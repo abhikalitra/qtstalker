@@ -20,10 +20,12 @@
 - Changed the name of the Qtstalker quotes plugin to QtstalkerFormat. This was to keep from confusing object files with the
   main program.
   
-- Finally changed the compiling process to a regular ./configure;make;make install format. To do this I had to re-organize the
+- Finally changed the compiling process to a regular './configure;make;make install' format. To do this I had to re-organize the
   entire source tree. The executable 'qtstalker' will now be put into /usr/bin. The plugins will be created in /usr/lib/qtstalker.
-  The docs will go into /usr/share/doc/qtstalker. This seems to be the most popular choice (at least with Gentoo and Debian...are you
-  listening RHAT?)
+  The docs will go into /usr/share/doc/qtstalker. This seems to be the most popular choice (at least with Gentoo and Debian)
+  
+- Removed the install plugins stuff. Not really needed since all you have to do is plop the lib into the dir for it to work.
+
 
 0.20
 ====
