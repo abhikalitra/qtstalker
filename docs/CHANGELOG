@@ -1,3 +1,12 @@
+0.21
+====
+
+- Some compile errors reported because I made some changes that apply to Qt3.1.2 that are not compatible with Qt3.0*
+  Back ported the String::remove to Qt3.0*
+  
+- I split the ./compile script into 2 scripts. ./compile creates the qtstalker binary, and ./compile_plugins creates all
+  the plugins. This is to make the compile process more efficient and flexible.
+
 0.20
 ====
 
