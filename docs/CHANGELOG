@@ -9,6 +9,8 @@
 
 - Applied patch from xley for the CSV plugin docs.
 
+- Fixed a bug that would segfault if there was only 1 bar to plot.
+
 0.20
 ====
 

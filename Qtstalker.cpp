@@ -797,19 +797,30 @@ void QtstalkerApp::loadChart (QString d)
     max = 0;
   slider->blockSignals(TRUE);
   slider->setRange(0, recordList->count() - 1);
-  slider->setValue(max + 1);
+  if ((int) recordList->count() < page)
+    slider->setValue(0);
+  else
+    slider->setValue(max + 1);
   slider->blockSignals(FALSE);
 
-  mainPlot->setIndex(max + 1);
+  if ((int) recordList->count() < page)
+    mainPlot->setIndex(0);
+  else
+    mainPlot->setIndex(max + 1);
   for(it.toFirst(); it.current(); ++it)
-    it.current()->setIndex(max + 1);
+  {
+    if ((int) recordList->count() < page)
+      it.current()->setIndex(0);
+    else
+      it.current()->setIndex(max + 1);
+  }
 
   pixelspace->blockSignals(TRUE);
   pixelspace->setRange(mainPlot->getMinPixelspace(), 99);
   pixelspace->blockSignals(FALSE);
 
   mainPlot->draw();
-  
+
   if (plotList.count())
   {
     Plot *plot = plotList[tabs->label(tabs->currentPageIndex())];
