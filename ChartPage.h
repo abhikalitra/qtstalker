@@ -38,17 +38,14 @@ class ChartPage : public BaseDialog
   public:
     ChartPage (QWidget *, Config *);
     ~ChartPage ();
-    void traverse(QString);
     void exportChart (QString);
 
   public slots:
     void deleteChart ();
     void editChart ();
     void exportSymbol ();
-    void exportAll ();
     void chartSelected (QString);
     void chartNoSelection ();
-    void directoryStatus (bool);
 
   protected:
     Navigator *nav;

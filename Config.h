@@ -62,33 +62,14 @@ class Config
     ~Config ();
     void setData(Parm, QString);
     QString getData (Parm);
-    void setPath (QString);
-    void saveFile (QString, QStringList);
-    QStringList loadFile (QString);
     QStringList getDirList (QString);
-
-    QStringList getGroup (QString);
-    QStringList getGroupList ();
-    void setGroup (QString, QStringList);
-    void deleteGroup (QString);
-
-    QStringList getPortfolio (QString);
-    QStringList getPortfolioList ();
-    void setPortfolio (QString, QStringList);
-    void deletePortfolio (QString);
 
     QStringList getIndicators ();
     QStringList getIndicator (QString);
     QString getIndicatorPlugin (QString);
     void setIndicator (QString, QStringList);
     void deleteIndicator (QString);
-
     QStringList getIndicatorList ();
-
-    QStringList getTest (QString);
-    QStringList getTestList ();
-    void setTest (QString, QStringList);
-    void deleteTest (QString);
 
     void installPlugin (QString selection);
     QStringList getIndicatorPlugins ();

@@ -54,6 +54,18 @@
 #include "delete.xpm"
 #include "co.xpm"
 #include "qtstalker.xpm"
+#include "nav.xpm"
+#include "dirclosed.xpm"
+#include "plainitem.xpm"
+#include "portfolio.xpm"
+#include "test.xpm"
+#include "text.xpm"
+#include "buyarrow.xpm"
+#include "sellarrow.xpm"
+#include "fib.xpm"
+#include "horizontal.xpm"
+#include "vertical.xpm"
+#include "trend.xpm"
 
 QtstalkerApp::QtstalkerApp()
 {
@@ -175,6 +187,9 @@ QtstalkerApp::QtstalkerApp()
   l = QStringList::split(" ", config->getData(Config::AppFont), FALSE);
   QFont font(l[0], l[1].toInt(), l[2].toInt());
   qApp->setFont(font, TRUE, 0);
+  
+  // set the nav status
+  slotHideNav(TRUE);
 
   slotChartTypeChanged(0);
 }
@@ -231,6 +246,11 @@ void QtstalkerApp::initActions()
   actionNewPlugin = new QAction(tr("Install new plugins..."), icon, tr("Install new plugins..."), 0, this);
   actionNewPlugin->setStatusTip(tr("Install new plugins."));
   connect(actionNewPlugin, SIGNAL(activated()), this, SLOT(slotNewPlugin()));
+  
+  icon = nav;
+  actionNav = new QAction(tr("Chart Navigator"), icon, tr("Chart Navigator"), 0, this, 0, true);
+  actionNav->setStatusTip(tr("Toggle the chart navigator area."));
+  connect(actionNav, SIGNAL(toggled(bool)), this, SLOT(slotHideNav(bool)));
 }
 
 void QtstalkerApp::initMenuBar()
@@ -247,6 +267,7 @@ void QtstalkerApp::initMenuBar()
   viewMenu->setCheckable(true);
   actionGrid->addTo(viewMenu);
   actionScaleToScreen->addTo(viewMenu);
+  actionNav->addTo(viewMenu);
 
   pluginMenu = new QPopupMenu();
   actionNewPlugin->addTo(pluginMenu);
@@ -278,12 +299,21 @@ void QtstalkerApp::initMenuBar()
 
   chartObjectMenu = new QPopupMenu();
   QStringList l = mainPlot->getChartObjectList();
-  int loop;
-  for (loop = 0; loop < (int) l.count(); loop++)
-  {
-    int id = chartObjectMenu->insertItem(QPixmap(co), l[loop], this, SLOT(slotNewChartObject(int)));
-    chartObjectMenu->setItemParameter(id, id);
-  }
+  int id = chartObjectMenu->insertItem(QPixmap(buyarrow), l[0], this, SLOT(slotNewChartObject(int)));
+  chartObjectMenu->setItemParameter(id, id);
+  id = chartObjectMenu->insertItem(QPixmap(sellarrow), l[1], this, SLOT(slotNewChartObject(int)));
+  chartObjectMenu->setItemParameter(id, id);
+  id = chartObjectMenu->insertItem(QPixmap(fib), l[2], this, SLOT(slotNewChartObject(int)));
+  chartObjectMenu->setItemParameter(id, id);
+  id = chartObjectMenu->insertItem(QPixmap(horizontal), l[3], this, SLOT(slotNewChartObject(int)));
+  chartObjectMenu->setItemParameter(id, id);
+  id = chartObjectMenu->insertItem(QPixmap(vertical), l[4], this, SLOT(slotNewChartObject(int)));
+  chartObjectMenu->setItemParameter(id, id);
+  id = chartObjectMenu->insertItem(QPixmap(trend), l[5], this, SLOT(slotNewChartObject(int)));
+  chartObjectMenu->setItemParameter(id, id);
+  id = chartObjectMenu->insertItem(QPixmap(text), l[6], this, SLOT(slotNewChartObject(int)));
+  chartObjectMenu->setItemParameter(id, id);
+
   chartMenu->insertItem (QPixmap(co), tr("New Chart Object"), chartObjectMenu);
 
   chartMenu->insertItem (QPixmap(edit), tr("Edit Chart Object"), chartObjectEditMenu);
@@ -295,6 +325,7 @@ void QtstalkerApp::initToolBar()
   // construct the chart toolbar
   toolbar = new QToolBar(this, "toolbar");
 
+  actionNav->addTo(toolbar);
   actionNewIndicator->addTo(toolbar);
   actionGrid->addTo(toolbar);
   actionScaleToScreen->addTo(toolbar);
@@ -1001,10 +1032,39 @@ void QtstalkerApp::mainPlotPopupMenu ()
   int loop;
   for (loop = 0; loop < (int) l.count(); loop++)
   {
-    int id = chartObjectEditMenu->insertItem(QPixmap(co), l[loop], this, SLOT(slotEditChartObject(int)));
+    QPixmap icon;
+    Setting *co = i->getChartObject(l[loop]);
+    switch (co->getInt("ObjectType"))
+    {
+      case Plot::VerticalLine:
+        icon = vertical;
+        break;
+      case Plot::HorizontalLine:
+        icon = horizontal;
+        break;
+      case Plot::TrendLine:
+        icon = trend;
+        break;
+      case Plot::Text:
+        icon = text;
+        break;
+      case Plot::BuyArrow:
+        icon = buyarrow;
+        break;
+      case Plot::SellArrow:
+        icon = sellarrow;
+        break;
+      case Plot::FibonacciLine:
+        icon = fib;
+        break;
+      default:
+        break;
+    }
+
+    int id = chartObjectEditMenu->insertItem(icon, l[loop], this, SLOT(slotEditChartObject(int)));
     chartObjectEditMenu->setItemParameter(id, id);
 
-    id = chartObjectDeleteMenu->insertItem(QPixmap(co), l[loop], this, SLOT(slotDeleteChartObject(int)));
+    id = chartObjectDeleteMenu->insertItem(icon, l[loop], this, SLOT(slotDeleteChartObject(int)));
     chartObjectDeleteMenu->setItemParameter(id, id);
   }
 
@@ -1028,10 +1088,39 @@ void QtstalkerApp::indicatorPlotPopupMenu ()
   int loop;
   for (loop = 0; loop < (int) l.count(); loop++)
   {
-    int id = chartObjectEditMenu->insertItem(QPixmap(co), l[loop], this, SLOT(slotEditChartObject(int)));
+    QPixmap icon;
+    Setting *co = i->getChartObject(l[loop]);
+    switch (co->getInt("ObjectType"))
+    {
+      case Plot::VerticalLine:
+        icon = vertical;
+        break;
+      case Plot::HorizontalLine:
+        icon = horizontal;
+        break;
+      case Plot::TrendLine:
+        icon = trend;
+        break;
+      case Plot::Text:
+        icon = text;
+        break;
+      case Plot::BuyArrow:
+        icon = buyarrow;
+        break;
+      case Plot::SellArrow:
+        icon = sellarrow;
+        break;
+      case Plot::FibonacciLine:
+        icon = fib;
+        break;
+      default:
+        break;
+    }
+
+    int id = chartObjectEditMenu->insertItem(icon, l[loop], this, SLOT(slotEditChartObject(int)));
     chartObjectEditMenu->setItemParameter(id, id);
 
-    id = chartObjectDeleteMenu->insertItem(QPixmap(co), l[loop], this, SLOT(slotDeleteChartObject(int)));
+    id = chartObjectDeleteMenu->insertItem(icon, l[loop], this, SLOT(slotDeleteChartObject(int)));
     chartObjectDeleteMenu->setItemParameter(id, id);
   }
 
@@ -1389,7 +1478,7 @@ void QtstalkerApp::initGroupNav ()
 {
   GroupPage *gp = new GroupPage(baseWidget, config);
   connect(gp, SIGNAL(fileSelected(QString)), this, SLOT(slotOpenChart(QString)));
-  navTab->addTab(gp, "G");
+  navTab->addTab(gp, QIconSet(QPixmap(dirclosed)), QString::null);
   navTab->setTabToolTip(gp, tr("Workwith Groups"));
 }
 
@@ -1397,22 +1486,32 @@ void QtstalkerApp::initChartNav ()
 {
   ChartPage *cp = new ChartPage(baseWidget, config);
   connect(cp, SIGNAL(fileSelected(QString)), this, SLOT(slotOpenChart(QString)));
-  navTab->addTab(cp, "C");
+  navTab->addTab(cp, QIconSet(QPixmap(plainitem)), QString::null);
   navTab->setTabToolTip(cp, tr("Workwith Charts"));
 }
 
 void QtstalkerApp::initPortfolioNav ()
 {
   PortfolioPage *pp = new PortfolioPage(baseWidget, config);
-  navTab->addTab(pp, "P");
+  navTab->addTab(pp, QIconSet(QPixmap(portfolio)), QString::null);
   navTab->setTabToolTip(pp, tr("Workwith Portfolios"));
 }
 
 void QtstalkerApp::initTestNav ()
 {
   TestPage *tp = new TestPage(baseWidget, config);
-  navTab->addTab(tp, "T");
+  navTab->addTab(tp, QIconSet(QPixmap(test)), QString::null);
   navTab->setTabToolTip(tp, tr("Workwith Backtests"));
+}
+
+void QtstalkerApp::slotHideNav (bool d)
+{
+  actionNav->setOn(d);
+
+  if (d)
+    navTab->show();
+  else
+    navTab->hide();
 }
 
 /*

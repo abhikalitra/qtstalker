@@ -23,10 +23,10 @@
 #include "EditChartDialog.h"
 #include "ChartDb.h"
 #include "Setting.h"
+#include "SymbolDialog.h"
 #include "edit.xpm"
 #include "delete.xpm"
 #include "export.xpm"
-#include "up.xpm"
 #include <qmessagebox.h>
 
 ChartPage::ChartPage (QWidget *w, Config *c) : BaseDialog(w)
@@ -36,29 +36,19 @@ ChartPage::ChartPage (QWidget *w, Config *c) : BaseDialog(w)
   nav = new Navigator(this, config->getData(Config::DataPath));
   connect(nav, SIGNAL(fileSelected(QString)), this, SLOT(chartSelected(QString)));
   connect(nav, SIGNAL(noSelection()), this, SLOT(chartNoSelection()));
-  connect(nav, SIGNAL(directoryStatus(bool)), this, SLOT(directoryStatus(bool)));
   nav->updateList();
   basebox->addWidget(nav);
 
-  setButton(QPixmap(up), tr("Up Directory"), 0);
-  connect(getButton(0), SIGNAL(clicked()), nav, SLOT(upDirectory()));
+  setButton(QPixmap(edit), tr("Edit Chart"), 0);
+  connect(getButton(0), SIGNAL(clicked()), this, SLOT(editChart()));
   setButtonStatus(0, FALSE);
 
-  setButton(QPixmap(edit), tr("Edit Chart"), 1);
-  connect(getButton(1), SIGNAL(clicked()), this, SLOT(editChart()));
+  setButton(QPixmap(deletefile), tr("Delete Chart"), 1);
+  connect(getButton(1), SIGNAL(clicked()), this, SLOT(deleteChart()));
   setButtonStatus(1, FALSE);
 
-  setButton(QPixmap(deletefile), tr("Delete Chart"), 2);
-  connect(getButton(2), SIGNAL(clicked()), this, SLOT(deleteChart()));
-  setButtonStatus(2, FALSE);
-
-  setButton(QPixmap(exportfile), tr("Export Chart"), 3);
-  connect(getButton(3), SIGNAL(clicked()), this, SLOT(exportSymbol()));
-  setButtonStatus(3, FALSE);
-
-  setButton(QPixmap(exportfile), tr("Export All Charts"), 4);
-  connect(getButton(4), SIGNAL(clicked()), this, SLOT(exportAll()));
-  setButtonStatus(4, TRUE);
+  setButton(QPixmap(exportfile), tr("Export Chart"), 2);
+  connect(getButton(2), SIGNAL(clicked()), this, SLOT(exportSymbol()));
 }
 
 ChartPage::~ChartPage ()
@@ -104,74 +94,35 @@ void ChartPage::editChart ()
 
 void ChartPage::exportSymbol ()
 {
-  QString symbol = nav->getFileSelection();
-  if (! symbol.length())
-    return;
+  SymbolDialog *dialog = new SymbolDialog(this,
+  							   config->getData(Config::DataPath),
+							   "*");
+  dialog->setCaption(tr("Select Charts"));
 
-  QString s = config->getData(Config::Home);
-  s.append("/export");
-  QDir dir(s);
-  if (! dir.exists(s, TRUE))
+  int rc = dialog->exec();
+
+  if (rc == QDialog::Accepted)
   {
-    if (! dir.mkdir(s, TRUE))
+    QString s = config->getData(Config::Home);
+    s.append("/export");
+    QDir dir(s);
+    if (! dir.exists(s, TRUE))
     {
-      qDebug("Unable to create export directory.");
-      return;
-    }
-  }
-
-  exportChart(symbol);
-}
-
-void ChartPage::exportAll ()
-{
-  QString s = config->getData(Config::Home);
-  s.append("/export");
-  QDir dir(s);
-  if (! dir.exists(s, TRUE))
-  {
-    if (! dir.mkdir(s, TRUE))
-    {
-      qDebug("Unable to create export directory.");
-      return;
-    }
-  }
-
-  dir.setPath(config->getData(Config::DataPath));
-
-  int loop;
-  for (loop = 2; loop < (int) dir.count(); loop++)
-  {
-    s = dir.path();
-    s.append("/");
-    s.append(dir[loop]);
-    traverse(s);
-  }
-}
-
-void ChartPage::traverse(QString dirname)
-{
-  QDir dir(dirname);
-  dir.setFilter(QDir::Dirs|QDir::Files);
-
-  const QFileInfoList *fileinfolist = dir.entryInfoList();
-  QFileInfoListIterator it(*fileinfolist);
-  QFileInfo *fi;
-  while((fi = it.current()))
-  {
-    if(fi->fileName() == "." || fi->fileName() == "..")
-    {
-      ++it;
-      continue;
+      if (! dir.mkdir(s, TRUE))
+      {
+        qDebug("Unable to create export directory.");
+	delete dialog;
+        return;
+      }
     }
 
-    if(fi->isDir() && fi->isReadable())
-      traverse(fi->absFilePath());
-    else
-      exportChart(fi->absFilePath());
-
-    ++it;
+    QStringList l = dialog->selectedFiles();
+    int loop;
+    for (loop = 0; loop < (int) l.count(); loop++)
+      exportChart(l[loop]);
   }
+
+  delete dialog;
 }
 
 void ChartPage::exportChart (QString path)
@@ -196,21 +147,14 @@ void ChartPage::exportChart (QString path)
 
 void ChartPage::chartSelected (QString d)
 {
+  setButtonStatus(0, TRUE);
   setButtonStatus(1, TRUE);
-  setButtonStatus(2, TRUE);
-  setButtonStatus(3, TRUE);
   emit fileSelected(d);
 }
 
 void ChartPage::chartNoSelection ()
 {
+  setButtonStatus(0, FALSE);
   setButtonStatus(1, FALSE);
-  setButtonStatus(2, FALSE);
-  setButtonStatus(3, FALSE);
-}
-
-void ChartPage::directoryStatus (bool d)
-{
-  setButtonStatus(0, d);
 }
 

@@ -29,6 +29,8 @@
 #include <qinputdialog.h>
 #include <qsplitter.h>
 #include <qheader.h>
+#include <qfile.h>
+#include <qtextstream.h>
 #include "Tester.h"
 #include "edit.xpm"
 #include "delete.xpm"
@@ -1397,117 +1399,143 @@ void Tester::loadExitShortAlerts ()
 
 void Tester::saveRule ()
 {
-  QStringList l;
+  QString s = config->getData(Config::TestPath);
+  s.append("/");
+  s.append(ruleName);
+
+  QFile f(s);
+  if (! f.open(IO_WriteOnly))
+    return;
+  QTextStream stream(&f);
 
   QDictIterator<Indicator> it(enterLongIndicators);
   for (; it.current(); ++it)
   {
     Indicator *i = it.current();
-    QString s = "Enter Long=";
+    s = "Enter Long=";
     s.append(i->getString());
-    l.append(s);
+    stream << s << "\n";
   }
 
   QDictIterator<Indicator> it2(exitLongIndicators);
   for (; it2.current(); ++it2)
   {
     Indicator *i = it2.current();
-    QString s = "Exit Long=";
+    s = "Exit Long=";
     s.append(i->getString());
-    l.append(s);
+    stream << s << "\n";
   }
 
   QDictIterator<Indicator> it3(enterShortIndicators);
   for (; it3.current(); ++it3)
   {
     Indicator *i = it3.current();
-    QString s = "Enter Short=";
+    s = "Enter Short=";
     s.append(i->getString());
-    l.append(s);
+    stream << s << "\n";
   }
 
   QDictIterator<Indicator> it4(exitShortIndicators);
   for (; it4.current(); ++it4)
   {
     Indicator *i = it4.current();
-    QString s = "Exit Short=";
+    s = "Exit Short=";
     s.append(i->getString());
-    l.append(s);
+    stream << s << "\n";
   }
 
   // save max loss stop
   if (maximumLossCheck->isChecked())
-    l.append("Maximum Loss Check=True");
+    s = "Maximum Loss Check=True";
   else
-    l.append("Maximum Loss Check=False");
+    s = "Maximum Loss Check=False";
+  stream << s << "\n";
 
   if (maximumLossLong->isChecked())
-    l.append("Maximum Loss Long=True");
+    s = "Maximum Loss Long=True";
   else
-    l.append("Maximum Loss Long=False");
+    s = "Maximum Loss Long=False";
+  stream << s << "\n";
 
   if (maximumLossShort->isChecked())
-    l.append("Maximum Loss Short=True");
+    s = "Maximum Loss Short=True";
   else
-    l.append("Maximum Loss Short=False");
+    s = "Maximum Loss Short=False";
+  stream << s << "\n";
 
-  QString s = "Maximum Loss Edit=";
+  s = "Maximum Loss Edit=";
   s.append(maximumLossEdit->text());
-  l.append(s);
+  stream << s << "\n";
 
   // save profit stop
   if (profitCheck->isChecked())
-    l.append("Profit Check=True");
+    s = "Profit Check=True";
   else
-    l.append("Profit Check=False");
+    s = "Profit Check=False";
+  stream << s << "\n";
 
   if (profitLong->isChecked())
-    l.append("Profit Long=True");
+    s = "Profit Long=True";
   else
-    l.append("Profit Long=False");
+    s = "Profit Long=False";
+  stream << s << "\n";
 
   if (profitShort->isChecked())
-    l.append("Profit Short=True");
+    s = "Profit Short=True";
   else
-    l.append("Profit Short=False");
+    s = "Profit Short=False";
+  stream << s << "\n";
 
   s = "Profit Edit=";
   s.append(profitEdit->text());
-  l.append(s);
+  stream << s << "\n";
 
   // save trailing stop
   if (trailingCheck->isChecked())
-    l.append("Trailing Check=True");
+    s = "Trailing Check=True";
   else
-    l.append("Trailing Check=False");
+    s = "Trailing Check=False";
+  stream << s << "\n";
 
   if (trailingLong->isChecked())
-    l.append("Trailing Long=True");
+    s = "Trailing Long=True";
   else
-    l.append("Trailing Long=False");
+    s = "Trailing Long=False";
+  stream << s << "\n";
 
   if (trailingShort->isChecked())
-    l.append("Trailing Short=True");
+    s = "Trailing Short=True";
   else
-    l.append("Trailing Short=False");
+    s = "Trailing Short=False";
+  stream << s << "\n";
 
   s = "Trailing Edit=";
   s.append(trailingEdit->text());
-  l.append(s);
+  stream << s << "\n";
 
-  config->setTest(ruleName, l);
+  f.close();
 }
 
 void Tester::loadRule ()
 {
-  QStringList l = config->getTest(ruleName);
-  if (! l.count())
+  QString s = config->getData(Config::TestPath);
+  s.append("/");
+  s.append(ruleName);
+
+  QFile f(s);
+  if (! f.open(IO_ReadOnly))
     return;
-    
-  int loop;
-  for (loop = 0; loop < (int) l.count(); loop++)
+  QTextStream stream(&f);
+
+  while(stream.atEnd() == 0)
   {
-    QStringList l2 = QStringList::split("=", l[loop], FALSE);
+    s = stream.readLine();
+    s = s.stripWhiteSpace();
+
+    if (! s.length())
+      continue;
+
+    QStringList l2 = QStringList::split("=", s, FALSE);
     
     if (! l2[0].compare("Enter Long"))
     {
@@ -1623,6 +1651,8 @@ void Tester::loadRule ()
     if (! l2[0].compare("Trailing Edit"))
       trailingEdit->setText(l2[1]);
   }
+  
+  f.close();
 }
 
 void Tester::exitDialog ()

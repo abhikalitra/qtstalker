@@ -33,7 +33,6 @@ class Navigator : public QListBox
   signals:
     void fileSelected (QString);
     void noSelection ();
-    void directoryStatus (bool);
 
   public:
     Navigator (QWidget *, QString);

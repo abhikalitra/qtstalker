@@ -46,7 +46,12 @@ void Navigator::updateList ()
   currentDir.refresh();
 
   int loop;
-  for (loop = 2; loop < (int) currentDir.count(); loop++)
+  if (! basePath.compare(currentDir.absPath()))
+    loop = 2;
+  else
+    loop = 1;
+
+  for (; loop < (int) currentDir.count(); loop++)
   {
     QString s = currentDir.absPath();
     s.append("/");
@@ -66,11 +71,6 @@ void Navigator::upDirectory ()
   currentDir.cdUp();
   updateList();
   emit noSelection();
-
-  if (! basePath.compare(currentDir.absPath()))
-    emit directoryStatus(FALSE);
-  else
-    emit directoryStatus(TRUE);
 }
 
 void Navigator::fileSelection (QListBoxItem *item)
@@ -80,13 +80,18 @@ void Navigator::fileSelection (QListBoxItem *item)
 
   if (item->pixmap())
   {
+    if (! item->text().compare(".."))
+    {
+      upDirectory();
+      return;
+    }
+
     QString s = currentDir.absPath();
     s.append("/");
     s.append(item->text());
     currentDir.setPath(s);
     updateList();
     emit noSelection();
-    emit directoryStatus(TRUE);
   }
   else
     emit fileSelected(getFileSelection());

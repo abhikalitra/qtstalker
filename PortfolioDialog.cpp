@@ -29,6 +29,8 @@
 #include <qstringlist.h>
 #include <qmessagebox.h>
 #include <qdir.h>
+#include <qfile.h>
+#include <qtextstream.h>
 
 PortfolioDialog::PortfolioDialog (Config *c, QString p) : EditDialog (c)
 {
@@ -80,14 +82,26 @@ void PortfolioDialog::updatePortfolio ()
 {
   plist->clear();
 
-  QStringList l = config->getPortfolio(portfolio);
+  QString s = config->getData(Config::PortfolioPath);
+  s.append("/");
+  s.append(portfolio);
 
-  int loop;
-  for (loop = 0; loop < (int) l.count(); loop++)
+  QFile f(s);
+  if (! f.open(IO_ReadOnly))
+    return;
+  QTextStream stream(&f);
+  while(stream.atEnd() == 0)
   {
-    QStringList l2 = QStringList::split(",", l[loop], FALSE);
-    item = new QListViewItem(plist, l2[0], l2[1], l2[2], l2[3]);
+    s = stream.readLine();
+    s = s.stripWhiteSpace();
+    if (s.length())
+    {
+      QStringList l = QStringList::split(",", s, FALSE);
+      item = new QListViewItem(plist, l[0], l[1], l[2], l[3]);
+    }
   }
+
+  f.close();
 
   updatePortfolioItems();
 }
@@ -118,7 +132,7 @@ void PortfolioDialog::updatePortfolioItems ()
       delete db;
       continue;
     }
-    
+
     Setting *details = db->getDetails();
 
     QDateTime dt = QDateTime::fromString(details->getDateTime("Last Date"), Qt::ISODate);
@@ -146,23 +160,29 @@ void PortfolioDialog::updatePortfolioItems ()
 
 void PortfolioDialog::savePortfolio ()
 {
-  QStringList l;
+  QString s = config->getData(Config::PortfolioPath);
+  s.append("/");
+  s.append(portfolio);
+  QFile f(s);
+  if (! f.open(IO_WriteOnly))
+    return;
+  QTextStream stream(&f);
 
   QListViewItemIterator it(plist);
   for (; it.current(); ++it)
   {
     item = it.current();
-
-    QStringList l2;
-    l2.append(item->text(0));
-    l2.append(item->text(1));
-    l2.append(item->text(2));
-    l2.append(item->text(3));
-    QString s = l2.join(",");
-    l.append(s);
+    s = item->text(0);
+    s.append(",");
+    s.append(item->text(1));
+    s.append(",");
+    s.append(item->text(2));
+    s.append(",");
+    s.append(item->text(3));
+    stream << s << "\n";
   }
 
-  config->setPortfolio(portfolio, l);
+  f.close();
 
   reject();
 }

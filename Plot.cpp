@@ -1194,6 +1194,7 @@ void Plot::newChartObject ()
     set->set(QObject::tr("Plot"), it.currentKey(), Setting::None);
   }
   set->set("Name", objectName, Setting::None);
+  set->set("ObjectType", QString::number(objectFlag), Setting::None);
 
   switch(objectFlag)
   {

@@ -25,8 +25,6 @@
 #include <qdir.h>
 #include <qlibrary.h>
 #include <qsettings.h>
-#include <qfile.h>
-#include <qtextstream.h>
 
 Config::Config (QString p)
 {
@@ -285,81 +283,6 @@ void Config::setData (Parm p, QString d)
   }
 }
 
-QStringList Config::getGroup (QString n)
-{
-  QString s = getData(GroupPath);
-  s.append("/");
-  s.append(n);
-  return getDirList(s);
-}
-
-QStringList Config::getGroupList ()
-{
-  return getDirList(getData(GroupPath));
-}
-
-void Config::setGroup (QString n, QStringList l)
-{
-  QString s = getData(GroupPath);
-  s.append("/");
-  s.append(n);
-
-  QDir dir;
-  dir.mkdir(s, TRUE);
-
-  int loop;
-  for (loop = 0; loop < (int) l.count(); loop++)
-  {
-    QString s2 = "ln -s ";
-    s2.append(l[loop]);
-    s2.append(" ");
-    s2.append(s);
-    s2.append("/");
-    QFileInfo fi(l[loop]);
-    s2.append(fi.fileName());
-    system (s2);
-  }
-}
-
-void Config::deleteGroup (QString n)
-{
-  QString s =  "rm -r ";
-  s.append(getData(GroupPath));
-  s.append("/");
-  s.append(n);
-  system (s);
-}
-
-QStringList Config::getPortfolio (QString n)
-{
-  QString s = getData(PortfolioPath);
-  s.append("/");
-  s.append(n);
-  return loadFile(s);
-}
-
-QStringList Config::getPortfolioList ()
-{
-  return getDirList(getData(PortfolioPath));
-}
-
-void Config::setPortfolio (QString n, QStringList l)
-{
-  QString s = getData(PortfolioPath);
-  s.append("/");
-  s.append(n);
-  saveFile(s, l);
-}
-
-void Config::deletePortfolio (QString n)
-{
-  QString s = getData(PortfolioPath);
-  QDir dir(s);
-  s.append("/");
-  s.append(n);
-  dir.remove(s);
-}
-
 QStringList Config::getIndicators ()
 {
   QSettings settings;
@@ -390,36 +313,6 @@ void Config::deleteIndicator (QString n)
   settings.removeEntry(s);
 }
 
-QStringList Config::getTest (QString n)
-{
-  QString s = getData(TestPath);
-  s.append("/");
-  s.append(n);
-  return loadFile(s);
-}
-
-QStringList Config::getTestList ()
-{
-  return getDirList(getData(TestPath));
-}
-
-void Config::setTest (QString n, QStringList l)
-{
-  QString s = getData(TestPath);
-  s.append("/");
-  s.append(n);
-  saveFile(s, l);
-}
-
-void Config::deleteTest (QString n)
-{
-  QString s = getData(TestPath);
-  QDir dir(s);
-  s.append("/");
-  s.append(n);
-  dir.remove(s);
-}
-
 QStringList Config::getDirList (QString path)
 {
   QStringList l;
@@ -431,43 +324,6 @@ QStringList Config::getDirList (QString path)
     l.append(dir[loop]);
 
   return l;
-}
-
-QStringList Config::loadFile (QString path)
-{
-  QStringList l;
-
-  QFile f(path);
-  if (! f.open(IO_ReadOnly))
-    return l;
-  QTextStream stream(&f);
-
-  while(stream.atEnd() == 0)
-  {
-    QString s = stream.readLine();
-    s = s.stripWhiteSpace();
-
-    if (s.length())
-      l.append(s);
-  }
-
-  f.close();
-
-  return l;
-}
-
-void Config::saveFile (QString path, QStringList l)
-{
-  QFile f(path);
-  if (! f.open(IO_WriteOnly))
-    return;
-  QTextStream stream(&f);
-
-  int loop;
-  for (loop = 0; loop < (int) l.count(); loop++)
-    stream << l[loop] << "\n";
-
-  f.close();
 }
 
 void Config::installPlugin (QString selection)

@@ -75,9 +75,11 @@ void PortfolioPage::newPortfolio()
 							   this);
   if ((ok) && (! selection.isNull()))
   {
-    QStringList l = config->getPortfolio(selection);
-
-    if (l.count())
+    QString s = config->getData(Config::PortfolioPath);
+    s.append("/");
+    s.append(selection);
+    QDir dir(s);
+    if (dir.exists(s, TRUE))
     {
       QMessageBox::information(this, tr("Qtstalker: Error"), tr("This portfolio already exists."));
       return;
@@ -100,7 +102,12 @@ void PortfolioPage::deletePortfolio()
   if (rc == QMessageBox::No)
     return;
 
-  config->deletePortfolio(nav->currentText());
+  QString s = config->getData(Config::PortfolioPath);
+  s.append("/");
+  s.append(nav->currentText());
+  QDir dir(s);
+  dir.remove(s);
+
   nav->updateList();
   portfolioNoSelection();
 }
@@ -116,16 +123,21 @@ void PortfolioPage::renamePortfolio ()
 							   this);
   if ((ok) && (! selection.isNull()))
   {
-    QStringList l = config->getPortfolio(selection);
-    if (l.count())
+    QString s = config->getData(Config::PortfolioPath);
+    s.append("/");
+    s.append(selection);
+    QDir dir(s);
+    if (dir.exists(s, TRUE))
     {
       QMessageBox::information(this, tr("Qtstalker: Error"), tr("This portfolio already exists."));
       return;
     }
 
-    l = config->getPortfolio(nav->currentText());
-    config->deletePortfolio(nav->currentText());
-    config->setPortfolio(selection, l);
+    QString s2 = config->getData(Config::PortfolioPath);
+    s2.append("/");
+    s2.append(nav->currentText());
+
+    dir.rename(s2, s, TRUE);
 
     nav->updateList();
     portfolioNoSelection();

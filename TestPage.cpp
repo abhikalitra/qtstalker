@@ -77,9 +77,11 @@ void TestPage::newTest()
   if ((! ok) || (selection.isNull()))
     return;
 
-  QStringList l = config->getTest(selection);
-
-  if (l.count())
+  QString s = config->getData(Config::TestPath);
+  s.append("/");
+  s.append(selection);
+  QDir dir(s);
+  if (dir.exists(s, TRUE))
   {
     QMessageBox::information(this, tr("Qtstalker: Error"), tr("This backtest rule already exists."));
     return;
@@ -101,7 +103,12 @@ void TestPage::deleteTest()
   if (rc == QMessageBox::No)
     return;
 
-  config->deleteTest(nav->currentText());
+  QString s = config->getData(Config::TestPath);
+  s.append("/");
+  s.append(nav->currentText());
+  QDir dir(s);
+  dir.remove(s);
+
   nav->updateList();
   testNoSelection();
 }
@@ -119,16 +126,22 @@ void TestPage::renameTest ()
   if ((! ok) || (selection.isNull()))
     return;
 
-  QStringList l = config->getTest(selection);
-  if (l.count())
+  QString s = config->getData(Config::TestPath);
+  s.append("/");
+  s.append(selection);
+  QDir dir(s);
+  if (dir.exists(s, TRUE))
   {
     QMessageBox::information(this, tr("Qtstalker: Error"), tr("This backtest rule already exists."));
     return;
   }
 
-  l = config->getTest(nav->currentText());
-  config->deleteTest(nav->currentText());
-  config->setTest(selection, l);
+  QString s2 = config->getData(Config::TestPath);
+  s2.append("/");
+  s2.append(nav->currentText());
+
+  dir.rename(s2, s, TRUE);
+  
   nav->updateList();
   testNoSelection();
 }

@@ -47,7 +47,6 @@ class GroupPage : public BaseDialog
     void renameGroup ();
     void groupSelected (QString);
     void groupNoSelection ();
-    void directoryStatus (bool);
 
   protected:
     Navigator *nav;

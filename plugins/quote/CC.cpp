@@ -32,6 +32,8 @@ CC::CC ()
   
   set("Rollover","20", Setting::Integer);
 
+  set("Maximum Years","10", Setting::Integer);
+
   about = "Creates a continuous adjusted futures contract\n";
   about.append("for the selected futures symbol.");
 }
@@ -96,6 +98,9 @@ void CC::parse ()
 void CC::newChart (ChartDb *db, QString symbol, FuturesData *fd, QDir dir)
 {
   int rollover = getInt("Rollover");
+  
+  QDate tdate = QDate::currentDate();
+  int years = tdate.year() - getInt("Maximum Years");
 
   Setting *details = db->getDetails();
   details->set("Format", "Open|High|Low|Close|Volume|Open Interest", Setting::None);
@@ -119,6 +124,11 @@ void CC::newChart (ChartDb *db, QString symbol, FuturesData *fd, QDir dir)
   int loop;
   for (loop = 2; loop < (int) dir.count(); loop++)
   {
+    s = dir[loop];
+    s.truncate(s.length() - 1);
+    if (s.right(4).toInt() < years)
+      continue;
+
     if (! dir[loop].compare(currentContract))
       flag = TRUE;
 

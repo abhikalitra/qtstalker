@@ -6,7 +6,8 @@
 
 - Updated CC plugin to allow for rollover control. Number used is days from last trading day to
   rollover to the next contract. This can be a lengthy process to run this plugin as it has to rebuild each chart
-  from scratch every time you update. Allow for a few minutes to complete.
+  from scratch every time you update. Allow for a few minutes to complete. Also added a maximum years
+  parm to limit the size of the chart.
 
 - Updated HLC plugin to follow Donchian rule.
 
@@ -31,6 +32,8 @@
   foreign quote problems.
   
 - Did some tuning to various classes for better speed and memory usage.
+
+- Added individual pixmaps for each type chart object for better id.
 
 0.17
 ====
