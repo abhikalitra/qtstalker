@@ -32,7 +32,7 @@
 #include <qsplitter.h>
 #include <qtoolbutton.h>
 #include <qlist.h>
-#include <qlabel.h>
+#include <qmultilineedit.h>
 
 #include "Indicator.h"
 #include "Plot.h"
@@ -159,7 +159,7 @@ class QtstalkerApp : public QMainWindow
     QString chartSymbol;
     int chartObjectId;
     QList<Setting> *recordList;
-    QLabel *infoLabel;
+    QMultiLineEdit *infoLabel;
 };
 
 #endif 

@@ -107,6 +107,7 @@ QtstalkerApp::QtstalkerApp()
   initTestNav();
 
   infoLabel = new QMultiLineEdit(navBase);
+  infoLabel->setReadOnly(TRUE);
   vbox->addWidget(infoLabel, 1, 0);
 
   // construct the chart areas
