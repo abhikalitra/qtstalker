@@ -43,6 +43,7 @@ class BB : public IndicatorPlugin
     IndicatorPlugin::MAType maType;
     QString customBand;
     QStringList bandList;
+    QString label;
 };
 
 extern "C"

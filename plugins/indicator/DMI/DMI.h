@@ -34,9 +34,8 @@ class DMI : public IndicatorPlugin
     PlotLine * calculateCustom (QDict<PlotLine> *);
     Setting getIndicatorSettings ();
     void setIndicatorSettings (Setting);
-    PlotLine * getMDI (int period);
-    PlotLine * getPDI (int period);
-    PlotLine * getADX (PlotLine *mdi, PlotLine *pdi, IndicatorPlugin::MAType type, int period);
+    void getDI (int period);
+    void getADX (IndicatorPlugin::MAType type, int period);
     PlotLine * getTR ();
     
   private:
@@ -54,6 +53,7 @@ class DMI : public IndicatorPlugin
     IndicatorPlugin::MAType maType;
     QString lineRequest;
     QStringList lineList;
+    QString label;
 };
 
 extern "C"

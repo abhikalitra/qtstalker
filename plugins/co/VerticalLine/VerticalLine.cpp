@@ -22,6 +22,9 @@
 #include "VerticalLine.h"
 #include "PrefDialog.h"
 #include "ChartDb.h"
+#include "../../../src/delete.xpm"
+#include "../../../src/edit.xpm"
+#include "../../../src/rename.xpm"
 #include <qpainter.h>
 #include <qsettings.h>
 
@@ -32,9 +35,9 @@ VerticalLine::VerticalLine ()
   defaultColor.setNamedColor("white");
   objects.setAutoDelete(TRUE);
   
-  menu->insertItem(tr("&Edit VerticalLine"), this, SLOT(prefDialog()), CTRL+Key_E);
-  menu->insertItem(tr("&Move VerticalLine"), this, SLOT(moveObject()), CTRL+Key_M);
-  menu->insertItem(tr("&Delete VerticalLine"), this, SLOT(removeObject()), CTRL+Key_D);
+  menu->insertItem(QPixmap(edit), tr("&Edit VerticalLine"), this, SLOT(prefDialog()), CTRL+Key_E);
+  menu->insertItem(QPixmap(renam), tr("&Move VerticalLine"), this, SLOT(moveObject()), CTRL+Key_M);
+  menu->insertItem(QPixmap(deleteitem), tr("&Delete VerticalLine"), this, SLOT(removeObject()), CTRL+Key_D);
   
   loadDefaults();
 }

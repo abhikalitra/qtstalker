@@ -43,6 +43,7 @@ void MACD::setDefaults ()
   trigLineType = PlotLine::Dash;
   oscLineType = PlotLine::Histogram;
   macdLabel = "MACD";
+  label = macdLabel;
   trigLabel = "Trig";
   oscLabel = "Osc";
   fastPeriod = 12;
@@ -152,6 +153,7 @@ int MACD::indicatorPrefDialog (QWidget *w)
     fastPeriod = dialog->getInt(QObject::tr("Fast Period"));
     slowPeriod = dialog->getInt(QObject::tr("Slow Period"));
     macdLabel = dialog->getText(QObject::tr("MACD Label"));
+    label = macdLabel;
     macdLineType = (PlotLine::LineType) dialog->getComboIndex(QObject::tr("MACD Line Type"));
     macdMAType = (IndicatorPlugin::MAType) dialog->getComboIndex(QObject::tr("MACD MA Type"));
     if (customFlag)
@@ -258,6 +260,10 @@ void MACD::setIndicatorSettings (Setting dict)
   s = dict.getData("customInput");
   if (s.length())
     customInput = s;
+
+  s = dict.getData("label");
+  if (s.length())
+    label = s;
 }
 
 Setting MACD::getIndicatorSettings ()
@@ -282,6 +288,7 @@ Setting MACD::getIndicatorSettings ()
   dict.setData("oscScaleFlag", QString::number(oscScaleFlag));
   
   dict.setData("customInput", customInput);
+  dict.setData("label", label);
   dict.setData("plugin", pluginName);
   return dict;
 }

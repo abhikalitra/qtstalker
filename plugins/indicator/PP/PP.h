@@ -45,6 +45,7 @@ class PP : public IndicatorPlugin
     QString supLabel;
     QString supLabel2;
     QString supLabel3;
+    QString label;
 };
 
 extern "C"

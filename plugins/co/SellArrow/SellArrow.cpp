@@ -22,6 +22,9 @@
 #include "SellArrow.h"
 #include "PrefDialog.h"
 #include "ChartDb.h"
+#include "../../../src/delete.xpm"
+#include "../../../src/edit.xpm"
+#include "../../../src/rename.xpm"
 #include <qpainter.h>
 #include <qsettings.h>
 
@@ -32,9 +35,9 @@ SellArrow::SellArrow ()
   defaultColor.setNamedColor("red");
   objects.setAutoDelete(TRUE);
   
-  menu->insertItem(tr("&Edit SellArrow"), this, SLOT(prefDialog()), CTRL+Key_E);
-  menu->insertItem(tr("&Move SellArrow"), this, SLOT(moveObject()), CTRL+Key_M);
-  menu->insertItem(tr("&Delete SellArrow"), this, SLOT(removeObject()), CTRL+Key_D);
+  menu->insertItem(QPixmap(edit), tr("&Edit SellArrow"), this, SLOT(prefDialog()), CTRL+Key_E);
+  menu->insertItem(QPixmap(renam), tr("&Move SellArrow"), this, SLOT(moveObject()), CTRL+Key_M);
+  menu->insertItem(QPixmap(deleteitem), tr("&Delete SellArrow"), this, SLOT(removeObject()), CTRL+Key_D);
   
   loadDefaults();
 }

@@ -52,6 +52,7 @@ class MACD : public IndicatorPlugin
     BarData::InputType macdInput;
     bool oscScaleFlag;
     QString customInput;
+    QString label;
 };
 
 extern "C"

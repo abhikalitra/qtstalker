@@ -50,6 +50,7 @@ class ENV : public IndicatorPlugin
     QString customBand;
     QString customInput;
     QStringList bandList;
+    QString label;
 };
 
 extern "C"

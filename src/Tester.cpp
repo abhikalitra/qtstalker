@@ -364,42 +364,42 @@ void Tester::createReportPage ()
   vbox->addWidget(tradeList);
   
   // test summary
-
-  QVGroupBox *gbox = new QVGroupBox(tr("Test Summary"), w);
-  gbox->setInsideSpacing(2);
-  gbox->setColumns(2);
-  vbox->addWidget(gbox);
-
-  QLabel *label = new QLabel(tr("Account Balance"), gbox);
-  summaryBalance = new QLabel(" ", gbox);
-  
-  label = new QLabel(tr("Net Profit"), gbox);
-  summaryNetProfit = new QLabel(" ", gbox);
-
-  label = new QLabel(tr("Net Profit %"), gbox);
-  summaryNetPercentage = new QLabel(" ", gbox);
-
-  label = new QLabel(tr("Initial Investment"), gbox);
-  summaryInvestment = new QLabel(" ", gbox);
-
-  label = new QLabel(tr("Commissions"), gbox);
-  summaryCommission = new QLabel(" ", gbox);
-
-  label = new QLabel(tr("Largest Drawdown"), gbox);
-  summaryDrawdown = new QLabel(" ", gbox);
-
-  label = new QLabel(tr("Trades"), gbox);
-  summaryTrades = new QLabel(" ", gbox);
-
-  label = new QLabel(tr("Long Trades"), gbox);
-  summaryLongTrades = new QLabel(" ", gbox);
-
-  label = new QLabel(tr("Short Trades"), gbox);
-  summaryShortTrades = new QLabel(" ", gbox);
   
   QHBoxLayout *hbox = new QHBoxLayout(vbox);
   hbox->setSpacing(5);
 
+  QVGroupBox *gbox = new QVGroupBox(tr("Test Summary"), w);
+  gbox->setInsideSpacing(2);
+  gbox->setColumns(2);
+  hbox->addWidget(gbox);
+
+  QLabel *label = new QLabel(tr("Account Balance "), gbox);
+  summaryBalance = new QLabel(" ", gbox);
+  
+  label = new QLabel(tr("Net Profit "), gbox);
+  summaryNetProfit = new QLabel(" ", gbox);
+
+  label = new QLabel(tr("Net Profit % "), gbox);
+  summaryNetPercentage = new QLabel(" ", gbox);
+
+  label = new QLabel(tr("Initial Investment "), gbox);
+  summaryInvestment = new QLabel(" ", gbox);
+
+  label = new QLabel(tr("Commissions "), gbox);
+  summaryCommission = new QLabel(" ", gbox);
+
+  label = new QLabel(tr("Largest Drawdown "), gbox);
+  summaryDrawdown = new QLabel(" ", gbox);
+
+  label = new QLabel(tr("Trades "), gbox);
+  summaryTrades = new QLabel(" ", gbox);
+
+  label = new QLabel(tr("Long Trades "), gbox);
+  summaryLongTrades = new QLabel(" ", gbox);
+
+  label = new QLabel(tr("Short Trades "), gbox);
+  summaryShortTrades = new QLabel(" ", gbox);
+  
   // win summary
 
   gbox = new QVGroupBox(tr("Winning Trades Summary"), w);
@@ -407,22 +407,22 @@ void Tester::createReportPage ()
   gbox->setColumns(2);
   hbox->addWidget(gbox);
 
-  label = new QLabel(tr("Trades"), gbox);
+  label = new QLabel(tr("Trades "), gbox);
   summaryWinTrades = new QLabel(" ", gbox);
 
-  label = new QLabel(tr("Profit"), gbox);
+  label = new QLabel(tr("Profit "), gbox);
   summaryTotalWinTrades = new QLabel(" ", gbox);
 
-  label = new QLabel(tr("Average"), gbox);
+  label = new QLabel(tr("Average "), gbox);
   summaryAverageWin = new QLabel(" ", gbox);
 
-  label = new QLabel(tr("Largest"), gbox);
+  label = new QLabel(tr("Largest "), gbox);
   summaryLargestWin = new QLabel(" ", gbox);
 
-  label = new QLabel(tr("Long Trades"), gbox);
+  label = new QLabel(tr("Long Trades "), gbox);
   summaryWinLongTrades = new QLabel(" ", gbox);
 
-  label = new QLabel(tr("Short Trades"), gbox);
+  label = new QLabel(tr("Short Trades "), gbox);
   summaryWinShortTrades = new QLabel(" ", gbox);
 
   // lose summary
@@ -432,22 +432,22 @@ void Tester::createReportPage ()
   gbox->setColumns(2);
   hbox->addWidget(gbox);
 
-  label = new QLabel(tr("Trades"), gbox);
+  label = new QLabel(tr("Trades "), gbox);
   summaryLoseTrades = new QLabel(" ", gbox);
 
-  label = new QLabel(tr("Profit"), gbox);
+  label = new QLabel(tr("Profit "), gbox);
   summaryTotalLoseTrades = new QLabel(" ", gbox);
 
-  label = new QLabel(tr("Average"), gbox);
+  label = new QLabel(tr("Average "), gbox);
   summaryAverageLose = new QLabel(" ", gbox);
 
-  label = new QLabel(tr("Largest"), gbox);
+  label = new QLabel(tr("Largest "), gbox);
   summaryLargestLose = new QLabel(" ", gbox);
 
-  label = new QLabel(tr("Long Trades"), gbox);
+  label = new QLabel(tr("Long Trades "), gbox);
   summaryLoseLongTrades = new QLabel(" ", gbox);
 
-  label = new QLabel(tr("Short Trades"), gbox);
+  label = new QLabel(tr("Short Trades "), gbox);
   summaryLoseShortTrades = new QLabel(" ", gbox);
 
   addTab(w, tr("Reports"));

@@ -46,6 +46,7 @@ void BB::setDefaults ()
   period = 20;
   maType = IndicatorPlugin::SMA;
   customBand = QObject::tr("Upper");
+  label = pluginName;
 }
 
 void BB::calculate ()
@@ -115,6 +116,7 @@ int BB::indicatorPrefDialog (QWidget *w)
   dialog->addIntItem(QObject::tr("Period"), QObject::tr("Parms"), period, 1, 99999999);
   dialog->addFloatItem(QObject::tr("Deviation"), QObject::tr("Parms"), deviation, 0, 99999999);
   dialog->addComboItem(QObject::tr("MA Type"), QObject::tr("Parms"), maTypeList, maType);
+  dialog->addTextItem(QObject::tr("Label"), QObject::tr("Parms"), label);
   if (customFlag)
     dialog->addComboItem(QObject::tr("Plot"), QObject::tr("Parms"), bandList, customBand);
   
@@ -127,6 +129,7 @@ int BB::indicatorPrefDialog (QWidget *w)
     period = dialog->getInt(QObject::tr("Period"));
     maType = (IndicatorPlugin::MAType) dialog->getComboIndex(QObject::tr("MA Type"));
     deviation = dialog->getFloat(QObject::tr("Deviation"));
+    label = dialog->getText(QObject::tr("Label"));
     if (customFlag)
       customBand = dialog->getCombo(QObject::tr("Plot"));
     rc = TRUE;
@@ -178,6 +181,10 @@ void BB::setIndicatorSettings (Setting dict)
   s = dict.getData("customBand");
   if (s.length())
     customBand = s;
+
+  s = dict.getData("label");
+  if (s.length())
+    label = s;
 }
 
 Setting BB::getIndicatorSettings ()
@@ -189,6 +196,7 @@ Setting BB::getIndicatorSettings ()
   dict.setData("deviation", QString::number(deviation));
   dict.setData("maType", QString::number(maType));
   dict.setData("customBand", customBand);
+  dict.setData("label", label);
   dict.setData("plugin", pluginName);
   return dict;
 }

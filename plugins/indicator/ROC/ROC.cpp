@@ -62,7 +62,7 @@ void ROC::calculate ()
 
   int loop;
   for (loop = period; loop < (int) in->getSize(); loop++)
-    roc->append(((in->getData(loop) / in->getData(loop - period)) * 100) - 100);
+    roc->append(((in->getData(loop) - in->getData(loop - period)) / in->getData(loop - period)) * 100);
 
   if (smoothing > 1)
   {

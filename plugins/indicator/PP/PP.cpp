@@ -46,6 +46,7 @@ void PP::setDefaults ()
   resLabel = QObject::tr("PP FR");
   resLabel2 = QObject::tr("PP SR");
   resLabel3 = QObject::tr("PP TR");
+  label = pluginName;
 }
 
 void PP::calculate ()
@@ -121,6 +122,9 @@ int PP::indicatorPrefDialog (QWidget *w)
   dialog->addTextItem(QObject::tr("Label Second Support"), QObject::tr("Support"), supLabel2);
   dialog->addTextItem(QObject::tr("Label Third Support"), QObject::tr("Support"), supLabel3);
   
+  if (customFlag)
+    dialog->addTextItem(QObject::tr("Label"), QObject::tr("Support"), label);
+  
   dialog->createPage (QObject::tr("Resistance"));
   dialog->addColorItem(QObject::tr("Resistance Color"), QObject::tr("Resistance"), resColor);
   dialog->addComboItem(QObject::tr("Resistance Line Type"), QObject::tr("Resistance"), lineTypes, resLineType);
@@ -132,6 +136,9 @@ int PP::indicatorPrefDialog (QWidget *w)
   
   if (rc == QDialog::Accepted)
   {
+    if (customFlag)
+      label = dialog->getText(QObject::tr("Label"));
+  
     supColor = dialog->getColor(QObject::tr("Support Color"));
     resColor = dialog->getColor(QObject::tr("Resistance Color"));
     supLineType = (PlotLine::LineType) dialog->getComboIndex(QObject::tr("Support Line Type"));
@@ -207,6 +214,10 @@ void PP::setIndicatorSettings (Setting dict)
   s = dict.getData("supLabel3");
   if (s.length())
     supLabel3 = s;
+
+  s = dict.getData("label");
+  if (s.length())
+    label = s;
 }
 
 Setting PP::getIndicatorSettings ()
@@ -222,6 +233,7 @@ Setting PP::getIndicatorSettings ()
   dict.setData("supLabel", supLabel);
   dict.setData("supLabel2", supLabel2);
   dict.setData("supLabel3", supLabel3);
+  dict.setData("label", label);
   dict.setData("plugin", pluginName);
   return dict;
 }

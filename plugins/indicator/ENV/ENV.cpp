@@ -53,6 +53,7 @@ void ENV::setDefaults ()
   maType = IndicatorPlugin::SMA;
   customBand = QObject::tr("Upper");
   customInput = "1";
+  label = pluginName;
 }
 
 void ENV::calculate ()
@@ -108,6 +109,7 @@ int ENV::indicatorPrefDialog (QWidget *w)
   dialog->addComboItem(QObject::tr("MA Type"), QObject::tr("Parms"), maTypeList, maType);
   if (customFlag)
   {
+    dialog->addTextItem(QObject::tr("Label"), QObject::tr("Parms"), label);
     dialog->addComboItem(QObject::tr("Plot"), QObject::tr("Parms"), bandList, customBand);
     dialog->addFormulaInputItem(QObject::tr("Input"), QObject::tr("Parms"), FALSE, customInput);
   }
@@ -134,6 +136,7 @@ int ENV::indicatorPrefDialog (QWidget *w)
     maType = (IndicatorPlugin::MAType) dialog->getComboIndex(QObject::tr("MA Type"));
     if (customFlag)
     {
+      label = dialog->getText(QObject::tr("Label"));
       customBand = dialog->getCombo(QObject::tr("Plot"));
       customInput = dialog->getFormulaInput(QObject::tr("Input"));
     }
@@ -227,6 +230,10 @@ void ENV::setIndicatorSettings (Setting dict)
   s = dict.getData("customInput");
   if (s.length())
     customInput = s;
+
+  s = dict.getData("label");
+  if (s.length())
+    label = s;
 }
 
 Setting ENV::getIndicatorSettings ()
@@ -235,6 +242,7 @@ Setting ENV::getIndicatorSettings ()
   dict.setData("period", QString::number(period));
   dict.setData("maType", QString::number(maType));
   dict.setData("input", QString::number(input));
+  dict.setData("label", label);
   
   dict.setData("upperColor", upperColor.name());
   dict.setData("upperLineType", QString::number(upperLineType));

@@ -164,7 +164,11 @@
 20040914: Fixed bug #1028142 with patch to fix seg faults on FormulaEdit insert function.
           Thanks to Xiaoguang Zhang for the patch.
 	  
+20040916: A logic error was found in the DMI indicator that returned smaller +DI and -DI values.
+          Fixed that as well as optimised speed.
 	  
+
+	  	  
 	  	  	  
 0.26
 ====

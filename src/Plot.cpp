@@ -111,14 +111,7 @@ void Plot::clear ()
   indicators.clear();
   data = 0;
   mouseFlag = None;
-  
-  if (! chartPath.length())
-    return;
-    
-  QDir dir;
-  if (! dir.exists(chartPath))
-    return;
-  
+
   QDictIterator<COPlugin> it(coPlugins);
   for (; it.current(); ++it)
   {

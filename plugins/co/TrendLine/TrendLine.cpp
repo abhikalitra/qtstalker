@@ -22,6 +22,9 @@
 #include "TrendLine.h"
 #include "PrefDialog.h"
 #include "ChartDb.h"
+#include "../../../src/delete.xpm"
+#include "../../../src/edit.xpm"
+#include "../../../src/rename.xpm"
 #include <qpainter.h>
 #include <qsettings.h>
 
@@ -35,9 +38,9 @@ TrendLine::TrendLine ()
   extend = TRUE;
   bar = "Close";
   
-  menu->insertItem(tr("&Edit TrendLine"), this, SLOT(prefDialog()), CTRL+Key_E);
-  menu->insertItem(tr("&Move TrendLine"), this, SLOT(moveObject()), CTRL+Key_M);
-  menu->insertItem(tr("&Delete TrendLine"), this, SLOT(removeObject()), CTRL+Key_D);
+  menu->insertItem(QPixmap(edit), tr("&Edit TrendLine"), this, SLOT(prefDialog()), CTRL+Key_E);
+  menu->insertItem(QPixmap(renam), tr("&Move TrendLine"), this, SLOT(moveObject()), CTRL+Key_M);
+  menu->insertItem(QPixmap(deleteitem), tr("&Delete TrendLine"), this, SLOT(removeObject()), CTRL+Key_D);
   
   loadDefaults();
 }

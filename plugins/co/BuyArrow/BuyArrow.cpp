@@ -22,6 +22,9 @@
 #include "BuyArrow.h"
 #include "PrefDialog.h"
 #include "ChartDb.h"
+#include "../../../src/delete.xpm"
+#include "../../../src/edit.xpm"
+#include "../../../src/rename.xpm"
 #include <qpainter.h>
 #include <qsettings.h>
 
@@ -32,9 +35,9 @@ BuyArrow::BuyArrow ()
   defaultColor.setNamedColor("green");
   objects.setAutoDelete(TRUE);
   
-  menu->insertItem(tr("&Edit BuyArrow"), this, SLOT(prefDialog()), CTRL+Key_E);
-  menu->insertItem(tr("&Move BuyArrow"), this, SLOT(moveObject()), CTRL+Key_M);
-  menu->insertItem(tr("&Delete BuyArrow"), this, SLOT(removeObject()), CTRL+Key_D);
+  menu->insertItem(QPixmap(edit), tr("&Edit BuyArrow"), this, SLOT(prefDialog()), CTRL+Key_E);
+  menu->insertItem(QPixmap(renam), tr("&Move BuyArrow"), this, SLOT(moveObject()), CTRL+Key_M);
+  menu->insertItem(QPixmap(deleteitem), tr("&Delete BuyArrow"), this, SLOT(removeObject()), CTRL+Key_D);
   
   loadDefaults();
 }
@@ -266,16 +269,6 @@ void BuyArrow::loadDefaults ()
   s = settings.readEntry(s);
   if (s.length())
     defaultColor.setNamedColor(s);
-
-/*    
-  s = "/Qtstalker/Default" + key + "Font";
-  s = settings.readEntry(s);
-  if (s.length())
-  {
-    QStringList l = QStringList::split(",", s, FALSE);
-    font = QFont(l[0], l[1].toInt(), l[2].toInt());
-  }
-*/  
 }
 
 void BuyArrow::saveDefaults ()
@@ -284,13 +277,6 @@ void BuyArrow::saveDefaults ()
   
   QString s = "/Qtstalker/DefaultBuyArrowColor";
   settings.writeEntry(s, defaultColor.name());
-  
-/*  
-  s = "/Qtstalker/Default" + key + "Font";
-  settings.writeEntry(s, font.family() + "," +
-                      QString::number(font.pointSize()) + "," +
-		      QString::number(font.weight()));
-*/		      
 }
 
 void BuyArrow::keyEvent (QKeyEvent *key)

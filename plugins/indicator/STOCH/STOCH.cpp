@@ -47,7 +47,8 @@ void STOCH::setDefaults ()
   period = 14;
   buyLine = 20;
   sellLine = 80;
-  maType = IndicatorPlugin::SMA;  
+  maType = IndicatorPlugin::SMA;
+  label = pluginName;
 }
 
 void STOCH::calculate ()
@@ -156,7 +157,10 @@ int STOCH::indicatorPrefDialog (QWidget *w)
   dialog->addFloatItem(QObject::tr("Buy Line"), QObject::tr("Parms"), buyLine, 0, 100);
   dialog->addFloatItem(QObject::tr("Sell Line"), QObject::tr("Parms"), sellLine, 0, 100);
   if (customFlag)
+  {
+    dialog->addTextItem(QObject::tr("Label"), QObject::tr("Parms"), label);
     dialog->addFormulaInputItem(QObject::tr("Input"), QObject::tr("Parms"), FALSE, customInput);
+  }
   
   dialog->createPage (QObject::tr("%K Parms"));
   dialog->addColorItem(QObject::tr("%K Color"), QObject::tr("%K Parms"), kcolor);
@@ -187,7 +191,10 @@ int STOCH::indicatorPrefDialog (QWidget *w)
     buyLine = dialog->getFloat(QObject::tr("Buy Line"));
     sellLine = dialog->getFloat(QObject::tr("Sell Line"));
     if (customFlag)
+    {
+      label = dialog->getText(QObject::tr("Label"));
       customInput = dialog->getFormulaInput(QObject::tr("Input"));
+    }
     
     rc = TRUE;
   }
@@ -266,6 +273,10 @@ void STOCH::setIndicatorSettings (Setting dict)
   s = dict.getData("customInput");
   if (s.length())
     customInput = s;
+
+  s = dict.getData("label");
+  if (s.length())
+    label = s;
 }
 
 Setting STOCH::getIndicatorSettings ()
@@ -284,6 +295,7 @@ Setting STOCH::getIndicatorSettings ()
   dict.setData("buyLine", QString::number(buyLine));
   dict.setData("sellLine", QString::number(sellLine));
   dict.setData("customInput", customInput);
+  dict.setData("label", label);
   dict.setData("plugin", pluginName);
   return dict;
 }

@@ -55,27 +55,13 @@ void DMI::setDefaults ()
   smoothing = 9;
   maType = IndicatorPlugin::SMA;
   lineRequest = "ADX";
+  label = pluginName;
 }
 
 void DMI::calculate ()
 {
-  PlotLine *mdi = getMDI(period);
-  mdi->setColor(mdiColor);
-  mdi->setType(mdiLineType);
-  mdi->setLabel(mdiLabel);
-  output->addLine(mdi);
-  
-  PlotLine *pdi = getPDI(period);
-  pdi->setColor(pdiColor);
-  pdi->setType(pdiLineType);
-  pdi->setLabel(pdiLabel);
-  output->addLine(pdi);
-
-  PlotLine *adx = getADX(mdi, pdi, maType, smoothing);
-  adx->setColor(adxColor);
-  adx->setType(adxLineType);
-  adx->setLabel(adxLabel);
-  output->addLine(adx);
+  getDI(period);
+  getADX(maType, smoothing);
 }
 
 int DMI::indicatorPrefDialog (QWidget *w)
@@ -88,7 +74,10 @@ int DMI::indicatorPrefDialog (QWidget *w)
   dialog->addIntItem(QObject::tr("Smoothing"), QObject::tr("DMI"), smoothing, 1, 99999999);
   dialog->addComboItem(QObject::tr("Smoothing Type"), QObject::tr("DMI"), maTypeList, maType);
   if (customFlag)
+  {
+    dialog->addTextItem(QObject::tr("Label"), QObject::tr("DMI"), label);
     dialog->addComboItem(QObject::tr("Plot"), QObject::tr("DMI"), lineList, lineRequest);
+  }
   
   dialog->createPage (QObject::tr("+DM"));
   dialog->addColorItem(QObject::tr("+DM Color"), QObject::tr("+DM"), pdiColor);
@@ -113,7 +102,10 @@ int DMI::indicatorPrefDialog (QWidget *w)
     smoothing = dialog->getInt(QObject::tr("Smoothing"));
     maType = (IndicatorPlugin::MAType) dialog->getComboIndex(QObject::tr("Smoothing Type"));
     if (customFlag)
+    {
+      label = dialog->getText(QObject::tr("Label"));
       lineRequest = dialog->getCombo(QObject::tr("Plot"));    
+    }
       
     pdiColor = dialog->getColor(QObject::tr("+DM Color"));
     pdiLineType = (PlotLine::LineType) dialog->getComboIndex(QObject::tr("+DM Line Type"));
@@ -200,6 +192,10 @@ void DMI::setIndicatorSettings (Setting dict)
   s = dict.getData("adxLineType");
   if (s.length())
     adxLineType = (PlotLine::LineType) s.toInt();
+
+  s = dict.getData("label");
+  if (s.length())
+    label = s;
 }
 
 Setting DMI::getIndicatorSettings ()
@@ -217,6 +213,7 @@ Setting DMI::getIndicatorSettings ()
   dict.setData("pdiLabel", pdiLabel);
   dict.setData("mdiLabel", mdiLabel);
   dict.setData("adxLabel", adxLabel);
+  dict.setData("label", label);
   dict.setData("plugin", pluginName);
   return dict;
 }
@@ -236,29 +233,43 @@ PlotLine * DMI::calculateCustom (QDict<PlotLine> *)
   }
 }
 
-PlotLine * DMI::getMDI (int period)
+void DMI::getDI (int period)
 {
   PlotLine *mdm = new PlotLine();
+  PlotLine *pdm = new PlotLine();
+  
   int loop;
   for (loop = 1; loop < (int) data->count(); loop++)
   {
-    double high = data->getHigh(loop);
-    double low = data->getLow(loop);
-    double yhigh = data->getHigh(loop - 1);
-    double ylow = data->getLow(loop - 1);
-    double t = 0;
-
-    if (high > yhigh)
-      t = 0;
+    double hdiff = data->getHigh(loop) - data->getHigh(loop - 1);
+    double ldiff = data->getLow(loop - 1) - data->getLow(loop);
+    double p = 0;
+    double m = 0;
+      
+    if ((hdiff < 0 && ldiff < 0) || (hdiff == ldiff))
+    {
+      p = 0;
+      m = 0;
+    }
     else
     {
-      if (low < ylow)
-        t = ylow - low;
+      if (hdiff > ldiff)
+      {
+        p = hdiff;
+	m = 0;
+      }
       else
-	t = 0;
+      {
+	if (hdiff < ldiff)
+	{
+	  p = 0;
+	  m = ldiff;
+	}
+      }
     }
-
-    mdm->append(t);
+    
+    mdm->append(m);
+    pdm->append(p);
   }
 
   PlotLine *tr = getTR();
@@ -266,129 +277,94 @@ PlotLine * DMI::getMDI (int period)
   PlotLine *smamdm = getMA(mdm, IndicatorPlugin::SMA, period);
   int mdmLoop = smamdm->getSize() - 1;
 
+  PlotLine *smapdm = getMA(pdm, IndicatorPlugin::SMA, period);
+  int pdmLoop = smapdm->getSize() - 1;
+  
   PlotLine *smatr = getMA(tr, IndicatorPlugin::SMA, period);
   int trLoop = smatr->getSize() - 1;
 
   PlotLine *mdi = new PlotLine();
+  PlotLine *pdi = new PlotLine();
 
   while (mdmLoop > -1 && trLoop > -1)
   {
-    int t = (int) ((smamdm->getData(mdmLoop) / smatr->getData(trLoop)) * 100);
-    if (t > 100)
-      t = 100;
-    if (t < 0)
-      t = 0;
+    int m = (int) ((smamdm->getData(mdmLoop) / smatr->getData(trLoop)) * 100);
+    int p = (int) ((smapdm->getData(pdmLoop) / smatr->getData(trLoop)) * 100);
+    
+    if (m > 100)
+      m = 100;
+    if (m < 0)
+      m = 0;
 
-    mdi->prepend(t);
+    if (p > 100)
+      p = 100;
+    if (p < 0)
+      p = 0;
+      
+    mdi->prepend(m);
+    pdi->prepend(p);
 
     mdmLoop--;
-    trLoop--;
-  }
-
-  delete mdm;
-  delete tr;
-  delete smamdm;
-  delete smatr;
-  return mdi;
-}
-
-PlotLine * DMI::getPDI (int period)
-{
-  PlotLine *pdm = new PlotLine();
-
-  int loop;
-  for (loop = 1; loop < (int) data->count(); loop++)
-  {
-    double high = data->getHigh(loop);
-    double low = data->getLow(loop);
-    double yhigh = data->getHigh(loop - 1);
-    double ylow = data->getLow(loop - 1);
-    double t = 0;
-
-    if (high > yhigh)
-      t = high - yhigh;
-    else
-    {
-      if (low < ylow)
-	t = 0;
-      else
-      	t = 0;
-    }
-
-    pdm->append(t);
-  }
-
-  PlotLine *tr = getTR();
-
-  PlotLine *smapdm = getMA(pdm, IndicatorPlugin::SMA, period);
-  int pdmLoop = smapdm->getSize() - 1;
-
-  PlotLine *smatr = getMA(tr, IndicatorPlugin::SMA, period);
-  int trLoop = smatr->getSize() - 1;
-
-  PlotLine *pdi = new PlotLine();
-
-  while (pdmLoop > -1 && trLoop > -1)
-  {
-    int t = (int) ((smapdm->getData(pdmLoop) / smatr->getData(trLoop)) * 100);
-    if (t > 100)
-      t = 100;
-    if (t < 0)
-      t = 0;
-
-    pdi->prepend(t);
-
     pdmLoop--;
     trLoop--;
   }
 
+  delete mdm;
   delete pdm;
   delete tr;
+  delete smamdm;
   delete smapdm;
   delete smatr;
-  return pdi;
+  
+  mdi->setColor(mdiColor);
+  mdi->setType(mdiLineType);
+  mdi->setLabel(mdiLabel);
+  output->addLine(mdi);
+  
+  pdi->setColor(pdiColor);
+  pdi->setType(pdiLineType);
+  pdi->setLabel(pdiLabel);
+  output->addLine(pdi);
 }
 
-PlotLine * DMI::getADX (PlotLine *mdi, PlotLine *pdi, IndicatorPlugin::MAType type, int period)
+void DMI::getADX (IndicatorPlugin::MAType type, int period)
 {
+  PlotLine *mdi = output->getLine(0);
+  if (! mdi)
+    return;
+    
+  PlotLine *pdi = output->getLine(1);
+  if (! pdi)
+    return;
+  
   int mdiLoop = mdi->getSize() - 1;
   int pdiLoop = pdi->getSize() - 1;
 
-  PlotLine *disum = new PlotLine;
-  PlotLine *didiff = new PlotLine;
+  PlotLine *dx = new PlotLine;
 
   while (pdiLoop > -1 && mdiLoop > -1)
   {
-    disum->prepend(pdi->getData(pdiLoop) + mdi->getData(mdiLoop));
-    didiff->prepend(fabs(pdi->getData(pdiLoop) - mdi->getData(mdiLoop)));
-    pdiLoop--;
-    mdiLoop--;
-  }
-
-  int sumLoop = disum->getSize() - 1;
-  int diffLoop = didiff->getSize() - 1;
-
-  PlotLine *dx = new PlotLine;
-
-  while (sumLoop > -1 && diffLoop > -1)
-  {
-    int t = (int) ((didiff->getData(diffLoop) / disum->getData(sumLoop)) * 100);
+    double m = fabs(pdi->getData(pdiLoop) - mdi->getData(mdiLoop));
+    double p = pdi->getData(pdiLoop) + mdi->getData(mdiLoop);
+    int t = (int) ((m / p) * 100);
     if (t > 100)
       t = 100;
     if (t < 0)
       t = 0;
 
     dx->prepend(t);
-
-    sumLoop--;
-    diffLoop--;
+	       
+    pdiLoop--;
+    mdiLoop--;
   }
 
   PlotLine *adx = getMA(dx, type, period);
-  delete disum;
-  delete didiff;
+  adx->setColor(adxColor);
+  adx->setType(adxLineType);
+  adx->setLabel(adxLabel);
+  output->addLine(adx);
+  
   delete dx;
-  return adx;
 }
 
 PlotLine * DMI::getTR ()
