@@ -73,7 +73,7 @@ bool Indicator::getEnable ()
   return enable;
 }
 
-void Indicator::setName (QString d)
+void Indicator::setName (QString &d)
 {
   name = d;
 }
@@ -83,7 +83,7 @@ QString Indicator::getName ()
   return name;
 }
 
-void Indicator::setType (QString d)
+void Indicator::setType (QString &d)
 {
   type = d;
 }
@@ -93,7 +93,7 @@ QString Indicator::getType ()
   return type;
 }
 
-void Indicator::setFile (QString d)
+void Indicator::setFile (QString &d)
 {
   file = d;
 }
@@ -103,16 +103,15 @@ QString Indicator::getFile ()
   return file;
 }
 
-QStringList Indicator::getPlotTypes ()
+void Indicator::getPlotTypes (QStringList &l)
 {
-  QStringList l;
+  l.clear();
   l.append(QObject::tr("Main"));
   l.append(QObject::tr("Tabbed"));
   l.append(QObject::tr("Stacked"));
-  return l;
 }
 
-Indicator::PlotType Indicator::getPlotType (QString d)
+Indicator::PlotType Indicator::getPlotType (QString &d)
 {
   PlotType type = MainPlot;
   

@@ -328,8 +328,10 @@ void Tester::createTestPage ()
   grid->addWidget(gbox, 1, 0);
   
   label = new QLabel(tr("Symbol"), gbox);
-  
-  symbolButton = new SymbolButton(gbox, config.getData(Config::DataPath), QString());
+
+  QString s = config.getData(Config::DataPath);
+  QString s2;
+  symbolButton = new SymbolButton(gbox, s, s2);
   connect(symbolButton, SIGNAL(symbolChanged()), this, SLOT(symbolButtonPressed()));
   
   label = new QLabel(tr("Bars"), gbox);
@@ -555,7 +557,8 @@ void Tester::test ()
 		       TRUE);
   prog.show();
 
-  QString plugin = config.parseDbPlugin(symbolButton->getPath());
+  QString s = symbolButton->getPath();
+  QString plugin = config.parseDbPlugin(s);
   DbPlugin *db = config.getDbPlugin(plugin);
   if (! db)
   {
@@ -563,7 +566,7 @@ void Tester::test ()
     return;
   }
 
-  QString s = symbolButton->getPath();
+  s = symbolButton->getPath();
   db->openChart(s);
   
   db->getHeaderField(DbPlugin::Type, chartType);
@@ -588,7 +591,8 @@ void Tester::test ()
   equityPlot->clear();
     
   equityCurve = new PlotLine;
-  equityCurve->setColor(QString("green"));
+  s = "green";
+  equityCurve->setColor(s);
 
   if (loadAlerts(0))
   {
@@ -1200,16 +1204,20 @@ bool Tester::loadAlerts (int type)
     return TRUE;
   }
   
-  // open the CUS plugin   
-  IndicatorPlugin *plug = config.getIndicatorPlugin("CUS");
+  // open the CUS plugin
+  QString plugin("CUS");
+  IndicatorPlugin *plug = config.getIndicatorPlugin(plugin);
   if (! plug)
   {
-    config.closePlugin("CUS");
+    config.closePlugin(plugin);
     return TRUE;
   }
 
   for (loop = 0; loop < edit->getLines(); loop++)
-    plug->setCustomFunction(edit->getLine(loop));
+  {
+    QString t(edit->getLine(loop));
+    plug->setCustomFunction(t);
+  }
   
   // load the CUS plugin and calculate
   plug->setIndicatorInput(recordList);
@@ -1219,7 +1227,7 @@ bool Tester::loadAlerts (int type)
   if (! line)
   {
     qDebug("Tester::loadAlerts: no PlotLine returned");
-    config.closePlugin("CUS");
+    config.closePlugin(plugin);
     return TRUE;
   }
     
@@ -1261,7 +1269,7 @@ bool Tester::loadAlerts (int type)
     }
   }
   
-  config.closePlugin("CUS");
+  config.closePlugin(plugin);
   
   return FALSE;
 }
@@ -1758,12 +1766,15 @@ void Tester::updateChart ()
   
   //set up indicator
   PlotLine *close = recordList->getInput(BarData::Close);
-  close->setColor(QString("green"));
+  QString str("green");
+  close->setColor(str);
   
   Indicator *i = new Indicator;
-  i->setName("tester");
+  str = "tester";
+  i->setName(str);
   i->addLine(close);
-  plot->addIndicator(i->getName(), i);
+  str = i->getName();
+  plot->addIndicator(str, i);
 
   //set up arrows
   int loop;
@@ -1843,9 +1854,11 @@ void Tester::createEquityCurve ()
   
   //set up indicator
   Indicator *i = new Indicator;
-  i->setName("equity");
+  QString str = "equity";
+  i->setName(str);
   i->addLine(equityCurve);
-  equityPlot->addIndicator(i->getName(), i);
+  str = i->getName();
+  equityPlot->addIndicator(str, i);
 
   equityPlot->draw();
 }
@@ -1885,16 +1898,20 @@ bool Tester::loadCustomShortStop ()
 			     tr("No COMP step or COMP step not checked in Custom Short Stop."));
     return TRUE;
   }
-  
-  IndicatorPlugin *plug = config.getIndicatorPlugin("CUS");
+
+  QString plugin("CUS");  
+  IndicatorPlugin *plug = config.getIndicatorPlugin(plugin);
   if (! plug)
   {
-    config.closePlugin("CUS");
+    config.closePlugin(plugin);
     return TRUE;
   }
 
   for (loop = 0; loop < customShortStopEdit->getLines(); loop++)
-    plug->setCustomFunction(customShortStopEdit->getLine(loop));
+  {
+    QString t(customShortStopEdit->getLine(loop));
+    plug->setCustomFunction(t);
+  }
   
   // load the CUS plugin and calculate
   plug->setIndicatorInput(recordList);
@@ -1904,14 +1921,14 @@ bool Tester::loadCustomShortStop ()
   if (! line)
   {
     qDebug("Tester::loadCustomShortStop: no PlotLine returned");
-    config.closePlugin("CUS");
+    config.closePlugin(plugin);
     return TRUE;
   }
     
   customShortStopLine = new PlotLine;
   customLongStopLine->copy(line);
     
-  config.closePlugin("CUS");
+  config.closePlugin(plugin);
   
   return FALSE;
 }
@@ -1952,15 +1969,19 @@ bool Tester::loadCustomLongStop ()
     return TRUE;
   }
   
-  IndicatorPlugin *plug = config.getIndicatorPlugin("CUS");
+  QString plugin("CUS");  
+  IndicatorPlugin *plug = config.getIndicatorPlugin(plugin);
   if (! plug)
   {
-    config.closePlugin("CUS");
+    config.closePlugin(plugin);
     return TRUE;
   }
 
   for (loop = 0; loop < customLongStopEdit->getLines(); loop++)
-    plug->setCustomFunction(customLongStopEdit->getLine(loop));
+  {
+    QString t(customLongStopEdit->getLine(loop));
+    plug->setCustomFunction(t);
+  }
   
   // load the CUS plugin and calculate
   plug->setIndicatorInput(recordList);
@@ -1970,14 +1991,14 @@ bool Tester::loadCustomLongStop ()
   if (! line)
   {
     qDebug("Tester::loadCustomShortStop: no PlotLine returned");
-    config.closePlugin("CUS");
+    config.closePlugin(plugin);
     return TRUE;
   }
     
   customLongStopLine = new PlotLine;
   customLongStopLine->copy(line);
     
-  config.closePlugin("CUS");
+  config.closePlugin(plugin);
   
   return FALSE;
 }
@@ -2111,37 +2132,43 @@ QString Tester::newTest ()
 void Tester::slotHelp ()
 {
   HelpWindow *hw = 0;
+  QString str;
   QString s = tabLabel(currentPage());
   
   while (s.length())
   {
     if (! s.compare("Rules"))
     {
-      hw = new HelpWindow(this, "backtesterrules.html");
+      str = "backtesterrules.html";
+      hw = new HelpWindow(this, str);
       break;
     }
     
     if (! s.compare("Stops"))
     {
-      hw = new HelpWindow(this, "backtesterstops.html");
+      str = "backtesterstops.html";
+      hw = new HelpWindow(this, str);
       break;
     }
   
     if (! s.compare("Testing"))
     {
-      hw = new HelpWindow(this, "backtestertesting.html");
+      str = "backtestertesting.html";
+      hw = new HelpWindow(this, str);
       break;
     }
   
     if (! s.compare("Reports"))
     {
-      hw = new HelpWindow(this, "backtesterreports.html");
+      str = "backtesterreports.html";
+      hw = new HelpWindow(this, str);
       break;
     }
     
     if (! s.compare("Chart"))
     {
-      hw = new HelpWindow(this, "backtesterchart.html");
+      str = "backtesterchart.html";
+      hw = new HelpWindow(this, str);
       break;
     }
     

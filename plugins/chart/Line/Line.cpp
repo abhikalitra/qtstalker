@@ -36,7 +36,7 @@ Line::Line ()
   startX = 0;
   indicatorFlag = FALSE;
   defaultFlag = TRUE;
-  defaultFormula.append("plot=1|lineType=4|period=0|plugin=REF|input=3|color=#ff0000|label=REF");
+  defaultFormula = "plot=1|lineType=4|period=0|plugin=REF|input=3|color=#ff0000|label=REF|scale=0";
   loadSettings();  
   helpFile = "linechartplugin.html";
 }
@@ -100,12 +100,12 @@ void Line::prefDialog (QWidget *)
     minPixelspace = dialog->getSpacing();
     color = dialog->getColor();
     defaultFlag = dialog->getDefault();
-    
+
+    formulaList.clear();
     if (! defaultFlag)
     {
       int loop;
       bool flag = FALSE;
-      formulaList.clear();
       for (loop = 0; loop < (int) dialog->getLines(); loop++)
       {
         formulaList.append(dialog->getLine(loop));
@@ -127,6 +127,8 @@ void Line::prefDialog (QWidget *)
         return;
       }
     }
+    else
+      formulaList = defaultFormula;
         
     saveFlag = TRUE;
     saveSettings();
@@ -179,26 +181,20 @@ PlotLine * Line::getBoolLine ()
   PlotLine *line = 0;
   Config config;
   
-  // open the CUS plugin   
-  IndicatorPlugin *plug = config.getIndicatorPlugin("CUS");
+  // open the CUS plugin
+  QString plugin("CUS");
+  IndicatorPlugin *plug = config.getIndicatorPlugin(plugin);
   if (! plug)
   {
-    config.closePlugin("CUS");
+    config.closePlugin(plugin);
     return line;
   }
 
   // load the CUS plugin and calculate
   int loop;
-  if (defaultFlag)
-  {
-    for(loop = 0; loop < (int) defaultFormula.count(); loop++)
-      plug->setCustomFunction(defaultFormula[loop]);
-  }
-  else
-  {
-    for(loop = 0; loop < (int) formulaList.count(); loop++)
-      plug->setCustomFunction(formulaList[loop]);
-  }
+  for(loop = 0; loop < (int) formulaList.count(); loop++)
+    plug->setCustomFunction(formulaList[loop]);
+    
   plug->setIndicatorInput(data);
   plug->calculate();
   Indicator *i = plug->getIndicator();
@@ -206,14 +202,14 @@ PlotLine * Line::getBoolLine ()
   if (! line)
   {
     qDebug("Line::getBoolLine: no PlotLine returned");
-    config.closePlugin("CUS");
+    config.closePlugin(plugin);
     return 0;
   }
     
   PlotLine *nline = new PlotLine;
   nline->copy(line);
   
-  config.closePlugin("CUS");
+  config.closePlugin(plugin);
   
   return nline;
 }

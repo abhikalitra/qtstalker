@@ -62,7 +62,8 @@ void BB::calculate ()
   PlotLine *sma = getMA(in, maType, period);
   sma->setColor(color);
   sma->setType(lineType);
-  sma->setLabel("BBM");
+  QString s = "BBM";
+  sma->setLabel(s);
   int smaLoop = sma->getSize() - 1;
 
   if ((int) sma->getSize() < period * 2)
@@ -75,12 +76,14 @@ void BB::calculate ()
   PlotLine *bbu = new PlotLine;
   bbu->setColor(color);
   bbu->setType(lineType);
-  bbu->setLabel("BBU");
+  s = "BBU";
+  bbu->setLabel(s);
   
   PlotLine *bbl = new PlotLine;
   bbl->setColor(color);
   bbl->setType(lineType);
-  bbl->setLabel("BBL");
+  s = "BBL";
+  bbl->setLabel(s);
 
   int inputLoop = in->getSize() - 1;
   while (inputLoop >= period && smaLoop >= period)
@@ -111,31 +114,46 @@ void BB::calculate ()
 
 int BB::indicatorPrefDialog (QWidget *w)
 {
+  QString pl = QObject::tr("Parms");
+  QString cl = QObject::tr("Color");
+  QString ll = QObject::tr("Label");
+  QString ltl = QObject::tr("Line Type");
+  QString sl = QObject::tr("Period");
+  QString stl = QObject::tr("MA Type");
+  QString dl = QObject::tr("Deviation");
+
   PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(QObject::tr("BB Indicator"));
   dialog->setHelpFile(helpFile);
-  dialog->createPage (QObject::tr("Parms"));
-  dialog->addColorItem(QObject::tr("Color"), QObject::tr("Parms"), color);
-  dialog->addComboItem(QObject::tr("Line Type"), QObject::tr("Parms"), lineTypes, lineType);
-  dialog->addIntItem(QObject::tr("Period"), QObject::tr("Parms"), period, 1, 99999999);
-  dialog->addFloatItem(QObject::tr("Deviation"), QObject::tr("Parms"), deviation, 0, 99999999);
-  dialog->addComboItem(QObject::tr("MA Type"), QObject::tr("Parms"), getMATypes(), maType);
-  dialog->addTextItem(QObject::tr("Label"), QObject::tr("Parms"), label);
+  dialog->createPage (pl);
+  dialog->addColorItem(cl, pl, color);
+  dialog->addComboItem(ltl, pl, lineTypes, lineType);
+  dialog->addIntItem(sl, pl, period, 1, 99999999);
+  dialog->addFloatItem(dl, pl, deviation, 0, 99999999);
+  QStringList l = getMATypes();
+  dialog->addComboItem(stl, pl, l, maType);
+  dialog->addTextItem(ll, pl, label);
   if (customFlag)
-    dialog->addComboItem(QObject::tr("Plot"), QObject::tr("Parms"), bandList, customBand);
+  {
+    QString s = QObject::tr("Plot");
+    dialog->addComboItem(s, pl, bandList, customBand);
+  }
   
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
-    color = dialog->getColor(QObject::tr("Color"));
-    lineType = (PlotLine::LineType) dialog->getComboIndex(QObject::tr("Line Type"));
-    period = dialog->getInt(QObject::tr("Period"));
-    maType = dialog->getComboIndex(QObject::tr("MA Type"));
-    deviation = dialog->getFloat(QObject::tr("Deviation"));
-    label = dialog->getText(QObject::tr("Label"));
+    color = dialog->getColor(cl);
+    lineType = (PlotLine::LineType) dialog->getComboIndex(ltl);
+    period = dialog->getInt(sl);
+    maType = dialog->getComboIndex(stl);
+    deviation = dialog->getFloat(dl);
+    label = dialog->getText(ll);
     if (customFlag)
-      customBand = dialog->getCombo(QObject::tr("Plot"));
+    {
+      QString s = QObject::tr("Plot");
+      customBand = dialog->getCombo(s);
+    }
     rc = TRUE;
   }
   else

@@ -35,7 +35,7 @@ class Scaler
     void set (int ht, double h, double l, double lh, double lr, bool lf);
     int convertToY (double);
     double convertToVal (int);
-    QMemArray<double> getScaleArray ();
+    void getScaleArray (QMemArray<double> &);
     double getLogScaleHigh ();
     double getLogRange();
     int getHeight ();
@@ -54,7 +54,7 @@ class Scaler
     double range;
     double scaler;
 
-    QMemArray<double> scaleArray;
+//    QMemArray<double> scaleArray;
     QStringList scaleList;
 };
 

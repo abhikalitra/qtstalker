@@ -119,7 +119,8 @@ void Config::setup ()
       qDebug("Unable to create ~/Qtstalker/indicator/Indicators directory.");
     else
     {
-      setData(IndicatorGroup, "Indicators"); // set the new default template
+      QString str("Indicators");
+      setData(IndicatorGroup, str); // set the new default template
       
       // copy old indicators into new Indicators template
       s = home + "/indicator";
@@ -357,14 +358,14 @@ QString Config::getData (Parm p)
   return s;
 }
 
-QString Config::getData (QString p)
+QString Config::getData (QString &p)
 {
   QSettings settings;
   QString s = settings.readEntry("/Qtstalker/" + p);
   return s;
 }
 
-void Config::setData (Parm p, QString d)
+void Config::setData (Parm p, QString &d)
 {
   QSettings settings;
 
@@ -534,19 +535,20 @@ void Config::setData (Parm p, QString d)
   }
 }
 
-void Config::setData (QString p, QString d)
+void Config::setData (QString &p, QString &d)
 {
   QSettings settings;
   settings.writeEntry("/Qtstalker/" + p, d);
 }
 
-QStringList Config::getIndicators (QString d)
+void Config::getIndicators (QString &d, QStringList &l)
 {
   QString s = getData(IndicatorPath) + "/" + d;
-  return getDirList(s, TRUE);
+  l.clear();
+  getDirList(s, TRUE, l);
 }
 
-void Config::getIndicator (QString d, Setting &set)
+void Config::getIndicator (QString &d, Setting &set)
 {
   QFile f(d);
   if (! f.open(IO_ReadOnly))
@@ -574,7 +576,7 @@ void Config::getIndicator (QString d, Setting &set)
   f.close();
 }
 
-void Config::setIndicator (QString d, Setting &set)
+void Config::setIndicator (QString &d, Setting &set)
 {
   QFile f(d);
   if (! f.open(IO_WriteOnly))
@@ -593,16 +595,15 @@ void Config::setIndicator (QString d, Setting &set)
   f.close();
 }
 
-void Config::deleteIndicator (QString d)
+void Config::deleteIndicator (QString &d)
 {
   QDir dir;
   dir.remove(d);
 }
 
-QStringList Config::getDirList (QString path, bool flag)
+void Config::getDirList (QString &path, bool flag, QStringList &l)
 {
-  QStringList l;
-
+  l.clear();
   QDir dir(path);
 
   int loop;
@@ -618,44 +619,42 @@ QStringList Config::getDirList (QString path, bool flag)
         l.append(dir[loop]);
     }
   }
-
-  return l;
 }
 
-QStringList Config::getPluginList (Config::Parm d) 
+void Config::getPluginList (Config::Parm d, QStringList &l2) 
 {
-  QStringList l = getDirList(getData(d), TRUE);
+  l2.clear();
+  QStringList l;
+  QString s(getData(d));
+  getDirList(s, TRUE, l);
   
   if (! l.count())
-    return l;
+    return;
   
   int loop;
-  QStringList l2;
   for (loop = 0; loop < (int) l.count(); loop++)
   {
     QFileInfo fi(l[loop]);
     if (! fi.fileName().contains(version))
       continue;
 
-    QString s = fi.baseName(FALSE);
+    s = fi.baseName(FALSE);
     s.remove(0, 3);
     l2.append(s);
   }
-
-  return l2;
 }
 
-QStringList Config::getIndicatorList () 
+void Config::getIndicatorList (QStringList &l) 
 {
-  QStringList l = getPluginList(IndicatorPluginPath);
+  l.clear();
+  getPluginList(IndicatorPluginPath, l);
   l.remove("COMP");
   l.remove("MATH");
   l.remove("REF");
   l.remove("COUNTER");
-  return l;
 }
 
-ChartPlugin * Config::getChartPlugin (QString p)
+ChartPlugin * Config::getChartPlugin (QString &p)
 {
   ChartPlugin *plug = chartPlugins[p];
   if (plug)
@@ -681,7 +680,7 @@ ChartPlugin * Config::getChartPlugin (QString p)
   }
 }
 
-DbPlugin * Config::getDbPlugin (QString p)
+DbPlugin * Config::getDbPlugin (QString &p)
 {
   DbPlugin *plug = dbPlugins[p];
   if (plug)
@@ -707,7 +706,7 @@ DbPlugin * Config::getDbPlugin (QString p)
   }
 }
 
-IndicatorPlugin * Config::getIndicatorPlugin (QString p)
+IndicatorPlugin * Config::getIndicatorPlugin (QString &p)
 {
   IndicatorPlugin *plug = indicatorPlugins[p];
   if (plug)
@@ -733,7 +732,7 @@ IndicatorPlugin * Config::getIndicatorPlugin (QString p)
   }
 }
 
-QuotePlugin * Config::getQuotePlugin (QString p)
+QuotePlugin * Config::getQuotePlugin (QString &p)
 {
   QuotePlugin *plug = quotePlugins[p];
   if (plug)
@@ -759,7 +758,7 @@ QuotePlugin * Config::getQuotePlugin (QString p)
   }
 }
 
-COPlugin * Config::getCOPlugin (QString p)
+COPlugin * Config::getCOPlugin (QString &p)
 {
   COPlugin *plug = coPlugins[p];
   if (plug)
@@ -799,7 +798,7 @@ void Config::closePlugins ()
   libs.clear();
 }
 
-void Config::closePlugin (QString d)
+void Config::closePlugin (QString &d)
 {
   ChartPlugin *plug = chartPlugins[d];
   if (plug)
@@ -813,7 +812,7 @@ void Config::closePlugin (QString d)
   libs.remove(d);
 }
 
-QString Config::parseDbPlugin (QString d)
+QString Config::parseDbPlugin (QString &d)
 {
   QStringList l = QStringList::split("/", d, FALSE);
   int i = l.findIndex("Qtstalker");
@@ -821,7 +820,7 @@ QString Config::parseDbPlugin (QString d)
   return l[i];
 }
 
-void Config::copyIndicatorFile (QString d, QString d2)
+void Config::copyIndicatorFile (QString &d, QString &d2)
 {
   QFile f(d);
   if (! f.open(IO_ReadOnly))

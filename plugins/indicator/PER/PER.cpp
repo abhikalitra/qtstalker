@@ -75,29 +75,35 @@ void PER::calculate ()
 
 int PER::indicatorPrefDialog (QWidget *w)
 {
+  QString pl = QObject::tr("Parms");
+  QString cl = QObject::tr("Color");
+  QString ll = QObject::tr("Label");
+  QString ltl = QObject::tr("Line Type");
+  QString il = QObject::tr("Input");
+
   PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(QObject::tr("PER Indicator"));
-  dialog->createPage (QObject::tr("Parms"));
+  dialog->createPage (pl);
   dialog->setHelpFile(helpFile);
-  dialog->addColorItem(QObject::tr("Color"), QObject::tr("Parms"), color);
-  dialog->addComboItem(QObject::tr("Line Type"), QObject::tr("Parms"), lineTypes, lineType);
-  dialog->addTextItem(QObject::tr("Label"), QObject::tr("Parms"), label);
+  dialog->addColorItem(cl, pl, color);
+  dialog->addComboItem(ltl, pl, lineTypes, lineType);
+  dialog->addTextItem(ll, pl, label);
   if (customFlag)
-    dialog->addFormulaInputItem(QObject::tr("Input"), QObject::tr("Parms"), FALSE, customInput);
+    dialog->addFormulaInputItem(il, pl, FALSE, customInput);
   else
-    dialog->addComboItem(QObject::tr("Input"), QObject::tr("Parms"), inputTypeList, input);
+    dialog->addComboItem(il, pl, inputTypeList, input);
   
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
-    color = dialog->getColor(QObject::tr("Color"));
-    lineType = (PlotLine::LineType) dialog->getComboIndex(QObject::tr("Line Type"));
-    label = dialog->getText(QObject::tr("Label"));
+    color = dialog->getColor(cl);
+    lineType = (PlotLine::LineType) dialog->getComboIndex(ltl);
+    label = dialog->getText(ll);
     if (customFlag)
-      customInput = dialog->getFormulaInput(QObject::tr("Input"));
+      customInput = dialog->getFormulaInput(il);
     else
-      input = (BarData::InputType) dialog->getComboIndex(QObject::tr("Input"));
+      input = (BarData::InputType) dialog->getComboIndex(il);
     rc = TRUE;
   }
   else

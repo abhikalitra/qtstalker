@@ -57,31 +57,77 @@ void Spread::dbPrefDialog ()
   QString s = config.getData(Config::DataPath);
   
   PrefDialog *dialog = new PrefDialog(0);
-  dialog->setCaption(QObject::tr("Spread Prefs"));
-  dialog->createPage (QObject::tr("Details"));
   dialog->setHelpFile (helpFile);
+  dialog->setCaption(QObject::tr("Spread Prefs"));
   
-  QString t = "First Symbol";
+  QString pl = QObject::tr("Details");
+  dialog->createPage (pl);
+  
+  QString t = QObject::tr("Symbol");
   QString t2;
+  getHeaderField(DbPlugin::Symbol, t2);
+  dialog->addLabelItem(t, pl, t2);
+
+  t = QObject::tr("Name");
+  getHeaderField(DbPlugin::Title, t2);
+  dialog->addTextItem(t, pl, t2);
+
+  t = QObject::tr("Type");
+  getHeaderField(DbPlugin::Type, t2);
+  dialog->addLabelItem(t, pl, t2);
+  
+  t = QObject::tr("First Date");
+  t2.truncate(0);
+  Bar *bar = getFirstBar();
+  if (bar)
+  {
+    bar->getDate().getDateTimeString(TRUE, t2);
+    delete bar;
+  }
+  dialog->addLabelItem(t, pl, t2);
+  
+  t = QObject::tr("Last Date");
+  t2.truncate(0);
+  bar = getLastBar();
+  if (bar)
+  {
+    bar->getDate().getDateTimeString(TRUE, t2);
+    delete bar;
+  }
+  dialog->addLabelItem(t, pl, t2);
+  
+  pl = QObject::tr("Parms");
+  dialog->createPage (pl);
+  
+  t = "First Symbol";
   getData(t, t2);
-  dialog->addSymbolItem(QObject::tr("First Symbol"), QObject::tr("Details"), s, t2); // First Symbol
+  t = QObject::tr("First Symbol");
+  dialog->addSymbolItem(t, pl, s, t2); // First Symbol
 
   t = "Second Symbol";
   getData(t, t2);
-  dialog->addSymbolItem(QObject::tr("Second Symbol"), QObject::tr("Details"), s, t2); // Second Symbol
+  t = QObject::tr("Second Symbol");
+  dialog->addSymbolItem(t, pl, s, t2); // Second Symbol
   
   t = "Method";
   getData(t, t2);
-  dialog->addComboItem(QObject::tr("Method"), QObject::tr("Details"), l, t2); // Method
+  t = QObject::tr("Method");
+  dialog->addComboItem(t, pl, l, t2); // Method
   
   t = "Rebuild";
   getData(t, t2);
-  dialog->addCheckItem(QObject::tr("Rebuild"), QObject::tr("Details"), t2.toInt()); // Rebuild
+  t = QObject::tr("Rebuild");
+  dialog->addCheckItem(t, pl, t2.toInt()); // Rebuild
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
-    QString s = dialog->getSymbol(QObject::tr("First Symbol"));
+    t = QObject::tr("Name");
+    t2 = dialog->getText(t);
+    setHeaderField(DbPlugin::Title, t2);
+
+    t = QObject::tr("First Symbol");
+    QString s = dialog->getSymbol(t);
     QString s2;
     if (s.length())
     {
@@ -89,19 +135,22 @@ void Spread::dbPrefDialog ()
       setData(s2, s);
     }
       
-    s = dialog->getSymbol(QObject::tr("Second Symbol"));
+    t = QObject::tr("Second Symbol");
+    s = dialog->getSymbol(t);
     if (s.length())
     {
       s2 = "Second Symbol";
       setData(s2, s);
     }
 
+    t = QObject::tr("Method");
     s = "Method";
-    s2 = dialog->getCombo(QObject::tr("Method"));
+    s2 = dialog->getCombo(t);
     setData(s, s2);
     
+    t = QObject::tr("Rebuild");
     s = "Rebuild";
-    s2 = QString::number(dialog->getCheck(QObject::tr("Rebuild")));
+    s2 = QString::number(dialog->getCheck(t));
     setData(s, s2);
   }
   

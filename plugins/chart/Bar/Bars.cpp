@@ -265,11 +265,12 @@ PlotLine * Bars::getBoolLine ()
   PlotLine *line = 0;
   Config config;
   
-  // open the CUS plugin   
-  IndicatorPlugin *plug = config.getIndicatorPlugin("CUS");
+  // open the CUS plugin
+  QString plugin("CUS");
+  IndicatorPlugin *plug = config.getIndicatorPlugin(plugin);
   if (! plug)
   {
-    config.closePlugin("CUS");
+    config.closePlugin(plugin);
     return line;
   }
 
@@ -284,14 +285,14 @@ PlotLine * Bars::getBoolLine ()
   if (! line)
   {
     qDebug("Bars::getBoolLine: no PlotLine returned");
-    config.closePlugin("CUS");
+    config.closePlugin(plugin);
     return 0;
   }
     
   PlotLine *nline = new PlotLine;
   nline->copy(line);
   
-  config.closePlugin("CUS");
+  config.closePlugin(plugin);
   
   return nline;
 }

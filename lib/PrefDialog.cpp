@@ -21,7 +21,6 @@
 
 #include "PrefDialog.h"
 #include "HelpWindow.h"
-#include <qlabel.h>
 
 PrefDialog::PrefDialog (QWidget *w) : QTabDialog (w, "PrefDialog", TRUE)
 {
@@ -49,6 +48,7 @@ PrefDialog::~PrefDialog ()
   symbolList.clear();
   dvList.clear();
   formulaInputList.clear();
+  labelList.clear();
 }
 
 void PrefDialog::init ()
@@ -67,6 +67,7 @@ void PrefDialog::init ()
   symbolList.setAutoDelete(FALSE);
   dvList.setAutoDelete(FALSE);
   formulaInputList.setAutoDelete(FALSE);
+  labelList.setAutoDelete(FALSE);
   
   resize(300, 200);
   
@@ -77,26 +78,30 @@ void PrefDialog::init ()
   QObject::connect(this, SIGNAL(helpButtonPressed()), this, SLOT(help()));
 }
 
-void PrefDialog::createPage (QString name)
+void PrefDialog::createPage (QString &name)
 {
   QWidget *w = new QWidget(this);
   widgetList.replace(name, w);
   
-  QGridLayout *grid = new QGridLayout(w, 1, 2);
+  QVBoxLayout *vbox = new QVBoxLayout(w);
+  
+  QGridLayout *grid = new QGridLayout(vbox, 1, 2);
   grid->setMargin(5);
   grid->setSpacing(5);
   gridList.replace(name, grid);
   grid->setColStretch(1, 1);
+  
+  vbox->insertStretch(-1, 1);
 
   addTab(w, name);
 }
 
-void PrefDialog::deletePage (QString name)
+void PrefDialog::deletePage (QString &name)
 {
   removePage(widgetList[name]);
 }
 
-void PrefDialog::setHelpFile (QString d)
+void PrefDialog::setHelpFile (QString &d)
 {
   helpFile = d;
 }
@@ -108,7 +113,7 @@ void PrefDialog::help ()
   reject();
 }
 
-void PrefDialog::addColorItem (QString name, QString page, QColor color)
+void PrefDialog::addColorItem (QString &name, QString &page, QColor &color)
 {
   QWidget *w = widgetList[page];
   
@@ -124,7 +129,7 @@ void PrefDialog::addColorItem (QString name, QString page, QColor color)
   colorButtonList.replace(name, button);
 }
 
-QColor PrefDialog::getColor (QString name)
+QColor PrefDialog::getColor (QString &name)
 {
   QColor color;
   ColorButton *button = colorButtonList[name];
@@ -133,12 +138,12 @@ QColor PrefDialog::getColor (QString name)
   return color;
 }
 
-void PrefDialog::addFloatItem (QString name, QString page, double num)
+void PrefDialog::addFloatItem (QString &name, QString &page, double num)
 {
   addFloatItem(name, page, num, -9999999999.0, 9999999999.0);
 }
 
-void PrefDialog::addFloatItem (QString name, QString page, double num, double low, double high)
+void PrefDialog::addFloatItem (QString &name, QString &page, double num, double low, double high)
 {
   QWidget *w = widgetList[page];
   
@@ -157,7 +162,7 @@ void PrefDialog::addFloatItem (QString name, QString page, double num, double lo
   floatList.replace(name, edit);
 }
 
-double PrefDialog::getFloat (QString name)
+double PrefDialog::getFloat (QString &name)
 {
   double num = 0;
   QLineEdit *edit = floatList[name];
@@ -166,12 +171,12 @@ double PrefDialog::getFloat (QString name)
   return num;
 }
 
-void PrefDialog::addIntItem (QString name, QString page, int num)
+void PrefDialog::addIntItem (QString &name, QString &page, int num)
 {
   addIntItem(name, page, num, -999999999, 999999999);
 }
 
-void PrefDialog::addIntItem (QString name, QString page, int num, int min, int max)
+void PrefDialog::addIntItem (QString &name, QString &page, int num, int min, int max)
 {
   QWidget *w = widgetList[page];
   
@@ -187,7 +192,7 @@ void PrefDialog::addIntItem (QString name, QString page, int num, int min, int m
   intList.replace(name, spin);
 }
 
-int PrefDialog::getInt (QString name)
+int PrefDialog::getInt (QString &name)
 {
   int num = 0;
   QSpinBox *spin = intList[name];
@@ -196,7 +201,7 @@ int PrefDialog::getInt (QString name)
   return num;
 }
 
-void PrefDialog::addCheckItem (QString name, QString page, QString flag)
+void PrefDialog::addCheckItem (QString &name, QString &page, QString &flag)
 {
   if (! flag.compare("True"))
     addCheckItem(name, page, TRUE);
@@ -204,7 +209,7 @@ void PrefDialog::addCheckItem (QString name, QString page, QString flag)
     addCheckItem(name, page, FALSE);
 }
 
-void PrefDialog::addCheckItem (QString name, QString page, bool flag)
+void PrefDialog::addCheckItem (QString &name, QString &page, bool flag)
 {
   QWidget *w = widgetList[page];
   
@@ -220,7 +225,7 @@ void PrefDialog::addCheckItem (QString name, QString page, bool flag)
   checkList.replace(name, check);
 }
 
-bool PrefDialog::getCheck (QString name)
+bool PrefDialog::getCheck (QString &name)
 {
   bool flag = FALSE;
   QCheckBox *check = checkList[name];
@@ -229,7 +234,7 @@ bool PrefDialog::getCheck (QString name)
   return flag;
 }
 
-QString PrefDialog::getCheckString (QString name)
+QString PrefDialog::getCheckString (QString &name)
 {
   QString flag;
   QCheckBox *check = checkList[name];
@@ -243,7 +248,7 @@ QString PrefDialog::getCheckString (QString name)
   return flag;
 }
 
-void PrefDialog::addFontItem (QString name, QString page, QFont font)
+void PrefDialog::addFontItem (QString &name, QString &page, QFont &font)
 {
   QWidget *w = widgetList[page];
   
@@ -258,7 +263,7 @@ void PrefDialog::addFontItem (QString name, QString page, QFont font)
   fontButtonList.replace(name, button);
 }
 
-QFont PrefDialog::getFont (QString name)
+QFont PrefDialog::getFont (QString &name)
 {
   QFont font;
   FontButton *button = fontButtonList[name];
@@ -267,7 +272,7 @@ QFont PrefDialog::getFont (QString name)
   return font;
 }
 
-void PrefDialog::addTextItem (QString name, QString page, QString t)
+void PrefDialog::addTextItem (QString &name, QString &page, QString &t)
 {
   QWidget *w = widgetList[page];
   
@@ -282,7 +287,7 @@ void PrefDialog::addTextItem (QString name, QString page, QString t)
   textList.replace(name, edit);
 }
 
-QString PrefDialog::getText (QString name)
+QString PrefDialog::getText (QString &name)
 {
   QString s;
   QLineEdit *edit = textList[name];
@@ -291,7 +296,7 @@ QString PrefDialog::getText (QString name)
   return s;
 }
 
-void PrefDialog::addComboItem (QString name, QString page, QStringList l, QString s)
+void PrefDialog::addComboItem (QString &name, QString &page, QStringList &l, QString &s)
 {
   QWidget *w = widgetList[page];
   
@@ -309,7 +314,7 @@ void PrefDialog::addComboItem (QString name, QString page, QStringList l, QStrin
   comboList.replace(name, combo);
 }
 
-void PrefDialog::addComboItem (QString name, QString page, QStringList l, int s)
+void PrefDialog::addComboItem (QString &name, QString &page, QStringList &l, int s)
 {
   QWidget *w = widgetList[page];
   
@@ -326,7 +331,7 @@ void PrefDialog::addComboItem (QString name, QString page, QStringList l, int s)
   comboList.replace(name, combo);
 }
 
-QString PrefDialog::getCombo (QString name)
+QString PrefDialog::getCombo (QString &name)
 {
   QString s;
   QComboBox *combo = comboList[name];
@@ -335,7 +340,7 @@ QString PrefDialog::getCombo (QString name)
   return s;
 }
 
-int PrefDialog::getComboIndex (QString name)
+int PrefDialog::getComboIndex (QString &name)
 {
   int i = 0;
   QComboBox *combo = comboList[name];
@@ -344,12 +349,12 @@ int PrefDialog::getComboIndex (QString name)
   return i;
 }
 
-QComboBox * PrefDialog::getComboWidget (QString name)
+QComboBox * PrefDialog::getComboWidget (QString &name)
 {
   return comboList[name];
 }
 
-void PrefDialog::addDateItem (QString name, QString page, QDateTime dt)
+void PrefDialog::addDateItem (QString &name, QString &page, QDateTime &dt)
 {
   QWidget *w = widgetList[page];
   
@@ -366,7 +371,7 @@ void PrefDialog::addDateItem (QString name, QString page, QDateTime dt)
   dateList.replace(name, date);
 }
 
-QDateTime PrefDialog::getDate (QString name)
+QDateTime PrefDialog::getDate (QString &name)
 {
   QDateTime dt;
   QDateEdit *date = dateList[name];
@@ -375,7 +380,7 @@ QDateTime PrefDialog::getDate (QString name)
   return dt;
 }
 
-void PrefDialog::addFileItem (QString name, QString page, QStringList l, QString p)
+void PrefDialog::addFileItem (QString &name, QString &page, QStringList &l, QString &p)
 {
   QWidget *w = widgetList[page];
   
@@ -390,16 +395,16 @@ void PrefDialog::addFileItem (QString name, QString page, QStringList l, QString
   fileList.replace(name, button);
 }
 
-QStringList PrefDialog::getFile (QString name)
+QStringList PrefDialog::getFile (QString &name)
 {
   QStringList l;
   FileButton *button = fileList[name];
   if (button)
-    l = button->getFile();
+    button->getFile(l);
   return l;
 }
 
-void PrefDialog::addSymbolItem (QString name, QString page, QString path, QString symbol)
+void PrefDialog::addSymbolItem (QString &name, QString &page, QString &path, QString &symbol)
 {
   QWidget *w = widgetList[page];
   
@@ -414,7 +419,7 @@ void PrefDialog::addSymbolItem (QString name, QString page, QString path, QStrin
   symbolList.replace(name, button);
 }
 
-QString PrefDialog::getSymbol (QString name)
+QString PrefDialog::getSymbol (QString &name)
 {
   QString s;
   SymbolButton *button = symbolList[name];
@@ -423,7 +428,7 @@ QString PrefDialog::getSymbol (QString name)
   return s;
 }
 
-void PrefDialog::addFormulaInputItem (QString name, QString page, bool flag, QString in)
+void PrefDialog::addFormulaInputItem (QString &name, QString &page, bool flag, QString &in)
 {
   QWidget *w = widgetList[page];
   
@@ -438,12 +443,28 @@ void PrefDialog::addFormulaInputItem (QString name, QString page, bool flag, QSt
   formulaInputList.replace(name, fi);
 }
 
-QString PrefDialog::getFormulaInput (QString name)
+QString PrefDialog::getFormulaInput (QString &name)
 {
   QString s;
   FormulaInput *fi = formulaInputList[name];
   if (fi)
     s = fi->getInput();
   return s;
+}
+
+void PrefDialog::addLabelItem (QString &name, QString &page, QString &l)
+{
+  QWidget *w = widgetList[page];
+  
+  QGridLayout *grid = gridList[page];
+  grid->expand(grid->numRows() + 1, grid->numCols());
+  
+  QLabel *label = new QLabel(name, w);
+  grid->addWidget(label, grid->numRows() - 2, 0);
+  
+  label = new QLabel(l, w);
+  label->setFrameStyle(QFrame::WinPanel | QFrame::Sunken);
+  grid->addWidget(label, grid->numRows() - 2, 1);
+  labelList.replace(name, label);
 }
 

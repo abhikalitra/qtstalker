@@ -22,7 +22,7 @@
 #include "MacroKey.h"
 #include <qstringlist.h>
 
-MacroKey::MacroKey (int z, int s, int k, int a, QString t)
+MacroKey::MacroKey (int z, int s, int k, int a, QString &t)
 {
   zone = z;
   state = s;
@@ -43,7 +43,7 @@ MacroKey::~MacroKey ()
 {
 }
 
-void MacroKey::setString (QString d)
+void MacroKey::setString (QString &d)
 {
   QStringList l = QStringList::split(",", d, FALSE);
   zone = l[0].toInt();

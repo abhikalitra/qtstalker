@@ -117,9 +117,11 @@ void MacroPage::newMacro()
 
 void MacroPage::deleteMacro()
 {
+  QString s(config.getData(Config::MacroPath));
+  QString s2("*");
   SymbolDialog *dialog = new SymbolDialog(this,
-  				          config.getData(Config::MacroPath),
-					  "*",
+  				          s,
+					  s2,
 					  QFileDialog::ExistingFiles);
   dialog->setCaption(tr("Select Macros To Delete"));
 
@@ -198,42 +200,115 @@ void MacroPage::assignMacro ()
 {
   PrefDialog *dialog = new PrefDialog;
   dialog->setCaption(tr("Assign Macro"));
-  dialog->setHelpFile("macro.html");
+  
+  QString s("macro.html");
+  dialog->setHelpFile(s);
 
-  QString s = config.getData(Config::MacroPath);
+  QString path = config.getData(Config::MacroPath);
+  s = tr("Keys F1-F6");
+  dialog->createPage(s);
   
-  dialog->createPage(tr("Keys F1-F6"));
-  dialog->addSymbolItem("CTRL+F1", tr("Keys F1-F6"), s, config.getData(Config::Macro1));
-  dialog->addSymbolItem("CTRL+F2", tr("Keys F1-F6"), s, config.getData(Config::Macro2));
-  dialog->addSymbolItem("CTRL+F3", tr("Keys F1-F6"), s, config.getData(Config::Macro3));
-  dialog->addSymbolItem("CTRL+F4", tr("Keys F1-F6"), s, config.getData(Config::Macro4));
-  dialog->addSymbolItem("CTRL+F5", tr("Keys F1-F6"), s, config.getData(Config::Macro5));
-  dialog->addSymbolItem("CTRL+F6", tr("Keys F1-F6"), s, config.getData(Config::Macro6));
+  QString s2("CTRL+F1");
+  QString s3 = config.getData(Config::Macro1);
+  dialog->addSymbolItem(s2, s, path, s3);
   
-  dialog->createPage(tr("Keys F7-F12"));
-  dialog->addSymbolItem("CTRL+F7", tr("Keys F7-F12"), s, config.getData(Config::Macro7));
-  dialog->addSymbolItem("CTRL+F8", tr("Keys F7-F12"), s, config.getData(Config::Macro8));
-  dialog->addSymbolItem("CTRL+F9", tr("Keys F7-F12"), s, config.getData(Config::Macro9));
-  dialog->addSymbolItem("CTRL+F10", tr("Keys F7-F12"), s, config.getData(Config::Macro10));
-  dialog->addSymbolItem("CTRL+F11", tr("Keys F7-F12"), s, config.getData(Config::Macro11));
-  dialog->addSymbolItem("CTRL+F12", tr("Keys F7-F12"), s, config.getData(Config::Macro12));
+  s2 = "CTRL+F2";
+  s3 = config.getData(Config::Macro2);
+  dialog->addSymbolItem(s2, s, path, s3);
+  
+  s2 = "CTRL+F3";
+  s3 = config.getData(Config::Macro3);
+  dialog->addSymbolItem(s2, s, path, s3);
+  
+  s2 = "CTRL+F4";
+  s3 = config.getData(Config::Macro4);
+  dialog->addSymbolItem(s2, s, path, s3);
+  
+  s2 = "CTRL+F5";
+  s3 = config.getData(Config::Macro5);
+  dialog->addSymbolItem(s2, s, path, s3);
+  
+  s2 = "CTRL+F6";
+  s3 = config.getData(Config::Macro6);
+  dialog->addSymbolItem(s2, s, path, s3);
+  
+  s = tr("Keys F7-F12");
+  dialog->createPage(s);
+  
+  s2 = "CTRL+F7";
+  s3 = config.getData(Config::Macro7);
+  dialog->addSymbolItem(s2, s, path, s3);
+  
+  s2 = "CTRL+F8";
+  s3 = config.getData(Config::Macro8);
+  dialog->addSymbolItem(s2, s, path, s3);
+  
+  s2 = "CTRL+F9";
+  s3 = config.getData(Config::Macro9);
+  dialog->addSymbolItem(s2, s, path, s3);
+  
+  s2 = "CTRL+F10";
+  s3 = config.getData(Config::Macro10);
+  dialog->addSymbolItem(s2, s, path, s3);
+  
+  s2 = "CTRL+F11";
+  s3 = config.getData(Config::Macro11);
+  dialog->addSymbolItem(s2, s, path, s3);
+  s2 = "CTRL+F12";
+  s3 = config.getData(Config::Macro12);
+  dialog->addSymbolItem(s2, s, path, s3);
 
   int rc = dialog->exec();
     
   if (rc == QDialog::Accepted)
   {
-    config.setData(Config::Macro1, dialog->getSymbol("CTRL+F1"));
-    config.setData(Config::Macro2, dialog->getSymbol("CTRL+F2"));
-    config.setData(Config::Macro3, dialog->getSymbol("CTRL+F3"));
-    config.setData(Config::Macro4, dialog->getSymbol("CTRL+F4"));
-    config.setData(Config::Macro5, dialog->getSymbol("CTRL+F5"));
-    config.setData(Config::Macro6, dialog->getSymbol("CTRL+F6"));
-    config.setData(Config::Macro7, dialog->getSymbol("CTRL+F7"));
-    config.setData(Config::Macro8, dialog->getSymbol("CTRL+F8"));
-    config.setData(Config::Macro9, dialog->getSymbol("CTRL+F9"));
-    config.setData(Config::Macro10, dialog->getSymbol("CTRL+F10"));
-    config.setData(Config::Macro11, dialog->getSymbol("CTRL+F11"));
-    config.setData(Config::Macro12, dialog->getSymbol("CTRL+F12"));
+    s = "CTRL+F1";
+    s2 = dialog->getSymbol(s);
+    config.setData(Config::Macro1, s2);
+    
+    s = "CTRL+F2";
+    s2 = dialog->getSymbol(s);
+    config.setData(Config::Macro2, s2);
+    
+    s = "CTRL+F3";
+    s2 = dialog->getSymbol(s);
+    config.setData(Config::Macro3, s2);
+    
+    s = "CTRL+F4";
+    s2 = dialog->getSymbol(s);
+    config.setData(Config::Macro4, s2);
+    
+    s = "CTRL+F5";
+    s2 = dialog->getSymbol(s);
+    config.setData(Config::Macro5, s2);
+    
+    s = "CTRL+F6";
+    s2 = dialog->getSymbol(s);
+    config.setData(Config::Macro6, s2);
+    
+    s = "CTRL+F7";
+    s2 = dialog->getSymbol(s);
+    config.setData(Config::Macro7, s2);
+    
+    s = "CTRL+F8";
+    s2 = dialog->getSymbol(s);
+    config.setData(Config::Macro8, s2);
+    
+    s = "CTRL+F9";
+    s2 = dialog->getSymbol(s);
+    config.setData(Config::Macro9, s2);
+    
+    s = "CTRL+F10";
+    s2 = dialog->getSymbol(s);
+    config.setData(Config::Macro10, s2);
+    
+    s = "CTRL+F11";
+    s2 = dialog->getSymbol(s);
+    config.setData(Config::Macro11, s2);
+    
+    s = "CTRL+F12";
+    s2 = dialog->getSymbol(s);
+    config.setData(Config::Macro12, s2);
   }
   
   delete dialog;  
@@ -283,7 +358,8 @@ void MacroPage::doubleClick (QListBoxItem *item)
 
 void MacroPage::slotHelp ()
 {
-  HelpWindow *hw = new HelpWindow(this, "workwithmacros.html");
+  QString s = "workwithmacros.html";
+  HelpWindow *hw = new HelpWindow(this, s);
   hw->show();
 }
 

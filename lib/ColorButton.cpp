@@ -22,7 +22,7 @@
 #include "ColorButton.h"
 #include <qcolordialog.h>
 
-ColorButton::ColorButton (QWidget *w, QColor c) : QPushButton (w)
+ColorButton::ColorButton (QWidget *w, QColor &c) : QPushButton (w)
 {
   color = c;
   QObject::connect(this, SIGNAL(clicked()), this, SLOT(colorDialog()));
@@ -57,7 +57,7 @@ void ColorButton::colorDialog ()
   }
 }
 
-void ColorButton::setColor (QColor c)
+void ColorButton::setColor (QColor &c)
 {
   color = c;
   pix.fill(color);

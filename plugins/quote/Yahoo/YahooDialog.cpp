@@ -48,9 +48,11 @@ YahooDialog::YahooDialog (QWidget *p, QString d) : QTabDialog (p, "YahooDialog",
   
   toolbar = new Toolbar(w, 30, 30, FALSE);
   vbox->addWidget(toolbar);
-  
-  toolbar->addButton("new", newchart, tr("New Symbol"));
-  QObject::connect(toolbar->getButton("new"), SIGNAL(clicked()), this, SLOT(newStock()));
+
+  QString s = "new";
+  QString s2 = tr("New Symbol");
+  toolbar->addButton(s, newchart, s2);
+  QObject::connect(toolbar->getButton(s), SIGNAL(clicked()), this, SLOT(newStock()));
   
   vbox->addSpacing(10);
   
@@ -111,8 +113,9 @@ YahooDialog::YahooDialog (QWidget *p, QString d) : QTabDialog (p, "YahooDialog",
   allSymbols = new QCheckBox(tr("All Symbols"), w);
   connect(allSymbols, SIGNAL(toggled(bool)), this, SLOT(allSymbolsChecked(bool)));
   vbox->addWidget(allSymbols);
-  
-  list = new FileButton(w, QStringList(), dataPath);
+
+  QStringList l;  
+  list = new FileButton(w, l, dataPath);
   vbox->addWidget(list);
 
   addTab(w, tr("Yahoo"));
@@ -198,23 +201,24 @@ void YahooDialog::newStock ()
     if (dir.exists(s, TRUE))
       continue;
 
-    DbPlugin *db = config.getDbPlugin("Stocks");
+    QString plugin("Stocks");
+    DbPlugin *db = config.getDbPlugin(plugin);
     if (! db)
     {
-      config.closePlugin("Stocks");
+      config.closePlugin(plugin);
       continue;
     }
     
     if (db->openChart(s))
     {
       qDebug("YahooDialog::newStock: could not open db %s", s.latin1());
-      config.closePlugin("Stocks");
+      config.closePlugin(plugin);
       continue;
     }
           
     db->createNew();
     
-    config.closePlugin("Stocks");
+    config.closePlugin(plugin);
   }
 }
 
@@ -225,7 +229,9 @@ void YahooDialog::setList (QStringList l)
 
 QStringList YahooDialog::getList ()
 {
-  return list->getFile();
+  QStringList l;
+  list->getFile(l);
+  return l;
 }
 
 void YahooDialog::setAdjustment (bool d)

@@ -42,7 +42,7 @@ CME::CME ()
   downloadIndex = 0;
   cancelFlag = FALSE;
   
-  symbolList = fd.getSymbolList("CME");
+  fd.getSymbolList(pluginName, symbolList);
   symbolList.sort();
   
   connect(this, SIGNAL(signalCopyFileDone(QString)), this, SLOT(fileDone(QString)));
@@ -869,62 +869,69 @@ void CME::saveTodayData (QStringList l)
 
 void CME::parse (Setting *data)
 {
-  if (fd.setSymbol(data->getData("CSymbol")))
+  QString s = data->getData("CSymbol");
+  if (fd.setSymbol(s))
     return;
 
   // open
-  QString open;
-  if (setTFloat(data->getData("Open"), FALSE))
+  double open = 0;
+  s = data->getData("Open");
+  if (setTFloat(s, FALSE))
     return;
   else
-    open = QString::number(tfloat);
+    open = tfloat;
 
   // high
-  QString high;
-  if (setTFloat(data->getData("High"), FALSE))
+  double high = 0;
+  s = data->getData("High");
+  if (setTFloat(s, FALSE))
     return;
   else
-    high = QString::number(tfloat);
+    high = tfloat;
 
   // low
-  QString low;
-  if (setTFloat(data->getData("Low"), FALSE))
+  double low = 0;
+  s = data->getData("Low");
+  if (setTFloat(s, FALSE))
     return;
   else
-    low = QString::number(tfloat);
+    low = tfloat;
 
   // close
-  QString close;
-  if (setTFloat(data->getData("Close"), FALSE))
+  double close = 0;
+  s = data->getData("Close");
+  if (setTFloat(s, FALSE))
     return;
   else
-    close = QString::number(tfloat);
+    close = tfloat;
 
   // volume
-  QString volume;
-  if (setTFloat(data->getData("Volume"), FALSE))
+  double volume = 0;
+  s = data->getData("Volume");
+  if (setTFloat(s, FALSE))
     return;
   else
-    volume = QString::number(tfloat);
+    volume = tfloat;
 
   // oi
-  QString oi;
-  if (setTFloat(data->getData("OI"), FALSE))
+  double oi = 0;
+  s = data->getData("OI");
+  if (setTFloat(s, FALSE))
     return;
   else
-    oi = QString::number(tfloat);
+    oi = tfloat;
 
   // check for bad values
-  if (close.toFloat() == 0)
+  if (close == 0)
     return;
-  if (open.toFloat() == 0)
+  if (open == 0)
     open = close;
-  if (high.toFloat() == 0)
+  if (high == 0)
     high = close;
-  if (low.toFloat() == 0)
+  if (low == 0)
     low = close;
 
-  QString s = "Futures/CME/" + fd.getSymbol();
+  s = "Futures/CME/" + fd.getSymbol();
   QString path = createDirectory(s);
   if (! path.length())
   {
@@ -936,10 +943,11 @@ void CME::parse (Setting *data)
   emit statusLogMessage(s);
 
   Config config;
-  DbPlugin *db = config.getDbPlugin("Futures");
+  QString plugin("Futures");
+  DbPlugin *db = config.getDbPlugin(plugin);
   if (! db)
   {
-    config.closePlugin("Futures");
+    config.closePlugin(plugin);
     return;
   }
   
@@ -947,7 +955,7 @@ void CME::parse (Setting *data)
   if (db->openChart(s))
   {
     emit statusLogMessage(tr("Could not open db."));
-    config.closePlugin("Futures");
+    config.closePlugin(plugin);
     return;
   }
 
@@ -961,7 +969,7 @@ void CME::parse (Setting *data)
     {
       s = data->getData("Symbol") + tr(" - skipping update. Source does not match destination.");
       emit statusLogMessage(s);
-      config.closePlugin("Futures");
+      config.closePlugin(plugin);
       return;
     }
   }
@@ -991,18 +999,18 @@ void CME::parse (Setting *data)
   if (bar.setDate(s))
   {
     emit statusLogMessage("Bad date " + data->getData("Date"));
-    config.closePlugin("Futures");
+    config.closePlugin(plugin);
     return;
   }
-  bar.setOpen(open.toDouble());
-  bar.setHigh(high.toDouble());
-  bar.setLow(low.toDouble());
-  bar.setClose(close.toDouble());
-  bar.setVolume(volume.toDouble());
-  bar.setOI(oi.toInt());
+  bar.setOpen(open);
+  bar.setHigh(high);
+  bar.setLow(low);
+  bar.setClose(close);
+  bar.setVolume(volume);
+  bar.setOI((int) oi);
   db->setBar(bar);
 	     
-  config.closePlugin("Futures");
+  config.closePlugin(plugin);
 
 //  emit dataLogMessage(data->getData("Symbol"));
 }
@@ -1023,33 +1031,43 @@ void CME::prefDialog (QWidget *w)
 {
   PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(tr("CME Prefs"));
-  dialog->createPage (tr("Details"));
+  
+  QString s = tr("Details");
+  dialog->createPage (s);
   dialog->setHelpFile(helpFile);
 
   QStringList l2;
   l2.append("Today");
   l2.append("History");
-  dialog->addComboItem(tr("Method"), tr("Details"), l2, method);
-  connect(dialog->getComboWidget(tr("Method")),
+  QString s2 = tr("Method");
+  dialog->addComboItem(s2, s, l2, method);
+  connect(dialog->getComboWidget(s2),
           SIGNAL(activated(const QString &)),
 	  this,
 	  SLOT(methodChanged(const QString &)));
-    
-  dialog->addComboItem(tr("Symbol"), tr("Details"), symbolList, currentSymbol);
-  symbolCombo = dialog->getComboWidget(tr("Symbol"));
-  methodChanged (method);
+  
+  s2 = tr("Symbol");
+  dialog->addComboItem(s2, s, symbolList, currentSymbol);
+  symbolCombo = dialog->getComboWidget(s2);
+  methodChanged(method);
 
-  dialog->addIntItem(tr("Retry"), tr("Details"), retries, 0, 99);  
-  dialog->addIntItem(tr("Timeout"), tr("Details"), timeout, 0, 99);  
+  s2 = tr("Retry");
+  dialog->addIntItem(s2, s, retries, 0, 99);  
+  s2 = tr("Timeout");
+  dialog->addIntItem(s2, s, timeout, 0, 99);  
   
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
-    downloadSymbolList = dialog->getCombo(tr("Symbol"));
-    currentSymbol = dialog->getCombo(tr("Symbol"));
-    timeout = dialog->getInt(tr("Timeout"));
-    retries = dialog->getInt(tr("Retry"));
+    s = tr("Symbol");
+    downloadSymbolList = dialog->getCombo(s);
+    s = tr("Symbol");
+    currentSymbol = dialog->getCombo(s);
+    s = tr("Timeout");
+    timeout = dialog->getInt(s);
+    s = tr("Retry");
+    retries = dialog->getInt(s);
     
     saveFlag = TRUE;
     saveSettings();

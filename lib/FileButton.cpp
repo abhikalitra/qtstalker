@@ -23,7 +23,7 @@
 #include <qfiledialog.h>
 #include <qfileinfo.h>
 
-FileButton::FileButton (QWidget *w, QStringList l, QString p) : QPushButton (w)
+FileButton::FileButton (QWidget *w, QStringList &l, QString &p) : QPushButton (w)
 {
   QObject::connect(this, SIGNAL(clicked()), this, SLOT(fileDialog()));
   setMaximumHeight(25);
@@ -41,12 +41,13 @@ FileButton::~FileButton ()
 {
 }
 
-QStringList FileButton::getFile ()
+void FileButton::getFile (QStringList &l)
 {
-  return fileList;
+  l.clear();
+  l = fileList;
 }
 
-void FileButton::setFile (QStringList l)
+void FileButton::setFile (QStringList &l)
 {
   fileList = l;
   updateButtonText();

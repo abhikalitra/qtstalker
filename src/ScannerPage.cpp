@@ -89,9 +89,11 @@ void ScannerPage::openScanner (QString d)
 
 void ScannerPage::runScanner ()
 {
+  QString s(config.getData(Config::ScannerPath));
+  QString s2("*");
   SymbolDialog *dialog = new SymbolDialog(this, 
-  					  config.getData(Config::ScannerPath),
-					  "*",
+  					  s,
+					  s2,
 					  QFileDialog::ExistingFiles);
   dialog->setCaption(tr("Select scanners to run"));
 
@@ -153,9 +155,11 @@ void ScannerPage::newScanner()
 
 void ScannerPage::deleteScanner()
 {
+  QString s(config.getData(Config::ScannerPath));
+  QString s2("*");
   SymbolDialog *dialog = new SymbolDialog(this,
-  					  config.getData(Config::ScannerPath),
-					  "*",
+  					  s,
+					  s2,
 					  QFileDialog::ExistingFiles);
   dialog->setCaption(tr("Select Scanners To Delete"));
 
@@ -271,7 +275,8 @@ void ScannerPage::doubleClick (QListBoxItem *item)
 
 void ScannerPage::slotHelp ()
 {
-  HelpWindow *hw = new HelpWindow(this, "workwithscanner.html");
+  QString s = "workwithscanner.html";
+  HelpWindow *hw = new HelpWindow(this, s);
   hw->show();
 }
 

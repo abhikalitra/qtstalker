@@ -189,27 +189,35 @@ void SAR::calculate ()
 
 int SAR::indicatorPrefDialog (QWidget *w)
 {
+  QString pl = QObject::tr("Parms");
+  QString cl = QObject::tr("Color");
+  QString ll = QObject::tr("Label");
+  QString ltl = QObject::tr("Line Type");
+  QString il = QObject::tr("Initial");
+  QString al = QObject::tr("Add");
+  QString liml = QObject::tr("Limit");
+
   PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(QObject::tr("SAR Indicator"));
-  dialog->createPage (QObject::tr("Parms"));
+  dialog->createPage (pl);
   dialog->setHelpFile(helpFile);
-  dialog->addColorItem(QObject::tr("Color"), QObject::tr("Parms"), color);
-  dialog->addComboItem(QObject::tr("Line Type"), QObject::tr("Parms"), lineTypes, lineType);
-  dialog->addTextItem(QObject::tr("Label"), QObject::tr("Parms"), label);
-  dialog->addFloatItem(QObject::tr("Initial"), QObject::tr("Parms"), initial, 0, 99999999);
-  dialog->addFloatItem(QObject::tr("Add"), QObject::tr("Parms"), add, 0, 99999999);
-  dialog->addFloatItem(QObject::tr("Limit"), QObject::tr("Parms"), limit, 0, 99999999);
+  dialog->addColorItem(cl, pl, color);
+  dialog->addComboItem(ltl, pl, lineTypes, lineType);
+  dialog->addTextItem(ll, pl, label);
+  dialog->addFloatItem(il, pl, initial, 0, 99999999);
+  dialog->addFloatItem(al, pl, add, 0, 99999999);
+  dialog->addFloatItem(liml, pl, limit, 0, 99999999);
   
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
-    color = dialog->getColor(QObject::tr("Color"));
-    lineType = (PlotLine::LineType) dialog->getComboIndex(QObject::tr("Line Type"));
-    label = dialog->getText(QObject::tr("Label"));
-    initial = dialog->getFloat(QObject::tr("Initial"));
-    add = dialog->getFloat(QObject::tr("Add"));
-    limit = dialog->getFloat(QObject::tr("Limit"));
+    color = dialog->getColor(cl);
+    lineType = (PlotLine::LineType) dialog->getComboIndex(ltl);
+    label = dialog->getText(ll);
+    initial = dialog->getFloat(il);
+    add = dialog->getFloat(al);
+    limit = dialog->getFloat(liml);
     rc = TRUE;
   }
   else

@@ -44,9 +44,9 @@ class QuotePlugin : public QObject
   public:
     QuotePlugin ();
     virtual ~QuotePlugin ();
-    bool setTFloat (QString, bool);
-    QString stripJunk (QString);
-    QString createDirectory (QString);
+    bool setTFloat (QString &, bool);
+    QString stripJunk (QString &);
+    QString createDirectory (QString &);
     QString getPluginName ();
     QString getHelpFile ();
     
@@ -55,8 +55,8 @@ class QuotePlugin : public QObject
     virtual void prefDialog (QWidget *);
     
   public slots:
-    void getFile (QString);
-    void copyFile (QString, QString);
+    void getFile (QString &);
+    void copyFile (QString &, QString &);
     void getFileDone (QNetworkOperation *);
     void copyFileDone (QNetworkOperation *);
     void dataReady (const QByteArray &, QNetworkOperation *);

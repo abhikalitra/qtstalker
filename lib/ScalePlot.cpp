@@ -129,17 +129,17 @@ void ScalePlot::setScaleWidth (int d)
     scaleWidth = d;
 }
 
-void ScalePlot::setBackgroundColor (QColor d)
+void ScalePlot::setBackgroundColor (QColor &d)
 {
   backgroundColor = d;
 }
 
-void ScalePlot::setBorderColor (QColor d)
+void ScalePlot::setBorderColor (QColor &d)
 {
   borderColor = d;
 }
 
-void ScalePlot::setPlotFont (QFont d)
+void ScalePlot::setPlotFont (QFont &d)
 {
   plotFont = d;
 }
@@ -154,7 +154,8 @@ void ScalePlot::drawScale ()
 
   painter.fillRect(0, 0, buffer->width(), buffer->height(), backgroundColor);
   
-  QMemArray<double> scaleArray = scaler->getScaleArray();
+  QMemArray<double> scaleArray;
+  scaler->getScaleArray(scaleArray);
 
   int x = 0;
   int loop;
@@ -165,7 +166,8 @@ void ScalePlot::drawScale ()
     painter.drawLine (x, y, x + 4, y);
 
     // draw the text
-    QString s = strip(scaleArray[loop], 4);
+    QString s;
+    strip(scaleArray[loop], 4, s);
     
     // abbreviate too many (>=3) trailing zeroes in large numbers on y-axes
     if (! mainFlag)
@@ -180,21 +182,21 @@ void ScalePlot::drawScale ()
       
       if (s.toDouble() >= 1000000000)
       {
-        s = strip(s.toDouble() / 1000000000, 4);
+        strip(s.toDouble() / 1000000000, 4, s);
 	s.append("b");
       }
       else
       {
         if (s.toDouble() >= 1000000)
         {
-          s = strip(s.toDouble() / 1000000, 4);
+          strip(s.toDouble() / 1000000, 4, s);
 	  s.append("m");
         }
         else
         {
           if (s.toDouble() >= 1000)
           {
-            s = strip(s.toDouble() / 1000, 4);
+            strip(s.toDouble() / 1000, 4, s);
 	    s.append("k");
 	  }
 	}
@@ -226,9 +228,9 @@ void ScalePlot::drawScale ()
   painter.end();
 }
 
-QString ScalePlot::strip (double d, int p)
+void ScalePlot::strip (double d, int p, QString &s)
 {
-  QString s = QString::number(d, 'f', p);
+  s = QString::number(d, 'f', p);
 
   while (1)
   {
@@ -245,8 +247,6 @@ QString ScalePlot::strip (double d, int p)
         break;
     }
   }
-
-  return s;
 }
 
 void ScalePlot::slotScaleToScreenChanged (bool d)

@@ -46,7 +46,7 @@ class Plot : public QWidget
     void setData (BarData *);
     void setMainFlag (bool);
     void setLogScale (bool);
-    int setChartType (QString);
+    int setChartType (QString &);
     void setChartInput ();
     void setHideMainPlot (bool);
     bool getHideMainPlot ();
@@ -57,10 +57,10 @@ class Plot : public QWidget
     bool getCrosshairsStatus ();
     void setInfoFlag (bool);
     void drawCrossHair ();
-    void addIndicator (QString, Indicator *);
-    Indicator * getIndicator (QString);
-    QStringList getIndicators ();
-    bool deleteIndicator (QString);
+    void addIndicator (QString &, Indicator *);
+    Indicator * getIndicator (QString &);
+    void getIndicators (QStringList &);
+    bool deleteIndicator (QString &);
     void addChartObject (Setting &);
     int getWidth ();
     int getPixelspace ();

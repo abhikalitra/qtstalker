@@ -49,11 +49,12 @@ void CUS::calculate ()
     set.parse(formulaList[loop]);
 
     Config config;
-    IndicatorPlugin *plug = config.getIndicatorPlugin(set.getData("plugin"));
+    QString plugin = set.getData("plugin");
+    IndicatorPlugin *plug = config.getIndicatorPlugin(plugin);
     if (! plug)
     {
-      qDebug("CUS::calculate: %s plugin not loaded", set.getData("plugin").latin1());
-      config.closePlugin(set.getData("plugin"));
+      qDebug("CUS::calculate: %s plugin not loaded", plugin.latin1());
+      config.closePlugin(plugin);
       continue;
     }
   
@@ -64,7 +65,7 @@ void CUS::calculate ()
     if (! line)
     {
       qDebug("CUS::calculate: no PlotLine returned");
-      config.closePlugin(set.getData("plugin"));
+      config.closePlugin(plugin);
       continue;
     }
 
@@ -77,7 +78,7 @@ void CUS::calculate ()
       
     customLines->replace(QString::number(loop + 1), nline);
     
-    config.closePlugin(set.getData("plugin"));
+    config.closePlugin(plugin);
   }
 
   for (loop = 0; loop < (int) formulaList.count(); loop++)
@@ -142,7 +143,7 @@ int CUS::indicatorPrefDialog (QWidget *)
   return rc;
 }
 
-void CUS::loadIndicatorSettings (QString file)
+void CUS::loadIndicatorSettings (QString &file)
 {
   formulaList.clear();
   
@@ -167,7 +168,7 @@ void CUS::loadIndicatorSettings (QString file)
   plotType = set.getData("plotType").toInt();
 }
 
-void CUS::saveIndicatorSettings (QString file)
+void CUS::saveIndicatorSettings (QString &file)
 {
   Setting d;
   int loop;
@@ -180,7 +181,7 @@ void CUS::saveIndicatorSettings (QString file)
   saveFile(file, d);
 }
 
-void CUS::setCustomFunction (QString d)
+void CUS::setCustomFunction (QString &d)
 {
   formulaList.append(d);
 }
@@ -195,11 +196,12 @@ int CUS::getMinBars ()
     set.parse(formulaList[loop]);
 
     Config config;
-    IndicatorPlugin *plug = config.getIndicatorPlugin(set.getData("plugin"));
+    QString plugin = set.getData("plugin");
+    IndicatorPlugin *plug = config.getIndicatorPlugin(plugin);
     if (! plug)
     {
-      qDebug("CUS::calculate: %s plugin not loaded", set.getData("plugin").latin1());
-      config.closePlugin(set.getData("plugin"));
+      qDebug("CUS::calculate: %s plugin not loaded", plugin.latin1());
+      config.closePlugin(plugin);
       continue;
     }
   
@@ -210,7 +212,7 @@ int CUS::getMinBars ()
     if (t > min)
       min = t;
     
-    config.closePlugin(set.getData("plugin"));
+    config.closePlugin(plugin);
   }
 
   int t = minBars + min;

@@ -50,8 +50,8 @@ class Macro : public QObject
       SidePanel
     };
     
-    Macro(QString);
-    ~Macro();
+    Macro (QString &);
+    ~Macro ();
     void load ();
     void save ();
     void record ();
@@ -64,7 +64,7 @@ class Macro : public QObject
     void incIndex ();
     
   public slots:
-    void recordKey (int, int, int, int, QString);
+    void recordKey (int, int, int, int, QString &);
     
   private:
     QString path;

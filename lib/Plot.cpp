@@ -68,7 +68,7 @@ void Plot::setData (BarData *l)
   indicatorPlot->setData(l);
 }
 
-int Plot::setChartType (QString d)
+int Plot::setChartType (QString &d)
 {
   return indicatorPlot->setChartType(d);
 }
@@ -213,17 +213,17 @@ void Plot::setDateFlag (bool d)
     datePlot->hide();
 }
 
-void Plot::addIndicator (QString d, Indicator *i)
+void Plot::addIndicator (QString &d, Indicator *i)
 {
   indicatorPlot->addIndicator(d, i);
 }
 
-Indicator * Plot::getIndicator (QString d)
+Indicator * Plot::getIndicator (QString &d)
 {
   return indicatorPlot->getIndicator(d);
 }
 
-bool Plot::deleteIndicator (QString d)
+bool Plot::deleteIndicator (QString &d)
 {
   return indicatorPlot->deleteIndicator(d);
 }
@@ -238,9 +238,9 @@ int Plot::getMinPixelspace ()
   return indicatorPlot->getMinPixelspace();
 }
 
-QStringList Plot::getIndicators ()
+void Plot::getIndicators (QStringList &l)
 {
-  return indicatorPlot->getIndicators();
+  indicatorPlot->getIndicators(l);
 }
 
 void Plot::setCrosshairsStatus (bool status)

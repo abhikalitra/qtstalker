@@ -35,10 +35,10 @@ class FormulaInput : public QWidget
   Q_OBJECT
 
   public:
-    FormulaInput (QWidget *, bool f, QString in);
+    FormulaInput (QWidget *, bool f, QString &in);
     ~FormulaInput ();
     QString getInput ();
-    void setInput (QString);
+    void setInput (QString &);
 
   public slots:
     void buttonChecked (int);

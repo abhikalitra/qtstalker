@@ -224,31 +224,41 @@ void COMP::calculate ()
 
 int COMP::indicatorPrefDialog (QWidget *w)
 {
+  QString pl = QObject::tr("Parms");
+  QString cl = QObject::tr("Color");
+  QString ll = QObject::tr("Label");
+  QString ltl = QObject::tr("Line Type");
+  QString d1l = QObject::tr("Data1");
+  QString d2l = QObject::tr("Data2");
+  QString y1l = QObject::tr("Delay1");
+  QString y2l = QObject::tr("Delay2");
+  QString ml = QObject::tr("Method");
+
   PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(QObject::tr("COMP Indicator"));
-  dialog->createPage (QObject::tr("Parms"));
+  dialog->createPage (pl);
   dialog->setHelpFile(helpFile);
-  dialog->addColorItem(QObject::tr("Color"), QObject::tr("Parms"), color);
-  dialog->addTextItem(QObject::tr("Label"), QObject::tr("Parms"), label);
-  dialog->addComboItem(QObject::tr("Line Type"), QObject::tr("Parms"), lineTypes, lineType);
-  dialog->addFormulaInputItem(QObject::tr("Data1"), QObject::tr("Parms"), FALSE, data1);
-  dialog->addFormulaInputItem(QObject::tr("Delay1"), QObject::tr("Parms"), TRUE, delay1);
-  dialog->addComboItem(QObject::tr("Method"), QObject::tr("Parms"), opList, method);
-  dialog->addFormulaInputItem(QObject::tr("Data2"), QObject::tr("Parms"), TRUE, data2);
-  dialog->addFormulaInputItem(QObject::tr("Delay2"), QObject::tr("Parms"), TRUE, delay2);
+  dialog->addColorItem(cl, pl, color);
+  dialog->addTextItem(ll, pl, label);
+  dialog->addComboItem(ltl, pl, lineTypes, lineType);
+  dialog->addFormulaInputItem(d1l, pl, FALSE, data1);
+  dialog->addFormulaInputItem(y1l, pl, TRUE, delay1);
+  dialog->addComboItem(ml, pl, opList, method);
+  dialog->addFormulaInputItem(d2l, pl, TRUE, data2);
+  dialog->addFormulaInputItem(y2l, pl, TRUE, delay2);
   
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
-    color = dialog->getColor(QObject::tr("Color"));
-    lineType = (PlotLine::LineType) dialog->getComboIndex(QObject::tr("Line Type"));
-    label = dialog->getText(QObject::tr("Label"));
-    method = dialog->getCombo(QObject::tr("Method"));
-    data1 = dialog->getFormulaInput(QObject::tr("Data1"));
-    delay1 = dialog->getFormulaInput(QObject::tr("Delay1"));
-    data2 = dialog->getFormulaInput(QObject::tr("Data2"));
-    delay2 = dialog->getFormulaInput(QObject::tr("Delay2"));
+    color = dialog->getColor(cl);
+    lineType = (PlotLine::LineType) dialog->getComboIndex(ltl);
+    label = dialog->getText(ll);
+    method = dialog->getCombo(ml);
+    data1 = dialog->getFormulaInput(d1l);
+    delay1 = dialog->getFormulaInput(y1l);
+    data2 = dialog->getFormulaInput(d2l);
+    delay2 = dialog->getFormulaInput(y2l);
     rc = TRUE;
   }
   else

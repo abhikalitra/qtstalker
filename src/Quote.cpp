@@ -46,14 +46,18 @@ QuoteDialog::QuoteDialog () : QTabDialog (0, "QuoteDialog", FALSE, WDestructiveC
   toolbar = new Toolbar(w, 30, 30, FALSE);
   vbox->addWidget(toolbar);
 
-  toolbar->addButton("update", download, tr("Update"));
-  QObject::connect(toolbar->getButton("update"), SIGNAL(clicked()), this, SLOT(getQuotes()));
-  toolbar->getButton("update")->setAccel(CTRL+Key_U);
+  QString s("update");
+  QString s2(tr("Update"));
+  toolbar->addButton(s, download, s2);
+  QObject::connect(toolbar->getButton(s), SIGNAL(clicked()), this, SLOT(getQuotes()));
+  toolbar->getButton(s)->setAccel(CTRL+Key_U);
   
-  toolbar->addButton("cancelDownload", canceldownload, tr("Cancel Update"));
-  QObject::connect(toolbar->getButton("cancelDownload"), SIGNAL(clicked()), this, SLOT(cancelDownload()));
-  toolbar->setButtonStatus("cancelDownload", FALSE);
-  toolbar->getButton("cancelDownload")->setAccel(CTRL+Key_C);
+  s = "cancelDownload";
+  s = tr("Cancel Update");
+  toolbar->addButton(s, canceldownload, s2);
+  QObject::connect(toolbar->getButton(s), SIGNAL(clicked()), this, SLOT(cancelDownload()));
+  toolbar->setButtonStatus(s, FALSE);
+  toolbar->getButton(s)->setAccel(CTRL+Key_C);
   
   vbox->addSpacing(5);
     
@@ -65,7 +69,8 @@ QuoteDialog::QuoteDialog () : QTabDialog (0, "QuoteDialog", FALSE, WDestructiveC
   grid->setColStretch(0, 1);
   
   ruleCombo = new QComboBox(w);
-  QStringList pl = config.getPluginList(Config::QuotePluginPath);
+  QStringList pl;
+  config.getPluginList(Config::QuotePluginPath, pl);
   ruleCombo->insertStringList(pl, -1);
   connect (ruleCombo, SIGNAL(activated(int)), this, SLOT(ruleChanged(int)));
   grid->addWidget(ruleCombo, 0, 0);
@@ -136,7 +141,8 @@ void QuoteDialog::getQuotes ()
   
   printStatusLogMessage(tr("Starting update..."));
 
-  QuotePlugin *plug = config.getQuotePlugin(ruleCombo->currentText());
+  QString s = ruleCombo->currentText();
+  QuotePlugin *plug = config.getQuotePlugin(s);
   if (! plug)
   {
     qDebug("QuoteDialog::getQuotes - could not open plugin");
@@ -153,8 +159,10 @@ void QuoteDialog::ruleChanged (int)
   if (! ruleCombo->count())
   {
     settingButton->setEnabled(FALSE);
-    toolbar->setButtonStatus("update", FALSE);
-    toolbar->setButtonStatus("cancelDownload", FALSE);
+    QString s("update"); 
+    toolbar->setButtonStatus(s, FALSE);
+    s = "cancelDownload";
+    toolbar->setButtonStatus(s, FALSE);
     return;
   }
 
@@ -162,7 +170,7 @@ void QuoteDialog::ruleChanged (int)
     config.closePlugin(plugin);
   plugin = ruleCombo->currentText();
 
-  QuotePlugin *plug = config.getQuotePlugin(ruleCombo->currentText());
+  QuotePlugin *plug = config.getQuotePlugin(plugin);
   if (! plug)
   {
     qDebug("QuoteDialog::ruleChanged - could not open plugin");
@@ -173,7 +181,7 @@ void QuoteDialog::ruleChanged (int)
   connect (plug, SIGNAL(statusLogMessage(QString)), this, SLOT(printStatusLogMessage(QString)));
   connect (plug, SIGNAL(dataLogMessage(QString)), this, SLOT(printDataLogMessage(QString)));
   
-  config.setData(Config::LastQuotePlugin, ruleCombo->currentText());
+  config.setData(Config::LastQuotePlugin, plugin);
 }
 
 void QuoteDialog::downloadComplete ()
@@ -184,7 +192,7 @@ void QuoteDialog::downloadComplete ()
 
 void QuoteDialog::cancelDownload ()
 {
-  QuotePlugin *plug = config.getQuotePlugin(ruleCombo->currentText());
+  QuotePlugin *plug = config.getQuotePlugin(plugin);
   if (! plug)
   {
     qDebug("QuoteDialog::cancelDownload - could not open plugin");
@@ -200,10 +208,12 @@ void QuoteDialog::enableGUI ()
 {
   ruleCombo->setEnabled(TRUE);
   settingButton->setEnabled(TRUE);
-  toolbar->setButtonStatus("update", TRUE);
-  toolbar->setButtonStatus("cancelDownload", FALSE);
+  QString s("update"); 
+  toolbar->setButtonStatus(s, TRUE);
+  s = "cancelDownload";
+  toolbar->setButtonStatus(s, FALSE);
 
-  QuotePlugin *plug = config.getQuotePlugin(ruleCombo->currentText());
+  QuotePlugin *plug = config.getQuotePlugin(plugin);
   if (! plug)
   {
     qDebug("QuoteDialog::enableGUI - could not open plugin");
@@ -215,8 +225,10 @@ void QuoteDialog::disableGUI ()
 {
   ruleCombo->setEnabled(FALSE);
   settingButton->setEnabled(FALSE);
-  toolbar->setButtonStatus("update", FALSE);
-  toolbar->setButtonStatus("cancelDownload", TRUE);
+  QString s("update"); 
+  toolbar->setButtonStatus(s, FALSE);
+  s = "cancelDownload";
+  toolbar->setButtonStatus(s, TRUE);
 }
 
 void QuoteDialog::printStatusLogMessage (QString d)
@@ -236,7 +248,7 @@ void QuoteDialog::printDataLogMessage (QString d)
 
 void QuoteDialog::pluginSettings ()
 {
-  QuotePlugin *plug = config.getQuotePlugin(ruleCombo->currentText());
+  QuotePlugin *plug = config.getQuotePlugin(plugin);
   if (! plug)
   {
     qDebug("QuoteDialog::pluginSettings - could not open plugin");
@@ -248,7 +260,8 @@ void QuoteDialog::pluginSettings ()
 
 void QuoteDialog::help ()
 {
-  HelpWindow *hw = new HelpWindow(this, "quotes.html");
+  QString s = "quotes.html";
+  HelpWindow *hw = new HelpWindow(this, s);
   hw->show();
 }
 

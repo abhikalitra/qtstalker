@@ -54,8 +54,9 @@ GroupPage::GroupPage (QWidget *w) : QWidget (w)
   QToolTip::add(group, tr("Current Group"));
   group->setFocusPolicy(QWidget::NoFocus);
   vbox->addWidget(group);
-  
-  nav = new Navigator(this, config.getData(Config::GroupPath));
+
+  QString s(config.getData(Config::GroupPath));  
+  nav = new Navigator(this, s);
   connect(nav, SIGNAL(fileSelected(QString)), this, SLOT(groupSelected(QString)));
   connect(nav, SIGNAL(fileOpened(QString)), this, SLOT(chartOpened(QString)));
   connect(nav, SIGNAL(noSelection()), this, SLOT(groupNoSelection()));
@@ -127,9 +128,11 @@ void GroupPage::newGroup()
 
 void GroupPage::addGroupItem()
 {
+  QString s("*");
+  QString s2(config.getData(Config::DataPath));
   SymbolDialog *dialog = new SymbolDialog(this,
-  					  config.getData(Config::DataPath),
-					  "*",
+  					  s2,
+					  s,
 					  QFileDialog::ExistingFiles);
 
   int rc = dialog->exec();
@@ -142,7 +145,7 @@ void GroupPage::addGroupItem()
     {
       QFileInfo fi(l[loop]);
     
-      QString s = "ln -s ";
+      s = "ln -s ";
       s.append(l[loop]);
       s.append(" ");
       s.append(nav->getCurrentPath());
@@ -159,9 +162,11 @@ void GroupPage::addGroupItem()
 
 void GroupPage::deleteGroupItem()
 {
+  QString s("*");
+  QString s2(nav->getCurrentPath());
   SymbolDialog *dialog = new SymbolDialog(this,
-  					  nav->getCurrentPath(),
-					  "*",
+  					  s2,
+					  s,
 					  QFileDialog::ExistingFiles);
   dialog->setCaption(tr("Select Group Items To Delete"));
 
@@ -267,8 +272,9 @@ void GroupPage::renameGroup ()
     QMessageBox::information(this, tr("Qtstalker: Error"), tr("Group rename failed."));
     return;
   }
-  
-  nav->setDirectory(s2 + "/x");
+
+  s = s2 + "/x";
+  nav->setDirectory(s);
   nav->updateList();
   
   groupNoSelection();
@@ -280,9 +286,6 @@ void GroupPage::groupSelected (QString)
   menu->setItemEnabled(menu->idAt(2), TRUE);
   menu->setItemEnabled(menu->idAt(3), TRUE);
   menu->setItemEnabled(menu->idAt(4), TRUE);
-  
-//  QFileInfo fi(d);
-//  emit fileSelected(fi.readLink());
 }
 
 void GroupPage::chartOpened (QString d)
@@ -322,7 +325,8 @@ void GroupPage::rightClick (QListBoxItem *)
 
 void GroupPage::slotHelp ()
 {
-  HelpWindow *hw = new HelpWindow(this, "workwithgroups.html");
+  QString s = "workwithgroups.html";
+  HelpWindow *hw = new HelpWindow(this, s);
   hw->show();
 }
 

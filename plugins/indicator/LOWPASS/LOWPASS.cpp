@@ -146,30 +146,38 @@ void LOWPASS::calculate ()
 
 int LOWPASS::indicatorPrefDialog (QWidget *w)
 {
+  QString pl = QObject::tr("Parms");
+  QString cl = QObject::tr("Color");
+  QString ll = QObject::tr("Label");
+  QString ltl = QObject::tr("Line Type");
+  QString fl = QObject::tr("Freq");
+  QString wl = QObject::tr("Width");
+  QString il = QObject::tr("Input");
+
   PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(QObject::tr("LOWPASS Indicator"));
-  dialog->createPage (QObject::tr("Parms"));
-  dialog->addColorItem(QObject::tr("Color"), QObject::tr("Parms"), color);
-  dialog->addComboItem(QObject::tr("Line Type"), QObject::tr("Parms"), lineTypes, lineType);
-  dialog->addTextItem(QObject::tr("Label"), QObject::tr("Parms"), label);
-  dialog->addFloatItem(QObject::tr("freq"), QObject::tr("Parms"), freq, .009, 99999999);
-  dialog->addFloatItem(QObject::tr("width"), QObject::tr("Parms"), width, .009, 99999999);
+  dialog->createPage (pl);
+  dialog->addColorItem(cl, pl, color);
+  dialog->addComboItem(ltl, pl, lineTypes, lineType);
+  dialog->addTextItem(ll, pl, label);
+  dialog->addFloatItem(fl, pl, freq, .009, 99999999);
+  dialog->addFloatItem(wl, pl, width, .009, 99999999);
 
   if (customFlag)
-    dialog->addFormulaInputItem(QObject::tr("Input"), QObject::tr("Parms"), FALSE, customInput);
+    dialog->addFormulaInputItem(il, pl, FALSE, customInput);
 
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
-    color = dialog->getColor(QObject::tr("Color"));
-    lineType = (PlotLine::LineType) dialog->getComboIndex(QObject::tr("Line Type"));
-    freq = dialog->getFloat(QObject::tr("freq"));
-    width = dialog->getFloat(QObject::tr("width"));
-    label = dialog->getText(QObject::tr("Label"));
+    color = dialog->getColor(cl);
+    lineType = (PlotLine::LineType) dialog->getComboIndex(ltl);
+    freq = dialog->getFloat(fl);
+    width = dialog->getFloat(wl);
+    label = dialog->getText(ll);
 
     if (customFlag)
-      customInput = dialog->getFormulaInput(QObject::tr("Input"));
+      customInput = dialog->getFormulaInput(il);
       
     rc = TRUE;
   }

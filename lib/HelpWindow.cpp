@@ -28,7 +28,7 @@
 #include <qlayout.h>
 #include <qdir.h>
 
-HelpWindow::HelpWindow (QWidget *, QString fn) : QDialog (0, "HelpWindow", FALSE, WDestructiveClose)
+HelpWindow::HelpWindow (QWidget *, QString &fn) : QDialog (0, "HelpWindow", FALSE, WDestructiveClose)
 {
   Config config;
   homePath = config.getData(Config::HelpFilePath) + "/";
@@ -40,25 +40,33 @@ HelpWindow::HelpWindow (QWidget *, QString fn) : QDialog (0, "HelpWindow", FALSE
   
   toolbar = new Toolbar(this, 30, 30, FALSE);
   vbox->addWidget(toolbar);
-  
-  toolbar->addButton("home", home, tr("Home"));
-  QObject::connect(toolbar->getButton("home"), SIGNAL(clicked()), this, SLOT(goHome()));
-  
-  toolbar->addButton("previous", previous, tr("Previous"));
-  QObject::connect(toolbar->getButton("previous"), SIGNAL(clicked()), this, SLOT(goPrevious()));
 
-  toolbar->addButton("next", next, tr("Next"));
-  QObject::connect(toolbar->getButton("next"), SIGNAL(clicked()), this, SLOT(goNext()));
+  QString s("home");
+  QString s2(tr("Home"));
+  toolbar->addButton(s, home, s2);
+  QObject::connect(toolbar->getButton(s), SIGNAL(clicked()), this, SLOT(goHome()));
   
-  toolbar->addButton("exit", disable, tr("Close"));
-  QObject::connect(toolbar->getButton("exit"), SIGNAL(clicked()), this, SLOT(exit()));
+  s = "previous";
+  s2 = tr("Previous");
+  toolbar->addButton(s, previous, s2);
+  QObject::connect(toolbar->getButton(s), SIGNAL(clicked()), this, SLOT(goPrevious()));
+
+  s = "next";
+  s2 = tr("Next");
+  toolbar->addButton(s, next, s2);
+  QObject::connect(toolbar->getButton(s), SIGNAL(clicked()), this, SLOT(goNext()));
+  
+  s = "exit";
+  s2 = tr("Close");
+  toolbar->addButton(s, disable, s2);
+  QObject::connect(toolbar->getButton(s), SIGNAL(clicked()), this, SLOT(exit()));
   
   text = new QTextBrowser(this);
   QObject::connect(text, SIGNAL(backwardAvailable(bool)), this, SLOT(previousStatus(bool)));
   QObject::connect(text, SIGNAL(forwardAvailable(bool)), this, SLOT(nextStatus(bool)));
   vbox->addWidget (text);
   
-  QString s = homePath + fn;
+  s = homePath + fn;
   QDir dir;
   if (dir.exists(s) && s.contains(".html"))
     text->setSource(s);
@@ -91,12 +99,14 @@ void HelpWindow::goNext ()
 
 void HelpWindow::previousStatus (bool d)
 {
-  toolbar->setButtonStatus("previous", d);
+  QString s("previous");
+  toolbar->setButtonStatus(s, d);
 }
 
 void HelpWindow::nextStatus (bool d)
 {
-  toolbar->setButtonStatus("next", d);
+  QString s("next");
+  toolbar->setButtonStatus(s, d);
 }
 
 void HelpWindow::exit ()

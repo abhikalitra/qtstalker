@@ -32,7 +32,7 @@ class HelpWindow : public QDialog
   Q_OBJECT
 
   public:
-    HelpWindow (QWidget *, QString);
+    HelpWindow (QWidget *, QString &);
     ~HelpWindow ();
     
   public slots:

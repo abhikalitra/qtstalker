@@ -117,41 +117,70 @@ int PP::indicatorPrefDialog (QWidget *w)
 {
   PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(QObject::tr("PP Indicator"));
-  dialog->createPage (QObject::tr("Support"));
+  
+  QString pl = QObject::tr("Support");
+  dialog->createPage (pl);
   dialog->setHelpFile(helpFile);
-  dialog->addColorItem(QObject::tr("Support Color"), QObject::tr("Support"), supColor);
-  dialog->addComboItem(QObject::tr("Support Line Type"), QObject::tr("Support"), lineTypes, supLineType);
-  dialog->addTextItem(QObject::tr("Label First Support"), QObject::tr("Support"), supLabel);
-  dialog->addTextItem(QObject::tr("Label Second Support"), QObject::tr("Support"), supLabel2);
-  dialog->addTextItem(QObject::tr("Label Third Support"), QObject::tr("Support"), supLabel3);
+  QString t = QObject::tr("Support Color");
+  dialog->addColorItem(t, pl, supColor);
+  t = QObject::tr("Support Line Type");
+  dialog->addComboItem(t, pl, lineTypes, supLineType);
+  t = QObject::tr("Label First Support");
+  dialog->addTextItem(t, pl, supLabel);
+  t = QObject::tr("Label Second Support");
+  dialog->addTextItem(t, pl, supLabel2);
+  t = QObject::tr("Label Third Support");
+  dialog->addTextItem(t, pl, supLabel3);
   
   if (customFlag)
-    dialog->addTextItem(QObject::tr("Label"), QObject::tr("Support"), label);
+  {
+    t = QObject::tr("Label");
+    dialog->addTextItem(t, pl, label);
+  }
   
-  dialog->createPage (QObject::tr("Resistance"));
-  dialog->addColorItem(QObject::tr("Resistance Color"), QObject::tr("Resistance"), resColor);
-  dialog->addComboItem(QObject::tr("Resistance Line Type"), QObject::tr("Resistance"), lineTypes, resLineType);
-  dialog->addTextItem(QObject::tr("Label First Resistance"), QObject::tr("Resistance"), resLabel);
-  dialog->addTextItem(QObject::tr("Label Second Resistance"), QObject::tr("Resistance"), resLabel2);
-  dialog->addTextItem(QObject::tr("Label Third Resistance"), QObject::tr("Resistance"), resLabel3);
+  pl = QObject::tr("Resistance");
+  dialog->createPage (pl);
+  t = QObject::tr("Resistance Color");
+  dialog->addColorItem(t, pl, resColor);
+  t = QObject::tr("Resistance Line Type");
+  dialog->addComboItem(t, pl, lineTypes, resLineType);
+  t = QObject::tr("Label First Resistance");
+  dialog->addTextItem(t, pl, resLabel);
+  t = QObject::tr("Label Second Resistance");
+  dialog->addTextItem(t, pl, resLabel2);
+  t = QObject::tr("Label Third Resistance");
+  dialog->addTextItem(t, pl, resLabel3);
   
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
     if (customFlag)
-      label = dialog->getText(QObject::tr("Label"));
+    {
+      t = QObject::tr("Label");
+      label = dialog->getText(t);
+    }
   
-    supColor = dialog->getColor(QObject::tr("Support Color"));
-    resColor = dialog->getColor(QObject::tr("Resistance Color"));
-    supLineType = (PlotLine::LineType) dialog->getComboIndex(QObject::tr("Support Line Type"));
-    resLineType = (PlotLine::LineType) dialog->getComboIndex(QObject::tr("Resistance Line Type"));
-    supLabel = dialog->getText(QObject::tr("Label First Support"));
-    supLabel2 = dialog->getText(QObject::tr("Label Second Support"));
-    supLabel3 = dialog->getText(QObject::tr("Label Third Support"));
-    resLabel = dialog->getText(QObject::tr("Label First Resistance"));
-    resLabel2 = dialog->getText(QObject::tr("Label Second Resistance"));
-    resLabel3 = dialog->getText(QObject::tr("Label Third Resistance"));
+    t = QObject::tr("Support Color");
+    supColor = dialog->getColor(t);
+    t = QObject::tr("Resistance Color");
+    resColor = dialog->getColor(t);
+    t = QObject::tr("Support Line Type");
+    supLineType = (PlotLine::LineType) dialog->getComboIndex(t);
+    t = QObject::tr("Resistance Line Type");
+    resLineType = (PlotLine::LineType) dialog->getComboIndex(t);
+    t = QObject::tr("Label First Support");
+    supLabel = dialog->getText(t);
+    t = QObject::tr("Label Second Support");
+    supLabel2 = dialog->getText(t);
+    t = QObject::tr("Label Third Support");
+    supLabel3 = dialog->getText(t);
+    t = QObject::tr("Label First Resistance");
+    resLabel = dialog->getText(t);
+    t = QObject::tr("Label Second Resistance");
+    resLabel2 = dialog->getText(t);
+    t = QObject::tr("Label Third Resistance");
+    resLabel3 = dialog->getText(t);
     rc = TRUE;
   }
   else

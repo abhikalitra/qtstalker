@@ -25,7 +25,7 @@
 
 #define BUTTON_SIZE 24
 
-Navigator::Navigator (QWidget *w, QString bp) : QListBox(w)
+Navigator::Navigator (QWidget *w, QString &bp) : QListBox(w)
 {
   basePath = bp;
   id = 0;
@@ -114,7 +114,7 @@ QString Navigator::getFileSelection ()
   return s;
 }
 
-void Navigator::setDirectory (QString d)
+void Navigator::setDirectory (QString &d)
 {
   if (d.length())
   {
@@ -153,11 +153,10 @@ void Navigator::checkDirectory (QListBoxItem *item)
     return;
   }
   
-//  emit fileSelected(getFileSelection());
   emit fileOpened(getFileSelection());
 }
 
-void Navigator::setFilter (QString d)
+void Navigator::setFilter (QString &d)
 {
   currentDir.setNameFilter(d);
   updateList();

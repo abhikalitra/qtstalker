@@ -132,7 +132,7 @@ double Scaler::convertToVal (int y)
   return val;
 }
 
-QMemArray<double> Scaler::getScaleArray ()
+void Scaler::getScaleArray (QMemArray<double> &scaleArray)
 {
   int ticks;
   for (ticks = 2; (ticks * 15) < height; ticks++)
@@ -173,8 +173,6 @@ QMemArray<double> Scaler::getScaleArray ()
   }
 
   scaleArray.resize(loop);
-
-  return scaleArray;
 }
 
 double Scaler::getLogScaleHigh ()

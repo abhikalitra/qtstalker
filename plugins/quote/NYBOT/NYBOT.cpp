@@ -107,97 +107,103 @@ void NYBOT::parse ()
       }
 
       // open
-      QString open = data->getData("dailyOpenPrice1");
-      if (open.toFloat() == 0)
-        open = data->getData("dailyOpenPrice2");
-      if (setTFloat(open, FALSE))
+      double open = 0;
+      s = data->getData("dailyOpenPrice1");
+      if (s.toFloat() == 0)
+        s = data->getData("dailyOpenPrice2");
+      if (setTFloat(s, FALSE))
       {
         delete data;
         continue;
       }
       else
-        open = QString::number(tfloat);
+        open = tfloat;
 
       // high
-      QString high;
-      if (setTFloat(data->getData("dailyHigh"), FALSE))
+      double high = 0;
+      s = data->getData("dailyHigh");
+      if (setTFloat(s, FALSE))
       {
         delete data;
         continue;
       }
       else
-        high = QString::number(tfloat);
+        high = tfloat;
 
       // low
-      QString low;
-      if (setTFloat(data->getData("dailyLow"), FALSE))
+      double low = 0;
+      s = data->getData("dailyLow");
+      if (setTFloat(s, FALSE))
       {
         delete data;
         continue;
       }
       else
-        low = QString::number(tfloat);
+        low = tfloat;
 
       // close
-      QString close;
-      if (setTFloat(data->getData("settlementPrice"), FALSE))
+      double close = 0;
+      s = data->getData("settlementPrice");
+      if (setTFloat(s, FALSE))
       {
         delete data;
         continue;
       }
       else
-        close = QString::number(tfloat);
+        close = tfloat;
 
       // volume
-      QString volume;
-      if (setTFloat(data->getData("tradeVolume"), FALSE))
+      double volume = 0;
+      s = data->getData("tradeVolume");
+      if (setTFloat(s, FALSE))
       {
         delete data;
         continue;
       }
       else
-        volume = QString::number(tfloat);
+        volume = tfloat;
 
       // oi
-      QString oi;
-      if (setTFloat(data->getData("openInterest"), FALSE))
+      double oi = 0;
+      s = data->getData("openInterest");
+      if (setTFloat(s, FALSE))
       {
         delete data;
         continue;
       }
       else
-        oi = QString::number(tfloat);
+        oi = tfloat;
 
       if (symbol.compare("CC"))
       {
-        open = QString::number(open.toFloat() / 100);
-        high = QString::number(high.toFloat() / 100);
-        low = QString::number(low.toFloat() / 100);
-        close = QString::number(close.toFloat() / 100);
+        open = open / 100;
+        high = high / 100;
+        low = low / 100;
+        close = close / 100;
       }
 
       // check for bad values
-      if (close.toFloat() == 0)
+      if (close == 0)
       {
         delete data;
         continue;
       }
 
-      if (open.toFloat() == 0 || high.toFloat() == 0 || low.toFloat() == 0 || volume.toFloat() == 0)
+      if (open == 0 || high == 0 || low == 0 || volume == 0)
       {
         open = close;
 	high = close;
 	low = close;
       }
 
-      if (open.toFloat() > high.toFloat() || open.toFloat() < low.toFloat())
+      if (open > high || open < low)
       {
         open = close;
 	high = close;
 	low = close;
       }
 
-      if (close.toFloat() > high.toFloat() || close.toFloat() < low.toFloat())
+      if (close > high || close < low)
       {
         open = close;
 	high = close;
@@ -292,10 +298,11 @@ void NYBOT::parse ()
       }
       
       Config config;
-      DbPlugin *db = config.getDbPlugin("Futures");
+      QString plugin("Futures");
+      DbPlugin *db = config.getDbPlugin(plugin);
       if (! db)
       {
-        config.closePlugin("Futures");
+        config.closePlugin(plugin);
         continue;
       }
       
@@ -303,7 +310,7 @@ void NYBOT::parse ()
       if (db->openChart(s))
       {
         emit statusLogMessage("Could not open db.");
-        config.closePlugin("Futures");
+        config.closePlugin(plugin);
         return;
       }
 
@@ -317,7 +324,7 @@ void NYBOT::parse ()
         {
           s = symbol + " - skipping update. Source does not match destination.";
           emit statusLogMessage(s);
-          config.closePlugin("Futures");
+          config.closePlugin(plugin);
           return;
         }
       }
@@ -339,16 +346,16 @@ void NYBOT::parse ()
         db->setData(s, month);
       }
       
-      bar.setOpen(open.toDouble());
-      bar.setHigh(high.toDouble());
-      bar.setLow(low.toDouble());
-      bar.setClose(close.toDouble());
-      bar.setVolume(volume.toDouble());
-      bar.setOI(oi.toInt());
+      bar.setOpen(open);
+      bar.setHigh(high);
+      bar.setLow(low);
+      bar.setClose(close);
+      bar.setVolume(volume);
+      bar.setOI((int) oi);
       db->setBar(bar);
 		 
 //      emit dataLogMessage(symbol);
-      config.closePlugin("Futures");
+      config.closePlugin(plugin);
     }
 
     f.close();
@@ -368,15 +375,18 @@ void NYBOT::prefDialog (QWidget *w)
 {
   PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(tr("NYBOT Prefs"));
-  dialog->createPage (tr("Details"));
+  QString s = tr("Details");
+  dialog->createPage (s);
   dialog->setHelpFile(helpFile);
-  dialog->addFileItem(tr("File Input"), tr("Details"), list, lastPath);
+  QString s2 = tr("File Input");
+  dialog->addFileItem(s2, s, list, lastPath);
   
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
-    list = dialog->getFile(tr("File Input"));
+    s = tr("File Input");
+    list = dialog->getFile(s);
     
     saveFlag = TRUE;
     

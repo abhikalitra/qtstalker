@@ -32,7 +32,7 @@ class FontButton : public QPushButton
   Q_OBJECT
 
   public:
-    FontButton (QWidget *, QFont);
+    FontButton (QWidget *, QFont &);
     ~FontButton ();
     QFont getFont ();
     void setFontButton ();

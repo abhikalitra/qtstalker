@@ -96,21 +96,24 @@ void BarDialog::createBarPage ()
   QLabel *label = new QLabel(tr("Bar Up Color"), w);
   grid->addWidget(label, 0, 0);
   
-  barUpButton = new ColorButton(w, QColor("green"));
+  QColor c("green");
+  barUpButton = new ColorButton(w, c);
   grid->addWidget(barUpButton, 0, 1);
   barUpButton->setColorButton();
   
   label = new QLabel(tr("Bar Down Color"), w);
   grid->addWidget(label, 1, 0);
   
-  barDownButton = new ColorButton(w, QColor("red"));
+  c.setNamedColor("red");
+  barDownButton = new ColorButton(w, c);
   grid->addWidget(barDownButton, 1, 1);
   barDownButton->setColorButton();
   
   label = new QLabel(tr("Bar Neutral Color"), w);
   grid->addWidget(label, 2, 0);
   
-  barNeutralButton = new ColorButton(w, QColor("blue"));
+  c.setNamedColor("blue");
+  barNeutralButton = new ColorButton(w, c);
   grid->addWidget(barNeutralButton, 2, 1);
   barNeutralButton->setColorButton();
   
@@ -133,14 +136,16 @@ void BarDialog::createPaintBarPage ()
   QLabel *label = new QLabel(tr("Paint Bar Up Color"), w);
   grid->addWidget(label, 0, 0);
   
-  paintUpButton = new ColorButton(w, QColor("green"));
+  QColor c("green");
+  paintUpButton = new ColorButton(w, c);
   grid->addWidget(paintUpButton, 0, 1);
   paintUpButton->setColorButton();
   
   label = new QLabel(tr("Paint Bar Down Color"), w);
   grid->addWidget(label, 1, 0);
   
-  paintDownButton = new ColorButton(w, QColor("red"));
+  c.setNamedColor("red");
+  paintDownButton = new ColorButton(w, c);
   grid->addWidget(paintDownButton, 1, 1);
   paintDownButton->setColorButton();
   

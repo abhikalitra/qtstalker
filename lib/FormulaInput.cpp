@@ -26,7 +26,7 @@
 
 #define BUTTON_SIZE 24
 
-FormulaInput::FormulaInput (QWidget *w, bool f, QString in) : QWidget(w)
+FormulaInput::FormulaInput (QWidget *w, bool f, QString &in) : QWidget(w)
 {
   flag = f;
   
@@ -94,7 +94,7 @@ QString FormulaInput::getInput ()
   return s;
 }
 
-void FormulaInput::setInput (QString d)
+void FormulaInput::setInput (QString &d)
 {
   if (d.contains("#") && flag)
   {

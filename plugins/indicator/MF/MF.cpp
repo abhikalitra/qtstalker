@@ -108,27 +108,36 @@ void MF::calculate ()
 
 int MF::indicatorPrefDialog (QWidget *w)
 {
+  QString pl = QObject::tr("Parms");
+  QString cl = QObject::tr("Color");
+  QString ll = QObject::tr("Label");
+  QString ltl = QObject::tr("Line Type");
+  QString perl = QObject::tr("Period");
+  QString sl = QObject::tr("Smoothing");
+  QString stl = QObject::tr("Smoothing Type");
+
   PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(QObject::tr("MF Indicator"));
-  dialog->createPage (QObject::tr("Parms"));
+  dialog->createPage (pl);
   dialog->setHelpFile(helpFile);
-  dialog->addColorItem(QObject::tr("Color"), QObject::tr("Parms"), color);
-  dialog->addComboItem(QObject::tr("Line Type"), QObject::tr("Parms"), lineTypes, lineType);
-  dialog->addTextItem(QObject::tr("Label"), QObject::tr("Parms"), label);
-  dialog->addIntItem(QObject::tr("Period"), QObject::tr("Parms"), period, 1, 99999999);
-  dialog->addIntItem(QObject::tr("Smoothing"), QObject::tr("Parms"), smoothing, 0, 99999999);
-  dialog->addComboItem(QObject::tr("Smoothing Type"), QObject::tr("Parms"), getMATypes(), maType);
+  dialog->addColorItem(cl, pl, color);
+  dialog->addComboItem(ltl, pl, lineTypes, lineType);
+  dialog->addTextItem(ll, pl, label);
+  dialog->addIntItem(perl, pl, period, 1, 99999999);
+  dialog->addIntItem(sl, pl, smoothing, 0, 99999999);
+  QStringList l = getMATypes();
+  dialog->addComboItem(stl, pl, l, maType);
   
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
-    color = dialog->getColor(QObject::tr("Color"));
-    lineType = (PlotLine::LineType) dialog->getComboIndex(QObject::tr("Line Type"));
-    period = dialog->getInt(QObject::tr("Period"));
-    label = dialog->getText(QObject::tr("Label"));
-    maType = dialog->getComboIndex(QObject::tr("Smoothing Type"));
-    smoothing = dialog->getInt(QObject::tr("Smoothing"));
+    color = dialog->getColor(cl);
+    lineType = (PlotLine::LineType) dialog->getComboIndex(ltl);
+    period = dialog->getInt(perl);
+    label = dialog->getText(ll);
+    maType = dialog->getComboIndex(stl);
+    smoothing = dialog->getInt(sl);
     rc = TRUE;
   }
   else

@@ -21,7 +21,7 @@
 
 #include "SymbolDialog.h"
 
-SymbolDialog::SymbolDialog (QWidget *w, QString dir, QString filter, QFileDialog::Mode mode) :
+SymbolDialog::SymbolDialog (QWidget *w, QString &dir, QString &filter, QFileDialog::Mode mode) :
                             QFileDialog (dir, filter, w, "SymbolDialog", TRUE)
 {
   basePath = dir;

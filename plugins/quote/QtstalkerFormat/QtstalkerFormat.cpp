@@ -256,18 +256,20 @@ void QtstalkerFormat::prefDialog (QWidget *w)
 {
   PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(tr("QtstalkerFormat Prefs"));
-  dialog->createPage (tr("Details"));
+  QString s = tr("Details");
+  dialog->createPage (s);
   dialog->setHelpFile(helpFile);
   
   Config config;  
-  QString s = config.getData(Config::Home) + "/export";
-  dialog->addFileItem(tr("File Input"), tr("Details"), list, s);
+  QString s2 = config.getData(Config::Home) + "/export";
+  QString s3 = tr("File Input");
+  dialog->addFileItem(s3, s, list, s2);
   
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
-    list = dialog->getFile(tr("File Input"));
+    list = dialog->getFile(s3);
   }
   
   delete dialog;

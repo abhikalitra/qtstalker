@@ -99,9 +99,11 @@ void TestPage::newTest()
 
 void TestPage::deleteTest()
 {
+  QString s("*");
+  QString s2(config.getData(Config::TestPath));
   SymbolDialog *dialog = new SymbolDialog(this,
-  					  config.getData(Config::TestPath),
-					  "*",
+  					  s2,
+					  s,
 					  QFileDialog::DirectoryOnly);
   dialog->setCaption(tr("Select Backtest rule To Delete"));
 
@@ -122,7 +124,7 @@ void TestPage::deleteTest()
       return;
     }
 
-    QString s = "rm -r " + dialog->selectedFile();
+    s = "rm -r " + dialog->selectedFile();
     
     if (system(s.latin1()) == -1)
       qDebug("TestPage::deleteTest:command failed");
@@ -268,7 +270,8 @@ void TestPage::doubleClick (QListBoxItem *item)
 
 void TestPage::slotHelp ()
 {
-  HelpWindow *hw = new HelpWindow(this, "workwithbacktest.html");
+  QString s = "workwithbacktest.html";
+  HelpWindow *hw = new HelpWindow(this, s);
   hw->show();
 }
 

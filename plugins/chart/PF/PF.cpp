@@ -40,7 +40,8 @@ PF::~PF ()
 
 void PF::drawChart (int startX, int startIndex, int pixelspace)
 {
-  QMemArray<double> scaleArray = scaler->getScaleArray();
+  QMemArray<double> scaleArray;
+  scaler->getScaleArray(scaleArray);
   
   QPainter painter;
   painter.begin(buffer);
@@ -164,22 +165,34 @@ void PF::prefDialog (QWidget *w)
 {
   PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(tr("PF Chart Prefs"));
-  dialog->createPage (tr("Details"));
   dialog->setHelpFile (helpFile);
-  dialog->addColorItem(tr("Up Color"), tr("Details"), upColor);
-  dialog->addColorItem(tr("Down Color"), tr("Details"), downColor);
-  dialog->addFloatItem(tr("Box Size"), tr("Details"), size);
-  dialog->addIntItem(tr("Reversal"), tr("Details"), PAFReversal);
-  dialog->addIntItem(tr("Min Bar Spacing"), tr("Details"), minPixelspace, 4, 99);
+  
+  QString s = tr("Details");
+  dialog->createPage(s);
+  QString s2 = tr("Up Color");
+  dialog->addColorItem(s2, s, upColor);
+  s2 = tr("Down Color");
+  dialog->addColorItem(s2, s, downColor);
+  s2 = tr("Box Size");
+  dialog->addFloatItem(s2, s, size);
+  s2 = tr("Reversal");
+  dialog->addIntItem(s2, s, PAFReversal);
+  s2 = tr("Min Bar Spacing");
+  dialog->addIntItem(s2, s, minPixelspace, 4, 99);
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
-    upColor = dialog->getColor(tr("Up Color"));
-    downColor = dialog->getColor(tr("Down Color"));
-    size = dialog->getFloat(tr("Box Size"));
-    PAFReversal = dialog->getInt(tr("Reversal"));
-    minPixelspace = dialog->getInt(tr("Min Bar Spacing"));
+    s = tr("Up Color");
+    upColor = dialog->getColor(s);
+    s = tr("Down Color");
+    downColor = dialog->getColor(s);
+    s = tr("Box Size");
+    size = dialog->getFloat(s);
+    s = tr("Reversal");
+    PAFReversal = dialog->getInt(s);
+    s = tr("Min Bar Spacing");
+    minPixelspace = dialog->getInt(s);
     
     saveFlag = TRUE;
     saveSettings();

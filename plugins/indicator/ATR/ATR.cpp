@@ -94,25 +94,33 @@ void ATR::calculate ()
 
 int ATR::indicatorPrefDialog (QWidget *w)
 {
+  QString pl = QObject::tr("Parms");
+  QString cl = QObject::tr("Color");
+  QString ll = QObject::tr("Label");
+  QString ltl = QObject::tr("Line Type");
+  QString sl = QObject::tr("Smoothing");
+  QString stl = QObject::tr("Smoothing Type");
+
   PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(QObject::tr("ATR Indicator"));
-  dialog->createPage (QObject::tr("Parms"));
+  dialog->createPage (pl);
   dialog->setHelpFile(helpFile);
-  dialog->addColorItem(QObject::tr("Color"), QObject::tr("Parms"), color);
-  dialog->addTextItem(QObject::tr("Label"), QObject::tr("Parms"), label);
-  dialog->addComboItem(QObject::tr("Line Type"), QObject::tr("Parms"), lineTypes, lineType);
-  dialog->addIntItem(QObject::tr("Smoothing"), QObject::tr("Parms"), smoothing, 1, 99999999);
-  dialog->addComboItem(QObject::tr("Smoothing Type"), QObject::tr("Parms"), getMATypes(), maType);
+  dialog->addColorItem(cl, pl, color);
+  dialog->addTextItem(ll, pl, label);
+  dialog->addComboItem(ltl, pl, lineTypes, lineType);
+  dialog->addIntItem(sl, pl, smoothing, 1, 99999999);
+  QStringList l = getMATypes();
+  dialog->addComboItem(stl, pl, l, maType);
   
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
-    color = dialog->getColor(QObject::tr("Color"));
-    lineType = (PlotLine::LineType) dialog->getComboIndex(QObject::tr("Line Type"));
-    label = dialog->getText(QObject::tr("Label"));
-    smoothing = dialog->getInt(QObject::tr("Smoothing"));
-    maType = dialog->getComboIndex(QObject::tr("Smoothing Type"));
+    color = dialog->getColor(cl);
+    lineType = (PlotLine::LineType) dialog->getComboIndex(ltl);
+    label = dialog->getText(ll);
+    smoothing = dialog->getInt(sl);
+    maType = dialog->getComboIndex(stl);
     rc = TRUE;
   }
   else

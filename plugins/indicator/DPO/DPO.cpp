@@ -85,33 +85,42 @@ void DPO::calculate ()
 
 int DPO::indicatorPrefDialog (QWidget *w)
 {
+  QString pl = QObject::tr("Parms");
+  QString cl = QObject::tr("Color");
+  QString ll = QObject::tr("Label");
+  QString ltl = QObject::tr("Line Type");
+  QString perl = QObject::tr("Period");
+  QString stl = QObject::tr("MA Type");
+  QString il = QObject::tr("Input");
+
   PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(QObject::tr("DPO Indicator"));
-  dialog->createPage (QObject::tr("Parms"));
+  dialog->createPage (pl);
   dialog->setHelpFile(helpFile);
-  dialog->addColorItem(QObject::tr("Color"), QObject::tr("Parms"), color);
-  dialog->addComboItem(QObject::tr("Line Type"), QObject::tr("Parms"), lineTypes, lineType);
-  dialog->addTextItem(QObject::tr("Label"), QObject::tr("Parms"), label);
-  dialog->addIntItem(QObject::tr("Period"), QObject::tr("Parms"), period, 1, 99999999);
-  dialog->addComboItem(QObject::tr("MA Type"), QObject::tr("Parms"), getMATypes(), maType);
+  dialog->addColorItem(cl, pl, color);
+  dialog->addComboItem(ltl, pl, lineTypes, lineType);
+  dialog->addTextItem(ll, pl, label);
+  dialog->addIntItem(perl, pl, period, 1, 99999999);
+  QStringList l = getMATypes();
+  dialog->addComboItem(stl, pl, l, maType);
   if (customFlag)
-    dialog->addFormulaInputItem(QObject::tr("Input"), QObject::tr("Parms"), FALSE, customInput);
+    dialog->addFormulaInputItem(il, pl, FALSE, customInput);
   else
-    dialog->addComboItem(QObject::tr("Input"), QObject::tr("Parms"), inputTypeList, input);
+    dialog->addComboItem(il, pl, inputTypeList, input);
   
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
-    color = dialog->getColor(QObject::tr("Color"));
-    lineType = (PlotLine::LineType) dialog->getComboIndex(QObject::tr("Line Type"));
-    period = dialog->getInt(QObject::tr("Period"));
-    label = dialog->getText(QObject::tr("Label"));
-    maType = dialog->getComboIndex(QObject::tr("MA Type"));
+    color = dialog->getColor(cl);
+    lineType = (PlotLine::LineType) dialog->getComboIndex(ltl);
+    period = dialog->getInt(perl);
+    label = dialog->getText(ll);
+    maType = dialog->getComboIndex(stl);
     if (customFlag)
-      customInput = dialog->getFormulaInput(QObject::tr("Input"));
+      customInput = dialog->getFormulaInput(il);
     else
-      input = (BarData::InputType) dialog->getComboIndex(QObject::tr("Input"));
+      input = (BarData::InputType) dialog->getComboIndex(il);
     
     rc = TRUE;
   }

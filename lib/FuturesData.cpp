@@ -63,9 +63,9 @@ float FuturesData::getRate ()
   return rate;
 }
 
-QStringList FuturesData::getSymbolList (QString d)
+void FuturesData::getSymbolList (QString &d, QStringList &l)
 {
-  QStringList l;
+  l.clear();
   QDictIterator<Setting> it(data);
   for (; it.current(); ++it)
   {
@@ -77,18 +77,17 @@ QStringList FuturesData::getSymbolList (QString d)
         l.append(it.current()->getData("Symbol"));
     }
   }
-  
-  return l;
 }
 
-QStringList FuturesData::getMonthList ()
+void FuturesData::getMonthList (QStringList &l)
 {
-  return monthList;
+  l.clear();
+  l = monthList;
 }
 
-QStringList FuturesData::getMonths ()
+void FuturesData::getMonths (QStringList &l)
 {
-  QStringList l;
+  l.clear();
   l.append("F");
   l.append("G");
   l.append("H");
@@ -101,10 +100,9 @@ QStringList FuturesData::getMonths ()
   l.append("V");
   l.append("X");
   l.append("Z");
-  return l;
 }
 
-int FuturesData::setSymbol (QString d)
+int FuturesData::setSymbol (QString &d)
 {
   monthList.clear();
   
@@ -118,7 +116,8 @@ int FuturesData::setSymbol (QString d)
   monthList = QStringList::split(",", set->getData("Month"), FALSE);
   limit = set->getFloat("Limit");
   exchange = set->getData("Exchange");
-  contract = getCurrentContract(QDateTime::currentDateTime());
+  QDateTime dt = QDateTime::currentDateTime();
+  contract = getCurrentContract(dt);
   
   return FALSE;
 }
@@ -543,13 +542,15 @@ void FuturesData::loadData ()
   data.replace("FW20", set);
 }
 
-QString FuturesData::getCurrentContract (QDateTime dt)
+QString FuturesData::getCurrentContract (QDateTime &dt)
 {
   QString contract = symbol;
   bool yearFlag = FALSE;
 
-  QStringList ml = getMonthList();
-  QStringList fml = getMonths();
+  QStringList ml;
+  getMonthList(ml);
+  QStringList fml;
+  getMonths(fml);
 
   int currentMonth = dt.date().month() - 1;
 

@@ -51,27 +51,32 @@ void CC::dbPrefDialog ()
 {
   PrefDialog *dialog = new PrefDialog(0);
   dialog->setCaption(QObject::tr("CC Prefs"));
-  dialog->createPage(QObject::tr("Details"));
+  QString pl = QObject::tr("Details");
+  dialog->createPage(pl);
   dialog->setHelpFile(helpFile);
   
   QString s = "Maximum Years";
   QString s2;
   getData(s, s2);
-  dialog->addIntItem(QObject::tr("Maximum Years"), QObject::tr("Details"), s2.toInt());
+  QString t = QObject::tr("Maximum Years");
+  dialog->addIntItem(t, pl, s2.toInt());
   
   s = "Details";
   getData(s, s2);
-  dialog->addCheckItem(QObject::tr("Rebuild"), QObject::tr("Details"), s2.toInt());
+  t = QObject::tr("Rebuild");
+  dialog->addCheckItem(t, pl, s2.toInt());
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
     s = "Maximum Years";
-    s2 = QString::number(dialog->getInt(QObject::tr("Maximum Years")));
+    t = QObject::tr("Maximum Years");
+    s2 = QString::number(dialog->getInt(t));
     setData(s, s2);
     
     s = "Rebuild";
-    s2 = QString::number(dialog->getCheck(QObject::tr("Rebuild")));
+    t = QObject::tr("Rebuild");
+    s2 = QString::number(dialog->getCheck(t));
     setData(s, s2);
   }
   
@@ -161,11 +166,12 @@ void CC::update ()
     s = baseDir + "/" + dir[loop];
     if (! dir.exists(s))
       continue;
-    
-    DbPlugin *tdb = config.getDbPlugin("Futures");
+
+    QString plugin("Futures");    
+    DbPlugin *tdb = config.getDbPlugin(plugin);
     if (! tdb)
     {
-      config.closePlugin("Futures");
+      config.closePlugin(plugin);
       continue;
     }
       
@@ -205,7 +211,7 @@ void CC::update ()
     }
 
     delete recordList;
-    config.closePlugin("Futures");
+    config.closePlugin(plugin);
     
     if (flag)
       break;
@@ -215,10 +221,13 @@ void CC::update ()
 void CC::createNew ()
 {
   FuturesData fd;
+  QStringList l;
+  QString s = "All";
+  fd.getSymbolList(s, l);
   bool ok = FALSE;
   QString symbol = QInputDialog::getItem(QObject::tr("New CC"),
                                          QObject::tr("Select futures symbol to create."),
-					 fd.getSymbolList("All"),
+					 l,
 					 0,
 					 FALSE,
 					 &ok,
@@ -228,7 +237,7 @@ void CC::createNew ()
 
   QDir dir;
   Config config;
-  QString s = config.getData(Config::DataPath) + "/CC";
+  s = config.getData(Config::DataPath) + "/CC";
   if (! dir.exists(s))
   {
     if (! dir.mkdir(s, TRUE))

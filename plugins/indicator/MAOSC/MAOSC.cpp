@@ -90,37 +90,48 @@ void MAOSC::calculate ()
 
 int MAOSC::indicatorPrefDialog (QWidget *w)
 {
+  QString pl = QObject::tr("Parms");
+  QString cl = QObject::tr("Color");
+  QString ll = QObject::tr("Label");
+  QString ltl = QObject::tr("Line Type");
+  QString fperl = QObject::tr("Fast Period");
+  QString sperl = QObject::tr("Slow Period");
+  QString fml = QObject::tr("Fast MA Type");
+  QString sml = QObject::tr("Slow MA Type");
+  QString il = QObject::tr("Input");
+
   PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(QObject::tr("MAOSC Indicator"));
-  dialog->createPage (QObject::tr("Parms"));
+  dialog->createPage (pl);
   dialog->setHelpFile(helpFile);
-  dialog->addColorItem(QObject::tr("Color"), QObject::tr("Parms"), color);
-  dialog->addComboItem(QObject::tr("Line Type"), QObject::tr("Parms"), lineTypes, lineType);
-  dialog->addTextItem(QObject::tr("Label"), QObject::tr("Parms"), label);
-  dialog->addIntItem(QObject::tr("Fast Period"), QObject::tr("Parms"), fastPeriod, 1, 99999999);
-  dialog->addIntItem(QObject::tr("Slow Period"), QObject::tr("Parms"), slowPeriod, 1, 99999999);
-  dialog->addComboItem(QObject::tr("Fast MA Type"), QObject::tr("Parms"), getMATypes(), fastMaType);
-  dialog->addComboItem(QObject::tr("Slow MA Type"), QObject::tr("Parms"), getMATypes(), slowMaType);
+  dialog->addColorItem(cl, pl, color);
+  dialog->addComboItem(ltl, pl, lineTypes, lineType);
+  dialog->addTextItem(ll, pl, label);
+  dialog->addIntItem(fperl, pl, fastPeriod, 1, 99999999);
+  dialog->addIntItem(sperl, pl, slowPeriod, 1, 99999999);
+  QStringList l = getMATypes();
+  dialog->addComboItem(fml, pl, l, fastMaType);
+  dialog->addComboItem(sml, pl, l, slowMaType);
   if (customFlag)
-    dialog->addFormulaInputItem(QObject::tr("Input"), QObject::tr("Parms"), FALSE, customInput);
+    dialog->addFormulaInputItem(il, pl, FALSE, customInput);
   else
-    dialog->addComboItem(QObject::tr("Input"), QObject::tr("Parms"), inputTypeList, input);
+    dialog->addComboItem(il, pl, inputTypeList, input);
   
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
-    color = dialog->getColor(QObject::tr("Color"));
-    lineType = (PlotLine::LineType) dialog->getComboIndex(QObject::tr("Line Type"));
-    fastPeriod = dialog->getInt(QObject::tr("Fast Period"));
-    slowPeriod = dialog->getInt(QObject::tr("Slow Period"));
-    label = dialog->getText(QObject::tr("Label"));
-    fastMaType = dialog->getComboIndex(QObject::tr("Fast MA Type"));
-    slowMaType = dialog->getComboIndex(QObject::tr("Slow MA Type"));
+    color = dialog->getColor(cl);
+    lineType = (PlotLine::LineType) dialog->getComboIndex(ltl);
+    fastPeriod = dialog->getInt(fperl);
+    slowPeriod = dialog->getInt(sperl);
+    label = dialog->getText(ll);
+    fastMaType = dialog->getComboIndex(fml);
+    slowMaType = dialog->getComboIndex(sml);
     if (customFlag)
-      customInput = dialog->getFormulaInput(QObject::tr("Input"));
+      customInput = dialog->getFormulaInput(il);
     else
-      input = (BarData::InputType) dialog->getComboIndex(QObject::tr("Input"));
+      input = (BarData::InputType) dialog->getComboIndex(il);
     rc = TRUE;
   }
   else

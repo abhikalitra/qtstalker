@@ -153,18 +153,25 @@ void Swing::prefDialog (QWidget *w)
 {
   PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(tr("Swing Chart Prefs"));
-  dialog->createPage (tr("Details"));
+  QString s = tr("Details");
+  dialog->createPage (s);
   dialog->setHelpFile (helpFile);
-  dialog->addColorItem(tr("Up Color"), tr("Details"), upColor);
-  dialog->addColorItem(tr("Down Color"), tr("Details"), downColor);
-  dialog->addIntItem(tr("Min Bar Spacing"), tr("Details"), minPixelspace, 4, 99);
+  QString s2 = tr("Up Color");
+  dialog->addColorItem(s2, s, upColor);
+  s2 = tr("Down Color");
+  dialog->addColorItem(s2, s, downColor);
+  s2 = tr("Min Bar Spacing");
+  dialog->addIntItem(s2, s, minPixelspace, 4, 99);
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
-    upColor = dialog->getColor(tr("Up Color"));
-    downColor = dialog->getColor(tr("Down Color"));
-    minPixelspace = dialog->getInt(tr("Min Bar Spacing"));
+    s = tr("Up Color");
+    upColor = dialog->getColor(s);
+    s = tr("Down Color");
+    downColor = dialog->getColor(s);
+    s = tr("Min Bar Spacing");
+    minPixelspace = dialog->getInt(s);
     
     saveFlag = TRUE;
     saveSettings();

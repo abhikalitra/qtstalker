@@ -96,30 +96,30 @@ class Config
 
     Config ();
     ~Config ();
-    void setData(Parm, QString);
-    void setData(QString, QString);
+    void setData (Parm, QString &);
+    void setData (QString &, QString &);
     QString getData (Parm);
-    QString getData(QString);
-    QStringList getDirList (QString, bool);
+    QString getData (QString &);
+    void getDirList (QString &, bool, QStringList &);
     void setup ();
-    QString parseDbPlugin (QString);
+    QString parseDbPlugin (QString &);
 
-    QStringList getIndicators (QString);
-    void getIndicator (QString, Setting &);
-    void deleteIndicator (QString);
-    QStringList getIndicatorList ();
-    void setIndicator (QString, Setting &);
+    void getIndicators (QString &, QStringList &);
+    void getIndicator (QString &, Setting &);
+    void deleteIndicator (QString &);
+    void getIndicatorList (QStringList &);
+    void setIndicator (QString &, Setting &);
 
-    QStringList getPluginList (Config::Parm);
-    ChartPlugin * getChartPlugin (QString);
-    DbPlugin * getDbPlugin (QString);
-    IndicatorPlugin * getIndicatorPlugin (QString);
-    QuotePlugin * getQuotePlugin (QString);
-    COPlugin * getCOPlugin (QString);
+    void getPluginList (Config::Parm, QStringList &);
+    ChartPlugin * getChartPlugin (QString &);
+    DbPlugin * getDbPlugin (QString &);
+    IndicatorPlugin * getIndicatorPlugin (QString &);
+    QuotePlugin * getQuotePlugin (QString &);
+    COPlugin * getCOPlugin (QString &);
     void closePlugins ();
-    void closePlugin (QString);
+    void closePlugin (QString &);
     
-    void copyIndicatorFile (QString, QString);
+    void copyIndicatorFile (QString &, QString &);
 
   protected:
     QDict<QLibrary> libs;

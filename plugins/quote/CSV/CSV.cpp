@@ -206,7 +206,8 @@ void CSV::parse ()
           f.close();
           return;
         }
-	
+
+/*		
 	if (symbol.length() == 7)
 	  futuresSymbol = symbol.left(2);
 	else
@@ -220,6 +221,7 @@ void CSV::parse ()
           f.close();
           return;
 	}
+*/	
       }
     }
 
@@ -652,15 +654,15 @@ bool CSV::openDb (QString path, QString symbol, QString type, bool tickFlag)
     
     if (! type.compare("Futures"))
     {
-      s = fd.getName();
-      db->setHeaderField(DbPlugin::Title, s);
+//      s = fd.getName();
+//      db->setHeaderField(DbPlugin::Title, s);
       
-      QString s2 = fd.getSymbol();
-      s = "FuturesType";
-      db->setData(s, s2);
+//      QString s2 = fd.getSymbol();
+//      s = "FuturesType";
+//      db->setData(s, s2);
       
-      s = "FuturesMonth";
-      db->setData(s, futuresMonth);
+//      s = "FuturesMonth";
+//      db->setData(s, futuresMonth);
     }
   }
   

@@ -23,7 +23,7 @@
 #include <qfile.h>
 #include <qtextstream.h>
 
-Macro::Macro (QString d)
+Macro::Macro (QString &d)
 {
   path = d;
   flag = FALSE;
@@ -95,7 +95,7 @@ void Macro::stop ()
   save();
 }
 
-void Macro::recordKey (int z, int s, int k, int a, QString t)
+void Macro::recordKey (int z, int s, int k, int a, QString &t)
 {
   if (! flag)
     return;

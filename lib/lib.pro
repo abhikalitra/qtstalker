@@ -40,6 +40,7 @@ HEADERS += DatePlot.h
 HEADERS += ScalePlot.h
 HEADERS += IndicatorPlot.h
 HEADERS += Navigator.h
+HEADERS += BarEdit.h
 
    
 SOURCES += QuotePlugin.cpp
@@ -78,6 +79,7 @@ SOURCES += DatePlot.cpp
 SOURCES += ScalePlot.cpp
 SOURCES += IndicatorPlot.cpp
 SOURCES += Navigator.cpp
+SOURCES += BarEdit.cpp
 
     
 TARGET = qtstalker

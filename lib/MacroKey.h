@@ -28,7 +28,7 @@
 class MacroKey
 {
   public:
-    MacroKey(int, int, int, int, QString);
+    MacroKey(int, int, int, int, QString &);
     MacroKey();
     ~MacroKey();
     QKeyEvent * getKeyEvent ();
@@ -38,7 +38,7 @@ class MacroKey
     int getAscii ();
     QString getText ();
     QString getString ();
-    void setString (QString);
+    void setString (QString &);
     
   private:
     int zone;

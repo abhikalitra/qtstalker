@@ -61,7 +61,7 @@ void COPlugin::setPixmap (QPixmap *d)
   buffer = d;
 }
 
-void COPlugin::newObject (QString, QString)
+void COPlugin::newObject (QString &, QString &)
 {
 }
 
@@ -69,16 +69,16 @@ void COPlugin::addObject (Setting &)
 {
 }
 
-COPlugin::Status COPlugin::pointerClick (QPoint, BarDate, double)
+COPlugin::Status COPlugin::pointerClick (QPoint &, BarDate &, double)
 {
   return COPlugin::None;
 }
 
-void COPlugin::pointerMoving (QPoint, BarDate, double)
+void COPlugin::pointerMoving (QPoint &, BarDate &, double)
 {
 }
 
-void COPlugin::saveObjects (QString)
+void COPlugin::saveObjects (QString &)
 {
 }
 

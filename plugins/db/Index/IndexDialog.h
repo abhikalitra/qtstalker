@@ -28,17 +28,25 @@
 #include <qcheckbox.h>
 #include <qlistview.h>
 #include <qdict.h>
+#include <qlabel.h>
 
 class IndexDialog : public QTabDialog
 {
   Q_OBJECT
   
   public:
-    IndexDialog (QString);
+    IndexDialog (QString &);
     ~IndexDialog ();
     void setRebuild (bool);
     bool getRebuild ();
-    void setName (QString);
+    void setName (QString &);
+    void createDetailsPage ();
+    void createParmsPage ();
+    void setSymbol (QString &);
+    void setType (QString &);
+    void setFirstDate (QString &);
+    void setLastDate (QString &);
+    QString getName ();
     
   public slots:
     void buttonStatus ();
@@ -46,7 +54,7 @@ class IndexDialog : public QTabDialog
     void editItem ();
     void deleteItem ();
     QString getList ();
-    void setList (QString);
+    void setList (QString &);
     void help ();
           
   private:
@@ -57,5 +65,9 @@ class IndexDialog : public QTabDialog
     QListView *list;
     QDict<QString> symbolDict;
     QString helpFile;
+    QLabel *symbol;
+    QLabel *type;
+    QLabel *fdate;
+    QLabel *ldate;
 };
 

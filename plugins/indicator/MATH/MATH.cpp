@@ -412,47 +412,59 @@ int MATH::indicatorPrefDialog (QWidget *w)
       return FALSE;
   }
 
+  QString pl = QObject::tr("Parms");
+  QString cl = QObject::tr("Color");
+  QString ll = QObject::tr("Label");
+  QString ltl = QObject::tr("Line Type");
+  QString d1l = QObject::tr("Data1");
+  QString d2l = QObject::tr("Data2");
+  QString d3l = QObject::tr("Data3");
+  QString d4l = QObject::tr("Data4");
+  QString d5l = QObject::tr("Data5");
+  QString perl = QObject::tr("Period");
+  QString ml = QObject::tr("Method");
+  
   PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(QObject::tr("MATH Indicator"));
-  dialog->createPage (QObject::tr("Parms"));
+  dialog->createPage (pl);
   dialog->setHelpFile(helpFile);
-  dialog->addColorItem(QObject::tr("Color"), QObject::tr("Parms"), color);
-  dialog->addTextItem(QObject::tr("Label"), QObject::tr("Parms"), label);
-  dialog->addComboItem(QObject::tr("Line Type"), QObject::tr("Parms"), lineTypes, lineType);
+  dialog->addColorItem(cl, pl, color);
+  dialog->addTextItem(ll, pl, label);
+  dialog->addComboItem(ltl, pl, lineTypes, lineType);
   
   QStringList l;
   l.append(method);
-  dialog->addComboItem(QObject::tr("Method"), QObject::tr("Parms"), l, method);
+  dialog->addComboItem(ml, pl, l, method);
   
-  dialog->addFormulaInputItem(QObject::tr("Data1"), QObject::tr("Parms"), FALSE, data1);
+  dialog->addFormulaInputItem(d1l, pl, FALSE, data1);
   
   if (! method.compare("MIN") || ! method.compare("MAX"))
-    dialog->addIntItem(QObject::tr("Period"), QObject::tr("Parms"), period, 1, 99999999);
+    dialog->addIntItem(perl, pl, period, 1, 99999999);
   else
   {
-    dialog->addFormulaInputItem(QObject::tr("Data2"), QObject::tr("Parms"), TRUE, data2);
-    dialog->addFormulaInputItem(QObject::tr("Data3"), QObject::tr("Parms"), TRUE, data3);
-    dialog->addFormulaInputItem(QObject::tr("Data4"), QObject::tr("Parms"), TRUE, data4);
-    dialog->addFormulaInputItem(QObject::tr("Data5"), QObject::tr("Parms"), TRUE, data5);
+    dialog->addFormulaInputItem(d2l, pl, TRUE, data2);
+    dialog->addFormulaInputItem(d3l, pl, TRUE, data3);
+    dialog->addFormulaInputItem(d4l, pl, TRUE, data4);
+    dialog->addFormulaInputItem(d5l, pl, TRUE, data5);
   }
   
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
-    color = dialog->getColor(QObject::tr("Color"));
-    lineType = (PlotLine::LineType) dialog->getComboIndex(QObject::tr("Line Type"));
-    label = dialog->getText(QObject::tr("Label"));
-    data1 = dialog->getFormulaInput(QObject::tr("Data1"));
+    color = dialog->getColor(cl);
+    lineType = (PlotLine::LineType) dialog->getComboIndex(ltl);
+    label = dialog->getText(ll);
+    data1 = dialog->getFormulaInput(d1l);    
     
     if (! method.compare("MIN") || ! method.compare("MAX"))
-      period = dialog->getInt(QObject::tr("Period"));
+      period = dialog->getInt(perl);
     else
     {
-      data2 = dialog->getFormulaInput(QObject::tr("Data2"));
-      data3 = dialog->getFormulaInput(QObject::tr("Data3"));
-      data4 = dialog->getFormulaInput(QObject::tr("Data4"));
-      data5 = dialog->getFormulaInput(QObject::tr("Data5"));
+      data2 = dialog->getFormulaInput(d2l);
+      data3 = dialog->getFormulaInput(d3l);
+      data4 = dialog->getFormulaInput(d4l);
+      data5 = dialog->getFormulaInput(d5l);
     }
       
     rc = TRUE;

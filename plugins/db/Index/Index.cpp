@@ -59,9 +59,33 @@ void Index::dbPrefDialog ()
   getData(s, s2);
   dialog->setRebuild(s2.toInt());
   
-  s = "Symbol";
-  getData(s, s2);
-  dialog->setName(s2);
+  getHeaderField(DbPlugin::Symbol, s);
+  dialog->setSymbol(s);
+  
+  getHeaderField(DbPlugin::Title, s);
+  dialog->setName(s);
+  
+  getHeaderField(DbPlugin::Type, s);
+  dialog->setType(s);
+  
+  s.truncate(0);
+  Bar *bar = getFirstBar();
+  if (bar)
+  {
+    bar->getDate().getDateTimeString(TRUE, s);
+    delete bar;
+  }
+  dialog->setFirstDate(s);
+  
+  s.truncate(0);
+  bar = getLastBar();
+  if (bar)
+  {
+    bar->getDate().getDateTimeString(TRUE, s);
+    delete bar;
+  }
+  dialog->setLastDate(s);
+  
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
@@ -77,6 +101,9 @@ void Index::dbPrefDialog ()
     s = "Rebuild";
     s2 = QString::number(dialog->getRebuild());
     setData(s, s2);
+    
+    s = dialog->getName();
+    setHeaderField(DbPlugin::Title, s);
   }
   
   delete dialog;

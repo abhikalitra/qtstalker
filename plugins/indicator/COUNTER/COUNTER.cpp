@@ -106,25 +106,32 @@ void COUNTER::calculate ()
 
 int COUNTER::indicatorPrefDialog (QWidget *w)
 {
+  QString pl = QObject::tr("Parms");
+  QString cl = QObject::tr("Color");
+  QString ll = QObject::tr("Label");
+  QString ltl = QObject::tr("Line Type");
+  QString il = QObject::tr("Input");
+  QString rl = QObject::tr("Reset");
+
   PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(QObject::tr("COUNTER Indicator"));
-  dialog->createPage (QObject::tr("Parms"));
+  dialog->createPage (pl);
   dialog->setHelpFile(helpFile);
-  dialog->addColorItem(QObject::tr("Color"), QObject::tr("Parms"), color);
-  dialog->addComboItem(QObject::tr("Line Type"), QObject::tr("Parms"), lineTypes, lineType);
-  dialog->addTextItem(QObject::tr("Label"), QObject::tr("Parms"), label);
-  dialog->addFormulaInputItem(QObject::tr("Input"), QObject::tr("Parms"), FALSE, customInput);
-  dialog->addFormulaInputItem(QObject::tr("Reset"), QObject::tr("Parms"), FALSE, customInput2);
+  dialog->addColorItem(cl, pl, color);
+  dialog->addComboItem(ltl, pl, lineTypes, lineType);
+  dialog->addTextItem(ll, pl, label);
+  dialog->addFormulaInputItem(il, pl, FALSE, customInput);
+  dialog->addFormulaInputItem(rl, pl, FALSE, customInput2);
   
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
-    color = dialog->getColor(QObject::tr("Color"));
-    lineType = (PlotLine::LineType) dialog->getComboIndex(QObject::tr("Line Type"));
-    label = dialog->getText(QObject::tr("Label"));
-    customInput = dialog->getFormulaInput(QObject::tr("Input"));
-    customInput2 = dialog->getFormulaInput(QObject::tr("Reset"));
+    color = dialog->getColor(cl);
+    lineType = (PlotLine::LineType) dialog->getComboIndex(ltl);
+    label = dialog->getText(ll);
+    customInput = dialog->getFormulaInput(il);
+    customInput2 = dialog->getFormulaInput(rl);
     rc = TRUE;
   }
   else

@@ -108,21 +108,26 @@ void SellArrow::draw (int startIndex, int pixelspace, int startX)
 
 void SellArrow::prefDialog ()
 {
+  QString pl = tr("Details");
+  QString cl = tr("Color");
+  QString sd = tr("Set Default");
+
   PrefDialog *dialog = new PrefDialog();
   dialog->setCaption(tr("Edit SellArrow"));
-  dialog->createPage (tr("Details"));
+  dialog->createPage (pl);
   dialog->setHelpFile (helpFile);
-  dialog->addColorItem(tr("Color"), tr("Details"), selected->getColor());
-  dialog->addCheckItem(tr("Set Default"), tr("Details"), FALSE);
+  QColor color = selected->getColor();
+  dialog->addColorItem(cl, pl, color);
+  dialog->addCheckItem(sd, pl, FALSE);
   
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
-    QColor color = dialog->getColor(tr("Color"));
+    color = dialog->getColor(cl);
     selected->setColor(color);
     
-    bool f = dialog->getCheck(tr("Set Default"));
+    bool f = dialog->getCheck(sd);
     if (f)
     {
       defaultColor = color;
@@ -142,7 +147,7 @@ void SellArrow::addObject (Setting &set)
   objects.replace(co->getName(), co);
 }
 
-void SellArrow::newObject (QString ind, QString n)
+void SellArrow::newObject (QString &ind, QString &n)
 {
   loadDefaults();
   indicator = ind;
@@ -151,7 +156,7 @@ void SellArrow::newObject (QString ind, QString n)
   emit message(tr("Select point to place SellArrow..."));
 }
 
-COPlugin::Status SellArrow::pointerClick (QPoint point, BarDate x, double y)
+COPlugin::Status SellArrow::pointerClick (QPoint &point, BarDate &x, double y)
 {
   if (status == None)
   {
@@ -220,7 +225,7 @@ COPlugin::Status SellArrow::pointerClick (QPoint point, BarDate x, double y)
   return status;    
 }
 
-void SellArrow::pointerMoving (QPoint, BarDate x, double y)
+void SellArrow::pointerMoving (QPoint &, BarDate &x, double y)
 {
   if (status != Moving)
     return;
@@ -237,7 +242,7 @@ void SellArrow::pointerMoving (QPoint, BarDate x, double y)
   emit message(s);
 }
 
-void SellArrow::saveObjects (QString chartPath)
+void SellArrow::saveObjects (QString &chartPath)
 {
   if (! chartPath.length())
     return;

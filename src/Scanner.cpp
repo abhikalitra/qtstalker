@@ -146,16 +146,20 @@ void Scanner::scan ()
 		       TRUE);
   prog.show();
   
-  // open the CUS plugin   
-  IndicatorPlugin *plug = config.getIndicatorPlugin("CUS");
+  // open the CUS plugin
+  QString plugin("CUS");
+  IndicatorPlugin *plug = config.getIndicatorPlugin(plugin);
   if (! plug)
   {
-    config.closePlugin("CUS");
+    config.closePlugin(plugin);
     return;
   }
   int loop;
   for (loop = 0; loop < list->getLines(); loop++)
-    plug->setCustomFunction(list->getLine(loop));
+  {
+    QString s(list->getLine(loop));
+    plug->setCustomFunction(s);
+  }
   
   int minBars = plug->getMinBars();
   
@@ -224,7 +228,7 @@ void Scanner::scan ()
     emit message(QString());
   }
   
-  config.closePlugin("CUS");
+  config.closePlugin(plugin);
 }
 
 void Scanner::saveRule ()
@@ -311,9 +315,11 @@ void Scanner::exitDialog ()
 
 void Scanner::getSymbols ()
 {
+  QString s(config.getData(Config::DataPath));
+  QString s2("*");
   SymbolDialog *dialog = new SymbolDialog(this,
-  					  config.getData(Config::DataPath),
-					  "*",
+  					  s,
+					  s2,
 					  QFileDialog::ExistingFiles);
   dialog->setCaption(tr("Select symbols to scan"));
   
@@ -337,7 +343,8 @@ void Scanner::allSymbolsToggled (bool d)
 
 void Scanner::slotHelp ()
 {
-  HelpWindow *hw = new HelpWindow(this, "workwithscanner.html");
+  QString s = "workwithscanner.html";
+  HelpWindow *hw = new HelpWindow(this, s);
   hw->show();
 }
 

@@ -54,13 +54,13 @@ class PlotLine : public QObject
     PlotLine ();
     ~PlotLine ();
     void copy (PlotLine *);
-    void setColor (QString);
-    void setColor (QColor);
+    void setColor (QString &);
+    void setColor (QColor &);
     QColor getColor ();
     void setType (PlotLine::LineType);
-    void setType (QString);
+    void setType (QString &);
     PlotLine::LineType getType ();
-    void setLabel (QString);
+    void setLabel (QString &);
     QString getLabel ();
     void append (double);
     void prepend (double);
@@ -74,12 +74,12 @@ class PlotLine : public QObject
     void checkHighLow (double);
     void setScaleFlag (bool);
     bool getScaleFlag ();
-    QStringList getLineTypes ();
+    void getLineTypes (QStringList &);
 
     void setColorFlag (bool);
     bool getColorFlag ();
-    void appendColorBar (QColor);
-    void prependColorBar (QColor);
+    void appendColorBar (QColor &);
+    void prependColorBar (QColor &);
     QColor getColorBar (int);
 
     void draw (int, int, int, int);

@@ -333,27 +333,42 @@ void MySQLPlugin::prefDialog (QWidget *w)
 {
   PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(tr("MySQL Prefs"));
-  dialog->createPage (tr("Details"));
+  QString s = tr("Details");
+  dialog->createPage (s);
   dialog->setHelpFile(helpFile);
-  dialog->addTextItem(tr("Database"), tr("Details"), database);
-  dialog->addTextItem(tr("Host"), tr("Details"), host);
-  dialog->addTextItem(tr("Username"), tr("Details"), username);
-  dialog->addTextItem(tr("Password"), tr("Details"), password);
-  dialog->addTextItem(tr("SQL Query"), tr("Details"), sqlquery);
-  dialog->addTextItem(tr("Symbols"), tr("Details"), symbols);
-  dialog->addCheckItem(tr("Incremental"), tr("Details"), incremental);
+  QString s2 = tr("Database");
+  dialog->addTextItem(s2, s, database);
+  s2 = tr("Host");
+  dialog->addTextItem(s2, s, host);
+  s2 = tr("Username");
+  dialog->addTextItem(s2, s, username);
+  s2 = tr("Password");
+  dialog->addTextItem(s2, s, password);
+  s2 = tr("SQL Query");
+  dialog->addTextItem(s2, s, sqlquery);
+  s2 = tr("Symbols");
+  dialog->addTextItem(s2, s, symbols);
+  s2 = tr("Incremental");
+  dialog->addCheckItem(s2, s, incremental);
   
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
-    database = dialog->getText(tr("Database"));
-    host = dialog->getText(tr("Host"));
-    username = dialog->getText(tr("Username"));
-    password = dialog->getText(tr("Password"));
-    sqlquery = dialog->getText(tr("SQL Query"));
-    symbols = dialog->getText(tr("Symbols"));
-    incremental = dialog->getCheck(tr("Incremental"));
+    s = tr("Database");
+    database = dialog->getText(s);
+    s = tr("Host");
+    host = dialog->getText(s);
+    s = tr("Username");
+    username = dialog->getText(s);
+    s = tr("Password");
+    password = dialog->getText(s);
+    s = tr("SQL Query");
+    sqlquery = dialog->getText(s);
+    s = tr("Symbols");
+    symbols = dialog->getText(s);
+    s = tr("Incremental");
+    incremental = dialog->getCheck(s);
   }
   
   delete dialog;

@@ -46,7 +46,7 @@ QuotePlugin::~QuotePlugin ()
   delete timer;
 }
 
-QString QuotePlugin::stripJunk (QString d)
+QString QuotePlugin::stripJunk (QString &d)
 {
   QString s = d.stripWhiteSpace();
 
@@ -62,7 +62,7 @@ QString QuotePlugin::stripJunk (QString d)
   return s;
 }
 
-bool QuotePlugin::setTFloat (QString d, bool flag)
+bool QuotePlugin::setTFloat (QString &d, bool flag)
 {
   QString s = d;
   
@@ -97,7 +97,7 @@ bool QuotePlugin::setTFloat (QString d, bool flag)
     return FALSE;
 }
 
-QString QuotePlugin::createDirectory (QString d)
+QString QuotePlugin::createDirectory (QString &d)
 {
   Config config;
   QString path = config.getData(Config::DataPath);
@@ -129,7 +129,7 @@ QString QuotePlugin::getHelpFile ()
   return helpFile;
 }
 
-void QuotePlugin::getFile (QString url)
+void QuotePlugin::getFile (QString &url)
 {
   if (op)
   {
@@ -147,7 +147,7 @@ void QuotePlugin::getFile (QString url)
   op->get();
 }
 
-void QuotePlugin::copyFile (QString url, QString file)
+void QuotePlugin::copyFile (QString &url, QString &file)
 {
   if (op)
   {

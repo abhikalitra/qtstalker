@@ -35,7 +35,7 @@ IndicatorPlugin::IndicatorPlugin()
   plotType = 1;
   
   PlotLine *pl = new PlotLine;
-  lineTypes = pl->getLineTypes();
+  pl->getLineTypes(lineTypes);
   delete pl;
 
   BarData *it = new BarData;
@@ -64,7 +64,7 @@ void IndicatorPlugin::clearOutput ()
   output->clearLines();
 }
 
-void IndicatorPlugin::loadFile (QString file, Setting &dict)
+void IndicatorPlugin::loadFile (QString &file, Setting &dict)
 {
   output->clearLines();
 
@@ -109,7 +109,7 @@ void IndicatorPlugin::loadFile (QString file, Setting &dict)
     enabled = s.toInt();
 }
 
-void IndicatorPlugin::saveFile (QString file, Setting &dict)
+void IndicatorPlugin::saveFile (QString &file, Setting &dict)
 {
   QFile f(file);
   if (! f.open(IO_WriteOnly))
@@ -137,7 +137,7 @@ Indicator * IndicatorPlugin::getIndicator ()
   return output;
 }
 
-PlotLine * IndicatorPlugin::getInputLine (QString d)
+PlotLine * IndicatorPlugin::getInputLine (QString &d)
 {
   PlotLine *in = 0;
   
@@ -156,16 +156,17 @@ QStringList IndicatorPlugin::getMATypes ()
 {
   QStringList l;
   Config config;
-  IndicatorPlugin *plug = config.getIndicatorPlugin("MA");
+  QString s("MA");
+  IndicatorPlugin *plug = config.getIndicatorPlugin(s);
   if (! plug)
   {
     qDebug("IndicatorPlugin::getMATypes: cannot open MA plugin");
-    config.closePlugin("MA");
+    config.closePlugin(s);
     return l;
   }
   
   l = plug->getMATypes();
-  config.closePlugin("MA");
+  config.closePlugin(s);
   
   return l;
 }
@@ -174,16 +175,17 @@ PlotLine * IndicatorPlugin::getMA (PlotLine *in, int type, int period)
 {
   PlotLine *ma = 0;
   Config config;
-  IndicatorPlugin *plug = config.getIndicatorPlugin("MA");
+  QString s("MA");
+  IndicatorPlugin *plug = config.getIndicatorPlugin(s);
   if (! plug)
   {
     qDebug("IndicatorPlugin::getMA: cannot open MA plugin");
-    config.closePlugin("MA");
+    config.closePlugin(s);
     return ma;
   }
 
   ma = plug->getMA(in, type, period);
-  config.closePlugin("MA");
+  config.closePlugin(s);
   return ma;  
 }
 
@@ -228,7 +230,7 @@ void IndicatorPlugin::setIndicatorSettings (Setting &)
 {
 }
 
-void IndicatorPlugin::setCustomFunction (QString)
+void IndicatorPlugin::setCustomFunction (QString &)
 {
 }
 
@@ -237,14 +239,14 @@ int IndicatorPlugin::getMinBars ()
   return minBars;
 }
 
-void IndicatorPlugin::saveIndicatorSettings (QString d)
+void IndicatorPlugin::saveIndicatorSettings (QString &d)
 {
   Setting set;
   getIndicatorSettings(set);
   saveFile(d, set);
 }
 
-void IndicatorPlugin::loadIndicatorSettings (QString d)
+void IndicatorPlugin::loadIndicatorSettings (QString &d)
 {
   Setting set;
   loadFile(d, set);

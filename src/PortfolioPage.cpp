@@ -124,9 +124,11 @@ void PortfolioPage::newPortfolio()
 
 void PortfolioPage::deletePortfolio()
 {
+  QString s("*");
+  QString s2(config.getData(Config::PortfolioPath));
   SymbolDialog *dialog = new SymbolDialog(this,
-  				          config.getData(Config::PortfolioPath),
-					  "*",
+  				          s2,
+					  s,
 					  QFileDialog::ExistingFiles);
   dialog->setCaption(tr("Select Portfolios To Delete"));
 
@@ -242,7 +244,8 @@ void PortfolioPage::doubleClick (QListBoxItem *item)
 
 void PortfolioPage::slotHelp ()
 {
-  HelpWindow *hw = new HelpWindow(this, "workwithportfolios.html");
+  QString s = "workwithportfolios.html";
+  HelpWindow *hw = new HelpWindow(this, s);
   hw->show();
 }
 

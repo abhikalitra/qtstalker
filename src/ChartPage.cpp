@@ -54,7 +54,8 @@ ChartPage::ChartPage (QWidget *w) : QWidget (w)
   QToolTip::add(search, tr("List Filter, e.g. s* or sb*"));
   vbox->addWidget(search);
 
-  nav = new Navigator(this, config.getData(Config::DataPath));
+  QString s(config.getData(Config::DataPath));
+  nav = new Navigator(this, s);
   connect(nav, SIGNAL(fileSelected(QString)), this, SLOT(chartSelected(QString)));
   connect(nav, SIGNAL(fileOpened(QString)), this, SLOT(chartOpened(QString)));
   connect(nav, SIGNAL(noSelection()), this, SLOT(chartNoSelection()));
@@ -101,9 +102,11 @@ ChartPage::~ChartPage ()
 
 void ChartPage::deleteChart ()
 {
+  QString s("*");
+  QString s2(nav->getCurrentPath());
   SymbolDialog *dialog = new SymbolDialog(this, 
-  					  nav->getCurrentPath(),
-					  "*",
+  					  s2,
+					  s,
 					  QFileDialog::ExistingFiles);
   dialog->setCaption(tr("Select Charts To Delete"));
 
@@ -158,9 +161,11 @@ void ChartPage::editChart ()
 
 void ChartPage::exportSymbol ()
 {
+  QString s("*");
+  QString s2(nav->getCurrentPath());
   SymbolDialog *dialog = new SymbolDialog(this,
-  					  nav->getCurrentPath(),
-					  "*",
+  					  s2,
+					  s,
 					  QFileDialog::ExistingFiles);
   dialog->setCaption(tr("Select Charts"));
 
@@ -192,9 +197,11 @@ void ChartPage::exportSymbol ()
 
 void ChartPage::dumpSymbol ()
 {
+  QString s("*");
+  QString s2(nav->getCurrentPath());
   SymbolDialog *dialog = new SymbolDialog(this,
-  					  nav->getCurrentPath(),
-					  "*",
+  					  s2,
+					  s,
 					  QFileDialog::ExistingFiles);
   dialog->setCaption(tr("Select Charts"));
 
@@ -202,7 +209,7 @@ void ChartPage::dumpSymbol ()
 
   if (rc == QDialog::Accepted)
   {
-    QString s = config.getData(Config::Home);
+    s = config.getData(Config::Home);
     s.append("/export");
     QDir dir(s);
     if (! dir.exists(s, TRUE))
@@ -281,7 +288,8 @@ void ChartPage::refreshList ()
 
 void ChartPage::searchChanged (const QString &d)
 {
-  nav->setFilter(d);
+  QString s(d);
+  nav->setFilter(s);
 }
 
 void ChartPage::newChart (int id)
@@ -305,7 +313,8 @@ void ChartPage::newChart (int id)
 
 void ChartPage::slotHelp ()
 {
-  HelpWindow *hw = new HelpWindow(this, "workwithcharts.html");
+  QString s = "workwithcharts.html";
+  HelpWindow *hw = new HelpWindow(this, s);
   hw->show();
 }
 

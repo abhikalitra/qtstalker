@@ -22,14 +22,12 @@
 #ifndef STOCKSDIALOG_HPP
 #define STOCKSDIALOG_HPP
 
-#include <qstringlist.h>
-#include <qdatetimeedit.h>
 #include <qtabdialog.h>
 #include <qlineedit.h>
 #include <qlistview.h>
-#include "Toolbar.h"
 #include "DbPlugin.h"
 #include "Config.h"
+#include "BarEdit.h"
 
 class StocksDialog : public QTabDialog
 {
@@ -40,32 +38,21 @@ class StocksDialog : public QTabDialog
     ~StocksDialog ();
     void createDetailsPage ();
     void createDataPage ();
-    void clearRecordFields ();
 
   public slots:
-    void deleteRecord ();
+    void deleteRecord (QString);
     void saveRecord ();
-    void slotDateSearch ();
+    void slotDateSearch (QString);
     void saveChart ();
-    void textChanged (const QString &);
     void help ();
 
   private:
-    QDateTimeEdit *dateSearch;
     DbPlugin *db;
     Config config;
-    QLineEdit *date;
     QLineEdit *title;
-    QLineEdit *open;
-    QLineEdit *high;
-    QLineEdit *low;
-    QLineEdit *close;
-    QLineEdit *volume;
-    Toolbar *toolbar;
-    bool saveRecordFlag;
-    bool ignoreSaveRecordFlag;
     QString helpFile;
     QListView *fundView;
+    BarEdit *barEdit;
 };
 
 #endif

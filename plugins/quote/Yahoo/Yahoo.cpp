@@ -132,7 +132,8 @@ void Yahoo::startDownload ()
   QString s = tr("Downloading ") + currentUrl->getData("symbol");
   emit statusLogMessage(s);
 
-  getFile(currentUrl->getData("url"));
+  s = currentUrl->getData("url");
+  getFile(s);
 }
 
 void Yahoo::fileDone (bool d)
@@ -236,11 +237,12 @@ void Yahoo::parseHistory ()
     s.append("US");
   s.append("/");
   s.append(currentUrl->getData("symbol"));
-  
-  DbPlugin *plug = config.getDbPlugin("Stocks");
+
+  QString plugin("Stocks");  
+  DbPlugin *plug = config.getDbPlugin(plugin);
   if (! plug)
   {
-    config.closePlugin("Stocks");
+    config.closePlugin(plugin);
     f.close();
     return;
   }
@@ -249,7 +251,7 @@ void Yahoo::parseHistory ()
   {
     emit statusLogMessage("Could not open db.");
     f.close();
-    config.closePlugin("Stocks");
+    config.closePlugin(plugin);
     return;
   }
 
@@ -264,7 +266,7 @@ void Yahoo::parseHistory ()
       s = currentUrl->getData("symbol") + " - skipping update. Source does not match destination.";
       emit statusLogMessage(s);
       f.close();
-      config.closePlugin("Stocks");
+      config.closePlugin(plugin);
       return;
     }
   }
@@ -291,58 +293,63 @@ void Yahoo::parseHistory ()
     QString date = parseDate(l[0]);
 
     // open
-    QString open;
+    double open = 0;
     if (setTFloat(l[1], FALSE))
       continue;
     else
-      open = QString::number(tfloat);
+      open = tfloat;
 
     // high
-    QString high;
+    double high = 0;
     if (setTFloat(l[2], FALSE))
       continue;
     else
-      high = QString::number(tfloat);
+      high = tfloat;
 
     // low
-    QString low;
+    double low = 0;
     if (setTFloat(l[3], FALSE))
       continue;
     else
-      low = QString::number(tfloat);
+      low = tfloat;
 
     // close
-    QString close;
+    double close = 0;
     if (setTFloat(l[4], FALSE))
       continue;
     else
-      close = QString::number(tfloat);
+      close = tfloat;
 
     // volume
-    QString volume = "0";
+    double volume = 0;
     if (l.count() >= 6)
-      volume = l[5];
+    {
+      if (setTFloat(l[5], FALSE))
+        continue;
+      else
+        volume = tfloat;
+    }
 
     // adjusted close
     if (adjustment)
     {
-      QString adjclose = "0";
+      double adjclose = 0;
       if (l.count() >= 7)
       {
 	if (setTFloat(l[6], FALSE))
 	  continue;
 	else
-	  adjclose = QString::number(tfloat);
+	  adjclose = tfloat;
 	// apply yahoo's adjustments through all the data, not just closing price
 	// i.e. adjust for stock splits and dividends
-	float factor = close.toFloat() / adjclose.toFloat();
+	float factor = close / adjclose;
 	if (factor != 1)
 	{
-	  high   = QString::number(high.toFloat()   / factor);
-	  low    = QString::number(low.toFloat()    / factor);
-	  open   = QString::number(open.toFloat()   / factor);
-	  close  = QString::number(close.toFloat()  / factor);
-	  volume = QString::number(volume.toFloat() * factor);
+	  high = high / factor;
+	  low = low / factor;
+	  open = open / factor;
+	  close = close / factor;
+	  volume = volume * factor;
 	}
       }
     }
@@ -353,21 +360,21 @@ void Yahoo::parseHistory ()
       emit statusLogMessage("Bad date " + date);
       continue;
     }
-    bar.setOpen(open.toDouble());
-    bar.setHigh(high.toDouble());
-    bar.setLow(low.toDouble());
-    bar.setClose(close.toDouble());
-    bar.setVolume(volume.toDouble());
+    bar.setOpen(open);
+    bar.setHigh(high);
+    bar.setLow(low);
+    bar.setClose(close);
+    bar.setVolume(volume);
     plug->setBar(bar);
     
-    s = currentUrl->getData("symbol") + " " + date + " " + open + " " + high + " " + low
-        + " " + close + " " + volume;
+//    s = currentUrl->getData("symbol") + " " + date + " " + open + " " + high + " " + low
+//        + " " + close + " " + volume;
 	
-    emit dataLogMessage(s);
+//    emit dataLogMessage(s);
   }
 
   f.close();
-  config.closePlugin("Stocks");
+  config.closePlugin(plugin);
 }
 
 void Yahoo::parseQuote ()
@@ -397,10 +404,11 @@ void Yahoo::parseQuote ()
   s.append("/");
   s.append(currentUrl->getData("symbol"));
   
-  DbPlugin *plug = config.getDbPlugin("Stocks");
+  QString plugin("Stocks");
+  DbPlugin *plug = config.getDbPlugin(plugin);
   if (! plug)
   {
-    config.closePlugin("Stocks");
+    config.closePlugin(plugin);
     f.close();
     return;
   }
@@ -409,7 +417,7 @@ void Yahoo::parseQuote ()
   {
     emit statusLogMessage("Could not open db.");
     f.close();
-    config.closePlugin("Stocks");
+    config.closePlugin(plugin);
     return;
   }
 
@@ -424,7 +432,7 @@ void Yahoo::parseQuote ()
       s = currentUrl->getData("symbol") + " - skipping update. Source does not match destination.";
       emit statusLogMessage(s);
       f.close();
-      config.closePlugin("Stocks");
+      config.closePlugin(plugin);
       return;
     }
   }
@@ -461,37 +469,42 @@ void Yahoo::parseQuote ()
     date.append("000000");
 
     // open
-    QString open;
+    double open = 0;
     if (setTFloat(l[6], FALSE))
       continue;
     else
-      open = QString::number(tfloat);
+      open = tfloat;
 
     // high
-    QString high;
+    double high = 0;
     if (setTFloat(l[7], FALSE))
       continue;
     else
-      high = QString::number(tfloat);
+      high = tfloat;
 
     // low
-    QString low;
+    double low = 0;
     if (setTFloat(l[8], FALSE))
       continue;
     else
-      low = QString::number(tfloat);
+      low = tfloat;
 
     // close
-    QString close;
+    double close = 0;
     if (setTFloat(l[2], FALSE))
       continue;
     else
-      close = QString::number(tfloat);
+      close = tfloat;
 
     // volume
-    QString volume = "0";
+    double volume = 0;
     if (l.count() == 10)
-      volume = l[9];
+    {
+      if (setTFloat(l[9], FALSE))
+        continue;
+      else
+        volume = tfloat;
+    }
       
     Bar bar;
     if (bar.setDate(date))
@@ -499,21 +512,21 @@ void Yahoo::parseQuote ()
       emit statusLogMessage("Bad date " + date);
       continue;
     }
-    bar.setOpen(open.toDouble());
-    bar.setHigh(high.toDouble());
-    bar.setLow(low.toDouble());
-    bar.setClose(close.toDouble());
-    bar.setVolume(volume.toDouble());
+    bar.setOpen(open);
+    bar.setHigh(high);
+    bar.setLow(low);
+    bar.setClose(close);
+    bar.setVolume(volume);
     plug->setBar(bar);
     
-    s = currentUrl->getData("symbol") + " " + date + " " + open + " " + high + " " + low
-        + " " + close + " " + volume;
+//    s = currentUrl->getData("symbol") + " " + date + " " + open + " " + high + " " + low
+//        + " " + close + " " + volume;
 	
-    emit dataLogMessage(s);
+//    emit dataLogMessage(s);
   }
 
   f.close();
-  config.closePlugin("Stocks");
+  config.closePlugin(plugin);
 }
 
 QString Yahoo::parseDate (QString d)
@@ -783,17 +796,18 @@ void Yahoo::parseFundamental ()
   s.append("/");
   s.append(currentUrl->getData("symbol"));
   
-  DbPlugin *plug = config.getDbPlugin("Stocks");
+  QString plugin("Stocks");
+  DbPlugin *plug = config.getDbPlugin(plugin);
   if (! plug)
   {
-    config.closePlugin("Stocks");
+    config.closePlugin(plugin);
     return;
   }
   
   if (plug->openChart(s))
   {
     emit statusLogMessage("Could not open db.");
-    config.closePlugin("Stocks");
+    config.closePlugin(plugin);
     return;
   }
   
@@ -807,7 +821,7 @@ void Yahoo::parseFundamental ()
     {
       s = currentUrl->getData("symbol") + " - skipping update. Source does not match destination.";
       emit statusLogMessage(s);
-      config.closePlugin("Stocks");
+      config.closePlugin(plugin);
       return;
     }
   }
@@ -875,7 +889,7 @@ void Yahoo::parseFundamental ()
   s = "Updating " + currentUrl->getData("symbol");
   emit dataLogMessage(s);
   
-  config.closePlugin("Stocks");
+  config.closePlugin(plugin);
 }
 
 void Yahoo::loadAllSymbols ()
@@ -975,17 +989,18 @@ void Yahoo::createHistoryUrls (QString d)
 void Yahoo::createAutoHistoryUrls (QString path, QString d)
 {
   Config config;
-  DbPlugin *plug = config.getDbPlugin("Stocks");
+  QString plugin("Stocks");
+  DbPlugin *plug = config.getDbPlugin(plugin);
   if (! plug)
   {
-    config.closePlugin("Stocks");
+    config.closePlugin(plugin);
     qDebug("Yahoo::createAutoHistoryUrls:could not open plugin");
     return;
   }
 	
   if (plug->openChart(path))
   {
-    config.closePlugin("Stocks");
+    config.closePlugin(plugin);
     qDebug("Yahoo::createAutoHistoryUrls:could not open db");
     return;
   }
@@ -999,7 +1014,7 @@ void Yahoo::createAutoHistoryUrls (QString path, QString d)
   {
     if (s.compare(pluginName))
     {
-      config.closePlugin("Stocks");
+      config.closePlugin(plugin);
       qDebug("Yahoo::createAutoHistoryUrls:source not same as destination");
       return;
     }
@@ -1027,7 +1042,7 @@ void Yahoo::createAutoHistoryUrls (QString path, QString d)
   if (bar->getDate().getDate() == edate.date())
   {
     delete bar;
-    config.closePlugin("Stocks");
+    config.closePlugin(plugin);
     qDebug("Yahoo::createAutoHistoryUrls:barDate == endDate");
     return;
   }
@@ -1049,7 +1064,7 @@ void Yahoo::createAutoHistoryUrls (QString path, QString d)
   s.append("&g=d&q=q&y=0&x=.csv");
 	
   delete bar;
-  config.closePlugin("Stocks");
+  config.closePlugin(plugin);
   
   Setting *set = new Setting;
   set->setData("url", s);

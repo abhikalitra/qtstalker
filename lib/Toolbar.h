@@ -35,9 +35,9 @@ class Toolbar : public QFrame
   public:
     Toolbar (QWidget *w, int h, int w, bool);
     ~Toolbar ();
-    void addButton (QString name, QPixmap pix, QString tt);
-    QPushButton * getButton (QString name);
-    void setButtonStatus (QString name, bool d);
+    void addButton (QString &name, QPixmap pix, QString &tt);
+    QPushButton * getButton (QString &name);
+    void setButtonStatus (QString &name, bool d);
 
   private:
     QPushButton *cancelButton;

@@ -192,43 +192,55 @@ double FiboLine::getY (double v, double high, double low)
 
 void FiboLine::prefDialog ()
 {
+  QString pl = tr("Details");
+  QString cl = tr("Color");
+  QString sd = tr("Set Default");
+  QString l1 = tr("Line 1");
+  QString l2 = tr("Line 2");
+  QString l3 = tr("Line 3");
+  QString l4 = tr("Line 4");
+  QString l5 = tr("Line 5");
+  QString l6 = tr("Line 6");
+
   PrefDialog *dialog = new PrefDialog();
   dialog->setCaption(tr("Edit FiboLine"));
-  dialog->createPage (tr("Details"));
+  dialog->createPage (pl);
   dialog->setHelpFile (helpFile);
-  dialog->addColorItem(tr("Color"), tr("Details"), selected->getColor());
-  dialog->addCheckItem(tr("Set Default"), tr("Details"), FALSE);
+  QColor color = selected->getColor();
+  dialog->addColorItem(cl, pl, color);
+  dialog->addCheckItem(sd, pl, FALSE);
 
-  dialog->createPage (tr("Levels"));
-  dialog->addFloatItem(tr("Line 1"), tr("Levels"), selected->getLine(1));
-  dialog->addFloatItem(tr("Line 2"), tr("Levels"), selected->getLine(2));
-  dialog->addFloatItem(tr("Line 3"), tr("Levels"), selected->getLine(3));
-  dialog->addFloatItem(tr("Line 4"), tr("Levels"), selected->getLine(4));
-  dialog->addFloatItem(tr("Line 5"), tr("Levels"), selected->getLine(5));
-  dialog->addFloatItem(tr("Line 6"), tr("Levels"), selected->getLine(6));
+  pl = tr("Levels");
+  dialog->createPage (pl);
+  dialog->addFloatItem(l1, pl, selected->getLine(1));
+  dialog->addFloatItem(l2, pl, selected->getLine(2));
+  dialog->addFloatItem(l3, pl, selected->getLine(3));
+  dialog->addFloatItem(l4, pl, selected->getLine(4));
+  dialog->addFloatItem(l5, pl, selected->getLine(5));
+  dialog->addFloatItem(l6, pl, selected->getLine(6));
     
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
-    selected->setColor(dialog->getColor(tr("Color")));
-    selected->setLine(1, dialog->getFloat(tr("Line 1")));
-    selected->setLine(2, dialog->getFloat(tr("Line 2")));
-    selected->setLine(3, dialog->getFloat(tr("Line 3")));
-    selected->setLine(4, dialog->getFloat(tr("Line 4")));
-    selected->setLine(5, dialog->getFloat(tr("Line 5")));
-    selected->setLine(6, dialog->getFloat(tr("Line 6")));
+    selected->setColor(dialog->getColor(cl));
+    selected->setLine(1, dialog->getFloat(l1));
+    selected->setLine(2, dialog->getFloat(l2));
+    selected->setLine(3, dialog->getFloat(l3));
+    selected->setLine(4, dialog->getFloat(l4));
+    selected->setLine(5, dialog->getFloat(l5));
+    selected->setLine(6, dialog->getFloat(l6));
     
-    bool f = dialog->getCheck(tr("Set Default"));
+    bool f = dialog->getCheck(sd);
     if (f)
     {
-      defaultColor = dialog->getColor(tr("Color"));
-      line1 = dialog->getFloat(tr("Line 1"));
-      line2 = dialog->getFloat(tr("Line 2"));
-      line3 = dialog->getFloat(tr("Line 3"));
-      line4 = dialog->getFloat(tr("Line 4"));
-      line5 = dialog->getFloat(tr("Line 5"));
-      line6 = dialog->getFloat(tr("Line 6"));
+      defaultColor = dialog->getColor(cl);
+      line1 = dialog->getFloat(l1);
+      line2 = dialog->getFloat(l2);
+      line3 = dialog->getFloat(l3);
+      line4 = dialog->getFloat(l4);
+      line5 = dialog->getFloat(l5);
+      line6 = dialog->getFloat(l6);
       
       saveDefaults();
     }
@@ -246,7 +258,7 @@ void FiboLine::addObject (Setting &set)
   objects.replace(co->getName(), co);
 }
 
-void FiboLine::newObject (QString ind, QString n)
+void FiboLine::newObject (QString &ind, QString &n)
 {
   loadDefaults();
   indicator = ind;
@@ -257,7 +269,7 @@ void FiboLine::newObject (QString ind, QString n)
   emit message(tr("Select FiboLine high point..."));
 }
 
-COPlugin::Status FiboLine::pointerClick (QPoint point, BarDate x, double y)
+COPlugin::Status FiboLine::pointerClick (QPoint &point, BarDate &x, double y)
 {
   if (status == None)
   {
@@ -350,7 +362,7 @@ COPlugin::Status FiboLine::pointerClick (QPoint point, BarDate x, double y)
   return status;    
 }
 
-void FiboLine::pointerMoving (QPoint point, BarDate x, double y)
+void FiboLine::pointerMoving (QPoint &point, BarDate &x, double y)
 {
   if (status == ClickWait2)
   {
@@ -403,7 +415,7 @@ void FiboLine::pointerMoving (QPoint point, BarDate x, double y)
   }
 }
 
-void FiboLine::drawMovingPointer (QPoint point)
+void FiboLine::drawMovingPointer (QPoint &point)
 {
   if (point.x() < mpx)
     return;
@@ -435,7 +447,7 @@ void FiboLine::drawMovingPointer (QPoint point)
   emit signalRefresh();
 }
 
-void FiboLine::saveObjects (QString chartPath)
+void FiboLine::saveObjects (QString &chartPath)
 {
   if (! chartPath.length())
     return;

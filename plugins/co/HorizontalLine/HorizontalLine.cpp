@@ -132,21 +132,26 @@ void HorizontalLine::draw (int, int, int)
 
 void HorizontalLine::prefDialog ()
 {
+  QString pl = tr("Details");
+  QString cl = tr("Color");
+  QString sd = tr("Set Default");
+
   PrefDialog *dialog = new PrefDialog();
   dialog->setCaption(tr("Edit HorizontalLine"));
-  dialog->createPage (tr("Details"));
+  dialog->createPage (pl);
   dialog->setHelpFile (helpFile);
-  dialog->addColorItem(tr("Color"), tr("Details"), selected->getColor());
-  dialog->addCheckItem(tr("Set Default"), tr("Details"), FALSE);
+  QColor color = selected->getColor();
+  dialog->addColorItem(cl, pl, color);
+  dialog->addCheckItem(sd, pl, FALSE);
   
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
-    QColor color = dialog->getColor(tr("Color"));
+    color = dialog->getColor(cl);
     selected->setColor(color);
     
-    bool f = dialog->getCheck(tr("Set Default"));
+    bool f = dialog->getCheck(sd);
     if (f)
     {
       defaultColor = color;
@@ -166,7 +171,7 @@ void HorizontalLine::addObject (Setting &set)
   objects.replace(co->getName(), co);
 }
 
-void HorizontalLine::newObject (QString ind, QString n)
+void HorizontalLine::newObject (QString &ind, QString &n)
 {
   loadDefaults();
   indicator = ind;
@@ -175,7 +180,7 @@ void HorizontalLine::newObject (QString ind, QString n)
   emit message(tr("Select point to place HorizontalLine..."));
 }
 
-COPlugin::Status HorizontalLine::pointerClick (QPoint point, BarDate, double y)
+COPlugin::Status HorizontalLine::pointerClick (QPoint &point, BarDate &, double y)
 {
   if (status == None)
   {
@@ -244,7 +249,7 @@ COPlugin::Status HorizontalLine::pointerClick (QPoint point, BarDate, double y)
   return status;    
 }
 
-void HorizontalLine::pointerMoving (QPoint, BarDate, double y)
+void HorizontalLine::pointerMoving (QPoint &, BarDate &, double y)
 {
   if (status != Moving)
     return;
@@ -258,7 +263,7 @@ void HorizontalLine::pointerMoving (QPoint, BarDate, double y)
   emit message(s);
 }
 
-void HorizontalLine::saveObjects (QString chartPath)
+void HorizontalLine::saveObjects (QString &chartPath)
 {
   if (! chartPath.length())
     return;

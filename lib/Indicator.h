@@ -44,18 +44,18 @@ class Indicator
     void addLine (PlotLine *);
     PlotLine * getLine (int);
     Indicator::PlotType getPlotType ();
-    Indicator::PlotType getPlotType (QString);
+    Indicator::PlotType getPlotType (QString &);
     void setPlotType (Indicator::PlotType);
     void clearLines ();
     void setEnable (bool);
     bool getEnable ();
-    void setName (QString);
+    void setName (QString &);
     QString getName ();
-    void setType (QString);
+    void setType (QString &);
     QString getType ();
-    void setFile (QString);
+    void setFile (QString &);
     QString getFile ();
-    QStringList getPlotTypes ();
+    void getPlotTypes (QStringList &);
     void copy (Indicator *);
 
   private:

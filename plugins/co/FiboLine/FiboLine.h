@@ -39,9 +39,9 @@ class FiboLine : public COPlugin
     FiboLine ();
     ~FiboLine ();
     void draw (int, int, int);
-    void newObject (QString, QString);
+    void newObject (QString &, QString &);
     void addObject (Setting &);
-    void saveObjects (QString);
+    void saveObjects (QString &);
     void clear ();
     void keyEvent (QKeyEvent *);
     double getHigh ();
@@ -49,7 +49,7 @@ class FiboLine : public COPlugin
     void showMenu ();
     void getNameList (QStringList &);
     
-    void drawMovingPointer (QPoint);
+    void drawMovingPointer (QPoint &);
     void loadDefaults ();
     void saveDefaults ();
     double getY (double v, double high, double low);
@@ -58,8 +58,8 @@ class FiboLine : public COPlugin
     void prefDialog ();
     void moveObject ();
     void removeObject ();
-    COPlugin::Status pointerClick (QPoint, BarDate, double);
-    void pointerMoving (QPoint, BarDate, double);
+    COPlugin::Status pointerClick (QPoint &, BarDate &, double);
+    void pointerMoving (QPoint &, BarDate &, double);
     
   protected:
     QDict<FiboLineObject> objects;

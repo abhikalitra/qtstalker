@@ -24,64 +24,19 @@
 #include "PrefDialog.h"
 #include "HelpWindow.h"
 #include <qlayout.h>
-#include <qlabel.h>
 #include <qdir.h>
 #include "../../../pics/insert.xpm"
 #include "../../../pics/edit.xpm"
 #include "../../../pics/delete.xpm"
 
 
-IndexDialog::IndexDialog (QString d) : QTabDialog (0, "IndexDialog", TRUE)
+IndexDialog::IndexDialog (QString &d) : QTabDialog (0, "IndexDialog", TRUE)
 {
   helpFile = d;
 
-  QWidget *w = new QWidget(this);
+  createDetailsPage();
+  createParmsPage();
   
-  QVBoxLayout *vbox = new QVBoxLayout(w);
-  vbox->setMargin(5);
-  vbox->setSpacing(0);
-  
-  toolbar = new Toolbar(w, 30, 30, FALSE);
-  vbox->addWidget(toolbar);
-  
-  toolbar->addButton("add", insert, tr("Add Item"));
-  QObject::connect(toolbar->getButton("add"), SIGNAL(clicked()), this, SLOT(addItem()));
-  
-  toolbar->addButton("edit", edit, tr("Edit"));
-  QObject::connect(toolbar->getButton("edit"), SIGNAL(clicked()), this, SLOT(editItem()));
-  
-  toolbar->addButton("delete", deleteitem, tr("Delete"));
-  QObject::connect(toolbar->getButton("delete"), SIGNAL(clicked()), this, SLOT(deleteItem()));
-  
-  vbox->addSpacing(10);
-  
-  QGridLayout *grid = new QGridLayout(vbox, 5, 2);
-  grid->setSpacing(5);
-  grid->setColStretch(1, 1);
-  
-  QLabel *label = new QLabel(tr("Name"), w);
-  grid->addWidget(label, 0, 0);
-  
-  name = new QLineEdit(w);
-  name->setReadOnly(TRUE);
-  grid->addWidget(name, 0, 1);
-  
-  label = new QLabel(tr("Full Rebuild"), w);
-  grid->addWidget(label, 1, 0);
-  
-  rebuild = new QCheckBox(w);
-  grid->addWidget(rebuild, 1, 1);
-  
-  vbox->addSpacing(10);
-  
-  list = new QListView(w);
-  list->addColumn(tr("Symbol"), 200);
-  list->addColumn(tr("Weight"), -1);
-  QObject::connect(list, SIGNAL(selectionChanged()), this, SLOT(buttonStatus()));
-  vbox->addWidget(list);
-  
-  addTab(w, tr("Index"));
-
   setOkButton(tr("&OK"));
   setCancelButton(tr("&Cancel"));
   connect(this, SIGNAL(applyButtonPressed()), this, SLOT(accept()));
@@ -98,18 +53,117 @@ IndexDialog::~IndexDialog ()
 {
 }
 
+void IndexDialog::createDetailsPage ()
+{
+  QWidget *w = new QWidget(this);
+  
+  QVBoxLayout *vbox = new QVBoxLayout(w);
+  vbox->setMargin(5);
+  vbox->setSpacing(5);
+    
+  QGridLayout *grid = new QGridLayout(vbox);
+  grid->setMargin(0);
+  grid->setSpacing(5);
+  
+  QLabel *label = new QLabel(tr("Symbol"), w);
+  grid->addWidget(label, 0, 0);
+
+  symbol = new QLabel(w);
+  symbol->setFrameStyle(QFrame::WinPanel | QFrame::Sunken);
+  grid->addWidget(symbol, 0, 1);
+
+  label = new QLabel(tr("Name"), w);
+  grid->addWidget(label, 1, 0);
+  
+  name = new QLineEdit(w);
+  grid->addWidget(name, 1, 1);
+  
+  label = new QLabel(tr("Type"), w);
+  grid->addWidget(label, 2, 0);
+  
+  type = new QLabel(w);
+  type->setFrameStyle(QFrame::WinPanel | QFrame::Sunken);
+  grid->addWidget(type, 2, 1);
+  
+  label = new QLabel(tr("First Date"), w);
+  grid->addWidget(label, 3, 0);
+  
+  fdate = new QLabel(w);
+  fdate->setFrameStyle(QFrame::WinPanel | QFrame::Sunken);
+  grid->addWidget(fdate, 3, 1);
+  
+  label = new QLabel(tr("Last Date"), w);
+  grid->addWidget(label, 4, 0);
+  
+  ldate = new QLabel(w);
+  ldate->setFrameStyle(QFrame::WinPanel | QFrame::Sunken);
+  grid->addWidget(ldate, 4, 1);
+  
+  grid->setColStretch(1, 1);
+  
+  vbox->insertStretch(-1, 1);
+  
+  addTab(w, tr("Details"));  
+}
+
+void IndexDialog::createParmsPage ()
+{
+  QWidget *w = new QWidget(this);
+  
+  QVBoxLayout *vbox = new QVBoxLayout(w);
+  vbox->setMargin(5);
+  vbox->setSpacing(0);
+  
+  rebuild = new QCheckBox(tr("Full Rebuild"), w);
+  vbox->addWidget(rebuild);
+  
+  vbox->addSpacing(10);
+  
+  QHBoxLayout *hbox = new QHBoxLayout(vbox);
+  hbox->setSpacing(2);
+  
+  list = new QListView(w);
+  list->addColumn(tr("Symbol"), 200);
+  list->addColumn(tr("Weight"), -1);
+  QObject::connect(list, SIGNAL(selectionChanged()), this, SLOT(buttonStatus()));
+  hbox->addWidget(list);
+  
+  toolbar = new Toolbar(w, 30, 30, TRUE);
+  hbox->addWidget(toolbar);
+
+  QString s = "add";
+  QString s2 = tr("Add Item");
+  toolbar->addButton(s, insert, s2);
+  QObject::connect(toolbar->getButton(s), SIGNAL(clicked()), this, SLOT(addItem()));
+  
+  s = "edit";
+  s2 = tr("Edit");
+  toolbar->addButton(s, edit, s2);
+  QObject::connect(toolbar->getButton(s), SIGNAL(clicked()), this, SLOT(editItem()));
+  
+  s = "delete";
+  s2 = tr("Delete");
+  toolbar->addButton(s, deleteitem, s2);
+  QObject::connect(toolbar->getButton(s), SIGNAL(clicked()), this, SLOT(deleteItem()));
+  
+  addTab(w, tr("Index"));
+}
+
 void IndexDialog::buttonStatus ()
 {
+  QString s = "edit";
+  QString s2 = "delete";
+  
   QListViewItem *item = list->selectedItem();
   if (! item)
   {
-    toolbar->setButtonStatus("edit", FALSE);
-    toolbar->setButtonStatus("delete", FALSE);
+    toolbar->setButtonStatus(s, FALSE);
+    toolbar->setButtonStatus(s2, FALSE);
   }
   else
   {
-    toolbar->setButtonStatus("edit", TRUE);
-    toolbar->setButtonStatus("delete", TRUE);
+    toolbar->setButtonStatus(s, TRUE);
+    toolbar->setButtonStatus(s2, TRUE);
   }
 }
 
@@ -120,21 +174,27 @@ void IndexDialog::addItem ()
   
   PrefDialog *dialog = new PrefDialog();
   dialog->setCaption(tr("Add Index Item"));
-  dialog->createPage (tr("Details"));
-  dialog->addSymbolItem(tr("Symbol"), tr("Details"), config.getData(Config::DataPath), s);
-  dialog->addFloatItem(tr("Weight"), tr("Details"), weight);
+  QString pl = tr("Details");
+  dialog->createPage (pl);
+  QString t = tr("Symbol");
+  QString t2 = config.getData(Config::DataPath);
+  dialog->addSymbolItem(t, pl, t2, s);
+  t = tr("Weight");
+  dialog->addFloatItem(t, pl, weight);
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
-    s = dialog->getSymbol(tr("Symbol"));
+    t = tr("Symbol");
+    s = dialog->getSymbol(t);
     if (! s.length())
     {
       delete dialog;
       return;
     }
     
-    weight = dialog->getFloat(tr("Weight"));
+    t = tr("Weight");
+    weight = dialog->getFloat(t);
     
     QStringList l = QStringList::split("/", s, FALSE);
     symbolDict.insert(l[l.count() - 1], new QString(s));
@@ -158,21 +218,27 @@ void IndexDialog::editItem ()
   
   PrefDialog *dialog = new PrefDialog();
   dialog->setCaption(tr("Edit Index Item"));
-  dialog->createPage (tr("Details"));
-  dialog->addSymbolItem(tr("Symbol"), tr("Details"), config.getData(Config::DataPath), s);
-  dialog->addFloatItem(tr("Weight"), tr("Details"), weight);
+  QString pl = tr("Details");
+  dialog->createPage (pl);
+  QString t = tr("Symbol");
+  QString t2 = config.getData(Config::DataPath);
+  dialog->addSymbolItem(t, pl, t2, s);
+  t = tr("Weight");
+  dialog->addFloatItem(t, pl, weight);
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
-    s = dialog->getSymbol(tr("Symbol"));
+    t = tr("Symbol");
+    s = dialog->getSymbol(t);
     if (! s.length())
     {
       delete dialog;
       return;
     }
     
-    weight = dialog->getFloat(tr("Weight"));
+    t = tr("Weight");
+    weight = dialog->getFloat(t);
     
     symbolDict.remove(item->text(0));
     QStringList l = QStringList::split("/", s, FALSE);
@@ -199,7 +265,7 @@ void IndexDialog::deleteItem ()
   buttonStatus();
 }
 
-void IndexDialog::setList (QString d)
+void IndexDialog::setList (QString &d)
 {
   list->clear();
   symbolDict.clear();
@@ -250,9 +316,14 @@ bool IndexDialog::getRebuild ()
   return rebuild->isChecked();
 }
 
-void IndexDialog::setName (QString d)
+void IndexDialog::setName (QString &d)
 {
   name->setText(d);
+}
+
+QString IndexDialog::getName ()
+{
+  return name->text();
 }
 
 void IndexDialog::help ()
@@ -261,4 +332,25 @@ void IndexDialog::help ()
   hw->show();
   reject();
 }
+
+void IndexDialog::setSymbol (QString &d)
+{
+  symbol->setText(d);
+}
+
+void IndexDialog::setType (QString &d)
+{
+  type->setText(d);
+}
+
+void IndexDialog::setFirstDate (QString &d)
+{
+  fdate->setText(d);
+}
+
+void IndexDialog::setLastDate (QString &d)
+{
+  ldate->setText(d);
+}
+
 

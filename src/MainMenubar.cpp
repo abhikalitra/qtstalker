@@ -280,10 +280,17 @@ void MainMenubar::setStatus (int d, bool f)
 
 void MainMenubar::saveSettings ()
 {
-  config.setData(Config::DrawMode, QString::number(getStatus(DrawMode)));
-  config.setData(Config::ScaleToScreen, QString::number(getStatus(ScaleToScreen)));
-  config.setData(Config::Grid, QString::number(getStatus(Grid)));
-  config.setData(Config::LogScale, QString::number(getStatus(Log)));
+  QString s = QString::number(getStatus(DrawMode));
+  config.setData(Config::DrawMode, s);
+  
+  s = QString::number(getStatus(ScaleToScreen));
+  config.setData(Config::ScaleToScreen, s);
+  
+  s = QString::number(getStatus(Grid));
+  config.setData(Config::Grid, s);
+  
+  s = QString::number(getStatus(Log));
+  config.setData(Config::LogScale, s);
 }
 
 void MainMenubar::setKeyFlag (bool d)

@@ -90,7 +90,8 @@ void DataWindow::setBars (BarData *d)
 
 void DataWindow::setPlot (Plot *d)
 {
-  QStringList l = d->getIndicators();
+  QStringList l;
+  d->getIndicators(l);
   int loop;
   for (loop = 0; loop < (int) l.count(); loop++)
   {

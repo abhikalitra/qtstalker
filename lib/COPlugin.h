@@ -55,9 +55,9 @@ class COPlugin : public QObject
     COPlugin ();
     virtual ~COPlugin ();
     virtual void draw (int, int, int);
-    virtual void newObject (QString, QString);
+    virtual void newObject (QString &, QString &);
     virtual void addObject (Setting &);
-    virtual void saveObjects (QString);
+    virtual void saveObjects (QString &);
     virtual void clear ();
     virtual void keyEvent (QKeyEvent *);
     virtual double getHigh ();
@@ -72,8 +72,8 @@ class COPlugin : public QObject
 
   public slots:    
     virtual void prefDialog ();
-    virtual COPlugin::Status pointerClick (QPoint, BarDate, double);
-    virtual void pointerMoving (QPoint, BarDate x, double y);
+    virtual COPlugin::Status pointerClick (QPoint &, BarDate &, double);
+    virtual void pointerMoving (QPoint &, BarDate &, double y);
     
   protected:
     BarData *data;

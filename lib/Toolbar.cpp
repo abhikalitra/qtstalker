@@ -38,8 +38,8 @@ Toolbar::Toolbar (QWidget *w, int h, int wi, bool f) : QFrame (w)
   
   if (pflag)
   {
-    setMinimumWidth(width + 2);
-    setMaximumWidth(width + 2);
+    setMinimumWidth(width + 3);
+    setMaximumWidth(width + 3);
     vbox = new QVBoxLayout(this);  
     vbox->setSpacing(0);
     vbox->setMargin(1);
@@ -47,8 +47,8 @@ Toolbar::Toolbar (QWidget *w, int h, int wi, bool f) : QFrame (w)
   }
   else
   {
-    setMinimumHeight(height + 2);
-    setMaximumHeight(height + 2);
+    setMinimumHeight(height + 3);
+    setMaximumHeight(height + 3);
     hbox = new QHBoxLayout(this);  
     hbox->setSpacing(0);
     hbox->setMargin(1);
@@ -68,7 +68,7 @@ Toolbar::~Toolbar ()
 {
 }
 
-void Toolbar::addButton (QString name, QPixmap pix, QString tt)
+void Toolbar::addButton (QString &name, QPixmap pix, QString &tt)
 {
   QPushButton *button = new QPushButton(this);
   QToolTip::add(button, tt);
@@ -82,12 +82,12 @@ void Toolbar::addButton (QString name, QPixmap pix, QString tt)
   list.replace(name, button);
 }
 
-QPushButton * Toolbar::getButton (QString name)
+QPushButton * Toolbar::getButton (QString &name)
 {
   return list[name];
 }
 
-void Toolbar::setButtonStatus (QString name, bool d)
+void Toolbar::setButtonStatus (QString &name, bool d)
 {
   QPushButton *button = list[name];
   if (button)

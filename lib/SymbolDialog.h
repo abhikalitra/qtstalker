@@ -34,7 +34,7 @@ class SymbolDialog : public QFileDialog
     void signalKeyPressed (int, int, int, int, QString);
   
   public:
-    SymbolDialog (QWidget *, QString, QString, QFileDialog::Mode);
+    SymbolDialog (QWidget *, QString &, QString &, QFileDialog::Mode);
     ~SymbolDialog ();
     void setType (int);
 

@@ -43,9 +43,11 @@ PlotLine::~PlotLine ()
 
 void PlotLine::copy (PlotLine *d)
 {
-  setColor(d->getColor());
+  QColor c(d->getColor());
+  setColor(c);
   setType(d->getType());
-  setLabel(d->getLabel());
+  QString s = d->getLabel();
+  setLabel(s);
   setColorFlag(d->getColorFlag());
   setScaleFlag(d->getScaleFlag());
 
@@ -55,16 +57,19 @@ void PlotLine::copy (PlotLine *d)
     append(d->getData(loop));
 
     if (d->getColorFlag() == TRUE)
-      appendColorBar(d->getColorBar(loop));
+    {
+      c = d->getColorBar(loop);
+      appendColorBar(c);
+    }
   }
 }
 
-void PlotLine::setColor (QString d)
+void PlotLine::setColor (QString &d)
 {
   color.setNamedColor(d);
 }
 
-void PlotLine::setColor (QColor d)
+void PlotLine::setColor (QColor &d)
 {
   color = d;
 }
@@ -79,7 +84,7 @@ void PlotLine::setType (PlotLine::LineType d)
   lineType = d;
 }
 
-void PlotLine::setType (QString d)
+void PlotLine::setType (QString &d)
 {
   if (! d.compare(tr("Dot")))
   {
@@ -135,7 +140,7 @@ PlotLine::LineType PlotLine::getType ()
   return lineType;
 }
 
-void PlotLine::setLabel (QString d)
+void PlotLine::setLabel (QString &d)
 {
   label = d;
 }
@@ -227,12 +232,12 @@ bool PlotLine::getColorFlag ()
   return colorBarFlag;
 }
 
-void PlotLine::appendColorBar (QColor d)
+void PlotLine::appendColorBar (QColor &d)
 {
   colorBars.append(new QColor(d));
 }
 
-void PlotLine::prependColorBar (QColor d)
+void PlotLine::prependColorBar (QColor &d)
 {
   colorBars.prepend(new QColor(d));
 }
@@ -536,9 +541,9 @@ void PlotLine::setPointers (Scaler *s, QPixmap *p)
   buffer = p;
 }
 
-QStringList PlotLine::getLineTypes ()
+void PlotLine::getLineTypes (QStringList &l)
 {
-  QStringList l;
+  l.clear();
   l.append(QObject::tr("Dot"));
   l.append(QObject::tr("Dash"));
   l.append(QObject::tr("Histogram"));
@@ -546,6 +551,5 @@ QStringList PlotLine::getLineTypes ()
   l.append(QObject::tr("Line"));
   l.append(QObject::tr("Invisible"));
   l.append(QObject::tr("Horizontal"));
-  return l;
 }
 

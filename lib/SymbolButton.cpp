@@ -22,7 +22,7 @@
 #include "SymbolButton.h"
 #include "SymbolDialog.h"
 
-SymbolButton::SymbolButton (QWidget *w, QString d, QString s) : QPushButton (w)
+SymbolButton::SymbolButton (QWidget *w, QString &d, QString &s) : QPushButton (w)
 {
   QObject::connect(this, SIGNAL(clicked()), this, SLOT(fileDialog()));
   setMaximumHeight(25);
@@ -47,9 +47,10 @@ QString SymbolButton::getPath ()
 
 void SymbolButton::fileDialog ()
 {
+  QString s("*");
   SymbolDialog *dialog = new SymbolDialog(this,
   					  dirPath,
-					  "*",
+					  s,
 					  QFileDialog::ExistingFiles);
   dialog->setCaption(tr("Select Symbol"));
 
@@ -68,7 +69,7 @@ void SymbolButton::fileDialog ()
   delete dialog;
 }
 
-void SymbolButton::setSymbol (QString d)
+void SymbolButton::setSymbol (QString &d)
 {
   if (! d.length())
   {

@@ -38,12 +38,12 @@ class Navigator : public QListBox
     void fileOpened (QString);
 
   public:
-    Navigator (QWidget *, QString);
+    Navigator (QWidget *, QString &);
     ~Navigator ();
     QString getFileSelection ();
-    void setDirectory (QString);
+    void setDirectory (QString &);
     QString getCurrentPath ();
-    void setFilter (QString);
+    void setFilter (QString &);
     void setId (int);
     void setKeyFlag (bool);
     void setHome ();

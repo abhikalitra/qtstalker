@@ -111,27 +111,35 @@ void UO::calculate ()
 
 int UO::indicatorPrefDialog (QWidget *w)
 {
+  QString pl = QObject::tr("Parms");
+  QString cl = QObject::tr("Color");
+  QString ll = QObject::tr("Label");
+  QString ltl = QObject::tr("Line Type");
+  QString sper = QObject::tr("Short Period");
+  QString mper = QObject::tr("Medium Period");
+  QString lper = QObject::tr("Long Period");
+
   PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(QObject::tr("UO Indicator"));
-  dialog->createPage (QObject::tr("Parms"));
+  dialog->createPage (pl);
   dialog->setHelpFile(helpFile);
-  dialog->addColorItem(QObject::tr("Color"), QObject::tr("Parms"), color);
-  dialog->addComboItem(QObject::tr("Line Type"), QObject::tr("Parms"), lineTypes, lineType);
-  dialog->addTextItem(QObject::tr("Label"), QObject::tr("Parms"), label);
-  dialog->addIntItem(QObject::tr("Short Period"), QObject::tr("Parms"), shortPeriod, 1, 99999999);
-  dialog->addIntItem(QObject::tr("Medium Period"), QObject::tr("Parms"), medPeriod, 1, 99999999);
-  dialog->addIntItem(QObject::tr("Long Period"), QObject::tr("Parms"), longPeriod, 1, 99999999);
+  dialog->addColorItem(cl, pl, color);
+  dialog->addComboItem(ltl, pl, lineTypes, lineType);
+  dialog->addTextItem(ll, pl, label);
+  dialog->addIntItem(sper, pl, shortPeriod, 1, 99999999);
+  dialog->addIntItem(mper, pl, medPeriod, 1, 99999999);
+  dialog->addIntItem(lper, pl, longPeriod, 1, 99999999);
   
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
-    color = dialog->getColor(QObject::tr("Color"));
-    lineType = (PlotLine::LineType) dialog->getComboIndex(QObject::tr("Line Type"));
-    label = dialog->getText(QObject::tr("Label"));
-    shortPeriod = dialog->getInt(QObject::tr("Short Period"));
-    medPeriod = dialog->getInt(QObject::tr("Medium Period"));
-    longPeriod = dialog->getInt(QObject::tr("Long Period"));
+    color = dialog->getColor(cl);
+    lineType = (PlotLine::LineType) dialog->getComboIndex(ltl);
+    label = dialog->getText(ll);
+    shortPeriod = dialog->getInt(sper);
+    medPeriod = dialog->getInt(mper);
+    longPeriod = dialog->getInt(lper);
     rc = TRUE;
   }
   else

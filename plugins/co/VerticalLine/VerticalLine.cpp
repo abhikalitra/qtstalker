@@ -136,21 +136,26 @@ void VerticalLine::draw (int startIndex, int pixelspace, int startX)
 
 void VerticalLine::prefDialog ()
 {
+  QString pl = tr("Details");
+  QString cl = tr("Color");
+  QString sd = tr("Set Default");
+
   PrefDialog *dialog = new PrefDialog();
   dialog->setCaption(tr("Edit VerticalLine"));
-  dialog->createPage (tr("Details"));
+  dialog->createPage (pl);
   dialog->setHelpFile (helpFile);
-  dialog->addColorItem(tr("Color"), tr("Details"), selected->getColor());
-  dialog->addCheckItem(tr("Set Default"), tr("Details"), FALSE);
+  QColor color = selected->getColor();
+  dialog->addColorItem(cl, pl, color);
+  dialog->addCheckItem(sd, pl, FALSE);
   
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
-    QColor color = dialog->getColor(tr("Color"));
+    color = dialog->getColor(cl);
     selected->setColor(color);
     
-    bool f = dialog->getCheck(tr("Set Default"));
+    bool f = dialog->getCheck(sd);
     if (f)
     {
       defaultColor = color;
@@ -170,7 +175,7 @@ void VerticalLine::addObject (Setting &set)
   objects.replace(co->getName(), co);
 }
 
-void VerticalLine::newObject (QString ind, QString n)
+void VerticalLine::newObject (QString &ind, QString &n)
 {
   loadDefaults();
   indicator = ind;
@@ -179,7 +184,7 @@ void VerticalLine::newObject (QString ind, QString n)
   emit message(tr("Select point to place VerticalLine..."));
 }
 
-COPlugin::Status VerticalLine::pointerClick (QPoint point, BarDate x, double)
+COPlugin::Status VerticalLine::pointerClick (QPoint &point, BarDate &x, double)
 {
   if (status == None)
   {
@@ -248,7 +253,7 @@ COPlugin::Status VerticalLine::pointerClick (QPoint point, BarDate x, double)
   return status;    
 }
 
-void VerticalLine::pointerMoving (QPoint, BarDate x, double)
+void VerticalLine::pointerMoving (QPoint &, BarDate &x, double)
 {
   if (status != Moving)
     return;
@@ -263,7 +268,7 @@ void VerticalLine::pointerMoving (QPoint, BarDate x, double)
   emit message(s);
 }
 
-void VerticalLine::saveObjects (QString chartPath)
+void VerticalLine::saveObjects (QString &chartPath)
 {
   if (! chartPath.length())
     return;

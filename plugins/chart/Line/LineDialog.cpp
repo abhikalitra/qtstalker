@@ -50,7 +50,8 @@ LineDialog::LineDialog (QString d) : QTabDialog (0, "LineDialog", TRUE)
   QLabel *label = new QLabel(tr("Color"), w);
   grid->addWidget(label, 0, 0);
   
-  color = new ColorButton(w, QColor("green"));
+  QColor c("green");
+  color = new ColorButton(w, c);
   grid->addWidget(color, 0, 1);
   color->setColorButton();
     

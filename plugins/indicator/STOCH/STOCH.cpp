@@ -171,63 +171,93 @@ void STOCH::calculate ()
 
 int STOCH::indicatorPrefDialog (QWidget *w)
 {
+  QString pl = QObject::tr("Parms");
+  QString ll = QObject::tr("Label");
+  QString perl = QObject::tr("Period");
+  QString stl = QObject::tr("Smoothing Type");
+  QString il = QObject::tr("Input");
+  QString bzc = QObject::tr("Buy Zone Color");
+  QString szc = QObject::tr("Sell Zone Color");
+  QString bz = QObject::tr("Buy Zone");
+  QString sz = QObject::tr("Sell Zone");
+
   PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(QObject::tr("STOCH Indicator"));
-  dialog->createPage (QObject::tr("Parms"));
+  dialog->createPage (pl);
   dialog->setHelpFile(helpFile);
-  dialog->addIntItem(QObject::tr("Period"), QObject::tr("Parms"), period, 1, 99999999);
-  dialog->addComboItem(QObject::tr("Smoothing Type"), QObject::tr("Parms"), getMATypes(), maType);
+  dialog->addIntItem(perl, pl, period, 1, 99999999);
+  QStringList l = getMATypes();
+  dialog->addComboItem(stl, pl, l, maType);
   
   if (customFlag)
   {
-    dialog->addTextItem(QObject::tr("Label"), QObject::tr("Parms"), label);
-    dialog->addFormulaInputItem(QObject::tr("Input"), QObject::tr("Parms"), FALSE, customInput);
+    dialog->addTextItem(ll, pl, label);
+    dialog->addFormulaInputItem(il, pl, FALSE, customInput);
   }
   
-  dialog->createPage (QObject::tr("%K Parms"));
-  dialog->addColorItem(QObject::tr("%K Color"), QObject::tr("%K Parms"), kcolor);
-  dialog->addComboItem(QObject::tr("%K Line Type"), QObject::tr("%K Parms"), lineTypes, klineType);
-  dialog->addTextItem(QObject::tr("%K Label"), QObject::tr("%K Parms"), klabel);
-  dialog->addIntItem(QObject::tr("%K Smoothing"), QObject::tr("%K Parms"), kperiod, 0, 99999999);
+  pl = QObject::tr("%K Parms");
+  dialog->createPage (pl);
+  QString t = QObject::tr("%K Color");
+  dialog->addColorItem(t, pl, kcolor);
+  t = QObject::tr("%K Line Type");
+  dialog->addComboItem(t, pl, lineTypes, klineType);
+  t = QObject::tr("%K Label");
+  dialog->addTextItem(t, pl, klabel);
+  t = QObject::tr("%K Smoothing");
+  dialog->addIntItem(t, pl, kperiod, 0, 99999999);
   
-  dialog->createPage (QObject::tr("%D Parms"));
-  dialog->addColorItem(QObject::tr("%D Color"), QObject::tr("%D Parms"), dcolor);
-  dialog->addComboItem(QObject::tr("%D Line Type"), QObject::tr("%D Parms"), lineTypes, dlineType);
-  dialog->addTextItem(QObject::tr("%D Label"), QObject::tr("%D Parms"), dlabel);
-  dialog->addIntItem(QObject::tr("%D Smoothing"), QObject::tr("%D Parms"), dperiod, 0, 99999999);
+  pl = QObject::tr("%D Parms");
+  dialog->createPage (pl);
+  t = QObject::tr("%D Color");
+  dialog->addColorItem(t, pl, dcolor);
+  t = QObject::tr("%D Line Type");
+  dialog->addComboItem(t, pl, lineTypes, dlineType);
+  t = QObject::tr("%D Label");
+  dialog->addTextItem(t, pl, dlabel);
+  t = QObject::tr("%D Smoothing");
+  dialog->addIntItem(t, pl, dperiod, 0, 99999999);
   
-  dialog->createPage (QObject::tr("Zones"));
-  dialog->addColorItem(QObject::tr("Buy Zone Color"), QObject::tr("Zones"), buyColor);
-  dialog->addColorItem(QObject::tr("Sell Zone Color"), QObject::tr("Zones"), sellColor);
-  dialog->addIntItem(QObject::tr("Buy Zone"), QObject::tr("Zones"), buyLine, 0, 100);
-  dialog->addIntItem(QObject::tr("Sell Zone"), QObject::tr("Zones"), sellLine, 0, 100);
+  pl = QObject::tr("Zones");
+  dialog->createPage (pl);
+  dialog->addColorItem(bzc, pl, buyColor);
+  dialog->addColorItem(szc, pl, sellColor);
+  dialog->addIntItem(bz, pl, buyLine, 0, 100);
+  dialog->addIntItem(sz, pl, sellLine, 0, 100);
   
   
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
-    dcolor = dialog->getColor(QObject::tr("%D Color"));
-    dlineType = (PlotLine::LineType) dialog->getComboIndex(QObject::tr("%D Line Type"));
-    dperiod = dialog->getInt(QObject::tr("%D Smoothing"));
-    dlabel = dialog->getText(QObject::tr("%D Label"));
-    kcolor = dialog->getColor(QObject::tr("%K Color"));
-    klineType = (PlotLine::LineType) dialog->getComboIndex(QObject::tr("%K Line Type"));
-    kperiod = dialog->getInt(QObject::tr("%K Smoothing"));
-    klabel = dialog->getText(QObject::tr("%K Label"));
-    period = dialog->getInt(QObject::tr("Period"));
-    maType = dialog->getComboIndex(QObject::tr("Smoothing Type"));
+    t = QObject::tr("%D Color");
+    dcolor = dialog->getColor(t);
+    t = QObject::tr("%D Line Type");
+    dlineType = (PlotLine::LineType) dialog->getComboIndex(t);
+    t = QObject::tr("%D Smoothing");
+    dperiod = dialog->getInt(t);
+    t = QObject::tr("%D Label");
+    dlabel = dialog->getText(t);
+    t = QObject::tr("%K Color");
+    kcolor = dialog->getColor(t);
+    t = QObject::tr("%K Line Type");
+    klineType = (PlotLine::LineType) dialog->getComboIndex(t);
+    t = QObject::tr("%K Smoothing");
+    kperiod = dialog->getInt(t);
+    t = QObject::tr("%K Label");
+    klabel = dialog->getText(t);
+    period = dialog->getInt(perl);
+    maType = dialog->getComboIndex(stl);
     
     if (customFlag)
     {
-      label = dialog->getText(QObject::tr("Label"));
-      customInput = dialog->getFormulaInput(QObject::tr("Input"));
+      label = dialog->getText(ll);
+      customInput = dialog->getFormulaInput(il);
     }
     
-    buyColor = dialog->getColor(QObject::tr("Buy Zone Color"));
-    sellColor = dialog->getColor(QObject::tr("Sell Zone Color"));
-    buyLine = dialog->getInt(QObject::tr("Buy Zone"));
-    sellLine = dialog->getInt(QObject::tr("Sell Zone"));
+    buyColor = dialog->getColor(bzc);
+    sellColor = dialog->getColor(szc);
+    buyLine = dialog->getInt(bz);
+    sellLine = dialog->getInt(sz);
     
     rc = TRUE;
   }

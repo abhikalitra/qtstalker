@@ -44,7 +44,7 @@
 FormulaEdit::FormulaEdit (QWidget *w, int t) : QWidget(w)
 {
   type = (FormulaEditType) t;
-  functionList = config.getPluginList(Config::IndicatorPluginPath);
+  config.getPluginList(Config::IndicatorPluginPath, functionList);
   
   QHBoxLayout *hbox = new QHBoxLayout(this);
   hbox->setMargin(0);
@@ -70,23 +70,35 @@ FormulaEdit::FormulaEdit (QWidget *w, int t) : QWidget(w)
   toolbar = new Toolbar(this, 30, 30, TRUE);
   hbox->addWidget(toolbar);
 
-  toolbar->addButton("add", newchart, tr("Add"));
-  QObject::connect(toolbar->getButton("add"), SIGNAL(clicked()), this, SLOT(addItem()));
+  QString s("add");
+  QString s2(tr("Add"));
+  toolbar->addButton(s, newchart, s2);
+  QObject::connect(toolbar->getButton(s), SIGNAL(clicked()), this, SLOT(addItem()));
   
-  toolbar->addButton("insert", insert, tr("Insert"));
-  QObject::connect(toolbar->getButton("insert"), SIGNAL(clicked()), this, SLOT(insertItem()));
+  s = "insert";
+  s2 = tr("Insert");
+  toolbar->addButton(s, insert, s2);
+  QObject::connect(toolbar->getButton(s), SIGNAL(clicked()), this, SLOT(insertItem()));
   
-  toolbar->addButton("edit", edit, tr("Edit"));
-  QObject::connect(toolbar->getButton("edit"), SIGNAL(clicked()), this, SLOT(editItem()));
+  s = "edit";
+  s2 = tr("Edit");
+  toolbar->addButton(s, edit, s2);
+  QObject::connect(toolbar->getButton(s), SIGNAL(clicked()), this, SLOT(editItem()));
   
-  toolbar->addButton("delete", deleteitem, tr("Delete"));
-  QObject::connect(toolbar->getButton("delete"), SIGNAL(clicked()), this, SLOT(deleteItem()));
+  s = "delete";
+  s2 = tr("Delete");
+  toolbar->addButton(s, deleteitem, s2);
+  QObject::connect(toolbar->getButton(s), SIGNAL(clicked()), this, SLOT(deleteItem()));
 
-  toolbar->addButton("open", openchart, tr("Open Rule"));
-  QObject::connect(toolbar->getButton("open"), SIGNAL(clicked()), this, SLOT(openRule()));
+  s = "open";
+  s2 = tr("Open Rule");
+  toolbar->addButton(s, openchart, s2);
+  QObject::connect(toolbar->getButton(s), SIGNAL(clicked()), this, SLOT(openRule()));
 
-  toolbar->addButton("save", filesave, tr("Save Rule"));
-  QObject::connect(toolbar->getButton("save"), SIGNAL(clicked()), this, SLOT(saveRule()));
+  s = "save";
+  s2 = tr("Save Rule");
+  toolbar->addButton(s, filesave, s2);
+  QObject::connect(toolbar->getButton(s), SIGNAL(clicked()), this, SLOT(saveRule()));
 }
 
 FormulaEdit::~FormulaEdit ()
@@ -97,8 +109,9 @@ void FormulaEdit::addItem ()
 {
   PrefDialog *dialog = new PrefDialog(this);
   dialog->setCaption(tr("ADD Function"));
-  dialog->createPage (tr("Functions"));
-  dialog->addComboItem(tr("Functions"), tr("Functions"), functionList, 0);
+  QString s(tr("Functions")); 
+  dialog->createPage (s);
+  dialog->addComboItem(s, s, functionList, 0);
   int rc = dialog->exec();
   if (rc != QDialog::Accepted)
   {
@@ -106,7 +119,7 @@ void FormulaEdit::addItem ()
     return;
   }
   
-  QString type = functionList[dialog->getComboIndex(tr("Functions"))];
+  QString type = functionList[dialog->getComboIndex(s)];
   delete dialog;
   
   IndicatorPlugin *plug = config.getIndicatorPlugin(type);
@@ -139,7 +152,6 @@ void FormulaEdit::addItem ()
   check->setChecked(FALSE);
   list->setItem(list->numRows() - 1, 2, check);
 
-  QString s;
   set.getString(s);
   list->setText(list->numRows() - 1, 3, s);
   
@@ -150,8 +162,9 @@ void FormulaEdit::insertItem ()
 {
   PrefDialog *dialog = new PrefDialog(this);
   dialog->setCaption(tr("Insert Function"));
-  dialog->createPage (tr("Functions"));
-  dialog->addComboItem(tr("Functions"), tr("Functions"), functionList, 0);
+  QString s(tr("Functions")); 
+  dialog->createPage (s);
+  dialog->addComboItem(s, s, functionList, 0);
   int rc = dialog->exec();
   if (rc != QDialog::Accepted)
   {
@@ -159,7 +172,7 @@ void FormulaEdit::insertItem ()
     return;
   }
   
-  QString type = functionList[dialog->getComboIndex(tr("Functions"))];
+  QString type = functionList[dialog->getComboIndex(s)];
   delete dialog;
   
   IndicatorPlugin *plug = config.getIndicatorPlugin(type);
@@ -194,7 +207,6 @@ void FormulaEdit::insertItem ()
   check->setChecked(FALSE);
   list->setItem(row, 2, check);
   
-  QString s;
   set.getString(s);
   list->setText(row, 3, s);
   
@@ -206,11 +218,12 @@ void FormulaEdit::editItem ()
   Setting set;
   QString s = list->text(list->currentRow(), 3);
   set.parse(s);
-  
-  IndicatorPlugin *plug = config.getIndicatorPlugin(set.getData("plugin"));
+
+  QString plugin(set.getData("plugin"));  
+  IndicatorPlugin *plug = config.getIndicatorPlugin(plugin);
   if (! plug)
   {
-    config.closePlugin(set.getData("plugin"));
+    config.closePlugin(plugin);
     return;
   }
 
@@ -220,7 +233,7 @@ void FormulaEdit::editItem ()
   
   if (! plug->indicatorPrefDialog(this))
   {
-    config.closePlugin(set.getData("plugin"));
+    config.closePlugin(plugin);
     return;
   }
 
@@ -232,7 +245,7 @@ void FormulaEdit::editItem ()
   set2.getString(s);
   list->setText(list->currentRow(), 3, s);
   
-  config.closePlugin(set2.getData("plugin"));
+  config.closePlugin(plugin);
 }
 
 void FormulaEdit::deleteItem ()
@@ -240,7 +253,7 @@ void FormulaEdit::deleteItem ()
   list->removeRow(list->currentRow());
 }
 
-void FormulaEdit::setLine (QString d)
+void FormulaEdit::setLine (QString &d)
 {
   Setting set;
   set.parse(d);
@@ -291,9 +304,11 @@ int FormulaEdit::getLines ()
 
 void FormulaEdit::openRule ()
 {
+  QString s("*");
+  QString s2(config.getData(Config::CUSRulePath));
   SymbolDialog *dialog = new SymbolDialog(this, 
-  					  config.getData(Config::CUSRulePath),
-					  "*",
+  					  s2,
+					  s,
 					  QFileDialog::ExistingFiles);
   dialog->setCaption(tr("Select rule to open."));
 
@@ -314,7 +329,7 @@ void FormulaEdit::openRule ()
     
     while(stream.atEnd() == 0)
     {
-      QString s = stream.readLine();
+      s = stream.readLine();
       s = s.stripWhiteSpace();
       if (! s.length())
         continue;

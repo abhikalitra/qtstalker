@@ -21,28 +21,16 @@
 
 #include "StocksDialog.h"
 #include "Bar.h"
-#include "BarDate.h"
 #include "HelpWindow.h"
-#include "../../../pics/delete.xpm"
-#include "../../../pics/export.xpm"
-#include "../../../pics/search.xpm"
 #include <qlabel.h>
 #include <qlayout.h>
-#include <qvalidator.h>
 #include <qmessagebox.h>
-#include <qpushbutton.h>
-#include <qtooltip.h>
-#include <qpixmap.h>
-#include <qdir.h>
-
 
 StocksDialog::StocksDialog (QString p, DbPlugin *d) : QTabDialog (0, "StocksDialog", TRUE)
 {
   helpFile = p;
   db = d;
 
-  saveRecordFlag = FALSE;
-  ignoreSaveRecordFlag = FALSE;
   setCaption(tr("Qtstalker: Edit Stock"));
   
   createDetailsPage();
@@ -77,10 +65,10 @@ void StocksDialog::createDetailsPage ()
 
   QString s;
   db->getHeaderField(DbPlugin::Symbol, s);
-  QLineEdit *edit = new QLineEdit(s, w);
-  edit->setReadOnly(TRUE);
-  grid->addWidget(edit, 0, 1);
-  
+  label = new QLabel(s, w);
+  label->setFrameStyle(QFrame::WinPanel | QFrame::Sunken);
+  grid->addWidget(label, 0, 1);
+
   label = new QLabel(tr("Name"), w);
   grid->addWidget(label, 1, 0);
   
@@ -92,9 +80,35 @@ void StocksDialog::createDetailsPage ()
   grid->addWidget(label, 2, 0);
   
   db->getHeaderField(DbPlugin::Type, s);
-  edit = new QLineEdit(s, w);
-  edit->setReadOnly(TRUE);
-  grid->addWidget(edit, 2, 1);
+  label = new QLabel(s, w);
+  label->setFrameStyle(QFrame::WinPanel | QFrame::Sunken);
+  grid->addWidget(label, 2, 1);
+  
+  label = new QLabel(tr("First Date"), w);
+  grid->addWidget(label, 3, 0);
+  
+  Bar *bar = db->getFirstBar();
+  if (bar)
+  {
+    bar->getDate().getDateTimeString(TRUE, s);
+    label = new QLabel(s, w);
+    label->setFrameStyle(QFrame::WinPanel | QFrame::Sunken);
+    grid->addWidget(label, 3, 1);
+    delete bar;
+  }
+  
+  label = new QLabel(tr("Last Date"), w);
+  grid->addWidget(label, 4, 0);
+  
+  bar = db->getLastBar();
+  if (bar)
+  {
+    bar->getDate().getDateTimeString(TRUE, s);
+    label = new QLabel(s, w);
+    label->setFrameStyle(QFrame::WinPanel | QFrame::Sunken);
+    grid->addWidget(label, 4, 1);
+    delete bar;
+  }
   
   grid->expand(grid->numRows() + 1, grid->numCols());
   grid->setColStretch(1, 1);
@@ -141,186 +155,88 @@ void StocksDialog::createDataPage ()
   vbox->setMargin(5);
   vbox->setSpacing(0);
 
-  toolbar = new Toolbar(w, 30, 30, FALSE);
-  vbox->addWidget(toolbar);
-  vbox->addSpacing(10);
-  
-  toolbar->addButton("delete", QPixmap(deleteitem), tr("Delete Record"));
-  connect(toolbar->getButton("delete"), SIGNAL(clicked()), this, SLOT(deleteRecord()));
-  toolbar->setButtonStatus("delete", FALSE);
-  toolbar->getButton("delete")->setAccel(CTRL+Key_D);
-
-  toolbar->addButton("save", QPixmap(exportfile), tr("Save Record"));
-  connect(toolbar->getButton("save"), SIGNAL(clicked()), this, SLOT(saveRecord()));
-  toolbar->setButtonStatus("save", FALSE);
-  toolbar->getButton("save")->setAccel(CTRL+Key_S);
-
-  QGridLayout *grid = new QGridLayout(vbox);
-  grid->setSpacing(5);
-    
-  QLabel *label = new QLabel(tr("Search"), w);
-  grid->addWidget(label, 0, 0);
-  
-  QDateTime dt = QDateTime::currentDateTime();
-  dt.setTime(QTime(0, 0, 0));
-  dateSearch = new QDateTimeEdit(dt, w);
-  dateSearch->setAutoAdvance(TRUE);
-  dateSearch->dateEdit()->setOrder(QDateEdit::YMD);
-  QString s;
-  db->getHeaderField(DbPlugin::BarType, s);  
-  if (! s.toInt())
-    dateSearch->timeEdit()->setEnabled(FALSE);
-  grid->addWidget(dateSearch, 0, 1);
-  
-  QPushButton *button = new QPushButton(tr("Search"), w);
-  QObject::connect(button, SIGNAL(clicked()), this, SLOT(slotDateSearch()));
-  QToolTip::add(button, tr("Search"));
-  button->setPixmap(search);
-  grid->addWidget(button, 0, 2);
-  button->setAccel(CTRL+Key_R);
-  
-  label = new QLabel(tr("Date"), w);
-  grid->addWidget(label, 1, 0);
-  
-  date = new QLineEdit(w);
-  date->setReadOnly(TRUE);
-  grid->addWidget(date, 1, 1);
-
-  label = new QLabel(tr("Open"), w);
-  grid->addWidget(label, 2, 0);
-  
-  open = new QLineEdit(w);
-  QDoubleValidator *dv = new QDoubleValidator(0, 99999999999.0, 4, this, 0);
-  open->setValidator(dv);
-  connect(open, SIGNAL(textChanged(const QString &)), this, SLOT(textChanged(const QString &)));
-  grid->addWidget(open, 2, 1);
-
-  label = new QLabel(tr("High"), w);
-  grid->addWidget(label, 3, 0);
-  
-  high = new QLineEdit(w);
-  dv = new QDoubleValidator(0, 99999999999.0, 4, this, 0);
-  high->setValidator(dv);
-  connect(high, SIGNAL(textChanged(const QString &)), this, SLOT(textChanged(const QString &)));
-  grid->addWidget(high, 3, 1);
-  
-  label = new QLabel(tr("Low"), w);
-  grid->addWidget(label, 4, 0);
-  
-  low = new QLineEdit(w);
-  dv = new QDoubleValidator(0, 99999999999.0, 4, this, 0);
-  low->setValidator(dv);
-  connect(low, SIGNAL(textChanged(const QString &)), this, SLOT(textChanged(const QString &)));
-  grid->addWidget(low, 4, 1);
-
-  label = new QLabel(tr("Close"), w);
-  grid->addWidget(label, 5, 0);
-  
-  close = new QLineEdit(w);
-  dv = new QDoubleValidator(0, 99999999999.0, 4, this, 0);
-  close->setValidator(dv);
-  connect(close, SIGNAL(textChanged(const QString &)), this, SLOT(textChanged(const QString &)));
-  grid->addWidget(close, 5, 1);
-
-  label = new QLabel(tr("Volume"), w);
-  grid->addWidget(label, 6, 0);
-  
-  volume = new QLineEdit(w);
-  dv = new QDoubleValidator(0, 99999999999.0, 0, this, 0);
-  volume->setValidator(dv);
-  connect(volume, SIGNAL(textChanged(const QString &)), this, SLOT(textChanged(const QString &)));
-  grid->addWidget(volume, 6, 1);
-
-  grid->expand(grid->numRows() + 1, grid->numCols());
-  grid->setColStretch(1, 1);
+  barEdit = new BarEdit(w);
+  QString s = tr("Open");  
+  QString s2 = "Open";  
+  barEdit->createField(s, s2, FALSE);
+  s = tr("High");  
+  s2 = "High";  
+  barEdit->createField(s, s2, FALSE);
+  s = tr("Low");  
+  s2 = "Low";  
+  barEdit->createField(s, s2, FALSE);
+  s = tr("Close");  
+  s2 = "Close";  
+  barEdit->createField(s, s2, FALSE);
+  s = tr("Volume");  
+  s2 = "Volume";  
+  barEdit->createField(s, s2, FALSE);
+  connect(barEdit, SIGNAL(signalDeleteRecord(QString)), this, SLOT(deleteRecord(QString)));
+  connect(barEdit, SIGNAL(signalSaveRecord()), this, SLOT(saveRecord()));
+  connect(barEdit, SIGNAL(signalSearch(QString)), this, SLOT(slotDateSearch(QString)));
+  vbox->addWidget(barEdit);
   
   addTab(w, tr("Data"));  
 }
 
-void StocksDialog::deleteRecord ()
+void StocksDialog::deleteRecord (QString k)
 {
-  if (saveRecordFlag)
-  {  
-    int rc = QMessageBox::warning(this,
-    			          tr("Delete record."),
-			          tr("Are you sure you want to delete record?"),
-			          QMessageBox::Yes,
-			          QMessageBox::No,
-			          QMessageBox::NoButton);
-
-    if (rc == QMessageBox::No)
-      return;
-  }
-
-  QString s = dateSearch->dateTime().toString("yyyyMMddmmhhss");
-  db->deleteData(s);
-  
-  clearRecordFields();
-  
-  toolbar->setButtonStatus("delete", FALSE);
-  toolbar->setButtonStatus("save", FALSE);
-  saveRecordFlag = FALSE;
+  db->deleteData(k);
 }
 
 void StocksDialog::saveRecord ()
 {
   Bar bar;
-  QString s = date->text();
+  QString s = barEdit->getDate();
   bar.setDate(s);
-  bar.setOpen(open->text().toDouble());
-  bar.setHigh(high->text().toDouble());
-  bar.setLow(low->text().toDouble());
-  bar.setClose(close->text().toDouble());
-  bar.setVolume(volume->text().toDouble());
+  s = "Open";
+  bar.setOpen(barEdit->getField(s).toDouble());
+  s = "High";
+  bar.setHigh(barEdit->getField(s).toDouble());
+  s = "Low";
+  bar.setLow(barEdit->getField(s).toDouble());
+  s = "Close";
+  bar.setClose(barEdit->getField(s).toDouble());
+  s = "Volume";
+  bar.setVolume(barEdit->getField(s).toDouble());
   db->setBar(bar);
-  
-  toolbar->setButtonStatus("save", FALSE);
-  saveRecordFlag = FALSE;
 }
 
-void StocksDialog::slotDateSearch ()
+void StocksDialog::slotDateSearch (QString k)
 {
-  if (saveRecordFlag)
-  {  
-    int rc = QMessageBox::warning(this,
-    			          tr("Warning"),
-			          tr("Record has been modified.\nSave changes?"),
-			          QMessageBox::Yes,
-			          QMessageBox::No,
-			          QMessageBox::NoButton);
-
-    if (rc == QMessageBox::Yes)
-      saveRecord();
-    else
-      saveRecordFlag = FALSE;
-  }
-
-  QString key = dateSearch->dateTime().toString("yyyyMMddmmhhss");
-
-  clearRecordFields();
-  
-  Bar *record = db->getBar(key);
+  Bar *record = db->getBar(k);
   if (! record)
-  {
-    toolbar->setButtonStatus("delete", FALSE);
-    toolbar->setButtonStatus("save", FALSE);
     return;
-  }
 
-  ignoreSaveRecordFlag = TRUE;
-  record->getDate().getDateTimeString(TRUE, key);
-  date->setText(key);
-  open->setText(QString::number(record->getOpen()));
-  high->setText(QString::number(record->getHigh()));
-  low->setText(QString::number(record->getLow()));
-  close->setText(QString::number(record->getClose()));
-  volume->setText(QString::number(record->getVolume(), 'f', 0));
-  ignoreSaveRecordFlag = FALSE;
+  QString s;
+  record->getDate().getDateTimeString(TRUE, s);
+  barEdit->setDate(s, record->getTickFlag());
+  
+  s = "Open";
+  QString s2 = QString::number(record->getOpen());
+  barEdit->setField(s, s2);
+  
+  s = "High";
+  s2 = QString::number(record->getHigh());
+  barEdit->setField(s, s2);
+  
+  s = "Low";
+  s2 = QString::number(record->getLow());
+  barEdit->setField(s, s2);
+  
+  s = "Close";
+  s2 = QString::number(record->getClose());
+  barEdit->setField(s, s2);
+  
+  s = "Volume";
+  s2 = QString::number(record->getVolume(), 'f', 0);
+  barEdit->setField(s, s2);
+  
+  s = "OI";
+  s2 = QString::number(record->getOI(), 'f', 0);
+  barEdit->setField(s, s2);
   
   delete record;
-  
-  toolbar->setButtonStatus("delete", TRUE);
-  toolbar->setButtonStatus("save", FALSE);
 }
 
 void StocksDialog::saveChart ()
@@ -328,7 +244,7 @@ void StocksDialog::saveChart ()
   QString s = title->text();
   db->setHeaderField(DbPlugin::Title, s);
 
-  if (saveRecordFlag)
+  if (barEdit->getSaveFlag())
   {  
     int rc = QMessageBox::warning(this,
     			          tr("Warning"),
@@ -342,27 +258,6 @@ void StocksDialog::saveChart ()
   }
   
   accept();
-}
-
-void StocksDialog::clearRecordFields ()
-{
-  ignoreSaveRecordFlag = TRUE;
-  date->clear();
-  open->clear();
-  high->clear();
-  low->clear();
-  close->clear();
-  volume->clear();
-  ignoreSaveRecordFlag = FALSE;
-}
-
-void StocksDialog::textChanged (const QString &)
-{
-  if (! ignoreSaveRecordFlag)
-  {
-    saveRecordFlag = TRUE;
-    toolbar->setButtonStatus("save", TRUE);
-  }
 }
 
 void StocksDialog::help ()

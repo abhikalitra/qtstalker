@@ -71,25 +71,32 @@ void REF::calculate ()
 
 int REF::indicatorPrefDialog (QWidget *w)
 {
+  QString pl = QObject::tr("Parms");
+  QString cl = QObject::tr("Color");
+  QString ll = QObject::tr("Label");
+  QString ltl = QObject::tr("Line Type");
+  QString perl = QObject::tr("Period");
+  QString il = QObject::tr("Input");
+
   PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(QObject::tr("REF Indicator"));
-  dialog->createPage (QObject::tr("Parms"));
+  dialog->createPage (pl);
   dialog->setHelpFile(helpFile);
-  dialog->addColorItem(QObject::tr("Color"), QObject::tr("Parms"), color);
-  dialog->addTextItem(QObject::tr("Label"), QObject::tr("Parms"), label);
-  dialog->addComboItem(QObject::tr("Line Type"), QObject::tr("Parms"), lineTypes, lineType);
-  dialog->addIntItem(QObject::tr("Period"), QObject::tr("Parms"), period, 0, 999999);
-  dialog->addComboItem(QObject::tr("Input"), QObject::tr("Parms"), inputTypeList, input);
+  dialog->addColorItem(cl, pl, color);
+  dialog->addTextItem(ll, pl, label);
+  dialog->addComboItem(ltl, pl, lineTypes, lineType);
+  dialog->addIntItem(perl, pl, period, 0, 999999);
+  dialog->addComboItem(il, pl, inputTypeList, input);
   
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
-    color = dialog->getColor(QObject::tr("Color"));
-    lineType = (PlotLine::LineType) dialog->getComboIndex(QObject::tr("Line Type"));
-    label = dialog->getText(QObject::tr("Label"));
-    period = dialog->getInt(QObject::tr("Period"));
-    input = (BarData::InputType) dialog->getComboIndex(QObject::tr("Input"));
+    color = dialog->getColor(cl);
+    lineType = (PlotLine::LineType) dialog->getComboIndex(ltl);
+    label = dialog->getText(ll);
+    period = dialog->getInt(perl);
+    input = (BarData::InputType) dialog->getComboIndex(il);
     rc = TRUE;
   }
   else

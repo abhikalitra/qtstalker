@@ -19,38 +19,51 @@
  *  USA.
  */
 
-#ifndef STOCKSDIALOG_HPP
-#define STOCKSDIALOG_HPP
+#ifndef BAREDIT_HPP
+#define BAREDIT_HPP
 
-#include <qtabdialog.h>
+#include <qdatetimeedit.h>
 #include <qlineedit.h>
-#include "DbPlugin.h"
-#include "Config.h"
-#include "BarEdit.h"
+#include <qwidget.h>
+#include <qlayout.h>
+#include "Toolbar.h"
 
-class FuturesDialog : public QTabDialog
+class BarEdit : public QWidget
 {
   Q_OBJECT
+  
+  signals:
+    void signalDeleteRecord (QString);
+    void signalSaveRecord ();
+    void signalSearch (QString);
 
   public:
-    FuturesDialog (QString, DbPlugin *);
-    ~FuturesDialog ();
-    void createDetailsPage ();
-    void createDataPage ();
+    BarEdit (QWidget *);
+    ~BarEdit ();
+    void clearRecordFields ();
+    void createField (QString &, QString &, bool);
+    QString getDate ();
+    void setDate (QString &, bool);
+    void setField (QString &, QString &);
+    QString getField (QString &);
+    bool getSaveFlag ();
 
   public slots:
-    void deleteRecord (QString);
+    void deleteRecord ();
     void saveRecord ();
-    void slotDateSearch (QString);
-    void saveChart ();
-    void help ();
+    void slotDateSearch ();
+    void textChanged (const QString &);
 
   private:
-    DbPlugin *db;
-    Config config;
-    QLineEdit *title;
-    QString helpFile;
-    BarEdit *barEdit;
+    QGridLayout *grid;
+    QDateTimeEdit *dateSearch;
+    QLineEdit *date;
+    QDict<QLineEdit> editList;
+    Toolbar *toolbar;
+    bool saveRecordFlag;
+    bool ignoreSaveRecordFlag;
+    QString saveLabel;
+    QString deleteLabel;
 };
 
 #endif

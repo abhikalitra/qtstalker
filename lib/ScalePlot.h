@@ -41,15 +41,15 @@ class ScalePlot : public QWidget
     void setScaleWidth (int);
     void setLogScale (bool);
     void setScaleToScreen (bool);
-    QString strip (double, int);
+    void strip (double, int, QString &);
     void setScaler (Scaler *);
 
   public slots:
     void draw();
     void drawRefresh();
-    void setBackgroundColor (QColor);
-    void setBorderColor (QColor);
-    void setPlotFont (QFont);
+    void setBackgroundColor (QColor &);
+    void setBorderColor (QColor &);
+    void setPlotFont (QFont &);
     void slotScaleToScreenChanged (bool);
     void slotLogScaleChanged (bool);
     void drawScale ();

@@ -32,11 +32,11 @@ class ColorButton : public QPushButton
   Q_OBJECT
 
   public:
-    ColorButton (QWidget *, QColor);
+    ColorButton (QWidget *, QColor &);
     ~ColorButton ();
     QColor getColor ();
     void setColorButton ();
-    void setColor (QColor);
+    void setColor (QColor &);
 
   public slots:
     void colorDialog ();

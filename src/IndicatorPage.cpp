@@ -160,9 +160,11 @@ void IndicatorPage::newIndicatorGroup ()
 void IndicatorPage::deleteIndicatorGroup ()
 {
   Config config;
+  QString s("*");
+  QString s2(config.getData(Config::IndicatorPath));
   SymbolDialog *dialog = new SymbolDialog(this,
-  					  config.getData(Config::IndicatorPath),
-					  "*",
+  					  s2,
+					  s,
 					  QFileDialog::DirectoryOnly);
   dialog->setCaption(tr("Select Indicator Group(s) To Delete"));
 
@@ -231,18 +233,29 @@ void IndicatorPage::deleteIndicatorGroup ()
 void IndicatorPage::newIndicator ()
 {
   Indicator *ti = new Indicator;
-  QStringList l = ti->getPlotTypes();
+  QStringList l;
+  ti->getPlotTypes(l);
   delete ti;
 
   Config config;  
   PrefDialog *idialog = new PrefDialog;
   idialog->setCaption(tr("New Indicator"));
-  idialog->createPage (tr("Details"));
-  idialog->setHelpFile("newindicator.html");
-  idialog->addComboItem(tr("Indicator"), tr("Details"), config.getIndicatorList(), 0);
-  idialog->addTextItem(tr("Name"), tr("Details"), tr("NewIndicator"));
-  idialog->addComboItem(tr("Plot Type"), tr("Details"), l, 1);
-  idialog->addComboItem(tr("Indicator Group"), tr("Details"), getIndicatorGroups(), 0);
+  QString s("newindicator.html");
+  idialog->setHelpFile(s);
+  
+  s = tr("Details");
+  idialog->createPage (s);
+  QString s2(tr("Indicator"));
+  QStringList l2;
+  config.getIndicatorList(l2);
+  idialog->addComboItem(s2, s, l2, 0);
+  s2 = tr("Name");
+  QString s3(tr("NewIndicator"));
+  idialog->addTextItem(s2, s, s3);
+  s2 = tr("Plot Type");
+  idialog->addComboItem(s2, s, l, 1);
+  s2 = tr("Indicator Group");
+  idialog->addComboItem(s2, s, l, 0);
   
   int rc = idialog->exec();
   if (rc == QDialog::Rejected)
@@ -251,10 +264,14 @@ void IndicatorPage::newIndicator ()
     return;
   }
   
-  QString name = idialog->getText(tr("Name"));
-  QString indicator = idialog->getCombo(tr("Indicator"));
-  Indicator::PlotType plotType = (Indicator::PlotType) idialog->getComboIndex(tr("Plot Type"));
-  QString igroup = idialog->getCombo(tr("Indicator Group"));
+  s = tr("Name");
+  QString name = idialog->getText(s);
+  s = tr("Indicator");
+  QString indicator = idialog->getCombo(s);
+  s = tr("Plot Type");
+  Indicator::PlotType plotType = (Indicator::PlotType) idialog->getComboIndex(s);
+  s = tr("Indicator Group");
+  QString igroup = idialog->getCombo(s);
   delete idialog;
   
   if (! name.length())
@@ -265,7 +282,7 @@ void IndicatorPage::newIndicator ()
   
   // correct any forbidden chars in name
   int loop;
-  QString s;
+  s.truncate(0);
   for (loop = 0; loop < (int) name.length(); loop++)
   {
     QChar c = name.at(loop);
@@ -477,7 +494,8 @@ void IndicatorPage::deleteIndicator ()
 void IndicatorPage::moveIndicator ()
 {
   Indicator *i = new Indicator;
-  QStringList pl = i->getPlotTypes();
+  QStringList pl;
+  i->getPlotTypes(pl);
   delete i;
 
   Config config;
@@ -499,13 +517,18 @@ void IndicatorPage::moveIndicator ()
   
   PrefDialog *dialog = new PrefDialog;
   dialog->setCaption(tr("Move Indicator"));
-  dialog->createPage (tr("Details"));
-  dialog->setHelpFile("workwithmainindicators.html");
-  dialog->addComboItem(tr("Plot Type"), tr("Details"), pl, set.getInt("plotType"));
+  QString t("workwithmainindicators.html");  
+  dialog->setHelpFile(t);
+  
+  t = tr("Details");
+  dialog->createPage(t);
+  QString t2(tr("Plot Type"));
+  dialog->addComboItem(t2, t, pl, set.getInt("plotType"));
   QString igroup = group->currentText();
   if (localIndicators.findIndex(list->currentText()) != -1)
     igroup = tr("Local");
-  dialog->addComboItem(tr("Indicator Group"), tr("Details"), getIndicatorGroups(), igroup);
+  t2 = tr("Indicator Group");
+  dialog->addComboItem(t2, t, pl, igroup);
   
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)
@@ -513,10 +536,12 @@ void IndicatorPage::moveIndicator ()
     delete dialog;
     return;
   }
+
+  t = tr("Plot Type");
+  set.setData("plotType", QString::number(dialog->getComboIndex(t)));
   
-  set.setData("plotType", QString::number(dialog->getComboIndex(tr("Plot Type"))));
-  
-  QString s2 = dialog->getCombo(tr("Indicator Group"));
+  t = tr("Indicator Group");
+  QString s2 = dialog->getCombo(t);
   if (! igroup.compare(tr("Local")))
   {
     if (s2.compare(tr("Local")))
@@ -595,7 +620,9 @@ void IndicatorPage::updateList ()
   list->clear();
   
   Config config;
-  QStringList l = config.getIndicators(getIndicatorGroup());
+  QStringList l;
+  QString s(getIndicatorGroup());
+  config.getIndicators(s, l);
 
   int loop;  
   for (loop = 0; loop < (int) l.count(); loop++)
@@ -676,7 +703,8 @@ void IndicatorPage::changeIndicator (QString d)
 
 void IndicatorPage::slotHelp ()
 {
-  HelpWindow *hw = new HelpWindow(this, "workwithmainindicators.html");
+  QString s = "workwithmainindicators.html";
+  HelpWindow *hw = new HelpWindow(this, s);
   hw->show();
 }
 
@@ -857,15 +885,13 @@ void IndicatorPage::updateGroups ()
   group->blockSignals(FALSE);
 }
 
-QStringList IndicatorPage::getIndicatorGroups ()
+void IndicatorPage::getIndicatorGroups (QStringList &l)
 {
-  QStringList l;
+  l.clear();
   l.append(group->currentText());
   
   if (chartPath.length())
     l.append(tr("Local"));
-    
-  return l;
 }
 
 QString IndicatorPage::getIndicatorGroup ()

@@ -39,9 +39,9 @@ class Text : public COPlugin
     Text ();
     ~Text ();
     void draw (int, int, int);
-    void newObject (QString, QString);
+    void newObject (QString &, QString &);
     void addObject (Setting &);
-    void saveObjects (QString);
+    void saveObjects (QString &);
     void clear ();
     void keyEvent (QKeyEvent *);
     double getHigh ();
@@ -56,8 +56,8 @@ class Text : public COPlugin
     void prefDialog ();
     void moveObject ();
     void removeObject ();
-    COPlugin::Status pointerClick (QPoint, BarDate, double);
-    void pointerMoving (QPoint, BarDate x, double y);
+    COPlugin::Status pointerClick (QPoint &, BarDate &, double);
+    void pointerMoving (QPoint &, BarDate &, double y);
     
   protected:
     QPointArray arrow;

@@ -117,28 +117,37 @@ void Text::draw (int startIndex, int pixelspace, int startX)
 
 void Text::prefDialog ()
 {
+  QString pl = tr("Details");
+  QString cl = tr("Color");
+  QString sd = tr("Set Default");
+  QString fl = tr("Font");
+  QString ll = tr("Label");
+
   PrefDialog *dialog = new PrefDialog();
   dialog->setCaption(tr("Edit Text"));
-  dialog->createPage (tr("Details"));
+  dialog->createPage (pl);
   dialog->setHelpFile (helpFile);
-  dialog->addColorItem(tr("Color"), tr("Details"), selected->getColor());
-  dialog->addFontItem(tr("Font"), tr("Details"), selected->getFont());
-  dialog->addTextItem(tr("Label"), tr("Details"), selected->getLabel());
-  dialog->addCheckItem(tr("Set Default"), tr("Details"), FALSE);
+  QColor color = selected->getColor();
+  dialog->addColorItem(cl, pl, color);
+  QFont f = selected->getFont();
+  dialog->addFontItem(fl, pl, f);
+  QString t = selected->getLabel();
+  dialog->addTextItem(ll, pl, t);
+  dialog->addCheckItem(sd, pl, FALSE);
   
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
-    selected->setColor(dialog->getColor(tr("Color")));
-    selected->setLabel(dialog->getText(tr("Label")));
-    selected->setFont(dialog->getFont(tr("Font")));
+    selected->setColor(dialog->getColor(cl));
+    selected->setLabel(dialog->getText(ll));
+    selected->setFont(dialog->getFont(fl));
     
-    bool f = dialog->getCheck(tr("Set Default"));
+    bool f = dialog->getCheck(sd);
     if (f)
     {
-      defaultColor = dialog->getColor(tr("Color"));
-      font = dialog->getFont(tr("Font"));
+      defaultColor = dialog->getColor(cl);
+      font = dialog->getFont(fl);
       saveDefaults();
     }
     
@@ -155,7 +164,7 @@ void Text::addObject (Setting &set)
   objects.replace(co->getName(), co);
 }
 
-void Text::newObject (QString ind, QString n)
+void Text::newObject (QString &ind, QString &n)
 {
   loadDefaults();
   indicator = ind;
@@ -164,7 +173,7 @@ void Text::newObject (QString ind, QString n)
   emit message(tr("Select point to place Text..."));
 }
 
-COPlugin::Status Text::pointerClick (QPoint point, BarDate x, double y)
+COPlugin::Status Text::pointerClick (QPoint &point, BarDate &x, double y)
 {
   if (status == None)
   {
@@ -233,7 +242,7 @@ COPlugin::Status Text::pointerClick (QPoint point, BarDate x, double y)
   return status;    
 }
 
-void Text::pointerMoving (QPoint, BarDate x, double y)
+void Text::pointerMoving (QPoint &, BarDate &x, double y)
 {
   if (status != Moving)
     return;
@@ -250,7 +259,7 @@ void Text::pointerMoving (QPoint, BarDate x, double y)
   emit message(s);
 }
 
-void Text::saveObjects (QString chartPath)
+void Text::saveObjects (QString &chartPath)
 {
   if (! chartPath.length())
     return;

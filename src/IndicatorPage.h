@@ -62,7 +62,7 @@ class IndicatorPage : public QWidget
     IndicatorPage (QWidget *);
     ~IndicatorPage ();
     void updateGroups ();
-    QStringList getIndicatorGroups ();
+    void getIndicatorGroups (QStringList &);
     QString getIndicatorGroup ();
     void setFocus ();
     void setChartPath (QString);

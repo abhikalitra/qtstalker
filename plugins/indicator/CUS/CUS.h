@@ -28,10 +28,10 @@ class CUS : public IndicatorPlugin
     CUS ();
     virtual ~CUS ();
     void calculate ();
-    void loadIndicatorSettings (QString);
-    void saveIndicatorSettings (QString);
+    void loadIndicatorSettings (QString &);
+    void saveIndicatorSettings (QString &);
     int indicatorPrefDialog (QWidget *);
-    void setCustomFunction (QString);
+    void setCustomFunction (QString &);
     int getMinBars ();
     
   protected:

@@ -42,6 +42,7 @@
 #include <qdatetime.h>
 #include <qstringlist.h>
 #include <qstring.h>
+#include <qlabel.h>
 
 class PrefDialog : public QTabDialog
 {
@@ -52,38 +53,39 @@ class PrefDialog : public QTabDialog
     PrefDialog ();
     ~PrefDialog ();
     void init ();
-    void createPage (QString);
-    void deletePage (QString);
-    void setHelpFile (QString);
-    void addColorItem (QString, QString, QColor);
-    QColor getColor (QString);
-    void addFloatItem (QString, QString, double, double, double);
-    void addFloatItem (QString, QString, double);
-    double getFloat (QString);
-    void addIntItem (QString, QString, int);
-    void addIntItem (QString, QString, int, int, int);
-    int getInt (QString);
-    void addCheckItem (QString, QString, bool);
-    void addCheckItem (QString, QString, QString);
-    bool getCheck (QString);
-    QString getCheckString (QString);
-    void addFontItem (QString, QString, QFont);
-    QFont getFont (QString);
-    void addTextItem (QString, QString, QString);
-    QString getText (QString);
-    void addComboItem (QString, QString, QStringList, QString);
-    void addComboItem (QString, QString, QStringList, int);
-    QString getCombo (QString);
-    int getComboIndex (QString);
-    QComboBox * getComboWidget (QString);
-    void addDateItem (QString, QString, QDateTime);
-    QDateTime getDate (QString);
-    void addFileItem (QString, QString, QStringList, QString);
-    QStringList getFile (QString);
-    void addSymbolItem (QString, QString, QString, QString);
-    QString getSymbol (QString);
-    void addFormulaInputItem (QString, QString, bool, QString);
-    QString getFormulaInput (QString);
+    void createPage (QString &);
+    void deletePage (QString &);
+    void setHelpFile (QString &);
+    void addColorItem (QString &, QString &, QColor &);
+    QColor getColor (QString &);
+    void addFloatItem (QString &, QString &, double, double, double);
+    void addFloatItem (QString &, QString &, double);
+    double getFloat (QString &);
+    void addIntItem (QString &, QString &, int);
+    void addIntItem (QString &, QString &, int, int, int);
+    int getInt (QString &);
+    void addCheckItem (QString &, QString &, bool);
+    void addCheckItem (QString &, QString &, QString &);
+    bool getCheck (QString &);
+    QString getCheckString (QString &);
+    void addFontItem (QString &, QString &, QFont &);
+    QFont getFont (QString &);
+    void addTextItem (QString &, QString &, QString &);
+    QString getText (QString &);
+    void addComboItem (QString &, QString &, QStringList &, QString &);
+    void addComboItem (QString &, QString &, QStringList &, int);
+    QString getCombo (QString &);
+    int getComboIndex (QString &);
+    QComboBox * getComboWidget (QString &);
+    void addDateItem (QString &, QString &, QDateTime &);
+    QDateTime getDate (QString &);
+    void addFileItem (QString &, QString &, QStringList &, QString &);
+    QStringList getFile (QString &);
+    void addSymbolItem (QString &, QString &, QString &, QString &);
+    QString getSymbol (QString &);
+    void addFormulaInputItem (QString &, QString &, bool, QString &);
+    QString getFormulaInput (QString &);
+    void addLabelItem (QString &, QString &, QString &);
     
   public slots:
     void help ();
@@ -103,6 +105,7 @@ class PrefDialog : public QTabDialog
     QDict<SymbolButton> symbolList;
     QDict<QDoubleValidator> dvList;
     QDict<FormulaInput> formulaInputList;
+    QDict<QLabel> labelList;
     QString helpFile;
 };
 

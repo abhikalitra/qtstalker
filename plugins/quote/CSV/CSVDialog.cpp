@@ -75,15 +75,21 @@ void CSVDialog::createMainPage ()
   
   toolbar = new Toolbar(w, 30, 30, FALSE);
   vbox->addWidget(toolbar);
+
+  QString s = "new";
+  QString s2 = tr("New Rule");
+  toolbar->addButton(s, newchart, s2);
+  QObject::connect(toolbar->getButton(s), SIGNAL(clicked()), this, SLOT(newRule()));
   
-  toolbar->addButton("new", newchart, tr("New Rule"));
-  QObject::connect(toolbar->getButton("new"), SIGNAL(clicked()), this, SLOT(newRule()));
+  s = "edit";
+  s2 = tr("Edit Rule");
+  toolbar->addButton(s, edit, s2);
+  QObject::connect(toolbar->getButton(s), SIGNAL(clicked()), this, SLOT(editRule()));
   
-  toolbar->addButton("edit", edit, tr("Edit Rule"));
-  QObject::connect(toolbar->getButton("edit"), SIGNAL(clicked()), this, SLOT(editRule()));
-  
-  toolbar->addButton("delete", deleteitem, tr("Delete Rule"));
-  QObject::connect(toolbar->getButton("delete"), SIGNAL(clicked()), this, SLOT(deleteRule()));
+  s = "delete";
+  s2 = tr("Delete Rule");
+  toolbar->addButton(s, deleteitem, s2);
+  QObject::connect(toolbar->getButton(s), SIGNAL(clicked()), this, SLOT(deleteRule()));
   
   vbox->addSpacing(10);
   
@@ -100,7 +106,8 @@ void CSVDialog::createMainPage ()
   label = new QLabel(tr("Input:"), w);
   grid->addWidget(label, 1, 0);
   
-  file = new FileButton(w, QStringList(), lastPath);
+  QStringList l;
+  file = new FileButton(w, l, lastPath);
   grid->addWidget(file, 1, 1);
 
   label = new QLabel(tr("Symbol:"), w);
@@ -191,9 +198,10 @@ void CSVDialog::newRule ()
 
 void CSVDialog::editRule ()
 {
+  QString s("*");
   SymbolDialog *dialog = new SymbolDialog(this,
   				          ruleDir,
-					  "*",
+					  s,
 					  QFileDialog::ExistingFiles);
   dialog->setCaption(tr("Select Rule To Edit"));
 
@@ -219,9 +227,10 @@ void CSVDialog::editRule ()
 
 void CSVDialog::deleteRule ()
 {
+  QString s("*");
   SymbolDialog *dialog = new SymbolDialog(this,
   				          ruleDir,
-					  "*",
+					  s,
 					  QFileDialog::ExistingFiles);
   dialog->setCaption(tr("Select Rules To Delete"));
 
@@ -266,7 +275,9 @@ void CSVDialog::dateRangeChanged (bool d)
 
 QStringList CSVDialog::getFiles ()
 {
-  return file->getFile();
+  QStringList l;
+  file->getFile(l);
+  return l;
 }
 
 void CSVDialog::setFiles (QStringList l)

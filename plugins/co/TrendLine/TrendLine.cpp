@@ -194,33 +194,44 @@ void TrendLine::prefDialog ()
   l.append(tr("Low"));
   l.append(tr("Close"));
 
+  QString pl = tr("Details");
+  QString cl = tr("Color");
+  QString sd = tr("Set Default");
+  QString ub = tr("Use Bar");
+  QString el = tr("Extend Line");
+  QString bf = tr("Bar Field");
+  
   PrefDialog *dialog = new PrefDialog();
   dialog->setCaption(tr("Edit TrendLine"));
-  dialog->createPage (tr("Details"));
+  dialog->createPage (pl);
   dialog->setHelpFile (helpFile);
-  dialog->addColorItem(tr("Color"), tr("Details"), selected->getColor());
-  dialog->addComboItem(tr("Bar Field"), tr("Details"), l, selected->getBar());
-  dialog->addCheckItem(tr("Use Bar"), tr("Details"), selected->getUseBar());
-  dialog->addCheckItem(tr("Extend Line"), tr("Details"), selected->getExtend());
-  dialog->addCheckItem(tr("Set Default"), tr("Details"), FALSE);
+  QColor color = selected->getColor();
+  dialog->addColorItem(cl, pl, color);
+  QString t = selected->getBar();
+  dialog->addComboItem(bf, pl, l, t);
+  bool f = selected->getUseBar();
+  dialog->addCheckItem(ub, pl, f);
+  f = selected->getExtend();
+  dialog->addCheckItem(el, pl, f);
+  dialog->addCheckItem(sd, pl, FALSE);
   
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
-    selected->setColor(dialog->getColor(tr("Color")));
-    selected->setBar(dialog->getCombo(tr("Bar Field")));
-    selected->setUseBar(dialog->getCheck(tr("Use Bar")));
-    selected->setExtend(dialog->getCheck(tr("Extend Line")));
+    selected->setColor(dialog->getColor(cl));
+    selected->setBar(dialog->getCombo(bf));
+    selected->setUseBar(dialog->getCheck(ub));
+    selected->setExtend(dialog->getCheck(el));
     selected->setSaveFlag(TRUE);
     
-    bool f = dialog->getCheck(tr("Set Default"));
+    bool f = dialog->getCheck(sd);
     if (f)
     {
-      defaultColor = dialog->getColor(tr("Color"));
-      bar = dialog->getCombo(tr("Bar Field"));
-      usebar = dialog->getCheck(tr("Use Bar"));
-      extend = dialog->getCheck(tr("Extend Line"));
+      defaultColor = dialog->getColor(cl);
+      bar = dialog->getCombo(bf);
+      usebar = dialog->getCheck(ub);
+      extend = dialog->getCheck(el);
       
       saveDefaults();
     }
@@ -238,7 +249,7 @@ void TrendLine::addObject (Setting &set)
   objects.replace(co->getName(), co);
 }
 
-void TrendLine::newObject (QString ind, QString n)
+void TrendLine::newObject (QString &ind, QString &n)
 {
   loadDefaults();
   indicator = ind;
@@ -249,7 +260,7 @@ void TrendLine::newObject (QString ind, QString n)
   emit message(tr("Select TrendLine starting point..."));
 }
 
-COPlugin::Status TrendLine::pointerClick (QPoint point, BarDate x, double y)
+COPlugin::Status TrendLine::pointerClick (QPoint &point, BarDate &x, double y)
 {
   if (status == None)
   {
@@ -336,7 +347,7 @@ COPlugin::Status TrendLine::pointerClick (QPoint point, BarDate x, double y)
   return status;    
 }
 
-void TrendLine::pointerMoving (QPoint point, BarDate x, double y)
+void TrendLine::pointerMoving (QPoint &point, BarDate &x, double y)
 {
   if (status == ClickWait2)
   {
@@ -379,7 +390,7 @@ void TrendLine::pointerMoving (QPoint point, BarDate x, double y)
   }
 }
 
-void TrendLine::drawMovingPointer (QPoint point)
+void TrendLine::drawMovingPointer (QPoint &point)
 {
   if (point.x() < mpx)
     return;
@@ -404,7 +415,7 @@ void TrendLine::drawMovingPointer (QPoint point)
   emit signalRefresh();
 }
 
-void TrendLine::saveObjects (QString chartPath)
+void TrendLine::saveObjects (QString &chartPath)
 {
   if (! chartPath.length())
     return;
@@ -474,16 +485,19 @@ void TrendLine::saveDefaults ()
   Config config;
   
   QString s = "DefaultTrendLineColor";
-  config.setData(s, defaultColor.name());
+  QString s2 = defaultColor.name();
+  config.setData(s, s2);
 
   s = "DefaultTrendLineBar";
   config.setData(s, bar);
 
   s = "DefaultTrendLineExtend";
-  config.setData(s, QString::number(extend));
+  s2 = QString::number(extend);
+  config.setData(s, s2);
 
   s = "DefaultTrendLineUseBar";
-  config.setData(s, QString::number(usebar));
+  s2 = QString::number(usebar);
+  config.setData(s, s2);
 }
 
 void TrendLine::keyEvent (QKeyEvent *key)

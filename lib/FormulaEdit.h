@@ -42,7 +42,7 @@ class FormulaEdit : public QWidget
   
     FormulaEdit (QWidget *, int);
     ~FormulaEdit ();
-    void setLine (QString);
+    void setLine (QString &);
     QString getLine (int);
     int getLines ();
     bool checkError ();

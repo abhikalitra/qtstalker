@@ -252,41 +252,69 @@ void EP::prefDialog (QWidget *w)
 {
   PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(tr("EP Chart Prefs"));
-  dialog->createPage (tr("Parms"));
   dialog->setHelpFile (helpFile);
-  dialog->addColorItem(tr("Neutral Color"), tr("Parms"), neutralColor);
-  dialog->addIntItem(tr("Min Bar Spacing"), tr("Parms"), minPixelspace, 4, 99);
   
-  dialog->createPage (tr("Outside Rank"));
-  dialog->addColorItem(tr("Outside Rank 1"), tr("Outside Rank"), or1Color);
-  dialog->addColorItem(tr("Outside Rank 2"), tr("Outside Rank"), or2Color);
-  dialog->addColorItem(tr("Outside Rank 3"), tr("Outside Rank"), or3Color);
-  dialog->addColorItem(tr("Outside Rank 4"), tr("Outside Rank"), or4Color);
-  dialog->addColorItem(tr("Outside Rank 5"), tr("Outside Rank"), or5Color);
+  QString s = tr("Parms");
+  dialog->createPage(s);
+  QString s2 = tr("Neutral Color");
+  dialog->addColorItem(s2, s, neutralColor);
+  s2 = tr("Min Bar Spacing");
+  dialog->addIntItem(s2, s, minPixelspace, 4, 99);
   
-  dialog->createPage (tr("Inside Rank"));
-  dialog->addColorItem(tr("Inside Rank 1"), tr("Inside Rank"), ir1Color);
-  dialog->addColorItem(tr("Inside Rank 2"), tr("Inside Rank"), ir2Color);
-  dialog->addColorItem(tr("Inside Rank 3"), tr("Inside Rank"), ir3Color);
-  dialog->addColorItem(tr("Inside Rank 4"), tr("Inside Rank"), ir4Color);
-  dialog->addColorItem(tr("Inside Rank 5"), tr("Inside Rank"), ir5Color);
+  s = tr("Outside Rank");
+  dialog->createPage(s);
+  s2 = tr("Outside Rank 1");
+  dialog->addColorItem(s2, s, or1Color);
+  s2 = tr("Outside Rank 2");
+  dialog->addColorItem(s2, s, or2Color);
+  s2 = tr("Outside Rank 3");
+  dialog->addColorItem(s2, s, or3Color);
+  s2 = tr("Outside Rank 4");
+  dialog->addColorItem(s2, s, or4Color);
+  s2 = tr("Outside Rank 5");
+  dialog->addColorItem(s2, s, or5Color);
+  
+  s = tr("Inside Rank");
+  dialog->createPage(s);
+  s2 = tr("Inside Rank 1");
+  dialog->addColorItem(s2, s, ir1Color);
+  s2 = tr("Inside Rank 2");
+  dialog->addColorItem(s2, s, ir2Color);
+  s2 = tr("Inside Rank 3");
+  dialog->addColorItem(s2, s, ir3Color);
+  s2 = tr("Inside Rank 4");
+  dialog->addColorItem(s2, s, ir4Color);
+  s2 = tr("Inside Rank 5");
+  dialog->addColorItem(s2, s, ir5Color);
   
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
-    neutralColor = dialog->getColor(tr("Neutral Color"));
-    minPixelspace = dialog->getInt(tr("Min Bar Spacing"));
-    or1Color = dialog->getColor(tr("Outside Rank 1"));
-    or2Color = dialog->getColor(tr("Outside Rank 2"));
-    or3Color = dialog->getColor(tr("Outside Rank 3"));
-    or4Color = dialog->getColor(tr("Outside Rank 4"));
-    or5Color = dialog->getColor(tr("Outside Rank 5"));
-    ir1Color = dialog->getColor(tr("Inside Rank 1"));
-    ir2Color = dialog->getColor(tr("Inside Rank 2"));
-    ir3Color = dialog->getColor(tr("Inside Rank 3"));
-    ir4Color = dialog->getColor(tr("Inside Rank 4"));
-    ir5Color = dialog->getColor(tr("Inside Rank 5"));
+    s = tr("Neutral Color");
+    neutralColor = dialog->getColor(s);
+    s = tr("Min Bar Spacing");
+    minPixelspace = dialog->getInt(s);
+    s = tr("Outside Rank 1");
+    or1Color = dialog->getColor(s);
+    s = tr("Outside Rank 2");
+    or2Color = dialog->getColor(s);
+    s = tr("Outside Rank 3");
+    or3Color = dialog->getColor(s);
+    s = tr("Outside Rank 4");
+    or4Color = dialog->getColor(s);
+    s = tr("Outside Rank 5");
+    or5Color = dialog->getColor(s);
+    s = tr("Inside Rank 1");
+    ir1Color = dialog->getColor(s);
+    s = tr("Inside Rank 2");
+    ir2Color = dialog->getColor(s);
+    s = tr("Inside Rank 3");
+    ir3Color = dialog->getColor(s);
+    s = tr("Inside Rank 4");
+    ir4Color = dialog->getColor(s);
+    s = tr("Inside Rank 5");
+    ir5Color = dialog->getColor(s);
     
     saveFlag = TRUE;
     saveSettings();

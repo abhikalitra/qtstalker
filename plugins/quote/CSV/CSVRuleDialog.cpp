@@ -146,14 +146,18 @@ void CSVRuleDialog::createRulePage ()
   
   ruleToolbar = new Toolbar(w, 30, 30, TRUE);
   hbox->addWidget(ruleToolbar);
+
+  QString s = "insert";
+  QString s2 = tr("Insert Field");
+  ruleToolbar->addButton(s, insert, s2);
+  QObject::connect(ruleToolbar->getButton(s), SIGNAL(clicked()), this, SLOT(insertField()));
+  ruleToolbar->setButtonStatus(s, FALSE);
   
-  ruleToolbar->addButton("insert", insert, tr("Insert Field"));
-  QObject::connect(ruleToolbar->getButton("insert"), SIGNAL(clicked()), this, SLOT(insertField()));
-  ruleToolbar->setButtonStatus("insert", FALSE);
-  
-  ruleToolbar->addButton("deleteitem", deleteitem, tr("Delete Field"));
-  QObject::connect(ruleToolbar->getButton("deleteitem"), SIGNAL(clicked()), this, SLOT(deleteField()));
-  ruleToolbar->setButtonStatus("deleteitem", FALSE);
+  s = "deleteitem";
+  s2 = tr("Delete Field");
+  ruleToolbar->addButton(s, deleteitem, s2);
+  QObject::connect(ruleToolbar->getButton(s), SIGNAL(clicked()), this, SLOT(deleteField()));
+  ruleToolbar->setButtonStatus(s, FALSE);
   
   ruleList = new QListBox(w);
   QObject::connect(ruleList, SIGNAL(highlighted(int)), this, SLOT(ruleFieldSelected(int)));
@@ -289,18 +293,20 @@ void CSVRuleDialog::deleteField ()
 
 void CSVRuleDialog::ruleFieldSelected (int)
 {
+  QString s = "deleteitem";
   if (ruleList->currentItem() != -1)
-    ruleToolbar->setButtonStatus("deleteitem", TRUE);
+    ruleToolbar->setButtonStatus(s, TRUE);
   else
-    ruleToolbar->setButtonStatus("deleteitem", FALSE);
+    ruleToolbar->setButtonStatus(s, FALSE);
 }
 
 void CSVRuleDialog::fieldListSelected (int d)
 {
+  QString s = "insert";
   if (d != -1)
-    ruleToolbar->setButtonStatus("insert", TRUE);
+    ruleToolbar->setButtonStatus(s, TRUE);
   else
-    ruleToolbar->setButtonStatus("insert", FALSE);
+    ruleToolbar->setButtonStatus(s, FALSE);
 }
 
 void CSVRuleDialog::help ()

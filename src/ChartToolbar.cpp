@@ -47,7 +47,8 @@ ChartToolbar::ChartToolbar (QMainWindow *mw) : QToolBar (mw, "chartToolbar")
 
   chartTypeCombo = new MyComboBox(this, Macro::ChartToolbar);
   chartTypeCombo->show();
-  chartTypeCombo->insertStringList(config.getPluginList(Config::ChartPluginPath), -1);
+  config.getPluginList(Config::ChartPluginPath, l);
+  chartTypeCombo->insertStringList(l, -1);
   QToolTip::add(chartTypeCombo, tr("Chart Type"));
   chartTypeCombo->setCurrentText(config.getData(Config::ChartStyle));
   connect(chartTypeCombo, SIGNAL(activated(int)), this, SIGNAL(signalChartTypeChanged(int)));
@@ -197,9 +198,14 @@ int ChartToolbar::setSliderStart (int ov, bool flag, int width, int records)
 void ChartToolbar::saveSettings ()
 {
   Config config;
-  config.setData(Config::Bars, QString::number(getBars()));
-  config.setData(Config::Compression, QString::number(getCompressionInt()));  
-  config.setData(Config::ChartStyle, chartTypeCombo->currentText());  
+  QString s = QString::number(getBars());
+  config.setData(Config::Bars, s);
+  
+  s = QString::number(getCompressionInt());
+  config.setData(Config::Compression, s);
+  
+  s = chartTypeCombo->currentText();
+  config.setData(Config::ChartStyle, s);  
 }
 
 void ChartToolbar::setFocus ()

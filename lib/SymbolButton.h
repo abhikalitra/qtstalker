@@ -35,11 +35,11 @@ class SymbolButton : public QPushButton
     void symbolChanged ();
 
   public:
-    SymbolButton (QWidget *, QString, QString);
+    SymbolButton (QWidget *, QString &, QString &);
     ~SymbolButton ();
     QString getSymbol ();
     QString getPath ();
-    void setSymbol (QString);
+    void setSymbol (QString &);
 
   public slots:
     void fileDialog ();

@@ -39,9 +39,9 @@ class IndicatorPlugin
     Indicator * getIndicator ();
     void clearOutput ();
     void setCustomFlag (bool);
-    void loadFile (QString, Setting &);
-    void saveFile (QString, Setting &);
-    PlotLine * getInputLine (QString);
+    void loadFile (QString &, Setting &);
+    void saveFile (QString &, Setting &);
+    PlotLine * getInputLine (QString &);
     void setPlotType (int);
     QString getPluginName ();
     QString getHelpFile ();
@@ -51,10 +51,10 @@ class IndicatorPlugin
     virtual PlotLine * calculateCustom (QDict<PlotLine> *);
     virtual void getIndicatorSettings (Setting &);
     virtual void setIndicatorSettings (Setting &);
-    virtual void setCustomFunction (QString);
+    virtual void setCustomFunction (QString &);
     virtual int getMinBars ();
-    virtual void loadIndicatorSettings (QString);
-    virtual void saveIndicatorSettings (QString);
+    virtual void loadIndicatorSettings (QString &);
+    virtual void saveIndicatorSettings (QString &);
     virtual PlotLine * getMA (PlotLine *d, int, int);
     virtual QStringList getMATypes ();
     
