@@ -68,29 +68,10 @@ void Index::updateIndex ()
     }
 
     Setting *details = db->getDetails();
-    Setting *tdetails = new Setting;
-    tdetails->parse(details->getString());
-    tdetails->remove("First Date");
-    tdetails->remove("Last Date");
-
-    delete db;
-    dir.remove(s, TRUE);
-    db = new ChartDb();
-    if (db->openChart(s))
-    {
-      qDebug("could not open db");
-      delete db;
-      delete tdetails;
-      continue;
-    }
 
     s = tr("Updating ");
     s.append(dir[loop]);
     emit message(s);
-
-    details = db->getDetails();
-    details->parse(tdetails->getString());
-    delete tdetails;
 
     int loop2;
     int count = 0;
@@ -156,16 +137,12 @@ void Index::updateIndex ()
 
 int Index::loadData (QString symbol, float weight)
 {
-  QString s = dataPath;
-  s.append("/");
-  s.append(symbol);
-
-  QDir dir(s);
-  if (! dir.exists(s, TRUE))
+  QDir dir(symbol);
+  if (! dir.exists(symbol, TRUE))
     return TRUE;
 
   ChartDb *db = new ChartDb();
-  if (db->openChart(s))
+  if (db->openChart(symbol))
   {
     qDebug("could not open db");
     delete db;
@@ -205,7 +182,7 @@ int Index::loadData (QString symbol, float weight)
       r->setData("Open", QString::number(r->getFloat("Open") + (tr->getFloat("Open") * weight)));
       r->setData("High", QString::number(r->getFloat("High") + (tr->getFloat("High") * weight)));
       r->setData("Low", QString::number(r->getFloat("Low") + (tr->getFloat("Low") * weight)));
-      r->setData("Count", QString::number(r->getFloat("Count") + 1));
+      r->setData("Count", QString::number(r->getInt("Count") + 1));
     }
   }
 

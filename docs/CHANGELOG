@@ -14,16 +14,16 @@
 
 - Removed the CBOT plugin code. Given up hope for a work around.
 
-- Added DDMMYYY date format to the CSV plugin. Also added auto detection for date field delimiters (/-.).
+- Added DDMMYYYY date format to the CSV plugin. Also added auto detection for date field delimiters (/-.).
 
 - Fixed bug #830024 - single-click versus double-click with SymbolDialog.
 
 - Fixed bug #830357 - sychronised cross-hairs, data values were switched.
 
+- Added ability to stack indicators or add them to the tabs. Now you can view more than one tabbed indicator at a time.
+
 - Changed the new indicator dialog. Combined several steps and dialogs into one. Introduces an option to put the
   indicator in either the tabs or stackable.
-  
-- Added ability to stack indicators or add them to the tabs. Now you can view more than one tabbed indicator at a time.
 
 - Added a search function to the workwith charts tab.
 
@@ -47,7 +47,10 @@
 - Applied patch #837617 - patch to create libqtstalker.so. Kudos to Marco van Zwetselaar for moving the shared classes into a
   library. This has reduced the size of the executable and plugins by as much 2 thirds! Great patch Marco, we are back on track
   to being lean and mean.
-  
+
+- Fixed the Index plugin. Was not populating the chart with data due to bad symbol paths.
+
+
   
 0.22
 ====
