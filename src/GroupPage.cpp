@@ -69,11 +69,11 @@ void GroupPage::newGroup()
 {
   bool ok;
   QString selection = QInputDialog::getText(tr("New Group"),
-  							   tr("Enter new group symbol."),
-							   QLineEdit::Normal,
-							   tr("New Group"),
-							   &ok,
-							   this);
+  					    tr("Enter new group symbol."),
+					    QLineEdit::Normal,
+					    tr("NewGroup"),
+					    &ok,
+					    this);
   if ((! ok) || (selection.isNull()))
     return;
 
@@ -87,6 +87,13 @@ void GroupPage::newGroup()
     return;
   }
 
+  // check for any spaces
+  if (selection.contains(" "))
+  {
+    QMessageBox::information(this, tr("Qtstalker: Error"), tr("No spaces allowed in the group name."));
+    return;
+  }
+
   dir.mkdir(s, TRUE);
   nav->updateList();
 }
@@ -94,8 +101,8 @@ void GroupPage::newGroup()
 void GroupPage::addGroupItem()
 {
   SymbolDialog *dialog = new SymbolDialog(this,
-  							   config->getData(Config::DataPath),
-							   "*");
+  					  config->getData(Config::DataPath),
+					  "*");
 
   int rc = dialog->exec();
 

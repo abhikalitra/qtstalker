@@ -69,6 +69,9 @@
 - Trimmed down most of the png files in the docs in an attempt to reduce the size of the source package (2+ meg). Perhaps in the future,
   we will have to split the docs off into a separate source package.
   
+- Added check for spaces when creating a group.
+
+
 
 0.21
 ====
