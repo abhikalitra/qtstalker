@@ -317,13 +317,17 @@ void EditDialog::fileDialog ()
 
 void EditDialog::symbolDialog ()
 {
-  QString selection = QFileDialog::getOpenFileName(config->getData(Config::DataPath), "*", this, "file dialog");
-  if (! selection.isNull())
-  {
-    QString s = config->getData(Config::DataPath);
-    selection.remove(0, s.length() + 1);
-    item->setText(1, selection);
-  }
+  EditDialog *dialog = new EditDialog(config);
+  dialog->setCaption(tr("Select Chart"));
+  dialog->setFileSelector();
+  dialog->updateFileList();
+
+  int rc = dialog->exec();
+
+  if (rc == QDialog::Accepted)
+    item->setText(1, dialog->getFileSelection());
+
+  delete dialog;
 }
 
 void EditDialog::checkDialog ()
@@ -487,6 +491,35 @@ void EditDialog::fileSelection (QListViewItem *item)
   }
   else
     setFileInfo();
+}
+
+void EditDialog::setFileSelector ()
+{
+  list->hide();
+  fileList->show();
+  gbox->show();
+  upButton->show();
+}
+
+QString EditDialog::getFileSelection ()
+{
+  QString s;
+
+  item = fileList->selectedItem();
+  if (! item)
+    return s;
+
+  if (! item->pixmap(0))
+  {
+    s = currentDir.absPath();
+    s.append("/");
+    s.append(item->text(0));
+
+    QString s2 = config->getData(Config::DataPath);
+    s.remove(0, s2.length() + 1);
+  }
+  
+  return s;
 }
 
 //**********************************************************************

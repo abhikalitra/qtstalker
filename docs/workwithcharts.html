@@ -18,8 +18,11 @@
 
 <h2>Description:</h2>
 
-<p>The work with charts dialog allows you to open, create, edit, delete,
-export charts. Here is an example of large list of charts.</p>
+<p>The work with charts dialog allows you to open, edit, delete, export
+charts. All items that appear in the list can be either a chart or a
+directory. A directory will have a blue folder icon beside the text.
+Selecting the directory will move into it and update the list with the
+contents. Here is an example.</p>
 
 <p>Selecting a symbol from the list updates the current info on the chart:</p>
 <ul>
@@ -30,75 +33,58 @@ export charts. Here is an example of large list of charts.</p>
   <li>Last date is the most recent tick of data to plot.</li>
 </ul>
 
+<p></p>
+
 <p><img alt="work with charts dialog" src="workwithcharts1.png" /></p>
 
 <p></p>
 
-<h2>Open Button:</h2>
+<p>The button functions are as follows:</p>
+
+<h2><img alt="a" src="../open.xpm" />
+ Open</h2>
 
 <p>This will load and display the selected chart. eg ^IXIC</p>
 
 <p></p>
 
-<h2>New Button:</h2>
+<h2><img alt="a" src="../stop.xpm" />
+ Cancel</h2>
 
-<p>Here you can create a new Composite type of chart. A composite is a chart
-that is made up of other charts. Each symbol in the composite is given a
-weight and then calculated depending on the type. The types are:</p>
-<ul>
-  <li>Index - an average of all the symbols.</li>
-  <li>Spread - 2 symbols only, it is simply the second symbol minus the first
-    symbol.</li>
-  <li>Ratio - 2 symbols only, it is the first symbol divided by the second
-    symbol. 
-    <p></p>
-  </li>
-</ul>
-
-<p>Selecting this will bring up a series of dialogs. First you are asked for
-a name to call your new composite. The name must be unique, if not an error
-message will display.</p>
-
-<p><img alt="blah" src="workwithcharts2.png" /></p>
+<p>This exits the dialog.</p>
 
 <p></p>
 
-<p>After entering a new name, a second dialog will ask you to choose the
-composite type to create.</p>
+<h2><img alt="a" src="../up.xpm" />
+ Up Directory</h2>
 
-<p><img alt="blah" src="workwithcharts3.png" /></p>
-
-<p></p>
-
-<p>After selecting a composite type, a dialog that allows you to enter the
-symbols and weights for the composite will appear. Here we are creating an
-index composite. Each setting is made up of 2 parameters, a symbol and
-weight. ie. Parm 1 shows a setting of "^DJI 1". This means we are using
-symbol ^DJI with a weight of 1. A weight of 1 means 100%. A weight of 0.5
-means 50%. A weight of 2 means 200% etc. To edit the setting, just click on
-it and a dialog will appear in which you may edit the symbol and weight.</p>
-
-<p><img alt="blah" src="workwithcharts5.png" /></p>
+<p>If applicable, this will move up one directory level. All charts are
+children of the /data directory.</p>
 
 <p></p>
 
-<h2>Edit Button:</h2>
+<h2><img alt="a" src="../edit.xpm" />
+ Edit</h2>
 
 <p>Opens a dialog that allows you to edit some of the chart parameters. Only
 the parms listed can be edited. Parms are dependent on the chart types, so
 not every chart shares the same parms.</p>
 
-<p><img alt="blah" src="workwithcharts6.png" /></p>
+<p></p>
+
+<p><img alt="blah" src="workwithcharts2.png" /></p>
 
 <p></p>
 
-<h2>Delete Button:</h2>
+<h2><img alt="a" src="../delete.xpm" />
+ Delete</h2>
 
 <p>Permanently delete the chart selected.</p>
 
 <p></p>
 
-<h2>Export Symbol Button:</h2>
+<h2><img alt="a" src="../export.xpm" />
+ Export Symbol</h2>
 
 <p>Clicking this button will dump the contents of the selected file to ASCII.
 The exported file will be placed in the Qtstalker export directory. The
@@ -110,16 +96,13 @@ doing.</p>
 
 <p></p>
 
-<h2>Export All Symbols Button:</h2>
+<h2><img alt="a" src="../export.xpm" />
+ Export All Symbols</h2>
 
-<p>This is the same as the Export Symbol button except all charts in the list
-will be exported.</p>
+<p>This is the same as the Export Symbol button except all charts will be
+exported.</p>
 
 <p></p>
-
-<h2>Done Button:</h2>
-
-<p>Closes the Work with Charts dialog.</p>
 
 <p></p>
 </body>

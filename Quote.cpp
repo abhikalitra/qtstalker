@@ -142,6 +142,8 @@ void QuoteDialog::ruleChanged (int)
   
   if (plug->getCreateFlag())
     newButton->setEnabled(TRUE);
+  else
+    newButton->setEnabled(FALSE);
 
   list->clear();
 

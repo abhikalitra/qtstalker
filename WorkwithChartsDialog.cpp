@@ -81,10 +81,7 @@ WorkwithChartsDialog::WorkwithChartsDialog (Config *c) : EditDialog (c)
 
   connect(fileList, SIGNAL(doubleClicked(QListViewItem *)), this, SLOT(openSymbol()));
 
-  fileList->show();
-  gbox->show();
-  list->hide();
-  upButton->show();
+  setFileSelector();
 }
 
 WorkwithChartsDialog::~WorkwithChartsDialog ()
@@ -103,6 +100,7 @@ void WorkwithChartsDialog::openSymbol ()
   QString s = currentDir.absPath();
   s.append("/");
   s.append(item->text(0));
+
   emit chartOpened (s);
 
   reject();

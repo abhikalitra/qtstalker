@@ -57,6 +57,8 @@ class EditDialog : public QDialog
     void updateFileList ();
     void clearFileInfo ();
     void setFileInfo ();
+    void setFileSelector ();
+    QString getFileSelection ();
 
   public slots:
     void cellSelected (QListViewItem *);

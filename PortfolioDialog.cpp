@@ -106,8 +106,11 @@ void PortfolioDialog::updatePortfolio ()
   QStringList l = config->getPortfolio(portfolio);
 
   int loop;
-  for (loop = 0; loop < (int) l.count(); loop = loop + 4)
-    item = new QListViewItem(list2, l[loop], l[loop + 1], l[loop + 2], l[loop + 3]);
+  for (loop = 0; loop < (int) l.count(); loop++)
+  {
+    QStringList l2 = QStringList::split(",", l[loop], FALSE);
+    item = new QListViewItem(list2, l2[0], l2[1], l2[2], l2[3]);
+  }
 
   updatePortfolioItems();
 }

@@ -30,10 +30,7 @@ GroupDialog::GroupDialog (Config *c) : EditDialog (c)
 
   setCaption(tr("Qtstalker: Edit Group"));
   
-  list->hide();
-  fileList->show();
-  gbox->show();
-  upButton->show();
+  setFileSelector();
 
   list2 = new QListView(this);
   list2->setSelectionMode(QListView::Multi);
@@ -93,16 +90,9 @@ QStringList GroupDialog::getGroup ()
 
 void GroupDialog::insertItem ()
 {
-  item = fileList->selectedItem();
-  if (! item)
+  QString s = getFileSelection();
+  if (! s.length())
     return;
-
-  QString s = currentDir.path();
-  s.append("/");
-  s.append(item->text(0));
-
-  QString s2 = config->getData(Config::DataPath);
-  s.remove(0, s2.length() + 1);
 
   item = new QListViewItem(list2, s);
 
