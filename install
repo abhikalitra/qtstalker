@@ -8,5 +8,5 @@ strip ~/Qtstalker/plugins/indicator/*.so
 cp -f plugins/quote/*.so ~/Qtstalker/plugins/quote
 strip ~/Qtstalker/plugins/quote/*.so
 cp -f docs/* ~/Qtstalker/docs
-strip qtstalker
 cp -f qtstalker ~/Qtstalker
+strip ~/Qtstalker/qtstalker
