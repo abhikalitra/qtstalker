@@ -30,6 +30,9 @@ class DMI : public IndicatorPlugin
     PlotLine * getMDI (int period);
     PlotLine * getPDI (int period);
     QMemArray<int> getAlerts ();
+    void alertCrossover ();
+    void alertExtremePoint ();
+    void alertTurningPoint ();
 };
 
 extern "C"

@@ -30,10 +30,9 @@ BB::BB ()
   set(tr("Type"), pluginName, Setting::None);
   set(tr("Color"), "red", Setting::Color);
   set(tr("Line Type"), tr("Line"), Setting::LineType);
-  set(tr("Label"), pluginName, Setting::Text);
-  set(tr("Period"), "20", Setting::Integer);
   set(tr("Deviation"), "2", Setting::Float);
-  set(tr("Input"), tr("Close"), Setting::InputField);
+  set(tr("MA Period"), "20", Setting::Integer);
+  set(tr("MA Type"), tr("SMA"), Setting::MAType);
   set(tr("Plot"), tr("True"), Setting::None);
   set(tr("Alert"), tr("True"), Setting::None);
 
@@ -46,13 +45,13 @@ BB::~BB ()
 
 void BB::calculate ()
 {
-  int period = getInt(tr("Period"));
+  int period = getInt(tr("MA Period"));
 
   double deviation = getFloat(tr("Deviation"));
 
-  PlotLine *in = getInput(getData(tr("Input")));
+  PlotLine *in = getTP();
 
-  PlotLine *sma = getSMA(in, period);
+  PlotLine *sma = getMA(in, getData(tr("MA Type")), period);
   int smaLoop = sma->getSize() - 1;
 
   if ((int) sma->getSize() < period * 2)
@@ -83,16 +82,20 @@ void BB::calculate ()
   }
 
   delete in;
-  delete sma;
 
   bbu->setColor(getData(tr("Color")));
   bbu->setType(getData(tr("Line Type")));
-  bbu->setLabel(getData(tr("Label")));
+  bbu->setLabel(tr("BBL"));
   output.append(bbu);
+
+  sma->setColor(getData(tr("Color")));
+  sma->setType(getData(tr("Line Type")));
+  sma->setLabel(tr("BBM"));
+  output.append(sma);
 
   bbl->setColor(getData(tr("Color")));
   bbl->setType(getData(tr("Line Type")));
-  bbl->setLabel(getData(tr("Label")));
+  bbl->setLabel(tr("BBL"));
   output.append(bbl);
 }
 
@@ -100,11 +103,11 @@ QMemArray<int> BB::getAlerts ()
 {
   alerts.fill(0, data.count());
 
-  if (output.count() != 2)
+  if (output.count() != 3)
     return alerts;
 
   PlotLine *bbu = output.at(0);
-  PlotLine *bbl = output.at(1);
+  PlotLine *bbl = output.at(2);
 
   int listLoop = data.count() - bbu->getSize() + 9;
   int bbLoop = 9;

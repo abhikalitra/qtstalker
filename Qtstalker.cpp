@@ -1315,7 +1315,8 @@ void QtstalkerApp::slotChartTypeChanged (QAction *action)
     if (ind.length())
     {
       Indicator *i = indicatorList[ind];
-      mainPlot->setAlerts(i->getAlerts());
+      if (i)
+        mainPlot->setAlerts(i->getAlerts());
     }
   }
 
@@ -1371,7 +1372,10 @@ void QtstalkerApp::slotNewIndicator ()
 
     int loop;
     for(loop = 0; loop < (int) key.count(); loop++)
+    {
       set->set(key[loop], plug->getData(key[loop]), plug->getType(key[loop]));
+      set->setList(key[loop], plug->getList(key[loop]));
+    }
 
     delete plug;
   }
@@ -1403,6 +1407,33 @@ void QtstalkerApp::slotEditIndicator (int id)
 
   Setting *set = new Setting();
   set->parse(config->getIndicator(selection));
+  
+  QString s = config->getData(Config::IndicatorPluginPath);
+  s.append("/");
+  s.append(set->getData("Type"));
+  s.append(".so");
+
+  QLibrary *lib = new QLibrary(s);
+  Plugin *(*so)() = 0;
+  so = (Plugin *(*)()) lib->resolve("create");
+  if (so)
+  {
+    Plugin *plug = (*so)();
+
+    QStringList key = plug->getKeyList();
+
+    int loop;
+    for(loop = 0; loop < (int) key.count(); loop++)
+    {
+      if (plug->getType(key[loop]) == Setting::List)
+        set->setList(key[loop], plug->getList(key[loop]));
+    }
+
+    delete plug;
+  }
+
+  delete lib;
+
   dialog->setItems(set);
 
   int rc = dialog->exec();

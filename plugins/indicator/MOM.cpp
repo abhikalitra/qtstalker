@@ -30,8 +30,10 @@ MOM::MOM ()
   set(tr("Color"), "red", Setting::Color);
   set(tr("Line Type"), tr("Histogram"), Setting::LineType);
   set(tr("Label"), pluginName, Setting::Text);
-  set(tr("Period"), "14", Setting::Integer);
+  set(tr("Period"), "10", Setting::Integer);
   set(tr("Input"), tr("Close"), Setting::InputField);
+  set(tr("Smoothing"), "10", Setting::Integer);
+  set(tr("Smoothing Type"), tr("SMA"), Setting::MAType);
   set(tr("Plot"), tr("False"), Setting::None);
   set(tr("Alert"), tr("True"), Setting::None);
 
@@ -53,11 +55,23 @@ void MOM::calculate ()
   int loop;
   for (loop = period; loop < (int) in->getSize(); loop++)
     mom->append(in->getData(loop) - in->getData(loop - period));
-
-  mom->setColor(getData(tr("Color")));
-  mom->setType(getData(tr("Line Type")));
-  mom->setLabel(getData(tr("Label")));
-  output.append(mom);
+    
+  if (getInt(tr("Smoothing")) > 1)
+  {
+    PlotLine *ma = getMA(mom, getData(tr("Smoothing Type")), getInt(tr("Smoothing")));
+    ma->setColor(getData(tr("Color")));
+    ma->setType(getData(tr("Line Type")));
+    ma->setLabel(getData(tr("Label")));
+    output.append(ma);
+    delete mom;
+  }
+  else
+  {
+    mom->setColor(getData(tr("Color")));
+    mom->setType(getData(tr("Line Type")));
+    mom->setLabel(getData(tr("Label")));
+    output.append(mom);
+  }
 
   delete in;
 }
@@ -71,33 +85,33 @@ QMemArray<int> MOM::getAlerts ()
 
   PlotLine *line = output.at(0);
 
-  int lineLoop;
-  int listLoop = data.count() - line->getSize();
+  int dataLoop = data.count() - line->getSize();
+  int loop;
   int status = 0;
-  for (lineLoop = 0; lineLoop < (int) line->getSize(); lineLoop++, listLoop++)
+  for (loop = 0; loop < (int) line->getSize(); loop++, dataLoop++)
   {
     switch (status)
     {
       case -1:
-        if (line->getData(lineLoop) > 0)
+        if (line->getData(loop) > 0)
 	  status = 1;
 	break;
       case 1:
-        if (line->getData(lineLoop) < 0)
+        if (line->getData(loop) < 0)
 	  status = -1;
 	break;
       default:
-        if (line->getData(lineLoop) > 0)
+        if (line->getData(loop) > 0)
 	  status = 1;
 	else
 	{
-          if (line->getData(lineLoop) < 0)
+          if (line->getData(loop) < 0)
 	    status = -1;
 	}
 	break;
     }
-    
-    alerts[listLoop] = status;
+
+    alerts[dataLoop] = status;
   }
 
   return alerts;

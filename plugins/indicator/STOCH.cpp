@@ -38,6 +38,7 @@ STOCH::STOCH ()
   set(tr("Period"), "14", Setting::Integer);
   set(tr("Buy Line"), "20", Setting::Integer);
   set(tr("Sell Line"), "80", Setting::Integer);
+  set(tr("Smoothing Type"), tr("SMA"), Setting::MAType);
   set(tr("Plot"), tr("False"), Setting::None);
   set(tr("Alert"), tr("True"), Setting::None);
 
@@ -93,9 +94,9 @@ void STOCH::calculate ()
     k->append(t);
   }
 
-  if (kperiod)
+  if (kperiod > 1)
   {
-    PlotLine *k2 = getSMA(k, kperiod);
+    PlotLine *k2 = getMA(k, getData(tr("Smoothing Type")), kperiod);
     k2->setColor(getData(tr("%K Color")));
     k2->setType(getData(tr("%K Line Type")));
     k2->setLabel(getData(tr("%K Label")));
@@ -110,7 +111,7 @@ void STOCH::calculate ()
   PlotLine *d;
 
   if (dperiod)
-    d = getSMA(k, dperiod);
+    d = getMA(k, getData(tr("Smoothing Type")), dperiod);
   else
   {
     d = new PlotLine();
@@ -140,33 +141,33 @@ QMemArray<int> STOCH::getAlerts ()
 
   PlotLine *line = output.at(1);
 
-  int lineLoop;
-  int listLoop = data.count() - line->getSize() + 1;
+  int dataLoop = data.count() - line->getSize() + 1;
+  int loop;
   int status = 0;
-  for (lineLoop = 1; lineLoop < (int) line->getSize(); lineLoop++, listLoop++)
+  for (loop = 1; loop < (int) line->getSize(); loop++, dataLoop++)
   {
     switch (status)
     {
       case -1:
-        if ((line->getData(lineLoop) <= buy) && (line->getData(lineLoop) > line->getData(lineLoop - 1)))
+        if ((line->getData(loop) <= buy) && (line->getData(loop) > line->getData(loop - 1)))
           status = 1;
 	break;
       case 1:
-        if ((line->getData(lineLoop) >= sell) && (line->getData(lineLoop) < line->getData(lineLoop - 1)))
+        if ((line->getData(loop) >= sell) && (line->getData(loop) < line->getData(loop - 1)))
 	  status = -1;
 	break;
       default:
-        if ((line->getData(lineLoop) <= buy) && (line->getData(lineLoop) > line->getData(lineLoop - 1)))
+        if ((line->getData(loop) <= buy) && (line->getData(loop) > line->getData(loop - 1)))
 	  status = 1;
 	else
 	{
-          if ((line->getData(lineLoop) >= sell) && (line->getData(lineLoop) < line->getData(lineLoop - 1)))
+          if ((line->getData(loop) >= sell) && (line->getData(loop) < line->getData(loop - 1)))
 	    status = -1;
 	}
 	break;
     }
-    
-    alerts[listLoop] = status;
+
+    alerts[dataLoop] = status;
   }
 
   return alerts;

@@ -2,14 +2,6 @@ qmake -o Makefile AD.pro
 make
 cp libAD.so.0.2.0 AD.so
 
-qmake -o Makefile ADX.pro
-make
-cp libADX.so.0.2.0 ADX.so
-
-qmake -o Makefile ADXR.pro
-make
-cp libADXR.so.0.2.0 ADXR.so
-
 qmake -o Makefile ATR.pro
 make
 cp libATR.so.0.2.0 ATR.so

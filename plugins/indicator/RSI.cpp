@@ -28,15 +28,12 @@ RSI::RSI ()
   version = 0.2;
 
   set(tr("Type"), pluginName, Setting::None);
-  set(tr("RSI Color"), "red", Setting::Color);
-  set(tr("MA Color"), "yellow", Setting::Color);
-  set(tr("RSI Line Type"), tr("Line"), Setting::LineType);
-  set(tr("MA Line Type"), tr("Dash"), Setting::LineType);
-  set(tr("RSI Label"), pluginName, Setting::Text);
-  set(tr("MA Label"), tr("RSI MA"), Setting::Text);
-  set(tr("RSI Period"), "14", Setting::Integer);
-  set(tr("MA Period"), "14", Setting::Integer);
-  set(tr("MA Type"), tr("SMA"), Setting::MAType);
+  set(tr("Color"), "red", Setting::Color);
+  set(tr("Line Type"), tr("Line"), Setting::LineType);
+  set(tr("Label"), pluginName, Setting::Text);
+  set(tr("Period"), "14", Setting::Integer);
+  set(tr("Smoothing"), "10", Setting::Integer);
+  set(tr("Smoothing Type"), tr("SMA"), Setting::MAType);
   set(tr("Input"), tr("Close"), Setting::InputField);
   set(tr("Buy Line"), "25", Setting::Integer);
   set(tr("Sell Line"), "75", Setting::Integer);
@@ -52,14 +49,11 @@ RSI::~RSI ()
 
 void RSI::calculate ()
 {
-  int period = getInt(tr("RSI Period"));
+  int period = getInt(tr("Period"));
 
   PlotLine *in = getInput(getData(tr("Input")));
 
   PlotLine *rsi = new PlotLine();
-  rsi->setColor(getData(tr("RSI Color")));
-  rsi->setType(getData(tr("RSI Line Type")));
-  rsi->setLabel(getData(tr("RSI Label")));
 
   int loop;
   for (loop = period; loop < (int) in->getSize(); loop++)
@@ -88,16 +82,21 @@ void RSI::calculate ()
     rsi->append(t);
   }
 
-  output.append(rsi);
-
-  period = getInt(tr("MA Period"));
-  if (period)
+  if (getInt(tr("Smoothing")) > 1)
   {
-    PlotLine *ma = getMA(rsi, getData(tr("MA Type")), period);
-    ma->setColor(getData(tr("MA Color")));
-    ma->setType(getData(tr("MA Line Type")));
-    ma->setLabel(getData(tr("MA Label")));
+    PlotLine *ma = getMA(rsi, getData(tr("Smoothing Type")), getInt(tr("Smoothing")));
+    ma->setColor(getData(tr("Color")));
+    ma->setType(getData(tr("Line Type")));
+    ma->setLabel(getData(tr("Label")));
     output.append(ma);
+    delete rsi;
+  }
+  else
+  {
+    rsi->setColor(getData(tr("Color")));
+    rsi->setType(getData(tr("Line Type")));
+    rsi->setLabel(getData(tr("Label")));
+    output.append(rsi);
   }
 
   delete in;
@@ -114,39 +113,35 @@ QMemArray<int> RSI::getAlerts ()
 
   int sell = getInt(tr("Sell Line"));
 
-  PlotLine *line;
-  if (output.count() == 1)
-    line = output.at(0);
-  else
-    line = output.at(1);
+  PlotLine *line = output.at(0);
 
-  int lineLoop;
-  int listLoop = data.count() - line->getSize() + 1;
+  int dataLoop = data.count() - line->getSize() + 1;
+  int loop;
   int status = 0;
-  for (lineLoop = 1; lineLoop < (int) line->getSize(); lineLoop++, listLoop++)
+  for (loop = 1; loop < (int) line->getSize(); loop++, dataLoop++)
   {
     switch (status)
     {
       case -1:
-        if ((line->getData(lineLoop) <= buy) && (line->getData(lineLoop) > line->getData(lineLoop - 1)))
+        if ((line->getData(loop) <= buy) && (line->getData(loop) > line->getData(loop - 1)))
 	  status = 1;
 	break;
       case 1:
-        if ((line->getData(lineLoop) >= sell) && (line->getData(lineLoop) < line->getData(lineLoop - 1)))
+        if ((line->getData(loop) >= sell) && (line->getData(loop) < line->getData(loop - 1)))
 	  status = -1;
 	break;
       default:
-        if ((line->getData(lineLoop) <= buy) && (line->getData(lineLoop) > line->getData(lineLoop - 1)))
+        if ((line->getData(loop) <= buy) && (line->getData(loop) > line->getData(loop - 1)))
 	  status = 1;
 	else
 	{
-          if ((line->getData(lineLoop) >= sell) && (line->getData(lineLoop) < line->getData(lineLoop - 1)))
+          if ((line->getData(loop) >= sell) && (line->getData(loop) < line->getData(loop - 1)))
 	    status = -1;
 	}
 	break;
     }
-    
-    alerts[listLoop] = status;
+
+    alerts[dataLoop] = status;
   }
 
   return alerts;

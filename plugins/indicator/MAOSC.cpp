@@ -90,33 +90,33 @@ QMemArray<int> MAOSC::getAlerts ()
     return alerts;
 
   PlotLine *line = output.at(0);
-  int lineLoop;
-  int listLoop = data.count() - line->getSize();
+  int dataLoop = data.count() - line->getSize();
+  int loop;
   int status = 0;
-  for (lineLoop = 0; lineLoop < (int) line->getSize(); lineLoop++, listLoop++)
+  for (loop = 0; loop < (int) line->getSize(); loop++, dataLoop)
   {
     switch (status)
     {
       case -1:
-        if (line->getData(lineLoop) > 0)
+        if (line->getData(loop) > 0)
 	  status = 1;
 	break;
       case 1:
-        if (line->getData(lineLoop) < 0)
+        if (line->getData(loop) < 0)
 	  status = -1;
 	break;
       default:
-        if (line->getData(lineLoop) > 0)
+        if (line->getData(loop) > 0)
 	  status = 1;
 	else
 	{
-          if (line->getData(lineLoop) < 0)
+          if (line->getData(loop) < 0)
 	    status = -1;
 	}
 	break;
     }
-    
-    alerts[listLoop] = status;
+
+    alerts[dataLoop] = status;
   }
 
   return alerts;

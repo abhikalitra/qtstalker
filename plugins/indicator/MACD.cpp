@@ -28,16 +28,19 @@ MACD::MACD ()
 
   set(tr("Type"), pluginName, Setting::None);
   set(tr("MACD Color"), "red", Setting::Color);
-  set(tr("Trigger Color"), "yellow", Setting::Color);
+  set(tr("Signal Color"), "yellow", Setting::Color);
   set(tr("Oscillator Color"), "blue", Setting::Color);
   set(tr("MACD Line Type"), tr("Line"), Setting::LineType);
-  set(tr("Trigger Line Type"), tr("Dash"), Setting::LineType);
+  set(tr("Signal Line Type"), tr("Dash"), Setting::LineType);
   set(tr("Oscillator Line Type"), tr("Histogram"), Setting::LineType);
   set(tr("MACD Label"), pluginName, Setting::Text);
-  set(tr("Trigger Label"), tr("MACD Trigger"), Setting::Text);
+  set(tr("Signal Label"), tr("MACD Trigger"), Setting::Text);
   set(tr("Oscillator Label"), tr("MACD Oscillator"), Setting::Text);
   set(tr("Input"), tr("Close"), Setting::InputField);
-  set(tr("Period"), "9", Setting::Integer);
+  set(tr("Fast Period"), "12", Setting::Integer);
+  set(tr("Slow Period"), "26", Setting::Integer);
+  set(tr("Signal Period"), "9", Setting::Integer);
+  set(tr("MA Type"), tr("EMA"), Setting::MAType);
   set(tr("Plot"), tr("False"), Setting::None);
   set(tr("Alert"), tr("True"), Setting::None);
 
@@ -52,11 +55,11 @@ void MACD::calculate ()
 {
   PlotLine *d = getInput(getData(tr("Input")));
 
-  PlotLine *slow = getEMA(d, 26);
+  PlotLine *slow = getMA(d, getData(tr("MA Type")), getInt(tr("Slow Period")));
   if (slow->getSize() == 0)
     return;
 
-  PlotLine *fast = getEMA(d, 12);
+  PlotLine *fast = getMA(d, getData(tr("MA Type")), getInt(tr("Fast Period")));
 
   PlotLine *macd = new PlotLine();
   macd->setColor(getData(tr("MACD Color")));
@@ -73,12 +76,10 @@ void MACD::calculate ()
     sloop--;
   }
 
-  int period = getInt(tr("Period"));
-
-  PlotLine *trigger = getEMA(macd, period);
-  trigger->setColor(getData(tr("Trigger Color")));
-  trigger->setType(getData(tr("Trigger Line Type")));
-  trigger->setLabel(getData(tr("Trigger Label")));
+  PlotLine *signal = getMA(macd, getData(tr("MA Type")), getInt(tr("Signal Period")));
+  signal->setColor(getData(tr("Signal Color")));
+  signal->setType(getData(tr("Signal Line Type")));
+  signal->setLabel(getData(tr("Signal Label")));
 
   PlotLine *osc = new PlotLine();
   osc->setColor(getData(tr("Oscillator Color")));
@@ -86,18 +87,18 @@ void MACD::calculate ()
   osc->setLabel(getData(tr("Oscillator Label")));
 
   floop = macd->getSize() - 1;
-  sloop = trigger->getSize() - 1;
+  sloop = signal->getSize() - 1;
 
   while (floop > -1 && sloop > -1)
   {
-    osc->prepend(macd->getData(floop) - trigger->getData(sloop));
+    osc->prepend(macd->getData(floop) - signal->getData(sloop));
     floop--;
     sloop--;
   }
 
   output.append(osc);
   output.append(macd);
-  output.append(trigger);
+  output.append(signal);
 
   delete d;
   delete slow;

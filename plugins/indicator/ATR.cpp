@@ -30,7 +30,8 @@ ATR::ATR ()
   set(tr("Color"), "red", Setting::Color);
   set(tr("Line Type"), tr("Line"), Setting::LineType);
   set(tr("Label"), pluginName, Setting::Text);
-  set(tr("Period"), "14", Setting::Integer);
+  set(tr("Smoothing"), "14", Setting::Integer);
+  set(tr("Smoothing Type"), tr("SMA"), Setting::MAType);
   set(tr("Plot"), tr("False"), Setting::None);
   set(tr("Alert"), tr("True"), Setting::None);
 
@@ -45,14 +46,14 @@ void ATR::calculate ()
 {
   PlotLine *line = getTR();
 
-  PlotLine *data = getSMA(line, getInt(tr("Period")));
+  PlotLine *ma = getMA(line, getData(tr("Smoothing Type")), getInt(tr("Smoothing")));
+  ma->setColor(getData(tr("Color")));
+  ma->setType(getData(tr("Line Type")));
+  ma->setLabel(getData(tr("Label")));
 
   delete line;
 
-  data->setColor(getData(tr("Color")));
-  data->setType(getData(tr("Line Type")));
-  data->setLabel(getData(tr("Label")));
-  output.append(data);
+  output.append(ma);
 }
 
 QMemArray<int> ATR::getAlerts ()

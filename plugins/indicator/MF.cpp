@@ -31,6 +31,8 @@ MF::MF ()
   set(tr("Line Type"), tr("Line"), Setting::LineType);
   set(tr("Label"), pluginName, Setting::Text);
   set(tr("Period"), "10", Setting::Integer);
+  set(tr("Smoothing"), "10", Setting::Integer);
+  set(tr("Smoothing Type"), tr("SMA"), Setting::MAType);
   set(tr("Plot"), tr("False"), Setting::None);
   set(tr("Alert"), tr("False"), Setting::None);
 
@@ -88,10 +90,22 @@ void MF::calculate ()
     d->append(mfi);
   }
 
-  d->setColor(getData(tr("Color")));
-  d->setType(getData(tr("Line Type")));
-  d->setLabel(getData(tr("Label")));
-  output.append(d);
+  if (getInt(tr("Smoothing")) > 1)
+  {
+    PlotLine *ma = getMA(d, getData(tr("Smoothing Type")), getInt(tr("Smoothing")));
+    ma->setColor(getData(tr("Color")));
+    ma->setType(getData(tr("Line Type")));
+    ma->setLabel(getData(tr("Label")));
+    output.append(ma);
+    delete d;
+  }
+  else
+  {
+    d->setColor(getData(tr("Color")));
+    d->setType(getData(tr("Line Type")));
+    d->setLabel(getData(tr("Label")));
+    output.append(d);
+  }
 }
 
 Plugin * create ()

@@ -32,17 +32,17 @@ CCI::CCI ()
   set(tr("Line Type"), tr("Line"), Setting::LineType);
   set(tr("Label"), pluginName, Setting::Text);
   set(tr("Period"), "20", Setting::Integer);
-  set(tr("Buy Line"), "0", Setting::Integer);
-  set(tr("Sell Line"), "0", Setting::Integer);
-
-  set(tr("MA Color"), "yellow", Setting::Color);
-  set(tr("MA Line Type"), tr("Line"), Setting::LineType);
-  set(tr("MA Label"), tr("MA CCI"), Setting::Text);
-  set(tr("MA Period"), "20", Setting::Integer);
-  set(tr("MA Type"), tr("SMA"), Setting::MAType);
-
+  set(tr("Smoothing"), "3", Setting::Integer);
+  set(tr("Smoothing Type"), tr("SMA"), Setting::MAType);
   set(tr("Plot"), tr("False"), Setting::None);
   set(tr("Alert"), tr("True"), Setting::None);
+
+  QStringList l;
+  l.append(tr("100 Rule"));
+  l.append(tr("0 Rule"));
+  l.sort();
+  set(tr("Alert Type"), tr("100 Rule"), Setting::List);
+  setList(tr("Alert Type"), l);
 
   about = "Commodity Channel Index with optional MA\n";
 }
@@ -78,19 +78,22 @@ void CCI::calculate ()
     smaLoop--;
   }
 
-  cci->setColor(getData(tr("Color")));
-  cci->setType(getData(tr("Line Type")));
-  cci->setLabel(getData(tr("Label")));
-  output.append(cci);
-
-  period = getInt(tr("MA Period"));
-  if (period)
+  period = getInt(tr("Smoothing"));
+  if (period > 1)
   {
-    PlotLine *ma = getMA(cci, getData(tr("MA Type")), period);
-    ma->setColor(getData(tr("MA Color")));
-    ma->setType(getData(tr("MA Line Type")));
-    ma->setLabel(getData(tr("MA Label")));
+    PlotLine *ma = getMA(cci, getData(tr("Smoothing Type")), period);
+    ma->setColor(getData(tr("Color")));
+    ma->setType(getData(tr("Line Type")));
+    ma->setLabel(getData(tr("Label")));
     output.append(ma);
+    delete cci;
+  }
+  else
+  {
+    cci->setColor(getData(tr("Color")));
+    cci->setType(getData(tr("Line Type")));
+    cci->setLabel(getData(tr("Label")));
+    output.append(cci);
   }
 
   delete tp;
@@ -104,83 +107,82 @@ QMemArray<int> CCI::getAlerts ()
   if (output.count() == 0)
     return alerts;
 
-  int buy = getInt(tr("Buy Line"));
+  QString s = getData(tr("Alert Type"));
+  if (! s.compare(tr("100 Rule")))
+    alertHundred();
 
-  int sell = getInt(tr("Sell Line"));
-
-  if (output.count() == 1)
-  {
-    PlotLine *cci = output.at(0);
-
-    int listLoop = data.count() - cci->getSize();
-    int cciLoop;
-    int status = 0;
-    for (cciLoop = 0; cciLoop < (int) cci->getSize(); cciLoop++, listLoop++)
-    {
-      switch (status)
-      {
-        case -1:
-          if (cci->getData(cciLoop) > buy)
-	    status = 1;
-	  break;
-        case 1:
-          if (cci->getData(cciLoop) < sell)
-	    status = -1;
-	  break;
-        default:
-          if (cci->getData(cciLoop) > buy)
-	    status = 1;
-	  else
-	  {
-            if (cci->getData(cciLoop) < sell)
-	      status = -1;
-	  }
-	  break;
-      }
-
-      alerts[listLoop] = status;
-    }
-  }
-  else
-  {
-    if (output.count() == 2)
-    {
-      PlotLine *cci = output.at(0);
-      PlotLine *ma = output.at(1);
-
-      int maLoop;
-      int cciLoop = cci->getSize() - ma->getSize();
-      int listLoop = data.count() - ma->getSize();
-      int status = 0;
-      for (maLoop = 0; maLoop < (int) ma->getSize(); maLoop++, cciLoop++, listLoop++)
-      {
-        switch (status)
-        {
-          case -1:
-            if ((cci->getData(cciLoop) > ma->getData(maLoop)) && (cci->getData(cciLoop) > buy))
-	      status = 1;
-	    break;
-          case 1:
-            if ((cci->getData(cciLoop) < ma->getData(maLoop)) && (cci->getData(cciLoop) < sell))
-	      status = -1;
-	    break;
-          default:
-            if ((cci->getData(cciLoop) > ma->getData(maLoop)) && (cci->getData(cciLoop) > buy))
-	      status = 1;
-	    else
-	    {
-              if ((cci->getData(cciLoop) < ma->getData(maLoop)) && (cci->getData(cciLoop) < sell))
-	        status = -1;
-	    }
-	    break;
-        }
-	
-        alerts[listLoop] = status;
-      }
-    }
-  }
+  if (! s.compare(tr("0 Rule")))
+    alertZero();
 
   return alerts;
+}
+
+void CCI::alertHundred ()
+{
+  PlotLine *cci = output.at(0);
+
+  int dataLoop = data.count() - cci->getSize();
+  int loop;
+  int status = 0;
+  for (loop = 0; loop < (int) cci->getSize(); loop++, dataLoop++)
+  {
+    switch (status)
+    {
+      case -1:
+        if (cci->getData(loop) > -100)
+          status = 0;
+        break;
+      case 1:
+        if (cci->getData(loop) < 100)
+	  status = 0;
+	break;
+      default:
+        if (cci->getData(loop) > 100)
+	  status = 1;
+	else
+	{
+          if (cci->getData(loop) < -100)
+	    status = -1;
+	}
+	break;
+    }
+
+    alerts[dataLoop] = status;
+  }
+}
+
+void CCI::alertZero ()
+{
+  PlotLine *cci = output.at(0);
+
+  int dataLoop = data.count() - cci->getSize();
+  int status = 0;
+  int loop;
+  for (loop = 0; loop < (int) cci->getSize(); loop++, dataLoop++)
+  {
+    switch (status)
+    {
+      case -1:
+        if (cci->getData(loop) > 0)
+          status = 0;
+        break;
+      case 1:
+        if (cci->getData(loop) < 0)
+	  status = 0;
+	break;
+      default:
+        if (cci->getData(loop) > 0)
+	  status = 1;
+	else
+	{
+          if (cci->getData(loop) < 0)
+	    status = -1;
+	}
+	break;
+    }
+
+    alerts[dataLoop] = status;
+  }
 }
 
 Plugin * create ()

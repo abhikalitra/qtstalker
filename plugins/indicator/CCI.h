@@ -28,6 +28,8 @@ class CCI : public IndicatorPlugin
     virtual ~CCI ();
     void calculate ();
     QMemArray<int> getAlerts ();
+    void alertHundred ();
+    void alertZero ();
 };
 
 extern "C"
