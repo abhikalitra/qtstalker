@@ -309,8 +309,7 @@ void CMEHistory::parse (Setting *data)
     return;
   }
 
-  s = tr("Updating ");
-  s.append(fd->getSymbol());
+  s = tr("Updating ") + data->getData("Symbol");
   emit statusLogMessage(s);
 
   Bar *r = new Bar;

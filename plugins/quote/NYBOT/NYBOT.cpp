@@ -278,8 +278,7 @@ void NYBOT::parse ()
         return;
       }
 
-      s = tr("Updating ");
-      s.append(fd->getSymbol());
+      s = tr("Updating ") + symbol;
       emit statusLogMessage(s);
 
       Bar *bar = new Bar;

@@ -419,8 +419,10 @@ void Candle::loadSettings ()
 {
   QSettings settings;
   settings.beginGroup("/Qtstalker/Candle plugin");
+  
+  style = settings.readEntry("/style", tr("Candle"));
 
-  QString s = settings.readEntry("/ExpandCandles", "0");
+  QString s = settings.readEntry("/expandCandles", "0");
   expandCandles = s.toInt();
   
   minPixelspace = settings.readNumEntry("/minPixelspace", 2);
@@ -469,7 +471,8 @@ void Candle::saveSettings ()
   QSettings settings;
   settings.beginGroup("/Qtstalker/Candle plugin");
 
-  settings.writeEntry("/ExpandCandles", QString::number(expandCandles));
+  settings.writeEntry("/style", style);
+  settings.writeEntry("/expandCandles", QString::number(expandCandles));
   settings.writeEntry("/minPixelspace", minPixelspace);
     
   //****** candle settings

@@ -126,7 +126,7 @@ QString Bar::getString ()
   s.append(" ");
   s.append(QString::number(close));
   s.append(" ");
-  s.append(QString::number(volume));
+  s.append(QString::number(volume, 'f', 0));
   s.append(" ");
   s.append(QString::number(oi));
   

@@ -241,7 +241,7 @@ void ChartDb::setBar (Bar *bar)
   l.append(QString::number(bar->getHigh()));
   l.append(QString::number(bar->getLow()));
   l.append(QString::number(bar->getClose()));
-  l.append(QString::number(bar->getVolume()));
+  l.append(QString::number(bar->getVolume(), 'f', 0));
   l.append(QString::number(bar->getOI()));
   QString d = l.join(",");  
   
