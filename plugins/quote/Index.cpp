@@ -177,12 +177,12 @@ int Index::loadData (QString symbol, float weight)
 
   QDateTime dt = db->getDateTime(details->getData("First Date"));
 
-  db->getHistory(ChartDb::Daily, dt);
+  QList<Setting> *recordList = db->getHistory(ChartDb::Daily, dt);
 
   int loop;
-  for (loop = 0; loop < db->getDataSize(); loop++)
+  for (loop = 0; loop < (int) recordList->count(); loop++)
   {
-    Setting *tr = db->getRecordIndex(loop);
+    Setting *tr = recordList->at(loop);
     Setting *r = data.find(tr->getData("Date"));
     if (! r)
     {
@@ -210,6 +210,7 @@ int Index::loadData (QString symbol, float weight)
     }
   }
 
+  delete recordList;
   delete db;
 
   return FALSE;

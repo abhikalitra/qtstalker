@@ -170,7 +170,7 @@ void QuoteDialog::enableGUI ()
 
   setButtonStatus(1, TRUE);
   setButtonStatus(2, TRUE);
-  setButtonStatus(3, TRUE);
+  setButtonStatus(3, FALSE);
   if (plug->getCreateFlag())
     setButtonStatus(4, TRUE);
 }

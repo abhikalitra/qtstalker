@@ -42,6 +42,8 @@ Navigator::~Navigator ()
 void Navigator::updateList ()
 {
   clear();
+  
+  currentDir.refresh();
 
   int loop;
   for (loop = 2; loop < (int) currentDir.count(); loop++)

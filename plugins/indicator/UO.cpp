@@ -65,9 +65,9 @@ void UO::calculate ()
   PlotLine *f = new PlotLine();
 
   int loop;
-  for (loop = 0; loop < (int) data.count(); loop++)
+  for (loop = 0; loop < (int) data->count(); loop++)
   {
-    Setting *set = data.at(loop);
+    Setting *set = data->at(loop);
     f->append(set->getFloat("Close") - set->getFloat("Low"));
   }
 

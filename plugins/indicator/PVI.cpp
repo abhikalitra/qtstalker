@@ -46,12 +46,12 @@ void PVI::calculate ()
 
   int loop = 0;
   double pv = 1000;
-  for (loop = 1; loop < (int) data.count(); loop++)
+  for (loop = 1; loop < (int) data->count(); loop++)
   {
-    Setting *set = data.at(loop);
+    Setting *set = data->at(loop);
     double volume = set->getFloat("Volume");
     double close = set->getFloat("Close");
-    set = data.at(loop - 1);
+    set = data->at(loop - 1);
     double yvolume = set->getFloat("Volume");
     double yclose = set->getFloat("Close");
 

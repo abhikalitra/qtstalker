@@ -726,32 +726,32 @@ void Tester::test ()
   while (tradeList->numRows())
     tradeList->removeRow(0);
 
-  db->getHistory(ChartDb::Daily, sd);
-  
-  loadIndicators(0, db);
-  loadIndicators(1, db);
-  loadIndicators(2, db);
-  loadIndicators(3, db);
-  
+  recordList = db->getHistory(ChartDb::Daily, sd);
+
+  loadIndicators(0);
+  loadIndicators(1);
+  loadIndicators(2);
+  loadIndicators(3);
+
   loadEnterLongAlerts ();
   loadExitLongAlerts ();
   loadEnterShortAlerts ();
   loadExitShortAlerts ();
-  
+
   clearAlertCounts();
-  
-  for (testLoop = 0; testLoop < db->getDataSize(); testLoop++)
+
+  for (testLoop = 0; testLoop < (int) recordList->count(); testLoop++)
   {
-    currentRecord = db->getRecordIndex(testLoop);
+    currentRecord = recordList->at(testLoop);
     QDateTime td = QDateTime::fromString(currentRecord->getDateTime("Date"), ISODate);
     if (td >= sd)
       break;
   }
 
   status = 0;
-  for (; testLoop < db->getDataSize(); testLoop++)
+  for (; testLoop < (int) recordList->count(); testLoop++)
   {
-    currentRecord = db->getRecordIndex(testLoop);
+    currentRecord = recordList->at(testLoop);
 
     QDateTime dt = QDateTime::fromString(currentRecord->getDateTime("Date"), ISODate);
     if (dt > ed)
@@ -836,6 +836,7 @@ void Tester::test ()
 
   createSummary();
 
+  delete recordList;
   delete db;
 }
 
@@ -1225,7 +1226,7 @@ void Tester::showRule (int button)
   indicatorSelected(0);
 }
 
-void Tester::loadIndicators (int button, ChartDb *db)
+void Tester::loadIndicators (int button)
 {
   QDict<Indicator> list;
   switch (button)
@@ -1263,7 +1264,7 @@ void Tester::loadIndicators (int button, ChartDb *db)
     {
       Plugin *plug = (*so)();
 
-      plug->setIndicatorInput(db->getRecordList());
+      plug->setIndicatorInput(recordList);
 
       plug->parse(i->getString());
 
@@ -1293,13 +1294,13 @@ void Tester::loadEnterLongAlerts ()
     bool flag = FALSE;
     Setting *set = enterLongAlerts[it.currentKey()];
     set->clear();
-    for (loop = 0; loop < db->getDataSize(); loop++)
+    for (loop = 0; loop < (int) recordList->count(); loop++)
     {
       if (i->getAlert(loop) == 1)
       {
         if (! flag)
         {
-          Setting *r = db->getRecordIndex(loop);
+          Setting *r = recordList->at(loop);
           set->set(r->getData("Date").left(8), "1", Setting::None);
 	  flag = TRUE;
         }
@@ -1321,13 +1322,13 @@ void Tester::loadExitLongAlerts ()
     bool flag = FALSE;
     Setting *set = exitLongAlerts[it.currentKey()];
     set->clear();
-    for (loop = 0; loop < db->getDataSize(); loop++)
+    for (loop = 0; loop < (int) recordList->count(); loop++)
     {
       if (i->getAlert(loop) == -1)
       {
         if (! flag)
         {
-          Setting *r = db->getRecordIndex(loop);
+          Setting *r = recordList->at(loop);
           set->set(r->getData("Date").left(8), "1", Setting::None);
 	  flag = TRUE;
         }
@@ -1349,13 +1350,13 @@ void Tester::loadEnterShortAlerts ()
     bool flag = FALSE;
     Setting *set = enterShortAlerts[it.currentKey()];
     set->clear();
-    for (loop = 0; loop < db->getDataSize(); loop++)
+    for (loop = 0; loop < (int) recordList->count(); loop++)
     {
       if (i->getAlert(loop) == -1)
       {
         if (! flag)
         {
-          Setting *r = db->getRecordIndex(loop);
+          Setting *r = recordList->at(loop);
           set->set(r->getData("Date").left(8), "1", Setting::None);
 	  flag = TRUE;
         }
@@ -1377,13 +1378,13 @@ void Tester::loadExitShortAlerts ()
     bool flag = FALSE;
     Setting *set = exitShortAlerts[it.currentKey()];
     set->clear();
-    for (loop = 0; loop < db->getDataSize(); loop++)
+    for (loop = 0; loop < (int) recordList->count(); loop++)
     {
       if (i->getAlert(loop) == 1)
       {
         if (! flag)
         {
-          Setting *r = db->getRecordIndex(loop);
+          Setting *r = recordList->at(loop);
           set->set(r->getData("Date").left(8), "1", Setting::None);
 	  flag = TRUE;
         }

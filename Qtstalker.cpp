@@ -36,7 +36,6 @@
 #include "Quote.h"
 #include "DataWindow.h"
 #include "EditDialog.h"
-#include "Setting.h"
 #include "ChartDb.h"
 #include "ChartPage.h"
 #include "GroupPage.h"
@@ -60,6 +59,7 @@ QtstalkerApp::QtstalkerApp()
 {
   config = 0;
   chartMenu = 0;
+  recordList = 0;
   status = None;
   plotList.setAutoDelete(TRUE);
   setIcon(qtstalker);
@@ -347,6 +347,9 @@ void QtstalkerApp::slotQuit()
   config->setData(Config::MainPlotSize, QString::number(list[0]));
   config->setData(Config::IndicatorPlotSize, QString::number(list[1]));
   delete config;
+  
+  if (recordList)
+    delete recordList;
 
   qApp->quit();
 }
@@ -569,15 +572,17 @@ void QtstalkerApp::loadChart (QString d)
       ci = ChartDb::Monthly;
     }
   }
-  db->getHistory(ci, date);
+  if (recordList)
+    delete recordList;
+  recordList = db->getHistory(ci, date);
   mainPlot->setInterval(pi);
   for(it.toFirst(); it.current(); ++it)
     it.current()->setInterval(pi);
 
-  mainPlot->setData(db->getRecordList());
+  mainPlot->setData(recordList);
   for(it.toFirst(); it.current(); ++it)
   {
-    it.current()->setData(db->getRecordList());
+    it.current()->setData(recordList);
     it.current()->setPixelspace(mainPlot->getPixelspace());
   }
 
@@ -601,7 +606,7 @@ void QtstalkerApp::loadChart (QString d)
     {
       Plugin *plug = (*so)();
 
-      plug->setIndicatorInput(db->getRecordList());
+      plug->setIndicatorInput(recordList);
 
       plug->parse(i->getString());
 
@@ -644,9 +649,9 @@ void QtstalkerApp::loadChart (QString d)
     delete lib;
   }
 
-  if (db->getDataSize())
+  if (recordList->count())
   {
-    Setting *r = db->getRecordIndex(0);
+    Setting *r = recordList->at(0);
     QStringList keys = r->getKeyList();
     keys.remove("Date");
     keys.remove("Open");
@@ -663,9 +668,9 @@ void QtstalkerApp::loadChart (QString d)
     {
       PlotLine *pl = new PlotLine;
       int loop2;
-      for (loop2 = 0; loop2 < (int) db->getDataSize(); loop2++)
+      for (loop2 = 0; loop2 < (int) recordList->count(); loop2++)
       {
-        r = db->getRecordIndex(loop2);
+        r = recordList->at(loop2);
 	pl->append(r->getFloat(keys[loop]));
       }
 
@@ -717,11 +722,11 @@ void QtstalkerApp::loadChart (QString d)
   }
 
   int page = mainPlot->getWidth() / mainPlot->getPixelspace();
-  int max = db->getDataSize() - page;
+  int max = recordList->count() - page;
   if (max < 0)
     max = 0;
   slider->blockSignals(TRUE);
-  slider->setRange(0, db->getDataSize() - 1);
+  slider->setRange(0, recordList->count() - 1);
   slider->setValue(max);
   slider->blockSignals(FALSE);
 
@@ -890,14 +895,15 @@ QString QtstalkerApp::getWindowCaption ()
 
 void QtstalkerApp::slotDataWindow ()
 {
-  DataWindow *dw = new DataWindow(0, mainPlot->getDataSize());
+  DataWindow *dw = new DataWindow(0, recordList->count());
   dw->setCaption(getWindowCaption());
-  
+
   dw->setHeader(0, QObject::tr("Date"));
   int loop;
-  for (loop = 0; loop < (int) mainPlot->getDataSize(); loop++)
+  for (loop = 0; loop < (int) recordList->count(); loop++)
   {
-    QDateTime dt = mainPlot->getDate(loop);
+    Setting *r = recordList->at(loop);
+    QDateTime dt = QDateTime::fromString(r->getDateTime("Date"), Qt::ISODate);
     dw->setData(loop, 0, dt.toString("yyyyMMdd"));
   }
 
@@ -910,12 +916,13 @@ void QtstalkerApp::slotDataWindow ()
     dw->setHeader(3, QObject::tr("Low"));
     dw->setHeader(4, QObject::tr("Close"));
 
-    for (loop = 0; loop < (int) mainPlot->getDataSize(); loop++)
+    for (loop = 0; loop < (int) recordList->count(); loop++)
     {
-      dw->setData(loop, 1, QString::number(mainPlot->getOpen(loop)));
-      dw->setData(loop, 2, QString::number(mainPlot->getHigh(loop)));
-      dw->setData(loop, 3, QString::number(mainPlot->getLow(loop)));
-      dw->setData(loop, 4, QString::number(mainPlot->getClose(loop)));
+      Setting *r = recordList->at(loop);
+      dw->setData(loop, 1, r->getData("Open"));
+      dw->setData(loop, 2, r->getData("High"));
+      dw->setData(loop, 3, r->getData("Low"));
+      dw->setData(loop, 4, r->getData("Close"));
     }
 
     col = 5;
@@ -932,27 +939,31 @@ void QtstalkerApp::slotDataWindow ()
       dw->setHeader(col, line->getLabel());
 
       int loop3;
-      int offset = mainPlot->getDataSize() - line->getSize();
+      int offset = recordList->count() - line->getSize();
       for (loop3 = 0; loop3 < line->getSize(); loop3++)
         dw->setData(loop3 + offset, col, mainPlot->strip(line->getData(loop3)));
     }
   }
 
-  Plot *plot = plotList[tabs->label(tabs->currentPageIndex())];
-  l = plot->getIndicators();
-  for (loop = 0; loop < (int) l.count(); loop++)
+  QDictIterator<Plot> it(plotList);
+  for (; it.current(); ++it)
   {
-    i = plot->getIndicator(l[loop]);
-    int loop2;
-    for (loop2 = 0; loop2 < i->getLines(); loop2++, col++)
+    Plot *plot = it.current();
+    l = plot->getIndicators();
+    for (loop = 0; loop < (int) l.count(); loop++)
     {
-      PlotLine *line = i->getLine(loop2);
-      dw->setHeader(col, line->getLabel());
+      i = plot->getIndicator(l[loop]);
+      int loop2;
+      for (loop2 = 0; loop2 < i->getLines(); loop2++, col++)
+      {
+        PlotLine *line = i->getLine(loop2);
+        dw->setHeader(col, line->getLabel());
 
-      int loop3;
-      int offset = mainPlot->getDataSize() - line->getSize();
-      for (loop3 = 0; loop3 < line->getSize(); loop3++)
-        dw->setData(loop3 + offset, col, mainPlot->strip(line->getData(loop3)));
+        int loop3;
+        int offset = recordList->count() - line->getSize();
+        for (loop3 = 0; loop3 < line->getSize(); loop3++)
+          dw->setData(loop3 + offset, col, mainPlot->strip(line->getData(loop3)));
+      }
     }
   }
 

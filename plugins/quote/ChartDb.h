@@ -48,36 +48,32 @@ class ChartDb
     QString getData (QString);
     void setData (QString, QString);
     void deleteData (QString);
-    void getDailyHistory ();
-    void getWeeklyHistory ();
-    void getMonthlyHistory ();
+    QList<Setting> * getDailyHistory ();
+    QList<Setting> * getWeeklyHistory ();
+    QList<Setting> * getMonthlyHistory ();
     QDateTime getDateTime (QString);
     Setting * getRecord (QString, QString);
     void deleteRecord (Setting *);
     void setRecord (Setting *);
-    void getHistory (Compression, QDateTime);
+    QList<Setting> * getHistory (Compression, QDateTime);
     void loadDetails ();
     Setting * getDetails ();
     void saveDetails ();
     void dump (QString);
+    void setFormat ();
 
     QStringList getChartObjects ();
     Setting * getChartObject (QString);
     void setChartObject (QString, Setting *);
     void deleteChartObject (QString);
 
-    int getDataSize ();
-    double getCloseData (QDateTime);
-    Setting * getRecordIndex (int);
-    QList<Setting> getRecordList ();
-
   private:
     QString dataPath;
     DB *db;
     QDateTime startDate;
     Compression compression;
-    QList<Setting> recordList;
     Setting *details;
+    QStringList format;
 };
 
 #endif

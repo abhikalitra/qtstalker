@@ -48,14 +48,14 @@ void WILLR::calculate ()
   PlotLine *willr = new PlotLine();
 
   int loop;
-  for (loop = period; loop < (int) data.count(); loop++)
+  for (loop = period; loop < (int) data->count(); loop++)
   {
     int loop2;
     double lw;
     double hg;
     for (loop2 = 0, lw = 9999999, hg = 0; loop2 < period; loop2++)
     {
-      Setting *set = data.at(loop - loop2);
+      Setting *set = data->at(loop - loop2);
       double high = set->getFloat("High");
       double low = set->getFloat("Low");
 
@@ -66,7 +66,7 @@ void WILLR::calculate ()
         lw = low;
     }
 
-    Setting *set = data.at(loop);
+    Setting *set = data->at(loop);
     double t = ((hg - set->getFloat("Close")) / (hg - lw)) * 100;
     if (t > 100)
       t = 100;

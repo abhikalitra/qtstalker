@@ -102,7 +102,7 @@ void MA3::calculate ()
 
 QMemArray<int> MA3::getAlerts ()
 {
-  alerts.fill(0, data.count());
+  alerts.fill(0, data->count());
 
   if (output.count() != 3)
     return alerts;
@@ -111,7 +111,7 @@ QMemArray<int> MA3::getAlerts ()
   PlotLine *mma = output.at(1);
   PlotLine *sma = output.at(2);
 
-  int listLoop = data.count();
+  int listLoop = data->count();
   int fmaLoop = fma->getSize();
   int mmaLoop = mma->getSize();
   int smaLoop = sma->getSize();
@@ -124,7 +124,7 @@ QMemArray<int> MA3::getAlerts ()
   }
 
   int status = 0;
-  for (; listLoop < (int) data.count(); fmaLoop++, mmaLoop++, smaLoop++, listLoop++)
+  for (; listLoop < (int) data->count(); fmaLoop++, mmaLoop++, smaLoop++, listLoop++)
   {
     switch (status)
     {

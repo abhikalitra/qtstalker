@@ -90,7 +90,7 @@ void ENV::calculate ()
 
 QMemArray<int> ENV::getAlerts ()
 {
-  alerts.fill(0, data.count());
+  alerts.fill(0, data->count());
 
   if (output.count() != 2)
     return alerts;
@@ -98,12 +98,12 @@ QMemArray<int> ENV::getAlerts ()
   PlotLine *uma = output.at(0);
   PlotLine *lma = output.at(1);
 
-  int listLoop = data.count() - uma->getSize();
+  int listLoop = data->count() - uma->getSize();
   int maLoop;
   int status = 0;
   for (maLoop = 0; maLoop < (int) uma->getSize(); maLoop++, listLoop++)
   {
-    Setting *set = data.at(listLoop);
+    Setting *set = data->at(listLoop);
     double close = set->getFloat("Close");
 
     double t = (close - lma->getData(maLoop)) / (uma->getData(maLoop) - lma->getData(maLoop));

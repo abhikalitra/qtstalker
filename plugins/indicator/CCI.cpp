@@ -102,7 +102,7 @@ void CCI::calculate ()
 
 QMemArray<int> CCI::getAlerts ()
 {
-  alerts.fill(0, data.count());
+  alerts.fill(0, data->count());
 
   if (output.count() == 0)
     return alerts;
@@ -121,7 +121,7 @@ void CCI::alertHundred ()
 {
   PlotLine *cci = output.at(0);
 
-  int dataLoop = data.count() - cci->getSize();
+  int dataLoop = data->count() - cci->getSize();
   int loop;
   int status = 0;
   for (loop = 0; loop < (int) cci->getSize(); loop++, dataLoop++)
@@ -155,7 +155,7 @@ void CCI::alertZero ()
 {
   PlotLine *cci = output.at(0);
 
-  int dataLoop = data.count() - cci->getSize();
+  int dataLoop = data->count() - cci->getSize();
   int status = 0;
   int loop;
   for (loop = 0; loop < (int) cci->getSize(); loop++, dataLoop++)

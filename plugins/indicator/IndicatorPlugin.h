@@ -34,7 +34,7 @@ class IndicatorPlugin : public Plugin
     IndicatorPlugin();
     virtual ~IndicatorPlugin();
     QMemArray<int> getAlerts ();
-    void setIndicatorInput (QList<Setting>);
+    void setIndicatorInput (QList<Setting> *);
     int getIndicatorLines ();
     PlotLine * getIndicatorLine (int);
     PlotLine * getInput (QString);
@@ -47,7 +47,7 @@ class IndicatorPlugin : public Plugin
     PlotLine * getTP ();
 
   protected:
-    QList<Setting> data;
+    QList<Setting> *data;
     QList<PlotLine> output;
     QMemArray<int> alerts;
 };

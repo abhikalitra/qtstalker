@@ -63,14 +63,14 @@ void STOCH::calculate ()
   k->setLabel(getData(tr("%K Label")));
 
   int loop;
-  for (loop = period; loop < (int) data.count(); loop++)
+  for (loop = period; loop < (int) data->count(); loop++)
   {
     int loop2;
     double l;
     double h;
     for (loop2 = 0, l = 9999999, h = 0; loop2 < period; loop2++)
     {
-      Setting *set = data.at(loop - loop2);
+      Setting *set = data->at(loop - loop2);
       double high = set->getFloat("High");
       double low = set->getFloat("Low");
 
@@ -83,7 +83,7 @@ void STOCH::calculate ()
         l = t;
     }
 
-    Setting *set = data.at(loop);
+    Setting *set = data->at(loop);
     double close = set->getFloat("Close");
     double t = ((close - l) / (h - l)) * 100;
     if (t > 100)
@@ -130,7 +130,7 @@ void STOCH::calculate ()
 
 QMemArray<int> STOCH::getAlerts ()
 {
-  alerts.fill(0, data.count());
+  alerts.fill(0, data->count());
 
   if (output.count() != 2)
     return alerts;
@@ -141,7 +141,7 @@ QMemArray<int> STOCH::getAlerts ()
 
   PlotLine *line = output.at(1);
 
-  int dataLoop = data.count() - line->getSize() + 1;
+  int dataLoop = data->count() - line->getSize() + 1;
   int loop;
   int status = 0;
   for (loop = 1; loop < (int) line->getSize(); loop++, dataLoop++)

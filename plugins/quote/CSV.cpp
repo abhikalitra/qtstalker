@@ -183,6 +183,7 @@ void CSV::parse ()
         details->set("Title", symbol, Setting::Text);
 
       db->saveDetails();
+      db->setFormat();
     }
 
     QString s = tr("Updating ");

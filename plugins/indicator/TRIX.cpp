@@ -92,7 +92,7 @@ void TRIX::calculate ()
 
 QMemArray<int> TRIX::getAlerts ()
 {
-  alerts.fill(0, data.count());
+  alerts.fill(0, data->count());
 
   if (output.count() != 2)
     return alerts;
@@ -100,7 +100,7 @@ QMemArray<int> TRIX::getAlerts ()
   PlotLine *trix = output.at(0);
   PlotLine *trig = output.at(1);
 
-  int listLoop = data.count() - trig->getSize();
+  int listLoop = data->count() - trig->getSize();
   int trixLoop = trix->getSize() - trig->getSize();
   int trigLoop;
   int status = 0;

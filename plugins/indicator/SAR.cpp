@@ -53,10 +53,10 @@ void SAR::calculate ()
 
   PlotLine *d = new PlotLine();
 
-  Setting *set = data.at(1);
+  Setting *set = data->at(1);
   double high = set->getFloat("High");
   double low = set->getFloat("Low");
-  set = data.at(0);
+  set = data->at(0);
   double yhigh = set->getFloat("High");
   double ylow = set->getFloat("Low");
 
@@ -99,12 +99,12 @@ void SAR::calculate ()
   d->append(sar);
 
   int loop;
-  for (loop = 2; loop < (int) data.count(); loop++)
+  for (loop = 2; loop < (int) data->count(); loop++)
   {
-    set = data.at(loop);
+    set = data->at(loop);
     high = set->getFloat("High");
     low = set->getFloat("Low");
-    set = data.at(loop - 1);
+    set = data->at(loop - 1);
     yhigh = set->getFloat("High");
     ylow = set->getFloat("Low");
 
@@ -197,18 +197,18 @@ void SAR::calculate ()
 
 QMemArray<int> SAR::getAlerts ()
 {
-  alerts.fill(0, data.count());
+  alerts.fill(0, data->count());
 
   if (! output.count())
     return alerts;
 
   PlotLine *line = output.at(0);
   int lineLoop;
-  int listLoop = data.count() - line->getSize();
+  int listLoop = data->count() - line->getSize();
   int status = 0;
   for (lineLoop = 0; lineLoop < (int) line->getSize(); lineLoop++, listLoop++)
   {
-    Setting *set = data.at(listLoop);
+    Setting *set = data->at(listLoop);
     double high = set->getFloat("High");
     double low = set->getFloat("Low");
 

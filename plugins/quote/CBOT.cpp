@@ -523,6 +523,7 @@ void CBOT::parse ()
       details->set("Futures Month", month, Setting::None);
       details->set("Futures Type", fd->getSymbol(), Setting::None);
       details->set("Title", fd->getName(), Setting::Text);
+      db->setFormat();
     }
 
     db->setRecord(r);

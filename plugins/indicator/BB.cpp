@@ -101,7 +101,7 @@ void BB::calculate ()
 
 QMemArray<int> BB::getAlerts ()
 {
-  alerts.fill(0, data.count());
+  alerts.fill(0, data->count());
 
   if (output.count() != 3)
     return alerts;
@@ -109,13 +109,13 @@ QMemArray<int> BB::getAlerts ()
   PlotLine *bbu = output.at(0);
   PlotLine *bbl = output.at(2);
 
-  int listLoop = data.count() - bbu->getSize() + 9;
+  int listLoop = data->count() - bbu->getSize() + 9;
   int bbLoop = 9;
   int status = 0;
 
-  for (; listLoop < (int) data.count(); listLoop++, bbLoop++)
+  for (; listLoop < (int) data->count(); listLoop++, bbLoop++)
   {
-    Setting *set = data.at(listLoop);
+    Setting *set = data->at(listLoop);
     double close = set->getFloat("Close");
     double t = close - bbl->getData(bbLoop);
     double t2 = bbu->getData(bbLoop) - bbl->getData(bbLoop);
@@ -126,7 +126,7 @@ QMemArray<int> BB::getAlerts ()
     double l = 99999999;
     for (loop = 1; loop <= 9; loop++)
     {
-      set = data.at(listLoop - loop);
+      set = data->at(listLoop - loop);
       double high = set->getFloat("High");
       double low = set->getFloat("Low");
 
@@ -137,10 +137,10 @@ QMemArray<int> BB::getAlerts ()
 	l = low;
     }
 
-    set = data.at(listLoop);
+    set = data->at(listLoop);
     double high = set->getFloat("High");
     double low = set->getFloat("Low");
-    set = data.at(listLoop - 1);
+    set = data->at(listLoop - 1);
     double yclose = set->getFloat("Close");
 
     switch (status)

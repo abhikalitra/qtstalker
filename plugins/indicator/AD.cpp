@@ -49,9 +49,9 @@ void AD::calculate ()
 
   int loop;
   double accum = 0;
-  for (loop = 0; loop < (int) data.count(); loop++)
+  for (loop = 0; loop < (int) data->count(); loop++)
   {
-    Setting *set = data.at(loop);
+    Setting *set = data->at(loop);
     double volume = set->getFloat("Volume");
     if (volume > 0)
     {

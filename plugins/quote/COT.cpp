@@ -117,10 +117,9 @@ void COT::opDone (QNetworkOperation *o)
     f.close();
 
     delete op;
-
     parse();
-
     emit done();
+    return;
   }
 
   if (o->state() == QNetworkProtocol::StFailed)
@@ -317,6 +316,7 @@ void COT::saveData (Setting *set)
     details->set("Open Interest Color", "yellow", Setting::Color);
     details->set("Open Interest Line Type", "Line", Setting::LineType);
     db->saveDetails();
+    db->setFormat();
   }
   set->remove("Symbol");
   set->remove("Title");

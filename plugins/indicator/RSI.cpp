@@ -104,7 +104,7 @@ void RSI::calculate ()
 
 QMemArray<int> RSI::getAlerts ()
 {
-  alerts.fill(0, data.count());
+  alerts.fill(0, data->count());
 
   if (! output.count())
     return alerts;
@@ -115,7 +115,7 @@ QMemArray<int> RSI::getAlerts ()
 
   PlotLine *line = output.at(0);
 
-  int dataLoop = data.count() - line->getSize() + 1;
+  int dataLoop = data->count() - line->getSize() + 1;
   int loop;
   int status = 0;
   for (loop = 1; loop < (int) line->getSize(); loop++, dataLoop++)

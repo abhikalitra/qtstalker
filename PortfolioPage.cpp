@@ -90,6 +90,16 @@ void PortfolioPage::newPortfolio()
 
 void PortfolioPage::deletePortfolio()
 {
+  int rc = QMessageBox::warning(this,
+  					    tr("Qtstalker: Warning"),
+					    tr("Are you sure you want to delete this portfolio?"),
+					    QMessageBox::Yes,
+					    QMessageBox::No,
+					    QMessageBox::NoButton);
+
+  if (rc == QMessageBox::No)
+    return;
+
   config->deletePortfolio(nav->currentText());
   nav->updateList();
   portfolioNoSelection();

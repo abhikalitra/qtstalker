@@ -78,14 +78,14 @@ void ROC::calculate ()
 
 QMemArray<int> ROC::getAlerts ()
 {
-  alerts.fill(0, data.count());
+  alerts.fill(0, data->count());
 
   if (! output.count())
     return alerts;
 
   PlotLine *line = output.at(0);
 
-  int dataLoop = data.count() - line->getSize();
+  int dataLoop = data->count() - line->getSize();
   int loop;
   int status = 0;
   for (loop = 0; loop < (int) line->getSize(); loop++, dataLoop++)

@@ -39,7 +39,7 @@ class Plugin : public Setting, public QObject
     virtual ~Plugin ();
 
     // indicator plugin interface
-    virtual void setIndicatorInput (QList<Setting>);
+    virtual void setIndicatorInput (QList<Setting> *);
     virtual int getIndicatorLines ();
     virtual PlotLine * getIndicatorLine (int);
     virtual QMemArray<int> getAlerts ();

@@ -122,7 +122,7 @@ void DMI::calculate ()
 
 QMemArray<int> DMI::getAlerts ()
 {
-  alerts.fill(0, data.count());
+  alerts.fill(0, data->count());
 
   if (output.count() != 3)
     return alerts;
@@ -147,7 +147,7 @@ void DMI::alertCrossover ()
   PlotLine *pdi = output.at(1);
 
   int loop;
-  int dataLoop = data.count() - mdi->getSize();
+  int dataLoop = data->count() - mdi->getSize();
   int status = 0;
   for (loop = 0; loop < (int) mdi->getSize(); loop++, dataLoop++)
   {
@@ -169,12 +169,12 @@ void DMI::alertExtremePoint ()
   PlotLine *pdi = output.at(1);
 
   int loop;
-  int dataLoop = data.count() - mdi->getSize();
+  int dataLoop = data->count() - mdi->getSize();
   int status = 0;
   double point = 0;
   for (loop = 0; loop < (int) mdi->getSize(); loop++, dataLoop++)
   {
-    Setting *r = data.at(dataLoop);
+    Setting *r = data->at(dataLoop);
 
     if (pdi->getData(loop) > mdi->getData(loop))
     {
@@ -221,7 +221,7 @@ void DMI::alertTurningPoint ()
   PlotLine *pdi = output.at(1);
   PlotLine *adx = output.at(2);
 
-  int listLoop = data.count() - adx->getSize() + 1;
+  int listLoop = data->count() - adx->getSize() + 1;
   int mdiLoop = mdi->getSize() - adx->getSize() + 1;
   int pdiLoop = pdi->getSize() - adx->getSize() + 1;
   int adxLoop;
@@ -257,14 +257,14 @@ void DMI::alertTurningPoint ()
 /*
 QMemArray<int> ADX::getAlerts ()
 {
-  alerts.fill(0, data.count());
+  alerts.fill(0, data->count());
 
   if (! output.count())
     return alerts;
 
   PlotLine *adx = output.at(0);
   int adxLoop;
-  int listLoop = data.count() - adx->getSize() + 2;
+  int listLoop = data->count() - adx->getSize() + 2;
   int status = 0;
   for (adxLoop = 2; adxLoop < (int) adx->getSize(); adxLoop++, listLoop++)
   {
@@ -301,12 +301,12 @@ PlotLine * DMI::getMDI (int period)
   PlotLine *mdm = new PlotLine();
 
   int loop;
-  for (loop = 1; loop < (int) data.count(); loop++)
+  for (loop = 1; loop < (int) data->count(); loop++)
   {
-    Setting *set = data.at(loop);
+    Setting *set = data->at(loop);
     double high = set->getFloat("High");
     double low = set->getFloat("Low");
-    set = data.at(loop - 1);
+    set = data->at(loop - 1);
     double yhigh = set->getFloat("High");
     double ylow = set->getFloat("Low");
     double t = 0;
@@ -361,12 +361,12 @@ PlotLine * DMI::getPDI (int period)
   PlotLine *pdm = new PlotLine();
 
   int loop;
-  for (loop = 1; loop < (int) data.count(); loop++)
+  for (loop = 1; loop < (int) data->count(); loop++)
   {
-    Setting *set = data.at(loop);
+    Setting *set = data->at(loop);
     double high = set->getFloat("High");
     double low = set->getFloat("Low");
-    set = data.at(loop - 1);
+    set = data->at(loop - 1);
     double yhigh = set->getFloat("High");
     double ylow = set->getFloat("Low");
     double t = 0;

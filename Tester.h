@@ -59,7 +59,7 @@ class Tester : public QDialog
     bool maximumLoss ();
     bool profit ();
     bool trailing ();
-    void loadIndicators (int, ChartDb *);
+    void loadIndicators (int);
     void enterLong ();
     void exitLong ();
     void enterShort ();
@@ -135,6 +135,7 @@ class Tester : public QDialog
     int status;
     int testLoop;
     ChartDb *db;
+    QList<Setting> *recordList;
     Setting *currentRecord;
     Setting *buyRecord;
     double trailingHigh;

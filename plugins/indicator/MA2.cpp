@@ -83,7 +83,7 @@ void MA2::calculate ()
 
 QMemArray<int> MA2::getAlerts ()
 {
-  alerts.fill(0, data.count());
+  alerts.fill(0, data->count());
 
   if (output.count() != 2)
     return alerts;
@@ -91,7 +91,7 @@ QMemArray<int> MA2::getAlerts ()
   PlotLine *fma = output.at(0);
   PlotLine *sma = output.at(1);
 
-  int listLoop = data.count();
+  int listLoop = data->count();
   int fmaLoop = fma->getSize();
   int smaLoop = sma->getSize();
   while (listLoop != 0 && fmaLoop != 0 && smaLoop != 0)
@@ -102,7 +102,7 @@ QMemArray<int> MA2::getAlerts ()
   }
 
   int status = 0;
-  for (; listLoop < (int) data.count(); fmaLoop++, smaLoop++, listLoop++)
+  for (; listLoop < (int) data->count(); fmaLoop++, smaLoop++, listLoop++)
   {
     switch (status)
     {

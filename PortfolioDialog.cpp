@@ -124,7 +124,8 @@ void PortfolioDialog::updatePortfolioItems ()
     QDateTime dt = QDateTime::fromString(details->getDateTime("Last Date"), Qt::ISODate);
     item->setText(4, dt.toString("yyyyMMdd"));
 
-    QString last = QString::number(db->getCloseData(dt));
+    Setting *r = db->getRecord(dt.toString(DATE_FORMAT), db->getData(dt.toString(DATE_FORMAT)));
+    QString last = r->getData("Close");
     item->setText(5, last);
 
     float total;
@@ -241,6 +242,7 @@ void PortfolioDialog::modifyItem ()
   if (rc == QDialog::Accepted)
   {
     QString symbol = set->getData(tr("Symbol"));
+    symbol = symbol.remove(config->getData(Config::DataPath));
     QString action = set->getData(tr("Action"));
     QString vol = set->getData(tr("Volume"));
     QString price = set->getData(tr("Price"));

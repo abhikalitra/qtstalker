@@ -50,14 +50,14 @@ void MF::calculate ()
   PlotLine *d = new PlotLine();
 
   int loop;
-  for (loop = period; loop < (int) data.count(); loop++)
+  for (loop = period; loop < (int) data->count(); loop++)
   {
     double pmf = 0;
     double nmf = 0;
     int loop2;
     for (loop2 = 0; loop2 < period; loop2++)
     {
-      Setting *set = data.at(loop - loop2);
+      Setting *set = data->at(loop - loop2);
       double high = set->getFloat("High");
       double low = set->getFloat("Low");
       double close = set->getFloat("Close");
@@ -66,7 +66,7 @@ void MF::calculate ()
       double ttp = (high + low + close) / 3;
       double mf = ttp * volume;
 
-      set = data.at(loop - loop2 - 1);
+      set = data->at(loop - loop2 - 1);
       high = set->getFloat("High");
       low = set->getFloat("Low");
       close = set->getFloat("Close");

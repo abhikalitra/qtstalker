@@ -107,7 +107,7 @@ void MACD::calculate ()
 
 QMemArray<int> MACD::getAlerts ()
 {
-  alerts.fill(0, data.count());
+  alerts.fill(0, data->count());
 
   if (output.count() != 3)
     return alerts;
@@ -115,7 +115,7 @@ QMemArray<int> MACD::getAlerts ()
   PlotLine *macd = output.at(1);
   PlotLine *trig = output.at(2);
 
-  int listLoop = data.count() - trig->getSize();
+  int listLoop = data->count() - trig->getSize();
   int macdLoop = macd->getSize() - trig->getSize();
   int trigLoop;
   int status = 0;

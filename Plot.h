@@ -77,7 +77,7 @@ class Plot : public QWidget
     Plot (QWidget *);
     ~Plot ();
     void clear ();
-    void setData (QList<Setting>);
+    void setData (QList<Setting> *);
     void setInterval(TimeInterval);
     void setScaleWidth (int);
     void setDateHeight (int);
@@ -111,12 +111,6 @@ class Plot : public QWidget
     int getWidth ();
     int getPixelspace ();
     int getMinPixelspace ();
-    int getDataSize ();
-    QDateTime getDate (int);
-    double getOpen (int);
-    double getHigh (int);
-    double getLow (int);
-    double getClose (int);
     QString strip (double);
 
   public slots:
@@ -202,7 +196,7 @@ class Plot : public QWidget
     ObjectType objectFlag;
 
     QString chartType;
-    QList<Setting> data;
+    QList<Setting> *data;
     QDict<Indicator> indicators;
 };
 

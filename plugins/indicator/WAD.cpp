@@ -46,13 +46,13 @@ void WAD::calculate ()
 
   int loop;
   double accum = 0;
-  for (loop = 1; loop < (int) data.count(); loop++)
+  for (loop = 1; loop < (int) data->count(); loop++)
   {
-    Setting *set = data.at(loop);
+    Setting *set = data->at(loop);
     double high = set->getFloat("High");
     double low = set->getFloat("Low");
     double close = set->getFloat("Close");
-    set = data.at(loop - 1);
+    set = data->at(loop - 1);
     double yclose = set->getFloat("Close");
 
     double h = high;

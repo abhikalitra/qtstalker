@@ -49,7 +49,7 @@ PP::~PP ()
 
 void PP::calculate ()
 {
-  Setting *set = data.at(data.count() - 1);
+  Setting *set = data->at(data->count() - 1);
   double high = set->getFloat("High");
   double low = set->getFloat("Low");
   double close = set->getFloat("Close");

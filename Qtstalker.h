@@ -31,11 +31,13 @@
 #include <qtabwidget.h>
 #include <qsplitter.h>
 #include <qtoolbutton.h>
+#include <qlist.h>
 
 #include "Indicator.h"
 #include "Plot.h"
 #include "Config.h"
 #include "Navigator.h"
+#include "Setting.h"
 
 #define DEFAULT_INDICATOR_HEIGHT 125
 
@@ -149,6 +151,7 @@ class QtstalkerApp : public QMainWindow
     QString chartType;
     QString chartSymbol;
     int chartObjectId;
+    QList<Setting> *recordList;
 };
 
 #endif 

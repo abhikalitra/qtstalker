@@ -71,7 +71,7 @@ void VOLR::calculate ()
 
 QMemArray<int> VOLR::getAlerts ()
 {
-  alerts.fill(0, data.count());
+  alerts.fill(0, data->count());
 
   if (! output.count())
     return alerts;
@@ -79,7 +79,7 @@ QMemArray<int> VOLR::getAlerts ()
   PlotLine *line = output.at(0);
 
   int lineLoop;
-  int listLoop = data.count() - line->getSize();
+  int listLoop = data->count() - line->getSize();
   for (lineLoop = 0; lineLoop < line->getSize(); lineLoop++, listLoop++)
   {
     if (line->getData(lineLoop) > 2)

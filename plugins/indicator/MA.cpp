@@ -61,7 +61,7 @@ void MA::calculate ()
 
 QMemArray<int> MA::getAlerts ()
 {
-  alerts.fill(0, data.count());
+  alerts.fill(0, data->count());
 
   if (! output.count())
     return alerts;
@@ -70,10 +70,10 @@ QMemArray<int> MA::getAlerts ()
 
   PlotLine *in = getInput(getData(tr("Input")));
 
-  int listLoop = data.count() - line->getSize() + 1;
+  int listLoop = data->count() - line->getSize() + 1;
   int lineLoop;
   int status = 0;
-  for (lineLoop = 1; listLoop < (int) data.count(); lineLoop++, listLoop++)
+  for (lineLoop = 1; listLoop < (int) data->count(); lineLoop++, listLoop++)
   {
     switch (status)
     {

@@ -52,14 +52,14 @@ void HLC::calculate ()
   PlotLine *lb = new PlotLine();
 
   int loop;
-  for (loop = period; loop < (int) data.count(); loop++)
+  for (loop = period; loop < (int) data->count(); loop++)
   {
     int loop2;
     double h = -99999999;
     double l = 99999999;
     for (loop2 = 1; loop2 <= period; loop2++)
     {
-      Setting *set = data.at(loop - loop2);
+      Setting *set = data->at(loop - loop2);
       double high = set->getFloat("High");
       double low = set->getFloat("Low");
 
@@ -87,7 +87,7 @@ void HLC::calculate ()
 
 QMemArray<int> HLC::getAlerts ()
 {
-  alerts.fill(0, data.count());
+  alerts.fill(0, data->count());
 
   if (output.count() != 2)
     return alerts;
@@ -95,13 +95,13 @@ QMemArray<int> HLC::getAlerts ()
   PlotLine *u = output.at(0);
   PlotLine *l = output.at(1);
 
-  int listLoop = data.count() - u->getSize();
+  int listLoop = data->count() - u->getSize();
 
   int loop;
   int status = 0;
   for (loop = 0; loop < (int) u->getSize(); loop++, listLoop++)
   {
-    Setting *set = data.at(listLoop);
+    Setting *set = data->at(listLoop);
     double close = set->getFloat("Close");
 
     switch (status)

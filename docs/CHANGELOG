@@ -29,6 +29,8 @@
 
 - Added start and end date controls to the Yahoo plugin for more precise downloads. Hopefully this will solve some of the
   foreign quote problems.
+  
+- Did some tuning to various classes for better speed and memory usage.
 
 0.17
 ====

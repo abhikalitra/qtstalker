@@ -32,7 +32,7 @@ IndicatorPlugin::~IndicatorPlugin()
 {
 }
 
-void IndicatorPlugin::setIndicatorInput (QList<Setting> d)
+void IndicatorPlugin::setIndicatorInput (QList<Setting> *d)
 {
   data = d;
 }
@@ -83,9 +83,9 @@ PlotLine * IndicatorPlugin::getInput (QString field)
   PlotLine *in = new PlotLine();
 
   int loop;
-  for (loop = 0; loop < (int) data.count(); loop++)
+  for (loop = 0; loop < (int) data->count(); loop++)
   {
-    Setting *set = data.at(loop);
+    Setting *set = data->at(loop);
 
     switch(f)
     {
@@ -251,15 +251,15 @@ PlotLine * IndicatorPlugin::getTR ()
   PlotLine *tr = new PlotLine;
 
   int loop;
-  for (loop = 0; loop < (int) data.count(); loop++)
+  for (loop = 0; loop < (int) data->count(); loop++)
   {
-    Setting *set = data.at(loop);
+    Setting *set = data->at(loop);
     double high = set->getFloat("High");
     double low = set->getFloat("Low");
     double close;
     if (loop > 0)
     {
-      set = data.at(loop - 1);
+      set = data->at(loop - 1);
       close = set->getFloat("Close");
     }
     else
@@ -286,9 +286,9 @@ PlotLine * IndicatorPlugin::getTP ()
   PlotLine *tp = new PlotLine();
 
   int loop;
-  for (loop = 0; loop < (int) data.count(); loop++)
+  for (loop = 0; loop < (int) data->count(); loop++)
   {
-    Setting *set = data.at(loop);
+    Setting *set = data->at(loop);
     tp->append((set->getFloat("High") + set->getFloat("Low") + set->getFloat("Close")) / 3);
   }
 

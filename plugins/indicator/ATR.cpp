@@ -58,14 +58,14 @@ void ATR::calculate ()
 
 QMemArray<int> ATR::getAlerts ()
 {
-  alerts.fill(0, data.count());
+  alerts.fill(0, data->count());
 
   if (! output.count())
     return alerts;
 
   PlotLine *atr = output.at(0);
   int atrLoop;
-  int listLoop = data.count() - atr->getSize() + 18;
+  int listLoop = data->count() - atr->getSize() + 18;
   int status = 0;
 
   for (atrLoop = 18; atrLoop < (int) atr->getSize(); atrLoop++, listLoop++)

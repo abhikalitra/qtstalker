@@ -85,15 +85,6 @@ void CC::parse ()
     ChartDb *db = new ChartDb();
     db->openChart(s);
     newChart(db, symbols[symbolLoop], fd, dir);
-
-/*
-    Setting *details = db->getDetails();
-    if (! details->count())
-      newChart(db, symbols[symbolLoop], fd, dir);
-    else
-      updateChart(db, symbols[symbolLoop], fd, dir);
-*/
-
     delete db;
   }
 
@@ -115,6 +106,7 @@ void CC::newChart (ChartDb *db, QString symbol, FuturesData *fd, QDir dir)
   details->set("Title", s, Setting::Text);
   details->set("Futures Type", symbol, Setting::None);
   db->saveDetails();
+  db->setFormat();
 
   fd->setSymbol(symbol);
   QString currentContract = fd->getContract();
@@ -139,19 +131,25 @@ void CC::newChart (ChartDb *db, QString symbol, FuturesData *fd, QDir dir)
     Setting *tdetails = tdb->getDetails();
 
     if (! startDate.isValid())
-      startDate = QDateTime::fromString(tdetails->getDateTime("Start Date"), Qt::ISODate);
+      startDate = QDateTime::fromString(tdetails->getDateTime("First Date"), Qt::ISODate);
 
-    tdb->getHistory(ChartDb::Daily, startDate);
+    QList<Setting> *recordList = tdb->getHistory(ChartDb::Daily, startDate);
 
     int loop2;
-    int count = tdb->getDataSize() - rollover;
+    int count = recordList->count() - rollover;
     if (flag)
-      count = tdb->getDataSize();
+      count = recordList->count();
+    if (count < 1)
+    {
+      delete recordList;
+      delete tdb;
+      continue;
+    }
 
     for (loop2 = 1; loop2 < count; loop2++)
     {
-      Setting *r = tdb->getRecordIndex(loop2);
-      Setting *r2 = tdb->getRecordIndex(loop2 - 1);
+      Setting *r = recordList->at(loop2);
+      Setting *r2 = recordList->at(loop2 - 1);
 
       if (! pr->count())
         pr->set("Close", r2->getData("Close"), Setting::Float);
@@ -179,6 +177,7 @@ void CC::newChart (ChartDb *db, QString symbol, FuturesData *fd, QDir dir)
     details->set("Last Contract", dir[loop], Setting::None);
     db->saveDetails();
 
+    delete recordList;
     delete tdb;
 
     if (flag)
@@ -187,86 +186,6 @@ void CC::newChart (ChartDb *db, QString symbol, FuturesData *fd, QDir dir)
 
   delete pr;
 }
-
-/*
-void CC::updateChart (ChartDb *db, QString symbol, FuturesData *fd, QDir dir)
-{
-  int rollover = getInt("Rollover");
-
-  Setting *details = db->getDetails();
-  QString lastContract = details->getData("Last Contract");
-
-  fd->setSymbol(symbol);
-  QString currentContract = fd->getContract();
-
-  Setting *pr = db->getRecord(details->getData("Last Date"), db->getData(details->getData("Last Date")));
-
-  QDateTime startDate = QDateTime::fromString(details->getDateTime("Last Date"), Qt::ISODate);
-
-  int loop = 2;
-  for (; loop < (int) dir.count(); loop++)
-  {
-    if (! dir[loop].compare(lastContract))
-      break;
-  }
-
-  bool flag = FALSE;
-  for (; loop < (int) dir.count(); loop++)
-  {
-    if (! dir[loop].compare(currentContract))
-      flag = TRUE;
-
-    QString s = dir.absPath();
-    s.append("/");
-    s.append(dir[loop]);
-
-    ChartDb *tdb = new ChartDb();
-    tdb->openChart(s);
-
-    tdb->getHistory(ChartDb::Daily, startDate);
-
-    int loop2;
-    int count = tdb->getDataSize() - rollover;
-    if (flag)
-      count = tdb->getDataSize();
-
-    for (loop2 = 1; loop2 < count; loop2++)
-    {
-      Setting *r = tdb->getRecordIndex(loop2);
-      Setting *r2 = tdb->getRecordIndex(loop2 - 1);
-
-      double c = pr->getFloat("Close") + (r->getFloat("Close") - r2->getFloat("Close"));
-      double h = c + (r->getFloat("High") - r->getFloat("Close"));
-      double l = c - (r->getFloat("Close") - r->getFloat("Low"));
-      double o = h - (r->getFloat("High") - r->getFloat("Open"));
-
-      delete pr;
-
-      pr = new Setting;
-      pr->set("Date", r->getData("Date"), Setting::Date);
-      pr->set("Open", QString::number(o), Setting::Float);
-      pr->set("High", QString::number(h), Setting::Float);
-      pr->set("Low", QString::number(l), Setting::Float);
-      pr->set("Close", QString::number(c), Setting::Float);
-      pr->set("Volume", r->getData("Volume"), Setting::Float);
-      pr->set("Open Interest", r->getData("Open Interest"), Setting::Float);
-      db->setRecord(pr);
-      
-      startDate = QDateTime::fromString(r->getDateTime("Date"), Qt::ISODate);
-    }
-
-    details->set("Last Contract", dir[loop], Setting::None);
-    db->saveDetails();
-
-    delete tdb;
-
-    if (flag)
-      break;
-  }
-
-  delete pr;
-}
-*/
 
 Plugin * create ()
 {

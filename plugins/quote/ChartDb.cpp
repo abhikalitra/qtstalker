@@ -28,7 +28,6 @@
 
 ChartDb::ChartDb ()
 {
-  recordList.setAutoDelete(TRUE);
   db = 0;
   details = 0;
 }
@@ -99,7 +98,7 @@ void ChartDb::deleteData (QString k)
   db->del(db, NULL, &key, 0);
 }
 
-void ChartDb::getHistory (Compression c, QDateTime sd)
+QList<Setting> * ChartDb::getHistory (Compression c, QDateTime sd)
 {
   compression = c;
   startDate = sd;
@@ -107,18 +106,18 @@ void ChartDb::getHistory (Compression c, QDateTime sd)
   switch (compression)
   {
     case Weekly:
-      getWeeklyHistory();
+      return getWeeklyHistory();
       break;
     case Monthly:
-      getMonthlyHistory();
+      return getMonthlyHistory();
       break;
     default:
-      getDailyHistory();
+      return getDailyHistory();
       break;
   }
 }
 
-void ChartDb::getDailyHistory ()
+QList<Setting> * ChartDb::getDailyHistory ()
 {
   DBT key;
   DBT data;
@@ -127,6 +126,9 @@ void ChartDb::getDailyHistory ()
   memset(&data, 0, sizeof(DBT));
 
   db->cursor(db, NULL, &cursor, 0);
+  
+  QList<Setting> *recordList = new QList<Setting>;
+  recordList->setAutoDelete(TRUE);
 
   while (! cursor->c_get(cursor, &key, &data, DB_PREV))
   {
@@ -137,13 +139,15 @@ void ChartDb::getDailyHistory ()
     if (dt < startDate)
       break;
 
-    recordList.prepend(getRecord((char *) key.data, (char *) data.data));
+    recordList->prepend(getRecord((char *) key.data, (char *) data.data));
   }
 
   cursor->c_close(cursor);
+  
+  return recordList;
 }
 
-void ChartDb::getWeeklyHistory ()
+QList<Setting> * ChartDb::getWeeklyHistory ()
 {
   DBT key;
   DBT data;
@@ -156,6 +160,9 @@ void ChartDb::getWeeklyHistory ()
   Setting *tr = 0;
   QDateTime tdate = QDateTime::currentDateTime();
   
+  QList<Setting> *recordList = new QList<Setting>;
+  recordList->setAutoDelete(TRUE);
+
   while (! cursor->c_get(cursor, &key, &data, DB_PREV))
   {
     QDateTime dt = getDateTime((char *) key.data);
@@ -170,7 +177,7 @@ void ChartDb::getWeeklyHistory ()
     if (dt <= tdate)
     {
       if (tr)
-        recordList.prepend(tr);
+        recordList->prepend(tr);
 
       tr = new Setting;
       tr->parse(r->getString());
@@ -212,12 +219,14 @@ void ChartDb::getWeeklyHistory ()
   }
 
   if (tr)
-    recordList.prepend(tr);
+    recordList->prepend(tr);
 
   cursor->c_close(cursor);
+
+  return recordList;
 }
 
-void ChartDb::getMonthlyHistory ()
+QList<Setting> * ChartDb::getMonthlyHistory ()
 {
   DBT key;
   DBT data;
@@ -229,6 +238,9 @@ void ChartDb::getMonthlyHistory ()
 
   int month = -1;
   Setting *tr = 0;
+
+  QList<Setting> *recordList = new QList<Setting>;
+  recordList->setAutoDelete(TRUE);
 
   while (! cursor->c_get(cursor, &key, &data, DB_PREV))
   {
@@ -244,7 +256,7 @@ void ChartDb::getMonthlyHistory ()
     if (dt.date().month() != month)
     {
       if (tr)
-        recordList.prepend(tr);
+        recordList->prepend(tr);
 
       tr = new Setting;
       tr->parse(r->getString());
@@ -286,9 +298,11 @@ void ChartDb::getMonthlyHistory ()
   }
 
   if (tr)
-    recordList.prepend(tr);
+    recordList->prepend(tr);
 
   cursor->c_close(cursor);
+
+  return recordList;
 }
 
 QDateTime ChartDb::getDateTime (QString d)
@@ -314,7 +328,6 @@ void ChartDb::setRecord (Setting *set)
   if (date.length() != 14)
     return;
 
-  QStringList format = QStringList::split("|", details->getData("Format"), FALSE);
   QStringList l;
   int loop;
   for (loop = 0; loop < (int) format.count(); loop++)
@@ -400,8 +413,6 @@ void ChartDb::deleteRecord (Setting *set)
 
 Setting * ChartDb::getRecord (QString k, QString d)
 {
-  QStringList format = QStringList::split("|", details->getData("Format"), FALSE);
-
   QStringList l = QStringList::split(",", d, FALSE);
 
   Setting *r = new Setting;
@@ -467,36 +478,6 @@ void ChartDb::deleteChartObject (QString d)
   deleteData(s);
 }
 
-int ChartDb::getDataSize ()
-{
-  return (int) recordList.count();
-}
-
-double ChartDb::getCloseData (QDateTime d)
-{
-  QString key = d.toString(DATE_FORMAT);
-  QString s = getData(key);
-  Setting *r = getRecord(key, s);
-  double t = 0;
-  if (r)
-  {
-    t = r->getFloat("Close");
-    delete r;
-  }
-
-  return t;
-}
-
-Setting * ChartDb::getRecordIndex (int d)
-{
-  return recordList.at(d);
-}
-
-QList<Setting> ChartDb::getRecordList ()
-{
-  return recordList;
-}
-
 void ChartDb::saveDetails ()
 {
   setData("DETAILS", details->getString());
@@ -511,6 +492,7 @@ void ChartDb::loadDetails ()
 {
   details = new Setting;
   details->parse(getData("DETAILS"));
+  setFormat();
 }
 
 void ChartDb::dump (QString d)
@@ -534,6 +516,12 @@ void ChartDb::dump (QString d)
   cursor->c_close(cursor);
   outFile.close();
 }
+
+void ChartDb::setFormat ()
+{
+  format = QStringList::split("|", details->getData("Format"), FALSE);
+}
+
 
 
 
