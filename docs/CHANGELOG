@@ -3,15 +3,13 @@
 
 - fixed bug that skipped previous date when calculating MA's 
 
-- created 2 custom widgets SettingView and Navigator for dialogs
-
 - added a compile option to increase speed "-O2"
 
-- fixed "export" all bug when trying to export all charts
+- fixed "export" all bug that seg faults when trying to export all charts
 
-- added new MA support for Wilder and fixed TR function to include first bar thanks to Glen for the patch
+- added new MA support for Wilder's MA method  and fixed TR function to include first bar thanks to Glen for the patch
 
-- New quote plugin 'Ratio'. This is a composite that divides two symbols to produce the ratio between them.
+- New quote plugin "Ratio". This is a composite that divides two symbols to produce the ratio between them.
 
 0.15
 ======
@@ -118,3 +116,4 @@ This is a bug fix release.
 ===========
 
 Lots of changes I didn't record because I was too lazy.
+

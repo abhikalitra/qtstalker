@@ -46,6 +46,7 @@ class GroupDialog : public QDialog
     void deleteItem ();
     void symbolSelected (QString);
     void listSelected (QListViewItem *i);
+    void upDirectory ();
 
   private:
     Config *config;
@@ -53,6 +54,7 @@ class GroupDialog : public QDialog
     QToolButton *cancelButton;
     QToolButton *deleteButton;
     QToolButton *insertButton;
+    QToolButton *upButton;
     QGridLayout *toolbar;
     QListView *list;
     QListViewItem *item;

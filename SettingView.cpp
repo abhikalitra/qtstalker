@@ -22,6 +22,7 @@
 #include "SettingView.h"
 #include "ok.xpm"
 #include "stop.xpm"
+#include "up.xpm"
 #include <qcolordialog.h>
 #include <qmessagebox.h>
 #include <qcolor.h>
@@ -404,7 +405,7 @@ SymbolDialog::SymbolDialog (QString dataPath) : QDialog (0, "SymbolDialog", TRUE
   vbox->setSpacing(5);
   vbox->setMargin(5);
 
-  toolbar = new QGridLayout(vbox, 1, 3);
+  toolbar = new QGridLayout(vbox, 1, 4);
   toolbar->setSpacing(1);
 
   okButton = new QToolButton(this);
@@ -422,6 +423,14 @@ SymbolDialog::SymbolDialog (QString dataPath) : QDialog (0, "SymbolDialog", TRUE
   cancelButton->setMaximumWidth(30);
   cancelButton->setAutoRaise(TRUE);
   toolbar->addWidget(cancelButton, 0, 1);
+  
+  upButton = new QToolButton(this);
+  QToolTip::add(upButton, tr("Parent Directory"));
+  upButton->setPixmap(QPixmap(up));
+  connect(upButton, SIGNAL(clicked()), this, SLOT(upDirectory()));
+  upButton->setMaximumWidth(30);
+  upButton->setAutoRaise(TRUE);
+  toolbar->addWidget(upButton, 0, 2);
 
   navigator = new Navigator(this, dataPath);
   vbox->addWidget(navigator);
@@ -443,6 +452,11 @@ void SymbolDialog::checkDoubleClick (QString symbol)
 {
   if (symbol.length())
     accept();
+}
+
+void SymbolDialog::upDirectory ()
+{
+  navigator->upDirectory();
 }
 
 

@@ -28,6 +28,7 @@
 #include <qvgroupbox.h>
 #include <qinputdialog.h>
 #include <qlabel.h>
+#include <qsplitter.h>
 #include "Tester.h"
 #include "edit.xpm"
 #include "delete.xpm"
@@ -82,6 +83,8 @@ Tester::Tester (Config *c, QString n) : QDialog (0, 0, FALSE)
   createTestPage();
 
   createReportPage();
+
+  createChartPage();
 
   loadRule();
   
@@ -294,7 +297,7 @@ void Tester::createTestPage ()
   tradeShort = new QCheckBox(tr("Short"), gbox);
   gbox->addSpace(0);
 
-  QLabel *label = new QLabel(tr("Delay"), gbox);
+  QLabel *label = new QLabel(tr("Delay between consecutive longs/shorts"), gbox);
 
   delayDays = new QSpinBox(0, 999999, 1, gbox);
 
@@ -365,10 +368,35 @@ void Tester::createReportPage ()
   tradeList->addColumn(tr("Exit price"), -1);
   tradeList->addColumn(tr("Signal"), -1);
   tradeList->addColumn(tr("Profit"), -1);
+  tradeList->addColumn(tr("Account"), -1);
   tradeList->setSelectionMode(QListView::Single);
   vbox->addWidget(tradeList);
 
   tabs->addTab(w, tr("Reports"));
+}
+
+void Tester::createChartPage ()
+{
+  QWidget *w = new QWidget(this);
+
+  QVBoxLayout *vbox = new QVBoxLayout(w);
+  vbox->setMargin(5);
+  vbox->setSpacing(5);
+  
+  QSplitter *split = new QSplitter(w);
+  split->setOrientation(Vertical);
+  vbox->addWidget(split);
+
+  equityPlot = new Plot (split);
+  equityPlot->setDateFlag(FALSE);
+  equityPlot->setMainFlag(FALSE);
+  
+  closePlot = new Plot (split);
+  closePlot->setDateFlag(TRUE);
+  closePlot->setChartType("Line");
+  closePlot->setMainFlag(TRUE);
+
+  tabs->addTab(w, tr("Charts"));
 }
 
 void Tester::addIndicator ()
@@ -593,7 +621,7 @@ void Tester::test ()
   if (! tradeLong->isChecked() && ! tradeShort->isChecked())
     return;
 
-  double equity = account->text().toDouble();
+  equity = account->text().toDouble();
   if (equity == 0)
     return;
 
@@ -662,6 +690,25 @@ void Tester::test ()
     trailing();
   }
 
+  equityPlot->clear();
+  PlotLine *line = new PlotLine;
+  Indicator *ind = new Indicator;
+  ind->set("Plot", "True", Setting::None);
+  QListViewItemIterator it(tradeList);
+  for (; it.current() != 0; ++it)
+  {
+    QListViewItem *i = it.current();
+    QString s = i->text(7);
+    line->append(s.toDouble());
+  }
+  ind->addLine(line);
+  equityPlot->addIndicator("Equity", ind);
+  equityPlot->draw();
+
+  closePlot->clear();
+  closePlot->setData(db->getRecordList());
+  closePlot->draw();
+
   delete db;
 }
 
@@ -692,10 +739,12 @@ bool Tester::checkEnterLong ()
     exitPosition("Enter Long");
 
   status = 1;
-  
+
   buyRecord = currentRecord;
-  
+
   trailingHigh = buyRecord->getFloat("Close");
+
+  equity = equity - entryCom->value();
 
   return TRUE;
 }
@@ -761,6 +810,8 @@ bool Tester::checkEnterShort ()
   buyRecord = currentRecord;
 
   trailingLow = buyRecord->getFloat("Close");
+  
+  equity = equity - entryCom->value();
 
   return TRUE;
 }
@@ -813,6 +864,9 @@ void Tester::exitPosition (QString signal)
     type = tr("Long");
   }
 
+  equity = equity + profit;
+  equity = equity - exitCom->value();
+
   item = new QListViewItem(tradeList,
   			   type,
 			   buyRecord->getData("Date").left(8),
@@ -820,7 +874,8 @@ void Tester::exitPosition (QString signal)
 			   currentRecord->getData("Date").left(8),
 			   currentRecord->getData("Close"),
 			   signal,
-			   QString::number(profit));
+			   QString::number(profit),
+			   QString::number(equity));
 
 }
 
@@ -865,28 +920,36 @@ bool Tester::maximumLoss ()
   if (! maximumLossCheck->isChecked())
     return FALSE;
 
-  double loss = maximumLossEdit->text().toDouble();
+  double loss = equity / maximumLossEdit->text().toDouble();
   double t = 0;
 
   if ((status == 1) && (maximumLossLong->isChecked()))
   {
-    t = ((currentRecord->getFloat("Close") - buyRecord->getFloat("Close")) / buyRecord->getFloat("Close")) * 100;
+    t = currentRecord->getFloat("Close") - buyRecord->getFloat("Close");
     if (t < 0)
     {
       t = +t;
       if (t >= loss)
+      {
+        exitPosition("Maximum Loss");
+        status = 0;
         return TRUE;
+      }
     }
   }
 
   if ((status == -1) && (maximumLossShort->isChecked()))
   {
-    t = ((buyRecord->getFloat("Close") - currentRecord->getFloat("Close")) / buyRecord->getFloat("Close")) * 100;
+    t = buyRecord->getFloat("Close") - currentRecord->getFloat("Close");
     if (t < 0)
     {
       t = +t;
       if (t >= loss)
+      {
+        exitPosition("Maximum Loss");
+        status = 0;
         return TRUE;
+      }
     }
   }
 
@@ -901,26 +964,34 @@ bool Tester::profit ()
   if (! profitCheck->isChecked())
     return FALSE;
 
-  double profit = profitEdit->text().toDouble();
+  double profit = equity / profitEdit->text().toDouble();
   double t = 0;
 
   if ((status == 1) && (profitLong->isChecked()))
   {
-    t = ((currentRecord->getFloat("Close") - buyRecord->getFloat("Close")) / buyRecord->getFloat("Close")) * 100;
+    t = currentRecord->getFloat("Close") - buyRecord->getFloat("Close");
     if (t > 0)
     {
       if (t >= profit)
+      {
+        exitPosition("Profit");
+        status = 0;
         return TRUE;
+      }
     }
   }
 
   if ((status == -1) && (profitShort->isChecked()))
   {
-    t = ((buyRecord->getFloat("Close") - currentRecord->getFloat("Close")) / buyRecord->getFloat("Close")) * 100;
+    t = buyRecord->getFloat("Close") - currentRecord->getFloat("Close");
     if (t > 0)
     {
       if (t >= profit)
+      {
+        exitPosition("Profit");
+        status = 0;
         return TRUE;
+      }
     }
   }
 
@@ -934,7 +1005,7 @@ bool Tester::trailing ()
 
   if (! trailingCheck->isChecked())
     return FALSE;
-    
+
   double loss = trailingEdit->text().toDouble();
   double t = 0;
 
@@ -948,7 +1019,11 @@ bool Tester::trailing ()
     {
       t = +t;
       if (t >= loss)
+      {
+        exitPosition("Trailing");
+        status = 0;
         return TRUE;
+      }
     }
   }
 
@@ -962,7 +1037,11 @@ bool Tester::trailing ()
     {
       t = +t;
       if (t >= loss)
+      {
+        exitPosition("Trailing");
+        status = 0;
         return TRUE;
+      }
     }
   }
 

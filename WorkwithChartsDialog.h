@@ -51,6 +51,7 @@ class WorkwithChartsDialog : public QDialog
     void exportSymbol ();
     void exportAll ();
     void symbolSelected (QString);
+    void upDirectory ();
 
   private:
     Config *config;
@@ -60,6 +61,7 @@ class WorkwithChartsDialog : public QDialog
     QToolButton *deleteButton;
     QToolButton *exportButton;
     QToolButton *exportAllButton;
+    QToolButton *upButton;
     Navigator *navigator;
     QGridLayout *toolbar;
 };

@@ -28,6 +28,7 @@
 #include "delete.xpm"
 #include "export.xpm"
 #include "stop.xpm"
+#include "up.xpm"
 #include <qtooltip.h>
 #include <qdir.h>
 #include <qmessagebox.h>
@@ -41,7 +42,7 @@ WorkwithChartsDialog::WorkwithChartsDialog (Config *c) : QDialog (0, "WorkwithCh
   vbox->setMargin(5);
   vbox->setSpacing(5);
 
-  toolbar = new QGridLayout(vbox, 1, 7);
+  toolbar = new QGridLayout(vbox, 1, 8);
   toolbar->setSpacing(1);
 
   cancelButton = new QToolButton(this);
@@ -95,6 +96,14 @@ WorkwithChartsDialog::WorkwithChartsDialog (Config *c) : QDialog (0, "WorkwithCh
   exportAllButton->setMaximumWidth(30);
   exportAllButton->setAutoRaise(TRUE);
   toolbar->addWidget(exportAllButton, 0, 5);
+
+  upButton = new QToolButton(this);
+  QToolTip::add(upButton, tr("Parent Directory"));
+  upButton->setPixmap(QPixmap(up));
+  connect(upButton, SIGNAL(clicked()), this, SLOT(upDirectory()));
+  upButton->setMaximumWidth(30);
+  upButton->setAutoRaise(TRUE);
+  toolbar->addWidget(upButton, 0, 6);
 
   navigator = new Navigator(this, config->getData(Config::DataPath));
   connect(navigator, SIGNAL(doubleClick(QString)), this, SLOT(openSymbol(QString)));
@@ -298,4 +307,8 @@ void WorkwithChartsDialog::symbolSelected (QString d)
   }
 }
 
+void WorkwithChartsDialog::upDirectory ()
+{
+  navigator->upDirectory();
+}
 

@@ -24,6 +24,7 @@
 #include "delete.xpm"
 #include "ok.xpm"
 #include "stop.xpm"
+#include "up.xpm"
 #include <qtooltip.h>
 
 GroupDialog::GroupDialog (Config *c) : QDialog (0, "GroupDialog", TRUE)
@@ -37,7 +38,7 @@ GroupDialog::GroupDialog (Config *c) : QDialog (0, "GroupDialog", TRUE)
   vbox->setMargin(5);
   vbox->setSpacing(5);
   
-  toolbar = new QGridLayout(vbox, 1, 5);
+  toolbar = new QGridLayout(vbox, 1, 6);
   toolbar->setSpacing(1);
 
   okButton = new QToolButton(this);
@@ -74,6 +75,14 @@ GroupDialog::GroupDialog (Config *c) : QDialog (0, "GroupDialog", TRUE)
   deleteButton->setAutoRaise(TRUE);
   toolbar->addWidget(deleteButton, 0, 3);
   deleteButton->setEnabled(FALSE);
+
+  upButton = new QToolButton(this);
+  QToolTip::add(upButton, tr("Parent Directory"));
+  upButton->setPixmap(QPixmap(up));
+  connect(upButton, SIGNAL(clicked()), this, SLOT(upDirectory()));
+  upButton->setMaximumWidth(30);
+  upButton->setAutoRaise(TRUE);
+  toolbar->addWidget(upButton, 0, 4);
 
   fileSelector = new Navigator(this, config->getData(Config::DataPath));
   connect(fileSelector, SIGNAL(fileSelected(QString)), this, SLOT(symbolSelected(QString)));
@@ -182,6 +191,11 @@ void GroupDialog::listSelected (QListViewItem *)
     deleteButton->setEnabled(FALSE);
   else
     deleteButton->setEnabled(TRUE);
+}
+
+void GroupDialog::upDirectory ()
+{
+  fileSelector->upDirectory();
 }
 
 

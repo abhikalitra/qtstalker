@@ -89,11 +89,13 @@ class SymbolDialog : public QDialog
     
   public slots:
     void checkDoubleClick (QString);
+    void upDirectory ();
 
   private:
     QGridLayout *toolbar;
     QToolButton *okButton;
     QToolButton *cancelButton;
+    QToolButton *upButton;
     Navigator *navigator;
 };
 
