@@ -35,7 +35,6 @@
 
 - Color bars were off by one in the EP indicator. Fixed.
 
-- Removed CBOT plugin from the compile process pending a future fix or removal.
 
 0.20
 ====
