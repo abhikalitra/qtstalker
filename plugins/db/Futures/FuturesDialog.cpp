@@ -19,10 +19,12 @@
  *  USA.
  */
 
-#include "EditChartDialog.h"
-#include "delete.xpm"
-#include "export.xpm"
-#include "search.xpm"
+#include "FuturesDialog.h"
+#include "Bar.h"
+#include "BarDate.h"
+#include "../../../src/delete.xpm"
+#include "../../../src/export.xpm"
+#include "../../../src/search.xpm"
 #include <qlabel.h>
 #include <qlayout.h>
 #include <qvalidator.h>
@@ -31,15 +33,14 @@
 #include <qtooltip.h>
 #include <qpixmap.h>
 
-EditChartDialog::EditChartDialog (QString cp) : QTabDialog (0, "EditChartDialog", TRUE)
+FuturesDialog::FuturesDialog (QString d) : QTabDialog (0, "FuturesDialog", TRUE)
 {
   saveRecordFlag = FALSE;
   ignoreSaveRecordFlag = FALSE;
-  record = 0;
-  setCaption(tr("Qtstalker: Edit Chart"));
+  setCaption(tr("Qtstalker: Edit Futures"));
   
-  db = new ChartDb();
-  db->openChart(cp);
+  db = new ChartDb;
+  db->openChart(d);
   
   createDetailsPage();
   createDataPage();
@@ -49,15 +50,12 @@ EditChartDialog::EditChartDialog (QString cp) : QTabDialog (0, "EditChartDialog"
   connect(this, SIGNAL(applyButtonPressed()), this, SLOT(saveChart()));
 }
 
-EditChartDialog::~EditChartDialog ()
+FuturesDialog::~FuturesDialog ()
 {
   delete db;
-  
-  if (record)
-    delete record;
 }
 
-void EditChartDialog::createDetailsPage ()
+void FuturesDialog::createDetailsPage ()
 {
   QWidget *w = new QWidget(this);
     
@@ -68,40 +66,36 @@ void EditChartDialog::createDetailsPage ()
   QLabel *label = new QLabel(tr("Symbol"), w);
   grid->addWidget(label, 0, 0);
   
-  QLineEdit *edit = new QLineEdit(db->getDetail(ChartDb::Symbol), w);
+  QLineEdit *edit = new QLineEdit(db->getData("Symbol"), w);
   edit->setReadOnly(TRUE);
   grid->addWidget(edit, 0, 1);
   
   label = new QLabel(tr("Name"), w);
   grid->addWidget(label, 1, 0);
   
-  title = new QLineEdit(db->getDetail(ChartDb::Title), w);
+  title = new QLineEdit(db->getData("Title"), w);
   grid->addWidget(title, 1, 1);
   
   label = new QLabel(tr("Type"), w);
   grid->addWidget(label, 2, 0);
   
-  edit = new QLineEdit(db->getDetail(ChartDb::Type), w);
+  edit = new QLineEdit(db->getData("Type"), w);
   edit->setReadOnly(TRUE);
   grid->addWidget(edit, 2, 1);
   
-  QString s = db->getDetail(ChartDb::FuturesType);
-  if (s.length())
-  {
-    label = new QLabel(tr("Futures Symbol"), w);
-    grid->addWidget(label, 3, 0);
+  label = new QLabel(tr("Futures Type"), w);
+  grid->addWidget(label, 3, 0);
   
-    edit = new QLineEdit(s, w);
-    edit->setReadOnly(TRUE);
-    grid->addWidget(edit, 3, 1);
-    
-    label = new QLabel(tr("Futures Month"), w);
-    grid->addWidget(label, 4, 0);
+  edit = new QLineEdit(db->getData("FuturesType"), w);
+  edit->setReadOnly(TRUE);
+  grid->addWidget(edit, 3, 1);
+
+  label = new QLabel(tr("Futures Month"), w);
+  grid->addWidget(label, 4, 0);
   
-    edit = new QLineEdit(db->getDetail(ChartDb::FuturesMonth), w);
-    edit->setReadOnly(TRUE);
-    grid->addWidget(edit, 4, 1);
-  }
+  edit = new QLineEdit(db->getData("FuturesMonth"), w);
+  edit->setReadOnly(TRUE);
+  grid->addWidget(edit, 4, 1);
   
   grid->expand(grid->numRows() + 1, grid->numCols());
   grid->setColStretch(1, 1);
@@ -109,7 +103,7 @@ void EditChartDialog::createDetailsPage ()
   addTab(w, tr("Details"));  
 }
 
-void EditChartDialog::createDataPage ()
+void FuturesDialog::createDataPage ()
 {
   QWidget *w = new QWidget(this);
     
@@ -207,18 +201,18 @@ void EditChartDialog::createDataPage ()
   grid->addWidget(label, 7, 0);
   
   oi = new QLineEdit(w);
-  dv = new QDoubleValidator(0, 99999999999.0, 0, this, 0);
-  oi->setValidator(dv);
+  QIntValidator *iv = new QIntValidator(0, 999999999, this);
+  oi->setValidator(iv);
   connect(oi, SIGNAL(textChanged(const QString &)), this, SLOT(textChanged(const QString &)));
   grid->addWidget(oi, 7, 1);
-        
+  
   grid->expand(grid->numRows() + 1, grid->numCols());
   grid->setColStretch(1, 1);
   
   addTab(w, tr("Data"));  
 }
 
-void EditChartDialog::deleteRecord ()
+void FuturesDialog::deleteRecord ()
 {
   if (saveRecordFlag)
   {  
@@ -233,34 +227,27 @@ void EditChartDialog::deleteRecord ()
       return;
   }
 
-  db->deleteData(record->getDate().getDateTimeString(FALSE));
+  db->deleteData(date->text());
   
   clearRecordFields();
-  
-  delete record;
-  record = 0;
   
   toolbar->setButtonStatus("delete", FALSE);
   toolbar->setButtonStatus("save", FALSE);
   saveRecordFlag = FALSE;
 }
 
-void EditChartDialog::saveRecord ()
+void FuturesDialog::saveRecord ()
 {
-  record->setOpen(open->text().toDouble());
-  record->setHigh(high->text().toDouble());
-  record->setLow(low->text().toDouble());
-  record->setClose(close->text().toDouble());
-  record->setVolume(volume->text().toDouble());
-  record->setOI(oi->text().toInt());
-  
-  db->setBar(record);
+  BarDate bd;
+  bd.setDate(date->text());
+  db->setBar(bd, open->text().toDouble(), high->text().toDouble(), low->text().toDouble(),
+             close->text().toDouble(), volume->text().toDouble(), oi->text().toDouble());
   
   toolbar->setButtonStatus("save", FALSE);
   saveRecordFlag = FALSE;
 }
 
-void EditChartDialog::slotDateSearch ()
+void FuturesDialog::slotDateSearch ()
 {
   if (saveRecordFlag)
   {  
@@ -281,12 +268,6 @@ void EditChartDialog::slotDateSearch ()
 
   clearRecordFields();
   
-  if (record)
-  {
-    delete record;
-    record = 0;
-  }
-
   QString data = db->getData(key);
   if (! data.length())
   {
@@ -295,9 +276,7 @@ void EditChartDialog::slotDateSearch ()
     return;
   }
 
-  record = db->getBar(key, data);
-  if (! record)
-    return;
+  Bar *record = db->getBar(key, data);
 
   ignoreSaveRecordFlag = TRUE;
   date->setText(record->getDate().getDateTimeString(TRUE));
@@ -306,16 +285,18 @@ void EditChartDialog::slotDateSearch ()
   low->setText(QString::number(record->getLow()));
   close->setText(QString::number(record->getClose()));
   volume->setText(QString::number(record->getVolume(), 'f', 0));
-  oi->setText(QString::number(record->getOI()));
+  oi->setText(QString::number(record->getOI(), 'f', 0));
   ignoreSaveRecordFlag = FALSE;
+  
+  delete record;
   
   toolbar->setButtonStatus("delete", TRUE);
   toolbar->setButtonStatus("save", FALSE);
 }
 
-void EditChartDialog::saveChart ()
+void FuturesDialog::saveChart ()
 {
-  db->setDetail(ChartDb::Title, title->text());
+  db->setData("Title", title->text());
 
   if (saveRecordFlag)
   {  
@@ -333,7 +314,7 @@ void EditChartDialog::saveChart ()
   accept();
 }
 
-void EditChartDialog::clearRecordFields ()
+void FuturesDialog::clearRecordFields ()
 {
   ignoreSaveRecordFlag = TRUE;
   date->clear();
@@ -346,7 +327,7 @@ void EditChartDialog::clearRecordFields ()
   ignoreSaveRecordFlag = FALSE;
 }
 
-void EditChartDialog::textChanged (const QString &)
+void FuturesDialog::textChanged (const QString &)
 {
   if (! ignoreSaveRecordFlag)
   {

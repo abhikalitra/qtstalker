@@ -19,37 +19,41 @@
  *  USA.
  */
 
-#include "QuotePlugin.h"
-#include "ChartDb.h"
-#include "FuturesData.h"
+#include "SymbolButton.h"
+#include "Config.h"
+#include "Toolbar.h"
+#include <qtabdialog.h>
 #include <qstring.h>
-#include <qdir.h>
+#include <qlineedit.h>
+#include <qcheckbox.h>
+#include <qlistview.h>
+#include <qdict.h>
 
-class CC : public QuotePlugin
+class IndexDialog : public QTabDialog
 {
   Q_OBJECT
-
+  
   public:
-    CC ();
-    virtual ~CC ();
-    void update ();
-    void newChart (ChartDb *, QString, QDir);
-    void loadSettings ();
-    void saveSettings ();
-    void prefDialog (QWidget *);
-
-  public slots:
-    void parse ();
+    IndexDialog ();
+    ~IndexDialog ();
+    void setRebuild (bool);
+    bool getRebuild ();
+    void setName (QString);
     
+  public slots:
+    void buttonStatus ();
+    void addItem ();
+    void editItem ();
+    void deleteItem ();
+    QString getList ();
+    void setList (QString);
+          
   private:
-    int rollover;
-    int maxYears;
-    FuturesData fd;
+    QLineEdit *name;
+    Toolbar *toolbar;
+    Config config;
+    QCheckBox *rebuild;
+    QListView *list;
+    QDict<QString> symbolDict;
 };
-
-extern "C"
-{
-  Plugin * create ();
-};
-
 

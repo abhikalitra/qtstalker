@@ -19,24 +19,24 @@
  *  USA.
  */
 
-#ifndef EDITCHARTDIALOG_HPP
-#define EDITCHARTDIALOG_HPP
+#ifndef STOCKSDIALOG_HPP
+#define STOCKSDIALOG_HPP
 
 #include <qstringlist.h>
 #include <qdatetimeedit.h>
 #include <qtabdialog.h>
 #include <qlineedit.h>
-#include "ChartDb.h"
-#include "Bar.h"
 #include "Toolbar.h"
+#include "ChartDb.h"
+#include "Config.h"
 
-class EditChartDialog : public QTabDialog
+class FuturesDialog : public QTabDialog
 {
   Q_OBJECT
 
   public:
-    EditChartDialog (QString);
-    ~EditChartDialog ();
+    FuturesDialog (QString);
+    ~FuturesDialog ();
     void createDetailsPage ();
     void createDataPage ();
     void clearRecordFields ();
@@ -49,9 +49,9 @@ class EditChartDialog : public QTabDialog
     void textChanged (const QString &);
 
   private:
-    Bar *record;
     QDateTimeEdit *dateSearch;
     ChartDb *db;
+    Config config;
     QLineEdit *date;
     QLineEdit *title;
     QLineEdit *open;

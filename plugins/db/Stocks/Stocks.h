@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  *
- *  Copyright (C) 2001-2004 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2003 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,28 +19,26 @@
  *  USA.
  */
 
-#include "QuotePlugin.h"
-#include "Setting.h"
+#ifndef STOCKS_HPP
+#define STOCKS_HPP
+
+#include "DbPlugin.h"
+#include "BarDate.h"
+#include "Bar.h"
 #include <qstring.h>
-#include <qdict.h>
-#include <qdatetime.h>
 
-class Index : public QuotePlugin
+class Stocks : public DbPlugin
 {
-  Q_OBJECT
-
   public:
-    Index ();
-    virtual ~Index ();
-    void update ();
-    int loadData (QString, float);
-    void prefDialog (QWidget *);
-
-  public slots:
-    void updateIndex ();
+    Stocks ();
+    ~Stocks ();
+    Bar * getBar (QString, QString);
+    void dbPrefDialog ();
+    void setBar (BarDate date, double open, double high, double low, double close, double volume, double);
+    void saveDbDefaults (BarData::BarType barType, QString symbol, QString name, QString,
+                         QString, QString, QString);
 
   private:
-    QDict<Setting> data;
 };
 
 extern "C"
@@ -48,3 +46,4 @@ extern "C"
   Plugin * create ();
 }
 
+#endif

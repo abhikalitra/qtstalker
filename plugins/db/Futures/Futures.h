@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  *
- *  Copyright (C) 2001-2004 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2003 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,39 +19,31 @@
  *  USA.
  */
 
-#include "SymbolButton.h"
-#include "Toolbar.h"
-#include <qcombobox.h>
-#include <qtabdialog.h>
-#include <qstring.h>
-#include <qlineedit.h>
+#ifndef STOCKS_HPP
+#define STOCKS_HPP
 
-class SpreadDialog : public QTabDialog
+#include "DbPlugin.h"
+#include "BarDate.h"
+#include "Bar.h"
+#include <qstring.h>
+
+class Futures : public DbPlugin
 {
-  Q_OBJECT
-  
   public:
-    SpreadDialog ();
-    ~SpreadDialog ();
-    void saveData ();
-    
-  public slots:
-    void buttonStatus ();
-    void newSpread ();
-    void openSpread ();
-    void saveSpread ();
-    void dataChanged ();
-    void methodChanged (int);
-          
+    Futures ();
+    ~Futures ();
+    Bar * getBar (QString, QString);
+    void dbPrefDialog ();
+    void setBar (BarDate date, double open, double high, double low, double close, double volume, double);
+    void saveDbDefaults (BarData::BarType barType, QString symbol, QString name, QString futuresType,
+                         QString futuresMonth, QString, QString);
+
   private:
-    bool saveFlag;
-    QString file;
-    QString symbol;
-    SymbolButton *firstButton;
-    SymbolButton *secondButton;
-    QComboBox *method;
-    QLineEdit *name;
-    QString dataPath;
-    Toolbar *toolbar;
 };
 
+extern "C"
+{
+  Plugin * create ();
+}
+
+#endif

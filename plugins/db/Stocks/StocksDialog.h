@@ -1,6 +1,6 @@
 /*
  *  Qtstalker stock charter
- *
+ * 
  *  Copyright (C) 2001-2004 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -15,45 +15,53 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, 
  *  USA.
  */
 
-#include <qlistview.h>
+#ifndef STOCKSDIALOG_HPP
+#define STOCKSDIALOG_HPP
+
+#include <qstringlist.h>
+#include <qdatetimeedit.h>
 #include <qtabdialog.h>
-#include <qdict.h>
 #include <qlineedit.h>
 #include "Toolbar.h"
+#include "ChartDb.h"
+#include "Config.h"
 
-class IndexDialog : public QTabDialog
+class StocksDialog : public QTabDialog
 {
   Q_OBJECT
-  
+
   public:
-    IndexDialog ();
-    ~IndexDialog ();
-    void setList (QString);
-    QString getList ();
-    void saveData ();
-    
+    StocksDialog (QString);
+    ~StocksDialog ();
+    void createDetailsPage ();
+    void createDataPage ();
+    void clearRecordFields ();
+
   public slots:
-    void addItem ();
-    void editItem ();
-    void deleteItem ();
-    void buttonStatus ();
-    void newIndex ();
-    void openIndex ();
-    void saveIndex ();
-    void okPressed ();
-          
+    void deleteRecord ();
+    void saveRecord ();
+    void slotDateSearch ();
+    void saveChart ();
+    void textChanged (const QString &);
+
   private:
-    bool saveFlag;
-    QString symbol;
-    QString file;
-    QString dataPath;
-    QListView *list;
-    QLineEdit *name;
-    QDict<QString> symbolDict;
+    QDateTimeEdit *dateSearch;
+    ChartDb *db;
+    Config config;
+    QLineEdit *date;
+    QLineEdit *title;
+    QLineEdit *open;
+    QLineEdit *high;
+    QLineEdit *low;
+    QLineEdit *close;
+    QLineEdit *volume;
     Toolbar *toolbar;
+    bool saveRecordFlag;
+    bool ignoreSaveRecordFlag;
 };
 
+#endif
