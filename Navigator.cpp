@@ -45,7 +45,7 @@ void Navigator::updateList ()
 {
   clear();
 
-  currentDir.refresh();
+  currentDir.setPath(currentDir.absPath());
 
   int loop;
   if (! basePath.compare(currentDir.absPath()))

@@ -30,7 +30,8 @@
 - Backported QTable::setColumnLabel() function to Qt3.0.* It seems most of the compile errors being reported are caused
   by very small changes in the 3.1* versions. Most distributions are still using the 3.0* version, guess I'm spoiled
   using Gentoo.
-   
+  
+- fixed QDir::refresh() compile error, backported to Qt 3.0* 
   
 0.19
 ====
