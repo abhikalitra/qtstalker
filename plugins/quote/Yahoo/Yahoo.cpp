@@ -76,7 +76,7 @@ void Yahoo::update ()
   QDir dir = QDir::home();
   file = dir.path();
   file.append("/Qtstalker/download");
-
+  
   int loop;
   for (loop = 0; loop < (int) symbolList.count(); loop++)
   {

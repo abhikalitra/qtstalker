@@ -15,7 +15,10 @@
 supported exchanges are available
 with this plugin.<br>
 </p>
-<p>Adjustments: Yahoo provides an Adjusted Close column in its data,
+<p><br>
+</p>
+<h4>Adjustments:</h4>
+Yahoo provides an Adjusted Close column in its data,
 scaling prior closing prices to the most recent price based on stock
 splits and dividends. For example, if a 2-for-1 split occurs halfway
 through the data, the Adjusted Close price from before the split will
@@ -29,8 +32,18 @@ without large jumps due to stock splits, although the caveat is that
 absolute prices are a factor different from what occurred on the
 exchange that day. Having said that, factoring for historical events
 in this manner is a common approach for visually graphing stock
-prices.
-</p>
+prices.<br>
+<h4><br>
+</h4>
+<h4>200 Bar Limit:</h4>
+Most of the yahoo exchanges (except NA markets) have a 200 bar limit to
+the number of historical quotes that can be downloaded at one time. A
+work around for this is to download the data you need by doing it in
+several chunks of 250 days at a time. So, gettting many years worth of
+data would take 6 or 7 download sessions by adjusting the start and end
+dates by 250 days at a time.<br>
+<br>
+<br>
 <h3>Input Parameters:</h3>
 <ul>
   <li>Method - History for multiple quotes within the start and end
