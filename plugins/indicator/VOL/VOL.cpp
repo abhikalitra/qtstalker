@@ -26,8 +26,8 @@ VOL::VOL ()
   pluginName = "VOL";
 
   set(tr("Type"), pluginName, Setting::None);
-  set(tr("Color"), "red", Setting::Color);
-  set(tr("Color Bars"), tr("True"), Setting::Bool);
+  set(tr("Color Up"), "green", Setting::Color);
+  set(tr("Color Down"), "red", Setting::Color);
   set(tr("Line Type"), tr("Histogram Bar"), Setting::LineType);
   set(tr("Label"), pluginName, Setting::Text);
   set(tr("Plot"), tr("False"), Setting::None);
@@ -50,11 +50,28 @@ VOL::~VOL ()
 void VOL::calculate ()
 {
   PlotLine *pl = getInput(tr("Volume"));
-  pl->setColor(getData(tr("Color")));
   pl->setType(getData(tr("Line Type")));
   pl->setLabel(getData(tr("Label")));
-  if (! getData(tr("Color Bars")).compare(tr("True")))
-    pl->setColorBars(TRUE);
+  pl->setColorFlag(TRUE);
+
+  QString upColor = getData(tr("Color Up"));
+  QString downColor = getData(tr("Color Down"));
+
+  // set the first bar color
+  pl->appendColorBar(upColor);
+
+  int loop;
+  for (loop = 1; loop < (int) data->count(); loop++)
+  {
+    Setting *r = data->at(loop);
+    Setting *pr = data->at(loop - 1);;
+
+    if (r->getFloat("Close") > pr->getFloat("Close"))
+      pl->appendColorBar(upColor);
+    else
+      pl->appendColorBar(downColor);
+  }
+
   output.append(pl);
 
   if (getInt(tr("MA Period")) < 1)

@@ -52,17 +52,22 @@ class PlotLine
     double getLow ();
     void setLow (double);
     void checkHighLow (double);
-    void setColorBars (bool);
-    bool getColorBars ();
+
+    void setColorFlag (bool);
+    bool getColorFlag ();
+    void appendColorBar (QString);
+    void prependColorBar (QString);
+    QString getColorBar (int);
 
   private:
     QList<Val> data;
+    QList<QString> colorBars;
     QString color;
     QString lineType;
     QString label;
     double high;
     double low;
-    bool colorBars;
+    bool colorBarFlag;
 };
 
 #endif

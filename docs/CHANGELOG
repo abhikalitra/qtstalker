@@ -55,8 +55,12 @@
 - Moved the plugin management functions into Config class. Changed the plugins to stay opened and available
   instead of opening and closing all the time. Better speed. Maybe OSX will work with this arrangement.
   Added a Plugin::clearOutput() function to minimize memory use with open plugins.
-  
-  
+
+- Added new indicator plugin THERM. Thanks to patch #843533 from Martin Flack.
+
+- Added function to PlotLine class to color individual histogram bars. VOL and THERM plugins now use this.
+
+
 0.22
 ====
 

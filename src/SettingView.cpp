@@ -245,7 +245,18 @@ void SettingView::floatChanged (int row)
 
 void SettingView::textChanged (int row)
 {
-  settings->setData(list->text(row, 0), list->text(row, 1));
+  QString s = list->text(row, 1);
+
+  // remove any commas
+  while (s.contains(","))
+  {
+    int i = s.find(",", 0, FALSE);
+    s = s.remove(i, 1);
+  }
+
+  list->setText(row, 1, s);
+
+  settings->setData(list->text(row, 0), s);
 }
 
 void SettingView::fileDialog (int row)

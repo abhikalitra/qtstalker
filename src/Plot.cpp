@@ -1195,9 +1195,7 @@ void Plot::drawHistogramBar ()
 
   int x = startX;
   int zero = convertToY(0);
-
   int loop = currentLine->getSize() - data->count() + startIndex;
-  int dataLoop = startIndex;
 
   while ((x < _width) && (loop < (int) currentLine->getSize()))
   {
@@ -1205,27 +1203,14 @@ void Plot::drawHistogramBar ()
     {
       int y = convertToY(currentLine->getData(loop));
 
-      if (currentLine->getColorBars() == TRUE)
-      {
-        Setting *r = data->at(dataLoop);
-        Setting *pr;
-        if (dataLoop < 1)
-	  pr = data->at(dataLoop);
-        else
-	 pr = data->at(dataLoop - 1);
+      if (currentLine->getColorFlag() == TRUE)
+	color.setNamedColor(currentLine->getColorBar(loop));
 
-        if (r->getFloat("Close") > pr->getFloat("Close"))
-          painter.fillRect(x, y, pixelspace - 1, zero - y, upColor);
-        else
-          painter.fillRect(x, y, pixelspace - 1, zero - y, downColor);
-      }
-      else
-        painter.fillRect(x, y, pixelspace - 1, zero - y, color);
+      painter.fillRect(x, y, pixelspace - 1, zero - y, color);
     }
 
     x = x + pixelspace;
     loop++;
-    dataLoop++;
   }
 
   painter.end();

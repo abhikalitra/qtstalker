@@ -54,6 +54,7 @@ SUBDIRS += plugins/indicator/SAR
 SUBDIRS += plugins/indicator/SD
 SUBDIRS += plugins/indicator/STOCH
 SUBDIRS += plugins/indicator/STOCHRSI
+SUBDIRS += plugins/indicator/THERM
 SUBDIRS += plugins/indicator/TRIX
 SUBDIRS += plugins/indicator/UO
 SUBDIRS += plugins/indicator/VOL

@@ -801,11 +801,16 @@ void QtstalkerApp::loadChart (QString d)
         pl->setColor(tpl->getColor());
         pl->setType(tpl->getType());
         pl->setLabel(tpl->getLabel());
-        pl->setColorBars(tpl->getColorBars());
+        pl->setColorFlag(tpl->getColorFlag());
 
         int loop3;
         for (loop3 = 0; loop3 < (int) tpl->getSize(); loop3++)
+	{
           pl->append(tpl->getData(loop3));
+
+	  if (tpl->getColorFlag() == TRUE)
+            pl->appendColorBar(tpl->getColorBar(loop3));
+	}
 
         i->addLine(pl);
       }
@@ -816,8 +821,8 @@ void QtstalkerApp::loadChart (QString d)
       {
         plug->getAlerts();
         mainPlot->setPaintBars(plug->getColorBars(config->getData(Config::UpColor),
-      						        	  config->getData(Config::DownColor),
-						        	  config->getData(Config::NeutralColor)));
+      						  config->getData(Config::DownColor),
+						  config->getData(Config::NeutralColor)));
       }
 
       if (i->getMainPlot() && otherFlag)

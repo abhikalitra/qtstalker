@@ -24,11 +24,12 @@
 PlotLine::PlotLine ()
 {
   data.setAutoDelete(TRUE);
+  colorBars.setAutoDelete(TRUE);
   color = "red";
   lineType = "Line";
   high = -99999999;
   low = 99999999;
-  colorBars = FALSE;
+  colorBarFlag = FALSE;
 }
 
 PlotLine::~PlotLine ()
@@ -127,13 +128,35 @@ void PlotLine::checkHighLow (double d)
     low = d;
 }
 
-void PlotLine::setColorBars (bool d)
+void PlotLine::setColorFlag (bool d)
 {
-  colorBars = d;
+  colorBarFlag = d;
 }
 
-bool PlotLine::getColorBars ()
+bool PlotLine::getColorFlag ()
 {
-  return colorBars;
+  return colorBarFlag;
 }
+
+void PlotLine::appendColorBar (QString d)
+{
+  QString *r = new QString(d);
+  colorBars.append(r);
+}
+
+void PlotLine::prependColorBar (QString d)
+{
+  QString *r = new QString(d);
+  colorBars.prepend(r);
+}
+
+QString PlotLine::getColorBar (int d)
+{
+  if (d >= (int) colorBars.count())
+    return QString::null;
+
+  QString *r = colorBars.at(d);
+  return r->left(r->length());
+}
+
 
