@@ -23,6 +23,7 @@
 #include "ChartDb.h"
 #include "Setting.h"
 #include "EditDialog.h"
+#include "EditChartDialog.h"
 #include "open.xpm"
 #include "edit.xpm"
 #include "delete.xpm"
@@ -160,32 +161,11 @@ void WorkwithChartsDialog::editChart ()
   selection.append("/");
   selection.append(symbol);
 
-  ChartDb *db = new ChartDb();
-  if (db->openChart(selection))
-  {
-    QMessageBox::information(this, tr("Qtstalker: Error"), tr("Can't open chart."));
-    delete db;
-    return;
-  }
+  EditChartDialog *dialog = new EditChartDialog(config, selection);
 
-  Setting *set = db->getDetails();
+  dialog->exec();
 
-  QString chartType = set->getData("Chart Type");
-
-  EditDialog *dialog = new EditDialog(config);
-
-  QString s = tr("Qtstalker: Edit ");
-  s.append(chartType);
-  dialog->setCaption(s);
-
-  dialog->setItems(set);
-
-  int rc = dialog->exec();
-
-  if (rc == QDialog::Accepted)
-    db->saveDetails();
-
-  delete db;
+  delete dialog;
 }
 
 void WorkwithChartsDialog::exportSymbol ()

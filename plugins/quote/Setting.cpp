@@ -111,6 +111,13 @@ Setting::Type Setting::getType (QString k)
     return Setting::None;
 }
 
+void Setting::setType (QString k, Setting::Type t)
+{
+  SettingItem *set = dict[k];
+  if (set)
+    set->type = t;
+}
+
 QStringList Setting::getList (QString k)
 {
   SettingItem *set = dict[k];

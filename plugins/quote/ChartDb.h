@@ -53,6 +53,7 @@ class ChartDb
     void getMonthlyHistory ();
     QDateTime getDateTime (QString);
     Setting * getRecord (QString, QString);
+    void deleteRecord (Setting *);
     void setRecord (Setting *);
     void getHistory (Compression, QDateTime);
     void loadDetails ();

@@ -1,3 +1,4 @@
+
 0.16
 ======
 
@@ -15,6 +16,8 @@
 
 - Oh yeah baby, now we are getting serious, the basic backtesting module now completed. First person that finds the best
   indicator rules to short MSFT and UIS stock to oblivion gets drinks on me. Let the games begin.
+  
+- Added new dialog to edit chart tick data in place.
 
 0.15
 ======

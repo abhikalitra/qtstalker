@@ -64,6 +64,7 @@ class Setting
     int getInt (QString);
     void setData (QString, QString);
     Setting::Type getType (QString);
+    void Setting::setType (QString, Setting::Type);
     QStringList getList (QString);
     void setList (QString, QStringList);
     QStringList getKeyList ();

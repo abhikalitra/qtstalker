@@ -345,6 +345,59 @@ void ChartDb::setRecord (Setting *set)
   saveDetails();
 }
 
+void ChartDb::deleteRecord (Setting *set)
+{
+  QString date = set->getData("Date");
+  if (date.length() != 14)
+    return;
+
+  deleteData(date);
+  
+  DBT key;
+  DBT data;
+  DBC *cursor;
+  memset(&key, 0, sizeof(DBT));
+  memset(&data, 0, sizeof(DBT));
+
+  bool flag = FALSE;
+  db->cursor(db, NULL, &cursor, 0);
+  while (! cursor->c_get(cursor, &key, &data, DB_NEXT))
+  {
+    QDateTime dt = getDateTime((char *) key.data);
+    if (! dt.isValid())
+      continue;
+    else
+    {
+      details->setData("First Date", dt.toString(DATE_FORMAT));
+      flag = TRUE;
+      break;
+    }
+  }
+  cursor->c_close(cursor);
+  if (! flag)
+    details->remove("First Date");
+
+  flag = FALSE;
+  db->cursor(db, NULL, &cursor, 0);
+  while (! cursor->c_get(cursor, &key, &data, DB_PREV))
+  {
+    QDateTime dt = getDateTime((char *) key.data);
+    if (! dt.isValid())
+      continue;
+    else
+    {
+      details->setData("Last Date", dt.toString(DATE_FORMAT));
+      flag = TRUE;
+      break;
+    }
+  }
+  cursor->c_close(cursor);
+  if (! flag)
+    details->remove("Last Date");
+
+  saveDetails();
+}
+
 Setting * ChartDb::getRecord (QString k, QString d)
 {
   QStringList format = QStringList::split("|", details->getData("Format"), FALSE);

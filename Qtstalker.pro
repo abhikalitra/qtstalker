@@ -26,6 +26,7 @@ HEADERS	+= Tester.h
 HEADERS	+= SettingView.h
 HEADERS	+= Navigator.h
 HEADERS	+= WorkwithTestDialog.h
+HEADERS	+= EditChartDialog.h
 
 SOURCES += Qtstalker.cpp
 SOURCES	+= PortfolioDialog.cpp
@@ -48,6 +49,7 @@ SOURCES += Tester.cpp
 SOURCES += SettingView.cpp
 SOURCES += Navigator.cpp
 SOURCES += WorkwithTestDialog.cpp
+SOURCES += EditChartDialog.cpp
 
 TARGET = qtstalker
 
