@@ -158,7 +158,7 @@ PlotLine * QSMath::getWMA (PlotLine *d, int period)
     int weight;
     int divider;
     double total;
-    for (loop2 = period, weight = 1, divider = 0, total = 0; loop2 >= 0; loop2--, weight++)
+    for (loop2 = period - 1, weight = 1, divider = 0, total = 0; loop2 >= 0; loop2--, weight++)
     {
       total = total + (d->getData(loop - loop2) * weight);
       divider = divider + weight;
@@ -306,9 +306,9 @@ PlotLine * QSMath::getBB (MAType maType, int period, double deviation, int flag)
     double t = sqrt(t2 / period);
 
     if (flag)
-      bb->prepend(sma->getData(smaLoop) - (deviation * t)); // lower band
-    else
       bb->prepend(sma->getData(smaLoop) + (deviation * t)); // upper band
+    else
+      bb->prepend(sma->getData(smaLoop) - (deviation * t)); // lower band
 
     inputLoop--;
     smaLoop--;
