@@ -1655,11 +1655,11 @@ void Plot::setScale ()
       scaleLow = v;
   }
 
-  scaleHigh = scaleHigh + (scaleHigh * 0.01);
+  scaleHigh = scaleHigh * 1.01;
   if (scaleLow < 0)
-    scaleLow = scaleLow + (scaleLow * 0.1);
+    scaleLow = scaleLow * 1.1;
   else
-    scaleLow = scaleLow - (scaleLow * 0.01);
+    scaleLow = scaleLow * 0.99;
   double range = scaleHigh - scaleLow;
   scaler = _height / range;
 

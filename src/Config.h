@@ -24,6 +24,9 @@
 
 #include <qstring.h>
 #include <qstringlist.h>
+#include <qlibrary.h>
+#include <qdict.h>
+#include "Plugin.h"
 #include "Setting.h"
 
 
@@ -81,8 +84,13 @@ class Config
     QStringList getIndicatorPlugins ();
     QStringList getQuotePlugins ();
 
+    Plugin * getPlugin (Config::Parm, QString);
+    void closePlugin (QString);
+
   protected:
     QString path;
+    QDict<QLibrary> libs;
+    QDict<Plugin> plugins;
 };
 
 #endif

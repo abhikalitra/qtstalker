@@ -52,6 +52,10 @@
 
 - Tweaked the plot crosshairs to draw faster and y axis duplication if possible.
 
+- Moved the plugin management functions into Config class. Changed the plugins to stay opened and available
+  instead of opening and closing all the time. Better speed. Maybe OSX will work with this arrangement.
+  Added a Plugin::clearOutput() function to minimize memory use with open plugins.
+  
   
 0.22
 ====

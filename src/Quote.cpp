@@ -21,6 +21,7 @@
 
 #include "Quote.h"
 #include "EditDialog.h"
+#include "Plugin.h"
 #include "download.xpm"
 #include "canceldownload.xpm"
 #include "newchart.xpm"
@@ -30,9 +31,7 @@
 QuoteDialog::QuoteDialog (Config *c) : EditDialog (c)
 {
   settings = 0;
-  lib = 0;
-  plug = 0;
-  
+
   setCaption (tr("Qtstalker: Quotes"));
 
   setButtonStatus(0, FALSE);
@@ -58,11 +57,10 @@ QuoteDialog::QuoteDialog (Config *c) : EditDialog (c)
 
 QuoteDialog::~QuoteDialog ()
 {
-  if (plug)
-  {
-    delete plug;
-    delete lib;
-  }
+  QStringList l = config->getQuotePlugins();
+  int loop;
+  for (loop = 0; loop < (int) l.count(); loop++)
+    config->closePlugin(l[loop]);
 
   if (settings)
     delete settings;
@@ -72,12 +70,14 @@ void QuoteDialog::getQuotes ()
 {
   emit message(tr("Starting update..."));
 
+  Plugin *plug = config->getPlugin(Config::QuotePluginPath, ruleCombo->currentText());
+
   disableGUI();
 
   setButtonStatus(3, TRUE);
 
   list->updateSettings();
-  
+
   QStringList l = settings->getKeyList();
   int loop;
   for (loop = 0; loop < (int) l.count(); loop++)
@@ -91,17 +91,9 @@ void QuoteDialog::getQuotes ()
 
 void QuoteDialog::ruleChanged (int)
 {
-  if (plug)
-  {
-    delete plug;
-    plug = 0;
-    delete lib;
-    lib = 0;
-  }
-
   if (settings)
     delete settings;
-    
+
   if (! ruleCombo->count())
   {
     setButtonStatus(2, FALSE);
@@ -109,29 +101,15 @@ void QuoteDialog::ruleChanged (int)
     return;
   }
 
-  QString s = config->getData(Config::QuotePluginPath);
-  s.append("/lib");
-  s.append(ruleCombo->currentText());
-  s.append(".so");
-
-  lib = new QLibrary(s);
-  Plugin *(*so)() = 0;
-  so = (Plugin *(*)()) lib->resolve("create");
-  if (! so)
-  {
-    qDebug("Quote::Dll error\n");
-    delete lib;
-    lib = 0;
+  Plugin *plug = config->getPlugin(Config::QuotePluginPath, ruleCombo->currentText());
+  if (! plug)
     return;
-  }
-
-  plug = (*so)();
 
   connect (plug, SIGNAL(done()), this, SLOT(downloadComplete()));
   connect (plug, SIGNAL(message(QString)), this, SLOT(printMessage(QString)));
 
   plug->setDataPath(config->getData(Config::DataPath));
-  
+
   if (plug->getCreateFlag())
     setButtonStatus(4, TRUE);
   else
@@ -158,6 +136,7 @@ void QuoteDialog::downloadComplete ()
 
 void QuoteDialog::cancelDownload ()
 {
+  Plugin *plug = config->getPlugin(Config::QuotePluginPath, ruleCombo->currentText());
   plug->cancelUpdate();
   enableGUI();
   emit message(tr("Update cancelled."));
@@ -171,6 +150,8 @@ void QuoteDialog::enableGUI ()
   setButtonStatus(1, TRUE);
   setButtonStatus(2, TRUE);
   setButtonStatus(3, FALSE);
+
+  Plugin *plug = config->getPlugin(Config::QuotePluginPath, ruleCombo->currentText());
   if (plug->getCreateFlag())
     setButtonStatus(4, TRUE);
 }
@@ -188,6 +169,8 @@ void QuoteDialog::disableGUI ()
 
 void QuoteDialog::newChart ()
 {
+  Plugin *plug = config->getPlugin(Config::QuotePluginPath, ruleCombo->currentText());
+
   Setting *details = plug->getCreateDetails();
 
   EditDialog *dialog = new EditDialog(config);

@@ -24,7 +24,6 @@
 #include <qinputdialog.h>
 #include <qmessagebox.h>
 #include <qdatetime.h>
-#include <qlibrary.h>
 #include <qvgroupbox.h>
 #include <qinputdialog.h>
 #include <qsplitter.h>
@@ -521,18 +520,9 @@ void Tester::addIndicator ()
   EditDialog *dialog = new EditDialog(config);
   dialog->setCaption(tr("Edit Indicator"));
 
-  QString s = config->getData(Config::IndicatorPluginPath);
-  s.append("/lib");
-  s.append(ind);
-  s.append(".so");
-
-  QLibrary *lib = new QLibrary(s);
-  Plugin *(*so)() = 0;
-  so = (Plugin *(*)()) lib->resolve("create");
-  if (so)
+  Plugin *plug = config->getPlugin(Config::IndicatorPluginPath, ind);
+  if (plug)
   {
-    Plugin *plug = (*so)();
-
     QStringList key = plug->getKeyList();
 
     int loop;
@@ -541,11 +531,7 @@ void Tester::addIndicator ()
       set->set(key[loop], plug->getData(key[loop]), plug->getType(key[loop]));
       set->setList(key[loop], plug->getList(key[loop]));
     }
-
-    delete plug;
   }
-
-  delete lib;
 
   dialog->setItems(set);
 
@@ -1254,34 +1240,23 @@ void Tester::loadIndicators (int button)
 
     i->clearLines();
 
-    QString s = config->getData(Config::IndicatorPluginPath);
-    s.append("/lib");
-    s.append(i->getData(QObject::tr("Type")));
-    s.append(".so");
-
-    QLibrary *lib = new QLibrary(s);
-    Plugin *(*so)() = 0;
-    so = (Plugin *(*)()) lib->resolve("create");
-    if (so)
+    Plugin *plug = config->getPlugin(Config::IndicatorPluginPath, i->getData(QObject::tr("Type")));
+    if (plug)
     {
-      Plugin *plug = (*so)();
-
       plug->setIndicatorInput(recordList);
 
       plug->parse(i->getString());
 
       plug->calculate();
 
-      s = i->getData(QObject::tr("Alert"));
+      QString s = i->getData(QObject::tr("Alert"));
       if (! s.compare(QObject::tr("True")))
         i->setAlerts(plug->getAlerts());
 
       i->clearLines();
 
-      delete plug;
+      plug->clearOutput();
     }
-
-    delete lib;
   }
 }
 

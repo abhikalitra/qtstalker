@@ -24,9 +24,7 @@
 
 #include <qstring.h>
 #include <qcombobox.h>
-#include <qlibrary.h>
 #include "Config.h"
-#include "Plugin.h"
 #include "EditDialog.h"
 
 class QuoteDialog : public EditDialog
@@ -53,8 +51,6 @@ class QuoteDialog : public EditDialog
 
   private:
     QComboBox *ruleCombo;
-    Plugin *plug;
-    QLibrary *lib;
 };
 
 #endif

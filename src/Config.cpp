@@ -32,6 +32,8 @@
 Config::Config (QString p)
 {
   path = p;
+  libs.setAutoDelete(TRUE);
+  plugins.setAutoDelete(TRUE);
 
   QDir dir(QDir::homeDirPath());
   dir.convertToAbs();
@@ -113,6 +115,8 @@ Config::Config (QString p)
 
 Config::~Config ()
 {
+  plugins.clear();
+  libs.clear();
 }
 
 QString Config::getData (Parm p)
@@ -398,6 +402,59 @@ QStringList Config::getQuotePlugins ()
   l.remove(QObject::tr("Ratio"));
 
   return l;
+}
+
+Plugin * Config::getPlugin (Config::Parm t, QString p)
+{
+  Plugin *plug = plugins[p];
+  if (plug)
+    return plug;
+
+  QString s;
+
+  switch (t)
+  {
+    case Config::IndicatorPluginPath:
+      s = getData(IndicatorPluginPath);
+      break;
+    case Config::QuotePluginPath:
+      s = getData(QuotePluginPath);
+      break;
+    default:
+      break;
+  }
+
+  s.append("/lib");
+  s.append(p);
+  s.append(".so");
+
+  QLibrary *lib = new QLibrary(s);
+  Plugin *(*so)() = 0;
+  so = (Plugin *(*)()) lib->resolve("create");
+  if (so)
+  {
+    plug = (*so)();
+    libs.replace(p, lib);
+    plugins.replace(p, plug);
+    return plug;
+  }
+  else
+  {
+    qDebug("Quote::Dll error\n");
+    delete lib;
+    return 0;
+  }
+}
+
+void Config::closePlugin (QString name)
+{
+  Plugin *plug = plugins[name];
+  if (plug)
+    delete plug;
+
+  QLibrary *lib = libs[name];
+  if (lib)
+    delete lib;
 }
 
 

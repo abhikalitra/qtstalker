@@ -29,7 +29,6 @@
 #include <qcolor.h>
 #include <qfontmetrics.h>
 #include <qstringlist.h>
-#include <qlibrary.h>
 #include <qtooltip.h>
 #include <qframe.h>
 
@@ -787,22 +786,11 @@ void QtstalkerApp::loadChart (QString d)
     Indicator *i = new Indicator;
     i->parse(config->getIndicator(l[loop]));
 
-    QString s = config->getData(Config::IndicatorPluginPath);
-    s.append("/lib");
-    s.append(i->getData(QObject::tr("Type")));
-    s.append(".so");
-
-    QLibrary *lib = new QLibrary(s);
-    Plugin *(*so)() = 0;
-    so = (Plugin *(*)()) lib->resolve("create");
-    if (so)
+    Plugin *plug = config->getPlugin(Config::IndicatorPluginPath, i->getData(QObject::tr("Type")));
+    if (plug)
     {
-      Plugin *plug = (*so)();
-
       plug->setIndicatorInput(recordList);
-
       plug->parse(i->getString());
-
       plug->calculate();
 
       int loop2;
@@ -823,7 +811,7 @@ void QtstalkerApp::loadChart (QString d)
       }
 
       // set up the paint bar
-      s = config->getData(Config::PaintBarIndicator);
+      QString s = config->getData(Config::PaintBarIndicator);
       if (! s.compare(l[loop]))
       {
         plug->getAlerts();
@@ -849,10 +837,8 @@ void QtstalkerApp::loadChart (QString d)
         plot->addIndicator(l[loop], i);
       }
 
-      delete plug;
+      plug->clearOutput();
     }
-
-    delete lib;
   }
 
   if (recordList->count())
@@ -1381,18 +1367,9 @@ void QtstalkerApp::slotNewIndicator ()
   Setting *set = new Setting;
   set->set("Name", idialog->getName(), Setting::None);
 
-  QString s = config->getData(Config::IndicatorPluginPath);
-  s.append("/lib");
-  s.append(idialog->getIndicator());
-  s.append(".so");
-
-  QLibrary *lib = new QLibrary(s);
-  Plugin *(*so)() = 0;
-  so = (Plugin *(*)()) lib->resolve("create");
-  if (so)
+  Plugin *plug = config->getPlugin(Config::IndicatorPluginPath, idialog->getIndicator());
+  if (plug)
   {
-    Plugin *plug = (*so)();
-
     QStringList key = plug->getKeyList();
 
     int loop;
@@ -1401,11 +1378,7 @@ void QtstalkerApp::slotNewIndicator ()
       set->set(key[loop], plug->getData(key[loop]), plug->getType(key[loop]));
       set->setList(key[loop], plug->getList(key[loop]));
     }
-
-    delete plug;
   }
-
-  delete lib;
 
   dialog->setItems(set);
 
@@ -1442,18 +1415,9 @@ void QtstalkerApp::slotEditIndicator (int id)
   Setting *set = new Setting();
   set->parse(config->getIndicator(selection));
 
-  QString s = config->getData(Config::IndicatorPluginPath);
-  s.append("/lib");
-  s.append(set->getData("Type"));
-  s.append(".so");
-
-  QLibrary *lib = new QLibrary(s);
-  Plugin *(*so)() = 0;
-  so = (Plugin *(*)()) lib->resolve("create");
-  if (so)
+  Plugin *plug = config->getPlugin(Config::IndicatorPluginPath, set->getData("Type"));
+  if (plug)
   {
-    Plugin *plug = (*so)();
-
     QStringList key = plug->getKeyList();
 
     int loop;
@@ -1466,11 +1430,7 @@ void QtstalkerApp::slotEditIndicator (int id)
       if (plug->getType(key[loop]) == Setting::List)
         set->setList(key[loop], plug->getList(key[loop]));
     }
-
-    delete plug;
   }
-
-  delete lib;
 
   dialog->setItems(set);
 

@@ -46,6 +46,7 @@ class Plugin : public Setting, public QObject
     virtual QMemArray<int> getAlerts ();
     virtual QList<QColor> getColorBars (QString, QString, QString);
     virtual void calculate ();
+    virtual void clearOutput ();
 
     // quote plugin interface
     virtual void update ();

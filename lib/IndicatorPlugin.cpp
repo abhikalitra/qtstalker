@@ -36,6 +36,7 @@ IndicatorPlugin::~IndicatorPlugin()
 void IndicatorPlugin::setIndicatorInput (QList<Setting> *d)
 {
   data = d;
+  output.clear();
 }
 
 QMemArray<int> IndicatorPlugin::getAlerts ()
@@ -435,4 +436,10 @@ PlotLine * IndicatorPlugin::getIndicatorLine (int d)
   else
     return 0;
 }
+
+void IndicatorPlugin::clearOutput ()
+{
+  output.clear();
+}
+
 
