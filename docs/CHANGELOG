@@ -65,6 +65,8 @@
 
 - Fixed Yahoo quote plugin to accept yahoo format change (Adj. Close*) on 2003.09.17.
 
+- Renamed /src/Qtstalker.pro to src.pro to fix problem with qmake logic on some distributions.
+
 
 0.20
 ====
