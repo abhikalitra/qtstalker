@@ -378,7 +378,7 @@ void Tester::createReportPage ()
   header->setLabel(5, tr("Signal"), 70);
   header->setLabel(6, tr("Profit"), 70);
   header->setLabel(7, tr("Account"), 70);
-  header->setLabel(8, tr("Volume"), 40);
+  header->setLabel(8, tr("Volume"), 50);
   vbox->addWidget(tradeList);
   
   // test summary
@@ -1761,7 +1761,14 @@ void Tester::createSummary ()
       count++;
       co->set("Name", QString::number(count), Setting::None);
       co->setData(tr("Date"), tradeList->text(loop, 1));
-      co->setData(tr("Value"), QString::number(tradeList->text(loop, 2).toDouble() * .99));
+      co->setData(tr("Value"), QString::number(tradeList->text(loop, 2).toDouble() * .98));
+      i->addChartObject(co);
+
+      co = closePlot->newChartObject(tr("Sell Arrow"));
+      count++;
+      co->set("Name", QString::number(count), Setting::None);
+      co->setData(tr("Date"), tradeList->text(loop, 3));
+      co->setData(tr("Value"), QString::number(tradeList->text(loop, 4).toDouble() * 1.02));
       i->addChartObject(co);
     }
     else
@@ -1790,7 +1797,14 @@ void Tester::createSummary ()
       count++;
       co->set("Name", QString::number(count), Setting::None);
       co->setData(tr("Date"), tradeList->text(loop, 1));
-      co->setData(tr("Value"), QString::number(tradeList->text(loop, 2).toDouble() * 1.01));
+      co->setData(tr("Value"), QString::number(tradeList->text(loop, 2).toDouble() * 1.02));
+      i->addChartObject(co);
+      
+      co = closePlot->newChartObject(tr("Buy Arrow"));
+      count++;
+      co->set("Name", QString::number(count), Setting::None);
+      co->setData(tr("Date"), tradeList->text(loop, 3));
+      co->setData(tr("Value"), QString::number(tradeList->text(loop, 4).toDouble() * .98));
       i->addChartObject(co);
     }
 
