@@ -34,6 +34,8 @@ COMP::COMP ()
   opList.append("<=");
   opList.append(">");
   opList.append(">=");
+  opList.append("&&");
+  opList.append("||");
   
   setDefaults();
 }
@@ -50,6 +52,8 @@ void COMP::setDefaults ()
   method = "==";
   data1 = "1";
   data2 = "2";
+  displace1 = 0;
+  displace2 = 0;
 }
 
 void COMP::calculate ()
@@ -90,11 +94,11 @@ void COMP::calculate ()
   
   Operator op = getOperator(method);
   
-  while (loop > -1)
+  while (loop-displace1 > -1)
   {
     if (input2)
     {
-      if (loop2 < 0)
+      if (loop2-displace2 < 0)
         break;
     }
     
@@ -103,36 +107,48 @@ void COMP::calculate ()
     if (! input2)
       t = inputNum;
     else
-      t = input2->getData(loop2);
+      t = input2->getData(loop2-displace2);
       
     switch (op)
     {
       case Equal:
-        if (input->getData(loop) == t)
+        if (input->getData(loop-displace1) == t)
           line->prepend(1);
 	else
           line->prepend(0);
         break;
       case LessThan:
-        if (input->getData(loop) < t)
+        if (input->getData(loop-displace1) < t)
           line->prepend(1);
 	else
           line->prepend(0);
         break;
       case LessThanEqual:
-        if (input->getData(loop) <= t)
+        if (input->getData(loop-displace1) <= t)
           line->prepend(1);
 	else
           line->prepend(0);
         break;
       case GreaterThan:
-        if (input->getData(loop) > t)
+        if (input->getData(loop-displace1) > t)
           line->prepend(1);
 	else
           line->prepend(0);
         break;
       case GreaterThanEqual:
-        if (input->getData(loop) >= t)
+        if (input->getData(loop-displace1) >= t)
+          line->prepend(1);
+	else
+          line->prepend(0);
+        break;
+      case And:
+        if (input->getData(loop-displace1) && t)
+          line->prepend(1);
+	else
+          line->prepend(0);
+        break;
+      case Or:
+        if (input->getData(loop-displace1) || t)
           line->prepend(1);
 	else
           line->prepend(0);
@@ -158,8 +174,10 @@ int COMP::indicatorPrefDialog (QWidget *w)
   dialog->addTextItem(tr("Label"), tr("Parms"), label);
   dialog->addComboItem(tr("Line Type"), tr("Parms"), lineTypes, lineType);
   dialog->addFormulaInputItem(tr("Data1"), tr("Parms"), FALSE, data1);
+  dialog->addIntItem(tr("Displace1"), tr("Parms"), displace1, 0, 99999999);
   dialog->addComboItem(tr("Method"), tr("Parms"), opList, method);
   dialog->addFormulaInputItem(tr("Data2"), tr("Parms"), TRUE, data2);
+  dialog->addIntItem(tr("Displace2"), tr("Parms"), displace2, 0, 99999999);
   
   int rc = dialog->exec();
   
@@ -170,7 +188,9 @@ int COMP::indicatorPrefDialog (QWidget *w)
     label = dialog->getText(tr("Label"));
     method = dialog->getCombo(tr("Method"));
     data1 = dialog->getFormulaInput(tr("Data1"));
+    displace1 = dialog->getInt(tr("Displace1"));
     data2 = dialog->getFormulaInput(tr("Data2"));
+    displace2 = dialog->getInt(tr("Displace2"));
     rc = TRUE;
   }
   else
@@ -208,9 +228,17 @@ void COMP::loadIndicatorSettings (QString file)
   if (s)
     data1 = s->left(s->length());
 
+  s = dict["displace1"];
+  if (s)
+    displace1 = s->left(s->length()).toInt();
+
   s = dict["data2"];
   if (s)
     data2 = s->left(s->length());
+
+  s = dict["displace2"];
+  if (s)
+    displace2 = s->left(s->length()).toInt();
 }
 
 void COMP::saveIndicatorSettings (QString file)
@@ -224,7 +252,9 @@ void COMP::saveIndicatorSettings (QString file)
   dict.replace("plugin", new QString(pluginName));
   dict.replace("method", new QString(method));
   dict.replace("data1", new QString(data1));
+  dict.replace("displace1", new QString(QString::number(displace1)));
   dict.replace("data2", new QString(data2));
+  dict.replace("displace2", new QString(QString::number(displace2)));
 
   saveFile(file, dict);
 }
@@ -242,7 +272,9 @@ QString COMP::getCustomSettings ()
   QString s("COMP");
   s.append("," + method);
   s.append("," + data1);
+  s.append("," + QString::number(displace1));
   s.append("," + data2);
+  s.append("," + QString::number(displace2));
   s.append("," + color.name());
   s.append("," + QString::number(lineType));
   s.append("," + label);
@@ -256,10 +288,12 @@ void COMP::setCustomSettings (QString d)
   QStringList l = QStringList::split(",", d, FALSE);
   method = l[1];
   data1 = l[2];
-  data2 = l[3];
-  color.setNamedColor(l[4]);
-  lineType = (PlotLine::LineType) l[5].toInt();
-  label = l[6];
+  displace1 = l[3].toInt();
+  data2 = l[4];
+  displace2 = l[5].toInt();
+  color.setNamedColor(l[6]);
+  lineType = (PlotLine::LineType) l[7].toInt();
+  label = l[8];
 }
 
 COMP::Operator COMP::getOperator (QString d)
@@ -289,6 +323,18 @@ COMP::Operator COMP::getOperator (QString d)
     if (! d.compare(">"))
     {
       op = GreaterThan;
+      break;
+    }
+    
+    if (! d.compare("&&"))
+    {
+      op = And;
+      break;
+    }
+    
+    if (! d.compare("||"))
+    {
+      op = Or;
       break;
     }
     

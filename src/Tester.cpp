@@ -33,6 +33,10 @@ Tester::Tester (Config *c, QString n) : QTabDialog (0, 0, FALSE)
   config = c;
   ruleName = n;
   recordList = 0;
+  enterLongAlerts = new Setting;
+  exitLongAlerts = new Setting;
+  enterShortAlerts = new Setting;
+  exitShortAlerts = new Setting;
   
   fieldList.append(tr("Open"));
   fieldList.append(tr("Close"));
@@ -67,6 +71,11 @@ Tester::~Tester ()
 {
   if (recordList)
     delete recordList;
+    
+  delete enterLongAlerts;
+  delete exitLongAlerts;
+  delete enterShortAlerts;
+  delete exitShortAlerts;
 }
 
 void Tester::createFormulaPage ()
@@ -496,7 +505,7 @@ void Tester::test ()
 
     if (status == 0)
     {
-      if (enterLongAlerts.count() && tradeLong->isChecked())
+      if (enterLongAlerts->count() && tradeLong->isChecked())
       {
         if (enterLongCount)
         {
@@ -505,7 +514,7 @@ void Tester::test ()
         }
       }
 
-      if (enterShortAlerts.count() && tradeShort->isChecked())
+      if (enterShortAlerts->count() && tradeShort->isChecked())
       {
         if (enterShortCount)
         {
@@ -517,7 +526,7 @@ void Tester::test ()
 
     if (status == 1)
     {
-      if (enterShortAlerts.count() && tradeShort->isChecked())
+      if (enterShortAlerts->count() && tradeShort->isChecked())
       {
         if (enterShortCount)
         {
@@ -526,7 +535,7 @@ void Tester::test ()
         }
       }
 
-      if (exitLongAlerts.count() && tradeLong->isChecked())
+      if (exitLongAlerts->count() && tradeLong->isChecked())
       {
         if (exitLongCount)
         {
@@ -538,7 +547,7 @@ void Tester::test ()
     
     if (status == -1)
     {
-      if (enterLongAlerts.count() && tradeLong->isChecked())
+      if (enterLongAlerts->count() && tradeLong->isChecked())
       {
         if (enterLongCount)
         {
@@ -547,7 +556,7 @@ void Tester::test ()
         }
       }
 
-      if (exitShortAlerts.count() && tradeShort->isChecked())
+      if (exitShortAlerts->count() && tradeShort->isChecked())
       {
         if (exitShortCount)
         {
@@ -592,34 +601,34 @@ void Tester::checkAlerts ()
   switch (status)
   {
     case 0:
-      s = enterLongAlerts.getData(key);
+      s = enterLongAlerts->getData(key);
       if (s.length())
         enterLongCount++;
       else
       {
-        s = enterShortAlerts.getData(key);
+        s = enterShortAlerts->getData(key);
         if (s.length())
           enterShortCount++;
       }
       break;
     case 1:
-      s = exitLongAlerts.getData(key);
+      s = exitLongAlerts->getData(key);
       if (s.length())
         exitLongCount++;
       else
       {
-        s = enterShortAlerts.getData(key);
+        s = enterShortAlerts->getData(key);
         if (s.length())
           enterShortCount++;
       }
       break;
     case -1:
-      s = exitShortAlerts.getData(key);
+      s = exitShortAlerts->getData(key);
       if (s.length())
         exitShortCount++;
       else
       {
-        s = enterLongAlerts.getData(key);
+        s = enterLongAlerts->getData(key);
         if (s.length())
           enterLongCount++;
       }
@@ -942,32 +951,37 @@ void Tester::loadAlerts (int type)
   FormulaEdit *edit = 0;
   int delays = 0;
   QString s;
+  Setting *alerts = 0;
   
   switch(type)
   {
     case 0:
       edit = enterLongEdit;
-      enterLongAlerts.clear();
+      enterLongAlerts->clear();
       delays = enterLongDelay->value();
       s = tr("Enter long ");
+      alerts = enterLongAlerts;
       break;
     case 1:
       edit = exitLongEdit;
-      exitLongAlerts.clear();
+      exitLongAlerts->clear();
       delays = exitLongDelay->value();
       s = tr("Exit long ");
+      alerts = exitLongAlerts;
       break;
     case 2:
       edit = enterShortEdit;
-      enterShortAlerts.clear();
+      enterShortAlerts->clear();
       delays = enterShortDelay->value();
       s = tr("Enter short ");
+      alerts = enterShortAlerts;
       break;
     case 3:
       edit = exitShortEdit;
-      exitShortAlerts.clear();
+      exitShortAlerts->clear();
       delays = exitShortDelay->value();
       s = tr("Exit short ");
+      alerts = exitShortAlerts;
       break;
     default:
       break;
@@ -1029,68 +1043,28 @@ void Tester::loadAlerts (int type)
   
   loop = recordList->count() - line->getSize();
   int lineLoop = 0;
-  int delayCount = 0;
   for (; loop < (int) recordList->count(); loop++, lineLoop++)
   {
     if (line->getData(lineLoop) == 1)
     {
-      switch(type)
+      if (delays)
       {
-        case 0:
-          if (delays)
+        int loop2;
+	bool df = FALSE;
+        for (loop2 = delays; loop2 > -1; loop2--)
+	{
+          if (line->getData(lineLoop - loop2) != 1)
 	  {
-	    delayCount++;
-	    if (delayCount > delays)
-	    {
-              enterLongAlerts.setData(recordList->getDate(loop).getDateString(FALSE), "1");
-	      delayCount = 0;
-	    }
+            df = TRUE;
+	    break;
 	  }
-	  else
-            enterLongAlerts.setData(recordList->getDate(loop).getDateString(FALSE), "1");
-          break;
-        case 1:
-	  if (delays)
-	  {
-	    delayCount++;
-	    if (delayCount > delays)
-	    {
-              exitLongAlerts.setData(recordList->getDate(loop).getDateString(FALSE), "1");
-	      delayCount = 0;
-            }
-	  }
-	  else
-            exitLongAlerts.setData(recordList->getDate(loop).getDateString(FALSE), "1");
-          break;
-        case 2:
-	  if (delays)
-	  {
-	    delayCount++;
-	    if (delayCount > delays)
-	    {
-              enterShortAlerts.setData(recordList->getDate(loop).getDateString(FALSE), "1");
-	      delayCount = 0;
-	    }
-	  }
-	  else
-            enterShortAlerts.setData(recordList->getDate(loop).getDateString(FALSE), "1");
-          break;
-        case 3:
-	  if (delays)
-	  {
-	    delayCount++;
-	    if (delayCount > delays)
-	    {
-              exitShortAlerts.setData(recordList->getDate(loop).getDateString(FALSE), "1");
-	      delayCount = 0;
-	    }
-	  }
-	  else
-            exitShortAlerts.setData(recordList->getDate(loop).getDateString(FALSE), "1");
-          break;
-        default:
-          break;
+	}
+	
+	if (! df)
+          alerts->setData(recordList->getDate(loop).getDateString(FALSE), "1");
       }
+      else
+        alerts->setData(recordList->getDate(loop).getDateString(FALSE), "1");
     }
   }
   

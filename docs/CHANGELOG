@@ -96,6 +96,8 @@
 
 20040807: Tester now saves/loads the results of a test run.
 
+20040812: Applied patch #1007570 - displacements in COMP. Thanks to Xiaoguang Zhang.
+
 
 0.26
 ====

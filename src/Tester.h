@@ -93,10 +93,10 @@ class Tester : public QTabDialog
   protected:
     Config *config;
     QTable *tradeList;
-    Setting enterLongAlerts;
-    Setting exitLongAlerts;
-    Setting enterShortAlerts;
-    Setting exitShortAlerts;
+    Setting *enterLongAlerts;
+    Setting *exitLongAlerts;
+    Setting *enterShortAlerts;
+    Setting *exitShortAlerts;
     QCheckBox *maximumLossCheck;
     QCheckBox *maximumLossLong;
     QCheckBox *maximumLossShort;

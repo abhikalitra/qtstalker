@@ -32,7 +32,9 @@ class COMP : public IndicatorPlugin
       LessThan,
       LessThanEqual,
       GreaterThan,
-      GreaterThanEqual
+      GreaterThanEqual,
+      And,
+      Or
     };
   
     COMP ();
@@ -55,6 +57,8 @@ class COMP : public IndicatorPlugin
     QString data2;
     QString method;
     QStringList opList;
+    int displace1;
+    int displace2;
 };
 
 extern "C"
