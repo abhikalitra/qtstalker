@@ -50,7 +50,9 @@
 	  
 20041122: Applied patch 1058309 - add navigation buttons to docs. Thanks to Kern Sibbald.
 
-
+20041129: Added 3 more data inputs to the MATH plugin. Now the user can ADD/SUB/DIV/MUL up to
+          5 data arrays at once.
+          
 	  
 0.28
 ====

@@ -52,7 +52,10 @@ void MATH::setDefaults ()
   lineType = PlotLine::Line;
   label = pluginName;
   data1 = "1";
-  data2 = "2";
+  data2 = "1";
+  data3 = "#0";
+  data4 = "#0";
+  data5 = "#0";
   period = 10;
 }
 
@@ -115,13 +118,13 @@ void MATH::calculateOper ()
   int loop = input->getSize() - 1;
     
   int loop2 = 0;
-  double inputNum = 0;
+  double inputNum2 = 0;
   PlotLine *input2 = 0;
   if (data2.contains("#"))
   {
     QString s = data2;
     s.remove(0, 1);
-    inputNum = s.toDouble();
+    inputNum2 = s.toDouble();
   }
   else
   {
@@ -135,6 +138,54 @@ void MATH::calculateOper ()
     loop2 = input2->getSize() - 1;
   }
     
+  int loop3 = 0;
+  double inputNum3 = 0;
+  PlotLine *input3 = 0;
+  if (data3.contains("#"))
+  {
+    QString s = data3;
+    s.remove(0, 1);
+    inputNum3 = s.toDouble();
+  }
+  else
+  {
+    input3 = customLines->find(data3);
+    if (input3)
+      loop3 = input3->getSize() - 1;
+  }
+  
+  int loop4 = 0;
+  double inputNum4 = 0;
+  PlotLine *input4 = 0;
+  if (data4.contains("#"))
+  {
+    QString s = data4;
+    s.remove(0, 1);
+    inputNum4 = s.toDouble();
+  }
+  else
+  {
+    input4 = customLines->find(data4);
+    if (input4)
+      loop4 = input4->getSize() - 1;
+  }
+  
+  int loop5 = 0;
+  double inputNum5 = 0;
+  PlotLine *input5 = 0;
+  if (data5.contains("#"))
+  {
+    QString s = data5;
+    s.remove(0, 1);
+    inputNum5 = s.toDouble();
+  }
+  else
+  {
+    input5 = customLines->find(data5);
+    if (input5)
+      loop5 = input5->getSize() - 1;
+  }
+  
   PlotLine *line = new PlotLine;
   line->setColor(color);
   line->setType(lineType);
@@ -144,40 +195,202 @@ void MATH::calculateOper ()
   
   while (loop > -1)
   {
+    double v = input->getData(loop);
+    
     if (input2)
     {
       if (loop2 < 0)
         break;
-    }
     
-    double t = 0;
-    
-    if (! input2)
-      t = inputNum;
-    else
-      t = input2->getData(loop2);
-    
-    switch (type)
-    {
-      case 0:  
-        line->prepend(input->getData(loop) + t);
-	break;
-      case 1:
-        line->prepend(input->getData(loop) / t);
-	break;
-      case 2:
-        line->prepend(input->getData(loop) * t);
-	break;
-      case 3:
-        line->prepend(input->getData(loop) - t);
-	break;
-      default:
-        break;
-    }
-    
-    loop--;
-    if (input2)
+      switch (type)
+      {
+        case 0:
+	  v = v + input2->getData(loop2);
+	  break;
+        case 1:
+	  v = v / input2->getData(loop2);
+	  break;
+        case 2:
+	  v = v * input2->getData(loop2);
+	  break;
+        case 3:
+	  v = v - input2->getData(loop2);
+	  break;
+        default:
+          break;
+      }
+      
       loop2--;
+    }
+    else
+    {
+      switch (type)
+      {
+        case 0:
+	  v = v + inputNum2;
+	  break;
+        case 1:
+	  if (inputNum2)
+	    v = v / inputNum2;
+	  break;
+        case 2:
+	  if (inputNum2)
+	    v = v * inputNum2;
+	  break;
+        case 3:
+	  v = v - inputNum2;
+	  break;
+        default:
+          break;
+      }
+    }
+    
+    if (input3)
+    {
+      if (loop3 < 0)
+        break;
+    
+      switch (type)
+      {
+        case 0:
+	  v = v + input3->getData(loop3);
+	  break;
+        case 1:
+	  v = v / input3->getData(loop3);
+	  break;
+        case 2:
+	  v = v * input3->getData(loop3);
+	  break;
+        case 3:
+	  v = v - input3->getData(loop3);
+	  break;
+        default:
+          break;
+      }
+      
+      loop3--;
+    }
+    else
+    {
+      switch (type)
+      {
+        case 0:
+	  v = v + inputNum3;
+	  break;
+        case 1:
+	  if (inputNum3)
+	    v = v / inputNum3;
+	  break;
+        case 2:
+	  if (inputNum3)
+	    v = v * inputNum3;
+	  break;
+        case 3:
+	  v = v - inputNum3;
+	  break;
+        default:
+          break;
+      }
+    }
+    
+    if (input4)
+    {
+      if (loop4 < 0)
+        break;
+    
+      switch (type)
+      {
+        case 0:
+	  v = v + input4->getData(loop4);
+	  break;
+        case 1:
+	  v = v / input4->getData(loop4);
+	  break;
+        case 2:
+	  v = v * input4->getData(loop4);
+	  break;
+        case 3:
+	  v = v - input4->getData(loop4);
+	  break;
+        default:
+          break;
+      }
+      
+      loop4--;
+    }
+    else
+    {
+      switch (type)
+      {
+        case 0:
+	  v = v + inputNum4;
+	  break;
+        case 1:
+	  if (inputNum4)
+	    v = v / inputNum4;
+	  break;
+        case 2:
+	  if (inputNum4)
+	    v = v * inputNum4;
+	  break;
+        case 3:
+	  v = v - inputNum4;
+	  break;
+        default:
+          break;
+      }
+    }
+    
+    if (input5)
+    {
+      if (loop5 < 0)
+        break;
+    
+      switch (type)
+      {
+        case 0:
+	  v = v + input5->getData(loop5);
+	  break;
+        case 1:
+	  v = v / input5->getData(loop5);
+	  break;
+        case 2:
+	  v = v * input5->getData(loop5);
+	  break;
+        case 3:
+	  v = v - input5->getData(loop5);
+	  break;
+        default:
+          break;
+      }
+      
+      loop5--;
+    }
+    else
+    {
+      switch (type)
+      {
+        case 0:
+	  v = v + inputNum5;
+	  break;
+        case 1:
+	  if (inputNum5)
+	    v = v / inputNum5;
+	  break;
+        case 2:
+	  if (inputNum5)
+	    v = v * inputNum5;
+	  break;
+        case 3:
+	  v = v - inputNum5;
+	  break;
+        default:
+          break;
+      }
+    }
+    
+    line->prepend(v);
+    loop--;
   }
   
   output->addLine(line);
@@ -206,16 +419,22 @@ int MATH::indicatorPrefDialog (QWidget *w)
   dialog->addColorItem(QObject::tr("Color"), QObject::tr("Parms"), color);
   dialog->addTextItem(QObject::tr("Label"), QObject::tr("Parms"), label);
   dialog->addComboItem(QObject::tr("Line Type"), QObject::tr("Parms"), lineTypes, lineType);
-  dialog->addFormulaInputItem(QObject::tr("Data1"), QObject::tr("Parms"), FALSE, data1);
   
   QStringList l;
   l.append(method);
   dialog->addComboItem(QObject::tr("Method"), QObject::tr("Parms"), l, method);
   
+  dialog->addFormulaInputItem(QObject::tr("Data1"), QObject::tr("Parms"), FALSE, data1);
+  
   if (! method.compare("MIN") || ! method.compare("MAX"))
     dialog->addIntItem(QObject::tr("Period"), QObject::tr("Parms"), period, 1, 99999999);
   else
+  {
     dialog->addFormulaInputItem(QObject::tr("Data2"), QObject::tr("Parms"), TRUE, data2);
+    dialog->addFormulaInputItem(QObject::tr("Data3"), QObject::tr("Parms"), TRUE, data3);
+    dialog->addFormulaInputItem(QObject::tr("Data4"), QObject::tr("Parms"), TRUE, data4);
+    dialog->addFormulaInputItem(QObject::tr("Data5"), QObject::tr("Parms"), TRUE, data5);
+  }
   
   int rc = dialog->exec();
   
@@ -229,7 +448,12 @@ int MATH::indicatorPrefDialog (QWidget *w)
     if (! method.compare("MIN") || ! method.compare("MAX"))
       period = dialog->getInt(QObject::tr("Period"));
     else
+    {
       data2 = dialog->getFormulaInput(QObject::tr("Data2"));
+      data3 = dialog->getFormulaInput(QObject::tr("Data3"));
+      data4 = dialog->getFormulaInput(QObject::tr("Data4"));
+      data5 = dialog->getFormulaInput(QObject::tr("Data5"));
+    }
       
     rc = TRUE;
   }
@@ -281,6 +505,18 @@ void MATH::setIndicatorSettings (Setting dict)
   if (s.length())
     data2 = s;
 
+  s = dict.getData("data3");
+  if (s.length())
+    data3 = s;
+  
+  s = dict.getData("data4");
+  if (s.length())
+    data4 = s;
+  
+  s = dict.getData("data5");
+  if (s.length())
+    data5 = s;
+  
   s = dict.getData("period");
   if (s.length())
     period = s.toInt();
@@ -296,6 +532,9 @@ Setting MATH::getIndicatorSettings ()
   dict.setData("method", method);
   dict.setData("data1", data1);
   dict.setData("data2", data2);
+  dict.setData("data3", data3);
+  dict.setData("data4", data4);
+  dict.setData("data5", data5);
   dict.setData("period", QString::number(period));
   return dict;
 }

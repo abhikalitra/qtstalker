@@ -34,6 +34,7 @@
 #include <qcursor.h>
 #include <qlayout.h>
 #include <qdir.h>
+#include <stdlib.h>
 
 TestPage::TestPage (QWidget *w) : QWidget (w)
 {

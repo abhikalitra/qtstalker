@@ -43,6 +43,9 @@ class MATH : public IndicatorPlugin
     QString label;
     QString data1;
     QString data2;
+    QString data3;
+    QString data4;
+    QString data5;
     QString method;
     QStringList methodList;
     int period;
