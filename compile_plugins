@@ -1,4 +1,0 @@
-cd plugins/indicator
-./compile
-cd ../quote
-./compile
