@@ -85,6 +85,9 @@
 	  
 20040326: Modified indicator plugins to use QSMath class for often used TA functions.
 
+20040330: Added function to toggle the crosshairs from the chart context menu.
+
+20040330: Draw mode state is now saved between sessions.
 
 	  
 0.25

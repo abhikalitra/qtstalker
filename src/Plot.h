@@ -57,6 +57,7 @@ class Plot : public QWidget
     void signalNewIndicator ();
     void signalMouseLeftClick (int, int);
     void signalMinPixelspace (int);
+    void signalCrosshairsStatus (bool);
 
   public:
     enum MouseStatus
@@ -87,6 +88,7 @@ class Plot : public QWidget
     void setTabFlag (bool);
     bool getTabFlag ();
     bool getMainFlag ();
+    bool getCrosshairsStatus ();
 
     void addIndicator (QString, Indicator *);
     Indicator * getIndicator (QString);
@@ -122,6 +124,7 @@ class Plot : public QWidget
     void setChartPath (QString);
     void setDrawMode (bool);
     void slotSaveChartObjects ();
+    void setCrosshairsStatus (bool);
 
   protected:
     virtual void paintEvent (QPaintEvent *);
@@ -146,6 +149,7 @@ class Plot : public QWidget
     void createXGrid ();
     void slotMessage (QString);
     void objectMoving ();
+    void toggleCrosshairs ();
     
     void drawDate ();
     void drawDailyDate ();
@@ -190,6 +194,7 @@ class Plot : public QWidget
     bool tabFlag;
     bool crossHairFlag;
     bool drawMode;
+    bool crosshairs;
     int crossHairX;
     int crossHairY;
     int tx, tx2; // temp x coords for drawing chart objects

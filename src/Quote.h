@@ -24,7 +24,7 @@
 
 #include <qstring.h>
 #include <qcombobox.h>
-#include <qmultilineedit.h>
+#include <qtextedit.h>
 #include <qtabdialog.h>
 #include "Config.h"
 #include "Toolbar.h"
@@ -56,8 +56,8 @@ class QuoteDialog : public QTabDialog
     Config *config;
     QComboBox *ruleCombo;
     QString plugin;
-    QMultiLineEdit *dataLog;
-    QMultiLineEdit *statusLog;
+    QTextEdit *dataLog;
+    QTextEdit *statusLog;
     QPushButton *settingButton;
     Toolbar *toolbar;
 };

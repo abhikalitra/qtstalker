@@ -62,6 +62,7 @@ class QtstalkerApp : public QMainWindow
     void signalPlotDate (bool);
     void signalChartPath (QString);
     void signalDrawMode (bool);
+    void signalCrosshairsStatus(bool);
 
   public:
 
@@ -122,6 +123,7 @@ class QtstalkerApp : public QMainWindow
     void slotPlotKeyPressed (QKeyEvent *);
     void slotDrawMode (bool);
     void slotMinPixelspaceChanged (int);
+    void slotCrosshairsStatus (bool);
 
   private:
     QPopupMenu *fileMenu;

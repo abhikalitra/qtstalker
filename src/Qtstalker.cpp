@@ -146,6 +146,8 @@ QtstalkerApp::QtstalkerApp()
   QObject::connect(mainPlot, SIGNAL(leftMouseButton(int, int, bool)), this, SLOT(slotPlotLeftMouseButton(int, int, bool)));
   QObject::connect(mainPlot, SIGNAL(keyPressed(QKeyEvent *)), this, SLOT(slotPlotKeyPressed(QKeyEvent *)));
   QObject::connect(mainPlot, SIGNAL(signalMinPixelspace(int)), this, SLOT(slotMinPixelspaceChanged(int)));
+  QObject::connect(mainPlot, SIGNAL(signalCrosshairsStatus(bool)), this, SLOT(slotCrosshairsStatus(bool)));
+  QObject::connect(this, SIGNAL(signalCrosshairsStatus(bool)), mainPlot, SLOT(setCrosshairsStatus(bool)));
 
   QObject::connect(this, SIGNAL(signalGrid(bool)), mainPlot, SLOT(setGridFlag(bool)));
   QObject::connect(this, SIGNAL(signalScaleToScreen(bool)), mainPlot, SLOT(setScaleToScreen(bool)));
@@ -247,6 +249,17 @@ QtstalkerApp::QtstalkerApp()
 //  initScannerNav();
 
   resize(config->getData(Config::Width).toInt(), config->getData(Config::Height).toInt());
+  
+  // set crosshairs status for all the plots
+  emit signalCrosshairsStatus(config->getData(Config::Crosshairs).toInt());  
+  
+  // set the drawmode status for all the plots
+  s = config->getData(Config::DrawMode);
+  if (s.toInt())
+    actionDrawMode->setOn(TRUE);
+  else
+    actionDrawMode->setOn(FALSE);
+  emit signalDrawMode(s.toInt());  
   
   // catch any kill signals and try to save config
   QObject::connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(slotQuit()));
@@ -425,6 +438,8 @@ void QtstalkerApp::slotQuit()
   config->setData(Config::X, QString::number(this->x()));
   config->setData(Config::Y, QString::number(this->y()));
   config->setData(Config::Bars, QString::number(barCount->value()));
+  config->setData(Config::Crosshairs, QString::number(mainPlot->getCrosshairsStatus()));
+  config->setData(Config::DrawMode, QString::number(actionDrawMode->isOn()));
   config->closePlugins();
   delete config;
 
@@ -801,14 +816,16 @@ void QtstalkerApp::loadIndicator (Indicator *i)
     }
 
     // set up the paint bar
+/*    
     QString s = config->getData(Config::PaintBarIndicator);
     if (! s.compare(i->getName()))
     {
       plug->getAlerts();
-//      mainPlot->setPaintBars(plug->getColorBars(config->getData(Config::UpColor),
-//      						config->getData(Config::DownColor),
-//						config->getData(Config::NeutralColor)));
+      mainPlot->setPaintBars(plug->getColorBars(config->getData(Config::UpColor),
+      						config->getData(Config::DownColor),
+						config->getData(Config::NeutralColor)));
     }
+*/
 
     i->setMainPlot(plug->getPlotFlag());
     
@@ -1259,6 +1276,8 @@ void QtstalkerApp::addIndicatorButton (QString d, bool tabFlag)
 
   // setup the crosshair signals
   QObject::connect(plot, SIGNAL(leftMouseButton(int, int, bool)), this, SLOT(slotPlotLeftMouseButton(int, int, bool)));
+  QObject::connect(plot, SIGNAL(signalCrosshairsStatus(bool)), this, SLOT(slotCrosshairsStatus(bool)));
+  QObject::connect(this, SIGNAL(signalCrosshairsStatus(bool)), plot, SLOT(setCrosshairsStatus(bool)));
 
   // setup plot key presses
   QObject::connect(plot, SIGNAL(keyPressed(QKeyEvent *)), this, SLOT(slotPlotKeyPressed(QKeyEvent *)));
@@ -1270,6 +1289,11 @@ void QtstalkerApp::addIndicatorButton (QString d, bool tabFlag)
 void QtstalkerApp::slotChartUpdated ()
 {
   chartNav->refreshList();
+  
+  if (status == None)
+    return;
+  
+  loadChart(chartPath);
 
 // FIXME: segfaults on a rapid quote update
 //  loadChart(chartPath);
@@ -1396,6 +1420,11 @@ void QtstalkerApp::slotPlotLeftMouseButton (int x, int y, bool mainFlag)
   QDictIterator<Plot> it(plotList);
   for(; it.current(); ++it)
     it.current()->crossHair(x, y);
+}
+
+void QtstalkerApp::slotCrosshairsStatus (bool status)
+{
+  emit signalCrosshairsStatus(status);
 }
 
 void QtstalkerApp::slotPlotKeyPressed (QKeyEvent *key)

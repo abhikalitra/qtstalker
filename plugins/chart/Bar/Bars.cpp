@@ -41,8 +41,8 @@ void Bars::drawChart (int startX, int startIndex, int pixelspace)
 {
   if (! style.compare(tr("Bar")))
     drawBars(startX, startIndex, pixelspace);
-  else
-    drawPaintBars(startX, startIndex, pixelspace);
+//  else
+//    drawPaintBars(startX, startIndex, pixelspace);
 }
 
 void Bars::drawBars (int startX, int startIndex, int pixelspace)
@@ -108,6 +108,7 @@ void Bars::drawBars (int startX, int startIndex, int pixelspace)
   painter.end();
 }
 
+/*
 void Bars::drawPaintBars (int startX, int startIndex, int pixelspace)
 {
   QPainter painter;
@@ -118,8 +119,8 @@ void Bars::drawPaintBars (int startX, int startIndex, int pixelspace)
   
   while ((x < buffer->width()) && (loop < (int) data->count()))
   {
-//    QColor *color = paintBars.at(loop);
-//    painter.setPen(QColor(color->red(), color->green(), color->blue()));
+    QColor *color = paintBars.at(loop);
+    painter.setPen(QColor(color->red(), color->green(), color->blue()));
 
     int y;
     if (data->getOpen(loop) != 0)
@@ -142,6 +143,7 @@ void Bars::drawPaintBars (int startX, int startIndex, int pixelspace)
   painter.end();
 
 }
+*/
 
 void Bars::prefDialog ()
 {
@@ -160,9 +162,9 @@ void Bars::prefDialog ()
   dialog->addColorItem(tr("Bar Up Color"), 2, barUpColor);
   dialog->addColorItem(tr("Bar Down Color"), 2, barDownColor);
   
-  dialog->createPage (tr("Paint Bar Colors"));
-  dialog->addColorItem(tr("Paint Bar Up Color"), 3, paintUpColor);
-  dialog->addColorItem(tr("Paint Bar Down Color"), 3, paintDownColor);
+//  dialog->createPage (tr("Paint Bar Colors"));
+//  dialog->addColorItem(tr("Paint Bar Up Color"), 3, paintUpColor);
+//  dialog->addColorItem(tr("Paint Bar Down Color"), 3, paintDownColor);
   
   int rc = dialog->exec();
   
@@ -175,8 +177,8 @@ void Bars::prefDialog ()
     barUpColor = dialog->getColor(tr("Bar Up Color"));
     barDownColor = dialog->getColor(tr("Bar Down Color"));
     
-    paintUpColor = dialog->getColor(tr("Paint Bar Up Color"));
-    paintDownColor = dialog->getColor(tr("Paint Bar Down Color"));
+//    paintUpColor = dialog->getColor(tr("Paint Bar Up Color"));
+//    paintDownColor = dialog->getColor(tr("Paint Bar Down Color"));
     
     saveFlag = TRUE;
     emit draw();
@@ -199,11 +201,11 @@ void Bars::loadSettings ()
   s = settings.readEntry("/barDownColor", "red");
   barDownColor.setNamedColor(s);
   
-  s = settings.readEntry("/paintUpColor", "green");
-  paintUpColor.setNamedColor(s);
+//  s = settings.readEntry("/paintUpColor", "green");
+//  paintUpColor.setNamedColor(s);
 
-  s = settings.readEntry("/paintDownColor", "red");
-  paintDownColor.setNamedColor(s);
+//  s = settings.readEntry("/paintDownColor", "red");
+//  paintDownColor.setNamedColor(s);
   
   minPixelspace = settings.readNumEntry("/minPixelspace", 4);
   
@@ -223,8 +225,8 @@ void Bars::saveSettings ()
   settings.writeEntry("/barNeutralColor", barNeutralColor.name());
   settings.writeEntry("/barUpColor", barUpColor.name());
   settings.writeEntry("/barDownColor", barDownColor.name());
-  settings.writeEntry("/paintUpColor", paintUpColor.name());
-  settings.writeEntry("/paintDownColor", paintDownColor.name());
+//  settings.writeEntry("/paintUpColor", paintUpColor.name());
+//  settings.writeEntry("/paintDownColor", paintDownColor.name());
   settings.writeEntry("/minPixelspace", minPixelspace);
   settings.writeEntry("/style", style);
   

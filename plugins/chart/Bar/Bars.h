@@ -34,7 +34,7 @@ class Bars : public ChartPlugin
     virtual ~Bars ();
     void drawChart (int startX, int startIndex, int pixelspace);
     void drawBars (int startX, int startIndex, int pixelspace);
-    void drawPaintBars (int startX, int startIndex, int pixelspace);
+//    void drawPaintBars (int startX, int startIndex, int pixelspace);
     void prefDialog ();
     void loadSettings ();
     void saveSettings ();

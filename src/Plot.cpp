@@ -51,6 +51,7 @@
 #include "vertical.xpm"
 #include "trend.xpm"
 #include "print.xpm"
+#include "crosshair.xpm"
 
 #define SCALE_WIDTH 60
 
@@ -87,6 +88,7 @@ Plot::Plot (QWidget *w) : QWidget(w)
   crossHairFlag = FALSE;
   chartMenu = 0;
   drawMode = FALSE;
+  crosshairs = TRUE;
 
   plotFont.setFamily("Helvetica");
   plotFont.setPointSize(12);
@@ -218,6 +220,11 @@ void Plot::setDrawMode (bool d)
   drawMode = d;
 }
 
+bool Plot::getCrosshairsStatus ()
+{
+  return crosshairs;
+}
+
 void Plot::draw ()
 {
   crossHairFlag = FALSE;
@@ -336,7 +343,7 @@ void Plot::paintEvent (QPaintEvent *)
   bitBlt(this, 0, 0, buffer);
 
   // redraw the crosshair
-  if (crossHairFlag)
+  if (crossHairFlag && crosshairs)
   {
     QPainter painter;
     painter.begin(this);
@@ -378,9 +385,14 @@ void Plot::mousePressEvent (QMouseEvent *event)
   {
     if (event->button() == LeftButton)
     {
-      crossHair(event->x(), event->y());
-      updateStatusBar(event->x(), event->y());
-      emit leftMouseButton(event->x(), event->y(), mainFlag);
+      if (crosshairs)
+      {
+        crossHair(event->x(), event->y());
+        updateStatusBar(event->x(), event->y());
+        emit leftMouseButton(event->x(), event->y(), mainFlag);
+      }
+      else
+        updateStatusBar(event->x(), event->y());
       return;
     }
     else
@@ -1692,6 +1704,10 @@ void Plot::showPopupMenu ()
   chartMenu->insertSeparator ();
   chartMenu->insertItem(QPixmap(print), tr("Print Chart"), this, SLOT(printChart()));
     
+  chartMenu->insertSeparator ();
+  int id = chartMenu->insertItem(QPixmap(crosshair), tr("Crosshairs"), this, SLOT(toggleCrosshairs()));
+  chartMenu->setItemChecked(id, crosshairs);
+  
   QDictIterator<Indicator> it(indicators);
   for(; it.current(); ++it)
   {
@@ -1706,6 +1722,21 @@ void Plot::showPopupMenu ()
   }
 
   chartMenu->exec(QCursor::pos());
+}
+
+void Plot::toggleCrosshairs ()
+{
+  if (crosshairs == FALSE)
+    crosshairs = TRUE;
+  else
+    crosshairs = FALSE;
+  emit signalCrosshairsStatus(crosshairs);  
+}
+
+void Plot::setCrosshairsStatus (bool status)
+{
+  crosshairs = status;
+  draw();
 }
 
 void Plot::slotEditIndicator (int id)

@@ -79,8 +79,10 @@ QuoteDialog::QuoteDialog (Config *c) : QTabDialog (0, "QuoteDialog", TRUE)
   label = new QLabel(tr("Download Status:"), w);
   vbox->addWidget(label);
   
-  statusLog = new QMultiLineEdit(w);
+  statusLog = new QTextEdit(w);
+  statusLog->setTextFormat(Qt::LogText);
   statusLog->setReadOnly(TRUE);
+  statusLog->setMaxLogLines(500);
   vbox->addWidget(statusLog);
   
   addTab(w, tr("Quotes"));
@@ -96,8 +98,10 @@ QuoteDialog::QuoteDialog (Config *c) : QTabDialog (0, "QuoteDialog", TRUE)
   label = new QLabel(tr("Download Data:"), w);
   vbox->addWidget(label);
   
-  dataLog = new QMultiLineEdit(w);
+  dataLog = new QTextEdit(w);
+  dataLog->setTextFormat(Qt::LogText);
   dataLog->setReadOnly(TRUE);
+  dataLog->setMaxLogLines(500);
   vbox->addWidget(dataLog);
 
   addTab(w, tr("Data"));

@@ -46,8 +46,8 @@ class Config
       GridColor,
       ChartPluginPath,
       IndicatorPath,
-      NeutralColor, // unused
-      PaintBarIndicator, // unused
+      Crosshairs,
+      DrawMode,
       MainPlotSize,
       IndicatorPlotSize,
       ScaleToScreen,

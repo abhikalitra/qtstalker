@@ -232,6 +232,12 @@ QString Config::getData (Parm p)
     case Y:
       s = settings.readEntry("/Qtstalker/Y", "0");
       break;
+    case Crosshairs:
+      s = settings.readEntry("/Qtstalker/Crosshairs", "1");
+      break;
+    case DrawMode:
+      s = settings.readEntry("/Qtstalker/DrawMode", "0");
+      break;
     default:
       break;
   }
@@ -340,6 +346,12 @@ void Config::setData (Parm p, QString d)
       break;
     case Y:
       settings.writeEntry("/Qtstalker/Y", d);
+      break;
+    case Crosshairs:
+      settings.writeEntry("/Qtstalker/Crosshairs", d);
+      break;
+    case DrawMode:
+      settings.writeEntry("/Qtstalker/DrawMode", d);
       break;
     default:
       break;
