@@ -27,6 +27,7 @@ MATH::MATH ()
 {
   pluginName = "MATH";
   plotFlag = FALSE;
+  customFlag = TRUE;
   
   methodList.append(tr("ADD"));
   methodList.append(tr("DIV"));
@@ -52,25 +53,34 @@ void MATH::setDefaults ()
 
 void MATH::calculate ()
 {
-  PlotLine *input = getInputLine(data1);
+  PlotLine *input = customLines->find(data1);
   if (! input)
+  {
+    qDebug("MATH::calculate: no data1 input %s", data1.latin1());
     return;
+  }
   int loop = input->getSize() - 1;
     
   int loop2 = 0;
-  PlotLine *input2 = getInputLine(data2);
   double inputNum = 0;
-  if (! input2)
+  PlotLine *input2 = 0;
+  if (data2.contains("#"))
   {
-    if (! data2.contains("#"))
-      return;
-    
-    QString s = data2;  
+    QString s = data2;
     s.remove(0, 1);
     inputNum = s.toDouble();
   }
   else
+  {
+    input2 = customLines->find(data2);
+    if (! input2)
+    {
+      qDebug("MATH::calculate: no data2 input");
+      return;
+    }
+    
     loop2 = input2->getSize() - 1;
+  }
     
   PlotLine *line = new PlotLine;
   line->setColor(color);

@@ -89,6 +89,9 @@
 	  
 20040805: Applied patch #1002999 - volume in tester. Thanks to Xiaoguang Zhang.
 
+20040805: Plugins removed: MA2, MA3, MMA. Trying to reduce the number of plugins, these plugins
+          are easily reproduced by using a CUS formula.
+
 	  
 0.26
 ====

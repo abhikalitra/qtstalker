@@ -41,7 +41,8 @@ class BB : public IndicatorPlugin
     int period;
     double deviation;
     IndicatorPlugin::MAType maType;
-    bool bandFlag;
+    QString customBand;
+    QStringList bandList;
 };
 
 extern "C"

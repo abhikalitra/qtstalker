@@ -27,6 +27,10 @@ BB::BB ()
 {
   pluginName = "BB";
   plotFlag = TRUE;
+  
+  bandList.append(tr("Upper"));
+  bandList.append(tr("Lower"));
+  
   setDefaults();
 }
 
@@ -41,7 +45,7 @@ void BB::setDefaults ()
   deviation = 2;
   period = 20;
   maType = IndicatorPlugin::SMA;
-  bandFlag = FALSE;
+  customBand = tr("Upper");
 }
 
 void BB::calculate ()
@@ -107,6 +111,8 @@ int BB::indicatorPrefDialog ()
   dialog->addIntItem(tr("Period"), tr("Parms"), period, 1, 99999999);
   dialog->addFloatItem(tr("Deviation"), tr("Parms"), deviation, 0, 99999999);
   dialog->addComboItem(tr("MA Type"), tr("Parms"), maTypeList, maType);
+  if (customFlag)
+    dialog->addComboItem(tr("Plot"), tr("Parms"), bandList, customBand);
   
   int rc = dialog->exec();
   
@@ -117,6 +123,8 @@ int BB::indicatorPrefDialog ()
     period = dialog->getInt(tr("Period"));
     maType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("MA Type"));
     deviation = dialog->getFloat(tr("Deviation"));
+    if (customFlag)
+      customBand = dialog->getCombo(tr("Plot"));
     rc = TRUE;
   }
   else
@@ -174,7 +182,7 @@ PlotLine * BB::calculateCustom (QDict<PlotLine> *)
 {
   clearOutput();
   calculate();
-  if (bandFlag)
+  if (! customBand.compare(tr("Upper")))
     return output.at(0);
   else
     return output.at(1);
@@ -189,6 +197,7 @@ QString BB::getCustomSettings ()
   s.append("," + QString::number(bandFlag));
   s.append("," + color.name());
   s.append("," + QString::number(lineType));
+  s.append("," + customBand);
   return s;
 }
 
@@ -203,6 +212,7 @@ void BB::setCustomSettings (QString d)
   bandFlag = l[4].toInt();
   color.setNamedColor(l[5]);
   lineType = (PlotLine::LineType) l[6].toInt();
+  customBand = l[7];
 }
 
 Plugin * create ()

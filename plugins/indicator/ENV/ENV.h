@@ -47,7 +47,9 @@ class ENV : public IndicatorPlugin
     double lowerPercent;
     BarData::InputType input;
     IndicatorPlugin::MAType maType;
-    bool bandFlag;
+    QString customBand;
+    QString customInput;
+    QStringList bandList;
 };
 
 extern "C"

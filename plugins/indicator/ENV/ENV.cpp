@@ -27,6 +27,10 @@ ENV::ENV ()
 {
   pluginName = "ENV";
   plotFlag = TRUE;
+  
+  bandList.append(tr("Upper"));
+  bandList.append(tr("Lower"));
+  
   setDefaults();
 }
 
@@ -47,18 +51,26 @@ void ENV::setDefaults ()
   lowerPercent = 0.98;
   input = BarData::Close;
   maType = IndicatorPlugin::SMA;
-  bandFlag = FALSE;
+  customBand = tr("Upper");
+  customInput = "1";
 }
 
 void ENV::calculate ()
 {
-  IndicatorPlugin *t = new IndicatorPlugin();
+  PlotLine *in = 0;
+  if (customFlag)
+    in = getInputLine(customInput);
+  else
+    in = data->getInput(input);
+  if (! in)
+  {
+    qDebug("ENV::calculate: no input");
+    return;
+  }
 
-  PlotLine *in = data->getInput(input);
+  PlotLine *uma = getMA(in, maType, period);
 
-  PlotLine *uma = t->getMA(in, maType, period);
-
-  PlotLine *lma = t->getMA(in, maType, period);
+  PlotLine *lma = getMA(in, maType, period);
 
   int maLoop = uma->getSize() - 1;
 
@@ -73,7 +85,8 @@ void ENV::calculate ()
     maLoop--;
   }
 
-  delete in;
+  if (! customFlag)
+    delete in;
 
   uma->setColor(upperColor);
   uma->setType(upperLineType);
@@ -84,8 +97,6 @@ void ENV::calculate ()
   lma->setType(lowerLineType);
   lma->setLabel(lowerLabel);
   output.append(lma);
-  
-  delete t;
 }
 
 int ENV::indicatorPrefDialog ()
@@ -95,7 +106,13 @@ int ENV::indicatorPrefDialog ()
   dialog->createPage (tr("Parms"));
   dialog->addIntItem(tr("Period"), tr("Parms"), period, 1, 99999999);
   dialog->addComboItem(tr("MA Type"), tr("Parms"), maTypeList, maType);
-  dialog->addComboItem(tr("Input"), tr("Parms"), inputTypeList, input);
+  if (customFlag)
+  {
+    dialog->addComboItem(tr("Plot"), tr("Parms"), bandList, customBand);
+    dialog->addFormulaInputItem(tr("Input"), tr("Parms"), FALSE, customInput);
+  }
+  else
+    dialog->addComboItem(tr("Input"), tr("Parms"), inputTypeList, input);
   
   dialog->createPage (tr("Upper"));
   dialog->addColorItem(tr("Upper Color"), tr("Upper"), upperColor);
@@ -115,7 +132,13 @@ int ENV::indicatorPrefDialog ()
   {
     period = dialog->getInt(tr("Period"));
     maType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("MA Type"));
-    input = (BarData::InputType) dialog->getComboIndex(tr("Input"));
+    if (customFlag)
+    {
+      customBand = dialog->getCombo(tr("Plot"));
+      customInput = dialog->getFormulaInput(tr("Input"));
+    }
+    else
+      input = (BarData::InputType) dialog->getComboIndex(tr("Input"));
     
     upperColor = dialog->getColor(tr("Upper Color"));
     upperLineType = (PlotLine::LineType) dialog->getComboIndex(tr("Upper Line Type"));
@@ -213,11 +236,12 @@ void ENV::saveIndicatorSettings (QString file)
   saveFile(file, dict);
 }
 
-PlotLine * ENV::calculateCustom (QDict<PlotLine> *)
+PlotLine * ENV::calculateCustom (QDict<PlotLine> *d)
 {
+  customLines = d;
   clearOutput();
   calculate();
-  if (bandFlag)
+  if (! customBand.compare(tr("Upper")))
     return output.at(0);
   else
     return output.at(1);
@@ -240,7 +264,10 @@ QString ENV::getCustomSettings ()
   s.append("," + QString::number(lowerLineType));
   s.append("," + lowerLabel);
   s.append("," + QString::number(lowerPercent));
-  
+
+  s.append("," + customBand);
+  s.append("," + customInput);
+    
   return s;
 }
 
@@ -263,6 +290,10 @@ void ENV::setCustomSettings (QString d)
   lowerLineType = (PlotLine::LineType) l[10].toInt();
   lowerLabel = l[11];
   lowerPercent = l[12].toDouble();
+  
+  customBand = l[13];
+  customInput = l[14];
+  
 }
 
 Plugin * create ()

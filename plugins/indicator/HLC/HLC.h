@@ -43,7 +43,8 @@ class HLC : public IndicatorPlugin
     QString upperLabel;
     QString lowerLabel;
     int period;
-    bool bandFlag;
+    QString customBand;
+    QStringList bandList;
 };
 
 extern "C"

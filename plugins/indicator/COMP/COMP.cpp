@@ -27,6 +27,7 @@ COMP::COMP ()
 {
   pluginName = "COMP";
   plotFlag = FALSE;
+  customFlag = TRUE;
   
   opList.append("==");
   opList.append("<");

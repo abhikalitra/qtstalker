@@ -27,6 +27,10 @@ HLC::HLC ()
 {
   pluginName = "HLC";
   plotFlag = TRUE;
+  
+  bandList.append(tr("Upper"));
+  bandList.append(tr("Lower"));
+  
   setDefaults();
 }
 
@@ -43,7 +47,7 @@ void HLC::setDefaults ()
   upperLabel = tr("HLCU");
   lowerLabel = tr("HLCL");
   period = 20;
-  bandFlag = FALSE;
+  customBand = tr("Upper");
 }
 
 void HLC::calculate ()
@@ -90,6 +94,8 @@ int HLC::indicatorPrefDialog ()
   dialog->setCaption(tr("HLC Indicator"));
   dialog->createPage (tr("Parms"));
   dialog->addIntItem(tr("Period"), tr("Parms"), period, 1, 99999999);
+  if (customFlag)
+    dialog->addComboItem(tr("Plot"), tr("Parms"), bandList, customBand);
   
   dialog->createPage (tr("Upper"));
   dialog->addColorItem(tr("Upper Color"), tr("Upper"), upperColor);
@@ -112,6 +118,9 @@ int HLC::indicatorPrefDialog ()
     lowerColor = dialog->getColor(tr("Lower Color"));
     lowerLineType = (PlotLine::LineType) dialog->getComboIndex(tr("Lower Line Type"));
     lowerLabel = dialog->getText(tr("Lower Label"));
+    if (customFlag)
+      customBand = dialog->getCombo(tr("Plot"));
+    
     rc = TRUE;
   }
   else
@@ -179,10 +188,10 @@ PlotLine * HLC::calculateCustom (QDict<PlotLine> *)
 {
   clearOutput();
   calculate();
-  if (bandFlag)
-    return output.at(1);
-  else
+  if (! customBand.compare(tr("Upper")))
     return output.at(0);
+  else
+    return output.at(1);
 }
 
 QString HLC::getCustomSettings ()
@@ -196,6 +205,7 @@ QString HLC::getCustomSettings ()
   s.append("," + lowerColor.name());
   s.append("," + QString::number(lowerLineType));
   s.append("," + lowerLabel);
+  s.append("," + customBand);
   return s;
 }
 
@@ -212,6 +222,7 @@ void HLC::setCustomSettings (QString d)
   lowerColor.setNamedColor(l[6]);
   lowerLineType = (PlotLine::LineType) l[7].toInt();
   lowerLabel = l[8];
+  customBand = l[9];
 }
 
 Plugin * create ()

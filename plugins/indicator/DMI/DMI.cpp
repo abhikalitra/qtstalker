@@ -28,6 +28,11 @@ DMI::DMI ()
 {
   pluginName = "DMI";
   plotFlag = FALSE;
+  
+  lineList.append("ADX");
+  lineList.append("MDI");
+  lineList.append("PDI");
+  
   setDefaults();
 }
 
@@ -82,6 +87,8 @@ int DMI::indicatorPrefDialog ()
   dialog->addIntItem(tr("Period"), tr("DMI"), period, 1, 99999999);
   dialog->addIntItem(tr("Smoothing"), tr("DMI"), smoothing, 1, 99999999);
   dialog->addComboItem(tr("Smoothing Type"), tr("DMI"), maTypeList, maType);
+  if (customFlag)
+    dialog->addComboItem(tr("Plot"), tr("DMI"), lineList, lineRequest);
   
   dialog->createPage (tr("+DM"));
   dialog->addColorItem(tr("+DM Color"), tr("+DM"), pdiColor);
@@ -105,7 +112,9 @@ int DMI::indicatorPrefDialog ()
     period = dialog->getInt(tr("Period"));
     smoothing = dialog->getInt(tr("Smoothing"));
     maType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("Smoothing Type"));
-    
+    if (customFlag)
+      lineRequest = dialog->getCombo(tr("Plot"));    
+      
     pdiColor = dialog->getColor(tr("+DM Color"));
     pdiLineType = (PlotLine::LineType) dialog->getComboIndex(tr("+DM Line Type"));
     pdiLabel = dialog->getText(tr("+DM Label"));
@@ -236,6 +245,7 @@ QString DMI::getCustomSettings ()
   s.append("," + adxColor.name());
   s.append("," + QString::number(adxLineType));
   s.append("," + adxLabel);
+  s.append("," + lineRequest);
   return s;
 }
 
@@ -256,6 +266,7 @@ void DMI::setCustomSettings (QString d)
   adxColor.setNamedColor(l[10]);
   adxLineType = (PlotLine::LineType) l[11].toInt();
   adxLabel = l[12];
+  lineRequest = l[13];
 }
 
 PlotLine * DMI::getMDI (int period)

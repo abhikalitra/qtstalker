@@ -52,6 +52,7 @@ class DMI : public IndicatorPlugin
     int smoothing;
     IndicatorPlugin::MAType maType;
     QString lineRequest;
+    QStringList lineList;
 };
 
 extern "C"
