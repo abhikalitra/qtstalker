@@ -38,6 +38,7 @@
 #include <qimage.h>
 #include <qmessagebox.h>
 #include <qinputdialog.h>
+#include <qdir.h>
 
 #include "indicator.xpm"
 #include "edit.xpm"
@@ -1875,12 +1876,16 @@ void Plot::newChartObject ()
     QObject::connect(co, SIGNAL(message(QString)), this, SLOT(slotMessage(QString)));
     
     // update the db chartobject list
-    ChartDb *db = new ChartDb();
-    db->openChart(chartPath);
-    Setting *set = co->getSettings();
-    db->setChartObject(co->getName(), set);
-    delete set;
-    delete db;
+    QDir dir;
+    if (dir.exists(chartPath))
+    {
+      ChartDb *db = new ChartDb();
+      db->openChart(chartPath);
+      Setting *set = co->getSettings();
+      db->setChartObject(co->getName(), set);
+      delete set;
+      delete db;
+    }
 
     addChartObject(co);
     draw();
@@ -1974,10 +1979,14 @@ void Plot::createChartObject (QString d, QString n)
 
 void Plot::slotDeleteChartObject (QString s)
 {
-  ChartDb *db = new ChartDb();
-  db->openChart(chartPath);
-  db->deleteChartObject(s);
-  delete db;
+  QDir dir;
+  if (dir.exists(chartPath))
+  {
+    ChartDb *db = new ChartDb();
+    db->openChart(chartPath);
+    db->deleteChartObject(s);
+    delete db;
+  }
   
   chartObjects.remove(s);
   
@@ -1991,6 +2000,10 @@ void Plot::slotNewChartObject (int id)
   QString selection = chartObjectMenu->text(id);
   int loop = 0;
   QString name;
+  
+  QDir dir;
+  if (! dir.exists(chartPath))
+    return;
   
   ChartDb *db = new ChartDb();
   db->openChart(chartPath);
@@ -2154,7 +2167,11 @@ void Plot::slotSaveChartObjects ()
 {
   if (! chartPath.length())
     return;
-    
+
+  QDir dir;
+  if (! dir.exists(chartPath))
+    return;
+        
   ChartDb *db = new ChartDb();
   db->openChart(chartPath);
 
@@ -2193,6 +2210,10 @@ void Plot::slotDeleteAllChartObjects ()
   if (rc == QMessageBox::No)
     return;
    
+  QDir dir;
+  if (! dir.exists(chartPath))
+    return;
+    
   ChartDb *db = new ChartDb();
   db->openChart(chartPath);
   QStringList l = db->getChartObjectsList();

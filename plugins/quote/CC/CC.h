@@ -33,7 +33,7 @@ class CC : public QuotePlugin
     CC ();
     virtual ~CC ();
     void update ();
-    void newChart (ChartDb *, QString, FuturesData *, QDir);
+    void newChart (ChartDb *, QString, QDir);
     void loadSettings ();
     void saveSettings ();
     void prefDialog ();
@@ -44,6 +44,7 @@ class CC : public QuotePlugin
   private:
     int rollover;
     int maxYears;
+    FuturesData fd;
 };
 
 extern "C"

@@ -53,8 +53,7 @@ void CC::parse ()
   }
   path.append("/");
 
-  FuturesData *fd = new FuturesData;
-  QStringList symbols = fd->getSymbolList();
+  QStringList symbols = fd.getSymbolList();
 
   int symbolLoop;
   for (symbolLoop = 0; symbolLoop < (int) symbols.count(); symbolLoop++)
@@ -78,17 +77,15 @@ void CC::parse ()
 
     ChartDb *db = new ChartDb();
     db->openChart(s);
-    newChart(db, symbols[symbolLoop], fd, dir);
+    newChart(db, symbols[symbolLoop], dir);
     delete db;
   }
-
-  delete fd;
 
   emit statusLogMessage("Done");
   emit done();
 }
 
-void CC::newChart (ChartDb *db, QString symbol, FuturesData *fd, QDir dir)
+void CC::newChart (ChartDb *db, QString symbol, QDir dir)
 {
   QDate tdate = QDate::currentDate();
   int years = tdate.year() - maxYears;
@@ -101,8 +98,12 @@ void CC::newChart (ChartDb *db, QString symbol, FuturesData *fd, QDir dir)
   db->setDetail(ChartDb::FuturesType, symbol);
   db->setDetail(ChartDb::BarType, QString::number(BarData::Daily));
 
-  fd->setSymbol(symbol);
-  QString currentContract = fd->getContract();
+  if (fd.setSymbol(symbol))
+  {
+    qDebug("CC::newChart:invalid futures symbol");
+    return;
+  }
+  QString currentContract = fd.getContract();
 
   Bar *pr = new Bar;
   
@@ -127,14 +128,21 @@ void CC::newChart (ChartDb *db, QString symbol, FuturesData *fd, QDir dir)
     ChartDb *tdb = new ChartDb();
     tdb->openChart(s);
     
-    Bar *bar = db->getFirstBar();
+    Bar *bar = tdb->getFirstBar();
+    if (! bar)
+    {
+      qDebug("CC::newChart:no first bar %s", dir[loop].latin1());
+      delete tdb;
+      continue;
+    }
     if (! startDate.getDate().isValid())
       startDate = bar->getDate();
     delete bar;
 
     tdb->setBarCompression(ChartDb::Daily);
-    tdb->setBarRange(99999999);
+    tdb->setBarRange(260);
     BarData *recordList = tdb->getHistory();
+    delete tdb;
 
     int loop2;
     int count = recordList->count() - rollover;
@@ -143,12 +151,14 @@ void CC::newChart (ChartDb *db, QString symbol, FuturesData *fd, QDir dir)
     if (count < 1)
     {
       delete recordList;
-      delete tdb;
       continue;
     }
 
     for (loop2 = 1; loop2 < count; loop2++)
     {
+      if (recordList->getDate(loop2).getDate() < startDate.getDate())
+        continue;
+	
       if (! pr->getDate().getDate().isValid())
         pr->setClose(recordList->getClose(loop2 - 1));
 
@@ -173,7 +183,6 @@ void CC::newChart (ChartDb *db, QString symbol, FuturesData *fd, QDir dir)
     }
 
     delete recordList;
-    delete tdb;
 
     if (flag)
       break;

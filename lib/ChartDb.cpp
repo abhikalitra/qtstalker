@@ -374,6 +374,7 @@ Bar * ChartDb::getLastBar ()
       continue;
 
     bar = getBar((char *) key.data, (char *) data.data);
+    
     break;
   }
   cursor->c_close(cursor);
@@ -401,6 +402,7 @@ Bar * ChartDb::getFirstBar ()
       continue;
 
     bar = getBar((char *) key.data, (char *) data.data);
+    
     break;
   }
   cursor->c_close(cursor);

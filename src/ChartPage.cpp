@@ -156,7 +156,15 @@ void ChartPage::exportChart (QString path)
 
   QString s = config->getData(Config::Home);
   s.append("/export/");
-  s.append(db->getDetail(ChartDb::Symbol));
+  
+  QString s2 = db->getDetail(ChartDb::Symbol);
+  if (! s2.length())
+  {
+    QStringList l = QStringList::split("/", path, FALSE);
+    s.append(l[l.count() - 1]);
+  }
+  else
+    s.append(s2);
 
   db->dump(s);
 
