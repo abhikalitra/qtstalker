@@ -1,3 +1,6 @@
+rm -f *.o
+rm -f *.so
+
 qmake -o Makefile AD.pro
 make
 cp libAD.so AD.so

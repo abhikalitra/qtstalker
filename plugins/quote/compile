@@ -1,3 +1,7 @@
+rm -f *.o
+rm -f *.so
+rm -f moc_*
+
 qmake -o Makefile Yahoo.pro
 make
 cp libYahoo.so Yahoo.so
