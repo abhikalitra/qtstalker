@@ -87,10 +87,11 @@ EditDialog::EditDialog (Config *c) : QDialog (0, "EditDialog", TRUE)
   gbox = new QGroupBox(this);
   gbox->setColumnLayout(2, Horizontal);
   fileBox->addWidget(gbox);
+  gbox->setMinimumWidth(200);
+  gbox->setMaximumWidth(200);
 
   QLabel *label = new QLabel(tr("Symbol"), gbox);
   symbol = new QLabel(0, gbox);
-  symbol->setMinimumWidth(75);
 
   label = new QLabel(tr("Title"), gbox);
   title = new QLabel(0, gbox);
@@ -292,7 +293,7 @@ void EditDialog::floatDialog ()
 				     settings->getFloat(item->text(0)),
 				     -99999999,
 				     99999999,
-				     1,
+				     4,
 				     &ok,
 				     this,
 				     s);

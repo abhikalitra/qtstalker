@@ -716,14 +716,24 @@ void CME::parse (Setting *data)
     low = close;
     
   QString s = dataPath;
-  s.append("/");
-  s.append(fd->getSymbol());
+  s.append("/Futures");
   QDir dir(s);
   if (! dir.exists(s, TRUE))
   {
     if (! dir.mkdir(s, TRUE))
     {
-      qDebug("CME plugin: Unable to create directory");
+      qDebug("CME plugin: Unable to create futures directory");
+      return;
+    }
+  }
+
+  s.append("/");
+  s.append(fd->getSymbol());
+  if (! dir.exists(s, TRUE))
+  {
+    if (! dir.mkdir(s, TRUE))
+    {
+      qDebug("CME plugin: Unable to create symbol directory");
       return;
     }
   }
@@ -738,7 +748,7 @@ void CME::parse (Setting *data)
   r->set("Open Interest", oi, Setting::Float);
 
   s = dataPath;
-  s.append("/");
+  s.append("/Futures/");
   s.append(fd->getSymbol());
   s.append("/");
   s.append(data->getData("Symbol"));

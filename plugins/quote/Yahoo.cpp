@@ -55,10 +55,14 @@ void Yahoo::update ()
   file.append("/Qtstalker/download");
 
   QDateTime edate = QDateTime::currentDateTime();
+  edate = edate.addDays(-1);
   if (edate.date().dayOfWeek() == 6)
     edate = edate.addDays(-1);
-  if (edate.date().dayOfWeek() == 7)
-    edate = edate.addDays(-2);
+  else
+  {
+    if (edate.date().dayOfWeek() == 7)
+      edate = edate.addDays(-2);
+  }
 
   QString s = dataPath;
   s.append("/Stocks");

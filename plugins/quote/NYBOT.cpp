@@ -272,9 +272,19 @@ void NYBOT::parse ()
         continue;
 	
       s = dataPath;
+      s.append("/Futures");
+      QDir dir(s);
+      if (! dir.exists(s, TRUE))
+      {
+        if (! dir.mkdir(s, TRUE))
+        {
+          qDebug("NYBOT plugin: Unable to create futures directory");
+          return;
+        }
+      }
+
       s.append("/");
       s.append(fd->getSymbol());
-      QDir dir(s);
       if (! dir.exists(s, TRUE))
       {
         if (! dir.mkdir(s, TRUE))
@@ -294,7 +304,7 @@ void NYBOT::parse ()
       r->set("Open Interest", oi, Setting::Float);
 
       s = dataPath;
-      s.append("/");
+      s.append("/Futures/");
       s.append(fd->getSymbol());
       s.append("/");
       s.append(symbol);

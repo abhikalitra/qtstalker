@@ -311,14 +311,24 @@ void CMEHistory::parse (Setting *data)
     low = close;
     
   QString s = dataPath;
-  s.append("/");
-  s.append(symbolList);
+  s.append("/Futures");
   QDir dir(s);
   if (! dir.exists(s, TRUE))
   {
     if (! dir.mkdir(s, TRUE))
     {
-      qDebug("CMEHistory plugin: Unable to create directory");
+      qDebug("CMEHistory plugin: Unable to create futures directory");
+      return;
+    }
+  }
+
+  s.append("/");
+  s.append(symbolList);
+  if (! dir.exists(s, TRUE))
+  {
+    if (! dir.mkdir(s, TRUE))
+    {
+      qDebug("CMEHistory plugin: Unable to create symbol directory");
       return;
     }
   }
@@ -333,7 +343,7 @@ void CMEHistory::parse (Setting *data)
   r->set("Open Interest", oi, Setting::Float);
 
   s = dataPath;
-  s.append("/");
+  s.append("/Futures/");
   s.append(symbolList);
   s.append("/");
   s.append(data->getData("Symbol"));

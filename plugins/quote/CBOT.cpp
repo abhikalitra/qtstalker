@@ -454,14 +454,24 @@ void CBOT::parse ()
       oi = QString::number(tfloat);
       
     s = dataPath;
-    s.append("/");
-    s.append(fd->getSymbol());
+    s.append("/Futures");
     QDir dir(s);
     if (! dir.exists(s, TRUE))
     {
       if (! dir.mkdir(s, TRUE))
       {
-        qDebug("CBOT plugin: Unable to create directory");
+        qDebug("CBOT plugin: Unable to create futures directory");
+        return;
+      }
+    }
+
+    s.append("/");
+    s.append(fd->getSymbol());
+    if (! dir.exists(s, TRUE))
+    {
+      if (! dir.mkdir(s, TRUE))
+      {
+        qDebug("CBOT plugin: Unable to create symbol directory");
         return;
       }
     }
@@ -476,7 +486,7 @@ void CBOT::parse ()
     r->set("Open Interest", oi, Setting::Float);
 
     s = dataPath;
-    s.append("/");
+    s.append("/Futures/");
     s.append(fd->getSymbol());
     s.append("/");
     s.append(symbol);

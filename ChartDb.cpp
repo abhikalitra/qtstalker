@@ -102,13 +102,6 @@ void ChartDb::getHistory (Compression c, QDateTime sd)
   compression = c;
   startDate = sd;
 
-  QStringList format = QStringList::split("|", details->getData("Format"), FALSE);
-  if (format.findIndex("Open") == -1)
-  {
-    getDailyHistory();
-    return;
-  }
-
   switch (compression)
   {
     case Weekly:
@@ -178,29 +171,39 @@ void ChartDb::getWeeklyHistory ()
         recordList.prepend(tr);
 
       tr = new Setting;
-      tr->set("Date", r->getData("Date"), Setting::Date);
-      tr->set("Open", r->getData("Open"), Setting::Float);
-      tr->set("High", r->getData("High"), Setting::Float);
-      tr->set("Low", r->getData("Low"), Setting::Float);
-      tr->set("Close", r->getData("Close"), Setting::Float);
-      tr->set("Volume", r->getData("Volume"), Setting::Float);
-      tr->set("Open Interest", r->getData("Open Interest"), Setting::Float);
+      tr->parse(r->getString());
       tdate = dt.addDays(- dt.date().dayOfWeek());
     }
     else
     {
-      tr->setData("Open", r->getData("Open"));
+      QString s = r->getData("Open");
+      if (s.length())
+        tr->setData("Open", r->getData("Open"));
 
-      if (r->getFloat("High") > tr->getFloat("High"))
-        tr->setData("High", r->getData("High"));
+      s = r->getData("High");
+      if (s.length())
+      {
+        if (r->getFloat("High") > tr->getFloat("High"))
+          tr->setData("High", r->getData("High"));
+      }
 
-      if (r->getFloat("Low") < tr->getFloat("Low"))
-        tr->setData("Low", r->getData("Low"));
+      s = r->getData("Low");
+      if (s.length())
+      {
+        if (r->getFloat("Low") < tr->getFloat("Low"))
+          tr->setData("Low", r->getData("Low"));
+      }
 
-      tr->setData("Volume", QString::number(tr->getFloat("Volume") + r->getFloat("Volume")));
+      s = r->getData("Volume");
+      if (s.length())
+        tr->setData("Volume", QString::number(tr->getFloat("Volume") + r->getFloat("Volume")));
 
-      if (r->getFloat("Open Interest") > tr->getFloat("Open Interest"))
-        tr->setData("Open Interest", r->getData("Open Interest"));
+      s = r->getData("Open Interest");
+      if (s.length())
+      {
+        if (r->getFloat("Open Interest") > tr->getFloat("Open Interest"))
+          tr->setData("Open Interest", r->getData("Open Interest"));
+      }
     }
 
     delete r;
@@ -242,29 +245,39 @@ void ChartDb::getMonthlyHistory ()
         recordList.prepend(tr);
 
       tr = new Setting;
-      tr->set("Date", r->getData("Date"), Setting::Date);
-      tr->set("Open", r->getData("Open"), Setting::Float);
-      tr->set("High", r->getData("High"), Setting::Float);
-      tr->set("Low", r->getData("Low"), Setting::Float);
-      tr->set("Close", r->getData("Close"), Setting::Float);
-      tr->set("Volume", r->getData("Volume"), Setting::Float);
-      tr->set("Open Interest", r->getData("Open Interest"), Setting::Float);
+      tr->parse(r->getString());
       month = dt.date().month();
     }
     else
     {
-      tr->setData("Open", r->getData("Open"));
+      QString s = r->getData("Open");
+      if (s.length())
+        tr->setData("Open", r->getData("Open"));
 
-      if (r->getFloat("High") > tr->getFloat("High"))
-        tr->setData("High", r->getData("High"));
+      s = r->getData("High");
+      if (s.length())
+      {
+        if (r->getFloat("High") > tr->getFloat("High"))
+          tr->setData("High", r->getData("High"));
+      }
 
-      if (r->getFloat("Low") < tr->getFloat("Low"))
-        tr->setData("Low", r->getData("Low"));
+      s = r->getData("Low");
+      if (s.length())
+      {
+        if (r->getFloat("Low") < tr->getFloat("Low"))
+          tr->setData("Low", r->getData("Low"));
+      }
 
-      tr->setData("Volume", QString::number(tr->getFloat("Volume") + r->getFloat("Volume")));
+      s = r->getData("Volume");
+      if (s.length())
+        tr->setData("Volume", QString::number(tr->getFloat("Volume") + r->getFloat("Volume")));
 
-      if (r->getFloat("Open Interest") > tr->getFloat("Open Interest"))
-        tr->setData("Open Interest", r->getData("Open Interest"));
+      s = r->getData("Open Interest");
+      if (s.length())
+      {
+        if (r->getFloat("Open Interest") > tr->getFloat("Open Interest"))
+          tr->setData("Open Interest", r->getData("Open Interest"));
+      }
     }
 
     delete r;

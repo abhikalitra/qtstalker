@@ -36,6 +36,7 @@
 #include <qstringlist.h>
 #include <qlibrary.h>
 #include <qtooltip.h>
+#include <qlistbox.h>
 
 #include "Qtstalker.h"
 #include "GroupDialog.h"
@@ -422,8 +423,6 @@ void QtstalkerApp::initToolBar()
   connect (pixelspace, SIGNAL(valueChanged(int)), this, SLOT(slotPixelspaceChanged(int)));
   QToolTip::add(pixelspace, tr("Bar Spacing"));
 
-  toolbar->addSeparator();
-
   actionGrid->addTo(toolbar);
   actionScaleToScreen->addTo(toolbar);
 
@@ -440,11 +439,13 @@ void QtstalkerApp::initToolBar()
 
   navToolbar->addSeparator();
 
-  groupCombo = new QComboBox(navToolbar);
-  groupCombo->setMinimumWidth(125);
-  QToolTip::add(groupCombo, tr("Group Contents"));
-
   actionBack->addTo(navToolbar);
+
+  groupCombo = new QComboBox(navToolbar);
+  groupCombo->setMaximumWidth(20);
+  QListBox *lbox = groupCombo->listBox();
+  lbox->setVariableWidth(TRUE);
+  QToolTip::add(groupCombo, tr("Group Contents"));
 
   actionNext->addTo(navToolbar);
 
@@ -455,6 +456,8 @@ void QtstalkerApp::initToolBar()
   connect (slider, SIGNAL(valueChanged(int)), this, SLOT(slotSliderChanged(int)));
   slider->setEnabled(FALSE);
   QToolTip::add(slider, tr("Pan Chart"));
+  
+  navToolbar->setStretchableWidget(slider);
 
   QStringList l = config->getIndicators();
   int loop;

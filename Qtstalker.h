@@ -103,7 +103,7 @@ class QtstalkerApp : public QMainWindow
     void slotStatusMessage (QString);
 
   private:
-
+  
     QPopupMenu *fileMenu;
     QPopupMenu *editMenu;
     QPopupMenu *viewMenu;
