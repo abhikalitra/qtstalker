@@ -75,6 +75,8 @@ void Cycle::draw (QPixmap &buffer, Scaler &, int startIndex, int pixelspace, int
     if (x == -1)
       continue;
       
+    tpixelspace = pixelspace; // save this for adjusting the cycle interval
+    
     int origx = x;
       
     painter.setPen(co->getColor());
@@ -86,11 +88,9 @@ void Cycle::draw (QPixmap &buffer, Scaler &, int startIndex, int pixelspace, int
       if ((x + (interval * pixelspace)) > 0)
       {
         painter.drawArc(x,
-//                        buffer.height() - (buffer.height() / 4) - 2,
                         buffer.height() - ((interval * 4) / 2) - 2,
 		        interval * pixelspace,
 		        interval * 4,
-//		        buffer.height() / 2,
 		        16 * 180,
 		        16 * -180);
       
@@ -218,6 +218,8 @@ COPlugin::Status Cycle::pointerClick (QPoint &point, BarDate &x, double)
   {
     if (selected->isGrabSelected(point))
     {
+      tpoint = point;
+      tpoint.setX(point.x() - (selected->getInterval() * tpixelspace));
       status = Moving;
       return status;
     }
@@ -260,19 +262,44 @@ COPlugin::Status Cycle::pointerClick (QPoint &point, BarDate &x, double)
   return status;    
 }
 
-void Cycle::pointerMoving (QPixmap &, QPoint &, BarDate &x, double)
+void Cycle::pointerMoving (QPixmap &, QPoint &p, BarDate &x, double)
 {
   if (status != Moving)
     return;
-    
-  selected->setDate(x);
-  selected->setSaveFlag(TRUE);
+
+  int gp = selected->getGrabPosition();
+  if (gp == -1)
+    return;
   
-  emit signalDraw();
+  if (gp == 0)
+  {
+    selected->setDate(x);
+    selected->setSaveFlag(TRUE);
   
-  QString s;
-  x.getDateString(TRUE, s);
-  emit message(s);
+    QString s;
+    x.getDateString(TRUE, s);
+    emit message(s);
+    emit signalDraw();
+  }
+  else
+  {
+    if (gp > 0)
+    {
+      if (p.x() <= tpoint.x())
+        return;
+	
+      int t = (p.x() - tpoint.x()) / tpixelspace;
+      if (t == 0)
+	return;
+	  
+      selected->setInterval(t);
+      selected->setSaveFlag(TRUE);
+	
+      QString s = tr("Interval") + "=" + QString::number(t);
+      emit message(s);
+      emit signalDraw();
+    }
+  }
 }
 
 void Cycle::saveObjects (QString &chartPath)

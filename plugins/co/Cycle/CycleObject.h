@@ -63,6 +63,7 @@ class CycleObject
     CycleObject::Status getStatus ();
     void getSettings (Setting &);
     void setSettings (Setting &);
+    int getGrabPosition ();
     
   protected:
     bool saveFlag;
@@ -74,6 +75,7 @@ class CycleObject
     BarDate date;
     Status status;
     int interval;
+    int grabPosition;
 };
 
 #endif

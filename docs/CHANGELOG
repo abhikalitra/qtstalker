@@ -292,7 +292,10 @@
 20050325: The navigator will now purge any invalid group items before displaying them. They don't
           appear because they are broken symlinks, but it is better to get rid of them regardless.
 	  
-	  	  	  
+20050326: Changed behaviour of Cycle selection mode. Selecting the first grab box allows user
+          to drag the cycle across the chart. Selecting any other grab box will allow user to
+	  change the cycle interval.
+	  
 	  	  
 0.29
 ====

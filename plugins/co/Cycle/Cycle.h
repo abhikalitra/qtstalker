@@ -64,6 +64,8 @@ class Cycle : public COPlugin
     CycleObject *selected;
     QColor defaultColor;
     int defaultInterval;
+    QPoint tpoint;
+    int tpixelspace;
 };
 
 extern "C"

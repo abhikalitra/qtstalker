@@ -48,6 +48,7 @@ void CycleObject::init ()
   grabHandles.setAutoDelete(TRUE);
   selectionArea.setAutoDelete(TRUE);
   interval = 10;
+  grabPosition = -1;
 }
 
 void CycleObject::setSaveFlag (bool d)
@@ -135,15 +136,24 @@ bool CycleObject::isSelected (QPoint point)
 
 bool CycleObject::isGrabSelected (QPoint point)
 {
+  grabPosition = -1;
   int loop;
   for (loop = 0; loop < (int) grabHandles.count(); loop++)
   {
     QRegion *r = grabHandles.at(loop);
     if (r->contains(point))
+    {
+      grabPosition = loop;
       return TRUE;
+    }
   }
   
   return FALSE;
+}
+
+int CycleObject::getGrabPosition ()
+{
+  return grabPosition;
 }
 
 void CycleObject::setStatus (Status d)
