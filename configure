@@ -1,0 +1,9 @@
+echo "Building db..."
+tar zxvf db-2.7.7.tar.gz
+cd db-2.7.7/build_unix
+../dist/configure
+make
+cd ../../
+echo "Building Makefile..."
+qmake -o Makefile Qtstalker.pro
+

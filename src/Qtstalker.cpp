@@ -50,7 +50,6 @@
 #include "done.xpm"
 #include "configure.xpm"
 #include "scaletoscreen.xpm"
-#include "plugin.xpm"
 #include "edit.xpm"
 #include "delete.xpm"
 #include "co.xpm"
@@ -261,11 +260,6 @@ void QtstalkerApp::initActions()
   actionScaleToScreen->setStatusTip(tr("Scale chart to current screen data."));
   connect(actionScaleToScreen, SIGNAL(toggled(bool)), this, SLOT(slotScaleToScreen(bool)));
 
-  icon = plugin;
-  actionNewPlugin = new QAction(tr("Install new plugins..."), icon, tr("Install new plugins..."), 0, this);
-  actionNewPlugin->setStatusTip(tr("Install new plugins."));
-  connect(actionNewPlugin, SIGNAL(activated()), this, SLOT(slotNewPlugin()));
-  
   icon = nav;
   actionNav = new QAction(tr("Chart Navigator"), icon, tr("Chart Navigator"), 0, this, 0, true);
   actionNav->setStatusTip(tr("Toggle the chart navigator area."));
@@ -294,9 +288,6 @@ void QtstalkerApp::initMenuBar()
   actionLogScale->addTo(viewMenu);
   actionNav->addTo(viewMenu);
 
-  pluginMenu = new QPopupMenu();
-  actionNewPlugin->addTo(pluginMenu);
-
   toolMenu = new QPopupMenu();
   actionDatawindow->addTo(toolMenu);
   actionQuotes->addTo(toolMenu);
@@ -307,7 +298,6 @@ void QtstalkerApp::initMenuBar()
   menuBar()->insertItem(tr("&File"), fileMenu);
   menuBar()->insertItem(tr("&Edit"), editMenu);
   menuBar()->insertItem(tr("&View"), viewMenu);
-  menuBar()->insertItem(tr("&Plugins"), pluginMenu);
   menuBar()->insertItem(tr("&Tools"), toolMenu);
   menuBar()->insertSeparator();
   menuBar()->insertItem(tr("&Help"), helpMenu);
@@ -373,7 +363,7 @@ void QtstalkerApp::initToolBar()
   l.clear();
   l.append(tr("Bar"));
   l.append(tr("Paint Bar"));
-  l.append(tr("Exhaustion Bar"));
+  l.append(tr("Exhaustion Points"));
   l.append(tr("Line"));
   l.append(tr("Candle"));
   l.append(tr("Point and Figure"));
@@ -661,7 +651,7 @@ void QtstalkerApp::loadChart (QString d)
     i->parse(config->getIndicator(l[loop]));
     
     QString s = config->getData(Config::IndicatorPluginPath);
-    s.append("/");
+    s.append("/lib");
     s.append(i->getData(QObject::tr("Type")));
     s.append(".so");
 
@@ -1286,7 +1276,7 @@ void QtstalkerApp::slotNewIndicator ()
   set->set("Name", name, Setting::None);
 
   QString s = config->getData(Config::IndicatorPluginPath);
-  s.append("/");
+  s.append("/lib");
   s.append(selection);
   s.append(".so");
 
@@ -1338,7 +1328,7 @@ void QtstalkerApp::slotEditIndicator (int id)
   set->parse(config->getIndicator(selection));
   
   QString s = config->getData(Config::IndicatorPluginPath);
-  s.append("/");
+  s.append("/lib");
   s.append(set->getData("Type"));
   s.append(".so");
 
@@ -1481,17 +1471,6 @@ void QtstalkerApp::addIndicatorButton (QString d)
   tabs->addTab(plot, d);
 
   delete i;
-}
-
-void QtstalkerApp::slotNewPlugin ()
-{
-  QStringList l = QFileDialog::getOpenFileNames("*.so", QString::null, this, "file dialog");
-  if (l.count())
-  {
-    int loop;
-    for (loop = 0; loop < (int) l.count(); loop++)
-      config->installPlugin(l[loop]);
-  }
 }
 
 void QtstalkerApp::slotChartUpdated ()

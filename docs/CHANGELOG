@@ -17,6 +17,12 @@
 
 - Applied preliminary exhaustion bar patch from David Crossley. This is a new chart type see docs for details.
 
+- Changed the name of the Qtstalker quotes plugin to QtstalkerFormat. This was to keep from confusing object files with the
+  main program.
+  
+- Finally changed the compiling process to a regular ./configure;make;make install format. To do this I had to re-organize the
+  entire source tree. The executable 'qtstalker' will now be put into /usr/bin. The plugins will be created in /usr/lib.
+  The docs will go into /usr/share/doc. This seems to be the most popular choice.
 
 0.20
 ====

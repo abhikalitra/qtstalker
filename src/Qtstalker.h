@@ -99,7 +99,6 @@ class QtstalkerApp : public QMainWindow
     void indicatorPlotPopupMenu ();
     void slotPixelspaceChanged (int);
     void slotScaleToScreen (bool);
-    void slotNewPlugin ();
     void slotChartUpdated ();
     void slotStatusMessage (QString);
     void slotTabChanged (QWidget *);
@@ -112,7 +111,6 @@ class QtstalkerApp : public QMainWindow
     QPopupMenu *fileMenu;
     QPopupMenu *editMenu;
     QPopupMenu *viewMenu;
-    QPopupMenu *pluginMenu;
     QPopupMenu *toolMenu;
     QPopupMenu *helpMenu;
 
@@ -131,7 +129,6 @@ class QtstalkerApp : public QMainWindow
     QAction *actionNewIndicator;
     QAction *actionQuotes;
     QAction *actionScaleToScreen;
-    QAction *actionNewPlugin;
     QAction *actionNav;
     QAction *actionLogScale;
 

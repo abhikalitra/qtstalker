@@ -72,7 +72,7 @@ class Config
     void deleteIndicator (QString);
     QStringList getIndicatorList ();
 
-    void installPlugin (QString selection);
+//    void installPlugin (QString selection);
     QStringList getIndicatorPlugins ();
     QStringList getQuotePlugins ();
 

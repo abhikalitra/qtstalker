@@ -1,2 +1,9 @@
 All the documentation can be found by firing up your browser with docs/toc.html
 
+To compile and install:
+
+./configure
+make
+make install ( as root )
+
+

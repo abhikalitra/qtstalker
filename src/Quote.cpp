@@ -110,7 +110,7 @@ void QuoteDialog::ruleChanged (int)
   }
 
   QString s = config->getData(Config::QuotePluginPath);
-  s.append("/");
+  s.append("/lib");
   s.append(ruleCombo->currentText());
   s.append(".so");
 

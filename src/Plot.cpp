@@ -41,10 +41,17 @@ Plot::Plot (QWidget *w) : QWidget(w)
   upColor.setNamedColor("green");
   downColor.setNamedColor("red");
   neutralColor.setNamedColor("blue");
-  exhaustionOutsideMajorColor.setNamedColor("orange");
-  exhaustionOutsideMinorColor.setNamedColor("yellow");
-  exhaustionInsideMajorColor.setNamedColor("red");
-  exhaustionInsideMinorColor.setNamedColor("pink");
+  exhaustionNeutralColor.setNamedColor("dimgray");
+  exhaustionOutsideFiveColor.setNamedColor("red");
+  exhaustionOutsideFourColor.setNamedColor("darkorange");
+  exhaustionOutsideThreeColor.setNamedColor("gold");
+  exhaustionOutsideTwoColor.setNamedColor("goldenrod");
+  exhaustionOutsideOneColor.setNamedColor("khaki");
+  exhaustionInsideFiveColor.setNamedColor("blue");
+  exhaustionInsideFourColor.setNamedColor("royalblue");
+  exhaustionInsideThreeColor.setNamedColor("magenta");
+  exhaustionInsideTwoColor.setNamedColor("orchid");
+  exhaustionInsideOneColor.setNamedColor("pink");
   pixelspace = 0;
   minPixelspace = 0;
   dateFlag = FALSE;
@@ -170,7 +177,7 @@ void Plot::setChartType (QString d)
       break;
     }
 
-    if (! d.compare(tr("Exhaustion Bar")))
+    if (! d.compare(tr("Exhaustion Points")))
     {
       minPixelspace = 4;
       startX = 2;
@@ -283,9 +290,9 @@ void Plot::draw ()
           break;
         }
 
-        if (! chartType.compare(tr("Exhaustion Bar")))
+        if (! chartType.compare(tr("Exhaustion Points")))
         {
-          drawExhaustionBars();
+          drawExhaustionPoints();
           drawLines();
           drawObjects();
           break;
@@ -2010,14 +2017,12 @@ void Plot::drawPaintBar ()
   painter.end();
 }
 
-void Plot::drawExhaustionBars ()
+void Plot::drawExhaustionPoints ()
 {
   QPainter painter;
   painter.begin(&buffer);
-// Copied from Plot::drawBars() on 20030723
-/* Exhaustion Bars
-*  This is an experiment with concepts of "One- and Two-bar Price Patterns"
-*  See:
+/* This is an experiment with concepts of "One- and Two-bar Price Patterns"
+*  For some explanation see:
 *  "Technical Analysis Explained" by Martin Pring (Fourth Edition)
 *  ISBN 0-07-138193-7
 *  pp 111-135
@@ -2027,7 +2032,7 @@ void Plot::drawExhaustionBars ()
   int loop = startIndex;
 
   // set first bar as neutral
-  painter.setPen(neutralColor);
+  painter.setPen(exhaustionNeutralColor);
 
   Setting *r = data->at(loop);
   double t = r->getFloat("Open");
@@ -2056,25 +2061,151 @@ void Plot::drawExhaustionBars ()
 
 /* FIXME
 * - Initial implementation only attempts "outside bars" and "inside bars".
-* - Volume must accompany.
-* - Strong trend should precede.
-* - If more bars encompassed then assign exhaustionMajorColor.
-* - Give more weight to exhaustion bars that have more range.
+* - Not yet doing "exhaustion bars" or "two-bar reversals".
+* - Volume must accompany (not yet detected).
+* - Strong trend should precede (not yet detected).
+* - Detect more significance of bars.
 * - Decide what to do when o = h = l = c ... gives indicator which may be false.
 */
+    float exhaustionOutsideRank = 0;
+    float exhaustionInsideRank = 0;
+    double exhaustionVolume = r->getFloat("Volume");
+    double exhaustionVolumePr = pr->getFloat("Volume");
+    double exhaustionVolumeDiff = exhaustionVolume / exhaustionVolumePr * 100;
+    float exhaustionRange = r->getFloat("High") - r->getFloat("Low");
+    float exhaustionRangePr = pr->getFloat("High") - pr->getFloat("Low");
+    float exhaustionRangeDiff = exhaustionRange / exhaustionRangePr * 100;
+
+    // outside bar
     if ((r->getFloat("High") > pr->getFloat("High")) &&
-        (r->getFloat("Low") < pr->getFloat("Low")))
+        (r->getFloat("Low") < pr->getFloat("Low"))
+       )
     {
-      painter.setPen(exhaustionOutsideMinorColor);
+      exhaustionOutsideRank = 1;
+
+      // stronger outside bars - rank from 1..5
+      // There are many factors which determine significance of an outside bar.
+      // Add half a point for each situation.
+
+      // encompass more previous bars
+      if ((loop - 2) >= 0)
+      {
+        Setting *pr2 = data->at(loop - 2);
+        if ((r->getFloat("High") > pr2->getFloat("High")) &&
+            (r->getFloat("Low") < pr2->getFloat("Low"))
+           )
+        {
+          exhaustionOutsideRank += 0.5;
+          if ((loop - 3) >= 0)
+          {
+            Setting *pr3 = data->at(loop - 3);
+            if ((r->getFloat("High") > pr3->getFloat("High")) &&
+                (r->getFloat("Low") < pr3->getFloat("Low"))
+               )
+            {
+              exhaustionOutsideRank += 0.5;
+              if ((loop - 4) >= 0)
+              {
+                Setting *pr4 = data->at(loop - 4);
+                if ((r->getFloat("High") > pr4->getFloat("High")) &&
+                    (r->getFloat("Low") < pr4->getFloat("Low"))
+                   )
+                {
+                  exhaustionOutsideRank += 0.5;
+                }
+              }
+            }
+          }
+        }
+      }
+
+      // much greater range than the previous bar
+      if (exhaustionRangeDiff >= 500) exhaustionOutsideRank += 0.5;
+      if (exhaustionRangeDiff >= 900) exhaustionOutsideRank += 0.5;
+
+      // greater volume than the previous bar
+      if (exhaustionVolumeDiff >= 150) exhaustionOutsideRank += 0.5;
+      if (exhaustionVolumeDiff >= 300) exhaustionOutsideRank += 0.5;
+
+      // assign colour for the final ranking
+      if (exhaustionOutsideRank > 5)
+        exhaustionOutsideRank = 5;
+      int exhaustionOutsideRankSwitch = (int) exhaustionOutsideRank;
+      switch (exhaustionOutsideRankSwitch)
+      {
+        case 5:
+          painter.setPen(exhaustionOutsideFiveColor);
+          break;
+        case 4:
+          painter.setPen(exhaustionOutsideFourColor);
+          break;
+        case 3:
+          painter.setPen(exhaustionOutsideThreeColor);
+          break;
+        case 2:
+          painter.setPen(exhaustionOutsideTwoColor);
+          break;
+        case 1:
+          painter.setPen(exhaustionOutsideOneColor);
+          break;
+        default:
+          painter.setPen(exhaustionOutsideOneColor);
+          break;
+      }
     }
+
+    // inside bar
     else if ((r->getFloat("High") < pr->getFloat("High")) &&
-        (r->getFloat("Low") > pr->getFloat("Low")))
+             (r->getFloat("Low") > pr->getFloat("Low")) &&
+// need better volume test
+             (r->getFloat("Volume") > 0) && (pr->getFloat("Volume") > 0)
+       )
     {
-      painter.setPen(exhaustionInsideMinorColor);
+      exhaustionInsideRank = 1;
+
+      // stronger inside bars - rank from 1..5
+      // There are many factors which determine significance of an inside bar.
+      // Add half a point for each situation.
+
+      // much smaller range than the previous bar
+      if (exhaustionRangeDiff <= 25) exhaustionInsideRank += 0.5;
+      if (exhaustionRangeDiff <= 10) exhaustionInsideRank += 0.5;
+
+      // lesser volume than the previous bar
+      if (exhaustionVolumeDiff <= 50) exhaustionInsideRank += 0.5;
+      if (exhaustionVolumeDiff <= 20) exhaustionInsideRank += 0.5;
+
+      // assign colour for the final ranking
+      if (exhaustionInsideRank > 5)
+        exhaustionInsideRank = 5;
+      int exhaustionInsideRankSwitch = (int) exhaustionInsideRank;
+      switch (exhaustionInsideRankSwitch)
+      {
+        case 5:
+          painter.setPen(exhaustionInsideFiveColor);
+          break;
+        case 4:
+          painter.setPen(exhaustionInsideFourColor);
+          break;
+        case 3:
+          painter.setPen(exhaustionInsideThreeColor);
+          break;
+        case 2:
+          painter.setPen(exhaustionInsideTwoColor);
+          break;
+        case 1:
+          painter.setPen(exhaustionInsideOneColor);
+          break;
+        default:
+          painter.setPen(exhaustionInsideOneColor);
+          break;
+      }
     }
+
+    // plain bar
     else
     {
-      painter.setPen(neutralColor);
+      painter.setPen(exhaustionNeutralColor);
     }
 
     t = r->getFloat("Open");

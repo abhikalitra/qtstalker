@@ -80,32 +80,6 @@ Config::Config (QString p)
   }
   setData(TestPath, s);
 
-  s = home;
-  s.append("/plugins");
-  if (! dir.exists(s, TRUE))
-  {
-    if (! dir.mkdir(s, TRUE))
-      qDebug("Unable to create ~/Qtstalker/plugins directory.");
-  }
-
-  s = home;
-  s.append("/plugins/indicator");
-  if (! dir.exists(s, TRUE))
-  {
-    if (! dir.mkdir(s, TRUE))
-      qDebug("Unable to create ~/Qtstalker/plugins/indicator directory.");
-  }
-  setData(IndicatorPluginPath, s);
-
-  s = home;
-  s.append("/plugins/quote");
-  if (! dir.exists(s, TRUE))
-  {
-    if (! dir.mkdir(s, TRUE))
-      qDebug("Unable to create ~/Qtstalker/plugins/quote directory.");
-  }
-  setData(QuotePluginPath, s);
-
   QStringList l = getIndicators();
   if (l.count() == 0)
     setIndicator(QObject::tr("Volume"), QStringList::split(",", VOLUME, FALSE));
@@ -201,10 +175,10 @@ QString Config::getData (Parm p)
       s = settings.readEntry("/Qtstalker/ScaleToScreen", "0");
       break;
     case IndicatorPluginPath:
-      s = settings.readEntry("/Qtstalker/IndicatorPluginPath");
+      s = settings.readEntry("/Qtstalker/IndicatorPluginPath", "/usr/lib/qtstalker/indicator");
       break;
     case QuotePluginPath:
-      s = settings.readEntry("/Qtstalker/QuotePluginPath");
+      s = settings.readEntry("/Qtstalker/QuotePluginPath", "/usr/lib/qtstalker/quote");
       break;
     case Group:
       s = settings.readEntry("/Qtstalker/Group");
@@ -360,6 +334,7 @@ QStringList Config::getDirList (QString path)
   return l;
 }
 
+/*
 void Config::installPlugin (QString selection)
 {
   QLibrary *lib = new QLibrary(selection);
@@ -410,6 +385,7 @@ void Config::installPlugin (QString selection)
 
   delete lib;
 }
+*/
 
 QStringList Config::getIndicatorPlugins ()
 {
@@ -417,7 +393,10 @@ QStringList Config::getIndicatorPlugins ()
 
   int loop;
   for (loop = 0; loop < (int) l.count(); loop++)
+  {
     l[loop].truncate(l[loop].length() - 3);
+    l[loop].remove(0, 3);
+  }
 
   return l;
 }
@@ -428,7 +407,10 @@ QStringList Config::getQuotePlugins ()
 
   int loop;
   for (loop = 0; loop < (int) l.count(); loop++)
+  {
     l[loop].truncate(l[loop].length() - 3);
+    l[loop].remove(0, 3);
+  }
 
   return l;
 }
