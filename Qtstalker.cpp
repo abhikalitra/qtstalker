@@ -547,11 +547,9 @@ void QtstalkerApp::slotOpenGroup(QString selection)
 
   config->setData(Config::Group, selection);
 
-  Setting *set = config->getGroup(selection);
-  QStringList l = QStringList::split(" ", set->getData("Group"), FALSE);
+  QStringList l = config->getGroup(selection);
   l.sort();
   groupCombo->insertStringList(l, -1);
-  delete set;
 
   if (l.count() > 1)
   {

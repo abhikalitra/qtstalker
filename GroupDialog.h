@@ -34,7 +34,9 @@ class GroupDialog : public EditDialog
   public:
     GroupDialog (Config *);
     ~GroupDialog ();
-    void setItems (Setting *);
+    void setGroup (QStringList);
+    QStringList getGroup ();
+    bool getFlag ();
 
   public slots:
     void insertItem ();
@@ -44,6 +46,8 @@ class GroupDialog : public EditDialog
     QToolButton *deleteButton;
     QToolButton *insertButton;
     QListBox *list;
+    QStringList group;
+    bool flag;
 };
 
 #endif

@@ -62,9 +62,9 @@ class Config
     QStringList loadFile (QString);
     QStringList getDirList (QString);
 
-    Setting * getGroup (QString);
+    QStringList getGroup (QString);
     QStringList getGroupList ();
-    void setGroup (QString, Setting *);
+    void setGroup (QString, QStringList);
     void deleteGroup (QString);
 
     QStringList getPortfolio (QString);

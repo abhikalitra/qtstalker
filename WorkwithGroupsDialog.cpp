@@ -139,10 +139,8 @@ void WorkwithGroupsDialog::newGroup()
   if ((! ok) || (selection.isNull()))
     return;
 
-  Setting *group = config->getGroup(selection);
-  int t = group->count();
-  delete group;
-  if (t != 0)
+  QStringList l = config->getGroup(selection);
+  if (l.count() != 0)
   {
     QMessageBox::information(this, tr("Qtstalker: Error"), tr("This group already exists."));
     return;
@@ -150,18 +148,16 @@ void WorkwithGroupsDialog::newGroup()
 
   GroupDialog *dialog = new GroupDialog(config);
 
-  Setting *set = new Setting;
-  dialog->setItems(set);
+  dialog->setGroup(l);
 
   int rc = dialog->exec();
 
   if (rc == QDialog::Accepted)
   {
-    config->setGroup(selection, set);
+    config->setGroup(selection, dialog->getGroup());
     updateList();
   }
 
-  delete set;
   delete dialog;
 }
 
@@ -169,17 +165,21 @@ void WorkwithGroupsDialog::editGroup()
 {
   GroupDialog *dialog = new GroupDialog(config);
 
-  Setting *group = config->getGroup(item->text(0));
-  dialog->setItems(group);
+  dialog->setGroup(config->getGroup(item->text(0)));
 
   int rc = dialog->exec();
 
   if (rc == QDialog::Accepted)
   {
-    config->setGroup(item->text(0), group);
+    config->setGroup(item->text(0), dialog->getGroup());
+    if (dialog->getFlag())
+    {
+      QString s = config->getData(Config::Group);
+      if (! s.compare(item->text(0)))
+        emit groupOpened (item->text(0));
+    }
   }
 
-  delete group;
   delete dialog;
 }
 
@@ -197,19 +197,16 @@ void WorkwithGroupsDialog::renameGroup ()
   					    QLineEdit::Normal, item->text(0), &ok, this);
   if ((ok) && (! selection.isNull()))
   {
-    Setting *group = config->getGroup(selection);
-    int t = group->count();
-    delete group;
-    if (t != 0)
+    QStringList l = config->getGroup(selection);
+    if (l.count() != 0)
     {
       QMessageBox::information(this, tr("Qtstalker: Error"), tr("This chart group exists."));
       return;
     }
 
-    group = config->getGroup(item->text(0));
+    QStringList group = config->getGroup(item->text(0));
     config->deleteGroup(item->text(0));
     config->setGroup(selection, group);
-    delete group;
 
     updateList();
     buttonStatus();

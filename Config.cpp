@@ -213,14 +213,12 @@ void Config::setData (Parm p, QString d)
   }
 }
 
-Setting * Config::getGroup (QString n)
+QStringList Config::getGroup (QString n)
 {
   QSettings settings;
   QString s = "/Qtstalker/Group/";
   s.append(n);
-  Setting *set = new Setting;
-  set->parse(settings.readEntry(s, ""));
-  return set;
+  return settings.readListEntry(s, ',');
 }
 
 QStringList Config::getGroupList ()
@@ -229,12 +227,12 @@ QStringList Config::getGroupList ()
   return settings.entryList("/Qtstalker/Group");
 }
 
-void Config::setGroup (QString n, Setting *set)
+void Config::setGroup (QString n, QStringList l)
 {
   QSettings settings;
   QString s = "/Qtstalker/Group/";
   s.append(n);
-  settings.writeEntry(s, set->getString());
+  settings.writeEntry(s, l, ',');
 }
 
 void Config::deleteGroup (QString n)

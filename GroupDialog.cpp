@@ -27,6 +27,8 @@
 
 GroupDialog::GroupDialog (Config *c) : EditDialog (c)
 {
+  flag = FALSE;
+
   setCaption(tr("Qtstalker: Edit Group"));
 
   table->hide();
@@ -59,12 +61,16 @@ GroupDialog::~GroupDialog ()
 {
 }
 
-void GroupDialog::setItems (Setting *d)
+void GroupDialog::setGroup (QStringList l)
 {
-  settings = d;
+  group = l;
   list->clear();
-  QStringList l = QStringList::split(" ", settings->getData("Group"));
   list->insertStringList(l, -1);
+}
+
+QStringList GroupDialog::getGroup ()
+{
+  return group;
 }
 
 void GroupDialog::insertItem ()
@@ -73,18 +79,16 @@ void GroupDialog::insertItem ()
   if (files.count())
   {
     int loop;
-    QStringList l = QStringList::split(" ", settings->getData("Group"));
     for (loop = 0; loop < (int) files.count(); loop++)
     {
       QStringList l2(QStringList::split("/", files[loop], FALSE));
       list->insertItem(l2[l2.count() - 1], -1);
-      l.append(l2[l2.count() - 1]);
+      group.append(l2[l2.count() - 1]);
+      flag = TRUE;
     }
 
     list->sort(TRUE);
-
-    l.sort();
-    settings->set("Group", l.join(" "), Setting::Text);
+    group.sort();
   }
 }
 
@@ -93,16 +97,21 @@ void GroupDialog::deleteItem ()
   if (list->currentItem() != -1)
   {
     int loop;
-    QStringList l;
     for (loop = 0; loop < (int) list->count(); loop++)
     {
       if (list->isSelected(loop))
+      {
+	group.remove(list->text(loop));
         list->removeItem(loop);
-      else
-        l.append(list->text(loop));
+        flag = TRUE;
+      }
     }
-
-    settings->set("Group", l.join(" "), Setting::Text);
   }
 }
+
+bool GroupDialog::getFlag ()
+{
+  return flag;
+}
+
 
