@@ -42,6 +42,8 @@
 
 - Lowered the minimum bar spacing to 3 for line charts as per request.
 
+- Reverted back to old method of trend line creation. Major problems with keeping the angle constant when scaling changes.
+
   
 0.22
 ====

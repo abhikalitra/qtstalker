@@ -567,10 +567,13 @@ void Plot::mousePressEvent (QMouseEvent *event)
 	  break;
         default:
 	  getXY(event->x(), event->y(), 0);
-          if (objectFlag == FibonacciLine)
+          if (objectFlag == TrendLine || objectFlag == FibonacciLine)
 	  {
             mouseFlag = ClickWait2;
-            emit statusMessage(tr("Select low point of fibonacci line..."));
+            if (objectFlag == TrendLine)
+             emit statusMessage(tr("Select end point of trend line..."));
+	    else
+             emit statusMessage(tr("Select low point of fibonacci line..."));
 	  }
 	  else
 	    newChartObject();
@@ -1433,6 +1436,7 @@ void Plot::newChartObject ()
       set->set(QObject::tr("Color"), borderColor.name(), Setting::Color);
       break;
     case TrendLine:
+/*
       set->set(QObject::tr("Date"), x1, Setting::Date);
       set->set(QObject::tr("Value"), y1, Setting::Float);
       set->set(QObject::tr("Bar"), QObject::tr("Close"), Setting::InputField);
@@ -1440,6 +1444,14 @@ void Plot::newChartObject ()
       set->set(QObject::tr("Use Bar"), QObject::tr("False"), Setting::Bool);
       set->set(QObject::tr("Type"), QObject::tr("Trend Line"), Setting::None);
       set->set(QObject::tr("Color"), borderColor.name(), Setting::Color);
+*/
+      set->set(QObject::tr("Start Date"), x1, Setting::Date);
+      set->set(QObject::tr("Start Value"), y1, Setting::Float);
+      set->set(QObject::tr("End Date"), x2, Setting::Date);
+      set->set(QObject::tr("End Value"), y2, Setting::Float);
+      set->set(QObject::tr("Type"), QObject::tr("Trend Line"), Setting::None);
+      set->set(QObject::tr("Color"), borderColor.name(), Setting::Color);
+
       break;
     case Text:
       set->set(QObject::tr("Date"), x1, Setting::Date);
@@ -1598,6 +1610,23 @@ void Plot::setScale ()
     QString type = co->getData(QObject::tr("Type"));
     if (! type.compare(QObject::tr("Vertical Line")))
       continue;
+
+    if (! type.compare(QObject::tr("Trend Line")))
+    {
+      double v = co->getFloat(QObject::tr("Start Value"));
+      double v2 = co->getFloat(QObject::tr("End Value"));
+      if (v > scaleHigh)
+        scaleHigh = v;
+      if (v2 > scaleHigh)
+        scaleHigh = v2;
+
+      if (v < scaleLow)
+        scaleLow = v;
+      if (v2 < scaleLow)
+        scaleLow = v2;
+
+      continue;
+    }
 
     if (! type.compare(QObject::tr("Fibonacci Line")))
     {
@@ -2488,6 +2517,7 @@ void Plot::drawText (Setting *co)
 
 void Plot::drawTrendLine (Setting *co)
 {
+/*
   QPainter painter;
   painter.begin(&buffer);
 
@@ -2555,7 +2585,32 @@ void Plot::drawTrendLine (Setting *co)
   painter.drawLine (0, 0, x2 - x + pad, 0);
 
   painter.end();
+*/
 
+  QPainter painter;
+  painter.begin(&buffer);
+
+  QDateTime dt = QDateTime::fromString(co->getDateTime(QObject::tr("End Date")), Qt::ISODate);
+
+  int x2 = getXFromDate(dt);
+  if (x2 == -1)
+    return;
+
+  dt = QDateTime::fromString(co->getDateTime(QObject::tr("Start Date")), Qt::ISODate);
+
+  int x = getXFromDate(dt);
+  if (x == -1)
+    return;
+
+  int y = convertToY(co->getFloat(QObject::tr("Start Value")));
+  int y2 = convertToY(co->getFloat(QObject::tr("End Value")));
+
+  QColor color(co->getData(QObject::tr("Color")));
+  painter.setPen(color);
+
+  painter.drawLine (x, y, x2, y2);
+
+  painter.end();
 }
 
 void Plot::drawVerticalLine (Setting *co)
