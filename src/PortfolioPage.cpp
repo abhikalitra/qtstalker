@@ -68,15 +68,24 @@ void PortfolioPage::openPortfolio ()
 void PortfolioPage::newPortfolio()
 {
   bool ok;
-  QString selection = QInputDialog::getText(tr("New Portfolio"),
-  					    tr("Enter new portfolio name."),
-					    QLineEdit::Normal,
-					    tr("New Portfolio"),
-					    &ok,
-					    this);
-  if ((ok) && (! selection.isNull()))
+  QString s = QInputDialog::getText(tr("New Portfolio"),
+  				    tr("Enter new portfolio name."),
+				    QLineEdit::Normal,
+				    tr("New Portfolio"),
+				    &ok,
+				    this);
+  if ((ok) && (! s.isNull()))
   {
-    QString s = config.getData(Config::PortfolioPath);
+    int loop;
+    QString selection;
+    for (loop = 0; loop < (int) s.length(); loop++)
+    {
+      QChar c = s.at(loop);
+      if (c.isLetterOrNumber())
+        selection.append(c);
+    }
+  
+    s = config.getData(Config::PortfolioPath);
     s.append("/");
     s.append(selection);
     QDir dir(s);
@@ -140,15 +149,24 @@ void PortfolioPage::deletePortfolio()
 void PortfolioPage::renamePortfolio ()
 {
   bool ok;
-  QString selection = QInputDialog::getText(tr("Rename Portfolio"),
-  					    tr("Enter new portfolio name."),
-					    QLineEdit::Normal,
-					    nav->currentText(),
-					    &ok,
-					    this);
-  if ((ok) && (! selection.isNull()))
+  QString s = QInputDialog::getText(tr("Rename Portfolio"),
+  				    tr("Enter new portfolio name."),
+				    QLineEdit::Normal,
+				    nav->currentText(),
+				    &ok,
+				    this);
+  if ((ok) && (! s.isNull()))
   {
-    QString s = config.getData(Config::PortfolioPath);
+    int loop;
+    QString selection;
+    for (loop = 0; loop < (int) s.length(); loop++)
+    {
+      QChar c = s.at(loop);
+      if (c.isLetterOrNumber())
+        selection.append(c);
+    }
+  
+    s = config.getData(Config::PortfolioPath);
     s.append("/");
     s.append(selection);
     QDir dir(s);

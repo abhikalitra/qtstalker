@@ -1061,6 +1061,16 @@ void QtstalkerApp::slotNewIndicator ()
     QMessageBox::information(this, tr("Qtstalker: Error"), tr("Indicator name missing."));
     return;
   }
+  
+  int loop;
+  QString s;
+  for (loop = 0; loop < (int) name.length(); loop++)
+  {
+    QChar c = name.at(loop);
+    if (c.isLetterOrNumber())
+      s.append(c);
+  }
+  name = s;
 
   QDir dir;
   if (dir.exists(config.getData(Config::IndicatorPath) + "/" + name))

@@ -25,9 +25,9 @@
 #include "delete.xpm"
 #include "newchart.xpm"
 #include "insert.xpm"
-#include "rename.xpm"
 #include "stop.xpm"
 #include "edit.xpm"
+#include "rename.xpm"
 #include <qmessagebox.h>
 #include <qlineedit.h>
 #include <qinputdialog.h>
@@ -49,7 +49,7 @@ GroupPage::GroupPage (QWidget *w) : QWidget (w)
   QToolTip::add(group, tr("Current Group"));
   group->setFocusPolicy(QWidget::NoFocus);
   vbox->addWidget(group);
-
+  
   nav = new Navigator(this, config.getData(Config::GroupPath));
   connect(nav, SIGNAL(fileSelected(QString)), this, SLOT(groupSelected(QString)));
   connect(nav, SIGNAL(noSelection()), this, SLOT(groupNoSelection()));
@@ -63,6 +63,7 @@ GroupPage::GroupPage (QWidget *w) : QWidget (w)
   menu->insertItem(QPixmap(deleteitem), tr("&Delete Group Items"), this, SLOT(deleteGroupItem()), CTRL+Key_D);
   menu->insertItem(QPixmap(stop), tr("Delete &Group"), this, SLOT(deleteGroup()), CTRL+Key_G);
   menu->insertItem(QPixmap(renam), tr("&Rename Group"), this, SLOT(renameGroup()), CTRL+Key_R);
+  menu->insertItem(tr("&Refresh"), this, SLOT(refreshList()), CTRL+Key_F);
   menu->insertSeparator(-1);
   menu->insertItem(QPixmap(edit), tr("&Edit Chart"), this, SLOT(editChart()), CTRL+Key_E);
 
@@ -78,19 +79,25 @@ GroupPage::~GroupPage ()
 void GroupPage::newGroup()
 {
   bool ok;
-  QString selection = QInputDialog::getText(tr("New Group"),
-  					    tr("Enter new group symbol."),
-					    QLineEdit::Normal,
-					    tr("NewGroup"),
-					    &ok,
-					    this);
-  if ((! ok) || (selection.isNull()))
+  QString s = QInputDialog::getText(tr("New Group"),
+  				    tr("Enter new group symbol."),
+				    QLineEdit::Normal,
+				    tr("NewGroup"),
+				    &ok,
+				    this);
+  if ((! ok) || (s.isNull()))
     return;
 
-  while (selection.contains(" "))
-    selection = selection.remove(selection.find(" ", 0, TRUE), 1);
+  int loop;
+  QString selection;
+  for (loop = 0; loop < (int) s.length(); loop++)
+  {
+    QChar c = s.at(loop);
+    if (c.isLetterOrNumber())
+      selection.append(c);
+  }
   
-  QString s = nav->getCurrentPath();
+  s = nav->getCurrentPath();
   s.append("/");
   s.append(selection);
   QDir dir(s);
@@ -209,16 +216,25 @@ void GroupPage::renameGroup ()
 {
   QFileInfo fi(nav->getCurrentPath());
   bool ok;
-  QString selection = QInputDialog::getText(tr("Rename Group"),
-  					    tr("Enter new group symbol."),
-					    QLineEdit::Normal,
-					    fi.fileName(),
-					    &ok,
-					    this);
-  if ((! ok) || (selection.isNull()))
+  QString s = QInputDialog::getText(tr("Rename Group"),
+  				    tr("Enter new group symbol."),
+				    QLineEdit::Normal,
+				    fi.fileName(),
+				    &ok,
+				    this);
+  if ((! ok) || (s.isNull()))
     return;
-    
-  QString s = nav->getCurrentPath();
+
+  int loop;
+  QString selection;
+  for (loop = 0; loop < (int) s.length(); loop++)
+  {
+    QChar c = s.at(loop);
+    if (c.isLetterOrNumber())
+      selection.append(c);
+  }
+        
+  s = nav->getCurrentPath();
     
   QStringList l = QStringList::split("/", s, FALSE);
   l[l.count() - 1] = selection;
@@ -291,5 +307,10 @@ void GroupPage::editChart ()
   ChartDb *db = new ChartDb;
   db->dbPrefDialog(fi.readLink());
   delete db;
+}
+
+void GroupPage::refreshList ()
+{
+  nav->updateList();
 }
 

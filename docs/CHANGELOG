@@ -143,6 +143,14 @@
           open and save rules that are being edited. The rules can be used by any FormulaEdit
 	  using module.
 	  
+20040907: Added refresh option to the context menu for the group page.
+
+20040907: Fixed bug that accepts search characters when creating indicators. This applies
+          to any filename in qtstalker. Only number and alphabet characters are valid now.
+	  
+20040907: Scanner and backtest dialogs now display the name in the window titles.
+
+
 	  	  	  
 0.26
 ====

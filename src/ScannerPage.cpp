@@ -69,19 +69,24 @@ void ScannerPage::openScanner ()
 void ScannerPage::newScanner()
 {
   bool ok;
-  QString selection = QInputDialog::getText(tr("New Scanner"),
-  					    tr("Enter new scanner name."),
-					    QLineEdit::Normal,
-					    tr("NewScanner"),
-					    &ok,
-					    this);
-  if ((ok) && (! selection.isNull()))
+  QString s = QInputDialog::getText(tr("New Scanner"),
+  				    tr("Enter new scanner name."),
+				    QLineEdit::Normal,
+				    tr("NewScanner"),
+				    &ok,
+				    this);
+  if ((ok) && (! s.isNull()))
   {
+    int loop;
+    QString selection;
+    for (loop = 0; loop < (int) s.length(); loop++)
+    {
+      QChar c = s.at(loop);
+      if (c.isLetterOrNumber())
+        selection.append(c);
+    }
   
-    while (selection.contains(" "))
-      selection = selection.remove(selection.find(" ", 0, TRUE), 1);
-  
-    QString s = config.getData(Config::ScannerPath);
+    s = config.getData(Config::ScannerPath);
     s.append("/");
     s.append(selection);
     QDir dir(s);
@@ -139,18 +144,24 @@ void ScannerPage::deleteScanner()
 void ScannerPage::renameScanner ()
 {
   bool ok;
-  QString selection = QInputDialog::getText(tr("Rename Scanner"),
-  					    tr("Enter new scanner name."),
-					    QLineEdit::Normal,
-					    nav->currentText(),
-					    &ok,
-					    this);
-  if ((ok) && (! selection.isNull()))
+  QString s = QInputDialog::getText(tr("Rename Scanner"),
+  				    tr("Enter new scanner name."),
+				    QLineEdit::Normal,
+				    nav->currentText(),
+				    &ok,
+				    this);
+  if ((ok) && (! s.isNull()))
   {
-    while (selection.contains(" "))
-      selection = selection.remove(selection.find(" ", 0, TRUE), 1);
+    int loop;
+    QString selection;
+    for (loop = 0; loop < (int) s.length(); loop++)
+    {
+      QChar c = s.at(loop);
+      if (c.isLetterOrNumber())
+        selection.append(c);
+    }
   
-    QString s = config.getData(Config::ScannerPath);
+    s = config.getData(Config::ScannerPath);
     s.append("/");
     s.append(selection);
     QDir dir(s);

@@ -46,7 +46,7 @@ Tester::Tester (QString n) : QTabDialog (0, 0, FALSE)
   fieldList.append(tr("Open"));
   fieldList.append(tr("Close"));
 
-  setCaption ("Back Tester");
+  setCaption ("Qtstalker Back Tester" + ": " + ruleName);
 
   setDefaultButton(tr("&Test"));
   connect(this, SIGNAL(defaultButtonPressed()), this, SLOT(test()));
@@ -1945,20 +1945,26 @@ void Tester::saveCustomStopRule ()
 QString Tester::newTest ()
 {
   bool ok;
-  QString selection = QInputDialog::getText(tr("New Backtest Rule"),
-  					    tr("Enter new backtest rule name."),
-  					    QLineEdit::Normal,
-					    tr("New Rule"),
-					    &ok,
-					    this);
+  QString s = QInputDialog::getText(tr("New Backtest Rule"),
+  				    tr("Enter new backtest rule name."),
+  				    QLineEdit::Normal,
+				    tr("New Rule"),
+				    &ok,
+				    this);
 
-  if ((! ok) || (selection.isNull()))
-    return selection;
+  if ((! ok) || (s.isNull()))
+    return s;
 
-  while (selection.contains(" "))
-    selection = selection.remove(selection.find(" ", 0, TRUE), 1);
-    
-  QString s = config.getData(Config::TestPath) + "/" + selection;
+  int loop;
+  QString selection;
+  for (loop = 0; loop < (int) s.length(); loop++)
+  {
+    QChar c = s.at(loop);
+    if (c.isLetterOrNumber())
+      selection.append(c);
+  }
+  
+  s = config.getData(Config::TestPath) + "/" + selection;
   QDir dir(s);
   if (dir.exists(s, TRUE))
   {

@@ -50,6 +50,7 @@ class GroupPage : public QWidget
     void groupNoSelection ();
     void rightClick (QListBoxItem *);
     void editChart ();
+    void refreshList ();
 
   protected:
     Navigator *nav;

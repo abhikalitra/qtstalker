@@ -125,20 +125,26 @@ void TestPage::renameTest ()
     return;
 
   bool ok;
-  QString selection = QInputDialog::getText(tr("Rename Backtest Rule"),
-  					    tr("Enter new backtest rule name."),
-  					    QLineEdit::Normal,
-					    list->currentText(),
-					    &ok,
-					    this);
+  QString s = QInputDialog::getText(tr("Rename Backtest Rule"),
+  				    tr("Enter new backtest rule name."),
+  				    QLineEdit::Normal,
+				    list->currentText(),
+				    &ok,
+				    this);
 
-  if ((! ok) || (selection.isNull()))
+  if ((! ok) || (s.isNull()))
     return;
 
-  while (selection.contains(" "))
-    selection = selection.remove(selection.find(" ", 0, TRUE), 1);
+  int loop;
+  QString selection;
+  for (loop = 0; loop < (int) s.length(); loop++)
+  {
+    QChar c = s.at(loop);
+    if (c.isLetterOrNumber())
+      selection.append(c);
+  }
     
-  QString s = config.getData(Config::TestPath);
+  s = config.getData(Config::TestPath);
   s.append("/");
   s.append(selection);
   QDir dir(s);
@@ -162,20 +168,26 @@ void TestPage::copyTest ()
     return;
 
   bool ok;
-  QString selection = QInputDialog::getText(tr("Copy Backtest Rule"),
-  					    tr("Enter new name of copy."),
-  					    QLineEdit::Normal,
-					    list->currentText(),
-					    &ok,
-					    this);
+  QString s = QInputDialog::getText(tr("Copy Backtest Rule"),
+  				    tr("Enter new name of copy."),
+  				    QLineEdit::Normal,
+				    list->currentText(),
+				    &ok,
+				    this);
 
-  if ((! ok) || (selection.isNull()))
+  if ((! ok) || (s.isNull()))
     return;
 
-  while (selection.contains(" "))
-    selection = selection.remove(selection.find(" ", 0, TRUE), 1);
+  int loop;
+  QString selection;
+  for (loop = 0; loop < (int) s.length(); loop++)
+  {
+    QChar c = s.at(loop);
+    if (c.isLetterOrNumber())
+      selection.append(c);
+  }
     
-  QString s = config.getData(Config::TestPath) + "/" + selection;
+  s = config.getData(Config::TestPath) + "/" + selection;
   QDir dir(s);
   if (dir.exists(s, TRUE))
   {
