@@ -66,6 +66,7 @@
 #include "horizontal.xpm"
 #include "vertical.xpm"
 #include "trend.xpm"
+#include "loggrid.xpm"
 
 QtstalkerApp::QtstalkerApp()
 {
@@ -185,6 +186,14 @@ QtstalkerApp::QtstalkerApp()
   sizeList.append(s.toInt());
   split->setSizes(sizeList);
 
+  // set the logscale status
+  s = config->getData(Config::LogScale);
+  if (s.toInt())
+    actionLogScale->setOn(TRUE);
+  else
+    actionLogScale->setOn(FALSE);
+  mainPlot->setLogScale(s.toInt());
+
   // set the nav splitter size
   sizeList.clear();
   s = config->getData(Config::NavAreaSize);
@@ -262,6 +271,11 @@ void QtstalkerApp::initActions()
   actionNav = new QAction(tr("Chart Navigator"), icon, tr("Chart Navigator"), 0, this, 0, true);
   actionNav->setStatusTip(tr("Toggle the chart navigator area."));
   connect(actionNav, SIGNAL(toggled(bool)), this, SLOT(slotHideNav(bool)));
+
+  icon = loggridicon;
+  actionLogScale = new QAction(tr("Log Scaling"), icon, tr("Log Scaling"), 0, this, 0, true);
+  actionLogScale->setStatusTip(tr("Toggle log scaling."));
+  connect(actionLogScale, SIGNAL(toggled(bool)), this, SLOT(slotLogScale(bool)));
 }
 
 void QtstalkerApp::initMenuBar()
@@ -278,6 +292,7 @@ void QtstalkerApp::initMenuBar()
   viewMenu->setCheckable(true);
   actionGrid->addTo(viewMenu);
   actionScaleToScreen->addTo(viewMenu);
+  actionLogScale->addTo(viewMenu);
   actionNav->addTo(viewMenu);
 
   pluginMenu = new QPopupMenu();
@@ -339,6 +354,7 @@ void QtstalkerApp::initToolBar()
   actionNav->addTo(toolbar);
   actionGrid->addTo(toolbar);
   actionScaleToScreen->addTo(toolbar);
+  actionLogScale->addTo(toolbar);
   actionNewIndicator->addTo(toolbar);
   actionDatawindow->addTo(toolbar);
   actionQuotes->addTo(toolbar);
@@ -400,7 +416,7 @@ void QtstalkerApp::slotQuit()
 void QtstalkerApp::slotAbout()
 {
   QMessageBox *dialog = new QMessageBox(tr("About Qtstalker"),
-  							    tr("Qtstalker\nVersion 0.20 \n(C) 2001-2003 by Stefan Stratigakos"),
+  							    tr("Qtstalker\nVersion 0.21 \n(C) 2001-2003 by Stefan Stratigakos"),
 							    QMessageBox::NoIcon,
 							    QMessageBox::Ok,
 							    QMessageBox::NoButton,
@@ -521,6 +537,13 @@ void QtstalkerApp::slotScaleToScreen (bool state)
   QDictIterator<Plot> it(plotList);
   for(; it.current(); ++it)
     it.current()->setScaleToScreen(state);
+}
+
+void QtstalkerApp::slotLogScale (bool state)
+{
+  config->setData(Config::LogScale, QString::number(state));
+  mainPlot->setLogScale(state);
+  mainPlot->draw();
 }
 
 void QtstalkerApp::loadChart (QString d)

@@ -218,6 +218,9 @@ QString Config::getData (Parm p)
     case NavAreaSize:
       s = settings.readEntry("/Qtstalker/NavAreaSize", "20");
       break;
+    case LogScale:
+      s = settings.readEntry("/Qtstalker/LogScale", "0");
+      break;
     default:
       break;
   }
@@ -305,6 +308,9 @@ void Config::setData (Parm p, QString d)
       break;
     case NavAreaSize:
       settings.writeEntry("/Qtstalker/NavAreaSize", d);
+      break;
+    case LogScale:
+      settings.writeEntry("/Qtstalker/LogScale", d);
       break;
     default:
       break;

@@ -93,6 +93,7 @@ class Plot : public QWidget
     void setGridFlag (bool);
     void setMainFlag (bool);
     void setScaleToScreen (bool);
+    void setLogScale (bool);
     void setOtherFlag (bool);
     bool getOtherFlag ();
     void setPixelspace (int);
@@ -181,6 +182,7 @@ class Plot : public QWidget
     bool gridFlag;
     bool mainFlag;
     bool scaleToScreen;
+    bool logScale;
 
     int scaleWidth;
     double scaleHigh;
@@ -189,7 +191,9 @@ class Plot : public QWidget
     double mainHigh;
     double mainLow;
     QArray<double> scaleArray;
-    
+    double logScaleHigh;
+    double logRange;
+
     QString y1;
     QString y2;
     QString x1;

@@ -25,6 +25,7 @@
 #include <qpoint.h>
 #include <qpointarray.h>
 #include <qcursor.h>
+#include <math.h>
 
 Plot::Plot (QWidget *w) : QWidget(w)
 {
@@ -47,9 +48,12 @@ Plot::Plot (QWidget *w) : QWidget(w)
   interval = Daily;
   mainFlag = FALSE;
   scaleToScreen = FALSE;
+  logScale = FALSE;
   startIndex = 0;
   scaleHigh = -99999999;
   scaleLow = 99999999;
+  logScaleHigh = 0;
+  logRange = -1;
   mainHigh = -99999999;
   mainLow = 99999999;
   chartType = "None";
@@ -74,6 +78,8 @@ void Plot::clear ()
   alerts.truncate(0);
   scaleHigh = -99999999;
   scaleLow = 99999999;
+  logScaleHigh = 0;
+  logRange = -1;
   mainHigh = -99999999;
   mainLow = 99999999;
   indicators.clear();
@@ -193,6 +199,11 @@ void Plot::setMainFlag (bool d)
 void Plot::setScaleToScreen (bool d)
 {
   scaleToScreen = d;
+}
+
+void Plot::setLogScale (bool d)
+{
+  logScale = d;
 }
 
 void Plot::draw ()
@@ -1478,7 +1489,7 @@ void Plot::setScale ()
       QDictIterator<Indicator> it(indicators);
       it.toFirst();
       Indicator *i = it.current();
-      
+
       int loop;
       for (loop = 0; loop < i->getLines(); loop++)
       {
@@ -1567,6 +1578,13 @@ void Plot::setScale ()
     scaleLow = scaleLow - (scaleLow * 0.01);
   double range = scaleHigh - scaleLow;
   scaler = _height / range;
+  
+  if (mainFlag && logScale)
+  {
+    logScaleHigh = scaleHigh > 0.0 ? log(scaleHigh) : 1;
+    double logScaleLow = scaleLow > 0.0 ? log(scaleLow) : 0;
+    logRange = logScaleHigh - logScaleLow;
+  }
 
   QStringList array;
   array.append(".01");
@@ -1643,6 +1661,13 @@ void Plot::setScale ()
 
 int Plot::convertToY (double val)
 {
+  if (mainFlag && logScale)
+  {
+    if (val <= 0.0)
+      return _height;
+    else
+      return (int) (_height * (logScaleHigh - log(val)) / logRange);
+  }
   double t = val - scaleLow;
   int y = (int) (t * scaler);
   y = _height - y;
@@ -1653,6 +1678,12 @@ int Plot::convertToY (double val)
 
 double Plot::convertToVal (int y)
 {
+  if (mainFlag && logScale) {
+    if (y >= _height)
+      return scaleLow;
+    else
+      return exp(logScaleHigh - ((y * logRange) / _height));
+  }
   int p = _height - y;
   double val = scaleLow + (p / scaler) ;
   return val;

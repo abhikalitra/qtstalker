@@ -6,6 +6,8 @@
   
 - I split the ./compile script into 2 scripts. ./compile creates the qtstalker binary, and ./compile_plugins creates all
   the plugins. This is to make the compile process more efficient and flexible.
+  
+- Thanks to Marco van Zwetselaar for a patch to implement Log scaling to charts. 
 
 0.20
 ====
