@@ -22,18 +22,18 @@
 #include "VerticalLine.h"
 #include "PrefDialog.h"
 #include <qpainter.h>
-#include <qcolor.h>
 
-VerticalLine::VerticalLine (QPixmap *p, QString indicator, QString name, QString date)
+VerticalLine::VerticalLine (QPixmap *p, QString indicator, QString n, QDateTime d)
 {
   buffer = p;
+  type = ChartObject::VerticalLine;
+  plot = indicator;
+  name = n;
+  date = d;
+  color.setNamedColor("white");
   
-  settings.set("Type", "Vertical Line", Setting::None);
-  settings.set("Date", date, Setting::None);
-  settings.set(tr("Color"), "white", Setting::Color);
-  settings.set("Plot", indicator, Setting::None);
-  settings.set("Name", name, Setting::None);
-  settings.set("ObjectType", QString::number(ChartObject::VerticalLine), Setting::None);
+  menu->insertItem(tr("Edit Vertical Line"), this, SLOT(prefDialog()));
+  menu->insertItem(tr("Delete Vertical Line"), this, SLOT(remove()));
 }
 
 VerticalLine::~VerticalLine ()
@@ -44,8 +44,6 @@ void VerticalLine::draw (int x, int)
 {
   QPainter painter;
   painter.begin(buffer);
-
-  QColor color(settings.getData(tr("Color")));
   painter.setPen(color);
 
   painter.drawLine (x, 0, x, buffer->height());
@@ -66,25 +64,18 @@ void VerticalLine::draw (int x, int)
   painter.end();
 }
 
-QString VerticalLine::getDate ()
-{
-  return settings.getDateTime("Date");
-}
-
 void VerticalLine::prefDialog ()
 {
   PrefDialog *dialog = new PrefDialog();
   dialog->setCaption(tr("Edit Vertical Line"));
   dialog->createPage (tr("Details"));
-  dialog->addColorItem(tr("Color"), 1, QColor(settings.getData(tr("Color"))));
+  dialog->addColorItem(tr("Color"), 1, color);
   
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
-    QColor color = dialog->getColor(tr("Color"));
-    settings.setData(tr("Color"), color.name());
-    
+    color = dialog->getColor(tr("Color"));
     saveFlag = TRUE;
     emit signalDraw();
   }
@@ -92,11 +83,31 @@ void VerticalLine::prefDialog ()
   delete dialog;
 }
 
-void VerticalLine::move (QString d, QString v)
+void VerticalLine::move (QDateTime d, double)
 {
-  settings.setData("Date", d);
-  settings.setData("Value", v);
+  date = d;
   saveFlag = TRUE;
   emit signalDraw();
+  emit message(d.toString("yyyyMMdd"));
+}
+
+Setting * VerticalLine::getSettings ()
+{
+  Setting *set = new Setting;
+  set->set("Date", date.toString("yyyy-MM-dd00:00:00"), Setting::None);
+  set->set("Color", color.name(), Setting::Color);
+  set->set("Plot", plot, Setting::None);
+  set->set("Name", name, Setting::None);
+  set->set("ObjectType", QString::number(type), Setting::None);
+  return set;
+}
+
+void VerticalLine::setSettings (Setting *set)
+{
+  date = QDateTime::fromString(set->getData("Date"), Qt::ISODate);
+  color.setNamedColor(set->getData("Color"));
+  plot = set->getData("Plot");
+  name = set->getData("Name");
+  type = (ChartObject::ObjectType) set->getInt("ObjectType");
 }
 

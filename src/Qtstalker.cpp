@@ -69,6 +69,7 @@
 #include "loggrid.xpm"
 #include "hidechart.xpm"
 #include "date.xpm"
+#include "co.xpm"
 //#include "scanner.xpm"
 
 QtstalkerApp::QtstalkerApp()
@@ -154,6 +155,7 @@ QtstalkerApp::QtstalkerApp()
   QObject::connect(this, SIGNAL(signalIndex(int)), mainPlot, SLOT(setIndex(int)));
   QObject::connect(this, SIGNAL(signalInterval(Plot::TimeInterval)), mainPlot, SLOT(setInterval(Plot::TimeInterval)));
   QObject::connect(this, SIGNAL(signalChartPath(QString)), mainPlot, SLOT(setChartPath(QString)));
+  QObject::connect(this, SIGNAL(signalDrawMode(bool)), mainPlot, SLOT(setDrawMode(bool)));
 
   tabs = new QTabWidget(split);
   if (config->getData(Config::IndicatorTabs).toInt() == 0)
@@ -339,6 +341,11 @@ void QtstalkerApp::initActions()
   actionPlotDate->setStatusTip(tr("Toggle indicator date."));
   connect(actionPlotDate, SIGNAL(toggled(bool)), this, SLOT(slotPlotDate(bool)));
 
+  icon = co;
+  actionDrawMode = new QAction(tr("Toggle Draw Mode"), icon, tr("Toggle Draw Mode"), 0, this, 0, true);
+  actionDrawMode->setStatusTip(tr("Toggle drawing mode."));
+  connect(actionDrawMode, SIGNAL(toggled(bool)), this, SLOT(slotDrawMode(bool)));
+
 //  QAction *action = new QAction(QString::null, icon, QString::null, CTRL+Key_M, this);
 //  connect(action, SIGNAL(activated()), this, SLOT(slotMainPlotFocus()));
 
@@ -390,6 +397,7 @@ void QtstalkerApp::initToolBar()
   actionLogScale->addTo(toolbar);
   actionHideMainPlot->addTo(toolbar);
   actionPlotDate->addTo(toolbar);
+  actionDrawMode->addTo(toolbar);
   actionNewIndicator->addTo(toolbar);
   actionDatawindow->addTo(toolbar);
   actionQuotes->addTo(toolbar);
@@ -1031,8 +1039,10 @@ void QtstalkerApp::compressionChanged (QString d)
 
 void QtstalkerApp::slotChartTypeChanged (int)
 {
+  if (mainPlot->setChartType(chartTypeCombo->currentText()))
+    return;
+
   config->setData(Config::ChartStyle, chartTypeCombo->currentText());
-  mainPlot->setChartType(chartTypeCombo->currentText());
 
   emit signalPixelspace(mainPlot->getPixelspace());
 
@@ -1269,6 +1279,7 @@ void QtstalkerApp::addIndicatorButton (QString d, bool tabFlag)
   
   QObject::connect(this, SIGNAL(signalChartPath(QString)), plot, SLOT(setChartPath(QString)));
   QObject::connect(this, SIGNAL(signalIndex(int)), plot, SLOT(setIndex(int)));
+  QObject::connect(this, SIGNAL(signalDrawMode(bool)), plot, SLOT(setDrawMode(bool)));
 
   QObject::connect(this, SIGNAL(signalInterval(Plot::TimeInterval)), plot, SLOT(setInterval(Plot::TimeInterval)));
   compressionChanged(config->getData(Config::Compression));
@@ -1496,6 +1507,10 @@ void QtstalkerApp::slotPlotKeyPressed (QKeyEvent *key)
   }
 }
 
+void QtstalkerApp::slotDrawMode (bool d)
+{
+  emit signalDrawMode(d);
+}
 
 //**********************************************************************
 //**********************************************************************

@@ -30,15 +30,29 @@ class Line : public ChartPlugin
   Q_OBJECT
 
   public:
+    enum LineType
+    {
+      Open,
+      High,
+      Low,
+      Close,
+      Tp,
+      Ap,
+      Wp,
+      Hl,
+      Oc
+    };
+  
     Line ();
     virtual ~Line ();
     void drawChart (int startX, int startIndex, int pixelspace);
     void prefDialog ();
     void loadSettings ();
     void saveSettings ();
-
+  
   protected:
     QColor color;
+    LineType type;
 };
 
 extern "C"

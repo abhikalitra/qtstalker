@@ -30,6 +30,7 @@ Line::Line ()
   minPixelspace = 3;
   startX = 0;
   indicatorFlag = FALSE;
+  type = Close;
 
   loadSettings();  
 }
@@ -55,7 +56,37 @@ void Line::drawChart (int startX, int startIndex, int pixelspace)
 
   while ((x < buffer->width()) && (loop < (int) data->count()))
   {
-    y2 = scaler->convertToY(data->getClose(loop));
+    switch(type)
+    {
+      case Open:
+        y2 = scaler->convertToY(data->getOpen(loop));
+        break;
+      case High:
+        y2 = scaler->convertToY(data->getHigh(loop));
+        break;
+      case Low:
+        y2 = scaler->convertToY(data->getLow(loop));
+        break;
+      case Tp:
+        y2 = scaler->convertToY(((data->getHigh(loop) + data->getLow(loop) + data->getClose(loop)) / 3));
+        break;
+      case Ap:
+        y2 = scaler->convertToY(((data->getOpen(loop) + data->getHigh(loop) + data->getLow(loop) + data->getClose(loop)) / 4));
+        break;
+      case Wp:
+        y2 = scaler->convertToY(((data->getHigh(loop) + data->getLow(loop) + data->getClose(loop) + data->getClose(loop)) / 4));
+        break;
+      case Hl:
+        y2 = scaler->convertToY(((data->getHigh(loop) + data->getLow(loop)) / 2));
+        break;
+      case Oc:
+        y2 = scaler->convertToY(((data->getOpen(loop) + data->getClose(loop)) / 2));
+        break;
+      default:
+        y2 = scaler->convertToY(data->getClose(loop));
+        break;
+    }  
+  
     if (y != -1)
       painter.drawLine (x, y, x2, y2);
     x = x2;
@@ -70,15 +101,31 @@ void Line::drawChart (int startX, int startIndex, int pixelspace)
 
 void Line::prefDialog ()
 {
+  QStringList l;
+  l.append(tr("Open"));
+  l.append(tr("High"));
+  l.append(tr("Low"));
+  l.append(tr("Close"));
+  l.append(tr("Typical Price"));
+  l.append(tr("Average Price"));
+  l.append(tr("Weighted Price"));
+  l.append(tr("(H+L) /2"));
+  l.append(tr("(O+C) /2"));
+
   PrefDialog *dialog = new PrefDialog();
   dialog->setCaption(tr("Line Chart Prefs"));
   dialog->createPage (tr("Colors"));
   dialog->addColorItem(tr("Line Color"), 1, color);
+  dialog->addComboItem(tr("Line Type"), 1, l, l[(int) type]);
+  
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
     color = dialog->getColor(tr("Line Color"));
+    
+    type = (LineType) l.findIndex(dialog->getCombo(tr("Line Type")));
+    
     saveFlag = TRUE;
     emit draw();
   }
@@ -94,6 +141,9 @@ void Line::loadSettings ()
   QString s = settings.readEntry("/Color", "green");
   color.setNamedColor(s);
   
+  s = settings.readEntry("/Type", QString::number(type));
+  type = (LineType) s.toInt();
+  
   settings.endGroup();
 }
 
@@ -103,6 +153,7 @@ void Line::saveSettings ()
   settings.beginGroup("/Qtstalker/Line plugin");
   
   settings.writeEntry("/Color", color.name());
+  settings.writeEntry("/Type", QString::number(type));
   
   settings.endGroup();
 }

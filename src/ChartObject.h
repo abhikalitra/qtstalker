@@ -30,6 +30,8 @@
 #include <qstring.h>
 #include <qpopupmenu.h>
 #include <qregion.h>
+#include <qdatetime.h>
+#include <qcolor.h>
 
 class ChartObject : public QObject
 {
@@ -39,6 +41,7 @@ class ChartObject : public QObject
     void signalDraw();
     void signalChartObjectSelected(ChartObject *);
     void signalDeleteChartObject (QString);
+    void message (QString);
 
   public:
   
@@ -56,16 +59,20 @@ class ChartObject : public QObject
     ChartObject ();
     virtual ~ChartObject ();
     virtual void draw (int, int);
-    virtual QString getDate ();
-    virtual QString getDate2 ();
-    virtual void move (QString, QString);
+    virtual void move (QDateTime, double);
     virtual bool isClicked (int, int);
+    virtual Setting * getSettings ();
+    virtual void setSettings (Setting *);
     void unselect ();
     void showMenu ();
-    void setData (QString);
-    QString getData (QString);
-    QString getString ();
     bool getSaveFlag ();
+    void setSaveFlag (bool);
+    ChartObject::ObjectType getType ();
+    QDateTime getDate ();
+    QDateTime getDate2 ();
+    double getValue ();
+    double getValue2 ();
+    QString getName ();
 
   public slots:    
     virtual void prefDialog ();
@@ -76,11 +83,18 @@ class ChartObject : public QObject
     BarData *data;
     Scaler *scaler;
     QPixmap *buffer;
-    Setting settings;
     QPopupMenu *menu;
     bool saveFlag;
     bool status;
     QRegion area;
+    ObjectType type;
+    QString plot;
+    QString name;
+    QColor color;
+    QDateTime date;
+    QDateTime date2;
+    double value;
+    double value2;
 };
 
 #endif

@@ -22,23 +22,22 @@
 #include "Text.h"
 #include "PrefDialog.h"
 #include <qpainter.h>
-#include <qcolor.h>
 #include <qfontmetrics.h>
 
-Text::Text (Scaler *s, QPixmap *p, QString indicator, QString name, QString date, QString value)
+Text::Text (Scaler *s, QPixmap *p, QString indicator, QString n, QDateTime d, double v)
 {
   scaler = s;
   buffer = p;
+  type = ChartObject::Text;
+  plot = indicator;
+  name = n;
+  date = d;
+  value = v;
+  color.setNamedColor("white");
+  label = tr("Text");
   
-  settings.set("Type", "Text", Setting::None);
-  settings.set("Date", date, Setting::None);
-  settings.set("Value", value, Setting::None);
-  settings.set(tr("Color"), "white", Setting::Color);
-  settings.set("Plot", indicator, Setting::None);
-  settings.set("Name", name, Setting::None);
-  settings.set(tr("Label"), tr("Text"), Setting::Text);
-//  settings.set(tr("Font"), " ", Setting::Font);
-  settings.set("ObjectType", QString::number(ChartObject::Text), Setting::None);
+  menu->insertItem(tr("Edit Text"), this, SLOT(prefDialog()));
+  menu->insertItem(tr("Delete Text"), this, SLOT(remove()));
 }
 
 Text::~Text ()
@@ -50,17 +49,14 @@ void Text::draw (int x, int)
   QPainter painter;
   painter.begin(buffer);
 //  painter.setFont(plotFont);
-
-  int y = scaler->convertToY(settings.getFloat(tr("Value")));
-
-  QColor color(settings.getData(tr("Color")));
   painter.setPen(color);
 
-  QString s = settings.getData(tr("Label"));
-  painter.drawText(x, y, s);
+  int y = scaler->convertToY(value);
+
+  painter.drawText(x, y, label);
   
   QFontMetrics fm = painter.fontMetrics();
-  QRegion r(x, y - fm.height(), fm.width(s, -1), fm.height(), QRegion::Rectangle);
+  QRegion r(x, y - fm.height(), fm.width(label, -1), fm.height(), QRegion::Rectangle);
   area = r;
   
   if (status)
@@ -72,28 +68,20 @@ void Text::draw (int x, int)
   painter.end();
 }
 
-QString Text::getDate ()
-{
-  return settings.getDateTime(tr("Date"));
-}
-
 void Text::prefDialog ()
 {
   PrefDialog *dialog = new PrefDialog();
   dialog->setCaption(tr("Edit Text"));
   dialog->createPage (tr("Details"));
-  dialog->addColorItem(tr("Color"), 1, QColor(settings.getData(tr("Color"))));
-  dialog->addTextItem(tr("Label"), 1, settings.getData(tr("Label")));
+  dialog->addColorItem(tr("Color"), 1, color);
+  dialog->addTextItem(tr("Label"), 1, label);
   
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
-    QColor color = dialog->getColor(tr("Color"));
-    settings.setData(tr("Color"), color.name());
-    
-    settings.setData(tr("Label"), dialog->getText(tr("Label")));
-    
+    color = dialog->getColor(tr("Color"));
+    label = dialog->getText(tr("Label"));
     saveFlag = TRUE;
     emit signalDraw();
   }
@@ -101,11 +89,39 @@ void Text::prefDialog ()
   delete dialog;
 }
 
-void Text::move (QString d, QString v)
+void Text::move (QDateTime d, double v)
 {
-  settings.setData("Date", d);
-  settings.setData("Value", v);
+  date = d;
+  value = v;
   saveFlag = TRUE;
   emit signalDraw();
+  
+  QString s = d.toString("yyyyMMdd ");
+  s.append(QString::number(v));
+  emit message(s);
+}
+
+Setting * Text::getSettings ()
+{
+  Setting *set = new Setting;
+  set->set("Date", date.toString("yyyy-MM-dd00:00:00"), Setting::None);
+  set->set("Value", QString::number(value), Setting::None);
+  set->set("Color", color.name(), Setting::Color);
+  set->set("Plot", plot, Setting::None);
+  set->set("Name", name, Setting::None);
+  set->set("ObjectType", QString::number(type), Setting::None);
+  set->set("Label", label, Setting::None);
+  return set;
+}
+
+void Text::setSettings (Setting *set)
+{
+  date = QDateTime::fromString(set->getData("Date"), Qt::ISODate);
+  value = set->getFloat("Value");
+  color.setNamedColor(set->getData("Color"));
+  plot = set->getData("Plot");
+  name = set->getData("Name");
+  type = (ChartObject::ObjectType) set->getInt("ObjectType");
+  label = set->getData("Label");
 }
 

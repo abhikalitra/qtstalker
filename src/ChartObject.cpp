@@ -31,8 +31,6 @@ ChartObject::ChartObject ()
   status = FALSE;
   
   menu = new QPopupMenu();
-  menu->insertItem(tr("Edit"), this, SLOT(prefDialog()));
-  menu->insertItem(tr("Delete"), this, SLOT(remove()));
 }
 
 ChartObject::~ChartObject ()
@@ -44,30 +42,23 @@ void ChartObject::draw (int, int)
 {
 }
 
-QString ChartObject::getDate ()
+QDateTime ChartObject::getDate ()
 {
-  return QString();
+  return date;
 }
 
-QString ChartObject::getDate2 ()
+QDateTime ChartObject::getDate2 ()
 {
-  return QString();
+  return date2;
 }
 
-void ChartObject::setData (QString d)
+void ChartObject::setSettings (Setting *)
 {
-  settings.clear();
-  settings.parse(d);
 }
 
-QString ChartObject::getData (QString d)
+Setting * ChartObject::getSettings ()
 {
-  return settings.getData(d);
-}
-
-QString ChartObject::getString ()
-{
-  return settings.getString();
+  return 0;
 }
 
 void ChartObject::prefDialog ()
@@ -81,7 +72,7 @@ void ChartObject::showMenu ()
 
 void ChartObject::remove ()
 {
-  emit signalDeleteChartObject(settings.getData("Name"));
+  emit signalDeleteChartObject(name);
 }
 
 bool ChartObject::isClicked (int x, int y)
@@ -95,13 +86,18 @@ void ChartObject::unselect ()
   emit signalDraw();
 }
 
-void ChartObject::move (QString, QString)
+void ChartObject::move (QDateTime, double)
 {
 }
 
 bool ChartObject::getSaveFlag ()
 {
   return saveFlag;
+}
+
+void ChartObject::setSaveFlag (bool d)
+{
+  saveFlag = d;
 }
 
 void ChartObject::selected (int x, int y)
@@ -117,4 +113,23 @@ void ChartObject::selected (int x, int y)
   emit signalChartObjectSelected(this);
 }
 
+ChartObject::ObjectType ChartObject::getType ()
+{
+  return type;
+}
+
+double ChartObject::getValue ()
+{
+  return value;
+}
+
+double ChartObject::getValue2 ()
+{
+  return value2;
+}
+
+QString ChartObject::getName ()
+{
+  return name;
+}
 

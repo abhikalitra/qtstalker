@@ -61,6 +61,7 @@ class QtstalkerApp : public QMainWindow
     void signalIndicatorPageRefresh ();
     void signalPlotDate (bool);
     void signalChartPath (QString);
+    void signalDrawMode (bool);
 
   public:
 
@@ -119,6 +120,7 @@ class QtstalkerApp : public QMainWindow
     void slotPlotDate (bool);
     void slotPlotLeftMouseButton (int, int, bool);
     void slotPlotKeyPressed (QKeyEvent *);
+    void slotDrawMode (bool);
 
   private:
     QPopupMenu *fileMenu;
@@ -139,6 +141,7 @@ class QtstalkerApp : public QMainWindow
     QAction *actionLogScale;
     QAction *actionHideMainPlot;
     QAction *actionPlotDate;
+    QAction *actionDrawMode;
 
     QToolBar *toolbar;
     QToolBar *toolbar2;

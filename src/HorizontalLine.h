@@ -29,10 +29,12 @@ class HorizontalLine : public ChartObject
   Q_OBJECT
 
   public:
-    HorizontalLine (Scaler *, QPixmap *, QString, QString, QString);
+    HorizontalLine (Scaler *, QPixmap *, QString, QString, double);
     ~HorizontalLine ();
     void draw (int, int);
-    void move (QString, QString);
+    void move (QDateTime, double);
+    Setting * getSettings ();
+    void setSettings (Setting *);
     
   public slots:
     void prefDialog ();

@@ -29,16 +29,18 @@ class Text : public ChartObject
   Q_OBJECT
 
   public:
-    Text (Scaler *, QPixmap *, QString indicator, QString name, QString date, QString value);
+    Text (Scaler *, QPixmap *, QString, QString, QDateTime, double);
     ~Text ();
     void draw (int, int);
-    QString getDate ();
-    void move (QString, QString);
+    void move (QDateTime, double);
+    Setting * getSettings ();
+    void setSettings (Setting *);
     
   public slots:
     void prefDialog ();
     
   protected:
+    QString label;
 };
 
 #endif

@@ -22,19 +22,19 @@
 #include "HorizontalLine.h"
 #include "PrefDialog.h"
 #include <qpainter.h>
-#include <qcolor.h>
 
-HorizontalLine::HorizontalLine (Scaler *s, QPixmap *p, QString indicator, QString name, QString value)
+HorizontalLine::HorizontalLine (Scaler *s, QPixmap *p, QString indicator, QString n, double v)
 {
   scaler = s;
   buffer = p;
+  type = ChartObject::HorizontalLine;
+  plot = indicator;
+  name = n;
+  value = v;
+  color.setNamedColor("white");
   
-  settings.set("Type", "Horizontal Line", Setting::None);
-  settings.set("Value", value, Setting::None);
-  settings.set(tr("Color"), "white", Setting::Color);
-  settings.set("Plot", indicator, Setting::None);
-  settings.set("Name", name, Setting::None);
-  settings.set("ObjectType", QString::number(ChartObject::HorizontalLine), Setting::None);
+  menu->insertItem(tr("Edit Horizontal Line"), this, SLOT(prefDialog()));
+  menu->insertItem(tr("Delete Horizontal Line"), this, SLOT(remove()));
 }
 
 HorizontalLine::~HorizontalLine ()
@@ -45,14 +45,12 @@ void HorizontalLine::draw (int, int)
 {
   QPainter painter;
   painter.begin(buffer);
-
-  int y = scaler->convertToY(settings.getFloat("Value"));
-
-  QColor color(settings.getData(tr("Color")));
   painter.setPen(color);
 
+  int y = scaler->convertToY(value);
+
   painter.drawLine (0, y, buffer->width(), y);
-  painter.drawText(0, y - 1, settings.getData("Value"), -1);
+  painter.drawText(0, y - 1, QString::number(value), -1);
   
   QRegion r(0, y, buffer->width(), 1, QRegion::Rectangle);
   area = r;
@@ -75,14 +73,12 @@ void HorizontalLine::prefDialog ()
   PrefDialog *dialog = new PrefDialog();
   dialog->setCaption(tr("Edit Horizontal Line"));
   dialog->createPage (tr("Details"));
-  dialog->addColorItem(tr("Color"), 1, QColor(settings.getData(tr("Color"))));
+  dialog->addColorItem(tr("Color"), 1, color);
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
-    QColor color = dialog->getColor(tr("Color"));
-    settings.setData(tr("Color"), color.name());
-    
+    color = dialog->getColor(tr("Color"));
     saveFlag = TRUE;
     emit signalDraw();
   }
@@ -90,10 +86,31 @@ void HorizontalLine::prefDialog ()
   delete dialog;
 }
 
-void HorizontalLine::move (QString, QString v)
+void HorizontalLine::move (QDateTime, double v)
 {
-  settings.setData("Value", v);
+  value = v;
   saveFlag = TRUE;
   emit signalDraw();
+  emit message(QString::number(v));
+}
+
+Setting * HorizontalLine::getSettings ()
+{
+  Setting *set = new Setting;
+  set->set("Value", QString::number(value), Setting::None);
+  set->set("Color", color.name(), Setting::Color);
+  set->set("Plot", plot, Setting::None);
+  set->set("Name", name, Setting::None);
+  set->set("ObjectType", QString::number(type), Setting::None);
+  return set;
+}
+
+void HorizontalLine::setSettings (Setting *set)
+{
+  value = set->getFloat("Value");
+  color.setNamedColor(set->getData("Color"));
+  plot = set->getData("Plot");
+  name = set->getData("Name");
+  type = (ChartObject::ObjectType) set->getInt("ObjectType");
 }
 

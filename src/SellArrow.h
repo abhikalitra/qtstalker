@@ -29,11 +29,12 @@ class SellArrow : public ChartObject
   Q_OBJECT
 
   public:
-    SellArrow (Scaler *, QPixmap *, QString, QString, QString, QString);
+    SellArrow (Scaler *, QPixmap *, QString, QString, QDateTime, double);
     ~SellArrow ();
     void draw (int, int);
-    QString getDate ();
-    void move (QString, QString);
+    void move (QDateTime, double);
+    Setting * getSettings ();
+    void setSettings (Setting *);
     
   public slots:
     void prefDialog ();

@@ -22,21 +22,21 @@
 #include "SellArrow.h"
 #include "PrefDialog.h"
 #include <qpainter.h>
-#include <qcolor.h>
 #include <qpointarray.h>
 
-SellArrow::SellArrow (Scaler *s, QPixmap *p, QString indicator, QString name, QString date, QString value)
+SellArrow::SellArrow (Scaler *s, QPixmap *p, QString indicator, QString n, QDateTime d, double v)
 {
   scaler = s;
   buffer = p;
+  type = ChartObject::SellArrow;
+  plot = indicator;
+  name = n;
+  date = d;
+  value = v;
+  color.setNamedColor("red");
   
-  settings.set("Type", "Sell Arrow", Setting::None);
-  settings.set("Date", date, Setting::None);
-  settings.set("Value", value, Setting::None);
-  settings.set(tr("Color"), "red", Setting::Color);
-  settings.set("Plot", indicator, Setting::None);
-  settings.set("Name", name, Setting::None);
-  settings.set("ObjectType", QString::number(ChartObject::SellArrow), Setting::None);
+  menu->insertItem(tr("Edit Sell Arrow"), this, SLOT(prefDialog()));
+  menu->insertItem(tr("Delete Sell Arrow"), this, SLOT(remove()));
 }
 
 SellArrow::~SellArrow ()
@@ -48,9 +48,7 @@ void SellArrow::draw (int x, int)
   QPainter painter;
   painter.begin(buffer);
 
-  int y = scaler->convertToY(settings.getFloat("Value"));
-
-  QColor color(settings.getData(tr("Color")));
+  int y = scaler->convertToY(value);
 
   QPointArray array;
   array.setPoints(7, x, y,
@@ -77,38 +75,56 @@ void SellArrow::draw (int x, int)
   painter.end();
 }
 
-QString SellArrow::getDate ()
-{
-  return settings.getDateTime("Date");
-}
-
 void SellArrow::prefDialog ()
 {
   PrefDialog *dialog = new PrefDialog();
   dialog->setCaption(tr("Edit Sell Arrow"));
   dialog->createPage (tr("Details"));
-  dialog->addColorItem(tr("Color"), 1, QColor(settings.getData(tr("Color"))));
+  dialog->addColorItem(tr("Color"), 1, color);
   
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
-    QColor color = dialog->getColor(tr("Color"));
-    settings.setData(tr("Color"), color.name());
-    
+    color = dialog->getColor(tr("Color"));
     saveFlag = TRUE;
-    
     emit signalDraw();
   }
   
   delete dialog;
 }
 
-void SellArrow::move (QString d, QString v)
+void SellArrow::move (QDateTime d, double v)
 {
-  settings.setData("Date", d);
-  settings.setData("Value", v);
+  date = d;
+  value = v;
   saveFlag = TRUE;
   emit signalDraw();
+  
+  QString s = d.toString("yyyyMMdd ");
+  s.append(QString::number(v));
+  emit message(s);
+}
+
+Setting * SellArrow::getSettings ()
+{
+  Setting *set = new Setting;
+  set->set("Date", date.toString("yyyy-MM-dd00:00:00"), Setting::None);
+  set->set("Value", QString::number(value), Setting::None);
+  set->set("Color", color.name(), Setting::Color);
+  set->set("Plot", plot, Setting::None);
+  set->set("Name", name, Setting::None);
+  set->set("ObjectType", QString::number(type), Setting::None);
+  return set;
+}
+
+void SellArrow::setSettings (Setting *set)
+{
+  date = QDateTime::fromString(set->getData("Date"), Qt::ISODate);
+  value = set->getFloat("Value");
+  color.setNamedColor(set->getData("Color"));
+  plot = set->getData("Plot");
+  name = set->getData("Name");
+  type = (ChartObject::ObjectType) set->getInt("ObjectType");
 }
 

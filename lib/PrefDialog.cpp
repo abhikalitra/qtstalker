@@ -39,7 +39,7 @@ PrefDialog::PrefDialog () : QTabDialog (0, "PrefDialog", TRUE)
   
   dv = new QDoubleValidator(-99999999, 99999999, 4, this, 0);
   
-  setMinimumSize(250, 300);
+  resize(300, 200);
   
   setOkButton();
   setCancelButton();
@@ -59,6 +59,7 @@ void PrefDialog::createPage (QString name)
   grid->setMargin(5);
   grid->setSpacing(5);
   gridList.append(grid);
+  grid->setColStretch(1, 1);
 
   addTab(w, name);
 }

@@ -29,12 +29,12 @@ class TrendLine : public ChartObject
   Q_OBJECT
 
   public:
-    TrendLine (Scaler *, QPixmap *, BarData *, QString, QString, QString, QString, QString, QString);
+    TrendLine (Scaler *, QPixmap *, BarData *, QString, QString, QDateTime, double, QDateTime, double);
     ~TrendLine ();
     void draw (int, int);
-    QString getDate ();
-    QString getDate2 ();
-    void move (QString, QString);
+    void move (QDateTime, double);
+    Setting * getSettings ();
+    void setSettings (Setting *);
     bool isClicked (int, int);
     
   public slots:
@@ -43,6 +43,8 @@ class TrendLine : public ChartObject
   protected:
     QRegion area2;
     bool move2Flag;
+    bool useBar;
+    QString barField;
 };
 
 #endif

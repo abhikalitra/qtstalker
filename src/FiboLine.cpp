@@ -22,30 +22,30 @@
 #include "FiboLine.h"
 #include "PrefDialog.h"
 #include <qpainter.h>
-#include <qcolor.h>
 
-FiboLine::FiboLine (Scaler *s, QPixmap *p, QString indicator, QString name, QString date, QString value,
-                    QString date2, QString value2)
+FiboLine::FiboLine (Scaler *s, QPixmap *p, QString indicator, QString n, QDateTime d, double v,
+                    QDateTime d2, double v2)
 {
   scaler = s;
   buffer = p;
   move2Flag = FALSE;
-  
-  settings.set("Type", "Fibonacci Line", Setting::None);
-  settings.set(tr("Color"), "white", Setting::Color);
-  settings.set("Plot", indicator, Setting::None);
-  settings.set("Name", name, Setting::None);
-  settings.set("High", value, Setting::None);
-  settings.set("Start Date", date, Setting::None);
-  settings.set("Low", value2, Setting::None);
-  settings.set("End Date", date2, Setting::None);
-  settings.set("Line 1", "0", Setting::None);
-  settings.set("Line 2", "0.238", Setting::None);
-  settings.set("Line 3", "0.383", Setting::None);
-  settings.set("Line 4", "0.5", Setting::None);
-  settings.set("Line 5", "0.618", Setting::None);
-  settings.set("Line 6", "1", Setting::None);
-  settings.set("ObjectType", QString::number(ChartObject::FibonacciLine), Setting::None);
+  type = ChartObject::FibonacciLine;
+  plot = indicator;
+  name = n;
+  date = d;
+  date2 = d2;
+  value = v;
+  value2 = v2;
+  color.setNamedColor("white");
+  line1 = 0.238;
+  line2 = 0.383;
+  line3 = 0.5;
+  line4 = 0.618;
+  line5 = 1;
+  line6 = 1.618;
+
+  menu->insertItem(tr("Edit Fibonacci Line"), this, SLOT(prefDialog()));
+  menu->insertItem(tr("Delete Fibonacci Line"), this, SLOT(remove()));
 }
 
 FiboLine::~FiboLine ()
@@ -54,71 +54,60 @@ FiboLine::~FiboLine ()
 
 void FiboLine::draw (int x, int x2)
 {
-  QColor color(settings.getData(tr("Color")));
-  double high = settings.getFloat("High");
-  double low = settings.getFloat("Low");
-
   QPainter painter;
   painter.begin(buffer);
-//  painter.setFont(plotFont);
   painter.setPen(color);
 
-  QString v = settings.getData(tr("Line 1"));
-  if (v.length())
+  if (line1 != 0)
   {
-    double r = getY(v, high, low, v.toFloat());
+    double r = getY(line1, value, value2);
     int y = scaler->convertToY(r);
     painter.drawLine (x, y, x2, y);
   }
 
-  v = settings.getData(tr("Line 2"));
-  if (v.length())
+  if (line2 != 0)
   {
-    double r = getY(v, high, low, v.toFloat());
+    double r = getY(line2, value, value2);
     int y = scaler->convertToY(r);
     painter.drawLine (x, y, x2, y);
   }
 
-  v = settings.getData(tr("Line 3"));
-  if (v.length())
+  if (line3 != 0)
   {
-    double r = getY(v, high, low, v.toFloat());
+    double r = getY(line3, value, value2);
     int y = scaler->convertToY(r);
     painter.drawLine (x, y, x2, y);
   }
 
-  v = settings.getData(tr("Line 4"));
-  if (v.length())
+  if (line4 != 0)
   {
-    double r = getY(v, high, low, v.toFloat());
+    double r = getY(line4, value, value2);
     int y = scaler->convertToY(r);
     painter.drawLine (x, y, x2, y);
   }
 
-  v = settings.getData(tr("Line 5"));
-  if (v.length())
+  if (line5 != 0)
   {
-    double r = getY(v, high, low, v.toFloat());
+    double r = getY(line5, value, value2);
     int y = scaler->convertToY(r);
     painter.drawLine (x, y, x2, y);
   }
 
-  v = settings.getData(tr("Line 6"));
-  if (v.length())
+  if (line6 != 0)
   {
-    double r = getY(v, high, low, v.toFloat());
+    double r = getY(line6, value, value2);
     int y = scaler->convertToY(r);
     painter.drawLine (x, y, x2, y);
   }
 
   //bottom left corner
-  int y = scaler->convertToY(low);
+  int y = scaler->convertToY(value2);
   QRegion r(x - 4, y - 4, 8, 8, QRegion::Rectangle);
   area = r;
   painter.drawLine (x, y, x2, y);
   
   //top right corner
-  int y2 = scaler->convertToY(high);
+  int y2 = scaler->convertToY(value);
   QRegion r2(x2 - 4, y2 - 4, 8, 8, QRegion::Rectangle);
   area2 = r2;
   painter.drawLine (x, y2, x2, y2);
@@ -135,7 +124,7 @@ void FiboLine::draw (int x, int x2)
   painter.end();
 }
 
-double FiboLine::getY (QString label, double high, double low, double v)
+double FiboLine::getY (double v, double high, double low)
 {
   double range = high - low;
   double r = 0;
@@ -147,7 +136,7 @@ double FiboLine::getY (QString label, double high, double low, double v)
       r = low + (range * v);
     else
     {
-      if (label.contains("-"))
+      if (v < 0)
         r = high;
       else
         r = low;
@@ -168,29 +157,27 @@ void FiboLine::prefDialog ()
   PrefDialog *dialog = new PrefDialog();
   dialog->setCaption(tr("Edit Fibonacci Lines"));
   dialog->createPage (tr("Details"));
-  dialog->addColorItem(tr("Color"), 1, QColor(settings.getData(tr("Color"))));
+  dialog->addColorItem(tr("Color"), 1, color);
 
   dialog->createPage (tr("Levels"));
-  dialog->addFloatItem(tr("Line 1"), 2, settings.getFloat(tr("Line 1")));
-  dialog->addFloatItem(tr("Line 2"), 2, settings.getFloat(tr("Line 2")));
-  dialog->addFloatItem(tr("Line 3"), 2, settings.getFloat(tr("Line 3")));
-  dialog->addFloatItem(tr("Line 4"), 2, settings.getFloat(tr("Line 4")));
-  dialog->addFloatItem(tr("Line 5"), 2, settings.getFloat(tr("Line 5")));
-  dialog->addFloatItem(tr("Line 6"), 2, settings.getFloat(tr("Line 6")));
+  dialog->addFloatItem(tr("Line 1"), 2, line1);
+  dialog->addFloatItem(tr("Line 2"), 2, line2);
+  dialog->addFloatItem(tr("Line 3"), 2, line3);
+  dialog->addFloatItem(tr("Line 4"), 2, line4);
+  dialog->addFloatItem(tr("Line 5"), 2, line5);
+  dialog->addFloatItem(tr("Line 6"), 2, line6);
         
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
-    QColor color = dialog->getColor(tr("Color"));
-    settings.setData(tr("Color"), color.name());
-    
-    settings.setData(tr("Line 1"), QString::number(dialog->getFloat(tr("Line 1"))));
-    settings.setData(tr("Line 2"), QString::number(dialog->getFloat(tr("Line 2"))));
-    settings.setData(tr("Line 3"), QString::number(dialog->getFloat(tr("Line 3"))));
-    settings.setData(tr("Line 4"), QString::number(dialog->getFloat(tr("Line 4"))));
-    settings.setData(tr("Line 5"), QString::number(dialog->getFloat(tr("Line 5"))));
-    settings.setData(tr("Line 6"), QString::number(dialog->getFloat(tr("Line 6"))));
+    color = dialog->getColor(tr("Color"));
+    line1 = dialog->getFloat(tr("Line 1"));
+    line2 = dialog->getFloat(tr("Line 2"));
+    line3 = dialog->getFloat(tr("Line 3"));
+    line4 = dialog->getFloat(tr("Line 4"));
+    line5 = dialog->getFloat(tr("Line 5"));
+    line6 = dialog->getFloat(tr("Line 6"));
 
     saveFlag = TRUE;
     emit signalDraw();
@@ -199,48 +186,45 @@ void FiboLine::prefDialog ()
   delete dialog;
 }
 
-void FiboLine::move (QString d, QString v)
+void FiboLine::move (QDateTime d, double v)
 {
   if (! move2Flag)
   {
     // bottom left corner
-    if (d.toFloat() >= settings.getFloat("End Date"))
+    if (d >= date2)
       return;
     
-    if (v.toFloat() >= settings.getFloat("High"))
+    if (v >= value)
       return;
     
-    settings.setData("Start Date", d);
-    settings.setData("Low", v);
+    date = d;
+    value2 = v;
     saveFlag = TRUE;
     emit signalDraw();
+    
+    QString s = d.toString("yyyyMMdd ");
+    s.append(QString::number(v));
+    emit message(s);
   }
   else
   {
     //top right corner
-    if (d.toFloat() <= settings.getFloat("Start Date"))
+    if (d <= date)
       return;
 
-    if (v.toFloat() <= settings.getFloat("Low"))
+    if (v <= value2)
       return;
           
-    settings.setData("End Date", d);
-    settings.setData("High", v);
+    date2 = d;
+    value = v;
     saveFlag = TRUE;
     emit signalDraw();
+    
+    QString s = d.toString("yyyyMMdd ");
+    s.append(QString::number(v));
+    emit message(s);
   }
 }
-
-QString FiboLine::getDate ()
-{
-  return settings.getDateTime("Start Date");
-}
-
-QString FiboLine::getDate2 ()
-{
-  return settings.getDateTime("End Date");
-}
-
 
 bool FiboLine::isClicked (int x, int y)
 {
@@ -259,3 +243,42 @@ bool FiboLine::isClicked (int x, int y)
   
   return flag;
 }
+
+Setting * FiboLine::getSettings ()
+{
+  Setting *set = new Setting;
+  set->set("Color", color.name(), Setting::Color);
+  set->set("Plot", plot, Setting::None);
+  set->set("Name", name, Setting::None);
+  set->set("ObjectType", QString::number(type), Setting::None);
+  set->set("High", QString::number(value), Setting::None);
+  set->set("Low", QString::number(value2), Setting::None);
+  set->set("Start Date", date.toString("yyyy-MM-dd00:00:00"), Setting::None);
+  set->set("End Date", date2.toString("yyyy-MM-dd00:00:00"), Setting::None);
+  set->set("Line 1", QString::number(line1), Setting::None);
+  set->set("Line 2", QString::number(line2), Setting::None);
+  set->set("Line 3", QString::number(line3), Setting::None);
+  set->set("Line 4", QString::number(line4), Setting::None);
+  set->set("Line 5", QString::number(line5), Setting::None);
+  set->set("Line 6", QString::number(line6), Setting::None);
+  return set;
+}
+
+void FiboLine::setSettings (Setting *set)
+{
+  color.setNamedColor(set->getData("Color"));
+  plot = set->getData("Plot");
+  name = set->getData("Name");
+  type = (ChartObject::ObjectType) set->getInt("ObjectType");
+  value = set->getFloat("High");
+  value2 = set->getFloat("Low");
+  date = QDateTime::fromString(set->getData("Start Date"), Qt::ISODate);
+  date2 = QDateTime::fromString(set->getData("End Date"), Qt::ISODate);
+  line1 = set->getFloat("Line 1");
+  line2 = set->getFloat("Line 2");
+  line3 = set->getFloat("Line 3");
+  line4 = set->getFloat("Line 4");
+  line5 = set->getFloat("Line 5");
+  line6 = set->getFloat("Line 6");
+}
+

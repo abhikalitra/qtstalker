@@ -82,7 +82,7 @@ class Plot : public QWidget
     void setDateHeight (int);
     void setMainFlag (bool);
     void setLogScale (bool);
-    void setChartType (QString);
+    int setChartType (QString);
     void setChartInput ();
     void setConfig (Config *);
     void createChartObject (QString, QString);
@@ -125,6 +125,7 @@ class Plot : public QWidget
     void printChart ();
     void showPopupMenu ();
     void setChartPath (QString);
+    void setDrawMode (bool);
 
   protected:
     virtual void paintEvent (QPaintEvent *);
@@ -147,6 +148,7 @@ class Plot : public QWidget
     int getXFromDate (QDateTime);
     void getXY (int, int, int);
     void createXGrid ();
+    void slotMessage (QString);
 
     void slotEditIndicator (int);
     void slotDeleteIndicator (int);
@@ -184,6 +186,7 @@ class Plot : public QWidget
     bool hideMainPlot;
     bool tabFlag;
     bool crossHairFlag;
+    bool drawMode;
     int crossHairX;
     int crossHairY;
 
@@ -193,10 +196,10 @@ class Plot : public QWidget
     QArray<double> scaleArray;
     Scaler *scaler;
 
-    QString y1;
-    QString y2;
-    QString x1;
-    QString x2;
+    double y1;
+    double y2;
+    QDateTime x1;
+    QDateTime x2;
     QString objectName;
     MouseStatus mouseFlag;
     ChartObject::ObjectType objectFlag;

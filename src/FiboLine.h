@@ -29,13 +29,13 @@ class FiboLine : public ChartObject
   Q_OBJECT
 
   public:
-    FiboLine (Scaler *, QPixmap *, QString, QString, QString, QString, QString, QString);
+    FiboLine (Scaler *, QPixmap *, QString, QString, QDateTime, double, QDateTime, double);
     ~FiboLine ();
     void draw (int, int);
-    double getY (QString, double, double, double);
-    void move (QString, QString);
-    QString getDate ();
-    QString getDate2 ();
+    double getY (double, double, double);
+    void move (QDateTime, double);
+    Setting * getSettings ();
+    void setSettings (Setting *);
     bool isClicked (int, int);
     
   public slots:
@@ -44,6 +44,12 @@ class FiboLine : public ChartObject
   protected:
     QRegion area2;
     bool move2Flag;
+    double line1;
+    double line2;
+    double line3;
+    double line4;
+    double line5;
+    double line6;
 };
 
 #endif
