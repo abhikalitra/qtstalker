@@ -415,7 +415,7 @@ void ChartDb::setRecord (Setting *set)
       details->setData("First Date", dt.toString(DATE_FORMAT));
   }
   else
-    details->setData("First Date", dt.toString(DATE_FORMAT));
+    details->set("First Date", dt.toString(DATE_FORMAT), Setting::None);
 
   dt2 = getDateTime(details->getData("Last Date"));
   if (dt2.isValid())
@@ -424,7 +424,7 @@ void ChartDb::setRecord (Setting *set)
       details->setData("Last Date", dt.toString(DATE_FORMAT));
   }
   else
-    details->setData("Last Date", dt.toString(DATE_FORMAT));
+    details->set("Last Date", dt.toString(DATE_FORMAT), Setting::None);
 
   setDetails(details);
   delete details;
