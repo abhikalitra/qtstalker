@@ -43,19 +43,22 @@ PortfolioDialog::PortfolioDialog (Config *c, QString p) : EditDialog (c)
   s.append(portfolio);
   setCaption(s);
 
-  unhookButton(0);
-  connect(getButton(0), SIGNAL(clicked()), this, SLOT(savePortfolio()));
+  disconnect(this, SIGNAL(applyButtonPressed()), 0, 0);
+  connect(this, SIGNAL(applyButtonPressed()), this, SLOT(savePortfolio()));
 
-  setButton(QPixmap(newchart), tr("Add"), 2);
-  connect(getButton(2), SIGNAL(clicked()), this, SLOT(addItem()));
+  //add = 2  
+  setButton("add", QPixmap(newchart), tr("Add"));
+  connect(getButton("add"), SIGNAL(clicked()), this, SLOT(addItem()));
 
-  setButton(QPixmap(edit), tr("Edit"), 3);
-  connect(getButton(3), SIGNAL(clicked()), this, SLOT(modifyItem()));
-  setButtonStatus(3, FALSE);
+  // edit = 3
+  setButton("edit", QPixmap(edit), tr("Edit"));
+  connect(getButton("edit"), SIGNAL(clicked()), this, SLOT(modifyItem()));
+  setButtonStatus("edit", FALSE);
 
-  setButton(QPixmap(deletefile), tr("Delete"), 4);
-  connect(getButton(4), SIGNAL(clicked()), this, SLOT(deleteItem()));
-  setButtonStatus(4, FALSE);
+  // delete = 4
+  setButton("delete", QPixmap(deleteitem), tr("Delete"));
+  connect(getButton("delete"), SIGNAL(clicked()), this, SLOT(deleteItem()));
+  setButtonStatus("delete", FALSE);
 
   plist = new QListView(this);
   plist->setSelectionMode(QListView::Single);
@@ -283,13 +286,13 @@ void PortfolioDialog::buttonStatus (QListViewItem *i)
 {
   if (! i)
   {
-    setButtonStatus(3, FALSE);
-    setButtonStatus(4, FALSE);
+    setButtonStatus("edit", FALSE);
+    setButtonStatus("delete", FALSE);
   }
   else
   {
-    setButtonStatus(3, TRUE);
-    setButtonStatus(4, TRUE);
+    setButtonStatus("edit", TRUE);
+    setButtonStatus("delete", TRUE);
   }
 }
 

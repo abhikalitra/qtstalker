@@ -27,7 +27,7 @@
 Line::Line ()
 {
   pluginName = "Line";
-  minPixelspace = 3;
+//  minPixelspace = 3;
   startX = 0;
   indicatorFlag = FALSE;
   type = Close;
@@ -115,14 +115,14 @@ void Line::prefDialog ()
   dialog->createPage (tr("Colors"));
   dialog->addColorItem(tr("Line Color"), 1, color);
   dialog->addComboItem(tr("Line Type"), 1, l, l[(int) type]);
-  
+  dialog->addIntItem(tr("Min Bar Spacing"), 1, minPixelspace, 1, 99);
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
     color = dialog->getColor(tr("Line Color"));
-    
     type = (LineType) l.findIndex(dialog->getCombo(tr("Line Type")));
+    minPixelspace = dialog->getInt(tr("Min Bar Spacing"));
     
     saveFlag = TRUE;
     emit draw();
@@ -142,6 +142,8 @@ void Line::loadSettings ()
   s = settings.readEntry("/Type", QString::number(type));
   type = (LineType) s.toInt();
   
+  minPixelspace = settings.readNumEntry("/minPixelspace", 3);
+  
   settings.endGroup();
 }
 
@@ -155,6 +157,7 @@ void Line::saveSettings ()
   
   settings.writeEntry("/Color", color.name());
   settings.writeEntry("/Type", QString::number(type));
+  settings.writeEntry("/minPixelspace", minPixelspace);
   
   settings.endGroup();
 }

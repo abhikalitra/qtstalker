@@ -27,7 +27,7 @@
 PF::PF ()
 {
   pluginName = "PF";
-  minPixelspace = 4;
+//  minPixelspace = 4;
   startX = 0;
   indicatorFlag = TRUE;
 
@@ -171,7 +171,7 @@ void PF::prefDialog ()
   dialog->createPage (tr("Box Options"));
   dialog->addFloatItem(tr("Box Size"), 2, size);
   dialog->addIntItem(tr("Reversal"), 2, PAFReversal);
-  
+  dialog->addIntItem(tr("Min Bar Spacing"), 1, minPixelspace, 4, 99);
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
@@ -180,9 +180,9 @@ void PF::prefDialog ()
     downColor = dialog->getColor(tr("Down Color"));
     size = dialog->getFloat(tr("Box Size"));
     PAFReversal = dialog->getInt(tr("Reversal"));
+    minPixelspace = dialog->getInt(tr("Min Bar Spacing"));
     
     saveFlag = TRUE;
-    
     emit draw();
   }
   
@@ -205,7 +205,9 @@ void PF::loadSettings ()
 
   s = settings.readEntry("/Reversal", "3");
   PAFReversal = s.toInt();
-  
+
+  minPixelspace = settings.readNumEntry("/minPixelspace", 4);
+    
   settings.endGroup();
 }
 
@@ -221,6 +223,7 @@ void PF::saveSettings ()
   settings.writeEntry("/DownColor", downColor.name());
   settings.writeEntry("/BoxSize", QString::number(size));
   settings.writeEntry("/Reversal", QString::number(PAFReversal));
+  settings.writeEntry("/minPixelspace", minPixelspace);
   
   settings.endGroup();
 }

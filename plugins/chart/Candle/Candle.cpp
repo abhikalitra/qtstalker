@@ -27,7 +27,7 @@
 Candle::Candle ()
 {
   pluginName = "Candle";
-  minPixelspace = 2;
+//  minPixelspace = 2;
   startX = 2;
   indicatorFlag = FALSE;
   expandCandles = FALSE;
@@ -109,12 +109,15 @@ void Candle::prefDialog ()
   dialog->createPage (tr("Colors"));
   dialog->addColorItem(tr("Candle Color"), 1, color);
   dialog->addCheckItem(tr("Expand Candles"), 1, expandCandles);
+  dialog->addIntItem(tr("Min Bar Spacing"), 1, minPixelspace, 2, 99);
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
     color = dialog->getColor(tr("Candle Color"));
     expandCandles = dialog->getCheck(tr("Expand Candles"));
+    minPixelspace = dialog->getInt(tr("Min Bar Spacing"));
+    
     saveFlag = TRUE;
     emit draw();
   }
@@ -133,6 +136,8 @@ void Candle::loadSettings ()
   s = settings.readEntry("/ExpandCandles", "0");
   expandCandles = s.toInt();
   
+  minPixelspace = settings.readNumEntry("/minPixelspace", 6);
+  
   settings.endGroup();
 }
 
@@ -145,6 +150,7 @@ void Candle::saveSettings ()
   settings.beginGroup("/Qtstalker/Candle plugin");
   settings.writeEntry("/Color", color.name());
   settings.writeEntry("/ExpandCandles", QString::number(expandCandles));
+  settings.writeEntry("/minPixelspace", minPixelspace);
   settings.endGroup();
 }
 

@@ -27,7 +27,7 @@
 CandleQS::CandleQS ()
 {
   pluginName = "CandleQS";
-  minPixelspace = 6;
+//  minPixelspace = 6;
   startX = 2;
   indicatorFlag = FALSE;
   expandCandles = FALSE;
@@ -162,6 +162,7 @@ void CandleQS::prefDialog ()
   dialog->addColorItem(tr("Up Color"), 1, upColor);
   dialog->addColorItem(tr("Down Color"), 1, downColor);
   dialog->addCheckItem(tr("Expand Candles"), 1, expandCandles);
+  dialog->addIntItem(tr("Min Bar Spacing"), 1, minPixelspace, 2, 99);
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
@@ -170,9 +171,9 @@ void CandleQS::prefDialog ()
     upColor = dialog->getColor(tr("Up Color"));
     downColor = dialog->getColor(tr("Down Color"));
     expandCandles = dialog->getCheck(tr("Expand Candles"));
+    minPixelspace = dialog->getInt(tr("Min Bar Spacing"));
     
     saveFlag = TRUE;
-    
     emit draw();
   }
   
@@ -195,7 +196,9 @@ void CandleQS::loadSettings ()
   
   s = settings.readEntry("/ExpandCandles", "0");
   expandCandles = s.toInt();
-  
+
+  minPixelspace = settings.readNumEntry("/minPixelspace", 6);
+    
   settings.endGroup();
 }
 
@@ -211,6 +214,7 @@ void CandleQS::saveSettings ()
   settings.writeEntry("/UpColor", upColor.name());
   settings.writeEntry("/DownColor", downColor.name());
   settings.writeEntry("/ExpandCandles", QString::number(expandCandles));
+  settings.writeEntry("/minPixelspace", minPixelspace);
   
   settings.endGroup();
 }

@@ -237,7 +237,7 @@ void TrendLine::setSettings (Setting *set)
   value = set->getFloat("Start Value");
   value2 = set->getFloat("End Value");
   barField = set->getData("Bar Field");
-  useBar = set->getInt("Use bar");
+  useBar = set->getInt("Use Bar");
   color.setNamedColor(set->getData("Color"));
   plot = set->getData("Plot");
   name = set->getData("Name");

@@ -23,20 +23,25 @@
 #include "ok.xpm"
 #include "disable.xpm"
 #include <qtooltip.h>
+#include <qlayout.h>
 
-IndicatorPage::IndicatorPage (QWidget *w, Config *c, Plot *pl) : BaseDialog(w)
+IndicatorPage::IndicatorPage (QWidget *w, Config *c, Plot *pl) : QWidget (w)
 {
   config = c;
   plot = pl;
 
+  QVBoxLayout *vbox = new QVBoxLayout(this);
+  vbox->setMargin(2);
+  vbox->setSpacing(5);
+  
   list = new QListBox(this);
   connect(list, SIGNAL(doubleClicked(QListBoxItem *)), this, SLOT(doubleClick(QListBoxItem *)));
-  basebox->addWidget(list);
+  vbox->addWidget(list);
 
   enableMain = new QCheckBox(tr("Disable All"), this);
   QToolTip::add(enableMain, tr("Disable All Main Chart Indicators"));
   connect(enableMain, SIGNAL(clicked()), this, SLOT(mainToggled()));
-  basebox->addWidget(enableMain);
+  vbox->addWidget(enableMain);
 
   refreshList();
 }

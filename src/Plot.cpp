@@ -165,12 +165,10 @@ int Plot::setChartType (QString d)
   chartType = d;
   
   minPixelspace = chartPlugin->getMinPixelspace();
+  pixelspace = minPixelspace;
   startX = chartPlugin->getStartX();
   dateFlag = TRUE;  
   
-  if (minPixelspace > pixelspace)
-    pixelspace = minPixelspace;
-    
   QObject::connect(chartPlugin, SIGNAL(draw()), this, SLOT(draw()));
   
   return FALSE;
@@ -238,6 +236,17 @@ void Plot::draw ()
       }
     }
 
+    if (mainFlag)
+    {
+      if (chartPlugin->getMinPixelspace() != minPixelspace)
+      {
+        minPixelspace = chartPlugin->getMinPixelspace();
+        if (minPixelspace > pixelspace)
+          pixelspace = minPixelspace;
+        emit signalMinPixelspace(minPixelspace);
+      }
+    }
+    
     setHeight();
 
     setWidth();
@@ -1357,7 +1366,7 @@ void Plot::showPopupMenu ()
   chartDeleteMenu = new QPopupMenu();
   chartEditMenu = new QPopupMenu();
   chartMenu->insertItem(QPixmap(edit), tr("Edit Indicator"), chartEditMenu);
-  chartMenu->insertItem (QPixmap(deletefile), tr("Delete Indicator"), chartDeleteMenu);
+  chartMenu->insertItem (QPixmap(deleteitem), tr("Delete Indicator"), chartDeleteMenu);
   chartMenu->insertSeparator ();
 
   if (drawMode)
@@ -1382,7 +1391,7 @@ void Plot::showPopupMenu ()
     chartMenu->insertItem (QPixmap(co), tr("New Chart Object"), chartObjectMenu);
   }
 
-  chartMenu->insertItem(QPixmap(deletefile), tr("Delete All Chart Objects"), this, SLOT(slotDeleteAllChartObjects()));
+  chartMenu->insertItem(QPixmap(deleteitem), tr("Delete All Chart Objects"), this, SLOT(slotDeleteAllChartObjects()));
 
   chartMenu->insertSeparator ();
   chartMenu->insertItem(QPixmap(print), tr("Print Chart"), this, SLOT(printChart()));

@@ -22,6 +22,7 @@
 #include "EditChartDialog.h"
 #include "delete.xpm"
 #include "export.xpm"
+#include <qlabel.h>
 
 EditChartDialog::EditChartDialog (Config *c, QString cp) : EditDialog (c)
 {
@@ -33,49 +34,16 @@ EditChartDialog::EditChartDialog (Config *c, QString cp) : EditDialog (c)
 
   hideSettingView(TRUE);
 
-  setButtonStatus(0, FALSE);
+  setButton("delete", QPixmap(deleteitem), tr("Delete Record"));
+  connect(getButton("delete"), SIGNAL(clicked()), this, SLOT(deleteRecord()));
+  setButtonStatus("delete", FALSE);
 
-  setButton(QPixmap(deletefile), tr("Delete Record"), 2);
-  connect(getButton(2), SIGNAL(clicked()), this, SLOT(deleteRecord()));
-  setButtonStatus(2, FALSE);
-
-  setButton(QPixmap(exportfile), tr("Save Record"), 3);
-  connect(getButton(3), SIGNAL(clicked()), this, SLOT(saveRecord()));
-  setButtonStatus(3, FALSE);
-
-  tab = new QTabWidget(this);
-  basebox->addWidget(tab);
-
-  // create details page
-
-  QWidget *w = new QWidget(this);
-
-  QVBoxLayout *vbox = new QVBoxLayout(w);
-  vbox->setMargin(5);
-
-  detailList = new SettingView (w, config->getData(Config::DataPath));
-  vbox->addWidget(detailList);
-
-  tab->addTab(w, tr("Details"));
-
-  // create data page
-
-  w = new QWidget(this);
-
-  vbox = new QVBoxLayout(w);
-  vbox->setMargin(5);
-  vbox->setSpacing(5);
-
-  date = new QDateEdit(QDate::currentDate(), w);
-  date->setAutoAdvance(TRUE);
-  date->setOrder(QDateEdit::YMD);
-  connect(date, SIGNAL(valueChanged(const QDate &)), this, SLOT(dateChanged(const QDate &)));
-  vbox->addWidget(date);
-
-  recordList = new SettingView (w, config->getData(Config::DataPath));
-  vbox->addWidget(recordList);
-
-  tab->addTab(w, tr("Data"));
+  setButton("save", QPixmap(exportfile), tr("Save Record"));
+  connect(getButton("save"), SIGNAL(clicked()), this, SLOT(saveRecord()));
+  setButtonStatus("save", FALSE);
+  
+  createDetailsPage();
+  createDataPage();
 
   db = new ChartDb();
   db->openChart(chartPath);
@@ -92,14 +60,49 @@ EditChartDialog::~EditChartDialog ()
     delete record;
 }
 
+void EditChartDialog::createDetailsPage ()
+{
+  QWidget *w = new QWidget(this);
+  
+  QVBoxLayout *vbox = new QVBoxLayout(w);
+  vbox->setMargin(5);
+  vbox->setSpacing(0);
+  
+  detailList = new SettingView (w, config->getData(Config::DataPath));
+  vbox->addWidget(detailList);
+  
+  tabs->addTab(w, tr("Details"));  
+}
+
+void EditChartDialog::createDataPage ()
+{
+  QWidget *w = new QWidget(this);
+  
+  QVBoxLayout *vbox = new QVBoxLayout(w);
+  vbox->setMargin(5);
+  vbox->setSpacing(0);
+  
+  date = new QDateEdit(QDate::currentDate(), w);
+  date->setAutoAdvance(TRUE);
+  date->setOrder(QDateEdit::YMD);
+  connect(date, SIGNAL(valueChanged(const QDate &)), this, SLOT(dateChanged(const QDate &)));
+  vbox->addWidget(date);
+  vbox->addSpacing(5);
+
+  recordList = new SettingView (w, config->getData(Config::DataPath));
+  vbox->addWidget(recordList);
+  
+  tabs->addTab(w, tr("Data"));  
+}
+
 void EditChartDialog::deleteRecord ()
 {
   db->deleteRecord(record);
   recordList->clear();
   delete record;
   record = 0;
-  setButtonStatus(2, FALSE);
-  setButtonStatus(3, FALSE);
+  setButtonStatus("delete", FALSE);
+  setButtonStatus("save", FALSE);
 }
 
 void EditChartDialog::saveRecord ()
@@ -124,8 +127,8 @@ void EditChartDialog::dateChanged (const QDate &d)
   QString data = db->getData(key);
   if (! data.length())
   {
-    setButtonStatus(2, FALSE);
-    setButtonStatus(3, FALSE);
+    setButtonStatus("delete", FALSE);
+    setButtonStatus("save", FALSE);
     return;
   }
 
@@ -137,8 +140,8 @@ void EditChartDialog::dateChanged (const QDate &d)
 
   recordList->setItems(record);
 
-  setButtonStatus(2, TRUE);
-  setButtonStatus(3, TRUE);
+  setButtonStatus("delete", TRUE);
+  setButtonStatus("save", TRUE);
 }
 
 

@@ -84,9 +84,6 @@ void Scaler::set (int ht, double h, double l, double lh, double lr, bool df, boo
   logScaleHigh = lh;
   logRange = lr;
 
-  if (dateFlag)
-    height = height - dateHeight;
-
   range = scaleHigh - scaleLow;
   scaler = height / range;
 }

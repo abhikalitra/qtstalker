@@ -27,7 +27,7 @@
 Swing::Swing ()
 {
   pluginName = "Swing";
-  minPixelspace = 4;
+//  minPixelspace = 4;
   startX = 0;
   indicatorFlag = TRUE;
 
@@ -156,12 +156,14 @@ void Swing::prefDialog ()
   dialog->createPage (tr("Colors"));
   dialog->addColorItem(tr("Up Color"), 1, upColor);
   dialog->addColorItem(tr("Down Color"), 1, downColor);
+  dialog->addIntItem(tr("Min Bar Spacing"), 1, minPixelspace, 4, 99);
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
     upColor = dialog->getColor(tr("Up Color"));
     downColor = dialog->getColor(tr("Down Color"));
+    minPixelspace = dialog->getInt(tr("Min Bar Spacing"));
     
     saveFlag = TRUE;
     
@@ -185,6 +187,8 @@ void Swing::loadSettings ()
   s = settings.readEntry("/DownColor", "red");
   downColor.setNamedColor(s);
   
+  minPixelspace = settings.readNumEntry("/minPixelspace", 4);
+  
   settings.endGroup();
 }
 
@@ -199,6 +203,7 @@ void Swing::saveSettings ()
   settings.writeEntry("/NeutralColor", neutralColor.name());
   settings.writeEntry("/UpColor", upColor.name());
   settings.writeEntry("/DownColor", downColor.name());
+  settings.writeEntry("/minPixelspace", minPixelspace);
   
   settings.endGroup();
 }

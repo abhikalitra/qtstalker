@@ -30,26 +30,31 @@
 #include <qmessagebox.h>
 #include <qcursor.h>
 #include <qtooltip.h>
+#include <qlayout.h>
 
-ChartPage::ChartPage (QWidget *w, Config *c) : BaseDialog(w)
+ChartPage::ChartPage (QWidget *w, Config *c) : QWidget (w)
 {
   config = c;
 
+  QVBoxLayout *vbox = new QVBoxLayout(this);
+  vbox->setMargin(2);
+  vbox->setSpacing(5);
+  
   search = new QLineEdit("*", this);
   connect(search, SIGNAL(textChanged(const QString &)), this, SLOT(searchChanged(const QString &)));
   QToolTip::add(search, tr("List Filter, e.g. s* or sb*"));
-  basebox->addWidget(search);
+  vbox->addWidget(search);
 
   nav = new Navigator(this, config->getData(Config::DataPath));
   connect(nav, SIGNAL(fileSelected(QString)), this, SLOT(chartSelected(QString)));
   connect(nav, SIGNAL(noSelection()), this, SLOT(chartNoSelection()));
   connect(nav, SIGNAL(contextMenuRequested(QListBoxItem *, const QPoint &)), this, SLOT(rightClick(QListBoxItem *)));
   nav->updateList();
-  basebox->addWidget(nav);
+  vbox->addWidget(nav);
 
   menu = new QPopupMenu();
   menu->insertItem(QPixmap(edit), tr("Edit Chart"), this, SLOT(editChart()));
-  menu->insertItem(QPixmap(deletefile), tr("Delete Chart"), this, SLOT(deleteChart()));
+  menu->insertItem(QPixmap(deleteitem), tr("Delete Chart"), this, SLOT(deleteChart()));
   menu->insertItem(QPixmap(exportfile), tr("Export Chart"), this, SLOT(exportSymbol()));
 
   chartNoSelection();

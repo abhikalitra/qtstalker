@@ -54,6 +54,13 @@ class BarData
       Other
     };
     
+    enum BarCompression
+    {
+      Daily,
+      Weekly,
+      Monthly
+    };
+    
     BarData ();
     BarData (QStringList);
     ~BarData ();
@@ -73,6 +80,8 @@ class BarData
     double getOther (int, int);
     BarData::BarType getType ();
     QStringList getFormat ();
+    void setBarCompression (BarData::BarCompression);
+    BarData::BarCompression getBarCompression ();
     
   protected:
     QList<Bar> barList;
@@ -81,6 +90,7 @@ class BarData
     double low;
     BarType type;
     QStringList format;
+    BarCompression compression;
 };
 
 #endif

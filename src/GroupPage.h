@@ -27,10 +27,9 @@
 #include <qpopupmenu.h>
 #include <qlineedit.h>
 #include "Navigator.h"
-#include "BaseDialog.h"
 #include "Config.h"
 
-class GroupPage : public BaseDialog
+class GroupPage : public QWidget
 {
   Q_OBJECT
 

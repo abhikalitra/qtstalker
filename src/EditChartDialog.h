@@ -37,6 +37,8 @@ class EditChartDialog : public EditDialog
   public:
     EditChartDialog (Config *, QString);
     ~EditChartDialog ();
+    void createDetailsPage ();
+    void createDataPage ();
 
   public slots:
     void deleteRecord ();

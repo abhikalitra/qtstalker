@@ -56,6 +56,7 @@ class Plot : public QWidget
     void signalDeleteIndicator (QString, Plot *);
     void signalNewIndicator ();
     void signalMouseLeftClick (int, int);
+    void signalMinPixelspace (int);
 
   public:
 

@@ -26,11 +26,10 @@
 #include <qwidget.h>
 #include <qlistbox.h>
 #include <qcheckbox.h>
-#include "BaseDialog.h"
 #include "Config.h"
 #include "Plot.h"
 
-class IndicatorPage : public BaseDialog
+class IndicatorPage : public QWidget
 {
   Q_OBJECT
 

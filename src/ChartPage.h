@@ -27,10 +27,9 @@
 #include <qpopupmenu.h>
 #include <qlineedit.h>
 #include "Navigator.h"
-#include "BaseDialog.h"
 #include "Config.h"
 
-class ChartPage : public BaseDialog
+class ChartPage : public QWidget
 {
   Q_OBJECT
 

@@ -23,13 +23,14 @@
 #define EDITDIALOG_HPP
 
 #include <qdialog.h>
-#include <qtoolbutton.h>
+#include <qtabwidget.h>
+#include <qpushbutton.h>
 #include <qlayout.h>
 #include <qlistview.h>
-#include <qlist.h>
 #include "SettingView.h"
 #include "Setting.h"
 #include "Config.h"
+#include "Toolbar.h"
 
 class EditDialog : public QDialog
 {
@@ -39,11 +40,10 @@ class EditDialog : public QDialog
     EditDialog (Config *);
     ~EditDialog ();
     void setItems (Setting *);
-    void setButton (QPixmap, QString, int);
-    QToolButton * getButton (int);
-    void setButtonStatus (int, bool);
+    void setButton (QString, QPixmap, QString);
+    QPushButton * getButton (QString);
+    void setButtonStatus (QString, bool);
     void hideSettingView (bool);
-    void unhookButton (int);
 
   public slots:
     void saveSettings ();
@@ -53,9 +53,11 @@ class EditDialog : public QDialog
     Setting *settings;
     SettingView *list;
     QListViewItem *item;
-    QGridLayout *toolbar;
+    Toolbar *toolbar;
     QVBoxLayout *basebox;
-    QList<QToolButton> buttonList;
+    QTabWidget *tabs;
+    QPushButton *okButton;
+    QPushButton *cancelButton;
 };
 
 #endif

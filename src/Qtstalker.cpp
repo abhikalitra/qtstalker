@@ -147,6 +147,7 @@ QtstalkerApp::QtstalkerApp()
   QObject::connect(mainPlot, SIGNAL(infoMessage(Setting *)), this, SLOT(slotUpdateInfo(Setting *)));
   QObject::connect(mainPlot, SIGNAL(leftMouseButton(int, int, bool)), this, SLOT(slotPlotLeftMouseButton(int, int, bool)));
   QObject::connect(mainPlot, SIGNAL(keyPressed(QKeyEvent *)), this, SLOT(slotPlotKeyPressed(QKeyEvent *)));
+  QObject::connect(mainPlot, SIGNAL(signalMinPixelspace(int)), this, SLOT(slotMinPixelspaceChanged(int)));
 
   QObject::connect(this, SIGNAL(signalGrid(bool)), mainPlot, SLOT(setGridFlag(bool)));
   QObject::connect(this, SIGNAL(signalScaleToScreen(bool)), mainPlot, SLOT(setScaleToScreen(bool)));
@@ -260,6 +261,7 @@ QtstalkerApp::QtstalkerApp()
   // set the nav status
   slotHideNav(TRUE);
 
+  // set the last used chart type
   slotChartTypeChanged(0);
 
   initChartNav();
@@ -270,6 +272,9 @@ QtstalkerApp::QtstalkerApp()
 //  initScannerNav();
 
   resize(config->getData(Config::Width).toInt(), config->getData(Config::Height).toInt());
+  
+  // catch any kill signals and try to save config
+  QObject::connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(slotQuit()));
 }
 
 QtstalkerApp::~QtstalkerApp()
@@ -281,7 +286,7 @@ void QtstalkerApp::initActions()
   QPixmap icon(finished);
   actionQuit = new QAction(tr("Exit"), icon, tr("Exit"), 0, this);
   actionQuit->setStatusTip(tr("Quit Qtstalker."));
-  connect(actionQuit, SIGNAL(activated()), this, SLOT(slotQuit()));
+  connect(actionQuit, SIGNAL(activated()), qApp, SLOT(quit()));
 
   icon = indicator;
   actionNewIndicator = new QAction(tr("New Indicator..."), icon, tr("New Indicator..."), 0, this);
@@ -417,6 +422,7 @@ void QtstalkerApp::initToolBar()
   chartTypeCombo->show();
   chartTypeCombo->insertStringList(config->getChartPlugins(), -1);
   QToolTip::add(chartTypeCombo, tr("Chart Type"));
+  chartTypeCombo->setCurrentText(config->getData(Config::ChartStyle));
   connect(chartTypeCombo, SIGNAL(activated(int)), this, SLOT(slotChartTypeChanged(int)));
 
   pixelspace = new QSpinBox(toolbar2);
@@ -461,7 +467,7 @@ void QtstalkerApp::slotQuit()
   if (recordList)
     delete recordList;
 
-  qApp->quit();
+//  qApp->quit();
 }
 
 void QtstalkerApp::slotAbout()
@@ -646,14 +652,6 @@ void QtstalkerApp::loadChart (QString d)
 
   chartPath = d;
 
-  ChartDb *db = new ChartDb();
-  if (db->openChart(chartPath))
-  {
-    qDebug(tr("Unable to open chart."));
-    delete db;
-    return;
-  }
-
   // get a list of disabled indicators before you kill them
   QStringList l = mainPlot->getIndicators();
   QStringList di;
@@ -673,6 +671,14 @@ void QtstalkerApp::loadChart (QString d)
     
   // make sure we change db's after Plot saves previous db edits
   emit signalChartPath(chartPath);
+  
+  ChartDb *db = new ChartDb();
+  if (db->openChart(chartPath))
+  {
+    qDebug(tr("Unable to open chart."));
+    delete db;
+    return;
+  }
 
   Setting *set = db->getDetails();
   chartName = set->getData(tr("Title"));
@@ -831,31 +837,14 @@ void QtstalkerApp::loadChart (QString d)
     
     delete co;
   }
-  
-  int page = mainPlot->getWidth() / mainPlot->getPixelspace();
-  int max = recordList->count() - page;
-  if (max < 0)
-    max = 0;
-  slider->blockSignals(TRUE);
-  slider->setRange(0, recordList->count() - 1);
-  if (! reload)
-  {
-    if ((int) recordList->count() < page)
-      slider->setValue(0);
-    else
-      slider->setValue(max + 1);
-  }
-  slider->blockSignals(FALSE);
 
-  mainPlot->setIndex(slider->value());
-
-  for(it.toFirst(); it.current(); ++it)
-    it.current()->setIndex(slider->value());
-
+  // update the pixelspace
   pixelspace->blockSignals(TRUE);
   pixelspace->setRange(mainPlot->getMinPixelspace(), 99);
   pixelspace->blockSignals(FALSE);
-
+  
+  setSliderStart();
+  
   mainPlot->draw();
 
   for(it.toFirst(); it.current(); ++it)
@@ -1055,7 +1044,10 @@ void QtstalkerApp::slotChartTypeChanged (int)
 
   pixelspace->blockSignals(TRUE);
   pixelspace->setRange(mainPlot->getMinPixelspace(), 99);
+  pixelspace->setValue(mainPlot->getMinPixelspace());
   pixelspace->blockSignals(FALSE);
+  
+  setSliderStart();
 
   mainPlot->draw();
 
@@ -1244,7 +1236,9 @@ void QtstalkerApp::slotDeleteIndicator (QString text, Plot *plot)
 void QtstalkerApp::slotPixelspaceChanged (int d)
 {
   emit signalPixelspace(d);
-
+  
+  setSliderStart();
+  
   mainPlot->draw();
 
   QDictIterator<Plot> it(plotList);
@@ -1255,6 +1249,15 @@ void QtstalkerApp::slotPixelspaceChanged (int d)
   }
 
   slotTabChanged(0);
+}
+
+void QtstalkerApp::slotMinPixelspaceChanged (int d)
+{
+  pixelspace->blockSignals(TRUE);
+  pixelspace->setRange(d, 99);
+  pixelspace->setValue(d);
+  pixelspace->blockSignals(FALSE);
+  slotPixelspaceChanged(d);
 }
 
 void QtstalkerApp::slotSliderChanged (int v)
@@ -1543,6 +1546,32 @@ void QtstalkerApp::slotPlotKeyPressed (QKeyEvent *key)
 void QtstalkerApp::slotDrawMode (bool d)
 {
   emit signalDrawMode(d);
+}
+
+void QtstalkerApp::setSliderStart ()
+{
+  if (status == None)
+    return;
+
+  int page = mainPlot->getWidth() / pixelspace->value();
+  int max = recordList->count() - page;
+  if (max < 0)
+    max = 0;
+  slider->blockSignals(TRUE);
+  slider->setRange(0, recordList->count() - 1);
+  
+  if ((int) recordList->count() < page)
+  {
+    slider->setValue(0);
+    emit signalIndex(0);
+  }
+  else
+  {
+    slider->setValue(max + 1);
+    emit signalIndex(max + 1);
+  }
+  
+  slider->blockSignals(FALSE);
 }
 
 //**********************************************************************

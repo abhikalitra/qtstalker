@@ -91,6 +91,7 @@ class QtstalkerApp : public QMainWindow
     void exportChart (QString);
     void traverse(QString);
     void loadIndicator (Indicator *);
+    void setSliderStart ();
 
   public slots:
 
@@ -121,6 +122,7 @@ class QtstalkerApp : public QMainWindow
     void slotPlotLeftMouseButton (int, int, bool);
     void slotPlotKeyPressed (QKeyEvent *);
     void slotDrawMode (bool);
+    void slotMinPixelspaceChanged (int);
 
   private:
     QPopupMenu *fileMenu;

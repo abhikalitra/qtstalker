@@ -28,6 +28,7 @@ BarData::BarData ()
   low = 99999999;
   dateList.setAutoDelete(TRUE);
   barList.setAutoDelete(TRUE);
+  compression = BarData::Daily;
 }
 
 BarData::BarData (QStringList f)
@@ -38,6 +39,7 @@ BarData::BarData (QStringList f)
   dateList.setAutoDelete(TRUE);
   barList.setAutoDelete(TRUE);
   format = f;
+  compression = BarData::Daily;
 }
 
 BarData::~BarData ()
@@ -151,11 +153,52 @@ QDateTime BarData::getDate (int i)
 
 int BarData::getX (QDateTime date)
 {
-  X *x = dateList[date.toString("yyyyMMdd")];
-  if (x)
-    return x->x;
-  else
+  if (compression == Daily)
+  {
+    X *x = dateList[date.toString("yyyyMMdd")];
+    if (x)
+      return x->x;
+    else
+      return -1;
+  }
+  
+  if (compression == Weekly)
+  {
+    QDateTime dt = date;
+    dt = dt.addDays(- (dt.date().dayOfWeek() - 1));
+  
+    int loop = 0;
+    for (loop = 0; loop < 6; loop++)
+    {
+      X *x = dateList[dt.toString("yyyyMMdd")];
+      if (x)
+       return x->x;
+      else
+        dt = dt.addDays(1);
+    }
+    
     return -1;
+  }
+
+  if (compression == Monthly)
+  {
+    QDateTime dt = date;
+    dt.date().setYMD(date.date().year(), 1, 1);
+  
+    int loop = 0;
+    for (loop = 0; loop < dt.date().daysInMonth(); loop++)
+    {
+      X *x = dateList[dt.toString("yyyyMMdd")];
+      if (x)
+       return x->x;
+      else
+        dt = dt.addDays(1);
+    }
+    
+    return -1;
+  }
+  
+  return -1;
 }
 
 double BarData::getOpen (int i)
@@ -262,4 +305,13 @@ QStringList BarData::getFormat ()
   return format;
 }
 
+void BarData::setBarCompression (BarData::BarCompression d)
+{
+  compression = d;
+}
+
+BarData::BarCompression BarData::getBarCompression ()
+{
+  return compression;
+}
 

@@ -133,6 +133,8 @@ BarData * ChartDb::getDailyHistory ()
     recordList = new BarData(format);
   else
     recordList = new BarData;
+    
+  recordList->setBarCompression(BarData::Daily);
 
   while (! cursor->c_get(cursor, &key, &data, DB_PREV))
   {
@@ -171,6 +173,8 @@ BarData * ChartDb::getWeeklyHistory ()
     recordList = new BarData(format);
   else
     recordList = new BarData;
+    
+  recordList->setBarCompression(BarData::Weekly);
 
   while (! cursor->c_get(cursor, &key, &data, DB_PREV))
   {
@@ -255,6 +259,8 @@ BarData * ChartDb::getMonthlyHistory ()
     recordList = new BarData(format);
   else
     recordList = new BarData;
+    
+  recordList->setBarCompression(BarData::Monthly);
 
   while (! cursor->c_get(cursor, &key, &data, DB_PREV))
   {

@@ -29,22 +29,27 @@
 #include <qinputdialog.h>
 #include <qmessagebox.h>
 #include <qcursor.h>
+#include <qlayout.h>
 
-TestPage::TestPage (QWidget *w, Config *c) : BaseDialog (w)
+TestPage::TestPage (QWidget *w, Config *c) : QWidget (w)
 {
   config = c;
 
+  QVBoxLayout *vbox = new QVBoxLayout(this);
+  vbox->setMargin(2);
+  vbox->setSpacing(5);
+  
   nav = new Navigator(this, config->getData(Config::TestPath));
   connect(nav, SIGNAL(fileSelected(QString)), this, SLOT(testSelected(QString)));
   connect(nav, SIGNAL(noSelection()), this, SLOT(testNoSelection()));
   connect(nav, SIGNAL(contextMenuRequested(QListBoxItem *, const QPoint &)), this, SLOT(rightClick(QListBoxItem *)));
   nav->updateList();
-  basebox->addWidget(nav);
+  vbox->addWidget(nav);
   
   menu = new QPopupMenu();
   menu->insertItem(QPixmap(open), tr("Open Backtest Rule"), this, SLOT(openTest()));
   menu->insertItem(QPixmap(newchart), tr("New Backtest Rule"), this, SLOT(newTest()));
-  menu->insertItem(QPixmap(deletefile), tr("Delete Backtest Rule"), this, SLOT(deleteTest()));
+  menu->insertItem(QPixmap(deleteitem), tr("Delete Backtest Rule"), this, SLOT(deleteTest()));
   menu->insertItem(QPixmap(renam), tr("Rename Backtest Rule"), this, SLOT(renameTest()));
 
   testNoSelection();

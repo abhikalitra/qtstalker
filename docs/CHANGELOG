@@ -41,7 +41,17 @@
 20040308: Removed Price indicator plugin. Now redundant because of the Line chart plugin can replace
           it's functions.
 
+20040309: Added an option to save the minimum bar spacing for each chart plugin. When you change
+          chart types, the minimum bar spacing for that type will be the default.
 	  
+20040309: Last chart plugin used is now restored between sessions.
+
+20040310: Config settings were not being saved when the WM kills the app. Fixed.
+
+20040310: Fixed the plotting on tabbed indicators that left a space above the date if a date area
+          was requested.
+
+	  	  
 0.25
 ====
 

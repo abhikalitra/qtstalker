@@ -173,7 +173,7 @@ void Tester::createFormulaPage ()
 
   deleteIndicatorButton = new QToolButton(w);
   QToolTip::add(deleteIndicatorButton, tr("Delete Indicator"));
-  deleteIndicatorButton->setPixmap(QPixmap(deletefile));
+  deleteIndicatorButton->setPixmap(QPixmap(deleteitem));
   connect(deleteIndicatorButton, SIGNAL(clicked()), this, SLOT(deleteIndicator()));
   deleteIndicatorButton->setMaximumWidth(30);
   deleteIndicatorButton->setAutoRaise(TRUE);

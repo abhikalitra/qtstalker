@@ -29,22 +29,27 @@
 #include <qinputdialog.h>
 #include <qmessagebox.h>
 #include <qcursor.h>
+#include <qlayout.h>
 
-PortfolioPage::PortfolioPage (QWidget *w, Config *c) : BaseDialog (w)
+PortfolioPage::PortfolioPage (QWidget *w, Config *c) : QWidget (w)
 {
   config = c;
 
+  QVBoxLayout *vbox = new QVBoxLayout(this);
+  vbox->setMargin(2);
+  vbox->setSpacing(5);
+  
   nav = new Navigator(this, config->getData(Config::PortfolioPath));
   connect(nav, SIGNAL(fileSelected(QString)), this, SLOT(portfolioSelected(QString)));
   connect(nav, SIGNAL(noSelection()), this, SLOT(portfolioNoSelection()));
   connect(nav, SIGNAL(contextMenuRequested(QListBoxItem *, const QPoint &)), this, SLOT(rightClick(QListBoxItem *)));
   nav->updateList();
-  basebox->addWidget(nav);
+  vbox->addWidget(nav);
   
   menu = new QPopupMenu();
   menu->insertItem(QPixmap(open), tr("Open Portfolio"), this, SLOT(openPortfolio()));
   menu->insertItem(QPixmap(newchart), tr("New Portfolio"), this, SLOT(newPortfolio()));
-  menu->insertItem(QPixmap(deletefile), tr("Delete Portfolio"), this, SLOT(deletePortfolio()));
+  menu->insertItem(QPixmap(deleteitem), tr("Delete Portfolio"), this, SLOT(deletePortfolio()));
   menu->insertItem(QPixmap(renam), tr("Rename Portfolio"), this, SLOT(renamePortfolio()));
 
   portfolioNoSelection();

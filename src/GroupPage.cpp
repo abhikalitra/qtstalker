@@ -33,28 +33,33 @@
 #include <qcursor.h>
 #include <stdlib.h>
 #include <qtooltip.h>
+#include <qlayout.h>
 
-GroupPage::GroupPage (QWidget *w, Config *c) : BaseDialog(w)
+GroupPage::GroupPage (QWidget *w, Config *c) : QWidget (w)
 {
   config = c;
+  
+  QVBoxLayout *vbox = new QVBoxLayout(this);
+  vbox->setMargin(2);
+  vbox->setSpacing(5);
 
   group = new QLineEdit(this);
   group->setReadOnly(TRUE);
   QToolTip::add(group, tr("Current Group"));
   group->setFocusPolicy(QWidget::NoFocus);
-  basebox->addWidget(group);
+  vbox->addWidget(group);
 
   nav = new Navigator(this, config->getData(Config::GroupPath));
   connect(nav, SIGNAL(fileSelected(QString)), this, SLOT(groupSelected(QString)));
   connect(nav, SIGNAL(noSelection()), this, SLOT(groupNoSelection()));
   connect(nav, SIGNAL(contextMenuRequested(QListBoxItem *, const QPoint &)), this, SLOT(rightClick(QListBoxItem *)));
   nav->updateList();
-  basebox->addWidget(nav);
+  vbox->addWidget(nav);
 
   menu = new QPopupMenu();
   menu->insertItem(QPixmap(newchart), tr("New Group"), this, SLOT(newGroup()));
   menu->insertItem(QPixmap(insert), tr("Add Group Items"), this, SLOT(addGroupItem()));
-  menu->insertItem(QPixmap(deletefile), tr("Delete Group Items"), this, SLOT(deleteGroupItem()));
+  menu->insertItem(QPixmap(deleteitem), tr("Delete Group Items"), this, SLOT(deleteGroupItem()));
   menu->insertItem(QPixmap(stop), tr("Delete Group"), this, SLOT(deleteGroup()));
   menu->insertItem(QPixmap(renam), tr("Rename Group"), this, SLOT(renameGroup()));
 

@@ -27,7 +27,7 @@
 Bar::Bar ()
 {
   pluginName = "Bar";
-  minPixelspace = 4;
+//  minPixelspace = 4;
   startX = 2;
   indicatorFlag = FALSE;
 
@@ -109,6 +109,7 @@ void Bar::prefDialog ()
   dialog->addColorItem(tr("Neutral Color"), 1, neutralColor);
   dialog->addColorItem(tr("Up Color"), 1, upColor);
   dialog->addColorItem(tr("Down Color"), 1, downColor);
+  dialog->addIntItem(tr("Min Bar Spacing"), 1, minPixelspace, 4, 99);
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
@@ -116,9 +117,9 @@ void Bar::prefDialog ()
     neutralColor = dialog->getColor(tr("Neutral Color"));
     upColor = dialog->getColor(tr("Up Color"));
     downColor = dialog->getColor(tr("Down Color"));
+    minPixelspace = dialog->getInt(tr("Min Bar Spacing"));
     
     saveFlag = TRUE;
-    
     emit draw();
   }
   
@@ -139,6 +140,8 @@ void Bar::loadSettings ()
   s = settings.readEntry("/DownColor", "red");
   downColor.setNamedColor(s);
   
+  minPixelspace = settings.readNumEntry("/minPixelspace", 4);
+  
   settings.endGroup();
 }
 
@@ -153,6 +156,7 @@ void Bar::saveSettings ()
   settings.writeEntry("/NeutralColor", neutralColor.name());
   settings.writeEntry("/UpColor", upColor.name());
   settings.writeEntry("/DownColor", downColor.name());
+  settings.writeEntry("/minPixelspace", minPixelspace);
   
   settings.endGroup();
 }

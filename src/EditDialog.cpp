@@ -20,11 +20,6 @@
  */
 
 #include "EditDialog.h"
-#include "ok.xpm"
-#include "stop.xpm"
-#include <qtooltip.h>
-
-#define BUTTON_SIZE 24
 
 EditDialog::EditDialog (Config *c) : QDialog (0, "EditDialog", TRUE)
 {
@@ -32,23 +27,32 @@ EditDialog::EditDialog (Config *c) : QDialog (0, "EditDialog", TRUE)
   settings = 0;
   item = 0;
 
-  buttonList.setAutoDelete(TRUE);
-
   basebox = new QVBoxLayout(this);
-  basebox->setMargin(2);
-  basebox->setSpacing(5);
+  basebox->setMargin(5);
+  basebox->setSpacing(0);
 
-  toolbar = new QGridLayout(basebox, 1, 1);
-  toolbar->setSpacing(1);
-
-  setButton(QPixmap(ok), tr("OK"), 0);
-  connect(getButton(0), SIGNAL(clicked()), this, SLOT(saveSettings()));
-
-  setButton(QPixmap(stop), tr("Cancel"), 1);
-  connect(getButton(1), SIGNAL(clicked()), this, SLOT(reject()));
+  toolbar = new Toolbar(this, 30, 30);
+  basebox->addWidget(toolbar);
+  basebox->addSpacing(10);
+  
+  tabs = new QTabWidget(this);
+  basebox->addWidget(tabs);
+  basebox->addSpacing(5);
 
   list = new SettingView (this, config->getData(Config::DataPath));
   basebox->addWidget(list);
+  
+  QHBoxLayout *hbox = new QHBoxLayout(basebox);
+  hbox->setSpacing(5);
+  hbox->addStretch(1);
+  
+  okButton = new QPushButton(tr("OK"), this);
+  connect(okButton, SIGNAL(clicked()), this, SLOT(saveSettings()));
+  hbox->addWidget(okButton);
+  
+  cancelButton = new QPushButton(tr("Cancel"), this);
+  connect(cancelButton, SIGNAL(clicked()), this, SLOT(reject()));
+  hbox->addWidget(cancelButton);
 }
 
 EditDialog::~EditDialog ()
@@ -67,28 +71,19 @@ void EditDialog::saveSettings ()
   accept();
 }
 
-void EditDialog::setButton (QPixmap pix, QString tt, int pos)
+void EditDialog::setButton (QString name, QPixmap pix, QString tt)
 {
-  QToolButton *button = new QToolButton(this);
-  QToolTip::add(button, tt);
-  button->setPixmap(pix);
-  button->setMaximumWidth(BUTTON_SIZE);
-  button->setMaximumHeight(BUTTON_SIZE);
-  button->setAutoRaise(TRUE);
-  toolbar->addWidget(button, 0, pos);
-  buttonList.append(button);
-  toolbar->expand(1, toolbar->numCols() + 1);
+  toolbar->addButton(name, pix, tt);
 }
 
-QToolButton * EditDialog::getButton (int pos)
+QPushButton * EditDialog::getButton (QString name)
 {
-  return buttonList.at(pos);
+  return toolbar->getButton(name);
 }
 
-void EditDialog::setButtonStatus (int pos, bool status)
+void EditDialog::setButtonStatus (QString name, bool status)
 {
-  QToolButton *button = buttonList.at(pos);
-  button->setEnabled(status);
+  toolbar->setButtonStatus(name, status);
 }
 
 void EditDialog::hideSettingView (bool d)
@@ -98,11 +93,4 @@ void EditDialog::hideSettingView (bool d)
   else
     list->show();
 }
-
-void EditDialog::unhookButton (int pos)
-{
-  disconnect(getButton(pos), SIGNAL(clicked()), 0, 0);
-}
-
-
 

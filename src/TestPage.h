@@ -26,10 +26,9 @@
 #include <qwidget.h>
 #include <qpopupmenu.h>
 #include "Navigator.h"
-#include "BaseDialog.h"
 #include "Config.h"
 
-class TestPage : public BaseDialog
+class TestPage : public QWidget
 {
   Q_OBJECT
 
