@@ -19,14 +19,20 @@ any changes made since the last save.<br>
 <ul>
   <li>Long - Enable/disable long trades.</li>
   <li>Short - Enable/disable short trades.</li>
-  <li>Enter Long Delay - The number of bars to delay a signal to avoid
-whipsaw trades and false signals.</li>
-  <li>Exit Long Delay - The number of bars to delay a signal to avoid
-whipsaw trades and false signals.</li>
-  <li>Enter Short Delay - The number of bars to delay a signal to avoid
-whipsaw trades and false signals.</li>
-  <li>Exit Long Delay - The number of bars to delay a signal to avoid
-whipsaw trades and false signals.</li>
+  <li>Enter Long Delay - The number of bars to verify a signal to avoid
+whipsaw trades and false signals. eg. a value of 2 would require 2
+consecutive TRUE signals in generate an enter long signal.<br>
+  </li>
+  <li>Exit Long Delay - The number of bars to verify a signal to avoid
+whipsaw trades and false signals. eg. a value of 2 would require 2
+consecutive TRUE signals in generate an exit long signal.</li>
+  <li>Enter Short Delay - The number of bars to verify a signal to
+avoid
+whipsaw trades and false signals. eg. a value of 2 would require 2
+consecutive TRUE signals in generate an enter short signal.</li>
+  <li>Exit Long Delay - The number of bars to verify a signal to avoid
+whipsaw trades and false signals. eg. a value of 2 would require 2
+consecutive TRUE signals in generate an exit short signal.</li>
 </ul>
 <h3>Account</h3>
 <ul>
@@ -38,7 +44,8 @@ account.</li>
 not trading futures.</li>
   <li>Volume % - The percentage of the account balance to use for
 applying to each trade. This determines the volume. 50 would mean use
-50% of the account balance. If volume is set to zero, the default
+50% of the current account balance. If volume is set to zero, the
+default
 volume will be 1.</li>
 </ul>
 <h3>Testing<br>
@@ -48,8 +55,8 @@ volume will be 1.</li>
 test.</li>
   <li>Bars - The number of bars to load from the symbol to use for
 testing.</li>
-  <li>Entry/Exit Price - The bar price to use for price. You can select
-the open, close or average. Average price is a typical price of the bar.<br>
+  <li>Entry/Exit Price - The bar field to use for price. You can select
+the open or close.<br>
   </li>
 </ul>
 <br>

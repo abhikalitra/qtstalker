@@ -167,7 +167,9 @@
 20040916: A logic error was found in the DMI indicator that returned smaller +DI and -DI values.
           Fixed that as well as optimised speed.
 	  
-
+20040918: Finally fixed signal propagation for the indicator tabs. Now the user can delete all the
+          tabs if desired. YAY!
+	  
 	  	  
 	  	  	  
 0.26

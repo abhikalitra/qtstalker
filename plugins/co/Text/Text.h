@@ -46,6 +46,7 @@ class Text : public COPlugin
     void keyEvent (QKeyEvent *);
     double getHigh ();
     double getLow ();
+    void showMenu ();
     
     void loadDefaults ();
     void saveDefaults ();

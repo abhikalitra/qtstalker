@@ -62,11 +62,11 @@ class COPlugin : public QObject
     virtual void keyEvent (QKeyEvent *);
     virtual double getHigh ();
     virtual double getLow ();
+    virtual void showMenu ();
     
     void setData (BarData *);
     void setScaler (Scaler *);
     void setPixmap (QPixmap *);
-    void showMenu ();
 
   public slots:    
     virtual void prefDialog ();

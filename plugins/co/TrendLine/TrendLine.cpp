@@ -27,6 +27,7 @@
 #include "../../../src/rename.xpm"
 #include <qpainter.h>
 #include <qsettings.h>
+#include <qcursor.h>
 
 TrendLine::TrendLine ()
 {
@@ -251,6 +252,9 @@ COPlugin::Status TrendLine::pointerClick (QPoint point, BarDate x, double y)
     QDictIterator<TrendLineObject> it(objects);
     for (; it.current(); ++it)
     {
+      if (it.current()->getStatus() == TrendLineObject::Delete)
+        continue;
+    
       if (it.current()->isSelected(point))
       {
         selected = it.current();
@@ -532,6 +536,12 @@ double TrendLine::getLow ()
   }
 
   return low;
+}
+
+void TrendLine::showMenu ()
+{
+  if (selected)
+    menu->exec(QCursor::pos());
 }
 
 //****************************************************

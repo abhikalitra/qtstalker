@@ -215,13 +215,13 @@ void Tester::createStopPage ()
   trailingEdit = new QLineEdit("0", gbox);
   trailingEdit->setValidator(validator);
   
-  hbox = new QHBoxLayout(vbox);
-  hbox->setSpacing(5);
+  QGridLayout *grid = new QGridLayout(vbox, 1, 2);
+  grid->setSpacing(5);
   
   gbox = new QVGroupBox(tr("Custom Long Stop"), w);
   gbox->setInsideSpacing(2);
   gbox->setColumns(1);
-  hbox->addWidget(gbox);
+  grid->addWidget(gbox, 0, 0);
   
   customLongStopCheck = new QCheckBox(tr("Enabled"), gbox);
   connect(customLongStopCheck, SIGNAL(toggled(bool)), this, SLOT(customLongStopToggled(bool)));
@@ -231,7 +231,7 @@ void Tester::createStopPage ()
   gbox = new QVGroupBox(tr("Custom Short Stop"), w);
   gbox->setInsideSpacing(2);
   gbox->setColumns(1);
-  hbox->addWidget(gbox);
+  grid->addWidget(gbox, 0, 1);
   
   customShortStopCheck = new QCheckBox(tr("Enabled"), gbox);
   connect(customShortStopCheck, SIGNAL(toggled(bool)), this, SLOT(customShortStopToggled(bool)));
@@ -402,7 +402,7 @@ void Tester::createReportPage ()
   
   // win summary
 
-  gbox = new QVGroupBox(tr("Winning Trades Summary"), w);
+  gbox = new QVGroupBox(tr("Win Summary"), w);
   gbox->setInsideSpacing(2);
   gbox->setColumns(2);
   hbox->addWidget(gbox);
@@ -427,7 +427,7 @@ void Tester::createReportPage ()
 
   // lose summary
 
-  gbox = new QVGroupBox(tr("Losing Trades Summary"), w);
+  gbox = new QVGroupBox(tr("Loss Summary"), w);
   gbox->setInsideSpacing(2);
   gbox->setColumns(2);
   hbox->addWidget(gbox);

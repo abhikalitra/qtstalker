@@ -28,6 +28,7 @@
 #include "../../../src/rename.xpm"
 #include <qpainter.h>
 #include <qsettings.h>
+#include <qcursor.h>
 
 FiboLine::FiboLine ()
 {
@@ -252,6 +253,9 @@ COPlugin::Status FiboLine::pointerClick (QPoint point, BarDate x, double y)
     QDictIterator<FiboLineObject> it(objects);
     for (; it.current(); ++it)
     {
+      if (it.current()->getStatus() == FiboLineObject::Delete)
+        continue;
+    
       if (it.current()->isSelected(point))
       {
         selected = it.current();
@@ -516,6 +520,12 @@ double FiboLine::getLow ()
   }
 
   return low;
+}
+
+void FiboLine::showMenu ()
+{
+  if (selected)
+    menu->exec(QCursor::pos());
 }
 
 //****************************************************

@@ -42,13 +42,6 @@
 #include "TestPage.h"
 #include "IndicatorPage.h"
 #include "PlotLine.h"
-//#include "BuyArrow.h"
-//#include "SellArrow.h"
-//#include "TrendLine.h"
-//#include "HorizontalLine.h"
-//#include "VerticalLine.h"
-//#include "FiboLine.h"
-//#include "Text.h"
 #include "PrefDialog.h"
 #include "ScannerPage.h"
 #include "ChartDb.h"
@@ -1159,17 +1152,11 @@ void QtstalkerApp::slotEditIndicator (QString selection, Plot *plot)
 
 void QtstalkerApp::slotDeleteIndicator (QString text, Plot *plot)
 {
-  if (! plot->getMainFlag() && plot->getTabFlag())
-  {
-    if (tabs->count() == 1)
-    {
-      QMessageBox::information(this, tr("Qtstalker: Error"), tr("Must leave at least one indicator tab."));
-      return;
-    }
-  }
-
   // delete any chart objects that belong to the indicator
-  if (! plot->getMainFlag())
+  bool mainFlag = plot->getMainFlag();
+  bool tabFlag = plot->getTabFlag();
+  
+  if (! mainFlag)
   {
     ChartDb *db = new ChartDb;
     db->openChart(chartPath);
@@ -1184,10 +1171,13 @@ void QtstalkerApp::slotDeleteIndicator (QString text, Plot *plot)
     delete db;
   }
 
-  if (! plot->getMainFlag())
+  if (! mainFlag)
   {
-    if (plot->getTabFlag())
+    if (tabFlag)
+    {
       tabs->removePage((QWidget *) plot);
+      plotList.remove(text);
+    }
     else
       plotList.remove(text);
   }
@@ -1198,7 +1188,7 @@ void QtstalkerApp::slotDeleteIndicator (QString text, Plot *plot)
 
   emit signalIndicatorPageRefresh();
 
-  if (plot->getMainFlag())
+  if (mainFlag)
     mainPlot->draw();
 }
 
@@ -1332,7 +1322,11 @@ void QtstalkerApp::addIndicatorButton (QString d, Indicator::PlotType tabFlag)
   QObject::connect(plot, SIGNAL(keyPressed(QKeyEvent *)), this, SLOT(slotPlotKeyPressed(QKeyEvent *)));
 
   if (tabFlag == Indicator::TabPlot)
+  {
     tabs->addTab(plot, d);
+    tabs->showPage(plot);
+    tabs->adjustSize();
+  }
 }
 
 void QtstalkerApp::slotChartUpdated ()
@@ -1353,7 +1347,7 @@ void QtstalkerApp::slotStatusMessage (QString d)
 
 void QtstalkerApp::slotTabChanged (QWidget *)
 {
-  if (plotList.count())
+  if (tabs->count())
   {
     Plot *plot = plotList[tabs->label(tabs->currentPageIndex())];
     plot->draw();

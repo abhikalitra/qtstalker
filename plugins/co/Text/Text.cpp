@@ -28,6 +28,7 @@
 #include "../../../src/rename.xpm"
 #include <qpainter.h>
 #include <qsettings.h>
+#include <qcursor.h>
 
 Text::Text ()
 {
@@ -167,6 +168,9 @@ COPlugin::Status Text::pointerClick (QPoint point, BarDate x, double y)
     QDictIterator<TextObject> it(objects);
     for (; it.current(); ++it)
     {
+      if (it.current()->getStatus() == TextObject::Delete)
+        continue;
+    
       if (it.current()->isSelected(point))
       {
         selected = it.current();
@@ -372,6 +376,12 @@ double Text::getLow ()
   }
 
   return low;
+}
+
+void Text::showMenu ()
+{
+  if (selected)
+    menu->exec(QCursor::pos());
 }
 
 //****************************************************

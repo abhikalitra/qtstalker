@@ -27,6 +27,7 @@
 #include "../../../src/rename.xpm"
 #include <qpainter.h>
 #include <qsettings.h>
+#include <qcursor.h>
 
 VerticalLine::VerticalLine ()
 {
@@ -181,6 +182,9 @@ COPlugin::Status VerticalLine::pointerClick (QPoint point, BarDate x, double)
     QDictIterator<VerticalLineObject> it(objects);
     for (; it.current(); ++it)
     {
+      if (it.current()->getStatus() == VerticalLineObject::Delete)
+        continue;
+    
       if (it.current()->isSelected(point))
       {
         selected = it.current();
@@ -352,6 +356,12 @@ double VerticalLine::getHigh ()
 double VerticalLine::getLow ()
 {
   return data->getMin();
+}
+
+void VerticalLine::showMenu ()
+{
+  if (selected)
+    menu->exec(QCursor::pos());
 }
 
 //****************************************************

@@ -29,6 +29,7 @@
 #include <qpainter.h>
 #include <qsettings.h>
 #include <qpointarray.h>
+#include <qcursor.h>
 
 HorizontalLine::HorizontalLine ()
 {
@@ -178,6 +179,9 @@ COPlugin::Status HorizontalLine::pointerClick (QPoint point, BarDate, double y)
     QDictIterator<HorizontalLineObject> it(objects);
     for (; it.current(); ++it)
     {
+      if (it.current()->getStatus() == HorizontalLineObject::Delete)
+        continue;
+    
       if (it.current()->isSelected(point))
       {
         selected = it.current();
@@ -369,6 +373,12 @@ double HorizontalLine::getLow ()
   }
 
   return low;
+}
+
+void HorizontalLine::showMenu ()
+{
+  if (selected)
+    menu->exec(QCursor::pos());
 }
 
 //****************************************************

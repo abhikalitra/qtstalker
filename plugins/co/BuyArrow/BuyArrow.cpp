@@ -27,6 +27,7 @@
 #include "../../../src/rename.xpm"
 #include <qpainter.h>
 #include <qsettings.h>
+#include <qcursor.h>
 
 BuyArrow::BuyArrow ()
 {
@@ -157,6 +158,9 @@ COPlugin::Status BuyArrow::pointerClick (QPoint point, BarDate x, double y)
     QDictIterator<BuyArrowObject> it(objects);
     for (; it.current(); ++it)
     {
+      if (it.current()->getStatus() == BuyArrowObject::Delete)
+        continue;
+    
       if (it.current()->isSelected(point))
       {
         selected = it.current();
@@ -349,6 +353,12 @@ double BuyArrow::getLow ()
   }
 
   return low;
+}
+
+void BuyArrow::showMenu ()
+{
+  if (selected)
+    menu->exec(QCursor::pos());
 }
 
 //****************************************************

@@ -27,6 +27,7 @@
 #include "../../../src/rename.xpm"
 #include <qpainter.h>
 #include <qsettings.h>
+#include <qcursor.h>
 
 SellArrow::SellArrow ()
 {
@@ -153,6 +154,9 @@ COPlugin::Status SellArrow::pointerClick (QPoint point, BarDate x, double y)
     QDictIterator<SellArrowObject> it(objects);
     for (; it.current(); ++it)
     {
+      if (it.current()->getStatus() == SellArrowObject::Delete)
+        continue;
+    
       if (it.current()->isSelected(point))
       {
         selected = it.current();
@@ -345,6 +349,12 @@ double SellArrow::getLow ()
   }
 
   return low;
+}
+
+void SellArrow::showMenu ()
+{
+  if (selected)
+    menu->exec(QCursor::pos());
 }
 
 //****************************************************

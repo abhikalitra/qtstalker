@@ -20,7 +20,6 @@
  */
 
 #include "COPlugin.h"
-#include <qcursor.h>
 
 COPlugin::COPlugin ()
 {
@@ -45,7 +44,6 @@ void COPlugin::prefDialog ()
 
 void COPlugin::showMenu ()
 {
-  menu->exec(QCursor::pos());
 }
 
 void COPlugin::setData (BarData *d)

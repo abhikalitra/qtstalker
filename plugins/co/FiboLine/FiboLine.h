@@ -46,6 +46,7 @@ class FiboLine : public COPlugin
     void keyEvent (QKeyEvent *);
     double getHigh ();
     double getLow ();
+    void showMenu ();
     
     void drawMovingPointer (QPoint);
     void loadDefaults ();

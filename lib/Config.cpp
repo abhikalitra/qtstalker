@@ -117,24 +117,6 @@ void Config::setup ()
       qDebug("Unable to create ~/Qtstalker/cusrules directory.");
   }
   setData(CUSRulePath, s);
-  
-  QStringList l = getIndicators();
-  if (l.count() == 0)
-  {
-    IndicatorPlugin *plug = getIndicatorPlugin("VOL");
-    if (! plug)
-    {
-      qDebug("Config::Config: could not open plugin");
-      closePlugin("VOL");
-    }
-    else
-    {
-      QString s = getData(Config::IndicatorPath) + "/Volume";
-      plug->setPlotType(1);
-      plug->saveIndicatorSettings(s);
-      closePlugin("VOL");
-    }
-  }
 }
 
 QString Config::getData (Parm p)
