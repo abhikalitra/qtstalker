@@ -19,40 +19,38 @@
  *  USA.
  */
 
-#ifndef FORMULAEDIT_HPP
-#define FORMULAEDIT_HPP
+#ifndef FORMULAINPUT_HPP
+#define FORMULAINPUT_HPP
 
 #include <qstring.h>
 #include <qwidget.h>
-#include <qtable.h>
-#include "Toolbar.h"
+#include <qcombobox.h>
+#include <qspinbox.h>
+#include <qlineedit.h>
+#include <qwidgetstack.h>
 
-class FormulaEdit : public QWidget
+class FormulaInput : public QWidget
 {
   Q_OBJECT
 
   public:
-    FormulaEdit (QWidget *);
-    ~FormulaEdit ();
-    void setLine (QString);
-    QString getLine (int);
-    int getLines ();
-    QString getFormula (int);
-    QString getPlot (int);
-    QString getDialog (QString, QString);
+    FormulaInput (QWidget *, bool f, int lines, QString in);
+    ~FormulaInput ();
+    QString getInput ();
+    void setInput (QString);
 
   public slots:
-    void addItem ();
-    void editItem ();
-    void deleteItem ();
+    void buttonChecked (int);
 
   protected:
-    QTable *list;
-    Toolbar *toolbar;
-    QStringList functionList;
-    QStringList lineTypes;
-    QStringList maTypeList;
-    QStringList opList;
+    QComboBox *fields;
+    QComboBox *method;
+    QSpinBox *line;
+    QLineEdit *edit;
+    QStringList inputTypeList;
+    bool flag;
+    QWidgetStack *stack;
+    
 };
 
 #endif

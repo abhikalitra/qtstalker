@@ -37,6 +37,7 @@ PrefDialog::PrefDialog () : QTabDialog (0, "PrefDialog", TRUE)
   fileList.setAutoDelete(FALSE);
   symbolList.setAutoDelete(FALSE);
   dvList.setAutoDelete(FALSE);
+  formulaInputList.setAutoDelete(FALSE);
   
   resize(300, 200);
   
@@ -59,6 +60,7 @@ PrefDialog::~PrefDialog ()
   fileList.clear();
   symbolList.clear();
   dvList.clear();
+  formulaInputList.clear();
 }
 
 void PrefDialog::createPage (QString name)
@@ -99,11 +101,9 @@ void PrefDialog::addColorItem (QString name, QString page, QColor color)
 QColor PrefDialog::getColor (QString name)
 {
   QColor color;
-  
   ColorButton *button = colorButtonList[name];
   if (button)
     color = button->getColor();
-    
   return color;
 }
 
@@ -134,11 +134,9 @@ void PrefDialog::addFloatItem (QString name, QString page, double num, double lo
 double PrefDialog::getFloat (QString name)
 {
   double num = 0;
-  
   QLineEdit *edit = floatList[name];
   if (edit)
     num = edit->text().toFloat();
-    
   return num;
 }
 
@@ -166,11 +164,9 @@ void PrefDialog::addIntItem (QString name, QString page, int num, int min, int m
 int PrefDialog::getInt (QString name)
 {
   int num = 0;
-  
   QSpinBox *spin = intList[name];
   if (spin)
     num = spin->value();
-    
   return num;
 }
 
@@ -198,18 +194,15 @@ void PrefDialog::addCheckItem (QString name, QString page, bool flag)
 bool PrefDialog::getCheck (QString name)
 {
   bool flag = FALSE;
-  
   QCheckBox *check = checkList[name];
   if (check)
     flag = check->isChecked();
-    
   return flag;
 }
 
 QString PrefDialog::getCheckString (QString name)
 {
   QString flag;
-  
   QCheckBox *check = checkList[name];
   if (check)
   {
@@ -218,7 +211,6 @@ QString PrefDialog::getCheckString (QString name)
     else
       flag = "False";
   }    
-    
   return flag;
 }
 
@@ -240,11 +232,9 @@ void PrefDialog::addFontItem (QString name, QString page, QFont font)
 QFont PrefDialog::getFont (QString name)
 {
   QFont font;
-  
   FontButton *button = fontButtonList[name];
   if (button)
     font = button->getFont();
-    
   return font;
 }
 
@@ -266,11 +256,9 @@ void PrefDialog::addTextItem (QString name, QString page, QString t)
 QString PrefDialog::getText (QString name)
 {
   QString s;
-  
   QLineEdit *edit = textList[name];
   if (edit)
     s = edit->text();
-    
   return s;
 }
 
@@ -312,22 +300,18 @@ void PrefDialog::addComboItem (QString name, QString page, QStringList l, int s)
 QString PrefDialog::getCombo (QString name)
 {
   QString s;
-  
   QComboBox *combo = comboList[name];
   if (combo)
     s = combo->currentText();
-    
   return s;
 }
 
 int PrefDialog::getComboIndex (QString name)
 {
   int i = 0;
-  
   QComboBox *combo = comboList[name];
   if (combo)
     i = combo->currentItem();
-    
   return i;
 }
 
@@ -356,11 +340,9 @@ void PrefDialog::addDateItem (QString name, QString page, QDateTime dt)
 QDateTime PrefDialog::getDate (QString name)
 {
   QDateTime dt;
-  
   QDateEdit *date = dateList[name];
   if (date)
     dt.setDate(date->date());
-    
   return dt;
 }
 
@@ -382,11 +364,9 @@ void PrefDialog::addFileItem (QString name, QString page)
 QStringList PrefDialog::getFile (QString name)
 {
   QStringList l;
-  
   FileButton *button = fileList[name];
   if (button)
     l = button->getFile();
-    
   return l;
 }
 
@@ -408,11 +388,33 @@ void PrefDialog::addSymbolItem (QString name, QString page, QString path, QStrin
 QString PrefDialog::getSymbol (QString name)
 {
   QString s;
-  
   SymbolButton *button = symbolList[name];
   if (button)
     s = button->getPath();
-    
+  return s;
+}
+
+void PrefDialog::addFormulaInputItem (QString name, QString page, bool flag, int lines, QString in)
+{
+  QWidget *w = widgetList[page];
+  
+  QGridLayout *grid = gridList[page];
+  grid->expand(grid->numRows() + 1, grid->numCols());
+  
+  QLabel *label = new QLabel(name, w);
+  grid->addWidget(label, grid->numRows() - 2, 0);
+
+  FormulaInput *fi = new FormulaInput(w, flag, lines, in);
+  grid->addWidget(fi, grid->numRows() - 2, 1);
+  formulaInputList.replace(name, fi);
+}
+
+QString PrefDialog::getFormulaInput (QString name)
+{
+  QString s;
+  FormulaInput *fi = formulaInputList[name];
+  if (fi)
+    s = fi->getInput();
   return s;
 }
 

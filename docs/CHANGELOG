@@ -60,7 +60,7 @@
 	  testing rules you already have. Need to update DOCS.
 	  
 20040730: Added value labels to fibo objects to display when adjusting the various levels in real
-          time.
+          time. Also fixed fonts for values to use local font instead of system default.
 	  
 20040730: Added a chart page to the back testing module. First chart is an equity line that
           plots the account balance. The second chart is a line plot of the symbol close with
@@ -68,6 +68,13 @@
 	  counter instead.
 	  
 20040730: Added option to extend trendlines into the future in the edit dialog. Default is true.
+
+20040801: Applied patch #1001473 - PlotLine bug in Tester::. Thanks to Xiaoguang Zhang.
+
+20040801: Changed the method of entering/editing CUS rules in FormulaEdit:: to use a dialog
+          for each function in order to keep correct grammer. The user has to use the dialog
+	  now instead of entering functions by hand. Hopefully we can remove all the potential
+	  user errors so I don't have to code error checking for every parm. sigh.....
 
 
 0.26

@@ -63,54 +63,54 @@ class QSMath
     PlotLine * getEMA (PlotLine *, int);
     PlotLine * getWilderMA (PlotLine *, int);
     PlotLine * getWMA (PlotLine *, int);
-    QString getMA2 (int, QStringList);
+    void getMA2 (int, QStringList);
     
     PlotLine * getTR (); // true range
-    QString getTR2 (int i, QStringList);
+    void getTR2 (int i, QStringList);
     
     PlotLine * getTP (); // typical price H+L+C/3
-    QString getTP2 (int i, QStringList);
+    void getTP2 (int i, QStringList);
     
     PlotLine * getAD ();    // accumulation distribution
-    QString getAD2 (int i, QStringList);
+    void getAD2 (int i, QStringList);
     
     // bollinger band: flag=0 lower band, flag=1 upper band
     PlotLine * getBB (MAType maType, int period, double deviation, int flag);
-    QString getBB2 (int i, QStringList);
+    void getBB2 (int i, QStringList);
     
     PlotLine * getCCI (int period); // cci
-    QString getCCI2 (int i, QStringList);
+    void getCCI2 (int i, QStringList);
     
     PlotLine * getMDI (int period); //minus directional index 
-    QString getMDI2 (int i, QStringList);
+    void getMDI2 (int i, QStringList);
     
     PlotLine * getPDI (int period); //plus directional index
-    QString getPDI2 (int i, QStringList);
+    void getPDI2 (int i, QStringList);
     
     PlotLine * getADX (PlotLine *mdi, PlotLine *pdi, MAType maType, int period); // average directional index
-    QString getADX2 (int i, QStringList);
+    void getADX2 (int i, QStringList);
     
     PlotLine * getOSC (PlotLine *d, MAType fastMaType, MAType slowMaType,
                        int fastPeriod, int slowPeriod); // oscillator
-    QString getOSC2 (int i, QStringList);
+    void getOSC2 (int i, QStringList);
     
     PlotLine * getMF (int period); // money flow
-    QString getMF2 (int i, QStringList);
+    void getMF2 (int i, QStringList);
     
     PlotLine * getMOM (PlotLine *in, int period); // momentum
-    QString getMOM2 (int i, QStringList);
+    void getMOM2 (int i, QStringList);
     
     PlotLine * getNVI (); //negative volume index
-    QString getNVI2 (int i, QStringList);
+    void getNVI2 (int i, QStringList);
     
     PlotLine * getOBV (); //on balance volume
-    QString getOBV2 (int i, QStringList);
+    void getOBV2 (int i, QStringList);
 
     PlotLine * getPC (PlotLine *in, int period); //pecent change
-    QString getPC2 (int i, QStringList);
+    void getPC2 (int i, QStringList);
     
     PlotLine * getPER (PlotLine *in); //performance
-    QString getPER2 (int i, QStringList);
+    void getPER2 (int i, QStringList);
     
     double getPPFR (double high, double low, double close); // pivot point first resistance
     double getPPSR (double high, double low, double close); // pivot point second resistance
@@ -120,49 +120,49 @@ class QSMath
     double getPPTS (double high, double low, double close); // pivot point third support
     
     PlotLine * getPVI (); //positive volume index
-    QString getPVI2 (int i, QStringList);
+    void getPVI2 (int i, QStringList);
     
     PlotLine * getPVT (); //positive volume trend
-    QString getPVT2 (int i, QStringList);
+    void getPVT2 (int i, QStringList);
     
     PlotLine * getROC (PlotLine *in, int period); //rate of change
-    QString getROC2 (int i, QStringList);
+    void getROC2 (int i, QStringList);
     
     PlotLine * getRSI (PlotLine *in, int period); //relative strength index
-    QString getRSI2 (int i, QStringList);
+    void getRSI2 (int i, QStringList);
     
     PlotLine * getSAR (double initial, double add, double limit); // parabolic support and resistance
-    QString getSAR2 (int i, QStringList);
+    void getSAR2 (int i, QStringList);
     
     PlotLine * getSD (PlotLine *in, int period); // standard deviance
-    QString getSD2 (int i, QStringList);
+    void getSD2 (int i, QStringList);
     
     PlotLine * getSTOCH (MAType maType, int period, int kperiod); // stochastics
-    QString getSTOCH2 (int i, QStringList);
+    void getSTOCH2 (int i, QStringList);
     
     PlotLine * getVFI (int period); //volume flow index
-    QString getVFI2 (int i, QStringList);
+    void getVFI2 (int i, QStringList);
     
     PlotLine * getVOLR (int period); //volatility ratio
-    QString getVOLR2 (int i, QStringList);
+    void getVOLR2 (int i, QStringList);
     
     PlotLine * getWAD (); //william's accumulation distribution
-    QString getWAD2 (int i, QStringList);
+    void getWAD2 (int i, QStringList);
     
     PlotLine * getWILLR (int period); //william's %R
-    QString getWILLR2 (int i, QStringList);
+    void getWILLR2 (int i, QStringList);
     
-    QString getMUL (int i, QStringList); // multiply plotline
-    QString getDIV (int i, QStringList); // divide plotline
-    QString getSUB (int i, QStringList); // subtract plotline
-    QString getADD (int i, QStringList); // add plotline
-    QString getREF (int i, QStringList); // days back or current data array
-    QString getCOMPARE (int i, QStringList); // compares 2 data arrays and returns boolean array
+    void getMUL (int i, QStringList); // multiply plotline
+    void getDIV (int i, QStringList); // divide plotline
+    void getSUB (int i, QStringList); // subtract plotline
+    void getADD (int i, QStringList); // add plotline
+    void getREF (int i, QStringList); // days back or current data array
+    void getCOMPARE (int i, QStringList); // compares 2 data arrays and returns boolean array
     
     // custom functions
     void clearCustomLines ();
     PlotLine * getCustomLine (int);
-    QString calculateCustomFormula (QStringList, QStringList);
+    void calculateCustomFormula (QStringList, QStringList);
     PlotLine * getInputLine (QString);
     
   protected:

@@ -203,32 +203,11 @@ PlotLine * QSMath::getEMA (PlotLine *d, int period)
   return ema;
 }
 
-QString QSMath::getMA2 (int i, QStringList l)
+void QSMath::getMA2 (int i, QStringList l)
 {
-  QString rc;
-  bool ok;
-  
-  if (l.count() != 7)
-  {
-    rc = QObject::tr("MA: missing field");
-    return rc;
-  }
-
   MAType type = getMAType(l[1]);
-    
   PlotLine *input = getInputLine(l[2]);
-  if (! input)
-  {
-    rc = QObject::tr("MA: invalid input field");
-    return rc;
-  }
-
-  int period = l[3].toInt(&ok, 10);
-  if (! ok)
-  {
-    rc = QObject::tr("MA: invalid period field");
-    return rc;
-  }
+  int period = l[3].toInt();
   
   PlotLine *output = getMA(input, type, period);
   
@@ -238,11 +217,10 @@ QString QSMath::getMA2 (int i, QStringList l)
   
   customLines.replace(QString::number(i), output);
 
+  bool ok;
   l[2].toInt(&ok, 10);
   if (! ok)
     delete input;
-    
-  return rc;
 }
 
 //********************************************************************
@@ -423,25 +401,13 @@ PlotLine * QSMath::getTR ()
   return tr;
 }
 
-QString QSMath::getTR2 (int i, QStringList l)
+void QSMath::getTR2 (int i, QStringList l)
 {
-  QString rc;
-  
-  if (l.count() != 4)
-  {
-    rc = QObject::tr("TR: missing field");
-    return rc;
-  }
-  
   PlotLine *output = getTR();
-  
   output->setColor(l[1]);
   output->setType(l[2]);
   output->setLabel(l[3]);
-  
   customLines.replace(QString::number(i), output);
-      
-  return rc;
 }
 
 //********************************************************************
@@ -459,25 +425,13 @@ PlotLine * QSMath::getTP ()
   return tp;
 }
 
-QString QSMath::getTP2 (int i, QStringList l)
+void QSMath::getTP2 (int i, QStringList l)
 {
-  QString rc;
-  
-  if (l.count() != 4)
-  {
-    rc = QObject::tr("TP: missing field");
-    return rc;
-  }
-  
   PlotLine *output = getTP();
-  
   output->setColor(l[1]);
   output->setType(l[2]);
   output->setLabel(l[3]);
-  
   customLines.replace(QString::number(i), output);
-      
-  return rc;
 }
 
 //********************************************************************
@@ -514,25 +468,13 @@ PlotLine * QSMath::getAD ()
   return line;
 }
 
-QString QSMath::getAD2 (int i, QStringList l)
+void QSMath::getAD2 (int i, QStringList l)
 {
-  QString rc;
-  
-  if (l.count() != 4)
-  {
-    rc = QObject::tr("AD: missing field");
-    return rc;
-  }
-  
   PlotLine *output = getAD();
-  
   output->setColor(l[1]);
   output->setType(l[2]);
   output->setLabel(l[3]);
-  
   customLines.replace(QString::number(i), output);
-      
-  return rc;
 }
 
 //********************************************************************
@@ -579,49 +521,18 @@ PlotLine * QSMath::getBB (MAType maType, int period, double deviation, int flag)
   return bb;
 }
 
-QString QSMath::getBB2 (int i, QStringList l)
+void QSMath::getBB2 (int i, QStringList l)
 {
-  QString rc;
-  bool ok;
-  
-  if (l.count() != 8)
-  {
-    rc = QObject::tr("BB: missing field");
-    return rc;
-  }
-  
   MAType type = getMAType(l[1]);
-  
-  int period = l[2].toInt(&ok, 10);
-  if (! ok)
-  {
-    rc = QObject::tr("BB: invalid period field");
-    return rc;
-  }
-  
-  double deviation = l[3].toDouble(&ok);
-  if (! ok)
-  {
-    rc = QObject::tr("BB: invalid deviation field");
-    return rc;
-  }
-  
-  int flag = l[4].toInt(&ok, 10);
-  if (! ok)
-  {
-    rc = QObject::tr("BB: invalid flag field");
-    return rc;
-  }
+  int period = l[2].toInt();
+  double deviation = l[3].toDouble();
+  int flag = l[4].toInt();
   
   PlotLine *output = getBB(type, period, deviation, flag);
-  
   output->setColor(l[5]);
   output->setType(l[6]);
   output->setLabel(l[7]);
-  
   customLines.replace(QString::number(i), output);
-      
-  return rc;
 }
 
 //********************************************************************
@@ -658,33 +569,14 @@ PlotLine * QSMath::getCCI (int period)
   return cci;
 }
 
-QString QSMath::getCCI2 (int i, QStringList l)
+void QSMath::getCCI2 (int i, QStringList l)
 {
-  QString rc;
-  bool ok;
-  
-  if (l.count() != 5)
-  {
-    rc = QObject::tr("CCI: missing field");
-    return rc;
-  }
-  
-  int period = l[1].toInt(&ok, 10);
-  if (! ok)
-  {
-    rc = QObject::tr("CCI: invalid period field");
-    return rc;
-  }
-  
+  int period = l[1].toInt();
   PlotLine *output = getCCI(period);
-  
   output->setColor(l[2]);
   output->setType(l[3]);
   output->setLabel(l[4]);
-  
   customLines.replace(QString::number(i), output);
-      
-  return rc;
 }
 
 //********************************************************************
@@ -748,33 +640,14 @@ PlotLine * QSMath::getMDI (int period)
   return mdi;
 }
 
-QString QSMath::getMDI2 (int i, QStringList l)
+void QSMath::getMDI2 (int i, QStringList l)
 {
-  QString rc;
-  bool ok;
-  
-  if (l.count() != 5)
-  {
-    rc = QObject::tr("MDI: missing field");
-    return rc;
-  }
-  
-  int period = l[1].toInt(&ok, 10);
-  if (! ok)
-  {
-    rc = QObject::tr("MDI: invalid period field");
-    return rc;
-  }
-  
+  int period = l[1].toInt();
   PlotLine *output = getMDI(period);
-  
   output->setColor(l[2]);
   output->setType(l[3]);
   output->setLabel(l[4]);
-  
   customLines.replace(QString::number(i), output);
-      
-  return rc;
 }
 
 //********************************************************************
@@ -838,33 +711,14 @@ PlotLine * QSMath::getPDI (int period)
   return pdi;
 }
 
-QString QSMath::getPDI2 (int i, QStringList l)
+void QSMath::getPDI2 (int i, QStringList l)
 {
-  QString rc;
-  bool ok;
-  
-  if (l.count() != 5)
-  {
-    rc = QObject::tr("PDI: missing field");
-    return rc;
-  }
-  
-  int period = l[1].toInt(&ok, 10);
-  if (! ok)
-  {
-    rc = QObject::tr("PDI: invalid period field");
-    return rc;
-  }
-  
+  int period = l[1].toInt();
   PlotLine *output = getPDI(period);
-  
   output->setColor(l[2]);
   output->setType(l[3]);
   output->setLabel(l[4]);
-  
   customLines.replace(QString::number(i), output);
-      
-  return rc;
 }
 
 //********************************************************************
@@ -912,40 +766,20 @@ PlotLine * QSMath::getADX (PlotLine *mdi, PlotLine *pdi, MAType maType, int peri
   return adx;
 }
 
-QString QSMath::getADX2 (int i, QStringList l)
+void QSMath::getADX2 (int i, QStringList l)
 {
-  QString rc;
-  bool ok;
-  
-  if (l.count() != 6)
-  {
-    rc = QObject::tr("ADX: missing field");
-    return rc;
-  }
-  
   MAType type = getMAType(l[1]);
-  
-  int period = l[2].toInt(&ok, 10);
-  if (! ok)
-  {
-    rc = QObject::tr("ADX: invalid period field");
-    return rc;
-  }
+  int period = l[2].toInt();
   
   PlotLine *mdi = getMDI(period);
   PlotLine *pdi = getPDI(period);
-  
   PlotLine *output = getADX(mdi, pdi, type, period);
-  
   output->setColor(l[3]);
   output->setType(l[4]);
   output->setLabel(l[5]);
-  
   customLines.replace(QString::number(i), output);
-
   delete mdi;
   delete pdi;
-  return rc;
 }
 
 //********************************************************************
@@ -973,55 +807,24 @@ PlotLine * QSMath::getOSC (PlotLine *in, MAType fastMaType, MAType slowMaType,
   return osc;
 }
 
-QString QSMath::getOSC2 (int i, QStringList l)
+void QSMath::getOSC2 (int i, QStringList l)
 {
-  QString rc;
-  bool ok;
-  
-  if (l.count() != 9)
-  {
-    rc = QObject::tr("OSC: missing field");
-    return rc;
-  }
-  
   PlotLine *input = getInputLine(l[1]);
-  if (! input)
-  {
-    rc = QObject::tr("OSC: invalid input field");
-    return rc;
-  }
-
   MAType ftype = getMAType(l[2]);
-  
   MAType stype = getMAType(l[3]);
-    
-  int fperiod = l[4].toInt(&ok, 10);
-  if (! ok)
-  {
-    rc = QObject::tr("OSC: invalid period field");
-    return rc;
-  }
-  
-  int speriod = l[5].toInt(&ok, 10);
-  if (! ok)
-  {
-    rc = QObject::tr("OSC: invalid period field");
-    return rc;
-  }
+  int fperiod = l[4].toInt();
+  int speriod = l[5].toInt();
   
   PlotLine *output = getOSC(input, ftype, stype, fperiod, speriod);
-  
   output->setColor(l[6]);
   output->setType(l[7]);
   output->setLabel(l[8]);
-  
   customLines.replace(QString::number(i), output);
-      
+
+  bool ok;      
   l[1].toInt(&ok, 10);
   if (! ok)
     delete input;
-  
-  return rc;
 }
 
 //********************************************************************
@@ -1074,33 +877,14 @@ PlotLine * QSMath::getMF (int period)
   return d;
 }
 
-QString QSMath::getMF2 (int i, QStringList l)
+void QSMath::getMF2 (int i, QStringList l)
 {
-  QString rc;
-  bool ok;
-  
-  if (l.count() != 5)
-  {
-    rc = QObject::tr("MF: missing field");
-    return rc;
-  }
-  
-  int period = l[1].toInt(&ok, 10);
-  if (! ok)
-  {
-    rc = QObject::tr("MF: invalid period field");
-    return rc;
-  }
-  
+  int period = l[1].toInt();
   PlotLine *output = getMF(period);
-  
   output->setColor(l[2]);
   output->setType(l[3]);
   output->setLabel(l[4]);
-  
   customLines.replace(QString::number(i), output);
-      
-  return rc;
 }
 
 //********************************************************************
@@ -1116,44 +900,21 @@ PlotLine * QSMath::getMOM (PlotLine *in, int period)
   return mom;    
 }
 
-QString QSMath::getMOM2 (int i, QStringList l)
+void QSMath::getMOM2 (int i, QStringList l)
 {
-  QString rc;
-  bool ok;
-  
-  if (l.count() != 6)
-  {
-    rc = QObject::tr("MOM: missing field");
-    return rc;
-  }
-  
   PlotLine *input = getInputLine(l[1]);
-  if (! input)
-  {
-    rc = QObject::tr("MOM: invalid input field");
-    return rc;
-  }
-
-  int period = l[2].toInt(&ok, 10);
-  if (! ok)
-  {
-    rc = QObject::tr("MOM: invalid period field");
-    return rc;
-  }
+  int period = l[2].toInt();
   
   PlotLine *output = getMOM(input, period);
-  
   output->setColor(l[3]);
   output->setType(l[4]);
   output->setLabel(l[5]);
-  
   customLines.replace(QString::number(i), output);
-      
+
+  bool ok;      
   l[1].toInt(&ok, 10);
   if (! ok)
     delete input;
-  
-  return rc;
 }
 
 //********************************************************************
@@ -1182,25 +943,13 @@ PlotLine * QSMath::getNVI ()
   return nvi;
 }
 
-QString QSMath::getNVI2 (int i, QStringList l)
+void QSMath::getNVI2 (int i, QStringList l)
 {
-  QString rc;
-  
-  if (l.count() != 4)
-  {
-    rc = QObject::tr("NVI: missing field");
-    return rc;
-  }
-  
   PlotLine *output = getNVI();
-  
   output->setColor(l[1]);
   output->setType(l[2]);
   output->setLabel(l[3]);
-  
   customLines.replace(QString::number(i), output);
-      
-  return rc;
 }
 
 //********************************************************************
@@ -1233,25 +982,13 @@ PlotLine * QSMath::getOBV ()
   return obv;
 }
 
-QString QSMath::getOBV2 (int i, QStringList l)
+void QSMath::getOBV2 (int i, QStringList l)
 {
-  QString rc;
-  
-  if (l.count() != 4)
-  {
-    rc = QObject::tr("OBV: missing field");
-    return rc;
-  }
-  
   PlotLine *output = getOBV();
-  
   output->setColor(l[1]);
   output->setType(l[2]);
   output->setLabel(l[3]);
-  
   customLines.replace(QString::number(i), output);
-      
-  return rc;
 }
 
 //********************************************************************
@@ -1271,44 +1008,21 @@ PlotLine * QSMath::getPC (PlotLine *in, int period)
   return pc;
 }
 
-QString QSMath::getPC2 (int i, QStringList l)
+void QSMath::getPC2 (int i, QStringList l)
 {
-  QString rc;
-  bool ok;
-  
-  if (l.count() != 6)
-  {
-    rc = QObject::tr("PC: missing field");
-    return rc;
-  }
-  
   PlotLine *input = getInputLine(l[1]);
-  if (! input)
-  {
-    rc = QObject::tr("PC: invalid input field");
-    return rc;
-  }
-
-  int period = l[2].toInt(&ok, 10);
-  if (! ok)
-  {
-    rc = QObject::tr("PC: invalid period field");
-    return rc;
-  }
+  int period = l[2].toInt();
   
   PlotLine *output = getPC(input, period);
-  
   output->setColor(l[3]);
   output->setType(l[4]);
   output->setLabel(l[5]);
-  
   customLines.replace(QString::number(i), output);
-      
+
+  bool ok;      
   l[1].toInt(&ok, 10);
   if (! ok)
     delete input;
-  
-  return rc;
 }
 
 //********************************************************************
@@ -1327,37 +1041,19 @@ PlotLine * QSMath::getPER (PlotLine *in)
   return per;
 }
 
-QString QSMath::getPER2 (int i, QStringList l)
+void QSMath::getPER2 (int i, QStringList l)
 {
-  QString rc;
-  bool ok;
-  
-  if (l.count() != 5)
-  {
-    rc = QObject::tr("PER: missing field");
-    return rc;
-  }
-  
   PlotLine *input = getInputLine(l[1]);
-  if (! input)
-  {
-    rc = QObject::tr("PER: invalid input field");
-    return rc;
-  }
-
   PlotLine *output = getPER(input);
-  
   output->setColor(l[2]);
   output->setType(l[3]);
   output->setLabel(l[4]);
-  
   customLines.replace(QString::number(i), output);
-      
+
+  bool ok;      
   l[1].toInt(&ok, 10);
   if (! ok)
     delete input;
-  
-  return rc;
 }
 
 //********************************************************************
@@ -1430,25 +1126,13 @@ PlotLine * QSMath::getPVI ()
   return pvi;
 }
 
-QString QSMath::getPVI2 (int i, QStringList l)
+void QSMath::getPVI2 (int i, QStringList l)
 {
-  QString rc;
-  
-  if (l.count() != 4)
-  {
-    rc = QObject::tr("PVI: missing field");
-    return rc;
-  }
-  
   PlotLine *output = getPVI();
-  
   output->setColor(l[1]);
   output->setType(l[2]);
   output->setLabel(l[3]);
-  
   customLines.replace(QString::number(i), output);
-      
-  return rc;
 }
 
 //********************************************************************
@@ -1474,25 +1158,13 @@ PlotLine * QSMath::getPVT ()
   return pvt;
 }
 
-QString QSMath::getPVT2 (int i, QStringList l)
+void QSMath::getPVT2 (int i, QStringList l)
 {
-  QString rc;
-  
-  if (l.count() != 4)
-  {
-    rc = QObject::tr("PVT: missing field");
-    return rc;
-  }
-  
   PlotLine *output = getPVT();
-  
   output->setColor(l[1]);
   output->setType(l[2]);
   output->setLabel(l[3]);
-  
   customLines.replace(QString::number(i), output);
-      
-  return rc;
 }
 
 //********************************************************************
@@ -1508,44 +1180,21 @@ PlotLine * QSMath::getROC (PlotLine *in, int period)
   return roc;
 }
 
-QString QSMath::getROC2 (int i, QStringList l)
+void QSMath::getROC2 (int i, QStringList l)
 {
-  QString rc;
-  bool ok;
-  
-  if (l.count() != 6)
-  {
-    rc = QObject::tr("ROC: missing field");
-    return rc;
-  }
-  
   PlotLine *input = getInputLine(l[1]);
-  if (! input)
-  {
-    rc = QObject::tr("ROC: invalid input field");
-    return rc;
-  }
-
-  int period = l[2].toInt(&ok, 10);
-  if (! ok)
-  {
-    rc = QObject::tr("ROC: invalid period field");
-    return rc;
-  }
+  int period = l[2].toInt();
   
   PlotLine *output = getROC(input, period);
-  
   output->setColor(l[3]);
   output->setType(l[4]);
   output->setLabel(l[5]);
-  
   customLines.replace(QString::number(i), output);
-      
+
+  bool ok;      
   l[1].toInt(&ok, 10);
   if (! ok)
     delete input;
-  
-  return rc;
 }
 
 //********************************************************************
@@ -1584,44 +1233,21 @@ PlotLine * QSMath::getRSI (PlotLine *in, int period)
   return rsi;
 }
 
-QString QSMath::getRSI2 (int i, QStringList l)
+void QSMath::getRSI2 (int i, QStringList l)
 {
-  QString rc;
-  bool ok;
-  
-  if (l.count() != 6)
-  {
-    rc = QObject::tr("RSI: missing field");
-    return rc;
-  }
-  
   PlotLine *input = getInputLine(l[1]);
-  if (! input)
-  {
-    rc = QObject::tr("RSI: invalid input field");
-    return rc;
-  }
-
-  int period = l[2].toInt(&ok, 10);
-  if (! ok)
-  {
-    rc = QObject::tr("RSI: invalid period field");
-    return rc;
-  }
+  int period = l[2].toInt();
   
   PlotLine *output = getRSI(input, period);
-  
   output->setColor(l[3]);
   output->setType(l[4]);
   output->setLabel(l[5]);
-  
   customLines.replace(QString::number(i), output);
-      
+
+  bool ok;      
   l[1].toInt(&ok, 10);
   if (! ok)
     delete input;
-  
-  return rc;
 }
 
 //********************************************************************
@@ -1766,47 +1392,17 @@ PlotLine * QSMath::getSAR (double initial, double add, double limit)
   return d;
 }
 
-QString QSMath::getSAR2 (int i, QStringList l)
+void QSMath::getSAR2 (int i, QStringList l)
 {
-  QString rc;
-  bool ok;
-  
-  if (l.count() != 7)
-  {
-    rc = QObject::tr("SAR: missing field");
-    return rc;
-  }
-  
-  double initial = l[1].toDouble(&ok);
-  if (! ok)
-  {
-    rc = QObject::tr("SAR: invalid initial field");
-    return rc;
-  }
-  
-  double add = l[2].toDouble(&ok);
-  if (! ok)
-  {
-    rc = QObject::tr("SAR: invalid add field");
-    return rc;
-  }
-  
-  double limit = l[3].toDouble(&ok);
-  if (! ok)
-  {
-    rc = QObject::tr("SAR: invalid limit field");
-    return rc;
-  }
+  double initial = l[1].toDouble();
+  double add = l[2].toDouble();
+  double limit = l[3].toDouble();
   
   PlotLine *output = getSAR(initial, add, limit);
-  
   output->setColor(l[4]);
   output->setType(l[5]);
   output->setLabel(l[6]);
-  
   customLines.replace(QString::number(i), output);
-      
-  return rc;
 }
 
 //********************************************************************
@@ -1838,44 +1434,21 @@ PlotLine * QSMath::getSD (PlotLine *in, int period)
   return sd;
 }
 
-QString QSMath::getSD2 (int i, QStringList l)
+void QSMath::getSD2 (int i, QStringList l)
 {
-  QString rc;
-  bool ok;
-  
-  if (l.count() != 6)
-  {
-    rc = QObject::tr("SD: missing field");
-    return rc;
-  }
-  
   PlotLine *input = getInputLine(l[1]);
-  if (! input)
-  {
-    rc = QObject::tr("SD: invalid input field");
-    return rc;
-  }
-
-  int period = l[2].toInt(&ok, 10);
-  if (! ok)
-  {
-    rc = QObject::tr("SD: invalid period field");
-    return rc;
-  }
+  int period = l[2].toInt();
   
   PlotLine *output = getSD(input, period);
-  
   output->setColor(l[3]);
   output->setType(l[4]);
   output->setLabel(l[5]);
-  
   customLines.replace(QString::number(i), output);
-      
+
+  bool ok;      
   l[1].toInt(&ok, 10);
   if (! ok)
     delete input;
-  
-  return rc;
 }
 
 //********************************************************************
@@ -1924,42 +1497,17 @@ PlotLine * QSMath::getSTOCH (MAType maType, int period, int kperiod)
     return k;
 }
 
-QString QSMath::getSTOCH2 (int i, QStringList l)
+void QSMath::getSTOCH2 (int i, QStringList l)
 {
-  QString rc;
-  bool ok;
-  
-  if (l.count() != 7)
-  {
-    rc = QObject::tr("STOCH: missing field");
-    return rc;
-  }
-
   MAType type = getMAType(l[1]);
-    
-  int period = l[2].toInt(&ok, 10);
-  if (! ok)
-  {
-    rc = QObject::tr("STOCH: invalid period field");
-    return rc;
-  }
-  
-  int kperiod = l[3].toInt(&ok, 10);
-  if (! ok)
-  {
-    rc = QObject::tr("STOCH: invalid k period field");
-    return rc;
-  }
+  int period = l[2].toInt();
+  int kperiod = l[3].toInt();
   
   PlotLine *output = getSTOCH(type, period, kperiod);
-  
   output->setColor(l[4]);
   output->setType(l[5]);
   output->setLabel(l[6]);
-  
   customLines.replace(QString::number(i), output);
-      
-  return rc;
 }
 
 //********************************************************************
@@ -2021,33 +1569,14 @@ PlotLine * QSMath::getVFI (int period)
   return vfi;
 }
 
-QString QSMath::getVFI2 (int i, QStringList l)
+void QSMath::getVFI2 (int i, QStringList l)
 {
-  QString rc;
-  bool ok;
-  
-  if (l.count() != 5)
-  {
-    rc = QObject::tr("VFI: missing field");
-    return rc;
-  }
-  
-  int period = l[1].toInt(&ok, 10);
-  if (! ok)
-  {
-    rc = QObject::tr("VFI: invalid period field");
-    return rc;
-  }
-  
+  int period = l[1].toInt();
   PlotLine *output = getVFI(period);
-  
   output->setColor(l[2]);
   output->setType(l[3]);
   output->setLabel(l[4]);
-  
   customLines.replace(QString::number(i), output);
-      
-  return rc;
 }
 
 //********************************************************************
@@ -2076,33 +1605,14 @@ PlotLine * QSMath::getVOLR (int period)
   return volr;
 }
 
-QString QSMath::getVOLR2 (int i, QStringList l)
+void QSMath::getVOLR2 (int i, QStringList l)
 {
-  QString rc;
-  bool ok;
-  
-  if (l.count() != 5)
-  {
-    rc = QObject::tr("VOLR: missing field");
-    return rc;
-  }
-  
-  int period = l[1].toInt(&ok, 10);
-  if (! ok)
-  {
-    rc = QObject::tr("VOLR: invalid period field");
-    return rc;
-  }
-  
+  int period = l[1].toInt();
   PlotLine *output = getVOLR(period);
-  
   output->setColor(l[2]);
   output->setType(l[3]);
   output->setLabel(l[4]);
-  
   customLines.replace(QString::number(i), output);
-      
-  return rc;
 }
 
 //********************************************************************
@@ -2146,25 +1656,13 @@ PlotLine * QSMath::getWAD ()
   return wad;
 }
 
-QString QSMath::getWAD2 (int i, QStringList l)
+void QSMath::getWAD2 (int i, QStringList l)
 {
-  QString rc;
-  
-  if (l.count() != 4)
-  {
-    rc = QObject::tr("WAD: missing field");
-    return rc;
-  }
-  
   PlotLine *output = getWAD();
-  
   output->setColor(l[1]);
   output->setType(l[2]);
   output->setLabel(l[3]);
-  
   customLines.replace(QString::number(i), output);
-      
-  return rc;
 }
 
 //********************************************************************
@@ -2206,79 +1704,30 @@ PlotLine * QSMath::getWILLR (int period)
   return willr;
 }
 
-QString QSMath::getWILLR2 (int i, QStringList l)
+void QSMath::getWILLR2 (int i, QStringList l)
 {
-  QString rc;
-  bool ok;
-  
-  if (l.count() != 5)
-  {
-    rc = QObject::tr("WILLR: missing field");
-    return rc;
-  }
-  
-  int period = l[1].toInt(&ok, 10);
-  if (! ok)
-  {
-    rc = QObject::tr("WILLR: invalid period field");
-    return rc;
-  }
-  
+  int period = l[1].toInt();
   PlotLine *output = getWILLR(period);
-  
   output->setColor(l[2]);
   output->setType(l[3]);
   output->setLabel(l[4]);
-  
   customLines.replace(QString::number(i), output);
-      
-  return rc;
 }
 
 //**************************************************
 
-QString QSMath::getADD (int i, QStringList l)
+void QSMath::getADD (int i, QStringList l)
 {
-  QString rc;
-  bool ok;
-  int loop = 0;
-  int loop2 = 0;
-  
-  if (l.count() != 6)
-  {
-    rc = QObject::tr("ADD: missing field");
-    return rc;
-  }
-
   PlotLine *input = getInputLine(l[1]);
-  if (! input)
-  {
-    rc = QObject::tr("ADD: invalid input field");
-    return rc;
-  }
-  else
-    loop = input->getSize() - 1;
+  int loop = input->getSize() - 1;
     
+  int loop2 = 0;
   PlotLine *input2 = getInputLine(l[2]);
   double inputNum = 0;
   if (! input2)
   {
-    if (l[2].contains("#"))
-    {
-      l[2].remove(0, 1);
-      inputNum = l[2].toDouble(&ok);
-      if (! ok)
-      {
-        delete input;
-        rc = QObject::tr("ADD: invalid input2 field");
-        return rc;
-      }
-    }
-    else
-    {
-      rc = QObject::tr("ADD: invalid input2 field");
-      return rc;
-    }
+    l[2].remove(0, 1);
+    inputNum = l[2].toDouble();
   }
   else
     loop2 = input2->getSize() - 1;
@@ -2313,6 +1762,7 @@ QString QSMath::getADD (int i, QStringList l)
   
   customLines.replace(QString::number(i), output);
 
+  bool ok;
   l[1].toInt(&ok, 10);
   if (! ok)
     delete input;
@@ -2323,54 +1773,22 @@ QString QSMath::getADD (int i, QStringList l)
     if (! ok)
       delete input2;
   }
-          
-  return rc;
 }
 
 //**************************************************
 
-QString QSMath::getSUB (int i, QStringList l)
+void QSMath::getSUB (int i, QStringList l)
 {
-  QString rc;
-  bool ok;
-  int loop = 0;
-  int loop2 = 0;
-  
-  if (l.count() != 6)
-  {
-    rc = QObject::tr("SUB: missing field");
-    return rc;
-  }
-
   PlotLine *input = getInputLine(l[1]);
-  if (! input)
-  {
-    rc = QObject::tr("SUB: invalid input field");
-    return rc;
-  }
-  else
-    loop = input->getSize() - 1;
+  int loop = input->getSize() - 1;
     
+  int loop2 = 0;
   PlotLine *input2 = getInputLine(l[2]);
   double inputNum = 0;
   if (! input2)
   {
-    if (l[2].contains("#"))
-    {
-      l[2].remove(0, 1);
-      inputNum = l[2].toDouble(&ok);
-      if (! ok)
-      {
-        delete input;
-        rc = QObject::tr("SUB: invalid input2 field");
-        return rc;
-      }
-    }
-    else
-    {
-      rc = QObject::tr("SUB: invalid input2 field");
-      return rc;
-    }
+    l[2].remove(0, 1);
+    inputNum = l[2].toDouble();
   }
   else
     loop2 = input2->getSize() - 1;
@@ -2405,6 +1823,7 @@ QString QSMath::getSUB (int i, QStringList l)
   
   customLines.replace(QString::number(i), output);
 
+  bool ok;
   l[1].toInt(&ok, 10);
   if (! ok)
     delete input;
@@ -2415,54 +1834,22 @@ QString QSMath::getSUB (int i, QStringList l)
     if (! ok)
       delete input2;
   }
-          
-  return rc;
 }
 
 //**************************************************
 
-QString QSMath::getMUL (int i, QStringList l)
+void QSMath::getMUL (int i, QStringList l)
 {
-  QString rc;
-  bool ok;
-  int loop = 0;
-  int loop2 = 0;
-  
-  if (l.count() != 6)
-  {
-    rc = QObject::tr("MUL: missing field");
-    return rc;
-  }
-
   PlotLine *input = getInputLine(l[1]);
-  if (! input)
-  {
-    rc = QObject::tr("MUL: invalid input field");
-    return rc;
-  }
-  else
-    loop = input->getSize() - 1;
+  int loop = input->getSize() - 1;
     
+  int loop2 = 0;
   PlotLine *input2 = getInputLine(l[2]);
   double inputNum = 0;
   if (! input2)
   {
-    if (l[2].contains("#"))
-    {
-      l[2].remove(0, 1);
-      inputNum = l[2].toDouble(&ok);
-      if (! ok)
-      {
-        delete input;
-        rc = QObject::tr("MUL: invalid input2 field");
-        return rc;
-      }
-    }
-    else
-    {
-      rc = QObject::tr("MUL: invalid input2 field");
-      return rc;
-    }
+    l[2].remove(0, 1);
+    inputNum = l[2].toDouble();
   }
   else
     loop2 = input2->getSize() - 1;
@@ -2497,6 +1884,7 @@ QString QSMath::getMUL (int i, QStringList l)
   
   customLines.replace(QString::number(i), output);
 
+  bool ok;
   l[1].toInt(&ok, 10);
   if (! ok)
     delete input;
@@ -2507,54 +1895,22 @@ QString QSMath::getMUL (int i, QStringList l)
     if (! ok)
       delete input2;
   }
-          
-  return rc;
 }
 
 //**************************************************
 
-QString QSMath::getDIV (int i, QStringList l)
+void QSMath::getDIV (int i, QStringList l)
 {
-  QString rc;
-  bool ok;
-  int loop = 0;
-  int loop2 = 0;
-  
-  if (l.count() != 6)
-  {
-    rc = QObject::tr("DIV: missing field");
-    return rc;
-  }
-
   PlotLine *input = getInputLine(l[1]);
-  if (! input)
-  {
-    rc = QObject::tr("DIV: invalid input field");
-    return rc;
-  }
-  else
-    loop = input->getSize() - 1;
+  int loop = input->getSize() - 1;
     
+  int loop2 = 0;
   PlotLine *input2 = getInputLine(l[2]);
   double inputNum = 0;
   if (! input2)
   {
-    if (l[2].contains("#"))
-    {
-      l[2].remove(0, 1);
-      inputNum = l[2].toDouble(&ok);
-      if (! ok)
-      {
-        delete input;
-        rc = QObject::tr("DIV: invalid input2 field");
-        return rc;
-      }
-    }
-    else
-    {
-      rc = QObject::tr("DIV: invalid input2 field");
-      return rc;
-    }
+    l[2].remove(0, 1);
+    inputNum = l[2].toDouble();
   }
   else
     loop2 = input2->getSize() - 1;
@@ -2589,6 +1945,7 @@ QString QSMath::getDIV (int i, QStringList l)
   
   customLines.replace(QString::number(i), output);
 
+  bool ok;
   l[1].toInt(&ok, 10);
   if (! ok)
     delete input;
@@ -2599,37 +1956,14 @@ QString QSMath::getDIV (int i, QStringList l)
     if (! ok)
       delete input2;
   }
-          
-  return rc;
 }
 
 //**************************************************
 
-QString QSMath::getREF (int i, QStringList l)
+void QSMath::getREF (int i, QStringList l)
 {
-  QString rc;
-  bool ok;
-  
-  if (l.count() != 6)
-  {
-    rc = QObject::tr("REF: missing field");
-    return rc;
-  }
-
   PlotLine *input = getInputLine(l[1]);
-  if (! input)
-  {
-    rc = QObject::tr("REF: invalid input field");
-    return rc;
-  }
-  
-  int period = l[2].toInt(&ok, 10);
-  if (! ok || period < 0)
-  {
-    rc = QObject::tr("REF: invalid period field");
-    return rc;
-  }
-  
+  int period = l[2].toInt();
   int loop = 0;
   PlotLine *output = new PlotLine;
   for (loop = 0; loop < input->getSize(); loop++)
@@ -2639,68 +1973,29 @@ QString QSMath::getREF (int i, QStringList l)
       
     output->append(input->getData(loop - period));
   }
-  
   output->setColor(l[3]);
   output->setType(l[4]);
   output->setLabel(l[5]);
-  
   customLines.replace(QString::number(i), output);
-
   delete input;
-  return rc;
 }
 
 //**************************************************
 
-QString QSMath::getCOMPARE (int i, QStringList l)
+void QSMath::getCOMPARE (int i, QStringList l)
 {
-  QString rc;
-  bool ok;
-  int loop = 0;
-  int loop2 = 0;
-  
-  if (l.count() != 7)
-  {
-    rc = QObject::tr("COMPARE: missing field");
-    return rc;
-  }
-
   PlotLine *input = getInputLine(l[1]);
-  if (! input)
-  {
-    rc = QObject::tr("COMPARE: invalid data1 field");
-    return rc;
-  }
-  else
-    loop = input->getSize() - 1;
+  int loop = input->getSize() - 1;
     
   Operator op = getOperator(l[2]);
-  if (op == NoOp)
-  {
-    rc = QObject::tr("COMPARE: invalid operator field");
-    return rc;
-  }
-    
+  
+  int loop2 = 0;
   PlotLine *input2 = getInputLine(l[3]);
   double inputNum = 0;
   if (! input2)
   {
-    if (l[3].contains("#"))
-    {
-      l[3].remove(0, 1);
-      inputNum = l[3].toDouble(&ok);
-      if (! ok)
-      {
-        delete input;
-        rc = QObject::tr("COMPARE: invalid data2 field");
-        return rc;
-      }
-    }
-    else
-    {
-      rc = QObject::tr("COMPARE: invalid data2 field");
-      return rc;
-    }
+    l[3].remove(0, 1);
+    inputNum = l[3].toDouble();
   }
   else
     loop2 = input2->getSize() - 1;
@@ -2769,6 +2064,7 @@ QString QSMath::getCOMPARE (int i, QStringList l)
   
   customLines.replace(QString::number(i), output);
 
+  bool ok;
   l[1].toInt(&ok, 10);
   if (! ok)
     delete input;
@@ -2779,8 +2075,6 @@ QString QSMath::getCOMPARE (int i, QStringList l)
     if (! ok)
       delete input2;
   }
-          
-  return rc;
 }
 
 //**************************************************
@@ -2799,15 +2093,11 @@ PlotLine * QSMath::getCustomLine (int i)
   return customLines[QString::number(i)];
 }
 
-QString QSMath::calculateCustomFormula (QStringList fl, QStringList pl)
+void QSMath::calculateCustomFormula (QStringList fl, QStringList pl)
 {
   int loop;
-  QString err;
   for (loop = 0; loop < (int) fl.count(); loop++)
   {
-    if (err.length())
-      break;
-    
     QStringList l = QStringList::split(",", fl[loop], FALSE);
     int loop2;
     for (loop2 = 0; loop2 < (int) l.count(); loop2++)
@@ -2815,235 +2105,219 @@ QString QSMath::calculateCustomFormula (QStringList fl, QStringList pl)
 
     if (! l[0].compare(QObject::tr("AD")))
     {
-      err = getAD2(loop + 1, l);
+      getAD2(loop + 1, l);
       continue;
     }
   
     if (! l[0].compare(QObject::tr("ADD")))
     {
-      err = getADD(loop + 1, l);
+      getADD(loop + 1, l);
       continue;
     }
     
     if (! l[0].compare(QObject::tr("ADX")))
     {
-      err = getADX2(loop + 1, l);
+      getADX2(loop + 1, l);
       continue;
     }
       
     if (! l[0].compare(QObject::tr("BB")))
     {
-      err = getBB2(loop + 1, l);
+      getBB2(loop + 1, l);
       continue;
     }
   
     if (! l[0].compare(QObject::tr("CCI")))
     {
-      err = getCCI2(loop + 1, l);
+      getCCI2(loop + 1, l);
       continue;
     }
 
     if (! l[0].compare(QObject::tr("COMP")))
     {
-      err = getCOMPARE(loop + 1, l);
+      getCOMPARE(loop + 1, l);
       continue;
     }
 
     if (! l[0].compare(QObject::tr("DIV")))
     {
-      err = getDIV(loop + 1, l);
+      getDIV(loop + 1, l);
       continue;
     }
     
     if (! l[0].compare(QObject::tr("MA")))
     {
-      err = getMA2(loop + 1, l);
+      getMA2(loop + 1, l);
       continue;
     }
     
     if (! l[0].compare(QObject::tr("MDI")))
     {
-      err = getMDI2(loop + 1, l);
+      getMDI2(loop + 1, l);
       continue;
     }
       
     if (! l[0].compare(QObject::tr("MF")))
     {
-      err = getMF2(loop + 1, l);
+      getMF2(loop + 1, l);
       continue;
     }
   
     if (! l[0].compare(QObject::tr("MOM")))
     {
-      err = getMOM2(loop + 1, l);
+      getMOM2(loop + 1, l);
       continue;
     }
   
     if (! l[0].compare(QObject::tr("MUL")))
     {
-      err = getMUL(loop + 1, l);
+      getMUL(loop + 1, l);
       continue;
     }
     
     if (! l[0].compare(QObject::tr("NVI")))
     {
-      err = getNVI2(loop + 1, l);
+      getNVI2(loop + 1, l);
       continue;
     }
   
     if (! l[0].compare(QObject::tr("OBV")))
     {
-      err = getOBV2(loop + 1, l);
+      getOBV2(loop + 1, l);
       continue;
     }
   
     if (! l[0].compare(QObject::tr("OSC")))
     {
-      err = getOSC2(loop + 1, l);
+      getOSC2(loop + 1, l);
       continue;
     }
   
     if (! l[0].compare(QObject::tr("PC")))
     {
-      err = getPC2(loop + 1, l);
+      getPC2(loop + 1, l);
       continue;
     }
   
     if (! l[0].compare(QObject::tr("PDI")))
     {
-      err = getPDI2(loop + 1, l);
+      getPDI2(loop + 1, l);
       continue;
     }
 
     if (! l[0].compare(QObject::tr("PER")))
     {
-      err = getPER2(loop + 1, l);
+      getPER2(loop + 1, l);
       continue;
     }
   
     if (! l[0].compare(QObject::tr("PVI")))
     {
-      err = getPVI2(loop + 1, l);
+      getPVI2(loop + 1, l);
       continue;
     }
   
     if (! l[0].compare(QObject::tr("PVT")))
     {
-      err = getPVT2(loop + 1, l);
+      getPVT2(loop + 1, l);
       continue;
     }
   
     if (! l[0].compare(QObject::tr("REF")))
     {
-      err = getREF(loop + 1, l);
+      getREF(loop + 1, l);
       continue;
     }
     
     if (! l[0].compare(QObject::tr("ROC")))
     {
-      err = getROC2(loop + 1, l);
+      getROC2(loop + 1, l);
       continue;
     }
   
     if (! l[0].compare(QObject::tr("RSI")))
     {
-      err = getRSI2(loop + 1, l);
+      getRSI2(loop + 1, l);
       continue;
     }
   
     if (! l[0].compare(QObject::tr("SAR")))
     {
-      err = getSAR2(loop + 1, l);
+      getSAR2(loop + 1, l);
       continue;
     }
   
     if (! l[0].compare(QObject::tr("SD")))
     {
-      err = getSD2(loop + 1, l);
+      getSD2(loop + 1, l);
       continue;
     }
   
     if (! l[0].compare(QObject::tr("STOCH")))
     {
-      err = getSTOCH2(loop + 1, l);
+      getSTOCH2(loop + 1, l);
       continue;
     }
   
     if (! l[0].compare(QObject::tr("SUB")))
     {
-      err = getSUB(loop + 1, l);
+      getSUB(loop + 1, l);
       continue;
     }
     
     if (! l[0].compare(QObject::tr("TP")))
     {
-      err = getTP2(loop + 1, l);
+      getTP2(loop + 1, l);
       continue;
     }
   
     if (! l[0].compare(QObject::tr("TR")))
     {
-      err = getTR2(loop + 1, l);
+      getTR2(loop + 1, l);
       continue;
     }
   
     if (! l[0].compare(QObject::tr("VFI")))
     {
-      err = getVFI2(loop + 1, l);
+      getVFI2(loop + 1, l);
       continue;
     }
   
     if (! l[0].compare(QObject::tr("VOLR")))
     {
-      err = getVOLR2(loop + 1, l);
+      getVOLR2(loop + 1, l);
       continue;
     }
   
     if (! l[0].compare(QObject::tr("WAD")))
     {
-      err = getWAD2(loop + 1, l);
+      getWAD2(loop + 1, l);
       continue;
     }
   
     if (! l[0].compare(QObject::tr("WILLR")))
     {
-      err = getWILLR2(loop + 1, l);
+      getWILLR2(loop + 1, l);
       continue;
     }
   }
 
-  if (err.length())
+  customLines.setAutoDelete(TRUE);
+  for (loop = 0; loop < (int) pl.count(); loop++)
   {
-    err.prepend("Line ");
-    err.prepend(QString::number(loop + 1));
-    err.prepend(": ");
-    qDebug(err);
-    clearCustomLines();
+    if (! pl[loop].toInt())
+      customLines.remove(QString::number(loop + 1));
   }
-  else
-  {
-    customLines.setAutoDelete(TRUE);
-  
-    for (loop = 0; loop < (int) pl.count(); loop++)
-    {
-      if (! pl[loop].toInt())
-        customLines.remove(QString::number(loop + 1));
-    }
-    
-    customLines.setAutoDelete(FALSE);
-  }
-        
-  return err;
+  customLines.setAutoDelete(FALSE);
 }
 
 PlotLine * QSMath::getInputLine (QString d)
 {
-  bool ok;
   PlotLine *input = 0;
-  
   if (d.contains("#"))
     return input;
   
+  bool ok;
   d.toInt(&ok, 10);
   if (! ok)
     input = data->getInput(data->getInputType(d));

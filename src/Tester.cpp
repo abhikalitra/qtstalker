@@ -1017,15 +1017,9 @@ void Tester::loadAlerts (int type)
   }
   
   QSMath *t = new QSMath(recordList);
-  QString err = t->calculateCustomFormula(formulaList, plotList);
-  if (err.length())
-  {
-    qDebug("Tester::loadAlerts: " + err);
-    delete t;
-    return;
-  }
+  t->calculateCustomFormula(formulaList, plotList);
 
-  PlotLine *line = 0;
+  PlotLine *line = new PlotLine;
   for (loop = plotList.count() - 1; loop > -1; loop--)
   {
     if (plotList[loop].toInt())
@@ -1657,5 +1651,4 @@ void Tester::createEquityCurve ()
 
   equityPlot->draw();
 }
-
 

@@ -114,15 +114,7 @@ void Bars::drawPaintBars (int startX, int startIndex, int pixelspace)
 {
   PlotLine *line = 0;
   QSMath *t = new QSMath(data);
-  QString err = t->calculateCustomFormula(formulaList, plotList);
-  if (err.length())
-  {
-    QMessageBox::warning(0,
-    			 QObject::tr("Qtstalker: Custom Function Error"),
-			 err);
-    delete t;
-    return;
-  }
+  t->calculateCustomFormula(formulaList, plotList);
   
   int loop;
   for (loop = plotList.count() - 1; loop > -1; loop--)

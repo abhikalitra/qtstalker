@@ -41,13 +41,7 @@ void Line::drawChart (int startX, int startIndex, int pixelspace)
 {
   PlotLine *line = 0;
   QSMath *t = new QSMath(data);
-  QString err = t->calculateCustomFormula(formulaList, plotList);
-  if (err.length())
-  {
-    qDebug("Line plugin: " + err);
-    delete t;
-    return;
-  }
+  t->calculateCustomFormula(formulaList, plotList);
   
   int loop;
   for (loop = plotList.count() - 1; loop > -1; loop--)
