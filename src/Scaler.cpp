@@ -61,6 +61,13 @@ Scaler::Scaler ()
   scaleList.append("500000000");
   scaleList.append("1000000000");
   scaleList.append("2500000000");
+  scaleList.append("5000000000");
+  scaleList.append("10000000000");
+  scaleList.append("25000000000");
+  scaleList.append("50000000000");
+  scaleList.append("100000000000");
+  scaleList.append("250000000000");
+  scaleList.append("500000000000");
 }
 
 Scaler::~Scaler ()

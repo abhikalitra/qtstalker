@@ -241,6 +241,8 @@ QtstalkerApp::QtstalkerApp()
   sizeList.clear();
   s = config->getData(Config::NavAreaSize);
   sizeList.append(s.toInt());
+  QString s2 = config->getData(Config::Width);
+  sizeList.append(s2.toInt() - s.toInt());
   navSplitter->setSizes(sizeList);
   
   // place navigator on left/right side

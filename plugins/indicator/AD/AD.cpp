@@ -51,7 +51,7 @@ void AD::calculate ()
   for (loop = 0; loop < (int) data->count(); loop++)
   {
     Setting *set = data->at(loop);
-    double volume = set->getFloat("Volume") / 1000;
+    double volume = set->getFloat("Volume");
     if (volume > 0)
     {
       double high = set->getFloat("High");

@@ -226,6 +226,8 @@ void GroupPage::renameGroup ()
 
     s.append("/x");
     nav->setDirectory(s);
+    
+    groupNoSelection();
   }
 }
 

@@ -49,7 +49,7 @@ void OBV::calculate ()
   {
     Setting *set = data->at(loop);
     double close = set->getFloat("Close");
-    double volume = set->getFloat("Volume") / 1000;
+    double volume = set->getFloat("Volume");
     set = data->at(loop - 1);
     double yclose = set->getFloat("Close");
 

@@ -17,6 +17,13 @@
 	    
 20040213: Fixed bug that created phantom indicator when edited. 
 
+20040214: Found and fixed the real cause of the volume overflow bug. Turns out it was because Scaler
+          just didn't go up high enough. Added more billions to the scaling strings. Restored weekly
+	  and monthly volume back to charts. Also restored the OBV and AD indictors by removing the
+	  divisor to volume values.
+
+20040214: Fixed bug that didn't refresh the group page if the group is renamed.
+
 
 0.23
 ====
