@@ -18,6 +18,9 @@
 
 - Fixed bug #830024.
 
+- Fixed bug #830357.
+
+
 
 0.22
 ====
@@ -72,8 +75,6 @@
   we will have to split the docs off into a separate source package.
   
 - Added check for spaces when creating a group.
-
-
 
 0.21
 ====

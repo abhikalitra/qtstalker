@@ -587,6 +587,7 @@ void Plot::mousePressEvent (QMouseEvent *event)
   {
     case LeftButton:
       crossHair(event->x(), event->y());
+      updateStatusBar(event->x(), event->y());
       emit leftMouseButton(event->x(), mainFlag);
       break;
     case RightButton:
@@ -1312,7 +1313,13 @@ void Plot::crossHair (int x, int y)
   painter.setPen(QPen(borderColor, 1, QPen::DotLine));
   painter.drawLine (0, y, buffer.width() - SCALE_WIDTH, y);
   painter.drawLine (x, 0, x, buffer.height());
+  painter.end();
 
+  paintEvent(0);
+}
+
+void Plot::updateStatusBar (int x, int y)
+{
   int i = (x / pixelspace) + startIndex;
   if (i >= (int) data->count())
     i = data->count() - 1;
@@ -1325,10 +1332,6 @@ void Plot::crossHair (int x, int y)
   s.append(" ");
   s.append(QString::number(convertToVal(y)));
   emit statusMessage(s);
-
-  painter.end();
-
-  paintEvent(0);
 }
 
 void Plot::getXY (int x, int y, int f)

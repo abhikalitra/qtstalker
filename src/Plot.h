@@ -88,6 +88,7 @@ class Plot : public QWidget
     void createChartObject (QString, QString);
     void setPaintBars (QList<QColor>);
     void setHideMainPlot (bool);
+    void updateStatusBar (int, int);
 
     void addIndicator (QString, Indicator *);
     Indicator * getIndicator (QString);
