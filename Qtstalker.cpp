@@ -76,7 +76,7 @@ QtstalkerApp::QtstalkerApp()
   chartMenu = 0;
   status = None;
   plotList.setAutoDelete(TRUE);
-  this->setIcon(qtstalker);
+  setIcon(qtstalker);
 
   QString s(QDir::homeDirPath());
   s.append("/Qtstalker/config");
@@ -101,6 +101,7 @@ QtstalkerApp::QtstalkerApp()
   setPlotFont(mainPlot);
   QObject::connect(mainPlot, SIGNAL(rightMouseButton()), this, SLOT(mainPlotPopupMenu()));
   QObject::connect(mainPlot, SIGNAL(statusMessage(QString)), this, SLOT(slotStatusMessage(QString)));
+  QObject::connect(mainPlot, SIGNAL(chartObjectCreated(Setting *)), this, SLOT(slotChartObjectCreated(Setting *)));
 
   tabs = new QTabWidget(split);
   QObject::connect(tabs, SIGNAL(currentChanged(QWidget *)), this, SLOT(slotTabChanged(QWidget *)));
@@ -307,7 +308,17 @@ void QtstalkerApp::initMenuBar()
   chartMenu->insertSeparator ();
   chartObjectDeleteMenu = new QPopupMenu();
   chartObjectEditMenu = new QPopupMenu();
-  chartObjectId = chartMenu->insertItem(QPixmap(co), tr("New Chart Object"), this, SLOT(slotNewChartObject(int)));
+
+  chartObjectMenu = new QPopupMenu();
+  QStringList l = mainPlot->getChartObjectList();
+  int loop;
+  for (loop = 0; loop < (int) l.count(); loop++)
+  {
+    int id = chartObjectMenu->insertItem(QPixmap(co), l[loop], this, SLOT(slotNewChartObject(int)));
+    chartObjectMenu->setItemParameter(id, id);
+  }
+  chartMenu->insertItem (QPixmap(co), tr("New Chart Object"), chartObjectMenu);
+
   chartMenu->insertItem (QPixmap(edit), tr("Edit Chart Object"), chartObjectEditMenu);
   chartMenu->insertItem (QPixmap(deletefile), tr("Delete Chart Object"), chartObjectDeleteMenu);
 }
@@ -874,15 +885,15 @@ void QtstalkerApp::slotBarComboChanged (int index)
 
 void QtstalkerApp::slotNewChartObject (int id)
 {
-  bool ok = FALSE;
-  QString selection = QInputDialog::getItem(tr("New Chart Object"), tr("Select a new chart object to create."),
-  					    mainPlot->getChartObjectList(), 0, FALSE, &ok, this);
-  if (ok == FALSE)
-    return;
+  QString selection = chartObjectMenu->text(id);
 
-  ok = FALSE;
-  QString name = QInputDialog::getText(tr("Chart Object Name"), tr("Enter a unique name for this chart object."),
-                                       QLineEdit::Normal, tr("New Chart Object"), &ok, this);
+  bool ok = FALSE;
+  QString name = QInputDialog::getText(tr("Chart Object Name"),
+  						      tr("Enter a unique name for this chart object."),
+						      QLineEdit::Normal,
+						      tr("New Chart Object"),
+						      &ok,
+						      this);
   if (ok == FALSE)
     return;
 
@@ -896,52 +907,21 @@ void QtstalkerApp::slotNewChartObject (int id)
     return;
   }
 
-  EditDialog *dialog = new EditDialog(config);
-
-  QString s = tr("New Chart Object");
-  s.append(" - ");
-  s.append(selection);
-  dialog->setCaption(s);
-
-  Setting *co = mainPlot->newChartObject(selection);
-  co->set("Name", name, Setting::None);
-  if (id)
-    co->set(tr("Plot"), tabs->label(tabs->currentPageIndex()), Setting::None);
-
-  dialog->setItems(co);
-
-  int rc = dialog->exec();
-
-  if (rc == QDialog::Accepted)
+  if (chartObjectId)
   {
-    ChartDb *db = new ChartDb();
-    db->openChart(chartPath);
-    db->setChartObject(name, co);
-    delete db;
-
-    Indicator *i;
-    if (id == 0)
-      i = mainPlot->getIndicator(co->getData(tr("Plot")));
-    else
-    {
-      Plot *plot = plotList[co->getData(tr("Plot"))];
-      i = plot->getIndicator(co->getData(tr("Plot")));
-    }
-
-    i->addChartObject(co);
-
-    if (id == 0)
-      mainPlot->draw();
-    else
-    {
-      Plot *plot = plotList[tabs->label(tabs->currentPageIndex())];
-      plot->draw();
-    }
+    Plot *plot = plotList[tabs->label(tabs->currentPageIndex())];
+    plot->createChartObject(selection, name);
   }
   else
-    delete co;
+    mainPlot->createChartObject(selection, name);
+}
 
-  delete dialog;
+void QtstalkerApp::slotChartObjectCreated (Setting *co)
+{
+  ChartDb *db = new ChartDb();
+  db->openChart(chartPath);
+  db->setChartObject(co->getData("Name"), co);
+  delete db;
 }
 
 void QtstalkerApp::slotEditChartObject (int id)
@@ -1168,6 +1148,7 @@ void QtstalkerApp::mainPlotPopupMenu ()
     chartObjectDeleteMenu->setItemParameter(id, id);
   }
 
+  chartObjectId = 0;
   chartMenu->exec(QCursor::pos());
 }
 
@@ -1194,6 +1175,7 @@ void QtstalkerApp::indicatorPlotPopupMenu ()
     chartObjectDeleteMenu->setItemParameter(id, id);
   }
 
+  chartObjectId = 1;
   chartMenu->exec(QCursor::pos());
 }
 
@@ -1459,6 +1441,7 @@ void QtstalkerApp::addIndicatorButton (QString d)
   Plot *plot = new Plot (baseWidget);
   QObject::connect(plot, SIGNAL(rightMouseButton()), this, SLOT(indicatorPlotPopupMenu()));
   QObject::connect(plot, SIGNAL(statusMessage(QString)), this, SLOT(slotStatusMessage(QString)));
+  QObject::connect(plot, SIGNAL(chartObjectCreated(Setting *)), this, SLOT(slotChartObjectCreated(Setting *)));
   plotList.replace(d, plot);
   plot->setGridFlag(config->getData(Config::Grid).toInt());
   plot->setScaleToScreen(config->getData(Config::ScaleToScreen).toInt());

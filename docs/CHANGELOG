@@ -19,7 +19,10 @@
 
 - Made some minor GUI changes to the toolbar. Replaced chart type and chart compression buttons with combo boxes.
 
-
+- Changed chart object creation to be alot simpler. After selecting an object to create, just click on the chart and the
+  object will be created without user interaction.
+  
+  
 0.17
 ====
 

@@ -109,7 +109,9 @@ void QuoteDialog::getQuotes ()
   disableGUI();
 
   cancelDownloadButton->setEnabled(TRUE);
-
+  
+  list->updateSettings();
+  
   QStringList l = settings->getKeyList();
   int loop;
   for (loop = 0; loop < (int) l.count(); loop++)

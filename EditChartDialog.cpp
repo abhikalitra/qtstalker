@@ -138,6 +138,7 @@ void EditChartDialog::deleteRecord ()
 
 void EditChartDialog::saveRecord ()
 {
+  recordList->updateSettings();
   db->setRecord(record);
 }
 

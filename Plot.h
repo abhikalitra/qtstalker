@@ -45,6 +45,7 @@ class Plot : public QWidget
   signals:
     void rightMouseButton ();
     void statusMessage (QString);
+    void chartObjectCreated (Setting *);
 
   public:
 
@@ -53,6 +54,24 @@ class Plot : public QWidget
       Daily,
       Weekly,
       Monthly
+    };
+
+    enum ObjectType
+    {
+      VerticalLine,
+      HorizontalLine,
+      TrendLine,
+      Text,
+      BuyArrow,
+      SellArrow,
+      FibonacciLine
+    };
+
+    enum MouseStatus
+    {
+      None,
+      ClickWait,
+      ClickWait2
     };
 
     Plot (QWidget *);
@@ -78,13 +97,14 @@ class Plot : public QWidget
     void setPixelspace (int);
     void setChartType (QString);
     void setAlerts (QMemArray<int>);
+    void createChartObject (QString, QString);
 
     void addIndicator (QString, Indicator *);
     Indicator * getIndicator (QString);
     QStringList getIndicators ();
     void deleteIndicator (QString);
     QStringList getChartObjectList ();
-    Setting * newChartObject (QString);
+    void newChartObject ();
 
     void crossHair (int, int);
     void setIndex (int);
@@ -139,6 +159,7 @@ class Plot : public QWidget
     int convertToY (double);
     void setScale ();
     int getXFromDate (QDateTime);
+    void getXY (int, int, int);
 
   private:
     QFont plotFont;
@@ -171,6 +192,14 @@ class Plot : public QWidget
     double mainHigh;
     double mainLow;
     QArray<double> scaleArray;
+    
+    QString y1;
+    QString y2;
+    QString x1;
+    QString x2;
+    QString objectName;
+    MouseStatus mouseFlag;
+    ObjectType objectFlag;
 
     QString chartType;
     QList<Setting> data;

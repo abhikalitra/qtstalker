@@ -103,6 +103,7 @@ class QtstalkerApp : public QMainWindow
     void slotStatusMessage (QString);
     void slotWorkwithTest ();
     void slotTabChanged (QWidget *);
+    void slotChartObjectCreated (Setting *);
 
   private:
     QPopupMenu *fileMenu;
@@ -117,6 +118,7 @@ class QtstalkerApp : public QMainWindow
     QPopupMenu *chartDeleteMenu;
     QPopupMenu *chartObjectDeleteMenu;
     QPopupMenu *chartObjectEditMenu;
+    QPopupMenu *chartObjectMenu;
 
     QAction *actionQuit;
     QAction *actionAbout;

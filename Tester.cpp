@@ -41,7 +41,6 @@
 #include "exitshort.xpm"
 #include "EditDialog.h"
 #include "Plugin.h"
-#include "SettingView.h"
 #include "FuturesData.h"
 
 Tester::Tester (Config *c, QString n) : QDialog (0, 0, FALSE)

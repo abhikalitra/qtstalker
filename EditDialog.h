@@ -38,6 +38,9 @@ class EditDialog : public QDialog
     EditDialog (Config *);
     ~EditDialog ();
     void setItems (Setting *);
+    
+  public slots:
+    void saveSettings ();
 
   protected:
     Config *config;

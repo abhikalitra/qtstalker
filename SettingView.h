@@ -41,6 +41,7 @@ class ColorItem : public QTableItem
     ~ColorItem ();
     void paint (QPainter *p, const QColorGroup &cg, const QRect &cr, bool selected );
     void setColor (QString);
+    QString getColor ();
 
   private:
     QString color;
@@ -52,7 +53,7 @@ class IntegerItem : public QTableItem
     IntegerItem (QTable *, EditType, int);
     ~IntegerItem ();
     QWidget * createEditor () const;
-    void setContentFromEditor (QWidget *w);
+    QString text () const;
 
   private:
     QSpinBox *spinner;
@@ -62,14 +63,14 @@ class IntegerItem : public QTableItem
 class DateItem : public QTableItem
 {
   public:
-    DateItem (QTable *, EditType);
+    DateItem (QTable *, EditType, QString);
     ~DateItem ();
     QWidget * createEditor () const;
-    void setContentFromEditor (QWidget *w);
-    QDate getDate ();
+    QString text () const;
 
   private:
     QDateEdit *dateEdit;
+    QString startDate;
 };
 
 class SettingView : public QWidget
@@ -82,7 +83,6 @@ class SettingView : public QWidget
     void setItems (Setting *);
     void makeSettings ();
     void colorDialog (int);
-    void dateChanged (int);
     void floatChanged (int);
     void fileDialog (int);
     void symbolDialog (int);
@@ -91,6 +91,7 @@ class SettingView : public QWidget
     void boolChanged (int);
     void clear ();
     void clearRows ();
+    void updateSettings ();
 
   public slots:
     void doubleClick (int, int, int, const QPoint &);

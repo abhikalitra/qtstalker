@@ -24,6 +24,7 @@
 #include <qpen.h>
 #include <qpoint.h>
 #include <qpointarray.h>
+#include <qcursor.h>
 
 Plot::Plot (QWidget *w) : QWidget(w)
 {
@@ -52,6 +53,7 @@ Plot::Plot (QWidget *w) : QWidget(w)
   mainHigh = -99999999;
   mainLow = 99999999;
   chartType = "None";
+  mouseFlag = None;
 
   plotFont.setFamily("Helvetica");
   plotFont.setPointSize(12);
@@ -468,6 +470,40 @@ void Plot::mousePressEvent (QMouseEvent *event)
   {
     if (! indicators.count())
       return;
+  }
+
+  if (event->x() > buffer.width() - SCALE_WIDTH)
+    return;
+
+  if (mouseFlag != None)
+  {
+    if (event->button() == LeftButton)
+    {
+      switch (mouseFlag)
+      {
+        case ClickWait2:
+	  getXY(event->x(), event->y(), 1);
+          newChartObject();
+	  break;
+        default:
+	  getXY(event->x(), event->y(), 0);
+          if (objectFlag == TrendLine || objectFlag == FibonacciLine)
+	  {
+            mouseFlag = ClickWait2;
+            if (objectFlag == TrendLine)
+             emit statusMessage(tr("Select end point of trend line..."));
+	    else
+             emit statusMessage(tr("Select low point of fibonacci line..."));
+	  }
+	  else
+	    newChartObject();
+	  break;
+      }
+      
+      return;
+    }
+
+    return;
   }
 
   switch(event->button())
@@ -1103,9 +1139,6 @@ void Plot::drawInfo ()
 
 void Plot::crossHair (int x, int y)
 {
-  if (x > buffer.width() - SCALE_WIDTH)
-    return;
-
   draw();
 
   QPainter painter;
@@ -1132,80 +1165,107 @@ void Plot::crossHair (int x, int y)
   paintEvent(0);
 }
 
-Setting * Plot::newChartObject (QString d)
+void Plot::getXY (int x, int y, int f)
+{
+  int i = (x / pixelspace) + startIndex;
+  if (i >= (int) data.count())
+    i = data.count() - 1;
+  if (i < startIndex)
+    i = startIndex;
+
+  Setting *r = data.at(i);
+
+  QDateTime date = QDateTime::fromString(r->getDateTime("Date"), Qt::ISODate);
+
+  if (f == 0)
+  {
+    x1 = date.toString("yyyyMMdd");
+    y1 = QString::number(convertToVal(y));
+  }
+  else
+  {
+    x2 = date.toString("yyyyMMdd");
+    y2 = QString::number(convertToVal(y));
+  }
+}
+
+void Plot::newChartObject ()
 {
   Setting *set = new Setting();
   set->set(QObject::tr("Color"), "red", Setting::Color);
-  set->set(QObject::tr("Plot"), QObject::tr("Main Plot"), Setting::None);
-
-  QDateTime dt = QDateTime::currentDateTime();
-
-  if (! d.compare(QObject::tr("Buy Arrow")))
+  if (mainFlag)
+    set->set(QObject::tr("Plot"), QObject::tr("Main Plot"), Setting::None);
+  else
   {
-    set->set(QObject::tr("Date"), dt.toString("yyyyMMdd"), Setting::Date);
-    set->set(QObject::tr("Value"), "0", Setting::Float);
-    set->set(QObject::tr("Type"), QObject::tr("Buy Arrow"), Setting::None);
-    return set;
+    QDictIterator<Indicator> it(indicators);
+    it.toFirst();
+    set->set(QObject::tr("Plot"), it.currentKey(), Setting::None);
   }
+  set->set("Name", objectName, Setting::None);
 
-  if (! d.compare(QObject::tr("Sell Arrow")))
+  switch(objectFlag)
   {
-    set->set(QObject::tr("Date"), dt.toString("yyyyMMdd"), Setting::Date);
-    set->set(QObject::tr("Value"), "0", Setting::Float);
-    set->set(QObject::tr("Type"), QObject::tr("Sell Arrow"), Setting::None);
-    return set;
+    case BuyArrow:
+      set->set(QObject::tr("Date"), x1, Setting::Date);
+      set->set(QObject::tr("Value"), y1, Setting::Float);
+      set->set(QObject::tr("Type"), QObject::tr("Buy Arrow"), Setting::None);
+      break;
+    case SellArrow:
+      set->set(QObject::tr("Date"), x1, Setting::Date);
+      set->set(QObject::tr("Value"), y1, Setting::Float);
+      set->set(QObject::tr("Type"), QObject::tr("Sell Arrow"), Setting::None);
+      break;
+    case FibonacciLine:
+      set->set(QObject::tr("High"), y1, Setting::Float);
+      set->set(QObject::tr("Low"), y2, Setting::Float);
+      set->set(QObject::tr("Support"), QObject::tr("False"), Setting::Bool);
+      set->set("0.238", QObject::tr("True"), Setting::Bool);
+      set->set("0.383", QObject::tr("True"), Setting::Bool);
+      set->set("0.5", QObject::tr("True"), Setting::Bool);
+      set->set("0.618", QObject::tr("True"), Setting::Bool);
+      set->set("1", QObject::tr("False"), Setting::Bool);
+      set->set("1.618", QObject::tr("False"), Setting::Bool);
+      set->set("2.618", QObject::tr("False"), Setting::Bool);
+      set->set("4.236", QObject::tr("False"), Setting::Bool);
+      set->set(QObject::tr("Type"), QObject::tr("Fibonacci Line"), Setting::None);
+      break;
+    case HorizontalLine:
+      set->set(QObject::tr("Value"), y1, Setting::Float);
+      set->set(QObject::tr("Type"), QObject::tr("Horizontal Line"), Setting::None);
+      break;
+    case VerticalLine:
+      set->set(QObject::tr("Date"), x1, Setting::Date);
+      set->set(QObject::tr("Type"), QObject::tr("Vertical Line"), Setting::None);
+      break;
+    case TrendLine:
+      set->set(QObject::tr("Start Date"), x1, Setting::Date);
+      set->set(QObject::tr("Start Value"), y1, Setting::Float);
+      set->set(QObject::tr("End Date"), x2, Setting::Date);
+      set->set(QObject::tr("End Value"), y2, Setting::Float);
+      set->set(QObject::tr("Type"), QObject::tr("Trend Line"), Setting::None);
+      break;
+    case Text:
+      set->set(QObject::tr("Date"), x1, Setting::Date);
+      set->set(QObject::tr("Value"), y1, Setting::Float);
+      set->set(QObject::tr("Label"), QObject::tr("Text"), Setting::Text);
+      set->set(QObject::tr("Type"), QObject::tr("Text"), Setting::None);
+      break;
+    default:
+      break;
   }
+  
+  mouseFlag = None;
+  
+  emit chartObjectCreated(set);
 
-  if (! d.compare(QObject::tr("Fibonacci Line")))
-  {
-    set->set(QObject::tr("High"), "0", Setting::Float);
-    set->set(QObject::tr("Low"), "0", Setting::Float);
-    set->set(QObject::tr("Support"), QObject::tr("False"), Setting::Bool);
-    set->set("0.238", QObject::tr("False"), Setting::Bool);
-    set->set("0.383", QObject::tr("False"), Setting::Bool);
-    set->set("0.5", QObject::tr("False"), Setting::Bool);
-    set->set("0.618", QObject::tr("False"), Setting::Bool);
-    set->set("1", QObject::tr("False"), Setting::Bool);
-    set->set("1.618", QObject::tr("False"), Setting::Bool);
-    set->set("2.618", QObject::tr("False"), Setting::Bool);
-    set->set("4.236", QObject::tr("False"), Setting::Bool);
-    set->set(QObject::tr("Type"), QObject::tr("Fibonacci Line"), Setting::None);
-    return set;
-  }
+  Indicator *i = indicators[set->getData(tr("Plot"))];
+  i->addChartObject(set);
 
-  if (! d.compare(QObject::tr("Horizontal Line")))
-  {
-    set->set(QObject::tr("Value"), "0", Setting::Float);
-    set->set(QObject::tr("Type"), QObject::tr("Horizontal Line"), Setting::None);
-    return set;
-  }
-
-  if (! d.compare(QObject::tr("Vertical Line")))
-  {
-    set->set(QObject::tr("Date"), dt.toString("yyyyMMdd"), Setting::Date);
-    set->set(QObject::tr("Type"), QObject::tr("Vertical Line"), Setting::None);
-    return set;
-  }
-
-  if (! d.compare(QObject::tr("Trend Line")))
-  {
-    set->set(QObject::tr("Start Date"), dt.toString("yyyyMMdd"), Setting::Date);
-    set->set(QObject::tr("Start Value"), "0", Setting::Float);
-    set->set(QObject::tr("End Date"), dt.toString("yyyyMMdd"), Setting::Date);
-    set->set(QObject::tr("End Value"), "0", Setting::Float);
-    set->set(QObject::tr("Type"), QObject::tr("Trend Line"), Setting::None);
-    return set;
-  }
-
-  if (! d.compare(QObject::tr("Text")))
-  {
-    set->set(QObject::tr("Date"), dt.toString("yyyyMMdd"), Setting::Date);
-    set->set(QObject::tr("Value"), "0", Setting::Float);
-    set->set(QObject::tr("Label"), QObject::tr("Text"), Setting::Text);
-    set->set(QObject::tr("Type"), QObject::tr("Text"), Setting::None);
-  }
-
-  return set;
+  draw();
+  
+  emit statusMessage("");
+  
+  setCursor(QCursor(Qt::ArrowCursor));
 }
 
 QStringList Plot::getChartObjectList ()
@@ -2243,7 +2303,7 @@ double Plot::getClose (int d)
 QStringList Plot::getIndicators ()
 {
   QStringList l;
-  
+
   QDictIterator<Indicator> it(indicators);
   for (; it.current(); ++it)
     l.append(it.currentKey());
@@ -2251,6 +2311,73 @@ QStringList Plot::getIndicators ()
   return l;
 }
 
+void Plot::createChartObject (QString d, QString n)
+{
+  setCursor(QCursor(Qt::PointingHandCursor));
+
+  objectName = n;
+
+  while (1)
+  {
+    if (! d.compare(tr("Vertical Line")))
+    {
+      mouseFlag = ClickWait;
+      objectFlag = VerticalLine;
+      emit statusMessage(tr("Select point to place vertical line..."));
+      break;
+    }
+
+    if (! d.compare(tr("Horizontal Line")))
+    {
+      mouseFlag = ClickWait;
+      objectFlag = HorizontalLine;
+      emit statusMessage(tr("Select point to place horizontal line..."));
+      break;
+    }
+
+    if (! d.compare(tr("Text")))
+    {
+      mouseFlag = ClickWait;
+      objectFlag = Text;
+      emit statusMessage(tr("Select point to place text..."));
+      break;
+    }
+
+    if (! d.compare(tr("Trend Line")))
+    {
+      mouseFlag = ClickWait;
+      objectFlag = TrendLine;
+      emit statusMessage(tr("Select start point of trend line..."));
+      break;
+    }
+
+    if (! d.compare(tr("Buy Arrow")))
+    {
+      mouseFlag = ClickWait;
+      objectFlag = BuyArrow;
+      emit statusMessage(tr("Select point to place buy arrow..."));
+      break;
+    }
+
+    if (! d.compare(tr("Sell Arrow")))
+    {
+      mouseFlag = ClickWait;
+      objectFlag = SellArrow;
+      emit statusMessage(tr("Select point to place sell arrow..."));
+      break;
+    }
+
+    if (! d.compare(tr("Fibonacci Line")))
+    {
+      mouseFlag = ClickWait;
+      objectFlag = FibonacciLine;
+      emit statusMessage(tr("Select high point of fibonacci line..."));
+      break;
+    }
+
+    break;
+  }
+}
 
 
 

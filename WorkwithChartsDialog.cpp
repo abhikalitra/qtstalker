@@ -22,7 +22,6 @@
 #include "WorkwithChartsDialog.h"
 #include "ChartDb.h"
 #include "Setting.h"
-#include "EditDialog.h"
 #include "EditChartDialog.h"
 #include "open.xpm"
 #include "edit.xpm"

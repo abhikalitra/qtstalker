@@ -54,6 +54,7 @@ SettingView::SettingView (QWidget *w, QString dp) : QWidget (w)
   list->setColumnLabels(l);
   list->setColumnReadOnly(0, TRUE);
   list->setShowGrid(FALSE);
+  list->setSorting(TRUE);
   connect(list, SIGNAL(doubleClicked(int, int, int, const QPoint &)), this, SLOT(doubleClick(int, int, int, const QPoint &)));
   connect(list, SIGNAL(valueChanged(int, int)), this, SLOT(itemChanged(int, int)));
   box->addWidget(list);
@@ -141,7 +142,7 @@ void SettingView::makeSettings ()
 
           if (settings->getType(key[loop]) == Setting::Date)
 	{
-          DateItem *item = new DateItem(list, QTableItem::Always);
+          DateItem *item = new DateItem(list, QTableItem::Always, settings->getData(key[loop]));
 	  list->setItem(row, 1, item);
           break;
 	}
@@ -168,6 +169,8 @@ void SettingView::makeSettings ()
       row++;
     }
   }
+  
+  list->sortColumn(0, TRUE, TRUE);
 }
 
 void SettingView::doubleClick (int row, int, int, const QPoint &)
@@ -205,11 +208,7 @@ void SettingView::itemChanged (int row, int)
     case Setting::Float:
       floatChanged(row);
       break;
-    case Setting::Date:
-      dateChanged(row);
-      break;
     case Setting::Text:
-    case Setting::Integer:
     case Setting::List:
     case Setting::LineType:
     case Setting::MAType:
@@ -233,13 +232,6 @@ void SettingView::colorDialog (int row)
     item->setColor(color.name());
     settings->setData(list->text(row, 0), color.name());
   }
-}
-
-void SettingView::dateChanged (int row)
-{
-  DateItem *item = (DateItem *) list->item(row, 1);
-  QDate dt = item->getDate();
-  settings->setData(list->text(row, 0), dt.toString("yyyyMMdd"));
 }
 
 void SettingView::floatChanged (int row)
@@ -339,6 +331,24 @@ void SettingView::clearRows ()
     list->removeRow(loop);
 }
 
+void SettingView::updateSettings ()
+{
+  int loop;
+  for (loop = 0; loop < (int) list->numRows(); loop++)
+  {
+    if (settings->getType(list->text(loop, 0)) == Setting::Color)
+    {
+      ColorItem *item = (ColorItem *) list->item(loop, 1);
+      settings->setData(list->text(loop, 0), item->getColor());
+    }
+    else
+    {
+      QTableItem *item = list->item(loop, 1);
+      settings->setData(list->text(loop, 0), item->text());
+    }
+  }
+}
+
 //**********************************************************************
 //*********************** SYMBOL DIALOG ********************************
 //**********************************************************************
@@ -427,6 +437,11 @@ void ColorItem::setColor (QString col)
   color = col;
 }
 
+QString ColorItem::getColor ()
+{
+  return color;
+}
+
 //**********************************************************************
 //*********************** Integer Item ***********************************
 //**********************************************************************
@@ -448,21 +463,21 @@ QWidget * IntegerItem::createEditor () const
   return spinner;
 }
 
-void IntegerItem::setContentFromEditor (QWidget *w)
+QString IntegerItem::text () const
 {
-  if ( w->inherits( "QSpinBox" ) )
-    setText(((QSpinBox*)w)->text());
-  else
-    QTableItem::setContentFromEditor(w);
+  return spinner->text();
 }
 
 //**********************************************************************
 //*********************** Date Item *************************************
 //**********************************************************************
 
-DateItem::DateItem (QTable *t, EditType et) : QTableItem (t, et, QString::null)
+DateItem::DateItem (QTable *t, EditType et, QString d) : QTableItem (t, et, QString::null)
 {
   setReplaceable( FALSE );
+  startDate = d;
+  startDate.insert(6, "-");
+  startDate.insert(4, "-");
 }
 
 DateItem::~DateItem ()
@@ -472,18 +487,15 @@ DateItem::~DateItem ()
 QWidget * DateItem::createEditor () const
 {
   ((DateItem*)this )->dateEdit = new QDateEdit (QDate::currentDate(), table()->viewport());
+  if (startDate.length())
+    dateEdit->setDate(QDate::fromString(startDate, Qt::ISODate));
   dateEdit->setAutoAdvance(TRUE);
   dateEdit->setOrder(QDateEdit::YMD);
   return dateEdit;
 }
 
-void DateItem::setContentFromEditor (QWidget *w)
+QString DateItem::text () const
 {
-  QTableItem::setContentFromEditor(w);
-}
-
-QDate DateItem::getDate ()
-{
-  return dateEdit->date();
+  return dateEdit->date().toString("yyyyMMdd");
 }
 
