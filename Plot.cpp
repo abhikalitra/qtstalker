@@ -1184,7 +1184,6 @@ void Plot::getXY (int x, int y, int f)
 void Plot::newChartObject ()
 {
   Setting *set = new Setting();
-  set->set(QObject::tr("Color"), "red", Setting::Color);
   if (mainFlag)
     set->set(QObject::tr("Plot"), QObject::tr("Main Plot"), Setting::None);
   else
@@ -1202,11 +1201,13 @@ void Plot::newChartObject ()
       set->set(QObject::tr("Date"), x1, Setting::Date);
       set->set(QObject::tr("Value"), y1, Setting::Float);
       set->set(QObject::tr("Type"), QObject::tr("Buy Arrow"), Setting::None);
+      set->set(QObject::tr("Color"), upColor.name(), Setting::Color);
       break;
     case SellArrow:
       set->set(QObject::tr("Date"), x1, Setting::Date);
       set->set(QObject::tr("Value"), y1, Setting::Float);
       set->set(QObject::tr("Type"), QObject::tr("Sell Arrow"), Setting::None);
+      set->set(QObject::tr("Color"), downColor.name(), Setting::Color);
       break;
     case FibonacciLine:
       set->set(QObject::tr("High"), y1, Setting::Float);
@@ -1221,14 +1222,17 @@ void Plot::newChartObject ()
       set->set("2.618", QObject::tr("False"), Setting::Bool);
       set->set("4.236", QObject::tr("False"), Setting::Bool);
       set->set(QObject::tr("Type"), QObject::tr("Fibonacci Line"), Setting::None);
+      set->set(QObject::tr("Color"), borderColor.name(), Setting::Color);
       break;
     case HorizontalLine:
       set->set(QObject::tr("Value"), y1, Setting::Float);
       set->set(QObject::tr("Type"), QObject::tr("Horizontal Line"), Setting::None);
+      set->set(QObject::tr("Color"), borderColor.name(), Setting::Color);
       break;
     case VerticalLine:
       set->set(QObject::tr("Date"), x1, Setting::Date);
       set->set(QObject::tr("Type"), QObject::tr("Vertical Line"), Setting::None);
+      set->set(QObject::tr("Color"), borderColor.name(), Setting::Color);
       break;
     case TrendLine:
       set->set(QObject::tr("Start Date"), x1, Setting::Date);
@@ -1236,19 +1240,21 @@ void Plot::newChartObject ()
       set->set(QObject::tr("End Date"), x2, Setting::Date);
       set->set(QObject::tr("End Value"), y2, Setting::Float);
       set->set(QObject::tr("Type"), QObject::tr("Trend Line"), Setting::None);
+      set->set(QObject::tr("Color"), borderColor.name(), Setting::Color);
       break;
     case Text:
       set->set(QObject::tr("Date"), x1, Setting::Date);
       set->set(QObject::tr("Value"), y1, Setting::Float);
       set->set(QObject::tr("Label"), QObject::tr("Text"), Setting::Text);
       set->set(QObject::tr("Type"), QObject::tr("Text"), Setting::None);
+      set->set(QObject::tr("Color"), borderColor.name(), Setting::Color);
       break;
     default:
       break;
   }
-  
+
   mouseFlag = None;
-  
+
   emit chartObjectCreated(set);
 
   Indicator *i = indicators[set->getData(tr("Plot"))];

@@ -388,7 +388,7 @@ void QtstalkerApp::slotQuit()
 void QtstalkerApp::slotAbout()
 {
   QMessageBox *dialog = new QMessageBox(tr("About Qtstalker"),
-  							    tr("Qtstalker\nVersion 0.18 \n(C) 2001-2003 by Stefan Stratigakos"),
+  							    tr("Qtstalker\nVersion 0.19 \n(C) 2001-2003 by Stefan Stratigakos"),
 							    QMessageBox::NoIcon,
 							    QMessageBox::Ok,
 							    QMessageBox::NoButton,
