@@ -958,9 +958,8 @@ void CME::parse (Setting *data)
                        fd.getSymbol(), data->getData("Month"), QString(), QString());
   }
   
-  db->setBar(bd, data->getData("Open").toDouble(), data->getData("High").toDouble(),
-             data->getData("Low").toDouble(), data->getData("Close").toDouble(),
-	     data->getData("Volume").toDouble(), data->getData("OI").toDouble());
+  db->setBar(bd, open.toDouble(), high.toDouble(), low.toDouble(), close.toDouble(),
+	     volume.toDouble(), oi.toDouble());
 	     
   delete db;
 
