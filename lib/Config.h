@@ -74,11 +74,12 @@ class Config
       CandleColor //unused
     };
 
-    Config (QString);
+    Config ();
     ~Config ();
     void setData(Parm, QString);
     QString getData (Parm);
     QStringList getDirList (QString);
+    void setup ();
 
     QStringList getIndicators ();
     Setting * getIndicator (QString);
@@ -94,7 +95,6 @@ class Config
     void closePlugin (QString);
 
   protected:
-    QString path;
     QDict<QLibrary> libs;
     QDict<Plugin> plugins;
 };

@@ -29,12 +29,20 @@
 #include <qfile.h>
 #include <qtextstream.h>
 
-Config::Config (QString p)
+Config::Config ()
 {
-  path = p;
   libs.setAutoDelete(TRUE);
   plugins.setAutoDelete(TRUE);
+}
 
+Config::~Config ()
+{
+  plugins.clear();
+  libs.clear();
+}
+
+void Config::setup ()
+{
   QDir dir(QDir::homeDirPath());
   dir.convertToAbs();
   QString home = dir.absPath();
@@ -116,17 +124,6 @@ Config::Config (QString p)
       closePlugin("VOL");
     }
   }
-
-  // remove old paths to plugins
-  QSettings settings;
-  settings.removeEntry("/Qtstalker/IndicatorPluginPath");
-  settings.removeEntry("/Qtstalker/QuotePluginPath");
-}
-
-Config::~Config ()
-{
-  plugins.clear();
-  libs.clear();
 }
 
 QString Config::getData (Parm p)

@@ -20,6 +20,7 @@
  */
 
 #include "Bars.h"
+#include "Config.h"
 #include <qpainter.h>
 #include <qsettings.h>
 
@@ -110,7 +111,26 @@ void Bars::drawBars (int startX, int startIndex, int pixelspace)
 
 void Bars::drawPaintBars (int startX, int startIndex, int pixelspace)
 {
-/*
+  Config *config = new Config;
+  
+  Setting *set = config->getIndicator(indicator);
+  
+  Plugin *plug = config->getPlugin(Config::IndicatorPluginPath, set->getData("plugin"));
+  if (! plug)
+  {
+    delete config;
+    delete set;
+    return;
+  }
+  
+  plug->setIndicatorInput(data);
+  plug->loadIndicatorSettings(config->getData(Config::IndicatorPath) + "/" + indicator);
+  plug->calculate();
+  plug->getAlerts();
+  paintBars = plug->getAlerts();
+  delete set;
+  delete config;
+
   QPainter painter;
   painter.begin(buffer);
 
@@ -119,9 +139,18 @@ void Bars::drawPaintBars (int startX, int startIndex, int pixelspace)
   
   while ((x < buffer->width()) && (loop < (int) data->count()))
   {
-    QColor *color = paintBars.at(loop);
-    painter.setPen(QColor(color->red(), color->green(), color->blue()));
-
+    switch (paintBars.at(loop))
+    {
+      case 1:
+        painter.setPen(paintUpColor);
+	break;
+      case -1:
+        painter.setPen(paintDownColor);
+	break;
+      default:
+        break;
+    }
+    
     int y;
     if (data->getOpen(loop) != 0)
     {
@@ -141,7 +170,6 @@ void Bars::drawPaintBars (int startX, int startIndex, int pixelspace)
   }
 
   painter.end();
-*/
 }
 
 void Bars::prefDialog ()
@@ -181,6 +209,7 @@ void Bars::prefDialog ()
     {
       paintUpColor = dialog->getColor(tr("Paint Bar Up Color"));
       paintDownColor = dialog->getColor(tr("Paint Bar Down Color"));
+      indicator = dialog->getCombo(tr("Indicator"));
     }
     
     saveFlag = TRUE;
@@ -200,20 +229,24 @@ void Bars::styleChanged (const QString &)
     
   if (! style.compare(tr("Bar")))
   {
-    dialog->deletePage(tr("Paint Bar Colors"));
+    dialog->deletePage(tr("Parms"));
     
-    dialog->createPage (tr("Bar Colors"));
-    dialog->addColorItem(tr("Bar Neutral Color"), tr("Bar Colors"), barNeutralColor);
-    dialog->addColorItem(tr("Bar Up Color"), tr("Bar Colors"), barUpColor);
-    dialog->addColorItem(tr("Bar Down Color"), tr("Bar Colors"), barDownColor);
+    dialog->createPage (tr("Parms"));
+    dialog->addColorItem(tr("Bar Neutral Color"), tr("Parms"), barNeutralColor);
+    dialog->addColorItem(tr("Bar Up Color"), tr("Parms"), barUpColor);
+    dialog->addColorItem(tr("Bar Down Color"), tr("Parms"), barDownColor);
   }
   else
   {
-    dialog->deletePage(tr("Bar Colors"));
+    dialog->deletePage(tr("Parms"));
     
-    dialog->createPage (tr("Paint Bar Colors"));
-    dialog->addColorItem(tr("Paint Bar Up Color"), tr("Paint Bar Colors"), paintUpColor);
-    dialog->addColorItem(tr("Paint Bar Down Color"), tr("Paint Bar Colors"), paintDownColor);
+    dialog->createPage (tr("Parms"));
+    dialog->addColorItem(tr("Paint Bar Up Color"), tr("Parms"), paintUpColor);
+    dialog->addColorItem(tr("Paint Bar Down Color"), tr("Parms"), paintDownColor);
+    
+    Config *config = new Config;
+    dialog->addComboItem(tr("Indicator"), tr("Parms"), config->getIndicators(), indicator);
+    delete config;
   }
 }
 
@@ -233,6 +266,7 @@ void Bars::loadSettings ()
   // paint bar settings  
   paintUpColor.setNamedColor(settings.readEntry("/paintUpColor", "green"));
   paintDownColor.setNamedColor(settings.readEntry("/paintDownColor", "red"));
+  indicator = settings.readEntry("/indicator");
   
   settings.endGroup();
 }
@@ -256,6 +290,7 @@ void Bars::saveSettings ()
   // paint bar settings
   settings.writeEntry("/paintUpColor", paintUpColor.name());
   settings.writeEntry("/paintDownColor", paintDownColor.name());
+  settings.writeEntry("/indicator", indicator);
   
   settings.endGroup();
 }

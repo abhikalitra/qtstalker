@@ -26,7 +26,6 @@
 #include <qstring.h>
 #include <qmemarray.h>
 #include <qobject.h>
-#include <qcolor.h>
 #include <qpixmap.h>
 #include "PlotLine.h"
 #include "BarData.h"
@@ -51,7 +50,6 @@ class Plugin : public QObject
     virtual int getIndicatorLines ();
     virtual PlotLine * getIndicatorLine (int);
     virtual QMemArray<int> getAlerts ();
-    virtual QList<QColor> getColorBars (QString, QString, QString);
     virtual void calculate ();
     virtual void clearOutput ();
     virtual bool getAlertFlag ();

@@ -26,7 +26,6 @@
 IndicatorPlugin::IndicatorPlugin()
 {
   output.setAutoDelete(TRUE);
-  paintBars.setAutoDelete(TRUE);
   pluginType = IndicatorPlug;
   saveFlag = FALSE;
   plotFlag = FALSE;
@@ -59,30 +58,6 @@ QMemArray<int> IndicatorPlugin::getAlerts ()
 {
   alerts.fill(0, data->count());
   return alerts;
-}
-
-QList<QColor> IndicatorPlugin::getColorBars (QString uc, QString dc, QString nc)
-{
-  paintBars.clear();
-  
-  int loop;
-  for (loop = 0; loop < (int) data->count(); loop++)
-  {
-    switch(alerts[loop])
-    {
-      case -1:
-        paintBars.append(new QColor(dc));
-        break;
-      case 1:
-        paintBars.append(new QColor(uc));
-        break;
-      default:
-        paintBars.append(new QColor(nc));
-        break;
-    }
-  }
-
-  return paintBars;
 }
 
 bool IndicatorPlugin::getPlotFlag ()

@@ -28,7 +28,6 @@
 #include <qstring.h>
 #include <qlist.h>
 #include <qmemarray.h>
-#include <qcolor.h>
 #include <qdict.h>
 
 class IndicatorPlugin : public Plugin
@@ -37,7 +36,6 @@ class IndicatorPlugin : public Plugin
     IndicatorPlugin();
     virtual ~IndicatorPlugin();
     QMemArray<int> getAlerts ();
-    QList<QColor> getColorBars (QString, QString, QString);
     void setIndicatorInput (BarData *);
     int getIndicatorLines ();
     void clearOutput ();
@@ -51,7 +49,6 @@ class IndicatorPlugin : public Plugin
     BarData *data;
     QList<PlotLine> output;
     QMemArray<int> alerts;
-    QList<QColor> paintBars;
     QStringList lineTypes;
     QStringList maTypeList;
     QStringList inputTypeList;

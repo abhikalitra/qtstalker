@@ -22,6 +22,7 @@ HEADERS += Toolbar.h
 HEADERS += Bar.h
 HEADERS += BarDate.h
 HEADERS += QSMath.h
+HEADERS += Config.h
    
 SOURCES += Plugin.cpp
 SOURCES += QuotePlugin.cpp
@@ -43,6 +44,7 @@ SOURCES += Toolbar.cpp
 SOURCES += Bar.cpp
 SOURCES += BarDate.cpp
 SOURCES += QSMath.cpp
+SOURCES += Config.cpp
     
 TARGET = qtstalker
 VERSION = 0.23.0

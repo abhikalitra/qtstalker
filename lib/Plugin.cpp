@@ -67,12 +67,6 @@ QMemArray<int> Plugin::getAlerts ()
   return 0;
 }
 
-QList<QColor> Plugin::getColorBars (QString, QString, QString)
-{
-  QList<QColor> l;
-  return l;
-}
-
 int Plugin::getIndicatorLines ()
 {
   return 0;

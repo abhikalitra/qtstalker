@@ -77,9 +77,8 @@ QtstalkerApp::QtstalkerApp()
   plotList.setAutoDelete(TRUE);
   setIcon(qtstalker);
 
-  QString s(QDir::homeDirPath());
-  s.append("/Qtstalker/config");
-  config = new Config(s);
+  config = new Config();
+  config->setup();
 
   initActions();
 
@@ -176,7 +175,7 @@ QtstalkerApp::QtstalkerApp()
   delete db;
 
   // set the grid status
-  s = config->getData(Config::Grid);
+  QString s = config->getData(Config::Grid);
   if (s.toInt())
     actionGrid->setOn(TRUE);
   else
@@ -804,18 +803,6 @@ void QtstalkerApp::loadIndicator (Indicator *i)
       pl->copy(tpl);
       i->addLine(pl);
     }
-
-    // set up the paint bar
-/*    
-    QString s = config->getData(Config::PaintBarIndicator);
-    if (! s.compare(i->getName()))
-    {
-      plug->getAlerts();
-      mainPlot->setPaintBars(plug->getColorBars(config->getData(Config::UpColor),
-      						config->getData(Config::DownColor),
-						config->getData(Config::NeutralColor)));
-    }
-*/
 
     i->setMainPlot(plug->getPlotFlag());
     

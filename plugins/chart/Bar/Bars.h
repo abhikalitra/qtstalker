@@ -45,6 +45,8 @@ class Bars : public ChartPlugin
 
   protected:
     QString style;
+    QString indicator;
+    QMemArray<int> paintBars;
     QColor barNeutralColor;
     QColor barUpColor;
     QColor barDownColor;
