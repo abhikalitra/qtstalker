@@ -19,64 +19,41 @@
  *  USA.
  */
 
-#ifndef WORKWITHCHARTS_HPP
-#define WORKWITHCHARTS_HPP
+#ifndef WORKWITHPORTFOLIOSDIALOG_HPP
+#define WORKWITHPORTFOLIOSDIALOG_HPP
 
 #include <qstring.h>
-#include <qlistview.h>
-#include <qpushbutton.h>
 #include <qdialog.h>
-#include <qpixmap.h>
+#include <qtoolbutton.h>
+#include <qlistview.h>
 #include "Config.h"
 
-class WorkwithCharts : public QDialog
+class WorkwithPortfoliosDialog : public QDialog
 {
   Q_OBJECT
 
-  signals:
-    void chartOpened (QString);
-    void groupOpened (QString);
-
   public:
-    WorkwithCharts (Config *, QString);
-    ~WorkwithCharts ();
+    WorkwithPortfoliosDialog (Config *);
+    ~WorkwithPortfoliosDialog ();
     void updateList ();
-    void updateChartList ();
-    void deleteChart ();
-    void editChart ();
-    void editComposite ();
-    void newComposite ();
-    void newGroup();
-    void editGroup();
-    void deleteGroup();
-    void renamePortfolio ();
-    void openPortfolio ();
-    void editPortfolio ();
-    void deletePortfolio ();
-    void newPortfolio ();
 
   public slots:
-    void deleteSymbol ();
-    void openSymbol (QListViewItem *);
-    void openSymbol ();
-    void newSymbol ();
-    void editSymbol ();
+    void openPortfolio ();
+    void renamePortfolio ();
+    void newPortfolio ();
+    void deletePortfolio ();
+    void editPortfolio ();
     void buttonStatus();
-    void exportSymbol ();
-    void renameGroup ();
-    void renameSymbol ();
 
   private:
-    QString type;
     Config *config;
     QListView *list;
     QListViewItem *item;
-    QPushButton *openButton;
-    QPushButton *editButton;
-    QPushButton *deleteButton;
-    QPushButton *newButton;
-    QPushButton *renameButton;
-    QPushButton *exportButton;
+    QToolButton *openButton;
+    QToolButton *editButton;
+    QToolButton *deleteButton;
+    QToolButton *newButton;
+    QToolButton *renameButton;
 };
 
 #endif

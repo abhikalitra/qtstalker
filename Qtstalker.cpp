@@ -45,8 +45,6 @@
 #include "Setting.h"
 #include "CompositeDialog.h"
 #include "ChartDb.h"
-#include "WorkwithCharts.h"
-
 #include "WorkwithChartsDialog.h"
 #include "WorkwithGroupsDialog.h"
 #include "WorkwithPortfoliosDialog.h"
@@ -175,8 +173,6 @@ QtstalkerApp::QtstalkerApp()
   split->setSizes(sizeList);
 
   slotChartTypeChanged(actionBar);
-
-//  this.setFont(QFont("helvetica", 9));
 }
 
 QtstalkerApp::~QtstalkerApp()
@@ -497,7 +493,6 @@ void QtstalkerApp::slotAbout()
 
 void QtstalkerApp::slotWorkwithChart ()
 {
-//  WorkwithCharts *dialog = new WorkwithCharts(config, "Chart");
   WorkwithChartsDialog *dialog = new WorkwithChartsDialog(config);
   QObject::connect(dialog, SIGNAL(chartOpened(QString)), this, SLOT(slotOpenChart(QString)));
   dialog->show();
@@ -527,7 +522,6 @@ void QtstalkerApp::slotOpenChart (QString selection)
 
 void QtstalkerApp::slotWorkwithGroup ()
 {
-//  WorkwithCharts *dialog = new WorkwithCharts(config, "Group");
   WorkwithGroupsDialog *dialog = new WorkwithGroupsDialog(config);
   QObject::connect(dialog, SIGNAL(groupOpened(QString)), this, SLOT(slotOpenGroup(QString)));
   dialog->show();
@@ -1086,7 +1080,6 @@ QString QtstalkerApp::getWindowCaption ()
 
 void QtstalkerApp::slotWorkwithPortfolio ()
 {
-//  WorkwithCharts *dialog = new WorkwithCharts(config, "Portfolio");
   WorkwithPortfoliosDialog *dialog = new WorkwithPortfoliosDialog(config);
   dialog->show();
   dialog->updateList();
