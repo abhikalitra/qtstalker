@@ -30,6 +30,7 @@ CandleQS::CandleQS ()
   minPixelspace = 6;
   startX = 2;
   indicatorFlag = FALSE;
+  expandCandles = FALSE;
 
   loadSettings();  
 }
@@ -42,12 +43,18 @@ void CandleQS::drawChart (int startX, int startIndex, int pixelspace)
 {
   QPainter painter;
   painter.begin(buffer);
+  painter.setPen(neutralColor);
 
   int x = startX;
   int loop = startIndex;
 
-  painter.setPen(neutralColor);
-
+  int w = (1 + pixelspace) / 2 - 1 ; // width of 1/2 candle
+  if (expandCandles)
+  {
+    if (pixelspace < 5) 
+      w = 1;
+  }
+  
   int h = scaler->convertToY(data->getHigh(loop));
   int l = scaler->convertToY(data->getLow(loop));
   int c = scaler->convertToY(data->getClose(loop));
@@ -57,7 +64,11 @@ void CandleQS::drawChart (int startX, int startIndex, int pixelspace)
   {
     if (c < o)
     {
-      painter.drawRect(x - 2, c, 5, o - c);
+      if (expandCandles)
+        painter.drawRect(x - w, c, 1+2*w, o - c);
+      else
+        painter.drawRect(x - 2, c, 5, o - c);
+	
       painter.drawLine (x, h, x, c);
       painter.drawLine (x, o, x, l);
     }
@@ -66,9 +77,19 @@ void CandleQS::drawChart (int startX, int startIndex, int pixelspace)
       painter.drawLine (x, h, x, l);
     
       if (c == o)
-        painter.drawLine (x - 2, o, x + 2, o);
+      {
+        if (expandCandles)
+          painter.drawLine (x - w, o, x + w, o);
+	else
+          painter.drawLine (x - 2, o, x + 2, o);
+      }
       else
-        painter.fillRect(x - 2, o, 5, c - o, painter.pen().color());
+      {
+        if (expandCandles)
+          painter.fillRect(x - w, o, 1+2*w, c - o, painter.pen().color());
+	else
+          painter.fillRect(x - 2, o, 5, c - o, painter.pen().color());
+      }
     }
   }
 
@@ -96,7 +117,11 @@ void CandleQS::drawChart (int startX, int startIndex, int pixelspace)
     {
       if (c < o)
       {
-        painter.drawRect(x - 2, c, 5, o - c);
+        if (expandCandles)
+          painter.drawRect(x - w, c, 1+2*w, o - c);
+	else
+          painter.drawRect(x - 2, c, 5, o - c);
+      
         painter.drawLine (x, h, x, c);
         painter.drawLine (x, o, x, l);
       }
@@ -105,9 +130,19 @@ void CandleQS::drawChart (int startX, int startIndex, int pixelspace)
         painter.drawLine (x, h, x, l);
       
         if (c == o)
-          painter.drawLine (x - 2, o, x + 2, o);
+	{
+	  if (expandCandles)
+            painter.drawLine (x - w, o, x + w, o);
+	  else
+            painter.drawLine (x - 2, o, x + 2, o);
+	}
         else
-          painter.fillRect(x - 2, o, 5, c - o, painter.pen().color());
+	{
+          if (expandCandles)
+            painter.fillRect(x - w, o, 1+2*w, c - o, painter.pen().color());
+	  else
+            painter.fillRect(x - 2, o, 5, c - o, painter.pen().color());
+	}
       }
     }
 
@@ -126,6 +161,7 @@ void CandleQS::prefDialog ()
   dialog->addColorItem(tr("Neutral Color"), 1, neutralColor);
   dialog->addColorItem(tr("Up Color"), 1, upColor);
   dialog->addColorItem(tr("Down Color"), 1, downColor);
+  dialog->addCheckItem(tr("Expand Candles"), 1, expandCandles);
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
@@ -133,6 +169,7 @@ void CandleQS::prefDialog ()
     neutralColor = dialog->getColor(tr("Neutral Color"));
     upColor = dialog->getColor(tr("Up Color"));
     downColor = dialog->getColor(tr("Down Color"));
+    expandCandles = dialog->getCheck(tr("Expand Candles"));
     
     saveFlag = TRUE;
     
@@ -156,6 +193,9 @@ void CandleQS::loadSettings ()
   s = settings.readEntry("/DownColor", "red");
   downColor.setNamedColor(s);
   
+  s = settings.readEntry("/ExpandCandles", "0");
+  expandCandles = s.toInt();
+  
   settings.endGroup();
 }
 
@@ -170,6 +210,7 @@ void CandleQS::saveSettings ()
   settings.writeEntry("/NeutralColor", neutralColor.name());
   settings.writeEntry("/UpColor", upColor.name());
   settings.writeEntry("/DownColor", downColor.name());
+  settings.writeEntry("/ExpandCandles", QString::number(expandCandles));
   
   settings.endGroup();
 }

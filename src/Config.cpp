@@ -393,6 +393,9 @@ QStringList Config::getIndicatorPlugins ()
     l[loop].remove(0, 3);
   }
 
+  // ignore any old removed plugins
+  l.remove(QObject::tr("PRICE"));
+  
   return l;
 }
 
@@ -407,6 +410,7 @@ QStringList Config::getQuotePlugins ()
     l[loop].remove(0, 3);
   }
 
+  // ignore any old removed plugins
   l.remove(QObject::tr("CBOT"));
   l.remove(QObject::tr("Ratio"));
   l.remove(QObject::tr("YahooQuote"));

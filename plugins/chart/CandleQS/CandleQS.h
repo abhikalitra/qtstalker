@@ -41,6 +41,7 @@ class CandleQS : public ChartPlugin
     QColor neutralColor;
     QColor upColor;
     QColor downColor;
+    bool expandCandles;
 };
 
 extern "C"

@@ -36,8 +36,10 @@
 	  quote dialog. You need to press the settings button beside the plugin combobox to bring
 	  up the settings dialog for each plugin.
 	  
-20040307: Folded YahooQuote plugin into Yahoo plugin.
+20040307: Folded YahooQuote plugin into Yahoo plugin. Removed YahooQuote quote plugin.
 	  
+20040308: Removed Price indicator plugin. Now redundant because of the Line chart plugin can replace
+          it's functions.
 
 	  
 0.25

@@ -78,23 +78,21 @@ void OVRLY::calculate ()
 
 void OVRLY::comparePrice ()
 {
-  PlotLine *tline = getInput(tr("Close"));
-  PlotLine *line1 = normalize(tline);
+  PlotLine *line1 = getInput(tr("Close"));
   line1->setColor(getData(tr("Color")));
   line1->setType(getData(tr("Line Type")));
   line1->setLabel(getData(tr("Label")));
-  delete tline;
+  line1->setScaleFlag(TRUE);
   output.append(line1);
 
   QString s = getData(tr("Base Symbol"));
   if (s.length())
   {
-    tline = getSymbolLine(s);
-    PlotLine *line2 = normalize(tline);
-    delete tline;
+    PlotLine *line2 = getSymbolLine(s);
     line2->setColor(getData(tr("Base Color")));
     line2->setType(getData(tr("Base Line Type")));
     line2->setLabel(getData(tr("Base Label")));
+    line2->setScaleFlag(TRUE);
     output.append(line2);
   }
 }
@@ -187,6 +185,7 @@ PlotLine * OVRLY::getSymbolLine (QString d)
   return line;
 }
 
+/*
 PlotLine * OVRLY::normalize (PlotLine *input)
 {
   PlotLine *line = new PlotLine();
@@ -204,7 +203,7 @@ PlotLine * OVRLY::normalize (PlotLine *input)
 
   return line;
 }
-
+*/
 Plugin * create ()
 {
   OVRLY *o = new OVRLY;

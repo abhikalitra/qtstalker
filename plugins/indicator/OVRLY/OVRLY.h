@@ -28,7 +28,7 @@ class OVRLY : public IndicatorPlugin
     virtual ~OVRLY ();
     void calculate ();
     PlotLine * getSymbolLine (QString);
-    PlotLine * normalize (PlotLine *);
+//    PlotLine * normalize (PlotLine *);
     void comparePrice ();
     void comparePerformance ();
 };
