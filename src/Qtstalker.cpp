@@ -97,7 +97,8 @@ QtstalkerApp::QtstalkerApp()
   navBase = new QWidget(navSplitter);
   QVBoxLayout *vbox = new QVBoxLayout(navBase);
 
-  navTab = new QTabWidget(navBase);
+  navTab = new NavigatorTab(navBase);
+  QObject::connect(navTab, SIGNAL(signalPositionChanged(int)), this, SLOT(slotNavigatorPosition(int)));
   vbox->addWidget(navTab, 1, 0);
 
   infoLabel = new QMultiLineEdit(navBase);
@@ -257,7 +258,9 @@ QtstalkerApp::QtstalkerApp()
     actionDrawMode->setOn(TRUE);
   else
     actionDrawMode->setOn(FALSE);
-  emit signalDrawMode(s.toInt());  
+  emit signalDrawMode(s.toInt());
+  
+  navTab->togglePosition(navTab->getPosition());
   
   // catch any kill signals and try to save config
   QObject::connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(slotQuit()));
@@ -495,9 +498,6 @@ void QtstalkerApp::slotOptions ()
   l = QStringList::split(" ", config->getData(Config::AppFont), FALSE);
   dialog->addFontItem(tr("App Font"), tr("Fonts"), QFont(l[0], l[1].toInt(), l[2].toInt()));
     
-  dialog->createPage(tr("Geometry"));
-  dialog->addCheckItem(tr("Navigator Left"), tr("Geometry"), config->getData(Config::NavigatorPosition).toInt());
-  
   int rc = dialog->exec();
 
   if (rc == QDialog::Accepted)
@@ -541,20 +541,6 @@ void QtstalkerApp::slotOptions ()
       config->setData(Config::AppFont, s);
       qApp->setFont(font, TRUE, 0);
     }
-
-    // save navigator left option
-    bool flag = dialog->getCheck(tr("Navigator Left"));
-    if (flag)
-    {
-      config->setData(Config::NavigatorPosition, "1");
-      navSplitter->moveToFirst(navBase);
-    }
-    else
-    {
-      config->setData(Config::NavigatorPosition, "0");
-      navSplitter->moveToLast(navBase);
-    }
-    navSplitter->refresh();
 
     loadChart(chartPath);
 
@@ -1500,6 +1486,16 @@ void QtstalkerApp::setSliderStart ()
   }
   
   slider->blockSignals(FALSE);
+}
+
+void QtstalkerApp::slotNavigatorPosition (int d)
+{
+  if (! d)
+    navSplitter->moveToFirst(navBase);
+  else
+    navSplitter->moveToLast(navBase);
+    
+  navSplitter->refresh();
 }
 
 //**********************************************************************

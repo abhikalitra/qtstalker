@@ -23,7 +23,7 @@
 #include <qcursor.h>
 #include <qsettings.h>
 
-IndicatorTab::IndicatorTab (QWidget *w) : QTabWidget (w)
+IndicatorTabBar::IndicatorTabBar (QWidget *w) : QTabBar (w)
 {
   menu = new QPopupMenu;
   
@@ -33,38 +33,52 @@ IndicatorTab::IndicatorTab (QWidget *w) : QTabWidget (w)
   id = positionMenu->insertItem(tr("Bottom"), this, SLOT(toggleTabPosition(int)));
   positionMenu->setItemParameter(id, 1);
   menu->insertItem (tr("Tab Position"), positionMenu);
-  
+}
+
+IndicatorTabBar::~IndicatorTabBar ()
+{
+  delete menu;
+}
+
+void IndicatorTabBar::contextMenuEvent (QContextMenuEvent *event)
+{
+  event->accept();
+  menu->exec(QCursor::pos());
+}
+
+void IndicatorTabBar::toggleTabPosition (int pos)
+{
+  switch (pos)
+  {
+    case 1:
+      emit signalPositionChanged(QTabWidget::Bottom);
+      break;
+    default:
+      emit signalPositionChanged(QTabWidget::Top);
+      break;
+  }
+}
+
+//*****************************************************************
+//*****************************************************************
+//*****************************************************************
+
+IndicatorTab::IndicatorTab (QWidget *w) : QTabWidget (w)
+{
+  IndicatorTabBar *bar = new IndicatorTabBar(this);
+  QObject::connect(bar, SIGNAL(signalPositionChanged(QTabWidget::TabPosition)),
+                   this, SLOT(toggleTabPosition(QTabWidget::TabPosition)));
+  setTabBar(bar);
   loadSettings();
 }
 
 IndicatorTab::~IndicatorTab ()
 {
-  delete menu;
 }
 
-void IndicatorTab::mousePressEvent (QMouseEvent *event)
+void IndicatorTab::toggleTabPosition (QTabWidget::TabPosition pos)
 {
-  if (event->button() != RightButton)
-  {
-    event->ignore();
-    return;
-  }
-
-  menu->exec(QCursor::pos());
-}
-
-void IndicatorTab::toggleTabPosition (int pos)
-{
-  switch (pos)
-  {
-    case 1:
-      setTabPosition(QTabWidget::Bottom);
-      break;
-    default:
-      setTabPosition(QTabWidget::Top);
-      break;
-  }
-      
+  setTabPosition(pos);
   saveSettings();
 }
 
@@ -86,3 +100,4 @@ void IndicatorTab::loadSettings()
   else
     setTabPosition(QTabWidget::Bottom);
 }
+

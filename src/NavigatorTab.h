@@ -19,47 +19,54 @@
  *  USA.
  */
 
-#ifndef INDICATORTAB_HPP
-#define INDICATORTAB_HPP
+#ifndef NAVIGATORTAB_HPP
+#define NAVIGATORTAB_HPP
 
 #include <qtabwidget.h>
 #include <qpopupmenu.h>
 #include <qtabbar.h>
 
-class IndicatorTabBar : public QTabBar
+class NavigatorTabBar : public QTabBar
 {
   Q_OBJECT
   
   signals:
-    void signalPositionChanged (QTabWidget::TabPosition);
+    void signalPositionChanged (int);
 
   public:
-    IndicatorTabBar (QWidget *);
-    ~IndicatorTabBar ();
+    NavigatorTabBar (QWidget *);
+    ~NavigatorTabBar ();
 
   protected:
     virtual void contextMenuEvent (QContextMenuEvent *);
     
   private slots:
-    void toggleTabPosition (int);
+    void togglePosition (int);
   
   private:
     QPopupMenu *menu;
     QPopupMenu *positionMenu;
 };
 
-class IndicatorTab : public QTabWidget
+class NavigatorTab : public QTabWidget
 {
   Q_OBJECT
 
+  signals:
+    void signalPositionChanged (int);
+  
   public:
-    IndicatorTab (QWidget *);
-    ~IndicatorTab ();
+    NavigatorTab (QWidget *);
+    ~NavigatorTab ();
     void loadSettings();
     void saveSettings();
+    int getPosition ();
 
-  private slots:
-    void toggleTabPosition (QTabWidget::TabPosition);
+  public slots:
+    void togglePosition (int);
+
+  private:
+    int position;
 };
 
 #endif

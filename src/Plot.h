@@ -132,6 +132,7 @@ class Plot : public QWidget
     virtual void mouseMoveEvent (QMouseEvent *);
     virtual void keyPressEvent (QKeyEvent *);
     virtual void mouseDoubleClickEvent (QMouseEvent *);
+    virtual void contextMenuEvent (QContextMenuEvent *);
 
   private slots:
     void drawObjects ();

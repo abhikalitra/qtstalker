@@ -61,7 +61,7 @@ class Config
       AppFont,
       NavAreaSize,
       LogScale,
-      NavigatorPosition,
+      NavigatorPosition, // unused
       IndicatorTabs, // unused
       StackedIndicator,
       PAFBoxSize, // unused

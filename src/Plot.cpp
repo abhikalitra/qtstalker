@@ -389,14 +389,6 @@ void Plot::mousePressEvent (QMouseEvent *event)
         updateStatusBar(event->x(), event->y());
       return;
     }
-    else
-    {
-      if (event->button() == RightButton)
-      {
-        showPopupMenu();
-        return;
-      }
-    }
   }
     
   if (event->button() == LeftButton)
@@ -446,16 +438,25 @@ void Plot::mousePressEvent (QMouseEvent *event)
 	break;
     }
   }
+}
+
+void Plot::contextMenuEvent (QContextMenuEvent *)
+{
+  if (mainFlag)
+  {
+    if (! data)
+      return;
+  }
   else
   {
-    if (event->button() == RightButton)
-    {
-      if (mouseFlag == COSelected)
-        tco->showMenu();
-      else
-        showPopupMenu();
-    }
+    if (! indicators.count())
+      return;
   }
+
+  if (mouseFlag == COSelected)
+    tco->showMenu();
+  else
+    showPopupMenu();
 }
 
 void Plot::mouseMoveEvent (QMouseEvent *event)

@@ -42,6 +42,7 @@
 #include "ChartDb.h"
 #include "ChartObject.h"
 #include "IndicatorTab.h"
+#include "NavigatorTab.h"
 
 #define DEFAULT_INDICATOR_HEIGHT 125
 
@@ -125,6 +126,7 @@ class QtstalkerApp : public QMainWindow
     void slotDrawMode (bool);
     void slotMinPixelspaceChanged (int);
     void slotCrosshairsStatus (bool);
+    void slotNavigatorPosition (int);
 
   private:
     QPopupMenu *fileMenu;
@@ -153,7 +155,7 @@ class QtstalkerApp : public QMainWindow
     QSplitter *split;
     QSplitter *navSplitter;
     IndicatorTab *tabs;
-    QTabWidget *navTab;
+    NavigatorTab *navTab;
     QWidget *baseWidget;
     QWidget *navBase;
     ChartPage *chartNav;
