@@ -10,13 +10,16 @@
 
 - Fixed bug that skipped previous date when calculating MA's.
 
-- Added a compile option to increase speed "-Os".
+- Added a compile option to increase speed and decrease size "-Os".
 
 - Fixed "export" all bug that seg faults when trying to export all charts.
 
 - Added new MA support for Wilder's MA method  and fixed TR function to include first bar. Thanks to Glen for the patch.
 
 - New quote plugin "Ratio". This is a composite that divides two symbols to produce the ratio between them.
+
+- New quote plugin "CSV". This imports comma-separated values (CSV) ascii
+  files from the local filesystem.
 
 - Fixed bug that prevented chart objects with a date parm to draw.
 

@@ -38,6 +38,10 @@ qmake -o Makefile COT.pro
 make
 cp libCOT.so.0.2.0 COT.so
 
+qmake -o Makefile CSV.pro
+make
+cp libCSV.so.0.2.0 CSV.so
+
 qmake -o Makefile Ratio.pro
 make
 cp libRatio.so.0.2.0 Ratio.so

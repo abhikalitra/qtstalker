@@ -113,3 +113,5 @@ Scaling options include:
   Scale to entire data series
   Scale to screen
 
+Back testing functions allowing you to test indicator(s) performance using real data collected with qtstalker.
+
