@@ -47,6 +47,10 @@ Tester::Tester (Config *c, QString n) : QDialog (0, 0, FALSE)
   exitLongIndicators.setAutoDelete(TRUE);
   enterShortIndicators.setAutoDelete(TRUE);
   exitShortIndicators.setAutoDelete(TRUE);
+  enterLongAlerts.setAutoDelete(TRUE);
+  exitLongAlerts.setAutoDelete(TRUE);
+  enterShortAlerts.setAutoDelete(TRUE);
+  exitShortAlerts.setAutoDelete(TRUE);
 
   setCaption ("Back Tester");
 
@@ -297,16 +301,12 @@ void Tester::createTestPage ()
   tradeShort = new QCheckBox(tr("Short"), gbox);
   gbox->addSpace(0);
 
-  QLabel *label = new QLabel(tr("Delay between consecutive longs/shorts"), gbox);
-
-  delayDays = new QSpinBox(0, 999999, 1, gbox);
-
   gbox = new QVGroupBox(tr("Date Range"), w);
   gbox->setInsideSpacing(2);
   gbox->setColumns(2);
   grid->addWidget(gbox, 0, 1);
 
-  label = new QLabel(tr("Start Date"), gbox);
+  QLabel *label = new QLabel(tr("Start Date"), gbox);
 
   startDate = new QDateEdit(QDate::currentDate(), gbox);
   startDate->setOrder(QDateEdit::YMD);
@@ -498,15 +498,19 @@ void Tester::addIndicator ()
     {
       case 0:
         enterLongIndicators.insert(name, i);
+        enterLongAlerts.insert(name, new Setting);
 	break;
       case 1:
         exitLongIndicators.insert(name, i);
+        exitLongAlerts.insert(name, new Setting);
 	break;
       case 2:
         enterShortIndicators.insert(name, i);
+        enterShortAlerts.insert(name, i);
 	break;
       default:
         exitShortIndicators.insert(name, i);
+        exitShortAlerts.insert(name, i);
 	break;
     }
 
@@ -585,15 +589,19 @@ void Tester::deleteIndicator ()
   {
     case 0:
       enterLongIndicators.remove(item->text(0));
+      enterLongAlerts.remove(item->text(0));
       break;
     case 1:
       exitLongIndicators.remove(item->text(0));
+      exitLongAlerts.remove(item->text(0));
       break;
     case 2:
       enterShortIndicators.remove(item->text(0));
+      enterShortAlerts.remove(item->text(0));
       break;
     default:
       exitShortIndicators.remove(item->text(0));
+      exitShortAlerts.remove(item->text(0));
       break;
   }
 
@@ -656,9 +664,24 @@ void Tester::test ()
   loadIndicators(1, db);
   loadIndicators(2, db);
   loadIndicators(3, db);
+  
+  loadEnterLongAlerts ();
+  loadExitLongAlerts ();
+  loadEnterShortAlerts ();
+  loadExitShortAlerts ();
+  
+  clearAlertCounts();
+
+  for (testLoop = 0; testLoop < db->getDataSize(); testLoop++)
+  {
+    currentRecord = db->getRecordIndex(testLoop);
+    QDateTime td = QDateTime::fromString(currentRecord->getDateTime("Date"), ISODate);
+    if (td >= sd)
+      break;
+  }
 
   status = 0;
-  for (testLoop = 0; testLoop < db->getDataSize(); testLoop++)
+  for (; testLoop < db->getDataSize(); testLoop++)
   {
     currentRecord = db->getRecordIndex(testLoop);
 
@@ -666,16 +689,72 @@ void Tester::test ()
     if (dt > ed)
       break;
 
-    if (checkEnterLong())
-      continue;
+    checkAlerts();
 
-    if (checkExitLong())
-      continue;
+    if (status == 0)
+    {
+      if (enterLongAlerts.count() && tradeLong->isChecked())
+      {
+        if ((int) enterLongAlerts.count() == enterLongCount)
+        {
+          enterLong();
+          continue;
+        }
+      }
 
-    if (checkEnterShort())
-      continue;
+      if (enterShortAlerts.count() && tradeShort->isChecked())
+      {
+        if ((int) enterShortAlerts.count() == enterShortCount)
+        {
+          enterShort();
+          continue;
+        }
+      }
+    }
 
-    if (checkExitShort())
+    if (status == 1)
+    {
+      if (enterShortAlerts.count() && tradeShort->isChecked())
+      {
+        if ((int) enterShortAlerts.count() == enterShortCount)
+        {
+          enterShort();
+          continue;
+        }
+      }
+
+      if (exitLongAlerts.count() && tradeLong->isChecked())
+      {
+        if ((int) exitLongAlerts.count() == exitLongCount)
+        {
+          exitLong();
+          continue;
+        }
+      }
+    }
+    
+    if (status == -1)
+    {
+      if (enterLongAlerts.count() && tradeLong->isChecked())
+      {
+        if ((int) enterLongAlerts.count() == enterLongCount)
+        {
+          enterLong();
+          continue;
+        }
+      }
+
+      if (exitShortAlerts.count() && tradeShort->isChecked())
+      {
+        if ((int) exitShortAlerts.count() == exitShortCount)
+        {
+          exitShort();
+          continue;
+        }
+      }
+    }
+    
+    if (status == 0)
       continue;
 
     if (breakeven())
@@ -690,6 +769,7 @@ void Tester::test ()
     trailing();
   }
 
+/*
   equityPlot->clear();
   PlotLine *line = new PlotLine;
   Indicator *ind = new Indicator;
@@ -708,142 +788,98 @@ void Tester::test ()
   closePlot->clear();
   closePlot->setData(db->getRecordList());
   closePlot->draw();
+*/
 
   delete db;
 }
 
-bool Tester::checkEnterLong ()
+void Tester::checkAlerts ()
 {
-  if (status == 1)
-    return FALSE;
+  QString key = currentRecord->getData("Date").left(8);
 
-  if (! tradeLong->isChecked())
-    return FALSE;
-
-  if (! enterLongIndicators.count())
-    return FALSE;
-
-  int count = 0;
-  QDictIterator<Indicator> it(enterLongIndicators);
+  QDictIterator<Setting> it(enterLongAlerts);
   for (; it.current(); ++it)
   {
-    Indicator *i = it.current();
-    if (i->getAlert(testLoop) == 1)
-      count++;
+    Setting *set = it.current();
+    QString s = set->getData(key);
+    if (s.length())
+      enterLongCount++;
   }
 
-  if ((int) enterLongIndicators.count() != count)
-    return FALSE;
+  QDictIterator<Setting> it2(exitLongAlerts);
+  for (; it2.current(); ++it2)
+  {
+    Setting *set = it2.current();
+    QString s = set->getData(key);
+    if (s.length())
+      exitLongCount++;
+  }
 
+  QDictIterator<Setting> it3(enterShortAlerts);
+  for (; it3.current(); ++it3)
+  {
+    Setting *set = it3.current();
+    QString s = set->getData(key);
+    if (s.length())
+      enterShortCount++;
+  }
+
+  QDictIterator<Setting> it4(exitShortAlerts);
+  for (; it4.current(); ++it4)
+  {
+    Setting *set = it4.current();
+    QString s = set->getData(key);
+    if (s.length())
+      exitShortCount++;
+  }
+}
+
+void Tester::clearAlertCounts ()
+{
+  enterLongCount = 0;
+  exitLongCount = 0;
+  enterShortCount = 0;
+  exitShortCount = 0;
+}
+
+void Tester::enterLong ()
+{
   if (status != 0)
     exitPosition("Enter Long");
 
   status = 1;
-
   buyRecord = currentRecord;
-
   trailingHigh = buyRecord->getFloat("Close");
-
   equity = equity - entryCom->value();
 
-  return TRUE;
+  clearAlertCounts();
 }
 
-bool Tester::checkExitLong ()
+void Tester::exitLong ()
 {
-  if (status != 1)
-    return FALSE;
-
-  if (! tradeLong->isChecked())
-    return FALSE;
-
-  if (! exitLongIndicators.count())
-    return FALSE;
-
-  int count = 0;
-  QDictIterator<Indicator> it(exitLongIndicators);
-  for (; it.current(); ++it)
-  {
-    Indicator *i = it.current();
-    if (i->getAlert(testLoop) == -1)
-      count++;
-  }
-
-  if ((int) exitLongIndicators.count() != count)
-    return FALSE;
-
   exitPosition("Exit Long");
-
   status = 0;
-
-  return TRUE;
+  clearAlertCounts();
 }
 
-bool Tester::checkEnterShort ()
+void Tester::enterShort ()
 {
-  if (status == -1)
-    return FALSE;
-
-  if (! tradeShort->isChecked())
-    return FALSE;
-
-  if (! enterShortIndicators.count())
-    return FALSE;
-
-  int count = 0;
-  QDictIterator<Indicator> it(enterShortIndicators);
-  for (; it.current(); ++it)
-  {
-    Indicator *i = it.current();
-    if (i->getAlert(testLoop) == -1)
-      count++;
-  }
-
-  if ((int) enterShortIndicators.count() != count)
-    return FALSE;
-
   if (status != 0)
     exitPosition("Enter Short");
 
   status = -1;
-
   buyRecord = currentRecord;
-
   trailingLow = buyRecord->getFloat("Close");
-  
   equity = equity - entryCom->value();
 
-  return TRUE;
+  clearAlertCounts();
 }
 
-bool Tester::checkExitShort ()
+void Tester::exitShort ()
 {
-  if (status != -1)
-    return FALSE;
-
-  if (! tradeShort->isChecked())
-    return FALSE;
-
-  if (! exitShortIndicators.count())
-    return FALSE;
-
-  int count = 0;
-  QDictIterator<Indicator> it(exitShortIndicators);
-  for (; it.current(); ++it)
-  {
-    Indicator *i = it.current();
-    if (i->getAlert(testLoop) == 1)
-      count++;
-  }
-
-  if ((int) exitShortIndicators.count() != count)
-    return FALSE;
-
   exitPosition("Exit Short");
-
   status = 0;
-  
-  return TRUE;
+  clearAlertCounts();
 }
 
 void Tester::exitPosition (QString signal)
@@ -881,9 +917,6 @@ void Tester::exitPosition (QString signal)
 
 bool Tester::breakeven ()
 {
-  if (status == 0)
-    return FALSE;
-
   if (! breakevenCheck->isChecked())
     return FALSE;
 
@@ -894,6 +927,7 @@ bool Tester::breakeven ()
     {
       exitPosition("Breakeven");
       status = 0;
+      clearAlertCounts();
       return TRUE;
     }
   }
@@ -905,6 +939,7 @@ bool Tester::breakeven ()
     {
       exitPosition("Breakeven");
       status = 0;
+      clearAlertCounts();
       return TRUE;
     }
   }
@@ -914,9 +949,6 @@ bool Tester::breakeven ()
 
 bool Tester::maximumLoss ()
 {
-  if (status == 0)
-    return FALSE;
-
   if (! maximumLossCheck->isChecked())
     return FALSE;
 
@@ -933,6 +965,7 @@ bool Tester::maximumLoss ()
       {
         exitPosition("Maximum Loss");
         status = 0;
+        clearAlertCounts();
         return TRUE;
       }
     }
@@ -948,6 +981,7 @@ bool Tester::maximumLoss ()
       {
         exitPosition("Maximum Loss");
         status = 0;
+        clearAlertCounts();
         return TRUE;
       }
     }
@@ -958,9 +992,6 @@ bool Tester::maximumLoss ()
 
 bool Tester::profit ()
 {
-  if (status == 0)
-    return FALSE;
-
   if (! profitCheck->isChecked())
     return FALSE;
 
@@ -976,6 +1007,7 @@ bool Tester::profit ()
       {
         exitPosition("Profit");
         status = 0;
+        clearAlertCounts();
         return TRUE;
       }
     }
@@ -990,6 +1022,7 @@ bool Tester::profit ()
       {
         exitPosition("Profit");
         status = 0;
+        clearAlertCounts();
         return TRUE;
       }
     }
@@ -1000,9 +1033,6 @@ bool Tester::profit ()
 
 bool Tester::trailing ()
 {
-  if (status == 0)
-    return FALSE;
-
   if (! trailingCheck->isChecked())
     return FALSE;
 
@@ -1022,6 +1052,7 @@ bool Tester::trailing ()
       {
         exitPosition("Trailing");
         status = 0;
+        clearAlertCounts();
         return TRUE;
       }
     }
@@ -1040,6 +1071,7 @@ bool Tester::trailing ()
       {
         exitPosition("Trailing");
         status = 0;
+        clearAlertCounts();
         return TRUE;
       }
     }
@@ -1235,6 +1267,118 @@ void Tester::loadIndicators (int button, ChartDb *db)
   }
 }
 
+void Tester::loadEnterLongAlerts ()
+{
+  QDictIterator<Indicator> it(enterLongIndicators);
+  for (; it.current(); ++it)
+  {
+    Indicator *i = it.current();
+
+    int loop;
+    bool flag = FALSE;
+    Setting *set = enterLongAlerts[it.currentKey()];
+    set->clear();
+    for (loop = 0; loop < db->getDataSize(); loop++)
+    {
+      if (i->getAlert(loop) == 1)
+      {
+        if (! flag)
+        {
+          Setting *r = db->getRecordIndex(loop);
+          set->set(r->getData("Date").left(8), "1", Setting::None);
+	  flag = TRUE;
+        }
+      }
+      else
+        flag = FALSE;
+    }
+  }
+}
+
+void Tester::loadExitLongAlerts ()
+{
+  QDictIterator<Indicator> it(exitLongIndicators);
+  for (; it.current(); ++it)
+  {
+    Indicator *i = it.current();
+
+    int loop;
+    bool flag = FALSE;
+    Setting *set = exitLongAlerts[it.currentKey()];
+    set->clear();
+    for (loop = 0; loop < db->getDataSize(); loop++)
+    {
+      if (i->getAlert(loop) == -1)
+      {
+        if (! flag)
+        {
+          Setting *r = db->getRecordIndex(loop);
+          set->set(r->getData("Date").left(8), "1", Setting::None);
+	  flag = TRUE;
+        }
+      }
+      else
+        flag = FALSE;
+    }
+  }
+}
+
+void Tester::loadEnterShortAlerts ()
+{
+  QDictIterator<Indicator> it(enterShortIndicators);
+  for (; it.current(); ++it)
+  {
+    Indicator *i = it.current();
+
+    int loop;
+    bool flag = FALSE;
+    Setting *set = enterShortAlerts[it.currentKey()];
+    set->clear();
+    for (loop = 0; loop < db->getDataSize(); loop++)
+    {
+      if (i->getAlert(loop) == -1)
+      {
+        if (! flag)
+        {
+          Setting *r = db->getRecordIndex(loop);
+          set->set(r->getData("Date").left(8), "1", Setting::None);
+	  flag = TRUE;
+        }
+      }
+      else
+        flag = FALSE;
+    }
+  }
+}
+
+void Tester::loadExitShortAlerts ()
+{
+  QDictIterator<Indicator> it(exitShortIndicators);
+  for (; it.current(); ++it)
+  {
+    Indicator *i = it.current();
+
+    int loop;
+    bool flag = FALSE;
+    Setting *set = exitShortAlerts[it.currentKey()];
+    set->clear();
+    for (loop = 0; loop < db->getDataSize(); loop++)
+    {
+      if (i->getAlert(loop) == 1)
+      {
+        if (! flag)
+        {
+          Setting *r = db->getRecordIndex(loop);
+          set->set(r->getData("Date").left(8), "1", Setting::None);
+	  flag = TRUE;
+        }
+      }
+      else
+        flag = FALSE;
+    }
+  }
+}
+
 void Tester::saveRule ()
 {
   QStringList l;
@@ -1371,6 +1515,7 @@ void Tester::loadRule ()
       Indicator *i = new Indicator;
       i->parse(l2[1]);
       enterLongIndicators.insert(i->getData("Name"), i);
+      enterLongAlerts.insert(i->getData("Name"), new Setting);
       continue;
     }
 
@@ -1379,6 +1524,7 @@ void Tester::loadRule ()
       Indicator *i = new Indicator;
       i->parse(l2[1]);
       exitLongIndicators.insert(i->getData("Name"), i);
+      exitLongAlerts.insert(i->getData("Name"), new Setting);
       continue;
     }
 
@@ -1387,6 +1533,7 @@ void Tester::loadRule ()
       Indicator *i = new Indicator;
       i->parse(l2[1]);
       enterShortIndicators.insert(i->getData("Name"), i);
+      enterShortAlerts.insert(i->getData("Name"), new Setting);
       continue;
     }
 
@@ -1395,6 +1542,7 @@ void Tester::loadRule ()
       Indicator *i = new Indicator;
       i->parse(l2[1]);
       exitShortIndicators.insert(i->getData("Name"), i);
+      exitShortAlerts.insert(i->getData("Name"), new Setting);
       continue;
     }
 

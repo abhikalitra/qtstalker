@@ -60,10 +60,16 @@ class Tester : public QDialog
     bool profit ();
     bool trailing ();
     void loadIndicators (int, ChartDb *);
-    bool checkEnterLong ();
-    bool checkExitLong ();
-    bool checkEnterShort ();
-    bool checkExitShort ();
+    void enterLong ();
+    void exitLong ();
+    void enterShort ();
+    void exitShort ();
+    void loadEnterLongAlerts ();
+    void loadExitLongAlerts ();
+    void loadEnterShortAlerts ();
+    void loadExitShortAlerts ();
+    void clearAlertCounts ();
+    void checkAlerts ();
 
   public slots:
     void editIndicator ();
@@ -91,6 +97,10 @@ class Tester : public QDialog
     QDict<Indicator> exitLongIndicators;
     QDict<Indicator> enterShortIndicators;
     QDict<Indicator> exitShortIndicators;
+    QDict<Setting> enterLongAlerts;
+    QDict<Setting> exitLongAlerts;
+    QDict<Setting> enterShortAlerts;
+    QDict<Setting> exitShortAlerts;
     QToolButton *addIndicatorButton;
     QToolButton *editIndicatorButton;
     QToolButton *deleteIndicatorButton;
@@ -113,7 +123,6 @@ class Tester : public QDialog
     QLineEdit *trailingEdit;
     QPushButton *testButton;
     QPushButton *symbolButton;
-    QSpinBox *delayDays;
     QSpinBox *entryCom;
     QSpinBox *exitCom;
     QSpinBox *account;
@@ -135,6 +144,10 @@ class Tester : public QDialog
     double trailingHigh;
     double trailingLow;
     double equity;
+    int enterLongCount;
+    int exitLongCount;
+    int enterShortCount;
+    int exitShortCount;
 };
 
 #endif
