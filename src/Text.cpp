@@ -20,8 +20,10 @@
  */
 
 #include "Text.h"
+#include "PrefDialog.h"
 #include <qpainter.h>
 #include <qcolor.h>
+#include <qfontmetrics.h>
 
 Text::Text (Scaler *s, QPixmap *p, QString indicator, QString name, QString date, QString value)
 {
@@ -29,8 +31,8 @@ Text::Text (Scaler *s, QPixmap *p, QString indicator, QString name, QString date
   buffer = p;
   
   settings.set("Type", "Text", Setting::None);
-  settings.set(tr("Date"), date, Setting::Date);
-  settings.set(tr("Value"), value, Setting::Float);
+  settings.set("Date", date, Setting::None);
+  settings.set("Value", value, Setting::None);
   settings.set(tr("Color"), "white", Setting::Color);
   settings.set("Plot", indicator, Setting::None);
   settings.set("Name", name, Setting::None);
@@ -54,7 +56,18 @@ void Text::draw (int x, int)
   QColor color(settings.getData(tr("Color")));
   painter.setPen(color);
 
-  painter.drawText(x, y, settings.getData(tr("Label")));
+  QString s = settings.getData(tr("Label"));
+  painter.drawText(x, y, s);
+  
+  QFontMetrics fm = painter.fontMetrics();
+  QRegion r(x, y - fm.height(), fm.width(s, -1), fm.height(), QRegion::Rectangle);
+  area = r;
+  
+  if (status)
+  {
+    QRect r = area.boundingRect();
+    painter.drawRect(r.topLeft().x() - 2, r.topLeft().y() - 2, r.width() + 4, r.height() + 4);
+  }
 
   painter.end();
 }
@@ -62,5 +75,37 @@ void Text::draw (int x, int)
 QString Text::getDate ()
 {
   return settings.getDateTime(tr("Date"));
+}
+
+void Text::prefDialog ()
+{
+  PrefDialog *dialog = new PrefDialog();
+  dialog->setCaption(tr("Edit Text"));
+  dialog->createPage (tr("Details"));
+  dialog->addColorItem(tr("Color"), 1, QColor(settings.getData(tr("Color"))));
+  dialog->addTextItem(tr("Label"), 1, settings.getData(tr("Label")));
+  
+  int rc = dialog->exec();
+  
+  if (rc == QDialog::Accepted)
+  {
+    QColor color = dialog->getColor(tr("Color"));
+    settings.setData(tr("Color"), color.name());
+    
+    settings.setData(tr("Label"), dialog->getText(tr("Label")));
+    
+    saveFlag = TRUE;
+    emit signalDraw();
+  }
+  
+  delete dialog;
+}
+
+void Text::move (QString d, QString v)
+{
+  settings.setData("Date", d);
+  settings.setData("Value", v);
+  saveFlag = TRUE;
+  emit signalDraw();
 }
 

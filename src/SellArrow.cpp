@@ -20,6 +20,7 @@
  */
 
 #include "SellArrow.h"
+#include "PrefDialog.h"
 #include <qpainter.h>
 #include <qcolor.h>
 #include <qpointarray.h>
@@ -30,8 +31,8 @@ SellArrow::SellArrow (Scaler *s, QPixmap *p, QString indicator, QString name, QS
   buffer = p;
   
   settings.set("Type", "Sell Arrow", Setting::None);
-  settings.set(tr("Date"), date, Setting::Date);
-  settings.set(tr("Value"), value, Setting::Float);
+  settings.set("Date", date, Setting::None);
+  settings.set("Value", value, Setting::None);
   settings.set(tr("Color"), "red", Setting::Color);
   settings.set("Plot", indicator, Setting::None);
   settings.set("Name", name, Setting::None);
@@ -47,26 +48,67 @@ void SellArrow::draw (int x, int)
   QPainter painter;
   painter.begin(buffer);
 
-  int y = scaler->convertToY(settings.getFloat(tr("Value")));
+  int y = scaler->convertToY(settings.getFloat("Value"));
 
   QColor color(settings.getData(tr("Color")));
 
   QPointArray array;
   array.setPoints(7, x, y,
-                  x + 4, y - 4,
-	          x + 1, y - 4,
-	          x + 1, y - 10,
-	          x - 1, y - 10,
-	          x - 1, y - 4,
-                  x - 4, y - 4);
+                  x + 5, y - 5,
+	          x + 2, y - 5,
+	          x + 2, y - 11,
+	          x - 2, y - 11,
+	          x - 2, y - 5,
+                  x - 5, y - 5);
   painter.setBrush(color);
   painter.drawPolygon(array, TRUE, 0, -1);
+  
+  QRegion r(array, FALSE);
+  area = r;
+  
+  if (status)
+  {
+    painter.setBrush(NoBrush);
+    painter.setPen(color);
+    QRect r = area.boundingRect();
+    painter.drawRect(r.topLeft().x() - 2, r.topLeft().y() - 2, r.width() + 4, r.height() + 4);
+  }
 
   painter.end();
 }
 
 QString SellArrow::getDate ()
 {
-  return settings.getDateTime(tr("Date"));
+  return settings.getDateTime("Date");
+}
+
+void SellArrow::prefDialog ()
+{
+  PrefDialog *dialog = new PrefDialog();
+  dialog->setCaption(tr("Edit Sell Arrow"));
+  dialog->createPage (tr("Details"));
+  dialog->addColorItem(tr("Color"), 1, QColor(settings.getData(tr("Color"))));
+  
+  int rc = dialog->exec();
+  
+  if (rc == QDialog::Accepted)
+  {
+    QColor color = dialog->getColor(tr("Color"));
+    settings.setData(tr("Color"), color.name());
+    
+    saveFlag = TRUE;
+    
+    emit signalDraw();
+  }
+  
+  delete dialog;
+}
+
+void SellArrow::move (QString d, QString v)
+{
+  settings.setData("Date", d);
+  settings.setData("Value", v);
+  saveFlag = TRUE;
+  emit signalDraw();
 }
 

@@ -35,8 +35,11 @@ PrefDialog::PrefDialog () : QTabDialog (0, "PrefDialog", TRUE)
   fontButtonList.setAutoDelete(TRUE);
   textList.setAutoDelete(TRUE);
   comboList.setAutoDelete(TRUE);
+  dateList.setAutoDelete(TRUE);
   
   dv = new QDoubleValidator(-99999999, 99999999, 4, this, 0);
+  
+  setMinimumSize(250, 300);
   
   setOkButton();
   setCancelButton();
@@ -141,6 +144,14 @@ int PrefDialog::getInt (QString name)
   return num;
 }
 
+void PrefDialog::addCheckItem (QString name, int page, QString flag)
+{
+  if (! flag.compare("True"))
+    addCheckItem(name, page, TRUE);
+  else
+    addCheckItem(name, page, FALSE);
+}
+
 void PrefDialog::addCheckItem (QString name, int page, bool flag)
 {
   QWidget *w = widgetList.at(page - 1);
@@ -161,6 +172,22 @@ bool PrefDialog::getCheck (QString name)
   QCheckBox *check = checkList[name];
   if (check)
     flag = check->isChecked();
+    
+  return flag;
+}
+
+QString PrefDialog::getCheckString (QString name)
+{
+  QString flag = FALSE;
+  
+  QCheckBox *check = checkList[name];
+  if (check)
+  {
+    if (check->isChecked())
+      flag = "True";
+    else
+      flag = "False";
+  }    
     
   return flag;
 }
@@ -217,7 +244,7 @@ QString PrefDialog::getText (QString name)
   return s;
 }
 
-void PrefDialog::addComboItem (QString name, int page, QStringList l)
+void PrefDialog::addComboItem (QString name, int page, QStringList l, QString s)
 {
   QWidget *w = widgetList.at(page - 1);
   
@@ -229,6 +256,8 @@ void PrefDialog::addComboItem (QString name, int page, QStringList l)
 
   QComboBox *combo = new QComboBox(w);
   combo->insertStringList(l, -1);
+  if (s.length())
+    combo->setCurrentText(s);
   grid->addWidget(combo, grid->numRows() - 2, 1);
   comboList.insert(name, combo);
 }
@@ -242,6 +271,34 @@ QString PrefDialog::getCombo (QString name)
     s = combo->currentText();
     
   return s;
+}
+
+void PrefDialog::addDateItem (QString name, int page, QDateTime dt)
+{
+  QWidget *w = widgetList.at(page - 1);
+  
+  QGridLayout *grid = gridList.at(page - 1);
+  grid->expand(grid->numRows() + 1, grid->numCols());
+  
+  QLabel *label = new QLabel(name, w);
+  grid->addWidget(label, grid->numRows() - 2, 0);
+
+  QDateEdit *date = new QDateEdit(dt.date(), w);
+  date->setAutoAdvance(TRUE);
+  date->setOrder(QDateEdit::YMD);
+  grid->addWidget(date, grid->numRows() - 2, 1);
+  dateList.insert(name, date);
+}
+
+QDateTime PrefDialog::getDate (QString name)
+{
+  QDateTime dt;
+  
+  QDateEdit *date = dateList[name];
+  if (date)
+    dt.setDate(date->date());
+    
+  return dt;
 }
 
 //****************************************************************************

@@ -54,10 +54,8 @@ class Plot : public QWidget
     void keyPressed (QKeyEvent *);
     void signalEditIndicator (QString, Plot *);
     void signalDeleteIndicator (QString, Plot *);
-    void signalEditChartObject (ChartObject *, Plot *);
-    void signalDeleteChartObject (QString, Plot *);
     void signalNewIndicator ();
-    void signalNewChartObject (QString, Plot *);
+    void signalMouseLeftClick (int, int);
 
   public:
 
@@ -72,7 +70,8 @@ class Plot : public QWidget
     {
       None,
       ClickWait,
-      ClickWait2
+      ClickWait2,
+      COSelected
     };
 
     Plot (QWidget *);
@@ -125,6 +124,7 @@ class Plot : public QWidget
     void crossHair (int, int);
     void printChart ();
     void showPopupMenu ();
+    void setChartPath (QString);
 
   protected:
     virtual void paintEvent (QPaintEvent *);
@@ -150,10 +150,12 @@ class Plot : public QWidget
 
     void slotEditIndicator (int);
     void slotDeleteIndicator (int);
-    void slotEditChartObject (int);
-    void slotDeleteChartObject (int);
+    void slotDeleteChartObject (QString);
     void slotNewIndicator ();
     void slotNewChartObject (int);
+    void slotSaveChartObjects ();
+    void slotChartObjectSelected (ChartObject *);
+    void slotDeleteAllChartObjects ();
     
     void slotEditChartPrefs ();
 
@@ -198,8 +200,10 @@ class Plot : public QWidget
     QString objectName;
     MouseStatus mouseFlag;
     ChartObject::ObjectType objectFlag;
+    ChartObject *tco;
 
     QString chartType;
+    QString chartPath;
     BarData *data;
     QDict<Indicator> indicators;
     QDict<ChartObject> chartObjects;
@@ -209,8 +213,6 @@ class Plot : public QWidget
     QPopupMenu *chartMenu;
     QPopupMenu *chartEditMenu;
     QPopupMenu *chartDeleteMenu;
-    QPopupMenu *chartObjectDeleteMenu;
-    QPopupMenu *chartObjectEditMenu;
     QPopupMenu *chartObjectMenu;
 };
 

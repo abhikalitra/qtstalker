@@ -35,6 +35,8 @@
 #include <qcheckbox.h>
 #include <qfont.h>
 #include <qcombobox.h>
+#include <qdatetimeedit.h>
+#include <qdatetime.h>
 
 class ColorButton : public QPushButton
 {
@@ -86,13 +88,17 @@ class PrefDialog : public QTabDialog
     void addIntItem (QString, int, int);
     int getInt (QString);
     void addCheckItem (QString, int, bool);
+    void addCheckItem (QString, int, QString);
     bool getCheck (QString);
+    QString getCheckString (QString);
     void addFontItem (QString, int, QFont);
     QFont getFont (QString);
     void addTextItem (QString, int, QString);
     QString getText (QString);
-    void addComboItem (QString, int, QStringList);
+    void addComboItem (QString, int, QStringList, QString);
     QString getCombo (QString);
+    void addDateItem (QString, int, QDateTime);
+    QDateTime getDate (QString);
 
   public slots:
 
@@ -107,6 +113,7 @@ class PrefDialog : public QTabDialog
     QDict<FontButton> fontButtonList;
     QDict<QLineEdit> textList;
     QDict<QComboBox> comboList;
+    QDict<QDateEdit> dateList;
 };
 
 #endif

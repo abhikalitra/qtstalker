@@ -20,6 +20,10 @@
 20040228: Added new option to MACD plugin. Option controls the osc scaling. True turns on full
           scaling and false reverts to normal scaling.
 	  
+20040302: Yehaaww! Drag and drop chart objects are working. Needs some polishing and tweaking
+          here and there still. But it works. This is a big step forward in usability. Overhauled
+	  the Fibonacci and trendlines. 
+	  	  
 	  
 0.25
 ====

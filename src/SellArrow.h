@@ -33,6 +33,12 @@ class SellArrow : public ChartObject
     ~SellArrow ();
     void draw (int, int);
     QString getDate ();
+    void move (QString, QString);
+    
+  public slots:
+    void prefDialog ();
+    
+  protected:
 };
 
 #endif

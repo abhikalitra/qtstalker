@@ -32,6 +32,12 @@ class HorizontalLine : public ChartObject
     HorizontalLine (Scaler *, QPixmap *, QString, QString, QString);
     ~HorizontalLine ();
     void draw (int, int);
+    void move (QString, QString);
+    
+  public slots:
+    void prefDialog ();
+    
+  protected:
 };
 
 #endif

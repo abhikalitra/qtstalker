@@ -20,6 +20,7 @@
  */
 
 #include "VerticalLine.h"
+#include "PrefDialog.h"
 #include <qpainter.h>
 #include <qcolor.h>
 
@@ -28,7 +29,7 @@ VerticalLine::VerticalLine (QPixmap *p, QString indicator, QString name, QString
   buffer = p;
   
   settings.set("Type", "Vertical Line", Setting::None);
-  settings.set(tr("Date"), date, Setting::Date);
+  settings.set("Date", date, Setting::None);
   settings.set(tr("Color"), "white", Setting::Color);
   settings.set("Plot", indicator, Setting::None);
   settings.set("Name", name, Setting::None);
@@ -48,12 +49,54 @@ void VerticalLine::draw (int x, int)
   painter.setPen(color);
 
   painter.drawLine (x, 0, x, buffer->height());
+  
+  QRegion r(x, 0, 1, buffer->height(), QRegion::Rectangle);
+  area = r;
+  
+  if (status)
+  {
+    int t = (int) buffer->height() / 4;
+    painter.fillRect(x - 3, 0, 6, 6, color);
+    painter.fillRect(x - 3, t, 6, 6, color);
+    painter.fillRect(x - 3, t * 2, 6, 6, color);
+    painter.fillRect(x - 3, t * 3, 6, 6, color);
+    painter.fillRect(x - 3, t * 4, 6, 6, color);
+  }
 
   painter.end();
 }
 
 QString VerticalLine::getDate ()
 {
-  return settings.getDateTime(tr("Date"));
+  return settings.getDateTime("Date");
+}
+
+void VerticalLine::prefDialog ()
+{
+  PrefDialog *dialog = new PrefDialog();
+  dialog->setCaption(tr("Edit Vertical Line"));
+  dialog->createPage (tr("Details"));
+  dialog->addColorItem(tr("Color"), 1, QColor(settings.getData(tr("Color"))));
+  
+  int rc = dialog->exec();
+  
+  if (rc == QDialog::Accepted)
+  {
+    QColor color = dialog->getColor(tr("Color"));
+    settings.setData(tr("Color"), color.name());
+    
+    saveFlag = TRUE;
+    emit signalDraw();
+  }
+  
+  delete dialog;
+}
+
+void VerticalLine::move (QString d, QString v)
+{
+  settings.setData("Date", d);
+  settings.setData("Value", v);
+  saveFlag = TRUE;
+  emit signalDraw();
 }
 

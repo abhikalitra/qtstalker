@@ -23,16 +23,27 @@
 #define BUYARROW_HPP
 
 #include "ChartObject.h"
+#include <qcolor.h>
+#include <qdatetime.h>
 
 class BuyArrow : public ChartObject
 {
   Q_OBJECT
 
   public:
+  
     BuyArrow (Scaler *, QPixmap *, QString, QString, QString, QString);
     ~BuyArrow ();
     void draw (int, int);
     QString getDate ();
+    void move (QString, QString);
+    
+  public slots:
+    void prefDialog ();
+    
+  protected:
+    QColor color;
+    QDateTime date;
 };
 
 #endif

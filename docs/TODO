@@ -3,7 +3,6 @@ To Do:
 
 - create some howto docs for quote plugins
 - add MA option to all plugins?
-- drag and drop chart objects
 - chart scanner
 - intraday quotes
 - postgresql quote plugin
@@ -12,8 +11,7 @@ To Do:
 - add alerts to SZ & THERM plugins
 - add subgroups to groups ability
 - update plugin howto for BarData usage
-- add ability to create tabs and group settings to a tab for easier editing
-
+- add new dialog interface for indicator and quote plugins
 
 
 Maybe some day:

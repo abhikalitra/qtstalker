@@ -34,6 +34,15 @@ class TrendLine : public ChartObject
     void draw (int, int);
     QString getDate ();
     QString getDate2 ();
+    void move (QString, QString);
+    bool isClicked (int, int);
+    
+  public slots:
+    void prefDialog ();
+    
+  protected:
+    QRegion area2;
+    bool move2Flag;
 };
 
 #endif

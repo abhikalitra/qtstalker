@@ -60,6 +60,7 @@ class QtstalkerApp : public QMainWindow
     void signalInterval(Plot::TimeInterval);
     void signalIndicatorPageRefresh ();
     void signalPlotDate (bool);
+    void signalChartPath (QString);
 
   public:
 
@@ -102,9 +103,6 @@ class QtstalkerApp : public QMainWindow
     void slotNewIndicator ();
     void slotEditIndicator (QString, Plot *);
     void slotDeleteIndicator (QString, Plot *);
-    void slotNewChartObject (QString, Plot *);
-    void slotEditChartObject (ChartObject *, Plot *);
-    void slotDeleteChartObject (QString, Plot *);
     void slotGrid (bool);
     void slotCompressionChanged (int);
     void slotChartTypeChanged (int);
@@ -114,7 +112,6 @@ class QtstalkerApp : public QMainWindow
     void slotChartUpdated ();
     void slotStatusMessage (QString);
     void slotTabChanged (QWidget *);
-    void slotChartObjectCreated (ChartObject *);
     void slotHideNav (bool);
     void slotUpdateInfo (Setting *);
     void slotLogScale (bool);

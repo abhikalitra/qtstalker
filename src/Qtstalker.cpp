@@ -140,14 +140,10 @@ QtstalkerApp::QtstalkerApp()
   emit signalPlotFont(font);
 
   QObject::connect(mainPlot, SIGNAL(signalNewIndicator()), this, SLOT(slotNewIndicator()));
-  QObject::connect(mainPlot, SIGNAL(signalNewChartObject(QString, Plot *)), this, SLOT(slotNewChartObject(QString, Plot *)));
-  QObject::connect(mainPlot, SIGNAL(signalEditChartObject(ChartObject *, Plot *)), this, SLOT(slotEditChartObject(ChartObject *, Plot *)));
-  QObject::connect(mainPlot, SIGNAL(signalDeleteChartObject(QString, Plot *)), this, SLOT(slotDeleteChartObject(QString, Plot *)));
   QObject::connect(mainPlot, SIGNAL(signalEditIndicator(QString, Plot *)), this, SLOT(slotEditIndicator(QString, Plot *)));
   QObject::connect(mainPlot, SIGNAL(signalDeleteIndicator(QString, Plot *)), this, SLOT(slotDeleteIndicator(QString, Plot *)));
 
   QObject::connect(mainPlot, SIGNAL(statusMessage(QString)), this, SLOT(slotStatusMessage(QString)));
-  QObject::connect(mainPlot, SIGNAL(chartObjectCreated(ChartObject *)), this, SLOT(slotChartObjectCreated(ChartObject *)));
   QObject::connect(mainPlot, SIGNAL(infoMessage(Setting *)), this, SLOT(slotUpdateInfo(Setting *)));
   QObject::connect(mainPlot, SIGNAL(leftMouseButton(int, int, bool)), this, SLOT(slotPlotLeftMouseButton(int, int, bool)));
   QObject::connect(mainPlot, SIGNAL(keyPressed(QKeyEvent *)), this, SLOT(slotPlotKeyPressed(QKeyEvent *)));
@@ -157,6 +153,7 @@ QtstalkerApp::QtstalkerApp()
   QObject::connect(this, SIGNAL(signalPixelspace(int)), mainPlot, SLOT(setPixelspace(int)));
   QObject::connect(this, SIGNAL(signalIndex(int)), mainPlot, SLOT(setIndex(int)));
   QObject::connect(this, SIGNAL(signalInterval(Plot::TimeInterval)), mainPlot, SLOT(setInterval(Plot::TimeInterval)));
+  QObject::connect(this, SIGNAL(signalChartPath(QString)), mainPlot, SLOT(setChartPath(QString)));
 
   tabs = new QTabWidget(split);
   if (config->getData(Config::IndicatorTabs).toInt() == 0)
@@ -656,6 +653,9 @@ void QtstalkerApp::loadChart (QString d)
   QDictIterator<Plot> it(plotList);
   for(; it.current(); ++it)
     it.current()->clear();
+    
+  // make sure we change db's after Plot saves previous db edits
+  emit signalChartPath(chartPath);
 
   Setting *set = db->getDetails();
   chartName = set->getData(tr("Title"));
@@ -903,83 +903,6 @@ void QtstalkerApp::slotBarComboChanged (int index)
 {
   config->setData(Config::Bars, barCombo->text(index));
   loadChart(chartPath);
-}
-
-void QtstalkerApp::slotNewChartObject (QString selection, Plot *plot)
-{
-  bool ok = FALSE;
-  QString name = QInputDialog::getText(tr("Chart Object Name"),
-  				       tr("Enter a unique name for this chart object."),
-				       QLineEdit::Normal,
-				       tr("New Chart Object"),
-				       &ok,
-				       this);
-  if (ok == FALSE)
-    return;
-
-  ChartDb *db = new ChartDb();
-  db->openChart(chartPath);
-  QStringList l = db->getChartObjects();
-  delete db;
-  if (l.findIndex(name) != -1)
-  {
-    QMessageBox::information(this, tr("Qtstalker: Error"), tr("Duplicate chart object name."));
-    return;
-  }
-
-  plot->createChartObject(selection, name);
-}
-
-void QtstalkerApp::slotChartObjectCreated (ChartObject *co)
-{
-  ChartDb *db = new ChartDb();
-  db->openChart(chartPath);
-  
-  Setting *set = new Setting;
-  set->parse(co->getString());
-  
-  db->setChartObject(co->getData("Name"), set);
-  
-  delete set;
-  delete db;
-}
-
-void QtstalkerApp::slotEditChartObject (ChartObject *co, Plot *plot)
-{
-  EditDialog *dialog = new EditDialog(config);
-
-  QString s = tr("Edit Chart Object");
-  s.append(" - ");
-  s.append(co->getData(tr("Type")));
-  dialog->setCaption(s);
-
-  Setting *set = new Setting;
-  set->parse(co->getString());
-  dialog->setItems(set);
-
-  int rc = dialog->exec();
-
-  if (rc == QDialog::Accepted)
-  {
-    ChartDb *db = new ChartDb();
-    db->openChart(chartPath);
-    db->setChartObject(co->getData("Name"), set);
-    delete db;
-
-    plot->draw();
-  }
-
-  delete set;
-  delete dialog;
-}
-
-void QtstalkerApp::slotDeleteChartObject (QString name, Plot *plot)
-{
-  ChartDb *db = new ChartDb();
-  db->openChart(chartPath);
-  db->deleteChartObject(name);
-  delete db;
-  plot->draw();
 }
 
 QString QtstalkerApp::getWindowCaption ()
@@ -1339,16 +1262,12 @@ void QtstalkerApp::addIndicatorButton (QString d, bool tabFlag)
   plotList.replace(d, plot);
 
   QObject::connect(plot, SIGNAL(signalNewIndicator()), this, SLOT(slotNewIndicator()));
-  QObject::connect(plot, SIGNAL(signalNewChartObject(QString, Plot *)), this, SLOT(slotNewChartObject(QString, Plot *)));
-  QObject::connect(plot, SIGNAL(signalEditChartObject(ChartObject *, Plot *)), this, SLOT(slotEditChartObject(ChartObject *, Plot *)));
-  QObject::connect(plot, SIGNAL(signalDeleteChartObject(QString, Plot *)), this, SLOT(slotDeleteChartObject(QString, Plot *)));
   QObject::connect(plot, SIGNAL(signalEditIndicator(QString, Plot *)), this, SLOT(slotEditIndicator(QString, Plot *)));
   QObject::connect(plot, SIGNAL(signalDeleteIndicator(QString, Plot *)), this, SLOT(slotDeleteIndicator(QString, Plot *)));
-
   QObject::connect(plot, SIGNAL(statusMessage(QString)), this, SLOT(slotStatusMessage(QString)));
-  QObject::connect(plot, SIGNAL(chartObjectCreated(ChartObject *)), this, SLOT(slotChartObjectCreated(ChartObject *)));
   QObject::connect(plot, SIGNAL(infoMessage(Setting *)), this, SLOT(slotUpdateInfo(Setting *)));
-
+  
+  QObject::connect(this, SIGNAL(signalChartPath(QString)), plot, SLOT(setChartPath(QString)));
   QObject::connect(this, SIGNAL(signalIndex(int)), plot, SLOT(setIndex(int)));
 
   QObject::connect(this, SIGNAL(signalInterval(Plot::TimeInterval)), plot, SLOT(setInterval(Plot::TimeInterval)));

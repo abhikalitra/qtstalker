@@ -23,15 +23,22 @@
 #define CHARTOBJECT_HPP
 
 #include "Scaler.h"
-#include "Setting.h"
 #include "BarData.h"
+#include "Setting.h"
 #include <qpixmap.h>
 #include <qobject.h>
 #include <qstring.h>
+#include <qpopupmenu.h>
+#include <qregion.h>
 
 class ChartObject : public QObject
 {
   Q_OBJECT
+  
+  signals:
+    void signalDraw();
+    void signalChartObjectSelected(ChartObject *);
+    void signalDeleteChartObject (QString);
 
   public:
   
@@ -51,15 +58,29 @@ class ChartObject : public QObject
     virtual void draw (int, int);
     virtual QString getDate ();
     virtual QString getDate2 ();
+    virtual void move (QString, QString);
+    virtual bool isClicked (int, int);
+    void unselect ();
+    void showMenu ();
     void setData (QString);
     QString getData (QString);
     QString getString ();
+    bool getSaveFlag ();
+
+  public slots:    
+    virtual void prefDialog ();
+    void selected (int, int);
+    void remove ();
     
   protected:
-    Setting settings;
     BarData *data;
     Scaler *scaler;
     QPixmap *buffer;
+    Setting settings;
+    QPopupMenu *menu;
+    bool saveFlag;
+    bool status;
+    QRegion area;
 };
 
 #endif

@@ -20,16 +20,24 @@
  */
 
 #include "ChartObject.h"
+#include <qcursor.h>
 
 ChartObject::ChartObject ()
 {
   data = 0;
   scaler = 0;
   buffer = 0;
+  saveFlag = FALSE;
+  status = FALSE;
+  
+  menu = new QPopupMenu();
+  menu->insertItem(tr("Edit"), this, SLOT(prefDialog()));
+  menu->insertItem(tr("Delete"), this, SLOT(remove()));
 }
 
 ChartObject::~ChartObject ()
 {
+  delete menu;
 }
 
 void ChartObject::draw (int, int)
@@ -61,4 +69,52 @@ QString ChartObject::getString ()
 {
   return settings.getString();
 }
+
+void ChartObject::prefDialog ()
+{
+}
+
+void ChartObject::showMenu ()
+{
+  menu->exec(QCursor::pos());
+}
+
+void ChartObject::remove ()
+{
+  emit signalDeleteChartObject(settings.getData("Name"));
+}
+
+bool ChartObject::isClicked (int x, int y)
+{
+  return area.contains(QPoint(x,y));
+}
+
+void ChartObject::unselect ()
+{
+  status = FALSE;
+  emit signalDraw();
+}
+
+void ChartObject::move (QString, QString)
+{
+}
+
+bool ChartObject::getSaveFlag ()
+{
+  return saveFlag;
+}
+
+void ChartObject::selected (int x, int y)
+{
+  if (status)
+    return;
+    
+  if (! area.contains(QPoint(x,y)))
+    return;
+    
+  status = TRUE;
+  emit signalDraw();
+  emit signalChartObjectSelected(this);
+}
+
 

@@ -33,6 +33,12 @@ class VerticalLine : public ChartObject
     ~VerticalLine ();
     void draw (int, int);
     QString getDate ();
+    void move (QString, QString);
+    
+  public slots:
+    void prefDialog ();
+    
+  protected:
 };
 
 #endif

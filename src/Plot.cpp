@@ -27,6 +27,7 @@
 #include "VerticalLine.h"
 #include "FiboLine.h"
 #include "Text.h"
+#include "ChartDb.h"
 #include <qpainter.h>
 #include <qpen.h>
 #include <qpoint.h>
@@ -37,6 +38,7 @@
 #include <qpaintdevicemetrics.h>
 #include <qimage.h>
 #include <qmessagebox.h>
+#include <qinputdialog.h>
 
 #include "indicator.xpm"
 #include "edit.xpm"
@@ -111,8 +113,6 @@ Plot::Plot (QWidget *w) : QWidget(w)
   chartMenu->insertItem(QPixmap(edit), tr("Edit Indicator"), chartEditMenu);
   chartMenu->insertItem (QPixmap(deletefile), tr("Delete Indicator"), chartDeleteMenu);
   chartMenu->insertSeparator ();
-  chartObjectDeleteMenu = new QPopupMenu();
-  chartObjectEditMenu = new QPopupMenu();
 
   chartObjectMenu = new QPopupMenu();
   QStringList l = getChartObjectList();
@@ -133,8 +133,7 @@ Plot::Plot (QWidget *w) : QWidget(w)
 
   chartMenu->insertItem (QPixmap(co), tr("New Chart Object"), chartObjectMenu);
 
-  chartMenu->insertItem (QPixmap(edit), tr("Edit Chart Object"), chartObjectEditMenu);
-  chartMenu->insertItem (QPixmap(deletefile), tr("Delete Chart Object"), chartObjectDeleteMenu);
+  chartMenu->insertItem(QPixmap(deletefile), tr("Delete All Chart Objects"), this, SLOT(slotDeleteAllChartObjects()));
 
   chartMenu->insertSeparator ();
   chartMenu->insertItem(QPixmap(print), tr("Print Chart"), this, SLOT(printChart()));
@@ -152,8 +151,12 @@ void Plot::clear ()
   mainLow = 99999999;
   indicators.clear();
 //  paintBars.clear();
+  
+  slotSaveChartObjects();
   chartObjects.clear();
+  
   data = 0;
+  mouseFlag = None;
 }
 
 void Plot::setData (BarData *l)
@@ -237,6 +240,11 @@ bool Plot::getHideMainPlot ()
   return hideMainPlot;
 }
 
+void Plot::setChartPath (QString d)
+{
+  chartPath = d;
+}
+
 void Plot::draw ()
 {
   crossHairFlag = FALSE;
@@ -297,46 +305,6 @@ void Plot::draw ()
   }
 
   paintEvent(0);
-}
-
-void Plot::drawObjects ()
-{
-  QDictIterator<ChartObject> it(chartObjects);
-  for (; it.current(); ++it)
-  {
-    int x = -1;
-    int x2 = -1;
-    
-    ChartObject *co = it.current();
-
-    if (co->getDate().length())
-    {
-      QDateTime dt = QDateTime::fromString(co->getDate(), Qt::ISODate);
-      if (! dt.isValid())
-      {
-        qDebug("Plot::drawObjects:invalid date %s", co->getDate().latin1());
-        continue;
-      }
-      x = getXFromDate(dt);
-      if (x == -1)
-        continue;
-    }
-    
-    if (co->getDate2().length())
-    {
-      QDateTime dt = QDateTime::fromString(co->getDate2(), Qt::ISODate);
-      if (! dt.isValid())
-      {
-        qDebug("Plot::drawObjects:invalid date2 %s", co->getDate2().latin1());
-        continue;
-      }
-      x2 = getXFromDate(dt);
-      if (x2 == -1)
-        continue;
-    }
-    
-    co->draw(x, x2);
-  }
 }
 
 void Plot::drawLines ()
@@ -417,49 +385,56 @@ void Plot::mousePressEvent (QMouseEvent *event)
   if (event->x() > buffer->width() - SCALE_WIDTH)
     return;
 
-  if (mouseFlag != None)
+  if (event->button() == LeftButton)
   {
-    if (event->button() == LeftButton)
+    switch (mouseFlag)
     {
-      switch (mouseFlag)
-      {
-        case ClickWait2:
-	  getXY(event->x(), event->y(), 1);
-          newChartObject();
-	  break;
-        default:
-	  getXY(event->x(), event->y(), 0);
-          if (objectFlag == ChartObject::TrendLine || objectFlag == ChartObject::FibonacciLine)
-	  {
-            mouseFlag = ClickWait2;
-            if (objectFlag == ChartObject::TrendLine)
-             emit statusMessage(tr("Select end point of trend line..."));
-	    else
-             emit statusMessage(tr("Select low point of fibonacci line..."));
-	  }
+      case ClickWait2:
+        getXY(event->x(), event->y(), 1);
+        newChartObject();
+        break;
+      case ClickWait:
+	getXY(event->x(), event->y(), 0);
+        if (objectFlag == ChartObject::TrendLine || objectFlag == ChartObject::FibonacciLine)
+	{
+          mouseFlag = ClickWait2;
+          if (objectFlag == ChartObject::TrendLine)
+            emit statusMessage(tr("Select end point of trend line..."));
 	  else
-	    newChartObject();
-	  break;
-      }
-
-      return;
+            emit statusMessage(tr("Select low point of fibonacci line..."));
+	}
+	else
+	  newChartObject();
+	break;
+      case COSelected:
+        if (! tco->isClicked(event->x(), event->y()))
+	{
+	  tco->unselect();
+	  mouseFlag = None;
+	}
+        break;
+      default:
+        emit signalMouseLeftClick(event->x(), event->y());
+//        crossHair(event->x(), event->y());
+//        updateStatusBar(event->x(), event->y());
+//        emit leftMouseButton(event->x(), event->y(), mainFlag);
+	break;
     }
-
-    return;
   }
-
-  switch(event->button())
+  else
   {
-    case LeftButton:
-      crossHair(event->x(), event->y());
-      updateStatusBar(event->x(), event->y());
-      emit leftMouseButton(event->x(), event->y(), mainFlag);
-      break;
-    case RightButton:
-      showPopupMenu();
-      break;
-    default:
-      break;
+    if (event->button() == RightButton)
+    {
+      if (mouseFlag == COSelected)
+      {
+        if (tco->isClicked(event->x(), event->y()))
+          tco->showMenu();
+	else
+          showPopupMenu();
+      }
+      else
+        showPopupMenu();
+    }
   }
 }
 
@@ -478,6 +453,14 @@ void Plot::mouseMoveEvent (QMouseEvent *event)
 
   if (event->x() > buffer->width() - SCALE_WIDTH)
     return;
+   
+  // are we trying to drag a chart object?
+  if ((mouseFlag == COSelected) && (event->state() == LeftButton))
+  {
+    getXY(event->x(), event->y(), 0);
+    tco->move(x1, y1);
+    return;
+  }
 
   int i = (event->x() / pixelspace) + startIndex;
   if (i >= (int) data->count())
@@ -1098,99 +1081,6 @@ void Plot::getXY (int x, int y, int f)
   }
 }
 
-void Plot::newChartObject ()
-{
-  bool cancelFlag = FALSE;
-  ChartObject *co = 0;
-  QString name = objectName;
-  QString pl = "Main Plot";
-  if (! mainFlag)
-  {
-    QDictIterator<Indicator> it(indicators);
-    it.toFirst();
-    pl = it.currentKey();
-  }
-
-  while (1)
-  {
-    if (objectFlag == ChartObject::BuyArrow)
-    {
-      co = new BuyArrow(scaler, buffer, pl, name, x1, y1);
-      break;
-    }
-    
-    if (objectFlag == ChartObject::SellArrow)
-    {
-      co = new SellArrow(scaler, buffer, pl, name, x1, y1);
-      break;
-    }
-    
-    if (objectFlag == ChartObject::FibonacciLine)
-    {
-      co = new FiboLine(scaler, buffer, pl, name, y1, y2);
-      break;
-    }
-    
-    if (objectFlag == ChartObject::HorizontalLine)
-    {
-      co = new HorizontalLine(scaler, buffer, pl, name, y1);
-      break;
-    }
-    
-    if (objectFlag == ChartObject::VerticalLine)
-    {
-      co = new VerticalLine(buffer, pl, name, x1);
-      break;
-    }
-    
-    if (objectFlag == ChartObject::TrendLine)
-    {
-      if (x2.toFloat() <= x1.toFloat())
-      {
-	cancelFlag = TRUE;
-        QMessageBox::information(this, tr("Qtstalker: Error"),
-    			         tr("Trendline end point <= start point."));
-        break;
-      }
-      
-      co = new TrendLine(scaler, buffer, data, pl, name, x1, y1, x2, y2);
-      break;
-    }
-    
-    if (objectFlag == ChartObject::Text)
-    {
-      co = new Text(scaler, buffer, pl, name, x1, y1);
-      break;
-    }
-    
-    break;
-  }
-
-  if (! cancelFlag)
-  {
-    emit chartObjectCreated(co);
-    addChartObject(co);
-    draw();
-  }
-  
-  mouseFlag = None;
-  emit statusMessage("");
-  setCursor(QCursor(Qt::ArrowCursor));
-}
-
-QStringList Plot::getChartObjectList ()
-{
-  QStringList l;
-  l.append(QObject::tr("Buy Arrow"));
-  l.append(QObject::tr("Sell Arrow"));
-  l.append(QObject::tr("Fibonacci Line"));
-  l.append(QObject::tr("Horizontal Line"));
-  l.append(QObject::tr("Vertical Line"));
-  l.append(QObject::tr("Trend Line"));
-  l.append(QObject::tr("Text"));
-  return l;
-}
-
 void Plot::setScale ()
 {
   double scaleHigh = -99999999;
@@ -1300,8 +1190,8 @@ void Plot::setScale ()
 
     if (! type.compare(QObject::tr("Trend Line")))
     {
-      double v = co->getData(QObject::tr("Start Value")).toFloat();
-      double v2 = co->getData(QObject::tr("End Value")).toFloat();
+      double v = co->getData("Start Value").toFloat();
+      double v2 = co->getData("End Value").toFloat();
       if (v > scaleHigh)
         scaleHigh = v;
       if (v2 > scaleHigh)
@@ -1317,8 +1207,8 @@ void Plot::setScale ()
 
     if (! type.compare(QObject::tr("Fibonacci Line")))
     {
-      double v = co->getData(QObject::tr("High")).toFloat();
-      double v2 = co->getData(QObject::tr("Low")).toFloat();
+      double v = co->getData("High").toFloat();
+      double v2 = co->getData("Low").toFloat();
       if (v > scaleHigh)
         scaleHigh = v;
       if (v2 < scaleLow)
@@ -1326,7 +1216,7 @@ void Plot::setScale ()
       continue;
     }
 
-    double v = co->getData(QObject::tr("Value")).toFloat();
+    double v = co->getData("Value").toFloat();
     if (v > scaleHigh)
       scaleHigh = v;
     if (v < scaleLow)
@@ -1432,6 +1322,227 @@ QStringList Plot::getIndicators ()
   return l;
 }
 
+void Plot::printChart ()
+{
+  QPrinter printer;
+  printer.setPageSize(QPrinter::Letter);
+
+  if (printer.setup())
+  {
+    emit statusMessage(tr("Creating chart snapshot..."));
+
+// FIXME
+/*    
+    printer.setFullPage(true);
+    QSize margins = printer.margins();
+    int leftMargin = margins.width();
+    int topMargin  = margins.height();
+
+    QPaintDeviceMetrics prm(&printer);
+    
+    int prmw = prm.width() - leftMargin;
+    int prmh = prm.height() - topMargin;
+
+    QPixmap pix = buffer;
+
+    if ((pix.width() > prmw) || (pix.height() > prmh))
+    {
+      QImage image = pix.convertToImage();
+      image = image.smoothScale(prmw, prmh, QImage::ScaleMin);
+      pix.convertFromImage(image);
+    }
+
+    emit statusMessage(tr("Printing..."));
+
+    QPainter painter;
+    painter.begin(&printer);
+    painter.drawPixmap(leftMargin/2, topMargin/2, pix);
+    painter.end();
+*/
+    emit statusMessage(tr("Printing complete."));
+  }
+}
+
+void Plot::showPopupMenu ()
+{
+  if (! data->count())
+    return;
+
+  chartEditMenu->clear();
+  chartDeleteMenu->clear();
+
+  QDictIterator<Indicator> it(indicators);
+  for(; it.current(); ++it)
+  {
+    if (it.currentKey().compare("Main Plot"))
+    {
+      int id = chartDeleteMenu->insertItem(QPixmap(indicator), it.currentKey(), this, SLOT(slotDeleteIndicator(int)));
+      chartDeleteMenu->setItemParameter(id, id);
+
+      id = chartEditMenu->insertItem(QPixmap(indicator), it.currentKey(), this, SLOT(slotEditIndicator(int)));
+      chartEditMenu->setItemParameter(id, id);
+    }
+  }
+
+  chartMenu->exec(QCursor::pos());
+}
+
+void Plot::slotEditIndicator (int id)
+{
+  QString s = chartEditMenu->text(id);
+  emit signalEditIndicator(s, this);
+}
+
+void Plot::slotDeleteIndicator (int id)
+{
+  QString s = chartDeleteMenu->text(id);
+  emit signalDeleteIndicator(s, this);
+}
+
+void Plot::slotNewIndicator ()
+{
+  emit signalNewIndicator();
+}
+
+void Plot::slotEditChartPrefs ()
+{
+  chartPlugin->prefDialog();
+}
+
+//*************************************************************************
+//******************** chart object functions *****************************
+//*************************************************************************
+
+void Plot::newChartObject ()
+{
+  bool cancelFlag = FALSE;
+  ChartObject *co = 0;
+  QString name = objectName;
+  QString pl = "Main Plot";
+  if (! mainFlag)
+  {
+    QDictIterator<Indicator> it(indicators);
+    it.toFirst();
+    pl = it.currentKey();
+  }
+
+  while (1)
+  {
+    if (objectFlag == ChartObject::BuyArrow)
+    {
+      co = new BuyArrow(scaler, buffer, pl, name, x1, y1);
+      break;
+    }
+    
+    if (objectFlag == ChartObject::SellArrow)
+    {
+      co = new SellArrow(scaler, buffer, pl, name, x1, y1);
+      break;
+    }
+    
+    if (objectFlag == ChartObject::FibonacciLine)
+    {
+/*    
+      if (x2.toFloat() <= x1.toFloat())
+      {
+	cancelFlag = TRUE;
+        QMessageBox::information(this, tr("Qtstalker: Error"),
+    			         tr("Fibonacci end point <= start point."));
+        break;
+      }
+    
+      if (y1.toFloat() >= y2.toFloat())
+      {
+	cancelFlag = TRUE;
+        QMessageBox::information(this, tr("Qtstalker: Error"),
+    			         tr("Fibonacci low point >= high point."));
+        break;
+      }
+      
+      if (y2.toFloat() <= y1.toFloat())
+      {
+	cancelFlag = TRUE;
+        QMessageBox::information(this, tr("Qtstalker: Error"),
+    			         tr("Fibonacci high point <= low point."));
+        break;
+      }
+*/      
+      co = new FiboLine(scaler, buffer, pl, name, x1, y1, x2, y2);
+      break;
+    }
+    
+    if (objectFlag == ChartObject::HorizontalLine)
+    {
+      co = new HorizontalLine(scaler, buffer, pl, name, y1);
+      break;
+    }
+    
+    if (objectFlag == ChartObject::VerticalLine)
+    {
+      co = new VerticalLine(buffer, pl, name, x1);
+      break;
+    }
+    
+    if (objectFlag == ChartObject::TrendLine)
+    {
+      if (x2.toFloat() <= x1.toFloat())
+      {
+	cancelFlag = TRUE;
+        QMessageBox::information(this, tr("Qtstalker: Error"),
+    			         tr("Trendline end point <= start point."));
+        break;
+      }
+      
+      co = new TrendLine(scaler, buffer, data, pl, name, x1, y1, x2, y2);
+      break;
+    }
+    
+    if (objectFlag == ChartObject::Text)
+    {
+      co = new Text(scaler, buffer, pl, name, x1, y1);
+      break;
+    }
+    
+    break;
+  }
+
+  if (! cancelFlag)
+  {
+    QObject::connect(co, SIGNAL(signalDraw()), this, SLOT(draw()));
+    QObject::connect(this, SIGNAL(signalMouseLeftClick(int, int)), co, SLOT(selected(int, int)));
+    QObject::connect(co, SIGNAL(signalChartObjectSelected(ChartObject *)), this, SLOT(slotChartObjectSelected(ChartObject *)));
+    QObject::connect(co, SIGNAL(signalDeleteChartObject(QString)), this, SLOT(slotDeleteChartObject(QString)));
+    
+    ChartDb *db = new ChartDb();
+    db->openChart(chartPath);
+    Setting *set = new Setting;
+    set->parse(co->getString());
+    db->setChartObject(co->getData("Name"), set);
+    delete set;
+    delete db;
+    
+    addChartObject(co);
+    draw();
+  }
+  
+  mouseFlag = None;
+  emit statusMessage("");
+  setCursor(QCursor(Qt::ArrowCursor));
+}
+
+QStringList Plot::getChartObjectList ()
+{
+  QStringList l;
+  l.append(QObject::tr("Buy Arrow"));
+  l.append(QObject::tr("Sell Arrow"));
+  l.append(QObject::tr("Fibonacci Line"));
+  l.append(QObject::tr("Horizontal Line"));
+  l.append(QObject::tr("Vertical Line"));
+  l.append(QObject::tr("Trend Line"));
+  l.append(QObject::tr("Text"));
+  return l;
+}
+
 void Plot::createChartObject (QString d, QString n)
 {
   setCursor(QCursor(Qt::PointingHandCursor));
@@ -1500,168 +1611,43 @@ void Plot::createChartObject (QString d, QString n)
   }
 }
 
-void Plot::printChart ()
+void Plot::slotDeleteChartObject (QString s)
 {
-  QPrinter printer;
-  printer.setPageSize(QPrinter::Letter);
-
-  if (printer.setup())
-  {
-    emit statusMessage(tr("Creating chart snapshot..."));
-
-// FIXME
-/*    
-    printer.setFullPage(true);
-    QSize margins = printer.margins();
-    int leftMargin = margins.width();
-    int topMargin  = margins.height();
-
-    QPaintDeviceMetrics prm(&printer);
-    
-    int prmw = prm.width() - leftMargin;
-    int prmh = prm.height() - topMargin;
-
-    QPixmap pix = buffer;
-
-    if ((pix.width() > prmw) || (pix.height() > prmh))
-    {
-      QImage image = pix.convertToImage();
-      image = image.smoothScale(prmw, prmh, QImage::ScaleMin);
-      pix.convertFromImage(image);
-    }
-
-    emit statusMessage(tr("Printing..."));
-
-    QPainter painter;
-    painter.begin(&printer);
-    painter.drawPixmap(leftMargin/2, topMargin/2, pix);
-    painter.end();
-*/
-    emit statusMessage(tr("Printing complete."));
-  }
-}
-
-void Plot::showPopupMenu ()
-{
-  if (! data->count())
-    return;
-
-  chartEditMenu->clear();
-  chartDeleteMenu->clear();
-  chartObjectEditMenu->clear();
-  chartObjectDeleteMenu->clear();
-
-  QDictIterator<Indicator> it(indicators);
-  for(; it.current(); ++it)
-  {
-    if (it.currentKey().compare("Main Plot"))
-    {
-      int id = chartDeleteMenu->insertItem(QPixmap(indicator), it.currentKey(), this, SLOT(slotDeleteIndicator(int)));
-      chartDeleteMenu->setItemParameter(id, id);
-
-      id = chartEditMenu->insertItem(QPixmap(indicator), it.currentKey(), this, SLOT(slotEditIndicator(int)));
-      chartEditMenu->setItemParameter(id, id);
-    }
-  }
-
-  QDictIterator<ChartObject> it2(chartObjects);
-  for (; it2.current(); ++it2)
-  {
-    ChartObject *co = it2.current();
-    QPixmap icon;
-    int ot = co->getData("ObjectType").toInt();
-
-    while (1)
-    {
-      if (ot == ChartObject::VerticalLine)
-      {
-        icon = QPixmap(vertical);
-	break;
-      }
-
-      if (ot == ChartObject::HorizontalLine)
-      {
-        icon = QPixmap(horizontal);
-	break;
-      }
-
-      if (ot == ChartObject::TrendLine)
-      {
-        icon = QPixmap(trend);
-	break;
-      }
-
-      if (ot == ChartObject::Text)
-      {
-        icon = QPixmap(text);
-	break;
-      }
-
-      if (ot == ChartObject::BuyArrow)
-      {
-        icon = QPixmap(buyarrow);
-	break;
-      }
-
-      if (ot == ChartObject::SellArrow)
-      {
-        icon = QPixmap(sellarrow);
-	break;
-      }
-
-      if (ot == ChartObject::FibonacciLine)
-      {
-        icon = QPixmap(fib);
-	break;
-      }
-
-      break;
-    }
-
-    int id = chartObjectEditMenu->insertItem(icon, it2.currentKey(), this, SLOT(slotEditChartObject(int)));
-    chartObjectEditMenu->setItemParameter(id, id);
-
-    id = chartObjectDeleteMenu->insertItem(icon, it2.currentKey(), this, SLOT(slotDeleteChartObject(int)));
-    chartObjectDeleteMenu->setItemParameter(id, id);
-  }
-
-  chartMenu->exec(QCursor::pos());
-}
-
-void Plot::slotEditIndicator (int id)
-{
-  QString s = chartEditMenu->text(id);
-  emit signalEditIndicator(s, this);
-}
-
-void Plot::slotDeleteIndicator (int id)
-{
-  QString s = chartDeleteMenu->text(id);
-  emit signalDeleteIndicator(s, this);
-}
-
-void Plot::slotEditChartObject (int id)
-{
-  QString s = chartObjectEditMenu->text(id);
-  emit signalEditChartObject(chartObjects[s], this);
-}
-
-void Plot::slotDeleteChartObject (int id)
-{
-  QString s = chartObjectDeleteMenu->text(id);
+  ChartDb *db = new ChartDb();
+  db->openChart(chartPath);
+  db->deleteChartObject(s);
+  delete db;
+  
   chartObjects.remove(s);
-  emit signalDeleteChartObject(s, this);
-}
-
-void Plot::slotNewIndicator ()
-{
-  emit signalNewIndicator();
+  
+  mouseFlag = None;
+  
+  draw();
 }
 
 void Plot::slotNewChartObject (int id)
 {
-  QString s = chartObjectMenu->text(id);
-  emit signalNewChartObject(s, this);
+  QString selection = chartObjectMenu->text(id);
+  int loop = 0;
+  QString name;
+  
+  ChartDb *db = new ChartDb();
+  db->openChart(chartPath);
+  QStringList l = db->getChartObjects();
+  delete db;
+  
+  while (1)
+  {
+    name = selection;
+    name.append(QString::number(loop));
+    
+    if (l.findIndex(name) != -1)
+      loop++;
+    else
+      break;
+  }
+
+  createChartObject(selection, name);
 }
 
 void Plot::addChartObject (ChartObject *co)
@@ -1690,7 +1676,7 @@ void Plot::addChartObject (Setting *set)
     
     if (ot == ChartObject::FibonacciLine)
     {
-      co = new FiboLine(scaler, buffer, QString(), QString(), QString(), QString());
+      co = new FiboLine(scaler, buffer, QString(), QString(), QString(), QString(), QString(), QString());
       break;
     }
     
@@ -1724,6 +1710,11 @@ void Plot::addChartObject (Setting *set)
 
   co->setData(set->getString());
   
+  QObject::connect(co, SIGNAL(signalDraw()), this, SLOT(draw()));
+  QObject::connect(this, SIGNAL(signalMouseLeftClick(int, int)), co, SLOT(selected(int, int)));
+  QObject::connect(co, SIGNAL(signalChartObjectSelected(ChartObject *)), this, SLOT(slotChartObjectSelected(ChartObject *)));
+  QObject::connect(co, SIGNAL(signalDeleteChartObject(QString)), this, SLOT(slotDeleteChartObject(QString)));
+  
   chartObjects.replace(co->getData("Name"), co);
 }
 
@@ -1737,8 +1728,98 @@ QStringList Plot::getChartObjects ()
   return l;
 }
 
-void Plot::slotEditChartPrefs ()
+void Plot::drawObjects ()
 {
-  chartPlugin->prefDialog();
+  QDictIterator<ChartObject> it(chartObjects);
+  for (; it.current(); ++it)
+  {
+    int x = -1;
+    int x2 = -1;
+    
+    ChartObject *co = it.current();
+
+    if (co->getDate().length())
+    {
+      QDateTime dt = QDateTime::fromString(co->getDate(), Qt::ISODate);
+      if (! dt.isValid())
+      {
+        qDebug("Plot::drawObjects:invalid date %s", co->getDate().latin1());
+        continue;
+      }
+      x = getXFromDate(dt);
+      if (x == -1)
+        continue;
+    }
+    
+    if (co->getDate2().length())
+    {
+      QDateTime dt = QDateTime::fromString(co->getDate2(), Qt::ISODate);
+      if (! dt.isValid())
+      {
+        qDebug("Plot::drawObjects:invalid date2 %s", co->getDate2().latin1());
+        continue;
+      }
+      x2 = getXFromDate(dt);
+      if (x2 == -1)
+        continue;
+    }
+    
+    co->draw(x, x2);
+  }
 }
 
+void Plot::slotSaveChartObjects ()
+{
+  ChartDb *db = new ChartDb();
+  db->openChart(chartPath);
+
+  QDictIterator<ChartObject> it(chartObjects);
+  for (; it.current(); ++it)
+  {
+    ChartObject *co = it.current();
+    
+    if (co->getSaveFlag())
+    {
+      Setting *set = new Setting;
+      set->parse(co->getString());
+      db->setChartObject(co->getData("Name"), set);
+      delete set;
+    }
+  }
+  
+  delete db;
+}
+
+void Plot::slotChartObjectSelected (ChartObject *co)
+{
+  tco = co;
+  mouseFlag = COSelected;
+}
+
+void Plot::slotDeleteAllChartObjects ()
+{
+  int  rc = QMessageBox::warning(this,
+  			         tr("Qtstalker: Warning"),
+				 tr("Are you sure you want to delete all chart objects?"),
+				 QMessageBox::Yes,
+				 QMessageBox::No,
+				 QMessageBox::NoButton);
+
+  if (rc == QMessageBox::No)
+    return;
+   
+  ChartDb *db = new ChartDb();
+  db->openChart(chartPath);
+  QStringList l = db->getChartObjects();
+
+  int loop;  
+  for (loop = 0; loop < (int) l.count(); loop++)
+  {
+    db->deleteChartObject(l[loop]);
+    chartObjects.remove(l[loop]);
+  }
+  
+  delete db;
+  mouseFlag = None;
+  draw();
+}
