@@ -144,22 +144,20 @@ HorizontalLineObject::Status HorizontalLineObject::getStatus ()
   return status;
 }
 
-Setting * HorizontalLineObject::getSettings ()
+void HorizontalLineObject::getSettings (Setting &set)
 {
-  Setting *set = new Setting;
-  set->setData("Value", QString::number(value));
-  set->setData("Color", color.name());
-  set->setData("Plot", plot);
-  set->setData("Name", name);
-  set->setData("Plugin", "HorizontalLine");
-  return set;
+  set.setData("Value", QString::number(value));
+  set.setData("Color", color.name());
+  set.setData("Plot", plot);
+  set.setData("Name", name);
+  set.setData("Plugin", "HorizontalLine");
 }
 
-void HorizontalLineObject::setSettings (Setting *set)
+void HorizontalLineObject::setSettings (Setting &set)
 {
-  value = set->getFloat("Value");
-  color.setNamedColor(set->getData("Color"));
-  plot = set->getData("Plot");
-  name = set->getData("Name");
+  value = set.getFloat("Value");
+  color.setNamedColor(set.getData("Color"));
+  plot = set.getData("Plot");
+  name = set.getData("Name");
 }
 

@@ -74,11 +74,10 @@ Scaler::~Scaler ()
 {
 }
 
-void Scaler::set (int ht, double h, double l, double lh, double lr, bool df, bool lf)
+void Scaler::set (int ht, double h, double l, double lh, double lr, bool lf)
 {
   height = ht;
   logScale = lf;
-  dateFlag = df;
   scaleHigh = h;
   scaleLow = l;
   logScaleHigh = lh;
@@ -175,11 +174,6 @@ double Scaler::getLogRange ()
 int Scaler::getHeight ()
 {
   return height;
-}
-
-bool Scaler::getDateFlag ()
-{
-  return dateFlag;
 }
 
 bool Scaler::getLogFlag ()

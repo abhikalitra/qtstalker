@@ -65,8 +65,8 @@ class FiboLineObject
     int isGrabSelected (QPoint point);
     void setStatus (Status);
     FiboLineObject::Status getStatus ();
-    Setting * getSettings ();
-    void setSettings (Setting *);
+    void getSettings (Setting &);
+    void setSettings (Setting &);
     void setLine (int, double);
     double getLine (int);
     

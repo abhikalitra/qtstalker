@@ -58,8 +58,8 @@ class HorizontalLineObject
     bool isGrabSelected (QPoint point);
     void setStatus (Status);
     HorizontalLineObject::Status getStatus ();
-    Setting * getSettings ();
-    void setSettings (Setting *);
+    void getSettings (Setting &);
+    void setSettings (Setting &);
     
   protected:
     bool saveFlag;

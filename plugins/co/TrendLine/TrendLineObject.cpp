@@ -210,34 +210,32 @@ TrendLineObject::Status TrendLineObject::getStatus ()
   return status;
 }
 
-Setting * TrendLineObject::getSettings ()
+void TrendLineObject::getSettings (Setting &set)
 {
-  Setting *set = new Setting;
-  set->setData("Start Date", date.getDateTimeString(FALSE));
-  set->setData("End Date", date2.getDateTimeString(FALSE));
-  set->setData("Start Value", QString::number(value));
-  set->setData("End Value", QString::number(value2));
-  set->setData("Bar Field", bar);
-  set->setData("Use Bar", QString::number(usebar));
-  set->setData("Extend Line", QString::number(extend));
-  set->setData("Color", color.name());
-  set->setData("Plot", plot);
-  set->setData("Name", name);
-  set->setData("Plugin", "TrendLine");
-  return set;
+  set.setData("Start Date", date.getDateTimeString(FALSE));
+  set.setData("End Date", date2.getDateTimeString(FALSE));
+  set.setData("Start Value", QString::number(value));
+  set.setData("End Value", QString::number(value2));
+  set.setData("Bar Field", bar);
+  set.setData("Use Bar", QString::number(usebar));
+  set.setData("Extend Line", QString::number(extend));
+  set.setData("Color", color.name());
+  set.setData("Plot", plot);
+  set.setData("Name", name);
+  set.setData("Plugin", "TrendLine");
 }
 
-void TrendLineObject::setSettings (Setting *set)
+void TrendLineObject::setSettings (Setting &set)
 {
-  color.setNamedColor(set->getData("Color"));
-  date.setDate(set->getData("Start Date"));
-  date2.setDate(set->getData("End Date"));
-  value = set->getFloat("Start Value");
-  value2 = set->getFloat("End Value");
-  bar = set->getData("Bar Field");
-  usebar = set->getInt("Use Bar");
-  extend = set->getInt("Extend Line");
-  plot = set->getData("Plot");
-  name = set->getData("Name");
+  color.setNamedColor(set.getData("Color"));
+  date.setDate(set.getData("Start Date"));
+  date2.setDate(set.getData("End Date"));
+  value = set.getFloat("Start Value");
+  value2 = set.getFloat("End Value");
+  bar = set.getData("Bar Field");
+  usebar = set.getInt("Use Bar");
+  extend = set.getInt("Extend Line");
+  plot = set.getData("Plot");
+  name = set.getData("Name");
 }
 

@@ -65,7 +65,7 @@ void COPlugin::newObject (QString, QString)
 {
 }
 
-void COPlugin::addObject (Setting *)
+void COPlugin::addObject (Setting &)
 {
 }
 
@@ -103,6 +103,10 @@ double COPlugin::getLow ()
 QString COPlugin::getHelpFile ()
 {
   return helpFile;
+}
+
+void COPlugin::getNameList (QStringList &)
+{
 }
 
 

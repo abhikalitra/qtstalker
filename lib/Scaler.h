@@ -32,7 +32,7 @@ class Scaler
   public:
     Scaler ();
     ~Scaler ();
-    void set (int ht, double h, double l, double lh, double lr, bool df, bool lf);
+    void set (int ht, double h, double l, double lh, double lr, bool lf);
     int convertToY (double);
     double convertToVal (int);
     QMemArray<double> getScaleArray ();
@@ -47,7 +47,6 @@ class Scaler
     int height;
     int dateHeight;
     bool logScale;
-    bool dateFlag;
     double scaleHigh;
     double scaleLow;
     double logScaleHigh;

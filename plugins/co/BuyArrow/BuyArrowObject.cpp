@@ -155,24 +155,22 @@ BuyArrowObject::Status BuyArrowObject::getStatus ()
   return status;
 }
 
-Setting * BuyArrowObject::getSettings ()
+void BuyArrowObject::getSettings (Setting &set)
 {
-  Setting *set = new Setting;
-  set->setData("Date", date.getDateTimeString(FALSE));
-  set->setData("Value", QString::number(value));
-  set->setData("Color", color.name());
-  set->setData("Plot", plot);
-  set->setData("Name", name);
-  set->setData("Plugin", "BuyArrow");
-  return set;
+  set.setData("Date", date.getDateTimeString(FALSE));
+  set.setData("Value", QString::number(value));
+  set.setData("Color", color.name());
+  set.setData("Plot", plot);
+  set.setData("Name", name);
+  set.setData("Plugin", "BuyArrow");
 }
 
-void BuyArrowObject::setSettings (Setting *set)
+void BuyArrowObject::setSettings (Setting &set)
 {
-  date.setDate(set->getData("Date"));
-  value = set->getFloat("Value");
-  color.setNamedColor(set->getData("Color"));
-  plot = set->getData("Plot");
-  name = set->getData("Name");
+  date.setDate(set.getData("Date"));
+  value = set.getFloat("Value");
+  color.setNamedColor(set.getData("Color"));
+  plot = set.getData("Plot");
+  name = set.getData("Name");
 }
 

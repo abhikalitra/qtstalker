@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef PLOT_HPP
-#define PLOT_HPP
+#ifndef INDICATORPLOT_HPP
+#define INDICATORPLOT_HPP
 
 #include <qwidget.h>
 #include <qstring.h>
@@ -42,7 +42,7 @@
 #include "BarData.h"
 #include "COPlugin.h"
 
-class Plot : public QWidget
+class IndicatorPlot : public QWidget
 {
   Q_OBJECT
 
@@ -55,6 +55,7 @@ class Plot : public QWidget
     void signalNewIndicator ();
     void signalMinPixelspace (int);
     void signalCrosshairsStatus (bool);
+    void signalDraw ();
 
   public:
     enum MouseStatus
@@ -65,12 +66,10 @@ class Plot : public QWidget
       Moving
     };
 
-    Plot (QWidget *);
-    ~Plot ();
+    IndicatorPlot (QWidget *);
+    ~IndicatorPlot ();
     void clear ();
     void setData (BarData *);
-    void setScaleWidth (int);
-    void setDateHeight (int);
     void setMainFlag (bool);
     void setLogScale (bool);
     int setChartType (QString);
@@ -78,19 +77,15 @@ class Plot : public QWidget
     void setHideMainPlot (bool);
     bool getHideMainPlot ();
     void updateStatusBar (int, int);
-    void setTabFlag (bool);
-    bool getTabFlag ();
     bool getMainFlag ();
     bool getCrosshairsStatus ();
     void setInfoFlag (bool);
     void drawCrossHair ();
-
     void addIndicator (QString, Indicator *);
     Indicator * getIndicator (QString);
     QStringList getIndicators ();
     bool deleteIndicator (QString);
-    void addChartObject (Setting *);
-
+    void addChartObject (Setting &);
     int getWidth ();
     int getPixelspace ();
     int getMinPixelspace ();
@@ -101,6 +96,7 @@ class Plot : public QWidget
     void setDrawMode (bool);
     void setDateFlag (bool);
     void setCrosshairsFlag (bool);
+    void setScaler (Scaler *);
 
   public slots:
     void draw();
@@ -111,7 +107,6 @@ class Plot : public QWidget
     void setGridColor (QColor);
     void setPlotFont (QFont);
     void setIndex (int);
-    void setInterval(BarData::BarCompression);
     void crossHair (int, int, bool);
     void printChart ();
     void showPopupMenu ();
@@ -121,7 +116,6 @@ class Plot : public QWidget
     void slotGridChanged (bool);
     void slotScaleToScreenChanged (bool);
     void slotDrawModeChanged (bool);
-    void slotDateFlagChanged (bool);
     void slotLogScaleChanged (bool);
     void slotHideMainChanged (bool);
 
@@ -138,30 +132,18 @@ class Plot : public QWidget
     void drawObjects ();
     void drawLines ();
     void drawXGrid ();
-    void drawScale ();
     void drawYGrid ();
     void drawInfo ();
-    void setHeight ();
-    void setWidth ();
     void setScale ();
     int getXFromDate (BarDate);
     void getXY (int, int);
     void createXGrid ();
     void slotMessage (QString);
     void toggleCrosshairs ();
-    
-    void drawDate ();
-    void drawDailyDate ();
-    void drawWeeklyDate ();
-    void drawMonthlyDate ();
-    void drawHourlyDate ();
-    void draw15Date ();
-
     void slotEditIndicator (int);
     void slotNewIndicator ();
     void slotNewChartObject (int);
     void slotDeleteAllChartObjects ();
-    
     void slotEditChartPrefs ();
 
   private:
@@ -172,48 +154,35 @@ class Plot : public QWidget
     Config config;
     int pixelspace;
     int minPixelspace;
-    int dateHeight;
-    int _height;
-    int _width;
     int startX;
     int startIndex;
     BarData::BarCompression interval;
     QColor backgroundColor;
     QColor gridColor;
     QColor borderColor;
-    bool dateFlag;
     bool gridFlag;
     bool mainFlag;
     bool scaleToScreen;
     bool logScale;
     bool hideMainPlot;
-    bool tabFlag;
     bool crossHairFlag;
     bool drawMode;
     bool crosshairs;
     bool infoFlag;
     BarDate crossHairX;
     double crossHairY;
-
-    int scaleWidth;
-    double mainHigh;
-    double mainLow;
-    QMemArray<double> scaleArray;
     Scaler *scaler;
-
     double y1;
     BarDate x1;
     MouseStatus mouseFlag;
     COPlugin *coPlugin;
     QStringList coList;
     QDict<COPlugin> coPlugins;
-
     QString chartType;
     QString chartPath;
     BarData *data;
     QDict<Indicator> indicators;
     QMemArray<int> xGrid;
-
     QPopupMenu *chartMenu;
     QPopupMenu *chartEditMenu;
     QPopupMenu *chartObjectMenu;

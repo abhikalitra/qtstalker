@@ -180,37 +180,34 @@ TextObject::Status TextObject::getStatus ()
   return status;
 }
 
-Setting * TextObject::getSettings ()
+void TextObject::getSettings (Setting &set)
 {
-  Setting *set = new Setting;
-  set->setData("Date", date.getDateTimeString(FALSE));
-  set->setData("Value", QString::number(value));
-  set->setData("Color", color.name());
-  set->setData("Plot", plot);
-  set->setData("Name", name);
-  set->setData("Label", label);
-  set->setData("Plugin", "Text");
+  set.setData("Date", date.getDateTimeString(FALSE));
+  set.setData("Value", QString::number(value));
+  set.setData("Color", color.name());
+  set.setData("Plot", plot);
+  set.setData("Name", name);
+  set.setData("Label", label);
+  set.setData("Plugin", "Text");
   
   QString s = font.family();
   s.append(" ");
   s.append(QString::number(font.pointSize()));
   s.append(" ");
   s.append(QString::number(font.weight()));
-  set->setData("Font", s);
-  
-  return set;
+  set.setData("Font", s);
 }
 
-void TextObject::setSettings (Setting *set)
+void TextObject::setSettings (Setting &set)
 {
-  date.setDate(set->getData("Date"));
-  value = set->getFloat("Value");
-  color.setNamedColor(set->getData("Color"));
-  plot = set->getData("Plot");
-  name = set->getData("Name");
-  label = set->getData("Label");
+  date.setDate(set.getData("Date"));
+  value = set.getFloat("Value");
+  color.setNamedColor(set.getData("Color"));
+  plot = set.getData("Plot");
+  name = set.getData("Name");
+  label = set.getData("Label");
   
-  QStringList l = QStringList::split(" ", set->getData("Font"), FALSE);
+  QStringList l = QStringList::split(" ", set.getData("Font"), FALSE);
   if (l.count())
     font = QFont(l[0], l[1].toInt(), l[2].toInt());
 }

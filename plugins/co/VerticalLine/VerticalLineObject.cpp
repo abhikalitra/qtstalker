@@ -144,22 +144,20 @@ VerticalLineObject::Status VerticalLineObject::getStatus ()
   return status;
 }
 
-Setting * VerticalLineObject::getSettings ()
+void VerticalLineObject::getSettings (Setting &set)
 {
-  Setting *set = new Setting;
-  set->setData("Date", date.getDateTimeString(FALSE));
-  set->setData("Color", color.name());
-  set->setData("Plot", plot);
-  set->setData("Name", name);
-  set->setData("Plugin", "VerticalLine");
-  return set;
+  set.setData("Date", date.getDateTimeString(FALSE));
+  set.setData("Color", color.name());
+  set.setData("Plot", plot);
+  set.setData("Name", name);
+  set.setData("Plugin", "VerticalLine");
 }
 
-void VerticalLineObject::setSettings (Setting *set)
+void VerticalLineObject::setSettings (Setting &set)
 {
-  date.setDate(set->getData("Date"));
-  color.setNamedColor(set->getData("Color"));
-  plot = set->getData("Plot");
-  name = set->getData("Name");
+  date.setDate(set.getData("Date"));
+  color.setNamedColor(set.getData("Color"));
+  plot = set.getData("Plot");
+  name = set.getData("Name");
 }
 

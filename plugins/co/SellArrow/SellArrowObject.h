@@ -61,8 +61,8 @@ class SellArrowObject
     bool isGrabSelected (QPoint point);
     void setStatus (Status);
     SellArrowObject::Status getStatus ();
-    Setting * getSettings ();
-    void setSettings (Setting *);
+    void getSettings (Setting &);
+    void setSettings (Setting &);
     
   protected:
     bool saveFlag;

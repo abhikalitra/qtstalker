@@ -22,9 +22,9 @@
 #include "Quote.h"
 #include "QuotePlugin.h"
 #include "HelpWindow.h"
-#include "download.xpm"
-#include "canceldownload.xpm"
-#include "configure.xpm"
+#include "../pics/download.xpm"
+#include "../pics/canceldownload.xpm"
+#include "../pics/configure.xpm"
 #include <qstringlist.h>
 #include <qmessagebox.h>
 #include <qapplication.h>

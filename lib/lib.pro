@@ -35,6 +35,10 @@ HEADERS += MySlider.h
 HEADERS += MacroKey.h
 HEADERS += Macro.h
 HEADERS += MyListBox.h
+HEADERS += Plot.h
+HEADERS += DatePlot.h
+HEADERS += ScalePlot.h
+HEADERS += IndicatorPlot.h
    
 SOURCES += QuotePlugin.cpp
 SOURCES += IndicatorPlugin.cpp
@@ -67,6 +71,10 @@ SOURCES += MySlider.cpp
 SOURCES += MacroKey.cpp
 SOURCES += Macro.cpp
 SOURCES += MyListBox.cpp
+SOURCES += Plot.cpp
+SOURCES += DatePlot.cpp
+SOURCES += ScalePlot.cpp
+SOURCES += IndicatorPlot.cpp
 
     
 TARGET = qtstalker

@@ -170,9 +170,12 @@
 	  
 20050302: Moved MA functions from IndicatorPlugin:: into MA plugin.
 
+20050303: Plot:: code clean up. Split this class into 3 helper classes DatePlot, ScalePlot and
+          IndicatorPlot. Moved them from /src into /lib.
+
+20050303: Code clean up, moved all pixmaps from /src into new directory /pics. 
 
 
-	  
 	  	  
 0.29
 ====

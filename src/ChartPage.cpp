@@ -24,11 +24,11 @@
 #include "SymbolDialog.h"
 #include "DbPlugin.h"
 #include "HelpWindow.h"
-#include "edit.xpm"
-#include "delete.xpm"
-#include "export.xpm"
-#include "newchart.xpm"
-#include "help.xpm"
+#include "../pics/edit.xpm"
+#include "../pics/delete.xpm"
+#include "../pics/export.xpm"
+#include "../pics/newchart.xpm"
+#include "../pics/help.xpm"
 #include <qmessagebox.h>
 #include <qcursor.h>
 #include <qtooltip.h>

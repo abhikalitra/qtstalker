@@ -71,8 +71,8 @@ class TrendLineObject
     void setBar (QString);
     QString getBar ();
     TrendLineObject::Status getStatus ();
-    Setting * getSettings ();
-    void setSettings (Setting *);
+    void getSettings (Setting &);
+    void setSettings (Setting &);
     
   protected:
     bool saveFlag;

@@ -66,8 +66,8 @@ class TextObject
     bool isGrabSelected (QPoint point);
     void setStatus (Status);
     TextObject::Status getStatus ();
-    Setting * getSettings ();
-    void setSettings (Setting *);
+    void getSettings (Setting &);
+    void setSettings (Setting &);
     
   protected:
     bool saveFlag;

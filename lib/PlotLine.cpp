@@ -300,7 +300,6 @@ void PlotLine::drawLine (int dataSize, int startX, int startIndex, int pixelspac
 	       getLow(),
 	       scaler->getLogScaleHigh(),
 	       scaler->getLogRange(),
-	       scaler->getDateFlag(),
 	       scaler->getLogFlag());
   }
 
@@ -368,7 +367,6 @@ void PlotLine::drawDot (int dataSize, int startX, int startIndex, int pixelspace
 	       getLow(),
 	       scaler->getLogScaleHigh(),
 	       scaler->getLogRange(),
-	       scaler->getDateFlag(),
 	       scaler->getLogFlag());
   }
 
@@ -416,7 +414,6 @@ void PlotLine::drawHistogram (int dataSize, int startX, int startIndex, int pixe
 	       getLow(),
 	       scaler->getLogScaleHigh(),
 	       scaler->getLogRange(),
-	       scaler->getDateFlag(),
 	       scaler->getLogFlag());
     zero = scale->convertToY(0);
   }
@@ -476,7 +473,6 @@ void PlotLine::drawHistogramBar (int dataSize, int startX, int startIndex, int p
 	       getLow(),
 	       scaler->getLogScaleHigh(),
 	       scaler->getLogRange(),
-	       scaler->getDateFlag(),
 	       scaler->getLogFlag());
     zero = scale->convertToY(0);
   }

@@ -38,7 +38,7 @@
 #include "MacroKey.h"
 #include "DbPlugin.h"
 
-#include "qtstalker.xpm"
+#include "../pics/qtstalker.xpm"
 
 QtstalkerApp::QtstalkerApp()
 {
@@ -97,7 +97,7 @@ QtstalkerApp::QtstalkerApp()
   mainPlot->setMainFlag(TRUE);
   mainPlot->setLogScale(menubar->getStatus(MainMenubar::Log));
   connect(menubar, SIGNAL(signalLog(bool)), mainPlot, SLOT(slotLogScaleChanged(bool)));
-  connect(menubar, SIGNAL(signalHideMain(bool)), mainPlot, SLOT(slotHideMainChanged(bool)));
+  connect(menubar, SIGNAL(signalHideMain(bool)), mainPlot->getIndicatorPlot(), SLOT(slotHideMainChanged(bool)));
 
   // setup the indicator tabs
   tabs = new IndicatorTab(split);
@@ -486,13 +486,12 @@ void QtstalkerApp::loadChart (QString d)
     loadIndicator(i);
   }
 
-  QPtrList<Setting> col = plug->getChartObjects();
-  QPtrListIterator<Setting> coit(col);
-  for (; coit.current(); ++coit)
+  plug->getChartObjects(l);
+  Setting co;
+  for (loop = 0; loop < (int) l.count(); loop++)
   {
-    Setting *co = coit.current();
-    
-    QString s = co->getData("Plot");
+    co.parse(l[loop]);
+    QString s = co.getData("Plot");
     if (! s.compare(tr("Main Plot")))
       mainPlot->addChartObject(co);
     else
@@ -861,7 +860,7 @@ void QtstalkerApp::initPlot (Plot *plot)
   plot->setBorderColor(color);
 
   color.setNamedColor(config.getData(Config::GridColor));
-  connect(this, SIGNAL(signalGridColor(QColor)), plot, SLOT(setGridColor(QColor)));
+  connect(this, SIGNAL(signalGridColor(QColor)), plot->getIndicatorPlot(), SLOT(setGridColor(QColor)));
   plot->setGridColor(color);
 
   connect(this, SIGNAL(signalPlotFont(QFont)), plot, SLOT(setPlotFont(QFont)));
@@ -882,23 +881,23 @@ void QtstalkerApp::initPlot (Plot *plot)
   plot->setCrosshairsStatus(config.getData(Config::Crosshairs).toInt());  
   plot->setDrawMode(menubar->getStatus(MainMenubar::DrawMode));
     
-  connect(plot, SIGNAL(signalNewIndicator()), ip, SLOT(newIndicator()));
-  connect(plot, SIGNAL(signalEditIndicator(QString)), ip, SLOT(editIndicator(QString)));
-  connect(plot, SIGNAL(statusMessage(QString)), this, SLOT(slotStatusMessage(QString)));
-  connect(plot, SIGNAL(infoMessage(Setting *)), this, SLOT(slotUpdateInfo(Setting *)));
-  connect(plot, SIGNAL(leftMouseButton(int, int, bool)), this, SLOT(slotPlotLeftMouseButton(int, int, bool)));
-  connect(plot, SIGNAL(signalMinPixelspace(int)), this, SLOT(slotMinPixelspaceChanged(int)));
-  connect(plot, SIGNAL(signalCrosshairsStatus(bool)), this, SLOT(slotCrosshairsStatus(bool)));
-  connect(this, SIGNAL(signalCrosshairsStatus(bool)), plot, SLOT(setCrosshairsStatus(bool)));
+  connect(plot->getIndicatorPlot(), SIGNAL(signalNewIndicator()), ip, SLOT(newIndicator()));
+  connect(plot->getIndicatorPlot(), SIGNAL(signalEditIndicator(QString)), ip, SLOT(editIndicator(QString)));
+  connect(plot->getIndicatorPlot(), SIGNAL(statusMessage(QString)), this, SLOT(slotStatusMessage(QString)));
+  connect(plot->getIndicatorPlot(), SIGNAL(infoMessage(Setting *)), this, SLOT(slotUpdateInfo(Setting *)));
+  connect(plot->getIndicatorPlot(), SIGNAL(leftMouseButton(int, int, bool)), this, SLOT(slotPlotLeftMouseButton(int, int, bool)));
+  connect(plot->getIndicatorPlot(), SIGNAL(signalMinPixelspace(int)), this, SLOT(slotMinPixelspaceChanged(int)));
+  connect(plot->getIndicatorPlot(), SIGNAL(signalCrosshairsStatus(bool)), this, SLOT(slotCrosshairsStatus(bool)));
+  connect(this, SIGNAL(signalCrosshairsStatus(bool)), plot->getIndicatorPlot(), SLOT(setCrosshairsStatus(bool)));
   connect(this, SIGNAL(signalPixelspace(int)), plot, SLOT(setPixelspace(int)));
   connect(this, SIGNAL(signalIndex(int)), plot, SLOT(setIndex(int)));
-  connect(this, SIGNAL(signalInterval(BarData::BarCompression)), plot, SLOT(setInterval(BarData::BarCompression)));
-  connect(this, SIGNAL(signalChartPath(QString)), plot, SLOT(setChartPath(QString)));
+  connect(this, SIGNAL(signalInterval(BarData::BarCompression)), plot->getDatePlot(), SLOT(setInterval(BarData::BarCompression)));
+  connect(this, SIGNAL(signalChartPath(QString)), plot->getIndicatorPlot(), SLOT(setChartPath(QString)));
   
   connect(toolbar2, SIGNAL(signalSliderChanged(int)), plot, SLOT(slotSliderChanged(int)));
-  connect(menubar, SIGNAL(signalGrid(bool)), plot, SLOT(slotGridChanged(bool)));
+  connect(menubar, SIGNAL(signalGrid(bool)), plot->getIndicatorPlot(), SLOT(slotGridChanged(bool)));
   connect(menubar, SIGNAL(signalScale(bool)), plot, SLOT(slotScaleToScreenChanged(bool)));
-  connect(menubar, SIGNAL(signalDraw(bool)), plot, SLOT(slotDrawModeChanged(bool)));
+  connect(menubar, SIGNAL(signalDraw(bool)), plot->getIndicatorPlot(), SLOT(slotDrawModeChanged(bool)));
 }
 
 void QtstalkerApp::slotChartUpdated ()

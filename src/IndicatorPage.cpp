@@ -26,16 +26,16 @@
 #include "SymbolDialog.h"
 #include "Indicator.h"
 #include "IndicatorPlugin.h"
-#include "help.xpm"
-#include "ok.xpm"
-#include "ok_gray.xpm"
-#include "disable.xpm"
-#include "disable_gray.xpm"
-#include "edit.xpm"
-#include "delete.xpm"
-#include "newchart.xpm"
-#include "move.xpm"
-#include "dirclosed.xpm"
+#include "../pics/help.xpm"
+#include "../pics/ok.xpm"
+#include "../pics/ok_gray.xpm"
+#include "../pics/disable.xpm"
+#include "../pics/disable_gray.xpm"
+#include "../pics/edit.xpm"
+#include "../pics/delete.xpm"
+#include "../pics/newchart.xpm"
+#include "../pics/move.xpm"
+#include "../pics/dirclosed.xpm"
 #include <qcursor.h>
 #include <qdir.h>
 #include <qaccel.h>
@@ -43,6 +43,7 @@
 #include <qtextstream.h>
 #include <qinputdialog.h>
 #include <qmessagebox.h>
+#include <qtooltip.h>
 
 
 IndicatorPage::IndicatorPage (QWidget *w) : QWidget (w)
@@ -65,6 +66,7 @@ IndicatorPage::IndicatorPage (QWidget *w) : QWidget (w)
   connect(group, SIGNAL(activated(int)), this, SLOT(slotGroupChanged(int)));
   connect(group, SIGNAL(signalKeyPressed(int, int, int, int, QString)),
           this, SIGNAL(signalKeyPressed(int, int, int, int, QString)));
+  QToolTip::add(group, tr("Indicator Groups"));
   vbox->addWidget(group);
 
   list = new MyListBox(this, Macro::IndicatorPage);
@@ -428,13 +430,15 @@ void IndicatorPage::deleteIndicator ()
       return;
     }
     
-    QPtrList<Setting> l = db->getChartObjects ();
-    QPtrListIterator<Setting> it(l);
-    for (; it.current(); ++it)
+    QStringList l;
+    db->getChartObjects(l);
+    int loop;
+    Setting set;
+    for (loop = 0; loop < (int) l.count(); loop++)
     {
-      Setting *co = it.current();
-      if (! co->getData("Plot").compare(list->currentText()))
-        db->deleteChartObject(co->getData("Name"));
+      set.parse(l[loop]);
+      if (! set.getData("Plot").compare(list->currentText()))
+        db->deleteChartObject(set.getData("Name"));
     }
   
     db->deleteIndicator(list->currentText());  

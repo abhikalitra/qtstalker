@@ -22,9 +22,9 @@
 #include "FuturesDialog.h"
 #include "Bar.h"
 #include "BarDate.h"
-#include "../../../src/delete.xpm"
-#include "../../../src/export.xpm"
-#include "../../../src/search.xpm"
+#include "../../../pics/delete.xpm"
+#include "../../../pics/export.xpm"
+#include "../../../pics/search.xpm"
 #include "HelpWindow.h"
 #include <qlabel.h>
 #include <qlayout.h>

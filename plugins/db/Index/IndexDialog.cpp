@@ -26,9 +26,9 @@
 #include <qlayout.h>
 #include <qlabel.h>
 #include <qdir.h>
-#include "../../../src/insert.xpm"
-#include "../../../src/edit.xpm"
-#include "../../../src/delete.xpm"
+#include "../../../pics/insert.xpm"
+#include "../../../pics/edit.xpm"
+#include "../../../pics/delete.xpm"
 
 IndexDialog::IndexDialog (QString d) : QTabDialog (0, "IndexDialog", TRUE)
 {

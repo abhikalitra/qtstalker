@@ -20,7 +20,7 @@
  */
 
 #include "Navigator.h"
-#include "dirclosed.xpm"
+#include "../pics/dirclosed.xpm"
 #include <qpixmap.h>
 
 #define BUTTON_SIZE 24

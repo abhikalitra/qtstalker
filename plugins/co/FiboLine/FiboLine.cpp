@@ -23,9 +23,9 @@
 #include "PrefDialog.h"
 #include "DbPlugin.h"
 #include "Config.h"
-#include "../../../src/delete.xpm"
-#include "../../../src/edit.xpm"
-#include "../../../src/rename.xpm"
+#include "../../../pics/delete.xpm"
+#include "../../../pics/edit.xpm"
+#include "../../../pics/rename.xpm"
 #include <qpainter.h>
 #include <qsettings.h>
 #include <qcursor.h>
@@ -239,7 +239,7 @@ void FiboLine::prefDialog ()
   delete dialog;
 }
 
-void FiboLine::addObject (Setting *set)
+void FiboLine::addObject (Setting &set)
 {
   FiboLineObject *co = new FiboLineObject;
   co->setSettings(set);
@@ -460,9 +460,9 @@ void FiboLine::saveObjects (QString chartPath)
     
     if (co->getSaveFlag())
     {
-      Setting *set = co->getSettings();
+      Setting set;
+      co->getSettings(set);
       db->setChartObject(co->getName(), set);
-      delete set;
     }
   }
   
@@ -611,6 +611,13 @@ void FiboLine::showMenu ()
 {
   if (selected)
     menu->exec(QCursor::pos());
+}
+
+void FiboLine::getNameList (QStringList &d)
+{
+  QDictIterator<FiboLineObject> it(objects);
+  for (; it.current(); ++it)
+    d.append(it.current()->getName());
 }
 
 //****************************************************

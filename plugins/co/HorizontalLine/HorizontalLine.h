@@ -39,13 +39,14 @@ class HorizontalLine : public COPlugin
     ~HorizontalLine ();
     void draw (int, int, int);
     void newObject (QString, QString);
-    void addObject (Setting *);
+    void addObject (Setting &);
     void saveObjects (QString);
     void clear ();
     void keyEvent (QKeyEvent *);
     double getHigh ();
     double getLow ();
     void showMenu ();
+    void getNameList (QStringList &);
     
     void loadDefaults ();
     void saveDefaults ();

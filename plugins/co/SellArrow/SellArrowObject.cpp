@@ -155,24 +155,22 @@ SellArrowObject::Status SellArrowObject::getStatus ()
   return status;
 }
 
-Setting * SellArrowObject::getSettings ()
+void SellArrowObject::getSettings (Setting &set)
 {
-  Setting *set = new Setting;
-  set->setData("Date", date.getDateTimeString(FALSE));
-  set->setData("Value", QString::number(value));
-  set->setData("Color", color.name());
-  set->setData("Plot", plot);
-  set->setData("Name", name);
-  set->setData("Plugin", "SellArrow");
-  return set;
+  set.setData("Date", date.getDateTimeString(FALSE));
+  set.setData("Value", QString::number(value));
+  set.setData("Color", color.name());
+  set.setData("Plot", plot);
+  set.setData("Name", name);
+  set.setData("Plugin", "SellArrow");
 }
 
-void SellArrowObject::setSettings (Setting *set)
+void SellArrowObject::setSettings (Setting &set)
 {
-  date.setDate(set->getData("Date"));
-  value = set->getFloat("Value");
-  color.setNamedColor(set->getData("Color"));
-  plot = set->getData("Plot");
-  name = set->getData("Name");
+  date.setDate(set.getData("Date"));
+  value = set.getFloat("Value");
+  color.setNamedColor(set.getData("Color"));
+  plot = set.getData("Plot");
+  name = set.getData("Name");
 }
 

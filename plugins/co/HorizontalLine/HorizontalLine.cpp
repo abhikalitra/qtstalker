@@ -23,9 +23,9 @@
 #include "PrefDialog.h"
 #include "DbPlugin.h"
 #include "Config.h"
-#include "../../../src/delete.xpm"
-#include "../../../src/edit.xpm"
-#include "../../../src/rename.xpm"
+#include "../../../pics/delete.xpm"
+#include "../../../pics/edit.xpm"
+#include "../../../pics/rename.xpm"
 #include <qpainter.h>
 #include <qsettings.h>
 #include <qpointarray.h>
@@ -159,7 +159,7 @@ void HorizontalLine::prefDialog ()
   delete dialog;
 }
 
-void HorizontalLine::addObject (Setting *set)
+void HorizontalLine::addObject (Setting &set)
 {
   HorizontalLineObject *co = new HorizontalLineObject;
   co->setSettings(set);
@@ -287,9 +287,9 @@ void HorizontalLine::saveObjects (QString chartPath)
     
     if (co->getSaveFlag())
     {
-      Setting *set = co->getSettings();
+      Setting set;
+      co->getSettings(set);
       db->setChartObject(co->getName(), set);
-      delete set;
     }
   }
   
@@ -390,6 +390,13 @@ void HorizontalLine::showMenu ()
 {
   if (selected)
     menu->exec(QCursor::pos());
+}
+
+void HorizontalLine::getNameList (QStringList &d)
+{
+  QDictIterator<HorizontalLineObject> it(objects);
+  for (; it.current(); ++it)
+    d.append(it.current()->getName());
 }
 
 //****************************************************

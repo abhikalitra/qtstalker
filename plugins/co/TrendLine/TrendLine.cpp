@@ -23,9 +23,9 @@
 #include "PrefDialog.h"
 #include "DbPlugin.h"
 #include "Config.h"
-#include "../../../src/delete.xpm"
-#include "../../../src/edit.xpm"
-#include "../../../src/rename.xpm"
+#include "../../../pics/delete.xpm"
+#include "../../../pics/edit.xpm"
+#include "../../../pics/rename.xpm"
 #include <qpainter.h>
 #include <qcursor.h>
 
@@ -231,7 +231,7 @@ void TrendLine::prefDialog ()
   delete dialog;
 }
 
-void TrendLine::addObject (Setting *set)
+void TrendLine::addObject (Setting &set)
 {
   TrendLineObject *co = new TrendLineObject;
   co->setSettings(set);
@@ -429,9 +429,9 @@ void TrendLine::saveObjects (QString chartPath)
     
     if (co->getSaveFlag())
     {
-      Setting *set = co->getSettings();
+      Setting set;
+      co->getSettings(set);
       db->setChartObject(co->getName(), set);
-      delete set;
     }
   }
   
@@ -560,6 +560,13 @@ void TrendLine::showMenu ()
 {
   if (selected)
     menu->exec(QCursor::pos());
+}
+
+void TrendLine::getNameList (QStringList &d)
+{
+  QDictIterator<TrendLineObject> it(objects);
+  for (; it.current(); ++it)
+    d.append(it.current()->getName());
 }
 
 //****************************************************

@@ -23,9 +23,9 @@
 #include "PrefDialog.h"
 #include "DbPlugin.h"
 #include "Config.h"
-#include "../../../src/delete.xpm"
-#include "../../../src/edit.xpm"
-#include "../../../src/rename.xpm"
+#include "../../../pics/delete.xpm"
+#include "../../../pics/edit.xpm"
+#include "../../../pics/rename.xpm"
 #include <qpainter.h>
 #include <qsettings.h>
 #include <qcursor.h>
@@ -148,7 +148,7 @@ void Text::prefDialog ()
   delete dialog;
 }
 
-void Text::addObject (Setting *set)
+void Text::addObject (Setting &set)
 {
   TextObject *co = new TextObject;
   co->setSettings(set);
@@ -277,9 +277,9 @@ void Text::saveObjects (QString chartPath)
     
     if (co->getSaveFlag())
     {
-      Setting *set = co->getSettings();
+      Setting set;
+      co->getSettings(set);
       db->setChartObject(co->getName(), set);
-      delete set;
     }
   }
   
@@ -393,6 +393,13 @@ void Text::showMenu ()
 {
   if (selected)
     menu->exec(QCursor::pos());
+}
+
+void Text::getNameList (QStringList &d)
+{
+  QDictIterator<TextObject> it(objects);
+  for (; it.current(); ++it)
+    d.append(it.current()->getName());
 }
 
 //****************************************************

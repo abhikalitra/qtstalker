@@ -21,20 +21,20 @@
 
 #include "MainMenubar.h"
 #include <qaccel.h>
-#include "done.xpm"
-#include "grid.xpm"
-#include "datawindow.xpm"
-#include "indicator.xpm"
-#include "quotes.xpm"
-#include "configure.xpm"
-#include "scaletoscreen.xpm"
-#include "nav.xpm"
-#include "loggrid.xpm"
-#include "hidechart.xpm"
-#include "date.xpm"
-#include "co.xpm"
-#include "help.xpm"
-#include "qtstalker.xpm"
+#include "../pics/done.xpm"
+#include "../pics/grid.xpm"
+#include "../pics/datawindow.xpm"
+#include "../pics/indicator.xpm"
+#include "../pics/quotes.xpm"
+#include "../pics/configure.xpm"
+#include "../pics/scaletoscreen.xpm"
+#include "../pics/nav.xpm"
+#include "../pics/loggrid.xpm"
+#include "../pics/hidechart.xpm"
+#include "../pics/date.xpm"
+#include "../pics/co.xpm"
+#include "../pics/help.xpm"
+#include "../pics/qtstalker.xpm"
 
 
 MainMenubar::MainMenubar (QMainWindow *mw) : QMenuBar (mw, "mainMenubar")
@@ -50,6 +50,7 @@ MainMenubar::MainMenubar (QMainWindow *mw) : QMenuBar (mw, "mainMenubar")
   action->setIconSet(icon);
   action->setAccel(CTRL+Key_1);
   action->setStatusTip(tr("Quit Qtstalker (Ctrl+1)"));
+  action->setToolTip(tr("Quit Qtstalker (Ctrl+1)"));
   connect(action, SIGNAL(activated()), this, SIGNAL(signalExit()));
   actions.replace(Exit, action);
   
@@ -58,6 +59,7 @@ MainMenubar::MainMenubar (QMainWindow *mw) : QMenuBar (mw, "mainMenubar")
   action->setMenuText(tr("New &Indicator"));
   action->setIconSet(icon);
   action->setStatusTip(tr("Add a new indicator to chart (Ctrl+2)"));
+  action->setToolTip(tr("Add a new indicator to chart (Ctrl+2)"));
   connect(action, SIGNAL(activated()), this, SIGNAL(signalNewIndicator()));
   actions.replace(NewIndicator, action);
 
@@ -66,6 +68,7 @@ MainMenubar::MainMenubar (QMainWindow *mw) : QMenuBar (mw, "mainMenubar")
   action->setMenuText(tr("Edit &Preferences"));
   action->setIconSet(icon);
   action->setStatusTip(tr("Modify user preferences  (Ctrl+3)"));
+  action->setToolTip(tr("Modify user preferences  (Ctrl+3)"));
   connect(action, SIGNAL(activated()), mw, SLOT(slotOptions()));
   actions.replace(Options, action);
 
@@ -75,6 +78,7 @@ MainMenubar::MainMenubar (QMainWindow *mw) : QMenuBar (mw, "mainMenubar")
   action->setMenuText(tr("Chart &Grid"));
   action->setIconSet(icon);
   action->setStatusTip(tr("Toggle the chart grid  (Ctrl+4)"));
+  action->setToolTip(tr("Toggle the chart grid  (Ctrl+4)"));
   action->setToggleAction(TRUE);
   action->setOn(s.toInt());
   connect(action, SIGNAL(toggled(bool)), this, SIGNAL(signalGrid(bool)));
@@ -85,6 +89,7 @@ MainMenubar::MainMenubar (QMainWindow *mw) : QMenuBar (mw, "mainMenubar")
   action->setMenuText(tr("&Quotes"));
   action->setIconSet(icon);
   action->setStatusTip(tr("Download quotes from internet  (Alt+2)"));
+  action->setToolTip(tr("Download quotes from internet  (Alt+2)"));
   connect(action, SIGNAL(activated()), mw, SLOT(slotQuotes()));
   actions.replace(Quotes, action);
 
@@ -94,6 +99,7 @@ MainMenubar::MainMenubar (QMainWindow *mw) : QMenuBar (mw, "mainMenubar")
   action->setIconSet(icon);
   action->setAccel(ALT+Key_1);
   action->setStatusTip(tr("Show the data window (Alt+1)"));
+  action->setToolTip(tr("Show the data window (Alt+1)"));
   connect(action, SIGNAL(activated()), mw, SLOT(slotDataWindow()));
   actions.replace(DataWindow, action);
 
@@ -102,6 +108,7 @@ MainMenubar::MainMenubar (QMainWindow *mw) : QMenuBar (mw, "mainMenubar")
   action->setMenuText(tr("&About"));
   action->setIconSet(icon);
   action->setStatusTip(tr("About Qtstalker."));
+  action->setToolTip(tr("About Qtstalker."));
   connect(action, SIGNAL(activated()), mw, SLOT(slotAbout()));
   actions.replace(About, action);
 
@@ -111,6 +118,7 @@ MainMenubar::MainMenubar (QMainWindow *mw) : QMenuBar (mw, "mainMenubar")
   action->setMenuText(tr("&Scale To Screen"));
   action->setIconSet(icon);
   action->setStatusTip(tr("Scale chart to current screen data (Ctrl+5)"));
+  action->setToolTip(tr("Scale chart to current screen data (Ctrl+5)"));
   action->setToggleAction(TRUE);
   action->setOn(s.toInt());
   connect(action, SIGNAL(toggled(bool)), this, SIGNAL(signalScale(bool)));
@@ -121,6 +129,7 @@ MainMenubar::MainMenubar (QMainWindow *mw) : QMenuBar (mw, "mainMenubar")
   action->setMenuText(tr("Side Pa&nel"));
   action->setIconSet(icon);
   action->setStatusTip(tr("Toggle the side panel area from view (Ctrl+7)"));
+  action->setToolTip(tr("Toggle the side panel area from view (Ctrl+7)"));
   action->setToggleAction(TRUE);
   connect(action, SIGNAL(toggled(bool)), mw, SLOT(slotHideNav(bool)));
   actions.replace(SidePanel, action);
@@ -131,6 +140,7 @@ MainMenubar::MainMenubar (QMainWindow *mw) : QMenuBar (mw, "mainMenubar")
   action->setMenuText(tr("&Log Scaling"));
   action->setIconSet(icon);
   action->setStatusTip(tr("Toggle log scaling (Ctrl+6)"));
+  action->setToolTip(tr("Toggle log scaling (Ctrl+6)"));
   action->setToggleAction(TRUE);
   action->setOn(s.toInt());
   connect(action, SIGNAL(toggled(bool)), this, SIGNAL(signalLog(bool)));
@@ -141,6 +151,7 @@ MainMenubar::MainMenubar (QMainWindow *mw) : QMenuBar (mw, "mainMenubar")
   action->setMenuText(tr("Hide &Main Plot"));
   action->setIconSet(icon);
   action->setStatusTip(tr("Hide the main plot (Ctrl+8)"));
+  action->setToolTip(tr("Hide the main plot (Ctrl+8)"));
   action->setToggleAction(TRUE);
   connect(action, SIGNAL(toggled(bool)), this, SIGNAL(signalHideMain(bool)));
   actions.replace(HideMain, action);
@@ -150,6 +161,7 @@ MainMenubar::MainMenubar (QMainWindow *mw) : QMenuBar (mw, "mainMenubar")
   action->setMenuText(tr("Toggle Indicator Date"));
   action->setIconSet(icon);
   action->setStatusTip(tr("Toggle indicator date (Ctrl+9)"));
+  action->setToolTip(tr("Toggle indicator date (Ctrl+9)"));
   action->setToggleAction(TRUE);
   connect(action, SIGNAL(toggled(bool)), this, SIGNAL(signalPlotDate(bool)));
   actions.replace(IndicatorDate, action);
@@ -160,6 +172,7 @@ MainMenubar::MainMenubar (QMainWindow *mw) : QMenuBar (mw, "mainMenubar")
   action->setMenuText(tr("Toggle Dra&w Mode"));
   action->setIconSet(icon);
   action->setStatusTip(tr("Toggle drawing mode (Ctrl+0)"));
+  action->setToolTip(tr("Toggle drawing mode (Ctrl+0)"));
   action->setToggleAction(TRUE);
   action->setOn(s.toInt());
   connect(action, SIGNAL(toggled(bool)), this, SIGNAL(signalDraw(bool)));
@@ -171,6 +184,7 @@ MainMenubar::MainMenubar (QMainWindow *mw) : QMenuBar (mw, "mainMenubar")
   action->setIconSet(icon);
   action->setAccel(ALT+Key_3);
   action->setStatusTip(tr("Display Help Dialog (Alt+3)"));
+  action->setToolTip(tr("Display Help Dialog (Alt+3)"));
   connect(action, SIGNAL(activated()), mw, SLOT(slotHelp()));
   actions.replace(Help, action);
   

@@ -19,7 +19,7 @@
  *  USA.
  */
 
-#include "Plot.h"
+#include "IndicatorPlot.h"
 #include "DbPlugin.h"
 #include "PrefDialog.h"
 #include <qpainter.h>
@@ -35,45 +35,35 @@
 #include <qinputdialog.h>
 #include <qdir.h>
 
-#include "indicator.xpm"
-#include "edit.xpm"
-#include "delete.xpm"
-#include "co.xpm"
-#include "print.xpm"
-#include "crosshair.xpm"
+#include "../pics/indicator.xpm"
+#include "../pics/edit.xpm"
+#include "../pics/delete.xpm"
+#include "../pics/co.xpm"
+#include "../pics/print.xpm"
+#include "../pics/crosshair.xpm"
 
-#define SCALE_WIDTH 60
-
-Plot::Plot (QWidget *w) : QWidget(w)
+IndicatorPlot::IndicatorPlot (QWidget *w) : QWidget(w)
 {
   buffer = new QPixmap;
-  scaler = new Scaler;
+  scaler = 0;
   chartPlugin = 0;
   coPlugin = 0;
   setBackgroundMode(NoBackground);
-  scaleWidth = SCALE_WIDTH;
-  dateHeight = DATE_HEIGHT;
-  _height = 0;
-  _width = 0;
   startX = 2;
   backgroundColor.setNamedColor("black");
   borderColor.setNamedColor("white");
   gridColor.setNamedColor("#626262");
   pixelspace = 0;
   minPixelspace = 0;
-  dateFlag = FALSE;
   gridFlag = TRUE;
   interval = BarData::DailyBar;
   mainFlag = FALSE;
   scaleToScreen = FALSE;
   logScale = FALSE;
   startIndex = 0;
-  mainHigh = -99999999;
-  mainLow = 99999999;
   chartType = "None";
   mouseFlag = None;
   hideMainPlot = FALSE;
-  tabFlag = TRUE;
   crossHairFlag = FALSE;
   chartMenu = 0;
   drawMode = FALSE;
@@ -98,18 +88,15 @@ Plot::Plot (QWidget *w) : QWidget(w)
   coPlugins.setAutoDelete(FALSE);
 }
 
-Plot::~Plot ()
+IndicatorPlot::~IndicatorPlot ()
 {
   delete buffer;
-  delete scaler;
   delete chartMenu;
   config.closePlugins();
 }
 
-void Plot::clear ()
+void IndicatorPlot::clear ()
 {
-  mainHigh = -99999999;
-  mainLow = 99999999;
   indicators.clear();
   data = 0;
   mouseFlag = None;
@@ -127,19 +114,13 @@ void Plot::clear ()
     chartPlugin->savePixelspace();
 }
 
-void Plot::setData (BarData *l)
+void IndicatorPlot::setData (BarData *l)
 {
   if (! l->count())
     return;
 
   data = l;
   
-  if (mainFlag)
-  {
-    mainHigh = data->getMax();
-    mainLow = data->getMin();
-  }
-
   createXGrid();
   
   QDictIterator<COPlugin> it(coPlugins);
@@ -150,7 +131,7 @@ void Plot::setData (BarData *l)
   }
 }
 
-int Plot::setChartType (QString d)
+int IndicatorPlot::setChartType (QString d)
 {
   if (chartType.length())
   {
@@ -162,7 +143,7 @@ int Plot::setChartType (QString d)
   chartPlugin = config.getChartPlugin(d);
   if (! chartPlugin)
   {
-    qDebug("Plot::setChartType:unable to open %s chart plugin", d.latin1());
+    qDebug("IndicatorPlot::setChartType:unable to open %s chart plugin", d.latin1());
     return TRUE;
   }
   
@@ -174,49 +155,48 @@ int Plot::setChartType (QString d)
   minPixelspace = chartPlugin->getMinPixelspace();
   pixelspace = chartPlugin->getPixelspace();
   startX = chartPlugin->getStartX();
-  dateFlag = TRUE;  
   
   QObject::connect(chartPlugin, SIGNAL(draw()), this, SLOT(draw()));
   
   return FALSE;
 }
 
-void Plot::setChartInput ()
+void IndicatorPlot::setChartInput ()
 {
   chartPlugin->setChartInput(data, scaler, buffer);
 }
 
-void Plot::setMainFlag (bool d)
+void IndicatorPlot::setMainFlag (bool d)
 {
   mainFlag = d;
 }
 
-void Plot::setScaleToScreen (bool d)
+void IndicatorPlot::setScaleToScreen (bool d)
 {
   scaleToScreen = d;
 }
 
-void Plot::setLogScale (bool d)
+void IndicatorPlot::setLogScale (bool d)
 {
   logScale = d;
 }
 
-void Plot::setHideMainPlot (bool d)
+void IndicatorPlot::setHideMainPlot (bool d)
 {
   hideMainPlot = d;
 }
 
-bool Plot::getHideMainPlot ()
+bool IndicatorPlot::getHideMainPlot ()
 {
   return hideMainPlot;
 }
 
-void Plot::setChartPath (QString d)
+void IndicatorPlot::setChartPath (QString d)
 {
   chartPath = d;
 }
 
-void Plot::setDrawMode (bool d)
+void IndicatorPlot::setDrawMode (bool d)
 {
   drawMode = d;
   
@@ -232,17 +212,17 @@ void Plot::setDrawMode (bool d)
   }
 }
 
-bool Plot::getCrosshairsStatus ()
+bool IndicatorPlot::getCrosshairsStatus ()
 {
   return crosshairs;
 }
 
-void Plot::setInfoFlag (bool d)
+void IndicatorPlot::setInfoFlag (bool d)
 {
   infoFlag = d;
 }
 
-void Plot::draw ()
+void IndicatorPlot::draw ()
 {
   buffer->fill(backgroundColor);
 
@@ -268,10 +248,6 @@ void Plot::draw ()
       }
     }
     
-    setHeight();
-
-    setWidth();
-
     setScale();
 
     drawXGrid();
@@ -304,23 +280,20 @@ void Plot::draw ()
     
     drawCrossHair();
 
-    drawScale();
-
     drawInfo();
-
-    if (dateFlag)
-      drawDate();
   }
 
   paintEvent(0);
+  
+  emit signalDraw();
 }
 
-void Plot::drawRefresh ()
+void IndicatorPlot::drawRefresh ()
 {
   paintEvent(0);
 }
 
-void Plot::drawLines ()
+void IndicatorPlot::drawLines ()
 {
   QDictIterator<Indicator> it(indicators);
   for (; it.current(); ++it)
@@ -339,20 +312,18 @@ void Plot::drawLines ()
   }
 }
 
-void Plot::paintEvent (QPaintEvent *)
+void IndicatorPlot::paintEvent (QPaintEvent *)
 {
   bitBlt(this, 0, 0, buffer);
 }
 
-void Plot::resizeEvent (QResizeEvent *event)
+void IndicatorPlot::resizeEvent (QResizeEvent *event)
 {
   buffer->resize(event->size());
-  setHeight();
-  setWidth();
   draw();
 }
 
-void Plot::mousePressEvent (QMouseEvent *event)
+void IndicatorPlot::mousePressEvent (QMouseEvent *event)
 {
   if (mainFlag)
   {
@@ -364,9 +335,6 @@ void Plot::mousePressEvent (QMouseEvent *event)
     if (! indicators.count() || ! data)
       return;
   }
-
-  if (event->x() > buffer->width() - SCALE_WIDTH)
-    return;
 
   if (! drawMode)
   {
@@ -441,7 +409,7 @@ void Plot::mousePressEvent (QMouseEvent *event)
   }
 }
 
-void Plot::contextMenuEvent (QContextMenuEvent *)
+void IndicatorPlot::contextMenuEvent (QContextMenuEvent *)
 {
   if (drawMode && mouseFlag == COSelected && coPlugin)
     coPlugin->showMenu();
@@ -449,7 +417,7 @@ void Plot::contextMenuEvent (QContextMenuEvent *)
     showPopupMenu();
 }
 
-void Plot::mouseMoveEvent (QMouseEvent *event)
+void IndicatorPlot::mouseMoveEvent (QMouseEvent *event)
 {
   if (mainFlag)
   {
@@ -462,9 +430,6 @@ void Plot::mouseMoveEvent (QMouseEvent *event)
       return;
   }
 
-  if (event->x() > buffer->width() - SCALE_WIDTH)
-    return;
-   
   // ignore moves above the top of the chart - we get draw errors if we don't
   if (event->y() <= 0)
     return;
@@ -521,7 +486,7 @@ void Plot::mouseMoveEvent (QMouseEvent *event)
     delete r;
 }
 
-void Plot::mouseDoubleClickEvent (QMouseEvent *event)
+void IndicatorPlot::mouseDoubleClickEvent (QMouseEvent *)
 {
   if (mainFlag)
   {
@@ -534,16 +499,13 @@ void Plot::mouseDoubleClickEvent (QMouseEvent *event)
       return;
   }
 
-  if (event->x() > buffer->width() - SCALE_WIDTH)
-    return;
-
   if (mouseFlag != COSelected)
     return;
     
   coPlugin->prefDialog();
 }
 
-void Plot::keyPressEvent (QKeyEvent *key)
+void IndicatorPlot::keyPressEvent (QKeyEvent *key)
 {
   // if chart object selected then pass keyevent to it
   if (mouseFlag == COSelected)
@@ -573,40 +535,32 @@ void Plot::keyPressEvent (QKeyEvent *key)
   }
 }
 
-void Plot::setScaleWidth (int d)
-{
-  if (d > 999 || d < SCALE_WIDTH)
-    return;
-  else
-    scaleWidth = d;
-}
-
-void Plot::setBackgroundColor (QColor d)
+void IndicatorPlot::setBackgroundColor (QColor d)
 {
   backgroundColor = d;
 }
 
-void Plot::setBorderColor (QColor d)
+void IndicatorPlot::setBorderColor (QColor d)
 {
   borderColor = d;
 }
 
-void Plot::setGridColor (QColor d)
+void IndicatorPlot::setGridColor (QColor d)
 {
   gridColor = d;
 }
 
-void Plot::setPlotFont (QFont d)
+void IndicatorPlot::setPlotFont (QFont d)
 {
   plotFont = d;
 }
 
-void Plot::setGridFlag (bool d)
+void IndicatorPlot::setGridFlag (bool d)
 {
   gridFlag = d;
 }
 
-void Plot::setPixelspace (int d)
+void IndicatorPlot::setPixelspace (int d)
 {
   pixelspace = d;
 
@@ -614,359 +568,17 @@ void Plot::setPixelspace (int d)
     chartPlugin->setPixelspace(d);
 }
 
-void Plot::setIndex (int d)
+void IndicatorPlot::setIndex (int d)
 {
   startIndex = d;
 }
 
-void Plot::setTabFlag (bool d)
-{
-  tabFlag = d;
-}
-
-bool Plot::getTabFlag ()
-{
-  return tabFlag;
-}
-
-bool Plot::getMainFlag ()
+bool IndicatorPlot::getMainFlag ()
 {
   return mainFlag;
 }
 
-//***********************************************************************
-//******************** DATE FUNCTIONS ***********************************
-//***********************************************************************
-
-void Plot::setInterval (BarData::BarCompression d)
-{
-  interval = d;
-}
-
-void Plot::setDateHeight (int d)
-{
-  if (d > 999 || d < DATE_HEIGHT)
-    return ;
-  else
-    dateHeight = d;
-}
-
-void Plot::setDateFlag (bool d)
-{
-  dateFlag = d;
-}
-
-void Plot::drawDate ()
-{
-  QPainter painter;
-  painter.begin(buffer);
-  painter.setPen(borderColor);
-  
-  // clear date area
-  painter.fillRect(0, buffer->height() - dateHeight, buffer->width() - scaleWidth, dateHeight, backgroundColor);
-
-  // draw the seperator line
-  painter.drawLine (0, buffer->height() - dateHeight, buffer->width() - scaleWidth, buffer->height() - dateHeight);
-
-  painter.end();
-  
-  if (data->getBarType() == BarData::Tick)
-  { 
-    switch (interval)
-    {
-      case BarData::Minute5:
-      case BarData::Minute15:
-        draw15Date();
-        break;
-      case BarData::Minute30:
-      case BarData::Minute60:
-        drawHourlyDate();
-        break;
-      case BarData::WeeklyBar:
-        drawWeeklyDate();
-        break;
-      case BarData::MonthlyBar:
-        drawMonthlyDate();
-        break;
-      default:
-        drawDailyDate();
-        break;
-    }
-  }
-  else
-  {
-    switch (interval)
-    {
-      case BarData::WeeklyBar:
-        drawWeeklyDate();
-        break;
-      case BarData::MonthlyBar:
-        drawMonthlyDate();
-        break;
-      default:
-        drawDailyDate();
-        break;
-    }
-  }
-}
-
-void Plot::draw15Date ()
-{
-  QPainter painter;
-  painter.begin(buffer);
-  painter.setPen(borderColor);
-  painter.setFont(plotFont);
-
-  QFontMetrics fm = painter.fontMetrics();
-  
-  int x = startX;
-  int loop = startIndex;
-
-  BarDate nextHour = data->getDate(loop);
-  BarDate oldDay = data->getDate(loop);
-  nextHour.setTime(nextHour.getHour(), 0, 0);
-  if ((nextHour.getHour() % 2) == 0)
-    nextHour.addSecs(7200);
-  else
-    nextHour.addSecs(3600);
-
-  while(x <= _width && loop < (int) data->count())
-  {
-    BarDate date = data->getDate(loop);
-    
-    if (date.getDate().day() != oldDay.getDate().day())
-    {
-      painter.drawLine (x, _height + 1, x, _height + dateHeight - fm.height() - 1);
-      QString s = date.getDate().toString("d");
-      painter.drawText (x - (fm.width(s, -1) / 2), buffer->height() - 2, s, -1);
-      oldDay = date;
-    }
-    else
-    {
-      // every 2 hours make a small tick
-      if (date.getDateValue() >= nextHour.getDateValue())
-      {
-        painter.drawLine (x, _height + 1, x, _height + 4);
-
-        QString s;
-        if (date.getHour() >= 12)
-	{
-	  if (date.getHour() == 12)
-            s = QString::number(date.getHour());
-	  else
-            s = QString::number(date.getHour() - 12);	
-	  s.append("p");
-	}
-	else
-	{
-          s = QString::number(date.getHour());	
-	  s.append("a");
-	}
-        painter.drawText (x - (fm.width(s, -1) / 2),
-		          buffer->height() - dateHeight + fm.height() + 1,
-			  s,
-			  -1);
-      }
-    }
-    
-    if (date.getDateValue() >= nextHour.getDateValue())
-    {
-      nextHour = date;
-      nextHour.setTime(date.getHour(), 0, 0);
-      if ((date.getHour() % 2) == 0)
-        nextHour.addSecs(7200);
-      else
-        nextHour.addSecs(3600);
-    }
-
-    x = x + pixelspace;
-    loop++;
-  }
-
-  painter.end();
-}
-
-void Plot::drawHourlyDate ()
-{
-  QPainter painter;
-  painter.begin(buffer);
-  painter.setPen(borderColor);
-  painter.setFont(plotFont);
-
-  QFontMetrics fm = painter.fontMetrics();
-  
-  int x = startX;
-  int loop = startIndex;
-
-  QDate oldDay = data->getDate(loop).getDate();
-
-  while(x <= _width && loop < (int) data->count())
-  {
-    QDate date = data->getDate(loop).getDate();
-
-    if (date.day() != oldDay.day())
-    {
-      oldDay = date;
-      painter.drawLine (x, _height + 1, x, _height + (dateHeight / 3));
-      QString s = date.toString("d");
-      painter.drawText (x - (fm.width(s, -1) / 2),
-	  		_height + (dateHeight / 3) + fm.height() + 2,
-			s,
-			-1);
-    }
-
-    x = x + pixelspace;
-    loop++;
-  }
-
-  painter.end();
-}
-
-void Plot::drawDailyDate ()
-{
-  QPainter painter;
-  painter.begin(buffer);
-  painter.setPen(borderColor);
-  painter.setFont(plotFont);
-
-  QFontMetrics fm = painter.fontMetrics();
-  
-  int x = startX;
-  int loop = startIndex;
-
-  QDate oldDate = data->getDate(loop).getDate();
-  QDate oldWeek = oldDate;
-  oldWeek = oldWeek.addDays(7 - oldWeek.dayOfWeek());
-
-  while(x <= _width && loop < (int) data->count())
-  {
-    QDate date = data->getDate(loop).getDate();
-
-    if (date.month() != oldDate.month())
-    {
-      oldDate = date;
-
-      painter.drawLine (x, _height + 1, x, _height + dateHeight - fm.height() - 1);
-
-      QString s = date.toString("MMM'yy");
-      painter.drawText (x - (fm.width(s, -1) / 2), buffer->height() - 2, s, -1);
-
-      oldWeek = date;
-      oldWeek = oldWeek.addDays(7 - oldWeek.dayOfWeek());
-    }
-    else
-    {
-      // if start of new week make a tick
-      if (date > oldWeek)
-      {
-        painter.drawLine (x, _height + 1, x, _height + 4);
-
-        QString s = date.toString("d");
-        painter.drawText (x - (fm.width(s, -1) / 2),
-			  buffer->height() - dateHeight + fm.height() + 1,
-			  s,
-			  -1);
-
-  	oldWeek = date;
-        oldWeek = oldWeek.addDays(7 - oldWeek.dayOfWeek());
-      }
-    }
-
-    x = x + pixelspace;
-    loop++;
-  }
-
-  painter.end();
-}
-
-void Plot::drawWeeklyDate ()
-{
-  QPainter painter;
-  painter.begin(buffer);
-  painter.setPen(borderColor);
-  painter.setFont(plotFont);
-
-  QFontMetrics fm = painter.fontMetrics();
-  
-  int x = startX;
-  int loop = startIndex;
-
-  QDate oldMonth = data->getDate(loop).getDate();
-
-  while(x <= _width && loop < (int) data->count())
-  {
-    QDate date = data->getDate(loop).getDate();
-
-    if (date.month() != oldMonth.month())
-    {
-      oldMonth = date;
-
-      painter.drawLine (x, _height + 1, x, _height + (dateHeight / 3));
-
-      QString s;
-      s = date.toString("MMM'yy");
-
-      if (fm.width(s, -1) > 4 * pixelspace)
-      {
-        if (date.month() == 1)
-          s = date.toString("yy");
-	else
-	{
-          s = date.toString("MMM");
-          s.truncate(1);
-	}
-      }
-
-      painter.drawText (x - (fm.width(s, -1) / 2),
-  		        _height + (dateHeight / 3) + fm.height() + 2,
-			s,
-			-1);
-    }
-
-    x = x + pixelspace;
-    loop++;
-  }
-  
-  painter.end();
-}
-
-void Plot::drawMonthlyDate ()
-{
-  QPainter painter;
-  painter.begin(buffer);
-  painter.setPen(borderColor);
-  painter.setFont(plotFont);
-
-  QFontMetrics fm = painter.fontMetrics();
-  
-  int x = startX;
-  int loop = startIndex;
-
-  QDate oldYear = data->getDate(loop).getDate();
-
-  while(x <= _width && loop < (int) data->count())
-  {
-    QDate date = data->getDate(loop).getDate();
-
-    if (date.year() != oldYear.year())
-    {
-      oldYear = date;
-      painter.drawLine (x, _height + 1, x, _height + (dateHeight / 3));
-      QString s = date.toString("yyyy");
-      painter.drawText (x - (fm.width(s, -1) / 2),
-	  		_height + (dateHeight / 3) + fm.height() + 2,
-			s,
-			-1);
-    }
-
-    x = x + pixelspace;
-    loop++;
-  }
-
-  painter.end();
-}
-
-void Plot::drawXGrid ()
+void IndicatorPlot::drawXGrid ()
 {
   if (gridFlag == FALSE)
     return;
@@ -981,14 +593,14 @@ void Plot::drawXGrid ()
     if (xGrid[loop] >= startIndex)
     {
       int x = startX + (xGrid[loop] * pixelspace) - (startIndex * pixelspace);
-      painter.drawLine (x, 0, x, _height);
+      painter.drawLine (x, 0, x, buffer->height());
     }
   }
 
   painter.end();
 }
 
-void Plot::createXGrid ()
+void IndicatorPlot::createXGrid ()
 {
   xGrid.resize(0);
   int loop = 0;
@@ -1061,7 +673,7 @@ void Plot::createXGrid ()
   }
 }
 
-void Plot::addIndicator (QString d, Indicator *i)
+void IndicatorPlot::addIndicator (QString d, Indicator *i)
 {
   indicators.replace(d, i);
   
@@ -1074,110 +686,17 @@ void Plot::addIndicator (QString d, Indicator *i)
   }
 }
 
-Indicator * Plot::getIndicator (QString d)
+Indicator * IndicatorPlot::getIndicator (QString d)
 {
   return indicators[d];
 }
 
-bool Plot::deleteIndicator (QString d)
+bool IndicatorPlot::deleteIndicator (QString d)
 {
   return indicators.remove(d);
 }
 
-void Plot::setHeight ()
-{
-  _height = buffer->height();
-  if (dateFlag)
-    _height = _height - dateHeight - 1;
-}
-
-void Plot::setWidth ()
-{
-  _width = buffer->width() - scaleWidth - startX;
-}
-
-void Plot::drawScale ()
-{
-  QPainter painter;
-  painter.begin(buffer);
-  painter.setFont(plotFont);
-
-  QFontMetrics fm = painter.fontMetrics();
-
-  painter.fillRect(buffer->width() - scaleWidth, 0, scaleWidth, buffer->height(), backgroundColor);
-
-  int x = buffer->width() - scaleWidth;
-
-  int loop;
-  for (loop = 0; loop < (int) scaleArray.size(); loop++)
-  {
-    int y = scaler->convertToY(scaleArray[loop]);
-    painter.setPen(QPen(borderColor, 1, QPen::SolidLine));
-    painter.drawLine (x, y, x + 4, y);
-
-    // draw the text
-    QString s = strip(scaleArray[loop], 4);
-    
-    // abbreviate too many (>=3) trailing zeroes in large numbers on y-axes
-    if (! mainFlag)
-    {
-      bool flag = FALSE;
-      
-      if (s.toDouble() < 0)
-      {
-        flag = TRUE;
-	s.remove(0, 1);  
-      }
-      
-      if (s.toDouble() >= 1000000000)
-      {
-        s = strip(s.toDouble() / 1000000000, 4);
-	s.append("b");
-      }
-      else
-      {
-        if (s.toDouble() >= 1000000)
-        {
-          s = strip(s.toDouble() / 1000000, 4);
-	  s.append("m");
-        }
-        else
-        {
-          if (s.toDouble() >= 1000)
-          {
-            s = strip(s.toDouble() / 1000, 4);
-	    s.append("k");
-	  }
-	}
-      }
-      
-      if (flag)
-        s.prepend("-");
-    }
-    
-    painter.drawText(x + 7, y + (fm.height() / 2), s);
-  }
-
-  painter.setPen(QPen(borderColor, 1, QPen::SolidLine));
-  painter.drawLine (x, 0, x, _height);
-  
-  // draw the last value pointer on the scale of main plot
-  if (mainFlag && ! hideMainPlot)
-  {
-    int y = scaler->convertToY(data->getClose(data->count() - 1));
-    
-    QPointArray array;
-    array.setPoints(3, x + 2, y,
-                    x + 8, y - 4,
-	            x + 8, y + 4);
-    painter.setBrush(borderColor);
-    painter.drawPolygon(array, TRUE, 0, -1);
-  }
-
-  painter.end();
-}
-
-void Plot::drawYGrid ()
+void IndicatorPlot::drawYGrid ()
 {
   if (! gridFlag)
     return;
@@ -1185,18 +704,20 @@ void Plot::drawYGrid ()
   QPainter painter;
   painter.begin(buffer);
   painter.setPen(QPen(gridColor, 1, QPen::DotLine));
+  
+  QMemArray<double> scaleArray = scaler->getScaleArray();
 
   int loop;
   for (loop = 0; loop < (int) scaleArray.size(); loop++)
   {
     int y = scaler->convertToY(scaleArray[loop]);
-    painter.drawLine (startX, y, _width, y);
+    painter.drawLine (startX, y, buffer->width(), y);
   }
 
   painter.end();
 }
 
-void Plot::drawInfo ()
+void IndicatorPlot::drawInfo ()
 {
   QPainter painter;
   painter.begin(buffer);
@@ -1281,7 +802,7 @@ void Plot::drawInfo ()
   painter.end();
 }
 
-void Plot::crossHair (int x, int y, bool f)
+void IndicatorPlot::crossHair (int x, int y, bool f)
 {
   crossHairFlag = TRUE;
   getXY(x, y);
@@ -1291,7 +812,7 @@ void Plot::crossHair (int x, int y, bool f)
     draw();
 }
 
-void Plot::drawCrossHair ()
+void IndicatorPlot::drawCrossHair ()
 {
   if (! crosshairs)
     return;
@@ -1305,12 +826,12 @@ void Plot::drawCrossHair ()
   QPainter painter;
   painter.begin(buffer);
   painter.setPen(QPen(borderColor, 1, QPen::DotLine));
-  painter.drawLine (0, y, buffer->width() - SCALE_WIDTH, y);
+  painter.drawLine (0, y, buffer->width(), y);
   painter.drawLine (x, 0, x, buffer->height());
   painter.end();
 }
 
-void Plot::updateStatusBar (int x, int y)
+void IndicatorPlot::updateStatusBar (int x, int y)
 {
   int i = convertXToDataIndex(x);
   QString s = data->getDate(i).getDateTimeString(TRUE);
@@ -1319,14 +840,14 @@ void Plot::updateStatusBar (int x, int y)
   emit statusMessage(s);
 }
 
-void Plot::getXY (int x, int y)
+void IndicatorPlot::getXY (int x, int y)
 {
   int i = convertXToDataIndex(x);
   x1 = data->getDate(i);
   y1 = scaler->convertToVal(y);
 }
 
-void Plot::setScale ()
+void IndicatorPlot::setScale ()
 {
   double scaleHigh = -99999999;
   double scaleLow = 99999999;
@@ -1335,14 +856,14 @@ void Plot::setScale ()
   {
     if (! scaleToScreen)
     {
-      scaleHigh = mainHigh;
-      scaleLow = mainLow;
+      scaleHigh = data->getMax();
+      scaleLow = data->getMin();
     }
     else
     {
       int x = startX;
       int loop = startIndex;
-      while ((x < _width) && (loop < (int) data->count()))
+      while ((x < buffer->width()) && (loop < (int) data->count()))
       {
 	double t = data->getHigh(loop);
         if (t > scaleHigh)
@@ -1412,7 +933,7 @@ void Plot::setScale ()
         
 	int x = startX;
         int loop2 = line->getSize() - data->count() + startIndex;
-        while ((x < _width) && (loop2 < (int) line->getSize()))
+        while ((x < buffer->width()) && (loop2 < (int) line->getSize()))
         {
           if (loop2 > -1)
           {
@@ -1460,33 +981,20 @@ void Plot::setScale ()
     logRange = logScaleHigh - logScaleLow;
   }
 
-  scaler->set(_height,
-  	     scaleHigh,
-	     scaleLow,
-	     logScaleHigh,
-	     logRange,
-	     dateFlag,
-	     logScale);
-
-  scaleArray = scaler->getScaleArray();
+  scaler->set(buffer->height(), scaleHigh, scaleLow, logScaleHigh, logRange, logScale);
 }
 
-int Plot::getWidth ()
-{
-  return _width;
-}
-
-int Plot::getPixelspace ()
+int IndicatorPlot::getPixelspace ()
 {
   return pixelspace;
 }
 
-int Plot::getMinPixelspace ()
+int IndicatorPlot::getMinPixelspace ()
 {
   return minPixelspace;
 }
 
-int Plot::getXFromDate (BarDate d)
+int IndicatorPlot::getXFromDate (BarDate d)
 {
   int x2 = data->getX(d);
   if (x2 == -1)
@@ -1497,7 +1005,7 @@ int Plot::getXFromDate (BarDate d)
   return x;
 }
 
-QString Plot::strip (double d, int p)
+QString IndicatorPlot::strip (double d, int p)
 {
   QString s = QString::number(d, 'f', p);
 
@@ -1520,7 +1028,7 @@ QString Plot::strip (double d, int p)
   return s;
 }
 
-QStringList Plot::getIndicators ()
+QStringList IndicatorPlot::getIndicators ()
 {
   QStringList l;
 
@@ -1531,7 +1039,7 @@ QStringList Plot::getIndicators ()
   return l;
 }
 
-void Plot::printChart ()
+void IndicatorPlot::printChart ()
 {
   QPrinter printer;
   printer.setPageSize(QPrinter::Letter);
@@ -1569,7 +1077,7 @@ void Plot::printChart ()
   }
 }
 
-void Plot::showPopupMenu ()
+void IndicatorPlot::showPopupMenu ()
 {
   chartMenu->clear();
     
@@ -1613,7 +1121,7 @@ void Plot::showPopupMenu ()
   QDictIterator<Indicator> it(indicators);
   for(; it.current(); ++it)
   {
-    if (it.currentKey().compare("Main Plot"))
+    if (it.currentKey().compare("Main IndicatorPlot"))
     {
       int id = chartEditMenu->insertItem(QPixmap(indicator), it.currentKey(), this, SLOT(slotEditIndicator(int)));
       chartEditMenu->setItemParameter(id, id);
@@ -1623,7 +1131,7 @@ void Plot::showPopupMenu ()
   chartMenu->exec(QCursor::pos());
 }
 
-void Plot::toggleCrosshairs ()
+void IndicatorPlot::toggleCrosshairs ()
 {
   if (crosshairs == FALSE)
     crosshairs = TRUE;
@@ -1632,70 +1140,64 @@ void Plot::toggleCrosshairs ()
   emit signalCrosshairsStatus(crosshairs);  
 }
 
-void Plot::setCrosshairsStatus (bool status)
+void IndicatorPlot::setCrosshairsStatus (bool status)
 {
   crosshairs = status;
   crossHairFlag = FALSE;
   draw();
 }
 
-void Plot::slotEditIndicator (int id)
+void IndicatorPlot::slotEditIndicator (int id)
 {
   QString s = chartEditMenu->text(id);
   emit signalEditIndicator(s);
 }
 
-void Plot::slotNewIndicator ()
+void IndicatorPlot::slotNewIndicator ()
 {
   emit signalNewIndicator();
 }
 
-void Plot::slotEditChartPrefs ()
+void IndicatorPlot::slotEditChartPrefs ()
 {
   chartPlugin->prefDialog(this);
 }
 
-void Plot::slotMessage (QString d)
+void IndicatorPlot::slotMessage (QString d)
 {
   emit statusMessage(d);
 }
 
-void Plot::slotSliderChanged (int v)
+void IndicatorPlot::slotSliderChanged (int v)
 {
   setIndex(v);
   draw();
 }
 
-void Plot::slotGridChanged (bool d)
+void IndicatorPlot::slotGridChanged (bool d)
 {
   setGridFlag(d);
   draw();
 }
 
-void Plot::slotScaleToScreenChanged (bool d)
+void IndicatorPlot::slotScaleToScreenChanged (bool d)
 {
   setScaleToScreen(d);
   draw();
 }
 
-void Plot::slotDrawModeChanged (bool d)
+void IndicatorPlot::slotDrawModeChanged (bool d)
 {
   setDrawMode(d);
 }
 
-void Plot::slotDateFlagChanged (bool d)
-{
-  setDateFlag(d);
-  draw();
-}
-
-void Plot::slotLogScaleChanged (bool d)
+void IndicatorPlot::slotLogScaleChanged (bool d)
 {
   setLogScale(d);
   draw();
 }
 
-void Plot::slotHideMainChanged (bool d)
+void IndicatorPlot::slotHideMainChanged (bool d)
 {
   setHideMainPlot(d);
   draw();
@@ -1705,7 +1207,7 @@ void Plot::slotHideMainChanged (bool d)
 //******************** chart object functions *****************************
 //*************************************************************************
 
-void Plot::slotNewChartObject (int id)
+void IndicatorPlot::slotNewChartObject (int id)
 {
   if (! chartPath.length())
     return;
@@ -1733,6 +1235,12 @@ void Plot::slotNewChartObject (int id)
   }
   
   QStringList l;
+  QDictIterator<COPlugin> it(coPlugins);
+  for(; it.current(); ++it)
+    it.current()->getNameList(l);
+  
+/*  
+  QStringList l;
   QString plugin = config.parseDbPlugin(chartPath);
   DbPlugin *db = config.getDbPlugin(plugin);
   if (! db)
@@ -1742,8 +1250,9 @@ void Plot::slotNewChartObject (int id)
   }
   
   db->openChart(chartPath);
-  l = db->getChartObjectsList();
+  db->getChartObjectsList(l);
   config.closePlugin(plugin);
+*/  
   
   int loop = 0;
   QString name;
@@ -1770,47 +1279,47 @@ void Plot::slotNewChartObject (int id)
   mouseFlag = ClickWait;
 }
 
-void Plot::addChartObject (Setting *set)
+void IndicatorPlot::addChartObject (Setting &set)
 {
   // routine to convert old chart objects to plugin format
   // remove later when users have updated
-  QString s = set->getData("Plugin");
+  QString s = set.getData("Plugin");
   if (! s.length())
   {
-    s = set->getData("ObjectType");
+    s = set.getData("ObjectType");
     
     switch (s.toInt())
     {
       case 0:
-        set->setData("Plugin", "VerticalLine");
+        set.setData("Plugin", "VerticalLine");
 	break;
       case 1:
-        set->setData("Plugin", "HorizontalLine");
+        set.setData("Plugin", "HorizontalLine");
 	break;
       case 2:
-        set->setData("Plugin", "TrendLine");
+        set.setData("Plugin", "TrendLine");
 	break;
       case 3:
-        set->setData("Plugin", "Text");
+        set.setData("Plugin", "Text");
 	break;
       case 4:
-        set->setData("Plugin", "BuyArrow");
+        set.setData("Plugin", "BuyArrow");
 	break;
       case 5:
-        set->setData("Plugin", "SellArrow");
+        set.setData("Plugin", "SellArrow");
 	break;
       case 6:
-        set->setData("Plugin", "FiboLine");
+        set.setData("Plugin", "FiboLine");
 	break;
       default:
 	break;
     }
   }
 
-  COPlugin *plug = coPlugins[set->getData("Plugin")];
+  COPlugin *plug = coPlugins[set.getData("Plugin")];
   if (! plug)
   {
-    plug = config.getCOPlugin(set->getData("Plugin"));
+    plug = config.getCOPlugin(set.getData("Plugin"));
     if (! plug)
       return;
       
@@ -1820,13 +1329,13 @@ void Plot::addChartObject (Setting *set)
     QObject::connect(plug, SIGNAL(signalDraw()), this, SLOT(draw()));
     QObject::connect(plug, SIGNAL(signalRefresh()), this, SLOT(drawRefresh()));
     QObject::connect(plug, SIGNAL(message(QString)), this, SLOT(slotMessage(QString)));
-    coPlugins.replace(set->getData("Plugin"), plug);
+    coPlugins.replace(set.getData("Plugin"), plug);
   }
   
   plug->addObject(set);
 }
 
-void Plot::drawObjects ()
+void IndicatorPlot::drawObjects ()
 {
   QDictIterator<COPlugin> it(coPlugins);
   for (; it.current(); ++it)
@@ -1836,7 +1345,7 @@ void Plot::drawObjects ()
   }
 }
 
-void Plot::slotDeleteAllChartObjects ()
+void IndicatorPlot::slotDeleteAllChartObjects ()
 {
   if (! chartPath.length())
     return;
@@ -1845,9 +1354,22 @@ void Plot::slotDeleteAllChartObjects ()
   if (! dir.exists(chartPath))
     return;
 
-  QStringList l = config.getPluginList(Config::COPluginPath);
+  QDictIterator<COPlugin> it(coPlugins);
+  QStringList l;
+  for(; it.current(); ++it)
+    l.append(it.currentKey());
+    
+  if (! l.count())
+  {
+    QMessageBox::information(this,
+                             tr("Qtstalker: Delete All Chart Objects"),
+			     tr("No chart objects to delete."));
+    return;
+  }
+    
+//  QStringList l = config.getPluginList(Config::COPluginPath);
+
   int loop;
-  
   PrefDialog *dialog = new PrefDialog;
   dialog->setCaption(tr("Delete All Chart Objects"));
   dialog->createPage (tr("Details"));
@@ -1881,14 +1403,16 @@ void Plot::slotDeleteAllChartObjects ()
     return;
   }
   db->openChart(chartPath);
-  
-  QPtrList<Setting> col = db->getChartObjects();
-  QPtrListIterator<Setting> coit(col);
-  for (; coit.current(); ++coit)
+
+  QStringList l3;  
+  db->getChartObjects(l3);
+  Setting set;
+  for (loop = 0; loop < (int) l3.count(); loop++)
   {
-    QString s = coit.current()->getData("Plugin");
+    set.parse(l3[loop]);
+    QString s = set.getData("Plugin");
     if (l2.findIndex(s) != -1)
-      db->deleteChartObject(coit.current()->getData("Name"));
+      db->deleteChartObject(set.getData("Name"));
   }
   
   config.closePlugin(plugin);
@@ -1904,7 +1428,7 @@ void Plot::slotDeleteAllChartObjects ()
   draw();
 }
 
-int Plot::convertXToDataIndex (int x)
+int IndicatorPlot::convertXToDataIndex (int x)
 {
   int i = (x / pixelspace) + startIndex;
   if (i >= (int) data->count())
@@ -1915,8 +1439,14 @@ int Plot::convertXToDataIndex (int x)
   return i;
 }
 
-void Plot::setCrosshairsFlag (bool d)
+void IndicatorPlot::setCrosshairsFlag (bool d)
 {
   crosshairs = d;
 }
+
+void IndicatorPlot::setScaler (Scaler *d)
+{
+  scaler = d;
+}
+
 

@@ -142,39 +142,24 @@ QString DbPlugin::getHelpFile ()
   return helpFile;
 }
 
-QStringList DbPlugin::getChartObjectsList ()
+void DbPlugin::getChartObjectsList (QStringList &d)
 {
   QStringList l = QStringList::split(",", getHeaderField(CO), FALSE);
-  QStringList l2;
   int loop;
   Setting ts;
   for (loop = 0; loop < (int) l.count(); loop++)
   {
     ts.parse(l[loop]);
-    l2.append(ts.getData("Name"));
+    d.append(ts.getData("Name"));
   }
-    
-  return l2;
 }
 
-QPtrList<Setting> DbPlugin::getChartObjects ()
+void DbPlugin::getChartObjects (QStringList &d)
 {
-  QPtrList<Setting> list;
-  list.setAutoDelete(TRUE);
-
-  QStringList l = QStringList::split(",", getHeaderField(CO), FALSE);
-  int loop;
-  for (loop = 0; loop < (int) l.count(); loop++)
-  {
-    Setting *set = new Setting;
-    set->parse(l[loop]);
-    list.append(set);
-  }  
-  
-  return list;
+  d = QStringList::split(",", getHeaderField(CO), FALSE);
 }
 
-void DbPlugin::setChartObject (QString d, Setting *set)
+void DbPlugin::setChartObject (QString d, Setting &set)
 {
   QStringList l = QStringList::split(",", getHeaderField(CO), FALSE);
   int loop;
@@ -185,7 +170,7 @@ void DbPlugin::setChartObject (QString d, Setting *set)
     ts.parse(l[loop]);
     if (! ts.getData("Name").compare(d))
     {
-      l[loop] = set->getString();
+      l[loop] = set.getString();
       flag = TRUE;
       break;
     }
@@ -193,7 +178,7 @@ void DbPlugin::setChartObject (QString d, Setting *set)
   
   if (! flag)
   {
-    l.append(set->getString());
+    l.append(set.getString());
     flag = TRUE;
   }
   

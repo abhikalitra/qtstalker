@@ -20,11 +20,11 @@
  */
 
 #include "CSVDialog.h"
-#include "../../../src/newchart.xpm"
-#include "../../../src/insert.xpm"
-#include "../../../src/edit.xpm"
-#include "../../../src/delete.xpm"
-#include "../../../src/filesave.xpm"
+#include "../../../pics/newchart.xpm"
+#include "../../../pics/insert.xpm"
+#include "../../../pics/edit.xpm"
+#include "../../../pics/delete.xpm"
+#include "../../../pics/filesave.xpm"
 #include "Setting.h"
 #include "HelpWindow.h"
 #include <qdir.h>

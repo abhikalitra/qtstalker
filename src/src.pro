@@ -8,7 +8,6 @@ QMAKE_CXXFLAGS += -rdynamic -ffast-math
 HEADERS += Qtstalker.h
 HEADERS += PortfolioDialog.h
 HEADERS += Quote.h
-HEADERS += Plot.h
 HEADERS += DataWindow.h
 HEADERS += Tester.h
 HEADERS += Navigator.h
@@ -26,10 +25,10 @@ HEADERS += MacroPage.h
 HEADERS += ChartToolbar.h
 HEADERS += MainMenubar.h
 
+
 SOURCES += Qtstalker.cpp
 SOURCES += PortfolioDialog.cpp
 SOURCES += Quote.cpp
-SOURCES += Plot.cpp
 SOURCES += DataWindow.cpp
 SOURCES += Tester.cpp
 SOURCES += Navigator.cpp
@@ -46,6 +45,7 @@ SOURCES += MacroPage.cpp
 #SOURCES += MacroDialog.cpp
 SOURCES += ChartToolbar.cpp
 SOURCES += MainMenubar.cpp
+
 
 TARGET = qtstalker
 

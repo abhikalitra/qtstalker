@@ -23,11 +23,11 @@
 #include "PortfolioDialog.h"
 #include "SymbolDialog.h"
 #include "HelpWindow.h"
-#include "help.xpm"
-#include "open.xpm"
-#include "newchart.xpm"
-#include "delete.xpm"
-#include "rename.xpm"
+#include "../pics/help.xpm"
+#include "../pics/open.xpm"
+#include "../pics/newchart.xpm"
+#include "../pics/delete.xpm"
+#include "../pics/rename.xpm"
 #include <qinputdialog.h>
 #include <qmessagebox.h>
 #include <qcursor.h>

@@ -54,9 +54,9 @@ class DbPlugin
     void setBarCompression (BarData::BarCompression);
     void setBarRange (int);
     QString getHelpFile ();
-    QStringList getChartObjectsList ();    
-    QPtrList<Setting> getChartObjects ();
-    void setChartObject (QString, Setting *);
+    void getChartObjectsList (QStringList &);    
+    void getChartObjects (QStringList &);
+    void setChartObject (QString, Setting &);
     void deleteChartObject (QString);
     void dump (QString, bool);
     Bar * getLastBar ();

@@ -25,9 +25,9 @@
 #include "PrefDialog.h"
 #include "DbPlugin.h"
 #include "HelpWindow.h"
-#include "newchart.xpm"
-#include "edit.xpm"
-#include "delete.xpm"
+#include "../pics/newchart.xpm"
+#include "../pics/edit.xpm"
+#include "../pics/delete.xpm"
 #include <qstringlist.h>
 #include <qmessagebox.h>
 #include <qdir.h>

@@ -21,9 +21,9 @@
 
 #include "YahooDialog.h"
 #include "DbPlugin.h"
-#include "../../../src/newchart.xpm"
-#include "../../../src/selectall.xpm"
-#include "../../../src/unselectall.xpm"
+#include "../../../pics/newchart.xpm"
+#include "../../../pics/selectall.xpm"
+#include "../../../pics/unselectall.xpm"
 #include "HelpWindow.h"
 #include "Config.h"
 #include <qinputdialog.h>

@@ -56,13 +56,14 @@ class COPlugin : public QObject
     virtual ~COPlugin ();
     virtual void draw (int, int, int);
     virtual void newObject (QString, QString);
-    virtual void addObject (Setting *);
+    virtual void addObject (Setting &);
     virtual void saveObjects (QString);
     virtual void clear ();
     virtual void keyEvent (QKeyEvent *);
     virtual double getHigh ();
     virtual double getLow ();
     virtual void showMenu ();
+    virtual void getNameList (QStringList &);
     
     void setData (BarData *);
     void setScaler (Scaler *);

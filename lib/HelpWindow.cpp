@@ -21,10 +21,10 @@
 
 #include "HelpWindow.h"
 #include "Config.h"
-#include "../src/next.xpm"
-#include "../src/home.xpm"
-#include "../src/previous.xpm"
-#include "../src/disable.xpm"
+#include "../pics/next.xpm"
+#include "../pics/home.xpm"
+#include "../pics/previous.xpm"
+#include "../pics/disable.xpm"
 #include <qlayout.h>
 #include <qdir.h>
 

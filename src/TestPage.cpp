@@ -21,12 +21,12 @@
 
 #include "TestPage.h"
 #include "HelpWindow.h"
-#include "help.xpm"
-#include "open.xpm"
-#include "newchart.xpm"
-#include "delete.xpm"
-#include "rename.xpm"
-#include "copy.xpm"
+#include "../pics/help.xpm"
+#include "../pics/open.xpm"
+#include "../pics/newchart.xpm"
+#include "../pics/delete.xpm"
+#include "../pics/rename.xpm"
+#include "../pics/copy.xpm"
 #include "SymbolDialog.h"
 #include <qinputdialog.h>
 #include <qmessagebox.h>

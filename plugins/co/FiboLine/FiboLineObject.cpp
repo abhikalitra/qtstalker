@@ -241,40 +241,38 @@ FiboLineObject::Status FiboLineObject::getStatus ()
   return status;
 }
 
-Setting * FiboLineObject::getSettings ()
+void FiboLineObject::getSettings (Setting &set)
 {
-  Setting *set = new Setting;
-  set->setData("Color", color.name());
-  set->setData("Plot", plot);
-  set->setData("Name", name);
-  set->setData("High", QString::number(high));
-  set->setData("Low", QString::number(low));
-  set->setData("Start Date", startDate.getDateTimeString(FALSE));
-  set->setData("End Date", endDate.getDateTimeString(FALSE));
-  set->setData("Line 1", QString::number(line1));
-  set->setData("Line 2", QString::number(line2));
-  set->setData("Line 3", QString::number(line3));
-  set->setData("Line 4", QString::number(line4));
-  set->setData("Line 5", QString::number(line5));
-  set->setData("Line 6", QString::number(line6));
-  set->setData("Plugin", "FiboLine");
-  return set;
+  set.setData("Color", color.name());
+  set.setData("Plot", plot);
+  set.setData("Name", name);
+  set.setData("High", QString::number(high));
+  set.setData("Low", QString::number(low));
+  set.setData("Start Date", startDate.getDateTimeString(FALSE));
+  set.setData("End Date", endDate.getDateTimeString(FALSE));
+  set.setData("Line 1", QString::number(line1));
+  set.setData("Line 2", QString::number(line2));
+  set.setData("Line 3", QString::number(line3));
+  set.setData("Line 4", QString::number(line4));
+  set.setData("Line 5", QString::number(line5));
+  set.setData("Line 6", QString::number(line6));
+  set.setData("Plugin", "FiboLine");
 }
 
-void FiboLineObject::setSettings (Setting *set)
+void FiboLineObject::setSettings (Setting &set)
 {
-  color.setNamedColor(set->getData("Color"));
-  plot = set->getData("Plot");
-  name = set->getData("Name");
-  high = set->getFloat("High");
-  low = set->getFloat("Low");
-  startDate.setDate(set->getData("Start Date"));
-  endDate.setDate(set->getData("End Date"));
-  line1 = set->getFloat("Line 1");
-  line2 = set->getFloat("Line 2");
-  line3 = set->getFloat("Line 3");
-  line4 = set->getFloat("Line 4");
-  line5 = set->getFloat("Line 5");
-  line6 = set->getFloat("Line 6");
+  color.setNamedColor(set.getData("Color"));
+  plot = set.getData("Plot");
+  name = set.getData("Name");
+  high = set.getFloat("High");
+  low = set.getFloat("Low");
+  startDate.setDate(set.getData("Start Date"));
+  endDate.setDate(set.getData("End Date"));
+  line1 = set.getFloat("Line 1");
+  line2 = set.getFloat("Line 2");
+  line3 = set.getFloat("Line 3");
+  line4 = set.getFloat("Line 4");
+  line5 = set.getFloat("Line 5");
+  line6 = set.getFloat("Line 6");
 }
 
