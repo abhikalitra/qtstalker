@@ -109,15 +109,13 @@ void QuoteDialog::getQuotes ()
   disableGUI();
 
   cancelDownloadButton->setEnabled(TRUE);
-  
-  QList<QListViewItem> l = list->getList();
 
+  QStringList l = settings->getKeyList();
   int loop;
   for (loop = 0; loop < (int) l.count(); loop++)
   {
-    item = l.at(loop);
-    plug->setData(item->text(0), item->text(1));
-    plug->setList(item->text(0), settings->getList(item->text(0)));
+    plug->setData(l[loop], settings->getData(l[loop]));
+    plug->setList(l[loop], settings->getList(l[loop]));
   }
 
   plug->update();

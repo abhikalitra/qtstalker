@@ -35,22 +35,27 @@
 #include <qtooltip.h>
 #include <qfontdialog.h>
 #include <qfont.h>
+#include <qpalette.h>
+#include <qvalidator.h>
 
 SettingView::SettingView (QWidget *w, QString dp) : QWidget (w)
 {
   dataPath = dp;
   settings = 0;
-  item = 0;
 
   QVBoxLayout *box = new QVBoxLayout(this);
   box->setMargin(0);
 
-  list = new QListView(this);
-  list->setSelectionMode(QListView::Single);
-  list->addColumn(tr("Setting"), -1);
-  list->addColumn(tr("Value"), -1);
-  list->setColumnWidthMode(0, QListView::Maximum);
-  connect(list, SIGNAL(clicked(QListViewItem *)), this, SLOT(cellSelected(QListViewItem *)));
+  list = new QTable(0, 2, this);
+  list->setSelectionMode(QTable::Single);
+  QStringList l;
+  l.append(tr("Setting"));
+  l.append(tr("Value"));
+  list->setColumnLabels(l);
+  list->setColumnReadOnly(0, TRUE);
+  list->setShowGrid(FALSE);
+  connect(list, SIGNAL(doubleClicked(int, int, int, const QPoint &)), this, SLOT(doubleClick(int, int, int, const QPoint &)));
+  connect(list, SIGNAL(valueChanged(int, int)), this, SLOT(itemChanged(int, int)));
   box->addWidget(list);
 }
 
@@ -66,200 +71,207 @@ void SettingView::setItems (Setting *d)
 
 void SettingView::makeSettings ()
 {
-  list->clear();
-  
-  QStringList key = settings->getKeyList();
+  clearRows();
 
+  QStringList key = settings->getKeyList();
+  
+  int row = 0;
   int loop;
   for (loop = 0; loop < (int) key.count(); loop++)
   {
     if (settings->getType(key[loop]) != Setting::None)
     {
-      item = new QListViewItem(list, key[loop], settings->getData(key[loop]));
+      list->setNumRows(row + 1);
 
-      if (settings->getType(key[loop]) == Setting::Color)
+      list->setText(row, 0, key[loop]);
+
+      while (1)
       {
-        QPixmap pix;
-	pix.resize(25, item->height());
-	pix.fill(QColor(item->text(1)));
-	item->setPixmap(1, pix);
+        if (settings->getType(key[loop]) == Setting::Color)
+	{
+          ColorItem *item = new ColorItem(list, QTableItem::Never, QString::null);
+	  item->setColor(settings->getData(key[loop]));
+	  list->setItem(row, 1, item);
+          break;
+	}
+
+        if (settings->getType(key[loop]) == Setting::Text ||
+	    settings->getType(key[loop]) == Setting::Float)
+	{
+	  list->setText(row, 1, settings->getData(key[loop]));
+          break;
+	}
+
+        if (settings->getType(key[loop]) == Setting::Integer)
+	{
+          IntegerItem *item = new IntegerItem(list, QTableItem::Always, settings->getData(key[loop]).toInt());
+	  list->setItem(row, 1, item);
+          break;
+	}
+
+        if (settings->getType(key[loop]) == Setting::List ||
+	    settings->getType(key[loop]) == Setting::LineType ||
+	    settings->getType(key[loop]) == Setting::MAType ||
+	    settings->getType(key[loop]) == Setting::InputField)
+	{
+
+          QComboTableItem *item = new QComboTableItem(list, settings->getList(key[loop]), FALSE);
+	  list->setItem(row, 1, item);
+	  item->setCurrentItem(settings->getData(key[loop]));
+          break;
+	}
+
+        if (settings->getType(key[loop]) == Setting::Bool)
+	{
+          QCheckTableItem *item = new QCheckTableItem(list, QString::null);
+	  if (! settings->getData(key[loop]).compare(tr("True")))
+            item->setChecked(TRUE);
+	  else
+            item->setChecked(FALSE);
+	  list->setItem(row, 1, item);
+          break;
+	}
+
+        if (settings->getType(key[loop]) == Setting::Symbol)
+	{
+          QTableItem *item = new QTableItem(list, QTableItem::Never, settings->getData(key[loop]));
+	  list->setItem(row, 1, item);
+          break;
+	}
+
+          if (settings->getType(key[loop]) == Setting::Date)
+	{
+          DateItem *item = new DateItem(list, QTableItem::Always);
+	  list->setItem(row, 1, item);
+          break;
+	}
+
+        if (settings->getType(key[loop]) == Setting::FileList)
+	{
+          QTableItem *item = new QTableItem(list, QTableItem::Never, QString::null);
+	  item->setText(tr("0 files selected"));
+	  list->setItem(row, 1, item);
+          break;
+	}
+
+        if (settings->getType(key[loop]) == Setting::Font)
+	{
+          QTableItem *item = new QTableItem(list, QTableItem::Never, QString::null);
+	  item->setText(settings->getData(key[loop]));
+	  list->setItem(row, 1, item);
+          break;
+	}
+
+	break;
       }
+
+      row++;
     }
   }
 }
 
-void SettingView::cellSelected (QListViewItem *i)
+void SettingView::doubleClick (int row, int, int, const QPoint &)
 {
-  if (! i)
+  if (row < 0)
     return;
 
-  item = list->selectedItem();
+  QString s = list->text(row, 0);
 
-  switch (settings->getType(item->text(0)))
+  switch (settings->getType(s))
   {
     case Setting::Color:
-      colorDialog();
-      break;
-    case Setting::Text:
-      textDialog();
-      break;
-    case Setting::Integer:
-      intDialog();
-      break;
-    case Setting::Float:
-      floatDialog();
-      break;
-    case Setting::List:
-    case Setting::LineType:
-    case Setting::MAType:
-    case Setting::InputField:
-      listDialog();
-      break;
-    case Setting::Bool:
-      checkDialog();
-      break;
-    case Setting::Date:
-      dateDialog();
+      colorDialog(row);
       break;
     case Setting::FileList:
-      fileDialog();
+      fileDialog(row);
       break;
     case Setting::Symbol:
-      symbolDialog();
+      symbolDialog(row);
       break;
     case Setting::Font:
-      fontDialog();
+      fontDialog(row);
       break;
     default:
       break;
   }
 }
 
-void SettingView::colorDialog ()
+void SettingView::itemChanged (int row, int)
 {
-  QColor color = QColorDialog::getColor(QColor(item->text(1)), this, 0);
+  QString s = list->text(row, 0);
+
+  switch (settings->getType(s))
+  {
+    case Setting::Float:
+      floatChanged(row);
+      break;
+    case Setting::Date:
+      dateChanged(row);
+      break;
+    case Setting::Text:
+    case Setting::Integer:
+    case Setting::List:
+    case Setting::LineType:
+    case Setting::MAType:
+    case Setting::InputField:
+      textChanged(row);
+      break;
+    case Setting::Bool:
+      boolChanged(row);
+      break;
+    default:
+      break;
+  }
+}
+
+void SettingView::colorDialog (int row)
+{
+  ColorItem *item = (ColorItem *) list->item(row, 1);
+  QColor color = QColorDialog::getColor(QColor(settings->getData(list->text(row, 0))), this, 0);
   if (color.isValid())
   {
-    item->setText(1, color.name());
-
-    QPixmap pix;
-    pix.resize(25, item->height());
-    pix.fill(QColor(item->text(1)));
-    item->setPixmap(1, pix);
-
-    settings->setData(item->text(0), item->text(1));
+    item->setColor(color.name());
+    settings->setData(list->text(row, 0), color.name());
   }
 }
 
-void SettingView::dateDialog ()
+void SettingView::dateChanged (int row)
 {
-  DateDialog *dialog = new DateDialog();
-  dialog->setCaption(tr("Edit Date"));
-
-  QDate dt = QDate::currentDate();
-  QString s = item->text(1);
-  if (s.length())
-  {
-    s.insert(4, "-");
-    s.insert(7, "-");
-    dt = QDate::fromString(s, Qt::ISODate);
-  }
-  dialog->setDate(dt);
-
-  int rc = dialog->exec();
-
-  if (rc == QDialog::Accepted)
-  {
-    dt = dialog->getDate();
-    item->setText(1, dt.toString("yyyyMMdd"));
-    
-    settings->setData(item->text(0), item->text(1));
-  }
-
-  delete dialog;
+  DateItem *item = (DateItem *) list->item(row, 1);
+  QDate dt = item->getDate();
+  settings->setData(list->text(row, 0), dt.toString("yyyyMMdd"));
 }
 
-void SettingView::textDialog ()
+void SettingView::floatChanged (int row)
 {
-  bool ok = FALSE;
-
-  QString s = tr("Edit ");
-  s.append(item->text(0));
-
-  QString text = QInputDialog::getText(s,
-  				       s,
-				       QLineEdit::Normal,
-				       item->text(1),
-				       &ok,
-				       this,
-				       s);
-  if (ok == FALSE)
-    return;
-
-  while(text.contains(','))
-  {
-    int pos = text.find(',', 0, TRUE);
-    text = text.replace(pos, 1, " ");
-  }
-
-  item->setText(1, text);
-  
-  settings->setData(item->text(0), item->text(1));
+  int rc;
+  QDoubleValidator dv(-99999999, 99999999, 4, this, 0);
+  QString s = list->text(row, 1);
+  if (dv.validate(s, rc) == QValidator::Invalid)
+    list->setText(row, 1, settings->getData(list->text(row, 0)));
+  else
+    settings->setData(list->text(row, 0), list->text(row, 1));
 }
 
-void SettingView::intDialog ()
+void SettingView::textChanged (int row)
 {
-  bool ok = FALSE;
-
-  QString s = tr("Edit ");
-  s.append(item->text(0));
-
-  int n = QInputDialog::getInteger(s,
-  				   s,
-				   settings->getInt(item->text(0)),
-				   -99999999,
-				   99999999,
-				   1,
-				   &ok,
-				   this,
-				   s);
-  if (ok == FALSE)
-    return;
-
-  item->setText(1, QString::number(n));
-  
-  settings->setData(item->text(0), item->text(1));
+  settings->setData(list->text(row, 0), list->text(row, 1));
 }
 
-void SettingView::floatDialog ()
+void SettingView::boolChanged (int row)
 {
-  bool ok = FALSE;
-
-  QString s = tr("Edit ");
-  s.append(item->text(0));
-
-  double n = QInputDialog::getDouble(s,
-  				     s,
-				     settings->getFloat(item->text(0)),
-				     -99999999,
-				     99999999,
-				     4,
-				     &ok,
-				     this,
-				     s);
-  if (ok == FALSE)
-    return;
-
-  item->setText(1, QString::number(n));
-  
-  settings->setData(item->text(0), item->text(1));
+  QCheckTableItem *item = (QCheckTableItem *) list->item(row, 1);
+  if (item->isChecked())
+    settings->setData(list->text(row, 0), tr("True"));
+  else
+    settings->setData(list->text(row, 0), tr("False"));
 }
 
-void SettingView::fileDialog ()
+void SettingView::fileDialog (int row)
 {
   QString path = "*";
 
-  QStringList selection = settings->getList(item->text(0));
+  QStringList selection = settings->getList(list->text(row, 0));
   if (selection.count())
   {
     path = selection[0];
@@ -269,17 +281,17 @@ void SettingView::fileDialog ()
   selection = QFileDialog::getOpenFileNames("*", path, this, "file dialog");
   if (selection.count())
   {
-    settings->setList(item->text(0), selection);
+    settings->setList(list->text(row, 0), selection);
 
     QString s = QString::number(selection.count());
     s.append(tr(" files selected"));
-    item->setText(1, s);
-    
-    settings->setData(item->text(0), item->text(1));
+    list->setText(row, 1, s);
+
+    settings->setData(list->text(row, 0), list->text(row, 1));
   }
 }
 
-void SettingView::symbolDialog ()
+void SettingView::symbolDialog (int row)
 {
   SymbolDialog *dialog = new SymbolDialog(dataPath);
   dialog->setCaption(tr("Select Chart"));
@@ -288,75 +300,17 @@ void SettingView::symbolDialog ()
 
   if (rc == QDialog::Accepted)
   {
-    item->setText(1, dialog->getSymbol());
-
-    settings->setData(item->text(0), item->text(1));
+    list->setText(row, 1, dialog->getSymbol());
+    settings->setData(list->text(row, 0), list->text(row, 1));
   }
 
   delete dialog;
 }
 
-void SettingView::checkDialog ()
-{
-  bool ok = FALSE;
-
-  QStringList l;
-  l.append(tr("False"));
-  l.append(tr("True"));
-
-  int index = l.findIndex(settings->getData(item->text(0)));
-
-  QString s = tr("Edit ");
-  s.append(item->text(0));
-
-  s = QInputDialog::getItem(s,
-  			    s,
-			    l,
-			    index,
-			    FALSE,
-			    &ok,
-			    this,
-			    s);
-
-  if (ok == FALSE)
-    return;
-
-  item->setText(1, s);
-  
-  settings->setData(item->text(0), item->text(1));
-}
-
-void SettingView::listDialog ()
-{
-  bool ok = FALSE;
-
-  QStringList l = settings->getList(item->text(0));
-  int index = l.findIndex(settings->getData(item->text(0)));
-
-  QString s = tr("Edit ");
-  s.append(item->text(0));
-
-  s = QInputDialog::getItem(s,
-  			    s,
-			    l,
-			    index,
-			    FALSE,
-			    &ok,
-			    this,
-			    s);
-
-  if (ok == FALSE)
-    return;
-
-  item->setText(1, s);
-
-  settings->setData(item->text(0), item->text(1));
-}
-
-void SettingView::fontDialog ()
+void SettingView::fontDialog (int row)
 {
   bool ok;
-  QStringList l = QStringList::split(" ", item->text(1), FALSE);
+  QStringList l = QStringList::split(" ", list->text(row, 1), FALSE);
   QFont font = QFontDialog::getFont(&ok, QFont(l[0], l[1].toInt(), l[2].toInt()), this);
   if (ok)
   {
@@ -366,66 +320,23 @@ void SettingView::fontDialog ()
     s.append(" ");
     s.append(QString::number(font.weight()));
 
-    item->setText(1, s);
+    list->setText(row, 1, s);
 
-    settings->setData(item->text(0), item->text(1));
+    settings->setData(list->text(row, 0), list->text(row, 1));
   }
-}
-
-QList<QListViewItem> SettingView::getList ()
-{
-  QList<QListViewItem> l;
-  QListViewItemIterator it(list);
-  for (; it.current(); ++it)
-    l.append(it.current());
-  return l;
 }
 
 void SettingView::clear ()
 {
   settings = 0;
-  list->clear();
+  clearRows();
 }
 
-//**********************************************************************
-//*********************** DATE DIALOG **********************************
-//**********************************************************************
-
-DateDialog::DateDialog () : QDialog (0, "DateDialog", TRUE)
+void SettingView::clearRows ()
 {
-  QVBoxLayout *vbox = new QVBoxLayout(this);
-  vbox->setSpacing(10);
-  vbox->setMargin(10);
-
-  date = new QDateEdit(QDate::currentDate(), this);
-  date->setAutoAdvance(TRUE);
-  date->setOrder(QDateEdit::YMD);
-  vbox->addWidget(date);
-
-  QHBoxLayout *hbox = new QHBoxLayout(vbox);
-  hbox->setSpacing(5);
-
-  QPushButton *button = new QPushButton (tr("OK"), this);
-  connect (button, SIGNAL (clicked()), this, SLOT (accept()));
-  hbox->addWidget(button);
-
-  button = new QPushButton (tr("Cancel"), this);
-  connect (button, SIGNAL (clicked()), this, SLOT (reject()));
-  hbox->addWidget(button);
-}
-
-DateDialog::~DateDialog ()
-{
-}
-
-void DateDialog::setDate (QDate d)
-{
-  date->setDate(d);
-}
-
-QDate DateDialog::getDate ()
-{
-  return date->date();
+  int loop;
+  for (loop = list->numRows() - 1; loop > -1; loop--)
+    list->removeRow(loop);
 }
 
 //**********************************************************************
@@ -492,4 +403,87 @@ void SymbolDialog::upDirectory ()
   navigator->upDirectory();
 }
 
+//**********************************************************************
+//*********************** Color Item *************************************
+//**********************************************************************
+
+ColorItem::ColorItem (QTable *t, EditType et, QString s) : QTableItem (t, et, s)
+{
+}
+
+ColorItem::~ColorItem ()
+{
+}
+
+void ColorItem::paint (QPainter *p, const QColorGroup &cg, const QRect &cr, bool selected)
+{
+  QColorGroup g(cg);
+  g.setColor(QColorGroup::Base, QColor(color));
+  QTableItem::paint(p, g, cr, selected);
+}
+
+void ColorItem::setColor (QString col)
+{
+  color = col;
+}
+
+//**********************************************************************
+//*********************** Integer Item ***********************************
+//**********************************************************************
+
+IntegerItem::IntegerItem (QTable *t, EditType et, int v) : QTableItem (t, et, QString::null)
+{
+  setReplaceable( FALSE );
+  val = v;
+}
+
+IntegerItem::~IntegerItem ()
+{
+}
+
+QWidget * IntegerItem::createEditor () const
+{
+  ((IntegerItem*)this )->spinner = new QSpinBox (-999999, 999999, 1, table()->viewport());
+  spinner->setValue(val);
+  return spinner;
+}
+
+void IntegerItem::setContentFromEditor (QWidget *w)
+{
+  if ( w->inherits( "QSpinBox" ) )
+    setText(((QSpinBox*)w)->text());
+  else
+    QTableItem::setContentFromEditor(w);
+}
+
+//**********************************************************************
+//*********************** Date Item *************************************
+//**********************************************************************
+
+DateItem::DateItem (QTable *t, EditType et) : QTableItem (t, et, QString::null)
+{
+  setReplaceable( FALSE );
+}
+
+DateItem::~DateItem ()
+{
+}
+
+QWidget * DateItem::createEditor () const
+{
+  ((DateItem*)this )->dateEdit = new QDateEdit (QDate::currentDate(), table()->viewport());
+  dateEdit->setAutoAdvance(TRUE);
+  dateEdit->setOrder(QDateEdit::YMD);
+  return dateEdit;
+}
+
+void DateItem::setContentFromEditor (QWidget *w)
+{
+  QTableItem::setContentFromEditor(w);
+}
+
+QDate DateItem::getDate ()
+{
+  return dateEdit->date();
+}
 

@@ -40,7 +40,7 @@ EditDialog::EditDialog (Config *c) : QDialog (0, "EditDialog", TRUE)
   okButton = new QToolButton(this);
   QToolTip::add(okButton, tr("OK"));
   okButton->setPixmap(QPixmap(ok));
-  connect(okButton, SIGNAL(clicked()), this, SLOT(saveData()));
+  connect(okButton, SIGNAL(clicked()), this, SLOT(accept()));
   okButton->setMaximumWidth(30);
   okButton->setAutoRaise(TRUE);
   toolbar->addWidget(okButton, 0, 0);
@@ -59,19 +59,6 @@ EditDialog::EditDialog (Config *c) : QDialog (0, "EditDialog", TRUE)
 
 EditDialog::~EditDialog ()
 {
-}
-
-void EditDialog::saveData ()
-{
-  int loop;
-  QList<QListViewItem> l = list->getList();
-  for (loop = 0; loop < (int) l.count(); loop++)
-  {
-    item = l.at(loop);
-    settings->setData(item->text(0), item->text(1));
-  }
-
-  accept();
 }
 
 void EditDialog::setItems (Setting *set)

@@ -597,6 +597,9 @@ void QtstalkerApp::slotOptions ()
   if (rc == QDialog::Accepted)
   {
     config->setData(Config::BackgroundColor, set->getData(tr("Color Background")));
+
+    qDebug(set->getData(tr("Color Border")).latin1());
+    
     config->setData(Config::BorderColor, set->getData(tr("Color Border")));
     config->setData(Config::GridColor, set->getData(tr("Color Grid")));
     config->setData(Config::UpColor, set->getData(tr("Color Up")));

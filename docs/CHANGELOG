@@ -15,6 +15,8 @@
   
 - Having some font issues with Qt upgrades. Changed the font setting for the chart plot to be global for the app.
 
+- Changed the dialogs to edit values in place instead of popping up a dialog.
+
 0.17
 ====
 

@@ -24,14 +24,53 @@
 
 #include <qdialog.h>
 #include <qwidget.h>
-#include <qlistview.h>
+#include <qtable.h>
 #include <qdatetime.h>
 #include <qdatetimeedit.h>
 #include <qlayout.h>
 #include <qtoolbutton.h>
+#include <qspinbox.h>
 
 #include "Setting.h"
 #include "Navigator.h"
+
+class ColorItem : public QTableItem
+{
+  public:
+    ColorItem (QTable *, EditType, QString);
+    ~ColorItem ();
+    void paint (QPainter *p, const QColorGroup &cg, const QRect &cr, bool selected );
+    void setColor (QString);
+
+  private:
+    QString color;
+};
+
+class IntegerItem : public QTableItem
+{
+  public:
+    IntegerItem (QTable *, EditType, int);
+    ~IntegerItem ();
+    QWidget * createEditor () const;
+    void setContentFromEditor (QWidget *w);
+
+  private:
+    QSpinBox *spinner;
+    int val;
+};
+
+class DateItem : public QTableItem
+{
+  public:
+    DateItem (QTable *, EditType);
+    ~DateItem ();
+    QWidget * createEditor () const;
+    void setContentFromEditor (QWidget *w);
+    QDate getDate ();
+
+  private:
+    QDateEdit *dateEdit;
+};
 
 class SettingView : public QWidget
 {
@@ -42,41 +81,25 @@ class SettingView : public QWidget
     ~SettingView ();
     void setItems (Setting *);
     void makeSettings ();
-    void colorDialog ();
-    void dateDialog ();
-    void textDialog ();
-    void intDialog ();
-    void floatDialog ();
-    void fileDialog ();
-    void symbolDialog ();
-    void checkDialog ();
-    void listDialog ();
-    void fontDialog ();
-    QList<QListViewItem> getList();
+    void colorDialog (int);
+    void dateChanged (int);
+    void floatChanged (int);
+    void fileDialog (int);
+    void symbolDialog (int);
+    void fontDialog (int);
+    void textChanged (int);
+    void boolChanged (int);
     void clear ();
+    void clearRows ();
 
   public slots:
-    void cellSelected (QListViewItem *);
+    void doubleClick (int, int, int, const QPoint &);
+    void itemChanged (int, int);
 
   protected:
     QString dataPath;
     Setting *settings;
-    QListView *list;
-    QListViewItem *item;
-};
-
-class DateDialog : public QDialog
-{
-  Q_OBJECT
-
-  public:
-    DateDialog ();
-    ~DateDialog ();
-    void setDate (QDate);
-    QDate getDate ();
-
-  private:
-    QDateEdit *date;
+    QTable *list;
 };
 
 class SymbolDialog : public QDialog
@@ -101,3 +124,4 @@ class SymbolDialog : public QDialog
 };
 
 #endif
+
