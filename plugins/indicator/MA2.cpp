@@ -32,12 +32,13 @@ MA2::MA2 ()
   set(tr("Fast Label"), tr("MA2 Fast"), Setting::Text);
   set(tr("Fast Period"), "5", Setting::Integer);
   set(tr("Fast Type"), "SMA", Setting::MAType);
+  set(tr("Fast Input"), tr("Close"), Setting::InputField);
   set(tr("Slow Color"), "red", Setting::Color);
   set(tr("Slow Line Type"), tr("Line"), Setting::LineType);
   set(tr("Slow Label"), tr("MA2 Slow"), Setting::Text);
   set(tr("Slow Period"), "20", Setting::Integer);
   set(tr("Slow Type"), "SMA", Setting::MAType);
-  set(tr("Input"), tr("Close"), Setting::InputField);
+  set(tr("Slow Input"), tr("Close"), Setting::InputField);
   set(tr("Plot"), tr("True"), Setting::None);
   set(tr("Alert"), tr("True"), Setting::None);
 
@@ -50,23 +51,24 @@ MA2::~MA2 ()
 
 void MA2::calculate ()
 {
-  PlotLine *in = getInput(getData(tr("Input")));
+  PlotLine *fin = getInput(getData(tr("Fast Input")));
+  PlotLine *sin = getInput(getData(tr("Slow Input")));
 
   int fperiod = getInt(tr("Fast Period"));
-
   int speriod = getInt(tr("Slow Period"));
 
-  PlotLine *fma = getMA(in, getData(tr("Fast Type")), fperiod);
+  PlotLine *fma = getMA(fin, getData(tr("Fast Type")), fperiod);
   fma->setColor(getData(tr("Fast Color")));
   fma->setType(getData(tr("Fast Line Type")));
   fma->setLabel(getData(tr("Fast Label")));
 
-  PlotLine *sma = getMA(in, getData(tr("Slow Type")), speriod);
+  PlotLine *sma = getMA(sin, getData(tr("Slow Type")), speriod);
   sma->setColor(getData(tr("Slow Color")));
   sma->setType(getData(tr("Slow Line Type")));
   sma->setLabel(getData(tr("Slow Label")));
 
-  delete in;
+  delete fin;
+  delete sin;
 
   if (fma->getSize())
     output.append(fma);

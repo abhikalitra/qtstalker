@@ -32,17 +32,19 @@ MA3::MA3 ()
   set(tr("Fast Label"), tr("MA3 Fast"), Setting::Text);
   set(tr("Fast Period"), "5", Setting::Integer);
   set(tr("Fast Type"), "SMA", Setting::MAType);
+  set(tr("Fast Input"), tr("Close"), Setting::InputField);
   set(tr("Middle Color"), "red", Setting::Color);
   set(tr("Middle Line Type"), tr("Line"), Setting::LineType);
   set(tr("Middle Label"), tr("MA3 Middle"), Setting::Text);
   set(tr("Middle Period"), "20", Setting::Integer);
   set(tr("Middle Type"), "SMA", Setting::MAType);
+  set(tr("Middle Input"), tr("Close"), Setting::InputField);
   set(tr("Slow Color"), "red", Setting::Color);
   set(tr("Slow Line Type"), tr("Line"), Setting::LineType);
   set(tr("Slow Label"), tr("MA3 Slow"), Setting::Text);
   set(tr("Slow Period"), "40", Setting::Integer);
   set(tr("Slow Type"), "SMA", Setting::MAType);
-  set(tr("Input"), tr("Close"), Setting::InputField);
+  set(tr("Slow Input"), tr("Close"), Setting::InputField);
   set(tr("Plot"), tr("True"), Setting::None);
   set(tr("Alert"), tr("True"), Setting::None);
 
@@ -55,30 +57,32 @@ MA3::~MA3 ()
 
 void MA3::calculate ()
 {
-  PlotLine *in = getInput(getData(tr("Input")));
+  PlotLine *fin = getInput(getData(tr("Fast Input")));
+  PlotLine *min = getInput(getData(tr("Middle Input")));
+  PlotLine *sin = getInput(getData(tr("Slow Input")));
 
   int fperiod = getInt(tr("Fast Period"));
-
   int mperiod = getInt(tr("Middle Period"));
-
   int speriod = getInt(tr("Slow Period"));
 
-  PlotLine *fma = getMA(in, getData(tr("Fast Type")), fperiod);
+  PlotLine *fma = getMA(fin, getData(tr("Fast Type")), fperiod);
   fma->setColor(getData(tr("Fast Color")));
   fma->setType(getData(tr("Fast Line Type")));
   fma->setLabel(getData(tr("Fast Label")));
 
-  PlotLine *mma = getMA(in, getData(tr("Middle Type")), mperiod);
+  PlotLine *mma = getMA(min, getData(tr("Middle Type")), mperiod);
   mma->setColor(getData(tr("Middle Color")));
   mma->setType(getData(tr("Middle Line Type")));
   mma->setLabel(getData(tr("Middle Label")));
 
-  PlotLine *sma = getMA(in, getData(tr("Slow Type")), speriod);
+  PlotLine *sma = getMA(sin, getData(tr("Slow Type")), speriod);
   sma->setColor(getData(tr("Slow Color")));
   sma->setType(getData(tr("Slow Line Type")));
   sma->setLabel(getData(tr("Slow Label")));
 
-  delete in;
+  delete fin;
+  delete min;
+  delete sin;
 
   if (fma->getSize())
     output.append(fma);
