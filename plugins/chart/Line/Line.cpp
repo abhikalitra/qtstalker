@@ -116,7 +116,7 @@ void Line::prefDialog (QWidget *)
           flag = TRUE;
       }
   
-      if (! flag)
+      if (! flag && formulaList.count())
       {
         QMessageBox::information(0,
                                  tr("Qtstalker: Error"),

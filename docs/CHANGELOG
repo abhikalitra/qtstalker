@@ -210,6 +210,11 @@
 20050305: Fixed time delimiter. If the ":" delimiter was not included the time was rejected.
           Now delimiter is not needed.
 	  
+20050305: Added 'Symbol Filter' option to CSV plugin. This allows the user to filter out
+          all unmatching symbols from an input file. If left blank then all symbols will
+	  be imported. For example: if user enters 'IBM,RHAT' then all symbols except
+	  IBM and RHAT will be ignored in the import process. User must use a comma
+	  as delimiter between symbols.
 	  
 	  	  
 0.29

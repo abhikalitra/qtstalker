@@ -22,6 +22,7 @@ To Do:
 - create a date range for loading charts, then step through bar by bar to simulate paper trading
 - put CUS editors to define up, down, neutral colors in Bars plugin.
 - overhaul CSV plugin to allow URL downloads and clean up code...it's a mess  
+- put in left/right chart justify option.
 
     
 

@@ -197,8 +197,15 @@ void CSVDialog::createRulePage ()
   connect(directory, SIGNAL(textChanged(const QString &)), this, SLOT(textChanged(const QString &)));
   grid->addWidget(directory, 3, 1);
 
-  label = new QLabel(tr("Fields:"), w);
+  label = new QLabel(tr("Symbol Filter:"), w);
   grid->addWidget(label, 4, 0);
+  
+  symbolFilter = new QLineEdit(w);
+  connect(symbolFilter, SIGNAL(textChanged(const QString &)), this, SLOT(textChanged(const QString &)));
+  grid->addWidget(symbolFilter, 4, 1);
+  
+  label = new QLabel(tr("Fields:"), w);
+  grid->addWidget(label, 5, 0);
   
   fieldCombo = new QComboBox(w);
   fieldCombo->insertItem(tr("Date:YYYYMMDD"), -1);
@@ -217,7 +224,7 @@ void CSVDialog::createRulePage ()
   fieldCombo->insertItem(tr("OI"), -1);
   fieldCombo->insertItem(tr("Ignore"), -1);
   fieldCombo->insertItem(tr("Name"), -1);
-  grid->addWidget(fieldCombo, 4, 1);
+  grid->addWidget(fieldCombo, 5, 1);
   
   vbox->addSpacing(10);
 
@@ -263,6 +270,8 @@ void CSVDialog::newRule ()
   
   directory->clear();
   
+  symbolFilter->clear();
+  
   saveRule();
   
   ruleToolbar->setButtonStatus("delete", TRUE);
@@ -306,6 +315,8 @@ void CSVDialog::editRule ()
   
   directory->setText(set->getData("Directory"));
   
+  symbolFilter->setText(set->getData("SymbolFilter"));
+  
   l = QStringList::split(",", set->getData("Rule"));
   ruleList->insertStringList(l, -1);
   
@@ -343,6 +354,7 @@ void CSVDialog::deleteRule ()
   ruleName->clear();
   ruleList->clear();
   directory->clear();
+  symbolFilter->clear();
   
   ruleToolbar->setButtonStatus("delete", FALSE);
   ruleToolbar->setButtonStatus("save", FALSE);
@@ -381,6 +393,7 @@ void CSVDialog::saveRule ()
   set->setData("Delimiter", delimiter->currentText());
   set->setData("Type", type->currentText());
   set->setData("Directory", directory->text());
+  set->setData("SymbolFilter", symbolFilter->text());
   int loop;
   QStringList l;
   for (loop = 0; loop < (int) ruleList->count(); loop++)

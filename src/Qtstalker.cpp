@@ -629,8 +629,11 @@ void QtstalkerApp::slotChartTypeChanged (int)
 
   toolbar2->setPixelspace(mainPlot->getMinPixelspace(), mainPlot->getPixelspace());
   
-  setSliderStart(toolbar2->getPixelspace(), FALSE);
-
+//  setSliderStart(toolbar2->getPixelspace(), FALSE);
+  setSliderStart(toolbar2->getPixelspace(), TRUE);
+  
+  emit signalIndex(toolbar2->getSlider());
+  
   mainPlot->draw();
 
   QDictIterator<Plot> it(plotList);
@@ -781,7 +784,10 @@ void QtstalkerApp::slotPixelspaceChanged (int d)
   
   emit signalPixelspace(d);
   
-  setSliderStart(ov, FALSE);
+//  setSliderStart(ov, FALSE);
+  setSliderStart(ov, TRUE);
+  
+  emit signalIndex(toolbar2->getSlider());
   
   mainPlot->draw();
 

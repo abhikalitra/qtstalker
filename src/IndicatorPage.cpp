@@ -63,6 +63,7 @@ IndicatorPage::IndicatorPage (QWidget *w) : QWidget (w)
   vbox->setSpacing(5);
   
   group = new MyComboBox(this, Macro::IndicatorPage);
+  updateGroups();
   connect(group, SIGNAL(activated(int)), this, SLOT(slotGroupChanged(int)));
   connect(group, SIGNAL(signalKeyPressed(int, int, int, int, QString)),
           this, SIGNAL(signalKeyPressed(int, int, int, int, QString)));
@@ -100,7 +101,6 @@ IndicatorPage::IndicatorPage (QWidget *w) : QWidget (w)
   a->insertItem(CTRL+Key_H, Help);
   a->insertItem(CTRL+Key_Tab, Tab);
   
-  updateGroups();
   itemSelected(QString());
 }
 
@@ -112,15 +112,15 @@ void IndicatorPage::itemSelected (const QString &d)
 {
   if (d.length())
   {
+    menu->setItemEnabled(menu->idAt(4), TRUE);
     menu->setItemEnabled(menu->idAt(5), TRUE);
     menu->setItemEnabled(menu->idAt(6), TRUE);
-    menu->setItemEnabled(menu->idAt(7), TRUE);
   }
   else
   {
+    menu->setItemEnabled(menu->idAt(4), FALSE);
     menu->setItemEnabled(menu->idAt(5), FALSE);
     menu->setItemEnabled(menu->idAt(6), FALSE);
-    menu->setItemEnabled(menu->idAt(7), FALSE);
   }
 }
 
@@ -154,7 +154,6 @@ void IndicatorPage::newIndicatorGroup ()
   }
 
   dir.mkdir(s, TRUE);
-  updateList();
   updateGroups();
 }
 
@@ -185,28 +184,44 @@ void IndicatorPage::deleteIndicatorGroup ()
     }
 
     QStringList l = dialog->selectedFile();
-    int loop;
-    QDir dir;
-    for (loop = 0; loop < (int) l.count(); loop++)
+    if (! l.count())
     {
-      dir.setPath(l[loop]);
-      if (! dir.dirName().compare("Indicators")) // dont delete the default group
-        continue;
-	
-      int loop2;
-      for (loop2 = 2; loop2 < (int) dir.count(); loop2++)
+      delete dialog;
+      return;
+    }
+    
+    QDir dir(l[0]);
+    bool flag = FALSE;
+    if (! dir.dirName().compare(currentGroup))
+      flag = TRUE;
+    
+    if (! dir.dirName().compare("Indicators"))
+    {
+      delete dialog;
+      QMessageBox::information(this,
+                               tr("Qtstalker: Delete Indicator Group"),
+                               tr("Cannot delete default group."));
+      return;
+    }
+    else
+    {
+      int loop;
+      for (loop = 2; loop < (int) dir.count(); loop++)
       {
-        QString s = dir.absPath() + "/" + dir[loop2];
+        QString s = dir.absPath() + "/" + dir[loop];
         if (! dir.remove(s, TRUE))
           qDebug("IndicatorPage::deleteGroupItem:failed to delete file");
       }
       
-      if (! dir.rmdir(l[loop], TRUE))
+      if (! dir.rmdir(dir.absPath(), TRUE))
         qDebug("IndicatorPage::deleteGroupItem:failed to delete dir");
     }
 
-    updateList();
     updateGroups();
+    
+    if (flag)
+      slotGroupChanged(0);
+      
     itemSelected(QString());
   }
   
@@ -789,9 +804,9 @@ void IndicatorPage::runMacro (Macro *d)
 
 void IndicatorPage::slotGroupChanged (int)
 {
-  if (group->count() == 1)
+  if (group->count() == 1 && ! group->currentText().compare(currentGroup))
     return;
-
+  
   int loop;
   for (loop = 0; loop < (int) list->count(); loop++)
   {
@@ -810,6 +825,8 @@ void IndicatorPage::slotGroupChanged (int)
 
 void IndicatorPage::updateGroups ()
 {
+  group->blockSignals(TRUE);
+  
   group->clear();
   
   QStringList l;
@@ -823,9 +840,10 @@ void IndicatorPage::updateGroups ()
       l.append(dir[loop]);
   }
   group->insertStringList(l, -1);
-  
-  if (currentGroup.length())  
-    group->setCurrentText(currentGroup);
+
+  group->setCurrentItem(l.findIndex(currentGroup));
+    
+  group->blockSignals(FALSE);
 }
 
 QStringList IndicatorPage::getIndicatorGroups ()

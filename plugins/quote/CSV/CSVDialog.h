@@ -86,5 +86,6 @@ class CSVDialog : public QTabDialog
     QString lastPath;
     QSpinBox *minutes;
     QLineEdit *directory;
+    QLineEdit *symbolFilter;
 };
 

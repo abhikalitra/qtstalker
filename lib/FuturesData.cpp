@@ -563,6 +563,15 @@ void FuturesData::loadData ()
   set->setData("Month", "H,M,U,Z");
   set->setData("Exchange", "NYBOT");
   data.replace("YX", set);
+  
+  // Warsaw Stock Exchange futures
+  set = new Setting;
+  set->setData("Name", "WIG20 Index");
+  set->setData("Symbol", "FW20");
+  set->setData("Month", "H,M,U,Z");
+  set->setData("Exchange", "WSE");
+  set->setData("Rate", "10");
+  data.replace("FW20", set);
 }
 
 QString FuturesData::getCurrentContract (QDateTime dt)

@@ -330,7 +330,7 @@ QString Config::getData (Parm p)
       s = settings.readEntry("/Qtstalker/Macro12");
       break;
     case IndicatorGroup:
-      s = settings.readEntry("/Qtstalker/IndicatorGroup");
+      s = settings.readEntry("/Qtstalker/IndicatorGroup", "Indicators");
       break;
     default:
       break;

@@ -185,7 +185,7 @@ void Bars::prefDialog (QWidget *)
         flag = TRUE;
     }
   
-    if (! flag)
+    if (! flag && formulaList.count())
     {
       QMessageBox::information(0,
                                tr("Qtstalker: Error"),
@@ -258,6 +258,9 @@ void Bars::saveSettings ()
 
 PlotLine * Bars::getBoolLine ()
 {
+  if (! formulaList.count())
+    return 0;
+    
   PlotLine *line = 0;
   Config config;
   

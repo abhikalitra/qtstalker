@@ -142,6 +142,9 @@ void CSV::parse ()
     return;
   }
   
+  // get the symbol filter
+  QStringList symbolFilter = QStringList::split(",", rule->getData("SymbolFilter"), FALSE);
+  
   // check for time field and set the tickflag  
   bool tickFlag = FALSE;
   if (rule->getData("Rule").contains("Time"))
@@ -333,6 +336,15 @@ void CSV::parse ()
 	
         if (! fieldList[fieldLoop].compare("Symbol"))
 	{
+	  if (symbolFilter.count())
+	  {
+	    if (symbolFilter.findIndex(l[fieldLoop]) == -1)
+	    {
+	      flag = TRUE;
+	      break;
+	    }
+	  }
+	  
 	  r->setData("Symbol", l[fieldLoop]);
 	  continue;
 	}

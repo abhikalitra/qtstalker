@@ -281,6 +281,9 @@ void MainMenubar::setStatus (int d, bool f)
 void MainMenubar::saveSettings ()
 {
   config.setData(Config::DrawMode, QString::number(getStatus(DrawMode)));
+  config.setData(Config::ScaleToScreen, QString::number(getStatus(ScaleToScreen)));
+  config.setData(Config::Grid, QString::number(getStatus(Grid)));
+  config.setData(Config::LogScale, QString::number(getStatus(Log)));
 }
 
 void MainMenubar::setKeyFlag (bool d)
