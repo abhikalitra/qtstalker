@@ -32,6 +32,13 @@ OI::OI ()
   set(tr("Plot"), tr("False"), Setting::None);
   set(tr("Alert"), tr("False"), Setting::None);
 
+  set(tr("MA Color"), "red", Setting::Color);
+  set(tr("MA Line Type"), tr("Line"), Setting::LineType);
+  set(tr("MA Label"), tr("MAOI"), Setting::Text);
+  set(tr("MA Period"), "0", Setting::Integer);
+  set(tr("MA Displace"), "0", Setting::Integer);
+  set(tr("MA Type"), "SMA", Setting::MAType);
+
   about = "Open Interest\n";
 }
 
@@ -46,6 +53,15 @@ void OI::calculate ()
   pl->setType(getData(tr("Line Type")));
   pl->setLabel(getData(tr("Label")));
   output.append(pl);
+
+  if (getInt(tr("MA Period")) < 1)
+    return;
+
+  PlotLine *ma = getMA(pl, getData(tr("MA Type")), getInt(tr("MA Period")), getInt(tr("MA Displace")));
+  ma->setColor(getData(tr("MA Color")));
+  ma->setType(getData(tr("MA Line Type")));
+  ma->setLabel(getData(tr("MA Label")));
+  output.append(ma);
 }
 
 Plugin * create ()

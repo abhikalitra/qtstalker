@@ -84,7 +84,7 @@ CSV::CSV ()
     if (date.dayOfWeek() == 7)
       date = date.addDays(-2);
   }
-  set("End Date", date.toString("yyyyMMdd"), Setting::Date);
+  set("Date End", date.toString("yyyyMMdd"), Setting::Date);
 
   date = date.addDays(-1);
   if (date.dayOfWeek() == 6)
@@ -94,7 +94,7 @@ CSV::CSV ()
     if (date.dayOfWeek() == 7)
       date = date.addDays(-2);
   }
-  set("Start Date", date.toString("yyyyMMdd"), Setting::Date);
+  set("Date Start", date.toString("yyyyMMdd"), Setting::Date);
 
   set("Select Date Range", tr("False"), Setting::Bool);
 

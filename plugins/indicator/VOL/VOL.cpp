@@ -33,6 +33,13 @@ VOL::VOL ()
   set(tr("Plot"), tr("False"), Setting::None);
   set(tr("Alert"), tr("False"), Setting::None);
 
+  set(tr("MA Color"), "yellow", Setting::Color);
+  set(tr("MA Line Type"), tr("Line"), Setting::LineType);
+  set(tr("MA Label"), tr("MAVol"), Setting::Text);
+  set(tr("MA Period"), "0", Setting::Integer);
+  set(tr("MA Displace"), "0", Setting::Integer);
+  set(tr("MA Type"), "SMA", Setting::MAType);
+
   about = "Volume\n";
 }
 
@@ -49,6 +56,15 @@ void VOL::calculate ()
   if (! getData(tr("Color Bars")).compare(tr("True")))
     pl->setColorBars(TRUE);
   output.append(pl);
+
+  if (getInt(tr("MA Period")) < 1)
+    return;
+
+  PlotLine *ma = getMA(pl, getData(tr("MA Type")), getInt(tr("MA Period")), getInt(tr("MA Displace")));
+  ma->setColor(getData(tr("MA Color")));
+  ma->setType(getData(tr("MA Line Type")));
+  ma->setLabel(getData(tr("MA Label")));
+  output.append(ma);
 }
 
 Plugin * create ()
