@@ -33,6 +33,26 @@ Yahoo::Yahoo ()
   version = 0.2;
   createFlag = TRUE;
   op = 0;
+  
+  QDate date = QDate::currentDate();
+  if (date.dayOfWeek() == 6)
+    date = date.addDays(-1);
+  else
+  {
+    if (date.dayOfWeek() == 7)
+      date = date.addDays(-2);
+  }
+  set("End Date", date.toString("yyyyMMdd"), Setting::Date);
+
+  date = date.addDays(-1);
+  if (date.dayOfWeek() == 6)
+    date = date.addDays(-1);
+  else
+  {
+    if (date.dayOfWeek() == 7)
+      date = date.addDays(-2);
+  }
+  set("Start Date", date.toString("yyyyMMdd"), Setting::Date);
 
   about = "Downloads Yahoo data\n";
   about.append("and imports it directly into qtstalker.\n");
@@ -56,6 +76,7 @@ void Yahoo::update ()
   file = dir.path();
   file.append("/Qtstalker/download");
 
+/*
   QDateTime edate = QDateTime::currentDateTime();
   edate = edate.addDays(-1);
   if (edate.date().dayOfWeek() == 6)
@@ -65,6 +86,9 @@ void Yahoo::update ()
     if (edate.date().dayOfWeek() == 7)
       edate = edate.addDays(-2);
   }
+*/
+
+  QDateTime edate = QDateTime::fromString(getDateTime("End Date"), Qt::ISODate);
 
   QString s = dataPath;
   s.append("/Stocks");
@@ -84,7 +108,8 @@ void Yahoo::update ()
     QDateTime sdate;
     s = details->getDateTime("Last Date");
     if (s.length())
-      sdate = QDateTime::fromString(s, Qt::ISODate);
+      sdate = QDateTime::fromString(getDateTime("Start Date"), Qt::ISODate);
+//      sdate = QDateTime::fromString(s, Qt::ISODate);
     else
       sdate = QDateTime::fromString("1990-01-0100:00:00", Qt::ISODate);
 

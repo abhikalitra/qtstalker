@@ -23,87 +23,49 @@
 #include "ChartDb.h"
 #include "Setting.h"
 #include "FuturesData.h"
-#include "EditDialog.h"
-#include "ok.xpm"
 #include "newchart.xpm"
 #include "edit.xpm"
 #include "delete.xpm"
-#include "stop.xpm"
 #include <qstringlist.h>
 #include <qmessagebox.h>
-#include <qtooltip.h>
 #include <qdir.h>
 
-PortfolioDialog::PortfolioDialog (Config *c, QString p) : QDialog (0, "PortfolioDialog", TRUE)
+PortfolioDialog::PortfolioDialog (Config *c, QString p) : EditDialog (c)
 {
-  config = c;
   portfolio = p;
+  
+  hideSettingView(TRUE);
 
   QString s = tr("Qtstalker: Portfolio");
   s.append(" ");
   s.append(portfolio);
   setCaption(s);
-  
-  QVBoxLayout *vbox = new QVBoxLayout(this);
-  vbox->setMargin(5);
-  vbox->setSpacing(5);
 
-  toolbar = new QGridLayout(vbox, 1, 6);
-  toolbar->setSpacing(1);
-  
-  okButton = new QToolButton(this);
-  QToolTip::add(okButton, tr("OK"));
-  okButton->setPixmap(QPixmap(ok));
-  connect(okButton, SIGNAL(clicked()), this, SLOT(savePortfolio()));
-  okButton->setMaximumWidth(30);
-  okButton->setAutoRaise(TRUE);
-  toolbar->addWidget(okButton, 0, 0);
+  unhookButton(0);
+  connect(getButton(0), SIGNAL(clicked()), this, SLOT(savePortfolio()));
 
-  cancelButton = new QToolButton(this);
-  QToolTip::add(cancelButton, tr("Cancel"));
-  cancelButton->setPixmap(QPixmap(stop));
-  connect(cancelButton, SIGNAL(clicked()), this, SLOT(savePortfolio()));
-  cancelButton->setMaximumWidth(30);
-  cancelButton->setAutoRaise(TRUE);
-  toolbar->addWidget(cancelButton, 0, 1);
+  setButton(QPixmap(newchart), tr("Add"), 2);
+  connect(getButton(2), SIGNAL(clicked()), this, SLOT(addItem()));
 
-  addButton = new QToolButton(this);
-  QToolTip::add(addButton, tr("Add"));
-  addButton->setPixmap(QPixmap(newchart));
-  connect(addButton, SIGNAL(clicked()), this, SLOT(addItem()));
-  addButton->setMaximumWidth(30);
-  addButton->setAutoRaise(TRUE);
-  toolbar->addWidget(addButton, 0, 2);
+  setButton(QPixmap(edit), tr("Edit"), 3);
+  connect(getButton(3), SIGNAL(clicked()), this, SLOT(modifyItem()));
+  setButtonStatus(3, FALSE);
 
-  modifyButton = new QToolButton(this);
-  QToolTip::add(modifyButton, tr("Edit"));
-  modifyButton->setPixmap(QPixmap(edit));
-  connect(modifyButton, SIGNAL(clicked()), this, SLOT(modifyItem()));
-  modifyButton->setMaximumWidth(30);
-  modifyButton->setAutoRaise(TRUE);
-  toolbar->addWidget(modifyButton, 0, 3);
-  modifyButton->setEnabled(FALSE);
+  setButton(QPixmap(deletefile), tr("Delete"), 4);
+  connect(getButton(4), SIGNAL(clicked()), this, SLOT(deleteItem()));
+  setButtonStatus(4, FALSE);
 
-  deleteButton = new QToolButton(this);
-  QToolTip::add(deleteButton, tr("Delete"));
-  deleteButton->setPixmap(QPixmap(deletefile));
-  connect(deleteButton, SIGNAL(clicked()), this, SLOT(deleteItem()));
-  deleteButton->setMaximumWidth(30);
-  deleteButton->setAutoRaise(TRUE);
-  toolbar->addWidget(deleteButton, 0, 4);
-  deleteButton->setEnabled(FALSE);
-
-  list = new QListView(this);
-  list->setSelectionMode(QListView::Single);
-  list->addColumn(QObject::tr("Ticker"), -1);
-  list->addColumn(QObject::tr("L/S"), -1);
-  list->addColumn(QObject::tr("Vol"), -1);
-  list->addColumn(QObject::tr("Buy"), -1);
-  list->addColumn(QObject::tr("Last Date"), -1);
-  list->addColumn(QObject::tr("Value"), -1);
-  list->addColumn(QObject::tr("Profit"), -1);
-  connect(list, SIGNAL(clicked(QListViewItem *)), this, SLOT(buttonStatus(QListViewItem *)));
-  vbox->addWidget(list);
+  plist = new QListView(this);
+  plist->setSelectionMode(QListView::Single);
+  plist->addColumn(QObject::tr("Ticker"), -1);
+  plist->addColumn(QObject::tr("L/S"), -1);
+  plist->addColumn(QObject::tr("Vol"), -1);
+  plist->addColumn(QObject::tr("Buy"), -1);
+  plist->addColumn(QObject::tr("Last Date"), -1);
+  plist->addColumn(QObject::tr("Value"), -1);
+  plist->addColumn(QObject::tr("Profit"), -1);
+  connect(plist, SIGNAL(clicked(QListViewItem *)), this, SLOT(buttonStatus(QListViewItem *)));
+  basebox->addWidget(plist);
 
   buttonStatus(0);
 
@@ -116,7 +78,7 @@ PortfolioDialog::~PortfolioDialog ()
 
 void PortfolioDialog::updatePortfolio ()
 {
-  list->clear();
+  plist->clear();
 
   QStringList l = config->getPortfolio(portfolio);
 
@@ -124,7 +86,7 @@ void PortfolioDialog::updatePortfolio ()
   for (loop = 0; loop < (int) l.count(); loop++)
   {
     QStringList l2 = QStringList::split(",", l[loop], FALSE);
-    item = new QListViewItem(list, l2[0], l2[1], l2[2], l2[3]);
+    item = new QListViewItem(plist, l2[0], l2[1], l2[2], l2[3]);
   }
 
   updatePortfolioItems();
@@ -132,7 +94,7 @@ void PortfolioDialog::updatePortfolio ()
 
 void PortfolioDialog::updatePortfolioItems ()
 {
-  QListViewItemIterator it(list);
+  QListViewItemIterator it(plist);
   for (; it.current(); ++it)
   {
     item = it.current();
@@ -185,7 +147,7 @@ void PortfolioDialog::savePortfolio ()
 {
   QStringList l;
 
-  QListViewItemIterator it(list);
+  QListViewItemIterator it(plist);
   for (; it.current(); ++it)
   {
     item = it.current();
@@ -226,6 +188,7 @@ void PortfolioDialog::addItem ()
   if (rc == QDialog::Accepted)
   {
     QString symbol = set->getData(tr("Symbol"));
+    symbol = symbol.remove(config->getData(Config::DataPath));
     if (symbol.isNull())
       QMessageBox::information(this, tr("Qtstalker: Error"), tr("No symbol selected."));
     else
@@ -234,7 +197,7 @@ void PortfolioDialog::addItem ()
       QString vol = set->getData(tr("Volume"));
       QString price = set->getData(tr("Price"));
 
-      item = new QListViewItem(list, symbol, action, vol, price);
+      item = new QListViewItem(plist, symbol, action, vol, price);
       updatePortfolioItems();
     }
   }
@@ -245,7 +208,7 @@ void PortfolioDialog::addItem ()
 
 void PortfolioDialog::deleteItem ()
 {
-  item = list->selectedItem();
+  item = plist->selectedItem();
   if (item)
     delete item;
 
@@ -254,7 +217,7 @@ void PortfolioDialog::deleteItem ()
 
 void PortfolioDialog::modifyItem ()
 {
-  item = list->currentItem();
+  item = plist->currentItem();
   if (! item)
     return;
 
@@ -298,13 +261,13 @@ void PortfolioDialog::buttonStatus (QListViewItem *i)
 {
   if (! i)
   {
-    deleteButton->setEnabled(FALSE);
-    modifyButton->setEnabled(FALSE);
+    setButtonStatus(3, FALSE);
+    setButtonStatus(4, FALSE);
   }
   else
   {
-    deleteButton->setEnabled(TRUE);
-    modifyButton->setEnabled(TRUE);
+    setButtonStatus(3, TRUE);
+    setButtonStatus(4, TRUE);
   }
 }
 

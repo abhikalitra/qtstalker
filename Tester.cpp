@@ -348,7 +348,7 @@ void Tester::createTestPage ()
   label = new QLabel(tr("Account %"), gbox);
 
   volumePercent = new QSpinBox(0, 100, 1, gbox);
-  
+
   testButton = new QPushButton(tr("Perform Test"), w);
   connect(testButton, SIGNAL(clicked()), this, SLOT(test()));
   vbox->addWidget(testButton);
@@ -1157,6 +1157,7 @@ void Tester::symbolButtonPressed ()
   if (rc == QDialog::Accepted)
   {
     QString symbol = dialog->selectedFile();
+    symbol = symbol.remove(config->getData(Config::DataPath));
     if (! symbol.length())
     {
       delete dialog;

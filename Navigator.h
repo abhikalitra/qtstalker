@@ -45,7 +45,7 @@ class Navigator : public QListBox
 
   public slots:
     void upDirectory ();
-    void fileSelection ();
+    void fileSelection (QListBoxItem *);
 
   protected:
     QString basePath;

@@ -34,7 +34,7 @@ class CC : public QuotePlugin
     virtual ~CC ();
     void update ();
     void newChart (ChartDb *db, QString symbol, FuturesData *fd, QDir dir);
-    void updateChart (ChartDb *db, QString symbol, FuturesData *fd, QDir dir);
+//    void updateChart (ChartDb *db, QString symbol, FuturesData *fd, QDir dir);
 
   public slots:
     void parse ();

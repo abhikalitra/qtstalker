@@ -22,17 +22,15 @@
 #ifndef EDITCHARTDIALOG_HPP
 #define EDITCHARTDIALOG_HPP
 
-#include <qtoolbutton.h>
-#include <qlayout.h>
-#include <qdialog.h>
 #include <qstringlist.h>
 #include <qdatetimeedit.h>
 #include <qtabwidget.h>
 #include "Config.h"
 #include "SettingView.h"
 #include "ChartDb.h"
+#include "EditDialog.h"
 
-class EditChartDialog : public QDialog
+class EditChartDialog : public EditDialog
 {
   Q_OBJECT
 
@@ -46,12 +44,6 @@ class EditChartDialog : public QDialog
     void dateChanged (const QDate &);
 
   private:
-    Config *config;
-    QToolButton *okButton;
-    QToolButton *cancelButton;
-    QToolButton *deleteButton;
-    QToolButton *saveButton;
-    QGridLayout *toolbar;
     SettingView *detailList;
     SettingView *recordList;
     Setting *details;

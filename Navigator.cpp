@@ -32,7 +32,7 @@ Navigator::Navigator (QWidget *w, QString bp) : QListBox(w)
   currentDir.setPath(bp);
 
   setSelectionMode(QListBox::Single);
-  connect(this, SIGNAL(selectionChanged()), this, SLOT(fileSelection()));
+  connect(this, SIGNAL(currentChanged(QListBoxItem *)), this, SLOT(fileSelection(QListBoxItem *)));
 }
 
 Navigator::~Navigator ()
@@ -42,8 +42,6 @@ Navigator::~Navigator ()
 void Navigator::updateList ()
 {
   clear();
-
-  currentDir.setPath(currentDir.absPath());
 
   int loop;
   for (loop = 2; loop < (int) currentDir.count(); loop++)
@@ -57,6 +55,8 @@ void Navigator::updateList ()
     else
       insertItem(currentDir[loop], -1);
   }
+  
+  clearSelection();
 }
 
 void Navigator::upDirectory ()
@@ -71,13 +71,16 @@ void Navigator::upDirectory ()
     emit directoryStatus(TRUE);
 }
 
-void Navigator::fileSelection ()
+void Navigator::fileSelection (QListBoxItem *item)
 {
-  if (pixmap(currentItem()))
+  if (! item)
+    return;
+
+  if (item->pixmap())
   {
     QString s = currentDir.absPath();
     s.append("/");
-    s.append(currentText());
+    s.append(item->text());
     currentDir.setPath(s);
     updateList();
     emit noSelection();

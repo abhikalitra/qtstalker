@@ -22,14 +22,12 @@
 #ifndef PORTFOLIODIALOG_HPP
 #define PORTFOLIODIALOG_HPP
 
-#include "Config.h"
-#include <qstring.h>
-#include <qdialog.h>
-#include <qtoolbutton.h>
 #include <qlistview.h>
-#include <qlayout.h>
+#include <qstring.h>
+#include "Config.h"
+#include "EditDialog.h"
 
-class PortfolioDialog : public QDialog
+class PortfolioDialog : public EditDialog
 {
   Q_OBJECT
 
@@ -48,16 +46,9 @@ class PortfolioDialog : public QDialog
     void buttonStatus (QListViewItem *);
 
   private:
-    QListView *list;
+    QListView *plist;
     QListViewItem *item;
-    Config *config;
-    QToolButton *okButton;
-    QToolButton *cancelButton;
-    QToolButton *modifyButton;
-    QToolButton *addButton;
-    QToolButton *deleteButton;
     QString portfolio;
-    QGridLayout *toolbar;
 };
 
 #endif

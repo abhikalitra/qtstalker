@@ -36,8 +36,15 @@ CBOT::CBOT ()
   createFlag = FALSE;
   op = 0;
 
-  QDateTime dt = QDateTime::currentDateTime();
-  set("Date", dt.toString("yyyyMMdd"), Setting::Date);
+  QDate date = QDate::currentDate();
+  if (date.dayOfWeek() == 6)
+    date = date.addDays(-1);
+  else
+  {
+    if (date.dayOfWeek() == 7)
+      date = date.addDays(-2);
+  }
+  set("Date", date.toString("yyyyMMdd"), Setting::Date);
 
   about = "Downloads daily settlement quotes from CBOT\n";
   about.append("and imports it directly into qtstalker.");

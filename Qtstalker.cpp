@@ -1379,6 +1379,7 @@ void QtstalkerApp::initGroupNav ()
   GroupPage *gp = new GroupPage(baseWidget, config);
   connect(gp, SIGNAL(fileSelected(QString)), this, SLOT(slotOpenChart(QString)));
   navTab->addTab(gp, "G");
+  navTab->setTabToolTip(gp, tr("Workwith Groups"));
 }
 
 void QtstalkerApp::initChartNav ()
@@ -1386,18 +1387,21 @@ void QtstalkerApp::initChartNav ()
   ChartPage *cp = new ChartPage(baseWidget, config);
   connect(cp, SIGNAL(fileSelected(QString)), this, SLOT(slotOpenChart(QString)));
   navTab->addTab(cp, "C");
+  navTab->setTabToolTip(cp, tr("Workwith Charts"));
 }
 
 void QtstalkerApp::initPortfolioNav ()
 {
   PortfolioPage *pp = new PortfolioPage(baseWidget, config);
   navTab->addTab(pp, "P");
+  navTab->setTabToolTip(pp, tr("Workwith Portfolios"));
 }
 
 void QtstalkerApp::initTestNav ()
 {
   TestPage *tp = new TestPage(baseWidget, config);
   navTab->addTab(tp, "T");
+  navTab->setTabToolTip(tp, tr("Workwith Backtests"));
 }
 
 /*

@@ -25,15 +25,11 @@
 #include <qstring.h>
 #include <qcombobox.h>
 #include <qlibrary.h>
-#include <qtoolbutton.h>
-#include <qdialog.h>
-#include <qlayout.h>
-#include <qlistview.h>
 #include "Config.h"
 #include "Plugin.h"
-#include "SettingView.h"
+#include "EditDialog.h"
 
-class QuoteDialog : public QDialog
+class QuoteDialog : public EditDialog
 {
   Q_OBJECT
 
@@ -56,18 +52,9 @@ class QuoteDialog : public QDialog
     void printMessage (QString);
 
   private:
-    Setting *settings;
     QComboBox *ruleCombo;
     Plugin *plug;
     QLibrary *lib;
-    QToolButton *cancelButton;
-    QToolButton *downloadButton;
-    QToolButton *cancelDownloadButton;
-    QToolButton *newButton;
-    Config *config;
-    SettingView *list;
-    QListViewItem *item;
-    QGridLayout *toolbar;
 };
 
 #endif

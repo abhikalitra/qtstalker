@@ -24,68 +24,34 @@
 #include "download.xpm"
 #include "canceldownload.xpm"
 #include "newchart.xpm"
-#include "stop.xpm"
 #include <qstringlist.h>
 #include <qmessagebox.h>
-#include <qtooltip.h>
 
-QuoteDialog::QuoteDialog (Config *c) : QDialog (0, "QuoteDialog", TRUE)
+QuoteDialog::QuoteDialog (Config *c) : EditDialog (c)
 {
-  config = c;
   settings = 0;
   lib = 0;
   plug = 0;
   
   setCaption (tr("Qtstalker: Quotes"));
 
-  QVBoxLayout *vbox = new QVBoxLayout(this);
-  vbox->setMargin(5);
-  vbox->setSpacing(5);
+  setButtonStatus(0, FALSE);
 
-  toolbar = new QGridLayout(vbox, 1, 5);
-  toolbar->setSpacing(1);
+  setButton(QPixmap(download), tr("Update"), 2);
+  connect(getButton(2), SIGNAL(clicked()), this, SLOT(getQuotes()));
 
-  cancelButton = new QToolButton(this);
-  QToolTip::add(cancelButton, tr("Cancel"));
-  cancelButton->setPixmap(QPixmap(stop));
-  connect(cancelButton, SIGNAL(clicked()), this, SLOT(reject()));
-  cancelButton->setMaximumWidth(30);
-  cancelButton->setAutoRaise(TRUE);
-  toolbar->addWidget(cancelButton, 0, 0);
+  setButton(QPixmap(canceldownload), tr("Cancel Update"), 3);
+  connect(getButton(3), SIGNAL(clicked()), this, SLOT(cancelDownload()));
+  setButtonStatus(3, FALSE);
 
-  downloadButton = new QToolButton(this);
-  QToolTip::add(downloadButton, tr("Update"));
-  downloadButton->setPixmap(QPixmap(download));
-  connect(downloadButton, SIGNAL(clicked()), this, SLOT(getQuotes()));
-  downloadButton->setMaximumWidth(30);
-  downloadButton->setAutoRaise(TRUE);
-  toolbar->addWidget(downloadButton, 0, 1);
-
-  cancelDownloadButton = new QToolButton(this);
-  QToolTip::add(cancelDownloadButton, tr("Cancel Update"));
-  cancelDownloadButton->setPixmap(QPixmap(canceldownload));
-  connect(cancelDownloadButton, SIGNAL(clicked()), this, SLOT(cancelDownload()));
-  cancelDownloadButton->setMaximumWidth(30);
-  toolbar->addWidget(cancelDownloadButton, 0, 2);
-  cancelDownloadButton->setEnabled(FALSE);
-  cancelDownloadButton->setAutoRaise(TRUE);
-
-  newButton = new QToolButton(this);
-  QToolTip::add(newButton, tr("New Chart"));
-  newButton->setPixmap(QPixmap(newchart));
-  connect(newButton, SIGNAL(clicked()), this, SLOT(newChart()));
-  newButton->setMaximumWidth(30);
-  toolbar->addWidget(newButton, 0, 3);
-  newButton->setEnabled(FALSE);
-  newButton->setAutoRaise(TRUE);
+  setButton(QPixmap(newchart), tr("New Chart"), 4);
+  connect(getButton(4), SIGNAL(clicked()), this, SLOT(newChart()));
+  setButtonStatus(4, FALSE);
 
   ruleCombo = new QComboBox(this);
   ruleCombo->insertStringList(config->getQuotePlugins(), -1);
   connect (ruleCombo, SIGNAL(activated(int)), this, SLOT(ruleChanged(int)));
-  vbox->insertWidget(1, ruleCombo, 0, 0);
-
-  list = new SettingView (this, config->getData(Config::DataPath));
-  vbox->addWidget(list);
+  basebox->insertWidget(1, ruleCombo, 0, 0);
 
   ruleChanged(0);
 }
@@ -108,8 +74,8 @@ void QuoteDialog::getQuotes ()
 
   disableGUI();
 
-  cancelDownloadButton->setEnabled(TRUE);
-  
+  setButtonStatus(3, TRUE);
+
   list->updateSettings();
   
   QStringList l = settings->getKeyList();
@@ -138,8 +104,8 @@ void QuoteDialog::ruleChanged (int)
     
   if (! ruleCombo->count())
   {
-    downloadButton->setEnabled(FALSE);
-    newButton->setEnabled(FALSE);
+    setButtonStatus(2, FALSE);
+    setButtonStatus(4, FALSE);
     return;
   }
 
@@ -167,9 +133,9 @@ void QuoteDialog::ruleChanged (int)
   plug->setDataPath(config->getData(Config::DataPath));
   
   if (plug->getCreateFlag())
-    newButton->setEnabled(TRUE);
+    setButtonStatus(4, TRUE);
   else
-    newButton->setEnabled(FALSE);
+    setButtonStatus(4, FALSE);
 
   settings = new Setting;
   QStringList l = plug->getKeyList();
@@ -200,22 +166,24 @@ void QuoteDialog::cancelDownload ()
 void QuoteDialog::enableGUI ()
 {
   list->setEnabled(TRUE);
-  downloadButton->setEnabled(TRUE);
   ruleCombo->setEnabled(TRUE);
-  cancelButton->setEnabled(TRUE);
-  cancelDownloadButton->setEnabled(FALSE);
+
+  setButtonStatus(1, TRUE);
+  setButtonStatus(2, TRUE);
+  setButtonStatus(3, TRUE);
   if (plug->getCreateFlag())
-    newButton->setEnabled(TRUE);
+    setButtonStatus(4, TRUE);
 }
 
 void QuoteDialog::disableGUI ()
 {
   list->setEnabled(FALSE);
-  downloadButton->setEnabled(FALSE);
   ruleCombo->setEnabled(FALSE);
-  cancelButton->setEnabled(FALSE);
-  cancelDownloadButton->setEnabled(TRUE);
-  newButton->setEnabled(FALSE);
+
+  setButtonStatus(1, FALSE);
+  setButtonStatus(2, FALSE);
+  setButtonStatus(3, TRUE);
+  setButtonStatus(4, FALSE);
 }
 
 void QuoteDialog::newChart ()

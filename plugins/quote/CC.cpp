@@ -79,14 +79,20 @@ void CC::parse ()
     s = dataPath;
     s.append("/CC/");
     s.append(symbols[symbolLoop]);
+    
+    dir.remove(s, TRUE);
 
     ChartDb *db = new ChartDb();
     db->openChart(s);
+    newChart(db, symbols[symbolLoop], fd, dir);
+
+/*
     Setting *details = db->getDetails();
     if (! details->count())
       newChart(db, symbols[symbolLoop], fd, dir);
     else
       updateChart(db, symbols[symbolLoop], fd, dir);
+*/
 
     delete db;
   }
@@ -182,6 +188,7 @@ void CC::newChart (ChartDb *db, QString symbol, FuturesData *fd, QDir dir)
   delete pr;
 }
 
+/*
 void CC::updateChart (ChartDb *db, QString symbol, FuturesData *fd, QDir dir)
 {
   int rollover = getInt("Rollover");
@@ -259,6 +266,7 @@ void CC::updateChart (ChartDb *db, QString symbol, FuturesData *fd, QDir dir)
 
   delete pr;
 }
+*/
 
 Plugin * create ()
 {

@@ -26,6 +26,7 @@
 #include <qtoolbutton.h>
 #include <qlayout.h>
 #include <qlistview.h>
+#include <qlist.h>
 #include "SettingView.h"
 #include "Setting.h"
 #include "Config.h"
@@ -38,7 +39,12 @@ class EditDialog : public QDialog
     EditDialog (Config *);
     ~EditDialog ();
     void setItems (Setting *);
-    
+    void setButton (QPixmap, QString, int);
+    QToolButton * getButton (int);
+    void setButtonStatus (int, bool);
+    void hideSettingView (bool);
+    void unhookButton (int);
+
   public slots:
     void saveSettings ();
 
@@ -47,10 +53,9 @@ class EditDialog : public QDialog
     Setting *settings;
     SettingView *list;
     QListViewItem *item;
-    QToolButton *okButton;
-    QToolButton *cancelButton;
     QGridLayout *toolbar;
-    QVBoxLayout *vbox;
+    QVBoxLayout *basebox;
+    QList<QToolButton> buttonList;
 };
 
 #endif

@@ -21,74 +21,40 @@
 
 #include "EditChartDialog.h"
 #include "delete.xpm"
-#include "ok.xpm"
-#include "stop.xpm"
 #include "export.xpm"
-#include <qtooltip.h>
 
-EditChartDialog::EditChartDialog (Config *c, QString cp) : QDialog (0, "EditChartDialog", TRUE)
+EditChartDialog::EditChartDialog (Config *c, QString cp) : EditDialog (c)
 {
-  config = c;
   chartPath = cp;
   details = 0;
   record = 0;
 
   setCaption(tr("Qtstalker: Edit Chart"));
-  
-  QVBoxLayout *vbox = new QVBoxLayout(this);
-  vbox->setMargin(5);
-  vbox->setSpacing(5);
-  
-  toolbar = new QGridLayout(vbox, 1, 5);
-  toolbar->setSpacing(1);
 
-  okButton = new QToolButton(this);
-  QToolTip::add(okButton, tr("OK"));
-  okButton->setPixmap(QPixmap(ok));
-  connect(okButton, SIGNAL(clicked()), this, SLOT(accept()));
-  okButton->setMaximumWidth(30);
-  okButton->setAutoRaise(TRUE);
-  toolbar->addWidget(okButton, 0, 0);
-  okButton->setEnabled(FALSE);
+  hideSettingView(TRUE);
 
-  cancelButton = new QToolButton(this);
-  QToolTip::add(cancelButton, tr("Cancel"));
-  cancelButton->setPixmap(QPixmap(stop));
-  connect(cancelButton, SIGNAL(clicked()), this, SLOT(reject()));
-  cancelButton->setMaximumWidth(30);
-  cancelButton->setAutoRaise(TRUE);
-  toolbar->addWidget(cancelButton, 0, 1);
+  setButtonStatus(0, FALSE);
 
-  deleteButton = new QToolButton(this);
-  QToolTip::add(deleteButton, tr("Delete Record"));
-  deleteButton->setPixmap(QPixmap(deletefile));
-  connect(deleteButton, SIGNAL(clicked()), this, SLOT(deleteRecord()));
-  deleteButton->setMaximumWidth(30);
-  deleteButton->setAutoRaise(TRUE);
-  toolbar->addWidget(deleteButton, 0, 2);
-  deleteButton->setEnabled(FALSE);
+  setButton(QPixmap(deletefile), tr("Delete Record"), 2);
+  connect(getButton(2), SIGNAL(clicked()), this, SLOT(deleteRecord()));
+  setButtonStatus(2, FALSE);
 
-  saveButton = new QToolButton(this);
-  QToolTip::add(saveButton, tr("Save Record"));
-  saveButton->setPixmap(QPixmap(exportfile));
-  connect(saveButton, SIGNAL(clicked()), this, SLOT(saveRecord()));
-  saveButton->setMaximumWidth(30);
-  saveButton->setAutoRaise(TRUE);
-  toolbar->addWidget(saveButton, 0, 3);
-  saveButton->setEnabled(FALSE);
-  
+  setButton(QPixmap(exportfile), tr("Save Record"), 3);
+  connect(getButton(3), SIGNAL(clicked()), this, SLOT(saveRecord()));
+  setButtonStatus(3, FALSE);
+
   tab = new QTabWidget(this);
-  vbox->addWidget(tab);
+  basebox->addWidget(tab);
 
   // create details page
 
   QWidget *w = new QWidget(this);
 
-  QVBoxLayout *vbox2 = new QVBoxLayout(w);
-  vbox2->setMargin(5);
+  QVBoxLayout *vbox = new QVBoxLayout(w);
+  vbox->setMargin(5);
 
   detailList = new SettingView (w, config->getData(Config::DataPath));
-  vbox2->addWidget(detailList);
+  vbox->addWidget(detailList);
 
   tab->addTab(w, tr("Details"));
 
@@ -96,18 +62,18 @@ EditChartDialog::EditChartDialog (Config *c, QString cp) : QDialog (0, "EditChar
 
   w = new QWidget(this);
 
-  vbox2 = new QVBoxLayout(w);
-  vbox2->setMargin(5);
-  vbox2->setSpacing(5);
+  vbox = new QVBoxLayout(w);
+  vbox->setMargin(5);
+  vbox->setSpacing(5);
 
   date = new QDateEdit(QDate::currentDate(), w);
   date->setAutoAdvance(TRUE);
   date->setOrder(QDateEdit::YMD);
   connect(date, SIGNAL(valueChanged(const QDate &)), this, SLOT(dateChanged(const QDate &)));
-  vbox2->addWidget(date);
+  vbox->addWidget(date);
 
   recordList = new SettingView (w, config->getData(Config::DataPath));
-  vbox2->addWidget(recordList);
+  vbox->addWidget(recordList);
 
   tab->addTab(w, tr("Data"));
 
@@ -132,8 +98,8 @@ void EditChartDialog::deleteRecord ()
   recordList->clear();
   delete record;
   record = 0;
-  saveButton->setEnabled(FALSE);
-  deleteButton->setEnabled(FALSE);
+  setButtonStatus(2, FALSE);
+  setButtonStatus(3, FALSE);
 }
 
 void EditChartDialog::saveRecord ()
@@ -158,8 +124,8 @@ void EditChartDialog::dateChanged (const QDate &d)
   QString data = db->getData(key);
   if (! data.length())
   {
-    saveButton->setEnabled(FALSE);
-    deleteButton->setEnabled(FALSE);
+    setButtonStatus(2, FALSE);
+    setButtonStatus(3, FALSE);
     return;
   }
 
@@ -171,8 +137,8 @@ void EditChartDialog::dateChanged (const QDate &d)
 
   recordList->setItems(record);
 
-  saveButton->setEnabled(TRUE);
-  deleteButton->setEnabled(TRUE);
+  setButtonStatus(2, TRUE);
+  setButtonStatus(3, TRUE);
 }
 
 
