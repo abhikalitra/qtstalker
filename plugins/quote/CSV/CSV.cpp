@@ -93,6 +93,8 @@ void CSV::update ()
 
 void CSV::parse ()
 {
+  dateFormat = getData(tr("Date Format"));
+
   setDelimiter();
 
   FuturesData *fd = new FuturesData;
@@ -326,7 +328,20 @@ void CSV::setDelimiter ()
 QString CSV::getDate (QString d)
 {
   QString date;
+
+  while (1)
+  {
+    if (! dateFormat.compare(tr("YYYYMMDD")))
+    {
+      
+      break;
+    }
+
+    break;
+  }
+
   date = d;
+
   return date;
 }
 

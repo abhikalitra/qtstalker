@@ -37,6 +37,7 @@ class CSV : public QuotePlugin
 
   private:
     QString delimiter;
+    QString dateFormat;
 };
 
 extern "C"
