@@ -211,7 +211,7 @@ void StocksDialog::deleteRecord ()
       return;
   }
 
-  db->deleteData(date->text());
+  db->deleteData(dateSearch->dateTime().toString("yyyyMMddmmhhss"));
   
   clearRecordFields();
   
