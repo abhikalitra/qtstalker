@@ -155,6 +155,7 @@ void QuoteDialog::ruleChanged (int)
   plug = (*so)();
 
   connect (plug, SIGNAL(done()), this, SLOT(downloadComplete()));
+  connect (plug, SIGNAL(message(QString)), this, SLOT(printMessage(QString)));
 
   plug->setDataPath(config->getData(Config::DataPath));
   
@@ -229,5 +230,9 @@ void QuoteDialog::newChart ()
   delete dialog;
 }
 
+void QuoteDialog::printMessage (QString d)
+{
+  emit message(d);
+}
 
 

@@ -36,6 +36,8 @@ YahooQuote::YahooQuote ()
 
   about = "Downloads YahooQuote data\n";
   about.append("and imports it directly into qtstalker.\n");
+  
+  qInitNetworkProtocols();
 }
 
 YahooQuote::~YahooQuote ()
@@ -75,13 +77,14 @@ void YahooQuote::update ()
     return;
   }
 
-  qInitNetworkProtocols();
-
   QTimer::singleShot(250, this, SLOT(getFile()));
 }
 
 void YahooQuote::opDone (QNetworkOperation *o)
 {
+  if (! o)
+    return;
+
   if (o->state() == QNetworkProtocol::StDone && o->operation() == QNetworkProtocol::OpGet)
   {
     parse();
@@ -99,6 +102,14 @@ void YahooQuote::opDone (QNetworkOperation *o)
 
     getFile();
   }
+  
+  if (o->state() == QNetworkProtocol::StFailed)
+  {
+    emit message("Download error");
+    emit done();
+    delete op;
+    return;
+  }
 }
 
 void YahooQuote::getFile ()
@@ -110,6 +121,10 @@ void YahooQuote::getFile ()
   connect(op, SIGNAL(finished(QNetworkOperation *)), this, SLOT(opDone(QNetworkOperation *)));
   connect(op, SIGNAL(data(const QByteArray &, QNetworkOperation *)), this, SLOT(dataReady(const QByteArray &, QNetworkOperation *)));
   op->get();
+  
+  QString s = tr("Downloading ");
+  s.append(symbolList[symbolLoop]);
+  emit message(s);
 }
 
 void YahooQuote::dataReady (const QByteArray &d, QNetworkOperation *)

@@ -39,6 +39,8 @@ CME::CME ()
 
   about = "Downloads daily settlement quotes from CME\n";
   about.append("and imports it directly into qtstalker.");
+  
+  qInitNetworkProtocols();
 }
 
 CME::~CME ()
@@ -61,13 +63,14 @@ void CME::update ()
   urlList.append("ftp://ftp.cme.com//pub/settle/stleqt");
   urlList.append("ftp://ftp.cme.com//pub/settle/stlint");
 
-  qInitNetworkProtocols();
-
   QTimer::singleShot(250, this, SLOT(getFile()));
 }
 
 void CME::opDone (QNetworkOperation *o)
 {
+  if (! o)
+    return;
+
   if (o->state() != QNetworkProtocol::StDone)
     return;
 
@@ -109,6 +112,8 @@ void CME::getFile ()
   op = new QUrlOperator();
   connect(op, SIGNAL(finished(QNetworkOperation *)), this, SLOT(opDone(QNetworkOperation *)));
   op->copy(urlList[symbolLoop], file, FALSE, FALSE);
+  
+  emit message(tr("Downloading CME data"));
 }
 
 void CME::parseToday ()

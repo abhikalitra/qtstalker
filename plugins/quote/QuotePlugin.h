@@ -31,6 +31,7 @@ class QuotePlugin : public Plugin
 
   signals:
     void done ();
+    void message (QString);
 
   public:
     QuotePlugin ();

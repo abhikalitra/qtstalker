@@ -84,5 +84,3 @@ bool QuotePlugin::getCreateFlag ()
   return createFlag;
 }
 
-
-

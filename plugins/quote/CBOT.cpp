@@ -41,6 +41,8 @@ CBOT::CBOT ()
 
   about = "Downloads daily settlement quotes from CBOT\n";
   about.append("and imports it directly into qtstalker.");
+  
+  qInitNetworkProtocols();
 }
 
 CBOT::~CBOT ()
@@ -87,14 +89,14 @@ void CBOT::update ()
   s.append(y);
   s.append(".txt");
 
-  qInitNetworkProtocols();
-
   if (op)
     delete op;
   op = new QUrlOperator(s);
   connect(op, SIGNAL(finished(QNetworkOperation *)), this, SLOT(opDone(QNetworkOperation *)));
   connect(op, SIGNAL(data(const QByteArray &, QNetworkOperation *)), this, SLOT(dataReady(const QByteArray &, QNetworkOperation *)));
   op->get();
+  
+  emit message(tr("Downloading CBOT data"));
 }
 
 void CBOT::dataReady (const QByteArray &d, QNetworkOperation *)
@@ -150,9 +152,20 @@ QString CBOT::translateFraction3 (QString d)
 
 void CBOT::opDone (QNetworkOperation *o)
 {
+  if (! o)
+    return;
+
   if (o->state() == QNetworkProtocol::StDone && o->operation() == QNetworkProtocol::OpGet)
   {
     parse();
+    emit done();
+    delete op;
+    return;
+  }
+  
+  if (o->state() == QNetworkProtocol::StFailed)
+  {
+    emit message("Download error");
     emit done();
     delete op;
     return;

@@ -36,6 +36,8 @@ Yahoo::Yahoo ()
 
   about = "Downloads Yahoo data\n";
   about.append("and imports it directly into qtstalker.\n");
+  
+  qInitNetworkProtocols();
 }
 
 Yahoo::~Yahoo ()
@@ -79,8 +81,11 @@ void Yahoo::update ()
     db->openChart(s);
     Setting *details = db->getDetails();
 
-    QDateTime sdate = QDateTime::fromString(details->getDateTime("Last Date"), Qt::ISODate);
-    if (! sdate.isValid())
+    QDateTime sdate;
+    s = details->getDateTime("Last Date");
+    if (s.length())
+      sdate = QDateTime::fromString(s, Qt::ISODate);
+    else
       sdate = QDateTime::fromString("1990-01-0100:00:00", Qt::ISODate);
 
     s = "http://chart.yahoo.com/table.csv?s=";
@@ -111,13 +116,14 @@ void Yahoo::update ()
     return;
   }
 
-  qInitNetworkProtocols();
-
   QTimer::singleShot(250, this, SLOT(getFile()));
 }
 
 void Yahoo::opDone (QNetworkOperation *o)
 {
+  if (! o)
+    return;
+
   if (o->state() == QNetworkProtocol::StDone && o->operation() == QNetworkProtocol::OpGet)
   {
     parse();
@@ -134,6 +140,16 @@ void Yahoo::opDone (QNetworkOperation *o)
     data.truncate(0);
 
     getFile();
+    
+    return;
+  }
+
+  if (o->state() == QNetworkProtocol::StFailed)
+  {
+    emit message("Download error");
+    emit done();
+    delete op;
+    return;
   }
 }
 
@@ -146,6 +162,10 @@ void Yahoo::getFile ()
   connect(op, SIGNAL(finished(QNetworkOperation *)), this, SLOT(opDone(QNetworkOperation *)));
   connect(op, SIGNAL(data(const QByteArray &, QNetworkOperation *)), this, SLOT(dataReady(const QByteArray &, QNetworkOperation *)));
   op->get();
+  
+  QString s = tr("Downloading ");
+  s.append(symbolList[symbolLoop]);
+  emit message(s);
 }
 
 void Yahoo::dataReady (const QByteArray &d, QNetworkOperation *)

@@ -45,6 +45,8 @@ COT::COT ()
   setList(tr("Data"), l);
 
   about = "Downloads COT and creates a chart.";
+
+  qInitNetworkProtocols();
 }
 
 COT::~COT ()
@@ -55,9 +57,7 @@ void COT::update ()
 {
   data.truncate(0);
   op = 0;
-  
-  qInitNetworkProtocols();
-  
+
   QString s = getData("Data");
   if (! s.compare("Current"))
   {
@@ -84,6 +84,8 @@ void COT::getFile ()
   connect(op, SIGNAL(finished(QNetworkOperation *)), this, SLOT(opDone(QNetworkOperation *)));
   connect(op, SIGNAL(data(const QByteArray &, QNetworkOperation *)), this, SLOT(dataReady(const QByteArray &, QNetworkOperation *)));
   op->get();
+  
+  emit message(tr("Downloading COT data"));
 }
 
 void COT::getFile2 ()
@@ -96,10 +98,15 @@ void COT::getFile2 ()
   op = new QUrlOperator();
   connect(op, SIGNAL(finished(QNetworkOperation *)), this, SLOT(opDone2(QNetworkOperation *)));
   op->copy(url, file, FALSE, FALSE);
+  
+  emit message(tr("Downloading COT data"));
 }
 
 void COT::opDone (QNetworkOperation *o)
 {
+  if (! o)
+    return;
+
   if (o->state() == QNetworkProtocol::StDone && o->operation() == QNetworkProtocol::OpGet)
   {
     QFile f(file);
@@ -115,15 +122,27 @@ void COT::opDone (QNetworkOperation *o)
 
     emit done();
   }
+
+  if (o->state() == QNetworkProtocol::StFailed)
+  {
+    emit message(tr("Download error"));
+    emit done();
+    delete op;
+    return;
+  }
 }
 
 void COT::opDone2 (QNetworkOperation *o)
 {
+  if (! o)
+    return;
+
   if (o->state() != QNetworkProtocol::StDone)
     return;
 
   if (o->errorCode() != QNetworkProtocol::NoError)
   {
+    emit message(tr("Download error"));
     QString s = o->protocolDetail();
     qDebug(s.latin1());
     delete op;

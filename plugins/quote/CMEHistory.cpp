@@ -62,6 +62,8 @@ CMEHistory::CMEHistory ()
 
   about = "Downloads daily settlement quotes from CME\n";
   about.append("and imports it directly into qtstalker.");
+  
+  qInitNetworkProtocols();
 }
 
 CMEHistory::~CMEHistory ()
@@ -71,8 +73,6 @@ CMEHistory::~CMEHistory ()
 
 void CMEHistory::update ()
 {
-  qInitNetworkProtocols();
-
   QTimer::singleShot(250, this, SLOT(getFile()));
 }
 
@@ -93,15 +93,21 @@ void CMEHistory::getFile ()
   url.append("ytd.zip");
 
   op.copy(url, file, FALSE, FALSE);
+  
+  emit message(tr("Downloading CME data"));
 }
 
 void CMEHistory::opDone (QNetworkOperation *o)
 {
+  if (! o)
+    return;
+
   if (o->state() != QNetworkProtocol::StDone)
     return;
 
   if (o->errorCode() != QNetworkProtocol::NoError)
   {
+    emit message(tr("Download error"));
     QString s = o->protocolDetail();
     qDebug(s.latin1());
     emit done();

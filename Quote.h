@@ -53,6 +53,7 @@ class QuoteDialog : public QDialog
     void downloadComplete ();
     void cancelDownload ();
     void newChart ();
+    void printMessage (QString);
 
   private:
     Setting *settings;
