@@ -63,6 +63,7 @@ Plot::Plot (QWidget *w) : QWidget(w)
   mouseFlag = None;
   hideMainPlot = FALSE;
   tabFlag = TRUE;
+  crossHairFlag = FALSE;
   PAFBoxSize = 0;
   PAFReversal = 3;
 
@@ -258,6 +259,8 @@ void Plot::setHideMainPlot (bool d)
 
 void Plot::draw ()
 {
+  crossHairFlag = FALSE;
+
   buffer.fill(backgroundColor);
 
   if (data)
@@ -526,6 +529,17 @@ void Plot::drawLines ()
 void Plot::paintEvent (QPaintEvent *)
 {
   bitBlt(this, 0, 0, &buffer);
+
+  // redraw the crosshair
+  if (crossHairFlag)
+  {
+    QPainter painter;
+    painter.begin(this);
+    painter.setPen(QPen(borderColor, 1, QPen::DotLine));
+    painter.drawLine (0, crossHairY, buffer.width() - SCALE_WIDTH, crossHairY);
+    painter.drawLine (crossHairX, 0, crossHairX, buffer.height());
+    painter.end();
+  }
 }
 
 void Plot::resizeEvent (QResizeEvent *event)
@@ -591,7 +605,7 @@ void Plot::mousePressEvent (QMouseEvent *event)
     case LeftButton:
       crossHair(event->x(), event->y());
       updateStatusBar(event->x(), event->y());
-      emit leftMouseButton(event->x(), mainFlag);
+      emit leftMouseButton(event->x(), event->y(), mainFlag);
       break;
     case RightButton:
       emit rightMouseButton();
@@ -1329,16 +1343,18 @@ void Plot::drawInfo ()
 
 void Plot::crossHair (int x, int y)
 {
-  draw();
+  crossHairFlag = TRUE;
+  crossHairX = x;
+  crossHairY = y;
+
+  paintEvent(0);
 
   QPainter painter;
-  painter.begin(&buffer);
+  painter.begin(this);
   painter.setPen(QPen(borderColor, 1, QPen::DotLine));
   painter.drawLine (0, y, buffer.width() - SCALE_WIDTH, y);
   painter.drawLine (x, 0, x, buffer.height());
   painter.end();
-
-  paintEvent(0);
 }
 
 void Plot::updateStatusBar (int x, int y)
@@ -1646,7 +1662,7 @@ void Plot::setScale ()
     scaleLow = scaleLow - (scaleLow * 0.01);
   double range = scaleHigh - scaleLow;
   scaler = _height / range;
-  
+
   if (mainFlag && logScale)
   {
     logScaleHigh = scaleHigh > 0.0 ? log(scaleHigh) : 1;

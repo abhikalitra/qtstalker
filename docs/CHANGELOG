@@ -50,6 +50,7 @@
 
 - Fixed the Index plugin. Was not populating the chart with data due to bad symbol paths.
 
+- Tweaked the plot crosshairs to draw faster and y axis duplication if possible.
 
   
 0.22

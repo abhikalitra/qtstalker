@@ -45,7 +45,7 @@ class Plot : public QWidget
     void statusMessage (QString);
     void chartObjectCreated (Setting *);
     void infoMessage (Setting *);
-    void leftMouseButton (int, bool);
+    void leftMouseButton (int, int, bool);
 
   public:
 
@@ -191,6 +191,9 @@ class Plot : public QWidget
     bool logScale;
     bool hideMainPlot;
     bool tabFlag;
+    bool crossHairFlag;
+    int crossHairX;
+    int crossHairY;
 
     int scaleWidth;
     double scaleHigh;

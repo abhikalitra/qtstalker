@@ -156,7 +156,7 @@ QtstalkerApp::QtstalkerApp()
   QObject::connect(mainPlot, SIGNAL(statusMessage(QString)), this, SLOT(slotStatusMessage(QString)));
   QObject::connect(mainPlot, SIGNAL(chartObjectCreated(Setting *)), this, SLOT(slotChartObjectCreated(Setting *)));
   QObject::connect(mainPlot, SIGNAL(infoMessage(Setting *)), this, SLOT(slotUpdateInfo(Setting *)));
-  QObject::connect(mainPlot, SIGNAL(leftMouseButton(int, bool)), this, SLOT(slotPlotLeftMouseButton(int, bool)));
+  QObject::connect(mainPlot, SIGNAL(leftMouseButton(int, int, bool)), this, SLOT(slotPlotLeftMouseButton(int, int, bool)));
 
   QObject::connect(this, SIGNAL(signalGrid(bool)), mainPlot, SLOT(setGridFlag(bool)));
   QObject::connect(this, SIGNAL(signalScaleToScreen(bool)), mainPlot, SLOT(setScaleToScreen(bool)));
@@ -196,6 +196,15 @@ QtstalkerApp::QtstalkerApp()
   barCombo->setEnabled(FALSE);
 
   // setup the compression buttons
+  for (loop = 0; loop < (int) compressionCombo->count(); loop++)
+  {
+    QString s = compressionCombo->text(loop);
+    if (! s.compare(config->getData(Config::Compression)))
+    {
+      compressionCombo->setCurrentItem(loop);
+      break;
+    }
+  }
   compressionChanged(config->getData(Config::Compression));
 
   // set the grid status
@@ -1635,7 +1644,7 @@ void QtstalkerApp::addIndicatorButton (QString d, bool tabFlag)
   QObject::connect(this, SIGNAL(signalPlotDate(bool)), plot, SLOT(setDateFlag(bool)));
 
   // setup the crosshair signals
-  QObject::connect(plot, SIGNAL(leftMouseButton(int, bool)), this, SLOT(slotPlotLeftMouseButton(int, bool)));
+  QObject::connect(plot, SIGNAL(leftMouseButton(int, int, bool)), this, SLOT(slotPlotLeftMouseButton(int, int, bool)));
 
   if (tabFlag)
     tabs->addTab(plot, d);
@@ -1753,14 +1762,14 @@ void QtstalkerApp::slotPlotDate (bool d)
   slotTabChanged(0);
 }
 
-void QtstalkerApp::slotPlotLeftMouseButton (int x, bool mainFlag )
+void QtstalkerApp::slotPlotLeftMouseButton (int x, int y, bool mainFlag)
 {
   if (! mainFlag)
-    mainPlot->crossHair(x, 0);
+    mainPlot->crossHair(x, y);
 
   QDictIterator<Plot> it(plotList);
   for(; it.current(); ++it)
-    it.current()->crossHair(x, 0);
+    it.current()->crossHair(x, y);
 }
 
 //**********************************************************************
