@@ -57,9 +57,12 @@
 
 20050213: Fixed bug that segfaults if a turned off indicator is modified.
 
-20050214: Fixed bug #1122245 - issues with CSV plugin.
+20050214: Fixed bug #1122245 - issues with CSV and NYBOT plugins.
 
-	  	  
+20050214: F1-F12 keys now run macros assigned to them using the 'Assign Macro' menu option
+          in the Macro side panel.
+	  
+	  	  	  
 	  
 0.29
 ====

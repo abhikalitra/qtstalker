@@ -77,18 +77,18 @@ class Config
       IndicatorPageStatus,
       PlotSizes,
       Menubar,
-      MacroF1,
-      MacroF2,
-      MacroF3,
-      MacroF4,
-      MacroF5,
-      MacroF6,
-      MacroF7,
-      MacroF8,
-      MacroF9,
-      MacroF10,
-      MacroF11,
-      MacroF12
+      Macro1,
+      Macro2,
+      Macro3,
+      Macro4,
+      Macro5,
+      Macro6,
+      Macro7,
+      Macro8,
+      Macro9,
+      Macro10,
+      Macro11,
+      Macro12
     };
 
     Config ();

@@ -21,7 +21,6 @@
 
 #include "MainMenubar.h"
 #include "Macro.h"
-#include "Config.h"
 #include <qaccel.h>
 #include "done.xpm"
 #include "grid.xpm"
@@ -38,28 +37,25 @@
 #include "help.xpm"
 #include "qtstalker.xpm"
 
+
 MainMenubar::MainMenubar (QMainWindow *mw) : QMenuBar (mw, "mainMenubar")
 {
   keyFlag = FALSE;
   actions.setAutoDelete(FALSE);
-  Config config;
   
   QPixmap icon(finished);
-//  QAction *action  = new QAction(tr("Exit"), icon, tr("E&xit"), CTRL+Key_X, this);
-  QAction *action  = new QAction(icon, tr("E&xit"), 0, this, "actionExit");
+  QAction *action  = new QAction(icon, tr("E&xit"), CTRL+Key_1, this, "actionExit");
   action->setStatusTip(tr("Quit Qtstalker."));
   connect(action, SIGNAL(activated()), this, SIGNAL(signalExit()));
   actions.replace(Exit, action);
   
   icon = indicator;
-//  action = new QAction(tr("New Indicator..."), icon, tr("New &Indicator..."), CTRL+Key_I, this);
   action = new QAction(icon, tr("New &Indicator"), 0, this, "actionNewIndicator");
   action->setStatusTip(tr("Add a new indicator to chart."));
   connect(action, SIGNAL(activated()), mw, SLOT(slotNewIndicator()));
   actions.replace(NewIndicator, action);
 
   icon = configure;
-//  action = new QAction(tr("Edit Preferences..."), icon, tr("Edit &Preferences..."), CTRL+Key_P, this);
   action = new QAction(icon, tr("Edit &Preferences"), 0, this, "actionOptions");
   action->setStatusTip(tr("Modify user preferences."));
   connect(action, SIGNAL(activated()), mw, SLOT(slotOptions()));
@@ -67,7 +63,6 @@ MainMenubar::MainMenubar (QMainWindow *mw) : QMenuBar (mw, "mainMenubar")
 
   icon = gridicon;
   QString s = config.getData(Config::Grid);
-//  action = new QAction(tr("Chart Grid"), icon, tr("Chart &Grid"), CTRL+Key_G, this, 0, true);
   action = new QAction(icon, tr("Chart &Grid"), 0, this, "actionGrid");
   action->setStatusTip(tr("Toggle the chart grid."));
   action->setToggleAction(TRUE);
@@ -76,21 +71,18 @@ MainMenubar::MainMenubar (QMainWindow *mw) : QMenuBar (mw, "mainMenubar")
   actions.replace(Grid, action);
 
   icon = quotes;
-//  action = new QAction(tr("Quotes..."), icon, tr("&Quotes..."), CTRL+Key_Q, this);
   action = new QAction(icon, tr("&Quotes..."), 0, this, "actionQuote");
   action->setStatusTip(tr("Download quotes from internet."));
   connect(action, SIGNAL(activated()), mw, SLOT(slotQuotes()));
   actions.replace(Quotes, action);
 
   icon = datawindow;
-//  action = new QAction(tr("Data Window..."), icon, tr("&Data Window..."), CTRL+Key_D, this);
-  action = new QAction(icon, tr("&Data Window..."), 0, this, "actionDataWindow");
+  action = new QAction(icon, tr("&Data Window..."), ALT+Key_1, this, "actionDataWindow");
   action->setStatusTip(tr("Show the data window."));
   connect(action, SIGNAL(activated()), mw, SLOT(slotDataWindow()));
   actions.replace(DataWindow, action);
 
   icon = qtstalker;
-//  action = new QAction(tr("About"), icon, tr("&About..."), CTRL+Key_A, this);
   action = new QAction(icon, tr("&About..."), 0, this, "actionAbout");
   action->setStatusTip(tr("About Qtstalker."));
   connect(action, SIGNAL(activated()), mw, SLOT(slotAbout()));
@@ -98,7 +90,6 @@ MainMenubar::MainMenubar (QMainWindow *mw) : QMenuBar (mw, "mainMenubar")
 
   icon = scaletoscreen;
   s = config.getData(Config::ScaleToScreen);
-//  action = new QAction(tr("Scale To Screen"), icon, tr("&Scale To Screen"), CTRL+Key_S, this, 0, true);
   action = new QAction(icon, tr("&Scale To Screen"), 0, this, "actionScale");
   action->setStatusTip(tr("Scale chart to current screen data."));
   action->setToggleAction(TRUE);
@@ -107,7 +98,6 @@ MainMenubar::MainMenubar (QMainWindow *mw) : QMenuBar (mw, "mainMenubar")
   actions.replace(ScaleToScreen, action);
 
   icon = nav;
-//  action = new QAction(tr("Side Panel"), icon, tr("Side Pa&nel"), CTRL+Key_N, this, 0, true);
   action = new QAction(icon, tr("Side Pa&nel"), 0, this, "actionPanel");
   action->setStatusTip(tr("Toggle the side panel area from view."));
   action->setToggleAction(TRUE);
@@ -116,7 +106,6 @@ MainMenubar::MainMenubar (QMainWindow *mw) : QMenuBar (mw, "mainMenubar")
 
   icon = loggridicon;
   s = config.getData(Config::LogScale);
-//  action = new QAction(tr("Log Scaling"), icon, tr("&Log Scaling"), CTRL+Key_L, this, 0, true);
   action = new QAction(icon, tr("&Log Scaling"), 0, this, "actionLog");
   action->setStatusTip(tr("Toggle log scaling."));
   action->setToggleAction(TRUE);
@@ -125,7 +114,6 @@ MainMenubar::MainMenubar (QMainWindow *mw) : QMenuBar (mw, "mainMenubar")
   actions.replace(Log, action);
 
   icon = hidechart;
-//  action = new QAction(tr("Hide Main Plot"), icon, tr("Hide &Main Plot"), CTRL+Key_M, this, 0, true);
   action = new QAction(icon, tr("Hide &Main Plot"), 0, this, "actionHideMain");
   action->setStatusTip(tr("Hide the main plot."));
   action->setToggleAction(TRUE);
@@ -133,7 +121,6 @@ MainMenubar::MainMenubar (QMainWindow *mw) : QMenuBar (mw, "mainMenubar")
   actions.replace(HideMain, action);
 
   icon = date;
-//  action = new QAction(tr("Toggle Indicator Date"), icon, tr("Toggle Indicator Date"), 0, this, 0, true);
   action = new QAction(icon, tr("Toggle Indicator Date"), 0, this, "actionDate");
   action->setStatusTip(tr("Toggle indicator date."));
   action->setToggleAction(TRUE);
@@ -142,7 +129,6 @@ MainMenubar::MainMenubar (QMainWindow *mw) : QMenuBar (mw, "mainMenubar")
 
   icon = co;
   s = config.getData(Config::DrawMode);
-//  action = new QAction(tr("Toggle Draw Mode"), icon, tr("Toggle Dra&w Mode"), CTRL+Key_W, this, 0, true);
   action = new QAction(icon, tr("Toggle Dra&w Mode"), 0, this, "actionDraw");
   action->setStatusTip(tr("Toggle drawing mode."));
   action->setToggleAction(TRUE);
@@ -151,38 +137,48 @@ MainMenubar::MainMenubar (QMainWindow *mw) : QMenuBar (mw, "mainMenubar")
   actions.replace(DrawMode, action);
   
   icon = help;
-//  action = new QAction(tr("Help"), icon, tr("&Help..."), CTRL+Key_H, this);
-  action = new QAction(icon, tr("&Help..."), 0, this, "actionHelp");
+  action = new QAction(icon, tr("&Help..."), ALT+Key_3, this, "actionHelp");
   action->setStatusTip(tr("Display Help Dialog."));
   connect(action, SIGNAL(activated()), mw, SLOT(slotHelp()));
   actions.replace(Help, action);
   
-
- QAccel *a = new QAccel(mw);
- a->insertItem(CTRL+Key_C, 0);
- a->connectItem(0, this, SLOT(slotChartPanelFocus()));
- a->insertItem(CTRL+Key_G, 1);
- a->connectItem(1, this, SLOT(slotGroupPanelFocus()));
- a->insertItem(CTRL+Key_I, 2);
- a->connectItem(2, this, SLOT(slotIndicatorPanelFocus()));
- a->insertItem(CTRL+Key_P, 3);
- a->connectItem(3, this, SLOT(slotPortfolioPanelFocus()));
- a->insertItem(CTRL+Key_T, 4);
- a->connectItem(4, this, SLOT(slotTestPanelFocus()));
- a->insertItem(CTRL+Key_S, 5);
- a->connectItem(5, this, SLOT(slotScannerPanelFocus()));
- a->insertItem(CTRL+Key_M, 6);
- a->connectItem(6, this, SLOT(slotMacroPanelFocus()));
- a->insertItem(CTRL+Key_B, 7);
- a->connectItem(7, this, SLOT(slotToolbarFocus()));
- a->insertItem(CTRL+Key_Escape, 8);
- a->connectItem(8, mw, SLOT(slotStopMacro()));
+  QAccel *a = new QAccel(mw);
+  connect(a, SIGNAL(activated(int)), this, SLOT(slotAccel(int)));
+  a->insertItem(CTRL+Key_C, ChartPanelFocus);
+  a->insertItem(CTRL+Key_G, GroupPanelFocus);
+  a->insertItem(CTRL+Key_I, IndicatorPanelFocus);
+  a->insertItem(CTRL+Key_P, PortfolioPanelFocus);
+  a->insertItem(CTRL+Key_T, TestPanelFocus);
+  a->insertItem(CTRL+Key_S, ScannerPanelFocus);
+  a->insertItem(CTRL+Key_M, MacroPanelFocus);
+  a->insertItem(CTRL+Key_B, ToolbarFocus);
+  
+  a->insertItem(CTRL+Key_2, NewIndicator);
+  a->insertItem(CTRL+Key_3, Options);
+  a->insertItem(CTRL+Key_4, Grid);
+  a->insertItem(CTRL+Key_5, ScaleToScreen);
+  a->insertItem(CTRL+Key_6, Log);
+  a->insertItem(CTRL+Key_7, SidePanel);
+  a->insertItem(CTRL+Key_8, HideMain);
+  a->insertItem(CTRL+Key_9, IndicatorDate);
+  a->insertItem(CTRL+Key_0, DrawMode);
+  a->insertItem(ALT+Key_2, Quotes);
+  
+  a->insertItem(CTRL+Key_Escape, 8);
+  a->connectItem(8, mw, SLOT(slotStopMacro()));
  
-  // test for tab
-//  action = new QAction(mw, 0, FALSE);
-//  action->setAccel(Key_Tab);
-//  connect(action, SIGNAL(activated()), this, SLOT(slotDummy()));
-//  actions.replace(99, action);
+  a->insertItem(Key_F1, Macro1);
+  a->insertItem(Key_F2, Macro2);
+  a->insertItem(Key_F3, Macro3);
+  a->insertItem(Key_F4, Macro4);
+  a->insertItem(Key_F5, Macro5);
+  a->insertItem(Key_F6, Macro6);
+  a->insertItem(Key_F7, Macro7);
+  a->insertItem(Key_F8, Macro8);
+  a->insertItem(Key_F9, Macro9);
+  a->insertItem(Key_F10, Macro10);
+  a->insertItem(Key_F11, Macro11);
+  a->insertItem(Key_F12, Macro12);
   
   createMenus();
   
@@ -247,8 +243,6 @@ void MainMenubar::setStatus (int d, bool f)
 
 void MainMenubar::saveSettings ()
 {
-  Config config;
-  
   config.setData(Config::DrawMode, QString::number(getStatus(DrawMode)));
 }
 
@@ -257,59 +251,261 @@ void MainMenubar::setKeyFlag (bool d)
   keyFlag = d;
 }
 
-void MainMenubar::slotChartPanelFocus ()
+void MainMenubar::slotAccel (int id)
 {
-  emit signalFocusEvent(Macro::ChartPage);
-  if (keyFlag)
-    emit signalKeyPressed (Macro::SidePanel, ControlButton, Key_C, 0, QString());
+  switch (id)
+  {
+    case NewIndicator:
+      emit signalNewIndicator();
+      if (keyFlag)
+        emit signalKeyPressed (Macro::Menubar, ControlButton, Key_2, 0, QString());
+      break;
+    case Options:
+      emit signalOptions();
+      if (keyFlag)
+        emit signalKeyPressed (Macro::Menubar, ControlButton, Key_3, 0, QString());
+      break;
+    case Grid:
+      getAction(Grid)->toggle();
+      if (keyFlag)
+        emit signalKeyPressed (Macro::Menubar, ControlButton, Key_4, 0, QString());
+      break;
+    case Quotes:
+      emit signalQuotes();
+      if (keyFlag)
+        emit signalKeyPressed (Macro::Menubar, AltButton, Key_2, 0, QString());
+      break;
+    case ScaleToScreen:
+      getAction(ScaleToScreen)->toggle();
+      if (keyFlag)
+        emit signalKeyPressed (Macro::Menubar, ControlButton, Key_5, 0, QString());
+      break;
+    case SidePanel:
+      getAction(SidePanel)->toggle();
+      if (keyFlag)
+        emit signalKeyPressed (Macro::Menubar, ControlButton, Key_7, 0, QString());
+      break;
+    case Log:
+      getAction(Log)->toggle();
+      if (keyFlag)
+        emit signalKeyPressed (Macro::Menubar, ControlButton, Key_6, 0, QString());
+      break;
+    case HideMain:
+      getAction(HideMain)->toggle();
+      if (keyFlag)
+        emit signalKeyPressed (Macro::Menubar, ControlButton, Key_8, 0, QString());
+      break;
+    case IndicatorDate:
+      getAction(IndicatorDate)->toggle();
+      if (keyFlag)
+        emit signalKeyPressed (Macro::Menubar, ControlButton, Key_9, 0, QString());
+      break;
+    case DrawMode:
+      getAction(DrawMode)->toggle();
+      if (keyFlag)
+        emit signalKeyPressed (Macro::Menubar, ControlButton, Key_0, 0, QString());
+      break;
+    case ChartPanelFocus:
+      emit signalFocusEvent(Macro::ChartPage);
+      if (keyFlag)
+        emit signalKeyPressed (Macro::SidePanel, ControlButton, Key_C, 0, QString());
+      break;
+    case GroupPanelFocus:
+      emit signalFocusEvent(Macro::GroupPage);
+      if (keyFlag)
+        emit signalKeyPressed (Macro::SidePanel, ControlButton, Key_G, 0, QString());
+      break;
+    case IndicatorPanelFocus:
+      emit signalFocusEvent(Macro::IndicatorPage);
+      if (keyFlag)
+        emit signalKeyPressed (Macro::SidePanel, ControlButton, Key_I, 0, QString());
+      break;
+    case PortfolioPanelFocus:
+      emit signalFocusEvent(Macro::PortfolioPage);
+      if (keyFlag)
+        emit signalKeyPressed (Macro::SidePanel, ControlButton, Key_P, 0, QString());
+      break;
+    case TestPanelFocus:
+      emit signalFocusEvent(Macro::TestPage);
+      if (keyFlag)
+        emit signalKeyPressed (Macro::SidePanel, ControlButton, Key_T, 0, QString());
+      break;
+    case ScannerPanelFocus:
+      emit signalFocusEvent(Macro::ScannerPage);
+      if (keyFlag)
+        emit signalKeyPressed (Macro::SidePanel, ControlButton, Key_S, 0, QString());
+      break;
+    case MacroPanelFocus:
+      emit signalFocusEvent(Macro::MacroPage);
+      if (keyFlag)
+        emit signalKeyPressed (Macro::SidePanel, ControlButton, Key_M, 0, QString());
+      break;
+    case ToolbarFocus:
+      emit signalToolbarFocusEvent();
+      if (keyFlag)
+        emit signalKeyPressed (Macro::ChartToolbar, ControlButton, Key_B, 0, QString());
+      break;
+    case Macro1:
+      emit signalRunMacro(config.getData(Config::Macro1));
+      if (keyFlag)
+        emit signalKeyPressed (Macro::Menubar, 0, Key_F1, 0, QString());
+      break;
+    case Macro2:
+      emit signalRunMacro(config.getData(Config::Macro2));
+      if (keyFlag)
+        emit signalKeyPressed (Macro::Menubar, 0, Key_F2, 0, QString());
+      break;
+    case Macro3:
+      emit signalRunMacro(config.getData(Config::Macro3));
+      if (keyFlag)
+        emit signalKeyPressed (Macro::Menubar, 0, Key_F3, 0, QString());
+      break;
+    case Macro4:
+      emit signalRunMacro(config.getData(Config::Macro4));
+      if (keyFlag)
+        emit signalKeyPressed (Macro::Menubar, 0, Key_F4, 0, QString());
+      break;
+    case Macro5:
+      emit signalRunMacro(config.getData(Config::Macro5));
+      if (keyFlag)
+        emit signalKeyPressed (Macro::Menubar, 0, Key_F5, 0, QString());
+      break;
+    case Macro6:
+      emit signalRunMacro(config.getData(Config::Macro6));
+      if (keyFlag)
+        emit signalKeyPressed (Macro::Menubar, 0, Key_F6, 0, QString());
+      break;
+    case Macro7:
+      emit signalRunMacro(config.getData(Config::Macro7));
+      if (keyFlag)
+        emit signalKeyPressed (Macro::Menubar, 0, Key_F7, 0, QString());
+      break;
+    case Macro8:
+      emit signalRunMacro(config.getData(Config::Macro8));
+      if (keyFlag)
+        emit signalKeyPressed (Macro::Menubar, 0, Key_F8, 0, QString());
+      break;
+    case Macro9:
+      emit signalRunMacro(config.getData(Config::Macro9));
+      if (keyFlag)
+        emit signalKeyPressed (Macro::Menubar, 0, Key_F9, 0, QString());
+      break;
+    case Macro10:
+      emit signalRunMacro(config.getData(Config::Macro10));
+      if (keyFlag)
+        emit signalKeyPressed (Macro::Menubar, 0, Key_F10, 0, QString());
+      break;
+    case Macro11:
+      emit signalRunMacro(config.getData(Config::Macro11));
+      if (keyFlag)
+        emit signalKeyPressed (Macro::Menubar, 0, Key_F11, 0, QString());
+      break;
+    case Macro12:
+      emit signalRunMacro(config.getData(Config::Macro12));
+      if (keyFlag)
+        emit signalKeyPressed (Macro::Menubar, 0, Key_F12, 0, QString());
+      break;
+    default:
+      break;
+  }
 }
 
-void MainMenubar::slotGroupPanelFocus()
+void MainMenubar::doKeyPress (QKeyEvent *key)
 {
-  emit signalFocusEvent(Macro::GroupPage);
-  if (keyFlag)
-    emit signalKeyPressed (Macro::SidePanel, ControlButton, Key_G, 0, QString());
-}
+  key->accept();
 
-void MainMenubar::slotIndicatorPanelFocus()
-{
-  emit signalFocusEvent(Macro::IndicatorPage);
-  if (keyFlag)
-    emit signalKeyPressed (Macro::SidePanel, ControlButton, Key_I, 0, QString());
-}
-
-void MainMenubar::slotPortfolioPanelFocus()
-{
-  emit signalFocusEvent(Macro::PortfolioPage);
-  if (keyFlag)
-    emit signalKeyPressed (Macro::SidePanel, ControlButton, Key_P, 0, QString());
-}
-
-void MainMenubar::slotTestPanelFocus()
-{
-  emit signalFocusEvent(Macro::TestPage);
-  if (keyFlag)
-    emit signalKeyPressed (Macro::SidePanel, ControlButton, Key_T, 0, QString());
-}
-
-void MainMenubar::slotScannerPanelFocus()
-{
-  emit signalFocusEvent(Macro::ScannerPage);
-  if (keyFlag)
-    emit signalKeyPressed (Macro::SidePanel, ControlButton, Key_S, 0, QString());
-}
-
-void MainMenubar::slotMacroPanelFocus()
-{
-  emit signalFocusEvent(Macro::MacroPage);
-  if (keyFlag)
-    emit signalKeyPressed (Macro::SidePanel, ControlButton, Key_M, 0, QString());
-}
-
-void MainMenubar::slotToolbarFocus()
-{
-  emit signalToolbarFocusEvent();
-  if (keyFlag)
-    emit signalKeyPressed (Macro::ChartToolbar, ControlButton, Key_B, 0, QString());
+  if (key->state() == Qt::ControlButton)
+  {
+    switch (key->key())
+    {
+      case Qt::Key_2:
+	slotAccel(NewIndicator);
+        break;
+      case Qt::Key_3:
+	slotAccel(Options);
+        break;
+      case Qt::Key_4:
+	slotAccel(Grid);
+        break;
+      case Qt::Key_5:
+	slotAccel(ScaleToScreen);
+        break;
+      case Qt::Key_6:
+	slotAccel(Log);
+        break;
+      case Qt::Key_7:
+	slotAccel(SidePanel);
+        break;
+      case Qt::Key_8:
+	slotAccel(HideMain);
+        break;
+      case Qt::Key_9:
+	slotAccel(IndicatorDate);
+        break;
+      case Qt::Key_0:
+	slotAccel(DrawMode);
+        break;
+      default:
+        break;
+    }
+  }
+  else
+  {
+    if (key->state() == Qt::AltButton)
+    {
+      switch (key->key())
+      {
+        case Qt::Key_2:
+	  slotAccel(Quotes);
+          break;
+        default:
+          break;
+      }
+    }
+    else
+    {
+      switch (key->key())
+      {
+        case Qt::Key_F1:
+	  slotAccel(Macro1);
+          break;
+        case Qt::Key_F2:
+	  slotAccel(Macro2);
+          break;
+        case Qt::Key_F3:
+	  slotAccel(Macro3);
+          break;
+        case Qt::Key_F4:
+	  slotAccel(Macro4);
+          break;
+        case Qt::Key_F5:
+	  slotAccel(Macro5);
+          break;
+        case Qt::Key_F6:
+	  slotAccel(Macro6);
+          break;
+        case Qt::Key_F7:
+	  slotAccel(Macro7);
+          break;
+        case Qt::Key_F8:
+	  slotAccel(Macro8);
+          break;
+        case Qt::Key_F9:
+	  slotAccel(Macro9);
+          break;
+        case Qt::Key_F10:
+	  slotAccel(Macro10);
+          break;
+        case Qt::Key_F11:
+	  slotAccel(Macro11);
+          break;
+        case Qt::Key_F12:
+	  slotAccel(Macro12);
+          break;
+        default:
+          break;
+      }
+    }
+  }
 }
 

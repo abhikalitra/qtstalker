@@ -28,6 +28,8 @@
 #include <qpopupmenu.h>
 #include <qintdict.h>
 #include <qaction.h>
+#include "Config.h"
+
 
 class MainMenubar : public QMenuBar
 {
@@ -41,9 +43,14 @@ class MainMenubar : public QMenuBar
     void signalPlotDate (bool);
     void signalLog (bool);
     void signalHideMain (bool);
+    void signalSidePanel (bool);
     void signalFocusEvent (int);
     void signalKeyPressed (int, int, int, int, QString);
     void signalToolbarFocusEvent ();
+    void signalRunMacro (QString);
+    void signalNewIndicator();
+    void signalOptions();
+    void signalQuotes();
     
   public:
   
@@ -62,7 +69,27 @@ class MainMenubar : public QMenuBar
       HideMain,
       IndicatorDate,
       DrawMode,
-      Help
+      Help,
+      ChartPanelFocus,
+      GroupPanelFocus,
+      IndicatorPanelFocus,
+      PortfolioPanelFocus,
+      TestPanelFocus,
+      ScannerPanelFocus,
+      MacroPanelFocus,
+      ToolbarFocus,
+      Macro1,
+      Macro2,
+      Macro3,
+      Macro4,
+      Macro5,
+      Macro6,
+      Macro7,
+      Macro8,
+      Macro9,
+      Macro10,
+      Macro11,
+      Macro12
     };
   
     MainMenubar(QMainWindow *);
@@ -74,17 +101,15 @@ class MainMenubar : public QMenuBar
     void saveSettings ();
     
   public slots:
-    void slotChartPanelFocus ();
-    void slotGroupPanelFocus();
-    void slotIndicatorPanelFocus();
-    void slotPortfolioPanelFocus();
-    void slotTestPanelFocus();
-    void slotScannerPanelFocus();
-    void slotMacroPanelFocus();
-    void slotToolbarFocus();
+    void slotAccel (int);
     void setKeyFlag (bool);
+    void doKeyPress (QKeyEvent *);
+    
+//  protected:
+//    virtual void keyPressEvent (QKeyEvent *);
     
   private:
+    Config config;
     QPopupMenu *fileMenu;
     QPopupMenu *editMenu;
     QPopupMenu *viewMenu;

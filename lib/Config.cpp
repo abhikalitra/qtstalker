@@ -265,41 +265,41 @@ QString Config::getData (Parm p)
     case Menubar:
       s = settings.readEntry("/Qtstalker/Menubar", "1");
       break;
-    case MacroF1:
-      s = settings.readEntry("/Qtstalker/MacroF1");
+    case Macro1:
+      s = settings.readEntry("/Qtstalker/Macro1");
       break;
-    case MacroF2:
-      s = settings.readEntry("/Qtstalker/MacroF2");
+    case Macro2:
+      s = settings.readEntry("/Qtstalker/Macro2");
       break;
-    case MacroF3:
-      s = settings.readEntry("/Qtstalker/MacroF3");
+    case Macro3:
+      s = settings.readEntry("/Qtstalker/Macro3");
       break;
-    case MacroF4:
-      s = settings.readEntry("/Qtstalker/MacroF4");
+    case Macro4:
+      s = settings.readEntry("/Qtstalker/Macro4");
       break;
-    case MacroF5:
-      s = settings.readEntry("/Qtstalker/MacroF5");
+    case Macro5:
+      s = settings.readEntry("/Qtstalker/Macro5");
       break;
-    case MacroF6:
-      s = settings.readEntry("/Qtstalker/MacroF6");
+    case Macro6:
+      s = settings.readEntry("/Qtstalker/Macro6");
       break;
-    case MacroF7:
-      s = settings.readEntry("/Qtstalker/MacroF7");
+    case Macro7:
+      s = settings.readEntry("/Qtstalker/Macro7");
       break;
-    case MacroF8:
-      s = settings.readEntry("/Qtstalker/MacroF8");
+    case Macro8:
+      s = settings.readEntry("/Qtstalker/Macro8");
       break;
-    case MacroF9:
-      s = settings.readEntry("/Qtstalker/MacroF9");
+    case Macro9:
+      s = settings.readEntry("/Qtstalker/Macro9");
       break;
-    case MacroF10:
-      s = settings.readEntry("/Qtstalker/MacroF10");
+    case Macro10:
+      s = settings.readEntry("/Qtstalker/Macro10");
       break;
-    case MacroF11:
-      s = settings.readEntry("/Qtstalker/MacroF11");
+    case Macro11:
+      s = settings.readEntry("/Qtstalker/Macro11");
       break;
-    case MacroF12:
-      s = settings.readEntry("/Qtstalker/MacroF12");
+    case Macro12:
+      s = settings.readEntry("/Qtstalker/Macro12");
       break;
     default:
       break;
@@ -438,41 +438,41 @@ void Config::setData (Parm p, QString d)
     case Menubar:
       settings.writeEntry("/Qtstalker/Menubar", d);
       break;
-    case MacroF1:
-      settings.writeEntry("/Qtstalker/MacroF1", d);
+    case Macro1:
+      settings.writeEntry("/Qtstalker/Macro1", d);
       break;
-    case MacroF2:
-      settings.writeEntry("/Qtstalker/MacroF2", d);
+    case Macro2:
+      settings.writeEntry("/Qtstalker/Macro2", d);
       break;
-    case MacroF3:
-      settings.writeEntry("/Qtstalker/MacroF3", d);
+    case Macro3:
+      settings.writeEntry("/Qtstalker/Macro3", d);
       break;
-    case MacroF4:
-      settings.writeEntry("/Qtstalker/MacroF4", d);
+    case Macro4:
+      settings.writeEntry("/Qtstalker/Macro4", d);
       break;
-    case MacroF5:
-      settings.writeEntry("/Qtstalker/MacroF5", d);
+    case Macro5:
+      settings.writeEntry("/Qtstalker/Macro5", d);
       break;
-    case MacroF6:
-      settings.writeEntry("/Qtstalker/MacroF6", d);
+    case Macro6:
+      settings.writeEntry("/Qtstalker/Macro6", d);
       break;
-    case MacroF7:
-      settings.writeEntry("/Qtstalker/MacroF7", d);
+    case Macro7:
+      settings.writeEntry("/Qtstalker/Macro7", d);
       break;
-    case MacroF8:
-      settings.writeEntry("/Qtstalker/MacroF8", d);
+    case Macro8:
+      settings.writeEntry("/Qtstalker/Macro8", d);
       break;
-    case MacroF9:
-      settings.writeEntry("/Qtstalker/MacroF9", d);
+    case Macro9:
+      settings.writeEntry("/Qtstalker/Macro9", d);
       break;
-    case MacroF10:
-      settings.writeEntry("/Qtstalker/MacroF10", d);
+    case Macro10:
+      settings.writeEntry("/Qtstalker/Macro10", d);
       break;
-    case MacroF11:
-      settings.writeEntry("/Qtstalker/MacroF11", d);
+    case Macro11:
+      settings.writeEntry("/Qtstalker/Macro11", d);
       break;
-    case MacroF12:
-      settings.writeEntry("/Qtstalker/MacroF12", d);
+    case Macro12:
+      settings.writeEntry("/Qtstalker/Macro12", d);
       break;
     default:
       break;
