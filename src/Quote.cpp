@@ -33,7 +33,7 @@
 #include <qpixmap.h>
 #include <qtooltip.h>
 
-QuoteDialog::QuoteDialog () : QTabDialog (0, "QuoteDialog", FALSE)
+QuoteDialog::QuoteDialog () : QTabDialog (0, "QuoteDialog", TRUE)
 {
   setCaption (tr("Qtstalker: Quotes"));
   
@@ -111,7 +111,7 @@ QuoteDialog::QuoteDialog () : QTabDialog (0, "QuoteDialog", FALSE)
   addTab(w, tr("Data"));
   
   setOkButton(tr("&Done"));
-  QObject::connect(this, SIGNAL(applyButtonPressed()), this, SLOT(done()));
+  QObject::connect(this, SIGNAL(applyButtonPressed()), this, SLOT(accept()));
   
   setHelpButton();
   QObject::connect(this, SIGNAL(helpButtonPressed()), this, SLOT(help()));
@@ -244,10 +244,5 @@ void QuoteDialog::help ()
 {
   HelpWindow *hw = new HelpWindow(this, "quotes.html");
   hw->show();
-}
-
-void QuoteDialog::done ()
-{
-  emit exit();
 }
 

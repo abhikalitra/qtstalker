@@ -1,3 +1,10 @@
+0.28
+====
+
+20041002: Changed quotes dialog back to modal to fix segfaults.
+
+
+
 0.27
 ====
 

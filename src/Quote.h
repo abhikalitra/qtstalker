@@ -37,7 +37,6 @@ class QuoteDialog : public QTabDialog
   signals:
     void chartUpdated ();
     void message (QString);
-    void exit ();
 
   public:
     QuoteDialog ();
@@ -54,7 +53,6 @@ class QuoteDialog : public QTabDialog
     void printStatusLogMessage (QString);
     void printDataLogMessage (QString);
     void help ();
-    void done ();
 
   private:
     Config config;
