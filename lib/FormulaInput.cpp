@@ -31,7 +31,7 @@ FormulaInput::FormulaInput (QWidget *w, bool f, QString in) : QWidget(w)
   flag = f;
   
   BarData *it = new BarData;
-  inputTypeList = it->getInputFields();
+  it->getInputFields(inputTypeList);
   delete it;
 
   QGridLayout *grid = new QGridLayout(this, 1, 2);

@@ -146,7 +146,9 @@ VerticalLineObject::Status VerticalLineObject::getStatus ()
 
 void VerticalLineObject::getSettings (Setting &set)
 {
-  set.setData("Date", date.getDateTimeString(FALSE));
+  QString s;
+  date.getDateTimeString(FALSE, s);
+  set.setData("Date", s);
   set.setData("Color", color.name());
   set.setData("Plot", plot);
   set.setData("Name", name);
@@ -155,7 +157,8 @@ void VerticalLineObject::getSettings (Setting &set)
 
 void VerticalLineObject::setSettings (Setting &set)
 {
-  date.setDate(set.getData("Date"));
+  QString s = set.getData("Date");
+  date.setDate(s);
   color.setNamedColor(set.getData("Color"));
   plot = set.getData("Plot");
   name = set.getData("Name");

@@ -987,7 +987,8 @@ void CME::parse (Setting *data)
   }
   
   Bar bar;
-  if (bar.setDate(data->getData("Date")))
+  s = data->getData("Date");
+  if (bar.setDate(s))
   {
     emit statusLogMessage("Bad date " + data->getData("Date"));
     config.closePlugin("Futures");

@@ -95,6 +95,8 @@ void DbPlugin::getData (QString &k, QString &d)
 
   if (db->get(db, NULL, &key, &data, 0) == 0)
     d = (char *) data.data;
+  else
+    d.truncate(0);
 }
 
 void DbPlugin::setData (QString &k, QString &d)
@@ -174,7 +176,7 @@ void DbPlugin::setChartObject (QString &d, Setting &set)
     ts.parse(l[loop]);
     if (! ts.getData("Name").compare(d))
     {
-      l[loop] = set.getString();
+      set.getString(l[loop]);
       flag = TRUE;
       break;
     }
@@ -182,7 +184,8 @@ void DbPlugin::setChartObject (QString &d, Setting &set)
   
   if (! flag)
   {
-    l.append(set.getString());
+    set.getString(s);
+    l.append(s);
     flag = TRUE;
   }
   
@@ -244,7 +247,8 @@ void DbPlugin::dump (QString &d, bool f)
         continue;
     
       BarDate dt;
-      if (dt.setDate((char *) key.data))
+      QString s = (char *) key.data;
+      if (dt.setDate(s))
         continue;
   
       outStream << (char *) key.data << "," << (char *) data.data << "\n";
@@ -274,10 +278,10 @@ Bar * DbPlugin::getFirstBar ()
       continue;
     
     BarDate dt;
-    if (dt.setDate((char *) key.data))
+    QString k = (char *) key.data;
+    if (dt.setDate(k))
       continue;
 
-    QString k = (char *) key.data;
     QString d = (char *) data.data;
     bar = getBar(k, d);
    
@@ -304,10 +308,10 @@ Bar * DbPlugin::getLastBar ()
       continue;
     
     BarDate dt;
-    if (dt.setDate((char *) key.data))
+    QString k = (char *) key.data;
+    if (dt.setDate(k))
       continue;
 
-    QString k = (char *) key.data;
     QString d = (char *) data.data;
     bar = getBar(k, d);
     
@@ -398,10 +402,10 @@ void DbPlugin::getDailyHistory ()
       continue;
     
     BarDate dt;
-    if (dt.setDate((char *) key.data))
+    QString k = (char *) key.data;
+    if (dt.setDate(k))
       continue;
 
-    QString k = (char *) key.data;
     QString d = (char *) data.data;
     Bar *bar = getBar(k, d);
     bar->setTickFlag(barType);
@@ -433,10 +437,10 @@ void DbPlugin::getDailyTickHistory ()
       continue;
     
     BarDate dt;
-    if (dt.setDate((char *) key.data))
+    QString k = (char *) key.data;
+    if (dt.setDate(k))
       continue;
     
-    QString k = (char *) key.data;
     QString d = (char *) data.data;
     tbar = getBar(k, d);
     
@@ -457,8 +461,10 @@ void DbPlugin::getDailyTickHistory ()
         bar = new Bar;
 	
 	BarDate dt;
-	dt.setDate(tbar->getDate().getDate());
-	dt.setTime(QTime(0, 0, 0, 0));
+	QDate t = tbar->getDate().getDate();
+	dt.setDate(t);
+	QTime t2(0, 0, 0, 0);
+	dt.setTime(t2);
         bar->setDate(dt);
         bar->setOpen(tbar->getOpen());
         bar->setHigh(tbar->getHigh());
@@ -472,8 +478,10 @@ void DbPlugin::getDailyTickHistory ()
       bar = new Bar;
 	
       BarDate dt;
-      dt.setDate(tbar->getDate().getDate());
-      dt.setTime(QTime(0, 0, 0, 0));
+      QDate t = tbar->getDate().getDate();
+      dt.setDate(t);
+      QTime t2(0, 0, 0, 0);
+      dt.setTime(t2);
       bar->setDate(dt);
       bar->setOpen(tbar->getOpen());
       bar->setHigh(tbar->getHigh());
@@ -517,7 +525,8 @@ void DbPlugin::getWeeklyHistory ()
       continue;
     
     BarDate dt;
-    if (dt.setDate((char *) key.data))
+    QString k = (char *) key.data;
+    if (dt.setDate(k))
       continue;
       
     int tweek = dt.getDate().weekNumber(&tyear);
@@ -530,7 +539,6 @@ void DbPlugin::getWeeklyHistory ()
       else
         barData->prepend(bar);
 	
-      QString k = (char *) key.data;
       QString d = (char *) data.data;
       bar = getBar(k, d);
     }
@@ -551,7 +559,6 @@ void DbPlugin::getWeeklyHistory ()
       }
     }      
 
-    QString k = (char *) key.data;
     QString d = (char *) data.data;
     Bar *tbar = getBar(k, d);
     if (tbar->getHigh() > bar->getHigh())
@@ -594,7 +601,8 @@ void DbPlugin::getMonthlyHistory ()
       continue;
     
     BarDate dt;
-    if (dt.setDate((char *) key.data))
+    QString k = (char *) key.data;
+    if (dt.setDate(k))
       continue;
       
     int tmonth = dt.getDate().month();
@@ -608,7 +616,6 @@ void DbPlugin::getMonthlyHistory ()
       else
         barData->prepend(bar);
 	
-      QString k = (char *) key.data;
       QString d = (char *) data.data;
       bar = getBar(k, d);
     }
@@ -629,7 +636,6 @@ void DbPlugin::getMonthlyHistory ()
       }
     }      
 
-    QString k = (char *) key.data;
     QString d = (char *) data.data;
     Bar *tbar = getBar(k, d);
     if (tbar->getHigh() > bar->getHigh())
@@ -662,25 +668,29 @@ void DbPlugin::getTickHistory (int mins)
     return;
     
   BarDate ed;
-  ed.setDate(lbar->getDate().getDate());
-  ed.setTime(lbar->getDate().getTime());
+  QDate tdt = lbar->getDate().getDate();
+  ed.setDate(tdt);
+  QTime tt = lbar->getDate().getTime();
+  ed.setTime(tt);
   int t = (int) ed.getTime().minute() / mins;
   t++;
   ed.addSecs(((t * mins) - ed.getTime().minute()) * 60);
   delete lbar;
   
   BarDate sd;
-  sd.setDate(ed.getDateTimeString(FALSE));
+  QString s;
+  ed.getDateTimeString(FALSE, s);
+  sd.setDate(s);
   sd.addSecs(-(mins * 60));
   
-  QString s;
   getHeaderField(BarType, s);
   int barType = s.toInt();
   
   Bar *tbar = new Bar;
   Bar *bar = new Bar;
   bar->setTickFlag(barType);
-  bar->setDate(QString::number(ed.getDateValue(), 'f', 0));
+  s = QString::number(ed.getDateValue(), 'f', 0);
+  bar->setDate(s);
 
   db->cursor(db, NULL, &cursor, 0);
   
@@ -693,13 +703,13 @@ void DbPlugin::getTickHistory (int mins)
       continue;
     
     BarDate dt;
-    if (dt.setDate((char *) key.data))
+    QString k = (char *) key.data;
+    if (dt.setDate(k))
       continue;
 
     if (dt.getDateValue() < ed.getDateValue() && dt.getDateValue() >= sd.getDateValue())
     {
       delete tbar;
-      QString k = (char *) key.data;
       QString d = (char *) data.data;
       tbar = getBar(k, d);
 	
@@ -738,10 +748,10 @@ void DbPlugin::getTickHistory (int mins)
       }
 	
       bar->setTickFlag(barType);
-      bar->setDate(QString::number(ed.getDateValue(), 'f', 0));
+      s = QString::number(ed.getDateValue(), 'f', 0);
+      bar->setDate(s);
       
       delete tbar;
-      QString k = (char *) key.data;
       QString d = (char *) data.data;
       tbar = getBar(k, d);
 	

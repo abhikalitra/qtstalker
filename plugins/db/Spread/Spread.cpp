@@ -19,6 +19,7 @@
  *  USA.
  */
 
+ 
 #include "Spread.h"
 #include "PrefDialog.h"
 #include "DbPlugin.h"
@@ -137,8 +138,9 @@ void Spread::updateSpread ()
   {
     Bar &bar = *r;
     setBar(bar);
-    
-    if (r->getData("Count") != 2)
+
+    s = "Count";
+    if (r->getData(s) != 2)
     {
       s = QString::number(fdate, 'f', 0);
       deleteData(s);
@@ -149,10 +151,12 @@ void Spread::updateSpread ()
   for (; it.current(); ++it)
   {
     r = it.current();
-    if (r->getData("Count") == 2)
+    s = "Count";
+    if (r->getData(s) == 2)
     {
       Bar bar;
-      bar.setDate(r->getDate());
+      BarDate dt = r->getDate();
+      bar.setDate(dt);
       bar.setOpen(r->getClose());
       bar.setHigh(r->getClose());
       bar.setLow(r->getClose());
@@ -206,14 +210,18 @@ void Spread::loadData (QString &symbol, QString &method)
   int loop;
   for (loop = 0; loop < (int) recordList->count(); loop++)
   {
-    Bar *r = data.find(recordList->getDate(loop).getDateTimeString(FALSE));
+    recordList->getDate(loop).getDateTimeString(FALSE, s);
+    Bar *r = data.find(s);
     if (! r)
     {
       r = new Bar;
-      r->setDate(recordList->getDate(loop));
+      BarDate dt = recordList->getDate(loop);
+      r->setDate(dt);
       r->setClose(recordList->getClose(loop));
-      r->setData("Count", 1);
-      data.insert(r->getDate().getDateTimeString(FALSE), r);
+      s = "Count";
+      r->setData(s, 1);
+      r->getDate().getDateTimeString(FALSE, s);
+      data.insert(s, r);
       
       if (r->getDate().getDateValue() < fdate)
         fdate = r->getDate().getDateValue();
@@ -226,7 +234,8 @@ void Spread::loadData (QString &symbol, QString &method)
       if (! method.compare("Divide"))
         r->setClose(r->getClose() / recordList->getClose(loop));
       
-      r->setData("Count", 2);
+      s = "Count";
+      r->setData(s, 2);
     }
   }
 
@@ -302,7 +311,7 @@ void Spread::setBar (Bar &bar)
   if (k.toInt() != bar.getTickFlag())
     return;
 
-  k = bar.getDate().getDateTimeString(FALSE);
+  bar.getDate().getDateTimeString(FALSE, k);
   
   QString d = QString::number(bar.getOpen()) + "," + QString::number(bar.getHigh()) + "," +
               QString::number(bar.getLow()) + "," + QString::number(bar.getClose());

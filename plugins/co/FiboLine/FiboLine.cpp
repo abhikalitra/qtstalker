@@ -376,7 +376,9 @@ void FiboLine::pointerMoving (QPoint point, BarDate x, double y)
     
     emit signalDraw();
     
-    QString s = x.getDateString(TRUE) + " " + QString::number(y);
+    QString s;
+    x.getDateString(TRUE, s);
+    s = s + " " + QString::number(y);
     emit message(s);
   }
   else
@@ -394,7 +396,9 @@ void FiboLine::pointerMoving (QPoint point, BarDate x, double y)
     
     emit signalDraw();
     
-    QString s = x.getDateString(TRUE) + " " + QString::number(y);
+    QString s;
+    x.getDateString(TRUE, s);
+    s = s + " " + QString::number(y);
     emit message(s);
   }
 }

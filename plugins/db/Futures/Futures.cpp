@@ -60,7 +60,7 @@ void Futures::setBar (Bar &bar)
   if (k.toInt() != bar.getTickFlag())
     return;
 
-  k = bar.getDate().getDateTimeString(FALSE);
+  bar.getDate().getDateTimeString(FALSE, k);
   
   QString d = QString::number(bar.getOpen()) + "," + QString::number(bar.getHigh()) + "," +
               QString::number(bar.getLow()) + "," + QString::number(bar.getClose()) + "," +

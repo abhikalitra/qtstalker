@@ -235,7 +235,9 @@ void BuyArrow::pointerMoving (QPoint, BarDate x, double y)
   
   emit signalDraw();
   
-  QString s = x.getDateString(TRUE) + " " + QString::number(y);
+  QString s;
+  x.getDateString(TRUE, s);
+  s = s + " " + QString::number(y);
   emit message(s);
 }
 

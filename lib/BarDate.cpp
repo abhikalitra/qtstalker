@@ -30,7 +30,7 @@ BarDate::~BarDate ()
 {
 }
 
-int BarDate::setDate (QString d)
+int BarDate::setDate (QString &d)
 {
   QString s = d;
   while (s.contains("-"))
@@ -70,13 +70,6 @@ int BarDate::setDate (QString d)
   }
   
   int sec = 0;
-//  int sec = s.mid(12, 2).toInt();
-//  if (sec < 0 || sec > 59)
-//  {
-//    qDebug("BarDate::setDate: second out of range %i", sec);
-//    return TRUE;
-//  }
-  
   QTime t(hour, min, sec, 0);
   if (! t.isValid())
   {
@@ -90,7 +83,7 @@ int BarDate::setDate (QString d)
   return FALSE;
 }
 
-int BarDate::setDate (QDate d)
+int BarDate::setDate (QDate &d)
 {
   date.setDate(d);
   if (date.date().isValid())
@@ -99,7 +92,7 @@ int BarDate::setDate (QDate d)
     return TRUE;
 }
 
-int BarDate::setTime (QTime d)
+int BarDate::setTime (QTime &d)
 {
   date.setTime(QTime(d.hour(), d.minute(), 0, 0));
   if (date.time().isValid())
@@ -118,32 +111,34 @@ QTime BarDate::getTime ()
   return date.time();
 }
 
-QString BarDate::getDateString (bool sepFlag)
+void BarDate::getDateString (bool sepFlag, QString &d)
 {
   if (sepFlag)
-    return date.date().toString("yyyy-MM-dd");
+    d = date.date().toString("yyyy-MM-dd");
   else
-    return date.date().toString("yyyyMMdd");
+    d = date.date().toString("yyyyMMdd");
 }
 
-QString BarDate::getDateTimeString (bool sepFlag)
+void BarDate::getDateTimeString (bool sepFlag, QString &d)
 {
-  QString s = getDateString(sepFlag);
+  QString s;
+  getDateString(sepFlag, s);
   
   if (sepFlag)
     s.append(" ");
     
-  s.append(getTimeString(sepFlag));
-  
-  return s;
+  QString s2;
+  getTimeString(sepFlag, s2);
+  s.append(s2);
+  d = s;
 }
 
-QString BarDate::getTimeString (bool sepFlag)
+void BarDate::getTimeString (bool sepFlag, QString &d)
 {
   if (sepFlag)
-    return date.time().toString("hh:mm:ss");
+    d = date.time().toString("hh:mm:ss");
   else
-    return date.time().toString("hhmmss");
+    d = date.time().toString("hhmmss");
 }
 
 int BarDate::setTime (int h, int m, int)
@@ -157,7 +152,8 @@ int BarDate::setTime (int h, int m, int)
 
 double BarDate::getDateValue ()
 {
-  QString s = getDateTimeString(FALSE);
+  QString s;
+  getDateTimeString(FALSE, s);
   return s.toDouble();
 }
 
@@ -191,9 +187,9 @@ int BarDate::getHour ()
   return date.time().hour();
 }
 
-QDateTime BarDate::getDateTime ()
+void BarDate::getDateTime (QDateTime &d)
 {
-  return date;
+  d = date;
 }
 
 

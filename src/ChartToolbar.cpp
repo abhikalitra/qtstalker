@@ -35,7 +35,9 @@ ChartToolbar::ChartToolbar (QMainWindow *mw) : QToolBar (mw, "chartToolbar")
   BarData *bd = new BarData;
   compressionCombo = new MyComboBox(this, Macro::ChartToolbar);
   compressionCombo->show();
-  compressionCombo->insertStringList(bd->getBarCompressionList(), -1);
+  QStringList l;
+  bd->getBarCompressionList(l);
+  compressionCombo->insertStringList(l, -1);
   compressionCombo->setCurrentItem((BarData::BarCompression) config.getData(Config::Compression).toInt());
   QToolTip::add(compressionCombo, tr("Chart Compression"));
   connect(compressionCombo, SIGNAL(activated(int)), this, SIGNAL(signalCompressionChanged(int)));

@@ -32,13 +32,13 @@ Bar::~Bar ()
 {
 }
 
-int Bar::setDate (BarDate d)
+int Bar::setDate (BarDate &d)
 {
   date = d;
   return FALSE;
 }
 
-int Bar::setDate (QString d)
+int Bar::setDate (QString &d)
 {
   if (date.setDate(d))
     return TRUE;
@@ -53,7 +53,8 @@ BarDate Bar::getDate ()
 
 void Bar::setOpen (double d)
 {
-  setData("Open", d);
+  QString s = "Open";
+  setData(s, d);
 }
 
 double Bar::getOpen ()
@@ -67,7 +68,8 @@ double Bar::getOpen ()
 
 void Bar::setHigh (double d)
 {
-  setData("High", d);
+  QString s = "High";
+  setData(s, d);
 }
 
 double Bar::getHigh ()
@@ -81,7 +83,8 @@ double Bar::getHigh ()
 
 void Bar::setLow (double d)
 {
-  setData("Low", d);
+  QString s = "Low";
+  setData(s, d);
 }
 
 double Bar::getLow ()
@@ -95,7 +98,8 @@ double Bar::getLow ()
 
 void Bar::setClose (double d)
 {
-  setData("Close", d);
+  QString s = "Close";
+  setData(s, d);
 }
 
 double Bar::getClose ()
@@ -109,7 +113,8 @@ double Bar::getClose ()
 
 void Bar::setVolume (double d)
 {
-  setData("Volume", d);
+  QString s = "Volume";
+  setData(s, d);
 }
 
 double Bar::getVolume ()
@@ -123,7 +128,8 @@ double Bar::getVolume ()
 
 void Bar::setOI (int d)
 {
-  setData("OI", d);
+  QString s = "OI";
+  setData(s, d);
 }
 
 double Bar::getOI ()
@@ -135,9 +141,9 @@ double Bar::getOI ()
     return 0;
 }
 
-QString Bar::getString ()
+void Bar::getString (QString &s)
 {
-  QString s = date.getDateTimeString(TRUE);
+  date.getDateTimeString(TRUE, s);
   
   QDictIterator<BarItem> it(data);
   for(; it.current(); ++it)
@@ -145,19 +151,17 @@ QString Bar::getString ()
     s.append(" ");
     s.append(QString::number(it.current()->v, 'g'));
   }
-  return s;
 }
 
-QStringList Bar::getFields ()
+void Bar::getFields (QStringList &l)
 {
-  QStringList l;
+  l.clear();
   QDictIterator<BarItem> it(data);
   for(; it.current(); ++it)
     l.append(it.currentKey());  
-  return l;
 }
 
-double Bar::getData (QString d)
+double Bar::getData (QString &d)
 {
   BarItem *r = data[d];
   if (r)
@@ -166,7 +170,7 @@ double Bar::getData (QString d)
     return 0;
 }
 
-void Bar::setData (QString k, double d)
+void Bar::setData (QString &k, double d)
 {
   BarItem *r = new BarItem;
   r->v = d;
@@ -181,8 +185,12 @@ void Bar::setData (QString k, double d)
 void Bar::copy (Bar *d)
 {
   QDictIterator<BarItem> it(data);
+  QString s;
   for(; it.current(); ++it)
-    d->setData(it.currentKey(), it.current()->v);
+  {
+    s = it.currentKey();
+    d->setData(s, it.current()->v);
+  }
   d->setDate(date);
   d->setTickFlag(date.getTickFlag());
 }

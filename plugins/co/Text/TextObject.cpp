@@ -182,7 +182,9 @@ TextObject::Status TextObject::getStatus ()
 
 void TextObject::getSettings (Setting &set)
 {
-  set.setData("Date", date.getDateTimeString(FALSE));
+  QString s;
+  date.getDateTimeString(FALSE, s);
+  set.setData("Date", s);
   set.setData("Value", QString::number(value));
   set.setData("Color", color.name());
   set.setData("Plot", plot);
@@ -190,7 +192,7 @@ void TextObject::getSettings (Setting &set)
   set.setData("Label", label);
   set.setData("Plugin", "Text");
   
-  QString s = font.family();
+  s = font.family();
   s.append(" ");
   s.append(QString::number(font.pointSize()));
   s.append(" ");
@@ -200,7 +202,8 @@ void TextObject::getSettings (Setting &set)
 
 void TextObject::setSettings (Setting &set)
 {
-  date.setDate(set.getData("Date"));
+  QString s = set.getData("Date");
+  date.setDate(s);
   value = set.getFloat("Value");
   color.setNamedColor(set.getData("Color"));
   plot = set.getData("Plot");

@@ -138,8 +138,10 @@ void FormulaEdit::addItem ()
   check = new QCheckTableItem(list, QString::null);
   check->setChecked(FALSE);
   list->setItem(list->numRows() - 1, 2, check);
-  
-  list->setText(list->numRows() - 1, 3, set.getString());
+
+  QString s;
+  set.getString(s);
+  list->setText(list->numRows() - 1, 3, s);
   
   config.closePlugin(type);
 }
@@ -192,7 +194,9 @@ void FormulaEdit::insertItem ()
   check->setChecked(FALSE);
   list->setItem(row, 2, check);
   
-  list->setText(row, 3, set.getString());
+  QString s;
+  set.getString(s);
+  list->setText(row, 3, s);
   
   config.closePlugin(type);
 }
@@ -200,7 +204,8 @@ void FormulaEdit::insertItem ()
 void FormulaEdit::editItem ()
 {
   Setting set;
-  set.parse(list->text(list->currentRow(), 3));
+  QString s = list->text(list->currentRow(), 3);
+  set.parse(s);
   
   IndicatorPlugin *plug = config.getIndicatorPlugin(set.getData("plugin"));
   if (! plug)
@@ -224,7 +229,8 @@ void FormulaEdit::editItem ()
     
   list->setText(list->currentRow(), 0, set2.getData("label"));
   
-  list->setText(list->currentRow(), 3, set2.getString());
+  set2.getString(s);
+  list->setText(list->currentRow(), 3, s);
   
   config.closePlugin(set2.getData("plugin"));
 }
@@ -257,13 +263,16 @@ void FormulaEdit::setLine (QString d)
     check->setChecked(TRUE);
   list->setItem(list->numRows() - 1, 2, check);
   
-  list->setText(list->numRows() - 1, 3, set.getString());
+  QString s;
+  set.getString(s);
+  list->setText(list->numRows() - 1, 3, s);
 }
 
 QString FormulaEdit::getLine (int i)
 {
   Setting set;
-  set.parse(list->text(i, 3));
+  QString s = list->text(i, 3);
+  set.parse(s);
   
   QCheckTableItem *check = (QCheckTableItem *) list->item(i, 1);
   set.setData("plot", QString::number(check->isChecked()));
@@ -271,7 +280,8 @@ QString FormulaEdit::getLine (int i)
   check = (QCheckTableItem *) list->item(i, 2);
   set.setData("scale", QString::number(check->isChecked()));
   
-  return set.getString();
+  set.getString(s);
+  return s;
 }
 
 int FormulaEdit::getLines ()
@@ -398,9 +408,11 @@ bool FormulaEdit::checkError ()
   int loop;
   int comp = 0;
   Setting set;
+  QString s;
   for (loop = 0; loop < list->numRows(); loop++)
   {
-    set.parse(getLine(loop));
+    s = getLine(loop);
+    set.parse(s);
     
     bool p = set.getInt("plot");
     

@@ -73,8 +73,11 @@ void DataWindow::setBars (BarData *d)
   for (loop = 0; loop < (int) d->count(); loop++)
   {
     BarDate dt = d->getDate(loop);
-    table->setText(loop, 0, dt.getDateString(TRUE));
-    table->setText(loop, 1, dt.getTimeString(TRUE));
+    QString s;
+    dt.getDateString(TRUE, s);
+    table->setText(loop, 0, s);
+    dt.getTimeString(TRUE, s);
+    table->setText(loop, 1, s);
     table->setText(loop, 2, strip(d->getOpen(loop), 4));
     table->setText(loop, 3, strip(d->getHigh(loop), 4));
     table->setText(loop, 4, strip(d->getLow(loop), 4));

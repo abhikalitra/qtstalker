@@ -30,15 +30,15 @@ class BarDate
   public:
     BarDate ();
     ~BarDate ();
-    int setDate (QString);
-    int setDate (QDate);
+    int setDate (QString &);
+    int setDate (QDate &);
     QDate getDate ();
-    int setTime (QTime d);
+    int setTime (QTime &d);
     int setTime (int, int, int);
     QTime getTime ();
-    QString getDateString (bool sepFlag);
-    QString getDateTimeString (bool sepFlag);
-    QString getTimeString (bool sepFlag);
+    void getDateString (bool sepFlag, QString &);
+    void getDateTimeString (bool sepFlag, QString &);
+    void getTimeString (bool sepFlag, QString &);
     double getDateValue ();
     void addSecs (int);
     void addMonths (int);
@@ -46,7 +46,7 @@ class BarDate
     bool getTickFlag ();
     void setTickFlag (bool);
     int getHour ();
-    QDateTime getDateTime ();
+    void getDateTime (QDateTime &);
     
   protected:
     QDateTime date;

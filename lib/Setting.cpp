@@ -63,15 +63,12 @@ void Setting::setData (QString k, QString d)
   dict.replace(k, new QString(d));
 }
 
-QStringList Setting::getKeyList ()
+void Setting::getKeyList (QStringList &l)
 {
-  QStringList l;
-
+  l.clear();
   QDictIterator<QString> it(dict);
   for (; it.current(); ++it)
     l.append(it.currentKey());
-
-  return l;
 }
 
 void Setting::remove (QString k)
@@ -79,8 +76,9 @@ void Setting::remove (QString k)
   dict.remove(k);
 }
 
-QString Setting::getString ()
+void Setting::getString (QString &s)
 {
+  s.truncate(0);
   QStringList l;
   QDictIterator<QString> it(dict);
   for (; it.current(); ++it)
@@ -88,11 +86,10 @@ QString Setting::getString ()
     QString *s = it.current();
     l.append(it.currentKey() + "=" + s->left(s->length()));
   }
-
-  return l.join("|");
+  s = l.join("|");
 }
 
-void Setting::parse (QString d)
+void Setting::parse (QString &d)
 {
   dict.clear();
 

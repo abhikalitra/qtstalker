@@ -451,8 +451,11 @@ void IndicatorPlot::mouseMoveEvent (QMouseEvent *event)
   int i = convertXToDataIndex(event->x());
 
   Setting *r = new Setting;
-  r->setData("D", data->getDate(i).getDateString(TRUE));
-  r->setData("T", data->getDate(i).getTimeString(TRUE));
+  QString s;
+  data->getDate(i).getDateString(TRUE, s);
+  r->setData("D", s);
+  data->getDate(i).getTimeString(TRUE, s);
+  r->setData("T", s);
   
   if (mainFlag)
   {
@@ -727,7 +730,8 @@ void IndicatorPlot::drawInfo ()
   QFontMetrics fm = painter.fontMetrics();
   int pos = startX;
 
-  QString s = data->getDate(data->count() - 1).getDateString(TRUE);
+  QString s;
+  data->getDate(data->count() - 1).getDateString(TRUE, s);
   s.append(" ");
   painter.drawText(pos, 10, s, -1);
   pos = pos + fm.width(s);
@@ -852,7 +856,8 @@ int IndicatorPlot::convertXToDataIndex (int x)
 void IndicatorPlot::updateStatusBar (int x, int y)
 {
   int i = convertXToDataIndex(x);
-  QString s = data->getDate(i).getDateTimeString(TRUE);
+  QString s;
+  data->getDate(i).getDateTimeString(TRUE, s);
   s.append(" ");
   s.append(strip(scaler->convertToVal(y), 4));
   emit statusMessage(s);

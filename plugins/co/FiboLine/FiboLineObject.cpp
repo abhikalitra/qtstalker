@@ -243,13 +243,16 @@ FiboLineObject::Status FiboLineObject::getStatus ()
 
 void FiboLineObject::getSettings (Setting &set)
 {
+  QString s;
   set.setData("Color", color.name());
   set.setData("Plot", plot);
   set.setData("Name", name);
   set.setData("High", QString::number(high));
   set.setData("Low", QString::number(low));
-  set.setData("Start Date", startDate.getDateTimeString(FALSE));
-  set.setData("End Date", endDate.getDateTimeString(FALSE));
+  startDate.getDateTimeString(FALSE, s);
+  set.setData("Start Date", s);
+  endDate.getDateTimeString(FALSE, s);
+  set.setData("End Date", s);
   set.setData("Line 1", QString::number(line1));
   set.setData("Line 2", QString::number(line2));
   set.setData("Line 3", QString::number(line3));
@@ -266,8 +269,10 @@ void FiboLineObject::setSettings (Setting &set)
   name = set.getData("Name");
   high = set.getFloat("High");
   low = set.getFloat("Low");
-  startDate.setDate(set.getData("Start Date"));
-  endDate.setDate(set.getData("End Date"));
+  QString s = set.getData("Start Date");
+  startDate.setDate(s);
+  s = set.getData("End Date");
+  endDate.setDate(s);
   line1 = set.getFloat("Line 1");
   line2 = set.getFloat("Line 2");
   line3 = set.getFloat("Line 3");

@@ -989,7 +989,8 @@ void QtstalkerApp::slotHideNav (bool d)
 
 void QtstalkerApp::slotUpdateInfo (Setting *r)
 {
-  QStringList l = r->getKeyList();
+  QStringList l;
+  r->getKeyList(l);
   l.sort();
   int loop;
   QString s;

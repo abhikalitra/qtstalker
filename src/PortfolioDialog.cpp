@@ -171,7 +171,8 @@ void PortfolioDialog::updatePortfolioItems ()
       continue;
     }
     
-    item->setText(4, bar->getDate().getDateString(TRUE));
+    bar->getDate().getDateString(TRUE, s);
+    item->setText(4, s);
 
     QString last = QString::number(bar->getClose());
     item->setText(5, last);

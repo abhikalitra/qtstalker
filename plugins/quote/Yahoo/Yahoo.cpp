@@ -867,7 +867,8 @@ void Yahoo::parseFundamental ()
   // include date of this update
   QDate dt = QDate::currentDate();
   fund.setData("updateDate", dt.toString("yyyy-MM-dd"));
-  QString s2 = fund.getString();
+  QString s2;
+  fund.getString(s2);
   s = "Fundamentals";
   plug->setData(s, s2);
     
@@ -1019,7 +1020,8 @@ void Yahoo::createAutoHistoryUrls (QString path, QString d)
     QDateTime dt = edate;
     dt = dt.addDays(-365);
     bar = new Bar;
-    bar->setDate(dt.toString("yyyyMMdd000000"));
+    s = dt.toString("yyyyMMdd000000");
+    bar->setDate(s);
   }
 
   if (bar->getDate().getDate() == edate.date())

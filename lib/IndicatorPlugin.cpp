@@ -39,7 +39,7 @@ IndicatorPlugin::IndicatorPlugin()
   delete pl;
 
   BarData *it = new BarData;
-  inputTypeList = it->getInputFields();
+  it->getInputFields(inputTypeList);
   delete it;
 }
 
@@ -122,7 +122,8 @@ void IndicatorPlugin::saveFile (QString file, Setting &dict)
   dict.setData("plotType", QString::number(plotType));
   dict.setData("enable", QString::number(enabled));
   
-  QStringList key = dict.getKeyList();
+  QStringList key;
+  dict.getKeyList(key);
   
   int loop;
   for(loop = 0; loop < (int) key.count(); loop++)

@@ -379,7 +379,9 @@ void CSV::parse ()
 	  db->setHeaderField(DbPlugin::Title, s);
 
         db->setBar(bar);
-	emit dataLogMessage(r.getData("Symbol") + " " + r.getString());
+	
+	r.getString(s);
+	emit dataLogMessage(r.getData("Symbol") + " " + s);
         emit statusLogMessage("Updating " + r.getData("Symbol"));
 	config.closePlugin(type);
 	db = 0;
@@ -390,7 +392,9 @@ void CSV::parse ()
 	if (s.length())
 	  db->setHeaderField(DbPlugin::Title, s);
         db->setBar(bar);
-	emit dataLogMessage(symbol + " " + r.getString());
+	
+	r.getString(s);
+	emit dataLogMessage(symbol + " " + s);
       }
     }
 
@@ -743,7 +747,8 @@ void CSV::loadSettings ()
         continue;
 	
       Setting set;
-      set.parse(settings.readEntry(s));
+      QString t = settings.readEntry(s);
+      set.parse(t);
       
       QString s2 = ruleDir + "/" + l[loop];
       QFile f(s2);
@@ -754,7 +759,8 @@ void CSV::loadSettings ()
       }
       QTextStream stream(&f);
   
-      QStringList l2 = set.getKeyList();
+      QStringList l2;
+      set.getKeyList(l2);
       int loop2;
       for (loop2 = 0; loop2 < (int) l2.count(); loop2++)
         stream << l2[loop2] << "=" << set.getData(l2[loop2]) << "\n";

@@ -179,7 +179,8 @@ void CC::update ()
     int loop2;
     for (loop2 = 1; loop2 < (int) recordList->count(); loop2++)
     {
-      Dummy *r = data.find(recordList->getDate(loop2).getDateTimeString(FALSE));
+      recordList->getDate(loop2).getDateTimeString(FALSE, s);
+      Dummy *r = data.find(s);
       if (r)
         continue;
 	
@@ -189,7 +190,8 @@ void CC::update ()
       double o = h - (recordList->getHigh(loop2) - recordList->getOpen(loop2));
 	
       Bar bar;
-      bar.setDate(recordList->getDate(loop2));
+      BarDate dt = recordList->getDate(loop2);
+      bar.setDate(dt);
       bar.setOpen(o);
       bar.setHigh(h);
       bar.setLow(l);
@@ -198,7 +200,8 @@ void CC::update ()
       bar.setOI((int) recordList->getOI(loop2));
       setBar(bar);
       pr = c;
-      data.insert(bar.getDate().getDateTimeString(FALSE), new Dummy);
+      bar.getDate().getDateTimeString(FALSE, s);
+      data.insert(s, new Dummy);
     }
 
     delete recordList;
@@ -288,7 +291,7 @@ void CC::setBar (Bar &bar)
   if (k.toInt() != bar.getTickFlag())
     return;
 
-  k = bar.getDate().getDateTimeString(FALSE);
+  bar.getDate().getDateTimeString(FALSE, k);
   
   QString d = QString::number(bar.getOpen()) + "," + QString::number(bar.getHigh()) + "," +
               QString::number(bar.getLow()) + "," + QString::number(bar.getClose()) + "," +

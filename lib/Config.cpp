@@ -585,7 +585,8 @@ void Config::setIndicator (QString d, Setting &set)
   QTextStream stream(&f);
   
   int loop;
-  QStringList l = set.getKeyList();
+  QStringList l;
+  set.getKeyList(l);
   for (loop = 0; loop < (int) l.count(); loop++)
     stream << l[loop] << "=" << set.getData(l[loop]) << "\n";
   

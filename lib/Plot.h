@@ -84,7 +84,6 @@ class Plot : public QWidget
     void setIndex (int);
     void setInterval(BarData::BarCompression);
     void crossHair (int, int, bool);
-//    void printChart ();
     void setChartPath (QString);
     void setCrosshairsStatus (bool);
     void slotSliderChanged (int);

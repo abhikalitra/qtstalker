@@ -79,14 +79,18 @@ void SYMBOL::calculate ()
   {
     Setting *r = new Setting;
     r->setData("Close", QString::number(recordList->getClose(loop)));
-    dict.insert(recordList->getDate(loop).getDateTimeString(FALSE), r);
+    QString s;
+    recordList->getDate(loop).getDateTimeString(FALSE, s);
+    dict.insert(s, r);
   }
 
   double val = 0;
 
   for (loop = 0; loop < (int) data->count(); loop++)
   {
-    Setting *r2 = dict[data->getDate(loop).getDateTimeString(FALSE)];
+    QString s;
+    data->getDate(loop).getDateTimeString(FALSE, s);
+    Setting *r2 = dict[s];
     if (r2)
     {
       val = r2->getFloat("Close");

@@ -180,7 +180,8 @@ void Bars::prefDialog (QWidget *)
       formulaList.append(dialog->getLine(loop));
       
       Setting set;
-      set.parse(dialog->getLine(loop));
+      QString s = dialog->getLine(loop);
+      set.parse(s);
       if (! set.getData("plugin").compare("COMP"))
         flag = TRUE;
     }

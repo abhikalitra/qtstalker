@@ -111,7 +111,8 @@ void Line::prefDialog (QWidget *)
         formulaList.append(dialog->getLine(loop));
 	
         Setting set;
-        set.parse(dialog->getLine(loop));
+	QString s = dialog->getLine(loop); 
+        set.parse(s);
         if (set.getData("plot").toInt())
           flag = TRUE;
       }

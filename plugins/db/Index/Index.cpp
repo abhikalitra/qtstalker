@@ -112,8 +112,9 @@ void Index::updateIndex ()
   {
     Bar &bar = *r;
     setBar(bar);
-    
-    if (r->getData("Count") != count)
+
+    s = "Count";
+    if (r->getData(s) != count)
     {
       s = QString::number(fdate, 'f', 0);
       deleteData(s);
@@ -124,7 +125,8 @@ void Index::updateIndex ()
   for (; it.current(); ++it)
   {
     r = it.current();
-    if (r->getData("Count") == count)
+    s = "Count";
+    if (r->getData(s) == count)
     {
       r->setOpen(r->getOpen() / count);
       r->setHigh(r->getHigh() / count);
@@ -191,17 +193,21 @@ void Index::loadData (QString &symbol, float weight)
   int loop;
   for (loop = 0; loop < (int) recordList->count(); loop++)
   {
-    Bar *r = data.find(recordList->getDate(loop).getDateTimeString(FALSE));
+    recordList->getDate(loop).getDateTimeString(FALSE, s);
+    Bar *r = data.find(s);
     if (! r)
     {
       r = new Bar;
-      r->setDate(recordList->getDate(loop));
+      BarDate dt = recordList->getDate(loop);
+      r->setDate(dt);
       r->setOpen(recordList->getOpen(loop) * weight);
       r->setHigh(recordList->getHigh(loop) * weight);
       r->setLow(recordList->getLow(loop) * weight);
       r->setClose(recordList->getClose(loop) * weight);
-      r->setData("Count", 1);
-      data.insert(r->getDate().getDateTimeString(FALSE), r);
+      s = "Count";
+      r->setData(s, 1);
+      r->getDate().getDateTimeString(FALSE, s);
+      data.insert(s, r);
       
       if (r->getDate().getDateValue() < fdate)
         fdate = r->getDate().getDateValue();
@@ -212,7 +218,8 @@ void Index::loadData (QString &symbol, float weight)
       r->setHigh(r->getHigh() + (recordList->getHigh(loop) * weight));
       r->setLow(r->getLow() + (recordList->getLow(loop) * weight));
       r->setClose(r->getClose() + (recordList->getClose(loop) * weight));
-      r->setData("Count", r->getData("Count") + 1);
+      s = "Count";
+      r->setData(s, r->getData(s) + 1);
     }
   }
 
@@ -288,7 +295,7 @@ void Index::setBar (Bar &bar)
   if (k.toInt() != bar.getTickFlag())
     return;
 
-  k = bar.getDate().getDateTimeString(FALSE);
+  bar.getDate().getDateTimeString(FALSE, k);
   
   QString d = QString::number(bar.getOpen()) + "," + QString::number(bar.getHigh()) + "," +
               QString::number(bar.getLow()) + "," + QString::number(bar.getClose());

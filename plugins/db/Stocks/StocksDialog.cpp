@@ -110,7 +110,8 @@ void StocksDialog::createDetailsPage ()
   s = tr("Fundamentals: last updated ");
   s.append(fund.getData("updateDate"));
   fund.remove("updateDate");
-  QStringList key = fund.getKeyList();
+  QStringList key;
+  fund.getKeyList(key);
   key.sort();
   
   vbox->addSpacing(10);
@@ -264,7 +265,8 @@ void StocksDialog::deleteRecord ()
 void StocksDialog::saveRecord ()
 {
   Bar bar;
-  bar.setDate(date->text());
+  QString s = date->text();
+  bar.setDate(s);
   bar.setOpen(open->text().toDouble());
   bar.setHigh(high->text().toDouble());
   bar.setLow(low->text().toDouble());
@@ -306,7 +308,8 @@ void StocksDialog::slotDateSearch ()
   }
 
   ignoreSaveRecordFlag = TRUE;
-  date->setText(record->getDate().getDateTimeString(TRUE));
+  record->getDate().getDateTimeString(TRUE, key);
+  date->setText(key);
   open->setText(QString::number(record->getOpen()));
   high->setText(QString::number(record->getHigh()));
   low->setText(QString::number(record->getLow()));

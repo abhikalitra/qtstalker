@@ -357,7 +357,9 @@ void TrendLine::pointerMoving (QPoint point, BarDate x, double y)
     selected->setSaveFlag(TRUE);
     emit signalDraw();
     
-    QString s = x.getDateString(TRUE) + " " + QString::number(y);
+    QString s;
+    x.getDateString(TRUE, s);
+    s = s + " " + QString::number(y);
     emit message(s);
   }
   else
@@ -370,7 +372,9 @@ void TrendLine::pointerMoving (QPoint point, BarDate x, double y)
     selected->setSaveFlag(TRUE);
     emit signalDraw();
     
-    QString s = x.getDateString(TRUE) + " " + QString::number(y);
+    QString s;
+    x.getDateString(TRUE, s);
+    s = s + " " + QString::number(y);
     emit message(s);
   }
 }

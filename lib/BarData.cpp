@@ -35,16 +35,15 @@ BarData::~BarData ()
 {
 }
 
-QStringList BarData::getInputFields ()
+void BarData::getInputFields (QStringList &l)
 {
-  QStringList l;
+  l.clear();
   l.append(QObject::tr("Open"));
   l.append(QObject::tr("High"));
   l.append(QObject::tr("Low"));
   l.append(QObject::tr("Close"));
   l.append(QObject::tr("Volume"));
   l.append(QObject::tr("Open Interest"));
-  return l;
 }
 
 PlotLine * BarData::getInput (BarData::InputType field)
@@ -106,11 +105,18 @@ void BarData::createDateList ()
     
     X *x = new X;
     x->x = loop;
-    
+
+    QString s;
     if (barType == Daily)
-      dateList.replace(bar->getDate().getDateString(FALSE), x);
+    {
+      bar->getDate().getDateString(FALSE, s);
+      dateList.replace(s, x);
+    }
     else
-      dateList.replace(bar->getDate().getDateTimeString(FALSE), x);
+    {
+      bar->getDate().getDateTimeString(FALSE, s);
+      dateList.replace(s, x);
+    }
   }
 }
 
@@ -129,11 +135,18 @@ BarDate BarData::getDate (int i)
 int BarData::getX (BarDate &date)
 {
   X *x = 0;
-  
+
+  QString s;  
   if (barType == Daily)
-    x = dateList[date.getDateString(FALSE)];
+  {
+    date.getDateString(FALSE, s);
+    x = dateList[s];
+  }
   else
-    x = dateList[date.getDateTimeString(FALSE)];
+  {
+    date.getDateTimeString(FALSE, s);
+    x = dateList[s];
+  }
   
   if (x)
     return x->x;
@@ -300,9 +313,9 @@ BarData::InputType BarData::getInputType (QString &d)
   return t;
 }
 
-QStringList BarData::getBarCompressionList ()
+void BarData::getBarCompressionList (QStringList &l)
 {
-  QStringList l;
+  l.clear();
   l.append(QObject::tr("5 Minute"));
   l.append(QObject::tr("15 Minute"));
   l.append(QObject::tr("30 Minute"));
@@ -310,7 +323,6 @@ QStringList BarData::getBarCompressionList ()
   l.append(QObject::tr("Daily"));
   l.append(QObject::tr("Weekly"));
   l.append(QObject::tr("Monthly"));
-  return l;  
 }
 
 Bar * BarData::getBar (int d)

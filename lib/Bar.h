@@ -39,8 +39,8 @@ class Bar
   
     Bar ();
     ~Bar ();
-    int setDate (BarDate);
-    int setDate (QString);
+    int setDate (BarDate &);
+    int setDate (QString &);
     BarDate getDate ();
     void setOpen (double);
     double getOpen ();
@@ -54,10 +54,10 @@ class Bar
     double getVolume ();
     void setOI (int);
     double getOI ();
-    QString getString ();
-    QStringList getFields ();
-    void setData (QString, double);
-    double getData (QString);
+    void getString (QString &);
+    void getFields (QStringList &);
+    void setData (QString &, double);
+    double getData (QString &);
     void copy (Bar *);
     double getMin ();
     double getMax ();

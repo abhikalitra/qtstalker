@@ -80,10 +80,10 @@ class BarData
     void createDateList ();
     void setBarType (BarData::BarType);
     BarData::BarType getBarType ();
-    QStringList getInputFields ();
+    void getInputFields (QStringList &);
     PlotLine * getInput (BarData::InputType);
     BarData::InputType getInputType (QString &);
-    QStringList getBarCompressionList ();
+    void getBarCompressionList (QStringList &);
     Bar * getBar (int);
     void setMinMax ();
     void deleteBar (int);

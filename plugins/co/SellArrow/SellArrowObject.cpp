@@ -157,7 +157,9 @@ SellArrowObject::Status SellArrowObject::getStatus ()
 
 void SellArrowObject::getSettings (Setting &set)
 {
-  set.setData("Date", date.getDateTimeString(FALSE));
+  QString s;
+  date.getDateTimeString(FALSE, s);
+  set.setData("Date", s);
   set.setData("Value", QString::number(value));
   set.setData("Color", color.name());
   set.setData("Plot", plot);
@@ -167,7 +169,8 @@ void SellArrowObject::getSettings (Setting &set)
 
 void SellArrowObject::setSettings (Setting &set)
 {
-  date.setDate(set.getData("Date"));
+  QString s = set.getData("Date");
+  date.setDate(s);
   value = set.getFloat("Value");
   color.setNamedColor(set.getData("Color"));
   plot = set.getData("Plot");

@@ -258,7 +258,8 @@ void VerticalLine::pointerMoving (QPoint, BarDate x, double)
   
   emit signalDraw();
   
-  QString s = x.getDateString(TRUE);
+  QString s;
+  x.getDateString(TRUE, s);
   emit message(s);
 }
 

@@ -740,7 +740,8 @@ void Tester::test ()
 void Tester::checkAlerts ()
 {
   QString s;
-  QString key = recordList->getDate(currentRecord).getDateString(FALSE);
+  QString key;
+  recordList->getDate(currentRecord).getDateString(FALSE, key);
 
   switch (status)
   {
@@ -857,11 +858,14 @@ void Tester::exitPosition (QString signal)
 
   equity = equity - exitCom->value();
 
+  QString s;
   tradeList->setNumRows(tradeList->numRows() + 1);
   tradeList->setText(tradeList->numRows() - 1, 0, type);
-  tradeList->setText(tradeList->numRows() - 1, 1, recordList->getDate(buyRecord).getDateString(FALSE));
+  recordList->getDate(buyRecord).getDateString(FALSE, s);
+  tradeList->setText(tradeList->numRows() - 1, 1, s);
   tradeList->setText(tradeList->numRows() - 1, 2, QString::number(enterPrice));
-  tradeList->setText(tradeList->numRows() - 1, 3, recordList->getDate(currentRecord).getDateString(FALSE));
+  recordList->getDate(currentRecord).getDateString(FALSE, s);
+  tradeList->setText(tradeList->numRows() - 1, 3, s);
   tradeList->setText(tradeList->numRows() - 1, 4, QString::number(exitPrice));
   tradeList->setText(tradeList->numRows() - 1, 5, signal);
   tradeList->setText(tradeList->numRows() - 1, 6, QString::number(profit));
@@ -1175,7 +1179,8 @@ bool Tester::loadAlerts (int type)
   for (loop = 0; loop < edit->getLines(); loop++)
   {
     Setting set;
-    set.parse(edit->getLine(loop));
+    QString t = edit->getLine(loop);
+    set.parse(t);
     if (! set.getData("plugin").compare("COMP"))
     {
       if (set.getData("plot").toInt())
@@ -1240,11 +1245,19 @@ bool Tester::loadAlerts (int type)
 	  }
 	
 	  if (! df)
-            alerts->setData(recordList->getDate(loop).getDateString(FALSE), "1");
+	  {
+	    QString t;
+	    recordList->getDate(loop).getDateString(FALSE, t);
+            alerts->setData(t, "1");
+	  }
 	}
       }
       else
-        alerts->setData(recordList->getDate(loop).getDateString(FALSE), "1");
+      {
+        QString t;
+	recordList->getDate(loop).getDateString(FALSE, t);
+        alerts->setData(t, "1");
+      }
     }
   }
   
@@ -1767,8 +1780,10 @@ void Tester::updateChart ()
     {
       name++;
       BarDate dt;
-      dt.setDate(tradeList->text(loop, 3) + "000000");
-      set.setData("Date", dt.getDateTimeString(FALSE));
+      QString t = tradeList->text(loop, 3) + "000000";
+      dt.setDate(t);
+      dt.getDateTimeString(FALSE, t);
+      set.setData("Date", t);
       set.setData("Value", QString::number(enter));
       set.setData("Color", "red");
       set.setData("Plot", "tester");
@@ -1777,8 +1792,10 @@ void Tester::updateChart ()
       plot->addChartObject(set);
       
       name++;
-      dt.setDate(tradeList->text(loop, 1) + "000000");
-      set.setData("Date", dt.getDateTimeString(FALSE));
+      t = tradeList->text(loop, 1) + "000000";
+      dt.setDate(t);
+      dt.getDateTimeString(FALSE, t);
+      set.setData("Date", t);
       set.setData("Value", QString::number(exit));
       set.setData("Color", "green");
       set.setData("Plot", "tester");
@@ -1790,8 +1807,10 @@ void Tester::updateChart ()
     {
       name++;
       BarDate dt;
-      dt.setDate(tradeList->text(loop, 1) + "000000");
-      set.setData("Date", dt.getDateTimeString(FALSE));
+      QString t = tradeList->text(loop, 1) + "000000";
+      dt.setDate(t);
+      dt.getDateTimeString(FALSE, t);
+      set.setData("Date", t);
       set.setData("Value", QString::number(enter));
       set.setData("Color", "green");
       set.setData("Plot", "tester");
@@ -1800,8 +1819,10 @@ void Tester::updateChart ()
       plot->addChartObject(set);
       
       name++;
-      dt.setDate(tradeList->text(loop, 3) + "000000");
-      set.setData("Date", dt.getDateTimeString(FALSE));
+      t = tradeList->text(loop, 3) + "000000";
+      dt.setDate(t);
+      dt.getDateTimeString(FALSE, t);
+      set.setData("Date", t);
       set.setData("Value", QString::number(exit));
       set.setData("Color", "red");
       set.setData("Plot", "tester");
@@ -1845,7 +1866,8 @@ bool Tester::loadCustomShortStop ()
   for (loop = 0; loop < customShortStopEdit->getLines(); loop++)
   {
     Setting set;
-    set.parse(customShortStopEdit->getLine(loop));
+    QString t = customShortStopEdit->getLine(loop); 
+    set.parse(t);
     if (! set.getData("plugin").compare("COMP"))
     {
       if (set.getData("plot").toInt())
@@ -1910,7 +1932,8 @@ bool Tester::loadCustomLongStop ()
   for (loop = 0; loop < customLongStopEdit->getLines(); loop++)
   {
     Setting set;
-    set.parse(customLongStopEdit->getLine(loop));
+    QString t = customLongStopEdit->getLine(loop); 
+    set.parse(t);
     if (! set.getData("plugin").compare("COMP"))
     {
       if (set.getData("plot").toInt())

@@ -212,8 +212,11 @@ TrendLineObject::Status TrendLineObject::getStatus ()
 
 void TrendLineObject::getSettings (Setting &set)
 {
-  set.setData("Start Date", date.getDateTimeString(FALSE));
-  set.setData("End Date", date2.getDateTimeString(FALSE));
+  QString s;
+  date.getDateTimeString(FALSE, s);
+  set.setData("Start Date", s);
+  date2.getDateTimeString(FALSE, s);
+  set.setData("End Date", s);
   set.setData("Start Value", QString::number(value));
   set.setData("End Value", QString::number(value2));
   set.setData("Bar Field", bar);
@@ -228,8 +231,10 @@ void TrendLineObject::getSettings (Setting &set)
 void TrendLineObject::setSettings (Setting &set)
 {
   color.setNamedColor(set.getData("Color"));
-  date.setDate(set.getData("Start Date"));
-  date2.setDate(set.getData("End Date"));
+  QString s = set.getData("Start Date");
+  date.setDate(s);
+  s = set.getData("End Date");
+  date2.setDate(s);
   value = set.getFloat("Start Value");
   value2 = set.getFloat("End Value");
   bar = set.getData("Bar Field");

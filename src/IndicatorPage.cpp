@@ -326,7 +326,8 @@ void IndicatorPage::newIndicator ()
       tset.setData("plotType", QString::number(plotType));
       
       // save the local indicator to the db
-      QString s2 = tset.getString();
+      QString s2;
+      tset.getString(s2);
       db->addIndicator(s2);
       
       localIndicators.append(name);
@@ -401,7 +402,8 @@ void IndicatorPage::editIndicator (QString d)
       set.setData("File", s);
       set.setData("Name", d);
       Setting *set2 = new Setting;
-      set2->parse(set.getString());      
+      set.getString(s);
+      set2->parse(s);      
       emit signalEditIndicator(set2);
     }
   }
@@ -565,7 +567,8 @@ void IndicatorPage::moveIndicator ()
         return;
       }
       
-      QString t = set.getString();
+      QString t;
+      set.getString(t);
       db->addIndicator(t);
       localIndicators.append(list->currentText());
       
@@ -938,7 +941,8 @@ void IndicatorPage::saveLocalIndicator (QString d, Setting &set)
     }
     
     // save the local indicator to the db
-    QString t = set.getString();
+    QString t;
+    set.getString(t);
     db->setIndicator(d, t);
     
     config.closePlugin(plugin);

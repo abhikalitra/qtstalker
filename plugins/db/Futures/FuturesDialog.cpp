@@ -257,7 +257,8 @@ void FuturesDialog::deleteRecord ()
 void FuturesDialog::saveRecord ()
 {
   Bar bar;
-  bar.setDate(date->text());
+  QString s = date->text();
+  bar.setDate(s);
   bar.setOpen(open->text().toDouble());
   bar.setHigh(high->text().toDouble());
   bar.setLow(low->text().toDouble());
@@ -300,7 +301,8 @@ void FuturesDialog::slotDateSearch ()
   }
 
   ignoreSaveRecordFlag = TRUE;
-  date->setText(record->getDate().getDateTimeString(TRUE));
+  record->getDate().getDateTimeString(TRUE, key);
+  date->setText(key);
   open->setText(QString::number(record->getOpen()));
   high->setText(QString::number(record->getHigh()));
   low->setText(QString::number(record->getLow()));

@@ -35,10 +35,10 @@ class Setting
     double getFloat (QString);
     int getInt (QString);
     void setData (QString, QString);
-    QStringList getKeyList ();
+    void getKeyList (QStringList &);
     void remove (QString);
-    QString getString ();
-    void parse (QString);
+    void getString (QString &);
+    void parse (QString &);
     void clear ();
     int count ();
     
