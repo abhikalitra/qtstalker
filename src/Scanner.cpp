@@ -246,8 +246,11 @@ void Scanner::saveRule ()
   stream << "allSymbols=" << QString::number(allSymbols->isChecked()) << "\n";
   stream << "bars=" << QString::number(bars->value()) << "\n";
   stream << "compression=" << period->currentText() << "\n";
-
+  
   int loop;
+  for (loop = 0; loop < (int) fileList.count(); loop++)
+    stream << "symbol=" << fileList[loop] << "\n";
+  
   for (loop = 0; loop < list->getLines(); loop++)
     stream << list->getLine(loop) << "\n";
   
@@ -265,6 +268,8 @@ void Scanner::loadRule ()
     return;
   QTextStream stream(&f);
 
+  fileList.clear();
+  
   while(stream.atEnd() == 0)
   {
     s = stream.readLine();
@@ -296,7 +301,13 @@ void Scanner::loadRule ()
     }
     
     if (! l[0].compare("compression"))
+    {
       period->setCurrentText(l[1]);
+      continue;
+    }
+    
+    if (! l[0].compare("symbol"))
+      fileList.append(l[1]);
   }
 
   f.close();

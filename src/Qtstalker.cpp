@@ -1003,7 +1003,7 @@ void QtstalkerApp::addIndicatorButton (QString d, Indicator::PlotType tabFlag)
     plot->show();
 
     QValueList<int> a = split->sizes();
-    a[a.size() - 2] = 75;
+    a[a.size() - 2] = 100;
     split->setSizes(a);
   }
   plotList.replace(d, plot);
@@ -1297,7 +1297,7 @@ void QtstalkerApp::slotRunMacro (QString d)
         navTab->doKeyPress(m->getKey());
 	break;
       case Macro::ChartToolbar:
-//        toolbar2->doKeyPress(m->getKey());
+        toolbar2->doKeyPress(m->getKey());
 	break;
       case Macro::Menubar:
         menubar->doKeyPress(m->getKey());
@@ -1340,6 +1340,7 @@ void QtstalkerApp::slotRecordMacro (QString d)
   connect(tp, SIGNAL(signalKeyPressed(int, int, int, int, QString)), currentMacro, SLOT(recordKey(int, int, int, int, QString)));
   connect(sp, SIGNAL(signalKeyPressed(int, int, int, int, QString)), currentMacro, SLOT(recordKey(int, int, int, int, QString)));
   connect(mp, SIGNAL(signalKeyPressed(int, int, int, int, QString)), currentMacro, SLOT(recordKey(int, int, int, int, QString)));
+  connect(toolbar2, SIGNAL(signalKeyPressed(int, int, int, int, QString)), currentMacro, SLOT(recordKey(int, int, int, int, QString)));
   
   emit signalSetKeyFlag(TRUE);
   

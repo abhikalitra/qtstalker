@@ -62,7 +62,11 @@
 20050214: F1-F12 keys now run macros assigned to them using the 'Assign Macro' menu option
           in the Macro side panel.
 	  
-	  	  	  
+20050215: Scanner now saves all the symbols selected when the user saves the scanner with 'Apply'.
+
+20050215: Added a 'Name' field parm to the CSV plugin.
+
+
 	  
 0.29
 ====

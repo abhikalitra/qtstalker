@@ -22,46 +22,71 @@
 #include "ChartToolbar.h"
 #include "Config.h"
 #include "BarData.h"
+#include "Macro.h"
 #include <qtooltip.h>
+#include <qaccel.h>
 
 ChartToolbar::ChartToolbar (QMainWindow *mw) : QToolBar (mw, "chartToolbar")
 {
   keyFlag = FALSE;
   Config config;
   
-  compressionCombo = new QComboBox(this);
+  compressionCombo = new MyCombo(this);
   BarData *bd = new BarData;
   compressionCombo->show();
   compressionCombo->insertStringList(bd->getBarCompressionList(), -1);
   compressionCombo->setCurrentItem((BarData::BarCompression) config.getData(Config::Compression).toInt());
   QToolTip::add(compressionCombo, tr("Chart Compression"));
   connect(compressionCombo, SIGNAL(activated(int)), this, SIGNAL(signalCompressionChanged(int)));
+  connect(compressionCombo, SIGNAL(signalKeyPressed(int, int, int, int, QString)),
+          this, SIGNAL(signalKeyPressed(int, int, int, int, QString)));
   delete bd;
 
-  chartTypeCombo = new QComboBox(this);
+  chartTypeCombo = new MyCombo(this);
   chartTypeCombo->show();
   chartTypeCombo->insertStringList(config.getPluginList(Config::ChartPluginPath), -1);
   QToolTip::add(chartTypeCombo, tr("Chart Type"));
   chartTypeCombo->setCurrentText(config.getData(Config::ChartStyle));
   connect(chartTypeCombo, SIGNAL(activated(int)), this, SIGNAL(signalChartTypeChanged(int)));
+  connect(chartTypeCombo, SIGNAL(signalKeyPressed(int, int, int, int, QString)),
+          this, SIGNAL(signalKeyPressed(int, int, int, int, QString)));
 
-  pixelspace = new QSpinBox(this);
+  pixelspace = new MySpinner(this);
   connect (pixelspace, SIGNAL(valueChanged(int)), this, SIGNAL(signalPixelspaceChanged(int)));
   QToolTip::add(pixelspace, tr("Bar Spacing"));
+  connect(pixelspace, SIGNAL(signalKeyPressed(int, int, int, int, QString)),
+          this, SIGNAL(signalKeyPressed(int, int, int, int, QString)));
 
-  barCount = new QSpinBox(1, 99999999, 1, this);
+  barCount = new MySpinner(this);
+  barCount->setMinValue(1);
+  barCount->setMaxValue(99999999);
+  barCount->setLineStep(1);
   barCount->setValue(config.getData(Config::Bars).toInt());  
   QToolTip::add(barCount, tr("Total bars to load"));
+  connect(barCount, SIGNAL(signalKeyPressed(int, int, int, int, QString)),
+          this, SIGNAL(signalKeyPressed(int, int, int, int, QString)));
 
   addSeparator();
 
-  slider = new QSlider(this);
+  slider = new MySlider(this);
   slider->setOrientation(Qt::Horizontal);
   connect (slider, SIGNAL(valueChanged(int)), this, SIGNAL(signalSliderChanged(int)));
   slider->setEnabled(FALSE);
   QToolTip::add(slider, tr("Pan Chart"));
+  connect(slider, SIGNAL(signalKeyPressed(int, int, int, int, QString)),
+          this, SIGNAL(signalKeyPressed(int, int, int, int, QString)));
 
   setStretchableWidget(slider);
+  
+  QAccel *a = new QAccel(mw);
+  connect(a, SIGNAL(activated(int)), this, SLOT(slotAccel(int)));
+  a->insertItem(CTRL+Key_End, ChartPannerFocus);
+  a->insertItem(CTRL+Key_Plus, BarsLoadedFocus);
+  a->insertItem(CTRL+Key_Minus, BarSpacingFocus);
+  a->insertItem(CTRL+Key_Prior, CompressionFocus);
+  a->insertItem(CTRL+Key_Next, ChartTypeFocus);
+  
+  focusFlag = CompressionFocus;
 }
 
 ChartToolbar::~ChartToolbar ()
@@ -174,58 +199,207 @@ void ChartToolbar::saveSettings ()
 void ChartToolbar::setFocus ()
 {
   compressionCombo->setFocus();
+  focusFlag = CompressionFocus;
 }
 
 void ChartToolbar::setKeyFlag (bool d)
 {
   keyFlag = d;
+  compressionCombo->setKeyFlag(d);
+  chartTypeCombo->setKeyFlag(d);
+  pixelspace->setKeyFlag(d);
+  barCount->setKeyFlag(d);
+  slider->setKeyFlag(d);
 }
 
-
-// old key stuff needs to be done
-/*
-  switch (key->key())
+void ChartToolbar::slotAccel (int id)
+{
+  switch (id)
   {
-    case Qt::Key_Left:
-      slider->setValue(slider->value() - 1);
-      break;
-    case Qt::Key_Right:
-      slider->setValue(slider->value() + 1);
-      break;
-    case Qt::Key_Home:
-      slider->setValue(0);
-      break;
-    case Qt::Key_End:
-      slider->setValue(slider->maxValue());
-      break;
-    case Qt::Key_Prior:
-      slider->addStep();
-      break;
-    case Qt::Key_Next:
-      slider->subtractStep();
-      break;
-    case Qt::Key_Minus:
-      pixelspace->stepDown();
-      break;
-    case Qt::Key_Plus:
-      pixelspace->stepUp();
-      break;
-    case Qt::Key_Up:
-      if (compressionCombo->currentItem() != (compressionCombo->count() - 1))
-      {
-        compressionCombo->setCurrentItem(compressionCombo->currentItem() + 1);
-        slotCompressionChanged(compressionCombo->currentItem());
-      }
-      break;
-    case Qt::Key_Down:
-      if (compressionCombo->currentItem() != 0)
-      {
-        compressionCombo->setCurrentItem(compressionCombo->currentItem() - 1);
-        slotCompressionChanged(compressionCombo->currentItem());
-      }
-      break;
+    case CompressionFocus:
+      compressionCombo->setFocus();
+      focusFlag = CompressionFocus;
+      if (keyFlag)
+        emit signalKeyPressed (Macro::ChartToolbar, ControlButton, Key_Prior, 0, QString());
+      break;  
+    case ChartPannerFocus:
+      slider->setFocus();
+      focusFlag = ChartPannerFocus;
+      if (keyFlag)
+        emit signalKeyPressed (Macro::ChartToolbar, ControlButton, Key_End, 0, QString());
+      break;  
+    case BarsLoadedFocus:
+      barCount->setFocus();
+      focusFlag = BarsLoadedFocus;
+      if (keyFlag)
+        emit signalKeyPressed (Macro::ChartToolbar, ControlButton, Key_Plus, 0, QString());
+      break;  
+    case BarSpacingFocus:
+      pixelspace->setFocus();
+      focusFlag = BarSpacingFocus;
+      if (keyFlag)
+        emit signalKeyPressed (Macro::ChartToolbar, ControlButton, Key_Minus, 0, QString());
+      break;  
+    case ChartTypeFocus:
+      chartTypeCombo->setFocus();
+      focusFlag = ChartTypeFocus;
+      if (keyFlag)
+        emit signalKeyPressed (Macro::ChartToolbar, ControlButton, Key_Next, 0, QString());
+      break;  
     default:
       break;
   }
-*/
+}
+
+void ChartToolbar::doKeyPress (QKeyEvent *key)
+{
+  key->accept();
+  
+  if (! key->state())
+  {
+    switch(focusFlag)
+    {
+      case CompressionFocus:
+        compressionCombo->doKeyPress(key);
+	break;
+      case ChartTypeFocus:
+        chartTypeCombo->doKeyPress(key);
+	break;
+      case BarSpacingFocus:
+        pixelspace->doKeyPress(key);
+	break;
+      case BarsLoadedFocus:
+        barCount->doKeyPress(key);
+	break;
+      case ChartPannerFocus:
+        slider->doKeyPress(key);
+	break;
+      default:
+        break;
+    }
+  }
+  else
+  {
+    if (key->state() == Qt::ControlButton)
+    {
+      switch (key->key())
+      {
+        case Qt::Key_Prior:
+	  slotAccel(CompressionFocus);
+          break;
+        case Qt::Key_Next:
+	  slotAccel(ChartTypeFocus);
+          break;
+        case Qt::Key_Plus:
+	  slotAccel(BarsLoadedFocus);
+          break;
+        case Qt::Key_End:
+	  slotAccel(ChartPannerFocus);
+          break;
+        case Qt::Key_Minus:
+	  slotAccel(BarSpacingFocus);
+          break;
+        default:
+          break;
+      }
+    }
+  }
+}
+
+
+//***********************************************************
+//*************** MyCombo Widget ****************************
+//***********************************************************
+
+MyCombo::MyCombo (QWidget *w) : QComboBox (w)
+{
+  keyFlag = FALSE;
+}
+
+MyCombo::~MyCombo ()
+{
+}
+
+void MyCombo::keyPressEvent (QKeyEvent *key)
+{
+  if (keyFlag)
+    emit signalKeyPressed (Macro::ChartToolbar, key->state(), key->key(), key->ascii(), key->text());
+    
+  QComboBox::keyPressEvent(key);  
+}
+
+void MyCombo::setKeyFlag (bool d)
+{
+  keyFlag = d;
+}
+
+void MyCombo::doKeyPress (QKeyEvent *key)
+{
+  QComboBox::keyPressEvent(key);  
+}
+
+
+//***********************************************************
+//*************** MySpinner Widget **************************
+//***********************************************************
+
+MySpinner::MySpinner (QWidget *w) : QSpinBox (w)
+{
+  keyFlag = FALSE;
+}
+
+MySpinner::~MySpinner ()
+{
+}
+
+void MySpinner::keyPressEvent (QKeyEvent *key)
+{
+  if (keyFlag)
+    emit signalKeyPressed (Macro::ChartToolbar, key->state(), key->key(), key->ascii(), key->text());
+    
+  QSpinBox::keyPressEvent(key);  
+}
+
+void MySpinner::setKeyFlag (bool d)
+{
+  keyFlag = d;
+}
+
+void MySpinner::doKeyPress (QKeyEvent *key)
+{
+  QSpinBox::keyPressEvent(key);  
+}
+
+//***********************************************************
+//*************** MySlider Widget ***************************
+//***********************************************************
+
+MySlider::MySlider (QWidget *w) : QSlider (w)
+{
+  keyFlag = FALSE;
+}
+
+MySlider::~MySlider ()
+{
+}
+
+void MySlider::keyPressEvent (QKeyEvent *key)
+{
+  if (keyFlag)
+    emit signalKeyPressed (Macro::ChartToolbar, key->state(), key->key(), key->ascii(), key->text());
+    
+  QSlider::keyPressEvent(key);  
+}
+
+void MySlider::setKeyFlag (bool d)
+{
+  keyFlag = d;
+}
+
+void MySlider::doKeyPress (QKeyEvent *key)
+{
+  QSlider::keyPressEvent(key);  
+}
+
+
 

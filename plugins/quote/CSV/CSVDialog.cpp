@@ -198,6 +198,7 @@ void CSVDialog::createRulePage ()
   fieldCombo->insertItem(tr("Volume"), -1);
   fieldCombo->insertItem(tr("OI"), -1);
   fieldCombo->insertItem(tr("Ignore"), -1);
+  fieldCombo->insertItem(tr("Name"), -1);
   grid->addWidget(fieldCombo, 3, 1);
   
   vbox->addSpacing(10);

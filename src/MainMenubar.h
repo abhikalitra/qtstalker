@@ -105,9 +105,6 @@ class MainMenubar : public QMenuBar
     void setKeyFlag (bool);
     void doKeyPress (QKeyEvent *);
     
-//  protected:
-//    virtual void keyPressEvent (QKeyEvent *);
-    
   private:
     Config config;
     QPopupMenu *fileMenu;

@@ -29,6 +29,68 @@
 #include <qspinbox.h>
 #include <qslider.h>
 
+
+class MyCombo : public QComboBox
+{
+  Q_OBJECT
+  
+  signals:
+    void signalKeyPressed (int, int, int, int, QString);
+  
+  public:
+    MyCombo (QWidget *);
+    ~MyCombo ();
+    void setKeyFlag (bool);   
+    void doKeyPress (QKeyEvent *); 
+    
+  protected:
+    virtual void keyPressEvent (QKeyEvent *);
+    
+  private:
+    bool keyFlag;
+};
+
+class MySpinner : public QSpinBox
+{
+  Q_OBJECT
+  
+  signals:
+    void signalKeyPressed (int, int, int, int, QString);
+  
+  public:
+    MySpinner (QWidget *);
+    ~MySpinner ();
+    void setKeyFlag (bool);   
+    void doKeyPress (QKeyEvent *); 
+    
+  protected:
+    virtual void keyPressEvent (QKeyEvent *);
+    
+  private:
+    bool keyFlag;
+};
+
+class MySlider : public QSlider
+{
+  Q_OBJECT
+  
+  signals:
+    void signalKeyPressed (int, int, int, int, QString);
+  
+  public:
+    MySlider (QWidget *);
+    ~MySlider ();
+    void setKeyFlag (bool);   
+    void doKeyPress (QKeyEvent *); 
+    
+  protected:
+    virtual void keyPressEvent (QKeyEvent *);
+    
+  private:
+    bool keyFlag;
+};
+
+
 class ChartToolbar : public QToolBar
 {
   Q_OBJECT
@@ -38,9 +100,19 @@ class ChartToolbar : public QToolBar
     void signalChartTypeChanged (int);
     void signalPixelspaceChanged (int);
     void signalSliderChanged (int);
-    void signalKeyPressed (int, QKeyEvent *);
+    void signalKeyPressed (int, int, int, int, QString);
     
   public:
+  
+    enum MenuAction
+    {
+      CompressionFocus,
+      ChartTypeFocus,
+      BarSpacingFocus,
+      BarsLoadedFocus,
+      ChartPannerFocus
+    };
+  
     ChartToolbar(QMainWindow *);
     ~ChartToolbar();
     int getBars ();
@@ -58,14 +130,17 @@ class ChartToolbar : public QToolBar
   public slots:
     void setFocus ();
     void setKeyFlag (bool);
+    void slotAccel (int);
+    void doKeyPress (QKeyEvent *);
   
   private:
-    QComboBox *compressionCombo;
-    QComboBox *chartTypeCombo;
-    QSpinBox *pixelspace;
-    QSpinBox *barCount;
-    QSlider *slider;
+    MyCombo *compressionCombo;
+    MyCombo *chartTypeCombo;
+    MySpinner *pixelspace;
+    MySpinner *barCount;
+    MySlider *slider;
     bool keyFlag;
+    MenuAction focusFlag;
 };
 
 #endif

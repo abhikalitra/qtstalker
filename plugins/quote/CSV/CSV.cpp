@@ -283,7 +283,13 @@ void CSV::parse ()
 	  continue;
 	}
 	
-        if (! fieldList[fieldLoop].compare("Open") ||
+        if (! fieldList[fieldLoop].compare("Name"))
+	{
+	  r->setData("Name", l[fieldLoop]);
+	  continue;
+	}
+        
+	if (! fieldList[fieldLoop].compare("Open") ||
 	    ! fieldList[fieldLoop].compare("High") ||
 	    ! fieldList[fieldLoop].compare("Low") ||
 	    ! fieldList[fieldLoop].compare("Close") ||
@@ -349,6 +355,10 @@ void CSV::parse ()
 	  delete bar;
 	  continue;
 	}
+	
+	if (r->getData("Name").length())
+	  db->setTitle(r->getData("Name"));
+	  
         db->setBar(bar);
 	emit dataLogMessage(r->getData("Symbol") + " " + r->getString());
         emit statusLogMessage("Updating " + r->getData("Symbol"));
@@ -357,6 +367,8 @@ void CSV::parse ()
       }
       else
       {
+	if (r->getData("Name").length())
+	  db->setTitle(r->getData("Name"));
         db->setBar(bar);
 	emit dataLogMessage(symbol + " " + r->getString());
       }

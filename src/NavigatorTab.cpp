@@ -220,7 +220,7 @@ void NavigatorTab::buttonPressed (int id)
 
 void NavigatorTab::pressButton (int id) 
 {
-  if (bg->selectedId() == id)
+  if (bg->id(bg->selected()) == id)
   {
     buttonPressed(id);
     return;

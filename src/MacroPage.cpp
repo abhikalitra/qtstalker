@@ -207,37 +207,37 @@ void MacroPage::assignMacro ()
   QString s = config.getData(Config::MacroPath);
   
   dialog->createPage(tr("Keys F1-F6"));
-  dialog->addSymbolItem("CTRL+F1", tr("Keys F1-F6"), s, config.getData(Config::MacroF1));
-  dialog->addSymbolItem("CTRL+F2", tr("Keys F1-F6"), s, config.getData(Config::MacroF2));
-  dialog->addSymbolItem("CTRL+F3", tr("Keys F1-F6"), s, config.getData(Config::MacroF3));
-  dialog->addSymbolItem("CTRL+F4", tr("Keys F1-F6"), s, config.getData(Config::MacroF4));
-  dialog->addSymbolItem("CTRL+F5", tr("Keys F1-F6"), s, config.getData(Config::MacroF5));
-  dialog->addSymbolItem("CTRL+F6", tr("Keys F1-F6"), s, config.getData(Config::MacroF6));
+  dialog->addSymbolItem("CTRL+F1", tr("Keys F1-F6"), s, config.getData(Config::Macro1));
+  dialog->addSymbolItem("CTRL+F2", tr("Keys F1-F6"), s, config.getData(Config::Macro2));
+  dialog->addSymbolItem("CTRL+F3", tr("Keys F1-F6"), s, config.getData(Config::Macro3));
+  dialog->addSymbolItem("CTRL+F4", tr("Keys F1-F6"), s, config.getData(Config::Macro4));
+  dialog->addSymbolItem("CTRL+F5", tr("Keys F1-F6"), s, config.getData(Config::Macro5));
+  dialog->addSymbolItem("CTRL+F6", tr("Keys F1-F6"), s, config.getData(Config::Macro6));
   
   dialog->createPage(tr("Keys F7-F12"));
-  dialog->addSymbolItem("CTRL+F7", tr("Keys F7-F12"), s, config.getData(Config::MacroF7));
-  dialog->addSymbolItem("CTRL+F8", tr("Keys F7-F12"), s, config.getData(Config::MacroF8));
-  dialog->addSymbolItem("CTRL+F9", tr("Keys F7-F12"), s, config.getData(Config::MacroF9));
-  dialog->addSymbolItem("CTRL+F10", tr("Keys F7-F12"), s, config.getData(Config::MacroF10));
-  dialog->addSymbolItem("CTRL+F11", tr("Keys F7-F12"), s, config.getData(Config::MacroF11));
-  dialog->addSymbolItem("CTRL+F12", tr("Keys F7-F12"), s, config.getData(Config::MacroF12));
+  dialog->addSymbolItem("CTRL+F7", tr("Keys F7-F12"), s, config.getData(Config::Macro7));
+  dialog->addSymbolItem("CTRL+F8", tr("Keys F7-F12"), s, config.getData(Config::Macro8));
+  dialog->addSymbolItem("CTRL+F9", tr("Keys F7-F12"), s, config.getData(Config::Macro9));
+  dialog->addSymbolItem("CTRL+F10", tr("Keys F7-F12"), s, config.getData(Config::Macro10));
+  dialog->addSymbolItem("CTRL+F11", tr("Keys F7-F12"), s, config.getData(Config::Macro11));
+  dialog->addSymbolItem("CTRL+F12", tr("Keys F7-F12"), s, config.getData(Config::Macro12));
 
   int rc = dialog->exec();
     
   if (rc == QDialog::Accepted)
   {
-    config.setData(Config::MacroF1, dialog->getSymbol("CTRL+F1"));
-    config.setData(Config::MacroF2, dialog->getSymbol("CTRL+F2"));
-    config.setData(Config::MacroF3, dialog->getSymbol("CTRL+F3"));
-    config.setData(Config::MacroF4, dialog->getSymbol("CTRL+F4"));
-    config.setData(Config::MacroF5, dialog->getSymbol("CTRL+F5"));
-    config.setData(Config::MacroF6, dialog->getSymbol("CTRL+F6"));
-    config.setData(Config::MacroF7, dialog->getSymbol("CTRL+F7"));
-    config.setData(Config::MacroF8, dialog->getSymbol("CTRL+F8"));
-    config.setData(Config::MacroF9, dialog->getSymbol("CTRL+F9"));
-    config.setData(Config::MacroF10, dialog->getSymbol("CTRL+F10"));
-    config.setData(Config::MacroF11, dialog->getSymbol("CTRL+F11"));
-    config.setData(Config::MacroF12, dialog->getSymbol("CTRL+F12"));
+    config.setData(Config::Macro1, dialog->getSymbol("CTRL+F1"));
+    config.setData(Config::Macro2, dialog->getSymbol("CTRL+F2"));
+    config.setData(Config::Macro3, dialog->getSymbol("CTRL+F3"));
+    config.setData(Config::Macro4, dialog->getSymbol("CTRL+F4"));
+    config.setData(Config::Macro5, dialog->getSymbol("CTRL+F5"));
+    config.setData(Config::Macro6, dialog->getSymbol("CTRL+F6"));
+    config.setData(Config::Macro7, dialog->getSymbol("CTRL+F7"));
+    config.setData(Config::Macro8, dialog->getSymbol("CTRL+F8"));
+    config.setData(Config::Macro9, dialog->getSymbol("CTRL+F9"));
+    config.setData(Config::Macro10, dialog->getSymbol("CTRL+F10"));
+    config.setData(Config::Macro11, dialog->getSymbol("CTRL+F11"));
+    config.setData(Config::Macro12, dialog->getSymbol("CTRL+F12"));
   }
   
   delete dialog;  
