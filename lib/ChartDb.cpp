@@ -293,7 +293,7 @@ int ChartDb::loadPlugin ()
     }
   }
     
-  plug = config.getPlugin(Config::DbPluginPath, dbPlugin);
+  plug = config.getDbPlugin(dbPlugin);
   if (! plug)
   {
     config.closePlugin(dbPlugin);

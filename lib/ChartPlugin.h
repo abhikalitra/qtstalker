@@ -22,9 +22,12 @@
 #ifndef CHARTPLUGIN_HPP
 #define CHARTPLUGIN_HPP
 
-#include "Plugin.h"
+#include <qobject.h>
+#include <qpixmap.h>
+#include "BarData.h"
+#include "Scaler.h"
 
-class ChartPlugin : public Plugin
+class ChartPlugin : public QObject
 {
   Q_OBJECT
 
@@ -38,7 +41,12 @@ class ChartPlugin : public Plugin
     int getMinPixelspace ();
     int getStartX ();
     bool getIndicatorFlag ();
+    QString getPluginName ();
 
+    virtual void drawChart (int, int, int);
+    virtual void saveSettings ();
+    virtual void prefDialog (QWidget *);
+    
   protected:
     Scaler *scaler;
     QPixmap *buffer;
@@ -47,6 +55,12 @@ class ChartPlugin : public Plugin
     int startX;
     bool indicatorFlag;
     bool saveFlag;
+    QString pluginName;
 };
+
+extern "C"
+{
+  ChartPlugin * createChartPlugin ();
+}
 
 #endif

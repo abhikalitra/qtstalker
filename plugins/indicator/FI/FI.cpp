@@ -22,6 +22,7 @@
 #include "FI.h"
 #include "PrefDialog.h"
 #include <qdict.h>
+#include <qobject.h>
 
 FI::FI ()
 {
@@ -75,23 +76,23 @@ void FI::calculate ()
 int FI::indicatorPrefDialog (QWidget *w)
 {
   PrefDialog *dialog = new PrefDialog(w);
-  dialog->setCaption(tr("FI Indicator"));
-  dialog->createPage (tr("Parms"));
-  dialog->addColorItem(tr("Color"), tr("Parms"), color);
-  dialog->addComboItem(tr("Line Type"), tr("Parms"), lineTypes, lineType);
-  dialog->addTextItem(tr("Label"), tr("Parms"), label);
-  dialog->addIntItem(tr("Smoothing"), tr("Parms"), smoothing, 0, 99999999);
-  dialog->addComboItem(tr("Smoothing Type"), tr("Parms"), maTypeList, maType);
+  dialog->setCaption(QObject::tr("FI Indicator"));
+  dialog->createPage (QObject::tr("Parms"));
+  dialog->addColorItem(QObject::tr("Color"), QObject::tr("Parms"), color);
+  dialog->addComboItem(QObject::tr("Line Type"), QObject::tr("Parms"), lineTypes, lineType);
+  dialog->addTextItem(QObject::tr("Label"), QObject::tr("Parms"), label);
+  dialog->addIntItem(QObject::tr("Smoothing"), QObject::tr("Parms"), smoothing, 0, 99999999);
+  dialog->addComboItem(QObject::tr("Smoothing Type"), QObject::tr("Parms"), maTypeList, maType);
   
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
-    color = dialog->getColor(tr("Color"));
-    lineType = (PlotLine::LineType) dialog->getComboIndex(tr("Line Type"));
-    smoothing = dialog->getInt(tr("Smoothing"));
-    label = dialog->getText(tr("Label"));
-    maType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("Smoothing Type"));
+    color = dialog->getColor(QObject::tr("Color"));
+    lineType = (PlotLine::LineType) dialog->getComboIndex(QObject::tr("Line Type"));
+    smoothing = dialog->getInt(QObject::tr("Smoothing"));
+    label = dialog->getText(QObject::tr("Label"));
+    maType = (IndicatorPlugin::MAType) dialog->getComboIndex(QObject::tr("Smoothing Type"));
     rc = TRUE;
   }
   else
@@ -158,10 +159,10 @@ PlotLine * FI::calculateCustom (QDict<PlotLine> *)
   return output->getLine(0);
 }
 
-Plugin * create ()
+IndicatorPlugin * createIndicatorPlugin ()
 {
   FI *o = new FI;
-  return ((Plugin *) o);
+  return ((IndicatorPlugin *) o);
 }
 
 

@@ -48,5 +48,5 @@ class ROC : public IndicatorPlugin
 
 extern "C"
 {
-  Plugin * create ();
+  IndicatorPlugin * createIndicatorPlugin ();
 }

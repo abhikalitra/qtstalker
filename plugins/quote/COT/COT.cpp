@@ -629,9 +629,9 @@ void COT::saveSettings ()
   settings.endGroup();
 }
 
-Plugin * create ()
+QuotePlugin * createQuotePlugin ()
 {
   COT *o = new COT;
-  return ((Plugin *) o);
+  return ((QuotePlugin *) o);
 }
 

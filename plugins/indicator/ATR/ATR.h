@@ -45,7 +45,7 @@ class ATR : public IndicatorPlugin
 
 extern "C"
 {
-  Plugin * create ();
+  IndicatorPlugin * createIndicatorPlugin ();
 }
 
 

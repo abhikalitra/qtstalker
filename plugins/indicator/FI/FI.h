@@ -45,6 +45,6 @@ class FI : public IndicatorPlugin
 
 extern "C"
 {
-  Plugin * create ();
+  IndicatorPlugin * createIndicatorPlugin ();
 }
 

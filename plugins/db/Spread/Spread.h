@@ -48,7 +48,7 @@ class Spread : public DbPlugin
 
 extern "C"
 {
-  Plugin * create ();
+  DbPlugin * createDbPlugin ();
 }
 
 #endif

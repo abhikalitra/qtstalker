@@ -22,11 +22,10 @@
 #ifndef QUOTEPLUGIN_HPP
 #define QUOTEPLUGIN_HPP
 
-#include "Plugin.h"
-#include "Config.h"
 #include <qstring.h>
+#include <qobject.h>
 
-class QuotePlugin : public Plugin
+class QuotePlugin : public QObject
 {
   Q_OBJECT
 
@@ -42,12 +41,22 @@ class QuotePlugin : public Plugin
     bool setTFloat (QString);
     QString stripJunk (QString);
     QString createDirectory (QString);
+    QString getPluginName ();
 
+    virtual void update ();
+    virtual void cancelUpdate ();
+    virtual void prefDialog (QWidget *);
+    
   protected:
     QString file;
     float tfloat;
     bool saveFlag;
-    Config config;
+    QString pluginName;
 };
+
+extern "C"
+{
+  QuotePlugin * createQuotePlugin ();
+}
 
 #endif

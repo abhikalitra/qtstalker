@@ -58,6 +58,6 @@ class Yahoo : public QuotePlugin
 
 extern "C"
 {
-  Plugin * create ();
+  QuotePlugin * createQuotePlugin ();
 }
 

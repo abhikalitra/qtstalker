@@ -20,7 +20,6 @@
  */
 
 #include "Config.h"
-#include "Plugin.h"
 #include <qobject.h>
 #include <qdir.h>
 #include <qlibrary.h>
@@ -32,13 +31,19 @@
 Config::Config ()
 {
   libs.setAutoDelete(TRUE);
-  plugins.setAutoDelete(TRUE);
+  chartPlugins.setAutoDelete(TRUE);
+  dbPlugins.setAutoDelete(TRUE);
+  indicatorPlugins.setAutoDelete(TRUE);
+  quotePlugins.setAutoDelete(TRUE);
   version = "0.27";  // only this version of plugin is allowed to be loaded
 }
 
 Config::~Config ()
 {
-  plugins.clear();
+  chartPlugins.clear();
+  dbPlugins.clear();
+  indicatorPlugins.clear();
+  quotePlugins.clear();
   libs.clear();
 }
 
@@ -55,8 +60,7 @@ void Config::setup ()
   }
   setData(Home, home);
 
-  QString s = home;
-  s.append("/data");
+  QString s = home + "/data";
   if (! dir.exists(s, TRUE))
   {
     if (! dir.mkdir(s, TRUE))
@@ -64,8 +68,7 @@ void Config::setup ()
   }
   setData(DataPath, s);
 
-  s = home;
-  s.append("/group");
+  s = home + "/group";
   if (! dir.exists(s, TRUE))
   {
     if (! dir.mkdir(s, TRUE))
@@ -73,8 +76,7 @@ void Config::setup ()
   }
   setData(GroupPath, s);
 
-  s = home;
-  s.append("/portfolio");
+  s = home + "/portfolio";
   if (! dir.exists(s, TRUE))
   {
     if (! dir.mkdir(s, TRUE))
@@ -82,8 +84,7 @@ void Config::setup ()
   }
   setData(PortfolioPath, s);
 
-  s = home;
-  s.append("/test");
+  s = home + "/test";
   if (! dir.exists(s, TRUE))
   {
     if (! dir.mkdir(s, TRUE))
@@ -91,8 +92,7 @@ void Config::setup ()
   }
   setData(TestPath, s);
 
-  s = home;
-  s.append("/scanner");
+  s = home + "/scanner";
   if (! dir.exists(s, TRUE))
   {
     if (! dir.mkdir(s, TRUE))
@@ -100,8 +100,7 @@ void Config::setup ()
   }
   setData(ScannerPath, s);
 
-  s = home;
-  s.append("/indicator");
+  s = home + "/indicator";
   if (! dir.exists(s, TRUE))
   {
     if (! dir.mkdir(s, TRUE))
@@ -112,7 +111,7 @@ void Config::setup ()
   QStringList l = getIndicators();
   if (l.count() == 0)
   {
-    Plugin *plug = getPlugin(Config::IndicatorPluginPath, "VOL");
+    IndicatorPlugin *plug = getIndicatorPlugin("VOL");
     if (! plug)
     {
       qDebug("Config::Config: could not open plugin");
@@ -436,51 +435,105 @@ QStringList Config::getIndicatorList ()
   return l;
 }
 
-Plugin * Config::getPlugin (Config::Parm t, QString p)
+ChartPlugin * Config::getChartPlugin (QString p)
 {
-  Plugin *plug = plugins[p];
+  ChartPlugin *plug = chartPlugins[p];
   if (plug)
     return plug;
 
-  QString s;
-  
-  switch (t)
-  {
-    case Config::IndicatorPluginPath:
-      s = getData(IndicatorPluginPath);
-      break;
-    case Config::QuotePluginPath:
-      s = getData(QuotePluginPath);
-      break;
-    case Config::ChartPluginPath:
-      s = getData(ChartPluginPath);
-      break;
-    case Config::DbPluginPath:
-      s = getData(DbPluginPath);
-      break;
-    default:
-      break;
-  }
-
-  s.append("/lib");
-  s.append(p);
-  s.append(".");
-  s.append(version);
-  s.append(".so");
+  QString s = getData(ChartPluginPath) + "/lib" + p + "." + version + ".so";
 
   QLibrary *lib = new QLibrary(s);
-  Plugin *(*so)() = 0;
-  so = (Plugin *(*)()) lib->resolve("create");
+  ChartPlugin *(*so)() = 0;
+  so = (ChartPlugin *(*)()) lib->resolve("createChartPlugin");
   if (so)
   {
     plug = (*so)();
     libs.replace(p, lib);
-    plugins.replace(p, plug);
+    chartPlugins.replace(p, plug);
     return plug;
   }
   else
   {
-    qDebug("Config::getPlugin:%s Dll error\n", s.latin1());
+    qDebug("Config::getChartPlugin:%s Dll error\n", s.latin1());
+    delete lib;
+    return 0;
+  }
+}
+
+DbPlugin * Config::getDbPlugin (QString p)
+{
+  DbPlugin *plug = dbPlugins[p];
+  if (plug)
+    return plug;
+
+  QString s = getData(DbPluginPath) + "/lib" + p + "." + version + ".so";
+
+  QLibrary *lib = new QLibrary(s);
+  DbPlugin *(*so)() = 0;
+  so = (DbPlugin *(*)()) lib->resolve("createDbPlugin");
+  if (so)
+  {
+    plug = (*so)();
+    libs.replace(p, lib);
+    dbPlugins.replace(p, plug);
+    return plug;
+  }
+  else
+  {
+    qDebug("Config::getDbPlugin:%s Dll error\n", s.latin1());
+    delete lib;
+    return 0;
+  }
+}
+
+IndicatorPlugin * Config::getIndicatorPlugin (QString p)
+{
+  IndicatorPlugin *plug = indicatorPlugins[p];
+  if (plug)
+    return plug;
+
+  QString s = getData(IndicatorPluginPath) + "/lib" + p + "." + version + ".so";
+
+  QLibrary *lib = new QLibrary(s);
+  IndicatorPlugin *(*so)() = 0;
+  so = (IndicatorPlugin *(*)()) lib->resolve("createIndicatorPlugin");
+  if (so)
+  {
+    plug = (*so)();
+    libs.replace(p, lib);
+    indicatorPlugins.replace(p, plug);
+    return plug;
+  }
+  else
+  {
+    qDebug("Config::getIndicatorPlugin:%s Dll error\n", s.latin1());
+    delete lib;
+    return 0;
+  }
+}
+
+QuotePlugin * Config::getQuotePlugin (QString p)
+{
+  QuotePlugin *plug = quotePlugins[p];
+  if (plug)
+    return plug;
+
+  QString s = getData(QuotePluginPath) + "/lib" + p + "." + version + ".so";
+
+  QLibrary *lib = new QLibrary(s);
+  QuotePlugin *(*so)() = 0;
+  so = (QuotePlugin *(*)()) lib->resolve("createQuotePlugin");
+  if (so)
+  {
+    plug = (*so)();
+    libs.replace(p, lib);
+    quotePlugins.replace(p, plug);
+    return plug;
+  }
+  else
+  {
+    qDebug("Config::getQuotePlugin:%s Dll error\n", s.latin1());
     delete lib;
     return 0;
   }
@@ -488,39 +541,29 @@ Plugin * Config::getPlugin (Config::Parm t, QString p)
 
 void Config::closePlugins ()
 {
-  QDictIterator<Plugin> it(plugins);
+  QDictIterator<ChartPlugin> it(chartPlugins);
   for (; it.current(); ++it)
-  {
-    switch(it.current()->getPluginType())
-    {
-      case Plugin::ChartPlug:
-        it.current()->saveSettings();
-	break;
-      default:
-	break;
-    }
-  }
+    it.current()->saveSettings();
   
-  plugins.clear();
+  chartPlugins.clear();
+  dbPlugins.clear();
+  indicatorPlugins.clear();
+  quotePlugins.clear();
+  
   libs.clear();
 }
 
 void Config::closePlugin (QString d)
 {
-  Plugin *plug = plugins[d];
+  ChartPlugin *plug = chartPlugins[d];
   if (plug)
-  {
-    switch(plug->getPluginType())
-    {
-      case Plugin::ChartPlug:
-        plug->saveSettings();
-	break;
-      default:
-	break;
-    }
-  }
+    plug->saveSettings();
    
-  plugins.remove(d);
+  chartPlugins.remove(d);
+  dbPlugins.remove(d);
+  indicatorPlugins.remove(d);
+  quotePlugins.remove(d);
+  
   libs.remove(d);
 }
 

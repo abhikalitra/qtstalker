@@ -23,6 +23,7 @@
 #include "LineDialog.h"
 #include "Config.h"
 #include "Indicator.h"
+#include "IndicatorPlugin.h"
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qpainter.h>
@@ -174,7 +175,7 @@ PlotLine * Line::getBoolLine ()
   Config config;
   
   // open the CUS plugin   
-  Plugin *plug = config.getPlugin(Config::IndicatorPluginPath, "CUS");
+  IndicatorPlugin *plug = config.getIndicatorPlugin("CUS");
   if (! plug)
   {
     config.closePlugin("CUS");
@@ -215,9 +216,9 @@ PlotLine * Line::getBoolLine ()
 //*************************************************
 //*************************************************
 
-Plugin * create ()
+ChartPlugin * createChartPlugin ()
 {
   Line *o = new Line;
-  return ((Plugin *) o);
+  return ((ChartPlugin *) o);
 }
 

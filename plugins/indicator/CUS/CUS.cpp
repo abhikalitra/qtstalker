@@ -22,7 +22,9 @@
 #include "CUS.h"
 #include "CUSDialog.h"
 #include "Config.h"
+#include "IndicatorPlugin.h"
 #include <qmessagebox.h>
+#include <qobject.h>
 
 CUS::CUS ()
 {
@@ -46,7 +48,7 @@ void CUS::calculate ()
     set.parse(formulaList[loop]);
 
     Config config;
-    Plugin *plug = config.getPlugin(Config::IndicatorPluginPath, set.getData("plugin"));
+    IndicatorPlugin *plug = config.getIndicatorPlugin(set.getData("plugin"));
     if (! plug)
     {
       qDebug("CUS::calculate: %s plugin not loaded", set.getData("plugin").latin1());
@@ -116,8 +118,8 @@ int CUS::indicatorPrefDialog (QWidget *)
     if (! flag)
     {
       QMessageBox::information(0,
-                               tr("Qtstalker: Error"),
-			       tr("No step checked to plot."));
+                               QObject::tr("Qtstalker: Error"),
+			       QObject::tr("No step checked to plot."));
     }
     
     rc = TRUE;
@@ -175,9 +177,9 @@ void CUS::setCustomFunction (QString d)
 //*********************************************************************************
 //*********************************************************************************
 
-Plugin * create ()
+IndicatorPlugin * createIndicatorPlugin ()
 {
   CUS *o = new CUS;
-  return ((Plugin *) o);
+  return ((IndicatorPlugin *) o);
 }
 

@@ -22,6 +22,7 @@
 #include "MA.h"
 #include "PrefDialog.h"
 #include <qdict.h>
+#include <qobject.h>
 
 MA::MA ()
 {
@@ -71,31 +72,31 @@ void MA::calculate ()
 int MA::indicatorPrefDialog (QWidget *w)
 {
   PrefDialog *dialog = new PrefDialog(w);
-  dialog->setCaption(tr("MA Indicator"));
-  dialog->createPage (tr("Parms"));
-  dialog->addColorItem(tr("Color"), tr("Parms"), color);
-  dialog->addComboItem(tr("Line Type"), tr("Parms"), lineTypes, lineType);
-  dialog->addTextItem(tr("Label"), tr("Parms"), label);
-  dialog->addIntItem(tr("Period"), tr("Parms"), period, 1, 99999999);
-  dialog->addComboItem(tr("MA Type"), tr("Parms"), maTypeList, maType);
+  dialog->setCaption(QObject::tr("MA Indicator"));
+  dialog->createPage (QObject::tr("Parms"));
+  dialog->addColorItem(QObject::tr("Color"), QObject::tr("Parms"), color);
+  dialog->addComboItem(QObject::tr("Line Type"), QObject::tr("Parms"), lineTypes, lineType);
+  dialog->addTextItem(QObject::tr("Label"), QObject::tr("Parms"), label);
+  dialog->addIntItem(QObject::tr("Period"), QObject::tr("Parms"), period, 1, 99999999);
+  dialog->addComboItem(QObject::tr("MA Type"), QObject::tr("Parms"), maTypeList, maType);
   if (customFlag)
-    dialog->addFormulaInputItem(tr("Input"), tr("Parms"), FALSE, customInput);
+    dialog->addFormulaInputItem(QObject::tr("Input"), QObject::tr("Parms"), FALSE, customInput);
   else
-    dialog->addComboItem(tr("Input"), tr("Parms"), inputTypeList, input);
+    dialog->addComboItem(QObject::tr("Input"), QObject::tr("Parms"), inputTypeList, input);
   
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
-    color = dialog->getColor(tr("Color"));
-    lineType = (PlotLine::LineType) dialog->getComboIndex(tr("Line Type"));
-    period = dialog->getInt(tr("Period"));
-    label = dialog->getText(tr("Label"));
-    maType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("MA Type"));
+    color = dialog->getColor(QObject::tr("Color"));
+    lineType = (PlotLine::LineType) dialog->getComboIndex(QObject::tr("Line Type"));
+    period = dialog->getInt(QObject::tr("Period"));
+    label = dialog->getText(QObject::tr("Label"));
+    maType = (IndicatorPlugin::MAType) dialog->getComboIndex(QObject::tr("MA Type"));
     if (customFlag)
-      customInput = dialog->getFormulaInput(tr("Input"));
+      customInput = dialog->getFormulaInput(QObject::tr("Input"));
     else
-      input = (BarData::InputType) dialog->getComboIndex(tr("Input"));
+      input = (BarData::InputType) dialog->getComboIndex(QObject::tr("Input"));
     rc = TRUE;
   }
   else
@@ -180,10 +181,10 @@ PlotLine * MA::calculateCustom (QDict<PlotLine> *d)
 //*************************************************************************
 //*************************************************************************
 
-Plugin * create ()
+IndicatorPlugin * createIndicatorPlugin ()
 {
   MA *o = new MA;
-  return ((Plugin *) o);
+  return ((IndicatorPlugin *) o);
 }
 
 

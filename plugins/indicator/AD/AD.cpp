@@ -1,14 +1,14 @@
 /*
  *  Qtstalker stock charter
  *
- *  Copyright (C) 2001-2004 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2004 Stefan S. SQObject::tratigakos
  *
- *  This program is free software; you can redistribute it and/or modify
+ *  This program is free software; you can redisQObject::tribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
  *  (at your option) any later version.
  *
- *  This program is distributed in the hope that it will be useful,
+ *  This program is disQObject::tributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
@@ -22,6 +22,7 @@
 #include "AD.h"
 #include "PrefDialog.h"
 #include <qdict.h>
+#include <qobject.h>
 
 AD::AD ()
 {
@@ -129,21 +130,21 @@ void AD::calculateWAD ()
 int AD::indicatorPrefDialog (QWidget *w)
 {
   PrefDialog *dialog = new PrefDialog(w);
-  dialog->setCaption(tr("AD Indicator"));
-  dialog->createPage (tr("Parms"));
-  dialog->addColorItem(tr("Color"), tr("Parms"), color);
-  dialog->addTextItem(tr("Label"), tr("Parms"), label);
-  dialog->addComboItem(tr("Line Type"), tr("Parms"), lineTypes, lineType);
-  dialog->addComboItem(tr("Method"), tr("Parms"), methodList, method);
+  dialog->setCaption(QObject::tr("AD Indicator"));
+  dialog->createPage (QObject::tr("Parms"));
+  dialog->addColorItem(QObject::tr("Color"), QObject::tr("Parms"), color);
+  dialog->addTextItem(QObject::tr("Label"), QObject::tr("Parms"), label);
+  dialog->addComboItem(QObject::tr("Line Type"), QObject::tr("Parms"), lineTypes, lineType);
+  dialog->addComboItem(QObject::tr("Method"), QObject::tr("Parms"), methodList, method);
   
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
-    color = dialog->getColor(tr("Color"));
-    lineType = (PlotLine::LineType) dialog->getComboIndex(tr("Line Type"));
-    label = dialog->getText(tr("Label"));
-    method = dialog->getCombo(tr("Method"));
+    color = dialog->getColor(QObject::tr("Color"));
+    lineType = (PlotLine::LineType) dialog->getComboIndex(QObject::tr("Line Type"));
+    label = dialog->getText(QObject::tr("Label"));
+    method = dialog->getCombo(QObject::tr("Method"));
     rc = TRUE;
   }
   else
@@ -205,10 +206,10 @@ void AD::setIndicatorSettings (Setting dict)
     method = s;
 }
 
-Plugin * create ()
+IndicatorPlugin * createIndicatorPlugin ()
 {
   AD *o = new AD;
-  return ((Plugin *) o);
+  return ((IndicatorPlugin *) o);
 }
 
 

@@ -47,7 +47,7 @@ class BB : public IndicatorPlugin
 
 extern "C"
 {
-  Plugin * create ();
+  IndicatorPlugin * createIndicatorPlugin ();
 }
 
 

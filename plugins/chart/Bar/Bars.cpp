@@ -23,6 +23,7 @@
 #include "BarDialog.h"
 #include "Config.h"
 #include "Indicator.h"
+#include "IndicatorPlugin.h"
 #include <qpainter.h>
 #include <qsettings.h>
 #include <qmessagebox.h>
@@ -273,7 +274,7 @@ PlotLine * Bars::getBoolLine ()
   Config config;
   
   // open the CUS plugin   
-  Plugin *plug = config.getPlugin(Config::IndicatorPluginPath, "CUS");
+  IndicatorPlugin *plug = config.getIndicatorPlugin("CUS");
   if (! plug)
   {
     config.closePlugin("CUS");
@@ -306,8 +307,8 @@ PlotLine * Bars::getBoolLine ()
 //*************************************************
 //*************************************************
   
-Plugin * create ()
+ChartPlugin * createChartPlugin ()
 {
   Bars *o = new Bars;
-  return ((Plugin *) o);
+  return ((ChartPlugin *) o);
 }

@@ -45,7 +45,7 @@ class Swing : public ChartPlugin
 
 extern "C"
 {
-  Plugin * create ();
+  ChartPlugin * createChartPlugin ();
 };
 
 #endif

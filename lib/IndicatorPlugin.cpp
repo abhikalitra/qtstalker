@@ -27,7 +27,6 @@
 IndicatorPlugin::IndicatorPlugin()
 {
   output = new Indicator;
-  pluginType = IndicatorPlug;
   saveFlag = FALSE;
   customFlag = FALSE;
   plotType = 1;
@@ -354,4 +353,50 @@ void IndicatorPlugin::setPlotType (int d)
 {
   plotType = d;
 }
+
+QString IndicatorPlugin::getPluginName ()
+{
+  return pluginName;
+}
+
+//***************************************************************
+//****************** VIRTUAL OVERIDES ***************************
+//***************************************************************
+
+void IndicatorPlugin::saveIndicatorSettings (QString)
+{
+}
+
+void IndicatorPlugin::calculate ()
+{
+}
+
+int IndicatorPlugin::indicatorPrefDialog (QWidget *)
+{
+  return 0;
+}
+
+void IndicatorPlugin::loadIndicatorSettings (QString)
+{
+}
+
+PlotLine * IndicatorPlugin::calculateCustom (QDict<PlotLine> *)
+{
+  return 0;
+}
+
+Setting IndicatorPlugin::getIndicatorSettings ()
+{
+  return Setting();
+}
+
+void IndicatorPlugin::setIndicatorSettings (Setting)
+{
+}
+
+void IndicatorPlugin::setCustomFunction (QString)
+{
+}
+
+
 

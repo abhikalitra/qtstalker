@@ -2,7 +2,6 @@ TEMPLATE = lib
  
 CONFIG += thread warn_on
   
-HEADERS += Plugin.h
 HEADERS += QuotePlugin.h
 HEADERS += IndicatorPlugin.h
 HEADERS += ChartPlugin.h
@@ -27,7 +26,6 @@ HEADERS += FormulaEdit.h
 HEADERS += FormulaInput.h
 HEADERS += Indicator.h
    
-SOURCES += Plugin.cpp
 SOURCES += QuotePlugin.cpp
 SOURCES += IndicatorPlugin.cpp
 SOURCES += ChartPlugin.cpp

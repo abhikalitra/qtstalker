@@ -74,9 +74,9 @@ void Futures::saveDbDefaults (Setting *set)
   setData("Plugin", "Futures");
 }
 
-Plugin * create ()
+DbPlugin * createDbPlugin ()
 {
   Futures *o = new Futures;
-  return ((Plugin *) o);
+  return ((DbPlugin *) o);
 }
 

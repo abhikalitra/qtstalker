@@ -619,10 +619,10 @@ Setting * CSV::getRule ()
 //**********************************************************
 //**********************************************************
 
-Plugin * create ()
+QuotePlugin * createQuotePlugin ()
 {
   CSV *o = new CSV;
-  return ((Plugin *) o);
+  return ((QuotePlugin *) o);
 }
 
 

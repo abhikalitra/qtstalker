@@ -47,5 +47,5 @@ class UO : public IndicatorPlugin
 
 extern "C"
 {
-  Plugin * create ();
+  IndicatorPlugin * createIndicatorPlugin ();
 }

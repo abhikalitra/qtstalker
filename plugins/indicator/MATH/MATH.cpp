@@ -23,18 +23,19 @@
 #include "PrefDialog.h"
 #include <qdict.h>
 #include <qinputdialog.h>
+#include <qobject.h>
 
 MATH::MATH ()
 {
   pluginName = "MATH";
   customFlag = TRUE;
   
-  methodList.append(tr("ADD"));
-  methodList.append(tr("DIV"));
-  methodList.append(tr("MUL"));
-  methodList.append(tr("SUB"));
-  methodList.append(tr("MIN"));
-  methodList.append(tr("MAX"));
+  methodList.append(QObject::tr("ADD"));
+  methodList.append(QObject::tr("DIV"));
+  methodList.append(QObject::tr("MUL"));
+  methodList.append(QObject::tr("SUB"));
+  methodList.append(QObject::tr("MIN"));
+  methodList.append(QObject::tr("MAX"));
   
   setDefaults();
 }
@@ -185,8 +186,8 @@ int MATH::indicatorPrefDialog (QWidget *w)
   if (! method.length())
   {
     bool ok = FALSE;
-    method = QInputDialog::getItem(tr("Select MATH Function"),
-                                   tr("Select MATH function"),
+    method = QInputDialog::getItem(QObject::tr("Select MATH Function"),
+                                   QObject::tr("Select MATH function"),
 				   methodList,
 				   0,
 				   FALSE,
@@ -197,35 +198,35 @@ int MATH::indicatorPrefDialog (QWidget *w)
   }
 
   PrefDialog *dialog = new PrefDialog(w);
-  dialog->setCaption(tr("MATH Indicator"));
-  dialog->createPage (tr("Parms"));
-  dialog->addColorItem(tr("Color"), tr("Parms"), color);
-  dialog->addTextItem(tr("Label"), tr("Parms"), label);
-  dialog->addComboItem(tr("Line Type"), tr("Parms"), lineTypes, lineType);
-  dialog->addFormulaInputItem(tr("Data1"), tr("Parms"), FALSE, data1);
+  dialog->setCaption(QObject::tr("MATH Indicator"));
+  dialog->createPage (QObject::tr("Parms"));
+  dialog->addColorItem(QObject::tr("Color"), QObject::tr("Parms"), color);
+  dialog->addTextItem(QObject::tr("Label"), QObject::tr("Parms"), label);
+  dialog->addComboItem(QObject::tr("Line Type"), QObject::tr("Parms"), lineTypes, lineType);
+  dialog->addFormulaInputItem(QObject::tr("Data1"), QObject::tr("Parms"), FALSE, data1);
   
   QStringList l;
   l.append(method);
-  dialog->addComboItem(tr("Method"), tr("Parms"), l, method);
+  dialog->addComboItem(QObject::tr("Method"), QObject::tr("Parms"), l, method);
   
   if (! method.compare("MIN") || ! method.compare("MAX"))
-    dialog->addIntItem(tr("Period"), tr("Parms"), period, 1, 99999999);
+    dialog->addIntItem(QObject::tr("Period"), QObject::tr("Parms"), period, 1, 99999999);
   else
-    dialog->addFormulaInputItem(tr("Data2"), tr("Parms"), TRUE, data2);
+    dialog->addFormulaInputItem(QObject::tr("Data2"), QObject::tr("Parms"), TRUE, data2);
   
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
-    color = dialog->getColor(tr("Color"));
-    lineType = (PlotLine::LineType) dialog->getComboIndex(tr("Line Type"));
-    label = dialog->getText(tr("Label"));
-    data1 = dialog->getFormulaInput(tr("Data1"));
+    color = dialog->getColor(QObject::tr("Color"));
+    lineType = (PlotLine::LineType) dialog->getComboIndex(QObject::tr("Line Type"));
+    label = dialog->getText(QObject::tr("Label"));
+    data1 = dialog->getFormulaInput(QObject::tr("Data1"));
     
     if (! method.compare("MIN") || ! method.compare("MAX"))
-      period = dialog->getInt(tr("Period"));
+      period = dialog->getInt(QObject::tr("Period"));
     else
-      data2 = dialog->getFormulaInput(tr("Data2"));
+      data2 = dialog->getFormulaInput(QObject::tr("Data2"));
       
     rc = TRUE;
   }
@@ -308,10 +309,10 @@ PlotLine * MATH::calculateCustom (QDict<PlotLine> *d)
 //******************************************************************
 //******************************************************************
 
-Plugin * create ()
+IndicatorPlugin * createIndicatorPlugin ()
 {
   MATH *o = new MATH;
-  return ((Plugin *) o);
+  return ((IndicatorPlugin *) o);
 }
 
 

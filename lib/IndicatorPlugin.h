@@ -22,17 +22,17 @@
 #ifndef INDICATORPLUGIN_HPP
 #define INDICATORPLUGIN_HPP
 
-#include "Plugin.h"
 #include "PlotLine.h"
 #include "Setting.h"
+#include "BarData.h"
+#include "Indicator.h"
 #include <qstring.h>
-#include <qptrlist.h>
+#include <qstringlist.h>
 #include <qdict.h>
 
-class IndicatorPlugin : public Plugin
+class IndicatorPlugin
 {
   public:
-
     enum MAType
     {
       EMA,
@@ -58,7 +58,17 @@ class IndicatorPlugin : public Plugin
     QStringList getMATypes ();
     IndicatorPlugin::MAType getMAType (QString);
     void setPlotType (int);
+    QString getPluginName ();
 
+    virtual void calculate ();
+    virtual int indicatorPrefDialog (QWidget *);
+    virtual void loadIndicatorSettings (QString);
+    virtual void saveIndicatorSettings (QString);
+    virtual PlotLine * calculateCustom (QDict<PlotLine> *);
+    virtual Setting getIndicatorSettings ();
+    virtual void setIndicatorSettings (Setting);
+    virtual void setCustomFunction (QString);
+    
   protected:
     BarData *data;
     Indicator *output;
@@ -69,7 +79,13 @@ class IndicatorPlugin : public Plugin
     QDict<PlotLine> *customLines;
     QStringList maTypeList;
     int plotType;
+    QString pluginName;
 };
+
+extern "C"
+{
+  IndicatorPlugin * createIndicatorPlugin ();
+}
 
 #endif
 

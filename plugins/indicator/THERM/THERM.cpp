@@ -26,6 +26,7 @@
 #include <math.h>
 #include "PrefDialog.h"
 #include <qdict.h>
+#include <qobject.h>
 
 THERM::THERM ()
 {
@@ -46,7 +47,7 @@ void THERM::setDefaults ()
   lineType = PlotLine::HistogramBar;
   maLineType = PlotLine::Line;
   label = pluginName;
-  maLabel = tr("THERM MA");
+  maLabel = QObject::tr("THERM MA");
   threshold = 3;
   smoothing = 2;
   maPeriod = 22;
@@ -124,41 +125,41 @@ void THERM::calculate ()
 int THERM::indicatorPrefDialog (QWidget *w)
 {
   PrefDialog *dialog = new PrefDialog(w);
-  dialog->setCaption(tr("THERM Indicator"));
+  dialog->setCaption(QObject::tr("THERM Indicator"));
 
-  dialog->createPage (tr("THERM Parms"));
-  dialog->addColorItem(tr("Color Above MA"), tr("THERM Parms"), upColor);
-  dialog->addColorItem(tr("Color Below MA"), tr("THERM Parms"), downColor);
-  dialog->addColorItem(tr("Color Threshold"), tr("THERM Parms"), threshColor);
-  dialog->addTextItem(tr("Label"), tr("THERM Parms"), label);
-  dialog->addFloatItem(tr("Threshold"), tr("THERM Parms"), threshold, 1, 99999999);
-  dialog->addIntItem(tr("Smoothing"), tr("THERM Parms"), smoothing, 0, 99999999);
-  dialog->addComboItem(tr("Smoothing Type"), tr("THERM Parms"), maTypeList, smoothType);
+  dialog->createPage (QObject::tr("THERM Parms"));
+  dialog->addColorItem(QObject::tr("Color Above MA"), QObject::tr("THERM Parms"), upColor);
+  dialog->addColorItem(QObject::tr("Color Below MA"), QObject::tr("THERM Parms"), downColor);
+  dialog->addColorItem(QObject::tr("Color Threshold"), QObject::tr("THERM Parms"), threshColor);
+  dialog->addTextItem(QObject::tr("Label"), QObject::tr("THERM Parms"), label);
+  dialog->addFloatItem(QObject::tr("Threshold"), QObject::tr("THERM Parms"), threshold, 1, 99999999);
+  dialog->addIntItem(QObject::tr("Smoothing"), QObject::tr("THERM Parms"), smoothing, 0, 99999999);
+  dialog->addComboItem(QObject::tr("Smoothing Type"), QObject::tr("THERM Parms"), maTypeList, smoothType);
   
-  dialog->createPage (tr("MA Parms"));
-  dialog->addColorItem(tr("MA Color"), tr("MA Parms"), maColor);
-  dialog->addComboItem(tr("MA Line Type"), tr("MA Parms"), lineTypes, maLineType);
-  dialog->addTextItem(tr("MA Label"), tr("MA Parms"), maLabel);
-  dialog->addIntItem(tr("MA Period"), tr("MA Parms"), maPeriod, 0, 99999999);
-  dialog->addComboItem(tr("MA Type"), tr("MA Parms"), maTypeList, maType);
+  dialog->createPage (QObject::tr("MA Parms"));
+  dialog->addColorItem(QObject::tr("MA Color"), QObject::tr("MA Parms"), maColor);
+  dialog->addComboItem(QObject::tr("MA Line Type"), QObject::tr("MA Parms"), lineTypes, maLineType);
+  dialog->addTextItem(QObject::tr("MA Label"), QObject::tr("MA Parms"), maLabel);
+  dialog->addIntItem(QObject::tr("MA Period"), QObject::tr("MA Parms"), maPeriod, 0, 99999999);
+  dialog->addComboItem(QObject::tr("MA Type"), QObject::tr("MA Parms"), maTypeList, maType);
   
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
-    upColor = dialog->getColor(tr("Color Above MA"));
-    downColor = dialog->getColor(tr("Color Below MA"));
-    threshColor = dialog->getColor(tr("Color Threshold"));
-    label = dialog->getText(tr("Label"));
-    threshold = dialog->getFloat(tr("Threshold"));
-    smoothing = dialog->getInt(tr("Smoothing"));
-    smoothType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("Smoothing Type"));
+    upColor = dialog->getColor(QObject::tr("Color Above MA"));
+    downColor = dialog->getColor(QObject::tr("Color Below MA"));
+    threshColor = dialog->getColor(QObject::tr("Color Threshold"));
+    label = dialog->getText(QObject::tr("Label"));
+    threshold = dialog->getFloat(QObject::tr("Threshold"));
+    smoothing = dialog->getInt(QObject::tr("Smoothing"));
+    smoothType = (IndicatorPlugin::MAType) dialog->getComboIndex(QObject::tr("Smoothing Type"));
     
-    maColor = dialog->getColor(tr("MA Color"));
-    maLineType = (PlotLine::LineType) dialog->getComboIndex(tr("MA Line Type"));
-    maLabel = dialog->getText(tr("MA Label"));
-    maPeriod = dialog->getInt(tr("MA Period"));
-    maType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("MA Type"));
+    maColor = dialog->getColor(QObject::tr("MA Color"));
+    maLineType = (PlotLine::LineType) dialog->getComboIndex(QObject::tr("MA Line Type"));
+    maLabel = dialog->getText(QObject::tr("MA Label"));
+    maPeriod = dialog->getInt(QObject::tr("MA Period"));
+    maType = (IndicatorPlugin::MAType) dialog->getComboIndex(QObject::tr("MA Type"));
     rc = TRUE;
   }
   else
@@ -261,10 +262,10 @@ PlotLine * THERM::calculateCustom (QDict<PlotLine> *)
   return output->getLine(0);
 }
 
-Plugin * create ()
+IndicatorPlugin * createIndicatorPlugin ()
 {
   THERM *o = new THERM;
-  return ((Plugin *) o);
+  return ((IndicatorPlugin *) o);
 }
 
 /* Alert Notes

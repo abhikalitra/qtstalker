@@ -23,6 +23,7 @@
 #include "BarData.h"
 #include "PrefDialog.h"
 #include "Setting.h"
+#include "IndicatorPlugin.h"
 #include "../src/newchart.xpm"
 #include "../src/delete.xpm"
 #include "../src/edit.xpm"
@@ -89,7 +90,7 @@ void FormulaEdit::addItem ()
   QString type = functionList[dialog->getComboIndex(tr("Functions"))];
   delete dialog;
   
-  Plugin *plug = config.getPlugin(Config::IndicatorPluginPath, type);
+  IndicatorPlugin *plug = config.getIndicatorPlugin(type);
   if (! plug)
   {
     config.closePlugin(type);
@@ -135,7 +136,7 @@ void FormulaEdit::insertItem ()
   QString type = functionList[dialog->getComboIndex(tr("Functions"))];
   delete dialog;
   
-  Plugin *plug = config.getPlugin(Config::IndicatorPluginPath, type);
+  IndicatorPlugin *plug = config.getIndicatorPlugin(type);
   if (! plug)
   {
     config.closePlugin(type);
@@ -170,7 +171,7 @@ void FormulaEdit::editItem ()
   Setting set;
   set.parse(list->text(list->currentRow(), 2));
   
-  Plugin *plug = config.getPlugin(Config::IndicatorPluginPath, set.getData("plugin"));
+  IndicatorPlugin *plug = config.getIndicatorPlugin(set.getData("plugin"));
   if (! plug)
   {
     config.closePlugin(set.getData("plugin"));

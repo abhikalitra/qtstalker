@@ -29,7 +29,6 @@ DbPlugin::DbPlugin ()
   db = 0;
   barCompression = BarData::DailyBar;
   barRange = 275;
-  pluginType = DbPlug;
 }
 
 DbPlugin::~DbPlugin ()
@@ -343,4 +342,37 @@ void DbPlugin::setDbPath (QString d)
 {
   path = d;
 }
+
+QString DbPlugin::getPluginName ()
+{
+  return pluginName;
+}
+
+//*********************************************************
+//***************** VIRTUAL OVERRIDES *********************
+//*********************************************************
+
+Bar * DbPlugin::getBar (QString, QString)
+{
+  return 0;
+}
+
+void DbPlugin::setBar (Bar *)
+{
+}
+
+QString DbPlugin::createNew ()
+{
+  return QString();
+}
+
+void DbPlugin::saveDbDefaults (Setting *)
+{
+}
+
+void DbPlugin::dbPrefDialog ()
+{
+}
+
+
 

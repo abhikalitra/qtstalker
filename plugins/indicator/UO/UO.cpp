@@ -22,6 +22,7 @@
 #include "UO.h"
 #include "PrefDialog.h"
 #include <qdict.h>
+#include <qobject.h>
 
 UO::UO ()
 {
@@ -108,25 +109,25 @@ void UO::calculate ()
 int UO::indicatorPrefDialog (QWidget *w)
 {
   PrefDialog *dialog = new PrefDialog(w);
-  dialog->setCaption(tr("UO Indicator"));
-  dialog->createPage (tr("Parms"));
-  dialog->addColorItem(tr("Color"), tr("Parms"), color);
-  dialog->addComboItem(tr("Line Type"), tr("Parms"), lineTypes, lineType);
-  dialog->addTextItem(tr("Label"), tr("Parms"), label);
-  dialog->addIntItem(tr("Short Period"), tr("Parms"), shortPeriod, 1, 99999999);
-  dialog->addIntItem(tr("Medium Period"), tr("Parms"), medPeriod, 1, 99999999);
-  dialog->addIntItem(tr("Long Period"), tr("Parms"), longPeriod, 1, 99999999);
+  dialog->setCaption(QObject::tr("UO Indicator"));
+  dialog->createPage (QObject::tr("Parms"));
+  dialog->addColorItem(QObject::tr("Color"), QObject::tr("Parms"), color);
+  dialog->addComboItem(QObject::tr("Line Type"), QObject::tr("Parms"), lineTypes, lineType);
+  dialog->addTextItem(QObject::tr("Label"), QObject::tr("Parms"), label);
+  dialog->addIntItem(QObject::tr("Short Period"), QObject::tr("Parms"), shortPeriod, 1, 99999999);
+  dialog->addIntItem(QObject::tr("Medium Period"), QObject::tr("Parms"), medPeriod, 1, 99999999);
+  dialog->addIntItem(QObject::tr("Long Period"), QObject::tr("Parms"), longPeriod, 1, 99999999);
   
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
-    color = dialog->getColor(tr("Color"));
-    lineType = (PlotLine::LineType) dialog->getComboIndex(tr("Line Type"));
-    label = dialog->getText(tr("Label"));
-    shortPeriod = dialog->getInt(tr("Short Period"));
-    medPeriod = dialog->getInt(tr("Medium Period"));
-    longPeriod = dialog->getInt(tr("Long Period"));
+    color = dialog->getColor(QObject::tr("Color"));
+    lineType = (PlotLine::LineType) dialog->getComboIndex(QObject::tr("Line Type"));
+    label = dialog->getText(QObject::tr("Label"));
+    shortPeriod = dialog->getInt(QObject::tr("Short Period"));
+    medPeriod = dialog->getInt(QObject::tr("Medium Period"));
+    longPeriod = dialog->getInt(QObject::tr("Long Period"));
     rc = TRUE;
   }
   else
@@ -228,9 +229,9 @@ PlotLine * UO::getTR ()
   return tr;
 }
 
-Plugin * create ()
+IndicatorPlugin * createIndicatorPlugin ()
 {
   UO *o = new UO;
-  return ((Plugin *) o);
+  return ((IndicatorPlugin *) o);
 }
 

@@ -25,7 +25,7 @@
 #include <qstring.h>
 #include <qptrlist.h>
 #include <qstringlist.h>
-#include "Plugin.h"
+#include "DbPlugin.h"
 #include "Setting.h"
 #include "BarData.h"
 #include "Bar.h"
@@ -61,7 +61,7 @@ class ChartDb
     
   private:
     DB *db;
-    Plugin *plug;
+    DbPlugin *plug;
     QString dbPlugin;
     Config config;
     QString path;

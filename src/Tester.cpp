@@ -30,6 +30,7 @@
 #include <qdir.h>
 #include "Tester.h"
 #include "ChartDb.h"
+#include "IndicatorPlugin.h"
 
 Tester::Tester (QString n) : QTabDialog (0, 0, FALSE)
 {
@@ -1139,7 +1140,7 @@ bool Tester::loadAlerts (int type)
   }
   
   // open the CUS plugin   
-  Plugin *plug = config.getPlugin(Config::IndicatorPluginPath, "CUS");
+  IndicatorPlugin *plug = config.getIndicatorPlugin("CUS");
   if (! plug)
   {
     config.closePlugin("CUS");
@@ -1884,7 +1885,7 @@ bool Tester::loadCustomShortStop ()
     return TRUE;
   }
   
-  Plugin *plug = config.getPlugin(Config::IndicatorPluginPath, "CUS");
+  IndicatorPlugin *plug = config.getIndicatorPlugin("CUS");
   if (! plug)
   {
     config.closePlugin("CUS");
@@ -1949,7 +1950,7 @@ bool Tester::loadCustomLongStop ()
     return TRUE;
   }
   
-  Plugin *plug = config.getPlugin(Config::IndicatorPluginPath, "CUS");
+  IndicatorPlugin *plug = config.getIndicatorPlugin("CUS");
   if (! plug)
   {
     config.closePlugin("CUS");

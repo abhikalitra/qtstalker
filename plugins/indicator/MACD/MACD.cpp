@@ -22,6 +22,7 @@
 #include "MACD.h"
 #include "PrefDialog.h"
 #include <qdict.h>
+#include <qobject.h>
 
 MACD::MACD ()
 {
@@ -117,56 +118,56 @@ void MACD::calculate ()
 int MACD::indicatorPrefDialog (QWidget *w)
 {
   PrefDialog *dialog = new PrefDialog(w);
-  dialog->setCaption(tr("MACD Indicator"));
+  dialog->setCaption(QObject::tr("MACD Indicator"));
   
-  dialog->createPage (tr("MACD"));
-  dialog->addColorItem(tr("MACD Color"), tr("MACD"), macdColor);
-  dialog->addIntItem(tr("Fast Period"), tr("MACD"), fastPeriod, 1, 99999999);
-  dialog->addIntItem(tr("Slow Period"), tr("MACD"), slowPeriod, 1, 99999999);
-  dialog->addTextItem(tr("MACD Label"), tr("MACD"), macdLabel);
-  dialog->addComboItem(tr("MACD Line Type"), tr("MACD"), lineTypes, macdLineType);
-  dialog->addComboItem(tr("MACD MA Type"), tr("MACD"), maTypeList, macdMAType);
+  dialog->createPage (QObject::tr("MACD"));
+  dialog->addColorItem(QObject::tr("MACD Color"), QObject::tr("MACD"), macdColor);
+  dialog->addIntItem(QObject::tr("Fast Period"), QObject::tr("MACD"), fastPeriod, 1, 99999999);
+  dialog->addIntItem(QObject::tr("Slow Period"), QObject::tr("MACD"), slowPeriod, 1, 99999999);
+  dialog->addTextItem(QObject::tr("MACD Label"), QObject::tr("MACD"), macdLabel);
+  dialog->addComboItem(QObject::tr("MACD Line Type"), QObject::tr("MACD"), lineTypes, macdLineType);
+  dialog->addComboItem(QObject::tr("MACD MA Type"), QObject::tr("MACD"), maTypeList, macdMAType);
   if (customFlag)
-    dialog->addFormulaInputItem(tr("MACD Input"), tr("MACD"), FALSE, customInput);
+    dialog->addFormulaInputItem(QObject::tr("MACD Input"), QObject::tr("MACD"), FALSE, customInput);
   else
-    dialog->addComboItem(tr("MACD Input"), tr("MACD"), inputTypeList, macdInput);
+    dialog->addComboItem(QObject::tr("MACD Input"), QObject::tr("MACD"), inputTypeList, macdInput);
   
-  dialog->createPage (tr("Trigger"));
-  dialog->addColorItem(tr("Trigger Color"), tr("Trigger"), trigColor);
-  dialog->addIntItem(tr("Trigger Period"), tr("Trigger"), trigPeriod, 1, 99999999);
-  dialog->addTextItem(tr("Trigger Label"), tr("Trigger"), trigLabel);
-  dialog->addComboItem(tr("Trigger Line Type"), tr("Trigger"), lineTypes, trigLineType);
+  dialog->createPage (QObject::tr("Trigger"));
+  dialog->addColorItem(QObject::tr("Trigger Color"), QObject::tr("Trigger"), trigColor);
+  dialog->addIntItem(QObject::tr("Trigger Period"), QObject::tr("Trigger"), trigPeriod, 1, 99999999);
+  dialog->addTextItem(QObject::tr("Trigger Label"), QObject::tr("Trigger"), trigLabel);
+  dialog->addComboItem(QObject::tr("Trigger Line Type"), QObject::tr("Trigger"), lineTypes, trigLineType);
   
-  dialog->createPage (tr("Osc"));
-  dialog->addColorItem(tr("Osc Color"), tr("Osc"), oscColor);
-  dialog->addTextItem(tr("Osc Label"), tr("Osc"), oscLabel);
-  dialog->addComboItem(tr("Osc Line Type"), tr("Osc"), lineTypes, oscLineType);
-  dialog->addCheckItem(tr("Osc Scaling Max"), tr("Osc"), oscScaleFlag);
+  dialog->createPage (QObject::tr("Osc"));
+  dialog->addColorItem(QObject::tr("Osc Color"), QObject::tr("Osc"), oscColor);
+  dialog->addTextItem(QObject::tr("Osc Label"), QObject::tr("Osc"), oscLabel);
+  dialog->addComboItem(QObject::tr("Osc Line Type"), QObject::tr("Osc"), lineTypes, oscLineType);
+  dialog->addCheckItem(QObject::tr("Osc Scaling Max"), QObject::tr("Osc"), oscScaleFlag);
   
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
-    macdColor = dialog->getColor(tr("MACD Color"));
-    fastPeriod = dialog->getInt(tr("Fast Period"));
-    slowPeriod = dialog->getInt(tr("Slow Period"));
-    macdLabel = dialog->getText(tr("MACD Label"));
-    macdLineType = (PlotLine::LineType) dialog->getComboIndex(tr("MACD Line Type"));
-    macdMAType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("MACD MA Type"));
+    macdColor = dialog->getColor(QObject::tr("MACD Color"));
+    fastPeriod = dialog->getInt(QObject::tr("Fast Period"));
+    slowPeriod = dialog->getInt(QObject::tr("Slow Period"));
+    macdLabel = dialog->getText(QObject::tr("MACD Label"));
+    macdLineType = (PlotLine::LineType) dialog->getComboIndex(QObject::tr("MACD Line Type"));
+    macdMAType = (IndicatorPlugin::MAType) dialog->getComboIndex(QObject::tr("MACD MA Type"));
     if (customFlag)
-      customInput = dialog->getFormulaInput(tr("MACD Input"));
+      customInput = dialog->getFormulaInput(QObject::tr("MACD Input"));
     else
-      macdInput = (BarData::InputType) dialog->getComboIndex(tr("MACD Input"));
+      macdInput = (BarData::InputType) dialog->getComboIndex(QObject::tr("MACD Input"));
     
-    trigColor = dialog->getColor(tr("Trigger Color"));
-    trigPeriod = dialog->getInt(tr("Trigger Period"));
-    trigLabel = dialog->getText(tr("Trigger Label"));
-    trigLineType = (PlotLine::LineType) dialog->getComboIndex(tr("Trigger Line Type"));
+    trigColor = dialog->getColor(QObject::tr("Trigger Color"));
+    trigPeriod = dialog->getInt(QObject::tr("Trigger Period"));
+    trigLabel = dialog->getText(QObject::tr("Trigger Label"));
+    trigLineType = (PlotLine::LineType) dialog->getComboIndex(QObject::tr("Trigger Line Type"));
     
-    oscColor = dialog->getColor(tr("Osc Color"));
-    oscLabel = dialog->getText(tr("Osc Label"));
-    oscLineType = (PlotLine::LineType) dialog->getComboIndex(tr("Osc Line Type"));
-    oscScaleFlag = dialog->getCheck(tr("Osc Scaling Max"));
+    oscColor = dialog->getColor(QObject::tr("Osc Color"));
+    oscLabel = dialog->getText(QObject::tr("Osc Label"));
+    oscLineType = (PlotLine::LineType) dialog->getComboIndex(QObject::tr("Osc Line Type"));
+    oscScaleFlag = dialog->getCheck(QObject::tr("Osc Scaling Max"));
     
     rc = TRUE;
   }
@@ -293,9 +294,9 @@ PlotLine * MACD::calculateCustom (QDict<PlotLine> *d)
   return output->getLine(1);
 }
 
-Plugin * create ()
+IndicatorPlugin * createIndicatorPlugin ()
 {
   MACD *o = new MACD;
-  return ((Plugin *) o);
+  return ((IndicatorPlugin *) o);
 }
 

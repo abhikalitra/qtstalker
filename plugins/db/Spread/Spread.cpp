@@ -27,6 +27,7 @@
 #include <qdir.h>
 #include <qinputdialog.h>
 #include <qmessagebox.h>
+#include <qobject.h>
 
 Spread::Spread ()
 {
@@ -59,26 +60,26 @@ void Spread::dbPrefDialog ()
 {
   Config config;
   QStringList l;
-  l.append(tr("Subtract"));
-  l.append(tr("Divide"));
+  l.append(QObject::tr("Subtract"));
+  l.append(QObject::tr("Divide"));
   
   QString s = config.getData(Config::DataPath) + "/Futures";
   
   PrefDialog *dialog = new PrefDialog(0);
-  dialog->setCaption(tr("Spread Prefs"));
-  dialog->createPage (tr("Details"));
-  dialog->addSymbolItem(tr("First Symbol"), tr("Details"), s, getData("First Symbol"));
-  dialog->addSymbolItem(tr("Second Symbol"), tr("Details"), s, getData("Second Symbol"));
-  dialog->addComboItem(tr("Method"), tr("Details"), l, getData("Method"));
-  dialog->addCheckItem(tr("Rebuild"), tr("Details"), getData("Rebuild").toInt());
+  dialog->setCaption(QObject::tr("Spread Prefs"));
+  dialog->createPage (QObject::tr("Details"));
+  dialog->addSymbolItem(QObject::tr("First Symbol"), QObject::tr("Details"), s, getData("First Symbol"));
+  dialog->addSymbolItem(QObject::tr("Second Symbol"), QObject::tr("Details"), s, getData("Second Symbol"));
+  dialog->addComboItem(QObject::tr("Method"), QObject::tr("Details"), l, getData("Method"));
+  dialog->addCheckItem(QObject::tr("Rebuild"), QObject::tr("Details"), getData("Rebuild").toInt());
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
-    setData("First Symbol", dialog->getSymbol(tr("First Symbol")));
-    setData("Second Symbol", dialog->getSymbol(tr("Second Symbol")));
-    setData("Method", dialog->getCombo(tr("Method")));
-    setData("Rebuild", QString::number(dialog->getCheck(tr("Rebuild"))));
+    setData("First Symbol", dialog->getSymbol(QObject::tr("First Symbol")));
+    setData("Second Symbol", dialog->getSymbol(QObject::tr("Second Symbol")));
+    setData("Method", dialog->getCombo(QObject::tr("Method")));
+    setData("Rebuild", QString::number(dialog->getCheck(QObject::tr("Rebuild"))));
     updateSpread();
   }
   
@@ -171,10 +172,10 @@ void Spread::loadData (QString symbol, QString method)
     }
     else
     {
-      if (! method.compare(tr("Subtract")))
+      if (! method.compare(QObject::tr("Subtract")))
         r->setClose(r->getClose() - recordList->getClose(loop));
 
-      if (! method.compare(tr("Divide")))
+      if (! method.compare(QObject::tr("Divide")))
         r->setClose(r->getClose() / recordList->getClose(loop));
       
       r->setData("Count", 2);
@@ -187,8 +188,8 @@ void Spread::loadData (QString symbol, QString method)
 QString Spread::createNew ()
 {
   bool ok = FALSE;
-  QString spread = QInputDialog::getText(tr("New Spread"),
-                                         tr("Enter symbol name for the new Spread"),
+  QString spread = QInputDialog::getText(QObject::tr("New Spread"),
+                                         QObject::tr("Enter symbol name for the new Spread"),
 					 QLineEdit::Normal,
 					 QString::null,
 					 &ok,
@@ -204,8 +205,8 @@ QString Spread::createNew ()
     if (! dir.mkdir(s, TRUE))
     {
       QMessageBox::information(0,
-                               tr("Qtstalker: Error"),
-			       tr("Could not create ~/Qtstalker/data/Spread directory."));
+                               QObject::tr("Qtstalker: Error"),
+			       QObject::tr("Could not create ~/Qtstalker/data/Spread directory."));
       return QString();
     }
   }
@@ -214,8 +215,8 @@ QString Spread::createNew ()
   if (dir.exists(s))
   {
     QMessageBox::information(0,
-                             tr("Qtstalker: Error"),
-			     tr("This Spread already exists."));
+                             QObject::tr("Qtstalker: Error"),
+			     QObject::tr("This Spread already exists."));
     return QString();
   }
 
@@ -231,9 +232,9 @@ void Spread::saveDbDefaults (Setting *set)
   setData("Plugin", "Spread");
 }
 
-Plugin * create ()
+DbPlugin * createDbPlugin ()
 {
   Spread *o = new Spread;
-  return ((Plugin *) o);
+  return ((DbPlugin *) o);
 }
 

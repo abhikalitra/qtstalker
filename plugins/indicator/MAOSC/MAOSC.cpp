@@ -22,6 +22,7 @@
 #include "MAOSC.h"
 #include "PrefDialog.h"
 #include <qdict.h>
+#include <qobject.h>
 
 MAOSC::MAOSC ()
 {
@@ -88,35 +89,35 @@ void MAOSC::calculate ()
 int MAOSC::indicatorPrefDialog (QWidget *w)
 {
   PrefDialog *dialog = new PrefDialog(w);
-  dialog->setCaption(tr("MAOSC Indicator"));
-  dialog->createPage (tr("Parms"));
-  dialog->addColorItem(tr("Color"), tr("Parms"), color);
-  dialog->addComboItem(tr("Line Type"), tr("Parms"), lineTypes, lineType);
-  dialog->addTextItem(tr("Label"), tr("Parms"), label);
-  dialog->addIntItem(tr("Fast Period"), tr("Parms"), fastPeriod, 1, 99999999);
-  dialog->addIntItem(tr("Slow Period"), tr("Parms"), slowPeriod, 1, 99999999);
-  dialog->addComboItem(tr("Fast MA Type"), tr("Parms"), maTypeList, fastMaType);
-  dialog->addComboItem(tr("Slow MA Type"), tr("Parms"), maTypeList, slowMaType);
+  dialog->setCaption(QObject::tr("MAOSC Indicator"));
+  dialog->createPage (QObject::tr("Parms"));
+  dialog->addColorItem(QObject::tr("Color"), QObject::tr("Parms"), color);
+  dialog->addComboItem(QObject::tr("Line Type"), QObject::tr("Parms"), lineTypes, lineType);
+  dialog->addTextItem(QObject::tr("Label"), QObject::tr("Parms"), label);
+  dialog->addIntItem(QObject::tr("Fast Period"), QObject::tr("Parms"), fastPeriod, 1, 99999999);
+  dialog->addIntItem(QObject::tr("Slow Period"), QObject::tr("Parms"), slowPeriod, 1, 99999999);
+  dialog->addComboItem(QObject::tr("Fast MA Type"), QObject::tr("Parms"), maTypeList, fastMaType);
+  dialog->addComboItem(QObject::tr("Slow MA Type"), QObject::tr("Parms"), maTypeList, slowMaType);
   if (customFlag)
-    dialog->addFormulaInputItem(tr("Input"), tr("Parms"), FALSE, customInput);
+    dialog->addFormulaInputItem(QObject::tr("Input"), QObject::tr("Parms"), FALSE, customInput);
   else
-    dialog->addComboItem(tr("Input"), tr("Parms"), inputTypeList, input);
+    dialog->addComboItem(QObject::tr("Input"), QObject::tr("Parms"), inputTypeList, input);
   
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
-    color = dialog->getColor(tr("Color"));
-    lineType = (PlotLine::LineType) dialog->getComboIndex(tr("Line Type"));
-    fastPeriod = dialog->getInt(tr("Fast Period"));
-    slowPeriod = dialog->getInt(tr("Slow Period"));
-    label = dialog->getText(tr("Label"));
-    fastMaType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("Fast MA Type"));
-    slowMaType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("Slow MA Type"));
+    color = dialog->getColor(QObject::tr("Color"));
+    lineType = (PlotLine::LineType) dialog->getComboIndex(QObject::tr("Line Type"));
+    fastPeriod = dialog->getInt(QObject::tr("Fast Period"));
+    slowPeriod = dialog->getInt(QObject::tr("Slow Period"));
+    label = dialog->getText(QObject::tr("Label"));
+    fastMaType = (IndicatorPlugin::MAType) dialog->getComboIndex(QObject::tr("Fast MA Type"));
+    slowMaType = (IndicatorPlugin::MAType) dialog->getComboIndex(QObject::tr("Slow MA Type"));
     if (customFlag)
-      customInput = dialog->getFormulaInput(tr("Input"));
+      customInput = dialog->getFormulaInput(QObject::tr("Input"));
     else
-      input = (BarData::InputType) dialog->getComboIndex(tr("Input"));
+      input = (BarData::InputType) dialog->getComboIndex(QObject::tr("Input"));
     rc = TRUE;
   }
   else
@@ -204,9 +205,9 @@ PlotLine * MAOSC::calculateCustom (QDict<PlotLine> *d)
   return output->getLine(0);
 }
 
-Plugin * create ()
+IndicatorPlugin * createIndicatorPlugin ()
 {
   MAOSC *o = new MAOSC;
-  return ((Plugin *) o);
+  return ((IndicatorPlugin *) o);
 }
 

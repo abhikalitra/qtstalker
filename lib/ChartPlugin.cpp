@@ -23,7 +23,6 @@
 
 ChartPlugin::ChartPlugin ()
 {
-  pluginType = ChartPlug;
   data = 0;
   scaler = 0;
   buffer = 0;
@@ -58,4 +57,27 @@ bool ChartPlugin::getIndicatorFlag ()
 {
   return indicatorFlag;
 }
+
+QString ChartPlugin::getPluginName ()
+{
+  return pluginName;
+}
+
+//**********************************************************
+//***************** VIRTUAL OVERRIDES **********************
+//**********************************************************
+
+void ChartPlugin::drawChart (int, int, int)
+{
+}
+
+void ChartPlugin::saveSettings ()
+{
+}
+
+void ChartPlugin::prefDialog (QWidget *)
+{
+}
+
+
 

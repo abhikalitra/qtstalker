@@ -204,8 +204,8 @@ void Swing::saveSettings ()
 //*************************************************
 //*************************************************
 
-Plugin * create ()
+ChartPlugin * createChartPlugin ()
 {
   Swing *o = new Swing;
-  return ((Plugin *) o);
+  return ((ChartPlugin *) o);
 }

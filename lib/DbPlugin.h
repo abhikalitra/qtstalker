@@ -25,17 +25,17 @@
 #include <qstring.h>
 #include <qptrlist.h>
 #include <qstringlist.h>
-#include "Plugin.h"
+#include <db.h>
 #include "Setting.h"
 #include "BarData.h"
 #include "Bar.h"
 #include "BarDate.h"
 
-class DbPlugin : public Plugin
+class DbPlugin
 {
   public:
     DbPlugin ();
-    ~DbPlugin ();
+    virtual ~DbPlugin ();
     void setBarCompression (BarData::BarCompression);
     void setBarRange (int);
     Bar * getLastBar ();
@@ -51,12 +51,25 @@ class DbPlugin : public Plugin
     BarDate getPrevDate (BarDate);
     void setDb (DB *);
     void setDbPath (QString);
+    QString getPluginName ();
+    
+    virtual Bar * getBar (QString, QString);
+    virtual void setBar (Bar *);
+    virtual void dbPrefDialog ();
+    virtual QString createNew ();
+    virtual void saveDbDefaults (Setting *);
     
   protected:
     DB *db;
     int barRange;
     BarData::BarCompression barCompression;
     QString path;
+    QString pluginName;
 };
+
+extern "C"
+{
+  DbPlugin * createDbPlugin ();
+}
 
 #endif

@@ -353,10 +353,10 @@ void NYBOT::prefDialog (QWidget *w)
   delete dialog;
 }
 
-Plugin * create ()
+QuotePlugin * createQuotePlugin ()
 {
   NYBOT *o = new NYBOT;
-  return ((Plugin *) o);
+  return ((QuotePlugin *) o);
 }
 
 

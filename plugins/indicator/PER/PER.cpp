@@ -22,6 +22,7 @@
 #include "PER.h"
 #include "PrefDialog.h"
 #include <qdict.h>
+#include <qobject.h>
 
 PER::PER ()
 {
@@ -73,27 +74,27 @@ void PER::calculate ()
 int PER::indicatorPrefDialog (QWidget *w)
 {
   PrefDialog *dialog = new PrefDialog(w);
-  dialog->setCaption(tr("PER Indicator"));
-  dialog->createPage (tr("Parms"));
-  dialog->addColorItem(tr("Color"), tr("Parms"), color);
-  dialog->addComboItem(tr("Line Type"), tr("Parms"), lineTypes, lineType);
-  dialog->addTextItem(tr("Label"), tr("Parms"), label);
+  dialog->setCaption(QObject::tr("PER Indicator"));
+  dialog->createPage (QObject::tr("Parms"));
+  dialog->addColorItem(QObject::tr("Color"), QObject::tr("Parms"), color);
+  dialog->addComboItem(QObject::tr("Line Type"), QObject::tr("Parms"), lineTypes, lineType);
+  dialog->addTextItem(QObject::tr("Label"), QObject::tr("Parms"), label);
   if (customFlag)
-    dialog->addFormulaInputItem(tr("Input"), tr("Parms"), FALSE, customInput);
+    dialog->addFormulaInputItem(QObject::tr("Input"), QObject::tr("Parms"), FALSE, customInput);
   else
-    dialog->addComboItem(tr("Input"), tr("Parms"), inputTypeList, input);
+    dialog->addComboItem(QObject::tr("Input"), QObject::tr("Parms"), inputTypeList, input);
   
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
-    color = dialog->getColor(tr("Color"));
-    lineType = (PlotLine::LineType) dialog->getComboIndex(tr("Line Type"));
-    label = dialog->getText(tr("Label"));
+    color = dialog->getColor(QObject::tr("Color"));
+    lineType = (PlotLine::LineType) dialog->getComboIndex(QObject::tr("Line Type"));
+    label = dialog->getText(QObject::tr("Label"));
     if (customFlag)
-      customInput = dialog->getFormulaInput(tr("Input"));
+      customInput = dialog->getFormulaInput(QObject::tr("Input"));
     else
-      input = (BarData::InputType) dialog->getComboIndex(tr("Input"));
+      input = (BarData::InputType) dialog->getComboIndex(QObject::tr("Input"));
     rc = TRUE;
   }
   else
@@ -161,10 +162,10 @@ PlotLine * PER::calculateCustom (QDict<PlotLine> *d)
   return output->getLine(0);
 }
 
-Plugin * create ()
+IndicatorPlugin * createIndicatorPlugin ()
 {
   PER *o = new PER;
-  return ((Plugin *) o);
+  return ((IndicatorPlugin *) o);
 }
 
 

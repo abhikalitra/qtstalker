@@ -23,6 +23,7 @@
 #include <math.h>
 #include "PrefDialog.h"
 #include <qdict.h>
+#include <qobject.h>
 
 DMI::DMI ()
 {
@@ -80,51 +81,51 @@ void DMI::calculate ()
 int DMI::indicatorPrefDialog (QWidget *w)
 {
   PrefDialog *dialog = new PrefDialog(w);
-  dialog->setCaption(tr("DMI Indicator"));
+  dialog->setCaption(QObject::tr("DMI Indicator"));
   
-  dialog->createPage (tr("DMI"));
-  dialog->addIntItem(tr("Period"), tr("DMI"), period, 1, 99999999);
-  dialog->addIntItem(tr("Smoothing"), tr("DMI"), smoothing, 1, 99999999);
-  dialog->addComboItem(tr("Smoothing Type"), tr("DMI"), maTypeList, maType);
+  dialog->createPage (QObject::tr("DMI"));
+  dialog->addIntItem(QObject::tr("Period"), QObject::tr("DMI"), period, 1, 99999999);
+  dialog->addIntItem(QObject::tr("Smoothing"), QObject::tr("DMI"), smoothing, 1, 99999999);
+  dialog->addComboItem(QObject::tr("Smoothing Type"), QObject::tr("DMI"), maTypeList, maType);
   if (customFlag)
-    dialog->addComboItem(tr("Plot"), tr("DMI"), lineList, lineRequest);
+    dialog->addComboItem(QObject::tr("Plot"), QObject::tr("DMI"), lineList, lineRequest);
   
-  dialog->createPage (tr("+DM"));
-  dialog->addColorItem(tr("+DM Color"), tr("+DM"), pdiColor);
-  dialog->addTextItem(tr("+DM Label"), tr("+DM"), pdiLabel);
-  dialog->addComboItem(tr("+DM Line Type"), tr("+DM"), lineTypes, pdiLineType);
+  dialog->createPage (QObject::tr("+DM"));
+  dialog->addColorItem(QObject::tr("+DM Color"), QObject::tr("+DM"), pdiColor);
+  dialog->addTextItem(QObject::tr("+DM Label"), QObject::tr("+DM"), pdiLabel);
+  dialog->addComboItem(QObject::tr("+DM Line Type"), QObject::tr("+DM"), lineTypes, pdiLineType);
   
-  dialog->createPage (tr("-DM"));
-  dialog->addColorItem(tr("-DM Color"), tr("-DM"), mdiColor);
-  dialog->addTextItem(tr("-DM Label"), tr("-DM"), mdiLabel);
-  dialog->addComboItem(tr("-DM Line Type"), tr("-DM"), lineTypes, mdiLineType);
+  dialog->createPage (QObject::tr("-DM"));
+  dialog->addColorItem(QObject::tr("-DM Color"), QObject::tr("-DM"), mdiColor);
+  dialog->addTextItem(QObject::tr("-DM Label"), QObject::tr("-DM"), mdiLabel);
+  dialog->addComboItem(QObject::tr("-DM Line Type"), QObject::tr("-DM"), lineTypes, mdiLineType);
   
-  dialog->createPage (tr("ADX"));
-  dialog->addColorItem(tr("ADX Color"), tr("ADX"), adxColor);
-  dialog->addTextItem(tr("ADX Label"), tr("ADX"), adxLabel);
-  dialog->addComboItem(tr("ADX Line Type"), tr("ADX"), lineTypes, adxLineType);
+  dialog->createPage (QObject::tr("ADX"));
+  dialog->addColorItem(QObject::tr("ADX Color"), QObject::tr("ADX"), adxColor);
+  dialog->addTextItem(QObject::tr("ADX Label"), QObject::tr("ADX"), adxLabel);
+  dialog->addComboItem(QObject::tr("ADX Line Type"), QObject::tr("ADX"), lineTypes, adxLineType);
   
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
-    period = dialog->getInt(tr("Period"));
-    smoothing = dialog->getInt(tr("Smoothing"));
-    maType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("Smoothing Type"));
+    period = dialog->getInt(QObject::tr("Period"));
+    smoothing = dialog->getInt(QObject::tr("Smoothing"));
+    maType = (IndicatorPlugin::MAType) dialog->getComboIndex(QObject::tr("Smoothing Type"));
     if (customFlag)
-      lineRequest = dialog->getCombo(tr("Plot"));    
+      lineRequest = dialog->getCombo(QObject::tr("Plot"));    
       
-    pdiColor = dialog->getColor(tr("+DM Color"));
-    pdiLineType = (PlotLine::LineType) dialog->getComboIndex(tr("+DM Line Type"));
-    pdiLabel = dialog->getText(tr("+DM Label"));
+    pdiColor = dialog->getColor(QObject::tr("+DM Color"));
+    pdiLineType = (PlotLine::LineType) dialog->getComboIndex(QObject::tr("+DM Line Type"));
+    pdiLabel = dialog->getText(QObject::tr("+DM Label"));
     
-    mdiColor = dialog->getColor(tr("-DM Color"));
-    mdiLineType = (PlotLine::LineType) dialog->getComboIndex(tr("-DM Line Type"));
-    mdiLabel = dialog->getText(tr("-DM Label"));
+    mdiColor = dialog->getColor(QObject::tr("-DM Color"));
+    mdiLineType = (PlotLine::LineType) dialog->getComboIndex(QObject::tr("-DM Line Type"));
+    mdiLabel = dialog->getText(QObject::tr("-DM Label"));
     
-    adxColor = dialog->getColor(tr("ADX Color"));
-    adxLineType = (PlotLine::LineType) dialog->getComboIndex(tr("ADX Line Type"));
-    adxLabel = dialog->getText(tr("ADX Label"));
+    adxColor = dialog->getColor(QObject::tr("ADX Color"));
+    adxLineType = (PlotLine::LineType) dialog->getComboIndex(QObject::tr("ADX Line Type"));
+    adxLabel = dialog->getText(QObject::tr("ADX Label"));
     
     rc = TRUE;
   }
@@ -420,9 +421,9 @@ PlotLine * DMI::getTR ()
   return tr;
 }
 
-Plugin * create ()
+IndicatorPlugin * createIndicatorPlugin ()
 {
   DMI *o = new DMI;
-  return ((Plugin *) o);
+  return ((IndicatorPlugin *) o);
 }
 

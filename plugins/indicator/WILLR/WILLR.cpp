@@ -22,6 +22,7 @@
 #include "WILLR.h"
 #include "PrefDialog.h"
 #include <qdict.h>
+#include <qobject.h>
 
 WILLR::WILLR ()
 {
@@ -82,21 +83,21 @@ void WILLR::calculate ()
 int WILLR::indicatorPrefDialog (QWidget *w)
 {
   PrefDialog *dialog = new PrefDialog(w);
-  dialog->setCaption(tr("WILLR Indicator"));
-  dialog->createPage (tr("Parms"));
-  dialog->addColorItem(tr("Color"), tr("Parms"), color);
-  dialog->addComboItem(tr("Line Type"), tr("Parms"), lineTypes, lineType);
-  dialog->addTextItem(tr("Label"), tr("Parms"), label);
-  dialog->addIntItem(tr("Period"), tr("Parms"), period, 1, 99999999);
+  dialog->setCaption(QObject::tr("WILLR Indicator"));
+  dialog->createPage (QObject::tr("Parms"));
+  dialog->addColorItem(QObject::tr("Color"), QObject::tr("Parms"), color);
+  dialog->addComboItem(QObject::tr("Line Type"), QObject::tr("Parms"), lineTypes, lineType);
+  dialog->addTextItem(QObject::tr("Label"), QObject::tr("Parms"), label);
+  dialog->addIntItem(QObject::tr("Period"), QObject::tr("Parms"), period, 1, 99999999);
   
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
-    color = dialog->getColor(tr("Color"));
-    lineType = (PlotLine::LineType) dialog->getComboIndex(tr("Line Type"));
-    period = dialog->getInt(tr("Period"));
-    label = dialog->getText(tr("Label"));
+    color = dialog->getColor(QObject::tr("Color"));
+    lineType = (PlotLine::LineType) dialog->getComboIndex(QObject::tr("Line Type"));
+    period = dialog->getInt(QObject::tr("Period"));
+    label = dialog->getText(QObject::tr("Label"));
     rc = TRUE;
   }
   else
@@ -158,10 +159,10 @@ PlotLine * WILLR::calculateCustom (QDict<PlotLine> *)
   return output->getLine(0);
 }
 
-Plugin * create ()
+IndicatorPlugin * createIndicatorPlugin ()
 {
   WILLR *o = new WILLR;
-  return ((Plugin *) o);
+  return ((IndicatorPlugin *) o);
 }
 
 

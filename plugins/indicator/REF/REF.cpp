@@ -22,6 +22,7 @@
 #include "REF.h"
 #include "PrefDialog.h"
 #include <qdict.h>
+#include <qobject.h>
 
 REF::REF ()
 {
@@ -69,23 +70,23 @@ void REF::calculate ()
 int REF::indicatorPrefDialog (QWidget *w)
 {
   PrefDialog *dialog = new PrefDialog(w);
-  dialog->setCaption(tr("REF Indicator"));
-  dialog->createPage (tr("Parms"));
-  dialog->addColorItem(tr("Color"), tr("Parms"), color);
-  dialog->addTextItem(tr("Label"), tr("Parms"), label);
-  dialog->addComboItem(tr("Line Type"), tr("Parms"), lineTypes, lineType);
-  dialog->addIntItem(tr("Period"), tr("Parms"), period, 0, 999999);
-  dialog->addComboItem(tr("Input"), tr("Parms"), inputTypeList, input);
+  dialog->setCaption(QObject::tr("REF Indicator"));
+  dialog->createPage (QObject::tr("Parms"));
+  dialog->addColorItem(QObject::tr("Color"), QObject::tr("Parms"), color);
+  dialog->addTextItem(QObject::tr("Label"), QObject::tr("Parms"), label);
+  dialog->addComboItem(QObject::tr("Line Type"), QObject::tr("Parms"), lineTypes, lineType);
+  dialog->addIntItem(QObject::tr("Period"), QObject::tr("Parms"), period, 0, 999999);
+  dialog->addComboItem(QObject::tr("Input"), QObject::tr("Parms"), inputTypeList, input);
   
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
-    color = dialog->getColor(tr("Color"));
-    lineType = (PlotLine::LineType) dialog->getComboIndex(tr("Line Type"));
-    label = dialog->getText(tr("Label"));
-    period = dialog->getInt(tr("Period"));
-    input = (BarData::InputType) dialog->getComboIndex(tr("Input"));
+    color = dialog->getColor(QObject::tr("Color"));
+    lineType = (PlotLine::LineType) dialog->getComboIndex(QObject::tr("Line Type"));
+    label = dialog->getText(QObject::tr("Label"));
+    period = dialog->getInt(QObject::tr("Period"));
+    input = (BarData::InputType) dialog->getComboIndex(QObject::tr("Input"));
     rc = TRUE;
   }
   else
@@ -152,10 +153,10 @@ PlotLine * REF::calculateCustom (QDict<PlotLine> *)
   return output->getLine(0);
 }
 
-Plugin * create ()
+IndicatorPlugin * createIndicatorPlugin ()
 {
   REF *o = new REF;
-  return ((Plugin *) o);
+  return ((IndicatorPlugin *) o);
 }
 
 

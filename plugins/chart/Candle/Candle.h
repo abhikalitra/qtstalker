@@ -69,7 +69,7 @@ class Candle : public ChartPlugin
 
 extern "C"
 {
-  Plugin * create ();
+  ChartPlugin * createChartPlugin ();
 };
 
 #endif

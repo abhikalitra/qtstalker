@@ -26,7 +26,6 @@
 #include <qtextstream.h>
 #include <qtimer.h>
 #include <qstring.h>
-#include <qstringlist.h>
 #include <qdir.h>
 
 QtstalkerFormat::QtstalkerFormat ()
@@ -124,10 +123,10 @@ void QtstalkerFormat::prefDialog (QWidget *w)
   delete dialog;
 }
 
-Plugin * create ()
+QuotePlugin * createQuotePlugin ()
 {
   QtstalkerFormat *o = new QtstalkerFormat;
-  return ((Plugin *) o);
+  return ((QuotePlugin *) o);
 }
 
 

@@ -329,10 +329,10 @@ void MySQLPlugin::prefDialog (QWidget *w)
  *
  * Return new instance of this plugin.
  */
-Plugin * create ()
+QuotePlugin * createQuotePlugin ()
 {
   MySQLPlugin *o = new MySQLPlugin;
-  return ((Plugin *) o);
+  return ((QuotePlugin *) o);
 }
 
 

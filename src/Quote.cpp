@@ -20,7 +20,7 @@
  */
 
 #include "Quote.h"
-#include "Plugin.h"
+#include "QuotePlugin.h"
 #include "download.xpm"
 #include "canceldownload.xpm"
 #include "configure.xpm"
@@ -129,7 +129,7 @@ void QuoteDialog::getQuotes ()
   
   printStatusLogMessage(tr("Starting update..."));
 
-  Plugin *plug = config.getPlugin(Config::QuotePluginPath, ruleCombo->currentText());
+  QuotePlugin *plug = config.getQuotePlugin(ruleCombo->currentText());
   if (! plug)
   {
     qDebug("QuoteDialog::getQuotes - could not open plugin");
@@ -155,7 +155,7 @@ void QuoteDialog::ruleChanged (int)
     config.closePlugin(plugin);
   plugin = ruleCombo->currentText();
 
-  Plugin *plug = config.getPlugin(Config::QuotePluginPath, ruleCombo->currentText());
+  QuotePlugin *plug = config.getQuotePlugin(ruleCombo->currentText());
   if (! plug)
   {
     qDebug("QuoteDialog::ruleChanged - could not open plugin");
@@ -175,7 +175,7 @@ void QuoteDialog::downloadComplete ()
 
 void QuoteDialog::cancelDownload ()
 {
-  Plugin *plug = config.getPlugin(Config::QuotePluginPath, ruleCombo->currentText());
+  QuotePlugin *plug = config.getQuotePlugin(ruleCombo->currentText());
   if (! plug)
   {
     qDebug("QuoteDialog::cancelDownload - could not open plugin");
@@ -194,7 +194,7 @@ void QuoteDialog::enableGUI ()
   toolbar->setButtonStatus("update", TRUE);
   toolbar->setButtonStatus("cancelDownload", FALSE);
 
-  Plugin *plug = config.getPlugin(Config::QuotePluginPath, ruleCombo->currentText());
+  QuotePlugin *plug = config.getQuotePlugin(ruleCombo->currentText());
   if (! plug)
   {
     qDebug("QuoteDialog::enableGUI - could not open plugin");
@@ -227,7 +227,7 @@ void QuoteDialog::printDataLogMessage (QString d)
 
 void QuoteDialog::pluginSettings ()
 {
-  Plugin *plug = config.getPlugin(Config::QuotePluginPath, ruleCombo->currentText());
+  QuotePlugin *plug = config.getQuotePlugin(ruleCombo->currentText());
   if (! plug)
   {
     qDebug("QuoteDialog::pluginSettings - could not open plugin");

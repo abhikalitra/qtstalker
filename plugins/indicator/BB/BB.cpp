@@ -22,13 +22,14 @@
 #include "BB.h"
 #include "PrefDialog.h"
 #include <qdict.h>
+#include <qobject.h>
 
 BB::BB ()
 {
   pluginName = "BB";
   
-  bandList.append(tr("Upper"));
-  bandList.append(tr("Lower"));
+  bandList.append(QObject::tr("Upper"));
+  bandList.append(QObject::tr("Lower"));
   
   setDefaults();
 }
@@ -44,7 +45,7 @@ void BB::setDefaults ()
   deviation = 2;
   period = 20;
   maType = IndicatorPlugin::SMA;
-  customBand = tr("Upper");
+  customBand = QObject::tr("Upper");
 }
 
 void BB::calculate ()
@@ -57,7 +58,7 @@ void BB::calculate ()
   PlotLine *sma = getMA(in, maType, period);
   sma->setColor(color);
   sma->setType(lineType);
-  sma->setLabel(tr("BBM"));
+  sma->setLabel(QObject::tr("BBM"));
   int smaLoop = sma->getSize() - 1;
 
   if ((int) sma->getSize() < period * 2)
@@ -70,12 +71,12 @@ void BB::calculate ()
   PlotLine *bbu = new PlotLine;
   bbu->setColor(color);
   bbu->setType(lineType);
-  bbu->setLabel(tr("BBU"));
+  bbu->setLabel(QObject::tr("BBU"));
   
   PlotLine *bbl = new PlotLine;
   bbl->setColor(color);
   bbl->setType(lineType);
-  bbl->setLabel(tr("BBL"));
+  bbl->setLabel(QObject::tr("BBL"));
 
   int inputLoop = in->getSize() - 1;
   while (inputLoop >= period && smaLoop >= period)
@@ -107,27 +108,27 @@ void BB::calculate ()
 int BB::indicatorPrefDialog (QWidget *w)
 {
   PrefDialog *dialog = new PrefDialog(w);
-  dialog->setCaption(tr("BB Indicator"));
-  dialog->createPage (tr("Parms"));
-  dialog->addColorItem(tr("Color"), tr("Parms"), color);
-  dialog->addComboItem(tr("Line Type"), tr("Parms"), lineTypes, lineType);
-  dialog->addIntItem(tr("Period"), tr("Parms"), period, 1, 99999999);
-  dialog->addFloatItem(tr("Deviation"), tr("Parms"), deviation, 0, 99999999);
-  dialog->addComboItem(tr("MA Type"), tr("Parms"), maTypeList, maType);
+  dialog->setCaption(QObject::tr("BB Indicator"));
+  dialog->createPage (QObject::tr("Parms"));
+  dialog->addColorItem(QObject::tr("Color"), QObject::tr("Parms"), color);
+  dialog->addComboItem(QObject::tr("Line Type"), QObject::tr("Parms"), lineTypes, lineType);
+  dialog->addIntItem(QObject::tr("Period"), QObject::tr("Parms"), period, 1, 99999999);
+  dialog->addFloatItem(QObject::tr("Deviation"), QObject::tr("Parms"), deviation, 0, 99999999);
+  dialog->addComboItem(QObject::tr("MA Type"), QObject::tr("Parms"), maTypeList, maType);
   if (customFlag)
-    dialog->addComboItem(tr("Plot"), tr("Parms"), bandList, customBand);
+    dialog->addComboItem(QObject::tr("Plot"), QObject::tr("Parms"), bandList, customBand);
   
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
-    color = dialog->getColor(tr("Color"));
-    lineType = (PlotLine::LineType) dialog->getComboIndex(tr("Line Type"));
-    period = dialog->getInt(tr("Period"));
-    maType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("MA Type"));
-    deviation = dialog->getFloat(tr("Deviation"));
+    color = dialog->getColor(QObject::tr("Color"));
+    lineType = (PlotLine::LineType) dialog->getComboIndex(QObject::tr("Line Type"));
+    period = dialog->getInt(QObject::tr("Period"));
+    maType = (IndicatorPlugin::MAType) dialog->getComboIndex(QObject::tr("MA Type"));
+    deviation = dialog->getFloat(QObject::tr("Deviation"));
     if (customFlag)
-      customBand = dialog->getCombo(tr("Plot"));
+      customBand = dialog->getCombo(QObject::tr("Plot"));
     rc = TRUE;
   }
   else
@@ -196,16 +197,16 @@ PlotLine * BB::calculateCustom (QDict<PlotLine> *)
 {
   clearOutput();
   calculate();
-  if (! customBand.compare(tr("Upper")))
+  if (! customBand.compare(QObject::tr("Upper")))
     return output->getLine(0);
   else
     return output->getLine(1);
 }
 
-Plugin * create ()
+IndicatorPlugin * createIndicatorPlugin ()
 {
   BB *o = new BB;
-  return ((Plugin *) o);
+  return ((IndicatorPlugin *) o);
 }
 
 

@@ -1079,9 +1079,9 @@ void CME::methodChanged (const QString & d)
     symbolCombo->setEnabled(TRUE);
 }
 
-Plugin * create ()
+QuotePlugin * createQuotePlugin ()
 {
   CME *o = new CME;
-  return ((Plugin *) o);
+  return ((QuotePlugin *) o);
 }
 

@@ -29,6 +29,7 @@
 #include "BarData.h"
 #include "SymbolDialog.h"
 #include "ChartDb.h"
+#include "IndicatorPlugin.h"
 
 Scanner::Scanner (QString n) : QTabDialog (0, 0, FALSE)
 {
@@ -165,7 +166,7 @@ void Scanner::scan ()
     BarData *recordList = db->getHistory();
     
     // open the CUS plugin   
-    Plugin *plug2 = config.getPlugin(Config::IndicatorPluginPath, "CUS");
+    IndicatorPlugin *plug2 = config.getIndicatorPlugin("CUS");
     if (! plug2)
     {
       config.closePlugin("CUS");

@@ -134,6 +134,10 @@
 	  
 20040826: Added custom long and short stops to the tester module.
 
+20040901: Removed Plugin class to better separate the various plugin classes to make less
+          dependancies between plugin classes.
+	  
+	  
 	  	  	  
 0.26
 ====

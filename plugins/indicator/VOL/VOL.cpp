@@ -22,6 +22,7 @@
 #include "VOL.h"
 #include "PrefDialog.h"
 #include <qdict.h>
+#include <qobject.h>
 
 VOL::VOL ()
 {
@@ -80,35 +81,35 @@ void VOL::calculate ()
 int VOL::indicatorPrefDialog (QWidget *w)
 {
   PrefDialog *dialog = new PrefDialog(w);
-  dialog->setCaption(tr("VOL Indicator"));
+  dialog->setCaption(QObject::tr("VOL Indicator"));
   
-  dialog->createPage (tr("VOL"));
-  dialog->addColorItem(tr("Up Color"), tr("VOL"), upColor);
-  dialog->addColorItem(tr("Down Color"), tr("VOL"), downColor);
-  dialog->addTextItem(tr("VOL Label"), tr("VOL"), volLabel);
-  dialog->addComboItem(tr("VOL Line Type"), tr("VOL"), lineTypes, volLineType);
+  dialog->createPage (QObject::tr("VOL"));
+  dialog->addColorItem(QObject::tr("Up Color"), QObject::tr("VOL"), upColor);
+  dialog->addColorItem(QObject::tr("Down Color"), QObject::tr("VOL"), downColor);
+  dialog->addTextItem(QObject::tr("VOL Label"), QObject::tr("VOL"), volLabel);
+  dialog->addComboItem(QObject::tr("VOL Line Type"), QObject::tr("VOL"), lineTypes, volLineType);
   
-  dialog->createPage (tr("MA"));
-  dialog->addColorItem(tr("MA Color"), tr("MA"), maColor);
-  dialog->addIntItem(tr("MA Period"), tr("MA"), period, 0, 99999999);
-  dialog->addTextItem(tr("MA Label"), tr("MA"), maLabel);
-  dialog->addComboItem(tr("MA Line Type"), tr("MA"), lineTypes, maLineType);
-  dialog->addComboItem(tr("MA Type"), tr("MA"), maTypeList, maType);
+  dialog->createPage (QObject::tr("MA"));
+  dialog->addColorItem(QObject::tr("MA Color"), QObject::tr("MA"), maColor);
+  dialog->addIntItem(QObject::tr("MA Period"), QObject::tr("MA"), period, 0, 99999999);
+  dialog->addTextItem(QObject::tr("MA Label"), QObject::tr("MA"), maLabel);
+  dialog->addComboItem(QObject::tr("MA Line Type"), QObject::tr("MA"), lineTypes, maLineType);
+  dialog->addComboItem(QObject::tr("MA Type"), QObject::tr("MA"), maTypeList, maType);
   
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
-    upColor = dialog->getColor(tr("Up Color"));
-    downColor = dialog->getColor(tr("Down Color"));
-    volLabel = dialog->getText(tr("VOL Label"));
-    volLineType = (PlotLine::LineType) dialog->getComboIndex(tr("VOL Line Type"));
+    upColor = dialog->getColor(QObject::tr("Up Color"));
+    downColor = dialog->getColor(QObject::tr("Down Color"));
+    volLabel = dialog->getText(QObject::tr("VOL Label"));
+    volLineType = (PlotLine::LineType) dialog->getComboIndex(QObject::tr("VOL Line Type"));
     
-    maColor = dialog->getColor(tr("MA Color"));
-    period = dialog->getInt(tr("MA Period"));
-    maLabel = dialog->getText(tr("MA Label"));
-    maLineType = (PlotLine::LineType) dialog->getComboIndex(tr("MA Line Type"));
-    maType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("MA Type"));
+    maColor = dialog->getColor(QObject::tr("MA Color"));
+    period = dialog->getInt(QObject::tr("MA Period"));
+    maLabel = dialog->getText(QObject::tr("MA Label"));
+    maLineType = (PlotLine::LineType) dialog->getComboIndex(QObject::tr("MA Line Type"));
+    maType = (IndicatorPlugin::MAType) dialog->getComboIndex(QObject::tr("MA Type"));
     
     rc = TRUE;
   }
@@ -189,9 +190,9 @@ Setting VOL::getIndicatorSettings ()
   return dict;
 }
 
-Plugin * create ()
+IndicatorPlugin * createIndicatorPlugin ()
 {
   VOL *o = new VOL;
-  return ((Plugin *) o);
+  return ((IndicatorPlugin *) o);
 }
 

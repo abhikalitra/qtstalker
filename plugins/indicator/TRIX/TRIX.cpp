@@ -22,6 +22,7 @@
 #include "TRIX.h"
 #include "PrefDialog.h"
 #include <qdict.h>
+#include <qobject.h>
 
 TRIX::TRIX ()
 {
@@ -40,7 +41,7 @@ void TRIX::setDefaults ()
   lineType = PlotLine::Line;
   trigLineType = PlotLine::Dash;
   label = pluginName;
-  trigLabel = tr("TRIX Trig");
+  trigLabel = QObject::tr("TRIX Trig");
   period = 12;
   tperiod = 9;
   input = BarData::Close;
@@ -97,42 +98,42 @@ void TRIX::calculate ()
 int TRIX::indicatorPrefDialog (QWidget *w)
 {
   PrefDialog *dialog = new PrefDialog(w);
-  dialog->setCaption(tr("TRIX Indicator"));
-  dialog->createPage (tr("Parms"));
-  dialog->addColorItem(tr("Color"), tr("Parms"), color);
-  dialog->addComboItem(tr("Line Type"), tr("Parms"), lineTypes, lineType);
-  dialog->addTextItem(tr("Label"), tr("Parms"), label);
-  dialog->addIntItem(tr("Period"), tr("Parms"), period, 1, 99999999);
+  dialog->setCaption(QObject::tr("TRIX Indicator"));
+  dialog->createPage (QObject::tr("Parms"));
+  dialog->addColorItem(QObject::tr("Color"), QObject::tr("Parms"), color);
+  dialog->addComboItem(QObject::tr("Line Type"), QObject::tr("Parms"), lineTypes, lineType);
+  dialog->addTextItem(QObject::tr("Label"), QObject::tr("Parms"), label);
+  dialog->addIntItem(QObject::tr("Period"), QObject::tr("Parms"), period, 1, 99999999);
   if (customFlag)
-    dialog->addFormulaInputItem(tr("Input"), tr("Parms"), FALSE, customInput);
+    dialog->addFormulaInputItem(QObject::tr("Input"), QObject::tr("Parms"), FALSE, customInput);
   else
-    dialog->addComboItem(tr("Input"), tr("Parms"), inputTypeList, input);
+    dialog->addComboItem(QObject::tr("Input"), QObject::tr("Parms"), inputTypeList, input);
   
-  dialog->createPage (tr("Trigger Parms"));
-  dialog->addColorItem(tr("Trigger Color"), tr("Trigger Parms"), trigColor);
-  dialog->addComboItem(tr("Trigger Line Type"), tr("Trigger Parms"), lineTypes, trigLineType);
-  dialog->addTextItem(tr("Trigger Label"), tr("Trigger Parms"), trigLabel);
-  dialog->addIntItem(tr("Trigger Period"), tr("Trigger Parms"), tperiod, 1, 99999999);
-  dialog->addComboItem(tr("Trigger Type"), tr("Trigger Parms"), maTypeList, maType);
+  dialog->createPage (QObject::tr("Trigger Parms"));
+  dialog->addColorItem(QObject::tr("Trigger Color"), QObject::tr("Trigger Parms"), trigColor);
+  dialog->addComboItem(QObject::tr("Trigger Line Type"), QObject::tr("Trigger Parms"), lineTypes, trigLineType);
+  dialog->addTextItem(QObject::tr("Trigger Label"), QObject::tr("Trigger Parms"), trigLabel);
+  dialog->addIntItem(QObject::tr("Trigger Period"), QObject::tr("Trigger Parms"), tperiod, 1, 99999999);
+  dialog->addComboItem(QObject::tr("Trigger Type"), QObject::tr("Trigger Parms"), maTypeList, maType);
   
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
-    color = dialog->getColor(tr("Color"));
-    lineType = (PlotLine::LineType) dialog->getComboIndex(tr("Line Type"));
-    period = dialog->getInt(tr("Period"));
-    label = dialog->getText(tr("Label"));
+    color = dialog->getColor(QObject::tr("Color"));
+    lineType = (PlotLine::LineType) dialog->getComboIndex(QObject::tr("Line Type"));
+    period = dialog->getInt(QObject::tr("Period"));
+    label = dialog->getText(QObject::tr("Label"));
     if (customFlag)
-      customInput = dialog->getFormulaInput(tr("Input"));
+      customInput = dialog->getFormulaInput(QObject::tr("Input"));
     else
-      input = (BarData::InputType) dialog->getComboIndex(tr("Input"));
+      input = (BarData::InputType) dialog->getComboIndex(QObject::tr("Input"));
     
-    trigColor = dialog->getColor(tr("Trigger Color"));
-    trigLineType = (PlotLine::LineType) dialog->getComboIndex(tr("Trigger Line Type"));
-    tperiod = dialog->getInt(tr("Trigger Period"));
-    trigLabel = dialog->getText(tr("Trigger Label"));
-    maType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("Trigger Type"));
+    trigColor = dialog->getColor(QObject::tr("Trigger Color"));
+    trigLineType = (PlotLine::LineType) dialog->getComboIndex(QObject::tr("Trigger Line Type"));
+    tperiod = dialog->getInt(QObject::tr("Trigger Period"));
+    trigLabel = dialog->getText(QObject::tr("Trigger Label"));
+    maType = (IndicatorPlugin::MAType) dialog->getComboIndex(QObject::tr("Trigger Type"));
     rc = TRUE;
   }
   else
@@ -231,10 +232,10 @@ PlotLine * TRIX::calculateCustom (QDict<PlotLine> *d)
   return output->getLine(0);
 }
 
-Plugin * create ()
+IndicatorPlugin * createIndicatorPlugin ()
 {
   TRIX *o = new TRIX;
-  return ((Plugin *) o);
+  return ((IndicatorPlugin *) o);
 }
 
 

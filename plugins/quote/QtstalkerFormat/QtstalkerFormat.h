@@ -20,6 +20,8 @@
  */
 
 #include "QuotePlugin.h"
+#include <qstringlist.h>
+#include <qwidget.h>
 
 class QtstalkerFormat : public QuotePlugin
 {
@@ -40,7 +42,7 @@ class QtstalkerFormat : public QuotePlugin
 
 extern "C"
 {
-  Plugin * create ();
+  QuotePlugin * createQuotePlugin ();
 };
 
 

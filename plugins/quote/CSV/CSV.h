@@ -61,5 +61,5 @@ class CSV : public QuotePlugin
 
 extern "C"
 {
-  Plugin * create ();
+  QuotePlugin * createQuotePlugin ();
 }

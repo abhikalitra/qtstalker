@@ -52,7 +52,7 @@ class Bars : public ChartPlugin
 
 extern "C"
 {
-  Plugin * create ();
+  ChartPlugin * createChartPlugin ();
 };
 
 #endif

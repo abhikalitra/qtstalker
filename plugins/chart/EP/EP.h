@@ -52,7 +52,7 @@ class EP : public ChartPlugin
 
 extern "C"
 {
-  Plugin * create ();
+  ChartPlugin * createChartPlugin ();
 }
 
 

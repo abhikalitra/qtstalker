@@ -22,6 +22,7 @@
 #include "PP.h"
 #include "PrefDialog.h"
 #include <qdict.h>
+#include <qobject.h>
 
 PP::PP ()
 {
@@ -39,12 +40,12 @@ void PP::setDefaults ()
   supColor.setNamedColor("yellow");
   resLineType = PlotLine::Horizontal;
   supLineType = PlotLine::Horizontal;
-  supLabel = tr("PP FS");
-  supLabel2 = tr("PP SS");
-  supLabel3 = tr("PP TS");
-  resLabel = tr("PP FR");
-  resLabel2 = tr("PP SR");
-  resLabel3 = tr("PP TR");
+  supLabel = QObject::tr("PP FS");
+  supLabel2 = QObject::tr("PP SS");
+  supLabel3 = QObject::tr("PP TS");
+  resLabel = QObject::tr("PP FR");
+  resLabel2 = QObject::tr("PP SR");
+  resLabel3 = QObject::tr("PP TR");
 }
 
 void PP::calculate ()
@@ -112,35 +113,35 @@ void PP::calculate ()
 int PP::indicatorPrefDialog (QWidget *w)
 {
   PrefDialog *dialog = new PrefDialog(w);
-  dialog->setCaption(tr("PP Indicator"));
-  dialog->createPage (tr("Support"));
-  dialog->addColorItem(tr("Support Color"), tr("Support"), supColor);
-  dialog->addComboItem(tr("Support Line Type"), tr("Support"), lineTypes, supLineType);
-  dialog->addTextItem(tr("Label First Support"), tr("Support"), supLabel);
-  dialog->addTextItem(tr("Label Second Support"), tr("Support"), supLabel2);
-  dialog->addTextItem(tr("Label Third Support"), tr("Support"), supLabel3);
+  dialog->setCaption(QObject::tr("PP Indicator"));
+  dialog->createPage (QObject::tr("Support"));
+  dialog->addColorItem(QObject::tr("Support Color"), QObject::tr("Support"), supColor);
+  dialog->addComboItem(QObject::tr("Support Line Type"), QObject::tr("Support"), lineTypes, supLineType);
+  dialog->addTextItem(QObject::tr("Label First Support"), QObject::tr("Support"), supLabel);
+  dialog->addTextItem(QObject::tr("Label Second Support"), QObject::tr("Support"), supLabel2);
+  dialog->addTextItem(QObject::tr("Label Third Support"), QObject::tr("Support"), supLabel3);
   
-  dialog->createPage (tr("Resistance"));
-  dialog->addColorItem(tr("Resistance Color"), tr("Resistance"), resColor);
-  dialog->addComboItem(tr("Resistance Line Type"), tr("Resistance"), lineTypes, resLineType);
-  dialog->addTextItem(tr("Label First Resistance"), tr("Resistance"), resLabel);
-  dialog->addTextItem(tr("Label Second Resistance"), tr("Resistance"), resLabel2);
-  dialog->addTextItem(tr("Label Third Resistance"), tr("Resistance"), resLabel3);
+  dialog->createPage (QObject::tr("Resistance"));
+  dialog->addColorItem(QObject::tr("Resistance Color"), QObject::tr("Resistance"), resColor);
+  dialog->addComboItem(QObject::tr("Resistance Line Type"), QObject::tr("Resistance"), lineTypes, resLineType);
+  dialog->addTextItem(QObject::tr("Label First Resistance"), QObject::tr("Resistance"), resLabel);
+  dialog->addTextItem(QObject::tr("Label Second Resistance"), QObject::tr("Resistance"), resLabel2);
+  dialog->addTextItem(QObject::tr("Label Third Resistance"), QObject::tr("Resistance"), resLabel3);
   
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
-    supColor = dialog->getColor(tr("Support Color"));
-    resColor = dialog->getColor(tr("Resistance Color"));
-    supLineType = (PlotLine::LineType) dialog->getComboIndex(tr("Support Line Type"));
-    resLineType = (PlotLine::LineType) dialog->getComboIndex(tr("Resistance Line Type"));
-    supLabel = dialog->getText(tr("Label First Support"));
-    supLabel2 = dialog->getText(tr("Label Second Support"));
-    supLabel3 = dialog->getText(tr("Label Third Support"));
-    resLabel = dialog->getText(tr("Label First Resistance"));
-    resLabel2 = dialog->getText(tr("Label Second Resistance"));
-    resLabel3 = dialog->getText(tr("Label Third Resistance"));
+    supColor = dialog->getColor(QObject::tr("Support Color"));
+    resColor = dialog->getColor(QObject::tr("Resistance Color"));
+    supLineType = (PlotLine::LineType) dialog->getComboIndex(QObject::tr("Support Line Type"));
+    resLineType = (PlotLine::LineType) dialog->getComboIndex(QObject::tr("Resistance Line Type"));
+    supLabel = dialog->getText(QObject::tr("Label First Support"));
+    supLabel2 = dialog->getText(QObject::tr("Label Second Support"));
+    supLabel3 = dialog->getText(QObject::tr("Label Third Support"));
+    resLabel = dialog->getText(QObject::tr("Label First Resistance"));
+    resLabel2 = dialog->getText(QObject::tr("Label Second Resistance"));
+    resLabel3 = dialog->getText(QObject::tr("Label Third Resistance"));
     rc = TRUE;
   }
   else
@@ -225,10 +226,10 @@ Setting PP::getIndicatorSettings ()
   return dict;
 }
 
-Plugin * create ()
+IndicatorPlugin * createIndicatorPlugin ()
 {
   PP *o = new PP;
-  return ((Plugin *) o);
+  return ((IndicatorPlugin *) o);
 }
 
 

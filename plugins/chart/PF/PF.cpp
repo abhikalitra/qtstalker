@@ -225,8 +225,8 @@ void PF::saveSettings ()
 //*************************************************
 //*************************************************
 
-Plugin * create ()
+ChartPlugin * createChartPlugin ()
 {
   PF *o = new PF;
-  return ((Plugin *) o);
+  return ((ChartPlugin *) o);
 }

@@ -869,7 +869,7 @@ void QtstalkerApp::loadChart (QString d)
 
 void QtstalkerApp::loadIndicator (Indicator *i)
 {
-  Plugin *plug = config.getPlugin(Config::IndicatorPluginPath, i->getType());
+  IndicatorPlugin *plug = config.getIndicatorPlugin(i->getType());
   if (plug)
   {
     plug->setIndicatorInput(recordList);
@@ -1069,7 +1069,7 @@ void QtstalkerApp::slotNewIndicator ()
     return;
   }
 
-  Plugin *plug = config.getPlugin(Config::IndicatorPluginPath, indicator);
+  IndicatorPlugin *plug = config.getIndicatorPlugin(indicator);
   if (! plug)
   {
     qDebug("QtstalkerApp::slotNewIndicator - could not open plugin");
@@ -1115,7 +1115,7 @@ void QtstalkerApp::slotEditIndicator (QString selection, Plot *plot)
   
   QString type = set->getData("plugin");
   
-  Plugin *plug = config.getPlugin(Config::IndicatorPluginPath, type);
+  IndicatorPlugin *plug = config.getIndicatorPlugin(type);
   if (! plug)
   {
     qDebug("QtstalkerApp::slotEditIndicator - could not open plugin");

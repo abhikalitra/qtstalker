@@ -48,7 +48,7 @@ class Line : public ChartPlugin
 
 extern "C"
 {
-  Plugin * create ();
+  ChartPlugin * createChartPlugin ();
 };
 
 #endif

@@ -549,9 +549,9 @@ void Candle::saveSettings ()
 //*************************************************
 //*************************************************
 
-Plugin * create ()
+ChartPlugin * createChartPlugin ()
 {
   Candle *o = new Candle;
-  return ((Plugin *) o);
+  return ((ChartPlugin *) o);
 }
 

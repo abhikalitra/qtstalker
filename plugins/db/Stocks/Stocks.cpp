@@ -70,9 +70,9 @@ void Stocks::saveDbDefaults (Setting *set)
   setData("Plugin", "Stocks");
 }
 
-Plugin * create ()
+DbPlugin * createDbPlugin ()
 {
   Stocks *o = new Stocks;
-  return ((Plugin *) o);
+  return ((DbPlugin *) o);
 }
 

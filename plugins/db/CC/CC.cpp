@@ -28,6 +28,7 @@
 #include <qdir.h>
 #include <qinputdialog.h>
 #include <qmessagebox.h>
+#include <qobject.h>
 
 CC::CC ()
 {
@@ -60,14 +61,14 @@ Bar * CC::getBar (QString k, QString d)
 void CC::dbPrefDialog ()
 {
   PrefDialog *dialog = new PrefDialog(0);
-  dialog->setCaption(tr("CC Prefs"));
-  dialog->createPage (tr("Details"));
-  dialog->addIntItem(tr("Maximum Years"), tr("Details"), getData("MaxYears").toInt());
+  dialog->setCaption(QObject::tr("CC Prefs"));
+  dialog->createPage (QObject::tr("Details"));
+  dialog->addIntItem(QObject::tr("Maximum Years"), QObject::tr("Details"), getData("MaxYears").toInt());
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
-    setData("MaxYears", QString::number(dialog->getInt(tr("Maximum Years"))));
+    setData("MaxYears", QString::number(dialog->getInt(QObject::tr("Maximum Years"))));
   }
   
   delete dialog;
@@ -201,8 +202,8 @@ QString CC::createNew ()
 {
   FuturesData fd;
   bool ok = FALSE;
-  QString symbol = QInputDialog::getItem(tr("New CC"),
-                                         tr("Select futures symbol to create."),
+  QString symbol = QInputDialog::getItem(QObject::tr("New CC"),
+                                         QObject::tr("Select futures symbol to create."),
 					 fd.getSymbolList(),
 					 0,
 					 FALSE,
@@ -219,8 +220,8 @@ QString CC::createNew ()
     if (! dir.mkdir(s, TRUE))
     {
       QMessageBox::information(0,
-                               tr("Qtstalker: Error"),
-			       tr("Could not create ~/Qtstalker/data/CC directory."));
+                               QObject::tr("Qtstalker: Error"),
+			       QObject::tr("Could not create ~/Qtstalker/data/CC directory."));
       return QString();
     }
   }
@@ -229,17 +230,17 @@ QString CC::createNew ()
   if (dir.exists(s))
   {
     QMessageBox::information(0,
-                             tr("Qtstalker: Error"),
-			     tr("This CC already exists."));
+                             QObject::tr("Qtstalker: Error"),
+			     QObject::tr("This CC already exists."));
     return QString();
   }
   
   return s;
 }
 
-Plugin * create ()
+DbPlugin * createDbPlugin ()
 {
   CC *o = new CC;
-  return ((Plugin *) o);
+  return ((DbPlugin *) o);
 }
 

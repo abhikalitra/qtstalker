@@ -342,10 +342,10 @@ void EP::saveSettings ()
 //*************************************************
 //*************************************************
 
-Plugin * create ()
+ChartPlugin * createChartPlugin ()
 {
   EP *o = new EP;
-  return ((Plugin *) o);
+  return ((ChartPlugin *) o);
 }
 
 

@@ -27,6 +27,7 @@
 #include <qdir.h>
 #include <qinputdialog.h>
 #include <qmessagebox.h>
+#include <qobject.h>
 
 Index::Index ()
 {
@@ -189,8 +190,8 @@ void Index::loadData (QString symbol, float weight)
 QString Index::createNew ()
 {
   bool ok = FALSE;
-  QString index = QInputDialog::getText(tr("New Index"),
-                                        tr("Enter symbol name for the new Index"),
+  QString index = QInputDialog::getText(QObject::tr("New Index"),
+                                        QObject::tr("Enter symbol name for the new Index"),
 					QLineEdit::Normal,
 					QString::null,
 					&ok,
@@ -206,8 +207,8 @@ QString Index::createNew ()
     if (! dir.mkdir(s, TRUE))
     {
       QMessageBox::information(0,
-                               tr("Qtstalker: Error"),
-			       tr("Could not create ~/Qtstalker/data/Index directory."));
+                               QObject::tr("Qtstalker: Error"),
+			       QObject::tr("Could not create ~/Qtstalker/data/Index directory."));
       return QString();
     }
   }
@@ -216,8 +217,8 @@ QString Index::createNew ()
   if (dir.exists(s))
   {
     QMessageBox::information(0,
-                             tr("Qtstalker: Error"),
-			     tr("This Index already exists."));
+                             QObject::tr("Qtstalker: Error"),
+			     QObject::tr("This Index already exists."));
     return QString();
   }
   
@@ -233,9 +234,9 @@ void Index::saveDbDefaults (Setting *set)
   setData("Plugin", "Index");
 }
 
-Plugin * create ()
+DbPlugin * createDbPlugin ()
 {
   Index *o = new Index;
-  return ((Plugin *) o);
+  return ((DbPlugin *) o);
 }
 

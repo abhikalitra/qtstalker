@@ -22,13 +22,14 @@
 #include "ENV.h"
 #include "PrefDialog.h"
 #include <qdict.h>
+#include <qobject.h>
 
 ENV::ENV ()
 {
   pluginName = "ENV";
   
-  bandList.append(tr("Upper"));
-  bandList.append(tr("Lower"));
+  bandList.append(QObject::tr("Upper"));
+  bandList.append(QObject::tr("Lower"));
   
   setDefaults();
 }
@@ -43,14 +44,14 @@ void ENV::setDefaults ()
   lowerColor.setNamedColor("red");
   upperLineType = PlotLine::Line;
   lowerLineType = PlotLine::Line;
-  upperLabel = tr("ENVU");
-  lowerLabel = tr("ENVL");
+  upperLabel = QObject::tr("ENVU");
+  lowerLabel = QObject::tr("ENVL");
   period = 10;
   upperPercent = 1.02;
   lowerPercent = 0.98;
   input = BarData::Close;
   maType = IndicatorPlugin::SMA;
-  customBand = tr("Upper");
+  customBand = QObject::tr("Upper");
   customInput = "1";
 }
 
@@ -101,53 +102,53 @@ void ENV::calculate ()
 int ENV::indicatorPrefDialog (QWidget *w)
 {
   PrefDialog *dialog = new PrefDialog(w);
-  dialog->setCaption(tr("ENV Indicator"));
-  dialog->createPage (tr("Parms"));
-  dialog->addIntItem(tr("Period"), tr("Parms"), period, 1, 99999999);
-  dialog->addComboItem(tr("MA Type"), tr("Parms"), maTypeList, maType);
+  dialog->setCaption(QObject::tr("ENV Indicator"));
+  dialog->createPage (QObject::tr("Parms"));
+  dialog->addIntItem(QObject::tr("Period"), QObject::tr("Parms"), period, 1, 99999999);
+  dialog->addComboItem(QObject::tr("MA Type"), QObject::tr("Parms"), maTypeList, maType);
   if (customFlag)
   {
-    dialog->addComboItem(tr("Plot"), tr("Parms"), bandList, customBand);
-    dialog->addFormulaInputItem(tr("Input"), tr("Parms"), FALSE, customInput);
+    dialog->addComboItem(QObject::tr("Plot"), QObject::tr("Parms"), bandList, customBand);
+    dialog->addFormulaInputItem(QObject::tr("Input"), QObject::tr("Parms"), FALSE, customInput);
   }
   else
-    dialog->addComboItem(tr("Input"), tr("Parms"), inputTypeList, input);
+    dialog->addComboItem(QObject::tr("Input"), QObject::tr("Parms"), inputTypeList, input);
   
-  dialog->createPage (tr("Upper"));
-  dialog->addColorItem(tr("Upper Color"), tr("Upper"), upperColor);
-  dialog->addComboItem(tr("Upper Line Type"), tr("Upper"), lineTypes, upperLineType);
-  dialog->addTextItem(tr("Upper Label"), tr("Upper"), upperLabel);
-  dialog->addFloatItem(tr("Upper %"), tr("Upper"), upperPercent, 0, 99999999.0);
+  dialog->createPage (QObject::tr("Upper"));
+  dialog->addColorItem(QObject::tr("Upper Color"), QObject::tr("Upper"), upperColor);
+  dialog->addComboItem(QObject::tr("Upper Line Type"), QObject::tr("Upper"), lineTypes, upperLineType);
+  dialog->addTextItem(QObject::tr("Upper Label"), QObject::tr("Upper"), upperLabel);
+  dialog->addFloatItem(QObject::tr("Upper %"), QObject::tr("Upper"), upperPercent, 0, 99999999.0);
   
-  dialog->createPage (tr("Lower"));
-  dialog->addColorItem(tr("Lower Color"), tr("Lower"), lowerColor);
-  dialog->addComboItem(tr("Lower Line Type"), tr("Lower"), lineTypes, lowerLineType);
-  dialog->addTextItem(tr("Lower Label"), tr("Lower"), lowerLabel);
-  dialog->addFloatItem(tr("Lower %"), tr("Lower"), lowerPercent, 0, 99999999.0);
+  dialog->createPage (QObject::tr("Lower"));
+  dialog->addColorItem(QObject::tr("Lower Color"), QObject::tr("Lower"), lowerColor);
+  dialog->addComboItem(QObject::tr("Lower Line Type"), QObject::tr("Lower"), lineTypes, lowerLineType);
+  dialog->addTextItem(QObject::tr("Lower Label"), QObject::tr("Lower"), lowerLabel);
+  dialog->addFloatItem(QObject::tr("Lower %"), QObject::tr("Lower"), lowerPercent, 0, 99999999.0);
   
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
-    period = dialog->getInt(tr("Period"));
-    maType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("MA Type"));
+    period = dialog->getInt(QObject::tr("Period"));
+    maType = (IndicatorPlugin::MAType) dialog->getComboIndex(QObject::tr("MA Type"));
     if (customFlag)
     {
-      customBand = dialog->getCombo(tr("Plot"));
-      customInput = dialog->getFormulaInput(tr("Input"));
+      customBand = dialog->getCombo(QObject::tr("Plot"));
+      customInput = dialog->getFormulaInput(QObject::tr("Input"));
     }
     else
-      input = (BarData::InputType) dialog->getComboIndex(tr("Input"));
+      input = (BarData::InputType) dialog->getComboIndex(QObject::tr("Input"));
     
-    upperColor = dialog->getColor(tr("Upper Color"));
-    upperLineType = (PlotLine::LineType) dialog->getComboIndex(tr("Upper Line Type"));
-    upperLabel = dialog->getText(tr("Upper Label"));
-    upperPercent = dialog->getFloat(tr("Upper %"));
+    upperColor = dialog->getColor(QObject::tr("Upper Color"));
+    upperLineType = (PlotLine::LineType) dialog->getComboIndex(QObject::tr("Upper Line Type"));
+    upperLabel = dialog->getText(QObject::tr("Upper Label"));
+    upperPercent = dialog->getFloat(QObject::tr("Upper %"));
     
-    lowerColor = dialog->getColor(tr("Lower Color"));
-    lowerLineType = (PlotLine::LineType) dialog->getComboIndex(tr("Lower Line Type"));
-    lowerLabel = dialog->getText(tr("Lower Label"));
-    lowerPercent = dialog->getFloat(tr("Lower %"));
+    lowerColor = dialog->getColor(QObject::tr("Lower Color"));
+    lowerLineType = (PlotLine::LineType) dialog->getComboIndex(QObject::tr("Lower Line Type"));
+    lowerLabel = dialog->getText(QObject::tr("Lower Label"));
+    lowerPercent = dialog->getFloat(QObject::tr("Lower %"));
     
     rc = TRUE;
   }
@@ -256,16 +257,16 @@ PlotLine * ENV::calculateCustom (QDict<PlotLine> *d)
   customLines = d;
   clearOutput();
   calculate();
-  if (! customBand.compare(tr("Upper")))
+  if (! customBand.compare(QObject::tr("Upper")))
     return output->getLine(0);
   else
     return output->getLine(1);
 }
 
-Plugin * create ()
+IndicatorPlugin * createIndicatorPlugin ()
 {
   ENV *o = new ENV;
-  return ((Plugin *) o);
+  return ((IndicatorPlugin *) o);
 }
 
 

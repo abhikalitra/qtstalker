@@ -603,10 +603,10 @@ void Yahoo::saveSettings ()
   settings.endGroup();
 }
 
-Plugin * create ()
+QuotePlugin * createQuotePlugin ()
 {
   Yahoo *o = new Yahoo;
-  return ((Plugin *) o);
+  return ((QuotePlugin *) o);
 }
 
 

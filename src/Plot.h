@@ -39,7 +39,7 @@
 #include "Scaler.h"
 #include "ChartObject.h"
 #include "Config.h"
-#include "Plugin.h"
+#include "ChartPlugin.h"
 #include "BarData.h"
 
 class Plot : public QWidget
@@ -173,7 +173,7 @@ class Plot : public QWidget
     QFont plotFont;
     PlotLine *currentLine;
     QPixmap *buffer;
-    Plugin *chartPlugin;
+    ChartPlugin *chartPlugin;
     Config config;
     int pixelspace;
     int minPixelspace;

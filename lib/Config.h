@@ -26,7 +26,10 @@
 #include <qstringlist.h>
 #include <qlibrary.h>
 #include <qdict.h>
-#include "Plugin.h"
+#include "ChartPlugin.h"
+#include "DbPlugin.h"
+#include "IndicatorPlugin.h"
+#include "QuotePlugin.h"
 #include "Setting.h"
 
 class Config
@@ -83,18 +86,23 @@ class Config
 
     QStringList getIndicators ();
     Setting * getIndicator (QString);
-    QString getIndicatorPlugin (QString);
     void deleteIndicator (QString);
     QStringList getIndicatorList ();
 
     QStringList getPluginList (Config::Parm);
-    Plugin * getPlugin (Config::Parm, QString);
+    ChartPlugin * getChartPlugin (QString);
+    DbPlugin * getDbPlugin (QString);
+    IndicatorPlugin * getIndicatorPlugin (QString);
+    QuotePlugin * getQuotePlugin (QString);
     void closePlugins ();
     void closePlugin (QString);
 
   protected:
     QDict<QLibrary> libs;
-    QDict<Plugin> plugins;
+    QDict<ChartPlugin> chartPlugins;
+    QDict<DbPlugin> dbPlugins;
+    QDict<IndicatorPlugin> indicatorPlugins;
+    QDict<QuotePlugin> quotePlugins;
     QString version;
 };
 

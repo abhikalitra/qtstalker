@@ -148,7 +148,7 @@ int Plot::setChartType (QString d)
   if (chartType.length())
     config.closePlugin(chartType);
   
-  chartPlugin = config.getPlugin(Config::ChartPluginPath, d);
+  chartPlugin = config.getChartPlugin(d);
   if (! chartPlugin)
   {
     qDebug("Plot::setChartType:unable to open %s chart plugin", d.latin1());

@@ -22,6 +22,7 @@
 #include "ATR.h"
 #include "PrefDialog.h"
 #include <qdict.h>
+#include <qobject.h>
 
 ATR::ATR ()
 {
@@ -90,23 +91,23 @@ void ATR::calculate ()
 int ATR::indicatorPrefDialog (QWidget *w)
 {
   PrefDialog *dialog = new PrefDialog(w);
-  dialog->setCaption(tr("ATR Indicator"));
-  dialog->createPage (tr("Parms"));
-  dialog->addColorItem(tr("Color"), tr("Parms"), color);
-  dialog->addTextItem(tr("Label"), tr("Parms"), label);
-  dialog->addComboItem(tr("Line Type"), tr("Parms"), lineTypes, lineType);
-  dialog->addIntItem(tr("Smoothing"), tr("Parms"), smoothing, 1, 99999999);
-  dialog->addComboItem(tr("Smoothing Type"), tr("Parms"), maTypeList, maType);
+  dialog->setCaption(QObject::tr("ATR Indicator"));
+  dialog->createPage (QObject::tr("Parms"));
+  dialog->addColorItem(QObject::tr("Color"), QObject::tr("Parms"), color);
+  dialog->addTextItem(QObject::tr("Label"), QObject::tr("Parms"), label);
+  dialog->addComboItem(QObject::tr("Line Type"), QObject::tr("Parms"), lineTypes, lineType);
+  dialog->addIntItem(QObject::tr("Smoothing"), QObject::tr("Parms"), smoothing, 1, 99999999);
+  dialog->addComboItem(QObject::tr("Smoothing Type"), QObject::tr("Parms"), maTypeList, maType);
   
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
-    color = dialog->getColor(tr("Color"));
-    lineType = (PlotLine::LineType) dialog->getComboIndex(tr("Line Type"));
-    label = dialog->getText(tr("Label"));
-    smoothing = dialog->getInt(tr("Smoothing"));
-    maType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("Smoothing Type"));
+    color = dialog->getColor(QObject::tr("Color"));
+    lineType = (PlotLine::LineType) dialog->getComboIndex(QObject::tr("Line Type"));
+    label = dialog->getText(QObject::tr("Label"));
+    smoothing = dialog->getInt(QObject::tr("Smoothing"));
+    maType = (IndicatorPlugin::MAType) dialog->getComboIndex(QObject::tr("Smoothing Type"));
     rc = TRUE;
   }
   else
@@ -173,10 +174,10 @@ PlotLine * ATR::calculateCustom (QDict<PlotLine> *)
   return output->getLine(0);
 }
 
-Plugin * create ()
+IndicatorPlugin * createIndicatorPlugin ()
 {
   ATR *o = new ATR;
-  return ((Plugin *) o);
+  return ((IndicatorPlugin *) o);
 }
 
 

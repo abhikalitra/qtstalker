@@ -25,14 +25,15 @@
 #include <qdict.h>
 #include "PrefDialog.h"
 #include "Config.h"
+#include <qobject.h>
 
 OVRLY::OVRLY ()
 {
   pluginName = "OVRLY";
   setDefaults();
 
-  methodList.append(tr("Compare Price"));
-  methodList.append(tr("Compare Performance"));
+  methodList.append(QObject::tr("Compare Price"));
+  methodList.append(QObject::tr("Compare Performance"));
   methodList.sort();
 }
 
@@ -47,22 +48,22 @@ void OVRLY::setDefaults ()
   lineType = PlotLine::Line;
   baseLineType = PlotLine::Line;
   label = pluginName;
-  baseLabel = tr("Base");
+  baseLabel = QObject::tr("Base");
   baseSymbol.truncate(0);
-  method = tr("Compare Performance");
+  method = QObject::tr("Compare Performance");
 }
 
 void OVRLY::calculate ()
 {
   while (1)
   {
-    if (! method.compare(tr("Compare Price")))
+    if (! method.compare(QObject::tr("Compare Price")))
     {
       comparePrice();
       break;
     }
 
-    if (! method.compare(tr("Compare Performance")))
+    if (! method.compare(QObject::tr("Compare Performance")))
     {
       comparePerformance();
       break;
@@ -168,7 +169,7 @@ PlotLine * OVRLY::getSymbolLine (QString d)
     Setting *r2 = dict[data->getDate(loop).getDateTimeString(FALSE)];
     if (r2)
     {
-      val = r2->getFloat(tr("Close"));
+      val = r2->getFloat(QObject::tr("Close"));
       line->append(val);
     }
   }
@@ -184,32 +185,32 @@ int OVRLY::indicatorPrefDialog (QWidget *w)
   Config *config = new Config;
   
   PrefDialog *dialog = new PrefDialog(w);
-  dialog->setCaption(tr("OVRLY Indicator"));
+  dialog->setCaption(QObject::tr("OVRLY Indicator"));
   
-  dialog->createPage (tr("Base Symbol"));
-  dialog->addColorItem(tr("Base Color"), tr("Base Symbol"), baseColor);
-  dialog->addComboItem(tr("Base Line Type"), tr("Base Symbol"), lineTypes, baseLineType);
-  dialog->addTextItem(tr("Base Label"), tr("Base Symbol"), baseLabel);
-  dialog->addComboItem(tr("Method"), tr("Base Symbol"), methodList, method);
-  dialog->addSymbolItem(tr("Base Symbol"), tr("Base Symbol"), config->getData(Config::DataPath), baseSymbol);
+  dialog->createPage (QObject::tr("Base Symbol"));
+  dialog->addColorItem(QObject::tr("Base Color"), QObject::tr("Base Symbol"), baseColor);
+  dialog->addComboItem(QObject::tr("Base Line Type"), QObject::tr("Base Symbol"), lineTypes, baseLineType);
+  dialog->addTextItem(QObject::tr("Base Label"), QObject::tr("Base Symbol"), baseLabel);
+  dialog->addComboItem(QObject::tr("Method"), QObject::tr("Base Symbol"), methodList, method);
+  dialog->addSymbolItem(QObject::tr("Base Symbol"), QObject::tr("Base Symbol"), config->getData(Config::DataPath), baseSymbol);
   
-  dialog->createPage (tr("Current Symbol"));
-  dialog->addColorItem(tr("Color"), tr("Current Symbol"), color);
-  dialog->addComboItem(tr("Line Type"), tr("Current Symbol"), lineTypes, lineType);
-  dialog->addTextItem(tr("Label"), tr("Current Symbol"), label);
+  dialog->createPage (QObject::tr("Current Symbol"));
+  dialog->addColorItem(QObject::tr("Color"), QObject::tr("Current Symbol"), color);
+  dialog->addComboItem(QObject::tr("Line Type"), QObject::tr("Current Symbol"), lineTypes, lineType);
+  dialog->addTextItem(QObject::tr("Label"), QObject::tr("Current Symbol"), label);
   
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
-    color = dialog->getColor(tr("Color"));
-    baseColor = dialog->getColor(tr("Base Color"));
-    lineType = (PlotLine::LineType) dialog->getComboIndex(tr("Line Type"));
-    baseLineType = (PlotLine::LineType) dialog->getComboIndex(tr("Base Line Type"));
-    label = dialog->getText(tr("Label"));
-    baseLabel = dialog->getText(tr("Base Label"));
-    method = dialog->getCombo(tr("Method"));
-    baseSymbol = dialog->getSymbol(tr("Base Symbol"));
+    color = dialog->getColor(QObject::tr("Color"));
+    baseColor = dialog->getColor(QObject::tr("Base Color"));
+    lineType = (PlotLine::LineType) dialog->getComboIndex(QObject::tr("Line Type"));
+    baseLineType = (PlotLine::LineType) dialog->getComboIndex(QObject::tr("Base Line Type"));
+    label = dialog->getText(QObject::tr("Label"));
+    baseLabel = dialog->getText(QObject::tr("Base Label"));
+    method = dialog->getCombo(QObject::tr("Method"));
+    baseSymbol = dialog->getSymbol(QObject::tr("Base Symbol"));
     rc = TRUE;
   }
   else
@@ -285,10 +286,10 @@ Setting OVRLY::getIndicatorSettings ()
   return dict;
 }
 
-Plugin * create ()
+IndicatorPlugin * createIndicatorPlugin ()
 {
   OVRLY *o = new OVRLY;
-  return ((Plugin *) o);
+  return ((IndicatorPlugin *) o);
 }
 
 

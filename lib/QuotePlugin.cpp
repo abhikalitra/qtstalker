@@ -25,7 +25,6 @@
 
 QuotePlugin::QuotePlugin ()
 {
-  pluginType = QuotePlug;
   saveFlag = FALSE;
 }
 
@@ -90,5 +89,28 @@ QString QuotePlugin::createDirectory (QString d)
 
   return path;
 }
+
+QString QuotePlugin::getPluginName ()
+{
+  return pluginName;
+}
+
+//**************************************************************************
+//*************************** VIRTUAL OVERRIDES ****************************
+//**************************************************************************
+
+void QuotePlugin::update ()
+{
+}
+
+void QuotePlugin::cancelUpdate ()
+{
+}
+
+void QuotePlugin::prefDialog (QWidget *)
+{
+}
+
+
 
 

@@ -27,13 +27,14 @@
 #include <stdio.h>
 #include "PrefDialog.h"
 #include <qdict.h>
+#include <qobject.h>
 
 SZ::SZ ()
 {
   pluginName = "SZ";
   setDefaults();
-  methodList.append(tr("Long"));
-  methodList.append(tr("Short"));
+  methodList.append(QObject::tr("Long"));
+  methodList.append(QObject::tr("Short"));
 }
 
 SZ::~SZ ()
@@ -47,7 +48,7 @@ void SZ::setDefaults ()
   coefficient = 2.5;
   period = 10;
   no_decline_period = 2;
-  method = tr("Long");
+  method = QObject::tr("Long");
   label = pluginName;
 }
 
@@ -59,7 +60,7 @@ void SZ::calculate ()
   int display_uptrend = 0;
   int display_dntrend = 0;
   int position = 1;
-  if (! method.compare(tr("Long")))
+  if (! method.compare(QObject::tr("Long")))
     position = 1;
   else
     position = 2;
@@ -160,7 +161,7 @@ void SZ::calculate ()
   {
     sz_uptrend->setColor(color);
     sz_uptrend->setType(lineType);
-    sz_uptrend->setLabel(tr("SZ LONG"));
+    sz_uptrend->setLabel(QObject::tr("SZ LONG"));
     output->addLine(sz_uptrend);
   }
 
@@ -168,7 +169,7 @@ void SZ::calculate ()
   {
     sz_dntrend->setColor(color);
     sz_dntrend->setType(lineType);
-    sz_dntrend->setLabel(tr("SZ SHORT"));
+    sz_dntrend->setLabel(QObject::tr("SZ SHORT"));
     output->addLine(sz_dntrend);
   }
 }
@@ -176,27 +177,27 @@ void SZ::calculate ()
 int SZ::indicatorPrefDialog (QWidget *w)
 {
   PrefDialog *dialog = new PrefDialog(w);
-  dialog->setCaption(tr("SZ Indicator"));
-  dialog->createPage (tr("Parms"));
-  dialog->addColorItem(tr("Color"), tr("Parms"), color);
-  dialog->addComboItem(tr("Line Type"), tr("Parms"), lineTypes, lineType);
-  dialog->addComboItem(tr("Position"), tr("Parms"), methodList, method);
-  dialog->addIntItem(tr("Lookback Period"), tr("Parms"), period, 1, 99999999);
-  dialog->addIntItem(tr("No Decline Period"), tr("Parms"), no_decline_period, 1, 99999999);
-  dialog->addFloatItem(tr("Coefficient"), tr("Parms"), coefficient, 0, 99999999);
-  dialog->addTextItem(tr("Label"), tr("Parms"), label);
+  dialog->setCaption(QObject::tr("SZ Indicator"));
+  dialog->createPage (QObject::tr("Parms"));
+  dialog->addColorItem(QObject::tr("Color"), QObject::tr("Parms"), color);
+  dialog->addComboItem(QObject::tr("Line Type"), QObject::tr("Parms"), lineTypes, lineType);
+  dialog->addComboItem(QObject::tr("Position"), QObject::tr("Parms"), methodList, method);
+  dialog->addIntItem(QObject::tr("Lookback Period"), QObject::tr("Parms"), period, 1, 99999999);
+  dialog->addIntItem(QObject::tr("No Decline Period"), QObject::tr("Parms"), no_decline_period, 1, 99999999);
+  dialog->addFloatItem(QObject::tr("Coefficient"), QObject::tr("Parms"), coefficient, 0, 99999999);
+  dialog->addTextItem(QObject::tr("Label"), QObject::tr("Parms"), label);
   
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
-    color = dialog->getColor(tr("Color"));
-    lineType = (PlotLine::LineType) dialog->getComboIndex(tr("Line Type"));
-    period = dialog->getInt(tr("Lookback Period"));
-    no_decline_period = dialog->getInt(tr("No Decline Period"));
-    coefficient = dialog->getFloat(tr("Coefficient"));
-    method = dialog->getCombo(tr("Position"));
-    label = dialog->getText(tr("Label"));
+    color = dialog->getColor(QObject::tr("Color"));
+    lineType = (PlotLine::LineType) dialog->getComboIndex(QObject::tr("Line Type"));
+    period = dialog->getInt(QObject::tr("Lookback Period"));
+    no_decline_period = dialog->getInt(QObject::tr("No Decline Period"));
+    coefficient = dialog->getFloat(QObject::tr("Coefficient"));
+    method = dialog->getCombo(QObject::tr("Position"));
+    label = dialog->getText(QObject::tr("Label"));
     rc = TRUE;
   }
   else
@@ -273,10 +274,10 @@ PlotLine * SZ::calculateCustom (QDict<PlotLine> *)
   return output->getLine(0);
 }
 
-Plugin * create ()
+IndicatorPlugin * createIndicatorPlugin ()
 {
   SZ *o = new SZ;
-  return ((Plugin *) o);
+  return ((IndicatorPlugin *) o);
 }
 
 
