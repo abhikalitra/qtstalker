@@ -37,6 +37,7 @@
 #include <qvalidator.h>
 #include <qbuttongroup.h>
 #include <qlabel.h>
+#include <qslider.h>
 #include "Config.h"
 #include "Indicator.h"
 #include "Setting.h"
@@ -86,6 +87,7 @@ class Tester : public QDialog
     void saveRule ();
     void exitDialog ();
     void loadRule ();
+    void sliderChanged (int);
 
   protected:
     Config *config;
@@ -130,6 +132,7 @@ class Tester : public QDialog
     QString ruleName;
     Plot *equityPlot;
     Plot *closePlot;
+    QSlider *slider;
 
     int status;
     int testLoop;

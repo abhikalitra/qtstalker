@@ -34,6 +34,10 @@
 #include "indicator.xpm"
 #include "stop.xpm"
 #include "ok.xpm"
+#include "enterlong.xpm"
+#include "entershort.xpm"
+#include "exitlong.xpm"
+#include "exitshort.xpm"
 #include "EditDialog.h"
 #include "Plugin.h"
 #include "SettingView.h"
@@ -118,7 +122,7 @@ void Tester::createFormulaPage ()
   QToolTip::add(button, tr("Enter Long Rule"));
   button->setAutoRaise(TRUE);
   button->setMaximumWidth(30);
-  button->setText(tr("EL"));
+  button->setPixmap(QPixmap(enterlong));
   button->setToggleButton(TRUE);
   tb->addWidget(button, 0, 0);
   buttonGroup->insert(button, 0);
@@ -127,7 +131,7 @@ void Tester::createFormulaPage ()
   QToolTip::add(button, tr("Exit Long Rule"));
   button->setAutoRaise(TRUE);
   button->setMaximumWidth(30);
-  button->setText(tr("XL"));
+  button->setPixmap(QPixmap(exitlong));
   button->setToggleButton(TRUE);
   tb->addWidget(button, 0, 1);
   buttonGroup->insert(button, 1);
@@ -136,7 +140,7 @@ void Tester::createFormulaPage ()
   QToolTip::add(button, tr("Enter Short Rule"));
   button->setAutoRaise(TRUE);
   button->setMaximumWidth(30);
-  button->setText(tr("ES"));
+  button->setPixmap(QPixmap(entershort));
   button->setToggleButton(TRUE);
   tb->addWidget(button, 0, 2);
   buttonGroup->insert(button, 2);
@@ -145,7 +149,7 @@ void Tester::createFormulaPage ()
   QToolTip::add(button, tr("Exit Short Rule"));
   button->setAutoRaise(TRUE);
   button->setMaximumWidth(30);
-  button->setText(tr("XS"));
+  button->setPixmap(QPixmap(exitshort));
   button->setToggleButton(TRUE);
   tb->addWidget(button, 0, 3);
   buttonGroup->insert(button, 3);
@@ -455,7 +459,7 @@ void Tester::createChartPage ()
   QVBoxLayout *vbox = new QVBoxLayout(w);
   vbox->setMargin(5);
   vbox->setSpacing(5);
-  
+
   QSplitter *split = new QSplitter(w);
   split->setOrientation(Vertical);
   vbox->addWidget(split);
@@ -469,6 +473,12 @@ void Tester::createChartPage ()
   closePlot->setChartType("Line");
   closePlot->setMainFlag(TRUE);
   closePlot->clear();
+  
+  slider = new QSlider(w);
+  slider->setOrientation(Qt::Horizontal);
+  connect (slider, SIGNAL(valueChanged(int)), this, SLOT(sliderChanged(int)));
+  QToolTip::add(slider, tr("Pan Chart"));
+  vbox->addWidget(slider);
 
   tabs->addTab(w, tr("Charts"));
 }
@@ -580,11 +590,11 @@ void Tester::addIndicator ()
 	break;
       case 2:
         enterShortIndicators.insert(name, i);
-        enterShortAlerts.insert(name, i);
+        enterShortAlerts.insert(name, new Setting);
 	break;
       default:
         exitShortIndicators.insert(name, i);
-        exitShortAlerts.insert(name, i);
+        exitShortAlerts.insert(name, new Setting);
 	break;
     }
 
@@ -840,31 +850,42 @@ void Tester::test ()
     trailing();
   }
 
-//  if (status != 0)
-//    exitPosition("Open");
-
-/*
+  closePlot->clear();
   equityPlot->clear();
+
+  closePlot->setData(db->getRecordList());
+  equityPlot->setData(db->getRecordList());
+
   PlotLine *line = new PlotLine;
   Indicator *ind = new Indicator;
   ind->set("Plot", "True", Setting::None);
   QListViewItemIterator it(tradeList);
-  for (; it.current() != 0; ++it)
+  int loop;
+  for (loop = 0; loop < db->getDataSize(); loop++)
   {
-    QListViewItem *i = it.current();
-    QString s = i->text(7);
-    line->append(s.toDouble());
+    for (; it.current() != 0; ++it)
+    {
+      QListViewItem *i = it.current();
+      QString s = i->text(7);
+      line->append(s.toDouble());
+    }
   }
   ind->addLine(line);
   equityPlot->addIndicator("Equity", ind);
-  equityPlot->draw();
-*/
-
-  closePlot->setData(db->getRecordList());
 
   createSummary();
-  
+
+  int page = closePlot->getWidth() / closePlot->getPixelspace();
+  int max = db->getDataSize() - page;
+  if (max < 0)
+    max = 0;
+  slider->blockSignals(TRUE);
+  slider->setRange(0, db->getDataSize() - 1);
+  slider->setValue(max);
+  slider->blockSignals(FALSE);
+
   closePlot->draw();
+  equityPlot->draw();
 
   delete db;
 }
@@ -1696,18 +1717,11 @@ void Tester::createSummary ()
 	  largestWin = s.toDouble();
       }
       
-      Setting *co = closePlot->newChartObject(tr("Buy Arrow"));
+      Setting *co = closePlot->newChartObject(tr("Vertical Line"));
       count++;
       co->set("Name", QString::number(count), Setting::None);
       co->setData(tr("Date"), item->text(1));
-      co->setData(tr("Value"), QString::number(item->text(2).toDouble() * 0.99));
-      i->addChartObject(co);
-
-      co = closePlot->newChartObject(tr("Sell Arrow"));
-      count++;
-      co->set("Name", QString::number(count), Setting::None);
-      co->setData(tr("Date"), item->text(3));
-      co->setData(tr("Value"), QString::number(item->text(4).toDouble() * 1.01));
+      co->setData(tr("Color"), "green");
       i->addChartObject(co);
     }
     else
@@ -1732,18 +1746,11 @@ void Tester::createSummary ()
 	  largestWin = s.toDouble();
       }
 
-      Setting *co = closePlot->newChartObject(tr("Sell Arrow"));
+      Setting *co = closePlot->newChartObject(tr("Vertical Line"));
       count++;
       co->set("Name", QString::number(count), Setting::None);
       co->setData(tr("Date"), item->text(1));
-      co->setData(tr("Value"), QString::number(item->text(2).toDouble() * 1.01));
-      i->addChartObject(co);
-
-      co = closePlot->newChartObject(tr("Buy Arrow"));
-      count++;
-      co->set("Name", QString::number(count), Setting::None);
-      co->setData(tr("Date"), item->text(3));
-      co->setData(tr("Value"), QString::number(item->text(4).toDouble() * 0.99));
+      co->setData(tr("Color"), "red");
       i->addChartObject(co);
     }
 
@@ -1781,4 +1788,12 @@ void Tester::createSummary ()
   summaryLoseShortTrades->setNum(loseShortTrades);
 }
 
+void Tester::sliderChanged (int v)
+{
+  equityPlot->setIndex(v);
+  closePlot->setIndex(v);
+
+  equityPlot->draw();
+  closePlot->draw();
+}
 
