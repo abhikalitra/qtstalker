@@ -454,6 +454,7 @@ QStringList Config::getIndicatorList ()
   l.remove("COMP");
   l.remove("MATH");
   l.remove("REF");
+  l.remove("COUNTER");
   return l;
 }
 

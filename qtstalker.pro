@@ -32,6 +32,7 @@ SUBDIRS += plugins/indicator/ATR
 SUBDIRS += plugins/indicator/BB
 SUBDIRS += plugins/indicator/CCI
 SUBDIRS += plugins/indicator/COMP
+SUBDIRS += plugins/indicator/COUNTER
 SUBDIRS += plugins/indicator/CUS
 SUBDIRS += plugins/indicator/DMI
 SUBDIRS += plugins/indicator/DPO

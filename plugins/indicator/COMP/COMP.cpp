@@ -52,8 +52,8 @@ void COMP::setDefaults ()
   method = "EQ";
   data1 = "1";
   data2 = "2";
-  displace1 = 0;
-  displace2 = 0;
+  delay1 = "#0";
+  delay2 = "#0";
 }
 
 void COMP::calculate ()
@@ -85,6 +85,43 @@ void COMP::calculate ()
     }
     
     loop2 = input2->getSize() - 1;
+  }
+
+  int timeLoop1 = 0;
+  int displace1 = 0;
+  PlotLine *timeInput1 = 0;
+  if (delay1.contains("#"))
+  {
+    QString s = delay1;
+    s.remove(0, 1);
+    displace1 = s.toInt();
+  } else {
+    timeInput1 = customLines->find(delay1);
+    if (! timeInput1)
+    {
+      qDebug("COMP::calculate: no delay1 input");
+      return;
+    }
+    timeLoop1 = timeInput1->getSize() - 1;
+    displace1 = (int) timeInput1->getData(timeLoop1);
+  }
+  int timeLoop2 = 0;
+  int displace2 = 0;
+  PlotLine *timeInput2 = 0;
+  if (delay2.contains("#"))
+  {
+    QString s = delay2;
+    s.remove(0, 1);
+    displace2 = s.toInt();
+  } else {
+    timeInput2 = customLines->find(delay2);
+    if (! timeInput2)
+    {
+      qDebug("COMP::calculate: no delay2 input");
+      return;
+    }
+    timeLoop2 = timeInput2->getSize() - 1;
+    displace2 = (int) timeInput2->getData(timeLoop2);
   }
     
   PlotLine *line = new PlotLine;
@@ -158,8 +195,17 @@ void COMP::calculate ()
     }
       
     loop--;
-    if (input2)
+    if(timeInput1&&timeLoop1>0) {
+      timeLoop1--;
+      displace1 = (int) timeInput1->getData(timeLoop1);
+    }
+    if (input2) {
       loop2--;
+    if(timeInput2&&timeLoop2>0) {
+      timeLoop2--;
+      displace2 = (int) timeInput2->getData(timeLoop2);
+    }
+    }
   }
   
   output->addLine(line);
@@ -174,10 +220,10 @@ int COMP::indicatorPrefDialog (QWidget *w)
   dialog->addTextItem(QObject::tr("Label"), QObject::tr("Parms"), label);
   dialog->addComboItem(QObject::tr("Line Type"), QObject::tr("Parms"), lineTypes, lineType);
   dialog->addFormulaInputItem(QObject::tr("Data1"), QObject::tr("Parms"), FALSE, data1);
-  dialog->addIntItem(QObject::tr("Displace1"), QObject::tr("Parms"), displace1, 0, 99999999);
+  dialog->addFormulaInputItem(QObject::tr("Delay1"), QObject::tr("Parms"), TRUE, delay1);
   dialog->addComboItem(QObject::tr("Method"), QObject::tr("Parms"), opList, method);
   dialog->addFormulaInputItem(QObject::tr("Data2"), QObject::tr("Parms"), TRUE, data2);
-  dialog->addIntItem(QObject::tr("Displace2"), QObject::tr("Parms"), displace2, 0, 99999999);
+  dialog->addFormulaInputItem(QObject::tr("Delay2"), QObject::tr("Parms"), TRUE, delay2);
   
   int rc = dialog->exec();
   
@@ -188,9 +234,9 @@ int COMP::indicatorPrefDialog (QWidget *w)
     label = dialog->getText(QObject::tr("Label"));
     method = dialog->getCombo(QObject::tr("Method"));
     data1 = dialog->getFormulaInput(QObject::tr("Data1"));
-    displace1 = dialog->getInt(QObject::tr("Displace1"));
+    delay1 = dialog->getFormulaInput(QObject::tr("Delay1"));
     data2 = dialog->getFormulaInput(QObject::tr("Data2"));
-    displace2 = dialog->getInt(QObject::tr("Displace2"));
+    delay2 = dialog->getFormulaInput(QObject::tr("Delay2"));
     rc = TRUE;
   }
   else
@@ -237,17 +283,17 @@ void COMP::setIndicatorSettings (Setting dict)
   if (s.length())
     data1 = s;
 
-  s = dict.getData("displace1");
+  s = dict.getData("delay1");
   if (s.length())
-    displace1 = s.toInt();
+    delay1 = s;
 
   s = dict.getData("data2");
   if (s.length())
     data2 = s;
 
-  s = dict.getData("displace2");
+  s = dict.getData("delay2");
   if (s.length())
-    displace2 = s.toInt();
+    delay2 = s;
 }
 
 Setting COMP::getIndicatorSettings ()
@@ -259,9 +305,9 @@ Setting COMP::getIndicatorSettings ()
   dict.setData("plugin", pluginName);
   dict.setData("method", method);
   dict.setData("data1", data1);
-  dict.setData("displace1", QString::number(displace1));
+  dict.setData("delay1", delay1);
   dict.setData("data2", data2);
-  dict.setData("displace2", QString::number(displace2));
+  dict.setData("delay2", delay2);
   return dict;
 }
 

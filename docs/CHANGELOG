@@ -153,6 +153,15 @@
 20040912: Created new class of plugins for chart objects. Continuing the process of maximum
           modularity and flexibility. Moved chart object code classes from /src and created
 	  a COPlugin class for each one.
+	  
+20040913: Applied patch #1025390 - indicator plugin COUNTER. This is used for CUS rules that
+          allow the user to count COMP signals and have a method of using the number of
+	  consecutive TRUE signals. Thanks to Xiaoguang Zhang for the plugin.
+	  
+20040913: Applied patch #1026411 - customizable displace in COMP indicator. Thanks to
+          Xiaoguang Zhang for the patch.
+	  
+	  
 	  	  	  
 0.26
 ====

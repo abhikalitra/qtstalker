@@ -21,24 +21,11 @@
 
 #include "IndicatorPlugin.h"
 
-class COMP : public IndicatorPlugin
+class COUNTER : public IndicatorPlugin
 {
   public:
-  
-    enum Operator
-    {
-      NoOp,
-      Equal,
-      LessThan,
-      LessThanEqual,
-      GreaterThan,
-      GreaterThanEqual,
-      And,
-      Or
-    };
-  
-    COMP ();
-    virtual ~COMP ();
+    COUNTER ();
+    virtual ~COUNTER ();
     void calculate ();
     void loadIndicatorSettings (QString);
     void saveIndicatorSettings (QString);
@@ -47,23 +34,16 @@ class COMP : public IndicatorPlugin
     PlotLine * calculateCustom (QDict<PlotLine> *);
     Setting getIndicatorSettings ();
     void setIndicatorSettings (Setting);
-    COMP::Operator getOperator (QString);
-  
+    
   private:
     QColor color;
     PlotLine::LineType lineType;
     QString label;
-    QString data1;
-    QString data2;
-    QString method;
-    QStringList opList;
-    QString delay1;
-    QString delay2;
+    QString customInput;
+    QString customInput2;
 };
 
 extern "C"
 {
   IndicatorPlugin * createIndicatorPlugin ();
 }
-
-
