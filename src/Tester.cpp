@@ -521,8 +521,7 @@ void Tester::test ()
   if (! chartType.compare(tr("Futures")))
     fd.setSymbol(db->getData(tr("FuturesType")));
 
-  while (tradeList->numRows())
-    tradeList->removeRow(0);
+  tradeList->setNumRows(0);
 
   db->setBarCompression(BarData::DailyBar);
   db->setBarRange(bars->value());
@@ -857,7 +856,7 @@ bool Tester::maximumLoss ()
   if ((status == 1) && (maximumLossLong->isChecked()))
   {
     double t = enterPrice * (1 - (maximumLossEdit->text().toDouble() / 100));
-    if (t <= exitPrice)
+    if (exitPrice <= t)
     {
       exitPosition("Maximum Loss");
       status = 0;
@@ -869,7 +868,7 @@ bool Tester::maximumLoss ()
   if ((status == -1) && (maximumLossShort->isChecked()))
   {
     double t = enterPrice * (1 + (maximumLossEdit->text().toDouble() / 100));
-    if (t >= exitPrice)
+    if (exitPrice >= t)
     {
       exitPosition("Maximum Loss");
       status = 0;
@@ -892,7 +891,7 @@ bool Tester::profit ()
   if ((status == 1) && (profitLong->isChecked()))
   {
     double t = enterPrice * (1 + (profitEdit->text().toDouble() / 100));
-    if (t >= exitPrice)
+    if (exitPrice >= t)
     {
       exitPosition("Profit");
       status = 0;
@@ -904,7 +903,7 @@ bool Tester::profit ()
   if ((status == -1) && (profitShort->isChecked()))
   {
     double t = enterPrice * (1 - (profitEdit->text().toDouble() / 100));
-    if (t <= exitPrice)
+    if (exitPrice <= t)
     {
       exitPosition("Profit");
       status = 0;
@@ -1651,9 +1650,6 @@ void Tester::createSummary ()
 
 void Tester::getVolume ()
 {
-
-
-
   double balance = equity;
   if (volumePercent->value() == 0)
   {
