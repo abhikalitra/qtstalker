@@ -219,6 +219,18 @@ QString Config::getData (Parm p)
     case PAFReversal:
       s = settings.readEntry("/Qtstalker/PAFReversal", "3");
       break;
+    case Height:
+      s = settings.readEntry("/Qtstalker/Height", "640");
+      break;
+    case Width:
+      s = settings.readEntry("/Qtstalker/Width", "480");
+      break;
+    case X:
+      s = settings.readEntry("/Qtstalker/X", "0");
+      break;
+    case Y:
+      s = settings.readEntry("/Qtstalker/Y", "0");
+      break;
     default:
       break;
   }
@@ -324,6 +336,18 @@ void Config::setData (Parm p, QString d)
       break;
     case PAFReversal:
       settings.writeEntry("/Qtstalker/PAFReversal", d);
+      break;
+    case Height:
+      settings.writeEntry("/Qtstalker/Height", d);
+      break;
+    case Width:
+      settings.writeEntry("/Qtstalker/Width", d);
+      break;
+    case X:
+      settings.writeEntry("/Qtstalker/X", d);
+      break;
+    case Y:
+      settings.writeEntry("/Qtstalker/Y", d);
       break;
     default:
       break;

@@ -72,6 +72,10 @@
   the source tree. This shows up as undefined references to functions when make tries to link the qtstalker binary to the
   old library instead of the new library. Hopefully, this will fix it.
   
+- App now saves and restores window height, width, x and y positions.
+
+- Bar position is restored if chart is reloaded. No longer resets to the last bar.
+
 
 0.22
 ====

@@ -41,6 +41,7 @@ GroupPage::GroupPage (QWidget *w, Config *c) : BaseDialog(w)
   group = new QLineEdit(this);
   group->setReadOnly(TRUE);
   QToolTip::add(group, tr("Current Group"));
+  group->setFocusPolicy(QWidget::NoFocus);
   basebox->addWidget(group);
 
   nav = new Navigator(this, config->getData(Config::GroupPath));

@@ -157,7 +157,7 @@ QtstalkerApp::QtstalkerApp()
   QObject::connect(mainPlot, SIGNAL(chartObjectCreated(Setting *)), this, SLOT(slotChartObjectCreated(Setting *)));
   QObject::connect(mainPlot, SIGNAL(infoMessage(Setting *)), this, SLOT(slotUpdateInfo(Setting *)));
   QObject::connect(mainPlot, SIGNAL(leftMouseButton(int, int, bool)), this, SLOT(slotPlotLeftMouseButton(int, int, bool)));
-  QObject::connect(mainPlot, SIGNAL(keyPressed(Qt::Key)), this, SLOT(slotPlotKeyPressed(Qt::Key)));
+  QObject::connect(mainPlot, SIGNAL(keyPressed(QKeyEvent *)), this, SLOT(slotPlotKeyPressed(QKeyEvent *)));
 
   QObject::connect(this, SIGNAL(signalGrid(bool)), mainPlot, SLOT(setGridFlag(bool)));
   QObject::connect(this, SIGNAL(signalScaleToScreen(bool)), mainPlot, SLOT(setScaleToScreen(bool)));
@@ -274,6 +274,8 @@ QtstalkerApp::QtstalkerApp()
   initIndicatorNav();
   initPortfolioNav();
   initTestNav();
+
+  resize(config->getData(Config::Width).toInt(), config->getData(Config::Height).toInt());
 }
 
 QtstalkerApp::~QtstalkerApp()
@@ -343,6 +345,12 @@ void QtstalkerApp::initActions()
   actionPlotDate = new QAction(tr("Toggle Indicator Date"), icon, tr("Toggle Indicator Date"), 0, this, 0, true);
   actionPlotDate->setStatusTip(tr("Toggle indicator date."));
   connect(actionPlotDate, SIGNAL(toggled(bool)), this, SLOT(slotPlotDate(bool)));
+
+//  QAction *action = new QAction(QString::null, icon, QString::null, CTRL+Key_M, this);
+//  connect(action, SIGNAL(activated()), this, SLOT(slotMainPlotFocus()));
+
+//  action = new QAction(QString::null, icon, QString::null, CTRL+Key_C, this);
+//  connect(action, SIGNAL(activated()), this, SLOT(slotChartTabFocus()));
 }
 
 void QtstalkerApp::initMenuBar()
@@ -474,8 +482,12 @@ void QtstalkerApp::slotQuit()
   QValueList<int> list = split->sizes();
   config->setData(Config::MainPlotSize, QString::number(list[0]));
   config->setData(Config::IndicatorPlotSize, QString::number(list[1]));
+  config->setData(Config::Height, QString::number(this->height()));
+  config->setData(Config::Width, QString::number(this->width()));
+  config->setData(Config::X, QString::number(this->x()));
+  config->setData(Config::Y, QString::number(this->y()));
   delete config;
-  
+
   if (recordList)
     delete recordList;
 
@@ -678,6 +690,11 @@ void QtstalkerApp::loadChart (QString d)
   QDir dir(d);
   if (! dir.exists(d, TRUE))
     return;
+
+  // check if we need to save the slider position because chart is reloaded
+  bool reload = FALSE;
+  if (! chartPath.compare(d))
+    reload = TRUE;
 
   chartPath = d;
 
@@ -910,23 +927,19 @@ void QtstalkerApp::loadChart (QString d)
     max = 0;
   slider->blockSignals(TRUE);
   slider->setRange(0, recordList->count() - 1);
-  if ((int) recordList->count() < page)
-    slider->setValue(0);
-  else
-    slider->setValue(max + 1);
-  slider->blockSignals(FALSE);
-
-  if ((int) recordList->count() < page)
-    mainPlot->setIndex(0);
-  else
-    mainPlot->setIndex(max + 1);
-  for(it.toFirst(); it.current(); ++it)
+  if (! reload)
   {
     if ((int) recordList->count() < page)
-      it.current()->setIndex(0);
+      slider->setValue(0);
     else
-      it.current()->setIndex(max + 1);
+      slider->setValue(max + 1);
   }
+  slider->blockSignals(FALSE);
+
+  mainPlot->setIndex(slider->value());
+
+  for(it.toFirst(); it.current(); ++it)
+    it.current()->setIndex(slider->value());
 
   pixelspace->blockSignals(TRUE);
   pixelspace->setRange(mainPlot->getMinPixelspace(), 99);
@@ -1619,7 +1632,7 @@ void QtstalkerApp::addIndicatorButton (QString d, bool tabFlag)
   QObject::connect(plot, SIGNAL(leftMouseButton(int, int, bool)), this, SLOT(slotPlotLeftMouseButton(int, int, bool)));
 
   // setup plot key presses
-  QObject::connect(plot, SIGNAL(keyPressed(Qt::Key)), this, SLOT(slotPlotKeyPressed(Qt::Key)));
+  QObject::connect(plot, SIGNAL(keyPressed(QKeyEvent *)), this, SLOT(slotPlotKeyPressed(QKeyEvent *)));
 
   if (tabFlag)
     tabs->addTab(plot, d);
@@ -1747,12 +1760,12 @@ void QtstalkerApp::slotPlotLeftMouseButton (int x, int y, bool mainFlag)
     it.current()->crossHair(x, y);
 }
 
-void QtstalkerApp::slotPlotKeyPressed (Qt::Key key)
+void QtstalkerApp::slotPlotKeyPressed (QKeyEvent *key)
 {
   if (status == None)
     return;
 
-  switch (key)
+  switch (key->key())
   {
     case Qt::Key_Left:
       slider->setValue(slider->value() - 1);
@@ -1767,10 +1780,30 @@ void QtstalkerApp::slotPlotKeyPressed (Qt::Key key)
       slider->setValue(slider->maxValue());
       break;
     case Qt::Key_Prior:
-      slider->subtractStep();
+      slider->addStep();
       break;
     case Qt::Key_Next:
-      slider->addStep();
+      slider->subtractStep();
+      break;
+    case Qt::Key_Minus:
+      pixelspace->stepDown();
+      break;
+    case Qt::Key_Plus:
+      pixelspace->stepUp();
+      break;
+    case Qt::Key_Up:
+      if (compressionCombo->currentItem() != (compressionCombo->count() - 1))
+      {
+        compressionCombo->setCurrentItem(compressionCombo->currentItem() + 1);
+        slotCompressionChanged(compressionCombo->currentItem());
+      }
+      break;
+    case Qt::Key_Down:
+      if (compressionCombo->currentItem() != 0)
+      {
+        compressionCombo->setCurrentItem(compressionCombo->currentItem() - 1);
+        slotCompressionChanged(compressionCombo->currentItem());
+      }
       break;
     default:
       break;

@@ -708,7 +708,9 @@ void Plot::keyPressEvent (QKeyEvent *key)
     case Qt::Key_Minus:
     case Qt::Key_Prior:
     case Qt::Key_Next:
-      emit keyPressed((Qt::Key) key->key());
+    case Qt::Key_Up:
+    case Qt::Key_Down:
+      emit keyPressed(key);
       break;
     default:
       key->ignore();

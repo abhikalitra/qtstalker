@@ -46,7 +46,7 @@ class Plot : public QWidget
     void chartObjectCreated (Setting *);
     void infoMessage (Setting *);
     void leftMouseButton (int, int, bool);
-    void keyPressed (Qt::Key);
+    void keyPressed (QKeyEvent *);
 
   public:
 

@@ -65,7 +65,11 @@ class Config
       IndicatorTabs,
       StackedIndicator,
       PAFBoxSize,
-      PAFReversal
+      PAFReversal,
+      Height,
+      Width,
+      X,
+      Y
     };
 
     Config (QString);

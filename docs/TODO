@@ -3,6 +3,15 @@ To Do:
 
 - create some howto docs for quote plugins
 - add MA option to all plugins?
+- drag and drop chart objects
+- chart scanner
+- intraday quotes
+- postgresql quote plugin
+- print charts
+- key bindings
+- key binding scripting
+- zero toggle
+
 
 Maybe some day:
 ===============
