@@ -79,24 +79,13 @@ class Plot : public QWidget
     ~Plot ();
     void clear ();
     void setData (QList<Setting> *);
-    void setInterval(TimeInterval);
     void setScaleWidth (int);
     void setDateHeight (int);
-    void setBackgroundColor (QColor);
-    void setBorderColor (QColor);
-    void setGridColor (QColor);
-    void setUpColor (QColor);
-    void setDownColor (QColor);
-    void setNeutralColor (QColor);
-    void setPlotFont (QFont);
     void setDateFlag (bool);
-    void setGridFlag (bool);
     void setMainFlag (bool);
-    void setScaleToScreen (bool);
     void setLogScale (bool);
     void setOtherFlag (bool);
     bool getOtherFlag ();
-    void setPixelspace (int);
     void setChartType (QString);
     void createChartObject (QString, QString);
     void setPaintBars (QList<QColor>);
@@ -109,7 +98,6 @@ class Plot : public QWidget
     void newChartObject ();
 
     void crossHair (int, int);
-    void setIndex (int);
     int getWidth ();
     int getPixelspace ();
     int getMinPixelspace ();
@@ -117,6 +105,18 @@ class Plot : public QWidget
 
   public slots:
     void draw();
+    void setGridFlag (bool);
+    void setScaleToScreen (bool);
+    void setPixelspace (int);
+    void setBackgroundColor (QColor);
+    void setBorderColor (QColor);
+    void setGridColor (QColor);
+    void setUpColor (QColor);
+    void setDownColor (QColor);
+    void setNeutralColor (QColor);
+    void setPlotFont (QFont);
+    void setIndex (int);
+    void setInterval(Plot::TimeInterval);
 
   protected:
     virtual void paintEvent (QPaintEvent *);

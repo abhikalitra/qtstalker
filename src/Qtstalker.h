@@ -46,6 +46,20 @@
 class QtstalkerApp : public QMainWindow
 {
   Q_OBJECT
+  
+  signals:
+    void signalGrid (bool);
+    void signalScaleToScreen (bool);
+    void signalPixelspace (int);
+    void signalBackgroundColor (QColor);
+    void signalBorderColor (QColor);
+    void signalGridColor (QColor);
+    void signalUpColor (QColor);
+    void signalDownColor (QColor);
+    void signalNeutralColor (QColor);
+    void signalPlotFont (QFont);
+    void signalIndex (int);
+    void signalInterval(Plot::TimeInterval);
 
   public:
 
@@ -70,8 +84,6 @@ class QtstalkerApp : public QMainWindow
     void loadChart (QString);
     void compressionChanged (QString);
     void addIndicatorButton (QString);
-    void setPlotFont (Plot *);
-    void setPlotColor (Plot *, Config::Parm);
     void exportChart (QString);
     void traverse(QString);
 

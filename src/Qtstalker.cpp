@@ -122,11 +122,47 @@ QtstalkerApp::QtstalkerApp()
   mainPlot = new Plot (split);
   mainPlot->setDateFlag(TRUE);
   mainPlot->setMainFlag(TRUE);
-  setPlotFont(mainPlot);
+  
+  QColor color;
+  color.setNamedColor(config->getData(Config::BackgroundColor));
+  QObject::connect(this, SIGNAL(signalBackgroundColor(QColor)), mainPlot, SLOT(setBackgroundColor(QColor)));
+  emit signalBackgroundColor(color);
+
+  color.setNamedColor(config->getData(Config::BorderColor));
+  QObject::connect(this, SIGNAL(signalBorderColor(QColor)), mainPlot, SLOT(setBorderColor(QColor)));
+  emit signalBorderColor(color);
+
+  color.setNamedColor(config->getData(Config::GridColor));
+  QObject::connect(this, SIGNAL(signalGridColor(QColor)), mainPlot, SLOT(setGridColor(QColor)));
+  emit signalGridColor(color);
+
+  color.setNamedColor(config->getData(Config::UpColor));
+  QObject::connect(this, SIGNAL(signalUpColor(QColor)), mainPlot, SLOT(setUpColor(QColor)));
+  emit signalUpColor(color);
+
+  color.setNamedColor(config->getData(Config::DownColor));
+  QObject::connect(this, SIGNAL(signalDownColor(QColor)), mainPlot, SLOT(setDownColor(QColor)));
+  emit signalDownColor(color);
+
+  color.setNamedColor(config->getData(Config::NeutralColor));
+  QObject::connect(this, SIGNAL(signalNeutralColor(QColor)), mainPlot, SLOT(setNeutralColor(QColor)));
+  emit signalNeutralColor(color);
+
+  QStringList l = QStringList::split(" ", config->getData(Config::PlotFont), FALSE);
+  QFont font(l[0], l[1].toInt(), l[2].toInt());
+  QObject::connect(this, SIGNAL(signalPlotFont(QFont)), mainPlot, SLOT(setPlotFont(QFont)));
+  emit signalPlotFont(font);
+
   QObject::connect(mainPlot, SIGNAL(rightMouseButton()), this, SLOT(mainPlotPopupMenu()));
   QObject::connect(mainPlot, SIGNAL(statusMessage(QString)), this, SLOT(slotStatusMessage(QString)));
   QObject::connect(mainPlot, SIGNAL(chartObjectCreated(Setting *)), this, SLOT(slotChartObjectCreated(Setting *)));
   QObject::connect(mainPlot, SIGNAL(infoMessage(Setting *)), this, SLOT(slotUpdateInfo(Setting *)));
+  
+  QObject::connect(this, SIGNAL(signalGrid(bool)), mainPlot, SLOT(setGridFlag(bool)));
+  QObject::connect(this, SIGNAL(signalScaleToScreen(bool)), mainPlot, SLOT(setScaleToScreen(bool)));
+  QObject::connect(this, SIGNAL(signalPixelspace(int)), mainPlot, SLOT(setPixelspace(int)));
+  QObject::connect(this, SIGNAL(signalIndex(int)), mainPlot, SLOT(setIndex(int)));
+  QObject::connect(this, SIGNAL(signalInterval(Plot::TimeInterval)), mainPlot, SLOT(setInterval(Plot::TimeInterval)));
 
   tabs = new QTabWidget(split);
   QObject::connect(tabs, SIGNAL(currentChanged(QWidget *)), this, SLOT(slotTabChanged(QWidget *)));
@@ -166,7 +202,7 @@ QtstalkerApp::QtstalkerApp()
     actionGrid->setOn(TRUE);
   else
     actionGrid->setOn(FALSE);
-  mainPlot->setGridFlag(s.toInt());
+  emit signalGrid(s.toInt());
 
   // set the scale to screen status
   s = config->getData(Config::ScaleToScreen);
@@ -174,7 +210,7 @@ QtstalkerApp::QtstalkerApp()
     actionScaleToScreen->setOn(TRUE);
   else
     actionScaleToScreen->setOn(FALSE);
-  mainPlot->setScaleToScreen(s.toInt());
+  emit signalScaleToScreen(s.toInt());
 
   // set the indicator splitter size
   QValueList<int> sizeList;
@@ -198,13 +234,13 @@ QtstalkerApp::QtstalkerApp()
   sizeList.append(s.toInt());
   navSplitter->setSizes(sizeList);
 
-  QStringList l = config->getIndicators();
+  l = config->getIndicators();
   for (loop = 0; loop < (int) l.count(); loop++)
     addIndicatorButton(l[loop]);
 
   l = QStringList::split(" ", config->getData(Config::AppFont), FALSE);
-  QFont font(l[0], l[1].toInt(), l[2].toInt());
-  qApp->setFont(font, TRUE, 0);
+  QFont font2(l[0], l[1].toInt(), l[2].toInt());
+  qApp->setFont(font2, TRUE, 0);
 
   // set the nav status
   slotHideNav(TRUE);
@@ -459,41 +495,43 @@ void QtstalkerApp::slotOptions ()
 
   if (rc == QDialog::Accepted)
   {
+    QColor color;
+
     config->setData(Config::BackgroundColor, set->getData(tr("Color Background")));
+    color.setNamedColor(set->getData(tr("Color Background")));
+    emit signalBackgroundColor(color);
+
     config->setData(Config::BorderColor, set->getData(tr("Color Border")));
+    color.setNamedColor(set->getData(tr("Color Border")));
+    emit signalBorderColor(color);
+
     config->setData(Config::GridColor, set->getData(tr("Color Grid")));
+    color.setNamedColor(set->getData(tr("Color Grid")));
+    emit signalGridColor(color);
+
     config->setData(Config::UpColor, set->getData(tr("Color Up")));
+    color.setNamedColor(set->getData(tr("Color Up")));
+    emit signalUpColor(color);
+
     config->setData(Config::DownColor, set->getData(tr("Color Down")));
+    color.setNamedColor(set->getData(tr("Color Down")));
+    emit signalDownColor(color);
+
     config->setData(Config::NeutralColor, set->getData(tr("Color Neutral")));
-    config->setData(Config::PaintBarIndicator, set->getData(tr("Paint Bar Indicator")));
+    color.setNamedColor(set->getData(tr("Color Neutral")));
+    emit signalNeutralColor(color);
+
     config->setData(Config::PlotFont, set->getData(tr("Plot Font")));
-    config->setData(Config::AppFont, set->getData(tr("App Font")));
-
-    setPlotColor(mainPlot, Config::BackgroundColor);
-    setPlotColor(mainPlot, Config::BorderColor);
-    setPlotColor(mainPlot, Config::GridColor);
-    setPlotColor(mainPlot, Config::UpColor);
-    setPlotColor(mainPlot, Config::DownColor);
-    setPlotColor(mainPlot, Config::NeutralColor);
-
-    QDictIterator<Plot> it(plotList);
-    for(; it.current(); ++it)
-    {
-      setPlotColor(it.current(), Config::BackgroundColor);
-      setPlotColor(it.current(), Config::BorderColor);
-      setPlotColor(it.current(), Config::GridColor);
-      setPlotColor(it.current(), Config::UpColor);
-      setPlotColor(it.current(), Config::DownColor);
-      setPlotColor(it.current(), Config::NeutralColor);
-    }
-
-    QStringList l = QStringList::split(" ", config->getData(Config::AppFont), FALSE);
+    QStringList l = QStringList::split(" ", set->getData(tr("Plot Font")), FALSE);
     QFont font(l[0], l[1].toInt(), l[2].toInt());
-    qApp->setFont(font, TRUE, 0);
+    emit signalPlotFont(font);
 
-    setPlotFont(mainPlot);
-    for(it.toFirst(); it.current(); ++it)
-      setPlotFont(it.current());
+    config->setData(Config::AppFont, set->getData(tr("App Font")));
+    l = QStringList::split(" ", set->getData(tr("App Font")), FALSE);
+    QFont font2(l[0], l[1].toInt(), l[2].toInt());
+    qApp->setFont(font2, TRUE, 0);
+
+    config->setData(Config::PaintBarIndicator, set->getData(tr("Paint Bar Indicator")));
 
     loadChart(chartPath);
 
@@ -507,25 +545,23 @@ void QtstalkerApp::slotOptions ()
 void QtstalkerApp::slotGrid (bool state)
 {
   config->setData(Config::Grid, QString::number(state));
+  
+  emit signalGrid(state);
 
-  mainPlot->setGridFlag(state);
   mainPlot->draw();
-
-  QDictIterator<Plot> it(plotList);
-  for(; it.current(); ++it)
-    it.current()->setGridFlag(state);
+  
+  slotTabChanged (0);
 }
 
 void QtstalkerApp::slotScaleToScreen (bool state)
 {
   config->setData(Config::ScaleToScreen, QString::number(state));
 
-  mainPlot->setScaleToScreen(state);
-  mainPlot->draw();
+  emit signalScaleToScreen(state);
 
-  QDictIterator<Plot> it(plotList);
-  for(; it.current(); ++it)
-    it.current()->setScaleToScreen(state);
+  mainPlot->draw();
+  
+  slotTabChanged(0);
 }
 
 void QtstalkerApp::slotLogScale (bool state)
@@ -630,16 +666,12 @@ void QtstalkerApp::loadChart (QString d)
   if (recordList)
     delete recordList;
   recordList = db->getHistory(ci, date);
-  mainPlot->setInterval(pi);
-  for(it.toFirst(); it.current(); ++it)
-    it.current()->setInterval(pi);
+//  emit signalInterval(pi);
 
   mainPlot->setData(recordList);
+//  emit signalPixelspace(mainPlot->getPixelspace());
   for(it.toFirst(); it.current(); ++it)
-  {
     it.current()->setData(recordList);
-    it.current()->setPixelspace(mainPlot->getPixelspace());
-  }
 
   QStringList l = config->getIndicators();
 
@@ -796,12 +828,8 @@ void QtstalkerApp::loadChart (QString d)
   pixelspace->blockSignals(FALSE);
 
   mainPlot->draw();
-
-  if (plotList.count())
-  {
-    Plot *plot = plotList[tabs->label(tabs->currentPageIndex())];
-    plot->draw();
-  }
+  
+  slotTabChanged(0);
 
   setCaption(getWindowCaption());
 
@@ -890,10 +918,7 @@ void QtstalkerApp::slotEditChartObject (int id)
     if (! flag)
       mainPlot->draw();
     else
-    {
-      Plot *plot = plotList[tabs->label(tabs->currentPageIndex())];
-      plot->draw();
-    }
+      slotTabChanged(0);
   }
 
   delete dialog;
@@ -923,10 +948,7 @@ void QtstalkerApp::slotDeleteChartObject (int id)
   if (! flag)
     mainPlot->draw();
   else
-  {
-    Plot *plot = plotList[tabs->label(tabs->currentPageIndex())];
-    plot->draw();
-  }
+    slotTabChanged(0);
 }
 
 QString QtstalkerApp::getWindowCaption ()
@@ -1180,11 +1202,7 @@ void QtstalkerApp::compressionChanged (QString d)
       t = Plot::Monthly;
   }
 
-  mainPlot->setInterval(t);
-
-  QDictIterator<Plot> it(plotList);
-  for(; it.current(); ++it)
-    it.current()->setInterval(t);
+  emit signalInterval(t);
 }
 
 void QtstalkerApp::slotChartTypeChanged (int)
@@ -1192,9 +1210,7 @@ void QtstalkerApp::slotChartTypeChanged (int)
   config->setData(Config::ChartStyle, chartTypeCombo->currentText());
   mainPlot->setChartType(chartTypeCombo->currentText());
 
-  QDictIterator<Plot> it(plotList);
-  for(; it.current(); ++it)
-    it.current()->setPixelspace(mainPlot->getPixelspace());
+  emit signalPixelspace(mainPlot->getPixelspace());
 
   pixelspace->blockSignals(TRUE);
   pixelspace->setRange(mainPlot->getMinPixelspace(), 99);
@@ -1202,11 +1218,7 @@ void QtstalkerApp::slotChartTypeChanged (int)
 
   mainPlot->draw();
   
-  if (plotList.count())
-  {
-    Plot *plot = plotList[tabs->label(tabs->currentPageIndex())];
-    plot->draw();
-  }
+  slotTabChanged(0);
 }
 
 void QtstalkerApp::slotNewIndicator ()
@@ -1376,18 +1388,11 @@ void QtstalkerApp::slotDeleteIndicator (int id)
 
 void QtstalkerApp::slotPixelspaceChanged (int d)
 {
-  mainPlot->setPixelspace(d);
+  emit signalPixelspace(d);
+
   mainPlot->draw();
-
-  QDictIterator<Plot> it(plotList);
-  for(; it.current(); ++it)
-    it.current()->setPixelspace(d);
-
-  if (plotList.count())
-  {
-    Plot *plot = plotList[tabs->label(tabs->currentPageIndex())];
-    plot->draw();
-  }
+  
+  slotTabChanged(0);
 }
 
 void QtstalkerApp::slotSliderChanged (int v)
@@ -1395,18 +1400,11 @@ void QtstalkerApp::slotSliderChanged (int v)
   if (status == None)
     return;
 
-  mainPlot->setIndex(v);
+  emit signalIndex(v);
+
   mainPlot->draw();
-
-  QDictIterator<Plot> it(plotList);
-  for(; it.current(); ++it)
-    it.current()->setIndex(v);
-
-  if (plotList.count())
-  {
-    Plot *plot = plotList[tabs->label(tabs->currentPageIndex())];
-    plot->draw();
-  }
+  
+  slotTabChanged(0);
 }
 
 void QtstalkerApp::addIndicatorButton (QString d)
@@ -1427,17 +1425,49 @@ void QtstalkerApp::addIndicatorButton (QString d)
   QObject::connect(plot, SIGNAL(chartObjectCreated(Setting *)), this, SLOT(slotChartObjectCreated(Setting *)));
   QObject::connect(plot, SIGNAL(infoMessage(Setting *)), this, SLOT(slotUpdateInfo(Setting *)));
   plotList.replace(d, plot);
-  plot->setGridFlag(config->getData(Config::Grid).toInt());
-  plot->setScaleToScreen(config->getData(Config::ScaleToScreen).toInt());
 
-  setPlotColor(plot, Config::BackgroundColor);
-  setPlotColor(plot, Config::BorderColor);
-  setPlotColor(plot, Config::GridColor);
-  setPlotColor(plot, Config::UpColor);
-  setPlotColor(plot, Config::DownColor);
-  setPlotColor(plot, Config::NeutralColor);
+  QObject::connect(this, SIGNAL(signalIndex(int)), plot, SLOT(setIndex(int)));
+  
+  QObject::connect(this, SIGNAL(signalInterval(Plot::TimeInterval)), plot, SLOT(setInterval(Plot::TimeInterval)));
+  compressionChanged(config->getData(Config::Compression));
 
-  setPlotFont(plot);
+  QObject::connect(this, SIGNAL(signalGrid(bool)), plot, SLOT(setGridFlag(bool)));
+  emit signalGrid(config->getData(Config::Grid).toInt());
+
+  QObject::connect(this, SIGNAL(signalScaleToScreen(bool)), plot, SLOT(setScaleToScreen(bool)));
+  emit signalScaleToScreen(config->getData(Config::ScaleToScreen).toInt());
+  
+  QObject::connect(this, SIGNAL(signalPixelspace(int)), plot, SLOT(setPixelspace(int)));
+  
+  QColor color;
+  color.setNamedColor(config->getData(Config::BackgroundColor));
+  QObject::connect(this, SIGNAL(signalBackgroundColor(QColor)), plot, SLOT(setBackgroundColor(QColor)));
+  emit signalBackgroundColor(color);
+
+  color.setNamedColor(config->getData(Config::BorderColor));
+  QObject::connect(this, SIGNAL(signalBorderColor(QColor)), plot, SLOT(setBorderColor(QColor)));
+  emit signalBorderColor(color);
+
+  color.setNamedColor(config->getData(Config::GridColor));
+  QObject::connect(this, SIGNAL(signalGridColor(QColor)), plot, SLOT(setGridColor(QColor)));
+  emit signalGridColor(color);
+
+  color.setNamedColor(config->getData(Config::UpColor));
+  QObject::connect(this, SIGNAL(signalUpColor(QColor)), plot, SLOT(setUpColor(QColor)));
+  emit signalUpColor(color);
+
+  color.setNamedColor(config->getData(Config::DownColor));
+  QObject::connect(this, SIGNAL(signalDownColor(QColor)), plot, SLOT(setDownColor(QColor)));
+  emit signalDownColor(color);
+
+  color.setNamedColor(config->getData(Config::NeutralColor));
+  QObject::connect(this, SIGNAL(signalNeutralColor(QColor)), plot, SLOT(setNeutralColor(QColor)));
+  emit signalNeutralColor(color);
+
+  QStringList l = QStringList::split(" ", config->getData(Config::PlotFont), FALSE);
+  QFont font(l[0], l[1].toInt(), l[2].toInt());
+  QObject::connect(this, SIGNAL(signalPlotFont(QFont)), plot, SLOT(setPlotFont(QFont)));
+  emit signalPlotFont(font);
 
   tabs->addTab(plot, d);
 
@@ -1462,43 +1492,6 @@ void QtstalkerApp::slotTabChanged (QWidget *)
   {
     Plot *plot = plotList[tabs->label(tabs->currentPageIndex())];
     plot->draw();
-  }
-}
-
-void QtstalkerApp::setPlotFont (Plot *plot)
-{
-  QStringList l = QStringList::split(" ", config->getData(Config::PlotFont), FALSE);
-  QFont font(l[0], l[1].toInt(), l[2].toInt());
-  plot->setPlotFont(font);
-}
-
-void QtstalkerApp::setPlotColor (Plot *plot, Config::Parm parm)
-{
-  QColor color;
-  color.setNamedColor(config->getData(parm));
-
-  switch(parm)
-  {
-    case Config::BackgroundColor:
-      plot->setBackgroundColor(color);
-      break;
-    case Config::BorderColor:
-      plot->setBorderColor(color);
-      break;
-    case Config::GridColor:
-      plot->setGridColor(color);
-      break;
-    case Config::UpColor:
-      plot->setUpColor(color);
-      break;
-    case Config::DownColor:
-      plot->setDownColor(color);
-      break;
-    case Config::NeutralColor:
-      plot->setNeutralColor(color);
-      break;
-    default:
-      break;
   }
 }
 

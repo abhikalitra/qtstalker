@@ -616,7 +616,7 @@ void Plot::mouseMoveEvent (QMouseEvent *event)
     delete r;
 }
 
-void Plot::setInterval (TimeInterval d)
+void Plot::setInterval (Plot::TimeInterval d)
 {
   interval = d;
 }

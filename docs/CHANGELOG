@@ -13,8 +13,6 @@
 
 - Applied 3 patches for PP color and several docs from David Crossley.
 
-- Changed the plugin compile scripts to clear out old object files before compiling.
-
 - Applied preliminary exhaustion bar patch from David Crossley. This is a new chart type see docs for details.
 
 - Changed the name of the Qtstalker quotes plugin to QtstalkerFormat. This was to keep from confusing object files with the
@@ -47,6 +45,7 @@
 
 - Applied patch #789058 from David Crossley to fix candles not being drawn properly when open == close.
 
+- Changed some functions in Qtstalker class to use signals to make Plot class parm changes.
 
 0.20
 ====
