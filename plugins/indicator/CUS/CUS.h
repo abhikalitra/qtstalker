@@ -34,6 +34,7 @@ class CUS : public IndicatorPlugin
   protected:
     QStringList functionList;
     QStringList plotList;
+    QStringList formulaList;
 };
 
 extern "C"

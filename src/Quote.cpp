@@ -44,7 +44,7 @@ QuoteDialog::QuoteDialog (Config *c) : QTabDialog (0, "QuoteDialog", TRUE)
   vbox->setSpacing(2);
   vbox->setMargin(5);
   
-  toolbar = new Toolbar(w, 30, 30);
+  toolbar = new Toolbar(w, 30, 30, FALSE);
   vbox->addWidget(toolbar);
 
   toolbar->addButton("update", download, tr("Update"));

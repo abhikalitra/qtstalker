@@ -29,6 +29,8 @@ HEADERS += TrendLine.h
 HEADERS += VerticalLine.h
 HEADERS += IndicatorTab.h
 HEADERS += NavigatorTab.h
+HEADERS += ScannerPage.h
+HEADERS += Scanner.h
 
 SOURCES += Qtstalker.cpp
 SOURCES += PortfolioDialog.cpp
@@ -54,6 +56,8 @@ SOURCES += TrendLine.cpp
 SOURCES += VerticalLine.cpp
 SOURCES += IndicatorTab.cpp
 SOURCES += NavigatorTab.cpp
+SOURCES += ScannerPage.cpp
+SOURCES += Scanner.cpp
 
 TARGET = qtstalker
 

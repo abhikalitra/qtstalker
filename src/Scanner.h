@@ -19,25 +19,58 @@
  *  USA.
  */
 
-#include <qtabdialog.h>
+#ifndef SCANNER_HPP
+#define SCANNER_HPP
+
+#include <qstring.h>
+#include <qdialog.h>
+#include <qcombobox.h>
+#include <qpushbutton.h>
+#include <qcheckbox.h>
+#include "Toolbar.h"
+#include "Config.h"
 #include "FormulaEdit.h"
 
-class CUSDialog : public QTabDialog
+class Traverse
 {
-  Q_OBJECT
-  
   public:
-    CUSDialog ();
-    ~CUSDialog ();
-    int getLines ();
-    QString getFunction (int);
-    QString getPlot (int);
-    void setLine (QString);
-    QString getLine (int);
-    
+    Traverse();
+    ~Traverse();
+    void traverse(QString dirname);
+    QStringList getList();
+
   private:
-    FormulaEdit *list;
+    QStringList list;
 };
 
-    
+class Scanner : public QDialog
+{
+  Q_OBJECT
 
+  signals:
+    void exitScanner ();
+
+  public:
+    Scanner (QString);
+    ~Scanner ();
+
+  public slots:
+    void scan ();
+    void saveRule ();
+    void exitDialog ();
+    void loadRule ();
+    void getSymbols ();
+    void allSymbolsToggled (bool);
+
+  protected:
+    FormulaEdit *list;
+    Toolbar *toolbar;
+    QComboBox *period;
+    QString scannerName;
+    Config config;
+    QPushButton *fileButton;
+    QStringList fileList;
+    QCheckBox *allSymbols;
+};
+
+#endif

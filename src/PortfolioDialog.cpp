@@ -50,7 +50,7 @@ PortfolioDialog::PortfolioDialog (Config *c, QString p) : QTabDialog (0, "Portfo
   vbox->setMargin(5);
   vbox->setSpacing(0);
 
-  toolbar = new Toolbar(w, 30, 30);
+  toolbar = new Toolbar(w, 30, 30, FALSE);
   vbox->addWidget(toolbar);
   vbox->addSpacing(10);
   

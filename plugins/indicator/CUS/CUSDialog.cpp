@@ -20,8 +20,6 @@
  */
 
 #include "CUSDialog.h"
-#include "../../../src/newchart.xpm"
-#include "../../../src/delete.xpm"
 #include <qinputdialog.h>
 #include <qmessagebox.h>
 #include <qlayout.h>
@@ -38,24 +36,7 @@ CUSDialog::CUSDialog () : QTabDialog (0, "CUSDialog", TRUE)
   vbox->setMargin(5);
   vbox->setSpacing(0);
   
-  toolbar = new Toolbar(w, 30, 30);
-  vbox->addWidget(toolbar);
-  
-  toolbar->addButton("add", newchart, tr("Add"));
-  QObject::connect(toolbar->getButton("add"), SIGNAL(clicked()), this, SLOT(addItem()));
-  
-  toolbar->addButton("delete", deleteitem, tr("Delete"));
-  QObject::connect(toolbar->getButton("delete"), SIGNAL(clicked()), this, SLOT(deleteItem()));
-  
-  vbox->addSpacing(10);
-  
-  list = new QTable(0, 2, w);
-  list->setSelectionMode(QTable::Single);
-  list->setSorting(FALSE);
-  list->horizontalHeader()->setLabel(0, tr("Function"));
-  list->horizontalHeader()->setLabel(1, tr("Plot"));
-  list->setColumnWidth(0, 275);
-  list->setColumnWidth(1, 50);
+  list = new FormulaEdit(w);
   vbox->addWidget(list);
   
   addTab(w, tr("Settings"));
@@ -70,49 +51,29 @@ CUSDialog::~CUSDialog ()
 {
 }
 
-void CUSDialog::addItem ()
-{
-  list->setNumRows(list->numRows() + 1);
-  
-  list->setText(list->numRows() - 1, 0, QString::null);
-  
-  QCheckTableItem *check = new QCheckTableItem(list, QString::null);
-  check->setChecked(FALSE);
-  list->setItem(list->numRows() - 1, 1, check);
-}
-
-void CUSDialog::deleteItem ()
-{
-  list->removeRow(list->currentRow());
-}
-
-void CUSDialog::setLine (QString d, bool c)
-{
-  list->setNumRows(list->numRows() + 1);
-    
-  list->setText(list->numRows() - 1, 0, d);
-  
-  QCheckTableItem *check = new QCheckTableItem(list, QString::null);
-  if (! c)
-    check->setChecked(FALSE);
-  else
-    check->setChecked(TRUE);
-  list->setItem(list->numRows() - 1, 1, check);
-}
-
 int CUSDialog::getLines ()
 {
-  return list->numRows();
+  return list->getLines();
 }
 
 QString CUSDialog::getFunction (int row)
 {
-  return list->text(row, 0);
+  return list->getFormula(row);
 }
 
-bool CUSDialog::getPlot (int row)
+QString CUSDialog::getPlot (int row)
 {
-  QCheckTableItem *check = (QCheckTableItem *) list->item(row, 1);
-  return check->isChecked();
+  return list->getPlot(row);
 }
+
+void CUSDialog::setLine (QString d)
+{
+  list->setLine(d);
+}
+
+QString CUSDialog::getLine (int row)
+{
+  return list->getLine(row);
+}
+
 

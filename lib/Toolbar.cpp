@@ -22,27 +22,46 @@
 #include "Toolbar.h"
 #include <qtooltip.h>
 
-Toolbar::Toolbar (QWidget *w, int h, int wi) : QFrame (w)
+Toolbar::Toolbar (QWidget *w, int h, int wi, bool f) : QFrame (w)
 {
   height = h;
   width = wi;
+  pflag = f;
   list.setAutoDelete(TRUE);
   
   setFrameShape(Box);
   setFrameShadow(Sunken);
   setLineWidth(1);
-  setMinimumHeight(height + 2);
-  setMaximumHeight(height + 2);
 
-  QHBoxLayout *hbox = new QHBoxLayout(this);  
-  hbox->setSpacing(0);
-  hbox->setMargin(1);
+  QHBoxLayout *hbox = 0;
+  QVBoxLayout *vbox = 0;
   
-  grid = new QGridLayout(hbox, 1, 1);  
+  if (pflag)
+  {
+    setMinimumWidth(width + 2);
+    setMaximumWidth(width + 2);
+    vbox = new QVBoxLayout(this);  
+    vbox->setSpacing(0);
+    vbox->setMargin(1);
+    grid = new QGridLayout(vbox, 1, 1);  
+  }
+  else
+  {
+    setMinimumHeight(height + 2);
+    setMaximumHeight(height + 2);
+    hbox = new QHBoxLayout(this);  
+    hbox->setSpacing(0);
+    hbox->setMargin(1);
+    grid = new QGridLayout(hbox, 1, 1);  
+  }
+  
   grid->setSpacing(0);
   grid->setMargin(0);
   
-  hbox->addStretch(1);
+  if (pflag)
+    vbox->addStretch(1);
+  else
+    hbox->addStretch(1);
 }
 
 Toolbar::~Toolbar ()
@@ -56,7 +75,10 @@ void Toolbar::addButton (QString name, QPixmap pix, QString tt)
   button->setPixmap(pix);
   button->setMaximumWidth(width);
   button->setMaximumHeight(height);
-  grid->addWidget(button, 0, list.count());
+  if (pflag)
+    grid->addWidget(button, list.count(), 0);
+  else
+    grid->addWidget(button, 0, list.count());
   list.replace(name, button);
 }
 

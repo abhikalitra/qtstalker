@@ -23,6 +23,7 @@ HEADERS += Bar.h
 HEADERS += BarDate.h
 HEADERS += QSMath.h
 HEADERS += Config.h
+HEADERS += FormulaEdit.h
    
 SOURCES += Plugin.cpp
 SOURCES += QuotePlugin.cpp
@@ -45,6 +46,7 @@ SOURCES += Bar.cpp
 SOURCES += BarDate.cpp
 SOURCES += QSMath.cpp
 SOURCES += Config.cpp
+SOURCES += FormulaEdit.cpp
     
 TARGET = qtstalker
 VERSION = 0.26.0

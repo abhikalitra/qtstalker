@@ -50,6 +50,7 @@
 #include "FiboLine.h"
 #include "Text.h"
 #include "PrefDialog.h"
+#include "ScannerPage.h"
 
 #include "grid.xpm"
 #include "datawindow.xpm"
@@ -68,7 +69,7 @@
 #include "hidechart.xpm"
 #include "date.xpm"
 #include "co.xpm"
-//#include "scanner.xpm"
+#include "scanner.xpm"
 
 QtstalkerApp::QtstalkerApp()
 {
@@ -143,6 +144,12 @@ QtstalkerApp::QtstalkerApp()
   hbox2->addWidget(button);
   bg->insert(button, 3);
 
+  hbox2->addStretch(1);
+    
+  hbox2 = new QHBoxLayout(vbox);
+  hbox2->setSpacing(1);
+  hbox2->setMargin(1);
+
   button = new QPushButton(navBase);
   QToolTip::add(button, tr("Workwith Backtesting"));
   button->setPixmap(test);
@@ -151,6 +158,15 @@ QtstalkerApp::QtstalkerApp()
   button->setToggleButton(TRUE);
   hbox2->addWidget(button);
   bg->insert(button, 4);
+  
+  button = new QPushButton(navBase);
+  QToolTip::add(button, tr("Workwith Scanner"));
+  button->setPixmap(scanner);
+  button->setMaximumWidth(25);
+  button->setMaximumHeight(25);
+  button->setToggleButton(TRUE);
+  hbox2->addWidget(button);
+  bg->insert(button, 5);
   
   hbox2->addStretch(1);
   
@@ -305,7 +321,7 @@ QtstalkerApp::QtstalkerApp()
   initIndicatorNav();
   initPortfolioNav();
   initTestNav();
-//  initScannerNav();
+  initScannerNav();
 
   resize(config->getData(Config::Width).toInt(), config->getData(Config::Height).toInt());
   
@@ -1356,8 +1372,6 @@ void QtstalkerApp::initGroupNav ()
 {
   GroupPage *gp = new GroupPage(baseWidget, config);
   connect(gp, SIGNAL(fileSelected(QString)), this, SLOT(slotOpenChart(QString)));
-//  navTab->addTab(gp, QIconSet(QPixmap(dirclosed)), QString::null);
-//  navTab->setTabToolTip(gp, tr("Workwith Groups"));
   navTab->addWidget(gp, 1);
 }
 
@@ -1365,43 +1379,32 @@ void QtstalkerApp::initChartNav ()
 {
   chartNav = new ChartPage(baseWidget, config);
   connect(chartNav, SIGNAL(fileSelected(QString)), this, SLOT(slotOpenChart(QString)));
-//  navTab->addTab(chartNav, QIconSet(QPixmap(plainitem)), QString::null);
-//  navTab->setTabToolTip(chartNav, tr("Workwith Charts"));
   navTab->addWidget(chartNav, 0);
 }
 
 void QtstalkerApp::initPortfolioNav ()
 {
   PortfolioPage *pp = new PortfolioPage(baseWidget, config);
-//  navTab->addTab(pp, QIconSet(QPixmap(portfolio)), QString::null);
-//  navTab->setTabToolTip(pp, tr("Workwith Portfolios"));
   navTab->addWidget(pp, 3);
 }
 
 void QtstalkerApp::initTestNav ()
 {
   TestPage *tp = new TestPage(baseWidget, config);
-//  navTab->addTab(tp, QIconSet(QPixmap(test)), QString::null);
-//  navTab->setTabToolTip(tp, tr("Workwith Backtests"));
   navTab->addWidget(tp, 4);
 }
 
 void QtstalkerApp::initIndicatorNav ()
 {
   IndicatorPage *ip = new IndicatorPage(baseWidget, config, mainPlot);
-//  navTab->addTab(ip, QIconSet(QPixmap(indicator)), QString::null);
-//  navTab->setTabToolTip(ip, tr("Workwith Main Chart Indicators"));
   connect(this, SIGNAL(signalIndicatorPageRefresh()), ip, SLOT(refreshList()));
   navTab->addWidget(ip, 2);
 }
 
 void QtstalkerApp::initScannerNav ()
 {
-/*
   ScannerPage *sp = new ScannerPage(baseWidget, config);
-  navTab->addTab(sp, QIconSet(QPixmap(scanner)), QString::null);
-  navTab->setTabToolTip(sp, tr("Workwith Scanners"));
-*/
+  navTab->addWidget(sp, 5);
 }
 
 void QtstalkerApp::slotHideNav (bool d)

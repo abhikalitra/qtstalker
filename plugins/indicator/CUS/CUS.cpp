@@ -55,7 +55,7 @@ int CUS::indicatorPrefDialog ()
   
   int loop;
   for (loop = 0; loop < (int) functionList.count(); loop++)
-    dialog->setLine(functionList[loop], plotList[loop].toInt());
+    dialog->setLine(formulaList[loop]);
     
   int rc = dialog->exec();
   
@@ -65,10 +65,12 @@ int CUS::indicatorPrefDialog ()
     int loop;
     functionList.clear();
     plotList.clear();
+    formulaList.clear();
     for (loop = 0; loop < max; loop++)
     {
       functionList.append(dialog->getFunction(loop));
-      plotList.append(QString::number(dialog->getPlot(loop)));
+      plotList.append(dialog->getPlot(loop));
+      formulaList.append(dialog->getLine(loop));
     }
     
     rc = TRUE;
@@ -82,8 +84,7 @@ int CUS::indicatorPrefDialog ()
 
 void CUS::loadIndicatorSettings (QString file)
 {
-  functionList.clear();
-  plotList.clear();
+  formulaList.clear();
   
   QDict<QString> dict = loadFile(file);
   if (! dict.count())
@@ -95,9 +96,7 @@ void CUS::loadIndicatorSettings (QString file)
     QString *s = dict[QString::number(loop)];
     if (s)
     {
-      QStringList l = QStringList::split("|", s->left(s->length()), FALSE);
-      functionList.append(l[0]);
-      plotList.append(l[1]);
+      formulaList.append(s->left(s->length()));
       loop++;
     }
     else
@@ -112,7 +111,7 @@ void CUS::saveIndicatorSettings (QString file)
   
   int loop;
   for (loop = 0; loop < (int) functionList.count(); loop++)
-    dict.replace(QString::number(loop + 1), new QString(functionList[loop] + "|" + plotList[loop]));
+    dict.replace(QString::number(loop + 1), new QString(formulaList[loop]));
 
   dict.replace("plugin", new QString(pluginName));
 

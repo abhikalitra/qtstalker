@@ -48,6 +48,17 @@ QStringList QSMath::getMATypes ()
   return l;
 }
 
+QStringList QSMath::getOperatorTypes ()
+{
+  QStringList l;
+  l.append("==");
+  l.append("<");
+  l.append("<=");
+  l.append(">");
+  l.append(">=");
+  return l;
+}
+
 QSMath::MAType QSMath::getMAType (QString d)
 {
   MAType type = SMA;
@@ -79,6 +90,45 @@ QSMath::MAType QSMath::getMAType (QString d)
   }
   
   return type;
+}
+
+QSMath::Operator QSMath::getOperator (QString d)
+{
+  Operator op = NoOp;
+  
+  while (1)
+  {
+    if (! d.compare("=="))
+    {
+      op = Equal;
+      break;
+    }
+    
+    if (! d.compare("<"))
+    {
+      op = LessThan;
+      break;
+    }
+  
+    if (! d.compare("<="))
+    {
+      op = LessThanEqual;
+      break;
+    }
+      
+    if (! d.compare(">"))
+    {
+      op = GreaterThan;
+      break;
+    }
+    
+    if (! d.compare(">="))
+      op = GreaterThanEqual;
+    
+    break;
+  }
+  
+  return op;
 }
 
 PlotLine * QSMath::getMA (PlotLine *d, MAType type, int period)
@@ -2546,6 +2596,139 @@ QString QSMath::getREF (int i, QStringList l)
 }
 
 //**************************************************
+
+QString QSMath::getCOMPARE (int i, QStringList l)
+{
+  QString rc;
+  bool ok;
+  int loop = 0;
+  int loop2 = 0;
+  
+  if (l.count() != 7)
+  {
+    rc = QObject::tr("COMPARE: missing field");
+    return rc;
+  }
+
+  PlotLine *input = getInputLine(l[1]);
+  if (! input)
+  {
+    rc = QObject::tr("COMPARE: invalid data1 field");
+    return rc;
+  }
+  else
+    loop = input->getSize() - 1;
+    
+  Operator op = getOperator(l[2]);
+  if (op == NoOp)
+  {
+    rc = QObject::tr("COMPARE: invalid operator field");
+    return rc;
+  }
+    
+  PlotLine *input2 = getInputLine(l[3]);
+  double inputNum = 0;
+  if (! input2)
+  {
+    if (l[2].contains("#"))
+    {
+      l[2].remove(0, 1);
+      inputNum = l[2].toDouble(&ok);
+      if (! ok)
+      {
+        delete input;
+        rc = QObject::tr("COMPARE: invalid data2 field");
+        return rc;
+      }
+    }
+    else
+    {
+      rc = QObject::tr("COMPARE: invalid data2 field");
+      return rc;
+    }
+  }
+  else
+    loop2 = input2->getSize() - 1;
+    
+  PlotLine *output = new PlotLine;
+  
+  while (loop > -1)
+  {
+    if (input2)
+    {
+      if (loop2 < 0)
+        break;
+    }
+    
+    double t = 0;
+    
+    if (! input2)
+      t = inputNum;
+    else
+      t = input2->getData(loop2);
+      
+    switch (op)
+    {
+      case Equal:
+        if (input->getData(loop) == t)
+          output->prepend(1);
+	else
+          output->prepend(0);
+        break;
+      case LessThan:
+        if (input->getData(loop) < t)
+          output->prepend(1);
+	else
+          output->prepend(0);
+        break;
+      case LessThanEqual:
+        if (input->getData(loop) <= t)
+          output->prepend(1);
+	else
+          output->prepend(0);
+        break;
+      case GreaterThan:
+        if (input->getData(loop) > t)
+          output->prepend(1);
+	else
+          output->prepend(0);
+        break;
+      case GreaterThanEqual:
+        if (input->getData(loop) >= t)
+          output->prepend(1);
+	else
+          output->prepend(0);
+        break;
+      default:
+        break;
+    }
+      
+    loop--;
+    if (input2)
+      loop2--;
+  }
+  
+  output->setColor(l[4]);
+  output->setType(l[5]);
+  output->setLabel(l[6]);
+  
+  customLines.replace(QString::number(i), output);
+
+  l[1].toInt(&ok, 10);
+  if (! ok)
+    delete input;
+  
+  if (input2)
+  {
+    l[3].toInt(&ok, 10);
+    if (! ok)
+      delete input2;
+  }
+          
+  return rc;
+}
+
+//**************************************************
 //********* custom functions ***********************
 //**************************************************
 
@@ -2575,60 +2758,24 @@ QString QSMath::calculateCustomFormula (QStringList fl, QStringList pl)
     for (loop2 = 0; loop2 < (int) l.count(); loop2++)
       l[loop2] = l[loop2].stripWhiteSpace();
 
-    if (! l[0].compare(QObject::tr("ADD")))
-    {
-      err = getADD(loop + 1, l);
-      continue;
-    }
-    
-    if (! l[0].compare(QObject::tr("SUB")))
-    {
-      err = getSUB(loop + 1, l);
-      continue;
-    }
-    
-    if (! l[0].compare(QObject::tr("MUL")))
-    {
-      err = getMUL(loop + 1, l);
-      continue;
-    }
-    
-    if (! l[0].compare(QObject::tr("DIV")))
-    {
-      err = getDIV(loop + 1, l);
-      continue;
-    }
-    
-    if (! l[0].compare(QObject::tr("REF")))
-    {
-      err = getREF(loop + 1, l);
-      continue;
-    }
-    
-    if (! l[0].compare(QObject::tr("MA")))
-    {
-      err = getMA2(loop + 1, l);
-      continue;
-    }
-    
-    if (! l[0].compare(QObject::tr("TR")))
-    {
-      err = getTR2(loop + 1, l);
-      continue;
-    }
-  
-    if (! l[0].compare(QObject::tr("TP")))
-    {
-      err = getTP2(loop + 1, l);
-      continue;
-    }
-  
     if (! l[0].compare(QObject::tr("AD")))
     {
       err = getAD2(loop + 1, l);
       continue;
     }
   
+    if (! l[0].compare(QObject::tr("ADD")))
+    {
+      err = getADD(loop + 1, l);
+      continue;
+    }
+    
+    if (! l[0].compare(QObject::tr("ADX")))
+    {
+      err = getADX2(loop + 1, l);
+      continue;
+    }
+      
     if (! l[0].compare(QObject::tr("BB")))
     {
       err = getBB2(loop + 1, l);
@@ -2641,30 +2788,30 @@ QString QSMath::calculateCustomFormula (QStringList fl, QStringList pl)
       continue;
     }
 
+    if (! l[0].compare(QObject::tr("COMP")))
+    {
+      err = getCOMPARE(loop + 1, l);
+      continue;
+    }
+
+    if (! l[0].compare(QObject::tr("DIV")))
+    {
+      err = getDIV(loop + 1, l);
+      continue;
+    }
+    
+    if (! l[0].compare(QObject::tr("MA")))
+    {
+      err = getMA2(loop + 1, l);
+      continue;
+    }
+    
     if (! l[0].compare(QObject::tr("MDI")))
     {
       err = getMDI2(loop + 1, l);
       continue;
     }
       
-    if (! l[0].compare(QObject::tr("PDI")))
-    {
-      err = getPDI2(loop + 1, l);
-      continue;
-    }
-
-    if (! l[0].compare(QObject::tr("ADX")))
-    {
-      err = getADX2(loop + 1, l);
-      continue;
-    }
-      
-    if (! l[0].compare(QObject::tr("OSC")))
-    {
-      err = getOSC2(loop + 1, l);
-      continue;
-    }
-  
     if (! l[0].compare(QObject::tr("MF")))
     {
       err = getMF2(loop + 1, l);
@@ -2677,6 +2824,12 @@ QString QSMath::calculateCustomFormula (QStringList fl, QStringList pl)
       continue;
     }
   
+    if (! l[0].compare(QObject::tr("MUL")))
+    {
+      err = getMUL(loop + 1, l);
+      continue;
+    }
+    
     if (! l[0].compare(QObject::tr("NVI")))
     {
       err = getNVI2(loop + 1, l);
@@ -2689,12 +2842,24 @@ QString QSMath::calculateCustomFormula (QStringList fl, QStringList pl)
       continue;
     }
   
+    if (! l[0].compare(QObject::tr("OSC")))
+    {
+      err = getOSC2(loop + 1, l);
+      continue;
+    }
+  
     if (! l[0].compare(QObject::tr("PC")))
     {
       err = getPC2(loop + 1, l);
       continue;
     }
   
+    if (! l[0].compare(QObject::tr("PDI")))
+    {
+      err = getPDI2(loop + 1, l);
+      continue;
+    }
+
     if (! l[0].compare(QObject::tr("PER")))
     {
       err = getPER2(loop + 1, l);
@@ -2713,6 +2878,12 @@ QString QSMath::calculateCustomFormula (QStringList fl, QStringList pl)
       continue;
     }
   
+    if (! l[0].compare(QObject::tr("REF")))
+    {
+      err = getREF(loop + 1, l);
+      continue;
+    }
+    
     if (! l[0].compare(QObject::tr("ROC")))
     {
       err = getROC2(loop + 1, l);
@@ -2740,6 +2911,24 @@ QString QSMath::calculateCustomFormula (QStringList fl, QStringList pl)
     if (! l[0].compare(QObject::tr("STOCH")))
     {
       err = getSTOCH2(loop + 1, l);
+      continue;
+    }
+  
+    if (! l[0].compare(QObject::tr("SUB")))
+    {
+      err = getSUB(loop + 1, l);
+      continue;
+    }
+    
+    if (! l[0].compare(QObject::tr("TP")))
+    {
+      err = getTP2(loop + 1, l);
+      continue;
+    }
+  
+    if (! l[0].compare(QObject::tr("TR")))
+    {
+      err = getTR2(loop + 1, l);
       continue;
     }
   

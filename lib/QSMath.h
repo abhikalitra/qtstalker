@@ -38,11 +38,24 @@ class QSMath
       Wilder
     };
     
+  public:
+    enum Operator
+    {
+      NoOp,
+      Equal,
+      LessThan,
+      LessThanEqual,
+      GreaterThan,
+      GreaterThanEqual
+    };
+    
     QSMath();
     QSMath(BarData *d);
     ~QSMath();
     QStringList getMATypes ();
     QSMath::MAType getMAType (QString);
+    QStringList QSMath::getOperatorTypes ();
+    QSMath::Operator getOperator (QString);
 
     PlotLine * getMA (PlotLine *, MAType, int, int);
     PlotLine * getMA (PlotLine *, MAType, int);
@@ -144,6 +157,7 @@ class QSMath
     QString getSUB (int i, QStringList); // subtract plotline
     QString getADD (int i, QStringList); // add plotline
     QString getREF (int i, QStringList); // days back or current data array
+    QString getCOMPARE (int i, QStringList); // compares 2 data arrays and returns boolean array
     
     // custom functions
     void clearCustomLines ();

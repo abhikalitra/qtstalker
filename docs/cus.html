@@ -46,10 +46,11 @@ plot.<br>
   <li>label - The text used to identify the plot in the data window and
 plot.</li>
   <li><a href="ctypes.html">matype</a> - The type of moving average to
-use.<br>
+use.</li>
+  <li><a href="ctypes.html">operator</a> - The comparison operator to
+use ie. &lt;=<br>
   </li>
 </ul>
-<br>
 <br>
 <span style="font-weight: bold;"></span><span style="font-weight: bold;"></span><span
  style="font-weight: bold;"></span><span style="font-weight: bold;"></span>
@@ -228,6 +229,42 @@ Commodity Channel Index indicator. See CCI indicator for more info. </td>
   </tbody>
 </table>
 <br>
+<table style="text-align: left; width: 1178px; height: 144px;"
+ border="1" cellspacing="2" cellpadding="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; width: 10%; background-color: rgb(204, 204, 204);">NAME</td>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">Compare<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">SYNTAX<br>
+      </td>
+      <td style="vertical-align: top;">COMP,data1,operator,data2,color,line
+type,label<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">FUNCTION<br>
+      </td>
+      <td style="vertical-align: top;">Compares data1 to data2 and
+returns a TRUE or FALSE.<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">EXAMPLE<br>
+      </td>
+      <td style="vertical-align: top;">"COMP,Close,&gt;,Open,green,Line,Buy"
+if the close is greater than the open returns TRUE else returns FALSE.<br>
+"COMP,Close,&lt;,#10.375,red,Line,Sell" if the close is less than the
+constant 10.375 returns TRUE else returns FALSE. </td>
+    </tr>
+  </tbody>
+</table>
+<span style="font-weight: bold;"></span><span style="font-weight: bold;"></span><span
+ style="font-weight: bold;"></span><span style="font-weight: bold;"></span><br>
 <table style="text-align: left; width: 1178px; height: 144px;"
  border="1" cellspacing="2" cellpadding="2">
   <tbody>

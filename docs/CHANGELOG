@@ -31,9 +31,12 @@
           formulas. See DOCS for more info on usage.
 	  
 20040706: Changed the navigator gui from tabs to small buttons. Having to page back and forth
-          to access all the tabs was becoming tiresome. Ahhh much better being able to see and
+          to access all the tabs was becoming tiresome. Ahhh, much better being able to see and
 	  select all the buttons at once.
-	  	  
+
+20040710: Rough version of the symbol scanner is now included. Need to update DOCS.
+
+
 	  
 0.26
 ====
