@@ -45,7 +45,6 @@
 #include "ScannerPage.h"
 #include "ChartDb.h"
 #include "HelpWindow.h"
-#include "Quote.h"
 
 #include "grid.xpm"
 #include "datawindow.xpm"
@@ -70,6 +69,7 @@
 QtstalkerApp::QtstalkerApp()
 {
   recordList = 0;
+  quoteDialog = 0;
   status = None;
   plotList.setAutoDelete(TRUE);
   setIcon(qtstalker);
@@ -551,6 +551,9 @@ void QtstalkerApp::slotQuit()
   // delete any BarData
   if (recordList)
     delete recordList;
+    
+  if (quoteDialog)
+    delete quoteDialog;
 }
 
 void QtstalkerApp::slotAbout()
@@ -578,11 +581,16 @@ void QtstalkerApp::slotOpenChart (QString selection)
 
 void QtstalkerApp::slotQuotes ()
 {
-  QuoteDialog *dialog = new QuoteDialog();
-  QObject::connect(dialog, SIGNAL(chartUpdated()), this, SLOT(slotChartUpdated()));
-  QObject::connect(dialog, SIGNAL(message(QString)), this, SLOT(slotStatusMessage(QString)));
-  dialog->exec();
-  delete dialog;
+  if (quoteDialog)
+    quoteDialog->raise();
+  else
+  {
+    quoteDialog = new QuoteDialog();
+    QObject::connect(quoteDialog, SIGNAL(chartUpdated()), this, SLOT(slotChartUpdated()));
+    QObject::connect(quoteDialog, SIGNAL(message(QString)), this, SLOT(slotStatusMessage(QString)));
+    QObject::connect(quoteDialog, SIGNAL(destroyed()), this, SLOT(slotExitQuoteDialog()));
+    quoteDialog->show();
+  }
 }
 
 void QtstalkerApp::slotOptions ()
@@ -1617,6 +1625,11 @@ void QtstalkerApp::slotHelp ()
 {
   HelpWindow *hw = new HelpWindow(this, "toc.html");
   hw->show();
+}
+
+void QtstalkerApp::slotExitQuoteDialog ()
+{
+  quoteDialog = 0;
 }
 
 //**********************************************************************

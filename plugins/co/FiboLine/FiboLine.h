@@ -70,6 +70,12 @@ class FiboLine : public COPlugin
     double ty;
     int mpx, mpx2, mpy, mpy2;
     QFont font;
+    double line1;
+    double line2;
+    double line3;
+    double line4;
+    double line5;
+    double line6;
 };
 
 extern "C"

@@ -312,6 +312,8 @@ void COT::saveData (Setting *set)
     set2->setData("BarType", QString::number(BarData::Daily));
     set2->setData("Symbol", set->getData("Symbol"));
     set2->setData("Title", set->getData("Title"));
+    set2->setData("FuturesType", set->getData("Symbol"));
+    set2->setData("FuturesMonth", "Z");
     db->saveDbDefaults(set2);
     delete set2;
   }
@@ -321,18 +323,21 @@ void COT::saveData (Setting *set)
   {
     emit statusLogMessage("Bad date " + set->getData("Date"));
     delete bar;
+    delete db;
     return;
   }
   bar->setOpen(set->getFloat("Non Commercial"));
   bar->setHigh(set->getFloat("Commercial"));
   bar->setLow(set->getFloat("Non Reportable"));
+  bar->setClose(0);
+  bar->setVolume(0);
   bar->setOI(set->getInt("Open Interest"));
   db->setBar(bar);
+  
+  s = set->getData("Symbol") + " " + bar->getString();
+  emit dataLogMessage(s);
+  
   delete bar;
-  
-//  s = set->getData("Symbol") + " " + r->getString();
-//  emit dataLogMessage(s);
-  
   delete db;
 }
 

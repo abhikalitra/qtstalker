@@ -21,13 +21,26 @@
 	  
 20041030: Fixed bug in COMP plugin that didn't check for displace value greater than the
           timeLoop value. Was causing segfaults.
-	  
 	  	  	 
 20041101: Fixed logic error introduced from previous fix in the COMP plugin that removed
           all true signals from being generated.
 	  
+20041101: Added levels to the default settings for the Fibo plugin.
 
+20041101: Fixed Auto History and retry functions for the Yahoo plugin.
 
+20041101: Fixed cancel download function for the yahoo plugin. 
+
+20041101: Fixed bug in Fibo plugin that ignored levels that extend beyond the original
+          high and low points. The user can now select a fibo object by selecting any line
+	  rather than just the high and low ones. The grab handles will still only appear
+	  on the original high and low levels.
+	  
+20041102: Changed quotes dialog back to non-modal.
+
+20041102: Fixed bug in COT plugin that segs when first run.
+
+          
 	  
 0.28
 ====

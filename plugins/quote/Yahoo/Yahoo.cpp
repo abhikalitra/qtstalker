@@ -37,6 +37,7 @@ Yahoo::Yahoo ()
   pluginName = "Yahoo";
   op = 0;
   helpFile = "yahoo.html";
+  index = 0;
   errorLoop = 0;
   
   sdate = QDateTime::currentDateTime();
@@ -65,18 +66,21 @@ Yahoo::Yahoo ()
 
 Yahoo::~Yahoo ()
 {
+  if (op)
+  {
+    op->stop();
+    delete op;
+  }
 }
 
 void Yahoo::update ()
 {
-  urlList.clear();
-  errorUrlList.clear();
-  errorSymbolList.clear();
+  url.clear();
   data.truncate(0);
-  symbolLoop = 0;
-  op = 0;
-  errorLoop = 0;
   Config config;
+  errorLoop = 0;
+  index = 0;
+  downloadList.clear();
 
   QDir dir = QDir::home();
   file = dir.path();
@@ -111,7 +115,7 @@ void Yahoo::update ()
       
       if (! method.compare(tr("Auto History")))
       {
-        QString s2 = config.getData(Config::DataPath) + "/" + symbolList[loop];
+        QString s2 = config.getData(Config::DataPath) + "/Stocks/" + symbolList[loop];
 	if (! dir.exists(s2))
 	  break;
 	  
@@ -123,13 +127,6 @@ void Yahoo::update ()
           break;
         }
 	
-	Bar *bar = plug->getLastBar();
-	if (! bar)
-	{
-	  delete plug;
-	  break;
-	}
-
         edate = QDateTime::currentDateTime();
         if (edate.date().dayOfWeek() == 6)
           edate = edate.addDays(-1);
@@ -139,6 +136,15 @@ void Yahoo::update ()
             edate = edate.addDays(-2);
         }
 	
+	Bar *bar = plug->getLastBar();
+	if (! bar)
+	{
+	  QDateTime dt = edate;
+	  dt = dt.addDays(-365);
+	  bar = new Bar;
+	  bar->setDate(dt.toString("yyyyMMdd000000"));
+	}
+
 	if (bar->getDate().getDate() == edate.date())
 	{
 	  delete bar;
@@ -178,16 +184,18 @@ void Yahoo::update ()
     }
     
     if (s.length())
-      urlList.append(s);
+      url.setData(symbolList[loop], s);
   }
 
-  if (! symbolList.count())
+  if (! url.count())
   {
     emit done();
     emit statusLogMessage(tr("No symbols selected. Done."));
     return;
   }
 
+  downloadList = url.getKeyList();
+  
   QTimer::singleShot(250, this, SLOT(getFile()));
 }
 
@@ -204,29 +212,26 @@ void Yahoo::opDone (QNetworkOperation *o)
       parseQuote();
 
     QString s = tr("Downloading ");
-    s.append(symbolList[symbolLoop]);
+    s.append(downloadList[index]);
     emit statusLogMessage(s);
-            
-    symbolLoop++;
-
-    if (symbolLoop == (int) symbolList.count())
+    
+    url.remove(downloadList[index]);
+      
+    index++;
+    if (index >= (int) downloadList.count())
     {
-      if (! errorUrlList.isEmpty() && errorLoop < retries)
-      {
-        errorLoop++;
-	urlList = errorUrlList;
-	symbolList = errorSymbolList;
-	errorUrlList.clear();
-	errorSymbolList.clear();
-	symbolLoop = 0;
-      }
-      else
+      errorLoop++;
+      if (errorLoop == retries || url.count() == 0)
       {
         emit done();
         emit statusLogMessage(tr("Done"));
 	printErrorList();
-        delete op;
         return;
+      }
+      else
+      {
+        downloadList = url.getKeyList();
+	index = 0;
       }
     }
 
@@ -237,31 +242,40 @@ void Yahoo::opDone (QNetworkOperation *o)
 
   if (o->state() == QNetworkProtocol::StFailed)
   {
-    if (symbolLoop + 1 >= (int) symbolList.count())
+    emit statusLogMessage(tr("Download error ") + downloadList[index] + tr(" skipped"));
+    
+    index++;
+    if (index >= (int) downloadList.count())
     {
-      emit done();
-      emit statusLogMessage(tr("Done"));
-      printErrorList();
-      delete op;
+      errorLoop++;
+      if (errorLoop == retries || url.count() == 0)
+      {
+        emit done();
+        emit statusLogMessage(tr("Done"));
+	printErrorList();
+        return;
+      }
+      else
+      {
+        downloadList = url.getKeyList();
+	index = 0;
+      }
     }
-    else
-    {
-      emit statusLogMessage(tr("Download error ") + symbolList[symbolLoop] + tr(" skipped"));
-      errorUrlList.append(urlList[symbolLoop]);
-      errorSymbolList.append(symbolList[symbolLoop]);
-      symbolLoop++;
-      data.truncate(0);
-      getFile();
-    }
+    
+    data.truncate(0);
+    getFile();
   }
 }
 
 void Yahoo::getFile ()
 {
   if (op)
+  {
+    op->stop();
     delete op;
+  }
 
-  op = new QUrlOperator(urlList[symbolLoop]);
+  op = new QUrlOperator(url.getData(downloadList[index]));
   connect(op, SIGNAL(finished(QNetworkOperation *)), this, SLOT(opDone(QNetworkOperation *)));
   connect(op, SIGNAL(data(const QByteArray &, QNetworkOperation *)), this, SLOT(dataReady(const QByteArray &, QNetworkOperation *)));
   op->get();
@@ -304,7 +318,7 @@ void Yahoo::parseHistory ()
   stream.setDevice(&f);
 
   Config config;
-  s = config.getData(Config::DataPath) + "/Stocks/" + symbolList[symbolLoop];
+  s = config.getData(Config::DataPath) + "/Stocks/" + downloadList[index];
   
   ChartDb *plug = new ChartDb;
   plug->setPlugin("Stocks");
@@ -321,8 +335,8 @@ void Yahoo::parseHistory ()
   {
     Setting *set = new Setting;
     set->setData("BarType", QString::number(BarData::Daily));
-    set->setData("Symbol", symbolList[symbolLoop]);
-    set->setData("Title", symbolList[symbolLoop]);
+    set->setData("Symbol", downloadList[index]);
+    set->setData("Title", downloadList[index]);
     plug->saveDbDefaults(set);
     delete set;
   }
@@ -411,7 +425,7 @@ void Yahoo::parseHistory ()
     plug->setBar(bar);
     delete bar;
     
-    s = symbolList[symbolLoop] + " " + date + " " + open + " " + high + " " + low
+    s = downloadList[index] + " " + date + " " + open + " " + high + " " + low
         + " " + close + " " + volume;
 	
     emit dataLogMessage(s);
@@ -439,7 +453,7 @@ void Yahoo::parseQuote ()
   stream.setDevice(&f);
 
   Config config;  
-  QString s = config.getData(Config::DataPath) + "/Stocks/" + symbolList[symbolLoop];
+  QString s = config.getData(Config::DataPath) + "/Stocks/" + downloadList[index];
   
   ChartDb *plug = new ChartDb;
   plug->setPlugin("Stocks");
@@ -456,8 +470,8 @@ void Yahoo::parseQuote ()
   {
     Setting *set = new Setting;
     set->setData("BarType", QString::number(BarData::Daily));
-    set->setData("Symbol", symbolList[symbolLoop]);
-    set->setData("Title", symbolList[symbolLoop]);
+    set->setData("Symbol", downloadList[index]);
+    set->setData("Title", downloadList[index]);
     plug->saveDbDefaults(set);
     delete set;
   }
@@ -532,7 +546,7 @@ void Yahoo::parseQuote ()
     plug->setBar(bar);
     delete bar;
     
-    s = symbolList[symbolLoop] + " " + date + " " + open + " " + high + " " + low
+    s = downloadList[index] + " " + date + " " + open + " " + high + " " + low
         + " " + close + " " + volume;
 	
     emit dataLogMessage(s);
@@ -701,13 +715,24 @@ void Yahoo::saveSettings ()
 void Yahoo::printErrorList ()
 {
   int loop;
-  for (loop = 0; loop < (int) errorSymbolList.count(); loop++)
+  QStringList l = url.getKeyList();
+  for (loop = 0; loop < (int) l.count(); loop++)
   {
     QString s = tr("Unable to download ");
-    s.append(errorSymbolList[loop]);
+    s.append(l[loop]);
     emit statusLogMessage(s);
   }
 }	
+
+void Yahoo::cancelUpdate ()
+{
+  if (op)
+  {
+    op->stop();
+    emit done();
+  }
+}
+
 
 //***********************************************************************
 //***********************************************************************

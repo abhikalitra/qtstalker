@@ -41,6 +41,7 @@
 #include "ChartPage.h"
 #include "IndicatorTab.h"
 #include "NavigatorTab.h"
+#include "Quote.h"
 
 #define DEFAULT_INDICATOR_HEIGHT 125
 
@@ -129,6 +130,7 @@ class QtstalkerApp : public QMainWindow
     void slotTabIndicatorFocus ();
     void slotNavigatorButtonPressed (int);
     void slotHelp ();
+    void slotExitQuoteDialog ();
 
   private:
     QPopupMenu *fileMenu;
@@ -180,6 +182,7 @@ class QtstalkerApp : public QMainWindow
     QString dbPlugin;
     BarData *recordList;
     QMultiLineEdit *infoLabel;
+    QuoteDialog *quoteDialog;
 };
 
 #endif

@@ -23,6 +23,7 @@
 #include <qstring.h>
 #include <qurloperator.h>
 #include <qnetworkprotocol.h>
+#include "Setting.h"
 
 class Yahoo : public QuotePlugin
 {
@@ -39,6 +40,7 @@ class Yahoo : public QuotePlugin
     void saveSettings ();
     void prefDialog (QWidget *);
     void printErrorList ();
+    void cancelUpdate ();
     
   public slots:
     void opDone (QNetworkOperation *);
@@ -49,15 +51,14 @@ class Yahoo : public QuotePlugin
     QString data;
     QUrlOperator *op;
     QStringList symbolList;
-    QStringList urlList;
-    QStringList errorUrlList;
-    QStringList errorSymbolList;
-    int symbolLoop;
+    QStringList downloadList;
+    int index;
     bool adjustment;
     QDateTime sdate;
     QDateTime edate;
     QString method;
     int retries;
+    Setting url;
     int errorLoop;
 };
 

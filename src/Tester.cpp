@@ -475,7 +475,7 @@ void Tester::createChartPage ()
   equityPlot->setMainFlag(FALSE);
   equityPlot->setInfoFlag(FALSE);
   QObject::connect(this, SIGNAL(signalIndex(int)), equityPlot, SLOT(setIndex(int)));
-  QStringList l = QStringList::split(" ", config.getData(Config::PlotFont), FALSE);
+  QStringList l = QStringList::split(",", config.getData(Config::PlotFont), FALSE);
   QFont font(l[0], l[1].toInt(), l[2].toInt());
   equityPlot->setPlotFont(font);
   vbox->addWidget(equityPlot);

@@ -37,9 +37,15 @@ FiboLine::FiboLine ()
   defaultColor.setNamedColor("white");
   objects.setAutoDelete(TRUE);
   helpFile = "fiboline.html";
+  line1 = 0.5;
+  line2 = 0;
+  line3 = 0;
+  line4 = 0;
+  line5 = 0;
+  line6 = 0;
 
   Config config;  
-  QStringList l = QStringList::split(" ", config.getData(Config::PlotFont), FALSE);
+  QStringList l = QStringList::split(",", config.getData(Config::PlotFont), FALSE);
   QFont f(l[0], l[1].toInt(), l[2].toInt());
   font = f;
     
@@ -96,6 +102,8 @@ void FiboLine::draw (int startIndex, int pixelspace, int startX)
   
     double high = co->getHigh();
     double low = co->getLow();
+    QPointArray array;
+    co->clearSelectionArea();
     
     int loop;
     for (loop = 1; loop <= 6; loop++)
@@ -105,25 +113,19 @@ void FiboLine::draw (int startIndex, int pixelspace, int startX)
         double r = getY(co->getLine(loop), co->getHigh(), co->getLow());
         int y = scaler->convertToY(r);
         painter.drawLine (x, y, x2, y);
-    
-        painter.drawText(x, y - 1, QString::number(co->getLine(loop) * 100) + "%", -1);
-    
-        if (r > high)
-          high = r;
-        if (r < low)
-          low = r;
+        painter.drawText(x, y - 1, QString::number(co->getLine(loop) * 100) + "% - " + QString::number(r), -1);
+	
+        array.putPoints(0, 4, x, y - 4, x, y + 4, x2, y + 4, x2, y - 4);
+        co->setSelectionArea(new QRegion(array));
       }
     }
   
     // draw the low line
     int y = scaler->convertToY(co->getLow());
     painter.drawLine (x, y, x2, y);
-    if (co->getStatus() == FiboLineObject::Selected)
-      painter.drawText(x, y - 1, QString::number(co->getLow()), -1);
+//    if (co->getStatus() == FiboLineObject::Selected)
+      painter.drawText(x, y - 1, "0% - " + QString::number(co->getLow()), -1);
 
-    co->clearSelectionArea();
-    QPointArray array;
-  
     // store the selectable area the low line occupies
     array.putPoints(0, 4, x, y - 4, x, y + 4, x2, y + 4, x2, y - 4);
     co->setSelectionArea(new QRegion(array));
@@ -131,8 +133,8 @@ void FiboLine::draw (int startIndex, int pixelspace, int startX)
     // draw the high line
     int y2 = scaler->convertToY(co->getHigh());
     painter.drawLine (x, y2, x2, y2);
-    if (co->getStatus() == FiboLineObject::Selected)
-      painter.drawText(x, y2 - 1, QString::number(co->getHigh()), -1);
+//    if (co->getStatus() == FiboLineObject::Selected)
+      painter.drawText(x, y2 - 1, "100% - " + QString::number(co->getHigh()), -1);
 
     // store the selectable area the high line occupies
     array.putPoints(0, 4, x, y2 - 4, x, y2 + 4, x2, y2 + 4, x2, y2 - 4);
@@ -171,7 +173,7 @@ double FiboLine::getY (double v, double high, double low)
   double range = high - low;
   double r = 0;
   if (v < 0)
-    r = high + (range * v);
+    r = low + (range * v);
   else
   {
     if (v > 0)
@@ -221,6 +223,12 @@ void FiboLine::prefDialog ()
     if (f)
     {
       defaultColor = dialog->getColor(tr("Color"));
+      line1 = dialog->getFloat(tr("Line 1"));
+      line2 = dialog->getFloat(tr("Line 2"));
+      line3 = dialog->getFloat(tr("Line 3"));
+      line4 = dialog->getFloat(tr("Line 4"));
+      line5 = dialog->getFloat(tr("Line 5"));
+      line6 = dialog->getFloat(tr("Line 6"));
       
       saveDefaults();
     }
@@ -316,6 +324,12 @@ COPlugin::Status FiboLine::pointerClick (QPoint point, BarDate x, double y)
     FiboLineObject *co = new FiboLineObject(indicator, name, tx, ty, x, y);
     co->setSaveFlag(TRUE);
     co->setColor(defaultColor);
+    co->setLine(1, line1);
+    co->setLine(2, line2);
+    co->setLine(3, line3);
+    co->setLine(4, line4);
+    co->setLine(5, line5);
+    co->setLine(6, line6);
     
     objects.replace(name, co);
     
@@ -442,6 +456,36 @@ void FiboLine::loadDefaults ()
   s = settings.readEntry(s);
   if (s.length())
     defaultColor.setNamedColor(s);
+
+  s = "/Qtstalker/DefaultFiboLine1";
+  s = settings.readEntry(s);
+  if (s.length())
+    line1 = s.toFloat();
+
+  s = "/Qtstalker/DefaultFiboLine2";
+  s = settings.readEntry(s);
+  if (s.length())
+    line2 = s.toFloat();
+
+  s = "/Qtstalker/DefaultFiboLine3";
+  s = settings.readEntry(s);
+  if (s.length())
+    line3 = s.toFloat();
+
+  s = "/Qtstalker/DefaultFiboLine4";
+  s = settings.readEntry(s);
+  if (s.length())
+    line4 = s.toFloat();
+
+  s = "/Qtstalker/DefaultFiboLine5";
+  s = settings.readEntry(s);
+  if (s.length())
+    line5 = s.toFloat();
+
+  s = "/Qtstalker/DefaultFiboLine6";
+  s = settings.readEntry(s);
+  if (s.length())
+    line6 = s.toFloat();
 }
 
 void FiboLine::saveDefaults ()
@@ -450,6 +494,24 @@ void FiboLine::saveDefaults ()
   
   QString s = "/Qtstalker/DefaultFiboLineColor";
   settings.writeEntry(s, defaultColor.name());
+
+  s = "/Qtstalker/DefaultFiboLine1";
+  settings.writeEntry(s, QString::number(line1));
+
+  s = "/Qtstalker/DefaultFiboLine2";
+  settings.writeEntry(s, QString::number(line2));
+
+  s = "/Qtstalker/DefaultFiboLine3";
+  settings.writeEntry(s, QString::number(line3));
+
+  s = "/Qtstalker/DefaultFiboLine4";
+  settings.writeEntry(s, QString::number(line4));
+
+  s = "/Qtstalker/DefaultFiboLine5";
+  settings.writeEntry(s, QString::number(line5));
+
+  s = "/Qtstalker/DefaultFiboLine6";
+  settings.writeEntry(s, QString::number(line6));
 }
 
 void FiboLine::keyEvent (QKeyEvent *key)

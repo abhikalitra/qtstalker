@@ -40,7 +40,7 @@ HorizontalLine::HorizontalLine ()
   helpFile = "horizontalline.html";
 
   Config config;  
-  QStringList l = QStringList::split(" ", config.getData(Config::PlotFont), FALSE);
+  QStringList l = QStringList::split(",", config.getData(Config::PlotFont), FALSE);
   QFont f(l[0], l[1].toInt(), l[2].toInt());
   font = f;
   

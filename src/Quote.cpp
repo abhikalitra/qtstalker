@@ -33,7 +33,7 @@
 #include <qpixmap.h>
 #include <qtooltip.h>
 
-QuoteDialog::QuoteDialog () : QTabDialog (0, "QuoteDialog", TRUE)
+QuoteDialog::QuoteDialog () : QTabDialog (0, "QuoteDialog", FALSE, WDestructiveClose)
 {
   setCaption (tr("Qtstalker: Quotes"));
   
