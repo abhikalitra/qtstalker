@@ -21,6 +21,7 @@ HEADERS += FileButton.h
 HEADERS += Toolbar.h
 HEADERS += Bar.h
 HEADERS += BarDate.h
+HEADERS += QSMath.h
    
 SOURCES += Plugin.cpp
 SOURCES += QuotePlugin.cpp
@@ -41,6 +42,7 @@ SOURCES += FileButton.cpp
 SOURCES += Toolbar.cpp
 SOURCES += Bar.cpp
 SOURCES += BarDate.cpp
+SOURCES += QSMath.cpp
     
 TARGET = qtstalker
 VERSION = 0.23.0
@@ -52,8 +54,5 @@ LIBS += -L../db-2.7.7/build_unix -ldb
 # linux options
 unix:linux-g++:LIBS += -ldl
 
-# mac os x options
-macx:QMAKE_CXXFLAGS += -bundle
-       
 target.path = /usr/lib
 INSTALLS += target
