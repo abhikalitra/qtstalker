@@ -27,7 +27,7 @@
 #include <qpushbutton.h>
 #include <qlayout.h>
 #include <qlistview.h>
-#include "SettingView.h"
+//#include "SettingView.h"
 #include "Setting.h"
 #include "Config.h"
 #include "Toolbar.h"
@@ -53,7 +53,7 @@ class EditDialog : public QDialog
   protected:
     Config *config;
     Setting *settings;
-    SettingView *list;
+//    SettingView *list;
     QListViewItem *item;
     Toolbar *toolbar;
     QVBoxLayout *basebox;

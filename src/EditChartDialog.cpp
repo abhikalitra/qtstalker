@@ -22,38 +22,35 @@
 #include "EditChartDialog.h"
 #include "delete.xpm"
 #include "export.xpm"
+#include "search.xpm"
 #include <qlabel.h>
+#include <qlayout.h>
+#include <qvalidator.h>
+#include <qmessagebox.h>
+#include <qpushbutton.h>
+#include <qtooltip.h>
+#include <qpixmap.h>
 
-EditChartDialog::EditChartDialog (Config *c, QString cp) : EditDialog (c)
+EditChartDialog::EditChartDialog (QString cp) : QTabDialog (0, "EditChartDialog", TRUE)
 {
-  chartPath = cp;
-  details = 0;
+  saveRecordFlag = FALSE;
+  ignoreSaveRecordFlag = FALSE;
   record = 0;
-
   setCaption(tr("Qtstalker: Edit Chart"));
-
-  hideSettingView(TRUE);
-
-  setButton("delete", QPixmap(deleteitem), tr("Delete Record"));
-  connect(getButton("delete"), SIGNAL(clicked()), this, SLOT(deleteRecord()));
-  setButtonStatus("delete", FALSE);
-
-  setButton("save", QPixmap(exportfile), tr("Save Record"));
-  connect(getButton("save"), SIGNAL(clicked()), this, SLOT(saveRecord()));
-  setButtonStatus("save", FALSE);
+  
+  db = new ChartDb();
+  db->openChart(cp);
   
   createDetailsPage();
   createDataPage();
-
-  db = new ChartDb();
-  db->openChart(chartPath);
-  details = db->getDetails();
-  detailList->setItems(details);
+  
+  setOkButton();
+  setCancelButton();
+  connect(this, SIGNAL(applyButtonPressed()), this, SLOT(saveChart()));
 }
 
 EditChartDialog::~EditChartDialog ()
 {
-  db->saveDetails();
   delete db;
   
   if (record)
@@ -63,61 +60,224 @@ EditChartDialog::~EditChartDialog ()
 void EditChartDialog::createDetailsPage ()
 {
   QWidget *w = new QWidget(this);
+    
+  QGridLayout *grid = new QGridLayout(w);
+  grid->setMargin(5);
+  grid->setSpacing(5);
   
-  QVBoxLayout *vbox = new QVBoxLayout(w);
-  vbox->setMargin(5);
-  vbox->setSpacing(0);
+  QLabel *label = new QLabel(tr("Symbol"), w);
+  grid->addWidget(label, 0, 0);
   
-  detailList = new SettingView (w, config->getData(Config::DataPath));
-  vbox->addWidget(detailList);
+  QLineEdit *edit = new QLineEdit(db->getDetail(ChartDb::Symbol), w);
+  edit->setReadOnly(TRUE);
+  grid->addWidget(edit, 0, 1);
   
-  tabs->addTab(w, tr("Details"));  
+  label = new QLabel(tr("Name"), w);
+  grid->addWidget(label, 1, 0);
+  
+  title = new QLineEdit(db->getDetail(ChartDb::Title), w);
+  grid->addWidget(title, 1, 1);
+  
+  label = new QLabel(tr("Type"), w);
+  grid->addWidget(label, 2, 0);
+  
+  edit = new QLineEdit(db->getDetail(ChartDb::Type), w);
+  edit->setReadOnly(TRUE);
+  grid->addWidget(edit, 2, 1);
+  
+  QString s = db->getDetail(ChartDb::FuturesType);
+  if (s.length())
+  {
+    label = new QLabel(tr("Futures Symbol"), w);
+    grid->addWidget(label, 3, 0);
+  
+    edit = new QLineEdit(s, w);
+    edit->setReadOnly(TRUE);
+    grid->addWidget(edit, 3, 1);
+    
+    label = new QLabel(tr("Futures Month"), w);
+    grid->addWidget(label, 4, 0);
+  
+    edit = new QLineEdit(db->getDetail(ChartDb::FuturesMonth), w);
+    edit->setReadOnly(TRUE);
+    grid->addWidget(edit, 4, 1);
+  }
+  
+  grid->expand(grid->numRows() + 1, grid->numCols());
+  grid->setColStretch(1, 1);
+  
+  addTab(w, tr("Details"));  
 }
 
 void EditChartDialog::createDataPage ()
 {
   QWidget *w = new QWidget(this);
-  
+    
   QVBoxLayout *vbox = new QVBoxLayout(w);
   vbox->setMargin(5);
   vbox->setSpacing(0);
-  
-  date = new QDateEdit(QDate::currentDate(), w);
-  date->setAutoAdvance(TRUE);
-  date->setOrder(QDateEdit::YMD);
-  connect(date, SIGNAL(valueChanged(const QDate &)), this, SLOT(dateChanged(const QDate &)));
-  vbox->addWidget(date);
-  vbox->addSpacing(5);
 
-  recordList = new SettingView (w, config->getData(Config::DataPath));
-  vbox->addWidget(recordList);
+  toolbar = new Toolbar(w, 30, 30);
+  vbox->addWidget(toolbar);
+  vbox->addSpacing(10);
   
-  tabs->addTab(w, tr("Data"));  
+  toolbar->addButton("delete", QPixmap(deleteitem), tr("Delete Record"));
+  connect(toolbar->getButton("delete"), SIGNAL(clicked()), this, SLOT(deleteRecord()));
+  toolbar->setButtonStatus("delete", FALSE);
+
+  toolbar->addButton("save", QPixmap(exportfile), tr("Save Record"));
+  connect(toolbar->getButton("save"), SIGNAL(clicked()), this, SLOT(saveRecord()));
+  toolbar->setButtonStatus("save", FALSE);
+
+  QGridLayout *grid = new QGridLayout(vbox);
+  grid->setSpacing(5);
+    
+  QLabel *label = new QLabel(tr("Search"), w);
+  grid->addWidget(label, 0, 0);
+  
+  QDateTime dt = QDateTime::currentDateTime();
+  dt.setTime(QTime(0, 0, 0));
+  dateSearch = new QDateTimeEdit(dt, w);
+  dateSearch->setAutoAdvance(TRUE);
+  dateSearch->dateEdit()->setOrder(QDateEdit::YMD);
+  grid->addWidget(dateSearch, 0, 1);
+  
+  QPushButton *button = new QPushButton(tr("Search"), w);
+  QObject::connect(button, SIGNAL(pressed()), this, SLOT(slotDateSearch()));
+  QToolTip::add(button, tr("Search"));
+  button->setPixmap(search);
+  grid->addWidget(button, 0, 2);
+  
+  label = new QLabel(tr("Date"), w);
+  grid->addWidget(label, 1, 0);
+  
+  date = new QLineEdit(w);
+  date->setReadOnly(TRUE);
+  grid->addWidget(date, 1, 1);
+
+  label = new QLabel(tr("Open"), w);
+  grid->addWidget(label, 2, 0);
+  
+  open = new QLineEdit(w);
+  QDoubleValidator *dv = new QDoubleValidator(0, 99999999999.0, 4, this, 0);
+  open->setValidator(dv);
+  connect(open, SIGNAL(textChanged(const QString &)), this, SLOT(textChanged(const QString &)));
+  grid->addWidget(open, 2, 1);
+
+  label = new QLabel(tr("High"), w);
+  grid->addWidget(label, 3, 0);
+  
+  high = new QLineEdit(w);
+  dv = new QDoubleValidator(0, 99999999999.0, 4, this, 0);
+  high->setValidator(dv);
+  connect(high, SIGNAL(textChanged(const QString &)), this, SLOT(textChanged(const QString &)));
+  grid->addWidget(high, 3, 1);
+  
+  label = new QLabel(tr("Low"), w);
+  grid->addWidget(label, 4, 0);
+  
+  low = new QLineEdit(w);
+  dv = new QDoubleValidator(0, 99999999999.0, 4, this, 0);
+  low->setValidator(dv);
+  connect(low, SIGNAL(textChanged(const QString &)), this, SLOT(textChanged(const QString &)));
+  grid->addWidget(low, 4, 1);
+
+  label = new QLabel(tr("Close"), w);
+  grid->addWidget(label, 5, 0);
+  
+  close = new QLineEdit(w);
+  dv = new QDoubleValidator(0, 99999999999.0, 4, this, 0);
+  close->setValidator(dv);
+  connect(close, SIGNAL(textChanged(const QString &)), this, SLOT(textChanged(const QString &)));
+  grid->addWidget(close, 5, 1);
+
+  label = new QLabel(tr("Volume"), w);
+  grid->addWidget(label, 6, 0);
+  
+  volume = new QLineEdit(w);
+  dv = new QDoubleValidator(0, 99999999999.0, 0, this, 0);
+  volume->setValidator(dv);
+  connect(volume, SIGNAL(textChanged(const QString &)), this, SLOT(textChanged(const QString &)));
+  grid->addWidget(volume, 6, 1);
+
+  label = new QLabel(tr("OI"), w);
+  grid->addWidget(label, 7, 0);
+  
+  oi = new QLineEdit(w);
+  dv = new QDoubleValidator(0, 99999999999.0, 0, this, 0);
+  oi->setValidator(dv);
+  connect(oi, SIGNAL(textChanged(const QString &)), this, SLOT(textChanged(const QString &)));
+  grid->addWidget(oi, 7, 1);
+        
+  grid->expand(grid->numRows() + 1, grid->numCols());
+  grid->setColStretch(1, 1);
+  
+  addTab(w, tr("Data"));  
 }
 
 void EditChartDialog::deleteRecord ()
 {
-  db->deleteRecord(record);
-  recordList->clear();
+  if (saveRecordFlag)
+  {  
+    int rc = QMessageBox::warning(this,
+    			          tr("Delete record."),
+			          tr("Are you sure you want to delete record?"),
+			          QMessageBox::Yes,
+			          QMessageBox::No,
+			          QMessageBox::NoButton);
+
+    if (rc == QMessageBox::No)
+      return;
+  }
+
+  db->deleteData(record->getDate().getDateTimeString(TRUE));
+  
+  clearRecordFields();
+  
   delete record;
   record = 0;
-  setButtonStatus("delete", FALSE);
-  setButtonStatus("save", FALSE);
+  
+  toolbar->setButtonStatus("delete", FALSE);
+  toolbar->setButtonStatus("save", FALSE);
+  saveRecordFlag = FALSE;
 }
 
 void EditChartDialog::saveRecord ()
 {
-  recordList->updateSettings();
-  db->setRecord(record);
+  record->setOpen(open->text().toDouble());
+  record->setHigh(high->text().toDouble());
+  record->setLow(low->text().toDouble());
+  record->setClose(close->text().toDouble());
+  record->setVolume(volume->text().toDouble());
+  record->setOI(oi->text().toInt());
+  
+  db->setBar(record);
+  
+  toolbar->setButtonStatus("save", FALSE);
+  saveRecordFlag = FALSE;
 }
 
-void EditChartDialog::dateChanged (const QDate &d)
+void EditChartDialog::slotDateSearch ()
 {
-  QString key = d.toString("yyyyMMdd");
-  key.append("000000");
+  if (saveRecordFlag)
+  {  
+    int rc = QMessageBox::warning(this,
+    			          tr("Warning"),
+			          tr("Record has been modified.\nSave changes?"),
+			          QMessageBox::Yes,
+			          QMessageBox::No,
+			          QMessageBox::NoButton);
 
-  recordList->clear();
+    if (rc == QMessageBox::Yes)
+      saveRecord();
+    else
+      saveRecordFlag = FALSE;
+  }
 
+  QString key = dateSearch->dateTime().toString("yyyy-MM-ddmm:hh:ss");
+
+  clearRecordFields();
+  
   if (record)
   {
     delete record;
@@ -127,22 +287,69 @@ void EditChartDialog::dateChanged (const QDate &d)
   QString data = db->getData(key);
   if (! data.length())
   {
-    setButtonStatus("delete", FALSE);
-    setButtonStatus("save", FALSE);
+    toolbar->setButtonStatus("delete", FALSE);
+    toolbar->setButtonStatus("save", FALSE);
     return;
   }
 
-  record = db->getRecord(key, data);
+  record = db->getBar(key, data);
   if (! record)
     return;
 
-  record->setType("Date", Setting::None);
-
-  recordList->setItems(record);
-
-  setButtonStatus("delete", TRUE);
-  setButtonStatus("save", TRUE);
+  ignoreSaveRecordFlag = TRUE;
+  date->setText(record->getDate().getDateTimeString(TRUE));
+  open->setText(QString::number(record->getOpen()));
+  high->setText(QString::number(record->getHigh()));
+  low->setText(QString::number(record->getLow()));
+  close->setText(QString::number(record->getClose()));
+  volume->setText(QString::number(record->getVolume(), 'f', 0));
+  oi->setText(QString::number(record->getOI()));
+  ignoreSaveRecordFlag = FALSE;
+  
+  toolbar->setButtonStatus("delete", TRUE);
+  toolbar->setButtonStatus("save", FALSE);
 }
 
+void EditChartDialog::saveChart ()
+{
+  db->setDetail(ChartDb::Title, title->text());
+
+  if (saveRecordFlag)
+  {  
+    int rc = QMessageBox::warning(this,
+    			          tr("Warning"),
+			          tr("Record has been modified.\nSave changes?"),
+			          QMessageBox::Yes,
+			          QMessageBox::No,
+			          QMessageBox::NoButton);
+
+    if (rc == QMessageBox::Yes)
+      saveRecord();
+  }
+  
+  accept();
+}
+
+void EditChartDialog::clearRecordFields ()
+{
+  ignoreSaveRecordFlag = TRUE;
+  date->clear();
+  open->clear();
+  high->clear();
+  low->clear();
+  close->clear();
+  volume->clear();
+  oi->clear();
+  ignoreSaveRecordFlag = FALSE;
+}
+
+void EditChartDialog::textChanged (const QString &)
+{
+  if (! ignoreSaveRecordFlag)
+  {
+    saveRecordFlag = TRUE;
+    toolbar->setButtonStatus("save", TRUE);
+  }
+}
 
 

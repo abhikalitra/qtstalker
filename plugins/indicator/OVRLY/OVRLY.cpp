@@ -144,27 +144,35 @@ void OVRLY::comparePerformance ()
 
 PlotLine * OVRLY::getSymbolLine (QString d)
 {
+  PlotLine *line = new PlotLine();
+
   ChartDb *db = new ChartDb;
-  db->openChart(d);
-  QDateTime date = data->getDate(0);
-  BarData *recordList = db->getHistory(ChartDb::Daily, date, BarData::Bars);
+  if (db->openChart(d))
+  {
+    delete db;
+    return line;
+  }
+  
+  BarDate date = data->getDate(0);
+  
+  db->setBarCompression(ChartDb::Daily);
+  db->setBarRange(99999999);
+  BarData *recordList = db->getHistory();
 
   QDict<Setting> dict;
   int loop;
   for (loop = 0; loop < (int) recordList->count(); loop++)
   {
     Setting *r = new Setting;
-    r->set("Close", QString::number(recordList->getClose(loop)), Setting::Float);
-    dict.insert(recordList->getDate(loop).toString("yyyyMMdd000000"), r);
+    r->setData("Close", QString::number(recordList->getClose(loop)));
+    dict.insert(recordList->getDate(loop).getDateTimeString(FALSE), r);
   }
-
-  PlotLine *line = new PlotLine();
 
   double val = 0;
 
   for (loop = 0; loop < (int) data->count(); loop++)
   {
-    Setting *r2 = dict[recordList->getDate(loop).toString("yyyyMMdd000000")];
+    Setting *r2 = dict[recordList->getDate(loop).getDateTimeString(FALSE)];
     if (! r2)
       line->append(val);
     else

@@ -24,36 +24,45 @@
 
 #include <qstringlist.h>
 #include <qdatetimeedit.h>
-#include <qtabwidget.h>
-#include "Config.h"
-#include "SettingView.h"
+#include <qtabdialog.h>
+#include <qlineedit.h>
 #include "ChartDb.h"
-#include "EditDialog.h"
+#include "Bar.h"
+#include "Toolbar.h"
 
-class EditChartDialog : public EditDialog
+class EditChartDialog : public QTabDialog
 {
   Q_OBJECT
 
   public:
-    EditChartDialog (Config *, QString);
+    EditChartDialog (QString);
     ~EditChartDialog ();
     void createDetailsPage ();
     void createDataPage ();
+    void clearRecordFields ();
 
   public slots:
     void deleteRecord ();
     void saveRecord ();
-    void dateChanged (const QDate &);
+    void slotDateSearch ();
+    void saveChart ();
+    void textChanged (const QString &);
 
   private:
-    SettingView *detailList;
-    SettingView *recordList;
-    Setting *details;
-    Setting *record;
-    QDateEdit *date;
-    QString chartPath;
+    Bar *record;
+    QDateTimeEdit *dateSearch;
     ChartDb *db;
-    QTabWidget *tab;
+    QLineEdit *date;
+    QLineEdit *title;
+    QLineEdit *open;
+    QLineEdit *high;
+    QLineEdit *low;
+    QLineEdit *close;
+    QLineEdit *volume;
+    QLineEdit *oi;
+    Toolbar *toolbar;
+    bool saveRecordFlag;
+    bool ignoreSaveRecordFlag;
 };
 
 #endif

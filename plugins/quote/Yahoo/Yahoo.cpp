@@ -21,6 +21,7 @@
 
 #include "Yahoo.h"
 #include "YahooDialog.h"
+#include "ChartDb.h"
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qdir.h>
@@ -206,8 +207,23 @@ void Yahoo::parseHistory ()
   s = dataPath;
   s.append("/Stocks/");
   s.append(symbolList[symbolLoop]);
-  ChartDb *db = new ChartDb();
-  db->openChart(s);
+  
+  ChartDb *db = new ChartDb;
+  if (db->openChart(s))
+  {
+    emit statusLogMessage("Could not open db.");
+    f.close();
+    delete db;
+    return;
+  }
+
+  s = db->getDetail(ChartDb::Symbol);
+  if (! s.length())
+  {
+    db->setDetail(ChartDb::Symbol, symbolList[symbolLoop]);
+    db->setDetail(ChartDb::Title, symbolList[symbolLoop]);
+    db->setDetail(ChartDb::Type, "Stock");
+  }
 
   while(stream.atEnd() == 0)
   {
@@ -220,8 +236,6 @@ void Yahoo::parseHistory ()
 
     // date
     QString date = parseDate(l[0]);
-    if (date.length() != 14)
-      continue;
 
     // open
     QString open;
@@ -280,16 +294,23 @@ void Yahoo::parseHistory ()
       }
     }
 
-    Setting *r = new Setting;
-    r->set("Date", date, Setting::Date);
-    r->set("Open", open, Setting::Float);
-    r->set("High", high, Setting::Float);
-    r->set("Low", low, Setting::Float);
-    r->set("Close", close, Setting::Float);
-    r->set("Volume", volume, Setting::Float);
-    db->setRecord(r);
-    setDataLogMessage(r);
-    delete r;
+    Bar *bar = new Bar;
+    if (bar->setDate(date))
+    {
+      emit statusLogMessage("Bad date " + date);
+      delete bar;
+      continue;
+    }
+    bar->setOpen(open.toFloat());
+    bar->setHigh(high.toFloat());
+    bar->setLow(low.toFloat());
+    bar->setClose(close.toFloat());
+    bar->setVolume(volume.toFloat());
+    db->setBar(bar);
+    
+    s = symbolList[symbolLoop] + " " + bar->getString();
+    emit dataLogMessage(s);
+    delete bar;
   }
 
   f.close();
@@ -316,9 +337,25 @@ void Yahoo::parseQuote ()
   QString s = dataPath;
   s.append("/Stocks/");
   s.append(symbolList[symbolLoop]);
-  ChartDb *db = new ChartDb();
-  db->openChart(s);
-
+  
+  ChartDb *db = new ChartDb;
+  if (db->openChart(s))
+  {
+    emit statusLogMessage("Could not open db.");
+    f.close();
+    delete db;
+    return;
+  }
+  
+  s = db->getDetail(ChartDb::Symbol);
+  if (! s.length())
+  {
+    db->setDetail(ChartDb::Symbol, symbolList[symbolLoop]);
+    db->setDetail(ChartDb::Title, symbolList[symbolLoop]);
+    db->setDetail(ChartDb::Type, "Stock");
+    db->setDetail(ChartDb::BarType, QString::number(BarData::Daily));
+  }
+  
   while(stream.atEnd() == 0)
   {
     QString s = stream.readLine();
@@ -373,17 +410,24 @@ void Yahoo::parseQuote ()
     QString volume = "0";
     if (l.count() == 10)
       volume = l[9];
-
-    Setting *r = new Setting;
-    r->set("Date", date, Setting::Date);
-    r->set("Open", open, Setting::Float);
-    r->set("High", high, Setting::Float);
-    r->set("Low", low, Setting::Float);
-    r->set("Close", close, Setting::Float);
-    r->set("Volume", volume, Setting::Float);
-    db->setRecord(r);
-    setDataLogMessage(r);
-    delete r;
+      
+    Bar *bar = new Bar;
+    if (bar->setDate(date))
+    {
+      emit statusLogMessage("Bad date " + date);
+      delete bar;
+      continue;
+    }
+    bar->setOpen(open.toFloat());
+    bar->setHigh(high.toFloat());
+    bar->setLow(low.toFloat());
+    bar->setClose(close.toFloat());
+    bar->setVolume(volume.toFloat());
+    db->setBar(bar);
+    
+    s = symbolList[symbolLoop] + " " + bar->getString();
+    emit dataLogMessage(s);
+    delete bar;
   }
 
   f.close();
@@ -403,7 +447,7 @@ QString Yahoo::parseDate (QString d)
     s.prepend("20");
   else
     s.prepend("19");
-
+    
   while (1)
   {
     if (! l[1].compare("Jan"))

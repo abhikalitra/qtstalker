@@ -49,7 +49,7 @@ void DataWindow::setHeader (int col, QString d)
 {
   if (col >= table->numCols())
     table->setNumCols(table->numCols() + 1);
-  table->setColumnWidth(col, 70);
+  table->setColumnWidth(col, 80);
   hHeader->setLabel(col, d);
 }
 

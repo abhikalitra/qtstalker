@@ -30,6 +30,7 @@
 #include <qmessagebox.h>
 #include <qcursor.h>
 #include <qlayout.h>
+#include <qfile.h>
 
 PortfolioPage::PortfolioPage (QWidget *w, Config *c) : QWidget (w)
 {
@@ -86,6 +87,14 @@ void PortfolioPage::newPortfolio()
       QMessageBox::information(this, tr("Qtstalker: Error"), tr("This portfolio already exists."));
       return;
     }
+
+    // create the empty file    
+    QFile f(s);
+    if (! f.open(IO_WriteOnly))
+      return;
+    f.close();
+    
+    nav->updateList();
 
     PortfolioDialog *dialog = new PortfolioDialog(config, selection);
     dialog->show();

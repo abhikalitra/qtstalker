@@ -59,7 +59,7 @@ class ChartObject : public QObject
     ChartObject ();
     virtual ~ChartObject ();
     virtual void draw (int, int);
-    virtual void move (QDateTime, double);
+    virtual void move (BarDate, double);
     virtual bool isClicked (int, int);
     virtual Setting * getSettings ();
     virtual void setSettings (Setting *);
@@ -68,8 +68,8 @@ class ChartObject : public QObject
     bool getSaveFlag ();
     void setSaveFlag (bool);
     ChartObject::ObjectType getType ();
-    QDateTime getDate ();
-    QDateTime getDate2 ();
+    BarDate getDate ();
+    BarDate getDate2 ();
     double getValue ();
     double getValue2 ();
     QString getName ();
@@ -91,8 +91,8 @@ class ChartObject : public QObject
     QString plot;
     QString name;
     QColor color;
-    QDateTime date;
-    QDateTime date2;
+    BarDate date;
+    BarDate date2;
     double value;
     double value2;
 };

@@ -356,9 +356,8 @@ void IndexDialog::openIndex ()
         return;
       }
       
-      Setting *details = db->getDetails();
-      setList(details->getData("Index"));
-      symbol = details->getData("Symbol");
+      setList(db->getData("Index"));
+      symbol = db->getDetail(ChartDb::Symbol);
       name->setText(symbol);
       delete db;
       
@@ -389,19 +388,16 @@ void IndexDialog::saveIndex ()
     return;
   }
   
-  Setting *details = db->getDetails();
-  if (! details->count())
+  QString s = db->getDetail(ChartDb::Symbol);
+  if (! s.length())
   {
-    details->set("Format", "Open|High|Low|Close|Volume|Open Interest", Setting::None);
-    details->set("Chart Type", "Index", Setting::None);
-    details->set("Symbol", symbol, Setting::None);
-    details->set("Title", symbol, Setting::Text);
-    details->set("Index", getList(), Setting::Text);
-    db->saveDetails();
+    db->setDetail(ChartDb::Symbol, symbol);
+    db->setDetail(ChartDb::Title, symbol);
+    db->setDetail(ChartDb::Type, "Index");
+    db->setDetail(ChartDb::BarType, QString::number(BarData::Daily));
   }
   
-  details->setData("Index", getList());
-  db->saveDetails();
+  db->setData("Index", getList());
   delete db;
 
   saveFlag = FALSE;

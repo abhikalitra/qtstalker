@@ -37,10 +37,10 @@
 #include "Setting.h"
 #include "Indicator.h"
 #include "Scaler.h"
-#include "BarData.h"
 #include "ChartObject.h"
 #include "Config.h"
 #include "Plugin.h"
+#include "ChartDb.h"
 
 class Plot : public QWidget
 {
@@ -59,14 +59,6 @@ class Plot : public QWidget
     void signalMinPixelspace (int);
 
   public:
-
-    enum TimeInterval
-    {
-      Daily,
-      Weekly,
-      Monthly
-    };
-
     enum MouseStatus
     {
       None,
@@ -120,7 +112,7 @@ class Plot : public QWidget
     void setGridColor (QColor);
     void setPlotFont (QFont);
     void setIndex (int);
-    void setInterval(Plot::TimeInterval);
+    void setInterval(ChartDb::BarCompression);
     void setDateFlag (bool);
     void crossHair (int, int);
     void printChart ();
@@ -139,7 +131,6 @@ class Plot : public QWidget
   private slots:
     void drawObjects ();
     void drawLines ();
-    void drawDate ();
     void drawXGrid ();
     void drawScale ();
     void drawYGrid ();
@@ -147,10 +138,19 @@ class Plot : public QWidget
     void setHeight ();
     void setWidth ();
     void setScale ();
-    int getXFromDate (QDateTime);
+    int getXFromDate (BarDate);
     void getXY (int, int, int);
     void createXGrid ();
     void slotMessage (QString);
+    
+    void drawDate ();
+    void drawDailyDate ();
+    void drawWeeklyDate ();
+    void drawMonthlyDate ();
+    void drawHourlyDate ();
+    void draw30Date ();
+    void draw15Date ();
+    void draw5Date ();
 
     void slotEditIndicator (int);
     void slotDeleteIndicator (int);
@@ -175,7 +175,7 @@ class Plot : public QWidget
     int _width;
     int startX;
     int startIndex;
-    TimeInterval interval;
+    ChartDb::BarCompression interval;
     QColor backgroundColor;
     QColor gridColor;
     QColor borderColor;
@@ -199,8 +199,8 @@ class Plot : public QWidget
 
     double y1;
     double y2;
-    QDateTime x1;
-    QDateTime x2;
+    BarDate x1;
+    BarDate x2;
     QString objectName;
     MouseStatus mouseFlag;
     ChartObject::ObjectType objectFlag;

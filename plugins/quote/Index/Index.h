@@ -20,6 +20,7 @@
  */
 
 #include "QuotePlugin.h"
+#include "Setting.h"
 #include <qstring.h>
 #include <qdict.h>
 #include <qdatetime.h>

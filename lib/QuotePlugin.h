@@ -41,7 +41,6 @@ class QuotePlugin : public Plugin
     bool setTFloat (QString);
     QString stripJunk (QString);
     QString createDirectory (QString);
-    void setDataLogMessage (Setting *);
 
   protected:
     QString file;

@@ -212,11 +212,10 @@ void SpreadDialog::openSpread ()
         return;
       }
       
-      Setting *details = db->getDetails();
-      firstButton->setSymbol(details->getData("First Symbol"));
-      secondButton->setSymbol(details->getData("Second Symbol"));
-      method->setCurrentText(details->getData("Method"));
-      symbol = details->getData("Symbol");
+      firstButton->setSymbol(db->getData("First Symbol"));
+      secondButton->setSymbol(db->getData("Second Symbol"));
+      method->setCurrentText(db->getData("Method"));
+      symbol = db->getDetail(ChartDb::Symbol);
       name->setText(symbol);
       delete db;
     }
@@ -247,24 +246,18 @@ void SpreadDialog::saveSpread ()
     return;
   }
   
-  Setting *details = db->getDetails();
-  
-  if (! details->count())
+  QString s = db->getDetail(ChartDb::Symbol);
+  if (! s.length())
   {
-    details->set("Format", "Open|High|Low|Close|Volume|Open Interest", Setting::None);
-    details->set("Chart Type", "Spread", Setting::None);
-    details->set("Method", method->currentText(), Setting::None);
-    details->set("Symbol", symbol, Setting::None);
-    details->set("Title", symbol, Setting::Text);
-    details->set("First Symbol", firstButton->getPath(), Setting::Symbol);
-    details->set("Second Symbol", secondButton->getPath(), Setting::Symbol);
-    db->saveDetails();
+    db->setDetail(ChartDb::Symbol, symbol);
+    db->setDetail(ChartDb::Type, "Spread");
+    db->setDetail(ChartDb::Title, symbol);
+    db->setDetail(ChartDb::BarType, QString::number(BarData::Daily));
   }
   
-  details->set("First Symbol", firstButton->getPath(), Setting::Symbol);
-  details->set("Second Symbol", secondButton->getPath(), Setting::Symbol);
-  details->set("Method", method->currentText(), Setting::None);
-  db->saveDetails();
+  db->setData("First Symbol", firstButton->getPath());
+  db->setData("Second Symbol", secondButton->getPath());
+  db->setData("Method", method->currentText());
   delete db;
 
   saveFlag = FALSE;

@@ -4,14 +4,12 @@ To Do:
 - create some howto docs for quote plugins
 - add MA option to all plugins?
 - chart scanner
-- intraday quotes
 - postgresql quote plugin
 - key bindings
 - key binding scripting
 - add alerts to SZ & THERM plugins
 - add subgroups to groups ability
 - update plugin howto for BarData usage
-- add new dialog interface for indicator and quote plugins
 - fix trendlines and fibo objects to plot on weekly and monthly charts as well
 
 
@@ -22,8 +20,6 @@ Maybe some day:
   So, fat chance I'm going to get this done soon without any help... help.... help...
 
 - A proper portfolio manager.
-
-- Intraday charting.
 
 - support for options
 

@@ -602,14 +602,14 @@ void CME::saveTodayData (QStringList l)
   }
   symbol.append(month);
 
-  set->set("CSymbol", l[0], Setting::None);
-  set->set("Symbol", symbol, Setting::None);
+  set->setData("CSymbol", l[0]);
+  set->setData("Symbol", symbol);
 
   s = l[1];
   s.append("000000");
-  set->set("Date", s, Setting::None);
+  set->setData("Date", s);
 
-  set->set("Month", month, Setting::None);
+  set->setData("Month", month);
   
   QString open = l[3];
   QString high = l[4];
@@ -650,12 +650,12 @@ void CME::saveTodayData (QStringList l)
       close.prepend(".");
   }
 
-  set->set("Open", open, Setting::None);
-  set->set("High", high, Setting::None);
-  set->set("Low", low, Setting::None);
-  set->set("Close", close, Setting::None);
-  set->set("Volume", volume, Setting::None);
-  set->set("OI", oi, Setting::None);
+  set->setData("Open", open);
+  set->setData("High", high);
+  set->setData("Low", low);
+  set->setData("Close", close);
+  set->setData("Volume", volume);
+  set->setData("OI", oi);
 
   parse(set);
 
@@ -739,14 +739,19 @@ void CME::parse (Setting *data)
   s.append(fd->getSymbol());
   emit statusLogMessage(s);
 
-  Setting *r = new Setting;
-  r->set("Date", data->getData("Date"), Setting::Date);
-  r->set("Open", open, Setting::Float);
-  r->set("High", high, Setting::Float);
-  r->set("Low", low, Setting::Float);
-  r->set("Close", close, Setting::Float);
-  r->set("Volume", volume, Setting::Float);
-  r->set("Open Interest", oi, Setting::Float);
+  Bar *r = new Bar;
+  if (r->setDate(data->getData("Date")))
+  {
+    delete r;
+    emit statusLogMessage("Bad date " + data->getData("Date"));
+    return;
+  }
+  r->setOpen(open.toDouble());
+  r->setHigh(high.toDouble());
+  r->setLow(low.toDouble());
+  r->setClose(close.toDouble());
+  r->setVolume(volume.toDouble());
+  r->setOI(oi.toInt());
 
   s = path;
   s.append("/");
@@ -754,22 +759,20 @@ void CME::parse (Setting *data)
   ChartDb *db = new ChartDb();
   db->openChart(s);
 
-  Setting *details = db->getDetails();
-  if (! details->count())
+  s = db->getDetail(ChartDb::Symbol);
+  if (! s.length())
   {
-    details->set("Format", "Open|High|Low|Close|Volume|Open Interest", Setting::None);
-    details->set("Chart Type", tr("Futures"), Setting::None);
-    details->set("Symbol", data->getData("Symbol"), Setting::None);
-    details->set("Source", pluginName, Setting::None);
-    details->set("Futures Month", data->getData("Month"), Setting::None);
-    details->set("Futures Type", fd->getSymbol(), Setting::None);
-    details->set("Title", fd->getName(), Setting::Text);
-    db->setFormat();
+    db->setDetail(ChartDb::Symbol, data->getData("Symbol"));
+    db->setDetail(ChartDb::Title, fd->getName());
+    db->setDetail(ChartDb::Type, "Futures");
+    db->setDetail(ChartDb::FuturesType, fd->getSymbol());
+    db->setDetail(ChartDb::FuturesMonth, data->getData("Month"));
+    db->setDetail(ChartDb::BarType, QString::number(BarData::Daily));
   }
-
-  db->setRecord(r);
-  setDataLogMessage(r);
+  db->setBar(r);
   delete db;
+
+  emit dataLogMessage(data->getData("Symbol") + " " + r->getString());
   delete r;
 }
 

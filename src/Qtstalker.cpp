@@ -35,7 +35,6 @@
 #include "Qtstalker.h"
 #include "Quote.h"
 #include "DataWindow.h"
-#include "ChartDb.h"
 #include "ChartPage.h"
 #include "GroupPage.h"
 #include "PortfolioPage.h"
@@ -152,7 +151,7 @@ QtstalkerApp::QtstalkerApp()
   QObject::connect(this, SIGNAL(signalScaleToScreen(bool)), mainPlot, SLOT(setScaleToScreen(bool)));
   QObject::connect(this, SIGNAL(signalPixelspace(int)), mainPlot, SLOT(setPixelspace(int)));
   QObject::connect(this, SIGNAL(signalIndex(int)), mainPlot, SLOT(setIndex(int)));
-  QObject::connect(this, SIGNAL(signalInterval(Plot::TimeInterval)), mainPlot, SLOT(setInterval(Plot::TimeInterval)));
+  QObject::connect(this, SIGNAL(signalInterval(ChartDb::BarCompression)), mainPlot, SLOT(setInterval(ChartDb::BarCompression)));
   QObject::connect(this, SIGNAL(signalChartPath(QString)), mainPlot, SLOT(setChartPath(QString)));
   QObject::connect(this, SIGNAL(signalDrawMode(bool)), mainPlot, SLOT(setDrawMode(bool)));
 
@@ -165,39 +164,15 @@ QtstalkerApp::QtstalkerApp()
 
   statusBar()->message(tr("Ready"), 2000);
 
-  // set up the bar intervals
-  barCombo->insertItem(tr("3 Months"), -1);
-  barCombo->insertItem(tr("6 Months"), -1);
-  barCombo->insertItem(tr("9 Months"), -1);
-  barCombo->insertItem(tr("1 Year"), -1);
-  barCombo->insertItem(tr("2 Years"), -1);
-  barCombo->insertItem(tr("5 Years"), -1);
-  barCombo->insertItem(tr("All"), -1);
+  // set up the number of bars to load
+  barCount->setValue(config->getData(Config::Bars).toInt());
 
-  int loop;
-  for (loop = 0; loop < (int) barCombo->count(); loop++)
-  {
-    QString s = barCombo->text(loop);
-    if (! s.compare(config->getData(Config::Bars)))
-    {
-      barCombo->setCurrentItem(loop);
-      break;
-    }
-  }
-  connect (barCombo, SIGNAL(activated(int)), this, SLOT(slotBarComboChanged(int)));
-  barCombo->setEnabled(FALSE);
-
-  // setup the compression buttons
-  for (loop = 0; loop < (int) compressionCombo->count(); loop++)
-  {
-    QString s = compressionCombo->text(loop);
-    if (! s.compare(config->getData(Config::Compression)))
-    {
-      compressionCombo->setCurrentItem(loop);
-      break;
-    }
-  }
-  compressionChanged(config->getData(Config::Compression));
+  // setup the compression list
+  ChartDb *db = new ChartDb();
+  compressionCombo->insertStringList(db->getBarCompressionList(), -1);
+  compressionCombo->setCurrentItem(config->getData(Config::Compression).toInt());
+  compressionChanged();
+  delete db;
 
   // set the grid status
   s = config->getData(Config::Grid);
@@ -245,6 +220,7 @@ QtstalkerApp::QtstalkerApp()
 
   l = config->getIndicators();
   QStringList sl = QStringList::split(",", config->getData(Config::StackedIndicator), FALSE);
+  int loop;
   for (loop = 0; loop < (int) l.count(); loop++)
   {
     if (sl.findIndex(l[loop]) != -1)
@@ -348,12 +324,6 @@ void QtstalkerApp::initActions()
   actionDrawMode = new QAction(tr("Toggle Draw Mode"), icon, tr("Toggle Draw Mode"), 0, this, 0, true);
   actionDrawMode->setStatusTip(tr("Toggle drawing mode."));
   connect(actionDrawMode, SIGNAL(toggled(bool)), this, SLOT(slotDrawMode(bool)));
-
-//  QAction *action = new QAction(QString::null, icon, QString::null, CTRL+Key_M, this);
-//  connect(action, SIGNAL(activated()), this, SLOT(slotMainPlotFocus()));
-
-//  action = new QAction(QString::null, icon, QString::null, CTRL+Key_C, this);
-//  connect(action, SIGNAL(activated()), this, SLOT(slotChartTabFocus()));
 }
 
 void QtstalkerApp::initMenuBar()
@@ -409,11 +379,6 @@ void QtstalkerApp::initToolBar()
 
   compressionCombo = new QComboBox(toolbar2);
   compressionCombo->show();
-  QStringList l;
-  l.append(tr("Daily"));
-  l.append(tr("Weekly"));
-  l.append(tr("Monthly"));
-  compressionCombo->insertStringList(l, -1);
   QToolTip::add(compressionCombo, tr("Chart Compression"));
   connect(compressionCombo, SIGNAL(activated(int)), this, SLOT(slotCompressionChanged(int)));
 
@@ -428,8 +393,8 @@ void QtstalkerApp::initToolBar()
   connect (pixelspace, SIGNAL(valueChanged(int)), this, SLOT(slotPixelspaceChanged(int)));
   QToolTip::add(pixelspace, tr("Bar Spacing"));
 
-  barCombo = new QComboBox(toolbar2);
-  QToolTip::add(barCombo, tr("Bars"));
+  barCount = new QSpinBox(1, 99999999, 1, toolbar2);
+  QToolTip::add(barCount, tr("Total bars to load"));
 
   toolbar2->addSeparator();
 
@@ -459,14 +424,13 @@ void QtstalkerApp::slotQuit()
   config->setData(Config::Width, QString::number(this->width()));
   config->setData(Config::X, QString::number(this->x()));
   config->setData(Config::Y, QString::number(this->y()));
+  config->setData(Config::Bars, QString::number(barCount->value()));
   config->closePlugins();
   delete config;
 
   // delete any BarData
   if (recordList)
     delete recordList;
-
-//  qApp->quit();
 }
 
 void QtstalkerApp::slotAbout()
@@ -489,7 +453,6 @@ void QtstalkerApp::slotOpenChart (QString selection)
   slider->setEnabled(TRUE);
   actionDatawindow->setEnabled(TRUE);
   actionNewIndicator->setEnabled(TRUE);
-  barCombo->setEnabled(TRUE);
   status = Chart;
   qApp->processEvents();
   loadChart(selection);
@@ -671,23 +634,27 @@ void QtstalkerApp::loadChart (QString d)
   // make sure we change db's after Plot saves previous db edits
   emit signalChartPath(chartPath);
   
-  ChartDb *db = new ChartDb();
+  ChartDb *db = new ChartDb;
+  db->setBarCompression((ChartDb::BarCompression) compressionCombo->currentItem());
+  db->setBarRange(barCount->value());
   if (db->openChart(chartPath))
   {
-    qDebug(tr("Unable to open chart."));
+    qDebug("QtstalkerApp::loadChart: error opening %s", chartPath.latin1());
     delete db;
     return;
   }
-
-  Setting *set = db->getDetails();
-  chartName = set->getData(tr("Title"));
-  chartType = set->getData("Chart Type");
-  chartSymbol = set->getData("Symbol");
-  QDateTime fd = QDateTime::fromString(set->getDateTime("First Date"), Qt::ISODate);
-  QDateTime date = QDateTime::fromString(set->getDateTime("Last Date"), Qt::ISODate);
-
-  // determine if chart is other type
+  
+  if (recordList)
+    delete recordList;
+  recordList = db->getHistory();
+  chartName = db->getDetail(ChartDb::Title);
+  chartType = db->getDetail(ChartDb::Type);
+  chartSymbol = db->getDetail(ChartDb::Symbol);
+  
   bool otherFlag = FALSE;
+// determine if chart is other type
+//FIXME
+/*  
   if (chartType.compare(tr("Stock"))
       && chartType.compare(tr("Futures"))
       && chartType.compare(tr("Index"))
@@ -705,61 +672,7 @@ void QtstalkerApp::loadChart (QString d)
     if (! actionHideMainPlot->isOn())
       mainPlot->setHideMainPlot(FALSE);
   }
-
-  if (! date.isValid())
-  {
-    date = QDateTime::currentDateTime();
-    date.setTime(QTime(0, 0, 0, 0));
-  }
-
-  switch (barCombo->currentItem())
-  {
-    case 0:
-      date = date.addDays(-91);
-      break;
-    case 1:
-      date = date.addDays(-183);
-      break;
-    case 2:
-      date = date.addDays(-275);
-      break;
-    case 4:
-      date = date.addDays(-730);
-      break;
-    case 5:
-      date = date.addDays(-1825);
-      break;
-    case 6:
-      if (fd.isValid())
-        date = fd;
-      break;
-    default:
-      date = date.addDays(-365);
-      break;
-  }
-
-  QString compression = config->getData(Config::Compression);
-  Plot::TimeInterval pi = Plot::Daily;
-  ChartDb::Compression ci = ChartDb::Daily;
-  if (! compression.compare(QObject::tr("Weekly")))
-  {
-    pi = Plot::Weekly;
-    ci = ChartDb::Weekly;
-  }
-  else
-  {
-    if (! compression.compare(QObject::tr("Monthly")))
-    {
-      pi = Plot::Monthly;
-      ci = ChartDb::Monthly;
-    }
-  }
-  if (recordList)
-    delete recordList;
-  if (otherFlag)
-    recordList = db->getHistory(ci, date, BarData::Other);
-  else
-    recordList = db->getHistory(ci, date, BarData::Bars);
+*/
   
   mainPlot->setData(recordList);
   for(it.toFirst(); it.current(); ++it)
@@ -822,12 +735,12 @@ void QtstalkerApp::loadChart (QString d)
   }
 */
 
-  l = db->getChartObjects();
-  for (loop = 0; loop < (int) l.count(); loop++)
+  QList<Setting> *col = db->getChartObjects();
+  for (loop = 0; loop < (int) col->count(); loop++)
   {
-    Setting *co = db->getChartObject(l[loop]);
+    Setting *co = col->at(loop);
     
-    QString s = co->getData(tr("Plot"));
+    QString s = co->getData("Plot");
     if (! s.compare(tr("Main Plot")))
       mainPlot->addChartObject(co);
     else
@@ -836,9 +749,9 @@ void QtstalkerApp::loadChart (QString d)
       if (plot)
         plot->addChartObject(co);
     }
-    
-    delete co;
   }
+  delete col;
+  delete db;
 
   // update the pixelspace
   pixelspace->blockSignals(TRUE);
@@ -860,8 +773,6 @@ void QtstalkerApp::loadChart (QString d)
   setCaption(getWindowCaption());
 
   emit signalIndicatorPageRefresh();
-
-  delete db;
 }
 
 void QtstalkerApp::loadIndicator (Indicator *i)
@@ -907,12 +818,6 @@ void QtstalkerApp::loadIndicator (Indicator *i)
   config->closePlugin(i->getType());
 }
 
-void QtstalkerApp::slotBarComboChanged (int index)
-{
-  config->setData(Config::Bars, barCombo->text(index));
-  loadChart(chartPath);
-}
-
 QString QtstalkerApp::getWindowCaption ()
 {
   QString caption = tr("Qtstalker");
@@ -933,7 +838,7 @@ QString QtstalkerApp::getWindowCaption ()
       break;
   }
 
-  caption.append(config->getData(Config::Compression));
+  caption.append(compressionCombo->currentText());
 
   return caption;
 }
@@ -943,31 +848,33 @@ void QtstalkerApp::slotDataWindow ()
   DataWindow *dw = new DataWindow(0, recordList->count());
   dw->setCaption(getWindowCaption());
 
-  dw->setHeader(0, QObject::tr("Date"));
+  dw->setHeader(0, tr("Date"));
+  dw->setHeader(1, tr("Time"));
   int loop;
   for (loop = 0; loop < (int) recordList->count(); loop++)
   {
-    QDateTime dt = recordList->getDate(loop);
-    dw->setData(loop, 0, dt.toString("yyyyMMdd"));
+    BarDate dt = recordList->getDate(loop);
+    dw->setData(loop, 0, dt.getDateString(TRUE));
+    dw->setData(loop, 1, dt.getTimeString(TRUE));
   }
 
-  int col = 1;
+  int col = 2;
   if (! mainPlot->getHideMainPlot())
   {
-    dw->setHeader(1, QObject::tr("Open"));
-    dw->setHeader(2, QObject::tr("High"));
-    dw->setHeader(3, QObject::tr("Low"));
-    dw->setHeader(4, QObject::tr("Close"));
+    dw->setHeader(2, tr("Open"));
+    dw->setHeader(3, tr("High"));
+    dw->setHeader(4, tr("Low"));
+    dw->setHeader(5, tr("Close"));
 
     for (loop = 0; loop < (int) recordList->count(); loop++)
     {
-      dw->setData(loop, 1, mainPlot->strip(recordList->getOpen(loop)));
-      dw->setData(loop, 2, mainPlot->strip(recordList->getHigh(loop)));
-      dw->setData(loop, 3, mainPlot->strip(recordList->getLow(loop)));
-      dw->setData(loop, 4, mainPlot->strip(recordList->getClose(loop)));
+      dw->setData(loop, 2, mainPlot->strip(recordList->getOpen(loop)));
+      dw->setData(loop, 3, mainPlot->strip(recordList->getHigh(loop)));
+      dw->setData(loop, 4, mainPlot->strip(recordList->getLow(loop)));
+      dw->setData(loop, 5, mainPlot->strip(recordList->getClose(loop)));
     }
 
-    col = 5;
+    col = 6;
   }
 
   QStringList l = mainPlot->getIndicators();
@@ -1014,27 +921,14 @@ void QtstalkerApp::slotDataWindow ()
 
 void QtstalkerApp::slotCompressionChanged (int)
 {
-  compressionChanged(compressionCombo->currentText());
+  compressionChanged();
   loadChart(chartPath);
 }
 
-void QtstalkerApp::compressionChanged (QString d)
+void QtstalkerApp::compressionChanged ()
 {
-  config->setData(Config::Compression, d);
-
-  Plot::TimeInterval t;
-
-  if (! d.compare(tr("Daily")))
-    t = Plot::Daily;
-  else
-  {
-    if (! d.compare(tr("Weekly")))
-      t = Plot::Weekly;
-    else
-      t = Plot::Monthly;
-  }
-
-  emit signalInterval(t);
+  config->setData(Config::Compression, QString::number(compressionCombo->currentItem()));
+  emit signalInterval((ChartDb::BarCompression) compressionCombo->currentItem());
 }
 
 void QtstalkerApp::slotChartTypeChanged (int)
@@ -1185,7 +1079,7 @@ void QtstalkerApp::slotDeleteIndicator (QString text, Plot *plot)
   if (! plot->getMainFlag())
   {
     QStringList l = plot->getChartObjects();
-
+    
     ChartDb *db = new ChartDb;
     db->openChart(chartPath);
     int loop;
@@ -1306,8 +1200,8 @@ void QtstalkerApp::addIndicatorButton (QString d, bool tabFlag)
   QObject::connect(this, SIGNAL(signalIndex(int)), plot, SLOT(setIndex(int)));
   QObject::connect(this, SIGNAL(signalDrawMode(bool)), plot, SLOT(setDrawMode(bool)));
 
-  QObject::connect(this, SIGNAL(signalInterval(Plot::TimeInterval)), plot, SLOT(setInterval(Plot::TimeInterval)));
-  compressionChanged(config->getData(Config::Compression));
+  QObject::connect(this, SIGNAL(signalInterval(ChartDb::BarCompression)), plot, SLOT(setInterval(ChartDb::BarCompression)));
+  compressionChanged();
 
   QObject::connect(this, SIGNAL(signalGrid(bool)), plot, SLOT(setGridFlag(bool)));
   emit signalGrid(config->getData(Config::Grid).toInt());

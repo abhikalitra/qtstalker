@@ -20,11 +20,14 @@
  */
 
 #include "MySQLPlugin.h"
+#include "PrefDialog.h"
+#include "Setting.h"
 #include <qdir.h>
 #include <qtimer.h>
 #include <qdatetime.h>
 #include <qsettings.h>
 #include <qmessagebox.h>
+#include <qstringlist.h>
 
 /**
  * constructor
@@ -33,8 +36,6 @@ MySQLPlugin::MySQLPlugin ()
 {
   // plugin defaults
   pluginName = "MySQL";
-  about = tr("Imports quotes from a MySQL database.\n");
-  createFlag = TRUE;
 
   // get settings persisted last time
   retrieveSettings();
@@ -57,16 +58,16 @@ void MySQLPlugin::retrieveSettings()
   QSettings settings;
 
   settings.beginGroup("/Qtstalker/MySQL plugin");
-    set(tr("Database"), settings.readEntry("/database"), Setting::Text);
-    set(tr("Host"), settings.readEntry("/host", "localhost"), Setting::Text);
-    set(tr("Username"), settings.readEntry("/username"), Setting::Text);
-    set(tr("Password"), settings.readEntry("/password"), Setting::Text);
-    set(tr("Symbols"), settings.readEntry("/symbols"), Setting::Text);
-    set(tr("SQL Query"), settings.readEntry("/sqlquery", 
-	"SELECT day,open,high,low,close,volume FROM Quotes"
-	" WHERE symbol = '$SYMBOL$' AND day > '$LASTDAY$'"
-	" ORDER BY day"), Setting::Text);
-    set(tr("Incremental"), settings.readEntry("/incremental", tr("True")), Setting::Bool);
+    database = settings.readEntry("/database");
+    host = settings.readEntry("/host", "localhost");
+    username = settings.readEntry("/username");
+    password = settings.readEntry("/password");
+    symbols = settings.readEntry("/symbols");
+    sqlquery = settings.readEntry("/sqlquery", 
+				  "SELECT day,open,high,low,close,volume FROM Quotes"
+				  " WHERE symbol = '$SYMBOL$' AND day > '$LASTDAY$'"
+				  " ORDER BY day");
+    incremental = settings.readNumEntry("/incremental", TRUE);
   settings.endGroup();
 }
 
@@ -80,13 +81,13 @@ void MySQLPlugin::storeSettings()
   QSettings settings;
   
   settings.beginGroup("/Qtstalker/MySQL plugin");
-    settings.writeEntry("/database", getData(tr("Database")));
-    settings.writeEntry("/host", getData(tr("Host")));
-    settings.writeEntry("/username", getData(tr("Username")));
-    settings.writeEntry("/password", getData(tr("Password")));
-    settings.writeEntry("/sqlquery", getData(tr("SQL Query")));
-    settings.writeEntry("/symbols", getData(tr("Symbols")));
-    settings.writeEntry("/incremental", getData(tr("Incremental")));
+    settings.writeEntry("/database", database);
+    settings.writeEntry("/host", host);
+    settings.writeEntry("/username", username);
+    settings.writeEntry("/password", password);
+    settings.writeEntry("/sqlquery", sqlquery);
+    settings.writeEntry("/symbols", symbols);
+    settings.writeEntry("/incremental", incremental);
   settings.endGroup();
 }
 
@@ -110,10 +111,10 @@ void MySQLPlugin::performUpdate ()
 {
   if (openDatabase()) 
   {
-    QStringList symbols = QStringList::split(' ', getData(tr("Symbols")));
-    QStringList::const_iterator iter = symbols.begin();
+    QStringList symbolList = QStringList::split(' ', symbols, FALSE);
+    QStringList::const_iterator iter = symbolList.begin();
 
-    while (iter != symbols.end())
+    while (iter != symbolList.end())
       updateSymbol(*iter++);
 
     closeDatabase();
@@ -123,6 +124,7 @@ void MySQLPlugin::performUpdate ()
   }
 
   emit done();
+  emit statusLogMessage(tr("Done"));
 }
 
 /**
@@ -132,28 +134,52 @@ void MySQLPlugin::performUpdate ()
  */
 void MySQLPlugin::updateSymbol(QString symbol) 
 {
-  emit message("Updating " + symbol);
-  
+  emit statusLogMessage("Updating " + symbol);
+
+  // verify and create the directory if needed  
   QString chartpath = dataPath;
-  chartpath.append("/Stocks/");
+  chartpath.append("/Stocks");
+  QDir dir(chartpath);
+  if (!dir.exists() && !dir.mkdir(chartpath))
+  {
+    QString errstr = "MySQL plugin: unable to create directory: ";
+    errstr.append(chartpath);
+    QMessageBox::critical(0, "MySQL Plugin Error", errstr);
+    emit statusLogMessage("MySQL Plugin Error: "+ errstr);
+    return;
+  }
+  chartpath.append("/");
   chartpath.append(symbol);
+
+  // create the new chart
 
   ChartDb db;
   db.openChart(chartpath);
-  
+  QString s = db.getDetail(ChartDb::Symbol);
+  if (! s.length())
+  {
+    db.setDetail(ChartDb::Symbol, symbol);
+    db.setDetail(ChartDb::Type, "Stock");
+    db.setDetail(ChartDb::Title, symbol);
+    db.setDetail(ChartDb::BarType, QString::number(BarData::Daily));
+  }
+
   QDate lastdate;
 
-  if (getData(tr("Incremental")) == tr("True")) 
+  if (incremental == TRUE) 
   {
-    QString ld = db.getDetails()->getDateTime("Last Date");
-    if (ld.length() != 0) 
-      lastdate = QDate::fromString(ld, Qt::ISODate);
+    Bar *bar = db.getLastBar();
+    if (bar)
+    {
+      lastdate = bar->getDate().getDate();
+      delete bar;
+    }
   }
  
-  if (!lastdate.isValid()) 
+  if (! lastdate.isValid()) 
     lastdate.setYMD(1800, 1, 1);
   
-  QString sql = getData(tr("SQL Query"));
+  QString sql = sqlquery;
   sql.replace("$SYMBOL$", symbol);
   sql.replace("$LASTDAY$", lastdate.toString(Qt::ISODate));
 
@@ -168,10 +194,10 @@ bool MySQLPlugin::openDatabase()
 {
   if (!(mysql_init(&mysql) 
       && mysql_real_connect(&mysql,
-	getData(tr("Host")), 
-	getData(tr("Username")), 
-	getData(tr("Password")),
-	getData(tr("Database")), 
+	host, 
+	username, 
+	password,
+	database, 
 	0     /* port */, 
 	NULL  /* socket */, 
 	0     /* flags */)))
@@ -179,6 +205,7 @@ bool MySQLPlugin::openDatabase()
     QString errstr = "Could not connect to database.\n";
     errstr.append(mysql_error(&mysql));
     QMessageBox::critical(0, "Database error", errstr); 
+    emit statusLogMessage("Database error: " + errstr);
     return false;
   }
   
@@ -208,25 +235,47 @@ void MySQLPlugin::doQuery (QString sql, ChartDb& db)
       && (res = mysql_store_result(&mysql)) != NULL) 
   {
     MYSQL_ROW row;
-    Setting rec;
     bool with_oi = mysql_num_fields(res) == 7;
 
     while ((row = mysql_fetch_row(res)) != NULL) 
     {
+      Bar *bar = new Bar;
+      
       QString d = row[0];
       d = d.remove('-');
       d.append("000000");
-
-      rec.set("Date", d, Setting::Date);
-      rec.set("Open", row[1], Setting::Float);
-      rec.set("High", row[2], Setting::Float);
-      rec.set("Low", row[3], Setting::Float);
-      rec.set("Close", row[4], Setting::Float);
-      rec.set("Volume", row[5], Setting::Float);
+      if (bar->setDate(d))
+      {
+        delete bar;
+        emit statusLogMessage("Bad date " + d);
+        continue;
+      }
+      
+      d = row[1];
+      bar->setOpen(d.toDouble());
+      
+      d = row[2];
+      bar->setHigh(d.toDouble());
+      
+      d = row[3];
+      bar->setLow(d.toDouble());
+      
+      d = row[4];
+      bar->setClose(d.toDouble());
+      
+      d = row[5];
+      bar->setVolume(d.toDouble());
+      
       if (with_oi)
-	rec.set("Open Interest", row[6], Setting::Float);
-
-      db.setRecord(&rec);
+      {
+        d = row[6];
+        bar->setOI(d.toInt());
+      }
+      
+      db.setBar(bar);
+      
+      emit dataLogMessage(db.getDetail(ChartDb::Symbol) + " " + bar->getString());
+      delete bar;
     }
    
     mysql_free_result(res);
@@ -236,101 +285,38 @@ void MySQLPlugin::doQuery (QString sql, ChartDb& db)
     QString errstr = "Database query failed.\n";
     errstr.append(mysql_error(&mysql));
     QMessageBox::critical(0, "Database Query problem", errstr);
+    emit statusLogMessage("Database Query problem: " + errstr);
   }
 }
 
-/**
- * getCreateDetails()
- * overrides Plugin::getCreateDetails()
- *
- * Called by main application to get the settings needed to create a new
- * chart based on this plugin.
- * We return two setttings: chart format and a list of symbols to create.
- */
-  
-Setting* MySQLPlugin::getCreateDetails ()
+// show the prefs dialog to edit settings
+void MySQLPlugin::prefDialog ()
 {
-  QStringList l;
-  l.append(tr("DOHLCV"));
-  l.append(tr("DOHLCVI"));
-
-  Setting *s = new Setting;
-  s->set(tr("Title"), "", Setting::Text);
-  s->set(tr("Symbol"), "", Setting::Text);
-  s->set(tr("Format"), l[0], Setting::List);
-  s->setList(tr("Format"), l);
-  return s;
-}
-
-/**
- * createChart()
- * overrides Plugin::createChart()
- *
- * Create new charts from the given Settings (see getCreateDetails())
- */
-void MySQLPlugin::createChart (Setting *setting)
-{
-  // process the settings we received from the 'new chart' dialog
-
-  QString symbol = setting->getData(tr("Symbol"));
-  QString title = setting->getData(tr("Title"));
-  bool withOI = setting->getData(tr("Format")) == tr("DOHLCVI");
-
-  // do some checking on the settings
-
-  if (symbol.length() == 0)
-    return;
-
-  if (title.length() == 0)
-    title = symbol;
+  PrefDialog *dialog = new PrefDialog();
+  dialog->setCaption(tr("MySQL Prefs"));
+  dialog->createPage (tr("Details"));
+  dialog->addTextItem(tr("Database"), 1, database);
+  dialog->addTextItem(tr("Host"), 1, host);
+  dialog->addTextItem(tr("Username"), 1, username);
+  dialog->addTextItem(tr("Password"), 1, password);
+  dialog->addTextItem(tr("SQL Query"), 1, sqlquery);
+  dialog->addTextItem(tr("Symbols"), 1, symbols);
+  dialog->addCheckItem(tr("Incremental"), 1, incremental);
   
-  // get path to database
+  int rc = dialog->exec();
   
-  QString dbpath = dataPath;
-  dbpath.append("/Stocks");
-  QDir dir(dbpath);
-  
-  if (!dir.exists() && !dir.mkdir(dbpath))
+  if (rc == QDialog::Accepted)
   {
-    QString errstr = "MySQL plugin: unable to create directory: ";
-    errstr.append(dbpath);
-    QMessageBox::critical(0, "MySQL Plugin Error", errstr);
-    return;
+    database = dialog->getText(tr("Database"));
+    host = dialog->getText(tr("Host"));
+    username = dialog->getText(tr("Username"));
+    password = dialog->getText(tr("Password"));
+    sqlquery = dialog->getText(tr("SQL Query"));
+    symbols = dialog->getText(tr("Symbols"));
+    incremental = dialog->getCheck(tr("Incremental"));
   }
   
-  dbpath.append("/");
-  dbpath.append(symbol);
-
-  // create the new chart
-
-  if (!dir.exists(dbpath)) 
-  {
-    ChartDb db;
-    db.openChart(dbpath);
-
-    Setting *details = db.getDetails();
-    if (withOI)
-      details->set("Format", "Open|High|Low|Close|Volume|Open Interest", Setting::None);
-    else
-      details->set("Format", "Open|High|Low|Close|Volume", Setting::None);
-    details->set("Chart Type", "Stock", Setting::None);
-    details->set("Symbol", symbol, Setting::None);
-    details->set("Source", pluginName, Setting::None);
-    details->set("Title", title, Setting::Text);
-    db.saveDetails();
-    db.setFormat();
-  }
-  else
-  {
-    QMessageBox::message(0, "Information", "Symbol already present"); 
-  }
-
-  // add the added stock to the list we update
-  
-  QString list = getData(tr("Symbols"));
-  list.append(" ");
-  list.append(symbol);
-  set(tr("Symbols"), list, Setting::Text);
+  delete dialog;
 }
 
 /**

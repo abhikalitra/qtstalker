@@ -29,10 +29,10 @@ class VerticalLine : public ChartObject
   Q_OBJECT
 
   public:
-    VerticalLine (QPixmap *, QString, QString, QDateTime);
+    VerticalLine (QPixmap *, QString, QString, BarDate);
     ~VerticalLine ();
     void draw (int, int);
-    void move (QDateTime, double);
+    void move (BarDate, double);
     Setting * getSettings ();
     void setSettings (Setting *);
     

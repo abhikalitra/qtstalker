@@ -21,6 +21,7 @@
 
 #include "QuotePlugin.h"
 #include "FuturesData.h"
+#include "Setting.h"
 #include <qstring.h>
 #include <qnetworkprotocol.h>
 #include <qurloperator.h>

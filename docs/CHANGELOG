@@ -58,8 +58,17 @@
 	  the plugin where the settings file is and it will load it and configure itself to it.
 
 20040313: Converted the indicator EP plugin to a new EP chart plugin. The chart plugin is now
-          better suited.
+          better suited. Removing the EP indicator.
 	  
+20040322: Completed intraday quote conversion to all classes. Intraday quotes up to the minute
+          can now be used. All that is needed is an app that can update the charts with quotes.
+	  Will be updating the CSV and Yahoo plugins to use them in the future.
+	  
+20040322: Updated the GUI to use new chart compression formats of 5/15/30/60 minute charts if quotes
+          are available.
+	  
+20040322: Replaced the Bars combobox on the toolbar with a spinbox to better control the number of bars
+          to load.
 
 	  	  
 0.25

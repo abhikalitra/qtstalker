@@ -29,11 +29,10 @@ class BuyArrow : public ChartObject
   Q_OBJECT
 
   public:
-  
-    BuyArrow (Scaler *, QPixmap *, QString, QString, QDateTime, double);
+    BuyArrow (Scaler *, QPixmap *, QString, QString, BarDate, double);
     ~BuyArrow ();
     void draw (int, int);
-    void move (QDateTime, double);
+    void move (BarDate, double);
     Setting * getSettings ();
     void setSettings (Setting *);
     

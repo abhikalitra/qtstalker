@@ -160,13 +160,13 @@ QString Config::getData (Parm p)
       s = settings.readEntry("/Qtstalker/ChartStyle", QObject::tr("Bar"));
       break;
     case Compression:
-      s = settings.readEntry("/Qtstalker/Compression", QObject::tr("Daily"));
+      s = settings.readEntry("/Qtstalker/Compression", "4");
       break;
     case Grid:
       s = settings.readEntry("/Qtstalker/Grid", "1");
       break;
     case Bars:
-      s = settings.readEntry("/Qtstalker/Bars", QObject::tr("1 Year"));
+      s = settings.readEntry("/Qtstalker/Bars", "275");
       break;
     case BackgroundColor:
       s = settings.readEntry("/Qtstalker/BackgroundColor", "black");

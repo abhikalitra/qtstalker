@@ -30,10 +30,10 @@ class Text : public ChartObject
   Q_OBJECT
 
   public:
-    Text (Scaler *, QPixmap *, QString, QString, QDateTime, double);
+    Text (Scaler *, QPixmap *, QString, QString, BarDate, double);
     ~Text ();
     void draw (int, int);
-    void move (QDateTime, double);
+    void move (BarDate, double);
     Setting * getSettings ();
     void setSettings (Setting *);
     

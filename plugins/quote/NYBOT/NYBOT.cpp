@@ -22,6 +22,7 @@
 #include "NYBOT.h"
 #include "ChartDb.h"
 #include "PrefDialog.h"
+#include "Setting.h"
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qtimer.h>
@@ -72,7 +73,7 @@ void NYBOT::parse ()
       Setting *data = new Setting;
       int loop2;
       for (loop2 = 0; loop2 < (int) keys.count(); loop2++)
-        data->set(keys[loop2], l[loop2], Setting::None);
+        data->setData(keys[loop2], l[loop2]);
 
       // symbol
       QString symbol = data->getData("commoditySymbol");
@@ -281,14 +282,19 @@ void NYBOT::parse ()
       s.append(fd->getSymbol());
       emit statusLogMessage(s);
 
-      Setting *r = new Setting;
-      r->set("Date", date, Setting::Date);
-      r->set("Open", open, Setting::Float);
-      r->set("High", high, Setting::Float);
-      r->set("Low", low, Setting::Float);
-      r->set("Close", close, Setting::Float);
-      r->set("Volume", volume, Setting::Float);
-      r->set("Open Interest", oi, Setting::Float);
+      Bar *bar = new Bar;
+      if (bar->setDate(date))
+      {
+        delete bar;
+        emit statusLogMessage("Bad date " + date);
+        continue;
+      }
+      bar->setOpen(open.toDouble());
+      bar->setHigh(high.toDouble());
+      bar->setLow(low.toDouble());
+      bar->setClose(close.toDouble());
+      bar->setVolume(volume.toDouble());
+      bar->setOI(oi.toInt());
 
       s = path;
       s.append("/");
@@ -296,22 +302,21 @@ void NYBOT::parse ()
       ChartDb *db = new ChartDb();
       db->openChart(s);
 
-      Setting *details = db->getDetails();
-      if (! details->count())
+      s = db->getDetail(ChartDb::Symbol);
+      if (! s.length())
       {
-        details->set("Format", "Open|High|Low|Close|Volume|Open Interest", Setting::None);
-        details->set("Chart Type", tr("Futures"), Setting::None);
-        details->set("Symbol", symbol, Setting::None);
-        details->set("Source", pluginName, Setting::None);
-        details->set("Futures Month", month, Setting::None);
-        details->set("Futures Type", fd->getSymbol(), Setting::None);
-        details->set("Title", fd->getName(), Setting::Text);
-        db->setFormat();
+        db->setDetail(ChartDb::Symbol, symbol);
+        db->setDetail(ChartDb::Type, "Futures");
+        db->setDetail(ChartDb::Title, fd->getName());
+        db->setDetail(ChartDb::FuturesType, fd->getSymbol());
+        db->setDetail(ChartDb::FuturesMonth, month);
+        db->setDetail(ChartDb::BarType, QString::number(BarData::Daily));
       }
-      db->setRecord(r);
-      setDataLogMessage(r);
+      
+      db->setBar(bar);
+      emit dataLogMessage(symbol + " " + bar->getString());
       delete db;
-      delete r;
+      delete bar;
     }
 
     f.close();

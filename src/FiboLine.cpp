@@ -23,8 +23,8 @@
 #include "PrefDialog.h"
 #include <qpainter.h>
 
-FiboLine::FiboLine (Scaler *s, QPixmap *p, QString indicator, QString n, QDateTime d, double v,
-                    QDateTime d2, double v2)
+FiboLine::FiboLine (Scaler *s, QPixmap *p, QString indicator, QString n, BarDate d, double v,
+                    BarDate d2, double v2)
 {
   scaler = s;
   buffer = p;
@@ -227,12 +227,12 @@ void FiboLine::prefDialog ()
   delete dialog;
 }
 
-void FiboLine::move (QDateTime d, double v)
+void FiboLine::move (BarDate d, double v)
 {
   if (! move2Flag)
   {
     // bottom left corner
-    if (d >= date2)
+    if (d.getDateValue() >= date2.getDateValue())
       return;
     
     if (v >= value)
@@ -243,14 +243,13 @@ void FiboLine::move (QDateTime d, double v)
     saveFlag = TRUE;
     emit signalDraw();
     
-    QString s = d.toString("yyyyMMdd ");
-    s.append(QString::number(v));
+    QString s = d.getDateString(TRUE) + " " + QString::number(v);
     emit message(s);
   }
   else
   {
     //top right corner
-    if (d <= date)
+    if (d.getDateValue() <= date.getDateValue())
       return;
 
     if (v <= value2)
@@ -261,8 +260,7 @@ void FiboLine::move (QDateTime d, double v)
     saveFlag = TRUE;
     emit signalDraw();
     
-    QString s = d.toString("yyyyMMdd ");
-    s.append(QString::number(v));
+    QString s = d.getDateString(TRUE) + " " + QString::number(v);
     emit message(s);
   }
 }
@@ -288,20 +286,20 @@ bool FiboLine::isClicked (int x, int y)
 Setting * FiboLine::getSettings ()
 {
   Setting *set = new Setting;
-  set->set("Color", color.name(), Setting::Color);
-  set->set("Plot", plot, Setting::None);
-  set->set("Name", name, Setting::None);
-  set->set("ObjectType", QString::number(type), Setting::None);
-  set->set("High", QString::number(value), Setting::None);
-  set->set("Low", QString::number(value2), Setting::None);
-  set->set("Start Date", date.toString("yyyy-MM-dd00:00:00"), Setting::None);
-  set->set("End Date", date2.toString("yyyy-MM-dd00:00:00"), Setting::None);
-  set->set("Line 1", QString::number(line1), Setting::None);
-  set->set("Line 2", QString::number(line2), Setting::None);
-  set->set("Line 3", QString::number(line3), Setting::None);
-  set->set("Line 4", QString::number(line4), Setting::None);
-  set->set("Line 5", QString::number(line5), Setting::None);
-  set->set("Line 6", QString::number(line6), Setting::None);
+  set->setData("Color", color.name());
+  set->setData("Plot", plot);
+  set->setData("Name", name);
+  set->setData("ObjectType", QString::number(type));
+  set->setData("High", QString::number(value));
+  set->setData("Low", QString::number(value2));
+  set->setData("Start Date", date.getDateTimeString(FALSE));
+  set->setData("End Date", date2.getDateTimeString(FALSE));
+  set->setData("Line 1", QString::number(line1));
+  set->setData("Line 2", QString::number(line2));
+  set->setData("Line 3", QString::number(line3));
+  set->setData("Line 4", QString::number(line4));
+  set->setData("Line 5", QString::number(line5));
+  set->setData("Line 6", QString::number(line6));
   return set;
 }
 
@@ -313,8 +311,8 @@ void FiboLine::setSettings (Setting *set)
   type = (ChartObject::ObjectType) set->getInt("ObjectType");
   value = set->getFloat("High");
   value2 = set->getFloat("Low");
-  date = QDateTime::fromString(set->getData("Start Date"), Qt::ISODate);
-  date2 = QDateTime::fromString(set->getData("End Date"), Qt::ISODate);
+  date.setDate(set->getData("Start Date"));
+  date2.setDate(set->getData("End Date"));
   line1 = set->getFloat("Line 1");
   line2 = set->getFloat("Line 2");
   line3 = set->getFloat("Line 3");

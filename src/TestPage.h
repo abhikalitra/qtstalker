@@ -25,7 +25,7 @@
 #include <qstring.h>
 #include <qwidget.h>
 #include <qpopupmenu.h>
-#include "Navigator.h"
+#include <qlistbox.h>
 #include "Config.h"
 
 class TestPage : public QWidget
@@ -41,13 +41,14 @@ class TestPage : public QWidget
     void renameTest ();
     void newTest ();
     void deleteTest ();
-    void testSelected (QString);
+    void testSelected (const QString &);
     void testNoSelection ();
     void rightClick (QListBoxItem *);
+    void updateList ();
 
   private:
     Config *config;
-    Navigator *nav;
+    QListBox *list;
     QPopupMenu *menu;
 };
 

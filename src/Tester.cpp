@@ -41,7 +41,7 @@
 #include "EditDialog.h"
 #include "Plugin.h"
 #include "FuturesData.h"
-#include "SymbolDialog.h"
+#include "PrefDialog.h"
 
 Tester::Tester (Config *c, QString n) : QTabDialog (0, 0, TRUE)
 {
@@ -314,8 +314,8 @@ void Tester::createTestPage ()
   gbox->setInsideSpacing(2);
   grid->addWidget(gbox, 1, 1);
 
-  symbolButton = new QPushButton(gbox);
-  connect(symbolButton, SIGNAL(clicked()), this, SLOT(symbolButtonPressed()));
+  symbolButton = new SymbolButton(gbox, config->getData(Config::DataPath), QString());
+  connect(symbolButton, SIGNAL(symbolChanged()), this, SLOT(symbolButtonPressed()));
 
   gbox = new QVGroupBox(tr("Volume"), w);
   gbox->setInsideSpacing(2);
@@ -445,15 +445,27 @@ void Tester::createReportPage ()
 
 void Tester::addIndicator ()
 {
-  bool ok;
-  QString name = QInputDialog::getText(tr("Indicator Name"),
-  				       tr("Enter a unique name for this indicator."),
-                                       QLineEdit::Normal,
-				       tr("New Indicator"),
-				       &ok,
-				       this);
-  if (! ok || ! name.length())
+  PrefDialog *idialog = new PrefDialog();
+  idialog->setCaption(tr("New Indicator"));
+  idialog->createPage (tr("Details"));
+  idialog->addComboItem(tr("Indicator"), 1, config->getIndicatorPlugins(), 0);
+  idialog->addTextItem(tr("Name"), 1, tr("New Indicator"));
+  int rc = idialog->exec();
+  if (rc == QDialog::Rejected)
+  {
+    delete idialog;
     return;
+  }
+  
+  QString name = idialog->getText(tr("Name"));
+  QString indicator = idialog->getCombo(tr("Indicator"));
+  delete idialog;
+
+  if (! name.length())
+  {
+    QMessageBox::information(this, tr("Qtstalker: Error"), tr("Indicator name missing."));
+    return;
+  }
 
   int id = buttonGroup->id(buttonGroup->selected());
   Indicator *i = 0;
@@ -479,68 +491,56 @@ void Tester::addIndicator ()
     return;
   }
 
-  QString ind = QInputDialog::getItem(tr("Add Indicator"),
-  				      tr("Choose an indicator to add"),
-				      config->getIndicatorPlugins(),
-				      0,
-				      FALSE,
-				      &ok,
-				      this);
-
-  if (! ok || ! ind.length())
-    return;
-
-  Plugin *plug = config->getPlugin(Config::IndicatorPluginPath, ind);
+  Plugin *plug = config->getPlugin(Config::IndicatorPluginPath, indicator);
   if (! plug)
   {
     qDebug("Tester::addIndicator - could not open plugin");
-    config->closePlugin(ind);
+    config->closePlugin(indicator);
     return;
   }
-  Setting *set = plug->getPluginSettings();
-  i = new Indicator;
 
-  EditDialog *dialog = new EditDialog(config);
-  dialog->setCaption(tr("Edit Indicator"));
-  dialog->hideTabs(TRUE);
-  dialog->hideToolbar(TRUE);
-
-  dialog->setItems(set);
-
-  int rc = dialog->exec();
-
-  if (rc == QDialog::Accepted)
+  rc = plug->indicatorPrefDialog();
+  
+  if (rc)
   {
-    i->parse(set->getStringList());
-    i->set("Name", name, Setting::None);
-
+    i = new Indicator;
+    QString s = config->getData(Config::TestPath) + "/" + ruleName;
+    
     switch (id)
     {
       case 0:
+        s.append("/el/");
         enterLongIndicators.insert(name, i);
         enterLongAlerts.insert(name, new Setting);
 	break;
       case 1:
+        s.append("/xl/");
         exitLongIndicators.insert(name, i);
         exitLongAlerts.insert(name, new Setting);
 	break;
       case 2:
+        s.append("/es/");
         enterShortIndicators.insert(name, i);
         enterShortAlerts.insert(name, new Setting);
 	break;
       default:
+        s.append("/xs/");
         exitShortIndicators.insert(name, i);
         exitShortAlerts.insert(name, new Setting);
 	break;
     }
 
+    s.append(name);
+    plug->saveIndicatorSettings(s);
+
+    i->setFile(s);
+    i->setName(name);
+    i->setType(indicator);
+
     item = new QListViewItem(indicatorList, name);
   }
 
-  config->closePlugin(ind);
-
-  delete set;
-  delete dialog;
+  config->closePlugin(indicator);
 }
 
 void Tester::editIndicator ()
@@ -550,12 +550,6 @@ void Tester::editIndicator ()
     return;
 
   QString name = item->text(0);
-
-  EditDialog *dialog = new EditDialog(config);
-  dialog->setCaption(tr("Edit Indicator"));
-  dialog->hideTabs(TRUE);
-  dialog->hideToolbar(TRUE);
-
   int id = buttonGroup->id(buttonGroup->selected());
   Indicator *i = 0;
   switch (id)
@@ -574,27 +568,21 @@ void Tester::editIndicator ()
       break;
   }
 
-  Plugin *plug = config->getPlugin(Config::IndicatorPluginPath, i->getData(tr("Type")));
+  Plugin *plug = config->getPlugin(Config::IndicatorPluginPath, i->getType());
   if (! plug)
   {
-    qDebug("Tester::editIndicator - could not open plugin");
-    config->closePlugin(i->getData(tr("Type")));
+    qDebug("QtstalkerApp::slotNewIndicator - could not open plugin");
+    config->closePlugin(i->getType());
     return;
   }
-  Setting *set = plug->getPluginSettings();
-  set->merge(i->getStringList());
 
-  dialog->setItems(set);
+  plug->loadIndicatorSettings(i->getFile());
+  int rc = plug->indicatorPrefDialog();
 
-  int rc = dialog->exec();
-
-  if (rc == QDialog::Accepted)
-    i->merge(set->getStringList());
-
-  config->closePlugin(i->getData(tr("Type")));
-
-  delete set;
-  delete dialog;
+  if (rc)
+    plug->saveIndicatorSettings(i->getFile());
+    
+  config->closePlugin(i->getType());
 }
 
 void Tester::deleteIndicator ()
@@ -652,23 +640,22 @@ void Tester::test ()
   if (equity == 0)
     return;
 
-  QString symbol = symbolButton->text();
+  QString symbol = symbolButton->getSymbol();
   if (! symbol.length())
     return;
 
-  QDateTime sd(startDate->date());
-  if (! sd.isValid())
+  BarDate sd;
+  sd.setDate(startDate->date().toString("yyyyMMddmmhhss"));
+  if (! sd.getDate().isValid())
     return;
 
-  QDateTime ed(endDate->date());
-  if (! ed.isValid())
+  BarDate ed;
+  ed.setDate(endDate->date().toString("yyyyMMddmmhhss"));
+  if (! ed.getDate().isValid())
     return;
 
-  QString s = config->getData(Config::DataPath);
-  s.append("/");
-  s.append(symbol);
   db = new ChartDb;
-  if (db->openChart(s))
+  if (db->openChart(symbolButton->getPath()))
   {
     delete db;
     qDebug("Tester: Cant open db");
@@ -678,7 +665,9 @@ void Tester::test ()
   while (tradeList->numRows())
     tradeList->removeRow(0);
 
-  recordList = db->getHistory(ChartDb::Daily, sd, BarData::Bars);
+  db->setBarCompression(ChartDb::Daily);
+  db->setBarRange(99999999);
+  recordList = db->getHistory();
 
   loadIndicators(0);
   loadIndicators(1);
@@ -695,8 +684,8 @@ void Tester::test ()
   for (testLoop = 0; testLoop < (int) recordList->count(); testLoop++)
   {
     currentRecord = testLoop;
-    QDateTime td = recordList->getDate(currentRecord);
-    if (td >= sd)
+    BarDate td = recordList->getDate(currentRecord);
+    if (td.getDateValue() >= sd.getDateValue())
       break;
   }
 
@@ -704,8 +693,8 @@ void Tester::test ()
   for (; testLoop < (int) recordList->count(); testLoop++)
   {
     currentRecord = testLoop;
-    QDateTime dt = recordList->getDate(currentRecord);
-    if (dt > ed)
+    BarDate dt = recordList->getDate(currentRecord);
+    if (dt.getDateValue() > ed.getDateValue())
       break;
 
     checkAlerts();
@@ -793,7 +782,7 @@ void Tester::test ()
 
 void Tester::checkAlerts ()
 {
-  QString key = recordList->getDate(currentRecord).toString("yyyyMMdd");
+  QString key = recordList->getDate(currentRecord).getDateString(FALSE);
 
   QDictIterator<Setting> it(enterLongAlerts);
   for (; it.current(); ++it)
@@ -900,11 +889,11 @@ void Tester::exitPosition (QString signal)
     type = tr("Long");
   }
 
-  Setting *details = db->getDetails();
-  if (! details->getData("Chart Type").compare(tr("Futures")))
+  QString chartType = db->getDetail(ChartDb::Type);
+  if (! chartType.compare(tr("Futures")))
   {
     FuturesData *fd = new FuturesData;
-    fd->setSymbol(details->getData("Futures Type"));
+    fd->setSymbol(db->getDetail(ChartDb::FuturesType));
     profit = fd->getRate() * profit;
     delete fd;
   }
@@ -915,9 +904,9 @@ void Tester::exitPosition (QString signal)
 
   tradeList->setNumRows(tradeList->numRows() + 1);
   tradeList->setText(tradeList->numRows() - 1, 0, type);
-  tradeList->setText(tradeList->numRows() - 1, 1, recordList->getDate(buyRecord).toString("yyyyMMdd"));
+  tradeList->setText(tradeList->numRows() - 1, 1, recordList->getDate(buyRecord).getDateString(FALSE));
   tradeList->setText(tradeList->numRows() - 1, 2, QString::number(recordList->getClose(buyRecord)));
-  tradeList->setText(tradeList->numRows() - 1, 3, recordList->getDate(currentRecord).toString("yyyyMMdd"));
+  tradeList->setText(tradeList->numRows() - 1, 3, recordList->getDate(currentRecord).getDateString(FALSE));
   tradeList->setText(tradeList->numRows() - 1, 4, QString::number(recordList->getClose(currentRecord)));
   tradeList->setText(tradeList->numRows() - 1, 5, signal);
   tradeList->setText(tradeList->numRows() - 1, 6, QString::number(profit));
@@ -1099,49 +1088,25 @@ void Tester::trailingToggled (bool status)
 
 void Tester::symbolButtonPressed ()
 {
-  SymbolDialog *dialog = new SymbolDialog(this,
-  					  config->getData(Config::DataPath),
-					  "*");
-  dialog->setCaption(tr("Select Chart"));
-
-  int rc = dialog->exec();
-
-  if (rc == QDialog::Accepted)
+  QString symbol = symbolButton->getPath();
+  
+  db = new ChartDb;
+  if (db->openChart(symbol))
   {
-    QString symbol = dialog->selectedFile();
-    symbol = symbol.remove(0, config->getData(Config::DataPath).length());
-    if (! symbol.length())
-    {
-      delete dialog;
-      return;
-    }
-
-    symbolButton->setText(symbol);
-
-    QString s = config->getData(Config::DataPath);
-    s.append("/");
-    s.append(symbol);
-    db = new ChartDb;
-    if (db->openChart(s))
-    {
-      delete db;
-      delete dialog;
-      qDebug("Tester: Cant open db");
-      return;
-    }
-    
-    Setting *details = db->getDetails();
-
-    QDateTime dt = QDateTime::fromString(details->getDateTime("First Date"), ISODate);
-    startDate->setDate(dt.date());
-
-    dt = QDateTime::fromString(details->getDateTime("Last Date"), ISODate);
-    endDate->setDate(dt.date());
-
     delete db;
+    qDebug("Tester: Cant open db");
+    return;
   }
+    
+  Bar *bar = db->getFirstBar();
+  startDate->setDate(bar->getDate().getDate());
+  delete bar;
 
-  delete dialog;
+  bar = db->getLastBar();
+  endDate->setDate(bar->getDate().getDate());
+  delete bar;
+
+  delete db;
 }
 
 void Tester::showRule (int button)
@@ -1203,25 +1168,23 @@ void Tester::loadIndicators (int button)
 
     i->clearLines();
 
-    Plugin *plug = config->getPlugin(Config::IndicatorPluginPath, i->getData(tr("Type")));
+    Plugin *plug = config->getPlugin(Config::IndicatorPluginPath, i->getType());
     if (! plug)
     {
       qDebug("Tester::loadIndicators - could not open plugin");
-      config->closePlugin(i->getData(tr("Type")));
+      config->closePlugin(i->getType());
       continue;
     }
     
     plug->setIndicatorInput(recordList);
-    plug->parse(i->getString());
+    plug->loadIndicatorSettings(i->getFile());
     plug->calculate();
 
-    QString s = i->getData(QObject::tr("Alert"));
-    if (! s.compare(QObject::tr("True")))
+    if (plug->getAlertFlag())
       i->setAlerts(plug->getAlerts());
 
     i->clearLines();
-    plug->clearOutput();
-    config->closePlugin(i->getData(tr("Type")));
+    config->closePlugin(i->getType());
   }
 }
 
@@ -1242,7 +1205,7 @@ void Tester::loadEnterLongAlerts ()
       {
         if (! flag)
         {
-          set->set(recordList->getDate(loop).toString("yyyyMMdd"), "1", Setting::None);
+          set->setData(recordList->getDate(loop).getDateString(FALSE), "1");
 	  flag = TRUE;
         }
       }
@@ -1269,7 +1232,7 @@ void Tester::loadExitLongAlerts ()
       {
         if (! flag)
         {
-          set->set(recordList->getDate(loop).toString("yyyyMMdd"), "1", Setting::None);
+          set->setData(recordList->getDate(loop).getDateString(FALSE), "1");
 	  flag = TRUE;
         }
       }
@@ -1296,7 +1259,7 @@ void Tester::loadEnterShortAlerts ()
       {
         if (! flag)
         {
-          set->set(recordList->getDate(loop).toString("yyyyMMdd"), "1", Setting::None);
+          set->setData(recordList->getDate(loop).getDateString(FALSE), "1");
 	  flag = TRUE;
         }
       }
@@ -1323,7 +1286,7 @@ void Tester::loadExitShortAlerts ()
       {
         if (! flag)
         {
-          set->set(recordList->getDate(loop).toString("yyyyMMdd"), "1", Setting::None);
+          set->setData(recordList->getDate(loop).getDateString(FALSE), "1");
 	  flag = TRUE;
         }
       }
@@ -1338,48 +1301,42 @@ void Tester::saveRule ()
   QString s = config->getData(Config::TestPath);
   s.append("/");
   s.append(ruleName);
+  s.append("/");
+  s.append(ruleName);
 
   QFile f(s);
   if (! f.open(IO_WriteOnly))
     return;
   QTextStream stream(&f);
-
+  
   QDictIterator<Indicator> it(enterLongIndicators);
   for (; it.current(); ++it)
   {
     Indicator *i = it.current();
-    s = "Enter Long=";
-    s.append(i->getString());
-    stream << s << "\n";
+    stream << "Enter Long=" + i->getName() + "," + i->getType() + "," + i->getFile() << "\n";
   }
-
+  
   QDictIterator<Indicator> it2(exitLongIndicators);
   for (; it2.current(); ++it2)
   {
     Indicator *i = it2.current();
-    s = "Exit Long=";
-    s.append(i->getString());
-    stream << s << "\n";
+    stream << "Exit Long=" + i->getName() + "," + i->getType() + "," + i->getFile() << "\n";
   }
 
   QDictIterator<Indicator> it3(enterShortIndicators);
   for (; it3.current(); ++it3)
   {
     Indicator *i = it3.current();
-    s = "Enter Short=";
-    s.append(i->getString());
-    stream << s << "\n";
+    stream << "Enter Short=" + i->getName() + "," + i->getType() + "," + i->getFile() << "\n";
   }
-
-  QDictIterator<Indicator> it4(exitShortIndicators);
+  
+  QDictIterator<Indicator> it4(enterLongIndicators);
   for (; it4.current(); ++it4)
   {
     Indicator *i = it4.current();
-    s = "Exit Short=";
-    s.append(i->getString());
-    stream << s << "\n";
+    stream << "Exit Short=" + i->getName() + "," + i->getType() + "," + i->getFile() << "\n";
   }
-
+  
   // save max loss stop
   if (maximumLossCheck->isChecked())
     s = "Maximum Loss Check=True";
@@ -1457,6 +1414,8 @@ void Tester::loadRule ()
   QString s = config->getData(Config::TestPath);
   s.append("/");
   s.append(ruleName);
+  s.append("/");
+  s.append(ruleName);
 
   QFile f(s);
   if (! f.open(IO_ReadOnly))
@@ -1476,36 +1435,48 @@ void Tester::loadRule ()
     if (! l2[0].compare("Enter Long"))
     {
       Indicator *i = new Indicator;
-      i->parse(l2[1]);
-      enterLongIndicators.insert(i->getData("Name"), i);
-      enterLongAlerts.insert(i->getData("Name"), new Setting);
+      QStringList l = QStringList::split(",", l2[1], FALSE);
+      i->setName(l[0]);
+      i->setType(l[1]);
+      i->setFile(l[2]);
+      enterLongIndicators.insert(i->getName(), i);
+      enterLongAlerts.insert(i->getName(), new Setting);
       continue;
     }
 
     if (! l2[0].compare("Exit Long"))
     {
       Indicator *i = new Indicator;
-      i->parse(l2[1]);
-      exitLongIndicators.insert(i->getData("Name"), i);
-      exitLongAlerts.insert(i->getData("Name"), new Setting);
+      QStringList l = QStringList::split(",", l2[1], FALSE);
+      i->setName(l[0]);
+      i->setType(l[1]);
+      i->setFile(l[2]);
+      exitLongIndicators.insert(i->getName(), i);
+      exitLongAlerts.insert(i->getName(), new Setting);
       continue;
     }
 
     if (! l2[0].compare("Enter Short"))
     {
       Indicator *i = new Indicator;
-      i->parse(l2[1]);
-      enterShortIndicators.insert(i->getData("Name"), i);
-      enterShortAlerts.insert(i->getData("Name"), new Setting);
+      QStringList l = QStringList::split(",", l2[1], FALSE);
+      i->setName(l[0]);
+      i->setType(l[1]);
+      i->setFile(l[2]);
+      enterShortIndicators.insert(i->getName(), i);
+      enterShortAlerts.insert(i->getName(), new Setting);
       continue;
     }
 
     if (! l2[0].compare("Exit Short"))
     {
       Indicator *i = new Indicator;
-      i->parse(l2[1]);
-      exitShortIndicators.insert(i->getData("Name"), i);
-      exitShortAlerts.insert(i->getData("Name"), new Setting);
+      QStringList l = QStringList::split(",", l2[1], FALSE);
+      i->setName(l[0]);
+      i->setType(l[1]);
+      i->setFile(l[2]);
+      exitShortIndicators.insert(i->getName(), i);
+      exitShortAlerts.insert(i->getName(), new Setting);
       continue;
     }
 

@@ -24,7 +24,7 @@
 #include <qpainter.h>
 
 TrendLine::TrendLine (Scaler *s, QPixmap *p, BarData *d, QString indicator, QString n,
-                      QDateTime dt, double v, QDateTime dt2, double v2)
+                      BarDate dt, double v, BarDate dt2, double v2)
 {
   data = d;
   scaler = s;
@@ -164,11 +164,11 @@ void TrendLine::prefDialog ()
   delete dialog;
 }
 
-void TrendLine::move (QDateTime d, double v)
+void TrendLine::move (BarDate d, double v)
 {
   if (! move2Flag)
   {
-    if (d >= date2)
+    if (d.getDateValue() >= date2.getDateValue())
       return;
     
     date = d;
@@ -176,13 +176,12 @@ void TrendLine::move (QDateTime d, double v)
     saveFlag = TRUE;
     emit signalDraw();
     
-    QString s = d.toString("yyyyMMdd ");
-    s.append(QString::number(v));
+    QString s = d.getDateString(TRUE) + " " + QString::number(v);
     emit message(s);
   }
   else
   {
-    if (d <= date)
+    if (d.getDateValue() <= date.getDateValue())
       return;
     
     date2 = d;
@@ -190,8 +189,7 @@ void TrendLine::move (QDateTime d, double v)
     saveFlag = TRUE;
     emit signalDraw();
     
-    QString s = d.toString("yyyyMMdd ");
-    s.append(QString::number(v));
+    QString s = d.getDateString(TRUE) + " " + QString::number(v);
     emit message(s);
   }
 }
@@ -217,23 +215,23 @@ bool TrendLine::isClicked (int x, int y)
 Setting * TrendLine::getSettings ()
 {
   Setting *set = new Setting;
-  set->set("Start Date", date.toString("yyyy-MM-dd00:00:00"), Setting::None);
-  set->set("End Date", date2.toString("yyyy-MM-dd00:00:00"), Setting::None);
-  set->set("Start Value", QString::number(value), Setting::None);
-  set->set("End Value", QString::number(value2), Setting::None);
-  set->set("Bar Field", barField, Setting::InputField);
-  set->set("Use Bar", QString::number(useBar), Setting::Bool);
-  set->set("Color", color.name(), Setting::Color);
-  set->set("Plot", plot, Setting::None);
-  set->set("Name", name, Setting::None);
-  set->set("ObjectType", QString::number(type), Setting::None);
+  set->setData("Start Date", date.getDateTimeString(FALSE));
+  set->setData("End Date", date2.getDateTimeString(FALSE));
+  set->setData("Start Value", QString::number(value));
+  set->setData("End Value", QString::number(value2));
+  set->setData("Bar Field", barField);
+  set->setData("Use Bar", QString::number(useBar));
+  set->setData("Color", color.name());
+  set->setData("Plot", plot);
+  set->setData("Name", name);
+  set->setData("ObjectType", QString::number(type));
   return set;
 }
 
 void TrendLine::setSettings (Setting *set)
 {
-  date = QDateTime::fromString(set->getData("Start Date"), Qt::ISODate);
-  date2 = QDateTime::fromString(set->getData("End Date"), Qt::ISODate);
+  date.setDate(set->getData("Start Date"));
+  date2.setDate(set->getData("End Date"));
   value = set->getFloat("Start Value");
   value2 = set->getFloat("End Value");
   barField = set->getData("Bar Field");

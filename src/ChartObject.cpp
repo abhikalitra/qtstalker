@@ -42,12 +42,12 @@ void ChartObject::draw (int, int)
 {
 }
 
-QDateTime ChartObject::getDate ()
+BarDate ChartObject::getDate ()
 {
   return date;
 }
 
-QDateTime ChartObject::getDate2 ()
+BarDate ChartObject::getDate2 ()
 {
   return date2;
 }
@@ -86,7 +86,7 @@ void ChartObject::unselect ()
   emit signalDraw();
 }
 
-void ChartObject::move (QDateTime, double)
+void ChartObject::move (BarDate, double)
 {
 }
 

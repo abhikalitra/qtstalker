@@ -66,13 +66,11 @@ void Index::updateIndex ()
       continue;
     }
 
-    Setting *details = db->getDetails();
-
     s = tr("Updating ");
     s.append(dir[loop]);
     emit statusLogMessage(s);
     
-    QStringList l = QStringList::split(":", details->getData("Index"), FALSE);
+    QStringList l = QStringList::split(":", db->getData("Index"), FALSE);
 
     int loop2;
     int count = 0;
@@ -93,28 +91,33 @@ void Index::updateIndex ()
       Setting *r = it.current();
       if (r->getInt("Count") == count)
       {
-        Setting *r2 = new Setting;
+        Bar *r2 = new Bar;
+        if (r2->setDate(r->getData("Date")))
+        {
+          delete r2;
+          emit statusLogMessage("Bad date " + r->getData("Date"));
+          continue;
+        }
 
-      	r2->set("Date", r->getData("Date"), Setting::Date);
-	r2->set("Close", QString::number(r->getFloat("Close") / count), Setting::Float);
-	r2->set("Volume", QString::number(r->getFloat("Volume") / count), Setting::Float);
-	r2->set("Open Interest", QString::number(r->getFloat("Open Interest") / count), Setting::Float);
-	r2->set("Open", QString::number(r->getFloat("Open") / count), Setting::Float);
-	r2->set("High", QString::number(r->getFloat("High") / count), Setting::Float);
-	r2->set("Low", QString::number(r->getFloat("Low") / count), Setting::Float);
+      	r2->setDate(r->getData("Date"));
+	r2->setClose(r->getFloat("Close") / count);
+	r2->setVolume(r->getFloat("Volume") / count);
+	r2->setOI(r->getInt("OI") / count);
+	r2->setOpen(r->getFloat("Open") / count);
+	r2->setHigh(r->getFloat("High") / count);
+	r2->setLow(r->getFloat("Low") / count);
 
-	if (r2->getFloat("Open") > r2->getFloat("High"))
-	  r2->setData("High", r2->getData("Open"));
-	if (r2->getFloat("Open") < r2->getFloat("Low"))
-	  r2->setData("Low", r2->getData("Open"));
+	if (r2->getOpen() > r2->getHigh())
+	  r2->setHigh(r2->getOpen());
+	if (r2->getOpen() < r2->getLow())
+	  r2->setLow(r2->getOpen());
 
-	if (r2->getFloat("Close") > r2->getFloat("High"))
-	  r2->setData("High", r2->getData("Close"));
-	if (r2->getFloat("Close") < r2->getFloat("Low"))
-	  r2->setData("Low", r2->getData("Close"));
+	if (r2->getClose() > r2->getHigh())
+	  r2->setHigh(r2->getClose());
+	if (r2->getClose() < r2->getLow())
+	  r2->setLow(r2->getClose());
 
-        db->setRecord(r2);
-        setDataLogMessage(r2);
+        db->setBar(r2);
 
 	delete r2;
       }
@@ -143,35 +146,33 @@ int Index::loadData (QString symbol, float weight)
     return TRUE;
   }
 
-  Setting *details = db->getDetails();
-
-  QDateTime dt = db->getDateTime(details->getData("First Date"));
-
-  BarData *recordList = db->getHistory(ChartDb::Daily, dt, BarData::Bars);
+  db->setBarRange(99999999);
+  db->setBarCompression(ChartDb::Daily);
+  BarData *recordList = db->getHistory();
 
   int loop;
   for (loop = 0; loop < (int) recordList->count(); loop++)
   {
-    Setting *r = data.find(recordList->getDate(loop).toString("yyyyMMdd000000"));
+    Setting *r = data.find(recordList->getDate(loop).getDateTimeString(FALSE));
     if (! r)
     {
       r = new Setting;
 
-      r->set("Date", recordList->getDate(loop).toString("yyyyMMdd000000"), Setting::Date);
-      r->set("Close", QString::number(recordList->getClose(loop) * weight), Setting::Float);
-      r->set("Volume", QString::number(recordList->getVolume(loop) * weight), Setting::Float);
-      r->set("Open Interest", QString::number(recordList->getOI(loop) * weight), Setting::Float);
-      r->set("Open", QString::number(recordList->getOpen(loop) * weight), Setting::Float);
-      r->set("High", QString::number(recordList->getHigh(loop) * weight), Setting::Float);
-      r->set("Low", QString::number(recordList->getLow(loop) * weight), Setting::Float);
-      r->set("Count", "1", Setting::Integer);
+      r->setData("Date", recordList->getDate(loop).getDateTimeString(FALSE));
+      r->setData("Close", QString::number(recordList->getClose(loop) * weight));
+      r->setData("Volume", QString::number(recordList->getVolume(loop) * weight));
+      r->setData("OI", QString::number(recordList->getOI(loop) * weight));
+      r->setData("Open", QString::number(recordList->getOpen(loop) * weight));
+      r->setData("High", QString::number(recordList->getHigh(loop) * weight));
+      r->setData("Low", QString::number(recordList->getLow(loop) * weight));
+      r->setData("Count", "1");
       data.insert(r->getData("Date"), r);
     }
     else
     {
       r->setData("Close", QString::number(r->getFloat("Close") + (recordList->getClose(loop) * weight)));
       r->setData("Volume", QString::number(r->getFloat("Volume") + (recordList->getVolume(loop) * weight)));
-      r->setData("Open Interest", QString::number(r->getFloat("Open Interest") + (recordList->getOI(loop) * weight)));
+      r->setData("OI", QString::number(r->getFloat("OI") + (recordList->getOI(loop) * weight)));
       r->setData("Open", QString::number(r->getFloat("Open") + (recordList->getOpen(loop) * weight)));
       r->setData("High", QString::number(r->getFloat("High") + (recordList->getHigh(loop) * weight)));
       r->setData("Low", QString::number(r->getFloat("Low") + (recordList->getLow(loop) * weight)));

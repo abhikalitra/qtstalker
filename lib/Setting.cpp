@@ -31,141 +31,45 @@ Setting::~Setting ()
 {
 }
 
-void Setting::set (QString k, QString d, Setting::Type t)
-{
-  SettingItem *set = new SettingItem;
-  set->key = k;
-  set->data = d;
-  set->type = t;
-
-  switch (t)
-  {
-    case LineType:
-      set->list.append(QObject::tr("Dot"));
-      set->list.append(QObject::tr("Dash"));
-      set->list.append(QObject::tr("Histogram"));
-      set->list.append(QObject::tr("Histogram Bar"));
-      set->list.append(QObject::tr("Line"));
-      set->list.append(QObject::tr("Invisible"));
-      break;
-    case MAType:
-      set->list.append(QObject::tr("EMA"));
-      set->list.append(QObject::tr("SMA"));
-      set->list.append(QObject::tr("Wilder"));
-      set->list.append(QObject::tr("WMA"));
-      break;
-    case InputField:
-      set->list.append(QObject::tr("Open"));
-      set->list.append(QObject::tr("High"));
-      set->list.append(QObject::tr("Low"));
-      set->list.append(QObject::tr("Close"));
-      set->list.append(QObject::tr("Volume"));
-      set->list.append(QObject::tr("Open Interest"));
-      set->list.append(QObject::tr("Average Price"));
-      set->list.append(QObject::tr("Typical Price"));
-      set->list.append(QObject::tr("Weighted Price"));
-      set->list.append(QObject::tr("HL Price"));
-      set->list.append(QObject::tr("OC Price"));
-      break;
-    default:
-      break;
-  }
-
-  dict.replace(k, set);
-}
-
 QString Setting::getData (QString k)
 {
-  SettingItem *set = dict[k];
-  if (set)
-    return set->data;
+  QString *s = dict[k];
+  if (s)
+    return s->left(s->length());
   else
     return 0;
 }
 
 double Setting::getFloat (QString k)
 {
-  SettingItem *set = dict[k];
-  if (set)
-    return set->data.toDouble();
+  QString *s = dict[k];
+  if (s)
+    return s->toFloat();
   else
     return 0;
 }
 
 int Setting::getInt (QString k)
 {
-  SettingItem *set = dict[k];
-  if (set)
-    return set->data.toInt();
+  QString *s = dict[k];
+  if (s)
+    return s->toInt();
   else
     return 0;
 }
 
 void Setting::setData (QString k, QString d)
 {
-  SettingItem *set = dict[k];
-  if (set)
-    set->data = d;
-}
-
-Setting::Type Setting::getType (QString k)
-{
-  SettingItem *set = dict[k];
-  if (set)
-    return (Setting::Type) set->type;
-  else
-    return Setting::None;
-}
-
-void Setting::setType (QString k, Setting::Type t)
-{
-  SettingItem *set = dict[k];
-  if (set)
-    set->type = t;
-}
-
-QStringList Setting::getList (QString k)
-{
-  SettingItem *set = dict[k];
-  if (set)
-    return set->list;
-  else
-    return 0;
-}
-
-void Setting::setList (QString k, QStringList l)
-{
-  SettingItem *set = dict[k];
-  if (set)
-    set->list = l;
+  dict.replace(k, new QString(d));
 }
 
 QStringList Setting::getKeyList ()
 {
   QStringList l;
 
-  QDictIterator<SettingItem> it(dict);
-  while (it.current())
-  {
+  QDictIterator<QString> it(dict);
+  for (; it.current(); ++it)
     l.append(it.currentKey());
-    ++it;
-  }
-
-  return l;
-}
-
-QStringList Setting::getStringList ()
-{
-  QStringList l;
-  QDictIterator<SettingItem> it(dict);
-  while (it.current())
-  {
-    SettingItem *item = it.current();
-    l.append(item->key);
-    l.append(item->data);
-    l.append(QString::number(item->type));
-    ++it;
-  }
 
   return l;
 }
@@ -177,28 +81,29 @@ void Setting::remove (QString k)
 
 QString Setting::getString ()
 {
-  QStringList l = getStringList();
-  return l.join(",");
+  QStringList l;
+  QDictIterator<QString> it(dict);
+  for (; it.current(); ++it)
+  {
+    QString *s = it.current();
+    l.append(it.currentKey() + "=" + s->left(s->length()));
+  }
+
+  return l.join("|");
 }
 
 void Setting::parse (QString d)
 {
   dict.clear();
 
-  QStringList l(QStringList::split(",", d, FALSE));
+  QStringList l = QStringList::split("|", d, FALSE);
 
   int loop;
-  for (loop = 0; loop < (int) l.count(); loop = loop + 3)
-    set(l[loop], l[loop + 1], (Setting::Type) l[loop + 2].toInt());
-}
-
-void Setting::parse (QStringList d)
-{
-  dict.clear();
-
-  int loop;
-  for (loop = 0; loop < (int) d.count(); loop = loop + 3)
-    set(d[loop], d[loop + 1], (Setting::Type) d[loop + 2].toInt());
+  for (loop = 0; loop < (int) l.count(); loop++)
+  {
+    QStringList l2 = QStringList::split("=", l[loop], FALSE);
+    dict.replace(l2[0], new QString(l2[1]));
+  }
 }
 
 void Setting::clear ()
@@ -209,31 +114,5 @@ void Setting::clear ()
 int Setting::count ()
 {
   return (int) dict.count();
-}
-
-QString Setting::getDateTime (QString k)
-{
-  QString date;
-
-  SettingItem *set = dict[k];
-  if (set)
-  {
-    date = set->data;
-    if (date.length() == 8)
-      date.append("000000");
-    date.insert(4, "-");
-    date.insert(7, "-");
-    date.insert(12, ":");
-    date.insert(15, ":");
-  }
-
-  return date;
-}
-
-void Setting::merge (QStringList l)
-{
-  int loop;
-  for (loop = 0; loop < (int) l.count(); loop = loop + 3)
-    setData(l[loop], l[loop + 1]);
 }
 

@@ -34,8 +34,7 @@ class MySQLPlugin : public QuotePlugin
 
     // plugin interface
     void update ();
-    Setting* getCreateDetails ();
-    void createChart (Setting*);
+    void prefDialog ();
 
   public slots:
     void performUpdate();
@@ -50,6 +49,13 @@ class MySQLPlugin : public QuotePlugin
 
   private:
     MYSQL mysql;
+    QString database;
+    QString host;
+    QString username;
+    QString password;
+    QString symbols;
+    QString sqlquery;
+    bool incremental;
 };
 
 extern "C"

@@ -39,8 +39,8 @@ EditDialog::EditDialog (Config *c) : QDialog (0, "EditDialog", TRUE)
   basebox->addWidget(tabs);
   basebox->addSpacing(5);
 
-  list = new SettingView (this, config->getData(Config::DataPath));
-  basebox->addWidget(list);
+//  list = new SettingView (this, config->getData(Config::DataPath));
+//  basebox->addWidget(list);
   basebox->addSpacing(10);
   
   QHBoxLayout *hbox = new QHBoxLayout(basebox);
@@ -63,12 +63,12 @@ EditDialog::~EditDialog ()
 void EditDialog::setItems (Setting *set)
 {
   settings = set;
-  list->setItems(set);
+//  list->setItems(set);
 }
 
 void EditDialog::saveSettings ()
 {
-  list->updateSettings();
+//  list->updateSettings();
   accept();
 }
 
@@ -89,10 +89,12 @@ void EditDialog::setButtonStatus (QString name, bool status)
 
 void EditDialog::hideSettingView (bool d)
 {
+/*
   if (d)
     list->hide();
   else
     list->show();
+*/
 }
 
 void EditDialog::hideTabs (bool d)

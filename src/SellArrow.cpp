@@ -24,7 +24,7 @@
 #include <qpainter.h>
 #include <qpointarray.h>
 
-SellArrow::SellArrow (Scaler *s, QPixmap *p, QString indicator, QString n, QDateTime d, double v)
+SellArrow::SellArrow (Scaler *s, QPixmap *p, QString indicator, QString n, BarDate d, double v)
 {
   scaler = s;
   buffer = p;
@@ -94,33 +94,32 @@ void SellArrow::prefDialog ()
   delete dialog;
 }
 
-void SellArrow::move (QDateTime d, double v)
+void SellArrow::move (BarDate d, double v)
 {
   date = d;
   value = v;
   saveFlag = TRUE;
   emit signalDraw();
   
-  QString s = d.toString("yyyyMMdd ");
-  s.append(QString::number(v));
+  QString s = d.getDateString(TRUE) + " " + QString::number(v);
   emit message(s);
 }
 
 Setting * SellArrow::getSettings ()
 {
   Setting *set = new Setting;
-  set->set("Date", date.toString("yyyy-MM-dd00:00:00"), Setting::None);
-  set->set("Value", QString::number(value), Setting::None);
-  set->set("Color", color.name(), Setting::Color);
-  set->set("Plot", plot, Setting::None);
-  set->set("Name", name, Setting::None);
-  set->set("ObjectType", QString::number(type), Setting::None);
+  set->setData("Date", date.getDateTimeString(FALSE));
+  set->setData("Value", QString::number(value));
+  set->setData("Color", color.name());
+  set->setData("Plot", plot);
+  set->setData("Name", name);
+  set->setData("ObjectType", QString::number(type));
   return set;
 }
 
 void SellArrow::setSettings (Setting *set)
 {
-  date = QDateTime::fromString(set->getData("Date"), Qt::ISODate);
+  date.setDate(set->getData("Date"));
   value = set->getFloat("Value");
   color.setNamedColor(set->getData("Color"));
   plot = set->getData("Plot");

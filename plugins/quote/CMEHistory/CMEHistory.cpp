@@ -137,11 +137,11 @@ void CMEHistory::parseHistory ()
     s2 = s.mid(31, 6);
     s2.prepend("20");
     s2.append("000000");
-    set->set("Date", s2, Setting::None);
+    set->setData("Date", s2);
 
     // csymbol
     s2 = s.mid(37, 2);
-    set->set("CSymbol", s2, Setting::None);
+    set->setData("CSymbol", s2);
 
     // symbol
     s2 = s.mid(37, 2);
@@ -189,9 +189,9 @@ void CMEHistory::parseHistory ()
         break;
     }
     s2.append(month);
-    set->set("Symbol", s2, Setting::None);
+    set->setData("Symbol", s2);
 
-    set->set("Month", month, Setting::None);
+    set->setData("Month", month);
 
     QString dec = s.mid(30, 1);
     
@@ -203,30 +203,30 @@ void CMEHistory::parseHistory ()
     // open
     s2 = s.mid(53, 9);
     s2 = s2.insert(s2.length() - dec.toInt(), ".");
-    set->set("Open", s2, Setting::None);
+    set->setData("Open", s2);
 
     // high
     s2 = s.mid(73, 9);
     s2 = s2.insert(s2.length() - dec.toInt(), ".");
-    set->set("High", s2, Setting::None);
+    set->setData("High", s2);
 
     // low
     s2 = s.mid(83, 9);
     s2 = s2.insert(s2.length() - dec.toInt(), ".");
-    set->set("Low", s2, Setting::None);
+    set->setData("Low", s2);
 
     // close
     s2 = s.mid(113, 9);
     s2 = s2.insert(s2.length() - dec.toInt(), ".");
-    set->set("Close", s2, Setting::None);
+    set->setData("Close", s2);
 
     // volume
     s2 = s.mid(122, 7);
-    set->set("Volume", s2, Setting::None);
+    set->setData("Volume", s2);
 
     // oi
     s2 = s.mid(136, 7);
-    set->set("OI", s2, Setting::None);
+    set->setData("OI", s2);
 
     parse(set);
 
@@ -313,14 +313,19 @@ void CMEHistory::parse (Setting *data)
   s.append(fd->getSymbol());
   emit statusLogMessage(s);
 
-  Setting *r = new Setting;
-  r->set("Date", data->getData("Date"), Setting::Date);
-  r->set("Open", open, Setting::Float);
-  r->set("High", high, Setting::Float);
-  r->set("Low", low, Setting::Float);
-  r->set("Close", close, Setting::Float);
-  r->set("Volume", volume, Setting::Float);
-  r->set("Open Interest", oi, Setting::Float);
+  Bar *r = new Bar;
+  if (r->setDate(data->getData("Date")))
+  {
+    delete r;
+    emit statusLogMessage("Bad date " + data->getData("Date"));
+    return;
+  }
+  r->setOpen(open.toDouble());
+  r->setHigh(high.toDouble());
+  r->setLow(low.toDouble());
+  r->setClose(close.toDouble());
+  r->setVolume(volume.toDouble());
+  r->setOI(oi.toInt());
 
   s = path;
   s.append("/");
@@ -328,22 +333,21 @@ void CMEHistory::parse (Setting *data)
   ChartDb *db = new ChartDb();
   db->openChart(s);
 
-  Setting *details = db->getDetails();
-  if (! details->count())
+  s = db->getDetail(ChartDb::Symbol);
+  if (! s.length())
   {
-    details->set("Format", "Open|High|Low|Close|Volume|Open Interest", Setting::None);
-    details->set("Chart Type", tr("Futures"), Setting::None);
-    details->set("Symbol", data->getData("Symbol"), Setting::None);
-    details->set("Source", pluginName, Setting::None);
-    details->set("Futures Month", data->getData("Month"), Setting::None);
-    details->set("Futures Type", fd->getSymbol(), Setting::None);
-    details->set("Title", fd->getName(), Setting::Text);
-    db->setFormat();
+    db->setDetail(ChartDb::Symbol, data->getData("Symbol"));
+    db->setDetail(ChartDb::Title, fd->getName());
+    db->setDetail(ChartDb::Type, "Futures");
+    db->setDetail(ChartDb::FuturesType, fd->getSymbol());
+    db->setDetail(ChartDb::FuturesMonth, data->getData("Month"));
+    db->setDetail(ChartDb::BarType, QString::number(BarData::Daily));
   }
 
-  db->setRecord(r);
-  setDataLogMessage(r);
+  db->setBar(r);
   delete db;
+  
+  emit dataLogMessage(data->getData("Symbol") + " " + r->getString());
   delete r;
 }
 

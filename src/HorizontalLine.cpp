@@ -86,7 +86,7 @@ void HorizontalLine::prefDialog ()
   delete dialog;
 }
 
-void HorizontalLine::move (QDateTime, double v)
+void HorizontalLine::move (BarDate, double v)
 {
   value = v;
   saveFlag = TRUE;
@@ -97,11 +97,11 @@ void HorizontalLine::move (QDateTime, double v)
 Setting * HorizontalLine::getSettings ()
 {
   Setting *set = new Setting;
-  set->set("Value", QString::number(value), Setting::None);
-  set->set("Color", color.name(), Setting::Color);
-  set->set("Plot", plot, Setting::None);
-  set->set("Name", name, Setting::None);
-  set->set("ObjectType", QString::number(type), Setting::None);
+  set->setData("Value", QString::number(value));
+  set->setData("Color", color.name());
+  set->setData("Plot", plot);
+  set->setData("Name", name);
+  set->setData("ObjectType", QString::number(type));
   return set;
 }
 

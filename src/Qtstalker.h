@@ -39,7 +39,7 @@
 #include "Navigator.h"
 #include "Setting.h"
 #include "ChartPage.h"
-#include "BarData.h"
+#include "ChartDb.h"
 #include "ChartObject.h"
 
 #define DEFAULT_INDICATOR_HEIGHT 125
@@ -57,7 +57,7 @@ class QtstalkerApp : public QMainWindow
     void signalGridColor (QColor);
     void signalPlotFont (QFont);
     void signalIndex (int);
-    void signalInterval(Plot::TimeInterval);
+    void signalInterval(ChartDb::BarCompression);
     void signalIndicatorPageRefresh ();
     void signalPlotDate (bool);
     void signalChartPath (QString);
@@ -86,7 +86,7 @@ class QtstalkerApp : public QMainWindow
     QString getWindowCaption ();
     void setChartType (int);
     void loadChart (QString);
-    void compressionChanged (QString);
+    void compressionChanged ();
     void addIndicatorButton (QString, bool);
     void exportChart (QString);
     void traverse(QString);
@@ -101,7 +101,6 @@ class QtstalkerApp : public QMainWindow
     void slotQuotes ();
     void slotOptions ();
     void slotDataWindow ();
-    void slotBarComboChanged (int);
     void slotNewIndicator ();
     void slotEditIndicator (QString, Plot *);
     void slotDeleteIndicator (QString, Plot *);
@@ -157,7 +156,7 @@ class QtstalkerApp : public QMainWindow
     ChartPage *chartNav;
     Plot *mainPlot;
     QDict<Plot> plotList;
-    QComboBox *barCombo;
+    QSpinBox *barCount;
     QComboBox *compressionCombo;
     QComboBox *chartTypeCombo;
     QSpinBox *pixelspace;

@@ -65,11 +65,12 @@ void Spread::updateSpread ()
       continue;
     }
 
-    Setting *details = db->getDetails();
-    Setting *tdetails = new Setting;
-    tdetails->parse(details->getString());
-    tdetails->remove("First Date");
-    tdetails->remove("Last Date");
+    QString symbol = db->getDetail(ChartDb::Symbol);
+    QString type = db->getDetail(ChartDb::Type);
+    QString title = db->getDetail(ChartDb::Title);
+    QString fs = db->getData("First Symbol");
+    QString ss = db->getData("Second Symbol");
+    QString meth = db->getData("Method");
 
     delete db;
     dir.remove(s, TRUE);
@@ -78,7 +79,6 @@ void Spread::updateSpread ()
     {
       emit statusLogMessage(tr("could not open db"));
       delete db;
-      delete tdetails;
       continue;
     }
 
@@ -86,15 +86,17 @@ void Spread::updateSpread ()
     s.append(dir[loop]);
     emit statusLogMessage(s);
 
-    details = db->getDetails();
-    details->parse(tdetails->getString());
-    delete tdetails;
-    db->saveDetails();
-    db->setFormat();
+    db->setDetail(ChartDb::Symbol, symbol);
+    db->setDetail(ChartDb::Type, type);
+    db->setDetail(ChartDb::Title, title);
+    db->setData("First Symbol", fs);
+    db->setData("Second Symbol", ss);
+    db->setData("Method", meth);
+    db->setDetail(ChartDb::BarType, "Daily");
+    
+    loadData(fs, meth);
 
-    loadData(details->getData(tr("First Symbol")), details->getData(tr("Method")));
-
-    loadData(details->getData(tr("Second Symbol")), details->getData(tr("Method")));
+    loadData(ss, meth);
 
     QDictIterator<Setting> it(data);
     for (; it.current(); ++it)
@@ -102,8 +104,22 @@ void Spread::updateSpread ()
       Setting *r = it.current();
       if (r->getInt("Count") == 2)
       {
-        db->setRecord(r);
-	setDataLogMessage(r);
+        Bar *bar = new Bar;
+        if (bar->setDate(r->getData("Date")))
+        {
+          delete bar;
+          emit statusLogMessage("Bad date " + r->getData("Date"));
+          continue;
+        }
+        bar->setOpen(r->getFloat("Open"));
+        bar->setHigh(r->getFloat("High"));
+        bar->setLow(r->getFloat("Low"));
+        bar->setClose(r->getFloat("Close"));
+        bar->setVolume(r->getFloat("Volume"));
+        bar->setOI(r->getInt("OI"));
+      
+        db->setBar(bar);
+	delete bar;
       }
     }
 
@@ -126,28 +142,26 @@ void Spread::loadData (QString symbol, QString method)
     return;
   }
 
-  Setting *details = tdb->getDetails();
-
-  QDateTime dt = tdb->getDateTime(details->getData("First Date"));
-
-  BarData *recordList = tdb->getHistory(ChartDb::Daily, dt, BarData::Bars);
+  tdb->setBarCompression(ChartDb::Daily);
+  tdb->setBarRange(99999999);
+  BarData *recordList = tdb->getHistory();
+  delete tdb;
 
   int loop;
   for (loop = 0; loop < (int) recordList->count(); loop++)
   {
-//    Setting *tr = recordList->at(loop);
-    Setting *r = data.find(recordList->getDate(loop).toString("yyyyMMdd000000"));
+    Setting *r = data.find(recordList->getDate(loop).getDateTimeString(FALSE));
     if (! r)
     {
       r = new Setting;
-      r->set("Date", recordList->getDate(loop).toString("yyyyMMdd000000"), Setting::Date);
-      r->set("Close", QString::number(recordList->getClose(loop)), Setting::Float);
-      r->set("Volume", QString::number(recordList->getVolume(loop)), Setting::Float);
-      r->set("Open Interest", QString::number(recordList->getOI(loop)), Setting::Float);
-      r->set("Open", r->getData("Close"), Setting::Float);
-      r->set("High", r->getData("Close"), Setting::Float);
-      r->set("Low", r->getData("Close"), Setting::Float);
-      r->set("Count", "1", Setting::Integer);
+      r->setData("Date", recordList->getDate(loop).getDateTimeString(FALSE));
+      r->setData("Close", QString::number(recordList->getClose(loop)));
+      r->setData("Volume", QString::number(recordList->getVolume(loop)));
+      r->setData("OI", QString::number(recordList->getOI(loop)));
+      r->setData("Open", r->getData("Close"));
+      r->setData("High", r->getData("Close"));
+      r->setData("Low", r->getData("Close"));
+      r->setData("Count", "1");
       data.insert(r->getData("Date"), r);
     }
     else
@@ -156,14 +170,14 @@ void Spread::loadData (QString symbol, QString method)
       {
         r->setData("Close", QString::number(r->getFloat("Close") - (recordList->getClose(loop))));
         r->setData("Volume", QString::number(r->getFloat("Volume") - (recordList->getVolume(loop))));
-        r->setData("Open Interest", QString::number(r->getFloat("Open Interest") - (recordList->getOI(loop))));
+        r->setData("OI", QString::number(r->getFloat("OI") - (recordList->getOI(loop))));
       }
 
       if (! method.compare(QObject::tr("Divide")))
       {
         r->setData("Close", QString::number(r->getFloat("Close") / (recordList->getClose(loop))));
         r->setData("Volume", QString::number(r->getFloat("Volume") / (recordList->getVolume(loop))));
-        r->setData("Open Interest", QString::number(r->getFloat("Open Interest") / (recordList->getOI(loop))));
+        r->setData("OI", QString::number(r->getFloat("OI") / (recordList->getOI(loop))));
       }
 
       r->setData("Open", r->getData("Close"));
@@ -174,7 +188,6 @@ void Spread::loadData (QString symbol, QString method)
   }
 
   delete recordList;
-  delete tdb;
 }
 
 void Spread::prefDialog ()

@@ -24,73 +24,46 @@
 
 #include <qlist.h>
 #include <qdict.h>
-#include <qdatetime.h>
-#include <qstringlist.h>
-#include "Setting.h"
+#include "Bar.h"
 
 class BarData
 {
   public:
-  
-    typedef struct
-    {
-      QDateTime date;
-      double open;
-      double high;
-      double low;
-      double close;
-      double volume;
-      int oi;
-    } Bar;
-    
     typedef struct
     {
       int x;
     } X;
-  
+
     enum BarType
     {
-      Bars,
-      Other
-    };
-    
-    enum BarCompression
-    {
       Daily,
-      Weekly,
-      Monthly
+      Tick
     };
-    
+      
     BarData ();
-    BarData (QStringList);
     ~BarData ();
     int count ();
-    QDateTime getDate (int);
+    BarDate getDate (int);
     double getOpen (int);
     double getHigh (int);
     double getLow (int);
     double getClose (int);
     double getVolume (int);
     int getOI (int);
-    void prepend (Setting *);
-    int getX (QDateTime);
+    void prepend (Bar *bar);
+    int getX (BarDate);
     double getMax ();
     double getMin ();
     void createDateList ();
-    double getOther (int, int);
-    BarData::BarType getType ();
-    QStringList getFormat ();
-    void setBarCompression (BarData::BarCompression);
-    BarData::BarCompression getBarCompression ();
+    void setBarType (BarData::BarType);
+    BarData::BarType getBarType ();
     
   protected:
     QList<Bar> barList;
     QDict<X> dateList;
     double high;
     double low;
-    BarType type;
-    QStringList format;
-    BarCompression compression;
+    BarData::BarType barType;
 };
 
 #endif

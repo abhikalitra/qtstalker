@@ -32,7 +32,7 @@ class HorizontalLine : public ChartObject
     HorizontalLine (Scaler *, QPixmap *, QString, QString, double);
     ~HorizontalLine ();
     void draw (int, int);
-    void move (QDateTime, double);
+    void move (BarDate, double);
     Setting * getSettings ();
     void setSettings (Setting *);
     

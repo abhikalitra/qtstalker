@@ -105,7 +105,7 @@ void ChartPage::editChart ()
   if (! symbol.length())
     return;
 
-  EditChartDialog *dialog = new EditChartDialog(config, symbol);
+  EditChartDialog *dialog = new EditChartDialog(symbol);
 
   dialog->exec();
 
@@ -154,11 +154,9 @@ void ChartPage::exportChart (QString path)
     return;
   }
 
-  Setting *details = db->getDetails();
-
   QString s = config->getData(Config::Home);
   s.append("/export/");
-  s.append(details->getData("Symbol"));
+  s.append(db->getDetail(ChartDb::Symbol));
 
   db->dump(s);
 

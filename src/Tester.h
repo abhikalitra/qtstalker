@@ -43,6 +43,7 @@
 #include "Setting.h"
 #include "ChartDb.h"
 #include "BarData.h"
+#include "SymbolButton.h"
 
 class Tester : public QTabDialog
 {
@@ -116,7 +117,7 @@ class Tester : public QTabDialog
     QLineEdit *profitEdit;
     QLineEdit *trailingEdit;
     QPushButton *testButton;
-    QPushButton *symbolButton;
+    SymbolButton *symbolButton;
     QSpinBox *entryCom;
     QSpinBox *exitCom;
     QSpinBox *account;

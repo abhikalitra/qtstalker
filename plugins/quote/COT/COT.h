@@ -20,6 +20,7 @@
  */
 
 #include "QuotePlugin.h"
+#include "Setting.h"
 #include <qstring.h>
 #include <qnetworkprotocol.h>
 #include <qurloperator.h>

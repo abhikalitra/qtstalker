@@ -151,15 +151,9 @@ void YahooDialog::newStock ()
     if (dir.exists(s, TRUE))
       continue;
 
-    ChartDb *db = new ChartDb();
-    db->openChart(s);
-    Setting *details = db->getDetails();
-    details->set("Format", "Open|High|Low|Close|Volume", Setting::None);
-    details->set("Chart Type", "Stock", Setting::None);
-    details->set("Symbol", l[loop], Setting::None);
-    details->set("Source", "Yahoo", Setting::None);
-    details->set("Title", l[loop], Setting::Text);
-    db->saveDetails();
+    ChartDb *db = new ChartDb;
+    if (db->openChart(s))
+      qDebug("YahooDialog::newStock: could not open db %s", s.latin1());
     delete db;
   }
   

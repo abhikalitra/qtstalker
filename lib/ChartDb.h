@@ -25,57 +25,66 @@
 #include <qstring.h>
 #include <qlist.h>
 #include <qstringlist.h>
-#include <qdatetime.h>
 #include <db.h>
 #include "Setting.h"
 #include "BarData.h"
-
-#define DATE_FORMAT "yyyyMMddhhmmss"
+#include "Bar.h"
+#include "BarDate.h"
 
 class ChartDb
 {
   public:
-
-    enum Compression
+    enum BarCompression
     {
+      Minute5,
+      Minute15,
+      Minute30,
+      Minute60,
       Daily,
       Weekly,
       Monthly
     };
 
+    enum Detail
+    {
+      Symbol,
+      Title,
+      Type,
+      FuturesType,
+      FuturesMonth,
+      BarType
+    };
+      
     ChartDb ();
     ~ChartDb ();
     int openChart (QString);
     QString getData (QString);
     void setData (QString, QString);
     void deleteData (QString);
-    BarData * getDailyHistory ();
-    BarData * getWeeklyHistory ();
-    BarData * getMonthlyHistory ();
-    QDateTime getDateTime (QString);
-    Setting * getRecord (QString, QString);
-    void deleteRecord (Setting *);
-    void setRecord (Setting *);
-    BarData * getHistory (Compression, QDateTime, BarData::BarType);
-    void loadDetails ();
-    Setting * getDetails ();
-    void saveDetails ();
+    Bar * getBar (QString, QString);
+    void setBar (Bar *);
+    BarData * getHistory ();
     void dump (QString);
-    void setFormat ();
-
-    QStringList getChartObjects ();
-    Setting * getChartObject (QString);
+    void setBarCompression (ChartDb::BarCompression);
+    ChartDb::BarCompression getBarCompression ();
+    void setBarRange (int);
+    int getBarRange ();
+    QStringList getBarCompressionList ();
+    Bar * getLastBar ();
+    Bar * getFirstBar ();
+    BarDate getPrevDate (BarDate);
+    QStringList getChartObjectsList ();    
+    QList<Setting> * getChartObjects ();
     void setChartObject (QString, Setting *);
     void deleteChartObject (QString);
+    QString getDetail (Detail);
+    void setDetail (Detail, QString);
 
   private:
     QString dataPath;
     DB *db;
-    QDateTime startDate;
-    Compression compression;
-    Setting *details;
-    QStringList format;
-    BarData::BarType barType;
+    int barRange;
+    BarCompression barCompression;
 };
 
 #endif

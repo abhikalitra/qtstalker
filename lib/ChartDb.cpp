@@ -25,20 +25,19 @@
 #include <qdatetime.h>
 #include <qtextstream.h>
 #include <qfile.h>
+#include <qdir.h>
 
 ChartDb::ChartDb ()
 {
   db = 0;
-  details = 0;
+  barCompression = Daily;
+  barRange = 275;
 }
 
 ChartDb::~ChartDb ()
 {
   if (db)
     db->close(db, 0);
-
-  if (details)
-    delete details;
 }
 
 int ChartDb::openChart (QString path)
@@ -46,10 +45,7 @@ int ChartDb::openChart (QString path)
   if (db_open((char *) path.latin1(), DB_BTREE, DB_CREATE, 0664, NULL, NULL, &db) != 0)
     return TRUE;
   else
-  {
-    loadDetails();
     return FALSE;
-  }
 }
 
 QString ChartDb::getData (QString k)
@@ -62,10 +58,8 @@ QString ChartDb::getData (QString k)
   key.data = (char *) k.latin1();
   key.size = k.length() + 1;
 
-  db->get(db, NULL, &key, &data, 0);
-
   QString s;
-  if (data.size)
+  if (db->get(db, NULL, &key, &data, 0) == 0)
     s = (char *) data.data;
 
   return s;
@@ -98,423 +92,207 @@ void ChartDb::deleteData (QString k)
   db->del(db, NULL, &key, 0);
 }
 
-BarData * ChartDb::getHistory (Compression c, QDateTime sd, BarData::BarType bt)
+BarData * ChartDb::getHistory ()
 {
-  compression = c;
-  startDate = sd;
-  barType = bt;
+  DBT key;
+  DBT data;
+  DBC *cursor;
+  memset(&key, 0, sizeof(DBT));
+  memset(&data, 0, sizeof(DBT));
+  
+  BarData *barData = new BarData;
+  QString s = getDetail(ChartDb::BarType);
+  barData->setBarType((BarData::BarType) s.toInt());
+  Bar *bar = 0;
+  int barCount = 0;
+  BarDate prevDate;
 
-  switch (compression)
+  db->cursor(db, NULL, &cursor, 0);
+  
+  while (! cursor->c_get(cursor, &key, &data, DB_PREV))
   {
+    if (key.size != 15)
+      continue;
+    
+    BarDate dt;
+    if (dt.setDate((char *) key.data))
+      continue;
+
+    if (barCount >= barRange)
+      break;
+
+    if (! bar)
+    {
+      bar = getBar((char *) key.data, (char *) data.data);
+      prevDate = getPrevDate(dt);
+      continue;
+    }
+      
+    if (dt.getDateValue() < prevDate.getDateValue())
+    {
+      barData->prepend(bar);
+      barCount++;
+      
+      bar = getBar((char *) key.data, (char *) data.data);
+      if (barData->getBarType() == BarData::Tick)
+        bar->setDate(prevDate.getDateTimeString(FALSE));
+      prevDate = getPrevDate(dt);
+    }
+    else
+    {
+      Bar *tbar = getBar((char *) key.data, (char *) data.data);
+    
+      bar->setOpen(tbar->getOpen());
+      
+      if (tbar->getHigh() > bar->getHigh())
+        bar->setHigh(tbar->getHigh());
+	
+      if (tbar->getLow() < bar->getLow())
+        bar->setLow(tbar->getLow());
+	
+      bar->setVolume(bar->getVolume() + tbar->getVolume());
+	
+      bar->setOI(bar->getOI() + tbar->getOI());
+	
+      delete tbar;
+    }
+  }
+  
+  if (bar)
+    barData->prepend(bar);
+  
+  cursor->c_close(cursor);
+  
+  barData->createDateList();
+  
+  return barData;
+}
+
+BarDate ChartDb::getPrevDate (BarDate date)
+{
+  BarDate dt;
+  dt.setDate(date.getDateTimeString(FALSE));
+  QDate dt2;
+  
+  switch(barCompression)
+  {
+    case Minute5:
+      dt.setTime(date.getHour(), 0, 0);
+      while (dt.getDateValue() < date.getDateValue())
+        dt.addMinutes(5);
+      dt.subMinutes(5);
+      break;
+    case Minute15:
+      dt.setTime(date.getHour(), 0, 0);
+      while (dt.getDateValue() < date.getDateValue())
+        dt.addMinutes(15);
+      dt.subMinutes(15);
+      break;
+    case Minute30:
+      if (dt.getMinute() < 30)
+        dt.setTime(dt.getHour(), 0, 0);
+      else
+        dt.setTime(dt.getHour(), 30, 0);
+      break;
+    case Minute60:
+      dt.setTime(dt.getHour(), 0, 0);
+      break;
+    case Daily:
+      dt.setTime(0, 0, 0);
+      break;
     case Weekly:
-      return getWeeklyHistory();
+      dt2 = dt.getDate();
+      dt2 = dt2.addDays(-(dt2.dayOfWeek() - 1));
+      dt.setDate(dt2);
+      dt.setTime(0, 0, 0);
       break;
     case Monthly:
-      return getMonthlyHistory();
+      dt.setDate(QDate(dt.getDate().year(), dt.getDate().month(), 1));
+      dt.setTime(0, 0, 0);
       break;
     default:
-      return getDailyHistory();
       break;
   }
-}
-
-BarData * ChartDb::getDailyHistory ()
-{
-  DBT key;
-  DBT data;
-  DBC *cursor;
-  memset(&key, 0, sizeof(DBT));
-  memset(&data, 0, sizeof(DBT));
-
-  db->cursor(db, NULL, &cursor, 0);
   
-  BarData *recordList;
-  if (barType == BarData::Other)
-    recordList = new BarData(format);
-  else
-    recordList = new BarData;
-    
-  recordList->setBarCompression(BarData::Daily);
-
-  while (! cursor->c_get(cursor, &key, &data, DB_PREV))
-  {
-    QDateTime dt = getDateTime((char *) key.data);
-    if (! dt.isValid())
-      continue;
-
-    if (dt < startDate)
-      break;
-
-    recordList->prepend(getRecord((char *) key.data, (char *) data.data));
-  }
-
-  cursor->c_close(cursor);
-  
-  recordList->createDateList();
-  
-  return recordList;
-}
-
-BarData * ChartDb::getWeeklyHistory ()
-{
-  DBT key;
-  DBT data;
-  DBC *cursor;
-  memset(&key, 0, sizeof(DBT));
-  memset(&data, 0, sizeof(DBT));
-
-  db->cursor(db, NULL, &cursor, 0);
-
-  Setting *tr = 0;
-  QDateTime tdate = QDateTime::currentDateTime();
-  
-  BarData *recordList;
-  if (barType == BarData::Other)
-    recordList = new BarData(format);
-  else
-    recordList = new BarData;
-    
-  recordList->setBarCompression(BarData::Weekly);
-
-  while (! cursor->c_get(cursor, &key, &data, DB_PREV))
-  {
-    QDateTime dt = getDateTime((char *) key.data);
-    if (! dt.isValid())
-      continue;
-
-    if (dt < startDate)
-      break;
-
-    Setting *r = getRecord((char *) key.data, (char *) data.data);
-
-    if (dt <= tdate)
-    {
-      if (tr)
-        recordList->prepend(tr);
-
-      tr = new Setting;
-      tr->parse(r->getString());
-      tdate = dt.addDays(- dt.date().dayOfWeek());
-    }
-    else
-    {
-      QString s = r->getData("Open");
-      if (s.length())
-        tr->setData("Open", r->getData("Open"));
-
-      s = r->getData("High");
-      if (s.length())
-      {
-        if (r->getFloat("High") > tr->getFloat("High"))
-          tr->setData("High", r->getData("High"));
-      }
-
-      s = r->getData("Low");
-      if (s.length())
-      {
-        if (r->getFloat("Low") < tr->getFloat("Low"))
-          tr->setData("Low", r->getData("Low"));
-      }
-
-      s = r->getData("Volume");
-      if (s.length())
-        tr->setData("Volume", QString::number(tr->getFloat("Volume") + r->getFloat("Volume")));
-
-      s = r->getData("Open Interest");
-      if (s.length())
-      {
-        if (r->getFloat("Open Interest") > tr->getFloat("Open Interest"))
-          tr->setData("Open Interest", r->getData("Open Interest"));
-      }
-    }
-
-    delete r;
-  }
-
-  if (tr)
-    recordList->prepend(tr);
-
-  cursor->c_close(cursor);
-
-  recordList->createDateList();
-  
-  return recordList;
-}
-
-BarData * ChartDb::getMonthlyHistory ()
-{
-  DBT key;
-  DBT data;
-  DBC *cursor;
-  memset(&key, 0, sizeof(DBT));
-  memset(&data, 0, sizeof(DBT));
-
-  db->cursor(db, NULL, &cursor, 0);
-
-  int month = -1;
-  Setting *tr = 0;
-
-  BarData *recordList;
-  if (barType == BarData::Other)
-    recordList = new BarData(format);
-  else
-    recordList = new BarData;
-    
-  recordList->setBarCompression(BarData::Monthly);
-
-  while (! cursor->c_get(cursor, &key, &data, DB_PREV))
-  {
-    QDateTime dt = getDateTime((char *) key.data);
-    if (! dt.isValid())
-      continue;
-
-    if (dt < startDate)
-      break;
-
-    Setting *r = getRecord((char *) key.data, (char *) data.data);
-
-    if (dt.date().month() != month)
-    {
-      if (tr)
-        recordList->prepend(tr);
-
-      tr = new Setting;
-      tr->parse(r->getString());
-      month = dt.date().month();
-    }
-    else
-    {
-      QString s = r->getData("Open");
-      if (s.length())
-        tr->setData("Open", r->getData("Open"));
-
-      s = r->getData("High");
-      if (s.length())
-      {
-        if (r->getFloat("High") > tr->getFloat("High"))
-          tr->setData("High", r->getData("High"));
-      }
-
-      s = r->getData("Low");
-      if (s.length())
-      {
-        if (r->getFloat("Low") < tr->getFloat("Low"))
-          tr->setData("Low", r->getData("Low"));
-      }
-
-      s = r->getData("Volume");
-      if (s.length())
-        tr->setData("Volume", QString::number(tr->getFloat("Volume") + r->getFloat("Volume")));
-
-      s = r->getData("Open Interest");
-      if (s.length())
-      {
-        if (r->getFloat("Open Interest") > tr->getFloat("Open Interest"))
-          tr->setData("Open Interest", r->getData("Open Interest"));
-      }
-    }
-
-    delete r;
-  }
-
-  if (tr)
-    recordList->prepend(tr);
-
-  cursor->c_close(cursor);
-
-  recordList->createDateList();
-  
-  return recordList;
-}
-
-QDateTime ChartDb::getDateTime (QString d)
-{
-  QDateTime dt;
-
-  if (d.length() != 14)
-    return dt;
-
-  QString s = d;
-  s.insert(4, "-");
-  s.insert(7, "-");
-  s.insert(12, ":");
-  s.insert(15, ":");
-  dt = QDateTime::fromString(s, Qt::ISODate);
-
   return dt;
 }
 
-void ChartDb::setRecord (Setting *set)
-{
-  QString date = set->getData("Date");
-  if (date.length() != 14)
-    return;
-
-  QStringList l;
-  int loop;
-  for (loop = 0; loop < (int) format.count(); loop++)
-    l.append(set->getData(format[loop]));
-
-  setData(date, l.join(","));
-
-  QDateTime dt = getDateTime(date);
-
-  QDateTime dt2 = getDateTime(details->getData("First Date"));
-  if (dt2.isValid())
-  {
-    if (dt < dt2)
-      details->setData("First Date", dt.toString(DATE_FORMAT));
-  }
-  else
-    details->set("First Date", dt.toString(DATE_FORMAT), Setting::None);
-
-  dt2 = getDateTime(details->getData("Last Date"));
-  if (dt2.isValid())
-  {
-    if (dt > dt2)
-      details->setData("Last Date", dt.toString(DATE_FORMAT));
-  }
-  else
-    details->set("Last Date", dt.toString(DATE_FORMAT), Setting::None);
-
-  saveDetails();
-}
-
-void ChartDb::deleteRecord (Setting *set)
-{
-  QString date = set->getData("Date");
-  if (date.length() != 14)
-    return;
-
-  deleteData(date);
-  
-  DBT key;
-  DBT data;
-  DBC *cursor;
-  memset(&key, 0, sizeof(DBT));
-  memset(&data, 0, sizeof(DBT));
-
-  bool flag = FALSE;
-  db->cursor(db, NULL, &cursor, 0);
-  while (! cursor->c_get(cursor, &key, &data, DB_NEXT))
-  {
-    QDateTime dt = getDateTime((char *) key.data);
-    if (! dt.isValid())
-      continue;
-    else
-    {
-      details->setData("First Date", dt.toString(DATE_FORMAT));
-      flag = TRUE;
-      break;
-    }
-  }
-  cursor->c_close(cursor);
-  if (! flag)
-    details->remove("First Date");
-
-  flag = FALSE;
-  db->cursor(db, NULL, &cursor, 0);
-  while (! cursor->c_get(cursor, &key, &data, DB_PREV))
-  {
-    QDateTime dt = getDateTime((char *) key.data);
-    if (! dt.isValid())
-      continue;
-    else
-    {
-      details->setData("Last Date", dt.toString(DATE_FORMAT));
-      flag = TRUE;
-      break;
-    }
-  }
-  cursor->c_close(cursor);
-  if (! flag)
-    details->remove("Last Date");
-
-  saveDetails();
-}
-
-Setting * ChartDb::getRecord (QString k, QString d)
+Bar * ChartDb::getBar (QString k, QString d)
 {
   QStringList l = QStringList::split(",", d, FALSE);
 
-  Setting *r = new Setting;
-  r->set("Date", k, Setting::Date);
-
-  int loop;
-  for (loop = 0; loop < (int) format.count(); loop++)
-    r->set(format[loop], l[loop], Setting::Float);
-
-  return r;
+  Bar *bar = new Bar;
+  bar->setDate(k);
+  bar->setOpen(l[0].toDouble());
+  bar->setHigh(l[1].toDouble());
+  bar->setLow(l[2].toDouble());
+  bar->setClose(l[3].toDouble());
+  bar->setVolume(l[4].toDouble());
+  bar->setOI(l[5].toInt());
+  
+  return bar;
 }
 
-QStringList ChartDb::getChartObjects ()
+void ChartDb::setBar (Bar *bar)
+{
+  QString k = bar->getDate().getDateTimeString(FALSE);
+  QStringList l;
+  l.append(QString::number(bar->getOpen()));
+  l.append(QString::number(bar->getHigh()));
+  l.append(QString::number(bar->getLow()));
+  l.append(QString::number(bar->getClose()));
+  l.append(QString::number(bar->getVolume()));
+  l.append(QString::number(bar->getOI()));
+  QString d = l.join(",");  
+  
+  setData(k, d);
+}
+
+QStringList ChartDb::getChartObjectsList ()
 {
   QStringList l;
-  QString s = getData("CHART_OBJECT_LIST");
+  QString s = getData("CHARTOBJECTS");
   if (s.length())
-    return QStringList::split(",", s, FALSE);
-  else
-    return l;
+    l = QStringList::split(",", s, FALSE);
+  return l;
 }
 
-Setting * ChartDb::getChartObject (QString d)
+QList<Setting> *ChartDb::getChartObjects ()
 {
-  Setting *set = 0;
-  QString s = "CHART_OBJECT_";
-  s.append(d);
-  s = getData(s);
-  if (s.length())
-  {
-    set = new Setting;
-    set->parse(s);
-  }
+  QList<Setting> *list = new QList<Setting>;
+  list->setAutoDelete(TRUE);
 
-  return set;
+  QStringList l = getChartObjectsList();
+  int loop;
+  for (loop = 0; loop < (int) l.count(); loop++)
+  {
+    Setting *set = new Setting;
+    set->parse(getData(l[loop]));
+    list->append(set);
+  }  
+  
+  return list;
 }
 
 void ChartDb::setChartObject (QString d, Setting *set)
 {
-  QString s = "CHART_OBJECT_";
-  s.append(d);
-  setData(s, set->getString());
-
-  QStringList l = getChartObjects();
-  if (l.findIndex(d) == -1)
-  {
-    l.append(d);
-    setData("CHART_OBJECT_LIST", l.join(","));
-  }
+  QStringList l = getChartObjectsList();
+  l.append(d);
+  setData("CHARTOBJECTS", l.join(","));
+  
+  setData(d, set->getString());
 }
 
 void ChartDb::deleteChartObject (QString d)
 {
-  QStringList l = getChartObjects();
+  QStringList l = getChartObjectsList();
   l.remove(d);
   if (l.count())
-    setData("CHART_OBJECT_LIST", l.join(","));
+    setData("CHARTOBJECTS", l.join(","));
   else
-    setData("CHART_OBJECT_LIST", "");
+    setData("CHARTOBJECTS", "");
 
-  QString s = "CHART_OBJECT_";
-  s.append(d);
-  deleteData(s);
-}
-
-void ChartDb::saveDetails ()
-{
-  setData("DETAILS", details->getString());
-}
-
-Setting * ChartDb::getDetails ()
-{
-  return details;
-}
-
-void ChartDb::loadDetails ()
-{
-  details = new Setting;
-  details->parse(getData("DETAILS"));
-  setFormat();
+  deleteData(d);
 }
 
 void ChartDb::dump (QString d)
@@ -539,11 +317,148 @@ void ChartDb::dump (QString d)
   outFile.close();
 }
 
-void ChartDb::setFormat ()
+QStringList ChartDb::getBarCompressionList ()
 {
-  format = QStringList::split("|", details->getData("Format"), FALSE);
+  QStringList l;
+  l.append(QObject::tr("5 Minute"));
+  l.append(QObject::tr("15 Minute"));
+  l.append(QObject::tr("30 Minute"));
+  l.append(QObject::tr("60 Minute"));
+  l.append(QObject::tr("Daily"));
+  l.append(QObject::tr("Weekly"));
+  l.append(QObject::tr("Monthly"));
+  return l;  
 }
 
+void ChartDb::setBarCompression (ChartDb::BarCompression d)
+{
+  barCompression = d;
+}
 
+ChartDb::BarCompression ChartDb::getBarCompression ()
+{
+  return barCompression;
+}
 
+void ChartDb::setBarRange (int d)
+{
+  barRange = d;
+}
+
+int ChartDb::getBarRange ()
+{
+  return barRange;
+}
+
+Bar * ChartDb::getLastBar ()
+{
+  DBT key;
+  DBT data;
+  DBC *cursor;
+  memset(&key, 0, sizeof(DBT));
+  memset(&data, 0, sizeof(DBT));
+  Bar *bar = 0;
+
+  db->cursor(db, NULL, &cursor, 0);
+  while (! cursor->c_get(cursor, &key, &data, DB_PREV))
+  {
+    if (key.size != 15)
+      continue;
+    
+    BarDate dt;
+    if (dt.setDate((char *) key.data))
+      continue;
+
+    bar = getBar((char *) key.data, (char *) data.data);
+    break;
+  }
+  cursor->c_close(cursor);
+  
+  return bar;
+}
+
+Bar * ChartDb::getFirstBar ()
+{
+  DBT key;
+  DBT data;
+  DBC *cursor;
+  memset(&key, 0, sizeof(DBT));
+  memset(&data, 0, sizeof(DBT));
+  Bar *bar = 0;
+
+  db->cursor(db, NULL, &cursor, 0);
+  while (! cursor->c_get(cursor, &key, &data, DB_NEXT))
+  {
+    if (key.size != 15)
+      continue;
+    
+    BarDate dt;
+    if (dt.setDate((char *) key.data))
+      continue;
+
+    bar = getBar((char *) key.data, (char *) data.data);
+    break;
+  }
+  cursor->c_close(cursor);
+  
+  return bar;
+}
+
+void ChartDb::setDetail (Detail k, QString d)
+{
+  switch (k)
+  {
+    case Symbol:
+      setData("Symbol", d);
+      break;
+    case Title:
+      setData("Title", d);
+      break;
+    case Type:
+      setData("Type", d);
+      break;
+    case FuturesType:
+      setData("FuturesType", d);
+      break;
+    case FuturesMonth:
+      setData("FuturesMonth", d);
+      break;
+    case BarType:
+      setData("BarType", d);
+      break;
+    default:
+      break;
+  }
+}
+
+QString ChartDb::getDetail (Detail k)
+{
+  QString s;
+  
+  switch (k)
+  {
+    case Symbol:
+      s = getData("Symbol");
+      break;
+    case Title:
+      s = getData("Title");
+      break;
+    case Type:
+      s = getData("Type");
+      break;
+    case FuturesType:
+      s = getData("FuturesType");
+      break;
+    case FuturesMonth:
+      s = getData("FuturesMonth");
+      break;
+    case BarType:
+      s = getData("BarType");
+      break;
+    default:
+      break;
+  }
+  
+  return s;
+}
 

@@ -69,7 +69,7 @@ PortfolioDialog::PortfolioDialog (Config *c, QString p) : QTabDialog (0, "Portfo
 
   plist = new QListView(w);
   plist->setSelectionMode(QListView::Single);
-  plist->addColumn(QObject::tr("Ticker"), -1);
+  plist->addColumn(QObject::tr("Symbol"), -1);
   plist->addColumn(QObject::tr("L/S"), -1);
   plist->addColumn(QObject::tr("Vol"), -1);
   plist->addColumn(QObject::tr("Buy"), -1);
@@ -147,13 +147,21 @@ void PortfolioDialog::updatePortfolioItems ()
       continue;
     }
 
-    Setting *details = db->getDetails();
+    QString type = db->getDetail(ChartDb::Type);
+    QString futuresType = db->getDetail(ChartDb::FuturesType);
+    Bar *bar = db->getLastBar();
+    
+    delete db;
+    
+    if (! bar)
+    {
+      delete bar;
+      continue;
+    }
+    
+    item->setText(4, bar->getDate().getDateString(TRUE));
 
-    QDateTime dt = QDateTime::fromString(details->getDateTime("Last Date"), Qt::ISODate);
-    item->setText(4, dt.toString("yyyyMMdd"));
-
-    Setting *r = db->getRecord(dt.toString(DATE_FORMAT), db->getData(dt.toString(DATE_FORMAT)));
-    QString last = r->getData("Close");
+    QString last = QString::number(bar->getClose());
     item->setText(5, last);
 
     float total;
@@ -162,13 +170,12 @@ void PortfolioDialog::updatePortfolioItems ()
     else
       total = volume.toFloat() * (price.toFloat() - last.toFloat());
 
-    QString type = details->getData("Chart Type");
     if (! type.compare("Futures"))
-      total = futuresProfit(details->getData("Futures Type"), total);
+      total = futuresProfit(futuresType, total);
 
     item->setText(6, QString::number(total));
-
-    delete db;
+    
+    delete bar;
   }
 }
 

@@ -29,10 +29,10 @@ class TrendLine : public ChartObject
   Q_OBJECT
 
   public:
-    TrendLine (Scaler *, QPixmap *, BarData *, QString, QString, QDateTime, double, QDateTime, double);
+    TrendLine (Scaler *, QPixmap *, BarData *, QString, QString, BarDate, double, BarDate, double);
     ~TrendLine ();
     void draw (int, int);
-    void move (QDateTime, double);
+    void move (BarDate, double);
     Setting * getSettings ();
     void setSettings (Setting *);
     bool isClicked (int, int);

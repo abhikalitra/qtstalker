@@ -190,13 +190,28 @@ void CSV::parse ()
 
       if (r)
       {
+        Bar *bar = new Bar;
+        if (bar->setDate(r->getData("Date")))
+        {
+          delete bar;
+          emit statusLogMessage("Bad date " + r->getData("Date"));
+	  delete r;
+          continue;
+        }
+        bar->setOpen(r->getFloat("Open"));
+        bar->setHigh(r->getFloat("High"));
+        bar->setLow(r->getFloat("Low"));
+        bar->setClose(r->getFloat("Close"));
+        bar->setVolume(r->getFloat("Volume"));
+        bar->setOI(r->getInt("OI"));
+      
         if (! symbol.length())
 	{
 	  s = path;
 	  s.append(r->getData("Symbol"));
 	  openDb(s, r->getData("Symbol"), type);
-          db->setRecord(r);
-	  setDataLogMessage(r);
+          db->setBar(bar);
+	  emit dataLogMessage(r->getData("Symbol") + " " + bar->getString());
           delete db;
 	  db = 0;
           s = tr("Updating ");
@@ -204,15 +219,15 @@ void CSV::parse ()
 	}
 	else
 	{
-          db->setRecord(r);
-	  setDataLogMessage(r);
+          db->setBar(bar);
+	  emit dataLogMessage(r->getData("Symbol") + " " + bar->getString());
           s = tr("Updating ");
           s.append(symbol);
 	}
 
         emit statusLogMessage(s);
-
         delete r;
+	delete bar;
       }
     }
 
@@ -352,56 +367,25 @@ QDate CSV::getDate (QString d)
   return date;
 }
 
-void CSV::newChart (Setting *details)
-{
-  while (1)
-  {
-    if (! format.compare("DOHLCV") || ! format.compare("SDOHLCV"))
-    {
-      details->set("Format", "Open|High|Low|Close|Volume", Setting::None);
-      break;
-    }
-
-    if (! format.compare("DOHLCVI"))
-    {
-      details->set("Format", "Open|High|Low|Close|Volume|Open Interest", Setting::None);
-      break;
-    }
-
-    if (! format.compare("DTOHLC"))
-    {
-      details->set("Format", "Open|High|Low|Close", Setting::None);
-      break;
-    }
-
-    break;
-  }
-}
-
 void CSV::openDb (QString path, QString symbol, QString type)
 {
   db = new ChartDb();
   db->openChart(path);
 
-  Setting *details = db->getDetails();
-  if (! details->count())
+  QString s = db->getDetail(ChartDb::Symbol);
+  if (! s.length())
   {
-    newChart(details);
-
-    details->set("Chart Type", type, Setting::None);
-    details->set("Symbol", symbol, Setting::None);
+    db->setDetail(ChartDb::Symbol, symbol);
+    db->setDetail(ChartDb::Type, type);
 
     if (! type.compare("Futures"))
     {
-      details->set("Futures Type", fd.getSymbol(), Setting::None);
-      details->set("Futures Month", futuresMonth, Setting::None);
-      details->set("Title", fd.getName(), Setting::Text);
+      db->setDetail(ChartDb::FuturesType, fd.getSymbol());
+      db->setDetail(ChartDb::FuturesMonth, futuresMonth);
+      db->setDetail(ChartDb::Title, fd.getName());
     }
     else
-      details->set("Title", symbol, Setting::Text);
-
-    db->saveDetails();
-    db->setFormat();
+      db->setDetail(ChartDb::Title, type);
   }
 }
 
@@ -484,12 +468,12 @@ Setting * CSV::getDOHLCV (QStringList l)
   }
 
   r = new Setting;
-  r->set("Date", date, Setting::Date);
-  r->set("Open", open, Setting::Float);
-  r->set("High", high, Setting::Float);
-  r->set("Low", low, Setting::Float);
-  r->set("Close", close, Setting::Float);
-  r->set("Volume", volume, Setting::Float);
+  r->setData("Date", date);
+  r->setData("Open", open);
+  r->setData("High", high);
+  r->setData("Low", low);
+  r->setData("Close", close);
+  r->setData("Volume", volume);
 
   return r;
 }
@@ -580,13 +564,13 @@ Setting * CSV::getDOHLCVI (QStringList l)
   }
 
   r = new Setting;
-  r->set("Date", date, Setting::Date);
-  r->set("Open", open, Setting::Float);
-  r->set("High", high, Setting::Float);
-  r->set("Low", low, Setting::Float);
-  r->set("Close", close, Setting::Float);
-  r->set("Volume", volume, Setting::Float);
-  r->set("Open Interest", oi, Setting::Float);
+  r->setData("Date", date);
+  r->setData("Open", open);
+  r->setData("High", high);
+  r->setData("Low", low);
+  r->setData("Close", close);
+  r->setData("Volume", volume);
+  r->setData("OI", oi);
 
   return r;
 }
@@ -663,11 +647,11 @@ Setting * CSV::getDTOHLC (QStringList l)
   }
 
   r = new Setting;
-  r->set("Date", date, Setting::Date);
-  r->set("Open", open, Setting::Float);
-  r->set("High", high, Setting::Float);
-  r->set("Low", low, Setting::Float);
-  r->set("Close", close, Setting::Float);
+  r->setData("Date", date);
+  r->setData("Open", open);
+  r->setData("High", high);
+  r->setData("Low", low);
+  r->setData("Close", close);
 
   return r;
 }
@@ -754,13 +738,13 @@ Setting * CSV::getSDOHLCV (QStringList l)
   }
 
   r = new Setting;
-  r->set("Symbol", symbol, Setting::Text);
-  r->set("Date", date, Setting::Date);
-  r->set("Open", open, Setting::Float);
-  r->set("High", high, Setting::Float);
-  r->set("Low", low, Setting::Float);
-  r->set("Close", close, Setting::Float);
-  r->set("Volume", volume, Setting::Float);
+  r->setData("Symbol", symbol);
+  r->setData("Date", date);
+  r->setData("Open", open);
+  r->setData("High", high);
+  r->setData("Low", low);
+  r->setData("Close", close);
+  r->setData("Volume", volume);
 
   return r;
 }

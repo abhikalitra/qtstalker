@@ -29,10 +29,10 @@ class SellArrow : public ChartObject
   Q_OBJECT
 
   public:
-    SellArrow (Scaler *, QPixmap *, QString, QString, QDateTime, double);
+    SellArrow (Scaler *, QPixmap *, QString, QString, BarDate, double);
     ~SellArrow ();
     void draw (int, int);
-    void move (QDateTime, double);
+    void move (BarDate, double);
     Setting * getSettings ();
     void setSettings (Setting *);
     

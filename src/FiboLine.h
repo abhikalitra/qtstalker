@@ -29,11 +29,11 @@ class FiboLine : public ChartObject
   Q_OBJECT
 
   public:
-    FiboLine (Scaler *, QPixmap *, QString, QString, QDateTime, double, QDateTime, double);
+    FiboLine (Scaler *, QPixmap *, QString, QString, BarDate, double, BarDate, double);
     ~FiboLine ();
     void draw (int, int);
     double getY (double, double, double);
-    void move (QDateTime, double);
+    void move (BarDate, double);
     Setting * getSettings ();
     void setSettings (Setting *);
     bool isClicked (int, int);

@@ -25,7 +25,7 @@
 #include <qfontmetrics.h>
 #include <qapplication.h>
 
-Text::Text (Scaler *s, QPixmap *p, QString indicator, QString n, QDateTime d, double v)
+Text::Text (Scaler *s, QPixmap *p, QString indicator, QString n, BarDate d, double v)
 {
   scaler = s;
   buffer = p;
@@ -94,42 +94,41 @@ void Text::prefDialog ()
   delete dialog;
 }
 
-void Text::move (QDateTime d, double v)
+void Text::move (BarDate d, double v)
 {
   date = d;
   value = v;
   saveFlag = TRUE;
   emit signalDraw();
   
-  QString s = d.toString("yyyyMMdd ");
-  s.append(QString::number(v));
+  QString s = d.getDateString(TRUE) + " " + QString::number(v);
   emit message(s);
 }
 
 Setting * Text::getSettings ()
 {
   Setting *set = new Setting;
-  set->set("Date", date.toString("yyyy-MM-dd00:00:00"), Setting::None);
-  set->set("Value", QString::number(value), Setting::None);
-  set->set("Color", color.name(), Setting::Color);
-  set->set("Plot", plot, Setting::None);
-  set->set("Name", name, Setting::None);
-  set->set("ObjectType", QString::number(type), Setting::None);
-  set->set("Label", label, Setting::None);
+  set->setData("Date", date.getDateTimeString(FALSE));
+  set->setData("Value", QString::number(value));
+  set->setData("Color", color.name());
+  set->setData("Plot", plot);
+  set->setData("Name", name);
+  set->setData("ObjectType", QString::number(type));
+  set->setData("Label", label);
 
   QString s = textFont.family();
   s.append(" ");
   s.append(QString::number(textFont.pointSize()));
   s.append(" ");
   s.append(QString::number(textFont.weight()));
-  set->set("Font", s, Setting::None);
+  set->setData("Font", s);
   
   return set;
 }
 
 void Text::setSettings (Setting *set)
 {
-  date = QDateTime::fromString(set->getData("Date"), Qt::ISODate);
+  date.setDate(set->getData("Date"));
   value = set->getFloat("Value");
   color.setNamedColor(set->getData("Color"));
   plot = set->getData("Plot");

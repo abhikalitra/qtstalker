@@ -3,9 +3,9 @@ TEMPLATE = lib
 CONFIG += thread warn_on plugin
 #QMAKE_CXXFLAGS += -Os
 
-HEADERS += Bar.h
+HEADERS += Bars.h
 
-SOURCES += Bar.cpp
+SOURCES += Bars.cpp
 
 TARGET = Bar
 

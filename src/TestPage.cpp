@@ -21,7 +21,6 @@
 
 #include "TestPage.h"
 #include "Tester.h"
-#include "SymbolDialog.h"
 #include "open.xpm"
 #include "newchart.xpm"
 #include "delete.xpm"
@@ -30,6 +29,7 @@
 #include <qmessagebox.h>
 #include <qcursor.h>
 #include <qlayout.h>
+#include <qdir.h>
 
 TestPage::TestPage (QWidget *w, Config *c) : QWidget (w)
 {
@@ -39,12 +39,10 @@ TestPage::TestPage (QWidget *w, Config *c) : QWidget (w)
   vbox->setMargin(2);
   vbox->setSpacing(5);
   
-  nav = new Navigator(this, config->getData(Config::TestPath));
-  connect(nav, SIGNAL(fileSelected(QString)), this, SLOT(testSelected(QString)));
-  connect(nav, SIGNAL(noSelection()), this, SLOT(testNoSelection()));
-  connect(nav, SIGNAL(contextMenuRequested(QListBoxItem *, const QPoint &)), this, SLOT(rightClick(QListBoxItem *)));
-  nav->updateList();
-  vbox->addWidget(nav);
+  list = new QListBox(this);
+  connect(list, SIGNAL(contextMenuRequested(QListBoxItem *, const QPoint &)), this, SLOT(rightClick(QListBoxItem *)));
+  connect(list, SIGNAL(highlighted(const QString &)), this, SLOT(testSelected(const QString &)));
+  vbox->addWidget(list);
   
   menu = new QPopupMenu();
   menu->insertItem(QPixmap(open), tr("Open Backtest Rule"), this, SLOT(openTest()));
@@ -52,6 +50,7 @@ TestPage::TestPage (QWidget *w, Config *c) : QWidget (w)
   menu->insertItem(QPixmap(deleteitem), tr("Delete Backtest Rule"), this, SLOT(deleteTest()));
   menu->insertItem(QPixmap(renam), tr("Rename Backtest Rule"), this, SLOT(renameTest()));
 
+  updateList();
   testNoSelection();
 }
 
@@ -62,19 +61,19 @@ TestPage::~TestPage ()
 
 void TestPage::openTest ()
 {
-//  Tester *dialog = new Tester(config, nav->currentText());
-//  dialog->show();
+  Tester *dialog = new Tester(config, list->currentText());
+  dialog->show();
 }
 
 void TestPage::newTest()
 {
   bool ok;
   QString selection = QInputDialog::getText(tr("New Backtest Rule"),
-  					    		   tr("Enter new backtest rule name."),
-  					    		   QLineEdit::Normal,
-							   tr("New Rule"),
-					    		   &ok,
-					    		   this);
+  					    tr("Enter new backtest rule name."),
+  					    QLineEdit::Normal,
+					    tr("New Rule"),
+					    &ok,
+					    this);
 
   if ((! ok) || (selection.isNull()))
     return;
@@ -89,56 +88,84 @@ void TestPage::newTest()
     return;
   }
 
-//  Tester *dialog = new Tester(config, selection);
-//  dialog->show();
+  if (! dir.mkdir(s, TRUE))
+  {
+    qDebug("TestPage::newTest:can't create dir %s", s.latin1());
+    return;
+  }
+  
+  if (! dir.mkdir(s + "/el", TRUE))
+  {
+    qDebug("TestPage::newTest:can't create el dir");
+    return;
+  }
+  
+  if (! dir.mkdir(s + "/xl", TRUE))
+  {
+    qDebug("TestPage::newTest:can't create xl dir");
+    return;
+  }
+  
+  if (! dir.mkdir(s + "/es", TRUE))
+  {
+    qDebug("TestPage::newTest:can't create es dir");
+    return;
+  }
+  
+  if (! dir.mkdir(s + "/xs", TRUE))
+  {
+    qDebug("TestPage::newTest:can't create xs dir");
+    return;
+  }
+
+  updateList();
+  
+  Tester *dialog = new Tester(config, selection);
+  dialog->show();
 }
 
 void TestPage::deleteTest()
 {
-  SymbolDialog *dialog = new SymbolDialog(this,
-  							   nav->getCurrentPath(),
-							   "*");
-  dialog->setCaption(tr("Select Portfolios To Delete"));
+  if (list->currentItem() == -1)
+    return;
+    
+  int rc = QMessageBox::warning(this,
+  				tr("Qtstalker: Warning"),
+				tr("Are you sure you want to delete this backtest rule?"),
+				QMessageBox::Yes,
+				QMessageBox::No,
+				QMessageBox::NoButton);
 
-  int rc = dialog->exec();
+  if (rc == QMessageBox::No)
+    return;
 
-  if (rc == QDialog::Accepted)
+  QString s = "rm -r ";
+  s.append(config->getData(Config::TestPath));
+  s.append("/");
+  s.append(list->currentText());
+  if (system(s.latin1()) == -1)
   {
-    rc = QMessageBox::warning(this,
-  					  tr("Qtstalker: Warning"),
-					  tr("Are you sure you want to delete this backtest rule?"),
-					  QMessageBox::Yes,
-					  QMessageBox::No,
-					  QMessageBox::NoButton);
-
-    if (rc == QMessageBox::No)
-    {
-      delete dialog;
-      return;
-    }
-
-    QStringList l = dialog->selectedFiles();
-    int loop;
-    QDir dir;
-    for (loop = 0; loop < (int) l.count(); loop++)
-      dir.remove(l[loop], TRUE);
-
-    nav->updateList();
-    testNoSelection();
+    qDebug("TestPage::deleteTest:command failed");
+    return;
   }
   
-  delete dialog;
+  list->removeItem(list->currentItem());
+  
+  testNoSelection();
 }
 
 void TestPage::renameTest ()
 {
+  if (list->currentItem() == -1)
+    return;
+
   bool ok;
   QString selection = QInputDialog::getText(tr("Rename Backtest Rule"),
-  					    		   tr("Enter new backtest rule name."),
-  					    		   QLineEdit::Normal,
-					    		   nav->currentText(),
-					    		   &ok,
-					    		   this);
+  					    tr("Enter new backtest rule name."),
+  					    QLineEdit::Normal,
+					    list->currentText(),
+					    &ok,
+					    this);
 
   if ((! ok) || (selection.isNull()))
     return;
@@ -155,15 +182,13 @@ void TestPage::renameTest ()
 
   QString s2 = config->getData(Config::TestPath);
   s2.append("/");
-  s2.append(nav->currentText());
-
+  s2.append(list->currentText());
   dir.rename(s2, s, TRUE);
   
-  nav->updateList();
-  testNoSelection();
+  list->changeItem(selection, list->currentItem());
 }
 
-void TestPage::testSelected (QString)
+void TestPage::testSelected (const QString &) 
 {
   menu->setItemEnabled(menu->idAt(0), TRUE);
   menu->setItemEnabled(menu->idAt(2), TRUE);
@@ -180,6 +205,16 @@ void TestPage::testNoSelection ()
 void TestPage::rightClick (QListBoxItem *)
 {
   menu->exec(QCursor::pos());
+}
+
+void TestPage::updateList ()
+{
+  list->clear();
+  
+  QDir dir(config->getData(Config::TestPath));
+  int loop;
+  for (loop = 2; loop < (int) dir.count(); loop++)
+    list->insertItem(dir[loop], -1);
 }
 
 

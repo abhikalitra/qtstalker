@@ -27,7 +27,6 @@
 #include "VerticalLine.h"
 #include "FiboLine.h"
 #include "Text.h"
-#include "ChartDb.h"
 #include <qpainter.h>
 #include <qpen.h>
 #include <qpoint.h>
@@ -74,7 +73,7 @@ Plot::Plot (QWidget *w) : QWidget(w)
   minPixelspace = 0;
   dateFlag = FALSE;
   gridFlag = TRUE;
-  interval = Daily;
+  interval = ChartDb::Daily;
   mainFlag = FALSE;
   scaleToScreen = FALSE;
   logScale = FALSE;
@@ -470,15 +469,15 @@ void Plot::mouseMoveEvent (QMouseEvent *event)
     i = startIndex;
 
   Setting *r = new Setting;
-
-  r->set("D", data->getDate(i).toString("yyyyMMdd"), Setting::Date);
+  r->setData("D", data->getDate(i).getDateString(TRUE));
+  r->setData("T", data->getDate(i).getTimeString(TRUE));
   
-  if (mainFlag && data->getType() == BarData::Bars)
+  if (mainFlag)
   {
-    r->set("O", strip(data->getOpen(i)), Setting::Float);
-    r->set("H", strip(data->getHigh(i)), Setting::Float);
-    r->set("L", strip(data->getLow(i)), Setting::Float);
-    r->set("C", strip(data->getClose(i)), Setting::Float);
+    r->setData("O", strip(data->getOpen(i)));
+    r->setData("H", strip(data->getHigh(i)));
+    r->setData("L", strip(data->getLow(i)));
+    r->setData("C", strip(data->getClose(i)));
   }
 
   QDictIterator<Indicator> it(indicators);
@@ -495,7 +494,7 @@ void Plot::mouseMoveEvent (QMouseEvent *event)
       PlotLine *line = ind->getLine(loop);
       int li = line->getSize() - data->count() + i;
       if (li > -1 && li <= line->getSize())
-        r->set(line->getLabel(), strip(line->getData(li)), Setting::Float);
+        r->setData(line->getLabel(), strip(line->getData(li)));
     }
   }
 
@@ -527,25 +526,12 @@ void Plot::keyPressEvent (QKeyEvent *key)
   }
 }
 
-void Plot::setInterval (Plot::TimeInterval d)
-{
-  interval = d;
-}
-
 void Plot::setScaleWidth (int d)
 {
   if (d > 999 || d < SCALE_WIDTH)
     return;
   else
     scaleWidth = d;
-}
-
-void Plot::setDateHeight (int d)
-{
-  if (d > 999 || d < DATE_HEIGHT)
-    return ;
-  else
-    dateHeight = d;
 }
 
 void Plot::setBackgroundColor (QColor d)
@@ -566,11 +552,6 @@ void Plot::setGridColor (QColor d)
 void Plot::setPlotFont (QFont d)
 {
   plotFont = d;
-}
-
-void Plot::setDateFlag (bool d)
-{
-  dateFlag = d;
 }
 
 void Plot::setGridFlag (bool d)
@@ -603,7 +584,75 @@ bool Plot::getMainFlag ()
   return mainFlag;
 }
 
+//***********************************************************************
+//******************** DATE FUNCTIONS ***********************************
+//***********************************************************************
+
+void Plot::setInterval (ChartDb::BarCompression d)
+{
+  interval = d;
+}
+
+void Plot::setDateHeight (int d)
+{
+  if (d > 999 || d < DATE_HEIGHT)
+    return ;
+  else
+    dateHeight = d;
+}
+
+void Plot::setDateFlag (bool d)
+{
+  dateFlag = d;
+}
+
 void Plot::drawDate ()
+{
+  QPainter painter;
+  painter.begin(buffer);
+  painter.setPen(borderColor);
+  
+  // clear date area
+  painter.fillRect(0, buffer->height() - dateHeight, buffer->width() - scaleWidth, dateHeight, backgroundColor);
+
+  // draw the seperator line
+  painter.drawLine (0, buffer->height() - dateHeight, buffer->width() - scaleWidth, buffer->height() - dateHeight);
+
+  painter.end();
+    
+  switch (interval)
+  {
+    case ChartDb::Daily:
+      drawDailyDate();
+      break;
+    case ChartDb::Weekly:
+      drawWeeklyDate();
+      break;
+    case ChartDb::Monthly:
+      drawMonthlyDate();
+      break;
+    default:
+      break;
+  }
+}
+
+void Plot::draw5Date ()
+{
+}
+
+void Plot::draw15Date ()
+{
+}
+
+void Plot::draw30Date ()
+{
+}
+
+void Plot::drawHourlyDate ()
+{
+}
+
+void Plot::drawDailyDate ()
 {
   QPainter painter;
   painter.begin(buffer);
@@ -611,123 +660,137 @@ void Plot::drawDate ()
   painter.setFont(plotFont);
 
   QFontMetrics fm = painter.fontMetrics();
-
-  // clear date area
-  painter.fillRect(0, buffer->height() - dateHeight, buffer->width() - scaleWidth, dateHeight, backgroundColor);
-
-  // draw the seperator line
-  painter.drawLine (0, buffer->height() - dateHeight, buffer->width() - scaleWidth, buffer->height() - dateHeight);
-
+  
   int x = startX;
   int loop = startIndex;
 
-  if (interval == Daily)
+  QDate oldDate = data->getDate(loop).getDate();
+  QDate oldWeek = oldDate;
+  oldWeek = oldWeek.addDays(7 - oldWeek.dayOfWeek());
+
+  while(x <= _width && loop < (int) data->count())
   {
-    QDateTime oldDate = data->getDate(loop);
-    QDateTime oldWeek = oldDate;
-    oldWeek = oldWeek.addDays(7 - oldWeek.date().dayOfWeek());
+    QDate date = data->getDate(loop).getDate();
 
-    while(x <= _width && loop < (int) data->count())
+    if (date.month() != oldDate.month())
     {
-      QDateTime date = data->getDate(loop);
+      oldDate = date;
 
-      if (date.date().month() != oldDate.date().month())
-      {
-        oldDate = date;
+      painter.drawLine (x, _height + 1, x, _height + dateHeight - fm.height() - 1);
 
-        painter.drawLine (x, _height + 1, x, _height + dateHeight - fm.height() - 1);
+      QString s = date.toString("MMM'yy");
+      painter.drawText (x - (fm.width(s, -1) / 2), buffer->height() - 2, s, -1);
 
-        QString s = date.toString("MMM'yy");
-        painter.drawText (x - (fm.width(s, -1) / 2), buffer->height() - 2, s, -1);
-
-        oldWeek = date;
-        oldWeek = oldWeek.addDays(7 - oldWeek.date().dayOfWeek());
-      }
-      else
-      {
-        // if start of new week make a tick
-        if (date > oldWeek)
-	{
-          painter.drawLine (x, _height + 1, x, _height + 4);
-
-          QString s = date.toString("d");
-          painter.drawText (x - (fm.width(s, -1) / 2),
-	   		    buffer->height() - dateHeight + fm.height() + 1,
-			    s,
-			    -1);
-
-  	  oldWeek = date;
-          oldWeek = oldWeek.addDays(7 - oldWeek.date().dayOfWeek());
-	}
-      }
-
-      x = x + pixelspace;
-      loop++;
-    }
-  }
-  else
-  {
-    if (interval == Weekly)
-    {
-      QDateTime oldMonth = data->getDate(loop);
-
-      while(x <= _width && loop < (int) data->count())
-      {
-        QDateTime date = data->getDate(loop);
-
-        if (date.date().month() != oldMonth.date().month())
-        {
-          oldMonth = date;
-
-          painter.drawLine (x, _height + 1, x, _height + (dateHeight / 3));
-
-	  QString s;
-   	  s = date.toString("MMM'yy");
-
-	  if (fm.width(s, -1) > 4 * pixelspace)
-	  {
-            if (date.date().month() == 1)
-              s = date.toString("yy");
-	    else
-	    {
-              s = date.toString("MMM");
-              s.truncate(1);
-	    }
-	  }
-
-          painter.drawText (x - (fm.width(s, -1) / 2),
-	  		    _height + (dateHeight / 3) + fm.height() + 2,
-			    s,
-			    -1);
-        }
-
-        x = x + pixelspace;
-        loop++;
-      }
+      oldWeek = date;
+      oldWeek = oldWeek.addDays(7 - oldWeek.dayOfWeek());
     }
     else
     {
-      QDateTime oldYear = data->getDate(loop);
-
-      while(x <= _width && loop < (int) data->count())
+      // if start of new week make a tick
+      if (date > oldWeek)
       {
-        QDateTime date = data->getDate(loop);
+        painter.drawLine (x, _height + 1, x, _height + 4);
 
-        if (date.date().year() != oldYear.date().year())
-        {
-          oldYear = date;
-          painter.drawLine (x, _height + 1, x, _height + (dateHeight / 3));
-	  QString s = date.toString("yyyy");
-          painter.drawText (x - (fm.width(s, -1) / 2),
-	  		    _height + (dateHeight / 3) + fm.height() + 2,
-			    s,
-			    -1);
-        }
+        QString s = date.toString("d");
+        painter.drawText (x - (fm.width(s, -1) / 2),
+			  buffer->height() - dateHeight + fm.height() + 1,
+			  s,
+			  -1);
 
-        x = x + pixelspace;
-        loop++;
+  	oldWeek = date;
+        oldWeek = oldWeek.addDays(7 - oldWeek.dayOfWeek());
       }
     }
+
+    x = x + pixelspace;
+    loop++;
+  }
+
+  painter.end();
+}
+
+void Plot::drawWeeklyDate ()
+{
+  QPainter painter;
+  painter.begin(buffer);
+  painter.setPen(borderColor);
+  painter.setFont(plotFont);
+
+  QFontMetrics fm = painter.fontMetrics();
+  
+  int x = startX;
+  int loop = startIndex;
+
+  QDate oldMonth = data->getDate(loop).getDate();
+
+  while(x <= _width && loop < (int) data->count())
+  {
+    QDate date = data->getDate(loop).getDate();
+
+    if (date.month() != oldMonth.month())
+    {
+      oldMonth = date;
+
+      painter.drawLine (x, _height + 1, x, _height + (dateHeight / 3));
+
+      QString s;
+      s = date.toString("MMM'yy");
+
+      if (fm.width(s, -1) > 4 * pixelspace)
+      {
+        if (date.month() == 1)
+          s = date.toString("yy");
+	else
+	{
+          s = date.toString("MMM");
+          s.truncate(1);
+	}
+      }
+
+      painter.drawText (x - (fm.width(s, -1) / 2),
+  		        _height + (dateHeight / 3) + fm.height() + 2,
+			s,
+			-1);
+    }
+
+    x = x + pixelspace;
+    loop++;
+  }
+  
+  painter.end();
+}
+
+void Plot::drawMonthlyDate ()
+{
+  QPainter painter;
+  painter.begin(buffer);
+  painter.setPen(borderColor);
+  painter.setFont(plotFont);
+
+  QFontMetrics fm = painter.fontMetrics();
+  
+  int x = startX;
+  int loop = startIndex;
+
+  QDate oldYear = data->getDate(loop).getDate();
+
+  while(x <= _width && loop < (int) data->count())
+  {
+    QDate date = data->getDate(loop).getDate();
+
+    if (date.year() != oldYear.year())
+    {
+      oldYear = date;
+      painter.drawLine (x, _height + 1, x, _height + (dateHeight / 3));
+      QString s = date.toString("yyyy");
+      painter.drawText (x - (fm.width(s, -1) / 2),
+	  		_height + (dateHeight / 3) + fm.height() + 2,
+			s,
+			-1);
+    }
+
+    x = x + pixelspace;
+    loop++;
   }
 
   painter.end();
@@ -761,15 +824,15 @@ void Plot::createXGrid ()
 
   int loop = 0;
 
-  QDateTime oldDate = data->getDate(loop);
+  QDate oldDate = data->getDate(loop).getDate();
 
   for (loop = 0; loop < (int) data->count(); loop++)
   {
-    QDateTime date = data->getDate(loop);
+    QDate date = data->getDate(loop).getDate();
 
-    if (interval == Daily)
+    if (interval == ChartDb::Daily)
     {
-      if (date.date().month() != oldDate.date().month())
+      if (date.month() != oldDate.month())
       {
         oldDate = date;
 	xGrid.resize(xGrid.size() + 1);
@@ -778,7 +841,7 @@ void Plot::createXGrid ()
     }
     else
     {
-      if (date.date().year() != oldDate.date().year())
+      if (date.year() != oldDate.year())
       {
         oldDate = date;
 	xGrid.resize(xGrid.size() + 1);
@@ -831,7 +894,7 @@ void Plot::drawScale ()
 
   QFontMetrics fm = painter.fontMetrics();
 
-  painter.fillRect(buffer->width() - scaleWidth, 0, scaleWidth, _height + 1, backgroundColor);
+  painter.fillRect(buffer->width() - scaleWidth, 0, scaleWidth, buffer->height(), backgroundColor);
 
   int x = buffer->width() - scaleWidth;
 
@@ -933,9 +996,7 @@ void Plot::drawInfo ()
   QFontMetrics fm = painter.fontMetrics();
   int pos = startX;
 
-  QString s = "D=";
-  QDateTime date = data->getDate(data->count() - 1);
-  s.append(date.toString("yyyyMMdd"));
+  QString s = data->getDate(data->count() - 1).getDateString(TRUE);
   s.append(" ");
   painter.drawText(pos, 10, s, -1);
   pos = pos + fm.width(s);
@@ -1053,8 +1114,7 @@ void Plot::updateStatusBar (int x, int y)
   if (i < startIndex)
     i = startIndex;
 
-  QDateTime date = data->getDate(i);
-  QString s = date.toString("yyyyMMdd");
+  QString s = data->getDate(i).getDateTimeString(TRUE);
   s.append(" ");
   s.append(strip(scaler->convertToVal(y)));
   emit statusMessage(s);
@@ -1252,7 +1312,7 @@ int Plot::getMinPixelspace ()
   return minPixelspace;
 }
 
-int Plot::getXFromDate (QDateTime d)
+int Plot::getXFromDate (BarDate d)
 {
   int x2 = data->getX(d);
   if (x2 == -1)
@@ -1508,7 +1568,7 @@ void Plot::newChartObject ()
     
     if (objectFlag == ChartObject::TrendLine)
     {
-      if (x2 <= x1)
+      if (x2.getDateValue() <= x1.getDateValue())
       {
 	cancelFlag = TRUE;
         QMessageBox::information(this, tr("Qtstalker: Error"),
@@ -1649,14 +1709,12 @@ void Plot::slotNewChartObject (int id)
   
   ChartDb *db = new ChartDb();
   db->openChart(chartPath);
-  QStringList l = db->getChartObjects();
+  QStringList l = db->getChartObjectsList();
   delete db;
   
   while (1)
   {
-    name = selection;
-    name.append(QString::number(loop));
-    
+    name = QString::number(loop);
     if (l.findIndex(name) != -1)
       loop++;
     else
@@ -1674,8 +1732,8 @@ void Plot::addChartObject (ChartObject *co)
 void Plot::addChartObject (Setting *set)
 {
   ChartObject *co = 0;
-  int ot = set->getData("ObjectType").toInt();
-  QDateTime dt;
+  ChartObject::ObjectType ot = (ChartObject::ObjectType) set->getInt("ObjectType");
+  BarDate dt;
   
   while (1)
   {
@@ -1777,8 +1835,8 @@ void Plot::drawObjects ()
     
     if (flag)
     {
-      QDateTime dt = co->getDate();
-      if (dt.isValid())
+      BarDate dt = co->getDate();
+      if (dt.getDate().isValid())
       {
         x = getXFromDate(dt);
         if (x == -1)
@@ -1790,8 +1848,8 @@ void Plot::drawObjects ()
 
     if (flag2)
     {
-      QDateTime dt = co->getDate2();
-      if (dt.isValid())
+      BarDate dt = co->getDate2();
+      if (dt.getDate().isValid())
       {
         x2 = getXFromDate(dt);
         if (x2 == -1)
@@ -1807,6 +1865,9 @@ void Plot::drawObjects ()
 
 void Plot::slotSaveChartObjects ()
 {
+  if (! chartPath.length())
+    return;
+    
   ChartDb *db = new ChartDb();
   db->openChart(chartPath);
 
@@ -1819,7 +1880,6 @@ void Plot::slotSaveChartObjects ()
     {
       Setting *set = co->getSettings();
       db->setChartObject(co->getName(), set);
-      delete set;
     }
   }
   
@@ -1846,7 +1906,7 @@ void Plot::slotDeleteAllChartObjects ()
    
   ChartDb *db = new ChartDb();
   db->openChart(chartPath);
-  QStringList l = db->getChartObjects();
+  QStringList l = db->getChartObjectsList();
 
   int loop;  
   for (loop = 0; loop < (int) l.count(); loop++)

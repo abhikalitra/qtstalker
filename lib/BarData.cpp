@@ -23,103 +23,30 @@
 
 BarData::BarData ()
 {
-  type = Bars;
   high = -99999999;
   low = 99999999;
   dateList.setAutoDelete(TRUE);
   barList.setAutoDelete(TRUE);
-  compression = BarData::Daily;
-}
-
-BarData::BarData (QStringList f)
-{
-  type = Other;
-  high = -99999999;
-  low = 99999999;
-  dateList.setAutoDelete(TRUE);
-  barList.setAutoDelete(TRUE);
-  format = f;
-  compression = BarData::Daily;
+  barType = Daily;
 }
 
 BarData::~BarData ()
 {
 }
 
+
 int BarData::count ()
 {
   return (int) barList.count();
 }
 
-void BarData::prepend (Setting *r)
+void BarData::prepend (Bar *bar)
 {
-  QDateTime dt = QDateTime::fromString(r->getDateTime("Date"), Qt::ISODate);
-  if (! dt.isValid())
-  {
-    qDebug("BarData::prepend:invalid date");
-    return;
-  }
-  
-  Bar *bar = new Bar;
-  bar->date = QDateTime::fromString(r->getDateTime("Date"), Qt::ISODate);
-  
-  if (type == Bars)
-  {
-    bar->open = r->getFloat("Open");
-    bar->high = r->getFloat("High");
-    bar->low = r->getFloat("Low");
-    bar->close = r->getFloat("Close");
-    bar->volume = r->getFloat("Volume");
-    bar->oi = r->getInt("Open Interest");
+  if (bar->getHigh() > high)
+    high = bar->getHigh();
     
-    if (bar->high > high)
-      high = bar->high;
-    if (bar->low < low)
-      low = bar->low;
-  }
-  else
-  {
-    int loop = 0;
-    bar->open = 0;
-    bar->high = 0;
-    bar->low = 0;
-    bar->close = 0;
-    bar->volume = 0;
-    bar->oi = 0;
-    int end = (int) format.count();
-
-    while (1)
-    {
-      if (loop == end)
-        break;
-      else
-        bar->open = r->getFloat(format[loop]);
-  
-      loop++;
-      if (loop == end)
-        break;
-      else
-        bar->high = r->getFloat(format[loop]);
-  
-      loop++;
-      if (loop == end)
-        break;
-      else
-        bar->low = r->getFloat(format[loop]);
-      
-      loop++;
-      if (loop == end)
-        break;
-      else
-        bar->close = r->getFloat(format[loop]);
-
-      loop++;
-      if (loop == end)
-        break;
-      else
-        bar->volume = r->getFloat(format[loop]);
-    }
-  }
+  if (bar->getLow() < low)
+    low = bar->getLow();
   
   barList.prepend(bar);
 }
@@ -135,34 +62,42 @@ void BarData::createDateList ()
     
     X *x = new X;
     x->x = loop;
-    dateList.replace(bar->date.toString("yyyyMMdd"), x);
+    
+    if (barType == Daily)
+      dateList.replace(bar->getDate().getDateString(FALSE), x);
+    else
+      dateList.replace(bar->getDate().getDateTimeString(FALSE), x);
   }
 }
 
-QDateTime BarData::getDate (int i)
+BarDate BarData::getDate (int i)
 {
   Bar *bar = barList.at(i);
   if (bar)
-    return bar->date;
+    return bar->getDate();
   else
   {
-    QDateTime dt;
+    BarDate dt;
     return dt;
   }
 }
 
-int BarData::getX (QDateTime date)
+int BarData::getX (BarDate date)
 {
-  if (compression == Daily)
-  {
-    X *x = dateList[date.toString("yyyyMMdd")];
-    if (x)
-      return x->x;
-    else
-      return -1;
-  }
+  X *x = 0;
   
-  if (compression == Weekly)
+  if (barType == Daily)
+    x = dateList[date.getDateString(FALSE)];
+  else
+    x = dateList[date.getDateTimeString(FALSE)];
+  
+  if (x)
+    return x->x;
+  else
+    return -1;
+
+/*    
+  if (barCompression == Weekly)
   {
     QDateTime dt = date;
     dt = dt.addDays(- (dt.date().dayOfWeek() - 1));
@@ -180,7 +115,7 @@ int BarData::getX (QDateTime date)
     return -1;
   }
 
-  if (compression == Monthly)
+  if (barCompression == Monthly)
   {
     QDateTime dt = date;
     dt.date().setYMD(date.date().year(), 1, 1);
@@ -199,13 +134,14 @@ int BarData::getX (QDateTime date)
   }
   
   return -1;
+*/  
 }
 
 double BarData::getOpen (int i)
 {
   Bar *bar = barList.at(i);
   if (bar)
-    return bar->open;
+    return bar->getOpen();
   else
     return 0;
 }
@@ -214,7 +150,7 @@ double BarData::getHigh (int i)
 {
   Bar *bar = barList.at(i);
   if (bar)
-    return bar->high;
+    return bar->getHigh();
   else
     return 0;
 }
@@ -223,7 +159,7 @@ double BarData::getLow (int i)
 {
   Bar *bar = barList.at(i);
   if (bar)
-    return bar->low;
+    return bar->getLow();
   else
     return 0;
 }
@@ -232,7 +168,7 @@ double BarData::getClose (int i)
 {
   Bar *bar = barList.at(i);
   if (bar)
-    return bar->close;
+    return bar->getClose();
   else
     return 0;
 }
@@ -241,7 +177,7 @@ double BarData::getVolume (int i)
 {
   Bar *bar = barList.at(i);
   if (bar)
-    return bar->volume;
+    return bar->getVolume();
   else
     return 0;
 }
@@ -250,7 +186,7 @@ int BarData::getOI (int i)
 {
   Bar *bar = barList.at(i);
   if (bar)
-    return bar->oi;
+    return bar->getOI();
   else
     return 0;
 }
@@ -265,53 +201,14 @@ double BarData::getMin ()
   return low;
 }
 
-double BarData::getOther (int i, int f)
+void BarData::setBarType (BarData::BarType d)
 {
-  double val = 0;
-  
-  Bar *bar = barList.at(i);
-  if (bar)
-  {
-    switch (f)
-    {
-      case 0:
-        val = bar->open;
-	break;
-      case 1:
-        val = bar->high;
-	break;
-      case 2:
-        val = bar->low;
-	break;
-      case 3:
-        val = bar->close;
-	break;
-      default:
-        val = bar->volume;
-	break;
-    }
-  }
-  
-  return val;
+  barType = d;
 }
 
-BarData::BarType BarData::getType ()
+BarData::BarType BarData::getBarType ()
 {
-  return type;
+  return barType;
 }
 
-QStringList BarData::getFormat ()
-{
-  return format;
-}
-
-void BarData::setBarCompression (BarData::BarCompression d)
-{
-  compression = d;
-}
-
-BarData::BarCompression BarData::getBarCompression ()
-{
-  return compression;
-}
 

@@ -26,60 +26,24 @@
 #include <qstringlist.h>
 #include <qdict.h>
 
-typedef struct
-{
-  QString data;
-  QString key;
-  QStringList list;
-  int type;
-
-} SettingItem;
-
 class Setting
 {
   public:
-    enum Type
-    {
-      None,
-      Integer,
-      Float,
-      Bool,
-      Text,
-      Color,
-      Date,
-      Symbol,
-      FileList,
-      Font,
-      List,
-      MAType,
-      InputField,
-      LineType
-    };
-
     Setting ();
     ~Setting ();
-    void set (QString, QString, Setting::Type);
     QString getData (QString);
     double getFloat (QString);
     int getInt (QString);
     void setData (QString, QString);
-    Setting::Type getType (QString);
-    void Setting::setType (QString, Setting::Type);
-    QStringList getList (QString);
-    void setList (QString, QStringList);
     QStringList getKeyList ();
-    QStringList getStringList ();
     void remove (QString);
     QString getString ();
     void parse (QString);
-    void parse (QStringList);
     void clear ();
     int count ();
-    QString getDateTime (QString);
-    void merge (QStringList);
-
+    
   protected:
-    QDict<SettingItem> dict;
+    QDict<QString> dict;
 };
 
 #endif

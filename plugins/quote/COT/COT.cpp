@@ -261,13 +261,13 @@ void COT::parse ()
     QString nrs = QString::number(tfloat);
 
     Setting *set = new Setting;
-    set->set("Symbol", symbol, Setting::None);
-    set->set("Date", date, Setting::None);
-    set->set("Open Interest", oi, Setting::Float);
-    set->set("Non Commercial", QString::number(ncl.toFloat() - ncs.toFloat()), Setting::Float);
-    set->set("Commercial", QString::number(cl.toFloat() - cs.toFloat()), Setting::Float);
-    set->set("Non Reportable", QString::number(nrl.toFloat() - nrs.toFloat()), Setting::Float);
-    set->set("Title", l[0], Setting::Text);
+    set->setData("Symbol", symbol);
+    set->setData("Date", date);
+    set->setData("Open Interest", oi);
+    set->setData("Non Commercial", QString::number(ncl.toFloat() - ncs.toFloat()));
+    set->setData("Commercial", QString::number(cl.toFloat() - cs.toFloat()));
+    set->setData("Non Reportable", QString::number(nrl.toFloat() - nrs.toFloat()));
+    set->setData("Title", l[0]);
 
     saveData(set);
 
@@ -285,6 +285,18 @@ void COT::saveData (Setting *set)
     emit statusLogMessage("Unable to create directory");
     return;
   }
+  
+  Bar *r = new Bar;
+  if (r->setDate(set->getData("Date")))
+  {
+    delete r;
+    emit statusLogMessage("Bad date " + set->getData("Date"));
+    return;
+  }
+  r->setOpen(set->getFloat("Non Commercial"));
+  r->setHigh(set->getFloat("Commercial"));
+  r->setLow(set->getFloat("Non Reportable"));
+  r->setOI(set->getInt("Open Interest"));
 
   s.append("/");
   s.append(set->getData("Symbol"));
@@ -295,29 +307,21 @@ void COT::saveData (Setting *set)
   s.append(set->getData("Symbol"));
   emit statusLogMessage(s);
 
-  Setting *details = db->getDetails();
-  if (! details->count())
+  s = db->getDetail(ChartDb::Symbol);
+  if (! s.length())
   {
-    details->set("Format", "Non Commercial|Commercial|Non Reportable|Open Interest", Setting::None);
-    details->set("Chart Type", "COT", Setting::None);
-    details->set("Symbol", set->getData("Symbol"), Setting::None);
-    details->set("Title", set->getData("Title"), Setting::Text);
-    details->set("Non Commercial Color", "red", Setting::Color);
-    details->set("Non Commercial Line Type", "Line", Setting::LineType);
-    details->set("Commercial Color", "green", Setting::Color);
-    details->set("Commercial Line Type", "Line", Setting::LineType);
-    details->set("Non Reportable Color", "blue", Setting::Color);
-    details->set("Non Reportable Line Type", "Line", Setting::LineType);
-    details->set("Open Interest Color", "yellow", Setting::Color);
-    details->set("Open Interest Line Type", "Line", Setting::LineType);
-    db->saveDetails();
-    db->setFormat();
+    db->setDetail(ChartDb::Symbol, set->getData("Symbol"));
+    db->setDetail(ChartDb::Title, set->getData("Title"));
+    db->setDetail(ChartDb::Type, "COT");
+    db->setDetail(ChartDb::BarType, QString::number(BarData::Daily));
   }
-  set->remove("Symbol");
-  set->remove("Title");
 
-  db->setRecord(set);
-  setDataLogMessage(set);
+  db->setBar(r);
+  
+  s = set->getData("Symbol") + " " + r->getString();
+  emit dataLogMessage(s);
+  
+  delete r;
   delete db;
 }
 
