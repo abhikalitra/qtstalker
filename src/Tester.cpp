@@ -518,6 +518,7 @@ void Tester::addIndicator ()
   if (! plug)
   {
     qDebug("Tester::addIndicator - could not open plugin");
+    config->closePlugin(ind);
     return;
   }
   Setting *set = plug->getPluginSettings();
@@ -558,8 +559,9 @@ void Tester::addIndicator ()
     item = new QListViewItem(indicatorList, name);
   }
 
-  config->closePlugins();
+  config->closePlugin(ind);
 
+  delete set;
   delete dialog;
 }
 
@@ -596,6 +598,7 @@ void Tester::editIndicator ()
   if (! plug)
   {
     qDebug("Tester::editIndicator - could not open plugin");
+    config->closePlugin(i->getData(tr("Type")));
     return;
   }
   Setting *set = plug->getPluginSettings();
@@ -608,8 +611,9 @@ void Tester::editIndicator ()
   if (rc == QDialog::Accepted)
     i->merge(set->getStringList());
 
-  config->closePlugins();
+  config->closePlugin(i->getData(tr("Type")));
 
+  delete set;
   delete dialog;
 }
 
@@ -1219,10 +1223,11 @@ void Tester::loadIndicators (int button)
 
     i->clearLines();
 
-    Plugin *plug = config->getPlugin(Config::IndicatorPluginPath, i->getData(QObject::tr("Type")));
+    Plugin *plug = config->getPlugin(Config::IndicatorPluginPath, i->getData(tr("Type")));
     if (! plug)
     {
       qDebug("Tester::loadIndicators - could not open plugin");
+      config->closePlugin(i->getData(tr("Type")));
       continue;
     }
     
@@ -1235,11 +1240,9 @@ void Tester::loadIndicators (int button)
       i->setAlerts(plug->getAlerts());
 
     i->clearLines();
-
     plug->clearOutput();
+    config->closePlugin(i->getData(tr("Type")));
   }
-
-  config->closePlugins();
 }
 
 void Tester::loadEnterLongAlerts ()

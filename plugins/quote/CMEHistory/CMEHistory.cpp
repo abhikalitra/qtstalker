@@ -21,6 +21,7 @@
 
 #include "CMEHistory.h"
 #include "ChartDb.h"
+#include "PrefDialog.h"
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qnetwork.h>
@@ -28,46 +29,23 @@
 #include <qstringlist.h>
 #include <stdlib.h>
 #include <qtimer.h>
+#include <qsettings.h>
 
 CMEHistory::CMEHistory ()
 {
   pluginName = "CMEHistory";
   fd = new FuturesData;
-  createFlag = FALSE;
   connect(&op, SIGNAL(finished(QNetworkOperation *)), this, SLOT(opDone(QNetworkOperation *)));
-
-  QStringList l;
-  l.append("AD");
-  l.append("CD");
-  l.append("EC");
-  l.append("ES");
-  l.append("JY");
-  l.append("FC");
-  l.append("GI");
-  l.append("LB");
-  l.append("LC");
-  l.append("LN");
-  l.append("NB");
-  l.append("ND");
-  l.append("PB");
-  l.append("SF");
-  l.append("NQ");
-  l.append("SP");
-  l.append("ED");
-  l.sort();
-
-  set(tr("Symbol"), "AD", Setting::List);
-  setList(tr("Symbol"), l);
-
-  about = "Downloads daily settlement quotes from CME\n";
-  about.append("and imports it directly into qtstalker.");
   
+  loadSettings();
   qInitNetworkProtocols();
 }
 
 CMEHistory::~CMEHistory ()
 {
   delete fd;
+  if (saveFlag)
+    saveSettings();
 }
 
 void CMEHistory::update ()
@@ -85,15 +63,16 @@ void CMEHistory::getFile ()
   file2 = dir.path();
   file2.append("/Qtstalker");
 
-  symbolList = getData(tr("Symbol"));
-
   url = "ftp://ftp.cme.com//pub/hist_eod/";
-  url.append(symbolList.lower());
+  url.append(currentSymbol.lower());
   url.append("ytd.zip");
 
   op.copy(url, file, FALSE, FALSE);
   
-  emit message(tr("Downloading CME data"));
+  QString s = tr("Downloading");
+  s.append(" ");
+  s.append(url);
+  emit statusLogMessage(s);
 }
 
 void CMEHistory::opDone (QNetworkOperation *o)
@@ -106,7 +85,7 @@ void CMEHistory::opDone (QNetworkOperation *o)
 
   if (o->errorCode() != QNetworkProtocol::NoError)
   {
-    emit message(tr("Download error"));
+    emit statusLogMessage(tr("Download error: bailing out"));
     QString s = o->protocolDetail();
     qDebug(s.latin1());
     emit done();
@@ -119,6 +98,7 @@ void CMEHistory::opDone (QNetworkOperation *o)
 
   parseHistory();
 
+  emit statusLogMessage(tr("Done"));
   emit done();
 }
 
@@ -126,7 +106,7 @@ void CMEHistory::parseHistory ()
 {
   QString s2 = file2;
   s2.append("/");
-  s2.append(symbolList.lower());
+  s2.append(currentSymbol.lower());
   s2.append("ytd.eod");
   QDir dir(s2);
   dir.remove(s2);
@@ -141,7 +121,7 @@ void CMEHistory::parseHistory ()
   QFile f(s2);
   if (! f.open(IO_ReadOnly))
   {
-    qDebug("could not open parse history file");
+    emit statusLogMessage("could not open parse history file");
     return;
   }
   QTextStream stream(&f);
@@ -318,22 +298,22 @@ void CMEHistory::parse (Setting *data)
   QString path = createDirectory("Futures");
   if (! path.length())
   {
-    qDebug("CMEHistory plugin: Unable to create futures directory");
+    emit statusLogMessage("Unable to create futures directory");
     return;
   }
 
   QString s = "Futures/";
-  s.append(symbolList);
+  s.append(currentSymbol);
   path = createDirectory(s);
   if (! path.length())
   {
-    qDebug("CMEHistory plugin: Unable to create symbol directory");
+    emit statusLogMessage("Unable to create symbol directory");
     return;
   }
 
   s = tr("Updating ");
   s.append(fd->getSymbol());
-  emit message(s);
+  emit statusLogMessage(s);
 
   Setting *r = new Setting;
   r->set("Date", data->getData("Date"), Setting::Date);
@@ -364,6 +344,7 @@ void CMEHistory::parse (Setting *data)
   }
 
   db->setRecord(r);
+  setDataLogMessage(r);
   delete db;
   delete r;
 }
@@ -372,6 +353,64 @@ void CMEHistory::cancelUpdate ()
 {
   op.stop();
   emit done();
+  emit statusLogMessage("Cancelled");
+}
+
+void CMEHistory::prefDialog ()
+{
+  QStringList l;
+  l.append("AD");
+  l.append("CD");
+  l.append("EC");
+  l.append("ES");
+  l.append("JY");
+  l.append("FC");
+  l.append("GI");
+  l.append("LB");
+  l.append("LC");
+  l.append("LN");
+  l.append("NB");
+  l.append("ND");
+  l.append("PB");
+  l.append("SF");
+  l.append("NQ");
+  l.append("SP");
+  l.append("ED");
+  l.sort();
+
+  PrefDialog *dialog = new PrefDialog();
+  dialog->setCaption(tr("CMEHistory Prefs"));
+  dialog->createPage (tr("Details"));
+  dialog->addComboItem(tr("Symbol"), 1, l, currentSymbol);
+  int rc = dialog->exec();
+  
+  if (rc == QDialog::Accepted)
+  {
+    currentSymbol = dialog->getCombo(tr("Symbol"));
+    saveFlag = TRUE;
+  }
+  
+  delete dialog;
+}
+
+void CMEHistory::loadSettings ()
+{
+  QSettings settings;
+  settings.beginGroup("/Qtstalker/CMEHistory plugin");
+
+  currentSymbol = settings.readEntry("/Symbol", "AD");
+  
+  settings.endGroup();
+}
+
+void CMEHistory::saveSettings ()
+{
+  QSettings settings;
+  settings.beginGroup("/Qtstalker/CMEHistory plugin");
+  
+  settings.writeEntry("/Symbol", currentSymbol);
+  
+  settings.endGroup();
 }
 
 Plugin * create ()

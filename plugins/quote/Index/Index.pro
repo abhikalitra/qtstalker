@@ -4,8 +4,10 @@ CONFIG += thread warn_on plugin
 QMAKE_CXXFLAGS += -Os
 
 HEADERS += Index.h
+HEADERS += IndexDialog.h
 
 SOURCES += Index.cpp
+SOURCES += IndexDialog.cpp
 
 TARGET = Index
 

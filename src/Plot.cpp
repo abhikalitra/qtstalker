@@ -149,9 +149,10 @@ void Plot::setData (BarData *l)
 
 int Plot::setChartType (QString d)
 {
-  config->closeChartPlugin();
+  if (chartType.length())
+    config->closePlugin(chartType);
   
-  chartPlugin = config->getChartPlugin(d);
+  chartPlugin = config->getPlugin(Config::ChartPluginPath, d);
   if (! chartPlugin)
   {
     qDebug("Plot::setChartType:unable to open %s chart plugin", d.latin1());

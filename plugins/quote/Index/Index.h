@@ -32,9 +32,8 @@ class Index : public QuotePlugin
     Index ();
     virtual ~Index ();
     void update ();
-    Setting * getCreateDetails ();
-    void createChart (Setting *);
     int loadData (QString, float);
+    void prefDialog ();
 
   public slots:
     void updateIndex ();

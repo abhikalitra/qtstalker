@@ -21,6 +21,7 @@
 
 #include "Spread.h"
 #include "ChartDb.h"
+#include "SpreadDialog.h"
 #include <qdir.h>
 #include <qstringlist.h>
 #include <qmessagebox.h>
@@ -29,10 +30,7 @@
 Spread::Spread ()
 {
   pluginName = "Spread";
-  createFlag = TRUE;
   data.setAutoDelete(TRUE);
-
-  about = "Creates and updates a chart to form a spread chart.\n";
 }
 
 Spread::~Spread ()
@@ -62,7 +60,7 @@ void Spread::updateSpread ()
     ChartDb *db = new ChartDb();
     if (db->openChart(s))
     {
-      qDebug("could not open db");
+      emit statusLogMessage(tr("could not open db"));
       delete db;
       continue;
     }
@@ -78,7 +76,7 @@ void Spread::updateSpread ()
     db = new ChartDb();
     if (db->openChart(s))
     {
-      qDebug("could not open db");
+      emit statusLogMessage(tr("could not open db"));
       delete db;
       delete tdetails;
       continue;
@@ -86,7 +84,7 @@ void Spread::updateSpread ()
 
     s = tr("Updating ");
     s.append(dir[loop]);
-    emit message(s);
+    emit statusLogMessage(s);
 
     details = db->getDetails();
     details->parse(tdetails->getString());
@@ -103,7 +101,10 @@ void Spread::updateSpread ()
     {
       Setting *r = it.current();
       if (r->getInt("Count") == 2)
+      {
         db->setRecord(r);
+	setDataLogMessage(r);
+      }
     }
 
     delete db;
@@ -112,6 +113,7 @@ void Spread::updateSpread ()
   }
 
   emit done();
+  emit statusLogMessage(tr("Done"));
 }
 
 void Spread::loadData (QString symbol, QString method)
@@ -119,7 +121,7 @@ void Spread::loadData (QString symbol, QString method)
   ChartDb *tdb = new ChartDb();
   if (tdb->openChart(symbol))
   {
-    qDebug("could not open db");
+    emit statusLogMessage(tr("could not open db"));
     delete tdb;
     return;
   }
@@ -175,75 +177,12 @@ void Spread::loadData (QString symbol, QString method)
   delete tdb;
 }
 
-Setting * Spread::getCreateDetails ()
+void Spread::prefDialog ()
 {
-  Setting *set = new Setting;
-  set->set(tr("First Symbol"), "", Setting::Symbol);
-  set->set(tr("Second Symbol"), "", Setting::Symbol);
-
-  QStringList l;
-  l.append(tr("Subtract"));
-  l.append(tr("Divide"));
-  l.sort();
-  set->set(tr("Method"), tr("Subtract"), Setting::List);
-  set->setList(tr("Method"), l);
-
-  return set;
-}
-
-void Spread::createChart (Setting *set)
-{
-  QString s = set->getData(tr("First Symbol"));
-  if (! s.length())
-  {
-    QMessageBox::information(0, tr("Error"), tr("Invalid first symbol"), 0, 0, QMessageBox::Ok);
-    return;
-  }
-
-  s = set->getData(tr("Second Symbol"));
-  if (! s.length())
-  {
-    QMessageBox::information(0, tr("Error"), tr("Invalid second symbol"), 0, 0, QMessageBox::Ok);
-    return;
-  }
-
-  QString path = createDirectory("Spread");
-  if (! path.length())
-  {
-    qDebug("Spread plugin: Unable to create directory");
-    return;
-  }
-
-  QStringList l = QStringList::split("/", set->getData(tr("First Symbol")), FALSE);
-  QString symbol = l[l.count() - 1];
-  symbol.append("-");
-  l = QStringList::split("/", set->getData(tr("Second Symbol")), FALSE);
-  symbol.append(l[l.count() - 1]);
-
-  path.append("/");
-  path.append(symbol);
-  QDir dir(path);
-  if (dir.exists(path, TRUE))
-  {
-    QMessageBox::information(0, tr("Error"), tr("Duplicate chart"), 0, 0, QMessageBox::Ok);
-    return;
-  }
-
-  ChartDb *db = new ChartDb();
-  db->openChart(path);
-
-  Setting *details = db->getDetails();
-  details->set("Format", "Open|High|Low|Close|Volume|Open Interest", Setting::None);
-  details->set("Chart Type", tr("Spread"), Setting::None);
-  details->set("Method", set->getData(tr("Method")), Setting::None);
-  details->set("Symbol", symbol, Setting::None);
-  details->set("Title", symbol, Setting::Text);
-  details->set("First Symbol", set->getData(tr("First Symbol")), Setting::Symbol);
-  details->set("Second Symbol", set->getData(tr("Second Symbol")), Setting::Symbol);
-
-  db->saveDetails();
-
-  delete db;
+  SpreadDialog *dialog = new SpreadDialog();
+  dialog->setCaption(tr("Spread Prefs"));
+  dialog->exec();
+  delete dialog;
 }
 
 Plugin * create ()

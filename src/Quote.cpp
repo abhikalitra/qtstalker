@@ -20,49 +20,105 @@
  */
 
 #include "Quote.h"
-#include "EditDialog.h"
 #include "Plugin.h"
 #include "download.xpm"
 #include "canceldownload.xpm"
-#include "newchart.xpm"
+#include "configure.xpm"
 #include <qstringlist.h>
 #include <qmessagebox.h>
+#include <qapplication.h>
+#include <qlabel.h>
+#include <qlayout.h>
+#include <qpixmap.h>
+#include <qtooltip.h>
 
-QuoteDialog::QuoteDialog (Config *c) : EditDialog (c)
+QuoteDialog::QuoteDialog (Config *c) : QTabDialog (0, "QuoteDialog", TRUE)
 {
-  settings = 0;
-
+  config = c;
+  
   setCaption (tr("Qtstalker: Quotes"));
+  
+  QWidget *w = new QWidget(this);
+  
+  QVBoxLayout *vbox = new QVBoxLayout(w);
+  vbox->setSpacing(2);
+  vbox->setMargin(5);
+  
+  toolbar = new Toolbar(w, 30, 30);
+  vbox->addWidget(toolbar);
 
-  setButtonStatus(0, FALSE);
-
-  setButton(QPixmap(download), tr("Update"), 2);
-  connect(getButton(2), SIGNAL(clicked()), this, SLOT(getQuotes()));
-
-  setButton(QPixmap(canceldownload), tr("Cancel Update"), 3);
-  connect(getButton(3), SIGNAL(clicked()), this, SLOT(cancelDownload()));
-  setButtonStatus(3, FALSE);
-
-  setButton(QPixmap(newchart), tr("New Chart"), 4);
-  connect(getButton(4), SIGNAL(clicked()), this, SLOT(newChart()));
-  setButtonStatus(4, FALSE);
-
-  ruleCombo = new QComboBox(this);
+  toolbar->addButton("update", download, tr("Update"));
+  QObject::connect(toolbar->getButton("update"), SIGNAL(pressed()), this, SLOT(getQuotes()));
+  
+  toolbar->addButton("cancelDownload", canceldownload, tr("Cancel Update"));
+  QObject::connect(toolbar->getButton("cancelDownload"), SIGNAL(pressed()), this, SLOT(cancelDownload()));
+  toolbar->setButtonStatus("cancelDownload", FALSE);
+  
+  vbox->addSpacing(5);
+    
+  QLabel *label = new QLabel(tr("Quote Plugins:"), w);
+  vbox->addWidget(label);
+  
+  QGridLayout *grid = new QGridLayout(vbox, 1, 2);
+  grid->setSpacing(5);
+  grid->setColStretch(0, 1);
+  
+  ruleCombo = new QComboBox(w);
   ruleCombo->insertStringList(config->getQuotePlugins(), -1);
   connect (ruleCombo, SIGNAL(activated(int)), this, SLOT(ruleChanged(int)));
-  basebox->insertWidget(1, ruleCombo, 0, 0);
+  grid->addWidget(ruleCombo, 0, 0);
+  
+  settingButton = new QPushButton(tr("Settings..."), w);
+  QObject::connect(settingButton, SIGNAL(pressed()), this, SLOT(pluginSettings()));
+  QToolTip::add(settingButton, tr("Settings"));
+  settingButton->setPixmap(configure);
+  grid->addWidget(settingButton, 0, 1);
+  
+  vbox->addSpacing(10);
+  
+  label = new QLabel(tr("Download Status:"), w);
+  vbox->addWidget(label);
+  
+  statusLog = new QMultiLineEdit(w);
+  statusLog->setReadOnly(TRUE);
+  vbox->addWidget(statusLog);
+  
+  addTab(w, tr("Quotes"));
 
+  // create the data page
+    
+  w = new QWidget(this);
+  
+  vbox = new QVBoxLayout(w);
+  vbox->setMargin(10);
+  vbox->setSpacing(2);
+  
+  label = new QLabel(tr("Download Data:"), w);
+  vbox->addWidget(label);
+  
+  dataLog = new QMultiLineEdit(w);
+  dataLog->setReadOnly(TRUE);
+  vbox->addWidget(dataLog);
+
+  addTab(w, tr("Data"));
+  
+  setOkButton(tr("Done"));
+   
   ruleChanged(0);
+  
+  resize(400, 300);
 }
 
 QuoteDialog::~QuoteDialog ()
 {
-  config->closePlugins();
 }
 
 void QuoteDialog::getQuotes ()
 {
-  emit message(tr("Starting update..."));
+  statusLog->clear();
+  dataLog->clear();
+  
+  printStatusLogMessage(tr("Starting update..."));
 
   Plugin *plug = config->getPlugin(Config::QuotePluginPath, ruleCombo->currentText());
   if (! plug)
@@ -73,32 +129,22 @@ void QuoteDialog::getQuotes ()
 
   disableGUI();
 
-  setButtonStatus(3, TRUE);
-
-  list->updateSettings();
-
-  plug->merge(settings->getStringList());
-
-  // refresh any lists 
-  QStringList key = settings->getKeyList();
-  int loop;
-  for(loop = 0; loop < (int) key.count(); loop++)
-    plug->setList(key[loop], settings->getList(key[loop]));
-
   plug->update();
 }
 
 void QuoteDialog::ruleChanged (int)
 {
-  if (settings)
-    delete settings;
-
   if (! ruleCombo->count())
   {
-    setButtonStatus(2, FALSE);
-    setButtonStatus(4, FALSE);
+    settingButton->setEnabled(FALSE);
+    toolbar->setButtonStatus("update", FALSE);
+    toolbar->setButtonStatus("cancelDownload", FALSE);
     return;
   }
+
+  if (plugin.length())
+    config->closePlugin(plugin);
+  plugin = ruleCombo->currentText();
 
   Plugin *plug = config->getPlugin(Config::QuotePluginPath, ruleCombo->currentText());
   if (! plug)
@@ -108,24 +154,15 @@ void QuoteDialog::ruleChanged (int)
   }
 
   connect (plug, SIGNAL(done()), this, SLOT(downloadComplete()));
-  connect (plug, SIGNAL(message(QString)), this, SLOT(printMessage(QString)));
+  connect (plug, SIGNAL(statusLogMessage(QString)), this, SLOT(printStatusLogMessage(QString)));
+  connect (plug, SIGNAL(dataLogMessage(QString)), this, SLOT(printDataLogMessage(QString)));
 
   plug->setDataPath(config->getData(Config::DataPath));
-
-  if (plug->getCreateFlag())
-    setButtonStatus(4, TRUE);
-  else
-    setButtonStatus(4, FALSE);
-
-  settings = plug->getPluginSettings();
-
-  list->setItems(settings);
 }
 
 void QuoteDialog::downloadComplete ()
 {
   enableGUI();
-  emit message(tr("Update complete."));
   emit chartUpdated();
 }
 
@@ -140,17 +177,15 @@ void QuoteDialog::cancelDownload ()
 
   plug->cancelUpdate();
   enableGUI();
-  emit message(tr("Update cancelled."));
+  printStatusLogMessage(tr("Update cancelled."));
 }
 
 void QuoteDialog::enableGUI ()
 {
-  list->setEnabled(TRUE);
   ruleCombo->setEnabled(TRUE);
-
-  setButtonStatus(1, TRUE);
-  setButtonStatus(2, TRUE);
-  setButtonStatus(3, FALSE);
+  settingButton->setEnabled(TRUE);
+  toolbar->setButtonStatus("update", TRUE);
+  toolbar->setButtonStatus("cancelDownload", FALSE);
 
   Plugin *plug = config->getPlugin(Config::QuotePluginPath, ruleCombo->currentText());
   if (! plug)
@@ -158,51 +193,37 @@ void QuoteDialog::enableGUI ()
     qDebug("QuoteDialog::enableGUI - could not open plugin");
     return;
   }
-
-  if (plug->getCreateFlag())
-    setButtonStatus(4, TRUE);
 }
 
 void QuoteDialog::disableGUI ()
 {
-  list->setEnabled(FALSE);
   ruleCombo->setEnabled(FALSE);
-
-  setButtonStatus(1, FALSE);
-  setButtonStatus(2, FALSE);
-  setButtonStatus(3, TRUE);
-  setButtonStatus(4, FALSE);
+  settingButton->setEnabled(FALSE);
+  toolbar->setButtonStatus("update", FALSE);
+  toolbar->setButtonStatus("cancelDownload", TRUE);
 }
 
-void QuoteDialog::newChart ()
+void QuoteDialog::printStatusLogMessage (QString d)
+{
+  statusLog->append(d);
+  emit message(QString());
+}
+
+void QuoteDialog::printDataLogMessage (QString d)
+{
+  dataLog->append(d);
+  emit message(QString());
+}
+
+void QuoteDialog::pluginSettings ()
 {
   Plugin *plug = config->getPlugin(Config::QuotePluginPath, ruleCombo->currentText());
   if (! plug)
   {
-    qDebug("QuoteDialog::newChart - could not open plugin");
+    qDebug("QuoteDialog::pluginSettings - could not open plugin");
     return;
   }
-
-  Setting *details = plug->getCreateDetails();
-
-  EditDialog *dialog = new EditDialog(config);
-
-  dialog->setCaption(tr("Qtstalker: New Chart"));
-
-  dialog->setItems(details);
-
-  int rc = dialog->exec();
-
-  if (rc == QDialog::Accepted)
-    plug->createChart(details);
-
-  delete details;
-  delete dialog;
+  
+  plug->prefDialog();
 }
-
-void QuoteDialog::printMessage (QString d)
-{
-  emit message(d);
-}
-
 

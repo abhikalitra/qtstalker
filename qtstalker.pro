@@ -15,7 +15,6 @@ SUBDIRS += plugins/chart/PF
 SUBDIRS += plugins/chart/PaintBar
 SUBDIRS += plugins/chart/Swing
 
-
 #compile quote plugins
 SUBDIRS += plugins/quote/CC
 SUBDIRS += plugins/quote/CME
@@ -27,12 +26,11 @@ SUBDIRS += plugins/quote/NYBOT
 SUBDIRS += plugins/quote/QtstalkerFormat
 SUBDIRS += plugins/quote/Spread
 SUBDIRS += plugins/quote/Yahoo
-SUBDIRS += plugins/quote/YahooQuote
+#SUBDIRS += plugins/quote/YahooQuote
 
 exists(/usr/include/mysql/mysql.h){
   SUBDIRS += plugins/quote/MySQL
 }
-
 
 #compile indicator plugins
 SUBDIRS += plugins/indicator/AD

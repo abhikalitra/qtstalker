@@ -20,8 +20,6 @@
  */
 
 #include "PrefDialog.h"
-#include <qcolordialog.h>
-#include <qfontdialog.h>
 #include <qlabel.h>
 
 PrefDialog::PrefDialog () : QTabDialog (0, "PrefDialog", TRUE)
@@ -36,6 +34,8 @@ PrefDialog::PrefDialog () : QTabDialog (0, "PrefDialog", TRUE)
   textList.setAutoDelete(TRUE);
   comboList.setAutoDelete(TRUE);
   dateList.setAutoDelete(TRUE);
+  fileList.setAutoDelete(TRUE);
+  symbolList.setAutoDelete(TRUE);
   
   dv = new QDoubleValidator(-99999999, 99999999, 4, this, 0);
   
@@ -302,81 +302,55 @@ QDateTime PrefDialog::getDate (QString name)
   return dt;
 }
 
-//****************************************************************************
-//**************** ColorButton ***********************************************
-//****************************************************************************
-
-ColorButton::ColorButton (QWidget *w, QColor c) : QPushButton (w)
+void PrefDialog::addFileItem (QString name, int page)
 {
-  color = c;
-  QObject::connect(this, SIGNAL(pressed()), this, SLOT(colorDialog()));
-  setMaximumHeight(25);
-  setToggleButton(FALSE);
-  pix.resize(50, 10);
+  QWidget *w = widgetList.at(page - 1);
+  
+  QGridLayout *grid = gridList.at(page - 1);
+  grid->expand(grid->numRows() + 1, grid->numCols());
+  
+  QLabel *label = new QLabel(name, w);
+  grid->addWidget(label, grid->numRows() - 2, 0);
+
+  FileButton *button = new FileButton(w);
+  grid->addWidget(button, grid->numRows() - 2, 1);
+  fileList.insert(name, button);
 }
 
-ColorButton::~ColorButton ()
+QStringList PrefDialog::getFile (QString name)
 {
+  QStringList l;
+  
+  FileButton *button = fileList[name];
+  if (button)
+    l = button->getFile();
+    
+  return l;
 }
 
-void ColorButton::setColorButton ()
+void PrefDialog::addSymbolItem (QString name, int page, QString path, QString symbol)
 {
-//  pix.resize(this->width(), this->height() - 5);
-  pix.fill(color);
-  setPixmap(pix);
+  QWidget *w = widgetList.at(page - 1);
+  
+  QGridLayout *grid = gridList.at(page - 1);
+  grid->expand(grid->numRows() + 1, grid->numCols());
+  
+  QLabel *label = new QLabel(name, w);
+  grid->addWidget(label, grid->numRows() - 2, 0);
+
+  SymbolButton *button = new SymbolButton(w, path, symbol);
+  grid->addWidget(button, grid->numRows() - 2, 1);
+  symbolList.insert(name, button);
 }
 
-QColor ColorButton::getColor ()
+QString PrefDialog::getSymbol (QString name)
 {
-  return color;
-}
-
-void ColorButton::colorDialog ()
-{
-  QColor c = QColorDialog::getColor(color, this, 0);
-  if (c.isValid())
-  {
-    color = c;
-    setColorButton();
-  }
-}
-
-//****************************************************************************
-//**************** FontButton ***********************************************
-//****************************************************************************
-
-FontButton::FontButton (QWidget *w, QFont f) : QPushButton (w)
-{
-  font = f;
-  QObject::connect(this, SIGNAL(pressed()), this, SLOT(fontDialog()));
-  setMaximumHeight(25);
-  setToggleButton(FALSE);
-  setFontButton();
-  setText(tr("Font"));
-}
-
-FontButton::~FontButton ()
-{
-}
-
-void FontButton::setFontButton ()
-{
-  setFont(font);
-}
-
-QFont FontButton::getFont ()
-{
-  return font;
-}
-
-void FontButton::fontDialog ()
-{
-  bool ok;
-  QFont f = QFontDialog::getFont(&ok, font, this);
-  if (ok)
-  {
-    font = f;
-    setFontButton();
-  }
+  QString s;
+  
+  SymbolButton *button = symbolList[name];
+  if (button)
+    s = button->getPath();
+    
+  return s;
 }
 

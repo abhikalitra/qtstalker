@@ -24,10 +24,12 @@
 
 #include <qstring.h>
 #include <qcombobox.h>
+#include <qmultilineedit.h>
+#include <qtabdialog.h>
 #include "Config.h"
-#include "EditDialog.h"
+#include "Toolbar.h"
 
-class QuoteDialog : public EditDialog
+class QuoteDialog : public QTabDialog
 {
   Q_OBJECT
 
@@ -46,11 +48,18 @@ class QuoteDialog : public EditDialog
     void ruleChanged (int);
     void downloadComplete ();
     void cancelDownload ();
-    void newChart ();
-    void printMessage (QString);
+    void pluginSettings ();
+    void printStatusLogMessage (QString);
+    void printDataLogMessage (QString);
 
   private:
+    Config *config;
     QComboBox *ruleCombo;
+    QString plugin;
+    QMultiLineEdit *dataLog;
+    QMultiLineEdit *statusLog;
+    QPushButton *settingButton;
+    Toolbar *toolbar;
 };
 
 #endif

@@ -22,61 +22,29 @@
 #ifndef PREFDIALOG_HPP
 #define PREFDIALOG_HPP
 
+#include "ColorButton.h"
+#include "FontButton.h"
+#include "FileButton.h"
+#include "SymbolButton.h"
 #include <qtabdialog.h>
 #include <qlayout.h>
 #include <qwidget.h>
 #include <qlist.h>
 #include <qpushbutton.h>
-#include <qpixmap.h>
 #include <qdict.h>
 #include <qspinbox.h>
 #include <qlineedit.h>
 #include <qvalidator.h>
 #include <qcheckbox.h>
-#include <qfont.h>
 #include <qcombobox.h>
+#include <qfont.h>
 #include <qdatetimeedit.h>
 #include <qdatetime.h>
-
-class ColorButton : public QPushButton
-{
-  Q_OBJECT
-
-  public:
-    ColorButton (QWidget *, QColor);
-    ~ColorButton ();
-    QColor getColor ();
-    void setColorButton ();
-
-  public slots:
-    void colorDialog ();
-        
-  private:
-    QColor color;
-    QPixmap pix;
-};
-
-class FontButton : public QPushButton
-{
-  Q_OBJECT
-
-  public:
-    FontButton (QWidget *, QFont);
-    ~FontButton ();
-    QFont getFont ();
-    void setFontButton ();
-
-  public slots:
-    void fontDialog ();
-        
-  private:
-    QFont font;
-};
+#include <qstringlist.h>
+#include <qstring.h>
 
 class PrefDialog : public QTabDialog
 {
-  Q_OBJECT
-
   public:
     PrefDialog ();
     ~PrefDialog ();
@@ -99,8 +67,10 @@ class PrefDialog : public QTabDialog
     QString getCombo (QString);
     void addDateItem (QString, int, QDateTime);
     QDateTime getDate (QString);
-
-  public slots:
+    void addFileItem (QString, int);
+    QStringList getFile (QString);
+    void addSymbolItem (QString, int, QString, QString);
+    QString getSymbol (QString);
 
   private:
     QDoubleValidator *dv;
@@ -114,6 +84,8 @@ class PrefDialog : public QTabDialog
     QDict<QLineEdit> textList;
     QDict<QComboBox> comboList;
     QDict<QDateEdit> dateList;
+    QDict<FileButton> fileList;
+    QDict<SymbolButton> symbolList;
 };
 
 #endif

@@ -30,12 +30,14 @@ class NYBOT : public QuotePlugin
     NYBOT ();
     virtual ~NYBOT ();
     void update ();
+    void prefDialog ();
 
   public slots:
     void parse ();
     
   private:
     FuturesData *fd;
+    QStringList list;
 };
 
 extern "C"

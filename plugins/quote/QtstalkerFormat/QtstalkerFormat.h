@@ -29,9 +29,13 @@ class QtstalkerFormat : public QuotePlugin
     QtstalkerFormat ();
     virtual ~QtstalkerFormat ();
     void update ();
+    void prefDialog ();
 
   public slots:
     void parse ();
+    
+  private:
+    QStringList list;
 };
 
 extern "C"

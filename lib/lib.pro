@@ -13,6 +13,12 @@ HEADERS += BarData.h
 HEADERS += Scaler.h
 HEADERS += ChartPlugin.h
 HEADERS += PrefDialog.h
+HEADERS += SymbolDialog.h
+HEADERS += SymbolButton.h
+HEADERS += ColorButton.h
+HEADERS += FontButton.h
+HEADERS += FileButton.h
+HEADERS += Toolbar.h
    
 SOURCES += Plugin.cpp
 SOURCES += QuotePlugin.cpp
@@ -25,6 +31,12 @@ SOURCES += BarData.cpp
 SOURCES += Scaler.cpp
 SOURCES += ChartPlugin.cpp
 SOURCES += PrefDialog.cpp
+SOURCES += SymbolDialog.cpp
+SOURCES += SymbolButton.cpp
+SOURCES += ColorButton.cpp
+SOURCES += FontButton.cpp
+SOURCES += FileButton.cpp
+SOURCES += Toolbar.cpp
     
 TARGET = qtstalker
 VERSION = 0.23.0

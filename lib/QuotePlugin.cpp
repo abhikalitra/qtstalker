@@ -25,7 +25,7 @@
 QuotePlugin::QuotePlugin ()
 {
   pluginType = "Quote";
-  createFlag = FALSE;
+  saveFlag = FALSE;
 }
 
 QuotePlugin::~QuotePlugin ()
@@ -80,11 +80,6 @@ bool QuotePlugin::setTFloat (QString d)
     return FALSE;
 }
 
-bool QuotePlugin::getCreateFlag ()
-{
-  return createFlag;
-}
-
 QString QuotePlugin::createDirectory (QString d)
 {
   QString path = dataPath;
@@ -100,5 +95,53 @@ QString QuotePlugin::createDirectory (QString d)
 
   return path;
 }
+
+void QuotePlugin::setDataLogMessage (Setting *r)
+{
+  QString s;
+  QStringList l = r->getKeyList();
+  
+  s = "D ";
+  s.append(r->getData("Date"));
+
+  if (l.findIndex("Open") != -1)
+  {
+    s.append(" O ");
+    s.append(r->getData("Open"));
+  }
+
+  if (l.findIndex("High") != -1)
+  {
+    s.append(" H ");
+    s.append(r->getData("High"));
+  }
+
+  if (l.findIndex("Low") != -1)
+  {
+    s.append(" L ");
+    s.append(r->getData("Low"));
+  }
+
+  if (l.findIndex("Close") != -1)
+  {
+    s.append(" C ");
+    s.append(r->getData("Close"));
+  }
+
+  if (l.findIndex("Volume") != -1)
+  {
+    s.append(" V ");
+    s.append(r->getData("Volume"));
+  }
+
+  if (l.findIndex("Open Interest") != -1)
+  {
+    s.append(" OI ");
+    s.append(r->getData("Open Interest"));
+  }
+ 
+  emit dataLogMessage(s);           
+}
+
 
 

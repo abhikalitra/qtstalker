@@ -42,7 +42,6 @@
 #include "PortfolioPage.h"
 #include "TestPage.h"
 #include "IndicatorPage.h"
-#include "NewIndicatorDialog.h"
 #include "PlotLine.h"
 #include "BuyArrow.h"
 #include "SellArrow.h"
@@ -870,14 +869,12 @@ void QtstalkerApp::loadChart (QString d)
 
   emit signalIndicatorPageRefresh();
 
-  config->closePlugins();
-
   delete db;
 }
 
 void QtstalkerApp::loadIndicator (Indicator *i)
 {
-  Plugin *plug = config->getPlugin(Config::IndicatorPluginPath, i->getData(QObject::tr("Type")));
+  Plugin *plug = config->getPlugin(Config::IndicatorPluginPath, i->getData(tr("Type")));
   if (plug)
   {
     plug->setIndicatorInput(recordList);
@@ -911,9 +908,9 @@ void QtstalkerApp::loadIndicator (Indicator *i)
       plot->addIndicator(i->getData("Name"), i);
       plot->setData(recordList);
     }
-
-    config->closePlugins();
   }
+  
+  config->closePlugin(i->getData(tr("Type")));
 }
 
 void QtstalkerApp::slotBarComboChanged (int index)
@@ -1073,11 +1070,35 @@ void QtstalkerApp::slotChartTypeChanged (int)
 
 void QtstalkerApp::slotNewIndicator ()
 {
-  NewIndicatorDialog *idialog = new NewIndicatorDialog(config);
+  PrefDialog *idialog = new PrefDialog();
+  idialog->setCaption(tr("New Indicator"));
+  idialog->createPage (tr("Details"));
+  idialog->addComboItem(tr("Indicator"), 1, config->getIndicatorPlugins(), 0);
+  idialog->addTextItem(tr("Name"), 1, tr("New Indicator"));
+  idialog->addCheckItem(tr("Create Tab"), 1, TRUE);
+  
   int rc = idialog->exec();
   if (rc == QDialog::Rejected)
   {
     delete idialog;
+    return;
+  }
+  
+  QString name = idialog->getText(tr("Name"));
+  QString indicator = idialog->getCombo(tr("Indicator"));
+  bool createTab = idialog->getCheck(tr("Create Tab"));
+  delete idialog;
+  
+  if (! name.length())
+  {
+    QMessageBox::information(this, tr("Qtstalker: Error"), tr("Indicator name missing."));
+    return;
+  }
+
+  QStringList l = config->getIndicator(name);
+  if (l.count())
+  {
+    QMessageBox::information(this, tr("Qtstalker: Error"), tr("Duplicate indicator name."));
     return;
   }
 
@@ -1085,16 +1106,16 @@ void QtstalkerApp::slotNewIndicator ()
 
   dialog->setCaption(tr("Edit Indicator"));
 
-  Plugin *plug = config->getPlugin(Config::IndicatorPluginPath, idialog->getIndicator());
+  Plugin *plug = config->getPlugin(Config::IndicatorPluginPath, indicator);
   if (! plug)
   {
-    delete idialog;
     delete dialog;
     qDebug("QtstalkerApp::slotNewIndicator - could not open plugin");
+    config->closePlugin(indicator);
     return;
   }
   Setting *set = plug->getPluginSettings();
-  set->set("Name", idialog->getName(), Setting::None);
+  set->set("Name", name, Setting::None);
 
   dialog->setItems(set);
 
@@ -1102,18 +1123,18 @@ void QtstalkerApp::slotNewIndicator ()
 
   if (rc == QDialog::Accepted)
   {
-    config->setIndicator(idialog->getName(), set->getStringList());
-    addIndicatorButton(idialog->getName(), idialog->getTabFlag());
+    config->setIndicator(name, set->getStringList());
+    addIndicatorButton(name, createTab);
 
-    if (idialog->getTabFlag() == FALSE)
+    if (createTab == FALSE)
     {
       QStringList l = QStringList::split(",", config->getData(Config::StackedIndicator), FALSE);
-      l.append(idialog->getName());
+      l.append(name);
       config->setData(Config::StackedIndicator, l.join(","));
     }
 
     Indicator *i = new Indicator;
-    i->parse(config->getIndicator(idialog->getName()));
+    i->parse(config->getIndicator(name));
     loadIndicator(i);
 
     if (i->getMainPlot())
@@ -1122,9 +1143,9 @@ void QtstalkerApp::slotNewIndicator ()
     emit signalIndicatorPageRefresh();
   }
 
-  config->closePlugins();
+  config->closePlugin(indicator);
 
-  delete idialog;
+  delete set;
   delete dialog;
 }
 
@@ -1142,6 +1163,7 @@ void QtstalkerApp::slotEditIndicator (QString selection, Plot *plot)
   {
     delete dialog;
     qDebug("QtstalkerApp::slotEditIndicator - could not open plugin");
+    config->closePlugin(set->getData("Type"));
     return;
   }
 
@@ -1165,8 +1187,9 @@ void QtstalkerApp::slotEditIndicator (QString selection, Plot *plot)
     plot->draw();
   }
 
-  config->closePlugins();
+  config->closePlugin(set2->getData("Type"));
 
+  delete set2;
   delete dialog;
 }
 

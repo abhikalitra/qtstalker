@@ -36,6 +36,9 @@ class COT : public QuotePlugin
     void saveData (Setting *);
     void cancelUpdate ();
     QString getSymbol (QString);
+    void loadSettings ();
+    void saveSettings ();
+    void prefDialog ();
 
   public slots:
     void getFile ();
@@ -48,6 +51,7 @@ class COT : public QuotePlugin
     QUrlOperator *op;
     QString url;
     QString data;
+    QString format;
 };
 
 extern "C"

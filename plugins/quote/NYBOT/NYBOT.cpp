@@ -21,6 +21,7 @@
 
 #include "NYBOT.h"
 #include "ChartDb.h"
+#include "PrefDialog.h"
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qtimer.h>
@@ -32,14 +33,6 @@ NYBOT::NYBOT ()
 {
   pluginName = "NYBOT";
   fd = new FuturesData;
-  createFlag = FALSE;
-
-  set(tr("Input"), "", Setting::FileList);
-
-  about = "Imports quotes downloaded previously from the NYBOT site.\n";
-  about.append("NOTE: Only quotes downloaded manually can be imported.\n");
-  about.append("      The quotes are created dynamically, no static content\n");
-  about.append("      for scripted downloads. Oh well, still better then nothing.");
 }
 
 NYBOT::~NYBOT ()
@@ -54,8 +47,6 @@ void NYBOT::update ()
 
 void NYBOT::parse ()
 {
-  QStringList list = getList(tr("Input"));
-
   int loop;
   for (loop = 0; loop < (int) list.count(); loop++)
   {
@@ -273,7 +264,7 @@ void NYBOT::parse ()
       QString path = createDirectory("Futures");
       if (! path.length())
       {
-        qDebug("NYBOT plugin: Unable to create futures directory");
+        emit statusLogMessage(tr("Unable to create futures directory"));
         return;
       }
 
@@ -282,13 +273,13 @@ void NYBOT::parse ()
       path = createDirectory(s);
       if (! path.length())
       {
-        qDebug("NYBOT plugin: Unable to create directory");
+        emit statusLogMessage(tr("Unable to create directory"));
         return;
       }
 
       s = tr("Updating ");
       s.append(fd->getSymbol());
-      emit message(s);
+      emit statusLogMessage(s);
 
       Setting *r = new Setting;
       r->set("Date", date, Setting::Date);
@@ -318,6 +309,7 @@ void NYBOT::parse ()
         db->setFormat();
       }
       db->setRecord(r);
+      setDataLogMessage(r);
       delete db;
       delete r;
     }
@@ -326,6 +318,24 @@ void NYBOT::parse ()
   }
 
   emit done();
+  emit statusLogMessage(tr("Done"));
+}
+
+void NYBOT::prefDialog ()
+{
+  PrefDialog *dialog = new PrefDialog();
+  dialog->setCaption(tr("NYBOT Prefs"));
+  dialog->createPage (tr("Details"));
+  dialog->addFileItem(tr("File Input"), 1);
+  
+  int rc = dialog->exec();
+  
+  if (rc == QDialog::Accepted)
+  {
+    list = dialog->getFile(tr("File Input"));
+  }
+  
+  delete dialog;
 }
 
 Plugin * create ()

@@ -40,18 +40,28 @@ class CSV : public QuotePlugin
     Setting * getDOHLCVI (QStringList);
     Setting * getDTOHLC (QStringList);
     Setting * getSDOHLCV (QStringList);
+    void loadSettings ();
+    void saveSettings ();
+    void prefDialog ();
 
   public slots:
     void parse ();
 
   private:
-    QString delimiter;
+    QString delim;
     QString dateFormat;
     FuturesData fd;
     bool dateFlag;
     QDateTime sdate;
     QDateTime edate;
     ChartDb *db;
+    QStringList list;
+    QString symbolOveride;
+    QString chartType;
+    QString futuresSymbol;
+    QString futuresMonth;
+    QString format;
+    QString delimiter;
 };
 
 extern "C"

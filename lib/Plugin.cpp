@@ -126,20 +126,6 @@ void Plugin::cancelUpdate ()
 {
 }
 
-Setting * Plugin::getCreateDetails ()
-{
-  return 0;
-}
-
-void Plugin::createChart (Setting *)
-{
-}
-
-bool Plugin::getCreateFlag ()
-{
-  return FALSE;
-}
-
 
 //**********************************************************
 //************** chart plugin interface ********************

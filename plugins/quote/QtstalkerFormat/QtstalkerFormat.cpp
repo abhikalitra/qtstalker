@@ -21,6 +21,7 @@
 
 #include "QtstalkerFormat.h"
 #include "ChartDb.h"
+#include "PrefDialog.h"
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qtimer.h>
@@ -31,12 +32,6 @@
 QtstalkerFormat::QtstalkerFormat ()
 {
   pluginName = "QtstalkerFormat";
-  createFlag = FALSE;
-
-  set(tr("Input"), "", Setting::FileList);
-
-  about = "Imports ascii files that were exported\n";
-  about.append("previously by qtstalker's export facility.");
 }
 
 QtstalkerFormat::~QtstalkerFormat ()
@@ -50,8 +45,6 @@ void QtstalkerFormat::update ()
 
 void QtstalkerFormat::parse ()
 {
-  QStringList list = getList(tr("Input"));
-
   int loop;
   for (loop = 0; loop < (int) list.count(); loop++)
   {
@@ -66,7 +59,7 @@ void QtstalkerFormat::parse ()
     QString path = createDirectory("Import");
     if (! path.length())
     {
-      qDebug("QtstalkerFormat plugin: Unable to create directory");
+      emit statusLogMessage(tr("Unable to create directory"));
       return;
     }
 
@@ -80,7 +73,7 @@ void QtstalkerFormat::parse ()
 
     QString s = tr("Updating ");
     s.append(symbol);
-    emit message(s);
+    emit statusLogMessage(s);
 
     while(stream.atEnd() == 0)
     {
@@ -102,6 +95,24 @@ void QtstalkerFormat::parse ()
   }
 
   emit done();
+  emit statusLogMessage(tr("Done"));
+}
+
+void QtstalkerFormat::prefDialog ()
+{
+  PrefDialog *dialog = new PrefDialog();
+  dialog->setCaption(tr("QtstalkerFormat Prefs"));
+  dialog->createPage (tr("Details"));
+  dialog->addFileItem(tr("File Input"), 1);
+  
+  int rc = dialog->exec();
+  
+  if (rc == QDialog::Accepted)
+  {
+    list = dialog->getFile(tr("File Input"));
+  }
+  
+  delete dialog;
 }
 
 Plugin * create ()

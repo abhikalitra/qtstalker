@@ -20,25 +20,23 @@
  */
 
 #include "CC.h"
+#include "PrefDialog.h"
 #include <qtimer.h>
 #include <qstringlist.h>
 #include <qdatetime.h>
+#include <qsettings.h>
 
 CC::CC ()
 {
   pluginName = "CC";
-  createFlag = FALSE;
-
-  set("Rollover","20", Setting::Integer);
-
-  set("Maximum Years","10", Setting::Integer);
-
-  about = "Creates a continuous adjusted futures contract\n";
-  about.append("for the selected futures symbol.");
+  
+  loadSettings();
 }
 
 CC::~CC ()
 {
+  if (saveFlag)
+    saveSettings();
 }
 
 void CC::update ()
@@ -48,10 +46,12 @@ void CC::update ()
 
 void CC::parse ()
 {
+  emit statusLogMessage("CC: Starting...");
+  
   QString path = createDirectory("CC");
   if (! path.length())
   {
-    qDebug("CC plugin: Unable to create directory");
+    emit statusLogMessage("Unable to create directory...bailing out");
     return;
   }
   path.append("/");
@@ -64,7 +64,7 @@ void CC::parse ()
   {
     QString s = tr("Updating ");
     s.append(symbols[symbolLoop]);
-    emit message(s);
+    emit statusLogMessage(s);
 
     s = dataPath;
     s.append("/Futures/");
@@ -87,15 +87,14 @@ void CC::parse ()
 
   delete fd;
 
+  emit statusLogMessage("Done");
   emit done();
 }
 
 void CC::newChart (ChartDb *db, QString symbol, FuturesData *fd, QDir dir)
 {
-  int rollover = getInt("Rollover");
-  
   QDate tdate = QDate::currentDate();
-  int years = tdate.year() - getInt("Maximum Years");
+  int years = tdate.year() - maxYears;
 
   Setting *details = db->getDetails();
   details->set("Format", "Open|High|Low|Close|Volume|Open Interest", Setting::None);
@@ -172,6 +171,8 @@ void CC::newChart (ChartDb *db, QString symbol, FuturesData *fd, QDir dir)
       pr->set("Volume", QString::number(recordList->getVolume(loop2)), Setting::Float);
       pr->set("Open Interest", QString::number(recordList->getOI(loop2)), Setting::Float);
       db->setRecord(pr);
+      
+      setDataLogMessage(pr);
 
       startDate = recordList->getDate(loop2);
     }
@@ -187,6 +188,51 @@ void CC::newChart (ChartDb *db, QString symbol, FuturesData *fd, QDir dir)
   }
 
   delete pr;
+}
+
+void CC::prefDialog ()
+{
+  PrefDialog *dialog = new PrefDialog();
+  dialog->setCaption(tr("CC Prefs"));
+  dialog->createPage (tr("Details"));
+  dialog->addIntItem(tr("Rollover"), 1, rollover);
+  dialog->addColorItem(tr("Maximum Years"), 1, maxYears);
+  int rc = dialog->exec();
+  
+  if (rc == QDialog::Accepted)
+  {
+    rollover = dialog->getInt(tr("Rollover"));
+    maxYears = dialog->getInt(tr("Maximum Years"));
+    
+    saveFlag = TRUE;
+  }
+  
+  delete dialog;
+}
+
+void CC::loadSettings ()
+{
+  QSettings settings;
+  settings.beginGroup("/Qtstalker/CC plugin");
+
+  QString s = settings.readEntry("/Rollover", "20");
+  rollover = s.toInt();
+  
+  s = settings.readEntry("/MaxYears", "10");
+  maxYears = s.toInt();
+  
+  settings.endGroup();
+}
+
+void CC::saveSettings ()
+{
+  QSettings settings;
+  settings.beginGroup("/Qtstalker/CC plugin");
+  
+  settings.writeEntry("/Rollover", QString::number(rollover));
+  settings.writeEntry("/MaxYears", QString::number(maxYears));
+  
+  settings.endGroup();
 }
 
 Plugin * create ()

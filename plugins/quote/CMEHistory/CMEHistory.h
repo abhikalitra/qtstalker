@@ -36,6 +36,9 @@ class CMEHistory : public QuotePlugin
     void parse (Setting *);
     void cancelUpdate ();
     void parseHistory ();
+    void loadSettings ();
+    void saveSettings ();
+    void prefDialog ();
 
   public slots:
     void getFile ();
@@ -44,8 +47,8 @@ class CMEHistory : public QuotePlugin
   private:
     QString file2;
     QUrlOperator op;
-    QString symbolList;
     QString url;
+    QString currentSymbol;
     FuturesData *fd;
 };
 

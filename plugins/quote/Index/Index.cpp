@@ -21,18 +21,17 @@
 
 #include "Index.h"
 #include "ChartDb.h"
+#include "IndexDialog.h"
 #include <qdir.h>
 #include <qstringlist.h>
 #include <qmessagebox.h>
 #include <qtimer.h>
+#include <qsettings.h>
 
 Index::Index ()
 {
   pluginName = "Index";
-  createFlag = TRUE;
   data.setAutoDelete(TRUE);
-
-  about = "Updates a chart to form a composite index chart.\n";
 }
 
 Index::~Index ()
@@ -62,7 +61,7 @@ void Index::updateIndex ()
     ChartDb *db = new ChartDb();
     if (db->openChart(s))
     {
-      qDebug("could not open db");
+      emit statusLogMessage(tr("could not open db"));
       delete db;
       continue;
     }
@@ -71,23 +70,16 @@ void Index::updateIndex ()
 
     s = tr("Updating ");
     s.append(dir[loop]);
-    emit message(s);
+    emit statusLogMessage(s);
+    
+    QStringList l = QStringList::split(":", details->getData("Index"), FALSE);
 
     int loop2;
     int count = 0;
-    for (loop2 = 1; loop2 < 11; loop2++)
+    for (loop2 = 0; loop2 < (int) l.count(); loop2 = loop2 + 2)
     {
-      s = tr("Symbol ");
-      if (loop2 < 10)
-        s.append("0");
-      s.append(QString::number(loop2));
-      QString symbol = details->getData(s);
-
-      s = tr("Weight ");
-      if (loop2 < 10)
-        s.append("0");
-      s.append(QString::number(loop2));
-      float weight = details->getFloat(s);
+      QString symbol = l[loop2];
+      float weight = l[loop2 + 1].toFloat();
       if (weight == 0)
         weight = 1;
 
@@ -122,6 +114,7 @@ void Index::updateIndex ()
 	  r2->setData("Low", r2->getData("Close"));
 
         db->setRecord(r2);
+        setDataLogMessage(r2);
 
 	delete r2;
       }
@@ -133,6 +126,7 @@ void Index::updateIndex ()
   }
   
   emit done();
+  emit statusLogMessage(tr("Done"));
 }
 
 int Index::loadData (QString symbol, float weight)
@@ -144,7 +138,7 @@ int Index::loadData (QString symbol, float weight)
   ChartDb *db = new ChartDb();
   if (db->openChart(symbol))
   {
-    qDebug("could not open db");
+    emit statusLogMessage(tr("could not open db"));
     delete db;
     return TRUE;
   }
@@ -191,90 +185,12 @@ int Index::loadData (QString symbol, float weight)
   return FALSE;
 }
 
-Setting * Index::getCreateDetails ()
+void Index::prefDialog ()
 {
-  Setting *set = new Setting;
-  set->set(tr("Symbol"), "New Index", Setting::Text);
-  set->set(tr("Symbol 01"), " ", Setting::Symbol);
-  set->set(tr("Weight 01"), "1", Setting::Float);
-  set->set(tr("Symbol 02"), " ", Setting::Symbol);
-  set->set(tr("Weight 02"), "1", Setting::Float);
-  set->set(tr("Symbol 03"), " ", Setting::Symbol);
-  set->set(tr("Weight 03"), "1", Setting::Float);
-  set->set(tr("Symbol 04"), " ", Setting::Symbol);
-  set->set(tr("Weight 04"), "1", Setting::Float);
-  set->set(tr("Symbol 05"), " ", Setting::Symbol);
-  set->set(tr("Weight 05"), "1", Setting::Float);
-  set->set(tr("Symbol 06"), " ", Setting::Symbol);
-  set->set(tr("Weight 06"), "1", Setting::Float);
-  set->set(tr("Symbol 07"), " ", Setting::Symbol);
-  set->set(tr("Weight 07"), "1", Setting::Float);
-  set->set(tr("Symbol 08"), " ", Setting::Symbol);
-  set->set(tr("Weight 08"), "1", Setting::Float);
-  set->set(tr("Symbol 09"), " ", Setting::Symbol);
-  set->set(tr("Weight 09"), "1", Setting::Float);
-  set->set(tr("Symbol 10"), " ", Setting::Symbol);
-  set->set(tr("Weight 10"), "1", Setting::Float);
-  return set;
-}
-
-void Index::createChart (Setting *set)
-{
-  QString symbol = set->getData(tr("Symbol"));
-  if (! symbol.length())
-  {
-    QMessageBox::information(0, tr("Error"), tr("Invalid symbol"), 0, 0, QMessageBox::Ok);
-    return;
-  }
-
-  QString path = createDirectory("Index");
-  if (! path.length())
-  {
-    qDebug("Index plugin: Unable to create directory");
-    return;
-  }
-
-  path.append("/");
-  path.append(symbol);
-  QDir dir(path);
-  if (dir.exists(path, TRUE))
-  {
-    QMessageBox::information(0, tr("Error"), tr("Duplicate chart"), 0, 0, QMessageBox::Ok);
-    return;
-  }
-
-  ChartDb *db = new ChartDb();
-  db->openChart(path);
-
-  Setting *details = db->getDetails();
-  details->set("Format", "Open|High|Low|Close|Volume|Open Interest", Setting::None);
-  details->set("Chart Type", tr("Index"), Setting::None);
-  details->set("Symbol", symbol, Setting::None);
-  details->set("Title", symbol, Setting::Text);
-  details->set(tr("Symbol 01"), set->getData(tr("Symbol 01")), set->getType(tr("Symbol 01")));
-  details->set(tr("Weight 01"), set->getData(tr("Weight 01")), set->getType(tr("Weight 01")));
-  details->set(tr("Symbol 02"), set->getData(tr("Symbol 02")), set->getType(tr("Symbol 02")));
-  details->set(tr("Weight 02"), set->getData(tr("Weight 02")), set->getType(tr("Weight 02")));
-  details->set(tr("Symbol 03"), set->getData(tr("Symbol 03")), set->getType(tr("Symbol 03")));
-  details->set(tr("Weight 03"), set->getData(tr("Weight 03")), set->getType(tr("Weight 03")));
-  details->set(tr("Symbol 04"), set->getData(tr("Symbol 04")), set->getType(tr("Symbol 04")));
-  details->set(tr("Weight 04"), set->getData(tr("Weight 04")), set->getType(tr("Weight 04")));
-  details->set(tr("Symbol 05"), set->getData(tr("Symbol 05")), set->getType(tr("Symbol 05")));
-  details->set(tr("Weight 05"), set->getData(tr("Weight 05")), set->getType(tr("Weight 05")));
-  details->set(tr("Symbol 06"), set->getData(tr("Symbol 06")), set->getType(tr("Symbol 06")));
-  details->set(tr("Weight 06"), set->getData(tr("Weight 06")), set->getType(tr("Weight 06")));
-  details->set(tr("Symbol 07"), set->getData(tr("Symbol 07")), set->getType(tr("Symbol 07")));
-  details->set(tr("Weight 07"), set->getData(tr("Weight 07")), set->getType(tr("Weight 07")));
-  details->set(tr("Symbol 08"), set->getData(tr("Symbol 08")), set->getType(tr("Symbol 08")));
-  details->set(tr("Weight 08"), set->getData(tr("Weight 08")), set->getType(tr("Weight 08")));
-  details->set(tr("Symbol 09"), set->getData(tr("Symbol 09")), set->getType(tr("Symbol 09")));
-  details->set(tr("Weight 09"), set->getData(tr("Weight 09")), set->getType(tr("Weight 09")));
-  details->set(tr("Symbol 10"), set->getData(tr("Symbol 10")), set->getType(tr("Symbol 10")));
-  details->set(tr("Weight 10"), set->getData(tr("Weight 10")), set->getType(tr("Weight 10")));
-
-  db->saveDetails();
-
-  delete db;
+  IndexDialog *dialog = new IndexDialog();
+  dialog->setCaption(tr("Index Prefs"));
+  dialog->exec();
+  delete dialog;
 }
 
 Plugin * create ()

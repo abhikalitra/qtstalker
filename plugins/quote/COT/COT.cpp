@@ -21,6 +21,7 @@
 
 #include "COT.h"
 #include "ChartDb.h"
+#include "PrefDialog.h"
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qnetwork.h>
@@ -29,27 +30,21 @@
 #include <qtimer.h>
 #include <stdlib.h>
 #include <qdatetime.h>
+#include <qsettings.h>
 
 COT::COT ()
 {
   pluginName = "COT";
-  createFlag = FALSE;
   op = 0;
-
-  QStringList l;
-  l.append("Current");
-  l.append("History");
-
-  set(tr("Data"), "Current", Setting::List);
-  setList(tr("Data"), l);
-
-  about = "Downloads COT and creates a chart.";
-
+  
+  loadSettings();
   qInitNetworkProtocols();
 }
 
 COT::~COT ()
 {
+  if (saveFlag)
+    saveSettings();
 }
 
 void COT::update ()
@@ -57,8 +52,7 @@ void COT::update ()
   data.truncate(0);
   op = 0;
 
-  QString s = getData("Data");
-  if (! s.compare("Current"))
+  if (! format.compare("Current"))
   {
     url = "http://www.cftc.gov/dea/newcot/deafut.txt";
     QTimer::singleShot(250, this, SLOT(getFile()));
@@ -84,7 +78,10 @@ void COT::getFile ()
   connect(op, SIGNAL(data(const QByteArray &, QNetworkOperation *)), this, SLOT(dataReady(const QByteArray &, QNetworkOperation *)));
   op->get();
   
-  emit message(tr("Downloading COT data"));
+  QString s = tr("Downloading");
+  s.append(" ");
+  s.append(url);
+  emit statusLogMessage(s);
 }
 
 void COT::getFile2 ()
@@ -98,7 +95,10 @@ void COT::getFile2 ()
   connect(op, SIGNAL(finished(QNetworkOperation *)), this, SLOT(opDone2(QNetworkOperation *)));
   op->copy(url, file, FALSE, FALSE);
   
-  emit message(tr("Downloading COT data"));
+  QString s = tr("Downloading");
+  s.append(" ");
+  s.append(url);
+  emit statusLogMessage(s);
 }
 
 void COT::opDone (QNetworkOperation *o)
@@ -117,13 +117,14 @@ void COT::opDone (QNetworkOperation *o)
 
     delete op;
     parse();
+    emit statusLogMessage(tr("Done"));
     emit done();
     return;
   }
 
   if (o->state() == QNetworkProtocol::StFailed)
   {
-    emit message(tr("Download error"));
+    emit statusLogMessage(tr("Download error"));
     emit done();
     delete op;
     return;
@@ -140,7 +141,7 @@ void COT::opDone2 (QNetworkOperation *o)
 
   if (o->errorCode() != QNetworkProtocol::NoError)
   {
-    emit message(tr("Download error"));
+    emit statusLogMessage(tr("Download error"));
     QString s = o->protocolDetail();
     qDebug(s.latin1());
     delete op;
@@ -173,6 +174,7 @@ void COT::opDone2 (QNetworkOperation *o)
   if (system(s2))
   {
     delete op;
+    emit statusLogMessage(tr("Done"));
     emit done();
     return;
   }
@@ -183,6 +185,7 @@ void COT::opDone2 (QNetworkOperation *o)
 
   delete op;
 
+  emit statusLogMessage(tr("Done"));
   emit done();
 }
 
@@ -281,7 +284,7 @@ void COT::saveData (Setting *set)
   QString s = createDirectory("COT");
   if (! s.length())
   {
-    qDebug("COT plugin: Unable to create directory");
+    emit statusLogMessage("Unable to create directory");
     return;
   }
 
@@ -292,7 +295,7 @@ void COT::saveData (Setting *set)
 
   s = tr("Updating ");
   s.append(set->getData("Symbol"));
-  emit message(s);
+  emit statusLogMessage(s);
 
   Setting *details = db->getDetails();
   if (! details->count())
@@ -316,6 +319,7 @@ void COT::saveData (Setting *set)
   set->remove("Title");
 
   db->setRecord(set);
+  setDataLogMessage(set);
   delete db;
 }
 
@@ -566,6 +570,48 @@ void COT::cancelUpdate ()
   if (op)
     op->stop();
   emit done();
+  emit statusLogMessage(tr("Cancelled"));
+}
+
+void COT::prefDialog ()
+{
+  QStringList l;
+  l.append("Current");
+  l.append("History");
+
+  PrefDialog *dialog = new PrefDialog();
+  dialog->setCaption(tr("COT Prefs"));
+  dialog->createPage (tr("Details"));
+  dialog->addComboItem(tr("Format"), 1, l, format);
+  int rc = dialog->exec();
+  
+  if (rc == QDialog::Accepted)
+  {
+    format = dialog->getCombo(tr("Format"));
+    saveFlag = TRUE;
+  }
+  
+  delete dialog;
+}
+
+void COT::loadSettings ()
+{
+  QSettings settings;
+  settings.beginGroup("/Qtstalker/COT plugin");
+
+  format = settings.readEntry("/Format", "Current");
+  
+  settings.endGroup();
+}
+
+void COT::saveSettings ()
+{
+  QSettings settings;
+  settings.beginGroup("/Qtstalker/COT plugin");
+  
+  settings.writeEntry("/Format", format);
+  
+  settings.endGroup();
 }
 
 Plugin * create ()

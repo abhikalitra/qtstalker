@@ -34,8 +34,6 @@ Config::Config (QString p)
   path = p;
   libs.setAutoDelete(TRUE);
   plugins.setAutoDelete(TRUE);
-  chartLib = 0;
-  chartPlugin = 0;
 
   QDir dir(QDir::homeDirPath());
   dir.convertToAbs();
@@ -128,7 +126,6 @@ Config::~Config ()
 {
   plugins.clear();
   libs.clear();
-  closeChartPlugin();
 }
 
 QString Config::getData (Parm p)
@@ -412,6 +409,7 @@ QStringList Config::getQuotePlugins ()
 
   l.remove(QObject::tr("CBOT"));
   l.remove(QObject::tr("Ratio"));
+  l.remove(QObject::tr("YahooQuote"));
 
   return l;
 }
@@ -446,6 +444,9 @@ Plugin * Config::getPlugin (Config::Parm t, QString p)
     case Config::QuotePluginPath:
       s = getData(QuotePluginPath);
       break;
+    case Config::ChartPluginPath:
+      s = getData(ChartPluginPath);
+      break;
     default:
       break;
   }
@@ -472,49 +473,16 @@ Plugin * Config::getPlugin (Config::Parm t, QString p)
   }
 }
 
-Plugin * Config::getChartPlugin (QString p)
-{
-  QString s = getData(ChartPluginPath);
-  s.append("/lib");
-  s.append(p);
-  s.append(".so");
-
-  chartLib = new QLibrary(s);
-  Plugin *(*so)() = 0;
-  so = (Plugin *(*)()) chartLib->resolve("create");
-  if (so)
-  {
-    chartPlugin = (*so)();
-    return chartPlugin;
-  }
-  else
-  {
-    qDebug("Quote::Dll error\n");
-    delete chartLib;
-    return 0;
-  }
-}
-
-
 void Config::closePlugins ()
 {
   plugins.clear();
   libs.clear();
 }
 
-void Config::closeChartPlugin ()
+void Config::closePlugin (QString d)
 {
-  if (chartPlugin)
-  {
-    delete chartPlugin;
-    chartPlugin = 0;
-  }
-  
-  if (chartLib)
-  {
-    delete chartLib;
-    chartLib = 0;
-  }
+  plugins.remove(d);
+  libs.remove(d);
 }
 
 

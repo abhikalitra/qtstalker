@@ -32,9 +32,8 @@ class Spread : public QuotePlugin
     Spread ();
     virtual ~Spread ();
     void update ();
-    Setting * getCreateDetails ();
-    void createChart (Setting *);
     void loadData (QString, QString);
+    void prefDialog ();
 
   public slots:
     void updateSpread ();

@@ -20,54 +20,53 @@
  */
 
 #include "Yahoo.h"
+#include "YahooDialog.h"
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qdir.h>
 #include <qdatetime.h>
 #include <qnetwork.h>
 #include <qtimer.h>
+#include <qsettings.h>
 
 Yahoo::Yahoo ()
 {
+  saveFlag = FALSE;
   pluginName = "Yahoo";
-  createFlag = TRUE;
   op = 0;
   
-  QDate date = QDate::currentDate();
-  if (date.dayOfWeek() == 6)
-    date = date.addDays(-1);
+  sdate = QDateTime::currentDateTime();
+  if (sdate.date().dayOfWeek() == 6)
+    sdate = sdate.addDays(-1);
   else
   {
-    if (date.dayOfWeek() == 7)
-      date = date.addDays(-2);
+    if (sdate.date().dayOfWeek() == 7)
+      sdate = sdate.addDays(-2);
   }
-  set("End Date", date.toString("yyyyMMdd"), Setting::Date);
+  sdate = sdate.addDays(-1);
 
-  date = date.addDays(-1);
-  if (date.dayOfWeek() == 6)
-    date = date.addDays(-1);
+  edate = QDateTime::currentDateTime();
+  if (edate.date().dayOfWeek() == 6)
+    edate = edate.addDays(-1);
   else
   {
-    if (date.dayOfWeek() == 7)
-      date = date.addDays(-2);
+    if (edate.date().dayOfWeek() == 7)
+      edate = edate.addDays(-2);
   }
-  set("Start Date", date.toString("yyyyMMdd"), Setting::Date);
-
-  set("Adjustments", tr("False"), Setting::Bool);
-
-  about = "Downloads Yahoo data\n";
-  about.append("and imports it directly into qtstalker.\n");
-  
+    
   qInitNetworkProtocols();
+  
+  loadSettings();
 }
 
 Yahoo::~Yahoo ()
 {
+  if (saveFlag)
+    saveSettings();
 }
 
 void Yahoo::update ()
 {
-  symbolList.clear();
   urlList.clear();
   data.truncate(0);
   symbolLoop = 0;
@@ -77,55 +76,43 @@ void Yahoo::update ()
   file = dir.path();
   file.append("/Qtstalker/download");
 
-  QDateTime edate = QDateTime::fromString(getDateTime("End Date"), Qt::ISODate);
-
-  QString s = dataPath;
-  s.append("/Stocks");
-  dir.setPath(s);
-
   int loop;
-  for (loop = 2; loop < (int) dir.count(); loop++)
+  for (loop = 0; loop < (int) symbolList.count(); loop++)
   {
-    s = dataPath;
-    s.append("/Stocks/");
-    s.append(dir[loop]);
-
-    ChartDb *db = new ChartDb();
-    db->openChart(s);
-    Setting *details = db->getDetails();
-
-    QDateTime sdate;
-    s = details->getDateTime("Last Date");
-    if (s.length())
-      sdate = QDateTime::fromString(getDateTime("Start Date"), Qt::ISODate);
-    else
-      sdate = QDateTime::fromString("1990-01-0100:00:00", Qt::ISODate);
-
-    s = "http://chart.yahoo.com/table.csv?s=";
-    s.append(dir[loop]);
-    s.append("&a=");
-    s.append(QString::number(sdate.date().month() - 1));
-    s.append("&b=");
-    s.append(sdate.toString("dd"));
-    s.append("&c=");
-    s.append(sdate.toString("yy"));
-    s.append("&d=");
-    s.append(QString::number(edate.date().month() - 1));
-    s.append("&e=");
-    s.append(edate.toString("dd"));
-    s.append("&f=");
-    s.append(edate.toString("yy"));
-    s.append("&g=d&q=q&y=0&x=.csv");
+    QString s;
     
-    symbolList.append(dir[loop]);
+    if (! method.compare(tr("History")))
+    {
+      s = "http://chart.yahoo.com/table.csv?s=";
+      s.append(symbolList[loop]);
+      s.append("&a=");
+      s.append(QString::number(sdate.date().month() - 1));
+      s.append("&b=");
+      s.append(sdate.toString("dd"));
+      s.append("&c=");
+      s.append(sdate.toString("yy"));
+      s.append("&d=");
+      s.append(QString::number(edate.date().month() - 1));
+      s.append("&e=");
+      s.append(edate.toString("dd"));
+      s.append("&f=");
+      s.append(edate.toString("yy"));
+      s.append("&g=d&q=q&y=0&x=.csv");
+    }
+    else
+    {
+      s = "http://finance.yahoo.com/d/quotes.csv?s=";
+      s.append(symbolList[loop]);
+      s.append("&f=snl1d1t1c1ohgv&e=.csv");
+    }
+    
     urlList.append(s);
-
-    delete db;
   }
 
   if (! symbolList.count())
   {
     emit done();
+    emit statusLogMessage(tr("No symbols selected. Done."));
     return;
   }
 
@@ -139,28 +126,30 @@ void Yahoo::opDone (QNetworkOperation *o)
 
   if (o->state() == QNetworkProtocol::StDone && o->operation() == QNetworkProtocol::OpGet)
   {
-    parse();
-
+    if (! method.compare(tr("History")))
+      parseHistory();
+    else
+      parseQuote();
+      
     symbolLoop++;
 
     if (symbolLoop == (int) symbolList.count())
     {
       emit done();
+      emit statusLogMessage(tr("Done"));
       delete op;
       return;
     }
 
     data.truncate(0);
-
     getFile();
-    
     return;
   }
 
   if (o->state() == QNetworkProtocol::StFailed)
   {
-    emit message("Download error");
     emit done();
+    emit statusLogMessage(tr("Download error"));
     delete op;
     return;
   }
@@ -178,7 +167,7 @@ void Yahoo::getFile ()
   
   QString s = tr("Downloading ");
   s.append(symbolList[symbolLoop]);
-  emit message(s);
+  emit statusLogMessage(s);
 }
 
 void Yahoo::dataReady (const QByteArray &d, QNetworkOperation *)
@@ -188,7 +177,7 @@ void Yahoo::dataReady (const QByteArray &d, QNetworkOperation *)
     data.append(d[loop]);
 }
 
-void Yahoo::parse ()
+void Yahoo::parseHistory ()
 {
   if (! data.length())
     return;
@@ -198,10 +187,6 @@ void Yahoo::parse ()
 
   if (data.contains("No Prices in this date range"))
     return;
-
-  int adjust = 0;
-  if (! getData(tr("Adjustments")).compare(tr("True")))
-    adjust = 1;
 
   // strip off the header
   QString s = "Date,Open,High,Low,Close";
@@ -275,7 +260,7 @@ void Yahoo::parse ()
       volume = l[5];
 
     // adjusted close
-    if (adjust)
+    if (adjustment)
     {
       QString adjclose = "0";
       if (l.count() >= 7)
@@ -306,6 +291,101 @@ void Yahoo::parse ()
     r->set("Close", close, Setting::Float);
     r->set("Volume", volume, Setting::Float);
     db->setRecord(r);
+    setDataLogMessage(r);
+    delete r;
+  }
+
+  f.close();
+  delete db;
+}
+
+void Yahoo::parseQuote ()
+{
+  if (! data.length())
+    return;
+
+  QFile f(file);
+  if (! f.open(IO_WriteOnly))
+    return;
+  QTextStream stream(&f);
+  stream << data;
+  f.close();
+
+  f.setName(file);
+  if (! f.open(IO_ReadOnly))
+    return;
+  stream.setDevice(&f);
+  
+  QString s = dataPath;
+  s.append("/Stocks/");
+  s.append(symbolList[symbolLoop]);
+  ChartDb *db = new ChartDb();
+  db->openChart(s);
+
+  while(stream.atEnd() == 0)
+  {
+    QString s = stream.readLine();
+    s = stripJunk(s);
+
+    QStringList l = QStringList::split(",", s, FALSE);
+    if (l.count() < 9 || l.count() > 10)
+      continue;
+
+    // get date
+    QStringList l2 = QStringList::split("/", l[3], FALSE);
+    if (l2.count() != 3)
+      continue;
+    QString date = l2[2];
+    if (l2[0].toInt() < 10)
+      date.append("0");
+    date.append(l2[0]);
+    if (l2[1].toInt() < 10)
+      date.append("0");
+    date.append(l2[1]);
+    date.append("000000");
+
+    // open
+    QString open;
+    if (setTFloat(l[6]))
+      continue;
+    else
+      open = QString::number(tfloat);
+
+    // high
+    QString high;
+    if (setTFloat(l[7]))
+      continue;
+    else
+      high = QString::number(tfloat);
+
+    // low
+    QString low;
+    if (setTFloat(l[8]))
+      continue;
+    else
+      low = QString::number(tfloat);
+
+    // close
+    QString close;
+    if (setTFloat(l[2]))
+      continue;
+    else
+      close = QString::number(tfloat);
+
+    // volume
+    QString volume = "0";
+    if (l.count() == 10)
+      volume = l[9];
+
+    Setting *r = new Setting;
+    r->set("Date", date, Setting::Date);
+    r->set("Open", open, Setting::Float);
+    r->set("High", high, Setting::Float);
+    r->set("Low", low, Setting::Float);
+    r->set("Close", close, Setting::Float);
+    r->set("Volume", volume, Setting::Float);
+    db->setRecord(r);
+    setDataLogMessage(r);
     delete r;
   }
 
@@ -412,47 +492,51 @@ QString Yahoo::parseDate (QString d)
   return s;
 }
 
-Setting * Yahoo::getCreateDetails ()
+void Yahoo::prefDialog ()
 {
-  Setting *set = new Setting;
-  set->set("New Symbols", "", Setting::Text);
-  return set;
+  YahooDialog *dialog = new YahooDialog();
+  dialog->setCaption(tr("Yahoo Prefs"));
+  dialog->setAdjustment(adjustment);
+  dialog->setStartDate(sdate);
+  dialog->setEndDate(edate);
+  dialog->setMethod(method);
+  
+  int rc = dialog->exec();
+  if (rc == QDialog::Accepted)
+  {
+    adjustment = dialog->getAdjustment();
+    sdate = dialog->getStartDate();
+    edate = dialog->getEndDate();
+    symbolList = dialog->getList();
+    method = dialog->getMethod();
+    saveFlag = TRUE;
+  }
+  
+  delete dialog;
 }
 
-void Yahoo::createChart (Setting *set)
+void Yahoo::loadSettings ()
 {
-  QStringList symbols = QStringList::split(" ", set->getData("New Symbols"), FALSE);
+  QSettings settings;
+  settings.beginGroup("/Qtstalker/Yahoo plugin");
 
-  QString path = createDirectory("Stocks");
-  if (! path.length())
-  {
-    qDebug("Yahoo plugin: Unable to create directory");
-    return;
-  }
-  path.append("/");
+  QString s = settings.readEntry("/Adjustment", "0");
+  adjustment = s.toInt();
+  
+  method = settings.readEntry("/Method", tr("History"));
+  
+  settings.endGroup();
+}
 
-  int loop;
-  for (loop = 0; loop < (int) symbols.count(); loop++)
-  {
-    QString s = path;
-    s.append(symbols[loop]);
-    QDir dir(s);
-    if (dir.exists(s, TRUE))
-      continue;
-
-    ChartDb *db = new ChartDb();
-    db->openChart(s);
-
-    Setting *details = db->getDetails();
-    details->set("Format", "Open|High|Low|Close|Volume", Setting::None);
-    details->set("Chart Type", tr("Stock"), Setting::None);
-    details->set("Symbol", symbols[loop], Setting::None);
-    details->set("Source", pluginName, Setting::None);
-    details->set("Title", symbols[loop], Setting::Text);
-    db->saveDetails();
-
-    delete db;
-  }
+void Yahoo::saveSettings ()
+{
+  QSettings settings;
+  settings.beginGroup("/Qtstalker/Yahoo plugin");
+  
+  settings.writeEntry("/Adjustment", QString::number(adjustment));
+  settings.writeEntry("/Method", method);
+  
+  settings.endGroup();
 }
 
 Plugin * create ()

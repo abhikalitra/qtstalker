@@ -87,18 +87,14 @@ void YahooQuote::opDone (QNetworkOperation *o)
   if (o->state() == QNetworkProtocol::StDone && o->operation() == QNetworkProtocol::OpGet)
   {
     parse();
-
     symbolLoop++;
-
     if (symbolLoop == (int) symbolList.count())
     {
       emit done();
       delete op;
       return;
     }
-
     data.truncate(0);
-
     getFile();
   }
   

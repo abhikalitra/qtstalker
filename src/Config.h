@@ -90,19 +90,14 @@ class Config
     QStringList getIndicatorPlugins ();
     QStringList getQuotePlugins ();
     QStringList getChartPlugins ();
-
     Plugin * getPlugin (Config::Parm, QString);
-    Plugin * getChartPlugin (QString);
-    
     void closePlugins ();
-    void closeChartPlugin ();
+    void closePlugin (QString);
 
   protected:
     QString path;
     QDict<QLibrary> libs;
     QDict<Plugin> plugins;
-    QLibrary *chartLib;
-    Plugin *chartPlugin;
 };
 
 #endif

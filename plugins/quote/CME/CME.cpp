@@ -33,11 +33,7 @@ CME::CME ()
 {
   pluginName = "CME";
   fd = new FuturesData;
-  createFlag = FALSE;
   op = 0;
-
-  about = "Downloads daily settlement quotes from CME\n";
-  about.append("and imports it directly into qtstalker.");
   
   qInitNetworkProtocols();
 }
@@ -78,6 +74,7 @@ void CME::opDone (QNetworkOperation *o)
     QString s = o->protocolDetail();
     qDebug(s.latin1());
     delete op;
+    emit statusLogMessage("Done");
     emit done();
     return;
   }
@@ -92,6 +89,7 @@ void CME::opDone (QNetworkOperation *o)
 
   if (symbolLoop >= (int) urlList.count())
   {
+    emit statusLogMessage("Done");
     emit done();
     delete op;
     return;
@@ -112,7 +110,9 @@ void CME::getFile ()
   connect(op, SIGNAL(finished(QNetworkOperation *)), this, SLOT(opDone(QNetworkOperation *)));
   op->copy(urlList[symbolLoop], file, FALSE, FALSE);
   
-  emit message(tr("Downloading CME data"));
+  QString s = "Downloading ";
+  s.append(urlList[symbolLoop]);
+  emit statusLogMessage(s);
 }
 
 void CME::parseToday ()
@@ -722,7 +722,7 @@ void CME::parse (Setting *data)
   QString path = createDirectory("Futures");
   if (! path.length())
   {
-    qDebug("CME plugin: Unable to create futures directory");
+    emit statusLogMessage("Unable to create futures directory");
     return;
   }
 
@@ -731,13 +731,13 @@ void CME::parse (Setting *data)
   path = createDirectory(s);
   if (! path.length())
   {
-    qDebug("CME plugin: Unable to create symbol directory");
+    emit statusLogMessage("Unable to create symbol directory");
     return;
   }
 
   s = tr("Updating ");
   s.append(fd->getSymbol());
-  emit message(s);
+  emit statusLogMessage(s);
 
   Setting *r = new Setting;
   r->set("Date", data->getData("Date"), Setting::Date);
@@ -768,6 +768,7 @@ void CME::parse (Setting *data)
   }
 
   db->setRecord(r);
+  setDataLogMessage(r);
   delete db;
   delete r;
 }
@@ -777,6 +778,7 @@ void CME::cancelUpdate ()
   if (op)
     op->stop();
   emit done();
+  emit statusLogMessage("Canceled");
 }
 
 Plugin * create ()

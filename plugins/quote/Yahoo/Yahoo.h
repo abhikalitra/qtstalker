@@ -34,9 +34,11 @@ class Yahoo : public QuotePlugin
     virtual ~Yahoo ();
     void update ();
     QString parseDate (QString);
-    void parse ();
-    Setting * getCreateDetails ();
-    void createChart (Setting *);
+    void parseHistory ();
+    void parseQuote ();
+    void loadSettings ();
+    void saveSettings ();
+    void prefDialog ();
     
   public slots:
     void opDone (QNetworkOperation *);
@@ -49,6 +51,10 @@ class Yahoo : public QuotePlugin
     QStringList symbolList;
     QStringList urlList;
     int symbolLoop;
+    bool adjustment;
+    QDateTime sdate;
+    QDateTime edate;
+    QString method;
 };
 
 extern "C"

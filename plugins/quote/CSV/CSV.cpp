@@ -20,89 +20,48 @@
  */
 
 #include "CSV.h"
+#include "PrefDialog.h"
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qtimer.h>
 #include <qstringlist.h>
 #include <qstring.h>
 #include <qdir.h>
+#include <qsettings.h>
 
 CSV::CSV ()
 {
   pluginName = "CSV";
-  createFlag = FALSE;
-  delimiter = ",";
+  delim = ",";
   db = 0;
-
-  set(tr("Input"), "", Setting::FileList);
-
-  set(tr("Symbol"), "", Setting::Text);
-
-  QStringList l;
-  l.append("Stock");
-  l.append("Futures");
-  set(tr("Chart Type"), "Stock", Setting::List);
-  setList(tr("Chart Type"), l);
-
-  l = fd.getSymbolList();
-  set(tr("Futures Symbol"), l[0], Setting::List);
-  setList(tr("Futures Symbol"), l);
-
-  l = fd.getMonths();
-  set(tr("Futures Month"), l[0], Setting::List);
-  setList(tr("Futures Month"), l);
-
-  l.clear();
-  l.append("DOHLCV");
-  l.append("DOHLCVI");
-  l.append("DTOHLC");
-  l.append("SDOHLCV");
-  set(tr("Format"), l[0], Setting::List);
-  setList(tr("Format"), l);
-
-  l.clear();
-  l.append(tr("Comma"));
-  l.append(tr("Tab"));
-  l.append(tr("Space"));
-  set(tr("Delimiter"), tr("Comma"), Setting::List);
-  setList(tr("Delimiter"), l);
-
-  l.clear();
-  l.append(tr("YYYYMMDD"));
-  l.append(tr("YYMMDD"));
-  l.append(tr("MMDDYY"));
-  l.append(tr("MMDDYYYY"));
-  l.append(tr("DDMMYYYY"));
-  set(tr("Date Format"), tr("YYYYMMDD"), Setting::List);
-  setList(tr("Date Format"), l);
-
-  QDate date = QDate::currentDate();
-  if (date.dayOfWeek() == 6)
-    date = date.addDays(-1);
+  dateFlag = FALSE;
+  
+  edate = QDateTime::currentDateTime();
+  if (edate.date().dayOfWeek() == 6)
+    edate = edate.addDays(-1);
   else
   {
-    if (date.dayOfWeek() == 7)
-      date = date.addDays(-2);
+    if (edate.date().dayOfWeek() == 7)
+      edate = edate.addDays(-2);
   }
-  set("Date End", date.toString("yyyyMMdd"), Setting::Date);
 
-  date = date.addDays(-1);
-  if (date.dayOfWeek() == 6)
-    date = date.addDays(-1);
+  sdate = QDateTime::currentDateTime();
+  sdate = sdate.addDays(-1);
+  if (sdate.date().dayOfWeek() == 6)
+    sdate = sdate.addDays(-1);
   else
   {
-    if (date.dayOfWeek() == 7)
-      date = date.addDays(-2);
+    if (sdate.date().dayOfWeek() == 7)
+      sdate = sdate.addDays(-2);
   }
-  set("Date Start", date.toString("yyyyMMdd"), Setting::Date);
-
-  set("Select Date Range", tr("False"), Setting::Bool);
-
-  about = "Imports ASCII CSV files.\n";
+  
+  loadSettings();
 }
 
 CSV::~CSV ()
 {
+  if (saveFlag)
+    saveSettings();
 }
 
 void CSV::update ()
@@ -112,20 +71,13 @@ void CSV::update ()
 
 void CSV::parse ()
 {
-  QStringList list = getList(tr("Input"));
-
-  dateFormat = getData(tr("Date Format"));
-
   setDelimiter();
 
-  dateFlag = FALSE;
-  if (! getData(tr("Select Date Range")).compare(tr("True")))
+  if (dateFlag)
   {
-    dateFlag = TRUE;
-    sdate = QDateTime::fromString(getDateTime("Date Start"), Qt::ISODate);
-    edate = QDateTime::fromString(getDateTime("Date End"), Qt::ISODate);
     if (sdate >= edate || edate <= sdate)
     {
+      emit statusLogMessage(tr("Done"));
       emit done();
       return;
     }
@@ -139,9 +91,7 @@ void CSV::parse ()
       continue;
     QTextStream stream(&f);
 
-    QString format = getData(tr("Format"));
-
-    QString symbol = getData(tr("Symbol"));
+    QString symbol = symbolOveride;
     if (! symbol.length() && format.compare("SDOHLCV"))
     {
       QStringList l = QStringList::split("/", list[loop], FALSE);
@@ -154,7 +104,7 @@ void CSV::parse ()
         symbol = symbol.remove(symbol.find("_", 0, TRUE), 1);
     }
 
-    QString type = getData(tr("Chart Type"));
+    QString type = chartType;
 
     QString path;
     if (! type.compare("Stock"))
@@ -162,7 +112,7 @@ void CSV::parse ()
       path = createDirectory("Stocks");
       if (! path.length())
       {
-        qDebug("CSV plugin: Unable to create stocks directory");
+        emit statusLogMessage("Unable to create stocks directory");
         f.close();
         return;
       }
@@ -174,19 +124,19 @@ void CSV::parse ()
         path = createDirectory("Futures");
         if (! path.length())
 	{
-          qDebug("CSV plugin: Unable to create futures directory");
+          emit statusLogMessage("Unable to create futures directory");
           f.close();
           return;
         }
 
-        fd.setSymbol(getData(tr("Futures Symbol")));
+        fd.setSymbol(futuresSymbol);
 
 	QString s = "Futures/";
 	s.append(fd.getSymbol());
         path = createDirectory(s);
         if (! path.length())
         {
-          qDebug("CSV plugin: Unable to create futures symbol directory");
+          emit statusLogMessage("Unable to create futures symbol directory");
           f.close();
           return;
         }
@@ -207,7 +157,7 @@ void CSV::parse ()
       QString s = stream.readLine();
       s = stripJunk(s);
 
-      QStringList l = QStringList::split(delimiter, s, FALSE);
+      QStringList l = QStringList::split(delim, s, FALSE);
 
       Setting *r = 0;
 
@@ -248,6 +198,7 @@ void CSV::parse ()
 	  s.append(r->getData("Symbol"));
 	  openDb(s, r->getData("Symbol"), type);
           db->setRecord(r);
+	  setDataLogMessage(r);
           delete db;
 	  db = 0;
           s = tr("Updating ");
@@ -256,11 +207,12 @@ void CSV::parse ()
 	else
 	{
           db->setRecord(r);
+	  setDataLogMessage(r);
           s = tr("Updating ");
           s.append(symbol);
 	}
 
-        emit message(s);
+        emit statusLogMessage(s);
 
         delete r;
       }
@@ -274,26 +226,27 @@ void CSV::parse ()
     f.close();
   }
 
+  emit statusLogMessage(tr("Done"));
   emit done();
 }
 
 void CSV::setDelimiter ()
 {
-  if (! getData(tr("Delimiter")).compare(tr("Comma")))
+  if (! delimiter.compare(tr("Comma")))
   {
-    delimiter = ",";
+    delim = ",";
     return;
   }
 
-  if (! getData(tr("Delimiter")).compare(tr("Tab")))
+  if (! delimiter.compare(tr("Tab")))
   {
-    delimiter = "	";
+    delim = "	";
     return;
   }
 
-  if (! getData(tr("Delimiter")).compare(tr("Space")))
+  if (! delimiter.compare(tr("Space")))
   {
-    delimiter = " ";
+    delim = " ";
     return;
   }
 }
@@ -403,8 +356,6 @@ QDate CSV::getDate (QString d)
 
 void CSV::newChart (Setting *details)
 {
-  QString format = getData(tr("Format"));
-
   while (1)
   {
     if (! format.compare("DOHLCV") || ! format.compare("SDOHLCV"))
@@ -445,7 +396,7 @@ void CSV::openDb (QString path, QString symbol, QString type)
     if (! type.compare("Futures"))
     {
       details->set("Futures Type", fd.getSymbol(), Setting::None);
-      details->set("Futures Month", getData(tr("Futures Month")), Setting::None);
+      details->set("Futures Month", futuresMonth, Setting::None);
       details->set("Title", fd.getName(), Setting::Text);
     }
     else
@@ -814,6 +765,102 @@ Setting * CSV::getSDOHLCV (QStringList l)
   r->set("Volume", volume, Setting::Float);
 
   return r;
+}
+
+void CSV::prefDialog ()
+{
+  PrefDialog *dialog = new PrefDialog();
+  dialog->setCaption(tr("CSV Prefs"));
+  dialog->createPage (tr("Details"));
+  dialog->addFileItem(tr("Input Files"), 1);
+  dialog->addTextItem(tr("Symbol"), 1, symbolOveride);
+  
+  QStringList l;
+  l.append(tr("Stock"));
+  l.append(tr("Futures"));
+  dialog->addComboItem(tr("Chart Type"), 1, l, chartType);
+
+  dialog->addComboItem(tr("Futures Symbol"), 1, fd.getSymbolList(), futuresSymbol);
+  dialog->addComboItem(tr("Futures Month"), 1, fd.getMonths(), futuresSymbol);
+
+  l.clear();
+  l.append("DOHLCV");
+  l.append("DOHLCVI");
+  l.append("DTOHLC");
+  l.append("SDOHLCV");
+  dialog->addComboItem(tr("Format"), 1, l, format);
+
+  l.clear();
+  l.append(tr("Comma"));
+  l.append(tr("Tab"));
+  l.append(tr("Space"));
+  dialog->addComboItem(tr("Delimiter"), 1, l, delimiter);
+
+  l.clear();
+  l.append(tr("YYYYMMDD"));
+  l.append(tr("YYMMDD"));
+  l.append(tr("MMDDYY"));
+  l.append(tr("MMDDYYYY"));
+  l.append(tr("DDMMYYYY"));
+  dialog->addComboItem(tr("Date Format"), 1, l, dateFormat);
+
+  dialog->addDateItem(tr("Date Start"), 1, sdate);
+  dialog->addDateItem(tr("Date End"), 1, edate);
+  dialog->addCheckItem(tr("Select Date Range"), 1, dateFlag);
+          
+  int rc = dialog->exec();
+  
+  if (rc == QDialog::Accepted)
+  {
+    list = dialog->getFile(tr("Input Files"));
+    symbolOveride = dialog->getText(tr("Symbol"));
+    chartType = dialog->getCombo(tr("Chart Type"));
+    futuresSymbol = dialog->getCombo(tr("Futures Symbol"));
+    futuresMonth = dialog->getCombo(tr("Futures Month"));
+    format = dialog->getCombo(tr("Format"));
+    delimiter = dialog->getCombo(tr("Delimiter"));
+    dateFormat = dialog->getCombo(tr("Date Format"));
+    sdate = dialog->getDate(tr("Date Start"));
+    edate = dialog->getDate(tr("Date End"));
+    dateFlag = dialog->getCheck(tr("Select Date Range"));
+    
+    saveFlag = TRUE;
+  }
+  
+  delete dialog;
+}
+
+void CSV::loadSettings ()
+{
+  QSettings settings;
+  settings.beginGroup("/Qtstalker/CSV plugin");
+
+  chartType = settings.readEntry("/ChartType", tr("Stock"));
+  futuresSymbol = settings.readEntry("/FuturesSymbol", "AD");
+  futuresMonth = settings.readEntry("/FuturesMonth", "F");
+  format = settings.readEntry("/Format", "DOHLCV");
+  delimiter = settings.readEntry("/Delimiter", tr("Comma"));
+  dateFormat = settings.readEntry("/DateFormat", tr("YYYYMMDD"));
+  
+  QString s = settings.readEntry("/DateRange", "0");
+  dateFlag = s.toInt();
+  
+  settings.endGroup();
+}
+
+void CSV::saveSettings ()
+{
+  QSettings settings;
+  settings.beginGroup("/Qtstalker/CSV plugin");
+  
+  settings.writeEntry("/ChartType", chartType);
+  settings.writeEntry("/FuturesSymbol", futuresSymbol);
+  settings.writeEntry("/FuturesMonth", futuresMonth);
+  settings.writeEntry("/Delimiter", delimiter);
+  settings.writeEntry("/DateFormat", dateFormat);
+  settings.writeEntry("/DateRange", QString::number(dateFlag));
+  
+  settings.endGroup();
 }
 
 Plugin * create ()

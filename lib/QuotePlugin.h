@@ -32,19 +32,21 @@ class QuotePlugin : public Plugin
   signals:
     void done ();
     void message (QString);
+    void statusLogMessage (QString);
+    void dataLogMessage (QString);
 
   public:
     QuotePlugin ();
     virtual ~QuotePlugin ();
     bool setTFloat (QString);
     QString stripJunk (QString);
-    bool getCreateFlag ();
     QString createDirectory (QString);
+    void setDataLogMessage (Setting *);
 
   protected:
     QString file;
     float tfloat;
-    bool createFlag;
+    bool saveFlag;
 };
 
 #endif

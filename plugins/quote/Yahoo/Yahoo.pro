@@ -4,8 +4,10 @@ CONFIG += thread warn_on plugin
 QMAKE_CXXFLAGS += -Os
 
 HEADERS += Yahoo.h
+HEADERS += YahooDialog.h
 
 SOURCES += Yahoo.cpp
+SOURCES += YahooDialog.cpp
 
 TARGET = Yahoo
 

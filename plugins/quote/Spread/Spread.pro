@@ -4,8 +4,10 @@ CONFIG += thread warn_on plugin
 QMAKE_CXXFLAGS += -Os
 
 HEADERS += Spread.h
+HEADERS += SpreadDialog.h
 
 SOURCES += Spread.cpp
+SOURCES += SpreadDialog.cpp
 
 TARGET = Spread
 

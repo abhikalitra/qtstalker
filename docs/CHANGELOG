@@ -31,7 +31,15 @@
 20040303: Applied patch #903981 - new doc explain cvs, development, contribution. Thanks to
           David Crossley.
 	  
-	  	  
+20040307: Added preference dialogs to all the quote plugins. Changed the quotes dialog to reflect
+          this change. The settings interface to each quote plugin no longer displays in the
+	  quote dialog. You need to press the settings button beside the plugin combobox to bring
+	  up the settings dialog for each plugin.
+	  
+20040307: Folded YahooQuote plugin into Yahoo plugin.
+	  
+
+	  
 0.25
 ====
 
