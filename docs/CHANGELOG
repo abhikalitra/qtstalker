@@ -270,6 +270,9 @@
 	  
 20050321: Added 1 and 10 minute bar chart options.
 
+20050322: Added new chart object called Cycle. This draws a series of arcs at the bottom of a
+          chart at a regular interval from a starting point. This allows the user to
+	  spot regular intervals between peaks and troughs by varying the interval time.
 	  
 	  	  
 	  	  

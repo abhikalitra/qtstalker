@@ -77,5 +77,6 @@ SUBDIRS += plugins/co/VerticalLine
 SUBDIRS += plugins/co/Text
 SUBDIRS += plugins/co/TrendLine
 SUBDIRS += plugins/co/FiboLine
+SUBDIRS += plugins/co/Cycle
 
 SUBDIRS += docs
