@@ -774,6 +774,12 @@ void Tester::test ()
     trailing();
   }
 
+  if (status != 0)
+  {
+    exitPosition("End of test");
+    status = 0;
+  }
+
   createSummary();
 
   delete recordList;

@@ -453,10 +453,10 @@ QString Yahoo::parseDate (QString d)
     return s;
 
   s = l[2];
-  if (s.toInt() < 50)
-    s.prepend("20");
-  else
+  if (s.toInt() > 29)
     s.prepend("19");
+  else
+    s.prepend("20");
     
   while (1)
   {

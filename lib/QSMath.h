@@ -62,7 +62,6 @@ class QSMath
     PlotLine * getMOM (PlotLine *in, int period); // momentum
     PlotLine * getNVI (); //negative volume index
     PlotLine * getOBV (); //on balance volume
-    PlotLine * getVFI (int period); //volume flow index
     PlotLine * getPC (PlotLine *in, int period); //pecent change
     PlotLine * getPER (PlotLine *in); //performance
     double getPPFR (double high, double low, double close); // pivot point first resistance
@@ -78,6 +77,7 @@ class QSMath
     PlotLine * getSAR (double initial, double add, double limit); // parabolic support and resistance
     PlotLine * getSD (PlotLine *in, int period); // standard deviance
     PlotLine * getSTOCH (MAType maType, int period, int kperiod); // stochastics
+    PlotLine * getVFI (int period); //volume flow index
     PlotLine * getVOLR (int period); //volatility ratio
     PlotLine * getWAD (); //william's accumulation distribution
     PlotLine * getWILLR (int period); //william's %R

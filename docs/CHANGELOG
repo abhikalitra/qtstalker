@@ -3,7 +3,11 @@
 
 20040614: - applied patch #972357 - new indicator VFI. Thanks to Xiaoguang Zhang.
 
+20040615: - applied patch #972868,972870 - VFI and Tester exit changes. Thanks to Xiaoguang Zhang.
 
+20040615: - fixed bug #972949 - yahoo Y2K bug. qtstalker was assuming any dates <1950 was a 
+            21st century date. The yahoo history data only goes back to 1930, so cutoff date
+	    is changed to anything before 1930 will be considered a 21st century date.
 
 0.26
 ====

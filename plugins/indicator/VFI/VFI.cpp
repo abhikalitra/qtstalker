@@ -82,27 +82,10 @@ QMemArray<int> VFI::getAlerts ()
   int loop;
   for (loop = 0; loop < (int) vfi->getSize(); loop++, dataLoop++)
   {
-    switch (status)
-    {
-      case -1:
-        if (vfi->getData(loop) > 0)
-          status = 0;
-        break;
-      case 1:
-        if (vfi->getData(loop) < 0)
-	  status = 0;
-	break;
-      default:
-        if (vfi->getData(loop) > 0)
-	  status = 1;
-	else
-	{
-          if (vfi->getData(loop) < 0)
-	    status = -1;
-	}
-	break;
-    }
-
+    if (vfi->getData(loop) > 0)
+          status = 1;
+    if (vfi->getData(loop) < 0)
+	  status = -1;
     alerts[dataLoop] = status;
   }
   return alerts;

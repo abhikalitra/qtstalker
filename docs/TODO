@@ -13,6 +13,7 @@ To Do:
 - fix trendlines and fibo objects to plot on weekly and monthly charts as well
 - make a freshmeat entry
 - context sensitive help
+- revise plugin alert system for hard coded methods (CCI, DMI etc)
 
 
 Maybe some day:
