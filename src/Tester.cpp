@@ -40,9 +40,15 @@ Tester::Tester (Config *c, QString n) : QTabDialog (0, 0, FALSE)
 
   setCaption ("Back Tester");
 
-  setOkButton(tr("&OK"));
-  connect(this, SIGNAL(applyButtonPressed()), this, SLOT(exitDialog()));
+  setDefaultButton(tr("&Test"));
+  connect(this, SIGNAL(defaultButtonPressed()), this, SLOT(test()));
+  
+  setApplyButton(tr("&Apply"));  
+  connect(this, SIGNAL(applyButtonPressed()), this, SLOT(saveRule()));
+  
   setCancelButton(tr("&Cancel"));  
+  
+  setOkButton(QString::null);  
 
   createFormulaPage();
 
@@ -195,35 +201,30 @@ void Tester::createTestPage ()
   tradeShort = new QCheckBox(tr("Short"), gbox);
   gbox->addSpace(0);
 
-  QLabel *label = new QLabel(tr("Delay"), gbox);
+  QLabel *label = new QLabel(tr("Enter Long Delay"), gbox);
     
-  delay = new QSpinBox(0, 999999, 1, gbox);
-  delay->setValue(0);
+  enterLongDelay = new QSpinBox(0, 999999, 1, gbox);
+  enterLongDelay->setValue(0);
 
-  gbox = new QVGroupBox(tr("Bars"), w);
-  gbox->setInsideSpacing(2);
-//  gbox->setColumns(2);
-  grid->addWidget(gbox, 0, 1);
+  label = new QLabel(tr("Exit Long Delay"), gbox);
+    
+  exitLongDelay = new QSpinBox(0, 999999, 1, gbox);
+  exitLongDelay->setValue(0);
   
-  bars = new QSpinBox(1, 99999999, 1, gbox);
-  bars->setValue(275);
-
-//  label = new QLabel(tr("Start Date"), gbox);
-
-//  startDate = new QDateEdit(QDate::currentDate(), gbox);
-//  startDate->setOrder(QDateEdit::YMD);
-//  startDate->setAutoAdvance(TRUE);
-
-//  label = new QLabel(tr("End Date"), gbox);
-
-//  endDate = new QDateEdit(QDate::currentDate(), gbox);
-//  endDate->setOrder(QDateEdit::YMD);
-//  endDate->setAutoAdvance(TRUE);
-
+  label = new QLabel(tr("Enter Short Delay"), gbox);
+    
+  enterShortDelay = new QSpinBox(0, 999999, 1, gbox);
+  enterShortDelay->setValue(0);
+  
+  label = new QLabel(tr("Exit Short Delay"), gbox);
+    
+  exitShortDelay = new QSpinBox(0, 999999, 1, gbox);
+  exitShortDelay->setValue(0);
+  
   gbox = new QVGroupBox(tr("Account"), w);
   gbox->setInsideSpacing(2);
   gbox->setColumns(2);
-  grid->addWidget(gbox, 1, 0);
+  grid->addWidget(gbox, 0, 1);
 
   label = new QLabel(tr("Entry Commission"), gbox);
 
@@ -243,35 +244,30 @@ void Tester::createTestPage ()
   label = new QLabel(tr("Futures Margin"), gbox);
 
   margin = new QSpinBox(0, 999999, 1, gbox);
-
-  gbox = new QVGroupBox(tr("Symbol"), w);
-  gbox->setInsideSpacing(2);
-  grid->addWidget(gbox, 1, 1);
-
-  symbolButton = new SymbolButton(gbox, config->getData(Config::DataPath), QString());
-  connect(symbolButton, SIGNAL(symbolChanged()), this, SLOT(symbolButtonPressed()));
-
-  gbox = new QVGroupBox(tr("Volume"), w);
-  gbox->setInsideSpacing(2);
-  gbox->setColumns(2);
-  grid->addWidget(gbox, 2, 0);
-
-  label = new QLabel(tr("Account %"), gbox);
+  
+  label = new QLabel(tr("Volume %"), gbox);
 
   volumePercent = new QSpinBox(0, 100, 1, gbox);
   
-  gbox = new QVGroupBox(tr("Entry/Exit Price"), w);
+  gbox = new QVGroupBox(tr("Testing"), w);
   gbox->setInsideSpacing(2);
   gbox->setColumns(2);
-  grid->addWidget(gbox, 2, 1);
+  grid->addWidget(gbox, 1, 0);
+  
+  label = new QLabel(tr("Symbol"), gbox);
+  
+  symbolButton = new SymbolButton(gbox, config->getData(Config::DataPath), QString());
+  connect(symbolButton, SIGNAL(symbolChanged()), this, SLOT(symbolButtonPressed()));
+  
+  label = new QLabel(tr("Bars"), gbox);
+  
+  bars = new QSpinBox(1, 99999999, 1, gbox);
+  bars->setValue(275);
 
+  label = new QLabel(tr("Entry/Exit Price"), gbox);
+  
   priceField = new QComboBox(gbox);
   priceField->insertStringList(fieldList,-1);
-
-  testButton = new QPushButton(tr("Perform Test"), w);
-  connect(testButton, SIGNAL(clicked()), this, SLOT(test()));
-  vbox->addWidget(testButton);
-  testButton->setAccel(CTRL+Key_T);
 
   addTab(w, tr("Testing"));
 }
@@ -296,7 +292,7 @@ void Tester::createReportPage ()
   header->setLabel(5, tr("Signal"), 100);
   header->setLabel(6, tr("Profit"), 90);
   header->setLabel(7, tr("Account"), 90);
-  header->setLabel(8, tr("Volume"), 50);
+  header->setLabel(8, tr("Vol"), 50);
   vbox->addWidget(tradeList);
   
   // test summary
@@ -453,16 +449,6 @@ void Tester::test ()
   if (! symbol.length())
     return;
 
-//  BarDate sd;
-//  sd.setDate(startDate->date().toString("yyyyMMddmmhhss"));
-//  if (! sd.getDate().isValid())
-//    return;
-
-//  BarDate ed;
-//  ed.setDate(endDate->date().toString("yyyyMMddmmhhss"));
-//  if (! ed.getDate().isValid())
-//    return;
-
   db = new ChartDb;
   if (db->openChart(symbolButton->getPath()))
   {
@@ -497,14 +483,6 @@ void Tester::test ()
 
   clearAlertCounts();
 
-//  for (testLoop = 0; testLoop < (int) recordList->count(); testLoop++)
-//  {
-//    currentRecord = testLoop;
-//    BarDate td = recordList->getDate(currentRecord);
-//    if (td.getDateValue() >= sd.getDateValue())
-//      break;
-//  }
-
   status = 0;
   testLoop = 0;
   for (; testLoop < (int) recordList->count(); testLoop++)
@@ -513,9 +491,7 @@ void Tester::test ()
     
     currentRecord = testLoop;
     BarDate dt = recordList->getDate(currentRecord);
-//    if (dt.getDateValue() > ed.getDateValue())
-//      break;
-
+    
     checkAlerts();
 
     if (status == 0)
@@ -958,27 +934,6 @@ void Tester::trailingToggled (bool status)
 void Tester::symbolButtonPressed ()
 {
   QString symbol = symbolButton->getPath();
-
-/*    
-  db = new ChartDb;
-  if (db->openChart(symbol))
-  {
-    delete db;
-    qDebug("Tester: Cant open db");
-    return;
-  }
-    
-  Bar *bar = db->getFirstBar();
-  startDate->setDate(bar->getDate().getDate());
-  delete bar;
-
-  bar = db->getLastBar();
-  endDate->setDate(bar->getDate().getDate());
-  delete bar;
-
-  delete db;
-*/
-  
 }
 
 void Tester::loadAlerts (int type)
@@ -987,24 +942,29 @@ void Tester::loadAlerts (int type)
   QStringList plotList;
   int loop;
   FormulaEdit *edit = 0;
+  int delays = 0;
   
   switch(type)
   {
     case 0:
       edit = enterLongEdit;
       enterLongAlerts.clear();
+      delays = enterLongDelay->value();
       break;
     case 1:
       edit = exitLongEdit;
       exitLongAlerts.clear();
+      delays = exitLongDelay->value();
       break;
     case 2:
       edit = enterShortEdit;
       enterShortAlerts.clear();
+      delays = enterShortDelay->value();
       break;
     case 3:
       edit = exitShortEdit;
       exitShortAlerts.clear();
+      delays = exitShortDelay->value();
       break;
     default:
       break;
@@ -1029,64 +989,71 @@ void Tester::loadAlerts (int type)
     }
   }
   
-  bool flag = FALSE;
   loop = recordList->count() - line->getSize();
   int lineLoop = 0;
-  int delays = delay->value();
+  int delayCount = 0;
   for (; loop < (int) recordList->count(); loop++, lineLoop++)
   {
     if (line->getData(lineLoop) == 1)
     {
-      if (! flag)
+      switch(type)
       {
-        if (delays)
-	{
-	  int delayLoop;
-	  bool delayFlag = FALSE;
-	  for (delayLoop = 1; delayLoop <= delays; delayLoop++)
+        case 0:
+          if (delays)
 	  {
-	    if ((lineLoop + delayLoop) < line->getSize())
+	    delayCount++;
+	    if (delayCount > delays)
 	    {
-	      if (line->getData(lineLoop + delayLoop) != 1)
-	      {
-	        delayFlag = TRUE;
-	        break;
-	      }
-	    }
-	    else
-	    {
-              delayFlag = TRUE;
-	      break;
+              enterLongAlerts.setData(recordList->getDate(loop).getDateString(FALSE), "1");
+	      delayCount = 0;
 	    }
 	  }
-	  
-	  if (delayFlag)
-	    continue;
-	}
-      
-        switch(type)
-        {
-          case 0:
+	  else
             enterLongAlerts.setData(recordList->getDate(loop).getDateString(FALSE), "1");
-            break;
-          case 1:
+          break;
+        case 1:
+	  if (delays)
+	  {
+	    delayCount++;
+	    if (delayCount > delays)
+	    {
+              exitLongAlerts.setData(recordList->getDate(loop).getDateString(FALSE), "1");
+	      delayCount = 0;
+            }
+	  }
+	  else
             exitLongAlerts.setData(recordList->getDate(loop).getDateString(FALSE), "1");
-            break;
-          case 2:
+          break;
+        case 2:
+	  if (delays)
+	  {
+	    delayCount++;
+	    if (delayCount > delays)
+	    {
+              enterShortAlerts.setData(recordList->getDate(loop).getDateString(FALSE), "1");
+	      delayCount = 0;
+	    }
+	  }
+	  else
             enterShortAlerts.setData(recordList->getDate(loop).getDateString(FALSE), "1");
-            break;
-          case 3:
+          break;
+        case 3:
+	  if (delays)
+	  {
+	    delayCount++;
+	    if (delayCount > delays)
+	    {
+              exitShortAlerts.setData(recordList->getDate(loop).getDateString(FALSE), "1");
+	      delayCount = 0;
+	    }
+	  }
+	  else
             exitShortAlerts.setData(recordList->getDate(loop).getDateString(FALSE), "1");
-            break;
-          default:
-            break;
-        }
-	
-        flag = TRUE;
+          break;
+        default:
+          break;
       }
     }
-    else
-      flag = FALSE;
   }
   
   if (line)
@@ -1221,6 +1188,18 @@ void Tester::saveRule ()
   s = "Trailing Edit=";
   s.append(trailingEdit->text());
   stream << s << "\n";
+  
+  if (tradeLong->isChecked())
+    s = "TradeLong=True";
+  else
+    s = "TradeLong=False";
+  stream << s << "\n";
+  
+  if (tradeShort->isChecked())
+    s = "TradeShort=True";
+  else
+    s = "TradeShort=False";
+  stream << s << "\n";
 
   s = "Volume Percent=";
   s.append(volumePercent->text());
@@ -1234,8 +1213,20 @@ void Tester::saveRule ()
   s.append(exitCom->text());
   stream << s << "\n";
   
-  s = "Delay=";
-  s.append(delay->text());
+  s = "EnterLongDelay=";
+  s.append(enterLongDelay->text());
+  stream << s << "\n";
+  
+  s = "ExitLongDelay=";
+  s.append(exitLongDelay->text());
+  stream << s << "\n";
+  
+  s = "EnterShortDelay=";
+  s.append(enterShortDelay->text());
+  stream << s << "\n";
+  
+  s = "ExitShortDelay=";
+  s.append(exitShortDelay->text());
   stream << s << "\n";
   
   s = "Price Field=";
@@ -1358,6 +1349,20 @@ void Tester::loadRule ()
       continue;
     }
     
+    if (! l2[0].compare("TradeLong"))
+    {
+      if (! l2[1].compare("True"))
+        tradeLong->setChecked(TRUE);
+      continue;
+    }
+    
+    if (! l2[0].compare("TradeShort"))
+    {
+      if (! l2[1].compare("True"))
+        tradeShort->setChecked(TRUE);
+      continue;
+    }
+    
     if (! l2[0].compare("Volume Percent"))
     {
       volumePercent->setValue(l2[1].toInt());
@@ -1376,12 +1381,30 @@ void Tester::loadRule ()
       continue;
     }
     
-    if (! l2[0].compare("Delay"))
+    if (! l2[0].compare("EnterLongDelay"))
     {
-      delay->setValue(l2[1].toInt());
+      enterLongDelay->setValue(l2[1].toInt());
       continue;
     }
   
+    if (! l2[0].compare("ExitLongDelay"))
+    {
+      exitLongDelay->setValue(l2[1].toInt());
+      continue;
+    }
+    
+    if (! l2[0].compare("EnterShortDelay"))
+    {
+      enterShortDelay->setValue(l2[1].toInt());
+      continue;
+    }
+    
+    if (! l2[0].compare("ExitShortDelay"))
+    {
+      exitShortDelay->setValue(l2[1].toInt());
+      continue;
+    }
+    
     if (! l2[0].compare("Bars"))
     {
       bars->setValue(l2[1].toInt());
@@ -1610,27 +1633,33 @@ void Tester::updateChart ()
   int name = 0;
   bool flag1 = FALSE;
   bool flag2 = FALSE;
+  double enter = 0;
+  double exit = 0;
   for (loop = 0; loop < (int) tradeList->numRows(); loop++)
   {
     if (! tradeList->text(loop, 0).compare(tr("Short")))
     {
       flag1 = TRUE;
       flag2 = FALSE;
+      enter = tradeList->text(loop, 2).toDouble() * 1.005;
+      exit = tradeList->text(loop, 4).toDouble() * 0.995;
     }
     else
     {
       flag1 = FALSE;
       flag2 = TRUE;
+      enter = tradeList->text(loop, 2).toDouble() * 0.995;
+      exit = tradeList->text(loop, 4).toDouble() * 1.005;
     }
     
     name++;
     BarDate dt;
     dt.setDate(tradeList->text(loop, 1) + "000000");
-    plot->addArrow(flag1, "tester", QString::number(name), dt, tradeList->text(loop, 2).toDouble());
+    plot->addArrow(flag1, "tester", QString::number(name), dt, enter);
       
     name++;
     dt.setDate(tradeList->text(loop, 3) + "000000");
-    plot->addArrow(flag2, "tester", QString::number(name), dt, tradeList->text(loop, 4).toDouble());
+    plot->addArrow(flag2, "tester", QString::number(name), dt, exit);
   }
 
   slider->setMaxValue(recordList->count() - 1);

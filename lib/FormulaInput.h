@@ -23,6 +23,7 @@
 #define FORMULAINPUT_HPP
 
 #include <qstring.h>
+#include <qstringlist.h>
 #include <qwidget.h>
 #include <qcombobox.h>
 #include <qspinbox.h>

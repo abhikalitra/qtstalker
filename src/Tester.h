@@ -27,7 +27,6 @@
 #include <qcheckbox.h>
 #include <qpushbutton.h>
 #include <qspinbox.h>
-//#include <qdatetimeedit.h>
 #include <qlineedit.h>
 #include <qvalidator.h>
 #include <qlabel.h>
@@ -112,17 +111,17 @@ class Tester : public QTabDialog
     QLineEdit *maximumLossEdit;
     QLineEdit *profitEdit;
     QLineEdit *trailingEdit;
-    QPushButton *testButton;
     SymbolButton *symbolButton;
     QSpinBox *entryCom;
     QSpinBox *exitCom;
     QSpinBox *account;
     QSpinBox *volumePercent;
     QSpinBox *margin;
-    QSpinBox *delay;
+    QSpinBox *enterLongDelay;
+    QSpinBox *exitLongDelay;
+    QSpinBox *enterShortDelay;
+    QSpinBox *exitShortDelay;
     QSpinBox *bars;
-//    QDateEdit *startDate;
-//    QDateEdit *endDate;
     QDoubleValidator *validator;
     QString ruleName;
     QComboBox *priceField;

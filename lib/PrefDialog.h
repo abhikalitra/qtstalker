@@ -46,8 +46,10 @@
 class PrefDialog : public QTabDialog
 {
   public:
+    PrefDialog (QWidget *);
     PrefDialog ();
     ~PrefDialog ();
+    void init ();
     void createPage (QString);
     void deletePage (QString);
     void addColorItem (QString, QString, QColor);

@@ -110,7 +110,7 @@ FormulaEdit::~FormulaEdit ()
 
 void FormulaEdit::addItem ()
 {
-  PrefDialog *dialog = new PrefDialog();
+  PrefDialog *dialog = new PrefDialog(this);
   dialog->setCaption(tr("ADD Function"));
   dialog->createPage (tr("Functions"));
   dialog->addComboItem(tr("Functions"), tr("Functions"), functionList, 0);
@@ -210,7 +210,7 @@ QString FormulaEdit::getDialog (QString t, QString f)
     type = l[0];
   }
   
-  PrefDialog *dialog = new PrefDialog();
+  PrefDialog *dialog = new PrefDialog(this);
   dialog->setCaption(tr("Function Dialog"));
   dialog->createPage (tr("Parms"));
   if (flag)

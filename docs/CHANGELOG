@@ -76,7 +76,12 @@
 	  now instead of entering functions by hand. Hopefully we can remove all the potential
 	  user errors so I don't have to code error checking for every parm. sigh.....
 
+20040801: Added trade delays for each backtester rule for enter/exit. Also added an apply button
+          to the backtester dialog which saves the backtester rule at the user's wish.
+	  
 
+
+	  
 0.26
 ====
 

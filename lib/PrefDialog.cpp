@@ -22,7 +22,35 @@
 #include "PrefDialog.h"
 #include <qlabel.h>
 
+PrefDialog::PrefDialog (QWidget *w) : QTabDialog (w, "PrefDialog", TRUE)
+{
+  init();
+}
+
 PrefDialog::PrefDialog () : QTabDialog (0, "PrefDialog", TRUE)
+{
+  init();
+}
+
+PrefDialog::~PrefDialog ()
+{
+  widgetList.clear();
+  gridList.clear();
+  colorButtonList.clear();
+  intList.clear();
+  floatList.clear();
+  checkList.clear();
+  fontButtonList.clear();
+  textList.clear();
+  comboList.clear();
+  dateList.clear();
+  fileList.clear();
+  symbolList.clear();
+  dvList.clear();
+  formulaInputList.clear();
+}
+
+void PrefDialog::init ()
 {
   widgetList.setAutoDelete(FALSE);
   gridList.setAutoDelete(FALSE);
@@ -43,24 +71,6 @@ PrefDialog::PrefDialog () : QTabDialog (0, "PrefDialog", TRUE)
   
   setOkButton(tr("&OK"));
   setCancelButton(tr("&Cancel"));
-}
-
-PrefDialog::~PrefDialog ()
-{
-  widgetList.clear();
-  gridList.clear();
-  colorButtonList.clear();
-  intList.clear();
-  floatList.clear();
-  checkList.clear();
-  fontButtonList.clear();
-  textList.clear();
-  comboList.clear();
-  dateList.clear();
-  fileList.clear();
-  symbolList.clear();
-  dvList.clear();
-  formulaInputList.clear();
 }
 
 void PrefDialog::createPage (QString name)
