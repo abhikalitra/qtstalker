@@ -48,9 +48,18 @@ void Navigator::updateList ()
 
   int loop;
   if (! basePath.compare(currentDir.absPath()))
+  {
+    currentDir.setMatchAllDirs(FALSE);
     loop = 2;
+  }
   else
     loop = 1;
+
+  if (currentDir.nameFilter().compare("*"))
+  {
+    currentDir.setMatchAllDirs(TRUE);
+    loop = 0;
+  }
 
   for (; loop < (int) currentDir.count(); loop++)
   {
@@ -59,7 +68,10 @@ void Navigator::updateList ()
     s.append(currentDir[loop]);
     QFileInfo info(s);
     if (info.isDir())
-      insertItem(QPixmap(dirclosed), currentDir[loop], -1);
+    {
+      if (currentDir[loop].compare("."))
+        insertItem(QPixmap(dirclosed), currentDir[loop], -1);
+    }
     else
       insertItem(currentDir[loop], -1);
   }
@@ -139,5 +151,12 @@ void Navigator::checkDirectory (QListBoxItem *item)
   }
   
   emit fileSelected(getFileSelection());
+}
+
+void Navigator::setFilter (QString d)
+{
+  currentDir.setNameFilter(d);
+  updateList();
+  emit noSelection();
 }
 

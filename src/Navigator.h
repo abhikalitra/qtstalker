@@ -40,6 +40,7 @@ class Navigator : public QListBox
     QString getFileSelection ();
     void setDirectory (QString);
     QString getCurrentPath ();
+    void setFilter (QString);
 
   public slots:
     void upDirectory ();

@@ -25,6 +25,7 @@
 #include <qstring.h>
 #include <qwidget.h>
 #include <qpopupmenu.h>
+#include <qlineedit.h>
 #include "Navigator.h"
 #include "BaseDialog.h"
 #include "Config.h"
@@ -49,11 +50,13 @@ class ChartPage : public BaseDialog
     void chartNoSelection ();
     void rightClick (QListBoxItem *);
     void refreshList ();
+    void searchChanged (const QString &);
 
   protected:
     Navigator *nav;
     Config *config;
     QPopupMenu *menu;
+    QLineEdit *search;
 };
 
 #endif

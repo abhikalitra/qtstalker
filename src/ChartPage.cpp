@@ -29,10 +29,16 @@
 #include "export.xpm"
 #include <qmessagebox.h>
 #include <qcursor.h>
+#include <qtooltip.h>
 
 ChartPage::ChartPage (QWidget *w, Config *c) : BaseDialog(w)
 {
   config = c;
+
+  search = new QLineEdit(this);
+  connect(search, SIGNAL(textChanged(const QString &)), this, SLOT(searchChanged(const QString &)));
+  QToolTip::add(search, tr("List Filter"));
+  basebox->addWidget(search);
 
   nav = new Navigator(this, config->getData(Config::DataPath));
   connect(nav, SIGNAL(fileSelected(QString)), this, SLOT(chartSelected(QString)));
@@ -174,6 +180,11 @@ void ChartPage::rightClick (QListBoxItem *)
 void ChartPage::refreshList ()
 {
   nav->updateList();
+}
+
+void ChartPage::searchChanged (const QString &d)
+{
+  nav->setFilter(d);
 }
 
 
