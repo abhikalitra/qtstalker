@@ -327,7 +327,7 @@ void CSV::parse ()
 	delete bar;
         continue;
       }
-      bar->setTickFlag(tickFlag);
+//      bar->setTickFlag(tickFlag);
       bar->setOpen(r->getData("Open").toDouble());
       bar->setHigh(r->getData("High").toDouble());
       bar->setLow(r->getData("Low").toDouble());

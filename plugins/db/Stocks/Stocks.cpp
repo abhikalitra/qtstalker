@@ -83,6 +83,7 @@ void Stocks::deleteBar (QString d)
   if (! findRecord(d))
     return;
     
+  fseek(db, -recordSize, SEEK_CUR);
   memset(&record, 0, recordSize);
   record.date = d.toDouble();
   fwrite(&record, recordSize, 1, db);

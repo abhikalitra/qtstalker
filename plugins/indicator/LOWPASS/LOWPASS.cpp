@@ -24,6 +24,8 @@
 #include <qdict.h>
 #include <qobject.h>
 #include <qcolor.h>
+#include <math.h>
+
 
 LOWPASS::LOWPASS ()
 {

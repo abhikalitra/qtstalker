@@ -1,7 +1,7 @@
 0.30
 ====
 
-200501XX: Removed the DB library and replaced db functions with my own. Ahhhhhh at last I have
+20050126: Removed the DB library and replaced db functions with my own. Ahhhhhh at last I have
           sharks with fricken laser beams attached to their heads!
 	  
 20050127: Applied patch for bug report #1110284. Thanks to chadth for the patch.
