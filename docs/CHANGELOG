@@ -49,6 +49,7 @@
 
 - Applied patch #791519 from Marco van Zwetselaar to add .cvsignore files to the source tree.
 
+- Applied patch #792296 from David Crossley for new indicator FI (force index).
 
 0.20
 ====
