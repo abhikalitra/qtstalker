@@ -52,14 +52,17 @@ Scanner::Scanner (QString n) : QTabDialog (0, 0, FALSE)
   fileButton = new QPushButton(tr("Symbols..."), gbox);
   connect(fileButton, SIGNAL(clicked()), this, SLOT(getSymbols()));
 
-  gbox = new QHGroupBox(tr("Compression"), w);  
+  gbox = new QHGroupBox(tr("Bars/Compression"), w);  
   vbox->addWidget(gbox);
+  
+  bars = new QSpinBox(1, 9999, 1, gbox);
+  bars->setValue(275);
   
   period = new QComboBox(gbox);
   period->insertItem(tr("Daily"), -1);
   period->insertItem(tr("Weekly"), -1);
   period->insertItem(tr("Monthly"), -1);
-
+  
   list = new FormulaEdit(w);
   vbox->addWidget(list);
   
@@ -91,6 +94,14 @@ Scanner::~Scanner ()
 
 void Scanner::scan ()
 {
+  if (! fileList.count() && ! allSymbols->isChecked())
+  {
+    QMessageBox::information(this,
+                             tr("Qtstalker: Error"),
+			     tr("No symbols selected."));
+    return;
+  }
+
   int loop;
   bool flag = FALSE;
   for (loop = 0; loop < list->getLines(); loop++)
@@ -161,7 +172,7 @@ void Scanner::scan ()
         db->setBarCompression(BarData::MonthlyBar);
     }
     
-    db->setBarRange(config.getData(Config::Bars).toInt());
+    db->setBarRange(bars->value());
 
     BarData *recordList = db->getHistory();
     
@@ -170,6 +181,7 @@ void Scanner::scan ()
     if (! plug2)
     {
       config.closePlugin("CUS");
+      delete recordList;
       delete db;
       continue;
     }
@@ -182,16 +194,15 @@ void Scanner::scan ()
     plug2->setIndicatorInput(recordList);
     plug2->calculate();
     Indicator *i = plug2->getIndicator();
-    PlotLine *line = i->getLine(0);
-    if (! line)
+    if (! i->getLines())
     {
-      qDebug("Scanner::scan: no PlotLine returned");
       config.closePlugin("CUS");
+      delete recordList;
       delete db;
       continue;
     }
-    
-    if (line)
+    PlotLine *line = i->getLine(0);
+    if (line && line->getSize() > 0)
     {
       if (line->getData(line->getSize() - 1) > 0)
       {
@@ -206,6 +217,7 @@ void Scanner::scan ()
     }
     
     config.closePlugin("CUS");
+    delete recordList;
     delete db;
   }
   

@@ -856,33 +856,25 @@ bool Tester::maximumLoss ()
     
   if ((status == 1) && (maximumLossLong->isChecked()))
   {
-    double t = ((exitPrice - enterPrice) / enterPrice) * 100;
-    if (t < 0)
+    double t = enterPrice * (1 - (maximumLossEdit->text().toDouble() / 100));
+    if (t <= exitPrice)
     {
-      t = -t;
-      if (t >= maximumLossEdit->text().toDouble())
-      {
-        exitPosition("Maximum Loss");
-        status = 0;
-        clearAlertCounts();
-        return TRUE;
-      }
+      exitPosition("Maximum Loss");
+      status = 0;
+      clearAlertCounts();
+      return TRUE;
     }
   }
 
   if ((status == -1) && (maximumLossShort->isChecked()))
   {
-    double t = ((enterPrice - exitPrice) / enterPrice) * 100;
-    if (t < 0)
+    double t = enterPrice * (1 + (maximumLossEdit->text().toDouble() / 100));
+    if (t >= exitPrice)
     {
-      t = -t;
-      if (t >= maximumLossEdit->text().toDouble())
-      {
-        exitPosition("Maximum Loss");
-        status = 0;
-        clearAlertCounts();
-        return TRUE;
-      }
+      exitPosition("Maximum Loss");
+      status = 0;
+      clearAlertCounts();
+      return TRUE;
     }
   }
 
@@ -899,31 +891,25 @@ bool Tester::profit ()
     
   if ((status == 1) && (profitLong->isChecked()))
   {
-    double t = ((exitPrice - enterPrice) / enterPrice) * 100;
-    if (t > 0)
+    double t = enterPrice * (1 + (profitEdit->text().toDouble() / 100));
+    if (t >= exitPrice)
     {
-      if (t >= profitEdit->text().toDouble())
-      {
-        exitPosition("Profit");
-        status = 0;
-        clearAlertCounts();
-        return TRUE;
-      }
+      exitPosition("Profit");
+      status = 0;
+      clearAlertCounts();
+      return TRUE;
     }
   }
 
   if ((status == -1) && (profitShort->isChecked()))
   {
-    double t = ((enterPrice - exitPrice) / enterPrice) * 100;
-    if (t > 0)
+    double t = enterPrice * (1 - (profitEdit->text().toDouble() / 100));
+    if (t <= exitPrice)
     {
-      if (t >= profitEdit->text().toDouble())
-      {
-        exitPosition("Profit");
-        status = 0;
-        clearAlertCounts();
-        return TRUE;
-      }
+      exitPosition("Profit");
+      status = 0;
+      clearAlertCounts();
+      return TRUE;
     }
   }
 
@@ -1665,6 +1651,9 @@ void Tester::createSummary ()
 
 void Tester::getVolume ()
 {
+
+
+
   double balance = equity;
   if (volumePercent->value() == 0)
   {
@@ -1970,6 +1959,9 @@ QString Tester::newTest ()
   if ((! ok) || (selection.isNull()))
     return selection;
 
+  while (selection.contains(" "))
+    selection = selection.remove(selection.find(" ", 0, TRUE), 1);
+    
   QString s = config.getData(Config::TestPath) + "/" + selection;
   QDir dir(s);
   if (dir.exists(s, TRUE))

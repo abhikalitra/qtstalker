@@ -64,7 +64,7 @@ class Config
       NavAreaSize,
       LogScale,
       DbPluginPath,
-      IndicatorTabs, // unused
+      CUSRulePath,
       StackedIndicator, //unused
       PAFBoxSize, // unused
       Version, // unused

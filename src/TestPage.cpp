@@ -25,6 +25,7 @@
 #include "newchart.xpm"
 #include "delete.xpm"
 #include "rename.xpm"
+#include "copy.xpm"
 #include "SymbolDialog.h"
 #include <qinputdialog.h>
 #include <qmessagebox.h>
@@ -48,6 +49,7 @@ TestPage::TestPage (QWidget *w) : QWidget (w)
   menu->insertItem(QPixmap(newchart), tr("&New Backtest Rule"), this, SLOT(newTest()), CTRL+Key_N);
   menu->insertItem(QPixmap(deleteitem), tr("&Delete Backtest Rule"), this, SLOT(deleteTest()), CTRL+Key_D);
   menu->insertItem(QPixmap(renam), tr("&Rename Backtest Rule"), this, SLOT(renameTest()), CTRL+Key_R);
+  menu->insertItem(QPixmap(copy), tr("&Copy Backtest Rule"), this, SLOT(copyTest()), CTRL+Key_C);
 
   updateList();
   testNoSelection();
@@ -133,6 +135,9 @@ void TestPage::renameTest ()
   if ((! ok) || (selection.isNull()))
     return;
 
+  while (selection.contains(" "))
+    selection = selection.remove(selection.find(" ", 0, TRUE), 1);
+    
   QString s = config.getData(Config::TestPath);
   s.append("/");
   s.append(selection);
@@ -151,11 +156,49 @@ void TestPage::renameTest ()
   list->changeItem(selection, list->currentItem());
 }
 
+void TestPage::copyTest ()
+{
+  if (list->currentItem() == -1)
+    return;
+
+  bool ok;
+  QString selection = QInputDialog::getText(tr("Copy Backtest Rule"),
+  					    tr("Enter new name of copy."),
+  					    QLineEdit::Normal,
+					    list->currentText(),
+					    &ok,
+					    this);
+
+  if ((! ok) || (selection.isNull()))
+    return;
+
+  while (selection.contains(" "))
+    selection = selection.remove(selection.find(" ", 0, TRUE), 1);
+    
+  QString s = config.getData(Config::TestPath) + "/" + selection;
+  QDir dir(s);
+  if (dir.exists(s, TRUE))
+  {
+    QMessageBox::information(this, tr("Qtstalker: Error"), tr("This backtest rule already exists."));
+    return;
+  }
+
+  s = "cp -R " + config.getData(Config::TestPath) + "/" + list->currentText() + " ";
+  s.append(config.getData(Config::TestPath) + "/" + selection);
+
+  if (system(s.latin1()) == -1)
+    qDebug("TestPage::copyTest:command failed");
+    
+  updateList();
+  testNoSelection();
+}
+
 void TestPage::testSelected (const QString &) 
 {
   menu->setItemEnabled(menu->idAt(0), TRUE);
   menu->setItemEnabled(menu->idAt(2), TRUE);
   menu->setItemEnabled(menu->idAt(3), TRUE);
+  menu->setItemEnabled(menu->idAt(4), TRUE);
 }
 
 void TestPage::testNoSelection ()
@@ -163,6 +206,7 @@ void TestPage::testNoSelection ()
   menu->setItemEnabled(menu->idAt(0), FALSE);
   menu->setItemEnabled(menu->idAt(2), FALSE);
   menu->setItemEnabled(menu->idAt(3), FALSE);
+  menu->setItemEnabled(menu->idAt(4), FALSE);
 }
 
 void TestPage::rightClick (QListBoxItem *)

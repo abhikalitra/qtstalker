@@ -108,6 +108,14 @@ void Config::setup ()
   }
   setData(IndicatorPath, s);
   
+  s = home + "/cusrules";
+  if (! dir.exists(s, TRUE))
+  {
+    if (! dir.mkdir(s, TRUE))
+      qDebug("Unable to create ~/Qtstalker/cusrules directory.");
+  }
+  setData(CUSRulePath, s);
+  
   QStringList l = getIndicators();
   if (l.count() == 0)
   {
@@ -230,6 +238,9 @@ QString Config::getData (Parm p)
     case DrawMode:
       s = settings.readEntry("/Qtstalker/DrawMode", "0");
       break;
+    case CUSRulePath:
+      s = settings.readEntry("/Qtstalker/CUSRulePath");
+      break;
     default:
       break;
   }
@@ -338,6 +349,9 @@ void Config::setData (Parm p, QString d)
       break;
     case DrawMode:
       settings.writeEntry("/Qtstalker/DrawMode", d);
+      break;
+    case CUSRulePath:
+      settings.writeEntry("/Qtstalker/CUSRulePath", d);
       break;
     default:
       break;

@@ -137,6 +137,11 @@
 20040901: Removed Plugin class to better separate the various plugin classes to make less
           dependancies between plugin classes.
 	  
+20040902: Added copy rule to the backtester page.
+	  
+20040902: Added CUS rule respository ~/Qtstalker/cusrules. The FormulaEdit widget can now
+          open and save rules that are being edited. The rules can be used by any FormulaEdit
+	  using module.
 	  
 	  	  	  
 0.26

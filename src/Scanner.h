@@ -28,6 +28,7 @@
 #include <qpushbutton.h>
 #include <qcheckbox.h>
 #include <qprogressbar.h>
+#include <qspinbox.h>
 #include "Config.h"
 #include "FormulaEdit.h"
 
@@ -72,6 +73,7 @@ class Scanner : public QTabDialog
     QStringList fileList;
     QCheckBox *allSymbols;
     QProgressBar *progbar;
+    QSpinBox *bars;
 };
 
 #endif

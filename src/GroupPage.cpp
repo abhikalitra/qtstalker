@@ -87,6 +87,9 @@ void GroupPage::newGroup()
   if ((! ok) || (selection.isNull()))
     return;
 
+  while (selection.contains(" "))
+    selection = selection.remove(selection.find(" ", 0, TRUE), 1);
+  
   QString s = nav->getCurrentPath();
   s.append("/");
   s.append(selection);
@@ -94,13 +97,6 @@ void GroupPage::newGroup()
   if (dir.exists(s, TRUE))
   {
     QMessageBox::information(this, tr("Qtstalker: Error"), tr("This group already exists."));
-    return;
-  }
-
-  // check for any spaces
-  if (selection.contains(" "))
-  {
-    QMessageBox::information(this, tr("Qtstalker: Error"), tr("No spaces allowed in the group name."));
     return;
   }
 

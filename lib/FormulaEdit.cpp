@@ -24,11 +24,19 @@
 #include "PrefDialog.h"
 #include "Setting.h"
 #include "IndicatorPlugin.h"
+#include "SymbolDialog.h"
 #include "../src/newchart.xpm"
 #include "../src/delete.xpm"
 #include "../src/edit.xpm"
 #include "../src/insert.xpm"
+#include "../src/openchart.xpm"
+#include "../src/filesave.xpm"
 #include <qlayout.h>
+#include <qfile.h>
+#include <qtextstream.h>
+#include <qinputdialog.h>
+#include <qdir.h>
+#include <qmessagebox.h>
 
 #define BUTTON_SIZE 24
 
@@ -46,10 +54,8 @@ FormulaEdit::FormulaEdit (QWidget *w) : QWidget(w)
   list->horizontalHeader()->setLabel(0, tr("Function"));
   list->horizontalHeader()->setLabel(1, tr("Plot"));
   list->horizontalHeader()->setLabel(2, tr("Parms"));
-//  list->setColumnWidth(0, 75);
   list->setColumnStretchable(0, TRUE);
   list->setColumnWidth(1, 35);
-//  list->setColumnWidth(2, 50);
   list->setColumnReadOnly(0, TRUE);
   list->setColumnReadOnly(2, TRUE);
   list->hideColumn(2);
@@ -69,6 +75,12 @@ FormulaEdit::FormulaEdit (QWidget *w) : QWidget(w)
   
   toolbar->addButton("delete", deleteitem, tr("Delete"));
   QObject::connect(toolbar->getButton("delete"), SIGNAL(clicked()), this, SLOT(deleteItem()));
+
+  toolbar->addButton("open", openchart, tr("Open Rule"));
+  QObject::connect(toolbar->getButton("open"), SIGNAL(clicked()), this, SLOT(openRule()));
+
+  toolbar->addButton("save", filesave, tr("Save Rule"));
+  QObject::connect(toolbar->getButton("save"), SIGNAL(clicked()), this, SLOT(saveRule()));
 }
 
 FormulaEdit::~FormulaEdit ()
@@ -233,5 +245,100 @@ QString FormulaEdit::getLine (int i)
 int FormulaEdit::getLines ()
 {
   return list->numRows();
+}
+
+void FormulaEdit::openRule ()
+{
+  SymbolDialog *dialog = new SymbolDialog(this, 
+  					  config.getData(Config::CUSRulePath),
+					  "*",
+					  QFileDialog::ExistingFiles);
+  dialog->setCaption(tr("Select rule to open."));
+
+  int rc = dialog->exec();
+
+  if (rc == QDialog::Accepted)
+  {
+    QFile f(dialog->selectedFile());
+    if (! f.open(IO_ReadOnly))
+    {
+      qDebug("FormulaEdit::openItem:can't read file");
+      delete dialog;
+      return;
+    }
+    QTextStream stream(&f);
+  
+    list->setNumRows(0);
+    
+    while(stream.atEnd() == 0)
+    {
+      QString s = stream.readLine();
+      s = s.stripWhiteSpace();
+      if (! s.length())
+        continue;
+      
+      QStringList l = QStringList::split("=", s, FALSE);
+    
+      if (l.count() < 2)
+        continue;
+      
+      if (l.count() > 2)
+      {
+        s = s.remove(0, l[0].length() + 1);
+        setLine(s);
+      }
+    }
+  
+    f.close();
+  }
+
+  delete dialog;
+}
+
+void FormulaEdit::saveRule ()
+{
+  bool ok;
+  QString selection = QInputDialog::getText(tr("Save Rule"),
+  					    tr("Enter name for rule."),
+					    QLineEdit::Normal,
+					    tr("NewRule"),
+					    &ok,
+					    this);
+  if ((! ok) || (selection.isNull()))
+    return;
+
+  while (selection.contains(" "))
+    selection = selection.remove(selection.find(" ", 0, TRUE), 1);
+    
+  QString s = config.getData(Config::CUSRulePath);
+  s.append("/");
+  s.append(selection);
+  QDir dir(s);
+  if (dir.exists(s, TRUE))
+  {
+    int rc = QMessageBox::warning(this,
+  			          tr("Qtstalker: Warning"),
+			          tr("Rule already exists. Do you want to replace it?"),
+			          QMessageBox::Yes,
+			          QMessageBox::No,
+			          QMessageBox::NoButton);
+
+    if (rc == QMessageBox::No)
+      return;
+  }
+  
+  QFile f(s);
+  if (! f.open(IO_WriteOnly))
+  {
+    qDebug("FormulaEdit::saveItem:can't open file");
+    return;
+  }
+  QTextStream stream(&f);
+  
+  int loop;
+  for (loop = 0; loop < list->numRows(); loop++)
+    stream << QString::number(loop + 1) << "=" << getLine(loop) << "\n";
+
+  f.close(); 
 }
 

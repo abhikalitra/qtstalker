@@ -72,11 +72,15 @@ void ScannerPage::newScanner()
   QString selection = QInputDialog::getText(tr("New Scanner"),
   					    tr("Enter new scanner name."),
 					    QLineEdit::Normal,
-					    tr("New Scanner"),
+					    tr("NewScanner"),
 					    &ok,
 					    this);
   if ((ok) && (! selection.isNull()))
   {
+  
+    while (selection.contains(" "))
+      selection = selection.remove(selection.find(" ", 0, TRUE), 1);
+  
     QString s = config.getData(Config::ScannerPath);
     s.append("/");
     s.append(selection);
@@ -143,6 +147,9 @@ void ScannerPage::renameScanner ()
 					    this);
   if ((ok) && (! selection.isNull()))
   {
+    while (selection.contains(" "))
+      selection = selection.remove(selection.find(" ", 0, TRUE), 1);
+  
     QString s = config.getData(Config::ScannerPath);
     s.append("/");
     s.append(selection);

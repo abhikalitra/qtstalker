@@ -1273,6 +1273,7 @@ void QtstalkerApp::addIndicatorButton (QString d, Indicator::PlotType tabFlag)
   
   QObject::connect(this, SIGNAL(signalChartPath(QString)), plot, SLOT(setChartPath(QString)));
   QObject::connect(this, SIGNAL(signalIndex(int)), plot, SLOT(setIndex(int)));
+  plot->setIndex(slider->value());
   QObject::connect(this, SIGNAL(signalDrawMode(bool)), plot, SLOT(setDrawMode(bool)));
 
   QObject::connect(this, SIGNAL(signalInterval(BarData::BarCompression)), plot, SLOT(setInterval(BarData::BarCompression)));
@@ -1549,13 +1550,6 @@ void QtstalkerApp::slotMainPlotFocus ()
 
 void QtstalkerApp::slotTabIndicatorFocus ()
 {
-/*
-  if (plotList.count())
-  {
-    Plot *plot = plotList[tabs->label(tabs->currentPageIndex())];
-    plot->setFocus();
-  }
-*/
   tabs->setFocus();
 }
 

@@ -11,6 +11,9 @@ To Do:
 - allow negative displacement for line plots
 - add indicator chart to the tester chart so buy/sell points have a reference
 - allow log/scale to screen options on the tester charts
+- progress widget to the tester running.
+- standardize tester report decimals
+
 
 
 Maybe some day:

@@ -45,6 +45,7 @@ class TestPage : public QWidget
     void testNoSelection ();
     void rightClick (QListBoxItem *);
     void updateList ();
+    void copyTest ();
 
   private:
     Config config;

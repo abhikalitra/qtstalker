@@ -44,6 +44,8 @@ class FormulaEdit : public QWidget
     void editItem ();
     void deleteItem ();
     void insertItem ();
+    void openRule ();
+    void saveRule ();
 
   protected:
     QTable *list;
