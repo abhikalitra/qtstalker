@@ -149,9 +149,6 @@ Bar * ChartDb::getLastBar ()
 
 void ChartDb::createNew (QString d)
 {
-  if (! plug)
-    return;
-  
   setPlugin(d);
   
   if (loadPlugin())

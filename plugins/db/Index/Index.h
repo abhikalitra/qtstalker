@@ -69,7 +69,6 @@ class Index : public DbPlugin
     QDict<Bar> data;
     IndexRecord record;
     double fdate;
-    double ldate;
 };
 
 extern "C"

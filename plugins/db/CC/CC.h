@@ -41,6 +41,12 @@ typedef struct
 
 } CCRecord;
 
+typedef struct
+{
+  bool t;
+
+} Dummy;
+
 class CC : public DbPlugin
 {
   public:

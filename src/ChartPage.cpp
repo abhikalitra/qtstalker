@@ -129,7 +129,7 @@ void ChartPage::editChart ()
 void ChartPage::exportSymbol ()
 {
   SymbolDialog *dialog = new SymbolDialog(this,
-  					  config.getData(Config::DataPath),
+  					  nav->getCurrentPath(),
 					  "*",
 					  QFileDialog::ExistingFiles);
   dialog->setCaption(tr("Select Charts"));

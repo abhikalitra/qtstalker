@@ -68,7 +68,6 @@ class Spread : public DbPlugin
     QDict<Bar> data;
     SpreadRecord record;
     double fdate;
-    double ldate;
 };
 
 extern "C"

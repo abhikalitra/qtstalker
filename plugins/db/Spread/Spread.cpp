@@ -82,7 +82,6 @@ void Spread::dbPrefDialog ()
     header->bool1 = dialog->getCheck(QObject::tr("Rebuild"));
 
     saveFlag = TRUE;
-    updateSpread();
   }
   
   delete dialog;
@@ -92,7 +91,6 @@ void Spread::updateSpread ()
 {
   data.clear();
   fdate = 99999999999999.0;
-  ldate = 0;
   
   QString fs = header->mvar1;
   if (! fs.length())
@@ -110,11 +108,12 @@ void Spread::updateSpread ()
 
   Bar *r = data.find(QString::number(fdate, 'f', 0));
   if (r)
+  {
     setBar(r);
-  
-  r = data.find(QString::number(ldate, 'f', 0));
-  if (r)
-    setBar(r);
+    
+    if (r->getData("Count") != 2)
+      deleteBar(QString::number(fdate, 'f', 0));
+  }
   
   QDictIterator<Bar> it(data);
   for (; it.current(); ++it)
@@ -147,11 +146,10 @@ void Spread::loadData (QString symbol, QString method)
   }
   
   db->setBarCompression(BarData::DailyBar);
+  db->setBarRange(99999999);
   
   bool rebuild = header->bool1;
-  if (rebuild)
-    db->setBarRange(99999999);
-  else
+  if (! rebuild)
   {
     Bar *bar = getLastBar();
     if (bar)
@@ -160,8 +158,6 @@ void Spread::loadData (QString symbol, QString method)
       db->setBarRange(bar->getDate().getDate().daysTo(d));
       delete bar;
     }
-    else
-      db->setBarRange(99999999);
   }
 
   BarData *recordList = db->getHistory();
@@ -178,9 +174,6 @@ void Spread::loadData (QString symbol, QString method)
       r->setData("Count", 1);
       data.insert(r->getDate().getDateTimeString(FALSE), r);
       
-      if (r->getDate().getDateValue() > ldate)
-        ldate = r->getDate().getDateValue();
-	
       if (r->getDate().getDateValue() < fdate)
         fdate = r->getDate().getDateValue();
     }

@@ -374,7 +374,23 @@ Bar * DbPlugin::getLastBar ()
     return bar;
     
   fseek(db, -recordSize, SEEK_END);
-  if (! readRecord())
+  bool flag = FALSE;
+  while(ftell(db) >= (long) sizeof(ChartHeader))
+  {
+    readRecord();
+    if (! getRecordState())
+    {
+      fseek(db, -recordSize * 2, SEEK_CUR);
+      continue;
+    }
+    else
+    {
+      flag = TRUE;
+      break;
+    }
+  }
+  
+  if (! flag)
     return bar;
   
   bar = new Bar;

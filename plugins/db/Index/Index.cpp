@@ -74,7 +74,6 @@ void Index::dbPrefDialog ()
     header->bool1 = dialog->getRebuild();
     
     saveFlag = TRUE;
-    updateIndex();
   }
   
   delete dialog;
@@ -84,13 +83,13 @@ void Index::updateIndex ()
 {
   data.clear();
   fdate = 99999999999999.0;
-  ldate = 0;
   
   QStringList l = QStringList::split(":", header->lvar1, FALSE);
   if (! l.count())
     return;
     
   int loop;
+  int count = 0;
   for (loop = 0; loop < (int) l.count(); loop = loop + 2)
   {
     QString symbol = l[loop];
@@ -99,17 +98,18 @@ void Index::updateIndex ()
       weight = 1;
 
     loadData(symbol, weight);
+    count++;
   }
 
   Bar *r = data.find(QString::number(fdate, 'f', 0));
   if (r)
+  {
     setBar(r);
+    
+    if (r->getData("Count") != count)
+      deleteBar(QString::number(fdate, 'f', 0));
+  }
   
-  r = data.find(QString::number(ldate, 'f', 0));
-  if (r)
-    setBar(r);
-  
-  int count = l.count() / 2;
   QDictIterator<Bar> it(data);
   for (; it.current(); ++it)
   {
@@ -149,11 +149,10 @@ void Index::loadData (QString symbol, float weight)
   }
   
   db->setBarCompression(BarData::DailyBar);
+  db->setBarRange(99999999);
   
   bool rebuild = header->bool1;
-  if (rebuild)
-    db->setBarRange(99999999);
-  else
+  if (! rebuild)
   {
     Bar *bar = getLastBar();
     if (bar)
@@ -162,8 +161,6 @@ void Index::loadData (QString symbol, float weight)
       db->setBarRange(bar->getDate().getDate().daysTo(d));
       delete bar;
     }
-    else
-      db->setBarRange(99999999);
   }
 
   BarData *recordList = db->getHistory();
@@ -183,9 +180,6 @@ void Index::loadData (QString symbol, float weight)
       r->setData("Count", 1);
       data.insert(r->getDate().getDateTimeString(FALSE), r);
       
-      if (r->getDate().getDateValue() > ldate)
-        ldate = r->getDate().getDateValue();
-	
       if (r->getDate().getDateValue() < fdate)
         fdate = r->getDate().getDateValue();
     }
