@@ -53,9 +53,10 @@
 
 20040313: Converted all indicator plugins to the new dialog format. This conversion removes storage
           of indicator settings from the rc file to individual flat ascii files that are stored
-	  int the new ~/Qtstalker/indicator directory. This allows greater flexibilty for
-	  manipulating indicator plugins, no longer tied to Settings:: class internally. Just tell
-	  the plugin where the settings file is and it will load it and configure itself to it.
+	  in the new ~/Qtstalker/indicator directory. This allows greater flexibilty for
+	  manipulating indicator plugins, no longer being tied to Settings:: class internally.
+	  Just tell the plugin where the settings file is and it will load and configure
+	  itself to it.
 
 20040313: Converted the indicator EP plugin to a new EP chart plugin. The chart plugin is now
           better suited. Removing the EP indicator.
@@ -64,11 +65,17 @@
           can now be used. All that is needed is an app that can update the charts with quotes.
 	  Will be updating the CSV and Yahoo plugins to use them in the future.
 	  
-20040322: Updated the GUI to use new chart compression formats of 5/15/30/60 minute charts if quotes
-          are available.
+20040322: Updated the GUI to use new chart compression formats of 5/15/30/60 minute charts if 
+          minute bar quotes are available.
 	  
 20040322: Replaced the Bars combobox on the toolbar with a spinbox to better control the number of bars
           to load.
+	  
+20040324: Overhauled the CSV plugin to allow for users to create thier own input file format rules.
+          Need to update the docs on how to do this. You create a new rule and insert the field
+	  format of the ascii file into the Rule Contents list. The fields in the list should match
+	  the fields in the ascii file from top to bottom in the list. Probably should create some
+	  default formats for users to play with initially.
 
 	  	  
 0.25

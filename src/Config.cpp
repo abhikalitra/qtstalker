@@ -26,6 +26,8 @@
 #include <qlibrary.h>
 #include <qsettings.h>
 #include <qobject.h>
+#include <qfile.h>
+#include <qtextstream.h>
 
 Config::Config (QString p)
 {
@@ -111,7 +113,6 @@ Config::Config (QString p)
     {
       QString s = getData(Config::IndicatorPath) + "/Volume";
       plug->saveIndicatorSettings(s);
-      setIndicator("Volume", "VOL");
       closePlugin("VOL");
     }
   }
@@ -347,33 +348,45 @@ void Config::setData (Parm p, QString d)
 
 QStringList Config::getIndicators ()
 {
-  QSettings settings;
-  return settings.entryList("/Qtstalker/Indicator");
+  return getDirList(getData(IndicatorPath));
 }
 
-QString Config::getIndicator (QString n)
+Setting * Config::getIndicator (QString n)
 {
-  QSettings settings;
-  QString s = "/Qtstalker/Indicator/" + n;
-  s = settings.readEntry(s);
-  return s;
-}
+  Setting *set = new Setting;
+  
+  QString s = getData(IndicatorPath) + "/" + n;
+  
+  QFile f(s);
+  if (! f.open(IO_ReadOnly))
+  {
+    qDebug("Config::getIndicator:can't open indicator file %s", s.latin1());
+    return set;
+  }
+  QTextStream stream(&f);
+  
+  while(stream.atEnd() == 0)
+  {
+    QString s = stream.readLine();
+    s = s.stripWhiteSpace();
+    if (! s.length())
+      continue;
+      
+    QStringList l = QStringList::split("=", s, FALSE);
+    if (l.count() != 2)
+      continue;
 
-void Config::setIndicator (QString k, QString d)
-{
-  QSettings settings;
-  QString s = "/Qtstalker/Indicator/" + k;
-  settings.writeEntry(s, d);
+    set->setData(l[0], l[1]);      
+  }
+  
+  f.close();
+  
+  return set;
 }
 
 void Config::deleteIndicator (QString n)
 {
-  QSettings settings;
-  QString s = "/Qtstalker/Indicator/" + n;
-  settings.removeEntry(s);
-  
-  // delete the ascii settings file as well
-  s = getData(IndicatorPath);
+  QString s = getData(IndicatorPath);
   s.append("/" + n);
   QDir dir;
   dir.remove(s);

@@ -280,6 +280,7 @@ void OVRLY::saveIndicatorSettings (QString file)
   dict.replace("baseLabel", new QString(baseLabel));
   dict.replace("method", new QString(method));
   dict.replace("baseSymbol", new QString(baseSymbol));
+  dict.replace("plugin", new QString(pluginName));
 
   saveFile(file, dict);
 }

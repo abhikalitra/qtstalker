@@ -249,6 +249,7 @@ void SZ::saveIndicatorSettings (QString file)
   dict.replace("noDeclinePeriod", new QString(QString::number(no_decline_period)));
   dict.replace("coefficient", new QString(QString::number(coefficient)));
   dict.replace("method", new QString(method));
+  dict.replace("plugin", new QString(pluginName));
 
   saveFile(file, dict);
 }

@@ -236,6 +236,7 @@ void TRIX::saveIndicatorSettings (QString file)
   dict.replace("tperiod", new QString(QString::number(tperiod)));
   dict.replace("trigLabel", new QString(trigLabel));
   dict.replace("maType", new QString(QString::number(maType)));
+  dict.replace("plugin", new QString(pluginName));
 
   saveFile(file, dict);
 }

@@ -232,6 +232,7 @@ void BB::saveIndicatorSettings (QString file)
   dict.replace("period", new QString(QString::number(period)));
   dict.replace("deviation", new QString(QString::number(deviation)));
   dict.replace("maType", new QString(QString::number(maType)));
+  dict.replace("plugin", new QString(pluginName));
 
   saveFile(file, dict);
 }

@@ -542,6 +542,7 @@ void DMI::saveIndicatorSettings (QString file)
   dict.replace("pdiLabel", new QString(pdiLabel));
   dict.replace("mdiLabel", new QString(mdiLabel));
   dict.replace("adxLabel", new QString(adxLabel));
+  dict.replace("plugin", new QString(pluginName));
 
   saveFile(file, dict);
 }

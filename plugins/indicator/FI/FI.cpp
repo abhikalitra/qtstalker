@@ -143,6 +143,7 @@ void FI::saveIndicatorSettings (QString file)
   dict.replace("smoothing", new QString(QString::number(smoothing)));
   dict.replace("label", new QString(label));
   dict.replace("maType", new QString(QString::number(maType)));
+  dict.replace("plugin", new QString(pluginName));
 
   saveFile(file, dict);
 }

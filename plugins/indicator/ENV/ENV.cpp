@@ -250,6 +250,8 @@ void ENV::saveIndicatorSettings (QString file)
   dict.replace("lowerLabel", new QString(lowerLabel));
   dict.replace("lowerPercent", new QString(QString::number(lowerPercent)));
 
+  dict.replace("plugin", new QString(pluginName));
+  
   saveFile(file, dict);
 }
 

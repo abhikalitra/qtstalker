@@ -150,6 +150,7 @@ void VOLR::saveIndicatorSettings (QString file)
   dict.replace("lineType", new QString(QString::number(lineType)));
   dict.replace("period", new QString(QString::number(period)));
   dict.replace("label", new QString(label));
+  dict.replace("plugin", new QString(pluginName));
 
   saveFile(file, dict);
 }

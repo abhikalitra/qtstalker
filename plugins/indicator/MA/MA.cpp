@@ -187,6 +187,7 @@ void MA::saveIndicatorSettings (QString file)
   dict.replace("maType", new QString(QString::number(maType)));
   dict.replace("input", new QString(QString::number(input)));
   dict.replace("displace", new QString(QString::number(displace)));
+  dict.replace("plugin", new QString(pluginName));
 
   saveFile(file, dict);
 }

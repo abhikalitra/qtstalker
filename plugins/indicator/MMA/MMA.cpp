@@ -639,6 +639,8 @@ void MMA::saveIndicatorSettings (QString file)
   dict.replace("longMaType", new QString(QString::number(longMaType)));
   dict.replace("longInput", new QString(QString::number(longInput)));
     
+  dict.replace("plugin", new QString(pluginName));
+  
   saveFile(file, dict);
 }
 

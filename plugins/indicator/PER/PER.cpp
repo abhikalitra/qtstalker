@@ -123,6 +123,7 @@ void PER::saveIndicatorSettings (QString file)
   dict.replace("lineType", new QString(QString::number(lineType)));
   dict.replace("label", new QString(label));
   dict.replace("input", new QString(QString::number(input)));
+  dict.replace("plugin", new QString(pluginName));
 
   saveFile(file, dict);
 }

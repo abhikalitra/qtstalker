@@ -81,9 +81,8 @@ class Config
     QStringList getDirList (QString);
 
     QStringList getIndicators ();
-    QString getIndicator (QString);
+    Setting * getIndicator (QString);
     QString getIndicatorPlugin (QString);
-    void setIndicator (QString, QString);
     void deleteIndicator (QString);
     QStringList getIndicatorList ();
 

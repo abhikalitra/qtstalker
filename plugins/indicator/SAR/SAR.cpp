@@ -305,6 +305,7 @@ void SAR::saveIndicatorSettings (QString file)
   dict.replace("initial", new QString(QString::number(initial)));
   dict.replace("add", new QString(QString::number(add)));
   dict.replace("limit", new QString(QString::number(limit)));
+  dict.replace("plugin", new QString(pluginName));
 
   saveFile(file, dict);
 }

@@ -205,6 +205,7 @@ void PP::saveIndicatorSettings (QString file)
   dict.replace("supLabel", new QString(supLabel));
   dict.replace("supLabel2", new QString(supLabel2));
   dict.replace("supLabel3", new QString(supLabel3));
+  dict.replace("plugin", new QString(pluginName));
 
   saveFile(file, dict);
 }

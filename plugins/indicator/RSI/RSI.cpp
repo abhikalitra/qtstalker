@@ -240,6 +240,7 @@ void RSI::saveIndicatorSettings (QString file)
   dict.replace("smoothing", new QString(QString::number(smoothing)));
   dict.replace("buyLine", new QString(QString::number(buyLine)));
   dict.replace("sellLine", new QString(QString::number(sellLine)));
+  dict.replace("plugin", new QString(pluginName));
 
   saveFile(file, dict);
 }

@@ -324,6 +324,8 @@ void MA3::saveIndicatorSettings (QString file)
   dict.replace("slowMAType", new QString(QString::number(slowMAType)));
   dict.replace("slowInput", new QString(QString::number(slowInput)));
 
+  dict.replace("plugin", new QString(pluginName));
+  
   saveFile(file, dict);
 }
 

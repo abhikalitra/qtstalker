@@ -215,6 +215,7 @@ void HLC::saveIndicatorSettings (QString file)
   dict.replace("lowerColor", new QString(lowerColor.name()));
   dict.replace("lowerLineType", new QString(QString::number(lowerLineType)));
   dict.replace("lowerLabel", new QString(lowerLabel));
+  dict.replace("plugin", new QString(pluginName));
 
   saveFile(file, dict);
 }

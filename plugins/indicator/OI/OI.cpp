@@ -167,6 +167,7 @@ void OI::saveIndicatorSettings (QString file)
   dict.replace("maLineType", new QString(QString::number(maLineType)));
   dict.replace("maType", new QString(QString::number(maType)));
   dict.replace("maDisplace", new QString(QString::number(displace)));
+  dict.replace("plugin", new QString(pluginName));
   
   saveFile(file, dict);
 }

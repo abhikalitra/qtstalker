@@ -121,6 +121,7 @@ void NVI::saveIndicatorSettings (QString file)
   dict.replace("color", new QString(color.name()));
   dict.replace("lineType", new QString(QString::number(lineType)));
   dict.replace("label", new QString(label));
+  dict.replace("plugin", new QString(pluginName));
 
   saveFile(file, dict);
 }

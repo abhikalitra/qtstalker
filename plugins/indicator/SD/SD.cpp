@@ -147,6 +147,7 @@ void SD::saveIndicatorSettings (QString file)
   dict.replace("period", new QString(QString::number(period)));
   dict.replace("label", new QString(label));
   dict.replace("input", new QString(QString::number(input)));
+  dict.replace("plugin", new QString(pluginName));
 
   saveFile(file, dict);
 }

@@ -284,6 +284,7 @@ void STOCH::saveIndicatorSettings (QString file)
   dict.replace("period", new QString(QString::number(period)));
   dict.replace("buyLine", new QString(QString::number(buyLine)));
   dict.replace("sellLine", new QString(QString::number(sellLine)));
+  dict.replace("plugin", new QString(pluginName));
 
   saveFile(file, dict);
 }

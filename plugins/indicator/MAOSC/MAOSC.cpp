@@ -205,6 +205,7 @@ void MAOSC::saveIndicatorSettings (QString file)
   dict.replace("fastMaType", new QString(QString::number(fastMaType)));
   dict.replace("slowMaType", new QString(QString::number(slowMaType)));
   dict.replace("input", new QString(QString::number(input)));
+  dict.replace("plugin", new QString(pluginName));
 
   saveFile(file, dict);
 }

@@ -199,6 +199,7 @@ void MOM::saveIndicatorSettings (QString file)
   dict.replace("maType", new QString(QString::number(maType)));
   dict.replace("input", new QString(QString::number(input)));
   dict.replace("smoothing", new QString(QString::number(smoothing)));
+  dict.replace("plugin", new QString(pluginName));
 
   saveFile(file, dict);
 }

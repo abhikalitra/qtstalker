@@ -182,6 +182,7 @@ void UO::saveIndicatorSettings (QString file)
   dict.replace("shortPeriod", new QString(QString::number(shortPeriod)));
   dict.replace("medPeriod", new QString(QString::number(medPeriod)));
   dict.replace("longPeriod", new QString(QString::number(longPeriod)));
+  dict.replace("plugin", new QString(pluginName));
 
   saveFile(file, dict);
 }

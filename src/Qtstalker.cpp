@@ -684,11 +684,18 @@ void QtstalkerApp::loadChart (QString d)
 
   for (loop = 0; loop < (int) l.count(); loop++)
   {
+    Setting *set = config->getIndicator(l[loop]);
+    if (! set->count())
+    {
+      delete set;
+      continue;
+    }
+    
     Indicator *i = new Indicator;
-    QString s = config->getData(Config::IndicatorPath) + "/" + l[loop];
     i->setName(l[loop]);
-    i->setFile(s);
-    i->setType(config->getIndicator(l[loop]));
+    i->setFile(config->getData(Config::IndicatorPath) + "/" + l[loop]);
+    i->setType(set->getData("plugin"));
+    delete set;
     loadIndicator(i);
 
     if (otherFlag)
@@ -986,8 +993,8 @@ void QtstalkerApp::slotNewIndicator ()
     return;
   }
 
-  QString l = config->getIndicator(name);
-  if (l.length())
+  QDir dir;
+  if (dir.exists(config->getData(Config::IndicatorPath) + "/" + name))
   {
     QMessageBox::information(this, tr("Qtstalker: Error"), tr("Duplicate indicator name."));
     return;
@@ -1008,7 +1015,6 @@ void QtstalkerApp::slotNewIndicator ()
     QString s = config->getData(Config::IndicatorPath) + "/" + name;
     plug->saveIndicatorSettings(s);
     
-    config->setIndicator(name, indicator);
     addIndicatorButton(name, createTab);
 
     if (createTab == FALSE)
@@ -1035,11 +1041,20 @@ void QtstalkerApp::slotNewIndicator ()
 
 void QtstalkerApp::slotEditIndicator (QString selection, Plot *plot)
 {
-  QString type = config->getIndicator(selection);
+  Setting *set = config->getIndicator(selection);
+  if (! set->count())
+  {
+    delete set;
+    qDebug("QtstalkerApp::slotEditIndicator:indicator settings empty");
+  }
+  
+  QString type = set->getData("plugin");
+  delete set;
+  
   Plugin *plug = config->getPlugin(Config::IndicatorPluginPath, type);
   if (! plug)
   {
-    qDebug("QtstalkerApp::slotNewIndicator - could not open plugin");
+    qDebug("QtstalkerApp::slotEditIndicator - could not open plugin");
     config->closePlugin(type);
     return;
   }
@@ -1159,11 +1174,20 @@ void QtstalkerApp::slotSliderChanged (int v)
 
 void QtstalkerApp::addIndicatorButton (QString d, bool tabFlag)
 {
-  QString type = config->getIndicator(d);
+  Setting *set = config->getIndicator(d);
+  if (! set->count())
+  {
+    delete set;
+    qDebug("QtstalkerApp::addIndicatorButton:indicator settings empty");
+  }
+  
+  QString type = set->getData("plugin");
+  delete set;
+
   Plugin *plug = config->getPlugin(Config::IndicatorPluginPath, type);
   if (! plug)
   {
-    qDebug("QtstalkerApp::slotNewIndicator - could not open plugin");
+    qDebug("QtstalkerApp::addIndicatorButton:could not open plugin");
     config->closePlugin(type);
     return;
   }

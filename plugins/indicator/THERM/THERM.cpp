@@ -246,6 +246,7 @@ void THERM::saveIndicatorSettings (QString file)
   dict.replace("maPeriod", new QString(QString::number(maPeriod)));
   dict.replace("maLabel", new QString(maLabel));
   dict.replace("maType", new QString(QString::number(maType)));
+  dict.replace("plugin", new QString(pluginName));
   
   saveFile(file, dict);
 }

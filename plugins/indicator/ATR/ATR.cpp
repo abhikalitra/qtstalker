@@ -179,6 +179,7 @@ void ATR::saveIndicatorSettings (QString file)
   dict.replace("lineType", new QString(QString::number(lineType)));
   dict.replace("smoothing", new QString(QString::number(smoothing)));
   dict.replace("maType", new QString(QString::number(maType)));
+  dict.replace("plugin", new QString(pluginName));
 
   saveFile(file, dict);
 }

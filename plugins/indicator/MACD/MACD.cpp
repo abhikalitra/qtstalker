@@ -301,6 +301,8 @@ void MACD::saveIndicatorSettings (QString file)
   dict.replace("oscLineType", new QString(QString::number(oscLineType)));
   dict.replace("oscScaleFlag", new QString(QString::number(oscScaleFlag)));
   
+  dict.replace("plugin", new QString(pluginName));
+  
   saveFile(file, dict);
 }
 

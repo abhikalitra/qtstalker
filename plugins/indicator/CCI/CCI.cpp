@@ -263,6 +263,7 @@ void CCI::saveIndicatorSettings (QString file)
   dict.replace("label", new QString(label));
   dict.replace("maType", new QString(QString::number(maType)));
   dict.replace("alertType", new QString(alertType));
+  dict.replace("plugin", new QString(pluginName));
 
   saveFile(file, dict);
 }
