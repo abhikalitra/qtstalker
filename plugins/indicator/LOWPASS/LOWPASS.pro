@@ -10,11 +10,10 @@ HEADERS += qtsFFT.h
 SOURCES += LOWPASS.cpp
 SOURCES += qtsFFT.cpp
 
-TARGET = LOWPASS.0.29
+TARGET = LOWPASS.0.30
 
 INCLUDEPATH += .
 INCLUDEPATH += ../../../lib
-INCLUDEPATH += ../../../db-2.7.7/build_unix
 
 LIBS += -L../../../lib -lqtstalker
 

@@ -305,7 +305,7 @@ void COT::saveData (Setting *set)
   s.append(set->getData("Symbol"));
   emit statusLogMessage(s);
 
-  s = db->getData("Symbol");
+  s = db->getSymbol();
   if (! s.length())
   {
     Setting *set2 = new Setting;

@@ -725,9 +725,9 @@ void Plot::draw15Date ()
   BarDate oldDay = data->getDate(loop);
   nextHour.setTime(nextHour.getHour(), 0, 0);
   if ((nextHour.getHour() % 2) == 0)
-    nextHour.addMinutes(120);
+    nextHour.addSecs(7200);
   else
-    nextHour.addMinutes(60);
+    nextHour.addSecs(3600);
 
   while(x <= _width && loop < (int) data->count())
   {
@@ -773,9 +773,9 @@ void Plot::draw15Date ()
       nextHour = date;
       nextHour.setTime(date.getHour(), 0, 0);
       if ((date.getHour() % 2) == 0)
-        nextHour.addMinutes(120);
+        nextHour.addSecs(7200);
       else
-        nextHour.addMinutes(60);
+        nextHour.addSecs(3600);
     }
 
     x = x + pixelspace;

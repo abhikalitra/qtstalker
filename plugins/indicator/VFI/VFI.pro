@@ -8,10 +8,9 @@ HEADERS += VFI.h
 
 SOURCES += VFI.cpp
 
-TARGET = VFI.0.29
+TARGET = VFI.0.30
 
 INCLUDEPATH += ../../../lib
-INCLUDEPATH += ../../../db-2.7.7/build_unix
 
 LIBS += -L../../../lib -lqtstalker
 

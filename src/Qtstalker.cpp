@@ -563,7 +563,7 @@ void QtstalkerApp::slotQuit()
 void QtstalkerApp::slotAbout()
 {
   QMessageBox *dialog = new QMessageBox(tr("About Qtstalker"),
-  					tr("Qtstalker\nVer CVS 0.29\n(C) 2001-2005 by Stefan Stratigakos"),
+  					tr("Qtstalker\nVer CVS 0.30 (greased weasel)\n(C) 2001-2005 by Stefan Stratigakos"),
 					QMessageBox::NoIcon,
 					QMessageBox::Ok,
 					QMessageBox::NoButton,
@@ -764,9 +764,9 @@ void QtstalkerApp::loadChart (QString d)
   trl->copy(recordList);
   delete trl;
   
-  chartName = plug->getData(tr("Title"));
-  chartType = plug->getData(tr("Type"));
-  chartSymbol = plug->getData(tr("Symbol"));
+  chartName = plug->getTitle();
+  chartType = plug->getType();
+  chartSymbol = plug->getSymbol();
   
   mainPlot->setData(recordList);
   for(it.toFirst(); it.current(); ++it)

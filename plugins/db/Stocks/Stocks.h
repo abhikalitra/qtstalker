@@ -27,17 +27,41 @@
 #include "Setting.h"
 #include <qstring.h>
 
+typedef struct
+{
+  bool state;
+  double date;
+  float open;
+  float high;
+  float low;
+  float close;
+  double volume;
+
+} StockRecord;
+
+
 class Stocks : public DbPlugin
 {
   public:
     Stocks ();
     ~Stocks ();
-    Bar * getBar (QString, QString);
     void dbPrefDialog ();
-    void setBar (Bar *);
     void saveDbDefaults (Setting *);
-
+    void dump (QString);
+    void deleteBar (QString);
+    int readRecord ();
+    int writeRecord ();
+    bool getRecordState ();
+    void fillBar (Bar *);
+    double getRecordDate ();
+    void fillRecord (Bar *);
+    void clearRecord ();
+    void setRecordDate (double);
+    int writeTempRecord ();
+    void setBarString (QString);
+    
   private:
+    StockRecord record;
 };
 
 extern "C"

@@ -44,6 +44,7 @@ void VOL::setDefaults ()
   volLineType = PlotLine::HistogramBar;
   maLineType = PlotLine::Line;
   volLabel = "VOL";
+  label = volLabel;
   maLabel = "MAVol";
   period = 0;
   maType = IndicatorPlugin::SMA;
@@ -106,6 +107,7 @@ int VOL::indicatorPrefDialog (QWidget *w)
     upColor = dialog->getColor(QObject::tr("Up Color"));
     downColor = dialog->getColor(QObject::tr("Down Color"));
     volLabel = dialog->getText(QObject::tr("VOL Label"));
+    label = volLabel;
     volLineType = (PlotLine::LineType) dialog->getComboIndex(QObject::tr("VOL Line Type"));
     
     maColor = dialog->getColor(QObject::tr("MA Color"));
@@ -175,6 +177,10 @@ void VOL::setIndicatorSettings (Setting dict)
   s = dict.getData("maType");
   if (s.length())
     maType = (IndicatorPlugin::MAType) s.toInt();
+
+  s = dict.getData("label");
+  if (s.length())
+    label = s;
 }
 
 Setting VOL::getIndicatorSettings ()
@@ -189,9 +195,18 @@ Setting VOL::getIndicatorSettings ()
   dict.setData("maLabel", maLabel);
   dict.setData("maLineType", QString::number(maLineType));
   dict.setData("maType", QString::number(maType));
+  dict.setData("label", label);
   dict.setData("plugin", pluginName);
   return dict;
 }
+
+PlotLine * VOL::calculateCustom (QDict<PlotLine> *)
+{
+  clearOutput();
+  calculate();
+  return output->getLine(0);
+}
+
 
 IndicatorPlugin * createIndicatorPlugin ()
 {

@@ -23,9 +23,7 @@
 
 BarDate::BarDate ()
 {
-  hour = 0;
-  min = 0;
-  sec = 0;
+  tickFlag = FALSE;
 }
 
 BarDate::~BarDate ()
@@ -49,42 +47,62 @@ int BarDate::setDate (QString d)
     qDebug("BarDate::setDate:bad string length %i", s.length());
     return TRUE;
   }
-    
-  date = QDate(s.left(4).toInt(), s.mid(4, 2).toInt(), s.mid(6, 2).toInt());
-  if (! date.isValid())
+  
+  QDate dt = QDate(s.left(4).toInt(), s.mid(4, 2).toInt(), s.mid(6, 2).toInt());
+  if (! dt.isValid())
   {
     qDebug("BarDate::setDate: invalid date %s", s.latin1());
     return TRUE;
   }
   
-  hour = s.mid(8, 2).toInt();
+  int hour = s.mid(8, 2).toInt();
   if (hour < 0 || hour > 23)
   {
     qDebug("BarDate::setDate: hour out of range %i", hour);
     return TRUE;
   }
     
-  min = s.mid(10, 2).toInt();
+  int min = s.mid(10, 2).toInt();
   if (min < 0 || min > 59)
   {
     qDebug("BarDate::setDate: minute out of range %i", min);
     return TRUE;
   }
   
-  sec = s.mid(12, 2).toInt();
-  if (sec < 0 || sec > 59)
+  int sec = 0;
+//  int sec = s.mid(12, 2).toInt();
+//  if (sec < 0 || sec > 59)
+//  {
+//    qDebug("BarDate::setDate: second out of range %i", sec);
+//    return TRUE;
+//  }
+  
+  QTime t(hour, min, sec, 0);
+  if (! t.isValid())
   {
-    qDebug("BarDate::setDate: second out of range %i", sec);
+    qDebug("BarDate::setDate: invalid time");
     return TRUE;
   }
+  
+  date.setDate(dt);
+  date.setTime(t);
     
   return FALSE;
 }
 
 int BarDate::setDate (QDate d)
 {
-  date = d;
-  if (date.isValid())
+  date.setDate(d);
+  if (date.date().isValid())
+    return FALSE;
+  else
+    return TRUE;
+}
+
+int BarDate::setTime (QTime d)
+{
+  date.setTime(QTime(d.hour(), d.minute(), 0, 0));
+  if (date.time().isValid())
     return FALSE;
   else
     return TRUE;
@@ -92,15 +110,20 @@ int BarDate::setDate (QDate d)
 
 QDate BarDate::getDate ()
 {
-  return date;
+  return date.date();
+}
+
+QTime BarDate::getTime ()
+{
+  return date.time();
 }
 
 QString BarDate::getDateString (bool sepFlag)
 {
   if (sepFlag)
-    return date.toString("yyyy-MM-dd");
+    return date.date().toString("yyyy-MM-dd");
   else
-    return date.toString("yyyyMMdd");
+    return date.date().toString("yyyyMMdd");
 }
 
 QString BarDate::getDateTimeString (bool sepFlag)
@@ -117,54 +140,19 @@ QString BarDate::getDateTimeString (bool sepFlag)
 
 QString BarDate::getTimeString (bool sepFlag)
 {
-  QString s;
-  
-  if (hour < 10)
-    s.append("0");
-  s.append(QString::number(hour));
-  
   if (sepFlag)
-    s.append(":");
-
-  if (min < 10)
-    s.append("0");
-  s.append(QString::number(min));
-  
-  if (sepFlag)
-    s.append(":");
-  
-  if (sec < 10)
-    s.append("0");
-  s.append(QString::number(sec));
-
-  return s;
+    return date.time().toString("hh:mm:ss");
+  else
+    return date.time().toString("hhmmss");
 }
 
 int BarDate::setTime (int h, int m, int s)
 {
-  if (h < 0 || h > 23)
+  date.setTime(QTime(h, m, 0, 0));
+  if (date.time().isValid())
+    return FALSE;
+  else
     return TRUE;
-  hour = h;
-    
-  if (m < 0 || m > 59)
-    return TRUE;
-  min = m;
-  
-  if (s < 0 || s > 59)
-    return TRUE;
-  sec = s;
-  
-  return FALSE;
-}
-
-int BarDate::getHour ()
-{
-  return hour;
-}
-
-int BarDate::getMinute ()
-{
-  return min;
 }
 
 double BarDate::getDateValue ()
@@ -173,43 +161,39 @@ double BarDate::getDateValue ()
   return s.toDouble();
 }
 
-void BarDate::addMinutes (int d)
+void BarDate::addSecs (int d)
 {
-  int loop;
-  for (loop = 0; loop < d; loop++)
-  {
-    min++;
-    if (min > 59)
-    {
-      min = 0;
-      hour++;
-      if (hour > 23)
-      {
-        date = date.addDays(1);
-	hour = 0;
-      }
-    }
-  }
+  date = date.addSecs(d);
 }
 
-void BarDate::subMinutes (int d)
+void BarDate::addDays (int d)
 {
-  int loop;
-  for (loop = 0; loop < d; loop++)
-  {
-    min--;
-    if (min < 0)
-    {
-      min = 59;
-      hour--;
-      if (hour < 0)
-      {
-        date = date.addDays(-1);
-	hour = 23;
-      }
-    }
-  }
+  date = date.addDays(d);
 }
 
+void BarDate::addMonths (int d)
+{
+  date = date.addMonths(d);
+}
+
+bool BarDate::getTickFlag ()
+{
+  return tickFlag;
+}
+
+void BarDate::setTickFlag (bool d)
+{
+  tickFlag = d;
+}
+
+int BarDate::getHour ()
+{
+  return date.time().hour();
+}
+
+QDateTime BarDate::getDateTime ()
+{
+  return date;
+}
 
 

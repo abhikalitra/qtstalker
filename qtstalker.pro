@@ -81,5 +81,5 @@ SUBDIRS += plugins/co/Text
 SUBDIRS += plugins/co/TrendLine
 SUBDIRS += plugins/co/FiboLine
 
-SUBDIRS += docs
+#SUBDIRS += docs
 

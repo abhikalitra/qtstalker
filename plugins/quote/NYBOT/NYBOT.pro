@@ -8,10 +8,9 @@ HEADERS += NYBOT.h
 
 SOURCES += NYBOT.cpp
 
-TARGET = NYBOT.0.29
+TARGET = NYBOT.0.30
 
 INCLUDEPATH += ../../../lib
-INCLUDEPATH += ../../../db-2.7.7/build_unix
 
 LIBS += -L../../../lib -lqtstalker
 

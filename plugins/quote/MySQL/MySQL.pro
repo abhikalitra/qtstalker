@@ -8,11 +8,10 @@ HEADERS += MySQLPlugin.h
 
 SOURCES += MySQLPlugin.cpp
 
-TARGET = MySQL.0.29
+TARGET = MySQL.0.30
 
 INCLUDEPATH += ../../../lib
 INCLUDEPATH += /usr/include/mysql
-INCLUDEPATH += ../../../db-2.7.7/build_unix
 
 LIBS += -lmysqlclient
 LIBS += -L../../../lib -lqtstalker

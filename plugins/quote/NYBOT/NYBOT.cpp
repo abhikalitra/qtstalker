@@ -303,7 +303,7 @@ void NYBOT::parse ()
         return;
       }
 
-      s = db->getData("Symbol");
+      s = db->getSymbol();
       if (! s.length())
       {
         Setting *set = new Setting;

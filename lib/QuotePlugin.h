@@ -56,9 +56,4 @@ class QuotePlugin : public QObject
     QString helpFile;
 };
 
-extern "C"
-{
-  QuotePlugin * createQuotePlugin ();
-}
-
 #endif

@@ -8,10 +8,9 @@ HEADERS += PER.h
 
 SOURCES += PER.cpp
 
-TARGET = PER.0.29
+TARGET = PER.0.30
 
 INCLUDEPATH += ../../../lib
-INCLUDEPATH += ../../../db-2.7.7/build_unix
 
 LIBS += -L../../../lib -lqtstalker
 

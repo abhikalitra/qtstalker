@@ -330,7 +330,7 @@ void Yahoo::parseHistory ()
     return;
   }
 
-  s = plug->getData("Symbol");
+  s = plug->getSymbol();
   if (! s.length())
   {
     Setting *set = new Setting;
@@ -465,7 +465,7 @@ void Yahoo::parseQuote ()
     return;
   }
   
-  s = plug->getData("Symbol");
+  s = plug->getSymbol();
   if (! s.length())
   {
     Setting *set = new Setting;

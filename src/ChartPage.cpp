@@ -168,7 +168,7 @@ void ChartPage::exportChart (QString path)
   QString s = config.getData(Config::Home);
   s.append("/export/");
   
-  QString s2 = db->getData(tr("Symbol"));
+  QString s2 = db->getSymbol();
   if (! s2.length())
   {
     QStringList l = QStringList::split("/", path, FALSE);
@@ -177,7 +177,7 @@ void ChartPage::exportChart (QString path)
   else
     s.append(s2);
 
-  db->dump(s, path);
+  db->dump(s);
 
   delete db;
 }

@@ -61,6 +61,8 @@ class Bar
     void copy (Bar *);
     double getMin ();
     double getMax ();
+    bool getTickFlag ();
+    void setTickFlag (bool);
     
   protected:
     BarDate date;

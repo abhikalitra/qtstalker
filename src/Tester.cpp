@@ -533,9 +533,9 @@ void Tester::test ()
   ChartDb *db = new ChartDb;
   db->openChart(symbolButton->getPath());
   
-  chartType = db->getData(tr("Type"));
+  chartType = db->getType();
   if (! chartType.compare(tr("Futures")))
-    fd.setSymbol(db->getData(tr("FuturesType")));
+    fd.setSymbol(db->getFuturesType());
 
   tradeList->setNumRows(0);
 

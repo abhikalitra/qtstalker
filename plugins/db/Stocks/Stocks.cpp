@@ -21,27 +21,18 @@
 
 #include "Stocks.h"
 #include "StocksDialog.h"
+#include <qtextstream.h>
+#include <qfile.h>
 
 Stocks::Stocks ()
 {
   helpFile = "stocksplugin.html";
+  recordSize = sizeof(StockRecord);
+  memset(&record, 0, recordSize);
 }
 
 Stocks::~Stocks ()
 {
-}
-
-Bar * Stocks::getBar (QString k, QString d)
-{
-  QStringList l = QStringList::split(",", d, FALSE);
-  Bar *bar = new Bar;
-  bar->setDate(k);
-  bar->setData("Open", l[0].toDouble());
-  bar->setData("High", l[1].toDouble());
-  bar->setData("Low", l[2].toDouble());
-  bar->setData("Close", l[3].toDouble());
-  bar->setData("Volume", l[4].toDouble());
-  return bar;
 }
 
 void Stocks::dbPrefDialog ()
@@ -51,29 +42,134 @@ void Stocks::dbPrefDialog ()
   delete dialog;
 }
 
-void Stocks::setBar (Bar *bar)
-{
-  QStringList l;
-  l.append(QString::number(bar->getOpen()));
-  l.append(QString::number(bar->getHigh()));
-  l.append(QString::number(bar->getLow()));
-  l.append(QString::number(bar->getClose()));
-  l.append(QString::number(bar->getVolume(), 'f', 0));
-  setData(bar->getDate().getDateTimeString(FALSE), l.join(","));
-}
-
 void Stocks::saveDbDefaults (Setting *set)
 {
-  setData("Symbol", set->getData("Symbol"));
-  setData("Type", "Stock");
-  setData("Title", set->getData("Title"));
-  setData("BarType", set->getData("BarType"));
-  setData("Plugin", "Stocks");
+  strncpy(header->symbol, set->getData("Symbol").ascii(), SSIZE);
+  strncpy(header->type, (char *) "Stock", SSIZE);
+  strncpy(header->title, set->getData("Title").ascii(), TITLESIZE);
+  header->barType = set->getInt("BarType");
+  strncpy(header->plugin, (char *) "Stocks", SSIZE);
+  saveFlag = TRUE;
 }
+
+void Stocks::dump (QString d)
+{
+  QFile outFile(d);
+  if (! outFile.open(IO_WriteOnly))
+    return;
+  QTextStream outStream(&outFile);
+  
+  dumpHeader(outStream);
+
+  fseek(db, sizeof(ChartHeader), SEEK_SET);
+  while (fread(&record, recordSize, 1, db))
+  {
+//    if (! record.state)
+//      continue;
+      
+    outStream << QString::number(record.date, 'f', 0) << ",";
+    outStream << QString::number(record.open, 'g', 4) << ",";
+    outStream << QString::number(record.high, 'g', 4) << ",";
+    outStream << QString::number(record.low, 'g', 4) << ",";
+    outStream << QString::number(record.close, 'g', 4) << ",";
+    outStream << QString::number(record.volume, 'f', 0) << "\n";
+  }  
+
+  outFile.close();
+}
+
+void Stocks::deleteBar (QString d)
+{
+  if (! findRecord(d))
+    return;
+    
+  memset(&record, 0, recordSize);
+  record.date = d.toDouble();
+  fwrite(&record, recordSize, 1, db);
+}
+
+int Stocks::readRecord ()
+{
+  return fread(&record, recordSize, 1, db);
+}
+
+int Stocks::writeRecord ()
+{
+  return fwrite(&record, recordSize, 1, db);
+}
+
+bool Stocks::getRecordState ()
+{
+  return record.state;
+}
+
+void Stocks::fillBar (Bar *bar)
+{
+  bar->setDate(QString::number(record.date, 'f', 0));
+  bar->setOpen(record.open);
+  bar->setHigh(record.high);
+  bar->setLow(record.low);
+  bar->setClose(record.close);
+  bar->setVolume(record.volume);
+}
+
+double Stocks::getRecordDate ()
+{
+  return record.date;
+}
+
+void Stocks::fillRecord (Bar *bar)
+{
+  record.state = TRUE;
+  record.date = bar->getDate().getDateValue();
+  record.open = bar->getOpen();  
+  record.high = bar->getHigh();  
+  record.low = bar->getLow();
+  record.close = bar->getClose();  
+  record.volume = bar->getVolume();  
+}
+
+void Stocks::setRecordDate (double d)
+{
+  record.date = d;
+}
+
+void Stocks::clearRecord ()
+{
+  memset(&record, 0, recordSize);
+}
+
+int Stocks::writeTempRecord ()
+{
+  return fwrite(&record, recordSize, 1, tdb);
+}
+
+void Stocks::setBarString (QString d)
+{
+  QStringList l = QStringList::split(",", d, FALSE);
+  if (l.count() < 6)
+    return;
+  
+  Bar *bar = new Bar;
+  bar->setDate(l[0]);
+  bar->setOpen(l[1].toDouble());
+  bar->setHigh(l[2].toDouble());
+  bar->setLow(l[3].toDouble());
+  bar->setClose(l[4].toDouble());
+  bar->setVolume(l[5].toDouble());
+  
+  bar->setTickFlag(header->barType);
+  
+  setBar(bar);
+  delete bar;
+}
+
+//********************************************************************
+//********************************************************************
+//********************************************************************
 
 DbPlugin * createDbPlugin ()
 {
   Stocks *o = new Stocks;
   return ((DbPlugin *) o);
 }
-

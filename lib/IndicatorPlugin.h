@@ -84,10 +84,5 @@ class IndicatorPlugin
     QString helpFile;
 };
 
-extern "C"
-{
-  IndicatorPlugin * createIndicatorPlugin ();
-}
-
 #endif
 

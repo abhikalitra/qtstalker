@@ -8,10 +8,9 @@ HEADERS += PP.h
 
 SOURCES += PP.cpp
 
-TARGET = PP.0.29
+TARGET = PP.0.30
 
 INCLUDEPATH += ../../../lib
-INCLUDEPATH += ../../../db-2.7.7/build_unix
 
 LIBS += -L../../../lib -lqtstalker
 

@@ -198,6 +198,10 @@ void DMI::setIndicatorSettings (Setting dict)
   s = dict.getData("label");
   if (s.length())
     label = s;
+
+  s = dict.getData("lineRequest");
+  if (s.length())
+    lineRequest = s;
 }
 
 Setting DMI::getIndicatorSettings ()
@@ -217,6 +221,7 @@ Setting DMI::getIndicatorSettings ()
   dict.setData("adxLabel", adxLabel);
   dict.setData("label", label);
   dict.setData("plugin", pluginName);
+  dict.setData("lineRequest", lineRequest);
   return dict;
 }
 
@@ -398,6 +403,10 @@ PlotLine * DMI::getTR ()
   
   return tr;
 }
+
+//*********************************************************
+//*********************************************************
+//*********************************************************
 
 IndicatorPlugin * createIndicatorPlugin ()
 {

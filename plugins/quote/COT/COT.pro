@@ -8,10 +8,9 @@ HEADERS += COT.h
 
 SOURCES += COT.cpp
 
-TARGET = COT.0.29
+TARGET = COT.0.30
 
 INCLUDEPATH += ../../../lib
-INCLUDEPATH += ../../../db-2.7.7/build_unix
 
 LIBS += -L../../../lib -lqtstalker
 

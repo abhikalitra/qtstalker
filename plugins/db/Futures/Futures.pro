@@ -10,10 +10,9 @@ HEADERS += FuturesDialog.h
 SOURCES += Futures.cpp
 SOURCES += FuturesDialog.cpp
 
-TARGET = Futures.0.29
+TARGET = Futures.0.30
 
 INCLUDEPATH += ../../../lib
-INCLUDEPATH += ../../../db-2.7.7/build_unix
 
 LIBS += -L../../../lib -lqtstalker
 

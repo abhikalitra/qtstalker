@@ -28,11 +28,15 @@
 #include <qinputdialog.h>
 #include <qmessagebox.h>
 #include <qobject.h>
+#include <qtextstream.h>
+#include <qfile.h>
 
 Index::Index ()
 {
   data.setAutoDelete(TRUE);
   helpFile = "indexes.html";
+  recordSize = sizeof(IndexRecord);
+  memset(&record, 0, recordSize);
 }
 
 Index::~Index ()
@@ -45,53 +49,44 @@ BarData * Index::getHistory ()
   return DbPlugin::getHistory();
 }
 
-Bar * Index::getBar (QString k, QString d)
-{
-  QStringList l = QStringList::split(",", d, FALSE);
-  Bar *bar = new Bar;
-  bar->setDate(k);
-  bar->setData("Open", l[0].toDouble());
-  bar->setData("High", l[1].toDouble());
-  bar->setData("Low", l[2].toDouble());
-  bar->setData("Close", l[3].toDouble());
-  return bar;
-}
-
 void Index::dbPrefDialog ()
 {
   IndexDialog *dialog = new IndexDialog(helpFile);
-  dialog->setList(getData("Index"));
-  dialog->setRebuild(getData("Rebuild").toInt());
-  dialog->setName(getData("Symbol"));
+  dialog->setList(header->lvar1);
+  dialog->setRebuild(header->bool1);
+  dialog->setName(header->symbol);
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
     QString s = dialog->getList();
-    if (s.length())
-      setData("Index", s);
-    setData("Rebuild", QString::number(dialog->getRebuild()));
+    if (s.length() < LSIZE)
+      strncpy(header->lvar1, s.ascii(), LSIZE);
+    else
+    {
+      QMessageBox::warning(0,
+                           QObject::tr("Qtstalker: Error"),
+			   QObject::tr("Too many Index items. Out of strorage room.\nRemove item(s) and try again."));
+      delete dialog;
+      return;		
+    }
+    
+    header->bool1 = dialog->getRebuild();
+    
+    saveFlag = TRUE;
     updateIndex();
   }
   
   delete dialog;
 }
 
-void Index::setBar (Bar *bar)
-{
-  QStringList l;
-  l.append(QString::number(bar->getOpen()));
-  l.append(QString::number(bar->getHigh()));
-  l.append(QString::number(bar->getLow()));
-  l.append(QString::number(bar->getClose()));
-  setData(bar->getDate().getDateTimeString(FALSE), l.join(","));
-}
-
 void Index::updateIndex ()
 {
   data.clear();
+  fdate = 99999999999999.0;
+  ldate = 0;
   
-  QStringList l = QStringList::split(":", getData("Index"), FALSE);
+  QStringList l = QStringList::split(":", header->lvar1, FALSE);
   if (! l.count())
     return;
     
@@ -106,11 +101,19 @@ void Index::updateIndex ()
     loadData(symbol, weight);
   }
 
+  Bar *r = data.find(QString::number(fdate, 'f', 0));
+  if (r)
+    setBar(r);
+  
+  r = data.find(QString::number(ldate, 'f', 0));
+  if (r)
+    setBar(r);
+  
   int count = l.count() / 2;
   QDictIterator<Bar> it(data);
   for (; it.current(); ++it)
   {
-    Bar *r = it.current();
+    r = it.current();
     if (r->getData("Count") == count)
     {
       r->setOpen(r->getOpen() / count);
@@ -147,8 +150,8 @@ void Index::loadData (QString symbol, float weight)
   
   db->setBarCompression(BarData::DailyBar);
   
-  QString rebuild = getData("Rebuild");
-  if (rebuild.toInt())
+  bool rebuild = header->bool1;
+  if (rebuild)
     db->setBarRange(99999999);
   else
   {
@@ -179,6 +182,12 @@ void Index::loadData (QString symbol, float weight)
       r->setClose(recordList->getClose(loop) * weight);
       r->setData("Count", 1);
       data.insert(r->getDate().getDateTimeString(FALSE), r);
+      
+      if (r->getDate().getDateValue() > ldate)
+        ldate = r->getDate().getDateValue();
+	
+      if (r->getDate().getDateValue() < fdate)
+        fdate = r->getDate().getDateValue();
     }
     else
     {
@@ -233,12 +242,123 @@ QString Index::createNew ()
 
 void Index::saveDbDefaults (Setting *set)
 {
-  setData("Symbol", set->getData("Symbol"));
-  setData("Type", "Index");
-  setData("Title", set->getData("Title"));
-  setData("BarType", set->getData("BarType"));
-  setData("Plugin", "Index");
+  strncpy(header->symbol, set->getData("Symbol").ascii(), SSIZE);
+  strncpy(header->type, (char *) "Index", SSIZE);
+  strncpy(header->title, set->getData("Title").ascii(), TITLESIZE);
+  header->barType = set->getData("BarType").toInt();
+  strncpy(header->plugin, (char *) "Index", SSIZE);
+  saveFlag = TRUE;
 }
+
+void Index::dump (QString d)
+{
+  QFile outFile(d);
+  if (! outFile.open(IO_WriteOnly))
+    return;
+  QTextStream outStream(&outFile);
+  
+  dumpHeader(outStream);
+
+  fseek(db, sizeof(ChartHeader), SEEK_SET);
+  while (fread(&record, recordSize, 1, db))
+  {
+    if (! record.state)
+      continue;
+  
+    outStream << QString::number(record.date, 'f', 0) << ",";
+    outStream << QString::number(record.open, 'g', 4) << ",";
+    outStream << QString::number(record.high, 'g', 4) << ",";
+    outStream << QString::number(record.low, 'g', 4) << ",";
+    outStream << QString::number(record.close, 'g', 4) << "\n";
+  }  
+
+  outFile.close();
+}
+
+void Index::deleteBar (QString d)
+{
+  if (! findRecord(d))
+    return;
+    
+  memset(&record, 0, recordSize);
+  record.date = d.toDouble();
+  fwrite(&record, recordSize, 1, db);
+}
+
+int Index::readRecord ()
+{
+  return fread(&record, recordSize, 1, db);
+}
+
+int Index::writeRecord ()
+{
+  return fwrite(&record, recordSize, 1, db);
+}
+
+bool Index::getRecordState ()
+{
+  return record.state;
+}
+
+void Index::fillBar (Bar *bar)
+{
+  bar->setDate(QString::number(record.date, 'f', 0));
+  bar->setOpen(record.open);
+  bar->setHigh(record.high);
+  bar->setLow(record.low);
+  bar->setClose(record.close);
+}
+
+double Index::getRecordDate ()
+{
+  return record.date;
+}
+
+void Index::fillRecord (Bar *bar)
+{
+  record.state = TRUE;
+  record.date = bar->getDate().getDateValue();
+  record.open = bar->getOpen();  
+  record.high = bar->getHigh();  
+  record.low = bar->getLow();
+  record.close = bar->getClose();  
+}
+
+void Index::setRecordDate (double d)
+{
+  record.date = d;
+}
+
+void Index::clearRecord ()
+{
+  memset(&record, 0, recordSize);
+}
+
+int Index::writeTempRecord ()
+{
+  return fwrite(&record, recordSize, 1, tdb);
+}
+
+void Index::setBarString (QString d)
+{
+  QStringList l = QStringList::split(",", d, FALSE);
+  if (l.count() < 5)
+    return;
+  
+  Bar *bar = new Bar;
+  bar->setDate(l[0]);
+  bar->setOpen(l[1].toDouble());
+  bar->setHigh(l[2].toDouble());
+  bar->setLow(l[3].toDouble());
+  bar->setClose(l[4].toDouble());
+  
+  setBar(bar);
+  delete bar;
+}
+
+//********************************************************************
+//********************************************************************
+//********************************************************************
 
 DbPlugin * createDbPlugin ()
 {

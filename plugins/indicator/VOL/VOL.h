@@ -31,6 +31,7 @@ class VOL : public IndicatorPlugin
     void saveIndicatorSettings (QString);
     int indicatorPrefDialog (QWidget *);
     void setDefaults();
+    PlotLine * calculateCustom (QDict<PlotLine> *);
     Setting getIndicatorSettings ();
     void setIndicatorSettings (Setting);
 
@@ -41,6 +42,7 @@ class VOL : public IndicatorPlugin
     PlotLine::LineType volLineType;
     PlotLine::LineType maLineType;
     QString volLabel;
+    QString label;
     QString maLabel;
     int period;
     IndicatorPlugin::MAType maType;

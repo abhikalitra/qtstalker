@@ -148,8 +148,8 @@ void PortfolioDialog::updatePortfolioItems ()
     ChartDb *plug = new ChartDb;
     plug->openChart(s);
     
-    QString type = plug->getData(tr("Type"));
-    QString futuresType = plug->getData(tr("FuturesType"));
+    QString type = plug->getType();
+    QString futuresType = plug->getFuturesType();
     Bar *bar = plug->getLastBar();
     
     if (! bar)

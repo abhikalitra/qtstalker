@@ -8,10 +8,9 @@ HEADERS += MATH.h
 
 SOURCES += MATH.cpp
 
-TARGET = MATH.0.29
+TARGET = MATH.0.30
 
 INCLUDEPATH += ../../../lib
-INCLUDEPATH += ../../../db-2.7.7/build_unix
 
 LIBS += -L../../../lib -lqtstalker
 

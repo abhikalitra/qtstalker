@@ -8,10 +8,9 @@ HEADERS += FI.h
 
 SOURCES += FI.cpp
 
-TARGET = FI.0.29
+TARGET = FI.0.30
 
 INCLUDEPATH += ../../../lib
-INCLUDEPATH += ../../../db-2.7.7/build_unix
 
 LIBS += -L../../../lib -lqtstalker
 

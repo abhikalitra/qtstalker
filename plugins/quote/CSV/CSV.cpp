@@ -310,8 +310,12 @@ void CSV::parse ()
 	delete r;
 	continue;
       }
+      bool tickFlag = FALSE;
       if (r->getData("Time"))
+      {
         s.append(r->getData("Time"));
+	tickFlag = TRUE;
+      }
       else
         s.append("000000");
 	
@@ -323,6 +327,7 @@ void CSV::parse ()
 	delete bar;
         continue;
       }
+      bar->setTickFlag(tickFlag);
       bar->setOpen(r->getData("Open").toDouble());
       bar->setHigh(r->getData("High").toDouble());
       bar->setLow(r->getData("Low").toDouble());
@@ -559,7 +564,7 @@ bool CSV::openDb (QString path, QString symbol, QString type)
     return TRUE;
   }
 
-  QString s = db->getData("Symbol");
+  QString s = db->getSymbol();
   if (! s.length())
   {
     Setting *set = new Setting;
@@ -589,8 +594,6 @@ void CSV::prefDialog (QWidget *w)
   dialog->setEndDate(edate);
   dialog->setDateRange(dateFlag);
   dialog->setRuleName(ruleName);
-  dialog->setFiles(list);
-  dialog->setSymbol(symbolOveride);
           
   int rc = dialog->exec();
   

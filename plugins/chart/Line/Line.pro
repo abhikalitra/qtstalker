@@ -10,10 +10,9 @@ HEADERS += LineDialog.h
 SOURCES += Line.cpp
 SOURCES += LineDialog.cpp
 
-TARGET = Line.0.29
+TARGET = Line.0.30
 
 INCLUDEPATH += ../../../lib
-INCLUDEPATH += ../../../db-2.7.7/build_unix
 
 LIBS += -L../../../lib -lqtstalker
 

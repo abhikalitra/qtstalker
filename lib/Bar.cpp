@@ -184,6 +184,7 @@ void Bar::copy (Bar *d)
   for(; it.current(); ++it)
     d->setData(it.currentKey(), it.current()->v);
   d->setDate(date);
+  d->setTickFlag(date.getTickFlag());
 }
 
 double Bar::getMin ()
@@ -194,5 +195,15 @@ double Bar::getMin ()
 double Bar::getMax ()
 {
   return max;
+}
+
+bool Bar::getTickFlag ()
+{
+  return date.getTickFlag();
+}
+
+void Bar::setTickFlag (bool d)
+{
+  date.setTickFlag(d);
 }
 

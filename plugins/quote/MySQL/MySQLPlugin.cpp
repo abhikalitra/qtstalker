@@ -179,7 +179,7 @@ void MySQLPlugin::updateSymbol(QString symbol)
     return;
   }
   
-  QString s = db.getData("Symbol");
+  QString s = db.getSymbol();
   if (! s.length())
   {
     Setting *set = new Setting;

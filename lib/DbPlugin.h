@@ -25,11 +25,53 @@
 #include <qstring.h>
 #include <qptrlist.h>
 #include <qstringlist.h>
-#include <db.h>
+#include <stdio.h>
 #include "Setting.h"
 #include "BarData.h"
 #include "Bar.h"
 #include "BarDate.h"
+
+#define SSSIZE 5
+#define SSIZE 25
+#define TITLESIZE 100
+#define PATHSIZE 250
+#define MSIZE 250
+#define COSIZE 10240
+#define LSIZE 1000
+
+typedef struct
+{
+  double firstDate;
+  double lastDate;
+  int records;
+  bool bool1;
+  bool bool2;
+  bool bool3;
+  int int1;
+  int int2;
+  int int3;
+  double double1;
+  double double2;
+  double double3;
+  int barType;
+  char plugin[SSIZE];
+  char symbol[SSIZE];
+  char type[SSIZE];
+  char futuresType[SSSIZE];
+  char futuresMonth[SSSIZE];
+  char title[TITLESIZE];
+  char path[PATHSIZE];
+  char co[COSIZE];
+  char svar1[SSIZE];
+  char svar2[SSIZE];
+  char svar3[SSIZE];
+  char mvar1[MSIZE];
+  char lvar1[LSIZE];
+  
+  char tspace[LSIZE]; // this is extra space in case we need it later
+
+} ChartHeader;
+
 
 class DbPlugin
 {
@@ -38,40 +80,69 @@ class DbPlugin
     virtual ~DbPlugin ();
     void setBarCompression (BarData::BarCompression);
     void setBarRange (int);
-    Bar * getLastBar ();
-    Bar * getFirstBar ();
+    void setDb (FILE *, ChartHeader *);
+    void setDbPath (QString);
+    QString getPluginName ();
+    QString getHelpFile ();
+    void close ();
     QStringList getChartObjectsList ();    
     QPtrList<Setting> getChartObjects ();
     void setChartObject (QString, Setting *);
     void deleteChartObject (QString);
-    QString getData (QString);
-    void setData (QString, QString);
-    void deleteData (QString);
-    BarDate getPrevDate (BarDate);
-    void setDb (DB *);
-    void setDbPath (QString);
-    QString getPluginName ();
-    QString getHelpFile ();
+    void dumpHeader (QTextStream &);
+    bool findRecord (QString);
+    Bar * getBar (QString);
+    Bar * getLastBar ();
+    void setBar (Bar *);
     
-    virtual Bar * getBar (QString, QString);
-    virtual void setBar (Bar *);
+    void setSymbol (QString);
+    void setTitle (QString);
+    void setType (QString);
+    void setFuturesType (QString);
+    void setHeaderCO (QString);
+    void setFuturesMonth (QString);
+    
+    void getDailyHistory ();
+    void getWeeklyHistory ();
+    void getMonthlyHistory ();
+    void getTickHistory (int);
+    void getDailyTickHistory ();
+    
+    void setFirstRecord (Bar *);
+    void setAppendRecord (Bar *);
+    void setInsertRecord (Bar *);
+    
+    void setHeader (Setting *);
+    
     virtual void dbPrefDialog ();
     virtual QString createNew ();
     virtual void saveDbDefaults (Setting *);
     virtual BarData * getHistory ();
+    virtual void dump (QString);
+    virtual void deleteBar (QString);
+    virtual int readRecord ();
+    virtual bool getRecordState ();
+    virtual void fillBar (Bar *);
+    virtual double getRecordDate ();
+    virtual int writeRecord ();
+    virtual void fillRecord (Bar *);
+    virtual void clearRecord ();
+    virtual void setRecordDate (double);
+    virtual int writeTempRecord ();
+    virtual void setBarString (QString);
     
   protected:
-    DB *db;
+    ChartHeader *header;
+    FILE *db;
+    FILE *tdb;
     int barRange;
     BarData::BarCompression barCompression;
     QString path;
     QString pluginName;
     QString helpFile;
+    bool saveFlag;
+    int recordSize;
+    BarData *barData;
 };
-
-extern "C"
-{
-  DbPlugin * createDbPlugin ();
-}
 
 #endif

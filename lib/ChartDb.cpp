@@ -20,23 +20,27 @@
  */
 
 #include "ChartDb.h"
-#include <qtextstream.h>
-#include <qfile.h>
+#include <string.h>
 #include <qfileinfo.h>
+#include <qfile.h>
 
 ChartDb::ChartDb ()
 {
   db = 0;
   plug = 0;
+  header = new ChartHeader;
+  memset(header, 0, sizeof(ChartHeader));
 }
 
 ChartDb::~ChartDb ()
 {
   if (plug)
-    config.closePlugin(dbPlugin);
+  {
+    plug->close();
+    config.closePlugin(QString(header->plugin));
+  }
     
-  if (db)
-    db->close(db, 0);
+  delete header;
 }
 
 int ChartDb::openChart (QString path)
@@ -47,33 +51,9 @@ int ChartDb::openChart (QString path)
   if (loadPlugin())
     return TRUE;
 
-  plug->setDb(db);
+  plug->setDb(db, header);
   
   return FALSE;
-}
-
-QString ChartDb::getData (QString k)
-{
-  if (! plug)
-    return QString();
-    
-  return plug->getData(k);
-}
-
-void ChartDb::setData (QString k, QString d)
-{
-  if (! plug)
-    return;
-    
-  plug->setData(k, d);
-}
-
-void ChartDb::deleteData (QString k)
-{
-  if (! plug)
-    return;
-  
-  plug->deleteData(k);
 }
 
 BarData * ChartDb::getHistory ()
@@ -92,11 +72,19 @@ void ChartDb::setBar (Bar *bar)
   plug->setBar(bar);
 }
 
+void ChartDb::setBarString (QString d)
+{
+  if (! plug)
+    return;
+  
+  plug->setBarString(d);
+}
+
 QStringList ChartDb::getChartObjectsList ()
 {
   if (! plug)
     return QStringList();
-
+    
   return plug->getChartObjectsList();
 }
 
@@ -107,7 +95,7 @@ QPtrList<Setting> ChartDb::getChartObjects ()
     QPtrList<Setting> l;
     return l;
   }
-  
+
   return plug->getChartObjects();
 }
 
@@ -116,7 +104,7 @@ void ChartDb::setChartObject (QString d, Setting *set)
   if (! plug)
     return;
 
-  plug->setChartObject (d, set);
+  plug->setChartObject(d, set);
 }
 
 void ChartDb::deleteChartObject (QString d)
@@ -127,33 +115,12 @@ void ChartDb::deleteChartObject (QString d)
   plug->deleteChartObject(d);
 }
 
-void ChartDb::dump (QString d, QString chartPath)
+void ChartDb::dump (QString d)
 {
   if (! db)
     return;
 
-  QFile outFile(d);
-  if (! outFile.open(IO_WriteOnly))
-    return;
-  QTextStream outStream(&outFile);
-
-  // save first line as the original db path. will be used by the qtstalkerformat plugin
-  outStream << "ChartPath=" << chartPath << "\n";
-  
-  DBT key;
-  DBT data;
-  DBC *cursor;
-  memset(&key, 0, sizeof(DBT));
-  memset(&data, 0, sizeof(DBT));
-
-  db->cursor(db, NULL, &cursor, 0);
-
-  while (! cursor->c_get(cursor, &key, &data, DB_NEXT))
-    outStream << (char *) key.data << "=" << (char *) data.data << "\n";
-
-  cursor->c_close(cursor);
-
-  outFile.close();
+  plug->dump(d);
 }
 
 void ChartDb::setBarCompression (BarData::BarCompression d)
@@ -180,25 +147,13 @@ Bar * ChartDb::getLastBar ()
   return plug->getLastBar();
 }
 
-Bar * ChartDb::getFirstBar ()
-{
-  if (! plug)
-    return 0;
-
-  return plug->getFirstBar();
-}
-
-Bar * ChartDb::getBar (QString k, QString d)
-{
-  if (! plug)
-    return 0;
-    
-  return plug->getBar(k, d);
-}
-
 void ChartDb::createNew (QString d)
 {
-  dbPlugin = d;
+  if (! plug)
+    return;
+  
+  setPlugin(d);
+  
   if (loadPlugin())
     return;
       
@@ -209,7 +164,7 @@ void ChartDb::createNew (QString d)
   if (open(path))
     return;
     
-  plug->setDb(db);
+  plug->setDb(db, header);
   
   QFileInfo fi(path);
   Setting *set = new Setting;
@@ -230,7 +185,7 @@ void ChartDb::dbPrefDialog (QString d)
   if (loadPlugin())
     return;
     
-  plug->setDb(db);
+  plug->setDb(db, header);
   plug->setDbPath(path);
   
   plug->dbPrefDialog();
@@ -238,7 +193,7 @@ void ChartDb::dbPrefDialog (QString d)
 
 void ChartDb::setPlugin (QString d)
 {
-  dbPlugin = d;
+  strncpy(header->plugin, d.ascii(), SSIZE);
 }
 
 int ChartDb::open (QString d)
@@ -249,22 +204,44 @@ int ChartDb::open (QString d)
     return TRUE;
   }
 
-// new db open call
-//  if (db->open(db, NULL, (char *) d.latin1(), NULL, DB_BTREE, DB_CREATE, 0664) != 0)
-    
-  if (db_open((char *) d.latin1(), DB_BTREE, DB_CREATE, 0664, NULL, NULL, &db) != 0)
+  bool flag = FALSE;  
+  QFile file(d);
+  if (! file.exists())
+  {
+    file.open(IO_WriteOnly);
+    file.close();
+    flag = TRUE;
+  }
+  
+  if ((db = fopen(d.ascii(), "r+")) == NULL)
   {
     qDebug("ChartDb::open: can't open db");
     return TRUE;
   }
+
+  rewind(db);
+  
+  if (flag)
+  {
+    strncpy(header->path, d.ascii(), PATHSIZE);
+    
+    if (! fwrite(header, sizeof(ChartHeader), 1, db))
+      qDebug("write header failed");
+  }
+  else
+  {
+    if (! fread(header, sizeof(ChartHeader), 1, db))
+      qDebug("read header failed");
+  }
   
   path = d;
+  
   return FALSE;
 }
 
 int ChartDb::loadPlugin ()
 {
-  if (! dbPlugin.length())
+  if (! strlen(header->plugin))
   {
     if (! db)
     {
@@ -272,41 +249,22 @@ int ChartDb::loadPlugin ()
       return TRUE;
     }
     
-    DBT key;
-    DBT data;
-    memset(&key, 0, sizeof(DBT));
-    memset(&data, 0, sizeof(DBT));
-
-    QString k = "Plugin";
-    key.data = (char *) k.latin1();
-    key.size = k.length() + 1;
-
-    if (db->get(db, NULL, &key, &data, 0) == 0)
-      dbPlugin = (char *) data.data;
-    
-    if (! dbPlugin.length())
+    QString s = config.parseDbPlugin(path);
+    if (s.length())
     {
-      dbPlugin = config.parseDbPlugin(path);
-      if (dbPlugin)
-      {
-        key.data = (char *) k.latin1();
-        key.size = k.length() + 1;
-        data.data = (char *) dbPlugin.latin1();
-        data.size = dbPlugin.length() + 1;
-        db->put(db, NULL, &key, &data, 0);
-      }
-      else
-      {
-        qDebug("ChartDb::loadPlugin: can't resolve db plugin");
-        return TRUE;
-      }
+      strncpy(header->plugin, s.ascii(), SSIZE);
+    }
+    else
+    {
+      qDebug("ChartDb::loadPlugin: can't resolve db plugin");
+      return TRUE;
     }
   }
     
-  plug = config.getDbPlugin(dbPlugin);
+  plug = config.getDbPlugin(QString(header->plugin));
   if (! plug)
   {
-    config.closePlugin(dbPlugin);
+    config.closePlugin(QString(header->plugin));
     qDebug("ChartDb::loadPlugin: can't open db plugin");
     return TRUE;
   }
@@ -319,6 +277,103 @@ void ChartDb::saveDbDefaults (Setting *set)
   if (! plug)
     return;
     
-  plug->saveDbDefaults (set);
+  plug->saveDbDefaults(set);
+}
+
+QString ChartDb::getSymbol ()
+{
+  return QString(header->symbol);
+}
+
+void ChartDb::setSymbol (QString d)
+{
+  if (! plug)
+    return;
+    
+  plug->setSymbol(d);
+}
+
+QString ChartDb::getTitle ()
+{
+  return QString(header->title);
+}
+
+void ChartDb::setTitle (QString d)
+{
+  if (! plug)
+    return;
+    
+  plug->setTitle(d);
+}
+
+QString ChartDb::getType()
+{
+  return QString(header->type);
+}
+
+void ChartDb::setType (QString d)
+{
+  if (! plug)
+    return;
+    
+  plug->setType(d);
+}
+
+QString ChartDb::getFuturesType()
+{
+  return QString(header->futuresType);
+}
+
+void ChartDb::setFuturesType (QString d)
+{
+  if (! plug)
+    return;
+    
+  plug->setFuturesType(d);
+}
+
+void ChartDb::deleteBar (QString d)
+{
+  if (! plug)
+    return;
+    
+  plug->deleteBar(d);
+}
+
+Bar * ChartDb::getBar (QString d)
+{
+  if (! plug)
+    return 0;
+    
+  return plug->getBar(d);
+}
+
+void ChartDb::setHeaderCO (QString d)
+{
+  if (! plug)
+    return;
+    
+  plug->setHeaderCO(d);
+}
+
+void ChartDb::setFuturesMonth (QString d)
+{
+  if (! plug)
+    return;
+    
+  plug->setFuturesMonth(d);
+}
+
+QString ChartDb::getFuturesMonth ()
+{
+  return header->futuresMonth;
+}
+
+void ChartDb::setHeader (Setting *d)
+{
+  if (! plug)
+    return;
+    
+  plug->setHeader(d);
 }
 

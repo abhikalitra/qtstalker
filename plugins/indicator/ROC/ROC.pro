@@ -8,10 +8,9 @@ HEADERS += ROC.h
 
 SOURCES += ROC.cpp
 
-TARGET = ROC.0.29
+TARGET = ROC.0.30
 
 INCLUDEPATH += ../../../lib
-INCLUDEPATH += ../../../db-2.7.7/build_unix
 
 LIBS += -L../../../lib -lqtstalker
 

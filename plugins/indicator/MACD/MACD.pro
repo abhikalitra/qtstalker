@@ -8,10 +8,9 @@ HEADERS += MACD.h
 
 SOURCES += MACD.cpp
 
-TARGET = MACD.0.29
+TARGET = MACD.0.30
 
 INCLUDEPATH += ../../../lib
-INCLUDEPATH += ../../../db-2.7.7/build_unix
 
 LIBS += -L../../../lib -lqtstalker
 

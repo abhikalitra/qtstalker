@@ -33,21 +33,24 @@ class BarDate
     int setDate (QString);
     int setDate (QDate);
     QDate getDate ();
+    int setTime (QTime d);
+    int setTime (int, int, int);
+    QTime getTime ();
     QString getDateString (bool sepFlag);
     QString getDateTimeString (bool sepFlag);
     QString getTimeString (bool sepFlag);
-    int setTime(int h, int m, int s);
-    int getHour ();
-    int getMinute ();
     double getDateValue ();
-    void addMinutes (int);
-    void subMinutes (int);
+    void addSecs (int);
+    void addMonths (int);
+    void addDays (int);
+    bool getTickFlag ();
+    void setTickFlag (bool);
+    int getHour ();
+    QDateTime getDateTime ();
     
   protected:
-    QDate date;
-    int min;
-    int hour;
-    int sec;
+    QDateTime date;
+    bool tickFlag;
 };
 
 #endif

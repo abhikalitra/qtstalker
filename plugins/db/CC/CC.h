@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef STOCKS_HPP
-#define STOCKS_HPP
+#ifndef CC_HPP
+#define CC_HPP
 
 #include "DbPlugin.h"
 #include "Bar.h"
@@ -28,18 +28,44 @@
 #include "Setting.h"
 #include <qstring.h>
 
+typedef struct
+{
+  bool state;
+  double date;
+  float open;
+  float high;
+  float low;
+  float close;
+  double volume;
+  unsigned int oi;
+
+} CCRecord;
+
 class CC : public DbPlugin
 {
   public:
     CC ();
     ~CC ();
-    Bar * getBar (QString, QString);
-    void dbPrefDialog ();
-    void setBar (Bar *);
-    void saveDbDefaults (Setting *);
     void update ();
     QString createNew ();
     BarData * getHistory ();
+    void dbPrefDialog ();
+    void saveDbDefaults (Setting *);
+    void dump (QString);
+    void deleteBar (QString);
+    int readRecord ();
+    int writeRecord ();
+    bool getRecordState ();
+    void fillBar (Bar *);
+    double getRecordDate ();
+    void fillRecord (Bar *);
+    void clearRecord ();
+    void setRecordDate (double);
+    int writeTempRecord ();
+    void setBarString (QString);
+    
+  private:
+    CCRecord record;
 };
 
 extern "C"

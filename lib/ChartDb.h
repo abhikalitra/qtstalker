@@ -25,6 +25,7 @@
 #include <qstring.h>
 #include <qptrlist.h>
 #include <qstringlist.h>
+#include <stdio.h>
 #include "Config.h"
 #include "DbPlugin.h"
 #include "Setting.h"
@@ -39,30 +40,40 @@ class ChartDb
     int openChart (QString);
     void setBarCompression (BarData::BarCompression);
     void setBarRange (int);
-    void dump (QString, QString);
+    void dump (QString);
     Bar * getLastBar ();
-    Bar * getFirstBar ();
-    Bar * getBar (QString, QString);
     QStringList getChartObjectsList ();    
     QPtrList<Setting> getChartObjects ();
     void setChartObject (QString, Setting *);
     void deleteChartObject (QString);
-    QString getData (QString);
-    void setData (QString, QString);
     void setBar (Bar *);
+    void setBarString (QString);
     BarData * getHistory ();
-    void deleteData (QString);
     void dbPrefDialog (QString);
     void createNew (QString);
     void setPlugin (QString);
     int open (QString);
     int loadPlugin ();
     void saveDbDefaults (Setting *);
+    QString getSymbol ();
+    void setSymbol (QString);
+    QString getTitle ();
+    void setTitle (QString);
+    QString getType ();
+    void setType (QString);
+    QString getFuturesType ();
+    void setFuturesType (QString);
+    void setFuturesMonth (QString);
+    QString getFuturesMonth ();
+    void deleteBar (QString);
+    Bar * getBar (QString);
+    void setHeaderCO (QString);
+    void setHeader (Setting *);
     
   private:
-    DB *db;
+    FILE *db;
+    ChartHeader *header;
     DbPlugin *plug;
-    QString dbPlugin;
     Config config;
     QString path;
 };

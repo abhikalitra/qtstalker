@@ -946,7 +946,7 @@ void CME::parse (Setting *data)
     return;
   }
   
-  s = db->getData("Symbol");
+  s = db->getSymbol();
   if (! s.length())
   {
     Setting *set = new Setting;

@@ -8,10 +8,9 @@ HEADERS += PC.h
 
 SOURCES += PC.cpp
 
-TARGET = PC.0.29
+TARGET = PC.0.30
 
 INCLUDEPATH += ../../../lib
-INCLUDEPATH += ../../../db-2.7.7/build_unix
 
 LIBS += -L../../../lib -lqtstalker
 

@@ -8,10 +8,9 @@ HEADERS += RSI.h
 
 SOURCES += RSI.cpp
 
-TARGET = RSI.0.29
+TARGET = RSI.0.30
 
 INCLUDEPATH += ../../../lib
-INCLUDEPATH += ../../../db-2.7.7/build_unix
 
 LIBS += -L../../../lib -lqtstalker
 

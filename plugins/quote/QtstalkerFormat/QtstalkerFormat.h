@@ -32,12 +32,20 @@ class QtstalkerFormat : public QuotePlugin
     virtual ~QtstalkerFormat ();
     void update ();
     void prefDialog (QWidget *);
+    void cancelUpdate ();
+    void loadSettings ();
+    void saveSettings ();
+    void importDB ();
+    void importNative ();
+    bool createDirectories (QString);
 
   public slots:
     void parse ();
     
   private:
     QStringList list;
+    QString method;
+    bool cancelFlag;
 };
 
 extern "C"

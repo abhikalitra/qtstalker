@@ -29,22 +29,47 @@
 #include <qstring.h>
 #include <qdict.h>
 
+typedef struct
+{
+  bool state;
+  double date;
+  float open;
+  float high;
+  float low;
+  float close;
+
+} IndexRecord;
+
+
 class Index : public DbPlugin
 {
   public:
     Index ();
     ~Index ();
     BarData * getHistory ();
-    Bar * getBar (QString, QString);
-    void dbPrefDialog ();
-    void setBar (Bar *);
     void updateIndex ();
     void loadData (QString, float);
     QString createNew ();
+    void dbPrefDialog ();
     void saveDbDefaults (Setting *);
-
+    void dump (QString);
+    void deleteBar (QString);
+    int readRecord ();
+    int writeRecord ();
+    bool getRecordState ();
+    void fillBar (Bar *);
+    double getRecordDate ();
+    void fillRecord (Bar *);
+    void clearRecord ();
+    void setRecordDate (double);
+    int writeTempRecord ();
+    void setBarString (QString);
+    
   private:
     QDict<Bar> data;
+    IndexRecord record;
+    double fdate;
+    double ldate;
 };
 
 extern "C"

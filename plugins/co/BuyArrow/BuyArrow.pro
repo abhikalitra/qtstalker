@@ -10,10 +10,9 @@ HEADERS += BuyArrowObject.h
 SOURCES += BuyArrow.cpp
 SOURCES += BuyArrowObject.cpp
 
-TARGET = BuyArrow.0.29
+TARGET = BuyArrow.0.30
 
 INCLUDEPATH += ../../../lib
-INCLUDEPATH += ../../../db-2.7.7/build_unix
 
 LIBS += -L../../../lib -lqtstalker
 

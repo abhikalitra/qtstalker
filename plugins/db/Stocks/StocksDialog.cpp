@@ -73,20 +73,20 @@ void StocksDialog::createDetailsPage ()
   QLabel *label = new QLabel(tr("Symbol"), w);
   grid->addWidget(label, 0, 0);
   
-  QLineEdit *edit = new QLineEdit(db->getData("Symbol"), w);
+  QLineEdit *edit = new QLineEdit(db->getSymbol(), w);
   edit->setReadOnly(TRUE);
   grid->addWidget(edit, 0, 1);
   
   label = new QLabel(tr("Name"), w);
   grid->addWidget(label, 1, 0);
   
-  title = new QLineEdit(db->getData("Title"), w);
+  title = new QLineEdit(db->getTitle(), w);
   grid->addWidget(title, 1, 1);
   
   label = new QLabel(tr("Type"), w);
   grid->addWidget(label, 2, 0);
   
-  edit = new QLineEdit(db->getData("Type"), w);
+  edit = new QLineEdit(db->getType(), w);
   edit->setReadOnly(TRUE);
   grid->addWidget(edit, 2, 1);
   
@@ -211,7 +211,7 @@ void StocksDialog::deleteRecord ()
       return;
   }
 
-  db->deleteData(dateSearch->dateTime().toString("yyyyMMddmmhhss"));
+  db->deleteBar(dateSearch->dateTime().toString("yyyyMMddmmhhss"));
   
   clearRecordFields();
   
@@ -257,15 +257,13 @@ void StocksDialog::slotDateSearch ()
 
   clearRecordFields();
   
-  QString data = db->getData(key);
-  if (! data.length())
+  Bar *record = db->getBar(key);
+  if (! record)
   {
     toolbar->setButtonStatus("delete", FALSE);
     toolbar->setButtonStatus("save", FALSE);
     return;
   }
-
-  Bar *record = db->getBar(key, data);
 
   ignoreSaveRecordFlag = TRUE;
   date->setText(record->getDate().getDateTimeString(TRUE));
@@ -284,7 +282,7 @@ void StocksDialog::slotDateSearch ()
 
 void StocksDialog::saveChart ()
 {
-  db->setData("Title", title->text());
+  db->setTitle(title->text());
 
   if (saveRecordFlag)
   {  

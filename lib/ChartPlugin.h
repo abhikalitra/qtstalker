@@ -64,9 +64,4 @@ class ChartPlugin : public QObject
     int currentPixelspace;
 };
 
-extern "C"
-{
-  ChartPlugin * createChartPlugin ();
-}
-
 #endif
