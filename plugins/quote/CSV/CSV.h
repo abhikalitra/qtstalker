@@ -20,6 +20,7 @@
  */
 
 #include "../../../src/QuotePlugin.h"
+#include <qdatetime.h>
 
 class CSV : public QuotePlugin
 {
@@ -30,7 +31,7 @@ class CSV : public QuotePlugin
     virtual ~CSV ();
     void update ();
     void setDelimiter ();
-    QString getDate (QString);
+    QDate getDate (QString);
 
   public slots:
     void parse ();

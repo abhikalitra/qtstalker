@@ -67,6 +67,7 @@
 
 - Renamed /src/Qtstalker.pro to src.pro to fix problem with qmake logic on some distributions.
 
+- CSV plugin updated to accept date ranges, delimiter types and date format.
 
 0.20
 ====

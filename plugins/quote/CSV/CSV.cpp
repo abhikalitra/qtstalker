@@ -58,7 +58,6 @@ CSV::CSV ()
   l.clear();
   l.append("DOHLCV");
   l.append("DOHLCVI");
-  l.append("Yahoo");
   set(tr("Format"), l[0], Setting::List);
   setList(tr("Format"), l);
 
@@ -77,8 +76,30 @@ CSV::CSV ()
   set(tr("Date Format"), tr("YYYYMMDD"), Setting::List);
   setList(tr("Date Format"), l);
 
+  QDate date = QDate::currentDate();
+  if (date.dayOfWeek() == 6)
+    date = date.addDays(-1);
+  else
+  {
+    if (date.dayOfWeek() == 7)
+      date = date.addDays(-2);
+  }
+  set("End Date", date.toString("yyyyMMdd"), Setting::Date);
+
+  date = date.addDays(-1);
+  if (date.dayOfWeek() == 6)
+    date = date.addDays(-1);
+  else
+  {
+    if (date.dayOfWeek() == 7)
+      date = date.addDays(-2);
+  }
+  set("Start Date", date.toString("yyyyMMdd"), Setting::Date);
+
+  set("Select Date Range", tr("False"), Setting::Bool);
+
   delete fd;
-  
+
   about = "Imports ASCII CSV files.\n";
 }
 
@@ -100,6 +121,13 @@ void CSV::parse ()
   FuturesData *fd = new FuturesData;
 
   QStringList list = getList(tr("Input"));
+
+  QDateTime sdate = QDateTime::fromString(getDateTime("Start Date"), Qt::ISODate);
+  QDateTime edate = QDateTime::fromString(getDateTime("End Date"), Qt::ISODate);
+
+  bool dateFlag = FALSE;
+  if (! getData(tr("Select Date Range")).compare(tr("True")))
+    dateFlag = TRUE;
 
   int loop;
   for (loop = 0; loop < (int) list.count(); loop++)
@@ -203,11 +231,19 @@ void CSV::parse ()
       s = stripJunk(s);
 
       QStringList l = QStringList::split(delimiter, s, FALSE);
-      
-      // date
-      QString date = l[0];
-      if (date.length() != 8)
+
+      QDate dt = getDate(l[0]);
+      if (! dt.isValid())
         continue;
+
+      if (dateFlag)
+      {
+        if (dt < sdate.date() || dt > edate.date())
+	  continue;
+      }
+
+      // date
+      QString date = dt.toString("yyyyMMdd");
       date.append("000000");
 
       // open
@@ -325,22 +361,53 @@ void CSV::setDelimiter ()
   }
 }
 
-QString CSV::getDate (QString d)
+QDate CSV::getDate (QString d)
 {
-  QString date;
+  QDate date;
+
+  QString s = d;
+  while (s.contains("/"))
+    s.remove(s.find("/", 0, TRUE), 1);
+
+  while (s.contains("-"))
+    s.remove(s.find("-", 0, TRUE), 1);
 
   while (1)
   {
     if (! dateFormat.compare(tr("YYYYMMDD")))
     {
-      
+      if (s.length() != 8)
+        break;
+      date.setYMD(s.left(4).toInt(), s.mid(4, 2).toInt(), s.right(2).toInt());
+      break;
+    }
+
+    if (! dateFormat.compare(tr("YYMMDD")))
+    {
+      if (s.length() != 6)
+        break;
+      date.setYMD(s.left(2).toInt(), s.mid(2, 2).toInt(), s.right(2).toInt());
+      break;
+    }
+
+    if (! dateFormat.compare(tr("MMDDYYYY")))
+    {
+      if (s.length() != 8)
+        break;
+      date.setYMD(s.right(4).toInt(), s.left(2).toInt(), s.mid(2, 2).toInt());
+      break;
+    }
+
+    if (! dateFormat.compare(tr("MMDDYY")))
+    {
+      if (s.length() != 6)
+        break;
+      date.setYMD(s.right(2).toInt(), s.left(2).toInt(), s.mid(2, 2).toInt());
       break;
     }
 
     break;
   }
-
-  date = d;
 
   return date;
 }
