@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  *
- *  Copyright (C) 2001-2003 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2004 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,33 +19,35 @@
  *  USA.
  */
 
-#ifndef BAR_HPP
-#define BAR_HPP
+#ifndef BARDATE_HPP
+#define BARDATE_HPP
 
-#include "ChartPlugin.h"
-#include <qcolor.h>
+#include <qdatetime.h>
+#include <qstring.h>
 
-class Bar : public ChartPlugin
+class BarDate
 {
-  Q_OBJECT
-
   public:
-    Bar ();
-    virtual ~Bar ();
-    void drawChart (int startX, int startIndex, int pixelspace);
-    void prefDialog ();
-    void loadSettings ();
-    void saveSettings ();
-
+    BarDate ();
+    ~BarDate ();
+    int setDate (QString);
+    int setDate (QDate);
+    QDate getDate ();
+    QString getDateString (bool sepFlag);
+    QString getDateTimeString (bool sepFlag);
+    QString getTimeString (bool sepFlag);
+    int setTime(int h, int m, int s);
+    int getHour ();
+    int getMinute ();
+    double getDateValue ();
+    void addMinutes (int);
+    void subMinutes (int);
+    
   protected:
-    QColor neutralColor;
-    QColor upColor;
-    QColor downColor;
-};
-
-extern "C"
-{
-  Plugin * create ();
+    QDate date;
+    int min;
+    int hour;
+    int sec;
 };
 
 #endif

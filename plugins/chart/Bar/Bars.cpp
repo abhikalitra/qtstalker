@@ -19,12 +19,12 @@
  *  USA.
  */
 
-#include "Bar.h"
+#include "Bars.h"
 #include "PrefDialog.h"
 #include <qpainter.h>
 #include <qsettings.h>
 
-Bar::Bar ()
+Bars::Bars ()
 {
   pluginName = "Bar";
 //  minPixelspace = 4;
@@ -34,11 +34,11 @@ Bar::Bar ()
   loadSettings();  
 }
 
-Bar::~Bar ()
+Bars::~Bars ()
 {
 }
 
-void Bar::drawChart (int startX, int startIndex, int pixelspace)
+void Bars::drawChart (int startX, int startIndex, int pixelspace)
 {
   QPainter painter;
   painter.begin(buffer);
@@ -101,7 +101,7 @@ void Bar::drawChart (int startX, int startIndex, int pixelspace)
   painter.end();
 }
 
-void Bar::prefDialog ()
+void Bars::prefDialog ()
 {
   PrefDialog *dialog = new PrefDialog();
   dialog->setCaption(tr("Bar Chart Prefs"));
@@ -126,7 +126,7 @@ void Bar::prefDialog ()
   delete dialog;
 }
 
-void Bar::loadSettings ()
+void Bars::loadSettings ()
 {
   QSettings settings;
   settings.beginGroup("/Qtstalker/Bar plugin");
@@ -145,7 +145,7 @@ void Bar::loadSettings ()
   settings.endGroup();
 }
 
-void Bar::saveSettings ()
+void Bars::saveSettings ()
 {
   if (! saveFlag)
     return;
@@ -166,6 +166,6 @@ void Bar::saveSettings ()
   
 Plugin * create ()
 {
-  Bar *o = new Bar;
+  Bars *o = new Bars;
   return ((Plugin *) o);
 }
