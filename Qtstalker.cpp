@@ -31,6 +31,7 @@
 #include <qstringlist.h>
 #include <qlibrary.h>
 #include <qtooltip.h>
+#include <qframe.h>
 
 #include "Qtstalker.h"
 #include "Quote.h"
@@ -105,14 +106,8 @@ QtstalkerApp::QtstalkerApp()
   initPortfolioNav();
   initTestNav();
 
-  infoLabel = new QLabel(navBase);
-  infoLabel->setAlignment(AlignTop | AlignLeft);
-  infoLabel->setMargin(5);
-  infoLabel->setFrameStyle(QFrame::StyledPanel | QFrame::Sunken);
+  infoLabel = new QMultiLineEdit(navBase);
   vbox->addWidget(infoLabel, 1, 0);
-
-  // try to keep the splitter from resizing after a infoLabel size change
-  navSplitter->setResizeMode(navBase, QSplitter::KeepSize);
 
   // construct the chart areas
 
