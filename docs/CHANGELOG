@@ -22,6 +22,10 @@
 
 20040624: fixed bugs in OVRLY indicator that displayed erratic behaviour.
 
+20040626: fixed bug that didn't restore stacked indicators space defaults on startup. now it
+          restores the default size of 75.
+	  
+20040628: fixed bug in PP indicator that didn't save linetype correctly.
 
 	  
 0.26

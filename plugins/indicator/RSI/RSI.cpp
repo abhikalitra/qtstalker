@@ -45,8 +45,8 @@ void RSI::setDefaults ()
   smoothing = 10;  
   maType = QSMath::SMA;  
   input = BarData::Close;
-  buyLine = 25;
-  sellLine = 75;
+  buyLine = 30;
+  sellLine = 70;
 }
 
 void RSI::calculate ()
@@ -84,34 +84,42 @@ QMemArray<int> RSI::getAlerts ()
     return alerts;
 
   PlotLine *line = output.at(0);
-
-  int dataLoop = data->count() - line->getSize() + 1;
-  int loop;
   int status = 0;
-  for (loop = 1; loop < (int) line->getSize(); loop++, dataLoop++)
+  int loop = data->count() - line->getSize() + 1;
+  for (; loop < (int) line->getSize(); loop++)
   {
     switch (status)
     {
       case -1:
-        if ((line->getData(loop) <= buyLine) && (line->getData(loop) > line->getData(loop - 1)))
-	  status = 1;
-	break;
-      case 1:
-        if ((line->getData(loop) >= sellLine) && (line->getData(loop) < line->getData(loop - 1)))
-	  status = -1;
-	break;
-      default:
-        if ((line->getData(loop) <= buyLine) && (line->getData(loop) > line->getData(loop - 1)))
-	  status = 1;
-	else
+        if ((line->getData(loop) > buyLine) && (line->getData(loop - 1) <= buyLine))
 	{
-          if ((line->getData(loop) >= sellLine) && (line->getData(loop) < line->getData(loop - 1)))
-	    status = -1;
+          alerts[loop] = 1;
+	  status = 1;
 	}
 	break;
+      case 1:
+        if ((line->getData(loop) < sellLine) && (line->getData(loop - 1) >= sellLine))
+	{
+          alerts[loop] = -1;
+	  status = -1;
+	}
+	break;
+      default:
+        if ((line->getData(loop) > buyLine) && (line->getData(loop - 1) <= buyLine))
+	{
+          alerts[loop] = 1;
+	  status = 1;
+	}
+	else
+	{
+          if ((line->getData(loop) < sellLine) && (line->getData(loop - 1) >= sellLine))
+	  {
+            alerts[loop] = -1;
+	    status = -1;
+	  }
+	}
+        break;
     }
-
-    alerts[dataLoop] = status;
   }
 
   return alerts;

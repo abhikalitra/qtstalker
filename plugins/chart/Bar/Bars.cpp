@@ -148,6 +148,7 @@ void Bars::drawPaintBars (int startX, int startIndex, int pixelspace)
         painter.setPen(paintDownColor);
 	break;
       default:
+        painter.setPen(barNeutralColor);
         break;
     }
     

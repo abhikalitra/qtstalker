@@ -126,8 +126,8 @@ int PP::indicatorPrefDialog ()
   {
     supColor = dialog->getColor(tr("Support Color"));
     resColor = dialog->getColor(tr("Resistance Color"));
-    supLineType = (PlotLine::LineType) dialog->getComboIndex(tr("Support Type"));
-    resLineType = (PlotLine::LineType) dialog->getComboIndex(tr("Resistance Type"));
+    supLineType = (PlotLine::LineType) dialog->getComboIndex(tr("Support Line Type"));
+    resLineType = (PlotLine::LineType) dialog->getComboIndex(tr("Resistance Line Type"));
     supLabel = dialog->getText(tr("Label First Support"));
     supLabel2 = dialog->getText(tr("Label Second Support"));
     supLabel3 = dialog->getText(tr("Label Third Support"));

@@ -190,14 +190,6 @@ QtstalkerApp::QtstalkerApp()
     actionScaleToScreen->setOn(FALSE);
   emit signalScaleToScreen(s.toInt());
 
-  // set the indicator splitter size
-  QValueList<int> sizeList;
-  s = config->getData(Config::MainPlotSize);
-  sizeList.append(s.toInt());
-  s = config->getData(Config::IndicatorPlotSize);
-  sizeList.append(s.toInt());
-  split->setSizes(sizeList);
-
   // set the logscale status
   s = config->getData(Config::LogScale);
   if (s.toInt())
@@ -207,7 +199,7 @@ QtstalkerApp::QtstalkerApp()
   mainPlot->setLogScale(s.toInt());
 
   // set the nav splitter size
-  sizeList.clear();
+  QValueList<int> sizeList;
   s = config->getData(Config::NavAreaSize);
   sizeList.append(s.toInt());
   QString s2 = config->getData(Config::Width);
@@ -232,6 +224,17 @@ QtstalkerApp::QtstalkerApp()
   l = QStringList::split(" ", config->getData(Config::AppFont), FALSE);
   QFont font2(l[0], l[1].toInt(), l[2].toInt());
   qApp->setFont(font2, TRUE, 0);
+  
+  // set the indicator splitter size
+  sizeList = split->sizes();
+  for (loop = 1; loop < (int) sizeList.count() - 1; loop++)
+    sizeList[loop] = 75;
+  s = config->getData(Config::MainPlotSize);
+  sizeList[0] = s.toInt();
+  s = config->getData(Config::IndicatorPlotSize);
+  sizeList[sizeList.count() - 1] = s.toInt();
+  split->setSizes(sizeList);
+  
 
   // set the nav status
   slotHideNav(TRUE);
