@@ -56,7 +56,8 @@ class Config
       PlotFont,
       AppFont,
       NavAreaSize,
-      LogScale
+      LogScale,
+      NavigatorPosition
     };
 
     Config (QString);

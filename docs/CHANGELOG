@@ -51,6 +51,10 @@
 
 - Applied patch #792296 from David Crossley for new indicator FI (force index).
 
+- Added new Config option NavigatorPosition that allows user to place the chart navigator on the left or right side. The
+  default is left side. This setting is edited in the preferences dialog. Checked means left side. Unchecked means right side.
+
+
 0.20
 ====
 

@@ -93,7 +93,7 @@ QtstalkerApp::QtstalkerApp()
   navSplitter = new QSplitter(baseWidget);
   navSplitter->setOrientation(Horizontal);
   hbox->addWidget(navSplitter);
-
+  
   navBase = new QWidget(navSplitter);
   QVBoxLayout *vbox = new QVBoxLayout(navBase);
 
@@ -166,7 +166,7 @@ QtstalkerApp::QtstalkerApp()
 
   tabs = new QTabWidget(split);
   QObject::connect(tabs, SIGNAL(currentChanged(QWidget *)), this, SLOT(slotTabChanged(QWidget *)));
-
+  
   initToolBar();
 
   statusBar()->message(tr("Ready"), 2000);
@@ -233,6 +233,10 @@ QtstalkerApp::QtstalkerApp()
   s = config->getData(Config::NavAreaSize);
   sizeList.append(s.toInt());
   navSplitter->setSizes(sizeList);
+  
+  // place navigator on left/right side
+  if (config->getData(Config::NavigatorPosition).toInt() == 0)
+    navSplitter->moveToLast(navBase);
 
   l = config->getIndicators();
   for (loop = 0; loop < (int) l.count(); loop++)
@@ -488,6 +492,11 @@ void QtstalkerApp::slotOptions ()
   set->setList(tr("Paint Bar Indicator"), config->getIndicators());
   set->set(tr("Plot Font"), config->getData(Config::PlotFont), Setting::Font);
   set->set(tr("App Font"), config->getData(Config::AppFont), Setting::Font);
+  
+  if (config->getData(Config::NavigatorPosition).toInt() == 1)
+    set->set(tr("Navigator Left"), tr("True"), Setting::Bool);
+  else
+    set->set(tr("Navigator Left"), tr("False"), Setting::Bool);
 
   dialog->setItems(set);
 
@@ -532,6 +541,18 @@ void QtstalkerApp::slotOptions ()
     qApp->setFont(font2, TRUE, 0);
 
     config->setData(Config::PaintBarIndicator, set->getData(tr("Paint Bar Indicator")));
+
+    if (! set->getData(tr("Navigator Left")).compare(tr("True")))
+    {
+      config->setData(Config::NavigatorPosition, "1");
+      navSplitter->moveToFirst(navBase);
+    }
+    else
+    {
+      config->setData(Config::NavigatorPosition, "0");
+      navSplitter->moveToLast(navBase);
+    }
+    navSplitter->refresh();
 
     loadChart(chartPath);
 

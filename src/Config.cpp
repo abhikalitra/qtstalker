@@ -200,6 +200,9 @@ QString Config::getData (Parm p)
     case LogScale:
       s = settings.readEntry("/Qtstalker/LogScale", "0");
       break;
+    case NavigatorPosition:
+      s = settings.readEntry("/Qtstalker/NavigatorPosition", "1");
+      break;
     default:
       break;
   }
@@ -290,6 +293,9 @@ void Config::setData (Parm p, QString d)
       break;
     case LogScale:
       settings.writeEntry("/Qtstalker/LogScale", d);
+      break;
+    case NavigatorPosition:
+      settings.writeEntry("/Qtstalker/NavigatorPosition", d);
       break;
     default:
       break;
