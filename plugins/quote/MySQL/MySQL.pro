@@ -9,12 +9,12 @@ SOURCES += MySQLPlugin.cpp
 
 TARGET = MySQL
 
-INCLUDEPATH += ../../../db-2.7.7/build_unix
+#INCLUDEPATH += ../../../db-2.7.7/build_unix
 INCLUDEPATH += ../../../lib
 INCLUDEPATH += /usr/include/mysql
 
-LIBS += -L../../../db-2.7.7/build_unix -ldb
-LIBS += -L/usr/lib
+#LIBS += -L../../../db-2.7.7/build_unix -ldb
+#LIBS += -L/usr/lib
 LIBS += -lmysqlclient
 
 # for redhat

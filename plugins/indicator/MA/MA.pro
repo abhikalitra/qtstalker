@@ -11,7 +11,7 @@ TARGET = MA
 
 INCLUDEPATH += ../../../lib
 
-LIBS += -L/usr/lib
+#LIBS += -L/usr/lib
 unix:linux-g++:LIBS += -ldl
 
 # mac os x options

@@ -67,6 +67,11 @@
 - Had to back out of keeping plugins open. Was causing problems with persistant settings losing values. The speed difference
   was actually pretty small, so no big loss here.
 
+- Commented out all LIBS += -L/usr/lib references in all plugins and src *.pro files. This was causing a problem on some
+  distributions when compiling. The old /usr/lib/libqtstalker was being linked instead of the newly compiled library in
+  the source tree. This shows up as undefined references to functions when make tries to link the qtstalker binary to the
+  old library instead of the new library. Hopefully, this will fix it.
+  
 
 0.22
 ====

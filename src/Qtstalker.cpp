@@ -43,6 +43,7 @@
 #include "TestPage.h"
 #include "IndicatorPage.h"
 #include "NewIndicatorDialog.h"
+#include "PlotLine.h"
 
 #include "grid.xpm"
 #include "datawindow.xpm"

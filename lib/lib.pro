@@ -24,7 +24,7 @@ VERSION = 0.23.0
 INCLUDEPATH += ../db-2.7.7/build_unix
 
 LIBS += -L../db-2.7.7/build_unix -ldb
-LIBS += -L/usr/lib
+#LIBS += -L/usr/lib
 
 # linux options
 unix:linux-g++:LIBS += -ldl
