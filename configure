@@ -5,5 +5,5 @@ cd db-2.7.7/build_unix
 make
 cd ../../
 echo "Building Makefile..."
-qmake -o Makefile Qtstalker.pro
+qmake -o Makefile qtstalker.pro
 

@@ -21,8 +21,9 @@
   main program.
   
 - Finally changed the compiling process to a regular ./configure;make;make install format. To do this I had to re-organize the
-  entire source tree. The executable 'qtstalker' will now be put into /usr/bin. The plugins will be created in /usr/lib.
-  The docs will go into /usr/share/doc. This seems to be the most popular choice.
+  entire source tree. The executable 'qtstalker' will now be put into /usr/bin. The plugins will be created in /usr/lib/qtstalker.
+  The docs will go into /usr/share/doc/qtstalker. This seems to be the most popular choice (at least with Gentoo and Debian...are you
+  listening RHAT?)
 
 0.20
 ====

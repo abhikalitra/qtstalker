@@ -1,1 +1,9 @@
-For install instructions see the documentation. Fire up your browser and look at docs/toc.html.
+For the documentation fire up your browser and look at docs/toc.html.
+
+To compile and install:
+
+./configure
+make
+make install (as root)
+
+
