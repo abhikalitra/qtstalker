@@ -5,8 +5,4 @@ make
 cd ../../
 qmake -o Makefile Qtstalker.pro
 make
-cd plugins/indicator
-./compile
-cd ../quote
-./compile
 

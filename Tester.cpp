@@ -1160,7 +1160,7 @@ void Tester::symbolButtonPressed ()
   if (rc == QDialog::Accepted)
   {
     QString symbol = dialog->selectedFile();
-    symbol = symbol.remove(config->getData(Config::DataPath));
+    symbol = symbol.remove(0, config->getData(Config::DataPath).length());
     if (! symbol.length())
     {
       delete dialog;

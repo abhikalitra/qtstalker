@@ -209,7 +209,7 @@ void PortfolioDialog::addItem ()
   if (rc == QDialog::Accepted)
   {
     QString symbol = set->getData(tr("Symbol"));
-    symbol = symbol.remove(config->getData(Config::DataPath));
+    symbol = symbol.remove(0, config->getData(Config::DataPath).length());
     if (symbol.isNull())
       QMessageBox::information(this, tr("Qtstalker: Error"), tr("No symbol selected."));
     else
@@ -262,7 +262,7 @@ void PortfolioDialog::modifyItem ()
   if (rc == QDialog::Accepted)
   {
     QString symbol = set->getData(tr("Symbol"));
-    symbol = symbol.remove(config->getData(Config::DataPath));
+    symbol = symbol.remove(0, config->getData(Config::DataPath).length());
     QString action = set->getData(tr("Action"));
     QString vol = set->getData(tr("Volume"));
     QString price = set->getData(tr("Price"));
