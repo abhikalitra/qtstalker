@@ -45,17 +45,17 @@ MA::~MA ()
 
 void MA::calculate ()
 {
-  SettingItem *set = getItem(tr("Period"));
-  int period = set->data.toInt();
+  int period = getInt(tr("Period"));
 
-  set = getItem(tr("Input"));
-  Output *in = getInput(set->data);
+  PlotLine *in = getInput(getData(tr("Input")));
 
-  set = getItem(tr("MA Type"));
-  Output *data = getMA(in, set->data, period);
+  PlotLine *data = getMA(in, getData(tr("MA Type")), period);
 
   delete in;
 
+  data->setColor(getData(tr("Color")));
+  data->setType(getData(tr("Line Type")));
+  data->setLabel(getData(tr("Label")));
   output.append(data);
 }
 
@@ -66,10 +66,9 @@ QMemArray<int> MA::getAlerts ()
   if (! output.count())
     return alerts;
 
-  Output *line = output.at(0);
+  PlotLine *line = output.at(0);
 
-  SettingItem *set = getItem(tr("Input"));
-  Output *in = getInput(set->data);
+  PlotLine *in = getInput(getData(tr("Input")));
 
   int listLoop = data.count() - line->getSize() + 1;
   int lineLoop;

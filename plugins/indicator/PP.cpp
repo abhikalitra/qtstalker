@@ -55,40 +55,40 @@ void PP::calculate ()
   double close = set->getFloat("Close");
   double pp = (high + low + close) / 3;
 
-  Output *fr = new Output();
-  fr->setColor(tr("Color Resistance"));
-  fr->setType(tr("Line Type Resistance"));
-  fr->setLabel(tr("Label First Resistance"));
+  PlotLine *fr = new PlotLine();
+  fr->setColor(getData(tr("Color Resistance")));
+  fr->setType(getData(tr("Line Type Resistance")));
+  fr->setLabel(getData(tr("Label First Resistance")));
   fr->append((2 * pp) - low);
 
-  Output *sr = new Output();
-  sr->setColor(tr("Color Resistance"));
-  sr->setType(tr("Line Type Resistance"));
-  sr->setLabel(tr("Label Second Resistance"));
+  PlotLine *sr = new PlotLine();
+  sr->setColor(getData(tr("Color Resistance")));
+  sr->setType(getData(tr("Line Type Resistance")));
+  sr->setLabel(getData(tr("Label Second Resistance")));
   sr->append(pp + (high - low));
 
-  Output *thr = new Output();
-  thr->setColor(tr("Color Resistance"));
-  thr->setType(tr("Line Type Resistance"));
-  thr->setLabel(tr("Label Third Resistance"));
+  PlotLine *thr = new PlotLine();
+  thr->setColor(getData(tr("Color Resistance")));
+  thr->setType(getData(tr("Line Type Resistance")));
+  thr->setLabel(getData(tr("Label Third Resistance")));
   thr->append((2 * pp) + (high - (2 * low)));
 
-  Output *fs = new Output();
-  fs->setColor(tr("Color Support"));
-  fs->setType(tr("Line Type Support"));
-  fs->setLabel(tr("Label First Support"));
+  PlotLine *fs = new PlotLine();
+  fs->setColor(getData(tr("Color Support")));
+  fs->setType(getData(tr("Line Type Support")));
+  fs->setLabel(getData(tr("Label First Support")));
   fs->append((2 * pp) - high);
 
-  Output *ss = new Output();
-  ss->setColor(tr("Color Support"));
-  ss->setType(tr("Line Type Support"));
-  ss->setLabel(tr("Label Second Support"));
+  PlotLine *ss = new PlotLine();
+  ss->setColor(getData(tr("Color Support")));
+  ss->setType(getData(tr("Line Type Support")));
+  ss->setLabel(getData(tr("Label Second Support")));
   ss->append(pp - (high - low));
 
-  Output *ts = new Output();
-  ts->setColor(tr("Color Support"));
-  ts->setType(tr("Line Type Support"));
-  ts->setLabel(tr("Label Second Support"));
+  PlotLine *ts = new PlotLine();
+  ts->setColor(getData(tr("Color Support")));
+  ts->setType(getData(tr("Line Type Support")));
+  ts->setLabel(getData(tr("Label Second Support")));
   ts->append((2 * pp) - ((2 * high) - low));
 
   output.append(ts);

@@ -43,10 +43,9 @@ WILLR::~WILLR ()
 
 void WILLR::calculate ()
 {
-  SettingItem *set = getItem(tr("Period"));
-  int period = set->data.toInt();
+  int period = getInt(tr("Period"));
 
-  Output *willr = new Output();
+  PlotLine *willr = new PlotLine();
 
   int loop;
   for (loop = period; loop < (int) data.count(); loop++)
@@ -77,6 +76,9 @@ void WILLR::calculate ()
     willr->append(t);
   }
 
+  willr->setColor(getData(tr("Color")));
+  willr->setType(getData(tr("Line Type")));
+  willr->setLabel(getData(tr("Label")));
   output.append(willr);
 }
 

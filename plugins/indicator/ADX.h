@@ -27,8 +27,8 @@ class ADX : public IndicatorPlugin
     ADX ();
     virtual ~ADX ();
     void calculate ();
-    Output * getMDI (int period);
-    Output * getPDI (int period);
+    PlotLine * getMDI (int period);
+    PlotLine * getPDI (int period);
     QMemArray<int> getAlerts ();
 };
 

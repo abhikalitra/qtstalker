@@ -45,15 +45,13 @@ STOCHRSI::~STOCHRSI ()
 
 void STOCHRSI::calculate ()
 {
-  SettingItem *set = getItem(tr("Period"));
-  int period = set->data.toInt();
+  int period = getInt(tr("Period"));
 
-  set = getItem(tr("Input"));
-  Output *in = getInput(set->data);
+  PlotLine *in = getInput(getData(tr("Input")));
 
-  Output *rsi = getRSI(in, period);
+  PlotLine *rsi = getRSI(in, period);
 
-  Output *data = new Output();
+  PlotLine *data = new PlotLine();
 
   int loop;
   for (loop = period - 1; loop < (int) rsi->getSize(); loop++)
@@ -82,15 +80,18 @@ void STOCHRSI::calculate ()
     data->append(t);
   }
 
+  data->setColor(getData(tr("Color")));
+  data->setType(getData(tr("Line Type")));
+  data->setLabel(getData(tr("Label")));
   output.append(data);
 
   delete in;
   delete rsi;
 }
 
-Output * STOCHRSI::getRSI (Output *in, int period)
+PlotLine * STOCHRSI::getRSI (PlotLine *in, int period)
 {
-  Output *rsi = new Output();
+  PlotLine *rsi = new PlotLine();
 
   int loop;
   for (loop = period; loop < (int) in->getSize(); loop++)

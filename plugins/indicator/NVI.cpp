@@ -42,7 +42,7 @@ NVI::~NVI ()
 
 void NVI::calculate ()
 {
-  Output *nvi = new Output();
+  PlotLine *nvi = new PlotLine();
 
   int loop;
   double nv = 1000;
@@ -61,6 +61,9 @@ void NVI::calculate ()
     nvi->append(nv);
   }
 
+  nvi->setColor(getData(tr("Color")));
+  nvi->setType(getData(tr("Line Type")));
+  nvi->setLabel(getData(tr("Label")));
   output.append(nvi);
 }
 

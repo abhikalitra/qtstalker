@@ -52,16 +52,14 @@ RSI::~RSI ()
 
 void RSI::calculate ()
 {
-  SettingItem *set = getItem(tr("RSI Period"));
-  int period = set->data.toInt();
+  int period = getInt(tr("RSI Period"));
 
-  set = getItem(tr("Input"));
-  Output *in = getInput(set->data);
+  PlotLine *in = getInput(getData(tr("Input")));
 
-  Output *rsi = new Output();
-  rsi->setColor(tr("RSI Color"));
-  rsi->setType(tr("RSI Line Type"));
-  rsi->setLabel(tr("RSI Label"));
+  PlotLine *rsi = new PlotLine();
+  rsi->setColor(getData(tr("RSI Color")));
+  rsi->setType(getData(tr("RSI Line Type")));
+  rsi->setLabel(getData(tr("RSI Label")));
 
   int loop;
   for (loop = period; loop < (int) in->getSize(); loop++)
@@ -92,15 +90,13 @@ void RSI::calculate ()
 
   output.append(rsi);
 
-  set = getItem(tr("MA Period"));
-  period = set->data.toInt();
+  period = getInt(tr("MA Period"));
   if (period)
   {
-    set = getItem(tr("MA Type"));
-    Output *ma = getMA(rsi, set->data, period);
-    ma->setColor(tr("MA Color"));
-    ma->setType(tr("MA Line Type"));
-    ma->setLabel(tr("MA Label"));
+    PlotLine *ma = getMA(rsi, getData(tr("MA Type")), period);
+    ma->setColor(getData(tr("MA Color")));
+    ma->setType(getData(tr("MA Line Type")));
+    ma->setLabel(getData(tr("MA Label")));
     output.append(ma);
   }
 
@@ -114,13 +110,11 @@ QMemArray<int> RSI::getAlerts ()
   if (! output.count())
     return alerts;
 
-  SettingItem *set = getItem(tr("Buy Line"));
-  int buy = set->data.toInt();
+  int buy = getInt(tr("Buy Line"));
 
-  set = getItem(tr("Sell Line"));
-  int sell = set->data.toInt();
+  int sell = getInt(tr("Sell Line"));
 
-  Output *line;
+  PlotLine *line;
   if (output.count() == 1)
     line = output.at(0);
   else

@@ -50,19 +50,18 @@ MACD::~MACD ()
 
 void MACD::calculate ()
 {
-  SettingItem *set = getItem(tr("Input"));
-  Output *d = getInput(set->data);
+  PlotLine *d = getInput(getData(tr("Input")));
 
-  Output *slow = getEMA(d, 26);
+  PlotLine *slow = getEMA(d, 26);
   if (slow->getSize() == 0)
     return;
 
-  Output *fast = getEMA(d, 12);
+  PlotLine *fast = getEMA(d, 12);
 
-  Output *macd = new Output();
-  macd->setColor(tr("MACD Color"));
-  macd->setType(tr("MACD Line Type"));
-  macd->setLabel(tr("MACD Label"));
+  PlotLine *macd = new PlotLine();
+  macd->setColor(getData(tr("MACD Color")));
+  macd->setType(getData(tr("MACD Line Type")));
+  macd->setLabel(getData(tr("MACD Label")));
 
   int floop = fast->getSize() - 1;
   int sloop = slow->getSize() - 1;
@@ -74,18 +73,17 @@ void MACD::calculate ()
     sloop--;
   }
 
-  set = getItem(tr("Period"));
-  int period = set->data.toInt();
+  int period = getInt(tr("Period"));
 
-  Output *trigger = getEMA(macd, period);
-  trigger->setColor(tr("Trigger Color"));
-  trigger->setType(tr("Trigger Line Type"));
-  trigger->setLabel(tr("Trigger Label"));
+  PlotLine *trigger = getEMA(macd, period);
+  trigger->setColor(getData(tr("Trigger Color")));
+  trigger->setType(getData(tr("Trigger Line Type")));
+  trigger->setLabel(getData(tr("Trigger Label")));
 
-  Output *osc = new Output();
-  osc->setColor(tr("Oscillator Color"));
-  osc->setType(tr("Oscillator Line Type"));
-  osc->setLabel(tr("Oscillator Label"));
+  PlotLine *osc = new PlotLine();
+  osc->setColor(getData(tr("Oscillator Color")));
+  osc->setType(getData(tr("Oscillator Line Type")));
+  osc->setLabel(getData(tr("Oscillator Label")));
 
   floop = macd->getSize() - 1;
   sloop = trigger->getSize() - 1;
@@ -113,8 +111,8 @@ QMemArray<int> MACD::getAlerts ()
   if (output.count() != 3)
     return alerts;
 
-  Output *macd = output.at(1);
-  Output *trig = output.at(2);
+  PlotLine *macd = output.at(1);
+  PlotLine *trig = output.at(2);
 
   int listLoop = data.count() - trig->getSize();
   int macdLoop = macd->getSize() - trig->getSize();

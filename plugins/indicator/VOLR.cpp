@@ -43,16 +43,15 @@ VOLR::~VOLR ()
 
 void VOLR::calculate ()
 {
-  SettingItem *set = getItem(tr("Period"));
-  int period = set->data.toInt();
+  int period = getInt(tr("Period"));
 
-  Output *trg = getTR();
+  PlotLine *trg = getTR();
   int trgLoop = trg->getSize() - 1;
 
-  Output *ma = getEMA(trg, period);
+  PlotLine *ma = getEMA(trg, period);
   int maLoop = ma->getSize() - 1;
 
-  Output *volr = new Output;
+  PlotLine *volr = new PlotLine;
 
   while (maLoop > -1 && trgLoop > -1)
   {
@@ -61,6 +60,9 @@ void VOLR::calculate ()
     trgLoop--;
   }
 
+  volr->setColor(getData(tr("Color")));
+  volr->setType(getData(tr("Line Type")));
+  volr->setLabel(getData(tr("Label")));
   output.append(volr);
 
   delete trg;
@@ -74,7 +76,7 @@ QMemArray<int> VOLR::getAlerts ()
   if (! output.count())
     return alerts;
 
-  Output *line = output.at(0);
+  PlotLine *line = output.at(0);
 
   int lineLoop;
   int listLoop = data.count() - line->getSize();

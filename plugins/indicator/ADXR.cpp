@@ -44,17 +44,16 @@ ADXR::~ADXR ()
 
 void ADXR::calculate ()
 {
-  SettingItem *set = getItem(tr("Period"));
-  int period = set->data.toInt();
+  int period = getInt(tr("Period"));
 
-  Output *mdi = getMDI(period);
+  PlotLine *mdi = getMDI(period);
   int mdiLoop = mdi->getSize() - 1;
 
-  Output *pdi = getPDI(period);
+  PlotLine *pdi = getPDI(period);
   int pdiLoop = pdi->getSize() - 1;
 
-  Output *disum = new Output;
-  Output *didiff = new Output;
+  PlotLine *disum = new PlotLine;
+  PlotLine *didiff = new PlotLine;
 
   while (pdiLoop > -1 && mdiLoop > -1)
   {
@@ -67,7 +66,7 @@ void ADXR::calculate ()
   int sumLoop = disum->getSize() - 1;
   int diffLoop = didiff->getSize() - 1;
 
-  Output *dx = new Output;
+  PlotLine *dx = new PlotLine;
 
   while (sumLoop > -1 && diffLoop > -1)
   {
@@ -83,7 +82,7 @@ void ADXR::calculate ()
     diffLoop--;
   }
 
-  Output *adx = getSMA(dx, period);
+  PlotLine *adx = getSMA(dx, period);
 
   if (period >= (int) adx->getSize())
   {
@@ -96,7 +95,7 @@ void ADXR::calculate ()
     return;
   }
 
-  Output *adxr = new Output;
+  PlotLine *adxr = new PlotLine;
 
   int adxLoop = adx->getSize() - 1;
 
@@ -114,6 +113,9 @@ void ADXR::calculate ()
   delete dx;
   delete adx;
 
+  adxr->setColor(getData(tr("Color")));
+  adxr->setType(getData(tr("Line Type")));
+  adxr->setLabel(getData(tr("Label")));
   output.append(adxr);
 }
 
@@ -124,7 +126,7 @@ QMemArray<int> ADXR::getAlerts ()
   if (! output.count())
     return alerts;
 
-  Output *adxr = output.at(0);
+  PlotLine *adxr = output.at(0);
   int adxrLoop;
   int listLoop = data.count() - adxr->getSize() + 2;
   int status = 0;
@@ -157,9 +159,9 @@ QMemArray<int> ADXR::getAlerts ()
   return alerts;
 }
 
-Output * ADXR::getMDI (int period)
+PlotLine * ADXR::getMDI (int period)
 {
-  Output *mdm = new Output();
+  PlotLine *mdm = new PlotLine();
 
   int loop;
   for (loop = 1; loop < (int) data.count(); loop++)
@@ -185,15 +187,15 @@ Output * ADXR::getMDI (int period)
     mdm->append(t);
   }
 
-  Output *tr = getTR();
+  PlotLine *tr = getTR();
 
-  Output *smamdm = getSMA(mdm, period);
+  PlotLine *smamdm = getSMA(mdm, period);
   int mdmLoop = smamdm->getSize() - 1;
 
-  Output *smatr = getSMA(tr, period);
+  PlotLine *smatr = getSMA(tr, period);
   int trLoop = smatr->getSize() - 1;
 
-  Output *mdi = new Output();
+  PlotLine *mdi = new PlotLine();
 
   while (mdmLoop > -1 && trLoop > -1)
   {
@@ -217,9 +219,9 @@ Output * ADXR::getMDI (int period)
   return mdi;
 }
 
-Output * ADXR::getPDI (int period)
+PlotLine * ADXR::getPDI (int period)
 {
-  Output *pdm = new Output();
+  PlotLine *pdm = new PlotLine();
 
   int loop;
   for (loop = 1; loop < (int) data.count(); loop++)
@@ -245,15 +247,15 @@ Output * ADXR::getPDI (int period)
     pdm->append(t);
   }
 
-  Output *tr = getTR();
+  PlotLine *tr = getTR();
 
-  Output *smapdm = getSMA(pdm, period);
+  PlotLine *smapdm = getSMA(pdm, period);
   int pdmLoop = smapdm->getSize() - 1;
 
-  Output *smatr = getSMA(tr, period);
+  PlotLine *smatr = getSMA(tr, period);
   int trLoop = smatr->getSize() - 1;
 
-  Output *pdi = new Output();
+  PlotLine *pdi = new PlotLine();
 
   while (pdmLoop > -1 && trLoop > -1)
   {

@@ -45,27 +45,24 @@ UO::~UO ()
 
 void UO::calculate ()
 {
-  SettingItem *set = getItem(tr("Short Period"));
-  int shortPeriod = set->data.toInt();
+  int shortPeriod = getInt(tr("Short Period"));
 
-  set = getItem(tr("Medium Period"));
-  int medPeriod = set->data.toInt();
+  int medPeriod = getInt(tr("Medium Period"));
 
-  set = getItem(tr("Long Period"));
-  int longPeriod = set->data.toInt();
+  int longPeriod = getInt(tr("Long Period"));
 
-  Output *trg = getTR();
+  PlotLine *trg = getTR();
 
-  Output *atr = getSMA(trg, shortPeriod);
+  PlotLine *atr = getSMA(trg, shortPeriod);
   int atrLoop = atr->getSize() - 1;
 
-  Output *atr2 = getSMA(trg, medPeriod);
+  PlotLine *atr2 = getSMA(trg, medPeriod);
   int atr2Loop = atr2->getSize() - 1;
 
-  Output *atr3 = getSMA(trg, longPeriod);
+  PlotLine *atr3 = getSMA(trg, longPeriod);
   int atr3Loop = atr3->getSize() - 1;
 
-  Output *f = new Output();
+  PlotLine *f = new PlotLine();
 
   int loop;
   for (loop = 0; loop < (int) data.count(); loop++)
@@ -74,16 +71,16 @@ void UO::calculate ()
     f->append(set->getFloat("Close") - set->getFloat("Low"));
   }
 
-  Output *sma = getSMA(f, shortPeriod);
+  PlotLine *sma = getSMA(f, shortPeriod);
   int smaLoop = sma->getSize() - 1;
 
-  Output *sma2 = getSMA(f, medPeriod);
+  PlotLine *sma2 = getSMA(f, medPeriod);
   int sma2Loop = sma2->getSize() - 1;
 
-  Output *sma3 = getSMA(f, longPeriod);
+  PlotLine *sma3 = getSMA(f, longPeriod);
   int sma3Loop = sma3->getSize() - 1;
 
-  Output *uo = new Output();
+  PlotLine *uo = new PlotLine();
 
   while (smaLoop > -1 && sma2Loop > -1 && sma3Loop > -1 && atrLoop > -1 && atr2Loop > -1 && atr3Loop > -1)
   {
@@ -102,6 +99,9 @@ void UO::calculate ()
     atr3Loop--;
   }
 
+  uo->setColor(getData(tr("Color")));
+  uo->setType(getData(tr("Line Type")));
+  uo->setLabel(getData(tr("Label")));
   output.append(uo);
 
   delete trg;

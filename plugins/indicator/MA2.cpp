@@ -50,26 +50,21 @@ MA2::~MA2 ()
 
 void MA2::calculate ()
 {
-  SettingItem *set = getItem(tr("Input"));
-  Output *in = getInput(set->data);
+  PlotLine *in = getInput(getData(tr("Input")));
 
-  set = getItem(tr("Fast Period"));
-  int fperiod = set->data.toInt();
+  int fperiod = getInt(tr("Fast Period"));
 
-  set = getItem(tr("Slow Period"));
-  int speriod = set->data.toInt();
+  int speriod = getInt(tr("Slow Period"));
 
-  set = getItem(tr("Fast Type"));
-  Output *fma = getMA(in, set->data, fperiod);
-  fma->setColor(tr("Fast Color"));
-  fma->setType(tr("Fast Line Type"));
-  fma->setLabel(tr("Fast Label"));
+  PlotLine *fma = getMA(in, getData(tr("Fast Type")), fperiod);
+  fma->setColor(getData(tr("Fast Color")));
+  fma->setType(getData(tr("Fast Line Type")));
+  fma->setLabel(getData(tr("Fast Label")));
 
-  set = getItem(tr("Slow Type"));
-  Output *sma = getMA(in, set->data, speriod);
-  sma->setColor(tr("Slow Color"));
-  sma->setType(tr("Slow Line Type"));
-  sma->setLabel(tr("Slow Label"));
+  PlotLine *sma = getMA(in, getData(tr("Slow Type")), speriod);
+  sma->setColor(getData(tr("Slow Color")));
+  sma->setType(getData(tr("Slow Line Type")));
+  sma->setLabel(getData(tr("Slow Label")));
 
   delete in;
 
@@ -91,8 +86,8 @@ QMemArray<int> MA2::getAlerts ()
   if (output.count() != 2)
     return alerts;
 
-  Output *fma = output.at(0);
-  Output *sma = output.at(1);
+  PlotLine *fma = output.at(0);
+  PlotLine *sma = output.at(1);
 
   int listLoop = data.count();
   int fmaLoop = fma->getSize();

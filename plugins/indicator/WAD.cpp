@@ -42,7 +42,7 @@ WAD::~WAD ()
 
 void WAD::calculate ()
 {
-  Output *wad = new Output();
+  PlotLine *wad = new PlotLine();
 
   int loop;
   double accum = 0;
@@ -76,6 +76,9 @@ void WAD::calculate ()
     wad->append(accum);
   }
 
+  wad->setColor(getData(tr("Color")));
+  wad->setType(getData(tr("Line Type")));
+  wad->setLabel(getData(tr("Label")));
   output.append(wad);
 }
 

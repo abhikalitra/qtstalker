@@ -60,7 +60,7 @@ class Setting
     ~Setting ();
     void set (QString, QString, Setting::Type);
     QString getData (QString);
-    float getFloat (QString);
+    double getFloat (QString);
     int getInt (QString);
     void setData (QString, QString);
     Setting::Type getType (QString);

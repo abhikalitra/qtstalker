@@ -46,18 +46,11 @@ HLC::~HLC ()
 
 void HLC::calculate ()
 {
-  SettingItem *set = getItem(tr("Period"));
-  int period = set->data.toInt();
+  int period = getInt(tr("Period"));
 
-  Output *ub = new Output();
-  ub->setColor(tr("Upper Color"));
-  ub->setType(tr("Upper Line Type"));
-  ub->setLabel(tr("Upper Label"));
+  PlotLine *ub = new PlotLine();
 
-  Output *lb = new Output();
-  lb->setColor(tr("Lower Color"));
-  lb->setType(tr("Lower Line Type"));
-  lb->setLabel(tr("Lower Label"));
+  PlotLine *lb = new PlotLine();
 
   int loop;
   for (loop = period; loop < (int) data.count(); loop++)
@@ -82,7 +75,14 @@ void HLC::calculate ()
     lb->append(l);
   }
 
+  ub->setColor(getData(tr("Upper Color")));
+  ub->setType(getData(tr("Upper Line Type")));
+  ub->setLabel(getData(tr("Upper Label")));
   output.append(ub);
+
+  lb->setColor(getData(tr("Lower Color")));
+  lb->setType(getData(tr("Lower Line Type")));
+  lb->setLabel(getData(tr("Lower Label")));
   output.append(lb);
 }
 
@@ -93,8 +93,8 @@ QMemArray<int> HLC::getAlerts ()
   if (output.count() != 2)
     return alerts;
 
-  Output *u = output.at(0);
-  Output *l = output.at(1);
+  PlotLine *u = output.at(0);
+  PlotLine *l = output.at(1);
 
   int listLoop = data.count() - u->getSize();
   int loop;

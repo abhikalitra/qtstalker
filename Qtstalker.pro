@@ -20,6 +20,7 @@ HEADERS	+= Plugin.h
 HEADERS	+= WorkwithChartsDialog.h
 HEADERS	+= WorkwithGroupsDialog.h
 HEADERS	+= WorkwithPortfoliosDialog.h
+HEADERS	+= PlotLine.h
 
 SOURCES += Qtstalker.cpp
 SOURCES	+= PortfolioDialog.cpp
@@ -37,6 +38,7 @@ SOURCES += Plugin.cpp
 SOURCES += WorkwithChartsDialog.cpp
 SOURCES += WorkwithGroupsDialog.cpp
 SOURCES += WorkwithPortfoliosDialog.cpp
+SOURCES += PlotLine.cpp
 
 TARGET = qtstalker
 

@@ -53,16 +53,15 @@ CCI::~CCI ()
 
 void CCI::calculate ()
 {
-  SettingItem *set = getItem(tr("Period"));
-  int period = set->data.toInt();
+  int period = getInt(tr("Period"));
 
-  Output *tp = getTP();
+  PlotLine *tp = getTP();
   int tpLoop = tp->getSize() - 1;
 
-  Output *sma = getSMA(tp, period);
+  PlotLine *sma = getSMA(tp, period);
   int smaLoop = sma->getSize() - 1;
 
-  Output *cci = new Output();
+  PlotLine *cci = new PlotLine();
 
   while (tpLoop >= period && smaLoop >= period)
   {
@@ -79,17 +78,18 @@ void CCI::calculate ()
     smaLoop--;
   }
 
+  cci->setColor(getData(tr("Color")));
+  cci->setType(getData(tr("Line Type")));
+  cci->setLabel(getData(tr("Label")));
   output.append(cci);
 
-  set = getItem(tr("MA Period"));
-  period = set->data.toInt();
+  period = getInt(tr("MA Period"));
   if (period)
   {
-    set = getItem(tr("MA Type"));
-    Output *ma = getMA(cci, set->data, period);
-    ma->setColor(tr("MA Color"));
-    ma->setType(tr("MA Line Type"));
-    ma->setLabel(tr("MA Label"));
+    PlotLine *ma = getMA(cci, getData(tr("MA Type")), period);
+    ma->setColor(getData(tr("MA Color")));
+    ma->setType(getData(tr("MA Line Type")));
+    ma->setLabel(getData(tr("MA Label")));
     output.append(ma);
   }
 
@@ -104,15 +104,13 @@ QMemArray<int> CCI::getAlerts ()
   if (output.count() == 0)
     return alerts;
 
-  SettingItem *set = getItem(tr("Buy Line"));
-  int buy = set->data.toInt();
+  int buy = getInt(tr("Buy Line"));
 
-  set = getItem(tr("Sell Line"));
-  int sell = set->data.toInt();
+  int sell = getInt(tr("Sell Line"));
 
   if (output.count() == 1)
   {
-    Output *cci = output.at(0);
+    PlotLine *cci = output.at(0);
 
     int listLoop = data.count() - cci->getSize();
     int cciLoop;
@@ -147,8 +145,8 @@ QMemArray<int> CCI::getAlerts ()
   {
     if (output.count() == 2)
     {
-      Output *cci = output.at(0);
-      Output *ma = output.at(1);
+      PlotLine *cci = output.at(0);
+      PlotLine *ma = output.at(1);
 
       int maLoop;
       int cciLoop = cci->getSize() - ma->getSize();

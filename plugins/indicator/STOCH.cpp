@@ -50,19 +50,16 @@ STOCH::~STOCH ()
 
 void STOCH::calculate ()
 {
-  SettingItem *set = getItem(tr("Period"));
-  int period = set->data.toInt();
+  int period = getInt(tr("Period"));
 
-  set = getItem(tr("%K Smoothing"));
-  int kperiod = set->data.toInt();
+  int kperiod = getInt(tr("%K Smoothing"));
 
-  set = getItem(tr("%D Smoothing"));
-  int dperiod = set->data.toInt();
+  int dperiod = getInt(tr("%D Smoothing"));
 
-  Output *k = new Output();
-  k->setColor(tr("%K Color"));
-  k->setType(tr("%K Line Type"));
-  k->setLabel(tr("%K Label"));
+  PlotLine *k = new PlotLine();
+  k->setColor(getData(tr("%K Color")));
+  k->setType(getData(tr("%K Line Type")));
+  k->setLabel(getData(tr("%K Label")));
 
   int loop;
   for (loop = period; loop < (int) data.count(); loop++)
@@ -98,10 +95,10 @@ void STOCH::calculate ()
 
   if (kperiod)
   {
-    Output *k2 = getSMA(k, kperiod);
-    k2->setColor(tr("%K Color"));
-    k2->setType(tr("%K Line Type"));
-    k2->setLabel(tr("%K Label"));
+    PlotLine *k2 = getSMA(k, kperiod);
+    k2->setColor(getData(tr("%K Color")));
+    k2->setType(getData(tr("%K Line Type")));
+    k2->setLabel(getData(tr("%K Label")));
     output.append(k2);
     delete k;
   }
@@ -110,22 +107,22 @@ void STOCH::calculate ()
 
   k = output.at(0);
 
-  Output *d;
+  PlotLine *d;
 
   if (dperiod)
     d = getSMA(k, dperiod);
   else
   {
-    d = new Output();
+    d = new PlotLine();
 
     int loop;
     for (loop = 0; loop < (int) k->getSize(); loop++)
       d->append(k->getData(loop));
   }
 
-  d->setColor(tr("%D Color"));
-  d->setType(tr("%D Line Type"));
-  d->setLabel(tr("%D Label"));
+  d->setColor(getData(tr("%D Color")));
+  d->setType(getData(tr("%D Line Type")));
+  d->setLabel(getData(tr("%D Label")));
 
   output.append(d);
 }
@@ -137,13 +134,11 @@ QMemArray<int> STOCH::getAlerts ()
   if (output.count() != 2)
     return alerts;
 
-  SettingItem *set = getItem(tr("Buy Line"));
-  int buy = set->data.toInt();
+  int buy = getInt(tr("Buy Line"));
 
-  set = getItem(tr("Sell Line"));
-  int sell = set->data.toInt();
+  int sell = getInt(tr("Sell Line"));
 
-  Output *line = output.at(1);
+  PlotLine *line = output.at(1);
 
   int lineLoop;
   int listLoop = data.count() - line->getSize() + 1;

@@ -42,7 +42,7 @@ OBV::~OBV ()
 
 void OBV::calculate ()
 {
-  Output *obv = new Output();
+  PlotLine *obv = new PlotLine();
 
   int loop;
   double t = 0;
@@ -65,6 +65,9 @@ void OBV::calculate ()
     obv->append(t);
   }
 
+  obv->setColor(getData(tr("Color")));
+  obv->setType(getData(tr("Line Type")));
+  obv->setLabel(getData(tr("Label")));
   output.append(obv);
 }
 

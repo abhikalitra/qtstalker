@@ -66,7 +66,7 @@ class ChartDb
     void deleteChartObject (QString);
 
     int getDataSize ();
-    float getCloseData (QDateTime);
+    double getCloseData (QDateTime);
     Setting * getRecordIndex (int);
     QList<Setting> getRecordList ();
 

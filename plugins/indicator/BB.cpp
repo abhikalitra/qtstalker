@@ -46,23 +46,20 @@ BB::~BB ()
 
 void BB::calculate ()
 {
-  SettingItem *set = getItem(tr("Period"));
-  int period = set->data.toInt();
+  int period = getInt(tr("Period"));
 
-  set = getItem(tr("Deviation"));
-  double deviation = set->data.toFloat();
+  double deviation = getFloat(tr("Deviation"));
 
-  set = getItem(tr("Input"));
-  Output *in = getInput(set->data);
+  PlotLine *in = getInput(getData(tr("Input")));
 
-  Output *sma = getSMA(in, period);
+  PlotLine *sma = getSMA(in, period);
   int smaLoop = sma->getSize() - 1;
 
   if ((int) sma->getSize() < period * 2)
     return;
 
-  Output *bbu = new Output();
-  Output *bbl = new Output();
+  PlotLine *bbu = new PlotLine();
+  PlotLine *bbl = new PlotLine();
 
   int inputLoop = in->getSize() - 1;
 
@@ -88,7 +85,14 @@ void BB::calculate ()
   delete in;
   delete sma;
 
+  bbu->setColor(getData(tr("Color")));
+  bbu->setType(getData(tr("Line Type")));
+  bbu->setLabel(getData(tr("Label")));
   output.append(bbu);
+
+  bbl->setColor(getData(tr("Color")));
+  bbl->setType(getData(tr("Line Type")));
+  bbl->setLabel(getData(tr("Label")));
   output.append(bbl);
 }
 
@@ -99,8 +103,8 @@ QMemArray<int> BB::getAlerts ()
   if (output.count() != 2)
     return alerts;
 
-  Output *bbu = output.at(0);
-  Output *bbl = output.at(1);
+  PlotLine *bbu = output.at(0);
+  PlotLine *bbl = output.at(1);
 
   int listLoop = data.count() - bbu->getSize() + 9;
   int bbLoop = 9;

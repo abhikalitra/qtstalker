@@ -43,10 +43,9 @@ MF::~MF ()
 
 void MF::calculate ()
 {
-  SettingItem *set = getItem(tr("Period"));
-  int period = set->data.toInt();
+  int period = getInt(tr("Period"));
 
-  Output *d = new Output();
+  PlotLine *d = new PlotLine();
 
   int loop;
   for (loop = period; loop < (int) data.count(); loop++)
@@ -89,6 +88,9 @@ void MF::calculate ()
     d->append(mfi);
   }
 
+  d->setColor(getData(tr("Color")));
+  d->setType(getData(tr("Line Type")));
+  d->setLabel(getData(tr("Label")));
   output.append(d);
 }
 

@@ -19,22 +19,50 @@
  *  USA.
  */
 
-#include "IndicatorPlugin.h"
+#ifndef PLOTLINE_HPP
+#define PLOTLINE_HPP
 
-class ADXR : public IndicatorPlugin
+#include <qstring.h>
+#include <qlist.h>
+#include <qmemarray.h>
+
+typedef struct
+{
+  double v;
+
+} Val;
+
+class PlotLine
 {
   public:
-    ADXR ();
-    virtual ~ADXR ();
-    void calculate ();
-    QMemArray<int> getAlerts ();
-    PlotLine * getMDI (int period);
-    PlotLine * getPDI (int period);
+    PlotLine ();
+    ~PlotLine ();
+    void setColor (QString);
+    QString getColor ();
+    void setType (QString);
+    QString getType ();
+    void setLabel (QString);
+    QString getLabel ();
+    void append (double);
+    void prepend (double);
+    double getData (int);
+    void setData (int, double);
+    int getSize ();
+    double getHigh ();
+    double getLow ();
+    void setShow (bool);
+    bool getShow ();
+    void checkHighLow (double);
+
+  private:
+    QList<Val> data;
+    QString color;
+    QString lineType;
+    QString label;
+    double high;
+    double low;
+    bool show;
 };
 
-extern "C"
-{
-  Plugin * create ();
-}
-
+#endif
 

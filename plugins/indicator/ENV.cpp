@@ -50,28 +50,17 @@ ENV::~ENV ()
 
 void ENV::calculate ()
 {
-  SettingItem *set = getItem(tr("Period"));
-  int period = set->data.toInt();
+  int period = getInt(tr("Period"));
 
-  set = getItem(tr("Upper Percent"));
-  double up = set->data.toFloat();
+  double up = getFloat(tr("Upper Percent"));
 
-  set = getItem(tr("Lower Percent"));
-  double lp = set->data.toFloat();
+  double lp = getFloat(tr("Lower Percent"));
 
-  set = getItem(tr("Input"));
-  Output *in = getInput(set->data);
+  PlotLine *in = getInput(getData(tr("Input")));
 
-  set = getItem(tr("MA Type"));
-  Output *uma = getMA(in, set->data, period);
-  uma->setColor(tr("Upper Color"));
-  uma->setType(tr("Upper Line Type"));
-  uma->setLabel(tr("Upper Label"));
+  PlotLine *uma = getMA(in, getData(tr("MA Type")), period);
 
-  Output *lma = getMA(in, set->data, period);
-  lma->setColor(tr("Lower Color"));
-  lma->setType(tr("Lower Line Type"));
-  lma->setLabel(tr("Lower Label"));
+  PlotLine *lma = getMA(in, getData(tr("MA Type")), period);
 
   int maLoop = uma->getSize() - 1;
 
@@ -88,7 +77,14 @@ void ENV::calculate ()
 
   delete in;
 
+  uma->setColor(getData(tr("Upper Color")));
+  uma->setType(getData(tr("Upper Line Type")));
+  uma->setLabel(getData(tr("Upper Label")));
   output.append(uma);
+
+  lma->setColor(getData(tr("Lower Color")));
+  lma->setType(getData(tr("Lower Line Type")));
+  lma->setLabel(getData(tr("Lower Label")));
   output.append(lma);
 }
 
@@ -99,8 +95,8 @@ QMemArray<int> ENV::getAlerts ()
   if (output.count() != 2)
     return alerts;
 
-  Output *uma = output.at(0);
-  Output *lma = output.at(1);
+  PlotLine *uma = output.at(0);
+  PlotLine *lma = output.at(1);
 
   int listLoop = data.count() - uma->getSize();
   int maLoop;

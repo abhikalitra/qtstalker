@@ -44,18 +44,19 @@ ROC::~ROC ()
 
 void ROC::calculate ()
 {
-  SettingItem *set = getItem(tr("Period"));
-  int period = set->data.toInt();
+  int period = getInt(tr("Period"));
 
-  set = getItem(tr("Input"));
-  Output *in = getInput(set->data);
+  PlotLine *in = getInput(getData(tr("Input")));
 
-  Output *roc = new Output();
+  PlotLine *roc = new PlotLine();
 
   int loop;
   for (loop = period; loop < (int) in->getSize(); loop++)
     roc->append(((in->getData(loop) / in->getData(loop - period)) * 100) - 100);
 
+  roc->setColor(getData(tr("Color")));
+  roc->setType(getData(tr("Line Type")));
+  roc->setLabel(getData(tr("Label")));
   output.append(roc);
 
   delete in;
@@ -68,7 +69,7 @@ QMemArray<int> ROC::getAlerts ()
   if (! output.count())
     return alerts;
 
-  Output *line = output.at(0);
+  PlotLine *line = output.at(0);
 
   int lineLoop;
   int listLoop = data.count() - line->getSize();

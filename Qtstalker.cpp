@@ -788,26 +788,16 @@ void QtstalkerApp::loadChart (QString d)
       int loop2;
       for (loop2 = 0; loop2 < plug->getIndicatorLines(); loop2++)
       {
-        Setting *set = plug->getIndicatorLineSettings(loop2);
-
 	if (i->getMainPlot() && ! mainPlot->getOtherFlag())
 	{
-	  int num = mainPlot->addLine(i->getData(set->getData("Color")),
-	                              i->getData(set->getData("Line Type")),
-				      i->getData(set->getData("Label")),
-				      plug->getIndicatorLineArray(loop2));
+	  int num = mainPlot->addLine(plug->getIndicatorLine(loop2));
 	  i->addLine(num);
 	}
 	else
 	{
-	  int num = indicatorPlot->addLine(i->getData(set->getData("Color")),
-	                                   i->getData(set->getData("Line Type")),
-				           i->getData(set->getData("Label")),
-				           plug->getIndicatorLineArray(loop2));
+	  int num = indicatorPlot->addLine(plug->getIndicatorLine(loop2));
 	  i->addLine(num);
 	}
-
-        delete set;
       }
 
       s = i->getData(QObject::tr("Alert"));
@@ -838,24 +828,28 @@ void QtstalkerApp::loadChart (QString d)
     int loop;
     for (loop = 0; loop < (int) keys.count(); loop++)
     {
-      QMemArray<double> array(db->getDataSize());
+      PlotLine *pl = new PlotLine;
       int loop2;
       for (loop2 = 0; loop2 < (int) db->getDataSize(); loop2++)
       {
         r = db->getRecordIndex(loop2);
-	array[loop2] = r->getFloat(keys[loop]);
+	pl->append(r->getFloat(keys[loop]));
       }
-      
+
       QString s = keys[loop];
       s.append(tr(" Color"));
-      QString c = set->getData(s);
+      pl->setColor(set->getData(s));
 
       s = keys[loop];
       s.append(tr(" Line Type"));
-      QString lt = set->getData(s);
+      pl->setType(set->getData(s));
+      
+      pl->setLabel(keys[loop]);
 
-      int num = mainPlot->addLine(c, lt, keys[loop], array);
+      int num = mainPlot->addLine(pl);
       i->addLine(num);
+      
+      delete pl;
     }
   }
   indicatorList.insert(tr("Main Plot"), i);
@@ -1135,13 +1129,12 @@ void QtstalkerApp::slotDataWindow ()
     col++;
     for (loop = 0; loop < (int) a.size(); loop++, col++)
     {
-      QMemArray<double> d;
       dw->setHeader(col, mainPlot->getLineLabel(a[loop]));
-      d = mainPlot->getLineData(a[loop]);
+      PlotLine *d = mainPlot->getLine(a[loop]);
       int loop2;
-      int offset = mainPlot->getDataSize() - d.size();
-      for (loop2 = 0; loop2 < (int) d.size(); loop2++)
-        dw->setData(loop2 + offset, col, mainPlot->strip(d[loop2]));
+      int offset = mainPlot->getDataSize() - d->getSize();
+      for (loop2 = 0; loop2 < (int) d->getSize(); loop2++)
+        dw->setData(loop2 + offset, col, mainPlot->strip(d->getData(loop2)));
     }
 
     dw->show();
@@ -1177,22 +1170,22 @@ void QtstalkerApp::slotDataWindow ()
 
     for (loop = 0; loop < (int) a.size(); loop++, col++)
     {
-      QMemArray<double> d;
+      PlotLine *d;
       if (i->getMainPlot())
       {
         dw->setHeader(col, mainPlot->getLineLabel(a[loop]));
-        d = mainPlot->getLineData(a[loop]);
+        d = mainPlot->getLine(a[loop]);
       }
       else
       {
         dw->setHeader(col, indicatorPlot->getLineLabel(a[loop]));
-        d = indicatorPlot->getLineData(a[loop]);
+        d = indicatorPlot->getLine(a[loop]);
       }
 
       int loop2;
-      int offset = mainPlot->getDataSize() - d.size();
-      for (loop2 = 0; loop2 < (int) d.size(); loop2++)
-        dw->setData(loop2 + offset, col, mainPlot->strip(d[loop2]));
+      int offset = mainPlot->getDataSize() - d->getSize();
+      for (loop2 = 0; loop2 < (int) d->getSize(); loop2++)
+        dw->setData(loop2 + offset, col, mainPlot->strip(d->getData(loop2)));
     }
 
     ++it;

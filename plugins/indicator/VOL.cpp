@@ -42,7 +42,12 @@ VOL::~VOL ()
 
 void VOL::calculate ()
 {
-  output.append(getInput(tr("Volume")));
+  PlotLine *pl = getInput(tr("Volume"));
+  pl->setColor(getData(tr("Color")));
+  pl->setType(getData(tr("Line Type")));
+  pl->setLabel(getData(tr("Label")));
+
+  output.append(pl);
 }
 
 Plugin * create ()

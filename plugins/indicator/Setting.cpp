@@ -76,11 +76,11 @@ QString Setting::getData (QString k)
     return 0;
 }
 
-float Setting::getFloat (QString k)
+double Setting::getFloat (QString k)
 {
   SettingItem *set = dict[k];
   if (set)
-    return set->data.toFloat();
+    return set->data.toDouble();
   else
     return 0;
 }

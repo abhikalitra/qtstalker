@@ -42,7 +42,10 @@ AD::~AD ()
 
 void AD::calculate ()
 {
-  Output *line = new Output;
+  PlotLine *line = new PlotLine;
+  line->setColor(getData(tr("Color")));
+  line->setType(getData(tr("Line Type")));
+  line->setLabel(getData(tr("Label")));
 
   int loop;
   double accum = 0;

@@ -42,7 +42,7 @@ QMemArray<int> IndicatorPlugin::getAlerts ()
   return alerts;
 }
 
-Output * IndicatorPlugin::getInput (QString field)
+PlotLine * IndicatorPlugin::getInput (QString field)
 {
   int f = -1;
   while (1)
@@ -80,7 +80,7 @@ Output * IndicatorPlugin::getInput (QString field)
     break;
   }
 
-  Output *in = new Output();
+  PlotLine *in = new PlotLine();
 
   int loop;
   for (loop = 0; loop < (int) data.count(); loop++)
@@ -113,9 +113,9 @@ Output * IndicatorPlugin::getInput (QString field)
   return in;
 }
 
-Output * IndicatorPlugin::getMA (Output *d, QString type, int period)
+PlotLine * IndicatorPlugin::getMA (PlotLine *d, QString type, int period)
 {
-  Output *ma;
+  PlotLine *ma;
   if (! type.compare(tr("SMA")))
     ma = getSMA(d, period);
   else
@@ -129,9 +129,9 @@ Output * IndicatorPlugin::getMA (Output *d, QString type, int period)
   return ma;
 }
 
-Output * IndicatorPlugin::getEMA (Output *data, int period)
+PlotLine * IndicatorPlugin::getEMA (PlotLine *data, int period)
 {
-  Output *ema = new Output;
+  PlotLine *ema = new PlotLine;
 
   if (period >= (int) data->getSize())
     return ema;
@@ -159,9 +159,9 @@ Output * IndicatorPlugin::getEMA (Output *data, int period)
   return ema;
 }
 
-Output * IndicatorPlugin::getSMA (Output *data, int period)
+PlotLine * IndicatorPlugin::getSMA (PlotLine *data, int period)
 {
-  Output *sma = new Output;
+  PlotLine *sma = new PlotLine;
 
   if (period >= (int) data->getSize())
     return sma;
@@ -183,9 +183,9 @@ Output * IndicatorPlugin::getSMA (Output *data, int period)
   return sma;
 }
 
-Output * IndicatorPlugin::getWMA (Output *data, int period)
+PlotLine * IndicatorPlugin::getWMA (PlotLine *data, int period)
 {
-  Output *wma = new Output;
+  PlotLine *wma = new PlotLine;
 
   if (period >= (int) data->getSize())
     return wma;
@@ -212,9 +212,9 @@ Output * IndicatorPlugin::getWMA (Output *data, int period)
   return wma;
 }
 
-Output * IndicatorPlugin::getTR ()
+PlotLine * IndicatorPlugin::getTR ()
 {
-  Output *tr = new Output;
+  PlotLine *tr = new PlotLine;
 
   int loop;
   for (loop = 1; loop < (int) data.count(); loop++)
@@ -241,9 +241,9 @@ Output * IndicatorPlugin::getTR ()
   return tr;
 }
 
-Output * IndicatorPlugin::getTP ()
+PlotLine * IndicatorPlugin::getTP ()
 {
-  Output *tp = new Output();
+  PlotLine *tp = new PlotLine();
 
   int loop;
   for (loop = 0; loop < (int) data.count(); loop++)
@@ -260,103 +260,12 @@ int IndicatorPlugin::getIndicatorLines ()
   return (int) output.count();
 }
 
-Setting * IndicatorPlugin::getIndicatorLineSettings (int d)
+PlotLine * IndicatorPlugin::getIndicatorLine (int d)
 {
-  Output *line = output.at(d);
-
-  Setting *set = new Setting;
-  set->set("Color", line->getColor(), Setting::None);
-  set->set("Line Type", line->getType(), Setting::None);
-  set->set("Label", line->getLabel(), Setting::None);
-  return set;
-}
-
-QMemArray<double> IndicatorPlugin::getIndicatorLineArray (int d)
-{
-  Output *line = output.at(d);
-
-  QMemArray<double> a(line->getSize());
-  int loop;
-  for (loop = 0; loop < (int) a.size(); loop++)
-    a[loop] = line->getData(loop);
-
-  return a;
-}
-
-//******************************************************************************
-//*********************** OUTPUT ***********************************************
-//******************************************************************************
-
-Output::Output ()
-{
-  data.setAutoDelete(TRUE);
-  color = QObject::tr("Color");
-  lineType = QObject::tr("Line Type");
-  label = QObject::tr("Label");
-}
-
-Output::~Output ()
-{
-}
-
-void Output::setColor (QString d)
-{
-  color = d;
-}
-
-QString Output::getColor ()
-{
-  return color;
-}
-
-void Output::setType (QString d)
-{
-  lineType = d;
-}
-
-QString Output::getType ()
-{
-  return lineType;
-}
-
-void Output::setLabel (QString d)
-{
-  label = d;
-}
-
-QString Output::getLabel ()
-{
-  return label;
-}
-
-void Output::append (double d)
-{
-  Val *r = new Val;
-  r->v  = d;
-  data.append(r);
-}
-
-void Output::prepend (double d)
-{
-  Val *r = new Val;
-  r->v = d;
-  data.prepend(r);
-}
-
-double Output::getData (int d)
-{
-  Val *r = data.at(d);
-  return r->v;
-}
-
-void Output::setData (int i, double d)
-{
-  Val *r = data.at(i);
-  r->v = d;
-}
-
-int Output::getSize ()
-{
-  return (int) data.count();
+  PlotLine *line = output.at(d);
+  if (line)
+    return line;
+  else
+    return 0;
 }
 

@@ -47,27 +47,22 @@ MAOSC::~MAOSC ()
 
 void MAOSC::calculate ()
 {
-  SettingItem *set = getItem(tr("MA Period"));
-  int period = set->data.toInt();
+  int period = getInt(tr("MA Period"));
 
-  set = getItem(tr("MA Period 2"));
-  int period2 = set->data.toInt();
+  int period2 = getInt(tr("MA Period 2"));
 
-  set = getItem(tr("Input"));
-  Output *in = getInput(set->data);
+  PlotLine *in = getInput(getData(tr("Input")));
 
-  set = getItem(tr("MA Type"));
-  QString type = set->data;
+  QString type = getData(tr("MA Type"));
 
-  set = getItem(tr("MA Type 2"));
-  QString type2 = set->data;
+  QString type2 = getData(tr("MA Type 2"));
 
-  Output *ma = new Output();
+  PlotLine *ma = new PlotLine();
 
-  Output *fma = getMA(in, type, period);
+  PlotLine *fma = getMA(in, type, period);
   int fmaLoop = fma->getSize() - 1;
 
-  Output *sma = getMA(in, type2, period2);
+  PlotLine *sma = getMA(in, type2, period2);
   int smaLoop = sma->getSize() - 1;
 
   while (fmaLoop > -1 && smaLoop > -1)
@@ -77,6 +72,9 @@ void MAOSC::calculate ()
     smaLoop--;
   }
 
+  ma->setColor(getData(tr("Color")));
+  ma->setType(getData(tr("Line Type")));
+  ma->setLabel(getData(tr("Label")));
   output.append(ma);
 
   delete in;
@@ -91,7 +89,7 @@ QMemArray<int> MAOSC::getAlerts ()
   if (! output.count())
     return alerts;
 
-  Output *line = output.at(0);
+  PlotLine *line = output.at(0);
   int lineLoop;
   int listLoop = data.count() - line->getSize();
   int status = 0;

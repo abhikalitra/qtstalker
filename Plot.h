@@ -30,24 +30,12 @@
 #include <qmemarray.h>
 #include <qfont.h>
 #include <qintdict.h>
-
+#include "PlotLine.h"
 #include "Setting.h"
 
 #define SCALE_WIDTH 60
 #define DATE_HEIGHT 20
 #define INFO_TEXT_OFFSET 11
-
-typedef struct
-{
-  QColor color;
-  QString type;
-  QString label;
-  QMemArray<double> data;
-  bool show;
-  double high;
-  double low;
-
-} PlotLine;
 
 class Plot : public QWidget
 {
@@ -91,9 +79,9 @@ class Plot : public QWidget
     QDateTime getDateTime (QString);
 
     void hideLines ();
-    int addLine (QString, QString, QString, QMemArray<double>);
+    int addLine (PlotLine *);
     void clearLines ();
-    QMemArray<double> getLineData (int);
+    PlotLine * getLine (int);
     QString getLineLabel (int);
     void showLine (int);
 

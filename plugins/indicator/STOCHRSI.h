@@ -27,7 +27,7 @@ class STOCHRSI : public IndicatorPlugin
     STOCHRSI ();
     virtual ~STOCHRSI ();
     void calculate ();
-    Output * getRSI (Output *in, int period);
+    PlotLine * getRSI (PlotLine *in, int period);
 };
 
 extern "C"

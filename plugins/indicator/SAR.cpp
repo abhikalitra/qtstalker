@@ -45,16 +45,13 @@ SAR::~SAR ()
 
 void SAR::calculate ()
 {
-  SettingItem *i = getItem(tr("Initial"));
-  double initial = i->data.toFloat();
+  double initial = getFloat(tr("Initial"));
 
-  i = getItem(tr("Add"));
-  double add = i->data.toFloat();
+  double add = getFloat(tr("Add"));
 
-  i = getItem(tr("Limit"));
-  double limit = i->data.toFloat();
+  double limit = getFloat(tr("Limit"));
 
-  Output *d = new Output();
+  PlotLine *d = new PlotLine();
 
   Setting *set = data.at(1);
   double high = set->getFloat("High");
@@ -192,6 +189,9 @@ void SAR::calculate ()
     d->append(sar);
   }
 
+  d->setColor(getData(tr("Color")));
+  d->setType(getData(tr("Line Type")));
+  d->setLabel(getData(tr("Label")));
   output.append(d);
 }
 
@@ -202,7 +202,7 @@ QMemArray<int> SAR::getAlerts ()
   if (! output.count())
     return alerts;
 
-  Output *line = output.at(0);
+  PlotLine *line = output.at(0);
   int lineLoop;
   int listLoop = data.count() - line->getSize();
   int status = 0;

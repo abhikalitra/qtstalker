@@ -28,6 +28,7 @@
 #include <qmemarray.h>
 #include <qobject.h>
 #include "Setting.h"
+#include "PlotLine.h"
 
 #define COPYRIGHT "(C) 2001, 2002 Stefan Stratigakos"
 
@@ -40,8 +41,7 @@ class Plugin : public Setting, public QObject
     // indicator plugin interface
     virtual void setIndicatorInput (QList<Setting>);
     virtual int getIndicatorLines ();
-    virtual Setting * getIndicatorLineSettings (int);
-    virtual QMemArray<double> getIndicatorLineArray (int);
+    virtual PlotLine * getIndicatorLine (int);
     virtual QMemArray<int> getAlerts ();
     virtual void calculate ();
 

@@ -51,23 +51,20 @@ TRIX::~TRIX ()
 
 void TRIX::calculate ()
 {
-  SettingItem *set = getItem(tr("Period"));
-  int period = set->data.toInt();
+  int period = getInt(tr("Period"));
 
-  set = getItem(tr("Trigger Period"));
-  int tperiod = set->data.toInt();
+  int tperiod = getInt(tr("Trigger Period"));
 
-  set = getItem(tr("Input"));
-  Output *in = getInput(set->data);
+  PlotLine *in = getInput(getData(tr("Input")));
 
-  Output *ema = getEMA(in, period);
+  PlotLine *ema = getEMA(in, period);
 
-  Output *ema2 = getEMA(ema, period);
+  PlotLine *ema2 = getEMA(ema, period);
 
-  Output *ema3 = getEMA(ema2, period);
+  PlotLine *ema3 = getEMA(ema2, period);
   int emaLoop = ema3->getSize() - 1;
 
-  Output *trix = new Output();
+  PlotLine *trix = new PlotLine();
 
   while (emaLoop > 0)
   {
@@ -75,13 +72,16 @@ void TRIX::calculate ()
     emaLoop--;
   }
 
-  set = getItem(tr("Trigger MA Type"));
-  Output *trigger = getMA(trix, set->data, tperiod);
-  trigger->setColor(tr("Trigger Color"));
-  trigger->setType(tr("Trigger Line Type"));
-  trigger->setLabel(tr("Trigger Label"));
+  PlotLine *trigger = getMA(trix, getData(tr("Trigger MA Type")), tperiod);
+  trigger->setColor(getData(tr("Trigger Color")));
+  trigger->setType(getData(tr("Trigger Line Type")));
+  trigger->setLabel(getData(tr("Trigger Label")));
 
+  trix->setColor(getData(tr("Color")));
+  trix->setType(getData(tr("Line Type")));
+  trix->setLabel(getData(tr("Label")));
   output.append(trix);
+
   output.append(trigger);
 
   delete in;
@@ -97,8 +97,8 @@ QMemArray<int> TRIX::getAlerts ()
   if (output.count() != 2)
     return alerts;
 
-  Output *trix = output.at(0);
-  Output *trig = output.at(1);
+  PlotLine *trix = output.at(0);
+  PlotLine *trig = output.at(1);
 
   int listLoop = data.count() - trig->getSize();
   int trixLoop = trix->getSize() - trig->getSize();

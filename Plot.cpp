@@ -49,10 +49,10 @@ Plot::Plot (QWidget *w) : QWidget(w)
   scaleToScreen = FALSE;
   otherFlag = FALSE;
   startIndex = 0;
-  scaleHigh = 0;
-  scaleLow = 0;
-  mainHigh = 0;
-  mainLow = 0;
+  scaleHigh = -99999999;
+  scaleLow = 99999999;
+  mainHigh = -99999999;
+  mainLow = 99999999;
   chartType = "None";
 
   plotFont.setFamily("Helvetica");
@@ -75,10 +75,10 @@ Plot::~Plot ()
 void Plot::clear ()
 {
   alerts.truncate(0);
-  scaleHigh = 0;
-  scaleLow = 0;
-  mainHigh = 0;
-  mainLow = 0;
+  scaleHigh = -99999999;
+  scaleLow = 99999999;
+  mainHigh = -99999999;
+  mainLow = 99999999;
   data.clear();
 }
 
@@ -95,7 +95,6 @@ void Plot::setData (QList<Setting> l)
     alerts.fill(0, -1);
   }
 
-  bool flag = FALSE;
   int loop;
   for (loop = 0; loop < (int) l.count(); loop++)
   {
@@ -107,13 +106,6 @@ void Plot::setData (QList<Setting> l)
 
     if (mainFlag)
     {
-      if (! flag)
-      {
-        mainHigh = r->getFloat("High");
-        mainLow = r->getFloat("Low");
-	flag = TRUE;
-      }
-;
       double t = r->getFloat("High");
       if (t > mainHigh)
         mainHigh = t;
@@ -351,11 +343,11 @@ void Plot::drawLines ()
   {
     currentLine = it.current();
 
-    if (currentLine->show == TRUE)
+    if (currentLine->getShow() == TRUE)
     {
       l.append(QString::number(it.currentKey()));
 
-      if (! currentLine->type.compare("Histogram"))
+      if (! currentLine->getType().compare("Histogram"))
         s = l[l.count() - 1];
     }
 
@@ -375,31 +367,31 @@ void Plot::drawLines ()
 
     while (1)
     {
-      if (! currentLine->type.compare("Histogram"))
+      if (! currentLine->getType().compare("Histogram"))
       {
         drawHistogram();
 	break;
       }
 
-      if (! currentLine->type.compare("Histogram Bar"))
+      if (! currentLine->getType().compare("Histogram Bar"))
       {
         drawHistogramBar();
 	break;
       }
 
-      if (! currentLine->type.compare("Dot"))
+      if (! currentLine->getType().compare("Dot"))
       {
         drawDot();
 	break;
       }
 
-      if (! currentLine->type.compare("Line") || ! currentLine->type.compare("Dash"))
+      if (! currentLine->getType().compare("Line") || ! currentLine->getType().compare("Dash"))
       {
         drawLine();
 	break;
       }
 
-      if (! currentLine->type.compare("Horizontal"))
+      if (! currentLine->getType().compare("Horizontal"))
         drawHorizontalLine();
 	
       break;
@@ -740,7 +732,7 @@ void Plot::showLine (int id)
 {
   PlotLine *pl = lineList[id];
   if (pl)
-    pl->show = TRUE;
+    pl->setShow(TRUE);
 }
 
 void Plot::hideLines ()
@@ -749,41 +741,24 @@ void Plot::hideLines ()
   while (it.current())
   {
     PlotLine *pl = it.current();
-    pl->show = FALSE;
+    pl->setShow(FALSE);
     ++it;
   }
 }
 
-int Plot::addLine (QString c, QString lt, QString l, QMemArray<double> d)
+int Plot::addLine (PlotLine *d)
 {
   PlotLine *pl = new PlotLine;
-  pl->color.setNamedColor(c);
-  pl->type = lt;
-  pl->label = l;
-  pl->data = d;
-  pl->show = TRUE;
-  pl->high = 0;
-  pl->low = 0;
+  pl->setColor(d->getColor());
+  pl->setType(d->getType());
+  pl->setLabel(d->getLabel());
 
-  bool flag = FALSE;
   int loop;
-  for (loop = 0; loop < (int) d.size(); loop++)
-  {
-    if (! flag)
-    {
-      pl->high = d[loop];
-      pl->low = d[loop];
-      flag = TRUE;
-    }
-
-    if (d[loop] > pl->high)
-      pl->high = d[loop];
-
-    if (d[loop] < pl->low)
-      pl->low = d[loop];
-  }
+  for (loop = 0; loop < (int) d->getSize(); loop++)
+    pl->append(d->getData(loop));
 
   lineCount++;
+  
   lineList.insert(lineCount, pl);
 
   return lineCount;
@@ -794,11 +769,11 @@ void Plot::clearLines ()
   lineList.clear();
 }
 
-QMemArray<double> Plot::getLineData (int d)
+PlotLine * Plot::getLine (int d)
 {
   PlotLine *pl = lineList[d];
   if (pl)
-    return pl->data;
+    return pl;
   else
     return 0;
 }
@@ -807,7 +782,7 @@ QString Plot::getLineLabel (int d)
 {
   PlotLine *pl = lineList[d];
   if (pl)
-    return pl->label;
+    return pl->getLabel();
   else
     return QString::null;
 }
@@ -887,9 +862,9 @@ void Plot::drawLine ()
   painter.begin(&buffer);
 
   QPen pen;
-  pen.setColor(currentLine->color);
+  pen.setColor(currentLine->getColor());
 
-  if (! currentLine->type.compare("Dash"))
+  if (! currentLine->getType().compare("Dash"))
     pen.setStyle(Qt::DotLine);
   else
     pen.setStyle(Qt::SolidLine);
@@ -899,13 +874,13 @@ void Plot::drawLine ()
   int x2 = startX;
   int y = -1;
   int y2 = -1;
-  int loop = currentLine->data.size() - data.count() + startIndex;
+  int loop = currentLine->getSize() - data.count() + startIndex;
 
-  while ((x2 < _width) && (loop < (int) currentLine->data.size()))
+  while ((x2 < _width) && (loop < (int) currentLine->getSize()))
   {
     if (loop > -1)
     {
-      y2 = convertToY(currentLine->data[loop]);
+      y2 = convertToY(currentLine->getData(loop));
       if (y != -1)
         painter.drawLine (x, y, x2, y2);
       x = x2;
@@ -926,14 +901,14 @@ void Plot::drawHorizontalLine ()
   painter.setFont(plotFont);
 
   QPen pen;
-  pen.setColor(currentLine->color);
+  pen.setColor(currentLine->getColor());
   painter.setPen(pen);
 
-  int y = convertToY(currentLine->data[currentLine->data.size() - 1]);
+  int y = convertToY(currentLine->getData(currentLine->getSize() - 1));
 
   painter.drawLine (0, y, _width, y);
 
-  painter.drawText(startX, y - 1, strip(currentLine->data[currentLine->data.size() - 1]));
+  painter.drawText(startX, y - 1, strip(currentLine->getData(currentLine->getSize() - 1)));
 
   painter.end();
 }
@@ -944,17 +919,17 @@ void Plot::drawDot ()
   painter.begin(&buffer);
 
   QPen pen;
-  pen.setColor(currentLine->color);
+  pen.setColor(currentLine->getColor());
   painter.setPen(pen);
 
   int x = startX;
-  int loop = currentLine->data.size() - data.count() + startIndex;
+  int loop = currentLine->getSize() - data.count() + startIndex;
 
-  while ((x < _width) && (loop < (int) currentLine->data.size()))
+  while ((x < _width) && (loop < (int) currentLine->getSize()))
   {
     if (loop > -1)
     {
-      int y = convertToY(currentLine->data[loop]);
+      int y = convertToY(currentLine->getData(loop));
       painter.drawPoint(x, y);
     }
 
@@ -969,10 +944,10 @@ void Plot::drawHistogram ()
 {
   QPainter painter;
   painter.begin(&buffer);
-  painter.setPen(currentLine->color);
-  painter.setBrush(currentLine->color);
+  painter.setPen(currentLine->getColor());
+  painter.setBrush(currentLine->getColor());
 
-  int loop = currentLine->data.size() - data.count() + startIndex;
+  int loop = currentLine->getSize() - data.count() + startIndex;
 
   QPointArray pa(4);
   int zero = convertToY(0);
@@ -981,11 +956,11 @@ void Plot::drawHistogram ()
   int y = -1;
   int y2 = -1;
 
-  while ((x < _width) && (loop < (int) currentLine->data.size()))
+  while ((x < _width) && (loop < (int) currentLine->getSize()))
   {
     if (loop > -1)
     {
-      y2 = convertToY(currentLine->data[loop]);
+      y2 = convertToY(currentLine->getData(loop));
       pa.setPoint(0, x, zero);
       pa.setPoint(1, x, y);
       pa.setPoint(2, x2, y2);
@@ -1010,18 +985,18 @@ void Plot::drawHistogramBar ()
   QPainter painter;
   painter.begin(&buffer);
 
-  QColor color(currentLine->color);
+  QColor color(currentLine->getColor());
 
   int x = startX;
   int zero = convertToY(0);
 
-  int loop = currentLine->data.size() - data.count() + startIndex;
+  int loop = currentLine->getSize() - data.count() + startIndex;
 
-  while ((x < _width) && (loop < (int) currentLine->data.size()))
+  while ((x < _width) && (loop < (int) currentLine->getSize()))
   {
     if (loop > -1)
     {
-      int y = convertToY(currentLine->data[loop]);
+      int y = convertToY(currentLine->getData(loop));
       painter.fillRect(x, y, pixelspace - 1, zero - y, color);
     }
 
@@ -1092,20 +1067,20 @@ void Plot::drawInfo ()
   {
     PlotLine *line = it.current();
 
-    if (line->show == FALSE)
+    if (line->getShow() == FALSE)
     {
       ++it;
       continue;
     }
 
-    if (line->data.size() > 1)
+    if (line->getSize() > 1)
     {
-      s = line->label;
+      s = line->getLabel();
       s.append("=");
-      s.append(strip(line->data[line->data.size() - 1]));
+      s.append(strip(line->getData(line->getSize() - 1)));
       s.append(" ");
 
-      painter.setPen(line->color);
+      painter.setPen(line->getColor());
       painter.drawText(pos, 10, s, -1);
       pos = pos + fm.width(s);
     }
@@ -1289,17 +1264,15 @@ void Plot::hideChartObjects ()
 
 void Plot::setScale ()
 {
-  scaleHigh = 0;
-  scaleLow = 0;
-  bool flag = FALSE;
-  
+  scaleHigh = -99999999;
+  scaleLow = 99999999;
+
   if (mainFlag && ! otherFlag)
   {
     if (! scaleToScreen)
     {
       scaleHigh = mainHigh;
       scaleLow = mainLow;
-      flag = TRUE;
     }
     else
     {
@@ -1309,14 +1282,7 @@ void Plot::setScale ()
       {
         Setting *r = data.at(loop);
 
-        if (! flag)
-	{
-          scaleHigh = r->getFloat("High");
-          scaleLow = r->getFloat("Low");
-	  flag = TRUE;
-	}
-
-	float t = r->getFloat("High");
+	double t = r->getFloat("High");
         if (t > scaleHigh)
 	  scaleHigh = t;
 
@@ -1337,24 +1303,17 @@ void Plot::setScale ()
     {
       PlotLine *line = it.current();
 
-      if (line->show == FALSE)
+      if (line->getShow() == FALSE)
       {
         ++it;
         continue;
       }
-      
-      if (! flag)
-      {
-        scaleHigh = line->high;
-        scaleLow = line->low;
-	flag = TRUE;
-      }
 
-      if (line->high > scaleHigh)
-        scaleHigh = line->high;
+      if (line->getHigh() > scaleHigh)
+        scaleHigh = line->getHigh();
 
-      if (line->low < scaleLow)
-        scaleLow = line->low;
+      if (line->getLow() < scaleLow)
+        scaleLow = line->getLow();
 
       ++it;
     }
@@ -1366,30 +1325,23 @@ void Plot::setScale ()
     {
       PlotLine *line = it.current();
 
-      if (line->show == FALSE)
+      if (line->getShow() == FALSE)
       {
         ++it;
         continue;
       }
 
       int x = startX;
-      int loop = line->data.size() - data.count() + startIndex;
-      while ((x < _width) && (loop < (int) line->data.size()))
+      int loop = line->getSize() - data.count() + startIndex;
+      while ((x < _width) && (loop < (int) line->getSize()))
       {
         if (loop > -1)
         {
-          if (! flag)
-          {
-            scaleHigh = line->data[loop];
-            scaleLow = line->data[loop];
-	    flag = TRUE;
-          }
+          if (line->getData(loop) > scaleHigh)
+            scaleHigh = line->getData(loop);
 
-          if (line->data[loop] > scaleHigh)
-            scaleHigh = line->data[loop];
-
-          if (line->data[loop] < scaleLow)
-            scaleLow = line->data[loop];
+          if (line->getData(loop) < scaleLow)
+            scaleLow = line->getData(loop);
         }
 
         x = x + pixelspace;

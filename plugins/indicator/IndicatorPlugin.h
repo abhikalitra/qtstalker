@@ -23,39 +23,10 @@
 #define INDICATORPLUGIN_HPP
 
 #include "Plugin.h"
+#include "PlotLine.h"
 #include <qstring.h>
 #include <qlist.h>
 #include <qmemarray.h>
-
-typedef struct
-{
-  double v;
-
-} Val;
-
-class Output
-{
-  public:
-    Output ();
-    ~Output ();
-    void setColor (QString);
-    QString getColor ();
-    void setType (QString);
-    QString getType ();
-    void setLabel (QString);
-    QString getLabel ();
-    void append (double);
-    void prepend (double);
-    double getData (int);
-    void setData (int, double);
-    int getSize ();
-
-  private:
-    QList<Val> data;
-    QString color;
-    QString lineType;
-    QString label;
-};
 
 class IndicatorPlugin : public Plugin
 {
@@ -65,19 +36,18 @@ class IndicatorPlugin : public Plugin
     QMemArray<int> getAlerts ();
     void setIndicatorInput (QList<Setting>);
     int getIndicatorLines ();
-    Setting * getIndicatorLineSettings (int);
-    QMemArray<double> getIndicatorLineArray (int);
-    Output * getInput (QString);
-    Output * getMA (Output *, QString, int);
-    Output * getSMA (Output *, int);
-    Output * getEMA (Output *, int);
-    Output * getWMA (Output *, int);
-    Output * getTR ();
-    Output * getTP ();
+    PlotLine * getIndicatorLine (int);
+    PlotLine * getInput (QString);
+    PlotLine * getMA (PlotLine *, QString, int);
+    PlotLine * getSMA (PlotLine *, int);
+    PlotLine * getEMA (PlotLine *, int);
+    PlotLine * getWMA (PlotLine *, int);
+    PlotLine * getTR ();
+    PlotLine * getTP ();
 
   protected:
     QList<Setting> data;
-    QList<Output> output;
+    QList<PlotLine> output;
     QMemArray<int> alerts;
 };
 

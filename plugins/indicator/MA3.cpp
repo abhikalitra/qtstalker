@@ -29,17 +29,17 @@ MA3::MA3 ()
   set(tr("Type"), pluginName, Setting::None);
   set(tr("Fast Color"), "red", Setting::Color);
   set(tr("Fast Line Type"), tr("Line"), Setting::LineType);
-  set(tr("Fast Label"), tr("MA2 Fast"), Setting::Text);
+  set(tr("Fast Label"), tr("MA3 Fast"), Setting::Text);
   set(tr("Fast Period"), "5", Setting::Integer);
   set(tr("Fast Type"), "SMA", Setting::MAType);
   set(tr("Middle Color"), "red", Setting::Color);
   set(tr("Middle Line Type"), tr("Line"), Setting::LineType);
-  set(tr("Middle Label"), tr("MA2 Middle"), Setting::Text);
+  set(tr("Middle Label"), tr("MA3 Middle"), Setting::Text);
   set(tr("Middle Period"), "20", Setting::Integer);
   set(tr("Middle Type"), "SMA", Setting::MAType);
   set(tr("Slow Color"), "red", Setting::Color);
   set(tr("Slow Line Type"), tr("Line"), Setting::LineType);
-  set(tr("Slow Label"), tr("MA2 Slow"), Setting::Text);
+  set(tr("Slow Label"), tr("MA3 Slow"), Setting::Text);
   set(tr("Slow Period"), "40", Setting::Integer);
   set(tr("Slow Type"), "SMA", Setting::MAType);
   set(tr("Input"), tr("Close"), Setting::InputField);
@@ -55,35 +55,28 @@ MA3::~MA3 ()
 
 void MA3::calculate ()
 {
-  SettingItem *set = getItem(tr("Input"));
-  Output *in = getInput(set->data);
+  PlotLine *in = getInput(getData(tr("Input")));
 
-  set = getItem(tr("Fast Period"));
-  int fperiod = set->data.toInt();
+  int fperiod = getInt(tr("Fast Period"));
 
-  set = getItem(tr("Middle Period"));
-  int mperiod = set->data.toInt();
+  int mperiod = getInt(tr("Middle Period"));
 
-  set = getItem(tr("Slow Period"));
-  int speriod = set->data.toInt();
+  int speriod = getInt(tr("Slow Period"));
 
-  set = getItem(tr("Fast Type"));
-  Output *fma = getMA(in, set->data, fperiod);
-  fma->setColor(tr("Fast Color"));
-  fma->setType(tr("Fast Line Type"));
-  fma->setLabel(tr("Fast Label"));
+  PlotLine *fma = getMA(in, getData(tr("Fast Type")), fperiod);
+  fma->setColor(getData(tr("Fast Color")));
+  fma->setType(getData(tr("Fast Line Type")));
+  fma->setLabel(getData(tr("Fast Label")));
 
-  set = getItem(tr("Middle Type"));
-  Output *mma = getMA(in, set->data, mperiod);
-  mma->setColor(tr("Middle Color"));
-  mma->setType(tr("Middle Line Type"));
-  mma->setLabel(tr("Middle Label"));
+  PlotLine *mma = getMA(in, getData(tr("Middle Type")), mperiod);
+  mma->setColor(getData(tr("Middle Color")));
+  mma->setType(getData(tr("Middle Line Type")));
+  mma->setLabel(getData(tr("Middle Label")));
 
-  set = getItem(tr("Slow Type"));
-  Output *sma = getMA(in, set->data, speriod);
-  sma->setColor(tr("Slow Color"));
-  sma->setType(tr("Slow Line Type"));
-  sma->setLabel(tr("Slow Label"));
+  PlotLine *sma = getMA(in, getData(tr("Slow Type")), speriod);
+  sma->setColor(getData(tr("Slow Color")));
+  sma->setType(getData(tr("Slow Line Type")));
+  sma->setLabel(getData(tr("Slow Label")));
 
   delete in;
 
@@ -110,9 +103,9 @@ QMemArray<int> MA3::getAlerts ()
   if (output.count() != 3)
     return alerts;
 
-  Output *fma = output.at(0);
-  Output *mma = output.at(1);
-  Output *sma = output.at(2);
+  PlotLine *fma = output.at(0);
+  PlotLine *mma = output.at(1);
+  PlotLine *sma = output.at(2);
 
   int listLoop = data.count();
   int fmaLoop = fma->getSize();

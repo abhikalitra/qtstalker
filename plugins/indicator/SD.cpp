@@ -45,13 +45,11 @@ SD::~SD ()
 
 void SD::calculate ()
 {
-  SettingItem *set = getItem(tr("Period"));
-  int period = set->data.toInt();
+  int period = getInt(tr("Period"));
 
-  set = getItem(tr("Input"));
-  Output *in = getInput(set->data);
+  PlotLine *in = getInput(getData(tr("Input")));
 
-  Output *sd = new Output();
+  PlotLine *sd = new PlotLine();
 
   int loop;
   for (loop = period; loop < (int) in->getSize(); loop++)
@@ -73,6 +71,9 @@ void SD::calculate ()
     sd->append(ds);
   }
 
+  sd->setColor(getData(tr("Color")));
+  sd->setType(getData(tr("Line Type")));
+  sd->setLabel(getData(tr("Label")));
   output.append(sd);
 
   delete in;

@@ -42,7 +42,11 @@ OI::~OI ()
 
 void OI::calculate ()
 {
-  output.append(getInput(tr("Open Interest")));
+  PlotLine *pl = getInput(tr("Open Interest"));
+  pl->setColor(getData(tr("Color")));
+  pl->setType(getData(tr("Line Type")));
+  pl->setLabel(getData(tr("Label")));
+  output.append(pl);
 }
 
 Plugin * create ()

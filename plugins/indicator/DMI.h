@@ -27,8 +27,8 @@ class DMI : public IndicatorPlugin
     DMI ();
     virtual ~DMI ();
     void calculate ();
-    Output * getMDI (int period);
-    Output * getPDI (int period);
+    PlotLine * getMDI (int period);
+    PlotLine * getPDI (int period);
     QMemArray<int> getAlerts ();
 };
 

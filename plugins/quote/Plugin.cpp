@@ -84,12 +84,7 @@ int Plugin::getIndicatorLines ()
   return 0;
 }
 
-Setting * Plugin::getIndicatorLineSettings (int)
-{
-  return 0;
-}
-
-QMemArray<double> Plugin::getIndicatorLineArray (int)
+PlotLine * Plugin::getIndicatorLine (int)
 {
   return 0;
 }

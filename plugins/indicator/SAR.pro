@@ -5,11 +5,13 @@ CONFIG += thread warn_on debug dll
 HEADERS += Plugin.h
 HEADERS += IndicatorPlugin.h
 HEADERS += Setting.h
+HEADERS += PlotLine.h
 HEADERS += SAR.h
 
 SOURCES += Plugin.cpp
 SOURCES += IndicatorPlugin.cpp
 SOURCES += Setting.cpp
+SOURCES += PlotLine.cpp
 SOURCES += SAR.cpp
 
 TARGET = SAR

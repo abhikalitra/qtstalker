@@ -50,24 +50,16 @@ DMI::~DMI ()
 
 void DMI::calculate ()
 {
-  SettingItem *set = getItem(tr("Period"));
-  int period = set->data.toInt();
+  int period = getInt(tr("Period"));
 
-  Output *mdi = getMDI(period);
-  mdi->setColor(tr("-DM Color"));
-  mdi->setType(tr("-DM Line Type"));
-  mdi->setLabel(tr("-DM Label"));
-
+  PlotLine *mdi = getMDI(period);
   int mdiLoop = mdi->getSize() - 1;
 
-  Output *pdi = getPDI(period);
-  pdi->setColor(tr("+DM Color"));
-  pdi->setType(tr("+DM Line Type"));
-  pdi->setLabel(tr("+DM Label"));
+  PlotLine *pdi = getPDI(period);
   int pdiLoop = pdi->getSize() - 1;
 
-  Output *disum = new Output;
-  Output *didiff = new Output;
+  PlotLine *disum = new PlotLine;
+  PlotLine *didiff = new PlotLine;
 
   while (pdiLoop > -1 && mdiLoop > -1)
   {
@@ -80,7 +72,7 @@ void DMI::calculate ()
   int sumLoop = disum->getSize() - 1;
   int diffLoop = didiff->getSize() - 1;
 
-  Output *dx = new Output;
+  PlotLine *dx = new PlotLine;
 
   while (sumLoop > -1 && diffLoop > -1)
   {
@@ -96,17 +88,25 @@ void DMI::calculate ()
     diffLoop--;
   }
 
-  Output *adx = getSMA(dx, period);
-  adx->setColor(tr("ADX Color"));
-  adx->setType(tr("ADX Line Type"));
-  adx->setLabel(tr("ADX Label"));
+  PlotLine *adx = getSMA(dx, period);
 
   delete disum;
   delete didiff;
   delete dx;
 
+  mdi->setColor(getData(tr("-DM Color")));
+  mdi->setType(getData(tr("-DM Line Type")));
+  mdi->setLabel(getData(tr("-DM Label")));
   output.append(mdi);
+
+  pdi->setColor(getData(tr("+DM Color")));
+  pdi->setType(getData(tr("+DM Line Type")));
+  pdi->setLabel(getData(tr("+DM Label")));
   output.append(pdi);
+
+  adx->setColor(getData(tr("ADX Color")));
+  adx->setType(getData(tr("ADX Line Type")));
+  adx->setLabel(getData(tr("ADX Label")));
   output.append(adx);
 }
 
@@ -117,9 +117,9 @@ QMemArray<int> DMI::getAlerts ()
   if (output.count() != 3)
     return alerts;
 
-  Output *mdi = output.at(0);
-  Output *pdi = output.at(1);
-  Output *adx = output.at(2);
+  PlotLine *mdi = output.at(0);
+  PlotLine *pdi = output.at(1);
+  PlotLine *adx = output.at(2);
 
   int listLoop = data.count() - adx->getSize() + 1;
   int mdiLoop = mdi->getSize() - adx->getSize() + 1;
@@ -155,9 +155,9 @@ QMemArray<int> DMI::getAlerts ()
   return alerts;
 }
 
-Output * DMI::getMDI (int period)
+PlotLine * DMI::getMDI (int period)
 {
-  Output *mdm = new Output();
+  PlotLine *mdm = new PlotLine();
 
   int loop;
   for (loop = 1; loop < (int) data.count(); loop++)
@@ -183,15 +183,15 @@ Output * DMI::getMDI (int period)
     mdm->append(t);
   }
 
-  Output *tr = getTR();
+  PlotLine *tr = getTR();
 
-  Output *smamdm = getSMA(mdm, period);
+  PlotLine *smamdm = getSMA(mdm, period);
   int mdmLoop = smamdm->getSize() - 1;
 
-  Output *smatr = getSMA(tr, period);
+  PlotLine *smatr = getSMA(tr, period);
   int trLoop = smatr->getSize() - 1;
 
-  Output *mdi = new Output();
+  PlotLine *mdi = new PlotLine();
 
   while (mdmLoop > -1 && trLoop > -1)
   {
@@ -215,9 +215,9 @@ Output * DMI::getMDI (int period)
   return mdi;
 }
 
-Output * DMI::getPDI (int period)
+PlotLine * DMI::getPDI (int period)
 {
-  Output *pdm = new Output();
+  PlotLine *pdm = new PlotLine();
 
   int loop;
   for (loop = 1; loop < (int) data.count(); loop++)
@@ -243,15 +243,15 @@ Output * DMI::getPDI (int period)
     pdm->append(t);
   }
 
-  Output *tr = getTR();
+  PlotLine *tr = getTR();
 
-  Output *smapdm = getSMA(pdm, period);
+  PlotLine *smapdm = getSMA(pdm, period);
   int pdmLoop = smapdm->getSize() - 1;
 
-  Output *smatr = getSMA(tr, period);
+  PlotLine *smatr = getSMA(tr, period);
   int trLoop = smatr->getSize() - 1;
 
-  Output *pdi = new Output();
+  PlotLine *pdi = new PlotLine();
 
   while (pdmLoop > -1 && trLoop > -1)
   {

@@ -184,7 +184,7 @@ void ChartDb::getWeeklyHistory ()
       tr->set("Low", r->getData("Low"), Setting::Float);
       tr->set("Close", r->getData("Close"), Setting::Float);
       tr->set("Volume", r->getData("Volume"), Setting::Float);
-      tr->set("OI", r->getData("OI"), Setting::Float);
+      tr->set("Open Interest", r->getData("Open Interest"), Setting::Float);
       tdate = dt.addDays(- dt.date().dayOfWeek());
     }
     else
@@ -199,8 +199,8 @@ void ChartDb::getWeeklyHistory ()
 
       tr->setData("Volume", QString::number(tr->getFloat("Volume") + r->getFloat("Volume")));
 
-      if (r->getFloat("OI") > tr->getFloat("OI"))
-        tr->setData("OI", r->getData("OI"));
+      if (r->getFloat("Open Interest") > tr->getFloat("Open Interest"))
+        tr->setData("Open Interest", r->getData("Open Interest"));
     }
 
     delete r;
@@ -248,7 +248,7 @@ void ChartDb::getMonthlyHistory ()
       tr->set("Low", r->getData("Low"), Setting::Float);
       tr->set("Close", r->getData("Close"), Setting::Float);
       tr->set("Volume", r->getData("Volume"), Setting::Float);
-      tr->set("OI", r->getData("OI"), Setting::Float);
+      tr->set("Open Interest", r->getData("Open Interest"), Setting::Float);
       month = dt.date().month();
     }
     else
@@ -263,8 +263,8 @@ void ChartDb::getMonthlyHistory ()
 
       tr->setData("Volume", QString::number(tr->getFloat("Volume") + r->getFloat("Volume")));
 
-      if (r->getFloat("OI") > tr->getFloat("OI"))
-        tr->setData("OI", r->getData("OI"));
+      if (r->getFloat("Open Interest") > tr->getFloat("Open Interest"))
+        tr->setData("Open Interest", r->getData("Open Interest"));
     }
 
     delete r;
@@ -404,12 +404,12 @@ int ChartDb::getDataSize ()
   return (int) recordList.count();
 }
 
-float ChartDb::getCloseData (QDateTime d)
+double ChartDb::getCloseData (QDateTime d)
 {
   QString key = d.toString(DATE_FORMAT);
   QString s = getData(key);
   Setting *r = getRecord(key, s);
-  float t = 0;
+  double t = 0;
   if (r)
   {
     t = r->getFloat("Close");

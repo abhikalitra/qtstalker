@@ -44,15 +44,13 @@ DPO::~DPO ()
 
 void DPO::calculate ()
 {
-  SettingItem *set = getItem(tr("Period"));
-  int period = set->data.toInt();
+  int period = getInt(tr("Period"));
 
-  Output *c = getInput(tr("Close"));
+  PlotLine *c = getInput(tr("Close"));
 
-  set = getItem(tr("MA Type"));
-  Output *ma = getMA(c, set->data, period);
+  PlotLine *ma = getMA(c, getData(tr("MA Type")), period);
 
-  Output *dpo = new Output();
+  PlotLine *dpo = new PlotLine();
 
   int maLoop = ma->getSize() - 1;
   int closeLoop = c->getSize() - 1;
@@ -68,6 +66,9 @@ void DPO::calculate ()
   delete c;
   delete ma;
 
+  dpo->setColor(getData(tr("Color")));
+  dpo->setType(getData(tr("Line Type")));
+  dpo->setLabel(getData(tr("Label")));
   output.append(dpo);
 }
 

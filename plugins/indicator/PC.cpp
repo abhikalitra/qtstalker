@@ -44,13 +44,11 @@ PC::~PC ()
 
 void PC::calculate ()
 {
-  SettingItem *set = getItem(tr("Period"));
-  int period = set->data.toInt();
+  int period = getInt(tr("Period"));
 
-  set = getItem(tr("Input"));
-  Output *in = getInput(set->data);
+  PlotLine *in = getInput(getData(tr("Input")));
 
-  Output *pc = new Output();
+  PlotLine *pc = new PlotLine();
 
   int loop;
   for (loop = period; loop < (int) in->getSize(); loop++)
@@ -60,6 +58,9 @@ void PC::calculate ()
     pc->append(t2);
   }
 
+  pc->setColor(getData(tr("Color")));
+  pc->setType(getData(tr("Line Type")));
+  pc->setLabel(getData(tr("Label")));
   output.append(pc);
 
   delete in;

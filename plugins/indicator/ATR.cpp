@@ -43,14 +43,15 @@ ATR::~ATR ()
 
 void ATR::calculate ()
 {
-  Output *line = getTR();
+  PlotLine *line = getTR();
 
-  SettingItem *set = getItem(tr("Period"));
-
-  Output *data = getSMA(line, set->data.toInt());
+  PlotLine *data = getSMA(line, getInt(tr("Period")));
 
   delete line;
 
+  data->setColor(getData(tr("Color")));
+  data->setType(getData(tr("Line Type")));
+  data->setLabel(getData(tr("Label")));
   output.append(data);
 }
 
@@ -61,7 +62,7 @@ QMemArray<int> ATR::getAlerts ()
   if (! output.count())
     return alerts;
 
-  Output *atr = output.at(0);
+  PlotLine *atr = output.at(0);
   int atrLoop;
   int listLoop = data.count() - atr->getSize() + 18;
   int status = 0;

@@ -42,7 +42,7 @@ PVT::~PVT ()
 
 void PVT::calculate ()
 {
-  Output *pvt = new Output();
+  PlotLine *pvt = new PlotLine();
 
   int loop = 0;
   double pv = 0;
@@ -58,6 +58,9 @@ void PVT::calculate ()
     pvt->append(pv);
   }
 
+  pvt->setColor(getData(tr("Color")));
+  pvt->setType(getData(tr("Line Type")));
+  pvt->setLabel(getData(tr("Label")));
   output.append(pvt);
 }
 

@@ -43,16 +43,18 @@ PER::~PER ()
 
 void PER::calculate ()
 {
-  SettingItem *set = getItem(tr("Input"));
-  Output *in = getInput(set->data);
+  PlotLine *in = getInput(getData(tr("Input")));
 
-  Output *per = new Output();
+  PlotLine *per = new PlotLine();
 
   double base = in->getData(0);
   int loop;
   for (loop = 1; loop < (int) in->getSize(); loop++)
     per->append(((in->getData(loop) - base) / base) * 100);
 
+  per->setColor(getData(tr("Color")));
+  per->setType(getData(tr("Line Type")));
+  per->setLabel(getData(tr("Label")));
   output.append(per);
 
   delete in;

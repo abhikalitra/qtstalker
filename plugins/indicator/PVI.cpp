@@ -42,7 +42,7 @@ PVI::~PVI ()
 
 void PVI::calculate ()
 {
-  Output *pvi = new Output();
+  PlotLine *pvi = new PlotLine();
 
   int loop = 0;
   double pv = 1000;
@@ -61,6 +61,9 @@ void PVI::calculate ()
     pvi->append(pv);
   }
 
+  pvi->setColor(getData(tr("Color")));
+  pvi->setType(getData(tr("Line Type")));
+  pvi->setLabel(getData(tr("Label")));
   output.append(pvi);
 }
 

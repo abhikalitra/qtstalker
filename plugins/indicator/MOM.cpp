@@ -44,18 +44,19 @@ MOM::~MOM ()
 
 void MOM::calculate ()
 {
-  SettingItem *set = getItem(tr("Period"));
-  int period = set->data.toInt();
+  int period = getInt(tr("Period"));
 
-  set = getItem(tr("Input"));
-  Output *in = getInput(set->data);
+  PlotLine *in = getInput(getData(tr("Input")));
 
-  Output *mom = new Output();
+  PlotLine *mom = new PlotLine();
 
   int loop;
   for (loop = period; loop < (int) in->getSize(); loop++)
     mom->append(in->getData(loop) - in->getData(loop - period));
 
+  mom->setColor(getData(tr("Color")));
+  mom->setType(getData(tr("Line Type")));
+  mom->setLabel(getData(tr("Label")));
   output.append(mom);
 
   delete in;
@@ -68,7 +69,7 @@ QMemArray<int> MOM::getAlerts ()
   if (! output.count())
     return alerts;
 
-  Output *line = output.at(0);
+  PlotLine *line = output.at(0);
 
   int lineLoop;
   int listLoop = data.count() - line->getSize();
