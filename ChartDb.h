@@ -26,7 +26,7 @@
 #include <qlist.h>
 #include <qstringlist.h>
 #include <qdatetime.h>
-#include <gdbm.h>
+#include <db.h>
 #include "Setting.h"
 
 #define DATE_FORMAT "yyyyMMddhhmmss"
@@ -53,9 +53,10 @@ class ChartDb
     void getDailyHistory ();
     void getWeeklyHistory ();
     void getMonthlyHistory ();
+    QDateTime getDateTime (QString);
     QDateTime getLastRecord ();
     QDateTime getFirstRecord ();
-    Setting * getRecord (QString);
+    Setting * getRecord (QString, QString);
     void setRecord (Setting *);
     void getSpread ();
     void getRatio ();
@@ -84,7 +85,8 @@ class ChartDb
 
   private:
     QString path;
-    GDBM_FILE db;
+    DB *db;
+    DBC *dbc;
     QDateTime startDate;
     Compression compression;
     QList<Setting> recordList;

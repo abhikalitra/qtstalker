@@ -33,7 +33,7 @@ ChartDb::ChartDb ()
 ChartDb::~ChartDb ()
 {
   if (db)
-    gdbm_close(db);
+    db->close(db, 0);
 }
 
 int ChartDb::openChart ()
@@ -41,61 +41,65 @@ int ChartDb::openChart ()
   char file[path.length() + 2];
   strcpy (file, path);
 
-  db = gdbm_open(file, 512, GDBM_WRCREAT, 0664, 0);
-
-  if (db)
-    return FALSE;
+  if (db_open(file, DB_BTREE, DB_CREATE, 0664, NULL, NULL, &db) != 0)
+    return TRUE;
   else
     return FALSE;
 }
 
 QString ChartDb::getData (QString k)
 {
+  DBT key;
+  DBT data;
+  memset(&key, 0, sizeof(DBT));
+  memset(&data, 0, sizeof(DBT));
+
   char str[k.length() + 2];
   strcpy (str, k);
 
-  datum key;
-  key.dptr = str;
-  key.dsize = k.length() + 1;
+  key.data = str;
+  key.size = k.length() + 1;
 
-  datum data = gdbm_fetch(db, key);
+  db->get(db, NULL, &key, &data, 0);
 
   QString s;
-  if (data.dptr)
-  {
-    s = data.dptr;
-    delete data.dptr;
-  }
+  if (data.size)
+    s = (char *) data.data;
 
   return s;
 }
 
 void ChartDb::setData (QString k, QString d)
 {
+  DBT key;
+  DBT data;
+  memset(&key, 0, sizeof(DBT));
+  memset(&data, 0, sizeof(DBT));
+
   char str[k.length() + 2];
   strcpy (str, k);
-  datum key;
-  key.dptr = str;
-  key.dsize = k.length() + 1;
+  key.data = str;
+  key.size = k.length() + 1;
 
   char str2[d.length() + 2];
   strcpy (str2, d);
-  datum data;
-  data.dptr = str2;
-  data.dsize = d.length() + 1;
+  data.data = str2;
+  data.size = d.length() + 1;
 
-  gdbm_store(db, key, data, GDBM_REPLACE);
+  db->put(db, NULL, &key, &data, 0);
 }
 
 void ChartDb::deleteData (QString k)
 {
+  DBT key;
+  memset(&key, 0, sizeof(DBT));
+
   char str[k.length() + 2];
   strcpy (str, k);
-  datum key;
-  key.dptr = str;
-  key.dsize = k.length() + 1;
+  key.data = str;
+  key.size = k.length() + 1;
 
-  gdbm_delete(db, key);
+  db->del(db, NULL, &key, 0);
 }
 
 void ChartDb::setPath (QString p)
@@ -105,18 +109,19 @@ void ChartDb::setPath (QString p)
 
 QStringList ChartDb::getKeyList ()
 {
-  QStringList list;
-  datum nextkey;
+  DBT key;
+  DBT data;
+  memset(&key, 0, sizeof(DBT));
+  memset(&data, 0, sizeof(DBT));
 
-  datum key = gdbm_firstkey(db);
-  while (key.dptr)
-  {
-    nextkey = gdbm_nextkey(db, key);
-    QString s = key.dptr;
-    list.append(s);
-    delete key.dptr;
-    key = nextkey;
-  }
+  QStringList list;
+
+  db->cursor(db, NULL, &dbc, 0);
+
+  while (! dbc->c_get(dbc, &key, &data, DB_NEXT))
+    list.append((char *) key.data);
+
+  dbc->c_close(dbc);
 
   return list;
 }
@@ -163,67 +168,75 @@ void ChartDb::getHistory (Compression c, QDateTime sd)
 
 void ChartDb::getDailyHistory ()
 {
-  QDateTime tdate = startDate;
+  DBT key;
+  DBT data;
+  memset(&key, 0, sizeof(DBT));
+  memset(&data, 0, sizeof(DBT));
 
-  QDateTime lastDate = getLastRecord();
-  if (! lastDate.isValid())
-    lastDate = QDateTime::currentDateTime();
+  db->cursor(db, NULL, &dbc, 0);
 
-  while (tdate <= lastDate)
+  while (! dbc->c_get(dbc, &key, &data, DB_PREV))
   {
-    Setting *r = getRecord(tdate.toString(DATE_FORMAT));
+    QDateTime dt = getDateTime((char *) key.data);
+    if (! dt.isValid())
+      continue;
 
-    if (r)
-      recordList.append(r);
+    if (dt < startDate)
+      break;
 
-    tdate = tdate.addDays(1);
-
-    if (tdate.date().dayOfWeek() == 6)
-      tdate = tdate.addDays(2);
-    else
-    {
-      if (tdate.date().dayOfWeek() == 7)
-        tdate = tdate.addDays(1);
-    }
+    recordList.prepend(getRecord((char *) key.data, (char *) data.data));
   }
+
+  dbc->c_close(dbc);
 }
 
 void ChartDb::getWeeklyHistory ()
 {
-  QDateTime tdate = startDate;
+  DBT key;
+  DBT data;
+  memset(&key, 0, sizeof(DBT));
+  memset(&data, 0, sizeof(DBT));
 
-  QDateTime lastDate = getLastRecord();
-  if (! lastDate.isValid())
-    lastDate = QDateTime::currentDateTime();
+  db->cursor(db, NULL, &dbc, 0);
 
-  while (tdate <= lastDate)
+  bool flag = FALSE;
+  Setting *tr = 0;
+  QDateTime tdate;
+
+  while (! dbc->c_get(dbc, &key, &data, DB_PREV))
   {
-    Setting *tr = new Setting;
-    tr->set("Date", "0", Setting::Date);
-    tr->set("Open", "0", Setting::Float);
-    tr->set("High", "-9999999999", Setting::Float);
-    tr->set("Low", "9999999999", Setting::Float);
-    tr->set("Close", "0", Setting::Float);
-    tr->set("Volume", "0", Setting::Float);
-    tr->set("OI", "0", Setting::Float);
+    QDateTime dt = getDateTime((char *) key.data);
+    if (! dt.isValid())
+      continue;
 
-    if (tdate.date().dayOfWeek() == 6)
-      tdate = tdate.addDays(2);
+    if (dt < startDate)
+      break;
+
+    Setting *r = getRecord((char *) key.data, (char *) data.data);
+
+    if (! flag)
+    {
+      tr = new Setting;
+      tr->set("Date", r->getData("Date"), Setting::Date);
+      tr->set("Open", r->getData("Open"), Setting::Float);
+      tr->set("High", r->getData("High"), Setting::Float);
+      tr->set("Low", r->getData("Low"), Setting::Float);
+      tr->set("Close", r->getData("Close"), Setting::Float);
+      tr->set("Volume", r->getData("Volume"), Setting::Float);
+      tr->set("OI", r->getData("OI"), Setting::Float);
+      flag = TRUE;
+      tdate = dt.addDays(0 - dt.date().dayOfWeek());
+    }
     else
     {
-      if (tdate.date().dayOfWeek() == 7)
-        tdate = tdate.addDays(1);
-    }
-
-    while (tdate.date().dayOfWeek() != 6)
-    {
-      Setting *r = getRecord(tdate.toString(DATE_FORMAT));
-      if (r)
+      if (dt < tdate)
       {
-        tr->setData("Date", r->getData("Date"));
-
-        if (tr->getFloat("Open") == 0)
-          tr->setData("Open", r->getData("Open"));
+        recordList.prepend(tr);
+	flag = FALSE;
+      }
+      else
+      {
+        tr->setData("Open", r->getData("Open"));
 
         if (r->getFloat("High") > tr->getFloat("High"))
           tr->setData("High", r->getData("High"));
@@ -231,99 +244,121 @@ void ChartDb::getWeeklyHistory ()
         if (r->getFloat("Low") < tr->getFloat("Low"))
           tr->setData("Low", r->getData("Low"));
 
-        tr->setData("Close", r->getData("Close"));
-
         tr->setData("Volume", QString::number(tr->getFloat("Volume") + r->getFloat("Volume")));
 
         if (r->getFloat("OI") > tr->getFloat("OI"))
           tr->setData("OI", r->getData("OI"));
-
-        delete r;
       }
-
-      tdate = tdate.addDays(1);
     }
 
-    if (tr->getFloat("Close") != 0)
-      recordList.append(tr);
-    else
-      delete tr;
+    delete r;
   }
+
+  if (tr)
+    recordList.prepend(tr);
+
+  dbc->c_close(dbc);
 }
 
 void ChartDb::getMonthlyHistory ()
 {
-  QDateTime tdate = startDate;
+  DBT key;
+  DBT data;
+  memset(&key, 0, sizeof(DBT));
+  memset(&data, 0, sizeof(DBT));
 
-  QDateTime lastDate = getLastRecord();
-  if (! lastDate.isValid())
-    lastDate = QDateTime::currentDateTime();
+  db->cursor(db, NULL, &dbc, 0);
 
-  while (tdate <= lastDate)
+  int month = -1;
+  Setting *tr = 0;
+
+  while (! dbc->c_get(dbc, &key, &data, DB_PREV))
   {
-    Setting *tr = new Setting;
-    tr->set("Date", "0", Setting::Date);
-    tr->set("Open", "0", Setting::Float);
-    tr->set("High", "-9999999999", Setting::Float);
-    tr->set("Low", "9999999999", Setting::Float);
-    tr->set("Close", "0", Setting::Float);
-    tr->set("Volume", "0", Setting::Float);
-    tr->set("OI", "0", Setting::Float);
+    QDateTime dt = getDateTime((char *) key.data);
+    if (! dt.isValid())
+      continue;
 
-    int month = tdate.date().month();
+    if (dt < startDate)
+      break;
 
-    while (tdate.date().month() == month)
+    Setting *r = getRecord((char *) key.data, (char *) data.data);
+
+    if (dt.date().month() != month)
     {
-      Setting *r = getRecord(tdate.toString(DATE_FORMAT));
-      if (r)
-      {
-        tr->setData("Date", r->getData("Date"));
+      if (tr)
+        recordList.prepend(tr);
 
-        if (tr->getFloat("Open") == 0)
-          tr->setData("Open", r->getData("Open"));
+      tr = new Setting;
+      tr->set("Date", r->getData("Date"), Setting::Date);
+      tr->set("Open", r->getData("Open"), Setting::Float);
+      tr->set("High", r->getData("High"), Setting::Float);
+      tr->set("Low", r->getData("Low"), Setting::Float);
+      tr->set("Close", r->getData("Close"), Setting::Float);
+      tr->set("Volume", r->getData("Volume"), Setting::Float);
+      tr->set("OI", r->getData("OI"), Setting::Float);
+      month = dt.date().month();
+    }
+    else
+    {
+      tr->setData("Open", r->getData("Open"));
 
-        if (r->getFloat("High") > tr->getFloat("High"))
-          tr->setData("High", r->getData("High"));
+      if (r->getFloat("High") > tr->getFloat("High"))
+        tr->setData("High", r->getData("High"));
 
-        if (r->getFloat("Low") < tr->getFloat("Low"))
-          tr->setData("Low", r->getData("Low"));
+      if (r->getFloat("Low") < tr->getFloat("Low"))
+        tr->setData("Low", r->getData("Low"));
 
-        tr->setData("Close", r->getData("Close"));
+      tr->setData("Volume", QString::number(tr->getFloat("Volume") + r->getFloat("Volume")));
 
-        tr->setData("Volume", QString::number(tr->getFloat("Volume") + r->getFloat("Volume")));
-
-        if (r->getFloat("OI") > tr->getFloat("OI"))
-          tr->setData("OI", r->getData("OI"));
-
-        delete r;
-      }
-
-      tdate = tdate.addDays(1);
+      if (r->getFloat("OI") > tr->getFloat("OI"))
+        tr->setData("OI", r->getData("OI"));
     }
 
-    if (tr->getFloat("Close") != 0)
-      recordList.append(tr);
-    else
-      delete tr;
+    delete r;
   }
+  
+  if (tr)
+    recordList.prepend(tr);
+
+  dbc->c_close(dbc);
+}
+
+QDateTime ChartDb::getDateTime (QString d)
+{
+  QDateTime dt;
+
+  if (d.length() != 14)
+    return dt;
+
+  QString s = d;
+  s.insert(4, "-");
+  s.insert(7, "-");
+  s.insert(12, ":");
+  s.insert(15, ":");
+  dt = QDateTime::fromString(s, Qt::ISODate);
+
+  return dt;
 }
 
 QDateTime ChartDb::getLastRecord ()
 {
   QDateTime dt;
 
-  QString s = getData("LAST_DATE");
-  if (s.length())
+  DBT key;
+  DBT data;
+  memset(&key, 0, sizeof(DBT));
+  memset(&data, 0, sizeof(DBT));
+
+  db->cursor(db, NULL, &dbc, 0);
+
+  while (! dbc->c_get(dbc, &key, &data, DB_PREV))
   {
-    Setting *r = getRecord(s);
-    QString s = r->getData("Date");
-    s.insert(4, "-");
-    s.insert(7, "-");
-    s.insert(12, ":");
-    s.insert(15, ":");
-    dt = QDateTime::fromString(s, Qt::ISODate);
-    delete r;
+    dt = getDateTime((char *) key.data);
+    if (dt.isValid())
+      break;
   }
+
+  dbc->c_close(dbc);
 
   return dt;
 }
@@ -332,18 +367,21 @@ QDateTime ChartDb::getFirstRecord ()
 {
   QDateTime dt;
 
-  QString s = getData("FIRST_DATE");
-  if (s.length())
+  DBT key;
+  DBT data;
+  memset(&key, 0, sizeof(DBT));
+  memset(&data, 0, sizeof(DBT));
+
+  db->cursor(db, NULL, &dbc, 0);
+
+  while (! dbc->c_get(dbc, &key, &data, DB_NEXT))
   {
-    Setting *r = getRecord(s);
-    QString s = r->getData("Date");
-    s.insert(4, "-");
-    s.insert(7, "-");
-    s.insert(12, ":");
-    s.insert(15, ":");
-    dt = QDateTime::fromString(s, Qt::ISODate);
-    delete r;
+    dt = getDateTime((char *) key.data);
+    if (dt.isValid())
+      break;
   }
+
+  dbc->c_close(dbc);
 
   return dt;
 }
@@ -363,56 +401,20 @@ void ChartDb::setRecord (Setting *set)
   l.append(set->getData("Open Interest"));
 
   setData(date, l.join(","));
-
-  date.insert(4, "-");
-  date.insert(7, "-");
-  date.insert(12, ":");
-  date.insert(15, ":");
-  QDateTime dt = QDateTime::fromString(date, Qt::ISODate);
-
-  QDateTime td = getLastRecord();
-  if (td.isValid())
-  {
-    if (dt > td)
-      setData("LAST_DATE", dt.toString(DATE_FORMAT));
-  }
-  else
-  {
-    setData("LAST_DATE", dt.toString(DATE_FORMAT));
-    setData("FIRST_DATE", dt.toString(DATE_FORMAT));
-    return;
-  }
-
-  td = getFirstRecord();
-  if (td.isValid())
-  {
-    if (dt < td)
-      setData("FIRST_DATE", dt.toString(DATE_FORMAT));
-  }
-  else
-  {
-    setData("LAST_DATE", dt.toString(DATE_FORMAT));
-    setData("FIRST_DATE", dt.toString(DATE_FORMAT));
-  }
 }
 
-Setting * ChartDb::getRecord (QString d)
+Setting * ChartDb::getRecord (QString k, QString d)
 {
-  Setting *r = 0;
+  QStringList l = QStringList::split(",", d, FALSE);
 
-  QString s = getData(d);
-  if (s.length())
-  {
-    QStringList l = QStringList::split(",", s, FALSE);
-    r = new Setting;
-    r->set("Date", d, Setting::Date);
-    r->set("Open", l[0], Setting::Float);
-    r->set("High", l[1], Setting::Float);
-    r->set("Low", l[2], Setting::Float);
-    r->set("Close", l[3], Setting::Float);
-    r->set("Volume", l[4], Setting::Float);
-    r->set("Open Interest", l[5], Setting::Float);
-  }
+  Setting *r = new Setting;
+  r->set("Date", k, Setting::Date);
+  r->set("Open", l[0], Setting::Float);
+  r->set("High", l[1], Setting::Float);
+  r->set("Low", l[2], Setting::Float);
+  r->set("Close", l[3], Setting::Float);
+  r->set("Volume", l[4], Setting::Float);
+  r->set("Open Interest", l[5], Setting::Float);
 
   return r;
 }
@@ -799,7 +801,9 @@ int ChartDb::getDataSize ()
 
 float ChartDb::getCloseData (QDateTime d)
 {
-  Setting *r = getRecord(d.toString(DATE_FORMAT));
+  QString key = d.toString(DATE_FORMAT);
+  QString s = getData(key);
+  Setting *r = getRecord(key, s);
   float t = 0;
   if (r)
   {

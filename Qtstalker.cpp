@@ -101,6 +101,7 @@ QtstalkerApp::QtstalkerApp()
 
   tabBar = new QTabBar(split);
   tabBar->setMaximumHeight(20);
+  tabBar->setMinimumHeight(20);
   QObject::connect(tabBar, SIGNAL(selected(int)), this, SLOT(slotIndicatorSelected(int)));
 
   indicatorPlot = new Plot (split);
@@ -876,7 +877,8 @@ void QtstalkerApp::loadChart (QString d)
 
   mainPlot->draw();
 
-  slotIndicatorSelected(tabBar->currentTab());
+  if (tabBar->count())
+    slotIndicatorSelected(tabBar->currentTab());
 
   setCaption(getWindowCaption());
 

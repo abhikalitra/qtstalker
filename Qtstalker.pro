@@ -38,9 +38,9 @@ SOURCES += Plugin.cpp
 
 TARGET = qtstalker
 
-INCLUDEPATH += gdbm-1.8.0
+INCLUDEPATH += db-2.7.7/build_unix
 
-LIBS += -Lgdbm-1.8.0/.libs -lgdbm -ldl
+LIBS += -Ldb-2.7.7/build_unix -ldb -ldl
 LIBS += -L/usr/lib
 
 
