@@ -1,5 +1,5 @@
 echo "Building Makefile..."
-qmake "DEFINES += QT_NO_COMPAT" -o Makefile qtstalker.pro
+qmake "DEFINES += QT_NO_COMPAT" "CONFIG += qt" -o Makefile qtstalker.pro
 echo "Done"
 
 

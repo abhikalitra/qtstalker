@@ -79,7 +79,7 @@ void SD::calculate ()
       double t = in->getData(loop - loop2) - mean;
       ds = ds + (t * t);
     }
-    ds = ds / period;
+    ds = sqrt(ds / period);
 
     sd->append(ds);
   }

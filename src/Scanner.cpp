@@ -125,10 +125,12 @@ void Scanner::scan ()
     dir.mkdir(s, TRUE);
   else
   {
-    QString s2 =  "rm -r ";
-    s2.append(s);
-    system (s2);
-    dir.mkdir(s, TRUE);
+    int loop;
+    for (loop = 2; loop < (int) dir.count(); loop++)
+    {
+      QString s2 = dir.absPath(); + "/" + dir[loop];
+      dir.remove(s2, TRUE);
+    }
   }
   
   if (allSymbols->isChecked())

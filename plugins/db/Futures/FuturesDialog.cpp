@@ -232,7 +232,7 @@ void FuturesDialog::deleteRecord ()
       return;
   }
 
-  db->deleteBar(dateSearch->dateTime().toString("yyyyMMddmmhhss"));
+  db->deleteData(dateSearch->dateTime().toString("yyyyMMddmmhhss"));
   
   clearRecordFields();
   

@@ -44,7 +44,8 @@ class DbPlugin
       Type,
       Title,
       Path,
-      CO
+      CO,
+      LocalIndicators
     };
   
     DbPlugin ();

@@ -30,7 +30,6 @@
 #include <qmessagebox.h>
 #include <qobject.h>
 
-
 Index::Index ()
 {
   data.setAutoDelete(TRUE);
@@ -94,7 +93,7 @@ void Index::updateIndex ()
     setBar(r);
     
     if (r->getData("Count") != count)
-      deleteBar(QString::number(fdate, 'f', 0));
+      deleteData(QString::number(fdate, 'f', 0));
   }
   
   QDictIterator<Bar> it(data);

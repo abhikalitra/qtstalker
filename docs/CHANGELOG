@@ -151,6 +151,23 @@
 
 20050226: Fixed CSV plugin rule editor to update the save button when the comboboxes are changed.
 
+20050227: Applied patch #1152912 - update for install.html. Thanks to David Crossley for the patch.
+
+20050227: Fixed DbPlugin::deleteBar function header.
+
+20050227: Added Local indicator for charts. If you want to apply a indicator to a specific chart
+          you just need to 
+	  
+20050228: Applied patch to correct SD indicator plugin logic. Thanks to Vinay Naik for the patch.
+
+20050228: Added CONFIG += qt parm to the configure script for OSX.
+
+20050228: Specific indicators can now be applied to individual charts. When you want to apply
+          a specific indicator, you create a new one using the indicator panel context menus.
+	  To apply the indicator you need to select the "Local" option from Indicator Group parm.
+	  Once the indicator is applied and saved the indicator will appear only when that
+	  particular chart is viewed. If you change charts, the local indicator will disappear.
+	  
 	  
 	  	  
 0.29

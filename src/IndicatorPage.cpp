@@ -33,6 +33,7 @@
 #include "delete.xpm"
 #include "newchart.xpm"
 #include "move.xpm"
+#include "dirclosed.xpm"
 #include <qcursor.h>
 #include <qdir.h>
 #include <qaccel.h>
@@ -51,6 +52,7 @@ IndicatorPage::IndicatorPage (QWidget *w) : QWidget (w)
   
   Config config;  
   baseDir = config.getData(Config::IndicatorPath);
+  cusRulePath = config.getData(Config::CUSRulePath);
   currentGroup = config.getData(Config::IndicatorGroup);
   
   QVBoxLayout *vbox = new QVBoxLayout(this);
@@ -73,10 +75,10 @@ IndicatorPage::IndicatorPage (QWidget *w) : QWidget (w)
   vbox->addWidget(list);
     
   menu = new QPopupMenu(this);
-  menu->insertItem(QPixmap(newchart), tr("&New Indicator Group		Ctrl+N"), this, SLOT(newIndicatorGroup()));
-  menu->insertItem(QPixmap(newchart), tr("Delete Indicator Group	Ctrl+X"), this, SLOT(deleteIndicatorGroup()));
+  menu->insertItem(QPixmap(dirclosed), tr("&New Indicator Group		Ctrl+N"), this, SLOT(newIndicatorGroup()));
+  menu->insertItem(QPixmap(deleteitem), tr("Delete Indicator Group	Ctrl+X"), this, SLOT(deleteIndicatorGroup()));
   menu->insertSeparator(-1);
-  menu->insertItem(QPixmap(newchart), tr("&Add Indicator		Ctrl+A"), this, SLOT(newIndicator()));
+  menu->insertItem(QPixmap(newchart), tr("Ne&w Indicator		Ctrl+W"), this, SLOT(newIndicator()));
   menu->insertItem(QPixmap(edit), tr("&Edit Indicator			Ctrl+E"), this, SLOT(editIndicator()));
   menu->insertItem(QPixmap(deleteitem), tr("&Delete Indicator		Ctrl+D"), this, SLOT(deleteIndicator()));
   menu->insertItem(QPixmap(moveitem), tr("Mo&ve Indicator		Ctrl+V"), this, SLOT(moveIndicator()));
@@ -106,15 +108,15 @@ void IndicatorPage::itemSelected (const QString &d)
 {
   if (d.length())
   {
-    menu->setItemEnabled(menu->idAt(4), TRUE);
     menu->setItemEnabled(menu->idAt(5), TRUE);
     menu->setItemEnabled(menu->idAt(6), TRUE);
+    menu->setItemEnabled(menu->idAt(7), TRUE);
   }
   else
   {
-    menu->setItemEnabled(menu->idAt(4), FALSE);
     menu->setItemEnabled(menu->idAt(5), FALSE);
     menu->setItemEnabled(menu->idAt(6), FALSE);
+    menu->setItemEnabled(menu->idAt(7), FALSE);
   }
 }
 
@@ -222,6 +224,7 @@ void IndicatorPage::newIndicator ()
   idialog->addTextItem(tr("Name"), tr("Details"), tr("NewIndicator"));
   idialog->addComboItem(tr("Plot Type"), tr("Details"), l, 1);
   idialog->addComboItem(tr("Indicator Group"), tr("Details"), getIndicatorGroups(), 0);
+  idialog->addCheckItem(tr("Save Indicator To Library"), tr("Details"), FALSE);
   
   int rc = idialog->exec();
   if (rc == QDialog::Rejected)
@@ -233,7 +236,8 @@ void IndicatorPage::newIndicator ()
   QString name = idialog->getText(tr("Name"));
   QString indicator = idialog->getCombo(tr("Indicator"));
   Indicator::PlotType plotType = (Indicator::PlotType) idialog->getComboIndex(tr("Plot Type"));
-  QString group = idialog->getCombo(tr("Indicator Group"));
+  bool saveLib = idialog->getCheck(tr("Save Indicator To Library"));
+  QString igroup = idialog->getCombo(tr("Indicator Group"));
   delete idialog;
   
   if (! name.length())
@@ -242,6 +246,7 @@ void IndicatorPage::newIndicator ()
     return;
   }
   
+  // correct any forbidden chars in name
   int loop;
   QString s;
   for (loop = 0; loop < (int) name.length(); loop++)
@@ -252,14 +257,28 @@ void IndicatorPage::newIndicator ()
   }
   name = s;
 
-  QDir dir;
-  s = baseDir + "/" + group + "/" + name;
+  // check if we can save the indicator in the library
+  if (saveLib)
+  {
+    s = cusRulePath + "/" + name;
+    QDir dir;
+    if (dir.exists(s))
+    {
+      QMessageBox::information(this, tr("Qtstalker: Error"), tr("Duplicate library indicator name."));
+      return;
+    }
+  }
+
+  // check if we can save this indicator in current group  
+  QDir dir;  
+  s = baseDir + "/" + group->currentText() + "/" + name;
   if (dir.exists(s))
   {
     QMessageBox::information(this, tr("Qtstalker: Error"), tr("Duplicate indicator name."));
     return;
   }
 
+  // get the indicator plugin
   IndicatorPlugin *plug = config.getIndicatorPlugin(indicator);
   if (! plug)
   {
@@ -273,7 +292,53 @@ void IndicatorPage::newIndicator ()
   if (rc)
   {
     plug->setPlotType((int) plotType);
+    
+    if (! igroup.compare(tr("Local")))
+    {
+      QString plugin = config.parseDbPlugin(chartPath);
+      DbPlugin *db = config.getDbPlugin(plugin);
+      if (! db)
+      {
+        qDebug("IndicatorPage::newIndicator: can't open db plugin");
+        config.closePlugin(plugin);
+        config.closePlugin(indicator);
+        return;
+      }
+  
+      if (db->openChart(chartPath))
+      {
+        qDebug("IndicatorPage::newIndicator: can't open chart");
+        config.closePlugin(plugin);
+        config.closePlugin(indicator);
+        return;
+      }
+    
+      // get the indicator settings
+      Setting tset;
+      plug->getIndicatorSettings(tset);
+      tset.setData("Name", name);
+      tset.setData("enable", "1");
+      tset.setData("plotType", QString::number(plotType));
+      
+      // save the local indicator to the db
+      QStringList l = QStringList::split(",", db->getHeaderField(DbPlugin::LocalIndicators), FALSE);
+      l.append(tset.getString());
+      db->setHeaderField(DbPlugin::LocalIndicators, l.join(","));
+      
+      localIndicators.append(name);
+      
+      config.closePlugin(plugin);
+    }
+    
     plug->saveIndicatorSettings(s);
+    
+    // save to indicator library if requested
+    if (saveLib)
+    {
+      s = cusRulePath + "/" + name;
+      plug->saveIndicatorSettings(s);
+    }
+      
     config.closePlugin(indicator);
     
     Setting *set = new Setting;
@@ -295,7 +360,14 @@ void IndicatorPage::editIndicator ()
 void IndicatorPage::editIndicator (QString d)
 {
   Config config;
+  QDir dir;
   QString s = baseDir + "/" + group->currentText() + "/" + d;
+  if (! dir.exists(s, TRUE))
+  {
+    qDebug("IndicatorPage::editIndicator: indicator not found %s", s.latin1());
+    return;
+  }
+  
   Setting *set = config.getIndicator(s);
   if (! set->count())
   {
@@ -320,11 +392,15 @@ void IndicatorPage::editIndicator (QString d)
   if (rc)
   {
     plug->saveIndicatorSettings(s);
+    
+    Setting tset;
+    plug->getIndicatorSettings(tset);
+    saveLocalIndicator(d, &tset);
+    
     config.closePlugin(type);
     
     if (set->getInt("enable"))
     {
-      set->setData("Name", d);
       set->setData("File", s);
       emit signalEditIndicator(set);
     }
@@ -335,6 +411,7 @@ void IndicatorPage::editIndicator (QString d)
 
 void IndicatorPage::deleteIndicator ()
 {
+  localIndicators.remove(list->currentText());
   emit signalDeleteIndicator(list->currentText());
 }
 
@@ -345,7 +422,14 @@ void IndicatorPage::moveIndicator ()
   delete i;
 
   Config config;
+  QDir dir;
   QString s =  baseDir + "/" + group->currentText() + "/" + list->currentText();
+  if (! dir.exists(s, TRUE))
+  {
+    qDebug("IndicatorPage::moveIndicator: indicator not found %s", s.latin1());
+    return;
+  }
+  
   Setting *set = config.getIndicator(s);
   if (! set->count())
   {
@@ -373,6 +457,8 @@ void IndicatorPage::moveIndicator ()
   if (status)
     emit signalDisableIndicator(s);
     
+  saveLocalIndicator(list->currentText(), set);
+  
   config.setIndicator(s, set);
   
   if (status)
@@ -385,7 +471,8 @@ void IndicatorPage::updateList ()
   
   Config config;
   QStringList l = config.getIndicators(getIndicatorGroup());
-  int loop;
+
+  int loop;  
   for (loop = 0; loop < (int) l.count(); loop++)
   {
     QFileInfo fi(l[loop]);
@@ -401,7 +488,7 @@ void IndicatorPage::updateList ()
       
     delete set;
   }
-  
+
   itemSelected(QString());
 }
 
@@ -418,8 +505,15 @@ void IndicatorPage::changeIndicator (QString d)
   if (! d.length())
     return;
     
-  Config config;
+  QDir dir;
   QString s = baseDir + "/" + group->currentText() + "/" + d;
+  if (! dir.exists(s, TRUE))
+  {
+    qDebug("IndicatorPage::changeIndicator: indicator not found %s", s.latin1());
+    return;
+  }
+  
+  Config config;
   Setting *set = config.getIndicator(s);
   int t = set->getInt("enable");
   if (t)
@@ -427,6 +521,7 @@ void IndicatorPage::changeIndicator (QString d)
     set->setData("enable", "0");
     config.setIndicator(s, set);
     list->changeItem(disable, d, list->currentItem());
+    saveLocalIndicator(d, set);
     emit signalDisableIndicator(s);
   }
   else
@@ -434,6 +529,7 @@ void IndicatorPage::changeIndicator (QString d)
     set->setData("enable", "1");
     config.setIndicator(s, set);
     list->changeItem(ok, d, list->currentItem());
+    saveLocalIndicator(d, set);
     emit signalEnableIndicator(s);
   }
   
@@ -484,8 +580,8 @@ void IndicatorPage::doKeyPress (QKeyEvent *key)
       case Qt::Key_X:
         slotAccel(DeleteIndicatorGroup);
 	break;
-      case Qt::Key_A:
-        slotAccel(AddIndicator);
+      case Qt::Key_W:
+        slotAccel(NewIndicator);
 	break;
       case Qt::Key_D:
         slotAccel(DeleteIndicator);
@@ -526,9 +622,9 @@ void IndicatorPage::slotAccel (int id)
         emit signalKeyPressed (Macro::IndicatorPage, ControlButton, Key_X, 0, QString());
       deleteIndicatorGroup();
       break;  
-    case AddIndicator:
+    case NewIndicator:
       if (keyFlag)
-        emit signalKeyPressed (Macro::IndicatorPage, ControlButton, Key_A, 0, QString());
+        emit signalKeyPressed (Macro::IndicatorPage, ControlButton, Key_W, 0, QString());
       newIndicator();
       break;  
     case DeleteIndicator:
@@ -602,18 +698,15 @@ void IndicatorPage::slotGroupChanged (int)
 
 void IndicatorPage::updateGroups ()
 {
-//  group->blockSignals(TRUE);
-  
   group->clear();
   group->insertStringList(getIndicatorGroups(), -1);
   if (currentGroup.length())  
     group->setCurrentText(currentGroup);
-  
-//  group->blockSignals(FALSE);
 }
 
 QStringList IndicatorPage::getIndicatorGroups ()
 {
+/*
   QStringList l;
   QDir dir(baseDir);
   int loop;
@@ -624,6 +717,13 @@ QStringList IndicatorPage::getIndicatorGroups ()
     if (fi.isDir())
       l.append(dir[loop]);
   }
+*/
+  QStringList l;
+  l.append(group->currentText());
+  
+  if (chartPath.length())
+    l.append(tr("Local"));
+    
   return l;
 }
 
@@ -636,3 +736,83 @@ void IndicatorPage::setFocus ()
 {
   list->setFocus();
 }
+
+void IndicatorPage::setChartPath (QString d)
+{
+  chartPath = d;
+}
+
+void IndicatorPage::addLocalIndicators (QString d)
+{
+  QStringList l = QStringList::split(",", d, FALSE);
+  int loop;
+  Setting set;
+  Config config;
+  for (loop = 0; loop < (int) l.count(); loop++)
+  {
+    set.parse(l[loop]);
+    QString s = baseDir + "/" + group->currentText() + "/" + set.getData("Name");
+    config.setIndicator(s, &set);
+    if (set.getInt("enable"))
+      emit signalEnableIndicator(s);
+    localIndicators.append(set.getData("Name"));
+  }
+}
+
+void IndicatorPage::removeLocalIndicators ()
+{
+  int loop;
+  QDir dir;
+  for (loop = 0; loop < (int) localIndicators.count(); loop++)
+  {
+    QString s = baseDir + "/" + group->currentText() + "/" + localIndicators[loop];
+    emit signalDisableIndicator(s);
+  }
+
+  for (loop = 0; loop < (int) localIndicators.count(); loop++)
+  {
+    QString s = baseDir + "/" + group->currentText() + "/" + localIndicators[loop];
+    dir.remove(s, TRUE);
+  }
+    
+  localIndicators.clear();
+}
+
+void IndicatorPage::saveLocalIndicator (QString d, Setting *set)
+{
+  if (localIndicators.findIndex(d) != -1)
+  {
+    Config config;
+    QString plugin = config.parseDbPlugin(chartPath);
+    DbPlugin *db = config.getDbPlugin(plugin);
+    if (! db)
+    {
+      qDebug("IndicatorPage::saveLocalIndicator: can't open db plugin");
+      config.closePlugin(plugin);
+      return;
+    }
+  
+    if (db->openChart(chartPath))
+    {
+      qDebug("IndicatorPage::saveLocalIndicator: can't open chart");
+      config.closePlugin(plugin);
+      return;
+    }
+    
+    // save the local indicator to the db
+    QStringList l = QStringList::split(",", db->getHeaderField(DbPlugin::LocalIndicators), FALSE);
+    int loop;
+    for (loop = 0; loop < (int) l.count(); loop++)
+    {
+      if (! set->getData("Name").compare(d))
+      {
+        l[loop] = set->getString();
+	break;
+      }
+    }
+    db->setHeaderField(DbPlugin::LocalIndicators, l.join(","));
+      
+    config.closePlugin(plugin);
+  }
+}
+

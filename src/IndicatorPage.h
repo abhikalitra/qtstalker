@@ -65,6 +65,10 @@ class IndicatorPage : public QWidget
     QStringList getIndicatorGroups ();
     QString getIndicatorGroup ();
     void setFocus ();
+    void setChartPath (QString);
+    void removeLocalIndicators ();
+    void addLocalIndicators (QString);
+    void saveLocalIndicator (QString d, Setting *);
 
   public slots:
     void doubleClick (QListBoxItem *);
@@ -96,8 +100,11 @@ class IndicatorPage : public QWidget
     Macro *macro;
     bool macroFlag;
     QString baseDir;
+    QString cusRulePath;
     QString currentGroup;
     bool updateEnableFlag;
+    QString chartPath;
+    QStringList localIndicators;
 };
 
 #endif

@@ -271,6 +271,9 @@ void QtstalkerApp::slotQuit()
   config.setData(Config::IndicatorGroup, ip->getIndicatorGroup());
   config.closePlugins();
   
+  // make sure we clean up before we quit
+  ip->removeLocalIndicators();
+  
   menubar->saveSettings();
   toolbar2->saveSettings();
 
@@ -419,6 +422,7 @@ void QtstalkerApp::loadChart (QString d)
     reload = TRUE;
 
   chartPath = d;
+  ip->setChartPath(chartPath); // let ip know what chart we are viewing currently
   
   mainPlot->clear();
 
@@ -464,8 +468,15 @@ void QtstalkerApp::loadChart (QString d)
     
   mainPlot->setChartInput ();
 
+  // setup the local indicators
+  if (! reload)
+  {
+    ip->removeLocalIndicators();
+    ip->addLocalIndicators(plug->getHeaderField(DbPlugin::LocalIndicators));
+  }
   QStringList l = config.getIndicators(ip->getIndicatorGroup());
-  int loop;
+
+  int loop;  
   for (loop = 0; loop < (int) l.count(); loop++)
   {
     Setting *set = config.getIndicator(l[loop]);
@@ -519,6 +530,8 @@ void QtstalkerApp::loadChart (QString d)
   }
 
   tabs->drawCurrent();
+  
+  ip->updateList();
 
   setCaption(getWindowCaption());
 }
@@ -743,7 +756,14 @@ void QtstalkerApp::slotDeleteIndicator (QString text)
   if (rc == QMessageBox::No)
     return;
 
+  QDir dir;
   QString s = config.getData(Config::IndicatorPath) + "/" + ip->getIndicatorGroup() + "/" + text;
+  if (! dir.exists(s, TRUE))
+  {
+    qDebug("QtstalkerApp::deleteIndicator: indicator not found %s", s.latin1());
+    return;
+  }
+  
   Setting *set = config.getIndicator(s);
   if (! set->count())
   {
@@ -766,19 +786,27 @@ void QtstalkerApp::slotDeleteIndicator (QString text)
     default:
       break;      
   }
+
+  delete set;
   
-  if (! mainFlag && chartPath.length())
+  if (chartPath.length())
   {
     QString plugin = config.parseDbPlugin(chartPath);
     DbPlugin *db = config.getDbPlugin(plugin);
     if (! db)
     {
+      qDebug("QtstalkerApp::slotDeleteIndicator:can't get db plugin");
       config.closePlugin(plugin);
-      delete set;
       return;
     }
-  
-    db->openChart(chartPath);
+    
+    if (db->openChart(chartPath))
+    {
+      qDebug("QtstalkerApp::slotDeleteIndicator: can't open chart");
+      config.closePlugin(plugin);
+      return;
+    }
+    
     QPtrList<Setting> l = db->getChartObjects ();
     QPtrListIterator<Setting> it(l);
     for (; it.current(); ++it)
@@ -787,6 +815,25 @@ void QtstalkerApp::slotDeleteIndicator (QString text)
       if (! co->getData("Plot").compare(text))
         db->deleteChartObject(co->getData("Name"));
     }
+    
+    QStringList l2 = QStringList::split(",", db->getHeaderField(DbPlugin::LocalIndicators), FALSE);
+    Setting tset;
+    for (QStringList::Iterator it = l2.begin(); it != l2.end(); ++it )
+    {
+      tset.parse(*it);
+      if (! tset.getData("Name").compare(text))
+      {
+        l2.remove(*it);
+	break;
+      }
+      else
+        tset.clear();
+    }
+    
+    if (l2.count())
+      db->setHeaderField(DbPlugin::LocalIndicators, l2.join(","));
+    else
+      db->setHeaderField(DbPlugin::LocalIndicators, "");
     
     config.closePlugin(plugin);
   }

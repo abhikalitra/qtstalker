@@ -30,7 +30,6 @@
 #include <qmessagebox.h>
 #include <qobject.h>
 
-
 Spread::Spread ()
 {
   data.setAutoDelete(TRUE);
@@ -108,7 +107,7 @@ void Spread::updateSpread ()
     setBar(r);
     
     if (r->getData("Count") != 2)
-      deleteBar(QString::number(fdate, 'f', 0));
+      deleteData(QString::number(fdate, 'f', 0));
   }
   
   QDictIterator<Bar> it(data);

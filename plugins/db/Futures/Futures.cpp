@@ -23,7 +23,6 @@
 #include "FuturesDialog.h"
 #include "BarData.h"
 
-
 Futures::Futures ()
 {
   helpFile = "futuresplugin.html";
