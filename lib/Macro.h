@@ -24,8 +24,10 @@
 
 #include <qobject.h>
 #include <qstring.h>
-#include <qstringlist.h>
 #include <qevent.h>
+#include <qptrlist.h>
+#include "MacroKey.h"
+
 
 class Macro : public QObject
 {
@@ -35,6 +37,7 @@ class Macro : public QObject
   
     enum MacroZone
     {
+      NoZone,
       ChartPage,
       GroupPage,
       IndicatorPage,
@@ -53,23 +56,21 @@ class Macro : public QObject
     void save ();
     void record ();
     void stop ();
-    QKeyEvent * getKey ();
+    QKeyEvent * getKey (int);
     int getCount ();
-    void setKey (int);
-    int getZone ();
+    int getZone (int);
+    void setIndex (int);
+    int getIndex ();
+    void incIndex ();
     
   public slots:
     void recordKey (int, int, int, int, QString);
     
   private:
     QString path;
-    QStringList list;
+    QPtrList<MacroKey> list;
     bool flag;
-    int zone;
-    int state;
-    int key;
-    int ascii;
-    QString text;
+    int index;
 };
 
 #endif

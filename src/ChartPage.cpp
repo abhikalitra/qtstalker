@@ -24,7 +24,6 @@
 #include "SymbolDialog.h"
 #include "ChartDb.h"
 #include "HelpWindow.h"
-#include "Macro.h"
 #include "edit.xpm"
 #include "delete.xpm"
 #include "export.xpm"
@@ -39,6 +38,8 @@
 ChartPage::ChartPage (QWidget *w) : QWidget (w)
 {
   keyFlag = FALSE;
+  macroFlag = FALSE;
+  macro = 0;
   
   QVBoxLayout *vbox = new QVBoxLayout(this);
   vbox->setMargin(2);
@@ -364,5 +365,22 @@ void ChartPage::slotAccel (int id)
     default:
       break;
   }
+}
+
+void ChartPage::runMacro (Macro *d)
+{
+  macro = d;
+  macroFlag = TRUE;
+  
+  while (macro->getZone(macro->getIndex()) == Macro::ChartPage)
+  {
+    doKeyPress(macro->getKey(macro->getIndex()));
+    
+    macro->incIndex();
+    if (macro->getIndex() >= macro->getCount())
+      break;
+  }
+  
+  macroFlag = FALSE;
 }
 

@@ -64,7 +64,7 @@ void CSVDialog::createMainPage ()
   vbox->setMargin(5);
   vbox->setSpacing(0);
   
-  QGridLayout *grid = new QGridLayout(vbox, 3, 1);
+  QGridLayout *grid = new QGridLayout(vbox, 4, 1);
   grid->setSpacing(5);
   grid->setColStretch(1, 1);
   
@@ -85,6 +85,15 @@ void CSVDialog::createMainPage ()
 
   ruleCombo = new QComboBox(w);
   grid->addWidget(ruleCombo, 2, 1);
+  
+  label = new QLabel(tr("Auto Reload:"), w);
+  grid->addWidget(label, 3, 0);
+  
+  minutes = new QSpinBox(w);
+  minutes->setMinValue(0);
+  minutes->setMaxValue(99);
+  minutes->setLineStep(0);
+  grid->addWidget(minutes, 3, 1);
   
   vbox->addSpacing(30);
   
@@ -469,5 +478,16 @@ void CSVDialog::help ()
   hw->show();
   reject();
 }
+
+void CSVDialog::setReloadInterval (int d)
+{
+  minutes->setValue(d);
+}
+
+int CSVDialog::getReloadInterval ()
+{
+  return minutes->value();
+}
+
 
 

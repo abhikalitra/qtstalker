@@ -33,6 +33,8 @@ HEADERS += MyLineEdit.h
 HEADERS += MySpinBox.h
 HEADERS += MyComboBox.h
 HEADERS += MySlider.h
+HEADERS += MacroKey.h
+HEADERS += Macro.h
    
 SOURCES += QuotePlugin.cpp
 SOURCES += IndicatorPlugin.cpp
@@ -63,6 +65,9 @@ SOURCES += MyLineEdit.cpp
 SOURCES += MySpinBox.cpp
 SOURCES += MyComboBox.cpp
 SOURCES += MySlider.cpp
+SOURCES += MacroKey.cpp
+SOURCES += Macro.cpp
+
     
 TARGET = qtstalker
 VERSION = 0.30.0

@@ -28,6 +28,7 @@
 #include <qlineedit.h>
 #include "Navigator.h"
 #include "Config.h"
+#include "Macro.h"
 
 class GroupPage : public QWidget
 {
@@ -66,6 +67,7 @@ class GroupPage : public QWidget
     void setKeyFlag (bool);
     void doKeyPress (QKeyEvent *);
     void slotAccel (int);
+    void runMacro (Macro *);
 
   protected:
     Navigator *nav;
@@ -73,6 +75,8 @@ class GroupPage : public QWidget
     QPopupMenu *menu;
     QLineEdit *group;
     bool keyFlag;
+    Macro *macro;
+    bool macroFlag;
 };
 
 #endif

@@ -22,7 +22,6 @@
 #include "TestPage.h"
 #include "Tester.h"
 #include "HelpWindow.h"
-#include "Macro.h"
 #include "help.xpm"
 #include "open.xpm"
 #include "newchart.xpm"
@@ -40,6 +39,8 @@
 TestPage::TestPage (QWidget *w) : QListBox (w)
 {
   keyFlag = FALSE;
+  macroFlag = FALSE;
+  macro = 0;
 
   connect(this, SIGNAL(contextMenuRequested(QListBoxItem *, const QPoint &)), this, SLOT(rightClick(QListBoxItem *)));
   connect(this, SIGNAL(highlighted(const QString &)), this, SLOT(testSelected(const QString &)));
@@ -363,6 +364,23 @@ void TestPage::slotAccel (int id)
     default:
       break;
   }
+}
+
+void TestPage::runMacro (Macro *d)
+{
+  macro = d;
+  macroFlag = TRUE;
+  
+  while (macro->getZone(macro->getIndex()) == Macro::TestPage)
+  {
+    doKeyPress(macro->getKey(macro->getIndex()));
+    
+    macro->incIndex();
+    if (macro->getIndex() >= macro->getCount())
+      break;
+  }
+  
+  macroFlag = FALSE;
 }
 
 

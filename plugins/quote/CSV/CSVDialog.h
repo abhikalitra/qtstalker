@@ -26,6 +26,7 @@
 #include <qdatetimeedit.h>
 #include <qstringlist.h>
 #include <qlistbox.h>
+#include <qspinbox.h>
 #include "FileButton.h"
 #include "Toolbar.h"
 
@@ -52,6 +53,8 @@ class CSVDialog : public QTabDialog
     void updateRules ();
     void setRuleName (QString);
     QString getRuleName ();
+    void setReloadInterval (int);
+    int getReloadInterval ();
     
   public slots:
     void dateRangeChanged (bool);
@@ -79,5 +82,6 @@ class CSVDialog : public QTabDialog
     QLineEdit *ruleName;
     QString helpFile;
     QString lastPath;
+    QSpinBox *minutes;
 };
 

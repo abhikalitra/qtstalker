@@ -29,6 +29,7 @@
 #include <qintdict.h>
 #include <qaction.h>
 #include "Config.h"
+#include "Macro.h"
 
 
 class MainMenubar : public QMenuBar
@@ -44,9 +45,7 @@ class MainMenubar : public QMenuBar
     void signalLog (bool);
     void signalHideMain (bool);
     void signalSidePanel (bool);
-    void signalFocusEvent (int);
     void signalKeyPressed (int, int, int, int, QString);
-    void signalToolbarFocusEvent ();
     void signalRunMacro (QString);
     void signalNewIndicator();
     void signalOptions();
@@ -70,14 +69,6 @@ class MainMenubar : public QMenuBar
       IndicatorDate,
       DrawMode,
       Help,
-      ChartPanelFocus,
-      GroupPanelFocus,
-      IndicatorPanelFocus,
-      PortfolioPanelFocus,
-      TestPanelFocus,
-      ScannerPanelFocus,
-      MacroPanelFocus,
-      ToolbarFocus,
       Macro1,
       Macro2,
       Macro3,
@@ -104,6 +95,7 @@ class MainMenubar : public QMenuBar
     void slotAccel (int);
     void setKeyFlag (bool);
     void doKeyPress (QKeyEvent *);
+    void runMacro (Macro *);
     
   private:
     Config config;
@@ -114,6 +106,8 @@ class MainMenubar : public QMenuBar
     QPopupMenu *helpMenu;
     QIntDict<QAction> actions;
     bool keyFlag;
+    Macro *tmacro;
+    bool macroFlag;
 };
 
 #endif

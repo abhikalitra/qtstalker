@@ -27,6 +27,8 @@
 #include <qlistbox.h>
 #include <qpopupmenu.h>
 #include "Setting.h"
+#include "Macro.h"
+#include "MacroKey.h"
 
 
 class IndicatorPage : public QListBox
@@ -48,6 +50,7 @@ class IndicatorPage : public QListBox
       NewIndicator,
       DeleteIndicator,
       EditIndicator,
+      MoveIndicator,
       Help
     };
   
@@ -65,11 +68,13 @@ class IndicatorPage : public QListBox
     void deleteIndicator ();
     void itemSelected(const QString &);
     QStringList getDisabledIndicators ();
-    void doKeyPress (QKeyEvent *);
     void changeIndicator (QString, int);
     void setKeyFlag (bool);
     bool getIndicatorStatus (QString);
     void slotAccel (int);
+    void doKeyPress (QKeyEvent *key);
+    void runMacro (Macro *);
+    void moveIndicator ();
 
   protected:
     virtual void keyPressEvent (QKeyEvent *);
@@ -77,6 +82,8 @@ class IndicatorPage : public QListBox
     QPopupMenu *menu;
     Setting statusList;
     bool keyFlag;
+    Macro *macro;
+    bool macroFlag;
 };
 
 #endif

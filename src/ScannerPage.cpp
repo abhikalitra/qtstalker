@@ -23,20 +23,23 @@
 #include "Scanner.h"
 #include "SymbolDialog.h"
 #include "HelpWindow.h"
-#include "Macro.h"
 #include "help.xpm"
 #include "open.xpm"
 #include "newchart.xpm"
 #include "delete.xpm"
 #include "rename.xpm"
+#include "macro.xpm"
 #include <qinputdialog.h>
 #include <qmessagebox.h>
 #include <qcursor.h>
 #include <qaccel.h>
+#include <qfileinfo.h>
 
 ScannerPage::ScannerPage (QWidget *w) : QListBox (w)
 {
   keyFlag = FALSE;
+  macroFlag = FALSE;
+  tmacro = 0;
 
   connect(this, SIGNAL(contextMenuRequested(QListBoxItem *, const QPoint &)), this, SLOT(rightClick(QListBoxItem *)));
   connect(this, SIGNAL(highlighted(const QString &)), this, SLOT(scannerSelected(const QString &)));
@@ -47,6 +50,7 @@ ScannerPage::ScannerPage (QWidget *w) : QListBox (w)
   menu->insertItem(QPixmap(open), tr("&Open Scanner		Ctrl+O"), this, SLOT(openScanner()));
   menu->insertItem(QPixmap(deleteitem), tr("&Delete Scanner	Ctrl+D"), this, SLOT(deleteScanner()));
   menu->insertItem(QPixmap(renam), tr("&Rename Scanner		Ctrl+R"), this, SLOT(renameScanner()));
+  menu->insertItem(QPixmap(macro), tr("R&un Scanner		Ctrl+U"), this, SLOT(runScanner()));
   menu->insertSeparator(-1);
   menu->insertItem(QPixmap(help), tr("&Help		Ctrl+H"), this, SLOT(slotHelp()));
 
@@ -56,6 +60,7 @@ ScannerPage::ScannerPage (QWidget *w) : QListBox (w)
   a->insertItem(CTRL+Key_O, OpenScanner);
   a->insertItem(CTRL+Key_D, DeleteScanner);
   a->insertItem(CTRL+Key_R, RenameScanner);
+  a->insertItem(CTRL+Key_U, RunScanner);
   a->insertItem(CTRL+Key_H, Help);
   
   refreshList();
@@ -70,7 +75,7 @@ void ScannerPage::openScanner ()
 {
   Scanner *dialog = new Scanner(currentText());
   connect(dialog, SIGNAL(exitScanner()), this, SLOT(refreshList()));
-  connect(dialog, SIGNAL(message(QString)), this, SLOT(slotMessage(QString)));
+  connect(dialog, SIGNAL(message(QString)), this, SIGNAL(message(QString)));
   dialog->show();
 }
 
@@ -78,8 +83,38 @@ void ScannerPage::openScanner (QString d)
 {
   Scanner *dialog = new Scanner(d);
   connect(dialog, SIGNAL(exitScanner()), this, SLOT(refreshList()));
-  connect(dialog, SIGNAL(message(QString)), this, SLOT(slotMessage(QString)));
+  connect(dialog, SIGNAL(message(QString)), this, SIGNAL(message(QString)));
   dialog->show();
+}
+
+void ScannerPage::runScanner ()
+{
+  SymbolDialog *dialog = new SymbolDialog(this, 
+  					  config.getData(Config::ScannerPath),
+					  "*",
+					  QFileDialog::ExistingFiles);
+  dialog->setCaption(tr("Select scanners to run"));
+
+  int rc = dialog->exec();
+
+  if (rc == QDialog::Accepted)
+  {
+    QStringList l = dialog->selectedFiles();
+    int loop;
+    QDir dir;
+    for (loop = 0; loop < (int) l.count(); loop++)
+    {
+      QFileInfo fi(l[loop]);
+      Scanner *sdialog = new Scanner(fi.fileName());
+      connect(sdialog, SIGNAL(exitScanner()), this, SLOT(refreshList()));
+      connect(sdialog, SIGNAL(message(QString)), this, SIGNAL(message(QString)));
+      sdialog->show();
+      sdialog->scan();
+      delete sdialog;
+    }
+  }
+
+  delete dialog;
 }
 
 void ScannerPage::newScanner()
@@ -226,11 +261,6 @@ void ScannerPage::refreshList ()
     insertItem(dir[loop], -1);
 }
 
-void ScannerPage::slotMessage (QString d)
-{
-  emit message(d);
-}
-
 void ScannerPage::doubleClick (QListBoxItem *item)
 {
   if (! item)
@@ -327,11 +357,33 @@ void ScannerPage::slotAccel (int id)
         emit signalKeyPressed (Macro::ScannerPage, ControlButton, Key_O, 0, QString());
       openScanner();
       break;  
+    case RunScanner:
+      if (keyFlag)
+        emit signalKeyPressed (Macro::ScannerPage, ControlButton, Key_U, 0, QString());
+      runScanner();
+      break;  
     case Help:
       slotHelp();
       break;  
     default:
       break;
   }
+}
+
+void ScannerPage::runMacro (Macro *d)
+{
+  tmacro = d;
+  macroFlag = TRUE;
+  
+  while (tmacro->getZone(tmacro->getIndex()) == Macro::ScannerPage)
+  {
+    doKeyPress(tmacro->getKey(tmacro->getIndex()));
+    
+    tmacro->incIndex();
+    if (tmacro->getIndex() >= tmacro->getCount())
+      break;
+  }
+  
+  macroFlag = FALSE;
 }
 

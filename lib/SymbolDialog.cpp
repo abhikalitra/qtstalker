@@ -27,6 +27,7 @@ SymbolDialog::SymbolDialog (QWidget *w, QString dir, QString filter, QFileDialog
   basePath = dir;
   setMode(mode);
   connect(this, SIGNAL(dirEntered(const QString &)), this, SLOT(dirSelected(const QString &)));
+  keyFlag = FALSE;
 }
 
 SymbolDialog::~SymbolDialog ()
@@ -45,5 +46,29 @@ void SymbolDialog::dirSelected (const QString &d)
   
   if (d.length() < basePath.length())
     setDir(basePath);
+}
+
+void SymbolDialog::setKeyFlag (bool d)
+{
+  keyFlag = d;
+}
+
+void SymbolDialog::keyPressEvent (QKeyEvent *key)
+{
+  if (keyFlag)
+    emit signalKeyPressed (type, key->state(), key->key(), key->ascii(), key->text());
+    
+  doKeyPress(key);  
+}
+
+void SymbolDialog::doKeyPress (QKeyEvent *key)
+{
+  key->accept();
+  QFileDialog::keyPressEvent(key);
+}
+
+void SymbolDialog::setType (int d)
+{
+  type = d;
 }
 

@@ -68,7 +68,21 @@
 
 20050216: Applied patch from vinaynaik to correct BB logic error.
 
+20050218: Can now run multiple scanners in one go. Use the new 'Run Scanner' menu option.
 
+20050218: Put a chart reload timer into the toolbar. Value set will reload the chart every X minutes.
+
+20050218: Added a reload interval timer to the CSV plugin. The timer will only start once the
+          user has opened the CSV settings dialog and set the timer. A zero value will turn it
+	  off. Non zero value will import the selected input files every X minutes. Once the
+	  user saves the settings dialog will the timer take effect. This is to ensure we don't
+	  have the timer always running. The timer will stop if the user closes the quotes dialog
+	  or if a different quote plugin is selected. If you want to keep the timer going you will
+	  have to keep the quotes dialog open and left at the CSV method.
+	  
+20050218: The position of indicators can now be changed. Use the 'Move Indicator' menu option
+          in the indicator panel.
+	  
 	  
 0.29
 ====

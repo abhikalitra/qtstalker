@@ -27,6 +27,8 @@
 #include <qpopupmenu.h>
 #include <qlistbox.h>
 #include "Config.h"
+#include "Macro.h"
+
 
 class MacroPage : public QListBox
 {
@@ -68,6 +70,7 @@ class MacroPage : public QListBox
     void runMacro ();
     void setKeyFlag (bool);
     void slotAccel (int);
+    void runMacro (Macro *);
 
   private:
     virtual void keyPressEvent (QKeyEvent *);
@@ -75,6 +78,8 @@ class MacroPage : public QListBox
     Config config;
     QPopupMenu *menu;
     bool keyFlag;
+    Macro *tmacro;
+    bool macroFlag;
 };
 
 #endif

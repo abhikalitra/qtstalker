@@ -39,9 +39,14 @@
 #include <qlayout.h>
 #include <qpushbutton.h>
 #include <qtooltip.h>
+#include <qaccel.h>
 
-NavigatorTab::NavigatorTab (QWidget *w) : QWidget (w)
+NavigatorTab::NavigatorTab (QWidget *w, QMainWindow *mw) : QWidget (w)
 {
+  macroFlag = FALSE;
+  tmacro = 0;
+  keyFlag = FALSE;
+
   QVBoxLayout *vbox = new QVBoxLayout(this);
   vbox->setSpacing(0);
   vbox->setMargin(0);
@@ -138,6 +143,16 @@ NavigatorTab::NavigatorTab (QWidget *w) : QWidget (w)
   id = positionMenu->insertItem(tr("Right"), this, SLOT(togglePosition(int)));
   positionMenu->setItemParameter(id, 1);
   menu->insertItem (tr("Navigator Position"), positionMenu);
+  
+  QAccel *a = new QAccel(mw);
+  connect(a, SIGNAL(activated(int)), this, SLOT(slotAccel(int)));
+  a->insertItem(CTRL+Key_C, ChartPanelFocus);
+  a->insertItem(CTRL+Key_G, GroupPanelFocus);
+  a->insertItem(CTRL+Key_I, IndicatorPanelFocus);
+  a->insertItem(CTRL+Key_P, PortfolioPanelFocus);
+  a->insertItem(CTRL+Key_T, TestPanelFocus);
+  a->insertItem(CTRL+Key_S, ScannerPanelFocus);
+  a->insertItem(CTRL+Key_M, MacroPanelFocus);
 
   loadSettings();
 }
@@ -272,5 +287,69 @@ void NavigatorTab::doKeyPress (QKeyEvent *key)
     key->ignore();
 }
 
+void NavigatorTab::runMacro (Macro *d)
+{
+  tmacro = d;
+  macroFlag = TRUE;
+  
+  while (tmacro->getZone(tmacro->getIndex()) == Macro::SidePanel)
+  {
+    doKeyPress(tmacro->getKey(tmacro->getIndex()));
+    
+    tmacro->incIndex();
+    if (tmacro->getIndex() >= tmacro->getCount())
+      break;
+  }
+  
+  macroFlag = FALSE;
+}
 
+void NavigatorTab::slotAccel (int id)
+{
+  switch (id)
+  {
+    case ChartPanelFocus:
+      if (keyFlag)
+        emit signalKeyPressed (Macro::SidePanel, ControlButton, Key_C, 0, QString());
+      pressButton(id);
+      break;
+    case GroupPanelFocus:
+      if (keyFlag)
+        emit signalKeyPressed (Macro::SidePanel, ControlButton, Key_G, 0, QString());
+      pressButton(id);
+      break;
+    case IndicatorPanelFocus:
+      if (keyFlag)
+        emit signalKeyPressed (Macro::SidePanel, ControlButton, Key_I, 0, QString());
+      pressButton(id);
+      break;
+    case PortfolioPanelFocus:
+      if (keyFlag)
+        emit signalKeyPressed (Macro::SidePanel, ControlButton, Key_P, 0, QString());
+      pressButton(id);
+      break;
+    case TestPanelFocus:
+      if (keyFlag)
+        emit signalKeyPressed (Macro::SidePanel, ControlButton, Key_T, 0, QString());
+      pressButton(id);
+      break;
+    case ScannerPanelFocus:
+      if (keyFlag)
+        emit signalKeyPressed (Macro::SidePanel, ControlButton, Key_S, 0, QString());
+      pressButton(id);
+      break;
+    case MacroPanelFocus:
+      if (keyFlag)
+        emit signalKeyPressed (Macro::SidePanel, ControlButton, Key_M, 0, QString());
+      pressButton(id);
+      break;
+    default:
+      break;
+  }
+}
+
+void NavigatorTab::setKeyFlag (bool d)
+{
+  keyFlag = d;
+}
 

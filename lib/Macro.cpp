@@ -27,6 +27,8 @@ Macro::Macro (QString d)
 {
   path = d;
   flag = FALSE;
+  list.setAutoDelete(TRUE);
+  index = 0;
 }
 
 Macro::~Macro ()
@@ -43,9 +45,13 @@ void Macro::save ()
     return;
   QTextStream stream(&f);
   
-  int loop;
-  for (loop = 0; loop < (int) list.count(); loop++)
-    stream << list[loop] << "\n";
+  QPtrListIterator<MacroKey> it(list);
+  MacroKey *mk = 0;
+  while ((mk = it.current()) != 0)
+  {
+    stream << mk->getString() << "\n";
+    ++it;
+  }  
   
   f.close();
 }
@@ -67,7 +73,9 @@ void Macro::load ()
     if (! s.length())
       continue;
       
-    list.append(s);
+    MacroKey *mk = new MacroKey();
+    mk->setString(s);
+    list.append(mk);
   }
 
   f.close();
@@ -82,56 +90,29 @@ void Macro::record ()
 void Macro::stop ()
 {
   flag = FALSE;
+  list.remove((unsigned int) 0);
+  list.remove(list.count() - 1);
   save();
 }
 
-void Macro::recordKey (int zone, int state, int key, int asc, QString t)
+void Macro::recordKey (int z, int s, int k, int a, QString t)
 {
   if (! flag)
     return;
     
-  if (! key)
+  if (z == 0 || k == 0)
     return;
   
-  QString s = QString::number(zone);
-  s.append(",");
-
-  s.append(QString::number(state));  
-  s.append(",");
-
-  s.append(QString::number(key));
-  s.append(",");
-  
-  s.append(QString::number(asc));  
-  s.append(",");
-  
-  s.append(t);  
-  
-  list.append(s);
+  list.append(new MacroKey(z, s, k, a, t));
 }
 
-void Macro::setKey (int i)
+QKeyEvent * Macro::getKey (int i)
 {
-  QStringList l = QStringList::split(",", list[i], FALSE);
-  zone = l[0].toInt();
-  state = l[1].toInt();
-  key = l[2].toInt();
-  ascii = l[3].toInt();
-  
-  if (l.count() == 4)
-    text = QString();
-  else
-    text = l[4];
-}
+  MacroKey *mk = list.at(i);
+  if (! mk)
+    return 0;
 
-QKeyEvent * Macro::getKey ()
-{
-  QKeyEvent *e = new QKeyEvent(QEvent::KeyPress,
-                               key,
-			       ascii,
-			       state,
-			       text);
-  return e;			       
+  return mk->getKeyEvent();			       
 }
 
 int Macro::getCount ()
@@ -139,8 +120,27 @@ int Macro::getCount ()
   return (int) list.count();
 }
 
-int Macro::getZone ()
+int Macro::getZone (int i)
 {
-  return zone;
+  MacroKey *mk = list.at(i);
+  if (mk)
+    return mk->getZone();
+  else
+    return -1;
+}
+
+void Macro::setIndex (int i)
+{
+  index = i;
+}
+
+int Macro::getIndex ()
+{
+  return index;
+}
+
+void Macro::incIndex ()
+{
+  index++;
 }
 

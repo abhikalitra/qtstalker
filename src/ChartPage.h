@@ -29,6 +29,7 @@
 #include "Navigator.h"
 #include "Config.h"
 #include "MyLineEdit.h"
+#include "Macro.h"
 
 class ChartPage : public QWidget
 {
@@ -71,6 +72,7 @@ class ChartPage : public QWidget
     void setKeyFlag (bool);
     void doKeyPress (QKeyEvent *);
     void slotAccel (int);
+    void runMacro (Macro *);
 
   protected:
     Navigator *nav;
@@ -79,6 +81,8 @@ class ChartPage : public QWidget
     QPopupMenu *newMenu;
     MyLineEdit *search;
     bool keyFlag;
+    Macro *macro;
+    bool macroFlag;
 };
 
 #endif

@@ -22,7 +22,6 @@
 #include "GroupPage.h"
 #include "SymbolDialog.h"
 #include "HelpWindow.h"
-#include "Macro.h"
 #include "help.xpm"
 #include "delete.xpm"
 #include "newchart.xpm"
@@ -43,6 +42,8 @@
 GroupPage::GroupPage (QWidget *w) : QWidget (w)
 {
   keyFlag = FALSE;
+  macroFlag = FALSE;
+  macro = 0;
   
   QVBoxLayout *vbox = new QVBoxLayout(this);
   vbox->setMargin(2);
@@ -400,4 +401,20 @@ void GroupPage::slotAccel (int id)
   }
 }
 
+void GroupPage::runMacro (Macro *d)
+{
+  macro = d;
+  macroFlag = TRUE;
+  
+  while (macro->getZone(macro->getIndex()) == Macro::GroupPage)
+  {
+    doKeyPress(macro->getKey(macro->getIndex()));
+    
+    macro->incIndex();
+    if (macro->getIndex() >= macro->getCount())
+      break;
+  }
+  
+  macroFlag = FALSE;
+}
 

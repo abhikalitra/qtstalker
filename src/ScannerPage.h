@@ -27,6 +27,8 @@
 #include <qpopupmenu.h>
 #include <qlistbox.h>
 #include "Config.h"
+#include "Macro.h"
+
 
 class ScannerPage : public QListBox
 {
@@ -44,6 +46,7 @@ class ScannerPage : public QListBox
       OpenScanner,
       DeleteScanner,
       RenameScanner,
+      RunScanner,
       Help
     };
   
@@ -56,15 +59,16 @@ class ScannerPage : public QListBox
     void renameScanner ();
     void newScanner ();
     void deleteScanner ();
+    void runScanner ();
     void scannerSelected (const QString &);
     void rightClick (QListBoxItem *);
     void refreshList ();
-    void slotMessage (QString);
     void slotHelp ();
     void doubleClick (QListBoxItem *);
     void doKeyPress (QKeyEvent *);
     void setKeyFlag (bool);
     void slotAccel (int);
+    void runMacro (Macro *);
 
   private:
     virtual void keyPressEvent (QKeyEvent *);
@@ -72,6 +76,8 @@ class ScannerPage : public QListBox
     Config config;
     QPopupMenu *menu;
     bool keyFlag;
+    Macro *tmacro;
+    bool macroFlag;
 };
 
 #endif

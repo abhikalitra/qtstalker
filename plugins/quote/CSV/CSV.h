@@ -24,6 +24,7 @@
 #include "ChartDb.h"
 #include "Setting.h"
 #include <qdatetime.h>
+#include <qtimer.h>
 
 class CSV : public QuotePlugin
 {
@@ -60,6 +61,8 @@ class CSV : public QuotePlugin
     QString futuresMonth;
     bool cancelFlag;
     QString lastPath;
+    int reloadInterval;
+    QTimer *reloadTimer;
 };
 
 extern "C"

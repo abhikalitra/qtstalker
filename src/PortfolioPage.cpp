@@ -23,7 +23,6 @@
 #include "PortfolioDialog.h"
 #include "SymbolDialog.h"
 #include "HelpWindow.h"
-#include "Macro.h"
 #include "help.xpm"
 #include "open.xpm"
 #include "newchart.xpm"
@@ -38,6 +37,8 @@
 PortfolioPage::PortfolioPage (QWidget *w) : QListBox (w)
 {
   keyFlag = FALSE;
+  macroFlag = FALSE;
+  macro = 0;
   
   connect(this, SIGNAL(contextMenuRequested(QListBoxItem *, const QPoint &)), this, SLOT(rightClick(QListBoxItem *)));
   connect(this, SIGNAL(highlighted(const QString &)), this, SLOT(portfolioSelected(const QString &)));
@@ -333,5 +334,22 @@ void PortfolioPage::slotAccel (int id)
     default:
       break;
   }
+}
+
+void PortfolioPage::runMacro (Macro *d)
+{
+  macro = d;
+  macroFlag = TRUE;
+  
+  while (macro->getZone(macro->getIndex()) == Macro::PortfolioPage)
+  {
+    doKeyPress(macro->getKey(macro->getIndex()));
+    
+    macro->incIndex();
+    if (macro->getIndex() >= macro->getCount())
+      break;
+  }
+  
+  macroFlag = FALSE;
 }
 

@@ -20,7 +20,6 @@
  */
 
 #include "MainMenubar.h"
-#include "Macro.h"
 #include <qaccel.h>
 #include "done.xpm"
 #include "grid.xpm"
@@ -40,6 +39,8 @@
 
 MainMenubar::MainMenubar (QMainWindow *mw) : QMenuBar (mw, "mainMenubar")
 {
+  macroFlag = FALSE;
+  tmacro = 0;
   keyFlag = FALSE;
   actions.setAutoDelete(FALSE);
   
@@ -144,15 +145,6 @@ MainMenubar::MainMenubar (QMainWindow *mw) : QMenuBar (mw, "mainMenubar")
   
   QAccel *a = new QAccel(mw);
   connect(a, SIGNAL(activated(int)), this, SLOT(slotAccel(int)));
-  a->insertItem(CTRL+Key_C, ChartPanelFocus);
-  a->insertItem(CTRL+Key_G, GroupPanelFocus);
-  a->insertItem(CTRL+Key_I, IndicatorPanelFocus);
-  a->insertItem(CTRL+Key_P, PortfolioPanelFocus);
-  a->insertItem(CTRL+Key_T, TestPanelFocus);
-  a->insertItem(CTRL+Key_S, ScannerPanelFocus);
-  a->insertItem(CTRL+Key_M, MacroPanelFocus);
-  a->insertItem(CTRL+Key_B, ToolbarFocus);
-  
   a->insertItem(CTRL+Key_2, NewIndicator);
   a->insertItem(CTRL+Key_3, Options);
   a->insertItem(CTRL+Key_4, Grid);
@@ -304,46 +296,6 @@ void MainMenubar::slotAccel (int id)
       getAction(DrawMode)->toggle();
       if (keyFlag)
         emit signalKeyPressed (Macro::Menubar, ControlButton, Key_0, 0, QString());
-      break;
-    case ChartPanelFocus:
-      emit signalFocusEvent(Macro::ChartPage);
-      if (keyFlag)
-        emit signalKeyPressed (Macro::SidePanel, ControlButton, Key_C, 0, QString());
-      break;
-    case GroupPanelFocus:
-      emit signalFocusEvent(Macro::GroupPage);
-      if (keyFlag)
-        emit signalKeyPressed (Macro::SidePanel, ControlButton, Key_G, 0, QString());
-      break;
-    case IndicatorPanelFocus:
-      emit signalFocusEvent(Macro::IndicatorPage);
-      if (keyFlag)
-        emit signalKeyPressed (Macro::SidePanel, ControlButton, Key_I, 0, QString());
-      break;
-    case PortfolioPanelFocus:
-      emit signalFocusEvent(Macro::PortfolioPage);
-      if (keyFlag)
-        emit signalKeyPressed (Macro::SidePanel, ControlButton, Key_P, 0, QString());
-      break;
-    case TestPanelFocus:
-      emit signalFocusEvent(Macro::TestPage);
-      if (keyFlag)
-        emit signalKeyPressed (Macro::SidePanel, ControlButton, Key_T, 0, QString());
-      break;
-    case ScannerPanelFocus:
-      emit signalFocusEvent(Macro::ScannerPage);
-      if (keyFlag)
-        emit signalKeyPressed (Macro::SidePanel, ControlButton, Key_S, 0, QString());
-      break;
-    case MacroPanelFocus:
-      emit signalFocusEvent(Macro::MacroPage);
-      if (keyFlag)
-        emit signalKeyPressed (Macro::SidePanel, ControlButton, Key_M, 0, QString());
-      break;
-    case ToolbarFocus:
-      emit signalToolbarFocusEvent();
-      if (keyFlag)
-        emit signalKeyPressed (Macro::ChartToolbar, ControlButton, Key_B, 0, QString());
       break;
     case Macro1:
       emit signalRunMacro(config.getData(Config::Macro1));
@@ -507,5 +459,22 @@ void MainMenubar::doKeyPress (QKeyEvent *key)
       }
     }
   }
+}
+
+void MainMenubar::runMacro (Macro *d)
+{
+  tmacro = d;
+  macroFlag = TRUE;
+  
+  while (tmacro->getZone(tmacro->getIndex()) == Macro::Menubar)
+  {
+    doKeyPress(tmacro->getKey(tmacro->getIndex()));
+    
+    tmacro->incIndex();
+    if (tmacro->getIndex() >= tmacro->getCount())
+      break;
+  }
+  
+  macroFlag = FALSE;
 }
 

@@ -54,7 +54,7 @@ Scanner::Scanner (QString n) : QTabDialog (0, 0, FALSE)
   allSymbols = new QCheckBox(tr("All symbols"), gbox);
   connect(allSymbols, SIGNAL(toggled(bool)), this, SLOT(allSymbolsToggled(bool)));
 
-  fileButton = new QPushButton(tr("Symbols..."), gbox);
+  fileButton = new QPushButton(tr("0 Symbols"), gbox);
   connect(fileButton, SIGNAL(clicked()), this, SLOT(getSymbols()));
 
   gbox = new QHGroupBox(tr("Bars/Compression"), w);  
@@ -229,6 +229,8 @@ void Scanner::scan ()
     config.closePlugin("CUS");
     delete recordList;
     delete db;
+    
+    emit message(QString());
   }
 }
 
@@ -310,6 +312,8 @@ void Scanner::loadRule ()
       fileList.append(l[1]);
   }
 
+  fileButton->setText(QString::number(fileList.count()) + " Symbols");
+  
   f.close();
 }
 
@@ -331,6 +335,8 @@ void Scanner::getSymbols ()
 
   if (rc == QDialog::Accepted)
     fileList = dialog->selectedFiles();
+    
+  fileButton->setText(QString::number(fileList.count()) + " Symbols");
     
   delete dialog;
 }

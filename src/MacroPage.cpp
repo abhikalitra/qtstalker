@@ -24,12 +24,12 @@
 //#include "MacroDialog.h"
 #include "HelpWindow.h"
 #include "PrefDialog.h"
-#include "Macro.h"
 #include "help.xpm"
 #include "edit.xpm"
 #include "newchart.xpm"
 #include "delete.xpm"
 #include "rename.xpm"
+#include "macro.xpm"
 #include <qinputdialog.h>
 #include <qmessagebox.h>
 #include <qcursor.h>
@@ -39,6 +39,8 @@
 MacroPage::MacroPage (QWidget *w) : QListBox (w)
 {
   keyFlag = FALSE;
+  macroFlag = FALSE;
+  tmacro = 0;
   
   connect(this, SIGNAL(contextMenuRequested(QListBoxItem *, const QPoint &)), this, SLOT(rightClick(QListBoxItem *)));
   connect(this, SIGNAL(highlighted(const QString &)), this, SLOT(macroSelected(const QString &)));
@@ -51,7 +53,7 @@ MacroPage::MacroPage (QWidget *w) : QListBox (w)
   menu->insertItem(QPixmap(renam), tr("&Rename Macro		Ctrl+R"), this, SLOT(renameMacro()));
   menu->insertItem(tr("&Assign Macro		Ctrl+A"), this, SLOT(assignMacro()));
   menu->insertSeparator(-1);
-  menu->insertItem(QPixmap(renam), tr("R&un Macro		Ctrl+U"), this, SLOT(runMacro()));
+  menu->insertItem(QPixmap(macro), tr("R&un Macro		Ctrl+U"), this, SLOT(runMacro()));
   menu->insertSeparator(-1);
   menu->insertItem(QPixmap(help), tr("&Help		Ctrl+H"), this, SLOT(slotHelp()));
 
@@ -382,8 +384,6 @@ void MacroPage::slotAccel (int id)
       assignMacro();
       break;  
     case RunMacro:
-      if (keyFlag)
-        emit signalKeyPressed (Macro::MacroPage, ControlButton, Key_U, 0, QString());
       runMacro();
       break;  
     case Help:
@@ -392,6 +392,23 @@ void MacroPage::slotAccel (int id)
     default:
       break;
   }
+}
+
+void MacroPage::runMacro (Macro *d)
+{
+  tmacro = d;
+  macroFlag = TRUE;
+  
+  while (tmacro->getZone(tmacro->getIndex()) == Macro::MacroPage)
+  {
+    doKeyPress(tmacro->getKey(tmacro->getIndex()));
+    
+    tmacro->incIndex();
+    if (tmacro->getIndex() >= tmacro->getCount())
+      break;
+  }
+  
+  macroFlag = FALSE;
 }
 
 

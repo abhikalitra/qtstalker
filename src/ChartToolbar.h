@@ -25,9 +25,11 @@
 #include <qstring.h>
 #include <qtoolbar.h>
 #include <qmainwindow.h>
+#include <qtimer.h>
 #include "MyComboBox.h"
 #include "MySpinBox.h"
 #include "MySlider.h"
+#include "Macro.h"
 
 
 class ChartToolbar : public QToolBar
@@ -40,16 +42,19 @@ class ChartToolbar : public QToolBar
     void signalPixelspaceChanged (int);
     void signalSliderChanged (int);
     void signalKeyPressed (int, int, int, int, QString);
+    void signalChartReload();
     
   public:
   
     enum MenuAction
     {
+      ToolbarFocus,
       CompressionFocus,
       ChartTypeFocus,
       BarSpacingFocus,
       BarsLoadedFocus,
-      ChartPannerFocus
+      ChartPannerFocus,
+      ChartReloadFocus
     };
   
     ChartToolbar(QMainWindow *);
@@ -71,15 +76,21 @@ class ChartToolbar : public QToolBar
     void setKeyFlag (bool);
     void slotAccel (int);
     void doKeyPress (QKeyEvent *);
+    void runMacro (Macro *);
+    void minutesChanged (int);
   
   private:
     MyComboBox *compressionCombo;
     MyComboBox *chartTypeCombo;
     MySpinBox *pixelspace;
     MySpinBox *barCount;
+    MySpinBox *minutes;
     MySlider *slider;
     bool keyFlag;
     MenuAction focusFlag;
+    Macro *macro;
+    bool macroFlag;
+    QTimer *reloadTimer;
 };
 
 #endif

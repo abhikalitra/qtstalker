@@ -38,6 +38,7 @@ CSV::CSV ()
   dateFlag = FALSE;
   helpFile = "csv.html";
   cancelFlag = FALSE;
+  reloadInterval = 0;
   
   edate = QDateTime::currentDateTime();
   if (edate.date().dayOfWeek() == 6)
@@ -57,6 +58,9 @@ CSV::CSV ()
     if (sdate.date().dayOfWeek() == 7)
       sdate = sdate.addDays(-2);
   }
+  
+  reloadTimer = new QTimer(this);
+  connect(reloadTimer, SIGNAL(timeout()), SLOT(parse()));
   
   loadSettings();
 }
@@ -617,6 +621,7 @@ void CSV::prefDialog (QWidget *w)
   dialog->setDateRange(dateFlag);
   dialog->setRuleName(ruleName);
   dialog->setFiles(list);
+  dialog->setReloadInterval(reloadInterval);
           
   int rc = dialog->exec();
   
@@ -628,6 +633,11 @@ void CSV::prefDialog (QWidget *w)
     sdate = dialog->getStartDate();
     edate = dialog->getEndDate();
     dateFlag = dialog->getDateRange();
+    
+    reloadInterval = dialog->getReloadInterval();
+    reloadTimer->stop();
+    if (reloadInterval)
+      reloadTimer->start(60000 * reloadInterval, FALSE);
     
     saveFlag = TRUE;
     
@@ -653,7 +663,10 @@ void CSV::loadSettings ()
   dateFlag = s.toInt();
   
   lastPath = settings.readEntry("/lastPath", QDir::homeDirPath());
-  
+
+  s = settings.readEntry("/ReloadInterval", "0");
+  reloadInterval = s.toInt();
+    
   settings.endGroup();
 }
 
@@ -668,6 +681,7 @@ void CSV::saveSettings ()
   settings.writeEntry("/RuleName", ruleName);
   settings.writeEntry("/DateRange", QString::number(dateFlag));
   settings.writeEntry("/lastPath", lastPath);
+  settings.writeEntry("/ReloadInterval", QString::number(reloadInterval));
   
   settings.endGroup();
 }

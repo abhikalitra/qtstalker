@@ -36,6 +36,7 @@
 #include "PrefDialog.h"
 #include "ChartDb.h"
 #include "HelpWindow.h"
+#include "MacroKey.h"
 
 #include "qtstalker.xpm"
 
@@ -72,9 +73,9 @@ QtstalkerApp::QtstalkerApp()
   vbox->addWidget(dpSplitter);
   
   // setup the side panels
-  navTab = new NavigatorTab(dpSplitter);
+  navTab = new NavigatorTab(dpSplitter, this);
   connect(navTab, SIGNAL(signalPositionChanged(int)), this, SLOT(slotNavigatorPosition(int)));
-  connect(menubar, SIGNAL(signalFocusEvent(int)), navTab, SLOT(pressButton(int)));
+  connect(this, SIGNAL(signalSetKeyFlag(bool)), navTab, SLOT(setKeyFlag(bool)));
   
   // setup the data panel area
   infoLabel = new QMultiLineEdit(dpSplitter);
@@ -231,8 +232,8 @@ void QtstalkerApp::initToolBar()
   connect(toolbar2, SIGNAL(signalCompressionChanged(int)), this, SLOT(slotCompressionChanged(int)));
   connect(toolbar2, SIGNAL(signalChartTypeChanged(int)), this, SLOT(slotChartTypeChanged(int)));
   connect(toolbar2, SIGNAL(signalPixelspaceChanged(int)), this, SLOT(slotPixelspaceChanged(int)));
-  connect(menubar, SIGNAL(signalToolbarFocusEvent()), toolbar2, SLOT(setFocus()));
   connect(this, SIGNAL(signalSetKeyFlag(bool)), toolbar2, SLOT(setKeyFlag(bool)));
+  connect(toolbar2, SIGNAL(signalChartReload()), this, SLOT(slotChartUpdated()));
 }
 
 void QtstalkerApp::slotQuit()
@@ -1264,43 +1265,41 @@ void QtstalkerApp::slotRunMacro (QString d)
 
   Macro *m = new Macro(d);
   m->load();
+  m->setIndex(0);
   
-  int loop;
-  for (loop = 0; loop < (int) m->getCount(); loop++)
+  while (m->getIndex() < m->getCount())
   {
-    m->setKey(loop);
-    
-    switch(m->getZone())
+    switch(m->getZone(m->getIndex()))
     {
       case Macro::ChartPage:
-        chartNav->doKeyPress(m->getKey());
+        chartNav->runMacro(m);
 	break;
       case Macro::GroupPage:
-        gp->doKeyPress(m->getKey());
+        gp->runMacro(m);
 	break;
       case Macro::IndicatorPage:
-        ip->doKeyPress(m->getKey());
+        ip->runMacro(m);
 	break;
       case Macro::PortfolioPage:
-        pp->doKeyPress(m->getKey());
+        pp->runMacro(m);
 	break;
       case Macro::TestPage:
-        tp->doKeyPress(m->getKey());
+        tp->runMacro(m);
 	break;
       case Macro::ScannerPage:
-        sp->doKeyPress(m->getKey());
+        sp->runMacro(m);
 	break;
       case Macro::MacroPage:
-        mp->doKeyPress(m->getKey());
+        mp->runMacro(m);
 	break;
       case Macro::SidePanel:
-        navTab->doKeyPress(m->getKey());
+        navTab->runMacro(m);
 	break;
       case Macro::ChartToolbar:
-        toolbar2->doKeyPress(m->getKey());
+        toolbar2->runMacro(m);
 	break;
       case Macro::Menubar:
-        menubar->doKeyPress(m->getKey());
+        menubar->runMacro(m);
 	break;
       default:
         break;
@@ -1341,6 +1340,7 @@ void QtstalkerApp::slotRecordMacro (QString d)
   connect(sp, SIGNAL(signalKeyPressed(int, int, int, int, QString)), currentMacro, SLOT(recordKey(int, int, int, int, QString)));
   connect(mp, SIGNAL(signalKeyPressed(int, int, int, int, QString)), currentMacro, SLOT(recordKey(int, int, int, int, QString)));
   connect(toolbar2, SIGNAL(signalKeyPressed(int, int, int, int, QString)), currentMacro, SLOT(recordKey(int, int, int, int, QString)));
+  connect(navTab, SIGNAL(signalKeyPressed(int, int, int, int, QString)), currentMacro, SLOT(recordKey(int, int, int, int, QString)));
   
   emit signalSetKeyFlag(TRUE);
   
