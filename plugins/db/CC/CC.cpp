@@ -104,6 +104,7 @@ void CC::saveDbDefaults (BarData::BarType barType, QString symbol, QString name,
   setData("Rebuild", "0");
 }
 
+/*
 void CC::update ()
 {
   Config config;
@@ -214,17 +215,17 @@ void CC::update ()
 
   delete pr;
 }
+*/
 
-/*
 void CC::update ()
 {
   Config config;
   QString baseDir = config.getData(Config::DataPath) + "/Futures/" + getData("Symbol");
-  QDir dir(s);
-  if (! dir.exists(s, TRUE))
+  QDir dir(baseDir);
+  if (! dir.exists(baseDir, TRUE))
     return;
     
-  int rollover = getData("Rollover").toInt();
+//  int rollover = getData("Rollover").toInt();
   int maxYears = getData("MaxYears").toInt();
   bool rebuild = getData("Rebuild").toInt();
   
@@ -241,28 +242,28 @@ void CC::update ()
     startDate = startDate.addYears(-maxYears);
   else
   {
-    Bar *bar = getLastbar();
+    Bar *bar = getLastBar();
     if (! bar)
       startDate = startDate.addYears(-maxYears);
     else
       startDate.setDate(bar->getDate().getDate());
   }
 
-  QString currentContract = fd.getContract(startDate);
+  QString currentContract = fd.getCurrentContract(startDate);
   
-  s = baseDir + currentContract;
+  QString s = baseDir + "/" + currentContract;
   ChartDb *db = new ChartDb;
   db->openChart(s);
   db->setBarCompression(BarData::DailyBar);
     
   while (startDate <= endDate)
   {
-    s = fd.getContract(startDate);
+    s = fd.getCurrentContract(startDate);
     if (s.compare(currentContract))
     {
       delete db;
       currentContract = s;
-      s = baseDir + currentContract;
+      s = baseDir + "/" + currentContract;
       db = new ChartDb;
       db->openChart(s);
       db->setBarCompression(BarData::DailyBar);
@@ -287,7 +288,6 @@ void CC::update ()
   if (db)
     delete db;
 }
-*/
 
 QString CC::createNew ()
 {

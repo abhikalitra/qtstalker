@@ -52,26 +52,21 @@ QString QuotePlugin::stripJunk (QString d)
 bool QuotePlugin::setTFloat (QString d)
 {
   QString s = d;
-  int p = s.find("A", 0, TRUE);
-  if (p != -1)
-    s.remove(p, 1);
+  
+  while (s.contains("A"))
+    s = s.remove(s.find("A", 0, TRUE), 1);
+  
+  while (s.contains("B"))
+    s = s.remove(s.find("B", 0, TRUE), 1);
 
-  p = s.find("B", 0, TRUE);
-  if (p != -1)
-    s.remove(p, 1);
-
-  p = s.find("K", 0, TRUE);
-  if (p != -1)
+  while (s.contains("K"))
   {
-    s.remove(p, 1);
+    s = s.remove(s.find("K", 0, TRUE), 1);
     s.append("000");
   }
 
   while (s.contains(","))
-  {
-    int pos = s.find(",", 0, TRUE);
-    s.remove(pos, 1);
-  }
+    s = s.remove(s.find(",", 0, TRUE), 1);
 
   bool ok;
   tfloat = s.toFloat(&ok);
