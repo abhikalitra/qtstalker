@@ -856,6 +856,7 @@ void Tester::test ()
   closePlot->setData(db->getRecordList());
   equityPlot->setData(db->getRecordList());
 
+/*
   PlotLine *line = new PlotLine;
   Indicator *ind = new Indicator;
   ind->set("Plot", "True", Setting::None);
@@ -872,6 +873,7 @@ void Tester::test ()
   }
   ind->addLine(line);
   equityPlot->addIndicator("Equity", ind);
+*/
 
   createSummary();
 
