@@ -223,6 +223,12 @@ void Plot::setDrawMode (bool d)
     setCursor(QCursor(ArrowCursor));
   else
     setCursor(QCursor(CrossCursor));
+    
+  if (! drawMode && coPlugin)
+  {
+    coPlugin->pointerClick(QPoint(-1, -1), x1, y1);
+    mouseFlag = None;
+  }
 }
 
 bool Plot::getCrosshairsStatus ()
@@ -1206,18 +1212,6 @@ void Plot::drawInfo ()
 
   if (data->count() && mainFlag)
   {
-    s = "O=";
-    s.append(strip(data->getOpen(data->count() - 1), 4));
-    s.append(" H=");
-    s.append(strip(data->getHigh(data->count() - 1), 4));
-    s.append(" L=");
-    s.append(strip(data->getLow(data->count() - 1), 4));
-    s.append(" C=");
-    s.append(strip(data->getClose(data->count() - 1), 4));
-    s.append(" ");
-    painter.drawText(pos, 10, s, -1);
-    pos = pos + fm.width(s);
-
     double ch = 0;
     double per = 0;
     if (data->count() > 1)
@@ -1239,7 +1233,20 @@ void Plot::drawInfo ()
       else
         painter.setPen(QColor("blue"));
     }
-
+    painter.drawText(pos, 10, s, -1);
+    pos = pos + fm.width(s);
+  
+    painter.setPen(borderColor);
+    
+    s = "O=";
+    s.append(strip(data->getOpen(data->count() - 1), 4));
+    s.append(" H=");
+    s.append(strip(data->getHigh(data->count() - 1), 4));
+    s.append(" L=");
+    s.append(strip(data->getLow(data->count() - 1), 4));
+    s.append(" C=");
+    s.append(strip(data->getClose(data->count() - 1), 4));
+    s.append(" ");
     painter.drawText(pos, 10, s, -1);
     pos = pos + fm.width(s);
   }

@@ -65,6 +65,15 @@ Yahoo::Yahoo ()
   qInitNetworkProtocols();
   
   loadSettings();
+  
+  // preload all symbols to download for default
+  QString s = QDir::homeDirPath();
+  s.append("/Qtstalker/data/Stocks");
+  QDir dir(s);
+  int loop;
+  for (loop = 2; loop < (int) dir.count(); loop++)
+    symbolList.append(dir[loop]);
+  symbolList.sort();
 }
 
 Yahoo::~Yahoo ()

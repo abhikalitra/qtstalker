@@ -322,6 +322,12 @@ COPlugin::Status FiboLine::pointerClick (QPoint point, BarDate x, double y)
   
   if (status == ClickWait2)
   {
+    if (x.getDateValue() <= tx.getDateValue())
+      return status;
+  
+    if (y >= ty)
+      return status;
+    
     FiboLineObject *co = new FiboLineObject(indicator, name, tx, ty, x, y);
     co->setSaveFlag(TRUE);
     co->setColor(defaultColor);
@@ -398,6 +404,9 @@ void FiboLine::drawMovingPointer (QPoint point)
   if (point.x() < mpx)
     return;
 
+  if (point.y() < mpy)
+    return;
+  
   QPainter painter;
   painter.begin(buffer);
   painter.setRasterOp(Qt::XorROP);

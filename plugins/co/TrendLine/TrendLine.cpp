@@ -314,6 +314,9 @@ COPlugin::Status TrendLine::pointerClick (QPoint point, BarDate x, double y)
   
   if (status == ClickWait2)
   {
+    if (x.getDateValue() <= tx.getDateValue())
+      return status;
+  
     TrendLineObject *co = new TrendLineObject(indicator, name, tx, ty, x, y);
     co->setSaveFlag(TRUE);
     co->setColor(defaultColor);

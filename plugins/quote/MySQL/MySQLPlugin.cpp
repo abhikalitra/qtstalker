@@ -117,11 +117,26 @@ void MySQLPlugin::performUpdate ()
   {
     QStringList symbolList = QStringList::split(' ', symbols, FALSE);
     QStringList::const_iterator iter = symbolList.begin();
-
+    
+    Config config;
+    QString path = config.getData(Config::DataPath) + "/Stocks/";
+    QDir dir;
+    
     while (iter != symbolList.end())
-      updateSymbol(*iter++);
+    {
+      // check if the symbollist contains a symbol that has been deleted
+      QString s = path + *iter;
+      if (! dir.exists(s))
+        // remove the symbol from the list
+        symbolList.remove(*iter);
+      else
+        updateSymbol(*iter++);
+    }
 
     closeDatabase();
+    
+    // save the new list contents
+    symbols = symbolList.join(" ");
   
     // if we get here, things went well, so we persist our settings
     storeSettings();

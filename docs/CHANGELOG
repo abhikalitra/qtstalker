@@ -99,6 +99,21 @@
 
 20050120: Bar spacing is now saved and restored for each chart type. 
 
+20050122: Fixed bug that locks-up app when creating a trendline/fiboline and selecting end point
+          before start point.
+	  
+20050122: As per user request, the yahoo plugin now preloads all stock symbols as a default so
+          that the user need not bring up the dialog to select symbols. Once the yahoo plugin is selected
+	  from the quotes dialog the user can just start the update.
+	  
+20050122: Moved the 'CH=' info on the main chart info line to the left. This is so at least
+          the unique data here is still visible on a small chart.
+	  
+20050122: MySQLPlugin now checks for any deleted symbols before downloading and updates it's
+          symbol list.
+	  
+20050122: Fixed bug that didn't remove grab handles from objects when drawmode was turned off.
+
 	  	  	  	  
 0.28
 ====
