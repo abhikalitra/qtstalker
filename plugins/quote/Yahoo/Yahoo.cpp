@@ -32,6 +32,7 @@
 #include <qtimer.h>
 #include <qsettings.h>
 
+
 Yahoo::Yahoo ()
 {
   pluginName = "Yahoo";
@@ -877,18 +878,46 @@ void Yahoo::parseFundamental ()
     int p = data.find("yfnc_leftnav1", 0, TRUE);
     if (p != -1)
     {
-      p = data.find(">", p, TRUE);
+      p = data.find("b>", p, TRUE);
       if (p != -1)
       {
+        p = p + 2;
         int p2 = data.find("<", p, TRUE);
         if (p2 != -1)
-          title = data.mid(p, p2 - p);
+	{
+	  s = data.mid(p, p2 - p);
+	  if (s.length())
+            title = s;
+	}
       }
     }
     
     plug->setHeaderField(DbPlugin::Title, title);
   }
-
+  else
+  {
+    QString s2 = plug->getHeaderField(DbPlugin::Title);
+    if (! s.compare(s2))
+    {
+      int p = data.find("yfnc_leftnav1", 0, TRUE);
+      if (p != -1)
+      {
+        p = data.find("b>", p, TRUE);
+        if (p != -1)
+        {
+          p = p + 2;
+          int p2 = data.find("<", p, TRUE);
+          if (p2 != -1)
+	  {
+            s = data.mid(p, p2 - p);
+	    if (s.length())
+              plug->setHeaderField(DbPlugin::Title, s);
+	  }
+	}
+      }
+    }
+  }
+  
   // include date of this update
   QDate dt = QDate::currentDate();
   fund.setData("updateDate", dt.toString("yyyy-MM-dd"));

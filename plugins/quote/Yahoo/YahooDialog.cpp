@@ -32,6 +32,7 @@
 #include <qframe.h>
 #include <qdir.h>
 
+
 YahooDialog::YahooDialog (QWidget *p, QString d) : QTabDialog (p, "YahooDialog", TRUE)
 {
   helpFile = d;
@@ -96,8 +97,6 @@ YahooDialog::YahooDialog (QWidget *p, QString d) : QTabDialog (p, "YahooDialog",
   timeout = new QSpinBox(1, 99, 1, w);
   grid->addWidget(timeout, 4, 1);
   
-//  vbox->addSpacing(5);
-  
   adjustment = new QCheckBox(tr("Adjustment"), w);
   vbox->addWidget(adjustment);
   
@@ -144,18 +143,28 @@ void YahooDialog::newStock ()
 
   QStringList l = QStringList::split(" ", symbols, FALSE);
   
-  QDir dir;
+  Config config;
+  QString s = config.getData(Config::DataPath) + "/Stocks";
+  QDir dir(s);
+  if (! dir.exists(s))
+  {
+    if (! dir.mkdir(s))
+    {
+      qDebug("YahooDialog::newStock: Unable to create %s directory", s.latin1());
+      return;
+    }
+  }
+  
   if (! dir.exists(dataPath))
   {
     if (! dir.mkdir(dataPath))
     {
-      qDebug("YahooDialog::newStock: Unable to create directory");
+      qDebug("YahooDialog::newStock: Unable to create %s directory", dataPath.latin1());
       return;
     }
   }
   
   int loop;
-  Config config;
   for (loop = 0; loop < (int) l.count(); loop++)
   {
     QString s = dataPath + "/";
@@ -164,13 +173,25 @@ void YahooDialog::newStock ()
     {
       s.append(fi.extension(FALSE).upper());
       if (! dir.exists(s, TRUE))
-        dir.mkdir(s);
+      {
+        if (! dir.mkdir(s))
+	{
+          qDebug("YahooDialog::newStock: Unable to create %s directory", s.latin1());
+          continue;
+	}
+      }
     }
     else
     {
       s.append("US");
       if (! dir.exists(s, TRUE))
-        dir.mkdir(s);
+      {
+        if (! dir.mkdir(s))
+	{
+          qDebug("YahooDialog::newStock: Unable to create %s directory", s.latin1());
+          continue;
+	}
+      }
     }
     s.append("/");
     s.append(l[loop]);

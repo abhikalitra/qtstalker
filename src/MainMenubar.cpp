@@ -88,8 +88,8 @@ MainMenubar::MainMenubar (QMainWindow *mw) : QMenuBar (mw, "mainMenubar")
   action = new QAction(this, "actionQuote");
   action->setMenuText(tr("&Quotes"));
   action->setIconSet(icon);
-  action->setStatusTip(tr("Download quotes from internet  (Alt+2)"));
-  action->setToolTip(tr("Download quotes from internet  (Alt+2)"));
+  action->setStatusTip(tr("Download quotes from internet  (Ctrl+Q)"));
+  action->setToolTip(tr("Download quotes from internet  (Ctrl+Q)"));
   connect(action, SIGNAL(activated()), mw, SLOT(slotQuotes()));
   actions.replace(Quotes, action);
 
@@ -199,7 +199,7 @@ MainMenubar::MainMenubar (QMainWindow *mw) : QMenuBar (mw, "mainMenubar")
   a->insertItem(CTRL+Key_8, HideMain);
   a->insertItem(CTRL+Key_9, IndicatorDate);
   a->insertItem(CTRL+Key_0, DrawMode);
-  a->insertItem(ALT+Key_2, Quotes);
+  a->insertItem(CTRL+Key_Q, Quotes);
   
   a->insertItem(CTRL+Key_Escape, 8);
   a->connectItem(8, mw, SLOT(slotStopMacro()));
@@ -313,7 +313,7 @@ void MainMenubar::slotAccel (int id)
     case Quotes:
       emit signalQuotes();
       if (keyFlag)
-        emit signalKeyPressed (Macro::Menubar, AltButton, Key_2, 0, QString());
+        emit signalKeyPressed (Macro::Menubar, ControlButton, Key_Q, 0, QString());
       break;
     case ScaleToScreen:
       getAction(ScaleToScreen)->toggle();
@@ -445,66 +445,55 @@ void MainMenubar::doKeyPress (QKeyEvent *key)
       case Qt::Key_0:
 	slotAccel(DrawMode);
         break;
+      case Qt::Key_Q:
+        slotAccel(Quotes);
+        break;
       default:
         break;
     }
   }
   else
   {
-    if (key->state() == Qt::AltButton)
+    switch (key->key())
     {
-      switch (key->key())
-      {
-        case Qt::Key_2:
-	  slotAccel(Quotes);
-          break;
-        default:
-          break;
-      }
-    }
-    else
-    {
-      switch (key->key())
-      {
-        case Qt::Key_F1:
-	  slotAccel(Macro1);
-          break;
-        case Qt::Key_F2:
-	  slotAccel(Macro2);
-          break;
-        case Qt::Key_F3:
-	  slotAccel(Macro3);
-          break;
-        case Qt::Key_F4:
-	  slotAccel(Macro4);
-          break;
-        case Qt::Key_F5:
-	  slotAccel(Macro5);
-          break;
-        case Qt::Key_F6:
-	  slotAccel(Macro6);
-          break;
-        case Qt::Key_F7:
-	  slotAccel(Macro7);
-          break;
-        case Qt::Key_F8:
-	  slotAccel(Macro8);
-          break;
-        case Qt::Key_F9:
-	  slotAccel(Macro9);
-          break;
-        case Qt::Key_F10:
-	  slotAccel(Macro10);
-          break;
-        case Qt::Key_F11:
-	  slotAccel(Macro11);
-          break;
-        case Qt::Key_F12:
-	  slotAccel(Macro12);
-          break;
-        default:
-          break;
-      }
+      case Qt::Key_F1:
+        slotAccel(Macro1);
+        break;
+      case Qt::Key_F2:
+	slotAccel(Macro2);
+        break;
+      case Qt::Key_F3:
+	slotAccel(Macro3);
+        break;
+      case Qt::Key_F4:
+	slotAccel(Macro4);
+        break;
+      case Qt::Key_F5:
+	slotAccel(Macro5);
+        break;
+      case Qt::Key_F6:
+	slotAccel(Macro6);
+        break;
+      case Qt::Key_F7:
+	slotAccel(Macro7);
+        break;
+      case Qt::Key_F8:
+	slotAccel(Macro8);
+        break;
+      case Qt::Key_F9:
+	slotAccel(Macro9);
+        break;
+      case Qt::Key_F10:
+	slotAccel(Macro10);
+        break;
+      case Qt::Key_F11:
+	slotAccel(Macro11);
+        break;
+      case Qt::Key_F12:
+	slotAccel(Macro12);
+        break;
+      default:
+        break;
     }
   }
 }

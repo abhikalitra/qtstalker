@@ -34,6 +34,7 @@
 #include <qdatetime.h>
 #include <qsettings.h>
 
+
 COT::COT ()
 {
   pluginName = "COT";

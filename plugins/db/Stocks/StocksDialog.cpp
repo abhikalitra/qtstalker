@@ -35,6 +35,7 @@
 #include <qpixmap.h>
 #include <qdir.h>
 
+
 StocksDialog::StocksDialog (QString p, DbPlugin *d) : QTabDialog (0, "StocksDialog", TRUE)
 {
   helpFile = p;

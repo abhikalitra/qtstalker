@@ -63,52 +63,21 @@ float FuturesData::getRate ()
   return rate;
 }
 
-QStringList FuturesData::getSymbolList ()
+QStringList FuturesData::getSymbolList (QString d)
 {
   QStringList l;
-  l.append("AD");
-  l.append("BO");
-  l.append("C");
-  l.append("CC");
-  l.append("CD");
-  l.append("CL");
-  l.append("CR");
-  l.append("CT");
-  l.append("DJ");
-  l.append("DX");
-  l.append("EC");
-  l.append("ED");
-  l.append("ES");
-  l.append("FC");
-  l.append("GC");
-  l.append("GI");
-  l.append("HG");
-  l.append("HO");
-  l.append("HU");
-  l.append("JO");
-  l.append("JY");
-  l.append("KC");
-  l.append("LB");
-  l.append("LC");
-  l.append("LN");
-  l.append("NB");
-  l.append("ND");
-  l.append("NG");
-  l.append("NQ");
-  l.append("O");
-  l.append("PA");
-  l.append("PB");
-  l.append("PL");
-  l.append("S");
-  l.append("SB");
-  l.append("SF");
-  l.append("SI");
-  l.append("SM");
-  l.append("SP");
-  l.append("TY");
-  l.append("US");
-  l.append("W");
-  l.append("YX");
+  QDictIterator<Setting> it(data);
+  for (; it.current(); ++it)
+  {
+    if (! d.compare("All"))
+      l.append(it.current()->getData("Symbol"));
+    else
+    {
+      if (! it.current()->getData("Exchange").compare(d))
+        l.append(it.current()->getData("Symbol"));
+    }
+  }
+  
   return l;
 }
 
@@ -159,7 +128,7 @@ void FuturesData::loadData ()
   data.clear();
   
   Setting *set = new Setting;
-  set->setData("Name", "Australian Dollar");
+  set->setData("Name", QObject::tr("Australian Dollar"));
   set->setData("Symbol", "AD");
   set->setData("Rate", "1000");
   set->setData("Month", "H,M,U,Z");
@@ -167,7 +136,7 @@ void FuturesData::loadData ()
   data.replace("AD", set);
   
   set = new Setting;
-  set->setData("Name", "Soybean Oil");
+  set->setData("Name", QObject::tr("Soybean Oil"));
   set->setData("Symbol", "BO");
   set->setData("Rate", "600");
   set->setData("Month", "F,H,K,N,Q,U,V,Z");
@@ -176,7 +145,7 @@ void FuturesData::loadData ()
   data.replace("BO", set);
   
   set = new Setting;
-  set->setData("Name", "British Pound");
+  set->setData("Name", QObject::tr("British Pound"));
   set->setData("Symbol", "NB");
   set->setData("Rate", "625");
   set->setData("Month", "H,M,U,Z");
@@ -184,7 +153,7 @@ void FuturesData::loadData ()
   data.replace("NB", set);
 
   set = new Setting;
-  set->setData("Name", "British Pound");
+  set->setData("Name", QObject::tr("British Pound"));
   set->setData("Symbol", "NB");
   set->setData("Rate", "625");
   set->setData("Month", "H,M,U,Z");
@@ -192,7 +161,7 @@ void FuturesData::loadData ()
   data.replace("BP", set);
 
   set = new Setting;
-  set->setData("Name", "Corn");
+  set->setData("Name", QObject::tr("Corn"));
   set->setData("Symbol", "C");
   set->setData("Rate", "50");
   set->setData("Month", "H,K,N,U,Z");
@@ -201,7 +170,7 @@ void FuturesData::loadData ()
   data.replace("C", set);
 
   set = new Setting;
-  set->setData("Name", "Cocoa");
+  set->setData("Name", QObject::tr("Cocoa"));
   set->setData("Symbol", "CC");
   set->setData("Rate", "10");
   set->setData("Month", "H,K,N,U,Z");
@@ -209,7 +178,7 @@ void FuturesData::loadData ()
   data.replace("CO", set);
   
   set = new Setting;
-  set->setData("Name", "Cocoa");
+  set->setData("Name", QObject::tr("Cocoa"));
   set->setData("Symbol", "CC");
   set->setData("Rate", "10");
   set->setData("Month", "H,K,N,U,Z");
@@ -217,7 +186,7 @@ void FuturesData::loadData ()
   data.replace("CC", set);
 
   set = new Setting;
-  set->setData("Name", "Canadian Dollar");
+  set->setData("Name", QObject::tr("Canadian Dollar"));
   set->setData("Symbol", "CD");
   set->setData("Rate", "1000");
   set->setData("Month", "H,M,U,Z");
@@ -225,7 +194,7 @@ void FuturesData::loadData ()
   data.replace("CD", set);
 
   set = new Setting;
-  set->setData("Name", "Crude Oil");
+  set->setData("Name", QObject::tr("Crude Oil"));
   set->setData("Symbol", "CL");
   set->setData("Rate", "1000");
   set->setData("Month", "F,G,H,J,K,M,N,Q,U,V,X,Z");
@@ -234,14 +203,14 @@ void FuturesData::loadData ()
   data.replace("CL", set);
 
   set = new Setting;
-  set->setData("Name", "CRB Index");
+  set->setData("Name", QObject::tr("CRB Index"));
   set->setData("Symbol", "CR");
   set->setData("Month", "F,G,J,M,Q,X");
   set->setData("Exchange", "NYBOT");
   data.replace("CR", set);
 
   set = new Setting;
-  set->setData("Name", "Cotton");
+  set->setData("Name", QObject::tr("Cotton"));
   set->setData("Symbol", "CT");
   set->setData("Rate", "500");
   set->setData("Month", "H,K,N,V,Z");
@@ -250,14 +219,14 @@ void FuturesData::loadData ()
   data.replace("CT", set);
 
   set = new Setting;
-  set->setData("Name", "Dow Jones Industrial Average");
+  set->setData("Name", QObject::tr("Dow Jones Industrial Average"));
   set->setData("Symbol", "DJ");
   set->setData("Month", "H,M,U,Z");
   set->setData("Exchange", "CBOT");
   data.replace("DJ", set);
   
   set = new Setting;
-  set->setData("Name", "US Dollar Index");
+  set->setData("Name", QObject::tr("US Dollar Index"));
   set->setData("Symbol", "DX");
   set->setData("Rate", "1000");
   set->setData("Month", "H,M,U,Z");
@@ -265,14 +234,14 @@ void FuturesData::loadData ()
   data.replace("DX", set);
   
   set = new Setting;
-  set->setData("Name", "Euro");
+  set->setData("Name", QObject::tr("Euro"));
   set->setData("Symbol", "EC");
   set->setData("Month", "H,M,U,Z");
   set->setData("Exchange", "CME");
   data.replace("EC", set);
 
   set = new Setting;
-  set->setData("Name", "Eurodollar");
+  set->setData("Name", QObject::tr("Eurodollar"));
   set->setData("Symbol", "ED");
   set->setData("Rate", "2500");
   set->setData("Month", "H,M,U,Z");
@@ -280,14 +249,14 @@ void FuturesData::loadData ()
   data.replace("ED", set);
 
   set = new Setting;
-  set->setData("Name", "E-MINI S&P 500");
+  set->setData("Name", QObject::tr("E-MINI S&P 500"));
   set->setData("Symbol", "ES");
   set->setData("Month", "H,M,U,Z");
   set->setData("Exchange", "CME");
   data.replace("ES", set);
 
   set = new Setting;
-  set->setData("Name", "Feeder Cattle");
+  set->setData("Name", QObject::tr("Feeder Cattle"));
   set->setData("Symbol", "FC");
   set->setData("Rate", "500");
   set->setData("Month", "F,H,J,K,Q,U,V,X");
@@ -296,7 +265,7 @@ void FuturesData::loadData ()
   data.replace("FC", set);
 
   set = new Setting;
-  set->setData("Name", "Gold");
+  set->setData("Name", QObject::tr("Gold"));
   set->setData("Symbol", "GC");
   set->setData("Rate", "100");
   set->setData("Month", "G,J,M,Q,V,Z");
@@ -305,14 +274,14 @@ void FuturesData::loadData ()
   data.replace("GC", set);
 
   set = new Setting;
-  set->setData("Name", "Goldman Sachs Commodity Index");
+  set->setData("Name", QObject::tr("Goldman Sachs Commodity Index"));
   set->setData("Symbol", "GI");
   set->setData("Month", "F,G,H,J,K,M,N,Q,U,V,X,Z");
   set->setData("Exchange", "CME");
   data.replace("GI", set);
 
   set = new Setting;
-  set->setData("Name", "Copper");
+  set->setData("Name", QObject::tr("Copper"));
   set->setData("Symbol", "HG");
   set->setData("Rate", "250");
   set->setData("Month", "H,K,N,U,Z");
@@ -321,7 +290,7 @@ void FuturesData::loadData ()
   data.replace("HG", set);
 
   set = new Setting;
-  set->setData("Name", "Heating Oil");
+  set->setData("Name", QObject::tr("Heating Oil"));
   set->setData("Symbol", "HO");
   set->setData("Rate", "400");
   set->setData("Month", "F,G,H,J,K,M,N,Q,U,V,X,Z");
@@ -330,7 +299,7 @@ void FuturesData::loadData ()
   data.replace("HO", set);
 
   set = new Setting;
-  set->setData("Name", "Unleaded Gasoline");
+  set->setData("Name", QObject::tr("Unleaded Gasoline"));
   set->setData("Symbol", "HU");
   set->setData("Rate", "400");
   set->setData("Month", "F,G,H,J,K,M,N,Q,U,V,X,Z");
@@ -339,7 +308,7 @@ void FuturesData::loadData ()
   data.replace("HU", set);
 
   set = new Setting;
-  set->setData("Name", "Frozen Concentrated Orange Juice");
+  set->setData("Name", QObject::tr("Frozen Concentrated Orange Juice"));
   set->setData("Symbol", "OJ");
   set->setData("Rate", "150");
   set->setData("Month", "F,H,K,N,U,X");
@@ -348,7 +317,7 @@ void FuturesData::loadData ()
   data.replace("OJ", set);
 
   set = new Setting;
-  set->setData("Name", "Frozen Concentrated Orange Juice");
+  set->setData("Name", QObject::tr("Frozen Concentrated Orange Juice"));
   set->setData("Symbol", "OJ");
   set->setData("Rate", "150");
   set->setData("Month", "F,H,K,N,U,X");
@@ -357,7 +326,7 @@ void FuturesData::loadData ()
   data.replace("JO", set);
 
   set = new Setting;
-  set->setData("Name", "Japanese Yen");
+  set->setData("Name", QObject::tr("Japanese Yen"));
   set->setData("Symbol", "JY");
   set->setData("Rate", "1250");
   set->setData("Month", "H,M,U,Z");
@@ -365,7 +334,7 @@ void FuturesData::loadData ()
   data.replace("JY", set);
 
   set = new Setting;
-  set->setData("Name", "Coffee");
+  set->setData("Name", QObject::tr("Coffee"));
   set->setData("Symbol", "KC");
   set->setData("Rate", "375");
   set->setData("Month", "H,K,N,U,Z");
@@ -373,7 +342,7 @@ void FuturesData::loadData ()
   data.replace("KC", set);
 
   set = new Setting;
-  set->setData("Name", "Lumber");
+  set->setData("Name", QObject::tr("Lumber"));
   set->setData("Symbol", "LB");
   set->setData("Rate", "80");
   set->setData("Month", "F,H,K,N,U,X");
@@ -382,7 +351,7 @@ void FuturesData::loadData ()
   data.replace("LB", set);
 
   set = new Setting;
-  set->setData("Name", "Live Cattle");
+  set->setData("Name", QObject::tr("Live Cattle"));
   set->setData("Symbol", "LC");
   set->setData("Rate", "400");
   set->setData("Month", "G,J,M,Q,V,Z");
@@ -391,7 +360,7 @@ void FuturesData::loadData ()
   data.replace("LC", set);
 
   set = new Setting;
-  set->setData("Name", "Lean Hogs");
+  set->setData("Name", QObject::tr("Lean Hogs"));
   set->setData("Symbol", "LN");
   set->setData("Rate", "400");
   set->setData("Month", "G,J,M,N,Q,V,Z");
@@ -400,7 +369,7 @@ void FuturesData::loadData ()
   data.replace("LN", set);
 
   set = new Setting;
-  set->setData("Name", "Lean Hogs");
+  set->setData("Name", QObject::tr("Lean Hogs"));
   set->setData("Symbol", "LN");
   set->setData("Rate", "400");
   set->setData("Month", "G,J,M,N,Q,V,Z");
@@ -409,14 +378,14 @@ void FuturesData::loadData ()
   data.replace("LH", set);
     
   set = new Setting;
-  set->setData("Name", "NASDAQ 100");
+  set->setData("Name", QObject::tr("NASDAQ 100"));
   set->setData("Symbol", "ND");
   set->setData("Month", "H,M,U,Z");
   set->setData("Exchange", "CME");
   data.replace("ND", set);
 
   set = new Setting;
-  set->setData("Name", "Natural Gas");
+  set->setData("Name", QObject::tr("Natural Gas"));
   set->setData("Symbol", "NG");
   set->setData("Rate", "10000");
   set->setData("Month", "F,G,H,J,K,M,N,Q,U,V,X,Z");
@@ -425,14 +394,14 @@ void FuturesData::loadData ()
   data.replace("NG", set);
 
   set = new Setting;
-  set->setData("Name", "E-MINI NASDAQ 100");
+  set->setData("Name", QObject::tr("E-MINI NASDAQ 100"));
   set->setData("Symbol", "NQ");
   set->setData("Month", "H,M,U,Z");
   set->setData("Exchange", "CME");
   data.replace("NQ", set);
 
   set = new Setting;
-  set->setData("Name", "Oats");
+  set->setData("Name", QObject::tr("Oats"));
   set->setData("Symbol", "O");
   set->setData("Rate", "50");
   set->setData("Month", "H,K,N,U,Z");
@@ -441,7 +410,7 @@ void FuturesData::loadData ()
   data.replace("O", set);
 
   set = new Setting;
-  set->setData("Name", "Palladium");
+  set->setData("Name", QObject::tr("Palladium"));
   set->setData("Symbol", "PA");
   set->setData("Rate", "100");
   set->setData("Month", "H,M,U,Z");
@@ -449,7 +418,7 @@ void FuturesData::loadData ()
   data.replace("PA", set);
 
   set = new Setting;
-  set->setData("Name", "Frozen Pork Bellies");
+  set->setData("Name", QObject::tr("Frozen Pork Bellies"));
   set->setData("Symbol", "PB");
   set->setData("Rate", "400");
   set->setData("Month", "G,H,K,N,Q");
@@ -458,7 +427,7 @@ void FuturesData::loadData ()
   data.replace("PB", set);
 
   set = new Setting;
-  set->setData("Name", "Platinum");
+  set->setData("Name", QObject::tr("Platinum"));
   set->setData("Symbol", "PL");
   set->setData("Rate", "50");
   set->setData("Month", "F,J,N,V");
@@ -467,7 +436,7 @@ void FuturesData::loadData ()
   data.replace("PL", set);
 
   set = new Setting;
-  set->setData("Name", "Soybeans");
+  set->setData("Name", QObject::tr("Soybeans"));
   set->setData("Symbol", "S");
   set->setData("Rate", "50");
   set->setData("Month", "F,H,K,N,Q,U,X");
@@ -476,7 +445,7 @@ void FuturesData::loadData ()
   data.replace("S", set);
 
   set = new Setting;
-  set->setData("Name", "Sugar #11 World");
+  set->setData("Name", QObject::tr("Sugar #11 World"));
   set->setData("Symbol", "SB");
   set->setData("Rate", "1120");
   set->setData("Month", "H,K,N,V");
@@ -484,7 +453,7 @@ void FuturesData::loadData ()
   data.replace("SB", set);
 
   set = new Setting;
-  set->setData("Name", "Swiss Franc");
+  set->setData("Name", QObject::tr("Swiss Franc"));
   set->setData("Symbol", "SF");
   set->setData("Rate", "1250");
   set->setData("Month", "H,M,U,Z");
@@ -492,7 +461,7 @@ void FuturesData::loadData ()
   data.replace("SF", set);
 
   set = new Setting;
-  set->setData("Name", "Silver");
+  set->setData("Name", QObject::tr("Silver"));
   set->setData("Symbol", "SI");
   set->setData("Rate", "100");
   set->setData("Month", "F,H,K,N,U,Z");
@@ -501,7 +470,7 @@ void FuturesData::loadData ()
   data.replace("SI", set);
 
   set = new Setting;
-  set->setData("Name", "Soy Meal");
+  set->setData("Name", QObject::tr("Soy Meal"));
   set->setData("Symbol", "SM");
   set->setData("Rate", "100");
   set->setData("Month", "F,H,K,N,Q,U,V,Z");
@@ -510,14 +479,14 @@ void FuturesData::loadData ()
   data.replace("SM", set);
 
   set = new Setting;
-  set->setData("Name", "S&P 500");
+  set->setData("Name", QObject::tr("S&P 500"));
   set->setData("Symbol", "SP");
   set->setData("Month", "H,M,U,Z");
   set->setData("Exchange", "CME");
   data.replace("SP", set);
 
   set = new Setting;
-  set->setData("Name", "Treasury Note 10 yr.");
+  set->setData("Name", QObject::tr("Treasury Note 10 yr."));
   set->setData("Symbol", "TY");
   set->setData("Rate", "1000");
   set->setData("Month", "H,M,U,Z");
@@ -525,7 +494,7 @@ void FuturesData::loadData ()
   data.replace("TY", set);
 
   set = new Setting;
-  set->setData("Name", "Treasury Note 10 yr.");
+  set->setData("Name", QObject::tr("Treasury Note 10 yr."));
   set->setData("Symbol", "TY");
   set->setData("Rate", "1000");
   set->setData("Month", "H,M,U,Z");
@@ -533,7 +502,7 @@ void FuturesData::loadData ()
   data.replace("TYD", set);
     
   set = new Setting;
-  set->setData("Name", "US Treasury Bond");
+  set->setData("Name", QObject::tr("US Treasury Bond"));
   set->setData("Symbol", "US");
   set->setData("Rate", "1000");
   set->setData("Month", "H,M,U,Z");
@@ -541,7 +510,7 @@ void FuturesData::loadData ()
   data.replace("US", set);
 
   set = new Setting;
-  set->setData("Name", "US Treasury Bond");
+  set->setData("Name", QObject::tr("US Treasury Bond"));
   set->setData("Symbol", "US");
   set->setData("Rate", "1000");
   set->setData("Month", "H,M,U,Z");
@@ -549,7 +518,7 @@ void FuturesData::loadData ()
   data.replace("USD", set);
     
   set = new Setting;
-  set->setData("Name", "Wheat");
+  set->setData("Name", QObject::tr("Wheat"));
   set->setData("Symbol", "W");
   set->setData("Rate", "50");
   set->setData("Month", "H,K,N,U,Z");
@@ -558,7 +527,7 @@ void FuturesData::loadData ()
   data.replace("W", set);
 
   set = new Setting;
-  set->setData("Name", "NYSE");
+  set->setData("Name", QObject::tr("NYSE"));
   set->setData("Symbol", "YX");
   set->setData("Month", "H,M,U,Z");
   set->setData("Exchange", "NYBOT");
@@ -566,7 +535,7 @@ void FuturesData::loadData ()
   
   // Warsaw Stock Exchange futures
   set = new Setting;
-  set->setData("Name", "WIG20 Index");
+  set->setData("Name", QObject::tr("WIG20 Index"));
   set->setData("Symbol", "FW20");
   set->setData("Month", "H,M,U,Z");
   set->setData("Exchange", "WSE");

@@ -32,6 +32,7 @@
 #include <qstringlist.h>
 
 
+
 /**
  * constructor
  */
@@ -168,7 +169,7 @@ void MySQLPlugin::updateSymbol(QString symbol)
 
   // create the new chart
   Config config;
-  QString chartpath = config.getData(Config::DataPath) + "/Stocks/" + symbol;
+  QString chartpath = config.getData(Config::DataPath) + "/Stocks/MySQL/" + symbol;
   
   QString plugin = config.parseDbPlugin(chartpath);
   DbPlugin *db = config.getDbPlugin(plugin);

@@ -30,7 +30,6 @@
 #include <qmessagebox.h>
 #include <qobject.h>
 
-
 Spread::Spread ()
 {
   data.setAutoDelete(TRUE);

@@ -24,6 +24,7 @@
 #include "BarData.h"
 #include <qfileinfo.h>
 
+
 Stocks::Stocks ()
 {
   helpFile = "stocksplugin.html";

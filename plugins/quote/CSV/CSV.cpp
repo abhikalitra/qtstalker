@@ -30,6 +30,7 @@
 #include <qdir.h>
 #include <qsettings.h>
 
+
 CSV::CSV ()
 {
   pluginName = "CSV";
@@ -185,58 +186,30 @@ void CSV::parse ()
     QString path;
     if (! type.compare("Stocks"))
     {
-      path = createDirectory("Stocks");
+      QString tmp = "Stocks/" + directory;
+      path = createDirectory(tmp);
       if (! path.length())
       {
-        emit statusLogMessage("Unable to create stocks directory");
+        emit statusLogMessage("Unable to create directory");
         emit done();
         f.close();
-	delete rule;
+        delete rule;
         return;
-      }
-      
-      // handle any custom directories
-      if (directory.length())
-      {
-        QString tmp = "Stocks/" + directory;
-        path = createDirectory(tmp);
-        if (! path.length())
-        {
-          emit statusLogMessage("Unable to create custom stocks directory");
-          emit done();
-          f.close();
-	  delete rule;
-          return;
-        }
       }
     }
     else
     {
       if (! type.compare("Futures"))
       {
-        path = createDirectory("Futures");
+        QString tmp = "Futures/" + directory;
+        path = createDirectory(tmp);
         if (! path.length())
-	{
-          emit statusLogMessage("Unable to create futures directory");
+        {
+          emit statusLogMessage("Unable to create directory");
           emit done();
           f.close();
-	  delete rule;
+          delete rule;
           return;
-        }
-	
-        // handle any custom directories
-        if (directory.length())
-        {
-          QString tmp = "Futures/" + directory;
-          path = createDirectory(tmp);
-          if (! path.length())
-          {
-            emit statusLogMessage("Unable to create custom futures directory");
-            emit done();
-            f.close();
-	    delete rule;
-            return;
-          }
         }
 	
 	if (symbol.length() == 7)
@@ -254,17 +227,17 @@ void CSV::parse ()
           return;
 	}
 
-	QString s = "Futures/";
-	s.append(fd.getSymbol());
-        path = createDirectory(s);
-        if (! path.length())
-        {
-          emit statusLogMessage("Unable to create futures symbol directory");
-          emit done();
-          f.close();
-	  delete rule;
-          return;
-        }
+//	QString s = "Futures/";
+//	s.append(fd.getSymbol());
+//        path = createDirectory(s);
+//        if (! path.length())
+//        {
+//          emit statusLogMessage("Unable to create futures symbol directory");
+//          emit done();
+//          f.close();
+//	  delete rule;
+//          return;
+//        }
       }
     }
 

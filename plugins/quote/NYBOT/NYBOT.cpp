@@ -33,6 +33,7 @@
 #include <qdir.h>
 #include <qsettings.h>
 
+
 NYBOT::NYBOT ()
 {
   pluginName = "NYBOT";
@@ -273,22 +274,14 @@ void NYBOT::parse ()
       else
         continue;
 
-      QString path = createDirectory("Futures");
+      s = "Futures/" + fd->getExchange() + "/" + fd->getSymbol();
+      QString path = createDirectory(s);
       if (! path.length())
       {
-        emit statusLogMessage(tr("Unable to create futures directory"));
+        emit statusLogMessage("Unable to create futures directory");
         return;
       }
-
-      s = "Futures/";
-      s.append(fd->getSymbol());
-      path = createDirectory(s);
-      if (! path.length())
-      {
-        emit statusLogMessage(tr("Unable to create directory"));
-        return;
-      }
-
+	
       s = tr("Updating ") + symbol;
       emit statusLogMessage(s);
       
@@ -308,9 +301,8 @@ void NYBOT::parse ()
 	delete bar;
         continue;
       }
-      s = path;
-      s.append("/");
-      s.append(symbol);
+      
+      s = path + "/" + symbol;
       if (db->openChart(s))
       {
         emit statusLogMessage("Could not open db.");

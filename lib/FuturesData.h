@@ -44,7 +44,7 @@ class FuturesData
     int setSymbol (QString);
     QStringList getMonthList ();
     QStringList getMonths ();
-    QStringList getSymbolList ();
+    QStringList getSymbolList (QString);
     QString getCurrentContract (QDateTime);
 
   protected:

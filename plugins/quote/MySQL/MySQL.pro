@@ -20,6 +20,9 @@ LIBS += -ldb
 # for redhat
 LIBS += -L/usr/lib/mysql
 
+# for 64bit systems
+LIBS += -L/usr/lib64/mysql
+
 unix:linux-g++:LIBS += -ldl
 
 target.path = /usr/lib/qtstalker/quote

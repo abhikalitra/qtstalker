@@ -35,6 +35,7 @@
 #include <qpixmap.h>
 #include <qdir.h>
 
+
 FuturesDialog::FuturesDialog (QString p, DbPlugin *d) : QTabDialog (0, "FuturesDialog", TRUE)
 {
   helpFile = p;

@@ -734,34 +734,38 @@ void DbPlugin::getTickHistory (int mins)
 
 void DbPlugin::setHeaderField (int k, QString d)
 {
+  QString s = d;
+  if (! s.length())
+    s = "";
+    
   switch (k)
   {
     case BarType:
-      setData("BarType", d);
+      setData("BarType", s);
       break;
     case Plugin:
-      setData("Plugin", d);
+      setData("Plugin", s);
       break;
     case Symbol:
-      setData("Symbol", d);
+      setData("Symbol", s);
       break;
     case Type:
-      setData("Type", d);
+      setData("Type", s);
       break;
     case Title:
-      setData("Title", d);
+      setData("Title", s);
       break;
     case Path:
-      setData("Path", d);
+      setData("Path", s);
       break;
     case CO:
-      setData("CO", d);
+      setData("CO", s);
       break;
     case LocalIndicators:
-      setData("LocalIndicators", d);
+      setData("LocalIndicators", s);
       break;
     case QuotePlugin:
-      setData("QuotePlugin", d);
+      setData("QuotePlugin", s);
       break;
     default:
       break;

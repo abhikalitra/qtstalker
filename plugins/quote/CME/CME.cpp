@@ -34,6 +34,7 @@
 #include <qsettings.h>
 #include <qfileinfo.h>
 
+
 CME::CME ()
 {
   pluginName = "CME";
@@ -43,23 +44,7 @@ CME::CME ()
   downloadIndex = 0;
   cancelFlag = FALSE;
   
-  symbolList.append("AD");
-  symbolList.append("CD");
-  symbolList.append("EC");
-  symbolList.append("ES");
-  symbolList.append("JY");
-  symbolList.append("FC");
-  symbolList.append("GI");
-  symbolList.append("LB");
-  symbolList.append("LC");
-  symbolList.append("LN");
-  symbolList.append("NB");
-  symbolList.append("ND");
-  symbolList.append("PB");
-  symbolList.append("SF");
-  symbolList.append("NQ");
-  symbolList.append("SP");
-  symbolList.append("ED");
+  symbolList = fd.getSymbolList("CME");
   symbolList.sort();
   
   connect(&opHistory, SIGNAL(finished(QNetworkOperation *)), this, SLOT(opHistoryDone(QNetworkOperation *)));
@@ -964,19 +949,11 @@ void CME::parse (Setting *data)
   if (low.toFloat() == 0)
     low = close;
 
-  QString path = createDirectory("Futures");
+  QString s = "Futures/CME/" + fd.getSymbol();
+  QString path = createDirectory(s);
   if (! path.length())
   {
     emit statusLogMessage("Unable to create futures directory");
-    return;
-  }
-
-  QString s = "Futures/";
-  s.append(fd.getSymbol());
-  path = createDirectory(s);
-  if (! path.length())
-  {
-    emit statusLogMessage("Unable to create symbol directory");
     return;
   }
 
@@ -990,9 +967,8 @@ void CME::parse (Setting *data)
     config.closePlugin("Futures");
     return;
   }
-  s = path;
-  s.append("/");
-  s.append(data->getData("Symbol"));
+  
+  s = path + "/" + data->getData("Symbol");
   if (db->openChart(s))
   {
     emit statusLogMessage("Could not open db.");
@@ -1080,28 +1056,12 @@ void CME::prefDialog (QWidget *w)
   dialog->addComboItem(tr("Symbol"), tr("Details"), symbolList, currentSymbol);
   symbolCombo = dialog->getComboWidget(tr("Symbol"));
   
-//  dialog->addCheckItem(tr("All symbols"), tr("Details"), allSymbols);
-  
   methodChanged (method);
   
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
-/*  
-    if (! method.compare("History"))
-    {
-      allSymbols = dialog->getCheck(tr("All symbols"));
-    
-      if (allSymbols)
-        downloadSymbolList = symbolList;
-      else
-      {
-        downloadSymbolList = dialog->getCombo(tr("Symbol"));
-        currentSymbol = dialog->getCombo(tr("Symbol"));
-      }
-    }
-*/
     downloadSymbolList = dialog->getCombo(tr("Symbol"));
     currentSymbol = dialog->getCombo(tr("Symbol"));
     
@@ -1120,9 +1080,6 @@ void CME::loadSettings ()
   method = settings.readEntry("/Method", "Today");
   currentSymbol = settings.readEntry("/Symbol", "AD");
   
-//  QString s = settings.readEntry("/AllSymbols", "0");
-//  allSymbols = s.toInt();
-  
   settings.endGroup();
 }
 
@@ -1136,7 +1093,6 @@ void CME::saveSettings ()
   
   settings.writeEntry("/Method", method);
   settings.writeEntry("/Symbol", currentSymbol);
-//  settings.writeEntry("/AllSymbols", QString::number(allSymbols));
   
   settings.endGroup();
 }

@@ -215,7 +215,24 @@
 	  be imported. For example: if user enters 'IBM,RHAT' then all symbols except
 	  IBM and RHAT will be ignored in the import process. User must use a comma
 	  as delimiter between symbols.
+
+20050306: Changed all futures quote plugins to group symbols into their respective exchanges.
+	  For example:
 	  
+	  ~/Qtstalker/data/Futures/CME/*
+	  ~/Qtstalker/data/Futures/NYBOT/*
+	  etc...
+	  
+20050306: Added FW20* futures from Warsaw exchange to the futures database.
+
+20050306: Yahoo Fundamental option now updates the Name field for stocks. NOTE: Composites
+          and derivatives don't have a name field so cannot be updated. Just real stocks.
+	  
+20050307: Added a new lib to the MySQL plugin for 64bit systems that need the MySQL 64bit lib.
+
+20050307: Changed quotes dialog shortcut key to CTRL+Q because ALT+2 is picked up by the WM.
+	  
+
 	  	  
 0.29
 ====

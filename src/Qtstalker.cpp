@@ -612,7 +612,7 @@ void QtstalkerApp::compressionChanged ()
 {
   // the compression has changed
   
-  config.setData(Config::Compression, QString::number(toolbar2->getCompressionInt()));
+//  config.setData(Config::Compression, QString::number(toolbar2->getCompressionInt()));
   emit signalInterval((BarData::BarCompression) toolbar2->getCompressionInt());
 }
 
@@ -623,7 +623,7 @@ void QtstalkerApp::slotChartTypeChanged (int)
   if (mainPlot->setChartType(toolbar2->getChartType()))
     return;
 
-  config.setData(Config::ChartStyle, toolbar2->getChartType());
+//  config.setData(Config::ChartStyle, toolbar2->getChartType());
 
   emit signalPixelspace(mainPlot->getPixelspace());
 
@@ -785,7 +785,7 @@ void QtstalkerApp::slotPixelspaceChanged (int d)
   emit signalPixelspace(d);
   
 //  setSliderStart(ov, FALSE);
-  setSliderStart(ov, TRUE);
+//  setSliderStart(ov, TRUE);
   
   emit signalIndex(toolbar2->getSlider());
   

@@ -196,6 +196,8 @@ void ChartToolbar::saveSettings ()
 {
   Config config;
   config.setData(Config::Bars, QString::number(getBars()));
+  config.setData(Config::Compression, QString::number(getCompressionInt()));  
+  config.setData(Config::ChartStyle, chartTypeCombo->currentText());  
 }
 
 void ChartToolbar::setFocus ()

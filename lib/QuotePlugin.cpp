@@ -86,13 +86,20 @@ bool QuotePlugin::setTFloat (QString d, bool flag)
 QString QuotePlugin::createDirectory (QString d)
 {
   Config config;
-  QString path = config.getData(Config::DataPath) + "/" + d;
-
-  QDir dir(path);
-  if (! dir.exists(path, TRUE))
+  QString path = config.getData(Config::DataPath);
+  
+  QStringList l = QStringList::split("/", d, FALSE);
+  int loop;
+  for (loop = 0; loop < (int) l.count(); loop++)
   {
-    if (! dir.mkdir(path, TRUE))
-      return QString::null;
+    path.append("/");
+    path.append(l[loop]);
+    QDir dir(path);
+    if (! dir.exists(path, TRUE))
+    {
+      if (! dir.mkdir(path, TRUE))
+        return QString::null;
+    }
   }
 
   return path;

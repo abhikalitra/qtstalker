@@ -31,6 +31,7 @@
 #include <qmessagebox.h>
 #include <qobject.h>
 
+
 CC::CC ()
 {
   helpFile = "cc.html";
@@ -186,7 +187,7 @@ void CC::createNew ()
   bool ok = FALSE;
   QString symbol = QInputDialog::getItem(QObject::tr("New CC"),
                                          QObject::tr("Select futures symbol to create."),
-					 fd.getSymbolList(),
+					 fd.getSymbolList("All"),
 					 0,
 					 FALSE,
 					 &ok,

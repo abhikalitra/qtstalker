@@ -30,6 +30,7 @@
 #include "../../../pics/edit.xpm"
 #include "../../../pics/delete.xpm"
 
+
 IndexDialog::IndexDialog (QString d) : QTabDialog (0, "IndexDialog", TRUE)
 {
   helpFile = d;
