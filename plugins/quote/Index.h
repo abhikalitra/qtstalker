@@ -34,7 +34,7 @@ class Index : public QuotePlugin
     void update ();
     Setting * getCreateDetails ();
     void createChart (Setting *);
-    int loadData (QString, float, QDateTime);
+    int loadData (QString, float);
 
   public slots:
     void updateIndex ();

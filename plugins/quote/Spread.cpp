@@ -69,12 +69,29 @@ void Spread::updateSpread ()
     }
 
     Setting *details = db->getDetails();
+    Setting *tdetails = new Setting;
+    tdetails->parse(details->getString());
+    tdetails->remove("First Date");
+    tdetails->remove("Last Date");
 
-    QDateTime startDate = db->getDateTime(details->getData("Last Date"));
-    
-    loadData(details->getData(tr("First Symbol")), startDate);
+    delete db;
+    dir.remove(s, TRUE);
+    db = new ChartDb();
+    if (db->openChart(s))
+    {
+      qDebug("could not open db");
+      delete db;
+      delete tdetails;
+      continue;
+    }
 
-    loadData(details->getData(tr("Second Symbol")), startDate);
+    details = db->getDetails();
+    details->parse(tdetails->getString());
+    delete tdetails;
+
+    loadData(details->getData(tr("First Symbol")));
+
+    loadData(details->getData(tr("Second Symbol")));
 
     QDictIterator<Setting> it(data);
     for (; it.current(); ++it)
@@ -92,7 +109,7 @@ void Spread::updateSpread ()
   emit done();
 }
 
-void Spread::loadData (QString symbol, QDateTime startDate)
+void Spread::loadData (QString symbol)
 {
   QString s = dataPath;
   s.append("/");
@@ -106,13 +123,11 @@ void Spread::loadData (QString symbol, QDateTime startDate)
     return;
   }
   
-  if (! startDate.isValid())
-  {
-    Setting *details = db->getDetails();
-    startDate = db->getDateTime(details->getData("First Date"));
-  }
+  Setting *details = db->getDetails();
 
-  db->getHistory(ChartDb::Daily, startDate);
+  QDateTime dt = db->getDateTime(details->getData("First Date"));
+
+  db->getHistory(ChartDb::Daily, dt);
 
   int loop;
   for (loop = 0; loop < db->getDataSize(); loop++)

@@ -69,24 +69,45 @@ void Index::updateIndex ()
     }
 
     Setting *details = db->getDetails();
+    Setting *tdetails = new Setting;
+    tdetails->parse(details->getString());
+    tdetails->remove("First Date");
+    tdetails->remove("Last Date");
 
-    QDateTime startDate = db->getDateTime(details->getData("Last Date"));
+    delete db;
+    dir.remove(s, TRUE);
+    db = new ChartDb();
+    if (db->openChart(s))
+    {
+      qDebug("could not open db");
+      delete db;
+      delete tdetails;
+      continue;
+    }
+
+    details = db->getDetails();
+    details->parse(tdetails->getString());
+    delete tdetails;
 
     int loop2;
     int count = 0;
     for (loop2 = 1; loop2 < 11; loop2++)
     {
       s = tr("Symbol ");
+      if (loop2 < 10)
+        s.append("0");
       s.append(QString::number(loop2));
       QString symbol = details->getData(s);
 
       s = tr("Weight ");
+      if (loop2 < 10)
+        s.append("0");
       s.append(QString::number(loop2));
       float weight = details->getFloat(s);
       if (weight == 0)
         weight = 1;
 
-      if (! loadData(symbol, weight, startDate))
+      if (! loadData(symbol, weight))
         count++;
     }
 
@@ -130,14 +151,12 @@ void Index::updateIndex ()
   emit done();
 }
 
-int Index::loadData (QString symbol, float weight, QDateTime startDate)
+int Index::loadData (QString symbol, float weight)
 {
-  QDateTime dt = startDate;
-
   QString s = dataPath;
   s.append("/");
   s.append(symbol);
-  
+
   QDir dir(s);
   if (! dir.exists(s, TRUE))
     return TRUE;
@@ -150,11 +169,9 @@ int Index::loadData (QString symbol, float weight, QDateTime startDate)
     return TRUE;
   }
 
-  if (! dt.isValid())
-  {
-    Setting *details = db->getDetails();
-    dt = db->getDateTime(details->getData("First Date"));
-  }
+  Setting *details = db->getDetails();
+
+  QDateTime dt = db->getDateTime(details->getData("First Date"));
 
   db->getHistory(ChartDb::Daily, dt);
 
@@ -166,7 +183,7 @@ int Index::loadData (QString symbol, float weight, QDateTime startDate)
     if (! r)
     {
       r = new Setting;
-      
+
       r->set("Date", tr->getData("Date"), Setting::Date);
       r->set("Close", QString::number(tr->getFloat("Close") * weight), Setting::Float);
       r->set("Volume", QString::number(tr->getFloat("Volume") * weight), Setting::Float);
@@ -190,7 +207,7 @@ int Index::loadData (QString symbol, float weight, QDateTime startDate)
   }
 
   delete db;
-  
+
   return FALSE;
 }
 
@@ -198,24 +215,24 @@ Setting * Index::getCreateDetails ()
 {
   Setting *set = new Setting;
   set->set(tr("Symbol"), "New Index", Setting::Text);
-  set->set(tr("Symbol 1"), " ", Setting::Symbol);
-  set->set(tr("Weight 1"), "1", Setting::Float);
-  set->set(tr("Symbol 2"), " ", Setting::Symbol);
-  set->set(tr("Weight 2"), "1", Setting::Float);
-  set->set(tr("Symbol 3"), " ", Setting::Symbol);
-  set->set(tr("Weight 3"), "1", Setting::Float);
-  set->set(tr("Symbol 4"), " ", Setting::Symbol);
-  set->set(tr("Weight 4"), "1", Setting::Float);
-  set->set(tr("Symbol 5"), " ", Setting::Symbol);
-  set->set(tr("Weight 5"), "1", Setting::Float);
-  set->set(tr("Symbol 6"), " ", Setting::Symbol);
-  set->set(tr("Weight 6"), "1", Setting::Float);
-  set->set(tr("Symbol 7"), " ", Setting::Symbol);
-  set->set(tr("Weight 7"), "1", Setting::Float);
-  set->set(tr("Symbol 8"), " ", Setting::Symbol);
-  set->set(tr("Weight 8"), "1", Setting::Float);
-  set->set(tr("Symbol 9"), " ", Setting::Symbol);
-  set->set(tr("Weight 9"), "1", Setting::Float);
+  set->set(tr("Symbol 01"), " ", Setting::Symbol);
+  set->set(tr("Weight 01"), "1", Setting::Float);
+  set->set(tr("Symbol 02"), " ", Setting::Symbol);
+  set->set(tr("Weight 02"), "1", Setting::Float);
+  set->set(tr("Symbol 03"), " ", Setting::Symbol);
+  set->set(tr("Weight 03"), "1", Setting::Float);
+  set->set(tr("Symbol 04"), " ", Setting::Symbol);
+  set->set(tr("Weight 04"), "1", Setting::Float);
+  set->set(tr("Symbol 05"), " ", Setting::Symbol);
+  set->set(tr("Weight 05"), "1", Setting::Float);
+  set->set(tr("Symbol 06"), " ", Setting::Symbol);
+  set->set(tr("Weight 06"), "1", Setting::Float);
+  set->set(tr("Symbol 07"), " ", Setting::Symbol);
+  set->set(tr("Weight 07"), "1", Setting::Float);
+  set->set(tr("Symbol 08"), " ", Setting::Symbol);
+  set->set(tr("Weight 08"), "1", Setting::Float);
+  set->set(tr("Symbol 09"), " ", Setting::Symbol);
+  set->set(tr("Weight 09"), "1", Setting::Float);
   set->set(tr("Symbol 10"), " ", Setting::Symbol);
   set->set(tr("Weight 10"), "1", Setting::Float);
   return set;
@@ -259,24 +276,24 @@ void Index::createChart (Setting *set)
   details->set("Chart Type", tr("Index"), Setting::None);
   details->set("Symbol", symbol, Setting::None);
   details->set("Title", symbol, Setting::Text);
-  details->set(tr("Symbol 1"), set->getData(tr("Symbol 1")), set->getType(tr("Symbol 1")));
-  details->set(tr("Weight 1"), set->getData(tr("Weight 1")), set->getType(tr("Weight 1")));
-  details->set(tr("Symbol 2"), set->getData(tr("Symbol 2")), set->getType(tr("Symbol 2")));
-  details->set(tr("Weight 2"), set->getData(tr("Weight 2")), set->getType(tr("Weight 2")));
-  details->set(tr("Symbol 3"), set->getData(tr("Symbol 3")), set->getType(tr("Symbol 3")));
-  details->set(tr("Weight 3"), set->getData(tr("Weight 3")), set->getType(tr("Weight 3")));
-  details->set(tr("Symbol 4"), set->getData(tr("Symbol 4")), set->getType(tr("Symbol 4")));
-  details->set(tr("Weight 4"), set->getData(tr("Weight 4")), set->getType(tr("Weight 4")));
-  details->set(tr("Symbol 5"), set->getData(tr("Symbol 5")), set->getType(tr("Symbol 5")));
-  details->set(tr("Weight 5"), set->getData(tr("Weight 5")), set->getType(tr("Weight 5")));
-  details->set(tr("Symbol 6"), set->getData(tr("Symbol 6")), set->getType(tr("Symbol 6")));
-  details->set(tr("Weight 6"), set->getData(tr("Weight 6")), set->getType(tr("Weight 6")));
-  details->set(tr("Symbol 7"), set->getData(tr("Symbol 7")), set->getType(tr("Symbol 7")));
-  details->set(tr("Weight 7"), set->getData(tr("Weight 7")), set->getType(tr("Weight 7")));
-  details->set(tr("Symbol 8"), set->getData(tr("Symbol 8")), set->getType(tr("Symbol 8")));
-  details->set(tr("Weight 8"), set->getData(tr("Weight 8")), set->getType(tr("Weight 8")));
-  details->set(tr("Symbol 9"), set->getData(tr("Symbol 9")), set->getType(tr("Symbol 9")));
-  details->set(tr("Weight 9"), set->getData(tr("Weight 9")), set->getType(tr("Weight 9")));
+  details->set(tr("Symbol 01"), set->getData(tr("Symbol 01")), set->getType(tr("Symbol 01")));
+  details->set(tr("Weight 01"), set->getData(tr("Weight 01")), set->getType(tr("Weight 01")));
+  details->set(tr("Symbol 02"), set->getData(tr("Symbol 02")), set->getType(tr("Symbol 02")));
+  details->set(tr("Weight 02"), set->getData(tr("Weight 02")), set->getType(tr("Weight 02")));
+  details->set(tr("Symbol 03"), set->getData(tr("Symbol 03")), set->getType(tr("Symbol 03")));
+  details->set(tr("Weight 03"), set->getData(tr("Weight 03")), set->getType(tr("Weight 03")));
+  details->set(tr("Symbol 04"), set->getData(tr("Symbol 04")), set->getType(tr("Symbol 04")));
+  details->set(tr("Weight 04"), set->getData(tr("Weight 04")), set->getType(tr("Weight 04")));
+  details->set(tr("Symbol 05"), set->getData(tr("Symbol 05")), set->getType(tr("Symbol 05")));
+  details->set(tr("Weight 05"), set->getData(tr("Weight 05")), set->getType(tr("Weight 05")));
+  details->set(tr("Symbol 06"), set->getData(tr("Symbol 06")), set->getType(tr("Symbol 06")));
+  details->set(tr("Weight 06"), set->getData(tr("Weight 06")), set->getType(tr("Weight 06")));
+  details->set(tr("Symbol 07"), set->getData(tr("Symbol 07")), set->getType(tr("Symbol 07")));
+  details->set(tr("Weight 07"), set->getData(tr("Weight 07")), set->getType(tr("Weight 07")));
+  details->set(tr("Symbol 08"), set->getData(tr("Symbol 08")), set->getType(tr("Symbol 08")));
+  details->set(tr("Weight 08"), set->getData(tr("Weight 08")), set->getType(tr("Weight 08")));
+  details->set(tr("Symbol 09"), set->getData(tr("Symbol 09")), set->getType(tr("Symbol 09")));
+  details->set(tr("Weight 09"), set->getData(tr("Weight 09")), set->getType(tr("Weight 09")));
   details->set(tr("Symbol 10"), set->getData(tr("Symbol 10")), set->getType(tr("Symbol 10")));
   details->set(tr("Weight 10"), set->getData(tr("Weight 10")), set->getType(tr("Weight 10")));
 

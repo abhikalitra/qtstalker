@@ -34,7 +34,7 @@ class Spread : public QuotePlugin
     void update ();
     Setting * getCreateDetails ();
     void createChart (Setting *);
-    void loadData (QString, QDateTime);
+    void loadData (QString);
 
   public slots:
     void updateSpread ();
