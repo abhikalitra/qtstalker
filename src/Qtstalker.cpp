@@ -1471,9 +1471,10 @@ void QtstalkerApp::addIndicatorButton (QString d)
 
   QObject::connect(this, SIGNAL(signalScaleToScreen(bool)), plot, SLOT(setScaleToScreen(bool)));
   emit signalScaleToScreen(config->getData(Config::ScaleToScreen).toInt());
-  
+
   QObject::connect(this, SIGNAL(signalPixelspace(int)), plot, SLOT(setPixelspace(int)));
-  
+  emit signalPixelspace(pixelspace->value());
+
   QColor color;
   color.setNamedColor(config->getData(Config::BackgroundColor));
   QObject::connect(this, SIGNAL(signalBackgroundColor(QColor)), plot, SLOT(setBackgroundColor(QColor)));

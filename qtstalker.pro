@@ -16,7 +16,7 @@ SUBDIRS += plugins/quote/YahooQuote
 
 exists(/usr/include/mysql/mysql.h){
   SUBDIRS += plugins/quote/MySQL
-{
+}
 
 SUBDIRS += plugins/indicator/AD
 SUBDIRS += plugins/indicator/ATR

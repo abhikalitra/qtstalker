@@ -29,6 +29,8 @@
 
 - Better resizing of columns when editing user settings in SettingView class.
 
+- Fixed bug #819309 that caused a segfault with 'floating point error' on new tab indicator creation.
+
 
 0.21
 ====
