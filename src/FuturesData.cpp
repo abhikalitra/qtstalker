@@ -255,10 +255,10 @@ int FuturesData::setSymbol (QString d)
       break;
     }
 
-    if (! d.compare("HG"))
+    if (! d.compare("HG") || ! d.compare("RHG"))
     {
       name = "Copper";
-      symbol = d;
+      symbol = "HG";
       rate = 250;
       monthList = QStringList::split(",", "H,K,N,U,Z", FALSE);
       limit = 20;
@@ -486,20 +486,20 @@ int FuturesData::setSymbol (QString d)
       break;
     }
 
-    if (! d.compare("TY"))
+    if (! d.compare("TY") || ! d.compare("TYD"))
     {
       name = "Treasury Note 10 yr.";
-      symbol = d;
+      symbol = "TY";
       rate = 1000;
       monthList = QStringList::split(",", "H,M,U,Z", FALSE);
       contract = getCurrentContract();
       break;
     }
 
-    if (! d.compare("US"))
+    if (! d.compare("US") || ! d.compare("USD"))
     {
       name = "US Treasury Bond";
-      symbol = d;
+      symbol = "US";
       rate = 1000;
       monthList = QStringList::split(",", "H,M,U,Z", FALSE);
       contract = getCurrentContract();
