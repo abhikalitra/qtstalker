@@ -130,6 +130,9 @@ void CSV::parse ()
   int loop;
   for (loop = 0; loop < (int) list.count(); loop++)
   {
+    if (cancelFlag)
+      break;
+      
     QFile f(list[loop]);
     if (! f.open(IO_ReadOnly))
       continue;
@@ -371,8 +374,14 @@ void CSV::parse ()
 
   delete rule;
   
-  emit statusLogMessage(tr("Done"));
   emit done();
+  if (cancelFlag)
+  {
+    cancelFlag = FALSE;
+    emit statusLogMessage(tr("Update cancelled"));
+  }
+  else
+    emit statusLogMessage(tr("Done"));
 }
 
 void CSV::setDelimiter (QString d)
@@ -653,6 +662,11 @@ Setting * CSV::getRule ()
     
   settings.endGroup();
   return set;
+}
+
+void CSV::cancelUpdate ()
+{
+  cancelFlag = TRUE;
 }
 
 //**********************************************************

@@ -162,6 +162,7 @@ class QtstalkerApp : public QMainWindow
     QMenuBar *menubar;
     QSplitter *split;
     QSplitter *navSplitter;
+    QSplitter *dpSplitter;
     IndicatorTab *tabs;
     NavigatorTab *navTab;
     QWidget *baseWidget;

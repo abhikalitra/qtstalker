@@ -35,6 +35,7 @@ class MySQLPlugin : public QuotePlugin
     // plugin interface
     void update ();
     void prefDialog (QWidget *);
+    void cancelUpdate ();
 
   public slots:
     void performUpdate();
@@ -56,6 +57,7 @@ class MySQLPlugin : public QuotePlugin
     QString symbols;
     QString sqlquery;
     bool incremental;
+    bool cancelFlag;
 };
 
 extern "C"

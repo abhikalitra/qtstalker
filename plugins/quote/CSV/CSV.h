@@ -41,6 +41,7 @@ class CSV : public QuotePlugin
     void saveSettings ();
     void prefDialog (QWidget *);
     Setting * getRule ();
+    void cancelUpdate ();
 
   public slots:
     void parse ();
@@ -57,6 +58,7 @@ class CSV : public QuotePlugin
     QString ruleName;
     QString futuresSymbol;
     QString futuresMonth;
+    bool cancelFlag;
 };
 
 extern "C"

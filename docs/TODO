@@ -10,7 +10,9 @@ To Do:
 - allow negative displacement for line plots
 - add indicator chart to the tester chart so buy/sell points have a reference
 - allow log/scale to screen options on the tester charts
-- add some default CSV plugin import rules
+- create a package of CUS indicators, default CSV plugin import rules to the install process
+  so users have a bunch of examples and things to play with
+- rename indicator function (possible main plot indicator panel revision)
 
 
 Maybe some day:

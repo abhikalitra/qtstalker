@@ -57,6 +57,9 @@ void NYBOT::parse ()
   int loop;
   for (loop = 0; loop < (int) list.count(); loop++)
   {
+    if (cancelFlag)
+      break;
+  
     QFile f(list[loop]);
     if (! f.open(IO_ReadOnly))
       continue;
@@ -338,7 +341,13 @@ void NYBOT::parse ()
   }
 
   emit done();
-  emit statusLogMessage(tr("Done"));
+  if (cancelFlag)
+  {
+    cancelFlag = FALSE;
+    emit statusLogMessage(tr("Update cancelled."));
+  }
+  else
+    emit statusLogMessage(tr("Done"));
 }
 
 void NYBOT::prefDialog (QWidget *w)
@@ -384,6 +393,11 @@ void NYBOT::saveSettings ()
   settings.beginGroup("/Qtstalker/NYBOT plugin");
   settings.writeEntry("/lastPath", lastPath);
   settings.endGroup();
+}
+
+void NYBOT::cancelUpdate ()
+{
+  cancelFlag = TRUE;
 }
 
 //**********************************************************

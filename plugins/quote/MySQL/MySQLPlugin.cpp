@@ -40,6 +40,7 @@ MySQLPlugin::MySQLPlugin ()
   // plugin defaults
   pluginName = "MySQL";
   helpFile = "mysql.html";
+  cancelFlag = FALSE;
 
   // get settings persisted last time
   retrieveSettings();
@@ -115,11 +116,30 @@ void MySQLPlugin::performUpdate ()
 {
   if (openDatabase()) 
   {
+    // verify and create the directory if needed  
+    Config config;
+    QString s = config.getData(Config::DataPath) + "/Stocks";
+    QDir dir(s);
+    if (! dir.exists() && ! dir.mkdir(s))
+    {
+      QString errstr = "Qtstalker::MySQL::performUpdate:unable to create directory: ";
+      errstr.append(s);
+      QMessageBox::critical(0, "MySQL Plugin Error", errstr);
+      emit statusLogMessage("MySQL Plugin Error: "+ errstr);
+      closeDatabase();
+      return;
+    }
+  
     QStringList symbolList = QStringList::split(' ', symbols, FALSE);
     QStringList::const_iterator iter = symbolList.begin();
     
     while (iter != symbolList.end())
-      updateSymbol(*iter++);
+    {
+      if (cancelFlag)
+	break;
+      else
+        updateSymbol(*iter++);
+    }
 
     closeDatabase();
     
@@ -128,7 +148,13 @@ void MySQLPlugin::performUpdate ()
   }
 
   emit done();
-  emit statusLogMessage(tr("Done"));
+  if (cancelFlag)
+  {
+    cancelFlag = FALSE;
+    emit statusLogMessage(tr("Update cancelled."));
+  }
+  else
+    emit statusLogMessage(tr("Done"));
 }
 
 /**
@@ -140,27 +166,14 @@ void MySQLPlugin::updateSymbol(QString symbol)
 {
   emit statusLogMessage("Updating " + symbol);
 
-  // verify and create the directory if needed  
-  Config config;
-  QString chartpath = config.getData(Config::DataPath) + "/Stocks";
-  QDir dir(chartpath);
-  if (!dir.exists() && !dir.mkdir(chartpath))
-  {
-    QString errstr = "MySQL plugin: unable to create directory: ";
-    errstr.append(chartpath);
-    QMessageBox::critical(0, "MySQL Plugin Error", errstr);
-    emit statusLogMessage("MySQL Plugin Error: "+ errstr);
-    return;
-  }
-  chartpath.append("/" + symbol);
-
   // create the new chart
-
+  Config config;
+  QString chartpath = config.getData(Config::DataPath) + "/Stocks/" + symbol;
   ChartDb db;
   db.setPlugin("Stocks");
   if (db.openChart(chartpath))
   {
-    emit statusLogMessage("Could not open db.");
+    emit statusLogMessage("Qtstalker::MySQL::updateSymbol:Could not open db.");
     return;
   }
   
@@ -196,7 +209,6 @@ void MySQLPlugin::updateSymbol(QString symbol)
 
   doQuery(sql, db);
 }
-
 
 /**
  * openDatabase()
@@ -324,6 +336,12 @@ void MySQLPlugin::prefDialog (QWidget *w)
   }
   
   delete dialog;
+}
+
+// user has cancelled update
+void MySQLPlugin::cancelUpdate ()
+{
+  cancelFlag = TRUE;
 }
 
 /**

@@ -51,7 +51,7 @@ class Config
       IndicatorPath,
       Crosshairs,
       DrawMode,
-      MainPlotSize, // unused
+      DataPanelSize,
       IndicatorPlotSize, // unused
       ScaleToScreen,
       IndicatorPluginPath,

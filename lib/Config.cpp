@@ -248,6 +248,9 @@ QString Config::getData (Parm p)
     case PlotSizes:
       s = settings.readEntry("/Qtstalker/PlotSizes");
       break;
+    case DataPanelSize:
+      s = settings.readEntry("/Qtstalker/DataPanelSize");
+      break;
     default:
       break;
   }
@@ -375,6 +378,9 @@ void Config::setData (Parm p, QString d)
       break;
     case PlotSizes:
       settings.writeEntry("/Qtstalker/PlotSizes", d);
+      break;
+    case DataPanelSize:
+      settings.writeEntry("/Qtstalker/DataPanelSize", d);
       break;
     default:
       break;

@@ -27,9 +27,14 @@
 	  
 20050205: Fixed bug in MySQL plugin that didn't create the symbols if they did not already
           exist. This was caused by trying to remove deleted symbols from the list. This can't 
-	  work without user updating the symbol list, so don't try it again.
+	  work without user updating the symbol list, there is no way to distinguish between
+	  a user wanting to create a new symbol and a user deleting the chart.
 	  
-	  
+20050206: Added cancelUpdate function to the MySQL, CSV, NYBOT plugins. Was not implemented.
+
+20050206: Added a splitter to the data panel.
+
+
 	  
 0.29
 ====
