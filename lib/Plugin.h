@@ -81,7 +81,7 @@ class Plugin : public QObject
     
     // db plugin interface
     virtual int openChart (QString);
-    virtual void setBarCompression (int);
+    virtual void setBarCompression (BarData::BarCompression);
     virtual void setBarRange (int);
     virtual void dump (QString);
     virtual Bar * getBar (QString, QString);

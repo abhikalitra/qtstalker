@@ -88,7 +88,6 @@ void Index::updateIndex ()
   
   QStringList l = QStringList::split(":", getData("Index"), FALSE);
   int loop;
-  int count = 0;
   for (loop = 0; loop < (int) l.count(); loop = loop + 2)
   {
     QString symbol = l[loop];
@@ -97,9 +96,9 @@ void Index::updateIndex ()
       weight = 1;
 
     loadData(symbol, weight);
-    count++;
   }
 
+  int count = l.count() / 2;
   QDictIterator<Bar> it(data);
   for (; it.current(); ++it)
   {
@@ -149,7 +148,7 @@ void Index::loadData (QString symbol, float weight)
     if (bar)
     {
       QDate d = QDate::currentDate();
-      db->setBarRange(d.daysTo(bar->getDate().getDate()));
+      db->setBarRange(bar->getDate().getDate().daysTo(d));
       delete bar;
     }
     else

@@ -62,16 +62,12 @@ void CC::dbPrefDialog ()
   PrefDialog *dialog = new PrefDialog(0);
   dialog->setCaption(tr("CC Prefs"));
   dialog->createPage (tr("Details"));
-  dialog->addIntItem(tr("Rollover"), tr("Details"), getData("Rollover").toInt());
   dialog->addIntItem(tr("Maximum Years"), tr("Details"), getData("MaxYears").toInt());
-  dialog->addCheckItem(tr("Rebuild"), tr("Details"), getData("Rebuild").toInt());
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
-    setData("Rollover", QString::number(dialog->getInt(tr("Rollover"))));
     setData("MaxYears", QString::number(dialog->getInt(tr("Maximum Years"))));
-    setData("Rebuild", QString::number(dialog->getCheck(tr("Rebuild"))));
   }
   
   delete dialog;
@@ -99,123 +95,8 @@ void CC::saveDbDefaults (BarData::BarType barType, QString symbol, QString name,
   setData("BarType", QString::number(barType));
   setData("CCType", symbol);
   setData("Plugin", "CC");
-  setData("Rollover", "20");
   setData("MaxYears", "10");
-  setData("Rebuild", "0");
 }
-
-/*
-void CC::update ()
-{
-  Config config;
-  QString s = config.getData(Config::DataPath) + "/Futures/" + getData("Symbol");
-  QDir dir(s);
-  if (! dir.exists(s, TRUE))
-    return;
-    
-  int rollover = getData("Rollover").toInt();
-  int maxYears = getData("MaxYears").toInt();
-
-  QDate tdate = QDate::currentDate();
-  int years = tdate.year() - maxYears;
-
-  FuturesData fd;
-  if (fd.setSymbol(getData("Symbol")))
-  {
-    qDebug("CC::newChart:invalid futures symbol");
-    return;
-  }
-  QString currentContract = fd.getContract();
-
-  Bar *pr = new Bar;
-  
-  BarDate startDate;
-  
-  bool flag = FALSE;
-  int loop;
-  for (loop = 2; loop < (int) dir.count(); loop++)
-  {
-    s = dir[loop];
-    s.truncate(s.length() - 1);
-    if (s.right(4).toInt() < years)
-      continue;
-
-    if (! dir[loop].compare(currentContract))
-      flag = TRUE;
-
-    s = dir.absPath();
-    s.append("/");
-    s.append(dir[loop]);
-
-    ChartDb *tdb = new ChartDb();
-    tdb->openChart(s);
-    
-    Bar *bar = tdb->getFirstBar();
-    if (! bar)
-    {
-      qDebug("CC::newChart:no first bar %s", dir[loop].latin1());
-      delete tdb;
-      continue;
-    }
-    if (! startDate.getDate().isValid())
-      startDate = bar->getDate();
-    delete bar;
-
-    tdb->setBarCompression(BarData::DailyBar);
-    tdb->setBarRange(260);
-    BarData *recordList = tdb->getHistory();
-
-    int loop2;
-    int count = recordList->count() - rollover;
-    if (flag)
-      count = recordList->count();
-    if (count < 1)
-    {
-      delete recordList;
-      delete tdb;
-      continue;
-    }
-
-    for (loop2 = 1; loop2 < count; loop2++)
-    {
-      if (recordList->getDate(loop2).getDate() < startDate.getDate())
-        continue;
-	
-      if (! pr->getDate().getDate().isValid())
-        pr->setClose(recordList->getClose(loop2 - 1));
-
-      double c = pr->getClose() + (recordList->getClose(loop2) - recordList->getClose(loop2 - 1));
-      double h = c + (recordList->getHigh(loop2) - recordList->getClose(loop2));
-      double l = c - (recordList->getClose(loop2) - recordList->getLow(loop2));
-      double o = h - (recordList->getHigh(loop2) - recordList->getOpen(loop2));
-
-      delete pr;
-
-      pr = new Bar;
-      pr->setDate(recordList->getDate(loop2));
-      pr->setOpen(o);
-      pr->setHigh(h);
-      pr->setLow(l);
-      pr->setClose(c);
-      pr->setVolume(recordList->getVolume(loop2));
-      pr->setOI((int) recordList->getOI(loop2));
-      
-      setBar(pr->getDate(), pr->getOpen(), pr->getHigh(), pr->getLow(), pr->getClose(),
-             pr->getVolume(), pr->getOI());
-      
-      startDate = recordList->getDate(loop2);
-    }
-
-    delete recordList;
-    delete tdb;
-
-    if (flag)
-      break;
-  }
-
-  delete pr;
-}
-*/
 
 void CC::update ()
 {
@@ -225,9 +106,7 @@ void CC::update ()
   if (! dir.exists(baseDir, TRUE))
     return;
     
-//  int rollover = getData("Rollover").toInt();
   int maxYears = getData("MaxYears").toInt();
-  bool rebuild = getData("Rebuild").toInt();
   
   FuturesData fd;
   if (fd.setSymbol(getData("Symbol")))
@@ -238,53 +117,74 @@ void CC::update ()
   
   QDateTime startDate = QDateTime::currentDateTime();
   QDateTime endDate = QDateTime::currentDateTime();
-  if (rebuild)
+  Bar *bar = getLastBar();
+  if (! bar)
     startDate = startDate.addYears(-maxYears);
   else
   {
-    Bar *bar = getLastBar();
-    if (! bar)
-      startDate = startDate.addYears(-maxYears);
-    else
-      startDate.setDate(bar->getDate().getDate());
-  }
-
-  QString currentContract = fd.getCurrentContract(startDate);
-  
-  QString s = baseDir + "/" + currentContract;
-  ChartDb *db = new ChartDb;
-  db->openChart(s);
-  db->setBarCompression(BarData::DailyBar);
-    
-  while (startDate <= endDate)
-  {
-    s = fd.getCurrentContract(startDate);
-    if (s.compare(currentContract))
-    {
-      delete db;
-      currentContract = s;
-      s = baseDir + "/" + currentContract;
-      db = new ChartDb;
-      db->openChart(s);
-      db->setBarCompression(BarData::DailyBar);
-    }
-    
-    s = startDate.toString("yyyyMMdd000000");
-    Bar *bar = db->getBar(s, getData(s));
-    if (! bar)
-    {
-      startDate = startDate.addDays(1);
-      continue;
-    }
-    
-    setBar(bar->getDate(), bar->getOpen(), bar->getHigh(), bar->getLow(), bar->getClose(),
-           bar->getVolume(), bar->getOI());
-      
-    startDate = startDate.addDays(1);
-    
+    startDate.setDate(bar->getDate().getDate());
     delete bar;
   }
 
+  QString currentContract;
+  ChartDb *db = 0;
+  Bar *fr = 0;
+  Bar *sr = 0;
+  Bar *pr = new Bar;
+    
+  while (startDate <= endDate)
+  {
+    QString s = fd.getCurrentContract(startDate);
+    if (s.compare(currentContract))
+    {
+      if (db)
+        delete db;
+	
+      currentContract = s;
+      s = baseDir + "/" + currentContract;
+      db = new ChartDb;
+      db->setPlugin("Futures");
+      db->openChart(s);
+      db->setBarCompression(BarData::DailyBar);
+      fr = 0;
+
+      while (! fr)
+      {
+        s = startDate.toString("yyyyMMdd000000");
+        QString s2 = db->getData(s);
+        if (s2.length())
+          fr = db->getBar(s, s2);
+	
+        startDate = startDate.addDays(1);
+        if (startDate.date().dayOfWeek() == 6)
+          startDate = startDate.addDays(2);
+      }
+    }
+    
+    s = startDate.toString("yyyyMMdd000000");
+    QString s2 = db->getData(s);
+    if (s2.length())
+    {
+      sr = db->getBar(s, s2);
+      if (sr)
+      {
+        double c = pr->getClose() + (sr->getClose() - fr->getClose());
+        double h = c + (sr->getHigh() - sr->getClose());
+        double l = c - (sr->getClose() - sr->getLow());
+        double o = h - (sr->getHigh() - sr->getOpen());
+        setBar(sr->getDate(), o, h, l, c, sr->getVolume(), sr->getOI());
+        pr->setClose(c);
+	delete fr;
+	fr = sr;
+      }
+    }
+      
+    startDate = startDate.addDays(1);
+    if (startDate.date().dayOfWeek() == 6)
+      startDate = startDate.addDays(2);
+  }
+
+  delete pr;
   if (db)
     delete db;
 }

@@ -156,7 +156,7 @@ int Plugin::openChart (QString)
   return 0;
 }
 
-void Plugin::setBarCompression (int)
+void Plugin::setBarCompression (BarData::BarCompression)
 {
 }
 

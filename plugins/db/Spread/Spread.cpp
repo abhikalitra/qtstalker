@@ -138,7 +138,7 @@ void Spread::loadData (QString symbol, QString method)
     if (bar)
     {
       QDate d = QDate::currentDate();
-      db->setBarRange(d.daysTo(bar->getDate().getDate()));
+      db->setBarRange(bar->getDate().getDate().daysTo(d));
       delete bar;
     }
     else
