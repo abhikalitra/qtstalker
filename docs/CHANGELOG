@@ -1,3 +1,14 @@
+0.21
+====
+
+- Fixed the resize bug with the side panel causing the annoying plot resizes.
+
+- Shortened the labels that appear in the side panel to minimize space.
+
+- Removed the Volume label from the side panel when mouse is over the main chart. It should only appear in the VOL chart.
+
+- Applied patch from xley for the CSV plugin docs.
+
 0.20
 ====
 

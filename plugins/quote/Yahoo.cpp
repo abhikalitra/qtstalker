@@ -76,18 +76,6 @@ void Yahoo::update ()
   file = dir.path();
   file.append("/Qtstalker/download");
 
-/*
-  QDateTime edate = QDateTime::currentDateTime();
-  edate = edate.addDays(-1);
-  if (edate.date().dayOfWeek() == 6)
-    edate = edate.addDays(-1);
-  else
-  {
-    if (edate.date().dayOfWeek() == 7)
-      edate = edate.addDays(-2);
-  }
-*/
-
   QDateTime edate = QDateTime::fromString(getDateTime("End Date"), Qt::ISODate);
 
   QString s = dataPath;
@@ -109,7 +97,6 @@ void Yahoo::update ()
     s = details->getDateTime("Last Date");
     if (s.length())
       sdate = QDateTime::fromString(getDateTime("Start Date"), Qt::ISODate);
-//      sdate = QDateTime::fromString(s, Qt::ISODate);
     else
       sdate = QDateTime::fromString("1990-01-0100:00:00", Qt::ISODate);
 

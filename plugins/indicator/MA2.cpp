@@ -29,13 +29,13 @@ MA2::MA2 ()
   set(tr("Type"), pluginName, Setting::None);
   set(tr("Fast Color"), "red", Setting::Color);
   set(tr("Fast Line Type"), tr("Line"), Setting::LineType);
-  set(tr("Fast Label"), tr("MA2 Fast"), Setting::Text);
+  set(tr("Fast Label"), tr("MA2F"), Setting::Text);
   set(tr("Fast Period"), "5", Setting::Integer);
   set(tr("Fast Type"), "SMA", Setting::MAType);
   set(tr("Fast Input"), tr("Close"), Setting::InputField);
   set(tr("Slow Color"), "red", Setting::Color);
   set(tr("Slow Line Type"), tr("Line"), Setting::LineType);
-  set(tr("Slow Label"), tr("MA2 Slow"), Setting::Text);
+  set(tr("Slow Label"), tr("MA2S"), Setting::Text);
   set(tr("Slow Period"), "20", Setting::Integer);
   set(tr("Slow Type"), "SMA", Setting::MAType);
   set(tr("Slow Input"), tr("Close"), Setting::InputField);

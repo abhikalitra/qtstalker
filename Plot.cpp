@@ -569,7 +569,30 @@ void Plot::mouseMoveEvent (QMouseEvent *event)
 
   QString s = tr->getData("Date");
   s.truncate(s.length() - 6);
-  r->set("Date", s, Setting::Date);
+  r->set("D", s, Setting::Date);
+  r->remove("Date");
+  r->remove("Volume");
+  r->remove("Open Interest");
+  if (r->getData("Open").length())
+  {
+    r->set("O", r->getData("Open"), Setting::Float);
+    r->remove("Open");
+  }
+  if (r->getData("High").length())
+  {
+    r->set("H", r->getData("High"), Setting::Float);
+    r->remove("High");
+  }
+  if (r->getData("Low").length())
+  {
+    r->set("L", r->getData("Low"), Setting::Float);
+    r->remove("Low");
+  }
+  if (r->getData("Close").length())
+  {
+    r->set("C", r->getData("Close"), Setting::Float);
+    r->remove("Close");
+  }
 
   QDictIterator<Indicator> it(indicators);
   for (; it.current(); ++it)
@@ -1977,8 +2000,8 @@ void Plot::drawSwing ()
   int loop = startIndex;
   int h;
   int l;
-  double high;
-  double low;
+  double high = -99999999;
+  double low = 99999999;
 
   int oldx = x;
   loop++;

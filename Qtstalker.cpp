@@ -111,6 +111,9 @@ QtstalkerApp::QtstalkerApp()
   infoLabel->setFrameStyle(QFrame::StyledPanel | QFrame::Sunken);
   vbox->addWidget(infoLabel, 1, 0);
 
+  // try to keep the splitter from resizing after a infoLabel size change
+  navSplitter->setResizeMode(navBase, QSplitter::KeepSize);
+
   // construct the chart areas
 
   QWidget *chartBase = new QWidget(navSplitter);
@@ -416,7 +419,7 @@ void QtstalkerApp::slotQuit()
 void QtstalkerApp::slotAbout()
 {
   QMessageBox *dialog = new QMessageBox(tr("About Qtstalker"),
-  							    tr("Qtstalker\nVersion 0.20 \n(C) 2001-2003 by Stefan Stratigakos"),
+  							    tr("Qtstalker\nVersion 0.21 \n(C) 2001-2003 by Stefan Stratigakos"),
 							    QMessageBox::NoIcon,
 							    QMessageBox::Ok,
 							    QMessageBox::NoButton,
