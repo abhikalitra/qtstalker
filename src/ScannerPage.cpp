@@ -97,7 +97,8 @@ void ScannerPage::deleteScanner()
 {
   SymbolDialog *dialog = new SymbolDialog(this,
   					  nav->getCurrentPath(),
-					  "*");
+					  "*",
+					  QFileDialog::ExistingFiles);
   dialog->setCaption(tr("Select Scanners To Delete"));
 
   int rc = dialog->exec();

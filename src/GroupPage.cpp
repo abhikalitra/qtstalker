@@ -112,7 +112,8 @@ void GroupPage::addGroupItem()
 {
   SymbolDialog *dialog = new SymbolDialog(this,
   					  config.getData(Config::DataPath),
-					  "*");
+					  "*",
+					  QFileDialog::ExistingFiles);
 
   int rc = dialog->exec();
 
@@ -143,7 +144,8 @@ void GroupPage::deleteGroupItem()
 {
   SymbolDialog *dialog = new SymbolDialog(this,
   					  nav->getCurrentPath(),
-					  "*");
+					  "*",
+					  QFileDialog::ExistingFiles);
   dialog->setCaption(tr("Select Group Items To Delete"));
 
   int rc = dialog->exec();

@@ -76,7 +76,10 @@ ChartPage::~ChartPage ()
 
 void ChartPage::deleteChart ()
 {
-  SymbolDialog *dialog = new SymbolDialog(this,nav->getCurrentPath(), "*");
+  SymbolDialog *dialog = new SymbolDialog(this, 
+  					  nav->getCurrentPath(),
+					  "*",
+					  QFileDialog::ExistingFiles);
   dialog->setCaption(tr("Select Charts To Delete"));
 
   int rc = dialog->exec();
@@ -123,7 +126,8 @@ void ChartPage::exportSymbol ()
 {
   SymbolDialog *dialog = new SymbolDialog(this,
   					  config.getData(Config::DataPath),
-					  "*");
+					  "*",
+					  QFileDialog::ExistingFiles);
   dialog->setCaption(tr("Select Charts"));
 
   int rc = dialog->exec();

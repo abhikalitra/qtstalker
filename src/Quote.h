@@ -27,8 +27,8 @@
 #include <qtextedit.h>
 #include <qtabdialog.h>
 #include <qcheckbox.h>
-#include "Config.h"
 #include "Toolbar.h"
+#include "Config.h"
 
 class QuoteDialog : public QTabDialog
 {

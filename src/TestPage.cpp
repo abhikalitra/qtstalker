@@ -25,6 +25,7 @@
 #include "newchart.xpm"
 #include "delete.xpm"
 #include "rename.xpm"
+#include "SymbolDialog.h"
 #include <qinputdialog.h>
 #include <qmessagebox.h>
 #include <qcursor.h>
@@ -80,32 +81,40 @@ void TestPage::newTest()
 
 void TestPage::deleteTest()
 {
-  if (list->currentItem() == -1)
-    return;
-    
-  int rc = QMessageBox::warning(this,
-  				tr("Qtstalker: Warning"),
-				tr("Are you sure you want to delete this backtest rule?"),
-				QMessageBox::Yes,
-				QMessageBox::No,
-				QMessageBox::NoButton);
+  SymbolDialog *dialog = new SymbolDialog(this,
+  					  config.getData(Config::TestPath),
+					  "*",
+					  QFileDialog::DirectoryOnly);
+  dialog->setCaption(tr("Select Backtest rule To Delete"));
 
-  if (rc == QMessageBox::No)
-    return;
+  int rc = dialog->exec();
 
-  QString s = "rm -r ";
-  s.append(config.getData(Config::TestPath));
-  s.append("/");
-  s.append(list->currentText());
-  if (system(s.latin1()) == -1)
+  if (rc == QDialog::Accepted)
   {
-    qDebug("TestPage::deleteTest:command failed");
-    return;
+    rc = QMessageBox::warning(this,
+  			      tr("Qtstalker: Warning"),
+			      tr("Are you sure you want to delete backtest rule?"),
+			      QMessageBox::Yes,
+			      QMessageBox::No,
+			      QMessageBox::NoButton);
+
+    if (rc == QMessageBox::No)
+    {
+      delete dialog;
+      return;
+    }
+
+    QString s = "rm -r " + dialog->selectedFile();
+    
+    if (system(s.latin1()) == -1)
+      qDebug("TestPage::deleteTest:command failed");
+    
+    updateList();
+
+    testNoSelection();
   }
-  
-  list->removeItem(list->currentItem());
-  
-  testNoSelection();
+
+  delete dialog;
 }
 
 void TestPage::renameTest ()

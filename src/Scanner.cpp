@@ -265,7 +265,8 @@ void Scanner::getSymbols ()
 {
   SymbolDialog *dialog = new SymbolDialog(this,
   					  config.getData(Config::DataPath),
-					  "*");
+					  "*",
+					  QFileDialog::ExistingFiles);
   dialog->setCaption(tr("Select symbols to scan"));
   
   int rc = dialog->exec();

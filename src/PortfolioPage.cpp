@@ -102,8 +102,9 @@ void PortfolioPage::newPortfolio()
 void PortfolioPage::deletePortfolio()
 {
   SymbolDialog *dialog = new SymbolDialog(this,
-  							   nav->getCurrentPath(),
-							   "*");
+  				          nav->getCurrentPath(),
+					  "*",
+					  QFileDialog::ExistingFiles);
   dialog->setCaption(tr("Select Portfolios To Delete"));
 
   int rc = dialog->exec();

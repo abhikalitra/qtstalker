@@ -31,7 +31,7 @@ class SymbolDialog : public QFileDialog
   Q_OBJECT
 
   public:
-    SymbolDialog (QWidget *, QString, QString);
+    SymbolDialog (QWidget *, QString, QString, QFileDialog::Mode);
     ~SymbolDialog ();
 
   public slots:

@@ -46,9 +46,10 @@ FormulaEdit::FormulaEdit (QWidget *w) : QWidget(w)
   list->horizontalHeader()->setLabel(0, tr("Function"));
   list->horizontalHeader()->setLabel(1, tr("Plot"));
   list->horizontalHeader()->setLabel(2, tr("Parms"));
-  list->setColumnWidth(0, 75);
-  list->setColumnWidth(1, 50);
-  list->setColumnWidth(2, 50);
+//  list->setColumnWidth(0, 75);
+  list->setColumnStretchable(0, TRUE);
+  list->setColumnWidth(1, 35);
+//  list->setColumnWidth(2, 50);
   list->setColumnReadOnly(0, TRUE);
   list->setColumnReadOnly(2, TRUE);
   list->hideColumn(2);

@@ -49,7 +49,8 @@ void SymbolButton::fileDialog ()
 {
   SymbolDialog *dialog = new SymbolDialog(this,
   					  dirPath,
-					  "*");
+					  "*",
+					  QFileDialog::ExistingFiles);
   dialog->setCaption(tr("Select Symbol"));
 
   int rc = dialog->exec();

@@ -73,6 +73,13 @@ Tester::Tester (QString n) : QTabDialog (0, 0, FALSE)
 
 Tester::Tester () : QTabDialog (0, 0, FALSE)
 {
+  recordList = 0;
+  customLongStopLine = 0;
+  customShortStopLine = 0;
+  enterLongAlerts = 0;
+  exitLongAlerts = 0;
+  enterShortAlerts = 0;
+  exitShortAlerts = 0;
 }
 
 Tester::~Tester ()
@@ -86,10 +93,17 @@ Tester::~Tester ()
   if (customShortStopLine)
     delete customShortStopLine;
   
-  delete enterLongAlerts;
-  delete exitLongAlerts;
-  delete enterShortAlerts;
-  delete exitShortAlerts;
+  if (enterLongAlerts)
+    delete enterLongAlerts;
+    
+  if (exitLongAlerts)
+    delete exitLongAlerts;
+    
+  if (enterShortAlerts)
+    delete enterShortAlerts;
+    
+  if (exitShortAlerts)
+    delete exitShortAlerts;
 }
 
 void Tester::createFormulaPage ()
@@ -1267,126 +1281,31 @@ void Tester::saveRule ()
     stream << s << l.join(",") << "\n";
   }
   
-  // save max loss stop
-  if (maximumLossCheck->isChecked())
-    s = "Maximum Loss Check=True";
-  else
-    s = "Maximum Loss Check=False";
-  stream << s << "\n";
-
-  if (maximumLossLong->isChecked())
-    s = "Maximum Loss Long=True";
-  else
-    s = "Maximum Loss Long=False";
-  stream << s << "\n";
-
-  if (maximumLossShort->isChecked())
-    s = "Maximum Loss Short=True";
-  else
-    s = "Maximum Loss Short=False";
-  stream << s << "\n";
-
-  s = "Maximum Loss Edit=";
-  s.append(maximumLossEdit->text());
-  stream << s << "\n";
-
-  // save profit stop
-  if (profitCheck->isChecked())
-    s = "Profit Check=True";
-  else
-    s = "Profit Check=False";
-  stream << s << "\n";
-
-  if (profitLong->isChecked())
-    s = "Profit Long=True";
-  else
-    s = "Profit Long=False";
-  stream << s << "\n";
-
-  if (profitShort->isChecked())
-    s = "Profit Short=True";
-  else
-    s = "Profit Short=False";
-  stream << s << "\n";
-
-  s = "Profit Edit=";
-  s.append(profitEdit->text());
-  stream << s << "\n";
-
-  // save trailing stop
-  if (trailingCheck->isChecked())
-    s = "Trailing Check=True";
-  else
-    s = "Trailing Check=False";
-  stream << s << "\n";
-
-  if (trailingLong->isChecked())
-    s = "Trailing Long=True";
-  else
-    s = "Trailing Long=False";
-  stream << s << "\n";
-
-  if (trailingShort->isChecked())
-    s = "Trailing Short=True";
-  else
-    s = "Trailing Short=False";
-  stream << s << "\n";
-
-  s = "Trailing Edit=";
-  s.append(trailingEdit->text());
-  stream << s << "\n";
-  
-  if (tradeLong->isChecked())
-    s = "TradeLong=True";
-  else
-    s = "TradeLong=False";
-  stream << s << "\n";
-  
-  if (tradeShort->isChecked())
-    s = "TradeShort=True";
-  else
-    s = "TradeShort=False";
-  stream << s << "\n";
-
-  s = "Volume Percent=";
-  s.append(volumePercent->text());
-  stream << s << "\n";
-  
-  s = "Entry Com=";
-  s.append(entryCom->text());
-  stream << s << "\n";
-  
-  s = "Exit Com=";
-  s.append(exitCom->text());
-  stream << s << "\n";
-  
-  s = "EnterLongDelay=";
-  s.append(enterLongDelay->text());
-  stream << s << "\n";
-  
-  s = "ExitLongDelay=";
-  s.append(exitLongDelay->text());
-  stream << s << "\n";
-  
-  s = "EnterShortDelay=";
-  s.append(enterShortDelay->text());
-  stream << s << "\n";
-  
-  s = "ExitShortDelay=";
-  s.append(exitShortDelay->text());
-  stream << s << "\n";
-  
-  s = "Price Field=";
-  s.append(priceField->currentText());
-  stream << s << "\n";
-  
-  s = "Bars=";
-  s.append(bars->text());
-  stream << s << "\n";
-  
-  s = "Symbol=";
-  s.append(symbolButton->getPath());
-  stream << s << "\n";
+  stream << "Maximum Loss Check=" << QString::number(maximumLossCheck->isChecked()) << "\n";
+  stream << "Maximum Loss Long=" << QString::number(maximumLossLong->isChecked()) << "\n";
+  stream << "Maximum Loss Short=" << QString::number(maximumLossShort->isChecked()) << "\n";
+  stream << "Maximum Loss Edit=" << maximumLossEdit->text() << "\n";
+  stream << "Profit Check=" << QString::number(profitCheck->isChecked()) << "\n";
+  stream << "Profit Long=" << QString::number(profitLong->isChecked()) << "\n";
+  stream << "Profit Short=" << QString::number(profitShort->isChecked()) << "\n";
+  stream << "Profit Edit=" << profitEdit->text() << "\n";
+  stream << "Trailing Check=" << QString::number(trailingCheck->isChecked()) << "\n";
+  stream << "Trailing Long=" << QString::number(trailingLong->isChecked()) << "\n";
+  stream << "Trailing Short=" << QString::number(trailingShort->isChecked()) << "\n";
+  stream << "Trailing Edit=" << trailingEdit->text() << "\n";
+  stream << "TradeLong=" << QString::number(tradeLong->isChecked()) << "\n";
+  stream << "TradeShort=" << QString::number(tradeShort->isChecked()) << "\n";
+  stream << "Volume Percent=" << volumePercent->text() << "\n";
+  stream << "Entry Com=" << entryCom->text() << "\n";
+  stream << "Exit Com=" << exitCom->text() << "\n";
+  stream << "EnterLongDelay=" << enterLongDelay->text() << "\n";
+  stream << "ExitLongDelay=" << exitLongDelay->text() << "\n";
+  stream << "EnterShortDelay=" << enterShortDelay->text() << "\n";
+  stream << "ExitShortDelay=" << exitShortDelay->text() << "\n";
+  stream << "Price Field=" << priceField->currentText() << "\n";
+  stream << "Bars=" << bars->text() << "\n";
+  stream << "Symbol=" << symbolButton->getPath() << "\n";
+  stream << "Account=" << account->text() << "\n";
   
   f.close();
 }
@@ -1424,22 +1343,19 @@ void Tester::loadRule ()
     
     if (! l2[0].compare("Maximum Loss Check"))
     {
-      if (! l2[1].compare("True"))
-        maximumLossCheck->setChecked(TRUE);
+      maximumLossCheck->setChecked(l2[1].toInt());
       continue;
     }
 
     if (! l2[0].compare("Maximum Loss Long"))
     {
-      if (! l2[1].compare("True"))
-        maximumLossLong->setChecked(TRUE);
+      maximumLossLong->setChecked(l2[1].toInt());
       continue;
     }
 
     if (! l2[0].compare("Maximum Loss Short"))
     {
-      if (! l2[1].compare("True"))
-        maximumLossShort->setChecked(TRUE);
+      maximumLossShort->setChecked(l2[1].toInt());
       continue;
     }
 
@@ -1451,22 +1367,19 @@ void Tester::loadRule ()
 
     if (! l2[0].compare("Profit Check"))
     {
-      if (! l2[1].compare("True"))
-        profitCheck->setChecked(TRUE);
+      profitCheck->setChecked(l2[1].toInt());
       continue;
     }
 
     if (! l2[0].compare("Profit Long"))
     {
-      if (! l2[1].compare("True"))
-        profitLong->setChecked(TRUE);
+      profitLong->setChecked(l2[1].toInt());
       continue;
     }
 
     if (! l2[0].compare("Profit Short"))
     {
-      if (! l2[1].compare("True"))
-        profitShort->setChecked(TRUE);
+      profitShort->setChecked(l2[1].toInt());
       continue;
     }
 
@@ -1478,22 +1391,19 @@ void Tester::loadRule ()
 
     if (! l2[0].compare("Trailing Check"))
     {
-      if (! l2[1].compare("True"))
-        trailingCheck->setChecked(TRUE);
+      trailingCheck->setChecked(l2[1].toInt());
       continue;
     }
 
     if (! l2[0].compare("Trailing Long"))
     {
-      if (! l2[1].compare("True"))
-        trailingLong->setChecked(TRUE);
+      trailingLong->setChecked(l2[1].toInt());
       continue;
     }
 
     if (! l2[0].compare("Trailing Short"))
     {
-      if (! l2[1].compare("True"))
-        trailingShort->setChecked(TRUE);
+      trailingShort->setChecked(l2[1].toInt());
       continue;
     }
 
@@ -1505,15 +1415,13 @@ void Tester::loadRule ()
     
     if (! l2[0].compare("TradeLong"))
     {
-      if (! l2[1].compare("True"))
-        tradeLong->setChecked(TRUE);
+      tradeLong->setChecked(l2[1].toInt());
       continue;
     }
     
     if (! l2[0].compare("TradeShort"))
     {
-      if (! l2[1].compare("True"))
-        tradeShort->setChecked(TRUE);
+      tradeShort->setChecked(l2[1].toInt());
       continue;
     }
     
@@ -1574,6 +1482,12 @@ void Tester::loadRule ()
     if (! l2[0].compare("Symbol"))
     {
       symbolButton->setSymbol(l2[1]);
+      continue;
+    }
+    
+    if (! l2[0].compare("Account"))
+    {
+      account->setValue(l2[1].toInt());
       continue;
     }
     
