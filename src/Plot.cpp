@@ -1436,22 +1436,15 @@ void Plot::newChartObject ()
       set->set(QObject::tr("Color"), borderColor.name(), Setting::Color);
       break;
     case TrendLine:
-/*
-      set->set(QObject::tr("Date"), x1, Setting::Date);
-      set->set(QObject::tr("Value"), y1, Setting::Float);
-      set->set(QObject::tr("Bar"), QObject::tr("Close"), Setting::InputField);
-      set->set(QObject::tr("Angle"), "45", Setting::Integer);
+      set->set(QObject::tr("Start Date"), x1, Setting::Date);
+      set->set(QObject::tr("Start Value"), y1, Setting::Float);
+      set->set(QObject::tr("Start Bar"), QObject::tr("Close"), Setting::InputField);
+      set->set(QObject::tr("End Date"), x2, Setting::Date);
+      set->set(QObject::tr("End Value"), y2, Setting::Float);
+      set->set(QObject::tr("End Bar"), QObject::tr("Close"), Setting::InputField);
       set->set(QObject::tr("Use Bar"), QObject::tr("False"), Setting::Bool);
       set->set(QObject::tr("Type"), QObject::tr("Trend Line"), Setting::None);
       set->set(QObject::tr("Color"), borderColor.name(), Setting::Color);
-*/
-      set->set(QObject::tr("Start Date"), x1, Setting::Date);
-      set->set(QObject::tr("Start Value"), y1, Setting::Float);
-      set->set(QObject::tr("End Date"), x2, Setting::Date);
-      set->set(QObject::tr("End Value"), y2, Setting::Float);
-      set->set(QObject::tr("Type"), QObject::tr("Trend Line"), Setting::None);
-      set->set(QObject::tr("Color"), borderColor.name(), Setting::Color);
-
       break;
     case Text:
       set->set(QObject::tr("Date"), x1, Setting::Date);
@@ -2517,18 +2510,16 @@ void Plot::drawText (Setting *co)
 
 void Plot::drawTrendLine (Setting *co)
 {
-/*
   QPainter painter;
   painter.begin(&buffer);
 
-  Setting *r = data->at(data->count() - 1);
-  QDateTime dt = QDateTime::fromString(r->getDateTime(QObject::tr("Date")), Qt::ISODate);
+  QDateTime dt = QDateTime::fromString(co->getDateTime(QObject::tr("End Date")), Qt::ISODate);
 
   int x2 = getXFromDate(dt);
   if (x2 == -1)
     return;
 
-  dt = QDateTime::fromString(co->getDateTime(QObject::tr("Date")), Qt::ISODate);
+  dt = QDateTime::fromString(co->getDateTime(QObject::tr("Start Date")), Qt::ISODate);
 
   int x = getXFromDate(dt);
   if (x == -1)
@@ -2537,8 +2528,8 @@ void Plot::drawTrendLine (Setting *co)
   int y;
   if (! co->getData(QObject::tr("Use Bar")).compare(QObject::tr("True")))
   {
-    QString s = co->getData(QObject::tr("Bar"));
-    r = data->at((x / pixelspace) + startIndex);
+    QString s = co->getData(QObject::tr("Start Bar"));
+    Setting *r = data->at((x / pixelspace) + startIndex);
 
     while (1)
     {
@@ -2570,45 +2561,64 @@ void Plot::drawTrendLine (Setting *co)
     }
   }
   else
-    y = convertToY(co->getFloat(QObject::tr("Value")));
+    y = convertToY(co->getFloat(QObject::tr("Start Value")));
 
-  QColor color(co->getData(QObject::tr("Color")));
-  painter.setPen(color);
+  int y2;
+  if (! co->getData(QObject::tr("Use Bar")).compare(QObject::tr("True")))
+  {
+    QString s = co->getData(QObject::tr("End Bar"));
+    Setting *r = data->at((x2 / pixelspace) + startIndex);
 
-  int angle = co->getInt(QObject::tr("Angle"));
-  QWMatrix m = painter.worldMatrix();
-  m.translate(x, y);
-  int pad;
-  m.rotate(-angle);
-  pad = pixelspace * angle;
-  painter.setWorldMatrix(m);
-  painter.drawLine (0, 0, x2 - x + pad, 0);
+    while (1)
+    {
+      if (! s.compare(QObject::tr("Open")))
+      {
+        y2 = convertToY(r->getFloat("Open"));
+	break;
+      }
 
-  painter.end();
-*/
+      if (! s.compare(QObject::tr("High")))
+      {
+        y2 = convertToY(r->getFloat("High"));
+	break;
+      }
 
-  QPainter painter;
-  painter.begin(&buffer);
+      if (! s.compare(QObject::tr("Low")))
+      {
+        y2 = convertToY(r->getFloat("Low"));
+	break;
+      }
 
-  QDateTime dt = QDateTime::fromString(co->getDateTime(QObject::tr("End Date")), Qt::ISODate);
+      if (! s.compare(QObject::tr("Close")))
+      {
+        y2 = convertToY(r->getFloat("Close"));
+	break;
+      }
 
-  int x2 = getXFromDate(dt);
-  if (x2 == -1)
-    return;
-
-  dt = QDateTime::fromString(co->getDateTime(QObject::tr("Start Date")), Qt::ISODate);
-
-  int x = getXFromDate(dt);
-  if (x == -1)
-    return;
-
-  int y = convertToY(co->getFloat(QObject::tr("Start Value")));
-  int y2 = convertToY(co->getFloat(QObject::tr("End Value")));
+      return;
+    }
+  }
+  else
+    y2 = convertToY(co->getFloat(QObject::tr("End Value")));
 
   QColor color(co->getData(QObject::tr("Color")));
   painter.setPen(color);
 
   painter.drawLine (x, y, x2, y2);
+
+  int ydiff = y - y2;
+  int xdiff = x2 - x;
+  Setting *r = data->at(data->count() - 1);
+  dt = QDateTime::fromString(r->getDateTime("Date"), Qt::ISODate);
+  int end = getXFromDate(dt);
+  while (x2 < end)
+  {
+    x = x2;
+    y = y2;
+    x2 = x2 + xdiff;
+    y2 = y2 - ydiff;
+    painter.drawLine (x, y, x2, y2);
+  }
 
   painter.end();
 }
