@@ -64,7 +64,7 @@ void PER::calculate ()
   for (loop = 1; loop < (int) in->getSize(); loop++)
     per->append(((in->getData(loop) - base) / base) * 100);
 
-  output.append(per);
+  output->addLine(per);
   
   if (! customFlag)
     delete in;
@@ -158,7 +158,7 @@ PlotLine * PER::calculateCustom (QDict<PlotLine> *d)
   customLines = d;
   clearOutput();
   calculate();
-  return output.at(0);
+  return output->getLine(0);
 }
 
 Plugin * create ()

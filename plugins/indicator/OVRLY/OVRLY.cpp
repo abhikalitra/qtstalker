@@ -79,7 +79,7 @@ void OVRLY::comparePrice ()
   line1->setType(lineType);
   line1->setLabel(label);
   line1->setScaleFlag(TRUE);
-  output.append(line1);
+  output->addLine(line1);
 
   if (baseSymbol.length())
   {
@@ -88,7 +88,7 @@ void OVRLY::comparePrice ()
     line2->setType(baseLineType);
     line2->setLabel(baseLabel);
     line2->setScaleFlag(TRUE);
-    output.append(line2);
+    output->addLine(line2);
   }
 }
 
@@ -129,8 +129,8 @@ void OVRLY::comparePerformance ()
 
   delete tline;
 
-  output.append(line1);
-  output.append(line2);
+  output->addLine(line1);
+  output->addLine(line2);
 }
 
 PlotLine * OVRLY::getSymbolLine (QString d)

@@ -22,6 +22,7 @@
 #include "Bars.h"
 #include "BarDialog.h"
 #include "Config.h"
+#include "Indicator.h"
 #include <qpainter.h>
 #include <qsettings.h>
 #include <qmessagebox.h>
@@ -285,7 +286,8 @@ PlotLine * Bars::getBoolLine ()
     plug->setCustomFunction(formulaList[loop]);
   plug->setIndicatorInput(data);
   plug->calculate();
-  line = plug->getIndicatorLine(0);
+  Indicator *i = plug->getIndicator();
+  line = i->getLine(0);
   if (! line)
   {
     qDebug("Bars::getBoolLine: no PlotLine returned");

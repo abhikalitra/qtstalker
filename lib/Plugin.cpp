@@ -56,12 +56,7 @@ void Plugin::setIndicatorInput (BarData *)
 {
 }
 
-int Plugin::getIndicatorLines ()
-{
-  return 0;
-}
-
-PlotLine * Plugin::getIndicatorLine (int)
+Indicator * Plugin::getIndicator ()
 {
   return 0;
 }

@@ -26,7 +26,7 @@
 
 IndicatorPlugin::IndicatorPlugin()
 {
-  output.setAutoDelete(TRUE);
+  output = new Indicator;
   pluginType = IndicatorPlug;
   saveFlag = FALSE;
   customFlag = FALSE;
@@ -45,12 +45,13 @@ IndicatorPlugin::IndicatorPlugin()
 
 IndicatorPlugin::~IndicatorPlugin()
 {
+  delete output;
 }
 
 void IndicatorPlugin::setIndicatorInput (BarData *d)
 {
   data = d;
-  output.clear();
+  output->clearLines();
 }
 
 void IndicatorPlugin::setCustomFlag (bool d)
@@ -60,12 +61,12 @@ void IndicatorPlugin::setCustomFlag (bool d)
 
 void IndicatorPlugin::clearOutput ()
 {
-  output.clear();
+  output->clearLines();
 }
 
 Setting IndicatorPlugin::loadFile (QString file)
 {
-  output.clear();
+  output->clearLines();
 
   Setting dict;
   
@@ -127,18 +128,9 @@ void IndicatorPlugin::saveFile (QString file, Setting dict)
   f.close();
 }
 
-int IndicatorPlugin::getIndicatorLines ()
+Indicator * IndicatorPlugin::getIndicator ()
 {
-  return (int) output.count();
-}
-
-PlotLine * IndicatorPlugin::getIndicatorLine (int d)
-{
-  PlotLine *line = output.at(d);
-  if (line)
-    return line;
-  else
-    return 0;
+  return output;
 }
 
 PlotLine * IndicatorPlugin::getInputLine (QString d)

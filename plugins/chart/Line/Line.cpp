@@ -22,6 +22,7 @@
 #include "Line.h"
 #include "LineDialog.h"
 #include "Config.h"
+#include "Indicator.h"
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qpainter.h>
@@ -34,7 +35,7 @@ Line::Line ()
   startX = 0;
   indicatorFlag = FALSE;
   defaultFlag = TRUE;
-  defaultFormula.append("REF,3,0,#00ff00,4,Close|1");
+  defaultFormula.append("plot=1|lineType=4|period=0|plugin=REF|input=3|color=#ff0000|label=REF");
   loadSettings();  
 }
 
@@ -194,7 +195,8 @@ PlotLine * Line::getBoolLine ()
   }
   plug->setIndicatorInput(data);
   plug->calculate();
-  line = plug->getIndicatorLine(0);
+  Indicator *i = plug->getIndicator();
+  line = i->getLine(0);
   if (! line)
   {
     qDebug("Line::getBoolLine: no PlotLine returned");

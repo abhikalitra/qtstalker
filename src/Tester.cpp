@@ -1028,7 +1028,8 @@ void Tester::loadAlerts (int type)
   // load the CUS plugin and calculate
   plug->setIndicatorInput(recordList);
   plug->calculate();
-  PlotLine *tline = plug->getIndicatorLine(0);
+  Indicator *i = plug->getIndicator();
+  PlotLine *tline = i->getLine(0);
   if (! tline)
   {
     qDebug("Tester::loadAlerts: no PlotLine returned");

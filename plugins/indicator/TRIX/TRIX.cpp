@@ -83,9 +83,9 @@ void TRIX::calculate ()
   trix->setColor(color);
   trix->setType(lineType);
   trix->setLabel(label);
-  output.append(trix);
+  output->addLine(trix);
 
-  output.append(trigger);
+  output->addLine(trigger);
 
   if (! customFlag)
     delete in;
@@ -228,7 +228,7 @@ PlotLine * TRIX::calculateCustom (QDict<PlotLine> *d)
   customLines = d;
   clearOutput();
   calculate();
-  return output.at(0);
+  return output->getLine(0);
 }
 
 Plugin * create ()

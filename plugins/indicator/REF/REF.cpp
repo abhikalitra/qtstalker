@@ -61,7 +61,7 @@ void REF::calculate ()
     line->append(in->getData(loop - period));
   }
   
-  output.append(line);
+  output->addLine(line);
   
   delete in;
 }
@@ -149,7 +149,7 @@ PlotLine * REF::calculateCustom (QDict<PlotLine> *)
 {
   clearOutput();
   calculate();
-  return output.at(0);
+  return output->getLine(0);
 }
 
 Plugin * create ()

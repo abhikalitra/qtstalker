@@ -75,18 +75,18 @@ void THERM::calculate ()
   if (smoothing > 1)
   {
     PlotLine *ma = getMA(therm, smoothType, smoothing);
-    output.append(ma);
+    output->addLine(ma);
     delete therm;
     therm = ma;
   }
   else
-    output.append(therm);
+    output->addLine(therm);
 
   PlotLine *therm_ma = getMA(therm, maType, maPeriod);
   therm_ma->setColor(maColor);
   therm_ma->setType(maLineType);
   therm_ma->setLabel(maLabel);
-  output.append(therm_ma);
+  output->addLine(therm_ma);
 
   // assign the therm colors
 
@@ -258,7 +258,7 @@ PlotLine * THERM::calculateCustom (QDict<PlotLine> *)
 {
   clearOutput();
   calculate();
-  return output.at(0);
+  return output->getLine(0);
 }
 
 Plugin * create ()

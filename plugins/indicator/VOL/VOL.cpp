@@ -65,7 +65,7 @@ void VOL::calculate ()
       pl->appendColorBar(downColor);
   }
 
-  output.append(pl);
+  output->addLine(pl);
 
   if (period < 1)
     return;
@@ -74,7 +74,7 @@ void VOL::calculate ()
   ma->setColor(maColor);
   ma->setType(maLineType);
   ma->setLabel(maLabel);
-  output.append(ma);
+  output->addLine(ma);
 }
 
 int VOL::indicatorPrefDialog (QWidget *w)

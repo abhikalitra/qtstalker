@@ -119,6 +119,10 @@
 
 20040817: Added an insert step function to the FormulaEdit widget, improving the editing of CUS
           formulas.
+
+20040821: Moved Indicator class into qtstalkerlib so that plugins could return an Indicator
+          instead of individual PlotLines.
+	  
 	  
 	  	  
 0.26

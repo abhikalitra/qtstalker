@@ -101,12 +101,12 @@ void PP::calculate ()
   t = (2 * pp) - ((2 * high) - low);
   ts->append(t);
 
-  output.append(ts);
-  output.append(ss);
-  output.append(fs);
-  output.append(fr);
-  output.append(sr);
-  output.append(thr);
+  output->addLine(ts);
+  output->addLine(ss);
+  output->addLine(fs);
+  output->addLine(fr);
+  output->addLine(sr);
+  output->addLine(thr);
 }
 
 int PP::indicatorPrefDialog (QWidget *w)

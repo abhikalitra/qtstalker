@@ -31,6 +31,7 @@
 #include "BarData.h"
 #include "Scaler.h"
 #include "Setting.h"
+#include "Indicator.h"
 
 class Plugin : public QObject
 {
@@ -48,8 +49,7 @@ class Plugin : public QObject
 
     // indicator plugin interface
     virtual void setIndicatorInput (BarData *);
-    virtual int getIndicatorLines ();
-    virtual PlotLine * getIndicatorLine (int);
+    virtual Indicator * getIndicator ();
     virtual void calculate ();
     virtual void clearOutput ();
     virtual int indicatorPrefDialog (QWidget *);

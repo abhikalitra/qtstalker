@@ -98,7 +98,7 @@ void MATH::calculateMinMax ()
       line->append(h);
   }
   
-  output.append(line);
+  output->addLine(line);
 }
 
 void MATH::calculateOper ()
@@ -177,7 +177,7 @@ void MATH::calculateOper ()
       loop2--;
   }
   
-  output.append(line);
+  output->addLine(line);
 }
 
 int MATH::indicatorPrefDialog (QWidget *w)
@@ -301,7 +301,7 @@ PlotLine * MATH::calculateCustom (QDict<PlotLine> *d)
   customLines = d;
   clearOutput();
   calculate();
-  return output.at(0);
+  return output->getLine(0);
 }
 
 //******************************************************************

@@ -75,7 +75,7 @@ void ATR::calculate ()
     ma->setColor(color);
     ma->setType(lineType);
     ma->setLabel(label);
-    output.append(ma);
+    output->addLine(ma);
     delete tr;
   }
   else
@@ -83,7 +83,7 @@ void ATR::calculate ()
     tr->setColor(color);
     tr->setType(lineType);
     tr->setLabel(label);
-    output.append(tr);
+    output->addLine(tr);
   }
 }
 
@@ -170,7 +170,7 @@ PlotLine * ATR::calculateCustom (QDict<PlotLine> *)
 {
   clearOutput();
   calculate();
-  return output.at(0);
+  return output->getLine(0);
 }
 
 Plugin * create ()

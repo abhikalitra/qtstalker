@@ -69,7 +69,7 @@ void ROC::calculate ()
     ma->setColor(color);
     ma->setType(lineType);
     ma->setLabel(label);
-    output.append(ma);
+    output->addLine(ma);
     delete roc;
   }
   else
@@ -77,7 +77,7 @@ void ROC::calculate ()
     roc->setColor(color);
     roc->setType(lineType);
     roc->setLabel(label);
-    output.append(roc);
+    output->addLine(roc);
   }
 
   if (! customFlag)
@@ -193,7 +193,7 @@ PlotLine * ROC::calculateCustom (QDict<PlotLine> *d)
   customLines = d;
   clearOutput();
   calculate();
-  return output.at(0);
+  return output->getLine(0);
 }
 
 Plugin * create ()

@@ -76,7 +76,7 @@ void WILLR::calculate ()
     willr->append(t);
   }
 
-  output.append(willr);
+  output->addLine(willr);
 }
 
 int WILLR::indicatorPrefDialog (QWidget *w)
@@ -155,7 +155,7 @@ PlotLine * WILLR::calculateCustom (QDict<PlotLine> *)
 {
   clearOutput();
   calculate();
-  return output.at(0);
+  return output->getLine(0);
 }
 
 Plugin * create ()

@@ -100,8 +100,8 @@ void BB::calculate ()
   delete in;
   delete sma;
 
-  output.append(bbu);
-  output.append(bbl);
+  output->addLine(bbu);
+  output->addLine(bbl);
 }
 
 int BB::indicatorPrefDialog (QWidget *w)
@@ -192,9 +192,9 @@ PlotLine * BB::calculateCustom (QDict<PlotLine> *)
   clearOutput();
   calculate();
   if (! customBand.compare(tr("Upper")))
-    return output.at(0);
+    return output->getLine(0);
   else
-    return output.at(1);
+    return output->getLine(1);
 }
 
 Plugin * create ()

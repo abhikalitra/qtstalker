@@ -76,7 +76,7 @@ void MAOSC::calculate ()
     smaLoop--;
   }
 
-  output.append(osc);
+  output->addLine(osc);
   
   if (! customFlag)
     delete in;
@@ -201,7 +201,7 @@ PlotLine * MAOSC::calculateCustom (QDict<PlotLine> *d)
   customLines = d;
   clearOutput();
   calculate();
-  return output.at(0);
+  return output->getLine(0);
 }
 
 Plugin * create ()

@@ -60,7 +60,7 @@ void FI::calculate ()
     ma->setColor(color);
     ma->setType(lineType);
     ma->setLabel(label);
-    output.append(ma);
+    output->addLine(ma);
     delete fi;
   }
   else
@@ -68,7 +68,7 @@ void FI::calculate ()
     fi->setColor(color);
     fi->setType(lineType);
     fi->setLabel(label);
-    output.append(fi);
+    output->addLine(fi);
   }
 }
 
@@ -155,7 +155,7 @@ PlotLine * FI::calculateCustom (QDict<PlotLine> *)
 {
   clearOutput();
   calculate();
-  return output.at(0);
+  return output->getLine(0);
 }
 
 Plugin * create ()

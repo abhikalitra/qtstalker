@@ -61,7 +61,7 @@ class BarData
     double getLow (int);
     double getClose (int);
     double getVolume (int);
-    int getOI (int);
+    double getOI (int);
     double getAverage (int);
     void prepend (Bar *bar);
     int getX (BarDate);

@@ -62,19 +62,19 @@ void DMI::calculate ()
   mdi->setColor(mdiColor);
   mdi->setType(mdiLineType);
   mdi->setLabel(mdiLabel);
-  output.append(mdi);
+  output->addLine(mdi);
   
   PlotLine *pdi = getPDI(period);
   pdi->setColor(pdiColor);
   pdi->setType(pdiLineType);
   pdi->setLabel(pdiLabel);
-  output.append(pdi);
+  output->addLine(pdi);
 
   PlotLine *adx = getADX(mdi, pdi, maType, smoothing);
   adx->setColor(adxColor);
   adx->setType(adxLineType);
   adx->setLabel(adxLabel);
-  output.append(adx);
+  output->addLine(adx);
 }
 
 int DMI::indicatorPrefDialog (QWidget *w)
@@ -225,13 +225,13 @@ PlotLine * DMI::calculateCustom (QDict<PlotLine> *)
   clearOutput();
   calculate();
   if (! lineRequest.compare("MDI"))
-    return output.at(0);
+    return output->getLine(0);
   else
   {
     if (! lineRequest.compare("PDI"))
-      return output.at(1);
+      return output->getLine(1);
     else
-      return output.at(2);
+      return output->getLine(2);
   }
 }
 

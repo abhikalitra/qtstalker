@@ -72,7 +72,7 @@ void MOM::calculate ()
     ma->setColor(color);
     ma->setType(lineType);
     ma->setLabel(label);
-    output.append(ma);
+    output->addLine(ma);
     delete mom;
   }
   else
@@ -80,7 +80,7 @@ void MOM::calculate ()
     mom->setColor(color);
     mom->setType(lineType);
     mom->setLabel(label);
-    output.append(mom);
+    output->addLine(mom);
   }
 }
 
@@ -193,7 +193,7 @@ PlotLine * MOM::calculateCustom (QDict<PlotLine> *d)
   customLines = d;
   clearOutput();
   calculate();
-  return output.at(0);
+  return output->getLine(0);
 }
 
 Plugin * create ()

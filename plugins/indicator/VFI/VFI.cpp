@@ -100,7 +100,7 @@ void VFI::calculate ()
     ma->setColor(color);
     ma->setType(lineType);
     ma->setLabel(label);
-    output.append(ma);
+    output->addLine(ma);
     delete vfi;
   }
   else
@@ -108,7 +108,7 @@ void VFI::calculate ()
     vfi->setColor(color);
     vfi->setType(lineType);
     vfi->setLabel(label);
-    output.append(vfi);
+    output->addLine(vfi);
   }
 }
 
@@ -203,7 +203,7 @@ PlotLine * VFI::calculateCustom (QDict<PlotLine> *)
 {
   clearOutput();
   calculate();
-  return output.at(0);
+  return output->getLine(0);
 }
 
 Plugin * create ()

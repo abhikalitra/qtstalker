@@ -91,7 +91,7 @@ void VT::calculateOBV ()
     obv->append(t);
   }
   
-  output.append(obv);
+  output->addLine(obv);
 }
 
 void VT::calculateNVI ()
@@ -116,7 +116,7 @@ void VT::calculateNVI ()
     nvi->append(nv);
   }
   
-  output.append(nvi);
+  output->addLine(nvi);
 }
 
 void VT::calculatePVI ()
@@ -141,7 +141,7 @@ void VT::calculatePVI ()
     pvi->append(pv);
   }
 
-  output.append(pvi);
+  output->addLine(pvi);
 }
 
 void VT::calculatePVT ()
@@ -163,7 +163,7 @@ void VT::calculatePVT ()
     pvt->append(pv);
   }
 
-  output.append(pvt);
+  output->addLine(pvt);
 }
 
 int VT::indicatorPrefDialog (QWidget *w)
@@ -242,7 +242,7 @@ PlotLine * VT::calculateCustom (QDict<PlotLine> *)
 {
   clearOutput();
   calculate();
-  return output.at(0);
+  return output->getLine(0);
 }
 
 Plugin * create ()

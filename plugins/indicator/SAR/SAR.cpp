@@ -181,7 +181,7 @@ void SAR::calculate ()
     d->append(sar);
   }
 
-  output.append(d);
+  output->addLine(d);
 }
 
 int SAR::indicatorPrefDialog (QWidget *w)
@@ -274,7 +274,7 @@ PlotLine * SAR::calculateCustom (QDict<PlotLine> *)
 {
   clearOutput();
   calculate();
-  return output.at(0);
+  return output->getLine(0);
 }
 
 Plugin * create ()

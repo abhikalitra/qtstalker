@@ -133,7 +133,7 @@ void STOCH::calculate ()
   k->setColor(kcolor);
   k->setType(klineType);
   k->setLabel(klabel);
-  output.append(k);
+  output->addLine(k);
 
   if (dperiod > 1)
   {
@@ -141,7 +141,7 @@ void STOCH::calculate ()
     d->setColor(dcolor);
     d->setType(dlineType);
     d->setLabel(dlabel);
-    output.append(d);
+    output->addLine(d);
   }
 }
 
@@ -292,7 +292,7 @@ PlotLine * STOCH::calculateCustom (QDict<PlotLine> *d)
   customLines = d;
   clearOutput();
   calculate();
-  return output.at(0);
+  return output->getLine(0);
 }
 
 Plugin * create ()

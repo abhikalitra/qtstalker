@@ -83,7 +83,7 @@ void AD::calculateAD ()
     line->append(accum);
   }
   
-  output.append(line);
+  output->addLine(line);
 }
 
 void AD::calculateWAD ()
@@ -123,7 +123,7 @@ void AD::calculateWAD ()
     wad->append(accum);
   }
 
-  output.append(wad);
+  output->addLine(wad);
 }
 
 int AD::indicatorPrefDialog (QWidget *w)
@@ -167,7 +167,7 @@ PlotLine * AD::calculateCustom (QDict<PlotLine> *)
 {
   clearOutput();
   calculate();
-  return output.at(0);
+  return output->getLine(0);
 }
 
 Setting AD::getIndicatorSettings ()

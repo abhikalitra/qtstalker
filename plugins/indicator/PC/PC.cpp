@@ -68,7 +68,7 @@ void PC::calculate ()
     pc->append(t2);
   }
   
-  output.append(pc);
+  output->addLine(pc);
   
   if (! customFlag)
     delete in;
@@ -169,7 +169,7 @@ PlotLine * PC::calculateCustom (QDict<PlotLine> *d)
   customLines = d;
   clearOutput();
   calculate();
-  return output.at(0);
+  return output->getLine(0);
 }
 
 Plugin * create ()

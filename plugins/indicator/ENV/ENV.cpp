@@ -90,12 +90,12 @@ void ENV::calculate ()
   uma->setColor(upperColor);
   uma->setType(upperLineType);
   uma->setLabel(upperLabel);
-  output.append(uma);
+  output->addLine(uma);
 
   lma->setColor(lowerColor);
   lma->setType(lowerLineType);
   lma->setLabel(lowerLabel);
-  output.append(lma);
+  output->addLine(lma);
 }
 
 int ENV::indicatorPrefDialog (QWidget *w)
@@ -257,9 +257,9 @@ PlotLine * ENV::calculateCustom (QDict<PlotLine> *d)
   clearOutput();
   calculate();
   if (! customBand.compare(tr("Upper")))
-    return output.at(0);
+    return output->getLine(0);
   else
-    return output.at(1);
+    return output->getLine(1);
 }
 
 Plugin * create ()

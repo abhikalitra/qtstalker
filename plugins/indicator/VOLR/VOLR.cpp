@@ -64,7 +64,7 @@ void VOLR::calculate ()
   delete trg;
   delete ma;
 
-  output.append(volr);
+  output->addLine(volr);
 }
 
 int VOLR::indicatorPrefDialog (QWidget *w)
@@ -143,7 +143,7 @@ PlotLine * VOLR::calculateCustom (QDict<PlotLine> *)
 {
   clearOutput();
   calculate();
-  return output.at(0);
+  return output->getLine(0);
 }
 
 PlotLine * VOLR::getTR ()

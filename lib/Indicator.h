@@ -44,6 +44,7 @@ class Indicator
     void addLine (PlotLine *);
     PlotLine * getLine (int);
     Indicator::PlotType getPlotType ();
+    Indicator::PlotType getPlotType (QString);
     void setPlotType (Indicator::PlotType);
     void clearLines ();
     void setEnable (bool);
@@ -55,7 +56,7 @@ class Indicator
     void setFile (QString);
     QString getFile ();
     QStringList getPlotTypes ();
-    Indicator::PlotType getPlotType (QString);
+    void copy (Indicator *);
 
   private:
     QPtrList<PlotLine> lines;

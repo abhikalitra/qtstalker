@@ -23,11 +23,20 @@
 #define BAR_HPP
 
 #include <qstring.h>
+#include <qstringlist.h>
+#include <qdict.h>
 #include "BarDate.h"
+
+typedef struct
+{
+  double v;
+
+} BarItem;
 
 class Bar
 {
   public:
+  
     Bar ();
     ~Bar ();
     int setDate (BarDate);
@@ -44,18 +53,16 @@ class Bar
     void setVolume (double);
     double getVolume ();
     void setOI (int);
-    int getOI ();
+    double getOI ();
     QString getString ();
     double getAverage();
+    QStringList getFields ();
+    void setData (QString, double);
+    double getData (QString);
     
   protected:
     BarDate date;
-    double open;
-    double high;
-    double low;
-    double close;
-    double volume;
-    int oi;
+    QDict<BarItem> data;
 };
 
 #endif

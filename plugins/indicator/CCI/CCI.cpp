@@ -81,7 +81,7 @@ void CCI::calculate ()
     ma->setColor(color);
     ma->setType(lineType);
     ma->setLabel(label);
-    output.append(ma);
+    output->addLine(ma);
     delete cci;
   }
   else
@@ -89,7 +89,7 @@ void CCI::calculate ()
     cci->setColor(color);
     cci->setType(lineType);
     cci->setLabel(label);
-    output.append(cci);
+    output->addLine(cci);
   }
 }
 
@@ -183,7 +183,7 @@ PlotLine * CCI::calculateCustom (QDict<PlotLine> *)
 {
   clearOutput();
   calculate();
-  return output.at(0);
+  return output->getLine(0);
 }
 
 Plugin * create ()

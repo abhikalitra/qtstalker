@@ -93,7 +93,7 @@ void UO::calculate ()
   uo->setColor(color);
   uo->setType(lineType);
   uo->setLabel(label);
-  output.append(uo);
+  output->addLine(uo);
 
   delete trg;
   delete atr;
@@ -195,7 +195,7 @@ PlotLine * UO::calculateCustom (QDict<PlotLine> *)
 {
   clearOutput();
   calculate();
-  return output.at(0);
+  return output->getLine(0);
 }
 
 PlotLine * UO::getTR ()

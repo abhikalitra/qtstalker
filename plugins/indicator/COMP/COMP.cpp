@@ -161,7 +161,7 @@ void COMP::calculate ()
       loop2--;
   }
   
-  output.append(line);
+  output->addLine(line);
 }
 
 int COMP::indicatorPrefDialog (QWidget *w)
@@ -269,7 +269,7 @@ PlotLine * COMP::calculateCustom (QDict<PlotLine> *d)
   customLines = d;
   clearOutput();
   calculate();
-  return output.at(0);
+  return output->getLine(0);
 }
 
 COMP::Operator COMP::getOperator (QString d)

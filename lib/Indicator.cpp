@@ -136,3 +136,20 @@ Indicator::PlotType Indicator::getPlotType (QString d)
   return type;
 }
 
+void Indicator::copy (Indicator *d)
+{
+  int loop;
+  for (loop = 0; loop < d->getLines(); loop++)
+  {
+    PlotLine *tpl = d->getLine(loop);
+    PlotLine *pl = new PlotLine;
+    pl->copy(tpl);
+    addLine(pl);
+  }
+
+//  setPlotType(d->getPlotType());
+//  setEnable(d->getEnable());
+//  setName(d->getName());
+//  setType(d->getType());
+//  setFile(d->getFile());
+}

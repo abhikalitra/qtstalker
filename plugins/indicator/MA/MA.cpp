@@ -64,7 +64,7 @@ void MA::calculate ()
   ma->setColor(color);
   ma->setType(lineType);
   ma->setLabel(label);
-  output.append(ma);
+  output->addLine(ma);
 }
 
 int MA::indicatorPrefDialog (QWidget *w)
@@ -169,8 +169,8 @@ PlotLine * MA::calculateCustom (QDict<PlotLine> *d)
   customLines = d;
   clearOutput();
   calculate();
-  if (output.count())
-    return output.at(0);
+  if (output->getLines())
+    return output->getLine(0);
   else
     return 0;
 }

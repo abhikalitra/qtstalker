@@ -226,7 +226,7 @@ double BarData::getVolume (int i)
     return 0;
 }
 
-int BarData::getOI (int i)
+double BarData::getOI (int i)
 {
   Bar *bar = barList.at(i);
   if (bar)

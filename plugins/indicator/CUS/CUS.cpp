@@ -80,7 +80,7 @@ void CUS::calculate ()
     {
       PlotLine *pl = customLines->find(QString::number(loop + 1));
       if (pl)
-        output.append(pl);
+        output->addLine(pl);
     }
   }
 

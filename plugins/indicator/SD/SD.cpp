@@ -81,7 +81,7 @@ void SD::calculate ()
     sd->append(ds);
   }
 
-  output.append(sd);
+  output->addLine(sd);
   
   if (! customFlag)
     delete in;
@@ -182,7 +182,7 @@ PlotLine * SD::calculateCustom (QDict<PlotLine> *d)
   customLines = d;
   clearOutput();
   calculate();
-  return output.at(0);
+  return output->getLine(0);
 }
 
 Plugin * create ()

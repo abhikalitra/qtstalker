@@ -91,7 +91,7 @@ void MF::calculate ()
     ma->setColor(color);
     ma->setType(lineType);
     ma->setLabel(label);
-    output.append(ma);
+    output->addLine(ma);
     delete d;
   }
   else
@@ -99,7 +99,7 @@ void MF::calculate ()
     d->setColor(color);
     d->setType(lineType);
     d->setLabel(label);
-    output.append(d);
+    output->addLine(d);
   }
 }
 
@@ -193,7 +193,7 @@ PlotLine * MF::calculateCustom (QDict<PlotLine> *)
 {
   clearOutput();
   calculate();
-  return output.at(0);
+  return output->getLine(0);
 }
 
 Plugin * create ()

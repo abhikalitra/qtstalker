@@ -23,12 +23,7 @@
 
 Bar::Bar ()
 {
-  open = 0;
-  high = 0;
-  low = 0;
-  close = 0;
-  volume = 0;
-  oi = 0;
+  data.setAutoDelete(TRUE);
 }
 
 Bar::~Bar ()
@@ -56,85 +51,132 @@ BarDate Bar::getDate ()
 
 void Bar::setOpen (double d)
 {
-  open = d;
+  setData("Open", d);
 }
 
 double Bar::getOpen ()
 {
-  return open;
+  BarItem *r = data["Open"];
+  if (r)
+    return r->v;
+  else
+    return 0;
 }
 
 void Bar::setHigh (double d)
 {
-  high = d;
+  setData("High", d);
 }
 
 double Bar::getHigh ()
 {
-  return high;
+  BarItem *r = data["High"];
+  if (r)
+    return r->v;
+  else
+    return 0;
 }
 
 void Bar::setLow (double d)
 {
-  low = d;
+  setData("Low", d);
 }
 
 double Bar::getLow ()
 {
-  return low;
+  BarItem *r = data["Low"];
+  if (r)
+    return r->v;
+  else
+    return 0;
 }
 
 void Bar::setClose (double d)
 {
-  close = d;
+  setData("Close", d);
 }
 
 double Bar::getClose ()
 {
-  return close;
+  BarItem *r = data["Close"];
+  if (r)
+    return r->v;
+  else
+    return 0;
 }
 
 void Bar::setVolume (double d)
 {
-  volume = d;
+  setData("Volume", d);
 }
 
 double Bar::getVolume ()
 {
-  return volume;
+  BarItem *r = data["Volume"];
+  if (r)
+    return r->v;
+  else
+    return 0;
 }
 
 void Bar::setOI (int d)
 {
-  oi = d;
+  setData("OI", d);
 }
 
-int Bar::getOI ()
+double Bar::getOI ()
 {
-  return oi;
+  BarItem *r = data["OI"];
+  if (r)
+    return r->v;
+  else
+    return 0;
 }
 
 QString Bar::getString ()
 {
   QString s = date.getDateTimeString(TRUE);
-  s.append(" ");
-  s.append(QString::number(open));
-  s.append(" ");
-  s.append(QString::number(high));
-  s.append(" ");
-  s.append(QString::number(low));
-  s.append(" ");
-  s.append(QString::number(close));
-  s.append(" ");
-  s.append(QString::number(volume, 'f', 0));
-  s.append(" ");
-  s.append(QString::number(oi));
   
+  QDictIterator<BarItem> it(data);
+  for(; it.current(); ++it)
+  {
+    s.append(" ");
+    s.append(QString::number(it.current()->v, 'g'));
+  }
   return s;
 }
 
 double Bar::getAverage ()
 {
-  return ((open + high + low + close) / 4);
+  double t = 0;
+  QDictIterator<BarItem> it(data);
+  for(; it.current(); ++it)
+    t = t + it.current()->v;
+  return (t / data.count());
+}
+
+QStringList Bar::getFields ()
+{
+  QStringList l;
+  QDictIterator<BarItem> it(data);
+  for(; it.current(); ++it)
+    l.append(it.currentKey());  
+  return l;
+}
+
+double Bar::getData (QString d)
+{
+  BarItem *r = data[d];
+  if (r)
+    return r->v;
+  else
+    return 0;
+}
+
+void Bar::setData (QString k, double d)
+{
+  BarItem *r = new BarItem;
+  r->v = d;
+  data.replace(k, r);
 }
 

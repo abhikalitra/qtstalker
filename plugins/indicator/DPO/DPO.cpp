@@ -62,7 +62,7 @@ void DPO::calculate ()
   dpo->setColor(color);
   dpo->setType(lineType);
   dpo->setLabel(label);
-  output.append(dpo);
+  output->addLine(dpo);
 
   int maLoop = ma->getSize() - 1;
   int closeLoop = in->getSize() - 1;
@@ -183,7 +183,7 @@ PlotLine * DPO::calculateCustom (QDict<PlotLine> *d)
   customLines = d;
   clearOutput();
   calculate();
-  return output.at(0);
+  return output->getLine(0);
 }
 
 Plugin * create ()

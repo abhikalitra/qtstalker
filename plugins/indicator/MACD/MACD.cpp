@@ -109,9 +109,9 @@ void MACD::calculate ()
     sloop--;
   }
 
-  output.append(osc);
-  output.append(macd);
-  output.append(signal);
+  output->addLine(osc);
+  output->addLine(macd);
+  output->addLine(signal);
 }
 
 int MACD::indicatorPrefDialog (QWidget *w)
@@ -290,7 +290,7 @@ PlotLine * MACD::calculateCustom (QDict<PlotLine> *d)
   customLines = d;
   clearOutput();
   calculate();
-  return output.at(1);
+  return output->getLine(1);
 }
 
 Plugin * create ()

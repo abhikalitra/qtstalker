@@ -160,7 +160,7 @@ void SZ::calculate ()
     sz_uptrend->setColor(color);
     sz_uptrend->setType(lineType);
     sz_uptrend->setLabel(tr("SZ LONG"));
-    output.append(sz_uptrend);
+    output->addLine(sz_uptrend);
   }
 
   if (display_dntrend)
@@ -168,7 +168,7 @@ void SZ::calculate ()
     sz_dntrend->setColor(color);
     sz_dntrend->setType(lineType);
     sz_dntrend->setLabel(tr("SZ SHORT"));
-    output.append(sz_dntrend);
+    output->addLine(sz_dntrend);
   }
 }
 
@@ -262,7 +262,7 @@ PlotLine * SZ::calculateCustom (QDict<PlotLine> *)
 {
   clearOutput();
   calculate();
-  return output.at(0);
+  return output->getLine(0);
 }
 
 Plugin * create ()

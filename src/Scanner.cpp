@@ -186,7 +186,8 @@ void Scanner::scan ()
     // load the CUS plugin and calculate
     plug->setIndicatorInput(recordList);
     plug->calculate();
-    PlotLine *line = plug->getIndicatorLine(0);
+    Indicator *i = plug->getIndicator();
+    PlotLine *line = i->getLine(0);
     if (! line)
     {
       qDebug("Scanner::scan: no PlotLine returned");

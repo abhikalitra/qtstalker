@@ -281,7 +281,7 @@ QtstalkerApp::QtstalkerApp()
   navSplitter->setSizes(sizeList);
   
   // place navigator on left/right side
-  if (config->getData(Config::NavigatorPosition).toInt() == 0)
+  if (navTab->getPosition() == 0)
     navSplitter->moveToLast(navBase);
 
   l = config->getIndicators();
@@ -875,18 +875,8 @@ void QtstalkerApp::loadIndicator (Indicator *i)
     plug->setIndicatorInput(recordList);
     plug->loadIndicatorSettings(i->getFile());
     plug->calculate();
+    i->copy(plug->getIndicator());
 
-    int loop;
-    for (loop = 0; loop < plug->getIndicatorLines(); loop++)
-    {
-      PlotLine *tpl = plug->getIndicatorLine(loop);
-      PlotLine *pl = new PlotLine;
-      pl->copy(tpl);
-      i->addLine(pl);
-    }
-
-//    i->setMainPlot(plug->getPlotFlag());
-    
     if (i->getPlotType() == Indicator::MainPlot)
       mainPlot->addIndicator(i->getName(), i);
     else

@@ -7,7 +7,6 @@ QMAKE_CXXFLAGS += -rdynamic
 
 HEADERS += Qtstalker.h
 HEADERS += PortfolioDialog.h
-HEADERS += Indicator.h
 HEADERS += Quote.h
 HEADERS += Plot.h
 HEADERS += DataWindow.h
@@ -34,7 +33,6 @@ HEADERS += Scanner.h
 
 SOURCES += Qtstalker.cpp
 SOURCES += PortfolioDialog.cpp
-SOURCES += Indicator.cpp
 SOURCES += Quote.cpp
 SOURCES += Plot.cpp
 SOURCES += DataWindow.cpp
