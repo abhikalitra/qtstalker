@@ -76,9 +76,11 @@ A really crappy portfolio manager. Good for tracking open positions.
 Quote plugins included are:
 
   CBOT - Chicago Board of Trade Futures
+  CC - Creates continuous adjusted futures contracts.
   CME - Chicago Mercantile Exchange Futures
   CMEHistory - Current history for Chicago Mercantile Exchange Futures
   COT - Commitment of Traders futures reports.
+  CSV - Creates charts from ASCII csv files.
   Index - Custom index composites.
   NYBOT - New York Board Of Trade Futures
   Qtstalker - Files that have been exported by qtstalker ASCII export function
