@@ -48,6 +48,7 @@ class STOCH : public IndicatorPlugin
     double buyLine;
     double sellLine;
     IndicatorPlugin::MAType maType;
+    QString customInput;
 };
 
 extern "C"

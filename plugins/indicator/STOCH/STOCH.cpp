@@ -52,36 +52,76 @@ void STOCH::setDefaults ()
 
 void STOCH::calculate ()
 {
-  PlotLine *k = new PlotLine();
-
-  int loop;
-  for (loop = period; loop < (int) data->count(); loop++)
+  PlotLine *in = 0;
+  if (customFlag)
   {
-    int loop2;
-    double l;
-    double h;
-    for (loop2 = 0, l = 9999999, h = 0; loop2 < period; loop2++)
+    in = getInputLine(customInput);
+    if (! in)
     {
-      double high = data->getHigh(loop - loop2);
-      double low = data->getLow(loop - loop2);
-
-      double t = high;
-      if (t > h)
-        h = t;
-
-      t = low;
-      if (t < l)
-        l = t;
+      qDebug("STOCH::calculate: no input");
+      return;
     }
+  }
+  
+  PlotLine *k = new PlotLine();
+  int loop;
+  
+  if (customFlag)
+  {
+    for (loop = period; loop < (int) in->getSize(); loop++)
+    {
+      int loop2;
+      double l;
+      double h;
+      for (loop2 = 0, l = 9999999, h = 0; loop2 < period; loop2++)
+      {
+        double t = data->getData(loop - loop2);
+        if (t > h)
+          h = t;
+        if (t < l)
+          l = t;
+      }
 
-    double close = data->getClose(loop);
-    double t = ((close - l) / (h - l)) * 100;
-    if (t > 100)
-      t = 100;
-    if (t < 0)
-      t = 0;
+      double close = data->getData(loop);
+      double t = ((close - l) / (h - l)) * 100;
+      if (t > 100)
+        t = 100;
+      if (t < 0)
+        t = 0;
 
-    k->append(t);
+      k->append(t);
+    }
+  }
+  else
+  {  
+    for (loop = period; loop < (int) data->count(); loop++)
+    {
+      int loop2;
+      double l;
+      double h;
+      for (loop2 = 0, l = 9999999, h = 0; loop2 < period; loop2++)
+      {
+        double high = data->getHigh(loop - loop2);
+        double low = data->getLow(loop - loop2);
+
+        double t = high;
+        if (t > h)
+          h = t;
+
+        t = low;
+        if (t < l)
+          l = t;
+      }
+
+      double close = data->getClose(loop);
+      double t = ((close - l) / (h - l)) * 100;
+      if (t > 100)
+        t = 100;
+      if (t < 0)
+        t = 0;
+
+      k->append(t);
+    }
   }
 
   if (kperiod > 1)
@@ -115,6 +155,8 @@ int STOCH::indicatorPrefDialog (QWidget *w)
   dialog->addComboItem(tr("Smoothing Type"), tr("Parms"), maTypeList, maType);
   dialog->addFloatItem(tr("Buy Line"), tr("Parms"), buyLine, 0, 100);
   dialog->addFloatItem(tr("Sell Line"), tr("Parms"), sellLine, 0, 100);
+  if (customFlag)
+    dialog->addFormulaInputItem(tr("Input"), tr("Parms"), FALSE, customInput);
   
   dialog->createPage (tr("%K Parms"));
   dialog->addColorItem(tr("%K Color"), tr("%K Parms"), kcolor);
@@ -144,6 +186,9 @@ int STOCH::indicatorPrefDialog (QWidget *w)
     maType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("Smoothing Type"));
     buyLine = dialog->getFloat(tr("Buy Line"));
     sellLine = dialog->getFloat(tr("Sell Line"));
+    if (customFlag)
+      customInput = dialog->getFormulaInput(tr("Input"));
+    
     rc = TRUE;
   }
   else
@@ -217,6 +262,10 @@ void STOCH::setIndicatorSettings (Setting dict)
   s = dict.getData("sellLine");
   if (s.length())
     sellLine = s.toFloat();
+
+  s = dict.getData("customInput");
+  if (s.length())
+    customInput = s;
 }
 
 Setting STOCH::getIndicatorSettings ()
@@ -234,12 +283,14 @@ Setting STOCH::getIndicatorSettings ()
   dict.setData("period", QString::number(period));
   dict.setData("buyLine", QString::number(buyLine));
   dict.setData("sellLine", QString::number(sellLine));
+  dict.setData("customInput", customInput);
   dict.setData("plugin", pluginName);
   return dict;
 }
 
-PlotLine * STOCH::calculateCustom (QDict<PlotLine> *)
+PlotLine * STOCH::calculateCustom (QDict<PlotLine> *d)
 {
+  customLines = d;
   clearOutput();
   calculate();
   return output.at(0);
