@@ -168,7 +168,16 @@ void Plot::setChartType (QString d)
       dateFlag = TRUE;
       break;
     }
-    
+
+    if (! d.compare(tr("Swing")))
+    {
+      minPixelspace = 4;
+      startX = 0;
+      chartType = d;
+      dateFlag = TRUE;
+      break;
+    }
+
     break;
   }
 
@@ -256,7 +265,13 @@ void Plot::draw ()
 	  break;
 	}
 
-        break;
+        if (! chartType.compare(tr("Swing")))
+        {
+          drawSwing();
+	  break;
+	}
+
+	break;
       }
     }
     else
@@ -1915,6 +1930,120 @@ void Plot::drawPaintBar ()
 
     x = x + pixelspace;
     loop++;
+  }
+
+  painter.end();
+}
+
+void Plot::drawSwing ()
+{
+  QPainter painter;
+  painter.begin(&buffer);
+  painter.setPen(neutralColor);
+
+  int status = 0;
+  int x = startX;
+  int loop = startIndex;
+  int h;
+  int l;
+  double high;
+  double low;
+
+  int oldx = x;
+  loop++;
+  x = x + pixelspace;
+
+  while ((x < _width) && (loop < (int) data->count()))
+  {
+    Setting *r = data->at(loop);
+    Setting *pr = data->at(loop - 1);
+
+    switch (status)
+    {
+      case 1:
+        if (r->getFloat("High") < pr->getFloat("High") && r->getFloat("Low") < pr->getFloat("Low"))
+	{
+	  painter.setPen(upColor);
+          h = convertToY(high);
+          l = convertToY(low);
+          painter.drawLine (x, h, x, l);
+
+          painter.drawLine (oldx, l, x, l);
+
+	  status = -1;
+	  oldx = x;
+          low = r->getFloat("Low");
+	}
+	else
+	{
+          if (r->getFloat("High") > high)
+           high = r->getFloat("High");
+	}
+	break;
+      case -1:
+        if (r->getFloat("High") > pr->getFloat("High") && r->getFloat("Low") > pr->getFloat("Low"))
+	{
+	  painter.setPen(downColor);
+          h = convertToY(high);
+          l = convertToY(low);
+          painter.drawLine (x, h, x, l);
+
+          painter.drawLine (oldx, h, x, h);
+
+	  status = 1;
+	  oldx = x;
+          high = r->getFloat("High");
+	}
+	else
+	{
+          if (r->getFloat("Low") < low)
+           low = r->getFloat("Low");
+        }
+	break;
+      default:
+        if (r->getFloat("High") < pr->getFloat("High") && r->getFloat("Low") < pr->getFloat("Low"))
+	{
+	  status = -1;
+	  oldx = x;
+          high = r->getFloat("High");
+          low = r->getFloat("Low");
+	}
+	else
+	{
+          if (r->getFloat("High") > pr->getFloat("High") && r->getFloat("Low") > pr->getFloat("Low"))
+	  {
+	    status = 1;
+	    oldx = x;
+            high = r->getFloat("High");
+            low = r->getFloat("Low");
+	  }
+        }
+	break;
+    }
+
+    x = x + pixelspace;
+    loop++;
+  }
+
+  // draw the leftover
+  switch (status)
+  {
+    case 1:
+      painter.setPen(upColor);
+      h = convertToY(high);
+      l = convertToY(low);
+      painter.drawLine (x, h, x, l);
+      painter.drawLine (oldx, l, x, l);
+        break;
+    case -1:
+      painter.setPen(downColor);
+      h = convertToY(high);
+      l = convertToY(low);
+      painter.drawLine (x, h, x, l);
+      painter.drawLine (oldx, h, x, h);
+      break;
+    default:
+      break;
   }
 
   painter.end();

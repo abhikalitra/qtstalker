@@ -198,7 +198,7 @@ QtstalkerApp::QtstalkerApp()
   l = QStringList::split(" ", config->getData(Config::AppFont), FALSE);
   QFont font(l[0], l[1].toInt(), l[2].toInt());
   qApp->setFont(font, TRUE, 0);
-  
+
   // set the nav status
   slotHideNav(TRUE);
 
@@ -361,6 +361,7 @@ void QtstalkerApp::initToolBar()
   l.append(tr("Line"));
   l.append(tr("Candle"));
   l.append(tr("Point and Figure"));
+  l.append(tr("Swing"));
   chartTypeCombo->insertStringList(l, -1);
   QToolTip::add(chartTypeCombo, tr("Chart Type"));
   connect(chartTypeCombo, SIGNAL(activated(int)), this, SLOT(slotChartTypeChanged(int)));

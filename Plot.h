@@ -137,6 +137,7 @@ class Plot : public QWidget
     void drawLineChart ();
     void drawCandle ();
     void drawBars ();
+    void drawSwing ();
     void drawObjects ();
     void drawLines ();
     void drawDate ();
