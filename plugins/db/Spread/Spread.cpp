@@ -64,7 +64,7 @@ void Spread::dbPrefDialog ()
   l.append(QObject::tr("Subtract"));
   l.append(QObject::tr("Divide"));
   
-  QString s = config.getData(Config::DataPath) + "/Futures";
+  QString s = config.getData(Config::DataPath);
   
   PrefDialog *dialog = new PrefDialog(0);
   dialog->setCaption(QObject::tr("Spread Prefs"));
@@ -78,10 +78,17 @@ void Spread::dbPrefDialog ()
   
   if (rc == QDialog::Accepted)
   {
-    setData("First Symbol", dialog->getSymbol(QObject::tr("First Symbol")));
-    setData("Second Symbol", dialog->getSymbol(QObject::tr("Second Symbol")));
+    QString s = dialog->getSymbol(QObject::tr("First Symbol"));
+    if (s.length())
+      setData("First Symbol", s);
+      
+    s = dialog->getSymbol(QObject::tr("Second Symbol"));
+    if (s.length())
+      setData("Second Symbol", s);
+      
     setData("Method", dialog->getCombo(QObject::tr("Method")));
     setData("Rebuild", QString::number(dialog->getCheck(QObject::tr("Rebuild"))));
+    
     updateSpread();
   }
   
@@ -103,7 +110,13 @@ void Spread::updateSpread ()
   data.clear();
   
   QString fs = getData("First Symbol");
+  if (! fs.length())
+    return;
+    
   QString ss = getData("Second Symbol");
+  if (! ss.length())
+    return;
+  
   QString meth = getData("Method");
 
   loadData(fs, meth);

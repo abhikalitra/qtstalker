@@ -129,7 +129,7 @@ void CSV::parse ()
     }
 
     QString path;
-    if (! type.compare("Stock"))
+    if (! type.compare("Stocks"))
     {
       path = createDirectory("Stocks");
       if (! path.length())
@@ -190,7 +190,8 @@ void CSV::parse ()
     {
       QString s = path;
       s.append(symbol);
-      openDb(s, symbol, type);
+      if (openDb(s, symbol, type))
+        continue;
       emit statusLogMessage("Updating " + symbol);
     }
 
@@ -310,7 +311,12 @@ void CSV::parse ()
       {
 	s = path;
 	s.append(r->getData("Symbol"));
-	openDb(s, r->getData("Symbol"), type);
+	if (openDb(s, r->getData("Symbol"), type))
+	{
+	  delete r;
+	  delete bar;
+	  continue;
+	}
         db->setBar(bar);
 	emit dataLogMessage(r->getData("Symbol") + " " + r->getString());
         emit statusLogMessage("Updating " + r->getData("Symbol"));
@@ -512,19 +518,18 @@ QDate CSV::getDate (QString k, QString d, Setting *r)
   return date;
 }
 
-void CSV::openDb (QString path, QString symbol, QString type)
+bool CSV::openDb (QString path, QString symbol, QString type)
 {
   db = new ChartDb;
-  if (! type.compare("Futures"))
-    db->setPlugin("Futures");
-  else
-    db->setPlugin("Stocks");
+  QDir dir;
+  if (! dir.exists(path))
+    db->setPlugin(type);
   if (db->openChart(path))
   {
     emit statusLogMessage("Could not open db.");
     delete db;
     db = 0;
-    return;
+    return TRUE;
   }
 
   QString s = db->getData("Symbol");
@@ -534,18 +539,19 @@ void CSV::openDb (QString path, QString symbol, QString type)
     set->setData("BarType", QString::number(BarData::Daily));
     set->setData("Symbol", symbol);
     set->setData("Title", symbol);
-    db->saveDbDefaults(set);
     
     if (! type.compare("Futures"))
     {
       set->setData("Title", fd.getName());
       set->setData("FuturesType", fd.getSymbol());
       set->setData("FuturesMonth", futuresMonth);
-      db->saveDbDefaults(set);
     }
     
+    db->saveDbDefaults(set);
     delete set;
   }
+  
+  return FALSE;
 }
 
 void CSV::prefDialog (QWidget *w)

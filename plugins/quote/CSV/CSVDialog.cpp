@@ -163,7 +163,7 @@ void CSVDialog::createRulePage ()
   grid->addWidget(label, 1, 0);
   
   type = new QComboBox(w);
-  type->insertItem(tr(tr("Stock")), -1);
+  type->insertItem(tr(tr("Stocks")), -1);
   type->insertItem(tr(tr("Futures")), -1);
   grid->addWidget(type, 1, 1);
   

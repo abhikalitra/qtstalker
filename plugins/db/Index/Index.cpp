@@ -61,13 +61,15 @@ void Index::dbPrefDialog ()
 {
   IndexDialog *dialog = new IndexDialog(helpFile);
   dialog->setList(getData("Index"));
-  dialog->setRebuild(getData("Rebuild"));
+  dialog->setRebuild(getData("Rebuild").toInt());
   dialog->setName(getData("Symbol"));
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
-    setData("Index", dialog->getList());
+    QString s = dialog->getList();
+    if (s.length())
+      setData("Index", s);
     setData("Rebuild", QString::number(dialog->getRebuild()));
     updateIndex();
   }
@@ -90,6 +92,9 @@ void Index::updateIndex ()
   data.clear();
   
   QStringList l = QStringList::split(":", getData("Index"), FALSE);
+  if (! l.count())
+    return;
+    
   int loop;
   for (loop = 0; loop < (int) l.count(); loop = loop + 2)
   {

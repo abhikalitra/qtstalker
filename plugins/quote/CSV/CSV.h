@@ -36,7 +36,7 @@ class CSV : public QuotePlugin
     void setDelimiter (QString);
     QDate getDate (QString, QString, Setting *);
     QString getTime (QString);
-    void openDb (QString, QString, QString);
+    bool openDb (QString, QString, QString);
     void loadSettings ();
     void saveSettings ();
     void prefDialog (QWidget *);
