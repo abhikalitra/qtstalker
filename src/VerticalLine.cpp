@@ -30,7 +30,7 @@ VerticalLine::VerticalLine (QPixmap *p, QString indicator, QString n, BarDate d)
   plot = indicator;
   name = n;
   date = d;
-  color.setNamedColor("white");
+  color.setNamedColor("red");
   
   menu->insertItem(tr("Edit Vertical Line"), this, SLOT(prefDialog()));
   menu->insertItem(tr("Move Vertical Line"), this, SLOT(moveObject()));

@@ -492,8 +492,10 @@ void QtstalkerApp::slotOptions ()
   dialog->addColorItem(tr("Chart Grid"), 1, QColor(config->getData(Config::GridColor)));
 
   dialog->createPage(tr("Fonts"));
-  dialog->addFontItem(tr("Plot Font"), 2, QFont(config->getData(Config::PlotFont)));
-  dialog->addFontItem(tr("App Font"), 2, QFont(config->getData(Config::AppFont)));
+  QStringList l = QStringList::split(" ", config->getData(Config::PlotFont), FALSE);
+  dialog->addFontItem(tr("Plot Font"), 2, QFont(l[0], l[1].toInt(), l[2].toInt()));
+  l = QStringList::split(" ", config->getData(Config::AppFont), FALSE);
+  dialog->addFontItem(tr("App Font"), 2, QFont(l[0], l[1].toInt(), l[2].toInt()));
     
   dialog->createPage(tr("Misc"));
   dialog->addCheckItem(tr("Navigator Left"), 3, config->getData(Config::NavigatorPosition).toInt());
@@ -522,8 +524,12 @@ void QtstalkerApp::slotOptions ()
     s.append(QString::number(font.pointSize()));
     s.append(" ");
     s.append(QString::number(font.weight()));
-    config->setData(Config::PlotFont, s);
-    emit signalPlotFont(font);
+    QString s2 = config->getData(Config::PlotFont);
+    if (s.compare(s2))
+    {
+      config->setData(Config::PlotFont, s);
+      emit signalPlotFont(font);
+    }
 
     // save app font option
     font = dialog->getFont(tr("App Font"));
@@ -532,8 +538,12 @@ void QtstalkerApp::slotOptions ()
     s.append(QString::number(font.pointSize()));
     s.append(" ");
     s.append(QString::number(font.weight()));
-    config->setData(Config::AppFont, s);
-    qApp->setFont(font, TRUE, 0);
+    s2 = config->getData(Config::AppFont);
+    if (s.compare(s2))
+    {
+      config->setData(Config::AppFont, s);
+      qApp->setFont(font, TRUE, 0);
+    }
 
     // save navigator left option
     bool flag = dialog->getCheck(tr("Navigator Left"));

@@ -36,7 +36,7 @@ FiboLine::FiboLine (Scaler *s, QPixmap *p, QString indicator, QString n, BarDate
   date2 = d2;
   value = v;
   value2 = v2;
-  color.setNamedColor("white");
+  color.setNamedColor("red");
   line1 = 0.5;
   line2 = 0;
   line3 = 0;

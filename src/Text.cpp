@@ -34,7 +34,7 @@ Text::Text (Scaler *s, QPixmap *p, QString indicator, QString n, BarDate d, doub
   name = n;
   date = d;
   value = v;
-  color.setNamedColor("white");
+  color.setNamedColor("red");
   label = tr("Text");
   textFont = QApplication::font();
   

@@ -460,6 +460,11 @@ void Plot::mousePressEvent (QMouseEvent *event)
       else
         showPopupMenu();
     }
+    else
+    {
+      if (event->button() == MidButton && mouseFlag == COSelected)
+        objectMoving();
+    }
   }
 }
 
@@ -479,6 +484,10 @@ void Plot::mouseMoveEvent (QMouseEvent *event)
   if (event->x() > buffer->width() - SCALE_WIDTH)
     return;
    
+  // ignore moves above the top of the chart - we get draw errors if we don't
+  if (event->y() <= 0)
+    return;
+    
   // are we trying to drag a chart object?
   if (mouseFlag == Moving && drawMode)
   {
@@ -497,7 +506,7 @@ void Plot::mouseMoveEvent (QMouseEvent *event)
       QPainter painter;
       painter.begin(buffer);
       painter.setRasterOp(Qt::XorROP);
-      painter.setPen(borderColor);
+      painter.setPen("red");
       
       // erase the previous line drawn
       if (tx2 != -1 && ty2 != -1)
@@ -2203,5 +2212,4 @@ void Plot::slotDeleteAllChartObjects ()
 void Plot::objectMoving ()
 {
   mouseFlag = Moving;
-//  QCursor::setPos(tx, ty);
 }

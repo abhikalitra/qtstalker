@@ -32,6 +32,7 @@
 #include <qstringlist.h>
 #include <qcursor.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <qtooltip.h>
 #include <qlayout.h>
 
@@ -166,9 +167,11 @@ void GroupPage::deleteGroupItem()
 
     QStringList l = dialog->selectedFiles();
     int loop;
-    QDir dir;
     for (loop = 0; loop < (int) l.count(); loop++)
-      dir.remove(l[loop], TRUE);
+    {
+      if (remove(l[loop]))
+        qDebug("GroupPage::deleteGroupItem:failed to delete symlink");
+    }
 
     nav->updateList();
 

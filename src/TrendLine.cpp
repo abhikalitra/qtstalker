@@ -37,7 +37,7 @@ TrendLine::TrendLine (Scaler *s, QPixmap *p, BarData *d, QString indicator, QStr
   date2 = dt2;
   value = v;
   value2 = v2;
-  color.setNamedColor("white");
+  color.setNamedColor("red");
   useBar = FALSE;
   barField = tr("Close");
   

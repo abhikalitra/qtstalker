@@ -31,7 +31,7 @@ HorizontalLine::HorizontalLine (Scaler *s, QPixmap *p, QString indicator, QStrin
   plot = indicator;
   name = n;
   value = v;
-  color.setNamedColor("white");
+  color.setNamedColor("red");
   
   menu->insertItem(tr("Edit Horizontal Line"), this, SLOT(prefDialog()));
   menu->insertItem(tr("Move Horizontal Line"), this, SLOT(moveObject()));
