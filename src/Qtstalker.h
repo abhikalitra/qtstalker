@@ -89,6 +89,7 @@ class QtstalkerApp : public QMainWindow
     void addIndicatorButton (QString, bool);
     void exportChart (QString);
     void traverse(QString);
+    void loadIndicator (Indicator *);
 
   public slots:
 

@@ -804,64 +804,16 @@ void QtstalkerApp::loadChart (QString d)
   {
     Indicator *i = new Indicator;
     i->parse(config->getIndicator(l[loop]));
+    loadIndicator(i);
 
-    Plugin *plug = config->getPlugin(Config::IndicatorPluginPath, i->getData(QObject::tr("Type")));
-    if (plug)
+    if (i->getMainPlot() && otherFlag)
+      i->clearLines();
+
+    if (i->getMainPlot())
     {
-      plug->setIndicatorInput(recordList);
-      plug->parse(i->getString());
-      plug->calculate();
-
-      int loop2;
-      for (loop2 = 0; loop2 < plug->getIndicatorLines(); loop2++)
-      {
-        PlotLine *tpl = plug->getIndicatorLine(loop2);
-        PlotLine *pl = new PlotLine;
-        pl->setColor(tpl->getColor());
-        pl->setType(tpl->getType());
-        pl->setLabel(tpl->getLabel());
-        pl->setColorFlag(tpl->getColorFlag());
-
-        int loop3;
-        for (loop3 = 0; loop3 < (int) tpl->getSize(); loop3++)
-	{
-          pl->append(tpl->getData(loop3));
-
-	  if (tpl->getColorFlag() == TRUE)
-            pl->appendColorBar(tpl->getColorBar(loop3));
-	}
-
-        i->addLine(pl);
-      }
-
-      // set up the paint bar
-      QString s = config->getData(Config::PaintBarIndicator);
-      if (! s.compare(l[loop]))
-      {
-        plug->getAlerts();
-        mainPlot->setPaintBars(plug->getColorBars(config->getData(Config::UpColor),
-      						  config->getData(Config::DownColor),
-						  config->getData(Config::NeutralColor)));
-      }
-
-      if (i->getMainPlot() && otherFlag)
-        i->clearLines();
-
-      if (i->getMainPlot())
-      {
-        // restore the enable status of this main chart indicator
-        if (di.findIndex(l[loop]) != -1)
-	  i->setEnable(FALSE);
-
-        mainPlot->addIndicator(l[loop], i);
-      }
-      else
-      {
-        Plot *plot = plotList[l[loop]];
-        plot->addIndicator(l[loop], i);
-      }
-
-      plug->clearOutput();
+      // restore the enable status of this main chart indicator
+      if (di.findIndex(l[loop]) != -1)
+	i->setEnable(FALSE);
     }
   }
 
@@ -962,6 +914,60 @@ void QtstalkerApp::loadChart (QString d)
   config->closePlugins();
 
   delete db;
+}
+
+void QtstalkerApp::loadIndicator (Indicator *i)
+{
+  Plugin *plug = config->getPlugin(Config::IndicatorPluginPath, i->getData(QObject::tr("Type")));
+  if (plug)
+  {
+    plug->setIndicatorInput(recordList);
+    plug->parse(i->getString());
+    plug->calculate();
+
+    int loop;
+    for (loop = 0; loop < plug->getIndicatorLines(); loop++)
+    {
+      PlotLine *tpl = plug->getIndicatorLine(loop);
+      PlotLine *pl = new PlotLine;
+      pl->setColor(tpl->getColor());
+      pl->setType(tpl->getType());
+      pl->setLabel(tpl->getLabel());
+      pl->setColorFlag(tpl->getColorFlag());
+
+      int loop2;
+      for (loop2 = 0; loop2 < (int) tpl->getSize(); loop2++)
+      {
+	pl->append(tpl->getData(loop2));
+
+	if (tpl->getColorFlag() == TRUE)
+          pl->appendColorBar(tpl->getColorBar(loop2));
+      }
+
+      i->addLine(pl);
+    }
+
+    // set up the paint bar
+    QString s = config->getData(Config::PaintBarIndicator);
+    if (! s.compare(i->getData("Name")))
+    {
+      plug->getAlerts();
+      mainPlot->setPaintBars(plug->getColorBars(config->getData(Config::UpColor),
+      						config->getData(Config::DownColor),
+						config->getData(Config::NeutralColor)));
+    }
+
+    if (i->getMainPlot())
+      mainPlot->addIndicator(i->getData("Name"), i);
+    else
+    {
+      Plot *plot = plotList[i->getData("Name")];
+      plot->addIndicator(i->getData("Name"), i);
+      plot->setData(recordList);
+    }
+
+    config->closePlugins();
+  }
 }
 
 void QtstalkerApp::slotBarComboChanged (int index)
@@ -1413,7 +1419,14 @@ void QtstalkerApp::slotNewIndicator ()
       config->setData(Config::StackedIndicator, l.join(","));
     }
 
-    loadChart(chartPath);
+    Indicator *i = new Indicator;
+    i->parse(config->getIndicator(idialog->getName()));
+    loadIndicator(i);
+
+    if (i->getMainPlot())
+      mainPlot->draw();
+
+    emit signalIndicatorPageRefresh();
   }
 
   config->closePlugins();
@@ -1451,8 +1464,16 @@ void QtstalkerApp::slotEditIndicator (int id)
 
   if (rc == QDialog::Accepted)
   {
-    config->setIndicator(set2->getData(tr("Name")), set2->getStringList());
-    loadChart(chartPath);
+    config->setIndicator(selection, set2->getStringList());
+
+    Indicator *i = new Indicator;
+    i->parse(config->getIndicator(set2->getData(tr("Name"))));
+    loadIndicator(i);
+
+    if (i->getMainPlot())
+      mainPlot->draw();
+    else
+      slotTabChanged(0);
   }
 
   config->closePlugins();
@@ -1462,6 +1483,8 @@ void QtstalkerApp::slotEditIndicator (int id)
 
 void QtstalkerApp::slotDeleteIndicator (int id)
 {
+  bool mainFlag = FALSE;
+
   QString text = chartDeleteMenu->text(id);
 
   Indicator *i = mainPlot->getIndicator(text);
@@ -1475,16 +1498,26 @@ void QtstalkerApp::slotDeleteIndicator (int id)
 
     Plot *plot = plotList[text];
     i = plot->getIndicator(text);
+  }
+  else
+  {
+    i = mainPlot->getIndicator(text);
+    mainFlag = TRUE;
+  }
 
-    // delete any chart objects that belong to the indicator
-    QStringList l = i->getChartObjects();
+  // delete any chart objects that belong to the indicator
+  QStringList l = i->getChartObjects();
 
-    ChartDb *db = new ChartDb;
-    db->openChart(chartPath);
-    int loop;
-    for (loop = 0; loop < (int) l.count(); loop++)
-      db->deleteChartObject(l[loop]);
-    delete db;
+  ChartDb *db = new ChartDb;
+  db->openChart(chartPath);
+  int loop;
+  for (loop = 0; loop < (int) l.count(); loop++)
+    db->deleteChartObject(l[loop]);
+  delete db;
+
+  if (! mainFlag)
+  {
+    Plot *plot = plotList[text];
 
     if (plot->getTabFlag())
       tabs->removePage((QWidget *) plot);
@@ -1496,10 +1529,15 @@ void QtstalkerApp::slotDeleteIndicator (int id)
       plotList.remove(text);
     }
   }
+  else
+    mainPlot->deleteIndicator(text);
 
   config->deleteIndicator(text);
 
-  loadChart(chartPath);
+  emit signalIndicatorPageRefresh();
+
+  if (mainFlag)
+    mainPlot->draw();
 }
 
 void QtstalkerApp::slotPixelspaceChanged (int d)

@@ -1007,14 +1007,19 @@ void Plot::drawXGrid ()
   painter.end();
 }
 
-void Plot::addIndicator (QString k, Indicator *i)
+void Plot::addIndicator (QString d, Indicator *i)
 {
-  indicators.replace(k, i);
+  indicators.replace(d, i);
 }
 
-Indicator * Plot::getIndicator (QString k)
+Indicator * Plot::getIndicator (QString d)
 {
-  return indicators[k];
+  return indicators[d];
+}
+
+void Plot::deleteIndicator (QString d)
+{
+  indicators.remove(d);
 }
 
 void Plot::setHeight ()

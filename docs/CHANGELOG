@@ -81,6 +81,12 @@
 
 - Added a new functions Plugin::getPluginSettings and Setting::merge to better manipulate settings.
 
+- Modified a few functions in QtstalkerApp to refresh the chart much faster when modifying indicators. The old method
+  would just reload the whole chart. The new method refreshes just the indicator.
+  
+- Applied patch #860795 - fix for indicator setting bug.
+
+
 
 0.22
 ====

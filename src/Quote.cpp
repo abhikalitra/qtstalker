@@ -79,6 +79,7 @@ void QuoteDialog::getQuotes ()
 
   plug->merge(settings->getStringList());
 
+  // refresh any lists 
   QStringList key = settings->getKeyList();
   int loop;
   for(loop = 0; loop < (int) key.count(); loop++)
