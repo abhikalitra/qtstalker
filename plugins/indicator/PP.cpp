@@ -28,7 +28,7 @@ PP::PP ()
 
   set(tr("Type"), pluginName, Setting::None);
   set(tr("Color Resistance"), "red", Setting::Color);
-  set(tr("Color Support"), "red", Setting::Color);
+  set(tr("Color Support"), "yellow", Setting::Color);
   set(tr("Line Type Resistance"), tr("Horizontal"), Setting::None);
   set(tr("Line Type Support"), tr("Horizontal"), Setting::None);
   set(tr("Label First Support"), tr("PP FS"), Setting::Text);

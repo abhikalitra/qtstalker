@@ -7,9 +7,12 @@
 
 - Removed the Volume label from the side panel when mouse is over the main chart. It should only appear in the VOL chart.
 
-- Applied patch from xley for the CSV plugin docs.
+- Applied patch from David Crossley for the CSV plugin docs.
 
 - Fixed a bug that would segfault if there was only 1 bar to plot.
+
+- Applied 3 patches for PP color and several docs from David Crossley.
+
 
 0.20
 ====
