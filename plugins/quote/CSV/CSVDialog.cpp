@@ -179,6 +179,7 @@ void CSVDialog::createRulePage ()
   fieldCombo->insertItem(tr("Date:MMDDYY"), -1);
   fieldCombo->insertItem(tr("Date:MMDDYYYY"), -1);
   fieldCombo->insertItem(tr("Date:DDMMYYYY"), -1);
+  fieldCombo->insertItem(tr("Date:MMDDYYYYHHMMSS"), -1);
   fieldCombo->insertItem(tr("Time"), -1);
   fieldCombo->insertItem(tr("Symbol"), -1);
   fieldCombo->insertItem(tr("Open"), -1);
@@ -419,6 +420,8 @@ bool CSVDialog::getDateRange ()
 
 void CSVDialog::updateRules ()
 {
+  ruleCombo->clear();
+  
   QSettings settings;
   settings.beginGroup("/Qtstalker/CSV plugin");
   QStringList l = QStringList::split(",", settings.readEntry("/RuleList"), FALSE);

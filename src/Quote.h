@@ -26,6 +26,7 @@
 #include <qcombobox.h>
 #include <qtextedit.h>
 #include <qtabdialog.h>
+#include <qcheckbox.h>
 #include "Config.h"
 #include "Toolbar.h"
 
@@ -60,6 +61,7 @@ class QuoteDialog : public QTabDialog
     QTextEdit *statusLog;
     QPushButton *settingButton;
     Toolbar *toolbar;
+    QCheckBox *showData;
 };
 
 #endif

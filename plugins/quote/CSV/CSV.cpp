@@ -212,7 +212,7 @@ void CSV::parse ()
       {
         if (fieldList[fieldLoop].contains("Date:"))
 	{
-          QDate dt = getDate(fieldList[fieldLoop], l[fieldLoop]);
+          QDate dt = getDate(fieldList[fieldLoop], l[fieldLoop], r);
           if (! dt.isValid())
 	  {
 	    qDebug("CSV::parse:Bad date %s", l[fieldLoop].latin1());
@@ -371,38 +371,50 @@ QString CSV::getTime (QString d)
   if (l.count() != 3)
     return time;
     
-  time = l[0] + l[1] + l[2];  
+  time = l[0] + l[1];
+   
+  if (l[2].toInt() < 10)
+    time.append("0");
+  time.append(QString::number(l[2].toInt()));
     
   return time;    
 }
 
-QDate CSV::getDate (QString k, QString d)
+QDate CSV::getDate (QString k, QString d, Setting *r)
 {
   QDate date;
   QStringList l;
-  QString s = d;
+  QString dateString = d;
+  QString timeString;
+  
+  if (d.contains(" "))
+  {
+    QStringList l2 = QStringList::split(" ", d, FALSE);
+    dateString = l2[0];
+    timeString = l2[1];
+  }
 
   while (1)
   {
-    if (s.contains("/"))
+    if (dateString.contains("/"))
     {
-      l = QStringList::split("/", s, FALSE);
+      l = QStringList::split("/", dateString, FALSE);
       if (l.count() != 3)
         return date;
       break;
     }
 
-    if (s.contains("-"))
+    if (dateString.contains("-"))
     {
-      l = QStringList::split("-", s, FALSE);
+      l = QStringList::split("-", dateString, FALSE);
       if (l.count() != 3)
         return date;
       break;
     }
 
-    if (s.contains("."))
+    if (dateString.contains("."))
     {
-      l = QStringList::split(".", s, FALSE);
+      l = QStringList::split(".", dateString, FALSE);
       if (l.count() != 3)
         return date;
       break;
@@ -419,8 +431,8 @@ QDate CSV::getDate (QString k, QString d)
         date.setYMD(l[0].toInt(), l[1].toInt(), l[2].toInt());
       else
       {
-        if (s.length() == 8)
-          date.setYMD(s.left(4).toInt(), s.mid(4, 2).toInt(), s.right(2).toInt());
+        if (dateString.length() == 8)
+          date.setYMD(dateString.left(4).toInt(), dateString.mid(4, 2).toInt(), dateString.right(2).toInt());
       }
       break;
     }
@@ -431,8 +443,8 @@ QDate CSV::getDate (QString k, QString d)
         date.setYMD(l[0].toInt(), l[1].toInt(), l[2].toInt());
       else
       {
-        if (s.length() == 6)
-          date.setYMD(s.left(2).toInt(), s.mid(2, 2).toInt(), s.right(2).toInt());
+        if (dateString.length() == 6)
+          date.setYMD(dateString.left(2).toInt(), dateString.mid(2, 2).toInt(), dateString.right(2).toInt());
       }
       break;
     }
@@ -443,8 +455,8 @@ QDate CSV::getDate (QString k, QString d)
         date.setYMD(l[2].toInt(), l[0].toInt(), l[1].toInt());
       else
       {
-        if (s.length() == 8)
-          date.setYMD(s.right(4).toInt(), s.left(2).toInt(), s.mid(2, 2).toInt());
+        if (dateString.length() == 8)
+          date.setYMD(dateString.right(4).toInt(), dateString.left(2).toInt(), dateString.mid(2, 2).toInt());
       }
       break;
     }
@@ -455,8 +467,8 @@ QDate CSV::getDate (QString k, QString d)
         date.setYMD(l[2].toInt(), l[0].toInt(), l[1].toInt());
       else
       {
-        if (s.length() == 6)
-          date.setYMD(s.right(2).toInt(), s.left(2).toInt(), s.mid(2, 2).toInt());
+        if (dateString.length() == 6)
+          date.setYMD(dateString.right(2).toInt(), dateString.left(2).toInt(), dateString.mid(2, 2).toInt());
       }
       break;
     }
@@ -467,12 +479,31 @@ QDate CSV::getDate (QString k, QString d)
         date.setYMD(l[2].toInt(), l[1].toInt(), l[0].toInt());
       else
       {
-        if (s.length() == 8)
-          date.setYMD(s.right(4).toInt(), s.mid(2, 2).toInt(), s.left(2).toInt());
+        if (dateString.length() == 8)
+          date.setYMD(dateString.right(4).toInt(), dateString.mid(2, 2).toInt(), dateString.left(2).toInt());
       }
       break;
     }
 
+    if (! k.compare("Date:MMDDYYYYHHMMSS"))
+    {
+      QString s = getTime(timeString);
+      if (s.length())
+        r->setData("Time", s);
+      else
+        break;
+      
+      if (l.count())
+        date.setYMD(l[2].toInt(), l[0].toInt(), l[1].toInt());
+      else
+      {
+        if (dateString.length() == 8)
+          date.setYMD(dateString.right(4).toInt(), dateString.left(2).toInt(), dateString.mid(2, 2).toInt());
+      }
+      
+      break;
+    }
+    
     break;
   }
 

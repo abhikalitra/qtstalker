@@ -101,8 +101,10 @@ BarData * ChartDb::getHistory ()
   memset(&data, 0, sizeof(DBT));
   
   BarData *barData = new BarData;
-  QString s = getDetail(ChartDb::BarType);
-  barData->setBarType((BarData::BarType) s.toInt());
+  if (barCompression >= Daily)
+    barData->setBarType(BarData::Daily);
+  else
+    barData->setBarType(BarData::Tick);
   Bar *bar = 0;
   int barCount = 0;
   BarDate prevDate;
@@ -152,8 +154,6 @@ BarData * ChartDb::getHistory ()
 	
       bar->setVolume(bar->getVolume() + tbar->getVolume());
 	
-      bar->setOI(bar->getOI() + tbar->getOI());
-	
       delete tbar;
     }
   }
@@ -173,29 +173,41 @@ BarDate ChartDb::getPrevDate (BarDate date)
   BarDate dt;
   dt.setDate(date.getDateTimeString(FALSE));
   QDate dt2;
+  int m = 0;
   
   switch(barCompression)
   {
     case Minute5:
-      dt.setTime(date.getHour(), 0, 0);
-      while (dt.getDateValue() < date.getDateValue())
-        dt.addMinutes(5);
-      dt.subMinutes(5);
+      m = (int) dt.getMinute() / 5;
+      m = dt.getMinute() - (m * 5);
+      if (m == 0)
+        dt.subMinutes(5);
+      else
+        dt.subMinutes(m);
       break;
     case Minute15:
-      dt.setTime(date.getHour(), 0, 0);
-      while (dt.getDateValue() < date.getDateValue())
-        dt.addMinutes(15);
-      dt.subMinutes(15);
+      m = (int) dt.getMinute() / 15;
+      m = dt.getMinute() - (m * 15);
+      if (m == 0)
+        dt.subMinutes(15);
+      else
+        dt.subMinutes(m);
       break;
     case Minute30:
-      if (dt.getMinute() < 30)
-        dt.setTime(dt.getHour(), 0, 0);
+      m = (int) dt.getMinute() / 30;
+      m = dt.getMinute() - (m * 30);
+      if (m == 0)
+        dt.subMinutes(30);
       else
-        dt.setTime(dt.getHour(), 30, 0);
+        dt.subMinutes(m);
       break;
     case Minute60:
-      dt.setTime(dt.getHour(), 0, 0);
+      m = (int) dt.getMinute() / 60;
+      m = dt.getMinute() - (m * 60);
+      if (m == 0)
+        dt.subMinutes(60);
+      else
+        dt.subMinutes(m);
       break;
     case Daily:
       dt.setTime(0, 0, 0);

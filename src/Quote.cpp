@@ -82,7 +82,7 @@ QuoteDialog::QuoteDialog (Config *c) : QTabDialog (0, "QuoteDialog", TRUE)
   statusLog = new QTextEdit(w);
   statusLog->setTextFormat(Qt::LogText);
   statusLog->setReadOnly(TRUE);
-  statusLog->setMaxLogLines(500);
+//  statusLog->setMaxLogLines(500);
   vbox->addWidget(statusLog);
   
   addTab(w, tr("Quotes"));
@@ -95,13 +95,17 @@ QuoteDialog::QuoteDialog (Config *c) : QTabDialog (0, "QuoteDialog", TRUE)
   vbox->setMargin(10);
   vbox->setSpacing(2);
   
+  showData = new QCheckBox(tr("Show Data Log"), w);
+  vbox->addWidget(showData);
+  vbox->addSpacing(10);
+  
   label = new QLabel(tr("Download Data:"), w);
   vbox->addWidget(label);
   
   dataLog = new QTextEdit(w);
   dataLog->setTextFormat(Qt::LogText);
   dataLog->setReadOnly(TRUE);
-  dataLog->setMaxLogLines(500);
+//  dataLog->setMaxLogLines(500);
   vbox->addWidget(dataLog);
 
   addTab(w, tr("Data"));
@@ -215,6 +219,9 @@ void QuoteDialog::printStatusLogMessage (QString d)
 
 void QuoteDialog::printDataLogMessage (QString d)
 {
+  if (! showData->isChecked())
+    return;
+    
   dataLog->append(d);
   emit message(QString());
 }
