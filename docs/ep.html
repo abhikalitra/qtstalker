@@ -5,14 +5,15 @@
   <meta http-equiv="content-type"
  content="text/html; charset=ISO-8859-1">
 </head>
-  <body>
-                                                   
+<body>
 <h2><u>Exhaustion Points - EP</u></h2>
 <p><b>NOTE:</b> This indicator is experimental. See notes below.
 </p>
 <p>
-"Outside Bars" (yellow-to-red) - the trading range encompasses the previous bar.
-"Inside Bars" (pink-to-blue) - the trading range is encompassed by the previous bar.
+"Outside Bars" (yellow-to-red) - the trading range encompasses the
+previous bar.
+"Inside Bars" (pink-to-blue) - the trading range is encompassed by the
+previous bar.
 </p>
 <p>
 May indicate short-term reversal.
@@ -22,23 +23,24 @@ Must be accompanied by volume and preceded by a trend.
 The outside bar at 20030313 is a classic. It is even more strong as it
 encompasses both previous bars and has a large body.
 </p>
-<p>
-<img src="exhaustion.png" title="Exhaustion Points" alt="Exhaustion Points"
-     width="713" height="759">
-<img src="exhaustion-legend.png" title="Exhaustion Legend" alt="Exhaustion Legend"
-     width="256" height="256">
-</p>
-
+<p>&nbsp;
+<img src="exhaustion.png" title="" alt=""
+ style="width: 570px; height: 447px;"> <img src="exhaustion-legend.png"
+ title="Exhaustion Legend" alt="Exhaustion Legend" width="256"
+ height="256"></p>
 <h3>Ranking of bars</h3>
-<p>Colour is used to denote the significance of bars. A five-point ranking
-scheme is used as shown in the legend. The value of the rank is also shown in
+<p>Colour is used to denote the significance of bars. A five-point
+ranking
+scheme is used as shown in the legend. The value of the rank is also
+shown in
 the side-panel and the data window as "EP".</p>
-<p>When an outside/inside bar is detected, it is assigned a default ranking
-of one point. For each other significance factor, half a point is added.
+<p>When an outside/inside bar is detected, it is assigned a default
+ranking
+of one point. For each other significance factor, half a point is
+added.
 The final rank is truncated to an integer between one and five.</p>
 <p>Many factors contribute to significance. Here are the few that are
-currently being used. 
-</p>
+currently being used. </p>
 <p>
 Outside bars:
 </p>
@@ -58,59 +60,57 @@ Inside bars:
   <li>lesser volume than the previous bar (50%) - add 0.5</li>
   <li>lesser volume than the previous bar (20%) - add 0.5</li>
 </ul>
-<p>You will need to apply more weight from your visual observations, e.g.
+<p>You will need to apply more weight from your visual observations,
+e.g.
 a sharper preceding trend.
 </p>
-
 <h3>Directions</h3>
 <p>This indicator is used with the "Paint Bar"
 <a href="charttype.html">chart type</a>. Add the EP indicator as normal
-(it will not show on the charts yet). Now use the menu option Edit->Preferences
+(it will not show on the charts yet). Now use the menu option
+Edit-&gt;Preferences
 and select EP to be the "Paint Bar Indicator".
 </p>
-
 <h3>Parameters:</h3>
 <ul>
-<li>Inside Rank 1 - Color of level-1 inside bars</li>
-<li>Inside Rank 2 - Color of level-2 inside bars</li>
-<li>Inside Rank 3 - Color of level-3 inside bars</li>
-<li>Inside Rank 4 - Color of level-4 inside bars</li>
-<li>Inside Rank 5 - Color of level-5 inside bars</li>
-<li>Label - Text to identify the value of the exhaustion point rank</li>
-<li>Neutral - Color of all other ordinary bars</li>
-<li>Ouside Rank 1 - Color of level-1 outside bars</li>
-<li>Ouside Rank 2 - Color of level-2 outside bars</li>
-<li>Ouside Rank 3 - Color of level-3 outside bars</li>
-<li>Ouside Rank 4 - Color of level-4 outside bars</li>
-<li>Ouside Rank 5 - Color of level-5 outside bars</li>
+  <li>Inside Rank 1 - Color of level-1 inside bars</li>
+  <li>Inside Rank 2 - Color of level-2 inside bars</li>
+  <li>Inside Rank 3 - Color of level-3 inside bars</li>
+  <li>Inside Rank 4 - Color of level-4 inside bars</li>
+  <li>Inside Rank 5 - Color of level-5 inside bars</li>
+  <li>Label - Text to identify the value of the exhaustion point rank</li>
+  <li>Neutral - Color of all other ordinary bars</li>
+  <li>Ouside Rank 1 - Color of level-1 outside bars</li>
+  <li>Ouside Rank 2 - Color of level-2 outside bars</li>
+  <li>Ouside Rank 3 - Color of level-3 outside bars</li>
+  <li>Ouside Rank 4 - Color of level-4 outside bars</li>
+  <li>Ouside Rank 5 - Color of level-5 outside bars</li>
 </ul>
-
 <h3>Alerts:</h3>
 <p>False</p>
-
 <h3>Development notes</h3>
 <p>Not yet automatically detecting that there is associated volume.
 You must verify that visually.
 </p>
-
-<p>Not yet automatically detecting that an up or down trend is in place.
+<p>Not yet automatically detecting that an up or down trend is in
+place.
 You must verify that visually.
 </p>
-
-<p>The ranking scheme needs to be fine-tuned, e.g. perhaps more weight should
+<p>The ranking scheme needs to be fine-tuned, e.g. perhaps more weight
+should
 be added to certain situations.
-Note that you can tweak these weights yourself in EP.cpp (search for "Rank").
+Note that you can tweak these weights yourself in EP.cpp (search for
+"Rank").
 </p>
-
-<p>More significance patterns need to be detected - currently only doing a few.
-(The maximum rank that can currently be achieved is three, i.e. you will not
+<p>More significance patterns need to be detected - currently only
+doing a few.
+(The maximum rank that can currently be achieved is three, i.e. you
+will not
 yet see any orange or red outside bars nor any blue inside bars.)
 </p>
-
 <p>There are other price patterns that indicate exhaustion points,
 e.g. two-bar reversals, exhaustion bars. However we are only attempting
 outside and inside bars.
 </p>
-
 </body>
 </html>
