@@ -20,7 +20,6 @@
  */
 
 #include "Plot.h"
-#include "Indicator.h"
 #include <qpainter.h>
 #include <qpen.h>
 #include <qpoint.h>
@@ -47,7 +46,6 @@ Plot::Plot (QWidget *w) : QWidget(w)
   interval = Daily;
   mainFlag = FALSE;
   scaleToScreen = FALSE;
-  otherFlag = FALSE;
   startIndex = 0;
   scaleHigh = -99999999;
   scaleLow = 99999999;
@@ -59,12 +57,7 @@ Plot::Plot (QWidget *w) : QWidget(w)
   plotFont.setPointSize(9);
   plotFont.setWeight(50);
 
-  objectCount = 0;
-  objectList.setAutoDelete(TRUE);
-
-  lineCount = 0;
-  lineList.setAutoDelete(TRUE);
-
+  indicators.setAutoDelete(TRUE);
   data.setAutoDelete(TRUE);
 }
 
@@ -80,6 +73,10 @@ void Plot::clear ()
   mainHigh = -99999999;
   mainLow = 99999999;
   data.clear();
+  indicators.clear();
+  
+  if (mainFlag)
+    indicators.replace("Main Plot", new Indicator);
 }
 
 void Plot::setData (QList<Setting> l)
@@ -106,13 +103,19 @@ void Plot::setData (QList<Setting> l)
 
     if (mainFlag)
     {
-      double t = r->getFloat("High");
-      if (t > mainHigh)
-        mainHigh = t;
+      QString s = r->getData("High");
+      if (s.length())
+      {
+        if (s.toFloat() > mainHigh)
+          mainHigh = s.toFloat();
+      }
 
-      t = r->getFloat("Low");
-      if (t < mainLow)
-	mainLow = t;
+      s = r->getData("Low");
+      if (s.length())
+      {
+        if (s.toFloat() < mainLow)
+	  mainLow = s.toFloat();
+      }
     }
   }
 }
@@ -204,52 +207,47 @@ void Plot::draw ()
 
     if (mainFlag)
     {
-      if (otherFlag)
-        drawLines();
-      else
+      while (1)
       {
-        while (1)
+        if (! chartType.compare(tr("Bar")))
         {
-          if (! chartType.compare(tr("Bar")))
-          {
-            drawBars();
-            drawLines();
-            drawObjects();
-            break;
-          }
-
-          if (! chartType.compare(tr("Candle")))
-          {
-            drawCandle();
-            drawLines();
-            drawObjects();
-            break;
-          }
-
-          if (! chartType.compare(tr("Line")))
-          {
-            drawLineChart();
-            drawLines();
-            drawObjects();
-            break;
-          }
-
-          if (! chartType.compare(tr("Paint Bar")))
-          {
-            drawPaintBar();
-            drawLines();
-            drawObjects();
-            break;
-          }
-
-          if (! chartType.compare(tr("Point And Figure")))
-	  {
-            drawPointAndFigure();
-	    break;
-	  }
-
+          drawBars();
+          drawLines();
+          drawObjects();
           break;
         }
+
+        if (! chartType.compare(tr("Candle")))
+        {
+          drawCandle();
+          drawLines();
+          drawObjects();
+          break;
+        }
+
+        if (! chartType.compare(tr("Line")))
+        {
+          drawLineChart();
+          drawLines();
+          drawObjects();
+          break;
+        }
+
+        if (! chartType.compare(tr("Paint Bar")))
+        {
+          drawPaintBar();
+          drawLines();
+          drawObjects();
+          break;
+        }
+
+        if (! chartType.compare(tr("Point And Figure")))
+        {
+          drawPointAndFigure();
+	  break;
+	}
+
+        break;
       }
     }
     else
@@ -268,19 +266,20 @@ void Plot::draw ()
 
 void Plot::drawObjects ()
 {
-  QIntDictIterator<Setting> it(objectList);
-  while (it.current())
+  Indicator *i;
+  if (mainFlag)
+    i = indicators["Main Plot"];
+  else
+    i = indicators[currentIndicator];
+
+  QStringList l = i->getChartObjects();
+
+  int loop;
+  for (loop = 0; loop < (int) l.count(); loop++)
   {
-    Setting *co = it.current();
+    Setting *co = i->getChartObject(l[loop]);
 
-    QString type = co->getData("Show");
-    if (! type.compare("False"))
-    {
-      ++it;
-      continue;
-    }
-
-    type = co->getData(QObject::tr("Type"));
+    QString type = co->getData(QObject::tr("Type"));
 
     while (1)
     {
@@ -328,73 +327,97 @@ void Plot::drawObjects ()
 
       break;
     }
-
-    ++it;
   }
 }
 
 void Plot::drawLines ()
 {
-  // try to order the lines so that any histograms are drawn first
-  QStringList l;
-  QString s;
-  QIntDictIterator<PlotLine> it(lineList);
-  while (it.current())
+  if (mainFlag)
   {
-    currentLine = it.current();
-
-    if (currentLine->getShow() == TRUE)
+    QDictIterator<Indicator> it(indicators);
+    for (; it.current(); ++it)
     {
-      l.append(QString::number(it.currentKey()));
+      Indicator *i = it.current();
+      
+      int loop;
+      for (loop = 0; loop < i->getLines(); loop++)
+      {
+        currentLine = i->getLine(loop);
 
-      if (! currentLine->getType().compare("Histogram"))
-        s = l[l.count() - 1];
+        while (1)
+        {
+          if (! currentLine->getType().compare("Histogram"))
+          {
+            drawHistogram();
+	    break;
+          }
+
+          if (! currentLine->getType().compare("Histogram Bar"))
+          {
+            drawHistogramBar();
+	    break;
+          }
+
+          if (! currentLine->getType().compare("Dot"))
+          {
+            drawDot();
+	    break;
+          }
+
+          if (! currentLine->getType().compare("Line") || ! currentLine->getType().compare("Dash"))
+          {
+            drawLine();
+	    break;
+          }
+
+          if (! currentLine->getType().compare("Horizontal"))
+            drawHorizontalLine();
+
+          break;
+        }
+      }
     }
-
-    ++it;
   }
-  l.sort();
-  if (s.length())
+  else
   {
-    l.remove(s);
-    l.prepend(s);
-  }
+    Indicator *i = indicators[currentIndicator];
 
-  int loop;
-  for (loop = 0; loop < (int) l.count(); loop++)
-  {
-    currentLine = lineList[l[loop].toInt()];
-
-    while (1)
+    int loop;
+    for (loop = 0; loop < i->getLines(); loop++)
     {
-      if (! currentLine->getType().compare("Histogram"))
-      {
-        drawHistogram();
-	break;
-      }
+      currentLine = i->getLine(loop);
 
-      if (! currentLine->getType().compare("Histogram Bar"))
+      while (1)
       {
-        drawHistogramBar();
-	break;
-      }
+        if (! currentLine->getType().compare("Histogram"))
+        {
+          drawHistogram();
+	  break;
+        }
 
-      if (! currentLine->getType().compare("Dot"))
-      {
-        drawDot();
-	break;
-      }
+        if (! currentLine->getType().compare("Histogram Bar"))
+        {
+          drawHistogramBar();
+	  break;
+        }
 
-      if (! currentLine->getType().compare("Line") || ! currentLine->getType().compare("Dash"))
-      {
-        drawLine();
-	break;
-      }
+        if (! currentLine->getType().compare("Dot"))
+        {
+          drawDot();
+	  break;
+        }
 
-      if (! currentLine->getType().compare("Horizontal"))
-        drawHorizontalLine();
-	
-      break;
+        if (! currentLine->getType().compare("Line") || ! currentLine->getType().compare("Dash"))
+        {
+          drawLine();
+	  break;
+        }
+
+        if (! currentLine->getType().compare("Horizontal"))
+          drawHorizontalLine();
+
+        break;
+      }
     }
   }
 }
@@ -424,7 +447,7 @@ void Plot::mousePressEvent (QMouseEvent *event)
   }
   else
   {
-    if (! lineList.count())
+    if (! indicators.count())
       return;
   }
 
@@ -500,16 +523,6 @@ void Plot::setDateFlag (bool d)
 void Plot::setGridFlag (bool d)
 {
   gridFlag = d;
-}
-
-void Plot::setOtherFlag (bool d)
-{
-  otherFlag = d;
-}
-
-bool Plot::getOtherFlag ()
-{
-  return otherFlag;
 }
 
 void Plot::setPixelspace (int d)
@@ -728,63 +741,14 @@ void Plot::drawXGrid ()
   painter.end();
 }
 
-void Plot::showLine (int id)
+void Plot::addIndicator (QString k, Indicator *i)
 {
-  PlotLine *pl = lineList[id];
-  if (pl)
-    pl->setShow(TRUE);
+  indicators.replace(k, i);
 }
 
-void Plot::hideLines ()
+Indicator * Plot::getIndicator (QString k)
 {
-  QIntDictIterator<PlotLine> it(lineList);
-  while (it.current())
-  {
-    PlotLine *pl = it.current();
-    pl->setShow(FALSE);
-    ++it;
-  }
-}
-
-int Plot::addLine (PlotLine *d)
-{
-  PlotLine *pl = new PlotLine;
-  pl->setColor(d->getColor());
-  pl->setType(d->getType());
-  pl->setLabel(d->getLabel());
-
-  int loop;
-  for (loop = 0; loop < (int) d->getSize(); loop++)
-    pl->append(d->getData(loop));
-
-  lineCount++;
-  
-  lineList.insert(lineCount, pl);
-
-  return lineCount;
-}
-
-void Plot::clearLines ()
-{
-  lineList.clear();
-}
-
-PlotLine * Plot::getLine (int d)
-{
-  PlotLine *pl = lineList[d];
-  if (pl)
-    return pl;
-  else
-    return 0;
-}
-
-QString Plot::getLineLabel (int d)
-{
-  PlotLine *pl = lineList[d];
-  if (pl)
-    return pl->getLabel();
-  else
-    return QString::null;
+  return indicators[k];
 }
 
 void Plot::setHeight ()
@@ -1025,7 +989,7 @@ void Plot::drawInfo ()
   painter.drawText(pos, 10, s, -1);
   pos = pos + fm.width(s);
 
-  if (data.count() && mainFlag && ! otherFlag)
+  if (data.count() && mainFlag)
   {
     s = "O=";
     s.append(r->getData("Open"));
@@ -1062,30 +1026,49 @@ void Plot::drawInfo ()
     pos = pos + fm.width(s);
   }
 
-  QIntDictIterator<PlotLine> it(lineList);
-  while (it.current())
+  if (mainFlag)
   {
-    PlotLine *line = it.current();
-
-    if (line->getShow() == FALSE)
+    QDictIterator<Indicator> it(indicators);
+    for (; it.current(); ++it)
     {
-      ++it;
-      continue;
-    }
+      Indicator *i = it.current();
+      int loop;
+      for (loop = 0; loop < (int) i->getLines(); loop++)
+      {
+        PlotLine *line = i->getLine(loop);
+        if (line->getSize() > 1)
+        {
+          s = line->getLabel();
+          s.append("=");
+          s.append(strip(line->getData(line->getSize() - 1)));
+          s.append(" ");
 
-    if (line->getSize() > 1)
+          painter.setPen(line->getColor());
+          painter.drawText(pos, 10, s, -1);
+          pos = pos + fm.width(s);
+        }
+      }
+    }
+  }
+  else
+  {
+    Indicator *i = indicators[currentIndicator];
+    int loop;
+    for (loop = 0; loop < (int) i->getLines(); loop++)
     {
-      s = line->getLabel();
-      s.append("=");
-      s.append(strip(line->getData(line->getSize() - 1)));
-      s.append(" ");
+      PlotLine *line = i->getLine(loop);
+      if (line->getSize() > 1)
+      {
+        s = line->getLabel();
+        s.append("=");
+        s.append(strip(line->getData(line->getSize() - 1)));
+        s.append(" ");
 
-      painter.setPen(line->getColor());
-      painter.drawText(pos, 10, s, -1);
-      pos = pos + fm.width(s);
+        painter.setPen(line->getColor());
+        painter.drawText(pos, 10, s, -1);
+        pos = pos + fm.width(s);
+      }
     }
-
-    ++it;
   }
 
   painter.end();
@@ -1127,7 +1110,6 @@ Setting * Plot::newChartObject (QString d)
   Setting *set = new Setting();
   set->set(QObject::tr("Color"), "red", Setting::Color);
   set->set(QObject::tr("Plot"), QObject::tr("Main Plot"), Setting::None);
-  set->set("Show", "True", Setting::None);
 
   QDateTime dt = QDateTime::currentDateTime();
 
@@ -1199,33 +1181,6 @@ Setting * Plot::newChartObject (QString d)
   return set;
 }
 
-int Plot::insertChartObject (Setting *d)
-{
-  Setting *set = new Setting;
-  QStringList l = d->getKeyList();
-  int loop;
-  for (loop = 0; loop < (int) l.count(); loop++)
-  {
-    SettingItem *item = d->getItem(l[loop]);
-    set->set(item->key, item->data, (Setting::Type) item->type);
-    set->setList(item->key, item->list);
-  }
-
-  objectCount++;
-  objectList.insert(objectCount, set);
-  return objectCount;
-}
-
-void Plot::deleteChartObject (int id)
-{
-  objectList.remove(id);
-}
-
-Setting * Plot::getChartObject (int id)
-{
-  return objectList[id];
-}
-
 QStringList Plot::getChartObjectList ()
 {
   QStringList l;
@@ -1239,35 +1194,12 @@ QStringList Plot::getChartObjectList ()
   return l;
 }
 
-void Plot::showChartObject (int id)
-{
-  Setting *set = objectList[id];
-  if (set)
-    set->set("Show", "True", Setting::None);
-}
-
-void Plot::clearChartObjects ()
-{
-  objectList.clear();
-}
-
-void Plot::hideChartObjects ()
-{
-  QIntDictIterator<Setting> it(objectList);
-  while (it.current())
-  {
-    Setting *co = it.current();
-    co->set("Show", "False", Setting::None);
-    ++it;
-  }
-}
-
 void Plot::setScale ()
 {
   scaleHigh = -99999999;
   scaleLow = 99999999;
 
-  if (mainFlag && ! otherFlag)
+  if (mainFlag)
   {
     if (! scaleToScreen)
     {
@@ -1298,78 +1230,115 @@ void Plot::setScale ()
 
   if (! scaleToScreen)
   {
-    QIntDictIterator<PlotLine> it(lineList);
-    while (it.current())
+    if (mainFlag)
     {
-      PlotLine *line = it.current();
-
-      if (line->getShow() == FALSE)
+      QDictIterator<Indicator> it(indicators);
+      for (; it.current(); ++it)
       {
-        ++it;
-        continue;
+        Indicator *i = it.current();
+	int loop;
+	for (loop = 0; loop < i->getLines(); loop++)
+	{
+	  PlotLine *line = i->getLine(loop);
+
+          if (line->getHigh() > scaleHigh)
+            scaleHigh = line->getHigh();
+
+          if (line->getLow() < scaleLow)
+            scaleLow = line->getLow();
+	}
       }
+    }
+    else
+    {
+      Indicator *i = indicators[currentIndicator];
+      int loop;
+      for (loop = 0; loop < i->getLines(); loop++)
+      {
+	PlotLine *line = i->getLine(loop);
 
-      if (line->getHigh() > scaleHigh)
-        scaleHigh = line->getHigh();
+        if (line->getHigh() > scaleHigh)
+          scaleHigh = line->getHigh();
 
-      if (line->getLow() < scaleLow)
-        scaleLow = line->getLow();
-
-      ++it;
+        if (line->getLow() < scaleLow)
+          scaleLow = line->getLow();
+      }
     }
   }
   else
   {
-    QIntDictIterator<PlotLine> it(lineList);
-    while (it.current())
+    if (mainFlag)
     {
-      PlotLine *line = it.current();
-
-      if (line->getShow() == FALSE)
+      QDictIterator<Indicator> it(indicators);
+      for (; it.current(); ++it)
       {
-        ++it;
-        continue;
-      }
+        Indicator *i = it.current();
+	int loop;
+	for (loop = 0; loop < i->getLines(); loop++)
+	{
+	  PlotLine *line = i->getLine(loop);
 
-      int x = startX;
-      int loop = line->getSize() - data.count() + startIndex;
-      while ((x < _width) && (loop < (int) line->getSize()))
-      {
-        if (loop > -1)
-        {
-          if (line->getData(loop) > scaleHigh)
-            scaleHigh = line->getData(loop);
+          int x = startX;
+          int loop2 = line->getSize() - data.count() + startIndex;
+          while ((x < _width) && (loop2 < (int) line->getSize()))
+          {
+            if (loop2 > -1)
+            {
+              if (line->getData(loop2) > scaleHigh)
+                scaleHigh = line->getData(loop2);
 
-          if (line->getData(loop) < scaleLow)
-            scaleLow = line->getData(loop);
+              if (line->getData(loop2) < scaleLow)
+                scaleLow = line->getData(loop2);
+            }
+
+            x = x + pixelspace;
+            loop2++;
+	  }
         }
-
-        x = x + pixelspace;
-        loop++;
       }
+    }
+    else
+    {
+      Indicator *i = indicators[currentIndicator];
+      int loop;
+      for (loop = 0; loop < i->getLines(); loop++)
+      {
+	PlotLine *line = i->getLine(loop);
 
-      ++it;
+        int x = startX;
+        int loop2 = line->getSize() - data.count() + startIndex;
+        while ((x < _width) && (loop2 < (int) line->getSize()))
+        {
+          if (loop2 > -1)
+          {
+            if (line->getData(loop2) > scaleHigh)
+              scaleHigh = line->getData(loop2);
+
+            if (line->getData(loop2) < scaleLow)
+              scaleLow = line->getData(loop2);
+          }
+
+          x = x + pixelspace;
+          loop2++;
+        }
+      }
     }
   }
 
-  QIntDictIterator<Setting> it(objectList);
-  while (it.current())
+  Indicator *i;
+  if (mainFlag)
+    i = indicators["Main Plot"];
+  else
+    i = indicators[currentIndicator];
+  QStringList l = i->getChartObjects();
+  int loop;
+  for (loop = 0; loop < (int) l.count(); loop++)
   {
-    Setting *co = it.current();
+    Setting *co = i->getChartObject(l[loop]);
 
-    QString type = co->getData("Show");
-    if (! type.compare("False"))
-    {
-      ++it;
-      continue;
-    }
-
-    type = co->getData(QObject::tr("Type"));
+    QString type = co->getData(QObject::tr("Type"));
     if (! type.compare(QObject::tr("Vertical Line")))
-    {
-      ++it;
       continue;
-    }
 
     if (! type.compare(QObject::tr("Trend Line")))
     {
@@ -1384,7 +1353,7 @@ void Plot::setScale ()
         scaleLow = v;
       if (v2 < scaleLow)
         scaleLow = v2;
-      ++it;
+
       continue;
     }
 
@@ -1396,7 +1365,7 @@ void Plot::setScale ()
         scaleHigh = v;
       if (v2 < scaleLow)
         scaleLow = v2;
-      ++it;
+
       continue;
     }
 
@@ -1405,8 +1374,6 @@ void Plot::setScale ()
       scaleHigh = v;
     if (v < scaleLow)
       scaleLow = v;
-
-    ++it;
   }
 
   scaleHigh = scaleHigh + (scaleHigh * 0.01);
@@ -1462,7 +1429,6 @@ void Plot::setScale ()
     ticks = 10;
 
   double interval = 0;
-  int loop;
   for (loop = 0; loop < (int) array.count(); loop++)
   {
     QString t = array[loop];
@@ -2265,6 +2231,21 @@ QDateTime Plot::getDateTime (QString d)
   return dt;
 }
 
+void Plot::setCurrentIndicator (QString d)
+{
+  currentIndicator = d;
+}
+
+QStringList Plot::getIndicators ()
+{
+  QStringList l;
+  
+  QDictIterator<Indicator> it(indicators);
+  for (; it.current(); ++it)
+    l.append(it.currentKey());
+
+  return l;
+}
 
 
 

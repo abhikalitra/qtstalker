@@ -24,37 +24,32 @@
 
 Indicator::Indicator ()
 {
+  chartObjects.setAutoDelete(TRUE);
+  lines.setAutoDelete(TRUE);
 }
 
 Indicator::~Indicator ()
 {
 }
 
-QMemArray<int> Indicator::getLines ()
+int Indicator::getLines ()
 {
-  return lines;
+  return (int) lines.count();
 }
 
-void Indicator::addLine (int d)
+PlotLine * Indicator::getLine (int i)
 {
-  lines.resize(lines.size() + 1);
-  lines[lines.size() - 1] = d;
+  return lines.at(i);
 }
 
-QMemArray<int> Indicator::getChartObjects ()
+void Indicator::addLine (PlotLine *l)
 {
-  QMemArray<int> a(chartObjects.count());
-  QStringList keys = chartObjects.getKeyList();
-  int loop;
-  for (loop = 0; loop < (int) keys.count(); loop++)
-    a[loop] = chartObjects.getInt(keys[loop]);
-
-  return a;
+  lines.append(l);
 }
 
-void Indicator::addChartObject (QString n, int d)
+void Indicator::addChartObject (Setting *co)
 {
-  chartObjects.set(n, QString::number(d), Setting::None);
+  chartObjects.replace(co->getData("Name"), co);
 }
 
 void Indicator::deleteChartObject (QString d)
@@ -62,14 +57,19 @@ void Indicator::deleteChartObject (QString d)
   chartObjects.remove(d);
 }
 
-int Indicator::getChartObject (QString d)
+Setting * Indicator::getChartObject (QString d)
 {
-  return chartObjects.getInt(d);
+  return chartObjects[d];
 }
 
-QStringList Indicator::getChartObjectNames ()
+QStringList Indicator::getChartObjects ()
 {
-  return chartObjects.getKeyList();
+  QStringList l;
+  QDictIterator<Setting> it(chartObjects);
+  for (; it.current(); ++it)
+    l.append(it.currentKey());
+
+  return l;
 }
 
 bool Indicator::getMainPlot ()
@@ -91,4 +91,8 @@ void Indicator::setAlerts (QMemArray<int> d)
   alerts = d;
 }
 
+void Indicator::clearLines ()
+{
+  lines.clear();
+}
 

@@ -25,7 +25,10 @@
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qmemarray.h>
+#include <qdict.h>
+#include <qlist.h>
 #include "Setting.h"
+#include "PlotLine.h"
 
 class Indicator : public Setting
 {
@@ -35,19 +38,20 @@ class Indicator : public Setting
     void clear ();
     QMemArray<int> getAlerts ();
     void setAlerts (QMemArray<int>);
-    QMemArray<int> getLines ();
-    void addLine (int);
-    QMemArray<int> getChartObjects ();
-    int getChartObject (QString);
-    void addChartObject (QString, int);
+    int getLines ();
+    void addLine (PlotLine *);
+    PlotLine * getLine (int);
+    QStringList getChartObjects ();
+    Setting * getChartObject (QString);
+    void addChartObject (Setting *);
     void deleteChartObject (QString);
-    QStringList getChartObjectNames ();
     bool getMainPlot ();
+    void clearLines ();
 
   private:
-    QMemArray<int> lines;
+    QList<PlotLine> lines;
     QMemArray<int> alerts;
-    Setting chartObjects;
+    QDict<Setting> chartObjects;
 };
 
 #endif

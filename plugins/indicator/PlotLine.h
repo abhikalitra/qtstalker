@@ -50,8 +50,6 @@ class PlotLine
     int getSize ();
     double getHigh ();
     double getLow ();
-    void setShow (bool);
-    bool getShow ();
     void checkHighLow (double);
 
   private:
@@ -61,7 +59,6 @@ class PlotLine
     QString label;
     double high;
     double low;
-    bool show;
 };
 
 #endif

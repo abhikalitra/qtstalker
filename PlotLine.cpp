@@ -28,7 +28,6 @@ PlotLine::PlotLine ()
   lineType = "Line";
   high = -99999999;
   low = 99999999;
-  show = TRUE;
 }
 
 PlotLine::~PlotLine ()
@@ -107,16 +106,6 @@ double PlotLine::getHigh ()
 double PlotLine::getLow ()
 {
   return low;
-}
-
-void PlotLine::setShow (bool d)
-{
-  show = d;
-}
-
-bool PlotLine::getShow ()
-{
-  return show;
 }
 
 void PlotLine::checkHighLow (double d)

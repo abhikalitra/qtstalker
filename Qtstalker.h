@@ -34,7 +34,6 @@
 #include <qlist.h>
 #include <qarray.h>
 #include <qslider.h>
-#include <qdict.h>
 #include <qtabbar.h>
 #include <qspinbox.h>
 
@@ -156,7 +155,6 @@ class QtstalkerApp : public QMainWindow
     Config *config;
     QSlider *slider;
     chartStatus status;
-    QDict<Indicator> indicatorList;
     QString chartPath;
     QString chartName;
     QString chartType;

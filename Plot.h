@@ -29,9 +29,10 @@
 #include <qcolor.h>
 #include <qmemarray.h>
 #include <qfont.h>
-#include <qintdict.h>
+#include <qdict.h>
 #include "PlotLine.h"
 #include "Setting.h"
+#include "Indicator.h"
 
 #define SCALE_WIDTH 60
 #define DATE_HEIGHT 20
@@ -78,21 +79,13 @@ class Plot : public QWidget
     void setAlerts (QMemArray<int>);
     QDateTime getDateTime (QString);
 
-    void hideLines ();
-    int addLine (PlotLine *);
-    void clearLines ();
-    PlotLine * getLine (int);
-    QString getLineLabel (int);
-    void showLine (int);
-
-    void hideChartObjects ();
-    Setting * newChartObject (QString);
-    int insertChartObject (Setting *);
-    Setting * getChartObject (int);
-    void deleteChartObject (int);
+    void addIndicator (QString, Indicator *);
+    Indicator * getIndicator (QString);
+    QStringList getIndicators ();
+    void deleteIndicator (QString);
+    void setCurrentIndicator (QString);
     QStringList getChartObjectList ();
-    void showChartObject (int);
-    void clearChartObjects ();
+    Setting * newChartObject (QString);
 
     void crossHair (int, int);
     void setIndex (int);
@@ -171,7 +164,6 @@ class Plot : public QWidget
     bool gridFlag;
     bool mainFlag;
     bool scaleToScreen;
-    bool otherFlag;
 
     int scaleWidth;
     double scaleHigh;
@@ -182,14 +174,9 @@ class Plot : public QWidget
     QArray<double> scaleArray;
 
     QString chartType;
-
+    QString currentIndicator;
     QList<Setting> data;
-
-    int objectCount;
-    QIntDict<Setting> objectList;
-    
-    int lineCount;
-    QIntDict<PlotLine> lineList;
+    QDict<Indicator> indicators;
 };
 
 #endif

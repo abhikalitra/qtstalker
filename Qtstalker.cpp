@@ -77,7 +77,6 @@ QtstalkerApp::QtstalkerApp()
   config = 0;
   chartMenu = 0;
   status = None;
-  indicatorList.setAutoDelete(TRUE);
   tabList.setAutoDelete(FALSE);
 
   QString s(QDir::homeDirPath());
@@ -666,12 +665,7 @@ void QtstalkerApp::loadChart (QString d)
   }
 
   mainPlot->clear();
-  mainPlot->clearChartObjects();
-  mainPlot->clearLines();
-  indicatorList.clear();
   indicatorPlot->clear();
-  indicatorPlot->clearChartObjects();
-  indicatorPlot->clearLines();
 
   Setting *set = db->getDetails();
   chartName = set->getData(tr("Title"));
@@ -679,7 +673,8 @@ void QtstalkerApp::loadChart (QString d)
   chartSymbol = set->getData("Symbol");
   QDateTime fd = db->getDateTime(set->getData("First Date"));
   QDateTime date = db->getDateTime(set->getData("Last Date"));
-  
+
+  bool otherFlag = FALSE;
   if (chartType.compare(tr("Stock"))
       && chartType.compare(tr("Futures"))
       && chartType.compare(tr("Index"))
@@ -690,7 +685,7 @@ void QtstalkerApp::loadChart (QString d)
     actionCandle->setEnabled(FALSE);
     actionLine->setEnabled(FALSE);
     actionPoint->setEnabled(FALSE);
-    mainPlot->setOtherFlag(TRUE);
+    otherFlag = TRUE;
   }
   else
   {
@@ -699,7 +694,6 @@ void QtstalkerApp::loadChart (QString d)
     actionCandle->setEnabled(TRUE);
     actionLine->setEnabled(TRUE);
     actionPoint->setEnabled(TRUE);
-    mainPlot->setOtherFlag(FALSE);
   }
 
   if (! date.isValid())
@@ -769,7 +763,7 @@ void QtstalkerApp::loadChart (QString d)
   {
     Indicator *i = new Indicator;
     i->parse(config->getIndicator(l[loop]));
-
+    
     QString s = config->getData(Config::IndicatorPluginPath);
     s.append("/");
     s.append(i->getData(QObject::tr("Type")));
@@ -791,32 +785,38 @@ void QtstalkerApp::loadChart (QString d)
       int loop2;
       for (loop2 = 0; loop2 < plug->getIndicatorLines(); loop2++)
       {
-	if (i->getMainPlot() && ! mainPlot->getOtherFlag())
-	{
-	  int num = mainPlot->addLine(plug->getIndicatorLine(loop2));
-	  i->addLine(num);
-	}
-	else
-	{
-	  int num = indicatorPlot->addLine(plug->getIndicatorLine(loop2));
-	  i->addLine(num);
-	}
+        PlotLine *tpl = plug->getIndicatorLine(loop2);
+        PlotLine *pl = new PlotLine;
+        pl->setColor(tpl->getColor());
+        pl->setType(tpl->getType());
+        pl->setLabel(tpl->getLabel());
+
+        int loop3;
+        for (loop3 = 0; loop3 < (int) tpl->getSize(); loop3++)
+          pl->append(tpl->getData(loop3));
+
+        i->addLine(pl);
       }
 
       s = i->getData(QObject::tr("Alert"));
       if (! s.compare(QObject::tr("True")))
         i->setAlerts(plug->getAlerts());
 
+      if (i->getMainPlot() && otherFlag)
+        i->clearLines();
+
+      if (i->getMainPlot())
+        mainPlot->addIndicator(l[loop], i);
+      else
+        indicatorPlot->addIndicator(l[loop], i);
+
       delete plug;
     }
-
-    indicatorList.insert(i->getData("Name"), i);
 
     delete lib;
   }
 
-  Indicator *i = new Indicator;
-  if (mainPlot->getOtherFlag() && db->getDataSize())
+  if (db->getDataSize())
   {
     Setting *r = db->getRecordIndex(0);
     QStringList keys = r->getKeyList();
@@ -827,6 +827,8 @@ void QtstalkerApp::loadChart (QString d)
     keys.remove("Close");
     keys.remove("Volume");
     keys.remove("Open Interest");
+    
+    Indicator *i = mainPlot->getIndicator("Main Plot");
 
     int loop;
     for (loop = 0; loop < (int) keys.count(); loop++)
@@ -846,33 +848,24 @@ void QtstalkerApp::loadChart (QString d)
       s = keys[loop];
       s.append(tr(" Line Type"));
       pl->setType(set->getData(s));
-      
+
       pl->setLabel(keys[loop]);
 
-      int num = mainPlot->addLine(pl);
-      i->addLine(num);
-      
-      delete pl;
+      i->addLine(pl);
     }
   }
-  indicatorList.insert(tr("Main Plot"), i);
 
   l = db->getChartObjects();
   for (loop = 0; loop < (int) l.count(); loop++)
   {
     Setting *co = db->getChartObject(l[loop]);
-
-    QString s = co->getData(tr("Plot"));
-    Indicator *i = indicatorList[s];
-    int num;
-    if (! s.compare(tr("Main Plot")))
-      num = mainPlot->insertChartObject(co);
+    Indicator *i = mainPlot->getIndicator(co->getData(tr("Plot")));
+    if (! i)
+      i = indicatorPlot->getIndicator(co->getData(tr("Plot")));
+    if (i)
+      i->addChartObject(co);
     else
-      num = indicatorPlot->insertChartObject(co);
-
-    i->addChartObject(l[loop], num);
-
-    delete co;
+      delete co;
   }
   
   // set up the paint bar if needed
@@ -880,7 +873,10 @@ void QtstalkerApp::loadChart (QString d)
   if (! s.compare(tr("Paint Bar")))
   {
     QString ind = config->getData(Config::PaintBarIndicator);
-    Indicator *i = indicatorList[ind];
+    Indicator *i = mainPlot->getIndicator(ind);
+    if (! i)
+      i = indicatorPlot->getIndicator(ind);
+      
     if (i)
       mainPlot->setAlerts(i->getAlerts());
   }
@@ -896,9 +892,6 @@ void QtstalkerApp::loadChart (QString d)
 
   indicatorPlot->setIndex(max);
   mainPlot->setIndex(max);
-
-  indicatorPlot->hideLines();
-  indicatorPlot->hideChartObjects();
 
   pixelspace->blockSignals(TRUE);
   pixelspace->setRange(mainPlot->getMinPixelspace(), 99);
@@ -975,33 +968,35 @@ void QtstalkerApp::slotNewChartObject (int id)
     db->setChartObject(name, co);
     delete db;
 
-    s = co->getData(tr("Plot"));
-    Indicator *i = indicatorList[s];
+    Indicator *i;
     if (id == 0)
-    {
-      int num = mainPlot->insertChartObject(co);
-      i->addChartObject(name, num);
-      mainPlot->draw();
-    }
+      i = mainPlot->getIndicator(co->getData(tr("Plot")));
     else
-    {
-      int num = indicatorPlot->insertChartObject(co);
-      i->addChartObject(name, num);
-      indicatorPlot->draw();
-    }
-  }
+      i = indicatorPlot->getIndicator(co->getData(tr("Plot")));
 
-  delete co;
+    i->addChartObject(co);
+
+    if (id == 0)
+      mainPlot->draw();
+    else
+      indicatorPlot->draw();
+  }
+  else
+    delete co;
+
   delete dialog;
 }
 
 void QtstalkerApp::slotEditChartObject (int id)
 {
+  QString name = chartObjectEditMenu->text(id);
   bool flag = FALSE;
-  Setting *co = mainPlot->getChartObject(id);
+  Indicator *i = mainPlot->getIndicator("Main Plot");
+  Setting *co = i->getChartObject(name);
   if (! co)
   {
-    co = indicatorPlot->getChartObject(id);
+    i = indicatorPlot->getIndicator(indicatorGroupText);
+    co = i->getChartObject(name);
     flag = TRUE;
   }
 
@@ -1034,20 +1029,17 @@ void QtstalkerApp::slotEditChartObject (int id)
 
 void QtstalkerApp::slotDeleteChartObject (int id)
 {
+  QString name = chartObjectDeleteMenu->text(id);
   bool flag = FALSE;
-  Setting *co = mainPlot->getChartObject(id);
+  Indicator *i = mainPlot->getIndicator("Main Plot");
+  Setting *co = i->getChartObject(name);
   if (! co)
   {
-    co = indicatorPlot->getChartObject(id);
+    i = indicatorPlot->getIndicator(indicatorGroupText);
+    co = i->getChartObject(name);
     flag = TRUE;
   }
 
-  QString name = co->getData("Name");
-  Indicator *i;
-  if (! flag)
-    i = indicatorList[tr("Main Plot")];
-  else
-    i = indicatorList[indicatorGroupText];
   i->deleteChartObject(name);
 
   ChartDb *db = new ChartDb();
@@ -1056,15 +1048,9 @@ void QtstalkerApp::slotDeleteChartObject (int id)
   delete db;
 
   if (! flag)
-  {
-    mainPlot->deleteChartObject(id);
     mainPlot->draw();
-  }
   else
-  {
-    indicatorPlot->deleteChartObject(id);
     indicatorPlot->draw();
-  }
 }
 
 QString QtstalkerApp::getWindowCaption ()
@@ -1110,88 +1096,66 @@ void QtstalkerApp::slotWorkwithPortfolio ()
 
 void QtstalkerApp::slotDataWindow ()
 {
-  if (mainPlot->getOtherFlag())
+  DataWindow *dw = new DataWindow(0, mainPlot->getDataSize());
+  dw->setCaption(getWindowCaption());
+
+  int col = 0;
+  Indicator *i = mainPlot->getIndicator("Main Plot");
+  if (! i->getLines())
   {
-    Indicator *i = indicatorList[tr("Main Plot")];
-
-    QMemArray<int> a = i->getLines();
-
-    DataWindow *dw = new DataWindow(a.size(), mainPlot->getDataSize());
-
-    dw->setCaption(getWindowCaption());
+    dw->setHeader(0, QObject::tr("Date"));
+    dw->setHeader(1, QObject::tr("Open"));
+    dw->setHeader(2, QObject::tr("High"));
+    dw->setHeader(3, QObject::tr("Low"));
+    dw->setHeader(4, QObject::tr("Close"));
 
     int loop;
-    int col = 0;
-    dw->setHeader(col, tr("Date"));
     for (loop = 0; loop < (int) mainPlot->getDataSize(); loop++)
     {
       QDateTime dt = mainPlot->getDate(loop);
-      dw->setData(loop, col, dt.toString("yyyyMMdd"));
+      dw->setData(loop, 0, dt.toString("yyyyMMdd"));
+      dw->setData(loop, 1, QString::number(mainPlot->getOpen(loop)));
+      dw->setData(loop, 2, QString::number(mainPlot->getHigh(loop)));
+      dw->setData(loop, 3, QString::number(mainPlot->getLow(loop)));
+      dw->setData(loop, 4, QString::number(mainPlot->getClose(loop)));
     }
 
-    col++;
-    for (loop = 0; loop < (int) a.size(); loop++, col++)
-    {
-      dw->setHeader(col, mainPlot->getLineLabel(a[loop]));
-      PlotLine *d = mainPlot->getLine(a[loop]);
-      int loop2;
-      int offset = mainPlot->getDataSize() - d->getSize();
-      for (loop2 = 0; loop2 < (int) d->getSize(); loop2++)
-        dw->setData(loop2 + offset, col, mainPlot->strip(d->getData(loop2)));
-    }
-
-    dw->show();
-
-    return;
+    col = 5;
   }
 
-  DataWindow *dw = new DataWindow(5, mainPlot->getDataSize());
-  dw->setCaption(getWindowCaption());
-  dw->setHeader(0, QObject::tr("Date"));
-  dw->setHeader(1, QObject::tr("Open"));
-  dw->setHeader(2, QObject::tr("High"));
-  dw->setHeader(3, QObject::tr("Low"));
-  dw->setHeader(4, QObject::tr("Close"));
-
+  QStringList l = mainPlot->getIndicators();
   int loop;
-  for (loop = 0; loop < (int) mainPlot->getDataSize(); loop++)
+  for (loop = 0; loop < (int) l.count(); loop++)
   {
-    QDateTime dt = mainPlot->getDate(loop);
-    dw->setData(loop, 0, dt.toString("yyyyMMdd"));
-    dw->setData(loop, 1, QString::number(mainPlot->getOpen(loop)));
-    dw->setData(loop, 2, QString::number(mainPlot->getHigh(loop)));
-    dw->setData(loop, 3, QString::number(mainPlot->getLow(loop)));
-    dw->setData(loop, 4, QString::number(mainPlot->getClose(loop)));
+    i = mainPlot->getIndicator(l[loop]);
+    int loop2;
+    for (loop2 = 0; loop2 < i->getLines(); loop2++, col++)
+    {
+      PlotLine *line = i->getLine(loop2);
+      dw->setHeader(col, line->getLabel());
+
+      int loop3;
+      int offset = mainPlot->getDataSize() - line->getSize();
+      for (loop3 = 0; loop3 < line->getSize(); loop3++)
+        dw->setData(loop3 + offset, col, mainPlot->strip(line->getData(loop3)));
+    }
   }
 
-  int col = 5;
-  QDictIterator<Indicator> it(indicatorList);
-  while (it.current())
+  l = indicatorPlot->getIndicators();
+  for (loop = 0; loop < (int) l.count(); loop++)
   {
-    Indicator *i = it.current();
-    QMemArray<int> a = i->getLines();
-
-    for (loop = 0; loop < (int) a.size(); loop++, col++)
+    i = indicatorPlot->getIndicator(l[loop]);
+    int loop2;
+    for (loop2 = 0; loop2 < i->getLines(); loop2++, col++)
     {
-      PlotLine *d;
-      if (i->getMainPlot())
-      {
-        dw->setHeader(col, mainPlot->getLineLabel(a[loop]));
-        d = mainPlot->getLine(a[loop]);
-      }
-      else
-      {
-        dw->setHeader(col, indicatorPlot->getLineLabel(a[loop]));
-        d = indicatorPlot->getLine(a[loop]);
-      }
+      PlotLine *line = i->getLine(loop2);
+      dw->setHeader(col, line->getLabel());
 
-      int loop2;
-      int offset = mainPlot->getDataSize() - d->getSize();
-      for (loop2 = 0; loop2 < (int) d->getSize(); loop2++)
-        dw->setData(loop2 + offset, col, mainPlot->strip(d->getData(loop2)));
+      int loop3;
+      int offset = mainPlot->getDataSize() - line->getSize();
+      for (loop3 = 0; loop3 < line->getSize(); loop3++)
+        dw->setData(loop3 + offset, col, mainPlot->strip(line->getData(loop3)));
     }
-
-    ++it;
   }
 
   dw->show();
@@ -1223,18 +1187,16 @@ void QtstalkerApp::mainPlotPopupMenu ()
   chartObjectEditMenu->clear();
   chartObjectDeleteMenu->clear();
 
-  Indicator *i = indicatorList[tr("Main Plot")];
-  QStringList l = i->getChartObjectNames();
+  Indicator *i = mainPlot->getIndicator("Main Plot");
+  QStringList l = i->getChartObjects();
   int loop;
   for (loop = 0; loop < (int) l.count(); loop++)
   {
-    int num = i->getChartObject(l[loop]);
-
     int id = chartObjectEditMenu->insertItem(QPixmap(co), l[loop], this, SLOT(slotEditChartObject(int)));
-    chartObjectEditMenu->setItemParameter(id, num);
+    chartObjectEditMenu->setItemParameter(id, id);
 
     id = chartObjectDeleteMenu->insertItem(QPixmap(co), l[loop], this, SLOT(slotDeleteChartObject(int)));
-    chartObjectDeleteMenu->setItemParameter(id, num);
+    chartObjectDeleteMenu->setItemParameter(id, id);
   }
 
   chartMenu->exec(QCursor::pos());
@@ -1246,22 +1208,20 @@ void QtstalkerApp::indicatorPlotPopupMenu ()
     return;
 
   plotPopupMenu(1);
-  
+
   chartObjectEditMenu->clear();
   chartObjectDeleteMenu->clear();
 
-  Indicator *i = indicatorList[indicatorGroupText];
-  QStringList l = i->getChartObjectNames();
+  Indicator *i = indicatorPlot->getIndicator(indicatorGroupText);
+  QStringList l = i->getChartObjects();
   int loop;
   for (loop = 0; loop < (int) l.count(); loop++)
   {
-    int num = i->getChartObject(l[loop]);
-
     int id = chartObjectEditMenu->insertItem(QPixmap(co), l[loop], this, SLOT(slotEditChartObject(int)));
-    chartObjectEditMenu->setItemParameter(id, num);
+    chartObjectEditMenu->setItemParameter(id, id);
 
     id = chartObjectDeleteMenu->insertItem(QPixmap(co), l[loop], this, SLOT(slotDeleteChartObject(int)));
-    chartObjectDeleteMenu->setItemParameter(id, num);
+    chartObjectDeleteMenu->setItemParameter(id, id);
   }
 
   chartMenu->exec(QCursor::pos());
@@ -1314,7 +1274,10 @@ void QtstalkerApp::slotChartTypeChanged (QAction *action)
     QString ind = config->getData(Config::PaintBarIndicator);
     if (ind.length())
     {
-      Indicator *i = indicatorList[ind];
+      Indicator *i = mainPlot->getIndicator(ind);
+      if (! i)
+        i = indicatorPlot->getIndicator(ind);
+
       if (i)
         mainPlot->setAlerts(i->getAlerts());
     }
@@ -1454,7 +1417,9 @@ void QtstalkerApp::slotDeleteIndicator (int id)
 
   config->deleteIndicator(text);
 
-  Indicator *i = indicatorList[text];
+  Indicator *i = mainPlot->getIndicator(text);
+  if (! i)
+    i = indicatorPlot->getIndicator(text);
 
   if (! i->getMainPlot())
   {
@@ -1471,7 +1436,7 @@ void QtstalkerApp::slotDeleteIndicator (int id)
     }
 
     // delete any chart objects that belong to the indicator
-    QStringList l = i->getChartObjectNames();
+    QStringList l = i->getChartObjects();
 
     ChartDb *db = new ChartDb;
     db->openChart(chartPath);
@@ -1514,19 +1479,7 @@ void QtstalkerApp::slotIndicatorSelected (int id)
   if (status == None)
     return;
 
-  indicatorPlot->hideLines();
-  indicatorPlot->hideChartObjects();
-
-  Indicator *i = indicatorList[indicatorGroupText];
-
-  QMemArray<int> a = i->getLines();
-  int loop;
-  for (loop = 0; loop < (int) a.size(); loop++)
-    indicatorPlot->showLine(a[loop]);
-
-  a = i->getChartObjects();
-  for (loop = 0; loop < (int) a.size(); loop++)
-    indicatorPlot->showChartObject(a[loop]);
+  indicatorPlot->setCurrentIndicator(indicatorGroupText);
 
   indicatorPlot->draw();
 }
