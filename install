@@ -4,7 +4,9 @@ mkdir ~/Qtstalker/plugins/quote
 mkdir ~/Qtstalker/plugins/indicator
 mkdir ~/Qtstalker/docs
 cp -f plugins/indicator/*.so ~/Qtstalker/plugins/indicator
+strip ~/Qtstalker/plugins/indicator/*.so
 cp -f plugins/quote/*.so ~/Qtstalker/plugins/quote
+strip ~/Qtstalker/plugins/quote/*.so
 cp -f docs/* ~/Qtstalker/docs
-cp -f qtstalker /usr/bin
-
+strip qtstalker
+cp -f qtstalker ~/Qtstalker
