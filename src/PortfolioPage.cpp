@@ -40,12 +40,11 @@ PortfolioPage::PortfolioPage (QWidget *w) : QWidget (w)
   vbox->setMargin(2);
   vbox->setSpacing(5);
   
-  nav = new Navigator(this, config.getData(Config::PortfolioPath));
-  connect(nav, SIGNAL(fileSelected(QString)), this, SLOT(portfolioSelected(QString)));
-  connect(nav, SIGNAL(noSelection()), this, SLOT(portfolioNoSelection()));
-  connect(nav, SIGNAL(contextMenuRequested(QListBoxItem *, const QPoint &)), this, SLOT(rightClick(QListBoxItem *)));
-  nav->updateList();
-  vbox->addWidget(nav);
+  list = new QListBox(this);
+  connect(list, SIGNAL(contextMenuRequested(QListBoxItem *, const QPoint &)), this, SLOT(rightClick(QListBoxItem *)));
+  connect(list, SIGNAL(highlighted(const QString &)), this, SLOT(portfolioSelected(const QString &)));
+  connect(list, SIGNAL(doubleClicked(QListBoxItem *)), this, SLOT(doubleClick(QListBoxItem *)));
+  vbox->addWidget(list);
   
   menu = new QPopupMenu();
   menu->insertItem(QPixmap(open), tr("&Open Portfolio"), this, SLOT(openPortfolio()), CTRL+Key_O);
@@ -55,7 +54,8 @@ PortfolioPage::PortfolioPage (QWidget *w) : QWidget (w)
   menu->insertSeparator(-1);
   menu->insertItem(QPixmap(help), tr("&Help"), this, SLOT(slotHelp()), CTRL+Key_H);
 
-  portfolioNoSelection();
+  updateList();
+  portfolioSelected(QString());
 }
 
 PortfolioPage::~PortfolioPage ()
@@ -65,7 +65,13 @@ PortfolioPage::~PortfolioPage ()
 
 void PortfolioPage::openPortfolio ()
 {
-  PortfolioDialog *dialog = new PortfolioDialog(nav->currentText());
+  PortfolioDialog *dialog = new PortfolioDialog(list->currentText());
+  dialog->show();
+}
+
+void PortfolioPage::openPortfolio (QString d)
+{
+  PortfolioDialog *dialog = new PortfolioDialog(d);
   dialog->show();
 }
 
@@ -105,17 +111,16 @@ void PortfolioPage::newPortfolio()
       return;
     f.close();
     
-    nav->updateList();
+    updateList();
 
-    PortfolioDialog *dialog = new PortfolioDialog(selection);
-    dialog->show();
+    openPortfolio(selection);
   }
 }
 
 void PortfolioPage::deletePortfolio()
 {
   SymbolDialog *dialog = new SymbolDialog(this,
-  				          nav->getCurrentPath(),
+  				          config.getData(Config::PortfolioPath),
 					  "*",
 					  QFileDialog::ExistingFiles);
   dialog->setCaption(tr("Select Portfolios To Delete"));
@@ -143,8 +148,8 @@ void PortfolioPage::deletePortfolio()
     for (loop = 0; loop < (int) l.count(); loop++)
       dir.remove(l[loop], TRUE);
 
-    nav->updateList();
-    portfolioNoSelection();
+    updateList();
+    portfolioSelected(QString());
   }
 
   delete dialog;
@@ -156,7 +161,7 @@ void PortfolioPage::renamePortfolio ()
   QString s = QInputDialog::getText(tr("Rename Portfolio"),
   				    tr("Enter new portfolio name."),
 				    QLineEdit::Normal,
-				    nav->currentText(),
+				    list->currentText(),
 				    &ok,
 				    this);
   if ((ok) && (! s.isNull()))
@@ -182,32 +187,52 @@ void PortfolioPage::renamePortfolio ()
 
     QString s2 = config.getData(Config::PortfolioPath);
     s2.append("/");
-    s2.append(nav->currentText());
+    s2.append(list->currentText());
 
     dir.rename(s2, s, TRUE);
 
-    nav->updateList();
-    portfolioNoSelection();
+    updateList();
+    portfolioSelected(QString());
   }
 }
 
-void PortfolioPage::portfolioSelected (QString)
+void PortfolioPage::portfolioSelected (const QString &d)
 {
-  menu->setItemEnabled(menu->idAt(0), TRUE);
-  menu->setItemEnabled(menu->idAt(2), TRUE);
-  menu->setItemEnabled(menu->idAt(3), TRUE);
-}
-
-void PortfolioPage::portfolioNoSelection ()
-{
-  menu->setItemEnabled(menu->idAt(0), FALSE);
-  menu->setItemEnabled(menu->idAt(2), FALSE);
-  menu->setItemEnabled(menu->idAt(3), FALSE);
+  if (d.length())
+  {
+    menu->setItemEnabled(menu->idAt(0), TRUE);
+    menu->setItemEnabled(menu->idAt(2), TRUE);
+    menu->setItemEnabled(menu->idAt(3), TRUE);
+  }
+  else
+  {
+    menu->setItemEnabled(menu->idAt(0), FALSE);
+    menu->setItemEnabled(menu->idAt(2), FALSE);
+    menu->setItemEnabled(menu->idAt(3), FALSE);
+  }
 }
 
 void PortfolioPage::rightClick (QListBoxItem *)
 {
   menu->exec(QCursor::pos());
+}
+
+void PortfolioPage::updateList ()
+{
+  list->clear();
+  
+  QDir dir(config.getData(Config::PortfolioPath));
+  int loop;
+  for (loop = 2; loop < (int) dir.count(); loop++)
+    list->insertItem(dir[loop], -1);
+}
+
+void PortfolioPage::doubleClick (QListBoxItem *item)
+{
+  if (! item)
+    return;
+    
+  openPortfolio(item->text());
 }
 
 void PortfolioPage::slotHelp ()

@@ -10,8 +10,17 @@
 
 20050128: Applied patch #1111167 to fix some html in the docs. Thanks to chadth for the patch.
 
-
-
+20050131: Scanner now saves all parms except the symbols selected. We don't save symbols selected
+          because big performance issues will appear if thousands were in the list.
+	  
+20050131: A double mouse click in the Scanner, Tester, Portfolio panels will open the clicked
+          item in the list.
+	  
+20050131: Added CSV export option to the chart panel. CSV exports chart in CSV format, and the
+          dump options dumps the raw chart along with header.
+	  
+	  
+	  
 0.29
 ====
 

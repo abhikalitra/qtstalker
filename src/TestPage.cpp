@@ -45,6 +45,7 @@ TestPage::TestPage (QWidget *w) : QWidget (w)
   list = new QListBox(this);
   connect(list, SIGNAL(contextMenuRequested(QListBoxItem *, const QPoint &)), this, SLOT(rightClick(QListBoxItem *)));
   connect(list, SIGNAL(highlighted(const QString &)), this, SLOT(testSelected(const QString &)));
+  connect(list, SIGNAL(doubleClicked(QListBoxItem *)), this, SLOT(doubleClick(QListBoxItem *)));
   vbox->addWidget(list);
   
   menu = new QPopupMenu();
@@ -244,6 +245,15 @@ void TestPage::updateList ()
 void TestPage::slotMessage (QString d)
 {
   emit message(d);
+}
+
+void TestPage::doubleClick (QListBoxItem *item)
+{
+  if (! item)
+    return;
+    
+  Tester *dialog = new Tester(item->text());
+  dialog->show();
 }
 
 void TestPage::slotHelp ()

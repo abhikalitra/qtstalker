@@ -118,7 +118,7 @@ class DbPlugin
     virtual QString createNew ();
     virtual void saveDbDefaults (Setting *);
     virtual BarData * getHistory ();
-    virtual void dump (QString);
+    virtual void dump (QString, bool);
     virtual void deleteBar (QString);
     virtual int readRecord ();
     virtual bool getRecordState ();

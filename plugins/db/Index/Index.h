@@ -52,7 +52,7 @@ class Index : public DbPlugin
     QString createNew ();
     void dbPrefDialog ();
     void saveDbDefaults (Setting *);
-    void dump (QString);
+    void dump (QString, bool);
     void deleteBar (QString);
     int readRecord ();
     int writeRecord ();

@@ -10,26 +10,8 @@ To Do:
 - allow negative displacement for line plots
 - add indicator chart to the tester chart so buy/sell points have a reference
 - allow log/scale to screen options on the tester charts
-- add co plugin icons back to the context menus
 - add yahoo plugin function to download fundamental data when a new symbol is created
 - add some default CSV plugin import rules
-- add export symbol feature in CSV format
-
--Scanner: I would expect the "Apply" button to store the current settings, like stock selection
-and bars/compression, as in the backtester. In the scanner, however, only the CUS indicator is saved. 
-  
--In the CUS indicator inserting of a new element does not lead to a renumbering of references in
-elements below. Example: 
-Existing CUS 
-a) ref close 
-c) ref volume 
-d) MA volume 
-  
-and then the following line #2 is inserted  
-b) ma close 
-  
-the reference in d) to c) is not updated with the new numbering, so that it still points to line number 2,
-which is now "ma close".  
 
 
 Maybe some day:

@@ -242,6 +242,10 @@ void Scanner::saveRule ()
   if (! f.open(IO_WriteOnly))
     return;
   QTextStream stream(&f);
+  
+  stream << "allSymbols=" << QString::number(allSymbols->isChecked()) << "\n";
+  stream << "bars=" << QString::number(bars->value()) << "\n";
+  stream << "compression=" << period->currentText() << "\n";
 
   int loop;
   for (loop = 0; loop < list->getLines(); loop++)
@@ -269,7 +273,30 @@ void Scanner::loadRule ()
     if (! s.length())
       continue;
       
-    list->setLine(s);
+    if (s.contains("|"))
+    {
+      list->setLine(s);
+      continue;
+    }
+
+    QStringList l = QStringList::split("=", s, FALSE);
+    if (l.count() != 2)
+      continue;
+      
+    if (! l[0].compare("allSymbols"))
+    {
+      allSymbols->setChecked(l[1].toInt());
+      continue;
+    }
+    
+    if (! l[0].compare("bars"))
+    {
+      bars->setValue(l[1].toInt());
+      continue;
+    }
+    
+    if (! l[0].compare("compression"))
+      period->setCurrentText(l[1]);
   }
 
   f.close();

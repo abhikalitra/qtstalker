@@ -39,13 +39,12 @@ ScannerPage::ScannerPage (QWidget *w) : QWidget (w)
   vbox->setMargin(2);
   vbox->setSpacing(5);
   
-  nav = new Navigator(this, config.getData(Config::ScannerPath));
-  connect(nav, SIGNAL(fileSelected(QString)), this, SLOT(scannerSelected(QString)));
-  connect(nav, SIGNAL(noSelection()), this, SLOT(scannerNoSelection()));
-  connect(nav, SIGNAL(contextMenuRequested(QListBoxItem *, const QPoint &)), this, SLOT(rightClick(QListBoxItem *)));
-  nav->updateList();
-  vbox->addWidget(nav);
-
+  list = new QListBox(this);
+  connect(list, SIGNAL(contextMenuRequested(QListBoxItem *, const QPoint &)), this, SLOT(rightClick(QListBoxItem *)));
+  connect(list, SIGNAL(highlighted(const QString &)), this, SLOT(scannerSelected(const QString &)));
+  connect(list, SIGNAL(doubleClicked(QListBoxItem *)), this, SLOT(doubleClick(QListBoxItem *)));
+  vbox->addWidget(list);
+  
   menu = new QPopupMenu();
   menu->insertItem(QPixmap(open), tr("Open Scanner"), this, SLOT(openScanner()));
   menu->insertItem(QPixmap(newchart), tr("New Scanner"), this, SLOT(newScanner()));
@@ -54,7 +53,8 @@ ScannerPage::ScannerPage (QWidget *w) : QWidget (w)
   menu->insertSeparator(-1);
   menu->insertItem(QPixmap(help), tr("&Help"), this, SLOT(slotHelp()), CTRL+Key_H);
 
-  scannerNoSelection();
+  refreshList();
+  scannerSelected(QString());
 }
 
 ScannerPage::~ScannerPage ()
@@ -64,7 +64,15 @@ ScannerPage::~ScannerPage ()
 
 void ScannerPage::openScanner ()
 {
-  Scanner *dialog = new Scanner(nav->currentText());
+  Scanner *dialog = new Scanner(list->currentText());
+  connect(dialog, SIGNAL(exitScanner()), this, SLOT(refreshList()));
+  connect(dialog, SIGNAL(message(QString)), this, SLOT(slotMessage(QString)));
+  dialog->show();
+}
+
+void ScannerPage::openScanner (QString d)
+{
+  Scanner *dialog = new Scanner(d);
   connect(dialog, SIGNAL(exitScanner()), this, SLOT(refreshList()));
   connect(dialog, SIGNAL(message(QString)), this, SLOT(slotMessage(QString)));
   dialog->show();
@@ -100,16 +108,14 @@ void ScannerPage::newScanner()
       return;
     }
 
-    Scanner *dialog = new Scanner(selection);
-    connect(dialog, SIGNAL(exitScanner()), this, SLOT(refreshList()));
-    dialog->show();
+    openScanner(selection);
   }
 }
 
 void ScannerPage::deleteScanner()
 {
   SymbolDialog *dialog = new SymbolDialog(this,
-  					  nav->getCurrentPath(),
+  					  config.getData(Config::ScannerPath),
 					  "*",
 					  QFileDialog::ExistingFiles);
   dialog->setCaption(tr("Select Scanners To Delete"));
@@ -137,9 +143,8 @@ void ScannerPage::deleteScanner()
     for (loop = 0; loop < (int) l.count(); loop++)
       dir.remove(l[loop], TRUE);
 
-    nav->updateList();
-
-    scannerNoSelection();
+    refreshList();
+    scannerSelected(QString());
   }
 
   delete dialog;
@@ -151,7 +156,7 @@ void ScannerPage::renameScanner ()
   QString s = QInputDialog::getText(tr("Rename Scanner"),
   				    tr("Enter new scanner name."),
 				    QLineEdit::Normal,
-				    nav->currentText(),
+				    list->currentText(),
 				    &ok,
 				    this);
   if ((ok) && (! s.isNull()))
@@ -177,28 +182,29 @@ void ScannerPage::renameScanner ()
 
     QString s2 = config.getData(Config::ScannerPath);
     s2.append("/");
-    s2.append(nav->currentText());
+    s2.append(list->currentText());
 
     dir.rename(s2, s, TRUE);
 
-    nav->updateList();
-
-    scannerNoSelection();
+    refreshList();
+    scannerSelected(QString());
   }
 }
 
-void ScannerPage::scannerSelected (QString)
+void ScannerPage::scannerSelected (const QString &d)
 {
-  menu->setItemEnabled(menu->idAt(0), TRUE);
-  menu->setItemEnabled(menu->idAt(2), TRUE);
-  menu->setItemEnabled(menu->idAt(3), TRUE);
-}
-
-void ScannerPage::scannerNoSelection ()
-{
-  menu->setItemEnabled(menu->idAt(0), FALSE);
-  menu->setItemEnabled(menu->idAt(2), FALSE);
-  menu->setItemEnabled(menu->idAt(3), FALSE);
+  if (d.length())
+  {
+    menu->setItemEnabled(menu->idAt(0), TRUE);
+    menu->setItemEnabled(menu->idAt(2), TRUE);
+    menu->setItemEnabled(menu->idAt(3), TRUE);
+  }
+  else
+  {
+    menu->setItemEnabled(menu->idAt(0), FALSE);
+    menu->setItemEnabled(menu->idAt(2), FALSE);
+    menu->setItemEnabled(menu->idAt(3), FALSE);
+  }
 }
 
 void ScannerPage::rightClick (QListBoxItem *)
@@ -208,12 +214,25 @@ void ScannerPage::rightClick (QListBoxItem *)
 
 void ScannerPage::refreshList ()
 {
-  nav->updateList();
+  list->clear();
+  
+  QDir dir(config.getData(Config::ScannerPath));
+  int loop;
+  for (loop = 2; loop < (int) dir.count(); loop++)
+    list->insertItem(dir[loop], -1);
 }
 
 void ScannerPage::slotMessage (QString d)
 {
   emit message(d);
+}
+
+void ScannerPage::doubleClick (QListBoxItem *item)
+{
+  if (! item)
+    return;
+    
+  openScanner(item->text());
 }
 
 void ScannerPage::slotHelp ()

@@ -240,14 +240,15 @@ void Spread::saveDbDefaults (Setting *set)
   saveFlag = TRUE;
 }
 
-void Spread::dump (QString d)
+void Spread::dump (QString d, bool f)
 {
   QFile outFile(d);
   if (! outFile.open(IO_WriteOnly))
     return;
   QTextStream outStream(&outFile);
   
-  dumpHeader(outStream);
+  if (! f)
+    dumpHeader(outStream);
 
   fseek(db, sizeof(ChartHeader), SEEK_SET);
   while (fread(&record, recordSize, 1, db))
@@ -256,10 +257,10 @@ void Spread::dump (QString d)
       continue;
   
     outStream << QString::number(record.date, 'f', 0) << ",";
-    outStream << QString::number(record.open, 'g', 4) << ",";
-    outStream << QString::number(record.high, 'g', 4) << ",";
-    outStream << QString::number(record.low, 'g', 4) << ",";
-    outStream << QString::number(record.close, 'g', 4) << "\n";
+    outStream << QString::number(record.open, 'f', 4) << ",";
+    outStream << QString::number(record.high, 'f', 4) << ",";
+    outStream << QString::number(record.low, 'f', 4) << ",";
+    outStream << QString::number(record.close, 'f', 4) << "\n";
   }  
 
   outFile.close();

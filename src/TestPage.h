@@ -51,6 +51,7 @@ class TestPage : public QWidget
     void copyTest ();
     void slotMessage (QString);
     void slotHelp ();
+    void doubleClick (QListBoxItem *);
 
   private:
     Config config;

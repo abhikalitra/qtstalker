@@ -46,6 +46,8 @@ class ChartPage : public QWidget
     void editChart ();
     void newChart (int);
     void exportSymbol ();
+    void dumpSymbol ();
+    void exportChart (QString, bool);
     void chartSelected (QString);
     void chartNoSelection ();
     void rightClick (QListBoxItem *);

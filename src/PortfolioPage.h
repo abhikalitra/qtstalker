@@ -25,7 +25,7 @@
 #include <qstring.h>
 #include <qwidget.h>
 #include <qpopupmenu.h>
-#include "Navigator.h"
+#include <qlistbox.h>
 #include "Config.h"
 
 class PortfolioPage : public QWidget
@@ -38,17 +38,19 @@ class PortfolioPage : public QWidget
 
   public slots:
     void openPortfolio ();
+    void openPortfolio (QString);
     void renamePortfolio ();
     void newPortfolio ();
     void deletePortfolio ();
-    void portfolioSelected (QString);
-    void portfolioNoSelection ();
+    void portfolioSelected (const QString &);
     void rightClick (QListBoxItem *);
     void slotHelp ();
+    void doubleClick (QListBoxItem *);
+    void updateList ();
 
   private:
     Config config;
-    Navigator *nav;
+    QListBox *list;
     QPopupMenu *menu;
 };
 

@@ -989,7 +989,7 @@ void DbPlugin::dbPrefDialog ()
 {
 }
 
-void DbPlugin::dump (QString)
+void DbPlugin::dump (QString, bool)
 {
 }
 

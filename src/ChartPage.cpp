@@ -65,7 +65,8 @@ ChartPage::ChartPage (QWidget *w) : QWidget (w)
   menu->insertItem(QPixmap(newchart), tr("&New..."), newMenu);
   menu->insertItem(QPixmap(edit), tr("&Edit Chart"), this, SLOT(editChart()), CTRL+Key_E);
   menu->insertItem(QPixmap(deleteitem), tr("&Delete Chart"), this, SLOT(deleteChart()), CTRL+Key_D);
-  menu->insertItem(QPixmap(exportfile), tr("E&xport Chart"), this, SLOT(exportSymbol()), CTRL+Key_X);
+  menu->insertItem(QPixmap(exportfile), tr("E&xport Chart CSV"), this, SLOT(exportSymbol()), CTRL+Key_X);
+  menu->insertItem(QPixmap(exportfile), tr("D&ump Chart"), this, SLOT(dumpSymbol()), CTRL+Key_U);
   menu->insertSeparator(-1);
   menu->insertItem(QPixmap(help), tr("&Help"), this, SLOT(slotHelp()), CTRL+Key_H);
 
@@ -154,13 +155,47 @@ void ChartPage::exportSymbol ()
     QStringList l = dialog->selectedFiles();
     int loop;
     for (loop = 0; loop < (int) l.count(); loop++)
-      exportChart(l[loop]);
+      exportChart(l[loop], TRUE);
   }
 
   delete dialog;
 }
 
-void ChartPage::exportChart (QString path)
+void ChartPage::dumpSymbol ()
+{
+  SymbolDialog *dialog = new SymbolDialog(this,
+  					  nav->getCurrentPath(),
+					  "*",
+					  QFileDialog::ExistingFiles);
+  dialog->setCaption(tr("Select Charts"));
+
+  int rc = dialog->exec();
+
+  if (rc == QDialog::Accepted)
+  {
+    QString s = config.getData(Config::Home);
+    s.append("/export");
+    QDir dir(s);
+    if (! dir.exists(s, TRUE))
+    {
+      if (! dir.mkdir(s, TRUE))
+      {
+        qDebug("Unable to create export directory.");
+	delete dialog;
+        return;
+      }
+    }
+
+    QStringList l = dialog->selectedFiles();
+    int loop;
+    for (loop = 0; loop < (int) l.count(); loop++)
+      exportChart(l[loop], FALSE);
+  }
+
+  delete dialog;
+}
+
+void ChartPage::exportChart (QString path, bool f)
 {
   ChartDb *db = new ChartDb;
   db->openChart(path);
@@ -177,7 +212,7 @@ void ChartPage::exportChart (QString path)
   else
     s.append(s2);
 
-  db->dump(s);
+  db->dump(s, f);
 
   delete db;
 }

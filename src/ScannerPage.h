@@ -25,7 +25,7 @@
 #include <qstring.h>
 #include <qwidget.h>
 #include <qpopupmenu.h>
-#include "Navigator.h"
+#include <qlistbox.h>
 #include "Config.h"
 
 class ScannerPage : public QWidget
@@ -41,19 +41,20 @@ class ScannerPage : public QWidget
 
   public slots:
     void openScanner ();
+    void openScanner (QString);
     void renameScanner ();
     void newScanner ();
     void deleteScanner ();
-    void scannerSelected (QString);
-    void scannerNoSelection ();
+    void scannerSelected (const QString &);
     void rightClick (QListBoxItem *);
     void refreshList ();
     void slotMessage (QString);
     void slotHelp ();
+    void doubleClick (QListBoxItem *);
 
   private:
     Config config;
-    Navigator *nav;
+    QListBox *list;
     QPopupMenu *menu;
 };
 

@@ -115,12 +115,12 @@ void ChartDb::deleteChartObject (QString d)
   plug->deleteChartObject(d);
 }
 
-void ChartDb::dump (QString d)
+void ChartDb::dump (QString d, bool f)
 {
   if (! db)
     return;
 
-  plug->dump(d);
+  plug->dump(d, f);
 }
 
 void ChartDb::setBarCompression (BarData::BarCompression d)
