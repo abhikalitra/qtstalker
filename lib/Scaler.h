@@ -41,6 +41,7 @@ class Scaler
     int getHeight ();
     bool getDateFlag ();
     bool getLogFlag ();
+    double getLow ();
 
   protected:
     int height;

@@ -62,7 +62,7 @@ class Config
       NavAreaSize,
       LogScale,
       NavigatorPosition,
-      IndicatorTabs,
+      IndicatorTabs, // unused
       StackedIndicator,
       PAFBoxSize, // unused
       PAFReversal, // unused

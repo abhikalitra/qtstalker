@@ -157,9 +157,7 @@ QtstalkerApp::QtstalkerApp()
   QObject::connect(this, SIGNAL(signalChartPath(QString)), mainPlot, SLOT(setChartPath(QString)));
   QObject::connect(this, SIGNAL(signalDrawMode(bool)), mainPlot, SLOT(setDrawMode(bool)));
 
-  tabs = new QTabWidget(split);
-  if (config->getData(Config::IndicatorTabs).toInt() == 0)
-    tabs->setTabPosition(QTabWidget::Bottom);
+  tabs = new IndicatorTab(split);
   QObject::connect(tabs, SIGNAL(currentChanged(QWidget *)), this, SLOT(slotTabChanged(QWidget *)));
 
   initToolBar();
@@ -499,7 +497,6 @@ void QtstalkerApp::slotOptions ()
     
   dialog->createPage(tr("Geometry"));
   dialog->addCheckItem(tr("Navigator Left"), tr("Geometry"), config->getData(Config::NavigatorPosition).toInt());
-  dialog->addCheckItem(tr("Indicator Tabs Top"), tr("Geometry"), config->getData(Config::IndicatorTabs).toInt());
   
   int rc = dialog->exec();
 
@@ -558,19 +555,6 @@ void QtstalkerApp::slotOptions ()
       navSplitter->moveToLast(navBase);
     }
     navSplitter->refresh();
-
-    // save indicator tabs position option
-    flag = dialog->getCheck(tr("Indicator Tabs Top"));
-    if (flag)
-    {
-      config->setData(Config::IndicatorTabs, "1");
-      tabs->setTabPosition(QTabWidget::Top);
-    }
-    else
-    {
-      config->setData(Config::IndicatorTabs, "0");
-      tabs->setTabPosition(QTabWidget::Bottom);
-    }
 
     loadChart(chartPath);
 

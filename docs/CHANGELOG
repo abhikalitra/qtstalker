@@ -105,6 +105,14 @@
 	  other than the bounds of the chart object currently selected. A double left mouse click
 	  on a selection brings up the edit dialog. Keyboard shortcuts for a selected object are
 	  CTRL-E for edit dialog, CTRL-M for move mode and CTRL-D for object delete.
+	  
+20040428: Fixed chart object scaling when scale to screen is true. Now objects only appear if
+          they fall within the bar price range on screen. If scale to screen is false, all chart
+	  objects will appear.
+	  
+20040428: Moved the "Tab Position Top" parm from prefs menu to a context menu activated by
+          mouse right click on the indicator tab area. 
+	  	  
 	
 0.25
 ====

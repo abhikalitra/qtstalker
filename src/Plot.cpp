@@ -1440,7 +1440,7 @@ void Plot::setScale ()
         continue;
 
       int loop;
-        for (loop = 0; loop < i->getLines(); loop++)
+      for (loop = 0; loop < i->getLines(); loop++)
       {
 	PlotLine *line = i->getLine(loop);
 	if (line->getType() == PlotLine::Invisible)
@@ -1467,7 +1467,7 @@ void Plot::setScale ()
         continue;
 
       int loop;
-        for (loop = 0; loop < i->getLines(); loop++)
+      for (loop = 0; loop < i->getLines(); loop++)
       {
 	PlotLine *line = i->getLine(loop);
 	if (line->getType() == PlotLine::Invisible)
@@ -1493,37 +1493,40 @@ void Plot::setScale ()
     }
   }
 
-  QDictIterator<ChartObject> it(chartObjects);
-  for (; it.current(); ++it)
+  if (! scaleToScreen)
   {
-    ChartObject *co = it.current();
-
-    ChartObject::ObjectType type = co->getType();
-    if (type == ChartObject::VerticalLine)
-      continue;
-
-    if ((type == ChartObject::TrendLine) || (type == ChartObject::FibonacciLine))
+    QDictIterator<ChartObject> it(chartObjects);
+    for (; it.current(); ++it)
     {
+      ChartObject *co = it.current();
+
+      ChartObject::ObjectType type = co->getType();
+      if (type == ChartObject::VerticalLine)
+        continue;
+
+      if ((type == ChartObject::TrendLine) || (type == ChartObject::FibonacciLine))
+      {
+        double v = co->getValue();
+        double v2 = co->getValue2();
+        if (v > scaleHigh)
+          scaleHigh = v;
+        if (v2 > scaleHigh)
+          scaleHigh = v2;
+
+        if (v < scaleLow)
+          scaleLow = v;
+        if (v2 < scaleLow)
+          scaleLow = v2;
+
+        continue;
+      }
+
       double v = co->getValue();
-      double v2 = co->getValue2();
       if (v > scaleHigh)
         scaleHigh = v;
-      if (v2 > scaleHigh)
-        scaleHigh = v2;
-
       if (v < scaleLow)
         scaleLow = v;
-      if (v2 < scaleLow)
-        scaleLow = v2;
-
-      continue;
     }
-
-    double v = co->getValue();
-    if (v > scaleHigh)
-      scaleHigh = v;
-    if (v < scaleLow)
-      scaleLow = v;
   }
 
   scaleHigh = scaleHigh * 1.01;

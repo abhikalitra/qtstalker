@@ -187,5 +187,10 @@ bool Scaler::getLogFlag ()
   return logScale;
 }
 
+double Scaler::getLow ()
+{
+  return scaleLow;
+}
+
 
 

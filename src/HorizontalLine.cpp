@@ -46,12 +46,16 @@ HorizontalLine::~HorizontalLine ()
 
 void HorizontalLine::draw (int, int)
 {
+  int y = scaler->convertToY(value);
+  ty = y;
+  
+  // if value is off chart then don't draw it
+  if (value < scaler->getLow())
+    return;
+  
   QPainter painter;
   painter.begin(buffer);
   painter.setPen(color);
-
-  int y = scaler->convertToY(value);
-  ty = y;
 
   painter.drawLine (0, y, buffer->width(), y);
   painter.drawText(0, y - 1, QString::number(value), -1);

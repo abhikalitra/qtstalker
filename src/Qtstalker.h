@@ -41,6 +41,7 @@
 #include "ChartPage.h"
 #include "ChartDb.h"
 #include "ChartObject.h"
+#include "IndicatorTab.h"
 
 #define DEFAULT_INDICATOR_HEIGHT 125
 
@@ -151,7 +152,7 @@ class QtstalkerApp : public QMainWindow
     QMenuBar *menubar;
     QSplitter *split;
     QSplitter *navSplitter;
-    QTabWidget *tabs;
+    IndicatorTab *tabs;
     QTabWidget *navTab;
     QWidget *baseWidget;
     QWidget *navBase;

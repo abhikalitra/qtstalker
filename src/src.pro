@@ -30,7 +30,7 @@ HEADERS += SellArrow.h
 HEADERS += Text.h
 HEADERS += TrendLine.h
 HEADERS += VerticalLine.h
-
+HEADERS += IndicatorTab.h
 
 SOURCES += Qtstalker.cpp
 SOURCES += PortfolioDialog.cpp
@@ -57,6 +57,7 @@ SOURCES += SellArrow.cpp
 SOURCES += Text.cpp
 SOURCES += TrendLine.cpp
 SOURCES += VerticalLine.cpp
+SOURCES += IndicatorTab.cpp
 
 TARGET = qtstalker
 
