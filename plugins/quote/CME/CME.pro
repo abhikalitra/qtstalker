@@ -19,9 +19,8 @@ SOURCES += CME.cpp
 
 TARGET = CME
 
-VERSION = 0.2
-
 INCLUDEPATH += ../../../db-2.7.7/build_unix
+INCLUDEPATH += ../../../src
 
 LIBS += -L../../../db-2.7.7/build_unix -ldb
 LIBS += -L/usr/lib

@@ -3,8 +3,6 @@ TEMPLATE = lib
 CONFIG += thread warn_on plugin
 QMAKE_CXXFLAGS += -Os
 
-VERSION = 0.2
-
 HEADERS += ../../../src/Plugin.h
 HEADERS += ../../../src/IndicatorPlugin.h
 HEADERS += ../../../src/Setting.h
@@ -18,6 +16,8 @@ SOURCES += ../../../src/PlotLine.cpp
 SOURCES += EP.cpp
 
 TARGET = EP
+
+INCLUDEPATH += ../../../src
 
 LIBS += -L/usr/lib
 unix:linux-g++:LIBS += -ldl

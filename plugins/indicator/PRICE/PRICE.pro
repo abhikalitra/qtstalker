@@ -4,23 +4,21 @@ CONFIG += thread warn_on plugin
 QMAKE_CXXFLAGS += -Os
 
 HEADERS += ../../../src/Plugin.h
-HEADERS += ../../../src/QuotePlugin.h
+HEADERS += ../../../src/IndicatorPlugin.h
 HEADERS += ../../../src/Setting.h
-HEADERS += ../../../src/ChartDb.h
-HEADERS += YahooQuote.h
+HEADERS += ../../../src/PlotLine.h
+HEADERS += PRICE.h
 
 SOURCES += ../../../src/Plugin.cpp
-SOURCES += ../../../src/QuotePlugin.cpp
+SOURCES += ../../../src/IndicatorPlugin.cpp
 SOURCES += ../../../src/Setting.cpp
-SOURCES += ../../../src/ChartDb.cpp
-SOURCES += YahooQuote.cpp
+SOURCES += ../../../src/PlotLine.cpp
+SOURCES += PRICE.cpp
 
-TARGET = YahooQuote
+TARGET = PRICE
 
-INCLUDEPATH += ../../../db-2.7.7/build_unix
 INCLUDEPATH += ../../../src
 
-LIBS += -L../../../db-2.7.7/build_unix -ldb
 LIBS += -L/usr/lib
 unix:linux-g++:LIBS += -ldl
 
@@ -29,5 +27,5 @@ macx:QMAKE_CXXFLAGS += -bundle
 
 unix:OBJECTS_DIR = ../../../src
 
-target.path = /usr/lib/qtstalker/quote
+target.path = /usr/lib/qtstalker/indicator
 INSTALLS += target

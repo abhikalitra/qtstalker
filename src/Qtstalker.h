@@ -120,6 +120,7 @@ class QtstalkerApp : public QMainWindow
     void slotHideNav (bool);
     void slotUpdateInfo (Setting *);
     void slotLogScale (bool);
+    void slotHideMainPlot (bool);
 
   private:
     QPopupMenu *fileMenu;
@@ -145,6 +146,7 @@ class QtstalkerApp : public QMainWindow
     QAction *actionScaleToScreen;
     QAction *actionNav;
     QAction *actionLogScale;
+    QAction *actionHideMainPlot;
 
     QToolBar *toolbar;
     QMenuBar *menubar;

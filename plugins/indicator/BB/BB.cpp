@@ -84,7 +84,7 @@ void BB::calculate ()
 
   bbu->setColor(getData(tr("Color")));
   bbu->setType(getData(tr("Line Type")));
-  bbu->setLabel(tr("BBL"));
+  bbu->setLabel(tr("BBU"));
   output.append(bbu);
 
   sma->setColor(getData(tr("Color")));

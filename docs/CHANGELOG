@@ -14,6 +14,15 @@
 
 - Added DTOHLC format option to the CSV plugin.
 
+- Added toolbar toggle to hide/show the main OHLC plot. Use this to clarify other close based indicators
+  on the chart.
+  
+- Added new indicator PRICE. This allows you to plot a number of different price plot formulas.
+
+- Applied patches #816926, #816927 from David Crossley.
+
+- Added an additional include path to all the plugins to help in compiling with older qmake versions. (Debian stable).
+
 
 
 0.21

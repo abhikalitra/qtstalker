@@ -46,8 +46,12 @@ class IndicatorPlugin : public Plugin
     PlotLine * getEMA (PlotLine *, int);
     PlotLine * getWilderMA (PlotLine *, int);
     PlotLine * getWMA (PlotLine *, int);
-    PlotLine * getTR ();
-    PlotLine * getTP ();
+    PlotLine * getTR (); // true range
+    PlotLine * getTP (); // typical price H+L+C/3
+    PlotLine * getAP (); // average price O+H+L+C/4
+    PlotLine * getWP (); // weighted price H+L+C+C/4
+    PlotLine * getHL (); // weighted price H+L/2
+    PlotLine * getOC (); // weighted price O+C/2
 
   protected:
     QList<Setting> *data;

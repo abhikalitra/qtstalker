@@ -61,6 +61,7 @@ Plot::Plot (QWidget *w) : QWidget(w)
   mainLow = 99999999;
   chartType = "None";
   mouseFlag = None;
+  hideMainPlot = FALSE;
 
   plotFont.setFamily("Helvetica");
   plotFont.setPointSize(12);
@@ -247,6 +248,11 @@ void Plot::setLogScale (bool d)
   logScale = d;
 }
 
+void Plot::setHideMainPlot (bool d)
+{
+  hideMainPlot = d;
+}
+
 void Plot::draw ()
 {
   buffer.fill(backgroundColor);
@@ -276,6 +282,13 @@ void Plot::draw ()
     {
       while (1)
       {
+        if (hideMainPlot == TRUE)
+	{
+          drawLines();
+          drawObjects();
+          break;
+	}
+
         if (! chartType.compare(tr("Bar")))
         {
           drawBars();

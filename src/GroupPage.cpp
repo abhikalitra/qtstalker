@@ -224,7 +224,6 @@ void GroupPage::renameGroup ()
 void GroupPage::groupSelected (QString d)
 {
   menu->setItemEnabled(menu->idAt(1), TRUE);
-  menu->setItemEnabled(menu->idAt(2), TRUE);
   menu->setItemEnabled(menu->idAt(3), TRUE);
   menu->setItemEnabled(menu->idAt(4), TRUE);
   emit fileSelected(d);
@@ -239,7 +238,6 @@ void GroupPage::groupNoSelection ()
     group->setText(s2.right(s2.length() - s.length() - 1));
 
     menu->setItemEnabled(menu->idAt(1), TRUE);
-    menu->setItemEnabled(menu->idAt(2), FALSE);
     menu->setItemEnabled(menu->idAt(3), TRUE);
     menu->setItemEnabled(menu->idAt(4), TRUE);
   }
@@ -248,7 +246,6 @@ void GroupPage::groupNoSelection ()
     group->clear();
 
     menu->setItemEnabled(menu->idAt(1), FALSE);
-    menu->setItemEnabled(menu->idAt(2), FALSE);
     menu->setItemEnabled(menu->idAt(3), FALSE);
     menu->setItemEnabled(menu->idAt(4), FALSE);
   }

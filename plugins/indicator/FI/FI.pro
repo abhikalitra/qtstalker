@@ -17,7 +17,7 @@ SOURCES += FI.cpp
 
 TARGET = FI
 
-VERSION = 0.1
+INCLUDEPATH += ../../../src
 
 LIBS += -L/usr/lib
 unix:linux-g++:LIBS += -ldl

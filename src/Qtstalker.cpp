@@ -68,6 +68,7 @@
 #include "vertical.xpm"
 #include "trend.xpm"
 #include "loggrid.xpm"
+#include "hidechart.xpm"
 
 QtstalkerApp::QtstalkerApp()
 {
@@ -100,13 +101,6 @@ QtstalkerApp::QtstalkerApp()
 
   navTab = new QTabWidget(navBase);
   vbox->addWidget(navTab, 1, 0);
-
-/*
-  initChartNav();
-  initGroupNav();
-  initPortfolioNav();
-  initTestNav();
- */
 
   infoLabel = new QMultiLineEdit(navBase);
   infoLabel->setReadOnly(TRUE);
@@ -318,6 +312,11 @@ void QtstalkerApp::initActions()
   actionLogScale = new QAction(tr("Log Scaling"), icon, tr("Log Scaling"), 0, this, 0, true);
   actionLogScale->setStatusTip(tr("Toggle log scaling."));
   connect(actionLogScale, SIGNAL(toggled(bool)), this, SLOT(slotLogScale(bool)));
+
+  icon = hidechart;
+  actionHideMainPlot = new QAction(tr("Hide Main Plot"), icon, tr("Hide Main Plot"), 0, this, 0, true);
+  actionHideMainPlot->setStatusTip(tr("Hide the main plot."));
+  connect(actionHideMainPlot, SIGNAL(toggled(bool)), this, SLOT(slotHideMainPlot(bool)));
 }
 
 void QtstalkerApp::initMenuBar()
@@ -336,6 +335,7 @@ void QtstalkerApp::initMenuBar()
   actionScaleToScreen->addTo(viewMenu);
   actionLogScale->addTo(viewMenu);
   actionNav->addTo(viewMenu);
+  actionHideMainPlot->addTo(viewMenu);
 
   toolMenu = new QPopupMenu();
   actionDatawindow->addTo(toolMenu);
@@ -393,6 +393,7 @@ void QtstalkerApp::initToolBar()
   actionGrid->addTo(toolbar);
   actionScaleToScreen->addTo(toolbar);
   actionLogScale->addTo(toolbar);
+  actionHideMainPlot->addTo(toolbar);
   actionNewIndicator->addTo(toolbar);
   actionDatawindow->addTo(toolbar);
   actionQuotes->addTo(toolbar);
@@ -1595,6 +1596,14 @@ void QtstalkerApp::slotUpdateInfo (Setting *r)
 
   infoLabel->setText(s);
 }
+
+void QtstalkerApp::slotHideMainPlot (bool d)
+{
+  actionHideMainPlot->setOn(d);
+  mainPlot->setHideMainPlot(d);
+  mainPlot->draw();
+}
+
 
 //**********************************************************************
 //**********************************************************************

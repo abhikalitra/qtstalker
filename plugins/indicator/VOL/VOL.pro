@@ -17,7 +17,7 @@ SOURCES += VOL.cpp
 
 TARGET = VOL
 
-VERSION = 0.2
+INCLUDEPATH += ../../../src
 
 LIBS += -L/usr/lib
 unix:linux-g++:LIBS += -ldl

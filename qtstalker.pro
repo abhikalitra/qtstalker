@@ -38,6 +38,7 @@ SUBDIRS += plugins/indicator/OI
 SUBDIRS += plugins/indicator/PC
 SUBDIRS += plugins/indicator/PER
 SUBDIRS += plugins/indicator/PP
+SUBDIRS += plugins/indicator/PRICE
 SUBDIRS += plugins/indicator/PVI
 SUBDIRS += plugins/indicator/PVT
 SUBDIRS += plugins/indicator/ROC

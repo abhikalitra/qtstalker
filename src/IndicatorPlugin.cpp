@@ -103,6 +103,36 @@ PlotLine * IndicatorPlugin::getInput (QString field)
       break;
     }
 
+    if (! field.compare(tr("Average Price")))
+    {
+      return getAP();
+      break;
+    }
+
+    if (! field.compare(tr("Typical Price")))
+    {
+      return getTP();
+      break;
+    }
+
+    if (! field.compare(tr("Weighted Price")))
+    {
+      return getWP();
+      break;
+    }
+
+    if (! field.compare(tr("HL Price")))
+    {
+      return getHL();
+      break;
+    }
+
+    if (! field.compare(tr("OC Price")))
+    {
+      return getOC();
+      break;
+    }
+
     break;
   }
 
@@ -334,6 +364,62 @@ PlotLine * IndicatorPlugin::getTP ()
   }
 
   return tp;
+}
+
+PlotLine * IndicatorPlugin::getAP ()
+{
+  PlotLine *ap = new PlotLine();
+
+  int loop;
+  for (loop = 0; loop < (int) data->count(); loop++)
+  {
+    Setting *set = data->at(loop);
+    ap->append((set->getFloat("Open") + set->getFloat("High") + set->getFloat("Low") + set->getFloat("Close")) / 4);
+  }
+
+  return ap;
+}
+
+PlotLine * IndicatorPlugin::getWP ()
+{
+  PlotLine *wp = new PlotLine();
+
+  int loop;
+  for (loop = 0; loop < (int) data->count(); loop++)
+  {
+    Setting *set = data->at(loop);
+    wp->append((set->getFloat("High") + set->getFloat("Low") + set->getFloat("Close") + set->getFloat("Close")) / 4);
+  }
+
+  return wp;
+}
+
+PlotLine * IndicatorPlugin::getHL ()
+{
+  PlotLine *hl = new PlotLine();
+
+  int loop;
+  for (loop = 0; loop < (int) data->count(); loop++)
+  {
+    Setting *set = data->at(loop);
+    hl->append((set->getFloat("High") + set->getFloat("Low")) / 2);
+  }
+
+  return hl;
+}
+
+PlotLine * IndicatorPlugin::getOC ()
+{
+  PlotLine *oc = new PlotLine();
+
+  int loop;
+  for (loop = 0; loop < (int) data->count(); loop++)
+  {
+    Setting *set = data->at(loop);
+    oc->append((set->getFloat("Open") + set->getFloat("Close")) / 2);
+  }
+
+  return oc;
 }
 
 int IndicatorPlugin::getIndicatorLines ()

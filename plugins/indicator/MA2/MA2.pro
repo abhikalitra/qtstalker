@@ -17,7 +17,7 @@ SOURCES += MA2.cpp
 
 TARGET = MA2
 
-VERSION = 0.2
+INCLUDEPATH += ../../../src
 
 LIBS += -L/usr/lib
 unix:linux-g++:LIBS += -ldl

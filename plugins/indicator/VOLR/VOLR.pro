@@ -17,7 +17,7 @@ SOURCES += VOLR.cpp
 
 TARGET = VOLR
 
-VERSION = 0.2
+INCLUDEPATH += ../../../src
 
 LIBS += -L/usr/lib
 unix:linux-g++:LIBS += -ldl

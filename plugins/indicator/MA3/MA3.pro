@@ -17,7 +17,7 @@ SOURCES += MA3.cpp
 
 TARGET = MA3
 
-VERSION = 0.2
+INCLUDEPATH += ../../../src
 
 LIBS += -L/usr/lib
 unix:linux-g++:LIBS += -ldl

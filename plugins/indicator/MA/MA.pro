@@ -17,7 +17,7 @@ SOURCES += MA.cpp
 
 TARGET = MA
 
-VERSION = 0.2
+INCLUDEPATH += ../../../src
 
 LIBS += -L/usr/lib
 unix:linux-g++:LIBS += -ldl

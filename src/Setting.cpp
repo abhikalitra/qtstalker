@@ -61,6 +61,11 @@ void Setting::set (QString k, QString d, Setting::Type t)
       set->list.append(QObject::tr("Close"));
       set->list.append(QObject::tr("Volume"));
       set->list.append(QObject::tr("Open Interest"));
+      set->list.append(QObject::tr("Average Price"));
+      set->list.append(QObject::tr("Typical Price"));
+      set->list.append(QObject::tr("Weighted Price"));
+      set->list.append(QObject::tr("HL Price"));
+      set->list.append(QObject::tr("OC Price"));
       break;
     default:
       break;

@@ -17,7 +17,7 @@ SOURCES += PER.cpp
 
 TARGET = PER
 
-VERSION = 0.2
+INCLUDEPATH += ../../../src
 
 LIBS += -L/usr/lib
 unix:linux-g++:LIBS += -ldl

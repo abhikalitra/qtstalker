@@ -87,6 +87,7 @@ class Plot : public QWidget
     void setChartType (QString);
     void createChartObject (QString, QString);
     void setPaintBars (QList<QColor>);
+    void setHideMainPlot (bool);
 
     void addIndicator (QString, Indicator *);
     Indicator * getIndicator (QString);
@@ -180,6 +181,7 @@ class Plot : public QWidget
     bool mainFlag;
     bool scaleToScreen;
     bool logScale;
+    bool hideMainPlot;
 
     int scaleWidth;
     double scaleHigh;

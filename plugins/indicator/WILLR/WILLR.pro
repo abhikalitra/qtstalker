@@ -17,7 +17,7 @@ SOURCES += WILLR.cpp
 
 TARGET = WILLR
 
-VERSION = 0.2
+INCLUDEPATH += ../../../src
 
 LIBS += -L/usr/lib
 unix:linux-g++:LIBS += -ldl
