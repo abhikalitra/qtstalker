@@ -25,6 +25,11 @@
           download all the yahoo fundamental info for each symbol selected. The fundemental info
 	  can then be viewed by selecting the "Edit" option from the chart panel context menu.
 	  
+20050205: Fixed bug in MySQL plugin that didn't create the symbols if they did not already
+          exist. This was caused by trying to remove deleted symbols from the list. This can't 
+	  work without user updating the symbol list, so don't try it again.
+	  
+	  
 	  
 0.29
 ====
