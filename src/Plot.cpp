@@ -27,6 +27,9 @@
 #include <qcursor.h>
 #include <math.h>
 
+#define SCALE_WIDTH 60
+#define DATE_HEIGHT 30
+
 Plot::Plot (QWidget *w) : QWidget(w)
 {
   setBackgroundMode(NoBackground);
@@ -188,7 +191,7 @@ void Plot::setChartType (QString d)
 
     if (! d.compare(tr("Line")))
     {
-      minPixelspace = 3;
+      minPixelspace = 4;
       startX = 0;
       chartType = d;
       dateFlag = TRUE;
@@ -762,27 +765,9 @@ void Plot::drawDate ()
       {
         oldDate = date;
 
-        painter.drawLine (x, _height + 1, x, _height + 6);
+        painter.drawLine (x, _height + 1, x, _height + dateHeight - fm.height() - 1);
 
-        QString s;
-	if (pixelspace < 7)
-	{
-          if (date.date().month() == 1)
-            s = date.toString("yy");
-          else
-	  {
-            s = date.toString("MMM");
-	    s.truncate(1);
-	  }
-	}
-	else
-	{
-          if (date.date().month() == 1)
-            s = date.toString("yy");
-          else
-            s = date.toString("MMM");
-	}
-
+        QString s = date.toString("MMM'yy");
         painter.drawText (x - (fm.width(s, -1) / 2), buffer.height() - 2, s, -1);
 
         oldWeek = date;
@@ -793,14 +778,15 @@ void Plot::drawDate ()
         // if start of new week make a tick
         if (date > oldWeek)
 	{
-  	  if (pixelspace >= 15)
-	  {
-            QString s = date.toString("d");
-            painter.drawText (x - (fm.width(s, -1) / 2), buffer.height() - 2, s, -1);
-	  }
-
           painter.drawLine (x, _height + 1, x, _height + 4);
-	  oldWeek = date;
+
+          QString s = date.toString("d");
+          painter.drawText (x - (fm.width(s, -1) / 2),
+	   		    buffer.height() - dateHeight + fm.height() + 1,
+			    s,
+			    -1);
+
+  	  oldWeek = date;
           oldWeek = oldWeek.addDays(7 - oldWeek.date().dayOfWeek());
 	}
       }
@@ -825,10 +811,12 @@ void Plot::drawDate ()
         {
           oldMonth = date;
 
-          painter.drawLine (x, _height + 1, x, _height + 6);
+          painter.drawLine (x, _height + 1, x, _height + (dateHeight / 3));
 
 	  QString s;
-  	  if (pixelspace < 7)
+   	  s = date.toString("MMM'yy");
+
+	  if (fm.width(s, -1) > 4 * pixelspace)
 	  {
             if (date.date().month() == 1)
               s = date.toString("yy");
@@ -838,15 +826,11 @@ void Plot::drawDate ()
               s.truncate(1);
 	    }
 	  }
-	  else
-	  {
-            if (date.date().month() == 1)
-              s = date.toString("yyyy");
-	    else
-              s = date.toString("MMM");
-	  }
 
-          painter.drawText (x - (fm.width(s, -1) / 2), buffer.height() - 2, s, -1);
+          painter.drawText (x - (fm.width(s, -1) / 2),
+	  		    _height + (dateHeight / 3) + fm.height() + 2,
+			    s,
+			    -1);
         }
 
         x = x + pixelspace;
@@ -866,9 +850,12 @@ void Plot::drawDate ()
         if (date.date().year() != oldYear.date().year())
         {
           oldYear = date;
-          painter.drawLine (x, _height + 1, x, _height + 6);
+          painter.drawLine (x, _height + 1, x, _height + (dateHeight / 3));
 	  QString s = date.toString("yyyy");
-          painter.drawText (x - (fm.width(s, -1) / 2), buffer.height() - 2, s, -1);
+          painter.drawText (x - (fm.width(s, -1) / 2),
+	  		    _height + (dateHeight / 3) + fm.height() + 2,
+			    s,
+			    -1);
         }
 
         x = x + pixelspace;

@@ -36,10 +36,6 @@
 #include "Setting.h"
 #include "Indicator.h"
 
-#define SCALE_WIDTH 60
-#define DATE_HEIGHT 20
-#define INFO_TEXT_OFFSET 11
-
 class Plot : public QWidget
 {
   Q_OBJECT
