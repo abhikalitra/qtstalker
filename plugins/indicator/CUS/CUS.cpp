@@ -30,6 +30,7 @@ CUS::CUS ()
 {
   pluginName = "CUS";
   customFlag = TRUE;
+  helpFile = "cus.html";
 }
 
 CUS::~CUS ()
@@ -91,7 +92,7 @@ void CUS::calculate ()
 
 int CUS::indicatorPrefDialog (QWidget *)
 {
-  CUSDialog *dialog = new CUSDialog();
+  CUSDialog *dialog = new CUSDialog(helpFile);
   
   int loop;
   for (loop = 0; loop < (int) formulaList.count(); loop++)

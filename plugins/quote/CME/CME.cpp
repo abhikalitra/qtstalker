@@ -37,6 +37,7 @@ CME::CME ()
   pluginName = "CME";
   op = 0;
   symbolCombo = 0;
+  helpFile = "cme.html";
   
   connect(&opHistory, SIGNAL(finished(QNetworkOperation *)), this, SLOT(opHistoryDone(QNetworkOperation *)));
   
@@ -1018,6 +1019,7 @@ void CME::prefDialog (QWidget *w)
   PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(tr("CME Prefs"));
   dialog->createPage (tr("Details"));
+  dialog->setHelpFile(helpFile);
 
   QStringList l2;
   l2.append("Today");

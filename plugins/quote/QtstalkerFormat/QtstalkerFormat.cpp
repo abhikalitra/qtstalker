@@ -31,6 +31,7 @@
 QtstalkerFormat::QtstalkerFormat ()
 {
   pluginName = "QtstalkerFormat";
+  helpFile = "qtstalker.html";
 }
 
 QtstalkerFormat::~QtstalkerFormat ()
@@ -111,6 +112,7 @@ void QtstalkerFormat::prefDialog (QWidget *w)
   PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(tr("QtstalkerFormat Prefs"));
   dialog->createPage (tr("Details"));
+  dialog->setHelpFile(helpFile);
   dialog->addFileItem(tr("File Input"), tr("Details"));
   
   int rc = dialog->exec();

@@ -22,14 +22,23 @@
 #include "IndexDialog.h"
 #include "SymbolDialog.h"
 #include "PrefDialog.h"
+#include "Config.h"
+#include "HelpWindow.h"
 #include <qlayout.h>
 #include <qlabel.h>
+#include <qdir.h>
 #include "../../../src/insert.xpm"
 #include "../../../src/edit.xpm"
 #include "../../../src/delete.xpm"
 
-IndexDialog::IndexDialog () : QTabDialog (0, "IndexDialog", TRUE)
+IndexDialog::IndexDialog (QString d) : QTabDialog (0, "IndexDialog", TRUE)
 {
+  Config config;
+  QString s = config.getData(Config::HelpFilePath) + "/" + d;
+  QDir dir;
+  if (dir.exists(s))
+    helpFile = s;
+
   QWidget *w = new QWidget(this);
   
   QVBoxLayout *vbox = new QVBoxLayout(w);
@@ -80,7 +89,10 @@ IndexDialog::IndexDialog () : QTabDialog (0, "IndexDialog", TRUE)
   setOkButton(tr("&OK"));
   setCancelButton(tr("&Cancel"));
   connect(this, SIGNAL(applyButtonPressed()), this, SLOT(accept()));
-  
+
+  setHelpButton();
+  QObject::connect(this, SIGNAL(helpButtonPressed()), this, SLOT(help()));
+    
   buttonStatus();
   
   resize(325, 250);
@@ -245,5 +257,14 @@ bool IndexDialog::getRebuild ()
 void IndexDialog::setName (QString d)
 {
   name->setText(d);
+}
+
+void IndexDialog::help ()
+{
+  if (! helpFile.length())
+    return;
+    
+  HelpWindow *hw = new HelpWindow(this, helpFile);
+  hw->show();
 }
 

@@ -25,6 +25,7 @@
 #include <qdatetime.h>
 #include <qdir.h>
 #include <qhgroupbox.h>
+#include <qprogressdialog.h>
 #include "Scanner.h"
 #include "BarData.h"
 #include "SymbolDialog.h"
@@ -68,12 +69,6 @@ Scanner::Scanner (QString n) : QTabDialog (0, 0, FALSE)
   
   list = new FormulaEdit(w);
   vbox->addWidget(list);
-  
-  vbox->addSpacing(10);
-  
-  progbar = new QProgressBar(0, w);
-  progbar->reset();
-  vbox->addWidget(progbar);
   
   setDefaultButton(tr("&Scan"));
   connect(this, SIGNAL(defaultButtonPressed()), this, SLOT(scan()));
@@ -155,12 +150,20 @@ void Scanner::scan ()
     delete trav;
   }
 
-  progbar->setTotalSteps(fileList.count());
-  
+  QProgressDialog prog(tr("Scanning..."),
+                       tr("Cancel"),
+		       fileList.count(),
+		       this,
+		       "progress",
+		       TRUE);
+  prog.show();
+
   for (loop = 0; loop < (int) fileList.count(); loop++)
   {
-    progbar->setProgress(loop);
+    prog.setProgress(loop);
     emit message(QString());
+    if (prog.wasCancelled())
+      break;
   
     ChartDb *db = new ChartDb;
     db->openChart(fileList[loop]);
@@ -223,8 +226,6 @@ void Scanner::scan ()
     delete recordList;
     delete db;
   }
-  
-  progbar->reset();
 }
 
 void Scanner::saveRule ()

@@ -2,6 +2,8 @@ TEMPLATE = lib
  
 CONFIG += thread warn_on
   
+QMAKE_CXXFLAGS += -ffast-math -Os
+
 HEADERS += QuotePlugin.h
 HEADERS += IndicatorPlugin.h
 HEADERS += ChartPlugin.h
@@ -26,6 +28,7 @@ HEADERS += FormulaEdit.h
 HEADERS += FormulaInput.h
 HEADERS += Indicator.h
 HEADERS += COPlugin.h
+HEADERS += HelpWindow.h
    
 SOURCES += QuotePlugin.cpp
 SOURCES += IndicatorPlugin.cpp
@@ -51,6 +54,7 @@ SOURCES += FormulaEdit.cpp
 SOURCES += FormulaInput.cpp
 SOURCES += Indicator.cpp
 SOURCES += COPlugin.cpp
+SOURCES += HelpWindow.cpp
     
 TARGET = qtstalker
 VERSION = 0.27.0

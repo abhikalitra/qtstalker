@@ -42,6 +42,7 @@ class QuotePlugin : public QObject
     QString stripJunk (QString);
     QString createDirectory (QString);
     QString getPluginName ();
+    QString getHelpFile ();
 
     virtual void update ();
     virtual void cancelUpdate ();
@@ -52,6 +53,7 @@ class QuotePlugin : public QObject
     float tfloat;
     bool saveFlag;
     QString pluginName;
+    QString helpFile;
 };
 
 extern "C"

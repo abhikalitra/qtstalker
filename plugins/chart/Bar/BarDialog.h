@@ -31,7 +31,7 @@ class BarDialog : public QTabDialog
   Q_OBJECT
   
   public:
-    BarDialog ();
+    BarDialog (QString);
     ~BarDialog ();
     int getLines ();
     QString getLine (int);
@@ -51,6 +51,9 @@ class BarDialog : public QTabDialog
     void setStyle (QString);
     QString getStyle ();
     
+  public slots:
+    void help ();
+    
   private:
     FormulaEdit *list;
     QComboBox *style;
@@ -60,6 +63,7 @@ class BarDialog : public QTabDialog
     ColorButton *barDownButton;
     ColorButton *barUpButton;
     ColorButton *barNeutralButton;
+    QString helpFile;
 };
 
     

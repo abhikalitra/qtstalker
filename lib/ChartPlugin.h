@@ -42,6 +42,7 @@ class ChartPlugin : public QObject
     int getStartX ();
     bool getIndicatorFlag ();
     QString getPluginName ();
+    QString getHelpFile ();
 
     virtual void drawChart (int, int, int);
     virtual void saveSettings ();
@@ -56,6 +57,7 @@ class ChartPlugin : public QObject
     bool indicatorFlag;
     bool saveFlag;
     QString pluginName;
+    QString helpFile;
 };
 
 extern "C"

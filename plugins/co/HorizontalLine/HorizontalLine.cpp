@@ -37,6 +37,7 @@ HorizontalLine::HorizontalLine ()
   selected = 0;
   defaultColor.setNamedColor("white");
   objects.setAutoDelete(TRUE);
+  helpFile = "horizontalline.html";
 
   Config config;  
   QStringList l = QStringList::split(" ", config.getData(Config::PlotFont), FALSE);
@@ -134,6 +135,7 @@ void HorizontalLine::prefDialog ()
   PrefDialog *dialog = new PrefDialog();
   dialog->setCaption(tr("Edit HorizontalLine"));
   dialog->createPage (tr("Details"));
+  dialog->setHelpFile (helpFile);
   dialog->addColorItem(tr("Color"), tr("Details"), selected->getColor());
   dialog->addCheckItem(tr("Set Default"), tr("Details"), FALSE);
   

@@ -29,6 +29,7 @@ Swing::Swing ()
   pluginName = "Swing";
   startX = 0;
   indicatorFlag = TRUE;
+  helpFile = "swingchartplugin.html";
 
   loadSettings();  
 }
@@ -153,6 +154,7 @@ void Swing::prefDialog (QWidget *w)
   PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(tr("Swing Chart Prefs"));
   dialog->createPage (tr("Details"));
+  dialog->setHelpFile (helpFile);
   dialog->addColorItem(tr("Up Color"), tr("Details"), upColor);
   dialog->addColorItem(tr("Down Color"), tr("Details"), downColor);
   dialog->addIntItem(tr("Min Bar Spacing"), tr("Details"), minPixelspace, 4, 99);

@@ -59,6 +59,7 @@ class IndicatorPlugin
     IndicatorPlugin::MAType getMAType (QString);
     void setPlotType (int);
     QString getPluginName ();
+    QString getHelpFile ();
 
     virtual void calculate ();
     virtual int indicatorPrefDialog (QWidget *);
@@ -80,6 +81,7 @@ class IndicatorPlugin
     QStringList maTypeList;
     int plotType;
     QString pluginName;
+    QString helpFile;
 };
 
 extern "C"

@@ -95,6 +95,11 @@ QString QuotePlugin::getPluginName ()
   return pluginName;
 }
 
+QString QuotePlugin::getHelpFile ()
+{
+  return helpFile;
+}
+
 //**************************************************************************
 //*************************** VIRTUAL OVERRIDES ****************************
 //**************************************************************************

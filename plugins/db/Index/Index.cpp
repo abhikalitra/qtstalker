@@ -32,6 +32,7 @@
 Index::Index ()
 {
   data.setAutoDelete(TRUE);
+  helpFile = "indexes.html";
 }
 
 Index::~Index ()
@@ -58,7 +59,7 @@ Bar * Index::getBar (QString k, QString d)
 
 void Index::dbPrefDialog ()
 {
-  IndexDialog *dialog = new IndexDialog();
+  IndexDialog *dialog = new IndexDialog(helpFile);
   dialog->setList(getData("Index"));
   dialog->setRebuild(getData("Rebuild"));
   dialog->setName(getData("Symbol"));

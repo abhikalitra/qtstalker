@@ -27,6 +27,8 @@
 MACD::MACD ()
 {
   pluginName = "MACD";
+  helpFile = "macd.html";
+  
   setDefaults();
 }
 
@@ -120,6 +122,7 @@ int MACD::indicatorPrefDialog (QWidget *w)
 {
   PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(QObject::tr("MACD Indicator"));
+  dialog->setHelpFile(helpFile);
   
   dialog->createPage (QObject::tr("MACD"));
   dialog->addColorItem(QObject::tr("MACD Color"), QObject::tr("MACD"), macdColor);

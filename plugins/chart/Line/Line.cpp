@@ -38,6 +38,7 @@ Line::Line ()
   defaultFlag = TRUE;
   defaultFormula.append("plot=1|lineType=4|period=0|plugin=REF|input=3|color=#ff0000|label=REF");
   loadSettings();  
+  helpFile = "linechartplugin.html";
 }
 
 Line::~Line ()
@@ -83,7 +84,7 @@ void Line::drawChart (int startX, int startIndex, int pixelspace)
 
 void Line::prefDialog (QWidget *)
 {
-  LineDialog *dialog = new LineDialog();
+  LineDialog *dialog = new LineDialog(helpFile);
   dialog->setColor(color);
   dialog->setSpacing(minPixelspace);
   dialog->setDefault(defaultFlag);

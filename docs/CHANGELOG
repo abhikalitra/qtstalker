@@ -170,7 +170,11 @@
 20040918: Finally fixed signal propagation for the indicator tabs. Now the user can delete all the
           tabs if desired. YAY!
 	  
-	  	  
+20040919: Added progress dialogs to Scanner and Tester.
+
+20040920: Added help dialogs to all the plugins. 
+
+
 	  	  	  
 0.26
 ====

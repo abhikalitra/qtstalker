@@ -33,6 +33,8 @@ DMI::DMI ()
   lineList.append("MDI");
   lineList.append("PDI");
   
+  helpFile = "dmi.html";
+  
   setDefaults();
 }
 
@@ -68,7 +70,7 @@ int DMI::indicatorPrefDialog (QWidget *w)
 {
   PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(QObject::tr("DMI Indicator"));
-  
+  dialog->setHelpFile(helpFile);
   dialog->createPage (QObject::tr("DMI"));
   dialog->addIntItem(QObject::tr("Period"), QObject::tr("DMI"), period, 1, 99999999);
   dialog->addIntItem(QObject::tr("Smoothing"), QObject::tr("DMI"), smoothing, 1, 99999999);

@@ -32,7 +32,7 @@ class YahooDialog : public QTabDialog
   Q_OBJECT
   
   public:
-    YahooDialog ();
+    YahooDialog (QString);
     ~YahooDialog ();
     QStringList getList ();
     void updateList ();
@@ -50,6 +50,7 @@ class YahooDialog : public QTabDialog
     void selectAll ();
     void unselectAll ();
     void methodChanged (int);
+    void help ();
           
   private:
     QListBox *list;
@@ -58,6 +59,7 @@ class YahooDialog : public QTabDialog
     QDateEdit *date2;
     QComboBox *method;
     QString dataPath;
+    QString helpFile;
     Toolbar *toolbar;
 };
 

@@ -32,6 +32,7 @@
 
 CC::CC ()
 {
+  helpFile = "cc.html";
 }
 
 CC::~CC ()
@@ -63,6 +64,7 @@ void CC::dbPrefDialog ()
   PrefDialog *dialog = new PrefDialog(0);
   dialog->setCaption(QObject::tr("CC Prefs"));
   dialog->createPage (QObject::tr("Details"));
+  dialog->setHelpFile (helpFile);
   dialog->addIntItem(QObject::tr("Maximum Years"), QObject::tr("Details"), getData("MaxYears").toInt());
   int rc = dialog->exec();
   
@@ -92,7 +94,6 @@ void CC::saveDbDefaults (Setting *set)
   setData("Type", "CC");
   setData("Title", set->getData("Title") + " - Continuous Adjusted");
   setData("BarType", set->getData("BarType"));
-  setData("CCType", set->getData("Symbol"));
   setData("Plugin", "CC");
   setData("MaxYears", "10");
 }
@@ -126,33 +127,42 @@ void CC::update ()
   }
 
   QString currentContract;
-  ChartDb *db = 0;
+  ChartDb *tdb = 0;
   Bar *fr = 0;
   Bar *sr = 0;
   Bar *pr = new Bar;
-    
+
   while (startDate <= endDate)
   {
     QString s = fd.getCurrentContract(startDate);
     if (s.compare(currentContract))
     {
-      if (db)
-        delete db;
+      if (tdb)
+        delete tdb;
+	
+      QString s2 = baseDir + "/" + s;
+      if (! dir.exists(s2))
+      {
+        startDate = startDate.addDays(1);
+        if (startDate.date().dayOfWeek() == 6)
+          startDate = startDate.addDays(2);
+        continue;
+      }
 	
       currentContract = s;
-      s = baseDir + "/" + currentContract;
-      db = new ChartDb;
-      db->setPlugin("Futures");
-      db->openChart(s);
-      db->setBarCompression(BarData::DailyBar);
+      
+      tdb = new ChartDb;
+      tdb->setPlugin("Futures");
+      tdb->openChart(s2);
+      tdb->setBarCompression(BarData::DailyBar);
       fr = 0;
 
       while (! fr)
       {
         s = startDate.toString("yyyyMMdd000000");
-        QString s2 = db->getData(s);
+        QString s2 = tdb->getData(s);
         if (s2.length())
-          fr = db->getBar(s, s2);
+          fr = tdb->getBar(s, s2);
 	
         startDate = startDate.addDays(1);
         if (startDate.date().dayOfWeek() == 6)
@@ -161,10 +171,10 @@ void CC::update ()
     }
     
     s = startDate.toString("yyyyMMdd000000");
-    QString s2 = db->getData(s);
+    QString s2 = tdb->getData(s);
     if (s2.length())
     {
-      sr = db->getBar(s, s2);
+      sr = tdb->getBar(s, s2);
       if (sr)
       {
         double c = pr->getClose() + (sr->getClose() - fr->getClose());
@@ -194,8 +204,8 @@ void CC::update ()
   }
 
   delete pr;
-  if (db)
-    delete db;
+  if (tdb)
+    delete tdb;
 }
 
 QString CC::createNew ()

@@ -36,6 +36,7 @@ Yahoo::Yahoo ()
 {
   pluginName = "Yahoo";
   op = 0;
+  helpFile = "yahoo.html";
   
   sdate = QDateTime::currentDateTime();
   if (sdate.date().dayOfWeek() == 6)
@@ -555,7 +556,7 @@ QString Yahoo::parseDate (QString d)
 
 void Yahoo::prefDialog (QWidget *)
 {
-  YahooDialog *dialog = new YahooDialog();
+  YahooDialog *dialog = new YahooDialog(helpFile);
   dialog->setCaption(tr("Yahoo Prefs"));
   dialog->setAdjustment(adjustment);
   dialog->setStartDate(sdate);

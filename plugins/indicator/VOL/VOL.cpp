@@ -27,6 +27,8 @@
 VOL::VOL ()
 {
   pluginName = "VOL";
+  helpFile = "vol.html";
+  
   setDefaults();
 }
 
@@ -82,6 +84,7 @@ int VOL::indicatorPrefDialog (QWidget *w)
 {
   PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(QObject::tr("VOL Indicator"));
+  dialog->setHelpFile(helpFile);
   
   dialog->createPage (QObject::tr("VOL"));
   dialog->addColorItem(QObject::tr("Up Color"), QObject::tr("VOL"), upColor);

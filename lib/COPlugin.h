@@ -67,6 +67,7 @@ class COPlugin : public QObject
     void setData (BarData *);
     void setScaler (Scaler *);
     void setPixmap (QPixmap *);
+    QString getHelpFile ();
 
   public slots:    
     virtual void prefDialog ();
@@ -80,6 +81,7 @@ class COPlugin : public QObject
     QPopupMenu *menu;
     QString indicator;
     QString name;
+    QString helpFile;
 };
 
 #endif

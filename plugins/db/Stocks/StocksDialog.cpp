@@ -22,6 +22,8 @@
 #include "StocksDialog.h"
 #include "Bar.h"
 #include "BarDate.h"
+#include "Config.h"
+#include "HelpWindow.h"
 #include "../../../src/delete.xpm"
 #include "../../../src/export.xpm"
 #include "../../../src/search.xpm"
@@ -32,9 +34,16 @@
 #include <qpushbutton.h>
 #include <qtooltip.h>
 #include <qpixmap.h>
+#include <qdir.h>
 
-StocksDialog::StocksDialog (QString d) : QTabDialog (0, "StocksDialog", TRUE)
+StocksDialog::StocksDialog (QString d, QString p) : QTabDialog (0, "StocksDialog", TRUE)
 {
+  Config config;
+  QString s = config.getData(Config::HelpFilePath) + "/" + p;
+  QDir dir;
+  if (dir.exists(s))
+    helpFile = s;
+
   saveRecordFlag = FALSE;
   ignoreSaveRecordFlag = FALSE;
   setCaption(tr("Qtstalker: Edit Stock"));
@@ -48,6 +57,9 @@ StocksDialog::StocksDialog (QString d) : QTabDialog (0, "StocksDialog", TRUE)
   setOkButton(tr("&OK"));
   setCancelButton(tr("&Cancel"));
   connect(this, SIGNAL(applyButtonPressed()), this, SLOT(saveChart()));
+  
+  setHelpButton();
+  QObject::connect(this, SIGNAL(helpButtonPressed()), this, SLOT(help()));
 }
 
 StocksDialog::~StocksDialog ()
@@ -316,4 +328,12 @@ void StocksDialog::textChanged (const QString &)
   }
 }
 
+void StocksDialog::help ()
+{
+  if (! helpFile.length())
+    return;
+    
+  HelpWindow *hw = new HelpWindow(this, helpFile);
+  hw->show();
+}
 

@@ -561,7 +561,7 @@ void QtstalkerApp::slotQuotes ()
 
 void QtstalkerApp::slotOptions ()
 {
-  PrefDialog *dialog = new PrefDialog();
+  PrefDialog *dialog = new PrefDialog;
   dialog->setCaption(tr("Edit Prefs"));
 
   dialog->createPage(tr("Colors"));
@@ -574,6 +574,9 @@ void QtstalkerApp::slotOptions ()
   dialog->addFontItem(tr("Plot Font"), tr("Fonts"), QFont(l[0], l[1].toInt(), l[2].toInt()));
   l = QStringList::split(" ", config.getData(Config::AppFont), FALSE);
   dialog->addFontItem(tr("App Font"), tr("Fonts"), QFont(l[0], l[1].toInt(), l[2].toInt()));
+  
+  dialog->createPage(tr("Help"));
+  dialog->addTextItem(tr("HTML Path"), tr("Help"), config.getData(Config::HelpFilePath));
     
   int rc = dialog->exec();
 
@@ -618,6 +621,9 @@ void QtstalkerApp::slotOptions ()
       config.setData(Config::AppFont, s);
       qApp->setFont(font, TRUE, 0);
     }
+    
+    // save help
+    config.setData(Config::HelpFilePath, dialog->getText(tr("HTML Path")));
 
     loadChart(chartPath);
 
@@ -1030,12 +1036,12 @@ void QtstalkerApp::slotNewIndicator ()
   QStringList l = ti->getPlotTypes();
   delete ti;
   
-  PrefDialog *idialog = new PrefDialog();
+  PrefDialog *idialog = new PrefDialog;
   idialog->setCaption(tr("New Indicator"));
   idialog->createPage (tr("Details"));
   idialog->addComboItem(tr("Indicator"), tr("Details"), config.getIndicatorList(), 0);
-  idialog->addTextItem(tr("Name"), tr("Details"), tr("New Indicator"));
-  idialog->addComboItem(tr("Plot Type"), tr("Details"), l, 0);
+  idialog->addTextItem(tr("Name"), tr("Details"), tr("NewIndicator"));
+  idialog->addComboItem(tr("Plot Type"), tr("Details"), l, 1);
   
   int rc = idialog->exec();
   if (rc == QDialog::Rejected)
@@ -1377,6 +1383,7 @@ void QtstalkerApp::initPortfolioNav ()
 void QtstalkerApp::initTestNav ()
 {
   TestPage *tp = new TestPage(baseWidget);
+  QObject::connect(tp, SIGNAL(message(QString)), this, SLOT(slotStatusMessage(QString)));
   navTab->addWidget(tp, 4);
 }
 

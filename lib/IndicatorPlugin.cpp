@@ -359,6 +359,11 @@ QString IndicatorPlugin::getPluginName ()
   return pluginName;
 }
 
+QString IndicatorPlugin::getHelpFile ()
+{
+  return helpFile;
+}
+
 //***************************************************************
 //****************** VIRTUAL OVERIDES ***************************
 //***************************************************************

@@ -24,6 +24,7 @@
 
 Futures::Futures ()
 {
+  helpFile = "futuresplugin.html";
 }
 
 Futures::~Futures ()
@@ -46,7 +47,7 @@ Bar * Futures::getBar (QString k, QString d)
 
 void Futures::dbPrefDialog ()
 {
-  FuturesDialog *dialog = new FuturesDialog(path);
+  FuturesDialog *dialog = new FuturesDialog(path, helpFile);
   dialog->exec();
   delete dialog;
 }

@@ -25,15 +25,23 @@
 #include "../../../src/newchart.xpm"
 #include "../../../src/selectall.xpm"
 #include "../../../src/unselectall.xpm"
+#include "HelpWindow.h"
 #include <qinputdialog.h>
 #include <qdir.h>
 #include <qmessagebox.h>
 #include <qlayout.h>
 #include <qlabel.h>
 #include <qframe.h>
+#include <qdir.h>
 
-YahooDialog::YahooDialog () : QTabDialog (0, "YahooDialog", TRUE)
+YahooDialog::YahooDialog (QString d) : QTabDialog (0, "YahooDialog", TRUE)
 {
+  Config config;
+  QString s = config.getData(Config::HelpFilePath) + "/" + d;
+  QDir dir;
+  if (dir.exists(s))
+    helpFile = s;
+
   dataPath = QDir::homeDirPath();
   dataPath.append("/Qtstalker/data/Stocks");
 
@@ -109,6 +117,8 @@ YahooDialog::YahooDialog () : QTabDialog (0, "YahooDialog", TRUE)
 
   setOkButton();
   setCancelButton();
+  setHelpButton();
+  QObject::connect(this, SIGNAL(helpButtonPressed()), this, SLOT(help()));
 
   resize(300, 400);
       
@@ -260,5 +270,14 @@ void YahooDialog::methodChanged (int)
     date->setEnabled(TRUE);
     date2->setEnabled(TRUE);
   }
+}
+
+void YahooDialog::help ()
+{
+  if (! helpFile.length())
+    return;
+    
+  HelpWindow *hw = new HelpWindow(this, helpFile);
+  hw->show();
 }
 

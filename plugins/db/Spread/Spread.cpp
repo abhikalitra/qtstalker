@@ -32,6 +32,7 @@
 Spread::Spread ()
 {
   data.setAutoDelete(TRUE);
+  helpFile = "spread.html";
 }
 
 Spread::~Spread ()
@@ -68,6 +69,7 @@ void Spread::dbPrefDialog ()
   PrefDialog *dialog = new PrefDialog(0);
   dialog->setCaption(QObject::tr("Spread Prefs"));
   dialog->createPage (QObject::tr("Details"));
+  dialog->setHelpFile (helpFile);
   dialog->addSymbolItem(QObject::tr("First Symbol"), QObject::tr("Details"), s, getData("First Symbol"));
   dialog->addSymbolItem(QObject::tr("Second Symbol"), QObject::tr("Details"), s, getData("Second Symbol"));
   dialog->addComboItem(QObject::tr("Method"), QObject::tr("Details"), l, getData("Method"));

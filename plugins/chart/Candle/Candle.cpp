@@ -30,6 +30,7 @@ Candle::Candle ()
   indicatorFlag = FALSE;
   expandCandles = FALSE;
   dialog = 0;
+  helpFile = "candlechartplugin.html";
 
   loadSettings();
 }
@@ -343,6 +344,7 @@ void Candle::prefDialog (QWidget *w)
   dialog = new PrefDialog(w);
   dialog->setCaption(tr("Candle Chart Prefs"));
   dialog->createPage (tr("Prefs"));
+  dialog->setHelpFile (helpFile);
   dialog->addComboItem(tr("Style"), tr("Prefs"), l, style);
   QObject::connect(dialog->getComboWidget("Style"),
                    SIGNAL(activated(const QString &)),

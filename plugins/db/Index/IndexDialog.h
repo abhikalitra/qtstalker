@@ -34,7 +34,7 @@ class IndexDialog : public QTabDialog
   Q_OBJECT
   
   public:
-    IndexDialog ();
+    IndexDialog (QString);
     ~IndexDialog ();
     void setRebuild (bool);
     bool getRebuild ();
@@ -47,6 +47,7 @@ class IndexDialog : public QTabDialog
     void deleteItem ();
     QString getList ();
     void setList (QString);
+    void help ();
           
   private:
     QLineEdit *name;
@@ -55,5 +56,6 @@ class IndexDialog : public QTabDialog
     QCheckBox *rebuild;
     QListView *list;
     QDict<QString> symbolDict;
+    QString helpFile;
 };
 

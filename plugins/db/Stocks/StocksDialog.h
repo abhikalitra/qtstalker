@@ -35,7 +35,7 @@ class StocksDialog : public QTabDialog
   Q_OBJECT
 
   public:
-    StocksDialog (QString);
+    StocksDialog (QString, QString);
     ~StocksDialog ();
     void createDetailsPage ();
     void createDataPage ();
@@ -47,6 +47,7 @@ class StocksDialog : public QTabDialog
     void slotDateSearch ();
     void saveChart ();
     void textChanged (const QString &);
+    void help ();
 
   private:
     QDateTimeEdit *dateSearch;
@@ -62,6 +63,7 @@ class StocksDialog : public QTabDialog
     Toolbar *toolbar;
     bool saveRecordFlag;
     bool ignoreSaveRecordFlag;
+    QString helpFile;
 };
 
 #endif

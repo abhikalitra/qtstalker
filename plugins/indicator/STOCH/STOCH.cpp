@@ -27,6 +27,8 @@
 STOCH::STOCH ()
 {
   pluginName = "STOCH";
+  helpFile = "stoch.html";
+  
   setDefaults();
 }
 
@@ -152,6 +154,7 @@ int STOCH::indicatorPrefDialog (QWidget *w)
   PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(QObject::tr("STOCH Indicator"));
   dialog->createPage (QObject::tr("Parms"));
+  dialog->setHelpFile(helpFile);
   dialog->addIntItem(QObject::tr("Period"), QObject::tr("Parms"), period, 1, 99999999);
   dialog->addComboItem(QObject::tr("Smoothing Type"), QObject::tr("Parms"), maTypeList, maType);
   dialog->addFloatItem(QObject::tr("Buy Line"), QObject::tr("Parms"), buyLine, 0, 100);

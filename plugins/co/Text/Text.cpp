@@ -36,6 +36,7 @@ Text::Text ()
   selected = 0;
   defaultColor.setNamedColor("white");
   objects.setAutoDelete(TRUE);
+  helpFile = "text.html";
   
   Config config;  
   QStringList l = QStringList::split(" ", config.getData(Config::PlotFont), FALSE);
@@ -119,6 +120,7 @@ void Text::prefDialog ()
   PrefDialog *dialog = new PrefDialog();
   dialog->setCaption(tr("Edit Text"));
   dialog->createPage (tr("Details"));
+  dialog->setHelpFile (helpFile);
   dialog->addColorItem(tr("Color"), tr("Details"), selected->getColor());
   dialog->addFontItem(tr("Font"), tr("Details"), selected->getFont());
   dialog->addTextItem(tr("Label"), tr("Details"), selected->getLabel());

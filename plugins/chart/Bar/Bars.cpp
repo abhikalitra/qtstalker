@@ -35,6 +35,7 @@ Bars::Bars ()
   pluginName = "Bar";
   startX = 2;
   indicatorFlag = FALSE;
+  helpFile = "barchartplugin.html";
 
   loadSettings();  
 }
@@ -165,7 +166,7 @@ void Bars::drawPaintBars (int startX, int startIndex, int pixelspace)
 
 void Bars::prefDialog (QWidget *)
 {
-  BarDialog *dialog = new BarDialog();
+  BarDialog *dialog = new BarDialog(helpFile);
   dialog->setBarColors(barUpColor, barDownColor, barNeutralColor);
   dialog->setPaintBarColors(paintUpColor, paintDownColor);
   dialog->setStyle(style);

@@ -39,6 +39,7 @@ MySQLPlugin::MySQLPlugin ()
 {
   // plugin defaults
   pluginName = "MySQL";
+  helpFile = "mysql.html";
 
   // get settings persisted last time
   retrieveSettings();
@@ -300,6 +301,7 @@ void MySQLPlugin::prefDialog (QWidget *w)
   PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(tr("MySQL Prefs"));
   dialog->createPage (tr("Details"));
+  dialog->setHelpFile(helpFile);
   dialog->addTextItem(tr("Database"), tr("Details"), database);
   dialog->addTextItem(tr("Host"), tr("Details"), host);
   dialog->addTextItem(tr("Username"), tr("Details"), username);

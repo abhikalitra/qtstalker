@@ -31,6 +31,8 @@ BB::BB ()
   bandList.append(QObject::tr("Upper"));
   bandList.append(QObject::tr("Lower"));
   
+  helpFile = "bb.html";
+  
   setDefaults();
 }
 
@@ -110,6 +112,7 @@ int BB::indicatorPrefDialog (QWidget *w)
 {
   PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(QObject::tr("BB Indicator"));
+  dialog->setHelpFile(helpFile);
   dialog->createPage (QObject::tr("Parms"));
   dialog->addColorItem(QObject::tr("Color"), QObject::tr("Parms"), color);
   dialog->addComboItem(QObject::tr("Line Type"), QObject::tr("Parms"), lineTypes, lineType);

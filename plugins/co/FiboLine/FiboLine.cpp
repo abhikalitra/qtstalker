@@ -36,6 +36,7 @@ FiboLine::FiboLine ()
   selected = 0;
   defaultColor.setNamedColor("white");
   objects.setAutoDelete(TRUE);
+  helpFile = "fiboline.html";
 
   Config config;  
   QStringList l = QStringList::split(" ", config.getData(Config::PlotFont), FALSE);
@@ -192,6 +193,7 @@ void FiboLine::prefDialog ()
   PrefDialog *dialog = new PrefDialog();
   dialog->setCaption(tr("Edit FiboLine"));
   dialog->createPage (tr("Details"));
+  dialog->setHelpFile (helpFile);
   dialog->addColorItem(tr("Color"), tr("Details"), selected->getColor());
   dialog->addCheckItem(tr("Set Default"), tr("Details"), FALSE);
 
@@ -393,7 +395,7 @@ void FiboLine::drawMovingPointer (QPoint point)
   // draw the new line
   painter.drawLine (mpx, mpy, point.x(), mpy);
   painter.drawLine (mpx, point.y(), point.x(), point.y());
-      
+        
   mpx2 = point.x();
   mpy2 = point.y();
   

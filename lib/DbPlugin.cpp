@@ -348,6 +348,11 @@ QString DbPlugin::getPluginName ()
   return pluginName;
 }
 
+QString DbPlugin::getHelpFile ()
+{
+  return helpFile;
+}
+
 //*********************************************************
 //***************** VIRTUAL OVERRIDES *********************
 //*********************************************************

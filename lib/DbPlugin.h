@@ -46,18 +46,19 @@ class DbPlugin
     void deleteChartObject (QString);
     QString getData (QString);
     void setData (QString, QString);
-    BarData * getHistory ();
     void deleteData (QString);
     BarDate getPrevDate (BarDate);
     void setDb (DB *);
     void setDbPath (QString);
     QString getPluginName ();
+    QString getHelpFile ();
     
     virtual Bar * getBar (QString, QString);
     virtual void setBar (Bar *);
     virtual void dbPrefDialog ();
     virtual QString createNew ();
     virtual void saveDbDefaults (Setting *);
+    virtual BarData * getHistory ();
     
   protected:
     DB *db;
@@ -65,6 +66,7 @@ class DbPlugin
     BarData::BarCompression barCompression;
     QString path;
     QString pluginName;
+    QString helpFile;
 };
 
 extern "C"

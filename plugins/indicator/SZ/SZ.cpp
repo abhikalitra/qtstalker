@@ -35,6 +35,7 @@ SZ::SZ ()
   setDefaults();
   methodList.append(QObject::tr("Long"));
   methodList.append(QObject::tr("Short"));
+  helpFile = "sz.html";
 }
 
 SZ::~SZ ()
@@ -179,6 +180,7 @@ int SZ::indicatorPrefDialog (QWidget *w)
   PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(QObject::tr("SZ Indicator"));
   dialog->createPage (QObject::tr("Parms"));
+  dialog->setHelpFile(helpFile);
   dialog->addColorItem(QObject::tr("Color"), QObject::tr("Parms"), color);
   dialog->addComboItem(QObject::tr("Line Type"), QObject::tr("Parms"), lineTypes, lineType);
   dialog->addComboItem(QObject::tr("Position"), QObject::tr("Parms"), methodList, method);

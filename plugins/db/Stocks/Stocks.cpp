@@ -24,6 +24,7 @@
 
 Stocks::Stocks ()
 {
+  helpFile = "stocksplugin.html";
 }
 
 Stocks::~Stocks ()
@@ -45,7 +46,7 @@ Bar * Stocks::getBar (QString k, QString d)
 
 void Stocks::dbPrefDialog ()
 {
-  StocksDialog *dialog = new StocksDialog(path);
+  StocksDialog *dialog = new StocksDialog(path, helpFile);
   dialog->exec();
   delete dialog;
 }

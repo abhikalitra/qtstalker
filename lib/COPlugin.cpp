@@ -100,6 +100,11 @@ double COPlugin::getLow ()
   return 0;
 }
 
+QString COPlugin::getHelpFile ()
+{
+  return helpFile;
+}
+
 
 
 

@@ -236,4 +236,9 @@ void TestPage::updateList ()
     list->insertItem(dir[loop], -1);
 }
 
+void TestPage::slotMessage (QString d)
+{
+  emit message(d);
+}
+
 

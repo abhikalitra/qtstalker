@@ -38,6 +38,7 @@ TrendLine::TrendLine ()
   usebar = FALSE;
   extend = TRUE;
   bar = "Close";
+  helpFile = "trendline.html";
   
   menu->insertItem(QPixmap(edit), tr("&Edit TrendLine"), this, SLOT(prefDialog()), CTRL+Key_E);
   menu->insertItem(QPixmap(renam), tr("&Move TrendLine"), this, SLOT(moveObject()), CTRL+Key_M);
@@ -196,6 +197,7 @@ void TrendLine::prefDialog ()
   PrefDialog *dialog = new PrefDialog();
   dialog->setCaption(tr("Edit TrendLine"));
   dialog->createPage (tr("Details"));
+  dialog->setHelpFile (helpFile);
   dialog->addColorItem(tr("Color"), tr("Details"), selected->getColor());
   dialog->addComboItem(tr("Bar Field"), tr("Details"), l, selected->getBar());
   dialog->addCheckItem(tr("Use Bar"), tr("Details"), selected->getUseBar());

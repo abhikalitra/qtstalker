@@ -67,7 +67,7 @@ class Config
       DbPluginPath,
       CUSRulePath,
       COPluginPath,
-      PAFBoxSize, // unused
+      HelpFilePath,
       Version, // unused
       Height,
       Width,

@@ -45,6 +45,8 @@
 
 class PrefDialog : public QTabDialog
 {
+  Q_OBJECT
+
   public:
     PrefDialog (QWidget *);
     PrefDialog ();
@@ -52,6 +54,7 @@ class PrefDialog : public QTabDialog
     void init ();
     void createPage (QString);
     void deletePage (QString);
+    void setHelpFile (QString);
     void addColorItem (QString, QString, QColor);
     QColor getColor (QString);
     void addFloatItem (QString, QString, double, double, double);
@@ -81,6 +84,9 @@ class PrefDialog : public QTabDialog
     QString getSymbol (QString);
     void addFormulaInputItem (QString, QString, bool, QString);
     QString getFormulaInput (QString);
+    
+  public slots:
+    void help ();
 
   private:
     QDict<QWidget> widgetList;
@@ -97,6 +103,7 @@ class PrefDialog : public QTabDialog
     QDict<SymbolButton> symbolList;
     QDict<QDoubleValidator> dvList;
     QDict<FormulaInput> formulaInputList;
+    QString helpFile;
 };
 
 #endif

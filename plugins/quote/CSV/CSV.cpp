@@ -36,6 +36,7 @@ CSV::CSV ()
   delim = ",";
   db = 0;
   dateFlag = FALSE;
+  helpFile = "csv.html";
   
   edate = QDateTime::currentDateTime();
   if (edate.date().dayOfWeek() == 6)
@@ -549,7 +550,7 @@ void CSV::openDb (QString path, QString symbol, QString type)
 
 void CSV::prefDialog (QWidget *)
 {
-  CSVDialog *dialog = new CSVDialog();
+  CSVDialog *dialog = new CSVDialog(helpFile);
   dialog->setCaption(tr("CSV Prefs"));
   dialog->setStartDate(sdate);
   dialog->setEndDate(edate);

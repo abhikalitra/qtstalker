@@ -25,6 +25,8 @@
 #include "../../../src/delete.xpm"
 #include "../../../src/export.xpm"
 #include "../../../src/search.xpm"
+#include "Config.h"
+#include "HelpWindow.h"
 #include <qlabel.h>
 #include <qlayout.h>
 #include <qvalidator.h>
@@ -32,9 +34,16 @@
 #include <qpushbutton.h>
 #include <qtooltip.h>
 #include <qpixmap.h>
+#include <qdir.h>
 
-FuturesDialog::FuturesDialog (QString d) : QTabDialog (0, "FuturesDialog", TRUE)
+FuturesDialog::FuturesDialog (QString d, QString p) : QTabDialog (0, "FuturesDialog", TRUE)
 {
+  Config config;
+  QString s = config.getData(Config::HelpFilePath) + "/" + p;
+  QDir dir;
+  if (dir.exists(s))
+    helpFile = s;
+
   saveRecordFlag = FALSE;
   ignoreSaveRecordFlag = FALSE;
   setCaption(tr("Qtstalker: Edit Futures"));
@@ -48,6 +57,8 @@ FuturesDialog::FuturesDialog (QString d) : QTabDialog (0, "FuturesDialog", TRUE)
   setOkButton(tr("&OK"));
   setCancelButton(tr("&Cancel"));
   connect(this, SIGNAL(applyButtonPressed()), this, SLOT(saveChart()));
+  setHelpButton();
+  QObject::connect(this, SIGNAL(helpButtonPressed()), this, SLOT(help()));
 }
 
 FuturesDialog::~FuturesDialog ()
@@ -342,4 +353,12 @@ void FuturesDialog::textChanged (const QString &)
   }
 }
 
+void FuturesDialog::help ()
+{
+  if (! helpFile.length())
+    return;
+    
+  HelpWindow *hw = new HelpWindow(this, helpFile);
+  hw->show();
+}
 

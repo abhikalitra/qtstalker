@@ -31,7 +31,7 @@ class LineDialog : public QTabDialog
   Q_OBJECT
   
   public:
-    LineDialog ();
+    LineDialog (QString);
     ~LineDialog ();
     int getLines ();
     QString getLine (int);
@@ -45,6 +45,7 @@ class LineDialog : public QTabDialog
     
   public slots:
     void defaultChecked (bool);
+    void help ();
     
   private:
     FormulaEdit *list;
@@ -52,6 +53,7 @@ class LineDialog : public QTabDialog
     ColorButton *color;
     QCheckBox *defaultPlot;
     bool defaultFlag;
+    QString helpFile;
 };
 
     

@@ -1,7 +1,8 @@
 TEMPLATE = lib
 
 CONFIG += thread warn_on plugin
-QMAKE_CXXFLAGS += -Os
+
+QMAKE_CXXFLAGS += -ffast-math -Os
 
 HEADERS += DMI.h
 

@@ -48,6 +48,7 @@ class Tester : public QTabDialog
   
   signals:
     void signalIndex (int);
+    void message (QString);
 
   public:
     Tester (QString);

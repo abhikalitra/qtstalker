@@ -27,6 +27,8 @@
 SAR::SAR ()
 {
   pluginName = "SAR";
+  helpFile = "sar.html";
+  
   setDefaults();
 }
 
@@ -190,6 +192,7 @@ int SAR::indicatorPrefDialog (QWidget *w)
   PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(QObject::tr("SAR Indicator"));
   dialog->createPage (QObject::tr("Parms"));
+  dialog->setHelpFile(helpFile);
   dialog->addColorItem(QObject::tr("Color"), QObject::tr("Parms"), color);
   dialog->addComboItem(QObject::tr("Line Type"), QObject::tr("Parms"), lineTypes, lineType);
   dialog->addTextItem(QObject::tr("Label"), QObject::tr("Parms"), label);

@@ -20,20 +20,32 @@
  */
 
 #include "BarDialog.h"
+#include "Config.h"
+#include "HelpWindow.h"
 #include <qinputdialog.h>
 #include <qmessagebox.h>
 #include <qlayout.h>
 #include <qlabel.h>
 #include <qframe.h>
+#include <qdir.h>
 
-BarDialog::BarDialog () : QTabDialog (0, "BarDialog", TRUE)
+BarDialog::BarDialog (QString d) : QTabDialog (0, "BarDialog", TRUE)
 {
+  Config config;
+  QString s = config.getData(Config::HelpFilePath) + "/" + d;
+  QDir dir;
+  if (dir.exists(s))
+    helpFile = s;
+
   setCaption(tr("Bar Chart Parms"));
   createMainPage();
   createBarPage();
   createPaintBarPage();
   setOkButton();
   setCancelButton();
+  setHelpButton();
+  QObject::connect(this, SIGNAL(helpButtonPressed()), this, SLOT(help()));
+  
   resize(400, 300);
 }
 
@@ -219,5 +231,13 @@ int BarDialog::getSpacing ()
   return spacing->value();
 }
 
+void BarDialog::help ()
+{
+  if (! helpFile.length())
+    return;
+    
+  HelpWindow *hw = new HelpWindow(this, helpFile);
+  hw->show();
+}
 
 

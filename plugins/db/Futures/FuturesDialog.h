@@ -35,7 +35,7 @@ class FuturesDialog : public QTabDialog
   Q_OBJECT
 
   public:
-    FuturesDialog (QString);
+    FuturesDialog (QString, QString);
     ~FuturesDialog ();
     void createDetailsPage ();
     void createDataPage ();
@@ -47,6 +47,7 @@ class FuturesDialog : public QTabDialog
     void slotDateSearch ();
     void saveChart ();
     void textChanged (const QString &);
+    void help ();
 
   private:
     QDateTimeEdit *dateSearch;
@@ -63,6 +64,7 @@ class FuturesDialog : public QTabDialog
     Toolbar *toolbar;
     bool saveRecordFlag;
     bool ignoreSaveRecordFlag;
+    QString helpFile;
 };
 
 #endif

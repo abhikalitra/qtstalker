@@ -34,6 +34,7 @@
 NYBOT::NYBOT ()
 {
   pluginName = "NYBOT";
+  helpFile = "nybot.html";
   fd = new FuturesData;
 }
 
@@ -341,6 +342,7 @@ void NYBOT::prefDialog (QWidget *w)
   PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(tr("NYBOT Prefs"));
   dialog->createPage (tr("Details"));
+  dialog->setHelpFile(helpFile);
   dialog->addFileItem(tr("File Input"), tr("Details"));
   
   int rc = dialog->exec();

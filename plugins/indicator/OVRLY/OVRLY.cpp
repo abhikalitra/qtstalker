@@ -35,6 +35,8 @@ OVRLY::OVRLY ()
   methodList.append(QObject::tr("Compare Price"));
   methodList.append(QObject::tr("Compare Performance"));
   methodList.sort();
+  
+  helpFile = "ovrly.html";
 }
 
 OVRLY::~OVRLY ()
@@ -186,6 +188,7 @@ int OVRLY::indicatorPrefDialog (QWidget *w)
   
   PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(QObject::tr("OVRLY Indicator"));
+  dialog->setHelpFile(helpFile);
   
   dialog->createPage (QObject::tr("Base Symbol"));
   dialog->addColorItem(QObject::tr("Base Color"), QObject::tr("Base Symbol"), baseColor);

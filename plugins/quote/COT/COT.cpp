@@ -37,6 +37,7 @@ COT::COT ()
 {
   pluginName = "COT";
   op = 0;
+  helpFile = "cot.html";
   
   loadSettings();
   qInitNetworkProtocols();
@@ -594,6 +595,7 @@ void COT::prefDialog (QWidget *w)
   PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(tr("COT Prefs"));
   dialog->createPage (tr("Details"));
+  dialog->setHelpFile(helpFile);
   dialog->addComboItem(tr("Format"), tr("Details"), l, format);
   int rc = dialog->exec();
   

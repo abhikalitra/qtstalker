@@ -31,6 +31,8 @@
 THERM::THERM ()
 {
   pluginName = "THERM";
+  helpFile = "therm.html";
+  
   setDefaults();
 }
 
@@ -126,6 +128,7 @@ int THERM::indicatorPrefDialog (QWidget *w)
 {
   PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(QObject::tr("THERM Indicator"));
+  dialog->setHelpFile(helpFile);
 
   dialog->createPage (QObject::tr("THERM Parms"));
   dialog->addColorItem(QObject::tr("Color Above MA"), QObject::tr("THERM Parms"), upColor);

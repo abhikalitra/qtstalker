@@ -34,7 +34,7 @@ class CSVDialog : public QTabDialog
   Q_OBJECT
   
   public:
-    CSVDialog ();
+    CSVDialog (QString);
     ~CSVDialog ();
     void createMainPage ();
     void createRulePage ();
@@ -60,6 +60,7 @@ class CSVDialog : public QTabDialog
     void insertField ();
     void deleteField ();
     void fieldSelected (int);
+    void help ();
           
   private:
     FileButton *file;
@@ -74,5 +75,6 @@ class CSVDialog : public QTabDialog
     Toolbar *ruleToolbar;
     QListBox *ruleList;
     QLineEdit *ruleName;
+    QString helpFile;
 };
 

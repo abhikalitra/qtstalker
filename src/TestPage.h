@@ -32,6 +32,9 @@ class TestPage : public QWidget
 {
   Q_OBJECT
 
+  signals:
+    void message (QString);
+  
   public:
     TestPage (QWidget *);
     ~TestPage ();
@@ -46,6 +49,7 @@ class TestPage : public QWidget
     void rightClick (QListBoxItem *);
     void updateList ();
     void copyTest ();
+    void slotMessage (QString);
 
   private:
     Config config;

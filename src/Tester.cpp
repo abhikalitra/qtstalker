@@ -28,6 +28,7 @@
 #include <qmessagebox.h>
 #include <qinputdialog.h>
 #include <qdir.h>
+#include <qprogressdialog.h>
 #include "Tester.h"
 #include "ChartDb.h"
 #include "IndicatorPlugin.h"
@@ -516,6 +517,14 @@ void Tester::test ()
   QString symbol = symbolButton->getSymbol();
   if (! symbol.length())
     return;
+    
+  QProgressDialog prog(tr("Testing..."),
+                       tr("Cancel"),
+		       bars->value(),
+		       this,
+		       "progress",
+		       TRUE);
+  prog.show();
 
   ChartDb *db = new ChartDb;
   db->openChart(symbolButton->getPath());
@@ -583,6 +592,11 @@ void Tester::test ()
   testLoop = 0;
   for (; testLoop < (int) recordList->count(); testLoop++)
   {
+    prog.setProgress(testLoop);
+    emit message(QString());
+    if (prog.wasCancelled())
+      break;
+  
     updateEquityCurve();
     
     currentRecord = testLoop;

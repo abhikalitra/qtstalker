@@ -26,6 +26,8 @@
 COUNTER::COUNTER ()
 {
   pluginName = "COUNTER";
+  helpFile = "counter.html";
+  
   setDefaults();
 }
 
@@ -107,6 +109,7 @@ int COUNTER::indicatorPrefDialog (QWidget *w)
   PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(QObject::tr("COUNTER Indicator"));
   dialog->createPage (QObject::tr("Parms"));
+  dialog->setHelpFile(helpFile);
   dialog->addColorItem(QObject::tr("Color"), QObject::tr("Parms"), color);
   dialog->addComboItem(QObject::tr("Line Type"), QObject::tr("Parms"), lineTypes, lineType);
   dialog->addTextItem(QObject::tr("Label"), QObject::tr("Parms"), label);

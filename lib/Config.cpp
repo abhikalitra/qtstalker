@@ -228,6 +228,9 @@ QString Config::getData (Parm p)
     case CUSRulePath:
       s = settings.readEntry("/Qtstalker/CUSRulePath");
       break;
+    case HelpFilePath:
+      s = settings.readEntry("/Qtstalker/HelpFilePath", "/usr/share/doc/qtstalker/html");
+      break;
     default:
       break;
   }
@@ -342,6 +345,9 @@ void Config::setData (Parm p, QString d)
       break;
     case CUSRulePath:
       settings.writeEntry("/Qtstalker/CUSRulePath", d);
+      break;
+    case HelpFilePath:
+      settings.writeEntry("/Qtstalker/HelpFilePath", d);
       break;
     default:
       break;

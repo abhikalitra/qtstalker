@@ -36,7 +36,9 @@ MATH::MATH ()
   methodList.append(QObject::tr("SUB"));
   methodList.append(QObject::tr("MIN"));
   methodList.append(QObject::tr("MAX"));
-  
+
+  helpFile = "math.html";
+    
   setDefaults();
 }
 
@@ -200,6 +202,7 @@ int MATH::indicatorPrefDialog (QWidget *w)
   PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(QObject::tr("MATH Indicator"));
   dialog->createPage (QObject::tr("Parms"));
+  dialog->setHelpFile(helpFile);
   dialog->addColorItem(QObject::tr("Color"), QObject::tr("Parms"), color);
   dialog->addTextItem(QObject::tr("Label"), QObject::tr("Parms"), label);
   dialog->addComboItem(QObject::tr("Line Type"), QObject::tr("Parms"), lineTypes, lineType);

@@ -30,6 +30,7 @@ EP::EP ()
   startX = 2;
   indicatorFlag = FALSE;
   loadSettings();  
+  helpFile = "ep.html";
 }
 
 EP::~EP ()
@@ -252,6 +253,7 @@ void EP::prefDialog (QWidget *w)
   PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(tr("EP Chart Prefs"));
   dialog->createPage (tr("Parms"));
+  dialog->setHelpFile (helpFile);
   dialog->addColorItem(tr("Neutral Color"), tr("Parms"), neutralColor);
   dialog->addIntItem(tr("Min Bar Spacing"), tr("Parms"), minPixelspace, 4, 99);
   

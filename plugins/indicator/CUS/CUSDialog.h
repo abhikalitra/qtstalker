@@ -27,14 +27,18 @@ class CUSDialog : public QTabDialog
   Q_OBJECT
   
   public:
-    CUSDialog ();
+    CUSDialog (QString);
     ~CUSDialog ();
     int getLines ();
     void setLine (QString);
     QString getLine (int);
     
+  public slots:
+    void help ();
+    
   private:
     FormulaEdit *list;
+    QString helpFile;
 };
 
     

@@ -28,6 +28,8 @@ REF::REF ()
 {
   pluginName = "REF";
   customFlag = TRUE;
+  helpFile = "ref.html";
+  
   setDefaults();
 }
 
@@ -72,6 +74,7 @@ int REF::indicatorPrefDialog (QWidget *w)
   PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(QObject::tr("REF Indicator"));
   dialog->createPage (QObject::tr("Parms"));
+  dialog->setHelpFile(helpFile);
   dialog->addColorItem(QObject::tr("Color"), QObject::tr("Parms"), color);
   dialog->addTextItem(QObject::tr("Label"), QObject::tr("Parms"), label);
   dialog->addComboItem(QObject::tr("Line Type"), QObject::tr("Parms"), lineTypes, lineType);

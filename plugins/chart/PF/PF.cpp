@@ -29,6 +29,7 @@ PF::PF ()
   pluginName = "PF";
   startX = 0;
   indicatorFlag = TRUE;
+  helpFile = "pfchartplugin.html";
 
   loadSettings();  
 }
@@ -164,6 +165,7 @@ void PF::prefDialog (QWidget *w)
   PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(tr("PF Chart Prefs"));
   dialog->createPage (tr("Details"));
+  dialog->setHelpFile (helpFile);
   dialog->addColorItem(tr("Up Color"), tr("Details"), upColor);
   dialog->addColorItem(tr("Down Color"), tr("Details"), downColor);
   dialog->addFloatItem(tr("Box Size"), tr("Details"), size);

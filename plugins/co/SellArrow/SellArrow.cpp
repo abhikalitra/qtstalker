@@ -35,6 +35,7 @@ SellArrow::SellArrow ()
   selected = 0;
   defaultColor.setNamedColor("red");
   objects.setAutoDelete(TRUE);
+  helpFile = "sellarrow.html";
   
   menu->insertItem(QPixmap(edit), tr("&Edit SellArrow"), this, SLOT(prefDialog()), CTRL+Key_E);
   menu->insertItem(QPixmap(renam), tr("&Move SellArrow"), this, SLOT(moveObject()), CTRL+Key_M);
@@ -109,6 +110,7 @@ void SellArrow::prefDialog ()
   PrefDialog *dialog = new PrefDialog();
   dialog->setCaption(tr("Edit SellArrow"));
   dialog->createPage (tr("Details"));
+  dialog->setHelpFile (helpFile);
   dialog->addColorItem(tr("Color"), tr("Details"), selected->getColor());
   dialog->addCheckItem(tr("Set Default"), tr("Details"), FALSE);
   

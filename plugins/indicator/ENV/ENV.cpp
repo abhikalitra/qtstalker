@@ -31,6 +31,8 @@ ENV::ENV ()
   bandList.append(QObject::tr("Upper"));
   bandList.append(QObject::tr("Lower"));
   
+  helpFile = "env.html";
+  
   setDefaults();
 }
 
@@ -105,6 +107,7 @@ int ENV::indicatorPrefDialog (QWidget *w)
   PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(QObject::tr("ENV Indicator"));
   dialog->createPage (QObject::tr("Parms"));
+  dialog->setHelpFile(helpFile);
   dialog->addIntItem(QObject::tr("Period"), QObject::tr("Parms"), period, 1, 99999999);
   dialog->addComboItem(QObject::tr("MA Type"), QObject::tr("Parms"), maTypeList, maType);
   if (customFlag)

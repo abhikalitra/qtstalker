@@ -27,6 +27,8 @@
 PP::PP ()
 {
   pluginName = "PP";
+  helpFile = "pp.html";
+  
   setDefaults();
 }
 
@@ -116,6 +118,7 @@ int PP::indicatorPrefDialog (QWidget *w)
   PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(QObject::tr("PP Indicator"));
   dialog->createPage (QObject::tr("Support"));
+  dialog->setHelpFile(helpFile);
   dialog->addColorItem(QObject::tr("Support Color"), QObject::tr("Support"), supColor);
   dialog->addComboItem(QObject::tr("Support Line Type"), QObject::tr("Support"), lineTypes, supLineType);
   dialog->addTextItem(QObject::tr("Label First Support"), QObject::tr("Support"), supLabel);

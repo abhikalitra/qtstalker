@@ -63,6 +63,11 @@ QString ChartPlugin::getPluginName ()
   return pluginName;
 }
 
+QString ChartPlugin::getHelpFile ()
+{
+  return helpFile;
+}
+
 //**********************************************************
 //***************** VIRTUAL OVERRIDES **********************
 //**********************************************************
