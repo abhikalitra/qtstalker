@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML Basic 1.0//EN"
+      "http://www.w3.org/TR/xhtml-basic/xhtml-basic10.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <title>No title</title>
+  <meta name="generator" content="amaya 6.1, see http://www.w3.org/Amaya/" />
+</head>
+
+<body xml:lang="en" lang="en">
+<h1>Quotes</h1>
+<img alt="blah" src="toolmenu2.png" /> 
+
+<p></p>
+
+<h2>Description</h2>
+
+<p>This is the quote download center. You use the various quote plugins to
+download the data you want and import them into Qtstalker. Each plugin will
+use different input data parameters. Once all the input parameters are
+satisfied, pressing the "Download" button will start the download. If you
+want to interrupt a download, press the cancel button. You may change the
+settings by either single or double clicking with the mouse anywhere in the
+setting box. Depending on the setting type, a dialog will be popup or double
+clicking will alow you to manually enter data. This works just like a
+spreadsheet for enetring data.</p>
+
+<p></p>
+
+<p>The available plugins are:</p>
+<ul>
+  <li>CBOT - EOD quotes from the CBOT exchange.</li>
+  <li>CME - EOD and historical quotes from the CME exchange.</li>
+  <li>NYBOT - EOD quotes from NBOT exchange.</li>
+  <li>NYMEX - EOD quotes from the NYMEX exchange.</li>
+  <li>Qtstalker - Import ASCII data in Qtstalker format.</li>
+  <li>Yahoo - Historical and delayed quotes from yahoo.</li>
+  <li>YahooQuote - Delayed quotes from yahoo.</li>
+</ul>
+
+<p></p>
+
+<h2>CBOT Plugin</h2>
+
+<p>EOD futures quotes from the Chicago Board of Trade.</p>
+
+<p>Input parameters:</p>
+<ul>
+  <li>Date</li>
+</ul>
+
+<p><img alt="blah" src="quote1.png" /></p>
+
+<p></p>
+
+<h2>CME Plugin</h2>
+
+<p>EOD and historical futures quotes from the Chicago Mercantile Exchange.
+Selecting the Today setting for Quote Type parameter will download just the
+EOD data. Selecting History will download the past years history of the
+selected Symbol.</p>
+
+<p>Input parameters:</p>
+<ul>
+  <li>Quote Type - Today or History download.</li>
+  <li>Symbol - Used only with historical quotes. List of CME symbols to
+    dowload.</li>
+</ul>
+<img alt="blah" src="quote2.png" /> 
+
+<p></p>
+
+<h2>NYBOT Plugin</h2>
+
+<p>EOD futures quotes from the New York Board of Trade. As of now, they use
+dynamic html to serve quotes, which makes it very difficult to get in an
+automated manner. So you must download the data manually using a browser and
+then use this plugin to read the ASCII file. This plugin can read the format
+of the ASCII file only.</p>
+
+<p>Input parameters:</p>
+<ul>
+  <li>Input - The file(s) to import.</li>
+</ul>
+<img alt="blah" src="quote3.png" /> 
+
+<p></p>
+
+<h2>NYMEX Plugin</h2>
+
+<p>EOD quotes from the New York Mercantile Exchange. Only the most recent
+quotes are available right now. So, if you want EOD for say 2002/09/01, you
+have until 14:00 2002/09/02 to get them before they are replaced by the next
+days quotes.</p>
+
+<p>Input parameters:</p>
+<ul>
+  <li>None</li>
+</ul>
+<img alt="blah" src="quote4.png" /> 
+
+<p></p>
+
+<h2>Qtstalker Plugin</h2>
+
+<p>This will allow you to import ASCII data that was exported only by
+Qtstalker previously. Qtstalker has an export function that dumps the chart
+from key/data binary data into a ASCII file. This plugin can read this data
+back in and re-create the chart. This plugin is only useful for fixing data
+problems or disaster recovery functions. I have included it for those
+purposes.</p>
+
+<p>Input parameters:</p>
+<ul>
+  <li>Input - The file(s) to import.</li>
+</ul>
+<img alt="blah" src="quote5.png" /> 
+
+<p></p>
+
+<h2>Yahoo Plugin</h2>
+
+<p>Historical quotes from all yahoo supported exchanges are available with
+this plugin. The plugin works in two modes. It will either update all yahoo
+symbols or download new symbols, but not both at the same time. To update
+current symbols, just set the date and download. If you want to enter new
+symbols, double click the New Symbols setting and enter the symbols seperated
+by a comma. ie. IBM,RHAT,MSFT</p>
+
+<p></p>
+
+<p>Input parameters:</p>
+<ul>
+  <li>Start Date - The date at which you want to the quotes to start
+  from.</li>
+  <li>New Symbols - Enter any new symbols you want to download.</li>
+</ul>
+<img alt="blah" src="quote6.png" /> 
+
+<p></p>
+
+<p>Here is what it looks like when entering new symbols. (Don't forget the
+commas, or nothing will happen or worse...)</p>
+
+<p><img alt="blah" src="quote7.png" /></p>
+
+<p></p>
+
+<p></p>
+
+<h2>YahooQuote Plugin</h2>
+
+<p>10 - 20 minute Delayed quotes from yahoo supported exchanges are available
+with this plugin. This works the same way as the above Yahoo plugin.</p>
+
+<p></p>
+
+<p>Input parameters:</p>
+<ul>
+  <li>New Symbols - Enter any new symbols here</li>
+</ul>
+
+<p><img alt="blah" src="quote8.png" /></p>
+
+<p></p>
+
+<p></p>
+
+<p></p>
+
+<p></p>
+
+<p></p>
+</body>
+</html>

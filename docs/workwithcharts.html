@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML Basic 1.0//EN"
+      "http://www.w3.org/TR/xhtml-basic/xhtml-basic10.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <title>No title</title>
+  <meta name="generator" content="amaya 6.1, see http://www.w3.org/Amaya/" />
+</head>
+
+<body xml:lang="en" lang="en">
+<h1>Work with Charts</h1>
+
+<h1><img alt="work with charts menu" src="filemenu1.png" />
+</h1>
+
+<p></p>
+
+<h2>Description:</h2>
+
+<p>The work with charts dialog allows you to view, create, edit, delete
+charts. Here is an example of large list of charts.</p>
+
+<p>You may click on any of the header columns to sort the list. The columns
+are defined as:</p>
+<ul>
+  <li>Symbol is the ticker symbol of the chart</li>
+  <li>Type is chart type. eg stock, futures, spread etc.</li>
+  <li>First date is the first tick of data available to plot.</li>
+  <li>Last date is the most recent tick of data to plot.</li>
+</ul>
+
+<p><img alt="work with charts dialog" src="workwithcharts1.png" /></p>
+
+<p></p>
+
+<h2>Open Button:</h2>
+
+<p>This will load and display the selected chart. eg ^IXIC</p>
+
+<p></p>
+
+<h2>New Button:</h2>
+
+<p>Here you can create a new Composite type of chart. A composite is a chart
+that is made up of other charts. Each symbol in the composite is given a
+weight and then calculated depending on the type. The types are:</p>
+<ul>
+  <li>Index - an average of all the symbols.</li>
+  <li>Spread - 2 symbols only, it is simply the second symbol minus the first
+    symbol.</li>
+  <li>Ratio - 2 symbols only, it is the first symbol divided by the second
+    symbol. 
+    <p></p>
+  </li>
+</ul>
+
+<p>Selecting this will bring up a series of dialogs. First you are asked for
+a name to call your new composite. The name must be unique, if not an error
+message will display.</p>
+
+<p><img alt="blah" src="workwithcharts2.png" /></p>
+
+<p></p>
+
+<p>After entering a new name, a second dialog will ask you to choose the
+composite type to create.</p>
+
+<p><img alt="blah" src="workwithcharts3.png" /></p>
+
+<p></p>
+
+<p>After selecting a composite type, a dialog that allows you to enter the
+symbols and weights for the composite will appear. This dialog has 2 tabs.</p>
+
+<p></p>
+
+<p>The Settings tab allows you to edit the "Title" of the composite.</p>
+
+<p><img alt="blah" src="workwithcharts4.png" /></p>
+
+<p></p>
+
+<p>The Composite List tab is where you add, delete and edit the weights and
+symbols in the composite. A weight of 1 means 100%. A weight of 0.5 means
+50%. A weight of 2 means 200%.</p>
+
+<p><img alt="blah" src="workwithcharts5.png" /></p>
+
+<p></p>
+
+<h2>Edit Button:</h2>
+
+<p>Opens a dialog that allows you to edit some of the chart parameters. Only
+the parms listed can be edited. Parms are dependent on the chart types, so
+not every chart shares the same parms.</p>
+
+<p><img alt="blah" src="workwithcharts6.png" /></p>
+
+<p></p>
+
+<h2>Delete Button:</h2>
+
+<p>Permanently delete the chart selected.</p>
+
+<p></p>
+
+<h2>Export Button:</h2>
+
+<p>Brings up a file selection dialog that allows you to dump the contents of
+the selected files to ASCII. The exported files will be placed in the
+Qtstalker export directory. The exported file is in the Qtstalker format of
+key/data pairs, so it will not be useful for most of you. I include it for
+use in correcting data errors and for disaster recovery operations. The
+Qtstalker quote plugin can import this file format to rebuild the chart.
+Don't do this unless you know what you are doing.</p>
+
+<p><img alt="blah" src="filedialog1.png" /></p>
+
+<p></p>
+
+<h2>Done Button:</h2>
+
+<p>Closes the Work with Charts dialog.</p>
+
+<p></p>
+</body>
+</html>

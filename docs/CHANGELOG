@@ -1,0 +1,95 @@
+0.15
+======
+
+- Comprehensive documentation now included in the docs directory. Moved all the docs there.
+  Whew! I'd rather stare at the wall than write docmentation. It's finally done.
+  
+- Ported code to Qt3. There is no backwards compatability with =< Qt2.3
+
+- Simplified the plugin interface with a new design. Much simpler now. Plugin is now the base
+  class for all plugins. Had to change all the plugins to accomodate the changes.
+
+- Removed chart plugins and merged them back into Plot code, this was not so
+  good an idea. Oh well.
+
+- Added new Quote plugins:
+    NYBOT
+    NYMEX
+    Qtstalker - Used to import ASCII files that have been exported using qtstalker's export function.
+
+- Removed Variable plugin
+
+- Combined the STOCHF and STOCHS plugin indicators into new STOCH plugin
+
+- Combined the SMA, EMA, WMA plugin indicators into MA plugin
+
+- Added colors to Candle charts
+
+- Added continuous contract chart type to the futures quote plugins. Whenever daily data is updated,
+  a continuous contract will be built and updated.
+
+- Changed dialogs to use QTable instead of QListView to allow for easy in place editing of parms.
+
+- New indicators:
+    MA2 - 2 plot MA
+    MA3 - 3 plot MA
+    DPO - Detrended Price Oscillator
+    VOLR - Volatility Ratio
+
+- added a cancel download function to quotes
+
+- added an install script that installs plugins and files for you instead of doing it manually.
+
+- added colors to text labels on plots.
+
+- added more detail to the date area of charts when zooming in.
+
+- moved chart object and line object management into the plot widget to be more OO
+
+- changed Point & Figure chart to include date spacing
+
+- changed the indicator area back to using tabs, arghh the button text was tool small for toolbar buttons
+
+
+0.14
+======
+
+This is a bug fix release.
+
+
+0.13
+======
+
+- I have gone plugin crazy. Almost every chart feature will be a dll plugin library.
+  Chart types, indicators, quote sources, chart objects will be plugins.
+  So far, chart types, indicators, quote sources, are now plugins.
+  I will make chart objects plugins in the future.
+
+- chart objects can be applied to all plots
+
+- plot size now adjustable by using the splitter
+
+- common gui method for changing parameters in dialogs
+
+- redesigned the plot widget to be more OO
+
+- using gdbm for db functions, removed the db dependicies, I am sick and tired of db upgrades
+  and version changes
+
+- removed the glib dependecies
+
+- added paint bars chart type
+
+- moved all data except tick data, to ASCII format for headache reduction
+
+- space between bars can be changed now
+
+- 2 scaling styles now, scale to entire data series and scale to screen
+
+- changed indicator tabs to a toolbar with buttons
+
+
+0.1 - 0.12
+===========
+
+Lots of changes I didn't record because I was too lazy.

@@ -1,0 +1,30 @@
+qmake -o Makefile Yahoo.pro
+make
+cp libYahoo.so.0.2.0 Yahoo.so
+
+qmake -o Makefile YahooQuote.pro
+make
+cp libYahooQuote.so.0.2.0 YahooQuote.so
+
+qmake -o Makefile CBOT.pro
+make
+cp libCBOT.so.0.2.0 CBOT.so
+
+qmake -o Makefile CME.pro
+make
+cp libCME.so.0.2.0 CME.so
+
+qmake -o Makefile NYMEX.pro
+make
+cp libNYMEX.so.0.2.0 NYMEX.so
+
+qmake -o Makefile NYBOT.pro
+make
+cp libNYBOT.so.0.2.0 NYBOT.so
+
+qmake -o Makefile Qtstalker.pro
+make
+cp libQtstalker.so.0.2.0 Qtstalker.so
+
+rm -f lib*
+

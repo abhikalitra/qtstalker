@@ -1,0 +1,153 @@
+qmake -o Makefile AD.pro
+make
+cp libAD.so.0.2.0 AD.so
+
+qmake -o Makefile ADX.pro
+make
+cp libADX.so.0.2.0 ADX.so
+
+qmake -o Makefile ADXR.pro
+make
+cp libADXR.so.0.2.0 ADXR.so
+
+qmake -o Makefile ATR.pro
+make
+cp libATR.so.0.2.0 ATR.so
+
+qmake -o Makefile BB.pro
+make
+cp libBB.so.0.2.0 BB.so
+
+qmake -o Makefile CCI.pro
+make
+cp libCCI.so.0.2.0 CCI.so
+
+qmake -o Makefile DMI.pro
+make
+cp libDMI.so.0.2.0 DMI.so
+
+qmake -o Makefile DPO.pro
+make
+cp libDPO.so.0.2.0 DPO.so
+
+qmake -o Makefile ENV.pro
+make
+cp libENV.so.0.2.0 ENV.so
+
+qmake -o Makefile HLC.pro
+make
+cp libHLC.so.0.2.0 HLC.so
+
+qmake -o Makefile MA.pro
+make
+cp libMA.so.0.2.0 MA.so
+
+qmake -o Makefile MA2.pro
+make
+cp libMA2.so.0.2.0 MA2.so
+
+qmake -o Makefile MA3.pro
+make
+cp libMA3.so.0.2.0 MA3.so
+
+qmake -o Makefile MACD.pro
+make
+cp libMACD.so.0.2.0 MACD.so
+
+qmake -o Makefile MAOSC.pro
+make
+cp libMAOSC.so.0.2.0 MAOSC.so
+
+qmake -o Makefile MF.pro
+make
+cp libMF.so.0.2.0 MF.so
+
+qmake -o Makefile MOM.pro
+make
+cp libMOM.so.0.2.0 MOM.so
+
+qmake -o Makefile NVI.pro
+make
+cp libNVI.so.0.2.0 NVI.so
+
+qmake -o Makefile OBV.pro
+make
+cp libOBV.so.0.2.0 OBV.so
+
+qmake -o Makefile OI.pro
+make
+cp libOI.so.0.2.0 OI.so
+
+qmake -o Makefile PC.pro
+make
+cp libPC.so.0.2.0 PC.so
+
+qmake -o Makefile PER.pro
+make
+cp libPER.so.0.2.0 PER.so
+
+qmake -o Makefile PP.pro
+make
+cp libPP.so.0.2.0 PP.so
+
+qmake -o Makefile PVI.pro
+make
+cp libPVI.so.0.2.0 PVI.so
+
+qmake -o Makefile PVT.pro
+make
+cp libPVT.so.0.2.0 PVT.so
+
+qmake -o Makefile ROC.pro
+make
+cp libROC.so.0.2.0 ROC.so
+
+qmake -o Makefile RSI.pro
+make
+cp libRSI.so.0.2.0 RSI.so
+
+qmake -o Makefile SAR.pro
+make
+cp libSAR.so.0.2.0 SAR.so
+
+qmake -o Makefile SD.pro
+make
+cp libSD.so.0.2.0 SD.so
+
+qmake -o Makefile STOCH.pro
+make
+cp libSTOCH.so.0.2.0 STOCH.so
+
+qmake -o Makefile STOCHRSI.pro
+make
+cp libSTOCHRSI.so.0.2.0 STOCHRSI.so
+
+qmake -o Makefile TRIX.pro
+make
+cp libTRIX.so.0.2.0 TRIX.so
+
+qmake -o Makefile UO.pro
+make
+cp libUO.so.0.2.0 UO.so
+
+qmake -o Makefile VOL.pro
+make
+cp libVOL.so.0.2.0 VOL.so
+
+qmake -o Makefile VOLR.pro
+make
+cp libVOLR.so.0.2.0 VOLR.so
+
+qmake -o Makefile WAD.pro
+make
+cp libWAD.so.0.2.0 WAD.so
+
+qmake -o Makefile WILLR.pro
+make
+cp libWILLR.so.0.2.0 WILLR.so
+
+rm -f lib*
+
+
+
+

@@ -1,0 +1,8 @@
+mkdir ~/Qtstalker
+mkdir ~/Qtstalker/plugins
+mkdir ~/Qtstalker/docs
+cp -f plugins/indicator/*.so ~/Qtstalker/plugins
+cp -f plugins/quote/*.so ~/Qtstalker/plugins
+cp -f docs/* ~/Qtstalker/docs
+cp -f qtstalker /usr/bin
+
