@@ -464,7 +464,7 @@ Plugin * Config::getPlugin (Config::Parm t, QString p)
   s.append("/lib");
   s.append(p);
   s.append(".");
-  s.append(getData(Config::Version));
+  s.append(version);
   s.append(".so");
 
   QLibrary *lib = new QLibrary(s);
