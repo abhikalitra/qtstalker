@@ -102,7 +102,22 @@ void CSV::parse ()
   }
 
   QString type = rule->getData("Type");
+  if (! type.length())
+  {
+    emit statusLogMessage(tr("Type not found"));
+    emit done();
+    delete rule;
+    return;
+  }
+  
   QStringList fieldList = QStringList::split(",", rule->getData("Rule"), FALSE);
+  if (! fieldList.count())
+  {
+    emit statusLogMessage(tr("No rule found"));
+    emit done();
+    delete rule;
+    return;
+  }
   
   int loop;
   for (loop = 0; loop < (int) list.count(); loop++)
