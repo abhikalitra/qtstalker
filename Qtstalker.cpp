@@ -106,6 +106,8 @@ QtstalkerApp::QtstalkerApp()
 
   infoLabel = new QLabel(tw);
   infoLabel->setAlignment(AlignTop | AlignLeft);
+  infoLabel->setMargin(5);
+  infoLabel->setFrameStyle(QFrame::StyledPanel | QFrame::Sunken);
   vbox->addWidget(infoLabel, 1, 0);
 
   // construct the chart areas
@@ -1572,50 +1574,6 @@ void QtstalkerApp::slotUpdateInfo (Setting *r)
 
   infoLabel->setText(s);
 }
-
-/*
-void QtstalkerApp::initInfoNav ()
-{
-  QWidget *w = new QWidget(baseWidget);
-
-  QVBoxLayout *vbox = new QVBoxLayout(w);
-
-  infoLabel = new QLabel(w);
-  vbox->addWidget(infoLabel);
-
-  QString s = currentDir.absPath();
-  s.append("/");
-  s.append(list->currentText());
-
-  ChartDb *db = new ChartDb;
-  if (db->openChart(s))
-  {
-    delete db;
-    clearFileInfo();
-    return;
-  }
-
-  Setting *set = db->getDetails();
-
-  symbol->setText(set->getData("Symbol"));
-
-  title->setText(set->getData("Title"));
-
-  type->setText(set->getData("Chart Type"));
-
-  s = set->getData("First Date");
-  s.truncate(s.length() - 6);
-  firstDate->setText(s);
-
-  s = set->getData("Last Date");
-  s.truncate(s.length() - 6);
-  lastDate->setText(s);
-
-  delete db;
-
-  navTab->addTab(w, "I");
-}
-*/
 
 //**********************************************************************
 //**********************************************************************
