@@ -1,6 +1,7 @@
 TEMPLATE = lib
 
 CONFIG += thread warn_on debug dll
+QMAKE_CXXFLAGS += -O3
 
 HEADERS += Plugin.h
 HEADERS += QuotePlugin.h

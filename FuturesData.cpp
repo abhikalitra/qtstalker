@@ -467,7 +467,7 @@ int FuturesData::setSymbol (QString d)
     if (! d.compare("OJ") || ! d.compare("JO"))
     {
       name = "Frozen Concentrated Orange Juice";
-      symbol = "JO";
+      symbol = "OJ";
       rate = 150;
       monthList = QStringList::split(",", "F,H,K,N,U,X", FALSE);
       switch (date.month())
