@@ -214,7 +214,7 @@ void Plot::setChartType (QString d)
       break;
     }
 
-    if (! d.compare(tr("Point and Figure")))
+    if (! d.compare(tr("P&F")))
     {
       minPixelspace = 4;
       startX = 0;
@@ -329,7 +329,7 @@ void Plot::draw ()
           break;
         }
 
-        if (! chartType.compare(tr("Point and Figure")))
+        if (! chartType.compare(tr("P&F")))
         {
           drawPointAndFigure();
 	  break;

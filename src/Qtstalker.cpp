@@ -453,7 +453,7 @@ void QtstalkerApp::initToolBar()
   l.append(tr("Paint Bar"));
   l.append(tr("Line"));
   l.append(tr("Candle"));
-  l.append(tr("Point and Figure"));
+  l.append(tr("P&F"));
   l.append(tr("Swing"));
   chartTypeCombo->insertStringList(l, -1);
   QToolTip::add(chartTypeCombo, tr("Chart Type"));
