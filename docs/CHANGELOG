@@ -47,6 +47,9 @@
 
 - Changed some functions in Qtstalker class to use signals to make Plot class parm changes.
 
+- Applied patch #791519 from Marco van Zwetselaar to add .cvsignore files to the source tree.
+
+
 0.20
 ====
 
