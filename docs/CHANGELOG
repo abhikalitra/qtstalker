@@ -41,6 +41,9 @@
 
 - Applied patch #788557 for EP docs from David Crossley.
 
+- Applied patch #788595 for new indicator MMA from David Crossley.
+
+- Changed SettingView class to remove user sorting of the table. Instead the key sorting will be done internally.
 
 
 0.20

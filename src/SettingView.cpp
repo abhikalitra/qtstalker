@@ -50,7 +50,7 @@ SettingView::SettingView (QWidget *w, QString dp) : QWidget (w)
   list->horizontalHeader()->setLabel(1, tr("Value"));
   list->setColumnReadOnly(0, TRUE);
   list->setShowGrid(FALSE);
-  list->setSorting(TRUE);
+  list->setSorting(FALSE);
   connect(list, SIGNAL(doubleClicked(int, int, int, const QPoint &)), this, SLOT(doubleClick(int, int, int, const QPoint &)));
   connect(list, SIGNAL(valueChanged(int, int)), this, SLOT(itemChanged(int, int)));
   box->addWidget(list);
@@ -71,6 +71,7 @@ void SettingView::makeSettings ()
   clearRows();
 
   QStringList key = settings->getKeyList();
+  key.sort();
   
   int row = 0;
   int loop;
