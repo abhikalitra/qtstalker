@@ -182,6 +182,7 @@ QtstalkerApp::QtstalkerApp()
   
   progBar = new QProgressBar(this);
   statusBar()->addWidget(progBar, 0, TRUE);
+  progBar->setMaximumHeight(progBar->height() - 10);
 
   statusBar()->message(tr("Ready"), 2000);
 }
@@ -831,12 +832,7 @@ void QtstalkerApp::slotEnableIndicator (QString name)
 
 void QtstalkerApp::slotPixelspaceChanged (int d)
 {
-//  int ov = mainPlot->getPixelspace();
-  
   emit signalPixelspace(d);
-  
-//  setSliderStart(ov, FALSE);
-//  setSliderStart(ov, TRUE);
   
   emit signalIndex(toolbar2->getSlider());
   

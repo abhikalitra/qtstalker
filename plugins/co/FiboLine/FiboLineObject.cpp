@@ -49,12 +49,13 @@ void FiboLineObject::init ()
   status = Plot;
   grabHandles.setAutoDelete(TRUE);
   selectionArea.setAutoDelete(TRUE);
-  line1 = 0.5;
-  line2 = 0;
-  line3 = 0;
+  line1 = 0.382;
+  line2 = 0.5;
+  line3 = 0.618;
   line4 = 0;
   line5 = 0;
   line6 = 0;
+  extend = FALSE;
 }
 
 void FiboLineObject::setSaveFlag (bool d)
@@ -259,6 +260,7 @@ void FiboLineObject::getSettings (Setting &set)
   set.setData("Line 4", QString::number(line4));
   set.setData("Line 5", QString::number(line5));
   set.setData("Line 6", QString::number(line6));
+  set.setData("Extend", QString::number(extend));
   set.setData("Plugin", "FiboLine");
 }
 
@@ -279,5 +281,16 @@ void FiboLineObject::setSettings (Setting &set)
   line4 = set.getFloat("Line 4");
   line5 = set.getFloat("Line 5");
   line6 = set.getFloat("Line 6");
+  extend = set.getInt("Extend");
+}
+
+bool FiboLineObject::getExtend ()
+{
+  return extend;
+}
+
+void FiboLineObject::setExtend (bool d)
+{
+  extend = d;
 }
 

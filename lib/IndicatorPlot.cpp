@@ -1164,6 +1164,7 @@ void IndicatorPlot::slotNewChartObject (int id)
     QObject::connect(coPlugin, SIGNAL(signalDraw()), this, SLOT(draw()));
     QObject::connect(coPlugin, SIGNAL(signalRefresh()), this, SLOT(drawRefresh()));
     QObject::connect(coPlugin, SIGNAL(message(QString)), this, SLOT(slotMessage(QString)));
+    QObject::connect(coPlugin, SIGNAL(signalObjectDeleted()), this, SLOT(slotChartObjectDeleted()));
     coPlugins.replace(selection, coPlugin);
   }
   
@@ -1246,6 +1247,7 @@ void IndicatorPlot::addChartObject (Setting &set)
     QObject::connect(plug, SIGNAL(signalDraw()), this, SLOT(draw()));
     QObject::connect(plug, SIGNAL(signalRefresh()), this, SLOT(drawRefresh()));
     QObject::connect(plug, SIGNAL(message(QString)), this, SLOT(slotMessage(QString)));
+    QObject::connect(plug, SIGNAL(signalObjectDeleted()), this, SLOT(slotChartObjectDeleted()));
     coPlugins.replace(plugin, plug);
   }
   
@@ -1364,6 +1366,11 @@ void IndicatorPlot::setScaler (Scaler &d)
 Scaler & IndicatorPlot::getScaler ()
 {
   return scaler;
+}
+
+void IndicatorPlot::slotChartObjectDeleted ()
+{
+  mouseFlag = None;
 }
 
 

@@ -337,6 +337,7 @@ void SellArrow::removeObject ()
   selected->setStatus(SellArrowObject::Delete);
   selected = 0;
   status = None;
+  emit signalObjectDeleted();
   emit signalDraw();
 }
 

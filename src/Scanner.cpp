@@ -184,7 +184,13 @@ void Scanner::scan ()
       config.closePlugin(plugin);
       continue;
     }
-        
+
+    QDir dir;
+    if (! dir.exists(fileList[loop]))
+    {
+      config.closePlugin(plugin);
+      continue;
+    }
     db->openChart(fileList[loop]);
 
     if (! period->currentText().compare(tr("Daily")))

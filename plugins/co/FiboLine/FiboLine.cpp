@@ -37,9 +37,9 @@ FiboLine::FiboLine ()
   defaultColor.setNamedColor("red");
   objects.setAutoDelete(TRUE);
   helpFile = "fiboline.html";
-  line1 = 0.5;
-  line2 = 0;
-  line3 = 0;
+  line1 = 0.382;
+  line2 = 0.5;
+  line3 = 0.618;
   line4 = 0;
   line5 = 0;
   line6 = 0;
@@ -89,6 +89,13 @@ void FiboLine::draw (QPixmap &buffer, Scaler &scaler, int startIndex, int pixels
     BarDate dt2 = co->getEndDate();
     if (! dt2.getDate().isValid())
       continue;
+      
+    if (co->getExtend())
+    {
+      dt2 = data->getDate(data->count() - 1);
+      if (! dt2.getDate().isValid())
+        continue;
+    }
     
     x2 = data->getX(dt2);
     if (x2 == -1)
@@ -203,6 +210,7 @@ void FiboLine::prefDialog ()
   QString l6 = tr("Line 6");
   QString hl = tr("High");
   QString ll = tr("Low");
+  QString el = tr("Extend");
 
   PrefDialog *dialog = new PrefDialog();
   dialog->setCaption(tr("Edit FiboLine"));
@@ -212,6 +220,7 @@ void FiboLine::prefDialog ()
   dialog->addColorItem(cl, pl, color);
   dialog->addFloatItem(hl, pl, selected->getHigh());
   dialog->addFloatItem(ll, pl, selected->getLow());
+  dialog->addCheckItem(el, pl, selected->getExtend());
   dialog->addCheckItem(sd, pl, FALSE);
 
   pl = tr("Levels");
@@ -236,6 +245,7 @@ void FiboLine::prefDialog ()
     selected->setLine(6, dialog->getFloat(l6));
     selected->setHigh(dialog->getFloat(hl));
     selected->setLow(dialog->getFloat(ll));
+    selected->setExtend(dialog->getCheck(el));
     
     selected->setSaveFlag(TRUE);
     
@@ -593,6 +603,7 @@ void FiboLine::removeObject ()
   selected->setStatus(FiboLineObject::Delete);
   selected = 0;
   status = None;
+  emit signalObjectDeleted();
   emit signalDraw();
 }
 

@@ -539,6 +539,7 @@ void TrendLine::removeObject ()
   selected->setStatus(TrendLineObject::Delete);
   selected = 0;
   status = None;
+  emit signalObjectDeleted();
   emit signalDraw();
 }
 

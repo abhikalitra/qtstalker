@@ -559,7 +559,18 @@ void Tester::test ()
   }
 
   s = symbolButton->getPath();
-  db->openChart(s);
+  QDir dir;
+  if (! dir.exists(s))
+  {
+    config.closePlugin(plugin);
+    return;
+  }
+  
+  if (db->openChart(s))
+  {
+    config.closePlugin(plugin);
+    return;
+  }
   
   db->getHeaderField(DbPlugin::Type, chartType);
   if (! chartType.compare(tr("Futures")))

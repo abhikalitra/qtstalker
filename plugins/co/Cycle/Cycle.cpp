@@ -86,9 +86,11 @@ void Cycle::draw (QPixmap &buffer, Scaler &, int startIndex, int pixelspace, int
       if ((x + (interval * pixelspace)) > 0)
       {
         painter.drawArc(x,
-                        buffer.height() - (buffer.height() / 4) - 2,
+//                        buffer.height() - (buffer.height() / 4) - 2,
+                        buffer.height() - ((interval * 4) / 2) - 2,
 		        interval * pixelspace,
-		        buffer.height() / 2,
+		        interval * 4,
+//		        buffer.height() / 2,
 		        16 * 180,
 		        16 * -180);
       
@@ -371,6 +373,7 @@ void Cycle::removeObject ()
   selected->setStatus(CycleObject::Delete);
   selected = 0;
   status = None;
+  emit signalObjectDeleted();
   emit signalDraw();
 }
 

@@ -367,6 +367,7 @@ void Text::removeObject ()
   selected->setStatus(TextObject::Delete);
   selected = 0;
   status = None;
+  emit signalObjectDeleted();
   emit signalDraw();
 }
 

@@ -358,6 +358,7 @@ void HorizontalLine::removeObject ()
   selected->setStatus(HorizontalLineObject::Delete);
   selected = 0;
   status = None;
+  emit signalObjectDeleted();
   emit signalDraw();
 }
 

@@ -38,9 +38,10 @@ class COPlugin : public QObject
   Q_OBJECT
   
   signals:
-    void signalDraw();
-    void signalRefresh();
+    void signalDraw ();
+    void signalRefresh ();
     void message (QString);
+    void signalObjectDeleted ();
 
   public:
     enum Status

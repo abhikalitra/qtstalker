@@ -358,6 +358,7 @@ void VerticalLine::removeObject ()
   selected->setStatus(VerticalLineObject::Delete);
   selected = 0;
   status = None;
+  emit signalObjectDeleted();
   emit signalDraw();
 }
 

@@ -97,7 +97,7 @@ void CC::dbPrefDialog ()
   t = QObject::tr("Maximum Years");
   dialog->addIntItem(t, pl, t2.toInt());
   
-  t = "Details";
+  t = "Rebuild";
   getData(t, t2);
   t = QObject::tr("Rebuild");
   dialog->addCheckItem(t, pl, t2.toInt());

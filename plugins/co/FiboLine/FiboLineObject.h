@@ -69,6 +69,8 @@ class FiboLineObject
     void setSettings (Setting &);
     void setLine (int, double);
     double getLine (int);
+    bool getExtend ();
+    void setExtend (bool);
     
   protected:
     bool saveFlag;
@@ -88,6 +90,7 @@ class FiboLineObject
     double line4;
     double line5;
     double line6;
+    bool extend;
 };
 
 #endif

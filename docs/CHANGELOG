@@ -281,6 +281,17 @@
 20050324: Removed the data log message page from the quotes dialog. This was creating a lot
           of unused signal overhead.
 	  
+20050325: Added an extend option to the Fiboline. This extends the lines to the end of the chart.
+
+20050325: Changed the Cycle arcs to vary in height according to their interval. Multiple Cycles
+          were difficult to distinguish.
+	  
+20050325: Fixed bug in Tester and Scanner that created a blank chart if symbol to test was not found.
+          This was caused by the data directory structure change.
+	  
+20050325: The navigator will now purge any invalid group items before displaying them. They don't
+          appear because they are broken symlinks, but it is better to get rid of them regardless.
+	  
 	  	  	  
 	  	  
 0.29

@@ -67,13 +67,24 @@ void Navigator::updateList ()
     s.append("/");
     s.append(currentDir[loop]);
     QFileInfo info(s);
+    
     if (info.isDir())
     {
       if (currentDir[loop].compare("."))
         insertItem(QPixmap(dirclosed), currentDir[loop], -1);
     }
     else
+    {
+      // check if this is a broken group link
+      if (! info.exists())
+      {
+        QDir dir;
+	dir.remove(s);
+	continue;
+      }
+    
       insertItem(currentDir[loop], -1);
+    }
   }
 
   clearSelection();

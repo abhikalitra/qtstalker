@@ -148,6 +148,7 @@ class IndicatorPlot : public QWidget
     void slotNewChartObject (int);
     void slotDeleteAllChartObjects ();
     void slotEditChartPrefs ();
+    void slotChartObjectDeleted ();
 
   private:
     QFont plotFont;
