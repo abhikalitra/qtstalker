@@ -40,6 +40,9 @@ Yahoo::Yahoo ()
   index = 0;
   errorLoop = 0;
   
+  timer = new QTimer(this);
+  connect(timer, SIGNAL(timeout()), this, SLOT(downloadError()));
+  
   sdate = QDateTime::currentDateTime();
   if (sdate.date().dayOfWeek() == 6)
     sdate = sdate.addDays(-1);
@@ -71,6 +74,8 @@ Yahoo::~Yahoo ()
     op->stop();
     delete op;
   }
+
+  delete timer;
 }
 
 void Yahoo::update ()
@@ -210,6 +215,8 @@ void Yahoo::opDone (QNetworkOperation *o)
 
   if (o->state() == QNetworkProtocol::StDone && o->operation() == QNetworkProtocol::OpGet)
   {
+    timer->stop();
+    
     if (method.contains(tr("History")))
       parseHistory();
     else
@@ -246,6 +253,11 @@ void Yahoo::opDone (QNetworkOperation *o)
 
   if (o->state() == QNetworkProtocol::StFailed)
   {
+    downloadError();
+
+/*        
+    timer->stop();
+    
     emit statusLogMessage(tr("Download error ") + downloadList[index] + tr(" skipped"));
     
     index++;
@@ -268,6 +280,8 @@ void Yahoo::opDone (QNetworkOperation *o)
     
     data.truncate(0);
     getFile();
+*/  
+    
   }
 }
 
@@ -279,6 +293,8 @@ void Yahoo::getFile ()
     delete op;
   }
 
+  timer->start(timeout * 1000, TRUE);
+  
   op = new QUrlOperator(url.getData(downloadList[index]));
   connect(op, SIGNAL(finished(QNetworkOperation *)), this, SLOT(opDone(QNetworkOperation *)));
   connect(op, SIGNAL(data(const QByteArray &, QNetworkOperation *)), this, SLOT(dataReady(const QByteArray &, QNetworkOperation *)));
@@ -668,6 +684,7 @@ void Yahoo::prefDialog (QWidget *w)
   dialog->setEndDate(edate);
   dialog->setMethod(method);
   dialog->setRetries(retries);
+  dialog->setTimeout(timeout);
   
   int rc = dialog->exec();
   if (rc == QDialog::Accepted)
@@ -679,6 +696,8 @@ void Yahoo::prefDialog (QWidget *w)
     symbolList.sort();
     method = dialog->getMethod();
     retries = dialog->getRetries();
+    timeout = dialog->getTimeout();
+    
     saveFlag = TRUE;
     saveSettings();
   }
@@ -699,6 +718,9 @@ void Yahoo::loadSettings ()
   s = settings.readEntry("/Retries", "3");
   retries = s.toInt();
   
+  s = settings.readEntry("/Timeout", "15");
+  timeout = s.toInt();
+  
   settings.endGroup();
 }
 
@@ -713,6 +735,7 @@ void Yahoo::saveSettings ()
   settings.writeEntry("/Adjustment", QString::number(adjustment));
   settings.writeEntry("/Method", method);
   settings.writeEntry("/Retries", QString::number(retries));
+  settings.writeEntry("/Timeout", QString::number(timeout));
   
   settings.endGroup();
 }
@@ -736,6 +759,34 @@ void Yahoo::cancelUpdate ()
     op->stop();
     emit done();
   }
+}
+
+void Yahoo::downloadError ()
+{
+  timer->stop();
+   
+  emit statusLogMessage(tr("Download error ") + downloadList[index] + tr(" skipped"));
+    
+  index++;
+  if (index >= (int) downloadList.count())
+  {
+    errorLoop++;
+    if (errorLoop == retries || url.count() == 0)
+    {
+      emit done();
+      emit statusLogMessage(tr("Done"));
+      printErrorList();
+      return;
+    }
+    else
+    {
+      downloadList = url.getKeyList();
+      index = 0;
+    }
+  }
+    
+  data.truncate(0);
+  getFile();
 }
 
 //***********************************************************************

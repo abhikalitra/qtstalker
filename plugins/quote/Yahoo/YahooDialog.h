@@ -47,6 +47,8 @@ class YahooDialog : public QTabDialog
     QString getMethod ();
     void setRetries (int);
     int getRetries ();
+    void setTimeout (int);
+    int getTimeout ();
     
   public slots:
     void newStock ();
@@ -65,6 +67,7 @@ class YahooDialog : public QTabDialog
     QString helpFile;
     Toolbar *toolbar;
     QSpinBox *retries;
+    QSpinBox *timeout;
 };
 
     

@@ -60,7 +60,7 @@ YahooDialog::YahooDialog (QWidget *p, QString d) : QTabDialog (p, "YahooDialog",
   
   vbox->addSpacing(10);
   
-  QGridLayout *grid = new QGridLayout(vbox, 5, 2);
+  QGridLayout *grid = new QGridLayout(vbox, 6, 2);
   grid->setSpacing(5);
   grid->setColStretch(1, 1);
   
@@ -95,6 +95,12 @@ YahooDialog::YahooDialog (QWidget *p, QString d) : QTabDialog (p, "YahooDialog",
   
   retries = new QSpinBox(0, 99, 1, w);
   grid->addWidget(retries, 3, 1);
+  
+  label = new QLabel(tr("Timeout"), w);
+  grid->addWidget(label, 4, 0);
+  
+  timeout = new QSpinBox(1, 99, 1, w);
+  grid->addWidget(timeout, 4, 1);
   
   vbox->addSpacing(5);
   
@@ -293,21 +299,6 @@ void YahooDialog::methodChanged (int d)
     default:
       break;
   }
-      
-/*      
-  if (method->currentItem() != 0)
-  {
-    adjustment->setEnabled(FALSE);
-    date->setEnabled(FALSE);
-    date2->setEnabled(FALSE);
-  }
-  else
-  {
-    adjustment->setEnabled(TRUE);
-    date->setEnabled(TRUE);
-    date2->setEnabled(TRUE);
-  }
-*/  
 }
 
 void YahooDialog::setRetries (int d)
@@ -318,6 +309,16 @@ void YahooDialog::setRetries (int d)
 int YahooDialog::getRetries ()
 {
   return retries->value();
+}
+
+void YahooDialog::setTimeout (int d)
+{
+  timeout->setValue(d);
+}
+
+int YahooDialog::getTimeout ()
+{
+  return timeout->value();
 }
 
 void YahooDialog::help ()

@@ -23,6 +23,7 @@
 #include <qstring.h>
 #include <qurloperator.h>
 #include <qnetworkprotocol.h>
+#include <qtimer.h>
 #include "Setting.h"
 
 class Yahoo : public QuotePlugin
@@ -46,6 +47,7 @@ class Yahoo : public QuotePlugin
     void opDone (QNetworkOperation *);
     void dataReady (const QByteArray &, QNetworkOperation *);
     void getFile ();
+    void downloadError ();
 
   private:
     QString data;
@@ -60,6 +62,8 @@ class Yahoo : public QuotePlugin
     int retries;
     Setting url;
     int errorLoop;
+    QTimer *timer;
+    int timeout;
 };
 
 extern "C"

@@ -75,7 +75,11 @@
 
 20050106: Changed bar spacing +/- behaviour to keep chart centered instead of defaulting to the
           right edge of the chart.
-	  
+
+20050110: Added a timeout parm to the yahoo plugin. This sets how many seconds are allowed
+          to elapse during each symbol being downloaded. If a symbol takes more than the set
+	  time to complete, the download will abort and move on to the next symbol.
+	  	  	  
 
 	  	  	  	  
 0.28
