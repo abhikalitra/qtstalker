@@ -45,42 +45,64 @@ void QtstalkerFormat::update ()
 
 void QtstalkerFormat::parse ()
 {
+  QString path = createDirectory("Import");
+  if (! path.length())
+  {
+    emit statusLogMessage(tr("Unable to create directory"));
+    return;
+  }
+  path.append("/");
+
   int loop;
   for (loop = 0; loop < (int) list.count(); loop++)
   {
+    QStringList l = QStringList::split("/", list[loop], FALSE);
+    QString symbol = l[l.count() - 1];
+    
+    QString newPath = path;    
+    newPath.append(symbol);
+
     QFile f(list[loop]);
     if (! f.open(IO_ReadOnly))
       continue;
     QTextStream stream(&f);
-
-    QStringList l = QStringList::split("/", list[loop], FALSE);
-    QString symbol = l[l.count() - 1];
-
-    QString path = createDirectory("Import");
-    if (! path.length())
-    {
-      emit statusLogMessage(tr("Unable to create directory"));
-      return;
-    }
     
-    path.append("/");
-    path.append(symbol);
-    QDir dir(path);
-    dir.remove(path, TRUE);
+    while(stream.atEnd() == 0)
+    {
+      QString s = stream.readLine();
+      s = s.stripWhiteSpace();
+      if (! s.length())
+        continue;
+
+      QStringList l = QStringList::split("=", s, FALSE);
+      if (l.count() < 2)
+        continue;
+	
+      if (! l[0].compare("ChartPath"))
+      {
+        newPath = l[1];
+	break;
+      }
+    }
+    f.reset();
+      
+    // delete the db if it exists
+    QDir dir;
+    dir.remove(newPath, TRUE);
     
     ChartDb *db = new ChartDb;
     db->setPlugin("Stocks");
-    if (db->openChart(path))
+    if (db->openChart(newPath))
     {
       emit statusLogMessage("Could not open db.");
       delete db;
-      break;
+      continue;
     }
-
+    
     QString s = tr("Updating ");
     s.append(symbol);
     emit statusLogMessage(s);
-
+    
     while(stream.atEnd() == 0)
     {
       s = stream.readLine();
@@ -92,8 +114,17 @@ void QtstalkerFormat::parse ()
       QStringList l = QStringList::split("=", s, FALSE);
       if (l.count() < 2)
         continue;
-
+	
       QString key = l[0];
+      
+      // remove this old relic from prev versions
+      if (! key.compare("DETAILS"))
+        continue;
+
+      // temp variable so don't save it
+      if (! l[0].compare("ChartPath"))
+        continue;
+		
       s = s.remove(0, key.length() + 1);
       
       db->setData(key, s);

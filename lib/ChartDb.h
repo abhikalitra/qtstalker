@@ -39,7 +39,7 @@ class ChartDb
     int openChart (QString);
     void setBarCompression (BarData::BarCompression);
     void setBarRange (int);
-    void dump (QString);
+    void dump (QString, QString);
     Bar * getLastBar ();
     Bar * getFirstBar ();
     Bar * getBar (QString, QString);

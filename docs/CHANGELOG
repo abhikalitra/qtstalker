@@ -84,6 +84,13 @@
 
 20050113: Fixed yahoo plugin to download symbols in sorted order.
 
+20050114: Changed plot cursor to reflect drawmode status. If drawmode is on then cursor is an
+          arrow. If drawmode is off then cursor is a cross.
+	  
+20050116: The export chart function now saves the original db path so the QtstalkerFormat
+          plugin can restore it properly.
+	  	  
+	  
 	  	  	  	  
 0.28
 ====

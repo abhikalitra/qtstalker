@@ -210,6 +210,11 @@ void Plot::setChartPath (QString d)
 void Plot::setDrawMode (bool d)
 {
   drawMode = d;
+  
+  if (drawMode)
+    setCursor(QCursor(ArrowCursor));
+  else
+    setCursor(QCursor(CrossCursor));
 }
 
 bool Plot::getCrosshairsStatus ()

@@ -127,7 +127,7 @@ void ChartDb::deleteChartObject (QString d)
   plug->deleteChartObject(d);
 }
 
-void ChartDb::dump (QString d)
+void ChartDb::dump (QString d, QString chartPath)
 {
   if (! db)
     return;
@@ -137,6 +137,9 @@ void ChartDb::dump (QString d)
     return;
   QTextStream outStream(&outFile);
 
+  // save first line as the original db path. will be used by the qtstalkerformat plugin
+  outStream << "ChartPath=" << chartPath << "\n";
+  
   DBT key;
   DBT data;
   DBC *cursor;
@@ -149,6 +152,7 @@ void ChartDb::dump (QString d)
     outStream << (char *) key.data << "=" << (char *) data.data << "\n";
 
   cursor->c_close(cursor);
+
   outFile.close();
 }
 
@@ -244,7 +248,10 @@ int ChartDb::open (QString d)
     qDebug("ChartDb::open: db already open");
     return TRUE;
   }
-  
+
+// new db open call
+//  if (db->open(db, NULL, (char *) d.latin1(), NULL, DB_BTREE, DB_CREATE, 0664) != 0)
+    
   if (db_open((char *) d.latin1(), DB_BTREE, DB_CREATE, 0664, NULL, NULL, &db) != 0)
   {
     qDebug("ChartDb::open: can't open db");

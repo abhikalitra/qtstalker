@@ -177,7 +177,7 @@ void ChartPage::exportChart (QString path)
   else
     s.append(s2);
 
-  db->dump(s);
+  db->dump(s, path);
 
   delete db;
 }
