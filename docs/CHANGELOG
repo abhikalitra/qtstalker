@@ -48,7 +48,9 @@
           ChartPage. Because the quotes dialog stays open a deleted chart does not
 	  get updated in the yahoo plugin download list.
 	  
-	  
+20041122: Applied patch 1058309 - add navigation buttons to docs. Thanks to Kern Sibbald.
+
+
 	  
 0.28
 ====
