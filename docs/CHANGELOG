@@ -31,6 +31,11 @@
 
 - Fixed bug #819309 that caused a segfault with 'floating point error' on new tab indicator creation.
 
+- New indicator plugin OVRLY. This tabbed indicator allows you to chart the current symbol along with a base symbol on the same chart.
+  There are 2 methods. Compare Price will show both plots, normalized so that scaling makes sense. This is good for comparing symbols
+  against an index or similar sectors. Compare Performance plots the % performance of each symbol from the first bar. This is good for
+  showing the relative % performance.
+  
 
 0.21
 ====

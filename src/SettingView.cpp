@@ -66,6 +66,8 @@ void SettingView::setItems (Setting *d)
   makeSettings();
   list->adjustColumn(0);
   list->adjustColumn(1);
+  if (list->columnWidth(1) < 100)
+    list->setColumnWidth(1, 100);
 }
 
 void SettingView::makeSettings ()
