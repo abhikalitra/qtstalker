@@ -334,59 +334,6 @@ QStringList Config::getDirList (QString path)
   return l;
 }
 
-/*
-void Config::installPlugin (QString selection)
-{
-  QLibrary *lib = new QLibrary(selection);
-  Plugin *(*so)() = 0;
-  so = (Plugin *(*)()) lib->resolve("create");
-  if (so)
-  {
-    Plugin *plug = (*so)();
-
-    QString type = plug->getPluginType();
-
-    QString name = plug->getPluginName();
-
-    QString sys = "cp -f ";
-    sys.append(selection);
-    sys.append(" ");
-
-    while (1)
-    {
-      if (! type.compare("Indicator"))
-      {
-        sys.append(getData(IndicatorPluginPath));
-
-        if (system(sys.latin1()) == -1)
-          qDebug("Qtstalker: Shell error, unable to install plugin.");
-
-        break;
-      }
-
-      if (! type.compare("Quote"))
-      {
-        sys.append(getData(QuotePluginPath));
-
-        if (system(sys.latin1()) == -1)
-          qDebug("Qtstalker: Shell error, unable to install plugin.");
-
-	break;
-      }
-
-      qDebug("Qtstalker: Invalid plugin.");
-      break;
-    }
-
-    delete plug;
-  }
-  else
-    qDebug("Qtstalker: Invalid plugin.");
-
-  delete lib;
-}
-*/
-
 QStringList Config::getIndicatorPlugins ()
 {
   QStringList l = getDirList(getData(IndicatorPluginPath));
