@@ -675,6 +675,7 @@ void QtstalkerApp::loadChart (QString d)
         pl->setColor(tpl->getColor());
         pl->setType(tpl->getType());
         pl->setLabel(tpl->getLabel());
+        pl->setColorBars(tpl->getColorBars());
 
         int loop3;
         for (loop3 = 0; loop3 < (int) tpl->getSize(); loop3++)
