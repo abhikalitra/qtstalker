@@ -161,6 +161,9 @@
 20040913: Applied patch #1026411 - customizable displace in COMP indicator. Thanks to
           Xiaoguang Zhang for the patch.
 	  
+20040914: Fixed bug #1028142 with patch to fix seg faults on FormulaEdit insert function.
+          Thanks to Xiaoguang Zhang for the patch.
+	  
 	  
 	  	  	  
 0.26

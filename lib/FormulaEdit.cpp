@@ -166,15 +166,17 @@ void FormulaEdit::insertItem ()
 
   Setting set = plug->getIndicatorSettings();
     
-  list->insertRows(list->currentRow(), 1);
+  int row = list->currentRow();
+
+  list->insertRows(row, 1);
   
-  list->setText(list->currentRow(), 0, set.getData("label"));
+  list->setText(row, 0, set.getData("label"));
   
-  list->setText(list->currentRow(), 2, set.getString());
+  list->setText(row, 2, set.getString());
   
   QCheckTableItem *check = new QCheckTableItem(list, QString::null);
   check->setChecked(FALSE);
-  list->setItem(list->currentRow(), 1, check);
+  list->setItem(row, 1, check);
   
   config.closePlugin(type);
 }

@@ -1696,56 +1696,69 @@ void Tester::updateChart ()
   Indicator *i = new Indicator;
   i->setName("tester");
   i->addLine(close);
-//  i->setMainPlot(FALSE);
   plot->addIndicator(i->getName(), i);
 
   //set up arrows
   int loop;
   int name = 0;
-  bool flag1 = FALSE;
-  bool flag2 = FALSE;
   double enter = 0;
   double exit = 0;
+  Setting *set = new Setting;
   for (loop = 0; loop < (int) tradeList->numRows(); loop++)
   {
+    enter = tradeList->text(loop, 2).toDouble();
+    exit = tradeList->text(loop, 4).toDouble();
+    
     if (! tradeList->text(loop, 0).compare(tr("Short")))
     {
-      flag1 = TRUE;
-      flag2 = FALSE;
-      enter = tradeList->text(loop, 2).toDouble() * 1.005;
-      exit = tradeList->text(loop, 4).toDouble() * 0.995;
+      name++;
+      BarDate dt;
+      dt.setDate(tradeList->text(loop, 3) + "000000");
+      set->setData("Date", dt.getDateTimeString(FALSE));
+      set->setData("Value", QString::number(enter));
+      set->setData("Color", "red");
+      set->setData("Plot", "tester");
+      set->setData("Name", QString::number(name));
+      set->setData("Plugin", "SellArrow");
+      plot->addChartObject(set);
+      
+      name++;
+      dt.setDate(tradeList->text(loop, 1) + "000000");
+      set->setData("Date", dt.getDateTimeString(FALSE));
+      set->setData("Value", QString::number(exit));
+      set->setData("Color", "green");
+      set->setData("Plot", "tester");
+      set->setData("Name", QString::number(name));
+      set->setData("Plugin", "BuyArrow");
+      plot->addChartObject(set);
     }
     else
     {
-      flag1 = FALSE;
-      flag2 = TRUE;
-      enter = tradeList->text(loop, 2).toDouble() * 0.995;
-      exit = tradeList->text(loop, 4).toDouble() * 1.005;
-    }
-    
-    name++;
-    BarDate dt;
-    dt.setDate(tradeList->text(loop, 1) + "000000");
-    Setting *set = new Setting;
-    set->setData("Date", dt.getDateTimeString(FALSE));
-    set->setData("Value", QString::number(enter));
-    set->setData("Color", "green");
-    set->setData("Plot", "tester");
-    set->setData("Name", QString::number(name));
-    set->setData("Plugin", "BuyArrow");
-    plot->addChartObject(set);
+      name++;
+      BarDate dt;
+      dt.setDate(tradeList->text(loop, 1) + "000000");
+      set->setData("Date", dt.getDateTimeString(FALSE));
+      set->setData("Value", QString::number(enter));
+      set->setData("Color", "green");
+      set->setData("Plot", "tester");
+      set->setData("Name", QString::number(name));
+      set->setData("Plugin", "BuyArrow");
+      plot->addChartObject(set);
       
-    name++;
-    dt.setDate(tradeList->text(loop, 3) + "000000");
-    set->setData("Date", dt.getDateTimeString(FALSE));
-    set->setData("Value", QString::number(exit));
-    set->setData("Color", "red");
-    set->setData("Plot", "tester");
-    set->setData("Name", QString::number(name));
-    set->setData("Plugin", "SellArrow");
-    plot->addChartObject(set);
+      name++;
+      dt.setDate(tradeList->text(loop, 3) + "000000");
+      set->setData("Date", dt.getDateTimeString(FALSE));
+      set->setData("Value", QString::number(exit));
+      set->setData("Color", "red");
+      set->setData("Plot", "tester");
+      set->setData("Name", QString::number(name));
+      set->setData("Plugin", "SellArrow");
+      plot->addChartObject(set);
+    }
   }
 
+  delete set;
+  
   slider->setMaxValue(recordList->count() - 1);
         
   plot->draw();
@@ -1759,7 +1772,6 @@ void Tester::createEquityCurve ()
   Indicator *i = new Indicator;
   i->setName("equity");
   i->addLine(equityCurve);
-//  i->setMainPlot(FALSE);
   equityPlot->addIndicator(i->getName(), i);
 
   equityPlot->draw();
