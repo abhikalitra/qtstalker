@@ -398,7 +398,9 @@ void QtstalkerApp::initToolBar()
   actionDatawindow->addTo(toolbar);
   actionQuotes->addTo(toolbar);
 
-  compressionCombo = new QComboBox(toolbar);
+  toolbar2 = new QToolBar(this, "toolbar2");
+
+  compressionCombo = new QComboBox(toolbar2);
   compressionCombo->show();
   QStringList l;
   l.append(tr("Daily"));
@@ -408,7 +410,7 @@ void QtstalkerApp::initToolBar()
   QToolTip::add(compressionCombo, tr("Chart Compression"));
   connect(compressionCombo, SIGNAL(activated(int)), this, SLOT(slotCompressionChanged(int)));
 
-  chartTypeCombo = new QComboBox(toolbar);
+  chartTypeCombo = new QComboBox(toolbar2);
   chartTypeCombo->show();
   l.clear();
   l.append(tr("Bar"));
@@ -421,22 +423,22 @@ void QtstalkerApp::initToolBar()
   QToolTip::add(chartTypeCombo, tr("Chart Type"));
   connect(chartTypeCombo, SIGNAL(activated(int)), this, SLOT(slotChartTypeChanged(int)));
 
-  pixelspace = new QSpinBox(toolbar);
+  pixelspace = new QSpinBox(toolbar2);
   connect (pixelspace, SIGNAL(valueChanged(int)), this, SLOT(slotPixelspaceChanged(int)));
   QToolTip::add(pixelspace, tr("Bar Spacing"));
 
-  barCombo = new QComboBox(toolbar);
+  barCombo = new QComboBox(toolbar2);
   QToolTip::add(barCombo, tr("Bars"));
 
-  toolbar->addSeparator();
+  toolbar2->addSeparator();
 
-  slider = new QSlider(toolbar);
+  slider = new QSlider(toolbar2);
   slider->setOrientation(Qt::Horizontal);
   connect (slider, SIGNAL(valueChanged(int)), this, SLOT(slotSliderChanged(int)));
   slider->setEnabled(FALSE);
   QToolTip::add(slider, tr("Pan Chart"));
 
-  toolbar->setStretchableWidget(slider);
+  toolbar2->setStretchableWidget(slider);
 }
 
 void QtstalkerApp::slotQuit()
@@ -621,6 +623,17 @@ void QtstalkerApp::loadChart (QString d)
     return;
   }
 
+  // get a list of disabled indicators before you kill them
+  QStringList l = mainPlot->getIndicators();
+  QStringList di;
+  int loop;
+  for (loop = 0; loop < (int) l.count(); loop++)
+  {
+    Indicator *i = mainPlot->getIndicator(l[loop]);
+    if (i->getEnable() == FALSE)
+      di.append(l[loop]);
+  }
+
   mainPlot->clear();
 
   QDictIterator<Plot> it(plotList);
@@ -702,9 +715,8 @@ void QtstalkerApp::loadChart (QString d)
   for(it.toFirst(); it.current(); ++it)
     it.current()->setData(recordList);
 
-  QStringList l = config->getIndicators();
+  l = config->getIndicators();
 
-  int loop;
   for (loop = 0; loop < (int) l.count(); loop++)
   {
     Indicator *i = new Indicator;
@@ -759,7 +771,13 @@ void QtstalkerApp::loadChart (QString d)
         i->clearLines();
 
       if (i->getMainPlot())
+      {
+        // restore the enable status of this main chart indicator
+        if (di.findIndex(l[loop]) != -1)
+	  i->setEnable(FALSE);
+
         mainPlot->addIndicator(l[loop], i);
+      }
       else
       {
         Plot *plot = plotList[l[loop]];
@@ -1455,6 +1473,7 @@ void QtstalkerApp::addIndicatorButton (QString d)
   }
 
   Plot *plot = new Plot (baseWidget);
+  plot->setDateFlag(TRUE);
   QObject::connect(plot, SIGNAL(rightMouseButton()), this, SLOT(indicatorPlotPopupMenu()));
   QObject::connect(plot, SIGNAL(statusMessage(QString)), this, SLOT(slotStatusMessage(QString)));
   QObject::connect(plot, SIGNAL(chartObjectCreated(Setting *)), this, SLOT(slotChartObjectCreated(Setting *)));

@@ -149,6 +149,7 @@ class QtstalkerApp : public QMainWindow
     QAction *actionHideMainPlot;
 
     QToolBar *toolbar;
+    QToolBar *toolbar2;
     QMenuBar *menubar;
     QSplitter *split;
     QSplitter *navSplitter;

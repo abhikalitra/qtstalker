@@ -2533,6 +2533,9 @@ QStringList Plot::getIndicators ()
   for (; it.current(); ++it)
     l.append(it.currentKey());
 
+  if (mainFlag)
+    l.remove("Main Plot");
+
   return l;
 }
 

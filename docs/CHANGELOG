@@ -36,6 +36,10 @@
   against an index or similar sectors. Compare Performance plots the % performance of each symbol from the first bar. This is good for
   showing the relative % performance.
   
+- Added new directive to all the plugin *.pro files to use /src for all moc files. For Debian compiles.
+
+- Disabled indicators settings were not being set after loading a new chart. Fixed.
+
 
 0.21
 ====

@@ -50,7 +50,6 @@ void IndicatorPage::refreshList ()
   list->clear();
 
   QStringList l = plot->getIndicators();
-  l.remove("Main Plot");
 
   int loop;
   for (loop = 0; loop < (int) l.count(); loop++)
@@ -86,7 +85,6 @@ void IndicatorPage::doubleClick (QListBoxItem *item)
 void IndicatorPage::mainToggled ()
 {
   QStringList l = plot->getIndicators();
-  l.remove("Main Plot");
 
   int loop;
   for (loop = 0; loop < (int) l.count(); loop++)
