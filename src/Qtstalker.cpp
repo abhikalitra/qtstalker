@@ -45,6 +45,7 @@
 #include "ScannerPage.h"
 #include "ChartDb.h"
 #include "HelpWindow.h"
+#include "Quote.h"
 
 #include "grid.xpm"
 #include "datawindow.xpm"
@@ -561,22 +562,11 @@ void QtstalkerApp::slotOpenChart (QString selection)
 
 void QtstalkerApp::slotQuotes ()
 {
-  if (quoteDialog)
-    quoteDialog->raise();
-  else
-  {
-    quoteDialog = new QuoteDialog();
-    QObject::connect(quoteDialog, SIGNAL(chartUpdated()), this, SLOT(slotChartUpdated()));
-    QObject::connect(quoteDialog, SIGNAL(message(QString)), this, SLOT(slotStatusMessage(QString)));
-    QObject::connect(quoteDialog, SIGNAL(exit()), this, SLOT(slotQuoteDialogExit()));
-    quoteDialog->show();
-  }
-}
-
-void QtstalkerApp::slotQuoteDialogExit ()
-{
-  delete quoteDialog;
-  quoteDialog = 0;
+  QuoteDialog *dialog = new QuoteDialog();
+  QObject::connect(dialog, SIGNAL(chartUpdated()), this, SLOT(slotChartUpdated()));
+  QObject::connect(dialog, SIGNAL(message(QString)), this, SLOT(slotStatusMessage(QString)));
+  dialog->exec();
+  delete dialog;
 }
 
 void QtstalkerApp::slotOptions ()
