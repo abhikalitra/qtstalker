@@ -69,9 +69,6 @@ macx:QMAKE_CXXFLAGS += -bundle
 target.path = /usr/bin
 INSTALLS += target
 
-docs.path = /usr/share/doc/qtstalker
-docs.files = ../docs/*
-INSTALLS += docs
 
 
 

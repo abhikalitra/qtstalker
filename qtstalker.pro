@@ -52,6 +52,8 @@ SUBDIRS += plugins/indicator/VOLR
 SUBDIRS += plugins/indicator/WAD
 SUBDIRS += plugins/indicator/WILLR
 
+SUBDIRS += docs
+
 
 
 
