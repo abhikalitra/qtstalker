@@ -30,8 +30,6 @@ class CUSDialog : public QTabDialog
     CUSDialog ();
     ~CUSDialog ();
     int getLines ();
-    QString getFunction (int);
-    QString getPlot (int);
     void setLine (QString);
     QString getLine (int);
     

@@ -94,10 +94,11 @@ void Scanner::scan ()
   bool flag = FALSE;
   for (loop = 0; loop < list->getLines(); loop++)
   {
-    QStringList l = QStringList::split(",", list->getLine(loop), FALSE);
-    if (! l[0].compare("COMP"))
+    Setting set;
+    set.parse(list->getLine(loop));
+    if (! set.getData("plugin").compare("COMP"))
     {
-      if (list->getPlot(loop).toInt())
+      if (set.getData("plot").toInt())
       {
         flag = TRUE;
 	break;

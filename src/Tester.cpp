@@ -993,10 +993,11 @@ void Tester::loadAlerts (int type)
   bool cflag = FALSE;
   for (loop = 0; loop < edit->getLines(); loop++)
   {
-    QStringList l = QStringList::split(",", edit->getLine(loop), FALSE);
-    if (! l[0].compare("COMP"))
+    Setting set;
+    set.parse(edit->getLine(loop));
+    if (! set.getData("plugin").compare("COMP"))
     {
-      if (edit->getPlot(loop).toInt())
+      if (set.getData("plot").toInt())
       {
         cflag = TRUE;
 	break;

@@ -27,6 +27,7 @@
 #include <qtable.h>
 #include "Toolbar.h"
 #include "Config.h"
+#include "Setting.h"
 
 class FormulaEdit : public QWidget
 {
@@ -38,19 +39,19 @@ class FormulaEdit : public QWidget
     void setLine (QString);
     QString getLine (int);
     int getLines ();
-    QString getFormula (int);
-    QString getPlot (int);
 
   public slots:
     void addItem ();
     void editItem ();
     void deleteItem ();
+    void insertItem ();
 
   protected:
     QTable *list;
     Toolbar *toolbar;
     QStringList functionList;
     Config config;
+    Setting steps;
 };
 
 #endif

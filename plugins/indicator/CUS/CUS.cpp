@@ -149,6 +149,8 @@ void CUS::loadIndicatorSettings (QString file)
     else
       break;
   }
+  
+  plotType = set.getData("plotType").toInt();
 }
 
 void CUS::saveIndicatorSettings (QString file)
@@ -159,6 +161,7 @@ void CUS::saveIndicatorSettings (QString file)
     d.setData(QString::number(loop + 1), formulaList[loop]);
 
   d.setData("plugin", pluginName);
+  d.setData("plotType", QString::number(plotType));
 
   saveFile(file, d);
 }

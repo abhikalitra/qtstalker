@@ -117,6 +117,9 @@
           stacked positions. Now users's can place them anywhere. Beware, some indicators placed on
 	  the main chart will mess the chart up because of scaling differences ie. VOL.
 
+20040817: Added an insert step function to the FormulaEdit widget, improving the editing of CUS
+          formulas.
+	  
 	  	  
 0.26
 ====

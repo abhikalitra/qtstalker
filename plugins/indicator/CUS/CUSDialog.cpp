@@ -56,16 +56,6 @@ int CUSDialog::getLines ()
   return list->getLines();
 }
 
-QString CUSDialog::getFunction (int row)
-{
-  return list->getFormula(row);
-}
-
-QString CUSDialog::getPlot (int row)
-{
-  return list->getPlot(row);
-}
-
 void CUSDialog::setLine (QString d)
 {
   list->setLine(d);
