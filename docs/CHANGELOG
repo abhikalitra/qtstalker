@@ -1,17 +1,20 @@
 0.16
 ======
 
-- fixed bug that skipped previous date when calculating MA's 
+- Fixed bug that skipped previous date when calculating MA's.
 
-- added a compile option to increase speed "-O2"
+- Added a compile option to increase speed "-O2".
 
-- fixed "export" all bug that seg faults when trying to export all charts
+- Fixed "export" all bug that seg faults when trying to export all charts.
 
-- added new MA support for Wilder's MA method  and fixed TR function to include first bar thanks to Glen for the patch
+- Added new MA support for Wilder's MA method  and fixed TR function to include first bar. Thanks to Glen for the patch.
 
 - New quote plugin "Ratio". This is a composite that divides two symbols to produce the ratio between them.
 
-- fixed bug that prevented chart objects with a date parm to draw
+- Fixed bug that prevented chart objects with a date parm to draw.
+
+- Oh yeah baby, now we are getting serious, the basic backtesting module now completed. First person that finds the best
+  indicator rules to short MSFT and UIS stock to oblivion gets drinks on me. Let the games begin.
 
 0.15
 ======
