@@ -20,5 +20,6 @@ SOURCES += AD.cpp
 TARGET = AD
 
 LIBS += -L/usr/lib
+unix:linux-g++:LIBS += -ldl
 
 

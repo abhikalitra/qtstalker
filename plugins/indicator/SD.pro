@@ -20,5 +20,6 @@ TARGET = SD
 VERSION = 0.2
 
 LIBS += -L/usr/lib
+unix:linux-g++:LIBS += -ldl
 
 
