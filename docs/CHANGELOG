@@ -105,7 +105,10 @@
 20040815: Removed OI indicator plugin. Easily replaced by using a REF custom function now. Part
           of a plugin consolidation revue in progress.
 	  
+20040815: Merged WAD plugin with the AD plugin. Removed WAD.
+
 	  
+	  	  
 0.26
 ====
 

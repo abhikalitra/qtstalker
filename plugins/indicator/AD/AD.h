@@ -31,6 +31,8 @@ class AD : public IndicatorPlugin
     void saveIndicatorSettings (QString);
     int indicatorPrefDialog (QWidget *);
     void setDefaults();
+    void calculateAD ();
+    void calculateWAD ();
     PlotLine * calculateCustom (QDict<PlotLine> *);
     Setting getIndicatorSettings ();
     void setIndicatorSettings (Setting);
@@ -39,6 +41,8 @@ class AD : public IndicatorPlugin
     QColor color;
     PlotLine::LineType lineType;
     QString label;
+    QStringList methodList;
+    QString method;
 };
 
 extern "C"

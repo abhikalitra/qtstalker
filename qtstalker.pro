@@ -69,7 +69,6 @@ SUBDIRS += plugins/indicator/UO
 SUBDIRS += plugins/indicator/VFI
 SUBDIRS += plugins/indicator/VOL
 SUBDIRS += plugins/indicator/VOLR
-SUBDIRS += plugins/indicator/WAD
 SUBDIRS += plugins/indicator/WILLR
 
 SUBDIRS += docs

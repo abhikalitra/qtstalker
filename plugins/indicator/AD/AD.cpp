@@ -27,6 +27,10 @@ AD::AD ()
 {
   pluginName = "AD";
   plotFlag = FALSE;
+  
+  methodList.append("AD");
+  methodList.append("WAD");
+  
   setDefaults();
 }
 
@@ -39,9 +43,18 @@ void AD::setDefaults ()
   color.setNamedColor("red");
   lineType = PlotLine::Line;
   label = pluginName;
+  method = "AD";
 }
 
 void AD::calculate ()
+{
+  if (! method.compare("AD"))
+    calculateAD();
+  else
+    calculateWAD();
+}
+
+void AD::calculateAD ()
 {
   PlotLine *line = new PlotLine();
   line->setColor(color);
@@ -74,6 +87,46 @@ void AD::calculate ()
   output.append(line);
 }
 
+void AD::calculateWAD ()
+{
+  PlotLine *wad = new PlotLine();
+  wad->setColor(color);
+  wad->setType(lineType);
+  wad->setLabel(label);
+
+  int loop;
+  double accum = 0;
+  for (loop = 1; loop < (int) data->count(); loop++)
+  {
+    double high = data->getHigh(loop);
+    double low = data->getLow(loop);
+    double close = data->getClose(loop);
+    double yclose = data->getClose(loop - 1);
+
+    double h = high;
+    if (yclose > h)
+      h = yclose;
+
+    double l = low;
+    if (yclose < l)
+      l = yclose;
+
+    if (close > yclose)
+      accum = accum + (close - l);
+    else
+    {
+      if (yclose == close)
+        ;
+      else
+        accum = accum - (h - close);
+    }
+
+    wad->append(accum);
+  }
+
+  output.append(wad);
+}
+
 int AD::indicatorPrefDialog (QWidget *w)
 {
   PrefDialog *dialog = new PrefDialog(w);
@@ -82,6 +135,7 @@ int AD::indicatorPrefDialog (QWidget *w)
   dialog->addColorItem(tr("Color"), tr("Parms"), color);
   dialog->addTextItem(tr("Label"), tr("Parms"), label);
   dialog->addComboItem(tr("Line Type"), tr("Parms"), lineTypes, lineType);
+  dialog->addComboItem(tr("Method"), tr("Parms"), methodList, method);
   
   int rc = dialog->exec();
   
@@ -90,6 +144,7 @@ int AD::indicatorPrefDialog (QWidget *w)
     color = dialog->getColor(tr("Color"));
     lineType = (PlotLine::LineType) dialog->getComboIndex(tr("Line Type"));
     label = dialog->getText(tr("Label"));
+    method = dialog->getCombo(tr("Method"));
     rc = TRUE;
   }
   else
@@ -122,6 +177,7 @@ Setting AD::getIndicatorSettings ()
   dict.setData("color", color.name());
   dict.setData("label", label);
   dict.setData("lineType", QString::number(lineType));
+  dict.setData("method", method);
   dict.setData("plugin", pluginName);
   return dict;
 }
@@ -144,6 +200,10 @@ void AD::setIndicatorSettings (Setting dict)
   s = dict.getData("lineType");
   if (s.length())
     lineType = (PlotLine::LineType) s.toInt();
+
+  s = dict.getData("method");
+  if (s.length())
+    method = s;
 }
 
 Plugin * create ()
