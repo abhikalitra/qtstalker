@@ -42,7 +42,13 @@
 
 20041113: Added use of semicolon as a delimiter in the CSV plugin as per user request.
 
-          
+20041117: Quote dialog now restores last used plugin as per user request.
+
+20041117: Fixed bug in Yahoo plugin that tried to download deleted symbols from the
+          ChartPage. Because the quotes dialog stays open a deleted chart does not
+	  get updated in the yahoo plugin download list.
+	  
+	  
 	  
 0.28
 ====

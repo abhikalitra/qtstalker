@@ -245,6 +245,9 @@ QString Config::getData (Parm p)
     case HelpFilePath:
       s = settings.readEntry("/Qtstalker/HelpFilePath", "/usr/share/doc/qtstalker/html");
       break;
+    case LastQuotePlugin:
+      s = settings.readEntry("/Qtstalker/LastQuotePlugin");
+      break;
     default:
       break;
   }
@@ -362,6 +365,9 @@ void Config::setData (Parm p, QString d)
       break;
     case HelpFilePath:
       settings.writeEntry("/Qtstalker/HelpFilePath", d);
+      break;
+    case LastQuotePlugin:
+      settings.writeEntry("/Qtstalker/LastQuotePlugin", d);
       break;
     default:
       break;

@@ -89,7 +89,11 @@ void Yahoo::update ()
   int loop;
   for (loop = 0; loop < (int) symbolList.count(); loop++)
   {
-    QString s;
+    QString s = config.getData(Config::DataPath) + "/Stocks/" + symbolList[loop];
+    if (! dir.exists(s))
+      continue;
+  
+    s.truncate(0);
     
     while (1)
     {
@@ -733,7 +737,6 @@ void Yahoo::cancelUpdate ()
     emit done();
   }
 }
-
 
 //***********************************************************************
 //***********************************************************************

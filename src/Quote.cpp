@@ -65,7 +65,8 @@ QuoteDialog::QuoteDialog () : QTabDialog (0, "QuoteDialog", FALSE, WDestructiveC
   grid->setColStretch(0, 1);
   
   ruleCombo = new QComboBox(w);
-  ruleCombo->insertStringList(config.getPluginList(Config::QuotePluginPath), -1);
+  QStringList pl = config.getPluginList(Config::QuotePluginPath);
+  ruleCombo->insertStringList(pl, -1);
   connect (ruleCombo, SIGNAL(activated(int)), this, SLOT(ruleChanged(int)));
   grid->addWidget(ruleCombo, 0, 0);
   
@@ -116,6 +117,9 @@ QuoteDialog::QuoteDialog () : QTabDialog (0, "QuoteDialog", FALSE, WDestructiveC
   setHelpButton();
   QObject::connect(this, SIGNAL(helpButtonPressed()), this, SLOT(help()));
    
+  int i = pl.findIndex(config.getData(Config::LastQuotePlugin));
+  if (i != -1)
+    ruleCombo->setCurrentItem(i);
   ruleChanged(0);
   
   resize(350, 350);
@@ -168,6 +172,8 @@ void QuoteDialog::ruleChanged (int)
   connect (plug, SIGNAL(done()), this, SLOT(downloadComplete()));
   connect (plug, SIGNAL(statusLogMessage(QString)), this, SLOT(printStatusLogMessage(QString)));
   connect (plug, SIGNAL(dataLogMessage(QString)), this, SLOT(printDataLogMessage(QString)));
+  
+  config.setData(Config::LastQuotePlugin, ruleCombo->currentText());
 }
 
 void QuoteDialog::downloadComplete ()

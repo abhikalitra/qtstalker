@@ -116,6 +116,3 @@ void QuotePlugin::prefDialog (QWidget *)
 {
 }
 
-
-
-

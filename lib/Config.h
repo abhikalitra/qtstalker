@@ -68,7 +68,7 @@ class Config
       CUSRulePath,
       COPluginPath,
       HelpFilePath,
-      Version, // unused
+      LastQuotePlugin,
       Height,
       Width,
       X,
