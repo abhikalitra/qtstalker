@@ -127,7 +127,7 @@ void WorkwithGroupsDialog::openGroup ()
   if (item)
   {
     emit groupOpened (item->text(0));
-    reject();
+    accept();
   }
 }
 

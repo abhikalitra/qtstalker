@@ -527,8 +527,8 @@ void QtstalkerApp::slotWorkwithGroup ()
 {
   WorkwithGroupsDialog *dialog = new WorkwithGroupsDialog(config);
   QObject::connect(dialog, SIGNAL(groupOpened(QString)), this, SLOT(slotOpenGroup(QString)));
-  dialog->show();
   dialog->updateList();
+  dialog->show();
 }
 
 void QtstalkerApp::slotOpenGroup(QString selection)
@@ -850,7 +850,7 @@ void QtstalkerApp::loadChart (QString d)
 
     delete co;
   }
-
+  
   // set up the paint bar if needed
   QString s = config->getData(Config::ChartStyle);
   if (! s.compare(tr("Paint Bar")))
@@ -869,7 +869,7 @@ void QtstalkerApp::loadChart (QString d)
   slider->blockSignals(TRUE);
   slider->setValue(max);
   slider->blockSignals(FALSE);
-
+  
   indicatorPlot->setIndex(max);
   mainPlot->setIndex(max);
 
@@ -884,7 +884,7 @@ void QtstalkerApp::loadChart (QString d)
   setCaption(getWindowCaption());
 
   slotUpdateSpaceButtons();
-
+  
   delete db;
 }
 
