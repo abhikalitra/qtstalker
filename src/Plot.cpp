@@ -41,17 +41,6 @@ Plot::Plot (QWidget *w) : QWidget(w)
   upColor.setNamedColor("green");
   downColor.setNamedColor("red");
   neutralColor.setNamedColor("blue");
-  exhaustionNeutralColor.setNamedColor("dimgray");
-  exhaustionOutsideFiveColor.setNamedColor("red");
-  exhaustionOutsideFourColor.setNamedColor("darkorange");
-  exhaustionOutsideThreeColor.setNamedColor("gold");
-  exhaustionOutsideTwoColor.setNamedColor("goldenrod");
-  exhaustionOutsideOneColor.setNamedColor("khaki");
-  exhaustionInsideFiveColor.setNamedColor("blue");
-  exhaustionInsideFourColor.setNamedColor("royalblue");
-  exhaustionInsideThreeColor.setNamedColor("magenta");
-  exhaustionInsideTwoColor.setNamedColor("orchid");
-  exhaustionInsideOneColor.setNamedColor("pink");
   pixelspace = 0;
   minPixelspace = 0;
   dateFlag = FALSE;
@@ -75,8 +64,9 @@ Plot::Plot (QWidget *w) : QWidget(w)
   plotFont.setWeight(50);
 
   indicators.setAutoDelete(TRUE);
+  paintBars.setAutoDelete(TRUE);
   data = 0;
-  
+
   setMouseTracking(TRUE);
 }
 
@@ -86,7 +76,6 @@ Plot::~Plot ()
 
 void Plot::clear ()
 {
-  alerts.truncate(0);
   scaleHigh = -99999999;
   scaleLow = 99999999;
   logScaleHigh = 0;
@@ -95,6 +84,7 @@ void Plot::clear ()
   mainLow = 99999999;
   indicators.clear();
   data = 0;
+  paintBars.clear();
 
   if (mainFlag)
     indicators.replace("Main Plot", new Indicator);
@@ -104,13 +94,14 @@ void Plot::setData (QList<Setting> *l)
 {
   if (! l->count())
     return;
-    
-  data = l;
 
+  data = l;
+  
   if (mainFlag)
   {
-    alerts.resize(l->count());
-    alerts.fill(0, -1);
+    int loop;
+    for (loop = 0; loop < (int) data->count(); loop++)
+      paintBars.append(new QColor(neutralColor.red(), neutralColor.green(), neutralColor.blue()));
   }
 
   int loop;
@@ -169,15 +160,6 @@ void Plot::setChartType (QString d)
     }
 
     if (! d.compare(tr("Paint Bar")))
-    {
-      minPixelspace = 4;
-      startX = 2;
-      chartType = d;
-      dateFlag = TRUE;
-      break;
-    }
-
-    if (! d.compare(tr("Exhaustion Points")))
     {
       minPixelspace = 4;
       startX = 2;
@@ -285,14 +267,6 @@ void Plot::draw ()
         if (! chartType.compare(tr("Paint Bar")))
         {
           drawPaintBar();
-          drawLines();
-          drawObjects();
-          break;
-        }
-
-        if (! chartType.compare(tr("Exhaustion Points")))
-        {
-          drawExhaustionPoints();
           drawLines();
           drawObjects();
           break;
@@ -475,7 +449,7 @@ void Plot::drawLines ()
           drawDot();
 	  break;
         }
-
+	
         if (! currentLine->getType().compare("Line") || ! currentLine->getType().compare("Dash"))
         {
           drawLine();
@@ -1146,6 +1120,7 @@ void Plot::drawHistogramBar ()
     {
       int y = convertToY(currentLine->getData(loop));
 
+/*
       if (currentLine->getColorBars() == TRUE)
       {
         Setting *r = data->at(dataLoop);
@@ -1161,6 +1136,7 @@ void Plot::drawHistogramBar ()
           painter.fillRect(x, y, pixelspace - 1, zero - y, downColor);
       }
       else
+*/
         painter.fillRect(x, y, pixelspace - 1, zero - y, color);
     }
 
@@ -1475,6 +1451,8 @@ void Plot::setScale ()
 	for (loop = 0; loop < i->getLines(); loop++)
 	{
 	  PlotLine *line = i->getLine(loop);
+	  if (! line->getType().compare(tr("Invisible")))
+	    continue;
 
           if (line->getHigh() > scaleHigh)
             scaleHigh = line->getHigh();
@@ -1489,11 +1467,13 @@ void Plot::setScale ()
       QDictIterator<Indicator> it(indicators);
       it.toFirst();
       Indicator *i = it.current();
-      
+
       int loop;
       for (loop = 0; loop < i->getLines(); loop++)
       {
 	PlotLine *line = i->getLine(loop);
+	if (! line->getType().compare(tr("Invisible")))
+	  continue;
 
         if (line->getHigh() > scaleHigh)
           scaleHigh = line->getHigh();
@@ -1515,6 +1495,8 @@ void Plot::setScale ()
 	for (loop = 0; loop < i->getLines(); loop++)
 	{
 	  PlotLine *line = i->getLine(loop);
+	  if (! line->getType().compare(tr("Invisible")))
+	    continue;
 
           int x = startX;
           int loop2 = line->getSize() - data->count() + startIndex;
@@ -1545,6 +1527,8 @@ void Plot::setScale ()
       for (loop = 0; loop < i->getLines(); loop++)
       {
 	PlotLine *line = i->getLine(loop);
+	if (! line->getType().compare(tr("Invisible")))
+	  continue;
 
         int x = startX;
         int loop2 = line->getSize() - data->count() + startIndex;
@@ -1971,6 +1955,17 @@ void Plot::drawLineChart ()
   painter.end();
 }
 
+void Plot::setPaintBars (QList<QColor> d)
+{
+  paintBars.clear();
+  int loop;
+  for (loop = 0; loop < (int) d.count(); loop++)
+  {
+    QColor *color = d.at(loop);
+    paintBars.append(new QColor(color->red(), color->green(), color->blue()));
+  }
+}
+
 void Plot::drawPaintBar ()
 {
   QPainter painter;
@@ -1978,21 +1973,12 @@ void Plot::drawPaintBar ()
 
   int x = startX;
   int loop = startIndex;
-
+  
   while ((x < _width) && (loop < (int) data->count()))
   {
-    switch (alerts[loop])
-    {
-      case -1:
-        painter.setPen(downColor);
-        break;
-      case 1:
-        painter.setPen(upColor);
-	break;
-      default:
-        painter.setPen(neutralColor);
-	break;
-    }
+    QColor *color = paintBars.at(loop);
+    if (color)
+      painter.setPen(QColor(color->red(), color->green(), color->blue()));
 
     Setting *r = data->at(loop);
 
@@ -2008,218 +1994,6 @@ void Plot::drawPaintBar ()
 
     int h = convertToY(r->getFloat("High"));
     int l = convertToY(r->getFloat("Low"));
-    painter.drawLine (x, h, x, l);
-
-    x = x + pixelspace;
-    loop++;
-  }
-
-  painter.end();
-}
-
-void Plot::drawExhaustionPoints ()
-{
-  QPainter painter;
-  painter.begin(&buffer);
-/* This is an experiment with concepts of "One- and Two-bar Price Patterns"
-*  For some explanation see:
-*  "Technical Analysis Explained" by Martin Pring (Fourth Edition)
-*  ISBN 0-07-138193-7
-*  pp 111-135
-*/
-
-  int x = startX;
-  int loop = startIndex;
-
-  // set first bar as neutral
-  painter.setPen(exhaustionNeutralColor);
-
-  Setting *r = data->at(loop);
-  double t = r->getFloat("Open");
-  int y;
-  if (t)
-  {
-    y = convertToY(t);
-    painter.drawLine (x - 2, y, x, y);
-  }
-
-  y = convertToY(r->getFloat("Close"));
-  painter.drawLine (x + 2, y, x, y);
-
-  int h = convertToY(r->getFloat("High"));
-
-  int l = convertToY(r->getFloat("Low"));
-  painter.drawLine (x, h, x, l);
-
-  x = x + pixelspace;
-  loop++;
-
-  while ((x < _width) && (loop < (int) data->count()))
-  {
-    r = data->at(loop);
-    Setting *pr = data->at(loop - 1);
-
-/* FIXME
-* - Initial implementation only attempts "outside bars" and "inside bars".
-* - Not yet doing "exhaustion bars" or "two-bar reversals".
-* - Volume must accompany (not yet detected).
-* - Strong trend should precede (not yet detected).
-* - Detect more significance of bars.
-* - Decide what to do when o = h = l = c ... gives indicator which may be false.
-*/
-    float exhaustionOutsideRank = 0;
-    float exhaustionInsideRank = 0;
-    double exhaustionVolume = r->getFloat("Volume");
-    double exhaustionVolumePr = pr->getFloat("Volume");
-    double exhaustionVolumeDiff = exhaustionVolume / exhaustionVolumePr * 100;
-    float exhaustionRange = r->getFloat("High") - r->getFloat("Low");
-    float exhaustionRangePr = pr->getFloat("High") - pr->getFloat("Low");
-    float exhaustionRangeDiff = exhaustionRange / exhaustionRangePr * 100;
-
-    // outside bar
-    if ((r->getFloat("High") > pr->getFloat("High")) &&
-        (r->getFloat("Low") < pr->getFloat("Low"))
-       )
-    {
-      exhaustionOutsideRank = 1;
-
-      // stronger outside bars - rank from 1..5
-      // There are many factors which determine significance of an outside bar.
-      // Add half a point for each situation.
-
-      // encompass more previous bars
-      if ((loop - 2) >= 0)
-      {
-        Setting *pr2 = data->at(loop - 2);
-        if ((r->getFloat("High") > pr2->getFloat("High")) &&
-            (r->getFloat("Low") < pr2->getFloat("Low"))
-           )
-        {
-          exhaustionOutsideRank += 0.5;
-          if ((loop - 3) >= 0)
-          {
-            Setting *pr3 = data->at(loop - 3);
-            if ((r->getFloat("High") > pr3->getFloat("High")) &&
-                (r->getFloat("Low") < pr3->getFloat("Low"))
-               )
-            {
-              exhaustionOutsideRank += 0.5;
-              if ((loop - 4) >= 0)
-              {
-                Setting *pr4 = data->at(loop - 4);
-                if ((r->getFloat("High") > pr4->getFloat("High")) &&
-                    (r->getFloat("Low") < pr4->getFloat("Low"))
-                   )
-                {
-                  exhaustionOutsideRank += 0.5;
-                }
-              }
-            }
-          }
-        }
-      }
-
-      // much greater range than the previous bar
-      if (exhaustionRangeDiff >= 500) exhaustionOutsideRank += 0.5;
-      if (exhaustionRangeDiff >= 900) exhaustionOutsideRank += 0.5;
-
-      // greater volume than the previous bar
-      if (exhaustionVolumeDiff >= 150) exhaustionOutsideRank += 0.5;
-      if (exhaustionVolumeDiff >= 300) exhaustionOutsideRank += 0.5;
-
-      // assign colour for the final ranking
-      if (exhaustionOutsideRank > 5)
-        exhaustionOutsideRank = 5;
-      int exhaustionOutsideRankSwitch = (int) exhaustionOutsideRank;
-      switch (exhaustionOutsideRankSwitch)
-      {
-        case 5:
-          painter.setPen(exhaustionOutsideFiveColor);
-          break;
-        case 4:
-          painter.setPen(exhaustionOutsideFourColor);
-          break;
-        case 3:
-          painter.setPen(exhaustionOutsideThreeColor);
-          break;
-        case 2:
-          painter.setPen(exhaustionOutsideTwoColor);
-          break;
-        case 1:
-          painter.setPen(exhaustionOutsideOneColor);
-          break;
-        default:
-          painter.setPen(exhaustionOutsideOneColor);
-          break;
-      }
-    }
-
-    // inside bar
-    else if ((r->getFloat("High") < pr->getFloat("High")) &&
-             (r->getFloat("Low") > pr->getFloat("Low")) &&
-// need better volume test
-             (r->getFloat("Volume") > 0) && (pr->getFloat("Volume") > 0)
-       )
-    {
-      exhaustionInsideRank = 1;
-
-      // stronger inside bars - rank from 1..5
-      // There are many factors which determine significance of an inside bar.
-      // Add half a point for each situation.
-
-      // much smaller range than the previous bar
-      if (exhaustionRangeDiff <= 25) exhaustionInsideRank += 0.5;
-      if (exhaustionRangeDiff <= 10) exhaustionInsideRank += 0.5;
-
-      // lesser volume than the previous bar
-      if (exhaustionVolumeDiff <= 50) exhaustionInsideRank += 0.5;
-      if (exhaustionVolumeDiff <= 20) exhaustionInsideRank += 0.5;
-
-      // assign colour for the final ranking
-      if (exhaustionInsideRank > 5)
-        exhaustionInsideRank = 5;
-      int exhaustionInsideRankSwitch = (int) exhaustionInsideRank;
-      switch (exhaustionInsideRankSwitch)
-      {
-        case 5:
-          painter.setPen(exhaustionInsideFiveColor);
-          break;
-        case 4:
-          painter.setPen(exhaustionInsideFourColor);
-          break;
-        case 3:
-          painter.setPen(exhaustionInsideThreeColor);
-          break;
-        case 2:
-          painter.setPen(exhaustionInsideTwoColor);
-          break;
-        case 1:
-          painter.setPen(exhaustionInsideOneColor);
-          break;
-        default:
-          painter.setPen(exhaustionInsideOneColor);
-          break;
-      }
-    }
-
-    // plain bar
-    else
-    {
-      painter.setPen(exhaustionNeutralColor);
-    }
-
-    t = r->getFloat("Open");
-    if (t)
-    {
-      y = convertToY(t);
-      painter.drawLine (x - 2, y, x, y);
-    }
-
-    y = convertToY(r->getFloat("Close"));
-    painter.drawLine (x + 2, y, x, y);
-
-    h = convertToY(r->getFloat("High"));
-    l = convertToY(r->getFloat("Low"));
     painter.drawLine (x, h, x, l);
 
     x = x + pixelspace;
@@ -2343,11 +2117,6 @@ void Plot::drawSwing ()
   painter.end();
 }
 
-void Plot::setAlerts (QMemArray<int> d)
-{
-  alerts = d;
-}
-
 void Plot::drawPointAndFigure ()
 {
   QPainter painter;
@@ -2379,7 +2148,7 @@ void Plot::drawPointAndFigure ()
 
   loop++;
   x2 = x2 + pixelspace;
-  
+
   while ((x2 < _width) && (loop < (int) data->count()))
   {
     r = data->at(loop);

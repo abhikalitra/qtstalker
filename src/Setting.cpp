@@ -46,6 +46,7 @@ void Setting::set (QString k, QString d, Setting::Type t)
       set->list.append(QObject::tr("Histogram"));
       set->list.append(QObject::tr("Histogram Bar"));
       set->list.append(QObject::tr("Line"));
+      set->list.append(QObject::tr("Invisible"));
       break;
     case MAType:
       set->list.append(QObject::tr("EMA"));

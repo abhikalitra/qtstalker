@@ -25,6 +25,7 @@
 IndicatorPlugin::IndicatorPlugin()
 {
   output.setAutoDelete(TRUE);
+  paintBars.setAutoDelete(TRUE);
   pluginType = "Indicator";
 }
 
@@ -39,7 +40,32 @@ void IndicatorPlugin::setIndicatorInput (QList<Setting> *d)
 
 QMemArray<int> IndicatorPlugin::getAlerts ()
 {
+  alerts.fill(0, data->count());
   return alerts;
+}
+
+QList<QColor> IndicatorPlugin::getColorBars (QString uc, QString dc, QString nc)
+{
+  paintBars.clear();
+  
+  int loop;
+  for (loop = 0; loop < (int) data->count(); loop++)
+  {
+    switch(alerts[loop])
+    {
+      case -1:
+        paintBars.append(new QColor(dc));
+        break;
+      case 1:
+        paintBars.append(new QColor(uc));
+        break;
+      default:
+        paintBars.append(new QColor(nc));
+        break;
+    }
+  }
+
+  return paintBars;
 }
 
 PlotLine * IndicatorPlugin::getInput (QString field)
@@ -309,3 +335,42 @@ PlotLine * IndicatorPlugin::getIndicatorLine (int d)
     return 0;
 }
 
+/*
+long IndicatorPlugin::getColorNumber (QString d)
+{
+  QColor color(d);
+  QString s;
+
+  int v = color.red();
+  if (v < 10)
+    s.append("00");
+  else
+  {
+    if (v < 100)
+      s.append("0");
+  }
+  s.append(QString::number(color.red()));
+
+  v = color.green();
+  if (v < 10)
+    s.append("00");
+  else
+  {
+    if (v < 100)
+      s.append("0");
+  }
+  s.append(QString::number(color.green()));
+
+  v = color.blue();
+  if (v < 10)
+    s.append("00");
+  else
+  {
+    if (v < 100)
+      s.append("0");
+  }
+  s.append(QString::number(color.blue()));
+
+  return s.toLong();
+}
+*/

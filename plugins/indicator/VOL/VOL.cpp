@@ -47,8 +47,8 @@ void VOL::calculate ()
   pl->setColor(getData(tr("Color")));
   pl->setType(getData(tr("Line Type")));
   pl->setLabel(getData(tr("Label")));
-  if (! getData(tr("Color Bars")).compare(tr("True")))
-    pl->setColorBars(TRUE);
+//  if (! getData(tr("Color Bars")).compare(tr("True")))
+//    pl->setColorBars(TRUE);
   output.append(pl);
 }
 

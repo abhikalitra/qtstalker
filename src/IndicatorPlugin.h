@@ -27,6 +27,7 @@
 #include <qstring.h>
 #include <qlist.h>
 #include <qmemarray.h>
+#include <qcolor.h>
 
 class IndicatorPlugin : public Plugin
 {
@@ -34,8 +35,10 @@ class IndicatorPlugin : public Plugin
     IndicatorPlugin();
     virtual ~IndicatorPlugin();
     QMemArray<int> getAlerts ();
+    QList<QColor> getColorBars (QString, QString, QString);
     void setIndicatorInput (QList<Setting> *);
     int getIndicatorLines ();
+//    long getColorNumber (QString);
     PlotLine * getIndicatorLine (int);
     PlotLine * getInput (QString);
     PlotLine * getMA (PlotLine *, QString, int);
@@ -50,6 +53,7 @@ class IndicatorPlugin : public Plugin
     QList<Setting> *data;
     QList<PlotLine> output;
     QMemArray<int> alerts;
+    QList<QColor> paintBars;
 };
 
 #endif

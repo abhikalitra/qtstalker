@@ -98,8 +98,8 @@ class Plot : public QWidget
     bool getOtherFlag ();
     void setPixelspace (int);
     void setChartType (QString);
-    void setAlerts (QMemArray<int>);
     void createChartObject (QString, QString);
+    void setPaintBars (QList<QColor>);
 
     void addIndicator (QString, Indicator *);
     Indicator * getIndicator (QString);
@@ -138,7 +138,6 @@ class Plot : public QWidget
     void drawLineChart ();
     void drawCandle ();
     void drawBars ();
-    void drawExhaustionPoints ();
     void drawSwing ();
     void drawObjects ();
     void drawLines ();
@@ -162,7 +161,6 @@ class Plot : public QWidget
 
   private:
     QFont plotFont;
-    QMemArray<int> alerts;
     PlotLine *currentLine;
     QPixmap buffer;
     int pixelspace;
@@ -179,17 +177,6 @@ class Plot : public QWidget
     QColor upColor;
     QColor downColor;
     QColor neutralColor;
-    QColor exhaustionNeutralColor;
-    QColor exhaustionOutsideFiveColor;
-    QColor exhaustionOutsideFourColor;
-    QColor exhaustionOutsideThreeColor;
-    QColor exhaustionOutsideTwoColor;
-    QColor exhaustionOutsideOneColor;
-    QColor exhaustionInsideFiveColor;
-    QColor exhaustionInsideFourColor;
-    QColor exhaustionInsideThreeColor;
-    QColor exhaustionInsideTwoColor;
-    QColor exhaustionInsideOneColor;
     bool dateFlag;
     bool gridFlag;
     bool mainFlag;
@@ -217,6 +204,7 @@ class Plot : public QWidget
     QString chartType;
     QList<Setting> *data;
     QDict<Indicator> indicators;
+    QList<QColor> paintBars;
 };
 
 #endif

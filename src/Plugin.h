@@ -27,6 +27,7 @@
 #include <qlist.h>
 #include <qmemarray.h>
 #include <qobject.h>
+#include <qcolor.h>
 #include "Setting.h"
 #include "PlotLine.h"
 
@@ -43,6 +44,7 @@ class Plugin : public Setting, public QObject
     virtual int getIndicatorLines ();
     virtual PlotLine * getIndicatorLine (int);
     virtual QMemArray<int> getAlerts ();
+    virtual QList<QColor> getColorBars (QString, QString, QString);
     virtual void calculate ();
 
     // quote plugin interface

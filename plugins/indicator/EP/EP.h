@@ -19,48 +19,20 @@
  *  USA.
  */
 
-#ifndef PLOTLINE_HPP
-#define PLOTLINE_HPP
+#include "../../../src/IndicatorPlugin.h"
 
-#include <qstring.h>
-#include <qlist.h>
-
-typedef struct
-{
-  double v;
-
-} Val;
-
-class PlotLine
+class EP : public IndicatorPlugin
 {
   public:
-    PlotLine ();
-    ~PlotLine ();
-    void setColor (QString);
-    QString getColor ();
-    void setType (QString);
-    QString getType ();
-    void setLabel (QString);
-    QString getLabel ();
-    void append (double);
-    void prepend (double);
-    double getData (int);
-    void setData (int, double);
-    int getSize ();
-    double getHigh ();
-    void setHigh (double);
-    double getLow ();
-    void setLow (double);
-    void checkHighLow (double);
-
-  private:
-    QList<Val> data;
-    QString color;
-    QString lineType;
-    QString label;
-    double high;
-    double low;
+    EP ();
+    virtual ~EP ();
+    void calculate ();
+    QList<QColor> getColorBars (QString, QString, QString);
 };
 
-#endif
+extern "C"
+{
+  Plugin * create ();
+}
+
 

@@ -363,7 +363,6 @@ void QtstalkerApp::initToolBar()
   l.clear();
   l.append(tr("Bar"));
   l.append(tr("Paint Bar"));
-  l.append(tr("Exhaustion Points"));
   l.append(tr("Line"));
   l.append(tr("Candle"));
   l.append(tr("Point and Figure"));
@@ -649,7 +648,7 @@ void QtstalkerApp::loadChart (QString d)
   {
     Indicator *i = new Indicator;
     i->parse(config->getIndicator(l[loop]));
-    
+
     QString s = config->getData(Config::IndicatorPluginPath);
     s.append("/lib");
     s.append(i->getData(QObject::tr("Type")));
@@ -676,7 +675,6 @@ void QtstalkerApp::loadChart (QString d)
         pl->setColor(tpl->getColor());
         pl->setType(tpl->getType());
         pl->setLabel(tpl->getLabel());
-        pl->setColorBars(tpl->getColorBars());
 
         int loop3;
         for (loop3 = 0; loop3 < (int) tpl->getSize(); loop3++)
@@ -685,9 +683,15 @@ void QtstalkerApp::loadChart (QString d)
         i->addLine(pl);
       }
 
-      s = i->getData(QObject::tr("Alert"));
-      if (! s.compare(QObject::tr("True")))
-        i->setAlerts(plug->getAlerts());
+      // set up the paint bar
+      s = config->getData(Config::PaintBarIndicator);
+      if (! s.compare(l[loop]))
+      {
+        plug->getAlerts();
+        mainPlot->setPaintBars(plug->getColorBars(config->getData(Config::UpColor),
+      						        	  config->getData(Config::DownColor),
+						        	  config->getData(Config::NeutralColor)));
+      }
 
       if (i->getMainPlot() && otherFlag)
         i->clearLines();
@@ -717,7 +721,7 @@ void QtstalkerApp::loadChart (QString d)
     keys.remove("Close");
     keys.remove("Volume");
     keys.remove("Open Interest");
-    
+
     Indicator *i = mainPlot->getIndicator("Main Plot");
 
     int loop;
@@ -760,22 +764,6 @@ void QtstalkerApp::loadChart (QString d)
       i->addChartObject(co);
     else
       delete co;
-  }
-  
-  // set up the paint bar if needed
-  QString s = config->getData(Config::ChartStyle);
-  if (! s.compare(tr("Paint Bar")))
-  {
-    QString ind = config->getData(Config::PaintBarIndicator);
-    Indicator *i = mainPlot->getIndicator(ind);
-    if (! i)
-    {
-      Plot *plot = plotList[ind];
-      i = plot->getIndicator(ind);
-    }
-      
-    if (i)
-      mainPlot->setAlerts(i->getAlerts());
   }
 
   int page = mainPlot->getWidth() / mainPlot->getPixelspace();
@@ -1206,24 +1194,6 @@ void QtstalkerApp::slotChartTypeChanged (int)
   QDictIterator<Plot> it(plotList);
   for(; it.current(); ++it)
     it.current()->setPixelspace(mainPlot->getPixelspace());
-
-  QString s = config->getData(Config::ChartStyle);
-  if (! s.compare(tr("Paint Bar")))
-  {
-    QString ind = config->getData(Config::PaintBarIndicator);
-    if (ind.length())
-    {
-      Indicator *i = mainPlot->getIndicator(ind);
-      if (! i)
-      {
-        Plot *plot = plotList[tabs->label(tabs->currentPageIndex())];
-        i = plot->getIndicator(ind);
-      }
-
-      if (i)
-        mainPlot->setAlerts(i->getAlerts());
-    }
-  }
 
   pixelspace->blockSignals(TRUE);
   pixelspace->setRange(mainPlot->getMinPixelspace(), 99);
