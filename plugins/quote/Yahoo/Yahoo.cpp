@@ -198,17 +198,10 @@ void Yahoo::parse ()
     return;
 
   // strip off the header
-  QString s = "Date,Open,High,Low,Close,Volume";
+  QString s = "Date,Open,High,Low,Close";
   int p = data.find(s, 0, TRUE);
   if (p != -1)
     data.remove(0, p + s.length());
-  else
-  {
-    s = "Date,Open,High,Low,Close";
-    int p = data.find(s, 0, TRUE);
-    if (p != -1)
-      data.remove(0, p + s.length());
-  }
 
   QFile f(file);
   if (! f.open(IO_WriteOnly))
@@ -234,7 +227,7 @@ void Yahoo::parse ()
     s = stripJunk(s);
 
     QStringList l = QStringList::split(",", s, FALSE);
-    if (l.count() < 5 || l.count() > 6)
+    if (l.count() < 5)
       continue;
 
     // date
@@ -272,7 +265,7 @@ void Yahoo::parse ()
 
     // volume
     QString volume = "0";
-    if (l.count() == 6)
+    if (l.count() >= 6)
       volume = l[5];
 
     Setting *r = new Setting;

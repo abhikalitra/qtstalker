@@ -63,6 +63,8 @@
 
 - Put a lebel in the group navigator tab to indicate what the current group is.
 
+- Fixed Yahoo quote plugin to accept yahoo format change (Adj. Close*) on 2003.09.17.
+
 
 0.20
 ====
