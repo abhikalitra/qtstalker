@@ -42,6 +42,8 @@
 
 - Lowered the minimum bar spacing to 3 for line charts as per request.
 
+- Applied patch #836996 - changelog shows a bit more detail
+
   
 0.22
 ====

@@ -19,8 +19,15 @@
 </ol>
 <h3>Installing from source</h3>
 <ol>
+  <li>Check to make sure you have your shell QTDIR environment variable
+set to point to the location of the root Qt directory. This setting is
+usually something like this: 'export QTDIR=/usr/lib/qt' or something
+similar to this. Failure to set this properly will result in make
+errors.<br>
+  </li>
   <li>Unpack the Qtstalker source.</li>
-  <li>./configure (this will compile the DB lib and create the Makefile)<br>
+  <li>./configure (this will compile the Berkeley DB lib and create the
+Makefile)<br>
   </li>
   <li>make<br>
   </li>
@@ -29,7 +36,8 @@
       <li>the executable 'qtstalker' will be copied to the /usr/bin
 directory</li>
       <li>the plugins will be copied to /usr/lib/qtstalker directory</li>
-      <li>the docs will be copied to /usr/share/doc/qtstalker directory
+      <li>the docs will be copied to /usr/share/doc/qtstalker/html
+directory
 (toc.html for the table of contents)</li>
     </ul>
   </li>
