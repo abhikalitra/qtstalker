@@ -93,8 +93,6 @@ Tester::Tester (Config *c, QString n) : QDialog (0, 0, FALSE)
 
   createReportPage();
 
-  createChartPage();
-
   loadRule();
   
   showRule(0);
@@ -468,39 +466,6 @@ void Tester::createReportPage ()
   tabs->addTab(w, tr("Reports"));
 }
 
-void Tester::createChartPage ()
-{
-  QWidget *w = new QWidget(this);
-
-  QVBoxLayout *vbox = new QVBoxLayout(w);
-  vbox->setMargin(5);
-  vbox->setSpacing(5);
-
-  QSplitter *split = new QSplitter(w);
-  split->setOrientation(Vertical);
-  vbox->addWidget(split);
-
-  equityPlot = new Plot (split);
-  equityPlot->setDateFlag(TRUE);
-  equityPlot->setChartType("Line");
-  equityPlot->setMainFlag(FALSE);
-  equityPlot->clear();
-
-  closePlot = new Plot (split);
-  closePlot->setDateFlag(TRUE);
-  closePlot->setChartType("Line");
-  closePlot->setMainFlag(TRUE);
-  closePlot->clear();
-
-  slider = new QSlider(w);
-  slider->setOrientation(Qt::Horizontal);
-  connect (slider, SIGNAL(valueChanged(int)), this, SLOT(sliderChanged(int)));
-  QToolTip::add(slider, tr("Pan Chart"));
-  vbox->addWidget(slider);
-
-  tabs->addTab(w, tr("Charts"));
-}
-
 void Tester::addIndicator ()
 {
   bool ok;
@@ -633,7 +598,7 @@ void Tester::editIndicator ()
 
   EditDialog *dialog = new EditDialog(config);
   dialog->setCaption(tr("Edit Indicator"));
-  
+
   int id = buttonGroup->id(buttonGroup->selected());
   Indicator *i = 0;
   switch (id)
@@ -869,54 +834,7 @@ void Tester::test ()
     trailing();
   }
 
-  closePlot->clear();
-  equityPlot->clear();
-
-  closePlot->setData(db->getRecordList());
-  equityPlot->setData(db->getRecordList());
-
-  PlotLine *line = new PlotLine;
-  line->setLabel("Equity");
-  line->setColor("green");
-  Indicator *ind = new Indicator;
-  ind->set("Plot", "True", Setting::None);
-  int loop;
-  int loop2 = 0;
-  double t = account->value();
-  for (loop = 0; loop < db->getDataSize(); loop++)
-  {
-    if (loop2 < tradeList->numRows())
-    {
-      Setting *r = db->getRecordIndex(loop);
-
-      QString s = r->getData("Date");
-      s.truncate(s.length() - 6);
-      if (! s.compare(tradeList->text(loop2, 3)))
-      {
-        t = tradeList->text(loop2, 7).toDouble();
-	loop2++;
-      }
-    }
-
-    line->append(t);
-  }
-  ind->addLine(line);
-  equityPlot->addIndicator("Equity", ind);
-  equityPlot->setCurrentIndicator("Equity");
-
   createSummary();
-
-  int page = closePlot->getWidth() / closePlot->getPixelspace();
-  int max = db->getDataSize() - page;
-  if (max < 0)
-    max = 0;
-  slider->blockSignals(TRUE);
-  slider->setRange(0, db->getDataSize() - 1);
-  slider->setValue(max);
-  slider->blockSignals(FALSE);
-
-  closePlot->draw();
-  equityPlot->draw();
 
   delete db;
 }
@@ -1726,10 +1644,7 @@ void Tester::createSummary ()
   double accountDrawdown = account->value();
   double commission = (tradeList->numRows() * entryCom->value()) + (tradeList->numRows() * exitCom->value());
   double balance = 0;
-  
-  Indicator *i = closePlot->getIndicator("Main Plot");
 
-  int count = 0;
   int loop;
   for (loop = 0; loop < tradeList->numRows(); loop++)
   {
@@ -1756,20 +1671,6 @@ void Tester::createSummary ()
 	if (s.toDouble() > largestWin)
 	  largestWin = s.toDouble();
       }
-      
-      Setting *co = closePlot->newChartObject(tr("Buy Arrow"));
-      count++;
-      co->set("Name", QString::number(count), Setting::None);
-      co->setData(tr("Date"), tradeList->text(loop, 1));
-      co->setData(tr("Value"), QString::number(tradeList->text(loop, 2).toDouble() * .98));
-      i->addChartObject(co);
-
-      co = closePlot->newChartObject(tr("Sell Arrow"));
-      count++;
-      co->set("Name", QString::number(count), Setting::None);
-      co->setData(tr("Date"), tradeList->text(loop, 3));
-      co->setData(tr("Value"), QString::number(tradeList->text(loop, 4).toDouble() * 1.02));
-      i->addChartObject(co);
     }
     else
     {
@@ -1792,20 +1693,6 @@ void Tester::createSummary ()
 	if (s.toDouble() > largestWin)
 	  largestWin = s.toDouble();
       }
-
-      Setting *co = closePlot->newChartObject(tr("Sell Arrow"));
-      count++;
-      co->set("Name", QString::number(count), Setting::None);
-      co->setData(tr("Date"), tradeList->text(loop, 1));
-      co->setData(tr("Value"), QString::number(tradeList->text(loop, 2).toDouble() * 1.02));
-      i->addChartObject(co);
-      
-      co = closePlot->newChartObject(tr("Buy Arrow"));
-      count++;
-      co->set("Name", QString::number(count), Setting::None);
-      co->setData(tr("Date"), tradeList->text(loop, 3));
-      co->setData(tr("Value"), QString::number(tradeList->text(loop, 4).toDouble() * .98));
-      i->addChartObject(co);
     }
 
     s = tradeList->text(loop, 7);
@@ -1840,15 +1727,6 @@ void Tester::createSummary ()
   summaryLargestLose->setNum(largestLose);
   summaryLoseLongTrades->setNum(loseLongTrades);
   summaryLoseShortTrades->setNum(loseShortTrades);
-}
-
-void Tester::sliderChanged (int v)
-{
-  equityPlot->setIndex(v);
-  closePlot->setIndex(v);
-
-  equityPlot->draw();
-  closePlot->draw();
 }
 
 void Tester::getVolume ()

@@ -10,6 +10,9 @@
 
 - Updated HLC plugin to follow Donchian rule.
 
+- Removed the charts from the backtesting dialog. This was bloat and fluff we don't need. Everything that is 
+  important is in the summary.
+
 0.17
 ====
 

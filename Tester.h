@@ -43,7 +43,6 @@
 #include "Indicator.h"
 #include "Setting.h"
 #include "ChartDb.h"
-#include "Plot.h"
 
 class Tester : public QDialog
 {
@@ -56,7 +55,6 @@ class Tester : public QDialog
     void createStopPage();
     void createTestPage();
     void createReportPage();
-    void createChartPage();
     void exitPosition (QString);
     bool maximumLoss ();
     bool profit ();
@@ -89,7 +87,6 @@ class Tester : public QDialog
     void saveRule ();
     void exitDialog ();
     void loadRule ();
-    void sliderChanged (int);
 
   protected:
     Config *config;
@@ -134,9 +131,6 @@ class Tester : public QDialog
     QDoubleValidator *validator;
     QButtonGroup *buttonGroup;
     QString ruleName;
-    Plot *equityPlot;
-    Plot *closePlot;
-    QSlider *slider;
 
     int status;
     int testLoop;
