@@ -88,18 +88,18 @@ int VOL::indicatorPrefDialog ()
   dialog->setCaption(tr("VOL Indicator"));
   
   dialog->createPage (tr("VOL"));
-  dialog->addColorItem(tr("Up Color"), 1, upColor);
-  dialog->addColorItem(tr("Down Color"), 1, downColor);
-  dialog->addTextItem(tr("VOL Label"), 1, volLabel);
-  dialog->addComboItem(tr("VOL Line Type"), 1, lineTypes, volLineType);
+  dialog->addColorItem(tr("Up Color"), tr("VOL"), upColor);
+  dialog->addColorItem(tr("Down Color"), tr("VOL"), downColor);
+  dialog->addTextItem(tr("VOL Label"), tr("VOL"), volLabel);
+  dialog->addComboItem(tr("VOL Line Type"), tr("VOL"), lineTypes, volLineType);
   
   dialog->createPage (tr("MA"));
-  dialog->addColorItem(tr("MA Color"), 2, maColor);
-  dialog->addIntItem(tr("MA Period"), 2, period, 0, 99999999);
-  dialog->addTextItem(tr("MA Label"), 2, maLabel);
-  dialog->addComboItem(tr("MA Line Type"), 2, lineTypes, maLineType);
-  dialog->addComboItem(tr("MA Type"), 2, maTypeList, maType);
-  dialog->addIntItem(tr("Displacement"), 2, displace, 0, 99999999);
+  dialog->addColorItem(tr("MA Color"), tr("MA"), maColor);
+  dialog->addIntItem(tr("MA Period"), tr("MA"), period, 0, 99999999);
+  dialog->addTextItem(tr("MA Label"), tr("MA"), maLabel);
+  dialog->addComboItem(tr("MA Line Type"), tr("MA"), lineTypes, maLineType);
+  dialog->addComboItem(tr("MA Type"), tr("MA"), maTypeList, maType);
+  dialog->addIntItem(tr("Displacement"), tr("MA"), displace, 0, 99999999);
   
   int rc = dialog->exec();
   

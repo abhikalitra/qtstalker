@@ -118,22 +118,22 @@ int STOCH::indicatorPrefDialog ()
   PrefDialog *dialog = new PrefDialog();
   dialog->setCaption(tr("STOCH Indicator"));
   dialog->createPage (tr("Parms"));
-  dialog->addIntItem(tr("Period"), 1, period, 1, 99999999);
-  dialog->addComboItem(tr("Smoothing Type"), 1, maTypeList, maType);
-  dialog->addFloatItem(tr("Buy Line"), 1, buyLine, 0, 100);
-  dialog->addFloatItem(tr("Sell Line"), 1, sellLine, 0, 100);
+  dialog->addIntItem(tr("Period"), tr("Parms"), period, 1, 99999999);
+  dialog->addComboItem(tr("Smoothing Type"), tr("Parms"), maTypeList, maType);
+  dialog->addFloatItem(tr("Buy Line"), tr("Parms"), buyLine, 0, 100);
+  dialog->addFloatItem(tr("Sell Line"), tr("Parms"), sellLine, 0, 100);
   
   dialog->createPage (tr("%K Parms"));
-  dialog->addColorItem(tr("%K Color"), 2, kcolor);
-  dialog->addComboItem(tr("%K Line Type"), 2, lineTypes, klineType);
-  dialog->addTextItem(tr("%K Label"), 2, klabel);
-  dialog->addIntItem(tr("%K Smoothing"), 2, kperiod, 0, 99999999);
+  dialog->addColorItem(tr("%K Color"), tr("%K Parms"), kcolor);
+  dialog->addComboItem(tr("%K Line Type"), tr("%K Parms"), lineTypes, klineType);
+  dialog->addTextItem(tr("%K Label"), tr("%K Parms"), klabel);
+  dialog->addIntItem(tr("%K Smoothing"), tr("%K Parms"), kperiod, 0, 99999999);
   
   dialog->createPage (tr("%D Parms"));
-  dialog->addColorItem(tr("%D Color"), 3, dcolor);
-  dialog->addComboItem(tr("%D Line Type"), 3, lineTypes, dlineType);
-  dialog->addTextItem(tr("%D Label"), 3, dlabel);
-  dialog->addIntItem(tr("%D Smoothing"), 3, dperiod, 0, 99999999);
+  dialog->addColorItem(tr("%D Color"), tr("%D Parms"), dcolor);
+  dialog->addComboItem(tr("%D Line Type"), tr("%D Parms"), lineTypes, dlineType);
+  dialog->addTextItem(tr("%D Label"), tr("%D Parms"), dlabel);
+  dialog->addIntItem(tr("%D Smoothing"), tr("%D Parms"), dperiod, 0, 99999999);
   
   int rc = dialog->exec();
   

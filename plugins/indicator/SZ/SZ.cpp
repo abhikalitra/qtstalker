@@ -179,12 +179,12 @@ int SZ::indicatorPrefDialog ()
   PrefDialog *dialog = new PrefDialog();
   dialog->setCaption(tr("SZ Indicator"));
   dialog->createPage (tr("Parms"));
-  dialog->addColorItem(tr("Color"), 1, color);
-  dialog->addComboItem(tr("Line Type"), 1, lineTypes, lineType);
-  dialog->addComboItem(tr("Position"), 1, methodList, method);
-  dialog->addIntItem(tr("Lookback Period"), 1, period, 1, 99999999);
-  dialog->addIntItem(tr("No Decline Period"), 1, no_decline_period, 1, 99999999);
-  dialog->addFloatItem(tr("Coefficient"), 1, coefficient, 0, 99999999);
+  dialog->addColorItem(tr("Color"), tr("Parms"), color);
+  dialog->addComboItem(tr("Line Type"), tr("Parms"), lineTypes, lineType);
+  dialog->addComboItem(tr("Position"), tr("Parms"), methodList, method);
+  dialog->addIntItem(tr("Lookback Period"), tr("Parms"), period, 1, 99999999);
+  dialog->addIntItem(tr("No Decline Period"), tr("Parms"), no_decline_period, 1, 99999999);
+  dialog->addFloatItem(tr("Coefficient"), tr("Parms"), coefficient, 0, 99999999);
   
   int rc = dialog->exec();
   

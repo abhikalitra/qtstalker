@@ -106,7 +106,7 @@ void QtstalkerFormat::prefDialog ()
   PrefDialog *dialog = new PrefDialog();
   dialog->setCaption(tr("QtstalkerFormat Prefs"));
   dialog->createPage (tr("Details"));
-  dialog->addFileItem(tr("File Input"), 1);
+  dialog->addFileItem(tr("File Input"), tr("Details"));
   
   int rc = dialog->exec();
   

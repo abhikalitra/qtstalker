@@ -139,21 +139,21 @@ int ENV::indicatorPrefDialog ()
   PrefDialog *dialog = new PrefDialog();
   dialog->setCaption(tr("ENV Indicator"));
   dialog->createPage (tr("Parms"));
-  dialog->addIntItem(tr("Period"), 1, period, 1, 99999999);
-  dialog->addComboItem(tr("MA Type"), 1, maTypeList, maType);
-  dialog->addComboItem(tr("Input"), 1, inputTypeList, input);
+  dialog->addIntItem(tr("Period"), tr("Parms"), period, 1, 99999999);
+  dialog->addComboItem(tr("MA Type"), tr("Parms"), maTypeList, maType);
+  dialog->addComboItem(tr("Input"), tr("Parms"), inputTypeList, input);
   
   dialog->createPage (tr("Upper"));
-  dialog->addColorItem(tr("Upper Color"), 2, upperColor);
-  dialog->addComboItem(tr("Upper Line Type"), 2, lineTypes, upperLineType);
-  dialog->addTextItem(tr("Upper Label"), 2, upperLabel);
-  dialog->addFloatItem(tr("Upper %"), 2, upperPercent, 0, 99999999.0);
+  dialog->addColorItem(tr("Upper Color"), tr("Upper"), upperColor);
+  dialog->addComboItem(tr("Upper Line Type"), tr("Upper"), lineTypes, upperLineType);
+  dialog->addTextItem(tr("Upper Label"), tr("Upper"), upperLabel);
+  dialog->addFloatItem(tr("Upper %"), tr("Upper"), upperPercent, 0, 99999999.0);
   
   dialog->createPage (tr("Lower"));
-  dialog->addColorItem(tr("Lower Color"), 3, lowerColor);
-  dialog->addComboItem(tr("Lower Line Type"), 3, lineTypes, lowerLineType);
-  dialog->addTextItem(tr("Lower Label"), 3, lowerLabel);
-  dialog->addFloatItem(tr("Lower %"), 3, lowerPercent, 0, 99999999.0);
+  dialog->addColorItem(tr("Lower Color"), tr("Lower"), lowerColor);
+  dialog->addComboItem(tr("Lower Line Type"), tr("Lower"), lineTypes, lowerLineType);
+  dialog->addTextItem(tr("Lower Label"), tr("Lower"), lowerLabel);
+  dialog->addFloatItem(tr("Lower %"), tr("Lower"), lowerPercent, 0, 99999999.0);
   
   int rc = dialog->exec();
   

@@ -23,6 +23,7 @@
 #define CANDLE_HPP
 
 #include "ChartPlugin.h"
+#include "PrefDialog.h"
 #include <qcolor.h>
 
 class Candle : public ChartPlugin
@@ -41,9 +42,13 @@ class Candle : public ChartPlugin
     void loadSettings ();
     void saveSettings ();
 
+  public slots:
+    void styleChanged (const QString &);
+    
   protected:
     QString style;
     bool expandCandles;
+    PrefDialog *dialog;
     
     // candle vars
     QColor candleColor;

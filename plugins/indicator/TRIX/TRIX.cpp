@@ -133,18 +133,18 @@ int TRIX::indicatorPrefDialog ()
   PrefDialog *dialog = new PrefDialog();
   dialog->setCaption(tr("TRIX Indicator"));
   dialog->createPage (tr("Parms"));
-  dialog->addColorItem(tr("Color"), 1, color);
-  dialog->addComboItem(tr("Line Type"), 1, lineTypes, lineType);
-  dialog->addTextItem(tr("Label"), 1, label);
-  dialog->addIntItem(tr("Period"), 1, period, 1, 99999999);
-  dialog->addComboItem(tr("Input"), 1, inputTypeList, input);
+  dialog->addColorItem(tr("Color"), tr("Parms"), color);
+  dialog->addComboItem(tr("Line Type"), tr("Parms"), lineTypes, lineType);
+  dialog->addTextItem(tr("Label"), tr("Parms"), label);
+  dialog->addIntItem(tr("Period"), tr("Parms"), period, 1, 99999999);
+  dialog->addComboItem(tr("Input"), tr("Parms"), inputTypeList, input);
   
   dialog->createPage (tr("Trigger Parms"));
-  dialog->addColorItem(tr("Trigger Color"), 2, trigColor);
-  dialog->addComboItem(tr("Trigger Line Type"), 2, lineTypes, trigLineType);
-  dialog->addTextItem(tr("Trigger Label"), 2, trigLabel);
-  dialog->addIntItem(tr("Trigger Period"), 2, tperiod, 1, 99999999);
-  dialog->addComboItem(tr("Trigger Type"), 2, maTypeList, maType);
+  dialog->addColorItem(tr("Trigger Color"), tr("Trigger Parms"), trigColor);
+  dialog->addComboItem(tr("Trigger Line Type"), tr("Trigger Parms"), lineTypes, trigLineType);
+  dialog->addTextItem(tr("Trigger Label"), tr("Trigger Parms"), trigLabel);
+  dialog->addIntItem(tr("Trigger Period"), tr("Trigger Parms"), tperiod, 1, 99999999);
+  dialog->addComboItem(tr("Trigger Type"), tr("Trigger Parms"), maTypeList, maType);
   
   int rc = dialog->exec();
   

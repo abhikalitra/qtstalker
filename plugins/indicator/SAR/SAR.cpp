@@ -104,12 +104,12 @@ int SAR::indicatorPrefDialog ()
   PrefDialog *dialog = new PrefDialog();
   dialog->setCaption(tr("SAR Indicator"));
   dialog->createPage (tr("Parms"));
-  dialog->addColorItem(tr("Color"), 1, color);
-  dialog->addComboItem(tr("Line Type"), 1, lineTypes, lineType);
-  dialog->addTextItem(tr("Label"), 1, label);
-  dialog->addFloatItem(tr("Initial"), 1, initial, 0, 99999999);
-  dialog->addFloatItem(tr("Add"), 1, add, 0, 99999999);
-  dialog->addFloatItem(tr("Limit"), 1, limit, 0, 99999999);
+  dialog->addColorItem(tr("Color"), tr("Parms"), color);
+  dialog->addComboItem(tr("Line Type"), tr("Parms"), lineTypes, lineType);
+  dialog->addTextItem(tr("Label"), tr("Parms"), label);
+  dialog->addFloatItem(tr("Initial"), tr("Parms"), initial, 0, 99999999);
+  dialog->addFloatItem(tr("Add"), tr("Parms"), add, 0, 99999999);
+  dialog->addFloatItem(tr("Limit"), tr("Parms"), limit, 0, 99999999);
   
   int rc = dialog->exec();
   

@@ -133,20 +133,20 @@ int THERM::indicatorPrefDialog ()
   dialog->setCaption(tr("THERM Indicator"));
 
   dialog->createPage (tr("THERM Parms"));
-  dialog->addColorItem(tr("Color Above MA"), 1, upColor);
-  dialog->addColorItem(tr("Color Below MA"), 1, downColor);
-  dialog->addColorItem(tr("Color Threshold"), 1, threshColor);
-  dialog->addTextItem(tr("Label"), 1, label);
-  dialog->addFloatItem(tr("Threshold"), 1, threshold, 1, 99999999);
-  dialog->addIntItem(tr("Smoothing"), 1, smoothing, 0, 99999999);
-  dialog->addComboItem(tr("Smoothing Type"), 1, maTypeList, smoothType);
+  dialog->addColorItem(tr("Color Above MA"), tr("THERM Parms"), upColor);
+  dialog->addColorItem(tr("Color Below MA"), tr("THERM Parms"), downColor);
+  dialog->addColorItem(tr("Color Threshold"), tr("THERM Parms"), threshColor);
+  dialog->addTextItem(tr("Label"), tr("THERM Parms"), label);
+  dialog->addFloatItem(tr("Threshold"), tr("THERM Parms"), threshold, 1, 99999999);
+  dialog->addIntItem(tr("Smoothing"), tr("THERM Parms"), smoothing, 0, 99999999);
+  dialog->addComboItem(tr("Smoothing Type"), tr("THERM Parms"), maTypeList, smoothType);
   
   dialog->createPage (tr("MA Parms"));
-  dialog->addColorItem(tr("MA Color"), 2, maColor);
-  dialog->addComboItem(tr("MA Line Type"), 2, lineTypes, maLineType);
-  dialog->addTextItem(tr("MA Label"), 2, maLabel);
-  dialog->addIntItem(tr("MA Period"), 2, maPeriod, 0, 99999999);
-  dialog->addComboItem(tr("MA Type"), 2, maTypeList, maType);
+  dialog->addColorItem(tr("MA Color"), tr("MA Parms"), maColor);
+  dialog->addComboItem(tr("MA Line Type"), tr("MA Parms"), lineTypes, maLineType);
+  dialog->addTextItem(tr("MA Label"), tr("MA Parms"), maLabel);
+  dialog->addIntItem(tr("MA Period"), tr("MA Parms"), maPeriod, 0, 99999999);
+  dialog->addComboItem(tr("MA Type"), tr("MA Parms"), maTypeList, maType);
   
   int rc = dialog->exec();
   

@@ -140,22 +140,22 @@ int MA2::indicatorPrefDialog ()
   PrefDialog *dialog = new PrefDialog();
   dialog->setCaption(tr("MA2 Indicator"));
   dialog->createPage (tr("Fast MA"));
-  dialog->addColorItem(tr("Fast Color"), 1, fastColor);
-  dialog->addComboItem(tr("Fast Line Type"), 1, lineTypes, fastLineType);
-  dialog->addTextItem(tr("Fast Label"), 1, fastLabel);
-  dialog->addIntItem(tr("Fast Period"), 1, fastPeriod, 1, 99999999);
-  dialog->addComboItem(tr("Fast MA Type"), 1, maTypeList, fastMaType);
-  dialog->addComboItem(tr("Fast Input"), 1, inputTypeList, fastInput);
-  dialog->addIntItem(tr("Fast Displace"), 1, fastDisplace, 0, 99999999);
+  dialog->addColorItem(tr("Fast Color"), tr("Fast MA"), fastColor);
+  dialog->addComboItem(tr("Fast Line Type"), tr("Fast MA"), lineTypes, fastLineType);
+  dialog->addTextItem(tr("Fast Label"), tr("Fast MA"), fastLabel);
+  dialog->addIntItem(tr("Fast Period"), tr("Fast MA"), fastPeriod, 1, 99999999);
+  dialog->addComboItem(tr("Fast MA Type"), tr("Fast MA"), maTypeList, fastMaType);
+  dialog->addComboItem(tr("Fast Input"), tr("Fast MA"), inputTypeList, fastInput);
+  dialog->addIntItem(tr("Fast Displace"), tr("Fast MA"), fastDisplace, 0, 99999999);
   
   dialog->createPage (tr("Slow MA"));
-  dialog->addColorItem(tr("Slow Color"), 2, slowColor);
-  dialog->addComboItem(tr("Slow Line Type"), 2, lineTypes, slowLineType);
-  dialog->addTextItem(tr("Slow Label"), 2, slowLabel);
-  dialog->addIntItem(tr("Slow Period"), 2, slowPeriod, 1, 99999999);
-  dialog->addComboItem(tr("Slow MA Type"), 2, maTypeList, slowMaType);
-  dialog->addComboItem(tr("Slow Input"), 2, inputTypeList, slowInput);
-  dialog->addIntItem(tr("Slow Displace"), 2, slowDisplace, 0, 99999999);
+  dialog->addColorItem(tr("Slow Color"), tr("Slow MA"), slowColor);
+  dialog->addComboItem(tr("Slow Line Type"), tr("Slow MA"), lineTypes, slowLineType);
+  dialog->addTextItem(tr("Slow Label"), tr("Slow MA"), slowLabel);
+  dialog->addIntItem(tr("Slow Period"), tr("Slow MA"), slowPeriod, 1, 99999999);
+  dialog->addComboItem(tr("Slow MA Type"), tr("Slow MA"), maTypeList, slowMaType);
+  dialog->addComboItem(tr("Slow Input"), tr("Slow MA"), inputTypeList, slowInput);
+  dialog->addIntItem(tr("Slow Displace"), tr("Slow MA"), slowDisplace, 0, 99999999);
   
   int rc = dialog->exec();
   

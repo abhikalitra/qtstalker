@@ -20,7 +20,6 @@
  */
 
 #include "Bars.h"
-#include "PrefDialog.h"
 #include <qpainter.h>
 #include <qsettings.h>
 
@@ -29,6 +28,7 @@ Bars::Bars ()
   pluginName = "Bar";
   startX = 2;
   indicatorFlag = FALSE;
+  dialog = 0;
 
   loadSettings();  
 }
@@ -41,8 +41,8 @@ void Bars::drawChart (int startX, int startIndex, int pixelspace)
 {
   if (! style.compare(tr("Bar")))
     drawBars(startX, startIndex, pixelspace);
-//  else
-//    drawPaintBars(startX, startIndex, pixelspace);
+  else
+    drawPaintBars(startX, startIndex, pixelspace);
 }
 
 void Bars::drawBars (int startX, int startIndex, int pixelspace)
@@ -108,9 +108,9 @@ void Bars::drawBars (int startX, int startIndex, int pixelspace)
   painter.end();
 }
 
-/*
 void Bars::drawPaintBars (int startX, int startIndex, int pixelspace)
 {
+/*
   QPainter painter;
   painter.begin(buffer);
 
@@ -141,9 +141,8 @@ void Bars::drawPaintBars (int startX, int startIndex, int pixelspace)
   }
 
   painter.end();
-
-}
 */
+}
 
 void Bars::prefDialog ()
 {
@@ -151,20 +150,19 @@ void Bars::prefDialog ()
   l.append(tr("Bar"));
   l.append(tr("Paint Bar"));
   
-  PrefDialog *dialog = new PrefDialog();
+  dialog = new PrefDialog();
   dialog->setCaption(tr("Bar Chart Prefs"));
   dialog->createPage (tr("Prefs"));
-  dialog->addComboItem(tr("Style"), 1, l, style);
-  dialog->addIntItem(tr("Min Bar Spacing"), 1, minPixelspace, 4, 99);
   
-  dialog->createPage (tr("Bar Colors"));
-  dialog->addColorItem(tr("Bar Neutral Color"), 2, barNeutralColor);
-  dialog->addColorItem(tr("Bar Up Color"), 2, barUpColor);
-  dialog->addColorItem(tr("Bar Down Color"), 2, barDownColor);
+  dialog->addComboItem(tr("Style"), tr("Prefs"), l, style);
+  QObject::connect(dialog->getComboWidget("Style"),
+                   SIGNAL(activated(const QString &)),
+                   this,
+		   SLOT(styleChanged(const QString &)));
   
-//  dialog->createPage (tr("Paint Bar Colors"));
-//  dialog->addColorItem(tr("Paint Bar Up Color"), 3, paintUpColor);
-//  dialog->addColorItem(tr("Paint Bar Down Color"), 3, paintDownColor);
+  dialog->addIntItem(tr("Min Bar Spacing"), tr("Prefs"), minPixelspace, 4, 99);
+  
+  styleChanged(style);
   
   int rc = dialog->exec();
   
@@ -173,18 +171,50 @@ void Bars::prefDialog ()
     minPixelspace = dialog->getInt(tr("Min Bar Spacing"));
     style = dialog->getCombo(tr("Style"));
     
-    barNeutralColor = dialog->getColor(tr("Bar Neutral Color"));
-    barUpColor = dialog->getColor(tr("Bar Up Color"));
-    barDownColor = dialog->getColor(tr("Bar Down Color"));
-    
-//    paintUpColor = dialog->getColor(tr("Paint Bar Up Color"));
-//    paintDownColor = dialog->getColor(tr("Paint Bar Down Color"));
+    if (! style.compare(tr("Bar")))
+    {
+      barNeutralColor = dialog->getColor(tr("Bar Neutral Color"));
+      barUpColor = dialog->getColor(tr("Bar Up Color"));
+      barDownColor = dialog->getColor(tr("Bar Down Color"));
+    }
+    else
+    {
+      paintUpColor = dialog->getColor(tr("Paint Bar Up Color"));
+      paintDownColor = dialog->getColor(tr("Paint Bar Down Color"));
+    }
     
     saveFlag = TRUE;
     emit draw();
   }
   
   delete dialog;
+  dialog = 0;
+}
+
+void Bars::styleChanged (const QString &)
+{
+  if (! dialog)
+    return;
+
+  style = dialog->getCombo(tr("Style"));
+    
+  if (! style.compare(tr("Bar")))
+  {
+    dialog->deletePage(tr("Paint Bar Colors"));
+    
+    dialog->createPage (tr("Bar Colors"));
+    dialog->addColorItem(tr("Bar Neutral Color"), tr("Bar Colors"), barNeutralColor);
+    dialog->addColorItem(tr("Bar Up Color"), tr("Bar Colors"), barUpColor);
+    dialog->addColorItem(tr("Bar Down Color"), tr("Bar Colors"), barDownColor);
+  }
+  else
+  {
+    dialog->deletePage(tr("Bar Colors"));
+    
+    dialog->createPage (tr("Paint Bar Colors"));
+    dialog->addColorItem(tr("Paint Bar Up Color"), tr("Paint Bar Colors"), paintUpColor);
+    dialog->addColorItem(tr("Paint Bar Down Color"), tr("Paint Bar Colors"), paintDownColor);
+  }
 }
 
 void Bars::loadSettings ()
@@ -192,24 +222,17 @@ void Bars::loadSettings ()
   QSettings settings;
   settings.beginGroup("/Qtstalker/Bar plugin");
 
-  QString s = settings.readEntry("/barNeutralColor", "blue");
-  barNeutralColor.setNamedColor(s);
-  
-  s = settings.readEntry("/barUpColor", "green");
-  barUpColor.setNamedColor(s);
-
-  s = settings.readEntry("/barDownColor", "red");
-  barDownColor.setNamedColor(s);
-  
-//  s = settings.readEntry("/paintUpColor", "green");
-//  paintUpColor.setNamedColor(s);
-
-//  s = settings.readEntry("/paintDownColor", "red");
-//  paintDownColor.setNamedColor(s);
-  
   minPixelspace = settings.readNumEntry("/minPixelspace", 4);
-  
   style = settings.readEntry("/style", tr("Bar"));
+
+  // bar settings  
+  barNeutralColor.setNamedColor(settings.readEntry("/barNeutralColor", "blue"));
+  barUpColor.setNamedColor(settings.readEntry("/barUpColor", "green"));
+  barDownColor.setNamedColor(settings.readEntry("/barDownColor", "red"));
+
+  // paint bar settings  
+  paintUpColor.setNamedColor(settings.readEntry("/paintUpColor", "green"));
+  paintDownColor.setNamedColor(settings.readEntry("/paintDownColor", "red"));
   
   settings.endGroup();
 }
@@ -222,13 +245,17 @@ void Bars::saveSettings ()
   QSettings settings;
   settings.beginGroup("/Qtstalker/Bar plugin");
   
+  settings.writeEntry("/minPixelspace", minPixelspace);
+  settings.writeEntry("/style", style);
+
+  // bar settengs  
   settings.writeEntry("/barNeutralColor", barNeutralColor.name());
   settings.writeEntry("/barUpColor", barUpColor.name());
   settings.writeEntry("/barDownColor", barDownColor.name());
-//  settings.writeEntry("/paintUpColor", paintUpColor.name());
-//  settings.writeEntry("/paintDownColor", paintDownColor.name());
-  settings.writeEntry("/minPixelspace", minPixelspace);
-  settings.writeEntry("/style", style);
+  
+  // paint bar settings
+  settings.writeEntry("/paintUpColor", paintUpColor.name());
+  settings.writeEntry("/paintDownColor", paintDownColor.name());
   
   settings.endGroup();
 }

@@ -27,7 +27,6 @@
 PF::PF ()
 {
   pluginName = "PF";
-//  minPixelspace = 4;
   startX = 0;
   indicatorFlag = TRUE;
 
@@ -164,14 +163,12 @@ void PF::prefDialog ()
 {
   PrefDialog *dialog = new PrefDialog();
   dialog->setCaption(tr("PF Chart Prefs"));
-  dialog->createPage (tr("Colors"));
-  dialog->addColorItem(tr("Up Color"), 1, upColor);
-  dialog->addColorItem(tr("Down Color"), 1, downColor);
-  
-  dialog->createPage (tr("Box Options"));
-  dialog->addFloatItem(tr("Box Size"), 2, size);
-  dialog->addIntItem(tr("Reversal"), 2, PAFReversal);
-  dialog->addIntItem(tr("Min Bar Spacing"), 1, minPixelspace, 4, 99);
+  dialog->createPage (tr("Details"));
+  dialog->addColorItem(tr("Up Color"), tr("Details"), upColor);
+  dialog->addColorItem(tr("Down Color"), tr("Details"), downColor);
+  dialog->addFloatItem(tr("Box Size"), tr("Details"), size);
+  dialog->addIntItem(tr("Reversal"), tr("Details"), PAFReversal);
+  dialog->addIntItem(tr("Min Bar Spacing"), tr("Details"), minPixelspace, 4, 99);
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
@@ -194,13 +191,10 @@ void PF::loadSettings ()
   QSettings settings;
   settings.beginGroup("/Qtstalker/PF plugin");
 
-  QString s = settings.readEntry("/UpColor", "green");
-  upColor.setNamedColor(s);
+  upColor.setNamedColor(settings.readEntry("/UpColor", "green"));
+  downColor.setNamedColor(settings.readEntry("/DownColor", "red"));
   
-  s = settings.readEntry("/DownColor", "red");
-  downColor.setNamedColor(s);
-  
-  s = settings.readEntry("/BoxSize", "0");
+  QString s = settings.readEntry("/BoxSize", "0");
   size = s.toFloat();
 
   s = settings.readEntry("/Reversal", "3");

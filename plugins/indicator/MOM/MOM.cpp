@@ -119,13 +119,13 @@ int MOM::indicatorPrefDialog ()
   PrefDialog *dialog = new PrefDialog();
   dialog->setCaption(tr("MOM Indicator"));
   dialog->createPage (tr("Parms"));
-  dialog->addColorItem(tr("Color"), 1, color);
-  dialog->addComboItem(tr("Line Type"), 1, lineTypes, lineType);
-  dialog->addTextItem(tr("Label"), 1, label);
-  dialog->addIntItem(tr("Period"), 1, period, 1, 99999999);
-  dialog->addComboItem(tr("Smoothing Type"), 1, maTypeList, maType);
-  dialog->addComboItem(tr("Input"), 1, inputTypeList, input);
-  dialog->addIntItem(tr("Smoothing"), 1, smoothing, 0, 99999999);
+  dialog->addColorItem(tr("Color"), tr("Parms"), color);
+  dialog->addComboItem(tr("Line Type"), tr("Parms"), lineTypes, lineType);
+  dialog->addTextItem(tr("Label"), tr("Parms"), label);
+  dialog->addIntItem(tr("Period"), tr("Parms"), period, 1, 99999999);
+  dialog->addComboItem(tr("Smoothing Type"), tr("Parms"), maTypeList, maType);
+  dialog->addComboItem(tr("Input"), tr("Parms"), inputTypeList, input);
+  dialog->addIntItem(tr("Smoothing"), tr("Parms"), smoothing, 0, 99999999);
   
   int rc = dialog->exec();
   

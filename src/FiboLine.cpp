@@ -215,16 +215,16 @@ void FiboLine::prefDialog ()
   PrefDialog *dialog = new PrefDialog();
   dialog->setCaption(tr("Edit Fibonacci Lines"));
   dialog->createPage (tr("Details"));
-  dialog->addColorItem(tr("Color"), 1, color);
-  dialog->addCheckItem(tr("Set Default"), 1, FALSE);
+  dialog->addColorItem(tr("Color"), tr("Details"), color);
+  dialog->addCheckItem(tr("Set Default"), tr("Details"), FALSE);
 
   dialog->createPage (tr("Levels"));
-  dialog->addFloatItem(tr("Line 1"), 2, line1);
-  dialog->addFloatItem(tr("Line 2"), 2, line2);
-  dialog->addFloatItem(tr("Line 3"), 2, line3);
-  dialog->addFloatItem(tr("Line 4"), 2, line4);
-  dialog->addFloatItem(tr("Line 5"), 2, line5);
-  dialog->addFloatItem(tr("Line 6"), 2, line6);
+  dialog->addFloatItem(tr("Line 1"), tr("Levels"), line1);
+  dialog->addFloatItem(tr("Line 2"), tr("Levels"), line2);
+  dialog->addFloatItem(tr("Line 3"), tr("Levels"), line3);
+  dialog->addFloatItem(tr("Line 4"), tr("Levels"), line4);
+  dialog->addFloatItem(tr("Line 5"), tr("Levels"), line5);
+  dialog->addFloatItem(tr("Line 6"), tr("Levels"), line6);
         
   int rc = dialog->exec();
   

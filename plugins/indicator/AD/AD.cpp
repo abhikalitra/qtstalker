@@ -60,9 +60,9 @@ int AD::indicatorPrefDialog ()
   PrefDialog *dialog = new PrefDialog();
   dialog->setCaption(tr("AD Indicator"));
   dialog->createPage (tr("Parms"));
-  dialog->addColorItem(tr("Color"), 1, color);
-  dialog->addTextItem(tr("Label"), 1, label);
-  dialog->addComboItem(tr("Line Type"), 1, lineTypes, lineType);
+  dialog->addColorItem(tr("Color"), tr("Parms"), color);
+  dialog->addTextItem(tr("Label"), tr("Parms"), label);
+  dialog->addComboItem(tr("Line Type"), tr("Parms"), lineTypes, lineType);
   
   int rc = dialog->exec();
   

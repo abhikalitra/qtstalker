@@ -111,10 +111,10 @@ void Line::prefDialog ()
 
   PrefDialog *dialog = new PrefDialog();
   dialog->setCaption(tr("Line Chart Prefs"));
-  dialog->createPage (tr("Colors"));
-  dialog->addColorItem(tr("Line Color"), 1, color);
-  dialog->addComboItem(tr("Line Type"), 1, l, l[(int) type]);
-  dialog->addIntItem(tr("Min Bar Spacing"), 1, minPixelspace, 1, 99);
+  dialog->createPage (tr("Details"));
+  dialog->addColorItem(tr("Line Color"), tr("Details"), color);
+  dialog->addComboItem(tr("Line Type"), tr("Details"), l, l[(int) type]);
+  dialog->addIntItem(tr("Min Bar Spacing"), tr("Details"), minPixelspace, 1, 99);
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
@@ -135,10 +135,9 @@ void Line::loadSettings ()
   QSettings settings;
   settings.beginGroup("/Qtstalker/Line plugin");
 
-  QString s = settings.readEntry("/Color", "green");
-  color.setNamedColor(s);
+  color.setNamedColor(settings.readEntry("/Color", "green"));
   
-  s = settings.readEntry("/Type", QString::number(type));
+  QString s = settings.readEntry("/Type", QString::number(type));
   type = (LineType) s.toInt();
   
   minPixelspace = settings.readNumEntry("/minPixelspace", 3);

@@ -61,10 +61,10 @@ int PER::indicatorPrefDialog ()
   PrefDialog *dialog = new PrefDialog();
   dialog->setCaption(tr("PER Indicator"));
   dialog->createPage (tr("Parms"));
-  dialog->addColorItem(tr("Color"), 1, color);
-  dialog->addComboItem(tr("Line Type"), 1, lineTypes, lineType);
-  dialog->addTextItem(tr("Label"), 1, label);
-  dialog->addComboItem(tr("Input"), 1, inputTypeList, input);
+  dialog->addColorItem(tr("Color"), tr("Parms"), color);
+  dialog->addComboItem(tr("Line Type"), tr("Parms"), lineTypes, lineType);
+  dialog->addTextItem(tr("Label"), tr("Parms"), label);
+  dialog->addComboItem(tr("Input"), tr("Parms"), inputTypeList, input);
   
   int rc = dialog->exec();
   

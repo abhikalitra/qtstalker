@@ -134,17 +134,17 @@ int HLC::indicatorPrefDialog ()
   PrefDialog *dialog = new PrefDialog();
   dialog->setCaption(tr("HLC Indicator"));
   dialog->createPage (tr("Parms"));
-  dialog->addIntItem(tr("Period"), 1, period, 1, 99999999);
+  dialog->addIntItem(tr("Period"), tr("Parms"), period, 1, 99999999);
   
   dialog->createPage (tr("Upper"));
-  dialog->addColorItem(tr("Upper Color"), 2, upperColor);
-  dialog->addComboItem(tr("Upper Line Type"), 2, lineTypes, upperLineType);
-  dialog->addTextItem(tr("Upper Label"), 2, upperLabel);
+  dialog->addColorItem(tr("Upper Color"), tr("Upper"), upperColor);
+  dialog->addComboItem(tr("Upper Line Type"), tr("Upper"), lineTypes, upperLineType);
+  dialog->addTextItem(tr("Upper Label"), tr("Upper"), upperLabel);
   
   dialog->createPage (tr("Lower"));
-  dialog->addColorItem(tr("Lower Color"), 3, lowerColor);
-  dialog->addComboItem(tr("Lower Line Type"), 3, lineTypes, lowerLineType);
-  dialog->addTextItem(tr("Lower Label"), 3, lowerLabel);
+  dialog->addColorItem(tr("Lower Color"), tr("Lower"), lowerColor);
+  dialog->addComboItem(tr("Lower Line Type"), tr("Lower"), lineTypes, lowerLineType);
+  dialog->addTextItem(tr("Lower Label"), tr("Lower"), lowerLabel);
   
   int rc = dialog->exec();
   

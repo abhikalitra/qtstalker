@@ -382,7 +382,7 @@ void CMEHistory::prefDialog ()
   PrefDialog *dialog = new PrefDialog();
   dialog->setCaption(tr("CMEHistory Prefs"));
   dialog->createPage (tr("Details"));
-  dialog->addComboItem(tr("Symbol"), 1, l, currentSymbol);
+  dialog->addComboItem(tr("Symbol"), tr("Details"), l, currentSymbol);
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)

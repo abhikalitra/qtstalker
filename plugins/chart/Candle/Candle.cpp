@@ -20,7 +20,6 @@
  */
 
 #include "Candle.h"
-#include "PrefDialog.h"
 #include <qpainter.h>
 #include <qsettings.h>
 
@@ -30,6 +29,7 @@ Candle::Candle ()
   startX = 2;
   indicatorFlag = FALSE;
   expandCandles = FALSE;
+  dialog = 0;
 
   loadSettings();
 }
@@ -340,40 +340,19 @@ void Candle::prefDialog ()
   l.append(tr("Candle QS"));
   l.append(tr("Volume Candle"));
 
-  PrefDialog *dialog = new PrefDialog();
+  dialog = new PrefDialog();
   dialog->setCaption(tr("Candle Chart Prefs"));
   dialog->createPage (tr("Prefs"));
-  dialog->addComboItem(tr("Style"), 1, l, style);
-  dialog->addIntItem(tr("Min Bar Spacing"), 1, minPixelspace, 2, 99);
-  dialog->addCheckItem(tr("Expand Candles"), 1, expandCandles);
-
-  // candle settings  
-  dialog->createPage (tr("Candle Colors"));
-  dialog->addColorItem(tr("Candle Color"), 2, candleColor);
-  dialog->addColorItem(tr("Neutral Color"), 2, qsNeutralColor);
-  dialog->addColorItem(tr("Up Color"), 2, qsUpColor);
-  dialog->addColorItem(tr("Down Color"), 2, qsDownColor);
+  dialog->addComboItem(tr("Style"), tr("Prefs"), l, style);
+  QObject::connect(dialog->getComboWidget("Style"),
+                   SIGNAL(activated(const QString &)),
+                   this,
+		   SLOT(styleChanged(const QString &)));
   
-  // volume settings
-  dialog->createPage (tr("Volume Candle"));                         
-  dialog->addIntItem (tr("Volume MA Periods"), 3, vma);        // ma periods
-  dialog->addFloatItem (tr("Volume Slow factor"   ), 3, vr1 );
-  dialog->addFloatItem (tr("Volume Active factor" ), 3, vr2 );
-  dialog->addFloatItem (tr("Volume Hot factor"    ), 3, vr3 );            // trigger points
-  dialog->addFloatItem (tr("Volume Fire factor"   ), 3, vr4 );
-  dialog->addFloatItem (tr("Volume Crazy factor"  ), 3, vr5 );
-  dialog->addIntItem (tr("Fixed Candle Radius (pixels)"), 3, fixedCandleRadius);
-  dialog->addIntItem (tr("Minimum Candle Radius (pixels)"), 3, minCandleRadius);
-  dialog->addIntItem (tr("Max Gap between Candles (pixels)"), 3, maxCandleGap);
+  dialog->addIntItem(tr("Min Bar Spacing"), tr("Prefs"), minPixelspace, 2, 99);
+  dialog->addCheckItem(tr("Expand Candles"), tr("Prefs"), expandCandles);
   
-  // tab to set candle colors
-  dialog->createPage (tr("Volume Colors"));                            
-  dialog->addColorItem(tr("Volume Normal color" ), 4, c0 );
-  dialog->addColorItem(tr("Volume Slow color"   ), 4, c1 );
-  dialog->addColorItem(tr("Volume Active color" ), 4, c2 );                // candle colors
-  dialog->addColorItem(tr("Volume Hot color"    ), 4, c3 );
-  dialog->addColorItem(tr("Volume Fire color"   ), 4, c4 );
-  dialog->addColorItem(tr("Volume Crazy color"  ), 4, c5 );
+  styleChanged(style);
 
   int rc = dialog->exec();
   
@@ -382,37 +361,105 @@ void Candle::prefDialog ()
     style = dialog->getCombo(tr("Style"));
     minPixelspace = dialog->getInt(tr("Min Bar Spacing"));
     expandCandles = dialog->getCheck(tr("Expand Candles"));
-  
-    // candle settings
-    candleColor = dialog->getColor(tr("Candle Color"));
-    qsNeutralColor = dialog->getColor(tr("Neutral Color"));
-    qsUpColor = dialog->getColor(tr("Up Color"));
-    qsDownColor = dialog->getColor(tr("Down Color"));
     
-    // volume settings
-    vma = dialog->getInt(tr("Volume MA Periods")); if (vma < 2) vma=2;
-    vr1 = dialog->getFloat(tr("Volume Slow factor"));
-    vr2 = dialog->getFloat(tr("Volume Active factor"));
-    vr3 = dialog->getFloat(tr("Volume Hot factor"));
-    vr4 = dialog->getFloat(tr("Volume Fire factor"));
-    vr5 = dialog->getFloat(tr("Volume Crazy factor"));
+    if (! style.compare(tr("Candle")))
+      candleColor = dialog->getColor(tr("Candle Color"));
+    else
+    {
+      if (! style.compare(tr("Candle QS")))
+      {
+        qsNeutralColor = dialog->getColor(tr("Neutral Color"));
+        qsUpColor = dialog->getColor(tr("Up Color"));
+        qsDownColor = dialog->getColor(tr("Down Color"));
+      }
+      else
+      {
+        vma = dialog->getInt(tr("Volume MA Periods"));
+        vr1 = dialog->getFloat(tr("Volume Slow factor"));
+        vr2 = dialog->getFloat(tr("Volume Active factor"));
+        vr3 = dialog->getFloat(tr("Volume Hot factor"));
+        vr4 = dialog->getFloat(tr("Volume Fire factor"));
+        vr5 = dialog->getFloat(tr("Volume Crazy factor"));
     
-    c1 = dialog->getColor(tr("Volume Slow color"));
-    c0 = dialog->getColor(tr("Volume Normal color"));
-    c2 = dialog->getColor(tr("Volume Active color"));
-    c3 = dialog->getColor(tr("Volume Hot color"));
-    c4 = dialog->getColor(tr("Volume Fire color"));
-    c5 = dialog->getColor(tr("Volume Crazy color"));
-    
-    fixedCandleRadius = dialog->getInt(tr("Fixed Candle Radius (pixels)"));
-    minCandleRadius   = dialog->getInt(tr("Minimum Candle Radius (pixels)"));
-    maxCandleGap      = dialog->getInt(tr("Max Gap between Candles (pixels)"));
+        c1 = dialog->getColor(tr("Volume Slow color"));
+        c0 = dialog->getColor(tr("Volume Normal color"));
+        c2 = dialog->getColor(tr("Volume Active color"));
+        c3 = dialog->getColor(tr("Volume Hot color"));
+        c4 = dialog->getColor(tr("Volume Fire color"));
+        c5 = dialog->getColor(tr("Volume Crazy color"));
+	
+        fixedCandleRadius = dialog->getInt(tr("Fixed Candle Radius (pixels)"));
+        minCandleRadius   = dialog->getInt(tr("Minimum Candle Radius (pixels)"));
+        maxCandleGap      = dialog->getInt(tr("Max Gap between Candles (pixels)"));
+      }
+    }
     
     saveFlag = TRUE;
     emit draw();
   }
   
   delete dialog;
+  dialog = 0;
+}
+
+void Candle::styleChanged (const QString &)
+{
+  if (! dialog)
+    return;
+
+  style = dialog->getCombo(tr("Style"));
+    
+  if (! style.compare(tr("Candle")))
+  {
+    dialog->deletePage(tr("Volume Candle"));
+    dialog->deletePage(tr("Volume Colors"));
+    dialog->deletePage(tr("Color"));
+    
+    // candle settings  
+    dialog->createPage (tr("Color"));
+    dialog->addColorItem(tr("Candle Color"), tr("Color"), candleColor);
+    return;
+  }
+  
+  if (! style.compare(tr("Candle QS")))
+  {
+    dialog->deletePage(tr("Volume Candle"));
+    dialog->deletePage(tr("Volume Colors"));
+    dialog->deletePage(tr("Color"));
+    
+    // candleqs settings  
+    dialog->createPage (tr("Color"));
+    dialog->addColorItem(tr("Neutral Color"), tr("Color"), qsNeutralColor);
+    dialog->addColorItem(tr("Up Color"), tr("Color"), qsUpColor);
+    dialog->addColorItem(tr("Down Color"), tr("Color"), qsDownColor);
+    return;
+  }
+  
+  if (! style.compare(tr("Volume Candle")))
+  {
+    dialog->deletePage(tr("Color"));
+    
+    // volume settings
+    dialog->createPage (tr("Volume Candle"));                         
+    dialog->addIntItem (tr("Volume MA Periods"), tr("Volume Candle"), vma, 2, 999); // ma periods
+    dialog->addFloatItem (tr("Volume Slow factor"   ), tr("Volume Candle"), vr1 );
+    dialog->addFloatItem (tr("Volume Active factor" ), tr("Volume Candle"), vr2 );
+    dialog->addFloatItem (tr("Volume Hot factor"    ), tr("Volume Candle"), vr3 ); // trigger points
+    dialog->addFloatItem (tr("Volume Fire factor"   ), tr("Volume Candle"), vr4 );
+    dialog->addFloatItem (tr("Volume Crazy factor"  ), tr("Volume Candle"), vr5 );
+    dialog->addIntItem (tr("Fixed Candle Radius (pixels)"), tr("Volume Candle"), fixedCandleRadius, 2, 999);
+    dialog->addIntItem (tr("Minimum Candle Radius (pixels)"), tr("Volume Candle"), minCandleRadius, 1, 999);
+    dialog->addIntItem (tr("Max Gap between Candles (pixels)"), tr("Volume Candle"), maxCandleGap, 0, 999);
+  
+    // tab to set candle colors
+    dialog->createPage (tr("Volume Colors"));                            
+    dialog->addColorItem(tr("Volume Normal color" ), tr("Volume Colors"), c0 );
+    dialog->addColorItem(tr("Volume Slow color"   ), tr("Volume Colors"), c1 );
+    dialog->addColorItem(tr("Volume Active color" ), tr("Volume Colors"), c2 ); // candle colors
+    dialog->addColorItem(tr("Volume Hot color"    ), tr("Volume Colors"), c3 );
+    dialog->addColorItem(tr("Volume Fire color"   ), tr("Volume Colors"), c4 );
+    dialog->addColorItem(tr("Volume Crazy color"  ), tr("Volume Colors"), c5 );
+  }
 }
 
 void Candle::loadSettings ()
@@ -428,18 +475,12 @@ void Candle::loadSettings ()
   minPixelspace = settings.readNumEntry("/minPixelspace", 2);
   
   // candle settings
-  s = settings.readEntry("/candleColor", "green");
-  candleColor.setNamedColor(s);
+  candleColor.setNamedColor(settings.readEntry("/candleColor", "green"));
   
   // qs settings
-  s = settings.readEntry("/qsNeutralColor", "blue");
-  qsNeutralColor.setNamedColor(s);
-  
-  s = settings.readEntry("/qsUpColor", "green");
-  qsUpColor.setNamedColor(s);
-
-  s = settings.readEntry("/qsDownColor", "red");
-  qsDownColor.setNamedColor(s);
+  qsNeutralColor.setNamedColor(settings.readEntry("/qsNeutralColor", "blue"));
+  qsUpColor.setNamedColor(settings.readEntry("/qsUpColor", "green"));
+  qsDownColor.setNamedColor(settings.readEntry("/qsDownColor", "red"));
 
   // volume settings  
   vma = settings.readNumEntry("/vma", 20);
@@ -449,16 +490,16 @@ void Candle::loadSettings ()
   vr4 = settings.readDoubleEntry("/vr4", 5.0);
   vr5 = settings.readDoubleEntry("/vr5", 10.0);
   
-  s = settings.readEntry("/c0", "black");   c0.setNamedColor(s);
-  s = settings.readEntry("/c1", "#5A5A5A"); c1.setNamedColor(s);
-  s = settings.readEntry("/c2", "darkRed"); c2.setNamedColor(s);
-  s = settings.readEntry("/c3", "red");     c3.setNamedColor(s);
-  s = settings.readEntry("/c4", "yellow");  c4.setNamedColor(s);
-  s = settings.readEntry("/c5", "white");   c5.setNamedColor(s);
+  c0.setNamedColor(settings.readEntry("/c0", "black"));
+  c1.setNamedColor(settings.readEntry("/c1", "#5A5A5A"));
+  c2.setNamedColor(settings.readEntry("/c2", "darkRed"));
+  c3.setNamedColor(settings.readEntry("/c3", "red"));
+  c4.setNamedColor(settings.readEntry("/c4", "yellow"));
+  c5.setNamedColor(settings.readEntry("/c5", "white"));
   
-  fixedCandleRadius = settings.readNumEntry("/fixedCandleRadius",2);  if(fixedCandleRadius < 1) fixedCandleRadius = 1;
-  minCandleRadius   = settings.readNumEntry("/minCandleRadius",1);    if(minCandleRadius < 1) minCandleRadius = 1;
-  maxCandleGap      = settings.readNumEntry("/maxCandleGap",1);       if(maxCandleGap < 0) maxCandleGap = 0;
+  fixedCandleRadius = settings.readNumEntry("/fixedCandleRadius", 2);
+  minCandleRadius = settings.readNumEntry("/minCandleRadius", 1);
+  maxCandleGap = settings.readNumEntry("/maxCandleGap", 1);
   
   settings.endGroup();
 }

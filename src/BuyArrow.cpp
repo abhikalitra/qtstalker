@@ -87,8 +87,8 @@ void BuyArrow::prefDialog ()
   PrefDialog *dialog = new PrefDialog();
   dialog->setCaption(tr("Edit Buy Arrow"));
   dialog->createPage (tr("Details"));
-  dialog->addColorItem(tr("Color"), 1, color);
-  dialog->addCheckItem(tr("Set Default"), 1, FALSE);
+  dialog->addColorItem(tr("Color"), tr("Details"), color);
+  dialog->addCheckItem(tr("Set Default"), tr("Details"), FALSE);
   
   int rc = dialog->exec();
   

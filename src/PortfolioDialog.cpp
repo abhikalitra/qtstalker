@@ -213,15 +213,15 @@ void PortfolioDialog::addItem ()
   PrefDialog *dialog = new PrefDialog;
   dialog->createPage(tr("Details"));
   dialog->setCaption(tr("New Portfolio Item"));
-  dialog->addSymbolItem(tr("Symbol"), 1, config->getData(Config::DataPath), QString());
+  dialog->addSymbolItem(tr("Symbol"), tr("Details"), config->getData(Config::DataPath), QString());
 
   QStringList l;
   l.append(tr("Long"));
   l.append(tr("Short"));
-  dialog->addComboItem(tr("Action"), 1, l, tr("Long"));
+  dialog->addComboItem(tr("Action"), tr("Details"), l, tr("Long"));
   
-  dialog->addFloatItem(tr("Price"), 1, 0, 0, 9999999999.0);
-  dialog->addIntItem(tr("Volume"), 1, 1, 1, 99999999);
+  dialog->addFloatItem(tr("Price"), tr("Details"), 0, 0, 9999999999.0);
+  dialog->addIntItem(tr("Volume"), tr("Details"), 1, 1, 99999999);
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
@@ -262,15 +262,15 @@ void PortfolioDialog::modifyItem ()
   PrefDialog *dialog = new PrefDialog;
   dialog->createPage(tr("Details"));
   dialog->setCaption(tr("Edit Portfolio Item"));
-  dialog->addSymbolItem(tr("Symbol"), 1, config->getData(Config::DataPath), item->text(0));
+  dialog->addSymbolItem(tr("Symbol"), tr("Details"), config->getData(Config::DataPath), item->text(0));
 
   QStringList l;
   l.append(tr("Long"));
   l.append(tr("Short"));
-  dialog->addComboItem(tr("Action"), 1, l, item->text(1));
+  dialog->addComboItem(tr("Action"), tr("Details"), l, item->text(1));
   
-  dialog->addFloatItem(tr("Price"), 1, item->text(3).toFloat(), 0, 9999999999.0);
-  dialog->addIntItem(tr("Volume"), 1, item->text(2).toInt(), 1, 99999999);
+  dialog->addFloatItem(tr("Price"), tr("Details"), item->text(3).toFloat(), 0, 9999999999.0);
+  dialog->addIntItem(tr("Volume"), tr("Details"), item->text(2).toInt(), 1, 99999999);
   int rc = dialog->exec();
 
   if (rc == QDialog::Accepted)

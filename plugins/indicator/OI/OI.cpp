@@ -74,17 +74,17 @@ int OI::indicatorPrefDialog ()
   dialog->setCaption(tr("OI Indicator"));
   
   dialog->createPage (tr("OI"));
-  dialog->addColorItem(tr("OI Color"), 1, oiColor);
-  dialog->addTextItem(tr("OI Label"), 1, oiLabel);
-  dialog->addComboItem(tr("OI Line Type"), 1, lineTypes, oiLineType);
+  dialog->addColorItem(tr("OI Color"), tr("OI"), oiColor);
+  dialog->addTextItem(tr("OI Label"), tr("OI"), oiLabel);
+  dialog->addComboItem(tr("OI Line Type"), tr("OI"), lineTypes, oiLineType);
   
   dialog->createPage (tr("MA"));
-  dialog->addColorItem(tr("MA Color"), 2, maColor);
-  dialog->addIntItem(tr("MA Period"), 2, period, 0, 99999999);
-  dialog->addTextItem(tr("MA Label"), 2, maLabel);
-  dialog->addComboItem(tr("MA Line Type"), 2, lineTypes, maLineType);
-  dialog->addComboItem(tr("MA Type"), 2, maTypeList, maType);
-  dialog->addIntItem(tr("Displacement"), 2, displace, 0, 99999999);
+  dialog->addColorItem(tr("MA Color"), tr("MA"), maColor);
+  dialog->addIntItem(tr("MA Period"), tr("MA"), period, 0, 99999999);
+  dialog->addTextItem(tr("MA Label"), tr("MA"), maLabel);
+  dialog->addComboItem(tr("MA Line Type"), tr("MA"), lineTypes, maLineType);
+  dialog->addComboItem(tr("MA Type"), tr("MA"), maTypeList, maType);
+  dialog->addIntItem(tr("Displacement"), tr("MA"), displace, 0, 99999999);
   
   int rc = dialog->exec();
   

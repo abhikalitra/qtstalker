@@ -118,11 +118,11 @@ int ATR::indicatorPrefDialog ()
   PrefDialog *dialog = new PrefDialog();
   dialog->setCaption(tr("ATR Indicator"));
   dialog->createPage (tr("Parms"));
-  dialog->addColorItem(tr("Color"), 1, color);
-  dialog->addTextItem(tr("Label"), 1, label);
-  dialog->addComboItem(tr("Line Type"), 1, lineTypes, lineType);
-  dialog->addIntItem(tr("Smoothing"), 1, smoothing, 1, 99999999);
-  dialog->addComboItem(tr("Smoothing Type"), 1, maTypeList, maType);
+  dialog->addColorItem(tr("Color"), tr("Parms"), color);
+  dialog->addTextItem(tr("Label"), tr("Parms"), label);
+  dialog->addComboItem(tr("Line Type"), tr("Parms"), lineTypes, lineType);
+  dialog->addIntItem(tr("Smoothing"), tr("Parms"), smoothing, 1, 99999999);
+  dialog->addComboItem(tr("Smoothing Type"), tr("Parms"), maTypeList, maType);
   
   int rc = dialog->exec();
   

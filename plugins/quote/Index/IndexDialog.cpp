@@ -121,9 +121,9 @@ void IndexDialog::addItem ()
   
   QString tpath = QDir::homeDirPath();
   tpath.append("/Qtstalker/data");
-  dialog->addSymbolItem(tr("Symbol"), 1, tpath, s);
+  dialog->addSymbolItem(tr("Symbol"), tr("Details"), tpath, s);
   
-  dialog->addFloatItem(tr("Weight"), 1, weight);
+  dialog->addFloatItem(tr("Weight"), tr("Details"), weight);
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
@@ -164,9 +164,9 @@ void IndexDialog::editItem ()
   
   QString tpath = QDir::homeDirPath();
   tpath.append("/Qtstalker/data");
-  dialog->addSymbolItem(tr("Symbol"), 1, tpath, s);
+  dialog->addSymbolItem(tr("Symbol"), tr("Details"), tpath, s);
   
-  dialog->addFloatItem(tr("Weight"), 1, weight);
+  dialog->addFloatItem(tr("Weight"), tr("Details"), weight);
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)

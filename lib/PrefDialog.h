@@ -29,7 +29,6 @@
 #include <qtabdialog.h>
 #include <qlayout.h>
 #include <qwidget.h>
-#include <qlist.h>
 #include <qpushbutton.h>
 #include <qdict.h>
 #include <qspinbox.h>
@@ -49,36 +48,38 @@ class PrefDialog : public QTabDialog
     PrefDialog ();
     ~PrefDialog ();
     void createPage (QString);
-    void addColorItem (QString, int, QColor);
+    void deletePage (QString);
+    void addColorItem (QString, QString, QColor);
     QColor getColor (QString);
-    void addFloatItem (QString, int, double, double, double);
-    void addFloatItem (QString, int, double);
+    void addFloatItem (QString, QString, double, double, double);
+    void addFloatItem (QString, QString, double);
     double getFloat (QString);
-    void addIntItem (QString, int, int);
-    void addIntItem (QString, int, int, int, int);
+    void addIntItem (QString, QString, int);
+    void addIntItem (QString, QString, int, int, int);
     int getInt (QString);
-    void addCheckItem (QString, int, bool);
-    void addCheckItem (QString, int, QString);
+    void addCheckItem (QString, QString, bool);
+    void addCheckItem (QString, QString, QString);
     bool getCheck (QString);
     QString getCheckString (QString);
-    void addFontItem (QString, int, QFont);
+    void addFontItem (QString, QString, QFont);
     QFont getFont (QString);
-    void addTextItem (QString, int, QString);
+    void addTextItem (QString, QString, QString);
     QString getText (QString);
-    void addComboItem (QString, int, QStringList, QString);
-    void addComboItem (QString, int, QStringList, int);
+    void addComboItem (QString, QString, QStringList, QString);
+    void addComboItem (QString, QString, QStringList, int);
     QString getCombo (QString);
     int getComboIndex (QString);
-    void addDateItem (QString, int, QDateTime);
+    QComboBox * getComboWidget (QString);
+    void addDateItem (QString, QString, QDateTime);
     QDateTime getDate (QString);
-    void addFileItem (QString, int);
+    void addFileItem (QString, QString);
     QStringList getFile (QString);
-    void addSymbolItem (QString, int, QString, QString);
+    void addSymbolItem (QString, QString, QString, QString);
     QString getSymbol (QString);
 
   private:
-    QList<QWidget> widgetList;
-    QList<QGridLayout> gridList;
+    QDict<QWidget> widgetList;
+    QDict<QGridLayout> gridList;
     QDict<ColorButton> colorButtonList;
     QDict<QSpinBox> intList;
     QDict<QLineEdit> floatList;

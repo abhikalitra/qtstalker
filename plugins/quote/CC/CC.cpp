@@ -196,8 +196,8 @@ void CC::prefDialog ()
   PrefDialog *dialog = new PrefDialog();
   dialog->setCaption(tr("CC Prefs"));
   dialog->createPage (tr("Details"));
-  dialog->addIntItem(tr("Rollover"), 1, rollover);
-  dialog->addIntItem(tr("Maximum Years"), 1, maxYears);
+  dialog->addIntItem(tr("Rollover"), tr("Details"), rollover);
+  dialog->addIntItem(tr("Maximum Years"), tr("Details"), maxYears);
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)

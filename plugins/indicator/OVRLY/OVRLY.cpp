@@ -194,16 +194,16 @@ int OVRLY::indicatorPrefDialog ()
   dialog->setCaption(tr("OVRLY Indicator"));
   
   dialog->createPage (tr("Base Symbol"));
-  dialog->addColorItem(tr("Base Color"), 1, baseColor);
-  dialog->addComboItem(tr("Base Line Type"), 1, lineTypes, baseLineType);
-  dialog->addTextItem(tr("Base Label"), 1, baseLabel);
-  dialog->addComboItem(tr("Method"), 1, methodList, method);
-  dialog->addSymbolItem(tr("Base Symbol"), 1, dataPath, baseSymbol);
+  dialog->addColorItem(tr("Base Color"), tr("Base Symbol"), baseColor);
+  dialog->addComboItem(tr("Base Line Type"), tr("Base Symbol"), lineTypes, baseLineType);
+  dialog->addTextItem(tr("Base Label"), tr("Base Symbol"), baseLabel);
+  dialog->addComboItem(tr("Method"), tr("Base Symbol"), methodList, method);
+  dialog->addSymbolItem(tr("Base Symbol"), tr("Base Symbol"), dataPath, baseSymbol);
   
   dialog->createPage (tr("Current Symbol"));
-  dialog->addColorItem(tr("Color"), 2, color);
-  dialog->addComboItem(tr("Line Type"), 2, lineTypes, lineType);
-  dialog->addTextItem(tr("Label"), 2, label);
+  dialog->addColorItem(tr("Color"), tr("Current Symbol"), color);
+  dialog->addComboItem(tr("Line Type"), tr("Current Symbol"), lineTypes, lineType);
+  dialog->addTextItem(tr("Label"), tr("Current Symbol"), label);
   
   int rc = dialog->exec();
   

@@ -163,10 +163,10 @@ void TrendLine::prefDialog ()
   PrefDialog *dialog = new PrefDialog();
   dialog->setCaption(tr("Edit Trend Line"));
   dialog->createPage (tr("Details"));
-  dialog->addColorItem(tr("Color"), 1, color);
-  dialog->addComboItem(tr("Bar Field"), 1, l, barField);
-  dialog->addCheckItem(tr("Use Bar"), 1, useBar);
-  dialog->addCheckItem(tr("Set Default"), 1, FALSE);
+  dialog->addColorItem(tr("Color"), tr("Details"), color);
+  dialog->addComboItem(tr("Bar Field"), tr("Details"), l, barField);
+  dialog->addCheckItem(tr("Use Bar"), tr("Details"), useBar);
+  dialog->addCheckItem(tr("Set Default"), tr("Details"), FALSE);
   
   int rc = dialog->exec();
   

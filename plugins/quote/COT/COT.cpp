@@ -584,7 +584,7 @@ void COT::prefDialog ()
   PrefDialog *dialog = new PrefDialog();
   dialog->setCaption(tr("COT Prefs"));
   dialog->createPage (tr("Details"));
-  dialog->addComboItem(tr("Format"), 1, l, format);
+  dialog->addComboItem(tr("Format"), tr("Details"), l, format);
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)

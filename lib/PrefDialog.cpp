@@ -24,19 +24,19 @@
 
 PrefDialog::PrefDialog () : QTabDialog (0, "PrefDialog", TRUE)
 {
-  widgetList.setAutoDelete(TRUE);
-  gridList.setAutoDelete(TRUE);
-  colorButtonList.setAutoDelete(TRUE);
-  intList.setAutoDelete(TRUE);
-  floatList.setAutoDelete(TRUE);
-  checkList.setAutoDelete(TRUE);
-  fontButtonList.setAutoDelete(TRUE);
-  textList.setAutoDelete(TRUE);
-  comboList.setAutoDelete(TRUE);
-  dateList.setAutoDelete(TRUE);
-  fileList.setAutoDelete(TRUE);
-  symbolList.setAutoDelete(TRUE);
-  dvList.setAutoDelete(TRUE);
+  widgetList.setAutoDelete(FALSE);
+  gridList.setAutoDelete(FALSE);
+  colorButtonList.setAutoDelete(FALSE);
+  intList.setAutoDelete(FALSE);
+  floatList.setAutoDelete(FALSE);
+  checkList.setAutoDelete(FALSE);
+  fontButtonList.setAutoDelete(FALSE);
+  textList.setAutoDelete(FALSE);
+  comboList.setAutoDelete(FALSE);
+  dateList.setAutoDelete(FALSE);
+  fileList.setAutoDelete(FALSE);
+  symbolList.setAutoDelete(FALSE);
+  dvList.setAutoDelete(FALSE);
   
   resize(300, 200);
   
@@ -46,27 +46,45 @@ PrefDialog::PrefDialog () : QTabDialog (0, "PrefDialog", TRUE)
 
 PrefDialog::~PrefDialog ()
 {
+  widgetList.clear();
+  gridList.clear();
+  colorButtonList.clear();
+  intList.clear();
+  floatList.clear();
+  checkList.clear();
+  fontButtonList.clear();
+  textList.clear();
+  comboList.clear();
+  dateList.clear();
+  fileList.clear();
+  symbolList.clear();
+  dvList.clear();
 }
 
 void PrefDialog::createPage (QString name)
 {
   QWidget *w = new QWidget(this);
-  widgetList.append(w);
+  widgetList.replace(name, w);
   
   QGridLayout *grid = new QGridLayout(w, 1, 2);
   grid->setMargin(5);
   grid->setSpacing(5);
-  gridList.append(grid);
+  gridList.replace(name, grid);
   grid->setColStretch(1, 1);
 
   addTab(w, name);
 }
 
-void PrefDialog::addColorItem (QString name, int page, QColor color)
+void PrefDialog::deletePage (QString name)
 {
-  QWidget *w = widgetList.at(page - 1);
+  removePage(widgetList[name]);
+}
+
+void PrefDialog::addColorItem (QString name, QString page, QColor color)
+{
+  QWidget *w = widgetList[page];
   
-  QGridLayout *grid = gridList.at(page - 1);
+  QGridLayout *grid = gridList[page];
   grid->expand(grid->numRows() + 1, grid->numCols());
   
   QLabel *label = new QLabel(name, w);
@@ -75,7 +93,7 @@ void PrefDialog::addColorItem (QString name, int page, QColor color)
   ColorButton *button = new ColorButton(w, color);
   grid->addWidget(button, grid->numRows() - 2, 1);
   button->setColorButton();
-  colorButtonList.insert(name, button);
+  colorButtonList.replace(name, button);
 }
 
 QColor PrefDialog::getColor (QString name)
@@ -89,28 +107,28 @@ QColor PrefDialog::getColor (QString name)
   return color;
 }
 
-void PrefDialog::addFloatItem (QString name, int page, double num)
+void PrefDialog::addFloatItem (QString name, QString page, double num)
 {
   addFloatItem(name, page, num, -9999999999.0, 9999999999.0);
 }
 
-void PrefDialog::addFloatItem (QString name, int page, double num, double low, double high)
+void PrefDialog::addFloatItem (QString name, QString page, double num, double low, double high)
 {
-  QWidget *w = widgetList.at(page - 1);
+  QWidget *w = widgetList[page];
   
-  QGridLayout *grid = gridList.at(page - 1);
+  QGridLayout *grid = gridList[page];
   grid->expand(grid->numRows() + 1, grid->numCols());
   
   QLabel *label = new QLabel(name, w);
   grid->addWidget(label, grid->numRows() - 2, 0);
   
   QDoubleValidator *dv = new QDoubleValidator(low, high, 4, this, 0);
-  dvList.insert(name, dv);
+  dvList.replace(name, dv);
   
   QLineEdit *edit = new QLineEdit(QString::number(num), w);
   edit->setValidator(dv);
   grid->addWidget(edit, grid->numRows() - 2, 1);
-  floatList.insert(name, edit);
+  floatList.replace(name, edit);
 }
 
 double PrefDialog::getFloat (QString name)
@@ -124,16 +142,16 @@ double PrefDialog::getFloat (QString name)
   return num;
 }
 
-void PrefDialog::addIntItem (QString name, int page, int num)
+void PrefDialog::addIntItem (QString name, QString page, int num)
 {
   addIntItem(name, page, num, -999999999, 999999999);
 }
 
-void PrefDialog::addIntItem (QString name, int page, int num, int min, int max)
+void PrefDialog::addIntItem (QString name, QString page, int num, int min, int max)
 {
-  QWidget *w = widgetList.at(page - 1);
+  QWidget *w = widgetList[page];
   
-  QGridLayout *grid = gridList.at(page - 1);
+  QGridLayout *grid = gridList[page];
   grid->expand(grid->numRows() + 1, grid->numCols());
   
   QLabel *label = new QLabel(name, w);
@@ -142,7 +160,7 @@ void PrefDialog::addIntItem (QString name, int page, int num, int min, int max)
   QSpinBox *spin = new QSpinBox(min, max, 1, w);
   spin->setValue(num);
   grid->addWidget(spin, grid->numRows() - 2, 1);
-  intList.insert(name, spin);
+  intList.replace(name, spin);
 }
 
 int PrefDialog::getInt (QString name)
@@ -156,7 +174,7 @@ int PrefDialog::getInt (QString name)
   return num;
 }
 
-void PrefDialog::addCheckItem (QString name, int page, QString flag)
+void PrefDialog::addCheckItem (QString name, QString page, QString flag)
 {
   if (! flag.compare("True"))
     addCheckItem(name, page, TRUE);
@@ -164,17 +182,17 @@ void PrefDialog::addCheckItem (QString name, int page, QString flag)
     addCheckItem(name, page, FALSE);
 }
 
-void PrefDialog::addCheckItem (QString name, int page, bool flag)
+void PrefDialog::addCheckItem (QString name, QString page, bool flag)
 {
-  QWidget *w = widgetList.at(page - 1);
+  QWidget *w = widgetList[page];
   
-  QGridLayout *grid = gridList.at(page - 1);
+  QGridLayout *grid = gridList[page];
   grid->expand(grid->numRows() + 1, grid->numCols());
   
   QCheckBox *check = new QCheckBox(name, w);
   check->setChecked(flag);
   grid->addWidget(check, grid->numRows() - 2, 0);
-  checkList.insert(name, check);
+  checkList.replace(name, check);
 }
 
 bool PrefDialog::getCheck (QString name)
@@ -204,11 +222,11 @@ QString PrefDialog::getCheckString (QString name)
   return flag;
 }
 
-void PrefDialog::addFontItem (QString name, int page, QFont font)
+void PrefDialog::addFontItem (QString name, QString page, QFont font)
 {
-  QWidget *w = widgetList.at(page - 1);
+  QWidget *w = widgetList[page];
   
-  QGridLayout *grid = gridList.at(page - 1);
+  QGridLayout *grid = gridList[page];
   grid->expand(grid->numRows() + 1, grid->numCols());
   
   QLabel *label = new QLabel(name, w);
@@ -216,7 +234,7 @@ void PrefDialog::addFontItem (QString name, int page, QFont font)
   
   FontButton *button = new FontButton(w, font);
   grid->addWidget(button, grid->numRows() - 2, 1);
-  fontButtonList.insert(name, button);
+  fontButtonList.replace(name, button);
 }
 
 QFont PrefDialog::getFont (QString name)
@@ -230,11 +248,11 @@ QFont PrefDialog::getFont (QString name)
   return font;
 }
 
-void PrefDialog::addTextItem (QString name, int page, QString t)
+void PrefDialog::addTextItem (QString name, QString page, QString t)
 {
-  QWidget *w = widgetList.at(page - 1);
+  QWidget *w = widgetList[page];
   
-  QGridLayout *grid = gridList.at(page - 1);
+  QGridLayout *grid = gridList[page];
   grid->expand(grid->numRows() + 1, grid->numCols());
   
   QLabel *label = new QLabel(name, w);
@@ -242,7 +260,7 @@ void PrefDialog::addTextItem (QString name, int page, QString t)
 
   QLineEdit *edit = new QLineEdit(t, w);
   grid->addWidget(edit, grid->numRows() - 2, 1);
-  textList.insert(name, edit);
+  textList.replace(name, edit);
 }
 
 QString PrefDialog::getText (QString name)
@@ -256,11 +274,11 @@ QString PrefDialog::getText (QString name)
   return s;
 }
 
-void PrefDialog::addComboItem (QString name, int page, QStringList l, QString s)
+void PrefDialog::addComboItem (QString name, QString page, QStringList l, QString s)
 {
-  QWidget *w = widgetList.at(page - 1);
+  QWidget *w = widgetList[page];
   
-  QGridLayout *grid = gridList.at(page - 1);
+  QGridLayout *grid = gridList[page];
   grid->expand(grid->numRows() + 1, grid->numCols());
   
   QLabel *label = new QLabel(name, w);
@@ -271,14 +289,14 @@ void PrefDialog::addComboItem (QString name, int page, QStringList l, QString s)
   if (s.length())
     combo->setCurrentText(s);
   grid->addWidget(combo, grid->numRows() - 2, 1);
-  comboList.insert(name, combo);
+  comboList.replace(name, combo);
 }
 
-void PrefDialog::addComboItem (QString name, int page, QStringList l, int s)
+void PrefDialog::addComboItem (QString name, QString page, QStringList l, int s)
 {
-  QWidget *w = widgetList.at(page - 1);
+  QWidget *w = widgetList[page];
   
-  QGridLayout *grid = gridList.at(page - 1);
+  QGridLayout *grid = gridList[page];
   grid->expand(grid->numRows() + 1, grid->numCols());
   
   QLabel *label = new QLabel(name, w);
@@ -288,7 +306,7 @@ void PrefDialog::addComboItem (QString name, int page, QStringList l, int s)
   combo->insertStringList(l, -1);
   combo->setCurrentItem(s);
   grid->addWidget(combo, grid->numRows() - 2, 1);
-  comboList.insert(name, combo);
+  comboList.replace(name, combo);
 }
 
 QString PrefDialog::getCombo (QString name)
@@ -313,11 +331,16 @@ int PrefDialog::getComboIndex (QString name)
   return i;
 }
 
-void PrefDialog::addDateItem (QString name, int page, QDateTime dt)
+QComboBox * PrefDialog::getComboWidget (QString name)
 {
-  QWidget *w = widgetList.at(page - 1);
+  return comboList[name];
+}
+
+void PrefDialog::addDateItem (QString name, QString page, QDateTime dt)
+{
+  QWidget *w = widgetList[page];
   
-  QGridLayout *grid = gridList.at(page - 1);
+  QGridLayout *grid = gridList[page];
   grid->expand(grid->numRows() + 1, grid->numCols());
   
   QLabel *label = new QLabel(name, w);
@@ -327,7 +350,7 @@ void PrefDialog::addDateItem (QString name, int page, QDateTime dt)
   date->setAutoAdvance(TRUE);
   date->setOrder(QDateEdit::YMD);
   grid->addWidget(date, grid->numRows() - 2, 1);
-  dateList.insert(name, date);
+  dateList.replace(name, date);
 }
 
 QDateTime PrefDialog::getDate (QString name)
@@ -341,11 +364,11 @@ QDateTime PrefDialog::getDate (QString name)
   return dt;
 }
 
-void PrefDialog::addFileItem (QString name, int page)
+void PrefDialog::addFileItem (QString name, QString page)
 {
-  QWidget *w = widgetList.at(page - 1);
+  QWidget *w = widgetList[page];
   
-  QGridLayout *grid = gridList.at(page - 1);
+  QGridLayout *grid = gridList[page];
   grid->expand(grid->numRows() + 1, grid->numCols());
   
   QLabel *label = new QLabel(name, w);
@@ -353,7 +376,7 @@ void PrefDialog::addFileItem (QString name, int page)
 
   FileButton *button = new FileButton(w);
   grid->addWidget(button, grid->numRows() - 2, 1);
-  fileList.insert(name, button);
+  fileList.replace(name, button);
 }
 
 QStringList PrefDialog::getFile (QString name)
@@ -367,11 +390,11 @@ QStringList PrefDialog::getFile (QString name)
   return l;
 }
 
-void PrefDialog::addSymbolItem (QString name, int page, QString path, QString symbol)
+void PrefDialog::addSymbolItem (QString name, QString page, QString path, QString symbol)
 {
-  QWidget *w = widgetList.at(page - 1);
+  QWidget *w = widgetList[page];
   
-  QGridLayout *grid = gridList.at(page - 1);
+  QGridLayout *grid = gridList[page];
   grid->expand(grid->numRows() + 1, grid->numCols());
   
   QLabel *label = new QLabel(name, w);
@@ -379,7 +402,7 @@ void PrefDialog::addSymbolItem (QString name, int page, QString path, QString sy
 
   SymbolButton *button = new SymbolButton(w, path, symbol);
   grid->addWidget(button, grid->numRows() - 2, 1);
-  symbolList.insert(name, button);
+  symbolList.replace(name, button);
 }
 
 QString PrefDialog::getSymbol (QString name)

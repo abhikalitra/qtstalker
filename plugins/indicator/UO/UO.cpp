@@ -114,12 +114,12 @@ int UO::indicatorPrefDialog ()
   PrefDialog *dialog = new PrefDialog();
   dialog->setCaption(tr("UO Indicator"));
   dialog->createPage (tr("Parms"));
-  dialog->addColorItem(tr("Color"), 1, color);
-  dialog->addComboItem(tr("Line Type"), 1, lineTypes, lineType);
-  dialog->addTextItem(tr("Label"), 1, label);
-  dialog->addIntItem(tr("Short Period"), 1, shortPeriod, 1, 99999999);
-  dialog->addIntItem(tr("Medium Period"), 1, medPeriod, 1, 99999999);
-  dialog->addIntItem(tr("Long Period"), 1, longPeriod, 1, 99999999);
+  dialog->addColorItem(tr("Color"), tr("Parms"), color);
+  dialog->addComboItem(tr("Line Type"), tr("Parms"), lineTypes, lineType);
+  dialog->addTextItem(tr("Label"), tr("Parms"), label);
+  dialog->addIntItem(tr("Short Period"), tr("Parms"), shortPeriod, 1, 99999999);
+  dialog->addIntItem(tr("Medium Period"), tr("Parms"), medPeriod, 1, 99999999);
+  dialog->addIntItem(tr("Long Period"), tr("Parms"), longPeriod, 1, 99999999);
   
   int rc = dialog->exec();
   

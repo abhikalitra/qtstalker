@@ -262,25 +262,25 @@ int DMI::indicatorPrefDialog ()
   dialog->setCaption(tr("DMI Indicator"));
   
   dialog->createPage (tr("DMI"));
-  dialog->addIntItem(tr("Period"), 1, period, 1, 99999999);
-  dialog->addIntItem(tr("Smoothing"), 1, smoothing, 1, 99999999);
-  dialog->addComboItem(tr("Smoothing Type"), 1, maTypeList, maType);
-  dialog->addComboItem(tr("Alert"), 1, alertList, alertType);
+  dialog->addIntItem(tr("Period"), tr("DMI"), period, 1, 99999999);
+  dialog->addIntItem(tr("Smoothing"), tr("DMI"), smoothing, 1, 99999999);
+  dialog->addComboItem(tr("Smoothing Type"), tr("DMI"), maTypeList, maType);
+  dialog->addComboItem(tr("Alert"), tr("DMI"), alertList, alertType);
   
   dialog->createPage (tr("+DM"));
-  dialog->addColorItem(tr("+DM Color"), 2, pdiColor);
-  dialog->addTextItem(tr("+DM Label"), 2, pdiLabel);
-  dialog->addComboItem(tr("+DM Line Type"), 2, lineTypes, pdiLineType);
+  dialog->addColorItem(tr("+DM Color"), tr("+DM"), pdiColor);
+  dialog->addTextItem(tr("+DM Label"), tr("+DM"), pdiLabel);
+  dialog->addComboItem(tr("+DM Line Type"), tr("+DM"), lineTypes, pdiLineType);
   
   dialog->createPage (tr("-DM"));
-  dialog->addColorItem(tr("-DM Color"), 3, mdiColor);
-  dialog->addTextItem(tr("-DM Label"), 3, mdiLabel);
-  dialog->addComboItem(tr("-DM Line Type"), 3, lineTypes, mdiLineType);
+  dialog->addColorItem(tr("-DM Color"), tr("-DM"), mdiColor);
+  dialog->addTextItem(tr("-DM Label"), tr("-DM"), mdiLabel);
+  dialog->addComboItem(tr("-DM Line Type"), tr("-DM"), lineTypes, mdiLineType);
   
   dialog->createPage (tr("ADX"));
-  dialog->addColorItem(tr("ADX Color"), 4, adxColor);
-  dialog->addTextItem(tr("ADX Label"), 4, adxLabel);
-  dialog->addComboItem(tr("ADX Line Type"), 4, lineTypes, adxLineType);
+  dialog->addColorItem(tr("ADX Color"), tr("ADX"), adxColor);
+  dialog->addTextItem(tr("ADX Label"), tr("ADX"), adxLabel);
+  dialog->addComboItem(tr("ADX Line Type"), tr("ADX"), lineTypes, adxLineType);
   
   int rc = dialog->exec();
   

@@ -295,13 +295,13 @@ void MySQLPlugin::prefDialog ()
   PrefDialog *dialog = new PrefDialog();
   dialog->setCaption(tr("MySQL Prefs"));
   dialog->createPage (tr("Details"));
-  dialog->addTextItem(tr("Database"), 1, database);
-  dialog->addTextItem(tr("Host"), 1, host);
-  dialog->addTextItem(tr("Username"), 1, username);
-  dialog->addTextItem(tr("Password"), 1, password);
-  dialog->addTextItem(tr("SQL Query"), 1, sqlquery);
-  dialog->addTextItem(tr("Symbols"), 1, symbols);
-  dialog->addCheckItem(tr("Incremental"), 1, incremental);
+  dialog->addTextItem(tr("Database"), tr("Details"), database);
+  dialog->addTextItem(tr("Host"), tr("Details"), host);
+  dialog->addTextItem(tr("Username"), tr("Details"), username);
+  dialog->addTextItem(tr("Password"), tr("Details"), password);
+  dialog->addTextItem(tr("SQL Query"), tr("Details"), sqlquery);
+  dialog->addTextItem(tr("Symbols"), tr("Details"), symbols);
+  dialog->addCheckItem(tr("Incremental"), tr("Details"), incremental);
   
   int rc = dialog->exec();
   

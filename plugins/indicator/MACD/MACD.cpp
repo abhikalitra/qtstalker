@@ -143,25 +143,25 @@ int MACD::indicatorPrefDialog ()
   dialog->setCaption(tr("MACD Indicator"));
   
   dialog->createPage (tr("MACD"));
-  dialog->addColorItem(tr("MACD Color"), 1, macdColor);
-  dialog->addIntItem(tr("Fast Period"), 1, fastPeriod, 1, 99999999);
-  dialog->addIntItem(tr("Slow Period"), 1, slowPeriod, 1, 99999999);
-  dialog->addTextItem(tr("MACD Label"), 1, macdLabel);
-  dialog->addComboItem(tr("MACD Line Type"), 1, lineTypes, macdLineType);
-  dialog->addComboItem(tr("MACD MA Type"), 1, maTypeList, macdMAType);
-  dialog->addComboItem(tr("MACD Input"), 1, inputTypeList, macdInput);
+  dialog->addColorItem(tr("MACD Color"), tr("MACD"), macdColor);
+  dialog->addIntItem(tr("Fast Period"), tr("MACD"), fastPeriod, 1, 99999999);
+  dialog->addIntItem(tr("Slow Period"), tr("MACD"), slowPeriod, 1, 99999999);
+  dialog->addTextItem(tr("MACD Label"), tr("MACD"), macdLabel);
+  dialog->addComboItem(tr("MACD Line Type"), tr("MACD"), lineTypes, macdLineType);
+  dialog->addComboItem(tr("MACD MA Type"), tr("MACD"), maTypeList, macdMAType);
+  dialog->addComboItem(tr("MACD Input"), tr("MACD"), inputTypeList, macdInput);
   
   dialog->createPage (tr("Trigger"));
-  dialog->addColorItem(tr("Trigger Color"), 2, trigColor);
-  dialog->addIntItem(tr("Trigger Period"), 2, trigPeriod, 1, 99999999);
-  dialog->addTextItem(tr("Trigger Label"), 2, trigLabel);
-  dialog->addComboItem(tr("Trigger Line Type"), 2, lineTypes, trigLineType);
+  dialog->addColorItem(tr("Trigger Color"), tr("Trigger"), trigColor);
+  dialog->addIntItem(tr("Trigger Period"), tr("Trigger"), trigPeriod, 1, 99999999);
+  dialog->addTextItem(tr("Trigger Label"), tr("Trigger"), trigLabel);
+  dialog->addComboItem(tr("Trigger Line Type"), tr("Trigger"), lineTypes, trigLineType);
   
   dialog->createPage (tr("Osc"));
-  dialog->addColorItem(tr("Osc Color"), 3, oscColor);
-  dialog->addTextItem(tr("Osc Label"), 3, oscLabel);
-  dialog->addComboItem(tr("Osc Line Type"), 3, lineTypes, oscLineType);
-  dialog->addCheckItem(tr("Osc Scaling Max"), 3, oscScaleFlag);
+  dialog->addColorItem(tr("Osc Color"), tr("Osc"), oscColor);
+  dialog->addTextItem(tr("Osc Label"), tr("Osc"), oscLabel);
+  dialog->addComboItem(tr("Osc Line Type"), tr("Osc"), lineTypes, oscLineType);
+  dialog->addCheckItem(tr("Osc Scaling Max"), tr("Osc"), oscScaleFlag);
   
   int rc = dialog->exec();
   

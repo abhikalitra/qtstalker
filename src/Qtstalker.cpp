@@ -487,19 +487,19 @@ void QtstalkerApp::slotOptions ()
   dialog->setCaption(tr("Edit Prefs"));
 
   dialog->createPage(tr("Colors"));
-  dialog->addColorItem(tr("Chart Background"), 1, QColor(config->getData(Config::BackgroundColor)));
-  dialog->addColorItem(tr("Chart Border"), 1, QColor(config->getData(Config::BorderColor)));
-  dialog->addColorItem(tr("Chart Grid"), 1, QColor(config->getData(Config::GridColor)));
+  dialog->addColorItem(tr("Chart Background"), tr("Colors"), QColor(config->getData(Config::BackgroundColor)));
+  dialog->addColorItem(tr("Chart Border"), tr("Colors"), QColor(config->getData(Config::BorderColor)));
+  dialog->addColorItem(tr("Chart Grid"), tr("Colors"), QColor(config->getData(Config::GridColor)));
 
   dialog->createPage(tr("Fonts"));
   QStringList l = QStringList::split(" ", config->getData(Config::PlotFont), FALSE);
-  dialog->addFontItem(tr("Plot Font"), 2, QFont(l[0], l[1].toInt(), l[2].toInt()));
+  dialog->addFontItem(tr("Plot Font"), tr("Fonts"), QFont(l[0], l[1].toInt(), l[2].toInt()));
   l = QStringList::split(" ", config->getData(Config::AppFont), FALSE);
-  dialog->addFontItem(tr("App Font"), 2, QFont(l[0], l[1].toInt(), l[2].toInt()));
+  dialog->addFontItem(tr("App Font"), tr("Fonts"), QFont(l[0], l[1].toInt(), l[2].toInt()));
     
-  dialog->createPage(tr("Misc"));
-  dialog->addCheckItem(tr("Navigator Left"), 3, config->getData(Config::NavigatorPosition).toInt());
-  dialog->addCheckItem(tr("Indicator Tabs Top"), 3, config->getData(Config::IndicatorTabs).toInt());
+  dialog->createPage(tr("Geometry"));
+  dialog->addCheckItem(tr("Navigator Left"), tr("Geometry"), config->getData(Config::NavigatorPosition).toInt());
+  dialog->addCheckItem(tr("Indicator Tabs Top"), tr("Geometry"), config->getData(Config::IndicatorTabs).toInt());
   
   int rc = dialog->exec();
 
@@ -998,9 +998,9 @@ void QtstalkerApp::slotNewIndicator ()
   PrefDialog *idialog = new PrefDialog();
   idialog->setCaption(tr("New Indicator"));
   idialog->createPage (tr("Details"));
-  idialog->addComboItem(tr("Indicator"), 1, config->getIndicatorPlugins(), 0);
-  idialog->addTextItem(tr("Name"), 1, tr("New Indicator"));
-  idialog->addCheckItem(tr("Create Tab"), 1, TRUE);
+  idialog->addComboItem(tr("Indicator"), tr("Details"), config->getIndicatorPlugins(), 0);
+  idialog->addTextItem(tr("Name"), tr("Details"), tr("New Indicator"));
+  idialog->addCheckItem(tr("Create Tab"), tr("Details"), TRUE);
   
   int rc = idialog->exec();
   if (rc == QDialog::Rejected)

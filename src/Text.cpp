@@ -82,10 +82,10 @@ void Text::prefDialog ()
   PrefDialog *dialog = new PrefDialog();
   dialog->setCaption(tr("Edit Text"));
   dialog->createPage (tr("Details"));
-  dialog->addColorItem(tr("Color"), 1, color);
-  dialog->addFontItem(tr("Font"), 1, font);
-  dialog->addTextItem(tr("Label"), 1, label);
-  dialog->addCheckItem(tr("Set Default"), 1, FALSE);
+  dialog->addColorItem(tr("Color"), tr("Details"), color);
+  dialog->addFontItem(tr("Font"), tr("Details"), font);
+  dialog->addTextItem(tr("Label"), tr("Details"), label);
+  dialog->addCheckItem(tr("Set Default"), tr("Details"), FALSE);
   
   int rc = dialog->exec();
   

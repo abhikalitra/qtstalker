@@ -330,7 +330,7 @@ void NYBOT::prefDialog ()
   PrefDialog *dialog = new PrefDialog();
   dialog->setCaption(tr("NYBOT Prefs"));
   dialog->createPage (tr("Details"));
-  dialog->addFileItem(tr("File Input"), 1);
+  dialog->addFileItem(tr("File Input"), tr("Details"));
   
   int rc = dialog->exec();
   

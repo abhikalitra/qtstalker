@@ -252,22 +252,22 @@ void EP::prefDialog ()
   PrefDialog *dialog = new PrefDialog();
   dialog->setCaption(tr("EP Chart Prefs"));
   dialog->createPage (tr("Parms"));
-  dialog->addColorItem(tr("Neutral Color"), 1, neutralColor);
-  dialog->addIntItem(tr("Min Bar Spacing"), 1, minPixelspace, 4, 99);
+  dialog->addColorItem(tr("Neutral Color"), tr("Parms"), neutralColor);
+  dialog->addIntItem(tr("Min Bar Spacing"), tr("Parms"), minPixelspace, 4, 99);
   
   dialog->createPage (tr("Outside Rank"));
-  dialog->addColorItem(tr("Outside Rank 1"), 2, or1Color);
-  dialog->addColorItem(tr("Outside Rank 2"), 2, or2Color);
-  dialog->addColorItem(tr("Outside Rank 3"), 2, or3Color);
-  dialog->addColorItem(tr("Outside Rank 4"), 2, or4Color);
-  dialog->addColorItem(tr("Outside Rank 5"), 2, or5Color);
+  dialog->addColorItem(tr("Outside Rank 1"), tr("Outside Rank"), or1Color);
+  dialog->addColorItem(tr("Outside Rank 2"), tr("Outside Rank"), or2Color);
+  dialog->addColorItem(tr("Outside Rank 3"), tr("Outside Rank"), or3Color);
+  dialog->addColorItem(tr("Outside Rank 4"), tr("Outside Rank"), or4Color);
+  dialog->addColorItem(tr("Outside Rank 5"), tr("Outside Rank"), or5Color);
   
   dialog->createPage (tr("Inside Rank"));
-  dialog->addColorItem(tr("Inside Rank 1"), 3, ir1Color);
-  dialog->addColorItem(tr("Inside Rank 2"), 3, ir2Color);
-  dialog->addColorItem(tr("Inside Rank 3"), 3, ir3Color);
-  dialog->addColorItem(tr("Inside Rank 4"), 3, ir4Color);
-  dialog->addColorItem(tr("Inside Rank 5"), 3, ir5Color);
+  dialog->addColorItem(tr("Inside Rank 1"), tr("Inside Rank"), ir1Color);
+  dialog->addColorItem(tr("Inside Rank 2"), tr("Inside Rank"), ir2Color);
+  dialog->addColorItem(tr("Inside Rank 3"), tr("Inside Rank"), ir3Color);
+  dialog->addColorItem(tr("Inside Rank 4"), tr("Inside Rank"), ir4Color);
+  dialog->addColorItem(tr("Inside Rank 5"), tr("Inside Rank"), ir5Color);
   
   int rc = dialog->exec();
   
@@ -300,38 +300,17 @@ void EP::loadSettings ()
 
   minPixelspace = settings.readNumEntry("/minPixelspace", 4);
   
-  QString s = settings.readEntry("/NeutralColor", "dimgray");
-  neutralColor.setNamedColor(s);
-  
-  s = settings.readEntry("/OutsideRank1", "khaki");
-  or1Color.setNamedColor(s);
-
-  s = settings.readEntry("/OutsideRank2", "goldenrod");
-  or2Color.setNamedColor(s);
-
-  s = settings.readEntry("/OutsideRank3", "gold");
-  or3Color.setNamedColor(s);
-    
-  s = settings.readEntry("/OutsideRank4", "darkorange");
-  or4Color.setNamedColor(s);
-  
-  s = settings.readEntry("/OutsideRank5", "red");
-  or5Color.setNamedColor(s);
-  
-  s = settings.readEntry("/InsideRank1", "pink");
-  ir1Color.setNamedColor(s);
-  
-  s = settings.readEntry("/InsideRank2", "orchid");
-  ir2Color.setNamedColor(s);
-  
-  s = settings.readEntry("/InsideRank3", "magenta");
-  ir3Color.setNamedColor(s);
-  
-  s = settings.readEntry("/InsideRank4", "royalblue");
-  ir4Color.setNamedColor(s);
-  
-  s = settings.readEntry("/InsideRank5", "blue");
-  ir5Color.setNamedColor(s);
+  neutralColor.setNamedColor(settings.readEntry("/NeutralColor", "dimgray"));
+  or1Color.setNamedColor(settings.readEntry("/OutsideRank1", "khaki"));
+  or2Color.setNamedColor(settings.readEntry("/OutsideRank2", "goldenrod"));
+  or3Color.setNamedColor(settings.readEntry("/OutsideRank3", "gold"));
+  or4Color.setNamedColor(settings.readEntry("/OutsideRank4", "darkorange"));
+  or5Color.setNamedColor(settings.readEntry("/OutsideRank5", "red"));
+  ir1Color.setNamedColor(settings.readEntry("/InsideRank1", "pink"));
+  ir2Color.setNamedColor(settings.readEntry("/InsideRank2", "orchid"));
+  ir3Color.setNamedColor(settings.readEntry("/InsideRank3", "magenta"));
+  ir4Color.setNamedColor(settings.readEntry("/InsideRank4", "royalblue"));
+  ir5Color.setNamedColor(settings.readEntry("/InsideRank5", "blue"));
   
   settings.endGroup();
 }

@@ -27,7 +27,6 @@
 Swing::Swing ()
 {
   pluginName = "Swing";
-//  minPixelspace = 4;
   startX = 0;
   indicatorFlag = TRUE;
 
@@ -153,10 +152,10 @@ void Swing::prefDialog ()
 {
   PrefDialog *dialog = new PrefDialog();
   dialog->setCaption(tr("Swing Chart Prefs"));
-  dialog->createPage (tr("Colors"));
-  dialog->addColorItem(tr("Up Color"), 1, upColor);
-  dialog->addColorItem(tr("Down Color"), 1, downColor);
-  dialog->addIntItem(tr("Min Bar Spacing"), 1, minPixelspace, 4, 99);
+  dialog->createPage (tr("Details"));
+  dialog->addColorItem(tr("Up Color"), tr("Details"), upColor);
+  dialog->addColorItem(tr("Down Color"), tr("Details"), downColor);
+  dialog->addIntItem(tr("Min Bar Spacing"), tr("Details"), minPixelspace, 4, 99);
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
@@ -178,15 +177,9 @@ void Swing::loadSettings ()
   QSettings settings;
   settings.beginGroup("/Qtstalker/Swing plugin");
 
-  QString s = settings.readEntry("/NeutralColor", "blue");
-  neutralColor.setNamedColor(s);
-  
-  s = settings.readEntry("/UpColor", "green");
-  upColor.setNamedColor(s);
-
-  s = settings.readEntry("/DownColor", "red");
-  downColor.setNamedColor(s);
-  
+  neutralColor.setNamedColor(settings.readEntry("/NeutralColor", "blue"));
+  upColor.setNamedColor(settings.readEntry("/UpColor", "green"));
+  downColor.setNamedColor(settings.readEntry("/DownColor", "red"));
   minPixelspace = settings.readNumEntry("/minPixelspace", 4);
   
   settings.endGroup();

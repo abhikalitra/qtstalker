@@ -108,14 +108,14 @@ int MAOSC::indicatorPrefDialog ()
   PrefDialog *dialog = new PrefDialog();
   dialog->setCaption(tr("MAOSC Indicator"));
   dialog->createPage (tr("Parms"));
-  dialog->addColorItem(tr("Color"), 1, color);
-  dialog->addComboItem(tr("Line Type"), 1, lineTypes, lineType);
-  dialog->addTextItem(tr("Label"), 1, label);
-  dialog->addIntItem(tr("Fast Period"), 1, fastPeriod, 1, 99999999);
-  dialog->addIntItem(tr("Slow Period"), 1, slowPeriod, 1, 99999999);
-  dialog->addComboItem(tr("Fast MA Type"), 1, maTypeList, fastMaType);
-  dialog->addComboItem(tr("Slow MA Type"), 1, maTypeList, slowMaType);
-  dialog->addComboItem(tr("Input"), 1, inputTypeList, input);
+  dialog->addColorItem(tr("Color"), tr("Parms"), color);
+  dialog->addComboItem(tr("Line Type"), tr("Parms"), lineTypes, lineType);
+  dialog->addTextItem(tr("Label"), tr("Parms"), label);
+  dialog->addIntItem(tr("Fast Period"), tr("Parms"), fastPeriod, 1, 99999999);
+  dialog->addIntItem(tr("Slow Period"), tr("Parms"), slowPeriod, 1, 99999999);
+  dialog->addComboItem(tr("Fast MA Type"), tr("Parms"), maTypeList, fastMaType);
+  dialog->addComboItem(tr("Slow MA Type"), tr("Parms"), maTypeList, slowMaType);
+  dialog->addComboItem(tr("Input"), tr("Parms"), inputTypeList, input);
   
   int rc = dialog->exec();
   

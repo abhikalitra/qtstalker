@@ -107,18 +107,18 @@ int PP::indicatorPrefDialog ()
   PrefDialog *dialog = new PrefDialog();
   dialog->setCaption(tr("PP Indicator"));
   dialog->createPage (tr("Support"));
-  dialog->addColorItem(tr("Support Color"), 1, supColor);
-  dialog->addComboItem(tr("Support Line Type"), 1, lineTypes, supLineType);
-  dialog->addTextItem(tr("Label First Support"), 1, supLabel);
-  dialog->addTextItem(tr("Label Second Support"), 1, supLabel2);
-  dialog->addTextItem(tr("Label Third Support"), 1, supLabel3);
+  dialog->addColorItem(tr("Support Color"), tr("Support"), supColor);
+  dialog->addComboItem(tr("Support Line Type"), tr("Support"), lineTypes, supLineType);
+  dialog->addTextItem(tr("Label First Support"), tr("Support"), supLabel);
+  dialog->addTextItem(tr("Label Second Support"), tr("Support"), supLabel2);
+  dialog->addTextItem(tr("Label Third Support"), tr("Support"), supLabel3);
   
   dialog->createPage (tr("Resistance"));
-  dialog->addColorItem(tr("Resistance Color"), 2, resColor);
-  dialog->addComboItem(tr("Resistance Line Type"), 2, lineTypes, resLineType);
-  dialog->addTextItem(tr("Label First Resistance"), 2, resLabel);
-  dialog->addTextItem(tr("Label Second Resistance"), 2, resLabel2);
-  dialog->addTextItem(tr("Label Third Resistance"), 2, resLabel3);
+  dialog->addColorItem(tr("Resistance Color"), tr("Resistance"), resColor);
+  dialog->addComboItem(tr("Resistance Line Type"), tr("Resistance"), lineTypes, resLineType);
+  dialog->addTextItem(tr("Label First Resistance"), tr("Resistance"), resLabel);
+  dialog->addTextItem(tr("Label Second Resistance"), tr("Resistance"), resLabel2);
+  dialog->addTextItem(tr("Label Third Resistance"), tr("Resistance"), resLabel3);
   
   int rc = dialog->exec();
   

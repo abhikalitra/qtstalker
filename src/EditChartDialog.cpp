@@ -230,7 +230,7 @@ void EditChartDialog::deleteRecord ()
       return;
   }
 
-  db->deleteData(record->getDate().getDateTimeString(TRUE));
+  db->deleteData(record->getDate().getDateTimeString(FALSE));
   
   clearRecordFields();
   
