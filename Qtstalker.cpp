@@ -373,6 +373,7 @@ void QtstalkerApp::initToolBar()
   l.clear();
   l.append(tr("Bar"));
   l.append(tr("Paint Bar"));
+  l.append(tr("Exhaustion Bar"));
   l.append(tr("Line"));
   l.append(tr("Candle"));
   l.append(tr("Point and Figure"));

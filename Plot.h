@@ -138,6 +138,7 @@ class Plot : public QWidget
     void drawLineChart ();
     void drawCandle ();
     void drawBars ();
+    void drawExhaustionBars ();
     void drawSwing ();
     void drawObjects ();
     void drawLines ();
@@ -178,6 +179,10 @@ class Plot : public QWidget
     QColor upColor;
     QColor downColor;
     QColor neutralColor;
+    QColor exhaustionOutsideMajorColor;
+    QColor exhaustionOutsideMinorColor;
+    QColor exhaustionInsideMajorColor;
+    QColor exhaustionInsideMinorColor;
     bool dateFlag;
     bool gridFlag;
     bool mainFlag;

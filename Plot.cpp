@@ -41,6 +41,10 @@ Plot::Plot (QWidget *w) : QWidget(w)
   upColor.setNamedColor("green");
   downColor.setNamedColor("red");
   neutralColor.setNamedColor("blue");
+  exhaustionOutsideMajorColor.setNamedColor("orange");
+  exhaustionOutsideMinorColor.setNamedColor("yellow");
+  exhaustionInsideMajorColor.setNamedColor("red");
+  exhaustionInsideMinorColor.setNamedColor("pink");
   pixelspace = 0;
   minPixelspace = 0;
   dateFlag = FALSE;
@@ -166,6 +170,15 @@ void Plot::setChartType (QString d)
       break;
     }
 
+    if (! d.compare(tr("Exhaustion Bar")))
+    {
+      minPixelspace = 4;
+      startX = 2;
+      chartType = d;
+      dateFlag = TRUE;
+      break;
+    }
+
     if (! d.compare(tr("Point and Figure")))
     {
       minPixelspace = 4;
@@ -265,6 +278,14 @@ void Plot::draw ()
         if (! chartType.compare(tr("Paint Bar")))
         {
           drawPaintBar();
+          drawLines();
+          drawObjects();
+          break;
+        }
+
+        if (! chartType.compare(tr("Exhaustion Bar")))
+        {
+          drawExhaustionBars();
           drawLines();
           drawObjects();
           break;
@@ -1980,6 +2001,94 @@ void Plot::drawPaintBar ()
 
     int h = convertToY(r->getFloat("High"));
     int l = convertToY(r->getFloat("Low"));
+    painter.drawLine (x, h, x, l);
+
+    x = x + pixelspace;
+    loop++;
+  }
+
+  painter.end();
+}
+
+void Plot::drawExhaustionBars ()
+{
+  QPainter painter;
+  painter.begin(&buffer);
+// Copied from Plot::drawBars() on 20030723
+/* Exhaustion Bars
+*  This is an experiment with concepts of "One- and Two-bar Price Patterns"
+*  See:
+*  "Technical Analysis Explained" by Martin Pring (Fourth Edition)
+*  ISBN 0-07-138193-7
+*  pp 111-135
+*/
+
+  int x = startX;
+  int loop = startIndex;
+
+  // set first bar as neutral
+  painter.setPen(neutralColor);
+
+  Setting *r = data->at(loop);
+  double t = r->getFloat("Open");
+  int y;
+  if (t)
+  {
+    y = convertToY(t);
+    painter.drawLine (x - 2, y, x, y);
+  }
+
+  y = convertToY(r->getFloat("Close"));
+  painter.drawLine (x + 2, y, x, y);
+
+  int h = convertToY(r->getFloat("High"));
+
+  int l = convertToY(r->getFloat("Low"));
+  painter.drawLine (x, h, x, l);
+
+  x = x + pixelspace;
+  loop++;
+
+  while ((x < _width) && (loop < (int) data->count()))
+  {
+    r = data->at(loop);
+    Setting *pr = data->at(loop - 1);
+
+/* FIXME
+* - Initial implementation only attempts "outside bars" and "inside bars".
+* - Volume must accompany.
+* - Strong trend should precede.
+* - If more bars encompassed then assign exhaustionMajorColor.
+* - Give more weight to exhaustion bars that have more range.
+* - Decide what to do when o = h = l = c ... gives indicator which may be false.
+*/
+    if ((r->getFloat("High") > pr->getFloat("High")) &&
+        (r->getFloat("Low") < pr->getFloat("Low")))
+    {
+      painter.setPen(exhaustionOutsideMinorColor);
+    }
+    else if ((r->getFloat("High") < pr->getFloat("High")) &&
+        (r->getFloat("Low") > pr->getFloat("Low")))
+    {
+      painter.setPen(exhaustionInsideMinorColor);
+    }
+    else
+    {
+      painter.setPen(neutralColor);
+    }
+
+    t = r->getFloat("Open");
+    if (t)
+    {
+      y = convertToY(t);
+      painter.drawLine (x - 2, y, x, y);
+    }
+
+    y = convertToY(r->getFloat("Close"));
+    painter.drawLine (x + 2, y, x, y);
+
+    h = convertToY(r->getFloat("High"));
+    l = convertToY(r->getFloat("Low"));
     painter.drawLine (x, h, x, l);
 
     x = x + pixelspace;

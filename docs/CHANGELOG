@@ -13,6 +13,10 @@
 
 - Applied 3 patches for PP color and several docs from David Crossley.
 
+- Changed the plugin compile scripts to clear out old object files before compiling.
+
+- Applied preliminary exhaustion bar patch from David Crossley. This is a new chart type see docs for details.
+
 
 0.20
 ====
