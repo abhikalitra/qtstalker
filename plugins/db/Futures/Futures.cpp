@@ -51,28 +51,26 @@ void Futures::dbPrefDialog ()
   delete dialog;
 }
 
-void Futures::setBar (BarDate date, double open, double high, double low,
-                     double close, double volume, double oi)
+void Futures::setBar (Bar *bar)
 {
   QStringList l;
-  l.append(QString::number(open));
-  l.append(QString::number(high));
-  l.append(QString::number(low));
-  l.append(QString::number(close));
-  l.append(QString::number(volume, 'f', 0));
-  l.append(QString::number(oi, 'f', 0));
-  setData(date.getDateTimeString(FALSE), l.join(","));
+  l.append(QString::number(bar->getOpen()));
+  l.append(QString::number(bar->getHigh()));
+  l.append(QString::number(bar->getLow()));
+  l.append(QString::number(bar->getClose()));
+  l.append(QString::number(bar->getVolume(), 'f', 0));
+  l.append(QString::number(bar->getOI(), 'f', 0));
+  setData(bar->getDate().getDateTimeString(FALSE), l.join(","));
 }
 
-void Futures::saveDbDefaults (BarData::BarType barType, QString symbol, QString name, QString futuresType,
-                              QString futuresMonth, QString, QString)
+void Futures::saveDbDefaults (Setting *set)
 {
-  setData("Symbol", symbol);
+  setData("Symbol", set->getData("Symbol"));
   setData("Type", "Futures");
-  setData("Title", name);
-  setData("BarType", QString::number(barType));
-  setData("FuturesType", futuresType);
-  setData("FuturesMonth", futuresMonth);
+  setData("Title", set->getData("Title"));
+  setData("BarType", set->getData("BarType"));
+  setData("FuturesType", set->getData("FuturesType"));
+  setData("FuturesMonth", set->getData("FuturesMonth"));
   setData("Plugin", "Futures");
 }
 

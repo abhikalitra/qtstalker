@@ -22,6 +22,7 @@
 #include "CME.h"
 #include "ChartDb.h"
 #include "PrefDialog.h"
+#include "Bar.h"
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qnetwork.h>
@@ -932,13 +933,6 @@ void CME::parse (Setting *data)
   s = tr("Updating ") + data->getData("Symbol");
   emit statusLogMessage(s);
 
-  BarDate bd;
-  if (bd.setDate(data->getData("Date")))
-  {
-    emit statusLogMessage("Bad date " + data->getData("Date"));
-    return;
-  }
-  
   ChartDb *db = new ChartDb;
   db->setPlugin("Futures");
   s = path;
@@ -954,12 +948,31 @@ void CME::parse (Setting *data)
   s = db->getData("Symbol");
   if (! s.length())
   {
-    db->saveDbDefaults(BarData::Daily, data->getData("Symbol"), fd.getName(),
-                       fd.getSymbol(), data->getData("Month"), QString(), QString());
+    Setting *set = new Setting;
+    set->setData("BarType", QString::number(BarData::Daily));
+    set->setData("Symbol", data->getData("Symbol"));
+    set->setData("Title", fd.getName());
+    set->setData("FuturesType", fd.getSymbol());
+    set->setData("FuturesMonth", data->getData("Month"));
+    db->saveDbDefaults(set);
+    delete set;
   }
   
-  db->setBar(bd, open.toDouble(), high.toDouble(), low.toDouble(), close.toDouble(),
-	     volume.toDouble(), oi.toDouble());
+  Bar *bar = new Bar;
+  if (bar->setDate(data->getData("Date")))
+  {
+    emit statusLogMessage("Bad date " + data->getData("Date"));
+    delete bar;
+    return;
+  }
+  bar->setOpen(open.toDouble());
+  bar->setHigh(high.toDouble());
+  bar->setLow(low.toDouble());
+  bar->setClose(close.toDouble());
+  bar->setVolume(volume.toDouble());
+  bar->setOI(oi.toInt());
+  db->setBar(bar);
+  delete bar;
 	     
   delete db;
 

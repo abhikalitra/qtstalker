@@ -50,25 +50,23 @@ void Stocks::dbPrefDialog ()
   delete dialog;
 }
 
-void Stocks::setBar (BarDate date, double open, double high, double low,
-                     double close, double volume, double)
+void Stocks::setBar (Bar *bar)
 {
   QStringList l;
-  l.append(QString::number(open));
-  l.append(QString::number(high));
-  l.append(QString::number(low));
-  l.append(QString::number(close));
-  l.append(QString::number(volume, 'f', 0));
-  setData(date.getDateTimeString(FALSE), l.join(","));
+  l.append(QString::number(bar->getOpen()));
+  l.append(QString::number(bar->getHigh()));
+  l.append(QString::number(bar->getLow()));
+  l.append(QString::number(bar->getClose()));
+  l.append(QString::number(bar->getVolume(), 'f', 0));
+  setData(bar->getDate().getDateTimeString(FALSE), l.join(","));
 }
 
-void Stocks::saveDbDefaults (BarData::BarType barType, QString symbol, QString name, QString,
-                             QString, QString, QString)
+void Stocks::saveDbDefaults (Setting *set)
 {
-  setData("Symbol", symbol);
+  setData("Symbol", set->getData("Symbol"));
   setData("Type", "Stock");
-  setData("Title", name);
-  setData("BarType", QString::number(barType));
+  setData("Title", set->getData("Title"));
+  setData("BarType", set->getData("BarType"));
   setData("Plugin", "Stocks");
 }
 

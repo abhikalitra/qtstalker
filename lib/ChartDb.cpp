@@ -84,12 +84,12 @@ BarData * ChartDb::getHistory ()
   return plug->getHistory();
 }
 
-void ChartDb::setBar (BarDate bd, double o, double h, double l, double c, double v, double oi)
+void ChartDb::setBar (Bar *bar)
 {
   if (! plug)
     return;
   
-  plug->setBar(bd, o, h, l, c, v, oi);
+  plug->setBar(bar);
 }
 
 QStringList ChartDb::getChartObjectsList ()
@@ -205,8 +205,12 @@ void ChartDb::createNew (QString d)
   plug->setDb(db);
   
   QFileInfo fi(path);
-  plug->saveDbDefaults(BarData::Daily, fi.fileName(), fi.fileName(), QString(), QString(),
-                       QString(), QString());
+  Setting *set = new Setting;
+  set->setData("BarType", QString::number(BarData::Daily));
+  set->setData("Symbol", fi.fileName());
+  set->setData("Title", fi.fileName());
+  plug->saveDbDefaults(set);
+  delete set;
   
   plug->dbPrefDialog();
 }
@@ -300,12 +304,11 @@ int ChartDb::loadPlugin ()
   return FALSE;
 }
 
-void ChartDb::saveDbDefaults (BarData::BarType bt, QString s1, QString s2, QString s3,
-                             QString s4, QString s5, QString s6)
+void ChartDb::saveDbDefaults (Setting *set)
 {
   if (! plug)
     return;
     
-  plug->saveDbDefaults (bt, s1, s2, s3, s4, s5, s6);
+  plug->saveDbDefaults (set);
 }
 

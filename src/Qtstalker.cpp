@@ -1149,7 +1149,7 @@ void QtstalkerApp::slotEditIndicator (QString selection, Plot *plot)
 
 void QtstalkerApp::slotDeleteIndicator (QString text, Plot *plot)
 {
-  if (! plot->getMainFlag())
+  if (! plot->getMainFlag() && plot->getTabFlag())
   {
     if (tabs->count() == 1)
     {

@@ -21,6 +21,7 @@
 
 #include "CSV.h"
 #include "CSVDialog.h"
+#include "Bar.h"
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qtimer.h>
@@ -288,22 +289,28 @@ void CSV::parse ()
         s.append(r->getData("Time"));
       else
         s.append("000000");
-      BarDate bd;
-      if (bd.setDate(s))
+	
+      Bar *bar = new Bar;
+      if (bar->setDate(s))
       {
         emit statusLogMessage("Bad date " + r->getData("Date"));
         delete r;
+	delete bar;
         continue;
       }
+      bar->setOpen(r->getData("Open").toDouble());
+      bar->setHigh(r->getData("High").toDouble());
+      bar->setLow(r->getData("Low").toDouble());
+      bar->setClose(r->getData("Close").toDouble());
+      bar->setVolume(r->getData("Volume").toDouble());
+      bar->setOI(r->getData("OI").toInt());
       
       if (! symbol.length())
       {
 	s = path;
 	s.append(r->getData("Symbol"));
 	openDb(s, r->getData("Symbol"), type);
-        db->setBar(bd, r->getData("Open").toDouble(), r->getData("High").toDouble(),
-	           r->getData("Low").toDouble(), r->getData("Close").toDouble(),
-	           r->getData("Volume").toDouble(), r->getData("OI").toDouble());
+        db->setBar(bar);
 	emit dataLogMessage(r->getData("Symbol") + " " + r->getString());
         emit statusLogMessage("Updating " + r->getData("Symbol"));
         delete db;
@@ -311,13 +318,12 @@ void CSV::parse ()
       }
       else
       {
-        db->setBar(bd, r->getData("Open").toDouble(), r->getData("High").toDouble(),
-	           r->getData("Low").toDouble(), r->getData("Close").toDouble(),
-	           r->getData("Volume").toDouble(), r->getData("OI").toDouble());
+        db->setBar(bar);
 	emit dataLogMessage(symbol + " " + r->getString());
       }
 
       delete r;
+      delete bar;
     }
 
     if (db)
@@ -523,14 +529,21 @@ void CSV::openDb (QString path, QString symbol, QString type)
   QString s = db->getData("Symbol");
   if (! s.length())
   {
-    db->saveDbDefaults(BarData::Daily, symbol, symbol, QString(),
-                       QString(), QString(), QString());
+    Setting *set = new Setting;
+    set->setData("BarType", QString::number(BarData::Daily));
+    set->setData("Symbol", symbol);
+    set->setData("Title", symbol);
+    db->saveDbDefaults(set);
     
     if (! type.compare("Futures"))
     {
-      db->saveDbDefaults(BarData::Daily, symbol, fd.getName(), fd.getSymbol(),
-                         futuresMonth, QString(), QString());
+      set->setData("Title", fd.getName());
+      set->setData("FuturesType", fd.getSymbol());
+      set->setData("FuturesMonth", futuresMonth);
+      db->saveDbDefaults(set);
     }
+    
+    delete set;
   }
 }
 

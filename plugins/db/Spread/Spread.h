@@ -24,6 +24,7 @@
 
 #include "DbPlugin.h"
 #include "Bar.h"
+#include "Setting.h"
 #include <qstring.h>
 #include <qdict.h>
 
@@ -35,12 +36,11 @@ class Spread : public DbPlugin
     BarData * getHistory ();
     Bar * getBar (QString, QString);
     void dbPrefDialog ();
-    void setBar (BarDate date, double open, double high, double low, double close, double volume, double);
+    void setBar (Bar *);
     void updateSpread ();
     void loadData (QString, QString);
     QString createNew ();
-    void saveDbDefaults (BarData::BarType barType, QString symbol, QString name, QString,
-                         QString, QString, QString);
+    void saveDbDefaults (Setting *);
 
   private:
     QDict<Bar> data;

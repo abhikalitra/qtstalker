@@ -238,10 +238,16 @@ void FuturesDialog::deleteRecord ()
 
 void FuturesDialog::saveRecord ()
 {
-  BarDate bd;
-  bd.setDate(date->text());
-  db->setBar(bd, open->text().toDouble(), high->text().toDouble(), low->text().toDouble(),
-             close->text().toDouble(), volume->text().toDouble(), oi->text().toDouble());
+  Bar *bar = new Bar;
+  bar->setDate(date->text());
+  bar->setOpen(open->text().toDouble());
+  bar->setHigh(high->text().toDouble());
+  bar->setLow(low->text().toDouble());
+  bar->setClose(close->text().toDouble());
+  bar->setVolume(volume->text().toDouble());
+  bar->setOI(oi->text().toInt());
+  db->setBar(bar);
+  delete bar;
   
   toolbar->setButtonStatus("save", FALSE);
   saveRecordFlag = FALSE;

@@ -23,9 +23,9 @@
 #define INDEX_HPP
 
 #include "DbPlugin.h"
-#include "BarDate.h"
 #include "Bar.h"
 #include "BarData.h"
+#include "Setting.h"
 #include <qstring.h>
 #include <qdict.h>
 
@@ -37,12 +37,11 @@ class Index : public DbPlugin
     BarData * getHistory ();
     Bar * getBar (QString, QString);
     void dbPrefDialog ();
-    void setBar (BarDate date, double open, double high, double low, double close, double, double);
+    void setBar (Bar *);
     void updateIndex ();
     void loadData (QString, float);
     QString createNew ();
-    void saveDbDefaults (BarData::BarType barType, QString symbol, QString name, QString,
-                         QString, QString, QString);
+    void saveDbDefaults (Setting *);
 
   private:
     QDict<Bar> data;

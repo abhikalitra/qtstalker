@@ -23,6 +23,7 @@
 #include "PrefDialog.h"
 #include "ChartDb.h"
 #include "Config.h"
+#include "Bar.h"
 #include <qdir.h>
 #include <qinputdialog.h>
 #include <qmessagebox.h>
@@ -84,14 +85,14 @@ void Spread::dbPrefDialog ()
   delete dialog;
 }
 
-void Spread::setBar (BarDate date, double open, double high, double low, double close, double, double)
+void Spread::setBar (Bar *bar)
 {
   QStringList l;
-  l.append(QString::number(open));
-  l.append(QString::number(high));
-  l.append(QString::number(low));
-  l.append(QString::number(close));
-  setData(date.getDateTimeString(FALSE), l.join(","));
+  l.append(QString::number(bar->getOpen()));
+  l.append(QString::number(bar->getHigh()));
+  l.append(QString::number(bar->getLow()));
+  l.append(QString::number(bar->getClose()));
+  setData(bar->getDate().getDateTimeString(FALSE), l.join(","));
 }
 
 void Spread::updateSpread ()
@@ -111,7 +112,16 @@ void Spread::updateSpread ()
   {
     Bar *r = it.current();
     if (r->getData("Count") == 2)
-      setBar(r->getDate(), r->getClose(), r->getClose(), r->getClose(), r->getClose(), 0, 0);
+    {
+      Bar *bar = new Bar;
+      bar->setDate(r->getDate());
+      bar->setOpen(r->getClose());
+      bar->setHigh(r->getClose());
+      bar->setLow(r->getClose());
+      bar->setClose(r->getClose());
+      setBar(bar);
+      delete bar;
+    }
   }
 
   data.clear();
@@ -212,13 +222,12 @@ QString Spread::createNew ()
   return s;  
 }
 
-void Spread::saveDbDefaults (BarData::BarType barType, QString symbol, QString name, QString,
-                             QString, QString, QString)
+void Spread::saveDbDefaults (Setting *set)
 {
-  setData("Symbol", symbol);
+  setData("Symbol", set->getData("Symbol"));
   setData("Type", "Spread");
-  setData("Title", name);
-  setData("BarType", QString::number(barType));
+  setData("Title", set->getData("Title"));
+  setData("BarType", set->getData("BarType"));
   setData("Plugin", "Spread");
 }
 

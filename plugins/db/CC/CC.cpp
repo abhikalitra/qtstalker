@@ -73,27 +73,25 @@ void CC::dbPrefDialog ()
   delete dialog;
 }
 
-void CC::setBar (BarDate date, double open, double high, double low,
-                 double close, double volume, double oi)
+void CC::setBar (Bar *bar)
 {
   QStringList l;
-  l.append(QString::number(open));
-  l.append(QString::number(high));
-  l.append(QString::number(low));
-  l.append(QString::number(close));
-  l.append(QString::number(volume, 'f', 0));
-  l.append(QString::number(oi, 'f', 0));
-  setData(date.getDateTimeString(FALSE), l.join(","));
+  l.append(QString::number(bar->getOpen()));
+  l.append(QString::number(bar->getHigh()));
+  l.append(QString::number(bar->getLow()));
+  l.append(QString::number(bar->getClose()));
+  l.append(QString::number(bar->getVolume(), 'f', 0));
+  l.append(QString::number(bar->getOI(), 'f', 0));
+  setData(bar->getDate().getDateTimeString(FALSE), l.join(","));
 }
 
-void CC::saveDbDefaults (BarData::BarType barType, QString symbol, QString name, QString,
-                         QString, QString, QString)
+void CC::saveDbDefaults (Setting *set)
 {
-  setData("Symbol", symbol);
+  setData("Symbol", set->getData("Symbol"));
   setData("Type", "CC");
-  setData("Title", name + " - Continuous Adjusted");
-  setData("BarType", QString::number(barType));
-  setData("CCType", symbol);
+  setData("Title", set->getData("Title") + " - Continuous Adjusted");
+  setData("BarType", set->getData("BarType"));
+  setData("CCType", set->getData("Symbol"));
   setData("Plugin", "CC");
   setData("MaxYears", "10");
 }
@@ -172,7 +170,17 @@ void CC::update ()
         double h = c + (sr->getHigh() - sr->getClose());
         double l = c - (sr->getClose() - sr->getLow());
         double o = h - (sr->getHigh() - sr->getOpen());
-        setBar(sr->getDate(), o, h, l, c, sr->getVolume(), sr->getOI());
+	
+	Bar *bar = new Bar;
+	bar->setDate(sr->getDate());
+	bar->setOpen(o);
+	bar->setHigh(h);
+	bar->setLow(l);
+	bar->setClose(c);
+	bar->setVolume(sr->getVolume());
+	bar->setOI((int) sr->getOI());
+        setBar(bar);
+	delete bar;
         pr->setClose(c);
 	delete fr;
 	fr = sr;

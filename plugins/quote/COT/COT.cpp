@@ -22,6 +22,7 @@
 #include "COT.h"
 #include "ChartDb.h"
 #include "PrefDialog.h"
+#include "Bar.h"
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qnetwork.h>
@@ -306,12 +307,27 @@ void COT::saveData (Setting *set)
   s = db->getData("Symbol");
   if (! s.length())
   {
-    db->saveDbDefaults(BarData::Daily, set->getData("Symbol"), set->getData("Title"), QString(),
-                         QString(), QString(), QString());
+    Setting *set2 = new Setting;
+    set2->setData("BarType", QString::number(BarData::Daily));
+    set2->setData("Symbol", set->getData("Symbol"));
+    set2->setData("Title", set->getData("Title"));
+    db->saveDbDefaults(set2);
+    delete set2;
   }
 
-  db->setBar(bd, set->getFloat("Non Commercial"), set->getFloat("Commercial"),
-             set->getFloat("Non Reportable"), 0, 0, set->getFloat("Open Interest"));
+  Bar *bar = new Bar;
+  if (bar->setDate(set->getData("Date")))
+  {
+    emit statusLogMessage("Bad date " + set->getData("Date"));
+    delete bar;
+    return;
+  }
+  bar->setOpen(set->getFloat("Non Commercial"));
+  bar->setHigh(set->getFloat("Commercial"));
+  bar->setLow(set->getFloat("Non Reportable"));
+  bar->setOI(set->getInt("Open Interest"));
+  db->setBar(bar);
+  delete bar;
   
 //  s = set->getData("Symbol") + " " + r->getString();
 //  emit dataLogMessage(s);

@@ -23,6 +23,7 @@
 #include "ChartDb.h"
 #include "PrefDialog.h"
 #include "Setting.h"
+#include "Bar.h"
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qtimer.h>
@@ -281,10 +282,11 @@ void NYBOT::parse ()
       s = tr("Updating ") + symbol;
       emit statusLogMessage(s);
       
-      BarDate bd;
-      if (bd.setDate(date))
+      Bar *bar = new Bar;
+      if (bar->setDate(date))
       {
         emit statusLogMessage("Bad date " + date);
+	delete bar;
         continue;
       }
       
@@ -303,13 +305,25 @@ void NYBOT::parse ()
       s = db->getData("Symbol");
       if (! s.length())
       {
-        db->saveDbDefaults(BarData::Daily, symbol, fd->getName(), fd->getSymbol(),
-                           month, QString(), QString());
+        Setting *set = new Setting;
+        set->setData("BarType", QString::number(BarData::Daily));
+        set->setData("Symbol", symbol);
+        set->setData("Title", fd->getName());
+        set->setData("FuturesType", fd->getSymbol());
+        set->setData("FuturesMonth", month);
+        db->saveDbDefaults(set);
+	delete set;
       
       }
       
-      db->setBar(bd, open.toDouble(), high.toDouble(), low.toDouble(), close.toDouble(),
-	         volume.toDouble(), oi.toDouble());
+      bar->setOpen(open.toDouble());
+      bar->setHigh(high.toDouble());
+      bar->setLow(low.toDouble());
+      bar->setClose(close.toDouble());
+      bar->setVolume(volume.toDouble());
+      bar->setOI(oi.toInt());
+      db->setBar(bar);
+      delete bar;
 		 
 //      emit dataLogMessage(symbol);
       delete db;

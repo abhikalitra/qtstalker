@@ -29,7 +29,6 @@
 #include "Setting.h"
 #include "BarData.h"
 #include "Bar.h"
-#include "BarDate.h"
 #include "Config.h"
 
 class ChartDb
@@ -50,7 +49,7 @@ class ChartDb
     void deleteChartObject (QString);
     QString getData (QString);
     void setData (QString, QString);
-    void setBar (BarDate, double, double, double, double, double, double);
+    void setBar (Bar *);
     BarData * getHistory ();
     void deleteData (QString);
     void dbPrefDialog (QString);
@@ -58,8 +57,7 @@ class ChartDb
     void setPlugin (QString);
     int open (QString);
     int loadPlugin ();
-    void saveDbDefaults (BarData::BarType, QString, QString, QString,
-                         QString, QString, QString);
+    void saveDbDefaults (Setting *);
     
   private:
     DB *db;

@@ -24,6 +24,7 @@
 #include "Setting.h"
 #include "ChartDb.h"
 #include "Config.h"
+#include "Bar.h"
 #include <qdir.h>
 #include <qtimer.h>
 #include <qdatetime.h>
@@ -165,8 +166,12 @@ void MySQLPlugin::updateSymbol(QString symbol)
   QString s = db.getData("Symbol");
   if (! s.length())
   {
-    db.saveDbDefaults(BarData::Daily, symbol, symbol, QString(),
-                      QString(), QString(), QString());
+    Setting *set = new Setting;
+    set->setData("BarType", QString::number(BarData::Daily));
+    set->setData("Symbol", symbol);
+    set->setData("Title", symbol);
+    db.saveDbDefaults(set);
+    delete set;
   }
 
   QDate lastdate;
@@ -247,10 +252,12 @@ void MySQLPlugin::doQuery (QString sql, ChartDb &db)
       QString d = row[0];
       d = d.remove('-');
       d.append("000000");
-      BarDate barDate;
-      if (barDate.setDate(d))
+      
+      Bar *bar = new Bar;
+      if (bar->setDate(d))
       {
         emit statusLogMessage("Bad date " + d);
+	delete bar;
         continue;
       }
       
@@ -264,8 +271,14 @@ void MySQLPlugin::doQuery (QString sql, ChartDb &db)
       if (with_oi)
         oi = row[6];
       
-      db.setBar(barDate, open.toDouble(), high.toDouble(), low.toDouble(),
-                close.toDouble(), volume.toDouble(), oi.toDouble());
+      bar->setOpen(open.toDouble());
+      bar->setHigh(high.toDouble());
+      bar->setLow(low.toDouble());
+      bar->setClose(close.toDouble());
+      bar->setVolume(volume.toDouble());
+      bar->setOI(oi.toInt());
+      db.setBar(bar);
+      delete bar;
       
 //      emit dataLogMessage(db.getDetail(ChartDb::Symbol) + " " + bar->getString());
     }

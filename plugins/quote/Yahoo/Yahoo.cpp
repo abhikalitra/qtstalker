@@ -23,6 +23,7 @@
 #include "YahooDialog.h"
 #include "ChartDb.h"
 #include "Config.h"
+#include "Bar.h"
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qdir.h>
@@ -82,7 +83,6 @@ void Yahoo::update ()
     
     if (! method.compare(tr("History")))
     {
-//      s = "http://chart.yahoo.com/table.csv?s=";
       s = "http://ichart.yahoo.com/table.csv?s=";
       s.append(symbolList[loop]);
       s.append("&a=");
@@ -231,8 +231,12 @@ void Yahoo::parseHistory ()
   s = plug->getData("Symbol");
   if (! s.length())
   {
-    plug->saveDbDefaults(BarData::Daily, symbolList[symbolLoop], symbolList[symbolLoop], QString(),
-                         QString(), QString(), QString());
+    Setting *set = new Setting;
+    set->setData("BarType", QString::number(BarData::Daily));
+    set->setData("Symbol", symbolList[symbolLoop]);
+    set->setData("Title", symbolList[symbolLoop]);
+    plug->saveDbDefaults(set);
+    delete set;
   }
 
   while(stream.atEnd() == 0)
@@ -304,14 +308,20 @@ void Yahoo::parseHistory ()
       }
     }
 
-    BarDate bd;    
-    if (bd.setDate(date))
+    Bar *bar = new Bar;
+    if (bar->setDate(date))
     {
       emit statusLogMessage("Bad date " + date);
+      delete bar;
       continue;
     }
-    plug->setBar(bd, open.toDouble(), high.toDouble(), low.toDouble(),
-                 close.toDouble(), volume.toDouble(), 0);
+    bar->setOpen(open.toDouble());
+    bar->setHigh(high.toDouble());
+    bar->setLow(low.toDouble());
+    bar->setClose(close.toDouble());
+    bar->setVolume(volume.toDouble());
+    plug->setBar(bar);
+    delete bar;
     
     s = symbolList[symbolLoop] + " " + date + " " + open + " " + high + " " + low
         + " " + close + " " + volume;
@@ -356,8 +366,12 @@ void Yahoo::parseQuote ()
   s = plug->getData("Symbol");
   if (! s.length())
   {
-    plug->saveDbDefaults(BarData::Daily, symbolList[symbolLoop], symbolList[symbolLoop], QString(),
-                         QString(), QString(), QString());
+    Setting *set = new Setting;
+    set->setData("BarType", QString::number(BarData::Daily));
+    set->setData("Symbol", symbolList[symbolLoop]);
+    set->setData("Title", symbolList[symbolLoop]);
+    plug->saveDbDefaults(set);
+    delete set;
   }
   
   while(stream.atEnd() == 0)
@@ -415,14 +429,20 @@ void Yahoo::parseQuote ()
     if (l.count() == 10)
       volume = l[9];
       
-    BarDate bd;    
-    if (bd.setDate(date))
+    Bar *bar = new Bar;
+    if (bar->setDate(date))
     {
       emit statusLogMessage("Bad date " + date);
+      delete bar;
       continue;
     }
-    plug->setBar(bd, open.toDouble(), high.toDouble(), low.toDouble(),
-                 close.toDouble(), volume.toDouble(), 0);
+    bar->setOpen(open.toDouble());
+    bar->setHigh(high.toDouble());
+    bar->setLow(low.toDouble());
+    bar->setClose(close.toDouble());
+    bar->setVolume(volume.toDouble());
+    plug->setBar(bar);
+    delete bar;
     
     s = symbolList[symbolLoop] + " " + date + " " + open + " " + high + " " + low
         + " " + close + " " + volume;

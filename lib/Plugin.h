@@ -93,13 +93,13 @@ class Plugin : public QObject
     virtual void deleteChartObject (QString);
     virtual QString getData (QString);
     virtual void setData (QString, QString);
-    virtual void setBar (BarDate, double, double, double, double, double, double);
+    virtual void setBar (Bar *);
     virtual BarData * getHistory ();
     virtual void deleteData (QString);
     virtual void dbPrefDialog ();
     virtual QString createNew ();
     virtual void setDb (DB *);
-    virtual void saveDbDefaults (BarData::BarType, QString, QString, QString, QString, QString, QString);
+    virtual void saveDbDefaults (Setting *);
     virtual void setDbPath (QString);
     
     // base plugin functions

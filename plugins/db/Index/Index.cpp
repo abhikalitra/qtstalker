@@ -23,6 +23,7 @@
 #include "IndexDialog.h"
 #include "Config.h"
 #include "ChartDb.h"
+#include "Bar.h"
 #include <qdir.h>
 #include <qinputdialog.h>
 #include <qmessagebox.h>
@@ -72,14 +73,14 @@ void Index::dbPrefDialog ()
   delete dialog;
 }
 
-void Index::setBar (BarDate date, double open, double high, double low, double close, double, double)
+void Index::setBar (Bar *bar)
 {
   QStringList l;
-  l.append(QString::number(open));
-  l.append(QString::number(high));
-  l.append(QString::number(low));
-  l.append(QString::number(close));
-  setData(date.getDateTimeString(FALSE), l.join(","));
+  l.append(QString::number(bar->getOpen()));
+  l.append(QString::number(bar->getHigh()));
+  l.append(QString::number(bar->getLow()));
+  l.append(QString::number(bar->getClose()));
+  setData(bar->getDate().getDateTimeString(FALSE), l.join(","));
 }
 
 void Index::updateIndex ()
@@ -119,8 +120,8 @@ void Index::updateIndex ()
 	r->setHigh(r->getClose());
       if (r->getClose() < r->getLow())
 	r->setLow(r->getClose());
-      
-      setBar(r->getDate(), r->getOpen(), r->getHigh(), r->getLow(), r->getClose(), 0, 0);
+	
+      setBar(r);
     }
   }
 
@@ -223,13 +224,12 @@ QString Index::createNew ()
   return s;
 }
 
-void Index::saveDbDefaults (BarData::BarType barType, QString symbol, QString name, QString,
-                             QString, QString, QString)
+void Index::saveDbDefaults (Setting *set)
 {
-  setData("Symbol", symbol);
+  setData("Symbol", set->getData("Symbol"));
   setData("Type", "Index");
-  setData("Title", name);
-  setData("BarType", QString::number(barType));
+  setData("Title", set->getData("Title"));
+  setData("BarType", set->getData("BarType"));
   setData("Plugin", "Index");
 }
 

@@ -210,7 +210,7 @@ void Plugin::setData (QString, QString)
 {
 }
 
-void Plugin::setBar (BarDate, double, double, double, double, double, double)
+void Plugin::setBar (Bar *)
 {
 }
 
@@ -236,7 +236,7 @@ void Plugin::setDb (DB *)
 {
 }
 
-void Plugin::saveDbDefaults (BarData::BarType, QString, QString, QString, QString, QString, QString)
+void Plugin::saveDbDefaults (Setting *)
 {
 }
 
