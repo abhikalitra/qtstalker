@@ -257,7 +257,16 @@ void SettingView::floatDialog ()
 
 void SettingView::fileDialog ()
 {
-  QStringList selection = QFileDialog::getOpenFileNames("*", "*", this, "file dialog");
+  QString path = "*";
+
+  QStringList selection = settings->getList(item->text(0));
+  if (selection.count())
+  {
+    path = selection[0];
+    path.truncate(selection[0].findRev("/"));
+  }
+
+  selection = QFileDialog::getOpenFileNames("*", path, this, "file dialog");
   if (selection.count())
   {
     settings->setList(item->text(0), selection);
