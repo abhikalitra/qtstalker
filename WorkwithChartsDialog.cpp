@@ -32,13 +32,11 @@
 #include "done.xpm"
 #include <qinputdialog.h>
 #include <qtextstream.h>
-#include <qdatetime.h>
 #include <qtooltip.h>
 #include <qlayout.h>
-#include <qpushbutton.h>
-#include <qgroupbox.h>
 #include <qdir.h>
 #include <qmessagebox.h>
+#include <qgroupbox.h>
 
 WorkwithChartsDialog::WorkwithChartsDialog (Config *c) : QDialog (0, 0, FALSE)
 {
@@ -56,6 +54,7 @@ WorkwithChartsDialog::WorkwithChartsDialog (Config *c) : QDialog (0, 0, FALSE)
   openButton->setPixmap(QPixmap(open));
   connect(openButton, SIGNAL(clicked()), this, SLOT(openSymbol()));
   openButton->setMaximumWidth(30);
+  openButton->setAutoRaise(TRUE);
   grid->addWidget(openButton, 0, 0);
 
   newButton = new QToolButton(this);
@@ -63,6 +62,7 @@ WorkwithChartsDialog::WorkwithChartsDialog (Config *c) : QDialog (0, 0, FALSE)
   newButton->setPixmap(QPixmap(newchart));
   connect(newButton, SIGNAL(clicked()), this, SLOT(newComposite()));
   newButton->setMaximumWidth(30);
+  newButton->setAutoRaise(TRUE);
   grid->addWidget(newButton, 0, 1);
 
   editButton = new QToolButton(this);
@@ -70,6 +70,7 @@ WorkwithChartsDialog::WorkwithChartsDialog (Config *c) : QDialog (0, 0, FALSE)
   editButton->setPixmap(QPixmap(edit));
   connect(editButton, SIGNAL(clicked()), this, SLOT(editChart()));
   editButton->setMaximumWidth(30);
+  editButton->setAutoRaise(TRUE);
   grid->addWidget(editButton, 0, 2);
 
   deleteButton = new QToolButton(this);
@@ -77,6 +78,7 @@ WorkwithChartsDialog::WorkwithChartsDialog (Config *c) : QDialog (0, 0, FALSE)
   deleteButton->setPixmap(QPixmap(deletefile));
   connect(deleteButton, SIGNAL(clicked()), this, SLOT(deleteChart()));
   deleteButton->setMaximumWidth(30);
+  deleteButton->setAutoRaise(TRUE);
   grid->addWidget(deleteButton, 0, 3);
 
   exportButton = new QToolButton(this);
@@ -84,6 +86,7 @@ WorkwithChartsDialog::WorkwithChartsDialog (Config *c) : QDialog (0, 0, FALSE)
   exportButton->setPixmap(QPixmap(exportfile));
   connect(exportButton, SIGNAL(clicked()), this, SLOT(exportSymbol()));
   exportButton->setMaximumWidth(30);
+  exportButton->setAutoRaise(TRUE);
   grid->addWidget(exportButton, 0, 4);
 
   exportAllButton = new QToolButton(this);
@@ -91,6 +94,7 @@ WorkwithChartsDialog::WorkwithChartsDialog (Config *c) : QDialog (0, 0, FALSE)
   exportAllButton->setPixmap(QPixmap(exportfile));
   connect(exportAllButton, SIGNAL(clicked()), this, SLOT(exportAll()));
   exportAllButton->setMaximumWidth(30);
+  exportAllButton->setAutoRaise(TRUE);
   grid->addWidget(exportAllButton, 0, 5);
 
   QToolButton *button = new QToolButton(this);
@@ -98,8 +102,9 @@ WorkwithChartsDialog::WorkwithChartsDialog (Config *c) : QDialog (0, 0, FALSE)
   button->setPixmap(QPixmap(finished));
   connect(button, SIGNAL(clicked()), this, SLOT(reject()));
   button->setMaximumWidth(30);
+  button->setAutoRaise(TRUE);
   grid->addWidget(button, 0, 6);
-  
+
   QFrame *sep = new QFrame(this);
   sep->setFrameStyle(QFrame::HLine | QFrame::Sunken);
   vbox->addWidget(sep);
@@ -107,7 +112,7 @@ WorkwithChartsDialog::WorkwithChartsDialog (Config *c) : QDialog (0, 0, FALSE)
   QHBoxLayout *hbox = new QHBoxLayout(vbox);
 
   list = new QListView(this);
-  list->addColumn(0, 200);
+  list->addColumn(tr("Symbol"), 200);
   list->setSelectionMode(QListView::Single);
   connect(list, SIGNAL(selectionChanged()), this, SLOT(buttonStatus()));
   connect(list, SIGNAL(doubleClicked(QListViewItem *)), this, SLOT(openSymbol()));

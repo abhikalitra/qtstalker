@@ -22,39 +22,63 @@
 #include "PortfolioDialog.h"
 #include "ChartDb.h"
 #include "Setting.h"
-#include "EditDialog.h"
 #include "FuturesData.h"
+#include "newchart.xpm"
+#include "edit.xpm"
+#include "delete.xpm"
 #include <qfiledialog.h>
 #include <qstringlist.h>
 #include <qlayout.h>
 #include <qframe.h>
-#include <qvgroupbox.h>
 #include <qinputdialog.h>
 #include <qmessagebox.h>
 #include <qdatetime.h>
+#include <qtooltip.h>
 
-PortfolioDialog::PortfolioDialog (Config *c, QString p) : QDialog (0, "PortfolioDialog", FALSE, WDestructiveClose)
+PortfolioDialog::PortfolioDialog (Config *c, QString p) : EditDialog (c)
 {
-  config = c;
-
   portfolio = p;
 
   QString s = tr("Qtstalker: Portfolio");
   s.append(" ");
   s.append(portfolio);
   setCaption(s);
+  
+  toolbar->expand(1, 6);
 
-  QHBoxLayout *hbox = new QHBoxLayout (this);
-  hbox->setMargin(5);
-  hbox->setSpacing(10);
+  addButton = new QToolButton(this);
+  QToolTip::add(addButton, tr("Add"));
+  addButton->setPixmap(QPixmap(newchart));
+  connect(addButton, SIGNAL(clicked()), this, SLOT(addItem()));
+  addButton->setMaximumWidth(30);
+  addButton->setAutoRaise(TRUE);
+  toolbar->addWidget(addButton, 0, 2);
 
-  QVBoxLayout *vbox = new QVBoxLayout (hbox);
-  vbox->setSpacing(5);
+  modifyButton = new QToolButton(this);
+  QToolTip::add(modifyButton, tr("Edit"));
+  modifyButton->setPixmap(QPixmap(edit));
+  connect(modifyButton, SIGNAL(clicked()), this, SLOT(modifyItem()));
+  modifyButton->setMaximumWidth(30);
+  modifyButton->setAutoRaise(TRUE);
+  toolbar->addWidget(modifyButton, 0, 3);
 
-  QVGroupBox *gbox = new QVGroupBox(tr("Portfolio"), this);
-  vbox->addWidget(gbox);
+  deleteButton = new QToolButton(this);
+  QToolTip::add(deleteButton, tr("Delete"));
+  deleteButton->setPixmap(QPixmap(deletefile));
+  connect(deleteButton, SIGNAL(clicked()), this, SLOT(deleteItem()));
+  deleteButton->setMaximumWidth(30);
+  deleteButton->setAutoRaise(TRUE);
+  toolbar->addWidget(deleteButton, 0, 4);
 
-  list = new QListView(gbox);
+  disconnect(okButton, SIGNAL(clicked()));
+  connect(okButton, SIGNAL(clicked()), this, SLOT(savePortfolio()));
+
+  disconnect(cancelButton, SIGNAL(clicked()));
+  connect(cancelButton, SIGNAL(clicked()), this, SLOT(savePortfolio()));
+  
+  table->hide();
+
+  list = new QListView(this);
   list->setSelectionMode(QListView::Single);
   list->setRootIsDecorated(TRUE);
   list->addColumn(QObject::tr("Ticker"), 150);
@@ -65,26 +89,7 @@ PortfolioDialog::PortfolioDialog (Config *c, QString p) : QDialog (0, "Portfolio
   list->addColumn(QObject::tr("Value"), 70);
   list->addColumn(QObject::tr("Profit"), 70);
   connect(list, SIGNAL(selectionChanged()), this, SLOT(buttonStatus()));
-
-  QGridLayout *grid = new QGridLayout(hbox, 7, 1);
-  grid->setSpacing(2);
-  grid->setMargin(5);
-
-  addButton = new QPushButton (tr("Add"), this);
-  connect (addButton, SIGNAL (clicked()), this, SLOT (addItem()));
-  grid->addWidget (addButton, 0, 0);
-
-  modifyButton = new QPushButton (tr("Edit"), this);
-  connect (modifyButton, SIGNAL (clicked()), this, SLOT (modifyItem()));
-  grid->addWidget(modifyButton, 1, 0);
-
-  deleteButton = new QPushButton (tr("Delete"), this);
-  connect (deleteButton, SIGNAL (clicked()), this, SLOT (deleteItem()));
-  grid->addWidget (deleteButton, 2, 0);
-
-  QPushButton *button = new QPushButton (tr("Done"), this);
-  connect (button, SIGNAL (clicked()), this, SLOT (savePortfolio()));
-  grid->addWidget(button, 3, 0);
+  topBox->addWidget(list);
 
   buttonStatus();
 

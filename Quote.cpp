@@ -42,6 +42,7 @@ QuoteDialog::QuoteDialog (Config *c) : EditDialog (c)
   downloadButton->setPixmap(QPixmap(download));
   connect(downloadButton, SIGNAL(clicked()), this, SLOT(getQuotes()));
   downloadButton->setMaximumWidth(30);
+  downloadButton->setAutoRaise(TRUE);
   toolbar->addWidget(downloadButton, 0, 2);
 
   cancelDownloadButton = new QToolButton(this);
@@ -51,6 +52,7 @@ QuoteDialog::QuoteDialog (Config *c) : EditDialog (c)
   cancelDownloadButton->setMaximumWidth(30);
   toolbar->addWidget(cancelDownloadButton, 0, 3);
   cancelDownloadButton->setEnabled(FALSE);
+  cancelDownloadButton->setAutoRaise(TRUE);
 
   QStringList l = QStringList::split(",", config->getData(Config::QuotePlugin), FALSE);
   ruleCombo = new QComboBox(this);

@@ -34,6 +34,7 @@ CompositeDialog::CompositeDialog (Config *c) : EditDialog (c)
   insertButton->setPixmap(QPixmap(insert));
   connect(insertButton, SIGNAL(clicked()), this, SLOT(newComposite()));
   insertButton->setMaximumWidth(30);
+  insertButton->setAutoRaise(TRUE);
   toolbar->addWidget(insertButton, 0, 2);
 
   deleteButton = new QToolButton(this);
@@ -41,6 +42,7 @@ CompositeDialog::CompositeDialog (Config *c) : EditDialog (c)
   deleteButton->setPixmap(QPixmap(deletefile));
   connect(deleteButton, SIGNAL(clicked()), this, SLOT(deleteComposite()));
   deleteButton->setMaximumWidth(30);
+  deleteButton->setAutoRaise(TRUE);
   toolbar->addWidget(deleteButton, 0, 3);
 }
 

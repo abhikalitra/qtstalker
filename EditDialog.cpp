@@ -51,6 +51,7 @@ EditDialog::EditDialog (Config *c) : QDialog (0, "EditDialog", TRUE)
   okButton->setPixmap(QPixmap(ok));
   connect(okButton, SIGNAL(clicked()), this, SLOT(accept()));
   okButton->setMaximumWidth(30);
+  okButton->setAutoRaise(TRUE);
   toolbar->addWidget(okButton, 0, 0);
 
   cancelButton = new QToolButton(this);
@@ -58,6 +59,7 @@ EditDialog::EditDialog (Config *c) : QDialog (0, "EditDialog", TRUE)
   cancelButton->setPixmap(QPixmap(stop));
   connect(cancelButton, SIGNAL(clicked()), this, SLOT(reject()));
   cancelButton->setMaximumWidth(30);
+  cancelButton->setAutoRaise(TRUE);
   toolbar->addWidget(cancelButton, 0, 1);
 
   QFrame *sep = new QFrame(this);

@@ -20,9 +20,7 @@
  */
 
 #include "WorkwithPortfoliosDialog.h"
-#include "EditDialog.h"
 #include "PortfolioDialog.h"
-#include "Setting.h"
 #include "open.xpm"
 #include "newchart.xpm"
 #include "edit.xpm"
@@ -32,10 +30,8 @@
 #include <qinputdialog.h>
 #include <qtooltip.h>
 #include <qlayout.h>
-#include <qpushbutton.h>
-#include <qgroupbox.h>
-#include <qdir.h>
 #include <qmessagebox.h>
+#include <qstring.h>
 
 WorkwithPortfoliosDialog::WorkwithPortfoliosDialog (Config *c) : QDialog (0, 0, FALSE)
 {
@@ -53,6 +49,7 @@ WorkwithPortfoliosDialog::WorkwithPortfoliosDialog (Config *c) : QDialog (0, 0, 
   openButton->setPixmap(QPixmap(open));
   connect(openButton, SIGNAL(clicked()), this, SLOT(openPortfolio()));
   openButton->setMaximumWidth(30);
+  openButton->setAutoRaise(TRUE);
   grid->addWidget(openButton, 0, 0);
 
   newButton = new QToolButton(this);
@@ -60,6 +57,7 @@ WorkwithPortfoliosDialog::WorkwithPortfoliosDialog (Config *c) : QDialog (0, 0, 
   newButton->setPixmap(QPixmap(newchart));
   connect(newButton, SIGNAL(clicked()), this, SLOT(newPortfolio()));
   newButton->setMaximumWidth(30);
+  newButton->setAutoRaise(TRUE);
   grid->addWidget(newButton, 0, 1);
 
   editButton = new QToolButton(this);
@@ -67,6 +65,7 @@ WorkwithPortfoliosDialog::WorkwithPortfoliosDialog (Config *c) : QDialog (0, 0, 
   editButton->setPixmap(QPixmap(edit));
   connect(editButton, SIGNAL(clicked()), this, SLOT(editPortfolio()));
   editButton->setMaximumWidth(30);
+  editButton->setAutoRaise(TRUE);
   grid->addWidget(editButton, 0, 2);
 
   deleteButton = new QToolButton(this);
@@ -74,6 +73,7 @@ WorkwithPortfoliosDialog::WorkwithPortfoliosDialog (Config *c) : QDialog (0, 0, 
   deleteButton->setPixmap(QPixmap(deletefile));
   connect(deleteButton, SIGNAL(clicked()), this, SLOT(deletePortfolio()));
   deleteButton->setMaximumWidth(30);
+  deleteButton->setAutoRaise(TRUE);
   grid->addWidget(deleteButton, 0, 3);
 
   renameButton = new QToolButton(this);
@@ -81,6 +81,7 @@ WorkwithPortfoliosDialog::WorkwithPortfoliosDialog (Config *c) : QDialog (0, 0, 
   renameButton->setPixmap(QPixmap(renam));
   connect(renameButton, SIGNAL(clicked()), this, SLOT(renamePortfolio()));
   renameButton->setMaximumWidth(30);
+  renameButton->setAutoRaise(TRUE);
   grid->addWidget(renameButton, 0, 4);
 
   QToolButton *button = new QToolButton(this);
@@ -88,14 +89,15 @@ WorkwithPortfoliosDialog::WorkwithPortfoliosDialog (Config *c) : QDialog (0, 0, 
   button->setPixmap(QPixmap(finished));
   connect(button, SIGNAL(clicked()), this, SLOT(reject()));
   button->setMaximumWidth(30);
+  button->setAutoRaise(TRUE);
   grid->addWidget(button, 0, 5);
-  
+
   QFrame *sep = new QFrame(this);
   sep->setFrameStyle(QFrame::HLine | QFrame::Sunken);
   vbox->addWidget(sep);
 
   list = new QListView(this);
-  list->addColumn(0, 200);
+  list->addColumn(tr("Portfolio"), 200);
   list->setSelectionMode(QListView::Single);
   connect(list, SIGNAL(selectionChanged()), this, SLOT(buttonStatus()));
   connect(list, SIGNAL(doubleClicked(QListViewItem *)), this, SLOT(openPortfolio()));

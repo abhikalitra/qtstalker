@@ -69,6 +69,9 @@
 #include "paintbar.xpm"
 #include "candle.xpm"
 #include "point.xpm"
+#include "edit.xpm"
+#include "delete.xpm"
+#include "co.xpm"
 
 QtstalkerApp::QtstalkerApp()
 {
@@ -398,17 +401,17 @@ void QtstalkerApp::initMenuBar()
   menuBar()->insertItem(tr("&Help"), helpMenu);
   
   chartMenu = new QPopupMenu();
-  chartMenu->insertItem(tr("New Indicator"), this, SLOT(slotNewIndicator()));
+  chartMenu->insertItem(QPixmap(indicator), tr("New Indicator"), this, SLOT(slotNewIndicator()));
   chartDeleteMenu = new QPopupMenu();
   chartEditMenu = new QPopupMenu();
-  chartMenu->insertItem(tr("Edit Indicator"), chartEditMenu);
-  chartMenu->insertItem (tr("Delete Indicator"), chartDeleteMenu);
+  chartMenu->insertItem(QPixmap(edit), tr("Edit Indicator"), chartEditMenu);
+  chartMenu->insertItem (QPixmap(deletefile), tr("Delete Indicator"), chartDeleteMenu);
   chartMenu->insertSeparator ();
   chartObjectDeleteMenu = new QPopupMenu();
   chartObjectEditMenu = new QPopupMenu();
-  chartObjectId = chartMenu->insertItem(tr("New Chart Object"), this, SLOT(slotNewChartObject(int)));
-  chartMenu->insertItem (tr("Edit Chart Object"), chartObjectEditMenu);
-  chartMenu->insertItem (tr("Delete Chart Object"), chartObjectDeleteMenu);
+  chartObjectId = chartMenu->insertItem(QPixmap(co), tr("New Chart Object"), this, SLOT(slotNewChartObject(int)));
+  chartMenu->insertItem (QPixmap(edit), tr("Edit Chart Object"), chartObjectEditMenu);
+  chartMenu->insertItem (QPixmap(deletefile), tr("Delete Chart Object"), chartObjectDeleteMenu);
 }
 
 void QtstalkerApp::initToolBar()
@@ -1148,10 +1151,10 @@ void QtstalkerApp::plotPopupMenu (int area)
   QStringList l = config->getIndicators();
   for (loop = 0; loop < (int) l.count(); loop++)
   {
-    int id = chartDeleteMenu->insertItem(l[loop], this, SLOT(slotDeleteIndicator(int)));
+    int id = chartDeleteMenu->insertItem(QPixmap(indicator), l[loop], this, SLOT(slotDeleteIndicator(int)));
     chartDeleteMenu->setItemParameter(id, id);
 
-    id = chartEditMenu->insertItem(l[loop], this, SLOT(slotEditIndicator(int)));
+    id = chartEditMenu->insertItem(QPixmap(indicator), l[loop], this, SLOT(slotEditIndicator(int)));
     chartEditMenu->setItemParameter(id, id);
   }
 
@@ -1172,10 +1175,10 @@ void QtstalkerApp::mainPlotPopupMenu ()
   {
     int num = i->getChartObject(l[loop]);
 
-    int id = chartObjectEditMenu->insertItem(l[loop], this, SLOT(slotEditChartObject(int)));
+    int id = chartObjectEditMenu->insertItem(QPixmap(co), l[loop], this, SLOT(slotEditChartObject(int)));
     chartObjectEditMenu->setItemParameter(id, num);
 
-    id = chartObjectDeleteMenu->insertItem(l[loop], this, SLOT(slotDeleteChartObject(int)));
+    id = chartObjectDeleteMenu->insertItem(QPixmap(co), l[loop], this, SLOT(slotDeleteChartObject(int)));
     chartObjectDeleteMenu->setItemParameter(id, num);
   }
 
@@ -1199,10 +1202,10 @@ void QtstalkerApp::indicatorPlotPopupMenu ()
   {
     int num = i->getChartObject(l[loop]);
 
-    int id = chartObjectEditMenu->insertItem(l[loop], this, SLOT(slotEditChartObject(int)));
+    int id = chartObjectEditMenu->insertItem(QPixmap(co), l[loop], this, SLOT(slotEditChartObject(int)));
     chartObjectEditMenu->setItemParameter(id, num);
 
-    id = chartObjectDeleteMenu->insertItem(l[loop], this, SLOT(slotDeleteChartObject(int)));
+    id = chartObjectDeleteMenu->insertItem(QPixmap(co), l[loop], this, SLOT(slotDeleteChartObject(int)));
     chartObjectDeleteMenu->setItemParameter(id, num);
   }
 

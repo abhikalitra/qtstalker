@@ -1,4 +1,4 @@
-/* 
+/*
  *  Qtstalker stock charter
  * 
  *  Copyright (C) 2001,2002 Stefan S. Stratigakos
@@ -23,9 +23,10 @@
 #define PORTFOLIODIALOG_HPP
 
 #include "Config.h"
+#include "EditDialog.h"
 #include <qstring.h>
 #include <qdialog.h>
-#include <qpushbutton.h>
+#include <qtoolbutton.h>
 #include <qlistview.h>
 #include <qlineedit.h>
 #include <qspinbox.h>
@@ -34,7 +35,7 @@
 #include <qpixmap.h>
 #include <qvalidator.h>
 
-class PortfolioDialog : public QDialog
+class PortfolioDialog : public EditDialog
 {
   Q_OBJECT
 
@@ -54,9 +55,9 @@ class PortfolioDialog : public QDialog
 
   private:
     Config *config;
-    QPushButton *modifyButton;
-    QPushButton *addButton;
-    QPushButton *deleteButton;
+    QToolButton *modifyButton;
+    QToolButton *addButton;
+    QToolButton *deleteButton;
     QListView *list;
     QListViewItem *item;
     QListViewItem *parent;

@@ -20,7 +20,6 @@
  */
 
 #include "WorkwithGroupsDialog.h"
-#include "EditDialog.h"
 #include "GroupDialog.h"
 #include "Setting.h"
 #include "open.xpm"
@@ -32,9 +31,6 @@
 #include <qinputdialog.h>
 #include <qtooltip.h>
 #include <qlayout.h>
-#include <qpushbutton.h>
-#include <qgroupbox.h>
-#include <qdir.h>
 #include <qmessagebox.h>
 
 WorkwithGroupsDialog::WorkwithGroupsDialog (Config *c) : QDialog (0, 0, FALSE)
@@ -53,6 +49,7 @@ WorkwithGroupsDialog::WorkwithGroupsDialog (Config *c) : QDialog (0, 0, FALSE)
   openButton->setPixmap(QPixmap(open));
   connect(openButton, SIGNAL(clicked()), this, SLOT(openGroup()));
   openButton->setMaximumWidth(30);
+  openButton->setAutoRaise(TRUE);
   grid->addWidget(openButton, 0, 0);
 
   newButton = new QToolButton(this);
@@ -60,6 +57,7 @@ WorkwithGroupsDialog::WorkwithGroupsDialog (Config *c) : QDialog (0, 0, FALSE)
   newButton->setPixmap(QPixmap(newchart));
   connect(newButton, SIGNAL(clicked()), this, SLOT(newGroup()));
   newButton->setMaximumWidth(30);
+  newButton->setAutoRaise(TRUE);
   grid->addWidget(newButton, 0, 1);
 
   editButton = new QToolButton(this);
@@ -67,6 +65,7 @@ WorkwithGroupsDialog::WorkwithGroupsDialog (Config *c) : QDialog (0, 0, FALSE)
   editButton->setPixmap(QPixmap(edit));
   connect(editButton, SIGNAL(clicked()), this, SLOT(editGroup()));
   editButton->setMaximumWidth(30);
+  editButton->setAutoRaise(TRUE);
   grid->addWidget(editButton, 0, 2);
 
   deleteButton = new QToolButton(this);
@@ -74,6 +73,7 @@ WorkwithGroupsDialog::WorkwithGroupsDialog (Config *c) : QDialog (0, 0, FALSE)
   deleteButton->setPixmap(QPixmap(deletefile));
   connect(deleteButton, SIGNAL(clicked()), this, SLOT(deleteGroup()));
   deleteButton->setMaximumWidth(30);
+  deleteButton->setAutoRaise(TRUE);
   grid->addWidget(deleteButton, 0, 3);
 
   renameButton = new QToolButton(this);
@@ -81,21 +81,23 @@ WorkwithGroupsDialog::WorkwithGroupsDialog (Config *c) : QDialog (0, 0, FALSE)
   renameButton->setPixmap(QPixmap(renam));
   connect(renameButton, SIGNAL(clicked()), this, SLOT(renameGroup()));
   renameButton->setMaximumWidth(30);
+  renameButton->setAutoRaise(TRUE);
   grid->addWidget(renameButton, 0, 4);
-  
+
   QToolButton *button = new QToolButton(this);
   QToolTip::add(button, tr("Done"));
   button->setPixmap(QPixmap(finished));
   connect(button, SIGNAL(clicked()), this, SLOT(reject()));
   button->setMaximumWidth(30);
+  button->setAutoRaise(TRUE);
   grid->addWidget(button, 0, 5);
-  
+
   QFrame *sep = new QFrame(this);
   sep->setFrameStyle(QFrame::HLine | QFrame::Sunken);
   vbox->addWidget(sep);
 
   list = new QListView(this);
-  list->addColumn(0, 200);
+  list->addColumn(tr("Group"), 200);
   list->setSelectionMode(QListView::Single);
   connect(list, SIGNAL(selectionChanged()), this, SLOT(buttonStatus()));
   connect(list, SIGNAL(doubleClicked(QListViewItem *)), this, SLOT(openGroup()));

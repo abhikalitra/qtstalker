@@ -22,7 +22,6 @@
 #ifndef WORKWITHPORTFOLIOSDIALOG_HPP
 #define WORKWITHPORTFOLIOSDIALOG_HPP
 
-#include <qstring.h>
 #include <qdialog.h>
 #include <qtoolbutton.h>
 #include <qlistview.h>
