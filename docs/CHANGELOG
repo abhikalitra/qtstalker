@@ -5,7 +5,10 @@
 
 - Bug #824922 fixed.
 
+- Thanks to Marco van Zwetselaar for creating a Debian package. Marco is working on getting qtstalker into the main Debian
+  distribution. This is exciting news.
 
+- Fixed bug #825827.
 
 
 0.22

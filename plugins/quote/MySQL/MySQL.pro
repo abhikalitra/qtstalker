@@ -25,6 +25,9 @@ LIBS += -L../../../db-2.7.7/build_unix -ldb
 LIBS += -L/usr/lib
 LIBS += -lmysqlclient
 
+# for redhat
+LIBS += -L/usr/lib/mysql
+
 unix:linux-g++:LIBS += -ldl
 
 # mac os x options
