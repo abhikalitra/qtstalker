@@ -1185,7 +1185,7 @@ void Plot::drawInfo ()
       ch = r->getFloat("Close") - pr->getFloat("Close");
     }
     s = "CH=";
-    s.append(QString::number(ch));
+    s.append(strip(ch));
     s.append(" ");
     if (ch < 0)
       painter.setPen(downColor);

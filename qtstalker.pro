@@ -30,6 +30,7 @@ SUBDIRS += plugins/indicator/MA3
 SUBDIRS += plugins/indicator/MACD
 SUBDIRS += plugins/indicator/MAOSC
 SUBDIRS += plugins/indicator/MF
+SUBDIRS += plugins/indicator/MMA
 SUBDIRS += plugins/indicator/MOM
 SUBDIRS += plugins/indicator/NVI
 SUBDIRS += plugins/indicator/OBV

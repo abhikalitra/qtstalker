@@ -1,14 +1,14 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
-  <title>Chart - Exhaustion Points</title>
+  <title>Exhaustion Points - EP</title>
   <meta http-equiv="content-type"
  content="text/html; charset=ISO-8859-1">
 </head>
   <body>
                                                    
-<h2><u>Chart - Exhaustion Points</u></h2>
-<p><b>NOTE:</b> This chart type is experimental. See notes below.
+<h2><u>Exhaustion Points - EP</u></h2>
+<p><b>NOTE:</b> This indicator is experimental. See notes below.
 </p>
 <p>
 "Outside Bars" (yellow-to-red) - the trading range encompasses the previous bar.
@@ -31,7 +31,8 @@ encompasses both previous bars and has a large body.
 
 <h3>Ranking of bars</h3>
 <p>Colour is used to denote the significance of bars. A five-point ranking
-scheme is used as shown in the legend.</p>
+scheme is used as shown in the legend. The value of the rank is also shown in
+the side-panel and the data window as "EP".</p>
 <p>When an outside/inside bar is detected, it is assigned a default ranking
 of one point. For each other significance factor, half a point is added.
 The final rank is truncated to an integer between one and five.</p>
@@ -47,7 +48,6 @@ Outside bars:
   <li>much bigger range than the previous bar (900%) - add 0.5</li>
   <li>greater volume than the previous bar (150%) - add 0.5</li>
   <li>greater volume than the previous bar (300%) - add 0.5</li>
-  <li></li>
 </ul>
 <p>
 Inside bars:
@@ -57,11 +57,36 @@ Inside bars:
   <li>much smaller range than the previous bar (10%) - add 0.5</li>
   <li>lesser volume than the previous bar (50%) - add 0.5</li>
   <li>lesser volume than the previous bar (20%) - add 0.5</li>
-  <li></li>
 </ul>
 <p>You will need to apply more weight from your visual observations, e.g.
 a sharper preceding trend.
 </p>
+
+<h3>Directions</h3>
+<p>This indicator is used with the "Paint Bar"
+<a href="charttype.html">chart type</a>. Add the EP indicator as normal
+(it will not show on the charts yet). Now use the menu option Edit->Preferences
+and select EP to be the "Paint Bar Indicator".
+</p>
+
+<h3>Parameters:</h3>
+<ul>
+<li>Inside Rank 1 - Color of level-1 inside bars</li>
+<li>Inside Rank 2 - Color of level-2 inside bars</li>
+<li>Inside Rank 3 - Color of level-3 inside bars</li>
+<li>Inside Rank 4 - Color of level-4 inside bars</li>
+<li>Inside Rank 5 - Color of level-5 inside bars</li>
+<li>Label - Text to identify the value of the exhaustion point rank</li>
+<li>Neutral - Color of all other ordinary bars</li>
+<li>Ouside Rank 1 - Color of level-1 outside bars</li>
+<li>Ouside Rank 2 - Color of level-2 outside bars</li>
+<li>Ouside Rank 3 - Color of level-3 outside bars</li>
+<li>Ouside Rank 4 - Color of level-4 outside bars</li>
+<li>Ouside Rank 5 - Color of level-5 outside bars</li>
+</ul>
+
+<h3>Alerts:</h3>
+<p>False</p>
 
 <h3>Development notes</h3>
 <p>Not yet automatically detecting that there is associated volume.
@@ -74,8 +99,7 @@ You must verify that visually.
 
 <p>The ranking scheme needs to be fine-tuned, e.g. perhaps more weight should
 be added to certain situations.
-Note that you can tweak these weights yourself in Plot.cpp
-(search for "Exhaustion or Rank").
+Note that you can tweak these weights yourself in EP.cpp (search for "Rank").
 </p>
 
 <p>More significance patterns need to be detected - currently only doing a few.

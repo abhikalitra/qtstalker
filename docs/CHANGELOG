@@ -35,6 +35,14 @@
 
 - Color bars were off by one in the EP indicator. Fixed.
 
+- Removed CBOT plugin from the compile process pending a future fix or removal.
+
+- Fixed the change field in the main chart to display only decimal numbers.
+
+- Applied patch #788557 for EP docs from David Crossley.
+
+- Applied patch #788595 for new indicator MMA from David Crossley.
+
 
 0.20
 ====
