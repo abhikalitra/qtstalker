@@ -43,6 +43,7 @@ class TrendLine : public ChartObject
   protected:
     bool move2Flag;
     bool useBar;
+    bool extend;
     QString barField;
 };
 

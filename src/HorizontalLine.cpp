@@ -56,6 +56,7 @@ void HorizontalLine::draw (int, int)
   QPainter painter;
   painter.begin(buffer);
   painter.setPen(color);
+  painter.setFont(font);
 
   painter.drawLine (0, y, buffer->width(), y);
   painter.drawText(0, y - 1, QString::number(value), -1);

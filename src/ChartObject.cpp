@@ -216,3 +216,8 @@ void ChartObject::keyEvent (QKeyEvent *key)
       break;
   }
 }
+
+void ChartObject::setFont (QFont f)
+{
+  font = f;
+}

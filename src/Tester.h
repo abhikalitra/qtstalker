@@ -27,22 +27,29 @@
 #include <qcheckbox.h>
 #include <qpushbutton.h>
 #include <qspinbox.h>
-#include <qdatetimeedit.h>
+//#include <qdatetimeedit.h>
 #include <qlineedit.h>
 #include <qvalidator.h>
 #include <qlabel.h>
 #include <qtable.h>
 #include <qcombobox.h>
+#include <qslider.h>
 #include "Config.h"
 #include "Setting.h"
 #include "ChartDb.h"
 #include "BarData.h"
 #include "SymbolButton.h"
 #include "FormulaEdit.h"
+#include "Plot.h"
+#include "PlotLine.h"
+#include "FuturesData.h"
 
 class Tester : public QTabDialog
 {
   Q_OBJECT
+  
+  signals:
+    void signalIndex (int);
 
   public:
     Tester (Config *, QString);
@@ -51,6 +58,7 @@ class Tester : public QTabDialog
     void createStopPage();
     void createTestPage();
     void createReportPage();
+    void createChartPage ();
     void exitPosition (QString);
     bool maximumLoss ();
     bool profit ();
@@ -68,6 +76,9 @@ class Tester : public QTabDialog
     double getPrice (int);
     void saveEditRule (int);
     void loadEditRule (int);
+    void updateChart ();
+    void updateEquityCurve ();
+    void createEquityCurve ();
 
   public slots:
     void test ();
@@ -78,6 +89,7 @@ class Tester : public QTabDialog
     void saveRule ();
     void exitDialog ();
     void loadRule ();
+    void slotSliderChanged (int);
 
   protected:
     Config *config;
@@ -108,8 +120,9 @@ class Tester : public QTabDialog
     QSpinBox *volumePercent;
     QSpinBox *margin;
     QSpinBox *delay;
-    QDateEdit *startDate;
-    QDateEdit *endDate;
+    QSpinBox *bars;
+//    QDateEdit *startDate;
+//    QDateEdit *endDate;
     QDoubleValidator *validator;
     QString ruleName;
     QComboBox *priceField;
@@ -117,6 +130,10 @@ class Tester : public QTabDialog
     FormulaEdit *enterShortEdit;
     FormulaEdit *exitLongEdit;
     FormulaEdit *exitShortEdit;
+    Plot *plot;
+    Plot *equityPlot;
+    QSlider *slider;
+    FuturesData fd;
 
     int status;
     int testLoop;
@@ -133,7 +150,9 @@ class Tester : public QTabDialog
     int exitShortCount;
     double volume;
     QStringList fieldList;
+    PlotLine *equityCurve;
 
+    QLabel *summaryBalance;
     QLabel *summaryNetProfit;
     QLabel *summaryNetPercentage;
     QLabel *summaryInvestment;

@@ -90,6 +90,7 @@ Plot::Plot (QWidget *w) : QWidget(w)
   chartMenu = 0;
   drawMode = FALSE;
   crosshairs = TRUE;
+  infoFlag = TRUE;
 
   plotFont.setFamily("Helvetica");
   plotFont.setPointSize(12);
@@ -217,6 +218,11 @@ void Plot::setDrawMode (bool d)
 bool Plot::getCrosshairsStatus ()
 {
   return crosshairs;
+}
+
+void Plot::setInfoFlag (bool d)
+{
+  infoFlag = d;
 }
 
 void Plot::draw ()
@@ -528,6 +534,9 @@ void Plot::mouseMoveEvent (QMouseEvent *event)
     }
   }
   
+  if (! infoFlag)
+    return;
+    
   int i = (event->x() / pixelspace) + startIndex;
   if (i >= (int) data->count())
     i = data->count() - 1;
@@ -1819,12 +1828,14 @@ void Plot::newChartObject ()
       }
       
       co = new FiboLine(scaler, buffer, pl, name, x1, y1, x2, y2);
+      co->setFont(plotFont);
       break;
     }
     
     if (objectFlag == ChartObject::HorizontalLine)
     {
       co = new HorizontalLine(scaler, buffer, pl, name, y1);
+      co->setFont(plotFont);
       break;
     }
     
@@ -2040,12 +2051,14 @@ void Plot::addChartObject (Setting *set)
     if (ot == ChartObject::FibonacciLine)
     {
       co = new FiboLine(scaler, buffer, QString(), QString(), dt, 0, dt, 0);
+      co->setFont(plotFont);
       break;
     }
     
     if (ot == ChartObject::HorizontalLine)
     {
       co = new HorizontalLine(scaler, buffer, QString(), QString(), 0);
+      co->setFont(plotFont);
       break;
     }
     
@@ -2236,3 +2249,20 @@ void Plot::isChartObjectSelected (int x, int y)
     }
   }
 }
+
+void Plot::addArrow (bool flag, QString indicator, QString name, BarDate dt, double val)
+{
+  ChartObject *co = 0;
+  if (flag)
+    co = new SellArrow(scaler, buffer, indicator, name, dt, val);
+  else
+    co = new BuyArrow(scaler, buffer, indicator, name, dt, val);
+  QObject::connect(co, SIGNAL(signalDraw()), this, SLOT(draw()));
+  QObject::connect(co, SIGNAL(signalRefresh()), this, SLOT(drawRefresh()));
+  QObject::connect(co, SIGNAL(signalMoving()), this, SLOT(objectMoving()));
+  QObject::connect(co, SIGNAL(signalChartObjectSelected(ChartObject *)), this, SLOT(slotChartObjectSelected(ChartObject *)));
+  QObject::connect(co, SIGNAL(signalDeleteChartObject(QString)), this, SLOT(slotDeleteChartObject(QString)));
+  QObject::connect(co, SIGNAL(message(QString)), this, SLOT(slotMessage(QString)));
+  chartObjects.replace(name, co);
+}
+

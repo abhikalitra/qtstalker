@@ -84,6 +84,7 @@ class ChartObject : public QObject
     void keyEvent (QKeyEvent *);
     bool isSelected (int, int);
     void selected ();
+    void setFont (QFont);
 
   public slots:    
     virtual void prefDialog ();

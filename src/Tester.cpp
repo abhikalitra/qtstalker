@@ -24,14 +24,15 @@
 #include <qheader.h>
 #include <qfile.h>
 #include <qtextstream.h>
+#include <qfont.h>
 #include "Tester.h"
-#include "FuturesData.h"
 #include "QSMath.h"
 
 Tester::Tester (Config *c, QString n) : QTabDialog (0, 0, FALSE)
 {
   config = c;
   ruleName = n;
+  recordList = 0;
   
   fieldList.append(tr("Open"));
   fieldList.append(tr("Close"));
@@ -51,11 +52,15 @@ Tester::Tester (Config *c, QString n) : QTabDialog (0, 0, FALSE)
 
   createReportPage();
 
+  createChartPage();
+  
   loadRule();
 }
 
 Tester::~Tester ()
 {
+  if (recordList)
+    delete recordList;
 }
 
 void Tester::createFormulaPage ()
@@ -195,22 +200,25 @@ void Tester::createTestPage ()
   delay = new QSpinBox(0, 999999, 1, gbox);
   delay->setValue(0);
 
-  gbox = new QVGroupBox(tr("Date Range"), w);
+  gbox = new QVGroupBox(tr("Bars"), w);
   gbox->setInsideSpacing(2);
-  gbox->setColumns(2);
+//  gbox->setColumns(2);
   grid->addWidget(gbox, 0, 1);
+  
+  bars = new QSpinBox(1, 99999999, 1, gbox);
+  bars->setValue(275);
 
-  label = new QLabel(tr("Start Date"), gbox);
+//  label = new QLabel(tr("Start Date"), gbox);
 
-  startDate = new QDateEdit(QDate::currentDate(), gbox);
-  startDate->setOrder(QDateEdit::YMD);
-  startDate->setAutoAdvance(TRUE);
+//  startDate = new QDateEdit(QDate::currentDate(), gbox);
+//  startDate->setOrder(QDateEdit::YMD);
+//  startDate->setAutoAdvance(TRUE);
 
-  label = new QLabel(tr("End Date"), gbox);
+//  label = new QLabel(tr("End Date"), gbox);
 
-  endDate = new QDateEdit(QDate::currentDate(), gbox);
-  endDate->setOrder(QDateEdit::YMD);
-  endDate->setAutoAdvance(TRUE);
+//  endDate = new QDateEdit(QDate::currentDate(), gbox);
+//  endDate->setOrder(QDateEdit::YMD);
+//  endDate->setAutoAdvance(TRUE);
 
   gbox = new QVGroupBox(tr("Account"), w);
   gbox->setInsideSpacing(2);
@@ -298,7 +306,10 @@ void Tester::createReportPage ()
   gbox->setColumns(2);
   vbox->addWidget(gbox);
 
-  QLabel *label = new QLabel(tr("Net Profit"), gbox);
+  QLabel *label = new QLabel(tr("Account Balance"), gbox);
+  summaryBalance = new QLabel(" ", gbox);
+  
+  label = new QLabel(tr("Net Profit"), gbox);
   summaryNetProfit = new QLabel(" ", gbox);
 
   label = new QLabel(tr("Net Profit %"), gbox);
@@ -378,6 +389,57 @@ void Tester::createReportPage ()
   addTab(w, tr("Reports"));
 }
 
+void Tester::createChartPage ()
+{
+  QWidget *w = new QWidget(this);
+
+  QVBoxLayout *vbox = new QVBoxLayout(w);
+  vbox->setMargin(5);
+  vbox->setSpacing(5);
+
+  equityPlot = new Plot (w);
+  equityPlot->setGridFlag(FALSE);
+  equityPlot->setScaleToScreen(FALSE);
+  equityPlot->setPixelspace(5);
+  equityPlot->setIndex(0);
+  equityPlot->setDateFlag(FALSE);
+  equityPlot->setMainFlag(FALSE);
+  equityPlot->setInfoFlag(FALSE);
+  QObject::connect(this, SIGNAL(signalIndex(int)), equityPlot, SLOT(setIndex(int)));
+  QStringList l = QStringList::split(" ", config->getData(Config::PlotFont), FALSE);
+  QFont font(l[0], l[1].toInt(), l[2].toInt());
+  equityPlot->setPlotFont(font);
+  vbox->addWidget(equityPlot);
+  equityPlot->setMinimumHeight(150);
+  equityPlot->setMaximumHeight(150);
+  
+  plot = new Plot (w);
+  plot->setGridFlag(FALSE);
+  plot->setScaleToScreen(FALSE);
+  plot->setPixelspace(5);
+  plot->setIndex(0);
+  plot->setDateFlag(TRUE);
+  plot->setMainFlag(FALSE);
+  plot->setInfoFlag(FALSE);
+  QObject::connect(this, SIGNAL(signalIndex(int)), plot, SLOT(setIndex(int)));
+  plot->setPlotFont(font);
+  vbox->addWidget(plot);
+  
+  slider = new QSlider(w);
+  slider->setOrientation(Qt::Horizontal);
+  connect (slider, SIGNAL(valueChanged(int)), this, SLOT(slotSliderChanged(int)));
+  vbox->addWidget(slider);
+  
+  addTab(w, tr("Chart"));
+}
+
+void Tester::slotSliderChanged (int v)
+{
+  emit signalIndex(v);
+  plot->draw();
+  equityPlot->draw();
+}
+
 void Tester::test ()
 {
   if (! tradeLong->isChecked() && ! tradeShort->isChecked())
@@ -391,15 +453,15 @@ void Tester::test ()
   if (! symbol.length())
     return;
 
-  BarDate sd;
-  sd.setDate(startDate->date().toString("yyyyMMddmmhhss"));
-  if (! sd.getDate().isValid())
-    return;
+//  BarDate sd;
+//  sd.setDate(startDate->date().toString("yyyyMMddmmhhss"));
+//  if (! sd.getDate().isValid())
+//    return;
 
-  BarDate ed;
-  ed.setDate(endDate->date().toString("yyyyMMddmmhhss"));
-  if (! ed.getDate().isValid())
-    return;
+//  BarDate ed;
+//  ed.setDate(endDate->date().toString("yyyyMMddmmhhss"));
+//  if (! ed.getDate().isValid())
+//    return;
 
   db = new ChartDb;
   if (db->openChart(symbolButton->getPath()))
@@ -408,13 +470,25 @@ void Tester::test ()
     qDebug("Tester: Cant open db");
     return;
   }
+  
+  QString s = db->getDetail(ChartDb::Type);
+  if (! s.compare(tr("Futures")))
+    fd.setSymbol(db->getDetail(ChartDb::FuturesType));
 
   while (tradeList->numRows())
     tradeList->removeRow(0);
 
   db->setBarCompression(ChartDb::Daily);
-  db->setBarRange(99999999);
+  db->setBarRange(bars->value());
+  if (recordList)
+    delete recordList;
   recordList = db->getHistory();
+
+  plot->clear();
+  equityPlot->clear();
+    
+  equityCurve = new PlotLine;
+  equityCurve->setColor(QString("green"));
 
   loadAlerts(0);
   loadAlerts(1);
@@ -423,21 +497,24 @@ void Tester::test ()
 
   clearAlertCounts();
 
-  for (testLoop = 0; testLoop < (int) recordList->count(); testLoop++)
-  {
-    currentRecord = testLoop;
-    BarDate td = recordList->getDate(currentRecord);
-    if (td.getDateValue() >= sd.getDateValue())
-      break;
-  }
+//  for (testLoop = 0; testLoop < (int) recordList->count(); testLoop++)
+//  {
+//    currentRecord = testLoop;
+//    BarDate td = recordList->getDate(currentRecord);
+//    if (td.getDateValue() >= sd.getDateValue())
+//      break;
+//  }
 
   status = 0;
+  testLoop = 0;
   for (; testLoop < (int) recordList->count(); testLoop++)
   {
+    updateEquityCurve();
+    
     currentRecord = testLoop;
     BarDate dt = recordList->getDate(currentRecord);
-    if (dt.getDateValue() > ed.getDateValue())
-      break;
+//    if (dt.getDateValue() > ed.getDateValue())
+//      break;
 
     checkAlerts();
 
@@ -523,8 +600,11 @@ void Tester::test ()
   }
 
   createSummary();
+  
+  updateChart();
 
-  delete recordList;
+  createEquityCurve();
+  
   delete db;
 }
 
@@ -643,12 +723,7 @@ void Tester::exitPosition (QString signal)
 
   QString chartType = db->getDetail(ChartDb::Type);
   if (! chartType.compare(tr("Futures")))
-  {
-    FuturesData *fd = new FuturesData;
-    fd->setSymbol(db->getDetail(ChartDb::FuturesType));
-    profit = fd->getRate() * profit;
-    delete fd;
-  }
+    profit = fd.getRate() * profit;
 
   equity = equity + profit;
 
@@ -664,6 +739,40 @@ void Tester::exitPosition (QString signal)
   tradeList->setText(tradeList->numRows() - 1, 6, QString::number(profit));
   tradeList->setText(tradeList->numRows() - 1, 7, QString::number(equity));
   tradeList->setText(tradeList->numRows() - 1, 8, QString::number(volume));
+}
+
+void Tester::updateEquityCurve ()
+{
+  if (status == 0)
+  {
+    equityCurve->append(equity);
+    return;
+  }
+  
+  double enterPrice = getPrice(buyRecord);
+  double exitPrice = getPrice(currentRecord);
+  double profit = 0;
+  double bal = equity;
+  QString type;
+
+  if (status == -1)
+  {
+    profit = (enterPrice - exitPrice) * volume;
+    type = tr("Short");
+  }
+  else
+  {
+    profit = (exitPrice - enterPrice) * volume;
+    type = tr("Long");
+  }
+
+  QString chartType = db->getDetail(ChartDb::Type);
+  if (! chartType.compare(tr("Futures")))
+    profit = fd.getRate() * profit;
+
+  bal = bal + profit;
+
+  equityCurve->append(bal);
 }
 
 bool Tester::maximumLoss ()
@@ -849,7 +958,8 @@ void Tester::trailingToggled (bool status)
 void Tester::symbolButtonPressed ()
 {
   QString symbol = symbolButton->getPath();
-  
+
+/*    
   db = new ChartDb;
   if (db->openChart(symbol))
   {
@@ -867,6 +977,8 @@ void Tester::symbolButtonPressed ()
   delete bar;
 
   delete db;
+*/
+  
 }
 
 void Tester::loadAlerts (int type)
@@ -1136,6 +1248,10 @@ void Tester::saveRule ()
   s.append(priceField->currentText());
   stream << s << "\n";
   
+  s = "Bars=";
+  s.append(bars->text());
+  stream << s << "\n";
+  
   f.close();
 }
 
@@ -1272,6 +1388,12 @@ void Tester::loadRule ()
       continue;
     }
   
+    if (! l2[0].compare("Bars"))
+    {
+      bars->setValue(l2[1].toInt());
+      continue;
+    }
+    
     if (! l2[0].compare("Price Field"))
     {
       priceField->setCurrentText(l2[1]);
@@ -1411,6 +1533,7 @@ void Tester::createSummary ()
   }
 
   // main summary
+  summaryBalance->setNum(balance);
   summaryNetProfit->setNum(balance - account->value());
   summaryNetPercentage->setNum(((balance - account->value()) / account->value()) * 100);
   summaryInvestment->setNum(account->value());
@@ -1474,5 +1597,65 @@ double Tester::getPrice (int i)
   return price;
 }
 
+void Tester::updateChart ()
+{
+  plot->setData(recordList);
+  
+  //set up indicator
+  PlotLine *close = recordList->getInput(BarData::Close);
+  close->setColor(QString("green"));
+  
+  Indicator *i = new Indicator;
+  i->setName("tester");
+  i->addLine(close);
+  i->setMainPlot(FALSE);
+  plot->addIndicator(i->getName(), i);
+
+  //set up arrows
+  int loop;
+  int name = 0;
+  bool flag1 = FALSE;
+  bool flag2 = FALSE;
+  for (loop = 0; loop < (int) tradeList->numRows(); loop++)
+  {
+    if (! tradeList->text(loop, 0).compare(tr("Short")))
+    {
+      flag1 = TRUE;
+      flag2 = FALSE;
+    }
+    else
+    {
+      flag1 = FALSE;
+      flag2 = TRUE;
+    }
+    
+    name++;
+    BarDate dt;
+    dt.setDate(tradeList->text(loop, 1) + "000000");
+    plot->addArrow(flag1, "tester", QString::number(name), dt, tradeList->text(loop, 2).toDouble());
+      
+    name++;
+    dt.setDate(tradeList->text(loop, 3) + "000000");
+    plot->addArrow(flag2, "tester", QString::number(name), dt, tradeList->text(loop, 4).toDouble());
+  }
+
+  slider->setMaxValue(recordList->count() - 1);
+        
+  plot->draw();
+}
+
+void Tester::createEquityCurve ()
+{
+  equityPlot->setData(recordList);
+  
+  //set up indicator
+  Indicator *i = new Indicator;
+  i->setName("equity");
+  i->addLine(equityCurve);
+  i->setMainPlot(FALSE);
+  equityPlot->addIndicator(i->getName(), i);
+
+  equityPlot->draw();
+}
 
 

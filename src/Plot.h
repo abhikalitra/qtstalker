@@ -87,6 +87,7 @@ class Plot : public QWidget
     bool getTabFlag ();
     bool getMainFlag ();
     bool getCrosshairsStatus ();
+    void setInfoFlag (bool);
 
     void addIndicator (QString, Indicator *);
     Indicator * getIndicator (QString);
@@ -98,6 +99,7 @@ class Plot : public QWidget
     void addChartObject (Setting *);
     QStringList getChartObjects ();
     void isChartObjectSelected (int x, int y);
+    void addArrow (bool flag, QString indicator, QString name, BarDate dt, double val);
 
     int getWidth ();
     int getPixelspace ();
@@ -195,6 +197,7 @@ class Plot : public QWidget
     bool crossHairFlag;
     bool drawMode;
     bool crosshairs;
+    bool infoFlag;
     int crossHairX;
     int crossHairY;
     int tx, tx2; // temp x coords for drawing chart objects

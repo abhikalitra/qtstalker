@@ -1348,9 +1348,6 @@ void QtstalkerApp::slotChartUpdated ()
     return;
   
   loadChart(chartPath);
-
-// FIXME: segfaults on a rapid quote update
-//  loadChart(chartPath);
 }
 
 void QtstalkerApp::slotStatusMessage (QString d)

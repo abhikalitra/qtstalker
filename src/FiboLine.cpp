@@ -60,6 +60,7 @@ void FiboLine::draw (int x, int x2)
   QPainter painter;
   painter.begin(buffer);
   painter.setPen(color);
+  painter.setFont(font);
   
   double high = value;
   double low = value2;
@@ -69,6 +70,8 @@ void FiboLine::draw (int x, int x2)
     double r = getY(line1, value, value2);
     int y = scaler->convertToY(r);
     painter.drawLine (x, y, x2, y);
+    
+    painter.drawText(x, y - 1, QString::number(line1 * 100) + "%", -1);
     
     if (r > high)
       high = r;
@@ -82,6 +85,8 @@ void FiboLine::draw (int x, int x2)
     int y = scaler->convertToY(r);
     painter.drawLine (x, y, x2, y);
     
+    painter.drawText(x, y - 1, QString::number(line2 * 100) + "%", -1);
+    
     if (r > high)
       high = r;
     if (r < low)
@@ -93,6 +98,8 @@ void FiboLine::draw (int x, int x2)
     double r = getY(line3, value, value2);
     int y = scaler->convertToY(r);
     painter.drawLine (x, y, x2, y);
+    
+    painter.drawText(x, y - 1, QString::number(line3 * 100) + "%", -1);
   
     if (r > high)
       high = r;
@@ -105,6 +112,8 @@ void FiboLine::draw (int x, int x2)
     double r = getY(line4, value, value2);
     int y = scaler->convertToY(r);
     painter.drawLine (x, y, x2, y);
+    
+    painter.drawText(x, y - 1, QString::number(line4 * 100) + "%", -1);
   
     if (r > high)
       high = r;
@@ -117,6 +126,8 @@ void FiboLine::draw (int x, int x2)
     double r = getY(line5, value, value2);
     int y = scaler->convertToY(r);
     painter.drawLine (x, y, x2, y);
+    
+    painter.drawText(x, y - 1, QString::number(line5 * 100) + "%", -1);
   
     if (r > high)
       high = r;
@@ -129,6 +140,8 @@ void FiboLine::draw (int x, int x2)
     double r = getY(line6, value, value2);
     int y = scaler->convertToY(r);
     painter.drawLine (x, y, x2, y);
+    
+    painter.drawText(x, y - 1, QString::number(line6 * 100) + "%", -1);
   
     if (r > high)
       high = r;
@@ -139,6 +152,8 @@ void FiboLine::draw (int x, int x2)
   // draw the low line
   int y = scaler->convertToY(value2);
   painter.drawLine (x, y, x2, y);
+  if (status)
+    painter.drawText(x, y - 1, QString::number(value2), -1);
 
   selectionArea.clear();
   QPointArray array;
@@ -150,6 +165,8 @@ void FiboLine::draw (int x, int x2)
   // draw the high line
   int y2 = scaler->convertToY(value);
   painter.drawLine (x, y2, x2, y2);
+  if (status)
+    painter.drawText(x, y2 - 1, QString::number(value), -1);
 
   // store the selectable area the high line occupies
   array.putPoints(0, 4, x, y2 - 4, x, y2 + 4, x2, y2 + 4, x2, y2 - 4);

@@ -40,6 +40,7 @@ TrendLine::TrendLine (Scaler *s, QPixmap *p, BarData *d, QString indicator, QStr
   value2 = v2;
   useBar = FALSE;
   barField = tr("Close");
+  extend = TRUE;
   
   menu->insertItem(tr("&Edit Trend Line"), this, SLOT(prefDialog()), tr("Ctrl+E"));
   menu->insertItem(tr("&Move Trend Line"), this, SLOT(moveObject()), tr("Ctrl+M"));
@@ -112,16 +113,19 @@ void TrendLine::draw (int x, int x2)
   int ty2 = y2;
   int tx = x;
   int ty = y;
-  
-  int ydiff = y - y2;
-  int xdiff = x2 - x;
-  while (x2 < buffer->width())
-  {
-    x = x2;
-    y = y2;
-    x2 = x2 + xdiff;
-    y2 = y2 - ydiff;
-    painter.drawLine (x, y, x2, y2);
+
+  if (extend)
+  {  
+    int ydiff = y - y2;
+    int xdiff = x2 - x;
+    while (x2 < buffer->width())
+    {
+      x = x2;
+      y = y2;
+      x2 = x2 + xdiff;
+      y2 = y2 - ydiff;
+      painter.drawLine (x, y, x2, y2);
+    }
   }
 
   // store the selectable area the line occupies
@@ -166,6 +170,7 @@ void TrendLine::prefDialog ()
   dialog->addColorItem(tr("Color"), tr("Details"), color);
   dialog->addComboItem(tr("Bar Field"), tr("Details"), l, barField);
   dialog->addCheckItem(tr("Use Bar"), tr("Details"), useBar);
+  dialog->addCheckItem(tr("Extend Line"), tr("Details"), extend);
   dialog->addCheckItem(tr("Set Default"), tr("Details"), FALSE);
   
   int rc = dialog->exec();
@@ -175,6 +180,7 @@ void TrendLine::prefDialog ()
     color = dialog->getColor(tr("Color"));
     useBar = dialog->getCheck(tr("Use Bar"));
     barField = dialog->getCombo(tr("Bar Field"));
+    extend = dialog->getCheck(tr("Extend Line"));
     
     bool f = dialog->getCheck(tr("Set Default"));
     if (f)
@@ -249,6 +255,7 @@ Setting * TrendLine::getSettings ()
   set->setData("End Value", QString::number(value2));
   set->setData("Bar Field", barField);
   set->setData("Use Bar", QString::number(useBar));
+  set->setData("Extend Line", QString::number(extend));
   set->setData("Color", color.name());
   set->setData("Plot", plot);
   set->setData("Name", name);
@@ -264,6 +271,7 @@ void TrendLine::setSettings (Setting *set)
   value2 = set->getFloat("End Value");
   barField = set->getData("Bar Field");
   useBar = set->getInt("Use Bar");
+  extend = set->getInt("Extend Line");
   color.setNamedColor(set->getData("Color"));
   plot = set->getData("Plot");
   name = set->getData("Name");

@@ -59,8 +59,17 @@
 	  system is not backwards compatible with the old one, so you will need to re-create any
 	  testing rules you already have. Need to update DOCS.
 	  
+20040730: Added value labels to fibo objects to display when adjusting the various levels in real
+          time.
+	  
+20040730: Added a chart page to the back testing module. First chart is an equity line that
+          plots the account balance. The second chart is a line plot of the symbol close with
+	  the buy/sell points marked for each signal. Replaced the date range parms with a bars
+	  counter instead.
+	  
+20040730: Added option to extend trendlines into the future in the edit dialog. Default is true.
 
-	  	  
+
 0.26
 ====
 

@@ -2,18 +2,14 @@ To Do:
 ======
 
 - create some howto docs for quote plugins
-- add MA option to all plugins?
-- chart scanner
 - postgresql quote plugin
 - key bindings
 - key binding scripting
-- add alerts to SZ & THERM plugins
 - add subgroups to groups ability
 - update plugin howto for BarData usage
 - fix trendlines and fibo objects to plot on weekly and monthly charts as well
 - make a freshmeat entry
 - context sensitive help
-- revise plugin alert system for hard coded methods (CCI, DMI etc)
 - allow negative displacement for line plots
 
 
