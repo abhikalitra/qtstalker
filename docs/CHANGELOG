@@ -37,13 +37,15 @@
 20040710: Rough version of the symbol scanner is now included. Will be improving as time goes on.
           Need to update DOCS.
 
-
 20040711: Changed the PaintBars chart type to use a custom formula to draw the paint bars. In order
           for it to work, the last step must be a COMP function that is checked to plot. This is the
 	  boolean array that will be used to draw the paint bars. If the COMP function returns
 	  TRUE than the bar will be considered an up bar. A FALSE value will be a down bar.
 	  Need to update DOCS.
 	  
+20040717: Changed the Line chart type to use a custom formula to plot. Now more flexible to use
+          a user defined formula rather than the hard coded options. The last step that is checked
+	  to plot will be the one to plot. Need to update DOCS.
 	  
 	  
 0.26

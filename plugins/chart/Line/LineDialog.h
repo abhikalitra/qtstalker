@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  *
- *  Copyright (C) 2001-2003 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2004 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,34 +19,33 @@
  *  USA.
  */
 
-#ifndef LINE_HPP
-#define LINE_HPP
-
-#include "ChartPlugin.h"
+#include <qtabdialog.h>
 #include <qcolor.h>
-#include <qstringlist.h>
+#include <qspinbox.h>
+#include "FormulaEdit.h"
+#include "ColorButton.h"
 
-class Line : public ChartPlugin
+class LineDialog : public QTabDialog
 {
   Q_OBJECT
-
-  public:
-    Line ();
-    virtual ~Line ();
-    void drawChart (int startX, int startIndex, int pixelspace);
-    void prefDialog ();
-    void loadSettings ();
-    void saveSettings ();
   
-  protected:
-    QColor color;
-    QStringList formulaList;
-    QStringList plotList;
+  public:
+    LineDialog ();
+    ~LineDialog ();
+    int getLines ();
+    QString getFunction (int);
+    QString getPlot (int);
+    void setLine (QString);
+    void setColor (QColor);
+    QColor getColor ();
+    void setSpacing (int);
+    int getSpacing ();
+    
+  private:
+    FormulaEdit *list;
+    QSpinBox *spacing;
+    ColorButton *color;
 };
 
-extern "C"
-{
-  Plugin * create ();
-};
+    
 
-#endif

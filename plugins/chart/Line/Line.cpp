@@ -20,7 +20,8 @@
  */
 
 #include "Line.h"
-#include "PrefDialog.h"
+#include "LineDialog.h"
+#include "QSMath.h"
 #include <qpainter.h>
 #include <qsettings.h>
 
@@ -29,8 +30,6 @@ Line::Line ()
   pluginName = "Line";
   startX = 0;
   indicatorFlag = FALSE;
-  type = Close;
-
   loadSettings();  
 }
 
@@ -40,6 +39,30 @@ Line::~Line ()
 
 void Line::drawChart (int startX, int startIndex, int pixelspace)
 {
+  PlotLine *line = 0;
+  QSMath *t = new QSMath(data);
+  QString err = t->calculateCustomFormula(formulaList, plotList);
+  if (err.length())
+  {
+    qDebug("Line plugin: " + err);
+    delete t;
+    return;
+  }
+  
+  int loop;
+  for (loop = plotList.count() - 1; loop > -1; loop--)
+  {
+    if (plotList[loop].toInt())
+    {
+      line = t->getCustomLine(loop + 1);
+      break;
+    }
+  }
+  delete t;
+  
+  if (! line)
+    return;
+
   QPainter painter;
   painter.begin(buffer);
 
@@ -47,42 +70,15 @@ void Line::drawChart (int startX, int startIndex, int pixelspace)
   int x2 = startX;
   int y = -1;
   int y2 = -1;
-  int loop = startIndex;
+  loop = startIndex;
+  int lineLoop = line->getSize() - data->count() + loop;
 
   painter.setPen(color);
 
   while ((x < buffer->width()) && (loop < (int) data->count()))
   {
-    switch(type)
-    {
-      case Open:
-        y2 = scaler->convertToY(data->getOpen(loop));
-        break;
-      case High:
-        y2 = scaler->convertToY(data->getHigh(loop));
-        break;
-      case Low:
-        y2 = scaler->convertToY(data->getLow(loop));
-        break;
-      case Tp:
-        y2 = scaler->convertToY(((data->getHigh(loop) + data->getLow(loop) + data->getClose(loop)) / 3));
-        break;
-      case Ap:
-        y2 = scaler->convertToY(((data->getOpen(loop) + data->getHigh(loop) + data->getLow(loop) + data->getClose(loop)) / 4));
-        break;
-      case Wp:
-        y2 = scaler->convertToY(((data->getHigh(loop) + data->getLow(loop) + data->getClose(loop) + data->getClose(loop)) / 4));
-        break;
-      case Hl:
-        y2 = scaler->convertToY(((data->getHigh(loop) + data->getLow(loop)) / 2));
-        break;
-      case Oc:
-        y2 = scaler->convertToY(((data->getOpen(loop) + data->getClose(loop)) / 2));
-        break;
-      default:
-        y2 = scaler->convertToY(data->getClose(loop));
-        break;
-    }  
+    if (lineLoop > -1 && lineLoop < line->getSize())
+      y2 = scaler->convertToY(line->getData(lineLoop));
   
     if (y != -1)
       painter.drawLine (x, y, x2, y2);
@@ -91,6 +87,7 @@ void Line::drawChart (int startX, int startIndex, int pixelspace)
 
     x2 = x2 + pixelspace;
     loop++;
+    lineLoop++;
   }
 
   painter.end();
@@ -98,31 +95,30 @@ void Line::drawChart (int startX, int startIndex, int pixelspace)
 
 void Line::prefDialog ()
 {
-  QStringList l;
-  l.append(tr("Open"));
-  l.append(tr("High"));
-  l.append(tr("Low"));
-  l.append(tr("Close"));
-  l.append(tr("Typical Price"));
-  l.append(tr("Average Price"));
-  l.append(tr("Weighted Price"));
-  l.append(tr("(H+L) /2"));
-  l.append(tr("(O+C) /2"));
-
-  PrefDialog *dialog = new PrefDialog();
-  dialog->setCaption(tr("Line Chart Prefs"));
-  dialog->createPage (tr("Details"));
-  dialog->addColorItem(tr("Line Color"), tr("Details"), color);
-  dialog->addComboItem(tr("Line Type"), tr("Details"), l, l[(int) type]);
-  dialog->addIntItem(tr("Min Bar Spacing"), tr("Details"), minPixelspace, 1, 99);
+  LineDialog *dialog = new LineDialog();
+  dialog->setColor(color);
+  dialog->setSpacing(minPixelspace);
+  
+  int loop;
+  for (loop = 0; loop < (int) formulaList.count(); loop++)
+    dialog->setLine(formulaList[loop] + "|" + plotList[loop]);
+  
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
-    color = dialog->getColor(tr("Line Color"));
-    type = (LineType) l.findIndex(dialog->getCombo(tr("Line Type")));
-    minPixelspace = dialog->getInt(tr("Min Bar Spacing"));
+    minPixelspace = dialog->getSpacing();
+    color = dialog->getColor();
     
+    int loop;
+    formulaList.clear();
+    plotList.clear();
+    for (loop = 0; loop < (int) dialog->getLines(); loop++)
+    {
+      formulaList.append(dialog->getFunction(loop));
+      plotList.append(dialog->getPlot(loop));
+    }
+        
     saveFlag = TRUE;
     emit draw();
   }
@@ -137,10 +133,16 @@ void Line::loadSettings ()
 
   color.setNamedColor(settings.readEntry("/Color", "green"));
   
-  QString s = settings.readEntry("/Type", QString::number(type));
-  type = (LineType) s.toInt();
-  
   minPixelspace = settings.readNumEntry("/minPixelspace", 3);
+  
+  QString s = settings.readEntry("/formula", "REF,Close,0,green,Line,C|1");
+  QStringList l = QStringList::split("|", s, FALSE);
+  int loop;
+  for (loop = 0; loop < (int) l.count(); loop = loop + 2)
+  {
+    formulaList.append(l[loop]);
+    plotList.append(l[loop + 1]);
+  }
   
   settings.endGroup();
 }
@@ -154,8 +156,19 @@ void Line::saveSettings ()
   settings.beginGroup("/Qtstalker/Line plugin");
   
   settings.writeEntry("/Color", color.name());
-  settings.writeEntry("/Type", QString::number(type));
   settings.writeEntry("/minPixelspace", minPixelspace);
+  
+  int loop;
+  QString s;
+  for (loop = 0; loop < (int) formulaList.count(); loop++)
+  {
+    s.append("|");
+    s.append(formulaList[loop]);
+    s.append("|");
+    s.append(plotList[loop]);
+  }
+  s.remove(0, 1);
+  settings.writeEntry("/formula", s);
   
   settings.endGroup();
 }
