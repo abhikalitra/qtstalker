@@ -18,6 +18,11 @@
 	  
 20040622: changed Tester:: class to non-modal dialog for multiple instances. testing needed.
 
+20040624: fixed bug in MOM, ROC, SD indicators that plots a blank chart.
+
+20040624: fixed bugs in OVRLY indicator that displayed erratic behaviour.
+
+
 	  
 0.26
 ====

@@ -586,8 +586,6 @@ PlotLine * QSMath::getMF (int period)
 PlotLine * QSMath::getMOM (PlotLine *in, int period)
 {
   PlotLine *mom = new PlotLine();
-  if (! data)
-    return mom;
 
   int loop;
   for (loop = period; loop < (int) in->getSize(); loop++)
@@ -666,7 +664,7 @@ PlotLine * QSMath::getPC (PlotLine *in, int period)
 PlotLine * QSMath::getPER (PlotLine *in)
 {
   PlotLine *per = new PlotLine();
-  if (! data)
+  if (in->getSize() < 1)
     return per;
 
   double base = in->getData(0);
@@ -680,8 +678,6 @@ PlotLine * QSMath::getPER (PlotLine *in)
 PlotLine * QSMath::getROC (PlotLine *in, int period)
 {
   PlotLine *roc = new PlotLine();
-  if (! data)
-    return roc;
 
   int loop;
   for (loop = period; loop < (int) in->getSize(); loop++)
@@ -954,8 +950,6 @@ PlotLine * QSMath::getSAR (double initial, double add, double limit)
 PlotLine * QSMath::getSD (PlotLine *in, int period)
 {
   PlotLine *sd = new PlotLine();
-  if (! data)
-    return sd;
 
   int loop;
   for (loop = period; loop < (int) in->getSize(); loop++)

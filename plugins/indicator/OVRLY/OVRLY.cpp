@@ -24,6 +24,7 @@
 #include <qdatetime.h>
 #include <qdict.h>
 #include "PrefDialog.h"
+#include "Config.h"
 
 OVRLY::OVRLY ()
 {
@@ -108,33 +109,25 @@ void OVRLY::comparePerformance ()
     return;
   }
 
-  int line1Loop = data->count() - 1;
   PlotLine *line1 = new PlotLine;
   line1->setColor(color);
   line1->setType(lineType);
   line1->setLabel(label);
 
-  int line2Loop = tline->getSize() - 1;
   PlotLine *line2 = new PlotLine;
   line2->setColor(baseColor);
   line2->setType(baseLineType);
   line2->setLabel(baseLabel);
 
-  while (line1Loop > -1 && line2Loop > -1)
-  {
-    line1Loop--;
-    line2Loop--;
-  }
-  line1Loop++;
-  line2Loop++;
-  double line1base = data->getClose(line1Loop);
-  double line2base = tline->getData(line2Loop);
-
-  for (; line1Loop < (int) data->count() && line2Loop < tline->getSize(); line1Loop++, line2Loop++)
-  {
-    line1->append(((data->getClose(line1Loop) - line1base) / line1base) * 100);
-    line2->append(((tline->getData(line2Loop) - line2base) / line2base) * 100);
-  }
+  int loop = 0;
+  double base = data->getClose(loop);
+  for (; loop < (int) data->count(); loop++)
+    line1->append(((data->getClose(loop) - base) / base) * 100);
+  
+  loop = 0;
+  base = tline->getData(loop);
+  for (; loop < tline->getSize(); loop++)
+    line2->append(((tline->getData(loop) - base) / base) * 100);
 
   delete tline;
 
@@ -156,10 +149,12 @@ PlotLine * OVRLY::getSymbolLine (QString d)
   BarDate date = data->getDate(0);
   
   db->setBarCompression(ChartDb::Daily);
-  db->setBarRange(99999999);
+  db->setBarRange(data->count());
   BarData *recordList = db->getHistory();
 
   QDict<Setting> dict;
+  dict.setAutoDelete(TRUE);
+  
   int loop;
   for (loop = 0; loop < (int) recordList->count(); loop++)
   {
@@ -172,10 +167,8 @@ PlotLine * OVRLY::getSymbolLine (QString d)
 
   for (loop = 0; loop < (int) data->count(); loop++)
   {
-    Setting *r2 = dict[recordList->getDate(loop).getDateTimeString(FALSE)];
-    if (! r2)
-      line->append(val);
-    else
+    Setting *r2 = dict[data->getDate(loop).getDateTimeString(FALSE)];
+    if (r2)
     {
       val = r2->getFloat(tr("Close"));
       line->append(val);
@@ -190,6 +183,8 @@ PlotLine * OVRLY::getSymbolLine (QString d)
 
 int OVRLY::indicatorPrefDialog ()
 {
+  Config *config = new Config;
+  
   PrefDialog *dialog = new PrefDialog();
   dialog->setCaption(tr("OVRLY Indicator"));
   
@@ -198,7 +193,7 @@ int OVRLY::indicatorPrefDialog ()
   dialog->addComboItem(tr("Base Line Type"), tr("Base Symbol"), lineTypes, baseLineType);
   dialog->addTextItem(tr("Base Label"), tr("Base Symbol"), baseLabel);
   dialog->addComboItem(tr("Method"), tr("Base Symbol"), methodList, method);
-  dialog->addSymbolItem(tr("Base Symbol"), tr("Base Symbol"), dataPath, baseSymbol);
+  dialog->addSymbolItem(tr("Base Symbol"), tr("Base Symbol"), config->getData(Config::DataPath), baseSymbol);
   
   dialog->createPage (tr("Current Symbol"));
   dialog->addColorItem(tr("Color"), tr("Current Symbol"), color);
@@ -223,6 +218,7 @@ int OVRLY::indicatorPrefDialog ()
     rc = FALSE;
   
   delete dialog;
+  delete config;
   return rc;
 }
 
