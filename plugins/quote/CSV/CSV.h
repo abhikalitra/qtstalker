@@ -23,6 +23,7 @@
 #include "FuturesData.h"
 #include "DbPlugin.h"
 #include "Setting.h"
+#include "Config.h"
 #include <qdatetime.h>
 #include <qtimer.h>
 
@@ -48,6 +49,7 @@ class CSV : public QuotePlugin
     void parse ();
 
   private:
+    Config config;
     QString delim;
     FuturesData fd;
     bool dateFlag;

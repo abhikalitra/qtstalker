@@ -379,28 +379,28 @@ void Yahoo::parseHistory ()
 
     // open
     QString open;
-    if (setTFloat(l[1]))
+    if (setTFloat(l[1], FALSE))
       continue;
     else
       open = QString::number(tfloat);
 
     // high
     QString high;
-    if (setTFloat(l[2]))
+    if (setTFloat(l[2], FALSE))
       continue;
     else
       high = QString::number(tfloat);
 
     // low
     QString low;
-    if (setTFloat(l[3]))
+    if (setTFloat(l[3], FALSE))
       continue;
     else
       low = QString::number(tfloat);
 
     // close
     QString close;
-    if (setTFloat(l[4]))
+    if (setTFloat(l[4], FALSE))
       continue;
     else
       close = QString::number(tfloat);
@@ -416,7 +416,7 @@ void Yahoo::parseHistory ()
       QString adjclose = "0";
       if (l.count() >= 7)
       {
-	if (setTFloat(l[6]))
+	if (setTFloat(l[6], FALSE))
 	  continue;
 	else
 	  adjclose = QString::number(tfloat);
@@ -527,28 +527,28 @@ void Yahoo::parseQuote ()
 
     // open
     QString open;
-    if (setTFloat(l[6]))
+    if (setTFloat(l[6], FALSE))
       continue;
     else
       open = QString::number(tfloat);
 
     // high
     QString high;
-    if (setTFloat(l[7]))
+    if (setTFloat(l[7], FALSE))
       continue;
     else
       high = QString::number(tfloat);
 
     // low
     QString low;
-    if (setTFloat(l[8]))
+    if (setTFloat(l[8], FALSE))
       continue;
     else
       low = QString::number(tfloat);
 
     // close
     QString close;
-    if (setTFloat(l[2]))
+    if (setTFloat(l[2], FALSE))
       continue;
     else
       close = QString::number(tfloat);

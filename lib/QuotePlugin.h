@@ -38,7 +38,7 @@ class QuotePlugin : public QObject
   public:
     QuotePlugin ();
     virtual ~QuotePlugin ();
-    bool setTFloat (QString);
+    bool setTFloat (QString, bool);
     QString stripJunk (QString);
     QString createDirectory (QString);
     QString getPluginName ();

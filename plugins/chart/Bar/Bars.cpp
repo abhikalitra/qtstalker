@@ -59,42 +59,26 @@ void Bars::drawBars (int startX, int startIndex, int pixelspace)
 
   int x = startX;
   int loop = startIndex;
-  
-  // set first bar as neutral
-  painter.setPen(barNeutralColor);
-
-  double t = data->getOpen(loop);
   int y;
-  if (t)
-  {
-    y = scaler->convertToY(t);
-    painter.drawLine (x - 2, y, x, y);
-  }
-
-  y = scaler->convertToY(data->getClose(loop));
-  painter.drawLine (x + 2, y, x, y);
-
-  int h = scaler->convertToY(data->getHigh(loop));
-
-  int l = scaler->convertToY(data->getLow(loop));
-  painter.drawLine (x, h, x, l);
-
-  x = x + pixelspace;
-  loop++;
-
+  
   while ((x < buffer->width()) && (loop < (int) data->count()))
   {
-    if (data->getClose(loop) > data->getClose(loop - 1))
-      painter.setPen(barUpColor);
-    else
-    {
-      if (data->getClose(loop) < data->getClose(loop - 1))
-        painter.setPen(barDownColor);
+    if (loop > 0)
+    {  
+      if (data->getClose(loop) > data->getClose(loop - 1))
+        painter.setPen(barUpColor);
       else
-        painter.setPen(barNeutralColor);
+      {
+        if (data->getClose(loop) < data->getClose(loop - 1))
+          painter.setPen(barDownColor);
+        else
+          painter.setPen(barNeutralColor);
+      }
     }
+    else
+      painter.setPen(barNeutralColor);
 
-    t = data->getOpen(loop);
+    double t = data->getOpen(loop);
     if (t)
     {
       y = scaler->convertToY(t);
@@ -104,8 +88,8 @@ void Bars::drawBars (int startX, int startIndex, int pixelspace)
     y = scaler->convertToY(data->getClose(loop));
     painter.drawLine (x + 2, y, x, y);
 
-    h = scaler->convertToY(data->getHigh(loop));
-    l = scaler->convertToY(data->getLow(loop));
+    int h = scaler->convertToY(data->getHigh(loop));
+    int l = scaler->convertToY(data->getLow(loop));
     painter.drawLine (x, h, x, l);
 
     x = x + pixelspace;

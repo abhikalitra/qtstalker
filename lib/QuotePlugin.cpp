@@ -48,7 +48,7 @@ QString QuotePlugin::stripJunk (QString d)
   return s;
 }
 
-bool QuotePlugin::setTFloat (QString d)
+bool QuotePlugin::setTFloat (QString d, bool flag)
 {
   QString s = d;
   
@@ -64,8 +64,16 @@ bool QuotePlugin::setTFloat (QString d)
     s.append("000");
   }
 
-  while (s.contains(","))
-    s = s.remove(s.find(",", 0, TRUE), 1);
+  if (flag)
+  {
+    while (s.contains(","))
+      s = s.replace(s.find(",", 0, TRUE), 1, ".");
+  }
+  else
+  {
+    while (s.contains(","))
+      s = s.remove(s.find(",", 0, TRUE), 1);
+  }
 
   bool ok;
   tfloat = s.toFloat(&ok);

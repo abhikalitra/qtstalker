@@ -22,8 +22,6 @@
 #include "CSV.h"
 #include "CSVDialog.h"
 #include "Bar.h"
-#include "Config.h"
-
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qtimer.h>
@@ -136,15 +134,14 @@ void CSV::parse ()
 
   // check for time field and set the tickflag  
   bool tickFlag = FALSE;
-  if (! rule->getData("Rule").contains("Time"))
+  if (rule->getData("Rule").contains("Time"))
     tickFlag = TRUE;
   else
   {
-    if (! rule->getData("Rule").contains("HHMMSS"))
+    if (rule->getData("Rule").contains("HHMMSS"))
       tickFlag = TRUE;
   }
 
-  Config config;      
   int loop;
   for (loop = 0; loop < (int) list.count(); loop++)
   {
@@ -309,11 +306,23 @@ void CSV::parse ()
 	if (! fieldList[fieldLoop].compare("Open") ||
 	    ! fieldList[fieldLoop].compare("High") ||
 	    ! fieldList[fieldLoop].compare("Low") ||
-	    ! fieldList[fieldLoop].compare("Close") ||
-	    ! fieldList[fieldLoop].compare("Volume") ||
+	    ! fieldList[fieldLoop].compare("Close"))
+	{
+          if (setTFloat(l[fieldLoop], TRUE))
+	  {
+	    qDebug("CSV::parse:Bad %s value", fieldList[fieldLoop].latin1());
+            emit statusLogMessage("Bad value");
+	    flag = TRUE;
+	    break;
+	  }
+	  r->setData(fieldList[fieldLoop], QString::number(tfloat));
+	  continue;
+	}
+	
+	if (! fieldList[fieldLoop].compare("Volume") ||
 	    ! fieldList[fieldLoop].compare("OI"))
 	{
-          if (setTFloat(l[fieldLoop]))
+          if (setTFloat(l[fieldLoop], FALSE))
 	  {
 	    qDebug("CSV::parse:Bad %s value", fieldList[fieldLoop].latin1());
             emit statusLogMessage("Bad value");
@@ -372,11 +381,11 @@ void CSV::parse ()
 	
 	if (r->getData("Name").length())
 	  db->setHeaderField(DbPlugin::Title, r->getData("Name"));
-	  
+
         db->setBar(bar);
 	emit dataLogMessage(r->getData("Symbol") + " " + r->getString());
         emit statusLogMessage("Updating " + r->getData("Symbol"));
-	config.closePlugin(db->getHeaderField(DbPlugin::Plugin));
+	config.closePlugin(type);
 	db = 0;
       }
       else
@@ -393,7 +402,7 @@ void CSV::parse ()
 
     if (db)
     {
-      config.closePlugin(db->getHeaderField(DbPlugin::Plugin));
+      config.closePlugin(type);
       db = 0;
     }
     f.close();
@@ -590,16 +599,17 @@ QDate CSV::getDate (QString k, QString d, Setting *r)
 
 bool CSV::openDb (QString path, QString symbol, QString type, bool tickFlag)
 {
-  Config config;
   db = config.getDbPlugin(type);
   if (! db)
   {
+    qDebug("CSV::openDb:can't open plugin");
     config.closePlugin(type);
     return TRUE;
   }
 
   if (db->openChart(path))
   {
+    qDebug("CSV::openDb:can't open chart");
     emit statusLogMessage("CSV::OpenDb:Could not open db.");
     config.closePlugin(type);
     db = 0;

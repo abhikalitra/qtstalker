@@ -176,6 +176,7 @@ void CSVDialog::createRulePage ()
   type = new QComboBox(w);
   type->insertItem(tr(tr("Stocks")), -1);
   type->insertItem(tr(tr("Futures")), -1);
+  connect(type, SIGNAL(activated(int)), this, SLOT(comboChanged(int)));
   grid->addWidget(type, 1, 1);
   
   label = new QLabel(tr("Delimiter:"), w);
@@ -186,6 +187,7 @@ void CSVDialog::createRulePage ()
   delimiter->insertItem(tr("Tab"), -1);
   delimiter->insertItem(tr("Space"), -1);
   delimiter->insertItem(tr("Semicolon"), -1);
+  connect(type, SIGNAL(activated(int)), this, SLOT(comboChanged(int)));
   grid->addWidget(delimiter, 2, 1);
 
   label = new QLabel(tr("Fields:"), w);
@@ -489,5 +491,9 @@ int CSVDialog::getReloadInterval ()
   return minutes->value();
 }
 
+void CSVDialog::comboChanged (int)
+{
+  ruleToolbar->setButtonStatus("save", TRUE);
+}
 
 

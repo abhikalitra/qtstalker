@@ -235,31 +235,31 @@ void COT::parse ()
     date.append("000000");
     date = date.stripWhiteSpace();
 
-    if (setTFloat(l[7]))
+    if (setTFloat(l[7], FALSE))
       continue;
     QString oi = QString::number(tfloat);
 
-    if (setTFloat(l[8]))
+    if (setTFloat(l[8], FALSE))
       continue;
     QString ncl = QString::number(tfloat);
 
-    if (setTFloat(l[9]))
+    if (setTFloat(l[9], FALSE))
       continue;
     QString ncs = QString::number(tfloat);
 
-    if (setTFloat(l[11]))
+    if (setTFloat(l[11], FALSE))
       continue;
     QString cl = QString::number(tfloat);
 
-    if (setTFloat(l[12]))
+    if (setTFloat(l[12], FALSE))
       continue;
     QString cs = QString::number(tfloat);
 
-    if (setTFloat(l[15]))
+    if (setTFloat(l[15], FALSE))
       continue;
     QString nrl = QString::number(tfloat);
 
-    if (setTFloat(l[16]))
+    if (setTFloat(l[16], FALSE))
       continue;
     QString nrs = QString::number(tfloat);
 

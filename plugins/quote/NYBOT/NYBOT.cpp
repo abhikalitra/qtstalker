@@ -110,7 +110,7 @@ void NYBOT::parse ()
       QString open = data->getData("dailyOpenPrice1");
       if (open.toFloat() == 0)
         open = data->getData("dailyOpenPrice2");
-      if (setTFloat(open))
+      if (setTFloat(open, FALSE))
       {
         delete data;
         continue;
@@ -120,7 +120,7 @@ void NYBOT::parse ()
 
       // high
       QString high;
-      if (setTFloat(data->getData("dailyHigh")))
+      if (setTFloat(data->getData("dailyHigh"), FALSE))
       {
         delete data;
         continue;
@@ -130,7 +130,7 @@ void NYBOT::parse ()
 
       // low
       QString low;
-      if (setTFloat(data->getData("dailyLow")))
+      if (setTFloat(data->getData("dailyLow"), FALSE))
       {
         delete data;
         continue;
@@ -140,7 +140,7 @@ void NYBOT::parse ()
 
       // close
       QString close;
-      if (setTFloat(data->getData("settlementPrice")))
+      if (setTFloat(data->getData("settlementPrice"), FALSE))
       {
         delete data;
         continue;
@@ -150,7 +150,7 @@ void NYBOT::parse ()
 
       // volume
       QString volume;
-      if (setTFloat(data->getData("tradeVolume")))
+      if (setTFloat(data->getData("tradeVolume"), FALSE))
       {
         delete data;
         continue;
@@ -160,7 +160,7 @@ void NYBOT::parse ()
 
       // oi
       QString oi;
-      if (setTFloat(data->getData("openInterest")))
+      if (setTFloat(data->getData("openInterest"), FALSE))
       {
         delete data;
         continue;

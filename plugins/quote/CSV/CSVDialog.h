@@ -66,6 +66,7 @@ class CSVDialog : public QTabDialog
     void deleteField ();
     void fieldSelected (int);
     void help ();
+    void comboChanged (int);
           
   private:
     FileButton *file;

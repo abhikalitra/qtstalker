@@ -866,28 +866,28 @@ void CME::saveTodayData (QStringList l)
   s = l[0];
   if (! s.compare("JY"))
   {
-    setTFloat(open);
+    setTFloat(open, FALSE);
     open = QString::number(tfloat);
     if (open.toFloat() > 9999)
       open.insert(1, ".");
     else
       open.prepend(".");
 
-    setTFloat(high);
+    setTFloat(high, FALSE);
     high = QString::number(tfloat);
     if (high.toFloat() > 9999)
       high.insert(1, ".");
     else
       high.prepend(".");
 
-    setTFloat(low);
+    setTFloat(low, FALSE);
     low = QString::number(tfloat);
     if (low.toFloat() > 9999)
       low.insert(1, ".");
     else
       low.prepend(".");
 
-    setTFloat(close);
+    setTFloat(close, FALSE);
     close = QString::number(tfloat);
     if (close.toFloat() > 9999)
       close.insert(1, ".");
@@ -914,42 +914,42 @@ void CME::parse (Setting *data)
 
   // open
   QString open;
-  if (setTFloat(data->getData("Open")))
+  if (setTFloat(data->getData("Open"), FALSE))
     return;
   else
     open = QString::number(tfloat);
 
   // high
   QString high;
-  if (setTFloat(data->getData("High")))
+  if (setTFloat(data->getData("High"), FALSE))
     return;
   else
     high = QString::number(tfloat);
 
   // low
   QString low;
-  if (setTFloat(data->getData("Low")))
+  if (setTFloat(data->getData("Low"), FALSE))
     return;
   else
     low = QString::number(tfloat);
 
   // close
   QString close;
-  if (setTFloat(data->getData("Close")))
+  if (setTFloat(data->getData("Close"), FALSE))
     return;
   else
     close = QString::number(tfloat);
 
   // volume
   QString volume;
-  if (setTFloat(data->getData("Volume")))
+  if (setTFloat(data->getData("Volume"), FALSE))
     return;
   else
     volume = QString::number(tfloat);
 
   // oi
   QString oi;
-  if (setTFloat(data->getData("OI")))
+  if (setTFloat(data->getData("OI"), FALSE))
     return;
   else
     oi = QString::number(tfloat);

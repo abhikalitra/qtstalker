@@ -63,15 +63,12 @@ class DbPlugin
     QString getData (QString);
     void setData (QString, QString);
     void deleteData (QString);
-    void deleteBar (QString);
     Bar * getBar (QString);
-    
     void getDailyHistory ();
     void getWeeklyHistory ();
     void getMonthlyHistory ();
     void getTickHistory (int);
     void getDailyTickHistory ();
-    
     void setHeaderField (int, QString);
     QString getHeaderField (int);
     void close ();
