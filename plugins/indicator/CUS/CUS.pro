@@ -9,7 +9,7 @@ HEADERS += CUSDialog.h
 SOURCES += CUS.cpp
 SOURCES += CUSDialog.cpp
 
-TARGET = CUS.0.26
+TARGET = CUS.0.27
 
 INCLUDEPATH += ../../../lib
 

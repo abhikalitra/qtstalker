@@ -27,7 +27,6 @@ VOL::VOL ()
 {
   pluginName = "VOL";
   plotFlag = FALSE;
-  alertFlag = FALSE;
   setDefaults();
 }
 

@@ -49,8 +49,18 @@
 
 20040724: Applied patches #997264 - single pass optimisation for SMA, #997252 - cvsignore updates.
           Thanks to Marco van Zwetselaar.
+
+20040728: Removed all the alert functions from all classes. The base plugin class was modified,
+          so we have to bump up all the lib and plugin versions from 0.26 to 0.27. qtstalker now only loads
+	  version 0.27 plugins.
+
+20040729: Changed the back testing gui and logic to use the new CUS user language to create
+          enter/exit rules instead of using the alert functions in the indicator plugins. The new
+	  system is not backwards compatible with the old one, so you will need to re-create any
+	  testing rules you already have. Need to update DOCS.
 	  
-	  
+
+	  	  
 0.26
 ====
 

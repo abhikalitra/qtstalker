@@ -27,7 +27,6 @@ VFI::VFI ()
 {
   pluginName = "VFI";
   plotFlag = FALSE;
-  alertFlag = TRUE;
   setDefaults();
 }
 
@@ -67,28 +66,6 @@ void VFI::calculate ()
     output.append(vfi);
   }
   delete t;
-}
-
-QMemArray<int> VFI::getAlerts ()
-{
-  alerts.fill(0, data->count());
-
-  if (output.count() == 0)
-    return alerts;
-  PlotLine *vfi = output.at(0);
-
-  int dataLoop = data->count() - vfi->getSize();
-  int status = 0;
-  int loop;
-  for (loop = 0; loop < (int) vfi->getSize(); loop++, dataLoop++)
-  {
-    if (vfi->getData(loop) > 0)
-          status = 1;
-    if (vfi->getData(loop) < 0)
-	  status = -1;
-    alerts[dataLoop] = status;
-  }
-  return alerts;
 }
 
 int VFI::indicatorPrefDialog ()

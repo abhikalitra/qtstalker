@@ -27,7 +27,6 @@ class VFI : public IndicatorPlugin
     VFI ();
     virtual ~VFI ();
     void calculate ();
-    QMemArray<int> getAlerts ();
     void loadIndicatorSettings (QString);
     void saveIndicatorSettings (QString);
     int indicatorPrefDialog ();

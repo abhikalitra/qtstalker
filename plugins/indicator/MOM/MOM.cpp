@@ -27,7 +27,6 @@ MOM::MOM ()
 {
   pluginName = "MOM";
   plotFlag = FALSE;
-  alertFlag = TRUE;
   setDefaults();
 }
 
@@ -71,47 +70,6 @@ void MOM::calculate ()
 
   delete in;
   delete t;
-}
-
-QMemArray<int> MOM::getAlerts ()
-{
-  alerts.fill(0, data->count());
-
-  if (! output.count())
-    return alerts;
-
-  PlotLine *line = output.at(0);
-
-  int dataLoop = data->count() - line->getSize();
-  int loop;
-  int status = 0;
-  for (loop = 0; loop < (int) line->getSize(); loop++, dataLoop++)
-  {
-    switch (status)
-    {
-      case -1:
-        if (line->getData(loop) > 0)
-	  status = 1;
-	break;
-      case 1:
-        if (line->getData(loop) < 0)
-	  status = -1;
-	break;
-      default:
-        if (line->getData(loop) > 0)
-	  status = 1;
-	else
-	{
-          if (line->getData(loop) < 0)
-	    status = -1;
-	}
-	break;
-    }
-
-    alerts[dataLoop] = status;
-  }
-
-  return alerts;
 }
 
 int MOM::indicatorPrefDialog ()

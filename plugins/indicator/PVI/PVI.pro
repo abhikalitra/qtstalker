@@ -7,7 +7,7 @@ HEADERS += PVI.h
 
 SOURCES += PVI.cpp
 
-TARGET = PVI.0.26
+TARGET = PVI.0.27
 
 INCLUDEPATH += ../../../lib
 

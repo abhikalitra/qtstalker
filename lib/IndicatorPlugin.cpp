@@ -29,7 +29,6 @@ IndicatorPlugin::IndicatorPlugin()
   pluginType = IndicatorPlug;
   saveFlag = FALSE;
   plotFlag = FALSE;
-  alertFlag = FALSE;
   
   PlotLine *pl = new PlotLine;
   lineTypes = pl->getLineTypes();
@@ -54,20 +53,9 @@ void IndicatorPlugin::setIndicatorInput (BarData *d)
   output.clear();
 }
 
-QMemArray<int> IndicatorPlugin::getAlerts ()
-{
-  alerts.fill(0, data->count());
-  return alerts;
-}
-
 bool IndicatorPlugin::getPlotFlag ()
 {
   return plotFlag;
-}
-
-bool IndicatorPlugin::getAlertFlag ()
-{
-  return alertFlag;
 }
 
 void IndicatorPlugin::clearOutput ()

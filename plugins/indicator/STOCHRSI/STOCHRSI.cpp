@@ -28,7 +28,6 @@ STOCHRSI::STOCHRSI ()
 {
   pluginName = "STOCHRSI";
   plotFlag = FALSE;
-  alertFlag = FALSE;
   setDefaults();
 }
 

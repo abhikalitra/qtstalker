@@ -33,7 +33,7 @@ Config::Config ()
 {
   libs.setAutoDelete(TRUE);
   plugins.setAutoDelete(TRUE);
-  version = "0.26";  // only this version of plugin is allowed to be loaded
+  version = "0.27";  // only this version of plugin is allowed to be loaded
 }
 
 Config::~Config ()

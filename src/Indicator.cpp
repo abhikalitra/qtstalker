@@ -57,24 +57,9 @@ bool Indicator::getMainPlot ()
   return plot;
 }
 
-QMemArray<int> Indicator::getAlerts ()
-{
-  return alerts;
-}
-
-void Indicator::setAlerts (QMemArray<int> d)
-{
-  alerts = d;
-}
-
 void Indicator::clearLines ()
 {
   lines.clear();
-}
-
-int Indicator::getAlert (int i)
-{
-  return alerts[i];
 }
 
 void Indicator::setEnable (bool status)

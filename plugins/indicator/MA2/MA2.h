@@ -27,7 +27,6 @@ class MA2 : public IndicatorPlugin
     MA2 ();
     virtual ~MA2 ();
     void calculate ();
-    QMemArray<int> getAlerts ();
     void loadIndicatorSettings (QString);
     void saveIndicatorSettings (QString);
     int indicatorPrefDialog ();

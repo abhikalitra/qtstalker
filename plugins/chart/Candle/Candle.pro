@@ -7,7 +7,7 @@ HEADERS += Candle.h
 
 SOURCES += Candle.cpp
 
-TARGET = Candle.0.26
+TARGET = Candle.0.27
 
 INCLUDEPATH += ../../../lib
 

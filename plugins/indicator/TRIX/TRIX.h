@@ -27,7 +27,6 @@ class TRIX : public IndicatorPlugin
     TRIX ();
     virtual ~TRIX ();
     void calculate ();
-    QMemArray<int> getAlerts ();
     void loadIndicatorSettings (QString);
     void saveIndicatorSettings (QString);
     int indicatorPrefDialog ();

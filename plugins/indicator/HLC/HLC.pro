@@ -7,7 +7,7 @@ HEADERS += HLC.h
 
 SOURCES += HLC.cpp
 
-TARGET = HLC.0.26
+TARGET = HLC.0.27
 
 INCLUDEPATH += ../../../lib
 

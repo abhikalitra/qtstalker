@@ -24,7 +24,6 @@
 
 #include <qstring.h>
 #include <qstringlist.h>
-#include <qmemarray.h>
 #include <qptrlist.h>
 #include "PlotLine.h"
 
@@ -33,10 +32,6 @@ class Indicator
   public:
     Indicator ();
     ~Indicator ();
-    void clear ();
-    QMemArray<int> getAlerts ();
-    void setAlerts (QMemArray<int>);
-    int getAlert (int);
     int getLines ();
     void addLine (PlotLine *);
     PlotLine * getLine (int);
@@ -54,7 +49,6 @@ class Indicator
 
   private:
     QPtrList<PlotLine> lines;
-    QMemArray<int> alerts;
     bool enable;
     QString name;
     QString type;

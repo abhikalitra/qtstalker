@@ -31,10 +31,6 @@ class DMI : public IndicatorPlugin
     void saveIndicatorSettings (QString);
     int indicatorPrefDialog ();
     void setDefaults();
-    QMemArray<int> getAlerts ();
-    void alertCrossover ();
-    void alertExtremePoint ();
-    void alertTurningPoint ();
     
   private:
     QColor mdiColor;
@@ -49,8 +45,6 @@ class DMI : public IndicatorPlugin
     int period;
     int smoothing;
     QSMath::MAType maType;
-    QStringList alertList;
-    QString alertType;
 };
 
 extern "C"

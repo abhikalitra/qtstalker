@@ -27,7 +27,6 @@
 #include "QSMath.h"
 #include <qstring.h>
 #include <qptrlist.h>
-#include <qmemarray.h>
 #include <qdict.h>
 
 class IndicatorPlugin : public Plugin
@@ -35,12 +34,10 @@ class IndicatorPlugin : public Plugin
   public:
     IndicatorPlugin();
     virtual ~IndicatorPlugin();
-    QMemArray<int> getAlerts ();
     void setIndicatorInput (BarData *);
     int getIndicatorLines ();
     void clearOutput ();
     bool getPlotFlag ();
-    bool getAlertFlag ();
     QDict<QString> loadFile (QString);
     void saveFile (QString, QDict<QString>);
     PlotLine * getIndicatorLine (int);
@@ -48,12 +45,10 @@ class IndicatorPlugin : public Plugin
   protected:
     BarData *data;
     QPtrList<PlotLine> output;
-    QMemArray<int> alerts;
     QStringList lineTypes;
     QStringList maTypeList;
     QStringList inputTypeList;
     bool plotFlag;
-    bool alertFlag;
     bool saveFlag;
 };
 

@@ -27,7 +27,6 @@ ENV::ENV ()
 {
   pluginName = "ENV";
   plotFlag = TRUE;
-  alertFlag = TRUE;
   setDefaults();
 }
 
@@ -86,52 +85,6 @@ void ENV::calculate ()
   output.append(lma);
   
   delete t;
-}
-
-QMemArray<int> ENV::getAlerts ()
-{
-  alerts.fill(0, data->count());
-
-  if (output.count() != 2)
-    return alerts;
-
-  PlotLine *uma = output.at(0);
-  PlotLine *lma = output.at(1);
-
-  int listLoop = data->count() - uma->getSize();
-  int maLoop;
-  int status = 0;
-  for (maLoop = 0; maLoop < (int) uma->getSize(); maLoop++, listLoop++)
-  {
-    double close = data->getClose(listLoop);
-
-    double t = (close - lma->getData(maLoop)) / (uma->getData(maLoop) - lma->getData(maLoop));
-
-    switch (status)
-    {
-      case -1:
-        if ((t < .2) || (close < lma->getData(maLoop)))
-          status = 1;
-        break;
-      case 1:
-        if ((t > .8) || (close > uma->getData(maLoop)))
-	  status = -1;
-	break;
-      default:
-        if ((t < .2) || (close < lma->getData(maLoop)))
-	  status = 1;
-	else
-	{
-          if ((t > .8) || (close > uma->getData(maLoop)))
-	    status = -1;
-	}
-	break;
-    }
-    
-    alerts[listLoop] = status;
-  }
-
-  return alerts;
 }
 
 int ENV::indicatorPrefDialog ()

@@ -30,7 +30,6 @@ OVRLY::OVRLY ()
 {
   pluginName = "OVRLY";
   plotFlag = FALSE;
-  alertFlag = FALSE;
   setDefaults();
 
   methodList.append(tr("Compare Price"));

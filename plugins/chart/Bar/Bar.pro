@@ -9,7 +9,7 @@ HEADERS += BarDialog.h
 SOURCES += Bars.cpp
 SOURCES += BarDialog.cpp
 
-TARGET = Bar.0.26
+TARGET = Bar.0.27
 
 INCLUDEPATH += ../../../lib
 

@@ -27,7 +27,6 @@ class STOCH : public IndicatorPlugin
     STOCH ();
     virtual ~STOCH ();
     void calculate ();
-    QMemArray<int> getAlerts ();
     void loadIndicatorSettings (QString);
     void saveIndicatorSettings (QString);
     int indicatorPrefDialog ();

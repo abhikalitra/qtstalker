@@ -24,27 +24,21 @@
 
 #include <qstring.h>
 #include <qtabdialog.h>
-#include <qlistview.h>
-#include <qdict.h>
-#include <qptrlist.h>
 #include <qcheckbox.h>
 #include <qpushbutton.h>
 #include <qspinbox.h>
 #include <qdatetimeedit.h>
 #include <qlineedit.h>
 #include <qvalidator.h>
-#include <qbuttongroup.h>
 #include <qlabel.h>
-#include <qslider.h>
 #include <qtable.h>
-#include <qtoolbutton.h>
 #include <qcombobox.h>
 #include "Config.h"
-#include "Indicator.h"
 #include "Setting.h"
 #include "ChartDb.h"
 #include "BarData.h"
 #include "SymbolButton.h"
+#include "FormulaEdit.h"
 
 class Tester : public QTabDialog
 {
@@ -61,49 +55,37 @@ class Tester : public QTabDialog
     bool maximumLoss ();
     bool profit ();
     bool trailing ();
-    void loadIndicators (int);
+    PlotLine * loadIndicator (FormulaEdit *);
     void enterLong ();
     void exitLong ();
     void enterShort ();
     void exitShort ();
-    void loadEnterLongAlerts ();
-    void loadExitLongAlerts ();
-    void loadEnterShortAlerts ();
-    void loadExitShortAlerts ();
+    void loadAlerts (int);
     void clearAlertCounts ();
     void checkAlerts ();
     void createSummary ();
     void getVolume ();
     double getPrice (int);
+    void saveEditRule (int);
+    void loadEditRule (int);
 
   public slots:
-    void editIndicator ();
-    void deleteIndicator ();
-    void addIndicator ();
-    void indicatorSelected (QListViewItem *);
     void test ();
     void maximumLossToggled (bool);
     void profitToggled (bool);
     void trailingToggled (bool);
     void symbolButtonPressed ();
-    void showRule (int);
     void saveRule ();
     void exitDialog ();
     void loadRule ();
 
   protected:
     Config *config;
-    QListView *indicatorList;
     QTable *tradeList;
-    QListViewItem *item;
-    QDict<Indicator> enterLongIndicators;
-    QDict<Indicator> exitLongIndicators;
-    QDict<Indicator> enterShortIndicators;
-    QDict<Indicator> exitShortIndicators;
-    QDict<Setting> enterLongAlerts;
-    QDict<Setting> exitLongAlerts;
-    QDict<Setting> enterShortAlerts;
-    QDict<Setting> exitShortAlerts;
+    Setting enterLongAlerts;
+    Setting exitLongAlerts;
+    Setting enterShortAlerts;
+    Setting exitShortAlerts;
     QCheckBox *maximumLossCheck;
     QCheckBox *maximumLossLong;
     QCheckBox *maximumLossShort;
@@ -129,12 +111,12 @@ class Tester : public QTabDialog
     QDateEdit *startDate;
     QDateEdit *endDate;
     QDoubleValidator *validator;
-    QButtonGroup *buttonGroup;
     QString ruleName;
-    QToolButton *addIndicatorButton;
-    QToolButton *editIndicatorButton;
-    QToolButton *deleteIndicatorButton;
     QComboBox *priceField;
+    FormulaEdit *enterLongEdit;
+    FormulaEdit *enterShortEdit;
+    FormulaEdit *exitLongEdit;
+    FormulaEdit *exitShortEdit;
 
     int status;
     int testLoop;

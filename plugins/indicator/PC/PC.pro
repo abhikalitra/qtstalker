@@ -7,7 +7,7 @@ HEADERS += PC.h
 
 SOURCES += PC.cpp
 
-TARGET = PC.0.26
+TARGET = PC.0.27
 
 INCLUDEPATH += ../../../lib
 

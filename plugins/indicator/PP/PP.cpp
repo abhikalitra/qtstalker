@@ -27,7 +27,6 @@ PP::PP ()
 {
   pluginName = "PP";
   plotFlag = TRUE;
-  alertFlag = FALSE;
   setDefaults();
 }
 

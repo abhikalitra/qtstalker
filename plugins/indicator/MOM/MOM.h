@@ -27,7 +27,6 @@ class MOM : public IndicatorPlugin
     MOM ();
     virtual ~MOM ();
     void calculate ();
-    QMemArray<int> getAlerts ();
     void loadIndicatorSettings (QString);
     void saveIndicatorSettings (QString);
     int indicatorPrefDialog ();

@@ -28,7 +28,6 @@ RSI::RSI ()
 {
   pluginName = "RSI";
   plotFlag = FALSE;
-  alertFlag = TRUE;
   setDefaults();
 }
 
@@ -74,55 +73,6 @@ void RSI::calculate ()
 
   delete in;
   delete t;
-}
-
-QMemArray<int> RSI::getAlerts ()
-{
-  alerts.fill(0, data->count());
-
-  if (! output.count())
-    return alerts;
-
-  PlotLine *line = output.at(0);
-  int status = 0;
-  int loop = data->count() - line->getSize() + 1;
-  for (; loop < (int) line->getSize(); loop++)
-  {
-    switch (status)
-    {
-      case -1:
-        if ((line->getData(loop) > buyLine) && (line->getData(loop - 1) <= buyLine))
-	{
-          alerts[loop] = 1;
-	  status = 1;
-	}
-	break;
-      case 1:
-        if ((line->getData(loop) < sellLine) && (line->getData(loop - 1) >= sellLine))
-	{
-          alerts[loop] = -1;
-	  status = -1;
-	}
-	break;
-      default:
-        if ((line->getData(loop) > buyLine) && (line->getData(loop - 1) <= buyLine))
-	{
-          alerts[loop] = 1;
-	  status = 1;
-	}
-	else
-	{
-          if ((line->getData(loop) < sellLine) && (line->getData(loop - 1) >= sellLine))
-	  {
-            alerts[loop] = -1;
-	    status = -1;
-	  }
-	}
-        break;
-    }
-  }
-
-  return alerts;
 }
 
 int RSI::indicatorPrefDialog ()

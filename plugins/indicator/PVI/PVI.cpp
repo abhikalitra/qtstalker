@@ -27,7 +27,6 @@ PVI::PVI ()
 {
   pluginName = "PVI";
   plotFlag = FALSE;
-  alertFlag = FALSE;
   setDefaults();
 }
 

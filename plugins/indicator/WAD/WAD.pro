@@ -7,7 +7,7 @@ HEADERS += WAD.h
 
 SOURCES += WAD.cpp
 
-TARGET = WAD.0.26
+TARGET = WAD.0.27
 
 INCLUDEPATH += ../../../lib
 

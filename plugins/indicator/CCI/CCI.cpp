@@ -28,12 +28,7 @@ CCI::CCI ()
 {
   pluginName = "CCI";
   plotFlag = FALSE;
-  alertFlag = TRUE;
   setDefaults();
-
-  alertList.append(tr("100 Rule"));
-  alertList.append(tr("0 Rule"));
-  alertList.sort();
 }
 
 CCI::~CCI ()
@@ -48,7 +43,6 @@ void CCI::setDefaults ()
   smoothing = 3;
   period = 20;
   maType = QSMath::SMA;
-  alertType = tr("100 Rule");
 }
 
 void CCI::calculate ()
@@ -77,90 +71,6 @@ void CCI::calculate ()
   delete t;
 }
 
-QMemArray<int> CCI::getAlerts ()
-{
-  alerts.fill(0, data->count());
-
-  if (output.count() == 0)
-    return alerts;
-
-  if (! alertType.compare(tr("100 Rule")))
-    alertHundred();
-
-  if (! alertType.compare(tr("0 Rule")))
-    alertZero();
-
-  return alerts;
-}
-
-void CCI::alertHundred ()
-{
-  PlotLine *cci = output.at(0);
-
-  int dataLoop = data->count() - cci->getSize();
-  int loop;
-  int status = 0;
-  for (loop = 0; loop < (int) cci->getSize(); loop++, dataLoop++)
-  {
-    switch (status)
-    {
-      case -1:
-        if (cci->getData(loop) > -100)
-          status = 0;
-        break;
-      case 1:
-        if (cci->getData(loop) < 100)
-	  status = 0;
-	break;
-      default:
-        if (cci->getData(loop) > 100)
-	  status = 1;
-	else
-	{
-          if (cci->getData(loop) < -100)
-	    status = -1;
-	}
-	break;
-    }
-
-    alerts[dataLoop] = status;
-  }
-}
-
-void CCI::alertZero ()
-{
-  PlotLine *cci = output.at(0);
-
-  int dataLoop = data->count() - cci->getSize();
-  int status = 0;
-  int loop;
-  for (loop = 0; loop < (int) cci->getSize(); loop++, dataLoop++)
-  {
-    switch (status)
-    {
-      case -1:
-        if (cci->getData(loop) > 0)
-          status = 0;
-        break;
-      case 1:
-        if (cci->getData(loop) < 0)
-	  status = 0;
-	break;
-      default:
-        if (cci->getData(loop) > 0)
-	  status = 1;
-	else
-	{
-          if (cci->getData(loop) < 0)
-	    status = -1;
-	}
-	break;
-    }
-
-    alerts[dataLoop] = status;
-  }
-}
-
 int CCI::indicatorPrefDialog ()
 {
   PrefDialog *dialog = new PrefDialog();
@@ -172,7 +82,6 @@ int CCI::indicatorPrefDialog ()
   dialog->addIntItem(tr("Period"), tr("Parms"), period, 1, 99999999);
   dialog->addIntItem(tr("Smoothing"), tr("Parms"), smoothing, 0, 99999999);
   dialog->addComboItem(tr("Smoothing Type"), tr("Parms"), maTypeList, maType);
-  dialog->addComboItem(tr("Alert"), tr("Parms"), alertList, alertType);
   
   int rc = dialog->exec();
   
@@ -184,7 +93,6 @@ int CCI::indicatorPrefDialog ()
     label = dialog->getText(tr("Label"));
     smoothing = dialog->getInt(tr("Smoothing"));
     maType = (QSMath::MAType) dialog->getComboIndex(tr("Smoothing Type"));
-    alertType = dialog->getCombo(tr("Alert"));
     rc = TRUE;
   }
   else
@@ -225,10 +133,6 @@ void CCI::loadIndicatorSettings (QString file)
   s = dict["maType"];
   if (s)
     maType = (QSMath::MAType) s->left(s->length()).toInt();
-
-  s = dict["alertType"];
-  if (s)
-    alertType = s->left(s->length());
 }
 
 void CCI::saveIndicatorSettings (QString file)
@@ -242,7 +146,6 @@ void CCI::saveIndicatorSettings (QString file)
   dict.replace("smoothing", new QString(QString::number(smoothing)));
   dict.replace("label", new QString(label));
   dict.replace("maType", new QString(QString::number(maType)));
-  dict.replace("alertType", new QString(alertType));
   dict.replace("plugin", new QString(pluginName));
 
   saveFile(file, dict);

@@ -27,7 +27,6 @@ NVI::NVI ()
 {
   pluginName = "NVI";
   plotFlag = FALSE;
-  alertFlag = FALSE;
   setDefaults();
 }
 

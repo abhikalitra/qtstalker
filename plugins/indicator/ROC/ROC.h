@@ -27,7 +27,6 @@ class ROC : public IndicatorPlugin
     ROC ();
     virtual ~ROC ();
     void calculate ();
-    QMemArray<int> getAlerts ();
     void loadIndicatorSettings (QString);
     void saveIndicatorSettings (QString);
     int indicatorPrefDialog ();

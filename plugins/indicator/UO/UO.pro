@@ -7,7 +7,7 @@ HEADERS += UO.h
 
 SOURCES += UO.cpp
 
-TARGET = UO.0.26
+TARGET = UO.0.27
 
 INCLUDEPATH += ../../../lib
 

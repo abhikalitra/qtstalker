@@ -7,7 +7,7 @@ HEADERS += SAR.h
 
 SOURCES += SAR.cpp
 
-TARGET = SAR.0.26
+TARGET = SAR.0.27
 
 INCLUDEPATH += ../../../lib
 

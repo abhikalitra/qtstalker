@@ -27,7 +27,6 @@ class SAR : public IndicatorPlugin
     SAR ();
     virtual ~SAR ();
     void calculate ();
-    QMemArray<int> getAlerts ();
     void loadIndicatorSettings (QString);
     void saveIndicatorSettings (QString);
     int indicatorPrefDialog ();

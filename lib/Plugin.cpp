@@ -23,7 +23,6 @@
 
 Plugin::Plugin ()
 {
-  version = 0.3;
 }
 
 Plugin::~Plugin ()
@@ -38,11 +37,6 @@ Plugin::PluginType Plugin::getPluginType ()
 QString Plugin::getPluginName ()
 {
   return pluginName;
-}
-
-QString Plugin::getVersion ()
-{
-  return QString::number(version);
 }
 
 void Plugin::setDataPath (QString d)
@@ -62,11 +56,6 @@ void Plugin::setIndicatorInput (BarData *)
 {
 }
 
-QMemArray<int> Plugin::getAlerts ()
-{
-  return 0;
-}
-
 int Plugin::getIndicatorLines ()
 {
   return 0;
@@ -79,11 +68,6 @@ PlotLine * Plugin::getIndicatorLine (int)
 
 void Plugin::clearOutput ()
 {
-}
-
-bool Plugin::getAlertFlag ()
-{
-  return FALSE;
 }
 
 bool Plugin::getPlotFlag ()

@@ -27,7 +27,6 @@ DPO::DPO ()
 {
   pluginName = "DPO";
   plotFlag = FALSE;
-  alertFlag = FALSE;
   setDefaults();
 }
 

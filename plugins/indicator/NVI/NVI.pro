@@ -7,7 +7,7 @@ HEADERS += NVI.h
 
 SOURCES += NVI.cpp
 
-TARGET = NVI.0.26
+TARGET = NVI.0.27
 
 INCLUDEPATH += ../../../lib
 

@@ -27,7 +27,6 @@ class MAOSC : public IndicatorPlugin
     MAOSC ();
     virtual ~MAOSC ();
     void calculate ();
-    QMemArray<int> getAlerts ();
     void loadIndicatorSettings (QString);
     void saveIndicatorSettings (QString);
     int indicatorPrefDialog ();

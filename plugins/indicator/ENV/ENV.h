@@ -27,7 +27,6 @@ class ENV : public IndicatorPlugin
     ENV ();
     virtual ~ENV ();
     void calculate ();
-    QMemArray<int> getAlerts ();
     void loadIndicatorSettings (QString);
     void saveIndicatorSettings (QString);
     int indicatorPrefDialog ();

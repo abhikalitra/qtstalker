@@ -27,7 +27,6 @@ class HLC : public IndicatorPlugin
     HLC ();
     virtual ~HLC ();
     void calculate ();
-    QMemArray<int> getAlerts ();
     void loadIndicatorSettings (QString);
     void saveIndicatorSettings (QString);
     int indicatorPrefDialog ();

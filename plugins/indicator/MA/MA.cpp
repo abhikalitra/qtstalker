@@ -27,7 +27,6 @@ MA::MA ()
 {
   pluginName = "MA";
   plotFlag = TRUE;
-  alertFlag = TRUE;
   setDefaults();
 }
 
@@ -59,51 +58,6 @@ void MA::calculate ()
   d->setType(lineType);
   d->setLabel(label);
   output.append(d);
-}
-
-QMemArray<int> MA::getAlerts ()
-{
-  alerts.fill(0, data->count());
-
-  if (! output.count())
-    return alerts;
-
-  PlotLine *line = output.at(0);
-
-  PlotLine *in = data->getInput(input);
-
-  int listLoop = data->count() - line->getSize() + 1;
-  int lineLoop;
-  int status = 0;
-  for (lineLoop = 1; listLoop < (int) data->count(); lineLoop++, listLoop++)
-  {
-    switch (status)
-    {
-      case -1:
-        if ((in->getData(listLoop) > line->getData(lineLoop)) && (in->getData(listLoop - 1) >= line->getData(lineLoop - 1)))
-	  status = 1;
-	break;
-      case 1:
-        if ((in->getData(listLoop) < line->getData(lineLoop)) && (in->getData(listLoop - 1) <= line->getData(lineLoop - 1)))
-	  status = -1;
-	break;
-      default:
-        if ((in->getData(listLoop) > line->getData(lineLoop)) && (in->getData(listLoop - 1) >= line->getData(lineLoop - 1)))
-	  status = 1;
-	else
-	{
-          if ((in->getData(listLoop) < line->getData(lineLoop)) && (in->getData(listLoop - 1) <= line->getData(lineLoop - 1)))
-	    status = -1;
-	}
-	break;
-    }
-    
-    alerts[listLoop] = status;
-  }
-
-  delete in;
-
-  return alerts;
 }
 
 int MA::indicatorPrefDialog ()

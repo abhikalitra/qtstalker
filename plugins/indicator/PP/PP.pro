@@ -7,7 +7,7 @@ HEADERS += PP.h
 
 SOURCES += PP.cpp
 
-TARGET = PP.0.26
+TARGET = PP.0.27
 
 INCLUDEPATH += ../../../lib
 

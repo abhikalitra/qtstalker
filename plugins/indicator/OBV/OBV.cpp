@@ -27,7 +27,6 @@ OBV::OBV ()
 {
   pluginName = "OBV";
   plotFlag = FALSE;
-  alertFlag = FALSE;
   setDefaults();
 }
 

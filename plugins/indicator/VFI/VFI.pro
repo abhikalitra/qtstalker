@@ -7,7 +7,7 @@ HEADERS += VFI.h
 
 SOURCES += VFI.cpp
 
-TARGET = VFI.0.26
+TARGET = VFI.0.27
 
 INCLUDEPATH += ../../../lib
 

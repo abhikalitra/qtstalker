@@ -27,7 +27,6 @@ TRIX::TRIX ()
 {
   pluginName = "TRIX";
   plotFlag = FALSE;
-  alertFlag = TRUE;
   setDefaults();
 }
 
@@ -83,49 +82,6 @@ void TRIX::calculate ()
   delete ema2;
   delete ema3;
   delete t;
-}
-
-QMemArray<int> TRIX::getAlerts ()
-{
-  alerts.fill(0, data->count());
-
-  if (output.count() != 2)
-    return alerts;
-
-  PlotLine *trix = output.at(0);
-  PlotLine *trig = output.at(1);
-
-  int listLoop = data->count() - trig->getSize();
-  int trixLoop = trix->getSize() - trig->getSize();
-  int trigLoop;
-  int status = 0;
-  for (trigLoop = 0; trigLoop < (int) trig->getSize(); trigLoop++, trixLoop++, listLoop++)
-  {
-    switch (status)
-    {
-      case -1:
-        if (trix->getData(trixLoop) > trig->getData(trigLoop))
-          status = 1;
-	break;
-      case 1:
-        if (trix->getData(trixLoop) < trig->getData(trigLoop))
-	  status = -1;
-	break;
-      default:
-        if (trix->getData(trixLoop) > trig->getData(trigLoop))
-	  status = 1;
-	else
-	{
-          if (trix->getData(trixLoop) < trig->getData(trigLoop))
-	    status = -1;
-	}
-	break;
-    }
-    
-    alerts[listLoop] = status;
-  }
-
-  return alerts;
 }
 
 int TRIX::indicatorPrefDialog ()

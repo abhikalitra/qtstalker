@@ -28,7 +28,6 @@ SD::SD ()
 {
   pluginName = "SD";
   plotFlag = FALSE;
-  alertFlag = FALSE;
   setDefaults();
 }
 

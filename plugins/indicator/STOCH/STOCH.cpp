@@ -27,7 +27,6 @@ STOCH::STOCH ()
 {
   pluginName = "STOCH";
   plotFlag = FALSE;
-  alertFlag = TRUE;
   setDefaults();
 }
 
@@ -70,47 +69,6 @@ void STOCH::calculate ()
   }
   
   delete t;
-}
-
-QMemArray<int> STOCH::getAlerts ()
-{
-  alerts.fill(0, data->count());
-
-  if (output.count() != 2)
-    return alerts;
-
-  PlotLine *line = output.at(1);
-
-  int dataLoop = data->count() - line->getSize() + 1;
-  int loop;
-  int status = 0;
-  for (loop = 1; loop < (int) line->getSize(); loop++, dataLoop++)
-  {
-    switch (status)
-    {
-      case -1:
-        if ((line->getData(loop) <= buyLine) && (line->getData(loop) > line->getData(loop - 1)))
-          status = 1;
-	break;
-      case 1:
-        if ((line->getData(loop) >= sellLine) && (line->getData(loop) < line->getData(loop - 1)))
-	  status = -1;
-	break;
-      default:
-        if ((line->getData(loop) <= buyLine) && (line->getData(loop) > line->getData(loop - 1)))
-	  status = 1;
-	else
-	{
-          if ((line->getData(loop) >= sellLine) && (line->getData(loop) < line->getData(loop - 1)))
-	    status = -1;
-	}
-	break;
-    }
-
-    alerts[dataLoop] = status;
-  }
-
-  return alerts;
 }
 
 int STOCH::indicatorPrefDialog ()

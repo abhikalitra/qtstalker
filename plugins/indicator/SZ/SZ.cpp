@@ -32,7 +32,6 @@ SZ::SZ ()
 {
   pluginName = "SZ";
   plotFlag = TRUE;
-  alertFlag = FALSE;
   setDefaults();
   methodList.append(tr("Long"));
   methodList.append(tr("Short"));

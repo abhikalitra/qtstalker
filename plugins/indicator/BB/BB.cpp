@@ -27,7 +27,6 @@ BB::BB ()
 {
   pluginName = "BB";
   plotFlag = TRUE;
-  alertFlag = TRUE;
   setDefaults();
 }
 
@@ -69,73 +68,6 @@ void BB::calculate ()
   output.append(sma);
   output.append(bbl);
   delete t;
-}
-
-QMemArray<int> BB::getAlerts ()
-{
-  alerts.fill(0, data->count());
-
-  if (output.count() != 3)
-    return alerts;
-
-  PlotLine *bbu = output.at(0);
-  PlotLine *bbl = output.at(2);
-
-  int listLoop = data->count() - bbu->getSize() + 9;
-  int bbLoop = 9;
-  int status = 0;
-
-  for (; listLoop < (int) data->count(); listLoop++, bbLoop++)
-  {
-    double close = data->getClose(listLoop);
-    double t = close - bbl->getData(bbLoop);
-    double t2 = bbu->getData(bbLoop) - bbl->getData(bbLoop);
-    double t3 = t / t2;
-
-    int loop;
-    double h = 0;
-    double l = 99999999;
-    for (loop = 1; loop <= 9; loop++)
-    {
-      double high = data->getHigh(listLoop - loop);
-      double low = data->getLow(listLoop - loop);
-
-      if (high > h)
-	h = high;
-
-      if (low < l)
-	l = low;
-    }
-
-    double high = data->getHigh(listLoop);
-    double low = data->getLow(listLoop);
-    double yclose = data->getClose(listLoop - 1);
-
-    switch (status)
-    {
-      case -1:
-        if ((t3 < .5) && (low < l) && (close > yclose))
-	  status = 1;
-	break;
-      case 1:
-        if ((t3 > .5) && (high > h) && (close < yclose))
-	  status = -1;
-	break;
-      default:
-        if ((t3 < .5) && (low < l) && (close > yclose))
-	  status = 1;
-	else
-	{
-          if ((t3 > .5) && (high > h) && (close < yclose))
-	    status = -1;
-	}
-	break;
-    }
-
-    alerts[listLoop] = status;
-  }
-
-  return alerts;
 }
 
 int BB::indicatorPrefDialog ()

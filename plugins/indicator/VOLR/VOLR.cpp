@@ -27,7 +27,6 @@ VOLR::VOLR ()
 {
   pluginName = "VOLR";
   plotFlag = FALSE;
-  alertFlag = TRUE;
   setDefaults();
 }
 
@@ -52,26 +51,6 @@ void VOLR::calculate ()
   volr->setLabel(label);
   output.append(volr);
   delete t;
-}
-
-QMemArray<int> VOLR::getAlerts ()
-{
-  alerts.fill(0, data->count());
-
-  if (! output.count())
-    return alerts;
-
-  PlotLine *line = output.at(0);
-
-  int lineLoop;
-  int listLoop = data->count() - line->getSize();
-  for (lineLoop = 0; lineLoop < line->getSize(); lineLoop++, listLoop++)
-  {
-    if (line->getData(lineLoop) > 2)
-      alerts[listLoop] = 1;
-  }
-
-  return alerts;
 }
 
 int VOLR::indicatorPrefDialog ()

@@ -27,7 +27,6 @@ OI::OI ()
 {
   pluginName = "OI";
   plotFlag = FALSE;
-  alertFlag = FALSE;
   setDefaults();
 }
 

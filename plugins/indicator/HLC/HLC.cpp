@@ -27,7 +27,6 @@ HLC::HLC ()
 {
   pluginName = "HLC";
   plotFlag = TRUE;
-  alertFlag = TRUE;
   setDefaults();
 }
 
@@ -82,51 +81,6 @@ void HLC::calculate ()
   lb->setType(lowerLineType);
   lb->setLabel(lowerLabel);
   output.append(lb);
-}
-
-QMemArray<int> HLC::getAlerts ()
-{
-  alerts.fill(0, data->count());
-
-  if (output.count() != 2)
-    return alerts;
-
-  PlotLine *u = output.at(0);
-  PlotLine *l = output.at(1);
-
-  int listLoop = data->count() - u->getSize();
-
-  int loop;
-  int status = 0;
-  for (loop = 0; loop < (int) u->getSize(); loop++, listLoop++)
-  {
-    double close = data->getClose(listLoop);
-
-    switch (status)
-    {
-      case -1:
-        if (close > u->getData(loop))
-	  status = 1;
-	break;
-      case 1:
-        if (close < l->getData(loop))
-	  status = -1;
-	break;
-      default:
-        if (close > u->getData(loop))
-	  status = 1;
-	else
-	{
-          if (close < l->getData(loop))
-	    status = -1;
-	}
-	break;
-    }
-    
-    alerts[listLoop] = status;
-  }
-
-  return alerts;
 }
 
 int HLC::indicatorPrefDialog ()

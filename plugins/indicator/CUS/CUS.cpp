@@ -27,7 +27,6 @@ CUS::CUS ()
 {
   pluginName = "CUS";
   plotFlag = FALSE;
-  alertFlag = FALSE;
 }
 
 CUS::~CUS ()

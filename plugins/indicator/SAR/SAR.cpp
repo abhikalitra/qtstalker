@@ -27,7 +27,6 @@ SAR::SAR ()
 {
   pluginName = "SAR";
   plotFlag = TRUE;
-  alertFlag = TRUE;
   setDefaults();
 }
 
@@ -54,49 +53,6 @@ void SAR::calculate ()
   d->setLabel(label);
   output.append(d);
   delete t;
-}
-
-QMemArray<int> SAR::getAlerts ()
-{
-  alerts.fill(0, data->count());
-
-  if (! output.count())
-    return alerts;
-
-  PlotLine *line = output.at(0);
-  int lineLoop;
-  int listLoop = data->count() - line->getSize();
-  int status = 0;
-  for (lineLoop = 0; lineLoop < (int) line->getSize(); lineLoop++, listLoop++)
-  {
-    double high = data->getHigh(listLoop);
-    double low = data->getLow(listLoop);
-
-    switch (status)
-    {
-      case -1:
-        if (line->getData(lineLoop) > high)
-	  status = 1;
-	break;
-      case 1:
-        if (line->getData(lineLoop) < low)
-	  status = -1;
-	break;
-      default:
-        if (line->getData(lineLoop) > high)
-	  status = 1;
-	else
-	{
-          if (line->getData(lineLoop) < low)
-	    status = -1;
-	}
-	break;
-    }
-    
-    alerts[listLoop] = status;
-  }
-
-  return alerts;
 }
 
 int SAR::indicatorPrefDialog ()

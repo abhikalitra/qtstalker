@@ -27,7 +27,6 @@ class VOLR : public IndicatorPlugin
     VOLR ();
     virtual ~VOLR ();
     void calculate ();
-    QMemArray<int> getAlerts ();
     void loadIndicatorSettings (QString);
     void saveIndicatorSettings (QString);
     int indicatorPrefDialog ();

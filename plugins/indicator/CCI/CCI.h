@@ -27,9 +27,6 @@ class CCI : public IndicatorPlugin
     CCI ();
     virtual ~CCI ();
     void calculate ();
-    QMemArray<int> getAlerts ();
-    void alertHundred ();
-    void alertZero ();
     void loadIndicatorSettings (QString);
     void saveIndicatorSettings (QString);
     int indicatorPrefDialog ();
@@ -39,11 +36,9 @@ class CCI : public IndicatorPlugin
     QColor color;
     PlotLine::LineType lineType;
     QString label;
-    QString alertType;
     int period;
     int smoothing;
     QSMath::MAType maType;
-    QStringList alertList;
 };
 
 extern "C"

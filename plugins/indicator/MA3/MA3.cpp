@@ -27,7 +27,6 @@ MA3::MA3 ()
 {
   pluginName = "MA3";
   plotFlag = TRUE;
-  alertFlag = TRUE;
   setDefaults();
 }
 
@@ -102,59 +101,6 @@ void MA3::calculate ()
     output.append(sma);
   else
     delete sma;
-}
-
-QMemArray<int> MA3::getAlerts ()
-{
-  alerts.fill(0, data->count());
-
-  if (output.count() != 3)
-    return alerts;
-
-  PlotLine *fma = output.at(0);
-  PlotLine *mma = output.at(1);
-  PlotLine *sma = output.at(2);
-
-  int listLoop = data->count();
-  int fmaLoop = fma->getSize();
-  int mmaLoop = mma->getSize();
-  int smaLoop = sma->getSize();
-  while (listLoop != 0 && fmaLoop != 0 && mmaLoop != 0 &&  smaLoop != 0)
-  {
-    listLoop--;
-    fmaLoop--;
-    mmaLoop--;
-    smaLoop--;
-  }
-
-  int status = 0;
-  for (; listLoop < (int) data->count(); fmaLoop++, mmaLoop++, smaLoop++, listLoop++)
-  {
-    switch (status)
-    {
-      case -1:
-        if (fma->getData(fmaLoop) > mma->getData(mmaLoop))
-	  status = 0;
-	break;
-      case 1:
-        if (fma->getData(fmaLoop) < mma->getData(mmaLoop))
-	  status = 0;
-	break;
-      default:
-        if ((fma->getData(fmaLoop) > mma->getData(mmaLoop)) && (mma->getData(mmaLoop) > sma->getData(smaLoop)))
-	  status = 1;
-	else
-	{
-          if ((fma->getData(fmaLoop) < mma->getData(mmaLoop)) && (mma->getData(mmaLoop) < sma->getData(smaLoop)))
-	    status = -1;
-	}
-	break;
-    }
-    
-    alerts[listLoop] = status;
-  }
-
-  return alerts;
 }
 
 int MA3::indicatorPrefDialog ()

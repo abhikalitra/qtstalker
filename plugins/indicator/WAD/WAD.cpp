@@ -27,7 +27,6 @@ WAD::WAD ()
 {
   pluginName = "WAD";
   plotFlag = FALSE;
-  alertFlag = FALSE;
   setDefaults();
 }
 

@@ -7,7 +7,7 @@ HEADERS += OBV.h
 
 SOURCES += OBV.cpp
 
-TARGET = OBV.0.26
+TARGET = OBV.0.27
 
 INCLUDEPATH += ../../../lib
 

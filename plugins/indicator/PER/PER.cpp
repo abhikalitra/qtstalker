@@ -27,7 +27,6 @@ PER::PER ()
 {
   pluginName = "PER";
   plotFlag = FALSE;
-  alertFlag = FALSE;
   setDefaults();
 }
 

@@ -27,7 +27,6 @@ class MACD : public IndicatorPlugin
     MACD ();
     virtual ~MACD ();
     void calculate ();
-    QMemArray<int> getAlerts ();
     void loadIndicatorSettings (QString);
     void saveIndicatorSettings (QString);
     int indicatorPrefDialog ();

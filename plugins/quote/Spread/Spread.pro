@@ -9,7 +9,7 @@ HEADERS += SpreadDialog.h
 SOURCES += Spread.cpp
 SOURCES += SpreadDialog.cpp
 
-TARGET = Spread.0.26
+TARGET = Spread.0.27
 
 INCLUDEPATH += ../../../lib
 INCLUDEPATH += ../../../db-2.7.7/build_unix

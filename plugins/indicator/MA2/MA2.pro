@@ -7,7 +7,7 @@ HEADERS += MA2.h
 
 SOURCES += MA2.cpp
 
-TARGET = MA2.0.26
+TARGET = MA2.0.27
 
 INCLUDEPATH += ../../../lib
 

@@ -7,7 +7,7 @@ HEADERS += STOCH.h
 
 SOURCES += STOCH.cpp
 
-TARGET = STOCH.0.26
+TARGET = STOCH.0.27
 
 INCLUDEPATH += ../../../lib
 

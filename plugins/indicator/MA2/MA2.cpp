@@ -27,7 +27,6 @@ MA2::MA2 ()
 {
   pluginName = "MA2";
   plotFlag = TRUE;
-  alertFlag = TRUE;
   setDefaults();
 }
 
@@ -83,56 +82,6 @@ void MA2::calculate ()
     output.append(sma);
   else
     delete sma;
-}
-
-QMemArray<int> MA2::getAlerts ()
-{
-  alerts.fill(0, data->count());
-
-  if (output.count() != 2)
-    return alerts;
-
-  PlotLine *fma = output.at(0);
-  PlotLine *sma = output.at(1);
-
-  int listLoop = data->count();
-  int fmaLoop = fma->getSize();
-  int smaLoop = sma->getSize();
-  while (listLoop != 0 && fmaLoop != 0 && smaLoop != 0)
-  {
-    listLoop--;
-    fmaLoop--;
-    smaLoop--;
-  }
-
-  int status = 0;
-  for (; listLoop < (int) data->count(); fmaLoop++, smaLoop++, listLoop++)
-  {
-    switch (status)
-    {
-      case -1:
-        if (fma->getData(fmaLoop) > sma->getData(smaLoop))
-	  status = 1;
-	break;
-      case 1:
-        if (fma->getData(fmaLoop) < sma->getData(smaLoop))
-	  status = -1;
-	break;
-      default:
-        if (fma->getData(fmaLoop) > sma->getData(smaLoop))
-	  status = 1;
-	else
-	{
-          if (fma->getData(fmaLoop) < sma->getData(smaLoop))
-	    status = -1;
-	}
-	break;
-    }
-    
-    alerts[listLoop] = status;
-  }
-
-  return alerts;
 }
 
 int MA2::indicatorPrefDialog ()

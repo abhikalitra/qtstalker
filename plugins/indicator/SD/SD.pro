@@ -7,7 +7,7 @@ HEADERS += SD.h
 
 SOURCES += SD.cpp
 
-TARGET = SD.0.26
+TARGET = SD.0.27
 
 INCLUDEPATH += ../../../lib
 

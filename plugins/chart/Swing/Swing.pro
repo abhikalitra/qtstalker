@@ -7,7 +7,7 @@ HEADERS += Swing.h
 
 SOURCES += Swing.cpp
 
-TARGET = Swing.0.26
+TARGET = Swing.0.27
 
 INCLUDEPATH += ../../../lib
 

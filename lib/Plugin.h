@@ -24,7 +24,6 @@
 
 #include <stdlib.h>
 #include <qstring.h>
-#include <qmemarray.h>
 #include <qobject.h>
 #include <qpixmap.h>
 #include "PlotLine.h"
@@ -49,10 +48,8 @@ class Plugin : public QObject
     virtual void setIndicatorInput (BarData *);
     virtual int getIndicatorLines ();
     virtual PlotLine * getIndicatorLine (int);
-    virtual QMemArray<int> getAlerts ();
     virtual void calculate ();
     virtual void clearOutput ();
-    virtual bool getAlertFlag ();
     virtual bool getPlotFlag ();
     virtual int indicatorPrefDialog ();
     virtual void loadIndicatorSettings (QString);
@@ -74,14 +71,12 @@ class Plugin : public QObject
     // base plugin functions
     Plugin::PluginType getPluginType ();
     QString getPluginName ();
-    QString getVersion ();
     void setDataPath (QString);
 
   protected:
     PluginType pluginType;
     QString pluginName;
     QString dataPath;
-    float version;
 };
 
 extern "C"

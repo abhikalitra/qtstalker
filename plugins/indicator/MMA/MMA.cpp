@@ -27,7 +27,6 @@ MMA::MMA ()
 {
   pluginName = "MMA";
   plotFlag = FALSE;
-  alertFlag = FALSE;
   setDefaults();
 }
 

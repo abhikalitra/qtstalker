@@ -27,7 +27,6 @@ AD::AD ()
 {
   pluginName = "AD";
   plotFlag = FALSE;
-  alertFlag = FALSE;
   setDefaults();
 }
 

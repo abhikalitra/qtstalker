@@ -27,7 +27,6 @@ PVT::PVT ()
 {
   pluginName = "PVT";
   plotFlag = FALSE;
-  alertFlag = FALSE;
   setDefaults();
 }
 

@@ -9,7 +9,7 @@ HEADERS += LineDialog.h
 SOURCES += Line.cpp
 SOURCES += LineDialog.cpp
 
-TARGET = Line.0.26
+TARGET = Line.0.27
 
 INCLUDEPATH += ../../../lib
 

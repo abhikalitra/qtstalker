@@ -7,7 +7,7 @@ HEADERS += DMI.h
 
 SOURCES += DMI.cpp
 
-TARGET = DMI.0.26
+TARGET = DMI.0.27
 
 INCLUDEPATH += ../../../lib
 

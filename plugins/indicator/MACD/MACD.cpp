@@ -27,7 +27,6 @@ MACD::MACD ()
 {
   pluginName = "MACD";
   plotFlag = FALSE;
-  alertFlag = TRUE;
   setDefaults();
 }
 
@@ -92,49 +91,6 @@ void MACD::calculate ()
 
   delete d;
   delete t;
-}
-
-QMemArray<int> MACD::getAlerts ()
-{
-  alerts.fill(0, data->count());
-
-  if (output.count() != 3)
-    return alerts;
-
-  PlotLine *macd = output.at(1);
-  PlotLine *trig = output.at(2);
-
-  int listLoop = data->count() - trig->getSize();
-  int macdLoop = macd->getSize() - trig->getSize();
-  int trigLoop;
-  int status = 0;
-  for (trigLoop = 0; trigLoop < (int) trig->getSize(); trigLoop++, macdLoop++, listLoop++)
-  {
-    switch (status)
-    {
-      case -1:
-        if (macd->getData(macdLoop) > trig->getData(trigLoop))
-	  status = 1;
-	break;
-      case 1:
-        if (macd->getData(macdLoop) < trig->getData(trigLoop))
-	  status = -1;
-	break;
-      default:
-        if (macd->getData(macdLoop) > trig->getData(trigLoop))
-	  status = 1;
-	else
-	{
-          if (macd->getData(macdLoop) < trig->getData(trigLoop))
-	    status = -1;
-	}
-	break;
-    }
-    
-    alerts[listLoop] = status;
-  }
-
-  return alerts;
 }
 
 int MACD::indicatorPrefDialog ()

@@ -28,13 +28,7 @@ DMI::DMI ()
 {
   pluginName = "DMI";
   plotFlag = FALSE;
-  alertFlag = TRUE;
   setDefaults();
-
-  alertList.append(tr("Crossover"));
-  alertList.append(tr("Extreme Point"));
-  alertList.append(tr("Turning Point"));
-  alertList.sort();
 }
 
 DMI::~DMI ()
@@ -55,7 +49,6 @@ void DMI::setDefaults ()
   period = 14;
   smoothing = 9;
   maType = QSMath::SMA;  
-  alertType = tr("Crossover");
 }
 
 void DMI::calculate ()
@@ -83,179 +76,6 @@ void DMI::calculate ()
   delete t;
 }
 
-QMemArray<int> DMI::getAlerts ()
-{
-  alerts.fill(0, data->count());
-
-  if (output.count() != 3)
-    return alerts;
-
-  if (! alertType.compare(tr("Crossover")))
-    alertCrossover();
-  else
-  {
-    if (! alertType.compare(tr("Extreme Point")))
-      alertExtremePoint();
-    else
-      alertTurningPoint();
-  }
-
-  return alerts;
-}
-
-void DMI::alertCrossover ()
-{
-  PlotLine *mdi = output.at(0);
-  PlotLine *pdi = output.at(1);
-
-  int loop;
-  int dataLoop = data->count() - mdi->getSize();
-  int status = 0;
-  for (loop = 0; loop < (int) mdi->getSize(); loop++, dataLoop++)
-  {
-    if (pdi->getData(loop) > mdi->getData(loop))
-      status = 1;
-    else
-    {
-      if (mdi->getData(loop) > pdi->getData(loop))
-        status = -1;
-    }
-
-    alerts[dataLoop] = status;
-  }
-}
-
-void DMI::alertExtremePoint ()
-{
-  PlotLine *mdi = output.at(0);
-  PlotLine *pdi = output.at(1);
-
-  int loop;
-  int dataLoop = data->count() - mdi->getSize();
-  int status = 0;
-  double point = 0;
-  for (loop = 0; loop < (int) mdi->getSize(); loop++, dataLoop++)
-  {
-    if (pdi->getData(loop) > mdi->getData(loop))
-    {
-      if (status != 1)
-      {
-        if (point == 0)
-          point = data->getHigh(dataLoop);
-        else
-        {
-	  if (data->getClose(dataLoop) > point)
-          {
-            status = 1;
-	    point = 0;
-	  }
-        }
-      }
-    }
-
-    if (mdi->getData(loop) > pdi->getData(loop))
-    {
-      if (status != -1)
-      {
-        if (point == 0)
-          point = data->getLow(dataLoop);
-        else
-        {
-          if (data->getClose(dataLoop) < point)
-	  {
-	    status = -1;
-	    point = 0;
-	  }
-	}
-      }
-    }
-
-    alerts[dataLoop] = status;
-  }
-}
-
-void DMI::alertTurningPoint ()
-{
-/*
-  PlotLine *mdi = output.at(0);
-  PlotLine *pdi = output.at(1);
-  PlotLine *adx = output.at(2);
-
-  int listLoop = data->count() - adx->getSize() + 1;
-  int mdiLoop = mdi->getSize() - adx->getSize() + 1;
-  int pdiLoop = pdi->getSize() - adx->getSize() + 1;
-  int adxLoop;
-  int status = 0;
-  for (adxLoop = 1; adxLoop < (int) adx->getSize(); adxLoop++, mdiLoop++, pdiLoop++, listLoop++)
-  {
-    switch (status)
-    {
-      case -1:
-        if ((pdi->getData(pdiLoop) > mdi->getData(mdiLoop)) && (adx->getData(adxLoop) > adx->getData(adxLoop - 1)))
-	  status = 1;
-	break;
-      case 1:
-        if ((pdi->getData(pdiLoop) < mdi->getData(mdiLoop)) && (adx->getData(adxLoop) > adx->getData(adxLoop - 1)))
-	  status = -1;
-	break;
-      default:
-        if ((pdi->getData(pdiLoop) > mdi->getData(mdiLoop)) && (adx->getData(adxLoop) > adx->getData(adxLoop - 1)))
-	  status = 1;
-	else
-	{
-          if ((pdi->getData(pdiLoop) < mdi->getData(mdiLoop)) && (adx->getData(adxLoop) > adx->getData(adxLoop - 1)))
-	    status = -1;
-	}
-	break;
-    }
-
-    alerts[listLoop] = status;
-  }
-*/
-}
-
-/*
-QMemArray<int> ADX::getAlerts ()
-{
-  alerts.fill(0, data->count());
-
-  if (! output.count())
-    return alerts;
-
-  PlotLine *adx = output.at(0);
-  int adxLoop;
-  int listLoop = data->count() - adx->getSize() + 2;
-  int status = 0;
-  for (adxLoop = 2; adxLoop < (int) adx->getSize(); adxLoop++, listLoop++)
-  {
-    switch (status)
-    {
-      case -1:
-        if ((adx->getData(adxLoop) > adx->getData(adxLoop - 1)) && (adx->getData(adxLoop - 1) <= adx->getData(adxLoop - 2)))
-          status = 1;
-	break;
-      case 1:
-        if ((adx->getData(adxLoop) < adx->getData(adxLoop - 1)) && (adx->getData(adxLoop - 1) >= adx->getData(adxLoop - 2)))
-	  status = -1;
-	break;
-      default:
-        if ((adx->getData(adxLoop) > adx->getData(adxLoop - 1)) && (adx->getData(adxLoop - 1) <= adx->getData(adxLoop - 2)))
-	  status = 1;
-	else
-	{
-          if ((adx->getData(adxLoop) < adx->getData(adxLoop - 1)) && (adx->getData(adxLoop - 1) >= adx->getData(adxLoop - 2)))
-	    status = -1;
-	}
-	break;
-    }
-
-    alerts[listLoop] = status;
-  }
-
-  return alerts;
-}
-*/
-
 int DMI::indicatorPrefDialog ()
 {
   PrefDialog *dialog = new PrefDialog();
@@ -265,7 +85,6 @@ int DMI::indicatorPrefDialog ()
   dialog->addIntItem(tr("Period"), tr("DMI"), period, 1, 99999999);
   dialog->addIntItem(tr("Smoothing"), tr("DMI"), smoothing, 1, 99999999);
   dialog->addComboItem(tr("Smoothing Type"), tr("DMI"), maTypeList, maType);
-  dialog->addComboItem(tr("Alert"), tr("DMI"), alertList, alertType);
   
   dialog->createPage (tr("+DM"));
   dialog->addColorItem(tr("+DM Color"), tr("+DM"), pdiColor);
@@ -289,7 +108,6 @@ int DMI::indicatorPrefDialog ()
     period = dialog->getInt(tr("Period"));
     smoothing = dialog->getInt(tr("Smoothing"));
     maType = (QSMath::MAType) dialog->getComboIndex(tr("Smoothing Type"));
-    alertType = dialog->getCombo(tr("Alert"));
     
     pdiColor = dialog->getColor(tr("+DM Color"));
     pdiLineType = (PlotLine::LineType) dialog->getComboIndex(tr("+DM Line Type"));
@@ -344,10 +162,6 @@ void DMI::loadIndicatorSettings (QString file)
   if (s)
     maType = (QSMath::MAType) s->left(s->length()).toInt();
     
-  s = dict["alertType"];
-  if (s)
-    alertType = s->left(s->length());
-
   s = dict["pdiLabel"];
   if (s)
     pdiLabel = s->left(s->length());
@@ -381,7 +195,6 @@ void DMI::saveIndicatorSettings (QString file)
   dict.replace("period", new QString(QString::number(period)));
   dict.replace("smoothing", new QString(QString::number(smoothing)));
   dict.replace("maType", new QString(QString::number(maType)));
-  dict.replace("alertType", new QString(alertType));
   dict.replace("pdiColor", new QString(pdiColor.name()));
   dict.replace("mdiColor", new QString(mdiColor.name()));
   dict.replace("adxColor", new QString(adxColor.name()));
