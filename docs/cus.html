@@ -8,22 +8,30 @@
 <body>
 <h2><u>Custom - CUS</u></h2>
 <br>
-<img style="width: 432px; height: 273px;" alt="" src="cus1.png"><br>
+<img style="width: 371px; height: 236px;" alt="" src="cus1.png"><br>
 <h3> Description:</h3>
 Allows the user to create custom indicators to plot. The user builds an
 indicator in a step by step manner. Using the above pic as an example
-to build a copy of the built in MACD indicator manually. The first
-function uses a MACD. We check the Plot
-column here if we want this particular function to appear on the plot.
-Step 2 then creates the trigger plot by applying an EMA using step 1 as
-the input. We also want to plot this. Step 3 then builds a histogram
-of&nbsp; the MACD and trigger plots by subtracting step 2 from step 1
-using the SUB function. We check this to plot as well.<br>
+to build a copy of the built in MACD indicator manually. Here is a
+breakdown of each step:<br>
+<br>
+1. We use a REF step to create an array of close bar fields. This will
+be used as the input data that later steps will build on. We don't
+check the plot column because we don't want to plot this.<br>
+2. We use a MACD step with step 1 as the input. We check the plot
+column so our MACD step will appear.<br>
+3. We use a MA to create the trigger plot by applying an EMA using step
+2 as
+the input. We check this to appear on the plot.<br>
+4. We use a MATH (subtraction) function to build a histogram
+of the MACD and trigger plots by subtracting step 3 from step 2. We
+check this to appear on the plot.<br>
 <br>
 By using all the indicator plugins available, we are able to build
 almost any
 kind of indicator quickly and simply without having to learn a new
-scripting language. Complicated intensive indicators would best be left
+scripting language. Complicated, intensive indicators would best be
+left
 to creating a plugin instead of long series of functions for speed and
 memory considerations.<br>
 <br>

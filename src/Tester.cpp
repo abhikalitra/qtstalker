@@ -1655,16 +1655,16 @@ void Tester::getVolume ()
   {
 //    volume = 1;
     balance = account->text().toDouble();
-    volume = (balance / getPrice(buyRecord));
+    volume = (int) (balance / getPrice(buyRecord));
     return;
   }
 
   balance = balance * ((double) volumePercent->value() / 100.0);
 
   if (margin->value())
-    volume = (double) (balance / margin->value());
+    volume = (int) (double) (balance / margin->value());
   else
-    volume = (double) (balance / getPrice(buyRecord));
+    volume = (int) (double) (balance / getPrice(buyRecord));
 
 //  if (volume < 1)
 //    volume = 1;
