@@ -31,6 +31,7 @@
 #include <qstringlist.h>
 #include <qtooltip.h>
 #include <qframe.h>
+#include <qbuttongroup.h>
 
 #include "Qtstalker.h"
 #include "Quote.h"
@@ -95,11 +96,68 @@ QtstalkerApp::QtstalkerApp()
   
   navBase = new QWidget(navSplitter);
   QVBoxLayout *vbox = new QVBoxLayout(navBase);
+  
+  QHBoxLayout *hbox2 = new QHBoxLayout(vbox);
+  hbox2->setSpacing(1);
+  hbox2->setMargin(1);
+  
+  QButtonGroup *bg = new QButtonGroup(navBase);
+  QObject::connect(bg, SIGNAL(clicked(int)), this, SLOT(slotNavigatorButtonPressed(int)));
+  bg->setExclusive(TRUE);
+  bg->hide();
+  
+  QPushButton *button = new QPushButton(navBase);
+  QToolTip::add(button, tr("Workwith Charts"));
+  button->setPixmap(plainitem);
+  button->setMaximumWidth(25);
+  button->setMaximumHeight(25);
+  button->setToggleButton(TRUE);
+  hbox2->addWidget(button);
+  bg->insert(button, 0);
+  bg->setButton(0);
+  
+  button = new QPushButton(navBase);
+  QToolTip::add(button, tr("Workwith Groups"));
+  button->setPixmap(dirclosed);
+  button->setMaximumWidth(25);
+  button->setMaximumHeight(25);
+  button->setToggleButton(TRUE);
+  hbox2->addWidget(button);
+  bg->insert(button, 1);
 
+  button = new QPushButton(navBase);
+  QToolTip::add(button, tr("Main Chart Indicators"));
+  button->setPixmap(indicator);
+  button->setMaximumWidth(25);
+  button->setMaximumHeight(25);
+  button->setToggleButton(TRUE);
+  hbox2->addWidget(button);
+  bg->insert(button, 2);
+  
+  button = new QPushButton(navBase);
+  QToolTip::add(button, tr("Workwith Portfolios"));
+  button->setPixmap(portfolio);
+  button->setMaximumWidth(25);
+  button->setMaximumHeight(25);
+  button->setToggleButton(TRUE);
+  hbox2->addWidget(button);
+  bg->insert(button, 3);
+
+  button = new QPushButton(navBase);
+  QToolTip::add(button, tr("Workwith Backtesting"));
+  button->setPixmap(test);
+  button->setMaximumWidth(25);
+  button->setMaximumHeight(25);
+  button->setToggleButton(TRUE);
+  hbox2->addWidget(button);
+  bg->insert(button, 4);
+  
+  hbox2->addStretch(1);
+  
   navTab = new NavigatorTab(navBase);
   QObject::connect(navTab, SIGNAL(signalPositionChanged(int)), this, SLOT(slotNavigatorPosition(int)));
   vbox->addWidget(navTab, 1, 0);
-
+  
   infoLabel = new QMultiLineEdit(navBase);
   infoLabel->setReadOnly(TRUE);
   vbox->addWidget(infoLabel, 1, 0);
@@ -1298,38 +1356,43 @@ void QtstalkerApp::initGroupNav ()
 {
   GroupPage *gp = new GroupPage(baseWidget, config);
   connect(gp, SIGNAL(fileSelected(QString)), this, SLOT(slotOpenChart(QString)));
-  navTab->addTab(gp, QIconSet(QPixmap(dirclosed)), QString::null);
-  navTab->setTabToolTip(gp, tr("Workwith Groups"));
+//  navTab->addTab(gp, QIconSet(QPixmap(dirclosed)), QString::null);
+//  navTab->setTabToolTip(gp, tr("Workwith Groups"));
+  navTab->addWidget(gp, 1);
 }
 
 void QtstalkerApp::initChartNav ()
 {
   chartNav = new ChartPage(baseWidget, config);
   connect(chartNav, SIGNAL(fileSelected(QString)), this, SLOT(slotOpenChart(QString)));
-  navTab->addTab(chartNav, QIconSet(QPixmap(plainitem)), QString::null);
-  navTab->setTabToolTip(chartNav, tr("Workwith Charts"));
+//  navTab->addTab(chartNav, QIconSet(QPixmap(plainitem)), QString::null);
+//  navTab->setTabToolTip(chartNav, tr("Workwith Charts"));
+  navTab->addWidget(chartNav, 0);
 }
 
 void QtstalkerApp::initPortfolioNav ()
 {
   PortfolioPage *pp = new PortfolioPage(baseWidget, config);
-  navTab->addTab(pp, QIconSet(QPixmap(portfolio)), QString::null);
-  navTab->setTabToolTip(pp, tr("Workwith Portfolios"));
+//  navTab->addTab(pp, QIconSet(QPixmap(portfolio)), QString::null);
+//  navTab->setTabToolTip(pp, tr("Workwith Portfolios"));
+  navTab->addWidget(pp, 3);
 }
 
 void QtstalkerApp::initTestNav ()
 {
   TestPage *tp = new TestPage(baseWidget, config);
-  navTab->addTab(tp, QIconSet(QPixmap(test)), QString::null);
-  navTab->setTabToolTip(tp, tr("Workwith Backtests"));
+//  navTab->addTab(tp, QIconSet(QPixmap(test)), QString::null);
+//  navTab->setTabToolTip(tp, tr("Workwith Backtests"));
+  navTab->addWidget(tp, 4);
 }
 
 void QtstalkerApp::initIndicatorNav ()
 {
   IndicatorPage *ip = new IndicatorPage(baseWidget, config, mainPlot);
-  navTab->addTab(ip, QIconSet(QPixmap(indicator)), QString::null);
-  navTab->setTabToolTip(ip, tr("Workwith Main Chart Indicators"));
+//  navTab->addTab(ip, QIconSet(QPixmap(indicator)), QString::null);
+//  navTab->setTabToolTip(ip, tr("Workwith Main Chart Indicators"));
   connect(this, SIGNAL(signalIndicatorPageRefresh()), ip, SLOT(refreshList()));
+  navTab->addWidget(ip, 2);
 }
 
 void QtstalkerApp::initScannerNav ()
@@ -1513,6 +1576,11 @@ void QtstalkerApp::slotTabIndicatorFocus ()
   }
 */
   tabs->setFocus();
+}
+
+void QtstalkerApp::slotNavigatorButtonPressed (int id)
+{
+  navTab->raiseWidget(id);
 }
 
 //**********************************************************************

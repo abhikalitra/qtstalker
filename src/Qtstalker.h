@@ -129,6 +129,7 @@ class QtstalkerApp : public QMainWindow
     void slotNavigatorPosition (int);
     void slotMainPlotFocus ();
     void slotTabIndicatorFocus ();
+    void slotNavigatorButtonPressed (int);
 
   private:
     QPopupMenu *fileMenu;

@@ -22,33 +22,10 @@
 #ifndef NAVIGATORTAB_HPP
 #define NAVIGATORTAB_HPP
 
-#include <qtabwidget.h>
 #include <qpopupmenu.h>
-#include <qtabbar.h>
+#include <qwidgetstack.h>
 
-class NavigatorTabBar : public QTabBar
-{
-  Q_OBJECT
-  
-  signals:
-    void signalPositionChanged (int);
-
-  public:
-    NavigatorTabBar (QWidget *);
-    ~NavigatorTabBar ();
-
-  protected:
-    virtual void contextMenuEvent (QContextMenuEvent *);
-    
-  private slots:
-    void togglePosition (int);
-  
-  private:
-    QPopupMenu *menu;
-    QPopupMenu *positionMenu;
-};
-
-class NavigatorTab : public QTabWidget
+class NavigatorTab : public QWidgetStack
 {
   Q_OBJECT
 
@@ -65,8 +42,13 @@ class NavigatorTab : public QTabWidget
   public slots:
     void togglePosition (int);
 
+  protected:
+    virtual void contextMenuEvent (QContextMenuEvent *);
+  
   private:
     int position;
+    QPopupMenu *menu;
+    QPopupMenu *positionMenu;
 };
 
 #endif

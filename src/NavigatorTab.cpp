@@ -23,7 +23,7 @@
 #include <qcursor.h>
 #include <qsettings.h>
 
-NavigatorTabBar::NavigatorTabBar (QWidget *w) : QTabBar (w)
+NavigatorTab::NavigatorTab (QWidget *w) : QWidgetStack (w)
 {
   menu = new QPopupMenu;
   
@@ -33,38 +33,13 @@ NavigatorTabBar::NavigatorTabBar (QWidget *w) : QTabBar (w)
   id = positionMenu->insertItem(tr("Right"), this, SLOT(togglePosition(int)));
   positionMenu->setItemParameter(id, 1);
   menu->insertItem (tr("Navigator Position"), positionMenu);
-}
 
-NavigatorTabBar::~NavigatorTabBar ()
-{
-  delete menu;
-}
-
-void NavigatorTabBar::contextMenuEvent (QContextMenuEvent *event)
-{
-  event->accept();
-  menu->exec(QCursor::pos());
-}
-
-void NavigatorTabBar::togglePosition (int pos)
-{
-  emit signalPositionChanged(pos);
-}
-
-//*****************************************************************
-//*****************************************************************
-//*****************************************************************
-
-NavigatorTab::NavigatorTab (QWidget *w) : QTabWidget (w)
-{
-  NavigatorTabBar *bar = new NavigatorTabBar(this);
-  QObject::connect(bar, SIGNAL(signalPositionChanged(int)), this, SLOT(togglePosition(int)));
-  setTabBar(bar);
   loadSettings();
 }
 
 NavigatorTab::~NavigatorTab ()
 {
+  delete menu;
 }
 
 void NavigatorTab::togglePosition (int pos)
@@ -89,5 +64,11 @@ void NavigatorTab::loadSettings()
 int NavigatorTab::getPosition () 
 {
   return position;
+}
+
+void NavigatorTab::contextMenuEvent (QContextMenuEvent *event)
+{
+  event->accept();
+  menu->exec(QCursor::pos());
 }
 
