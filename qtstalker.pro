@@ -2,7 +2,6 @@ TEMPLATE = subdirs
 
 SUBDIRS += src
 
-SUBDIRS += plugins/quote/CBOT
 SUBDIRS += plugins/quote/CC
 SUBDIRS += plugins/quote/CME
 SUBDIRS += plugins/quote/CMEHistory

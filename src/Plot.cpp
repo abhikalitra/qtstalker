@@ -1975,8 +1975,7 @@ void Plot::drawPaintBar ()
   while ((x < _width) && (loop < (int) data->count()))
   {
     QColor *color = paintBars.at(loop);
-    if (color)
-      painter.setPen(QColor(color->red(), color->green(), color->blue()));
+    painter.setPen(QColor(color->red(), color->green(), color->blue()));
 
     Setting *r = data->at(loop);
 

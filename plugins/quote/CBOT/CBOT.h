@@ -40,13 +40,15 @@ class CBOT : public QuotePlugin
     void parse();
 
   public slots:
+    void getFile ();
     void opDone (QNetworkOperation *);
-    void dataReady (const QByteArray &, QNetworkOperation *);
 
   private:
     QUrlOperator *op;
     FuturesData *fd;
     QString data;
+    QStringList urlList;
+    int symbolLoop;
 };
 
 extern "C"

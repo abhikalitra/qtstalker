@@ -28,16 +28,16 @@ EP::EP ()
 
   set(tr("Type"), pluginName, Setting::None);
   set(tr("Neutral"), "dimgray", Setting::Color);
-  set(tr("Outside Five"), "red", Setting::Color);
-  set(tr("Outside Four"), "darkorange", Setting::Color);
-  set(tr("Outside Three"), "gold", Setting::Color);
-  set(tr("Outside Two"), "goldenrod", Setting::Color);
-  set(tr("Outside One"), "khaki", Setting::Color);
-  set(tr("Inside Five"), "blue", Setting::Color);
-  set(tr("Inside Four"), "royalblue", Setting::Color);
-  set(tr("Inside Three"), "magenta", Setting::Color);
-  set(tr("Inside Two"), "orchid", Setting::Color);
-  set(tr("Inside One"), "pink", Setting::Color);
+  set(tr("Outside Rank 5"), "red", Setting::Color);
+  set(tr("Outside Rank 4"), "darkorange", Setting::Color);
+  set(tr("Outside Rank 3"), "gold", Setting::Color);
+  set(tr("Outside Rank 2"), "goldenrod", Setting::Color);
+  set(tr("Outside Rank 1"), "khaki", Setting::Color);
+  set(tr("Inside Rank 5"), "blue", Setting::Color);
+  set(tr("Inside Rank 4"), "royalblue", Setting::Color);
+  set(tr("Inside Rank 3"), "magenta", Setting::Color);
+  set(tr("Inside Rank 2"), "orchid", Setting::Color);
+  set(tr("Inside Rank 1"), "pink", Setting::Color);
   set(tr("Line Type"), "Bar", Setting::None);
   set(tr("Label"), pluginName, Setting::Text);
   set(tr("Plot"), tr("True"), Setting::None);
@@ -65,7 +65,10 @@ void EP::calculate ()
 *  pp 111-135
 */
 
+  // set first bar as neutral
   QString color = getData(tr("Neutral"));
+  rank->append(0);
+  paintBars.append(new QColor(color));
 
   int loop;
   for (loop = 1; loop < (int) data->count(); loop++)
@@ -146,26 +149,26 @@ void EP::calculate ()
         exhaustionOutsideRank += 0.5;
 
       // assign colour for the final ranking
+      rank->append((float) exhaustionOutsideRank);
       if (exhaustionOutsideRank > 5)
         exhaustionOutsideRank = 5;
       int exhaustionOutsideRankSwitch = (int) exhaustionOutsideRank;
-      rank->append((float) exhaustionOutsideRankSwitch);
       switch (exhaustionOutsideRankSwitch)
       {
         case 5:
-          color = getData(tr("Outside Five"));
+          color = getData(tr("Outside Rank 5"));
           break;
         case 4:
-          color = getData(tr("Outside Four"));
+          color = getData(tr("Outside Rank 4"));
           break;
         case 3:
-          color = getData(tr("Outside Three"));
+          color = getData(tr("Outside Rank 3"));
           break;
         case 2:
-          color = getData(tr("Outside Two"));
+          color = getData(tr("Outside Rank 2"));
           break;
         default:
-          color = getData(tr("Outside One"));
+          color = getData(tr("Outside Rank 2"));
           break;
       }
     }
@@ -192,26 +195,26 @@ void EP::calculate ()
       if (exhaustionVolumeDiff <= 20) exhaustionInsideRank += 0.5;
 
       // assign colour for the final ranking
+      rank->append((float) exhaustionInsideRank);
       if (exhaustionInsideRank > 5)
         exhaustionInsideRank = 5;
       int exhaustionInsideRankSwitch = (int) exhaustionInsideRank;
-      rank->append((float) exhaustionInsideRankSwitch);
       switch (exhaustionInsideRankSwitch)
       {
         case 5:
-          color = getData(tr("Inside Five"));
+          color = getData(tr("Inside Rank 5"));
           break;
         case 4:
-          color = getData(tr("Inside Four"));
+          color = getData(tr("Inside Rank 4"));
           break;
         case 3:
-          color = getData(tr("Inside Three"));
+          color = getData(tr("Inside Rank 3"));
           break;
         case 2:
-          color = getData(tr("Inside Two"));
+          color = getData(tr("Inside Rank 2"));
           break;
         default:
-          color = getData(tr("Inside One"));
+          color = getData(tr("Inside Rank 1"));
           break;
       }
     }

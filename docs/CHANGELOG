@@ -33,6 +33,10 @@
 
 - New line type "Invisible" added. This allows data plots to be hidden, but the data to be visible in the side panel or data window.
 
+- Color bars were off by one in the EP indicator. Fixed.
+
+- Removed CBOT plugin from the compile process pending a future fix or removal.
+
 0.20
 ====
 

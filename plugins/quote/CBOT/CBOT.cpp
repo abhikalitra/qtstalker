@@ -36,19 +36,11 @@ CBOT::CBOT ()
   createFlag = FALSE;
   op = 0;
 
-  QDate date = QDate::currentDate();
-  if (date.dayOfWeek() == 6)
-    date = date.addDays(-1);
-  else
-  {
-    if (date.dayOfWeek() == 7)
-      date = date.addDays(-2);
-  }
-  set("Date", date.toString("yyyyMMdd"), Setting::Date);
+  set(tr("History"), "1", Setting::Integer);
 
-  about = "Downloads daily settlement quotes from CBOT\n";
+  about = "Downloads historical settlement quotes from CBOT\n";
   about.append("and imports it directly into qtstalker.");
-  
+
   qInitNetworkProtocols();
 }
 
@@ -59,58 +51,73 @@ CBOT::~CBOT ()
 
 void CBOT::update ()
 {
-  data.truncate(0);
+  urlList.clear();
+  symbolLoop = 0;
   op = 0;
 
   QDir dir = QDir::home();
   file = dir.path();
   file.append("/Qtstalker/download");
-
-  QString s  = "http://www.cbot.com/cbot/shared/charts/bot";
-
-  QDateTime sdate = QDateTime::fromString(getDateTime("Date"), Qt::ISODate);
   
-  QDateTime dt = QDateTime::currentDateTime();
-  if (sdate > dt)
-  {
-    emit done();
-    return;
-  }
+  QDate date = QDate::currentDate();
 
-  if (sdate.date().dayOfWeek() == 6 || sdate.date().dayOfWeek() == 7)
-  {
-    emit done();
-    return;
-  }
-
-  if (sdate.date().month() < 10)
-    s.append("0");
-  s.append(QString::number(sdate.date().month()));
-  if (sdate.date().day() < 10)
-    s.append("0");
-  s.append(QString::number(sdate.date().day()));
-  QString y = QString::number(sdate.date().year());
-  y.remove(0, 2);
-  if (y.toInt() < 10)
-    y.remove(0, 1);
-  s.append(y);
-  s.append(".txt");
-
-  if (op)
-    delete op;
-  op = new QUrlOperator(s);
-  connect(op, SIGNAL(finished(QNetworkOperation *)), this, SLOT(opDone(QNetworkOperation *)));
-  connect(op, SIGNAL(data(const QByteArray &, QNetworkOperation *)), this, SLOT(dataReady(const QByteArray &, QNetworkOperation *)));
-  op->get();
+  fd->setSymbol("C");
+  QStringList months = fd->getMonthList();
   
-  emit message(tr("Downloading CBOT data"));
+
+  urlList.append("http://www.cbot.com/cbot/www/hist_dl/1,2964,NS+1!+Q03+c,00.html");
+
+  QTimer::singleShot(250, this, SLOT(getFile()));
 }
 
-void CBOT::dataReady (const QByteArray &d, QNetworkOperation *)
+void CME::getFile ()
 {
-  int loop;
-  for (loop = 0; loop < (int) d.size(); loop++)
-    data.append(d[loop]);
+  if (op)
+    delete op;
+
+  QDir dir(file);
+  dir.remove(file);
+
+  op = new QUrlOperator();
+  connect(op, SIGNAL(finished(QNetworkOperation *)), this, SLOT(opDone(QNetworkOperation *)));
+  op->copy(urlList[symbolLoop], file, FALSE, FALSE);
+
+  emit message(tr("Downloading CME data"));
+}
+
+void CME::opDone (QNetworkOperation *o)
+{
+  if (! o)
+    return;
+
+  if (o->state() != QNetworkProtocol::StDone)
+    return;
+
+  if (o->errorCode() != QNetworkProtocol::NoError)
+  {
+    QString s = o->protocolDetail();
+    qDebug(s.latin1());
+    delete op;
+    emit done();
+    return;
+  }
+
+  QDir dir(file);
+  if (! dir.exists(file, TRUE))
+    return;
+
+  parseToday();
+
+  symbolLoop++;
+
+  if (symbolLoop >= (int) urlList.count())
+  {
+    emit done();
+    delete op;
+    return;
+  }
+
+  getFile();
 }
 
 QString CBOT::translateFraction (QString d)
