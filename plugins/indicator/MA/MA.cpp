@@ -31,6 +31,7 @@ MA::MA ()
   set(tr("Line Type"), tr("Line"), Setting::LineType);
   set(tr("Label"), pluginName, Setting::Text);
   set(tr("Period"), "10", Setting::Integer);
+  set(tr("Displace"), "0", Setting::Integer);
   set(tr("Input"), tr("Close"), Setting::InputField);
   set(tr("MA Type"), "SMA", Setting::MAType);
   set(tr("Plot"), tr("True"), Setting::None);
@@ -45,11 +46,9 @@ MA::~MA ()
 
 void MA::calculate ()
 {
-  int period = getInt(tr("Period"));
-
   PlotLine *in = getInput(getData(tr("Input")));
 
-  PlotLine *data = getMA(in, getData(tr("MA Type")), period);
+  PlotLine *data = getMA(in, getData(tr("MA Type")), getInt(tr("Period")), getInt(tr("Displace")));
 
   delete in;
 

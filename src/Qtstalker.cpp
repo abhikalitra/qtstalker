@@ -1330,7 +1330,7 @@ void QtstalkerApp::slotEditIndicator (int id)
 
   Setting *set = new Setting();
   set->parse(config->getIndicator(selection));
-  
+
   QString s = config->getData(Config::IndicatorPluginPath);
   s.append("/lib");
   s.append(set->getData("Type"));
@@ -1348,6 +1348,10 @@ void QtstalkerApp::slotEditIndicator (int id)
     int loop;
     for(loop = 0; loop < (int) key.count(); loop++)
     {
+      // add any new parms if plugin has been updated
+      if (! set->getData(key[loop]).length())
+        set->set(key[loop], plug->getData(key[loop]), plug->getType(key[loop]));
+
       if (plug->getType(key[loop]) == Setting::List)
         set->setList(key[loop], plug->getList(key[loop]));
     }

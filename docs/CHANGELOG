@@ -54,6 +54,9 @@
 - Added new Config option NavigatorPosition that allows user to place the chart navigator on the left or right side. The
   default is left side. This setting is edited in the preferences dialog. Checked means left side. Unchecked means right side.
 
+- Added new option to all MA's to displace them if desired. 0 for no displacement and > 0 for bars of displacement. Updated the
+  MA, MA2, MA3, MMA plugins with the new parm.
+
 
 0.20
 ====

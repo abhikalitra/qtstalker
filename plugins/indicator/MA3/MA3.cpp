@@ -31,18 +31,21 @@ MA3::MA3 ()
   set(tr("Fast Line Type"), tr("Line"), Setting::LineType);
   set(tr("Fast Label"), tr("MA3F"), Setting::Text);
   set(tr("Fast Period"), "5", Setting::Integer);
+  set(tr("Fast Displace"), "0", Setting::Integer);
   set(tr("Fast Type"), "SMA", Setting::MAType);
   set(tr("Fast Input"), tr("Close"), Setting::InputField);
   set(tr("Middle Color"), "red", Setting::Color);
   set(tr("Middle Line Type"), tr("Line"), Setting::LineType);
   set(tr("Middle Label"), tr("MA3M"), Setting::Text);
   set(tr("Middle Period"), "20", Setting::Integer);
+  set(tr("Middle Displace"), "0", Setting::Integer);
   set(tr("Middle Type"), "SMA", Setting::MAType);
   set(tr("Middle Input"), tr("Close"), Setting::InputField);
   set(tr("Slow Color"), "red", Setting::Color);
   set(tr("Slow Line Type"), tr("Line"), Setting::LineType);
   set(tr("Slow Label"), tr("MA3S"), Setting::Text);
   set(tr("Slow Period"), "40", Setting::Integer);
+  set(tr("Slow Displace"), "0", Setting::Integer);
   set(tr("Slow Type"), "SMA", Setting::MAType);
   set(tr("Slow Input"), tr("Close"), Setting::InputField);
   set(tr("Plot"), tr("True"), Setting::None);
@@ -61,21 +64,17 @@ void MA3::calculate ()
   PlotLine *min = getInput(getData(tr("Middle Input")));
   PlotLine *sin = getInput(getData(tr("Slow Input")));
 
-  int fperiod = getInt(tr("Fast Period"));
-  int mperiod = getInt(tr("Middle Period"));
-  int speriod = getInt(tr("Slow Period"));
-
-  PlotLine *fma = getMA(fin, getData(tr("Fast Type")), fperiod);
+  PlotLine *fma = getMA(fin, getData(tr("Fast Type")), getInt(tr("Fast Period")), getInt(tr("Fast Displace")));
   fma->setColor(getData(tr("Fast Color")));
   fma->setType(getData(tr("Fast Line Type")));
   fma->setLabel(getData(tr("Fast Label")));
 
-  PlotLine *mma = getMA(min, getData(tr("Middle Type")), mperiod);
+  PlotLine *mma = getMA(min, getData(tr("Middle Type")), getInt(tr("Middle Period")), getInt(tr("Middle Displace")));
   mma->setColor(getData(tr("Middle Color")));
   mma->setType(getData(tr("Middle Line Type")));
   mma->setLabel(getData(tr("Middle Label")));
 
-  PlotLine *sma = getMA(sin, getData(tr("Slow Type")), speriod);
+  PlotLine *sma = getMA(sin, getData(tr("Slow Type")), getInt(tr("Slow Period")), getInt(tr("Slow Displace")));
   sma->setColor(getData(tr("Slow Color")));
   sma->setType(getData(tr("Slow Line Type")));
   sma->setLabel(getData(tr("Slow Label")));

@@ -40,6 +40,7 @@ class IndicatorPlugin : public Plugin
     int getIndicatorLines ();
     PlotLine * getIndicatorLine (int);
     PlotLine * getInput (QString);
+    PlotLine * getMA (PlotLine *, QString, int, int);
     PlotLine * getMA (PlotLine *, QString, int);
     PlotLine * getSMA (PlotLine *, int);
     PlotLine * getEMA (PlotLine *, int);

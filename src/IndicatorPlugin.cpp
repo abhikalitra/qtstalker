@@ -141,6 +141,11 @@ PlotLine * IndicatorPlugin::getInput (QString field)
 
 PlotLine * IndicatorPlugin::getMA (PlotLine *d, QString type, int period)
 {
+  return getMA(d, type, period, 0);
+}
+
+PlotLine * IndicatorPlugin::getMA (PlotLine *d, QString type, int period, int displace)
+{
   PlotLine *ma = 0;
   if (! type.compare(tr("SMA")))
     ma = getSMA(d, period);
@@ -157,7 +162,17 @@ PlotLine * IndicatorPlugin::getMA (PlotLine *d, QString type, int period)
     }
   }
 
-  return ma;
+  if (displace > 0)
+  {
+    PlotLine *dma = new PlotLine;
+    int loop;
+    for (loop = 0; loop < ma->getSize() - displace; loop++)
+      dma->append(ma->getData(loop));
+    delete ma;
+    return dma;
+  }
+  else
+    return ma;
 }
 
 PlotLine * IndicatorPlugin::getEMA (PlotLine *data, int period)
