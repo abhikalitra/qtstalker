@@ -64,6 +64,8 @@ void SettingView::setItems (Setting *d)
 {
   settings = d;
   makeSettings();
+  list->adjustColumn(0);
+  list->adjustColumn(1);
 }
 
 void SettingView::makeSettings ()

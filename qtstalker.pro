@@ -14,6 +14,10 @@ SUBDIRS += plugins/quote/Spread
 SUBDIRS += plugins/quote/Yahoo
 SUBDIRS += plugins/quote/YahooQuote
 
+exists(/usr/include/mysql/mysql.h){
+  SUBDIRS += plugins/quote/MySQL
+{
+
 SUBDIRS += plugins/indicator/AD
 SUBDIRS += plugins/indicator/ATR
 SUBDIRS += plugins/indicator/BB

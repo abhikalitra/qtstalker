@@ -1,7 +1,7 @@
 0.22
 ====
 
-- Added MA options to the VOL, OI plugins.
+- Added MA options to the VOL, OI indicator plugins.
 
 - Updated the date area of charts to include more detail.
 
@@ -21,8 +21,13 @@
 
 - Applied patches #816926, #816927 from David Crossley.
 
-- Added an additional include path to all the plugins to help in compiling with older qmake versions. (Debian stable).
+- Added an additional include path to all the plugins to help in compiling with older qmake versions. (Debian).
 
+- Applied patch #816871 from Marco Van Zwetselaar. This is a new quote plugin (MySQL) that allows the user to import quote data from
+  MySQL db's into Qtstalker format. Added a function to the qtstalker.pro file to make a conditional compile of this plugin if the 
+  mysql.h header file can be found. If not found, the plugin will not be compiled.
+
+- Better resizing of columns when editing user settings in SettingView class.
 
 
 0.21
