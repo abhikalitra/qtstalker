@@ -42,7 +42,7 @@
 #include "FuturesData.h"
 #include "PrefDialog.h"
 
-Tester::Tester (Config *c, QString n) : QTabDialog (0, 0, TRUE)
+Tester::Tester (Config *c, QString n) : QTabDialog (0, 0, FALSE)
 {
   config = c;
   ruleName = n;

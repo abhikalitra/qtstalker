@@ -13,10 +13,12 @@
 
 20040621: fixed bug in BB that switched labels for upper and lower bands.
 
-20040622: fixed bug in EMA logic that applied smoothing factor to the first value. now just a plain
+20040622: fixed bug #976814 in EMA logic that applied smoothing factor to the first value. now just a plain
           SMA value unsmoothed.
 	  
+20040622: changed Tester:: class to non-modal dialog for multiple instances. testing needed.
 
+	  
 0.26
 ====
 
