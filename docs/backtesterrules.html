@@ -2,70 +2,80 @@
 <html>
 <head>
   <title>Back Tester</title>
-                    
   <meta http-equiv="content-type"
  content="text/html; charset=ISO-8859-1">
 </head>
-  <body>
-     
+<body>
 <h2><u>Back Tester Rules</u></h2>
-   The rules page allows you to assign one or more indicators to each of
-the  four trade actions. The four trade actions are:   
+The rules page allows you to create an indicator formula for each of
+the four trade actions. The four trade actions are:
 <ul>
-     <li>Enter Long - Enter a long trade if all indicators listed issue a 
-buy  signal. A long position will only be entered if the rule is out or short.</li>
-     <li>Exit Long - Exit a long trade if all indicators listed issue a sell 
- signal.</li>
-     <li>Enter Short - Enter a short trade if all indicators listed issue 
-a  sell signal. A short position will only be entered if the rule is out or
+  <li>Enter Long - Enter a long trade if the indicator issues a
+buy signal. A long position will only be entered if the trading status
+is out or
+short.</li>
+  <li>Exit Long - Exit a long trade the indicator issues a
+sell signal.<br>
+  </li>
+  <li>Enter Short - Enter a short trade if the indicator issues
+a sell signal. A short position will only be entered if the trading
+status is out
+or
 long.</li>
-     <li>Exit Short - Exit a short trade if all indicators listed issue a 
-buy  signal</li>
-     
+  <li>Exit Short - Exit a short trade the indicator issues a
+buy signal.</li>
 </ul>
-  You may use more than one indicator for each trading rule. In order for 
-a trade action to be triggered, each of the indicators listed must be true.
- So, if you apply 2 indicators to the Enter Long action, both of the indicators
- must have issued a "buy signal" for the action to take effect.<br>
-  <br>
-   <img src="backtesterrules1.png" alt="" width="407" height="504">
-&nbsp;   <br>
-   <br>
-  The button functions are:   
-<p><img src="enterlong.png" alt="" width="24" height="24">
-   Enter Long - Display any indicators that are assigned to enter long trades.<br>
-  </p>
-   
-<p><img src="exitlong.png" alt="" width="24" height="24">
-   Exit Long - Display any indicators that are assigned to exit long trades.<br>
-  </p>
-   
-<p><img src="entershort.png" alt="" width="24" height="24">
-   Enter Short - Display any indicators that are assigned to enter short
-trades.<br>
-  </p>
-   
-<p><img src="exitshort.png" alt="" width="24" height="24">
-   Exit Short - Display any indicators that are assigned to exit short trades.<br>
-  </p>
-   
-<p><img src="indicator.png" alt="" width="19" height="17">
-   Add Indicator - Display a dialog in which you can select an indicator
-to  add to the rule currently selected.<br>
-  </p>
-   
-<p><img src="edit.png" alt="" width="22" height="22">
-   Edit Indicator - Allows you to edit the currently selected indicator.<br>
-  </p>
-   
-<p><img src="delete.png" alt="" width="22" height="22">
-   Delete Indicator - Delete the currently selected indicator.<br>
-  </p>
-  <br>
-  <br>
-   <br>
-   <br>
-  <br>
- <br>
+<br>
+<img style="width: 680px; height: 529px;" alt=""
+ src="backtesterrules1.png">&nbsp;&nbsp; <br>
+<br>
+<p>Here the above shot shows a simple moving average crossover formula
+for each trading rule.<br>
+</p>
+<p><br>
+Here is a breakdown of the enter long formula:</p>
+<p>1. We use a REF function to grab an array of close bars.<br>
+2. We create a 20 period SMA with step 1 as the input.<br>
+3. We use a COMP function to generate a TRUE signal if step1(the close)
+is &gt; step2 (the SMA). Note we check this step to plot. qtstalker
+needs to know which step will be used to generate signals.<br>
+</p>
+<p><br>
+The exit long formula breakdown is like this:<br>
+</p>
+<p>1. We use a REF function to grab an array of close bars.<br>
+2. We create a 40 period SMA with step 1 as the input.<br>
+3. We use a COMP function to generate a TRUE signal if step1(the close)
+is &lt; step2 (the SMA). Note we check this step to plot. qtstalker
+needs to know which step will be used to generate signals.<br>
+</p>
+<p><br>
+**CRITICAL**<br>
+In order for any formula to work, you must have a COMP step somewhere
+in the formula to generate the boolean array that will generate the
+buy/sell signals. A TRUE value will issue the signal that applies to
+the particular rule. Note also that the only step that is checked in
+the plot
+column must be the COMP step. The checked step is the one that tells
+qtstalker which step contains the logic for the trading rule signals.
+If a non
+COMP step or multiple steps are checked, the results will be unreliable.<br>
+</p>
+<br>
+<img style="width: 22px; height: 22px;" alt="" src="newchart.png">&nbsp;Add
+Function - Display a dialog in which you can select a formula function
+step to add.<br>
+<p><img src="edit.png" alt="" width="22" height="22"> Edit Function -
+Allows you to edit the currently selected function step.<br>
+</p>
+<p><img src="delete.png" alt="" width="22" height="22"> Delete Function
+- Delete the currently selected function step.<br>
+</p>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
 </body>
 </html>

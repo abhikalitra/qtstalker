@@ -41,7 +41,7 @@ class CME : public QuotePlugin
     void cancelUpdate ();
     void loadSettings ();
     void saveSettings ();
-    void prefDialog ();
+    void prefDialog (QWidget *);
     void parseHistory ();
 
   public slots:

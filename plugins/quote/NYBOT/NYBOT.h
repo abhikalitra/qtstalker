@@ -30,7 +30,7 @@ class NYBOT : public QuotePlugin
     NYBOT ();
     virtual ~NYBOT ();
     void update ();
-    void prefDialog ();
+    void prefDialog (QWidget *);
 
   public slots:
     void parse ();

@@ -39,7 +39,7 @@ class COT : public QuotePlugin
     QString getSymbol (QString);
     void loadSettings ();
     void saveSettings ();
-    void prefDialog ();
+    void prefDialog (QWidget *);
 
   public slots:
     void getFile ();

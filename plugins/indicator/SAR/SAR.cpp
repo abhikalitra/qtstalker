@@ -185,9 +185,9 @@ void SAR::calculate ()
   output.append(d);
 }
 
-int SAR::indicatorPrefDialog ()
+int SAR::indicatorPrefDialog (QWidget *w)
 {
-  PrefDialog *dialog = new PrefDialog();
+  PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(tr("SAR Indicator"));
   dialog->createPage (tr("Parms"));
   dialog->addColorItem(tr("Color"), tr("Parms"), color);

@@ -115,9 +115,9 @@ void MACD::calculate ()
   output.append(signal);
 }
 
-int MACD::indicatorPrefDialog ()
+int MACD::indicatorPrefDialog (QWidget *w)
 {
-  PrefDialog *dialog = new PrefDialog();
+  PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(tr("MACD Indicator"));
   
   dialog->createPage (tr("MACD"));

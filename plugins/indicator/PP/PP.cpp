@@ -110,9 +110,9 @@ void PP::calculate ()
   output.append(thr);
 }
 
-int PP::indicatorPrefDialog ()
+int PP::indicatorPrefDialog (QWidget *w)
 {
-  PrefDialog *dialog = new PrefDialog();
+  PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(tr("PP Indicator"));
   dialog->createPage (tr("Support"));
   dialog->addColorItem(tr("Support Color"), tr("Support"), supColor);

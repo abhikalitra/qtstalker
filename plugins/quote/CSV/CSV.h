@@ -39,7 +39,7 @@ class CSV : public QuotePlugin
     void openDb (QString, QString, QString);
     void loadSettings ();
     void saveSettings ();
-    void prefDialog ();
+    void prefDialog (QWidget *);
     Setting * getRule ();
 
   public slots:

@@ -32,7 +32,7 @@ class OVRLY : public IndicatorPlugin
     void comparePerformance ();
     void loadIndicatorSettings (QString);
     void saveIndicatorSettings (QString);
-    int indicatorPrefDialog ();
+    int indicatorPrefDialog (QWidget *);
     void setDefaults();
     
   private:

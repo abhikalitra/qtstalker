@@ -67,9 +67,9 @@ void REF::calculate ()
   delete in;
 }
 
-int REF::indicatorPrefDialog ()
+int REF::indicatorPrefDialog (QWidget *w)
 {
-  PrefDialog *dialog = new PrefDialog();
+  PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(tr("REF Indicator"));
   dialog->createPage (tr("Parms"));
   dialog->addColorItem(tr("Color"), tr("Parms"), color);

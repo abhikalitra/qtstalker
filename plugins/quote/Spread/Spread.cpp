@@ -190,7 +190,7 @@ void Spread::loadData (QString symbol, QString method)
   delete recordList;
 }
 
-void Spread::prefDialog ()
+void Spread::prefDialog (QWidget *)
 {
   SpreadDialog *dialog = new SpreadDialog();
   dialog->setCaption(tr("Spread Prefs"));

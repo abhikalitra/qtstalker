@@ -532,7 +532,7 @@ void CSV::openDb (QString path, QString symbol, QString type)
   }
 }
 
-void CSV::prefDialog ()
+void CSV::prefDialog (QWidget *)
 {
   CSVDialog *dialog = new CSVDialog();
   dialog->setCaption(tr("CSV Prefs"));

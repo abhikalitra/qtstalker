@@ -238,6 +238,6 @@ void QuoteDialog::pluginSettings ()
     return;
   }
   
-  plug->prefDialog();
+  plug->prefDialog(this);
 }
 

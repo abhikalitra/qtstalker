@@ -32,6 +32,8 @@ Line::Line ()
   pluginName = "Line";
   startX = 0;
   indicatorFlag = FALSE;
+  defaultFlag = TRUE;
+  defaultFormula.append("REF,3,0,#00ff00,4,Close|1");
   loadSettings();  
 }
 
@@ -76,11 +78,12 @@ void Line::drawChart (int startX, int startIndex, int pixelspace)
   delete line;
 }
 
-void Line::prefDialog ()
+void Line::prefDialog (QWidget *)
 {
   LineDialog *dialog = new LineDialog();
   dialog->setColor(color);
   dialog->setSpacing(minPixelspace);
+  dialog->setDefault(defaultFlag);
   
   int loop;
   for (loop = 0; loop < (int) formulaList.count(); loop++)
@@ -92,11 +95,15 @@ void Line::prefDialog ()
   {
     minPixelspace = dialog->getSpacing();
     color = dialog->getColor();
+    defaultFlag = dialog->getDefault();
     
-    int loop;
-    formulaList.clear();
-    for (loop = 0; loop < (int) dialog->getLines(); loop++)
-      formulaList.append(dialog->getLine(loop));
+    if (! defaultFlag)
+    {
+      int loop;
+      formulaList.clear();
+      for (loop = 0; loop < (int) dialog->getLines(); loop++)
+        formulaList.append(dialog->getLine(loop));
+    }
         
     saveFlag = TRUE;
     emit draw();
@@ -114,7 +121,9 @@ void Line::loadSettings ()
   
   minPixelspace = settings.readNumEntry("/minPixelspace", 3);
   
-  QString s = settings.readEntry("/formula", "REF,Close,0,green,Line,C|1");
+  defaultFlag = settings.readBoolEntry("/defaultFlag", TRUE);
+  
+  QString s = settings.readEntry("/formula");
   QStringList l = QStringList::split("|", s, FALSE);
   int loop;
   for (loop = 0; loop < (int) l.count(); loop = loop + 2)
@@ -133,7 +142,7 @@ void Line::saveSettings ()
   
   settings.writeEntry("/Color", color.name());
   settings.writeEntry("/minPixelspace", minPixelspace);
-  
+  settings.writeEntry("/defaultFlag", defaultFlag);
   settings.writeEntry("/formula", formulaList.join("|"));
   
   settings.endGroup();
@@ -153,7 +162,10 @@ PlotLine * Line::getBoolLine ()
   }
 
   // load the CUS plugin and calculate
-  plug->setCustomFunction(formulaList.join("|"));
+  if (defaultFlag)
+    plug->setCustomFunction(defaultFormula.join("|"));
+  else
+    plug->setCustomFunction(formulaList.join("|"));
   plug->setIndicatorInput(data);
   plug->calculate();
   line = plug->getIndicatorLine(0);

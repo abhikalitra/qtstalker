@@ -23,11 +23,11 @@
 #define SCANNER_HPP
 
 #include <qstring.h>
-#include <qdialog.h>
+#include <qtabdialog.h>
 #include <qcombobox.h>
 #include <qpushbutton.h>
 #include <qcheckbox.h>
-#include "Toolbar.h"
+#include <qprogressbar.h>
 #include "Config.h"
 #include "FormulaEdit.h"
 
@@ -43,12 +43,13 @@ class Traverse
     QStringList list;
 };
 
-class Scanner : public QDialog
+class Scanner : public QTabDialog
 {
   Q_OBJECT
 
   signals:
     void exitScanner ();
+    void message (QString);
 
   public:
     Scanner (QString);
@@ -64,13 +65,13 @@ class Scanner : public QDialog
 
   protected:
     FormulaEdit *list;
-    Toolbar *toolbar;
     QComboBox *period;
     QString scannerName;
     Config config;
     QPushButton *fileButton;
     QStringList fileList;
     QCheckBox *allSymbols;
+    QProgressBar *progbar;
 };
 
 #endif

@@ -22,6 +22,7 @@
 #include <qtabdialog.h>
 #include <qcolor.h>
 #include <qspinbox.h>
+#include <qcheckbox.h>
 #include "FormulaEdit.h"
 #include "ColorButton.h"
 
@@ -39,11 +40,18 @@ class LineDialog : public QTabDialog
     QColor getColor ();
     void setSpacing (int);
     int getSpacing ();
+    void setDefault (bool);
+    bool getDefault ();
+    
+  public slots:
+    void defaultChecked (bool);
     
   private:
     FormulaEdit *list;
     QSpinBox *spacing;
     ColorButton *color;
+    QCheckBox *defaultPlot;
+    bool defaultFlag;
 };
 
     

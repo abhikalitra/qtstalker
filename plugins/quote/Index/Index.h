@@ -34,7 +34,7 @@ class Index : public QuotePlugin
     virtual ~Index ();
     void update ();
     int loadData (QString, float);
-    void prefDialog ();
+    void prefDialog (QWidget *);
 
   public slots:
     void updateIndex ();

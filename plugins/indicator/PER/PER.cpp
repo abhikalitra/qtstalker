@@ -71,9 +71,9 @@ void PER::calculate ()
     delete in;
 }
 
-int PER::indicatorPrefDialog ()
+int PER::indicatorPrefDialog (QWidget *w)
 {
-  PrefDialog *dialog = new PrefDialog();
+  PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(tr("PER Indicator"));
   dialog->createPage (tr("Parms"));
   dialog->addColorItem(tr("Color"), tr("Parms"), color);

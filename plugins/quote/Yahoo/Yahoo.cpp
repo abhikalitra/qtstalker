@@ -543,7 +543,7 @@ QString Yahoo::parseDate (QString d)
   return s;
 }
 
-void Yahoo::prefDialog ()
+void Yahoo::prefDialog (QWidget *)
 {
   YahooDialog *dialog = new YahooDialog();
   dialog->setCaption(tr("Yahoo Prefs"));

@@ -75,7 +75,7 @@ bool Plugin::getPlotFlag ()
   return FALSE;
 }
 
-int Plugin::indicatorPrefDialog ()
+int Plugin::indicatorPrefDialog (QWidget *)
 {
   return 0;
 }
@@ -122,7 +122,7 @@ void Plugin::cancelUpdate ()
 {
 }
 
-void Plugin::prefDialog ()
+void Plugin::prefDialog (QWidget *)
 {
 }
 

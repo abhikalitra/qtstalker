@@ -28,6 +28,8 @@
 
 LineDialog::LineDialog () : QTabDialog (0, "LineDialog", TRUE)
 {
+  defaultFlag = TRUE;
+  
   setCaption(tr("Line Chart Parms"));
   
   QWidget *w = new QWidget(this);
@@ -36,7 +38,7 @@ LineDialog::LineDialog () : QTabDialog (0, "LineDialog", TRUE)
   vbox->setMargin(5);
   vbox->setSpacing(0);
   
-  QGridLayout *grid = new QGridLayout(vbox, 3, 2);
+  QGridLayout *grid = new QGridLayout(vbox, 4, 2);
   grid->setMargin(5);
   grid->setSpacing(5);
   grid->setColStretch(1, 1);
@@ -53,6 +55,13 @@ LineDialog::LineDialog () : QTabDialog (0, "LineDialog", TRUE)
     
   spacing = new QSpinBox(1, 99, 1, w);
   grid->addWidget(spacing, 1, 1);
+  
+  label = new QLabel(tr("Default Plot"), w);
+  grid->addWidget(label, 2, 0);
+  
+  defaultPlot = new QCheckBox(w);
+  connect(defaultPlot, SIGNAL(toggled(bool)), this, SLOT(defaultChecked(bool)));
+  grid->addWidget(defaultPlot, 2, 1);
   
   vbox->addSpacing(10);
   
@@ -105,5 +114,25 @@ int LineDialog::getSpacing ()
   return spacing->value();
 }
 
+void LineDialog::setDefault (bool d)
+{
+  defaultFlag = d;
+  defaultPlot->setChecked(defaultFlag);
+}
+
+bool LineDialog::getDefault ()
+{
+  return defaultFlag;
+}
+
+void LineDialog::defaultChecked (bool d)
+{
+  defaultFlag = d;
+  
+  if (d)
+    list->setEnabled(FALSE);
+  else
+    list->setEnabled(TRUE);
+}
 
 

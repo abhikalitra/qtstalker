@@ -1768,7 +1768,7 @@ void Plot::slotNewIndicator ()
 
 void Plot::slotEditChartPrefs ()
 {
-  chartPlugin->prefDialog();
+  chartPlugin->prefDialog(this);
 }
 
 void Plot::slotMessage (QString d)

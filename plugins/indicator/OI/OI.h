@@ -29,7 +29,7 @@ class OI : public IndicatorPlugin
     void calculate ();
     void loadIndicatorSettings (QString);
     void saveIndicatorSettings (QString);
-    int indicatorPrefDialog ();
+    int indicatorPrefDialog (QWidget *);
     void setDefaults();
 
   private:

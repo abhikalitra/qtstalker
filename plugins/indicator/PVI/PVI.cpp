@@ -66,9 +66,9 @@ void PVI::calculate ()
   output.append(pvi);
 }
 
-int PVI::indicatorPrefDialog ()
+int PVI::indicatorPrefDialog (QWidget *w)
 {
-  PrefDialog *dialog = new PrefDialog();
+  PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(tr("PVI Indicator"));
   dialog->createPage (tr("Parms"));
   dialog->addColorItem(tr("Color"), tr("Parms"), color);

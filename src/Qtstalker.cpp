@@ -1079,7 +1079,7 @@ void QtstalkerApp::slotNewIndicator ()
     return;
   }
 
-  rc = plug->indicatorPrefDialog();
+  rc = plug->indicatorPrefDialog(this);
   
   if (rc)
   {
@@ -1132,7 +1132,7 @@ void QtstalkerApp::slotEditIndicator (QString selection, Plot *plot)
 
   QString s = config->getData(Config::IndicatorPath) + "/" + selection;
   plug->loadIndicatorSettings(s);
-  int rc = plug->indicatorPrefDialog();
+  int rc = plug->indicatorPrefDialog(this);
 
   if (rc)
   {
@@ -1401,6 +1401,7 @@ void QtstalkerApp::initIndicatorNav ()
 void QtstalkerApp::initScannerNav ()
 {
   ScannerPage *sp = new ScannerPage(baseWidget, config);
+  QObject::connect(sp, SIGNAL(message(QString)), this, SLOT(slotStatusMessage(QString)));
   navTab->addWidget(sp, 5);
 }
 

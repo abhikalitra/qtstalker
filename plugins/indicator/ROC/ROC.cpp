@@ -85,9 +85,9 @@ void ROC::calculate ()
     delete in;
 }
 
-int ROC::indicatorPrefDialog ()
+int ROC::indicatorPrefDialog (QWidget *w)
 {
-  PrefDialog *dialog = new PrefDialog();
+  PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(tr("ROC Indicator"));
   dialog->createPage (tr("Parms"));
   dialog->addColorItem(tr("Color"), tr("Parms"), color);

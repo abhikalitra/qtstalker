@@ -70,9 +70,9 @@ void DPO::calculate ()
   delete ma;
 }
 
-int DPO::indicatorPrefDialog ()
+int DPO::indicatorPrefDialog (QWidget *w)
 {
-  PrefDialog *dialog = new PrefDialog();
+  PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(tr("DPO Indicator"));
   dialog->createPage (tr("Parms"));
   dialog->addColorItem(tr("Color"), tr("Parms"), color);

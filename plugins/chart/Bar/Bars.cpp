@@ -161,7 +161,7 @@ void Bars::drawPaintBars (int startX, int startIndex, int pixelspace)
   delete line;
 }
 
-void Bars::prefDialog ()
+void Bars::prefDialog (QWidget *)
 {
   BarDialog *dialog = new BarDialog();
   dialog->setBarColors(barUpColor, barDownColor, barNeutralColor);

@@ -81,9 +81,9 @@ void WAD::calculate ()
   output.append(wad);
 }
 
-int WAD::indicatorPrefDialog ()
+int WAD::indicatorPrefDialog (QWidget *w)
 {
-  PrefDialog *dialog = new PrefDialog();
+  PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(tr("WAD Indicator"));
   dialog->createPage (tr("Parms"));
   dialog->addColorItem(tr("Color"), tr("Parms"), color);

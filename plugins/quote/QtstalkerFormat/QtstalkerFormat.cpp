@@ -101,9 +101,9 @@ void QtstalkerFormat::parse ()
   emit statusLogMessage(tr("Done"));
 }
 
-void QtstalkerFormat::prefDialog ()
+void QtstalkerFormat::prefDialog (QWidget *w)
 {
-  PrefDialog *dialog = new PrefDialog();
+  PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(tr("QtstalkerFormat Prefs"));
   dialog->createPage (tr("Details"));
   dialog->addFileItem(tr("File Input"), tr("Details"));

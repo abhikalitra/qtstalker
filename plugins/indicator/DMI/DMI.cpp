@@ -78,9 +78,9 @@ void DMI::calculate ()
   output.append(adx);
 }
 
-int DMI::indicatorPrefDialog ()
+int DMI::indicatorPrefDialog (QWidget *w)
 {
-  PrefDialog *dialog = new PrefDialog();
+  PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(tr("DMI Indicator"));
   
   dialog->createPage (tr("DMI"));

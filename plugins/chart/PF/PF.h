@@ -33,7 +33,7 @@ class PF : public ChartPlugin
     PF ();
     virtual ~PF ();
     void drawChart (int startX, int startIndex, int pixelspace);
-    void prefDialog ();
+    void prefDialog (QWidget *);
     void loadSettings ();
     void saveSettings ();
 

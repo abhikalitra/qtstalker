@@ -180,11 +180,11 @@ PlotLine * OVRLY::getSymbolLine (QString d)
   return line;
 }
 
-int OVRLY::indicatorPrefDialog ()
+int OVRLY::indicatorPrefDialog (QWidget *w)
 {
   Config *config = new Config;
   
-  PrefDialog *dialog = new PrefDialog();
+  PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(tr("OVRLY Indicator"));
   
   dialog->createPage (tr("Base Symbol"));

@@ -983,7 +983,7 @@ void CME::cancelUpdate ()
   emit statusLogMessage("Canceled");
 }
 
-void CME::prefDialog ()
+void CME::prefDialog (QWidget *w)
 {
   QStringList l;
   l.append("AD");
@@ -1005,7 +1005,7 @@ void CME::prefDialog ()
   l.append("ED");
   l.sort();
 
-  PrefDialog *dialog = new PrefDialog();
+  PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(tr("CME Prefs"));
   dialog->createPage (tr("Details"));
 

@@ -191,9 +191,9 @@ void CC::newChart (ChartDb *db, QString symbol, QDir dir)
   delete pr;
 }
 
-void CC::prefDialog ()
+void CC::prefDialog (QWidget *w)
 {
-  PrefDialog *dialog = new PrefDialog();
+  PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(tr("CC Prefs"));
   dialog->createPage (tr("Details"));
   dialog->addIntItem(tr("Rollover"), tr("Details"), rollover);

@@ -82,7 +82,7 @@ void CUS::calculate ()
   delete customLines;
 }
 
-int CUS::indicatorPrefDialog ()
+int CUS::indicatorPrefDialog (QWidget *)
 {
   CUSDialog *dialog = new CUSDialog();
   

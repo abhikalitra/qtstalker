@@ -575,13 +575,13 @@ void COT::cancelUpdate ()
   emit statusLogMessage(tr("Cancelled"));
 }
 
-void COT::prefDialog ()
+void COT::prefDialog (QWidget *w)
 {
   QStringList l;
   l.append("Current");
   l.append("History");
 
-  PrefDialog *dialog = new PrefDialog();
+  PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(tr("COT Prefs"));
   dialog->createPage (tr("Details"));
   dialog->addComboItem(tr("Format"), tr("Details"), l, format);

@@ -79,9 +79,9 @@ void VOL::calculate ()
   output.append(ma);
 }
 
-int VOL::indicatorPrefDialog ()
+int VOL::indicatorPrefDialog (QWidget *w)
 {
-  PrefDialog *dialog = new PrefDialog();
+  PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(tr("VOL Indicator"));
   
   dialog->createPage (tr("VOL"));

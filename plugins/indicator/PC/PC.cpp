@@ -75,9 +75,9 @@ void PC::calculate ()
     delete in;
 }
 
-int PC::indicatorPrefDialog ()
+int PC::indicatorPrefDialog (QWidget *w)
 {
-  PrefDialog *dialog = new PrefDialog();
+  PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(tr("PC Indicator"));
   dialog->createPage (tr("Parms"));
   dialog->addColorItem(tr("Color"), tr("Parms"), color);

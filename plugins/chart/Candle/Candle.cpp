@@ -333,14 +333,14 @@ void Candle::drawVolumeCandles (int startX, int startIndex, int pixelspace)
 //******************** PREFS FUNCTIONS *****************************
 //******************************************************************
 
-void Candle::prefDialog ()
+void Candle::prefDialog (QWidget *w)
 {
   QStringList l;
   l.append(tr("Candle"));
   l.append(tr("Candle QS"));
   l.append(tr("Volume Candle"));
 
-  dialog = new PrefDialog();
+  dialog = new PrefDialog(w);
   dialog->setCaption(tr("Candle Chart Prefs"));
   dialog->createPage (tr("Prefs"));
   dialog->addComboItem(tr("Style"), tr("Prefs"), l, style);

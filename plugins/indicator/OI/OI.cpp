@@ -65,9 +65,9 @@ void OI::calculate ()
   output.append(ma);
 }
 
-int OI::indicatorPrefDialog ()
+int OI::indicatorPrefDialog (QWidget *w)
 {
-  PrefDialog *dialog = new PrefDialog();
+  PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(tr("OI Indicator"));
   
   dialog->createPage (tr("OI"));

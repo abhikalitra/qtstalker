@@ -88,9 +88,9 @@ void SD::calculate ()
     delete in;
 }
 
-int SD::indicatorPrefDialog ()
+int SD::indicatorPrefDialog (QWidget *w)
 {
-  PrefDialog *dialog = new PrefDialog();
+  PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(tr("SD Indicator"));
   dialog->createPage (tr("Parms"));
   dialog->addColorItem(tr("Color"), tr("Parms"), color);

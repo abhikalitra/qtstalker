@@ -70,9 +70,9 @@ void OBV::calculate ()
   output.append(obv);
 }
 
-int OBV::indicatorPrefDialog ()
+int OBV::indicatorPrefDialog (QWidget *w)
 {
-  PrefDialog *dialog = new PrefDialog();
+  PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(tr("OBV Indicator"));
   dialog->createPage (tr("Parms"));
   dialog->addColorItem(tr("Color"), tr("Parms"), color);

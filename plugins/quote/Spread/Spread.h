@@ -34,7 +34,7 @@ class Spread : public QuotePlugin
     virtual ~Spread ();
     void update ();
     void loadData (QString, QString);
-    void prefDialog ();
+    void prefDialog (QWidget *);
 
   public slots:
     void updateSpread ();

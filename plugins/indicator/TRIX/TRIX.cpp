@@ -93,9 +93,9 @@ void TRIX::calculate ()
   delete ema3;
 }
 
-int TRIX::indicatorPrefDialog ()
+int TRIX::indicatorPrefDialog (QWidget *w)
 {
-  PrefDialog *dialog = new PrefDialog();
+  PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(tr("TRIX Indicator"));
   dialog->createPage (tr("Parms"));
   dialog->addColorItem(tr("Color"), tr("Parms"), color);

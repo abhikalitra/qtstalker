@@ -34,7 +34,7 @@ class MySQLPlugin : public QuotePlugin
 
     // plugin interface
     void update ();
-    void prefDialog ();
+    void prefDialog (QWidget *);
 
   public slots:
     void performUpdate();

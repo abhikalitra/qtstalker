@@ -36,7 +36,7 @@ class CC : public QuotePlugin
     void newChart (ChartDb *, QString, QDir);
     void loadSettings ();
     void saveSettings ();
-    void prefDialog ();
+    void prefDialog (QWidget *);
 
   public slots:
     void parse ();

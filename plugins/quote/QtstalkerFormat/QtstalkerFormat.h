@@ -29,7 +29,7 @@ class QtstalkerFormat : public QuotePlugin
     QtstalkerFormat ();
     virtual ~QtstalkerFormat ();
     void update ();
-    void prefDialog ();
+    void prefDialog (QWidget *);
 
   public slots:
     void parse ();

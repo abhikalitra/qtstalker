@@ -159,9 +159,9 @@ void PF::drawChart (int startX, int startIndex, int pixelspace)
   painter.end();
 }
 
-void PF::prefDialog ()
+void PF::prefDialog (QWidget *w)
 {
-  PrefDialog *dialog = new PrefDialog();
+  PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(tr("PF Chart Prefs"));
   dialog->createPage (tr("Details"));
   dialog->addColorItem(tr("Up Color"), tr("Details"), upColor);

@@ -34,7 +34,7 @@ class Line : public ChartPlugin
     Line ();
     virtual ~Line ();
     void drawChart (int startX, int startIndex, int pixelspace);
-    void prefDialog ();
+    void prefDialog (QWidget *);
     void loadSettings ();
     void saveSettings ();
     PlotLine * getBoolLine ();
@@ -42,6 +42,8 @@ class Line : public ChartPlugin
   protected:
     QColor color;
     QStringList formulaList;
+    bool defaultFlag;
+    QStringList defaultFormula;
 };
 
 extern "C"

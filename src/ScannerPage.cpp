@@ -64,6 +64,7 @@ void ScannerPage::openScanner ()
 {
   Scanner *dialog = new Scanner(nav->currentText());
   connect(dialog, SIGNAL(exitScanner()), this, SLOT(refreshList()));
+  connect(dialog, SIGNAL(message(QString)), this, SLOT(slotMessage(QString)));
   dialog->show();
 }
 
@@ -186,7 +187,11 @@ void ScannerPage::rightClick (QListBoxItem *)
 
 void ScannerPage::refreshList ()
 {
-    nav->updateList();
+  nav->updateList();
 }
 
+void ScannerPage::slotMessage (QString d)
+{
+  emit message(d);
+}
 

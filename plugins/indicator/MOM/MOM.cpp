@@ -85,9 +85,9 @@ void MOM::calculate ()
   }
 }
 
-int MOM::indicatorPrefDialog ()
+int MOM::indicatorPrefDialog (QWidget *w)
 {
-  PrefDialog *dialog = new PrefDialog();
+  PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(tr("MOM Indicator"));
   dialog->createPage (tr("Parms"));
   dialog->addColorItem(tr("Color"), tr("Parms"), color);

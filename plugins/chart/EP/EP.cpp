@@ -247,9 +247,9 @@ void EP::drawChart (int startX, int startIndex, int pixelspace)
 //  output.append(rank);
 }
 
-void EP::prefDialog ()
+void EP::prefDialog (QWidget *w)
 {
-  PrefDialog *dialog = new PrefDialog();
+  PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(tr("EP Chart Prefs"));
   dialog->createPage (tr("Parms"));
   dialog->addColorItem(tr("Neutral Color"), tr("Parms"), neutralColor);

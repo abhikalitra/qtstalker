@@ -88,9 +88,9 @@ void HLC::calculate ()
   output.append(lb);
 }
 
-int HLC::indicatorPrefDialog ()
+int HLC::indicatorPrefDialog (QWidget *w)
 {
-  PrefDialog *dialog = new PrefDialog();
+  PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(tr("HLC Indicator"));
   dialog->createPage (tr("Parms"));
   dialog->addIntItem(tr("Period"), tr("Parms"), period, 1, 99999999);

@@ -32,6 +32,9 @@ class ScannerPage : public QWidget
 {
   Q_OBJECT
 
+  signals:
+    void message (QString);
+  
   public:
     ScannerPage (QWidget *, Config *);
     ~ScannerPage ();
@@ -45,6 +48,7 @@ class ScannerPage : public QWidget
     void scannerNoSelection ();
     void rightClick (QListBoxItem *);
     void refreshList ();
+    void slotMessage (QString);
 
   private:
     Config *config;

@@ -148,9 +148,9 @@ void Swing::drawChart (int startX, int startIndex, int pixelspace)
   painter.end();
 }
 
-void Swing::prefDialog ()
+void Swing::prefDialog (QWidget *w)
 {
-  PrefDialog *dialog = new PrefDialog();
+  PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(tr("Swing Chart Prefs"));
   dialog->createPage (tr("Details"));
   dialog->addColorItem(tr("Up Color"), tr("Details"), upColor);

@@ -149,9 +149,9 @@ void COMP::calculate ()
   output.append(line);
 }
 
-int COMP::indicatorPrefDialog ()
+int COMP::indicatorPrefDialog (QWidget *w)
 {
-  PrefDialog *dialog = new PrefDialog();
+  PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(tr("COMP Indicator"));
   dialog->createPage (tr("Parms"));
   dialog->addColorItem(tr("Color"), tr("Parms"), color);

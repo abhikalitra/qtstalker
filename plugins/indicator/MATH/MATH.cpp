@@ -130,9 +130,9 @@ void MATH::calculate ()
   output.append(line);
 }
 
-int MATH::indicatorPrefDialog ()
+int MATH::indicatorPrefDialog (QWidget *w)
 {
-  PrefDialog *dialog = new PrefDialog();
+  PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(tr("MATH Indicator"));
   dialog->createPage (tr("Parms"));
   dialog->addColorItem(tr("Color"), tr("Parms"), color);

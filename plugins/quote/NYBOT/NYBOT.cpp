@@ -325,9 +325,9 @@ void NYBOT::parse ()
   emit statusLogMessage(tr("Done"));
 }
 
-void NYBOT::prefDialog ()
+void NYBOT::prefDialog (QWidget *w)
 {
-  PrefDialog *dialog = new PrefDialog();
+  PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(tr("NYBOT Prefs"));
   dialog->createPage (tr("Details"));
   dialog->addFileItem(tr("File Input"), tr("Details"));

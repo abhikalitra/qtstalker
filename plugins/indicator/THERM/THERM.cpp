@@ -122,9 +122,9 @@ void THERM::calculate ()
   }
 }
 
-int THERM::indicatorPrefDialog ()
+int THERM::indicatorPrefDialog (QWidget *w)
 {
-  PrefDialog *dialog = new PrefDialog();
+  PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(tr("THERM Indicator"));
 
   dialog->createPage (tr("THERM Parms"));

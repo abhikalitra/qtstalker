@@ -73,9 +73,9 @@ void FI::calculate ()
   }
 }
 
-int FI::indicatorPrefDialog ()
+int FI::indicatorPrefDialog (QWidget *w)
 {
-  PrefDialog *dialog = new PrefDialog();
+  PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(tr("FI Indicator"));
   dialog->createPage (tr("Parms"));
   dialog->addColorItem(tr("Color"), tr("Parms"), color);

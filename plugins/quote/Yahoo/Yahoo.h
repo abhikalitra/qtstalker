@@ -37,7 +37,7 @@ class Yahoo : public QuotePlugin
     void parseQuote ();
     void loadSettings ();
     void saveSettings ();
-    void prefDialog ();
+    void prefDialog (QWidget *);
     
   public slots:
     void opDone (QNetworkOperation *);

@@ -26,36 +26,23 @@
 #include <qdir.h>
 #include <qhgroupbox.h>
 #include "Scanner.h"
-#include "stop.xpm"
-#include "ok.xpm"
-#include "scanner.xpm"
 #include "ChartDb.h"
 #include "BarData.h"
 #include "SymbolDialog.h"
 
-Scanner::Scanner (QString n) : QDialog (0, 0, TRUE)
+Scanner::Scanner (QString n) : QTabDialog (0, 0, FALSE)
 {
   scannerName = n;
   
   setCaption ("Scanner");
 
-  QVBoxLayout *vbox = new QVBoxLayout(this);
+  QWidget *w = new QWidget(this);
+  
+  QVBoxLayout *vbox = new QVBoxLayout(w);
   vbox->setMargin(5);
   vbox->setSpacing(5);
   
-  toolbar = new Toolbar(this, 30, 30, FALSE);
-  vbox->addWidget(toolbar);
-
-  toolbar->addButton("ok", ok, tr("OK"));
-  connect(toolbar->getButton("ok"), SIGNAL(clicked()), this, SLOT(exitDialog()));
-
-  toolbar->addButton("cancel", stop, tr("Cancel"));
-  connect(toolbar->getButton("cancel"), SIGNAL(clicked()), this, SLOT(reject()));
-  
-  toolbar->addButton("scan", scanner, tr("Scan"));
-  connect(toolbar->getButton("scan"), SIGNAL(clicked()), this, SLOT(scan()));
-  
-  QHGroupBox *gbox = new QHGroupBox(tr("Symbol Selection"), this);  
+  QHGroupBox *gbox = new QHGroupBox(tr("Symbol Selection"), w);  
   vbox->addWidget(gbox);
 
   allSymbols = new QCheckBox(tr("All symbols"), gbox);
@@ -64,7 +51,7 @@ Scanner::Scanner (QString n) : QDialog (0, 0, TRUE)
   fileButton = new QPushButton(tr("Symbols..."), gbox);
   connect(fileButton, SIGNAL(clicked()), this, SLOT(getSymbols()));
 
-  gbox = new QHGroupBox(tr("Compression"), this);  
+  gbox = new QHGroupBox(tr("Compression"), w);  
   vbox->addWidget(gbox);
   
   period = new QComboBox(gbox);
@@ -72,8 +59,27 @@ Scanner::Scanner (QString n) : QDialog (0, 0, TRUE)
   period->insertItem(tr("Weekly"), -1);
   period->insertItem(tr("Monthly"), -1);
 
-  list = new FormulaEdit(this);
+  list = new FormulaEdit(w);
   vbox->addWidget(list);
+  
+  vbox->addSpacing(10);
+  
+  progbar = new QProgressBar(0, w);
+  progbar->reset();
+  vbox->addWidget(progbar);
+  
+  setDefaultButton(tr("&Scan"));
+  connect(this, SIGNAL(defaultButtonPressed()), this, SLOT(scan()));
+  
+  setApplyButton(tr("&Apply"));  
+  connect(this, SIGNAL(applyButtonPressed()), this, SLOT(saveRule()));
+  
+  setCancelButton(tr("&Cancel"));  
+  connect(this, SIGNAL(cancelButtonPressed()), this, SLOT(exitDialog()));
+  
+  setOkButton(QString::null);  
+  
+  addTab(w, tr("Parms"));
 
   loadRule();
 }
@@ -112,8 +118,13 @@ void Scanner::scan ()
     delete trav;
   }
 
+  progbar->setTotalSteps(fileList.count());
+  
   for (loop = 0; loop < (int) fileList.count(); loop++)
   {
+    progbar->setProgress(loop);
+    emit message(QString());
+  
     ChartDb *db = new ChartDb;
     if (db->openChart(fileList[loop]))
     {
@@ -147,15 +158,16 @@ void Scanner::scan ()
     }
 
     QStringList l;
-    for (loop = 0; loop < list->getLines(); loop++)
-      l.append(list->getLine(loop));
+    int loop2;
+    for (loop2 = 0; loop2 < list->getLines(); loop2++)
+      l.append(list->getLine(loop2));
   
     // load the CUS plugin and calculate
     plug->setCustomFunction(l.join("|"));
     plug->setIndicatorInput(recordList);
     plug->calculate();
-    PlotLine *tline = plug->getIndicatorLine(0);
-    if (! tline)
+    PlotLine *line = plug->getIndicatorLine(0);
+    if (! line)
     {
       qDebug("Scanner::scan: no PlotLine returned");
       config.closePlugin("CUS");
@@ -163,10 +175,6 @@ void Scanner::scan ()
       delete db;
       continue;
     }
-    
-    PlotLine *line = new PlotLine;
-    line->copy(tline);
-    config.closePlugin("CUS");
     
     if (line)
     {
@@ -182,10 +190,12 @@ void Scanner::scan ()
       }
     }
     
+    config.closePlugin("CUS");
     delete recordList;
     delete db;
-    delete line;
   }
+  
+  progbar->reset();
 }
 
 void Scanner::saveRule ()
@@ -233,8 +243,7 @@ void Scanner::loadRule ()
 
 void Scanner::exitDialog ()
 {
-  saveRule();
-  accept();
+  reject();
   emit exitScanner();
 }
 

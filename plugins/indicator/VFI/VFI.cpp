@@ -113,9 +113,9 @@ void VFI::calculate ()
   }
 }
 
-int VFI::indicatorPrefDialog ()
+int VFI::indicatorPrefDialog (QWidget *w)
 {
-  PrefDialog *dialog = new PrefDialog();
+  PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(tr("VFI Indicator"));
   dialog->createPage (tr("Parms"));
   dialog->addColorItem(tr("Color"), tr("Parms"), color);

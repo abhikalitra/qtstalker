@@ -89,7 +89,7 @@ void FormulaEdit::addItem ()
   
   plug->setCustomFlag(TRUE);
   
-  if (! plug->indicatorPrefDialog())
+  if (! plug->indicatorPrefDialog(this))
   {
     config.closePlugin(type);
     return;
@@ -121,7 +121,7 @@ void FormulaEdit::editItem ()
   
   plug->setCustomSettings(list->text(list->currentRow(), 0));
   
-  if (! plug->indicatorPrefDialog())
+  if (! plug->indicatorPrefDialog(this))
   {
     config.closePlugin(l[0]);
     return;

@@ -290,9 +290,9 @@ void MySQLPlugin::doQuery (QString sql, ChartDb& db)
 }
 
 // show the prefs dialog to edit settings
-void MySQLPlugin::prefDialog ()
+void MySQLPlugin::prefDialog (QWidget *w)
 {
-  PrefDialog *dialog = new PrefDialog();
+  PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(tr("MySQL Prefs"));
   dialog->createPage (tr("Details"));
   dialog->addTextItem(tr("Database"), tr("Details"), database);

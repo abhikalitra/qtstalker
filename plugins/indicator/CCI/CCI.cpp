@@ -91,9 +91,9 @@ void CCI::calculate ()
   }
 }
 
-int CCI::indicatorPrefDialog ()
+int CCI::indicatorPrefDialog (QWidget *w)
 {
-  PrefDialog *dialog = new PrefDialog();
+  PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(tr("CCI Indicator"));
   dialog->createPage (tr("Parms"));
   dialog->addColorItem(tr("Color"), tr("Parms"), color);

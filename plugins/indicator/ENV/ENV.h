@@ -29,7 +29,7 @@ class ENV : public IndicatorPlugin
     void calculate ();
     void loadIndicatorSettings (QString);
     void saveIndicatorSettings (QString);
-    int indicatorPrefDialog ();
+    int indicatorPrefDialog (QWidget *);
     void setDefaults();
     PlotLine * calculateCustom (QDict<PlotLine> *);
     QString getCustomSettings ();

@@ -186,7 +186,7 @@ int Index::loadData (QString symbol, float weight)
   return FALSE;
 }
 
-void Index::prefDialog ()
+void Index::prefDialog (QWidget *)
 {
   IndexDialog *dialog = new IndexDialog();
   dialog->setCaption(tr("Index Prefs"));

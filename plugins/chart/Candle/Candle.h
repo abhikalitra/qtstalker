@@ -38,7 +38,7 @@ class Candle : public ChartPlugin
     void drawQSCandles (int startX, int startIndex, int pixelspace);
     void drawVolumeCandles (int startX, int startIndex, int pixelspace);
     QColor volumeColor (int index);
-    void prefDialog ();
+    void prefDialog (QWidget *);
     void loadSettings ();
     void saveSettings ();
 

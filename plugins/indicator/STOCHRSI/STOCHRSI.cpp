@@ -123,9 +123,9 @@ void STOCHRSI::calculate ()
   delete rsi;
 }
 
-int STOCHRSI::indicatorPrefDialog ()
+int STOCHRSI::indicatorPrefDialog (QWidget *w)
 {
-  PrefDialog *dialog = new PrefDialog();
+  PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(tr("STOCHRSI Indicator"));
   dialog->createPage (tr("Parms"));
   dialog->addColorItem(tr("Color"), tr("Parms"), color);
