@@ -156,6 +156,7 @@ QtstalkerApp::QtstalkerApp()
   QObject::connect(mainPlot, SIGNAL(chartObjectCreated(Setting *)), this, SLOT(slotChartObjectCreated(Setting *)));
   QObject::connect(mainPlot, SIGNAL(infoMessage(Setting *)), this, SLOT(slotUpdateInfo(Setting *)));
   QObject::connect(mainPlot, SIGNAL(leftMouseButton(int, int, bool)), this, SLOT(slotPlotLeftMouseButton(int, int, bool)));
+  QObject::connect(mainPlot, SIGNAL(keyPressed(Qt::Key)), this, SLOT(slotPlotKeyPressed(Qt::Key)));
 
   QObject::connect(this, SIGNAL(signalGrid(bool)), mainPlot, SLOT(setGridFlag(bool)));
   QObject::connect(this, SIGNAL(signalScaleToScreen(bool)), mainPlot, SLOT(setScaleToScreen(bool)));
@@ -944,6 +945,8 @@ void QtstalkerApp::loadChart (QString d)
 
   emit signalIndicatorPageRefresh();
 
+  config->closePlugins();
+
   delete db;
 }
 
@@ -1404,6 +1407,8 @@ void QtstalkerApp::slotNewIndicator ()
     loadChart(chartPath);
   }
 
+  config->closePlugins();
+
   delete idialog;
   delete dialog;
   delete set;
@@ -1432,8 +1437,7 @@ void QtstalkerApp::slotEditIndicator (int id)
       if (! set->getData(key[loop]).length())
         set->set(key[loop], plug->getData(key[loop]), plug->getType(key[loop]));
 
-      if (plug->getType(key[loop]) == Setting::List)
-        set->setList(key[loop], plug->getList(key[loop]));
+      set->setList(key[loop], plug->getList(key[loop]));
     }
   }
 
@@ -1446,6 +1450,8 @@ void QtstalkerApp::slotEditIndicator (int id)
     config->setIndicator(set->getData(tr("Name")), set->getStringList());
     loadChart(chartPath);
   }
+
+  config->closePlugins();
 
   delete set;
   delete dialog;
@@ -1611,6 +1617,9 @@ void QtstalkerApp::addIndicatorButton (QString d, bool tabFlag)
   // setup the crosshair signals
   QObject::connect(plot, SIGNAL(leftMouseButton(int, int, bool)), this, SLOT(slotPlotLeftMouseButton(int, int, bool)));
 
+  // setup plot key presses
+  QObject::connect(plot, SIGNAL(keyPressed(Qt::Key)), this, SLOT(slotPlotKeyPressed(Qt::Key)));
+
   if (tabFlag)
     tabs->addTab(plot, d);
 
@@ -1736,6 +1745,37 @@ void QtstalkerApp::slotPlotLeftMouseButton (int x, int y, bool mainFlag)
   for(; it.current(); ++it)
     it.current()->crossHair(x, y);
 }
+
+void QtstalkerApp::slotPlotKeyPressed (Qt::Key key)
+{
+  if (status == None)
+    return;
+
+  switch (key)
+  {
+    case Qt::Key_Left:
+      slider->setValue(slider->value() - 1);
+      break;
+    case Qt::Key_Right:
+      slider->setValue(slider->value() + 1);
+      break;
+    case Qt::Key_Home:
+      slider->setValue(0);
+      break;
+    case Qt::Key_End:
+      slider->setValue(slider->maxValue());
+      break;
+    case Qt::Key_Prior:
+      slider->subtractStep();
+      break;
+    case Qt::Key_Next:
+      slider->addStep();
+      break;
+    default:
+      break;
+  }
+}
+
 
 //**********************************************************************
 //**********************************************************************

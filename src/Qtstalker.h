@@ -124,6 +124,7 @@ class QtstalkerApp : public QMainWindow
     void slotHideMainPlot (bool);
     void slotPlotDate (bool);
     void slotPlotLeftMouseButton (int, int, bool);
+    void slotPlotKeyPressed (Qt::Key);
 
   private:
     QPopupMenu *fileMenu;

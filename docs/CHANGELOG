@@ -18,7 +18,7 @@
 
 - Fixed bug #830024 - single-click versus double-click with SymbolDialog.
 
-- Fixed bug #830357 - sychronised cross-hairs, data values were switched.
+- Fixed bug #830357 - synchronised cross-hairs, data values were switched.
 
 - Added ability to stack indicators or add them to the tabs. Now you can view more than one tabbed indicator at a time.
 
@@ -59,6 +59,13 @@
 - Added new indicator plugin THERM. Thanks to patch #843533 from Martin Flack.
 
 - Added function to PlotLine class to color individual histogram bars. VOL and THERM plugins now use this.
+
+- Fixed a bug with CC quote plugin. It was not calculating forward contracts properly on some symbols.
+
+- Applied patch #845558 - Elder's Safezone stop - new indicator SZ from Martin Flack.
+
+- Had to back out of keeping plugins open. Was causing problems with persistant settings losing values. The speed difference
+  was actually pretty small, so no big loss here.
 
 
 0.22

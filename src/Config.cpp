@@ -446,15 +446,10 @@ Plugin * Config::getPlugin (Config::Parm t, QString p)
   }
 }
 
-void Config::closePlugin (QString name)
+void Config::closePlugins ()
 {
-  Plugin *plug = plugins[name];
-  if (plug)
-    delete plug;
-
-  QLibrary *lib = libs[name];
-  if (lib)
-    delete lib;
+  plugins.clear();
+  libs.clear();
 }
 
 

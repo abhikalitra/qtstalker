@@ -76,6 +76,8 @@ Plot::Plot (QWidget *w) : QWidget(w)
   data = 0;
 
   setMouseTracking(TRUE);
+
+  setFocusPolicy(QWidget::ClickFocus);
   
   scaleList.append(".01");
   scaleList.append(".02");
@@ -692,6 +694,26 @@ void Plot::mouseMoveEvent (QMouseEvent *event)
     emit infoMessage(r);
   else
     delete r;
+}
+
+void Plot::keyPressEvent (QKeyEvent *key)
+{
+  switch (key->key())
+  {
+    case Qt::Key_Left:
+    case Qt::Key_Right:
+    case Qt::Key_Home:
+    case Qt::Key_End:
+    case Qt::Key_Plus:
+    case Qt::Key_Minus:
+    case Qt::Key_Prior:
+    case Qt::Key_Next:
+      emit keyPressed((Qt::Key) key->key());
+      break;
+    default:
+      key->ignore();
+      break;
+  }
 }
 
 void Plot::setInterval (Plot::TimeInterval d)

@@ -85,7 +85,7 @@ class Config
     QStringList getQuotePlugins ();
 
     Plugin * getPlugin (Config::Parm, QString);
-    void closePlugin (QString);
+    void closePlugins ();
 
   protected:
     QString path;

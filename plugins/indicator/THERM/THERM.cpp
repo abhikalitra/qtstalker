@@ -63,13 +63,9 @@ void THERM::calculate ()
   {
     Setting *r = data->at(loop);
     Setting *pr = data->at(loop - 1);
-    double hi_curr = r->getFloat("High");
-    double hi_last = pr->getFloat("High");
-    double lo_curr = r->getFloat("Low");
-    double lo_last = pr->getFloat("Low");
-
-    double high = fabs(hi_curr - hi_last);
-    double lo = fabs(lo_last - lo_curr);
+    double high = fabs(r->getFloat("High") - pr->getFloat("High"));
+    double lo = fabs(pr->getFloat("Low") - r->getFloat("Low"));
+    
     if (high > lo)
       thermometer = high;
     else
@@ -133,3 +129,13 @@ Plugin * create ()
   THERM *o = new THERM;
   return ((Plugin *) o);
 }
+
+/* Alert Notes
+
+1) enter when therm falls below MA
+2) exit when threshold is triggered
+3) explosive move expected when therm stays below MA for 5-7 days
+
+*/
+
+

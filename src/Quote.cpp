@@ -57,10 +57,7 @@ QuoteDialog::QuoteDialog (Config *c) : EditDialog (c)
 
 QuoteDialog::~QuoteDialog ()
 {
-  QStringList l = config->getQuotePlugins();
-  int loop;
-  for (loop = 0; loop < (int) l.count(); loop++)
-    config->closePlugin(l[loop]);
+  config->closePlugins();
 
   if (settings)
     delete settings;

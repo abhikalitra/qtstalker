@@ -577,7 +577,15 @@ QString FuturesData::getCurrentContract ()
       break;
     }
     else
+    {
       currentMonth++;
+      
+      if (currentMonth == 12)
+      {
+        yearFlag = TRUE;
+        currentMonth = 0;
+      }
+    }
   }
 
   return contract;
