@@ -106,41 +106,52 @@ int PER::indicatorPrefDialog (QWidget *w)
 
 void PER::loadIndicatorSettings (QString file)
 {
-  setDefaults();
-  
-  QDict<QString> dict = loadFile(file);
-  if (! dict.count())
-    return;
-  
-  QString *s = dict["color"];
-  if (s)
-    color.setNamedColor(s->left(s->length()));
-    
-  s = dict["lineType"];
-  if (s)
-    lineType = (PlotLine::LineType) s->left(s->length()).toInt();
-
-  s = dict["label"];
-  if (s)
-    label = s->left(s->length());
-      
-  s = dict["input"];
-  if (s)
-    input = (BarData::InputType) s->left(s->length()).toInt();
+  setIndicatorSettings(loadFile(file));
 }
 
 void PER::saveIndicatorSettings (QString file)
 {
-  QDict<QString>dict;
-  dict.setAutoDelete(TRUE);
+  saveFile(file, getIndicatorSettings());
+}
 
-  dict.replace("color", new QString(color.name()));
-  dict.replace("lineType", new QString(QString::number(lineType)));
-  dict.replace("label", new QString(label));
-  dict.replace("input", new QString(QString::number(input)));
-  dict.replace("plugin", new QString(pluginName));
+void PER::setIndicatorSettings (Setting dict)
+{
+  setDefaults();
+  
+  if (! dict.count())
+    return;
+  
+  QString s = dict.getData("color");
+  if (s.length())
+    color.setNamedColor(s);
+    
+  s = dict.getData("lineType");
+  if (s.length())
+    lineType = (PlotLine::LineType) s.toInt();
 
-  saveFile(file, dict);
+  s = dict.getData("label");
+  if (s.length())
+    label = s;
+      
+  s = dict.getData("input");
+  if (s.length())
+    input = (BarData::InputType) s.toInt();
+
+  s = dict.getData("customInput");
+  if (s.length())
+    customInput = s;
+}
+
+Setting PER::getIndicatorSettings ()
+{
+  Setting dict;
+  dict.setData("color", color.name());
+  dict.setData("lineType", QString::number(lineType));
+  dict.setData("label", label);
+  dict.setData("input", QString::number(input));
+  dict.setData("plugin", pluginName);
+  dict.setData("customInput", customInput);
+  return dict;
 }
 
 PlotLine * PER::calculateCustom (QDict<PlotLine> *d)
@@ -149,26 +160,6 @@ PlotLine * PER::calculateCustom (QDict<PlotLine> *d)
   clearOutput();
   calculate();
   return output.at(0);
-}
-
-QString PER::getCustomSettings ()
-{
-  QString s("PER");
-  s.append("," + customInput);
-  s.append("," + color.name());
-  s.append("," + QString::number(lineType));
-  s.append("," + label);
-  return s;
-}
-
-void PER::setCustomSettings (QString d)
-{
-  customFlag = TRUE;
-  QStringList l = QStringList::split(",", d, FALSE);
-  customInput = l[1];
-  color.setNamedColor(l[2]);
-  lineType = (PlotLine::LineType) l[3].toInt();
-  label = l[4];
 }
 
 Plugin * create ()

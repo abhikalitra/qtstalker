@@ -52,7 +52,7 @@ void VOLR::calculate ()
   PlotLine *trg = getTR();
   int trgLoop = trg->getSize() - 1;
 
-  PlotLine *ma = getEMA(trg, period);
+  PlotLine *ma = getMA(trg, IndicatorPlugin::EMA, period);
   int maLoop = ma->getSize() - 1;
 
   while (maLoop > -1 && trgLoop > -1)
@@ -97,41 +97,47 @@ int VOLR::indicatorPrefDialog (QWidget *w)
 
 void VOLR::loadIndicatorSettings (QString file)
 {
-  setDefaults();
-  
-  QDict<QString> dict = loadFile(file);
-  if (! dict.count())
-    return;
-  
-  QString *s = dict["color"];
-  if (s)
-    color.setNamedColor(s->left(s->length()));
-    
-  s = dict["lineType"];
-  if (s)
-    lineType = (PlotLine::LineType) s->left(s->length()).toInt();
-
-  s = dict["period"];
-  if (s)
-    period = s->left(s->length()).toInt();
-
-  s = dict["label"];
-  if (s)
-    label = s->left(s->length());
+  setIndicatorSettings(loadFile(file));
 }
 
 void VOLR::saveIndicatorSettings (QString file)
 {
-  QDict<QString>dict;
-  dict.setAutoDelete(TRUE);
+  saveFile(file, getIndicatorSettings());
+}
 
-  dict.replace("color", new QString(color.name()));
-  dict.replace("lineType", new QString(QString::number(lineType)));
-  dict.replace("period", new QString(QString::number(period)));
-  dict.replace("label", new QString(label));
-  dict.replace("plugin", new QString(pluginName));
+void VOLR::setIndicatorSettings (Setting dict)
+{
+  setDefaults();
+  
+  if (! dict.count())
+    return;
+  
+  QString s = dict.getData("color");
+  if (s.length())
+    color.setNamedColor(s);
+    
+  s = dict.getData("lineType");
+  if (s.length())
+    lineType = (PlotLine::LineType) s.toInt();
 
-  saveFile(file, dict);
+  s = dict.getData("period");
+  if (s.length())
+    period = s.toInt();
+
+  s = dict.getData("label");
+  if (s.length())
+    label = s;
+}
+
+Setting VOLR::getIndicatorSettings ()
+{
+  Setting dict;
+  dict.setData("color", color.name());
+  dict.setData("lineType", QString::number(lineType));
+  dict.setData("period", QString::number(period));
+  dict.setData("label", label);
+  dict.setData("plugin", pluginName);
+  return dict;
 }
 
 PlotLine * VOLR::calculateCustom (QDict<PlotLine> *)
@@ -141,22 +147,34 @@ PlotLine * VOLR::calculateCustom (QDict<PlotLine> *)
   return output.at(0);
 }
 
-QString VOLR::getCustomSettings ()
+PlotLine * VOLR::getTR ()
 {
-  QString s("VOLR");
-  s.append("," + color.name());
-  s.append("," + QString::number(lineType));
-  s.append("," + label);
-  return s;
-}
+  PlotLine *tr = new PlotLine;
+  int loop;
+  for (loop = 0; loop < (int) data->count(); loop++)
+  {
+    double high = data->getHigh(loop);
+    double low = data->getLow(loop);
+    double close;
+    if (loop > 0)
+      close = data->getClose(loop - 1);
+    else
+      close = high;
 
-void VOLR::setCustomSettings (QString d)
-{
-  customFlag = TRUE;
-  QStringList l = QStringList::split(",", d, FALSE);
-  color.setNamedColor(l[1]);
-  lineType = (PlotLine::LineType) l[2].toInt();
-  label = l[3];
+    double t = high - low;
+
+    double t2 = fabs(high - close);
+    if (t2 > t)
+      t = t2;
+
+    t2 = fabs(low - close);
+    if (t2 > t)
+      t = t2;
+
+    tr->append(t);
+  }
+  
+  return tr;
 }
 
 Plugin * create ()

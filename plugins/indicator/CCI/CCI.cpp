@@ -47,12 +47,15 @@ void CCI::setDefaults ()
 
 void CCI::calculate ()
 {
-  PlotLine *cci = new PlotLine();
+  PlotLine *cci = new PlotLine;
 
-  PlotLine *tp = getTP();
+  PlotLine *tp = new PlotLine;
+  int loop;
+  for (loop = 0; loop < (int) data->count(); loop++)
+    tp->append((data->getHigh(loop) + data->getLow(loop) + data->getClose(loop)) / 3);
   int tpLoop = tp->getSize() - 1;
 
-  PlotLine *sma = getSMA(tp, period);
+  PlotLine *sma = getMA(tp, IndicatorPlugin::SMA, period);
   int smaLoop = sma->getSize() - 1;
 
   while (tpLoop >= period && smaLoop >= period)
@@ -124,51 +127,57 @@ int CCI::indicatorPrefDialog (QWidget *w)
 
 void CCI::loadIndicatorSettings (QString file)
 {
-  setDefaults();
-  
-  QDict<QString> dict = loadFile(file);
-  if (! dict.count())
-    return;
-  
-  QString *s = dict["color"];
-  if (s)
-    color.setNamedColor(s->left(s->length()));
-    
-  s = dict["lineType"];
-  if (s)
-    lineType = (PlotLine::LineType) s->left(s->length()).toInt();
-
-  s = dict["period"];
-  if (s)
-    period = s->left(s->length()).toInt();
-
-  s = dict["smoothing"];
-  if (s)
-    smoothing = s->left(s->length()).toInt();
-
-  s = dict["label"];
-  if (s)
-    label = s->left(s->length());
-      
-  s = dict["maType"];
-  if (s)
-    maType = (IndicatorPlugin::MAType) s->left(s->length()).toInt();
+  setIndicatorSettings(loadFile(file));
 }
 
 void CCI::saveIndicatorSettings (QString file)
 {
-  QDict<QString>dict;
-  dict.setAutoDelete(TRUE);
+  saveFile(file, getIndicatorSettings());
+}
 
-  dict.replace("color", new QString(color.name()));
-  dict.replace("lineType", new QString(QString::number(lineType)));
-  dict.replace("period", new QString(QString::number(period)));
-  dict.replace("smoothing", new QString(QString::number(smoothing)));
-  dict.replace("label", new QString(label));
-  dict.replace("maType", new QString(QString::number(maType)));
-  dict.replace("plugin", new QString(pluginName));
+void CCI::setIndicatorSettings (Setting dict)
+{
+  setDefaults();
+  
+  if (! dict.count())
+    return;
+  
+  QString s = dict.getData("color");
+  if (s.length())
+    color.setNamedColor(s);
+    
+  s = dict.getData("lineType");
+  if (s.length())
+    lineType = (PlotLine::LineType) s.toInt();
 
-  saveFile(file, dict);
+  s = dict.getData("period");
+  if (s.length())
+    period = s.toInt();
+
+  s = dict.getData("smoothing");
+  if (s.length())
+    smoothing = s.toInt();
+
+  s = dict.getData("label");
+  if (s.length())
+    label = s;
+      
+  s = dict.getData("maType");
+  if (s.length())
+    maType = (IndicatorPlugin::MAType) s.toInt();
+}
+
+Setting CCI::getIndicatorSettings ()
+{
+  Setting dict;
+  dict.setData("color", color.name());
+  dict.setData("lineType", QString::number(lineType));
+  dict.setData("period", QString::number(period));
+  dict.setData("smoothing", QString::number(smoothing));
+  dict.setData("label", label);
+  dict.setData("maType", QString::number(maType));
+  dict.setData("plugin", pluginName);
+  return dict;
 }
 
 PlotLine * CCI::calculateCustom (QDict<PlotLine> *)
@@ -176,31 +185,6 @@ PlotLine * CCI::calculateCustom (QDict<PlotLine> *)
   clearOutput();
   calculate();
   return output.at(0);
-}
-
-QString CCI::getCustomSettings ()
-{
-  QString s("CCI");
-  s.append("," + QString::number(maType));
-  s.append("," + QString::number(period));
-  s.append("," + QString::number(smoothing));
-  s.append("," + color.name());
-  s.append("," + QString::number(lineType));
-  s.append("," + label);
-  return s;
-}
-
-void CCI::setCustomSettings (QString d)
-{
-  customFlag = TRUE;
-
-  QStringList l = QStringList::split(",", d, FALSE);
-  maType = (IndicatorPlugin::MAType) l[1].toInt();
-  period = l[2].toInt();
-  smoothing = l[3].toInt();
-  color.setNamedColor(l[4]);
-  lineType = (PlotLine::LineType) l[5].toInt();
-  label = l[6];
 }
 
 Plugin * create ()

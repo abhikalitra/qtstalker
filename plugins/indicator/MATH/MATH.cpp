@@ -163,51 +163,57 @@ int MATH::indicatorPrefDialog (QWidget *w)
 
 void MATH::loadIndicatorSettings (QString file)
 {
-  setDefaults();
-  
-  QDict<QString> dict = loadFile(file);
-  if (! dict.count())
-    return;
-  
-  QString *s = dict["color"];
-  if (s)
-    color.setNamedColor(s->left(s->length()));
-    
-  s = dict["label"];
-  if (s)
-    label = s->left(s->length());
-        
-  s = dict["lineType"];
-  if (s)
-    lineType = (PlotLine::LineType) s->left(s->length()).toInt();
-    
-  s = dict["method"];
-  if (s)
-    method = s->left(s->length());
-
-  s = dict["data1"];
-  if (s)
-    data1 = s->left(s->length());
-
-  s = dict["data2"];
-  if (s)
-    data2 = s->left(s->length());
+  setIndicatorSettings(loadFile(file));
 }
 
 void MATH::saveIndicatorSettings (QString file)
 {
-  QDict<QString>dict;
-  dict.setAutoDelete(TRUE);
+  saveFile(file, getIndicatorSettings());
+}
 
-  dict.replace("color", new QString(color.name()));
-  dict.replace("label", new QString(label));
-  dict.replace("lineType", new QString(QString::number(lineType)));
-  dict.replace("plugin", new QString(pluginName));
-  dict.replace("method", new QString(method));
-  dict.replace("data1", new QString(data1));
-  dict.replace("data2", new QString(data2));
+void MATH::setIndicatorSettings (Setting dict)
+{
+  setDefaults();
+  
+  if (! dict.count())
+    return;
+  
+  QString s = dict.getData("color");
+  if (s.length())
+    color.setNamedColor(s);
+    
+  s = dict.getData("label");
+  if (s.length())
+    label = s;
+        
+  s = dict.getData("lineType");
+  if (s.length())
+    lineType = (PlotLine::LineType) s.toInt();
+    
+  s = dict.getData("method");
+  if (s.length())
+    method = s;
 
-  saveFile(file, dict);
+  s = dict.getData("data1");
+  if (s.length())
+    data1 = s;
+
+  s = dict.getData("data2");
+  if (s.length())
+    data2 = s;
+}
+
+Setting MATH::getIndicatorSettings ()
+{
+  Setting dict;
+  dict.setData("color", color.name());
+  dict.setData("label", label);
+  dict.setData("lineType", QString::number(lineType));
+  dict.setData("plugin", pluginName);
+  dict.setData("method", method);
+  dict.setData("data1", data1);
+  dict.setData("data2", data2);
+  return dict;
 }
 
 PlotLine * MATH::calculateCustom (QDict<PlotLine> *d)
@@ -218,30 +224,9 @@ PlotLine * MATH::calculateCustom (QDict<PlotLine> *d)
   return output.at(0);
 }
 
-QString MATH::getCustomSettings ()
-{
-  QString s("MATH");
-  s.append("," + method);
-  s.append("," + data1);
-  s.append("," + data2);
-  s.append("," + color.name());
-  s.append("," + QString::number(lineType));
-  s.append("," + label);
-  return s;
-}
-
-void MATH::setCustomSettings (QString d)
-{
-  customFlag = TRUE;
-
-  QStringList l = QStringList::split(",", d, FALSE);
-  method = l[1];
-  data1 = l[2];
-  data2 = l[3];
-  color.setNamedColor(l[4]);
-  lineType = (PlotLine::LineType) l[5].toInt();
-  label = l[6];
-}
+//******************************************************************
+//******************************************************************
+//******************************************************************
 
 Plugin * create ()
 {

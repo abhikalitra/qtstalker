@@ -202,61 +202,67 @@ int COMP::indicatorPrefDialog (QWidget *w)
 
 void COMP::loadIndicatorSettings (QString file)
 {
-  setDefaults();
-  
-  QDict<QString> dict = loadFile(file);
-  if (! dict.count())
-    return;
-  
-  QString *s = dict["color"];
-  if (s)
-    color.setNamedColor(s->left(s->length()));
-    
-  s = dict["label"];
-  if (s)
-    label = s->left(s->length());
-        
-  s = dict["lineType"];
-  if (s)
-    lineType = (PlotLine::LineType) s->left(s->length()).toInt();
-    
-  s = dict["method"];
-  if (s)
-    method = s->left(s->length());
-
-  s = dict["data1"];
-  if (s)
-    data1 = s->left(s->length());
-
-  s = dict["displace1"];
-  if (s)
-    displace1 = s->left(s->length()).toInt();
-
-  s = dict["data2"];
-  if (s)
-    data2 = s->left(s->length());
-
-  s = dict["displace2"];
-  if (s)
-    displace2 = s->left(s->length()).toInt();
+  setIndicatorSettings(loadFile(file));
 }
 
 void COMP::saveIndicatorSettings (QString file)
 {
-  QDict<QString>dict;
-  dict.setAutoDelete(TRUE);
+  saveFile(file, getIndicatorSettings());
+}
 
-  dict.replace("color", new QString(color.name()));
-  dict.replace("label", new QString(label));
-  dict.replace("lineType", new QString(QString::number(lineType)));
-  dict.replace("plugin", new QString(pluginName));
-  dict.replace("method", new QString(method));
-  dict.replace("data1", new QString(data1));
-  dict.replace("displace1", new QString(QString::number(displace1)));
-  dict.replace("data2", new QString(data2));
-  dict.replace("displace2", new QString(QString::number(displace2)));
+void COMP::setIndicatorSettings (Setting dict)
+{
+  setDefaults();
+  
+  if (! dict.count())
+    return;
+  
+  QString s = dict.getData("color");
+  if (s.length())
+    color.setNamedColor(s);
+    
+  s = dict.getData("label");
+  if (s.length())
+    label = s;
+        
+  s = dict.getData("lineType");
+  if (s.length())
+    lineType = (PlotLine::LineType) s.toInt();
+    
+  s = dict.getData("method");
+  if (s.length())
+    method = s;
 
-  saveFile(file, dict);
+  s = dict.getData("data1");
+  if (s.length())
+    data1 = s;
+
+  s = dict.getData("displace1");
+  if (s.length())
+    displace1 = s.toInt();
+
+  s = dict.getData("data2");
+  if (s.length())
+    data2 = s;
+
+  s = dict.getData("displace2");
+  if (s.length())
+    displace2 = s.toInt();
+}
+
+Setting COMP::getIndicatorSettings ()
+{
+  Setting dict;
+  dict.setData("color", color.name());
+  dict.setData("label", label);
+  dict.setData("lineType", QString::number(lineType));
+  dict.setData("plugin", pluginName);
+  dict.setData("method", method);
+  dict.setData("data1", data1);
+  dict.setData("displace1", QString::number(displace1));
+  dict.setData("data2", data2);
+  dict.setData("displace2", QString::number(displace2));
+  return dict;
 }
 
 PlotLine * COMP::calculateCustom (QDict<PlotLine> *d)
@@ -265,35 +271,6 @@ PlotLine * COMP::calculateCustom (QDict<PlotLine> *d)
   clearOutput();
   calculate();
   return output.at(0);
-}
-
-QString COMP::getCustomSettings ()
-{
-  QString s("COMP");
-  s.append("," + method);
-  s.append("," + data1);
-  s.append("," + QString::number(displace1));
-  s.append("," + data2);
-  s.append("," + QString::number(displace2));
-  s.append("," + color.name());
-  s.append("," + QString::number(lineType));
-  s.append("," + label);
-  return s;
-}
-
-void COMP::setCustomSettings (QString d)
-{
-  customFlag = TRUE;
-
-  QStringList l = QStringList::split(",", d, FALSE);
-  method = l[1];
-  data1 = l[2];
-  displace1 = l[3].toInt();
-  data2 = l[4];
-  displace2 = l[5].toInt();
-  color.setNamedColor(l[6]);
-  lineType = (PlotLine::LineType) l[7].toInt();
-  label = l[8];
 }
 
 COMP::Operator COMP::getOperator (QString d)

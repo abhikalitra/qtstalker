@@ -93,13 +93,14 @@ PlotLine * Plugin::calculateCustom (QDict<PlotLine> *)
   return 0;
 }
 
-QString Plugin::getCustomSettings ()
+void Plugin::setIndicatorSettings (Setting)
 {
-  return QString();
 }
 
-void Plugin::setCustomSettings (QString)
+Setting Plugin::getIndicatorSettings ()
 {
+  Setting set;
+  return set;
 }
 
 void Plugin::setCustomFlag (bool)

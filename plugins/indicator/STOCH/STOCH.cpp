@@ -155,81 +155,87 @@ int STOCH::indicatorPrefDialog (QWidget *w)
 
 void STOCH::loadIndicatorSettings (QString file)
 {
-  setDefaults();
-  
-  QDict<QString> dict = loadFile(file);
-  if (! dict.count())
-    return;
-  
-  QString *s = dict["dcolor"];
-  if (s)
-    dcolor.setNamedColor(s->left(s->length()));
-    
-  s = dict["kcolor"];
-  if (s)
-    kcolor.setNamedColor(s->left(s->length()));
-  
-  s = dict["dlineType"];
-  if (s)
-    dlineType = (PlotLine::LineType) s->left(s->length()).toInt();
-
-  s = dict["klineType"];
-  if (s)
-    klineType = (PlotLine::LineType) s->left(s->length()).toInt();
-  
-  s = dict["period"];
-  if (s)
-    period = s->left(s->length()).toInt();
-
-  s = dict["dperiod"];
-  if (s)
-    dperiod = s->left(s->length()).toInt();
-  
-  s = dict["kperiod"];
-  if (s)
-    kperiod = s->left(s->length()).toInt();
-  
-  s = dict["dlabel"];
-  if (s)
-    dlabel = s->left(s->length());
-      
-  s = dict["klabel"];
-  if (s)
-    klabel = s->left(s->length());
-  
-  s = dict["maType"];
-  if (s)
-    maType = (IndicatorPlugin::MAType) s->left(s->length()).toInt();
-
-  s = dict["buyLine"];
-  if (s)
-    buyLine = s->left(s->length()).toFloat();
-
-  s = dict["sellLine"];
-  if (s)
-    sellLine = s->left(s->length()).toFloat();
+  setIndicatorSettings(loadFile(file));
 }
 
 void STOCH::saveIndicatorSettings (QString file)
 {
-  QDict<QString>dict;
-  dict.setAutoDelete(TRUE);
+  saveFile(file, getIndicatorSettings());
+}
 
-  dict.replace("dcolor", new QString(dcolor.name()));
-  dict.replace("dlineType", new QString(QString::number(dlineType)));
-  dict.replace("dperiod", new QString(QString::number(dperiod)));
-  dict.replace("dlabel", new QString(dlabel));
-  dict.replace("kcolor", new QString(kcolor.name()));
-  dict.replace("klineType", new QString(QString::number(klineType)));
-  dict.replace("kperiod", new QString(QString::number(kperiod)));
-  dict.replace("klabel", new QString(klabel));
-  dict.replace("maType", new QString(QString::number(maType)));
-  dict.replace("period", new QString(QString::number(period)));
-  dict.replace("buyLine", new QString(QString::number(buyLine)));
-  dict.replace("sellLine", new QString(QString::number(sellLine)));
-  dict.replace("plugin", new QString(pluginName));
+void STOCH::setIndicatorSettings (Setting dict)
+{
+  setDefaults();
+  
+  if (! dict.count())
+    return;
+  
+  QString s = dict.getData("dcolor");
+  if (s.length())
+    dcolor.setNamedColor(s);
+    
+  s = dict.getData("kcolor");
+  if (s.length())
+    kcolor.setNamedColor(s);
+  
+  s = dict.getData("dlineType");
+  if (s.length())
+    dlineType = (PlotLine::LineType) s.toInt();
 
-  saveFile(file, dict);
+  s = dict.getData("klineType");
+  if (s.length())
+    klineType = (PlotLine::LineType) s.toInt();
+  
+  s = dict.getData("period");
+  if (s.length())
+    period = s.toInt();
+
+  s = dict.getData("dperiod");
+  if (s.length())
+    dperiod = s.toInt();
+  
+  s = dict.getData("kperiod");
+  if (s.length())
+    kperiod = s.toInt();
+  
+  s = dict.getData("dlabel");
+  if (s.length())
+    dlabel = s;
+      
+  s = dict.getData("klabel");
+  if (s.length())
+    klabel = s;
+  
+  s = dict.getData("maType");
+  if (s.length())
+    maType = (IndicatorPlugin::MAType) s.toInt();
+
+  s = dict.getData("buyLine");
+  if (s.length())
+    buyLine = s.toFloat();
+
+  s = dict.getData("sellLine");
+  if (s.length())
+    sellLine = s.toFloat();
+}
+
+Setting STOCH::getIndicatorSettings ()
+{
+  Setting dict;
+  dict.setData("dcolor", dcolor.name());
+  dict.setData("dlineType", QString::number(dlineType));
+  dict.setData("dperiod", QString::number(dperiod));
+  dict.setData("dlabel", dlabel);
+  dict.setData("kcolor", kcolor.name());
+  dict.setData("klineType", QString::number(klineType));
+  dict.setData("kperiod", QString::number(kperiod));
+  dict.setData("klabel", klabel);
+  dict.setData("maType", QString::number(maType));
+  dict.setData("period", QString::number(period));
+  dict.setData("buyLine", QString::number(buyLine));
+  dict.setData("sellLine", QString::number(sellLine));
+  dict.setData("plugin", pluginName);
+  return dict;
 }
 
 PlotLine * STOCH::calculateCustom (QDict<PlotLine> *)
@@ -237,28 +243,6 @@ PlotLine * STOCH::calculateCustom (QDict<PlotLine> *)
   clearOutput();
   calculate();
   return output.at(0);
-}
-
-QString STOCH::getCustomSettings ()
-{
-  QString s("STOCH");
-  s.append("," + QString::number(maType));
-  s.append("," + QString::number(period));
-  s.append("," + kcolor.name());
-  s.append("," + QString::number(klineType));
-  s.append("," + klabel);
-  return s;
-}
-
-void STOCH::setCustomSettings (QString d)
-{
-  customFlag = TRUE;
-  QStringList l = QStringList::split(",", d, FALSE);
-  maType = (IndicatorPlugin::MAType) l[1].toInt();
-  period = l[2].toInt();
-  kcolor.setNamedColor(l[3]);
-  klineType = (PlotLine::LineType) l[4].toInt();
-  klabel = l[5];
 }
 
 Plugin * create ()

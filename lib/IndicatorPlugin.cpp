@@ -20,6 +20,7 @@
  */
 
 #include "IndicatorPlugin.h"
+#include "Config.h"
 #include <qfile.h>
 #include <qtextstream.h>
 
@@ -34,9 +35,9 @@ IndicatorPlugin::IndicatorPlugin()
   PlotLine *pl = new PlotLine;
   lineTypes = pl->getLineTypes();
   delete pl;
-  
+
   maTypeList = getMATypes();
-  
+      
   BarData *it = new BarData;
   inputTypeList = it->getInputFields();
   delete it;
@@ -67,12 +68,11 @@ void IndicatorPlugin::clearOutput ()
   output.clear();
 }
 
-QDict<QString> IndicatorPlugin::loadFile (QString file)
+Setting IndicatorPlugin::loadFile (QString file)
 {
   output.clear();
 
-  QDict<QString>dict;
-  dict.setAutoDelete(TRUE);
+  Setting dict;
   
   QFile f(file);
   if (! f.open(IO_ReadOnly))
@@ -90,10 +90,18 @@ QDict<QString> IndicatorPlugin::loadFile (QString file)
       continue;
       
     QStringList l = QStringList::split("=", s, FALSE);
-    if (l.count() != 2)
+    
+    if (l.count() < 2)
       continue;
-
-    dict.replace(l[0], new QString(l[1]));  
+      
+    if (l.count() > 2)
+    {
+      QString k = l[0];
+      s = s.remove(0, k.length() + 1);
+      dict.setData(k, s);  
+    }
+    else
+      dict.setData(l[0], l[1]);  
   }
   
   f.close();
@@ -101,7 +109,7 @@ QDict<QString> IndicatorPlugin::loadFile (QString file)
   return dict;
 }
 
-void IndicatorPlugin::saveFile (QString file, QDict<QString> dict)
+void IndicatorPlugin::saveFile (QString file, Setting dict)
 {
   QFile f(file);
   if (! f.open(IO_WriteOnly))
@@ -111,12 +119,11 @@ void IndicatorPlugin::saveFile (QString file, QDict<QString> dict)
   }
   QTextStream stream(&f);
   
-  QDictIterator<QString> it(dict);
-  for(; it.current(); ++it)
-  {
-    QString *s = it.current();
-    stream << it.currentKey() << "=" << s->left(s->length()) << "\n";
-  }
+  QStringList key = dict.getKeyList();
+  
+  int loop;
+  for(loop = 0; loop < (int) key.count(); loop++)
+    stream << key[loop] << "=" << dict.getData(key[loop]) << "\n";
   
   f.close();
 }
@@ -135,88 +142,34 @@ PlotLine * IndicatorPlugin::getIndicatorLine (int d)
     return 0;
 }
 
-QStringList IndicatorPlugin::getMATypes ()
+PlotLine * IndicatorPlugin::getInputLine (QString d)
 {
-  QStringList l;
-  l.append(QObject::tr("EMA"));
-  l.append(QObject::tr("SMA"));
-  l.append(QObject::tr("WMA"));
-  l.append(QObject::tr("Wilder"));
-  return l;
-}
-
-IndicatorPlugin::MAType IndicatorPlugin::getMAType (QString d)
-{
-  MAType type = SMA;
+  PlotLine *in = 0;
   
-  while (1)
-  {
-    if (! d.compare(QObject::tr("EMA")))
-    {
-      type = EMA;
-      break;
-    }
-    
-    if (! d.compare(QObject::tr("SMA")))
-    {
-      type = SMA;
-      break;
-    }
-  
-    if (! d.compare(QObject::tr("WMA")))
-    {
-      type = WMA;
-      break;
-    }
-  
-    if (! d.compare(QObject::tr("Wilder")))
-      type = Wilder;
+  if (d.contains("#"))
+    return in;
       
-    break;
-  }
-  
-  return type;
+  bool ok;
+  d.toInt(&ok, 10);
+  if (ok)
+    in = customLines->find(d);
+
+  return in;
 }
 
-PlotLine * IndicatorPlugin::getMA (PlotLine *d, MAType type, int period)
+/*
+Plugin * IndicatorPlugin::getPlugin (QString d)
 {
-  return getMA(d, type, period, 0);
-}
-
-PlotLine * IndicatorPlugin::getMA (PlotLine *d, MAType type, int period, int displace)
-{
-  PlotLine *ma = 0;
+  Config config;
   
-  switch (type)
-  {
-    case SMA:
-      ma = getSMA(d, period);
-      break;
-    case EMA:
-      ma = getEMA(d, period);
-      break;
-    case WMA:
-      ma = getWMA(d, period);
-      break;
-    case Wilder:
-      ma = getWilderMA(d, period);
-      break;
-    default:
-      break;
-  }
-
-  if (displace > 0)
-  {
-    PlotLine *dma = new PlotLine;
-    int loop;
-    for (loop = 0; loop < ma->getSize() - displace; loop++)
-      dma->append(ma->getData(loop));
-    delete ma;
-    return dma;
-  }
-  else
-    return ma;
+  // open the CUS plugin   
+  Plugin *plug = config.getPlugin(Config::IndicatorPluginPath, d);
+  if (! plug)
+    config.closePlugin(d);
+    
+  return plug;
 }
+*/
 
 PlotLine * IndicatorPlugin::getEMA (PlotLine *d, int period)
 {
@@ -358,64 +311,107 @@ PlotLine * IndicatorPlugin::getWilderMA (PlotLine *d, int period)
   return wilderma;
 }
 
-PlotLine * IndicatorPlugin::getTR ()
+QStringList IndicatorPlugin::getMATypes ()
 {
-  PlotLine *tr = new PlotLine;
-  if (! data)
-    return tr;
+  QStringList l;
+  l.append(QObject::tr("EMA"));
+  l.append(QObject::tr("SMA"));
+  l.append(QObject::tr("WMA"));
+  l.append(QObject::tr("Wilder"));
+  return l;
+}
 
-  int loop;
-  for (loop = 0; loop < (int) data->count(); loop++)
+IndicatorPlugin::MAType IndicatorPlugin::getMAType (QString d)
+{
+  MAType type = SMA;
+  
+  while (1)
   {
-    double high = data->getHigh(loop);
-    double low = data->getLow(loop);
-    double close;
-    if (loop > 0)
-      close = data->getClose(loop - 1);
-    else
-      close = high;
+    if (! d.compare(QObject::tr("EMA")))
+    {
+      type = EMA;
+      break;
+    }
+    
+    if (! d.compare(QObject::tr("SMA")))
+    {
+      type = SMA;
+      break;
+    }
+  
+    if (! d.compare(QObject::tr("WMA")))
+    {
+      type = WMA;
+      break;
+    }
+  
+    if (! d.compare(QObject::tr("Wilder")))
+      type = Wilder;
+      
+    break;
+  }
+  
+  return type;
+}
 
-    double t = high - low;
-
-    double t2 = fabs(high - close);
-    if (t2 > t)
-      t = t2;
-
-    t2 = fabs(low - close);
-    if (t2 > t)
-      t = t2;
-
-    tr->append(t);
+PlotLine * IndicatorPlugin::getMA (PlotLine *in, IndicatorPlugin::MAType type, int period)
+{
+  PlotLine *ma = 0;
+  
+  switch (type)
+  {
+    case EMA:  
+      ma = getEMA(in, period);
+      break;
+    case WMA:  
+      ma = getWMA(in, period);
+      break;
+    case Wilder:  
+      ma = getWilderMA(in, period);
+      break;
+    default:
+      ma = getSMA(in, period);
+      break;
   }
 
-  return tr;
+  return ma;  
 }
 
-PlotLine * IndicatorPlugin::getTP ()
+/*
+PlotLine * IndicatorPlugin::getMA (PlotLine *d, MAType type, int period)
 {
-  PlotLine *tp = new PlotLine();
-  if (! data)
-    return tp;
-
-  int loop;
-  for (loop = 0; loop < (int) data->count(); loop++)
-    tp->append((data->getHigh(loop) + data->getLow(loop) + data->getClose(loop)) / 3);
-
-  return tp;
-}
-
-PlotLine * IndicatorPlugin::getInputLine (QString d)
-{
-  PlotLine *in = 0;
+  PlotLine *line = 0;
+  Config config;
   
-  if (d.contains("#"))
-    return in;
-      
-  bool ok;
-  d.toInt(&ok, 10);
-  if (ok)
-    in = customLines->find(d);
+  // open the CUS plugin   
+  Plugin *plug = config.getPlugin(Config::IndicatorPluginPath, "MA");
+  if (! plug)
+  {
+    config.closePlugin("MA");
+    return line;
+  }
 
-  return in;
+  // load the plugin and calculate
+  Setting set = plug->getIndicatorSettings();
+  set.setData("maType", QString::number(type));
+  set.setData("period", QString::number(period));
+  plug->setIndicatorSettings(set);
+  
+  plug->setIndicatorInput(data);
+  plug->calculate();
+  PlotLine *nline = plug->getIndicatorLine(0);
+  if (! nline)
+  {
+    qDebug("IndicatorPlugin::getMA: no PlotLine returned");
+    config.closePlugin("MA");
+    return line;
+  }
+    
+  line = new PlotLine;
+  line->copy(nline);
+  config.closePlugin("MA");
+  
+  return line;
 }
+*/
 

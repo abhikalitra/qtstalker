@@ -24,6 +24,7 @@
 
 #include "Plugin.h"
 #include "PlotLine.h"
+#include "Setting.h"
 #include <qstring.h>
 #include <qptrlist.h>
 #include <qdict.h>
@@ -31,6 +32,7 @@
 class IndicatorPlugin : public Plugin
 {
   public:
+
     enum MAType
     {
       EMA,
@@ -38,7 +40,7 @@ class IndicatorPlugin : public Plugin
       WMA,
       Wilder
     };
-    
+  
     IndicatorPlugin();
     virtual ~IndicatorPlugin();
     void setIndicatorInput (BarData *);
@@ -46,31 +48,28 @@ class IndicatorPlugin : public Plugin
     void clearOutput ();
     bool getPlotFlag ();
     void setCustomFlag (bool);
-    QDict<QString> loadFile (QString);
-    void saveFile (QString, QDict<QString>);
+    Setting loadFile (QString);
+    void saveFile (QString, Setting);
     PlotLine * getIndicatorLine (int);
+    PlotLine * getInputLine (QString);
+    PlotLine * getEMA (PlotLine *d, int);
+    PlotLine * getSMA (PlotLine *d, int);
+    PlotLine * getWMA (PlotLine *d, int);
+    PlotLine * getWilderMA (PlotLine *d, int);
+    PlotLine * getMA (PlotLine *d, IndicatorPlugin::MAType, int);
     QStringList getMATypes ();
     IndicatorPlugin::MAType getMAType (QString);
-    PlotLine * getMA (PlotLine *d, MAType type, int period, int displace);
-    PlotLine * getMA (PlotLine *d, MAType type, int period);
-    PlotLine * getEMA (PlotLine *d, int period);
-    PlotLine * getSMA (PlotLine *d, int period);
-    PlotLine * getWMA (PlotLine *d, int period);
-    PlotLine * getWilderMA (PlotLine *d, int period);
-    PlotLine * getTR ();
-    PlotLine * getTP ();
-    PlotLine * getInputLine (QString);
 
   protected:
     BarData *data;
     QPtrList<PlotLine> output;
     QStringList lineTypes;
-    QStringList maTypeList;
     QStringList inputTypeList;
     bool plotFlag;
     bool saveFlag;
     bool customFlag;
     QDict<PlotLine> *customLines;
+    QStringList maTypeList;
 };
 
 #endif

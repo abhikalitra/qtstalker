@@ -97,36 +97,42 @@ int OBV::indicatorPrefDialog (QWidget *w)
 
 void OBV::loadIndicatorSettings (QString file)
 {
-  setDefaults();
-  
-  QDict<QString> dict = loadFile(file);
-  if (! dict.count())
-    return;
-  
-  QString *s = dict["color"];
-  if (s)
-    color.setNamedColor(s->left(s->length()));
-    
-  s = dict["lineType"];
-  if (s)
-    lineType = (PlotLine::LineType) s->left(s->length()).toInt();
-
-  s = dict["label"];
-  if (s)
-    label = s->left(s->length());
+  setIndicatorSettings(loadFile(file));
 }
 
 void OBV::saveIndicatorSettings (QString file)
 {
-  QDict<QString>dict;
-  dict.setAutoDelete(TRUE);
+  saveFile(file, getIndicatorSettings());
+}
 
-  dict.replace("color", new QString(color.name()));
-  dict.replace("lineType", new QString(QString::number(lineType)));
-  dict.replace("label", new QString(label));
-  dict.replace("plugin", new QString(pluginName));
+void OBV::setIndicatorSettings (Setting dict)
+{
+  setDefaults();
+  
+  if (! dict.count())
+    return;
+  
+  QString s = dict.getData("color");
+  if (s.length())
+    color.setNamedColor(s);
+    
+  s = dict.getData("lineType");
+  if (s.length())
+    lineType = (PlotLine::LineType) s.toInt();
 
-  saveFile(file, dict);
+  s = dict.getData("label");
+  if (s.length())
+    label = s;
+}
+
+Setting OBV::getIndicatorSettings ()
+{
+  Setting dict;
+  dict.setData("color", color.name());
+  dict.setData("lineType", QString::number(lineType));
+  dict.setData("label", label);
+  dict.setData("plugin", pluginName);
+  return dict;
 }
 
 PlotLine * OBV::calculateCustom (QDict<PlotLine> *)
@@ -134,24 +140,6 @@ PlotLine * OBV::calculateCustom (QDict<PlotLine> *)
   clearOutput();
   calculate();
   return output.at(0);
-}
-
-QString OBV::getCustomSettings ()
-{
-  QString s("OBV");
-  s.append("," + color.name());
-  s.append("," + QString::number(lineType));
-  s.append("," + label);
-  return s;
-}
-
-void OBV::setCustomSettings (QString d)
-{
-  customFlag = TRUE;
-  QStringList l = QStringList::split(",", d, FALSE);
-  color.setNamedColor(l[1]);
-  lineType = (PlotLine::LineType) l[2].toInt();
-  label = l[3];
 }
 
 Plugin * create ()

@@ -88,7 +88,7 @@ void MACD::calculate ()
   }
   delete fma;
   delete sma;
-  
+
   PlotLine *signal = getMA(macd, macdMAType, trigPeriod);
   signal->setColor(trigColor);
   signal->setType(trigLineType);
@@ -180,99 +180,110 @@ int MACD::indicatorPrefDialog (QWidget *w)
 
 void MACD::loadIndicatorSettings (QString file)
 {
-  setDefaults();
-  
-  QDict<QString> dict = loadFile(file);
-  if (! dict.count())
-    return;
-  
-  QString *s = dict["macdColor"];
-  if (s)
-    macdColor.setNamedColor(s->left(s->length()));
-    
-  s = dict["fastPeriod"];
-  if (s)
-    fastPeriod = s->left(s->length()).toInt();
-	
-  s = dict["slowPeriod"];
-  if (s)
-    slowPeriod = s->left(s->length()).toInt();
-  
-  s = dict["macdLabel"];
-  if (s)
-    macdLabel = s->left(s->length());
-        
-  s = dict["macdLineType"];
-  if (s)
-    macdLineType = (PlotLine::LineType) s->left(s->length()).toInt();
-        
-  s = dict["macdMAType"];
-  if (s)
-    macdMAType = (IndicatorPlugin::MAType) s->left(s->length()).toInt();
-        
-  s = dict["macdInput"];
-  if (s)
-    macdInput = (BarData::InputType) s->left(s->length()).toInt();
-
-  s = dict["trigColor"];
-  if (s)
-    trigColor.setNamedColor(s->left(s->length()));
-  
-  s = dict["trigPeriod"];
-  if (s)
-    trigPeriod = s->left(s->length()).toInt();
-  
-  s = dict["trigLabel"];
-  if (s)
-    trigLabel = s->left(s->length());
-        
-  s = dict["trigLineType"];
-  if (s)
-    trigLineType = (PlotLine::LineType) s->left(s->length()).toInt();
-        
-  s = dict["oscColor"];
-  if (s)
-    oscColor.setNamedColor(s->left(s->length()));
-  
-  s = dict["oscLabel"];
-  if (s)
-    oscLabel = s->left(s->length());
-        
-  s = dict["oscLineType"];
-  if (s)
-    oscLineType = (PlotLine::LineType) s->left(s->length()).toInt();
-
-  s = dict["oscScaleFlag"];
-  if (s)
-    oscScaleFlag = s->left(s->length()).toInt();
+  setIndicatorSettings(loadFile(file));
 }
 
 void MACD::saveIndicatorSettings (QString file)
 {
-  QDict<QString>dict;
-  dict.setAutoDelete(TRUE);
+  saveFile(file, getIndicatorSettings());
+}
 
-  dict.replace("macdColor", new QString(macdColor.name()));
-  dict.replace("fastPeriod", new QString(QString::number(fastPeriod)));
-  dict.replace("slowPeriod", new QString(QString::number(slowPeriod)));
-  dict.replace("macdLabel", new QString(macdLabel));
-  dict.replace("macdLineType", new QString(QString::number(macdLineType)));
-  dict.replace("macdMAType", new QString(QString::number(macdMAType)));
-  dict.replace("macdInput", new QString(QString::number(macdInput)));
+void MACD::setIndicatorSettings (Setting dict)
+{
+  setDefaults();
   
-  dict.replace("trigColor", new QString(trigColor.name()));
-  dict.replace("trigPeriod", new QString(QString::number(trigPeriod)));
-  dict.replace("trigLabel", new QString(trigLabel));
-  dict.replace("trigLineType", new QString(QString::number(trigLineType)));
+  if (! dict.count())
+    return;
   
-  dict.replace("oscColor", new QString(oscColor.name()));
-  dict.replace("oscLabel", new QString(oscLabel));
-  dict.replace("oscLineType", new QString(QString::number(oscLineType)));
-  dict.replace("oscScaleFlag", new QString(QString::number(oscScaleFlag)));
+  QString s = dict.getData("macdColor");
+  if (s.length())
+    macdColor.setNamedColor(s);
+    
+  s = dict.getData("fastPeriod");
+  if (s.length())
+    fastPeriod = s.toInt();
+	
+  s = dict.getData("slowPeriod");
+  if (s.length())
+    slowPeriod = s.toInt();
   
-  dict.replace("plugin", new QString(pluginName));
+  s = dict.getData("macdLabel");
+  if (s.length())
+    macdLabel = s;
+        
+  s = dict.getData("macdLineType");
+  if (s.length())
+    macdLineType = (PlotLine::LineType) s.toInt();
+        
+  s = dict.getData("macdMAType");
+  if (s.length())
+    macdMAType = (IndicatorPlugin::MAType) s.toInt();
+        
+  s = dict.getData("macdInput");
+  if (s.length())
+    macdInput = (BarData::InputType) s.toInt();
+
+  s = dict.getData("trigColor");
+  if (s.length())
+    trigColor.setNamedColor(s);
   
-  saveFile(file, dict);
+  s = dict.getData("trigPeriod");
+  if (s.length())
+    trigPeriod = s.toInt();
+  
+  s = dict.getData("trigLabel");
+  if (s.length())
+    trigLabel = s;
+        
+  s = dict.getData("trigLineType");
+  if (s.length())
+    trigLineType = (PlotLine::LineType) s.toInt();
+        
+  s = dict.getData("oscColor");
+  if (s.length())
+    oscColor.setNamedColor(s);
+  
+  s = dict.getData("oscLabel");
+  if (s.length())
+    oscLabel = s;
+        
+  s = dict.getData("oscLineType");
+  if (s.length())
+    oscLineType = (PlotLine::LineType) s.toInt();
+
+  s = dict.getData("oscScaleFlag");
+  if (s.length())
+    oscScaleFlag = s.toInt();
+
+  s = dict.getData("customInput");
+  if (s.length())
+    customInput = s;
+}
+
+Setting MACD::getIndicatorSettings ()
+{
+  Setting dict;
+  dict.setData("macdColor", macdColor.name());
+  dict.setData("fastPeriod", QString::number(fastPeriod));
+  dict.setData("slowPeriod", QString::number(slowPeriod));
+  dict.setData("macdLabel", macdLabel);
+  dict.setData("macdLineType", QString::number(macdLineType));
+  dict.setData("macdMAType", QString::number(macdMAType));
+  dict.setData("macdInput", QString::number(macdInput));
+  
+  dict.setData("trigColor", trigColor.name());
+  dict.setData("trigPeriod", QString::number(trigPeriod));
+  dict.setData("trigLabel", trigLabel);
+  dict.setData("trigLineType", QString::number(trigLineType));
+  
+  dict.setData("oscColor", oscColor.name());
+  dict.setData("oscLabel", oscLabel);
+  dict.setData("oscLineType", QString::number(oscLineType));
+  dict.setData("oscScaleFlag", QString::number(oscScaleFlag));
+  
+  dict.setData("customInput", customInput);
+  dict.setData("plugin", pluginName);
+  return dict;
 }
 
 PlotLine * MACD::calculateCustom (QDict<PlotLine> *d)
@@ -281,32 +292,6 @@ PlotLine * MACD::calculateCustom (QDict<PlotLine> *d)
   clearOutput();
   calculate();
   return output.at(1);
-}
-
-QString MACD::getCustomSettings ()
-{
-  QString s("MACD");
-  s.append("," + QString::number(macdMAType));
-  s.append("," + customInput);
-  s.append("," + QString::number(fastPeriod));
-  s.append("," + QString::number(slowPeriod));
-  s.append("," + macdColor.name());
-  s.append("," + QString::number(macdLineType));
-  s.append("," + macdLabel);
-  return s;
-}
-
-void MACD::setCustomSettings (QString d)
-{
-  customFlag = TRUE;
-  QStringList l = QStringList::split(",", d, FALSE);
-  macdMAType = (IndicatorPlugin::MAType) l[1].toInt();
-  customInput = l[2];
-  fastPeriod = l[3].toInt();
-  slowPeriod = l[4].toInt();
-  macdColor.setNamedColor(l[5]);
-  macdLineType = (PlotLine::LineType) l[6].toInt();
-  macdLabel = l[7];
 }
 
 Plugin * create ()

@@ -218,51 +218,57 @@ int SAR::indicatorPrefDialog (QWidget *w)
 
 void SAR::loadIndicatorSettings (QString file)
 {
-  setDefaults();
-  
-  QDict<QString> dict = loadFile(file);
-  if (! dict.count())
-    return;
-  
-  QString *s = dict["color"];
-  if (s)
-    color.setNamedColor(s->left(s->length()));
-    
-  s = dict["lineType"];
-  if (s)
-    lineType = (PlotLine::LineType) s->left(s->length()).toInt();
-
-  s = dict["label"];
-  if (s)
-    label = s->left(s->length());
-      
-  s = dict["initial"];
-  if (s)
-    initial = s->left(s->length()).toFloat();
-
-  s = dict["add"];
-  if (s)
-    add = s->left(s->length()).toFloat();
-
-  s = dict["limit"];
-  if (s)
-    limit = s->left(s->length()).toFloat();
+  setIndicatorSettings(loadFile(file));
 }
 
 void SAR::saveIndicatorSettings (QString file)
 {
-  QDict<QString>dict;
-  dict.setAutoDelete(TRUE);
+  saveFile(file, getIndicatorSettings());
+}
 
-  dict.replace("color", new QString(color.name()));
-  dict.replace("lineType", new QString(QString::number(lineType)));
-  dict.replace("label", new QString(label));
-  dict.replace("initial", new QString(QString::number(initial)));
-  dict.replace("add", new QString(QString::number(add)));
-  dict.replace("limit", new QString(QString::number(limit)));
-  dict.replace("plugin", new QString(pluginName));
+void SAR::setIndicatorSettings (Setting dict)
+{
+  setDefaults();
+  
+  if (! dict.count())
+    return;
+  
+  QString s = dict.getData("color");
+  if (s.length())
+    color.setNamedColor(s);
+    
+  s = dict.getData("lineType");
+  if (s.length())
+    lineType = (PlotLine::LineType) s.toInt();
 
-  saveFile(file, dict);
+  s = dict.getData("label");
+  if (s.length())
+    label = s;
+      
+  s = dict.getData("initial");
+  if (s.length())
+    initial = s.toFloat();
+
+  s = dict.getData("add");
+  if (s.length())
+    add = s.toFloat();
+
+  s = dict.getData("limit");
+  if (s.length())
+    limit = s.toFloat();
+}
+
+Setting SAR::getIndicatorSettings ()
+{
+  Setting dict;
+  dict.setData("color", color.name());
+  dict.setData("lineType", QString::number(lineType));
+  dict.setData("label", label);
+  dict.setData("initial", QString::number(initial));
+  dict.setData("add", QString::number(add));
+  dict.setData("limit", QString::number(limit));
+  dict.setData("plugin", pluginName);
+  return dict;
 }
 
 PlotLine * SAR::calculateCustom (QDict<PlotLine> *)
@@ -270,30 +276,6 @@ PlotLine * SAR::calculateCustom (QDict<PlotLine> *)
   clearOutput();
   calculate();
   return output.at(0);
-}
-
-QString SAR::getCustomSettings ()
-{
-  QString s("SAR");
-  s.append("," + QString::number(initial));
-  s.append("," + QString::number(add));
-  s.append("," + QString::number(limit));
-  s.append("," + color.name());
-  s.append("," + QString::number(lineType));
-  s.append("," + label);
-  return s;
-}
-
-void SAR::setCustomSettings (QString d)
-{
-  customFlag = TRUE;
-  QStringList l = QStringList::split(",", d, FALSE);
-  initial = l[1].toDouble();
-  add = l[2].toDouble();
-  limit = l[3].toDouble();
-  color.setNamedColor(l[4]);
-  lineType = (PlotLine::LineType) l[5].toInt();
-  label = l[6];
 }
 
 Plugin * create ()

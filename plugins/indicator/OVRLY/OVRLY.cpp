@@ -223,61 +223,67 @@ int OVRLY::indicatorPrefDialog (QWidget *w)
 
 void OVRLY::loadIndicatorSettings (QString file)
 {
-  setDefaults();
-  
-  QDict<QString> dict = loadFile(file);
-  if (! dict.count())
-    return;
-  
-  QString *s = dict["color"];
-  if (s)
-    color.setNamedColor(s->left(s->length()));
-    
-  s = dict["baseColor"];
-  if (s)
-    baseColor.setNamedColor(s->left(s->length()));
-  
-  s = dict["lineType"];
-  if (s)
-    lineType = (PlotLine::LineType) s->left(s->length()).toInt();
-
-  s = dict["baseLineType"];
-  if (s)
-    baseLineType = (PlotLine::LineType) s->left(s->length()).toInt();
-  
-  s = dict["label"];
-  if (s)
-    label = s->left(s->length());
-      
-  s = dict["baseLabel"];
-  if (s)
-    baseLabel = s->left(s->length());
-  
-  s = dict["method"];
-  if (s)
-    method = s->left(s->length());
-    
-  s = dict["baseSymbol"];
-  if (s)
-    baseSymbol = s->left(s->length());
+  setIndicatorSettings(loadFile(file));
 }
 
 void OVRLY::saveIndicatorSettings (QString file)
 {
-  QDict<QString>dict;
-  dict.setAutoDelete(TRUE);
+  saveFile(file, getIndicatorSettings());
+}
 
-  dict.replace("color", new QString(color.name()));
-  dict.replace("baseColor", new QString(baseColor.name()));
-  dict.replace("lineType", new QString(QString::number(lineType)));
-  dict.replace("baseLineType", new QString(QString::number(baseLineType)));
-  dict.replace("label", new QString(label));
-  dict.replace("baseLabel", new QString(baseLabel));
-  dict.replace("method", new QString(method));
-  dict.replace("baseSymbol", new QString(baseSymbol));
-  dict.replace("plugin", new QString(pluginName));
+void OVRLY::setIndicatorSettings (Setting dict)
+{
+  setDefaults();
+  
+  if (! dict.count())
+    return;
+  
+  QString s = dict.getData("color");
+  if (s.length())
+    color.setNamedColor(s);
+    
+  s = dict.getData("baseColor");
+  if (s.length())
+    baseColor.setNamedColor(s);
+  
+  s = dict.getData("lineType");
+  if (s.length())
+    lineType = (PlotLine::LineType) s.toInt();
 
-  saveFile(file, dict);
+  s = dict.getData("baseLineType");
+  if (s.length())
+    baseLineType = (PlotLine::LineType) s.toInt();
+  
+  s = dict.getData("label");
+  if (s.length())
+    label = s;
+      
+  s = dict.getData("baseLabel");
+  if (s.length())
+    baseLabel = s;
+  
+  s = dict.getData("method");
+  if (s.length())
+    method = s;
+    
+  s = dict.getData("baseSymbol");
+  if (s.length())
+    baseSymbol = s;
+}
+
+Setting OVRLY::getIndicatorSettings ()
+{
+  Setting dict;
+  dict.setData("color", color.name());
+  dict.setData("baseColor", baseColor.name());
+  dict.setData("lineType", QString::number(lineType));
+  dict.setData("baseLineType", QString::number(baseLineType));
+  dict.setData("label", label);
+  dict.setData("baseLabel", baseLabel);
+  dict.setData("method", method);
+  dict.setData("baseSymbol", baseSymbol);
+  dict.setData("plugin", pluginName);
+  return dict;
 }
 
 Plugin * create ()

@@ -157,66 +157,77 @@ int RSI::indicatorPrefDialog (QWidget *w)
 
 void RSI::loadIndicatorSettings (QString file)
 {
-  setDefaults();
-  
-  QDict<QString> dict = loadFile(file);
-  if (! dict.count())
-    return;
-  
-  QString *s = dict["color"];
-  if (s)
-    color.setNamedColor(s->left(s->length()));
-    
-  s = dict["lineType"];
-  if (s)
-    lineType = (PlotLine::LineType) s->left(s->length()).toInt();
-
-  s = dict["period"];
-  if (s)
-    period = s->left(s->length()).toInt();
-
-  s = dict["label"];
-  if (s)
-    label = s->left(s->length());
-      
-  s = dict["maType"];
-  if (s)
-    maType = (IndicatorPlugin::MAType) s->left(s->length()).toInt();
-    
-  s = dict["input"];
-  if (s)
-    input = (BarData::InputType) s->left(s->length()).toInt();
-    
-  s = dict["smoothing"];
-  if (s)
-    smoothing = s->left(s->length()).toInt();
-
-  s = dict["buyLine"];
-  if (s)
-    buyLine = s->left(s->length()).toFloat();
-
-  s = dict["sellLine"];
-  if (s)
-    sellLine = s->left(s->length()).toFloat();
+  setIndicatorSettings(loadFile(file));
 }
 
 void RSI::saveIndicatorSettings (QString file)
 {
-  QDict<QString>dict;
-  dict.setAutoDelete(TRUE);
+  saveFile(file, getIndicatorSettings());
+}
 
-  dict.replace("color", new QString(color.name()));
-  dict.replace("lineType", new QString(QString::number(lineType)));
-  dict.replace("period", new QString(QString::number(period)));
-  dict.replace("label", new QString(label));
-  dict.replace("maType", new QString(QString::number(maType)));
-  dict.replace("input", new QString(QString::number(input)));
-  dict.replace("smoothing", new QString(QString::number(smoothing)));
-  dict.replace("buyLine", new QString(QString::number(buyLine)));
-  dict.replace("sellLine", new QString(QString::number(sellLine)));
-  dict.replace("plugin", new QString(pluginName));
+void RSI::setIndicatorSettings (Setting dict)
+{
+  setDefaults();
+  
+  if (! dict.count())
+    return;
+  
+  QString s = dict.getData("color");
+  if (s.length())
+    color.setNamedColor(s);
+    
+  s = dict.getData("lineType");
+  if (s.length())
+    lineType = (PlotLine::LineType) s.toInt();
 
-  saveFile(file, dict);
+  s = dict.getData("period");
+  if (s.length())
+    period = s.toInt();
+
+  s = dict.getData("label");
+  if (s.length())
+    label = s;
+      
+  s = dict.getData("maType");
+  if (s.length())
+    maType = (IndicatorPlugin::MAType) s.toInt();
+    
+  s = dict.getData("input");
+  if (s.length())
+    input = (BarData::InputType) s.toInt();
+    
+  s = dict.getData("smoothing");
+  if (s.length())
+    smoothing = s.toInt();
+
+  s = dict.getData("buyLine");
+  if (s.length())
+    buyLine = s.toFloat();
+
+  s = dict.getData("sellLine");
+  if (s.length())
+    sellLine = s.toFloat();
+
+  s = dict.getData("customInput");
+  if (s.length())
+    customInput = s;
+}
+
+Setting RSI::getIndicatorSettings ()
+{
+  Setting dict;
+  dict.setData("color", color.name());
+  dict.setData("lineType", QString::number(lineType));
+  dict.setData("period", QString::number(period));
+  dict.setData("label", label);
+  dict.setData("maType", QString::number(maType));
+  dict.setData("input", QString::number(input));
+  dict.setData("smoothing", QString::number(smoothing));
+  dict.setData("buyLine", QString::number(buyLine));
+  dict.setData("sellLine", QString::number(sellLine));
+  dict.setData("customInput", customInput);
+  dict.setData("plugin", pluginName);
+  return dict;
 }
 
 PlotLine * RSI::calculateCustom (QDict<PlotLine> *d)
@@ -225,32 +236,6 @@ PlotLine * RSI::calculateCustom (QDict<PlotLine> *d)
   clearOutput();
   calculate();
   return output.at(0);
-}
-
-QString RSI::getCustomSettings ()
-{
-  QString s("RSI");
-  s.append("," + QString::number(maType));
-  s.append("," + customInput);
-  s.append("," + QString::number(period));
-  s.append("," + QString::number(smoothing));
-  s.append("," + color.name());
-  s.append("," + QString::number(lineType));
-  s.append("," + label);
-  return s;
-}
-
-void RSI::setCustomSettings (QString d)
-{
-  customFlag = TRUE;
-  QStringList l = QStringList::split(",", d, FALSE);
-  maType = (IndicatorPlugin::MAType) l[1].toInt();
-  customInput = l[2];
-  period = l[3].toInt();
-  smoothing = l[4].toInt();
-  color.setNamedColor(l[5]);
-  lineType = (PlotLine::LineType) l[6].toInt();
-  label = l[7];
 }
 
 Plugin * create ()

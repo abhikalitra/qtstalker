@@ -50,7 +50,11 @@ void BB::setDefaults ()
 
 void BB::calculate ()
 {
-  PlotLine *in = getTP();
+  PlotLine *in = new PlotLine();
+  int loop;
+  for (loop = 0; loop < (int) data->count(); loop++)
+    in->append((data->getHigh(loop) + data->getLow(loop) + data->getClose(loop)) / 3);
+    
   PlotLine *sma = getMA(in, maType, period);
   sma->setColor(color);
   sma->setType(lineType);
@@ -136,46 +140,52 @@ int BB::indicatorPrefDialog (QWidget *w)
 
 void BB::loadIndicatorSettings (QString file)
 {
-  setDefaults();
-  
-  QDict<QString> dict = loadFile(file);
-  if (! dict.count())
-    return;
-  
-  QString *s = dict["color"];
-  if (s)
-    color.setNamedColor(s->left(s->length()));
-    
-  s = dict["lineType"];
-  if (s)
-    lineType = (PlotLine::LineType) s->left(s->length()).toInt();
-
-  s = dict["period"];
-  if (s)
-    period = s->left(s->length()).toInt();
-
-  s = dict["deviation"];
-  if (s)
-    deviation = s->left(s->length()).toFloat();
-  
-  s = dict["maType"];
-  if (s)
-    maType = (IndicatorPlugin::MAType) s->left(s->length()).toInt();
+  setIndicatorSettings(loadFile(file));
 }
 
 void BB::saveIndicatorSettings (QString file)
 {
-  QDict<QString>dict;
-  dict.setAutoDelete(TRUE);
+  saveFile(file, getIndicatorSettings());
+}
 
-  dict.replace("color", new QString(color.name()));
-  dict.replace("lineType", new QString(QString::number(lineType)));
-  dict.replace("period", new QString(QString::number(period)));
-  dict.replace("deviation", new QString(QString::number(deviation)));
-  dict.replace("maType", new QString(QString::number(maType)));
-  dict.replace("plugin", new QString(pluginName));
+void BB::setIndicatorSettings (Setting dict)
+{
+  setDefaults();
+  
+  if (! dict.count())
+    return;
+  
+  QString s = dict.getData("color");
+  if (s.length())
+    color.setNamedColor(s);
+    
+  s = dict.getData("lineType");
+  if (s.length())
+    lineType = (PlotLine::LineType) s.toInt();
 
-  saveFile(file, dict);
+  s = dict.getData("period");
+  if (s.length())
+    period = s.toInt();
+
+  s = dict.getData("deviation");
+  if (s.length())
+    deviation = s.toFloat();
+  
+  s = dict.getData("maType");
+  if (s.length())
+    maType = (IndicatorPlugin::MAType) s.toInt();
+}
+
+Setting BB::getIndicatorSettings ()
+{
+  Setting dict;
+  dict.setData("color", color.name());
+  dict.setData("lineType", QString::number(lineType));
+  dict.setData("period", QString::number(period));
+  dict.setData("deviation", QString::number(deviation));
+  dict.setData("maType", QString::number(maType));
+  dict.setData("plugin", pluginName);
+  return dict;
 }
 
 PlotLine * BB::calculateCustom (QDict<PlotLine> *)
@@ -186,31 +196,6 @@ PlotLine * BB::calculateCustom (QDict<PlotLine> *)
     return output.at(0);
   else
     return output.at(1);
-}
-
-QString BB::getCustomSettings ()
-{
-  QString s("BB");
-  s.append("," + QString::number(maType));
-  s.append("," + QString::number(period));
-  s.append("," + QString::number(deviation));
-  s.append("," + color.name());
-  s.append("," + QString::number(lineType));
-  s.append("," + customBand);
-  return s;
-}
-
-void BB::setCustomSettings (QString d)
-{
-  customFlag = TRUE;
-
-  QStringList l = QStringList::split(",", d, FALSE);
-  maType = (IndicatorPlugin::MAType) l[1].toInt();
-  period = l[2].toInt();
-  deviation = l[3].toDouble();
-  color.setNamedColor(l[4]);
-  lineType = (PlotLine::LineType) l[5].toInt();
-  customBand = l[6];
 }
 
 Plugin * create ()

@@ -109,41 +109,47 @@ int WILLR::indicatorPrefDialog (QWidget *w)
 
 void WILLR::loadIndicatorSettings (QString file)
 {
-  setDefaults();
-  
-  QDict<QString> dict = loadFile(file);
-  if (! dict.count())
-    return;
-  
-  QString *s = dict["color"];
-  if (s)
-    color.setNamedColor(s->left(s->length()));
-    
-  s = dict["lineType"];
-  if (s)
-    lineType = (PlotLine::LineType) s->left(s->length()).toInt();
-
-  s = dict["period"];
-  if (s)
-    period = s->left(s->length()).toInt();
-
-  s = dict["label"];
-  if (s)
-    label = s->left(s->length());
+  setIndicatorSettings(loadFile(file));
 }
 
 void WILLR::saveIndicatorSettings (QString file)
 {
-  QDict<QString>dict;
-  dict.setAutoDelete(TRUE);
+  saveFile(file, getIndicatorSettings());
+}
 
-  dict.replace("color", new QString(color.name()));
-  dict.replace("lineType", new QString(QString::number(lineType)));
-  dict.replace("period", new QString(QString::number(period)));
-  dict.replace("label", new QString(label));
-  dict.replace("plugin", new QString(pluginName));
+void WILLR::setIndicatorSettings (Setting dict)
+{
+  setDefaults();
+  
+  if (! dict.count())
+    return;
+  
+  QString s = dict.getData("color");
+  if (s.length())
+    color.setNamedColor(s);
+    
+  s = dict.getData("lineType");
+  if (s.length())
+    lineType = (PlotLine::LineType) s.toInt();
 
-  saveFile(file, dict);
+  s = dict.getData("period");
+  if (s.length())
+    period = s.toInt();
+
+  s = dict.getData("label");
+  if (s.length())
+    label = s;
+}
+
+Setting WILLR::getIndicatorSettings ()
+{
+  Setting dict;
+  dict.setData("color", color.name());
+  dict.setData("lineType", QString::number(lineType));
+  dict.setData("period", QString::number(period));
+  dict.setData("label", label);
+  dict.setData("plugin", pluginName);
+  return dict;
 }
 
 PlotLine * WILLR::calculateCustom (QDict<PlotLine> *)
@@ -151,26 +157,6 @@ PlotLine * WILLR::calculateCustom (QDict<PlotLine> *)
   clearOutput();
   calculate();
   return output.at(0);
-}
-
-QString WILLR::getCustomSettings ()
-{
-  QString s("WILLR");
-  s.append("," + QString::number(period));
-  s.append("," + color.name());
-  s.append("," + QString::number(lineType));
-  s.append("," + label);
-  return s;
-}
-
-void WILLR::setCustomSettings (QString d)
-{
-  customFlag = TRUE;
-  QStringList l = QStringList::split(",", d, FALSE);
-  period = l[1].toInt();
-  color.setNamedColor(l[2]);
-  lineType = (PlotLine::LineType) l[3].toInt();
-  label = l[4];
 }
 
 Plugin * create ()

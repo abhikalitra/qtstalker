@@ -171,82 +171,88 @@ int THERM::indicatorPrefDialog (QWidget *w)
 
 void THERM::loadIndicatorSettings (QString file)
 {
-  setDefaults();
-  
-  QDict<QString> dict = loadFile(file);
-  if (! dict.count())
-    return;
-  
-  QString *s = dict["upColor"];
-  if (s)
-    upColor.setNamedColor(s->left(s->length()));
-    
-  s = dict["downColor"];
-  if (s)
-    downColor.setNamedColor(s->left(s->length()));
-  
-  s = dict["threshColor"];
-  if (s)
-    threshColor.setNamedColor(s->left(s->length()));
-  
-  s = dict["maColor"];
-  if (s)
-    maColor.setNamedColor(s->left(s->length()));
-    
-  s = dict["label"];
-  if (s)
-    label = s->left(s->length());
-    
-  s = dict["threshold"];
-  if (s)
-    threshold = s->left(s->length()).toFloat();
-  
-  s = dict["smoothing"];
-  if (s)
-    smoothing = s->left(s->length()).toInt();
-  
-  s = dict["smoothType"];
-  if (s)
-    smoothType = (IndicatorPlugin::MAType) s->left(s->length()).toInt();
-  
-  s = dict["maLineType"];
-  if (s)
-    maLineType = (PlotLine::LineType) s->left(s->length()).toInt();
-
-  s = dict["maLabel"];
-  if (s)
-    maLabel = s->left(s->length());
-    
-  s = dict["maPeriod"];
-  if (s)
-    maPeriod = s->left(s->length()).toInt();
-
-  s = dict["maType"];
-  if (s)
-    maType = (IndicatorPlugin::MAType) s->left(s->length()).toInt();
+  setIndicatorSettings(loadFile(file));
 }
 
 void THERM::saveIndicatorSettings (QString file)
 {
-  QDict<QString>dict;
-  dict.setAutoDelete(TRUE);
+  saveFile(file, getIndicatorSettings());
+}
 
-  dict.replace("upColor", new QString(upColor.name()));
-  dict.replace("downColor", new QString(downColor.name()));
-  dict.replace("threshColor", new QString(threshColor.name()));
-  dict.replace("label", new QString(label));
-  dict.replace("threshold", new QString(QString::number(threshold)));
-  dict.replace("smoothing", new QString(QString::number(smoothing)));
-  dict.replace("smoothType", new QString(QString::number(smoothType)));
+void THERM::setIndicatorSettings (Setting dict)
+{
+  setDefaults();
   
-  dict.replace("maColor", new QString(maColor.name()));
-  dict.replace("maLineType", new QString(QString::number(maLineType)));
-  dict.replace("maPeriod", new QString(QString::number(maPeriod)));
-  dict.replace("maLabel", new QString(maLabel));
-  dict.replace("maType", new QString(QString::number(maType)));
-  dict.replace("plugin", new QString(pluginName));
+  if (! dict.count())
+    return;
   
-  saveFile(file, dict);
+  QString s = dict.getData("upColor");
+  if (s.length())
+    upColor.setNamedColor(s);
+    
+  s = dict.getData("downColor");
+  if (s.length())
+    downColor.setNamedColor(s);
+  
+  s = dict.getData("threshColor");
+  if (s.length())
+    threshColor.setNamedColor(s);
+  
+  s = dict.getData("maColor");
+  if (s.length())
+    maColor.setNamedColor(s);
+    
+  s = dict.getData("label");
+  if (s.length())
+    label = s;
+    
+  s = dict.getData("threshold");
+  if (s.length())
+    threshold = s.toFloat();
+  
+  s = dict.getData("smoothing");
+  if (s.length())
+    smoothing = s.toInt();
+  
+  s = dict.getData("smoothType");
+  if (s.length())
+    smoothType = (IndicatorPlugin::MAType) s.toInt();
+  
+  s = dict.getData("maLineType");
+  if (s.length())
+    maLineType = (PlotLine::LineType) s.toInt();
+
+  s = dict.getData("maLabel");
+  if (s.length())
+    maLabel = s;
+    
+  s = dict.getData("maPeriod");
+  if (s.length())
+    maPeriod = s.toInt();
+
+  s = dict.getData("maType");
+  if (s.length())
+    maType = (IndicatorPlugin::MAType) s.toInt();
+}
+
+Setting THERM::getIndicatorSettings ()
+{
+  Setting dict;
+  dict.setData("upColor", upColor.name());
+  dict.setData("downColor", downColor.name());
+  dict.setData("threshColor", threshColor.name());
+  dict.setData("label", label);
+  dict.setData("threshold", QString::number(threshold));
+  dict.setData("smoothing", QString::number(smoothing));
+  dict.setData("smoothType", QString::number(smoothType));
+  
+  dict.setData("maColor", maColor.name());
+  dict.setData("maLineType", QString::number(maLineType));
+  dict.setData("maPeriod", QString::number(maPeriod));
+  dict.setData("maLabel", maLabel);
+  dict.setData("maType", QString::number(maType));
+  dict.setData("plugin", pluginName);
+  return dict;
 }
 
 PlotLine * THERM::calculateCustom (QDict<PlotLine> *)
@@ -254,32 +260,6 @@ PlotLine * THERM::calculateCustom (QDict<PlotLine> *)
   clearOutput();
   calculate();
   return output.at(0);
-}
-
-QString THERM::getCustomSettings ()
-{
-  QString s("THERM");
-  s.append("," + QString::number(smoothType));
-  s.append("," + QString::number(smoothing));
-  s.append("," + QString::number(threshold));
-  s.append("," + upColor.name());
-  s.append("," + downColor.name());
-  s.append("," + threshColor.name());
-  s.append("," + label);
-  return s;
-}
-
-void THERM::setCustomSettings (QString d)
-{
-  customFlag = TRUE;
-  QStringList l = QStringList::split(",", d, FALSE);
-  smoothType = (IndicatorPlugin::MAType) l[1].toInt();
-  smoothing = l[2].toInt();
-  threshold = l[3].toDouble();
-  upColor.setNamedColor(l[4]);
-  downColor.setNamedColor(l[5]);
-  threshColor.setNamedColor(l[6]);
-  label = l[7];
 }
 
 Plugin * create ()

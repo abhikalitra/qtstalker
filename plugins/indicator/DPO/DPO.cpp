@@ -101,46 +101,52 @@ int DPO::indicatorPrefDialog (QWidget *w)
 
 void DPO::loadIndicatorSettings (QString file)
 {
-  setDefaults();
-  
-  QDict<QString> dict = loadFile(file);
-  if (! dict.count())
-    return;
-  
-  QString *s = dict["color"];
-  if (s)
-    color.setNamedColor(s->left(s->length()));
-    
-  s = dict["lineType"];
-  if (s)
-    lineType = (PlotLine::LineType) s->left(s->length()).toInt();
-
-  s = dict["period"];
-  if (s)
-    period = s->left(s->length()).toInt();
-
-  s = dict["label"];
-  if (s)
-    label = s->left(s->length());
-      
-  s = dict["maType"];
-  if (s)
-    maType = (IndicatorPlugin::MAType) s->left(s->length()).toInt();
+  setIndicatorSettings(loadFile(file));
 }
 
 void DPO::saveIndicatorSettings (QString file)
 {
-  QDict<QString>dict;
-  dict.setAutoDelete(TRUE);
+  saveFile(file, getIndicatorSettings());
+}
 
-  dict.replace("color", new QString(color.name()));
-  dict.replace("lineType", new QString(QString::number(lineType)));
-  dict.replace("period", new QString(QString::number(period)));
-  dict.replace("label", new QString(label));
-  dict.replace("maType", new QString(QString::number(maType)));
-  dict.replace("plugin", new QString(pluginName));
+void DPO::setIndicatorSettings (Setting dict)
+{
+  setDefaults();
+  
+  if (! dict.count())
+    return;
+  
+  QString s = dict.getData("color");
+  if (s.length())
+    color.setNamedColor(s);
+    
+  s = dict.getData("lineType");
+  if (s.length())
+    lineType = (PlotLine::LineType) s.toInt();
 
-  saveFile(file, dict);
+  s = dict.getData("period");
+  if (s.length())
+    period = s.toInt();
+
+  s = dict.getData("label");
+  if (s.length())
+    label = s;
+      
+  s = dict.getData("maType");
+  if (s.length())
+    maType = (IndicatorPlugin::MAType) s.toInt();
+}
+
+Setting DPO::getIndicatorSettings ()
+{
+  Setting dict;
+  dict.setData("color", color.name());
+  dict.setData("lineType", QString::number(lineType));
+  dict.setData("period", QString::number(period));
+  dict.setData("label", label);
+  dict.setData("maType", QString::number(maType));
+  dict.setData("plugin", pluginName);
+  return dict;
 }
 
 PlotLine * DPO::calculateCustom (QDict<PlotLine> *)
@@ -148,29 +154,6 @@ PlotLine * DPO::calculateCustom (QDict<PlotLine> *)
   clearOutput();
   calculate();
   return output.at(0);
-}
-
-QString DPO::getCustomSettings ()
-{
-  QString s("DPO");
-  s.append("," + QString::number(maType));
-  s.append("," + QString::number(period));
-  s.append("," + color.name());
-  s.append("," + QString::number(lineType));
-  s.append("," + label);
-  return s;
-}
-
-void DPO::setCustomSettings (QString d)
-{
-  customFlag = TRUE;
-
-  QStringList l = QStringList::split(",", d, FALSE);
-  maType = (IndicatorPlugin::MAType) l[1].toInt();
-  period = l[2].toInt();
-  color.setNamedColor(l[3]);
-  lineType = (PlotLine::LineType) l[4].toInt();
-  label = l[5];
 }
 
 Plugin * create ()

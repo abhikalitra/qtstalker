@@ -45,13 +45,47 @@ void ATR::setDefaults ()
 
 void ATR::calculate ()
 {
-  PlotLine *tr = getTR();
-  PlotLine *ma = getMA(tr, maType, smoothing);
-  ma->setColor(color);
-  ma->setType(lineType);
-  ma->setLabel(label);
-  output.append(ma);
-  delete tr;
+  PlotLine *tr = new PlotLine;
+  int loop;
+  for (loop = 0; loop < (int) data->count(); loop++)
+  {
+    double high = data->getHigh(loop);
+    double low = data->getLow(loop);
+    double close;
+    if (loop > 0)
+      close = data->getClose(loop - 1);
+    else
+      close = high;
+
+    double t = high - low;
+
+    double t2 = fabs(high - close);
+    if (t2 > t)
+      t = t2;
+
+    t2 = fabs(low - close);
+    if (t2 > t)
+      t = t2;
+
+    tr->append(t);
+  }
+  
+  if (smoothing > 1)
+  {
+    PlotLine *ma = getMA(tr, maType, smoothing);
+    ma->setColor(color);
+    ma->setType(lineType);
+    ma->setLabel(label);
+    output.append(ma);
+    delete tr;
+  }
+  else
+  {
+    tr->setColor(color);
+    tr->setType(lineType);
+    tr->setLabel(label);
+    output.append(tr);
+  }
 }
 
 int ATR::indicatorPrefDialog (QWidget *w)
@@ -85,46 +119,52 @@ int ATR::indicatorPrefDialog (QWidget *w)
 
 void ATR::loadIndicatorSettings (QString file)
 {
-  setDefaults();
-  
-  QDict<QString> dict = loadFile(file);
-  if (! dict.count())
-    return;
-  
-  QString *s = dict["color"];
-  if (s)
-    color.setNamedColor(s->left(s->length()));
-    
-  s = dict["label"];
-  if (s)
-    label = s->left(s->length());
-        
-  s = dict["lineType"];
-  if (s)
-    lineType = (PlotLine::LineType) s->left(s->length()).toInt();
-
-  s = dict["smoothing"];
-  if (s)
-    smoothing = s->left(s->length()).toInt();
-
-  s = dict["maType"];
-  if (s)
-    maType = (IndicatorPlugin::MAType) s->left(s->length()).toInt();
+  setIndicatorSettings(loadFile(file));
 }
 
 void ATR::saveIndicatorSettings (QString file)
 {
-  QDict<QString>dict;
-  dict.setAutoDelete(TRUE);
+  saveFile(file, getIndicatorSettings());
+}
 
-  dict.replace("color", new QString(color.name()));
-  dict.replace("label", new QString(label));
-  dict.replace("lineType", new QString(QString::number(lineType)));
-  dict.replace("smoothing", new QString(QString::number(smoothing)));
-  dict.replace("maType", new QString(QString::number(maType)));
-  dict.replace("plugin", new QString(pluginName));
+void ATR::setIndicatorSettings (Setting dict)
+{
+  setDefaults();
+  
+  if (! dict.count())
+    return;
+  
+  QString s = dict.getData("color");
+  if (s.length())
+    color.setNamedColor(s);
+    
+  s = dict.getData("label");
+  if (s.length())
+    label = s;
+        
+  s = dict.getData("lineType");
+  if (s.length())
+    lineType = (PlotLine::LineType) s.toInt();
 
-  saveFile(file, dict);
+  s = dict.getData("smoothing");
+  if (s.length())
+    smoothing = s.toInt();
+
+  s = dict.getData("maType");
+  if (s.length())
+    maType = (IndicatorPlugin::MAType) s.toInt();
+}
+
+Setting ATR::getIndicatorSettings ()
+{
+  Setting dict;
+  dict.setData("color", color.name());
+  dict.setData("label", label);
+  dict.setData("lineType", QString::number(lineType));
+  dict.setData("smoothing", QString::number(smoothing));
+  dict.setData("maType", QString::number(maType));
+  dict.setData("plugin", pluginName);
+  return dict;
 }
 
 PlotLine * ATR::calculateCustom (QDict<PlotLine> *)
@@ -132,29 +172,6 @@ PlotLine * ATR::calculateCustom (QDict<PlotLine> *)
   clearOutput();
   calculate();
   return output.at(0);
-}
-
-QString ATR::getCustomSettings ()
-{
-  QString s("ATR");
-  s.append("," + QString::number(maType));
-  s.append("," + QString::number(smoothing));
-  s.append("," + color.name());
-  s.append("," + QString::number(lineType));
-  s.append("," + label);
-  return s;
-}
-
-void ATR::setCustomSettings (QString d)
-{
-  customFlag = TRUE;
-
-  QStringList l = QStringList::split(",", d, FALSE);
-  maType = (IndicatorPlugin::MAType) l[1].toInt();
-  smoothing = l[2].toInt();
-  color.setNamedColor(l[3]);
-  lineType = (PlotLine::LineType) l[4].toInt();
-  label = l[5];
 }
 
 Plugin * create ()

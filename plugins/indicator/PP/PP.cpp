@@ -153,71 +153,77 @@ int PP::indicatorPrefDialog (QWidget *w)
 
 void PP::loadIndicatorSettings (QString file)
 {
-  setDefaults();
-  
-  QDict<QString> dict = loadFile(file);
-  if (! dict.count())
-    return;
-  
-  QString *s = dict["resColor"];
-  if (s)
-    resColor.setNamedColor(s->left(s->length()));
-    
-  s = dict["supColor"];
-  if (s)
-    supColor.setNamedColor(s->left(s->length()));
-  
-  s = dict["resLineType"];
-  if (s)
-    resLineType = (PlotLine::LineType) s->left(s->length()).toInt();
-
-  s = dict["supLineType"];
-  if (s)
-    supLineType = (PlotLine::LineType) s->left(s->length()).toInt();
-  
-  s = dict["resLabel"];
-  if (s)
-    resLabel = s->left(s->length());
-      
-  s = dict["resLabel2"];
-  if (s)
-    resLabel2 = s->left(s->length());
-  
-  s = dict["resLabel3"];
-  if (s)
-    resLabel3 = s->left(s->length());
-
-  s = dict["supLabel"];
-  if (s)
-    supLabel = s->left(s->length());
-
-  s = dict["supLabel2"];
-  if (s)
-    supLabel2 = s->left(s->length());
-
-  s = dict["supLabel3"];
-  if (s)
-    supLabel3 = s->left(s->length());
+  setIndicatorSettings(loadFile(file));
 }
 
 void PP::saveIndicatorSettings (QString file)
 {
-  QDict<QString>dict;
-  dict.setAutoDelete(TRUE);
+  saveFile(file, getIndicatorSettings());
+}
 
-  dict.replace("resColor", new QString(resColor.name()));
-  dict.replace("supColor", new QString(supColor.name()));
-  dict.replace("resLineType", new QString(QString::number(resLineType)));
-  dict.replace("supLineType", new QString(QString::number(supLineType)));
-  dict.replace("resLabel", new QString(resLabel));
-  dict.replace("resLabel2", new QString(resLabel2));
-  dict.replace("resLabel3", new QString(resLabel3));
-  dict.replace("supLabel", new QString(supLabel));
-  dict.replace("supLabel2", new QString(supLabel2));
-  dict.replace("supLabel3", new QString(supLabel3));
-  dict.replace("plugin", new QString(pluginName));
+void PP::setIndicatorSettings (Setting dict)
+{
+  setDefaults();
+  
+  if (! dict.count())
+    return;
+  
+  QString s = dict.getData("resColor");
+  if (s.length())
+    resColor.setNamedColor(s);
+    
+  s = dict.getData("supColor");
+  if (s.length())
+    supColor.setNamedColor(s);
+  
+  s = dict.getData("resLineType");
+  if (s.length())
+    resLineType = (PlotLine::LineType) s.toInt();
 
-  saveFile(file, dict);
+  s = dict.getData("supLineType");
+  if (s.length())
+    supLineType = (PlotLine::LineType) s.toInt();
+  
+  s = dict.getData("resLabel");
+  if (s.length())
+    resLabel = s;
+      
+  s = dict.getData("resLabel2");
+  if (s.length())
+    resLabel2 = s;
+  
+  s = dict.getData("resLabel3");
+  if (s.length())
+    resLabel3 = s;
+
+  s = dict.getData("supLabel");
+  if (s.length())
+    supLabel = s;
+
+  s = dict.getData("supLabel2");
+  if (s.length())
+    supLabel2 = s;
+
+  s = dict.getData("supLabel3");
+  if (s.length())
+    supLabel3 = s;
+}
+
+Setting PP::getIndicatorSettings ()
+{
+  Setting dict;
+  dict.setData("resColor", resColor.name());
+  dict.setData("supColor", supColor.name());
+  dict.setData("resLineType", QString::number(resLineType));
+  dict.setData("supLineType", QString::number(supLineType));
+  dict.setData("resLabel", resLabel);
+  dict.setData("resLabel2", resLabel2);
+  dict.setData("resLabel3", resLabel3);
+  dict.setData("supLabel", supLabel);
+  dict.setData("supLabel2", supLabel2);
+  dict.setData("supLabel3", supLabel3);
+  dict.setData("plugin", pluginName);
+  return dict;
 }
 
 Plugin * create ()

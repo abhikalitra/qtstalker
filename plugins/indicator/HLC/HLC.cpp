@@ -55,26 +55,60 @@ void HLC::calculate ()
   PlotLine *ub = new PlotLine();
   PlotLine *lb = new PlotLine();
 
-  int loop;
-  for (loop = period; loop < (int) data->count(); loop++)
+  PlotLine *in = 0;
+  if (customFlag)
   {
-    int loop2;
-    double h = -99999999;
-    double l = 99999999;
-    for (loop2 = 1; loop2 <= period; loop2++)
+    in = getInputLine(customInput);
+    if (! in)
     {
-      double high = data->getHigh(loop - loop2);
-      double low = data->getLow(loop - loop2);
-
-      if (high > h)
-        h = high;
-
-      if (low < l)
-        l = low;
+      qDebug("HLC::calculate: no input");
+      return;
     }
+    
+    int loop;
+    for (loop = period; loop < (int) in->getSize(); loop++)
+    {
+      int loop2;
+      double h = -99999999;
+      double l = 99999999;
+      for (loop2 = 1; loop2 <= period; loop2++)
+      {
+        double t = in->getData(loop - loop2);
 
-    ub->append(h);
-    lb->append(l);
+        if (t > h)
+          h = t;
+
+        if (t < l)
+          l = t;
+      }
+
+      ub->append(h);
+      lb->append(l);
+    }
+  }
+  else
+  {    
+    int loop;
+    for (loop = period; loop < (int) data->count(); loop++)
+    {
+      int loop2;
+      double h = -99999999;
+      double l = 99999999;
+      for (loop2 = 1; loop2 <= period; loop2++)
+      {
+        double high = data->getHigh(loop - loop2);
+        double low = data->getLow(loop - loop2);
+
+        if (high > h)
+          h = high;
+
+        if (low < l)
+          l = low;
+      }
+
+      ub->append(h);
+      lb->append(l);
+    }
   }
 
   ub->setColor(upperColor);
@@ -95,7 +129,10 @@ int HLC::indicatorPrefDialog (QWidget *w)
   dialog->createPage (tr("Parms"));
   dialog->addIntItem(tr("Period"), tr("Parms"), period, 1, 99999999);
   if (customFlag)
+  {
     dialog->addComboItem(tr("Plot"), tr("Parms"), bandList, customBand);
+    dialog->addFormulaInputItem(tr("Input"), tr("Parms"), FALSE, customInput);
+  }
   
   dialog->createPage (tr("Upper"));
   dialog->addColorItem(tr("Upper Color"), tr("Upper"), upperColor);
@@ -119,7 +156,10 @@ int HLC::indicatorPrefDialog (QWidget *w)
     lowerLineType = (PlotLine::LineType) dialog->getComboIndex(tr("Lower Line Type"));
     lowerLabel = dialog->getText(tr("Lower Label"));
     if (customFlag)
+    {
       customBand = dialog->getCombo(tr("Plot"));
+      customInput = dialog->getFormulaInput(tr("Input"));
+    }
     
     rc = TRUE;
   }
@@ -132,95 +172,83 @@ int HLC::indicatorPrefDialog (QWidget *w)
 
 void HLC::loadIndicatorSettings (QString file)
 {
-  setDefaults();
-  
-  QDict<QString> dict = loadFile(file);
-  if (! dict.count())
-    return;
-  
-  QString *s = dict["period"];
-  if (s)
-    period = s->left(s->length()).toInt();
-  
-  s = dict["upperColor"];
-  if (s)
-    upperColor.setNamedColor(s->left(s->length()));
-    
-  s = dict["upperLineType"];
-  if (s)
-    upperLineType = (PlotLine::LineType) s->left(s->length()).toInt();
-
-  s = dict["upperLabel"];
-  if (s)
-    upperLabel = s->left(s->length());
-      
-  s = dict["lowerColor"];
-  if (s)
-    lowerColor.setNamedColor(s->left(s->length()));
-    
-  s = dict["lowerLineType"];
-  if (s)
-    lowerLineType = (PlotLine::LineType) s->left(s->length()).toInt();
-
-  s = dict["lowerLabel"];
-  if (s)
-    lowerLabel = s->left(s->length());
+  setIndicatorSettings(loadFile(file));
 }
 
 void HLC::saveIndicatorSettings (QString file)
 {
-  QDict<QString>dict;
-  dict.setAutoDelete(TRUE);
-
-  dict.replace("period", new QString(QString::number(period)));
-  dict.replace("upperColor", new QString(upperColor.name()));
-  dict.replace("upperLineType", new QString(QString::number(upperLineType)));
-  dict.replace("upperLabel", new QString(upperLabel));
-  dict.replace("lowerColor", new QString(lowerColor.name()));
-  dict.replace("lowerLineType", new QString(QString::number(lowerLineType)));
-  dict.replace("lowerLabel", new QString(lowerLabel));
-  dict.replace("plugin", new QString(pluginName));
-
-  saveFile(file, dict);
+  saveFile(file, getIndicatorSettings());
 }
 
-PlotLine * HLC::calculateCustom (QDict<PlotLine> *)
+void HLC::setIndicatorSettings (Setting dict)
 {
+  setDefaults();
+  
+  if (! dict.count())
+    return;
+  
+  QString s = dict.getData("period");
+  if (s.length())
+    period = s.toInt();
+  
+  s = dict.getData("upperColor");
+  if (s.length())
+    upperColor.setNamedColor(s);
+    
+  s = dict.getData("upperLineType");
+  if (s.length())
+    upperLineType = (PlotLine::LineType) s.toInt();
+
+  s = dict.getData("upperLabel");
+  if (s.length())
+    upperLabel = s;
+      
+  s = dict.getData("lowerColor");
+  if (s.length())
+    lowerColor.setNamedColor(s);
+    
+  s = dict.getData("lowerLineType");
+  if (s.length())
+    lowerLineType = (PlotLine::LineType) s.toInt();
+
+  s = dict.getData("lowerLabel");
+  if (s.length())
+    lowerLabel = s;
+
+  s = dict.getData("customBand");
+  if (s.length())
+    customBand = s;
+
+  s = dict.getData("customInput");
+  if (s.length())
+    customInput = s;
+}
+
+Setting HLC::getIndicatorSettings ()
+{
+  Setting dict;
+  dict.setData("period", QString::number(period));
+  dict.setData("upperColor", upperColor.name());
+  dict.setData("upperLineType", QString::number(upperLineType));
+  dict.setData("upperLabel", upperLabel);
+  dict.setData("lowerColor", lowerColor.name());
+  dict.setData("lowerLineType", QString::number(lowerLineType));
+  dict.setData("lowerLabel", lowerLabel);
+  dict.setData("customBand", customBand);
+  dict.setData("customInput", customInput);
+  dict.setData("plugin", pluginName);
+  return dict;
+}
+
+PlotLine * HLC::calculateCustom (QDict<PlotLine> *d)
+{
+  customLines = d;
   clearOutput();
   calculate();
   if (! customBand.compare(tr("Upper")))
     return output.at(0);
   else
     return output.at(1);
-}
-
-QString HLC::getCustomSettings ()
-{
-  QString s("HLC");
-  s.append("," + QString::number(period));
-  s.append("," + upperColor.name());
-  s.append("," + QString::number(upperLineType));
-  s.append("," + upperLabel);
-  s.append("," + lowerColor.name());
-  s.append("," + QString::number(lowerLineType));
-  s.append("," + lowerLabel);
-  s.append("," + customBand);
-  return s;
-}
-
-void HLC::setCustomSettings (QString d)
-{
-  customFlag = TRUE;
-
-  QStringList l = QStringList::split(",", d, FALSE);
-  period = l[1].toInt();
-  upperColor.setNamedColor(l[2]);
-  upperLineType = (PlotLine::LineType) l[3].toInt();
-  upperLabel = l[4];
-  lowerColor.setNamedColor(l[5]);
-  lowerLineType = (PlotLine::LineType) l[6].toInt();
-  lowerLabel = l[7];
-  customBand = l[8];
 }
 
 Plugin * create ()

@@ -98,6 +98,10 @@
 
 20040812: Applied patch #1007570 - displacements in COMP. Thanks to Xiaoguang Zhang.
 
+20040815: Modified the plugin base class and the indicator plugins to save custom parms in a new way
+          that doesn't depend on field order. Developers will have to recreate any custom indicators,
+	  tester rules etc. Also a complete recompile will be needed to update the plugins.
+	  
 
 0.26
 ====

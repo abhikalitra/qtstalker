@@ -1021,12 +1021,10 @@ void Tester::loadAlerts (int type)
     return;
   }
 
-  QStringList l;
   for (loop = 0; loop < edit->getLines(); loop++)
-    l.append(edit->getLine(loop));
+    plug->setCustomFunction(edit->getLine(loop));
   
   // load the CUS plugin and calculate
-  plug->setCustomFunction(l.join("|"));
   plug->setIndicatorInput(recordList);
   plug->calculate();
   PlotLine *tline = plug->getIndicatorLine(0);

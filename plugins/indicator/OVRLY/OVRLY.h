@@ -34,6 +34,8 @@ class OVRLY : public IndicatorPlugin
     void saveIndicatorSettings (QString);
     int indicatorPrefDialog (QWidget *);
     void setDefaults();
+    Setting getIndicatorSettings ();
+    void setIndicatorSettings (Setting);
     
   private:
     QColor color;

@@ -32,11 +32,12 @@ class DMI : public IndicatorPlugin
     int indicatorPrefDialog (QWidget *);
     void setDefaults();
     PlotLine * calculateCustom (QDict<PlotLine> *);
-    QString getCustomSettings ();
-    void setCustomSettings (QString);
+    Setting getIndicatorSettings ();
+    void setIndicatorSettings (Setting);
     PlotLine * getMDI (int period);
     PlotLine * getPDI (int period);
-    PlotLine * getADX (PlotLine *mdi, PlotLine *pdi, MAType maType, int period);
+    PlotLine * getADX (PlotLine *mdi, PlotLine *pdi, IndicatorPlugin::MAType type, int period);
+    PlotLine * getTR ();
     
   private:
     QColor mdiColor;

@@ -30,6 +30,7 @@
 #include "PlotLine.h"
 #include "BarData.h"
 #include "Scaler.h"
+#include "Setting.h"
 
 class Plugin : public QObject
 {
@@ -56,8 +57,8 @@ class Plugin : public QObject
     virtual void loadIndicatorSettings (QString);
     virtual void saveIndicatorSettings (QString);
     virtual PlotLine * calculateCustom (QDict<PlotLine> *);
-    virtual QString getCustomSettings ();
-    virtual void setCustomSettings (QString);
+    virtual Setting getIndicatorSettings ();
+    virtual void setIndicatorSettings (Setting);
     virtual void setCustomFlag (bool);
     virtual void setCustomFunction (QString);
 

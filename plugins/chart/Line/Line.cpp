@@ -107,8 +107,9 @@ void Line::prefDialog (QWidget *)
       {
         formulaList.append(dialog->getLine(loop));
 	
-        QStringList l = QStringList::split("|", formulaList[loop], FALSE);
-        if (l[1].toInt())
+        Setting set;
+        set.parse(dialog->getLine(loop));
+        if (set.getData("plot").toInt())
           flag = TRUE;
       }
   
@@ -142,10 +143,10 @@ void Line::loadSettings ()
   defaultFlag = settings.readBoolEntry("/defaultFlag", TRUE);
   
   QString s = settings.readEntry("/formula");
-  QStringList l = QStringList::split("|", s, FALSE);
+  QStringList l = QStringList::split(",", s, FALSE);
   int loop;
-  for (loop = 0; loop < (int) l.count(); loop = loop + 2)
-    formulaList.append(l[loop] + "|" + l[loop + 1]);
+  for (loop = 0; loop < (int) l.count(); loop++)
+    formulaList.append(l[loop]);
   
   settings.endGroup();
 }
@@ -161,7 +162,7 @@ void Line::saveSettings ()
   settings.writeEntry("/Color", color.name());
   settings.writeEntry("/minPixelspace", minPixelspace);
   settings.writeEntry("/defaultFlag", defaultFlag);
-  settings.writeEntry("/formula", formulaList.join("|"));
+  settings.writeEntry("/formula", formulaList.join(","));
   
   settings.endGroup();
 }
@@ -180,10 +181,17 @@ PlotLine * Line::getBoolLine ()
   }
 
   // load the CUS plugin and calculate
+  int loop;
   if (defaultFlag)
-    plug->setCustomFunction(defaultFormula.join("|"));
+  {
+    for(loop = 0; loop < (int) defaultFormula.count(); loop++)
+      plug->setCustomFunction(defaultFormula[loop]);
+  }
   else
-    plug->setCustomFunction(formulaList.join("|"));
+  {
+    for(loop = 0; loop < (int) formulaList.count(); loop++)
+      plug->setCustomFunction(formulaList[loop]);
+  }
   plug->setIndicatorInput(data);
   plug->calculate();
   line = plug->getIndicatorLine(0);

@@ -206,51 +206,57 @@ int SZ::indicatorPrefDialog (QWidget *w)
 
 void SZ::loadIndicatorSettings (QString file)
 {
-  setDefaults();
-  
-  QDict<QString> dict = loadFile(file);
-  if (! dict.count())
-    return;
-  
-  QString *s = dict["color"];
-  if (s)
-    color.setNamedColor(s->left(s->length()));
-    
-  s = dict["lineType"];
-  if (s)
-    lineType = (PlotLine::LineType) s->left(s->length()).toInt();
-
-  s = dict["period"];
-  if (s)
-    period = s->left(s->length()).toInt();
-
-  s = dict["noDeclinePeriod"];
-  if (s)
-    no_decline_period = s->left(s->length()).toInt();
-
-  s = dict["coefficient"];
-  if (s)
-    coefficient = s->left(s->length()).toFloat();
-
-  s = dict["method"];
-  if (s)
-    method = s->left(s->length());
+  setIndicatorSettings(loadFile(file));
 }
 
 void SZ::saveIndicatorSettings (QString file)
 {
-  QDict<QString>dict;
-  dict.setAutoDelete(TRUE);
+  saveFile(file, getIndicatorSettings());
+}
 
-  dict.replace("color", new QString(color.name()));
-  dict.replace("lineType", new QString(QString::number(lineType)));
-  dict.replace("period", new QString(QString::number(period)));
-  dict.replace("noDeclinePeriod", new QString(QString::number(no_decline_period)));
-  dict.replace("coefficient", new QString(QString::number(coefficient)));
-  dict.replace("method", new QString(method));
-  dict.replace("plugin", new QString(pluginName));
+void SZ::setIndicatorSettings (Setting dict)
+{
+  setDefaults();
+  
+  if (! dict.count())
+    return;
+  
+  QString s = dict.getData("color");
+  if (s.length())
+    color.setNamedColor(s);
+    
+  s = dict.getData("lineType");
+  if (s.length())
+    lineType = (PlotLine::LineType) s.toInt();
 
-  saveFile(file, dict);
+  s = dict.getData("period");
+  if (s.length())
+    period = s.toInt();
+
+  s = dict.getData("noDeclinePeriod");
+  if (s.length())
+    no_decline_period = s.toInt();
+
+  s = dict.getData("coefficient");
+  if (s.length())
+    coefficient = s.toFloat();
+
+  s = dict.getData("method");
+  if (s.length())
+    method = s;
+}
+
+Setting SZ::getIndicatorSettings ()
+{
+  Setting dict;
+  dict.setData("color", color.name());
+  dict.setData("lineType", QString::number(lineType));
+  dict.setData("period", QString::number(period));
+  dict.setData("noDeclinePeriod", QString::number(no_decline_period));
+  dict.setData("coefficient", QString::number(coefficient));
+  dict.setData("method", method);
+  dict.setData("plugin", pluginName);
+  return dict;
 }
 
 PlotLine * SZ::calculateCustom (QDict<PlotLine> *)
@@ -258,30 +264,6 @@ PlotLine * SZ::calculateCustom (QDict<PlotLine> *)
   clearOutput();
   calculate();
   return output.at(0);
-}
-
-QString SZ::getCustomSettings ()
-{
-  QString s("SZ");
-  s.append("," + method);
-  s.append("," + QString::number(period));
-  s.append("," + QString::number(no_decline_period));
-  s.append("," + QString::number(coefficient));
-  s.append("," + color.name());
-  s.append("," + QString::number(lineType));
-  return s;
-}
-
-void SZ::setCustomSettings (QString d)
-{
-  customFlag = TRUE;
-  QStringList l = QStringList::split(",", d, FALSE);
-  method = l[1];
-  period = l[2].toInt();
-  no_decline_period = l[3].toInt();
-  coefficient = l[4].toDouble();
-  color.setNamedColor(l[5]);
-  lineType = (PlotLine::LineType) l[6].toInt();
 }
 
 Plugin * create ()

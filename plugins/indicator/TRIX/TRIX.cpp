@@ -61,9 +61,11 @@ void TRIX::calculate ()
     return;
   }
 
-  PlotLine *ema = getEMA(in, period);
-  PlotLine *ema2 = getEMA(ema, period);
-  PlotLine *ema3 = getEMA(ema2, period);
+  PlotLine *ema = getMA(in, IndicatorPlugin::EMA, period);
+  
+  PlotLine *ema2 = getMA(ema, IndicatorPlugin::EMA, period);
+  
+  PlotLine *ema3 = getMA(ema2, IndicatorPlugin::EMA, period);
   int emaLoop = ema3->getSize() - 1;
 
   PlotLine *trix = new PlotLine();
@@ -143,72 +145,83 @@ int TRIX::indicatorPrefDialog (QWidget *w)
 
 void TRIX::loadIndicatorSettings (QString file)
 {
-  setDefaults();
-  
-  QDict<QString> dict = loadFile(file);
-  if (! dict.count())
-    return;
-  
-  QString *s = dict["color"];
-  if (s)
-    color.setNamedColor(s->left(s->length()));
-    
-  s = dict["lineType"];
-  if (s)
-    lineType = (PlotLine::LineType) s->left(s->length()).toInt();
-
-  s = dict["period"];
-  if (s)
-    period = s->left(s->length()).toInt();
-
-  s = dict["label"];
-  if (s)
-    label = s->left(s->length());
-      
-  s = dict["input"];
-  if (s)
-    input = (BarData::InputType) s->left(s->length()).toInt();
-  
-  s = dict["trigColor"];
-  if (s)
-    trigColor.setNamedColor(s->left(s->length()));
-    
-  s = dict["trigLineType"];
-  if (s)
-    trigLineType = (PlotLine::LineType) s->left(s->length()).toInt();
-
-  s = dict["tperiod"];
-  if (s)
-    tperiod = s->left(s->length()).toInt();
-
-  s = dict["trigLabel"];
-  if (s)
-    trigLabel = s->left(s->length());
-  
-  s = dict["maType"];
-  if (s)
-    maType = (IndicatorPlugin::MAType) s->left(s->length()).toInt();
+  setIndicatorSettings(loadFile(file));
 }
 
 void TRIX::saveIndicatorSettings (QString file)
 {
-  QDict<QString>dict;
-  dict.setAutoDelete(TRUE);
+  saveFile(file, getIndicatorSettings());
+}
 
-  dict.replace("color", new QString(color.name()));
-  dict.replace("lineType", new QString(QString::number(lineType)));
-  dict.replace("period", new QString(QString::number(period)));
-  dict.replace("label", new QString(label));
-  dict.replace("input", new QString(QString::number(input)));
+void TRIX::setIndicatorSettings (Setting dict)
+{
+  setDefaults();
+  
+  if (! dict.count())
+    return;
+  
+  QString s = dict.getData("color");
+  if (s.length())
+    color.setNamedColor(s);
+    
+  s = dict.getData("lineType");
+  if (s.length())
+    lineType = (PlotLine::LineType) s.toInt();
 
-  dict.replace("trigColor", new QString(trigColor.name()));
-  dict.replace("trigLineType", new QString(QString::number(trigLineType)));
-  dict.replace("tperiod", new QString(QString::number(tperiod)));
-  dict.replace("trigLabel", new QString(trigLabel));
-  dict.replace("maType", new QString(QString::number(maType)));
-  dict.replace("plugin", new QString(pluginName));
+  s = dict.getData("period");
+  if (s.length())
+    period = s.toInt();
 
-  saveFile(file, dict);
+  s = dict.getData("label");
+  if (s.length())
+    label = s;
+      
+  s = dict.getData("input");
+  if (s.length())
+    input = (BarData::InputType) s.toInt();
+  
+  s = dict.getData("trigColor");
+  if (s.length())
+    trigColor.setNamedColor(s);
+    
+  s = dict.getData("trigLineType");
+  if (s.length())
+    trigLineType = (PlotLine::LineType) s.toInt();
+
+  s = dict.getData("tperiod");
+  if (s.length())
+    tperiod = s.toInt();
+
+  s = dict.getData("trigLabel");
+  if (s.length())
+    trigLabel = s;
+  
+  s = dict.getData("maType");
+  if (s.length())
+    maType = (IndicatorPlugin::MAType) s.toInt();
+
+  s = dict.getData("customInput");
+  if (s.length())
+    customInput = s;
+}
+
+Setting TRIX::getIndicatorSettings ()
+{
+  Setting dict;
+  dict.setData("color", color.name());
+  dict.setData("lineType", QString::number(lineType));
+  dict.setData("period", QString::number(period));
+  dict.setData("label", label);
+  dict.setData("input", QString::number(input));
+
+  dict.setData("trigColor", trigColor.name());
+  dict.setData("trigLineType", QString::number(trigLineType));
+  dict.setData("tperiod", QString::number(tperiod));
+  dict.setData("trigLabel", trigLabel);
+  dict.setData("maType", QString::number(maType));
+  dict.setData("customInput", customInput);
+  dict.setData("plugin", pluginName);
+  return dict;
 }
 
 PlotLine * TRIX::calculateCustom (QDict<PlotLine> *d)
@@ -217,28 +230,6 @@ PlotLine * TRIX::calculateCustom (QDict<PlotLine> *d)
   clearOutput();
   calculate();
   return output.at(0);
-}
-
-QString TRIX::getCustomSettings ()
-{
-  QString s("TRIX");
-  s.append("," + customInput);
-  s.append("," + QString::number(period));
-  s.append("," + color.name());
-  s.append("," + QString::number(lineType));
-  s.append("," + label);
-  return s;
-}
-
-void TRIX::setCustomSettings (QString d)
-{
-  customFlag = TRUE;
-  QStringList l = QStringList::split(",", d, FALSE);
-  customInput = l[1];
-  period = l[2].toInt();
-  color.setNamedColor(l[3]);
-  lineType = (PlotLine::LineType) l[4].toInt();
-  label = l[5];
 }
 
 Plugin * create ()

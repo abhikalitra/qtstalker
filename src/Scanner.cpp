@@ -178,13 +178,11 @@ void Scanner::scan ()
       continue;
     }
 
-    QStringList l;
     int loop2;
     for (loop2 = 0; loop2 < list->getLines(); loop2++)
-      l.append(list->getLine(loop2));
+      plug->setCustomFunction(list->getLine(loop2));
   
     // load the CUS plugin and calculate
-    plug->setCustomFunction(l.join("|"));
     plug->setIndicatorInput(recordList);
     plug->calculate();
     PlotLine *line = plug->getIndicatorLine(0);

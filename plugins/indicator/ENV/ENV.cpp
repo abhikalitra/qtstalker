@@ -161,79 +161,95 @@ int ENV::indicatorPrefDialog (QWidget *w)
 
 void ENV::loadIndicatorSettings (QString file)
 {
-  setDefaults();
-  
-  QDict<QString> dict = loadFile(file);
-  if (! dict.count())
-    return;
-  
-  QString *s = dict["period"];
-  if (s)
-    period = s->left(s->length()).toInt();
-  
-  s = dict["maType"];
-  if (s)
-    maType = (IndicatorPlugin::MAType) s->left(s->length()).toInt();
-
-  s = dict["input"];
-  if (s)
-    input = (BarData::InputType) s->left(s->length()).toInt();
-      
-  s = dict["upperColor"];
-  if (s)
-    upperColor.setNamedColor(s->left(s->length()));
-    
-  s = dict["upperLineType"];
-  if (s)
-    upperLineType = (PlotLine::LineType) s->left(s->length()).toInt();
-
-  s = dict["upperLabel"];
-  if (s)
-    upperLabel = s->left(s->length());
-      
-  s = dict["upperPercent"];
-  if (s)
-    upperPercent = s->left(s->length()).toFloat();
-    
-  s = dict["lowerColor"];
-  if (s)
-    lowerColor.setNamedColor(s->left(s->length()));
-    
-  s = dict["lowerLineType"];
-  if (s)
-    lowerLineType = (PlotLine::LineType) s->left(s->length()).toInt();
-
-  s = dict["lowerLabel"];
-  if (s)
-    lowerLabel = s->left(s->length());
-      
-  s = dict["lowerPercent"];
-  if (s)
-    lowerPercent = s->left(s->length()).toFloat();
+  setIndicatorSettings(loadFile(file));
 }
 
 void ENV::saveIndicatorSettings (QString file)
 {
-  QDict<QString>dict;
-  dict.setAutoDelete(TRUE);
+  saveFile(file, getIndicatorSettings());
+}
 
-  dict.replace("period", new QString(QString::number(period)));
-  dict.replace("maType", new QString(QString::number(maType)));
-  dict.replace("input", new QString(QString::number(input)));
+void ENV::setIndicatorSettings (Setting dict)
+{
+  setDefaults();
   
-  dict.replace("upperColor", new QString(upperColor.name()));
-  dict.replace("upperLineType", new QString(QString::number(upperLineType)));
-  dict.replace("upperLabel", new QString(upperLabel));
-  dict.replace("upperPercent", new QString(QString::number(upperPercent)));
+  if (! dict.count())
+    return;
   
-  dict.replace("lowerColor", new QString(lowerColor.name()));
-  dict.replace("lowerLineType", new QString(QString::number(lowerLineType)));
-  dict.replace("lowerLabel", new QString(lowerLabel));
-  dict.replace("lowerPercent", new QString(QString::number(lowerPercent)));
+  QString s = dict.getData("period");
+  if (s.length())
+    period = s.toInt();
+  
+  s = dict.getData("maType");
+  if (s.length())
+    maType = (IndicatorPlugin::MAType) s.toInt();
 
-  dict.replace("plugin", new QString(pluginName));
+  s = dict.getData("input");
+  if (s.length())
+    input = (BarData::InputType) s.toInt();
+      
+  s = dict.getData("upperColor");
+  if (s.length())
+    upperColor.setNamedColor(s);
+    
+  s = dict.getData("upperLineType");
+  if (s.length())
+    upperLineType = (PlotLine::LineType) s.toInt();
+
+  s = dict.getData("upperLabel");
+  if (s.length())
+    upperLabel = s;
+      
+  s = dict.getData("upperPercent");
+  if (s.length())
+    upperPercent = s.toFloat();
+    
+  s = dict.getData("lowerColor");
+  if (s.length())
+    lowerColor.setNamedColor(s);
+    
+  s = dict.getData("lowerLineType");
+  if (s.length())
+    lowerLineType = (PlotLine::LineType) s.toInt();
+
+  s = dict.getData("lowerLabel");
+  if (s.length())
+    lowerLabel = s;
+      
+  s = dict.getData("lowerPercent");
+  if (s.length())
+    lowerPercent = s.toFloat();
+
+  s = dict.getData("customBand");
+  if (s.length())
+    customBand = s;
+
+  s = dict.getData("customInput");
+  if (s.length())
+    customInput = s;
+}
+
+Setting ENV::getIndicatorSettings ()
+{
+  Setting dict;
+  dict.setData("period", QString::number(period));
+  dict.setData("maType", QString::number(maType));
+  dict.setData("input", QString::number(input));
   
-  saveFile(file, dict);
+  dict.setData("upperColor", upperColor.name());
+  dict.setData("upperLineType", QString::number(upperLineType));
+  dict.setData("upperLabel", upperLabel);
+  dict.setData("upperPercent", QString::number(upperPercent));
+  
+  dict.setData("lowerColor", lowerColor.name());
+  dict.setData("lowerLineType", QString::number(lowerLineType));
+  dict.setData("lowerLabel", lowerLabel);
+  dict.setData("lowerPercent", QString::number(lowerPercent));
+
+  dict.setData("customBand", customBand);
+  dict.setData("customInput", customInput);
+  dict.setData("plugin", pluginName);
+  return dict;
 }
 
 PlotLine * ENV::calculateCustom (QDict<PlotLine> *d)
@@ -245,53 +261,6 @@ PlotLine * ENV::calculateCustom (QDict<PlotLine> *d)
     return output.at(0);
   else
     return output.at(1);
-}
-
-QString ENV::getCustomSettings ()
-{
-  QString s("ENV");
-  s.append("," + QString::number(maType));
-  s.append("," + QString::number(period));
-  s.append("," + QString::number(input));
-  
-  s.append("," + upperColor.name());
-  s.append("," + QString::number(upperLineType));
-  s.append("," + upperLabel);
-  s.append("," + QString::number(upperPercent));
-  
-  s.append("," + lowerColor.name());
-  s.append("," + QString::number(lowerLineType));
-  s.append("," + lowerLabel);
-  s.append("," + QString::number(lowerPercent));
-
-  s.append("," + customBand);
-  s.append("," + customInput);
-    
-  return s;
-}
-
-void ENV::setCustomSettings (QString d)
-{
-  customFlag = TRUE;
-
-  QStringList l = QStringList::split(",", d, FALSE);
-  maType = (IndicatorPlugin::MAType) l[1].toInt();
-  period = l[2].toInt();
-  input = (BarData::InputType) l[3].toInt();
-  
-  upperColor.setNamedColor(l[4]);
-  upperLineType = (PlotLine::LineType) l[5].toInt();
-  upperLabel = l[6];
-  upperPercent = l[7].toDouble();
-
-  lowerColor.setNamedColor(l[8]);
-  lowerLineType = (PlotLine::LineType) l[9].toInt();
-  lowerLabel = l[10];
-  lowerPercent = l[11].toDouble();
-  
-  customBand = l[12];
-  customInput = l[13];
-  
 }
 
 Plugin * create ()

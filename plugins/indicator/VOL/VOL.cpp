@@ -44,7 +44,6 @@ void VOL::setDefaults ()
   volLabel = "VOL";
   maLabel = "MAVol";
   period = 0;
-  displace = 0;
   maType = IndicatorPlugin::SMA;
 }
 
@@ -96,7 +95,6 @@ int VOL::indicatorPrefDialog (QWidget *w)
   dialog->addTextItem(tr("MA Label"), tr("MA"), maLabel);
   dialog->addComboItem(tr("MA Line Type"), tr("MA"), lineTypes, maLineType);
   dialog->addComboItem(tr("MA Type"), tr("MA"), maTypeList, maType);
-  dialog->addIntItem(tr("Displacement"), tr("MA"), displace, 0, 99999999);
   
   int rc = dialog->exec();
   
@@ -112,7 +110,6 @@ int VOL::indicatorPrefDialog (QWidget *w)
     maLabel = dialog->getText(tr("MA Label"));
     maLineType = (PlotLine::LineType) dialog->getComboIndex(tr("MA Line Type"));
     maType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("MA Type"));
-    displace = dialog->getInt(tr("Displacement"));
     
     rc = TRUE;
   }
@@ -125,71 +122,72 @@ int VOL::indicatorPrefDialog (QWidget *w)
 
 void VOL::loadIndicatorSettings (QString file)
 {
-  setDefaults();
-  
-  QDict<QString> dict = loadFile(file);
-  if (! dict.count())
-    return;
-  
-  QString *s = dict["upColor"];
-  if (s)
-    upColor.setNamedColor(s->left(s->length()));
-    
-  s = dict["downColor"];
-  if (s)
-    downColor.setNamedColor(s->left(s->length()));
-    
-  s = dict["volLabel"];
-  if (s)
-    volLabel = s->left(s->length());
-        
-  s = dict["volLineType"];
-  if (s)
-    volLineType = (PlotLine::LineType) s->left(s->length()).toInt();
-        
-  s = dict["maColor"];
-  if (s)
-    maColor.setNamedColor(s->left(s->length()));
-        
-  s = dict["maPeriod"];
-  if (s)
-    period = s->left(s->length()).toInt();
-	
-  s = dict["maLabel"];
-  if (s)
-    maLabel = s->left(s->length());
-        
-  s = dict["maLineType"];
-  if (s)
-    maLineType = (PlotLine::LineType) s->left(s->length()).toInt();
-        
-  s = dict["maType"];
-  if (s)
-    maType = (IndicatorPlugin::MAType) s->left(s->length()).toInt();
-        
-  s = dict["maDisplace"];
-  if (s)
-    displace = s->left(s->length()).toInt();
+  setIndicatorSettings(loadFile(file));
 }
 
 void VOL::saveIndicatorSettings (QString file)
 {
-  QDict<QString>dict;
-  dict.setAutoDelete(TRUE);
+  saveFile(file, getIndicatorSettings());
+}
 
-  dict.replace("upColor", new QString(upColor.name()));
-  dict.replace("downColor", new QString(downColor.name()));
-  dict.replace("volLabel", new QString(volLabel));
-  dict.replace("volLineType", new QString(QString::number(volLineType)));
-  dict.replace("maColor", new QString(maColor.name()));
-  dict.replace("maPeriod", new QString(QString::number(period)));
-  dict.replace("maLabel", new QString(maLabel));
-  dict.replace("maLineType", new QString(QString::number(maLineType)));
-  dict.replace("maType", new QString(QString::number(maType)));
-  dict.replace("maDisplace", new QString(QString::number(displace)));
-  dict.replace("plugin", new QString(pluginName));
+void VOL::setIndicatorSettings (Setting dict)
+{
+  setDefaults();
   
-  saveFile(file, dict);
+  if (! dict.count())
+    return;
+  
+  QString s = dict.getData("upColor");
+  if (s.length())
+    upColor.setNamedColor(s);
+    
+  s = dict.getData("downColor");
+  if (s.length())
+    downColor.setNamedColor(s);
+    
+  s = dict.getData("volLabel");
+  if (s.length())
+    volLabel = s;
+        
+  s = dict.getData("volLineType");
+  if (s.length())
+    volLineType = (PlotLine::LineType) s.toInt();
+        
+  s = dict.getData("maColor");
+  if (s.length())
+    maColor.setNamedColor(s);
+        
+  s = dict.getData("maPeriod");
+  if (s.length())
+    period = s.toInt();
+	
+  s = dict.getData("maLabel");
+  if (s.length())
+    maLabel = s;
+        
+  s = dict.getData("maLineType");
+  if (s.length())
+    maLineType = (PlotLine::LineType) s.toInt();
+        
+  s = dict.getData("maType");
+  if (s.length())
+    maType = (IndicatorPlugin::MAType) s.toInt();
+}
+
+Setting VOL::getIndicatorSettings ()
+{
+  Setting dict;
+  dict.setData("upColor", upColor.name());
+  dict.setData("downColor", downColor.name());
+  dict.setData("volLabel", volLabel);
+  dict.setData("volLineType", QString::number(volLineType));
+  dict.setData("maColor", maColor.name());
+  dict.setData("maPeriod", QString::number(period));
+  dict.setData("maLabel", maLabel);
+  dict.setData("maLineType", QString::number(maLineType));
+  dict.setData("maType", QString::number(maType));
+  dict.setData("plugin", pluginName);
+  return dict;
 }
 
 Plugin * create ()

@@ -129,61 +129,72 @@ int MAOSC::indicatorPrefDialog (QWidget *w)
 
 void MAOSC::loadIndicatorSettings (QString file)
 {
-  setDefaults();
-  
-  QDict<QString> dict = loadFile(file);
-  if (! dict.count())
-    return;
-  
-  QString *s = dict["color"];
-  if (s)
-    color.setNamedColor(s->left(s->length()));
-    
-  s = dict["lineType"];
-  if (s)
-    lineType = (PlotLine::LineType) s->left(s->length()).toInt();
-
-  s = dict["fastPeriod"];
-  if (s)
-    fastPeriod = s->left(s->length()).toInt();
-
-  s = dict["slowPeriod"];
-  if (s)
-    slowPeriod = s->left(s->length()).toInt();
-  
-  s = dict["label"];
-  if (s)
-    label = s->left(s->length());
-      
-  s = dict["fastMaType"];
-  if (s)
-    fastMaType = (IndicatorPlugin::MAType) s->left(s->length()).toInt();
-    
-  s = dict["slowMaType"];
-  if (s)
-    slowMaType = (IndicatorPlugin::MAType) s->left(s->length()).toInt();
-  
-  s = dict["input"];
-  if (s)
-    input = (BarData::InputType) s->left(s->length()).toInt();
+  setIndicatorSettings(loadFile(file));
 }
 
 void MAOSC::saveIndicatorSettings (QString file)
 {
-  QDict<QString>dict;
-  dict.setAutoDelete(TRUE);
+  saveFile(file, getIndicatorSettings());
+}
 
-  dict.replace("color", new QString(color.name()));
-  dict.replace("lineType", new QString(QString::number(lineType)));
-  dict.replace("fastPeriod", new QString(QString::number(fastPeriod)));
-  dict.replace("slowPeriod", new QString(QString::number(slowPeriod)));
-  dict.replace("label", new QString(label));
-  dict.replace("fastMaType", new QString(QString::number(fastMaType)));
-  dict.replace("slowMaType", new QString(QString::number(slowMaType)));
-  dict.replace("input", new QString(QString::number(input)));
-  dict.replace("plugin", new QString(pluginName));
+void MAOSC::setIndicatorSettings (Setting dict)
+{
+  setDefaults();
+  
+  if (! dict.count())
+    return;
+  
+  QString s = dict.getData("color");
+  if (s.length())
+    color.setNamedColor(s);
+    
+  s = dict.getData("lineType");
+  if (s.length())
+    lineType = (PlotLine::LineType) s.toInt();
 
-  saveFile(file, dict);
+  s = dict.getData("fastPeriod");
+  if (s.length())
+    fastPeriod = s.toInt();
+
+  s = dict.getData("slowPeriod");
+  if (s.length())
+    slowPeriod = s.toInt();
+  
+  s = dict.getData("label");
+  if (s.length())
+    label = s;
+      
+  s = dict.getData("fastMaType");
+  if (s.length())
+    fastMaType = (IndicatorPlugin::MAType) s.toInt();
+    
+  s = dict.getData("slowMaType");
+  if (s.length())
+    slowMaType = (IndicatorPlugin::MAType) s.toInt();
+  
+  s = dict.getData("input");
+  if (s.length())
+    input = (BarData::InputType) s.toInt();
+
+  s = dict.getData("customInput");
+  if (s.length())
+    customInput = s;
+}
+
+Setting MAOSC::getIndicatorSettings ()
+{
+  Setting dict;
+  dict.setData("color", color.name());
+  dict.setData("lineType", QString::number(lineType));
+  dict.setData("fastPeriod", QString::number(fastPeriod));
+  dict.setData("slowPeriod", QString::number(slowPeriod));
+  dict.setData("label", label);
+  dict.setData("fastMaType", QString::number(fastMaType));
+  dict.setData("slowMaType", QString::number(slowMaType));
+  dict.setData("input", QString::number(input));
+  dict.setData("customInput", customInput);
+  dict.setData("plugin", pluginName);
+  return dict;
 }
 
 PlotLine * MAOSC::calculateCustom (QDict<PlotLine> *d)
@@ -192,34 +203,6 @@ PlotLine * MAOSC::calculateCustom (QDict<PlotLine> *d)
   clearOutput();
   calculate();
   return output.at(0);
-}
-
-QString MAOSC::getCustomSettings ()
-{
-  QString s("MAOSC");
-  s.append("," + customInput);
-  s.append("," + QString::number(fastMaType));
-  s.append("," + QString::number(slowMaType));
-  s.append("," + QString::number(fastPeriod));
-  s.append("," + QString::number(slowPeriod));
-  s.append("," + color.name());
-  s.append("," + QString::number(lineType));
-  s.append("," + label);
-  return s;
-}
-
-void MAOSC::setCustomSettings (QString d)
-{
-  customFlag = TRUE;
-  QStringList l = QStringList::split(",", d, FALSE);
-  customInput = l[1];
-  fastMaType = (IndicatorPlugin::MAType) l[2].toInt();
-  slowMaType = (IndicatorPlugin::MAType) l[3].toInt();
-  fastPeriod = l[4].toInt();
-  slowPeriod = l[5].toInt();
-  color.setNamedColor(l[6]);
-  lineType = (PlotLine::LineType) l[7].toInt();
-  label = l[8];
 }
 
 Plugin * create ()

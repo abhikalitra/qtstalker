@@ -192,13 +192,10 @@ void Bars::prefDialog (QWidget *)
     {
       formulaList.append(dialog->getLine(loop));
       
-      QStringList l = QStringList::split(",", formulaList[loop], FALSE);
-      if (! l[0].compare("COMP"))
-      {
-        QStringList l2 = QStringList::split("|", formulaList[loop], FALSE);
-        if (l2[1].toInt())
-          flag = TRUE;
-      }
+      Setting set;
+      set.parse(dialog->getLine(loop));
+      if (! set.getData("plugin").compare("COMP"))
+        flag = TRUE;
     }
   
     if (! flag)
@@ -236,10 +233,10 @@ void Bars::loadSettings ()
   paintDownColor.setNamedColor(settings.readEntry("/paintDownColor", "red"));
 
   QString s = settings.readEntry("/formula");
-  QStringList l = QStringList::split("|", s, FALSE);
+  QStringList l = QStringList::split(",", s, FALSE);
   int loop;
-  for (loop = 0; loop < (int) l.count(); loop = loop + 2)
-    formulaList.append(l[loop] + "|" + l[loop + 1]);
+  for (loop = 0; loop < (int) l.count(); loop++)
+    formulaList.append(l[loop]);
     
   settings.endGroup();
 }
@@ -264,7 +261,7 @@ void Bars::saveSettings ()
   settings.writeEntry("/paintUpColor", paintUpColor.name());
   settings.writeEntry("/paintDownColor", paintDownColor.name());
   
-  settings.writeEntry("/formula", formulaList.join("|"));
+  settings.writeEntry("/formula", formulaList.join(","));
   
   settings.endGroup();
 }
@@ -283,7 +280,9 @@ PlotLine * Bars::getBoolLine ()
   }
 
   // load the CUS plugin and calculate
-  plug->setCustomFunction(formulaList.join("|"));
+  int loop;
+  for(loop = 0; loop < (int) formulaList.count(); loop++)
+    plug->setCustomFunction(formulaList[loop]);
   plug->setIndicatorInput(data);
   plug->calculate();
   line = plug->getIndicatorLine(0);

@@ -31,6 +31,8 @@ class VOL : public IndicatorPlugin
     void saveIndicatorSettings (QString);
     int indicatorPrefDialog (QWidget *);
     void setDefaults();
+    Setting getIndicatorSettings ();
+    void setIndicatorSettings (Setting);
 
   private:
     QColor upColor;
@@ -41,7 +43,6 @@ class VOL : public IndicatorPlugin
     QString volLabel;
     QString maLabel;
     int period;
-    int displace;
     IndicatorPlugin::MAType maType;
 };
 

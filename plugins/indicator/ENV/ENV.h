@@ -32,8 +32,8 @@ class ENV : public IndicatorPlugin
     int indicatorPrefDialog (QWidget *);
     void setDefaults();
     PlotLine * calculateCustom (QDict<PlotLine> *);
-    QString getCustomSettings ();
-    void setCustomSettings (QString);
+    Setting getIndicatorSettings ();
+    void setIndicatorSettings (Setting);
     
   private:
     QColor upperColor;

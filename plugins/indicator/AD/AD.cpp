@@ -101,36 +101,12 @@ int AD::indicatorPrefDialog (QWidget *w)
 
 void AD::loadIndicatorSettings (QString file)
 {
-  setDefaults();
-  
-  QDict<QString> dict = loadFile(file);
-  if (! dict.count())
-    return;
-  
-  QString *s = dict["color"];
-  if (s)
-    color.setNamedColor(s->left(s->length()));
-    
-  s = dict["label"];
-  if (s)
-    label = s->left(s->length());
-        
-  s = dict["lineType"];
-  if (s)
-    lineType = (PlotLine::LineType) s->left(s->length()).toInt();
+  setIndicatorSettings(loadFile(file));
 }
 
 void AD::saveIndicatorSettings (QString file)
 {
-  QDict<QString>dict;
-  dict.setAutoDelete(TRUE);
-
-  dict.replace("color", new QString(color.name()));
-  dict.replace("label", new QString(label));
-  dict.replace("lineType", new QString(QString::number(lineType)));
-  dict.replace("plugin", new QString(pluginName));
-
-  saveFile(file, dict);
+  saveFile(file, getIndicatorSettings());
 }
 
 PlotLine * AD::calculateCustom (QDict<PlotLine> *)
@@ -140,23 +116,34 @@ PlotLine * AD::calculateCustom (QDict<PlotLine> *)
   return output.at(0);
 }
 
-QString AD::getCustomSettings ()
+Setting AD::getIndicatorSettings ()
 {
-  QString s("AD");
-  s.append("," + color.name());
-  s.append("," + QString::number(lineType));
-  s.append("," + label);
-  return s;
+  Setting dict;
+  dict.setData("color", color.name());
+  dict.setData("label", label);
+  dict.setData("lineType", QString::number(lineType));
+  dict.setData("plugin", pluginName);
+  return dict;
 }
 
-void AD::setCustomSettings (QString d)
+void AD::setIndicatorSettings (Setting dict)
 {
-  customFlag = TRUE;
-
-  QStringList l = QStringList::split(",", d, FALSE);
-  color.setNamedColor(l[1]);
-  lineType = (PlotLine::LineType) l[2].toInt();
-  label = l[3];
+  setDefaults();
+  
+  if (! dict.count())
+    return;
+  
+  QString s = dict.getData("color");
+  if (s.length())
+    color.setNamedColor(s);
+    
+  s = dict.getData("label");
+  if (s.length())
+    label = s;
+        
+  s = dict.getData("lineType");
+  if (s.length())
+    lineType = (PlotLine::LineType) s.toInt();
 }
 
 Plugin * create ()

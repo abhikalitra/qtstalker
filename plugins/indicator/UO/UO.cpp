@@ -48,13 +48,13 @@ void UO::calculate ()
 {
   PlotLine *trg = getTR();
 
-  PlotLine *atr = getSMA(trg, shortPeriod);
+  PlotLine *atr = getMA(trg, IndicatorPlugin::SMA, shortPeriod);
   int atrLoop = atr->getSize() - 1;
 
-  PlotLine *atr2 = getSMA(trg, medPeriod);
+  PlotLine *atr2 = getMA(trg, IndicatorPlugin::SMA, medPeriod);
   int atr2Loop = atr2->getSize() - 1;
 
-  PlotLine *atr3 = getSMA(trg, longPeriod);
+  PlotLine *atr3 = getMA(trg, IndicatorPlugin::SMA, longPeriod);
   int atr3Loop = atr3->getSize() - 1;
 
   PlotLine *f = new PlotLine();
@@ -63,13 +63,13 @@ void UO::calculate ()
   for (loop = 0; loop < (int) data->count(); loop++)
     f->append(data->getClose(loop) - data->getLow(loop));
 
-  PlotLine *sma = getSMA(f, shortPeriod);
+  PlotLine *sma = getMA(f, IndicatorPlugin::SMA, shortPeriod);
   int smaLoop = sma->getSize() - 1;
 
-  PlotLine *sma2 = getSMA(f, medPeriod);
+  PlotLine *sma2 = getMA(f, IndicatorPlugin::SMA, medPeriod);
   int sma2Loop = sma2->getSize() - 1;
 
-  PlotLine *sma3 = getSMA(f, longPeriod);
+  PlotLine *sma3 = getMA(f, IndicatorPlugin::SMA, longPeriod);
   int sma3Loop = sma3->getSize() - 1;
 
   PlotLine *uo = new PlotLine();
@@ -139,51 +139,57 @@ int UO::indicatorPrefDialog (QWidget *w)
 
 void UO::loadIndicatorSettings (QString file)
 {
-  setDefaults();
-  
-  QDict<QString> dict = loadFile(file);
-  if (! dict.count())
-    return;
-  
-  QString *s = dict["color"];
-  if (s)
-    color.setNamedColor(s->left(s->length()));
-    
-  s = dict["lineType"];
-  if (s)
-    lineType = (PlotLine::LineType) s->left(s->length()).toInt();
-
-  s = dict["label"];
-  if (s)
-    label = s->left(s->length());
-
-  s = dict["shortPeriod"];
-  if (s)
-    shortPeriod = s->left(s->length()).toInt();
-
-  s = dict["medPeriod"];
-  if (s)
-    medPeriod = s->left(s->length()).toInt();
-
-  s = dict["longPeriod"];
-  if (s)
-    longPeriod = s->left(s->length()).toInt();
+  setIndicatorSettings(loadFile(file));
 }
 
 void UO::saveIndicatorSettings (QString file)
 {
-  QDict<QString>dict;
-  dict.setAutoDelete(TRUE);
+  saveFile(file, getIndicatorSettings());
+}
 
-  dict.replace("color", new QString(color.name()));
-  dict.replace("lineType", new QString(QString::number(lineType)));
-  dict.replace("label", new QString(label));
-  dict.replace("shortPeriod", new QString(QString::number(shortPeriod)));
-  dict.replace("medPeriod", new QString(QString::number(medPeriod)));
-  dict.replace("longPeriod", new QString(QString::number(longPeriod)));
-  dict.replace("plugin", new QString(pluginName));
+void UO::setIndicatorSettings (Setting dict)
+{
+  setDefaults();
+  
+  if (! dict.count())
+    return;
+  
+  QString s = dict.getData("color");
+  if (s.length())
+    color.setNamedColor(s);
+    
+  s = dict.getData("lineType");
+  if (s.length())
+    lineType = (PlotLine::LineType) s.toInt();
 
-  saveFile(file, dict);
+  s = dict.getData("label");
+  if (s.length())
+    label = s;
+
+  s = dict.getData("shortPeriod");
+  if (s.length())
+    shortPeriod = s.toInt();
+
+  s = dict.getData("medPeriod");
+  if (s.length())
+    medPeriod = s.toInt();
+
+  s = dict.getData("longPeriod");
+  if (s.length())
+    longPeriod = s.toInt();
+}
+
+Setting UO::getIndicatorSettings ()
+{
+  Setting dict;
+  dict.setData("color", color.name());
+  dict.setData("lineType", QString::number(lineType));
+  dict.setData("label", label);
+  dict.setData("shortPeriod", QString::number(shortPeriod));
+  dict.setData("medPeriod", QString::number(medPeriod));
+  dict.setData("longPeriod", QString::number(longPeriod));
+  dict.setData("plugin", pluginName);
+  return dict;
 }
 
 PlotLine * UO::calculateCustom (QDict<PlotLine> *)
@@ -193,28 +199,34 @@ PlotLine * UO::calculateCustom (QDict<PlotLine> *)
   return output.at(0);
 }
 
-QString UO::getCustomSettings ()
+PlotLine * UO::getTR ()
 {
-  QString s("UO");
-  s.append("," + QString::number(shortPeriod));
-  s.append("," + QString::number(medPeriod));
-  s.append("," + QString::number(longPeriod));
-  s.append("," + color.name());
-  s.append("," + QString::number(lineType));
-  s.append("," + label);
-  return s;
-}
+  PlotLine *tr = new PlotLine;
+  int loop;
+  for (loop = 0; loop < (int) data->count(); loop++)
+  {
+    double high = data->getHigh(loop);
+    double low = data->getLow(loop);
+    double close;
+    if (loop > 0)
+      close = data->getClose(loop - 1);
+    else
+      close = high;
 
-void UO::setCustomSettings (QString d)
-{
-  customFlag = TRUE;
-  QStringList l = QStringList::split(",", d, FALSE);
-  shortPeriod = l[1].toInt();
-  medPeriod = l[2].toInt();
-  longPeriod = l[3].toInt();
-  color.setNamedColor(l[4]);
-  lineType = (PlotLine::LineType) l[5].toInt();
-  label = l[6];
+    double t = high - low;
+
+    double t2 = fabs(high - close);
+    if (t2 > t)
+      t = t2;
+
+    t2 = fabs(low - close);
+    if (t2 > t)
+      t = t2;
+
+    tr->append(t);
+  }
+  
+  return tr;
 }
 
 Plugin * create ()

@@ -138,81 +138,87 @@ int DMI::indicatorPrefDialog (QWidget *w)
 
 void DMI::loadIndicatorSettings (QString file)
 {
-  setDefaults();
-  
-  QDict<QString> dict = loadFile(file);
-  if (! dict.count())
-    return;
-  
-  QString *s = dict["pdiColor"];
-  if (s)
-    pdiColor.setNamedColor(s->left(s->length()));
-    
-  s = dict["mdiColor"];
-  if (s)
-    mdiColor.setNamedColor(s->left(s->length()));
-  
-  s = dict["adxColor"];
-  if (s)
-    adxColor.setNamedColor(s->left(s->length()));
-    
-  s = dict["period"];
-  if (s)
-    period = (PlotLine::LineType) s->left(s->length()).toInt();
-    
-  s = dict["smoothing"];
-  if (s)
-    smoothing = (PlotLine::LineType) s->left(s->length()).toInt();
-    
-  s = dict["maType"];
-  if (s)
-    maType = (IndicatorPlugin::MAType) s->left(s->length()).toInt();
-    
-  s = dict["pdiLabel"];
-  if (s)
-    pdiLabel = s->left(s->length());
-    
-  s = dict["mdiLabel"];
-  if (s)
-    mdiLabel = s->left(s->length());
-    
-  s = dict["adxLabel"];
-  if (s)
-    adxLabel = s->left(s->length());
-        
-  s = dict["pdiLineType"];
-  if (s)
-    pdiLineType = (PlotLine::LineType) s->left(s->length()).toInt();
-
-  s = dict["mdiLineType"];
-  if (s)
-    mdiLineType = (PlotLine::LineType) s->left(s->length()).toInt();
-
-  s = dict["adxLineType"];
-  if (s)
-    adxLineType = (PlotLine::LineType) s->left(s->length()).toInt();
+  setIndicatorSettings(loadFile(file));
 }
 
 void DMI::saveIndicatorSettings (QString file)
 {
-  QDict<QString>dict;
-  dict.setAutoDelete(TRUE);
-  
-  dict.replace("period", new QString(QString::number(period)));
-  dict.replace("smoothing", new QString(QString::number(smoothing)));
-  dict.replace("maType", new QString(QString::number(maType)));
-  dict.replace("pdiColor", new QString(pdiColor.name()));
-  dict.replace("mdiColor", new QString(mdiColor.name()));
-  dict.replace("adxColor", new QString(adxColor.name()));
-  dict.replace("mdiLineType", new QString(QString::number(mdiLineType)));
-  dict.replace("pdiLineType", new QString(QString::number(pdiLineType)));
-  dict.replace("adxLineType", new QString(QString::number(adxLineType)));
-  dict.replace("pdiLabel", new QString(pdiLabel));
-  dict.replace("mdiLabel", new QString(mdiLabel));
-  dict.replace("adxLabel", new QString(adxLabel));
-  dict.replace("plugin", new QString(pluginName));
+  saveFile(file, getIndicatorSettings());
+}
 
-  saveFile(file, dict);
+void DMI::setIndicatorSettings (Setting dict)
+{
+  setDefaults();
+  
+  if (! dict.count())
+    return;
+  
+  QString s = dict.getData("pdiColor");
+  if (s.length())
+    pdiColor.setNamedColor(s);
+    
+  s = dict.getData("mdiColor");
+  if (s.length())
+    mdiColor.setNamedColor(s);
+  
+  s = dict.getData("adxColor");
+  if (s.length())
+    adxColor.setNamedColor(s);
+    
+  s = dict.getData("period");
+  if (s.length())
+    period = (PlotLine::LineType) s.toInt();
+    
+  s = dict.getData("smoothing");
+  if (s.length())
+    smoothing = (PlotLine::LineType) s.toInt();
+    
+  s = dict.getData("maType");
+  if (s.length())
+    maType = (IndicatorPlugin::MAType) s.toInt();
+    
+  s = dict.getData("pdiLabel");
+  if (s.length())
+    pdiLabel = s;
+    
+  s = dict.getData("mdiLabel");
+  if (s.length())
+    mdiLabel = s;
+    
+  s = dict.getData("adxLabel");
+  if (s.length())
+    adxLabel = s;
+        
+  s = dict.getData("pdiLineType");
+  if (s.length())
+    pdiLineType = (PlotLine::LineType) s.toInt();
+
+  s = dict.getData("mdiLineType");
+  if (s.length())
+    mdiLineType = (PlotLine::LineType) s.toInt();
+
+  s = dict.getData("adxLineType");
+  if (s.length())
+    adxLineType = (PlotLine::LineType) s.toInt();
+}
+
+Setting DMI::getIndicatorSettings ()
+{
+  Setting dict;
+  dict.setData("period", QString::number(period));
+  dict.setData("smoothing", QString::number(smoothing));
+  dict.setData("maType", QString::number(maType));
+  dict.setData("pdiColor", pdiColor.name());
+  dict.setData("mdiColor", mdiColor.name());
+  dict.setData("adxColor", adxColor.name());
+  dict.setData("mdiLineType", QString::number(mdiLineType));
+  dict.setData("pdiLineType", QString::number(pdiLineType));
+  dict.setData("adxLineType", QString::number(adxLineType));
+  dict.setData("pdiLabel", pdiLabel);
+  dict.setData("mdiLabel", mdiLabel);
+  dict.setData("adxLabel", adxLabel);
+  dict.setData("plugin", pluginName);
+  return dict;
 }
 
 PlotLine * DMI::calculateCustom (QDict<PlotLine> *)
@@ -228,45 +234,6 @@ PlotLine * DMI::calculateCustom (QDict<PlotLine> *)
     else
       return output.at(2);
   }
-}
-
-QString DMI::getCustomSettings ()
-{
-  QString s("DMI");
-  s.append("," + QString::number(maType));
-  s.append("," + QString::number(period));
-  s.append("," + QString::number(smoothing));
-  s.append("," + mdiColor.name());
-  s.append("," + QString::number(mdiLineType));
-  s.append("," + mdiLabel);
-  s.append("," + pdiColor.name());
-  s.append("," + QString::number(pdiLineType));
-  s.append("," + pdiLabel);
-  s.append("," + adxColor.name());
-  s.append("," + QString::number(adxLineType));
-  s.append("," + adxLabel);
-  s.append("," + lineRequest);
-  return s;
-}
-
-void DMI::setCustomSettings (QString d)
-{
-  customFlag = TRUE;
-
-  QStringList l = QStringList::split(",", d, FALSE);
-  maType = (IndicatorPlugin::MAType) l[1].toInt();
-  period = l[2].toInt();
-  smoothing = l[3].toInt();
-  mdiColor.setNamedColor(l[4]);
-  mdiLineType = (PlotLine::LineType) l[5].toInt();
-  mdiLabel = l[6];
-  pdiColor.setNamedColor(l[7]);
-  pdiLineType = (PlotLine::LineType) l[8].toInt();
-  pdiLabel = l[9];
-  adxColor.setNamedColor(l[10]);
-  adxLineType = (PlotLine::LineType) l[11].toInt();
-  adxLabel = l[12];
-  lineRequest = l[13];
 }
 
 PlotLine * DMI::getMDI (int period)
@@ -296,10 +263,10 @@ PlotLine * DMI::getMDI (int period)
 
   PlotLine *tr = getTR();
 
-  PlotLine *smamdm = getSMA(mdm, period);
+  PlotLine *smamdm = getMA(mdm, IndicatorPlugin::SMA, period);
   int mdmLoop = smamdm->getSize() - 1;
 
-  PlotLine *smatr = getSMA(tr, period);
+  PlotLine *smatr = getMA(tr, IndicatorPlugin::SMA, period);
   int trLoop = smatr->getSize() - 1;
 
   PlotLine *mdi = new PlotLine();
@@ -353,10 +320,10 @@ PlotLine * DMI::getPDI (int period)
 
   PlotLine *tr = getTR();
 
-  PlotLine *smapdm = getSMA(pdm, period);
+  PlotLine *smapdm = getMA(pdm, IndicatorPlugin::SMA, period);
   int pdmLoop = smapdm->getSize() - 1;
 
-  PlotLine *smatr = getSMA(tr, period);
+  PlotLine *smatr = getMA(tr, IndicatorPlugin::SMA, period);
   int trLoop = smatr->getSize() - 1;
 
   PlotLine *pdi = new PlotLine();
@@ -382,7 +349,7 @@ PlotLine * DMI::getPDI (int period)
   return pdi;
 }
 
-PlotLine * DMI::getADX (PlotLine *mdi, PlotLine *pdi, MAType maType, int period)
+PlotLine * DMI::getADX (PlotLine *mdi, PlotLine *pdi, IndicatorPlugin::MAType type, int period)
 {
   int mdiLoop = mdi->getSize() - 1;
   int pdiLoop = pdi->getSize() - 1;
@@ -417,12 +384,41 @@ PlotLine * DMI::getADX (PlotLine *mdi, PlotLine *pdi, MAType maType, int period)
     diffLoop--;
   }
 
-  PlotLine *adx = getMA(dx, maType, period);
-
+  PlotLine *adx = getMA(dx, type, period);
   delete disum;
   delete didiff;
   delete dx;
   return adx;
+}
+
+PlotLine * DMI::getTR ()
+{
+  PlotLine *tr = new PlotLine;
+  int loop;
+  for (loop = 0; loop < (int) data->count(); loop++)
+  {
+    double high = data->getHigh(loop);
+    double low = data->getLow(loop);
+    double close;
+    if (loop > 0)
+      close = data->getClose(loop - 1);
+    else
+      close = high;
+
+    double t = high - low;
+
+    double t2 = fabs(high - close);
+    if (t2 > t)
+      t = t2;
+
+    t2 = fabs(low - close);
+    if (t2 > t)
+      t = t2;
+
+    tr->append(t);
+  }
+  
+  return tr;
 }
 
 Plugin * create ()
