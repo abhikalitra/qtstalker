@@ -1068,9 +1068,9 @@ void Plot::drawScale ()
 	s.remove(0, 1);  
       }
       
-      if (s.toDouble() >= 1000000)
+      if (s.toDouble() >= 1000000000)
       {
-        s = QString::number(s.toDouble() / 1000000, 'f', 2);
+        s = QString::number(s.toDouble() / 1000000000, 'f', 2);
         if (s.contains(".00"))
           s.truncate(s.length() - 3);
 	else
@@ -1079,13 +1079,13 @@ void Plot::drawScale ()
             s.truncate(s.length() - 1);
 	}
 	
-	s.append("m");
+	s.append("b");
       }
       else
       {
-        if (s.toDouble() >= 1000)
+        if (s.toDouble() >= 1000000)
         {
-          s = QString::number(s.toDouble() / 1000, 'f', 2);
+          s = QString::number(s.toDouble() / 1000000, 'f', 2);
           if (s.contains(".00"))
             s.truncate(s.length() - 3);
 	  else
@@ -1093,8 +1093,24 @@ void Plot::drawScale ()
 	    while (! s.right(1).compare("0"))
               s.truncate(s.length() - 1);
 	  }
+	
+	  s.append("m");
+        }
+        else
+        {
+          if (s.toDouble() >= 1000)
+          {
+            s = QString::number(s.toDouble() / 1000, 'f', 2);
+            if (s.contains(".00"))
+              s.truncate(s.length() - 3);
+	    else
+	    {
+	      while (! s.right(1).compare("0"))
+                s.truncate(s.length() - 1);
+	    }
 	  
-	  s.append("k");
+	    s.append("k");
+	  }
 	}
       }
       
