@@ -23,6 +23,7 @@
 #define FIBOLINE_HPP
 
 #include "ChartObject.h"
+#include <qpointarray.h>
 
 class FiboLine : public ChartObject
 {
@@ -40,6 +41,7 @@ class FiboLine : public ChartObject
     
   public slots:
     void prefDialog ();
+    void selected (int, int);
     
   protected:
     QRegion area2;
@@ -50,6 +52,8 @@ class FiboLine : public ChartObject
     double line4;
     double line5;
     double line6;
+    QPointArray selectionAreaHigh;
+    QPointArray selectionAreaLow;
 };
 
 #endif

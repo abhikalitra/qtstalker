@@ -138,10 +138,16 @@ void FiboLine::draw (int x, int x2)
   // draw the low line
   int y = scaler->convertToY(value2);
   painter.drawLine (x, y, x2, y);
-  
+
+  // store the selectable area the low line occupies
+  selectionAreaLow.putPoints(0, 4, x, y - 4, x, y + 4, x2, y - 4, x2, y + 4);
+    
   // draw the high line
   int y2 = scaler->convertToY(value);
   painter.drawLine (x, y2, x2, y2);
+
+  // store the selectable area the high line occupies
+  selectionAreaHigh.putPoints(0, 4, x, y2 - 4, x, y2 + 4, x2, y2 - 4, x2, y2 + 4);
 
   //bottom left corner
   y = scaler->convertToY(low);
@@ -287,7 +293,28 @@ bool FiboLine::isClicked (int x, int y)
     move2Flag = TRUE;
   }
   
+  if (flag)
+    moveObject();
+  
   return flag;
+}
+
+void FiboLine::selected (int x, int y)
+{
+  if (status)
+    return;
+
+  QRegion r(selectionAreaHigh);
+  if (! r.contains(QPoint(x,y)))
+  {
+    QRegion r2(selectionAreaLow);
+    if (! r2.contains(QPoint(x,y)))
+      return;
+  }
+    
+  status = TRUE;
+  emit signalDraw();
+  emit signalChartObjectSelected(this);
 }
 
 Setting * FiboLine::getSettings ()

@@ -105,7 +105,10 @@ void TrendLine::draw (int x, int x2)
   painter.setPen(color);
 
   painter.drawLine (x, y, x2, y2);
-  
+
+  // store the selectable area the line occupies
+  selectionArea.putPoints(0, 4, x, y - 4, x, y + 4, x2, y2 - 4, x2, y2 + 4);
+    
   QRegion r(x - 4, y - 4, 8, 8, QRegion::Rectangle);
   area = r;
   QRegion r2(x2 - 4, y2 - 4, 8, 8, QRegion::Rectangle);
@@ -216,8 +219,25 @@ bool TrendLine::isClicked (int x, int y)
       flag = TRUE;
     move2Flag = TRUE;
   }
-  
+
+  if (flag)
+    moveObject();
+      
   return flag;
+}
+
+void TrendLine::selected (int x, int y)
+{
+  if (status)
+    return;
+
+  QRegion r(selectionArea);
+  if (! r.contains(QPoint(x,y)))
+    return;
+    
+  status = TRUE;
+  emit signalDraw();
+  emit signalChartObjectSelected(this);
 }
 
 Setting * TrendLine::getSettings ()
