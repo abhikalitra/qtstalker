@@ -12,6 +12,8 @@
 
 - Repackaged the db source to minimize size.
 
+- Removed the CBOT plugin code. Given up hope for a work around.
+
 
 0.22
 ====
@@ -38,7 +40,7 @@
 
 - Added an additional include path to all the plugins to help in compiling with older qmake versions. (Debian).
 
-- Applied patch #816871 from Marco Van Zwetselaar. This is a new quote plugin (MySQL) that allows the user to import quote data from
+- Applied patch #816871 from Marco van Zwetselaar. This is a new quote plugin (MySQL) that allows the user to import quote data from
   MySQL db's into Qtstalker format. Added a function to the qtstalker.pro file to make a conditional compile of this plugin if the 
   mysql.h header file can be found. If not found, the plugin will not be compiled.
 
