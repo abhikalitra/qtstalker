@@ -93,18 +93,26 @@ QtstalkerApp::QtstalkerApp()
   navSplitter->setOrientation(Horizontal);
   hbox->addWidget(navSplitter);
 
-  navTab = new QTabWidget(navSplitter);
+  QWidget *tw = new QWidget(navSplitter);
+  QVBoxLayout *vbox = new QVBoxLayout(tw);
+
+  navTab = new QTabWidget(tw);
+  vbox->addWidget(navTab, 1, 0);
 
   initChartNav();
   initGroupNav();
   initPortfolioNav();
   initTestNav();
 
+  infoLabel = new QLabel(tw);
+  infoLabel->setAlignment(AlignTop | AlignLeft);
+  vbox->addWidget(infoLabel, 1, 0);
+
   // construct the chart areas
 
   QWidget *chartBase = new QWidget(navSplitter);
 
-  QVBoxLayout *vbox = new QVBoxLayout(chartBase);
+  vbox = new QVBoxLayout(chartBase);
 
   split = new QSplitter(chartBase);
   split->setOrientation(Vertical);
@@ -117,6 +125,7 @@ QtstalkerApp::QtstalkerApp()
   QObject::connect(mainPlot, SIGNAL(rightMouseButton()), this, SLOT(mainPlotPopupMenu()));
   QObject::connect(mainPlot, SIGNAL(statusMessage(QString)), this, SLOT(slotStatusMessage(QString)));
   QObject::connect(mainPlot, SIGNAL(chartObjectCreated(Setting *)), this, SLOT(slotChartObjectCreated(Setting *)));
+  QObject::connect(mainPlot, SIGNAL(infoMessage(Setting *)), this, SLOT(slotUpdateInfo(Setting *)));
 
   tabs = new QTabWidget(split);
   QObject::connect(tabs, SIGNAL(currentChanged(QWidget *)), this, SLOT(slotTabChanged(QWidget *)));
@@ -1418,6 +1427,7 @@ void QtstalkerApp::addIndicatorButton (QString d)
   QObject::connect(plot, SIGNAL(rightMouseButton()), this, SLOT(indicatorPlotPopupMenu()));
   QObject::connect(plot, SIGNAL(statusMessage(QString)), this, SLOT(slotStatusMessage(QString)));
   QObject::connect(plot, SIGNAL(chartObjectCreated(Setting *)), this, SLOT(slotChartObjectCreated(Setting *)));
+  QObject::connect(plot, SIGNAL(infoMessage(Setting *)), this, SLOT(slotUpdateInfo(Setting *)));
   plotList.replace(d, plot);
   plot->setGridFlag(config->getData(Config::Grid).toInt());
   plot->setScaleToScreen(config->getData(Config::ScaleToScreen).toInt());
@@ -1542,6 +1552,25 @@ void QtstalkerApp::slotHideNav (bool d)
     navTab->show();
   else
     navTab->hide();
+}
+
+void QtstalkerApp::slotUpdateInfo (Setting *r)
+{
+  QStringList l = r->getKeyList();
+  l.sort();
+  int loop;
+  QString s;
+  for (loop = 0; loop < (int) l.count(); loop++)
+  {
+    s.append(l[loop]);
+    s.append(" ");
+    s.append(r->getData(l[loop]));
+    s.append("\n");
+  }
+
+  delete r;
+
+  infoLabel->setText(s);
 }
 
 /*

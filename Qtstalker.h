@@ -32,6 +32,7 @@
 #include <qsplitter.h>
 #include <qtoolbutton.h>
 #include <qlist.h>
+#include <qlabel.h>
 
 #include "Indicator.h"
 #include "Plot.h"
@@ -103,6 +104,7 @@ class QtstalkerApp : public QMainWindow
     void slotTabChanged (QWidget *);
     void slotChartObjectCreated (Setting *);
     void slotHideNav (bool);
+    void slotUpdateInfo (Setting *);
 
   private:
     QPopupMenu *fileMenu;
@@ -154,6 +156,7 @@ class QtstalkerApp : public QMainWindow
     QString chartSymbol;
     int chartObjectId;
     QList<Setting> *recordList;
+    QLabel *infoLabel;
 };
 
 #endif 

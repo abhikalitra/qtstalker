@@ -3,6 +3,12 @@
 
 - Added a "Color Bars" parm to draw color up and down bars for the VOL plugin. This only works if you use the
   histogram bars line style.
+  
+- Added a data panel located under the tab area that dynamically updates all the chart values where the mouse is currently located.
+
+- Reports that 0.19 does not create a binary on some dist's "debian". 0.17 compiles fine. I think this is because
+  I removed the -ldl linker option for FreeBSD. Some dist's need the linker option. Updated all the *.pro files to add
+  the -ldl linker option if on a linux-g++ system.
 
 0.19
 ====

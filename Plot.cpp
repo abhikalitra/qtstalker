@@ -61,6 +61,8 @@ Plot::Plot (QWidget *w) : QWidget(w)
 
   indicators.setAutoDelete(TRUE);
   data = 0;
+  
+  setMouseTracking(TRUE);
 }
 
 Plot::~Plot ()
@@ -491,7 +493,7 @@ void Plot::mousePressEvent (QMouseEvent *event)
 	    newChartObject();
 	  break;
       }
-      
+
       return;
     }
 
@@ -509,6 +511,58 @@ void Plot::mousePressEvent (QMouseEvent *event)
     default:
       break;
   }
+}
+
+void Plot::mouseMoveEvent (QMouseEvent *event)
+{
+  if (mainFlag)
+  {
+    if (! data)
+      return;
+  }
+  else
+  {
+    if (! indicators.count())
+      return;
+  }
+
+  if (event->x() > buffer.width() - SCALE_WIDTH)
+    return;
+
+  int i = (event->x() / pixelspace) + startIndex;
+  if (i >= (int) data->count())
+    i = data->count() - 1;
+  if (i < startIndex)
+    i = startIndex;
+
+  Setting *r = new Setting;
+  Setting *tr = data->at(i);
+
+  if (mainFlag)
+    r->parse(tr->getString());
+
+  QString s = tr->getData("Date");
+  s.truncate(s.length() - 6);
+  r->set("Date", s, Setting::Date);
+
+  QDictIterator<Indicator> it(indicators);
+  for (; it.current(); ++it)
+  {
+    Indicator *ind = it.current();
+    int loop;
+    for (loop = 0; loop < (int) ind->getLines(); loop++)
+    {
+      PlotLine *line = ind->getLine(loop);
+      int li = line->getSize() - data->count() + i;
+      if (li > -1 && li <= line->getSize())
+        r->set(line->getLabel(), strip(line->getData(li)), Setting::Float);
+    }
+  }
+
+  if (r->count())
+    emit infoMessage(r);
+  else
+    delete r;
 }
 
 void Plot::setInterval (TimeInterval d)

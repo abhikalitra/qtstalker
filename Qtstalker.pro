@@ -59,6 +59,7 @@ INCLUDEPATH += db-2.7.7/build_unix
 
 LIBS += -Ldb-2.7.7/build_unix -ldb
 LIBS += -L/usr/lib
+unix:linux-g++:LIBS += -ldl
 
 
 

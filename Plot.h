@@ -46,6 +46,7 @@ class Plot : public QWidget
     void rightMouseButton ();
     void statusMessage (QString);
     void chartObjectCreated (Setting *);
+    void infoMessage (Setting *);
 
   public:
 
@@ -120,6 +121,7 @@ class Plot : public QWidget
     virtual void paintEvent (QPaintEvent *);
     virtual void resizeEvent (QResizeEvent *);
     virtual void mousePressEvent (QMouseEvent *);
+    virtual void mouseMoveEvent (QMouseEvent *);
 
   private slots:
     void drawVerticalLine (Setting *);
