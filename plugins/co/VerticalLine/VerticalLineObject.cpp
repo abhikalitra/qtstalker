@@ -41,7 +41,7 @@ VerticalLineObject::~VerticalLineObject ()
 
 void VerticalLineObject::init ()
 {
-  color.setNamedColor("white");
+  color.setNamedColor("red");
   saveFlag = FALSE;
   status = Plot;
   grabHandles.setAutoDelete(TRUE);

@@ -281,6 +281,16 @@ PlotLine * SAR::calculateCustom (QDict<PlotLine> *)
   return output->getLine(0);
 }
 
+int SAR::getMinBars ()
+{
+  int t = minBars + 2;
+  return t;
+}
+
+//*******************************************************
+//*******************************************************
+//*******************************************************
+
 IndicatorPlugin * createIndicatorPlugin ()
 {
   SAR *o = new SAR;

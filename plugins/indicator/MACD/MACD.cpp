@@ -304,6 +304,22 @@ PlotLine * MACD::calculateCustom (QDict<PlotLine> *d)
   return output->getLine(1);
 }
 
+int MACD::getMinBars ()
+{
+  int t = 0;
+  if (fastPeriod > t)
+    t = fastPeriod;
+  if (slowPeriod > t)
+    t = slowPeriod;
+  t++;
+  t = t + trigPeriod;
+  return t;
+}
+
+//*******************************************************
+//*******************************************************
+//*******************************************************
+
 IndicatorPlugin * createIndicatorPlugin ()
 {
   MACD *o = new MACD;

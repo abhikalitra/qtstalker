@@ -32,8 +32,8 @@ ChartToolbar::ChartToolbar (QMainWindow *mw) : QToolBar (mw, "chartToolbar")
   macro = 0;
   Config config;
   
-  compressionCombo = new MyComboBox(this, Macro::ChartToolbar);
   BarData *bd = new BarData;
+  compressionCombo = new MyComboBox(this, Macro::ChartToolbar);
   compressionCombo->show();
   compressionCombo->insertStringList(bd->getBarCompressionList(), -1);
   compressionCombo->setCurrentItem((BarData::BarCompression) config.getData(Config::Compression).toInt());
@@ -367,6 +367,4 @@ void ChartToolbar::minutesChanged (int d)
     
   reloadTimer->start(60000 * d, FALSE);
 }
-
-
 

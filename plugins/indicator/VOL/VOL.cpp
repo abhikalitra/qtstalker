@@ -207,6 +207,15 @@ PlotLine * VOL::calculateCustom (QDict<PlotLine> *)
   return output->getLine(0);
 }
 
+int VOL::getMinBars ()
+{
+  int t = minBars + period;
+  return t;
+}
+
+//*******************************************************
+//*******************************************************
+//*******************************************************
 
 IndicatorPlugin * createIndicatorPlugin ()
 {

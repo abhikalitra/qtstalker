@@ -382,6 +382,22 @@ COMP::Operator COMP::getOperator (QString d)
   return op;
 }
 
+int COMP::getMinBars ()
+{
+  int t = minBars;
+  if (delay1.toInt() > delay2.toInt())
+    t = t + delay1.toInt();
+  else
+  {
+    if (delay2.toInt() > delay1.toInt())
+      t = t + delay2.toInt();
+    else
+      t = t + delay1.toInt();
+  }
+  
+  return t;
+}
+
 //***************************************************************
 //***************************************************************
 //***************************************************************

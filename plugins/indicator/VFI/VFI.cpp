@@ -211,6 +211,16 @@ PlotLine * VFI::calculateCustom (QDict<PlotLine> *)
   return output->getLine(0);
 }
 
+int VFI::getMinBars ()
+{
+  int t = minBars + period + smoothing;
+  return t;
+}
+
+//*******************************************************
+//*******************************************************
+//*******************************************************
+
 IndicatorPlugin * createIndicatorPlugin ()
 {
   VFI *o = new VFI;

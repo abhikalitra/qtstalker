@@ -305,7 +305,7 @@ void COT::saveData (Setting *set)
   s.append(set->getData("Symbol"));
   emit statusLogMessage(s);
 
-  s = db->getSymbol();
+  s = db->getHeaderField(DbPlugin::Symbol);
   if (! s.length())
   {
     Setting *set2 = new Setting;

@@ -200,6 +200,16 @@ PlotLine * MOM::calculateCustom (QDict<PlotLine> *d)
   return output->getLine(0);
 }
 
+int MOM::getMinBars ()
+{
+  int t = minBars + period + smoothing;
+  return t;
+}
+
+//*******************************************************
+//*******************************************************
+//*******************************************************
+
 IndicatorPlugin * createIndicatorPlugin ()
 {
   MOM *o = new MOM;

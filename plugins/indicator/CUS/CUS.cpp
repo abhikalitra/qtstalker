@@ -178,6 +178,38 @@ void CUS::setCustomFunction (QString d)
   formulaList.append(d);
 }
 
+int CUS::getMinBars ()
+{
+  int loop;
+  int min = 0;
+  for (loop = 0; loop < (int) formulaList.count(); loop++)
+  {
+    Setting set;
+    set.parse(formulaList[loop]);
+
+    Config config;
+    IndicatorPlugin *plug = config.getIndicatorPlugin(set.getData("plugin"));
+    if (! plug)
+    {
+      qDebug("CUS::calculate: %s plugin not loaded", set.getData("plugin").latin1());
+      config.closePlugin(set.getData("plugin"));
+      continue;
+    }
+  
+    plug->setCustomFlag(TRUE);
+    plug->setIndicatorSettings(set);
+    
+    int t = plug->getMinBars();
+    if (t > min)
+      min = t;
+    
+    config.closePlugin(set.getData("plugin"));
+  }
+
+  int t = minBars + min;
+  return t;
+}
+
 //*********************************************************************************
 //*********************************************************************************
 //*********************************************************************************

@@ -190,6 +190,16 @@ PlotLine * DPO::calculateCustom (QDict<PlotLine> *d)
   return output->getLine(0);
 }
 
+int DPO::getMinBars ()
+{
+  int t = minBars + period;
+  return t;
+}
+
+//*******************************************************
+//*******************************************************
+//*******************************************************
+
 IndicatorPlugin * createIndicatorPlugin ()
 {
   DPO *o = new DPO;

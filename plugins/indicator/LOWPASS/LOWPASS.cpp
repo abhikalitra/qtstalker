@@ -62,6 +62,9 @@ void LOWPASS::calculate ()
     return;
   }
 
+  if (in->getSize() == 0)
+    return;
+    
   PlotLine *out = new PlotLine;
 
 // ----------------------------------------------------------------------
@@ -308,6 +311,16 @@ PlotLine * LOWPASS::calculateCustom (QDict<PlotLine> *d)
   else
     return 0;
 }
+
+int LOWPASS::getMinBars ()
+{
+  int t = minBars + 20;
+  return t;
+}
+
+//*******************************************************
+//*******************************************************
+//*******************************************************
 
 IndicatorPlugin * createIndicatorPlugin ()
 {

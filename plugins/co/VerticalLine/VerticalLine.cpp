@@ -33,7 +33,7 @@ VerticalLine::VerticalLine ()
 {
   status = None;
   selected = 0;
-  defaultColor.setNamedColor("white");
+  defaultColor.setNamedColor("red");
   objects.setAutoDelete(TRUE);
   helpFile = "verticalline.html";
   

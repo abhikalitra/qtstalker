@@ -208,6 +208,21 @@ PlotLine * MAOSC::calculateCustom (QDict<PlotLine> *d)
   return output->getLine(0);
 }
 
+int MAOSC::getMinBars ()
+{
+  int t = 0;
+  if (fastPeriod > t)
+    t = fastPeriod;
+  if (slowPeriod > t)
+    t = slowPeriod;
+  t++;
+  return t;
+}
+
+//*******************************************************
+//*******************************************************
+//*******************************************************
+
 IndicatorPlugin * createIndicatorPlugin ()
 {
   MAOSC *o = new MAOSC;

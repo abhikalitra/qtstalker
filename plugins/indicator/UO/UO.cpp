@@ -233,6 +233,21 @@ PlotLine * UO::getTR ()
   return tr;
 }
 
+int UO::getMinBars ()
+{
+  int t = shortPeriod;
+  if (medPeriod > t)
+    t = medPeriod;
+  if (longPeriod > t)
+    t = longPeriod;
+  t = t + minBars;
+  return t;
+}
+
+//*******************************************************
+//*******************************************************
+//*******************************************************
+
 IndicatorPlugin * createIndicatorPlugin ()
 {
   UO *o = new UO;

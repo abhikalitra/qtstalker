@@ -212,6 +212,7 @@ void Bars::prefDialog (QWidget *)
     }
         
     saveFlag = TRUE;
+    saveSettings();
     emit draw();
   }
   

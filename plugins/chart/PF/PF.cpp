@@ -182,6 +182,7 @@ void PF::prefDialog (QWidget *w)
     minPixelspace = dialog->getInt(tr("Min Bar Spacing"));
     
     saveFlag = TRUE;
+    saveSettings();
     emit draw();
   }
   

@@ -276,6 +276,16 @@ PlotLine * SZ::calculateCustom (QDict<PlotLine> *)
   return output->getLine(0);
 }
 
+int SZ::getMinBars ()
+{
+  int t = minBars + period + no_decline_period;
+  return t;
+}
+
+//*******************************************************
+//*******************************************************
+//*******************************************************
+
 IndicatorPlugin * createIndicatorPlugin ()
 {
   SZ *o = new SZ;

@@ -41,7 +41,7 @@ HorizontalLineObject::~HorizontalLineObject ()
 
 void HorizontalLineObject::init ()
 {
-  color.setNamedColor("white");
+  color.setNamedColor("red");
   saveFlag = FALSE;
   status = Plot;
   grabHandles.setAutoDelete(TRUE);

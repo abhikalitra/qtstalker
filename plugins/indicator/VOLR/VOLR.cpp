@@ -181,6 +181,16 @@ PlotLine * VOLR::getTR ()
   return tr;
 }
 
+int VOLR::getMinBars ()
+{
+  int t = minBars + period;
+  return t;
+}
+
+//*******************************************************
+//*******************************************************
+//*******************************************************
+
 IndicatorPlugin * createIndicatorPlugin ()
 {
   VOLR *o = new VOLR;

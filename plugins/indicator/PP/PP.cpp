@@ -241,6 +241,16 @@ Setting PP::getIndicatorSettings ()
   return dict;
 }
 
+int PP::getMinBars ()
+{
+  int t = minBars + 2;
+  return t;
+}
+
+//*******************************************************
+//*******************************************************
+//*******************************************************
+
 IndicatorPlugin * createIndicatorPlugin ()
 {
   PP *o = new PP;

@@ -72,34 +72,34 @@ void FuturesDialog::createDetailsPage ()
   QLabel *label = new QLabel(tr("Symbol"), w);
   grid->addWidget(label, 0, 0);
   
-  QLineEdit *edit = new QLineEdit(db->getSymbol(), w);
+  QLineEdit *edit = new QLineEdit(db->getHeaderField(DbPlugin::Symbol), w);
   edit->setReadOnly(TRUE);
   grid->addWidget(edit, 0, 1);
   
   label = new QLabel(tr("Name"), w);
   grid->addWidget(label, 1, 0);
   
-  title = new QLineEdit(db->getTitle(), w);
+  title = new QLineEdit(db->getHeaderField(DbPlugin::Title), w);
   grid->addWidget(title, 1, 1);
   
   label = new QLabel(tr("Type"), w);
   grid->addWidget(label, 2, 0);
   
-  edit = new QLineEdit(db->getType(), w);
+  edit = new QLineEdit(db->getHeaderField(DbPlugin::Type), w);
   edit->setReadOnly(TRUE);
   grid->addWidget(edit, 2, 1);
   
   label = new QLabel(tr("Futures Type"), w);
   grid->addWidget(label, 3, 0);
   
-  edit = new QLineEdit(db->getFuturesType(), w);
+  edit = new QLineEdit(db->getHeaderField(DbPlugin::FuturesType), w);
   edit->setReadOnly(TRUE);
   grid->addWidget(edit, 3, 1);
 
   label = new QLabel(tr("Futures Month"), w);
   grid->addWidget(label, 4, 0);
   
-  edit = new QLineEdit(db->getFuturesMonth(), w);
+  edit = new QLineEdit(db->getHeaderField(DbPlugin::FuturesMonth), w);
   edit->setReadOnly(TRUE);
   grid->addWidget(edit, 4, 1);
   
@@ -142,6 +142,8 @@ void FuturesDialog::createDataPage ()
   dateSearch = new QDateTimeEdit(dt, w);
   dateSearch->setAutoAdvance(TRUE);
   dateSearch->dateEdit()->setOrder(QDateEdit::YMD);
+  if (! db->getHeaderField(DbPlugin::BarType).toInt())
+    dateSearch->timeEdit()->setEnabled(FALSE);
   grid->addWidget(dateSearch, 0, 1);
   
   QPushButton *button = new QPushButton(tr("Search"), w);
@@ -306,7 +308,7 @@ void FuturesDialog::slotDateSearch ()
 
 void FuturesDialog::saveChart ()
 {
-  db->setTitle(title->text());
+  db->setHeaderField(DbPlugin::Title, title->text());
 
   if (saveRecordFlag)
   {  

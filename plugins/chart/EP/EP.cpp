@@ -289,6 +289,7 @@ void EP::prefDialog (QWidget *w)
     ir5Color = dialog->getColor(tr("Inside Rank 5"));
     
     saveFlag = TRUE;
+    saveSettings();
     emit draw();
   }
   

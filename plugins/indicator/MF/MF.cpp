@@ -200,6 +200,16 @@ PlotLine * MF::calculateCustom (QDict<PlotLine> *)
   return output->getLine(0);
 }
 
+int MF::getMinBars ()
+{
+  int t = minBars + period + smoothing;
+  return t;
+}
+
+//*******************************************************
+//*******************************************************
+//*******************************************************
+
 IndicatorPlugin * createIndicatorPlugin ()
 {
   MF *o = new MF;

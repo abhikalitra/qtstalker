@@ -57,6 +57,7 @@ GroupPage::GroupPage (QWidget *w) : QWidget (w)
   
   nav = new Navigator(this, config.getData(Config::GroupPath));
   connect(nav, SIGNAL(fileSelected(QString)), this, SLOT(groupSelected(QString)));
+  connect(nav, SIGNAL(fileOpened(QString)), this, SLOT(chartOpened(QString)));
   connect(nav, SIGNAL(noSelection()), this, SLOT(groupNoSelection()));
   connect(nav, SIGNAL(contextMenuRequested(QListBoxItem *, const QPoint &)), this, SLOT(rightClick(QListBoxItem *)));
   connect(nav, SIGNAL(signalKeyPressed(int, int, int, int, QString)),
@@ -273,13 +274,19 @@ void GroupPage::renameGroup ()
   groupNoSelection();
 }
 
-void GroupPage::groupSelected (QString d)
+void GroupPage::groupSelected (QString)
 {
   menu->setItemEnabled(menu->idAt(1), TRUE);
   menu->setItemEnabled(menu->idAt(2), TRUE);
   menu->setItemEnabled(menu->idAt(3), TRUE);
   menu->setItemEnabled(menu->idAt(4), TRUE);
   
+//  QFileInfo fi(d);
+//  emit fileSelected(fi.readLink());
+}
+
+void GroupPage::chartOpened (QString d)
+{
   QFileInfo fi(d);
   emit fileSelected(fi.readLink());
 }

@@ -190,6 +190,16 @@ PlotLine * CCI::calculateCustom (QDict<PlotLine> *)
   return output->getLine(0);
 }
 
+int CCI::getMinBars ()
+{
+  int t = minBars + period + smoothing;
+  return t;
+}
+
+//*******************************************************
+//*******************************************************
+//*******************************************************
+
 IndicatorPlugin * createIndicatorPlugin ()
 {
   CCI *o = new CCI;

@@ -35,6 +35,7 @@ class Navigator : public QListBox
     void noSelection ();
     void keyPress (int, int);
     void signalKeyPressed (int, int, int, int, QString);
+    void fileOpened (QString);
 
   public:
     Navigator (QWidget *, QString);

@@ -311,7 +311,7 @@ void NYBOT::parse ()
         return;
       }
 
-      s = db->getSymbol();
+      s = db->getHeaderField(DbPlugin::Symbol);
       if (! s.length())
       {
         Setting *set = new Setting;

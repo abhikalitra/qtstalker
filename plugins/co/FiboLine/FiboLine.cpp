@@ -34,7 +34,7 @@ FiboLine::FiboLine ()
 {
   status = None;
   selected = 0;
-  defaultColor.setNamedColor("white");
+  defaultColor.setNamedColor("red");
   objects.setAutoDelete(TRUE);
   helpFile = "fiboline.html";
   line1 = 0.5;

@@ -200,6 +200,16 @@ PlotLine * ROC::calculateCustom (QDict<PlotLine> *d)
   return output->getLine(0);
 }
 
+int ROC::getMinBars ()
+{
+  int t = minBars + period + smoothing;
+  return t;
+}
+
+//*******************************************************
+//*******************************************************
+//*******************************************************
+
 IndicatorPlugin * createIndicatorPlugin ()
 {
   ROC *o = new ROC;

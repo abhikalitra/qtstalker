@@ -162,6 +162,16 @@ PlotLine * FI::calculateCustom (QDict<PlotLine> *)
   return output->getLine(0);
 }
 
+int FI::getMinBars ()
+{
+  int t = minBars + 1 + smoothing;
+  return t;
+}
+
+//*******************************************************
+//*******************************************************
+//*******************************************************
+
 IndicatorPlugin * createIndicatorPlugin ()
 {
   FI *o = new FI;

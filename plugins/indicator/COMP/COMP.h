@@ -48,6 +48,7 @@ class COMP : public IndicatorPlugin
     Setting getIndicatorSettings ();
     void setIndicatorSettings (Setting);
     COMP::Operator getOperator (QString);
+    int getMinBars ();
   
   private:
     QColor color;

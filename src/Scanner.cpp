@@ -57,11 +57,11 @@ Scanner::Scanner (QString n) : QTabDialog (0, 0, FALSE)
   fileButton = new QPushButton(tr("0 Symbols"), gbox);
   connect(fileButton, SIGNAL(clicked()), this, SLOT(getSymbols()));
 
-  gbox = new QHGroupBox(tr("Bars/Compression"), w);  
+  gbox = new QHGroupBox(tr("Compression"), w);  
   vbox->addWidget(gbox);
   
-  bars = new QSpinBox(1, 9999, 1, gbox);
-  bars->setValue(275);
+//  bars = new QSpinBox(1, 9999, 1, gbox);
+//  bars->setValue(275);
   
   period = new QComboBox(gbox);
   period->insertItem(tr("Daily"), -1);
@@ -145,8 +145,20 @@ void Scanner::scan ()
 		       "progress",
 		       TRUE);
   prog.show();
-
+  
+  // open the CUS plugin   
+  IndicatorPlugin *plug = config.getIndicatorPlugin("CUS");
+  if (! plug)
+  {
+    config.closePlugin("CUS");
+    return;
+  }
   int loop;
+  for (loop = 0; loop < list->getLines(); loop++)
+    plug->setCustomFunction(list->getLine(loop));
+  
+  int minBars = plug->getMinBars();
+  
   for (loop = 0; loop < (int) fileList.count(); loop++)
   {
     prog.setProgress(loop);
@@ -167,35 +179,22 @@ void Scanner::scan ()
         db->setBarCompression(BarData::MonthlyBar);
     }
     
-    db->setBarRange(bars->value());
+    db->setBarRange(minBars);
 
     BarData *recordList = db->getHistory();
     
-    // open the CUS plugin   
-    IndicatorPlugin *plug2 = config.getIndicatorPlugin("CUS");
-    if (! plug2)
-    {
-      config.closePlugin("CUS");
-      delete recordList;
-      delete db;
-      continue;
-    }
-
-    int loop2;
-    for (loop2 = 0; loop2 < list->getLines(); loop2++)
-      plug2->setCustomFunction(list->getLine(loop2));
-  
     // load the CUS plugin and calculate
-    plug2->setIndicatorInput(recordList);
-    plug2->calculate();
-    Indicator *i = plug2->getIndicator();
+    plug->clearOutput();
+    plug->setIndicatorInput(recordList);
+    plug->calculate();
+    Indicator *i = plug->getIndicator();
     if (! i->getLines())
     {
-      config.closePlugin("CUS");
       delete recordList;
       delete db;
       continue;
     }
+    
     PlotLine *line = i->getLine(0);
     if (line && line->getSize() > 0)
     {
@@ -211,12 +210,13 @@ void Scanner::scan ()
       }
     }
     
-    config.closePlugin("CUS");
     delete recordList;
     delete db;
     
     emit message(QString());
   }
+  
+  config.closePlugin("CUS");
 }
 
 void Scanner::saveRule ()
@@ -231,7 +231,7 @@ void Scanner::saveRule ()
   QTextStream stream(&f);
   
   stream << "allSymbols=" << QString::number(allSymbols->isChecked()) << "\n";
-  stream << "bars=" << QString::number(bars->value()) << "\n";
+//  stream << "bars=" << QString::number(bars->value()) << "\n";
   stream << "compression=" << period->currentText() << "\n";
   
   int loop;
@@ -281,11 +281,11 @@ void Scanner::loadRule ()
       continue;
     }
     
-    if (! l[0].compare("bars"))
-    {
-      bars->setValue(l[1].toInt());
-      continue;
-    }
+//    if (! l[0].compare("bars"))
+//    {
+//      bars->setValue(l[1].toInt());
+//      continue;
+//    }
     
     if (! l[0].compare("compression"))
     {

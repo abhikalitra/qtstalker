@@ -33,6 +33,7 @@ class PP : public IndicatorPlugin
     void setDefaults();
     Setting getIndicatorSettings ();
     void setIndicatorSettings (Setting);
+    int getMinBars ();
     
   private:
     QColor resColor;

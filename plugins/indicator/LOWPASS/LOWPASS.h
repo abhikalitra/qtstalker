@@ -43,6 +43,7 @@ class LOWPASS : public IndicatorPlugin
     PlotLine * calculateCustom (QDict<PlotLine> *d) ;
     Setting getIndicatorSettings ();
     void setIndicatorSettings (Setting);
+    int getMinBars ();
     
   private:
     QColor color;

@@ -241,6 +241,16 @@ PlotLine * RSI::calculateCustom (QDict<PlotLine> *d)
   return output->getLine(0);
 }
 
+int RSI::getMinBars ()
+{
+  int t = minBars + period + smoothing;
+  return t;
+}
+
+//*******************************************************
+//*******************************************************
+//*******************************************************
+
 IndicatorPlugin * createIndicatorPlugin ()
 {
   RSI *o = new RSI;

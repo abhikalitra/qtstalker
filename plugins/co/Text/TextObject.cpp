@@ -45,7 +45,7 @@ TextObject::~TextObject ()
 
 void TextObject::init ()
 {
-  color.setNamedColor("white");
+  color.setNamedColor("red");
   saveFlag = FALSE;
   status = Plot;
   grabHandles.setAutoDelete(TRUE);

@@ -40,6 +40,15 @@ DbPlugin::~DbPlugin ()
 {
 }
 
+void DbPlugin::close ()
+{
+  if (saveFlag)
+  {
+    rewind(db);
+    fwrite(header, sizeof(ChartHeader), 1, db);
+  }
+}
+
 void DbPlugin::setBarCompression (BarData::BarCompression d)
 {
   barCompression = d;
@@ -69,17 +78,6 @@ QString DbPlugin::getPluginName ()
 QString DbPlugin::getHelpFile ()
 {
   return helpFile;
-}
-
-void DbPlugin::close ()
-{
-  if (saveFlag)
-  {
-    rewind(db);
-    fwrite(header, sizeof(ChartHeader), 1, db);
-  }
-  
-  fclose(db);
 }
 
 QStringList DbPlugin::getChartObjectsList ()
@@ -196,127 +194,125 @@ void DbPlugin::dumpHeader (QTextStream &stream)
 {
   stream << "FirstDate=" << QString::number(header->firstDate, 'f', 0) << "\n";
   stream << "LastDate=" << QString::number(header->lastDate, 'f', 0) << "\n";
-  stream << "Symbol=" << header->symbol << "\n";
-  stream << "Title=" << header->title << "\n";
-  stream << "Type=" << header->type << "\n";
-  stream << "Path=" << header->path << "\n";
+  stream << "Symbol=" << getHeaderField(Symbol) << "\n";
+  stream << "Title=" << getHeaderField(Title) << "\n";
+  stream << "Type=" << getHeaderField(Type) << "\n";
+  stream << "Path=" << getHeaderField(Path) << "\n";
   stream << "Records=" << QString::number(header->records) << "\n";
-  stream << "CO=" << header->co << "\n";
-  stream << "BarType=" << QString::number(header->barType) << "\n";
-  stream << "Plugin=" << header->plugin << "\n";
-  stream << "FuturesType=" << header->futuresType << "\n";
-  stream << "FuturesMonth=" << header->futuresMonth << "\n";
-  stream << "bool1=" << QString::number(header->bool1) << "\n";
-  stream << "bool2=" << QString::number(header->bool2) << "\n";
-  stream << "bool3=" << QString::number(header->bool3) << "\n";
-  stream << "int1=" << QString::number(header->int1) << "\n";
-  stream << "int2=" << QString::number(header->int2) << "\n";
-  stream << "int3=" << QString::number(header->int3) << "\n";
-  stream << "double1=" << QString::number(header->double1) << "\n";
-  stream << "double2=" << QString::number(header->double2) << "\n";
-  stream << "double3=" << QString::number(header->double3) << "\n";
-  stream << "svar1=" << header->svar1 << "\n";
-  stream << "svar2=" << header->svar2 << "\n";
-  stream << "svar3=" << header->svar3 << "\n";
-  stream << "mvar1=" << header->mvar1 << "\n";
-  stream << "lvar1=" << header->lvar1 << "\n";
+  stream << "CO=" << getHeaderField(CO) << "\n";
+  stream << "BarType=" << getHeaderField(BarType) << "\n";
+  stream << "Plugin=" << getHeaderField(Plugin) << "\n";
+  stream << "FuturesType=" << getHeaderField(FuturesType) << "\n";
+  stream << "FuturesMonth=" << getHeaderField(FuturesMonth) << "\n";
+  stream << "bool1=" << getHeaderField(Bool1) << "\n";
+  stream << "bool2=" << getHeaderField(Bool2) << "\n";
+  stream << "bool3=" << getHeaderField(Bool3) << "\n";
+  stream << "int1=" << getHeaderField(Int1) << "\n";
+  stream << "int2=" << getHeaderField(Int2) << "\n";
+  stream << "int3=" << getHeaderField(Int3) << "\n";
+  stream << "double1=" << getHeaderField(Double1) << "\n";
+  stream << "double2=" << getHeaderField(Double2) << "\n";
+  stream << "double3=" << getHeaderField(Double3) << "\n";
+  stream << "svar1=" << getHeaderField(Svar1) << "\n";
+  stream << "svar2=" << getHeaderField(Svar2) << "\n";
+  stream << "svar3=" << getHeaderField(Svar3) << "\n";
+  stream << "mvar1=" << getHeaderField(Mvar1) << "\n";
+  stream << "lvar1=" << getHeaderField(Lvar1) << "\n";
 }
 
 void DbPlugin::setHeader (Setting *set)
 {
   QString s = set->getData("Symbol");
   if (s.length())
-    strncpy(header->symbol, s.ascii(), SSIZE);
+    setHeaderField(Symbol, s);
   
   s = set->getData("Title");
   if (s.length())
-    strncpy(header->title, s.ascii(), TITLESIZE);
+    setHeaderField(Title, s);
   
   s = set->getData("Type");
   if (s.length())
-    strncpy(header->type, s.ascii(), SSIZE);
+    setHeaderField(Type, s);
   
   s = set->getData("Path");
   if (s.length())
-    strncpy(header->path, s.ascii(), PATHSIZE);
+    setHeaderField(Path, s);
   
   s = set->getData("CO");
   if (s.length())
-    strncpy(header->co, s.ascii(), COSIZE);
+    setHeaderField(CO, s);
   
   s = set->getData("BarType");
   if (s.length())
-    header->barType = s.toInt();
+    setHeaderField(BarType, s);
   
   s = set->getData("Plugin");
   if (s.length())
-    strncpy(header->plugin, s.ascii(), SSIZE);
+    setHeaderField(Plugin, s);
   
   s = set->getData("FuturesType");
   if (s.length())
-    strncpy(header->futuresType, s.ascii(), SSSIZE);
+    setHeaderField(FuturesType, s);
   
   s = set->getData("FuturesMonth");
   if (s.length())
-    strncpy(header->futuresMonth, s.ascii(), SSSIZE);
+    setHeaderField(FuturesMonth, s);
   
   s = set->getData("bool1");
   if (s.length())
-    header->bool1 = s.toInt();
+    setHeaderField(Bool1, s);
   
   s = set->getData("bool2");
   if (s.length())
-    header->bool2 = s.toInt();
+    setHeaderField(Bool2, s);
   
   s = set->getData("bool3");
   if (s.length())
-    header->bool3 = s.toInt();
+    setHeaderField(Bool3, s);
   
   s = set->getData("int1");
   if (s.length())
-    header->int1 = s.toInt();
+    setHeaderField(Int1, s);
   
   s = set->getData("int2");
   if (s.length())
-    header->int2 = s.toInt();
+    setHeaderField(Int2, s);
   
   s = set->getData("int3");
   if (s.length())
-    header->int3 = s.toInt();
+    setHeaderField(Int3, s);
 
   s = set->getData("double1");
   if (s.length())
-    header->double1 = s.toDouble();
+    setHeaderField(Double1, s);
   
   s = set->getData("double2");
   if (s.length())
-    header->double2 = s.toDouble();
+    setHeaderField(Double2, s);
   
   s = set->getData("double3");
   if (s.length())
-    header->double3 = s.toDouble();
+    setHeaderField(Double3, s);
   
   s = set->getData("svar1");
   if (s.length())
-    strncpy(header->svar1, s.ascii(), SSIZE);
+    setHeaderField(Svar1, s);
   
   s = set->getData("svar2");
   if (s.length())
-    strncpy(header->svar2, s.ascii(), SSIZE);
+    setHeaderField(Svar2, s);
 
   s = set->getData("svar3");
   if (s.length())
-    strncpy(header->svar3, s.ascii(), SSIZE);
+    setHeaderField(Svar3, s);
       
   s = set->getData("mvar1");
   if (s.length())
-    strncpy(header->mvar1, s.ascii(), MSIZE);
+    setHeaderField(Mvar1, s);
   
   s = set->getData("lvar1");
   if (s.length())
-    strncpy(header->lvar1, s.ascii(), LSIZE);
-    
-  saveFlag = TRUE;    
+    setHeaderField(Lvar1, s);
 }
 
 bool DbPlugin::findRecord (QString d)
@@ -539,48 +535,6 @@ void DbPlugin::setInsertRecord (Bar *bar)
   
   db = fopen(header->path, "r+");
     
-  saveFlag = TRUE;
-}
-
-void DbPlugin::setSymbol (QString d)
-{
-  strncpy(header->symbol, d.ascii(), SSIZE);
-  saveFlag = TRUE;
-}
-
-void DbPlugin::setTitle (QString d)
-{
-  strncpy(header->title, d.ascii(), TITLESIZE);
-  saveFlag = TRUE;
-}
-
-void DbPlugin::setType (QString d)
-{
-  strncpy(header->type, d.ascii(), SSIZE);
-  saveFlag = TRUE;
-}
-
-void DbPlugin::setFuturesType (QString d)
-{
-  strncpy(header->futuresType, d.ascii(), SSSIZE);
-  saveFlag = TRUE;
-}
-
-void DbPlugin::setHeaderCO (QString d)
-{
-  strncpy(header->co, d.ascii(), COSIZE);
-  saveFlag = TRUE;
-}
-
-void DbPlugin::setFuturesMonth (QString d)
-{
-  strncpy(header->futuresMonth, d.ascii(), SSSIZE);
-  saveFlag = TRUE;
-}
-
-void DbPlugin::setHeaderFundamental (QString d)
-{
-  strncpy(header->lvar1, d.ascii(), LSIZE);
   saveFlag = TRUE;
 }
 
@@ -971,6 +925,168 @@ void DbPlugin::getTickHistory (int mins)
     barData->prepend(bar);
   else
     delete bar;
+}
+
+void DbPlugin::setHeaderField (int k, QString d)
+{
+  switch (k)
+  {
+    case BarType:
+      header->barType = d.toInt();
+      break;
+    case Plugin:
+      strncpy(header->plugin, d.ascii(), SSIZE);
+      break;
+    case Symbol:
+      strncpy(header->symbol, d.ascii(), SSIZE);
+      break;
+    case Type:
+      strncpy(header->type, d.ascii(), SSIZE);
+      break;
+    case FuturesType:
+      strncpy(header->futuresType, d.ascii(), SSSIZE);
+      break;
+    case FuturesMonth:
+      strncpy(header->futuresMonth, d.ascii(), SSSIZE);
+      break;
+    case Title:
+      strncpy(header->title, d.ascii(), TITLESIZE);
+      break;
+    case Path:
+      strncpy(header->path, d.ascii(), PATHSIZE);
+      break;
+    case CO:
+      strncpy(header->co, d.ascii(), COSIZE);
+      break;
+    case Svar1:
+      strncpy(header->svar1, d.ascii(), SSIZE);
+      break;
+    case Svar2:
+      strncpy(header->svar2, d.ascii(), SSIZE);
+      break;
+    case Svar3:
+      strncpy(header->svar3, d.ascii(), SSIZE);
+      break;
+    case Mvar1:
+      strncpy(header->mvar1, d.ascii(), MSIZE);
+      break;
+    case Lvar1:
+      strncpy(header->lvar1, d.ascii(), LSIZE);
+      break;
+    case Bool1:
+      header->bool1 = d.toInt();
+      break;
+    case Bool2:
+      header->bool2 = d.toInt();
+      break;
+    case Bool3:
+      header->bool3 = d.toInt();
+      break;
+    case Int1:
+      header->int1 = d.toInt();
+      break;
+    case Int2:
+      header->int2 = d.toInt();
+      break;
+    case Int3:
+      header->int3 = d.toInt();
+      break;
+    case Double1:
+      header->double1 = d.toDouble();
+      break;
+    case Double2:
+      header->double2 = d.toDouble();
+      break;
+    case Double3:
+      header->double3 = d.toDouble();
+      break;
+    default:
+      break;
+  }
+  
+  saveFlag = TRUE;    
+}
+
+QString DbPlugin::getHeaderField (int k)
+{
+  QString s;
+  
+  switch (k)
+  {
+    case BarType:
+      s = QString::number(header->barType);
+      break;
+    case Plugin:
+      s= header->plugin;
+      break;
+    case Symbol:
+      s = header->symbol;
+      break;
+    case Type:
+      s = header->type;
+      break;
+    case FuturesType:
+      s = header->futuresType;
+      break;
+    case FuturesMonth:
+      s = header->futuresMonth;
+      break;
+    case Title:
+      s = header->title;
+      break;
+    case Path:
+      s = header->path;
+      break;
+    case CO:
+      s = header->co;
+      break;
+    case Svar1:
+      s = header->svar1;
+      break;
+    case Svar2:
+      s = header->svar2;
+      break;
+    case Svar3:
+      s = header->svar3;
+      break;
+    case Mvar1:
+      s = header->mvar1;
+      break;
+    case Lvar1:
+      s = header->lvar1;
+      break;
+    case Bool1:
+      s = QString::number(header->bool1);
+      break;
+    case Bool2:
+      s = QString::number(header->bool2);
+      break;
+    case Bool3:
+      s = QString::number(header->bool3);
+      break;
+    case Int1:
+      s = QString::number(header->int1);
+      break;
+    case Int2:
+      s = QString::number(header->int2);
+      break;
+    case Int3:
+      s = QString::number(header->int3);
+      break;
+    case Double1:
+      s = QString::number(header->double1);
+      break;
+    case Double2:
+      s = QString::number(header->double2);
+      break;
+    case Double3:
+      s = QString::number(header->double3);
+      break;
+    default:
+      break;
+  }
+  
+  return s;
 }
 
 //*********************************************************

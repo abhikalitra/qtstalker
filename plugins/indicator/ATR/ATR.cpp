@@ -178,6 +178,16 @@ PlotLine * ATR::calculateCustom (QDict<PlotLine> *)
   return output->getLine(0);
 }
 
+int ATR::getMinBars ()
+{
+  int t = minBars + smoothing;
+  return t;
+}
+
+//*******************************************************
+//*******************************************************
+//*******************************************************
+
 IndicatorPlugin * createIndicatorPlugin ()
 {
   ATR *o = new ATR;

@@ -311,6 +311,16 @@ PlotLine * STOCH::calculateCustom (QDict<PlotLine> *d)
   return output->getLine(0);
 }
 
+int STOCH::getMinBars ()
+{
+  int t = minBars + period + dperiod + kperiod;
+  return t;
+}
+
+//*******************************************************
+//*******************************************************
+//*******************************************************
+
 IndicatorPlugin * createIndicatorPlugin ()
 {
   STOCH *o = new STOCH;

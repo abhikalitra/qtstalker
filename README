@@ -2,8 +2,15 @@ All the documentation can be found by firing up your browser with docs/toc.html
 
 To compile and install:
 
-./configure
-make
-make install ( as root )
+Using using the source from your currently installed version:
+
+1) make uninstall (as root) 
+
+
+Using the new source version continue:
+
+2) ./configure
+3) make
+4) make install ( as root )
 
 

@@ -35,6 +35,7 @@ class UO : public IndicatorPlugin
     Setting getIndicatorSettings ();
     void setIndicatorSettings (Setting);
     PlotLine * getTR ();
+    int getMinBars ();
     
   private:
     QColor color;

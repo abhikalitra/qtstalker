@@ -54,6 +54,7 @@ class FormulaEdit : public QWidget
     void insertItem ();
     void openRule ();
     void saveRule ();
+    void slotDoubleClicked(int, int, int, const QPoint &);
 
   protected:
     QTable *list;

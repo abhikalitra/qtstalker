@@ -265,6 +265,16 @@ PlotLine * THERM::calculateCustom (QDict<PlotLine> *)
   return output->getLine(0);
 }
 
+int THERM::getMinBars ()
+{
+  int t = minBars + maPeriod + smoothing;
+  return t;
+}
+
+//*******************************************************
+//*******************************************************
+//*******************************************************
+
 IndicatorPlugin * createIndicatorPlugin ()
 {
   THERM *o = new THERM;

@@ -162,6 +162,16 @@ PlotLine * WILLR::calculateCustom (QDict<PlotLine> *)
   return output->getLine(0);
 }
 
+int WILLR::getMinBars ()
+{
+  int t = minBars + period;
+  return t;
+}
+
+//*******************************************************
+//*******************************************************
+//*******************************************************
+
 IndicatorPlugin * createIndicatorPlugin ()
 {
   WILLR *o = new WILLR;

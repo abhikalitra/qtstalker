@@ -35,7 +35,7 @@ HorizontalLine::HorizontalLine ()
 {
   status = None;
   selected = 0;
-  defaultColor.setNamedColor("white");
+  defaultColor.setNamedColor("red");
   objects.setAutoDelete(TRUE);
   helpFile = "horizontalline.html";
 

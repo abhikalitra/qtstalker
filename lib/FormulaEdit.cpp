@@ -37,6 +37,7 @@
 #include <qinputdialog.h>
 #include <qdir.h>
 #include <qmessagebox.h>
+#include <qpoint.h>
 
 #define BUTTON_SIZE 24
 
@@ -60,6 +61,8 @@ FormulaEdit::FormulaEdit (QWidget *w, int t) : QWidget(w)
   list->setColumnReadOnly(0, TRUE);
   list->setColumnReadOnly(2, TRUE);
   list->hideColumn(2);
+  QObject::connect(list, SIGNAL(doubleClicked(int, int, int, const QPoint &)), this,
+                   SLOT(slotDoubleClicked(int, int, int, const QPoint &)));
   hbox->addWidget(list);
   
   toolbar = new Toolbar(this, 30, 30, TRUE);
@@ -399,4 +402,10 @@ bool FormulaEdit::checkError ()
   
   return rc;
 }
+
+void FormulaEdit::slotDoubleClicked (int, int, int, const QPoint &)
+{
+  editItem();
+}
+
 

@@ -447,9 +447,9 @@ void QtstalkerApp::loadChart (QString d)
   trl->copy(recordList);
   delete trl;
   
-  chartName = plug->getTitle();
-  chartType = plug->getType();
-  chartSymbol = plug->getSymbol();
+  chartName = plug->getHeaderField(DbPlugin::Title);
+  chartType = plug->getHeaderField(DbPlugin::Type);
+  chartSymbol = plug->getHeaderField(DbPlugin::Symbol);
   
   mainPlot->setData(recordList);
   for(it.toFirst(); it.current(); ++it)

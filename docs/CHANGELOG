@@ -91,7 +91,27 @@
 	  
 20050219: Added a splitter to the Tester charts.
 	  
+20050219: Fixed bug that didn't always save chart pref changes when requested.
+
+20050220: When editing a CUS formula, a double mouse click on the line will bring up the
+          edit dialog.
 	  
+20050220: Fixed bug in LOWPASS that segfaults if input data is empty.
+
+20050220: Fixed focus bug in the chart panel that didn't enable the Edit Chart option in the
+          context menu when chart was selected.
+	  
+20050220: Backported QAction code to Qt3.1 in MainMenubar::
+
+20050220: Changed the default colors of chart objects to be red. Users that use a white background
+          couldn't see the objects being created. Red is an unlikely color anyone will use as
+	  a background to avoid this problem in the future.
+
+20050220: Optimised scanner by loading the minimum amount of bars for each chart. Removed the
+          bars parm from the scanner dialog.
+	  
+20050220: Changed the group side panel list behaviour to match the chart panel.
+
 	  
 	  	  
 0.29

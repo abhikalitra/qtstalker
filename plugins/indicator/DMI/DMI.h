@@ -37,6 +37,7 @@ class DMI : public IndicatorPlugin
     void getDI (int period);
     void getADX (IndicatorPlugin::MAType type, int period);
     PlotLine * getTR ();
+    int getMinBars ();
     
   private:
     QColor mdiColor;

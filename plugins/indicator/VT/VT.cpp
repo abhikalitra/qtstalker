@@ -249,6 +249,16 @@ PlotLine * VT::calculateCustom (QDict<PlotLine> *)
   return output->getLine(0);
 }
 
+int VT::getMinBars ()
+{
+  int t = minBars + 2;
+  return t;
+}
+
+//*******************************************************
+//*******************************************************
+//*******************************************************
+
 IndicatorPlugin * createIndicatorPlugin ()
 {
   VT *o = new VT;

@@ -235,6 +235,16 @@ PlotLine * TRIX::calculateCustom (QDict<PlotLine> *d)
   return output->getLine(0);
 }
 
+int TRIX::getMinBars ()
+{
+  int t = minBars + period + period + period + tperiod;
+  return t;
+}
+
+//*******************************************************
+//*******************************************************
+//*******************************************************
+
 IndicatorPlugin * createIndicatorPlugin ()
 {
   TRIX *o = new TRIX;

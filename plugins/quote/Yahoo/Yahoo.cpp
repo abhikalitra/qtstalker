@@ -346,7 +346,7 @@ void Yahoo::parseHistory ()
     return;
   }
 
-  s = plug->getSymbol();
+  s = plug->getHeaderField(DbPlugin::Symbol);
   if (! s.length())
   {
     Setting *set = new Setting;
@@ -481,7 +481,7 @@ void Yahoo::parseQuote ()
     return;
   }
   
-  s = plug->getSymbol();
+  s = plug->getHeaderField(DbPlugin::Symbol);
   if (! s.length())
   {
     Setting *set = new Setting;
@@ -849,7 +849,7 @@ void Yahoo::parseFundamental ()
     return;
   }
   
-  s = plug->getSymbol();
+  s = plug->getHeaderField(DbPlugin::Symbol);
   if (! s.length())
   {
     Setting *set = new Setting;
@@ -874,7 +874,7 @@ void Yahoo::parseFundamental ()
     delete set;
   }
 
-  plug->setHeaderFundamental(fund.getString());
+  plug->setHeaderField(DbPlugin::Lvar1, fund.getString());
     
   s = "Updating " + downloadList[index];
   emit dataLogMessage(s);

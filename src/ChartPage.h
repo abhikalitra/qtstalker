@@ -73,6 +73,7 @@ class ChartPage : public QWidget
     void doKeyPress (QKeyEvent *);
     void slotAccel (int);
     void runMacro (Macro *);
+    void chartOpened (QString);
 
   protected:
     Navigator *nav;

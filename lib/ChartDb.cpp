@@ -23,6 +23,7 @@
 #include <string.h>
 #include <qfileinfo.h>
 #include <qfile.h>
+#include <stdio.h>
 
 ChartDb::ChartDb ()
 {
@@ -37,9 +38,10 @@ ChartDb::~ChartDb ()
   if (plug)
   {
     plug->close();
-    config.closePlugin(QString(header->plugin));
+    config.closePlugin(getHeaderField(DbPlugin::Plugin));
   }
-    
+ 
+  fclose(db);
   delete header;
 }
 
@@ -238,7 +240,7 @@ int ChartDb::open (QString d)
 
 int ChartDb::loadPlugin ()
 {
-  if (! strlen(header->plugin))
+  if (! strlen(QString(header->plugin)))
   {
     if (! db)
     {
@@ -248,9 +250,7 @@ int ChartDb::loadPlugin ()
     
     QString s = config.parseDbPlugin(path);
     if (s.length())
-    {
       strncpy(header->plugin, s.ascii(), SSIZE);
-    }
     else
     {
       qDebug("ChartDb::loadPlugin: can't resolve db plugin");
@@ -277,58 +277,6 @@ void ChartDb::saveDbDefaults (Setting *set)
   plug->saveDbDefaults(set);
 }
 
-QString ChartDb::getSymbol ()
-{
-  return QString(header->symbol);
-}
-
-void ChartDb::setSymbol (QString d)
-{
-  if (! plug)
-    return;
-    
-  plug->setSymbol(d);
-}
-
-QString ChartDb::getTitle ()
-{
-  return QString(header->title);
-}
-
-void ChartDb::setTitle (QString d)
-{
-  if (! plug)
-    return;
-    
-  plug->setTitle(d);
-}
-
-QString ChartDb::getType()
-{
-  return QString(header->type);
-}
-
-void ChartDb::setType (QString d)
-{
-  if (! plug)
-    return;
-    
-  plug->setType(d);
-}
-
-QString ChartDb::getFuturesType()
-{
-  return QString(header->futuresType);
-}
-
-void ChartDb::setFuturesType (QString d)
-{
-  if (! plug)
-    return;
-    
-  plug->setFuturesType(d);
-}
-
 void ChartDb::deleteBar (QString d)
 {
   if (! plug)
@@ -345,27 +293,6 @@ Bar * ChartDb::getBar (QString d)
   return plug->getBar(d);
 }
 
-void ChartDb::setHeaderCO (QString d)
-{
-  if (! plug)
-    return;
-    
-  plug->setHeaderCO(d);
-}
-
-void ChartDb::setFuturesMonth (QString d)
-{
-  if (! plug)
-    return;
-    
-  plug->setFuturesMonth(d);
-}
-
-QString ChartDb::getFuturesMonth ()
-{
-  return header->futuresMonth;
-}
-
 void ChartDb::setHeader (Setting *d)
 {
   if (! plug)
@@ -374,16 +301,23 @@ void ChartDb::setHeader (Setting *d)
   plug->setHeader(d);
 }
 
-void ChartDb::setHeaderFundamental (QString d)
+void ChartDb::setHeaderField (int k, QString d)
 {
   if (! plug)
     return;
     
-  plug->setHeaderFundamental(d);
+  plug->setHeaderField(k, d);
 }
 
-QString ChartDb::getHeaderFundamental ()
+QString ChartDb::getHeaderField (int k)
 {
-  return header->lvar1;
+  if (! plug)
+    return QString();
+    
+  return plug->getHeaderField(k);
 }
+
+
+
+
 

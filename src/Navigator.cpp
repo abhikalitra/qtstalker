@@ -35,7 +35,7 @@ Navigator::Navigator (QWidget *w, QString bp) : QListBox(w)
   currentDir.setMatchAllDirs(TRUE);
 
   setSelectionMode(QListBox::Single);
-//  connect(this, SIGNAL(currentChanged(QListBoxItem *)), this, SLOT(fileSelection(QListBoxItem *)));
+  connect(this, SIGNAL(currentChanged(QListBoxItem *)), this, SLOT(fileSelection(QListBoxItem *)));
   connect(this, SIGNAL(selected(QListBoxItem *)), this, SLOT(checkDirectory(QListBoxItem *)));
 }
 
@@ -147,7 +147,8 @@ void Navigator::checkDirectory (QListBoxItem *item)
     return;
   }
   
-  emit fileSelected(getFileSelection());
+//  emit fileSelected(getFileSelection());
+  emit fileOpened(getFileSelection());
 }
 
 void Navigator::setFilter (QString d)

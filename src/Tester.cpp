@@ -558,9 +558,9 @@ QProgressDialog prog(tr("Testing..."),
   ChartDb *db = new ChartDb;
   db->openChart(symbolButton->getPath());
   
-  chartType = db->getType();
+  chartType = db->getHeaderField(DbPlugin::Type);
   if (! chartType.compare(tr("Futures")))
-    fd.setSymbol(db->getFuturesType());
+    fd.setSymbol(db->getHeaderField(DbPlugin::FuturesType));
 
   tradeList->setNumRows(0);
 

@@ -26,6 +26,8 @@
 
 IndicatorPlugin::IndicatorPlugin()
 {
+  minBars = 2;
+  
   output = new Indicator;
   saveFlag = FALSE;
   customFlag = FALSE;
@@ -403,5 +405,9 @@ void IndicatorPlugin::setCustomFunction (QString)
 {
 }
 
+int IndicatorPlugin::getMinBars ()
+{
+  return minBars;
+}
 
 

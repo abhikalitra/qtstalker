@@ -44,7 +44,7 @@ TrendLineObject::~TrendLineObject ()
 
 void TrendLineObject::init ()
 {
-  color.setNamedColor("white");
+  color.setNamedColor("red");
   saveFlag = FALSE;
   status = Plot;
   grabHandles.setAutoDelete(TRUE);

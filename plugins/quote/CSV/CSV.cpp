@@ -361,7 +361,7 @@ void CSV::parse ()
 	}
 	
 	if (r->getData("Name").length())
-	  db->setTitle(r->getData("Name"));
+	  db->setHeaderField(DbPlugin::Title, r->getData("Name"));
 	  
         db->setBar(bar);
 	emit dataLogMessage(r->getData("Symbol") + " " + r->getString());
@@ -372,7 +372,7 @@ void CSV::parse ()
       else
       {
 	if (r->getData("Name").length())
-	  db->setTitle(r->getData("Name"));
+	  db->setHeaderField(DbPlugin::Title, r->getData("Name"));
         db->setBar(bar);
 	emit dataLogMessage(symbol + " " + r->getString());
       }
@@ -590,7 +590,7 @@ bool CSV::openDb (QString path, QString symbol, QString type)
     return TRUE;
   }
 
-  QString s = db->getSymbol();
+  QString s = db->getHeaderField(DbPlugin::Symbol);
   if (! s.length())
   {
     Setting *set = new Setting;

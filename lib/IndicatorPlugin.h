@@ -69,6 +69,7 @@ class IndicatorPlugin
     virtual Setting getIndicatorSettings ();
     virtual void setIndicatorSettings (Setting);
     virtual void setCustomFunction (QString);
+    virtual int getMinBars ();
     
   protected:
     BarData *data;
@@ -82,6 +83,7 @@ class IndicatorPlugin
     int plotType;
     QString pluginName;
     QString helpFile;
+    int minBars;
 };
 
 #endif

@@ -176,6 +176,16 @@ PlotLine * PC::calculateCustom (QDict<PlotLine> *d)
   return output->getLine(0);
 }
 
+int PC::getMinBars ()
+{
+  int t = minBars + period;
+  return t;
+}
+
+//*******************************************************
+//*******************************************************
+//*******************************************************
+
 IndicatorPlugin * createIndicatorPlugin ()
 {
   PC *o = new PC;

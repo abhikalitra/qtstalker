@@ -128,6 +128,7 @@ void Line::prefDialog (QWidget *)
     }
         
     saveFlag = TRUE;
+    saveSettings();
     emit draw();
   }
   

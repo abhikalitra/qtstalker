@@ -177,7 +177,7 @@ void MySQLPlugin::updateSymbol(QString symbol)
     return;
   }
   
-  QString s = db.getSymbol();
+  QString s = db.getHeaderField(DbPlugin::Symbol);
   if (! s.length())
   {
     Setting *set = new Setting;

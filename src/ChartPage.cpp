@@ -55,10 +55,10 @@ ChartPage::ChartPage (QWidget *w) : QWidget (w)
 
   nav = new Navigator(this, config.getData(Config::DataPath));
   connect(nav, SIGNAL(fileSelected(QString)), this, SLOT(chartSelected(QString)));
+  connect(nav, SIGNAL(fileOpened(QString)), this, SLOT(chartOpened(QString)));
   connect(nav, SIGNAL(noSelection()), this, SLOT(chartNoSelection()));
   connect(nav, SIGNAL(contextMenuRequested(QListBoxItem *, const QPoint &)), this,
           SLOT(rightClick(QListBoxItem *)));
-//  connect(nav, SIGNAL(keyPress(int, int)), this, SLOT(doKeyPress(int, int)));
   connect(nav, SIGNAL(signalKeyPressed(int, int, int, int, QString)),
           this, SIGNAL(signalKeyPressed(int, int, int, int, QString)));
   nav->updateList();
@@ -222,7 +222,7 @@ void ChartPage::exportChart (QString path, bool f)
   QString s = config.getData(Config::Home);
   s.append("/export/");
   
-  QString s2 = db->getSymbol();
+  QString s2 = db->getHeaderField(DbPlugin::Symbol);
   if (! s2.length())
   {
     QStringList l = QStringList::split("/", path, FALSE);
@@ -236,9 +236,14 @@ void ChartPage::exportChart (QString path, bool f)
   delete db;
 }
 
-void ChartPage::chartSelected (QString d)
+void ChartPage::chartSelected (QString)
 {
   menu->setItemEnabled(menu->idAt(1), TRUE);
+//  emit fileSelected(d);
+}
+
+void ChartPage::chartOpened (QString d)
+{
   emit fileSelected(d);
 }
 

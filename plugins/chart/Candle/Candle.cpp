@@ -397,6 +397,7 @@ void Candle::prefDialog (QWidget *w)
     }
     
     saveFlag = TRUE;
+    saveSettings();
     emit draw();
   }
   

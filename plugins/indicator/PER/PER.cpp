@@ -165,6 +165,16 @@ PlotLine * PER::calculateCustom (QDict<PlotLine> *d)
   return output->getLine(0);
 }
 
+int PER::getMinBars ()
+{
+  int t = minBars + 1;
+  return t;
+}
+
+//*******************************************************
+//*******************************************************
+//*******************************************************
+
 IndicatorPlugin * createIndicatorPlugin ()
 {
   PER *o = new PER;

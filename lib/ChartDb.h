@@ -55,23 +55,12 @@ class ChartDb
     int open (QString);
     int loadPlugin ();
     void saveDbDefaults (Setting *);
-    QString getSymbol ();
-    void setSymbol (QString);
-    QString getTitle ();
-    void setTitle (QString);
-    QString getType ();
-    void setType (QString);
-    QString getFuturesType ();
-    void setFuturesType (QString);
-    void setFuturesMonth (QString);
-    QString getFuturesMonth ();
     void deleteBar (QString);
     Bar * getBar (QString);
-    void setHeaderCO (QString);
     void setHeader (Setting *);
-    void setHeaderFundamental (QString);
-    QString getHeaderFundamental ();
-
+    void setHeaderField (int, QString);
+    QString getHeaderField (int);
+    
   private:
     FILE *db;
     ChartHeader *header;

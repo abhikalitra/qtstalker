@@ -150,7 +150,10 @@ void IndicatorPage::moveIndicator ()
   
   il[line] = "plotType=" + QString::number(dialog->getComboIndex(tr("Plot Type")));
 
-  emit signalDisableIndicator(currentText());
+  bool status = statusList.getInt(currentText());
+  
+  if (status)
+    emit signalDisableIndicator(currentText());
   
   QFile f2(s);
   if (! f2.open(IO_WriteOnly))
@@ -163,7 +166,8 @@ void IndicatorPage::moveIndicator ()
     
   f2.close();
   
-  emit signalEnableIndicator(currentText());
+  if (status)
+    emit signalEnableIndicator(currentText());
 }
 
 void IndicatorPage::refreshList ()

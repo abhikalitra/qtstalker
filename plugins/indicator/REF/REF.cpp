@@ -156,6 +156,16 @@ PlotLine * REF::calculateCustom (QDict<PlotLine> *)
   return output->getLine(0);
 }
 
+int REF::getMinBars ()
+{
+  int t = minBars + period;
+  return t;
+}
+
+//*******************************************************
+//*******************************************************
+//*******************************************************
+
 IndicatorPlugin * createIndicatorPlugin ()
 {
   REF *o = new REF;

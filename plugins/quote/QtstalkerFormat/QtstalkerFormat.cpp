@@ -156,37 +156,37 @@ void QtstalkerFormat::importDB ()
       
         if (! key.compare("Plugin"))
 	{
-	  db->setPlugin(s);
+	  db->setHeaderField(DbPlugin::Plugin, s);
 	  break;
 	}
 	
         if (! key.compare("Symbol"))
 	{
-	  db->setSymbol(s);
+	  db->setHeaderField(DbPlugin::Symbol, s);
 	  break;
 	}
 	
         if (! key.compare("Title"))
 	{
-	  db->setTitle(s);
+	  db->setHeaderField(DbPlugin::Title, s);
 	  break;
 	}
 	
         if (! key.compare("Type"))
 	{
-	  db->setType(s);
+	  db->setHeaderField(DbPlugin::Type, s);
 	  break;
 	}
 	
         if (! key.compare("FuturesType"))
 	{
-	  db->setFuturesType(s);
+	  db->setHeaderField(DbPlugin::FuturesType, s);
 	  break;
 	}
         
         if (! key.compare("FuturesMonth"))
 	{
-	  db->setFuturesMonth(s);
+	  db->setHeaderField(DbPlugin::FuturesMonth, s);
 	  break;
 	}
 	
@@ -203,7 +203,7 @@ void QtstalkerFormat::importDB ()
     }
 
     if (co.count())
-      db->setHeaderCO(co.join(","));
+      db->setHeaderField(DbPlugin::CO, co.join(","));
       
     f.close();
     delete db;

@@ -76,6 +76,34 @@ typedef struct
 class DbPlugin
 {
   public:
+  
+    enum HeaderField
+    {
+      BarType,
+      Plugin,
+      Symbol,
+      Type,
+      FuturesType,
+      FuturesMonth,
+      Title,
+      Path,
+      CO,
+      Svar1,
+      Svar2,
+      Svar3,
+      Mvar1,
+      Lvar1,
+      Bool1,
+      Bool2,
+      Bool3,
+      Int1,
+      Int2,
+      Int3,
+      Double1,
+      Double2,
+      Double3
+    };
+  
     DbPlugin ();
     virtual ~DbPlugin ();
     void setBarCompression (BarData::BarCompression);
@@ -84,7 +112,6 @@ class DbPlugin
     void setDbPath (QString);
     QString getPluginName ();
     QString getHelpFile ();
-    void close ();
     QStringList getChartObjectsList ();    
     QPtrList<Setting> getChartObjects ();
     void setChartObject (QString, Setting *);
@@ -94,14 +121,6 @@ class DbPlugin
     Bar * getBar (QString);
     Bar * getLastBar ();
     void setBar (Bar *);
-    
-    void setSymbol (QString);
-    void setTitle (QString);
-    void setType (QString);
-    void setFuturesType (QString);
-    void setHeaderCO (QString);
-    void setFuturesMonth (QString);
-    void setHeaderFundamental (QString);
     
     void getDailyHistory ();
     void getWeeklyHistory ();
@@ -114,6 +133,9 @@ class DbPlugin
     void setInsertRecord (Bar *);
     
     void setHeader (Setting *);
+    void setHeaderField (int, QString);
+    QString getHeaderField (int);
+    void close ();
     
     virtual void dbPrefDialog ();
     virtual QString createNew ();

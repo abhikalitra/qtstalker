@@ -34,6 +34,7 @@ class STOCH : public IndicatorPlugin
     PlotLine * calculateCustom (QDict<PlotLine> *);
     Setting getIndicatorSettings ();
     void setIndicatorSettings (Setting);
+    int getMinBars ();
     
   private:
     QColor dcolor;
