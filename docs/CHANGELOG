@@ -13,7 +13,9 @@
 20041021: Removed the OVRLY indicator. Now redundant due to the SYMBOL plugin and
           CUS language functions.
 	  
-	  	 
+20041025: Fixed bug in MATH::MIN/MAX that didn't include the current bar in the calculation.
+          Current bar is now included.
+	  	  	 
 
 0.28
 ====

@@ -10,6 +10,7 @@ To Do:
 - allow negative displacement for line plots
 - add indicator chart to the tester chart so buy/sell points have a reference
 - allow log/scale to screen options on the tester charts
+- allow indicators to be edited without having to load a chart first.
 
 
 Maybe some day:

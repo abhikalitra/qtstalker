@@ -38,6 +38,7 @@ class Yahoo : public QuotePlugin
     void loadSettings ();
     void saveSettings ();
     void prefDialog (QWidget *);
+    void printErrorList ();
     
   public slots:
     void opDone (QNetworkOperation *);
@@ -49,11 +50,15 @@ class Yahoo : public QuotePlugin
     QUrlOperator *op;
     QStringList symbolList;
     QStringList urlList;
+    QStringList errorUrlList;
+    QStringList errorSymbolList;
     int symbolLoop;
     bool adjustment;
     QDateTime sdate;
     QDateTime edate;
     QString method;
+    int retries;
+    int errorLoop;
 };
 
 extern "C"

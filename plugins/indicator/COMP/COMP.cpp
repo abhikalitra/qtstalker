@@ -97,7 +97,9 @@ void COMP::calculate ()
     QString s = delay1;
     s.remove(0, 1);
     displace1 = s.toInt();
-  } else {
+  }
+  else
+  {
     timeInput1 = customLines->find(delay1);
     if (! timeInput1)
     {
@@ -107,6 +109,7 @@ void COMP::calculate ()
     timeLoop1 = timeInput1->getSize() - 1;
     displace1 = (int) timeInput1->getData(timeLoop1);
   }
+  
   int timeLoop2 = 0;
   int displace2 = 0;
   PlotLine *timeInput2 = 0;
@@ -115,7 +118,9 @@ void COMP::calculate ()
     QString s = delay2;
     s.remove(0, 1);
     displace2 = s.toInt();
-  } else {
+  }
+  else
+  {
     timeInput2 = customLines->find(delay2);
     if (! timeInput2)
     {
@@ -197,16 +202,20 @@ void COMP::calculate ()
     }
       
     loop--;
-    if(timeInput1&&timeLoop1>0) {
+    if(timeInput1 && timeLoop1 > 0)
+    {
       timeLoop1--;
       displace1 = (int) timeInput1->getData(timeLoop1);
     }
-    if (input2) {
+    
+    if (input2)
+    {
       loop2--;
-    if(timeInput2&&timeLoop2>0) {
-      timeLoop2--;
-      displace2 = (int) timeInput2->getData(timeLoop2);
-    }
+      if(timeInput2 && timeLoop2 > 0)
+      {
+        timeLoop2--;
+        displace2 = (int) timeInput2->getData(timeLoop2);
+      }
     }
   }
   

@@ -86,7 +86,7 @@ void MATH::calculateMinMax ()
     int loop2;
     double h = -99999999;
     double l = 99999999;
-    for (loop2 = 1; loop2 <= period; loop2++)
+    for (loop2 = 0; loop2 <= period; loop2++)
     {
       double t = input->getData(loop - loop2);
       if (t > h)

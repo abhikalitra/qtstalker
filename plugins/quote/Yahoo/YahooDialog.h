@@ -25,6 +25,7 @@
 #include <qtabdialog.h>
 #include <qdatetime.h>
 #include <qcombobox.h>
+#include <qspinbox.h>
 #include "Toolbar.h"
 
 class YahooDialog : public QTabDialog
@@ -44,6 +45,8 @@ class YahooDialog : public QTabDialog
     QDateTime getEndDate ();
     void setMethod (QString);
     QString getMethod ();
+    void setRetries (int);
+    int getRetries ();
     
   public slots:
     void newStock ();
@@ -61,6 +64,7 @@ class YahooDialog : public QTabDialog
     QString dataPath;
     QString helpFile;
     Toolbar *toolbar;
+    QSpinBox *retries;
 };
 
     

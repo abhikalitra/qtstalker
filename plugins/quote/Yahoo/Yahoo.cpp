@@ -37,6 +37,7 @@ Yahoo::Yahoo ()
   pluginName = "Yahoo";
   op = 0;
   helpFile = "yahoo.html";
+  errorLoop = 0;
   
   sdate = QDateTime::currentDateTime();
   if (sdate.date().dayOfWeek() == 6)
@@ -69,9 +70,13 @@ Yahoo::~Yahoo ()
 void Yahoo::update ()
 {
   urlList.clear();
+  errorUrlList.clear();
+  errorSymbolList.clear();
   data.truncate(0);
   symbolLoop = 0;
   op = 0;
+  errorLoop = 0;
+  Config config;
 
   QDir dir = QDir::home();
   file = dir.path();
@@ -82,32 +87,98 @@ void Yahoo::update ()
   {
     QString s;
     
-    if (! method.compare(tr("History")))
+    while (1)
     {
-      s = "http://ichart.yahoo.com/table.csv?s=";
-      s.append(symbolList[loop]);
-      s.append("&a=");
-      s.append(QString::number(sdate.date().month() - 1));
-      s.append("&b=");
-      s.append(sdate.toString("dd"));
-      s.append("&c=");
-      s.append(sdate.toString("yy"));
-      s.append("&d=");
-      s.append(QString::number(edate.date().month() - 1));
-      s.append("&e=");
-      s.append(edate.toString("dd"));
-      s.append("&f=");
-      s.append(edate.toString("yy"));
-      s.append("&g=d&q=q&y=0&x=.csv");
-    }
-    else
-    {
-      s = "http://finance.yahoo.com/d/quotes.csv?s=";
-      s.append(symbolList[loop]);
-      s.append("&f=snl1d1t1c1ohgv&e=.csv");
+      if (! method.compare(tr("History")))
+      {
+        s = "http://ichart.yahoo.com/table.csv?s=";
+        s.append(symbolList[loop]);
+        s.append("&a=");
+        s.append(QString::number(sdate.date().month() - 1));
+        s.append("&b=");
+        s.append(sdate.toString("dd"));
+        s.append("&c=");
+        s.append(sdate.toString("yy"));
+        s.append("&d=");
+        s.append(QString::number(edate.date().month() - 1));
+        s.append("&e=");
+        s.append(edate.toString("dd"));
+        s.append("&f=");
+        s.append(edate.toString("yy"));
+        s.append("&g=d&q=q&y=0&x=.csv");
+	break;
+      }
+      
+      if (! method.compare(tr("Auto History")))
+      {
+        QString s2 = config.getData(Config::DataPath) + "/" + symbolList[loop];
+	if (! dir.exists(s2))
+	  break;
+	  
+        ChartDb *plug = new ChartDb;
+        plug->setPlugin("Stocks");
+        if (plug->openChart(s2))
+        {
+          delete plug;
+          break;
+        }
+	
+	Bar *bar = plug->getLastBar();
+	if (! bar)
+	{
+	  delete plug;
+	  break;
+	}
+
+        edate = QDateTime::currentDateTime();
+        if (edate.date().dayOfWeek() == 6)
+          edate = edate.addDays(-1);
+        else
+        {
+          if (edate.date().dayOfWeek() == 7)
+            edate = edate.addDays(-2);
+        }
+	
+	if (bar->getDate().getDate() == edate.date())
+	{
+	  delete bar;
+	  delete plug;
+	  break;
+	}
+		
+        s = "http://ichart.yahoo.com/table.csv?s=";
+        s.append(symbolList[loop]);
+        s.append("&a=");
+        s.append(QString::number(bar->getDate().getDate().month() - 1));
+        s.append("&b=");
+        s.append(bar->getDate().getDate().toString("dd"));
+        s.append("&c=");
+        s.append(bar->getDate().getDate().toString("yy"));
+        s.append("&d=");
+        s.append(QString::number(edate.date().month() - 1));
+        s.append("&e=");
+        s.append(edate.toString("dd"));
+        s.append("&f=");
+        s.append(edate.toString("yy"));
+        s.append("&g=d&q=q&y=0&x=.csv");
+	
+	delete bar;
+	delete plug;
+	break;
+      }
+      
+      if (! method.compare(tr("Quote")))
+      {
+        s = "http://finance.yahoo.com/d/quotes.csv?s=";
+        s.append(symbolList[loop]);
+        s.append("&f=snl1d1t1c1ohgv&e=.csv");
+      }
+      
+      break;
     }
     
-    urlList.append(s);
+    if (s.length())
+      urlList.append(s);
   }
 
   if (! symbolList.count())
@@ -127,19 +198,36 @@ void Yahoo::opDone (QNetworkOperation *o)
 
   if (o->state() == QNetworkProtocol::StDone && o->operation() == QNetworkProtocol::OpGet)
   {
-    if (! method.compare(tr("History")))
+    if (method.contains(tr("History")))
       parseHistory();
     else
       parseQuote();
-      
+
+    QString s = tr("Downloading ");
+    s.append(symbolList[symbolLoop]);
+    emit statusLogMessage(s);
+            
     symbolLoop++;
 
     if (symbolLoop == (int) symbolList.count())
     {
-      emit done();
-      emit statusLogMessage(tr("Done"));
-      delete op;
-      return;
+      if (! errorUrlList.isEmpty() && errorLoop < retries)
+      {
+        errorLoop++;
+	urlList = errorUrlList;
+	symbolList = errorSymbolList;
+	errorUrlList.clear();
+	errorSymbolList.clear();
+	symbolLoop = 0;
+      }
+      else
+      {
+        emit done();
+        emit statusLogMessage(tr("Done"));
+	printErrorList();
+        delete op;
+        return;
+      }
     }
 
     data.truncate(0);
@@ -153,11 +241,14 @@ void Yahoo::opDone (QNetworkOperation *o)
     {
       emit done();
       emit statusLogMessage(tr("Done"));
+      printErrorList();
       delete op;
     }
     else
     {
       emit statusLogMessage(tr("Download error ") + symbolList[symbolLoop] + tr(" skipped"));
+      errorUrlList.append(urlList[symbolLoop]);
+      errorSymbolList.append(symbolList[symbolLoop]);
       symbolLoop++;
       data.truncate(0);
       getFile();
@@ -174,10 +265,6 @@ void Yahoo::getFile ()
   connect(op, SIGNAL(finished(QNetworkOperation *)), this, SLOT(opDone(QNetworkOperation *)));
   connect(op, SIGNAL(data(const QByteArray &, QNetworkOperation *)), this, SLOT(dataReady(const QByteArray &, QNetworkOperation *)));
   op->get();
-  
-  QString s = tr("Downloading ");
-  s.append(symbolList[symbolLoop]);
-  emit statusLogMessage(s);
 }
 
 void Yahoo::dataReady (const QByteArray &d, QNetworkOperation *)
@@ -562,6 +649,7 @@ void Yahoo::prefDialog (QWidget *w)
   dialog->setStartDate(sdate);
   dialog->setEndDate(edate);
   dialog->setMethod(method);
+  dialog->setRetries(retries);
   
   int rc = dialog->exec();
   if (rc == QDialog::Accepted)
@@ -571,7 +659,9 @@ void Yahoo::prefDialog (QWidget *w)
     edate = dialog->getEndDate();
     symbolList = dialog->getList();
     method = dialog->getMethod();
+    retries = dialog->getRetries();
     saveFlag = TRUE;
+    saveSettings();
   }
   
   delete dialog;
@@ -587,6 +677,9 @@ void Yahoo::loadSettings ()
   
   method = settings.readEntry("/Method", tr("History"));
   
+  s = settings.readEntry("/Retries", "3");
+  retries = s.toInt();
+  
   settings.endGroup();
 }
 
@@ -600,10 +693,25 @@ void Yahoo::saveSettings ()
   
   settings.writeEntry("/Adjustment", QString::number(adjustment));
   settings.writeEntry("/Method", method);
+  settings.writeEntry("/Retries", QString::number(retries));
   
   settings.endGroup();
 }
 
+void Yahoo::printErrorList ()
+{
+  int loop;
+  for (loop = 0; loop < (int) errorSymbolList.count(); loop++)
+  {
+    QString s = tr("Unable to download ");
+    s.append(errorSymbolList[loop]);
+    emit statusLogMessage(s);
+  }
+}	
+
+//***********************************************************************
+//***********************************************************************
+//***********************************************************************
 QuotePlugin * createQuotePlugin ()
 {
   Yahoo *o = new Yahoo;

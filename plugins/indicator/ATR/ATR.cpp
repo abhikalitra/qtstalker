@@ -23,6 +23,7 @@
 #include "PrefDialog.h"
 #include <qdict.h>
 #include <qobject.h>
+#include <math.h>
 
 ATR::ATR ()
 {

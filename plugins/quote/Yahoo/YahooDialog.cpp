@@ -60,7 +60,7 @@ YahooDialog::YahooDialog (QWidget *p, QString d) : QTabDialog (p, "YahooDialog",
   
   vbox->addSpacing(10);
   
-  QGridLayout *grid = new QGridLayout(vbox, 4, 2);
+  QGridLayout *grid = new QGridLayout(vbox, 5, 2);
   grid->setSpacing(5);
   grid->setColStretch(1, 1);
   
@@ -69,7 +69,8 @@ YahooDialog::YahooDialog (QWidget *p, QString d) : QTabDialog (p, "YahooDialog",
   
   method = new QComboBox(w);
   method->insertItem(tr("History"), 0);
-  method->insertItem(tr("Quote"), 1);
+  method->insertItem(tr("Auto History"), 1);
+  method->insertItem(tr("Quote"), 2);
   QObject::connect(method, SIGNAL(activated(int)), this, SLOT(methodChanged(int)));
   grid->addWidget(method, 0, 1);
   
@@ -89,10 +90,17 @@ YahooDialog::YahooDialog (QWidget *p, QString d) : QTabDialog (p, "YahooDialog",
   date2->setOrder(QDateEdit::YMD);
   grid->addWidget(date2, 2, 1);
   
+  label = new QLabel(tr("Error Retry"), w);
+  grid->addWidget(label, 3, 0);
+  
+  retries = new QSpinBox(0, 99, 1, w);
+  grid->addWidget(retries, 3, 1);
+  
   vbox->addSpacing(5);
   
   adjustment = new QCheckBox(tr("Adjustment"), w);
   vbox->addWidget(adjustment);
+  
   vbox->addSpacing(10);
   
   QFrame *sep = new QFrame(w);
@@ -244,16 +252,50 @@ QString YahooDialog::getMethod ()
 void YahooDialog::setMethod (QString d)
 {
   if (! d.compare(tr("History")))
+  {
     method->setCurrentItem(0);
+    methodChanged(0);
+  }
   else
-    method->setCurrentItem(1);
-    
-  methodChanged(0);
+  {
+    if (! d.compare(tr("Auto History")))
+    {
+      method->setCurrentItem(1);
+      methodChanged(1);
+    }
+    else
+    {
+      method->setCurrentItem(2);
+      methodChanged(2);
+    }
+  }
 }
 
-void YahooDialog::methodChanged (int)
+void YahooDialog::methodChanged (int d)
 {
-  if (method->currentItem() == 1)
+  switch (d)
+  {
+    case 0:
+      adjustment->setEnabled(TRUE);
+      date->setEnabled(TRUE);
+      date2->setEnabled(TRUE);
+      break;
+    case 1:
+      adjustment->setEnabled(TRUE);
+      date->setEnabled(FALSE);
+      date2->setEnabled(FALSE);
+      break;
+    case 2:
+      adjustment->setEnabled(FALSE);
+      date->setEnabled(FALSE);
+      date2->setEnabled(FALSE);
+      break;
+    default:
+      break;
+  }
+      
+/*      
+  if (method->currentItem() != 0)
   {
     adjustment->setEnabled(FALSE);
     date->setEnabled(FALSE);
@@ -265,6 +307,17 @@ void YahooDialog::methodChanged (int)
     date->setEnabled(TRUE);
     date2->setEnabled(TRUE);
   }
+*/  
+}
+
+void YahooDialog::setRetries (int d)
+{
+  retries->setValue(d);
+}
+
+int YahooDialog::getRetries ()
+{
+  return retries->value();
 }
 
 void YahooDialog::help ()
