@@ -135,6 +135,13 @@ void QuoteDialog::ruleChanged (int)
 
   if (settings)
     delete settings;
+    
+  if (! ruleCombo->count())
+  {
+    downloadButton->setEnabled(FALSE);
+    newButton->setEnabled(FALSE);
+    return;
+  }
 
   QString s = config->getData(Config::QuotePluginPath);
   s.append("/");
