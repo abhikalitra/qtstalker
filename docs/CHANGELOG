@@ -26,6 +26,7 @@
   
 - Removed the install plugins stuff. Not really needed since all you have to do is plop the lib into the dir for it to work.
 
+- Fixed plugin path change when upgrading to 0.21 by removing them from the rc file.
 
 0.20
 ====

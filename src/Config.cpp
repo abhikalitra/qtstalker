@@ -105,20 +105,10 @@ Config::Config (QString p)
     delete i;
   }
   
-  // fix old paths to plugins
-  s = getData(IndicatorPluginPath);
-  if (! s.contains("/usr/lib/qtstalker"))
-  {
-    QSettings settings;
-    settings.removeEntry("/Qtstalker/IndicatorPluginPath");
-  }
-
-  s = getData(QuotePluginPath);
-  if (! s.contains("/usr/lib/qtstalker"))
-  {
-    QSettings settings;
-    settings.removeEntry("/Qtstalker/QuotePluginPath");
-  }
+  // remove old paths to plugins
+  QSettings settings;
+  settings.removeEntry("/Qtstalker/IndicatorPluginPath");
+  settings.removeEntry("/Qtstalker/QuotePluginPath");
 }
 
 Config::~Config ()
