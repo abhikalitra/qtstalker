@@ -19,6 +19,11 @@
 20050131: Added CSV export option to the chart panel. CSV exports chart in CSV format, and the
           dump options dumps the raw chart along with header.
 	  
+20050203: Quote plugins now remember input files selected in the settings dialog.
+
+20050204: Added a "Fundamental" download method option to the yahoo plugin. Selecting this option will
+          download all the yahoo fundamental info for each symbol selected. The fundemental info
+	  can then be viewed by selecting the "Edit" option from the chart panel context menu.
 	  
 	  
 0.29

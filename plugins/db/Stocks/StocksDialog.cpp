@@ -65,9 +65,13 @@ StocksDialog::~StocksDialog ()
 void StocksDialog::createDetailsPage ()
 {
   QWidget *w = new QWidget(this);
+  
+  QVBoxLayout *vbox = new QVBoxLayout(w);
+  vbox->setMargin(5);
+  vbox->setSpacing(5);
     
-  QGridLayout *grid = new QGridLayout(w);
-  grid->setMargin(5);
+  QGridLayout *grid = new QGridLayout(vbox);
+  grid->setMargin(0);
   grid->setSpacing(5);
   
   QLabel *label = new QLabel(tr("Symbol"), w);
@@ -93,6 +97,32 @@ void StocksDialog::createDetailsPage ()
   grid->expand(grid->numRows() + 1, grid->numCols());
   grid->setColStretch(1, 1);
   
+  // fundamentals section
+    
+  Setting fund;
+  fund.parse(db->getHeaderFundamental());
+  QStringList key = fund.getKeyList();
+  key.sort();
+  
+  vbox->addSpacing(10);
+  label = new QLabel(tr("Fundamentals"), w);
+  vbox->addWidget(label);
+  
+  fundView = new QTextEdit(w);
+  fundView->setTextFormat(Qt::LogText);
+  fundView->setReadOnly(TRUE);
+  vbox->addWidget(fundView);
+  
+  int loop;
+  for (loop = 0; loop < (int) key.count(); loop++)
+  {
+    QString s = key[loop] + " = " + fund.getData(key[loop]);
+    fundView->append(s);
+  }
+  
+  if (! key.count())
+    fundView->append(tr("No data available."));
+    
   addTab(w, tr("Details"));  
 }
 

@@ -594,6 +594,7 @@ void CSV::prefDialog (QWidget *w)
   dialog->setEndDate(edate);
   dialog->setDateRange(dateFlag);
   dialog->setRuleName(ruleName);
+  dialog->setFiles(list);
           
   int rc = dialog->exec();
   
@@ -653,7 +654,6 @@ Setting * CSV::getRule ()
   settings.endGroup();
   return set;
 }
-
 
 //**********************************************************
 //**********************************************************

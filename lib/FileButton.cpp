@@ -23,12 +23,17 @@
 #include <qfiledialog.h>
 #include <qfileinfo.h>
 
-FileButton::FileButton (QWidget *w, QStringList l) : QPushButton (w)
+FileButton::FileButton (QWidget *w, QStringList l, QString p) : QPushButton (w)
 {
   QObject::connect(this, SIGNAL(clicked()), this, SLOT(fileDialog()));
   setMaximumHeight(25);
   setToggleButton(FALSE);
   fileList = l;
+  
+  path = QDir::homeDirPath();
+  if (p.length())
+    path = p;
+  
   updateButtonText();
 }
 
@@ -49,7 +54,6 @@ void FileButton::setFile (QStringList l)
 
 void FileButton::fileDialog ()
 {
-  QString path = "*";
   if (fileList.count())
   {
     QFileInfo fi(fileList[0]);

@@ -31,6 +31,8 @@ class NYBOT : public QuotePlugin
     virtual ~NYBOT ();
     void update ();
     void prefDialog (QWidget *);
+    void loadSettings ();
+    void saveSettings ();
 
   public slots:
     void parse ();
@@ -38,6 +40,7 @@ class NYBOT : public QuotePlugin
   private:
     FuturesData *fd;
     QStringList list;
+    QString lastPath;
 };
 
 extern "C"

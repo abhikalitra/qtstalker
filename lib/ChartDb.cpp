@@ -374,3 +374,16 @@ void ChartDb::setHeader (Setting *d)
   plug->setHeader(d);
 }
 
+void ChartDb::setHeaderFundamental (QString d)
+{
+  if (! plug)
+    return;
+    
+  plug->setHeaderFundamental(d);
+}
+
+QString ChartDb::getHeaderFundamental ()
+{
+  return header->lvar1;
+}
+

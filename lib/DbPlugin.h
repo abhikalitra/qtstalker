@@ -101,6 +101,7 @@ class DbPlugin
     void setFuturesType (QString);
     void setHeaderCO (QString);
     void setFuturesMonth (QString);
+    void setHeaderFundamental (QString);
     
     void getDailyHistory ();
     void getWeeklyHistory ();

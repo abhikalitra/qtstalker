@@ -69,7 +69,9 @@ class ChartDb
     Bar * getBar (QString);
     void setHeaderCO (QString);
     void setHeader (Setting *);
-    
+    void setHeaderFundamental (QString);
+    QString getHeaderFundamental ();
+
   private:
     FILE *db;
     ChartHeader *header;

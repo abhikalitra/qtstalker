@@ -22,6 +22,7 @@
 #include "QtstalkerFormat.h"
 #include "ChartDb.h"
 #include "PrefDialog.h"
+#include "Config.h"
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qtimer.h>
@@ -342,8 +343,10 @@ void QtstalkerFormat::prefDialog (QWidget *w)
   l.append("DB");
   l.append("Qtstalker");
   dialog->addComboItem(tr("Method"), tr("Details"), l, method);
-  
-  dialog->addFileItem(tr("File Input"), tr("Details"), list);
+
+  Config config;  
+  QString s = config.getData(Config::Home) + "/export";
+  dialog->addFileItem(tr("File Input"), tr("Details"), list, s);
   
   int rc = dialog->exec();
   

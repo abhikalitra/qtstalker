@@ -30,12 +30,16 @@
 #include <qstringlist.h>
 #include <qstring.h>
 #include <qdir.h>
+#include <qsettings.h>
 
 NYBOT::NYBOT ()
 {
   pluginName = "NYBOT";
   helpFile = "nybot.html";
   fd = new FuturesData;
+  lastPath = QDir::homeDirPath();
+  
+  loadSettings();
 }
 
 NYBOT::~NYBOT ()
@@ -343,17 +347,48 @@ void NYBOT::prefDialog (QWidget *w)
   dialog->setCaption(tr("NYBOT Prefs"));
   dialog->createPage (tr("Details"));
   dialog->setHelpFile(helpFile);
-  dialog->addFileItem(tr("File Input"), tr("Details"), list);
+  dialog->addFileItem(tr("File Input"), tr("Details"), list, lastPath);
   
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
     list = dialog->getFile(tr("File Input"));
+    
+    if (list.count())
+    {
+      QFileInfo fi(list[0]);
+      lastPath = fi.dirPath(TRUE);
+    }
+    
+    saveFlag = TRUE;
   }
   
   delete dialog;
 }
+
+void NYBOT::loadSettings ()
+{
+  QSettings settings;
+  settings.beginGroup("/Qtstalker/NYBOT plugin");
+  lastPath = settings.readEntry("/lastPath", QDir::homeDirPath());
+  settings.endGroup();
+}
+
+void NYBOT::saveSettings ()
+{
+  if (! saveFlag)
+    return;
+
+  QSettings settings;
+  settings.beginGroup("/Qtstalker/NYBOT plugin");
+  settings.writeEntry("/lastPath", lastPath);
+  settings.endGroup();
+}
+
+//**********************************************************
+//**********************************************************
+//**********************************************************
 
 QuotePlugin * createQuotePlugin ()
 {

@@ -31,7 +31,7 @@ class FileButton : public QPushButton
   Q_OBJECT
 
   public:
-    FileButton (QWidget *, QStringList);
+    FileButton (QWidget *, QStringList, QString);
     ~FileButton ();
     QStringList getFile ();
     void setFile (QStringList);
@@ -42,6 +42,7 @@ class FileButton : public QPushButton
         
   private:
     QStringList fileList;
+    QString path;
 };
 
 #endif

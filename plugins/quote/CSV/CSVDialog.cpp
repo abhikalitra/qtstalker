@@ -45,6 +45,7 @@ CSVDialog::CSVDialog (QWidget *p, QString d) : QTabDialog (p, "CSVDialog", TRUE)
   setCancelButton();
   setHelpButton();
   QObject::connect(this, SIGNAL(helpButtonPressed()), this, SLOT(help()));
+  lastPath = QDir::homeDirPath();
   
   resize(325, 325);
   updateRules();
@@ -69,7 +70,7 @@ void CSVDialog::createMainPage ()
   QLabel *label = new QLabel(tr("Input:"), w);
   grid->addWidget(label, 0, 0);
   
-  file = new FileButton(w, QStringList());
+  file = new FileButton(w, QStringList(), lastPath);
   grid->addWidget(file, 0, 1);
 
   label = new QLabel(tr("Symbol:"), w);

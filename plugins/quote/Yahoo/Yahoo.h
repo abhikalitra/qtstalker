@@ -42,7 +42,8 @@ class Yahoo : public QuotePlugin
     void prefDialog (QWidget *);
     void printErrorList ();
     void cancelUpdate ();
-    
+    void parseFundamental ();
+      
   public slots:
     void opDone (QNetworkOperation *);
     void dataReady (const QByteArray &, QNetworkOperation *);

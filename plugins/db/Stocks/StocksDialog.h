@@ -26,6 +26,7 @@
 #include <qdatetimeedit.h>
 #include <qtabdialog.h>
 #include <qlineedit.h>
+#include <qtextedit.h>
 #include "Toolbar.h"
 #include "ChartDb.h"
 #include "Config.h"
@@ -64,6 +65,7 @@ class StocksDialog : public QTabDialog
     bool saveRecordFlag;
     bool ignoreSaveRecordFlag;
     QString helpFile;
+    QTextEdit *fundView;
 };
 
 #endif

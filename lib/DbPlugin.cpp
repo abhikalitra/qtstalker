@@ -578,6 +578,12 @@ void DbPlugin::setFuturesMonth (QString d)
   saveFlag = TRUE;
 }
 
+void DbPlugin::setHeaderFundamental (QString d)
+{
+  strncpy(header->lvar1, d.ascii(), LSIZE);
+  saveFlag = TRUE;
+}
+
 BarData * DbPlugin::getHistory ()
 {
   barData = new BarData;

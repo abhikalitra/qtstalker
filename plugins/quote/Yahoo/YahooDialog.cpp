@@ -71,6 +71,7 @@ YahooDialog::YahooDialog (QWidget *p, QString d) : QTabDialog (p, "YahooDialog",
   method->insertItem(tr("History"), 0);
   method->insertItem(tr("Auto History"), 1);
   method->insertItem(tr("Quote"), 2);
+  method->insertItem(tr("Fundamental"), 3);
   QObject::connect(method, SIGNAL(activated(int)), this, SLOT(methodChanged(int)));
   grid->addWidget(method, 0, 1);
   
@@ -272,8 +273,16 @@ void YahooDialog::setMethod (QString d)
     }
     else
     {
-      method->setCurrentItem(2);
-      methodChanged(2);
+      if (! d.compare(tr("Quote")))
+      {
+        method->setCurrentItem(2);
+        methodChanged(2);
+      }
+      else
+      {
+        method->setCurrentItem(3);
+        methodChanged(3);
+      }
     }
   }
 }
@@ -293,6 +302,11 @@ void YahooDialog::methodChanged (int d)
       date2->setEnabled(FALSE);
       break;
     case 2:
+      adjustment->setEnabled(FALSE);
+      date->setEnabled(FALSE);
+      date2->setEnabled(FALSE);
+      break;
+    case 3:
       adjustment->setEnabled(FALSE);
       date->setEnabled(FALSE);
       date2->setEnabled(FALSE);

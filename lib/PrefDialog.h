@@ -78,7 +78,7 @@ class PrefDialog : public QTabDialog
     QComboBox * getComboWidget (QString);
     void addDateItem (QString, QString, QDateTime);
     QDateTime getDate (QString);
-    void addFileItem (QString, QString, QStringList);
+    void addFileItem (QString, QString, QStringList, QString);
     QStringList getFile (QString);
     void addSymbolItem (QString, QString, QString, QString);
     QString getSymbol (QString);

@@ -10,7 +10,6 @@ To Do:
 - allow negative displacement for line plots
 - add indicator chart to the tester chart so buy/sell points have a reference
 - allow log/scale to screen options on the tester charts
-- add yahoo plugin function to download fundamental data when a new symbol is created
 - add some default CSV plugin import rules
 
 

@@ -372,7 +372,7 @@ QDateTime PrefDialog::getDate (QString name)
   return dt;
 }
 
-void PrefDialog::addFileItem (QString name, QString page, QStringList l)
+void PrefDialog::addFileItem (QString name, QString page, QStringList l, QString p)
 {
   QWidget *w = widgetList[page];
   
@@ -382,7 +382,7 @@ void PrefDialog::addFileItem (QString name, QString page, QStringList l)
   QLabel *label = new QLabel(name, w);
   grid->addWidget(label, grid->numRows() - 2, 0);
 
-  FileButton *button = new FileButton(w, l);
+  FileButton *button = new FileButton(w, l, p);
   grid->addWidget(button, grid->numRows() - 2, 1);
   fileList.replace(name, button);
 }

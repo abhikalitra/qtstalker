@@ -78,5 +78,6 @@ class CSVDialog : public QTabDialog
     QListBox *ruleList;
     QLineEdit *ruleName;
     QString helpFile;
+    QString lastPath;
 };
 

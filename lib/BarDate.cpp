@@ -146,7 +146,7 @@ QString BarDate::getTimeString (bool sepFlag)
     return date.time().toString("hhmmss");
 }
 
-int BarDate::setTime (int h, int m, int s)
+int BarDate::setTime (int h, int m, int)
 {
   date.setTime(QTime(h, m, 0, 0));
   if (date.time().isValid())

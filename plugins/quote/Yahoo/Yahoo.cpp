@@ -193,9 +193,20 @@ void Yahoo::update ()
       
       if (! method.compare(tr("Quote")))
       {
+        // multiple quotes: quote.yahoo.com/d/quotes.csv?s=IBM+RHAT+SCOX+MSFT+GOLD&f=sl1d1t1c1ohgv 
+        // multiple close only: quote.yahoo.com/d/quotes.csv?s=IBM+RHAT+SCOX+MSFT+GOLD&f=sl1
+        // URLPrefix = "http://quote.yahoo.com/d/quotes.csv?s=";
+        // URLPostfix = "&f=snl1d1t1c1ohgv&e=.csv";	
         s = "http://finance.yahoo.com/d/quotes.csv?s=";
         s.append(symbolList[loop]);
         s.append("&f=snl1d1t1c1ohgv&e=.csv");
+	break;
+      }
+      
+      if (! method.compare(tr("Fundamental")))
+      {
+        s = "http://finance.yahoo.com/q/ks?s=";
+        s.append(symbolList[loop]);
       }
       
       break;
@@ -230,7 +241,12 @@ void Yahoo::opDone (QNetworkOperation *o)
     if (method.contains(tr("History")))
       parseHistory();
     else
-      parseQuote();
+    {
+      if (method.contains(tr("Quote")))
+        parseQuote();
+      else
+        parseFundamental();
+    }
 
     QString s = tr("Downloading ");
     s.append(downloadList[index]);
@@ -772,6 +788,103 @@ void Yahoo::downloadError ()
     
   data.truncate(0);
   getFile();
+}
+
+void Yahoo::parseFundamental ()
+{
+  if (! data.length())
+    return;
+
+  if (data.contains("data available"))
+    return;
+    
+  QStringList l = QStringList::split("yfnc_tablehead1", data, FALSE);
+  int loop;
+  Setting fund;
+  for (loop = 1; loop < (int) l.count(); loop++)
+  {
+    QString k = l[loop];
+    int p = k.find(">", 0, TRUE);
+    if (p == -1)
+      continue;
+    p++;
+    k.remove(0, p);
+    p = k.find("<", 0, TRUE);
+    if (p == -1)
+      continue;
+    k.truncate(p - 1);
+    
+    if (k.contains("&sup"))
+      k.truncate(k.length() - 6);
+    if (k.contains("&amp"))
+      k.remove(k.find("&", 0, TRUE), 5);
+    k = k.stripWhiteSpace();
+    if (! k.length())
+      continue;
+    
+    QString d = l[loop];
+    p = d.find("yfnc_tabledata1", 0, TRUE);
+    if (p == -1)
+      continue;
+    p = d.find(">", p, TRUE);
+    if (p == -1)
+      continue;
+    p++;
+    d.remove(0, p);
+    p = d.find("<", 0, TRUE);
+    if (p == -1)
+      continue;
+    d.truncate(p);
+    d = d.stripWhiteSpace();  
+    if (! d.length())
+      continue;
+
+    fund.setData(k, d);
+  }
+      
+  Config config;
+  QString s = config.getData(Config::DataPath) + "/Stocks/" + downloadList[index];
+  
+  ChartDb *plug = new ChartDb;
+  plug->setPlugin("Stocks");
+  if (plug->openChart(s))
+  {
+    emit statusLogMessage("Could not open db.");
+    delete plug;
+    return;
+  }
+  
+  s = plug->getSymbol();
+  if (! s.length())
+  {
+    Setting *set = new Setting;
+    set->setData("BarType", QString::number(BarData::Daily));
+    set->setData("Symbol", downloadList[index]);
+    
+    QString title = downloadList[index];
+    int p = data.find("yfnc_leftnav1", 0, TRUE);
+    if (p != -1)
+    {
+      p = data.find(">", p, TRUE);
+      if (p != -1)
+      {
+        int p2 = data.find("<", p, TRUE);
+        if (p2 != -1)
+          title = data.mid(p, p2 - p);
+      }
+    }   
+    set->setData("Title", title);
+    
+    plug->saveDbDefaults(set);
+    delete set;
+  }
+
+  plug->setHeaderFundamental(fund.getString());
+    
+  s = "Updating " + downloadList[index];
+  emit dataLogMessage(s);
+  
+  delete plug;
 }
 
 //***********************************************************************
