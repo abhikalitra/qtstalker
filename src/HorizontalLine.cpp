@@ -33,9 +33,9 @@ HorizontalLine::HorizontalLine (Scaler *s, QPixmap *p, QString indicator, QStrin
   name = n;
   value = v;
   
-  menu->insertItem(tr("Edit Horizontal Line"), this, SLOT(prefDialog()));
-  menu->insertItem(tr("Move Horizontal Line"), this, SLOT(moveObject()));
-  menu->insertItem(tr("Delete Horizontal Line"), this, SLOT(remove()));
+  menu->insertItem(tr("&Edit Horizontal Line"), this, SLOT(prefDialog()));
+  menu->insertItem(tr("&Move Horizontal Line"), this, SLOT(moveObject()));
+  menu->insertItem(tr("&Delete Horizontal Line"), this, SLOT(remove()));
   
   loadDefaults("HorizontalLine");
 }

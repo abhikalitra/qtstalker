@@ -48,10 +48,10 @@ PortfolioPage::PortfolioPage (QWidget *w, Config *c) : QWidget (w)
   vbox->addWidget(nav);
   
   menu = new QPopupMenu();
-  menu->insertItem(QPixmap(open), tr("Open Portfolio"), this, SLOT(openPortfolio()));
-  menu->insertItem(QPixmap(newchart), tr("New Portfolio"), this, SLOT(newPortfolio()));
-  menu->insertItem(QPixmap(deleteitem), tr("Delete Portfolio"), this, SLOT(deletePortfolio()));
-  menu->insertItem(QPixmap(renam), tr("Rename Portfolio"), this, SLOT(renamePortfolio()));
+  menu->insertItem(QPixmap(open), tr("&Open Portfolio"), this, SLOT(openPortfolio()), CTRL+Key_O);
+  menu->insertItem(QPixmap(newchart), tr("&New Portfolio"), this, SLOT(newPortfolio()), CTRL+Key_N);
+  menu->insertItem(QPixmap(deleteitem), tr("&Delete Portfolio"), this, SLOT(deletePortfolio()), CTRL+Key_D);
+  menu->insertItem(QPixmap(renam), tr("&Rename Portfolio"), this, SLOT(renamePortfolio()), CTRL+Key_R);
 
   portfolioNoSelection();
 }
@@ -71,11 +71,11 @@ void PortfolioPage::newPortfolio()
 {
   bool ok;
   QString selection = QInputDialog::getText(tr("New Portfolio"),
-  							   tr("Enter new portfolio name."),
-							   QLineEdit::Normal,
-							   tr("New Portfolio"),
-							   &ok,
-							   this);
+  					    tr("Enter new portfolio name."),
+					    QLineEdit::Normal,
+					    tr("New Portfolio"),
+					    &ok,
+					    this);
   if ((ok) && (! selection.isNull()))
   {
     QString s = config->getData(Config::PortfolioPath);
@@ -113,11 +113,11 @@ void PortfolioPage::deletePortfolio()
   if (rc == QDialog::Accepted)
   {
     rc = QMessageBox::warning(this,
-  					  tr("Qtstalker: Warning"),
-					  tr("Are you sure you want to delete this portfolio?"),
-					  QMessageBox::Yes,
-					  QMessageBox::No,
-					  QMessageBox::NoButton);
+  			      tr("Qtstalker: Warning"),
+			      tr("Are you sure you want to delete this portfolio?"),
+			      QMessageBox::Yes,
+			      QMessageBox::No,
+			      QMessageBox::NoButton);
 
     if (rc == QMessageBox::No)
     {
@@ -142,11 +142,11 @@ void PortfolioPage::renamePortfolio ()
 {
   bool ok;
   QString selection = QInputDialog::getText(tr("Rename Portfolio"),
-  							   tr("Enter new portfolio name."),
-							   QLineEdit::Normal,
-							   nav->currentText(),
-							   &ok,
-							   this);
+  					    tr("Enter new portfolio name."),
+					    QLineEdit::Normal,
+					    nav->currentText(),
+					    &ok,
+					    this);
   if ((ok) && (! selection.isNull()))
   {
     QString s = config->getData(Config::PortfolioPath);

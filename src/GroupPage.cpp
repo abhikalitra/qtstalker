@@ -57,11 +57,11 @@ GroupPage::GroupPage (QWidget *w, Config *c) : QWidget (w)
   vbox->addWidget(nav);
 
   menu = new QPopupMenu();
-  menu->insertItem(QPixmap(newchart), tr("New Group"), this, SLOT(newGroup()));
-  menu->insertItem(QPixmap(insert), tr("Add Group Items"), this, SLOT(addGroupItem()));
-  menu->insertItem(QPixmap(deleteitem), tr("Delete Group Items"), this, SLOT(deleteGroupItem()));
-  menu->insertItem(QPixmap(stop), tr("Delete Group"), this, SLOT(deleteGroup()));
-  menu->insertItem(QPixmap(renam), tr("Rename Group"), this, SLOT(renameGroup()));
+  menu->insertItem(QPixmap(newchart), tr("&New Group"), this, SLOT(newGroup()), CTRL+Key_N);
+  menu->insertItem(QPixmap(insert), tr("&Add Group Items"), this, SLOT(addGroupItem()), CTRL+Key_A);
+  menu->insertItem(QPixmap(deleteitem), tr("&Delete Group Items"), this, SLOT(deleteGroupItem()), CTRL+Key_D);
+  menu->insertItem(QPixmap(stop), tr("Delete &Group"), this, SLOT(deleteGroup()), CTRL+Key_G);
+  menu->insertItem(QPixmap(renam), tr("&Rename Group"), this, SLOT(renameGroup()), CTRL+Key_R);
 
   groupNoSelection();
 }
@@ -152,11 +152,11 @@ void GroupPage::deleteGroupItem()
   if (rc == QDialog::Accepted)
   {
     rc = QMessageBox::warning(this,
-  					  tr("Qtstalker: Warning"),
-					  tr("Are you sure you want to delete group items?"),
-					  QMessageBox::Yes,
-					  QMessageBox::No,
-					  QMessageBox::NoButton);
+  			      tr("Qtstalker: Warning"),
+			      tr("Are you sure you want to delete group items?"),
+			      QMessageBox::Yes,
+			      QMessageBox::No,
+			      QMessageBox::NoButton);
 
     if (rc == QMessageBox::No)
     {
@@ -184,11 +184,11 @@ void GroupPage::deleteGroupItem()
 void GroupPage::deleteGroup()
 {
   int rc = QMessageBox::warning(this,
-  					    tr("Qtstalker: Warning"),
-					    tr("Are you sure you want to delete this group?"),
-					    QMessageBox::Yes,
-					    QMessageBox::No,
-					    QMessageBox::NoButton);
+  				tr("Qtstalker: Warning"),
+				tr("Are you sure you want to delete this group?"),
+				QMessageBox::Yes,
+				QMessageBox::No,
+				QMessageBox::NoButton);
 
   if (rc == QMessageBox::No)
     return;
@@ -213,11 +213,11 @@ void GroupPage::renameGroup ()
   QFileInfo fi(nav->getCurrentPath());
   bool ok;
   QString selection = QInputDialog::getText(tr("Rename Group"),
-  							   tr("Enter new group symbol."),
-							   QLineEdit::Normal,
-							   fi.fileName(),
-							   &ok,
-							   this);
+  					    tr("Enter new group symbol."),
+					    QLineEdit::Normal,
+					    fi.fileName(),
+					    &ok,
+					    this);
   if ((ok) && (! selection.isNull()))
   {
     QString s = config->getData(Config::GroupPath);

@@ -35,9 +35,9 @@ BuyArrow::BuyArrow (Scaler *s, QPixmap *p, QString indicator, QString n, BarDate
   value = v;
   color.setNamedColor("green");
   
-  menu->insertItem(tr("Edit Buy Arrow"), this, SLOT(prefDialog()));
-  menu->insertItem(tr("Move Buy Arrow"), this, SLOT(moveObject()));
-  menu->insertItem(tr("Delete Buy Arrow"), this, SLOT(remove()));
+  menu->insertItem(tr("&Edit Buy Arrow"), this, SLOT(prefDialog()), CTRL+Key_E);
+  menu->insertItem(tr("&Move Buy Arrow"), this, SLOT(moveObject()), CTRL+Key_M);
+  menu->insertItem(tr("&Delete Buy Arrow"), this, SLOT(remove()), CTRL+Key_D);
   
   loadDefaults("BuyArrow");
 }

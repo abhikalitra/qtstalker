@@ -48,14 +48,15 @@ ChartPage::ChartPage (QWidget *w, Config *c) : QWidget (w)
   nav = new Navigator(this, config->getData(Config::DataPath));
   connect(nav, SIGNAL(fileSelected(QString)), this, SLOT(chartSelected(QString)));
   connect(nav, SIGNAL(noSelection()), this, SLOT(chartNoSelection()));
-  connect(nav, SIGNAL(contextMenuRequested(QListBoxItem *, const QPoint &)), this, SLOT(rightClick(QListBoxItem *)));
+  connect(nav, SIGNAL(contextMenuRequested(QListBoxItem *, const QPoint &)), this,
+          SLOT(rightClick(QListBoxItem *)));
   nav->updateList();
   vbox->addWidget(nav);
 
   menu = new QPopupMenu();
-  menu->insertItem(QPixmap(edit), tr("Edit Chart"), this, SLOT(editChart()));
-  menu->insertItem(QPixmap(deleteitem), tr("Delete Chart"), this, SLOT(deleteChart()));
-  menu->insertItem(QPixmap(exportfile), tr("Export Chart"), this, SLOT(exportSymbol()));
+  menu->insertItem(QPixmap(edit), tr("&Edit Chart"), this, SLOT(editChart()), CTRL+Key_E);
+  menu->insertItem(QPixmap(deleteitem), tr("&Delete Chart"), this, SLOT(deleteChart()), CTRL+Key_D);
+  menu->insertItem(QPixmap(exportfile), tr("E&xport Chart"), this, SLOT(exportSymbol()), CTRL+Key_X);
 
   chartNoSelection();
 }

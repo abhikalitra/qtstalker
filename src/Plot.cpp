@@ -1663,11 +1663,11 @@ void Plot::showPopupMenu ()
     
   if (mainFlag)
   {
-    chartMenu->insertItem(tr("Chart Prefs"), this, SLOT(slotEditChartPrefs()));
+    chartMenu->insertItem(tr("&Chart Prefs"), this, SLOT(slotEditChartPrefs()), CTRL+Key_C);
     chartMenu->insertSeparator ();
   }
   
-  chartMenu->insertItem(QPixmap(indicator), tr("New Indicator"), this, SLOT(slotNewIndicator()));
+  chartMenu->insertItem(QPixmap(indicator), tr("New &Indicator"), this, SLOT(slotNewIndicator()), CTRL+Key_I);
   chartDeleteMenu = new QPopupMenu();
   chartEditMenu = new QPopupMenu();
   chartMenu->insertItem(QPixmap(edit), tr("Edit Indicator"), chartEditMenu);
@@ -1698,13 +1698,15 @@ void Plot::showPopupMenu ()
   else
     chartObjectMenu->setEnabled(TRUE);
   
-  chartMenu->insertItem(QPixmap(deleteitem), tr("Delete All Chart Objects"), this, SLOT(slotDeleteAllChartObjects()));
+  chartMenu->insertItem(QPixmap(deleteitem), tr("Delete &All Chart Objects"), this,
+                        SLOT(slotDeleteAllChartObjects()), CTRL+Key_A);
 
   chartMenu->insertSeparator ();
-  chartMenu->insertItem(QPixmap(print), tr("Print Chart"), this, SLOT(printChart()));
+  chartMenu->insertItem(QPixmap(print), tr("&Print Chart"), this, SLOT(printChart()), CTRL+Key_P);
     
   chartMenu->insertSeparator ();
-  id = chartMenu->insertItem(QPixmap(crosshair), tr("Crosshairs"), this, SLOT(toggleCrosshairs()));
+  id = chartMenu->insertItem(QPixmap(crosshair), tr("Cross&hairs"), this,
+                             SLOT(toggleCrosshairs()), CTRL+Key_H);
   chartMenu->setItemChecked(id, crosshairs);
   
   QDictIterator<Indicator> it(indicators);

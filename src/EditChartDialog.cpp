@@ -44,8 +44,8 @@ EditChartDialog::EditChartDialog (QString cp) : QTabDialog (0, "EditChartDialog"
   createDetailsPage();
   createDataPage();
   
-  setOkButton();
-  setCancelButton();
+  setOkButton(tr("&OK"));
+  setCancelButton(tr("&Cancel"));
   connect(this, SIGNAL(applyButtonPressed()), this, SLOT(saveChart()));
 }
 
@@ -124,10 +124,12 @@ void EditChartDialog::createDataPage ()
   toolbar->addButton("delete", QPixmap(deleteitem), tr("Delete Record"));
   connect(toolbar->getButton("delete"), SIGNAL(clicked()), this, SLOT(deleteRecord()));
   toolbar->setButtonStatus("delete", FALSE);
+  toolbar->getButton("delete")->setAccel(CTRL+Key_D);
 
   toolbar->addButton("save", QPixmap(exportfile), tr("Save Record"));
   connect(toolbar->getButton("save"), SIGNAL(clicked()), this, SLOT(saveRecord()));
   toolbar->setButtonStatus("save", FALSE);
+  toolbar->getButton("save")->setAccel(CTRL+Key_S);
 
   QGridLayout *grid = new QGridLayout(vbox);
   grid->setSpacing(5);
@@ -147,6 +149,7 @@ void EditChartDialog::createDataPage ()
   QToolTip::add(button, tr("Search"));
   button->setPixmap(search);
   grid->addWidget(button, 0, 2);
+  button->setAccel(CTRL+Key_R);
   
   label = new QLabel(tr("Date"), w);
   grid->addWidget(label, 1, 0);

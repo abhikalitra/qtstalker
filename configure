@@ -6,10 +6,6 @@ make
 cd ../../
 echo "Building Makefile..."
 qmake -o Makefile qtstalker.pro
-echo "Removing old plugins..."
-rm -f /usr/lib/qtstalker/quote/libCBOT.so
-rm -f /usr/lib/qtstalker/quote/libRatio.so
-rm -f /usr/lib/qtstalker/quote/libYahooQuote.so
 echo "Done"
 
 

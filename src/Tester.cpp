@@ -57,9 +57,9 @@ Tester::Tester (Config *c, QString n) : QTabDialog (0, 0, TRUE)
 
   setCaption ("Back Tester");
 
-  setOkButton();
+  setOkButton(tr("&OK"));
   connect(this, SIGNAL(applyButtonPressed()), this, SLOT(exitDialog()));
-  setCancelButton();  
+  setCancelButton(tr("&Cancel"));  
 
   createFormulaPage();
 
@@ -328,6 +328,7 @@ void Tester::createTestPage ()
   testButton = new QPushButton(tr("Perform Test"), w);
   connect(testButton, SIGNAL(clicked()), this, SLOT(test()));
   vbox->addWidget(testButton);
+  testButton->setAccel(CTRL+Key_T);
 
   addTab(w, tr("Testing"));
 }

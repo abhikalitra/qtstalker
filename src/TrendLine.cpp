@@ -41,9 +41,9 @@ TrendLine::TrendLine (Scaler *s, QPixmap *p, BarData *d, QString indicator, QStr
   useBar = FALSE;
   barField = tr("Close");
   
-  menu->insertItem(tr("Edit Trend Line"), this, SLOT(prefDialog()), tr("Ctrl+E"));
-  menu->insertItem(tr("Move Trend Line"), this, SLOT(moveObject()), tr("Ctrl+M"));
-  menu->insertItem(tr("Delete Trend Line"), this, SLOT(remove()), tr("Ctrl+D"));
+  menu->insertItem(tr("&Edit Trend Line"), this, SLOT(prefDialog()), tr("Ctrl+E"));
+  menu->insertItem(tr("&Move Trend Line"), this, SLOT(moveObject()), tr("Ctrl+M"));
+  menu->insertItem(tr("&Delete Trend Line"), this, SLOT(remove()), tr("Ctrl+D"));
   
   loadDefaults("TrendLine");
 }

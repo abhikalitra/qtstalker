@@ -56,16 +56,19 @@ PortfolioDialog::PortfolioDialog (Config *c, QString p) : QTabDialog (0, "Portfo
   
   connect(this, SIGNAL(applyButtonPressed()), this, SLOT(savePortfolio()));
 
-  toolbar->addButton("add", QPixmap(newchart), tr("Add"));
+  toolbar->addButton("add", QPixmap(newchart), tr("&Add"));
   connect(toolbar->getButton("add"), SIGNAL(clicked()), this, SLOT(addItem()));
+  toolbar->getButton("add")->setAccel(CTRL+Key_A);
 
-  toolbar->addButton("edit", QPixmap(edit), tr("Edit"));
+  toolbar->addButton("edit", QPixmap(edit), tr("&Edit"));
   connect(toolbar->getButton("edit"), SIGNAL(clicked()), this, SLOT(modifyItem()));
   toolbar->setButtonStatus("edit", FALSE);
+  toolbar->getButton("edit")->setAccel(CTRL+Key_E);
 
-  toolbar->addButton("delete", QPixmap(deleteitem), tr("Delete"));
+  toolbar->addButton("delete", QPixmap(deleteitem), tr("&Delete"));
   connect(toolbar->getButton("delete"), SIGNAL(clicked()), this, SLOT(deleteItem()));
   toolbar->setButtonStatus("delete", FALSE);
+  toolbar->getButton("delete")->setAccel(CTRL+Key_D);
 
   plist = new QListView(w);
   plist->setSelectionMode(QListView::Single);

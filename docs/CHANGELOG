@@ -115,6 +115,9 @@
 	  	  
 20040428: Moved the "Navigator Position Left" parm from prefs menu to a context menu activated by
           mouse right click on the navigator tab area. 
+	  
+20040506: Added key accels to menus and dialog buttons.
+
 	
 0.25
 ====

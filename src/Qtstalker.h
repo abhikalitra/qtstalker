@@ -127,6 +127,8 @@ class QtstalkerApp : public QMainWindow
     void slotMinPixelspaceChanged (int);
     void slotCrosshairsStatus (bool);
     void slotNavigatorPosition (int);
+    void slotMainPlotFocus ();
+    void slotTabIndicatorFocus ();
 
   private:
     QPopupMenu *fileMenu;
@@ -148,7 +150,9 @@ class QtstalkerApp : public QMainWindow
     QAction *actionHideMainPlot;
     QAction *actionPlotDate;
     QAction *actionDrawMode;
-
+    QAction *actionPlotFocus;
+    QAction *actionTabIndicatorFocus;
+    
     QToolBar *toolbar;
     QToolBar *toolbar2;
     QMenuBar *menubar;

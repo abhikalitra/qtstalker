@@ -44,9 +44,9 @@ FiboLine::FiboLine (Scaler *s, QPixmap *p, QString indicator, QString n, BarDate
   line5 = 0;
   line6 = 0;
 
-  menu->insertItem(tr("Edit Fibonacci Line"), this, SLOT(prefDialog()));
-  menu->insertItem(tr("Move Fibonacci Line"), this, SLOT(moveObject()));
-  menu->insertItem(tr("Delete Fibonacci Line"), this, SLOT(remove()));
+  menu->insertItem(tr("&Edit Fibonacci Line"), this, SLOT(prefDialog()));
+  menu->insertItem(tr("&Move Fibonacci Line"), this, SLOT(moveObject()));
+  menu->insertItem(tr("&Delete Fibonacci Line"), this, SLOT(remove()));
   
   loadDefaults("FiboLine");
 }

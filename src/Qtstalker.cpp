@@ -273,59 +273,59 @@ QtstalkerApp::~QtstalkerApp()
 void QtstalkerApp::initActions()
 {
   QPixmap icon(finished);
-  actionQuit = new QAction(tr("Exit"), icon, tr("Exit"), 0, this);
+  actionQuit = new QAction(tr("Exit"), icon, tr("E&xit"), CTRL+Key_X, this);
   actionQuit->setStatusTip(tr("Quit Qtstalker."));
   connect(actionQuit, SIGNAL(activated()), qApp, SLOT(quit()));
 
   icon = indicator;
-  actionNewIndicator = new QAction(tr("New Indicator..."), icon, tr("New Indicator..."), 0, this);
+  actionNewIndicator = new QAction(tr("New Indicator..."), icon, tr("New &Indicator..."), CTRL+Key_I, this);
   actionNewIndicator->setStatusTip(tr("Add a new indicator to chart."));
   connect(actionNewIndicator, SIGNAL(activated()), this, SLOT(slotNewIndicator()));
   actionNewIndicator->setEnabled(FALSE);
 
   icon = configure;
-  actionOptions = new QAction(tr("Edit Preferences..."), icon, tr("Edit Preferences..."), 0, this);
+  actionOptions = new QAction(tr("Edit Preferences..."), icon, tr("Edit &Preferences..."), CTRL+Key_P, this);
   actionOptions->setStatusTip(tr("Modify user preferences."));
   connect(actionOptions, SIGNAL(activated()), this, SLOT(slotOptions()));
 
   icon = gridicon;
-  actionGrid = new QAction(tr("Chart Grid"), icon, tr("Chart Grid"), 0, this, 0, true);
+  actionGrid = new QAction(tr("Chart Grid"), icon, tr("Chart &Grid"), CTRL+Key_G, this, 0, true);
   actionGrid->setStatusTip(tr("Toggle the chart grid."));
   connect(actionGrid, SIGNAL(toggled(bool)), this, SLOT(slotGrid(bool)));
 
   icon = quotes;
-  actionQuotes = new QAction(tr("Quotes..."), icon, tr("Quotes..."), 0, this);
+  actionQuotes = new QAction(tr("Quotes..."), icon, tr("&Quotes..."), CTRL+Key_Q, this);
   actionQuotes->setStatusTip(tr("Download quotes from internet."));
   connect(actionQuotes, SIGNAL(activated()), this, SLOT(slotQuotes()));
 
   icon = datawindow;
-  actionDatawindow = new QAction(tr("Data Window..."), icon, tr("Data Window..."), 0, this);
+  actionDatawindow = new QAction(tr("Data Window..."), icon, tr("&Data Window..."), CTRL+Key_D, this);
   actionDatawindow->setStatusTip(tr("Show the data window."));
   connect(actionDatawindow, SIGNAL(activated()), this, SLOT(slotDataWindow()));
   actionDatawindow->setEnabled(FALSE);
 
   icon = qtstalker;
-  actionAbout = new QAction(tr("About"), icon, tr("&About..."), 0, this);
+  actionAbout = new QAction(tr("About"), icon, tr("&About..."), CTRL+Key_A, this);
   actionAbout->setStatusTip(tr("About Qtstalker."));
   connect(actionAbout, SIGNAL(activated()), this, SLOT(slotAbout()));
 
   icon = scaletoscreen;
-  actionScaleToScreen = new QAction(tr("Scale To Screen"), icon, tr("Scale To Screen"), 0, this, 0, true);
+  actionScaleToScreen = new QAction(tr("Scale To Screen"), icon, tr("&Scale To Screen"), CTRL+Key_S, this, 0, true);
   actionScaleToScreen->setStatusTip(tr("Scale chart to current screen data."));
   connect(actionScaleToScreen, SIGNAL(toggled(bool)), this, SLOT(slotScaleToScreen(bool)));
 
   icon = nav;
-  actionNav = new QAction(tr("Chart Navigator"), icon, tr("Chart Navigator"), 0, this, 0, true);
+  actionNav = new QAction(tr("Chart Navigator"), icon, tr("Chart &Navigator"), CTRL+Key_N, this, 0, true);
   actionNav->setStatusTip(tr("Toggle the chart navigator area."));
   connect(actionNav, SIGNAL(toggled(bool)), this, SLOT(slotHideNav(bool)));
 
   icon = loggridicon;
-  actionLogScale = new QAction(tr("Log Scaling"), icon, tr("Log Scaling"), 0, this, 0, true);
+  actionLogScale = new QAction(tr("Log Scaling"), icon, tr("&Log Scaling"), CTRL+Key_L, this, 0, true);
   actionLogScale->setStatusTip(tr("Toggle log scaling."));
   connect(actionLogScale, SIGNAL(toggled(bool)), this, SLOT(slotLogScale(bool)));
 
   icon = hidechart;
-  actionHideMainPlot = new QAction(tr("Hide Main Plot"), icon, tr("Hide Main Plot"), 0, this, 0, true);
+  actionHideMainPlot = new QAction(tr("Hide Main Plot"), icon, tr("&Hide Main Plot"), CTRL+Key_H, this, 0, true);
   actionHideMainPlot->setStatusTip(tr("Hide the main plot."));
   connect(actionHideMainPlot, SIGNAL(toggled(bool)), this, SLOT(slotHideMainPlot(bool)));
 
@@ -335,9 +335,19 @@ void QtstalkerApp::initActions()
   connect(actionPlotDate, SIGNAL(toggled(bool)), this, SLOT(slotPlotDate(bool)));
 
   icon = co;
-  actionDrawMode = new QAction(tr("Toggle Draw Mode"), icon, tr("Toggle Draw Mode"), 0, this, 0, true);
+  actionDrawMode = new QAction(tr("Toggle Draw Mode"), icon, tr("Toggle &Draw Mode"), CTRL+Key_D, this, 0, true);
   actionDrawMode->setStatusTip(tr("Toggle drawing mode."));
   connect(actionDrawMode, SIGNAL(toggled(bool)), this, SLOT(slotDrawMode(bool)));
+
+  // sets a key accel for setting main plot focus
+  actionPlotFocus = new QAction(this, 0, FALSE);
+  actionPlotFocus->setAccel(CTRL+Key_M);
+  connect(actionPlotFocus, SIGNAL(activated()), this, SLOT(slotMainPlotFocus()));
+
+  // sets a key accel for setting tabbed plot focus
+  actionTabIndicatorFocus = new QAction(this, 0, FALSE);
+  actionTabIndicatorFocus->setAccel(CTRL+Key_T);
+  connect(actionTabIndicatorFocus, SIGNAL(activated()), this, SLOT(slotTabIndicatorFocus()));
 }
 
 void QtstalkerApp::initMenuBar()
@@ -1496,6 +1506,23 @@ void QtstalkerApp::slotNavigatorPosition (int d)
     navSplitter->moveToLast(navBase);
     
   navSplitter->refresh();
+}
+
+void QtstalkerApp::slotMainPlotFocus ()
+{
+  mainPlot->setFocus();
+}
+
+void QtstalkerApp::slotTabIndicatorFocus ()
+{
+/*
+  if (plotList.count())
+  {
+    Plot *plot = plotList[tabs->label(tabs->currentPageIndex())];
+    plot->setFocus();
+  }
+*/
+  tabs->setFocus();
 }
 
 //**********************************************************************

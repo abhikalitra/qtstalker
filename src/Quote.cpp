@@ -49,10 +49,12 @@ QuoteDialog::QuoteDialog (Config *c) : QTabDialog (0, "QuoteDialog", TRUE)
 
   toolbar->addButton("update", download, tr("Update"));
   QObject::connect(toolbar->getButton("update"), SIGNAL(clicked()), this, SLOT(getQuotes()));
+  toolbar->getButton("update")->setAccel(CTRL+Key_U);
   
   toolbar->addButton("cancelDownload", canceldownload, tr("Cancel Update"));
   QObject::connect(toolbar->getButton("cancelDownload"), SIGNAL(clicked()), this, SLOT(cancelDownload()));
   toolbar->setButtonStatus("cancelDownload", FALSE);
+  toolbar->getButton("cancelDownload")->setAccel(CTRL+Key_C);
   
   vbox->addSpacing(5);
     
@@ -73,6 +75,7 @@ QuoteDialog::QuoteDialog (Config *c) : QTabDialog (0, "QuoteDialog", TRUE)
   QToolTip::add(settingButton, tr("Settings"));
   settingButton->setPixmap(configure);
   grid->addWidget(settingButton, 0, 1);
+  settingButton->setAccel(CTRL+Key_S);
   
   vbox->addSpacing(10);
   
@@ -110,7 +113,7 @@ QuoteDialog::QuoteDialog (Config *c) : QTabDialog (0, "QuoteDialog", TRUE)
 
   addTab(w, tr("Data"));
   
-  setOkButton(tr("Done"));
+  setOkButton(tr("&Done"));
    
   ruleChanged(0);
   

@@ -40,8 +40,8 @@ PrefDialog::PrefDialog () : QTabDialog (0, "PrefDialog", TRUE)
   
   resize(300, 200);
   
-  setOkButton();
-  setCancelButton();
+  setOkButton(tr("&OK"));
+  setCancelButton(tr("&Cancel"));
 }
 
 PrefDialog::~PrefDialog ()

@@ -45,10 +45,10 @@ TestPage::TestPage (QWidget *w, Config *c) : QWidget (w)
   vbox->addWidget(list);
   
   menu = new QPopupMenu();
-  menu->insertItem(QPixmap(open), tr("Open Backtest Rule"), this, SLOT(openTest()));
-  menu->insertItem(QPixmap(newchart), tr("New Backtest Rule"), this, SLOT(newTest()));
-  menu->insertItem(QPixmap(deleteitem), tr("Delete Backtest Rule"), this, SLOT(deleteTest()));
-  menu->insertItem(QPixmap(renam), tr("Rename Backtest Rule"), this, SLOT(renameTest()));
+  menu->insertItem(QPixmap(open), tr("&Open Backtest Rule"), this, SLOT(openTest()), CTRL+Key_O);
+  menu->insertItem(QPixmap(newchart), tr("&New Backtest Rule"), this, SLOT(newTest()), CTRL+Key_N);
+  menu->insertItem(QPixmap(deleteitem), tr("&Delete Backtest Rule"), this, SLOT(deleteTest()), CTRL+Key_D);
+  menu->insertItem(QPixmap(renam), tr("&Rename Backtest Rule"), this, SLOT(renameTest()), CTRL+Key_R);
 
   updateList();
   testNoSelection();
