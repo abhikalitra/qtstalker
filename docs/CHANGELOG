@@ -10,6 +10,8 @@
 
 - Fixed bug #825827.
 
+- Repackaged the db source to minimize size.
+
 
 0.22
 ====
