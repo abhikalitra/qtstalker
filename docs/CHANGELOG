@@ -1,3 +1,9 @@
+0.20
+====
+
+- Added a "Color Bars" parm to draw color up and down bars for the VOL plugin. This only works if you use the
+  histogram bars line style.
+
 0.19
 ====
 

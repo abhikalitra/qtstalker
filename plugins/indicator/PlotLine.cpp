@@ -28,6 +28,7 @@ PlotLine::PlotLine ()
   lineType = "Line";
   high = -99999999;
   low = 99999999;
+  colorBars = FALSE;
 }
 
 PlotLine::~PlotLine ()
@@ -115,6 +116,17 @@ void PlotLine::checkHighLow (double d)
   if (d < low)
     low = d;
 }
+
+void PlotLine::setColorBars (bool d)
+{
+  colorBars = d;
+}
+
+bool PlotLine::getColorBars ()
+{
+  return colorBars;
+}
+
 
 
 

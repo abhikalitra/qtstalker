@@ -28,6 +28,7 @@ VOL::VOL ()
 
   set(tr("Type"), pluginName, Setting::None);
   set(tr("Color"), "red", Setting::Color);
+  set(tr("Color Bars"), tr("True"), Setting::Bool);
   set(tr("Line Type"), tr("Histogram Bar"), Setting::LineType);
   set(tr("Label"), pluginName, Setting::Text);
   set(tr("Plot"), tr("False"), Setting::None);
@@ -46,7 +47,8 @@ void VOL::calculate ()
   pl->setColor(getData(tr("Color")));
   pl->setType(getData(tr("Line Type")));
   pl->setLabel(getData(tr("Label")));
-
+  if (! getData(tr("Color Bars")).compare(tr("True")))
+    pl->setColorBars(TRUE);
   output.append(pl);
 }
 

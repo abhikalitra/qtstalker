@@ -388,7 +388,7 @@ void QtstalkerApp::slotQuit()
 void QtstalkerApp::slotAbout()
 {
   QMessageBox *dialog = new QMessageBox(tr("About Qtstalker"),
-  							    tr("Qtstalker\nVersion 0.19 \n(C) 2001-2003 by Stefan Stratigakos"),
+  							    tr("Qtstalker\nVersion 0.20 \n(C) 2001-2003 by Stefan Stratigakos"),
 							    QMessageBox::NoIcon,
 							    QMessageBox::Ok,
 							    QMessageBox::NoButton,
@@ -651,6 +651,7 @@ void QtstalkerApp::loadChart (QString d)
         pl->setColor(tpl->getColor());
         pl->setType(tpl->getType());
         pl->setLabel(tpl->getLabel());
+        pl->setColorBars(tpl->getColorBars());
 
         int loop3;
         for (loop3 = 0; loop3 < (int) tpl->getSize(); loop3++)

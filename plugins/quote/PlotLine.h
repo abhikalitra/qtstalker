@@ -51,6 +51,8 @@ class PlotLine
     double getHigh ();
     double getLow ();
     void checkHighLow (double);
+    void setColorBars (bool);
+    bool getColorBars ();
 
   private:
     QList<Val> data;
@@ -59,6 +61,7 @@ class PlotLine
     QString label;
     double high;
     double low;
+    bool colorBars;
 };
 
 #endif
