@@ -71,6 +71,7 @@ CSV::CSV ()
   l.append(tr("YYMMDD"));
   l.append(tr("MMDDYY"));
   l.append(tr("MMDDYYYY"));
+  l.append(tr("DDMMYYYY"));
   set(tr("Date Format"), tr("YYYYMMDD"), Setting::List);
   setList(tr("Date Format"), l);
 
@@ -291,45 +292,97 @@ void CSV::setDelimiter ()
 QDate CSV::getDate (QString d)
 {
   QDate date;
-
+  QStringList l;
   QString s = d;
-  while (s.contains("/"))
-    s.remove(s.find("/", 0, TRUE), 1);
 
-  while (s.contains("-"))
-    s.remove(s.find("-", 0, TRUE), 1);
+  while (1)
+  {
+    if (s.contains("/"))
+    {
+      l = QStringList::split("/", s, FALSE);
+      if (l.count() != 3)
+        return date;
+      break;
+    }
+
+    if (s.contains("-"))
+    {
+      l = QStringList::split("-", s, FALSE);
+      if (l.count() != 3)
+        return date;
+      break;
+    }
+
+    if (s.contains("."))
+    {
+      l = QStringList::split(".", s, FALSE);
+      if (l.count() != 3)
+        return date;
+      break;
+    }
+
+    break;
+  }
 
   while (1)
   {
     if (! dateFormat.compare(tr("YYYYMMDD")))
     {
-      if (s.length() != 8)
-        break;
-      date.setYMD(s.left(4).toInt(), s.mid(4, 2).toInt(), s.right(2).toInt());
+      if (l.count())
+        date.setYMD(l[0].toInt(), l[1].toInt(), l[2].toInt());
+      else
+      {
+        if (s.length() == 8)
+          date.setYMD(s.left(4).toInt(), s.mid(4, 2).toInt(), s.right(2).toInt());
+      }
       break;
     }
 
     if (! dateFormat.compare(tr("YYMMDD")))
     {
-      if (s.length() != 6)
-        break;
-      date.setYMD(s.left(2).toInt(), s.mid(2, 2).toInt(), s.right(2).toInt());
+      if (l.count())
+        date.setYMD(l[0].toInt(), l[1].toInt(), l[2].toInt());
+      else
+      {
+        if (s.length() == 6)
+          date.setYMD(s.left(2).toInt(), s.mid(2, 2).toInt(), s.right(2).toInt());
+      }
       break;
     }
 
     if (! dateFormat.compare(tr("MMDDYYYY")))
     {
-      if (s.length() != 8)
-        break;
-      date.setYMD(s.right(4).toInt(), s.left(2).toInt(), s.mid(2, 2).toInt());
+      if (l.count())
+        date.setYMD(l[2].toInt(), l[0].toInt(), l[1].toInt());
+      else
+      {
+        if (s.length() == 8)
+          date.setYMD(s.right(4).toInt(), s.left(2).toInt(), s.mid(2, 2).toInt());
+      }
       break;
     }
 
     if (! dateFormat.compare(tr("MMDDYY")))
     {
-      if (s.length() != 6)
-        break;
-      date.setYMD(s.right(2).toInt(), s.left(2).toInt(), s.mid(2, 2).toInt());
+      if (l.count())
+        date.setYMD(l[2].toInt(), l[0].toInt(), l[1].toInt());
+      else
+      {
+        if (s.length() == 6)
+          date.setYMD(s.right(2).toInt(), s.left(2).toInt(), s.mid(2, 2).toInt());
+      }
+      break;
+    }
+
+    if (! dateFormat.compare(tr("DDMMYYYY")))
+    {
+      if (l.count())
+        date.setYMD(l[2].toInt(), l[1].toInt(), l[0].toInt());
+      else
+      {
+        if (s.length() == 8)
+          date.setYMD(s.right(4).toInt(), s.mid(2, 2).toInt(), s.left(2).toInt());
+      }
       break;
     }
 

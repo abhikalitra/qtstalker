@@ -15,9 +15,18 @@ Perhaps
 you already have a collection of files in this format ... end-of-day
 data
 managed as a separate concern by some other application. </p>
-<p>This plugin can currently import DOHLCV and DOHLCVI field formats,
+<p>This plugin can currently import the following field formats,
 and
-can easily be modified to support other field formats. </p>
+can easily be modified to support other field formats.<br>
+</p>
+<ul>
+  <li>DOHLCV - Date,Open,High,Low,Close,Volume<br>
+  </li>
+  <li>DOHLCVI - Date,Open,High,Low,Close,Volume,Open Interest<br>
+  </li>
+  <li>DTOHLC - Date,Time,Open,High,Low,Close</li>
+</ul>
+<p> </p>
 <p>Here is an example snippet from a DOHLCV file called SBM.AX.txt </p>
 <pre>...<br>20030205,0.120,0.120,0.115,0.120,1129504<br>20030206,0.115,0.115,0.100,0.105,2559171<br>...<br></pre>
 <h3>Input Parameters:</h3>
