@@ -100,7 +100,7 @@ class QtstalkerApp : public QMainWindow
     void slotNewPlugin ();
     void slotChartUpdated ();
     void slotStatusMessage (QString);
-    void slotTester ();
+    void slotWorkwithTest ();
 
   private:
     QPopupMenu *fileMenu;
@@ -133,12 +133,12 @@ class QtstalkerApp : public QMainWindow
     QAction *actionQuotes;
     QAction *actionScaleToScreen;
     QAction *actionNewPlugin;
-    QAction *actionTester;
     QAction *actionBar;
     QAction *actionPaintBar;
     QAction *actionLine;
     QAction *actionCandle;
     QAction *actionPoint;
+    QAction *actionWorkwithTest;
 
     QActionGroup *compressionGroupAction;
     QActionGroup *chartTypeGroupAction;

@@ -51,7 +51,8 @@ class Config
       QuotePluginPath,
       GroupPath,
       PortfolioPath,
-      Group
+      Group,
+      TestPath
     };
 
     Config (QString);
@@ -80,6 +81,11 @@ class Config
     void deleteIndicator (QString);
 
     QStringList getIndicatorList ();
+
+    QStringList getTest (QString);
+    QStringList getTestList ();
+    void setTest (QString, QStringList);
+    void deleteTest (QString);
 
     void installPlugin (QString selection);
     QStringList getIndicatorPlugins ();

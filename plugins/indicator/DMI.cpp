@@ -28,10 +28,10 @@ DMI::DMI ()
   version = 0.2;
 
   set(tr("Type"), pluginName, Setting::None);
-  set(tr("+DM Color"), "red", Setting::Color);
+  set(tr("+DM Color"), "green", Setting::Color);
   set(tr("+DM Line Type"), tr("Line"), Setting::LineType);
   set(tr("+DM Label"), "+DM", Setting::Text);
-  set(tr("-DM Color"), "blue", Setting::Color);
+  set(tr("-DM Color"), "red", Setting::Color);
   set(tr("-DM Line Type"), tr("Line"), Setting::LineType);
   set(tr("-DM Label"), "-DM", Setting::Text);
   set(tr("ADX Color"), "yellow", Setting::Color);

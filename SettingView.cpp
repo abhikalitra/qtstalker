@@ -425,7 +425,8 @@ SymbolDialog::SymbolDialog (QString dataPath) : QDialog (0, "SymbolDialog", TRUE
 
   navigator = new Navigator(this, dataPath);
   vbox->addWidget(navigator);
-  
+  connect(navigator, SIGNAL(doubleClick(QString)), this, SLOT(checkDoubleClick(QString)));
+
   navigator->updateList();
 }
 
@@ -436,6 +437,12 @@ SymbolDialog::~SymbolDialog ()
 QString SymbolDialog::getSymbol ()
 {
   return navigator->getFileSelection();
+}
+
+void SymbolDialog::checkDoubleClick (QString symbol)
+{
+  if (symbol.length())
+    accept();
 }
 
 

@@ -49,6 +49,7 @@
 #include "WorkwithChartsDialog.h"
 #include "WorkwithGroupsDialog.h"
 #include "WorkwithPortfoliosDialog.h"
+#include "WorkwithTestDialog.h"
 #include "Tester.h"
 
 #include "dirclosed.xpm"
@@ -329,11 +330,11 @@ void QtstalkerApp::initActions()
   actionNewPlugin = new QAction(tr("Install new plugins..."), icon, tr("Install new plugins..."), 0, this);
   actionNewPlugin->setStatusTip(tr("Install new plugins."));
   connect(actionNewPlugin, SIGNAL(activated()), this, SLOT(slotNewPlugin()));
-  
+
   icon = test;
-  actionTester = new QAction(tr("Back Testing"), icon, tr("Back Testing"), 0, this);
-  actionTester->setStatusTip(tr("Back Testing"));
-  connect(actionTester, SIGNAL(activated()), this, SLOT(slotTester()));
+  actionWorkwithTest = new QAction(tr("Work with Backtest..."), icon, tr("Work with Backtest..."), 0, this);
+  actionWorkwithTest->setStatusTip(tr("Create, edit, delete backtest rules."));
+  connect(actionWorkwithTest, SIGNAL(activated()), this, SLOT(slotWorkwithTest()));
 }
 
 void QtstalkerApp::initMenuBar()
@@ -342,6 +343,7 @@ void QtstalkerApp::initMenuBar()
   actionWorkwithChart->addTo(fileMenu);
   actionWorkwithGroup->addTo(fileMenu);
   actionPortfolio->addTo(fileMenu);
+  actionWorkwithTest->addTo(fileMenu);
   fileMenu->insertSeparator();
   actionQuit->addTo(fileMenu);
 
@@ -373,7 +375,6 @@ void QtstalkerApp::initMenuBar()
   toolMenu = new QPopupMenu();
   actionDatawindow->addTo(toolMenu);
   actionQuotes->addTo(toolMenu);
-  actionTester->addTo(toolMenu);
 
   helpMenu = new QPopupMenu();
   actionAbout->addTo(helpMenu);
@@ -408,6 +409,7 @@ void QtstalkerApp::initToolBar()
   actionWorkwithChart->addTo(toolbar);
   actionWorkwithGroup->addTo(toolbar);
   actionPortfolio->addTo(toolbar);
+  actionWorkwithTest->addTo(toolbar);
   actionNewIndicator->addTo(toolbar);
 
   toolbar->addSeparator();
@@ -437,7 +439,6 @@ void QtstalkerApp::initToolBar()
 
   actionDatawindow->addTo(toolbar);
   actionQuotes->addTo(toolbar);
-  actionTester->addTo(toolbar);
 
   // construct the navigation toolbar
   navToolbar = new QToolBar(this, "nav toolbar");
@@ -466,7 +467,7 @@ void QtstalkerApp::initToolBar()
   connect (slider, SIGNAL(valueChanged(int)), this, SLOT(slotSliderChanged(int)));
   slider->setEnabled(FALSE);
   QToolTip::add(slider, tr("Pan Chart"));
-  
+
   navToolbar->setStretchableWidget(slider);
 
   QStringList l = config->getIndicators();
@@ -486,16 +487,15 @@ void QtstalkerApp::slotQuit()
 
 void QtstalkerApp::slotAbout()
 {
-  QMessageBox::about(this, tr("About..."), tr("Qtstalker\nVersion 0.15 \n(C) 2001,2002 by Stefan Stratigakos"));
+  QMessageBox::about(this, tr("About..."), tr("Qtstalker\nVersion 0.16 \n(C) 2001-2003 by Stefan Stratigakos"));
 }
 
 void QtstalkerApp::slotWorkwithChart ()
 {
   WorkwithChartsDialog *dialog = new WorkwithChartsDialog(config);
   QObject::connect(dialog, SIGNAL(chartOpened(QString)), this, SLOT(slotOpenChart(QString)));
-  dialog->show();
-  slotStatusMessage(tr("Scanning symbols..."));
   dialog->setStartDir(chartPath);
+  dialog->show();
   statusBar()->message(tr("Ready"), 2000);
 }
 
@@ -1566,10 +1566,12 @@ void QtstalkerApp::setPlotColors ()
   indicatorPlot->setNeutralColor(color);
 }
 
-void QtstalkerApp::slotTester ()
+void QtstalkerApp::slotWorkwithTest ()
 {
-  Tester *dialog = new Tester(config);
+  WorkwithTestDialog *dialog = new WorkwithTestDialog(config);
+  dialog->updateList();
   dialog->show();
+  statusBar()->message(tr("Ready"), 2000);
 }
 
 //**********************************************************************

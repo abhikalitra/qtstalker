@@ -96,3 +96,9 @@ void Indicator::clearLines ()
   lines.clear();
 }
 
+int Indicator::getAlert (int i)
+{
+  return alerts[i];
+}
+
+

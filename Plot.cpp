@@ -54,7 +54,7 @@ Plot::Plot (QWidget *w) : QWidget(w)
   chartType = "None";
 
   plotFont.setFamily("Helvetica");
-  plotFont.setPointSize(9);
+  plotFont.setPointSize(12);
   plotFont.setWeight(50);
 
   indicators.setAutoDelete(TRUE);

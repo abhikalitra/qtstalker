@@ -35,14 +35,17 @@
 #include "stop.xpm"
 #include "ok.xpm"
 #include "EditDialog.h"
-#include "ChartDb.h"
 #include "Plugin.h"
 #include "SettingView.h"
 
-Tester::Tester (Config *c) : QDialog (0, 0, FALSE)
+Tester::Tester (Config *c, QString n) : QDialog (0, 0, FALSE)
 {
   config = c;
-  indicators.setAutoDelete(TRUE);
+  ruleName = n;
+  enterLongIndicators.setAutoDelete(TRUE);
+  exitLongIndicators.setAutoDelete(TRUE);
+  enterShortIndicators.setAutoDelete(TRUE);
+  exitShortIndicators.setAutoDelete(TRUE);
 
   setCaption ("Back Tester");
 
@@ -54,9 +57,9 @@ Tester::Tester (Config *c) : QDialog (0, 0, FALSE)
   tb->setSpacing(1);
 
   QToolButton *button = new QToolButton(this);
-  QToolTip::add(button, tr("Start Testing"));
+  QToolTip::add(button, tr("OK"));
   button->setPixmap(QPixmap(ok));
-  connect(button, SIGNAL(clicked()), this, SLOT(accept()));
+  connect(button, SIGNAL(clicked()), this, SLOT(exitDialog()));
   button->setMaximumWidth(30);
   button->setAutoRaise(TRUE);
   tb->addWidget(button, 0, 0);
@@ -79,6 +82,10 @@ Tester::Tester (Config *c) : QDialog (0, 0, FALSE)
   createTestPage();
 
   createReportPage();
+
+  loadRule();
+  
+  showRule(0);
 }
 
 Tester::~Tester ()
@@ -93,8 +100,48 @@ void Tester::createFormulaPage ()
   vbox->setMargin(5);
   vbox->setSpacing(5);
 
-  QGridLayout *tb = new QGridLayout(vbox, 1, 4);
+  QGridLayout *tb = new QGridLayout(vbox, 1, 8);
   tb->setSpacing(1);
+
+  buttonGroup = new QButtonGroup(w);
+  buttonGroup->setExclusive(TRUE);
+  buttonGroup->hide();
+
+  QToolButton *button = new QToolButton(w);
+  QToolTip::add(button, tr("Enter Long Rule"));
+  button->setAutoRaise(TRUE);
+  button->setMaximumWidth(30);
+  button->setText(tr("EL"));
+  button->setToggleButton(TRUE);
+  tb->addWidget(button, 0, 0);
+  buttonGroup->insert(button, 0);
+
+  button = new QToolButton(w);
+  QToolTip::add(button, tr("Exit Long Rule"));
+  button->setAutoRaise(TRUE);
+  button->setMaximumWidth(30);
+  button->setText(tr("XL"));
+  button->setToggleButton(TRUE);
+  tb->addWidget(button, 0, 1);
+  buttonGroup->insert(button, 1);
+
+  button = new QToolButton(w);
+  QToolTip::add(button, tr("Enter Short Rule"));
+  button->setAutoRaise(TRUE);
+  button->setMaximumWidth(30);
+  button->setText(tr("ES"));
+  button->setToggleButton(TRUE);
+  tb->addWidget(button, 0, 2);
+  buttonGroup->insert(button, 2);
+
+  button = new QToolButton(w);
+  QToolTip::add(button, tr("Exit Short Rule"));
+  button->setAutoRaise(TRUE);
+  button->setMaximumWidth(30);
+  button->setText(tr("XS"));
+  button->setToggleButton(TRUE);
+  tb->addWidget(button, 0, 3);
+  buttonGroup->insert(button, 3);
 
   addIndicatorButton = new QToolButton(w);
   QToolTip::add(addIndicatorButton, tr("Add Indicator"));
@@ -102,8 +149,7 @@ void Tester::createFormulaPage ()
   connect(addIndicatorButton, SIGNAL(clicked()), this, SLOT(addIndicator()));
   addIndicatorButton->setMaximumWidth(30);
   addIndicatorButton->setAutoRaise(TRUE);
-  tb->addWidget(addIndicatorButton, 0, 0);
-  addIndicatorButton->setEnabled(FALSE);
+  tb->addWidget(addIndicatorButton, 0, 4);
 
   editIndicatorButton = new QToolButton(w);
   QToolTip::add(editIndicatorButton, tr("Edit Indicator"));
@@ -111,7 +157,7 @@ void Tester::createFormulaPage ()
   connect(editIndicatorButton, SIGNAL(clicked()), this, SLOT(editIndicator()));
   editIndicatorButton->setMaximumWidth(30);
   editIndicatorButton->setAutoRaise(TRUE);
-  tb->addWidget(editIndicatorButton, 0, 1);
+  tb->addWidget(editIndicatorButton, 0, 5);
   editIndicatorButton->setEnabled(FALSE);
 
   deleteIndicatorButton = new QToolButton(w);
@@ -120,26 +166,19 @@ void Tester::createFormulaPage ()
   connect(deleteIndicatorButton, SIGNAL(clicked()), this, SLOT(deleteIndicator()));
   deleteIndicatorButton->setMaximumWidth(30);
   deleteIndicatorButton->setAutoRaise(TRUE);
-  tb->addWidget(deleteIndicatorButton, 0, 2);
+  tb->addWidget(deleteIndicatorButton, 0, 6);
   deleteIndicatorButton->setEnabled(FALSE);
 
-  ruleList = new QListView(w);
-  ruleList->addColumn(tr("Indicators"), -1);
-  ruleList->setSelectionMode(QListView::Single);
-  ruleList->setRootIsDecorated(TRUE);
-  ruleList->setSorting(-1, FALSE);
-  connect(ruleList, SIGNAL(clicked(QListViewItem *)), this, SLOT(indicatorSelected(QListViewItem *)));
-  vbox->addWidget(ruleList);
-
-  baseItemList.setAutoDelete(FALSE);
-  item = new QListViewItem(ruleList, tr("Enter Long"));
-  baseItemList.append(item);
-  item = new QListViewItem(ruleList, item, tr("Exit Long"));
-  baseItemList.append(item);
-  item = new QListViewItem(ruleList, item, tr("Enter Short"));
-  baseItemList.append(item);
-  item = new QListViewItem(ruleList, item, tr("Exit Short"));
-  baseItemList.append(item);
+  indicatorList = new QListView(w);
+  indicatorList->addColumn("", 150);
+  indicatorList->setColumnWidthMode(0, QListView::Maximum);
+  indicatorList->setSelectionMode(QListView::Single);
+  connect(indicatorList, SIGNAL(clicked(QListViewItem *)), this, SLOT(indicatorSelected(QListViewItem *)));
+  vbox->addWidget(indicatorList);
+  
+  connect(buttonGroup, SIGNAL(clicked(int)), this, SLOT(showRule(int)));
+  buttonGroup->setButton(0);
+  showRule(0);
 
   tabs->addTab(w, tr("Rules"));
 }
@@ -284,15 +323,18 @@ void Tester::createTestPage ()
   label = new QLabel(tr("Entry Commision"), gbox);
 
   entryCom = new QSpinBox(0, 999999, 1, gbox);
+  entryCom->setValue(25);
 
   label = new QLabel(tr("Exit Commision"), gbox);
 
   exitCom = new QSpinBox(0, 999999, 1, gbox);
+  exitCom->setValue(25);
 
   label = new QLabel(tr("Account Balance"), gbox);
 
   account = new QSpinBox(0, 999999, 1, gbox);
-  
+  account->setValue(10000);
+
   gbox = new QVGroupBox(tr("Symbol"), w);
   gbox->setInsideSpacing(2);
   grid->addWidget(gbox, 1, 1);
@@ -341,7 +383,24 @@ void Tester::addIndicator ()
   if (! ok || ! name.length())
     return;
 
-  Indicator *i = indicators[name];
+  int id = buttonGroup->id(buttonGroup->selected());
+  Indicator *i = 0;
+  switch (id)
+  {
+    case 0:
+      i = enterLongIndicators[name];
+      break;
+    case 1:
+      i = exitLongIndicators[name];
+      break;
+    case 2:
+      i = enterShortIndicators[name];
+      break;
+    default:
+      i = exitShortIndicators[name];
+      break;
+  }
+
   if (i)
   {
     QMessageBox::information(this, tr("Qtstalker: Error"), tr("Duplicate indicator name."));
@@ -405,9 +464,25 @@ void Tester::addIndicator ()
       i->setList(key[loop], set->getList(key[loop]));
     }
 
-    item = ruleList->selectedItem();
-    item = new QListViewItem(item, name);
-    indicators.replace(name, i);
+    i->set("Name", name, Setting::None);
+
+    switch (id)
+    {
+      case 0:
+        enterLongIndicators.insert(name, i);
+	break;
+      case 1:
+        exitLongIndicators.insert(name, i);
+	break;
+      case 2:
+        enterShortIndicators.insert(name, i);
+	break;
+      default:
+        exitShortIndicators.insert(name, i);
+	break;
+    }
+
+    item = new QListViewItem(indicatorList, name);
   }
 
   delete dialog;
@@ -416,7 +491,7 @@ void Tester::addIndicator ()
 
 void Tester::editIndicator ()
 {
-  item = ruleList->selectedItem();
+  item = indicatorList->selectedItem();
   if (! item)
     return;
 
@@ -424,8 +499,24 @@ void Tester::editIndicator ()
 
   EditDialog *dialog = new EditDialog(config);
   dialog->setCaption(tr("Edit Indicator"));
-
-  Indicator *i = indicators[name];
+  
+  int id = buttonGroup->id(buttonGroup->selected());
+  Indicator *i = 0;
+  switch (id)
+  {
+    case 0:
+      i = enterLongIndicators[item->text(0)];
+      break;
+    case 1:
+      i = exitLongIndicators[item->text(0)];
+      break;
+    case 2:
+      i = enterShortIndicators[item->text(0)];
+      break;
+    default:
+      i = exitShortIndicators[item->text(0)];
+      break;
+  }
 
   QStringList key = i->getKeyList();
   int loop;
@@ -457,30 +548,43 @@ void Tester::editIndicator ()
 
 void Tester::deleteIndicator ()
 {
-  item = ruleList->selectedItem();
+  item = indicatorList->selectedItem();
   if (! item)
     return;
-
-  indicators.remove(item->text(0));
+    
+  int id = buttonGroup->id(buttonGroup->selected());
+  switch (id)
+  {
+    case 0:
+      enterLongIndicators.remove(item->text(0));
+      break;
+    case 1:
+      exitLongIndicators.remove(item->text(0));
+      break;
+    case 2:
+      enterShortIndicators.remove(item->text(0));
+      break;
+    default:
+      exitShortIndicators.remove(item->text(0));
+      break;
+  }
 
   delete item;
+  
+  indicatorSelected(0);
 }
 
 void Tester::indicatorSelected (QListViewItem *i)
 {
-  int index = baseItemList.findRef(i);
-
-  if (index == -1)
+  if (i)
   {
     editIndicatorButton->setEnabled(TRUE);
     deleteIndicatorButton->setEnabled(TRUE);
-    addIndicatorButton->setEnabled(FALSE);
   }
   else
   {
     editIndicatorButton->setEnabled(FALSE);
     deleteIndicatorButton->setEnabled(FALSE);
-    addIndicatorButton->setEnabled(TRUE);
   }
 }
 
@@ -497,18 +601,18 @@ void Tester::test ()
   if (! symbol.length())
     return;
 
-  QDate sd = startDate->date();
+  QDateTime sd(startDate->date());
   if (! sd.isValid())
     return;
 
-  QDate ed = endDate->date();
+  QDateTime ed(endDate->date());
   if (! ed.isValid())
     return;
 
   QString s = config->getData(Config::DataPath);
   s.append("/");
   s.append(symbol);
-  ChartDb *db = new ChartDb;
+  db = new ChartDb;
   if (db->openChart(s))
   {
     delete db;
@@ -519,222 +623,182 @@ void Tester::test ()
   tradeList->clear();
 
   db->getHistory(ChartDb::Daily, sd);
+  
+  loadIndicators(0, db);
+  loadIndicators(1, db);
+  loadIndicators(2, db);
+  loadIndicators(3, db);
 
-  QDictIterator<Indicator> it(indicators);
-  for (; it.current(); ++it)
+  status = 0;
+  for (testLoop = 0; testLoop < db->getDataSize(); testLoop++)
   {
-    Indicator *i = it.current();
-    
-    i->clearLines();
-    
-    s = config->getData(Config::IndicatorPluginPath);
-    s.append("/");
-    s.append(i->getData(QObject::tr("Type")));
-    s.append(".so");
+    currentRecord = db->getRecordIndex(testLoop);
 
-    QLibrary *lib = new QLibrary(s);
-    Plugin *(*so)() = 0;
-    so = (Plugin *(*)()) lib->resolve("create");
-    if (so)
-    {
-      Plugin *plug = (*so)();
-
-      plug->setIndicatorInput(db->getRecordList());
-
-      plug->parse(i->getString());
-
-      plug->calculate();
-
-      s = i->getData(QObject::tr("Alert"));
-      if (! s.compare(QObject::tr("True")))
-        i->setAlerts(plug->getAlerts());
-
-      delete plug;
-    }
-
-    delete lib;
-  }
-
-  int loop;
-  int status = 0;
-  Setting *sr;
-  double trailingHigh = 0;
-  double trailingLow = 0;
-  for (loop = 0; loop < db->getDataSize(); loop++)
-  {
-    Setting *r = db->getRecordIndex(loop);
-
-    s = r->getData(tr("Date"));
-    s.insert(4, "-");
-    s.insert(7, "-");
-    s.truncate(s.length() - 6);
-    QDate dt = QDate::fromString(s, ISODate);
+    QDateTime dt = QDateTime::fromString(currentRecord->getDateTime("Date"), ISODate);
     if (dt > ed)
       break;
 
-    if (status == -1)
-    {
-      if (tradeLong->isChecked())
-      {
-        if (checkPosition(0, loop, db->getDataSize()))
-        {
-	  exitPosition(status, sr, r, tr("Enter Long"));
-          status = 1;
-	  sr = r;
-          trailingHigh = r->getFloat(tr("Close"));
-          trailingLow = r->getFloat(tr("Close"));
-	  continue;
-        }
-      }
-
-      if (checkPosition(3, loop, db->getDataSize()))
-      {
-	exitPosition(status, sr, r, tr("Exit Short"));
-	status = 0;
-	sr = r;
-        continue;
-      }
-    }
-
-    if (status == 1)
-    {
-      if (tradeShort->isChecked())
-      {
-        if (checkPosition(2, loop, db->getDataSize()))
-        {
-      	  exitPosition(status, sr, r, tr("Enter Short"));
-          status = -1;
-	  sr = r;
-          trailingHigh = r->getFloat(tr("Close"));
-          trailingLow = r->getFloat(tr("Close"));
-	  continue;
-        }
-      }
-
-      if (checkPosition(1, loop, db->getDataSize()))
-      {
-	exitPosition(status, sr, r, tr("Exit Long"));
-	status = 0;
-	sr = r;
-        continue;
-      }
-    }
-
-    if (status == 0)
-    {
-      if (tradeLong->isChecked())
-      {
-        if (checkPosition(0, loop, db->getDataSize()))
-        {
-          status = 1;
-	  sr = r;
-          trailingHigh = r->getFloat(tr("Close"));
-          trailingLow = r->getFloat(tr("Close"));
-	  continue;
-	}
-      }
-
-      if (tradeShort->isChecked())
-      {
-        if (checkPosition(2, loop, db->getDataSize()))
-	{
-	  status = -1;
-	  sr = r;
-          trailingHigh = r->getFloat(tr("Close"));
-          trailingLow = r->getFloat(tr("Close"));
-          continue;
-	}
-      }
-    }
-
-    if (status == 0)
+    if (checkEnterLong())
       continue;
 
-    if (r->getFloat(tr("Close")) > trailingHigh)
-      trailingHigh = r->getFloat(tr("Close"));
-
-    if (r->getFloat(tr("Close")) < trailingLow)
-      trailingLow = r->getFloat(tr("Close"));
-
-    if (breakeven(status, sr, r))
-    {
-      exitPosition(status, sr, r, tr("Break"));
-      status = 0;
+    if (checkExitLong())
       continue;
-    }
 
-    if (maximumLoss(status, sr, r))
-    {
-      exitPosition(status, sr, r, tr("Loss"));
-      status = 0;
+    if (checkEnterShort())
       continue;
-    }
 
-    if (profit(status, sr, r))
-    {
-      exitPosition(status, sr, r, tr("Profit"));
-      status = 0;
+    if (checkExitShort())
       continue;
-    }
 
-    double t;
-    if (status == 1)
-      t = trailingHigh;
-    if (status == -1)
-      t = trailingLow;
-    if (trailing(status, r, t))
-    {
-      exitPosition(status, sr, r, tr("Trail"));
-      status = 0;
-    }
+    if (breakeven())
+      continue;
+
+    if (maximumLoss())
+      continue;
+
+    if (profit())
+      continue;
+
+    trailing();
   }
 
   delete db;
 }
 
-bool Tester::checkPosition (int pos, int record, int dataSize)
+bool Tester::checkEnterLong ()
 {
+  if (status == 1)
+    return FALSE;
+
+  if (! tradeLong->isChecked())
+    return FALSE;
+
+  if (! enterLongIndicators.count())
+    return FALSE;
+
   int count = 0;
-  int items = 0;
-  QListViewItemIterator it(baseItemList.at(pos));
+  QDictIterator<Indicator> it(enterLongIndicators);
   for (; it.current(); ++it)
   {
-    item = it.current();
-
-    Indicator *i = indicators[item->text(0)];
-    if (i)
-    {
-      items++;
-
-      if (i->getLines())
-      {
-        PlotLine *line = i->getLine(i->getLines() - 1);
-
-        int index = line->getSize() - dataSize + record;
-        if (index >= 0)
-        {
-          if (line->getData(index) == TRUE)
-            count++;
-        }
-      }
-    }
+    Indicator *i = it.current();
+    if (i->getAlert(testLoop) == 1)
+      count++;
   }
 
-  if (items)
-  {
-    if (items == count)
-      return TRUE;
-    else
-      return FALSE;
-  }
-  else
+  if ((int) enterLongIndicators.count() != count)
     return FALSE;
+
+  if (status != 0)
+    exitPosition("Enter Long");
+
+  status = 1;
+  
+  buyRecord = currentRecord;
+  
+  trailingHigh = buyRecord->getFloat("Close");
+
+  return TRUE;
 }
 
-void Tester::exitPosition (int status, Setting *sr, Setting *er, QString signal)
+bool Tester::checkExitLong ()
 {
-  double enterPrice = sr->getFloat("Close");
-  double exitPrice = er->getFloat("Close");
+  if (status != 1)
+    return FALSE;
+
+  if (! tradeLong->isChecked())
+    return FALSE;
+
+  if (! exitLongIndicators.count())
+    return FALSE;
+
+  int count = 0;
+  QDictIterator<Indicator> it(exitLongIndicators);
+  for (; it.current(); ++it)
+  {
+    Indicator *i = it.current();
+    if (i->getAlert(testLoop) == -1)
+      count++;
+  }
+
+  if ((int) exitLongIndicators.count() != count)
+    return FALSE;
+
+  exitPosition("Exit Long");
+
+  status = 0;
+
+  return TRUE;
+}
+
+bool Tester::checkEnterShort ()
+{
+  if (status == -1)
+    return FALSE;
+
+  if (! tradeShort->isChecked())
+    return FALSE;
+
+  if (! enterShortIndicators.count())
+    return FALSE;
+
+  int count = 0;
+  QDictIterator<Indicator> it(enterShortIndicators);
+  for (; it.current(); ++it)
+  {
+    Indicator *i = it.current();
+    if (i->getAlert(testLoop) == -1)
+      count++;
+  }
+
+  if ((int) enterShortIndicators.count() != count)
+    return FALSE;
+
+  if (status != 0)
+    exitPosition("Enter Short");
+
+  status = -1;
+
+  buyRecord = currentRecord;
+
+  trailingLow = buyRecord->getFloat("Close");
+
+  return TRUE;
+}
+
+bool Tester::checkExitShort ()
+{
+  if (status != -1)
+    return FALSE;
+
+  if (! tradeShort->isChecked())
+    return FALSE;
+
+  if (! exitShortIndicators.count())
+    return FALSE;
+
+  int count = 0;
+  QDictIterator<Indicator> it(exitShortIndicators);
+  for (; it.current(); ++it)
+  {
+    Indicator *i = it.current();
+    if (i->getAlert(testLoop) == 1)
+      count++;
+  }
+
+  if ((int) exitShortIndicators.count() != count)
+    return FALSE;
+
+  exitPosition("Exit Short");
+
+  status = 0;
+  
+  return TRUE;
+}
+
+void Tester::exitPosition (QString signal)
+{
+  double enterPrice = buyRecord->getFloat("Close");
+  double exitPrice = currentRecord->getFloat("Close");
   double profit = 0;
   QString type;
 
@@ -751,129 +815,158 @@ void Tester::exitPosition (int status, Setting *sr, Setting *er, QString signal)
 
   item = new QListViewItem(tradeList,
   			   type,
-			   sr->getData("Date").left(8),
-			   sr->getData("Close"),
-			   er->getData("Date").left(8),
-			   er->getData("Close"),
+			   buyRecord->getData("Date").left(8),
+			   buyRecord->getData("Close"),
+			   currentRecord->getData("Date").left(8),
+			   currentRecord->getData("Close"),
 			   signal,
 			   QString::number(profit));
 
 }
 
-bool Tester::breakeven (int status, Setting *sr, Setting *er)
+bool Tester::breakeven ()
 {
-  bool flag = FALSE;
+  if (status == 0)
+    return FALSE;
+
+  if (! breakevenCheck->isChecked())
+    return FALSE;
 
   if ((status == 1) && (breakevenLong->isChecked()))
   {
-    double t = er->getFloat("Close") - sr->getFloat("Close");
+    double t = currentRecord->getFloat("Close") - buyRecord->getFloat("Close");
     if (t <= 0)
-      flag = TRUE;
+    {
+      exitPosition("Breakeven");
+      status = 0;
+      return TRUE;
+    }
   }
 
   if ((status == -1) && (breakevenShort->isChecked()))
   {
-    double t = sr->getFloat("Close") - er->getFloat("Close");
+    double t = buyRecord->getFloat("Close") - currentRecord->getFloat("Close");
     if (t <= 0)
-      flag = TRUE;
+    {
+      exitPosition("Breakeven");
+      status = 0;
+      return TRUE;
+    }
   }
 
-  return flag;
+  return FALSE;
 }
 
-bool Tester::maximumLoss (int status, Setting *sr, Setting *er)
+bool Tester::maximumLoss ()
 {
-  bool flag = FALSE;
-  bool okFlag = FALSE;
+  if (status == 0)
+    return FALSE;
+
+  if (! maximumLossCheck->isChecked())
+    return FALSE;
+
   double loss = maximumLossEdit->text().toDouble();
   double t = 0;
 
   if ((status == 1) && (maximumLossLong->isChecked()))
   {
-    t = ((er->getFloat("Close") - sr->getFloat("Close")) / sr->getFloat("Close")) * 100;
-    okFlag = TRUE;
-  }
-
-  if ((status == -1) && (maximumLossShort->isChecked()))
-  {
-    t = ((sr->getFloat("Close") - er->getFloat("Close")) / sr->getFloat("Close")) * 100;
-    okFlag = TRUE;
-  }
-
-  if (okFlag)
-  {
+    t = ((currentRecord->getFloat("Close") - buyRecord->getFloat("Close")) / buyRecord->getFloat("Close")) * 100;
     if (t < 0)
     {
       t = +t;
       if (t >= loss)
-        flag = TRUE;
+        return TRUE;
     }
   }
 
-  return flag;
+  if ((status == -1) && (maximumLossShort->isChecked()))
+  {
+    t = ((buyRecord->getFloat("Close") - currentRecord->getFloat("Close")) / buyRecord->getFloat("Close")) * 100;
+    if (t < 0)
+    {
+      t = +t;
+      if (t >= loss)
+        return TRUE;
+    }
+  }
+
+  return FALSE;
 }
 
-bool Tester::profit (int status, Setting *sr, Setting *er)
+bool Tester::profit ()
 {
-  bool flag = FALSE;
-  bool okFlag = FALSE;
+  if (status == 0)
+    return FALSE;
+
+  if (! profitCheck->isChecked())
+    return FALSE;
+
   double profit = profitEdit->text().toDouble();
   double t = 0;
 
   if ((status == 1) && (profitLong->isChecked()))
   {
-    t = ((er->getFloat("Close") - sr->getFloat("Close")) / sr->getFloat("Close")) * 100;
-    okFlag = TRUE;
+    t = ((currentRecord->getFloat("Close") - buyRecord->getFloat("Close")) / buyRecord->getFloat("Close")) * 100;
+    if (t > 0)
+    {
+      if (t >= profit)
+        return TRUE;
+    }
   }
 
   if ((status == -1) && (profitShort->isChecked()))
   {
-    t = ((sr->getFloat("Close") - er->getFloat("Close")) / sr->getFloat("Close")) * 100;
-    okFlag = TRUE;
-  }
-
-  if (okFlag)
-  {
+    t = ((buyRecord->getFloat("Close") - currentRecord->getFloat("Close")) / buyRecord->getFloat("Close")) * 100;
     if (t > 0)
     {
       if (t >= profit)
-        flag = TRUE;
+        return TRUE;
     }
   }
 
-  return flag;
+  return FALSE;
 }
 
-bool Tester::trailing (int status, Setting *r, double max)
+bool Tester::trailing ()
 {
-  bool flag = FALSE;
-  bool okFlag = FALSE;
+  if (status == 0)
+    return FALSE;
+
+  if (! trailingCheck->isChecked())
+    return FALSE;
+    
   double loss = trailingEdit->text().toDouble();
   double t = 0;
 
   if ((status == 1) && (trailingLong->isChecked()))
   {
-    t = ((r->getFloat("Close") - max) / max) * 100;
-    okFlag = TRUE;
-  }
+    if (currentRecord->getFloat("Close") > trailingHigh)
+      trailingHigh = currentRecord->getFloat("Close");
 
-  if ((status == -1) && (trailingShort->isChecked()))
-  {
-    t = ((max - r->getFloat("Close")) / max) * 100;
-    okFlag = TRUE;
-  }
-
-  if (okFlag)
-  {
+    t = ((currentRecord->getFloat("Close") - trailingHigh) / trailingHigh) * 100;
     if (t < 0)
     {
       t = +t;
       if (t >= loss)
-        flag = TRUE;
+        return TRUE;
     }
   }
 
-  return flag;
+  if ((status == -1) && (trailingShort->isChecked()))
+  {
+    if (currentRecord->getFloat("Close") < trailingLow)
+      trailingLow = currentRecord->getFloat("Close");
+
+    t = ((trailingLow - currentRecord->getFloat("Close")) / trailingLow) * 100;
+    if (t < 0)
+    {
+      t = +t;
+      if (t >= loss)
+        return TRUE;
+    }
+  }
+
+  return FALSE;
 }
 
 void Tester::breakevenToggled (bool status)
@@ -946,8 +1039,390 @@ void Tester::symbolButtonPressed ()
   int rc = dialog->exec();
 
   if (rc == QDialog::Accepted)
+  {
     symbolButton->setText(dialog->getSymbol());
 
+    QString s = config->getData(Config::DataPath);
+    s.append("/");
+    s.append(dialog->getSymbol());
+    ChartDb *db = new ChartDb;
+    if (db->openChart(s))
+    {
+      delete db;
+      qDebug("Tester: Cant open db");
+    }
+    
+    Setting *details = db->getDetails();
+
+    QDateTime dt = QDateTime::fromString(details->getDateTime("First Date"), ISODate);
+    startDate->setDate(dt.date());
+
+    dt = QDateTime::fromString(details->getDateTime("Last Date"), ISODate);
+    endDate->setDate(dt.date());
+
+    delete db;
+  }
+
   delete dialog;
+}
+
+void Tester::showRule (int button)
+{
+  indicatorList->clear();
+
+  QDict<Indicator> list;
+  QString s;
+  switch (button)
+  {
+    case 0:
+      list = enterLongIndicators;
+      indicatorList->setColumnText(0, tr("Enter Long Indicators"));
+      break;
+    case 1:
+      list = exitLongIndicators;
+      indicatorList->setColumnText(0, tr("Exit Long Indicators"));
+      break;
+    case 2:
+      list = enterShortIndicators;
+      indicatorList->setColumnText(0, tr("Enter Short Indicators"));
+      break;
+    default:
+      list = exitShortIndicators;
+      indicatorList->setColumnText(0, tr("Exit Short Indicators"));
+      break;
+  }
+
+  QDictIterator<Indicator> it(list);
+  for (; it.current(); ++it)
+    item = new QListViewItem(indicatorList, it.currentKey());
+
+  indicatorSelected(0);
+}
+
+void Tester::loadIndicators (int button, ChartDb *db)
+{
+  QDict<Indicator> list;
+  switch (button)
+  {
+    case 0:
+      list = enterLongIndicators;
+      break;
+    case 1:
+      list = exitLongIndicators;
+      break;
+    case 2:
+      list = enterShortIndicators;
+      break;
+    default:
+      list = exitShortIndicators;
+      break;
+  }
+
+  QDictIterator<Indicator> it(list);
+  for (; it.current(); ++it)
+  {
+    Indicator *i = it.current();
+
+    i->clearLines();
+
+    QString s = config->getData(Config::IndicatorPluginPath);
+    s.append("/");
+    s.append(i->getData(QObject::tr("Type")));
+    s.append(".so");
+
+    QLibrary *lib = new QLibrary(s);
+    Plugin *(*so)() = 0;
+    so = (Plugin *(*)()) lib->resolve("create");
+    if (so)
+    {
+      Plugin *plug = (*so)();
+
+      plug->setIndicatorInput(db->getRecordList());
+
+      plug->parse(i->getString());
+
+      plug->calculate();
+
+      s = i->getData(QObject::tr("Alert"));
+      if (! s.compare(QObject::tr("True")))
+        i->setAlerts(plug->getAlerts());
+
+      i->clearLines();
+
+      delete plug;
+    }
+
+    delete lib;
+  }
+}
+
+void Tester::saveRule ()
+{
+  QStringList l;
+
+  QDictIterator<Indicator> it(enterLongIndicators);
+  for (; it.current(); ++it)
+  {
+    Indicator *i = it.current();
+    QString s = "Enter Long=";
+    s.append(i->getString());
+    l.append(s);
+  }
+
+  QDictIterator<Indicator> it2(exitLongIndicators);
+  for (; it2.current(); ++it2)
+  {
+    Indicator *i = it2.current();
+    QString s = "Exit Long=";
+    s.append(i->getString());
+    l.append(s);
+  }
+
+  QDictIterator<Indicator> it3(enterShortIndicators);
+  for (; it3.current(); ++it3)
+  {
+    Indicator *i = it3.current();
+    QString s = "Enter Short=";
+    s.append(i->getString());
+    l.append(s);
+  }
+
+  QDictIterator<Indicator> it4(exitShortIndicators);
+  for (; it4.current(); ++it4)
+  {
+    Indicator *i = it4.current();
+    QString s = "Exit Short=";
+    s.append(i->getString());
+    l.append(s);
+  }
+
+  // save breakeven stop
+  if (breakevenCheck->isChecked())
+    l.append("Breakeven Check=True");
+  else
+    l.append("Breakeven Check=False");
+
+  if (breakevenLong->isChecked())
+    l.append("Breakeven Long=True");
+  else
+    l.append("Breakeven Long=False");
+
+  if (breakevenShort->isChecked())
+    l.append("Breakeven Short=True");
+  else
+    l.append("Breakeven Short=False");
+
+
+  // save max loss stop
+  if (maximumLossCheck->isChecked())
+    l.append("Maximum Loss Check=True");
+  else
+    l.append("Maximum Loss Check=False");
+
+  if (maximumLossLong->isChecked())
+    l.append("Maximum Loss Long=True");
+  else
+    l.append("Maximum Loss Long=False");
+
+  if (maximumLossShort->isChecked())
+    l.append("Maximum Loss Short=True");
+  else
+    l.append("Maximum Loss Short=False");
+
+  QString s = "Maximum Loss Edit=";
+  s.append(maximumLossEdit->text());
+  l.append(s);
+
+  // save profit stop
+  if (profitCheck->isChecked())
+    l.append("Profit Check=True");
+  else
+    l.append("Profit Check=False");
+
+  if (profitLong->isChecked())
+    l.append("Profit Long=True");
+  else
+    l.append("Profit Long=False");
+
+  if (profitShort->isChecked())
+    l.append("Profit Short=True");
+  else
+    l.append("Profit Short=False");
+
+  s = "Profit Edit=";
+  s.append(profitEdit->text());
+  l.append(s);
+
+  // save trailing stop
+  if (trailingCheck->isChecked())
+    l.append("Trailing Check=True");
+  else
+    l.append("Trailing Check=False");
+
+  if (trailingLong->isChecked())
+    l.append("Trailing Long=True");
+  else
+    l.append("Trailing Long=False");
+
+  if (trailingShort->isChecked())
+    l.append("Trailing Short=True");
+  else
+    l.append("Trailing Short=False");
+
+  s = "Trailing Edit=";
+  s.append(trailingEdit->text());
+  l.append(s);
+
+  config->setTest(ruleName, l);
+}
+
+void Tester::loadRule ()
+{
+  QStringList l = config->getTest(ruleName);
+  if (! l.count())
+    return;
+    
+  int loop;
+  for (loop = 0; loop < (int) l.count(); loop++)
+  {
+    QStringList l2 = QStringList::split("=", l[loop], FALSE);
+    
+    if (! l2[0].compare("Enter Long"))
+    {
+      Indicator *i = new Indicator;
+      i->parse(l2[1]);
+      enterLongIndicators.insert(i->getData("Name"), i);
+      continue;
+    }
+
+    if (! l2[0].compare("Exit Long"))
+    {
+      Indicator *i = new Indicator;
+      i->parse(l2[1]);
+      exitLongIndicators.insert(i->getData("Name"), i);
+      continue;
+    }
+
+    if (! l2[0].compare("Enter Short"))
+    {
+      Indicator *i = new Indicator;
+      i->parse(l2[1]);
+      enterShortIndicators.insert(i->getData("Name"), i);
+      continue;
+    }
+
+    if (! l2[0].compare("Exit Short"))
+    {
+      Indicator *i = new Indicator;
+      i->parse(l2[1]);
+      exitShortIndicators.insert(i->getData("Name"), i);
+      continue;
+    }
+
+    if (! l2[0].compare("Breakeven Check"))
+    {
+      if (! l2[1].compare("True"))
+        breakevenCheck->setChecked(TRUE);
+      continue;
+    }
+
+    if (! l2[0].compare("Breakeven Long"))
+    {
+      if (! l2[1].compare("True"))
+        breakevenLong->setChecked(TRUE);
+      continue;
+    }
+
+    if (! l2[0].compare("Breakeven Short"))
+    {
+      if (! l2[1].compare("True"))
+        breakevenShort->setChecked(TRUE);
+      continue;
+    }
+
+    if (! l2[0].compare("Maximum Loss Check"))
+    {
+      if (! l2[1].compare("True"))
+        maximumLossCheck->setChecked(TRUE);
+      continue;
+    }
+
+    if (! l2[0].compare("Maximum Loss Long"))
+    {
+      if (! l2[1].compare("True"))
+        maximumLossLong->setChecked(TRUE);
+      continue;
+    }
+
+    if (! l2[0].compare("Maximum Loss Short"))
+    {
+      if (! l2[1].compare("True"))
+        maximumLossShort->setChecked(TRUE);
+      continue;
+    }
+
+    if (! l2[0].compare("Maximum Loss Edit"))
+    {
+      maximumLossEdit->setText(l2[1]);
+      continue;
+    }
+
+    if (! l2[0].compare("Profit Check"))
+    {
+      if (! l2[1].compare("True"))
+        profitCheck->setChecked(TRUE);
+      continue;
+    }
+
+    if (! l2[0].compare("Profit Long"))
+    {
+      if (! l2[1].compare("True"))
+        profitLong->setChecked(TRUE);
+      continue;
+    }
+
+    if (! l2[0].compare("Profit Short"))
+    {
+      if (! l2[1].compare("True"))
+        profitShort->setChecked(TRUE);
+      continue;
+    }
+
+    if (! l2[0].compare("Profit Edit"))
+    {
+      profitEdit->setText(l2[1]);
+      continue;
+    }
+
+    if (! l2[0].compare("Trailing Check"))
+    {
+      if (! l2[1].compare("True"))
+        trailingCheck->setChecked(TRUE);
+      continue;
+    }
+
+    if (! l2[0].compare("Trailing Long"))
+    {
+      if (! l2[1].compare("True"))
+        trailingLong->setChecked(TRUE);
+      continue;
+    }
+
+    if (! l2[0].compare("Trailing Short"))
+    {
+      if (! l2[1].compare("True"))
+        trailingShort->setChecked(TRUE);
+      continue;
+    }
+
+    if (! l2[0].compare("Trailing Edit"))
+      trailingEdit->setText(l2[1]);
+  }
+}
+
+void Tester::exitDialog ()
+{
+  saveRule();
+  accept();
 }
 

@@ -35,27 +35,33 @@
 #include <qdatetimeedit.h>
 #include <qlineedit.h>
 #include <qvalidator.h>
+#include <qbuttongroup.h>
 #include "Config.h"
 #include "Indicator.h"
 #include "Setting.h"
+#include "ChartDb.h"
 
 class Tester : public QDialog
 {
   Q_OBJECT
 
   public:
-    Tester (Config *);
+    Tester (Config *, QString);
     ~Tester ();
     void createFormulaPage();
     void createStopPage();
     void createTestPage();
     void createReportPage();
-    bool checkPosition (int, int, int);
-    void exitPosition (int, Setting *, Setting *, QString);
-    bool breakeven (int, Setting *, Setting *);
-    bool maximumLoss (int, Setting *, Setting *);
-    bool profit (int, Setting *, Setting *);
-    bool trailing (int, Setting *, double);
+    void exitPosition (QString);
+    bool breakeven ();
+    bool maximumLoss ();
+    bool profit ();
+    bool trailing ();
+    void loadIndicators (int, ChartDb *);
+    bool checkEnterLong ();
+    bool checkExitLong ();
+    bool checkEnterShort ();
+    bool checkExitShort ();
 
   public slots:
     void editIndicator ();
@@ -68,15 +74,21 @@ class Tester : public QDialog
     void profitToggled (bool);
     void trailingToggled (bool);
     void symbolButtonPressed ();
+    void showRule (int);
+    void saveRule ();
+    void exitDialog ();
+    void loadRule ();
 
   protected:
     Config *config;
     QTabWidget *tabs;
-    QListView *ruleList;
+    QListView *indicatorList;
     QListView *tradeList;
     QListViewItem *item;
-    QList<QListViewItem> baseItemList;
-    QDict<Indicator> indicators;
+    QDict<Indicator> enterLongIndicators;
+    QDict<Indicator> exitLongIndicators;
+    QDict<Indicator> enterShortIndicators;
+    QDict<Indicator> exitShortIndicators;
     QToolButton *addIndicatorButton;
     QToolButton *editIndicatorButton;
     QToolButton *deleteIndicatorButton;
@@ -106,6 +118,18 @@ class Tester : public QDialog
     QDateEdit *startDate;
     QDateEdit *endDate;
     QDoubleValidator *validator;
+    QButtonGroup *buttonGroup;
+    QString ruleName;
+    
+    int status;
+    int testLoop;
+    ChartDb *db;
+    Setting *currentRecord;
+    Setting *buyRecord;
+    bool ignoreLong;
+    bool ignoreShort;
+    double trailingHigh;
+    double trailingLow;
 };
 
 #endif

@@ -71,6 +71,15 @@ Config::Config (QString p)
   setData(PortfolioPath, s);
 
   s = home;
+  s.append("/test");
+  if (! dir.exists(s, TRUE))
+  {
+    if (! dir.mkdir(s, TRUE))
+      qDebug("Unable to create ~/Qtstalker/test directory.");
+  }
+  setData(TestPath, s);
+
+  s = home;
   s.append("/plugins");
   if (! dir.exists(s, TRUE))
   {
@@ -119,6 +128,9 @@ QString Config::getData (Parm p)
       break;
     case PortfolioPath:
       s = settings.readEntry("/Qtstalker/PortfolioPath");
+      break;
+    case TestPath:
+      s = settings.readEntry("/Qtstalker/TestPath");
       break;
     case ChartStyle:
       s = settings.readEntry("/Qtstalker/ChartStyle", QObject::tr("Bar Chart"));
@@ -195,6 +207,9 @@ void Config::setData (Parm p, QString d)
       break;
     case PortfolioPath:
       settings.writeEntry("/Qtstalker/PortfolioPath", d);
+      break;
+    case TestPath:
+      settings.writeEntry("/Qtstalker/TestPath", d);
       break;
     case ChartStyle:
       settings.writeEntry("/Qtstalker/ChartStyle", d);
@@ -340,6 +355,36 @@ void Config::deleteIndicator (QString n)
   QString s = "/Qtstalker/Indicator/";
   s.append(n);
   settings.removeEntry(s);
+}
+
+QStringList Config::getTest (QString n)
+{
+  QString s = getData(TestPath);
+  s.append("/");
+  s.append(n);
+  return loadFile(s);
+}
+
+QStringList Config::getTestList ()
+{
+  return getDirList(getData(TestPath));
+}
+
+void Config::setTest (QString n, QStringList l)
+{
+  QString s = getData(TestPath);
+  s.append("/");
+  s.append(n);
+  saveFile(s, l);
+}
+
+void Config::deleteTest (QString n)
+{
+  QString s = getData(TestPath);
+  QDir dir(s);
+  s.append("/");
+  s.append(n);
+  dir.remove(s);
 }
 
 QStringList Config::getDirList (QString path)

@@ -86,6 +86,9 @@ class SymbolDialog : public QDialog
     SymbolDialog (QString);
     ~SymbolDialog ();
     QString getSymbol ();
+    
+  public slots:
+    void checkDoubleClick (QString);
 
   private:
     QGridLayout *toolbar;

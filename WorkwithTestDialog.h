@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  *
- *  Copyright (C) 2001,2002 Stefan S. Stratigakos
+ *  Copyright (c) 2001,2002 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,41 +19,41 @@
  *  USA.
  */
 
-#ifndef INDICATOR_HPP
-#define INDICATOR_HPP
+#ifndef WORKWITHTESTDIALOG_HPP
+#define WORKWITHTESTDIALOG_HPP
 
-#include <qstring.h>
-#include <qstringlist.h>
-#include <qmemarray.h>
-#include <qdict.h>
-#include <qlist.h>
-#include "Setting.h"
-#include "PlotLine.h"
+#include <qtoolbutton.h>
+#include <qlistview.h>
+#include <qdialog.h>
+#include <qlayout.h>
+#include "Config.h"
 
-class Indicator : public Setting
+class WorkwithTestDialog : public QDialog
 {
+  Q_OBJECT
+
   public:
-    Indicator ();
-    ~Indicator ();
-    void clear ();
-    QMemArray<int> getAlerts ();
-    void setAlerts (QMemArray<int>);
-    int getAlert (int);
-    int getLines ();
-    void addLine (PlotLine *);
-    PlotLine * getLine (int);
-    QStringList getChartObjects ();
-    Setting * getChartObject (QString);
-    void addChartObject (Setting *);
-    void deleteChartObject (QString);
-    bool getMainPlot ();
-    void clearLines ();
+    WorkwithTestDialog (Config *);
+    ~WorkwithTestDialog ();
+    void updateList ();
+
+  public slots:
+    void openTest ();
+    void renameTest ();
+    void newTest ();
+    void deleteTest ();
+    void testSelected (QListViewItem *);
 
   private:
-    QList<PlotLine> lines;
-    QMemArray<int> alerts;
-    QDict<Setting> chartObjects;
+    QListView *list;
+    QListViewItem *item;
+    Config *config;
+    QToolButton *cancelButton;
+    QToolButton *openButton;
+    QToolButton *deleteButton;
+    QToolButton *newButton;
+    QToolButton *renameButton;
+    QGridLayout *toolbar;
 };
 
 #endif
-
