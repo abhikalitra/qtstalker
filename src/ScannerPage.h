@@ -37,6 +37,16 @@ class ScannerPage : public QListBox
     void signalKeyPressed (int, int, int, int, QString);
   
   public:
+  
+    enum HotKey
+    {
+      NewScanner,
+      OpenScanner,
+      DeleteScanner,
+      RenameScanner,
+      Help
+    };
+  
     ScannerPage (QWidget *);
     ~ScannerPage ();
 
@@ -54,6 +64,7 @@ class ScannerPage : public QListBox
     void doubleClick (QListBoxItem *);
     void doKeyPress (QKeyEvent *);
     void setKeyFlag (bool);
+    void slotAccel (int);
 
   private:
     virtual void keyPressEvent (QKeyEvent *);

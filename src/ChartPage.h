@@ -28,6 +28,7 @@
 #include <qlineedit.h>
 #include "Navigator.h"
 #include "Config.h"
+#include "MyLineEdit.h"
 
 class ChartPage : public QWidget
 {
@@ -35,13 +36,24 @@ class ChartPage : public QWidget
 
   signals:
     void fileSelected (QString);
+    void signalKeyPressed (int, int, int, int, QString);
 
   public:
+  
+    enum HotKey
+    {
+      DeleteChart,
+      EditChart,
+      ExportSymbol,
+      DumpSymbol,
+      Help,
+      Tab
+    };
+  
     ChartPage (QWidget *);
     ~ChartPage ();
     void exportChart (QString);
     void setFocus ();
-    Navigator * getNav ();
 
   public slots:
     void deleteChart ();
@@ -57,14 +69,15 @@ class ChartPage : public QWidget
     void searchChanged (const QString &);
     void slotHelp ();
     void setKeyFlag (bool);
-    void doKeyPress (int, int);
+    void doKeyPress (QKeyEvent *);
+    void slotAccel (int);
 
   protected:
     Navigator *nav;
     Config config;
     QPopupMenu *menu;
     QPopupMenu *newMenu;
-    QLineEdit *search;
+    MyLineEdit *search;
     bool keyFlag;
 };
 

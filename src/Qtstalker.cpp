@@ -1273,10 +1273,10 @@ void QtstalkerApp::slotRunMacro (QString d)
     switch(m->getZone())
     {
       case Macro::ChartPage:
-        chartNav->getNav()->doKeyPress(m->getKey());
+        chartNav->doKeyPress(m->getKey());
 	break;
       case Macro::GroupPage:
-        gp->getNav()->doKeyPress(m->getKey());
+        gp->doKeyPress(m->getKey());
 	break;
       case Macro::IndicatorPage:
         ip->doKeyPress(m->getKey());
@@ -1334,8 +1334,8 @@ void QtstalkerApp::slotRecordMacro (QString d)
   currentMacro = new Macro(d);
   connect(menubar, SIGNAL(signalKeyPressed(int, int, int, int, QString)), currentMacro, SLOT(recordKey(int, int, int, int, QString)));
   connect(ip, SIGNAL(signalKeyPressed(int, int, int, int, QString)), currentMacro, SLOT(recordKey(int, int, int, int, QString)));
-  connect(chartNav->getNav(), SIGNAL(signalKeyPressed(int, int, int, int, QString)), currentMacro, SLOT(recordKey(int, int, int, int, QString)));
-  connect(gp->getNav(), SIGNAL(signalKeyPressed(int, int, int, int, QString)), currentMacro, SLOT(recordKey(int, int, int, int, QString)));
+  connect(chartNav, SIGNAL(signalKeyPressed(int, int, int, int, QString)), currentMacro, SLOT(recordKey(int, int, int, int, QString)));
+  connect(gp, SIGNAL(signalKeyPressed(int, int, int, int, QString)), currentMacro, SLOT(recordKey(int, int, int, int, QString)));
   connect(pp, SIGNAL(signalKeyPressed(int, int, int, int, QString)), currentMacro, SLOT(recordKey(int, int, int, int, QString)));
   connect(tp, SIGNAL(signalKeyPressed(int, int, int, int, QString)), currentMacro, SLOT(recordKey(int, int, int, int, QString)));
   connect(sp, SIGNAL(signalKeyPressed(int, int, int, int, QString)), currentMacro, SLOT(recordKey(int, int, int, int, QString)));

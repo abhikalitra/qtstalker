@@ -38,6 +38,18 @@ class MacroPage : public QListBox
     void signalKeyPressed (int, int, int, int, QString);
 
   public:
+  
+    enum HotKey
+    {
+      NewMacro,
+      DeleteMacro,
+      EditMacro,
+      RenameMacro,
+      AssignMacro,
+      RunMacro,
+      Help
+    };
+  
     MacroPage (QWidget *);
     ~MacroPage ();
 
@@ -55,6 +67,7 @@ class MacroPage : public QListBox
     void doKeyPress (QKeyEvent *);
     void runMacro ();
     void setKeyFlag (bool);
+    void slotAccel (int);
 
   private:
     virtual void keyPressEvent (QKeyEvent *);

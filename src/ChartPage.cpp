@@ -38,12 +38,17 @@
 
 ChartPage::ChartPage (QWidget *w) : QWidget (w)
 {
+  keyFlag = FALSE;
+  
   QVBoxLayout *vbox = new QVBoxLayout(this);
   vbox->setMargin(2);
   vbox->setSpacing(5);
   
-  search = new QLineEdit("*", this);
+  search = new MyLineEdit(this, Macro::ChartPage);
+  search->setText("*");
   connect(search, SIGNAL(textChanged(const QString &)), this, SLOT(searchChanged(const QString &)));
+  connect(search, SIGNAL(signalKeyPressed(int, int, int, int, QString)),
+          this, SIGNAL(signalKeyPressed(int, int, int, int, QString)));
   QToolTip::add(search, tr("List Filter, e.g. s* or sb*"));
   vbox->addWidget(search);
 
@@ -52,7 +57,9 @@ ChartPage::ChartPage (QWidget *w) : QWidget (w)
   connect(nav, SIGNAL(noSelection()), this, SLOT(chartNoSelection()));
   connect(nav, SIGNAL(contextMenuRequested(QListBoxItem *, const QPoint &)), this,
           SLOT(rightClick(QListBoxItem *)));
-  connect(nav, SIGNAL(keyPress(int, int)), this, SLOT(doKeyPress(int, int)));
+//  connect(nav, SIGNAL(keyPress(int, int)), this, SLOT(doKeyPress(int, int)));
+  connect(nav, SIGNAL(signalKeyPressed(int, int, int, int, QString)),
+          this, SIGNAL(signalKeyPressed(int, int, int, int, QString)));
   nav->updateList();
   nav->setId(Macro::ChartPage);
   vbox->addWidget(nav);
@@ -75,16 +82,13 @@ ChartPage::ChartPage (QWidget *w) : QWidget (w)
   menu->insertItem(QPixmap(help), tr("&Help	Ctrl+H"), this, SLOT(slotHelp()));
 
   QAccel *a = new QAccel(this);
-  a->insertItem(CTRL+Key_D, 0);
-  a->connectItem(0, this, SLOT(deleteChart()));
-  a->insertItem(CTRL+Key_E, 1);
-  a->connectItem(1, this, SLOT(editChart()));
-  a->insertItem(CTRL+Key_X, 2);
-  a->connectItem(2, this, SLOT(exportSymbol()));
-  a->insertItem(CTRL+Key_U, 3);
-  a->connectItem(3, this, SLOT(dumpSymbol()));
-  a->insertItem(CTRL+Key_H, 4);
-  a->connectItem(4, this, SLOT(slotHelp()));
+  connect(a, SIGNAL(activated(int)), this, SLOT(slotAccel(int)));
+  a->insertItem(CTRL+Key_D, DeleteChart);
+  a->insertItem(CTRL+Key_E, EditChart);
+  a->insertItem(CTRL+Key_X, ExportSymbol);
+  a->insertItem(CTRL+Key_U, DumpSymbol);
+  a->insertItem(CTRL+Key_H, Help);
+  a->insertItem(CTRL+Key_Tab, Tab);
   
   chartNoSelection();
 }
@@ -281,24 +285,84 @@ void ChartPage::setFocus ()
 
 void ChartPage::setKeyFlag (bool d)
 {
+  keyFlag = d;
   nav->setKeyFlag(d);
+  search->setKeyFlag(d);
 }
 
-void ChartPage::doKeyPress (int, int key)
+void ChartPage::doKeyPress (QKeyEvent *key)
 {
-  switch (key)
+  key->accept();
+  
+  if (key->state() == Qt::ControlButton)
   {
-    case Qt::Key_Delete:
-    case Qt::Key_D:
-      deleteChart();
-      break;
-    default:
-      break;
+    switch(key->key())
+    {
+      case Qt::Key_D:
+        slotAccel(DeleteChart);
+	break;
+      case Qt::Key_E:
+        slotAccel(EditChart);
+	break;
+      case Qt::Key_X:
+        slotAccel(ExportSymbol);
+	break;
+      case Qt::Key_U:
+        slotAccel(DumpSymbol);
+	break;
+      case Qt::Key_Tab:
+        slotAccel(Tab);
+	break;
+      default:
+        break;
+    }
+  }
+  else
+  {
+    if (search->hasFocus())
+      search->doKeyPress(key);
+    else
+      nav->doKeyPress(key);
   }
 }
 
-Navigator * ChartPage::getNav ()
+void ChartPage::slotAccel (int id)
 {
-  return nav;
+  switch (id)
+  {
+    case DeleteChart:
+      if (keyFlag)
+        emit signalKeyPressed (Macro::ChartPage, ControlButton, Key_D, 0, QString());
+      deleteChart();
+      break;  
+    case EditChart:
+      if (keyFlag)
+        emit signalKeyPressed (Macro::ChartPage, ControlButton, Key_E, 0, QString());
+      editChart();
+      break;  
+    case ExportSymbol:
+      if (keyFlag)
+        emit signalKeyPressed (Macro::ChartPage, ControlButton, Key_X, 0, QString());
+      exportSymbol();
+      break;  
+    case DumpSymbol:
+      if (keyFlag)
+        emit signalKeyPressed (Macro::ChartPage, ControlButton, Key_U, 0, QString());
+      dumpSymbol();
+      break;  
+    case Help:
+      slotHelp();
+      break;  
+    case Tab:
+      if (keyFlag)
+        emit signalKeyPressed (Macro::ChartPage, ControlButton, Key_Tab, 0, QString());
+      if (search->hasFocus())
+        nav->setFocus();
+      else
+        search->setFocus();
+      break;  
+    default:
+      break;
+  }
 }
 

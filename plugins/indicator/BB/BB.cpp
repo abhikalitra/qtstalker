@@ -89,7 +89,7 @@ void BB::calculate ()
     double t2 = 0;
     for (count = 0, t2 = 0; count < period; count++)
     {
-      double t = in->getData(inputLoop - count) - sma->getData(smaLoop - count);
+      double t = in->getData(inputLoop - count) - sma->getData(smaLoop);
       t2 = t2 + (t * t);
     }
 

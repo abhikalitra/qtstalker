@@ -25,70 +25,9 @@
 #include <qstring.h>
 #include <qtoolbar.h>
 #include <qmainwindow.h>
-#include <qcombobox.h>
-#include <qspinbox.h>
-#include <qslider.h>
-
-
-class MyCombo : public QComboBox
-{
-  Q_OBJECT
-  
-  signals:
-    void signalKeyPressed (int, int, int, int, QString);
-  
-  public:
-    MyCombo (QWidget *);
-    ~MyCombo ();
-    void setKeyFlag (bool);   
-    void doKeyPress (QKeyEvent *); 
-    
-  protected:
-    virtual void keyPressEvent (QKeyEvent *);
-    
-  private:
-    bool keyFlag;
-};
-
-class MySpinner : public QSpinBox
-{
-  Q_OBJECT
-  
-  signals:
-    void signalKeyPressed (int, int, int, int, QString);
-  
-  public:
-    MySpinner (QWidget *);
-    ~MySpinner ();
-    void setKeyFlag (bool);   
-    void doKeyPress (QKeyEvent *); 
-    
-  protected:
-    virtual void keyPressEvent (QKeyEvent *);
-    
-  private:
-    bool keyFlag;
-};
-
-class MySlider : public QSlider
-{
-  Q_OBJECT
-  
-  signals:
-    void signalKeyPressed (int, int, int, int, QString);
-  
-  public:
-    MySlider (QWidget *);
-    ~MySlider ();
-    void setKeyFlag (bool);   
-    void doKeyPress (QKeyEvent *); 
-    
-  protected:
-    virtual void keyPressEvent (QKeyEvent *);
-    
-  private:
-    bool keyFlag;
-};
+#include "MyComboBox.h"
+#include "MySpinBox.h"
+#include "MySlider.h"
 
 
 class ChartToolbar : public QToolBar
@@ -134,10 +73,10 @@ class ChartToolbar : public QToolBar
     void doKeyPress (QKeyEvent *);
   
   private:
-    MyCombo *compressionCombo;
-    MyCombo *chartTypeCombo;
-    MySpinner *pixelspace;
-    MySpinner *barCount;
+    MyComboBox *compressionCombo;
+    MyComboBox *chartTypeCombo;
+    MySpinBox *pixelspace;
+    MySpinBox *barCount;
     MySlider *slider;
     bool keyFlag;
     MenuAction focusFlag;

@@ -31,7 +31,7 @@ ChartToolbar::ChartToolbar (QMainWindow *mw) : QToolBar (mw, "chartToolbar")
   keyFlag = FALSE;
   Config config;
   
-  compressionCombo = new MyCombo(this);
+  compressionCombo = new MyComboBox(this, Macro::ChartToolbar);
   BarData *bd = new BarData;
   compressionCombo->show();
   compressionCombo->insertStringList(bd->getBarCompressionList(), -1);
@@ -42,7 +42,7 @@ ChartToolbar::ChartToolbar (QMainWindow *mw) : QToolBar (mw, "chartToolbar")
           this, SIGNAL(signalKeyPressed(int, int, int, int, QString)));
   delete bd;
 
-  chartTypeCombo = new MyCombo(this);
+  chartTypeCombo = new MyComboBox(this, Macro::ChartToolbar);
   chartTypeCombo->show();
   chartTypeCombo->insertStringList(config.getPluginList(Config::ChartPluginPath), -1);
   QToolTip::add(chartTypeCombo, tr("Chart Type"));
@@ -51,13 +51,13 @@ ChartToolbar::ChartToolbar (QMainWindow *mw) : QToolBar (mw, "chartToolbar")
   connect(chartTypeCombo, SIGNAL(signalKeyPressed(int, int, int, int, QString)),
           this, SIGNAL(signalKeyPressed(int, int, int, int, QString)));
 
-  pixelspace = new MySpinner(this);
+  pixelspace = new MySpinBox(this, Macro::ChartToolbar);
   connect (pixelspace, SIGNAL(valueChanged(int)), this, SIGNAL(signalPixelspaceChanged(int)));
   QToolTip::add(pixelspace, tr("Bar Spacing"));
   connect(pixelspace, SIGNAL(signalKeyPressed(int, int, int, int, QString)),
           this, SIGNAL(signalKeyPressed(int, int, int, int, QString)));
 
-  barCount = new MySpinner(this);
+  barCount = new MySpinBox(this, Macro::ChartToolbar);
   barCount->setMinValue(1);
   barCount->setMaxValue(99999999);
   barCount->setLineStep(1);
@@ -68,7 +68,7 @@ ChartToolbar::ChartToolbar (QMainWindow *mw) : QToolBar (mw, "chartToolbar")
 
   addSeparator();
 
-  slider = new MySlider(this);
+  slider = new MySlider(this, Macro::ChartToolbar);
   slider->setOrientation(Qt::Horizontal);
   connect (slider, SIGNAL(valueChanged(int)), this, SIGNAL(signalSliderChanged(int)));
   slider->setEnabled(FALSE);
@@ -192,7 +192,6 @@ int ChartToolbar::setSliderStart (int ov, bool flag, int width, int records)
 void ChartToolbar::saveSettings ()
 {
   Config config;
-  
   config.setData(Config::Bars, QString::number(getBars()));
 }
 
@@ -305,101 +304,5 @@ void ChartToolbar::doKeyPress (QKeyEvent *key)
     }
   }
 }
-
-
-//***********************************************************
-//*************** MyCombo Widget ****************************
-//***********************************************************
-
-MyCombo::MyCombo (QWidget *w) : QComboBox (w)
-{
-  keyFlag = FALSE;
-}
-
-MyCombo::~MyCombo ()
-{
-}
-
-void MyCombo::keyPressEvent (QKeyEvent *key)
-{
-  if (keyFlag)
-    emit signalKeyPressed (Macro::ChartToolbar, key->state(), key->key(), key->ascii(), key->text());
-    
-  QComboBox::keyPressEvent(key);  
-}
-
-void MyCombo::setKeyFlag (bool d)
-{
-  keyFlag = d;
-}
-
-void MyCombo::doKeyPress (QKeyEvent *key)
-{
-  QComboBox::keyPressEvent(key);  
-}
-
-
-//***********************************************************
-//*************** MySpinner Widget **************************
-//***********************************************************
-
-MySpinner::MySpinner (QWidget *w) : QSpinBox (w)
-{
-  keyFlag = FALSE;
-}
-
-MySpinner::~MySpinner ()
-{
-}
-
-void MySpinner::keyPressEvent (QKeyEvent *key)
-{
-  if (keyFlag)
-    emit signalKeyPressed (Macro::ChartToolbar, key->state(), key->key(), key->ascii(), key->text());
-    
-  QSpinBox::keyPressEvent(key);  
-}
-
-void MySpinner::setKeyFlag (bool d)
-{
-  keyFlag = d;
-}
-
-void MySpinner::doKeyPress (QKeyEvent *key)
-{
-  QSpinBox::keyPressEvent(key);  
-}
-
-//***********************************************************
-//*************** MySlider Widget ***************************
-//***********************************************************
-
-MySlider::MySlider (QWidget *w) : QSlider (w)
-{
-  keyFlag = FALSE;
-}
-
-MySlider::~MySlider ()
-{
-}
-
-void MySlider::keyPressEvent (QKeyEvent *key)
-{
-  if (keyFlag)
-    emit signalKeyPressed (Macro::ChartToolbar, key->state(), key->key(), key->ascii(), key->text());
-    
-  QSlider::keyPressEvent(key);  
-}
-
-void MySlider::setKeyFlag (bool d)
-{
-  keyFlag = d;
-}
-
-void MySlider::doKeyPress (QKeyEvent *key)
-{
-  QSlider::keyPressEvent(key);  
-}
-
 
 

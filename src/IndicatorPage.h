@@ -42,6 +42,15 @@ class IndicatorPage : public QListBox
     void signalKeyPressed (int, int, int, int, QString);
   
   public:
+  
+    enum HotKey
+    {
+      NewIndicator,
+      DeleteIndicator,
+      EditIndicator,
+      Help
+    };
+  
     IndicatorPage (QWidget *);
     ~IndicatorPage ();
 
@@ -60,6 +69,7 @@ class IndicatorPage : public QListBox
     void changeIndicator (QString, int);
     void setKeyFlag (bool);
     bool getIndicatorStatus (QString);
+    void slotAccel (int);
 
   protected:
     virtual void keyPressEvent (QKeyEvent *);

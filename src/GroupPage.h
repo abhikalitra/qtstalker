@@ -35,12 +35,23 @@ class GroupPage : public QWidget
 
   signals:
     void fileSelected (QString);
+    void signalKeyPressed (int, int, int, int, QString);
 
   public:
+  
+    enum HotKey
+    {
+      NewGroup,
+      AddGroupItem,
+      DeleteGroupItem,
+      DeleteGroup,
+      RenameGroup,
+      Help
+    };
+  
     GroupPage (QWidget *);
     ~GroupPage ();
     void setFocus ();
-    Navigator * getNav ();
 
   public slots:
     void newGroup ();
@@ -53,12 +64,15 @@ class GroupPage : public QWidget
     void rightClick (QListBoxItem *);
     void slotHelp ();
     void setKeyFlag (bool);
+    void doKeyPress (QKeyEvent *);
+    void slotAccel (int);
 
   protected:
     Navigator *nav;
     Config config;
     QPopupMenu *menu;
     QLineEdit *group;
+    bool keyFlag;
 };
 
 #endif

@@ -56,20 +56,14 @@ MacroPage::MacroPage (QWidget *w) : QListBox (w)
   menu->insertItem(QPixmap(help), tr("&Help		Ctrl+H"), this, SLOT(slotHelp()));
 
   QAccel *a = new QAccel(this);
-  a->insertItem(CTRL+Key_N, 0);
-  a->connectItem(0, this, SLOT(newMacro()));
-  a->insertItem(CTRL+Key_E, 1);
-  a->connectItem(1, this, SLOT(editMacro()));
-  a->insertItem(CTRL+Key_D, 2);
-  a->connectItem(2, this, SLOT(deleteMacro()));
-  a->insertItem(CTRL+Key_R, 3);
-  a->connectItem(3, this, SLOT(renameMacro()));
-  a->insertItem(CTRL+Key_A, 4);
-  a->connectItem(4, this, SLOT(assignMacro()));
-  a->insertItem(CTRL+Key_U, 5);
-  a->connectItem(5, this, SLOT(runMacro()));
-  a->insertItem(CTRL+Key_H, 6);
-  a->connectItem(6, this, SLOT(slotHelp()));
+  connect(a, SIGNAL(activated(int)), this, SLOT(slotAccel(int)));
+  a->insertItem(CTRL+Key_N, NewMacro);
+  a->insertItem(CTRL+Key_E, EditMacro);
+  a->insertItem(CTRL+Key_D, DeleteMacro);
+  a->insertItem(CTRL+Key_R, RenameMacro);
+  a->insertItem(CTRL+Key_A, AssignMacro);
+  a->insertItem(CTRL+Key_U, RunMacro);
+  a->insertItem(CTRL+Key_H, Help);
   
   updateList();
   macroSelected(QString());
@@ -301,25 +295,49 @@ void MacroPage::keyPressEvent (QKeyEvent *key)
 
 void MacroPage::doKeyPress (QKeyEvent *key)
 {
-  switch (key->key())
+  key->accept();
+  
+  if (key->state() == Qt::ControlButton)
   {
-    case Qt::Key_Delete:
-      key->accept();
-      deleteMacro();
-      break;
-    case Qt::Key_Left: // segfaults if we dont trap this
-    case Qt::Key_Right: // segfaults if we dont trap this
-      key->accept();
-      break;      
-    case Qt::Key_Enter:
-    case Qt::Key_Return:
-      key->accept();
-      runMacro();
-      break;
-    default:
-      key->accept();
-      QListBox::keyPressEvent(key);
-      break;
+    switch(key->key())
+    {
+      case Qt::Key_N:
+        slotAccel(NewMacro);
+	break;
+      case Qt::Key_D:
+        slotAccel(DeleteMacro);
+	break;
+      case Qt::Key_E:
+        slotAccel(EditMacro);
+	break;
+      case Qt::Key_R:
+        slotAccel(RenameMacro);
+	break;
+      case Qt::Key_A:
+        slotAccel(AssignMacro);
+	break;
+      case Qt::Key_U:
+        slotAccel(RunMacro);
+	break;
+      default:
+        break;
+    }
+  }
+  else
+  {
+    switch (key->key())
+    {
+      case Qt::Key_Left: // segfaults if we dont trap this
+      case Qt::Key_Right: // segfaults if we dont trap this
+        break;      
+      case Qt::Key_Enter:
+      case Qt::Key_Return:
+        runMacro();
+        break;
+      default:
+        QListBox::keyPressEvent(key);
+        break;
+    }
   }
 }
 
@@ -333,5 +351,48 @@ void MacroPage::setKeyFlag (bool d)
 {
   keyFlag = d;
 }
+
+void MacroPage::slotAccel (int id)
+{
+  switch (id)
+  {
+    case NewMacro:
+      if (keyFlag)
+        emit signalKeyPressed (Macro::MacroPage, ControlButton, Key_N, 0, QString());
+      newMacro();
+      break;  
+    case EditMacro:
+      if (keyFlag)
+        emit signalKeyPressed (Macro::MacroPage, ControlButton, Key_E, 0, QString());
+      editMacro();
+      break;  
+    case DeleteMacro:
+      if (keyFlag)
+        emit signalKeyPressed (Macro::MacroPage, ControlButton, Key_D, 0, QString());
+      deleteMacro();
+      break;  
+    case RenameMacro:
+      if (keyFlag)
+        emit signalKeyPressed (Macro::MacroPage, ControlButton, Key_R, 0, QString());
+      renameMacro();
+      break;  
+    case AssignMacro:
+      if (keyFlag)
+        emit signalKeyPressed (Macro::MacroPage, ControlButton, Key_A, 0, QString());
+      assignMacro();
+      break;  
+    case RunMacro:
+      if (keyFlag)
+        emit signalKeyPressed (Macro::MacroPage, ControlButton, Key_U, 0, QString());
+      runMacro();
+      break;  
+    case Help:
+      slotHelp();
+      break;  
+    default:
+      break;
+  }
+}
+
 
 

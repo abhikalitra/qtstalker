@@ -36,6 +36,16 @@ class PortfolioPage : public QListBox
     void signalKeyPressed (int, int, int, int, QString);
 
   public:
+  
+    enum HotKey
+    {
+      NewPortfolio,
+      DeletePortfolio,
+      RenamePortfolio,
+      OpenPortfolio,
+      Help
+    };
+  
     PortfolioPage (QWidget *);
     ~PortfolioPage ();
 
@@ -52,6 +62,7 @@ class PortfolioPage : public QListBox
     void updateList ();
     void doKeyPress (QKeyEvent *);
     void setKeyFlag (bool);
+    void slotAccel (int);
 
   private:
     virtual void keyPressEvent (QKeyEvent *);

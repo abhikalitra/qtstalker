@@ -29,6 +29,10 @@ HEADERS += FormulaInput.h
 HEADERS += Indicator.h
 HEADERS += COPlugin.h
 HEADERS += HelpWindow.h
+HEADERS += MyLineEdit.h
+HEADERS += MySpinBox.h
+HEADERS += MyComboBox.h
+HEADERS += MySlider.h
    
 SOURCES += QuotePlugin.cpp
 SOURCES += IndicatorPlugin.cpp
@@ -55,6 +59,10 @@ SOURCES += FormulaInput.cpp
 SOURCES += Indicator.cpp
 SOURCES += COPlugin.cpp
 SOURCES += HelpWindow.cpp
+SOURCES += MyLineEdit.cpp
+SOURCES += MySpinBox.cpp
+SOURCES += MyComboBox.cpp
+SOURCES += MySlider.cpp
     
 TARGET = qtstalker
 VERSION = 0.30.0

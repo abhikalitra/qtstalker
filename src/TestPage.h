@@ -37,6 +37,17 @@ class TestPage : public QListBox
     void signalKeyPressed (int, int, int, int, QString);
   
   public:
+  
+    enum HotKey
+    {
+      NewTest,
+      OpenTest,
+      DeleteTest,
+      RenameTest,
+      CopyTest,
+      Help
+    };
+  
     TestPage (QWidget *);
     ~TestPage ();
 
@@ -55,6 +66,7 @@ class TestPage : public QListBox
     void doubleClick (QListBoxItem *);
     void doKeyPress (QKeyEvent *);
     void setKeyFlag (bool);
+    void slotAccel (int);
 
   private:
     virtual void keyPressEvent (QKeyEvent *);

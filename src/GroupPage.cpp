@@ -42,6 +42,8 @@
 
 GroupPage::GroupPage (QWidget *w) : QWidget (w)
 {
+  keyFlag = FALSE;
+  
   QVBoxLayout *vbox = new QVBoxLayout(this);
   vbox->setMargin(2);
   vbox->setSpacing(5);
@@ -56,6 +58,8 @@ GroupPage::GroupPage (QWidget *w) : QWidget (w)
   connect(nav, SIGNAL(fileSelected(QString)), this, SLOT(groupSelected(QString)));
   connect(nav, SIGNAL(noSelection()), this, SLOT(groupNoSelection()));
   connect(nav, SIGNAL(contextMenuRequested(QListBoxItem *, const QPoint &)), this, SLOT(rightClick(QListBoxItem *)));
+  connect(nav, SIGNAL(signalKeyPressed(int, int, int, int, QString)),
+          this, SIGNAL(signalKeyPressed(int, int, int, int, QString)));
   nav->updateList();
   nav->setId(Macro::GroupPage);
   vbox->addWidget(nav);
@@ -70,18 +74,12 @@ GroupPage::GroupPage (QWidget *w) : QWidget (w)
   menu->insertItem(QPixmap(help), tr("&Help		Ctrl+H"), this, SLOT(slotHelp()));
 
   QAccel *a = new QAccel(this);
-  a->insertItem(CTRL+Key_N, 0);
-  a->connectItem(0, this, SLOT(newGroup()));
-  a->insertItem(CTRL+Key_A, 1);
-  a->connectItem(1, this, SLOT(addGroupItem()));
-  a->insertItem(CTRL+Key_D, 2);
-  a->connectItem(2, this, SLOT(deleteGroupItem()));
-  a->insertItem(CTRL+Key_L, 3);
-  a->connectItem(3, this, SLOT(deleteGroup()));
-  a->insertItem(CTRL+Key_R, 4);
-  a->connectItem(4, this, SLOT(renameGroup()));
-  a->insertItem(CTRL+Key_H, 5);
-  a->connectItem(5, this, SLOT(slotHelp()));
+  a->insertItem(CTRL+Key_N, NewGroup);
+  a->insertItem(CTRL+Key_A, AddGroupItem);
+  a->insertItem(CTRL+Key_D, DeleteGroupItem);
+  a->insertItem(CTRL+Key_L, DeleteGroup);
+  a->insertItem(CTRL+Key_R, RenameGroup);
+  a->insertItem(CTRL+Key_H, Help);
   
   groupNoSelection();
 }
@@ -327,11 +325,79 @@ void GroupPage::setFocus ()
 
 void GroupPage::setKeyFlag (bool d)
 {
+  keyFlag = d;
   nav->setKeyFlag(d);
 }
 
-Navigator * GroupPage::getNav ()
+void GroupPage::doKeyPress (QKeyEvent *key)
 {
-  return nav;
+  key->accept();
+  
+  if (key->state() == Qt::ControlButton)
+  {
+    switch(key->key())
+    {
+      case Qt::Key_N:
+        slotAccel(NewGroup);
+	break;
+      case Qt::Key_A:
+        slotAccel(AddGroupItem);
+	break;
+      case Qt::Key_D:
+        slotAccel(DeleteGroupItem);
+	break;
+      case Qt::Key_L:
+        slotAccel(DeleteGroup);
+	break;
+      case Qt::Key_R:
+        slotAccel(RenameGroup);
+	break;
+      case Qt::Key_H:
+        slotAccel(Help);
+	break;
+      default:
+        break;
+    }
+  }
+  else
+    nav->doKeyPress(key);
 }
+
+void GroupPage::slotAccel (int id)
+{
+  switch (id)
+  {
+    case NewGroup:
+      if (keyFlag)
+        emit signalKeyPressed (Macro::GroupPage, ControlButton, Key_N, 0, QString());
+      newGroup();
+      break;  
+    case AddGroupItem:
+      if (keyFlag)
+        emit signalKeyPressed (Macro::GroupPage, ControlButton, Key_A, 0, QString());
+      addGroupItem();
+      break;  
+    case DeleteGroupItem:
+      if (keyFlag)
+        emit signalKeyPressed (Macro::GroupPage, ControlButton, Key_D, 0, QString());
+      deleteGroupItem();
+      break;  
+    case DeleteGroup:
+      if (keyFlag)
+        emit signalKeyPressed (Macro::GroupPage, ControlButton, Key_L, 0, QString());
+      deleteGroup();
+      break;  
+    case Help:
+      slotHelp();
+      break;  
+    case RenameGroup:
+      if (keyFlag)
+        emit signalKeyPressed (Macro::GroupPage, ControlButton, Key_R, 0, QString());
+      renameGroup();
+      break;
+    default:
+      break;
+  }
+}
+
 

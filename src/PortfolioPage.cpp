@@ -52,16 +52,12 @@ PortfolioPage::PortfolioPage (QWidget *w) : QListBox (w)
   menu->insertItem(QPixmap(help), tr("&Help		Ctrl+H"), this, SLOT(slotHelp()));
 
   QAccel *a = new QAccel(this);
-  a->insertItem(CTRL+Key_N, 0);
-  a->connectItem(0, this, SLOT(newPortfolio()));
-  a->insertItem(CTRL+Key_O, 1);
-  a->connectItem(1, this, SLOT(openPortfolio()));
-  a->insertItem(CTRL+Key_D, 2);
-  a->connectItem(2, this, SLOT(deletePortfolio()));
-  a->insertItem(CTRL+Key_R, 3);
-  a->connectItem(3, this, SLOT(renamePortfolio()));
-  a->insertItem(CTRL+Key_H, 4);
-  a->connectItem(4, this, SLOT(slotHelp()));
+  connect(a, SIGNAL(activated(int)), this, SLOT(slotAccel(int)));
+  a->insertItem(CTRL+Key_N, NewPortfolio);
+  a->insertItem(CTRL+Key_O, OpenPortfolio);
+  a->insertItem(CTRL+Key_D, DeletePortfolio);
+  a->insertItem(CTRL+Key_R, RenamePortfolio);
+  a->insertItem(CTRL+Key_H, Help);
   
   updateList();
   portfolioSelected(QString());
@@ -264,24 +260,77 @@ void PortfolioPage::keyPressEvent (QKeyEvent *key)
 
 void PortfolioPage::doKeyPress (QKeyEvent *key)
 {
-  switch (key->key())
+  key->accept();
+  
+  if (key->state() == Qt::ControlButton)
   {
-    case Qt::Key_Delete:
-      key->accept();
+    switch(key->key())
+    {
+      case Qt::Key_N:
+        slotAccel(NewPortfolio);
+	break;
+      case Qt::Key_D:
+        slotAccel(DeletePortfolio);
+	break;
+      case Qt::Key_O:
+        slotAccel(OpenPortfolio);
+	break;
+      case Qt::Key_R:
+        slotAccel(RenamePortfolio);
+	break;
+      default:
+        break;
+    }
+  }
+  else
+  {
+    switch (key->key())
+    {
+      case Qt::Key_Delete:
+        deletePortfolio();
+        break;
+      case Qt::Key_Left: // segfaults if we dont trap this
+      case Qt::Key_Right: // segfaults if we dont trap this
+        break;      
+      case Qt::Key_Enter:
+      case Qt::Key_Return:
+        openPortfolio();
+        break;
+      default:
+        QListBox::keyPressEvent(key);
+        break;
+    }
+  }
+}
+
+void PortfolioPage::slotAccel (int id)
+{
+  switch (id)
+  {
+    case NewPortfolio:
+      if (keyFlag)
+        emit signalKeyPressed (Macro::PortfolioPage, ControlButton, Key_N, 0, QString());
+      newPortfolio();
+      break;  
+    case DeletePortfolio:
+      if (keyFlag)
+        emit signalKeyPressed (Macro::PortfolioPage, ControlButton, Key_D, 0, QString());
       deletePortfolio();
-      break;
-    case Qt::Key_Left: // segfaults if we dont trap this
-    case Qt::Key_Right: // segfaults if we dont trap this
-      key->accept();
-      break;      
-    case Qt::Key_Enter:
-    case Qt::Key_Return:
-      key->accept();
+      break;  
+    case RenamePortfolio:
+      if (keyFlag)
+        emit signalKeyPressed (Macro::PortfolioPage, ControlButton, Key_R, 0, QString());
+      renamePortfolio();
+      break;  
+    case OpenPortfolio:
+      if (keyFlag)
+        emit signalKeyPressed (Macro::PortfolioPage, ControlButton, Key_O, 0, QString());
       openPortfolio();
-      break;
+      break;  
+    case Help:
+      slotHelp();
+      break;  
     default:
-      key->accept();
-      QListBox::keyPressEvent(key);
       break;
   }
 }

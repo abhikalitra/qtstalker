@@ -55,18 +55,13 @@ TestPage::TestPage (QWidget *w) : QListBox (w)
   menu->insertItem(QPixmap(help), tr("&Help		Ctrl+H"), this, SLOT(slotHelp()));
 
   QAccel *a = new QAccel(this);
-  a->insertItem(CTRL+Key_N, 0);
-  a->connectItem(0, this, SLOT(newTest()));
-  a->insertItem(CTRL+Key_O, 1);
-  a->connectItem(1, this, SLOT(openTest()));
-  a->insertItem(CTRL+Key_D, 2);
-  a->connectItem(2, this, SLOT(deleteTest()));
-  a->insertItem(CTRL+Key_R, 3);
-  a->connectItem(3, this, SLOT(renameTest()));
-  a->insertItem(CTRL+Key_Y, 4);
-  a->connectItem(4, this, SLOT(copyTest()));
-  a->insertItem(CTRL+Key_H, 5);
-  a->connectItem(5, this, SLOT(slotHelp()));
+  connect(a, SIGNAL(activated(int)), this, SLOT(slotAccel(int)));
+  a->insertItem(CTRL+Key_N, NewTest);
+  a->insertItem(CTRL+Key_O, OpenTest);
+  a->insertItem(CTRL+Key_D, DeleteTest);
+  a->insertItem(CTRL+Key_R, RenameTest);
+  a->insertItem(CTRL+Key_Y, CopyTest);
+  a->insertItem(CTRL+Key_H, Help);
   
   updateList();
   testNoSelection();
@@ -287,24 +282,85 @@ void TestPage::keyPressEvent (QKeyEvent *key)
 
 void TestPage::doKeyPress (QKeyEvent *key)
 {
-  switch (key->key())
+  key->accept();
+  
+  if (key->state() == Qt::ControlButton)
   {
-    case Qt::Key_Delete:
-      key->accept();
+    switch(key->key())
+    {
+      case Qt::Key_N:
+        slotAccel(NewTest);
+	break;
+      case Qt::Key_D:
+        slotAccel(DeleteTest);
+	break;
+      case Qt::Key_O:
+        slotAccel(OpenTest);
+	break;
+      case Qt::Key_R:
+        slotAccel(RenameTest);
+	break;
+      case Qt::Key_Y:
+        slotAccel(CopyTest);
+	break;
+      default:
+        break;
+    }
+  }
+  else
+  {
+    switch (key->key())
+    {
+      case Qt::Key_Delete:
+        deleteTest();
+        break;
+      case Qt::Key_Left: // segfaults if we dont trap this
+      case Qt::Key_Right: // segfaults if we dont trap this
+        break;      
+      case Qt::Key_Enter:
+      case Qt::Key_Return:
+        openTest();
+        break;
+      default:
+        QListBox::keyPressEvent(key);
+        break;
+    }
+  }
+}
+
+void TestPage::slotAccel (int id)
+{
+  switch (id)
+  {
+    case NewTest:
+      if (keyFlag)
+        emit signalKeyPressed (Macro::TestPage, ControlButton, Key_N, 0, QString());
+      newTest();
+      break;  
+    case DeleteTest:
+      if (keyFlag)
+        emit signalKeyPressed (Macro::TestPage, ControlButton, Key_D, 0, QString());
       deleteTest();
-      break;
-    case Qt::Key_Left: // segfaults if we dont trap this
-    case Qt::Key_Right: // segfaults if we dont trap this
-      key->accept();
-      break;      
-    case Qt::Key_Enter:
-    case Qt::Key_Return:
-      key->accept();
+      break;  
+    case RenameTest:
+      if (keyFlag)
+        emit signalKeyPressed (Macro::TestPage, ControlButton, Key_R, 0, QString());
+      renameTest();
+      break;  
+    case OpenTest:
+      if (keyFlag)
+        emit signalKeyPressed (Macro::TestPage, ControlButton, Key_O, 0, QString());
       openTest();
-      break;
+      break;  
+    case CopyTest:
+      if (keyFlag)
+        emit signalKeyPressed (Macro::TestPage, ControlButton, Key_Y, 0, QString());
+      copyTest();
+      break;  
+    case Help:
+      slotHelp();
+      break;  
     default:
-      key->accept();
-      QListBox::keyPressEvent(key);
       break;
   }
 }

@@ -50,14 +50,11 @@ IndicatorPage::IndicatorPage (QWidget *w) : QListBox (w)
   menu->insertItem(QPixmap(help), tr("&Help		Ctrl+H"), this, SLOT(slotHelp()));
 
   QAccel *a = new QAccel(this);
-  a->insertItem(CTRL+Key_N, 0);
-  a->connectItem(0, this, SLOT(newIndicator()));
-  a->insertItem(CTRL+Key_D, 1);
-  a->connectItem(1, this, SLOT(deleteIndicator()));
-  a->insertItem(CTRL+Key_E, 2);
-  a->connectItem(2, this, SLOT(editIndicator()));
-  a->insertItem(CTRL+Key_H, 3);
-  a->connectItem(3, this, SLOT(slotHelp()));
+  connect(a, SIGNAL(activated(int)), this, SLOT(slotAccel(int)));
+  a->insertItem(CTRL+Key_N, NewIndicator);
+  a->insertItem(CTRL+Key_D, DeleteIndicator);
+  a->insertItem(CTRL+Key_E, EditIndicator);
+  a->insertItem(CTRL+Key_H, Help);
 }
 
 IndicatorPage::~IndicatorPage ()
@@ -204,20 +201,67 @@ void IndicatorPage::keyPressEvent (QKeyEvent *key)
 
 void IndicatorPage::doKeyPress (QKeyEvent *key)
 {
-  switch (key->key())
+  key->accept();
+  
+  if (key->state() == Qt::ControlButton)
   {
-    case Qt::Key_Left: // segfaults if we dont trap this
-    case Qt::Key_Right: // segfaults if we dont trap this
-      key->accept();
-      break;      
-    case Qt::Key_Enter:
-    case Qt::Key_Return:
-      key->accept();
-      changeIndicator(currentText(), currentItem());
-      break;
+    switch(key->key())
+    {
+      case Qt::Key_N:
+        slotAccel(NewIndicator);
+	break;
+      case Qt::Key_D:
+        slotAccel(DeleteIndicator);
+	break;
+      case Qt::Key_E:
+        slotAccel(EditIndicator);
+	break;
+      default:
+        break;
+    }
+  }
+  else
+  {
+    switch (key->key())
+    {
+      case Qt::Key_Left: // segfaults if we dont trap this
+      case Qt::Key_Right: // segfaults if we dont trap this
+        break;      
+      case Qt::Key_Enter:
+      case Qt::Key_Return:
+        changeIndicator(currentText(), currentItem());
+        break;
+      default:
+        QListBox::keyPressEvent(key);
+        break;
+    }
+  }
+}
+
+void IndicatorPage::slotAccel (int id)
+{
+  switch (id)
+  {
+    case NewIndicator:
+      if (keyFlag)
+        emit signalKeyPressed (Macro::IndicatorPage, ControlButton, Key_N, 0, QString());
+      newIndicator();
+      break;  
+    case DeleteIndicator:
+      if (keyFlag)
+        emit signalKeyPressed (Macro::IndicatorPage, ControlButton, Key_D, 0, QString());
+      deleteIndicator();
+      break;  
+    case EditIndicator:
+      if (keyFlag)
+        emit signalKeyPressed (Macro::IndicatorPage, ControlButton, Key_E, 0, QString());
+      editIndicator();
+      break;  
+    case Help:
+      slotHelp();
+      break;  
     default:
-      key->accept();
-      QListBox::keyPressEvent(key);
       break;
   }
 }
+
