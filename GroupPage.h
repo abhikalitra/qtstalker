@@ -19,37 +19,39 @@
  *  USA.
  */
 
-#ifndef NAVIGATOR_HPP
-#define NAVIGATOR_HPP
+#ifndef GROUPPAGE_HPP
+#define GROUPPAGE_HPP
 
 #include <qstring.h>
-#include <qlistbox.h>
-#include <qdir.h>
+#include <qwidget.h>
+#include "Navigator.h"
+#include "BaseDialog.h"
+#include "Config.h"
 
-class Navigator : public QListBox
+class GroupPage : public BaseDialog
 {
   Q_OBJECT
 
   signals:
     void fileSelected (QString);
-    void noSelection ();
-    void directoryStatus (bool);
 
   public:
-    Navigator (QWidget *, QString);
-    ~Navigator ();
-    void updateList ();
-    QString getFileSelection ();
-    void setDirectory (QString);
-    QString getCurrentPath ();
+    GroupPage (QWidget *, Config *);
+    ~GroupPage ();
 
   public slots:
-    void upDirectory ();
-    void fileSelection ();
+    void newGroup ();
+    void addGroupItem ();
+    void deleteGroupItem ();
+    void deleteGroup ();
+    void renameGroup ();
+    void groupSelected (QString);
+    void groupNoSelection ();
+    void directoryStatus (bool);
 
   protected:
-    QString basePath;
-    QDir currentDir;
+    Navigator *nav;
+    Config *config;
 };
 
 #endif

@@ -21,43 +21,18 @@
 
 #include "Navigator.h"
 #include "dirclosed.xpm"
-#include "up.xpm"
-#include <qtooltip.h>
+#include <qpixmap.h>
 
 #define BUTTON_SIZE 24
 
-Navigator::Navigator (QWidget *w, QString bp) : QWidget(w)
+Navigator::Navigator (QWidget *w, QString bp) : QListBox(w)
 {
-  buttonList.setAutoDelete(TRUE);
   basePath = bp;
 
   currentDir.setPath(bp);
 
-  QVBoxLayout *vbox = new QVBoxLayout(this);
-  vbox->setMargin(0);
-  vbox->setSpacing(5);
-
-  toolbar = new QGridLayout(vbox, 1, 2);
-  toolbar->setSpacing(1);
-
-  upButton = new QToolButton(this);
-  QToolTip::add(upButton, tr("Up Directory"));
-  upButton->setPixmap(QPixmap(up));
-  upButton->setMaximumWidth(BUTTON_SIZE);
-  upButton->setMaximumHeight(BUTTON_SIZE);
-  upButton->setAutoRaise(TRUE);
-  toolbar->addWidget(upButton, 0, 0);
-  upButton->setEnabled(FALSE);
-  connect(upButton, SIGNAL(clicked()), this, SLOT(upDirectory()));
-
-  QHBoxLayout *hbox = new QHBoxLayout(vbox);
-  hbox->setMargin(0);
-  hbox->setSpacing(5);
-
-  list = new QListBox(this);
-  list->setSelectionMode(QListBox::Single);
-  connect(list, SIGNAL(selectionChanged()), this, SLOT(fileSelection()));
-  hbox->addWidget(list);
+  setSelectionMode(QListBox::Single);
+  connect(this, SIGNAL(selectionChanged()), this, SLOT(fileSelection()));
 }
 
 Navigator::~Navigator ()
@@ -66,7 +41,7 @@ Navigator::~Navigator ()
 
 void Navigator::updateList ()
 {
-  list->clear();
+  clear();
 
   currentDir.setPath(currentDir.absPath());
 
@@ -78,9 +53,9 @@ void Navigator::updateList ()
     s.append(currentDir[loop]);
     QFileInfo info(s);
     if (info.isDir())
-      list->insertItem(QPixmap(dirclosed), currentDir[loop], -1);
+      insertItem(QPixmap(dirclosed), currentDir[loop], -1);
     else
-      list->insertItem(currentDir[loop], -1);
+      insertItem(currentDir[loop], -1);
   }
 }
 
@@ -91,22 +66,22 @@ void Navigator::upDirectory ()
   emit noSelection();
 
   if (! basePath.compare(currentDir.absPath()))
-    upButton->setEnabled(FALSE);
+    emit directoryStatus(FALSE);
   else
-    upButton->setEnabled(TRUE);
+    emit directoryStatus(TRUE);
 }
 
 void Navigator::fileSelection ()
 {
-  if (list->pixmap(list->currentItem()))
+  if (pixmap(currentItem()))
   {
     QString s = currentDir.absPath();
     s.append("/");
-    s.append(list->currentText());
+    s.append(currentText());
     currentDir.setPath(s);
     updateList();
     emit noSelection();
-    upButton->setEnabled(TRUE);
+    emit directoryStatus(TRUE);
   }
   else
     emit fileSelected(getFileSelection());
@@ -116,7 +91,7 @@ QString Navigator::getFileSelection ()
 {
   QString s = currentDir.absPath();
   s.append("/");
-  s.append(list->currentText());
+  s.append(currentText());
   return s;
 }
 
@@ -132,30 +107,6 @@ void Navigator::setDirectory (QString d)
 QString Navigator::getCurrentPath ()
 {
   return currentDir.absPath();
-}
-
-void Navigator::setButton (QPixmap pix, QString tt, int pos)
-{
-  QToolButton *button = new QToolButton(this);
-  QToolTip::add(button, tt);
-  button->setPixmap(pix);
-  button->setMaximumWidth(BUTTON_SIZE);
-  button->setMaximumHeight(BUTTON_SIZE);
-  button->setAutoRaise(TRUE);
-  toolbar->addWidget(button, 0, pos + 1);
-  buttonList.append(button);
-  toolbar->expand(1, toolbar->numCols() + 1);
-}
-
-QToolButton * Navigator::getButton (int pos)
-{
-  return buttonList.at(pos);
-}
-
-void Navigator::setButtonStatus (int pos, bool status)
-{
-  QToolButton *button = buttonList.at(pos);
-  button->setEnabled(status);
 }
 
 

@@ -21,39 +21,31 @@
 #include <qdir.h>
 #include <qfiledialog.h>
 #include <qinputdialog.h>
-#include <qtextstream.h>
-#include <qfile.h>
 #include <qapplication.h>
 #include <qfont.h>
 #include <qtextcodec.h>
 #include <qtranslator.h>
 #include <qcursor.h>
-#include <qpixmap.h>
-#include <qpainter.h>
 #include <qcolor.h>
 #include <qfontmetrics.h>
 #include <qstringlist.h>
 #include <qlibrary.h>
 #include <qtooltip.h>
-#include <qlistbox.h>
 
 #include "Qtstalker.h"
 #include "Quote.h"
-#include "PortfolioDialog.h"
 #include "DataWindow.h"
 #include "EditDialog.h"
 #include "Setting.h"
 #include "ChartDb.h"
-#include "WorkwithPortfoliosDialog.h"
-#include "WorkwithTestDialog.h"
-#include "Tester.h"
-#include "EditChartDialog.h"
-#include "SymbolDialog.h"
+#include "ChartPage.h"
+#include "GroupPage.h"
+#include "PortfolioPage.h"
+#include "TestPage.h"
 
 #include "grid.xpm"
 #include "datawindow.xpm"
 #include "indicator.xpm"
-#include "portfolio.xpm"
 #include "quotes.xpm"
 #include "done.xpm"
 #include "configure.xpm"
@@ -62,13 +54,7 @@
 #include "edit.xpm"
 #include "delete.xpm"
 #include "co.xpm"
-#include "test.xpm"
 #include "qtstalker.xpm"
-#include "newchart.xpm"
-#include "insert.xpm"
-#include "rename.xpm"
-#include "export.xpm"
-#include "stop.xpm"
 
 QtstalkerApp::QtstalkerApp()
 {
@@ -98,8 +84,9 @@ QtstalkerApp::QtstalkerApp()
   navTab = new QTabWidget(navSplitter);
 
   initChartNav();
-
   initGroupNav();
+  initPortfolioNav();
+  initTestNav();
 
   // construct the chart areas
 
@@ -224,18 +211,14 @@ void QtstalkerApp::initActions()
   actionQuotes->setStatusTip(tr("Download quotes from internet."));
   connect(actionQuotes, SIGNAL(activated()), this, SLOT(slotQuotes()));
 
-  icon = portfolio;
-  actionPortfolio = new QAction(tr("Work with Portfolios..."), icon, tr("Work with Portfolios..."), 0, this);
-  actionPortfolio->setStatusTip(tr("Create, modify, delete a portfolio."));
-  connect(actionPortfolio, SIGNAL(activated()), this, SLOT(slotWorkwithPortfolio()));
-
   icon = datawindow;
   actionDatawindow = new QAction(tr("Data Window..."), icon, tr("Data Window..."), 0, this);
   actionDatawindow->setStatusTip(tr("Show the data window."));
   connect(actionDatawindow, SIGNAL(activated()), this, SLOT(slotDataWindow()));
   actionDatawindow->setEnabled(FALSE);
 
-  actionAbout = new QAction(tr("About"), tr("&About..."), 0, this);
+  icon = qtstalker;
+  actionAbout = new QAction(tr("About"), icon, tr("&About..."), 0, this);
   actionAbout->setStatusTip(tr("About Qtstalker."));
   connect(actionAbout, SIGNAL(activated()), this, SLOT(slotAbout()));
 
@@ -248,18 +231,11 @@ void QtstalkerApp::initActions()
   actionNewPlugin = new QAction(tr("Install new plugins..."), icon, tr("Install new plugins..."), 0, this);
   actionNewPlugin->setStatusTip(tr("Install new plugins."));
   connect(actionNewPlugin, SIGNAL(activated()), this, SLOT(slotNewPlugin()));
-
-  icon = test;
-  actionWorkwithTest = new QAction(tr("Work with Backtest..."), icon, tr("Work with Backtest..."), 0, this);
-  actionWorkwithTest->setStatusTip(tr("Create, edit, delete backtest rules."));
-  connect(actionWorkwithTest, SIGNAL(activated()), this, SLOT(slotWorkwithTest()));
 }
 
 void QtstalkerApp::initMenuBar()
 {
   fileMenu = new QPopupMenu();
-  actionPortfolio->addTo(fileMenu);
-  actionWorkwithTest->addTo(fileMenu);
   fileMenu->insertSeparator();
   actionQuit->addTo(fileMenu);
 
@@ -319,8 +295,6 @@ void QtstalkerApp::initToolBar()
   // construct the chart toolbar
   toolbar = new QToolBar(this, "toolbar");
 
-  actionPortfolio->addTo(toolbar);
-  actionWorkwithTest->addTo(toolbar);
   actionNewIndicator->addTo(toolbar);
   actionGrid->addTo(toolbar);
   actionScaleToScreen->addTo(toolbar);
@@ -399,6 +373,7 @@ void QtstalkerApp::slotOpenChart (QString selection)
   actionNewIndicator->setEnabled(TRUE);
   barCombo->setEnabled(TRUE);
   status = Chart;
+  qApp->processEvents();
   loadChart(selection);
 }
 
@@ -913,13 +888,6 @@ QString QtstalkerApp::getWindowCaption ()
   return caption;
 }
 
-void QtstalkerApp::slotWorkwithPortfolio ()
-{
-  WorkwithPortfoliosDialog *dialog = new WorkwithPortfoliosDialog(config);
-  dialog->show();
-  dialog->updateList();
-}
-
 void QtstalkerApp::slotDataWindow ()
 {
   DataWindow *dw = new DataWindow(0, mainPlot->getDataSize());
@@ -1363,14 +1331,6 @@ void QtstalkerApp::slotStatusMessage (QString d)
   qApp->processEvents();
 }
 
-void QtstalkerApp::slotWorkwithTest ()
-{
-  WorkwithTestDialog *dialog = new WorkwithTestDialog(config);
-  dialog->updateList();
-  dialog->show();
-  statusBar()->message(tr("Ready"), 2000);
-}
-
 void QtstalkerApp::slotTabChanged (QWidget *)
 {
   Plot *plot = plotList[tabs->label(tabs->currentPageIndex())];
@@ -1416,354 +1376,28 @@ void QtstalkerApp::setPlotColor (Plot *plot, Config::Parm parm)
 
 void QtstalkerApp::initGroupNav ()
 {
-  QWidget *w = new QWidget(baseWidget);
-
-  QVBoxLayout *vbox = new QVBoxLayout(w);
-  vbox->setMargin(5);
-  vbox->setSpacing(5);
-
-  groupNav = new Navigator(w, config->getData(Config::GroupPath));
-  connect(groupNav, SIGNAL(fileSelected(QString)), this, SLOT(slotGroupSelected(QString)));
-  connect(groupNav, SIGNAL(noSelection()), this, SLOT(slotGroupNoSelection()));
-  groupNav->updateList();
-  vbox->addWidget(groupNav);
-
-  groupNav->setButton(QPixmap(newchart), tr("New Group"), 0);
-  connect(groupNav->getButton(0), SIGNAL(clicked()), this, SLOT(slotNewGroup()));
-  groupNav->setButtonStatus(0, TRUE);
-
-  groupNav->setButton(QPixmap(insert), tr("Add Group Items"), 1);
-  connect(groupNav->getButton(1), SIGNAL(clicked()), this, SLOT(slotAddGroupItem()));
-  groupNav->setButtonStatus(1, FALSE);
-
-  groupNav->setButton(QPixmap(deletefile), tr("Delete Group Items"), 2);
-  connect(groupNav->getButton(2), SIGNAL(clicked()), this, SLOT(slotDeleteGroupItem()));
-  groupNav->setButtonStatus(2, FALSE);
-
-  groupNav->setButton(QPixmap(stop), tr("Delete Group"), 3);
-  connect(groupNav->getButton(3), SIGNAL(clicked()), this, SLOT(slotDeleteGroup()));
-  groupNav->setButtonStatus(3, FALSE);
-
-  groupNav->setButton(QPixmap(renam), tr("Rename Group"), 4);
-  connect(groupNav->getButton(4), SIGNAL(clicked()), this, SLOT(slotRenameGroup()));
-  groupNav->setButtonStatus(4, FALSE);
-
-  navTab->addTab(w, QIconSet(QPixmap("dirclosed")), "G");
-}
-
-void QtstalkerApp::slotNewGroup()
-{
-  bool ok;
-  QString selection = QInputDialog::getText(tr("New Group"),
-  							   tr("Enter new group symbol."),
-							   QLineEdit::Normal,
-							   tr("New Group"),
-							   &ok,
-							   this);
-  if ((! ok) || (selection.isNull()))
-    return;
-
-  QStringList l = config->getGroup(selection);
-  if (l.count() != 0)
-  {
-    QMessageBox::information(this, tr("Qtstalker: Error"), tr("This group already exists."));
-    return;
-  }
-
-  l.clear();
-  config->setGroup(selection, l);
-  groupNav->updateList();
-}
-
-void QtstalkerApp::slotAddGroupItem()
-{
-  SymbolDialog *dialog = new SymbolDialog(this,
-  							   config->getData(Config::DataPath),
-							   "*");
-
-  int rc = dialog->exec();
-
-  if (rc == QDialog::Accepted)
-  {
-    QFileInfo fi(groupNav->getCurrentPath());
-    config->setGroup(fi.fileName(), dialog->selectedFiles());
-    groupNav->updateList();
-  }
-
-  delete dialog;
-}
-
-void QtstalkerApp::slotDeleteGroupItem()
-{
-  QString s = groupNav->getFileSelection();
-  if (! s.length())
-    return;
-
-  QDir dir(s);
-  dir.remove(s, TRUE);
-
-  groupNav->updateList();
-
-  slotGroupNoSelection ();
-}
-
-void QtstalkerApp::slotDeleteGroup()
-{
-  int rc = QMessageBox::warning(this,
-  					    tr("Qtstalker: Warning"),
-					    tr("Are you sure you want to delete this group?"),
-					    QMessageBox::Yes,
-					    QMessageBox::No,
-					    QMessageBox::NoButton);
-
-  if (rc == QMessageBox::No)
-    return;
-
-  QFileInfo fi(groupNav->getCurrentPath());
-  config->deleteGroup(fi.fileName());
-  
-  QString s = config->getData(Config::GroupPath);
-  s.append("/x");
-  groupNav->upDirectory();
-  groupNav->updateList();
-  slotGroupNoSelection ();
-}
-
-void QtstalkerApp::slotRenameGroup ()
-{
-  QFileInfo fi(groupNav->getCurrentPath());
-  bool ok;
-  QString selection = QInputDialog::getText(tr("Rename Group"),
-  							   tr("Enter new group symbol."),
-							   QLineEdit::Normal,
-							   fi.fileName(),
-							   &ok,
-							   this);
-  if ((ok) && (! selection.isNull()))
-  {
-    QStringList l = config->getGroup(selection);
-    if (l.count() != 0)
-    {
-      QMessageBox::information(this, tr("Qtstalker: Error"), tr("This chart group exists."));
-      return;
-    }
-
-    QDir dir;
-    QString s = config->getData(Config::GroupPath);
-    s.append("/");
-    s.append(selection);
-    dir.rename(fi.absFilePath(), s, TRUE);
-
-    s.append("/x");
-    groupNav->setDirectory(s);
-  }
-}
-
-void QtstalkerApp::slotGroupSelected (QString d)
-{
-  groupNav->setButtonStatus(1, TRUE);
-  groupNav->setButtonStatus(2, TRUE);
-  groupNav->setButtonStatus(3, TRUE);
-  groupNav->setButtonStatus(4, TRUE);
-  qApp->processEvents();
-  slotOpenChart(d);
-}
-
-void QtstalkerApp::slotGroupNoSelection ()
-{
-  QString s = config->getData(Config::GroupPath);
-  if (s.compare(groupNav->getCurrentPath()))
-  {
-    groupNav->setButtonStatus(1, TRUE);
-    groupNav->setButtonStatus(2, FALSE);
-    groupNav->setButtonStatus(3, TRUE);
-    groupNav->setButtonStatus(4, TRUE);
-  }
-  else
-  {
-    groupNav->setButtonStatus(1, FALSE);
-    groupNav->setButtonStatus(2, FALSE);
-    groupNav->setButtonStatus(3, FALSE);
-    groupNav->setButtonStatus(4, FALSE);
-  }
+  GroupPage *gp = new GroupPage(baseWidget, config);
+  connect(gp, SIGNAL(fileSelected(QString)), this, SLOT(slotOpenChart(QString)));
+  navTab->addTab(gp, "G");
 }
 
 void QtstalkerApp::initChartNav ()
 {
-  QWidget *w = new QWidget(baseWidget);
-
-  QVBoxLayout *vbox = new QVBoxLayout(w);
-  vbox->setMargin(5);
-  vbox->setSpacing(5);
-
-  chartNav = new Navigator(w, config->getData(Config::DataPath));
-  connect(chartNav, SIGNAL(fileSelected(QString)), this, SLOT(slotChartSelected(QString)));
-  connect(chartNav, SIGNAL(noSelection()), this, SLOT(slotChartNoSelection()));
-  chartNav->updateList();
-  vbox->addWidget(chartNav);
-
-  chartNav->setButton(QPixmap(edit), tr("Edit Chart"), 0);
-  connect(chartNav->getButton(0), SIGNAL(clicked()), this, SLOT(slotEditChart()));
-  chartNav->setButtonStatus(0, FALSE);
-
-  chartNav->setButton(QPixmap(deletefile), tr("Delete Chart"), 1);
-  connect(chartNav->getButton(1), SIGNAL(clicked()), this, SLOT(slotDeleteChart()));
-  chartNav->setButtonStatus(1, FALSE);
-
-  chartNav->setButton(QPixmap(exportfile), tr("Export Chart"), 2);
-  connect(chartNav->getButton(2), SIGNAL(clicked()), this, SLOT(slotExportSymbol()));
-  chartNav->setButtonStatus(2, FALSE);
-
-  chartNav->setButton(QPixmap(exportfile), tr("Export All Charts"), 3);
-  connect(chartNav->getButton(3), SIGNAL(clicked()), this, SLOT(slotExportAll()));
-  chartNav->setButtonStatus(3, TRUE);
-
-  navTab->addTab(w, QIconSet(QPixmap("openchart")), "C");
+  ChartPage *cp = new ChartPage(baseWidget, config);
+  connect(cp, SIGNAL(fileSelected(QString)), this, SLOT(slotOpenChart(QString)));
+  navTab->addTab(cp, "C");
 }
 
-void QtstalkerApp::slotDeleteChart ()
+void QtstalkerApp::initPortfolioNav ()
 {
-  QString symbol = chartNav->getFileSelection();
-  if (! symbol.length())
-    return;
-
-  int rc = QMessageBox::warning(this,
-  					    tr("Qtstalker: Warning"),
-					    tr("Are you sure you want to delete this chart?"),
-					    QMessageBox::Yes,
-					    QMessageBox::No,
-					    QMessageBox::NoButton);
-
-  if (rc == QMessageBox::No)
-    return;
-
-  QDir dir(symbol);
-  dir.remove(symbol, TRUE);
-
-  chartNav->updateList();
-  
-  slotChartNoSelection();
+  PortfolioPage *pp = new PortfolioPage(baseWidget, config);
+  navTab->addTab(pp, "P");
 }
 
-void QtstalkerApp::slotEditChart ()
+void QtstalkerApp::initTestNav ()
 {
-  QString symbol = chartNav->getFileSelection();
-  if (! symbol.length())
-    return;
-
-  EditChartDialog *dialog = new EditChartDialog(config, symbol);
-
-  dialog->exec();
-
-  delete dialog;
-}
-
-void QtstalkerApp::slotExportSymbol ()
-{
-  QString symbol = chartNav->getFileSelection();
-  if (! symbol.length())
-    return;
-
-  QString s = config->getData(Config::Home);
-  s.append("/export");
-  QDir dir(s);
-  if (! dir.exists(s, TRUE))
-  {
-    if (! dir.mkdir(s, TRUE))
-    {
-      qDebug("Unable to create export directory.");
-      return;
-    }
-  }
-
-  exportChart(symbol);
-}
-
-void QtstalkerApp::slotExportAll ()
-{
-  QString s = config->getData(Config::Home);
-  s.append("/export");
-  QDir dir(s);
-  if (! dir.exists(s, TRUE))
-  {
-    if (! dir.mkdir(s, TRUE))
-    {
-      qDebug("Unable to create export directory.");
-      return;
-    }
-  }
-
-  dir.setPath(config->getData(Config::DataPath));
-
-  int loop;
-  for (loop = 2; loop < (int) dir.count(); loop++)
-  {
-    s = dir.path();
-    s.append("/");
-    s.append(dir[loop]);
-    traverse(s);
-  }
-}
-
-void QtstalkerApp::traverse(QString dirname)
-{
-  QDir dir(dirname);
-  dir.setFilter(QDir::Dirs|QDir::Files);
-
-  const QFileInfoList *fileinfolist = dir.entryInfoList();
-  QFileInfoListIterator it(*fileinfolist);
-  QFileInfo *fi;
-  while((fi = it.current()))
-  {
-    if(fi->fileName() == "." || fi->fileName() == "..")
-    {
-      ++it;
-      continue;
-    }
-
-    if(fi->isDir() && fi->isReadable())
-      traverse(fi->absFilePath());
-    else
-      exportChart(fi->absFilePath());
-
-    ++it;
-  }
-}
-
-void QtstalkerApp::exportChart (QString path)
-{
-  ChartDb *db = new ChartDb();
-  if(db->openChart(path))
-  {
-    delete db;
-    return;
-  }
-
-  Setting *details = db->getDetails();
-
-  QString s = config->getData(Config::Home);
-  s.append("/export/");
-  s.append(details->getData("Symbol"));
-
-  db->dump(s);
-
-  delete db;
-}
-
-void QtstalkerApp::slotChartSelected (QString d)
-{
-  chartNav->setButtonStatus(0, TRUE);
-  chartNav->setButtonStatus(1, TRUE);
-  chartNav->setButtonStatus(2, TRUE);
-  qApp->processEvents();
-  slotOpenChart(d);
-}
-
-void QtstalkerApp::slotChartNoSelection ()
-{
-  chartNav->setButtonStatus(0, FALSE);
-  chartNav->setButtonStatus(1, FALSE);
-  chartNav->setButtonStatus(2, FALSE);
+  TestPage *tp = new TestPage(baseWidget, config);
+  navTab->addTab(tp, "T");
 }
 
 /*

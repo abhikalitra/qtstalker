@@ -59,6 +59,8 @@ class QtstalkerApp : public QMainWindow
     void initToolBar ();
     void initGroupNav ();
     void initChartNav ();
+    void initPortfolioNav();
+    void initTestNav();
     QString getWindowCaption ();
     void setChartType (int);
     void loadChart (QString);
@@ -73,7 +75,6 @@ class QtstalkerApp : public QMainWindow
 
     void slotAbout ();
     void slotQuit();
-    void slotWorkwithPortfolio ();
     void slotOpenChart (QString);
     void slotQuotes ();
     void slotOptions ();
@@ -97,22 +98,8 @@ class QtstalkerApp : public QMainWindow
     void slotNewPlugin ();
     void slotChartUpdated ();
     void slotStatusMessage (QString);
-    void slotWorkwithTest ();
     void slotTabChanged (QWidget *);
     void slotChartObjectCreated (Setting *);
-    void slotChartSelected (QString);
-    void slotChartNoSelection ();
-    void slotNewGroup ();
-    void slotAddGroupItem ();
-    void slotDeleteGroupItem ();
-    void slotDeleteGroup ();
-    void slotRenameGroup ();
-    void slotGroupSelected (QString);
-    void slotGroupNoSelection ();
-    void slotEditChart ();
-    void slotDeleteChart ();
-    void slotExportSymbol ();
-    void slotExportAll ();
 
   private:
     QPopupMenu *fileMenu;
@@ -135,11 +122,9 @@ class QtstalkerApp : public QMainWindow
     QAction *actionGrid;
     QAction *actionDatawindow;
     QAction *actionNewIndicator;
-    QAction *actionPortfolio;
     QAction *actionQuotes;
     QAction *actionScaleToScreen;
     QAction *actionNewPlugin;
-    QAction *actionWorkwithTest;
 
     QToolBar *toolbar;
     QMenuBar *menubar;

@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  *
- *  Copyright (C) 2001,2002 Stefan S. Stratigakos
+ *  Copyright (c) 2001,2002 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,37 +19,34 @@
  *  USA.
  */
 
-#ifndef NAVIGATOR_HPP
-#define NAVIGATOR_HPP
+#ifndef PORTFOLIOPAGE_HPP
+#define PORTFOLIOPAGE_HPP
 
 #include <qstring.h>
-#include <qlistbox.h>
-#include <qdir.h>
+#include <qwidget.h>
+#include "Navigator.h"
+#include "BaseDialog.h"
+#include "Config.h"
 
-class Navigator : public QListBox
+class PortfolioPage : public BaseDialog
 {
   Q_OBJECT
 
-  signals:
-    void fileSelected (QString);
-    void noSelection ();
-    void directoryStatus (bool);
-
   public:
-    Navigator (QWidget *, QString);
-    ~Navigator ();
-    void updateList ();
-    QString getFileSelection ();
-    void setDirectory (QString);
-    QString getCurrentPath ();
+    PortfolioPage (QWidget *, Config *);
+    ~PortfolioPage ();
 
   public slots:
-    void upDirectory ();
-    void fileSelection ();
+    void openPortfolio ();
+    void renamePortfolio ();
+    void newPortfolio ();
+    void deletePortfolio ();
+    void portfolioSelected (QString);
+    void portfolioNoSelection ();
 
-  protected:
-    QString basePath;
-    QDir currentDir;
+  private:
+    Config *config;
+    Navigator *nav;
 };
 
 #endif

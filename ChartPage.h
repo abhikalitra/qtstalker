@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  *
- *  Copyright (c) 2001,2002 Stefan S. Stratigakos
+ *  Copyright (C) 2001,2002 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,41 +19,40 @@
  *  USA.
  */
 
-#ifndef WORKWITHTESTDIALOG_HPP
-#define WORKWITHTESTDIALOG_HPP
+#ifndef CHARTPAGE_HPP
+#define CHARTPAGE_HPP
 
-#include <qtoolbutton.h>
-#include <qlistview.h>
-#include <qdialog.h>
-#include <qlayout.h>
+#include <qstring.h>
+#include <qwidget.h>
+#include "Navigator.h"
+#include "BaseDialog.h"
 #include "Config.h"
 
-class WorkwithTestDialog : public QDialog
+class ChartPage : public BaseDialog
 {
   Q_OBJECT
 
+  signals:
+    void fileSelected (QString);
+
   public:
-    WorkwithTestDialog (Config *);
-    ~WorkwithTestDialog ();
-    void updateList ();
+    ChartPage (QWidget *, Config *);
+    ~ChartPage ();
+    void traverse(QString);
+    void exportChart (QString);
 
   public slots:
-    void openTest ();
-    void renameTest ();
-    void newTest ();
-    void deleteTest ();
-    void testSelected (QListViewItem *);
+    void deleteChart ();
+    void editChart ();
+    void exportSymbol ();
+    void exportAll ();
+    void chartSelected (QString);
+    void chartNoSelection ();
+    void directoryStatus (bool);
 
-  private:
-    QListView *list;
-    QListViewItem *item;
+  protected:
+    Navigator *nav;
     Config *config;
-    QToolButton *cancelButton;
-    QToolButton *openButton;
-    QToolButton *deleteButton;
-    QToolButton *newButton;
-    QToolButton *renameButton;
-    QGridLayout *toolbar;
 };
 
 #endif

@@ -19,43 +19,34 @@
  *  USA.
  */
 
-#ifndef WORKWITHPORTFOLIOSDIALOG_HPP
-#define WORKWITHPORTFOLIOSDIALOG_HPP
+#ifndef TESTPAGE_HPP
+#define TESTPAGE_HPP
 
-#include <qtoolbutton.h>
-#include <qlistview.h>
-#include <qdialog.h>
-#include <qlayout.h>
+#include <qstring.h>
+#include <qwidget.h>
+#include "Navigator.h"
+#include "BaseDialog.h"
 #include "Config.h"
 
-class WorkwithPortfoliosDialog : public QDialog
+class TestPage : public BaseDialog
 {
   Q_OBJECT
 
   public:
-    WorkwithPortfoliosDialog (Config *);
-    ~WorkwithPortfoliosDialog ();
-    void updateList ();
+    TestPage (QWidget *, Config *);
+    ~TestPage ();
 
   public slots:
-    void openPortfolio ();
-    void renamePortfolio ();
-    void newPortfolio ();
-    void deletePortfolio ();
-    void editPortfolio ();
-    void portfolioSelected (QListViewItem *);
+    void openTest ();
+    void renameTest ();
+    void newTest ();
+    void deleteTest ();
+    void testSelected (QString);
+    void testNoSelection ();
 
   private:
-    QListView *list;
-    QListViewItem *item;
     Config *config;
-    QToolButton *cancelButton;
-    QToolButton *openButton;
-    QToolButton *editButton;
-    QToolButton *deleteButton;
-    QToolButton *newButton;
-    QToolButton *renameButton;
-    QGridLayout *toolbar;
+    Navigator *nav;
 };
 
 #endif
