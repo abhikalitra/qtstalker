@@ -84,10 +84,13 @@ void QtstalkerFormat::parse ()
         continue;
 
       QStringList l = QStringList::split("=", s, FALSE);
-      if (l.count() != 2)
+      if (l.count() < 2)
         continue;
 
-      db->setData(l[0], l[1]);
+      QString key = l[0];
+      s = s.remove(0, key.length() + 1);
+      
+      db->setData(key, s);
     }
 
     f.close();

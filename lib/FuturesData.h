@@ -25,14 +25,15 @@
 
 #include <qstring.h>
 #include <qstringlist.h>
-
-#define SYMBOLS "AD,BO,C,CC,CD,CL,CR,CT,DJ,DX,EC,ED,ES,FC,GC,GI,HG,HO,HU,JO,JY,KC,LB,LC,LN,NB,ND,NG,NQ,O,PA,PB,PL,S,SB,SF,SI,SM,SP,TY,US,W"
+#include <qdict.h>
+#include "Setting.h"
 
 class FuturesData
 {
   public:
     FuturesData ();
     ~FuturesData ();
+    void loadData ();
     QString getName ();
     QString getSymbol ();
     QString getExchange ();
@@ -53,6 +54,7 @@ class FuturesData
     float limit;
     QStringList monthList;
     float rate;
+    QDict<Setting> data;
 };
 
 #endif
