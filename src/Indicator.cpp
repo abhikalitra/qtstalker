@@ -47,13 +47,14 @@ void Indicator::addLine (PlotLine *l)
   lines.append(l);
 }
 
+void Indicator::setMainPlot (bool d)
+{
+  plot = d;
+}
+
 bool Indicator::getMainPlot ()
 {
-  QString s = getData(QObject::tr("Plot"));
-  if (! s.compare(QObject::tr("True")))
-    return TRUE;
-  else
-    return FALSE;
+  return plot;
 }
 
 QMemArray<int> Indicator::getAlerts ()
@@ -86,4 +87,33 @@ bool Indicator::getEnable ()
   return enable;
 }
 
+void Indicator::setName (QString d)
+{
+  name = d;
+}
+
+QString Indicator::getName ()
+{
+  return name;
+}
+
+void Indicator::setType (QString d)
+{
+  type = d;
+}
+
+QString Indicator::getType ()
+{
+  return type;
+}
+
+void Indicator::setFile (QString d)
+{
+  file = d;
+}
+
+QString Indicator::getFile ()
+{
+  return file;
+}
 

@@ -20,133 +20,148 @@
  */
 
 #include "MMA.h"
+#include "PrefDialog.h"
+#include <qdict.h>
 
 MMA::MMA ()
 {
   pluginName = "MMA";
-
-  set(tr("Type"), pluginName, Setting::None);
-  set(tr("Fast Color"), "red", Setting::Color);
-  set(tr("Fast Line Type"), tr("Line"), Setting::LineType);
-  set(tr("Fast Label 1"), tr("MMAF1"), Setting::Text);
-  set(tr("Fast Label 2"), tr("MMAF2"), Setting::Text);
-  set(tr("Fast Label 3"), tr("MMAF3"), Setting::Text);
-  set(tr("Fast Label 4"), tr("MMAF4"), Setting::Text);
-  set(tr("Fast Label 5"), tr("MMAF5"), Setting::Text);
-  set(tr("Fast Label 6"), tr("MMAF6"), Setting::Text);
-  set(tr("Fast Period 1"), "3", Setting::Integer);
-  set(tr("Fast Period 2"), "6", Setting::Integer);
-  set(tr("Fast Period 3"), "8", Setting::Integer);
-  set(tr("Fast Period 4"), "10", Setting::Integer);
-  set(tr("Fast Period 5"), "12", Setting::Integer);
-  set(tr("Fast Period 6"), "15", Setting::Integer);
-  set(tr("Fast Displace 1"), "0", Setting::Integer);
-  set(tr("Fast Displace 2"), "0", Setting::Integer);
-  set(tr("Fast Displace 3"), "0", Setting::Integer);
-  set(tr("Fast Displace 4"), "0", Setting::Integer);
-  set(tr("Fast Displace 5"), "0", Setting::Integer);
-  set(tr("Fast Displace 6"), "0", Setting::Integer);
-  set(tr("Fast Type"), "EMA", Setting::MAType);
-  set(tr("Fast Input"), tr("Close"), Setting::InputField);
-  set(tr("Slow Color"), "yellow", Setting::Color);
-  set(tr("Slow Line Type"), tr("Line"), Setting::LineType);
-  set(tr("Slow Label 1"), tr("MMAS1"), Setting::Text);
-  set(tr("Slow Label 2"), tr("MMAS2"), Setting::Text);
-  set(tr("Slow Label 3"), tr("MMAS3"), Setting::Text);
-  set(tr("Slow Label 4"), tr("MMAS4"), Setting::Text);
-  set(tr("Slow Label 5"), tr("MMAS5"), Setting::Text);
-  set(tr("Slow Label 6"), tr("MMAS6"), Setting::Text);
-  set(tr("Slow Period 1"), "30", Setting::Integer);
-  set(tr("Slow Period 2"), "35", Setting::Integer);
-  set(tr("Slow Period 3"), "40", Setting::Integer);
-  set(tr("Slow Period 4"), "45", Setting::Integer);
-  set(tr("Slow Period 5"), "50", Setting::Integer);
-  set(tr("Slow Period 6"), "60", Setting::Integer);
-  set(tr("Slow Displace 1"), "0", Setting::Integer);
-  set(tr("Slow Displace 2"), "0", Setting::Integer);
-  set(tr("Slow Displace 3"), "0", Setting::Integer);
-  set(tr("Slow Displace 4"), "0", Setting::Integer);
-  set(tr("Slow Displace 5"), "0", Setting::Integer);
-  set(tr("Slow Displace 6"), "0", Setting::Integer);
-  set(tr("Slow Type"), "EMA", Setting::MAType);
-  set(tr("Slow Input"), tr("Close"), Setting::InputField);
-  set(tr("Long-term Color"), "blue", Setting::Color);
-  set(tr("Long-term Line Type"), tr("Line"), Setting::LineType);
-  set(tr("Long-term Label"), tr("MMAL"), Setting::Text);
-  set(tr("Long-term Period"), "150", Setting::Integer);
-  set(tr("Long-term Displace"), "0", Setting::Integer);
-  set(tr("Long-term Type"), "SMA", Setting::MAType);
-  set(tr("Long-term Input"), tr("Close"), Setting::InputField);
-  set(tr("Plot"), tr("False"), Setting::None);
-  set(tr("Alert"), tr("False"), Setting::None);
-
-  about = "Multiple Moving Averages\n";
+  plotFlag = FALSE;
+  alertFlag = FALSE;
+  setDefaults();
 }
 
 MMA::~MMA ()
 {
 }
 
+void MMA::setDefaults ()
+{
+  fastColor.setNamedColor("red");
+  fastLineType = PlotLine::Line;
+  fastLabel = "MMAF1";
+  fastLabel2 = "MMAF2";
+  fastLabel3 = "MMAF3";
+  fastLabel4 = "MMAF4";
+  fastLabel5 = "MMAF5";
+  fastLabel6 = "MMAF6";
+  fastPeriod = 3;
+  fastPeriod2 = 6;
+  fastPeriod3 = 8;
+  fastPeriod4 = 10;
+  fastPeriod5 = 12;
+  fastPeriod6 = 15;
+  fastDisplace = 0;  
+  fastDisplace2 = 0;  
+  fastDisplace3 = 0;  
+  fastDisplace4 = 0;  
+  fastDisplace5 = 0;  
+  fastDisplace6 = 0;  
+  fastMaType = IndicatorPlugin::EMA;  
+  fastInput = IndicatorPlugin::Close;
+
+  slowColor.setNamedColor("yellow");
+  slowLineType = PlotLine::Line;
+  slowLabel = "MMAS1";
+  slowLabel2 = "MMAS2";
+  slowLabel3 = "MMAS3";
+  slowLabel4 = "MMAS4";
+  slowLabel5 = "MMAS5";
+  slowLabel6 = "MMAS6";
+  slowPeriod = 30;
+  slowPeriod2 = 35;
+  slowPeriod3 = 40;
+  slowPeriod4 = 45;
+  slowPeriod5 = 50;
+  slowPeriod6 = 60;
+  slowDisplace = 0;  
+  slowDisplace2 = 0;  
+  slowDisplace3 = 0;  
+  slowDisplace4 = 0;  
+  slowDisplace5 = 0;  
+  slowDisplace6 = 0;  
+  slowMaType = IndicatorPlugin::EMA;  
+  slowInput = IndicatorPlugin::Close;
+  
+  longColor.setNamedColor("blue");
+  longLineType = PlotLine::Line;
+  longLabel = "MMAL";
+  longPeriod = 150;
+  longDisplace = 0;  
+  longMaType = IndicatorPlugin::SMA;  
+  longInput = IndicatorPlugin::Close;
+}
+
 void MMA::calculate ()
 {
-  PlotLine *fin = getInput(getData(tr("Fast Input")));
-  PlotLine *sin = getInput(getData(tr("Slow Input")));
-  PlotLine *lin = getInput(getData(tr("Long-term Input")));
+  PlotLine *fin = getInput(fastInput);
+  PlotLine *sin = getInput(slowInput);
+  PlotLine *lin = getInput(longInput);
 
-  PlotLine *fma1 = getMA(fin, getData(tr("Fast Type")), getInt(tr("Fast Period 1")), getInt(tr("Fast Displace 1")));
-  fma1->setColor(getData(tr("Fast Color")));
-  fma1->setType(getData(tr("Fast Line Type")));
-  fma1->setLabel(getData(tr("Fast Label 1")));
-  PlotLine *fma2 = getMA(fin, getData(tr("Fast Type")), getInt(tr("Fast Period 2")), getInt(tr("Fast Displace 2")));
-  fma2->setColor(getData(tr("Fast Color")));
-  fma2->setType(getData(tr("Fast Line Type")));
-  fma2->setLabel(getData(tr("Fast Label 2")));
-  PlotLine *fma3 = getMA(fin, getData(tr("Fast Type")), getInt(tr("Fast Period 3")), getInt(tr("Fast Displace 3")));
-  fma3->setColor(getData(tr("Fast Color")));
-  fma3->setType(getData(tr("Fast Line Type")));
-  fma3->setLabel(getData(tr("Fast Label 3")));
-  PlotLine *fma4 = getMA(fin, getData(tr("Fast Type")), getInt(tr("Fast Period 4")), getInt(tr("Fast Displace 4")));
-  fma4->setColor(getData(tr("Fast Color")));
-  fma4->setType(getData(tr("Fast Line Type")));
-  fma4->setLabel(getData(tr("Fast Label 4")));
-  PlotLine *fma5 = getMA(fin, getData(tr("Fast Type")), getInt(tr("Fast Period 5")), getInt(tr("Fast Displace 5")));
-  fma5->setColor(getData(tr("Fast Color")));
-  fma5->setType(getData(tr("Fast Line Type")));
-  fma5->setLabel(getData(tr("Fast Label 5")));
-  PlotLine *fma6 = getMA(fin, getData(tr("Fast Type")), getInt(tr("Fast Period 6")), getInt(tr("Fast Displace 6")));
-  fma6->setColor(getData(tr("Fast Color")));
-  fma6->setType(getData(tr("Fast Line Type")));
-  fma6->setLabel(getData(tr("Fast Label 6")));
+  PlotLine *fma1 = getMA(fin, fastMaType, fastPeriod, fastDisplace);
+  fma1->setColor(fastColor);
+  fma1->setType(fastLineType);
+  fma1->setLabel(fastLabel);
+  
+  PlotLine *fma2 = getMA(fin, fastMaType, fastPeriod2, fastDisplace2);
+  fma2->setColor(fastColor);
+  fma2->setType(fastLineType);
+  fma2->setLabel(fastLabel2);
+  
+  PlotLine *fma3 = getMA(fin, fastMaType, fastPeriod3, fastDisplace3);
+  fma3->setColor(fastColor);
+  fma3->setType(fastLineType);
+  fma3->setLabel(fastLabel3);
+  
+  PlotLine *fma4 = getMA(fin, fastMaType, fastPeriod4, fastDisplace4);
+  fma4->setColor(fastColor);
+  fma4->setType(fastLineType);
+  fma4->setLabel(fastLabel4);
+  
+  PlotLine *fma5 = getMA(fin, fastMaType, fastPeriod5, fastDisplace5);
+  fma5->setColor(fastColor);
+  fma5->setType(fastLineType);
+  fma5->setLabel(fastLabel5);
+  
+  PlotLine *fma6 = getMA(fin, fastMaType, fastPeriod6, fastDisplace6);
+  fma6->setColor(fastColor);
+  fma6->setType(fastLineType);
+  fma6->setLabel(fastLabel6);
 
-  PlotLine *sma1 = getMA(sin, getData(tr("Slow Type")), getInt(tr("Slow Period 1")), getInt(tr("Slow Displace 1")));
-  sma1->setColor(getData(tr("Slow Color")));
-  sma1->setType(getData(tr("Slow Line Type")));
-  sma1->setLabel(getData(tr("Slow Label 1")));
-  PlotLine *sma2 = getMA(sin, getData(tr("Slow Type")), getInt(tr("Slow Period 2")), getInt(tr("Slow Displace 2")));
-  sma2->setColor(getData(tr("Slow Color")));
-  sma2->setType(getData(tr("Slow Line Type")));
-  sma2->setLabel(getData(tr("Slow Label 2")));
-  PlotLine *sma3 = getMA(sin, getData(tr("Slow Type")), getInt(tr("Slow Period 3")), getInt(tr("Slow Displace 3")));
-  sma3->setColor(getData(tr("Slow Color")));
-  sma3->setType(getData(tr("Slow Line Type")));
-  sma3->setLabel(getData(tr("Slow Label 3")));
-  PlotLine *sma4 = getMA(sin, getData(tr("Slow Type")), getInt(tr("Slow Period 4")), getInt(tr("Slow Displace 4")));
-  sma4->setColor(getData(tr("Slow Color")));
-  sma4->setType(getData(tr("Slow Line Type")));
-  sma4->setLabel(getData(tr("Slow Label 4")));
-  PlotLine *sma5 = getMA(sin, getData(tr("Slow Type")), getInt(tr("Slow Period 5")), getInt(tr("Slow Displace 5")));
-  sma5->setColor(getData(tr("Slow Color")));
-  sma5->setType(getData(tr("Slow Line Type")));
-  sma5->setLabel(getData(tr("Slow Label 5")));
-  PlotLine *sma6 = getMA(sin, getData(tr("Slow Type")), getInt(tr("Slow Period 6")), getInt(tr("Slow Displace 6")));
-  sma6->setColor(getData(tr("Slow Color")));
-  sma6->setType(getData(tr("Slow Line Type")));
-  sma6->setLabel(getData(tr("Slow Label 6")));
+  PlotLine *sma1 = getMA(sin, slowMaType, slowPeriod, slowDisplace);
+  sma1->setColor(slowColor);
+  sma1->setType(slowLineType);
+  sma1->setLabel(slowLabel);
+  
+  PlotLine *sma2 = getMA(sin, slowMaType, slowPeriod2, slowDisplace2);
+  sma2->setColor(slowColor);
+  sma2->setType(slowLineType);
+  sma2->setLabel(slowLabel2);
+  
+  PlotLine *sma3 = getMA(sin, slowMaType, slowPeriod3, slowDisplace3);
+  sma3->setColor(slowColor);
+  sma3->setType(slowLineType);
+  sma3->setLabel(slowLabel3);
+  
+  PlotLine *sma4 = getMA(sin, slowMaType, slowPeriod4, slowDisplace4);
+  sma4->setColor(slowColor);
+  sma4->setType(slowLineType);
+  sma4->setLabel(slowLabel4);
+  
+  PlotLine *sma5 = getMA(sin, slowMaType, slowPeriod5, slowDisplace5);
+  sma5->setColor(slowColor);
+  sma5->setType(slowLineType);
+  sma5->setLabel(slowLabel5);
+  
+  PlotLine *sma6 = getMA(sin, slowMaType, slowPeriod6, slowDisplace6);
+  sma6->setColor(slowColor);
+  sma6->setType(slowLineType);
+  sma6->setLabel(slowLabel6);
 
-  PlotLine *lma = getMA(lin, getData(tr("Long-term Type")), getInt(tr("Long-term Period")), getInt(tr("Long-term Displace")));
-  lma->setColor(getData(tr("Long-term Color")));
-  lma->setType(getData(tr("Long-term Line Type")));
-  lma->setLabel(getData(tr("Long-term Label")));
+  PlotLine *lma = getMA(lin, longMaType, longPeriod, longDisplace);
+  lma->setColor(longColor);
+  lma->setType(longLineType);
+  lma->setLabel(longLabel);
 
   delete fin;
   delete sin;
@@ -216,6 +231,415 @@ void MMA::calculate ()
     output.append(lma);
   else
     delete lma;
+}
+
+int MMA::indicatorPrefDialog ()
+{
+  PrefDialog *dialog = new PrefDialog();
+  dialog->setCaption(tr("MMA Indicator"));
+  dialog->createPage (tr("Fast MA"));
+  dialog->addColorItem(tr("Fast Color"), 1, fastColor);
+  dialog->addComboItem(tr("Fast Line Type"), 1, lineTypes, fastLineType);
+  dialog->addTextItem(tr("Fast Label 1"), 1, fastLabel);
+  dialog->addTextItem(tr("Fast Label 2"), 1, fastLabel2);
+  dialog->addTextItem(tr("Fast Label 3"), 1, fastLabel3);
+  dialog->addTextItem(tr("Fast Label 4"), 1, fastLabel4);
+  dialog->addTextItem(tr("Fast Label 5"), 1, fastLabel5);
+  dialog->addTextItem(tr("Fast Label 6"), 1, fastLabel6);
+  dialog->addIntItem(tr("Fast Period 1"), 1, fastPeriod, 1, 99999999);
+  dialog->addIntItem(tr("Fast Period 2"), 1, fastPeriod2, 1, 99999999);
+  dialog->addIntItem(tr("Fast Period 3"), 1, fastPeriod3, 1, 99999999);
+  dialog->addIntItem(tr("Fast Period 4"), 1, fastPeriod4, 1, 99999999);
+  dialog->addIntItem(tr("Fast Period 5"), 1, fastPeriod5, 1, 99999999);
+  dialog->addIntItem(tr("Fast Period 6"), 1, fastPeriod6, 1, 99999999);
+  dialog->addIntItem(tr("Fast Displace 1"), 1, fastDisplace, 0, 99999999);
+  dialog->addIntItem(tr("Fast Displace 2"), 1, fastDisplace2, 0, 99999999);
+  dialog->addIntItem(tr("Fast Displace 3"), 1, fastDisplace3, 0, 99999999);
+  dialog->addIntItem(tr("Fast Displace 4"), 1, fastDisplace4, 0, 99999999);
+  dialog->addIntItem(tr("Fast Displace 5"), 1, fastDisplace5, 0, 99999999);
+  dialog->addIntItem(tr("Fast Displace 6"), 1, fastDisplace6, 0, 99999999);
+  dialog->addComboItem(tr("Fast MA Type"), 1, getMATypes(), fastMaType);
+  dialog->addComboItem(tr("Fast Input"), 1, getInputFields(), fastInput);
+  
+  dialog->createPage (tr("Slow MA"));
+  dialog->addColorItem(tr("Slow Color"), 2, slowColor);
+  dialog->addComboItem(tr("Slow Line Type"), 2, lineTypes, slowLineType);
+  dialog->addTextItem(tr("Slow Label 1"), 2, slowLabel);
+  dialog->addTextItem(tr("Slow Label 2"), 2, slowLabel2);
+  dialog->addTextItem(tr("Slow Label 3"), 2, slowLabel3);
+  dialog->addTextItem(tr("Slow Label 4"), 2, slowLabel4);
+  dialog->addTextItem(tr("Slow Label 5"), 2, slowLabel5);
+  dialog->addTextItem(tr("Slow Label 6"), 2, slowLabel6);
+  dialog->addIntItem(tr("Slow Period 1"), 2, slowPeriod, 1, 99999999);
+  dialog->addIntItem(tr("Slow Period 2"), 2, slowPeriod2, 1, 99999999);
+  dialog->addIntItem(tr("Slow Period 3"), 2, slowPeriod3, 1, 99999999);
+  dialog->addIntItem(tr("Slow Period 4"), 2, slowPeriod4, 1, 99999999);
+  dialog->addIntItem(tr("Slow Period 5"), 2, slowPeriod5, 1, 99999999);
+  dialog->addIntItem(tr("Slow Period 6"), 2, slowPeriod6, 1, 99999999);
+  dialog->addIntItem(tr("Slow Displace 1"), 2, slowDisplace, 0, 99999999);
+  dialog->addIntItem(tr("Slow Displace 2"), 2, slowDisplace2, 0, 99999999);
+  dialog->addIntItem(tr("Slow Displace 3"), 2, slowDisplace3, 0, 99999999);
+  dialog->addIntItem(tr("Slow Displace 4"), 2, slowDisplace4, 0, 99999999);
+  dialog->addIntItem(tr("Slow Displace 5"), 2, slowDisplace5, 0, 99999999);
+  dialog->addIntItem(tr("Slow Displace 6"), 2, slowDisplace6, 0, 99999999);
+  dialog->addComboItem(tr("Slow MA Type"), 2, getMATypes(), slowMaType);
+  dialog->addComboItem(tr("Slow Input"), 2, getInputFields(), slowInput);
+  
+  dialog->createPage (tr("Long MA"));
+  dialog->addColorItem(tr("Long Color"), 3, longColor);
+  dialog->addComboItem(tr("Long Line Type"), 3, lineTypes, longLineType);
+  dialog->addTextItem(tr("Long Label"), 3, longLabel);
+  dialog->addIntItem(tr("Long Period"), 3, longPeriod, 1, 99999999);
+  dialog->addIntItem(tr("Long Displace"), 3, longDisplace, 0, 99999999);
+  dialog->addComboItem(tr("Long MA Type"), 3, getMATypes(), longMaType);
+  dialog->addComboItem(tr("Long Input"), 3, getInputFields(), longInput);
+  
+  int rc = dialog->exec();
+  
+  if (rc == QDialog::Accepted)
+  {
+    fastColor = dialog->getColor(tr("Fast Color"));
+    fastLineType = (PlotLine::LineType) dialog->getComboIndex(tr("Fast Line Type"));
+    fastPeriod = dialog->getInt(tr("Fast Period 1"));
+    fastPeriod2 = dialog->getInt(tr("Fast Period 2"));
+    fastPeriod3 = dialog->getInt(tr("Fast Period 3"));
+    fastPeriod4 = dialog->getInt(tr("Fast Period 4"));
+    fastPeriod5 = dialog->getInt(tr("Fast Period 5"));
+    fastPeriod6 = dialog->getInt(tr("Fast Period 6"));
+    fastLabel = dialog->getText(tr("Fast Label 1"));
+    fastLabel2 = dialog->getText(tr("Fast Label 2"));
+    fastLabel3 = dialog->getText(tr("Fast Label 3"));
+    fastLabel4 = dialog->getText(tr("Fast Label 4"));
+    fastLabel5 = dialog->getText(tr("Fast Label 5"));
+    fastLabel6 = dialog->getText(tr("Fast Label 6"));
+    fastDisplace = dialog->getInt(tr("Fast Displace 1"));
+    fastDisplace2 = dialog->getInt(tr("Fast Displace 2"));
+    fastDisplace3 = dialog->getInt(tr("Fast Displace 3"));
+    fastDisplace4 = dialog->getInt(tr("Fast Displace 4"));
+    fastDisplace5 = dialog->getInt(tr("Fast Displace 5"));
+    fastDisplace6 = dialog->getInt(tr("Fast Displace 6"));
+    fastMaType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("Fast MA Type"));
+    fastInput = (IndicatorPlugin::InputType) dialog->getComboIndex(tr("Fast Input"));
+    
+    slowColor = dialog->getColor(tr("Slow Color"));
+    slowLineType = (PlotLine::LineType) dialog->getComboIndex(tr("Slow Line Type"));
+    slowPeriod = dialog->getInt(tr("Slow Period 1"));
+    slowPeriod2 = dialog->getInt(tr("Slow Period 2"));
+    slowPeriod3 = dialog->getInt(tr("Slow Period 3"));
+    slowPeriod4 = dialog->getInt(tr("Slow Period 4"));
+    slowPeriod5 = dialog->getInt(tr("Slow Period 5"));
+    slowPeriod6 = dialog->getInt(tr("Slow Period 6"));
+    slowLabel = dialog->getText(tr("Slow Label 1"));
+    slowLabel2 = dialog->getText(tr("Slow Label 2"));
+    slowLabel3 = dialog->getText(tr("Slow Label 3"));
+    slowLabel4 = dialog->getText(tr("Slow Label 4"));
+    slowLabel5 = dialog->getText(tr("Slow Label 5"));
+    slowLabel6 = dialog->getText(tr("Slow Label 6"));
+    slowDisplace = dialog->getInt(tr("Slow Displace 1"));
+    slowDisplace2 = dialog->getInt(tr("Slow Displace 2"));
+    slowDisplace3 = dialog->getInt(tr("Slow Displace 3"));
+    slowDisplace4 = dialog->getInt(tr("Slow Displace 4"));
+    slowDisplace5 = dialog->getInt(tr("Slow Displace 5"));
+    slowDisplace6 = dialog->getInt(tr("Slow Displace 6"));
+    slowMaType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("Slow MA Type"));
+    slowInput = (IndicatorPlugin::InputType) dialog->getComboIndex(tr("Slow Input"));
+
+    longColor = dialog->getColor(tr("Long Color"));
+    longLineType = (PlotLine::LineType) dialog->getComboIndex(tr("Long Line Type"));
+    longPeriod = dialog->getInt(tr("Long Period"));
+    longLabel = dialog->getText(tr("Long Label"));
+    longDisplace = dialog->getInt(tr("Long Displace"));
+    longMaType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("Long MA Type"));
+    longInput = (IndicatorPlugin::InputType) dialog->getComboIndex(tr("Long Input"));
+        
+    rc = TRUE;
+  }
+  else
+    rc = FALSE;
+  
+  delete dialog;
+  return rc;
+}
+
+void MMA::loadIndicatorSettings (QString file)
+{
+  setDefaults();
+  
+  QDict<QString> dict = loadFile(file);
+  if (! dict.count())
+    return;
+  
+  // fast
+  
+  QString *s = dict["fastColor"];
+  if (s)
+    fastColor.setNamedColor(s->left(s->length()));
+    
+  s = dict["fastLineType"];
+  if (s)
+    fastLineType = (PlotLine::LineType) s->left(s->length()).toInt();
+
+  s = dict["fastPeriod"];
+  if (s)
+    fastPeriod = s->left(s->length()).toInt();
+
+  s = dict["fastPeriod2"];
+  if (s)
+    fastPeriod2 = s->left(s->length()).toInt();
+  
+  s = dict["fastPeriod3"];
+  if (s)
+    fastPeriod3 = s->left(s->length()).toInt();
+
+  s = dict["fastPeriod4"];
+  if (s)
+    fastPeriod4 = s->left(s->length()).toInt();
+
+  s = dict["fastPeriod5"];
+  if (s)
+    fastPeriod5 = s->left(s->length()).toInt();
+
+  s = dict["fastPeriod6"];
+  if (s)
+    fastPeriod6 = s->left(s->length()).toInt();
+
+  s = dict["fastLabel"];
+  if (s)
+    fastLabel = s->left(s->length());
+      
+  s = dict["fastLabel2"];
+  if (s)
+    fastLabel2 = s->left(s->length());
+  
+  s = dict["fastLabel3"];
+  if (s)
+    fastLabel3 = s->left(s->length());
+  
+  s = dict["fastLabel4"];
+  if (s)
+    fastLabel4 = s->left(s->length());
+  
+  s = dict["fastLabel5"];
+  if (s)
+    fastLabel5 = s->left(s->length());
+  
+  s = dict["fastLabel6"];
+  if (s)
+    fastLabel6 = s->left(s->length());
+  
+  s = dict["fastDisplace"];
+  if (s)
+    fastDisplace = s->left(s->length()).toInt();
+  
+  s = dict["fastDisplace2"];
+  if (s)
+    fastDisplace2 = s->left(s->length()).toInt();
+  
+  s = dict["fastDisplace3"];
+  if (s)
+    fastDisplace3 = s->left(s->length()).toInt();
+  
+  s = dict["fastDisplace4"];
+  if (s)
+    fastDisplace4 = s->left(s->length()).toInt();
+  
+  s = dict["fastDisplace5"];
+  if (s)
+    fastDisplace5 = s->left(s->length()).toInt();
+  
+  s = dict["fastDisplace6"];
+  if (s)
+    fastDisplace6 = s->left(s->length()).toInt();
+  
+  s = dict["fastMaType"];
+  if (s)
+    fastMaType = (IndicatorPlugin::MAType) s->left(s->length()).toInt();
+    
+  s = dict["fastInput"];
+  if (s)
+    fastInput = (IndicatorPlugin::InputType) s->left(s->length()).toInt();
+
+  // slow
+  
+  s = dict["slowColor"];
+  if (s)
+    slowColor.setNamedColor(s->left(s->length()));
+    
+  s = dict["slowLineType"];
+  if (s)
+    slowLineType = (PlotLine::LineType) s->left(s->length()).toInt();
+
+  s = dict["slowPeriod"];
+  if (s)
+    slowPeriod = s->left(s->length()).toInt();
+
+  s = dict["slowPeriod2"];
+  if (s)
+    slowPeriod2 = s->left(s->length()).toInt();
+  
+  s = dict["slowPeriod3"];
+  if (s)
+    slowPeriod3 = s->left(s->length()).toInt();
+
+  s = dict["slowPeriod4"];
+  if (s)
+    slowPeriod4 = s->left(s->length()).toInt();
+
+  s = dict["slowPeriod5"];
+  if (s)
+    slowPeriod5 = s->left(s->length()).toInt();
+
+  s = dict["slowPeriod6"];
+  if (s)
+    slowPeriod6 = s->left(s->length()).toInt();
+
+  s = dict["slowLabel"];
+  if (s)
+    slowLabel = s->left(s->length());
+      
+  s = dict["slowLabel2"];
+  if (s)
+    slowLabel2 = s->left(s->length());
+  
+  s = dict["slowLabel3"];
+  if (s)
+    slowLabel3 = s->left(s->length());
+  
+  s = dict["slowLabel4"];
+  if (s)
+    slowLabel4 = s->left(s->length());
+  
+  s = dict["slowLabel5"];
+  if (s)
+    slowLabel5 = s->left(s->length());
+  
+  s = dict["slowLabel6"];
+  if (s)
+    slowLabel6 = s->left(s->length());
+  
+  s = dict["slowDisplace"];
+  if (s)
+    slowDisplace = s->left(s->length()).toInt();
+  
+  s = dict["slowDisplace2"];
+  if (s)
+    slowDisplace2 = s->left(s->length()).toInt();
+  
+  s = dict["slowDisplace3"];
+  if (s)
+    slowDisplace3 = s->left(s->length()).toInt();
+  
+  s = dict["slowDisplace4"];
+  if (s)
+    slowDisplace4 = s->left(s->length()).toInt();
+  
+  s = dict["slowDisplace5"];
+  if (s)
+    slowDisplace5 = s->left(s->length()).toInt();
+  
+  s = dict["slowDisplace6"];
+  if (s)
+    slowDisplace6 = s->left(s->length()).toInt();
+  
+  s = dict["slowMaType"];
+  if (s)
+    slowMaType = (IndicatorPlugin::MAType) s->left(s->length()).toInt();
+    
+  s = dict["slowInput"];
+  if (s)
+    slowInput = (IndicatorPlugin::InputType) s->left(s->length()).toInt();
+    
+  // long
+  
+  s = dict["longColor"];
+  if (s)
+    longColor.setNamedColor(s->left(s->length()));
+    
+  s = dict["longLineType"];
+  if (s)
+    longLineType = (PlotLine::LineType) s->left(s->length()).toInt();
+
+  s = dict["longPeriod"];
+  if (s)
+    longPeriod = s->left(s->length()).toInt();
+
+  s = dict["longLabel"];
+  if (s)
+    longLabel = s->left(s->length());
+      
+  s = dict["longDisplace"];
+  if (s)
+    longDisplace = s->left(s->length()).toInt();
+  
+  s = dict["longMaType"];
+  if (s)
+    longMaType = (IndicatorPlugin::MAType) s->left(s->length()).toInt();
+    
+  s = dict["longInput"];
+  if (s)
+    longInput = (IndicatorPlugin::InputType) s->left(s->length()).toInt();
+}
+
+void MMA::saveIndicatorSettings (QString file)
+{
+  QDict<QString>dict;
+  dict.setAutoDelete(TRUE);
+
+  dict.replace("fastColor", new QString(fastColor.name()));
+  dict.replace("fastLineType", new QString(QString::number(fastLineType)));
+  dict.replace("fastPeriod", new QString(QString::number(fastPeriod)));
+  dict.replace("fastPeriod2", new QString(QString::number(fastPeriod2)));
+  dict.replace("fastPeriod3", new QString(QString::number(fastPeriod3)));
+  dict.replace("fastPeriod4", new QString(QString::number(fastPeriod4)));
+  dict.replace("fastPeriod5", new QString(QString::number(fastPeriod5)));
+  dict.replace("fastPeriod6", new QString(QString::number(fastPeriod6)));
+  dict.replace("fastLabel", new QString(fastLabel));
+  dict.replace("fastLabel2", new QString(fastLabel2));
+  dict.replace("fastLabel3", new QString(fastLabel3));
+  dict.replace("fastLabel4", new QString(fastLabel4));
+  dict.replace("fastLabel5", new QString(fastLabel5));
+  dict.replace("fastLabel6", new QString(fastLabel6));
+  dict.replace("fastDisplace", new QString(QString::number(fastDisplace)));
+  dict.replace("fastDisplace2", new QString(QString::number(fastDisplace2)));
+  dict.replace("fastDisplace3", new QString(QString::number(fastDisplace3)));
+  dict.replace("fastDisplace4", new QString(QString::number(fastDisplace4)));
+  dict.replace("fastDisplace5", new QString(QString::number(fastDisplace5)));
+  dict.replace("fastDisplace6", new QString(QString::number(fastDisplace6)));
+  dict.replace("fastMaType", new QString(QString::number(fastMaType)));
+  dict.replace("fastInput", new QString(QString::number(fastInput)));
+
+  dict.replace("slowColor", new QString(slowColor.name()));
+  dict.replace("slowLineType", new QString(QString::number(slowLineType)));
+  dict.replace("slowPeriod", new QString(QString::number(slowPeriod)));
+  dict.replace("slowPeriod2", new QString(QString::number(slowPeriod2)));
+  dict.replace("slowPeriod3", new QString(QString::number(slowPeriod3)));
+  dict.replace("slowPeriod4", new QString(QString::number(slowPeriod4)));
+  dict.replace("slowPeriod5", new QString(QString::number(slowPeriod5)));
+  dict.replace("slowPeriod6", new QString(QString::number(slowPeriod6)));
+  dict.replace("slowLabel", new QString(slowLabel));
+  dict.replace("slowLabel2", new QString(slowLabel2));
+  dict.replace("slowLabel3", new QString(slowLabel3));
+  dict.replace("slowLabel4", new QString(slowLabel4));
+  dict.replace("slowLabel5", new QString(slowLabel5));
+  dict.replace("slowLabel6", new QString(slowLabel6));
+  dict.replace("slowDisplace", new QString(QString::number(slowDisplace)));
+  dict.replace("slowDisplace2", new QString(QString::number(slowDisplace2)));
+  dict.replace("slowDisplace3", new QString(QString::number(slowDisplace3)));
+  dict.replace("slowDisplace4", new QString(QString::number(slowDisplace4)));
+  dict.replace("slowDisplace5", new QString(QString::number(slowDisplace5)));
+  dict.replace("slowDisplace6", new QString(QString::number(slowDisplace6)));
+  dict.replace("slowMaType", new QString(QString::number(slowMaType)));
+  dict.replace("slowInput", new QString(QString::number(slowInput)));
+
+  dict.replace("longColor", new QString(longColor.name()));
+  dict.replace("longLineType", new QString(QString::number(longLineType)));
+  dict.replace("longPeriod", new QString(QString::number(longPeriod)));
+  dict.replace("longLabel", new QString(longLabel));
+  dict.replace("longDisplace", new QString(QString::number(longDisplace)));
+  dict.replace("longMaType", new QString(QString::number(longMaType)));
+  dict.replace("longInput", new QString(QString::number(longInput)));
+    
+  saveFile(file, dict);
 }
 
 Plugin * create ()

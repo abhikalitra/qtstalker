@@ -27,12 +27,32 @@ class DMI : public IndicatorPlugin
     DMI ();
     virtual ~DMI ();
     void calculate ();
+    void loadIndicatorSettings (QString);
+    void saveIndicatorSettings (QString);
+    int indicatorPrefDialog ();
+    void setDefaults();
     PlotLine * getMDI (int period);
     PlotLine * getPDI (int period);
     QMemArray<int> getAlerts ();
     void alertCrossover ();
     void alertExtremePoint ();
     void alertTurningPoint ();
+    
+  private:
+    QColor mdiColor;
+    QColor pdiColor;
+    QColor adxColor;
+    PlotLine::LineType mdiLineType;
+    PlotLine::LineType pdiLineType;
+    PlotLine::LineType adxLineType;
+    QString mdiLabel;
+    QString pdiLabel;
+    QString adxLabel;
+    int period;
+    int smoothing;
+    IndicatorPlugin::MAType maType;
+    QStringList alertList;
+    QString alertType;
 };
 
 extern "C"

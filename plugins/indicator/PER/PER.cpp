@@ -20,29 +20,32 @@
  */
 
 #include "PER.h"
+#include "PrefDialog.h"
+#include <qdict.h>
 
 PER::PER ()
 {
   pluginName = "PER";
-
-  set(tr("Type"), pluginName, Setting::None);
-  set(tr("Color"), "red", Setting::Color);
-  set(tr("Line Type"), tr("Histogram"), Setting::LineType);
-  set(tr("Label"), pluginName, Setting::Text);
-  set(tr("Input"), tr("Close"), Setting::InputField);
-  set(tr("Plot"), tr("False"), Setting::None);
-  set(tr("Alert"), tr("False"), Setting::None);
-
-  about = "Performance\n";
+  plotFlag = FALSE;
+  alertFlag = FALSE;
+  setDefaults();
 }
 
 PER::~PER ()
 {
 }
 
+void PER::setDefaults ()
+{
+  color.setNamedColor("red");
+  lineType = PlotLine::Histogram;
+  label = pluginName;
+  input = IndicatorPlugin::Close;
+}
+
 void PER::calculate ()
 {
-  PlotLine *in = getInput(getData(tr("Input")));
+  PlotLine *in = getInput(input);
 
   PlotLine *per = new PlotLine();
 
@@ -51,12 +54,77 @@ void PER::calculate ()
   for (loop = 1; loop < (int) in->getSize(); loop++)
     per->append(((in->getData(loop) - base) / base) * 100);
 
-  per->setColor(getData(tr("Color")));
-  per->setType(getData(tr("Line Type")));
-  per->setLabel(getData(tr("Label")));
+  per->setColor(color);
+  per->setType(lineType);
+  per->setLabel(label);
   output.append(per);
 
   delete in;
+}
+
+int PER::indicatorPrefDialog ()
+{
+  PrefDialog *dialog = new PrefDialog();
+  dialog->setCaption(tr("PER Indicator"));
+  dialog->createPage (tr("Parms"));
+  dialog->addColorItem(tr("Color"), 1, color);
+  dialog->addComboItem(tr("Line Type"), 1, lineTypes, lineType);
+  dialog->addTextItem(tr("Label"), 1, label);
+  dialog->addComboItem(tr("Input"), 1, getInputFields(), input);
+  
+  int rc = dialog->exec();
+  
+  if (rc == QDialog::Accepted)
+  {
+    color = dialog->getColor(tr("Color"));
+    lineType = (PlotLine::LineType) dialog->getComboIndex(tr("Line Type"));
+    label = dialog->getText(tr("Label"));
+    input = (IndicatorPlugin::InputType) dialog->getComboIndex(tr("Input"));
+    rc = TRUE;
+  }
+  else
+    rc = FALSE;
+  
+  delete dialog;
+  return rc;
+}
+
+void PER::loadIndicatorSettings (QString file)
+{
+  setDefaults();
+  
+  QDict<QString> dict = loadFile(file);
+  if (! dict.count())
+    return;
+  
+  QString *s = dict["color"];
+  if (s)
+    color.setNamedColor(s->left(s->length()));
+    
+  s = dict["lineType"];
+  if (s)
+    lineType = (PlotLine::LineType) s->left(s->length()).toInt();
+
+  s = dict["label"];
+  if (s)
+    label = s->left(s->length());
+      
+  s = dict["input"];
+  if (s)
+    input = (IndicatorPlugin::InputType) s->left(s->length()).toInt();
+}
+
+void PER::saveIndicatorSettings (QString file)
+{
+  QDict<QString>dict;
+  dict.setAutoDelete(TRUE);
+
+  dict.replace("color", new QString(color.name()));
+  dict.replace("lineType", new QString(QString::number(lineType)));
+  dict.replace("label", new QString(label));
+  dict.replace("input", new QString(QString::number(input)));
+
+  saveFile(file, dict);
 }
 
 Plugin * create ()

@@ -66,7 +66,9 @@ class PrefDialog : public QTabDialog
     void addTextItem (QString, int, QString);
     QString getText (QString);
     void addComboItem (QString, int, QStringList, QString);
+    void addComboItem (QString, int, QStringList, int);
     QString getCombo (QString);
+    int getComboIndex (QString);
     void addDateItem (QString, int, QDateTime);
     QDateTime getDate (QString);
     void addFileItem (QString, int);

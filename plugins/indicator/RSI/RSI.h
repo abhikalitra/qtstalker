@@ -28,6 +28,21 @@ class RSI : public IndicatorPlugin
     virtual ~RSI ();
     void calculate ();
     QMemArray<int> getAlerts ();
+    void loadIndicatorSettings (QString);
+    void saveIndicatorSettings (QString);
+    int indicatorPrefDialog ();
+    void setDefaults();
+    
+  private:
+    QColor color;
+    PlotLine::LineType lineType;
+    QString label;
+    int period;
+    int smoothing;
+    double buyLine;
+    double sellLine;
+    IndicatorPlugin::MAType maType;
+    IndicatorPlugin::InputType input;
 };
 
 extern "C"

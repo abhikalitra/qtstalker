@@ -1128,7 +1128,7 @@ void Plot::setScale ()
         for (loop = 0; loop < i->getLines(); loop++)
       {
 	PlotLine *line = i->getLine(loop);
-	if (! line->getType().compare(tr("Invisible")))
+	if (line->getType() == PlotLine::Invisible)
 	  continue;
 
         if (line->getHigh() > scaleHigh)
@@ -1155,7 +1155,7 @@ void Plot::setScale ()
         for (loop = 0; loop < i->getLines(); loop++)
       {
 	PlotLine *line = i->getLine(loop);
-	if (! line->getType().compare(tr("Invisible")))
+	if (line->getType() == PlotLine::Invisible)
 	  continue;
 
         int x = startX;

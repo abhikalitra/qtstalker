@@ -20,36 +20,33 @@
  */
 
 #include "UO.h"
+#include "PrefDialog.h"
+#include <qdict.h>
 
 UO::UO ()
 {
   pluginName = "UO";
-
-  set(tr("Type"), pluginName, Setting::None);
-  set(tr("Color"), "red", Setting::Color);
-  set(tr("Line Type"), tr("Line"), Setting::LineType);
-  set(tr("Label"), pluginName, Setting::Text);
-  set(tr("Short Period"), "7", Setting::Integer);
-  set(tr("Medium Period"), "14", Setting::Integer);
-  set(tr("Long Period"), "28", Setting::Integer);
-  set(tr("Plot"), tr("False"), Setting::None);
-  set(tr("Alert"), tr("False"), Setting::None);
-
-  about = "Ultimate Oscillator\n";
+  plotFlag = FALSE;
+  alertFlag = FALSE;
+  setDefaults();
 }
 
 UO::~UO ()
 {
 }
 
+void UO::setDefaults ()
+{
+  color.setNamedColor("red");
+  lineType = PlotLine::Line;
+  label = pluginName;
+  shortPeriod = 7;
+  medPeriod = 14;
+  longPeriod = 28;
+}
+
 void UO::calculate ()
 {
-  int shortPeriod = getInt(tr("Short Period"));
-
-  int medPeriod = getInt(tr("Medium Period"));
-
-  int longPeriod = getInt(tr("Long Period"));
-
   PlotLine *trg = getTR();
 
   PlotLine *atr = getSMA(trg, shortPeriod);
@@ -95,9 +92,9 @@ void UO::calculate ()
     atr3Loop--;
   }
 
-  uo->setColor(getData(tr("Color")));
-  uo->setType(getData(tr("Line Type")));
-  uo->setLabel(getData(tr("Label")));
+  uo->setColor(color);
+  uo->setType(lineType);
+  uo->setLabel(label);
   output.append(uo);
 
   delete trg;
@@ -108,6 +105,85 @@ void UO::calculate ()
   delete sma2;
   delete sma3;
   delete f;
+}
+
+int UO::indicatorPrefDialog ()
+{
+  PrefDialog *dialog = new PrefDialog();
+  dialog->setCaption(tr("UO Indicator"));
+  dialog->createPage (tr("Parms"));
+  dialog->addColorItem(tr("Color"), 1, color);
+  dialog->addComboItem(tr("Line Type"), 1, lineTypes, lineType);
+  dialog->addTextItem(tr("Label"), 1, label);
+  dialog->addIntItem(tr("Short Period"), 1, shortPeriod, 1, 99999999);
+  dialog->addIntItem(tr("Medium Period"), 1, medPeriod, 1, 99999999);
+  dialog->addIntItem(tr("Long Period"), 1, longPeriod, 1, 99999999);
+  
+  int rc = dialog->exec();
+  
+  if (rc == QDialog::Accepted)
+  {
+    color = dialog->getColor(tr("Color"));
+    lineType = (PlotLine::LineType) dialog->getComboIndex(tr("Line Type"));
+    label = dialog->getText(tr("Label"));
+    shortPeriod = dialog->getInt(tr("Short Period"));
+    medPeriod = dialog->getInt(tr("Medium Period"));
+    longPeriod = dialog->getInt(tr("Long Period"));
+    rc = TRUE;
+  }
+  else
+    rc = FALSE;
+  
+  delete dialog;
+  return rc;
+}
+
+void UO::loadIndicatorSettings (QString file)
+{
+  setDefaults();
+  
+  QDict<QString> dict = loadFile(file);
+  if (! dict.count())
+    return;
+  
+  QString *s = dict["color"];
+  if (s)
+    color.setNamedColor(s->left(s->length()));
+    
+  s = dict["lineType"];
+  if (s)
+    lineType = (PlotLine::LineType) s->left(s->length()).toInt();
+
+  s = dict["label"];
+  if (s)
+    label = s->left(s->length());
+
+  s = dict["shortPeriod"];
+  if (s)
+    shortPeriod = s->left(s->length()).toInt();
+
+  s = dict["medPeriod"];
+  if (s)
+    medPeriod = s->left(s->length()).toInt();
+
+  s = dict["longPeriod"];
+  if (s)
+    longPeriod = s->left(s->length()).toInt();
+}
+
+void UO::saveIndicatorSettings (QString file)
+{
+  QDict<QString>dict;
+  dict.setAutoDelete(TRUE);
+
+  dict.replace("color", new QString(color.name()));
+  dict.replace("lineType", new QString(QString::number(lineType)));
+  dict.replace("label", new QString(label));
+  dict.replace("shortPeriod", new QString(QString::number(shortPeriod)));
+  dict.replace("medPeriod", new QString(QString::number(medPeriod)));
+  dict.replace("longPeriod", new QString(QString::number(longPeriod)));
+
+  saveFile(file, dict);
 }
 
 Plugin * create ()

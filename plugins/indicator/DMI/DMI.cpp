@@ -21,46 +21,45 @@
 
 #include "DMI.h"
 #include <math.h>
+#include "PrefDialog.h"
+#include <qdict.h>
 
 DMI::DMI ()
 {
   pluginName = "DMI";
+  plotFlag = FALSE;
+  alertFlag = TRUE;
+  setDefaults();
 
-  set(tr("Type"), pluginName, Setting::None);
-  set(tr("+DM Color"), "green", Setting::Color);
-  set(tr("+DM Line Type"), tr("Line"), Setting::LineType);
-  set(tr("+DM Label"), "+DM", Setting::Text);
-  set(tr("-DM Color"), "red", Setting::Color);
-  set(tr("-DM Line Type"), tr("Line"), Setting::LineType);
-  set(tr("-DM Label"), "-DM", Setting::Text);
-  set(tr("ADX Color"), "yellow", Setting::Color);
-  set(tr("ADX Line Type"), tr("Line"), Setting::LineType);
-  set(tr("ADX Label"), "ADX", Setting::Text);
-  set(tr("Period"), "14", Setting::Integer);
-  set(tr("Smoothing"), "9", Setting::Integer);
-  set(tr("Smoothing Type"), tr("SMA"), Setting::MAType);
-  set(tr("Plot"), tr("False"), Setting::None);
-  set(tr("Alert"), tr("True"), Setting::None);
-
-  QStringList l;
-  l.append(tr("Crossover"));
-  l.append(tr("Extreme Point"));
-  l.append(tr("Turning Point"));
-  l.sort();
-  set(tr("Alert Type"), tr("Crossover"), Setting::List);
-  setList(tr("Alert Type"), l);
-
-  about = "Directional Movement Index\n";
+  alertList.append(tr("Crossover"));
+  alertList.append(tr("Extreme Point"));
+  alertList.append(tr("Turning Point"));
+  alertList.sort();
 }
 
 DMI::~DMI ()
 {
 }
 
+void DMI::setDefaults ()
+{
+  mdiColor.setNamedColor("red");
+  pdiColor.setNamedColor("green");
+  adxColor.setNamedColor("yellow");
+  pdiLineType = PlotLine::Line;
+  mdiLineType = PlotLine::Line;
+  adxLineType = PlotLine::Line;
+  pdiLabel = "+DM";
+  mdiLabel = "-DM";
+  adxLabel = "ADX";
+  period = 14;
+  smoothing = 9;
+  maType = IndicatorPlugin::SMA;  
+  alertType = tr("Crossover");
+}
+
 void DMI::calculate ()
 {
-  int period = getInt(tr("Period"));
-
   PlotLine *mdi = getMDI(period);
   int mdiLoop = mdi->getSize() - 1;
 
@@ -97,23 +96,23 @@ void DMI::calculate ()
     diffLoop--;
   }
 
-  PlotLine *adx = getMA(dx, getData(tr("Smoothing Type")), getInt(tr("Smoothing")));
-  adx->setColor(getData(tr("ADX Color")));
-  adx->setType(getData(tr("ADX Line Type")));
-  adx->setLabel(getData(tr("ADX Label")));
+  PlotLine *adx = getMA(dx, maType, smoothing);
+  adx->setColor(adxColor);
+  adx->setType(adxLineType);
+  adx->setLabel(adxLabel);
 
   delete disum;
   delete didiff;
   delete dx;
 
-  mdi->setColor(getData(tr("-DM Color")));
-  mdi->setType(getData(tr("-DM Line Type")));
-  mdi->setLabel(getData(tr("-DM Label")));
+  mdi->setColor(mdiColor);
+  mdi->setType(mdiLineType);
+  mdi->setLabel(mdiLabel);
   output.append(mdi);
 
-  pdi->setColor(getData(tr("+DM Color")));
-  pdi->setType(getData(tr("+DM Line Type")));
-  pdi->setLabel(getData(tr("+DM Label")));
+  pdi->setColor(pdiColor);
+  pdi->setType(pdiLineType);
+  pdi->setLabel(pdiLabel);
   output.append(pdi);
 
   output.append(adx);
@@ -126,12 +125,11 @@ QMemArray<int> DMI::getAlerts ()
   if (output.count() != 3)
     return alerts;
 
-  QString s = getData(tr("Alert Type"));
-  if (! s.compare(tr("Crossover")))
+  if (! alertType.compare(tr("Crossover")))
     alertCrossover();
   else
   {
-    if (! s.compare(tr("Extreme Point")))
+    if (! alertType.compare(tr("Extreme Point")))
       alertExtremePoint();
     else
       alertTurningPoint();
@@ -407,6 +405,145 @@ PlotLine * DMI::getPDI (int period)
   delete smatr;
 
   return pdi;
+}
+
+int DMI::indicatorPrefDialog ()
+{
+  PrefDialog *dialog = new PrefDialog();
+  dialog->setCaption(tr("DMI Indicator"));
+  
+  dialog->createPage (tr("DMI"));
+  dialog->addIntItem(tr("Period"), 1, period, 1, 99999999);
+  dialog->addIntItem(tr("Smoothing"), 1, smoothing, 1, 99999999);
+  dialog->addComboItem(tr("Smoothing Type"), 1, getMATypes(), maType);
+  dialog->addComboItem(tr("Alert"), 1, alertList, alertType);
+  
+  dialog->createPage (tr("+DM"));
+  dialog->addColorItem(tr("+DM Color"), 2, pdiColor);
+  dialog->addTextItem(tr("+DM Label"), 2, pdiLabel);
+  dialog->addComboItem(tr("+DM Line Type"), 2, lineTypes, pdiLineType);
+  
+  dialog->createPage (tr("-DM"));
+  dialog->addColorItem(tr("-DM Color"), 3, mdiColor);
+  dialog->addTextItem(tr("-DM Label"), 3, mdiLabel);
+  dialog->addComboItem(tr("-DM Line Type"), 3, lineTypes, mdiLineType);
+  
+  dialog->createPage (tr("ADX"));
+  dialog->addColorItem(tr("ADX Color"), 4, adxColor);
+  dialog->addTextItem(tr("ADX Label"), 4, adxLabel);
+  dialog->addComboItem(tr("ADX Line Type"), 4, lineTypes, adxLineType);
+  
+  int rc = dialog->exec();
+  
+  if (rc == QDialog::Accepted)
+  {
+    period = dialog->getInt(tr("Period"));
+    smoothing = dialog->getInt(tr("Smoothing"));
+    maType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("Smoothing Type"));
+    alertType = dialog->getCombo(tr("Alert"));
+    
+    pdiColor = dialog->getColor(tr("+DM Color"));
+    pdiLineType = (PlotLine::LineType) dialog->getComboIndex(tr("+DM Line Type"));
+    pdiLabel = dialog->getText(tr("+DM Label"));
+    
+    mdiColor = dialog->getColor(tr("-DM Color"));
+    mdiLineType = (PlotLine::LineType) dialog->getComboIndex(tr("-DM Line Type"));
+    mdiLabel = dialog->getText(tr("-DM Label"));
+    
+    adxColor = dialog->getColor(tr("ADX Color"));
+    adxLineType = (PlotLine::LineType) dialog->getComboIndex(tr("ADX Line Type"));
+    adxLabel = dialog->getText(tr("ADX Label"));
+    
+    rc = TRUE;
+  }
+  else
+    rc = FALSE;
+  
+  delete dialog;
+  return rc;
+}
+
+void DMI::loadIndicatorSettings (QString file)
+{
+  setDefaults();
+  
+  QDict<QString> dict = loadFile(file);
+  if (! dict.count())
+    return;
+  
+  QString *s = dict["pdiColor"];
+  if (s)
+    pdiColor.setNamedColor(s->left(s->length()));
+    
+  s = dict["mdiColor"];
+  if (s)
+    mdiColor.setNamedColor(s->left(s->length()));
+  
+  s = dict["adxColor"];
+  if (s)
+    adxColor.setNamedColor(s->left(s->length()));
+    
+  s = dict["period"];
+  if (s)
+    period = (PlotLine::LineType) s->left(s->length()).toInt();
+    
+  s = dict["smoothing"];
+  if (s)
+    smoothing = (PlotLine::LineType) s->left(s->length()).toInt();
+    
+  s = dict["maType"];
+  if (s)
+    maType = (IndicatorPlugin::MAType) s->left(s->length()).toInt();
+    
+  s = dict["alertType"];
+  if (s)
+    alertType = s->left(s->length());
+
+  s = dict["pdiLabel"];
+  if (s)
+    pdiLabel = s->left(s->length());
+    
+  s = dict["mdiLabel"];
+  if (s)
+    mdiLabel = s->left(s->length());
+    
+  s = dict["adxLabel"];
+  if (s)
+    adxLabel = s->left(s->length());
+        
+  s = dict["pdiLineType"];
+  if (s)
+    pdiLineType = (PlotLine::LineType) s->left(s->length()).toInt();
+
+  s = dict["mdiLineType"];
+  if (s)
+    mdiLineType = (PlotLine::LineType) s->left(s->length()).toInt();
+
+  s = dict["adxLineType"];
+  if (s)
+    adxLineType = (PlotLine::LineType) s->left(s->length()).toInt();
+}
+
+void DMI::saveIndicatorSettings (QString file)
+{
+  QDict<QString>dict;
+  dict.setAutoDelete(TRUE);
+  
+  dict.replace("period", new QString(QString::number(period)));
+  dict.replace("smoothing", new QString(QString::number(smoothing)));
+  dict.replace("maType", new QString(QString::number(maType)));
+  dict.replace("alertType", new QString(alertType));
+  dict.replace("pdiColor", new QString(pdiColor.name()));
+  dict.replace("mdiColor", new QString(mdiColor.name()));
+  dict.replace("adxColor", new QString(adxColor.name()));
+  dict.replace("mdiLineType", new QString(QString::number(mdiLineType)));
+  dict.replace("pdiLineType", new QString(QString::number(pdiLineType)));
+  dict.replace("adxLineType", new QString(QString::number(adxLineType)));
+  dict.replace("pdiLabel", new QString(pdiLabel));
+  dict.replace("mdiLabel", new QString(mdiLabel));
+  dict.replace("adxLabel", new QString(adxLabel));
+
+  saveFile(file, dict);
 }
 
 Plugin * create ()

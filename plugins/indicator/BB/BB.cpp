@@ -21,36 +21,35 @@
 
 #include "BB.h"
 #include <math.h>
+#include "PrefDialog.h"
+#include <qdict.h>
 
 BB::BB ()
 {
   pluginName = "BB";
-
-  set(tr("Type"), pluginName, Setting::None);
-  set(tr("Color"), "red", Setting::Color);
-  set(tr("Line Type"), tr("Line"), Setting::LineType);
-  set(tr("Deviation"), "2", Setting::Float);
-  set(tr("MA Period"), "20", Setting::Integer);
-  set(tr("MA Type"), tr("SMA"), Setting::MAType);
-  set(tr("Plot"), tr("True"), Setting::None);
-  set(tr("Alert"), tr("True"), Setting::None);
-
-  about = "Bollinger Bands\n";
+  plotFlag = TRUE;
+  alertFlag = TRUE;
+  setDefaults();
 }
 
 BB::~BB ()
 {
 }
 
+void BB::setDefaults ()
+{
+  color.setNamedColor("red");
+  lineType = PlotLine::Line;
+  deviation = 2;
+  period = 20;
+  maType = IndicatorPlugin::SMA;  
+}
+
 void BB::calculate ()
 {
-  int period = getInt(tr("MA Period"));
-
-  double deviation = getFloat(tr("Deviation"));
-
   PlotLine *in = getTP();
 
-  PlotLine *sma = getMA(in, getData(tr("MA Type")), period);
+  PlotLine *sma = getMA(in, maType, period);
   int smaLoop = sma->getSize() - 1;
 
   if ((int) sma->getSize() < period * 2)
@@ -82,18 +81,18 @@ void BB::calculate ()
 
   delete in;
 
-  bbu->setColor(getData(tr("Color")));
-  bbu->setType(getData(tr("Line Type")));
+  bbu->setColor(color);
+  bbu->setType(lineType);
   bbu->setLabel(tr("BBU"));
   output.append(bbu);
 
-  sma->setColor(getData(tr("Color")));
-  sma->setType(getData(tr("Line Type")));
+  sma->setColor(color);
+  sma->setType(lineType);
   sma->setLabel(tr("BBM"));
   output.append(sma);
 
-  bbl->setColor(getData(tr("Color")));
-  bbl->setType(getData(tr("Line Type")));
+  bbl->setColor(color);
+  bbl->setType(lineType);
   bbl->setLabel(tr("BBL"));
   output.append(bbl);
 }
@@ -163,6 +162,78 @@ QMemArray<int> BB::getAlerts ()
   }
 
   return alerts;
+}
+
+int BB::indicatorPrefDialog ()
+{
+  PrefDialog *dialog = new PrefDialog();
+  dialog->setCaption(tr("BB Indicator"));
+  dialog->createPage (tr("Parms"));
+  dialog->addColorItem(tr("Color"), 1, color);
+  dialog->addComboItem(tr("Line Type"), 1, lineTypes, lineType);
+  dialog->addIntItem(tr("Period"), 1, period, 1, 99999999);
+  dialog->addFloatItem(tr("Deviation"), 1, deviation, 0, 99999999);
+  dialog->addComboItem(tr("MA Type"), 1, getMATypes(), maType);
+  
+  int rc = dialog->exec();
+  
+  if (rc == QDialog::Accepted)
+  {
+    color = dialog->getColor(tr("Color"));
+    lineType = (PlotLine::LineType) dialog->getComboIndex(tr("Line Type"));
+    period = dialog->getInt(tr("Period"));
+    maType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("MA Type"));
+    deviation = dialog->getFloat(tr("Deviation"));
+    rc = TRUE;
+  }
+  else
+    rc = FALSE;
+  
+  delete dialog;
+  return rc;
+}
+
+void BB::loadIndicatorSettings (QString file)
+{
+  setDefaults();
+  
+  QDict<QString> dict = loadFile(file);
+  if (! dict.count())
+    return;
+  
+  QString *s = dict["color"];
+  if (s)
+    color.setNamedColor(s->left(s->length()));
+    
+  s = dict["lineType"];
+  if (s)
+    lineType = (PlotLine::LineType) s->left(s->length()).toInt();
+
+  s = dict["period"];
+  if (s)
+    period = s->left(s->length()).toInt();
+
+  s = dict["deviation"];
+  if (s)
+    deviation = s->left(s->length()).toFloat();
+  
+  s = dict["maType"];
+  if (s)
+    maType = (IndicatorPlugin::MAType) s->left(s->length()).toInt();
+}
+
+void BB::saveIndicatorSettings (QString file)
+{
+  QDict<QString>dict;
+  dict.setAutoDelete(TRUE);
+
+  dict.replace("color", new QString(color.name()));
+  dict.replace("lineType", new QString(QString::number(lineType)));
+  dict.replace("period", new QString(QString::number(period)));
+  dict.replace("deviation", new QString(QString::number(deviation)));
+  dict.replace("maType", new QString(QString::number(maType)));
+
+  saveFile(file, dict);
 }
 
 Plugin * create ()

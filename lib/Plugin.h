@@ -28,14 +28,21 @@
 #include <qobject.h>
 #include <qcolor.h>
 #include <qpixmap.h>
-#include "Setting.h"
 #include "PlotLine.h"
 #include "BarData.h"
 #include "Scaler.h"
 
-class Plugin : public Setting, public QObject
+class Plugin : public QObject
 {
   public:
+  
+    enum PluginType
+    {
+      IndicatorPlug,
+      QuotePlug,
+      ChartPlug
+    };
+  
     Plugin ();
     virtual ~Plugin ();
 
@@ -47,33 +54,35 @@ class Plugin : public Setting, public QObject
     virtual QList<QColor> getColorBars (QString, QString, QString);
     virtual void calculate ();
     virtual void clearOutput ();
+    virtual bool getAlertFlag ();
+    virtual bool getPlotFlag ();
+    virtual int indicatorPrefDialog ();
+    virtual void loadIndicatorSettings (QString);
+    virtual void saveIndicatorSettings (QString);
 
     // quote plugin interface
     virtual void update ();
     virtual void cancelUpdate ();
-    virtual void saveSettings ();
+    virtual void prefDialog ();
     
     // chart plugin interface
     virtual void drawChart (int, int, int);
     virtual void setChartInput (BarData *, Scaler *, QPixmap *);
-    virtual void prefDialog ();
     virtual int getMinPixelspace ();
     virtual int getStartX ();
     virtual bool getIndicatorFlag ();
-
+    virtual void saveSettings ();
+    
     // base plugin functions
-    QString getPluginType ();
+    Plugin::PluginType getPluginType ();
     QString getPluginName ();
     QString getVersion ();
-    QString getAbout ();
     void setDataPath (QString);
-    Setting * getPluginSettings ();
 
   protected:
-    QString pluginType;
+    PluginType pluginType;
     QString pluginName;
     QString dataPath;
-    QString about;
     float version;
 };
 

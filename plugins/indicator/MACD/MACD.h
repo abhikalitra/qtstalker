@@ -28,6 +28,27 @@ class MACD : public IndicatorPlugin
     virtual ~MACD ();
     void calculate ();
     QMemArray<int> getAlerts ();
+    void loadIndicatorSettings (QString);
+    void saveIndicatorSettings (QString);
+    int indicatorPrefDialog ();
+    void setDefaults();
+
+  private:
+    QColor macdColor;
+    QColor trigColor;
+    QColor oscColor;
+    PlotLine::LineType macdLineType;
+    PlotLine::LineType trigLineType;
+    PlotLine::LineType oscLineType;
+    QString macdLabel;
+    QString trigLabel;
+    QString oscLabel;
+    int fastPeriod;
+    int slowPeriod;
+    int trigPeriod;
+    IndicatorPlugin::MAType macdMAType;
+    IndicatorPlugin::InputType macdInput;
+    bool oscScaleFlag;
 };
 
 extern "C"

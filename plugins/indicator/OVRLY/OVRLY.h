@@ -28,9 +28,23 @@ class OVRLY : public IndicatorPlugin
     virtual ~OVRLY ();
     void calculate ();
     PlotLine * getSymbolLine (QString);
-//    PlotLine * normalize (PlotLine *);
     void comparePrice ();
     void comparePerformance ();
+    void loadIndicatorSettings (QString);
+    void saveIndicatorSettings (QString);
+    int indicatorPrefDialog ();
+    void setDefaults();
+    
+  private:
+    QColor color;
+    QColor baseColor;
+    PlotLine::LineType lineType;
+    PlotLine::LineType baseLineType;
+    QString label;
+    QString baseLabel;
+    QStringList methodList;
+    QString baseSymbol;
+    QString method;
 };
 
 extern "C"

@@ -28,10 +28,35 @@
 #include <qlist.h>
 #include <qmemarray.h>
 #include <qcolor.h>
+#include <qdict.h>
 
 class IndicatorPlugin : public Plugin
 {
   public:
+  
+    enum MAType
+    {
+      EMA,
+      SMA,
+      WMA,
+      Wilder
+    };
+
+    enum InputType
+    {
+      Open,
+      High,
+      Low,
+      Close,
+      Volume,
+      OpenInterest,
+      AveragePrice,
+      TypicalPrice,
+      WeightedPrice,
+      HLPrice,
+      OCPrice
+    };
+    
     IndicatorPlugin();
     virtual ~IndicatorPlugin();
     QMemArray<int> getAlerts ();
@@ -39,10 +64,16 @@ class IndicatorPlugin : public Plugin
     void setIndicatorInput (BarData *);
     int getIndicatorLines ();
     void clearOutput ();
+    QStringList getMATypes ();
+    QStringList getInputFields ();
+    bool getPlotFlag ();
+    bool getAlertFlag ();
+    QDict<QString> loadFile (QString);
+    void saveFile (QString, QDict<QString>);
     PlotLine * getIndicatorLine (int);
-    PlotLine * getInput (QString);
-    PlotLine * getMA (PlotLine *, QString, int, int);
-    PlotLine * getMA (PlotLine *, QString, int);
+    PlotLine * getInput (IndicatorPlugin::InputType);
+    PlotLine * getMA (PlotLine *, MAType, int, int);
+    PlotLine * getMA (PlotLine *, MAType, int);
     PlotLine * getSMA (PlotLine *, int);
     PlotLine * getEMA (PlotLine *, int);
     PlotLine * getWilderMA (PlotLine *, int);
@@ -59,6 +90,10 @@ class IndicatorPlugin : public Plugin
     QList<PlotLine> output;
     QMemArray<int> alerts;
     QList<QColor> paintBars;
+    QStringList lineTypes;
+    bool plotFlag;
+    bool alertFlag;
+    bool saveFlag;
 };
 
 #endif

@@ -30,7 +30,7 @@ Plugin::~Plugin ()
 {
 }
 
-QString Plugin::getPluginType ()
+Plugin::PluginType Plugin::getPluginType ()
 {
   return pluginType;
 }
@@ -45,36 +45,9 @@ QString Plugin::getVersion ()
   return QString::number(version);
 }
 
-QString Plugin::getAbout ()
-{
-  QString s = pluginName;
-  s.append(" Version ");
-  s.append(QString::number(version));
-  s.append("\n");
-  s.append(about);
-
-  return s;
-}
-
 void Plugin::setDataPath (QString d)
 {
   dataPath = d;
-}
-
-Setting * Plugin::getPluginSettings ()
-{
-  Setting *set = new Setting;
-
-  QStringList key = getKeyList();
-
-  int loop;
-  for(loop = 0; loop < (int) key.count(); loop++)
-  {
-    set->set(key[loop], getData(key[loop]), getType(key[loop]));
-    set->setList(key[loop], getList(key[loop]));
-  }
-
-  return set;
 }
 
 //**********************************************************
@@ -114,6 +87,29 @@ void Plugin::clearOutput ()
 {
 }
 
+bool Plugin::getAlertFlag ()
+{
+  return FALSE;
+}
+
+bool Plugin::getPlotFlag ()
+{
+  return FALSE;
+}
+
+int Plugin::indicatorPrefDialog ()
+{
+  return 0;
+}
+
+void Plugin::loadIndicatorSettings (QString)
+{
+}
+
+void Plugin::saveIndicatorSettings (QString)
+{
+}
+
 //**********************************************************
 //************** quote plugin interface ********************
 //**********************************************************
@@ -126,7 +122,7 @@ void Plugin::cancelUpdate ()
 {
 }
 
-void Plugin::saveSettings ()
+void Plugin::prefDialog ()
 {
 }
 
@@ -139,10 +135,6 @@ void Plugin::drawChart (int, int, int)
 }
 
 void Plugin::setChartInput (BarData *, Scaler *, QPixmap *)
-{
-}
-
-void Plugin::prefDialog ()
 {
 }
 
@@ -159,5 +151,9 @@ int Plugin::getStartX ()
 bool Plugin::getIndicatorFlag ()
 {
   return FALSE;
+}
+
+void Plugin::saveSettings ()
+{
 }
 

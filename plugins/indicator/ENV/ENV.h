@@ -28,6 +28,23 @@ class ENV : public IndicatorPlugin
     virtual ~ENV ();
     void calculate ();
     QMemArray<int> getAlerts ();
+    void loadIndicatorSettings (QString);
+    void saveIndicatorSettings (QString);
+    int indicatorPrefDialog ();
+    void setDefaults();
+    
+  private:
+    QColor upperColor;
+    QColor lowerColor;
+    PlotLine::LineType upperLineType;
+    PlotLine::LineType lowerLineType;
+    QString upperLabel;
+    QString lowerLabel;
+    int period;
+    double upperPercent;
+    double lowerPercent;
+    IndicatorPlugin::InputType input;
+    IndicatorPlugin::MAType maType;
 };
 
 extern "C"

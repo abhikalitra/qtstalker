@@ -27,6 +27,17 @@ class PC : public IndicatorPlugin
     PC ();
     virtual ~PC ();
     void calculate ();
+    void loadIndicatorSettings (QString);
+    void saveIndicatorSettings (QString);
+    int indicatorPrefDialog ();
+    void setDefaults();
+    
+  private:
+    QColor color;
+    PlotLine::LineType lineType;
+    QString label;
+    int period;
+    IndicatorPlugin::InputType input;
 };
 
 extern "C"

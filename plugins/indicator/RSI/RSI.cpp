@@ -21,36 +21,37 @@
 
 #include "RSI.h"
 #include <math.h>
+#include "PrefDialog.h"
+#include <qdict.h>
 
 RSI::RSI ()
 {
   pluginName = "RSI";
-
-  set(tr("Type"), pluginName, Setting::None);
-  set(tr("Color"), "red", Setting::Color);
-  set(tr("Line Type"), tr("Line"), Setting::LineType);
-  set(tr("Label"), pluginName, Setting::Text);
-  set(tr("Period"), "14", Setting::Integer);
-  set(tr("Smoothing"), "10", Setting::Integer);
-  set(tr("Smoothing Type"), tr("SMA"), Setting::MAType);
-  set(tr("Input"), tr("Close"), Setting::InputField);
-  set(tr("Buy Line"), "25", Setting::Integer);
-  set(tr("Sell Line"), "75", Setting::Integer);
-  set(tr("Plot"), tr("False"), Setting::None);
-  set(tr("Alert"), tr("True"), Setting::None);
-
-  about = "Relative Strength Index\n";
+  plotFlag = FALSE;
+  alertFlag = TRUE;
+  setDefaults();
 }
 
 RSI::~RSI ()
 {
 }
 
+void RSI::setDefaults ()
+{
+  color.setNamedColor("red");
+  lineType = PlotLine::Line;
+  label = pluginName;
+  period = 14;
+  smoothing = 10;  
+  maType = IndicatorPlugin::SMA;  
+  input = IndicatorPlugin::Close;
+  buyLine = 25;
+  sellLine = 75;
+}
+
 void RSI::calculate ()
 {
-  int period = getInt(tr("Period"));
-
-  PlotLine *in = getInput(getData(tr("Input")));
+  PlotLine *in = getInput(input);
 
   PlotLine *rsi = new PlotLine();
 
@@ -81,20 +82,20 @@ void RSI::calculate ()
     rsi->append(t);
   }
 
-  if (getInt(tr("Smoothing")) > 1)
+  if (smoothing > 1)
   {
-    PlotLine *ma = getMA(rsi, getData(tr("Smoothing Type")), getInt(tr("Smoothing")));
-    ma->setColor(getData(tr("Color")));
-    ma->setType(getData(tr("Line Type")));
-    ma->setLabel(getData(tr("Label")));
+    PlotLine *ma = getMA(rsi, maType, smoothing);
+    ma->setColor(color);
+    ma->setType(lineType);
+    ma->setLabel(label);
     output.append(ma);
     delete rsi;
   }
   else
   {
-    rsi->setColor(getData(tr("Color")));
-    rsi->setType(getData(tr("Line Type")));
-    rsi->setLabel(getData(tr("Label")));
+    rsi->setColor(color);
+    rsi->setType(lineType);
+    rsi->setLabel(label);
     output.append(rsi);
   }
 
@@ -108,10 +109,6 @@ QMemArray<int> RSI::getAlerts ()
   if (! output.count())
     return alerts;
 
-  int buy = getInt(tr("Buy Line"));
-
-  int sell = getInt(tr("Sell Line"));
-
   PlotLine *line = output.at(0);
 
   int dataLoop = data->count() - line->getSize() + 1;
@@ -122,19 +119,19 @@ QMemArray<int> RSI::getAlerts ()
     switch (status)
     {
       case -1:
-        if ((line->getData(loop) <= buy) && (line->getData(loop) > line->getData(loop - 1)))
+        if ((line->getData(loop) <= buyLine) && (line->getData(loop) > line->getData(loop - 1)))
 	  status = 1;
 	break;
       case 1:
-        if ((line->getData(loop) >= sell) && (line->getData(loop) < line->getData(loop - 1)))
+        if ((line->getData(loop) >= sellLine) && (line->getData(loop) < line->getData(loop - 1)))
 	  status = -1;
 	break;
       default:
-        if ((line->getData(loop) <= buy) && (line->getData(loop) > line->getData(loop - 1)))
+        if ((line->getData(loop) <= buyLine) && (line->getData(loop) > line->getData(loop - 1)))
 	  status = 1;
 	else
 	{
-          if ((line->getData(loop) >= sell) && (line->getData(loop) < line->getData(loop - 1)))
+          if ((line->getData(loop) >= sellLine) && (line->getData(loop) < line->getData(loop - 1)))
 	    status = -1;
 	}
 	break;
@@ -144,6 +141,107 @@ QMemArray<int> RSI::getAlerts ()
   }
 
   return alerts;
+}
+
+int RSI::indicatorPrefDialog ()
+{
+  PrefDialog *dialog = new PrefDialog();
+  dialog->setCaption(tr("RSI Indicator"));
+  dialog->createPage (tr("Parms"));
+  dialog->addColorItem(tr("Color"), 1, color);
+  dialog->addComboItem(tr("Line Type"), 1, lineTypes, lineType);
+  dialog->addTextItem(tr("Label"), 1, label);
+  dialog->addIntItem(tr("Period"), 1, period, 1, 99999999);
+  dialog->addComboItem(tr("Smoothing Type"), 1, getMATypes(), maType);
+  dialog->addIntItem(tr("Smoothing"), 1, smoothing, 0, 99999999);
+  dialog->addComboItem(tr("Input"), 1, getInputFields(), input);
+  dialog->addFloatItem(tr("Buy Line"), 1, buyLine, 0, 100);
+  dialog->addFloatItem(tr("Sell Line"), 1, sellLine, 0, 100);
+  
+  int rc = dialog->exec();
+  
+  if (rc == QDialog::Accepted)
+  {
+    color = dialog->getColor(tr("Color"));
+    lineType = (PlotLine::LineType) dialog->getComboIndex(tr("Line Type"));
+    period = dialog->getInt(tr("Period"));
+    label = dialog->getText(tr("Label"));
+    maType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("Smoothing Type"));
+    smoothing = dialog->getInt(tr("Smoothing"));
+    input = (IndicatorPlugin::InputType) dialog->getComboIndex(tr("Input"));
+    buyLine = dialog->getFloat(tr("Buy Line"));
+    sellLine = dialog->getFloat(tr("Sell Line"));
+    
+    rc = TRUE;
+  }
+  else
+    rc = FALSE;
+  
+  delete dialog;
+  return rc;
+}
+
+void RSI::loadIndicatorSettings (QString file)
+{
+  setDefaults();
+  
+  QDict<QString> dict = loadFile(file);
+  if (! dict.count())
+    return;
+  
+  QString *s = dict["color"];
+  if (s)
+    color.setNamedColor(s->left(s->length()));
+    
+  s = dict["lineType"];
+  if (s)
+    lineType = (PlotLine::LineType) s->left(s->length()).toInt();
+
+  s = dict["period"];
+  if (s)
+    period = s->left(s->length()).toInt();
+
+  s = dict["label"];
+  if (s)
+    label = s->left(s->length());
+      
+  s = dict["maType"];
+  if (s)
+    maType = (IndicatorPlugin::MAType) s->left(s->length()).toInt();
+    
+  s = dict["input"];
+  if (s)
+    input = (IndicatorPlugin::InputType) s->left(s->length()).toInt();
+    
+  s = dict["smoothing"];
+  if (s)
+    smoothing = s->left(s->length()).toInt();
+
+  s = dict["buyLine"];
+  if (s)
+    buyLine = s->left(s->length()).toFloat();
+
+  s = dict["sellLine"];
+  if (s)
+    sellLine = s->left(s->length()).toFloat();
+}
+
+void RSI::saveIndicatorSettings (QString file)
+{
+  QDict<QString>dict;
+  dict.setAutoDelete(TRUE);
+
+  dict.replace("color", new QString(color.name()));
+  dict.replace("lineType", new QString(QString::number(lineType)));
+  dict.replace("period", new QString(QString::number(period)));
+  dict.replace("label", new QString(label));
+  dict.replace("maType", new QString(QString::number(maType)));
+  dict.replace("input", new QString(QString::number(input)));
+  dict.replace("smoothing", new QString(QString::number(smoothing)));
+  dict.replace("buyLine", new QString(QString::number(buyLine)));
+  dict.replace("sellLine", new QString(QString::number(sellLine)));
+
+  saveFile(file, dict);
 }
 
 Plugin * create ()

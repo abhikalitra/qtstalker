@@ -21,39 +21,38 @@
 
 #include "CCI.h"
 #include <math.h>
+#include "PrefDialog.h"
+#include <qdict.h>
 
 CCI::CCI ()
 {
   pluginName = "CCI";
+  plotFlag = FALSE;
+  alertFlag = TRUE;
+  setDefaults();
 
-  set(tr("Type"), pluginName, Setting::None);
-  set(tr("Color"), "red", Setting::Color);
-  set(tr("Line Type"), tr("Line"), Setting::LineType);
-  set(tr("Label"), pluginName, Setting::Text);
-  set(tr("Period"), "20", Setting::Integer);
-  set(tr("Smoothing"), "3", Setting::Integer);
-  set(tr("Smoothing Type"), tr("SMA"), Setting::MAType);
-  set(tr("Plot"), tr("False"), Setting::None);
-  set(tr("Alert"), tr("True"), Setting::None);
-
-  QStringList l;
-  l.append(tr("100 Rule"));
-  l.append(tr("0 Rule"));
-  l.sort();
-  set(tr("Alert Type"), tr("100 Rule"), Setting::List);
-  setList(tr("Alert Type"), l);
-
-  about = "Commodity Channel Index with optional MA\n";
+  alertList.append(tr("100 Rule"));
+  alertList.append(tr("0 Rule"));
+  alertList.sort();
 }
 
 CCI::~CCI ()
 {
 }
 
+void CCI::setDefaults ()
+{
+  color.setNamedColor("red");
+  lineType = PlotLine::Line;
+  label = pluginName;
+  smoothing = 3;
+  period = 20;
+  maType = IndicatorPlugin::SMA;
+  alertType = tr("100 Rule");
+}
+
 void CCI::calculate ()
 {
-  int period = getInt(tr("Period"));
-
   PlotLine *tp = getTP();
   int tpLoop = tp->getSize() - 1;
 
@@ -77,21 +76,20 @@ void CCI::calculate ()
     smaLoop--;
   }
 
-  period = getInt(tr("Smoothing"));
-  if (period > 1)
+  if (smoothing > 1)
   {
-    PlotLine *ma = getMA(cci, getData(tr("Smoothing Type")), period);
-    ma->setColor(getData(tr("Color")));
-    ma->setType(getData(tr("Line Type")));
-    ma->setLabel(getData(tr("Label")));
+    PlotLine *ma = getMA(cci, maType, smoothing);
+    ma->setColor(color);
+    ma->setType(lineType);
+    ma->setLabel(label);
     output.append(ma);
     delete cci;
   }
   else
   {
-    cci->setColor(getData(tr("Color")));
-    cci->setType(getData(tr("Line Type")));
-    cci->setLabel(getData(tr("Label")));
+    cci->setColor(color);
+    cci->setType(lineType);
+    cci->setLabel(label);
     output.append(cci);
   }
 
@@ -106,11 +104,10 @@ QMemArray<int> CCI::getAlerts ()
   if (output.count() == 0)
     return alerts;
 
-  QString s = getData(tr("Alert Type"));
-  if (! s.compare(tr("100 Rule")))
+  if (! alertType.compare(tr("100 Rule")))
     alertHundred();
 
-  if (! s.compare(tr("0 Rule")))
+  if (! alertType.compare(tr("0 Rule")))
     alertZero();
 
   return alerts;
@@ -182,6 +179,92 @@ void CCI::alertZero ()
 
     alerts[dataLoop] = status;
   }
+}
+
+int CCI::indicatorPrefDialog ()
+{
+  PrefDialog *dialog = new PrefDialog();
+  dialog->setCaption(tr("CCI Indicator"));
+  dialog->createPage (tr("Parms"));
+  dialog->addColorItem(tr("Color"), 1, color);
+  dialog->addComboItem(tr("Line Type"), 1, lineTypes, lineType);
+  dialog->addTextItem(tr("Label"), 1, label);
+  dialog->addIntItem(tr("Period"), 1, period, 1, 99999999);
+  dialog->addIntItem(tr("Smoothing"), 1, smoothing, 0, 99999999);
+  dialog->addComboItem(tr("Smoothing Type"), 1, getMATypes(), maType);
+  dialog->addComboItem(tr("Alert"), 1, alertList, alertType);
+  
+  int rc = dialog->exec();
+  
+  if (rc == QDialog::Accepted)
+  {
+    color = dialog->getColor(tr("Color"));
+    lineType = (PlotLine::LineType) dialog->getComboIndex(tr("Line Type"));
+    period = dialog->getInt(tr("Period"));
+    label = dialog->getText(tr("Label"));
+    smoothing = dialog->getInt(tr("Smoothing"));
+    maType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("Smoothing Type"));
+    alertType = dialog->getCombo(tr("Alert"));
+    rc = TRUE;
+  }
+  else
+    rc = FALSE;
+  
+  delete dialog;
+  return rc;
+}
+
+void CCI::loadIndicatorSettings (QString file)
+{
+  setDefaults();
+  
+  QDict<QString> dict = loadFile(file);
+  if (! dict.count())
+    return;
+  
+  QString *s = dict["color"];
+  if (s)
+    color.setNamedColor(s->left(s->length()));
+    
+  s = dict["lineType"];
+  if (s)
+    lineType = (PlotLine::LineType) s->left(s->length()).toInt();
+
+  s = dict["period"];
+  if (s)
+    period = s->left(s->length()).toInt();
+
+  s = dict["smoothing"];
+  if (s)
+    smoothing = s->left(s->length()).toInt();
+
+  s = dict["label"];
+  if (s)
+    label = s->left(s->length());
+      
+  s = dict["maType"];
+  if (s)
+    maType = (IndicatorPlugin::MAType) s->left(s->length()).toInt();
+
+  s = dict["alertType"];
+  if (s)
+    alertType = s->left(s->length());
+}
+
+void CCI::saveIndicatorSettings (QString file)
+{
+  QDict<QString>dict;
+  dict.setAutoDelete(TRUE);
+
+  dict.replace("color", new QString(color.name()));
+  dict.replace("lineType", new QString(QString::number(lineType)));
+  dict.replace("period", new QString(QString::number(period)));
+  dict.replace("smoothing", new QString(QString::number(smoothing)));
+  dict.replace("label", new QString(label));
+  dict.replace("maType", new QString(QString::number(maType)));
+  dict.replace("alertType", new QString(alertType));
+
+  saveFile(file, dict);
 }
 
 Plugin * create ()

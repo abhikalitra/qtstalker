@@ -28,6 +28,17 @@ class BB : public IndicatorPlugin
     virtual ~BB ();
     void calculate ();
     QMemArray<int> getAlerts ();
+    void loadIndicatorSettings (QString);
+    void saveIndicatorSettings (QString);
+    int indicatorPrefDialog ();
+    void setDefaults();
+    
+  private:
+    QColor color;
+    PlotLine::LineType lineType;
+    int period;
+    double deviation;
+    IndicatorPlugin::MAType maType;
 };
 
 extern "C"

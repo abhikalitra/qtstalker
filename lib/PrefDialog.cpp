@@ -274,6 +274,23 @@ void PrefDialog::addComboItem (QString name, int page, QStringList l, QString s)
   comboList.insert(name, combo);
 }
 
+void PrefDialog::addComboItem (QString name, int page, QStringList l, int s)
+{
+  QWidget *w = widgetList.at(page - 1);
+  
+  QGridLayout *grid = gridList.at(page - 1);
+  grid->expand(grid->numRows() + 1, grid->numCols());
+  
+  QLabel *label = new QLabel(name, w);
+  grid->addWidget(label, grid->numRows() - 2, 0);
+
+  QComboBox *combo = new QComboBox(w);
+  combo->insertStringList(l, -1);
+  combo->setCurrentItem(s);
+  grid->addWidget(combo, grid->numRows() - 2, 1);
+  comboList.insert(name, combo);
+}
+
 QString PrefDialog::getCombo (QString name)
 {
   QString s;
@@ -283,6 +300,17 @@ QString PrefDialog::getCombo (QString name)
     s = combo->currentText();
     
   return s;
+}
+
+int PrefDialog::getComboIndex (QString name)
+{
+  int i = 0;
+  
+  QComboBox *combo = comboList[name];
+  if (combo)
+    i = combo->currentItem();
+    
+  return i;
 }
 
 void PrefDialog::addDateItem (QString name, int page, QDateTime dt)

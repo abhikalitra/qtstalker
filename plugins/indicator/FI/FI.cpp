@@ -20,25 +20,28 @@
  */
 
 #include "FI.h"
+#include "PrefDialog.h"
+#include <qdict.h>
 
 FI::FI ()
 {
   pluginName = "FI";
-
-  set(tr("Type"), pluginName, Setting::None);
-  set(tr("Color"), "orange", Setting::Color);
-  set(tr("Line Type"), tr("Histogram Bar"), Setting::LineType);
-  set(tr("Label"), pluginName, Setting::Text);
-  set(tr("Smoothing"), "2", Setting::Integer);
-  set(tr("Smoothing Type"), tr("EMA"), Setting::MAType);
-  set(tr("Plot"), tr("False"), Setting::None);
-  set(tr("Alert"), tr("False"), Setting::None);
-
-  about = "Force Index\n";
+  plotFlag = FALSE;
+  alertFlag = FALSE;
+  setDefaults();
 }
 
 FI::~FI ()
 {
+}
+
+void FI::setDefaults ()
+{
+  color.setNamedColor("orange");
+  lineType = PlotLine::HistogramBar;
+  label = pluginName;
+  smoothing = 2;
+  maType = IndicatorPlugin::EMA;
 }
 
 void FI::calculate ()
@@ -54,22 +57,94 @@ void FI::calculate ()
     fi->append(force);
   }
 
-  if (getInt(tr("Smoothing")) > 1)
+  if (smoothing > 1)
   {
-    PlotLine *ma = getMA(fi, getData(tr("Smoothing Type")), getInt(tr("Smoothing")));
-    ma->setColor(getData(tr("Color")));
-    ma->setType(getData(tr("Line Type")));
-    ma->setLabel(getData(tr("Label")));
+    PlotLine *ma = getMA(fi, maType, smoothing);
+    ma->setColor(color);
+    ma->setType(lineType);
+    ma->setLabel(label);
     output.append(ma);
     delete fi;
   }
   else
   {
-    fi->setColor(getData(tr("Color")));
-    fi->setType(getData(tr("Line Type")));
-    fi->setLabel(getData(tr("Label")));
+    fi->setColor(color);
+    fi->setType(lineType);
+    fi->setLabel(label);
     output.append(fi);
   }
+}
+
+int FI::indicatorPrefDialog ()
+{
+  PrefDialog *dialog = new PrefDialog();
+  dialog->setCaption(tr("FI Indicator"));
+  dialog->createPage (tr("Parms"));
+  dialog->addColorItem(tr("Color"), 1, color);
+  dialog->addComboItem(tr("Line Type"), 1, lineTypes, lineType);
+  dialog->addTextItem(tr("Label"), 1, label);
+  dialog->addIntItem(tr("Smoothing"), 1, smoothing, 0, 99999999);
+  dialog->addComboItem(tr("Smoothing Type"), 1, getMATypes(), maType);
+  
+  int rc = dialog->exec();
+  
+  if (rc == QDialog::Accepted)
+  {
+    color = dialog->getColor(tr("Color"));
+    lineType = (PlotLine::LineType) dialog->getComboIndex(tr("Line Type"));
+    smoothing = dialog->getInt(tr("Smoothing"));
+    label = dialog->getText(tr("Label"));
+    maType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("Smoothing Type"));
+    rc = TRUE;
+  }
+  else
+    rc = FALSE;
+  
+  delete dialog;
+  return rc;
+}
+
+void FI::loadIndicatorSettings (QString file)
+{
+  setDefaults();
+  
+  QDict<QString> dict = loadFile(file);
+  if (! dict.count())
+    return;
+  
+  QString *s = dict["color"];
+  if (s)
+    color.setNamedColor(s->left(s->length()));
+    
+  s = dict["lineType"];
+  if (s)
+    lineType = (PlotLine::LineType) s->left(s->length()).toInt();
+
+  s = dict["smoothing"];
+  if (s)
+    smoothing = s->left(s->length()).toInt();
+
+  s = dict["label"];
+  if (s)
+    label = s->left(s->length());
+      
+  s = dict["maType"];
+  if (s)
+    maType = (IndicatorPlugin::MAType) s->left(s->length()).toInt();
+}
+
+void FI::saveIndicatorSettings (QString file)
+{
+  QDict<QString>dict;
+  dict.setAutoDelete(TRUE);
+
+  dict.replace("color", new QString(color.name()));
+  dict.replace("lineType", new QString(QString::number(lineType)));
+  dict.replace("smoothing", new QString(QString::number(smoothing)));
+  dict.replace("label", new QString(label));
+  dict.replace("maType", new QString(QString::number(maType)));
+
+  saveFile(file, dict);
 }
 
 Plugin * create ()

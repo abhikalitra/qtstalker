@@ -27,6 +27,17 @@ class SD : public IndicatorPlugin
     SD ();
     virtual ~SD ();
     void calculate ();
+    void loadIndicatorSettings (QString);
+    void saveIndicatorSettings (QString);
+    int indicatorPrefDialog ();
+    void setDefaults();
+    
+  private:
+    QColor color;
+    PlotLine::LineType lineType;
+    QString label;
+    int period;
+    IndicatorPlugin::InputType input;
 };
 
 extern "C"

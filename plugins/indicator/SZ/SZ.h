@@ -27,6 +27,19 @@ class SZ : public IndicatorPlugin
     SZ ();
     virtual ~SZ ();
     void calculate ();
+    void loadIndicatorSettings (QString);
+    void saveIndicatorSettings (QString);
+    int indicatorPrefDialog ();
+    void setDefaults();
+    
+  private:
+    QColor color;
+    PlotLine::LineType lineType;
+    double coefficient;
+    int period;
+    int no_decline_period;
+    QString method;
+    QStringList methodList;
 };
 
 extern "C"

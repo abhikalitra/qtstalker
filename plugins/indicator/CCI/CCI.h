@@ -30,6 +30,20 @@ class CCI : public IndicatorPlugin
     QMemArray<int> getAlerts ();
     void alertHundred ();
     void alertZero ();
+    void loadIndicatorSettings (QString);
+    void saveIndicatorSettings (QString);
+    int indicatorPrefDialog ();
+    void setDefaults();
+    
+  private:
+    QColor color;
+    PlotLine::LineType lineType;
+    QString label;
+    QString alertType;
+    int period;
+    int smoothing;
+    IndicatorPlugin::MAType maType;
+    QStringList alertList;
 };
 
 extern "C"

@@ -24,7 +24,7 @@
 
 QuotePlugin::QuotePlugin ()
 {
-  pluginType = "Quote";
+  pluginType = QuotePlug;
   saveFlag = FALSE;
 }
 

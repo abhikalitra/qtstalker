@@ -20,48 +20,43 @@
  */
 
 #include "MAOSC.h"
+#include "PrefDialog.h"
+#include <qdict.h>
 
 MAOSC::MAOSC ()
 {
   pluginName = "MAOSC";
-
-  set(tr("Type"), pluginName, Setting::None);
-  set(tr("Color"), "red", Setting::Color);
-  set(tr("Line Type"), tr("Histogram"), Setting::LineType);
-  set(tr("Label"), pluginName, Setting::Text);
-  set(tr("MA Type"), tr("SMA"), Setting::MAType);
-  set(tr("MA Type 2"), tr("SMA"), Setting::MAType);
-  set(tr("MA Period"), "9", Setting::Integer);
-  set(tr("MA Period 2"), "18", Setting::Integer);
-  set(tr("Input"), tr("Close"), Setting::InputField);
-  set(tr("Plot"), tr("False"), Setting::None);
-  set(tr("Alert"), tr("True"), Setting::None);
-
-  about = "Moving Average Oscillator\n";
+  plotFlag = FALSE;
+  alertFlag = TRUE;
+  setDefaults();
 }
 
 MAOSC::~MAOSC ()
 {
 }
 
+void MAOSC::setDefaults ()
+{
+  color.setNamedColor("red");
+  lineType = PlotLine::Histogram;
+  label = pluginName;
+  fastPeriod = 9;
+  slowPeriod = 18;
+  fastMaType = IndicatorPlugin::SMA;  
+  slowMaType = IndicatorPlugin::SMA;  
+  input = IndicatorPlugin::Close;
+}
+
 void MAOSC::calculate ()
 {
-  int period = getInt(tr("MA Period"));
-
-  int period2 = getInt(tr("MA Period 2"));
-
-  PlotLine *in = getInput(getData(tr("Input")));
-
-  QString type = getData(tr("MA Type"));
-
-  QString type2 = getData(tr("MA Type 2"));
-
+  PlotLine *in = getInput(input);
+  
   PlotLine *ma = new PlotLine();
 
-  PlotLine *fma = getMA(in, type, period);
+  PlotLine *fma = getMA(in, fastMaType, fastPeriod);
   int fmaLoop = fma->getSize() - 1;
 
-  PlotLine *sma = getMA(in, type2, period2);
+  PlotLine *sma = getMA(in, slowMaType, slowPeriod);
   int smaLoop = sma->getSize() - 1;
 
   while (fmaLoop > -1 && smaLoop > -1)
@@ -71,9 +66,9 @@ void MAOSC::calculate ()
     smaLoop--;
   }
 
-  ma->setColor(getData(tr("Color")));
-  ma->setType(getData(tr("Line Type")));
-  ma->setLabel(getData(tr("Label")));
+  ma->setColor(color);
+  ma->setType(lineType);
+  ma->setLabel(label);
   output.append(ma);
 
   delete in;
@@ -119,6 +114,99 @@ QMemArray<int> MAOSC::getAlerts ()
   }
 
   return alerts;
+}
+
+int MAOSC::indicatorPrefDialog ()
+{
+  PrefDialog *dialog = new PrefDialog();
+  dialog->setCaption(tr("MAOSC Indicator"));
+  dialog->createPage (tr("Parms"));
+  dialog->addColorItem(tr("Color"), 1, color);
+  dialog->addComboItem(tr("Line Type"), 1, lineTypes, lineType);
+  dialog->addTextItem(tr("Label"), 1, label);
+  dialog->addIntItem(tr("Fast Period"), 1, fastPeriod, 1, 99999999);
+  dialog->addIntItem(tr("Slow Period"), 1, slowPeriod, 1, 99999999);
+  dialog->addComboItem(tr("Fast MA Type"), 1, getMATypes(), fastMaType);
+  dialog->addComboItem(tr("Slow MA Type"), 1, getMATypes(), slowMaType);
+  dialog->addComboItem(tr("Input"), 1, getInputFields(), input);
+  
+  int rc = dialog->exec();
+  
+  if (rc == QDialog::Accepted)
+  {
+    color = dialog->getColor(tr("Color"));
+    lineType = (PlotLine::LineType) dialog->getComboIndex(tr("Line Type"));
+    fastPeriod = dialog->getInt(tr("Fast Period"));
+    slowPeriod = dialog->getInt(tr("Slow Period"));
+    label = dialog->getText(tr("Label"));
+    fastMaType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("Fast MA Type"));
+    slowMaType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("Slow MA Type"));
+    input = (IndicatorPlugin::InputType) dialog->getComboIndex(tr("Input"));
+    rc = TRUE;
+  }
+  else
+    rc = FALSE;
+  
+  delete dialog;
+  return rc;
+}
+
+void MAOSC::loadIndicatorSettings (QString file)
+{
+  setDefaults();
+  
+  QDict<QString> dict = loadFile(file);
+  if (! dict.count())
+    return;
+  
+  QString *s = dict["color"];
+  if (s)
+    color.setNamedColor(s->left(s->length()));
+    
+  s = dict["lineType"];
+  if (s)
+    lineType = (PlotLine::LineType) s->left(s->length()).toInt();
+
+  s = dict["fastPeriod"];
+  if (s)
+    fastPeriod = s->left(s->length()).toInt();
+
+  s = dict["slowPeriod"];
+  if (s)
+    slowPeriod = s->left(s->length()).toInt();
+  
+  s = dict["label"];
+  if (s)
+    label = s->left(s->length());
+      
+  s = dict["fastMaType"];
+  if (s)
+    fastMaType = (IndicatorPlugin::MAType) s->left(s->length()).toInt();
+    
+  s = dict["slowMaType"];
+  if (s)
+    slowMaType = (IndicatorPlugin::MAType) s->left(s->length()).toInt();
+  
+  s = dict["input"];
+  if (s)
+    input = (IndicatorPlugin::InputType) s->left(s->length()).toInt();
+}
+
+void MAOSC::saveIndicatorSettings (QString file)
+{
+  QDict<QString>dict;
+  dict.setAutoDelete(TRUE);
+
+  dict.replace("color", new QString(color.name()));
+  dict.replace("lineType", new QString(QString::number(lineType)));
+  dict.replace("fastPeriod", new QString(QString::number(fastPeriod)));
+  dict.replace("slowPeriod", new QString(QString::number(slowPeriod)));
+  dict.replace("label", new QString(label));
+  dict.replace("fastMaType", new QString(QString::number(fastMaType)));
+  dict.replace("slowMaType", new QString(QString::number(slowMaType)));
+  dict.replace("input", new QString(QString::number(input)));
+
+  saveFile(file, dict);
 }
 
 Plugin * create ()

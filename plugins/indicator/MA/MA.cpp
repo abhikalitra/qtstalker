@@ -20,40 +20,43 @@
  */
 
 #include "MA.h"
+#include "PrefDialog.h"
+#include <qdict.h>
 
 MA::MA ()
 {
   pluginName = "MA";
-
-  set(tr("Type"), pluginName, Setting::None);
-  set(tr("Color"), "red", Setting::Color);
-  set(tr("Line Type"), tr("Line"), Setting::LineType);
-  set(tr("Label"), pluginName, Setting::Text);
-  set(tr("Period"), "10", Setting::Integer);
-  set(tr("Displace"), "0", Setting::Integer);
-  set(tr("Input"), tr("Close"), Setting::InputField);
-  set(tr("MA Type"), "SMA", Setting::MAType);
-  set(tr("Plot"), tr("True"), Setting::None);
-  set(tr("Alert"), tr("True"), Setting::None);
-
-  about = "Moving Average\n";
+  plotFlag = TRUE;
+  alertFlag = TRUE;
+  setDefaults();
 }
 
 MA::~MA ()
 {
 }
 
+void MA::setDefaults ()
+{
+  color.setNamedColor("red");
+  lineType = PlotLine::Line;
+  label = pluginName;
+  period = 10;
+  displace = 0;  
+  maType = IndicatorPlugin::SMA;  
+  input = IndicatorPlugin::Close;
+}
+
 void MA::calculate ()
 {
-  PlotLine *in = getInput(getData(tr("Input")));
+  PlotLine *in = getInput(input);
 
-  PlotLine *data = getMA(in, getData(tr("MA Type")), getInt(tr("Period")), getInt(tr("Displace")));
+  PlotLine *data = getMA(in, maType, period, displace);
 
   delete in;
 
-  data->setColor(getData(tr("Color")));
-  data->setType(getData(tr("Line Type")));
-  data->setLabel(getData(tr("Label")));
+  data->setColor(color);
+  data->setType(lineType);
+  data->setLabel(label);
   output.append(data);
 }
 
@@ -66,7 +69,7 @@ QMemArray<int> MA::getAlerts ()
 
   PlotLine *line = output.at(0);
 
-  PlotLine *in = getInput(getData(tr("Input")));
+  PlotLine *in = getInput(input);
 
   int listLoop = data->count() - line->getSize() + 1;
   int lineLoop;
@@ -100,6 +103,92 @@ QMemArray<int> MA::getAlerts ()
   delete in;
 
   return alerts;
+}
+
+int MA::indicatorPrefDialog ()
+{
+  PrefDialog *dialog = new PrefDialog();
+  dialog->setCaption(tr("MA Indicator"));
+  dialog->createPage (tr("Parms"));
+  dialog->addColorItem(tr("Color"), 1, color);
+  dialog->addComboItem(tr("Line Type"), 1, lineTypes, lineType);
+  dialog->addTextItem(tr("Label"), 1, label);
+  dialog->addIntItem(tr("Period"), 1, period, 1, 99999999);
+  dialog->addComboItem(tr("MA Type"), 1, getMATypes(), maType);
+  dialog->addComboItem(tr("Input"), 1, getInputFields(), input);
+  dialog->addIntItem(tr("Displace"), 1, displace, 0, 99999999);
+  
+  int rc = dialog->exec();
+  
+  if (rc == QDialog::Accepted)
+  {
+    color = dialog->getColor(tr("Color"));
+    lineType = (PlotLine::LineType) dialog->getComboIndex(tr("Line Type"));
+    period = dialog->getInt(tr("Period"));
+    label = dialog->getText(tr("Label"));
+    maType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("MA Type"));
+    displace = dialog->getInt(tr("Displace"));
+    input = (IndicatorPlugin::InputType) dialog->getComboIndex(tr("Input"));
+    rc = TRUE;
+  }
+  else
+    rc = FALSE;
+  
+  delete dialog;
+  return rc;
+}
+
+void MA::loadIndicatorSettings (QString file)
+{
+  setDefaults();
+  
+  QDict<QString> dict = loadFile(file);
+  if (! dict.count())
+    return;
+  
+  QString *s = dict["color"];
+  if (s)
+    color.setNamedColor(s->left(s->length()));
+    
+  s = dict["lineType"];
+  if (s)
+    lineType = (PlotLine::LineType) s->left(s->length()).toInt();
+
+  s = dict["period"];
+  if (s)
+    period = s->left(s->length()).toInt();
+
+  s = dict["label"];
+  if (s)
+    label = s->left(s->length());
+      
+  s = dict["maType"];
+  if (s)
+    maType = (IndicatorPlugin::MAType) s->left(s->length()).toInt();
+    
+  s = dict["input"];
+  if (s)
+    input = (IndicatorPlugin::InputType) s->left(s->length()).toInt();
+    
+  s = dict["displace"];
+  if (s)
+    displace = s->left(s->length()).toInt();
+}
+
+void MA::saveIndicatorSettings (QString file)
+{
+  QDict<QString>dict;
+  dict.setAutoDelete(TRUE);
+
+  dict.replace("color", new QString(color.name()));
+  dict.replace("lineType", new QString(QString::number(lineType)));
+  dict.replace("period", new QString(QString::number(period)));
+  dict.replace("label", new QString(label));
+  dict.replace("maType", new QString(QString::number(maType)));
+  dict.replace("input", new QString(QString::number(input)));
+  dict.replace("displace", new QString(QString::number(displace)));
+
+  saveFile(file, dict);
 }
 
 Plugin * create ()

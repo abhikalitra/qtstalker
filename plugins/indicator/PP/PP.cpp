@@ -20,30 +20,33 @@
  */
 
 #include "PP.h"
+#include "PrefDialog.h"
+#include <qdict.h>
 
 PP::PP ()
 {
   pluginName = "PP";
-
-  set(tr("Type"), pluginName, Setting::None);
-  set(tr("Color Resistance"), "red", Setting::Color);
-  set(tr("Color Support"), "yellow", Setting::Color);
-  set(tr("Line Type Resistance"), tr("Horizontal"), Setting::None);
-  set(tr("Line Type Support"), tr("Horizontal"), Setting::None);
-  set(tr("Label First Support"), tr("PP FS"), Setting::Text);
-  set(tr("Label Second Support"), tr("PP SS"), Setting::Text);
-  set(tr("Label Third Support"), tr("PP TS"), Setting::Text);
-  set(tr("Label First Resistance"), tr("PP FR"), Setting::Text);
-  set(tr("Label Second Resistance"), tr("PP SR"), Setting::Text);
-  set(tr("Label Third Resistance"), tr("PP TR"), Setting::Text);
-  set(tr("Plot"), tr("True"), Setting::None);
-  set(tr("Alert"), tr("False"), Setting::None);
-
-  about = "Pivot Point\n";
+  plotFlag = TRUE;
+  alertFlag = FALSE;
+  setDefaults();
 }
 
 PP::~PP ()
 {
+}
+
+void PP::setDefaults ()
+{
+  resColor.setNamedColor("red");
+  supColor.setNamedColor("yellow");
+  resLineType = PlotLine::Horizontal;
+  supLineType = PlotLine::Horizontal;
+  supLabel = tr("PP FS");
+  supLabel2 = tr("PP SS");
+  supLabel3 = tr("PP TS");
+  resLabel = tr("PP FR");
+  resLabel2 = tr("PP SR");
+  resLabel3 = tr("PP TR");
 }
 
 void PP::calculate ()
@@ -54,39 +57,39 @@ void PP::calculate ()
   double pp = (high + low + close) / 3;
 
   PlotLine *fr = new PlotLine();
-  fr->setColor(getData(tr("Color Resistance")));
-  fr->setType(getData(tr("Line Type Resistance")));
-  fr->setLabel(getData(tr("Label First Resistance")));
+  fr->setColor(resColor);
+  fr->setType(resLineType);
+  fr->setLabel(resLabel);
   fr->append((2 * pp) - low);
 
   PlotLine *sr = new PlotLine();
-  sr->setColor(getData(tr("Color Resistance")));
-  sr->setType(getData(tr("Line Type Resistance")));
-  sr->setLabel(getData(tr("Label Second Resistance")));
+  sr->setColor(resColor);
+  sr->setType(resLineType);
+  sr->setLabel(resLabel2);
   sr->append(pp + (high - low));
 
   PlotLine *thr = new PlotLine();
-  thr->setColor(getData(tr("Color Resistance")));
-  thr->setType(getData(tr("Line Type Resistance")));
-  thr->setLabel(getData(tr("Label Third Resistance")));
+  thr->setColor(resColor);
+  thr->setType(resLineType);
+  thr->setLabel(resLabel3);
   thr->append((2 * pp) + (high - (2 * low)));
 
   PlotLine *fs = new PlotLine();
-  fs->setColor(getData(tr("Color Support")));
-  fs->setType(getData(tr("Line Type Support")));
-  fs->setLabel(getData(tr("Label First Support")));
+  fs->setColor(supColor);
+  fs->setType(supLineType);
+  fs->setLabel(supLabel);
   fs->append((2 * pp) - high);
 
   PlotLine *ss = new PlotLine();
-  ss->setColor(getData(tr("Color Support")));
-  ss->setType(getData(tr("Line Type Support")));
-  ss->setLabel(getData(tr("Label Second Support")));
+  ss->setColor(supColor);
+  ss->setType(supLineType);
+  ss->setLabel(supLabel2);
   ss->append(pp - (high - low));
 
   PlotLine *ts = new PlotLine();
-  ts->setColor(getData(tr("Color Support")));
-  ts->setType(getData(tr("Line Type Support")));
-  ts->setLabel(getData(tr("Label Second Support")));
+  ts->setColor(supColor);
+  ts->setType(supLineType);
+  ts->setLabel(supLabel3);
   ts->append((2 * pp) - ((2 * high) - low));
 
   output.append(ts);
@@ -95,6 +98,115 @@ void PP::calculate ()
   output.append(fr);
   output.append(sr);
   output.append(thr);
+}
+
+int PP::indicatorPrefDialog ()
+{
+  PrefDialog *dialog = new PrefDialog();
+  dialog->setCaption(tr("PP Indicator"));
+  dialog->createPage (tr("Support"));
+  dialog->addColorItem(tr("Support Color"), 1, supColor);
+  dialog->addComboItem(tr("Support Line Type"), 1, lineTypes, supLineType);
+  dialog->addTextItem(tr("Label First Support"), 1, supLabel);
+  dialog->addTextItem(tr("Label Second Support"), 1, supLabel2);
+  dialog->addTextItem(tr("Label Third Support"), 1, supLabel3);
+  
+  dialog->createPage (tr("Resistance"));
+  dialog->addColorItem(tr("Resistance Color"), 2, resColor);
+  dialog->addComboItem(tr("Resistance Line Type"), 2, lineTypes, resLineType);
+  dialog->addTextItem(tr("Label First Resistance"), 2, resLabel);
+  dialog->addTextItem(tr("Label Second Resistance"), 2, resLabel2);
+  dialog->addTextItem(tr("Label Third Resistance"), 2, resLabel3);
+  
+  int rc = dialog->exec();
+  
+  if (rc == QDialog::Accepted)
+  {
+    supColor = dialog->getColor(tr("Support Color"));
+    resColor = dialog->getColor(tr("Resistance Color"));
+    supLineType = (PlotLine::LineType) dialog->getComboIndex(tr("Support Type"));
+    resLineType = (PlotLine::LineType) dialog->getComboIndex(tr("Resistance Type"));
+    supLabel = dialog->getText(tr("Label First Support"));
+    supLabel2 = dialog->getText(tr("Label Second Support"));
+    supLabel3 = dialog->getText(tr("Label Third Support"));
+    resLabel = dialog->getText(tr("Label First Resistance"));
+    resLabel2 = dialog->getText(tr("Label Second Resistance"));
+    resLabel3 = dialog->getText(tr("Label Third Resistance"));
+    rc = TRUE;
+  }
+  else
+    rc = FALSE;
+  
+  delete dialog;
+  return rc;
+}
+
+void PP::loadIndicatorSettings (QString file)
+{
+  setDefaults();
+  
+  QDict<QString> dict = loadFile(file);
+  if (! dict.count())
+    return;
+  
+  QString *s = dict["resColor"];
+  if (s)
+    resColor.setNamedColor(s->left(s->length()));
+    
+  s = dict["supColor"];
+  if (s)
+    supColor.setNamedColor(s->left(s->length()));
+  
+  s = dict["resLineType"];
+  if (s)
+    resLineType = (PlotLine::LineType) s->left(s->length()).toInt();
+
+  s = dict["supLineType"];
+  if (s)
+    supLineType = (PlotLine::LineType) s->left(s->length()).toInt();
+  
+  s = dict["resLabel"];
+  if (s)
+    resLabel = s->left(s->length());
+      
+  s = dict["resLabel2"];
+  if (s)
+    resLabel2 = s->left(s->length());
+  
+  s = dict["resLabel3"];
+  if (s)
+    resLabel3 = s->left(s->length());
+
+  s = dict["supLabel"];
+  if (s)
+    supLabel = s->left(s->length());
+
+  s = dict["supLabel2"];
+  if (s)
+    supLabel2 = s->left(s->length());
+
+  s = dict["supLabel3"];
+  if (s)
+    supLabel3 = s->left(s->length());
+}
+
+void PP::saveIndicatorSettings (QString file)
+{
+  QDict<QString>dict;
+  dict.setAutoDelete(TRUE);
+
+  dict.replace("resColor", new QString(resColor.name()));
+  dict.replace("supColor", new QString(supColor.name()));
+  dict.replace("resLineType", new QString(QString::number(resLineType)));
+  dict.replace("supLineType", new QString(QString::number(supLineType)));
+  dict.replace("resLabel", new QString(resLabel));
+  dict.replace("resLabel2", new QString(resLabel2));
+  dict.replace("resLabel3", new QString(resLabel3));
+  dict.replace("supLabel", new QString(supLabel));
+  dict.replace("supLabel2", new QString(supLabel2));
+  dict.replace("supLabel3", new QString(supLabel3));
+
+  saveFile(file, dict);
 }
 
 Plugin * create ()

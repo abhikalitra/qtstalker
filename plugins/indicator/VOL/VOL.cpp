@@ -20,42 +20,41 @@
  */
 
 #include "VOL.h"
+#include "PrefDialog.h"
+#include <qdict.h>
 
 VOL::VOL ()
 {
   pluginName = "VOL";
-
-  set(tr("Type"), pluginName, Setting::None);
-  set(tr("Color Up"), "green", Setting::Color);
-  set(tr("Color Down"), "red", Setting::Color);
-  set(tr("Line Type"), tr("Histogram Bar"), Setting::LineType);
-  set(tr("Label"), pluginName, Setting::Text);
-  set(tr("Plot"), tr("False"), Setting::None);
-  set(tr("Alert"), tr("False"), Setting::None);
-
-  set(tr("MA Color"), "yellow", Setting::Color);
-  set(tr("MA Line Type"), tr("Line"), Setting::LineType);
-  set(tr("MA Label"), tr("MAVol"), Setting::Text);
-  set(tr("MA Period"), "0", Setting::Integer);
-  set(tr("MA Displace"), "0", Setting::Integer);
-  set(tr("MA Type"), "SMA", Setting::MAType);
-
-  about = "Volume\n";
+  plotFlag = FALSE;
+  alertFlag = FALSE;
+  setDefaults();
 }
 
 VOL::~VOL ()
 {
 }
 
+void VOL::setDefaults ()
+{
+  upColor.setNamedColor("green");
+  downColor.setNamedColor("red");
+  maColor.setNamedColor("yellow");
+  volLineType = PlotLine::HistogramBar;
+  maLineType = PlotLine::Line;
+  volLabel = "VOL";
+  maLabel = "MAVol";
+  period = 0;
+  displace = 0;
+  maType = IndicatorPlugin::SMA;
+}
+
 void VOL::calculate ()
 {
-  PlotLine *pl = getInput(tr("Volume"));
-  pl->setType(getData(tr("Line Type")));
-  pl->setLabel(getData(tr("Label")));
+  PlotLine *pl = getInput(IndicatorPlugin::Volume);
+  pl->setType(volLineType);
+  pl->setLabel(volLabel);
   pl->setColorFlag(TRUE);
-
-  QString upColor = getData(tr("Color Up"));
-  QString downColor = getData(tr("Color Down"));
 
   // set the first bar color
   pl->appendColorBar(upColor);
@@ -71,14 +70,126 @@ void VOL::calculate ()
 
   output.append(pl);
 
-  if (getInt(tr("MA Period")) < 1)
+  if (period < 1)
     return;
 
-  PlotLine *ma = getMA(pl, getData(tr("MA Type")), getInt(tr("MA Period")), getInt(tr("MA Displace")));
-  ma->setColor(getData(tr("MA Color")));
-  ma->setType(getData(tr("MA Line Type")));
-  ma->setLabel(getData(tr("MA Label")));
+  PlotLine *ma = getMA(pl, maType, period, displace);
+  ma->setColor(maColor);
+  ma->setType(maLineType);
+  ma->setLabel(maLabel);
   output.append(ma);
+}
+
+int VOL::indicatorPrefDialog ()
+{
+  PrefDialog *dialog = new PrefDialog();
+  dialog->setCaption(tr("VOL Indicator"));
+  
+  dialog->createPage (tr("VOL"));
+  dialog->addColorItem(tr("Up Color"), 1, upColor);
+  dialog->addColorItem(tr("Down Color"), 1, downColor);
+  dialog->addTextItem(tr("VOL Label"), 1, volLabel);
+  dialog->addComboItem(tr("VOL Line Type"), 1, lineTypes, volLineType);
+  
+  dialog->createPage (tr("MA"));
+  dialog->addColorItem(tr("MA Color"), 2, maColor);
+  dialog->addIntItem(tr("MA Period"), 2, period, 0, 99999999);
+  dialog->addTextItem(tr("MA Label"), 2, maLabel);
+  dialog->addComboItem(tr("MA Line Type"), 2, lineTypes, maLineType);
+  dialog->addComboItem(tr("MA Type"), 2, getMATypes(), maType);
+  dialog->addIntItem(tr("Displacement"), 2, displace, 0, 99999999);
+  
+  int rc = dialog->exec();
+  
+  if (rc == QDialog::Accepted)
+  {
+    upColor = dialog->getColor(tr("Up Color"));
+    downColor = dialog->getColor(tr("Down Color"));
+    volLabel = dialog->getText(tr("VOL Label"));
+    volLineType = (PlotLine::LineType) dialog->getComboIndex(tr("VOL Line Type"));
+    
+    maColor = dialog->getColor(tr("MA Color"));
+    period = dialog->getInt(tr("MA Period"));
+    maLabel = dialog->getText(tr("MA Label"));
+    maLineType = (PlotLine::LineType) dialog->getComboIndex(tr("MA Line Type"));
+    maType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("MA Type"));
+    displace = dialog->getInt(tr("Displacement"));
+    
+    rc = TRUE;
+  }
+  else
+    rc = FALSE;
+  
+  delete dialog;
+  return rc;
+}
+
+void VOL::loadIndicatorSettings (QString file)
+{
+  setDefaults();
+  
+  QDict<QString> dict = loadFile(file);
+  if (! dict.count())
+    return;
+  
+  QString *s = dict["upColor"];
+  if (s)
+    upColor.setNamedColor(s->left(s->length()));
+    
+  s = dict["downColor"];
+  if (s)
+    downColor.setNamedColor(s->left(s->length()));
+    
+  s = dict["volLabel"];
+  if (s)
+    volLabel = s->left(s->length());
+        
+  s = dict["volLineType"];
+  if (s)
+    volLineType = (PlotLine::LineType) s->left(s->length()).toInt();
+        
+  s = dict["maColor"];
+  if (s)
+    maColor.setNamedColor(s->left(s->length()));
+        
+  s = dict["maPeriod"];
+  if (s)
+    period = s->left(s->length()).toInt();
+	
+  s = dict["maLabel"];
+  if (s)
+    maLabel = s->left(s->length());
+        
+  s = dict["maLineType"];
+  if (s)
+    maLineType = (PlotLine::LineType) s->left(s->length()).toInt();
+        
+  s = dict["maType"];
+  if (s)
+    maType = (IndicatorPlugin::MAType) s->left(s->length()).toInt();
+        
+  s = dict["maDisplace"];
+  if (s)
+    displace = s->left(s->length()).toInt();
+}
+
+void VOL::saveIndicatorSettings (QString file)
+{
+  QDict<QString>dict;
+  dict.setAutoDelete(TRUE);
+
+  dict.replace("upColor", new QString(upColor.name()));
+  dict.replace("downColor", new QString(downColor.name()));
+  dict.replace("volLabel", new QString(volLabel));
+  dict.replace("volLineType", new QString(QString::number(volLineType)));
+  dict.replace("maColor", new QString(maColor.name()));
+  dict.replace("maPeriod", new QString(QString::number(period)));
+  dict.replace("maLabel", new QString(maLabel));
+  dict.replace("maLineType", new QString(QString::number(maLineType)));
+  dict.replace("maType", new QString(QString::number(maType)));
+  dict.replace("maDisplace", new QString(QString::number(displace)));
+  
+  saveFile(file, dict);
 }
 
 Plugin * create ()

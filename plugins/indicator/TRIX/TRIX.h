@@ -28,6 +28,22 @@ class TRIX : public IndicatorPlugin
     virtual ~TRIX ();
     void calculate ();
     QMemArray<int> getAlerts ();
+    void loadIndicatorSettings (QString);
+    void saveIndicatorSettings (QString);
+    int indicatorPrefDialog ();
+    void setDefaults();
+    
+  private:
+    QColor color;
+    QColor trigColor;
+    PlotLine::LineType lineType;
+    PlotLine::LineType trigLineType;
+    QString label;
+    QString trigLabel;
+    int period;
+    int tperiod;
+    IndicatorPlugin::MAType maType;
+    IndicatorPlugin::InputType input;
 };
 
 extern "C"

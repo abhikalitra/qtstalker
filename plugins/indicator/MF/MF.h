@@ -27,6 +27,18 @@ class MF : public IndicatorPlugin
     MF ();
     virtual ~MF ();
     void calculate ();
+    void loadIndicatorSettings (QString);
+    void saveIndicatorSettings (QString);
+    int indicatorPrefDialog ();
+    void setDefaults();
+    
+  private:
+    QColor color;
+    PlotLine::LineType lineType;
+    QString label;
+    int period;
+    int smoothing;
+    IndicatorPlugin::MAType maType;
 };
 
 extern "C"

@@ -20,51 +20,54 @@
  */
 
 #include "MACD.h"
+#include "PrefDialog.h"
+#include <qdict.h>
 
 MACD::MACD ()
 {
   pluginName = "MACD";
-
-  set(tr("Type"), pluginName, Setting::None);
-  set(tr("MACD Color"), "red", Setting::Color);
-  set(tr("Signal Color"), "yellow", Setting::Color);
-  set(tr("Oscillator Color"), "blue", Setting::Color);
-  set(tr("MACD Line Type"), tr("Line"), Setting::LineType);
-  set(tr("Signal Line Type"), tr("Dash"), Setting::LineType);
-  set(tr("Oscillator Line Type"), tr("Histogram"), Setting::LineType);
-  set(tr("MACD Label"), pluginName, Setting::Text);
-  set(tr("Signal Label"), tr("Trig"), Setting::Text);
-  set(tr("Oscillator Label"), tr("Osc"), Setting::Text);
-  set(tr("Input"), tr("Close"), Setting::InputField);
-  set(tr("Fast Period"), "12", Setting::Integer);
-  set(tr("Slow Period"), "26", Setting::Integer);
-  set(tr("Signal Period"), "9", Setting::Integer);
-  set(tr("MA Type"), tr("EMA"), Setting::MAType);
-  set(tr("Oscillator Scaling Max"), tr("False"), Setting::Bool);
-  set(tr("Plot"), tr("False"), Setting::None);
-  set(tr("Alert"), tr("True"), Setting::None);
-
-  about = "Moving Average Convergence Divergence\n";
+  plotFlag = FALSE;
+  alertFlag = TRUE;
+  setDefaults();
 }
 
 MACD::~MACD ()
 {
 }
 
+void MACD::setDefaults ()
+{
+  macdColor.setNamedColor("red");
+  trigColor.setNamedColor("yellow");
+  oscColor.setNamedColor("blue");
+  macdLineType = PlotLine::Line;
+  trigLineType = PlotLine::Dash;
+  oscLineType = PlotLine::Histogram;
+  macdLabel = "MACD";
+  trigLabel = "Trig";
+  oscLabel = "Osc";
+  fastPeriod = 12;
+  slowPeriod = 26;
+  trigPeriod = 9;
+  macdMAType = IndicatorPlugin::EMA;  
+  macdInput = IndicatorPlugin::Close;
+  oscScaleFlag = FALSE;
+}
+
 void MACD::calculate ()
 {
-  PlotLine *d = getInput(getData(tr("Input")));
+  PlotLine *d = getInput(macdInput);
 
-  PlotLine *slow = getMA(d, getData(tr("MA Type")), getInt(tr("Slow Period")));
+  PlotLine *slow = getMA(d, macdMAType, slowPeriod);
   if (slow->getSize() == 0)
     return;
 
-  PlotLine *fast = getMA(d, getData(tr("MA Type")), getInt(tr("Fast Period")));
+  PlotLine *fast = getMA(d, macdMAType, fastPeriod);
 
   PlotLine *macd = new PlotLine();
-  macd->setColor(getData(tr("MACD Color")));
-  macd->setType(getData(tr("MACD Line Type")));
-  macd->setLabel(getData(tr("MACD Label")));
+  macd->setColor(macdColor);
+  macd->setType(macdLineType);
+  macd->setLabel(macdLabel);
 
   int floop = fast->getSize() - 1;
   int sloop = slow->getSize() - 1;
@@ -76,17 +79,16 @@ void MACD::calculate ()
     sloop--;
   }
 
-  PlotLine *signal = getMA(macd, getData(tr("MA Type")), getInt(tr("Signal Period")));
-  signal->setColor(getData(tr("Signal Color")));
-  signal->setType(getData(tr("Signal Line Type")));
-  signal->setLabel(getData(tr("Signal Label")));
+  PlotLine *signal = getMA(macd, macdMAType, trigPeriod);
+  signal->setColor(trigColor);
+  signal->setType(trigLineType);
+  signal->setLabel(trigLabel);
 
   PlotLine *osc = new PlotLine();
-  osc->setColor(getData(tr("Oscillator Color")));
-  osc->setType(getData(tr("Oscillator Line Type")));
-  osc->setLabel(getData(tr("Oscillator Label")));
-  if (! getData(tr("Oscillator Scaling Max")).compare(tr("True")))
-    osc->setScaleFlag(TRUE);
+  osc->setColor(oscColor);
+  osc->setType(oscLineType);
+  osc->setLabel(oscLabel);
+  osc->setScaleFlag(oscScaleFlag);
 
   floop = macd->getSize() - 1;
   sloop = signal->getSize() - 1;
@@ -148,6 +150,158 @@ QMemArray<int> MACD::getAlerts ()
   }
 
   return alerts;
+}
+
+int MACD::indicatorPrefDialog ()
+{
+  PrefDialog *dialog = new PrefDialog();
+  dialog->setCaption(tr("MACD Indicator"));
+  
+  dialog->createPage (tr("MACD"));
+  dialog->addColorItem(tr("MACD Color"), 1, macdColor);
+  dialog->addIntItem(tr("Fast Period"), 1, fastPeriod, 1, 99999999);
+  dialog->addIntItem(tr("Slow Period"), 1, slowPeriod, 1, 99999999);
+  dialog->addTextItem(tr("MACD Label"), 1, macdLabel);
+  dialog->addComboItem(tr("MACD Line Type"), 1, lineTypes, macdLineType);
+  dialog->addComboItem(tr("MACD MA Type"), 1, getMATypes(), macdMAType);
+  dialog->addComboItem(tr("MACD Input"), 1, getInputFields(), macdInput);
+  
+  dialog->createPage (tr("Trigger"));
+  dialog->addColorItem(tr("Trigger Color"), 2, trigColor);
+  dialog->addIntItem(tr("Trigger Period"), 2, trigPeriod, 1, 99999999);
+  dialog->addTextItem(tr("Trigger Label"), 2, trigLabel);
+  dialog->addComboItem(tr("Trigger Line Type"), 2, lineTypes, trigLineType);
+  
+  dialog->createPage (tr("Osc"));
+  dialog->addColorItem(tr("Osc Color"), 3, oscColor);
+  dialog->addTextItem(tr("Osc Label"), 3, oscLabel);
+  dialog->addComboItem(tr("Osc Line Type"), 3, lineTypes, oscLineType);
+  dialog->addCheckItem(tr("Osc Scaling Max"), 3, oscScaleFlag);
+  
+  int rc = dialog->exec();
+  
+  if (rc == QDialog::Accepted)
+  {
+    macdColor = dialog->getColor(tr("MACD Color"));
+    fastPeriod = dialog->getInt(tr("Fast Period"));
+    slowPeriod = dialog->getInt(tr("Slow Period"));
+    macdLabel = dialog->getText(tr("MACD Label"));
+    macdLineType = (PlotLine::LineType) dialog->getComboIndex(tr("MACD Line Type"));
+    macdMAType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("MACD MA Type"));
+    macdInput = (IndicatorPlugin::InputType) dialog->getComboIndex(tr("MACD Input"));
+    
+    trigColor = dialog->getColor(tr("Trigger Color"));
+    trigPeriod = dialog->getInt(tr("Trigger Period"));
+    trigLabel = dialog->getText(tr("Trigger Label"));
+    trigLineType = (PlotLine::LineType) dialog->getComboIndex(tr("Trigger Line Type"));
+    
+    oscColor = dialog->getColor(tr("Osc Color"));
+    oscLabel = dialog->getText(tr("Osc Label"));
+    oscLineType = (PlotLine::LineType) dialog->getComboIndex(tr("Osc Line Type"));
+    oscScaleFlag = dialog->getCheck(tr("Osc Scaling Max"));
+    
+    rc = TRUE;
+  }
+  else
+    rc = FALSE;
+  
+  delete dialog;
+  return rc;
+}
+
+void MACD::loadIndicatorSettings (QString file)
+{
+  setDefaults();
+  
+  QDict<QString> dict = loadFile(file);
+  if (! dict.count())
+    return;
+  
+  QString *s = dict["macdColor"];
+  if (s)
+    macdColor.setNamedColor(s->left(s->length()));
+    
+  s = dict["fastPeriod"];
+  if (s)
+    fastPeriod = s->left(s->length()).toInt();
+	
+  s = dict["slowPeriod"];
+  if (s)
+    slowPeriod = s->left(s->length()).toInt();
+  
+  s = dict["macdLabel"];
+  if (s)
+    macdLabel = s->left(s->length());
+        
+  s = dict["macdLineType"];
+  if (s)
+    macdLineType = (PlotLine::LineType) s->left(s->length()).toInt();
+        
+  s = dict["macdMAType"];
+  if (s)
+    macdMAType = (IndicatorPlugin::MAType) s->left(s->length()).toInt();
+        
+  s = dict["macdInput"];
+  if (s)
+    macdInput = (IndicatorPlugin::InputType) s->left(s->length()).toInt();
+
+  s = dict["trigColor"];
+  if (s)
+    trigColor.setNamedColor(s->left(s->length()));
+  
+  s = dict["trigPeriod"];
+  if (s)
+    trigPeriod = s->left(s->length()).toInt();
+  
+  s = dict["trigLabel"];
+  if (s)
+    trigLabel = s->left(s->length());
+        
+  s = dict["trigLineType"];
+  if (s)
+    trigLineType = (PlotLine::LineType) s->left(s->length()).toInt();
+        
+  s = dict["oscColor"];
+  if (s)
+    oscColor.setNamedColor(s->left(s->length()));
+  
+  s = dict["oscLabel"];
+  if (s)
+    oscLabel = s->left(s->length());
+        
+  s = dict["oscLineType"];
+  if (s)
+    oscLineType = (PlotLine::LineType) s->left(s->length()).toInt();
+
+  s = dict["oscScaleFlag"];
+  if (s)
+    oscScaleFlag = s->left(s->length()).toInt();
+}
+
+void MACD::saveIndicatorSettings (QString file)
+{
+  QDict<QString>dict;
+  dict.setAutoDelete(TRUE);
+
+  dict.replace("macdColor", new QString(macdColor.name()));
+  dict.replace("fastPeriod", new QString(QString::number(fastPeriod)));
+  dict.replace("slowPeriod", new QString(QString::number(slowPeriod)));
+  dict.replace("macdLabel", new QString(macdLabel));
+  dict.replace("macdLineType", new QString(QString::number(macdLineType)));
+  dict.replace("macdMAType", new QString(QString::number(macdMAType)));
+  dict.replace("macdInput", new QString(QString::number(macdInput)));
+  
+  dict.replace("trigColor", new QString(trigColor.name()));
+  dict.replace("trigPeriod", new QString(QString::number(trigPeriod)));
+  dict.replace("trigLabel", new QString(trigLabel));
+  dict.replace("trigLineType", new QString(QString::number(trigLineType)));
+  
+  dict.replace("oscColor", new QString(oscColor.name()));
+  dict.replace("oscLabel", new QString(oscLabel));
+  dict.replace("oscLineType", new QString(QString::number(oscLineType)));
+  dict.replace("oscScaleFlag", new QString(QString::number(oscScaleFlag)));
+  
+  saveFile(file, dict);
 }
 
 Plugin * create ()

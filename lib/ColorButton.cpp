@@ -29,6 +29,7 @@ ColorButton::ColorButton (QWidget *w, QColor c) : QPushButton (w)
   setMaximumHeight(25);
   setToggleButton(FALSE);
   pix.resize(50, 10);
+  setToggleType(SingleShot);
 }
 
 ColorButton::~ColorButton ()

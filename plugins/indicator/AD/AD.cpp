@@ -20,31 +20,34 @@
  */
 
 #include "AD.h"
+#include "PrefDialog.h"
+#include <qdict.h>
 
 AD::AD ()
 {
   pluginName = "AD";
-
-  set(tr("Type"), pluginName, Setting::None);
-  set(tr("Color"), "red", Setting::Color);
-  set(tr("Line Type"), tr("Line"), Setting::LineType);
-  set(tr("Label"), pluginName, Setting::Text);
-  set(tr("Plot"), tr("False"), Setting::None);
-  set(tr("Alert"), tr("False"), Setting::None);
-
-  about = "Acumulation Distribution\n";
+  plotFlag = FALSE;
+  alertFlag = FALSE;
+  setDefaults();
 }
 
 AD::~AD ()
 {
 }
 
+void AD::setDefaults ()
+{
+  color.setNamedColor("red");
+  lineType = PlotLine::Line;
+  label = pluginName;
+}
+
 void AD::calculate ()
 {
   PlotLine *line = new PlotLine;
-  line->setColor(getData(tr("Color")));
-  line->setType(getData(tr("Line Type")));
-  line->setLabel(getData(tr("Label")));
+  line->setColor(color);
+  line->setType(lineType);
+  line->setLabel(label);
 
   int loop;
   double accum = 0;
@@ -71,6 +74,65 @@ void AD::calculate ()
 
   output.append(line);
 }
+
+int AD::indicatorPrefDialog ()
+{
+  PrefDialog *dialog = new PrefDialog();
+  dialog->setCaption(tr("AD Indicator"));
+  dialog->createPage (tr("Parms"));
+  dialog->addColorItem(tr("Color"), 1, color);
+  dialog->addTextItem(tr("Label"), 1, label);
+  dialog->addComboItem(tr("Line Type"), 1, lineTypes, lineType);
+  
+  int rc = dialog->exec();
+  
+  if (rc == QDialog::Accepted)
+  {
+    color = dialog->getColor(tr("Color"));
+    lineType = (PlotLine::LineType) dialog->getComboIndex(tr("Line Type"));
+    label = dialog->getText(tr("Label"));
+    rc = TRUE;
+  }
+  else
+    rc = FALSE;
+  
+  delete dialog;
+  return rc;
+}
+
+void AD::loadIndicatorSettings (QString file)
+{
+  setDefaults();
+  
+  QDict<QString> dict = loadFile(file);
+  if (! dict.count())
+    return;
+  
+  QString *s = dict["color"];
+  if (s)
+    color.setNamedColor(s->left(s->length()));
+    
+  s = dict["label"];
+  if (s)
+    label = s->left(s->length());
+        
+  s = dict["lineType"];
+  if (s)
+    lineType = (PlotLine::LineType) s->left(s->length()).toInt();
+}
+
+void AD::saveIndicatorSettings (QString file)
+{
+  QDict<QString>dict;
+  dict.setAutoDelete(TRUE);
+
+  dict.replace("color", new QString(color.name()));
+  dict.replace("label", new QString(label));
+  dict.replace("lineType", new QString(QString::number(lineType)));
+
+  saveFile(file, dict);
+}
+
 
 Plugin * create ()
 {

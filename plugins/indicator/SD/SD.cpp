@@ -21,32 +21,33 @@
 
 #include "SD.h"
 #include <math.h>
+#include "PrefDialog.h"
+#include <qdict.h>
 
 SD::SD ()
 {
   pluginName = "SD";
-
-  set(tr("Type"), pluginName, Setting::None);
-  set(tr("Color"), "red", Setting::Color);
-  set(tr("Line Type"), tr("Line"), Setting::LineType);
-  set(tr("Label"), pluginName, Setting::Text);
-  set(tr("Period"), "21", Setting::Integer);
-  set(tr("Input"), tr("Close"), Setting::InputField);
-  set(tr("Plot"), tr("False"), Setting::None);
-  set(tr("Alert"), tr("False"), Setting::None);
-
-  about = "Standard Deviation\n";
+  plotFlag = FALSE;
+  alertFlag = FALSE;
+  setDefaults();
 }
 
 SD::~SD ()
 {
 }
 
+void SD::setDefaults ()
+{
+  color.setNamedColor("red");
+  lineType = PlotLine::Line;
+  label = pluginName;
+  period = 21;
+  input = IndicatorPlugin::Close;
+}
+
 void SD::calculate ()
 {
-  int period = getInt(tr("Period"));
-
-  PlotLine *in = getInput(getData(tr("Input")));
+  PlotLine *in = getInput(input);
 
   PlotLine *sd = new PlotLine();
 
@@ -70,12 +71,84 @@ void SD::calculate ()
     sd->append(ds);
   }
 
-  sd->setColor(getData(tr("Color")));
-  sd->setType(getData(tr("Line Type")));
-  sd->setLabel(getData(tr("Label")));
+  sd->setColor(color);
+  sd->setType(lineType);
+  sd->setLabel(label);
   output.append(sd);
 
   delete in;
+}
+
+int SD::indicatorPrefDialog ()
+{
+  PrefDialog *dialog = new PrefDialog();
+  dialog->setCaption(tr("SD Indicator"));
+  dialog->createPage (tr("Parms"));
+  dialog->addColorItem(tr("Color"), 1, color);
+  dialog->addComboItem(tr("Line Type"), 1, lineTypes, lineType);
+  dialog->addTextItem(tr("Label"), 1, label);
+  dialog->addIntItem(tr("Period"), 1, period, 1, 99999999);
+  dialog->addComboItem(tr("Input"), 1, getInputFields(), input);
+  
+  int rc = dialog->exec();
+  
+  if (rc == QDialog::Accepted)
+  {
+    color = dialog->getColor(tr("Color"));
+    lineType = (PlotLine::LineType) dialog->getComboIndex(tr("Line Type"));
+    period = dialog->getInt(tr("Period"));
+    label = dialog->getText(tr("Label"));
+    input = (IndicatorPlugin::InputType) dialog->getComboIndex(tr("Input"));
+    rc = TRUE;
+  }
+  else
+    rc = FALSE;
+  
+  delete dialog;
+  return rc;
+}
+
+void SD::loadIndicatorSettings (QString file)
+{
+  setDefaults();
+  
+  QDict<QString> dict = loadFile(file);
+  if (! dict.count())
+    return;
+  
+  QString *s = dict["color"];
+  if (s)
+    color.setNamedColor(s->left(s->length()));
+    
+  s = dict["lineType"];
+  if (s)
+    lineType = (PlotLine::LineType) s->left(s->length()).toInt();
+
+  s = dict["period"];
+  if (s)
+    period = s->left(s->length()).toInt();
+
+  s = dict["label"];
+  if (s)
+    label = s->left(s->length());
+      
+  s = dict["input"];
+  if (s)
+    input = (IndicatorPlugin::InputType) s->left(s->length()).toInt();
+}
+
+void SD::saveIndicatorSettings (QString file)
+{
+  QDict<QString>dict;
+  dict.setAutoDelete(TRUE);
+
+  dict.replace("color", new QString(color.name()));
+  dict.replace("lineType", new QString(QString::number(lineType)));
+  dict.replace("period", new QString(QString::number(period)));
+  dict.replace("label", new QString(label));
+  dict.replace("input", new QString(QString::number(input)));
+
+  saveFile(file, dict);
 }
 
 Plugin * create ()

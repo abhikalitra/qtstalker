@@ -20,30 +20,31 @@
  */
 
 #include "WILLR.h"
+#include "PrefDialog.h"
+#include <qdict.h>
 
 WILLR::WILLR ()
 {
   pluginName = "WILLR";
-
-  set(tr("Type"), pluginName, Setting::None);
-  set(tr("Color"), "red", Setting::Color);
-  set(tr("Line Type"), tr("Line"), Setting::LineType);
-  set(tr("Label"), pluginName, Setting::Text);
-  set(tr("Period"), "10", Setting::Integer);
-  set(tr("Plot"), tr("False"), Setting::None);
-  set(tr("Alert"), tr("False"), Setting::None);
-
-  about = "Williams Percent R\n";
+  plotFlag = FALSE;
+  alertFlag = FALSE;
+  setDefaults();
 }
 
 WILLR::~WILLR ()
 {
 }
 
+void WILLR::setDefaults ()
+{
+  color.setNamedColor("red");
+  lineType = PlotLine::Line;
+  label = pluginName;
+  period = 10;
+}
+
 void WILLR::calculate ()
 {
-  int period = getInt(tr("Period"));
-
   PlotLine *willr = new PlotLine();
 
   int loop;
@@ -74,10 +75,75 @@ void WILLR::calculate ()
     willr->append(t);
   }
 
-  willr->setColor(getData(tr("Color")));
-  willr->setType(getData(tr("Line Type")));
-  willr->setLabel(getData(tr("Label")));
+  willr->setColor(color);
+  willr->setType(lineType);
+  willr->setLabel(label);
   output.append(willr);
+}
+
+int WILLR::indicatorPrefDialog ()
+{
+  PrefDialog *dialog = new PrefDialog();
+  dialog->setCaption(tr("WILLR Indicator"));
+  dialog->createPage (tr("Parms"));
+  dialog->addColorItem(tr("Color"), 1, color);
+  dialog->addComboItem(tr("Line Type"), 1, lineTypes, lineType);
+  dialog->addTextItem(tr("Label"), 1, label);
+  dialog->addIntItem(tr("Period"), 1, period, 1, 99999999);
+  
+  int rc = dialog->exec();
+  
+  if (rc == QDialog::Accepted)
+  {
+    color = dialog->getColor(tr("Color"));
+    lineType = (PlotLine::LineType) dialog->getComboIndex(tr("Line Type"));
+    period = dialog->getInt(tr("Period"));
+    label = dialog->getText(tr("Label"));
+    rc = TRUE;
+  }
+  else
+    rc = FALSE;
+  
+  delete dialog;
+  return rc;
+}
+
+void WILLR::loadIndicatorSettings (QString file)
+{
+  setDefaults();
+  
+  QDict<QString> dict = loadFile(file);
+  if (! dict.count())
+    return;
+  
+  QString *s = dict["color"];
+  if (s)
+    color.setNamedColor(s->left(s->length()));
+    
+  s = dict["lineType"];
+  if (s)
+    lineType = (PlotLine::LineType) s->left(s->length()).toInt();
+
+  s = dict["period"];
+  if (s)
+    period = s->left(s->length()).toInt();
+
+  s = dict["label"];
+  if (s)
+    label = s->left(s->length());
+}
+
+void WILLR::saveIndicatorSettings (QString file)
+{
+  QDict<QString>dict;
+  dict.setAutoDelete(TRUE);
+
+  dict.replace("color", new QString(color.name()));
+  dict.replace("lineType", new QString(QString::number(lineType)));
+  dict.replace("period", new QString(QString::number(period)));
+  dict.replace("label", new QString(label));
+
+  saveFile(file, dict);
 }
 
 Plugin * create ()

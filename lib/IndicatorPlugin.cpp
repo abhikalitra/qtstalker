@@ -21,12 +21,21 @@
 
 #include "IndicatorPlugin.h"
 #include <math.h>
+#include <qfile.h>
+#include <qtextstream.h>
 
 IndicatorPlugin::IndicatorPlugin()
 {
   output.setAutoDelete(TRUE);
   paintBars.setAutoDelete(TRUE);
-  pluginType = "Indicator";
+  pluginType = IndicatorPlug;
+  saveFlag = FALSE;
+  plotFlag = FALSE;
+  alertFlag = FALSE;
+  
+  PlotLine *pl = new PlotLine;
+  lineTypes = pl->getLineTypes();
+  delete pl;
 }
 
 IndicatorPlugin::~IndicatorPlugin()
@@ -69,72 +78,123 @@ QList<QColor> IndicatorPlugin::getColorBars (QString uc, QString dc, QString nc)
   return paintBars;
 }
 
-PlotLine * IndicatorPlugin::getInput (QString field)
+QStringList IndicatorPlugin::getMATypes ()
 {
-  int f = -1;
-  while (1)
+  QStringList l;
+  l.append(QObject::tr("EMA"));
+  l.append(QObject::tr("SMA"));
+  l.append(QObject::tr("WMA"));
+  l.append(QObject::tr("Wilder"));
+  return l;
+}
+
+QStringList IndicatorPlugin::getInputFields ()
+{
+  QStringList l;
+  l.append(QObject::tr("Open"));
+  l.append(QObject::tr("High"));
+  l.append(QObject::tr("Low"));
+  l.append(QObject::tr("Close"));
+  l.append(QObject::tr("Volume"));
+  l.append(QObject::tr("Open Interest"));
+  l.append(QObject::tr("Average Price"));
+  l.append(QObject::tr("Typical Price"));
+  l.append(QObject::tr("Weighted Price"));
+  l.append(QObject::tr("HL Price"));
+  l.append(QObject::tr("OC Price"));
+  return l;
+}
+
+bool IndicatorPlugin::getPlotFlag ()
+{
+  return plotFlag;
+}
+
+bool IndicatorPlugin::getAlertFlag ()
+{
+  return alertFlag;
+}
+
+void IndicatorPlugin::clearOutput ()
+{
+  output.clear();
+}
+
+QDict<QString> IndicatorPlugin::loadFile (QString file)
+{
+  output.clear();
+
+  QDict<QString>dict;
+  dict.setAutoDelete(TRUE);
+  
+  QFile f(file);
+  if (! f.open(IO_ReadOnly))
   {
-    if (! field.compare(tr("Open")))
-    {
-      f = 0;
-      break;
-    }
+    qDebug("IndicatorPlugin:can't read file %s", file.latin1());
+    return dict;
+  }
+  QTextStream stream(&f);
+  
+  while(stream.atEnd() == 0)
+  {
+    QString s = stream.readLine();
+    s = s.stripWhiteSpace();
+    if (! s.length())
+      continue;
+      
+    QStringList l = QStringList::split("=", s, FALSE);
+    if (l.count() != 2)
+      continue;
 
-    if (! field.compare(tr("High")))
-    {
-      f = 1;
-      break;
-    }
+    dict.replace(l[0], new QString(l[1]));      
+  }
+  
+  f.close();
+  
+  return dict;
+}
 
-    if (! field.compare(tr("Low")))
-    {
-      f = 2;
-      break;
-    }
+void IndicatorPlugin::saveFile (QString file, QDict<QString> dict)
+{
+  QFile f(file);
+  if (! f.open(IO_WriteOnly))
+  {
+    qDebug("IndicatorPlugin:can't save file %s", file.latin1());
+    return;
+  }
+  QTextStream stream(&f);
+  
+  QDictIterator<QString> it(dict);
+  for(; it.current(); ++it)
+  {
+    QString *s = it.current();
+    stream << it.currentKey() << "=" << s->left(s->length()) << "\n";
+  }
+  
+  f.close();
+}
 
-    if (! field.compare(tr("Volume")))
-    {
-      f = 3;
-      break;
-    }
-
-    if (! field.compare(tr("Open Interest")))
-    {
-      f = 4;
-      break;
-    }
-
-    if (! field.compare(tr("Average Price")))
-    {
+PlotLine * IndicatorPlugin::getInput (IndicatorPlugin::InputType field)
+{
+  switch(field)
+  {
+    case AveragePrice:
       return getAP();
       break;
-    }
-
-    if (! field.compare(tr("Typical Price")))
-    {
+    case TypicalPrice:
       return getTP();
       break;
-    }
-
-    if (! field.compare(tr("Weighted Price")))
-    {
+    case WeightedPrice:
       return getWP();
       break;
-    }
-
-    if (! field.compare(tr("HL Price")))
-    {
+    case HLPrice:
       return getHL();
       break;
-    }
-
-    if (! field.compare(tr("OC Price")))
-    {
+    case OCPrice:
       return getOC();
       break;
-    }
-
-    break;
+    default:
+      break;
   }
 
   PlotLine *in = new PlotLine();
@@ -142,21 +202,21 @@ PlotLine * IndicatorPlugin::getInput (QString field)
   int loop;
   for (loop = 0; loop < (int) data->count(); loop++)
   {
-    switch(f)
+    switch(field)
     {
-      case 0:
+      case Open:
         in->append(data->getOpen(loop));
 	break;
-      case 1:
+      case High:
         in->append(data->getHigh(loop));
 	break;
-      case 2:
+      case Low:
         in->append(data->getLow(loop));
 	break;
-      case 3:
+      case Volume:
         in->append(data->getVolume(loop));
 	break;
-      case 4:
+      case OpenInterest:
         in->append(data->getOI(loop));
 	break;
       default:
@@ -168,27 +228,31 @@ PlotLine * IndicatorPlugin::getInput (QString field)
   return in;
 }
 
-PlotLine * IndicatorPlugin::getMA (PlotLine *d, QString type, int period)
+PlotLine * IndicatorPlugin::getMA (PlotLine *d, MAType type, int period)
 {
   return getMA(d, type, period, 0);
 }
 
-PlotLine * IndicatorPlugin::getMA (PlotLine *d, QString type, int period, int displace)
+PlotLine * IndicatorPlugin::getMA (PlotLine *d, MAType type, int period, int displace)
 {
   PlotLine *ma = 0;
-  if (! type.compare(tr("SMA")))
-    ma = getSMA(d, period);
-  else
+  
+  switch (type)
   {
-    if (! type.compare(tr("EMA")))
+    case SMA:
+      ma = getSMA(d, period);
+      break;
+    case EMA:
       ma = getEMA(d, period);
-    else
-    {
-      if (! type.compare(tr("WMA")))
-        ma = getWMA(d, period);
-      else
-        ma = getWilderMA(d, period);
-    }
+      break;
+    case WMA:
+      ma = getWMA(d, period);
+      break;
+    case Wilder:
+      ma = getWilderMA(d, period);
+      break;
+    default:
+      break;
   }
 
   if (displace > 0)
@@ -416,9 +480,5 @@ PlotLine * IndicatorPlugin::getIndicatorLine (int d)
     return 0;
 }
 
-void IndicatorPlugin::clearOutput ()
-{
-  output.clear();
-}
 
 

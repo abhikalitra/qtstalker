@@ -28,6 +28,24 @@ class STOCH : public IndicatorPlugin
     virtual ~STOCH ();
     void calculate ();
     QMemArray<int> getAlerts ();
+    void loadIndicatorSettings (QString);
+    void saveIndicatorSettings (QString);
+    int indicatorPrefDialog ();
+    void setDefaults();
+    
+  private:
+    QColor dcolor;
+    QColor kcolor;
+    PlotLine::LineType dlineType;
+    PlotLine::LineType klineType;
+    QString dlabel;
+    QString klabel;
+    int dperiod;
+    int kperiod;
+    int period;
+    double buyLine;
+    double sellLine;
+    IndicatorPlugin::MAType maType;
 };
 
 extern "C"

@@ -20,36 +20,33 @@
  */
 
 #include "SAR.h"
+#include "PrefDialog.h"
+#include <qdict.h>
 
 SAR::SAR ()
 {
   pluginName = "SAR";
-
-  set(tr("Type"), pluginName, Setting::None);
-  set(tr("Color"), "white", Setting::Color);
-  set(tr("Line Type"), tr("Dot"), Setting::LineType);
-  set(tr("Label"), pluginName, Setting::Text);
-  set(tr("Initial"), "0.02", Setting::Float);
-  set(tr("Add"), "0.02", Setting::Float);
-  set(tr("Limit"), "0.2", Setting::Float);
-  set(tr("Plot"), tr("True"), Setting::None);
-  set(tr("Alert"), tr("True"), Setting::None);
-
-  about = "Parabolic Time/Price SAR\n";
+  plotFlag = TRUE;
+  alertFlag = TRUE;
+  setDefaults();
 }
 
 SAR::~SAR ()
 {
 }
 
+void SAR::setDefaults ()
+{
+  color.setNamedColor("white");
+  lineType = PlotLine::Dot;
+  label = pluginName;
+  initial = 0.02;
+  add = 0.02;
+  limit = 0.2;
+}
+
 void SAR::calculate ()
 {
-  double initial = getFloat(tr("Initial"));
-
-  double add = getFloat(tr("Add"));
-
-  double limit = getFloat(tr("Limit"));
-
   PlotLine *d = new PlotLine();
 
   double high = data->getHigh(1);
@@ -184,9 +181,9 @@ void SAR::calculate ()
     d->append(sar);
   }
 
-  d->setColor(getData(tr("Color")));
-  d->setType(getData(tr("Line Type")));
-  d->setLabel(getData(tr("Label")));
+  d->setColor(color);
+  d->setType(lineType);
+  d->setLabel(label);
   output.append(d);
 }
 
@@ -231,6 +228,85 @@ QMemArray<int> SAR::getAlerts ()
   }
 
   return alerts;
+}
+
+int SAR::indicatorPrefDialog ()
+{
+  PrefDialog *dialog = new PrefDialog();
+  dialog->setCaption(tr("SAR Indicator"));
+  dialog->createPage (tr("Parms"));
+  dialog->addColorItem(tr("Color"), 1, color);
+  dialog->addComboItem(tr("Line Type"), 1, lineTypes, lineType);
+  dialog->addTextItem(tr("Label"), 1, label);
+  dialog->addFloatItem(tr("Initial"), 1, initial, 0, 99999999);
+  dialog->addFloatItem(tr("Add"), 1, add, 0, 99999999);
+  dialog->addFloatItem(tr("Limit"), 1, limit, 0, 99999999);
+  
+  int rc = dialog->exec();
+  
+  if (rc == QDialog::Accepted)
+  {
+    color = dialog->getColor(tr("Color"));
+    lineType = (PlotLine::LineType) dialog->getComboIndex(tr("Line Type"));
+    label = dialog->getText(tr("Label"));
+    initial = dialog->getFloat(tr("Initial"));
+    add = dialog->getFloat(tr("Add"));
+    limit = dialog->getFloat(tr("Limit"));
+    rc = TRUE;
+  }
+  else
+    rc = FALSE;
+  
+  delete dialog;
+  return rc;
+}
+
+void SAR::loadIndicatorSettings (QString file)
+{
+  setDefaults();
+  
+  QDict<QString> dict = loadFile(file);
+  if (! dict.count())
+    return;
+  
+  QString *s = dict["color"];
+  if (s)
+    color.setNamedColor(s->left(s->length()));
+    
+  s = dict["lineType"];
+  if (s)
+    lineType = (PlotLine::LineType) s->left(s->length()).toInt();
+
+  s = dict["label"];
+  if (s)
+    label = s->left(s->length());
+      
+  s = dict["initial"];
+  if (s)
+    initial = s->left(s->length()).toFloat();
+
+  s = dict["add"];
+  if (s)
+    add = s->left(s->length()).toFloat();
+
+  s = dict["limit"];
+  if (s)
+    limit = s->left(s->length()).toFloat();
+}
+
+void SAR::saveIndicatorSettings (QString file)
+{
+  QDict<QString>dict;
+  dict.setAutoDelete(TRUE);
+
+  dict.replace("color", new QString(color.name()));
+  dict.replace("lineType", new QString(QString::number(lineType)));
+  dict.replace("label", new QString(label));
+  dict.replace("initial", new QString(QString::number(initial)));
+  dict.replace("add", new QString(QString::number(add)));
+  dict.replace("limit", new QString(QString::number(limit)));
+
+  saveFile(file, dict);
 }
 
 Plugin * create ()

@@ -20,34 +20,35 @@
  */
 
 #include "MOM.h"
+#include "PrefDialog.h"
+#include <qdict.h>
 
 MOM::MOM ()
 {
   pluginName = "MOM";
-
-  set(tr("Type"), pluginName, Setting::None);
-  set(tr("Color"), "red", Setting::Color);
-  set(tr("Line Type"), tr("Histogram"), Setting::LineType);
-  set(tr("Label"), pluginName, Setting::Text);
-  set(tr("Period"), "10", Setting::Integer);
-  set(tr("Input"), tr("Close"), Setting::InputField);
-  set(tr("Smoothing"), "10", Setting::Integer);
-  set(tr("Smoothing Type"), tr("SMA"), Setting::MAType);
-  set(tr("Plot"), tr("False"), Setting::None);
-  set(tr("Alert"), tr("True"), Setting::None);
-
-  about = "Momentum\n";
+  plotFlag = FALSE;
+  alertFlag = TRUE;
+  setDefaults();
 }
 
 MOM::~MOM ()
 {
 }
 
+void MOM::setDefaults ()
+{
+  color.setNamedColor("red");
+  lineType = PlotLine::Histogram;
+  label = pluginName;
+  period = 10;
+  smoothing = 10;  
+  maType = IndicatorPlugin::SMA;  
+  input = IndicatorPlugin::Close;
+}
+
 void MOM::calculate ()
 {
-  int period = getInt(tr("Period"));
-
-  PlotLine *in = getInput(getData(tr("Input")));
+  PlotLine *in = getInput(input);
 
   PlotLine *mom = new PlotLine();
 
@@ -55,20 +56,20 @@ void MOM::calculate ()
   for (loop = period; loop < (int) in->getSize(); loop++)
     mom->append(in->getData(loop) - in->getData(loop - period));
     
-  if (getInt(tr("Smoothing")) > 1)
+  if (smoothing > 1)
   {
-    PlotLine *ma = getMA(mom, getData(tr("Smoothing Type")), getInt(tr("Smoothing")));
-    ma->setColor(getData(tr("Color")));
-    ma->setType(getData(tr("Line Type")));
-    ma->setLabel(getData(tr("Label")));
+    PlotLine *ma = getMA(mom, maType, smoothing);
+    ma->setColor(color);
+    ma->setType(lineType);
+    ma->setLabel(label);
     output.append(ma);
     delete mom;
   }
   else
   {
-    mom->setColor(getData(tr("Color")));
-    mom->setType(getData(tr("Line Type")));
-    mom->setLabel(getData(tr("Label")));
+    mom->setColor(color);
+    mom->setType(lineType);
+    mom->setLabel(label);
     output.append(mom);
   }
 
@@ -114,6 +115,92 @@ QMemArray<int> MOM::getAlerts ()
   }
 
   return alerts;
+}
+
+int MOM::indicatorPrefDialog ()
+{
+  PrefDialog *dialog = new PrefDialog();
+  dialog->setCaption(tr("MOM Indicator"));
+  dialog->createPage (tr("Parms"));
+  dialog->addColorItem(tr("Color"), 1, color);
+  dialog->addComboItem(tr("Line Type"), 1, lineTypes, lineType);
+  dialog->addTextItem(tr("Label"), 1, label);
+  dialog->addIntItem(tr("Period"), 1, period, 1, 99999999);
+  dialog->addComboItem(tr("Smoothing Type"), 1, getMATypes(), maType);
+  dialog->addComboItem(tr("Input"), 1, getInputFields(), input);
+  dialog->addIntItem(tr("Smoothing"), 1, smoothing, 0, 99999999);
+  
+  int rc = dialog->exec();
+  
+  if (rc == QDialog::Accepted)
+  {
+    color = dialog->getColor(tr("Color"));
+    lineType = (PlotLine::LineType) dialog->getComboIndex(tr("Line Type"));
+    period = dialog->getInt(tr("Period"));
+    label = dialog->getText(tr("Label"));
+    maType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("Smoothing Type"));
+    smoothing = dialog->getInt(tr("Smoothing"));
+    input = (IndicatorPlugin::InputType) dialog->getComboIndex(tr("Input"));
+    rc = TRUE;
+  }
+  else
+    rc = FALSE;
+  
+  delete dialog;
+  return rc;
+}
+
+void MOM::loadIndicatorSettings (QString file)
+{
+  setDefaults();
+  
+  QDict<QString> dict = loadFile(file);
+  if (! dict.count())
+    return;
+  
+  QString *s = dict["color"];
+  if (s)
+    color.setNamedColor(s->left(s->length()));
+    
+  s = dict["lineType"];
+  if (s)
+    lineType = (PlotLine::LineType) s->left(s->length()).toInt();
+
+  s = dict["period"];
+  if (s)
+    period = s->left(s->length()).toInt();
+
+  s = dict["label"];
+  if (s)
+    label = s->left(s->length());
+      
+  s = dict["maType"];
+  if (s)
+    maType = (IndicatorPlugin::MAType) s->left(s->length()).toInt();
+    
+  s = dict["input"];
+  if (s)
+    input = (IndicatorPlugin::InputType) s->left(s->length()).toInt();
+    
+  s = dict["smoothing"];
+  if (s)
+    smoothing = s->left(s->length()).toInt();
+}
+
+void MOM::saveIndicatorSettings (QString file)
+{
+  QDict<QString>dict;
+  dict.setAutoDelete(TRUE);
+
+  dict.replace("color", new QString(color.name()));
+  dict.replace("lineType", new QString(QString::number(lineType)));
+  dict.replace("period", new QString(QString::number(period)));
+  dict.replace("label", new QString(label));
+  dict.replace("maType", new QString(QString::number(maType)));
+  dict.replace("input", new QString(QString::number(input)));
+  dict.replace("smoothing", new QString(QString::number(smoothing)));
+
+  saveFile(file, dict);
 }
 
 Plugin * create ()

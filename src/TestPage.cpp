@@ -62,8 +62,8 @@ TestPage::~TestPage ()
 
 void TestPage::openTest ()
 {
-  Tester *dialog = new Tester(config, nav->currentText());
-  dialog->show();
+//  Tester *dialog = new Tester(config, nav->currentText());
+//  dialog->show();
 }
 
 void TestPage::newTest()
@@ -89,8 +89,8 @@ void TestPage::newTest()
     return;
   }
 
-  Tester *dialog = new Tester(config, selection);
-  dialog->show();
+//  Tester *dialog = new Tester(config, selection);
+//  dialog->show();
 }
 
 void TestPage::deleteTest()

@@ -27,8 +27,6 @@
 #include <qsettings.h>
 #include <qobject.h>
 
-#define VOLUME "Line Type,Histogram Bar,13,Type,VOL,0,Alert,False,0,Name,Volume,0,Color,red,5,Label,VOL,4,Plot,False,0,Color Bars,True,3"
-
 Config::Config (QString p)
 {
   path = p;
@@ -91,31 +89,33 @@ Config::Config (QString p)
   }
   setData(ScannerPath, s);
 
+  s = home;
+  s.append("/indicator");
+  if (! dir.exists(s, TRUE))
+  {
+    if (! dir.mkdir(s, TRUE))
+      qDebug("Unable to create ~/Qtstalker/indicator directory.");
+  }
+  setData(IndicatorPath, s);
+  
   QStringList l = getIndicators();
   if (l.count() == 0)
-    setIndicator(QObject::tr("Volume"), QStringList::split(",", VOLUME, FALSE));
-  else
   {
-    int loop;
-    bool flag = TRUE;
-    Setting *i = new Setting;
-    for (loop = 0; loop < (int) l.count(); loop++)
+    Plugin *plug = getPlugin(Config::IndicatorPluginPath, "VOL");
+    if (! plug)
     {
-      i->clear();
-      i->parse(getIndicator(l[loop]));
-      if (! i->getData("Plot").compare("False"))
-      {
-        flag = FALSE;
-        break;
-      }
+      qDebug("Config::Config: could not open plugin");
+      closePlugin("VOL");
     }
-
-    if (flag)
-      setIndicator(QObject::tr("Volume"), QStringList::split(",", VOLUME, FALSE));
-
-    delete i;
+    else
+    {
+      QString s = getData(Config::IndicatorPath) + "/Volume";
+      plug->saveIndicatorSettings(s);
+      setIndicator("Volume", "VOL");
+      closePlugin("VOL");
+    }
   }
-  
+
   // remove old paths to plugins
   QSettings settings;
   settings.removeEntry("/Qtstalker/IndicatorPluginPath");
@@ -153,11 +153,14 @@ QString Config::getData (Parm p)
     case ScannerPath:
       s = settings.readEntry("/Qtstalker/ScannerPath");
       break;
+    case IndicatorPath:
+      s = settings.readEntry("/Qtstalker/IndicatorPath");
+      break;
     case ChartStyle:
-      s = settings.readEntry("/Qtstalker/ChartStyle", QObject::tr("Bar Chart"));
+      s = settings.readEntry("/Qtstalker/ChartStyle", QObject::tr("Bar"));
       break;
     case Compression:
-      s = settings.readEntry("/Qtstalker/Compression", QObject::tr("Daily Compression"));
+      s = settings.readEntry("/Qtstalker/Compression", QObject::tr("Daily"));
       break;
     case Grid:
       s = settings.readEntry("/Qtstalker/Grid", "1");
@@ -259,6 +262,9 @@ void Config::setData (Parm p, QString d)
     case ScannerPath:
       settings.writeEntry("/Qtstalker/ScannerPath", d);
       break;
+    case IndicatorPath:
+      settings.writeEntry("/Qtstalker/IndicatorPath", d);
+      break;
     case ChartStyle:
       settings.writeEntry("/Qtstalker/ChartStyle", d);
       break;
@@ -345,28 +351,32 @@ QStringList Config::getIndicators ()
   return settings.entryList("/Qtstalker/Indicator");
 }
 
-QStringList Config::getIndicator (QString n)
+QString Config::getIndicator (QString n)
 {
   QSettings settings;
-  QString s = "/Qtstalker/Indicator/";
-  s.append(n);
-  return settings.readListEntry(s, ',');
+  QString s = "/Qtstalker/Indicator/" + n;
+  s = settings.readEntry(s);
+  return s;
 }
 
-void Config::setIndicator (QString k, QStringList d)
+void Config::setIndicator (QString k, QString d)
 {
   QSettings settings;
-  QString s = "/Qtstalker/Indicator/";
-  s.append(k);
-  settings.writeEntry(s, d, ',');
+  QString s = "/Qtstalker/Indicator/" + k;
+  settings.writeEntry(s, d);
 }
 
 void Config::deleteIndicator (QString n)
 {
   QSettings settings;
-  QString s = "/Qtstalker/Indicator/";
-  s.append(n);
+  QString s = "/Qtstalker/Indicator/" + n;
   settings.removeEntry(s);
+  
+  // delete the ascii settings file as well
+  s = getData(IndicatorPath);
+  s.append("/" + n);
+  QDir dir;
+  dir.remove(s);
 }
 
 QStringList Config::getDirList (QString path)
@@ -395,6 +405,7 @@ QStringList Config::getIndicatorPlugins ()
 
   // ignore any old removed plugins
   l.remove(QObject::tr("PRICE"));
+  l.remove(QObject::tr("EP"));
   
   return l;
 }
@@ -471,7 +482,7 @@ Plugin * Config::getPlugin (Config::Parm t, QString p)
   }
   else
   {
-    qDebug("Quote::Dll error\n");
+    qDebug("Config::getPlugin:%s Dll error\n", s.latin1());
     delete lib;
     return 0;
   }
@@ -481,7 +492,16 @@ void Config::closePlugins ()
 {
   QDictIterator<Plugin> it(plugins);
   for (; it.current(); ++it)
-    it.current()->saveSettings();
+  {
+    switch(it.current()->getPluginType())
+    {
+      case Plugin::ChartPlug:
+        it.current()->saveSettings();
+	break;
+      default:
+	break;
+    }
+  }
   
   plugins.clear();
   libs.clear();
@@ -491,14 +511,18 @@ void Config::closePlugin (QString d)
 {
   Plugin *plug = plugins[d];
   if (plug)
-    plug->saveSettings();
-    
+  {
+    switch(plug->getPluginType())
+    {
+      case Plugin::ChartPlug:
+        plug->saveSettings();
+	break;
+      default:
+	break;
+    }
+  }
+   
   plugins.remove(d);
   libs.remove(d);
 }
-
-
-
-
-
 

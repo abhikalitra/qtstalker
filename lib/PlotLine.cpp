@@ -29,8 +29,8 @@ PlotLine::PlotLine ()
   buffer = 0;
   data.setAutoDelete(TRUE);
   colorBars.setAutoDelete(TRUE);
-  color = "red";
-  lineType = "Line";
+  color.setNamedColor("red");
+  lineType = PlotLine::Line;
   high = -99999999;
   low = 99999999;
   colorBarFlag = FALSE;
@@ -61,20 +61,25 @@ void PlotLine::copy (PlotLine *d)
 
 void PlotLine::setColor (QString d)
 {
+  color.setNamedColor(d);
+}
+
+void PlotLine::setColor (QColor d)
+{
   color = d;
 }
 
-QString PlotLine::getColor ()
+QColor PlotLine::getColor ()
 {
   return color;
 }
 
-void PlotLine::setType (QString d)
+void PlotLine::setType (PlotLine::LineType d)
 {
   lineType = d;
 }
 
-QString PlotLine::getType ()
+PlotLine::LineType PlotLine::getType ()
 {
   return lineType;
 }
@@ -171,59 +176,47 @@ bool PlotLine::getColorFlag ()
   return colorBarFlag;
 }
 
-void PlotLine::appendColorBar (QString d)
+void PlotLine::appendColorBar (QColor d)
 {
-  QString *r = new QString(d);
-  colorBars.append(r);
+  colorBars.append(new QColor(d));
 }
 
-void PlotLine::prependColorBar (QString d)
+void PlotLine::prependColorBar (QColor d)
 {
-  QString *r = new QString(d);
-  colorBars.prepend(r);
+  colorBars.prepend(new QColor(d));
 }
 
-QString PlotLine::getColorBar (int d)
+QColor PlotLine::getColorBar (int d)
 {
   if (d >= (int) colorBars.count())
     return QString::null;
 
-  QString *r = colorBars.at(d);
-  return r->left(r->length());
+  QColor *color = colorBars.at(d);
+  return QColor(color->red(), color->green(), color->blue());
 }
 
 void PlotLine::draw (int dataSize, int startX, int startIndex, int pixelspace)
-{
-  while (1)
+{ 
+  switch (lineType)
   {
-    if (! getType().compare("Histogram"))
-    {
+    case PlotLine::Histogram:
       drawHistogram(dataSize, startX, startIndex, pixelspace);
       break;
-    }
-
-    if (! getType().compare("Histogram Bar"))
-    {
+    case PlotLine::HistogramBar:
       drawHistogramBar(dataSize, startX, startIndex, pixelspace);
       break;
-    }
-
-    if (! getType().compare("Dot"))
-    {
+    case PlotLine::Dot:
       drawDot(dataSize, startX, startIndex, pixelspace);
       break;
-    }
-
-    if (! getType().compare("Line") || ! getType().compare("Dash"))
-    {
+    case PlotLine::Line:
+    case PlotLine::Dash:
       drawLine(dataSize, startX, startIndex, pixelspace);
       break;
-    }
-
-    if (! getType().compare("Horizontal"))
+    case PlotLine::Horizontal:
       drawHorizontalLine(startX);
-
-    break;
+      break;
+    default:
+      break;
   }
 }
 
@@ -235,7 +228,7 @@ void PlotLine::drawLine (int dataSize, int startX, int startIndex, int pixelspac
   QPen pen;
   pen.setColor(getColor());
 
-  if (! getType().compare("Dash"))
+  if (getType() == PlotLine::Dash)
     pen.setStyle(Qt::DotLine);
   else
     pen.setStyle(Qt::SolidLine);
@@ -438,7 +431,7 @@ void PlotLine::drawHistogramBar (int dataSize, int startX, int startIndex, int p
         y = scaler->convertToY(getData(loop));
 
       if (getColorFlag() == TRUE)
-	color.setNamedColor(getColorBar(loop));
+	color = getColorBar(loop);
 
       painter.fillRect(x, y, pixelspace - 1, zero - y, color);
     }
@@ -481,4 +474,16 @@ void PlotLine::setPointers (Scaler *s, QPixmap *p)
   buffer = p;
 }
 
+QStringList PlotLine::getLineTypes ()
+{
+  QStringList l;
+  l.append(QObject::tr("Dot"));
+  l.append(QObject::tr("Dash"));
+  l.append(QObject::tr("Histogram"));
+  l.append(QObject::tr("Histogram Bar"));
+  l.append(QObject::tr("Line"));
+  l.append(QObject::tr("Invisible"));
+  l.append(QObject::tr("Horizontal"));
+  return l;
+}
 

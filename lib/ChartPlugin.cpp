@@ -23,7 +23,7 @@
 
 ChartPlugin::ChartPlugin ()
 {
-  pluginType = "Chart";
+  pluginType = ChartPlug;
   data = 0;
   scaler = 0;
   buffer = 0;

@@ -28,6 +28,33 @@ class MA3 : public IndicatorPlugin
     virtual ~MA3 ();
     void calculate ();
     QMemArray<int> getAlerts ();
+    void loadIndicatorSettings (QString);
+    void saveIndicatorSettings (QString);
+    int indicatorPrefDialog ();
+    void setDefaults();
+
+  private:
+    QColor fastColor;
+    QColor midColor;
+    QColor slowColor;
+    PlotLine::LineType fastLineType;
+    PlotLine::LineType midLineType;
+    PlotLine::LineType slowLineType;
+    QString fastLabel;
+    QString midLabel;
+    QString slowLabel;
+    int fastPeriod;
+    int midPeriod;
+    int slowPeriod;
+    IndicatorPlugin::MAType fastMAType;
+    IndicatorPlugin::MAType midMAType;
+    IndicatorPlugin::MAType slowMAType;
+    IndicatorPlugin::InputType fastInput;
+    IndicatorPlugin::InputType midInput;
+    IndicatorPlugin::InputType slowInput;
+    int fastDisplace;
+    int midDisplace;
+    int slowDisplace;
 };
 
 extern "C"

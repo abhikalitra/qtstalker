@@ -27,6 +27,22 @@ class VOL : public IndicatorPlugin
     VOL ();
     virtual ~VOL ();
     void calculate ();
+    void loadIndicatorSettings (QString);
+    void saveIndicatorSettings (QString);
+    int indicatorPrefDialog ();
+    void setDefaults();
+
+  private:
+    QColor upColor;
+    QColor downColor;
+    QColor maColor;
+    PlotLine::LineType volLineType;
+    PlotLine::LineType maLineType;
+    QString volLabel;
+    QString maLabel;
+    int period;
+    int displace;
+    IndicatorPlugin::MAType maType;
 };
 
 extern "C"

@@ -27,6 +27,16 @@ class PER : public IndicatorPlugin
     PER ();
     virtual ~PER ();
     void calculate ();
+    void loadIndicatorSettings (QString);
+    void saveIndicatorSettings (QString);
+    int indicatorPrefDialog ();
+    void setDefaults();
+    
+  private:
+    QColor color;
+    PlotLine::LineType lineType;
+    QString label;
+    IndicatorPlugin::InputType input;
 };
 
 extern "C"

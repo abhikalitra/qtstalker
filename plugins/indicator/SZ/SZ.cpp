@@ -25,45 +25,42 @@
 #include "SZ.h"
 #include <math.h>
 #include <stdio.h>
+#include "PrefDialog.h"
+#include <qdict.h>
 
 SZ::SZ ()
 {
   pluginName = "SZ";
-
-  set(tr("Type"), pluginName, Setting::None);
-  set(tr("Color"), "white", Setting::Color);
-  set(tr("Line Type"), tr("Line"), Setting::LineType);
-  set(tr("Coefficient"), "2.5", Setting::Float);
-  set(tr("Lookback Period"), "10", Setting::Integer);
-  set(tr("No Decline Period"), "2", Setting::Integer);
-  set(tr("Plot"), tr("True"), Setting::None);
-  set(tr("Alert"), tr("False"), Setting::None);
-
-  QStringList l;
-  l.append(tr("Long"));
-  l.append(tr("Short"));
-  set(tr("Position"), tr("Long"), Setting::List);
-  setList(tr("Position"), l);
-
-  about = "SafeZone Stop\n";
+  plotFlag = TRUE;
+  alertFlag = FALSE;
+  setDefaults();
+  methodList.append(tr("Long"));
+  methodList.append(tr("Short"));
 }
 
 SZ::~SZ ()
 {
 }
 
+void SZ::setDefaults ()
+{
+  color.setNamedColor("white");
+  lineType = PlotLine::Line;
+  coefficient = 2.5;
+  period = 10;
+  no_decline_period = 2;
+  method = tr("Long");
+}
+
 void SZ::calculate ()
 {
-  int period = getInt(tr("Lookback Period"));
   if (period < 1)
     period = 1;
-
-  double coefficient = getFloat(tr("Coefficient"));
 
   int display_uptrend = 0;
   int display_dntrend = 0;
   int position = 1;
-  if (! getData(tr("Position")).compare(tr("Long")))
+  if (! method.compare(tr("Long")))
     position = 1;
   else
     position = 2;
@@ -78,7 +75,6 @@ void SZ::calculate ()
   double uptrend_stop = 0;
   double dntrend_stop = 0;
 
-  int no_decline_period = getInt(tr("No Decline Period"));
   if (no_decline_period < 0)
     no_decline_period = 0;
   if (no_decline_period > 365)
@@ -163,19 +159,98 @@ void SZ::calculate ()
 
   if (display_uptrend)
   {
-    sz_uptrend->setColor(getData(tr("Color")));
-    sz_uptrend->setType(getData(tr("Line Type")));
+    sz_uptrend->setColor(color);
+    sz_uptrend->setType(lineType);
     sz_uptrend->setLabel(tr("SZ LONG"));
     output.append(sz_uptrend);
   }
 
   if (display_dntrend)
   {
-    sz_dntrend->setColor(getData(tr("Color")));
-    sz_dntrend->setType(getData(tr("Line Type")));
+    sz_dntrend->setColor(color);
+    sz_dntrend->setType(lineType);
     sz_dntrend->setLabel(tr("SZ SHORT"));
     output.append(sz_dntrend);
   }
+}
+
+int SZ::indicatorPrefDialog ()
+{
+  PrefDialog *dialog = new PrefDialog();
+  dialog->setCaption(tr("SZ Indicator"));
+  dialog->createPage (tr("Parms"));
+  dialog->addColorItem(tr("Color"), 1, color);
+  dialog->addComboItem(tr("Line Type"), 1, lineTypes, lineType);
+  dialog->addComboItem(tr("Position"), 1, methodList, method);
+  dialog->addIntItem(tr("Lookback Period"), 1, period, 1, 99999999);
+  dialog->addIntItem(tr("No Decline Period"), 1, no_decline_period, 1, 99999999);
+  dialog->addFloatItem(tr("Coefficient"), 1, coefficient, 0, 99999999);
+  
+  int rc = dialog->exec();
+  
+  if (rc == QDialog::Accepted)
+  {
+    color = dialog->getColor(tr("Color"));
+    lineType = (PlotLine::LineType) dialog->getComboIndex(tr("Line Type"));
+    period = dialog->getInt(tr("Lookback Period"));
+    no_decline_period = dialog->getInt(tr("No Decline Period"));
+    coefficient = dialog->getFloat(tr("Coefficient"));
+    method = dialog->getCombo(tr("Position"));
+    rc = TRUE;
+  }
+  else
+    rc = FALSE;
+  
+  delete dialog;
+  return rc;
+}
+
+void SZ::loadIndicatorSettings (QString file)
+{
+  setDefaults();
+  
+  QDict<QString> dict = loadFile(file);
+  if (! dict.count())
+    return;
+  
+  QString *s = dict["color"];
+  if (s)
+    color.setNamedColor(s->left(s->length()));
+    
+  s = dict["lineType"];
+  if (s)
+    lineType = (PlotLine::LineType) s->left(s->length()).toInt();
+
+  s = dict["period"];
+  if (s)
+    period = s->left(s->length()).toInt();
+
+  s = dict["noDeclinePeriod"];
+  if (s)
+    no_decline_period = s->left(s->length()).toInt();
+
+  s = dict["coefficient"];
+  if (s)
+    coefficient = s->left(s->length()).toFloat();
+
+  s = dict["method"];
+  if (s)
+    method = s->left(s->length());
+}
+
+void SZ::saveIndicatorSettings (QString file)
+{
+  QDict<QString>dict;
+  dict.setAutoDelete(TRUE);
+
+  dict.replace("color", new QString(color.name()));
+  dict.replace("lineType", new QString(QString::number(lineType)));
+  dict.replace("period", new QString(QString::number(period)));
+  dict.replace("noDeclinePeriod", new QString(QString::number(no_decline_period)));
+  dict.replace("coefficient", new QString(QString::number(coefficient)));
+  dict.replace("method", new QString(method));
+
+  saveFile(file, dict);
 }
 
 Plugin * create ()

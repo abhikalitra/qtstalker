@@ -27,6 +27,18 @@ class UO : public IndicatorPlugin
     UO ();
     virtual ~UO ();
     void calculate ();
+    void loadIndicatorSettings (QString);
+    void saveIndicatorSettings (QString);
+    int indicatorPrefDialog ();
+    void setDefaults();
+    
+  private:
+    QColor color;
+    PlotLine::LineType lineType;
+    QString label;
+    int shortPeriod;
+    int medPeriod;
+    int longPeriod;
 };
 
 extern "C"

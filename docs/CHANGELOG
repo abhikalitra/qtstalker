@@ -51,6 +51,16 @@
 20040310: Fixed the plotting on tabbed indicators that left a space above the date if a date area
           was requested.
 
+20040313: Converted all indicator plugins to the new dialog format. This conversion removes storage
+          of indicator settings from the rc file to individual flat ascii files that are stored
+	  int the new ~/Qtstalker/indicator directory. This allows greater flexibilty for
+	  manipulating indicator plugins, no longer tied to Settings:: class internally. Just tell
+	  the plugin where the settings file is and it will load it and configure itself to it.
+
+20040313: Converted the indicator EP plugin to a new EP chart plugin. The chart plugin is now
+          better suited.
+	  
+
 	  	  
 0.25
 ====

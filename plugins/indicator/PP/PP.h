@@ -27,6 +27,22 @@ class PP : public IndicatorPlugin
     PP ();
     virtual ~PP ();
     void calculate ();
+    void loadIndicatorSettings (QString);
+    void saveIndicatorSettings (QString);
+    int indicatorPrefDialog ();
+    void setDefaults();
+    
+  private:
+    QColor resColor;
+    QColor supColor;
+    PlotLine::LineType resLineType;
+    PlotLine::LineType supLineType;
+    QString resLabel;
+    QString resLabel2;
+    QString resLabel3;
+    QString supLabel;
+    QString supLabel2;
+    QString supLabel3;
 };
 
 extern "C"

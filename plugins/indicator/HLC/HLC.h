@@ -28,6 +28,19 @@ class HLC : public IndicatorPlugin
     virtual ~HLC ();
     void calculate ();
     QMemArray<int> getAlerts ();
+    void loadIndicatorSettings (QString);
+    void saveIndicatorSettings (QString);
+    int indicatorPrefDialog ();
+    void setDefaults();
+    
+  private:
+    QColor upperColor;
+    QColor lowerColor;
+    PlotLine::LineType upperLineType;
+    PlotLine::LineType lowerLineType;
+    QString upperLabel;
+    QString lowerLabel;
+    int period;
 };
 
 extern "C"

@@ -35,7 +35,6 @@
 #include "Qtstalker.h"
 #include "Quote.h"
 #include "DataWindow.h"
-#include "EditDialog.h"
 #include "ChartDb.h"
 #include "ChartPage.h"
 #include "GroupPage.h"
@@ -773,7 +772,10 @@ void QtstalkerApp::loadChart (QString d)
   for (loop = 0; loop < (int) l.count(); loop++)
   {
     Indicator *i = new Indicator;
-    i->parse(config->getIndicator(l[loop]));
+    QString s = config->getData(Config::IndicatorPath) + "/" + l[loop];
+    i->setName(l[loop]);
+    i->setFile(s);
+    i->setType(config->getIndicator(l[loop]));
     loadIndicator(i);
 
     if (otherFlag)
@@ -864,11 +866,11 @@ void QtstalkerApp::loadChart (QString d)
 
 void QtstalkerApp::loadIndicator (Indicator *i)
 {
-  Plugin *plug = config->getPlugin(Config::IndicatorPluginPath, i->getData(tr("Type")));
+  Plugin *plug = config->getPlugin(Config::IndicatorPluginPath, i->getType());
   if (plug)
   {
     plug->setIndicatorInput(recordList);
-    plug->parse(i->getString());
+    plug->loadIndicatorSettings(i->getFile());
     plug->calculate();
 
     int loop;
@@ -882,7 +884,7 @@ void QtstalkerApp::loadIndicator (Indicator *i)
 
     // set up the paint bar
     QString s = config->getData(Config::PaintBarIndicator);
-    if (! s.compare(i->getData("Name")))
+    if (! s.compare(i->getName()))
     {
       plug->getAlerts();
 //      mainPlot->setPaintBars(plug->getColorBars(config->getData(Config::UpColor),
@@ -890,17 +892,19 @@ void QtstalkerApp::loadIndicator (Indicator *i)
 //						config->getData(Config::NeutralColor)));
     }
 
+    i->setMainPlot(plug->getPlotFlag());
+    
     if (i->getMainPlot())
-      mainPlot->addIndicator(i->getData("Name"), i);
+      mainPlot->addIndicator(i->getName(), i);
     else
     {
-      Plot *plot = plotList[i->getData("Name")];
-      plot->addIndicator(i->getData("Name"), i);
+      Plot *plot = plotList[i->getName()];
+      plot->addIndicator(i->getName(), i);
       plot->setData(recordList);
     }
   }
   
-  config->closePlugin(i->getData(tr("Type")));
+  config->closePlugin(i->getType());
 }
 
 void QtstalkerApp::slotBarComboChanged (int index)
@@ -1088,35 +1092,29 @@ void QtstalkerApp::slotNewIndicator ()
     return;
   }
 
-  QStringList l = config->getIndicator(name);
-  if (l.count())
+  QString l = config->getIndicator(name);
+  if (l.length())
   {
     QMessageBox::information(this, tr("Qtstalker: Error"), tr("Duplicate indicator name."));
     return;
   }
 
-  EditDialog *dialog = new EditDialog(config);
-  dialog->setCaption(tr("Edit Indicator"));
-  dialog->hideTabs(TRUE);
-  dialog->hideToolbar(TRUE);
-
   Plugin *plug = config->getPlugin(Config::IndicatorPluginPath, indicator);
   if (! plug)
   {
-    delete dialog;
     qDebug("QtstalkerApp::slotNewIndicator - could not open plugin");
     config->closePlugin(indicator);
     return;
   }
-  
-  Setting *set = plug->getPluginSettings();
-  set->set("Name", name, Setting::None);
-  dialog->setItems(set);
 
-  rc = dialog->exec();
-  if (rc == QDialog::Accepted)
+  rc = plug->indicatorPrefDialog();
+  
+  if (rc)
   {
-    config->setIndicator(name, set->getStringList());
+    QString s = config->getData(Config::IndicatorPath) + "/" + name;
+    plug->saveIndicatorSettings(s);
+    
+    config->setIndicator(name, indicator);
     addIndicatorButton(name, createTab);
 
     if (createTab == FALSE)
@@ -1127,7 +1125,9 @@ void QtstalkerApp::slotNewIndicator ()
     }
 
     Indicator *i = new Indicator;
-    i->parse(config->getIndicator(name));
+    i->setFile(s);
+    i->setName(name);
+    i->setType(indicator);
     loadIndicator(i);
 
     if (i->getMainPlot())
@@ -1137,54 +1137,37 @@ void QtstalkerApp::slotNewIndicator ()
   }
 
   config->closePlugin(indicator);
-
-  delete set;
-  delete dialog;
 }
 
 void QtstalkerApp::slotEditIndicator (QString selection, Plot *plot)
 {
-  EditDialog *dialog = new EditDialog(config);
-  dialog->setCaption(tr("Edit Indicator"));
-  dialog->hideTabs(TRUE);
-  dialog->hideToolbar(TRUE);
-
-  Setting *set = new Setting;
-  set->parse(config->getIndicator(selection));
-
-  Plugin *plug = config->getPlugin(Config::IndicatorPluginPath, set->getData("Type"));
+  QString type = config->getIndicator(selection);
+  Plugin *plug = config->getPlugin(Config::IndicatorPluginPath, type);
   if (! plug)
   {
-    delete dialog;
-    qDebug("QtstalkerApp::slotEditIndicator - could not open plugin");
-    config->closePlugin(set->getData("Type"));
+    qDebug("QtstalkerApp::slotNewIndicator - could not open plugin");
+    config->closePlugin(type);
     return;
   }
 
-  Setting *set2 = plug->getPluginSettings();
-  set2->merge(set->getStringList());
-  set2->set("Name", selection, Setting::None);
-  delete set;
+  QString s = config->getData(Config::IndicatorPath) + "/" + selection;
+  plug->loadIndicatorSettings(s);
+  int rc = plug->indicatorPrefDialog();
 
-  dialog->setItems(set2);
-
-  int rc = dialog->exec();
-
-  if (rc == QDialog::Accepted)
+  if (rc)
   {
-    config->setIndicator(selection, set2->getStringList());
-
+    plug->saveIndicatorSettings(s);
+    
     Indicator *i = new Indicator;
-    i->parse(config->getIndicator(set2->getData(tr("Name"))));
+    i->setFile(s);
+    i->setName(selection);
+    i->setType(type);
     loadIndicator(i);
 
     plot->draw();
   }
 
-  config->closePlugin(set2->getData("Type"));
-
-  delete set2;
-  delete dialog;
+  config->closePlugin(type);
 }
 
 void QtstalkerApp::slotDeleteIndicator (QString text, Plot *plot)
@@ -1282,15 +1265,20 @@ void QtstalkerApp::slotSliderChanged (int v)
 
 void QtstalkerApp::addIndicatorButton (QString d, bool tabFlag)
 {
-  Indicator *i = new Indicator;
-  i->parse(config->getIndicator(d));
-
-  QString s = i->getData(tr("Plot"));
-  if (! s.compare(tr("True")))
+  QString type = config->getIndicator(d);
+  Plugin *plug = config->getPlugin(Config::IndicatorPluginPath, type);
+  if (! plug)
   {
-    delete i;
+    qDebug("QtstalkerApp::slotNewIndicator - could not open plugin");
+    config->closePlugin(type);
     return;
   }
+
+  bool plotFlag = plug->getPlotFlag();
+  config->closePlugin(type);
+  
+  if (plotFlag)
+    return;
 
   Plot *plot;
   if (tabFlag)
@@ -1359,8 +1347,6 @@ void QtstalkerApp::addIndicatorButton (QString d, bool tabFlag)
 
   if (tabFlag)
     tabs->addTab(plot, d);
-
-  delete i;
 }
 
 void QtstalkerApp::slotChartUpdated ()

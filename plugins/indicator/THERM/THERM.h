@@ -27,6 +27,25 @@ class THERM : public IndicatorPlugin
     THERM ();
     virtual ~THERM ();
     void calculate ();
+    void loadIndicatorSettings (QString);
+    void saveIndicatorSettings (QString);
+    int indicatorPrefDialog ();
+    void setDefaults();
+    
+  private:
+    QColor downColor;
+    QColor upColor;
+    QColor threshColor;
+    QColor maColor;
+    PlotLine::LineType lineType;
+    PlotLine::LineType maLineType;
+    QString label;
+    QString maLabel;
+    double threshold;
+    int smoothing;
+    int maPeriod;
+    IndicatorPlugin::MAType maType;
+    IndicatorPlugin::MAType smoothType;
 };
 
 extern "C"

@@ -23,50 +23,47 @@
 #include "ChartDb.h"
 #include <qdatetime.h>
 #include <qdict.h>
+#include "PrefDialog.h"
 
 OVRLY::OVRLY ()
 {
   pluginName = "OVRLY";
+  plotFlag = FALSE;
+  alertFlag = FALSE;
+  setDefaults();
 
-  set(tr("Type"), pluginName, Setting::None);
-  set(tr("Plot"), tr("False"), Setting::None);
-  set(tr("Alert"), tr("False"), Setting::None);
-
-  set(tr("Color"), "yellow", Setting::Color);
-  set(tr("Line Type"), tr("Line"), Setting::LineType);
-  set(tr("Label"), pluginName, Setting::Text);
-
-  set(tr("Base Color"), "red", Setting::Color);
-  set(tr("Base Line Type"), tr("Line"), Setting::LineType);
-  set(tr("Base Label"), tr("Base"), Setting::Text);
-  set(tr("Base Symbol"), " ", Setting::Symbol);
-
-  QStringList l;
-  l.append(tr("Compare Price"));
-  l.append(tr("Compare Performance"));
-  l.sort();
-  set(tr("Method"), tr("Compare Performance"), Setting::List);
-  setList(tr("Method"), l);
-
-  about = "Price Overlay\n";
+  methodList.append(tr("Compare Price"));
+  methodList.append(tr("Compare Performance"));
+  methodList.sort();
 }
 
 OVRLY::~OVRLY ()
 {
 }
 
+void OVRLY::setDefaults ()
+{
+  color.setNamedColor("yellow");
+  baseColor.setNamedColor("red");
+  lineType = PlotLine::Line;
+  baseLineType = PlotLine::Line;
+  label = pluginName;
+  baseLabel = tr("Base");
+  baseSymbol.truncate(0);
+  method = tr("Compare Performance");
+}
+
 void OVRLY::calculate ()
 {
-  QString s = getData(tr("Method"));
   while (1)
   {
-    if (! s.compare(tr("Compare Price")))
+    if (! method.compare(tr("Compare Price")))
     {
       comparePrice();
       break;
     }
 
-    if (! s.compare(tr("Compare Performance")))
+    if (! method.compare(tr("Compare Performance")))
     {
       comparePerformance();
       break;
@@ -78,20 +75,19 @@ void OVRLY::calculate ()
 
 void OVRLY::comparePrice ()
 {
-  PlotLine *line1 = getInput(tr("Close"));
-  line1->setColor(getData(tr("Color")));
-  line1->setType(getData(tr("Line Type")));
-  line1->setLabel(getData(tr("Label")));
+  PlotLine *line1 = getInput(IndicatorPlugin::Close);
+  line1->setColor(color);
+  line1->setType(lineType);
+  line1->setLabel(label);
   line1->setScaleFlag(TRUE);
   output.append(line1);
 
-  QString s = getData(tr("Base Symbol"));
-  if (s.length())
+  if (baseSymbol.length())
   {
-    PlotLine *line2 = getSymbolLine(s);
-    line2->setColor(getData(tr("Base Color")));
-    line2->setType(getData(tr("Base Line Type")));
-    line2->setLabel(getData(tr("Base Label")));
+    PlotLine *line2 = getSymbolLine(baseSymbol);
+    line2->setColor(baseColor);
+    line2->setType(baseLineType);
+    line2->setLabel(baseLabel);
     line2->setScaleFlag(TRUE);
     output.append(line2);
   }
@@ -102,11 +98,10 @@ void OVRLY::comparePerformance ()
   if (data->count() < 1)
     return;
 
-  QString s = getData(tr("Base Symbol"));
-  if (s.length() == 0)
+  if (baseSymbol.length() == 0)
     return;
 
-  PlotLine *tline = getSymbolLine(s);
+  PlotLine *tline = getSymbolLine(baseSymbol);
   if (tline->getSize() < 1)
   {
     delete tline;
@@ -115,15 +110,15 @@ void OVRLY::comparePerformance ()
 
   int line1Loop = data->count() - 1;
   PlotLine *line1 = new PlotLine;
-  line1->setColor(getData(tr("Color")));
-  line1->setType(getData(tr("Line Type")));
-  line1->setLabel(getData(tr("Label")));
+  line1->setColor(color);
+  line1->setType(lineType);
+  line1->setLabel(label);
 
   int line2Loop = tline->getSize() - 1;
   PlotLine *line2 = new PlotLine;
-  line2->setColor(getData(tr("Base Color")));
-  line2->setType(getData(tr("Base Line Type")));
-  line2->setLabel(getData(tr("Base Label")));
+  line2->setColor(baseColor);
+  line2->setType(baseLineType);
+  line2->setLabel(baseLabel);
 
   while (line1Loop > -1 && line2Loop > -1)
   {
@@ -183,6 +178,102 @@ PlotLine * OVRLY::getSymbolLine (QString d)
   delete db;
 
   return line;
+}
+
+int OVRLY::indicatorPrefDialog ()
+{
+  PrefDialog *dialog = new PrefDialog();
+  dialog->setCaption(tr("OVRLY Indicator"));
+  
+  dialog->createPage (tr("Base Symbol"));
+  dialog->addColorItem(tr("Base Color"), 1, baseColor);
+  dialog->addComboItem(tr("Base Line Type"), 1, lineTypes, baseLineType);
+  dialog->addTextItem(tr("Base Label"), 1, baseLabel);
+  dialog->addComboItem(tr("Method"), 1, methodList, method);
+  dialog->addSymbolItem(tr("Base Symbol"), 1, dataPath, baseSymbol);
+  
+  dialog->createPage (tr("Current Symbol"));
+  dialog->addColorItem(tr("Color"), 2, color);
+  dialog->addComboItem(tr("Line Type"), 2, lineTypes, lineType);
+  dialog->addTextItem(tr("Label"), 2, label);
+  
+  int rc = dialog->exec();
+  
+  if (rc == QDialog::Accepted)
+  {
+    color = dialog->getColor(tr("Color"));
+    baseColor = dialog->getColor(tr("Base Color"));
+    lineType = (PlotLine::LineType) dialog->getComboIndex(tr("Line Type"));
+    baseLineType = (PlotLine::LineType) dialog->getComboIndex(tr("Base Line Type"));
+    label = dialog->getText(tr("Label"));
+    baseLabel = dialog->getText(tr("Base Label"));
+    method = dialog->getCombo(tr("Method"));
+    baseSymbol = dialog->getSymbol(tr("Base Symbol"));
+    rc = TRUE;
+  }
+  else
+    rc = FALSE;
+  
+  delete dialog;
+  return rc;
+}
+
+void OVRLY::loadIndicatorSettings (QString file)
+{
+  setDefaults();
+  
+  QDict<QString> dict = loadFile(file);
+  if (! dict.count())
+    return;
+  
+  QString *s = dict["color"];
+  if (s)
+    color.setNamedColor(s->left(s->length()));
+    
+  s = dict["baseColor"];
+  if (s)
+    baseColor.setNamedColor(s->left(s->length()));
+  
+  s = dict["lineType"];
+  if (s)
+    lineType = (PlotLine::LineType) s->left(s->length()).toInt();
+
+  s = dict["baseLineType"];
+  if (s)
+    baseLineType = (PlotLine::LineType) s->left(s->length()).toInt();
+  
+  s = dict["label"];
+  if (s)
+    label = s->left(s->length());
+      
+  s = dict["baseLabel"];
+  if (s)
+    baseLabel = s->left(s->length());
+  
+  s = dict["method"];
+  if (s)
+    method = s->left(s->length());
+    
+  s = dict["baseSymbol"];
+  if (s)
+    baseSymbol = s->left(s->length());
+}
+
+void OVRLY::saveIndicatorSettings (QString file)
+{
+  QDict<QString>dict;
+  dict.setAutoDelete(TRUE);
+
+  dict.replace("color", new QString(color.name()));
+  dict.replace("baseColor", new QString(baseColor.name()));
+  dict.replace("lineType", new QString(QString::number(lineType)));
+  dict.replace("baseLineType", new QString(QString::number(baseLineType)));
+  dict.replace("label", new QString(label));
+  dict.replace("baseLabel", new QString(baseLabel));
+  dict.replace("method", new QString(method));
+  dict.replace("baseSymbol", new QString(baseSymbol));
+
+  saveFile(file, dict);
 }
 
 Plugin * create ()

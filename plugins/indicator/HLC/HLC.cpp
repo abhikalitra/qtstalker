@@ -20,33 +20,34 @@
  */
 
 #include "HLC.h"
+#include "PrefDialog.h"
+#include <qdict.h>
 
 HLC::HLC ()
 {
   pluginName = "HLC";
-
-  set(tr("Type"), pluginName, Setting::None);
-  set(tr("High Color"), "red", Setting::Color);
-  set(tr("Low Color"), "red", Setting::Color);
-  set(tr("High Line Type"), tr("Line"), Setting::LineType);
-  set(tr("Low Line Type"), tr("Line"), Setting::LineType);
-  set(tr("High Label"), tr("HLCU"), Setting::Text);
-  set(tr("Low Label"), tr("HLCL"), Setting::Text);
-  set(tr("Period"), "20", Setting::Integer);
-  set(tr("Plot"), tr("True"), Setting::None);
-  set(tr("Alert"), tr("True"), Setting::None);
-
-  about = "High Low Channel\n";
+  plotFlag = TRUE;
+  alertFlag = TRUE;
+  setDefaults();
 }
 
 HLC::~HLC ()
 {
 }
 
+void HLC::setDefaults ()
+{
+  upperColor.setNamedColor("red");
+  lowerColor.setNamedColor("red");
+  upperLineType = PlotLine::Line;
+  lowerLineType = PlotLine::Line;
+  upperLabel = tr("HLCU");
+  lowerLabel = tr("HLCL");
+  period = 20;
+}
+
 void HLC::calculate ()
 {
-  int period = getInt(tr("Period"));
-
   PlotLine *ub = new PlotLine();
   PlotLine *lb = new PlotLine();
 
@@ -72,14 +73,14 @@ void HLC::calculate ()
     lb->append(l);
   }
 
-  ub->setColor(getData(tr("High Color")));
-  ub->setType(getData(tr("High Line Type")));
-  ub->setLabel(getData(tr("High Label")));
+  ub->setColor(upperColor);
+  ub->setType(upperLineType);
+  ub->setLabel(upperLabel);
   output.append(ub);
 
-  lb->setColor(getData(tr("Low Color")));
-  lb->setType(getData(tr("Low Line Type")));
-  lb->setLabel(getData(tr("Low Label")));
+  lb->setColor(lowerColor);
+  lb->setType(lowerLineType);
+  lb->setLabel(lowerLabel);
   output.append(lb);
 }
 
@@ -126,6 +127,96 @@ QMemArray<int> HLC::getAlerts ()
   }
 
   return alerts;
+}
+
+int HLC::indicatorPrefDialog ()
+{
+  PrefDialog *dialog = new PrefDialog();
+  dialog->setCaption(tr("HLC Indicator"));
+  dialog->createPage (tr("Parms"));
+  dialog->addIntItem(tr("Period"), 1, period, 1, 99999999);
+  
+  dialog->createPage (tr("Upper"));
+  dialog->addColorItem(tr("Upper Color"), 2, upperColor);
+  dialog->addComboItem(tr("Upper Line Type"), 2, lineTypes, upperLineType);
+  dialog->addTextItem(tr("Upper Label"), 2, upperLabel);
+  
+  dialog->createPage (tr("Lower"));
+  dialog->addColorItem(tr("Lower Color"), 3, lowerColor);
+  dialog->addComboItem(tr("Lower Line Type"), 3, lineTypes, lowerLineType);
+  dialog->addTextItem(tr("Lower Label"), 3, lowerLabel);
+  
+  int rc = dialog->exec();
+  
+  if (rc == QDialog::Accepted)
+  {
+    period = dialog->getInt(tr("Period"));
+    upperColor = dialog->getColor(tr("Upper Color"));
+    upperLineType = (PlotLine::LineType) dialog->getComboIndex(tr("Upper Line Type"));
+    upperLabel = dialog->getText(tr("Upper Label"));
+    lowerColor = dialog->getColor(tr("Lower Color"));
+    lowerLineType = (PlotLine::LineType) dialog->getComboIndex(tr("Lower Line Type"));
+    lowerLabel = dialog->getText(tr("Lower Label"));
+    rc = TRUE;
+  }
+  else
+    rc = FALSE;
+  
+  delete dialog;
+  return rc;
+}
+
+void HLC::loadIndicatorSettings (QString file)
+{
+  setDefaults();
+  
+  QDict<QString> dict = loadFile(file);
+  if (! dict.count())
+    return;
+  
+  QString *s = dict["period"];
+  if (s)
+    period = s->left(s->length()).toInt();
+  
+  s = dict["upperColor"];
+  if (s)
+    upperColor.setNamedColor(s->left(s->length()));
+    
+  s = dict["upperLineType"];
+  if (s)
+    upperLineType = (PlotLine::LineType) s->left(s->length()).toInt();
+
+  s = dict["upperLabel"];
+  if (s)
+    upperLabel = s->left(s->length());
+      
+  s = dict["lowerColor"];
+  if (s)
+    lowerColor.setNamedColor(s->left(s->length()));
+    
+  s = dict["lowerLineType"];
+  if (s)
+    lowerLineType = (PlotLine::LineType) s->left(s->length()).toInt();
+
+  s = dict["lowerLabel"];
+  if (s)
+    lowerLabel = s->left(s->length());
+}
+
+void HLC::saveIndicatorSettings (QString file)
+{
+  QDict<QString>dict;
+  dict.setAutoDelete(TRUE);
+
+  dict.replace("period", new QString(QString::number(period)));
+  dict.replace("upperColor", new QString(upperColor.name()));
+  dict.replace("upperLineType", new QString(QString::number(upperLineType)));
+  dict.replace("upperLabel", new QString(upperLabel));
+  dict.replace("lowerColor", new QString(lowerColor.name()));
+  dict.replace("lowerLineType", new QString(QString::number(lowerLineType)));
+  dict.replace("lowerLabel", new QString(lowerLabel));
+
+  saveFile(file, dict);
 }
 
 Plugin * create ()

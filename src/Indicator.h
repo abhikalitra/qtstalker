@@ -26,10 +26,9 @@
 #include <qstringlist.h>
 #include <qmemarray.h>
 #include <qlist.h>
-#include "Setting.h"
 #include "PlotLine.h"
 
-class Indicator : public Setting
+class Indicator
 {
   public:
     Indicator ();
@@ -42,14 +41,25 @@ class Indicator : public Setting
     void addLine (PlotLine *);
     PlotLine * getLine (int);
     bool getMainPlot ();
+    void setMainPlot (bool);
     void clearLines ();
     void setEnable (bool);
     bool getEnable ();
+    void setName (QString);
+    QString getName ();
+    void setType (QString);
+    QString getType ();
+    void setFile (QString);
+    QString getFile ();
 
   private:
     QList<PlotLine> lines;
     QMemArray<int> alerts;
     bool enable;
+    QString name;
+    QString type;
+    QString file;
+    bool plot;
 };
 
 #endif

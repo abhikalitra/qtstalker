@@ -20,70 +20,67 @@
  */
 
 #include "ENV.h"
+#include "PrefDialog.h"
+#include <qdict.h>
 
 ENV::ENV ()
 {
   pluginName = "ENV";
-
-  set(tr("Type"), pluginName, Setting::None);
-  set(tr("Upper Color"), "red", Setting::Color);
-  set(tr("Lower Color"), "red", Setting::Color);
-  set(tr("Upper Line Type"), tr("Line"), Setting::LineType);
-  set(tr("Lower Line Type"), tr("Line"), Setting::LineType);
-  set(tr("Upper Label"), tr("ENVU"), Setting::Text);
-  set(tr("Lower Label"), tr("ENVL"), Setting::Text);
-  set(tr("Period"), "10", Setting::Integer);
-  set(tr("Upper Percent"), "1.02", Setting::Float);
-  set(tr("Lower Percent"), "0.98", Setting::Float);
-  set(tr("Input"), tr("Close"), Setting::InputField);
-  set(tr("MA Type"), tr("SMA"), Setting::MAType);
-  set(tr("Plot"), tr("True"), Setting::None);
-  set(tr("Alert"), tr("True"), Setting::None);
-
-  about = "Moving Average Envelope\n";
+  plotFlag = TRUE;
+  alertFlag = TRUE;
+  setDefaults();
 }
 
 ENV::~ENV ()
 {
 }
 
+void ENV::setDefaults ()
+{
+  upperColor.setNamedColor("red");
+  lowerColor.setNamedColor("red");
+  upperLineType = PlotLine::Line;
+  lowerLineType = PlotLine::Line;
+  upperLabel = tr("ENVU");
+  lowerLabel = tr("ENVL");
+  period = 10;
+  upperPercent = 1.02;
+  lowerPercent = 0.98;
+  input = IndicatorPlugin::Close;
+  maType = IndicatorPlugin::SMA;
+}
+
 void ENV::calculate ()
 {
-  int period = getInt(tr("Period"));
+  PlotLine *in = getInput(input);
 
-  double up = getFloat(tr("Upper Percent"));
+  PlotLine *uma = getMA(in, maType, period);
 
-  double lp = getFloat(tr("Lower Percent"));
-
-  PlotLine *in = getInput(getData(tr("Input")));
-
-  PlotLine *uma = getMA(in, getData(tr("MA Type")), period);
-
-  PlotLine *lma = getMA(in, getData(tr("MA Type")), period);
+  PlotLine *lma = getMA(in, maType, period);
 
   int maLoop = uma->getSize() - 1;
 
   while (maLoop > -1)
   {
     double t = uma->getData(maLoop);
-    uma->setData(maLoop, t * up);
+    uma->setData(maLoop, t * upperPercent);
 
     t = lma->getData(maLoop);
-    lma->setData(maLoop, t * lp);
+    lma->setData(maLoop, t * lowerPercent);
 
     maLoop--;
   }
 
   delete in;
 
-  uma->setColor(getData(tr("Upper Color")));
-  uma->setType(getData(tr("Upper Line Type")));
-  uma->setLabel(getData(tr("Upper Label")));
+  uma->setColor(upperColor);
+  uma->setType(upperLineType);
+  uma->setLabel(upperLabel);
   output.append(uma);
 
-  lma->setColor(getData(tr("Lower Color")));
-  lma->setType(getData(tr("Lower Line Type")));
-  lma->setLabel(getData(tr("Lower Label")));
+  lma->setColor(lowerColor);
+  lma->setType(lowerLineType);
+  lma->setLabel(lowerLabel);
   output.append(lma);
 }
 
@@ -131,6 +128,129 @@ QMemArray<int> ENV::getAlerts ()
   }
 
   return alerts;
+}
+
+int ENV::indicatorPrefDialog ()
+{
+  PrefDialog *dialog = new PrefDialog();
+  dialog->setCaption(tr("ENV Indicator"));
+  dialog->createPage (tr("Parms"));
+  dialog->addIntItem(tr("Period"), 1, period, 1, 99999999);
+  dialog->addComboItem(tr("MA Type"), 1, getMATypes(), maType);
+  dialog->addComboItem(tr("Input"), 1, getInputFields(), input);
+  
+  dialog->createPage (tr("Upper"));
+  dialog->addColorItem(tr("Upper Color"), 2, upperColor);
+  dialog->addComboItem(tr("Upper Line Type"), 2, lineTypes, upperLineType);
+  dialog->addTextItem(tr("Upper Label"), 2, upperLabel);
+  dialog->addFloatItem(tr("Upper %"), 2, upperPercent, 0, 99999999.0);
+  
+  dialog->createPage (tr("Lower"));
+  dialog->addColorItem(tr("Lower Color"), 3, lowerColor);
+  dialog->addComboItem(tr("Lower Line Type"), 3, lineTypes, lowerLineType);
+  dialog->addTextItem(tr("Lower Label"), 3, lowerLabel);
+  dialog->addFloatItem(tr("Lower %"), 3, lowerPercent, 0, 99999999.0);
+  
+  int rc = dialog->exec();
+  
+  if (rc == QDialog::Accepted)
+  {
+    period = dialog->getInt(tr("Period"));
+    maType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("MA Type"));
+    input = (IndicatorPlugin::InputType) dialog->getComboIndex(tr("Input"));
+    
+    upperColor = dialog->getColor(tr("Upper Color"));
+    upperLineType = (PlotLine::LineType) dialog->getComboIndex(tr("Upper Line Type"));
+    upperLabel = dialog->getText(tr("Upper Label"));
+    upperPercent = dialog->getFloat(tr("Upper %"));
+    
+    lowerColor = dialog->getColor(tr("Lower Color"));
+    lowerLineType = (PlotLine::LineType) dialog->getComboIndex(tr("Lower Line Type"));
+    lowerLabel = dialog->getText(tr("Lower Label"));
+    lowerPercent = dialog->getFloat(tr("Lower %"));
+    
+    rc = TRUE;
+  }
+  else
+    rc = FALSE;
+  
+  delete dialog;
+  return rc;
+}
+
+void ENV::loadIndicatorSettings (QString file)
+{
+  setDefaults();
+  
+  QDict<QString> dict = loadFile(file);
+  if (! dict.count())
+    return;
+  
+  QString *s = dict["period"];
+  if (s)
+    period = s->left(s->length()).toInt();
+  
+  s = dict["maType"];
+  if (s)
+    maType = (IndicatorPlugin::MAType) s->left(s->length()).toInt();
+
+  s = dict["input"];
+  if (s)
+    input = (IndicatorPlugin::InputType) s->left(s->length()).toInt();
+      
+  s = dict["upperColor"];
+  if (s)
+    upperColor.setNamedColor(s->left(s->length()));
+    
+  s = dict["upperLineType"];
+  if (s)
+    upperLineType = (PlotLine::LineType) s->left(s->length()).toInt();
+
+  s = dict["upperLabel"];
+  if (s)
+    upperLabel = s->left(s->length());
+      
+  s = dict["upperPercent"];
+  if (s)
+    upperPercent = s->left(s->length()).toFloat();
+    
+  s = dict["lowerColor"];
+  if (s)
+    lowerColor.setNamedColor(s->left(s->length()));
+    
+  s = dict["lowerLineType"];
+  if (s)
+    lowerLineType = (PlotLine::LineType) s->left(s->length()).toInt();
+
+  s = dict["lowerLabel"];
+  if (s)
+    lowerLabel = s->left(s->length());
+      
+  s = dict["lowerPercent"];
+  if (s)
+    lowerPercent = s->left(s->length()).toFloat();
+}
+
+void ENV::saveIndicatorSettings (QString file)
+{
+  QDict<QString>dict;
+  dict.setAutoDelete(TRUE);
+
+  dict.replace("period", new QString(QString::number(period)));
+  dict.replace("maType", new QString(QString::number(maType)));
+  dict.replace("input", new QString(QString::number(input)));
+  
+  dict.replace("upperColor", new QString(upperColor.name()));
+  dict.replace("upperLineType", new QString(QString::number(upperLineType)));
+  dict.replace("upperLabel", new QString(upperLabel));
+  dict.replace("upperPercent", new QString(QString::number(upperPercent)));
+  
+  dict.replace("lowerColor", new QString(lowerColor.name()));
+  dict.replace("lowerLineType", new QString(QString::number(lowerLineType)));
+  dict.replace("lowerLabel", new QString(lowerLabel));
+  dict.replace("lowerPercent", new QString(QString::number(lowerPercent)));
+
+  saveFile(file, dict);
 }
 
 Plugin * create ()

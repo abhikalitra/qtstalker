@@ -39,13 +39,26 @@ class PlotLine : public QObject
   Q_OBJECT
 
   public:
+  
+    enum LineType
+    {
+      Dot,
+      Dash,
+      Histogram,
+      HistogramBar,
+      Line,
+      Invisible,
+      Horizontal
+    };
+  
     PlotLine ();
     ~PlotLine ();
     void copy (PlotLine *);
     void setColor (QString);
-    QString getColor ();
-    void setType (QString);
-    QString getType ();
+    void setColor (QColor);
+    QColor getColor ();
+    void setType (PlotLine::LineType);
+    PlotLine::LineType getType ();
     void setLabel (QString);
     QString getLabel ();
     void append (double);
@@ -60,12 +73,13 @@ class PlotLine : public QObject
     void checkHighLow (double);
     void setScaleFlag (bool);
     bool getScaleFlag ();
+    QStringList getLineTypes ();
 
     void setColorFlag (bool);
     bool getColorFlag ();
-    void appendColorBar (QString);
-    void prependColorBar (QString);
-    QString getColorBar (int);
+    void appendColorBar (QColor);
+    void prependColorBar (QColor);
+    QColor getColorBar (int);
 
     void draw (int, int, int, int);
     void drawLine (int, int, int, int);
@@ -80,9 +94,9 @@ class PlotLine : public QObject
     Scaler *scaler;
     QPixmap *buffer;
     QList<Val> data;
-    QList<QString> colorBars;
-    QString color;
-    QString lineType;
+    QList<QColor> colorBars;
+    QColor color;
+    PlotLine::LineType lineType;
     QString label;
     double high;
     double low;

@@ -20,46 +20,43 @@
  */
 
 #include "STOCH.h"
+#include "PrefDialog.h"
+#include <qdict.h>
 
 STOCH::STOCH ()
 {
   pluginName = "STOCH";
-
-  set(tr("Type"), pluginName, Setting::None);
-  set(tr("%D Color"), "yellow", Setting::Color);
-  set(tr("%D Line Type"), tr("Dash"), Setting::LineType);
-  set(tr("%D Label"), "%D", Setting::Text);
-  set(tr("%D Smoothing"), "3", Setting::Integer);
-  set(tr("%K Color"), "red", Setting::Color);
-  set(tr("%K Line Type"), tr("Line"), Setting::LineType);
-  set(tr("%K Label"), "%K", Setting::Text);
-  set(tr("%K Smoothing"), "3", Setting::Integer);
-  set(tr("Period"), "14", Setting::Integer);
-  set(tr("Buy Line"), "20", Setting::Integer);
-  set(tr("Sell Line"), "80", Setting::Integer);
-  set(tr("Smoothing Type"), tr("SMA"), Setting::MAType);
-  set(tr("Plot"), tr("False"), Setting::None);
-  set(tr("Alert"), tr("True"), Setting::None);
-
-  about = "Stochastic\n";
+  plotFlag = FALSE;
+  alertFlag = TRUE;
+  setDefaults();
 }
 
 STOCH::~STOCH ()
 {
 }
 
+void STOCH::setDefaults ()
+{
+  dcolor.setNamedColor("yellow");
+  dlineType = PlotLine::Dash;
+  dlabel = "%D";
+  dperiod = 3;
+  kcolor.setNamedColor("red");
+  klineType = PlotLine::Line;
+  klabel = "%K";
+  kperiod = 3;
+  period = 14;
+  buyLine = 20;
+  sellLine = 80;
+  maType = IndicatorPlugin::SMA;  
+}
+
 void STOCH::calculate ()
 {
-  int period = getInt(tr("Period"));
-
-  int kperiod = getInt(tr("%K Smoothing"));
-
-  int dperiod = getInt(tr("%D Smoothing"));
-
   PlotLine *k = new PlotLine();
-  k->setColor(getData(tr("%K Color")));
-  k->setType(getData(tr("%K Line Type")));
-  k->setLabel(getData(tr("%K Label")));
+  k->setColor(kcolor);
+  k->setType(klineType);
+  k->setLabel(klabel);
 
   int loop;
   for (loop = period; loop < (int) data->count(); loop++)
@@ -93,10 +90,10 @@ void STOCH::calculate ()
 
   if (kperiod > 1)
   {
-    PlotLine *k2 = getMA(k, getData(tr("Smoothing Type")), kperiod);
-    k2->setColor(getData(tr("%K Color")));
-    k2->setType(getData(tr("%K Line Type")));
-    k2->setLabel(getData(tr("%K Label")));
+    PlotLine *k2 = getMA(k, maType, kperiod);
+    k2->setColor(kcolor);
+    k2->setType(klineType);
+    k2->setLabel(klabel);
     output.append(k2);
     delete k;
   }
@@ -108,7 +105,7 @@ void STOCH::calculate ()
   PlotLine *d;
 
   if (dperiod)
-    d = getMA(k, getData(tr("Smoothing Type")), dperiod);
+    d = getMA(k, maType, dperiod);
   else
   {
     d = new PlotLine();
@@ -118,9 +115,9 @@ void STOCH::calculate ()
       d->append(k->getData(loop));
   }
 
-  d->setColor(getData(tr("%D Color")));
-  d->setType(getData(tr("%D Line Type")));
-  d->setLabel(getData(tr("%D Label")));
+  d->setColor(dcolor);
+  d->setType(dlineType);
+  d->setLabel(dlabel);
 
   output.append(d);
 }
@@ -132,10 +129,6 @@ QMemArray<int> STOCH::getAlerts ()
   if (output.count() != 2)
     return alerts;
 
-  int buy = getInt(tr("Buy Line"));
-
-  int sell = getInt(tr("Sell Line"));
-
   PlotLine *line = output.at(1);
 
   int dataLoop = data->count() - line->getSize() + 1;
@@ -146,19 +139,19 @@ QMemArray<int> STOCH::getAlerts ()
     switch (status)
     {
       case -1:
-        if ((line->getData(loop) <= buy) && (line->getData(loop) > line->getData(loop - 1)))
+        if ((line->getData(loop) <= buyLine) && (line->getData(loop) > line->getData(loop - 1)))
           status = 1;
 	break;
       case 1:
-        if ((line->getData(loop) >= sell) && (line->getData(loop) < line->getData(loop - 1)))
+        if ((line->getData(loop) >= sellLine) && (line->getData(loop) < line->getData(loop - 1)))
 	  status = -1;
 	break;
       default:
-        if ((line->getData(loop) <= buy) && (line->getData(loop) > line->getData(loop - 1)))
+        if ((line->getData(loop) <= buyLine) && (line->getData(loop) > line->getData(loop - 1)))
 	  status = 1;
 	else
 	{
-          if ((line->getData(loop) >= sell) && (line->getData(loop) < line->getData(loop - 1)))
+          if ((line->getData(loop) >= sellLine) && (line->getData(loop) < line->getData(loop - 1)))
 	    status = -1;
 	}
 	break;
@@ -168,6 +161,131 @@ QMemArray<int> STOCH::getAlerts ()
   }
 
   return alerts;
+}
+
+int STOCH::indicatorPrefDialog ()
+{
+  PrefDialog *dialog = new PrefDialog();
+  dialog->setCaption(tr("STOCH Indicator"));
+  dialog->createPage (tr("Parms"));
+  dialog->addIntItem(tr("Period"), 1, period, 1, 99999999);
+  dialog->addComboItem(tr("Smoothing Type"), 1, getMATypes(), maType);
+  dialog->addFloatItem(tr("Buy Line"), 1, buyLine, 0, 100);
+  dialog->addFloatItem(tr("Sell Line"), 1, sellLine, 0, 100);
+  
+  dialog->createPage (tr("%K Parms"));
+  dialog->addColorItem(tr("%K Color"), 2, kcolor);
+  dialog->addComboItem(tr("%K Line Type"), 2, lineTypes, klineType);
+  dialog->addTextItem(tr("%K Label"), 2, klabel);
+  dialog->addIntItem(tr("%K Smoothing"), 2, kperiod, 0, 99999999);
+  
+  dialog->createPage (tr("%D Parms"));
+  dialog->addColorItem(tr("%D Color"), 3, dcolor);
+  dialog->addComboItem(tr("%D Line Type"), 3, lineTypes, dlineType);
+  dialog->addTextItem(tr("%D Label"), 3, dlabel);
+  dialog->addIntItem(tr("%D Smoothing"), 3, dperiod, 0, 99999999);
+  
+  int rc = dialog->exec();
+  
+  if (rc == QDialog::Accepted)
+  {
+    dcolor = dialog->getColor(tr("%D Color"));
+    dlineType = (PlotLine::LineType) dialog->getComboIndex(tr("%D Line Type"));
+    dperiod = dialog->getInt(tr("%D Smoothing"));
+    dlabel = dialog->getText(tr("%D Label"));
+    kcolor = dialog->getColor(tr("%K Color"));
+    klineType = (PlotLine::LineType) dialog->getComboIndex(tr("%K Line Type"));
+    kperiod = dialog->getInt(tr("%K Smoothing"));
+    klabel = dialog->getText(tr("%K Label"));
+    period = dialog->getInt(tr("Period"));
+    maType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("Smoothing Type"));
+    buyLine = dialog->getFloat(tr("Buy Line"));
+    sellLine = dialog->getFloat(tr("Sell Line"));
+    rc = TRUE;
+  }
+  else
+    rc = FALSE;
+  
+  delete dialog;
+  return rc;
+}
+
+void STOCH::loadIndicatorSettings (QString file)
+{
+  setDefaults();
+  
+  QDict<QString> dict = loadFile(file);
+  if (! dict.count())
+    return;
+  
+  QString *s = dict["dcolor"];
+  if (s)
+    dcolor.setNamedColor(s->left(s->length()));
+    
+  s = dict["kcolor"];
+  if (s)
+    kcolor.setNamedColor(s->left(s->length()));
+  
+  s = dict["dlineType"];
+  if (s)
+    dlineType = (PlotLine::LineType) s->left(s->length()).toInt();
+
+  s = dict["klineType"];
+  if (s)
+    klineType = (PlotLine::LineType) s->left(s->length()).toInt();
+  
+  s = dict["period"];
+  if (s)
+    period = s->left(s->length()).toInt();
+
+  s = dict["dperiod"];
+  if (s)
+    dperiod = s->left(s->length()).toInt();
+  
+  s = dict["kperiod"];
+  if (s)
+    kperiod = s->left(s->length()).toInt();
+  
+  s = dict["dlabel"];
+  if (s)
+    dlabel = s->left(s->length());
+      
+  s = dict["klabel"];
+  if (s)
+    klabel = s->left(s->length());
+  
+  s = dict["maType"];
+  if (s)
+    maType = (IndicatorPlugin::MAType) s->left(s->length()).toInt();
+
+  s = dict["buyLine"];
+  if (s)
+    buyLine = s->left(s->length()).toFloat();
+
+  s = dict["sellLine"];
+  if (s)
+    sellLine = s->left(s->length()).toFloat();
+}
+
+void STOCH::saveIndicatorSettings (QString file)
+{
+  QDict<QString>dict;
+  dict.setAutoDelete(TRUE);
+
+  dict.replace("dcolor", new QString(dcolor.name()));
+  dict.replace("dlineType", new QString(QString::number(dlineType)));
+  dict.replace("dperiod", new QString(QString::number(dperiod)));
+  dict.replace("dlabel", new QString(dlabel));
+  dict.replace("kcolor", new QString(kcolor.name()));
+  dict.replace("klineType", new QString(QString::number(klineType)));
+  dict.replace("kperiod", new QString(QString::number(kperiod)));
+  dict.replace("klabel", new QString(klabel));
+  dict.replace("maType", new QString(QString::number(maType)));
+  dict.replace("period", new QString(QString::number(period)));
+  dict.replace("buyLine", new QString(QString::number(buyLine)));
+  dict.replace("sellLine", new QString(QString::number(sellLine)));
+
+  saveFile(file, dict);
 }
 
 Plugin * create ()

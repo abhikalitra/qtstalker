@@ -45,7 +45,7 @@ class Config
       BorderColor,
       GridColor,
       ChartPluginPath,
-      DownColor, // unused
+      IndicatorPath,
       NeutralColor, // unused
       PaintBarIndicator, // unused
       MainPlotSize,
@@ -81,9 +81,9 @@ class Config
     QStringList getDirList (QString);
 
     QStringList getIndicators ();
-    QStringList getIndicator (QString);
+    QString getIndicator (QString);
     QString getIndicatorPlugin (QString);
-    void setIndicator (QString, QStringList);
+    void setIndicator (QString, QString);
     void deleteIndicator (QString);
     QStringList getIndicatorList ();
 

@@ -27,6 +27,21 @@ class OI : public IndicatorPlugin
     OI ();
     virtual ~OI ();
     void calculate ();
+    void loadIndicatorSettings (QString);
+    void saveIndicatorSettings (QString);
+    int indicatorPrefDialog ();
+    void setDefaults();
+
+  private:
+    QColor oiColor;
+    QColor maColor;
+    PlotLine::LineType oiLineType;
+    PlotLine::LineType maLineType;
+    QString oiLabel;
+    QString maLabel;
+    int period;
+    int displace;
+    IndicatorPlugin::MAType maType;
 };
 
 extern "C"

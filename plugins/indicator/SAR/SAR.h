@@ -28,6 +28,18 @@ class SAR : public IndicatorPlugin
     virtual ~SAR ();
     void calculate ();
     QMemArray<int> getAlerts ();
+    void loadIndicatorSettings (QString);
+    void saveIndicatorSettings (QString);
+    int indicatorPrefDialog ();
+    void setDefaults();
+    
+  private:
+    QColor color;
+    PlotLine::LineType lineType;
+    QString label;
+    double initial;
+    double add;
+    double limit;
 };
 
 extern "C"

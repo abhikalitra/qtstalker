@@ -20,63 +20,66 @@
  */
 
 #include "MA3.h"
+#include "PrefDialog.h"
+#include <qdict.h>
 
 MA3::MA3 ()
 {
   pluginName = "MA3";
-
-  set(tr("Type"), pluginName, Setting::None);
-  set(tr("Fast Color"), "red", Setting::Color);
-  set(tr("Fast Line Type"), tr("Line"), Setting::LineType);
-  set(tr("Fast Label"), tr("MA3F"), Setting::Text);
-  set(tr("Fast Period"), "5", Setting::Integer);
-  set(tr("Fast Displace"), "0", Setting::Integer);
-  set(tr("Fast Type"), "SMA", Setting::MAType);
-  set(tr("Fast Input"), tr("Close"), Setting::InputField);
-  set(tr("Middle Color"), "red", Setting::Color);
-  set(tr("Middle Line Type"), tr("Line"), Setting::LineType);
-  set(tr("Middle Label"), tr("MA3M"), Setting::Text);
-  set(tr("Middle Period"), "20", Setting::Integer);
-  set(tr("Middle Displace"), "0", Setting::Integer);
-  set(tr("Middle Type"), "SMA", Setting::MAType);
-  set(tr("Middle Input"), tr("Close"), Setting::InputField);
-  set(tr("Slow Color"), "red", Setting::Color);
-  set(tr("Slow Line Type"), tr("Line"), Setting::LineType);
-  set(tr("Slow Label"), tr("MA3S"), Setting::Text);
-  set(tr("Slow Period"), "40", Setting::Integer);
-  set(tr("Slow Displace"), "0", Setting::Integer);
-  set(tr("Slow Type"), "SMA", Setting::MAType);
-  set(tr("Slow Input"), tr("Close"), Setting::InputField);
-  set(tr("Plot"), tr("True"), Setting::None);
-  set(tr("Alert"), tr("True"), Setting::None);
-
-  about = "3 Plot Moving Average\n";
+  plotFlag = TRUE;
+  alertFlag = TRUE;
+  setDefaults();
 }
 
 MA3::~MA3 ()
 {
 }
 
+void MA3::setDefaults ()
+{
+  fastColor.setNamedColor("red");
+  midColor.setNamedColor("red");
+  slowColor.setNamedColor("red");
+  fastLineType = PlotLine::Line;
+  midLineType = PlotLine::Line;
+  slowLineType = PlotLine::Line;
+  fastLabel = "MA3F";
+  midLabel = "MA3M";
+  slowLabel = "MA3S";
+  slowPeriod = 40;
+  midPeriod = 20;
+  fastPeriod = 10;
+  fastMAType = IndicatorPlugin::SMA;  
+  midMAType = IndicatorPlugin::SMA;  
+  slowMAType = IndicatorPlugin::SMA;
+  fastDisplace = 0;  
+  midDisplace = 0;  
+  slowDisplace = 0;  
+  fastInput = IndicatorPlugin::Close;
+  midInput = IndicatorPlugin::Close;
+  slowInput = IndicatorPlugin::Close;
+}
+
 void MA3::calculate ()
 {
-  PlotLine *fin = getInput(getData(tr("Fast Input")));
-  PlotLine *min = getInput(getData(tr("Middle Input")));
-  PlotLine *sin = getInput(getData(tr("Slow Input")));
+  PlotLine *fin = getInput(fastInput);
+  PlotLine *min = getInput(midInput);
+  PlotLine *sin = getInput(slowInput);
 
-  PlotLine *fma = getMA(fin, getData(tr("Fast Type")), getInt(tr("Fast Period")), getInt(tr("Fast Displace")));
-  fma->setColor(getData(tr("Fast Color")));
-  fma->setType(getData(tr("Fast Line Type")));
-  fma->setLabel(getData(tr("Fast Label")));
+  PlotLine *fma = getMA(fin, fastMAType, fastPeriod, fastDisplace);
+  fma->setColor(fastColor);
+  fma->setType(fastLineType);
+  fma->setLabel(fastLabel);
 
-  PlotLine *mma = getMA(min, getData(tr("Middle Type")), getInt(tr("Middle Period")), getInt(tr("Middle Displace")));
-  mma->setColor(getData(tr("Middle Color")));
-  mma->setType(getData(tr("Middle Line Type")));
-  mma->setLabel(getData(tr("Middle Label")));
+  PlotLine *mma = getMA(min, midMAType, midPeriod, midDisplace);
+  mma->setColor(midColor);
+  mma->setType(midLineType);
+  mma->setLabel(midLabel);
 
-  PlotLine *sma = getMA(sin, getData(tr("Slow Type")), getInt(tr("Slow Period")), getInt(tr("Slow Displace")));
-  sma->setColor(getData(tr("Slow Color")));
-  sma->setType(getData(tr("Slow Line Type")));
-  sma->setLabel(getData(tr("Slow Label")));
+  PlotLine *sma = getMA(sin, slowMAType, slowPeriod, slowDisplace);
+  sma->setColor(slowColor);
+  sma->setType(slowLineType);
+  sma->setLabel(slowLabel);
 
   delete fin;
   delete min;
@@ -149,6 +152,179 @@ QMemArray<int> MA3::getAlerts ()
   }
 
   return alerts;
+}
+
+int MA3::indicatorPrefDialog ()
+{
+  PrefDialog *dialog = new PrefDialog();
+  dialog->setCaption(tr("MA3 Indicator"));
+  
+  dialog->createPage (tr("Fast MA"));
+  dialog->addColorItem(tr("Fast Color"), 1, fastColor);
+  dialog->addIntItem(tr("Fast Period"), 1, fastPeriod, 1, 99999999);
+  dialog->addTextItem(tr("Fast Label"), 1, fastLabel);
+  dialog->addComboItem(tr("Fast Line Type"), 1, lineTypes, fastLineType);
+  dialog->addComboItem(tr("Fast MA Type"), 1, getMATypes(), fastMAType);
+  dialog->addComboItem(tr("Fast Input"), 1, getInputFields(), fastInput);
+  
+  dialog->createPage (tr("Mid MA"));
+  dialog->addColorItem(tr("Mid Color"), 2, midColor);
+  dialog->addIntItem(tr("Mid Period"), 2, midPeriod, 1, 99999999);
+  dialog->addTextItem(tr("Mid Label"), 2, midLabel);
+  dialog->addComboItem(tr("Mid Line Type"), 2, lineTypes, midLineType);
+  dialog->addComboItem(tr("Mid MA Type"), 2, getMATypes(), midMAType);
+  dialog->addComboItem(tr("Mid Input"), 2, getInputFields(), midInput);
+  
+  dialog->createPage (tr("Slow MA"));
+  dialog->addColorItem(tr("Slow Color"), 3, slowColor);
+  dialog->addIntItem(tr("Slow Period"), 3, slowPeriod, 1, 99999999);
+  dialog->addTextItem(tr("Slow Label"), 3, slowLabel);
+  dialog->addComboItem(tr("Slow Line Type"), 3, lineTypes, slowLineType);
+  dialog->addComboItem(tr("Slow MA Type"), 3, getMATypes(), slowMAType);
+  dialog->addComboItem(tr("Slow Input"), 3, getInputFields(), slowInput);
+  
+  int rc = dialog->exec();
+  
+  if (rc == QDialog::Accepted)
+  {
+    fastColor = dialog->getColor(tr("Fast Color"));
+    fastPeriod = dialog->getInt(tr("Fast Period"));
+    fastLabel = dialog->getText(tr("Fast Label"));
+    fastLineType = (PlotLine::LineType) dialog->getComboIndex(tr("Fast Line Type"));
+    fastMAType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("Fast MA Type"));
+    fastInput = (IndicatorPlugin::InputType) dialog->getComboIndex(tr("Fast Input"));
+    
+    midColor = dialog->getColor(tr("Mid Color"));
+    midPeriod = dialog->getInt(tr("Mid Period"));
+    midLabel = dialog->getText(tr("Mid Label"));
+    midLineType = (PlotLine::LineType) dialog->getComboIndex(tr("Mid Line Type"));
+    midMAType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("Mid MA Type"));
+    midInput = (IndicatorPlugin::InputType) dialog->getComboIndex(tr("Mid Input"));
+    
+    slowColor = dialog->getColor(tr("Slow Color"));
+    slowPeriod = dialog->getInt(tr("Slow Period"));
+    slowLabel = dialog->getText(tr("Slow Label"));
+    slowLineType = (PlotLine::LineType) dialog->getComboIndex(tr("Slow Line Type"));
+    slowMAType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("Slow MA Type"));
+    slowInput = (IndicatorPlugin::InputType) dialog->getComboIndex(tr("Slow Input"));
+    
+    rc = TRUE;
+  }
+  else
+    rc = FALSE;
+  
+  delete dialog;
+  return rc;
+}
+
+void MA3::loadIndicatorSettings (QString file)
+{
+  setDefaults();
+  
+  QDict<QString> dict = loadFile(file);
+  if (! dict.count())
+    return;
+  
+  QString *s = dict["fastColor"];
+  if (s)
+    fastColor.setNamedColor(s->left(s->length()));
+    
+  s = dict["fastPeriod"];
+  if (s)
+    fastPeriod = s->left(s->length()).toInt();
+	
+  s = dict["fastLabel"];
+  if (s)
+    fastLabel = s->left(s->length());
+        
+  s = dict["fastLineType"];
+  if (s)
+    fastLineType = (PlotLine::LineType) s->left(s->length()).toInt();
+        
+  s = dict["fastMAType"];
+  if (s)
+    fastMAType = (IndicatorPlugin::MAType) s->left(s->length()).toInt();
+        
+  s = dict["fastInput"];
+  if (s)
+    fastInput = (IndicatorPlugin::InputType) s->left(s->length()).toInt();
+
+  s = dict["midColor"];
+  if (s)
+    midColor.setNamedColor(s->left(s->length()));
+    
+  s = dict["midPeriod"];
+  if (s)
+    midPeriod = s->left(s->length()).toInt();
+	
+  s = dict["midLabel"];
+  if (s)
+    midLabel = s->left(s->length());
+        
+  s = dict["midLineType"];
+  if (s)
+    midLineType = (PlotLine::LineType) s->left(s->length()).toInt();
+        
+  s = dict["midMAType"];
+  if (s)
+    midMAType = (IndicatorPlugin::MAType) s->left(s->length()).toInt();
+        
+  s = dict["midInput"];
+  if (s)
+    midInput = (IndicatorPlugin::InputType) s->left(s->length()).toInt();
+    
+  s = dict["slowColor"];
+  if (s)
+    slowColor.setNamedColor(s->left(s->length()));
+    
+  s = dict["slowPeriod"];
+  if (s)
+    slowPeriod = s->left(s->length()).toInt();
+	
+  s = dict["slowLabel"];
+  if (s)
+    slowLabel = s->left(s->length());
+        
+  s = dict["slowLineType"];
+  if (s)
+    slowLineType = (PlotLine::LineType) s->left(s->length()).toInt();
+        
+  s = dict["slowMAType"];
+  if (s)
+    slowMAType = (IndicatorPlugin::MAType) s->left(s->length()).toInt();
+        
+  s = dict["slowInput"];
+  if (s)
+    slowInput = (IndicatorPlugin::InputType) s->left(s->length()).toInt();
+}
+
+void MA3::saveIndicatorSettings (QString file)
+{
+  QDict<QString>dict;
+  dict.setAutoDelete(TRUE);
+
+  dict.replace("fastColor", new QString(fastColor.name()));
+  dict.replace("fastPeriod", new QString(QString::number(fastPeriod)));
+  dict.replace("fastLabel", new QString(fastLabel));
+  dict.replace("fastLineType", new QString(QString::number(fastLineType)));
+  dict.replace("fastMAType", new QString(QString::number(fastMAType)));
+  dict.replace("fastInput", new QString(QString::number(fastInput)));
+
+  dict.replace("midColor", new QString(midColor.name()));
+  dict.replace("midPeriod", new QString(QString::number(midPeriod)));
+  dict.replace("midLabel", new QString(midLabel));
+  dict.replace("midLineType", new QString(QString::number(midLineType)));
+  dict.replace("midMAType", new QString(QString::number(midMAType)));
+  dict.replace("midInput", new QString(QString::number(midInput)));
+  
+  dict.replace("slowColor", new QString(slowColor.name()));
+  dict.replace("slowPeriod", new QString(QString::number(slowPeriod)));
+  dict.replace("slowLabel", new QString(slowLabel));
+  dict.replace("slowLineType", new QString(QString::number(slowLineType)));
+  dict.replace("slowMAType", new QString(QString::number(slowMAType)));
+  dict.replace("slowInput", new QString(QString::number(slowInput)));
+
+  saveFile(file, dict);
 }
 
 Plugin * create ()

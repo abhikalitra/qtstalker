@@ -20,35 +20,38 @@
  */
 
 #include "ATR.h"
+#include "PrefDialog.h"
+#include <qdict.h>
 
 ATR::ATR ()
 {
   pluginName = "ATR";
-
-  set(tr("Type"), pluginName, Setting::None);
-  set(tr("Color"), "red", Setting::Color);
-  set(tr("Line Type"), tr("Line"), Setting::LineType);
-  set(tr("Label"), pluginName, Setting::Text);
-  set(tr("Smoothing"), "14", Setting::Integer);
-  set(tr("Smoothing Type"), tr("SMA"), Setting::MAType);
-  set(tr("Plot"), tr("False"), Setting::None);
-  set(tr("Alert"), tr("True"), Setting::None);
-
-  about = "Average True Range\n";
+  plotFlag = FALSE;
+  alertFlag = TRUE;
+  setDefaults();
 }
 
 ATR::~ATR ()
 {
 }
 
+void ATR::setDefaults ()
+{
+  color.setNamedColor("red");
+  lineType = PlotLine::Line;
+  label = pluginName;
+  smoothing = 14;
+  maType = IndicatorPlugin::SMA;  
+}
+
 void ATR::calculate ()
 {
   PlotLine *line = getTR();
 
-  PlotLine *ma = getMA(line, getData(tr("Smoothing Type")), getInt(tr("Smoothing")));
-  ma->setColor(getData(tr("Color")));
-  ma->setType(getData(tr("Line Type")));
-  ma->setLabel(getData(tr("Label")));
+  PlotLine *ma = getMA(line, maType, smoothing);
+  ma->setColor(color);
+  ma->setType(lineType);
+  ma->setLabel(label);
 
   delete line;
 
@@ -106,6 +109,78 @@ QMemArray<int> ATR::getAlerts ()
   }
 
   return alerts;
+}
+
+int ATR::indicatorPrefDialog ()
+{
+  PrefDialog *dialog = new PrefDialog();
+  dialog->setCaption(tr("ATR Indicator"));
+  dialog->createPage (tr("Parms"));
+  dialog->addColorItem(tr("Color"), 1, color);
+  dialog->addTextItem(tr("Label"), 1, label);
+  dialog->addComboItem(tr("Line Type"), 1, lineTypes, lineType);
+  dialog->addIntItem(tr("Smoothing"), 1, smoothing, 1, 99999999);
+  dialog->addComboItem(tr("Smoothing Type"), 1, getMATypes(), maType);
+  
+  int rc = dialog->exec();
+  
+  if (rc == QDialog::Accepted)
+  {
+    color = dialog->getColor(tr("Color"));
+    lineType = (PlotLine::LineType) dialog->getComboIndex(tr("Line Type"));
+    label = dialog->getText(tr("Label"));
+    smoothing = dialog->getInt(tr("Smoothing"));
+    maType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("Smoothing Type"));
+    rc = TRUE;
+  }
+  else
+    rc = FALSE;
+  
+  delete dialog;
+  return rc;
+}
+
+void ATR::loadIndicatorSettings (QString file)
+{
+  setDefaults();
+  
+  QDict<QString> dict = loadFile(file);
+  if (! dict.count())
+    return;
+  
+  QString *s = dict["color"];
+  if (s)
+    color.setNamedColor(s->left(s->length()));
+    
+  s = dict["label"];
+  if (s)
+    label = s->left(s->length());
+        
+  s = dict["lineType"];
+  if (s)
+    lineType = (PlotLine::LineType) s->left(s->length()).toInt();
+
+  s = dict["smoothing"];
+  if (s)
+    smoothing = s->left(s->length()).toInt();
+
+  s = dict["maType"];
+  if (s)
+    maType = (IndicatorPlugin::MAType) s->left(s->length()).toInt();
+}
+
+void ATR::saveIndicatorSettings (QString file)
+{
+  QDict<QString>dict;
+  dict.setAutoDelete(TRUE);
+
+  dict.replace("color", new QString(color.name()));
+  dict.replace("label", new QString(label));
+  dict.replace("lineType", new QString(QString::number(lineType)));
+  dict.replace("smoothing", new QString(QString::number(smoothing)));
+  dict.replace("maType", new QString(QString::number(maType)));
+
+  saveFile(file, dict);
 }
 
 Plugin * create ()
