@@ -46,10 +46,8 @@ SettingView::SettingView (QWidget *w, QString dp) : QWidget (w)
 
   list = new QTable(0, 2, this);
   list->setSelectionMode(QTable::Single);
-  QStringList l;
-  l.append(tr("Setting"));
-  l.append(tr("Value"));
-  list->setColumnLabels(l);
+  list->horizontalHeader()->setLabel(0, tr("Setting"));
+  list->horizontalHeader()->setLabel(1, tr("Value"));
   list->setColumnReadOnly(0, TRUE);
   list->setShowGrid(FALSE);
   list->setSorting(TRUE);
