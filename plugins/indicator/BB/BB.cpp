@@ -145,17 +145,7 @@ int BB::indicatorPrefDialog (QWidget *w)
   return rc;
 }
 
-void BB::loadIndicatorSettings (QString file)
-{
-  setIndicatorSettings(loadFile(file));
-}
-
-void BB::saveIndicatorSettings (QString file)
-{
-  saveFile(file, getIndicatorSettings());
-}
-
-void BB::setIndicatorSettings (Setting dict)
+void BB::setIndicatorSettings (Setting &dict)
 {
   setDefaults();
   
@@ -191,9 +181,8 @@ void BB::setIndicatorSettings (Setting dict)
     label = s;
 }
 
-Setting BB::getIndicatorSettings ()
+void BB::getIndicatorSettings (Setting &dict)
 {
-  Setting dict;
   dict.setData("color", color.name());
   dict.setData("lineType", QString::number(lineType));
   dict.setData("period", QString::number(period));
@@ -202,7 +191,6 @@ Setting BB::getIndicatorSettings ()
   dict.setData("customBand", customBand);
   dict.setData("label", label);
   dict.setData("plugin", pluginName);
-  return dict;
 }
 
 PlotLine * BB::calculateCustom (QDict<PlotLine> *)

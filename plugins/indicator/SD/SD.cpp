@@ -126,17 +126,7 @@ int SD::indicatorPrefDialog (QWidget *w)
   return rc;
 }
 
-void SD::loadIndicatorSettings (QString file)
-{
-  setIndicatorSettings(loadFile(file));
-}
-
-void SD::saveIndicatorSettings (QString file)
-{
-  saveFile(file, getIndicatorSettings());
-}
-
-void SD::setIndicatorSettings (Setting dict)
+void SD::setIndicatorSettings (Setting &dict)
 {
   setDefaults();
   
@@ -168,9 +158,8 @@ void SD::setIndicatorSettings (Setting dict)
     customInput = s;
 }
 
-Setting SD::getIndicatorSettings ()
+void SD::getIndicatorSettings (Setting &dict)
 {
-  Setting dict;
   dict.setData("color", color.name());
   dict.setData("lineType", QString::number(lineType));
   dict.setData("period", QString::number(period));
@@ -178,7 +167,6 @@ Setting SD::getIndicatorSettings ()
   dict.setData("input", QString::number(input));
   dict.setData("customInput", customInput);
   dict.setData("plugin", pluginName);
-  return dict;
 }
 
 PlotLine * SD::calculateCustom (QDict<PlotLine> *d)

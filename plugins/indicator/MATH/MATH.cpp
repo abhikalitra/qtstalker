@@ -464,17 +464,7 @@ int MATH::indicatorPrefDialog (QWidget *w)
   return rc;
 }
 
-void MATH::loadIndicatorSettings (QString file)
-{
-  setIndicatorSettings(loadFile(file));
-}
-
-void MATH::saveIndicatorSettings (QString file)
-{
-  saveFile(file, getIndicatorSettings());
-}
-
-void MATH::setIndicatorSettings (Setting dict)
+void MATH::setIndicatorSettings (Setting &dict)
 {
   setDefaults();
   
@@ -522,9 +512,8 @@ void MATH::setIndicatorSettings (Setting dict)
     period = s.toInt();
 }
 
-Setting MATH::getIndicatorSettings ()
+void MATH::getIndicatorSettings (Setting &dict)
 {
-  Setting dict;
   dict.setData("color", color.name());
   dict.setData("label", label);
   dict.setData("lineType", QString::number(lineType));
@@ -536,7 +525,6 @@ Setting MATH::getIndicatorSettings ()
   dict.setData("data4", data4);
   dict.setData("data5", data5);
   dict.setData("period", QString::number(period));
-  return dict;
 }
 
 PlotLine * MATH::calculateCustom (QDict<PlotLine> *d)

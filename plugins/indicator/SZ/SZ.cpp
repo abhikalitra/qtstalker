@@ -209,17 +209,7 @@ int SZ::indicatorPrefDialog (QWidget *w)
   return rc;
 }
 
-void SZ::loadIndicatorSettings (QString file)
-{
-  setIndicatorSettings(loadFile(file));
-}
-
-void SZ::saveIndicatorSettings (QString file)
-{
-  saveFile(file, getIndicatorSettings());
-}
-
-void SZ::setIndicatorSettings (Setting dict)
+void SZ::setIndicatorSettings (Setting &dict)
 {
   setDefaults();
   
@@ -255,9 +245,8 @@ void SZ::setIndicatorSettings (Setting dict)
     label = s;
 }
 
-Setting SZ::getIndicatorSettings ()
+void SZ::getIndicatorSettings (Setting &dict)
 {
-  Setting dict;
   dict.setData("color", color.name());
   dict.setData("lineType", QString::number(lineType));
   dict.setData("period", QString::number(period));
@@ -266,7 +255,6 @@ Setting SZ::getIndicatorSettings ()
   dict.setData("method", method);
   dict.setData("label", label);
   dict.setData("plugin", pluginName);
-  return dict;
 }
 
 PlotLine * SZ::calculateCustom (QDict<PlotLine> *)

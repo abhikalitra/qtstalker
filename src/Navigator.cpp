@@ -51,9 +51,15 @@ void Navigator::updateList ()
 
   int loop;
   if (! basePath.compare(currentDir.absPath()))
+  {
     loop = 2;
+    currentDir.setFilter(QDir::Dirs);
+  }
   else
+  {
     loop = 1;
+    currentDir.setFilter(QDir::All);
+  }
 
   for (; loop < (int) currentDir.count(); loop++)
   {

@@ -75,7 +75,7 @@ class Config
       X,
       Y,
       ScannerPath,
-      IndicatorPageStatus,
+      IndicatorPageStatus, // unused
       PlotSizes,
       Menubar,
       Macro1,
@@ -89,7 +89,8 @@ class Config
       Macro9,
       Macro10,
       Macro11,
-      Macro12
+      Macro12,
+      IndicatorGroup
     };
 
     Config ();
@@ -98,14 +99,15 @@ class Config
     void setData(QString, QString);
     QString getData (Parm);
     QString getData(QString);
-    QStringList getDirList (QString);
+    QStringList getDirList (QString, bool);
     void setup ();
     QString parseDbPlugin (QString);
 
-    QStringList getIndicators ();
+    QStringList getIndicators (QString);
     Setting * getIndicator (QString);
     void deleteIndicator (QString);
     QStringList getIndicatorList ();
+    void setIndicator (QString, Setting *);
 
     QStringList getPluginList (Config::Parm);
     ChartPlugin * getChartPlugin (QString);
@@ -115,6 +117,8 @@ class Config
     COPlugin * getCOPlugin (QString);
     void closePlugins ();
     void closePlugin (QString);
+    
+    void copyIndicatorFile (QString, QString);
 
   protected:
     QDict<QLibrary> libs;

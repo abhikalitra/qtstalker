@@ -190,17 +190,7 @@ int LOWPASS::indicatorPrefDialog (QWidget *w)
   return rc;
 }
 
-void LOWPASS::loadIndicatorSettings (QString file)
-{
-  setIndicatorSettings(loadFile(file));
-}
-
-void LOWPASS::saveIndicatorSettings (QString file)
-{
-  saveFile(file, getIndicatorSettings());
-}
-
-void LOWPASS::setIndicatorSettings (Setting dict)
+void LOWPASS::setIndicatorSettings (Setting &dict)
 {
   setDefaults();
   
@@ -232,9 +222,8 @@ void LOWPASS::setIndicatorSettings (Setting dict)
     customInput = s;
 }
 
-Setting LOWPASS::getIndicatorSettings()
+void LOWPASS::getIndicatorSettings(Setting &dict)
 {
-  Setting dict;
   dict.setData("color", color.name());
   dict.setData("lineType", QString::number(lineType));
   dict.setData("label", label);
@@ -242,7 +231,6 @@ Setting LOWPASS::getIndicatorSettings()
   dict.setData("width", QString::number(width));
   dict.setData("plugin", pluginName);
   dict.setData("customInput", customInput);
-  return dict;
 }
 
 PlotLine * LOWPASS::detrend(PlotLine *x, double &slope, double &intercept, bool detrend)

@@ -145,7 +145,8 @@ void CUS::loadIndicatorSettings (QString file)
 {
   formulaList.clear();
   
-  Setting set = loadFile(file);
+  Setting set;
+  loadFile(file, set);
   if (! set.count())
     return;
 

@@ -27,13 +27,11 @@ class DMI : public IndicatorPlugin
     DMI ();
     virtual ~DMI ();
     void calculate ();
-    void loadIndicatorSettings (QString);
-    void saveIndicatorSettings (QString);
     int indicatorPrefDialog (QWidget *);
     void setDefaults();
     PlotLine * calculateCustom (QDict<PlotLine> *);
-    Setting getIndicatorSettings ();
-    void setIndicatorSettings (Setting);
+    void getIndicatorSettings (Setting &);
+    void setIndicatorSettings (Setting &);
     void getDI (int period);
     void getADX (IndicatorPlugin::MAType type, int period);
     PlotLine * getTR ();

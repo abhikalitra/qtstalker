@@ -197,17 +197,7 @@ int VT::indicatorPrefDialog (QWidget *w)
   return rc;
 }
 
-void VT::loadIndicatorSettings (QString file)
-{
-  setIndicatorSettings(loadFile(file));
-}
-
-void VT::saveIndicatorSettings (QString file)
-{
-  saveFile(file, getIndicatorSettings());
-}
-
-void VT::setIndicatorSettings (Setting dict)
+void VT::setIndicatorSettings (Setting &dict)
 {
   setDefaults();
   
@@ -231,15 +221,13 @@ void VT::setIndicatorSettings (Setting dict)
     method = s;
 }
 
-Setting VT::getIndicatorSettings ()
+void VT::getIndicatorSettings (Setting &dict)
 {
-  Setting dict;
   dict.setData("color", color.name());
   dict.setData("lineType", QString::number(lineType));
   dict.setData("label", label);
   dict.setData("method", method);
   dict.setData("plugin", pluginName);
-  return dict;
 }
 
 PlotLine * VT::calculateCustom (QDict<PlotLine> *)

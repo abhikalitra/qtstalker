@@ -130,17 +130,7 @@ int DMI::indicatorPrefDialog (QWidget *w)
   return rc;
 }
 
-void DMI::loadIndicatorSettings (QString file)
-{
-  setIndicatorSettings(loadFile(file));
-}
-
-void DMI::saveIndicatorSettings (QString file)
-{
-  saveFile(file, getIndicatorSettings());
-}
-
-void DMI::setIndicatorSettings (Setting dict)
+void DMI::setIndicatorSettings (Setting &dict)
 {
   setDefaults();
   
@@ -204,9 +194,8 @@ void DMI::setIndicatorSettings (Setting dict)
     lineRequest = s;
 }
 
-Setting DMI::getIndicatorSettings ()
+void DMI::getIndicatorSettings (Setting &dict)
 {
-  Setting dict;
   dict.setData("period", QString::number(period));
   dict.setData("smoothing", QString::number(smoothing));
   dict.setData("maType", QString::number(maType));
@@ -222,7 +211,6 @@ Setting DMI::getIndicatorSettings ()
   dict.setData("label", label);
   dict.setData("plugin", pluginName);
   dict.setData("lineRequest", lineRequest);
-  return dict;
 }
 
 PlotLine * DMI::calculateCustom (QDict<PlotLine> *)

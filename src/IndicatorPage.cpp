@@ -23,6 +23,9 @@
 #include "HelpWindow.h"
 #include "Config.h"
 #include "PrefDialog.h"
+#include "SymbolDialog.h"
+#include "Indicator.h"
+#include "IndicatorPlugin.h"
 #include "help.xpm"
 #include "ok.xpm"
 #include "disable.xpm"
@@ -35,33 +38,64 @@
 #include <qaccel.h>
 #include <qfile.h>
 #include <qtextstream.h>
+#include <qinputdialog.h>
+#include <qmessagebox.h>
 
-IndicatorPage::IndicatorPage (QWidget *w) : QListBox (w)
+
+IndicatorPage::IndicatorPage (QWidget *w) : QWidget (w)
 {
   keyFlag = FALSE;
   macroFlag = FALSE;
   macro = 0;
+  updateEnableFlag = FALSE;
   
-  connect(this, SIGNAL(doubleClicked(QListBoxItem *)), this, SLOT(doubleClick(QListBoxItem *)));
-  connect(this, SIGNAL(contextMenuRequested(QListBoxItem *, const QPoint &)), this,
-          SLOT(rightClick(QListBoxItem *)));
-  connect(this, SIGNAL(highlighted(const QString &)), this, SLOT(itemSelected(const QString &)));
+  Config config;  
+  baseDir = config.getData(Config::IndicatorPath);
+  currentGroup = config.getData(Config::IndicatorGroup);
+  
+  QVBoxLayout *vbox = new QVBoxLayout(this);
+  vbox->setMargin(2);
+  vbox->setSpacing(5);
+  
+  group = new MyComboBox(this, Macro::IndicatorPage);
+  connect(group, SIGNAL(activated(int)), this, SLOT(slotGroupChanged(int)));
+  connect(group, SIGNAL(signalKeyPressed(int, int, int, int, QString)),
+          this, SIGNAL(signalKeyPressed(int, int, int, int, QString)));
+  vbox->addWidget(group);
 
+  list = new MyListBox(this, Macro::IndicatorPage);
+  connect(list, SIGNAL(doubleClicked(QListBoxItem *)), this, SLOT(doubleClick(QListBoxItem *)));
+  connect(list, SIGNAL(contextMenuRequested(QListBoxItem *, const QPoint &)), this,
+          SLOT(rightClick(QListBoxItem *)));
+  connect(list, SIGNAL(highlighted(const QString &)), this, SLOT(itemSelected(const QString &)));
+  connect(list, SIGNAL(signalKeyPressed(int, int, int, int, QString)),
+          this, SIGNAL(signalKeyPressed(int, int, int, int, QString)));
+  vbox->addWidget(list);
+    
   menu = new QPopupMenu(this);
-  menu->insertItem(QPixmap(newchart), tr("&New Indicator	Ctrl+N"), this, SLOT(newIndicator()));
-  menu->insertItem(QPixmap(edit), tr("&Edit Indicator		Ctrl+E"), this, SLOT(editIndicator()));
-  menu->insertItem(QPixmap(deleteitem), tr("&Delete Indicator	Ctrl+D"), this, SLOT(deleteIndicator()));
-  menu->insertItem(QPixmap(moveitem), tr("Mo&ve Indicator	Ctrl+V"), this, SLOT(moveIndicator()));
+  menu->insertItem(QPixmap(newchart), tr("&New Indicator Group		Ctrl+N"), this, SLOT(newIndicatorGroup()));
+  menu->insertItem(QPixmap(newchart), tr("Delete Indicator Group	Ctrl+X"), this, SLOT(deleteIndicatorGroup()));
   menu->insertSeparator(-1);
-  menu->insertItem(QPixmap(help), tr("&Help		Ctrl+H"), this, SLOT(slotHelp()));
+  menu->insertItem(QPixmap(newchart), tr("&Add Indicator		Ctrl+A"), this, SLOT(newIndicator()));
+  menu->insertItem(QPixmap(edit), tr("&Edit Indicator			Ctrl+E"), this, SLOT(editIndicator()));
+  menu->insertItem(QPixmap(deleteitem), tr("&Delete Indicator		Ctrl+D"), this, SLOT(deleteIndicator()));
+  menu->insertItem(QPixmap(moveitem), tr("Mo&ve Indicator		Ctrl+V"), this, SLOT(moveIndicator()));
+  menu->insertSeparator(-1);
+  menu->insertItem(QPixmap(help), tr("&Help			Ctrl+H"), this, SLOT(slotHelp()));
 
   QAccel *a = new QAccel(this);
   connect(a, SIGNAL(activated(int)), this, SLOT(slotAccel(int)));
-  a->insertItem(CTRL+Key_N, NewIndicator);
+  a->insertItem(CTRL+Key_N, NewIndicatorGroup);
+  a->insertItem(CTRL+Key_X, DeleteIndicatorGroup);
+  a->insertItem(CTRL+Key_A, AddIndicator);
   a->insertItem(CTRL+Key_D, DeleteIndicator);
   a->insertItem(CTRL+Key_E, EditIndicator);
   a->insertItem(CTRL+Key_V, MoveIndicator);
   a->insertItem(CTRL+Key_H, Help);
+  a->insertItem(CTRL+Key_Tab, Tab);
+  
+  updateGroups();
+  itemSelected(QString());
 }
 
 IndicatorPage::~IndicatorPage ()
@@ -72,29 +106,236 @@ void IndicatorPage::itemSelected (const QString &d)
 {
   if (d.length())
   {
-    menu->setItemEnabled(menu->idAt(1), TRUE);
-    menu->setItemEnabled(menu->idAt(2), TRUE);
+    menu->setItemEnabled(menu->idAt(4), TRUE);
+    menu->setItemEnabled(menu->idAt(5), TRUE);
+    menu->setItemEnabled(menu->idAt(6), TRUE);
   }
   else
   {
-    menu->setItemEnabled(menu->idAt(1), FALSE);
-    menu->setItemEnabled(menu->idAt(2), FALSE);
+    menu->setItemEnabled(menu->idAt(4), FALSE);
+    menu->setItemEnabled(menu->idAt(5), FALSE);
+    menu->setItemEnabled(menu->idAt(6), FALSE);
   }
+}
+
+void IndicatorPage::newIndicatorGroup ()
+{
+  bool ok;
+  QString s = QInputDialog::getText(tr("New Indicator Group"),
+  				    tr("Enter new group symbol."),
+				    QLineEdit::Normal,
+				    tr("NewGroup"),
+				    &ok,
+				    this);
+  if ((! ok) || (s.isNull()))
+    return;
+
+  int loop;
+  QString selection;
+  for (loop = 0; loop < (int) s.length(); loop++)
+  {
+    QChar c = s.at(loop);
+    if (c.isLetterOrNumber())
+      selection.append(c);
+  }
+  
+  s = baseDir + "/" + selection;
+  QDir dir(s);
+  if (dir.exists(s, TRUE))
+  {
+    QMessageBox::information(this, tr("Qtstalker: Error"), tr("This group already exists."));
+    return;
+  }
+
+  dir.mkdir(s, TRUE);
+  updateList();
+  updateGroups();
+}
+
+void IndicatorPage::deleteIndicatorGroup ()
+{
+  Config config;
+  SymbolDialog *dialog = new SymbolDialog(this,
+  					  config.getData(Config::IndicatorPath),
+					  "*",
+					  QFileDialog::DirectoryOnly);
+  dialog->setCaption(tr("Select Indicator Group(s) To Delete"));
+
+  int rc = dialog->exec();
+
+  if (rc == QDialog::Accepted)
+  {
+    rc = QMessageBox::warning(this,
+  			      tr("Qtstalker: Warning"),
+			      tr("Are you sure you want to delete indicator group items?"),
+			      QMessageBox::Yes,
+			      QMessageBox::No,
+			      QMessageBox::NoButton);
+
+    if (rc == QMessageBox::No)
+    {
+      delete dialog;
+      return;
+    }
+
+    QStringList l = dialog->selectedFile();
+    int loop;
+    QDir dir;
+    for (loop = 0; loop < (int) l.count(); loop++)
+    {
+      dir.setPath(l[loop]);
+      if (! dir.dirName().compare("Indicators")) // dont delete the default group
+        continue;
+	
+      int loop2;
+      for (loop2 = 2; loop2 < (int) dir.count(); loop2++)
+      {
+        QString s = dir.absPath() + "/" + dir[loop2];
+        if (! dir.remove(s, TRUE))
+          qDebug("IndicatorPage::deleteGroupItem:failed to delete file");
+      }
+      
+      if (! dir.rmdir(l[loop], TRUE))
+        qDebug("IndicatorPage::deleteGroupItem:failed to delete dir");
+    }
+
+    updateList();
+    updateGroups();
+    itemSelected(QString());
+  }
+  
+  delete dialog;
 }
 
 void IndicatorPage::newIndicator ()
 {
-  emit signalNewIndicator();
+  Indicator *ti = new Indicator;
+  QStringList l = ti->getPlotTypes();
+  delete ti;
+
+  Config config;  
+  PrefDialog *idialog = new PrefDialog;
+  idialog->setCaption(tr("New Indicator"));
+  idialog->createPage (tr("Details"));
+  idialog->setHelpFile("newindicator.html");
+  idialog->addComboItem(tr("Indicator"), tr("Details"), config.getIndicatorList(), 0);
+  idialog->addTextItem(tr("Name"), tr("Details"), tr("NewIndicator"));
+  idialog->addComboItem(tr("Plot Type"), tr("Details"), l, 1);
+  idialog->addComboItem(tr("Indicator Group"), tr("Details"), getIndicatorGroups(), 0);
+  
+  int rc = idialog->exec();
+  if (rc == QDialog::Rejected)
+  {
+    delete idialog;
+    return;
+  }
+  
+  QString name = idialog->getText(tr("Name"));
+  QString indicator = idialog->getCombo(tr("Indicator"));
+  Indicator::PlotType plotType = (Indicator::PlotType) idialog->getComboIndex(tr("Plot Type"));
+  QString group = idialog->getCombo(tr("Indicator Group"));
+  delete idialog;
+  
+  if (! name.length())
+  {
+    QMessageBox::information(this, tr("Qtstalker: Error"), tr("Indicator name missing."));
+    return;
+  }
+  
+  int loop;
+  QString s;
+  for (loop = 0; loop < (int) name.length(); loop++)
+  {
+    QChar c = name.at(loop);
+    if (c.isLetterOrNumber())
+      s.append(c);
+  }
+  name = s;
+
+  QDir dir;
+  s = baseDir + "/" + group + "/" + name;
+  if (dir.exists(s))
+  {
+    QMessageBox::information(this, tr("Qtstalker: Error"), tr("Duplicate indicator name."));
+    return;
+  }
+
+  IndicatorPlugin *plug = config.getIndicatorPlugin(indicator);
+  if (! plug)
+  {
+    qDebug("IndicatorPage::newIndicator - could not open plugin");
+    config.closePlugin(indicator);
+    return;
+  }
+
+  rc = plug->indicatorPrefDialog(this);
+  
+  if (rc)
+  {
+    plug->setPlotType((int) plotType);
+    plug->saveIndicatorSettings(s);
+    config.closePlugin(indicator);
+    
+    Setting *set = new Setting;
+    set->setData("Name", name);
+    set->setData("PlotType", QString::number(plotType));
+    set->setData("File", s);
+    set->setData("Indicator", indicator);
+    emit signalNewIndicator(set);
+  }
+  else
+    config.closePlugin(indicator);
 }
 
 void IndicatorPage::editIndicator ()
 {
-  emit signalEditIndicator(currentText());
+  editIndicator(list->currentText());
+}
+
+void IndicatorPage::editIndicator (QString d)
+{
+  Config config;
+  QString s = baseDir + "/" + group->currentText() + "/" + d;
+  Setting *set = config.getIndicator(s);
+  if (! set->count())
+  {
+    delete set;
+    qDebug("IndicatorPage::editIndicator:indicator settings empty");
+  }
+  
+  QString type = set->getData("plugin");
+  
+  IndicatorPlugin *plug = config.getIndicatorPlugin(type);
+  if (! plug)
+  {
+    qDebug("IndicatorPage::editIndicator - could not open plugin");
+    config.closePlugin(type);
+    delete set;
+    return;
+  }
+
+  plug->loadIndicatorSettings(s);
+  int rc = plug->indicatorPrefDialog(this);
+
+  if (rc)
+  {
+    plug->saveIndicatorSettings(s);
+    config.closePlugin(type);
+    
+    if (set->getInt("enable"))
+    {
+      set->setData("Name", d);
+      set->setData("File", s);
+      emit signalEditIndicator(set);
+    }
+  }
+  else
+    config.closePlugin(type);
 }
 
 void IndicatorPage::deleteIndicator ()
 {
-  emit signalDeleteIndicator(currentText());
+  emit signalDeleteIndicator(list->currentText());
 }
 
 void IndicatorPage::moveIndicator ()
@@ -104,94 +345,64 @@ void IndicatorPage::moveIndicator ()
   delete i;
 
   Config config;
-  QStringList il;
-  int type = 1;
-  int line = -1;
-  QString s =  config.getData(Config::IndicatorPath) + "/" + currentText();
-  
-  QFile f(s);
-  if (! f.open(IO_ReadOnly))
-    return;
-  QTextStream stream(&f);
-
-  while(stream.atEnd() == 0)
+  QString s =  baseDir + "/" + group->currentText() + "/" + list->currentText();
+  Setting *set = config.getIndicator(s);
+  if (! set->count())
   {
-    QString s = stream.readLine();
-    s = s.stripWhiteSpace();
-    if (! s.length())
-      continue;
-      
-    il.append(s);
-    
-    QStringList l = QStringList::split("=", s, FALSE);
-    if (! l[0].compare("plotType"))
-    {
-      type = l[1].toInt();
-      line = il.count() - 1;
-    }
+    delete set;
+    qDebug("IndicatorPage::moveIndicator:indicator settings empty");
   }
-  f.close();
-  
-  if (line == -1)
-    return;
   
   PrefDialog *dialog = new PrefDialog;
   dialog->setCaption(tr("Move Indicator"));
   dialog->createPage (tr("Details"));
   dialog->setHelpFile("workwithmainindicators.html");
-  dialog->addComboItem(tr("Plot Type"), tr("Details"), pl, type);
+  dialog->addComboItem(tr("Plot Type"), tr("Details"), pl, set->getInt("plotType"));
   
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)
   {
     delete dialog;
+    delete set;
     return;
   }
   
-  il[line] = "plotType=" + QString::number(dialog->getComboIndex(tr("Plot Type")));
+  set->setData("plotType", QString::number(dialog->getComboIndex(tr("Plot Type"))));
 
-  bool status = statusList.getInt(currentText());
-  
+  bool status = set->getInt("enable");
   if (status)
-    emit signalDisableIndicator(currentText());
-  
-  QFile f2(s);
-  if (! f2.open(IO_WriteOnly))
-    return;
-  QTextStream stream2(&f2);
-
-  int loop;
-  for (loop = 0; loop < (int) il.count(); loop++)
-    stream2 << il[loop] << "\n";
+    emit signalDisableIndicator(s);
     
-  f2.close();
+  config.setIndicator(s, set);
   
   if (status)
-    emit signalEnableIndicator(currentText());
+    emit signalEnableIndicator(s);
 }
 
-void IndicatorPage::refreshList ()
+void IndicatorPage::updateList ()
 {
-  clear();
-  statusList.clear();
-
+  list->clear();
+  
   Config config;
-  QDir dir(config.getData(Config::IndicatorPath));
-  QStringList l = QStringList::split(",", config.getData(Config::IndicatorPageStatus), FALSE);
+  QStringList l = config.getIndicators(getIndicatorGroup());
   int loop;
-  for (loop = 2; loop < (int) dir.count(); loop++)
+  for (loop = 0; loop < (int) l.count(); loop++)
   {
-    if (l.findIndex(dir[loop]) == -1)
-    {
-      insertItem(ok, dir[loop], -1);
-      statusList.setData(dir[loop], "1");
-    }
+    QFileInfo fi(l[loop]);
+    Setting *set = config.getIndicator(l[loop]);
+    if (! set->getInt("enable"))
+      list->insertItem(disable, fi.fileName(), -1);
     else
     {
-      insertItem(disable, dir[loop], -1);
-      statusList.setData(dir[loop], "0");
+      list->insertItem(ok, fi.fileName(), -1);
+      if (updateEnableFlag)
+        emit signalEnableIndicator(l[loop]);
     }
+      
+    delete set;
   }
+  
+  itemSelected(QString());
 }
 
 void IndicatorPage::doubleClick (QListBoxItem *item)
@@ -199,26 +410,34 @@ void IndicatorPage::doubleClick (QListBoxItem *item)
   if (! item)
     return;
     
-  changeIndicator(item->text(), index(item));
+  changeIndicator(item->text());
 }
 
-void IndicatorPage::changeIndicator (QString d, int i)
+void IndicatorPage::changeIndicator (QString d)
 {
   if (! d.length())
     return;
     
-  if (statusList.getInt(d))
+  Config config;
+  QString s = baseDir + "/" + group->currentText() + "/" + d;
+  Setting *set = config.getIndicator(s);
+  int t = set->getInt("enable");
+  if (t)
   {
-    changeItem(disable, d, i);
-    statusList.setData(d, "0");
-    emit signalDisableIndicator(d);
+    set->setData("enable", "0");
+    config.setIndicator(s, set);
+    list->changeItem(disable, d, list->currentItem());
+    emit signalDisableIndicator(s);
   }
   else
   {
-    changeItem(ok, d, i);
-    statusList.setData(d, "1");
-    emit signalEnableIndicator(d);
+    set->setData("enable", "1");
+    config.setIndicator(s, set);
+    list->changeItem(ok, d, list->currentItem());
+    emit signalEnableIndicator(s);
   }
+  
+  delete set;
 }
 
 void IndicatorPage::slotHelp ()
@@ -232,43 +451,11 @@ void IndicatorPage::rightClick (QListBoxItem *)
   menu->exec(QCursor::pos());
 }
 
-void IndicatorPage::saveStatus ()
-{
-  QStringList l = statusList.getKeyList();
-  QStringList l2;
-  int loop;
-  for (loop = 0; loop < (int) l.count(); loop++)
-  {
-    if (! statusList.getInt(l[loop]))
-      l2.append(l[loop]);
-  }
-
-  Config config;
-  config.setData(Config::IndicatorPageStatus, l2.join(","));
-}
-
-QStringList IndicatorPage::getDisabledIndicators ()
-{
-  QStringList l = statusList.getKeyList();
-  QStringList l2;
-  int loop;
-  for (loop = 0; loop < (int) l.count(); loop++)
-  {
-    if (! statusList.getInt(l[loop]))
-      l2.append(l[loop]);
-  }
-
-  return l2;
-}
-
-bool IndicatorPage::getIndicatorStatus (QString d)
-{
-  return (bool) statusList.getInt(d);
-}
-
 void IndicatorPage::setKeyFlag (bool d)
 {
   keyFlag = d;
+  list->setKeyFlag(d);
+  group->setKeyFlag(d);
 }
 
 void IndicatorPage::keyPressEvent (QKeyEvent *key)
@@ -292,7 +479,13 @@ void IndicatorPage::doKeyPress (QKeyEvent *key)
     switch(key->key())
     {
       case Qt::Key_N:
-        slotAccel(NewIndicator);
+        slotAccel(NewIndicatorGroup);
+	break;
+      case Qt::Key_X:
+        slotAccel(DeleteIndicatorGroup);
+	break;
+      case Qt::Key_A:
+        slotAccel(AddIndicator);
 	break;
       case Qt::Key_D:
         slotAccel(DeleteIndicator);
@@ -303,25 +496,19 @@ void IndicatorPage::doKeyPress (QKeyEvent *key)
       case Qt::Key_V:
         slotAccel(MoveIndicator);
 	break;
+      case Qt::Key_Tab:
+        slotAccel(Tab);
+	break;
       default:
         break;
     }
   }
   else
   {
-    switch (key->key())
-    {
-      case Qt::Key_Left: // segfaults if we dont trap this
-      case Qt::Key_Right: // segfaults if we dont trap this
-        break;      
-      case Qt::Key_Enter:
-      case Qt::Key_Return:
-        changeIndicator(currentText(), currentItem());
-        break;
-      default:
-        QListBox::keyPressEvent(key);
-        break;
-    }
+    if (list->hasFocus())
+      list->doKeyPress(key);
+    else
+      group->doKeyPress(key);
   }
 }
 
@@ -329,9 +516,19 @@ void IndicatorPage::slotAccel (int id)
 {
   switch (id)
   {
-    case NewIndicator:
+    case NewIndicatorGroup:
       if (keyFlag)
         emit signalKeyPressed (Macro::IndicatorPage, ControlButton, Key_N, 0, QString());
+      newIndicatorGroup();
+      break;  
+    case DeleteIndicatorGroup:
+      if (keyFlag)
+        emit signalKeyPressed (Macro::IndicatorPage, ControlButton, Key_X, 0, QString());
+      deleteIndicatorGroup();
+      break;  
+    case AddIndicator:
+      if (keyFlag)
+        emit signalKeyPressed (Macro::IndicatorPage, ControlButton, Key_A, 0, QString());
       newIndicator();
       break;  
     case DeleteIndicator:
@@ -351,6 +548,14 @@ void IndicatorPage::slotAccel (int id)
       break;  
     case Help:
       slotHelp();
+      break;  
+    case Tab:
+      if (keyFlag)
+        emit signalKeyPressed (Macro::IndicatorPage, ControlButton, Key_Tab, 0, QString());
+      if (list->hasFocus())
+        list->setFocus();
+      else
+        group->setFocus();
       break;  
     default:
       break;
@@ -374,3 +579,60 @@ void IndicatorPage::runMacro (Macro *d)
   macroFlag = FALSE;
 }
 
+void IndicatorPage::slotGroupChanged (int)
+{
+  if (group->count() == 1)
+    return;
+
+  int loop;
+  for (loop = 0; loop < (int) list->count(); loop++)
+  {
+    QString s = baseDir + "/" + currentGroup + "/" + list->text(loop);    
+    emit signalDisableIndicator(s);
+  }
+   
+  currentGroup = group->currentText();
+  
+  updateEnableFlag = TRUE;
+  updateList();
+  updateEnableFlag = FALSE;
+  
+  emit signalReloadChart();
+}
+
+void IndicatorPage::updateGroups ()
+{
+//  group->blockSignals(TRUE);
+  
+  group->clear();
+  group->insertStringList(getIndicatorGroups(), -1);
+  if (currentGroup.length())  
+    group->setCurrentText(currentGroup);
+  
+//  group->blockSignals(FALSE);
+}
+
+QStringList IndicatorPage::getIndicatorGroups ()
+{
+  QStringList l;
+  QDir dir(baseDir);
+  int loop;
+  for (loop = 2; loop < (int) dir.count(); loop++)
+  {
+    QString s = dir.absPath() + "/" + dir[loop];
+    QFileInfo fi(s);
+    if (fi.isDir())
+      l.append(dir[loop]);
+  }
+  return l;
+}
+
+QString IndicatorPage::getIndicatorGroup ()
+{
+  return group->currentText();
+}
+
+void IndicatorPage::setFocus ()
+{
+  list->setFocus();
+}

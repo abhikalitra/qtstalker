@@ -158,17 +158,7 @@ int RSI::indicatorPrefDialog (QWidget *w)
   return rc;
 }
 
-void RSI::loadIndicatorSettings (QString file)
-{
-  setIndicatorSettings(loadFile(file));
-}
-
-void RSI::saveIndicatorSettings (QString file)
-{
-  saveFile(file, getIndicatorSettings());
-}
-
-void RSI::setIndicatorSettings (Setting dict)
+void RSI::setIndicatorSettings (Setting &dict)
 {
   setDefaults();
   
@@ -216,9 +206,8 @@ void RSI::setIndicatorSettings (Setting dict)
     customInput = s;
 }
 
-Setting RSI::getIndicatorSettings ()
+void RSI::getIndicatorSettings (Setting &dict)
 {
-  Setting dict;
   dict.setData("color", color.name());
   dict.setData("lineType", QString::number(lineType));
   dict.setData("period", QString::number(period));
@@ -230,7 +219,6 @@ Setting RSI::getIndicatorSettings ()
   dict.setData("sellLine", QString::number(sellLine));
   dict.setData("customInput", customInput);
   dict.setData("plugin", pluginName);
-  return dict;
 }
 
 PlotLine * RSI::calculateCustom (QDict<PlotLine> *d)

@@ -47,8 +47,8 @@ class IndicatorPlugin
     Indicator * getIndicator ();
     void clearOutput ();
     void setCustomFlag (bool);
-    Setting loadFile (QString);
-    void saveFile (QString, Setting);
+    void loadFile (QString, Setting &);
+    void saveFile (QString, Setting &);
     PlotLine * getInputLine (QString);
     PlotLine * getEMA (PlotLine *d, int);
     PlotLine * getSMA (PlotLine *d, int);
@@ -63,13 +63,13 @@ class IndicatorPlugin
 
     virtual void calculate ();
     virtual int indicatorPrefDialog (QWidget *);
-    virtual void loadIndicatorSettings (QString);
-    virtual void saveIndicatorSettings (QString);
     virtual PlotLine * calculateCustom (QDict<PlotLine> *);
-    virtual Setting getIndicatorSettings ();
-    virtual void setIndicatorSettings (Setting);
+    virtual void getIndicatorSettings (Setting &);
+    virtual void setIndicatorSettings (Setting &);
     virtual void setCustomFunction (QString);
     virtual int getMinBars ();
+    virtual void loadIndicatorSettings (QString);
+    virtual void saveIndicatorSettings (QString);
     
   protected:
     BarData *data;
@@ -84,6 +84,7 @@ class IndicatorPlugin
     QString pluginName;
     QString helpFile;
     int minBars;
+    bool enabled;
 };
 
 #endif

@@ -125,17 +125,7 @@ int VOL::indicatorPrefDialog (QWidget *w)
   return rc;
 }
 
-void VOL::loadIndicatorSettings (QString file)
-{
-  setIndicatorSettings(loadFile(file));
-}
-
-void VOL::saveIndicatorSettings (QString file)
-{
-  saveFile(file, getIndicatorSettings());
-}
-
-void VOL::setIndicatorSettings (Setting dict)
+void VOL::setIndicatorSettings (Setting &dict)
 {
   setDefaults();
   
@@ -183,9 +173,8 @@ void VOL::setIndicatorSettings (Setting dict)
     label = s;
 }
 
-Setting VOL::getIndicatorSettings ()
+void VOL::getIndicatorSettings (Setting &dict)
 {
-  Setting dict;
   dict.setData("upColor", upColor.name());
   dict.setData("downColor", downColor.name());
   dict.setData("volLabel", volLabel);
@@ -197,7 +186,6 @@ Setting VOL::getIndicatorSettings ()
   dict.setData("maType", QString::number(maType));
   dict.setData("label", label);
   dict.setData("plugin", pluginName);
-  return dict;
 }
 
 PlotLine * VOL::calculateCustom (QDict<PlotLine> *)

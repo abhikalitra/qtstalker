@@ -183,17 +183,7 @@ int MACD::indicatorPrefDialog (QWidget *w)
   return rc;
 }
 
-void MACD::loadIndicatorSettings (QString file)
-{
-  setIndicatorSettings(loadFile(file));
-}
-
-void MACD::saveIndicatorSettings (QString file)
-{
-  saveFile(file, getIndicatorSettings());
-}
-
-void MACD::setIndicatorSettings (Setting dict)
+void MACD::setIndicatorSettings (Setting &dict)
 {
   setDefaults();
   
@@ -269,9 +259,8 @@ void MACD::setIndicatorSettings (Setting dict)
     label = s;
 }
 
-Setting MACD::getIndicatorSettings ()
+void MACD::getIndicatorSettings (Setting &dict)
 {
-  Setting dict;
   dict.setData("macdColor", macdColor.name());
   dict.setData("fastPeriod", QString::number(fastPeriod));
   dict.setData("slowPeriod", QString::number(slowPeriod));
@@ -293,7 +282,6 @@ Setting MACD::getIndicatorSettings ()
   dict.setData("customInput", customInput);
   dict.setData("label", label);
   dict.setData("plugin", pluginName);
-  return dict;
 }
 
 PlotLine * MACD::calculateCustom (QDict<PlotLine> *d)

@@ -27,13 +27,11 @@ class CCI : public IndicatorPlugin
     CCI ();
     virtual ~CCI ();
     void calculate ();
-    void loadIndicatorSettings (QString);
-    void saveIndicatorSettings (QString);
     int indicatorPrefDialog (QWidget *);
     void setDefaults();
     PlotLine * calculateCustom (QDict<PlotLine> *);
-    Setting getIndicatorSettings ();
-    void setIndicatorSettings (Setting);
+    void getIndicatorSettings (Setting &);
+    void setIndicatorSettings (Setting &);
     int getMinBars ();
     
   private:

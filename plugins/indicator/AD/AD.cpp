@@ -24,6 +24,7 @@
 #include <qdict.h>
 #include <qobject.h>
 
+
 AD::AD ()
 {
   pluginName = "AD";
@@ -157,16 +158,6 @@ int AD::indicatorPrefDialog (QWidget *w)
   return rc;
 }
 
-void AD::loadIndicatorSettings (QString file)
-{
-  setIndicatorSettings(loadFile(file));
-}
-
-void AD::saveIndicatorSettings (QString file)
-{
-  saveFile(file, getIndicatorSettings());
-}
-
 PlotLine * AD::calculateCustom (QDict<PlotLine> *)
 {
   clearOutput();
@@ -174,18 +165,16 @@ PlotLine * AD::calculateCustom (QDict<PlotLine> *)
   return output->getLine(0);
 }
 
-Setting AD::getIndicatorSettings ()
+void AD::getIndicatorSettings (Setting &dict)
 {
-  Setting dict;
   dict.setData("color", color.name());
   dict.setData("label", label);
   dict.setData("lineType", QString::number(lineType));
   dict.setData("method", method);
   dict.setData("plugin", pluginName);
-  return dict;
 }
 
-void AD::setIndicatorSettings (Setting dict)
+void AD::setIndicatorSettings (Setting &dict)
 {
   setDefaults();
   

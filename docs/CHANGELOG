@@ -130,6 +130,24 @@
 	  
 20050224: Removed the ENV and PC indicators. Can easily be reproduced by a CUS formula.
 	  
+20050224: Fixed bug that segfaults if an indicator is deleted with no chart loaded.
+
+20050224: Fixed bug in tester that checks unused trading rules and issues 'COMP missing' message.
+
+20050226: Changed the plugin loading routines in Config to ignore the file extension. Let QLibrary
+          figure out what kind of dll it is. This helps portability.
+	  
+20050226: Fixed scope issues with some compilers with indicator plugins loading and saving
+          settings.
+	  
+20050226: Added the ability to create indicator groups to the indicator panel. A default group
+          called Indicators will contain all of your original indicators. This group
+	  cannot be removed. The user can create any number of new groups and add indicators
+	  to them. To switch between groups, just select the group from the combobox located
+	  above the list. All indicators in the list are global. Local indicators that apply
+	  only to the current chart, have yet to be implemented.
+	  
+	  
 	  
 	  	  
 0.29

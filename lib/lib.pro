@@ -34,6 +34,7 @@ HEADERS += MyComboBox.h
 HEADERS += MySlider.h
 HEADERS += MacroKey.h
 HEADERS += Macro.h
+HEADERS += MyListBox.h
    
 SOURCES += QuotePlugin.cpp
 SOURCES += IndicatorPlugin.cpp
@@ -65,6 +66,7 @@ SOURCES += MyComboBox.cpp
 SOURCES += MySlider.cpp
 SOURCES += MacroKey.cpp
 SOURCES += Macro.cpp
+SOURCES += MyListBox.cpp
 
     
 TARGET = qtstalker

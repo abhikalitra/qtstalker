@@ -40,13 +40,11 @@ class COMP : public IndicatorPlugin
     COMP ();
     virtual ~COMP ();
     void calculate ();
-    void loadIndicatorSettings (QString);
-    void saveIndicatorSettings (QString);
     int indicatorPrefDialog (QWidget *);
     void setDefaults();
     PlotLine * calculateCustom (QDict<PlotLine> *);
-    Setting getIndicatorSettings ();
-    void setIndicatorSettings (Setting);
+    void getIndicatorSettings (Setting &);
+    void setIndicatorSettings (Setting &);
     COMP::Operator getOperator (QString);
     int getMinBars ();
   

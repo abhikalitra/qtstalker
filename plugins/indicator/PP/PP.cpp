@@ -161,17 +161,7 @@ int PP::indicatorPrefDialog (QWidget *w)
   return rc;
 }
 
-void PP::loadIndicatorSettings (QString file)
-{
-  setIndicatorSettings(loadFile(file));
-}
-
-void PP::saveIndicatorSettings (QString file)
-{
-  saveFile(file, getIndicatorSettings());
-}
-
-void PP::setIndicatorSettings (Setting dict)
+void PP::setIndicatorSettings (Setting &dict)
 {
   setDefaults();
   
@@ -223,9 +213,8 @@ void PP::setIndicatorSettings (Setting dict)
     label = s;
 }
 
-Setting PP::getIndicatorSettings ()
+void PP::getIndicatorSettings (Setting &dict)
 {
-  Setting dict;
   dict.setData("resColor", resColor.name());
   dict.setData("supColor", supColor.name());
   dict.setData("resLineType", QString::number(resLineType));
@@ -238,7 +227,6 @@ Setting PP::getIndicatorSettings ()
   dict.setData("supLabel3", supLabel3);
   dict.setData("label", label);
   dict.setData("plugin", pluginName);
-  return dict;
 }
 
 int PP::getMinBars ()

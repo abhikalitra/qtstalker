@@ -25,6 +25,7 @@
 #include <qobject.h>
 #include <math.h>
 
+
 ATR::ATR ()
 {
   pluginName = "ATR";
@@ -121,17 +122,7 @@ int ATR::indicatorPrefDialog (QWidget *w)
   return rc;
 }
 
-void ATR::loadIndicatorSettings (QString file)
-{
-  setIndicatorSettings(loadFile(file));
-}
-
-void ATR::saveIndicatorSettings (QString file)
-{
-  saveFile(file, getIndicatorSettings());
-}
-
-void ATR::setIndicatorSettings (Setting dict)
+void ATR::setIndicatorSettings (Setting &dict)
 {
   setDefaults();
   
@@ -159,16 +150,14 @@ void ATR::setIndicatorSettings (Setting dict)
     maType = (IndicatorPlugin::MAType) s.toInt();
 }
 
-Setting ATR::getIndicatorSettings ()
+void ATR::getIndicatorSettings (Setting &dict)
 {
-  Setting dict;
   dict.setData("color", color.name());
   dict.setData("label", label);
   dict.setData("lineType", QString::number(lineType));
   dict.setData("smoothing", QString::number(smoothing));
   dict.setData("maType", QString::number(maType));
   dict.setData("plugin", pluginName);
-  return dict;
 }
 
 PlotLine * ATR::calculateCustom (QDict<PlotLine> *)

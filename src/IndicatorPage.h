@@ -24,66 +24,80 @@
 
 #include <qstring.h>
 #include <qwidget.h>
-#include <qlistbox.h>
 #include <qpopupmenu.h>
 #include "Setting.h"
 #include "Macro.h"
 #include "MacroKey.h"
+#include "MyComboBox.h"
+#include "MyListBox.h"
 
 
-class IndicatorPage : public QListBox
+class IndicatorPage : public QWidget
 {
   Q_OBJECT
 
   signals:
     void signalDisableIndicator (QString);
     void signalEnableIndicator (QString);
-    void signalEditIndicator (QString);
+    void signalEditIndicator (Setting *);
     void signalDeleteIndicator (QString);
-    void signalNewIndicator ();
+    void signalNewIndicator (Setting *);
     void signalKeyPressed (int, int, int, int, QString);
+    void signalReloadChart ();
   
   public:
   
     enum HotKey
     {
-      NewIndicator,
+      NewIndicatorGroup,
+      DeleteIndicatorGroup,
+      AddIndicator,
       DeleteIndicator,
       EditIndicator,
       MoveIndicator,
-      Help
+      Help,
+      Tab
     };
   
     IndicatorPage (QWidget *);
     ~IndicatorPage ();
+    void updateGroups ();
+    QStringList getIndicatorGroups ();
+    QString getIndicatorGroup ();
+    void setFocus ();
 
   public slots:
     void doubleClick (QListBoxItem *);
-    void refreshList ();
+    void updateList ();
     void slotHelp ();
     void rightClick (QListBoxItem *);
-    void saveStatus ();
     void newIndicator ();
+    void editIndicator (QString);
     void editIndicator ();
     void deleteIndicator ();
-    void itemSelected(const QString &);
-    QStringList getDisabledIndicators ();
-    void changeIndicator (QString, int);
+    void itemSelected (const QString &);
+    void changeIndicator (QString);
     void setKeyFlag (bool);
-    bool getIndicatorStatus (QString);
     void slotAccel (int);
     void doKeyPress (QKeyEvent *key);
     void runMacro (Macro *);
     void moveIndicator ();
+    void slotGroupChanged (int);
+    void newIndicatorGroup ();
+    void deleteIndicatorGroup ();
 
   protected:
     virtual void keyPressEvent (QKeyEvent *);
     
+    MyListBox *list;
+    MyComboBox *group;
     QPopupMenu *menu;
-    Setting statusList;
     bool keyFlag;
     Macro *macro;
     bool macroFlag;
+    QString baseDir;
+    QString currentGroup;
+    bool updateEnableFlag;
 };
 
 #endif

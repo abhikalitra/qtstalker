@@ -2151,28 +2151,46 @@ bool Tester::checkFormula (int d)
   switch(d)
   {
     case 0:
-      ok = enterLongEdit->checkError();
-      s.append(tr("Enter Long: "));
+      if (enterLongEdit->getLines())
+      {
+        ok = enterLongEdit->checkError();
+        s.append(tr("Enter Long: "));
+      }
       break;
     case 1:
-      ok = exitLongEdit->checkError();
-      s.append(tr("Exit Long: "));
+      if (exitLongEdit->getLines())
+      {
+        ok = exitLongEdit->checkError();
+        s.append(tr("Exit Long: "));
+      }
       break;
     case 2:
-      ok = enterShortEdit->checkError();
-      s.append(tr("Enter Short: "));
+      if (enterShortEdit->getLines())
+      {
+        ok = enterShortEdit->checkError();
+        s.append(tr("Enter Short: "));
+      }
       break;
     case 3:
-      ok = exitShortEdit->checkError();
-      s.append(tr("Exit Short: "));
+      if (exitShortEdit->getLines())
+      {
+        ok = exitShortEdit->checkError();
+        s.append(tr("Exit Short: "));
+      }
       break;
     case 4:
-      ok = customLongStopEdit->checkError();
-      s.append(tr("Custom Long Stop: "));
+      if (customLongStopEdit->getLines())
+      {
+        ok = customLongStopEdit->checkError();
+        s.append(tr("Custom Long Stop: "));
+      }
       break;
     case 5:
-      ok = customShortStopEdit->checkError();
-      s.append(tr("Custom Short Stop: "));
+      if (customShortStopEdit->getLines())
+      {
+        ok = customShortStopEdit->checkError();
+        s.append(tr("Custom Short Stop: "));
+      }
       break;
     default:
       break;

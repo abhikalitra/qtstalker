@@ -110,17 +110,7 @@ int WILLR::indicatorPrefDialog (QWidget *w)
   return rc;
 }
 
-void WILLR::loadIndicatorSettings (QString file)
-{
-  setIndicatorSettings(loadFile(file));
-}
-
-void WILLR::saveIndicatorSettings (QString file)
-{
-  saveFile(file, getIndicatorSettings());
-}
-
-void WILLR::setIndicatorSettings (Setting dict)
+void WILLR::setIndicatorSettings (Setting &dict)
 {
   setDefaults();
   
@@ -144,15 +134,13 @@ void WILLR::setIndicatorSettings (Setting dict)
     label = s;
 }
 
-Setting WILLR::getIndicatorSettings ()
+void WILLR::getIndicatorSettings (Setting &dict)
 {
-  Setting dict;
   dict.setData("color", color.name());
   dict.setData("lineType", QString::number(lineType));
   dict.setData("period", QString::number(period));
   dict.setData("label", label);
   dict.setData("plugin", pluginName);
-  return dict;
 }
 
 PlotLine * WILLR::calculateCustom (QDict<PlotLine> *)

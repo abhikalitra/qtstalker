@@ -27,6 +27,7 @@
 IndicatorPlugin::IndicatorPlugin()
 {
   minBars = 2;
+  enabled = TRUE;
   
   output = new Indicator;
   saveFlag = FALSE;
@@ -65,17 +66,17 @@ void IndicatorPlugin::clearOutput ()
   output->clearLines();
 }
 
-Setting IndicatorPlugin::loadFile (QString file)
+void IndicatorPlugin::loadFile (QString file, Setting &dict)
 {
   output->clearLines();
 
-  Setting dict;
+//  Setting dict;
   
   QFile f(file);
   if (! f.open(IO_ReadOnly))
   {
     qDebug("IndicatorPlugin:can't read file %s", file.latin1());
-    return dict;
+    return;
   }
   QTextStream stream(&f);
   
@@ -107,10 +108,14 @@ Setting IndicatorPlugin::loadFile (QString file)
   if (s.length())
     plotType = s.toInt();
 
-  return dict;
+  s = dict.getData("enable");
+  if (s.length())
+    enabled = s.toInt();
+  
+//  return dict;
 }
 
-void IndicatorPlugin::saveFile (QString file, Setting dict)
+void IndicatorPlugin::saveFile (QString file, Setting &dict)
 {
   QFile f(file);
   if (! f.open(IO_WriteOnly))
@@ -121,6 +126,7 @@ void IndicatorPlugin::saveFile (QString file, Setting dict)
   QTextStream stream(&f);
   
   dict.setData("plotType", QString::number(plotType));
+  dict.setData("enable", QString::number(enabled));
   
   QStringList key = dict.getKeyList();
   
@@ -370,10 +376,6 @@ QString IndicatorPlugin::getHelpFile ()
 //****************** VIRTUAL OVERIDES ***************************
 //***************************************************************
 
-void IndicatorPlugin::saveIndicatorSettings (QString)
-{
-}
-
 void IndicatorPlugin::calculate ()
 {
 }
@@ -383,21 +385,16 @@ int IndicatorPlugin::indicatorPrefDialog (QWidget *)
   return 0;
 }
 
-void IndicatorPlugin::loadIndicatorSettings (QString)
-{
-}
-
 PlotLine * IndicatorPlugin::calculateCustom (QDict<PlotLine> *)
 {
   return 0;
 }
 
-Setting IndicatorPlugin::getIndicatorSettings ()
+void IndicatorPlugin::getIndicatorSettings (Setting &)
 {
-  return Setting();
 }
 
-void IndicatorPlugin::setIndicatorSettings (Setting)
+void IndicatorPlugin::setIndicatorSettings (Setting &)
 {
 }
 
@@ -408,6 +405,20 @@ void IndicatorPlugin::setCustomFunction (QString)
 int IndicatorPlugin::getMinBars ()
 {
   return minBars;
+}
+
+void IndicatorPlugin::saveIndicatorSettings (QString d)
+{
+  Setting set;
+  getIndicatorSettings(set);
+  saveFile(d, set);
+}
+
+void IndicatorPlugin::loadIndicatorSettings (QString d)
+{
+  Setting set;
+  loadFile(d, set);
+  setIndicatorSettings(set);
 }
 
 

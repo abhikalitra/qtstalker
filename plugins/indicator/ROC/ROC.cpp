@@ -127,17 +127,7 @@ int ROC::indicatorPrefDialog (QWidget *w)
   return rc;
 }
 
-void ROC::loadIndicatorSettings (QString file)
-{
-  setIndicatorSettings(loadFile(file));
-}
-
-void ROC::saveIndicatorSettings (QString file)
-{
-  saveFile(file, getIndicatorSettings());
-}
-
-void ROC::setIndicatorSettings (Setting dict)
+void ROC::setIndicatorSettings (Setting &dict)
 {
   setDefaults();
   
@@ -177,9 +167,8 @@ void ROC::setIndicatorSettings (Setting dict)
     customInput = s;
 }
 
-Setting ROC::getIndicatorSettings ()
+void ROC::getIndicatorSettings (Setting &dict)
 {
-  Setting dict;
   dict.setData("color", color.name());
   dict.setData("lineType", QString::number(lineType));
   dict.setData("period", QString::number(period));
@@ -189,7 +178,6 @@ Setting ROC::getIndicatorSettings ()
   dict.setData("smoothing", QString::number(smoothing));
   dict.setData("customInput", customInput);
   dict.setData("plugin", pluginName);
-  return dict;
 }
 
 PlotLine * ROC::calculateCustom (QDict<PlotLine> *d)

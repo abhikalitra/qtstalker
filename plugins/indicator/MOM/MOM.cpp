@@ -127,17 +127,7 @@ int MOM::indicatorPrefDialog (QWidget *w)
   return rc;
 }
 
-void MOM::loadIndicatorSettings (QString file)
-{
-  setIndicatorSettings(loadFile(file));
-}
-
-void MOM::saveIndicatorSettings (QString file)
-{
-  saveFile(file, getIndicatorSettings());
-}
-
-void MOM::setIndicatorSettings (Setting dict)
+void MOM::setIndicatorSettings (Setting &dict)
 {
   setDefaults();
   
@@ -177,9 +167,8 @@ void MOM::setIndicatorSettings (Setting dict)
     customInput = s;
 }
 
-Setting MOM::getIndicatorSettings ()
+void MOM::getIndicatorSettings (Setting &dict)
 {
-  Setting dict;
   dict.setData("color", color.name());
   dict.setData("lineType", QString::number(lineType));
   dict.setData("period", QString::number(period));
@@ -189,7 +178,6 @@ Setting MOM::getIndicatorSettings ()
   dict.setData("smoothing", QString::number(smoothing));
   dict.setData("customInput", customInput);
   dict.setData("plugin", pluginName);
-  return dict;
 }
 
 PlotLine * MOM::calculateCustom (QDict<PlotLine> *d)

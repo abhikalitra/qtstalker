@@ -124,7 +124,8 @@ void FormulaEdit::addItem ()
     return;
   }
 
-  Setting set = plug->getIndicatorSettings();
+  Setting set;
+  plug->getIndicatorSettings(set);
     
   list->setNumRows(list->numRows() + 1);
   
@@ -174,7 +175,8 @@ void FormulaEdit::insertItem ()
     return;
   }
 
-  Setting set = plug->getIndicatorSettings();
+  Setting set;
+  plug->getIndicatorSettings(set);
     
   int row = list->currentRow();
 
@@ -217,7 +219,8 @@ void FormulaEdit::editItem ()
     return;
   }
 
-  Setting set2 = plug->getIndicatorSettings();
+  Setting set2;
+  plug->getIndicatorSettings(set2);
     
   list->setText(list->currentRow(), 0, set2.getData("label"));
   

@@ -107,17 +107,7 @@ int PER::indicatorPrefDialog (QWidget *w)
   return rc;
 }
 
-void PER::loadIndicatorSettings (QString file)
-{
-  setIndicatorSettings(loadFile(file));
-}
-
-void PER::saveIndicatorSettings (QString file)
-{
-  saveFile(file, getIndicatorSettings());
-}
-
-void PER::setIndicatorSettings (Setting dict)
+void PER::setIndicatorSettings (Setting &dict)
 {
   setDefaults();
   
@@ -145,16 +135,14 @@ void PER::setIndicatorSettings (Setting dict)
     customInput = s;
 }
 
-Setting PER::getIndicatorSettings ()
+void PER::getIndicatorSettings (Setting &dict)
 {
-  Setting dict;
   dict.setData("color", color.name());
   dict.setData("lineType", QString::number(lineType));
   dict.setData("label", label);
   dict.setData("input", QString::number(input));
   dict.setData("plugin", pluginName);
   dict.setData("customInput", customInput);
-  return dict;
 }
 
 PlotLine * PER::calculateCustom (QDict<PlotLine> *d)

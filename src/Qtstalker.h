@@ -60,7 +60,6 @@ class QtstalkerApp : public QMainWindow
     void signalPlotFont (QFont);
     void signalIndex (int);
     void signalInterval(BarData::BarCompression);
-    void signalIndicatorPageRefresh ();
     void signalChartPath (QString);
     void signalCrosshairsStatus(bool);
     void signalSetKeyFlag (bool);
@@ -103,8 +102,8 @@ class QtstalkerApp : public QMainWindow
     void slotQuotes ();
     void slotOptions ();
     void slotDataWindow ();
-    void slotNewIndicator ();
-    void slotEditIndicator (QString);
+    void slotNewIndicator (Setting *);
+    void slotEditIndicator (Setting *set);
     void slotDeleteIndicator (QString);
     void slotCompressionChanged (int);
     void slotChartTypeChanged (int);

@@ -130,17 +130,7 @@ int MAOSC::indicatorPrefDialog (QWidget *w)
   return rc;
 }
 
-void MAOSC::loadIndicatorSettings (QString file)
-{
-  setIndicatorSettings(loadFile(file));
-}
-
-void MAOSC::saveIndicatorSettings (QString file)
-{
-  saveFile(file, getIndicatorSettings());
-}
-
-void MAOSC::setIndicatorSettings (Setting dict)
+void MAOSC::setIndicatorSettings (Setting &dict)
 {
   setDefaults();
   
@@ -184,9 +174,8 @@ void MAOSC::setIndicatorSettings (Setting dict)
     customInput = s;
 }
 
-Setting MAOSC::getIndicatorSettings ()
+void MAOSC::getIndicatorSettings (Setting &dict)
 {
-  Setting dict;
   dict.setData("color", color.name());
   dict.setData("lineType", QString::number(lineType));
   dict.setData("fastPeriod", QString::number(fastPeriod));
@@ -197,7 +186,6 @@ Setting MAOSC::getIndicatorSettings ()
   dict.setData("input", QString::number(input));
   dict.setData("customInput", customInput);
   dict.setData("plugin", pluginName);
-  return dict;
 }
 
 PlotLine * MAOSC::calculateCustom (QDict<PlotLine> *d)

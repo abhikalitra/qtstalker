@@ -36,13 +36,11 @@ class LOWPASS : public IndicatorPlugin
     LOWPASS ();
     virtual ~LOWPASS ();
     void calculate ();
-    void loadIndicatorSettings (QString);
-    void saveIndicatorSettings (QString);
     int indicatorPrefDialog (QWidget *);
     void setDefaults();
     PlotLine * calculateCustom (QDict<PlotLine> *d) ;
-    Setting getIndicatorSettings ();
-    void setIndicatorSettings (Setting);
+    void getIndicatorSettings (Setting &);
+    void setIndicatorSettings (Setting &);
     int getMinBars ();
     
   private:

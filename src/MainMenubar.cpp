@@ -58,7 +58,7 @@ MainMenubar::MainMenubar (QMainWindow *mw) : QMenuBar (mw, "mainMenubar")
   action->setMenuText(tr("New &Indicator"));
   action->setIconSet(icon);
   action->setStatusTip(tr("Add a new indicator to chart (Ctrl+2)"));
-  connect(action, SIGNAL(activated()), mw, SLOT(slotNewIndicator()));
+  connect(action, SIGNAL(activated()), this, SIGNAL(signalNewIndicator()));
   actions.replace(NewIndicator, action);
 
   icon = configure;

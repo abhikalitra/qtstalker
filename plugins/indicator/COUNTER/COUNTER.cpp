@@ -134,17 +134,7 @@ int COUNTER::indicatorPrefDialog (QWidget *w)
   return rc;
 }
 
-void COUNTER::loadIndicatorSettings (QString file)
-{
-  setIndicatorSettings(loadFile(file));
-}
-
-void COUNTER::saveIndicatorSettings (QString file)
-{
-  saveFile(file, getIndicatorSettings());
-}
-
-void COUNTER::setIndicatorSettings (Setting dict)
+void COUNTER::setIndicatorSettings (Setting &dict)
 {
   setDefaults();
   
@@ -172,16 +162,14 @@ void COUNTER::setIndicatorSettings (Setting dict)
     customInput2 = s;
 }
 
-Setting COUNTER::getIndicatorSettings ()
+void COUNTER::getIndicatorSettings (Setting &dict)
 {
-  Setting dict;
   dict.setData("color", color.name());
   dict.setData("lineType", QString::number(lineType));
   dict.setData("label", label);
   dict.setData("plugin", pluginName);
   dict.setData("customInput", customInput);
   dict.setData("customInput2", customInput2);
-  return dict;
 }
 
 PlotLine * COUNTER::calculateCustom (QDict<PlotLine> *d)

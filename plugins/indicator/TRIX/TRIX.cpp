@@ -146,17 +146,7 @@ int TRIX::indicatorPrefDialog (QWidget *w)
   return rc;
 }
 
-void TRIX::loadIndicatorSettings (QString file)
-{
-  setIndicatorSettings(loadFile(file));
-}
-
-void TRIX::saveIndicatorSettings (QString file)
-{
-  saveFile(file, getIndicatorSettings());
-}
-
-void TRIX::setIndicatorSettings (Setting dict)
+void TRIX::setIndicatorSettings (Setting &dict)
 {
   setDefaults();
   
@@ -208,9 +198,8 @@ void TRIX::setIndicatorSettings (Setting dict)
     customInput = s;
 }
 
-Setting TRIX::getIndicatorSettings ()
+void TRIX::getIndicatorSettings (Setting &dict)
 {
-  Setting dict;
   dict.setData("color", color.name());
   dict.setData("lineType", QString::number(lineType));
   dict.setData("period", QString::number(period));
@@ -224,7 +213,6 @@ Setting TRIX::getIndicatorSettings ()
   dict.setData("maType", QString::number(maType));
   dict.setData("customInput", customInput);
   dict.setData("plugin", pluginName);
-  return dict;
 }
 
 PlotLine * TRIX::calculateCustom (QDict<PlotLine> *d)

@@ -258,17 +258,7 @@ int COMP::indicatorPrefDialog (QWidget *w)
   return rc;
 }
 
-void COMP::loadIndicatorSettings (QString file)
-{
-  setIndicatorSettings(loadFile(file));
-}
-
-void COMP::saveIndicatorSettings (QString file)
-{
-  saveFile(file, getIndicatorSettings());
-}
-
-void COMP::setIndicatorSettings (Setting dict)
+void COMP::setIndicatorSettings (Setting &dict)
 {
   setDefaults();
   
@@ -308,9 +298,8 @@ void COMP::setIndicatorSettings (Setting dict)
     delay2 = s;
 }
 
-Setting COMP::getIndicatorSettings ()
+void COMP::getIndicatorSettings (Setting &dict)
 {
-  Setting dict;
   dict.setData("color", color.name());
   dict.setData("label", label);
   dict.setData("lineType", QString::number(lineType));
@@ -320,7 +309,6 @@ Setting COMP::getIndicatorSettings ()
   dict.setData("delay1", delay1);
   dict.setData("data2", data2);
   dict.setData("delay2", delay2);
-  return dict;
 }
 
 PlotLine * COMP::calculateCustom (QDict<PlotLine> *d)

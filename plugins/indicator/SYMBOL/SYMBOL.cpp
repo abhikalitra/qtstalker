@@ -134,17 +134,7 @@ int SYMBOL::indicatorPrefDialog (QWidget *w)
   return rc;
 }
 
-void SYMBOL::loadIndicatorSettings (QString file)
-{
-  setIndicatorSettings(loadFile(file));
-}
-
-void SYMBOL::saveIndicatorSettings (QString file)
-{
-  saveFile(file, getIndicatorSettings());
-}
-
-void SYMBOL::setIndicatorSettings (Setting dict)
+void SYMBOL::setIndicatorSettings (Setting &dict)
 {
   setDefaults();
   
@@ -168,15 +158,13 @@ void SYMBOL::setIndicatorSettings (Setting dict)
     symbol = s;
 }
 
-Setting SYMBOL::getIndicatorSettings ()
+void SYMBOL::getIndicatorSettings (Setting &dict)
 {
-  Setting dict;
   dict.setData("color", color.name());
   dict.setData("lineType", QString::number(lineType));
   dict.setData("label", label);
   dict.setData("symbol", symbol);
   dict.setData("plugin", pluginName);
-  return dict;
 }
 
 PlotLine * SYMBOL::calculateCustom (QDict<PlotLine> *)

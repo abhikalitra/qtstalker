@@ -208,17 +208,7 @@ int STOCH::indicatorPrefDialog (QWidget *w)
   return rc;
 }
 
-void STOCH::loadIndicatorSettings (QString file)
-{
-  setIndicatorSettings(loadFile(file));
-}
-
-void STOCH::saveIndicatorSettings (QString file)
-{
-  saveFile(file, getIndicatorSettings());
-}
-
-void STOCH::setIndicatorSettings (Setting dict)
+void STOCH::setIndicatorSettings (Setting &dict)
 {
   setDefaults();
   
@@ -282,9 +272,8 @@ void STOCH::setIndicatorSettings (Setting dict)
     label = s;
 }
 
-Setting STOCH::getIndicatorSettings ()
+void STOCH::getIndicatorSettings (Setting &dict)
 {
-  Setting dict;
   dict.setData("dcolor", dcolor.name());
   dict.setData("dlineType", QString::number(dlineType));
   dict.setData("dperiod", QString::number(dperiod));
@@ -300,7 +289,6 @@ Setting STOCH::getIndicatorSettings ()
   dict.setData("customInput", customInput);
   dict.setData("label", label);
   dict.setData("plugin", pluginName);
-  return dict;
 }
 
 PlotLine * STOCH::calculateCustom (QDict<PlotLine> *d)

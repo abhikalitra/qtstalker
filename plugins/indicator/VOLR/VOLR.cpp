@@ -99,17 +99,7 @@ int VOLR::indicatorPrefDialog (QWidget *w)
   return rc;
 }
 
-void VOLR::loadIndicatorSettings (QString file)
-{
-  setIndicatorSettings(loadFile(file));
-}
-
-void VOLR::saveIndicatorSettings (QString file)
-{
-  saveFile(file, getIndicatorSettings());
-}
-
-void VOLR::setIndicatorSettings (Setting dict)
+void VOLR::setIndicatorSettings (Setting &dict)
 {
   setDefaults();
   
@@ -133,15 +123,13 @@ void VOLR::setIndicatorSettings (Setting dict)
     label = s;
 }
 
-Setting VOLR::getIndicatorSettings ()
+void VOLR::getIndicatorSettings (Setting &dict)
 {
-  Setting dict;
   dict.setData("color", color.name());
   dict.setData("lineType", QString::number(lineType));
   dict.setData("period", QString::number(period));
   dict.setData("label", label);
   dict.setData("plugin", pluginName);
-  return dict;
 }
 
 PlotLine * VOLR::calculateCustom (QDict<PlotLine> *)

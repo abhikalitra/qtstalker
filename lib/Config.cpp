@@ -28,6 +28,7 @@
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qapplication.h>
+#include <qfileinfo.h>
 
 Config::Config ()
 {
@@ -110,6 +111,33 @@ void Config::setup ()
       qDebug("Unable to create ~/Qtstalker/indicator directory.");
   }
   setData(IndicatorPath, s);
+  
+  s = home + "/indicator/Indicators";
+  if (! dir.exists(s, TRUE))
+  {
+    if (! dir.mkdir(s, TRUE))
+      qDebug("Unable to create ~/Qtstalker/indicator/Indicators directory.");
+    else
+    {
+      setData(IndicatorGroup, "Indicators"); // set the new default template
+      
+      // copy old indicators into new Indicators template
+      s = home + "/indicator";
+      QDir dir(s);
+      int loop;
+      for (loop = 2; loop < (int) dir.count(); loop++)
+      {
+        QString s2 = dir.absPath() + "/" + dir[loop];
+        QFileInfo fi(s2);
+	if (! fi.isDir())
+	{
+	  s = dir.absPath() + "/Indicators/" + dir[loop];
+	  copyIndicatorFile(s2, s);
+	  dir.remove(s2, TRUE);
+	}
+      }
+    }
+  }
   
   s = home + "/cusrules";
   if (! dir.exists(s, TRUE))
@@ -301,6 +329,9 @@ QString Config::getData (Parm p)
     case Macro12:
       s = settings.readEntry("/Qtstalker/Macro12");
       break;
+    case IndicatorGroup:
+      s = settings.readEntry("/Qtstalker/IndicatorGroup");
+      break;
     default:
       break;
   }
@@ -474,6 +505,9 @@ void Config::setData (Parm p, QString d)
     case Macro12:
       settings.writeEntry("/Qtstalker/Macro12", d);
       break;
+    case IndicatorGroup:
+      settings.writeEntry("/Qtstalker/IndicatorGroup", d);
+      break;
     default:
       break;
   }
@@ -485,21 +519,22 @@ void Config::setData (QString p, QString d)
   settings.writeEntry("/Qtstalker/" + p, d);
 }
 
-QStringList Config::getIndicators ()
+QStringList Config::getIndicators (QString d)
 {
-  return getDirList(getData(IndicatorPath));
+  QString s = getData(IndicatorPath) + "/" + d;
+  return getDirList(s, TRUE);
 }
 
-Setting * Config::getIndicator (QString n)
+Setting * Config::getIndicator (QString d)
 {
   Setting *set = new Setting;
   
-  QString s = getData(IndicatorPath) + "/" + n;
+//  QString s = getData(IndicatorPath) + "/" + d + "/" + n;
   
-  QFile f(s);
+  QFile f(d);
   if (! f.open(IO_ReadOnly))
   {
-    qDebug("Config::getIndicator:can't open indicator file %s", s.latin1());
+    qDebug("Config::getIndicator:can't open indicator file %s", d.latin1());
     return set;
   }
   QTextStream stream(&f);
@@ -523,15 +558,32 @@ Setting * Config::getIndicator (QString n)
   return set;
 }
 
-void Config::deleteIndicator (QString n)
+void Config::setIndicator (QString d, Setting *set)
 {
-  QString s = getData(IndicatorPath);
-  s.append("/" + n);
-  QDir dir;
-  dir.remove(s);
+  QFile f(d);
+  if (! f.open(IO_WriteOnly))
+  {
+    qDebug("Config::getIndicator:can't open indicator file %s", d.latin1());
+    return;
+  }
+  QTextStream stream(&f);
+  
+  int loop;
+  QStringList l = set->getKeyList();
+  for (loop = 0; loop < (int) l.count(); loop++)
+    stream << l[loop] << "=" << set->getData(l[loop]) << "\n";
+  
+  f.close();
 }
 
-QStringList Config::getDirList (QString path)
+void Config::deleteIndicator (QString d)
+{
+//  QString s = getData(IndicatorPath) + "/" + d + "/" + n;
+  QDir dir;
+  dir.remove(d);
+}
+
+QStringList Config::getDirList (QString path, bool flag)
 {
   QStringList l;
 
@@ -539,14 +591,24 @@ QStringList Config::getDirList (QString path)
 
   int loop;
   for (loop = 2; loop < (int) dir.count(); loop++)
-    l.append(dir[loop]);
+  {
+    QString s = dir.absPath() + "/" + dir[loop];
+    QFileInfo fi(s);
+    if (! fi.isDir())
+    {
+      if (flag)
+        l.append(fi.absFilePath());
+      else
+        l.append(dir[loop]);
+    }
+  }
 
   return l;
 }
 
 QStringList Config::getPluginList (Config::Parm d) 
 {
-  QStringList l = getDirList(getData(d));
+  QStringList l = getDirList(getData(d), TRUE);
   
   if (! l.count())
     return l;
@@ -555,11 +617,11 @@ QStringList Config::getPluginList (Config::Parm d)
   QStringList l2;
   for (loop = 0; loop < (int) l.count(); loop++)
   {
-    if (! l[loop].contains(version))
+    QFileInfo fi(l[loop]);
+    if (! fi.fileName().contains(version))
       continue;
 
-    QString s = l[loop];
-    s.truncate(s.length() - 8);
+    QString s = fi.baseName(FALSE);
     s.remove(0, 3);
     l2.append(s);
   }
@@ -583,7 +645,8 @@ ChartPlugin * Config::getChartPlugin (QString p)
   if (plug)
     return plug;
 
-  QString s = getData(ChartPluginPath) + "/lib" + p + "." + version + ".so";
+//  QString s = getData(ChartPluginPath) + "/lib" + p + "." + version + ".so";
+  QString s = getData(ChartPluginPath) + "/lib" + p + "." + version;
 
   QLibrary *lib = new QLibrary(s);
   ChartPlugin *(*so)() = 0;
@@ -609,7 +672,8 @@ DbPlugin * Config::getDbPlugin (QString p)
   if (plug)
     return plug;
 
-  QString s = getData(DbPluginPath) + "/lib" + p + "." + version + ".so";
+//  QString s = getData(DbPluginPath) + "/lib" + p + "." + version + ".so";
+  QString s = getData(DbPluginPath) + "/lib" + p + "." + version;
 
   QLibrary *lib = new QLibrary(s);
   DbPlugin *(*so)() = 0;
@@ -635,7 +699,8 @@ IndicatorPlugin * Config::getIndicatorPlugin (QString p)
   if (plug)
     return plug;
 
-  QString s = getData(IndicatorPluginPath) + "/lib" + p + "." + version + ".so";
+//  QString s = getData(IndicatorPluginPath) + "/lib" + p + "." + version + ".so";
+  QString s = getData(IndicatorPluginPath) + "/lib" + p + "." + version;
 
   QLibrary *lib = new QLibrary(s);
   IndicatorPlugin *(*so)() = 0;
@@ -661,7 +726,8 @@ QuotePlugin * Config::getQuotePlugin (QString p)
   if (plug)
     return plug;
 
-  QString s = getData(QuotePluginPath) + "/lib" + p + "." + version + ".so";
+//  QString s = getData(QuotePluginPath) + "/lib" + p + "." + version + ".so";
+  QString s = getData(QuotePluginPath) + "/lib" + p + "." + version;
 
   QLibrary *lib = new QLibrary(s);
   QuotePlugin *(*so)() = 0;
@@ -687,7 +753,8 @@ COPlugin * Config::getCOPlugin (QString p)
   if (plug)
     return plug;
 
-  QString s = getData(COPluginPath) + "/lib" + p + "." + version + ".so";
+//  QString s = getData(COPluginPath) + "/lib" + p + "." + version + ".so";
+  QString s = getData(COPluginPath) + "/lib" + p + "." + version;
 
   QLibrary *lib = new QLibrary(s);
   COPlugin *(*so)() = 0;
@@ -742,3 +809,34 @@ QString Config::parseDbPlugin (QString d)
   i = i + 2;
   return l[i];
 }
+
+void Config::copyIndicatorFile (QString d, QString d2)
+{
+  QFile f(d);
+  if (! f.open(IO_ReadOnly))
+  {
+    qDebug("Config::copyFile:can't open input file %s", d.latin1());
+    return;
+  }
+  QTextStream stream(&f);
+  
+  QFile f2(d2);
+  if (! f2.open(IO_WriteOnly))
+  {
+    qDebug("Config::copyFile:can't open output file %s", d2.latin1());
+    f.close();
+    return;
+  }
+  QTextStream stream2(&f2);
+  
+  while(stream.atEnd() == 0)
+  {
+    QString s = stream.readLine();
+    stream2 << s << "\n";
+  }
+  stream2 << "enable=1\n";
+    
+  f.close();
+  f2.close();
+}
+

@@ -27,15 +27,13 @@ class AD : public IndicatorPlugin
     AD ();
     virtual ~AD ();
     void calculate ();
-    void loadIndicatorSettings (QString);
-    void saveIndicatorSettings (QString);
     int indicatorPrefDialog (QWidget *);
     void setDefaults();
     void calculateAD ();
     void calculateWAD ();
     PlotLine * calculateCustom (QDict<PlotLine> *);
-    Setting getIndicatorSettings ();
-    void setIndicatorSettings (Setting);
+    void getIndicatorSettings (Setting &);
+    void setIndicatorSettings (Setting &);
   
   private:
     QColor color;

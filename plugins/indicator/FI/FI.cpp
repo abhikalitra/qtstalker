@@ -105,17 +105,7 @@ int FI::indicatorPrefDialog (QWidget *w)
   return rc;
 }
 
-void FI::loadIndicatorSettings (QString file)
-{
-  setIndicatorSettings(loadFile(file));
-}
-
-void FI::saveIndicatorSettings (QString file)
-{
-  saveFile(file, getIndicatorSettings());
-}
-
-void FI::setIndicatorSettings (Setting dict)
+void FI::setIndicatorSettings (Setting &dict)
 {
   setDefaults();
   
@@ -143,16 +133,14 @@ void FI::setIndicatorSettings (Setting dict)
     maType = (IndicatorPlugin::MAType) s.toInt();
 }
 
-Setting FI::getIndicatorSettings ()
+void FI::getIndicatorSettings (Setting &dict)
 {
-  Setting dict;
   dict.setData("color", color.name());
   dict.setData("lineType", QString::number(lineType));
   dict.setData("smoothing", QString::number(smoothing));
   dict.setData("label", label);
   dict.setData("maType", QString::number(maType));
   dict.setData("plugin", pluginName);
-  return dict;
 }
 
 PlotLine * FI::calculateCustom (QDict<PlotLine> *)

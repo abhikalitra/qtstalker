@@ -141,17 +141,7 @@ int UO::indicatorPrefDialog (QWidget *w)
   return rc;
 }
 
-void UO::loadIndicatorSettings (QString file)
-{
-  setIndicatorSettings(loadFile(file));
-}
-
-void UO::saveIndicatorSettings (QString file)
-{
-  saveFile(file, getIndicatorSettings());
-}
-
-void UO::setIndicatorSettings (Setting dict)
+void UO::setIndicatorSettings (Setting &dict)
 {
   setDefaults();
   
@@ -183,9 +173,8 @@ void UO::setIndicatorSettings (Setting dict)
     longPeriod = s.toInt();
 }
 
-Setting UO::getIndicatorSettings ()
+void UO::getIndicatorSettings (Setting &dict)
 {
-  Setting dict;
   dict.setData("color", color.name());
   dict.setData("lineType", QString::number(lineType));
   dict.setData("label", label);
@@ -193,7 +182,6 @@ Setting UO::getIndicatorSettings ()
   dict.setData("medPeriod", QString::number(medPeriod));
   dict.setData("longPeriod", QString::number(longPeriod));
   dict.setData("plugin", pluginName);
-  return dict;
 }
 
 PlotLine * UO::calculateCustom (QDict<PlotLine> *)

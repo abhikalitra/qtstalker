@@ -138,17 +138,7 @@ int MF::indicatorPrefDialog (QWidget *w)
   return rc;
 }
 
-void MF::loadIndicatorSettings (QString file)
-{
-  setIndicatorSettings(loadFile(file));
-}
-
-void MF::saveIndicatorSettings (QString file)
-{
-  saveFile(file, getIndicatorSettings());
-}
-
-void MF::setIndicatorSettings (Setting dict)
+void MF::setIndicatorSettings (Setting &dict)
 {
   setDefaults();
   
@@ -180,9 +170,8 @@ void MF::setIndicatorSettings (Setting dict)
     smoothing = s.toInt();
 }
 
-Setting MF::getIndicatorSettings ()
+void MF::getIndicatorSettings (Setting &dict)
 {
-  Setting dict;
   dict.setData("color", color.name());
   dict.setData("lineType", QString::number(lineType));
   dict.setData("period", QString::number(period));
@@ -190,7 +179,6 @@ Setting MF::getIndicatorSettings ()
   dict.setData("maType", QString::number(maType));
   dict.setData("smoothing", QString::number(smoothing));
   dict.setData("plugin", pluginName);
-  return dict;
 }
 
 PlotLine * MF::calculateCustom (QDict<PlotLine> *)

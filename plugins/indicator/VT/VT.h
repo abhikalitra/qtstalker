@@ -27,8 +27,6 @@ class VT : public IndicatorPlugin
     VT ();
     virtual ~VT ();
     void calculate ();
-    void loadIndicatorSettings (QString);
-    void saveIndicatorSettings (QString);
     int indicatorPrefDialog (QWidget *);
     void setDefaults();
     void calculateOBV ();
@@ -36,8 +34,8 @@ class VT : public IndicatorPlugin
     void calculatePVI ();
     void calculatePVT ();
     PlotLine * calculateCustom (QDict<PlotLine> *);
-    Setting getIndicatorSettings ();
-    void setIndicatorSettings (Setting);
+    void getIndicatorSettings (Setting &);
+    void setIndicatorSettings (Setting &);
     int getMinBars ();
     
   private:

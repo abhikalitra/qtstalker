@@ -128,17 +128,7 @@ int CCI::indicatorPrefDialog (QWidget *w)
   return rc;
 }
 
-void CCI::loadIndicatorSettings (QString file)
-{
-  setIndicatorSettings(loadFile(file));
-}
-
-void CCI::saveIndicatorSettings (QString file)
-{
-  saveFile(file, getIndicatorSettings());
-}
-
-void CCI::setIndicatorSettings (Setting dict)
+void CCI::setIndicatorSettings (Setting &dict)
 {
   setDefaults();
   
@@ -170,9 +160,8 @@ void CCI::setIndicatorSettings (Setting dict)
     maType = (IndicatorPlugin::MAType) s.toInt();
 }
 
-Setting CCI::getIndicatorSettings ()
+void CCI::getIndicatorSettings (Setting &dict)
 {
-  Setting dict;
   dict.setData("color", color.name());
   dict.setData("lineType", QString::number(lineType));
   dict.setData("period", QString::number(period));
@@ -180,7 +169,6 @@ Setting CCI::getIndicatorSettings ()
   dict.setData("label", label);
   dict.setData("maType", QString::number(maType));
   dict.setData("plugin", pluginName);
-  return dict;
 }
 
 PlotLine * CCI::calculateCustom (QDict<PlotLine> *)

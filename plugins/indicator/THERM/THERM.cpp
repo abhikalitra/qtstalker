@@ -172,17 +172,7 @@ int THERM::indicatorPrefDialog (QWidget *w)
   return rc;
 }
 
-void THERM::loadIndicatorSettings (QString file)
-{
-  setIndicatorSettings(loadFile(file));
-}
-
-void THERM::saveIndicatorSettings (QString file)
-{
-  saveFile(file, getIndicatorSettings());
-}
-
-void THERM::setIndicatorSettings (Setting dict)
+void THERM::setIndicatorSettings (Setting &dict)
 {
   setDefaults();
   
@@ -238,9 +228,8 @@ void THERM::setIndicatorSettings (Setting dict)
     maType = (IndicatorPlugin::MAType) s.toInt();
 }
 
-Setting THERM::getIndicatorSettings ()
+void THERM::getIndicatorSettings (Setting &dict)
 {
-  Setting dict;
   dict.setData("upColor", upColor.name());
   dict.setData("downColor", downColor.name());
   dict.setData("threshColor", threshColor.name());
@@ -255,7 +244,6 @@ Setting THERM::getIndicatorSettings ()
   dict.setData("maLabel", maLabel);
   dict.setData("maType", QString::number(maType));
   dict.setData("plugin", pluginName);
-  return dict;
 }
 
 PlotLine * THERM::calculateCustom (QDict<PlotLine> *)

@@ -99,17 +99,7 @@ int REF::indicatorPrefDialog (QWidget *w)
   return rc;
 }
 
-void REF::loadIndicatorSettings (QString file)
-{
-  setIndicatorSettings(loadFile(file));
-}
-
-void REF::saveIndicatorSettings (QString file)
-{
-  saveFile(file, getIndicatorSettings());
-}
-
-void REF::setIndicatorSettings (Setting dict)
+void REF::setIndicatorSettings (Setting &dict)
 {
   setDefaults();
   
@@ -137,16 +127,14 @@ void REF::setIndicatorSettings (Setting dict)
     input = (BarData::InputType) s.toInt();
 }
 
-Setting REF::getIndicatorSettings ()
+void REF::getIndicatorSettings (Setting &dict)
 {
-  Setting dict;
   dict.setData("color", color.name());
   dict.setData("label", label);
   dict.setData("lineType", QString::number(lineType));
   dict.setData("plugin", pluginName);
   dict.setData("period", QString::number(period));
   dict.setData("input", QString::number(input));
-  return dict;
 }
 
 PlotLine * REF::calculateCustom (QDict<PlotLine> *)

@@ -148,17 +148,7 @@ int VFI::indicatorPrefDialog (QWidget *w)
   return rc;
 }
 
-void VFI::loadIndicatorSettings (QString file)
-{
-  setIndicatorSettings(loadFile(file));
-}
-
-void VFI::saveIndicatorSettings (QString file)
-{
-  saveFile(file, getIndicatorSettings());
-}
-
-void VFI::setIndicatorSettings (Setting dict)
+void VFI::setIndicatorSettings (Setting &dict)
 {
   setDefaults();
   
@@ -191,9 +181,8 @@ void VFI::setIndicatorSettings (Setting dict)
 
 }
 
-Setting VFI::getIndicatorSettings ()
+void VFI::getIndicatorSettings (Setting &dict)
 {
-  Setting dict;
   dict.setData("color", color.name());
   dict.setData("lineType", QString::number(lineType));
   dict.setData("label", label);
@@ -201,7 +190,6 @@ Setting VFI::getIndicatorSettings ()
   dict.setData("smoothing", QString::number(smoothing));
   dict.setData("maType", QString::number(maType));
   dict.setData("plugin", pluginName);
-  return dict;
 }
 
 PlotLine * VFI::calculateCustom (QDict<PlotLine> *)

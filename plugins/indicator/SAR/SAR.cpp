@@ -219,17 +219,7 @@ int SAR::indicatorPrefDialog (QWidget *w)
   return rc;
 }
 
-void SAR::loadIndicatorSettings (QString file)
-{
-  setIndicatorSettings(loadFile(file));
-}
-
-void SAR::saveIndicatorSettings (QString file)
-{
-  saveFile(file, getIndicatorSettings());
-}
-
-void SAR::setIndicatorSettings (Setting dict)
+void SAR::setIndicatorSettings (Setting &dict)
 {
   setDefaults();
   
@@ -261,9 +251,8 @@ void SAR::setIndicatorSettings (Setting dict)
     limit = s.toFloat();
 }
 
-Setting SAR::getIndicatorSettings ()
+void SAR::getIndicatorSettings (Setting &dict)
 {
-  Setting dict;
   dict.setData("color", color.name());
   dict.setData("lineType", QString::number(lineType));
   dict.setData("label", label);
@@ -271,7 +260,6 @@ Setting SAR::getIndicatorSettings ()
   dict.setData("add", QString::number(add));
   dict.setData("limit", QString::number(limit));
   dict.setData("plugin", pluginName);
-  return dict;
 }
 
 PlotLine * SAR::calculateCustom (QDict<PlotLine> *)

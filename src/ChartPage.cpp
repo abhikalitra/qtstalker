@@ -35,6 +35,7 @@
 #include <qlayout.h>
 #include <qaccel.h>
 
+
 ChartPage::ChartPage (QWidget *w) : QWidget (w)
 {
   keyFlag = FALSE;

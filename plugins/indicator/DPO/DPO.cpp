@@ -122,17 +122,7 @@ int DPO::indicatorPrefDialog (QWidget *w)
   return rc;
 }
 
-void DPO::loadIndicatorSettings (QString file)
-{
-  setIndicatorSettings(loadFile(file));
-}
-
-void DPO::saveIndicatorSettings (QString file)
-{
-  saveFile(file, getIndicatorSettings());
-}
-
-void DPO::setIndicatorSettings (Setting dict)
+void DPO::setIndicatorSettings (Setting &dict)
 {
   setDefaults();
   
@@ -168,9 +158,8 @@ void DPO::setIndicatorSettings (Setting dict)
     customInput = s;
 }
 
-Setting DPO::getIndicatorSettings ()
+void DPO::getIndicatorSettings (Setting &dict)
 {
-  Setting dict;
   dict.setData("color", color.name());
   dict.setData("lineType", QString::number(lineType));
   dict.setData("period", QString::number(period));
@@ -179,7 +168,6 @@ Setting DPO::getIndicatorSettings ()
   dict.setData("customInput", customInput);
   dict.setData("input", QString::number(input));
   dict.setData("plugin", pluginName);
-  return dict;
 }
 
 PlotLine * DPO::calculateCustom (QDict<PlotLine> *d)
