@@ -138,11 +138,11 @@ void COMP::calculate ()
   
   Operator op = getOperator(method);
   
-  while (loop - displace1 > -1 && loop - displace1 <= timeLoop1)
+  while (loop - displace1 > -1 && loop - displace1 < input->getSize())
   {
     if (input2)
     {
-      if (loop2 - displace2 < 0 || loop2 - displace2 > timeLoop2)
+      if (loop2 - displace2 < 0 || loop2 - displace2 >= input2->getSize())
         break;
     }
     

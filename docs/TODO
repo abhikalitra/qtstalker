@@ -10,7 +10,13 @@ To Do:
 - allow negative displacement for line plots
 - add indicator chart to the tester chart so buy/sell points have a reference
 - allow log/scale to screen options on the tester charts
-- allow indicators to be edited without having to load a chart first.
+- make quotes dialog modal again
+- cancel update does not work with yahoo plugin when not paused.
+- fix yahoo auto update and retry functions
+- add co plugin icons back to the context menus
+- add fibo levels to the defaults settings
+- fix fibo levels higher than high and low points bug
+- switching tab indicators does not redraw the crosshairs
 
 
 Maybe some day:

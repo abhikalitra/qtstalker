@@ -23,7 +23,12 @@
           timeLoop value. Was causing segfaults.
 	  
 	  	  	 
+20041101: Fixed logic error introduced from previous fix in the COMP plugin that removed
+          all true signals from being generated.
+	  
 
+
+	  
 0.28
 ====
 
