@@ -25,7 +25,7 @@
 #define DATE_HEIGHT 30
 
 #include <qstringlist.h>
-#include <qarray.h>
+#include <qmemarray.h>
 
 class Scaler
 {
@@ -35,7 +35,7 @@ class Scaler
     void set (int ht, double h, double l, double lh, double lr, bool df, bool lf);
     int convertToY (double);
     double convertToVal (int);
-    QArray<double> getScaleArray ();
+    QMemArray<double> getScaleArray ();
     double getLogScaleHigh ();
     double getLogRange();
     int getHeight ();
@@ -55,7 +55,7 @@ class Scaler
     double range;
     double scaler;
 
-    QArray<double> scaleArray;
+    QMemArray<double> scaleArray;
     QStringList scaleList;
 };
 

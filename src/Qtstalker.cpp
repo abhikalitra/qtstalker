@@ -746,7 +746,7 @@ void QtstalkerApp::loadChart (QString d)
   }
 */
 
-  QList<Setting> *col = db->getChartObjects();
+  QPtrList<Setting> *col = db->getChartObjects();
   for (loop = 0; loop < (int) col->count(); loop++)
   {
     Setting *co = col->at(loop);

@@ -33,7 +33,7 @@
 #include <qdatetime.h>
 #include <qcolor.h>
 #include <qfont.h>
-#include <qlist.h>
+#include <qptrlist.h>
 
 #define HANDLE_WIDTH 6
 
@@ -97,8 +97,8 @@ class ChartObject : public QObject
     QPopupMenu *menu;
     bool saveFlag;
     bool status;
-    QList<QRegion> grabHandles;
-    QList<QRegion> selectionArea;
+    QPtrList<QRegion> grabHandles;
+    QPtrList<QRegion> selectionArea;
     ObjectType type;
     QString plot;
     QString name;

@@ -203,7 +203,7 @@ class Plot : public QWidget
     int scaleWidth;
     double mainHigh;
     double mainLow;
-    QArray<double> scaleArray;
+    QMemArray<double> scaleArray;
     Scaler *scaler;
 
     double y1;
@@ -220,7 +220,7 @@ class Plot : public QWidget
     BarData *data;
     QDict<Indicator> indicators;
     QDict<ChartObject> chartObjects;
-    QArray<int> xGrid;
+    QMemArray<int> xGrid;
 
     QPopupMenu *chartMenu;
     QPopupMenu *chartEditMenu;

@@ -121,7 +121,7 @@ double Scaler::convertToVal (int y)
   return val;
 }
 
-QArray<double> Scaler::getScaleArray ()
+QMemArray<double> Scaler::getScaleArray ()
 {
   int ticks;
   for (ticks = 2; (ticks * 15) < height; ticks++)

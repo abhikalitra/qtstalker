@@ -26,7 +26,7 @@
 #include "PlotLine.h"
 #include "QSMath.h"
 #include <qstring.h>
-#include <qlist.h>
+#include <qptrlist.h>
 #include <qmemarray.h>
 #include <qdict.h>
 
@@ -47,7 +47,7 @@ class IndicatorPlugin : public Plugin
 
   protected:
     BarData *data;
-    QList<PlotLine> output;
+    QPtrList<PlotLine> output;
     QMemArray<int> alerts;
     QStringList lineTypes;
     QStringList maTypeList;

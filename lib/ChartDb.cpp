@@ -269,9 +269,9 @@ QStringList ChartDb::getChartObjectsList ()
   return l;
 }
 
-QList<Setting> *ChartDb::getChartObjects ()
+QPtrList<Setting> *ChartDb::getChartObjects ()
 {
-  QList<Setting> *list = new QList<Setting>;
+  QPtrList<Setting> *list = new QPtrList<Setting>;
   list->setAutoDelete(TRUE);
 
   QStringList l = getChartObjectsList();

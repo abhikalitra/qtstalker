@@ -30,7 +30,7 @@
 #include <qtabwidget.h>
 #include <qsplitter.h>
 #include <qtoolbutton.h>
-#include <qlist.h>
+#include <qptrlist.h>
 #include <qmultilineedit.h>
 
 #include "Indicator.h"

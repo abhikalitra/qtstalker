@@ -39,7 +39,7 @@ PF::~PF ()
 
 void PF::drawChart (int startX, int startIndex, int pixelspace)
 {
-  QArray<double> scaleArray = scaler->getScaleArray();
+  QMemArray<double> scaleArray = scaler->getScaleArray();
   
   QPainter painter;
   painter.begin(buffer);

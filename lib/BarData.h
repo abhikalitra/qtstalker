@@ -22,7 +22,7 @@
 #ifndef BARDATA_HPP
 #define BARDATA_HPP
 
-#include <qlist.h>
+#include <qptrlist.h>
 #include <qdict.h>
 #include <qstringlist.h>
 #include "Bar.h"
@@ -73,7 +73,7 @@ class BarData
     PlotLine * getInput (BarData::InputType);
     
   protected:
-    QList<Bar> barList;
+    QPtrList<Bar> barList;
     QDict<X> dateList;
     double high;
     double low;

@@ -23,7 +23,7 @@
 #define CHARTDB_HPP
 
 #include <qstring.h>
-#include <qlist.h>
+#include <qptrlist.h>
 #include <qstringlist.h>
 #include <db.h>
 #include "Setting.h"
@@ -74,7 +74,7 @@ class ChartDb
     Bar * getFirstBar ();
     BarDate getPrevDate (BarDate);
     QStringList getChartObjectsList ();    
-    QList<Setting> * getChartObjects ();
+    QPtrList<Setting> * getChartObjects ();
     void setChartObject (QString, Setting *);
     void deleteChartObject (QString);
     QString getDetail (Detail);

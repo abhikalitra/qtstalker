@@ -126,7 +126,9 @@
 
 20040527: Yahoo changed historical url. Updated yahoo plugin.
 
-	  
+20040528: Applied patch #962153 - remove deprectaed qt2 features. Thanks to Marco for this
+          patch.
+	  	  
 	
 0.25
 ====

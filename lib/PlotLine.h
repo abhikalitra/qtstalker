@@ -23,7 +23,7 @@
 #define PLOTLINE_HPP
 
 #include <qstring.h>
-#include <qlist.h>
+#include <qptrlist.h>
 #include <qobject.h>
 #include <qpixmap.h>
 #include "Scaler.h"
@@ -93,8 +93,8 @@ class PlotLine : public QObject
   private:
     Scaler *scaler;
     QPixmap *buffer;
-    QList<Val> data;
-    QList<QColor> colorBars;
+    QPtrList<Val> data;
+    QPtrList<QColor> colorBars;
     QColor color;
     PlotLine::LineType lineType;
     QString label;

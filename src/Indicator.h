@@ -25,7 +25,7 @@
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qmemarray.h>
-#include <qlist.h>
+#include <qptrlist.h>
 #include "PlotLine.h"
 
 class Indicator
@@ -53,7 +53,7 @@ class Indicator
     QString getFile ();
 
   private:
-    QList<PlotLine> lines;
+    QPtrList<PlotLine> lines;
     QMemArray<int> alerts;
     bool enable;
     QString name;

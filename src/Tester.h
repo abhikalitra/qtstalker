@@ -26,7 +26,7 @@
 #include <qtabdialog.h>
 #include <qlistview.h>
 #include <qdict.h>
-#include <qlist.h>
+#include <qptrlist.h>
 #include <qcheckbox.h>
 #include <qpushbutton.h>
 #include <qspinbox.h>

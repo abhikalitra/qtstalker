@@ -5,7 +5,7 @@ cd db-2.7.7/build_unix
 make
 cd ../../
 echo "Building Makefile..."
-qmake -o Makefile qtstalker.pro
+qmake "DEFINES += QT_NO_COMPAT" -o Makefile qtstalker.pro
 echo "Done"
 
 
