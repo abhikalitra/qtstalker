@@ -10,6 +10,7 @@ SOURCES += Candle.cpp
 TARGET = Candle.0.27
 
 INCLUDEPATH += ../../../lib
+INCLUDEPATH += ../../../db-2.7.7/build_unix
 
 LIBS += -L../../../lib -lqtstalker
 
