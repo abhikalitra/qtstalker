@@ -25,6 +25,7 @@
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qfont.h>
+#include <qmessagebox.h>
 #include "Tester.h"
 
 Tester::Tester (Config *c, QString n) : QTabDialog (0, 0, FALSE)
@@ -940,6 +941,7 @@ void Tester::loadAlerts (int type)
   int loop;
   FormulaEdit *edit = 0;
   int delays = 0;
+  QString s;
   
   switch(type)
   {
@@ -947,26 +949,53 @@ void Tester::loadAlerts (int type)
       edit = enterLongEdit;
       enterLongAlerts.clear();
       delays = enterLongDelay->value();
+      s = tr("Enter long ");
       break;
     case 1:
       edit = exitLongEdit;
       exitLongAlerts.clear();
       delays = exitLongDelay->value();
+      s = tr("Exit long ");
       break;
     case 2:
       edit = enterShortEdit;
       enterShortAlerts.clear();
       delays = enterShortDelay->value();
+      s = tr("Enter short ");
       break;
     case 3:
       edit = exitShortEdit;
       exitShortAlerts.clear();
       delays = exitShortDelay->value();
+      s = tr("Exit short ");
       break;
     default:
       break;
   }
-
+  
+  bool cflag = FALSE;
+  for (loop = 0; loop < edit->getLines(); loop++)
+  {
+    QStringList l = QStringList::split(",", edit->getLine(loop), FALSE);
+    if (! l[0].compare("COMP"))
+    {
+      if (edit->getPlot(loop).toInt())
+      {
+        cflag = TRUE;
+	break;
+      }
+    }
+  }
+  
+  if (! cflag)
+  {
+    s.append(" no COMP step or COMP step not checked.");
+    QMessageBox::information(this,
+                             tr("Qtstalker: Error"),
+			     s);
+    return;
+  }
+  
   // open the CUS plugin   
   Plugin *plug = config->getPlugin(Config::IndicatorPluginPath, "CUS");
   if (! plug)

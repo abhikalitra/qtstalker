@@ -26,6 +26,7 @@
 #include <qtextstream.h>
 #include <qpainter.h>
 #include <qsettings.h>
+#include <qmessagebox.h>
 
 Line::Line ()
 {
@@ -100,9 +101,26 @@ void Line::prefDialog (QWidget *)
     if (! defaultFlag)
     {
       int loop;
+      bool flag = FALSE;
       formulaList.clear();
       for (loop = 0; loop < (int) dialog->getLines(); loop++)
+      {
         formulaList.append(dialog->getLine(loop));
+	
+        QStringList l = QStringList::split("|", formulaList[loop], FALSE);
+        if (l[1].toInt())
+          flag = TRUE;
+      }
+  
+      if (! flag)
+      {
+        QMessageBox::information(0,
+                                 tr("Qtstalker: Error"),
+			         tr("Line chart: no step checked to plot."));
+        delete dialog;
+        saveFlag = TRUE;
+        return;
+      }
     }
         
     saveFlag = TRUE;

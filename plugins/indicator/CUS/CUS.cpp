@@ -22,6 +22,7 @@
 #include "CUS.h"
 #include "CUSDialog.h"
 #include "Config.h"
+#include <qmessagebox.h>
 
 CUS::CUS ()
 {
@@ -96,6 +97,7 @@ int CUS::indicatorPrefDialog (QWidget *)
   {
     int max = dialog->getLines();
     int loop;
+    bool flag = FALSE;
     functionList.clear();
     plotList.clear();
     formulaList.clear();
@@ -104,6 +106,16 @@ int CUS::indicatorPrefDialog (QWidget *)
       plotList.append(dialog->getPlot(loop));
       formulaList.append(dialog->getLine(loop));
       functionList.append(dialog->getFunction(loop));
+      
+      if (plotList[loop].toInt())
+        flag = TRUE;
+    }
+    
+    if (! flag)
+    {
+      QMessageBox::information(0,
+                               tr("Qtstalker: Error"),
+			       tr("No step checked to plot."));
     }
     
     rc = TRUE;

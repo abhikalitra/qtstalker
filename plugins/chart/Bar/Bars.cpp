@@ -186,9 +186,30 @@ void Bars::prefDialog (QWidget *)
     paintDownColor = dialog->getPaintDownColor();
     
     int loop;
+    bool flag = FALSE;
     formulaList.clear();
     for (loop = 0; loop < (int) dialog->getLines(); loop++)
+    {
       formulaList.append(dialog->getLine(loop));
+      
+      QStringList l = QStringList::split(",", formulaList[loop], FALSE);
+      if (! l[0].compare("COMP"))
+      {
+        QStringList l2 = QStringList::split("|", formulaList[loop], FALSE);
+        if (l2[1].toInt())
+          flag = TRUE;
+      }
+    }
+  
+    if (! flag)
+    {
+      QMessageBox::information(0,
+                               tr("Qtstalker: Error"),
+			       tr("No COMP step or COMP step not checked."));
+      saveFlag = TRUE;
+      delete dialog;
+      return;
+    }
         
     saveFlag = TRUE;
     emit draw();

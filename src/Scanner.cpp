@@ -91,6 +91,27 @@ Scanner::~Scanner ()
 void Scanner::scan ()
 {
   int loop;
+  bool flag = FALSE;
+  for (loop = 0; loop < list->getLines(); loop++)
+  {
+    QStringList l = QStringList::split(",", list->getLine(loop), FALSE);
+    if (! l[0].compare("COMP"))
+    {
+      if (list->getPlot(loop).toInt())
+      {
+        flag = TRUE;
+	break;
+      }
+    }
+  }
+  
+  if (! flag)
+  {
+    QMessageBox::information(this,
+                             tr("Qtstalker: Error"),
+			     tr("No COMP step or COMP step not checked."));
+    return;
+  }
   
   // clear dir for scan symbols
   QDir dir;
