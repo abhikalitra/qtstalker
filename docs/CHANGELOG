@@ -150,7 +150,9 @@
 	  
 20040907: Scanner and backtest dialogs now display the name in the window titles.
 
-
+20040912: Created new class of plugins for chart objects. Continuing the process of maximum
+          modularity and flexibility. Moved chart object code classes from /src and created
+	  a COPlugin class for each one.
 	  	  	  
 0.26
 ====

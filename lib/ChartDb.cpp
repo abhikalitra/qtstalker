@@ -100,10 +100,13 @@ QStringList ChartDb::getChartObjectsList ()
   return plug->getChartObjectsList();
 }
 
-QPtrList<Setting> * ChartDb::getChartObjects ()
+QPtrList<Setting> ChartDb::getChartObjects ()
 {
   if (! plug)
-    return 0;
+  {
+    QPtrList<Setting> l;
+    return l;
+  }
   
   return plug->getChartObjects();
 }

@@ -25,11 +25,11 @@
 #include <qstring.h>
 #include <qptrlist.h>
 #include <qstringlist.h>
+#include "Config.h"
 #include "DbPlugin.h"
 #include "Setting.h"
 #include "BarData.h"
 #include "Bar.h"
-#include "Config.h"
 
 class ChartDb
 {
@@ -44,7 +44,7 @@ class ChartDb
     Bar * getFirstBar ();
     Bar * getBar (QString, QString);
     QStringList getChartObjectsList ();    
-    QPtrList<Setting> * getChartObjects ();
+    QPtrList<Setting> getChartObjects ();
     void setChartObject (QString, Setting *);
     void deleteChartObject (QString);
     QString getData (QString);

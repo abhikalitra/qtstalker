@@ -37,10 +37,10 @@
 #include "Setting.h"
 #include "Indicator.h"
 #include "Scaler.h"
-#include "ChartObject.h"
 #include "Config.h"
 #include "ChartPlugin.h"
 #include "BarData.h"
+#include "COPlugin.h"
 
 class Plot : public QWidget
 {
@@ -48,7 +48,6 @@ class Plot : public QWidget
 
   signals:
     void statusMessage (QString);
-    void chartObjectCreated (ChartObject *);
     void infoMessage (Setting *);
     void leftMouseButton (int, int, bool);
     void keyPressed (QKeyEvent *);
@@ -63,7 +62,6 @@ class Plot : public QWidget
     {
       None,
       ClickWait,
-      ClickWait2,
       COSelected,
       Moving
     };
@@ -78,7 +76,6 @@ class Plot : public QWidget
     void setLogScale (bool);
     int setChartType (QString);
     void setChartInput ();
-    void createChartObject (QString, QString);
     void setHideMainPlot (bool);
     bool getHideMainPlot ();
     void updateStatusBar (int, int);
@@ -92,13 +89,7 @@ class Plot : public QWidget
     Indicator * getIndicator (QString);
     QStringList getIndicators ();
     void deleteIndicator (QString);
-    QStringList getChartObjectList ();
-    void newChartObject ();
-    void addChartObject (ChartObject *);
     void addChartObject (Setting *);
-    QStringList getChartObjects ();
-    void isChartObjectSelected (int x, int y);
-    void addArrow (bool flag, QString indicator, QString name, BarDate dt, double val);
 
     int getWidth ();
     int getPixelspace ();
@@ -123,7 +114,6 @@ class Plot : public QWidget
     void showPopupMenu ();
     void setChartPath (QString);
     void setDrawMode (bool);
-    void slotSaveChartObjects ();
     void setCrosshairsStatus (bool);
 
   protected:
@@ -146,10 +136,9 @@ class Plot : public QWidget
     void setWidth ();
     void setScale ();
     int getXFromDate (BarDate);
-    void getXY (int, int, int);
+    void getXY (int, int);
     void createXGrid ();
     void slotMessage (QString);
-    void objectMoving ();
     void toggleCrosshairs ();
     
     void drawDate ();
@@ -161,10 +150,8 @@ class Plot : public QWidget
 
     void slotEditIndicator (int);
     void slotDeleteIndicator (int);
-    void slotDeleteChartObject (QString);
     void slotNewIndicator ();
     void slotNewChartObject (int);
-    void slotChartObjectSelected (ChartObject *);
     void slotDeleteAllChartObjects ();
     
     void slotEditChartPrefs ();
@@ -199,8 +186,6 @@ class Plot : public QWidget
     bool infoFlag;
     int crossHairX;
     int crossHairY;
-    int tx, tx2; // temp x coords for drawing chart objects
-    int ty, ty2;  // temp y coords for drawing chart objects
 
     int scaleWidth;
     double mainHigh;
@@ -209,19 +194,16 @@ class Plot : public QWidget
     Scaler *scaler;
 
     double y1;
-    double y2;
     BarDate x1;
-    BarDate x2;
-    QString objectName;
     MouseStatus mouseFlag;
-    ChartObject::ObjectType objectFlag;
-    ChartObject *tco;
+    COPlugin *coPlugin;
+    QStringList coList;
+    QDict<COPlugin> coPlugins;
 
     QString chartType;
     QString chartPath;
     BarData *data;
     QDict<Indicator> indicators;
-    QDict<ChartObject> chartObjects;
     QMemArray<int> xGrid;
 
     QPopupMenu *chartMenu;

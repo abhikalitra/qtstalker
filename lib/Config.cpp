@@ -35,6 +35,7 @@ Config::Config ()
   dbPlugins.setAutoDelete(TRUE);
   indicatorPlugins.setAutoDelete(TRUE);
   quotePlugins.setAutoDelete(TRUE);
+  coPlugins.setAutoDelete(TRUE);
   version = "0.27";  // only this version of plugin is allowed to be loaded
 }
 
@@ -44,6 +45,7 @@ Config::~Config ()
   dbPlugins.clear();
   indicatorPlugins.clear();
   quotePlugins.clear();
+  coPlugins.clear();
   libs.clear();
 }
 
@@ -205,6 +207,9 @@ QString Config::getData (Parm p)
     case DbPluginPath:
       s = settings.readEntry("/Qtstalker/DbPluginPath", "/usr/lib/qtstalker/db");
       break;
+    case COPluginPath:
+      s = settings.readEntry("/Qtstalker/COPluginPath", "/usr/lib/qtstalker/co");
+      break;
     case Group:
       s = settings.readEntry("/Qtstalker/Group");
       break;
@@ -316,6 +321,9 @@ void Config::setData (Parm p, QString d)
       break;
     case DbPluginPath:
       settings.writeEntry("/Qtstalker/DbPluginPath", d);
+      break;
+    case COPluginPath:
+      settings.writeEntry("/Qtstalker/COPluginPath", d);
       break;
     case Group:
       settings.writeEntry("/Qtstalker/Group", d);
@@ -548,6 +556,32 @@ QuotePlugin * Config::getQuotePlugin (QString p)
   else
   {
     qDebug("Config::getQuotePlugin:%s Dll error\n", s.latin1());
+    delete lib;
+    return 0;
+  }
+}
+
+COPlugin * Config::getCOPlugin (QString p)
+{
+  COPlugin *plug = coPlugins[p];
+  if (plug)
+    return plug;
+
+  QString s = getData(COPluginPath) + "/lib" + p + "." + version + ".so";
+
+  QLibrary *lib = new QLibrary(s);
+  COPlugin *(*so)() = 0;
+  so = (COPlugin *(*)()) lib->resolve("createCOPlugin");
+  if (so)
+  {
+    plug = (*so)();
+    libs.replace(p, lib);
+    coPlugins.replace(p, plug);
+    return plug;
+  }
+  else
+  {
+    qDebug("Config::getCOPlugin:%s Dll error\n", s.latin1());
     delete lib;
     return 0;
   }

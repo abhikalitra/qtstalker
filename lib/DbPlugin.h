@@ -41,7 +41,7 @@ class DbPlugin
     Bar * getLastBar ();
     Bar * getFirstBar ();
     QStringList getChartObjectsList ();    
-    QPtrList<Setting> * getChartObjects ();
+    QPtrList<Setting> getChartObjects ();
     void setChartObject (QString, Setting *);
     void deleteChartObject (QString);
     QString getData (QString);

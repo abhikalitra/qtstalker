@@ -42,13 +42,13 @@
 #include "TestPage.h"
 #include "IndicatorPage.h"
 #include "PlotLine.h"
-#include "BuyArrow.h"
-#include "SellArrow.h"
-#include "TrendLine.h"
-#include "HorizontalLine.h"
-#include "VerticalLine.h"
-#include "FiboLine.h"
-#include "Text.h"
+//#include "BuyArrow.h"
+//#include "SellArrow.h"
+//#include "TrendLine.h"
+//#include "HorizontalLine.h"
+//#include "VerticalLine.h"
+//#include "FiboLine.h"
+//#include "Text.h"
 #include "PrefDialog.h"
 #include "ScannerPage.h"
 #include "ChartDb.h"
@@ -509,11 +509,11 @@ void QtstalkerApp::initToolBar()
 void QtstalkerApp::slotQuit()
 {
   // save any chart data
-  mainPlot->slotSaveChartObjects();
+  mainPlot->clear();
   
   QDictIterator<Plot> it(plotList);
   for(; it.current(); ++it)
-    it.current()->slotSaveChartObjects();
+    it.current()->clear();
 
   // save app settings
   QValueList<int> list = split->sizes();
@@ -827,10 +827,11 @@ void QtstalkerApp::loadChart (QString d)
   }
 */
 
-  QPtrList<Setting> *col = plug->getChartObjects();
-  for (loop = 0; loop < (int) col->count(); loop++)
+  QPtrList<Setting> col = plug->getChartObjects();
+  QPtrListIterator<Setting> coit(col);
+  for (; coit.current(); ++coit)
   {
-    Setting *co = col->at(loop);
+    Setting *co = coit.current();
     
     QString s = co->getData("Plot");
     if (! s.compare(tr("Main Plot")))
@@ -842,7 +843,6 @@ void QtstalkerApp::loadChart (QString d)
         plot->addChartObject(co);
     }
   }
-  delete col;
   delete plug;
 
   // update the pixelspace
@@ -1171,12 +1171,16 @@ void QtstalkerApp::slotDeleteIndicator (QString text, Plot *plot)
   // delete any chart objects that belong to the indicator
   if (! plot->getMainFlag())
   {
-    QStringList l = plot->getChartObjects();
     ChartDb *db = new ChartDb;
     db->openChart(chartPath);
-    int loop;
-    for (loop = 0; loop < (int) l.count(); loop++)
-      db->deleteChartObject(l[loop]);
+    QPtrList<Setting> l = db->getChartObjects ();
+    QPtrListIterator<Setting> it(l);
+    for (; it.current(); ++it)
+    {
+      Setting *co = it.current();
+      if (! co->getData("Plot").compare(text))
+        db->deleteChartObject(co->getData("Name"));
+    }
     delete db;
   }
 

@@ -39,7 +39,7 @@
 #include "Navigator.h"
 #include "Setting.h"
 #include "ChartPage.h"
-#include "ChartObject.h"
+//#include "ChartObject.h"
 #include "IndicatorTab.h"
 #include "NavigatorTab.h"
 

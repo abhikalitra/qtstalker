@@ -30,6 +30,7 @@
 #include "DbPlugin.h"
 #include "IndicatorPlugin.h"
 #include "QuotePlugin.h"
+#include "COPlugin.h"
 #include "Setting.h"
 
 class Config
@@ -65,7 +66,7 @@ class Config
       LogScale,
       DbPluginPath,
       CUSRulePath,
-      StackedIndicator, //unused
+      COPluginPath,
       PAFBoxSize, // unused
       Version, // unused
       Height,
@@ -94,6 +95,7 @@ class Config
     DbPlugin * getDbPlugin (QString);
     IndicatorPlugin * getIndicatorPlugin (QString);
     QuotePlugin * getQuotePlugin (QString);
+    COPlugin * getCOPlugin (QString);
     void closePlugins ();
     void closePlugin (QString);
 
@@ -103,6 +105,7 @@ class Config
     QDict<DbPlugin> dbPlugins;
     QDict<IndicatorPlugin> indicatorPlugins;
     QDict<QuotePlugin> quotePlugins;
+    QDict<COPlugin> coPlugins;
     QString version;
 };
 

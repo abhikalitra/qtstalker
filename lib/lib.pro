@@ -25,6 +25,7 @@ HEADERS += Config.h
 HEADERS += FormulaEdit.h
 HEADERS += FormulaInput.h
 HEADERS += Indicator.h
+HEADERS += COPlugin.h
    
 SOURCES += QuotePlugin.cpp
 SOURCES += IndicatorPlugin.cpp
@@ -49,6 +50,7 @@ SOURCES += Config.cpp
 SOURCES += FormulaEdit.cpp
 SOURCES += FormulaInput.cpp
 SOURCES += Indicator.cpp
+SOURCES += COPlugin.cpp
     
 TARGET = qtstalker
 VERSION = 0.27.0

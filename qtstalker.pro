@@ -70,5 +70,14 @@ SUBDIRS += plugins/db/Spread
 SUBDIRS += plugins/db/Index
 SUBDIRS += plugins/db/CC
 
+#compile co plugins
+SUBDIRS += plugins/co/BuyArrow
+SUBDIRS += plugins/co/SellArrow
+SUBDIRS += plugins/co/HorizontalLine
+SUBDIRS += plugins/co/VerticalLine
+SUBDIRS += plugins/co/Text
+SUBDIRS += plugins/co/TrendLine
+SUBDIRS += plugins/co/FiboLine
+
 SUBDIRS += docs
 

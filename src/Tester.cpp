@@ -1726,11 +1726,24 @@ void Tester::updateChart ()
     name++;
     BarDate dt;
     dt.setDate(tradeList->text(loop, 1) + "000000");
-    plot->addArrow(flag1, "tester", QString::number(name), dt, enter);
+    Setting *set = new Setting;
+    set->setData("Date", dt.getDateTimeString(FALSE));
+    set->setData("Value", QString::number(enter));
+    set->setData("Color", "green");
+    set->setData("Plot", "tester");
+    set->setData("Name", QString::number(name));
+    set->setData("Plugin", "BuyArrow");
+    plot->addChartObject(set);
       
     name++;
     dt.setDate(tradeList->text(loop, 3) + "000000");
-    plot->addArrow(flag2, "tester", QString::number(name), dt, exit);
+    set->setData("Date", dt.getDateTimeString(FALSE));
+    set->setData("Value", QString::number(exit));
+    set->setData("Color", "red");
+    set->setData("Plot", "tester");
+    set->setData("Name", QString::number(name));
+    set->setData("Plugin", "SellArrow");
+    plot->addChartObject(set);
   }
 
   slider->setMaxValue(recordList->count() - 1);

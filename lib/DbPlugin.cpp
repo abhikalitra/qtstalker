@@ -225,10 +225,10 @@ QStringList DbPlugin::getChartObjectsList ()
   return l;
 }
 
-QPtrList<Setting> *DbPlugin::getChartObjects ()
+QPtrList<Setting> DbPlugin::getChartObjects ()
 {
-  QPtrList<Setting> *list = new QPtrList<Setting>;
-  list->setAutoDelete(TRUE);
+  QPtrList<Setting> list;
+  list.setAutoDelete(TRUE);
 
   QStringList l = getChartObjectsList();
   int loop;
@@ -236,7 +236,7 @@ QPtrList<Setting> *DbPlugin::getChartObjects ()
   {
     Setting *set = new Setting;
     set->parse(getData(l[loop]));
-    list->append(set);
+    list.append(set);
   }  
   
   return list;
