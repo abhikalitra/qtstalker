@@ -37,7 +37,7 @@
 #define PATHSIZE 250
 #define MSIZE 250
 #define COSIZE 10240
-#define LSIZE 1000
+#define LSIZE 1250
 
 typedef struct
 {
@@ -68,7 +68,7 @@ typedef struct
   char mvar1[MSIZE];
   char lvar1[LSIZE];
   
-  char tspace[LSIZE]; // this is extra space in case we need it later
+  char tspace[750]; // this is extra space in case we need it later
 
 } ChartHeader;
 

@@ -112,6 +112,18 @@
 	  
 20050220: Changed the group side panel list behaviour to match the chart panel.
 
+20050221: Ugh...removed the chart reload timer from the toolbar...not needed...I forgot 
+          we already have a reload signal coming from the quotes plugin...
+	  
+20050221: Added a scaling option for each step in a CUS formula. If the user checks a step
+          that is also marked to plot, the checked step will ignore the scaling boundaries
+	  of the related plots and will scale relative to itself. This allows the user to
+	  put say a BB plot overtop a RSI and keep the scaling readable for both plots. The
+	  only downside to this is the scaled plot will not match the Y axis of the other
+	  unscaled plots.
+	  
+	  
+	  
 	  
 	  	  
 0.29

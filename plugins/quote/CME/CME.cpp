@@ -31,6 +31,7 @@
 #include <stdlib.h>
 #include <qtimer.h>
 #include <qsettings.h>
+#include <qfileinfo.h>
 
 CME::CME ()
 {
@@ -38,6 +39,27 @@ CME::CME ()
   op = 0;
   symbolCombo = 0;
   helpFile = "cme.html";
+  downloadIndex = 0;
+  cancelFlag = FALSE;
+  
+  symbolList.append("AD");
+  symbolList.append("CD");
+  symbolList.append("EC");
+  symbolList.append("ES");
+  symbolList.append("JY");
+  symbolList.append("FC");
+  symbolList.append("GI");
+  symbolList.append("LB");
+  symbolList.append("LC");
+  symbolList.append("LN");
+  symbolList.append("NB");
+  symbolList.append("ND");
+  symbolList.append("PB");
+  symbolList.append("SF");
+  symbolList.append("NQ");
+  symbolList.append("SP");
+  symbolList.append("ED");
+  symbolList.sort();
   
   connect(&opHistory, SIGNAL(finished(QNetworkOperation *)), this, SLOT(opHistoryDone(QNetworkOperation *)));
   
@@ -68,8 +90,11 @@ void CME::update ()
 
     QTimer::singleShot(250, this, SLOT(getFile()));
   }
-  else  
+  else
+  {
+    downloadIndex = 0;
     QTimer::singleShot(250, this, SLOT(getFileHistory()));
+  }
 }
 
 void CME::opDone (QNetworkOperation *o)
@@ -131,9 +156,15 @@ void CME::opHistoryDone (QNetworkOperation *o)
     return;
 
   parseHistory();
-
-  emit statusLogMessage(tr("Done"));
-  emit done();
+  
+  downloadIndex++;
+  if (downloadIndex < (int) downloadSymbolList.count())
+    getFileHistory();
+  else
+  {
+    emit statusLogMessage(tr("Done"));
+    emit done();
+  }
 }
 
 void CME::getFile ()
@@ -155,21 +186,38 @@ void CME::getFile ()
 
 void CME::getFileHistory ()
 {
-  QDir dir = QDir::home();
-  file = dir.path();
-  file.append("/Qtstalker/download.zip");
-  dir.remove(file);
+  QString s = QDir::homeDirPath();
+  s.append("/Qtstalker");
+  QDir dir(s);
+  int loop;
+  for (loop = 2; loop < (int) dir.count(); loop++)
+  {
+    QString t = dir.absPath() + "/" + dir[loop];
+    QFileInfo fi(t);
+    if (fi.isDir())
+      continue;
+      
+    if (! fi.extension(TRUE).compare("zip"))
+    {
+      dir.remove(fi.absFilePath());
+      continue;
+    }
+    
+    if (! fi.extension(TRUE).compare("eod"))
+      dir.remove(fi.absFilePath());
+  }
 
-  file2 = dir.path();
-  file2.append("/Qtstalker");
+  file2 = s;
+  s.append("/download.zip");
+  file = s;
 
   url = "ftp://ftp.cme.com//pub/hist_eod/";
-  url.append(currentSymbol.lower());
+  url.append(downloadSymbolList[downloadIndex].lower());
   url.append("ytd.zip");
 
   opHistory.copy(url, file, FALSE, FALSE);
   
-  QString s = tr("Downloading");
+  s = tr("Downloading");
   s.append(" ");
   s.append(url);
   emit statusLogMessage(s);
@@ -579,7 +627,7 @@ void CME::parseHistory ()
 {
   QString s2 = file2;
   s2.append("/");
-  s2.append(currentSymbol.lower());
+  s2.append(downloadSymbolList[downloadIndex].lower());
   s2.append("ytd.eod");
   QDir dir(s2);
   dir.remove(s2);
@@ -996,26 +1044,6 @@ void CME::cancelUpdate ()
 
 void CME::prefDialog (QWidget *w)
 {
-  QStringList l;
-  l.append("AD");
-  l.append("CD");
-  l.append("EC");
-  l.append("ES");
-  l.append("JY");
-  l.append("FC");
-  l.append("GI");
-  l.append("LB");
-  l.append("LC");
-  l.append("LN");
-  l.append("NB");
-  l.append("ND");
-  l.append("PB");
-  l.append("SF");
-  l.append("NQ");
-  l.append("SP");
-  l.append("ED");
-  l.sort();
-
   PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(tr("CME Prefs"));
   dialog->createPage (tr("Details"));
@@ -1030,8 +1058,10 @@ void CME::prefDialog (QWidget *w)
 	  this,
 	  SLOT(methodChanged(const QString &)));
     
-  dialog->addComboItem(tr("Symbol"), tr("Details"), l, currentSymbol);
+  dialog->addComboItem(tr("Symbol"), tr("Details"), symbolList, currentSymbol);
   symbolCombo = dialog->getComboWidget(tr("Symbol"));
+  
+//  dialog->addCheckItem(tr("All symbols"), tr("Details"), allSymbols);
   
   methodChanged (method);
   
@@ -1039,8 +1069,25 @@ void CME::prefDialog (QWidget *w)
   
   if (rc == QDialog::Accepted)
   {
+/*  
+    if (! method.compare("History"))
+    {
+      allSymbols = dialog->getCheck(tr("All symbols"));
+    
+      if (allSymbols)
+        downloadSymbolList = symbolList;
+      else
+      {
+        downloadSymbolList = dialog->getCombo(tr("Symbol"));
+        currentSymbol = dialog->getCombo(tr("Symbol"));
+      }
+    }
+*/
+    downloadSymbolList = dialog->getCombo(tr("Symbol"));
     currentSymbol = dialog->getCombo(tr("Symbol"));
+    
     saveFlag = TRUE;
+    saveSettings();
   }
   
   delete dialog;
@@ -1053,6 +1100,9 @@ void CME::loadSettings ()
 
   method = settings.readEntry("/Method", "Today");
   currentSymbol = settings.readEntry("/Symbol", "AD");
+  
+//  QString s = settings.readEntry("/AllSymbols", "0");
+//  allSymbols = s.toInt();
   
   settings.endGroup();
 }
@@ -1067,6 +1117,7 @@ void CME::saveSettings ()
   
   settings.writeEntry("/Method", method);
   settings.writeEntry("/Symbol", currentSymbol);
+//  settings.writeEntry("/AllSymbols", QString::number(allSymbols));
   
   settings.endGroup();
 }
@@ -1077,7 +1128,7 @@ void CME::methodChanged (const QString & d)
   
   if (! method.compare(tr("Today")))
     symbolCombo->setEnabled(FALSE);
-  else  
+  else
     symbolCombo->setEnabled(TRUE);
 }
 

@@ -67,19 +67,6 @@ ChartToolbar::ChartToolbar (QMainWindow *mw) : QToolBar (mw, "chartToolbar")
   connect(barCount, SIGNAL(signalKeyPressed(int, int, int, int, QString)),
           this, SIGNAL(signalKeyPressed(int, int, int, int, QString)));
 	  
-  minutes = new MySpinBox(this, Macro::ChartToolbar);
-  minutes->setMinValue(0);
-  minutes->setMaxValue(99);
-  minutes->setLineStep(1);
-  minutes->setValue(0);
-  QToolTip::add(minutes, tr("Chart Reload Minutes"));
-  connect(minutes, SIGNAL(valueChanged(int)), SLOT(minutesChanged(int)));
-  connect(minutes, SIGNAL(signalKeyPressed(int, int, int, int, QString)),
-          this, SIGNAL(signalKeyPressed(int, int, int, int, QString)));
-	  
-  reloadTimer = new QTimer(this);
-  connect(reloadTimer, SIGNAL(timeout()), SIGNAL(signalChartReload()));
-	  
   addSeparator();
 
   slider = new MySlider(this, Macro::ChartToolbar);
@@ -100,7 +87,6 @@ ChartToolbar::ChartToolbar (QMainWindow *mw) : QToolBar (mw, "chartToolbar")
   a->insertItem(CTRL+Key_Prior, CompressionFocus);
   a->insertItem(CTRL+Key_Next, ChartTypeFocus);
   a->insertItem(CTRL+Key_B, ToolbarFocus);
-  a->insertItem(CTRL+Key_Up, ChartReloadFocus);
   
   focusFlag = CompressionFocus;
 }
@@ -225,7 +211,6 @@ void ChartToolbar::setKeyFlag (bool d)
   pixelspace->setKeyFlag(d);
   barCount->setKeyFlag(d);
   slider->setKeyFlag(d);
-  minutes->setKeyFlag(d);
 }
 
 void ChartToolbar::slotAccel (int id)
@@ -267,12 +252,6 @@ void ChartToolbar::slotAccel (int id)
         emit signalKeyPressed (Macro::ChartToolbar, ControlButton, Key_B, 0, QString());
       setFocus();
       break;
-    case ChartReloadFocus:
-      minutes->setFocus();
-      focusFlag = ChartReloadFocus;
-      if (keyFlag)
-        emit signalKeyPressed (Macro::ChartToolbar, ControlButton, Key_Up, 0, QString());
-      break;  
     default:
       break;
   }
@@ -300,9 +279,6 @@ void ChartToolbar::doKeyPress (QKeyEvent *key)
 	break;
       case ChartPannerFocus:
         slider->doKeyPress(key);
-	break;
-      case ChartReloadFocus:
-        minutes->doKeyPress(key);
 	break;
       default:
         break;
@@ -332,9 +308,6 @@ void ChartToolbar::doKeyPress (QKeyEvent *key)
         case Qt::Key_B:
 	  slotAccel(ToolbarFocus);
           break;
-        case Qt::Key_Up:
-	  slotAccel(ChartReloadFocus);
-          break;
         default:
           break;
       }
@@ -357,14 +330,5 @@ void ChartToolbar::runMacro (Macro *d)
   }
   
   macroFlag = FALSE;
-}
-
-void ChartToolbar::minutesChanged (int d)
-{
-  reloadTimer->stop();
-  if (d == 0)
-    return;
-    
-  reloadTimer->start(60000 * d, FALSE);
 }
 

@@ -70,6 +70,11 @@ void CUS::calculate ()
 
     PlotLine *nline = new PlotLine;
     nline->copy(line);
+    
+    QString s = set.getData("scale");
+    if (s.length())
+      nline->setScaleFlag(s.toInt());
+      
     customLines->replace(QString::number(loop + 1), nline);
     
     config.closePlugin(set.getData("plugin"));

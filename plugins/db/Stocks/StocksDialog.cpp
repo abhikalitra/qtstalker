@@ -101,27 +101,27 @@ void StocksDialog::createDetailsPage ()
     
   Setting fund;
   fund.parse(db->getHeaderField(DbPlugin::Lvar1));
+  QString s = tr("Fundamentals: last updated ");
+  s.append(fund.getData("updateDate"));
+  fund.remove("updateDate");
   QStringList key = fund.getKeyList();
   key.sort();
   
   vbox->addSpacing(10);
-  label = new QLabel(tr("Fundamentals"), w);
+  label = new QLabel(s, w);
   vbox->addWidget(label);
   
-  fundView = new QTextEdit(w);
-  fundView->setTextFormat(Qt::LogText);
-  fundView->setReadOnly(TRUE);
+  fundView = new QListView(w);
+  fundView->addColumn(tr("Description"));
+  fundView->addColumn(tr("Value"));
   vbox->addWidget(fundView);
   
   int loop;
   for (loop = 0; loop < (int) key.count(); loop++)
-  {
-    QString s = key[loop] + " = " + fund.getData(key[loop]);
-    fundView->append(s);
-  }
+    new QListViewItem(fundView, key[loop], fund.getData(key[loop]));
   
   if (! key.count())
-    fundView->append(tr("No data available."));
+    new QListViewItem(fundView, tr("No data available."));
     
   addTab(w, tr("Details"));  
 }

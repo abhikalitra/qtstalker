@@ -232,7 +232,6 @@ void QtstalkerApp::initToolBar()
   connect(toolbar2, SIGNAL(signalChartTypeChanged(int)), this, SLOT(slotChartTypeChanged(int)));
   connect(toolbar2, SIGNAL(signalPixelspaceChanged(int)), this, SLOT(slotPixelspaceChanged(int)));
   connect(this, SIGNAL(signalSetKeyFlag(bool)), toolbar2, SLOT(setKeyFlag(bool)));
-  connect(toolbar2, SIGNAL(signalChartReload()), this, SLOT(slotChartUpdated()));
 }
 
 void QtstalkerApp::slotQuit()

@@ -25,7 +25,6 @@
 #include <qstring.h>
 #include <qtoolbar.h>
 #include <qmainwindow.h>
-#include <qtimer.h>
 #include "MyComboBox.h"
 #include "MySpinBox.h"
 #include "MySlider.h"
@@ -42,7 +41,6 @@ class ChartToolbar : public QToolBar
     void signalPixelspaceChanged (int);
     void signalSliderChanged (int);
     void signalKeyPressed (int, int, int, int, QString);
-    void signalChartReload();
     
   public:
   
@@ -53,8 +51,7 @@ class ChartToolbar : public QToolBar
       ChartTypeFocus,
       BarSpacingFocus,
       BarsLoadedFocus,
-      ChartPannerFocus,
-      ChartReloadFocus
+      ChartPannerFocus
     };
   
     ChartToolbar(QMainWindow *);
@@ -77,20 +74,17 @@ class ChartToolbar : public QToolBar
     void slotAccel (int);
     void doKeyPress (QKeyEvent *);
     void runMacro (Macro *);
-    void minutesChanged (int);
   
   private:
     MyComboBox *compressionCombo;
     MyComboBox *chartTypeCombo;
     MySpinBox *pixelspace;
     MySpinBox *barCount;
-    MySpinBox *minutes;
     MySlider *slider;
     bool keyFlag;
     MenuAction focusFlag;
     Macro *macro;
     bool macroFlag;
-    QTimer *reloadTimer;
 };
 
 #endif

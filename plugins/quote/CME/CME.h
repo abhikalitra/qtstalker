@@ -59,9 +59,14 @@ class CME : public QuotePlugin
     QString file2;
     QUrlOperator opHistory;
     QString url;
-    QString currentSymbol;
     QString method;
+    QString currentSymbol;
     QComboBox *symbolCombo;
+    QStringList symbolList;
+    QStringList downloadSymbolList;
+    bool allSymbols;
+    int downloadIndex;
+    bool cancelFlag;
 };
 
 extern "C"

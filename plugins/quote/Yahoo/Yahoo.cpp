@@ -874,6 +874,84 @@ void Yahoo::parseFundamental ()
     delete set;
   }
 
+  // include date of this update
+  QDate dt = QDate::currentDate();
+  fund.setData("updateDate", dt.toString("yyyy-MM-dd"));
+  
+  // remove useless data
+  QStringList key = fund.getKeyList();
+  for (loop = 0; loop < (int) key.count(); loop++)
+  {
+    if (key[loop].contains("(ttm"))
+    {
+      QString d = fund.getData(key[loop]);
+      QString k = key[loop].left(key[loop].find("(ttm", 0, TRUE) - 1);
+      fund.remove(key[loop]);
+      fund.setData(k, d);
+      continue;
+    }
+  
+    if (key[loop].contains("(mrq"))
+    {
+      QString d = fund.getData(key[loop]);
+      QString k = key[loop].left(key[loop].find("(mrq", 0, TRUE) - 1);
+      fund.remove(key[loop]);
+      fund.setData(k, d);
+      continue;
+    }
+    
+    if (key[loop].contains("(lfy"))
+    {
+      QString d = fund.getData(key[loop]);
+      QString k = key[loop].left(key[loop].find("(lfy", 0, TRUE) - 1);
+      fund.remove(key[loop]);
+      fund.setData(k, d);
+      continue;
+    }
+
+    if (key[loop].contains("(new per"))
+    {
+      QString d = fund.getData(key[loop]);
+      QString k = key[loop].left(key[loop].find("(new per", 0, TRUE) - 1);
+      fund.remove(key[loop]);
+      fund.setData(k, d);
+      continue;
+    }
+    
+    if (key[loop].contains("(intra"))
+    {
+      QString d = fund.getData(key[loop]);
+      QString k = key[loop].left(key[loop].find("(intra", 0, TRUE) - 1);
+      fund.remove(key[loop]);
+      fund.setData(k, d);
+      continue;
+    }
+    
+    if (key[loop].contains("(5 yr"))
+    {
+      QString d = fund.getData(key[loop]);
+      QString k = key[loop].left(key[loop].find("(5 yr", 0, TRUE) - 1);
+      fund.remove(key[loop]);
+      fund.setData(k, d);
+      continue;
+    }
+    
+    if (key[loop].contains("Moving Average"))
+    {
+      fund.remove(key[loop]);
+      continue;
+    }
+  
+    if (key[loop].contains("Volume"))
+    {
+      fund.remove(key[loop]);
+      continue;
+    }
+    
+    if (key[loop].contains("52-Week"))
+      fund.remove(key[loop]);
+  }
+  
   plug->setHeaderField(DbPlugin::Lvar1, fund.getString());
     
   s = "Updating " + downloadList[index];

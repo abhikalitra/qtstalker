@@ -131,7 +131,18 @@ void CSV::parse ()
     delete rule;
     return;
   }
-  
+
+  // check for time field and set the tickflag  
+  bool tickFlag = FALSE;
+  if (! rule->getData("Rule").contains("Time"))
+    tickFlag = TRUE;
+  else
+  {
+    if (! rule->getData("Rule").contains("HHMMSS"))
+      tickFlag = TRUE;
+  }
+
+      
   int loop;
   for (loop = 0; loop < (int) list.count(); loop++)
   {
@@ -221,7 +232,7 @@ void CSV::parse ()
     {
       QString s = path;
       s.append(symbol);
-      if (openDb(s, symbol, type))
+      if (openDb(s, symbol, type, tickFlag))
         continue;
       emit statusLogMessage("Updating " + symbol);
     }
@@ -324,12 +335,9 @@ void CSV::parse ()
 	delete r;
 	continue;
       }
-      bool tickFlag = FALSE;
+      
       if (r->getData("Time"))
-      {
         s.append(r->getData("Time"));
-	tickFlag = TRUE;
-      }
       else
         s.append("000000");
 	
@@ -341,7 +349,7 @@ void CSV::parse ()
 	delete bar;
         continue;
       }
-//      bar->setTickFlag(tickFlag);
+      bar->setTickFlag(tickFlag);
       bar->setOpen(r->getData("Open").toDouble());
       bar->setHigh(r->getData("High").toDouble());
       bar->setLow(r->getData("Low").toDouble());
@@ -353,7 +361,7 @@ void CSV::parse ()
       {
 	s = path;
 	s.append(r->getData("Symbol"));
-	if (openDb(s, r->getData("Symbol"), type))
+	if (openDb(s, r->getData("Symbol"), type, tickFlag))
 	{
 	  delete r;
 	  delete bar;
@@ -578,7 +586,7 @@ QDate CSV::getDate (QString k, QString d, Setting *r)
   return date;
 }
 
-bool CSV::openDb (QString path, QString symbol, QString type)
+bool CSV::openDb (QString path, QString symbol, QString type, bool tickFlag)
 {
   db = new ChartDb;
   db->setPlugin(type);
@@ -594,7 +602,7 @@ bool CSV::openDb (QString path, QString symbol, QString type)
   if (! s.length())
   {
     Setting *set = new Setting;
-    set->setData("BarType", QString::number(BarData::Daily));
+    set->setData("BarType", QString::number(tickFlag));
     set->setData("Symbol", symbol);
     set->setData("Title", symbol);
     
