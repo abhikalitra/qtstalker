@@ -1,16 +1,13 @@
-0.21
+0.20
 ====
 
 - Some compile errors reported because I made some changes that apply to Qt3.1.2 that are not compatible with Qt3.0*
-  Back ported the String::remove to Qt3.0*
+  Back ported the QString::remove to Qt3.0*
   
 - I split the ./compile script into 2 scripts. ./compile creates the qtstalker binary, and ./compile_plugins creates all
   the plugins. This is to make the compile process more efficient and flexible.
   
 - Thanks to Marco van Zwetselaar for a patch to implement Log scaling to charts. 
-
-0.20
-====
 
 - Added a "Color Bars" parm to draw color up and down bars for the VOL plugin. This only works if you use the
   histogram bars line style.
@@ -22,6 +19,12 @@
   the -ldl linker option if on a linux-g++ system.
   
 - Added new chart type "Swing". This is the typical Gann swing chart type.
+
+- Experimented with an OSX port. Turns out apple has a broken plugin system, you can load them but can't unload them.
+  Until they fix this, a OSX port will not be practical or efficient. Cmon apple, even win32 can do this...think different?
+  
+- Added the stdlib header to GroupPage to fix a compile error on Debian.
+
 
 0.19
 ====

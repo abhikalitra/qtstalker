@@ -31,6 +31,7 @@
 #include <qinputdialog.h>
 #include <qstringlist.h>
 #include <qcursor.h>
+#include <stdlib.h>
 
 GroupPage::GroupPage (QWidget *w, Config *c) : BaseDialog(w)
 {
