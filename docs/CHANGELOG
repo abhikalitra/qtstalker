@@ -1,9 +1,11 @@
 0.17
 ====
 
-- bug fix for yahoo quotes that didn't update new symbols first time
+- Bug fix for yahoo quotes that didn't update new symbols first time.
 
-- added basic indicator documentation
+- Added basic indicator documentation.
+
+- Added new quote plugin CC. This creates a continuous adjusted futures chart for each futures symbol available.
 
 0.16
 ======
