@@ -411,16 +411,19 @@ QStringList Config::getPluginList (Config::Parm d)
     return l;
   
   int loop;
+  QStringList l2;
   for (loop = 0; loop < (int) l.count(); loop++)
   {
     if (! l[loop].contains(version))
       continue;
-      
-    l[loop].truncate(l[loop].length() - 8);
-    l[loop].remove(0, 3);
+
+    QString s = l[loop];
+    s.truncate(s.length() - 8);
+    s.remove(0, 3);
+    l2.append(s);
   }
 
-  return l;
+  return l2;
 }
 
 Plugin * Config::getPlugin (Config::Parm t, QString p)
