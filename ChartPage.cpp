@@ -45,7 +45,7 @@ ChartPage::ChartPage (QWidget *w, Config *c) : BaseDialog(w)
   menu->insertItem(QPixmap(edit), tr("Edit Chart"), this, SLOT(editChart()));
   menu->insertItem(QPixmap(deletefile), tr("Delete Chart"), this, SLOT(deleteChart()));
   menu->insertItem(QPixmap(exportfile), tr("Export Chart"), this, SLOT(exportSymbol()));
-  
+
   chartNoSelection();
 }
 
@@ -173,6 +173,11 @@ void ChartPage::chartNoSelection ()
 void ChartPage::rightClick (QListBoxItem *)
 {
   menu->exec(QCursor::pos());
+}
+
+void ChartPage::refreshList ()
+{
+  nav->updateList();
 }
 
 

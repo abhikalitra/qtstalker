@@ -14,7 +14,7 @@
   
 - Added a data panel located under the tab area that dynamically updates all the chart values where the mouse is currently located.
 
-- Reports that 0.19 does not create a binary on some dist's "debian". 0.17 compiles fine. I think this is because
+- Reports that 0.19 does not create a binary on some dist's "Debian". 0.17 compiles fine. I think this is because
   I removed the -ldl linker option for FreeBSD. Some dist's need the linker option. Updated all the *.pro files to add
   the -ldl linker option if on a linux-g++ system.
   
@@ -23,7 +23,10 @@
 - Experimented with an OSX port. Turns out apple has a broken plugin system, you can load them but can't unload them.
   Until they fix this, a OSX port will not be practical or efficient. Cmon apple, even win32 can do this...think different?
   
-  
+- Added the stdlib header to GroupPage to fix a compile error on Debian.
+
+- Fixed a bug that didn't update the ChartPage after downloading quotes for the first time.
+
 0.19
 ====
 

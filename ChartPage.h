@@ -48,6 +48,7 @@ class ChartPage : public BaseDialog
     void chartSelected (QString);
     void chartNoSelection ();
     void rightClick (QListBoxItem *);
+    void refreshList ();
 
   protected:
     Navigator *nav;

@@ -27,7 +27,7 @@
 #include <qsettings.h>
 #include <qobject.h>
 
-#define VOLUME "Line Type,Histogram Bar,13,Type,VOL,0,Alert,False,0,Name,Volume,0,Color,red,5,Label,VOL,4,Plot,False,0"
+#define VOLUME "Line Type,Histogram Bar,13,Type,VOL,0,Alert,False,0,Name,Volume,0,Color,red,5,Label,VOL,4,Plot,False,0,Color Bars,True,3"
 
 Config::Config (QString p)
 {

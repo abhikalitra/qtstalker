@@ -37,7 +37,6 @@ class Navigator : public QListBox
   public:
     Navigator (QWidget *, QString);
     ~Navigator ();
-    void updateList ();
     QString getFileSelection ();
     void setDirectory (QString);
     QString getCurrentPath ();
@@ -46,6 +45,7 @@ class Navigator : public QListBox
     void upDirectory ();
     void fileSelection (QListBoxItem *);
     void checkDirectory (QListBoxItem *);
+    void updateList ();
 
   protected:
     QString basePath;

@@ -1485,6 +1485,7 @@ void QtstalkerApp::slotNewPlugin ()
 
 void QtstalkerApp::slotChartUpdated ()
 {
+  chartNav->refreshList();
   loadChart(chartPath);
 }
 
@@ -1550,10 +1551,10 @@ void QtstalkerApp::initGroupNav ()
 
 void QtstalkerApp::initChartNav ()
 {
-  ChartPage *cp = new ChartPage(baseWidget, config);
-  connect(cp, SIGNAL(fileSelected(QString)), this, SLOT(slotOpenChart(QString)));
-  navTab->addTab(cp, QIconSet(QPixmap(plainitem)), QString::null);
-  navTab->setTabToolTip(cp, tr("Workwith Charts"));
+  chartNav = new ChartPage(baseWidget, config);
+  connect(chartNav, SIGNAL(fileSelected(QString)), this, SLOT(slotOpenChart(QString)));
+  navTab->addTab(chartNav, QIconSet(QPixmap(plainitem)), QString::null);
+  navTab->setTabToolTip(chartNav, tr("Workwith Charts"));
 }
 
 void QtstalkerApp::initPortfolioNav ()
