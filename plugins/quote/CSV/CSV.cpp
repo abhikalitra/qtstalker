@@ -521,9 +521,9 @@ QDate CSV::getDate (QString k, QString d, Setting *r)
 bool CSV::openDb (QString path, QString symbol, QString type)
 {
   db = new ChartDb;
-  QDir dir;
-  if (! dir.exists(path))
-    db->setPlugin(type);
+//  QDir dir;
+//  if (! dir.exists(path))
+  db->setPlugin(type);
   if (db->openChart(path))
   {
     emit statusLogMessage("Could not open db.");
