@@ -1,3 +1,9 @@
+0.25
+====
+
+20040221: Fixed compile error on some systems for the OVRLY plugin. Added include path for db.h.
+
+
 0.24
 ====
 
