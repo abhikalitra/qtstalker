@@ -62,6 +62,7 @@ class QSMath
     PlotLine * getMOM (PlotLine *in, int period); // momentum
     PlotLine * getNVI (); //negative volume index
     PlotLine * getOBV (); //on balance volume
+    PlotLine * getVFI (int period); //volume flow index
     PlotLine * getPC (PlotLine *in, int period); //pecent change
     PlotLine * getPER (PlotLine *in); //performance
     double getPPFR (double high, double low, double close); // pivot point first resistance

@@ -66,6 +66,7 @@ SUBDIRS += plugins/indicator/SZ
 SUBDIRS += plugins/indicator/THERM
 SUBDIRS += plugins/indicator/TRIX
 SUBDIRS += plugins/indicator/UO
+SUBDIRS += plugins/indicator/VFI
 SUBDIRS += plugins/indicator/VOL
 SUBDIRS += plugins/indicator/VOLR
 SUBDIRS += plugins/indicator/WAD
