@@ -51,10 +51,10 @@ TrendLine::~TrendLine ()
 {
 }
 
-void TrendLine::draw (int startIndex, int pixelspace, int startX)
+void TrendLine::draw (QPixmap &buffer, Scaler &scaler, int startIndex, int pixelspace, int startX)
 {
   QPainter painter;
-  painter.begin(buffer);
+  painter.begin(&buffer);
   
   QDictIterator<TrendLineObject> it(objects);
   for (; it.current(); ++it)
@@ -99,29 +99,29 @@ void TrendLine::draw (int startIndex, int pixelspace, int startX)
       {
         if (! co->getBar().compare(tr("Open")))
         {
-          y = scaler->convertToY(data->getOpen(i));
-          y2 = scaler->convertToY(data->getOpen(i2));
+          y = scaler.convertToY(data->getOpen(i));
+          y2 = scaler.convertToY(data->getOpen(i2));
 	  break;
         }
 
         if (! co->getBar().compare(tr("High")))
         {
-          y = scaler->convertToY(data->getHigh(i));
-          y2 = scaler->convertToY(data->getHigh(i2));
+          y = scaler.convertToY(data->getHigh(i));
+          y2 = scaler.convertToY(data->getHigh(i2));
 	  break;
         }
 
         if (! co->getBar().compare(tr("Low")))
         {
-          y = scaler->convertToY(data->getLow(i));
-          y2 = scaler->convertToY(data->getLow(i2));
+          y = scaler.convertToY(data->getLow(i));
+          y2 = scaler.convertToY(data->getLow(i2));
 	  break;
         }
 
         if (! co->getBar().compare(tr("Close")))
         {
-          y = scaler->convertToY(data->getClose(i));
-          y2 = scaler->convertToY(data->getClose(i2));
+          y = scaler.convertToY(data->getClose(i));
+          y2 = scaler.convertToY(data->getClose(i2));
 	  break;
         }
 
@@ -130,8 +130,8 @@ void TrendLine::draw (int startIndex, int pixelspace, int startX)
     }
     else
     {
-      y = scaler->convertToY(co->getValue());
-      y2 = scaler->convertToY(co->getValue2());
+      y = scaler.convertToY(co->getValue());
+      y2 = scaler.convertToY(co->getValue2());
     }
 
     painter.setPen(co->getColor());
@@ -147,7 +147,7 @@ void TrendLine::draw (int startIndex, int pixelspace, int startX)
     {  
       int ydiff = y - y2;
       int xdiff = x2 - x;
-      while (x2 < buffer->width())
+      while (x2 < buffer.width())
       {
         x = x2;
         y = y2;
@@ -347,11 +347,11 @@ COPlugin::Status TrendLine::pointerClick (QPoint &point, BarDate &x, double y)
   return status;    
 }
 
-void TrendLine::pointerMoving (QPoint &point, BarDate &x, double y)
+void TrendLine::pointerMoving (QPixmap &buffer, QPoint &point, BarDate &x, double y)
 {
   if (status == ClickWait2)
   {
-    drawMovingPointer(point);
+    drawMovingPointer(buffer, point);
     return;
   }
   
@@ -390,13 +390,13 @@ void TrendLine::pointerMoving (QPoint &point, BarDate &x, double y)
   }
 }
 
-void TrendLine::drawMovingPointer (QPoint &point)
+void TrendLine::drawMovingPointer (QPixmap &buffer, QPoint &point)
 {
   if (point.x() < mpx)
     return;
 
   QPainter painter;
-  painter.begin(buffer);
+  painter.begin(&buffer);
   painter.setRasterOp(Qt::XorROP);
   painter.setPen(defaultColor);
       
@@ -584,6 +584,7 @@ void TrendLine::showMenu ()
 
 void TrendLine::getNameList (QStringList &d)
 {
+  d.clear();
   QDictIterator<TrendLineObject> it(objects);
   for (; it.current(); ++it)
     d.append(it.current()->getName());

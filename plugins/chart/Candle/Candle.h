@@ -33,10 +33,10 @@ class Candle : public ChartPlugin
   public:
     Candle ();
     virtual ~Candle ();
-    void drawChart (int startX, int startIndex, int pixelspace);
-    void drawCandles (int startX, int startIndex, int pixelspace);
-    void drawQSCandles (int startX, int startIndex, int pixelspace);
-    void drawVolumeCandles (int startX, int startIndex, int pixelspace);
+    void drawChart (QPixmap &, Scaler &, int startX, int startIndex, int pixelspace);
+    void drawCandles (QPixmap &, Scaler &, int startX, int startIndex, int pixelspace);
+    void drawQSCandles (QPixmap &, Scaler &, int startX, int startIndex, int pixelspace);
+    void drawVolumeCandles (QPixmap &, Scaler &, int startX, int startIndex, int pixelspace);
     QColor volumeColor (int index);
     void prefDialog (QWidget *);
     void loadSettings ();

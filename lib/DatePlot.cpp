@@ -28,7 +28,6 @@
 
 DatePlot::DatePlot (QWidget *w) : QWidget(w)
 {
-  buffer = new QPixmap;
   setBackgroundMode(NoBackground);
   scaleWidth = SCALE_WIDTH;
   startX = 2;
@@ -53,7 +52,6 @@ DatePlot::DatePlot (QWidget *w) : QWidget(w)
 
 DatePlot::~DatePlot ()
 {
-  delete buffer;
 }
 
 void DatePlot::clear ()
@@ -104,12 +102,12 @@ void DatePlot::setData (BarData *l)
 
 void DatePlot::draw ()
 {
-  buffer->fill(backgroundColor);
+  buffer.fill(backgroundColor);
 
   if (dateList.count() && isShown())
   {
     QPainter painter;
-    painter.begin(buffer);
+    painter.begin(&buffer);
     painter.setPen(borderColor);
     painter.setFont(plotFont);
 
@@ -118,12 +116,12 @@ void DatePlot::draw ()
     int loop = startIndex;
   
     // clear date area
-    painter.fillRect(0, buffer->height(), buffer->width() - scaleWidth, buffer->height(), backgroundColor);
+    painter.fillRect(0, buffer.height(), buffer.width() - scaleWidth, buffer.height(), backgroundColor);
 
     // draw the seperator line
-    painter.drawLine (0, 0, buffer->width() - scaleWidth, 0);
+    painter.drawLine (0, 0, buffer.width() - scaleWidth, 0);
 
-    while(x <= (buffer->width() - scaleWidth) && loop < (int) dateList.count())
+    while(x <= (buffer.width() - scaleWidth) && loop < (int) dateList.count())
     {
       TickItem *item = dateList.at(loop);
       
@@ -142,10 +140,10 @@ void DatePlot::draw ()
 	else
 	{
 	  // draw the long tick
-          painter.drawLine (x, 1, x, buffer->height() - fm.height() - 2);
+          painter.drawLine (x, 1, x, buffer.height() - fm.height() - 2);
 	  
           painter.drawText (x - (fm.width(item->text, -1) / 2),
-	                    buffer->height() - 2,
+	                    buffer.height() - 2,
 			    item->text,
 			    -1);
 	}
@@ -168,12 +166,12 @@ void DatePlot::drawRefresh ()
 
 void DatePlot::paintEvent (QPaintEvent *)
 {
-  bitBlt(this, 0, 0, buffer);
+  bitBlt(this, 0, 0, &buffer);
 }
 
 void DatePlot::resizeEvent (QResizeEvent *event)
 {
-  buffer->resize(event->size());
+  buffer.resize(event->size());
   draw();
 }
 

@@ -54,7 +54,7 @@ class COPlugin : public QObject
   
     COPlugin ();
     virtual ~COPlugin ();
-    virtual void draw (int, int, int);
+    virtual void draw (QPixmap &, Scaler &, int, int, int);
     virtual void newObject (QString &, QString &);
     virtual void addObject (Setting &);
     virtual void saveObjects (QString &);
@@ -66,19 +66,15 @@ class COPlugin : public QObject
     virtual void getNameList (QStringList &);
     
     void setData (BarData *);
-    void setScaler (Scaler *);
-    void setPixmap (QPixmap *);
     QString getHelpFile ();
 
   public slots:    
     virtual void prefDialog ();
     virtual COPlugin::Status pointerClick (QPoint &, BarDate &, double);
-    virtual void pointerMoving (QPoint &, BarDate &, double y);
+    virtual void pointerMoving (QPixmap &, QPoint &, BarDate &, double y);
     
   protected:
     BarData *data;
-    Scaler *scaler;
-    QPixmap *buffer;
     QPopupMenu *menu;
     QString indicator;
     QString name;

@@ -25,8 +25,6 @@
 
 PlotLine::PlotLine ()
 {
-  scaler = 0;
-  buffer = 0;
   data.setAutoDelete(TRUE);
   colorBars.setAutoDelete(TRUE);
   color.setNamedColor("red");
@@ -251,35 +249,35 @@ QColor PlotLine::getColorBar (int d)
   return QColor(color->red(), color->green(), color->blue());
 }
 
-void PlotLine::draw (int dataSize, int startX, int startIndex, int pixelspace)
+void PlotLine::draw (QPixmap &buffer, Scaler &scaler, int dataSize, int startX, int startIndex, int pixelspace)
 { 
   switch (lineType)
   {
     case PlotLine::Histogram:
-      drawHistogram(dataSize, startX, startIndex, pixelspace);
+      drawHistogram(buffer, scaler, dataSize, startX, startIndex, pixelspace);
       break;
     case PlotLine::HistogramBar:
-      drawHistogramBar(dataSize, startX, startIndex, pixelspace);
+      drawHistogramBar(buffer, scaler, dataSize, startX, startIndex, pixelspace);
       break;
     case PlotLine::Dot:
-      drawDot(dataSize, startX, startIndex, pixelspace);
+      drawDot(buffer, scaler, dataSize, startX, startIndex, pixelspace);
       break;
     case PlotLine::Line:
     case PlotLine::Dash:
-      drawLine(dataSize, startX, startIndex, pixelspace);
+      drawLine(buffer, scaler, dataSize, startX, startIndex, pixelspace);
       break;
     case PlotLine::Horizontal:
-      drawHorizontalLine(startX);
+      drawHorizontalLine(buffer, scaler, startX);
       break;
     default:
       break;
   }
 }
 
-void PlotLine::drawLine (int dataSize, int startX, int startIndex, int pixelspace)
+void PlotLine::drawLine (QPixmap &buffer, Scaler &scaler, int dataSize, int startX, int startIndex, int pixelspace)
 {
   QPainter painter;
-  painter.begin(buffer);
+  painter.begin(&buffer);
 
   QPen pen;
   pen.setColor(getColor());
@@ -300,22 +298,22 @@ void PlotLine::drawLine (int dataSize, int startX, int startIndex, int pixelspac
   if (getScaleFlag())
   {  
     scale = new Scaler;
-    scale->set(scaler->getHeight(),
+    scale->set(scaler.getHeight(),
   	       getHigh(),
 	       getLow(),
-	       scaler->getLogScaleHigh(),
-	       scaler->getLogRange(),
-	       scaler->getLogFlag());
+	       scaler.getLogScaleHigh(),
+	       scaler.getLogRange(),
+	       scaler.getLogFlag());
   }
 
-  while ((x2 < buffer->width()) && (loop < (int) getSize()))
+  while ((x2 < buffer.width()) && (loop < (int) getSize()))
   {
     if (loop > -1)
     {
       if (getScaleFlag())
         y2 = scale->convertToY(getData(loop));
       else
-        y2 = scaler->convertToY(getData(loop));
+        y2 = scaler.convertToY(getData(loop));
 
       if (y != -1)
         painter.drawLine (x, y, x2, y2);
@@ -333,28 +331,28 @@ void PlotLine::drawLine (int dataSize, int startX, int startIndex, int pixelspac
     delete scale;
 }
 
-void PlotLine::drawHorizontalLine (int startX)
+void PlotLine::drawHorizontalLine (QPixmap &buffer, Scaler &scaler, int startX)
 {
   QPainter painter;
-  painter.begin(buffer);
+  painter.begin(&buffer);
 
   QPen pen;
   pen.setColor(getColor());
   painter.setPen(pen);
 
-  int y = scaler->convertToY(getData(getSize() - 1));
+  int y = scaler.convertToY(getData(getSize() - 1));
 
-  painter.drawLine (0, y, buffer->width(), y);
+  painter.drawLine (0, y, buffer.width(), y);
 
   painter.drawText(startX, y - 1, strip(getData(getSize() - 1)));
 
   painter.end();
 }
 
-void PlotLine::drawDot (int dataSize, int startX, int startIndex, int pixelspace)
+void PlotLine::drawDot (QPixmap &buffer, Scaler &scaler, int dataSize, int startX, int startIndex, int pixelspace)
 {
   QPainter painter;
-  painter.begin(buffer);
+  painter.begin(&buffer);
 
   QPen pen;
   pen.setColor(getColor());
@@ -367,15 +365,15 @@ void PlotLine::drawDot (int dataSize, int startX, int startIndex, int pixelspace
   if (getScaleFlag())
   {
     scale = new Scaler;
-    scale->set(scaler->getHeight(),
+    scale->set(scaler.getHeight(),
   	       getHigh(),
 	       getLow(),
-	       scaler->getLogScaleHigh(),
-	       scaler->getLogRange(),
-	       scaler->getLogFlag());
+	       scaler.getLogScaleHigh(),
+	       scaler.getLogRange(),
+	       scaler.getLogFlag());
   }
 
-  while ((x < buffer->width()) && (loop < (int) getSize()))
+  while ((x < buffer.width()) && (loop < (int) getSize()))
   {
     if (loop > -1)
     {
@@ -383,7 +381,7 @@ void PlotLine::drawDot (int dataSize, int startX, int startIndex, int pixelspace
       if (getScaleFlag())
         y = scale->convertToY(getData(loop));
       else
-        y = scaler->convertToY(getData(loop));
+        y = scaler.convertToY(getData(loop));
 
       painter.drawPoint(x, y);
     }
@@ -398,10 +396,10 @@ void PlotLine::drawDot (int dataSize, int startX, int startIndex, int pixelspace
     delete scale;
 }
 
-void PlotLine::drawHistogram (int dataSize, int startX, int startIndex, int pixelspace)
+void PlotLine::drawHistogram (QPixmap &buffer, Scaler &scaler, int dataSize, int startX, int startIndex, int pixelspace)
 {
   QPainter painter;
-  painter.begin(buffer);
+  painter.begin(&buffer);
   painter.setPen(getColor());
   painter.setBrush(getColor());
 
@@ -414,30 +412,30 @@ void PlotLine::drawHistogram (int dataSize, int startX, int startIndex, int pixe
   if (getScaleFlag())
   {
     scale = new Scaler;
-    scale->set(scaler->getHeight(),
+    scale->set(scaler.getHeight(),
   	       getHigh(),
 	       getLow(),
-	       scaler->getLogScaleHigh(),
-	       scaler->getLogRange(),
-	       scaler->getLogFlag());
+	       scaler.getLogScaleHigh(),
+	       scaler.getLogRange(),
+	       scaler.getLogFlag());
     zero = scale->convertToY(0);
   }
   else
-    zero = scaler->convertToY(0);
+    zero = scaler.convertToY(0);
 
   int x = -1;
   int x2 = startX;
   int y = -1;
   int y2 = -1;
 
-  while ((x < buffer->width()) && (loop < (int) getSize()))
+  while ((x < buffer.width()) && (loop < (int) getSize()))
   {
     if (loop > -1)
     {
       if (getScaleFlag())
         y2 = scale->convertToY(getData(loop));
       else
-        y2 = scaler->convertToY(getData(loop));
+        y2 = scaler.convertToY(getData(loop));
       pa.setPoint(0, x, zero);
       pa.setPoint(1, x, y);
       pa.setPoint(2, x2, y2);
@@ -460,10 +458,10 @@ void PlotLine::drawHistogram (int dataSize, int startX, int startIndex, int pixe
     delete scale;
 }
 
-void PlotLine::drawHistogramBar (int dataSize, int startX, int startIndex, int pixelspace)
+void PlotLine::drawHistogramBar (QPixmap &buffer, Scaler &scaler, int dataSize, int startX, int startIndex, int pixelspace)
 {
   QPainter painter;
-  painter.begin(buffer);
+  painter.begin(&buffer);
 
   QColor color(getColor());
 
@@ -473,20 +471,20 @@ void PlotLine::drawHistogramBar (int dataSize, int startX, int startIndex, int p
   if (getScaleFlag())
   {
     scale = new Scaler;
-    scale->set(scaler->getHeight(),
+    scale->set(scaler.getHeight(),
   	       getHigh(),
 	       getLow(),
-	       scaler->getLogScaleHigh(),
-	       scaler->getLogRange(),
-	       scaler->getLogFlag());
+	       scaler.getLogScaleHigh(),
+	       scaler.getLogRange(),
+	       scaler.getLogFlag());
     zero = scale->convertToY(0);
   }
   else
-    zero = scaler->convertToY(0);
+    zero = scaler.convertToY(0);
 
   int loop = getSize() - dataSize + startIndex;
 
-  while ((x < buffer->width()) && (loop < (int) getSize()))
+  while ((x < buffer.width()) && (loop < (int) getSize()))
   {
     if (loop > -1)
     {
@@ -494,7 +492,7 @@ void PlotLine::drawHistogramBar (int dataSize, int startX, int startIndex, int p
       if (getScaleFlag())
         y = scale->convertToY(getData(loop));
       else
-        y = scaler->convertToY(getData(loop));
+        y = scaler.convertToY(getData(loop));
 
       if (getColorFlag() == TRUE)
 	color = getColorBar(loop);
@@ -533,12 +531,6 @@ QString PlotLine::strip (double d)
   }
 
   return s;
-}
-
-void PlotLine::setPointers (Scaler *s, QPixmap *p)
-{
-  scaler = s;
-  buffer = p;
 }
 
 void PlotLine::getLineTypes (QStringList &l)

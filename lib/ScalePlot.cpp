@@ -33,7 +33,6 @@
 
 ScalePlot::ScalePlot (QWidget *w) : QWidget(w)
 {
-  buffer = new QPixmap;
   setBackgroundMode(NoBackground);
   scaleWidth = SCALE_WIDTH;
   backgroundColor.setNamedColor("black");
@@ -41,7 +40,6 @@ ScalePlot::ScalePlot (QWidget *w) : QWidget(w)
   mainFlag = FALSE;
   scaleToScreen = FALSE;
   logScale = FALSE;
-  scaler = 0;
   close = 0;
   activeFlag = FALSE;
 
@@ -55,7 +53,6 @@ ScalePlot::ScalePlot (QWidget *w) : QWidget(w)
 
 ScalePlot::~ScalePlot ()
 {
-  delete buffer;
 }
 
 void ScalePlot::clear ()
@@ -86,7 +83,7 @@ void ScalePlot::setLogScale (bool d)
 
 void ScalePlot::draw ()
 {
-  buffer->fill(backgroundColor);
+  buffer.fill(backgroundColor);
 
   if (activeFlag)
     drawScale();
@@ -101,12 +98,12 @@ void ScalePlot::drawRefresh ()
 
 void ScalePlot::paintEvent (QPaintEvent *)
 {
-  bitBlt(this, 0, 0, buffer);
+  bitBlt(this, 0, 0, &buffer);
 }
 
 void ScalePlot::resizeEvent (QResizeEvent *event)
 {
-  buffer->resize(event->size());
+  buffer.resize(event->size());
   draw();
 }
 
@@ -136,14 +133,14 @@ void ScalePlot::setPlotFont (QFont &d)
 void ScalePlot::drawScale ()
 {
   QPainter painter;
-  painter.begin(buffer);
+  painter.begin(&buffer);
   painter.setFont(plotFont);
   painter.setPen(QPen(borderColor, 1, QPen::SolidLine));
 
-  painter.fillRect(0, 0, buffer->width(), buffer->height(), backgroundColor);
+  painter.fillRect(0, 0, buffer.width(), buffer.height(), backgroundColor);
   
   QMemArray<double> scaleArray;
-  scaler->getScaleArray(scaleArray);
+  scaler.getScaleArray(scaleArray);
   
   QFontMetrics fm(plotFont);
 
@@ -151,7 +148,7 @@ void ScalePlot::drawScale ()
   int loop;
   for (loop = 0; loop < (int) scaleArray.size(); loop++)
   {
-    int y = scaler->convertToY(scaleArray[loop]);
+    int y = scaler.convertToY(scaleArray[loop]);
     painter.drawLine (x, y, x + 4, y);
 
     // draw the text
@@ -198,12 +195,12 @@ void ScalePlot::drawScale ()
     painter.drawText(x + 7, y + (fm.height() / 2), s);
   }
 
-  painter.drawLine (x, 0, x, buffer->height());
+  painter.drawLine (x, 0, x, buffer.height());
   
   // draw the last value pointer on the scale of main plot
   if (mainFlag)
   {
-    int y = scaler->convertToY(close);
+    int y = scaler.convertToY(close);
     
     QPointArray array;
     array.setPoints(3, x + 2, y,
@@ -249,7 +246,7 @@ void ScalePlot::slotLogScaleChanged (bool d)
   draw();
 }
 
-void ScalePlot::setScaler (Scaler *d)
+void ScalePlot::setScaler (Scaler &d)
 {
   scaler = d;
 }

@@ -32,7 +32,7 @@ class Swing : public ChartPlugin
   public:
     Swing ();
     virtual ~Swing ();
-    void drawChart (int startX, int startIndex, int pixelspace);
+    void drawChart (QPixmap &, Scaler &, int startX, int startIndex, int pixelspace);
     void prefDialog (QWidget *);
     void loadSettings ();
     void saveSettings ();

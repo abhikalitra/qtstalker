@@ -37,7 +37,7 @@ class VerticalLine : public COPlugin
   public:
     VerticalLine ();
     ~VerticalLine ();
-    void draw (int, int, int);
+    void draw (QPixmap &, Scaler &, int, int, int);
     void newObject (QString &, QString &);
     void addObject (Setting &);
     void saveObjects (QString &);
@@ -56,7 +56,7 @@ class VerticalLine : public COPlugin
     void moveObject ();
     void removeObject ();
     COPlugin::Status pointerClick (QPoint &, BarDate &, double);
-    void pointerMoving (QPoint &, BarDate &, double y);
+    void pointerMoving (QPixmap &, QPoint &, BarDate &, double y);
     
   protected:
     QDict<VerticalLineObject> objects;

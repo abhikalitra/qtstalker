@@ -38,10 +38,10 @@ Swing::~Swing ()
 {
 }
 
-void Swing::drawChart (int startX, int startIndex, int pixelspace)
+void Swing::drawChart (QPixmap &buffer, Scaler &scaler, int startX, int startIndex, int pixelspace)
 {
   QPainter painter;
-  painter.begin(buffer);
+  painter.begin(&buffer);
   painter.setPen(neutralColor);
 
   int status = 0;
@@ -56,7 +56,7 @@ void Swing::drawChart (int startX, int startIndex, int pixelspace)
   loop++;
   x = x + pixelspace;
 
-  while ((x < buffer->width()) && (loop < (int) data->count()))
+  while ((x < buffer.width()) && (loop < (int) data->count()))
   {
     switch (status)
     {
@@ -64,8 +64,8 @@ void Swing::drawChart (int startX, int startIndex, int pixelspace)
         if (data->getHigh(loop) < data->getHigh(loop - 1) && data->getLow(loop) < data->getLow(loop - 1))
 	{
 	  painter.setPen(upColor);
-          h = scaler->convertToY(high);
-          l = scaler->convertToY(low);
+          h = scaler.convertToY(high);
+          l = scaler.convertToY(low);
           painter.drawLine (x, h, x, l);
 
           painter.drawLine (oldx, l, x, l);
@@ -84,8 +84,8 @@ void Swing::drawChart (int startX, int startIndex, int pixelspace)
         if (data->getHigh(loop) > data->getHigh(loop - 1) && data->getLow(loop) > data->getLow(loop - 1))
 	{
 	  painter.setPen(downColor);
-          h = scaler->convertToY(high);
-          l = scaler->convertToY(low);
+          h = scaler.convertToY(high);
+          l = scaler.convertToY(low);
           painter.drawLine (x, h, x, l);
 
           painter.drawLine (oldx, h, x, h);
@@ -130,15 +130,15 @@ void Swing::drawChart (int startX, int startIndex, int pixelspace)
   {
     case 1:
       painter.setPen(upColor);
-      h = scaler->convertToY(high);
-      l = scaler->convertToY(low);
+      h = scaler.convertToY(high);
+      l = scaler.convertToY(low);
       painter.drawLine (x, h, x, l);
       painter.drawLine (oldx, l, x, l);
         break;
     case -1:
       painter.setPen(downColor);
-      h = scaler->convertToY(high);
-      l = scaler->convertToY(low);
+      h = scaler.convertToY(high);
+      l = scaler.convertToY(low);
       painter.drawLine (x, h, x, l);
       painter.drawLine (oldx, h, x, h);
       break;

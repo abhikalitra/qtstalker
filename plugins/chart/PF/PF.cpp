@@ -38,13 +38,13 @@ PF::~PF ()
 {
 }
 
-void PF::drawChart (int startX, int startIndex, int pixelspace)
+void PF::drawChart (QPixmap &buffer, Scaler &scaler, int startX, int startIndex, int pixelspace)
 {
   QMemArray<double> scaleArray;
-  scaler->getScaleArray(scaleArray);
+  scaler.getScaleArray(scaleArray);
   
   QPainter painter;
-  painter.begin(buffer);
+  painter.begin(&buffer);
 
   int x = startX;
   int x2 = startX;
@@ -70,7 +70,7 @@ void PF::drawChart (int startX, int startIndex, int pixelspace)
   loop++;
   x2 = x2 + pixelspace;
 
-  while ((x2 < buffer->width()) && (loop < (int) data->count()))
+  while ((x2 < buffer.width()) && (loop < (int) data->count()))
   {
     double h = data->getHigh(loop);
     double l = data->getLow(loop);
@@ -86,14 +86,14 @@ void PF::drawChart (int startX, int startIndex, int pixelspace)
       {
         if (h >= (pl + ((PAFReversal + 1) * size)))
         {
-	  int y = scaler->convertToY(ph);
-	  int y2= scaler->convertToY(pl);
+	  int y = scaler.convertToY(ph);
+	  int y2= scaler.convertToY(pl);
           painter.fillRect(x, y, x2 - x + pixelspace, y2 - y, downColor);
 
 	  double val = ph - size;
 	  while (val > pl)
 	  {
-	    y = scaler->convertToY(val);
+	    y = scaler.convertToY(val);
             painter.drawLine (x, y, x2 + pixelspace, y);
             val = val - size;
 	  }
@@ -118,14 +118,14 @@ void PF::drawChart (int startX, int startIndex, int pixelspace)
       {
         if (l <= (ph - ((PAFReversal + 1) * size)))
         {
-	  int y = scaler->convertToY(ph);
-	  int y2= scaler->convertToY(pl);
+	  int y = scaler.convertToY(ph);
+	  int y2= scaler.convertToY(pl);
           painter.fillRect(x, y, x2 - x + pixelspace, y2 - y, upColor);
 
 	  double val = ph - size;
 	  while (val > pl)
 	  {
-	    y = scaler->convertToY(val);
+	    y = scaler.convertToY(val);
             painter.drawLine (x, y, x2 + pixelspace, y);
             val = val - size;
 	  }
@@ -144,8 +144,8 @@ void PF::drawChart (int startX, int startIndex, int pixelspace)
     loop++;
   }
 
-  int y = scaler->convertToY(ph);
-  int y2= scaler->convertToY(pl);
+  int y = scaler.convertToY(ph);
+  int y2= scaler.convertToY(pl);
   if (! symbol)
     painter.fillRect(x, y, x2 - x + pixelspace, y2 - y, downColor);
   else
@@ -153,7 +153,7 @@ void PF::drawChart (int startX, int startIndex, int pixelspace)
   double val = ph - size;
   while (val > pl)
   {
-    y = scaler->convertToY(val);
+    y = scaler.convertToY(val);
     painter.drawLine (x, y, x2 + pixelspace, y);
     val = val - size;
   }

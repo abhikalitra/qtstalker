@@ -37,22 +37,24 @@ Line::Line ()
   indicatorFlag = FALSE;
   defaultFlag = TRUE;
   defaultFormula = "plot=1|lineType=4|period=0|plugin=REF|input=3|color=#ff0000|label=REF|scale=0";
-  loadSettings();  
   helpFile = "linechartplugin.html";
+  line = 0;
+  loadSettings();  
 }
 
 Line::~Line ()
 {
+  if (line)
+    delete line;
 }
 
-void Line::drawChart (int startX, int startIndex, int pixelspace)
+void Line::drawChart (QPixmap &buffer, Scaler &scaler, int startX, int startIndex, int pixelspace)
 {
-  PlotLine *line = getBoolLine();
   if (! line)
     return;
 
   QPainter painter;
-  painter.begin(buffer);
+  painter.begin(&buffer);
 
   int x = -1;
   int x2 = startX;
@@ -63,10 +65,10 @@ void Line::drawChart (int startX, int startIndex, int pixelspace)
 
   painter.setPen(color);
 
-  while ((x < buffer->width()) && (loop < (int) data->count()))
+  while ((x < buffer.width()) && (loop < (int) data->count()))
   {
     if (lineLoop > -1 && lineLoop < line->getSize())
-      y2 = scaler->convertToY(line->getData(lineLoop));
+      y2 = scaler.convertToY(line->getData(lineLoop));
   
     if (y != -1)
       painter.drawLine (x, y, x2, y2);
@@ -79,7 +81,6 @@ void Line::drawChart (int startX, int startIndex, int pixelspace)
   }
 
   painter.end();
-  delete line;
 }
 
 void Line::prefDialog (QWidget *)
@@ -130,6 +131,8 @@ void Line::prefDialog (QWidget *)
     else
       formulaList = defaultFormula;
         
+    getBoolLine();
+    
     saveFlag = TRUE;
     saveSettings();
     emit draw();
@@ -176,9 +179,14 @@ void Line::saveSettings ()
   settings.endGroup();
 }
 
-PlotLine * Line::getBoolLine ()
+void Line::getBoolLine ()
 {
-  PlotLine *line = 0;
+  if (line)
+  {
+    delete line;
+    line = 0;
+  }
+
   Config config;
   
   // open the CUS plugin
@@ -187,7 +195,7 @@ PlotLine * Line::getBoolLine ()
   if (! plug)
   {
     config.closePlugin(plugin);
-    return line;
+    return;
   }
 
   // load the CUS plugin and calculate
@@ -198,20 +206,18 @@ PlotLine * Line::getBoolLine ()
   plug->setIndicatorInput(data);
   plug->calculate();
   Indicator *i = plug->getIndicator();
-  line = i->getLine(0);
-  if (! line)
+  PlotLine *tline = i->getLine(0);
+  if (! tline)
   {
     qDebug("Line::getBoolLine: no PlotLine returned");
     config.closePlugin(plugin);
-    return 0;
+    return;
   }
     
-  PlotLine *nline = new PlotLine;
-  nline->copy(line);
+  line = new PlotLine;
+  line->copy(tline);
   
   config.closePlugin(plugin);
-  
-  return nline;
 }
 
 void Line::savePixelspace ()
@@ -221,6 +227,18 @@ void Line::savePixelspace ()
   settings.writeEntry("/pixelspace", currentPixelspace);
   settings.endGroup();
 }
+
+void Line::setChartInput (BarData *d)
+{
+  data = d;
+  
+  if (data)
+  {
+    if (data->count())
+      getBoolLine();
+  }
+}
+
 
 //*************************************************
 //*************************************************

@@ -36,32 +36,35 @@ Bars::Bars ()
   startX = 2;
   indicatorFlag = FALSE;
   helpFile = "barchartplugin.html";
+  paintBars = 0;
 
   loadSettings();  
 }
 
 Bars::~Bars ()
 {
+  if (paintBars)
+    delete paintBars;
 }
 
-void Bars::drawChart (int startX, int startIndex, int pixelspace)
+void Bars::drawChart (QPixmap &buffer, Scaler &scaler, int startX, int startIndex, int pixelspace)
 {
   if (! style.compare("Bar"))
-    drawBars(startX, startIndex, pixelspace);
+    drawBars(buffer, scaler, startX, startIndex, pixelspace);
   else
-    drawPaintBars(startX, startIndex, pixelspace);
+    drawPaintBars(buffer, scaler, startX, startIndex, pixelspace);
 }
 
-void Bars::drawBars (int startX, int startIndex, int pixelspace)
+void Bars::drawBars (QPixmap &buffer, Scaler &scaler, int startX, int startIndex, int pixelspace)
 {
   QPainter painter;
-  painter.begin(buffer);
+  painter.begin(&buffer);
 
   int x = startX;
   int loop = startIndex;
   int y;
   
-  while ((x < buffer->width()) && (loop < (int) data->count()))
+  while ((x < buffer.width()) && (loop < (int) data->count()))
   {
     if (loop > 0)
     {  
@@ -81,15 +84,15 @@ void Bars::drawBars (int startX, int startIndex, int pixelspace)
     double t = data->getOpen(loop);
     if (t)
     {
-      y = scaler->convertToY(t);
+      y = scaler.convertToY(t);
       painter.drawLine (x - 2, y, x, y);
     }
 
-    y = scaler->convertToY(data->getClose(loop));
+    y = scaler.convertToY(data->getClose(loop));
     painter.drawLine (x + 2, y, x, y);
 
-    int h = scaler->convertToY(data->getHigh(loop));
-    int l = scaler->convertToY(data->getLow(loop));
+    int h = scaler.convertToY(data->getHigh(loop));
+    int l = scaler.convertToY(data->getLow(loop));
     painter.drawLine (x, h, x, l);
 
     x = x + pixelspace;
@@ -99,24 +102,23 @@ void Bars::drawBars (int startX, int startIndex, int pixelspace)
   painter.end();
 }
 
-void Bars::drawPaintBars (int startX, int startIndex, int pixelspace)
+void Bars::drawPaintBars (QPixmap &buffer, Scaler &scaler, int startX, int startIndex, int pixelspace)
 {
-  PlotLine *line = getBoolLine();
-  if (! line)
+  if (! paintBars)
     return;
 
   QPainter painter;
-  painter.begin(buffer);
+  painter.begin(&buffer);
 
   int x = startX;
   int loop = startIndex;
-  int lineLoop = line->getSize() - data->count() + loop;
+  int lineLoop = paintBars->getSize() - data->count() + loop;
   
-  while ((x < buffer->width()) && (loop < (int) data->count()))
+  while ((x < buffer.width()) && (loop < (int) data->count()))
   {
-    if (lineLoop > -1 && lineLoop < line->getSize())
+    if (lineLoop > -1 && lineLoop < paintBars->getSize())
     {
-      if (line->getData(lineLoop))
+      if (paintBars->getData(lineLoop))
         painter.setPen(paintUpColor);
       else
         painter.setPen(paintDownColor);
@@ -127,15 +129,15 @@ void Bars::drawPaintBars (int startX, int startIndex, int pixelspace)
     int y;
     if (data->getOpen(loop) != 0)
     {
-      y = scaler->convertToY(data->getOpen(loop));
+      y = scaler.convertToY(data->getOpen(loop));
       painter.drawLine (x - 2, y, x, y);
     }
 
-    y = scaler->convertToY(data->getClose(loop));
+    y = scaler.convertToY(data->getClose(loop));
     painter.drawLine (x + 2, y, x, y);
 
-    int h = scaler->convertToY(data->getHigh(loop));
-    int l = scaler->convertToY(data->getLow(loop));
+    int h = scaler.convertToY(data->getHigh(loop));
+    int l = scaler.convertToY(data->getLow(loop));
     painter.drawLine (x, h, x, l);
 
     x = x + pixelspace;
@@ -144,8 +146,6 @@ void Bars::drawPaintBars (int startX, int startIndex, int pixelspace)
   }
 
   painter.end();
-  
-  delete line;
 }
 
 void Bars::prefDialog (QWidget *)
@@ -195,7 +195,10 @@ void Bars::prefDialog (QWidget *)
       delete dialog;
       return;
     }
-        
+
+    if (! style.compare("Paint Bar"))
+      getBoolLine();
+    
     saveFlag = TRUE;
     saveSettings();
     emit draw();
@@ -257,12 +260,17 @@ void Bars::saveSettings ()
   settings.endGroup();
 }
 
-PlotLine * Bars::getBoolLine ()
+void Bars::getBoolLine ()
 {
+  if (paintBars)
+  {
+    delete paintBars;
+    paintBars = 0;
+  }
+  
   if (! formulaList.count())
-    return 0;
+    return;
     
-  PlotLine *line = 0;
   Config config;
   
   // open the CUS plugin
@@ -271,7 +279,7 @@ PlotLine * Bars::getBoolLine ()
   if (! plug)
   {
     config.closePlugin(plugin);
-    return line;
+    return;
   }
 
   // load the CUS plugin and calculate
@@ -281,20 +289,18 @@ PlotLine * Bars::getBoolLine ()
   plug->setIndicatorInput(data);
   plug->calculate();
   Indicator *i = plug->getIndicator();
-  line = i->getLine(0);
-  if (! line)
+  PlotLine *tline = i->getLine(0);
+  if (! tline)
   {
     qDebug("Bars::getBoolLine: no PlotLine returned");
     config.closePlugin(plugin);
-    return 0;
+    return;
   }
     
-  PlotLine *nline = new PlotLine;
-  nline->copy(line);
+  paintBars = new PlotLine;
+  paintBars->copy(tline);
   
   config.closePlugin(plugin);
-  
-  return nline;
 }
 
 void Bars::savePixelspace ()
@@ -303,6 +309,17 @@ void Bars::savePixelspace ()
   settings.beginGroup("/Qtstalker/Bar plugin");
   settings.writeEntry("/pixelspace", currentPixelspace);
   settings.endGroup();
+}
+
+void Bars::setChartInput (BarData *d)
+{
+  data = d;
+  
+  if (data)
+  {
+    if (data->count() && ! style.compare("Paint Bar"))
+      getBoolLine();
+  }
 }
 
 //*************************************************

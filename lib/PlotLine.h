@@ -82,18 +82,15 @@ class PlotLine : public QObject
     void prependColorBar (QColor &);
     QColor getColorBar (int);
 
-    void draw (int, int, int, int);
-    void drawLine (int, int, int, int);
-    void drawHorizontalLine (int);
-    void drawHistogram (int, int, int, int);
-    void drawHistogramBar (int, int, int, int);
-    void drawDot (int, int, int, int);
+    void draw (QPixmap &, Scaler &, int, int, int, int);
+    void drawLine (QPixmap &, Scaler &, int, int, int, int);
+    void drawHorizontalLine (QPixmap &, Scaler &, int);
+    void drawHistogram (QPixmap &, Scaler &, int, int, int, int);
+    void drawHistogramBar (QPixmap &, Scaler &, int, int, int, int);
+    void drawDot (QPixmap &, Scaler &, int, int, int, int);
     QString strip (double);
-    void setPointers (Scaler *, QPixmap *);
     
   private:
-    Scaler *scaler;
-    QPixmap *buffer;
     QPtrList<Val> data;
     QPtrList<QColor> colorBars;
     QColor color;

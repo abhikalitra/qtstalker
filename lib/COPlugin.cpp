@@ -24,8 +24,6 @@
 COPlugin::COPlugin ()
 {
   data = 0;
-  scaler = 0;
-  buffer = 0;
   menu = new QPopupMenu();
 }
 
@@ -34,7 +32,7 @@ COPlugin::~COPlugin ()
   delete menu;
 }
 
-void COPlugin::draw (int, int, int)
+void COPlugin::draw (QPixmap &, Scaler &, int, int, int)
 {
 }
 
@@ -51,16 +49,6 @@ void COPlugin::setData (BarData *d)
   data = d;
 }
 
-void COPlugin::setScaler (Scaler *d)
-{
-  scaler = d;
-}
-
-void COPlugin::setPixmap (QPixmap *d)
-{
-  buffer = d;
-}
-
 void COPlugin::newObject (QString &, QString &)
 {
 }
@@ -74,7 +62,7 @@ COPlugin::Status COPlugin::pointerClick (QPoint &, BarDate &, double)
   return COPlugin::None;
 }
 
-void COPlugin::pointerMoving (QPoint &, BarDate &, double)
+void COPlugin::pointerMoving (QPixmap &, QPoint &, BarDate &, double)
 {
 }
 

@@ -44,8 +44,6 @@
 
 IndicatorPlot::IndicatorPlot (QWidget *w) : QWidget(w)
 {
-  buffer = new QPixmap;
-  scaler = 0;
   chartPlugin = 0;
   coPlugin = 0;
   setBackgroundMode(NoBackground);
@@ -90,7 +88,6 @@ IndicatorPlot::IndicatorPlot (QWidget *w) : QWidget(w)
 
 IndicatorPlot::~IndicatorPlot ()
 {
-  delete buffer;
   delete chartMenu;
   config.closePlugins();
 }
@@ -163,7 +160,7 @@ int IndicatorPlot::setChartType (QString &d)
 
 void IndicatorPlot::setChartInput ()
 {
-  chartPlugin->setChartInput(data, scaler, buffer);
+  chartPlugin->setChartInput(data);
 }
 
 void IndicatorPlot::setMainFlag (bool d)
@@ -230,7 +227,7 @@ void IndicatorPlot::setInterval (BarData::BarCompression d)
 
 void IndicatorPlot::draw ()
 {
-  buffer->fill(backgroundColor);
+  buffer.fill(backgroundColor);
 
   if (data)
   {
@@ -269,7 +266,7 @@ void IndicatorPlot::draw ()
       }
       else
       {
-        chartPlugin->drawChart(startX, startIndex, pixelspace);
+        chartPlugin->drawChart(buffer, scaler, startX, startIndex, pixelspace);
 	
         if (! chartPlugin->getIndicatorFlag())
         {
@@ -313,19 +310,19 @@ void IndicatorPlot::drawLines ()
     for (loop = 0; loop < i->getLines(); loop++)
     {
       currentLine = i->getLine(loop);
-      currentLine->draw(data->count(), startX, startIndex, pixelspace);
+      currentLine->draw(buffer, scaler, data->count(), startX, startIndex, pixelspace);
     }
   }
 }
 
 void IndicatorPlot::paintEvent (QPaintEvent *)
 {
-  bitBlt(this, 0, 0, buffer);
+  bitBlt(this, 0, 0, &buffer);
 }
 
 void IndicatorPlot::resizeEvent (QResizeEvent *event)
 {
-  buffer->resize(event->size());
+  buffer.resize(event->size());
   draw();
 }
 
@@ -451,7 +448,7 @@ void IndicatorPlot::mouseMoveEvent (QMouseEvent *event)
     {
       getXY(event->x(), event->y());
       QPoint p(event->x(), event->y());
-      coPlugin->pointerMoving(p, x1, y1);
+      coPlugin->pointerMoving(buffer, p, x1, y1);
       return;
     }
   }
@@ -605,7 +602,7 @@ void IndicatorPlot::drawXGrid ()
     return;
 
   QPainter painter;
-  painter.begin(buffer);
+  painter.begin(&buffer);
   painter.setPen(QPen(gridColor, 1, QPen::DotLine));
 
   int loop;
@@ -614,7 +611,7 @@ void IndicatorPlot::drawXGrid ()
     if (xGrid[loop] >= startIndex)
     {
       int x = startX + (xGrid[loop] * pixelspace) - (startIndex * pixelspace);
-      painter.drawLine (x, 0, x, buffer->height());
+      painter.drawLine (x, 0, x, buffer.height());
     }
   }
 
@@ -688,14 +685,6 @@ void IndicatorPlot::createXGrid ()
 void IndicatorPlot::addIndicator (QString &d, Indicator *i)
 {
   indicators.replace(d, i);
-  
-  // dont forget to update plotlines with this plots drawing pointers
-  int loop;
-  for (loop = 0; loop < i->getLines(); loop++)
-  {
-    PlotLine *pl = i->getLine(loop);
-    pl->setPointers(scaler, buffer);
-  }
 }
 
 Indicator * IndicatorPlot::getIndicator (QString &d)
@@ -714,17 +703,17 @@ void IndicatorPlot::drawYGrid ()
     return;
 
   QPainter painter;
-  painter.begin(buffer);
+  painter.begin(&buffer);
   painter.setPen(QPen(gridColor, 1, QPen::DotLine));
   
   QMemArray<double> scaleArray;
-  scaler->getScaleArray(scaleArray);
+  scaler.getScaleArray(scaleArray);
 
   int loop;
   for (loop = 0; loop < (int) scaleArray.size(); loop++)
   {
-    int y = scaler->convertToY(scaleArray[loop]);
-    painter.drawLine (startX, y, buffer->width(), y);
+    int y = scaler.convertToY(scaleArray[loop]);
+    painter.drawLine (startX, y, buffer.width(), y);
   }
 
   painter.end();
@@ -733,7 +722,7 @@ void IndicatorPlot::drawYGrid ()
 void IndicatorPlot::drawInfo ()
 {
   QPainter painter;
-  painter.begin(buffer);
+  painter.begin(&buffer);
   painter.setPen(borderColor);
   painter.setFont(plotFont);
 
@@ -843,14 +832,14 @@ void IndicatorPlot::drawCrossHair ()
   if (! crossHairFlag)
     return;
     
-  int y = scaler->convertToY(crossHairY);
+  int y = scaler.convertToY(crossHairY);
   int x = startX + (data->getX(crossHairX) * pixelspace) - (startIndex * pixelspace);
   
   QPainter painter;
-  painter.begin(buffer);
+  painter.begin(&buffer);
   painter.setPen(QPen(borderColor, 1, QPen::DotLine));
-  painter.drawLine (0, y, buffer->width(), y);
-  painter.drawLine (x, 0, x, buffer->height());
+  painter.drawLine (0, y, buffer.width(), y);
+  painter.drawLine (x, 0, x, buffer.height());
   painter.end();
 }
 
@@ -858,7 +847,7 @@ void IndicatorPlot::getXY (int x, int y)
 {
   int i = convertXToDataIndex(x);
   x1 = data->getDate(i);
-  y1 = scaler->convertToVal(y);
+  y1 = scaler.convertToVal(y);
 }
 
 int IndicatorPlot::convertXToDataIndex (int x)
@@ -879,7 +868,7 @@ void IndicatorPlot::updateStatusBar (int x, int y)
   data->getDate(i).getDateTimeString(TRUE, s);
   s.append(" ");
   QString str;
-  strip(scaler->convertToVal(y), 4, str);
+  strip(scaler.convertToVal(y), 4, str);
   s.append(str);
   emit statusMessage(s);
 }
@@ -982,7 +971,7 @@ void IndicatorPlot::setScale ()
     logRange = logScaleHigh - logScaleLow;
   }
 
-  scaler->set(buffer->height(), scaleHigh, scaleLow, logScaleHigh, logRange, logScale);
+  scaler.set(buffer.height(), scaleHigh, scaleLow, logScaleHigh, logRange, logScale);
 }
 
 int IndicatorPlot::getPixelspace ()
@@ -1054,20 +1043,18 @@ void IndicatorPlot::printChart ()
     int prmw = prm.width() - leftMargin;
     int prmh = prm.height() - topMargin;
 
-    QPixmap &pix = *buffer;
-
-    if ((pix.width() > prmw) || (pix.height() > prmh))
+    if ((buffer.width() > prmw) || (buffer.height() > prmh))
     {
-      QImage image = pix.convertToImage();
+      QImage image = buffer.convertToImage();
       image = image.smoothScale(prmw, prmh, QImage::ScaleMin);
-      pix.convertFromImage(image);
+      buffer.convertFromImage(image);
     }
 
     emit statusMessage(tr("Printing..."));
 
     QPainter painter;
     painter.begin(&printer);
-    painter.drawPixmap(leftMargin/2, topMargin/2, pix);
+    painter.drawPixmap(leftMargin/2, topMargin/2, buffer);
     painter.end();
     emit statusMessage(tr("Printing complete."));
   }
@@ -1222,8 +1209,6 @@ void IndicatorPlot::slotNewChartObject (int id)
       return;
       
     coPlugin->setData(data);
-    coPlugin->setScaler(scaler);
-    coPlugin->setPixmap(buffer);
     QObject::connect(coPlugin, SIGNAL(signalDraw()), this, SLOT(draw()));
     QObject::connect(coPlugin, SIGNAL(signalRefresh()), this, SLOT(drawRefresh()));
     QObject::connect(coPlugin, SIGNAL(message(QString)), this, SLOT(slotMessage(QString)));
@@ -1306,8 +1291,6 @@ void IndicatorPlot::addChartObject (Setting &set)
       return;
       
     plug->setData(data);
-    plug->setScaler(scaler);
-    plug->setPixmap(buffer);
     QObject::connect(plug, SIGNAL(signalDraw()), this, SLOT(draw()));
     QObject::connect(plug, SIGNAL(signalRefresh()), this, SLOT(drawRefresh()));
     QObject::connect(plug, SIGNAL(message(QString)), this, SLOT(slotMessage(QString)));
@@ -1323,7 +1306,7 @@ void IndicatorPlot::drawObjects ()
   for (; it.current(); ++it)
   {
     COPlugin *plug = it.current();
-    plug->draw(startIndex, pixelspace, startX);
+    plug->draw(buffer, scaler, startIndex, pixelspace, startX);
   }
 }
 
@@ -1417,9 +1400,14 @@ void IndicatorPlot::setCrosshairsFlag (bool d)
   crosshairs = d;
 }
 
-void IndicatorPlot::setScaler (Scaler *d)
+void IndicatorPlot::setScaler (Scaler &d)
 {
   scaler = d;
+}
+
+Scaler & IndicatorPlot::getScaler ()
+{
+  return scaler;
 }
 
 

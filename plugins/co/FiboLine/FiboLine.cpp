@@ -60,10 +60,10 @@ FiboLine::~FiboLine ()
 {
 }
 
-void FiboLine::draw (int startIndex, int pixelspace, int startX)
+void FiboLine::draw (QPixmap &buffer, Scaler &scaler, int startIndex, int pixelspace, int startX)
 {
   QPainter painter;
-  painter.begin(buffer);
+  painter.begin(&buffer);
   painter.setFont(font);
   
   QDictIterator<FiboLineObject> it(objects);
@@ -111,7 +111,7 @@ void FiboLine::draw (int startIndex, int pixelspace, int startX)
       if (co->getLine(loop) != 0)
       {
         double r = getY(co->getLine(loop), co->getHigh(), co->getLow());
-        int y = scaler->convertToY(r);
+        int y = scaler.convertToY(r);
         painter.drawLine (x, y, x2, y);
         painter.drawText(x, y - 1, QString::number(co->getLine(loop) * 100) + "% - " + QString::number(r), -1);
 	
@@ -121,7 +121,7 @@ void FiboLine::draw (int startIndex, int pixelspace, int startX)
     }
   
     // draw the low line
-    int y = scaler->convertToY(co->getLow());
+    int y = scaler.convertToY(co->getLow());
     painter.drawLine (x, y, x2, y);
 //    if (co->getStatus() == FiboLineObject::Selected)
       painter.drawText(x, y - 1, "0% - " + QString::number(co->getLow()), -1);
@@ -131,7 +131,7 @@ void FiboLine::draw (int startIndex, int pixelspace, int startX)
     co->setSelectionArea(new QRegion(array));
     
     // draw the high line
-    int y2 = scaler->convertToY(co->getHigh());
+    int y2 = scaler.convertToY(co->getHigh());
     painter.drawLine (x, y2, x2, y2);
 //    if (co->getStatus() == FiboLineObject::Selected)
       painter.drawText(x, y2 - 1, "100% - " + QString::number(co->getHigh()), -1);
@@ -145,7 +145,7 @@ void FiboLine::draw (int startIndex, int pixelspace, int startX)
       co->clearGrabHandles();
     
       //bottom left corner
-      y = scaler->convertToY(low);
+      y = scaler.convertToY(low);
       co->setGrabHandle(new QRegion(x,
              			    y - (HANDLE_WIDTH / 2),
 				    HANDLE_WIDTH,
@@ -155,7 +155,7 @@ void FiboLine::draw (int startIndex, int pixelspace, int startX)
     
     
       //top right corner
-      y2 = scaler->convertToY(high);
+      y2 = scaler.convertToY(high);
       co->setGrabHandle(new QRegion(x2,
              			    y2 - (HANDLE_WIDTH / 2),
 				    HANDLE_WIDTH,
@@ -362,11 +362,11 @@ COPlugin::Status FiboLine::pointerClick (QPoint &point, BarDate &x, double y)
   return status;    
 }
 
-void FiboLine::pointerMoving (QPoint &point, BarDate &x, double y)
+void FiboLine::pointerMoving (QPixmap &buffer, QPoint &point, BarDate &x, double y)
 {
   if (status == ClickWait2)
   {
-    drawMovingPointer(point);
+    drawMovingPointer(buffer, point);
     return;
   }
   
@@ -415,7 +415,7 @@ void FiboLine::pointerMoving (QPoint &point, BarDate &x, double y)
   }
 }
 
-void FiboLine::drawMovingPointer (QPoint &point)
+void FiboLine::drawMovingPointer (QPixmap &buffer, QPoint &point)
 {
   if (point.x() < mpx)
     return;
@@ -424,7 +424,7 @@ void FiboLine::drawMovingPointer (QPoint &point)
     return;
   
   QPainter painter;
-  painter.begin(buffer);
+  painter.begin(&buffer);
   painter.setRasterOp(Qt::XorROP);
   painter.setPen(defaultColor);
       
@@ -633,6 +633,7 @@ void FiboLine::showMenu ()
 
 void FiboLine::getNameList (QStringList &d)
 {
+  d.clear();
   QDictIterator<FiboLineObject> it(objects);
   for (; it.current(); ++it)
     d.append(it.current()->getName());

@@ -24,7 +24,6 @@
 
 Plot::Plot (QWidget *w) : QWidget(w)
 {
-  scaler = new Scaler;
   dateFlag = FALSE;
   tabFlag = TRUE;
   
@@ -33,22 +32,19 @@ Plot::Plot (QWidget *w) : QWidget(w)
   QHBoxLayout *hbox = new QHBoxLayout(vbox);
 
   indicatorPlot = new IndicatorPlot(this);
-  indicatorPlot->setScaler(scaler);
   hbox->addWidget(indicatorPlot, 1, 0);
   
   scalePlot = new ScalePlot(this);
-  scalePlot->setScaler(scaler);
   hbox->addWidget(scalePlot);
   
   datePlot = new DatePlot(this);
   vbox->addWidget(datePlot);
   
-  connect(indicatorPlot, SIGNAL(signalDraw()), scalePlot, SLOT(draw()));
+  connect(indicatorPlot, SIGNAL(signalDraw()), this, SLOT(slotUpdateScalePlot()));
 }
 
 Plot::~Plot ()
 {
-  delete scaler;
 }
 
 void Plot::clear ()
@@ -316,5 +312,12 @@ DatePlot * Plot::getDatePlot ()
 {
   return datePlot;
 }
+
+void Plot::slotUpdateScalePlot ()
+{
+  scalePlot->setScaler(indicatorPlot->getScaler());
+  scalePlot->draw();
+}
+
 
 

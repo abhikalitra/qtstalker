@@ -33,18 +33,20 @@ class Line : public ChartPlugin
   public:
     Line ();
     virtual ~Line ();
-    void drawChart (int startX, int startIndex, int pixelspace);
+    void drawChart (QPixmap &, Scaler &, int startX, int startIndex, int pixelspace);
     void prefDialog (QWidget *);
     void loadSettings ();
     void saveSettings ();
-    PlotLine * getBoolLine ();
+    void getBoolLine ();
     void savePixelspace ();
+    void setChartInput (BarData *);
   
   protected:
     QColor color;
     QStringList formulaList;
     bool defaultFlag;
     QStringList defaultFormula;
+    PlotLine *line;
 };
 
 extern "C"

@@ -49,10 +49,10 @@ BuyArrow::~BuyArrow ()
 {
 }
 
-void BuyArrow::draw (int startIndex, int pixelspace, int startX)
+void BuyArrow::draw (QPixmap &buffer, Scaler &scaler, int startIndex, int pixelspace, int startX)
 {
   QPainter painter;
-  painter.begin(buffer);
+  painter.begin(&buffer);
   
   QDictIterator<BuyArrowObject> it(objects);
   for (; it.current(); ++it)
@@ -74,7 +74,7 @@ void BuyArrow::draw (int startIndex, int pixelspace, int startX)
     if (x == -1)
         continue;
     
-    int y = scaler->convertToY(co->getValue());
+    int y = scaler.convertToY(co->getValue());
 
     arrow.putPoints(0, 7, x, y,
                     x + 5, y + 5,
@@ -229,7 +229,7 @@ COPlugin::Status BuyArrow::pointerClick (QPoint &point, BarDate &x, double y)
   return status;    
 }
 
-void BuyArrow::pointerMoving (QPoint &, BarDate &x, double y)
+void BuyArrow::pointerMoving (QPixmap &, QPoint &, BarDate &x, double y)
 {
   if (status != Moving)
     return;
@@ -384,6 +384,7 @@ void BuyArrow::showMenu ()
 
 void BuyArrow::getNameList (QStringList &d)
 {
+  d.clear();
   QDictIterator<BuyArrowObject> it(objects);
   for (; it.current(); ++it)
     d.append(it.current()->getName());

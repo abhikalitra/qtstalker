@@ -40,24 +40,24 @@ Candle::~Candle ()
 }
 
 // find out which chart style to draw
-void Candle::drawChart (int startX, int startIndex, int pixelspace)
+void Candle::drawChart (QPixmap &buffer, Scaler &scaler, int startX, int startIndex, int pixelspace)
 {
   if (! style.compare("Candle"))
-    drawCandles(startX, startIndex, pixelspace);
+    drawCandles(buffer, scaler, startX, startIndex, pixelspace);
   else
   {
     if (! style.compare("Candle QS"))
-      drawQSCandles(startX, startIndex, pixelspace);
+      drawQSCandles(buffer, scaler, startX, startIndex, pixelspace);
     else
-      drawVolumeCandles(startX, startIndex, pixelspace);
+      drawVolumeCandles(buffer, scaler, startX, startIndex, pixelspace);
   }
 }
 
 // draw traditional candles
-void Candle::drawCandles (int startX, int startIndex, int pixelspace)
+void Candle::drawCandles (QPixmap &buffer, Scaler &scaler, int startX, int startIndex, int pixelspace)
 {
   QPainter painter;
-  painter.begin(buffer);
+  painter.begin(&buffer);
   painter.setPen(candleColor);
 
   int x = startX;
@@ -70,12 +70,12 @@ void Candle::drawCandles (int startX, int startIndex, int pixelspace)
       w = 1;
   }
   
-  while ((x < buffer->width()) && (loop < (int) data->count()))
+  while ((x < buffer.width()) && (loop < (int) data->count()))
   {
-    int h = scaler->convertToY(data->getHigh(loop));
-    int l = scaler->convertToY(data->getLow(loop));
-    int c = scaler->convertToY(data->getClose(loop));
-    int o = scaler->convertToY(data->getOpen(loop));
+    int h = scaler.convertToY(data->getHigh(loop));
+    int l = scaler.convertToY(data->getLow(loop));
+    int c = scaler.convertToY(data->getClose(loop));
+    int o = scaler.convertToY(data->getOpen(loop));
 
     if (data->getOpen(loop) != 0)
     {
@@ -118,10 +118,10 @@ void Candle::drawCandles (int startX, int startIndex, int pixelspace)
 }
 
 // draw qs candles 
-void Candle::drawQSCandles (int startX, int startIndex, int pixelspace)
+void Candle::drawQSCandles (QPixmap &buffer, Scaler &scaler, int startX, int startIndex, int pixelspace)
 {
   QPainter painter;
-  painter.begin(buffer);
+  painter.begin(&buffer);
   painter.setPen(qsNeutralColor);
 
   int x = startX;
@@ -134,10 +134,10 @@ void Candle::drawQSCandles (int startX, int startIndex, int pixelspace)
       w = 1;
   }
   
-  int h = scaler->convertToY(data->getHigh(loop));
-  int l = scaler->convertToY(data->getLow(loop));
-  int c = scaler->convertToY(data->getClose(loop));
-  int o = scaler->convertToY(data->getOpen(loop));
+  int h = scaler.convertToY(data->getHigh(loop));
+  int l = scaler.convertToY(data->getLow(loop));
+  int c = scaler.convertToY(data->getClose(loop));
+  int o = scaler.convertToY(data->getOpen(loop));
 
   if (data->getOpen(loop) != 0)
   {
@@ -175,7 +175,7 @@ void Candle::drawQSCandles (int startX, int startIndex, int pixelspace)
   loop++;
   x = x + pixelspace;
 
-  while ((x < buffer->width()) && (loop < (int) data->count()))
+  while ((x < buffer.width()) && (loop < (int) data->count()))
   {
     if (data->getClose(loop) > data->getClose(loop - 1))
       painter.setPen(qsUpColor);
@@ -187,10 +187,10 @@ void Candle::drawQSCandles (int startX, int startIndex, int pixelspace)
         painter.setPen(qsNeutralColor);
     }
 
-    h = scaler->convertToY(data->getHigh(loop));
-    l = scaler->convertToY(data->getLow(loop));
-    c = scaler->convertToY(data->getClose(loop));
-    o = scaler->convertToY(data->getOpen(loop));
+    h = scaler.convertToY(data->getHigh(loop));
+    l = scaler.convertToY(data->getLow(loop));
+    c = scaler.convertToY(data->getClose(loop));
+    o = scaler.convertToY(data->getOpen(loop));
 
     if (data->getOpen(loop) != 0)
     {
@@ -271,10 +271,10 @@ QColor Candle::volumeColor (int index) // function that returns color to use for
   return c;
 }
 
-void Candle::drawVolumeCandles (int startX, int startIndex, int pixelspace)
+void Candle::drawVolumeCandles (QPixmap &buffer, Scaler &scaler, int startX, int startIndex, int pixelspace)
 {
   QPainter painter;
-  painter.begin(buffer);
+  painter.begin(&buffer);
 
   int x = startX;
   int loop = startIndex;
@@ -294,12 +294,12 @@ void Candle::drawVolumeCandles (int startX, int startIndex, int pixelspace)
   
   painter.setPen(c0);
 
-  while ((x < buffer->width()) && (loop < (int) data->count()))
+  while ((x < buffer.width()) && (loop < (int) data->count()))
   {
-    int h = scaler->convertToY(data->getHigh(loop));
-    int l = scaler->convertToY(data->getLow(loop));
-    int c = scaler->convertToY(data->getClose(loop));
-    int o = scaler->convertToY(data->getOpen(loop));
+    int h = scaler.convertToY(data->getHigh(loop));
+    int l = scaler.convertToY(data->getLow(loop));
+    int c = scaler.convertToY(data->getClose(loop));
+    int o = scaler.convertToY(data->getOpen(loop));
     
     painter.setPen(volumeColor(loop));
 

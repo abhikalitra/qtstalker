@@ -96,7 +96,8 @@ class IndicatorPlot : public QWidget
     void setDrawMode (bool);
     void setDateFlag (bool);
     void setCrosshairsFlag (bool);
-    void setScaler (Scaler *);
+    void setScaler (Scaler &);
+    Scaler & getScaler ();
 
   public slots:
     void draw();
@@ -150,7 +151,7 @@ class IndicatorPlot : public QWidget
   private:
     QFont plotFont;
     PlotLine *currentLine;
-    QPixmap *buffer;
+    QPixmap buffer;
     ChartPlugin *chartPlugin;
     Config config;
     int pixelspace;
@@ -172,7 +173,7 @@ class IndicatorPlot : public QWidget
     bool infoFlag;
     BarDate crossHairX;
     double crossHairY;
-    Scaler *scaler;
+    Scaler scaler;
     double y1;
     BarDate x1;
     MouseStatus mouseFlag;

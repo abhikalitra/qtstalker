@@ -93,11 +93,11 @@ class Plot : public QWidget
     void slotDateFlagChanged (bool);
     void slotLogScaleChanged (bool);
     void slotHideMainChanged (bool);
+    void slotUpdateScalePlot ();
 
   private:
     bool dateFlag;
     bool tabFlag;
-    Scaler *scaler;
     DatePlot *datePlot;
     ScalePlot *scalePlot;
     IndicatorPlot *indicatorPlot;

@@ -37,10 +37,10 @@ EP::~EP ()
 {
 }
 
-void EP::drawChart (int startX, int startIndex, int pixelspace)
+void EP::drawChart (QPixmap &buffer, Scaler &scaler, int startX, int startIndex, int pixelspace)
 {
   QPainter painter;
-  painter.begin(buffer);
+  painter.begin(&buffer);
 
   int x = startX;
   int loop = startIndex;
@@ -65,18 +65,18 @@ void EP::drawChart (int startX, int startIndex, int pixelspace)
   int y;
   if (t)
   {
-    y = scaler->convertToY(t);
+    y = scaler.convertToY(t);
     painter.drawLine (x - 2, y, x, y);
   }
-  y = scaler->convertToY(data->getClose(loop));
+  y = scaler.convertToY(data->getClose(loop));
   painter.drawLine (x + 2, y, x, y);
-  int h = scaler->convertToY(data->getHigh(loop));
-  int l = scaler->convertToY(data->getLow(loop));
+  int h = scaler.convertToY(data->getHigh(loop));
+  int l = scaler.convertToY(data->getLow(loop));
   painter.drawLine (x, h, x, l);
   x = x + pixelspace;
   loop++;
 
-  while ((x < buffer->width()) && (loop < (int) data->count()))
+  while ((x < buffer.width()) && (loop < (int) data->count()))
   {
 /* FIXME
 * - Initial implementation only attempts "outside bars" and "inside bars".
@@ -233,13 +233,13 @@ void EP::drawChart (int startX, int startIndex, int pixelspace)
     t = data->getOpen(loop);
     if (t)
     {
-      y = scaler->convertToY(t);
+      y = scaler.convertToY(t);
       painter.drawLine (x - 2, y, x, y);
     }
-    y = scaler->convertToY(data->getClose(loop));
+    y = scaler.convertToY(data->getClose(loop));
     painter.drawLine (x + 2, y, x, y);
-    h = scaler->convertToY(data->getHigh(loop));
-    l = scaler->convertToY(data->getLow(loop));
+    h = scaler.convertToY(data->getHigh(loop));
+    l = scaler.convertToY(data->getLow(loop));
     painter.drawLine (x, h, x, l);
     x = x + pixelspace;
     loop++;

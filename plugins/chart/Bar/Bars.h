@@ -32,14 +32,15 @@ class Bars : public ChartPlugin
   public:
     Bars ();
     virtual ~Bars ();
-    void drawChart (int startX, int startIndex, int pixelspace);
-    void drawBars (int startX, int startIndex, int pixelspace);
-    void drawPaintBars (int startX, int startIndex, int pixelspace);
+    void drawChart (QPixmap &, Scaler &, int startX, int startIndex, int pixelspace);
+    void drawBars (QPixmap &, Scaler &, int startX, int startIndex, int pixelspace);
+    void drawPaintBars (QPixmap &, Scaler &, int startX, int startIndex, int pixelspace);
     void prefDialog (QWidget *);
     void loadSettings ();
     void saveSettings ();
-    PlotLine * getBoolLine ();
+    void getBoolLine ();
     void savePixelspace ();
+    void setChartInput (BarData *);
     
   protected:
     QString style;
@@ -49,6 +50,7 @@ class Bars : public ChartPlugin
     QColor paintUpColor;
     QColor paintDownColor;
     QStringList formulaList;
+    PlotLine *paintBars;
 };
 
 extern "C"

@@ -37,7 +37,7 @@ class HorizontalLine : public COPlugin
   public:
     HorizontalLine ();
     ~HorizontalLine ();
-    void draw (int, int, int);
+    void draw (QPixmap &, Scaler &, int, int, int);
     void newObject (QString &, QString &);
     void addObject (Setting &);
     void saveObjects (QString &);
@@ -56,7 +56,7 @@ class HorizontalLine : public COPlugin
     void moveObject ();
     void removeObject ();
     COPlugin::Status pointerClick (QPoint &, BarDate &, double);
-    void pointerMoving (QPoint &, BarDate &, double y);
+    void pointerMoving (QPixmap &, QPoint &, BarDate &, double y);
     
   protected:
     QDict<HorizontalLineObject> objects;

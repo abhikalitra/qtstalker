@@ -41,7 +41,7 @@ class ScalePlot : public QWidget
     void setLogScale (bool);
     void setScaleToScreen (bool);
     void strip (double, int, QString &);
-    void setScaler (Scaler *);
+    void setScaler (Scaler &);
 
   public slots:
     void draw();
@@ -60,14 +60,14 @@ class ScalePlot : public QWidget
 
   private:    
     QFont plotFont;
-    QPixmap *buffer;
+    QPixmap buffer;
     QColor backgroundColor;
     QColor borderColor;
     bool scaleToScreen;
     bool logScale;
     int scaleWidth;
     double close;
-    Scaler *scaler;
+    Scaler scaler;
     bool mainFlag;
     bool activeFlag;
 };

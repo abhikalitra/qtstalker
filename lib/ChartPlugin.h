@@ -37,7 +37,6 @@ class ChartPlugin : public QObject
   public:
     ChartPlugin ();
     virtual ~ChartPlugin ();
-    void setChartInput (BarData *, Scaler *, QPixmap *);
     int getMinPixelspace ();
     int getStartX ();
     bool getIndicatorFlag ();
@@ -46,14 +45,13 @@ class ChartPlugin : public QObject
     int getPixelspace ();
     void setPixelspace (int);
 
-    virtual void drawChart (int, int, int);
+    virtual void drawChart (QPixmap &, Scaler &, int, int, int);
     virtual void saveSettings ();
     virtual void prefDialog (QWidget *);
     virtual void savePixelspace ();
+    virtual void setChartInput (BarData *);
     
   protected:
-    Scaler *scaler;
-    QPixmap *buffer;
     BarData *data;
     int minPixelspace;
     int startX;

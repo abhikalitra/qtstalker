@@ -54,10 +54,10 @@ Text::~Text ()
 {
 }
 
-void Text::draw (int startIndex, int pixelspace, int startX)
+void Text::draw (QPixmap &buffer, Scaler &scaler, int startIndex, int pixelspace, int startX)
 {
   QPainter painter;
-  painter.begin(buffer);
+  painter.begin(&buffer);
   
   QDictIterator<TextObject> it(objects);
   for (; it.current(); ++it)
@@ -82,7 +82,7 @@ void Text::draw (int startIndex, int pixelspace, int startX)
     painter.setFont(co->getFont());
     painter.setPen(co->getColor());
     
-    int y = scaler->convertToY(co->getValue());
+    int y = scaler.convertToY(co->getValue());
 
     painter.drawText(x, y, co->getLabel());
   
@@ -242,7 +242,7 @@ COPlugin::Status Text::pointerClick (QPoint &point, BarDate &x, double y)
   return status;    
 }
 
-void Text::pointerMoving (QPoint &, BarDate &x, double y)
+void Text::pointerMoving (QPixmap &, QPoint &, BarDate &x, double y)
 {
   if (status != Moving)
     return;
@@ -410,6 +410,7 @@ void Text::showMenu ()
 
 void Text::getNameList (QStringList &d)
 {
+  d.clear();
   QDictIterator<TextObject> it(objects);
   for (; it.current(); ++it)
     d.append(it.current()->getName());

@@ -49,10 +49,10 @@ SellArrow::~SellArrow ()
 {
 }
 
-void SellArrow::draw (int startIndex, int pixelspace, int startX)
+void SellArrow::draw (QPixmap &buffer, Scaler &scaler, int startIndex, int pixelspace, int startX)
 {
   QPainter painter;
-  painter.begin(buffer);
+  painter.begin(&buffer);
   
   QDictIterator<SellArrowObject> it(objects);
   for (; it.current(); ++it)
@@ -74,7 +74,7 @@ void SellArrow::draw (int startIndex, int pixelspace, int startX)
     if (x == -1)
         continue;
     
-    int y = scaler->convertToY(co->getValue());
+    int y = scaler.convertToY(co->getValue());
 
     arrow.putPoints(0, 7, x, y,
                     x + 5, y - 5,
@@ -225,7 +225,7 @@ COPlugin::Status SellArrow::pointerClick (QPoint &point, BarDate &x, double y)
   return status;    
 }
 
-void SellArrow::pointerMoving (QPoint &, BarDate &x, double y)
+void SellArrow::pointerMoving (QPixmap &, QPoint &, BarDate &x, double y)
 {
   if (status != Moving)
     return;
@@ -380,6 +380,7 @@ void SellArrow::showMenu ()
 
 void SellArrow::getNameList (QStringList &d)
 {
+  d.clear();
   QDictIterator<SellArrowObject> it(objects);
   for (; it.current(); ++it)
     d.append(it.current()->getName());

@@ -55,10 +55,10 @@ HorizontalLine::~HorizontalLine ()
 {
 }
 
-void HorizontalLine::draw (int, int, int)
+void HorizontalLine::draw (QPixmap &buffer, Scaler &scaler, int, int, int)
 {
   QPainter painter;
-  painter.begin(buffer);
+  painter.begin(&buffer);
   painter.setFont(font);
   
   QDictIterator<HorizontalLineObject> it(objects);
@@ -69,26 +69,26 @@ void HorizontalLine::draw (int, int, int)
     if (co->getStatus() == HorizontalLineObject::Delete)
       continue;
       
-    int y = scaler->convertToY(co->getValue());
+    int y = scaler.convertToY(co->getValue());
   
     // if value is off chart then don't draw it
-    if (co->getValue() < scaler->getLow())
+    if (co->getValue() < scaler.getLow())
       continue;
       
     painter.setPen(co->getColor());
       
-    painter.drawLine (0, y, buffer->width(), y);
+    painter.drawLine (0, y, buffer.width(), y);
     painter.drawText(0, y - 1, QString::number(co->getValue()), -1);
   
     co->clearSelectionArea();
     QPointArray array;
-    array.putPoints(0, 4, 0, y - 4, 0, y + 4, buffer->width(), y + 4, buffer->width(), y - 4);
+    array.putPoints(0, 4, 0, y - 4, 0, y + 4, buffer.width(), y + 4, buffer.width(), y - 4);
     co->setSelectionArea(new QRegion(array));
     
     if (co->getStatus() == HorizontalLineObject::Selected)
     {
       co->clearGrabHandles();
-      int t = (int) buffer->width() / 4;
+      int t = (int) buffer.width() / 4;
     
       co->setGrabHandle(new QRegion(0,
              			    y - (HANDLE_WIDTH / 2),
@@ -249,7 +249,7 @@ COPlugin::Status HorizontalLine::pointerClick (QPoint &point, BarDate &, double 
   return status;    
 }
 
-void HorizontalLine::pointerMoving (QPoint &, BarDate &, double y)
+void HorizontalLine::pointerMoving (QPixmap &, QPoint &, BarDate &, double y)
 {
   if (status != Moving)
     return;
@@ -401,6 +401,7 @@ void HorizontalLine::showMenu ()
 
 void HorizontalLine::getNameList (QStringList &d)
 {
+  d.clear();
   QDictIterator<HorizontalLineObject> it(objects);
   for (; it.current(); ++it)
     d.append(it.current()->getName());

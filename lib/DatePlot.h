@@ -71,7 +71,7 @@ class DatePlot : public QWidget
 
   private:
     QFont plotFont;
-    QPixmap *buffer;
+    QPixmap buffer;
     int pixelspace;
     int scaleWidth;
     int startX;

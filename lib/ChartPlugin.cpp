@@ -24,8 +24,6 @@
 ChartPlugin::ChartPlugin ()
 {
   data = 0;
-  scaler = 0;
-  buffer = 0;
   minPixelspace = 0;
   startX = 0;
   indicatorFlag = FALSE;
@@ -34,13 +32,6 @@ ChartPlugin::ChartPlugin ()
 
 ChartPlugin::~ChartPlugin ()
 {
-}
-
-void ChartPlugin::setChartInput (BarData *d, Scaler *s, QPixmap *p)
-{
-  data = d;
-  scaler = s;
-  buffer = p;
 }
 
 int ChartPlugin::getMinPixelspace ()
@@ -82,7 +73,7 @@ void ChartPlugin::setPixelspace (int d)
 //***************** VIRTUAL OVERRIDES **********************
 //**********************************************************
 
-void ChartPlugin::drawChart (int, int, int)
+void ChartPlugin::drawChart (QPixmap &, Scaler &, int, int, int)
 {
 }
 
@@ -96,6 +87,11 @@ void ChartPlugin::prefDialog (QWidget *)
 
 void ChartPlugin::savePixelspace ()
 {
+}
+
+void ChartPlugin::setChartInput (BarData *d)
+{
+  data = d;
 }
 
 

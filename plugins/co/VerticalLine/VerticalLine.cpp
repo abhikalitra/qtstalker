@@ -49,10 +49,10 @@ VerticalLine::~VerticalLine ()
 {
 }
 
-void VerticalLine::draw (int startIndex, int pixelspace, int startX)
+void VerticalLine::draw (QPixmap &buffer, Scaler &, int startIndex, int pixelspace, int startX)
 {
   QPainter painter;
-  painter.begin(buffer);
+  painter.begin(&buffer);
   
   QDictIterator<VerticalLineObject> it(objects);
   for (; it.current(); ++it)
@@ -76,7 +76,7 @@ void VerticalLine::draw (int startIndex, int pixelspace, int startX)
       
     painter.setPen(co->getColor());
 
-    painter.drawLine (x, 0, x, buffer->height());
+    painter.drawLine (x, 0, x, buffer.height());
   
     co->clearSelectionArea();
     QPointArray array;
@@ -84,15 +84,15 @@ void VerticalLine::draw (int startIndex, int pixelspace, int startX)
   		    4,
 		    x - (HANDLE_WIDTH / 2), 0,
 		    x + (HANDLE_WIDTH / 2), 0,
-		    x + (HANDLE_WIDTH / 2), buffer->height(),
-		    x - (HANDLE_WIDTH / 2), buffer->height());
+		    x + (HANDLE_WIDTH / 2), buffer.height(),
+		    x - (HANDLE_WIDTH / 2), buffer.height());
     co->setSelectionArea(new QRegion(array));
     
     if (co->getStatus() == VerticalLineObject::Selected)
     {
       co->clearGrabHandles();
     
-      int t = (int) buffer->height() / 4;
+      int t = (int) buffer.height() / 4;
     
       co->setGrabHandle(new QRegion(x - (HANDLE_WIDTH / 2),
              			    0,
@@ -253,7 +253,7 @@ COPlugin::Status VerticalLine::pointerClick (QPoint &point, BarDate &x, double)
   return status;    
 }
 
-void VerticalLine::pointerMoving (QPoint &, BarDate &x, double)
+void VerticalLine::pointerMoving (QPixmap &, QPoint &, BarDate &x, double)
 {
   if (status != Moving)
     return;
@@ -386,6 +386,7 @@ void VerticalLine::showMenu ()
 
 void VerticalLine::getNameList (QStringList &d)
 {
+  d.clear();
   QDictIterator<VerticalLineObject> it(objects);
   for (; it.current(); ++it)
     d.append(it.current()->getName());
