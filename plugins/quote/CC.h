@@ -20,6 +20,10 @@
  */
 
 #include "QuotePlugin.h"
+#include "ChartDb.h"
+#include "FuturesData.h"
+#include <qstring.h>
+#include <qdir.h>
 
 class CC : public QuotePlugin
 {
@@ -29,6 +33,8 @@ class CC : public QuotePlugin
     CC ();
     virtual ~CC ();
     void update ();
+    void newChart (ChartDb *db, QString symbol, FuturesData *fd, QDir dir);
+    void updateChart (ChartDb *db, QString symbol, FuturesData *fd, QDir dir);
 
   public slots:
     void parse ();

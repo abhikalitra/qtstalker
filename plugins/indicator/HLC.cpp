@@ -27,12 +27,12 @@ HLC::HLC ()
   version = 0.2;
 
   set(tr("Type"), pluginName, Setting::None);
-  set(tr("Upper Color"), "red", Setting::Color);
-  set(tr("Lower Color"), "red", Setting::Color);
-  set(tr("Upper Line Type"), tr("Line"), Setting::LineType);
-  set(tr("Lower Line Type"), tr("Line"), Setting::LineType);
-  set(tr("Upper Label"), tr("HLCU"), Setting::Text);
-  set(tr("Lower Label"), tr("HLCL"), Setting::Text);
+  set(tr("High Color"), "red", Setting::Color);
+  set(tr("Low Color"), "red", Setting::Color);
+  set(tr("High Line Type"), tr("Line"), Setting::LineType);
+  set(tr("Low Line Type"), tr("Line"), Setting::LineType);
+  set(tr("High Label"), tr("HLCU"), Setting::Text);
+  set(tr("Low Label"), tr("HLCL"), Setting::Text);
   set(tr("Period"), "20", Setting::Integer);
   set(tr("Plot"), tr("True"), Setting::None);
   set(tr("Alert"), tr("True"), Setting::None);
@@ -49,15 +49,14 @@ void HLC::calculate ()
   int period = getInt(tr("Period"));
 
   PlotLine *ub = new PlotLine();
-
   PlotLine *lb = new PlotLine();
 
   int loop;
   for (loop = period; loop < (int) data.count(); loop++)
   {
     int loop2;
+    double h = -99999999;
     double l = 99999999;
-    double h = 0;
     for (loop2 = 1; loop2 <= period; loop2++)
     {
       Setting *set = data.at(loop - loop2);
@@ -75,14 +74,14 @@ void HLC::calculate ()
     lb->append(l);
   }
 
-  ub->setColor(getData(tr("Upper Color")));
-  ub->setType(getData(tr("Upper Line Type")));
-  ub->setLabel(getData(tr("Upper Label")));
+  ub->setColor(getData(tr("High Color")));
+  ub->setType(getData(tr("High Line Type")));
+  ub->setLabel(getData(tr("High Label")));
   output.append(ub);
 
-  lb->setColor(getData(tr("Lower Color")));
-  lb->setType(getData(tr("Lower Line Type")));
-  lb->setLabel(getData(tr("Lower Label")));
+  lb->setColor(getData(tr("Low Color")));
+  lb->setType(getData(tr("Low Line Type")));
+  lb->setLabel(getData(tr("Low Label")));
   output.append(lb);
 }
 
@@ -97,30 +96,30 @@ QMemArray<int> HLC::getAlerts ()
   PlotLine *l = output.at(1);
 
   int listLoop = data.count() - u->getSize();
+
   int loop;
   int status = 0;
   for (loop = 0; loop < (int) u->getSize(); loop++, listLoop++)
   {
     Setting *set = data.at(listLoop);
     double close = set->getFloat("Close");
-    double t = (close - l->getData(loop)) / (u->getData(loop) - l->getData(loop));
 
     switch (status)
     {
       case -1:
-        if ((t < .2) || (close < l->getData(loop)))
+        if (close > u->getData(loop))
 	  status = 1;
 	break;
       case 1:
-        if ((t > .8) || (close > u->getData(loop)))
+        if (close < l->getData(loop))
 	  status = -1;
 	break;
       default:
-        if ((t < .2) || (close < l->getData(loop)))
+        if (close > u->getData(loop))
 	  status = 1;
 	else
 	{
-          if ((t > .8) || (close > u->getData(loop)))
+          if (close < l->getData(loop))
 	    status = -1;
 	}
 	break;
