@@ -585,8 +585,7 @@ void QtstalkerApp::slotOptions ()
   set->set(tr("Color Down"), config->getData(Config::DownColor), Setting::Color);
   set->set(tr("Color Neutral"), config->getData(Config::NeutralColor), Setting::Color);
   set->set(tr("Paint Bar Indicator"), config->getData(Config::PaintBarIndicator), Setting::List);
-  SettingItem *i = set->getItem(tr("Paint Bar Indicator"));
-  i->list = config->getIndicators();
+  set->setList(tr("Paint Bar Indicator"), config->getIndicators());
 
   dialog->setItems(set);
 
@@ -681,8 +680,8 @@ void QtstalkerApp::loadChart (QString d)
   chartName = set->getData(tr("Title"));
   chartType = set->getData("Chart Type");
   chartSymbol = set->getData("Symbol");
-  QDateTime fd = db->getDateTime(set->getData("First Date"));
-  QDateTime date = db->getDateTime(set->getData("Last Date"));
+  QDateTime fd = QDateTime::fromString(set->getDateTime("First Date"), Qt::ISODate);
+  QDateTime date = QDateTime::fromString(set->getDateTime("Last Date"), Qt::ISODate);
 
   bool otherFlag = FALSE;
   if (chartType.compare(tr("Stock"))

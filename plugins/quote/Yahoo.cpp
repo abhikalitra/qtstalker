@@ -79,11 +79,7 @@ void Yahoo::update ()
     db->openChart(s);
     Setting *details = db->getDetails();
 
-    s = details->getData("Last Date");
-    s.insert(4, "-");
-    s.insert(7, "-");
-    s.append("00:00:00");
-    QDateTime sdate = QDateTime::fromString(s, Qt::ISODate);
+    QDateTime sdate = QDateTime::fromString(details->getDateTime("Last Date"), Qt::ISODate);
     if (! sdate.isValid())
       sdate = QDateTime::fromString("1990-01-0100:00:00", Qt::ISODate);
 

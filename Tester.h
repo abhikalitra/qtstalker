@@ -29,10 +29,15 @@
 #include <qdict.h>
 #include <qlist.h>
 #include <qtoolbutton.h>
+#include <qcheckbox.h>
+#include <qpushbutton.h>
+#include <qspinbox.h>
+#include <qdatetimeedit.h>
+#include <qlineedit.h>
+#include <qvalidator.h>
 #include "Config.h"
 #include "Indicator.h"
 #include "Setting.h"
-#include "SettingView.h"
 
 class Tester : public QDialog
 {
@@ -57,24 +62,50 @@ class Tester : public QDialog
     void deleteIndicator ();
     void addIndicator ();
     void indicatorSelected (QListViewItem *);
-    void stopSelected (QListViewItem *);
     void test ();
+    void breakevenToggled (bool);
+    void maximumLossToggled (bool);
+    void profitToggled (bool);
+    void trailingToggled (bool);
+    void symbolButtonPressed ();
 
   protected:
     Config *config;
     QTabWidget *tabs;
     QListView *ruleList;
-    QListView *stopList;
     QListView *tradeList;
     QListViewItem *item;
     QList<QListViewItem> baseItemList;
     QDict<Indicator> indicators;
-    QDict<Setting> stops;
-    SettingView *testList;
-    Setting *testSettings;
     QToolButton *addIndicatorButton;
     QToolButton *editIndicatorButton;
     QToolButton *deleteIndicatorButton;
+    QCheckBox *breakevenCheck;
+    QCheckBox *breakevenLong;
+    QCheckBox *breakevenShort;
+    QCheckBox *maximumLossCheck;
+    QCheckBox *maximumLossLong;
+    QCheckBox *maximumLossShort;
+    QCheckBox *profitCheck;
+    QCheckBox *profitLong;
+    QCheckBox *profitShort;
+    QCheckBox *trailingCheck;
+    QCheckBox *trailingLong;
+    QCheckBox *trailingShort;
+    QCheckBox *tradeLong;
+    QCheckBox *tradeShort;
+    QLineEdit *maximumLossEdit;
+    QLineEdit *profitEdit;
+    QLineEdit *trailingEdit;
+    QPushButton *testButton;
+    QPushButton *symbolButton;
+    QSpinBox *delayDays;
+    QSpinBox *entryCom;
+    QSpinBox *exitCom;
+    QSpinBox *account;
+    QDateEdit *startDate;
+    QDateEdit *endDate;
+    QDoubleValidator *validator;
 };
 
 #endif

@@ -59,11 +59,7 @@ void CBOT::update ()
 
   QString s  = "http://www.cbot.com/cbot/shared/charts/bot";
 
-  QString s2 = getData("Date");
-  s2.insert(4, "-");
-  s2.insert(7, "-");
-  s2.append("00:00:00");
-  QDateTime sdate = QDateTime::fromString(s2, Qt::ISODate);
+  QDateTime sdate = QDateTime::fromString(getDateTime("Date"), Qt::ISODate);
   
   QDateTime dt = QDateTime::currentDateTime();
   if (sdate > dt)

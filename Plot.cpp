@@ -566,14 +566,14 @@ void Plot::drawDate ()
   if (interval == Daily)
   {
     Setting *r = data.at(loop);
-    QDateTime oldDate = getDateTime(r->getData("Date"));
+    QDateTime oldDate = QDateTime::fromString(r->getDateTime("Date"), Qt::ISODate);
     QDateTime oldWeek = oldDate;
     oldWeek = oldWeek.addDays(7 - oldWeek.date().dayOfWeek());
 
     while(x <= _width && loop < (int) data.count())
     {
       r = data.at(loop);
-      QDateTime date = getDateTime(r->getData("Date"));
+      QDateTime date = QDateTime::fromString(r->getDateTime("Date"), Qt::ISODate);
 
       if (date.date().month() != oldDate.date().month())
       {
@@ -631,12 +631,12 @@ void Plot::drawDate ()
     if (interval == Weekly)
     {
       Setting *r = data.at(loop);
-      QDateTime oldMonth = getDateTime(r->getData("Date"));
+      QDateTime oldMonth = QDateTime::fromString(r->getDateTime("Date"), Qt::ISODate);
 
       while(x <= _width && loop < (int) data.count())
       {
         r = data.at(loop);
-        QDateTime date = getDateTime(r->getData("Date"));
+        QDateTime date = QDateTime::fromString(r->getDateTime("Date"), Qt::ISODate);
 
         if (date.date().month() != oldMonth.date().month())
         {
@@ -673,12 +673,12 @@ void Plot::drawDate ()
     else
     {
       Setting *r = data.at(loop);
-      QDateTime oldYear = getDateTime(r->getData("Date"));
+      QDateTime oldYear = QDateTime::fromString(r->getDateTime("Date"), Qt::ISODate);
 
       while(x <= _width && loop < (int) data.count())
       {
         r = data.at(loop);
-        QDateTime date = getDateTime(r->getData("Date"));
+        QDateTime date = QDateTime::fromString(r->getDateTime("Date"), Qt::ISODate);
 
         if (date.date().year() != oldYear.date().year())
         {
@@ -712,12 +712,12 @@ void Plot::drawXGrid ()
   if (interval == Daily)
   {
     Setting *r = data.at(loop);
-    QDateTime oldDate = getDateTime(r->getData("Date"));
+    QDateTime oldDate = QDateTime::fromString(r->getDateTime("Date"), Qt::ISODate);
 
     while(x <= _width && loop < (int) data.count())
     {
       r = data.at(loop);
-      QDateTime date = getDateTime(r->getData("Date"));
+      QDateTime date = QDateTime::fromString(r->getDateTime("Date"), Qt::ISODate);
 
       if (date.date().month() != oldDate.date().month())
       {
@@ -733,12 +733,12 @@ void Plot::drawXGrid ()
   else
   {
     Setting *r = data.at(loop);
-    QDateTime oldYear = getDateTime(r->getData("Date"));
+    QDateTime oldYear = QDateTime::fromString(r->getDateTime("Date"), Qt::ISODate);
 
     while(x <= _width && loop < (int) data.count())
     {
       r = data.at(loop);
-      QDateTime date = getDateTime(r->getData("Date"));
+      QDateTime date = QDateTime::fromString(r->getDateTime("Date"), Qt::ISODate);
 
       if (date.date().year() != oldYear.date().year())
       {
@@ -996,7 +996,7 @@ void Plot::drawInfo ()
 
   QString s = "D=";
   Setting *r = data.at(data.count() - 1);
-  QDateTime date = getDateTime(r->getData("Date"));
+  QDateTime date = QDateTime::fromString(r->getDateTime("Date"), Qt::ISODate);
   s.append(date.toString("yyyyMMdd"));
   s.append(" ");
   painter.drawText(pos, 10, s, -1);
@@ -1107,7 +1107,7 @@ void Plot::crossHair (int x, int y)
     i = startIndex;
 
   Setting *r = data.at(i);
-  QDateTime date = getDateTime(r->getData("Date"));
+  QDateTime date = QDateTime::fromString(r->getDateTime("Date"), Qt::ISODate);
   QString s = date.toString("yyyyMMdd");
   s.append(" ");
   s.append(QString::number(convertToVal(y)));
@@ -1508,14 +1508,14 @@ int Plot::getXFromDate (QDateTime d)
   int loop = startIndex;
 
   Setting *r = data.at(startIndex);
-  QDateTime date = getDateTime(r->getData("Date"));
+  QDateTime date = QDateTime::fromString(r->getDateTime("Date"), Qt::ISODate);
   if (d.date() < date.date())
     return -1;
 
   while(x <= _width && loop < (int) data.count())
   {
     r = data.at(loop);
-    date = getDateTime(r->getData("Date"));
+    date = QDateTime::fromString(r->getDateTime("Date"), Qt::ISODate);
 
     if (date.date() >= d.date())
       break;
@@ -1901,7 +1901,7 @@ void Plot::drawBuyArrow (Setting *co)
 
   QString s = co->getData(QObject::tr("Date"));
   s.append("000000");
-  QDateTime dt = getDateTime(s);
+  QDateTime dt = QDateTime::fromString(s, Qt::ISODate);
 
   int x = getXFromDate(dt);
   if (x == -1)
@@ -2091,7 +2091,7 @@ void Plot::drawSellArrow (Setting *co)
 
   QString s = co->getData(QObject::tr("Date"));
   s.append("000000");
-  QDateTime dt = getDateTime(s);
+  QDateTime dt = QDateTime::fromString(s, Qt::ISODate);
 
   int x = getXFromDate(dt);
   if (x == -1)
@@ -2123,7 +2123,7 @@ void Plot::drawText (Setting *co)
 
   QString s = co->getData(QObject::tr("Date"));
   s.append("000000");
-  QDateTime dt = getDateTime(s);
+  QDateTime dt = QDateTime::fromString(s, Qt::ISODate);
 
   int x = getXFromDate(dt);
   if (x == -1)
@@ -2146,7 +2146,7 @@ void Plot::drawTrendLine (Setting *co)
 
   QString s = co->getData(QObject::tr("End Date"));
   s.append("000000");
-  QDateTime dt = getDateTime(s);
+  QDateTime dt = QDateTime::fromString(s, Qt::ISODate);
 
   int x2 = getXFromDate(dt);
   if (x2 == -1)
@@ -2154,7 +2154,7 @@ void Plot::drawTrendLine (Setting *co)
 
   s = co->getData(QObject::tr("Start Date"));
   s.append("000000");
-  dt = getDateTime(s);
+  dt = QDateTime::fromString(s, Qt::ISODate);
 
   int x = getXFromDate(dt);
   if (x == -1)
@@ -2178,7 +2178,7 @@ void Plot::drawVerticalLine (Setting *co)
 
   QString s = co->getData(QObject::tr("Date"));
   s.append("000000");
-  QDateTime dt = getDateTime(s);
+  QDateTime dt = QDateTime::fromString(s, Qt::ISODate);
 
   int x = getXFromDate(dt);
   if (x == -1)
@@ -2200,7 +2200,7 @@ int Plot::getDataSize ()
 QDateTime Plot::getDate (int d)
 {
   Setting *r = data.at(d);
-  return getDateTime(r->getData("Date"));
+  return QDateTime::fromString(r->getDateTime("Date"), Qt::ISODate);
 }
 
 double Plot::getOpen (int d)
@@ -2225,23 +2225,6 @@ double Plot::getClose (int d)
 {
   Setting *r = data.at(d);
   return r->getFloat("Close");
-}
-
-QDateTime Plot::getDateTime (QString d)
-{
-  QDateTime dt;
-
-  if (d.length() != 14)
-    return dt;
-
-  QString s = d;
-  s.insert(4, "-");
-  s.insert(7, "-");
-  s.insert(12, ":");
-  s.insert(15, ":");
-  dt = QDateTime::fromString(s, Qt::ISODate);
-
-  return dt;
 }
 
 void Plot::setCurrentIndicator (QString d)

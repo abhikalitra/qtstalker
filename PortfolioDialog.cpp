@@ -159,7 +159,7 @@ void PortfolioDialog::updatePortfolioItems ()
     
     Setting *details = db->getDetails();
 
-    QDateTime dt = db->getDateTime(details->getData("Last Date"));
+    QDateTime dt = QDateTime::fromString(details->getDateTime("Last Date"), Qt::ISODate);
     item->setText(4, dt.toString("yyyyMMdd"));
 
     QString last = QString::number(db->getCloseData(dt));

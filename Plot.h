@@ -77,7 +77,6 @@ class Plot : public QWidget
     void setPixelspace (int);
     void setChartType (QString);
     void setAlerts (QMemArray<int>);
-    QDateTime getDateTime (QString);
 
     void addIndicator (QString, Indicator *);
     Indicator * getIndicator (QString);

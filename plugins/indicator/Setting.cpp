@@ -50,7 +50,7 @@ void Setting::set (QString k, QString d, Setting::Type t)
     case MAType:
       set->list.append(QObject::tr("EMA"));
       set->list.append(QObject::tr("SMA"));
-      set->list.append(QObject::tr("WilderMA"));
+      set->list.append(QObject::tr("Wilder"));
       set->list.append(QObject::tr("WMA"));
       break;
     case InputField:
@@ -188,15 +188,6 @@ void Setting::parse (QStringList d)
     set(d[loop], d[loop + 1], (Setting::Type) d[loop + 2].toInt());
 }
 
-SettingItem * Setting::getItem (QString k)
-{
-  SettingItem *set = dict[k];
-  if (set)
-    return set;
-  else
-    return 0;
-}
-
 void Setting::clear ()
 {
   dict.clear();
@@ -205,6 +196,25 @@ void Setting::clear ()
 int Setting::count ()
 {
   return (int) dict.count();
+}
+
+QString Setting::getDateTime (QString k)
+{
+  QString date;
+
+  SettingItem *set = dict[k];
+  if (set)
+  {
+    date = set->data;
+    if (date.length() == 8)
+      date.append("000000");
+    date.insert(4, "-");
+    date.insert(7, "-");
+    date.insert(12, ":");
+    date.insert(15, ":");
+  }
+
+  return date;
 }
 
 

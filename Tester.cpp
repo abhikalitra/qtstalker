@@ -25,6 +25,9 @@
 #include <qmessagebox.h>
 #include <qdatetime.h>
 #include <qlibrary.h>
+#include <qvgroupbox.h>
+#include <qinputdialog.h>
+#include <qlabel.h>
 #include "Tester.h"
 #include "edit.xpm"
 #include "delete.xpm"
@@ -34,12 +37,12 @@
 #include "EditDialog.h"
 #include "ChartDb.h"
 #include "Plugin.h"
+#include "SettingView.h"
 
 Tester::Tester (Config *c) : QDialog (0, 0, FALSE)
 {
   config = c;
   indicators.setAutoDelete(TRUE);
-  stops.setAutoDelete(TRUE);
 
   setCaption ("Back Tester");
 
@@ -53,7 +56,7 @@ Tester::Tester (Config *c) : QDialog (0, 0, FALSE)
   QToolButton *button = new QToolButton(this);
   QToolTip::add(button, tr("Start Testing"));
   button->setPixmap(QPixmap(ok));
-  connect(button, SIGNAL(clicked()), this, SLOT(test()));
+  connect(button, SIGNAL(clicked()), this, SLOT(accept()));
   button->setMaximumWidth(30);
   button->setAutoRaise(TRUE);
   tb->addWidget(button, 0, 0);
@@ -80,7 +83,6 @@ Tester::Tester (Config *c) : QDialog (0, 0, FALSE)
 
 Tester::~Tester ()
 {
-  delete testSettings;
 }
 
 void Tester::createFormulaPage ()
@@ -146,42 +148,87 @@ void Tester::createStopPage ()
 {
   QWidget *w = new QWidget(this);
 
-  QVBoxLayout *vbox = new QVBoxLayout(w);
-  vbox->setMargin(5);
-  vbox->setSpacing(5);
+  QGridLayout *grid = new QGridLayout(w, 2, 2);
+  grid->setMargin(5);
+  grid->setSpacing(5);
 
-  stopList = new QListView(w);
-  stopList->addColumn(tr("Stops"), -1);
-  stopList->setSelectionMode(QListView::Single);
-  connect(stopList, SIGNAL(clicked(QListViewItem *)), this, SLOT(stopSelected(QListViewItem *)));
-  vbox->addWidget(stopList);
+  QVGroupBox *gbox = new QVGroupBox(tr("Breakeven"), w);
+  gbox->setInsideSpacing(2);
+  grid->addWidget(gbox, 0, 0);
 
-  Setting *set = new Setting;
-  set->set(tr("Long"), tr("False"), Setting::Bool);
-  set->set(tr("Short"), tr("False"), Setting::Bool);
-  stops.replace(tr("Breakeven"), set);
+  breakevenCheck = new QCheckBox(tr("Enabled"), gbox);
+  connect(breakevenCheck, SIGNAL(toggled(bool)), this, SLOT(breakevenToggled(bool)));
 
-  set = new Setting;
-  set->set(tr("Long"), tr("False"), Setting::Bool);
-  set->set(tr("Short"), tr("False"), Setting::Bool);
-  set->set(tr("Loss %"), "0", Setting::Float);
-  stops.replace(tr("Maximum Loss"), set);
+  breakevenLong = new QCheckBox(tr("Long"), gbox);
 
-  set = new Setting;
-  set->set(tr("Long"), tr("False"), Setting::Bool);
-  set->set(tr("Short"), tr("False"), Setting::Bool);
-  set->set(tr("Profit %"), "0", Setting::Float);
-  stops.replace(tr("Profit"), set);
+  breakevenShort = new QCheckBox(tr("Short"), gbox);
 
-  set = new Setting;
-  set->set(tr("Long"), tr("False"), Setting::Bool);
-  set->set(tr("Short"), tr("False"), Setting::Bool);
-  set->set(tr("Risk %"), "0", Setting::Float);
-  stops.replace(tr("Trailing"), set);
+  gbox = new QVGroupBox(tr("Maximum Loss"), w);
+  gbox->setInsideSpacing(2);
+  gbox->setColumns(2);
+  grid->addWidget(gbox, 0, 1);
 
-  QDictIterator<Setting> it(stops);
-  for (; it.current(); ++it)
-    item = new QListViewItem(stopList, it.currentKey());
+  maximumLossCheck = new QCheckBox(tr("Enabled"), gbox);
+  connect(maximumLossCheck, SIGNAL(toggled(bool)), this, SLOT(maximumLossToggled(bool)));
+  gbox->addSpace(0);
+
+  maximumLossLong = new QCheckBox(tr("Long"), gbox);
+  gbox->addSpace(0);
+
+  maximumLossShort = new QCheckBox(tr("Short"), gbox);
+  gbox->addSpace(0);
+
+  validator = new QDoubleValidator(0, 999999, 2, w);
+
+  QLabel *label = new QLabel(tr("Loss %"), gbox);
+
+  maximumLossEdit = new QLineEdit("0", gbox);
+  maximumLossEdit->setValidator(validator);
+
+  gbox = new QVGroupBox(tr("Profit"), w);
+  gbox->setInsideSpacing(2);
+  gbox->setColumns(2);
+  grid->addWidget(gbox, 1, 0);
+
+  profitCheck = new QCheckBox(tr("Enabled"), gbox);
+  connect(profitCheck, SIGNAL(toggled(bool)), this, SLOT(profitToggled(bool)));
+  gbox->addSpace(0);
+
+  profitLong = new QCheckBox(tr("Long"), gbox);
+  gbox->addSpace(0);
+
+  profitShort = new QCheckBox(tr("Short"), gbox);
+  gbox->addSpace(0);
+
+  label = new QLabel(tr("Profit %"), gbox);
+
+  profitEdit = new QLineEdit("0", gbox);
+  profitEdit->setValidator(validator);
+
+  gbox = new QVGroupBox(tr("Trailing"), w);
+  gbox->setInsideSpacing(2);
+  gbox->setColumns(2);
+  grid->addWidget(gbox, 1, 1);
+
+  trailingCheck = new QCheckBox(tr("Enabled"), gbox);
+  connect(trailingCheck, SIGNAL(toggled(bool)), this, SLOT(trailingToggled(bool)));
+  gbox->addSpace(0);
+
+  trailingLong = new QCheckBox(tr("Long"), gbox);
+  gbox->addSpace(0);
+
+  trailingShort = new QCheckBox(tr("Short"), gbox);
+  gbox->addSpace(0);
+
+  label = new QLabel(tr("Loss %"), gbox);
+
+  trailingEdit = new QLineEdit("0", gbox);
+  trailingEdit->setValidator(validator);
+
+  breakevenToggled(FALSE);
+  maximumLossToggled(FALSE);
+  profitToggled(FALSE);
+  trailingToggled(FALSE);
 
   tabs->addTab(w, tr("Stops"));
 }
@@ -193,22 +240,69 @@ void Tester::createTestPage ()
   QVBoxLayout *vbox = new QVBoxLayout(w);
   vbox->setMargin(5);
   vbox->setSpacing(5);
+  
+  QGridLayout *grid = new QGridLayout(vbox, 2, 2);
+  grid->setSpacing(5);
 
-  testSettings = new Setting;
-  testSettings->set(tr("Long"), tr("True"), Setting::Bool);
-  testSettings->set(tr("Short"), tr("True"), Setting::Bool);
-  testSettings->set(tr("Delay"), "0", Setting::Integer);
-  testSettings->set(tr("Entry Commission"), "25", Setting::Float);
-  testSettings->set(tr("Exit Commission"), "25", Setting::Float);
-  testSettings->set(tr("Initial Equity"), "10000", Setting::Float);
-  testSettings->set(tr("Symbol"), "", Setting::Symbol);
-  QDate dt = QDate::currentDate();
-  testSettings->set(tr("Start Date"), dt.toString("yyyyMMdd"), Setting::Date);
-  testSettings->set(tr("End Date"), dt.toString("yyyyMMdd"), Setting::Date);
+  QVGroupBox *gbox = new QVGroupBox(tr("Trades"), w);
+  gbox->setInsideSpacing(2);
+  gbox->setColumns(2);
+  grid->addWidget(gbox, 0, 0);
 
-  testList = new SettingView(w, config->getData(Config::DataPath));
-  vbox->addWidget(testList);
-  testList->setItems(testSettings);
+  tradeLong = new QCheckBox(tr("Long"), gbox);
+  gbox->addSpace(0);
+
+  tradeShort = new QCheckBox(tr("Short"), gbox);
+  gbox->addSpace(0);
+
+  QLabel *label = new QLabel(tr("Delay"), gbox);
+
+  delayDays = new QSpinBox(0, 999999, 1, gbox);
+
+  gbox = new QVGroupBox(tr("Date Range"), w);
+  gbox->setInsideSpacing(2);
+  gbox->setColumns(2);
+  grid->addWidget(gbox, 0, 1);
+
+  label = new QLabel(tr("Start Date"), gbox);
+
+  startDate = new QDateEdit(QDate::currentDate(), gbox);
+  startDate->setOrder(QDateEdit::YMD);
+  startDate->setAutoAdvance(TRUE);
+
+  label = new QLabel(tr("End Date"), gbox);
+
+  endDate = new QDateEdit(QDate::currentDate(), gbox);
+  endDate->setOrder(QDateEdit::YMD);
+  endDate->setAutoAdvance(TRUE);
+
+  gbox = new QVGroupBox(tr("Account"), w);
+  gbox->setInsideSpacing(2);
+  gbox->setColumns(2);
+  grid->addWidget(gbox, 1, 0);
+
+  label = new QLabel(tr("Entry Commision"), gbox);
+
+  entryCom = new QSpinBox(0, 999999, 1, gbox);
+
+  label = new QLabel(tr("Exit Commision"), gbox);
+
+  exitCom = new QSpinBox(0, 999999, 1, gbox);
+
+  label = new QLabel(tr("Account Balance"), gbox);
+
+  account = new QSpinBox(0, 999999, 1, gbox);
+  
+  gbox = new QVGroupBox(tr("Symbol"), w);
+  gbox->setInsideSpacing(2);
+  grid->addWidget(gbox, 1, 1);
+
+  symbolButton = new QPushButton(gbox);
+  connect(symbolButton, SIGNAL(clicked()), this, SLOT(symbolButtonPressed()));
+
+  testButton = new QPushButton(tr("Perform Test"), w);
+  connect(testButton, SIGNAL(clicked()), this, SLOT(test()));
+  vbox->addWidget(testButton);
 
   tabs->addTab(w, tr("Testing"));
 }
@@ -390,65 +484,28 @@ void Tester::indicatorSelected (QListViewItem *i)
   }
 }
 
-void Tester::stopSelected (QListViewItem *i)
-{
-  if (! i)
-    return;
-
-  Setting *set = stops[i->text(0)];
-
-  EditDialog *dialog = new EditDialog(config);
-  dialog->setCaption(tr("Edit Stop"));
-
-  dialog->setItems(set);
-
-  dialog->exec();
-
-  delete dialog;
-}
-
 void Tester::test ()
 {
-  bool longFlag = FALSE;
-  if (! testSettings->getData(tr("Long")).compare(tr("True")))
-    longFlag = TRUE;
-
-  bool shortFlag = FALSE;
-  if (! testSettings->getData(tr("Short")).compare(tr("True")))
-    shortFlag = TRUE;
-
-  if (! longFlag && ! shortFlag)
+  if (! tradeLong->isChecked() && ! tradeShort->isChecked())
     return;
 
-//  int delay = testSettings->getInt(tr("Delay"));
-
-//  double entryCom = testSettings->getFloat(tr("Entry Commission"));
-
-//  double exitCom = testSettings->getFloat(tr("Exit Commission"));
-
-  double equity = testSettings->getFloat(tr("Initial Equity"));
-  if (equity <= 0)
+  double equity = account->text().toDouble();
+  if (equity == 0)
     return;
 
-  QString symbol = testSettings->getData(tr("Symbol"));
+  QString symbol = symbolButton->text();
   if (! symbol.length())
     return;
 
-  QString s = testSettings->getData(tr("Start Date"));
-  s.insert(4, "-");
-  s.insert(7, "-");
-  QDate startDate = QDate::fromString(s, ISODate);
-  if (! startDate.isValid())
+  QDate sd = startDate->date();
+  if (! sd.isValid())
     return;
 
-  s = testSettings->getData(tr("End Date"));
-  s.insert(4, "-");
-  s.insert(7, "-");
-  QDate endDate = QDate::fromString(s, ISODate);
-  if (! endDate.isValid())
+  QDate ed = endDate->date();
+  if (! ed.isValid())
     return;
 
-  s = config->getData(Config::DataPath);
+  QString s = config->getData(Config::DataPath);
   s.append("/");
   s.append(symbol);
   ChartDb *db = new ChartDb;
@@ -461,14 +518,14 @@ void Tester::test ()
 
   tradeList->clear();
 
-//  Setting *details = db->getDetails();
-
-  db->getHistory(ChartDb::Daily, startDate);
+  db->getHistory(ChartDb::Daily, sd);
 
   QDictIterator<Indicator> it(indicators);
   for (; it.current(); ++it)
   {
     Indicator *i = it.current();
+    
+    i->clearLines();
     
     s = config->getData(Config::IndicatorPluginPath);
     s.append("/");
@@ -512,12 +569,12 @@ void Tester::test ()
     s.insert(7, "-");
     s.truncate(s.length() - 6);
     QDate dt = QDate::fromString(s, ISODate);
-    if (dt > endDate)
+    if (dt > ed)
       break;
 
     if (status == -1)
     {
-      if (longFlag)
+      if (tradeLong->isChecked())
       {
         if (checkPosition(0, loop, db->getDataSize()))
         {
@@ -541,7 +598,7 @@ void Tester::test ()
 
     if (status == 1)
     {
-      if (shortFlag)
+      if (tradeShort->isChecked())
       {
         if (checkPosition(2, loop, db->getDataSize()))
         {
@@ -565,7 +622,7 @@ void Tester::test ()
 
     if (status == 0)
     {
-      if (longFlag)
+      if (tradeLong->isChecked())
       {
         if (checkPosition(0, loop, db->getDataSize()))
         {
@@ -577,7 +634,7 @@ void Tester::test ()
 	}
       }
 
-      if (shortFlag)
+      if (tradeShort->isChecked())
       {
         if (checkPosition(2, loop, db->getDataSize()))
 	{
@@ -706,16 +763,15 @@ void Tester::exitPosition (int status, Setting *sr, Setting *er, QString signal)
 bool Tester::breakeven (int status, Setting *sr, Setting *er)
 {
   bool flag = FALSE;
-  Setting *stop = stops[tr("Breakeven")];
 
-  if ((status == 1) && (! stop->getData(tr("Long")).compare(tr("True"))))
+  if ((status == 1) && (breakevenLong->isChecked()))
   {
     double t = er->getFloat("Close") - sr->getFloat("Close");
     if (t <= 0)
       flag = TRUE;
   }
 
-  if ((status == -1) && (! stop->getData(tr("Short")).compare(tr("True"))))
+  if ((status == -1) && (breakevenShort->isChecked()))
   {
     double t = sr->getFloat("Close") - er->getFloat("Close");
     if (t <= 0)
@@ -729,17 +785,16 @@ bool Tester::maximumLoss (int status, Setting *sr, Setting *er)
 {
   bool flag = FALSE;
   bool okFlag = FALSE;
-  Setting *stop = stops[tr("Maximum Loss")];
-  double loss = stop->getFloat(tr("Loss %"));
+  double loss = maximumLossEdit->text().toDouble();
   double t = 0;
 
-  if ((status == 1) && (! stop->getData(tr("Long")).compare(tr("True"))))
+  if ((status == 1) && (maximumLossLong->isChecked()))
   {
     t = ((er->getFloat("Close") - sr->getFloat("Close")) / sr->getFloat("Close")) * 100;
     okFlag = TRUE;
   }
 
-  if ((status == -1) && (! stop->getData(tr("Short")).compare(tr("True"))))
+  if ((status == -1) && (maximumLossShort->isChecked()))
   {
     t = ((sr->getFloat("Close") - er->getFloat("Close")) / sr->getFloat("Close")) * 100;
     okFlag = TRUE;
@@ -762,17 +817,16 @@ bool Tester::profit (int status, Setting *sr, Setting *er)
 {
   bool flag = FALSE;
   bool okFlag = FALSE;
-  Setting *stop = stops[tr("Profit")];
-  double profit = stop->getFloat(tr("Profit %"));
+  double profit = profitEdit->text().toDouble();
   double t = 0;
 
-  if ((status == 1) && (! stop->getData(tr("Long")).compare(tr("True"))))
+  if ((status == 1) && (profitLong->isChecked()))
   {
     t = ((er->getFloat("Close") - sr->getFloat("Close")) / sr->getFloat("Close")) * 100;
     okFlag = TRUE;
   }
 
-  if ((status == -1) && (! stop->getData(tr("Short")).compare(tr("True"))))
+  if ((status == -1) && (profitShort->isChecked()))
   {
     t = ((sr->getFloat("Close") - er->getFloat("Close")) / sr->getFloat("Close")) * 100;
     okFlag = TRUE;
@@ -794,17 +848,16 @@ bool Tester::trailing (int status, Setting *r, double max)
 {
   bool flag = FALSE;
   bool okFlag = FALSE;
-  Setting *stop = stops[tr("Trailing")];
-  double loss = stop->getFloat(tr("Risk %"));
+  double loss = trailingEdit->text().toDouble();
   double t = 0;
 
-  if ((status == 1) && (! stop->getData(tr("Long")).compare(tr("True"))))
+  if ((status == 1) && (trailingLong->isChecked()))
   {
     t = ((r->getFloat("Close") - max) / max) * 100;
     okFlag = TRUE;
   }
 
-  if ((status == -1) && (! stop->getData(tr("Short")).compare(tr("True"))))
+  if ((status == -1) && (trailingShort->isChecked()))
   {
     t = ((max - r->getFloat("Close")) / max) * 100;
     okFlag = TRUE;
@@ -823,5 +876,78 @@ bool Tester::trailing (int status, Setting *r, double max)
   return flag;
 }
 
+void Tester::breakevenToggled (bool status)
+{
+  if (status)
+  {
+    breakevenLong->setEnabled(TRUE);
+    breakevenShort->setEnabled(TRUE);
+  }
+  else
+  {
+    breakevenLong->setEnabled(FALSE);
+    breakevenShort->setEnabled(FALSE);
+  }
+}
 
+void Tester::maximumLossToggled (bool status)
+{
+  if (status)
+  {
+    maximumLossLong->setEnabled(TRUE);
+    maximumLossShort->setEnabled(TRUE);
+    maximumLossEdit->setEnabled(TRUE);
+  }
+  else
+  {
+    maximumLossLong->setEnabled(FALSE);
+    maximumLossShort->setEnabled(FALSE);
+    maximumLossEdit->setEnabled(FALSE);
+  }
+}
+
+void Tester::profitToggled (bool status)
+{
+  if (status)
+  {
+    profitLong->setEnabled(TRUE);
+    profitShort->setEnabled(TRUE);
+    profitEdit->setEnabled(TRUE);
+  }
+  else
+  {
+    profitLong->setEnabled(FALSE);
+    profitShort->setEnabled(FALSE);
+    profitEdit->setEnabled(FALSE);
+  }
+}
+
+void Tester::trailingToggled (bool status)
+{
+  if (status)
+  {
+    trailingLong->setEnabled(TRUE);
+    trailingShort->setEnabled(TRUE);
+    trailingEdit->setEnabled(TRUE);
+  }
+  else
+  {
+    trailingLong->setEnabled(FALSE);
+    trailingShort->setEnabled(FALSE);
+    trailingEdit->setEnabled(FALSE);
+  }
+}
+
+void Tester::symbolButtonPressed ()
+{
+  SymbolDialog *dialog = new SymbolDialog(config->getData(Config::DataPath));
+  dialog->setCaption(tr("Select Chart"));
+
+  int rc = dialog->exec();
+
+  if (rc == QDialog::Accepted)
+    symbolButton->setText(dialog->getSymbol());
+
+  delete dialog;
+}
 

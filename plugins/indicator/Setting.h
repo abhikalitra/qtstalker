@@ -70,11 +70,11 @@ class Setting
     QStringList getStringList ();
     void remove (QString);
     QString getString ();
-    SettingItem * getItem (QString);
     void parse (QString);
     void parse (QStringList);
     void clear ();
     int count ();
+    QString getDateTime (QString);
 
   protected:
     QDict<SettingItem> dict;
