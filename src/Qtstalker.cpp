@@ -199,10 +199,15 @@ QtstalkerApp::QtstalkerApp()
   QObject::connect(this, SIGNAL(signalGridColor(QColor)), mainPlot, SLOT(setGridColor(QColor)));
   emit signalGridColor(color);
 
-  QStringList l = QStringList::split(" ", config.getData(Config::PlotFont), FALSE);
-  QFont font(l[0], l[1].toInt(), l[2].toInt());
   QObject::connect(this, SIGNAL(signalPlotFont(QFont)), mainPlot, SLOT(setPlotFont(QFont)));
-  emit signalPlotFont(font);
+  QStringList l = QStringList::split(",", config.getData(Config::PlotFont), FALSE);
+  if (l.count() == 3)
+  {
+    QFont font(l[0], l[1].toInt(), l[2].toInt());
+    emit signalPlotFont(font);
+  }
+  else
+    emit signalPlotFont(QFont());
 
   QObject::connect(mainPlot, SIGNAL(signalNewIndicator()), this, SLOT(slotNewIndicator()));
   QObject::connect(mainPlot, SIGNAL(signalEditIndicator(QString, Plot *)), this, SLOT(slotEditIndicator(QString, Plot *)));
@@ -290,9 +295,14 @@ QtstalkerApp::QtstalkerApp()
     delete set;
   }
 
-  l = QStringList::split(" ", config.getData(Config::AppFont), FALSE);
-  QFont font2(l[0], l[1].toInt(), l[2].toInt());
-  qApp->setFont(font2, TRUE, 0);
+  l = QStringList::split(",", config.getData(Config::AppFont), FALSE);
+  if (l.count() == 3)
+  {
+    QFont font2(l[0], l[1].toInt(), l[2].toInt());
+    qApp->setFont(font2, TRUE, 0);
+  }
+  else
+    qApp->setFont(QFont(), TRUE, 0);
   
   // set the indicator splitter size
   sizeList = split->sizes();
@@ -538,7 +548,7 @@ void QtstalkerApp::slotQuit()
 void QtstalkerApp::slotAbout()
 {
   QMessageBox *dialog = new QMessageBox(tr("About Qtstalker"),
-  					tr("Qtstalker\nVer 0.28\n(C) 2001-2004 by Stefan Stratigakos"),
+  					tr("Qtstalker\nVer CVS 0.29\n(C) 2001-2004 by Stefan Stratigakos"),
 					QMessageBox::NoIcon,
 					QMessageBox::Ok,
 					QMessageBox::NoButton,
@@ -581,10 +591,12 @@ void QtstalkerApp::slotOptions ()
   dialog->addColorItem(tr("Chart Grid"), tr("Colors"), QColor(config.getData(Config::GridColor)));
 
   dialog->createPage(tr("Fonts"));
-  QStringList l = QStringList::split(" ", config.getData(Config::PlotFont), FALSE);
-  dialog->addFontItem(tr("Plot Font"), tr("Fonts"), QFont(l[0], l[1].toInt(), l[2].toInt()));
-  l = QStringList::split(" ", config.getData(Config::AppFont), FALSE);
-  dialog->addFontItem(tr("App Font"), tr("Fonts"), QFont(l[0], l[1].toInt(), l[2].toInt()));
+  QStringList l = QStringList::split(",", config.getData(Config::PlotFont), FALSE);
+  if (l.count() == 3)
+    dialog->addFontItem(tr("Plot Font"), tr("Fonts"), QFont(l[0], l[1].toInt(), l[2].toInt()));
+  l = QStringList::split(",", config.getData(Config::AppFont), FALSE);
+  if (l.count() == 3)
+    dialog->addFontItem(tr("App Font"), tr("Fonts"), QFont(l[0], l[1].toInt(), l[2].toInt()));
   
   int rc = dialog->exec();
 
@@ -605,9 +617,9 @@ void QtstalkerApp::slotOptions ()
     // save plot font option
     QFont font = dialog->getFont(tr("Plot Font"));
     QString s = font.family();
-    s.append(" ");
+    s.append(",");
     s.append(QString::number(font.pointSize()));
-    s.append(" ");
+    s.append(",");
     s.append(QString::number(font.weight()));
     QString s2 = config.getData(Config::PlotFont);
     if (s.compare(s2))
@@ -619,9 +631,9 @@ void QtstalkerApp::slotOptions ()
     // save app font option
     font = dialog->getFont(tr("App Font"));
     s = font.family();
-    s.append(" ");
+    s.append(",");
     s.append(QString::number(font.pointSize()));
-    s.append(" ");
+    s.append(",");
     s.append(QString::number(font.weight()));
     s2 = config.getData(Config::AppFont);
     if (s.compare(s2))
@@ -630,9 +642,6 @@ void QtstalkerApp::slotOptions ()
       qApp->setFont(font, TRUE, 0);
     }
     
-    // save help
-    config.setData(Config::HelpFilePath, dialog->getText(tr("HTML Path")));
-
     loadChart(chartPath);
 
     statusBar()->message (tr("Preferences saved."));
@@ -1320,10 +1329,15 @@ void QtstalkerApp::addIndicatorButton (QString d, Indicator::PlotType tabFlag)
   QObject::connect(this, SIGNAL(signalGridColor(QColor)), plot, SLOT(setGridColor(QColor)));
   emit signalGridColor(color);
 
-  QStringList l = QStringList::split(" ", config.getData(Config::PlotFont), FALSE);
-  QFont font(l[0], l[1].toInt(), l[2].toInt());
   QObject::connect(this, SIGNAL(signalPlotFont(QFont)), plot, SLOT(setPlotFont(QFont)));
-  emit signalPlotFont(font);
+  QStringList l = QStringList::split(",", config.getData(Config::PlotFont), FALSE);
+  if (l.count() == 3)
+  {
+    QFont font(l[0], l[1].toInt(), l[2].toInt());
+    emit signalPlotFont(font);
+  }
+  else
+    emit signalPlotFont(QFont());
 
   plot->setDateFlag(actionPlotDate->isOn());
   QObject::connect(this, SIGNAL(signalPlotDate(bool)), plot, SLOT(setDateFlag(bool)));

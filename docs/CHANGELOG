@@ -1,3 +1,14 @@
+0.29
+====
+
+20041009: Fixed bug #1043055 - app font should default to system font.
+
+20041009: Fixed bug #1043044 - font names with spaces don't persist.
+
+20041009: Fixed bug #1043037 - help path configuration.
+
+
+
 0.28
 ====
 

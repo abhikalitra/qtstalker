@@ -27,6 +27,7 @@
 #include <qobject.h>
 #include <qfile.h>
 #include <qtextstream.h>
+#include <qapplication.h>
 
 Config::Config ()
 {
@@ -117,6 +118,19 @@ void Config::setup ()
       qDebug("Unable to create ~/Qtstalker/cusrules directory.");
   }
   setData(CUSRulePath, s);
+
+  s = getData(AppFont);
+  if (! s.length())
+  {
+    QFont font = QApplication::font(0);  
+    s = font.family();
+    s.append(",");
+    s.append(QString::number(font.pointSize()));
+    s.append(",");
+    s.append(QString::number(font.weight()));
+    setData(AppFont, s);
+    setData(PlotFont, s);
+  }
 }
 
 QString Config::getData (Parm p)
@@ -196,10 +210,10 @@ QString Config::getData (Parm p)
       s = settings.readEntry("/Qtstalker/Group");
       break;
     case PlotFont:
-      s = settings.readEntry("/Qtstalker/PlotFont", "Helvetica 8 50");
+      s = settings.readEntry("/Qtstalker/PlotFont");
       break;
     case AppFont:
-      s = settings.readEntry("/Qtstalker/AppFont", "Helvetica 9 50");
+      s = settings.readEntry("/Qtstalker/AppFont");
       break;
     case NavAreaSize:
       s = settings.readEntry("/Qtstalker/NavAreaSize", "20");
