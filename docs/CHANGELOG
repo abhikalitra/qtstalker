@@ -1,21 +1,23 @@
 0.24
 ====
 
-- 20040208: Fixed MDK/Redhat compile bug for db.h file not found problem. This was preventing a full
-            compile on the big distributions.
+20040208: Fixed MDK/Redhat compile bug for db.h file not found problem. This was preventing a full
+          compile on the big distributions.
 	     
-- 20040208: Modified Plot::drawScale to compress the y-axis scaling numbers above 1000.
+20040208: Modified Plot::drawScale to compress the y-axis scaling numbers above 1000.
 
-- 20040208: Found a new bug in the AD and OBV indicator plugins that can't handle really large numbers.
-            Fixed this by applying a divisor of 1000 to all volume values used in the calculations.
+20040208: Found a new bug in the AD and OBV indicator plugins that can't handle really large numbers.
+          Fixed this by applying a divisor of 1000 to all volume values used in the calculations.
 	    
-- 20040210: Changed Candle charts to display hollow and filled properly.
+20040210: Changed Candle charts to display hollow and filled properly.
 
-- 20040211: Fixed bug for weekly and monthly charts when volume values exceed the double type limit.
-            This fix just disables the values. The proper fix will have to come in the next version
-	    using Qt3.3 due to qt limits on long double conversion.
+20040211: Fixed bug for weekly and monthly charts when volume values exceed the double type limit.
+          This fix just disables the values. The proper fix will have to come in the next version
+          using Qt3.3 due to qt limits on long double conversion.
 	    
-	    
+20040213: Fixed bug that created phantom indicator when edited. 
+
+
 0.23
 ====
 

@@ -1222,6 +1222,7 @@ void QtstalkerApp::slotEditIndicator (QString selection, Plot *plot)
 
   Setting *set2 = plug->getPluginSettings();
   set2->merge(set->getStringList());
+  set2->set("Name", selection, Setting::None);
   delete set;
 
   dialog->setItems(set2);
