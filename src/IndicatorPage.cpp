@@ -242,20 +242,25 @@ void IndicatorPage::newIndicator ()
   QString s("newindicator.html");
   idialog->setHelpFile(s);
   
-  s = tr("Details");
-  idialog->createPage (s);
-  QString s2(tr("Indicator"));
+  QString pl = tr("Details");
+  QString il = tr("Indicator");
+  QString nl = tr("Name");
+  QString ptl = tr("Plot Type");
+  QString igl = tr("Indicator Group");
+  
+  idialog->createPage (pl);
+  
   QStringList l2;
   config.getIndicatorList(l2);
-  idialog->addComboItem(s2, s, l2, 0);
-  s2 = tr("Name");
-  QString s3(tr("NewIndicator"));
-  idialog->addTextItem(s2, s, s3);
-  s2 = tr("Plot Type");
-  idialog->addComboItem(s2, s, l, 1);
-  s2 = tr("Indicator Group");
+  idialog->addComboItem(il, pl, l2, 0);
+  
+  s = tr("NewIndicator");
+  idialog->addTextItem(nl, pl, s);
+  
+  idialog->addComboItem(ptl, pl, l, 1);
+  
   getIndicatorGroups(l);
-  idialog->addComboItem(s2, s, l, 0);
+  idialog->addComboItem(igl, pl, l, 0);
   
   int rc = idialog->exec();
   if (rc == QDialog::Rejected)
@@ -264,14 +269,10 @@ void IndicatorPage::newIndicator ()
     return;
   }
   
-  s = tr("Name");
-  QString name = idialog->getText(s);
-  s = tr("Indicator");
-  QString indicator = idialog->getCombo(s);
-  s = tr("Plot Type");
-  Indicator::PlotType plotType = (Indicator::PlotType) idialog->getComboIndex(s);
-  s = tr("Indicator Group");
-  QString igroup = idialog->getCombo(s);
+  QString name = idialog->getText(nl);
+  QString indicator = idialog->getCombo(il);
+  Indicator::PlotType plotType = (Indicator::PlotType) idialog->getComboIndex(ptl);
+  QString igroup = idialog->getCombo(igl);
   delete idialog;
   
   if (! name.length())

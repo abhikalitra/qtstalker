@@ -21,6 +21,7 @@ SUBDIRS += plugins/quote/NYBOT
 SUBDIRS += plugins/quote/QtstalkerFormat
 SUBDIRS += plugins/quote/Yahoo
 
+#conditional compile if user has mysql installed
 exists(/usr/include/mysql/mysql.h){
   SUBDIRS += plugins/quote/MySQL
 }
@@ -36,7 +37,6 @@ SUBDIRS += plugins/indicator/CUS
 SUBDIRS += plugins/indicator/DMI
 SUBDIRS += plugins/indicator/DPO
 SUBDIRS += plugins/indicator/FI
-SUBDIRS += plugins/indicator/LOWPASS
 SUBDIRS += plugins/indicator/MA
 SUBDIRS += plugins/indicator/MACD
 SUBDIRS += plugins/indicator/MAOSC
@@ -79,4 +79,4 @@ SUBDIRS += plugins/co/TrendLine
 SUBDIRS += plugins/co/FiboLine
 SUBDIRS += plugins/co/Cycle
 
-#SUBDIRS += docs
+SUBDIRS += docs

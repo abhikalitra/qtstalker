@@ -314,6 +314,7 @@
           else 
             0 
 	    
+20050404: Merged LOWPASS plugin into MA plugin. Removed LOWPASS plugin.
 	    
 	  
 	  	  

@@ -53,7 +53,7 @@ QuoteDialog::QuoteDialog () : QTabDialog (0, "QuoteDialog", FALSE, WDestructiveC
   toolbar->getButton(s)->setAccel(CTRL+Key_U);
   
   s = "cancelDownload";
-  s = tr("Cancel Update");
+  s2 = tr("Cancel Update");
   toolbar->addButton(s, canceldownload, s2);
   QObject::connect(toolbar->getButton(s), SIGNAL(clicked()), this, SLOT(cancelDownload()));
   toolbar->setButtonStatus(s, FALSE);

@@ -5,8 +5,10 @@ CONFIG += thread warn_on plugin
 QMAKE_CXXFLAGS += -ffast-math -Os
 
 HEADERS += MA.h
+HEADERS += qtsFFT.h
 
 SOURCES += MA.cpp
+SOURCES += qtsFFT.cpp
 
 TARGET = MA.0.30
 

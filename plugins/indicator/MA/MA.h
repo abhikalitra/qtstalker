@@ -20,6 +20,7 @@
  */
 
 #include "IndicatorPlugin.h"
+#include "qtsFFT.h"
 
 class MA : public IndicatorPlugin
 {
@@ -29,7 +30,8 @@ class MA : public IndicatorPlugin
       EMA,
       SMA,
       WMA,
-      Wilder
+      Wilder,
+      Lowpass
     };
   
     MA ();
@@ -46,6 +48,7 @@ class MA : public IndicatorPlugin
     PlotLine * getWMA (PlotLine *d, int);
     PlotLine * getWilderMA (PlotLine *d, int);
     PlotLine * getMA (PlotLine *d, int, int);
+    PlotLine *getLowpass (PlotLine *d);
     QStringList getMATypes ();
     int getMAType (QString);
     
@@ -58,6 +61,15 @@ class MA : public IndicatorPlugin
     BarData::InputType input;
     QString customInput;
     QStringList maTypeList;
+    
+    // LOWPASS stuff
+    double freq;
+    double width;
+    qtsFFT * fft;
+    
+    void detrend(PlotLine* inLine, double* slope, double* intercept);
+    PlotLine * detrend(PlotLine *x, double &slope, double &intercept, bool detrend = true);
+    PlotLine * raise2Power(PlotLine *x, double pad = 0.0);
 };
 
 extern "C"
