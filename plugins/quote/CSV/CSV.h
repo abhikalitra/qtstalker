@@ -21,6 +21,7 @@
 
 #include "../../../src/QuotePlugin.h"
 #include "../../../src/FuturesData.h"
+#include "../../../src/ChartDb.h"
 #include <qdatetime.h>
 
 class CSV : public QuotePlugin
@@ -34,9 +35,11 @@ class CSV : public QuotePlugin
     void setDelimiter ();
     QDate getDate (QString);
     void newChart (Setting *);
+    void openDb (QString, QString, QString);
     Setting * getDOHLCV (QStringList);
     Setting * getDOHLCVI (QStringList);
     Setting * getDTOHLC (QStringList);
+    Setting * getSDOHLCV (QStringList);
 
   public slots:
     void parse ();
@@ -48,6 +51,7 @@ class CSV : public QuotePlugin
     bool dateFlag;
     QDateTime sdate;
     QDateTime edate;
+    ChartDb *db;
 };
 
 extern "C"

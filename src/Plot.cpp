@@ -565,13 +565,10 @@ void Plot::mousePressEvent (QMouseEvent *event)
 	  break;
         default:
 	  getXY(event->x(), event->y(), 0);
-          if (objectFlag == TrendLine || objectFlag == FibonacciLine)
+          if (objectFlag == FibonacciLine)
 	  {
             mouseFlag = ClickWait2;
-            if (objectFlag == TrendLine)
-             emit statusMessage(tr("Select end point of trend line..."));
-	    else
-             emit statusMessage(tr("Select low point of fibonacci line..."));
+            emit statusMessage(tr("Select low point of fibonacci line..."));
 	  }
 	  else
 	    newChartObject();
@@ -1383,6 +1380,7 @@ void Plot::newChartObject ()
   set->set("Name", objectName, Setting::None);
   set->set("ObjectType", QString::number(objectFlag), Setting::None);
 
+  QStringList l;
   switch(objectFlag)
   {
     case BuyArrow:
@@ -1424,10 +1422,16 @@ void Plot::newChartObject ()
       set->set(QObject::tr("Color"), borderColor.name(), Setting::Color);
       break;
     case TrendLine:
-      set->set(QObject::tr("Start Date"), x1, Setting::Date);
-      set->set(QObject::tr("Start Value"), y1, Setting::Float);
-      set->set(QObject::tr("End Date"), x2, Setting::Date);
-      set->set(QObject::tr("End Value"), y2, Setting::Float);
+      set->set(QObject::tr("Date"), x1, Setting::Date);
+      set->set(QObject::tr("Value"), y1, Setting::Float);
+      l.append(QObject::tr("Open"));
+      l.append(QObject::tr("High"));
+      l.append(QObject::tr("Low"));
+      l.append(QObject::tr("Close"));
+      set->set(QObject::tr("Bar"), QObject::tr("Close"), Setting::List);
+      set->setList(QObject::tr("Bar"), l);
+      set->set(QObject::tr("Angle"), "45", Setting::Integer);
+      set->set(QObject::tr("Use Bar"), QObject::tr("False"), Setting::Bool);
       set->set(QObject::tr("Type"), QObject::tr("Trend Line"), Setting::None);
       set->set(QObject::tr("Color"), borderColor.name(), Setting::Color);
       break;
@@ -1589,23 +1593,6 @@ void Plot::setScale ()
     if (! type.compare(QObject::tr("Vertical Line")))
       continue;
 
-    if (! type.compare(QObject::tr("Trend Line")))
-    {
-      double v = co->getFloat(QObject::tr("Start Value"));
-      double v2 = co->getFloat(QObject::tr("End Value"));
-      if (v > scaleHigh)
-        scaleHigh = v;
-      if (v2 > scaleHigh)
-        scaleHigh = v2;
-
-      if (v < scaleLow)
-        scaleLow = v;
-      if (v2 < scaleLow)
-        scaleLow = v2;
-
-      continue;
-    }
-
     if (! type.compare(QObject::tr("Fibonacci Line")))
     {
       double v = co->getFloat(QObject::tr("High"));
@@ -1614,7 +1601,6 @@ void Plot::setScale ()
         scaleHigh = v;
       if (v2 < scaleLow)
         scaleLow = v2;
-
       continue;
     }
 
@@ -2498,27 +2484,71 @@ void Plot::drawTrendLine (Setting *co)
   QPainter painter;
   painter.begin(&buffer);
 
-  QDateTime dt = QDateTime::fromString(co->getDateTime(QObject::tr("End Date")), Qt::ISODate);
+  Setting *r = data->at(data->count() - 1);
+  QDateTime dt = QDateTime::fromString(r->getDateTime(QObject::tr("Date")), Qt::ISODate);
 
   int x2 = getXFromDate(dt);
   if (x2 == -1)
     return;
 
-  dt = QDateTime::fromString(co->getDateTime(QObject::tr("Start Date")), Qt::ISODate);
+  dt = QDateTime::fromString(co->getDateTime(QObject::tr("Date")), Qt::ISODate);
 
   int x = getXFromDate(dt);
   if (x == -1)
     return;
 
-  int y = convertToY(co->getFloat(QObject::tr("Start Value")));
-  int y2 = convertToY(co->getFloat(QObject::tr("End Value")));
+  int y;
+  if (! co->getData(QObject::tr("Use Bar")).compare(QObject::tr("True")))
+  {
+    QString s = co->getData(QObject::tr("Bar"));
+    r = data->at((x / pixelspace) + startIndex);
+
+    while (1)
+    {
+      if (! s.compare(QObject::tr("Open")))
+      {
+        y = convertToY(r->getFloat("Open"));
+	break;
+      }
+
+      if (! s.compare(QObject::tr("High")))
+      {
+        y = convertToY(r->getFloat("High"));
+	break;
+      }
+
+      if (! s.compare(QObject::tr("Low")))
+      {
+        y = convertToY(r->getFloat("Low"));
+	break;
+      }
+
+      if (! s.compare(QObject::tr("Close")))
+      {
+        y = convertToY(r->getFloat("Close"));
+	break;
+      }
+
+      break;
+    }
+  }
+  else
+    y = convertToY(co->getFloat(QObject::tr("Value")));
 
   QColor color(co->getData(QObject::tr("Color")));
   painter.setPen(color);
 
-  painter.drawLine (x, y, x2, y2);
+  int angle = co->getInt(QObject::tr("Angle"));
+  QWMatrix m = painter.worldMatrix();
+  m.translate(x, y);
+  int pad;
+  m.rotate(-angle);
+  pad = pixelspace * angle;
+  painter.setWorldMatrix(m);
+  painter.drawLine (0, 0, x2 - x + pad, 0);
 
   painter.end();
+
 }
 
 void Plot::drawVerticalLine (Setting *co)

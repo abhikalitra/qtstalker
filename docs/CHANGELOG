@@ -25,7 +25,14 @@
   
 - Added ability to stack indicators or add them to the tabs. Now you can view more than one tabbed indicator at a time.
 
-- Added a search function to the workwith charts tab. 
+- Added a search function to the workwith charts tab.
+
+- Added a new field format for the CSV plugin. SDOHLCV files can now be imported.
+
+- Changed trend line dialog and creation functions to better handle extending them without user intervention. There are now
+  2 starting point options. You can either use the bar data OHLC or specify a value. The "Use Bar" toggle selects the bar fields
+  to be used instead of a specific value. Select an angle in degrees for the trend line to be used. 0 degrees is 3 o'clock, 90 degrees
+  is vertical, 180 degrees is 9 o'clock etc. Trend lines will automatically extend as bars are added to the chart.
 
 
 0.22

@@ -20,7 +20,6 @@
  */
 
 #include "CSV.h"
-#include "../../../src/ChartDb.h"
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qtimer.h>
@@ -33,6 +32,7 @@ CSV::CSV ()
   pluginName = "CSV";
   createFlag = FALSE;
   delimiter = ",";
+  db = 0;
 
   set(tr("Input"), "", Setting::FileList);
 
@@ -56,6 +56,7 @@ CSV::CSV ()
   l.append("DOHLCV");
   l.append("DOHLCVI");
   l.append("DTOHLC");
+  l.append("SDOHLCV");
   set(tr("Format"), l[0], Setting::List);
   setList(tr("Format"), l);
 
@@ -138,15 +139,17 @@ void CSV::parse ()
       continue;
     QTextStream stream(&f);
 
+    QString format = getData(tr("Format"));
+
     QString symbol = getData(tr("Symbol"));
-    if (! symbol.length())
+    if (! symbol.length() && format.compare("SDOHLCV"))
     {
       QStringList l = QStringList::split("/", list[loop], FALSE);
       symbol = l[l.count() - 1];
 
       if (symbol.right(4).contains(".txt"))
         symbol.truncate(symbol.length() - 4);
-	
+
       while (symbol.contains("_"))
         symbol = symbol.remove(symbol.find("_", 0, TRUE), 1);
     }
@@ -191,40 +194,17 @@ void CSV::parse ()
     }
 
     path.append("/");
-    path.append(symbol);
-    ChartDb *db = new ChartDb();
-    db->openChart(path);
 
-    QString format = getData(tr("Format"));
-
-    Setting *details = db->getDetails();
-    if (! details->count())
+    if (symbol.length())
     {
-      newChart(details);
-
-      details->set("Chart Type", type, Setting::None);
-      details->set("Symbol", symbol, Setting::None);
-
-      if (! type.compare("Futures"))
-      {
-        details->set("Futures Type", fd.getSymbol(), Setting::None);
-        details->set("Futures Month", getData(tr("Futures Month")), Setting::None);
-        details->set("Title", fd.getName(), Setting::Text);
-      }
-      else
-        details->set("Title", symbol, Setting::Text);
-
-      db->saveDetails();
-      db->setFormat();
+      QString s = path;
+      s.append(symbol);
+      openDb(s, symbol, type);
     }
-
-    QString s = tr("Updating ");
-    s.append(symbol);
-    emit message(s);
 
     while(stream.atEnd() == 0)
     {
-      s = stream.readLine();
+      QString s = stream.readLine();
       s = stripJunk(s);
 
       QStringList l = QStringList::split(delimiter, s, FALSE);
@@ -251,17 +231,46 @@ void CSV::parse ()
           break;
         }
 
-        break;
+        if (! format.compare("SDOHLCV"))
+        {
+	  r = getSDOHLCV(l);
+          break;
+        }
+
+	break;
       }
 
       if (r)
       {
-        db->setRecord(r);
+        if (! symbol.length())
+	{
+	  s = path;
+	  s.append(r->getData("Symbol"));
+	  openDb(s, r->getData("Symbol"), type);
+          db->setRecord(r);
+          delete db;
+	  db = 0;
+          s = tr("Updating ");
+          s.append(r->getData("Symbol"));
+	}
+	else
+	{
+          db->setRecord(r);
+          s = tr("Updating ");
+          s.append(symbol);
+	}
+
+        emit message(s);
+
         delete r;
       }
     }
 
-    delete db;
+    if (db)
+    {
+      delete db;
+      db = 0;
+    }
     f.close();
   }
 
@@ -398,7 +407,7 @@ void CSV::newChart (Setting *details)
 
   while (1)
   {
-    if (! format.compare("DOHLCV"))
+    if (! format.compare("DOHLCV") || ! format.compare("SDOHLCV"))
     {
       details->set("Format", "Open|High|Low|Close|Volume", Setting::None);
       break;
@@ -417,6 +426,33 @@ void CSV::newChart (Setting *details)
     }
 
     break;
+  }
+}
+
+void CSV::openDb (QString path, QString symbol, QString type)
+{
+  db = new ChartDb();
+  db->openChart(path);
+
+  Setting *details = db->getDetails();
+  if (! details->count())
+  {
+    newChart(details);
+
+    details->set("Chart Type", type, Setting::None);
+    details->set("Symbol", symbol, Setting::None);
+
+    if (! type.compare("Futures"))
+    {
+      details->set("Futures Type", fd.getSymbol(), Setting::None);
+      details->set("Futures Month", getData(tr("Futures Month")), Setting::None);
+      details->set("Title", fd.getName(), Setting::Text);
+    }
+    else
+      details->set("Title", symbol, Setting::Text);
+
+    db->saveDetails();
+    db->setFormat();
   }
 }
 
@@ -683,6 +719,99 @@ Setting * CSV::getDTOHLC (QStringList l)
   r->set("High", high, Setting::Float);
   r->set("Low", low, Setting::Float);
   r->set("Close", close, Setting::Float);
+
+  return r;
+}
+
+Setting * CSV::getSDOHLCV (QStringList l)
+{
+  Setting *r = 0;
+
+  QDate dt = getDate(l[1]);
+  if (! dt.isValid())
+    return r;
+
+  if (dateFlag)
+  {
+    if (dt < sdate.date() || dt > edate.date())
+      return r;
+  }
+
+  // date
+  QString date = dt.toString("yyyyMMdd");
+  date.append("000000");
+
+  // symbol
+  QString symbol = l[0];
+
+  // open
+  QString open;
+  if (setTFloat(l[2]))
+    return r;
+  else
+    open = QString::number(tfloat);
+
+  // high
+  QString high;
+  if (setTFloat(l[3]))
+    return r;
+  else
+    high = QString::number(tfloat);
+
+  // low
+  QString low;
+  if (setTFloat(l[4]))
+    return r;
+  else
+    low = QString::number(tfloat);
+
+  // close
+  QString close;
+  if (setTFloat(l[5]))
+    return r;
+  else
+    close = QString::number(tfloat);
+
+  // volume
+  QString volume;
+  if (setTFloat(l[6]))
+    return r;
+  else
+    volume = QString::number(tfloat);
+
+  // check for bad values
+  if (close.toFloat() == 0)
+    return r;
+
+  if (open.toFloat() == 0 || high.toFloat() == 0 || low.toFloat() == 0)
+  {
+    open = close;
+    high = close;
+    low = close;
+  }
+
+  if (open.toFloat() > high.toFloat() || open.toFloat() < low.toFloat())
+  {
+    open = close;
+    high = close;
+    low = close;
+  }
+
+  if (close.toFloat() > high.toFloat() || close.toFloat() < low.toFloat())
+  {
+    open = close;
+    high = close;
+    low = close;
+  }
+
+  r = new Setting;
+  r->set("Symbol", symbol, Setting::Text);
+  r->set("Date", date, Setting::Date);
+  r->set("Open", open, Setting::Float);
+  r->set("High", high, Setting::Float);
+  r->set("Low", low, Setting::Float);
+  r->set("Close", close, Setting::Float);
+  r->set("Volume", volume, Setting::Float);
 
   return r;
 }
