@@ -27,6 +27,7 @@
 #include <qcombobox.h>
 #include <qspinbox.h>
 #include "Toolbar.h"
+#include "FileButton.h"
 
 class YahooDialog : public QTabDialog
 {
@@ -36,9 +37,11 @@ class YahooDialog : public QTabDialog
     YahooDialog (QWidget *, QString);
     ~YahooDialog ();
     QStringList getList ();
-    void updateList ();
+    void setList (QStringList);
     void setAdjustment (bool);
     bool getAdjustment ();
+    void setAllSymbols (bool);
+    bool getAllSymbols ();
     void setStartDate (QDateTime);
     QDateTime getStartDate ();
     void setEndDate (QDateTime);
@@ -52,13 +55,12 @@ class YahooDialog : public QTabDialog
     
   public slots:
     void newStock ();
-    void selectAll ();
-    void unselectAll ();
     void methodChanged (int);
     void help ();
+    void allSymbolsChecked (bool);
           
   private:
-    QListBox *list;
+    FileButton *list;
     QCheckBox *adjustment;
     QDateEdit *date;
     QDateEdit *date2;
@@ -68,6 +70,7 @@ class YahooDialog : public QTabDialog
     Toolbar *toolbar;
     QSpinBox *retries;
     QSpinBox *timeout;
+    QCheckBox *allSymbols;
 };
 
     

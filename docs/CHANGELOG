@@ -181,10 +181,36 @@
 	  
 20050303: Added a 'Data Directory' option to the CSV plugin. If this option is used, then
           all updates will be forwarded to this directory. This is to help partition data
-	  better for custom uses.
+	  better for custom uses. For example, if the user were to enter 'mystocks' as
+	  as a directory, and the type of security was a Stock, then the directory
+	  ~/Qtstalker/data/Stocks/mystocks would be created and all symbols stored in that
+	  location. The plugin would limit it's updates to that directory.
+	  
+20050304: Code clean up, moved Navigator class from /src into /lib.	  
 	  	  
-
-
+20050304: Big change for the Yahoo plugin. Due to naming conflicts with ticker symbols from
+          foreign exchanges and system performance concerns, we had to make a big change to the
+	  directory structure of ~/Qtstalker/data/Stocks/*. Instead of all stocks being dumped
+	  into one directory, the Yahoo plugin will now store symbols in sub-directories
+	  according to their exchange origins. It will follow the Yahoo naming conventions.
+	  For example:
+	   
+	  ~/Qtstalker/data/Stocks/Yahoo/US - USA stocks
+	  ~/Qtstalker/data/Stocks/Yahoo/AX - AUD stocks
+	  ~/Qtstalker/data/Stocks/Yahoo/L - UK stocks
+	  etc..etc..
+	  
+	  This allows any plugin to work from a common directory structure and allow
+	  the ability to create a unique work space so as not to interfere with any other plugin
+	  data space.
+	   
+20050304: Yahoo plugin can now download the entire history of symbols if requested. The 200
+          day limit has been fixed.
+	  
+20050305: Fixed time delimiter. If the ":" delimiter was not included the time was rejected.
+          Now delimiter is not needed.
+	  
+	  
 	  	  
 0.29
 ====

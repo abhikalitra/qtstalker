@@ -43,6 +43,11 @@ class Yahoo : public QuotePlugin
     void printErrorList ();
     void cancelUpdate ();
     void parseFundamental ();
+    void loadAllSymbols ();
+    void createHistoryUrls (QString);
+    void createAutoHistoryUrls (QString, QString);
+    void createQuoteUrls (QString);
+    void createFundamentalUrls (QString);
       
   public slots:
     void opDone (QNetworkOperation *);
@@ -54,17 +59,19 @@ class Yahoo : public QuotePlugin
     QString data;
     QUrlOperator *op;
     QStringList symbolList;
-    QStringList downloadList;
-    int index;
     bool adjustment;
     QDateTime sdate;
     QDateTime edate;
     QString method;
     int retries;
-    Setting url;
+    QPtrList<Setting> url;
+    Setting *currentUrl;
     int errorLoop;
     QTimer *timer;
     int timeout;
+    bool allSymbols;
+    QString dataPath;
+    QStringList fileList;
 };
 
 extern "C"

@@ -37,8 +37,13 @@ Yahoo::Yahoo ()
   pluginName = "Yahoo";
   op = 0;
   helpFile = "yahoo.html";
-  index = 0;
   errorLoop = 0;
+  allSymbols = FALSE;
+  url.setAutoDelete(TRUE);
+  currentUrl = 0;
+  
+  Config config;
+  dataPath = config.getData(Config::DataPath) + "/Stocks/Yahoo";
   
   timer = new QTimer(this);
   connect(timer, SIGNAL(timeout()), this, SLOT(downloadError()));
@@ -67,13 +72,7 @@ Yahoo::Yahoo ()
   loadSettings();
   
   // preload all symbols to download for default
-  QString s = QDir::homeDirPath();
-  s.append("/Qtstalker/data/Stocks");
-  QDir dir(s);
-  int loop;
-  for (loop = 2; loop < (int) dir.count(); loop++)
-    symbolList.append(dir[loop]);
-  symbolList.sort();
+//  loadAllSymbols();
 }
 
 Yahoo::~Yahoo ()
@@ -93,8 +92,6 @@ void Yahoo::update ()
   data.truncate(0);
   Config config;
   errorLoop = 0;
-  index = 0;
-  downloadList.clear();
 
   QDir dir = QDir::home();
   file = dir.path();
@@ -103,136 +100,31 @@ void Yahoo::update ()
   int loop;
   for (loop = 0; loop < (int) symbolList.count(); loop++)
   {
-    QString s = config.getData(Config::DataPath) + "/Stocks/" + symbolList[loop];
-    if (! dir.exists(s))
+    QString path = dataPath + "/";
+    QFileInfo fi(symbolList[loop]);
+    if (fi.extension(FALSE).length())
+      path.append(fi.extension(FALSE).upper());
+    else
+      path.append("US");
+    path.append("/");
+    path.append(symbolList[loop]);
+    if (! dir.exists(path, TRUE))
       continue;
-  
-    s.truncate(0);
-    
-    while (1)
+      
+    if (! method.compare(tr("History")))
+      createHistoryUrls(symbolList[loop]);
+    else
     {
-      if (! method.compare(tr("History")))
-      {
-        s = "http://ichart.yahoo.com/table.csv?s=";
-        s.append(symbolList[loop]);
-        s.append("&a=");
-        s.append(QString::number(sdate.date().month() - 1));
-        s.append("&b=");
-        s.append(sdate.toString("dd"));
-        s.append("&c=");
-        s.append(sdate.toString("yy"));
-        s.append("&d=");
-        s.append(QString::number(edate.date().month() - 1));
-        s.append("&e=");
-        s.append(edate.toString("dd"));
-        s.append("&f=");
-        s.append(edate.toString("yy"));
-        s.append("&g=d&q=q&y=0&x=.csv");
-	break;
-      }
-      
       if (! method.compare(tr("Auto History")))
+        createAutoHistoryUrls(path, symbolList[loop]);
+      else
       {
-        QString s2 = config.getData(Config::DataPath) + "/Stocks/" + symbolList[loop];
-	if (! dir.exists(s2))
-	  break;
-	  
-        Config config;
-        DbPlugin *plug = config.getDbPlugin("Stocks");
-        if (! plug)
-        {
-          config.closePlugin("Stocks");
-          break;
-        }
-	
-        if (plug->openChart(s2))
-        {
-          config.closePlugin("Stocks");
-          break;
-        }
-	
-        // verify if this chart can be updated by this plugin
-        s2 = plug->getHeaderField(DbPlugin::QuotePlugin);
-        if (! s2.length())
-          plug->setHeaderField(DbPlugin::QuotePlugin, pluginName);
-        else
-        {
-          if (s2.compare(pluginName))
-          {
-            config.closePlugin("Stocks");
-            break;
-          }
-        }
-        
-	edate = QDateTime::currentDateTime();
-        if (edate.date().dayOfWeek() == 6)
-          edate = edate.addDays(-1);
-        else
-        {
-          if (edate.date().dayOfWeek() == 7)
-            edate = edate.addDays(-2);
-        }
-	
-	Bar *bar = plug->getLastBar();
-	if (! bar)
-	{
-	  QDateTime dt = edate;
-	  dt = dt.addDays(-365);
-	  bar = new Bar;
-	  bar->setDate(dt.toString("yyyyMMdd000000"));
-	}
-
-	if (bar->getDate().getDate() == edate.date())
-	{
-	  delete bar;
-          config.closePlugin("Stocks");
-	  break;
-	}
-		
-        s = "http://ichart.yahoo.com/table.csv?s=";
-        s.append(symbolList[loop]);
-        s.append("&a=");
-        s.append(QString::number(bar->getDate().getDate().month() - 1));
-        s.append("&b=");
-        s.append(bar->getDate().getDate().toString("dd"));
-        s.append("&c=");
-        s.append(bar->getDate().getDate().toString("yy"));
-        s.append("&d=");
-        s.append(QString::number(edate.date().month() - 1));
-        s.append("&e=");
-        s.append(edate.toString("dd"));
-        s.append("&f=");
-        s.append(edate.toString("yy"));
-        s.append("&g=d&q=q&y=0&x=.csv");
-	
-	delete bar;
-        config.closePlugin("Stocks");
-	break;
+        if (! method.compare(tr("Quote")))
+          createQuoteUrls(symbolList[loop]);
+	else
+          createFundamentalUrls(symbolList[loop]);
       }
-      
-      if (! method.compare(tr("Quote")))
-      {
-        // multiple quotes: quote.yahoo.com/d/quotes.csv?s=IBM+RHAT+SCOX+MSFT+GOLD&f=sl1d1t1c1ohgv 
-        // multiple close only: quote.yahoo.com/d/quotes.csv?s=IBM+RHAT+SCOX+MSFT+GOLD&f=sl1
-        // URLPrefix = "http://quote.yahoo.com/d/quotes.csv?s=";
-        // URLPostfix = "&f=snl1d1t1c1ohgv&e=.csv";	
-        s = "http://finance.yahoo.com/d/quotes.csv?s=";
-        s.append(symbolList[loop]);
-        s.append("&f=snl1d1t1c1ohgv&e=.csv");
-	break;
-      }
-      
-      if (! method.compare(tr("Fundamental")))
-      {
-        s = "http://finance.yahoo.com/q/ks?s=";
-        s.append(symbolList[loop]);
-      }
-      
-      break;
     }
-    
-    if (s.length())
-      url.setData(symbolList[loop], s);
   }
 
   if (! url.count())
@@ -242,8 +134,7 @@ void Yahoo::update ()
     return;
   }
 
-  downloadList = url.getKeyList();
-  downloadList.sort();
+  currentUrl = url.first();
   
   QTimer::singleShot(250, this, SLOT(getFile()));
 }
@@ -267,17 +158,21 @@ void Yahoo::opDone (QNetworkOperation *o)
         parseFundamental();
     }
 
-    QString s = tr("Downloading ");
-    s.append(downloadList[index]);
-    emit statusLogMessage(s);
+    url.remove();
+    if (! url.count())
+    {
+      emit done();
+      emit statusLogMessage(tr("Done"));
+      return;
+    }
+    else
+      currentUrl = url.current();
     
-    url.remove(downloadList[index]);
-      
-    index++;
-    if (index >= (int) downloadList.count())
+    if (! currentUrl)
     {
       errorLoop++;
-      if (errorLoop == retries || url.count() == 0)
+      
+      if (errorLoop == retries)
       {
         emit done();
         emit statusLogMessage(tr("Done"));
@@ -285,10 +180,7 @@ void Yahoo::opDone (QNetworkOperation *o)
         return;
       }
       else
-      {
-        downloadList = url.getKeyList();
-	index = 0;
-      }
+	currentUrl = url.first();
     }
 
     data.truncate(0);
@@ -310,10 +202,14 @@ void Yahoo::getFile ()
 
   timer->start(timeout * 1000, TRUE);
   
-  op = new QUrlOperator(url.getData(downloadList[index]));
+  op = new QUrlOperator(currentUrl->getData("url"));
   connect(op, SIGNAL(finished(QNetworkOperation *)), this, SLOT(opDone(QNetworkOperation *)));
   connect(op, SIGNAL(data(const QByteArray &, QNetworkOperation *)), this, SLOT(dataReady(const QByteArray &, QNetworkOperation *)));
   op->get();
+  
+  QString s = tr("Downloading ");
+  s.append(currentUrl->getData("symbol"));
+  emit statusLogMessage(s);
 }
 
 void Yahoo::dataReady (const QByteArray &d, QNetworkOperation *)
@@ -353,7 +249,15 @@ void Yahoo::parseHistory ()
   stream.setDevice(&f);
 
   Config config;
-  s = config.getData(Config::DataPath) + "/Stocks/" + downloadList[index];
+  s = dataPath + "/";
+  QFileInfo fi(currentUrl->getData("symbol"));
+  if (fi.extension(FALSE).length())
+    s.append(fi.extension(FALSE).upper());
+  else
+    s.append("US");
+  s.append("/");
+  s.append(currentUrl->getData("symbol"));
+  
   DbPlugin *plug = config.getDbPlugin("Stocks");
   if (! plug)
   {
@@ -378,7 +282,7 @@ void Yahoo::parseHistory ()
   {
     if (s.compare(pluginName))
     {
-      s = downloadList[index] + " - skipping update. Source does not match destination.";
+      s = currentUrl->getData("symbol") + " - skipping update. Source does not match destination.";
       emit statusLogMessage(s);
       f.close();
       config.closePlugin("Stocks");
@@ -390,8 +294,8 @@ void Yahoo::parseHistory ()
   if (! s.length())
   {
     plug->createNew();
-    plug->setHeaderField(DbPlugin::Symbol, downloadList[index]);
-    plug->setHeaderField(DbPlugin::Title, downloadList[index]);
+    plug->setHeaderField(DbPlugin::Symbol, currentUrl->getData("symbol"));
+    plug->setHeaderField(DbPlugin::Title, currentUrl->getData("symbol"));
   }
 
   while(stream.atEnd() == 0)
@@ -478,7 +382,7 @@ void Yahoo::parseHistory ()
     plug->setBar(bar);
     delete bar;
     
-    s = downloadList[index] + " " + date + " " + open + " " + high + " " + low
+    s = currentUrl->getData("symbol") + " " + date + " " + open + " " + high + " " + low
         + " " + close + " " + volume;
 	
     emit dataLogMessage(s);
@@ -505,8 +409,15 @@ void Yahoo::parseQuote ()
     return;
   stream.setDevice(&f);
 
-  Config config;  
-  QString s = config.getData(Config::DataPath) + "/Stocks/" + downloadList[index];
+  Config config;
+  QString s = dataPath + "/";
+  QFileInfo fi(currentUrl->getData("symbol"));
+  if (fi.extension(FALSE).length())
+    s.append(fi.extension(FALSE).upper());
+  else
+    s.append("US");
+  s.append("/");
+  s.append(currentUrl->getData("symbol"));
   
   DbPlugin *plug = config.getDbPlugin("Stocks");
   if (! plug)
@@ -532,7 +443,7 @@ void Yahoo::parseQuote ()
   {
     if (s.compare(pluginName))
     {
-      s = downloadList[index] + " - skipping update. Source does not match destination.";
+      s = currentUrl->getData("symbol") + " - skipping update. Source does not match destination.";
       emit statusLogMessage(s);
       f.close();
       config.closePlugin("Stocks");
@@ -544,8 +455,8 @@ void Yahoo::parseQuote ()
   if (! s.length())
   {
     plug->createNew();
-    plug->setHeaderField(DbPlugin::Symbol, downloadList[index]);
-    plug->setHeaderField(DbPlugin::Title, downloadList[index]);
+    plug->setHeaderField(DbPlugin::Symbol, currentUrl->getData("symbol"));
+    plug->setHeaderField(DbPlugin::Title, currentUrl->getData("symbol"));
   }
   
   while(stream.atEnd() == 0)
@@ -618,7 +529,7 @@ void Yahoo::parseQuote ()
     plug->setBar(bar);
     delete bar;
     
-    s = downloadList[index] + " " + date + " " + open + " " + high + " " + low
+    s = currentUrl->getData("symbol") + " " + date + " " + open + " " + high + " " + low
         + " " + close + " " + volume;
 	
     emit dataLogMessage(s);
@@ -737,6 +648,8 @@ void Yahoo::prefDialog (QWidget *w)
   dialog->setMethod(method);
   dialog->setRetries(retries);
   dialog->setTimeout(timeout);
+  dialog->setAllSymbols(allSymbols);
+  dialog->setList(fileList);
   
   int rc = dialog->exec();
   if (rc == QDialog::Accepted)
@@ -744,10 +657,24 @@ void Yahoo::prefDialog (QWidget *w)
     adjustment = dialog->getAdjustment();
     sdate = dialog->getStartDate();
     edate = dialog->getEndDate();
-    symbolList = dialog->getList();
     method = dialog->getMethod();
     retries = dialog->getRetries();
     timeout = dialog->getTimeout();
+    allSymbols = dialog->getAllSymbols();
+    
+    if (! allSymbols)
+    {
+      fileList = dialog->getList();
+      int loop;
+      symbolList.clear();
+      for (loop = 0; loop < (int) fileList.count(); loop++)
+      {
+        QFileInfo fi(fileList[loop]);
+        symbolList.append(fi.fileName());
+      }
+    }
+    else
+      loadAllSymbols();
     
     saveFlag = TRUE;
     saveSettings();
@@ -772,6 +699,9 @@ void Yahoo::loadSettings ()
   s = settings.readEntry("/Timeout", "15");
   timeout = s.toInt();
   
+  s = settings.readEntry("/AllSymbols", "1");
+  allSymbols = s.toInt();
+  
   settings.endGroup();
 }
 
@@ -787,18 +717,17 @@ void Yahoo::saveSettings ()
   settings.writeEntry("/Method", method);
   settings.writeEntry("/Retries", QString::number(retries));
   settings.writeEntry("/Timeout", QString::number(timeout));
+  settings.writeEntry("/AllSymbols", QString::number(allSymbols));
   
   settings.endGroup();
 }
 
 void Yahoo::printErrorList ()
 {
-  int loop;
-  QStringList l = url.getKeyList();
-  for (loop = 0; loop < (int) l.count(); loop++)
+  for (url.first(); url.current() != 0; url.next())
   {
     QString s = tr("Unable to download ");
-    s.append(l[loop]);
+    s.append(url.current()->getData("symbol"));
     emit statusLogMessage(s);
   }
 }	
@@ -817,13 +746,22 @@ void Yahoo::downloadError ()
 {
   timer->stop();
    
-  emit statusLogMessage(tr("Download error ") + downloadList[index] + tr(" skipped"));
+  emit statusLogMessage(tr("Download error ") + currentUrl->getData("symbol") + tr(" skipped"));
     
-  index++;
-  if (index >= (int) downloadList.count())
+  currentUrl = url.next();
+  if (! url.count())
+  {
+    emit done();
+    emit statusLogMessage(tr("Done"));
+    printErrorList();
+    return;
+  }
+    
+  if (! currentUrl)
   {
     errorLoop++;
-    if (errorLoop == retries || url.count() == 0)
+    
+    if (errorLoop == retries)
     {
       emit done();
       emit statusLogMessage(tr("Done"));
@@ -831,10 +769,7 @@ void Yahoo::downloadError ()
       return;
     }
     else
-    {
-      downloadList = url.getKeyList();
-      index = 0;
-    }
+      currentUrl = url.first();
   }
     
   data.truncate(0);
@@ -894,7 +829,14 @@ void Yahoo::parseFundamental ()
   }
       
   Config config;
-  QString s = config.getData(Config::DataPath) + "/Stocks/" + downloadList[index];
+  QString s = dataPath + "/";
+  QFileInfo fi(currentUrl->getData("symbol"));
+  if (fi.extension(FALSE).length())
+    s.append(fi.extension(FALSE).upper());
+  else
+    s.append("US");
+  s.append("/");
+  s.append(currentUrl->getData("symbol"));
   
   DbPlugin *plug = config.getDbPlugin("Stocks");
   if (! plug)
@@ -918,7 +860,7 @@ void Yahoo::parseFundamental ()
   {
     if (s.compare(pluginName))
     {
-      s = downloadList[index] + " - skipping update. Source does not match destination.";
+      s = currentUrl->getData("symbol") + " - skipping update. Source does not match destination.";
       emit statusLogMessage(s);
       config.closePlugin("Stocks");
       return;
@@ -929,9 +871,9 @@ void Yahoo::parseFundamental ()
   if (! s.length())
   {
     plug->createNew();
-    plug->setHeaderField(DbPlugin::Symbol, downloadList[index]);
+    plug->setHeaderField(DbPlugin::Symbol, currentUrl->getData("symbol"));
     
-    QString title = downloadList[index];
+    QString title = currentUrl->getData("symbol");
     int p = data.find("yfnc_leftnav1", 0, TRUE);
     if (p != -1)
     {
@@ -953,10 +895,212 @@ void Yahoo::parseFundamental ()
   
   plug->setData("Fundamentals", fund.getString());
     
-  s = "Updating " + downloadList[index];
+  s = "Updating " + currentUrl->getData("symbol");
   emit dataLogMessage(s);
   
   config.closePlugin("Stocks");
+}
+
+void Yahoo::loadAllSymbols ()
+{
+  symbolList.clear();
+  
+  QDir dir(dataPath);
+  int loop;
+  for (loop = 2; loop < (int) dir.count(); loop++)
+  {
+    QString s = dir.absPath() + "/" + dir[loop];
+    QFileInfo fi(s);
+    if (fi.isDir())
+    {
+      int loop2;
+      QDir dir2(s);
+      for (loop2 = 2; loop2 < (int) dir2.count(); loop2++)
+        symbolList.append(dir2[loop2]);
+    }
+  }
+  
+  symbolList.sort();
+}
+
+void Yahoo::createHistoryUrls (QString d)
+{
+  if (sdate.date().daysTo(edate.date()) > 199) 
+  { 
+    QDateTime tsdate = sdate;
+    QDateTime tedate = sdate;
+	  
+    while (tsdate <= edate)
+    {
+      tsdate = tedate;
+      tedate = tsdate.addDays(199);
+      if (tedate.date().dayOfWeek() == 6)
+        tedate = tedate.addDays(-1);
+      else
+      {
+        if (tedate.date().dayOfWeek() == 7)
+          tedate = tedate.addDays(-2);
+      }
+            
+      if (tedate > edate)
+	tedate = edate;
+	    
+      QString s = "http://ichart.yahoo.com/table.csv?s=";
+      s.append(d);
+      s.append("&a=");
+      s.append(QString::number(tsdate.date().month() - 1));
+      s.append("&b=");
+      s.append(tsdate.toString("dd"));
+      s.append("&c=");
+      s.append(tsdate.toString("yy"));
+      s.append("&d=");
+      s.append(QString::number(tedate.date().month() - 1));
+      s.append("&e=");
+      s.append(tedate.toString("dd"));
+      s.append("&f=");
+      s.append(tedate.toString("yy"));
+      s.append("&g=d&q=q&y=0&x=.csv");
+	    
+      Setting *set = new Setting;
+      set->setData("url", s);
+      set->setData("symbol", d);
+      url.append(set);
+	    
+      if (tedate == edate)
+        break;
+    }
+  }
+  else 
+  { 
+    QString s = "http://ichart.yahoo.com/table.csv?s=";
+    s.append(d);
+    s.append("&a=");
+    s.append(QString::number(sdate.date().month() - 1));
+    s.append("&b=");
+    s.append(sdate.toString("dd"));
+    s.append("&c=");
+    s.append(sdate.toString("yy"));
+    s.append("&d=");
+    s.append(QString::number(edate.date().month() - 1));
+    s.append("&e=");
+    s.append(edate.toString("dd"));
+    s.append("&f=");
+    s.append(edate.toString("yy"));
+    s.append("&g=d&q=q&y=0&x=.csv");
+    
+    Setting *set = new Setting;
+    set->setData("url", s);
+    set->setData("symbol", d);
+    url.append(set);
+  }
+}
+
+void Yahoo::createAutoHistoryUrls (QString path, QString d)
+{
+  Config config;
+  DbPlugin *plug = config.getDbPlugin("Stocks");
+  if (! plug)
+  {
+    config.closePlugin("Stocks");
+    qDebug("Yahoo::createAutoHistoryUrls:could not open plugin");
+    return;
+  }
+	
+  if (plug->openChart(path))
+  {
+    config.closePlugin("Stocks");
+    qDebug("Yahoo::createAutoHistoryUrls:could not open db");
+    return;
+  }
+	
+  // verify if this chart can be updated by this plugin
+  QString s = plug->getHeaderField(DbPlugin::QuotePlugin);
+  if (! s.length())
+    plug->setHeaderField(DbPlugin::QuotePlugin, pluginName);
+  else
+  {
+    if (s.compare(pluginName))
+    {
+      config.closePlugin("Stocks");
+      qDebug("Yahoo::createAutoHistoryUrls:source not same as destination");
+      return;
+    }
+  }
+        
+  edate = QDateTime::currentDateTime();
+  if (edate.date().dayOfWeek() == 6)
+    edate = edate.addDays(-1);
+  else
+  {
+    if (edate.date().dayOfWeek() == 7)
+      edate = edate.addDays(-2);
+  }
+	
+  Bar *bar = plug->getLastBar();
+  if (! bar)
+  {
+    QDateTime dt = edate;
+    dt = dt.addDays(-365);
+    bar = new Bar;
+    bar->setDate(dt.toString("yyyyMMdd000000"));
+  }
+
+  if (bar->getDate().getDate() == edate.date())
+  {
+    delete bar;
+    config.closePlugin("Stocks");
+    qDebug("Yahoo::createAutoHistoryUrls:barDate == endDate");
+    return;
+  }
+		
+  s = "http://ichart.yahoo.com/table.csv?s=";
+  s.append(d);
+  s.append("&a=");
+  s.append(QString::number(bar->getDate().getDate().month() - 1));
+  s.append("&b=");
+  s.append(bar->getDate().getDate().toString("dd"));
+  s.append("&c=");
+  s.append(bar->getDate().getDate().toString("yy"));
+  s.append("&d=");
+  s.append(QString::number(edate.date().month() - 1));
+  s.append("&e=");
+  s.append(edate.toString("dd"));
+  s.append("&f=");
+  s.append(edate.toString("yy"));
+  s.append("&g=d&q=q&y=0&x=.csv");
+	
+  delete bar;
+  config.closePlugin("Stocks");
+  
+  Setting *set = new Setting;
+  set->setData("url", s);
+  set->setData("symbol", d);
+  url.append(set);
+}
+
+void Yahoo::createQuoteUrls (QString d)
+{
+  // multiple quotes: quote.yahoo.com/d/quotes.csv?s=IBM+RHAT+SCOX+MSFT+GOLD&f=sl1d1t1c1ohgv 
+  // multiple close only: quote.yahoo.com/d/quotes.csv?s=IBM+RHAT+SCOX+MSFT+GOLD&f=sl1
+  // URLPrefix = "http://quote.yahoo.com/d/quotes.csv?s=";
+  // URLPostfix = "&f=snl1d1t1c1ohgv&e=.csv";	
+  QString s = "http://finance.yahoo.com/d/quotes.csv?s=";
+  s.append(d);
+  s.append("&f=snl1d1t1c1ohgv&e=.csv");
+  
+  Setting *set = new Setting;
+  set->setData("url", s);
+  set->setData("symbol", d);
+  url.append(set);
+}
+
+void Yahoo::createFundamentalUrls (QString d)
+{
+  QString s = "http://finance.yahoo.com/q/ks?s=" + d;
+  Setting *set = new Setting;
+  set->setData("url", s);
+  set->setData("symbol", d);
+  url.append(set);
 }
 
 //***********************************************************************

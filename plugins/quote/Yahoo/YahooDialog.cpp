@@ -22,8 +22,6 @@
 #include "YahooDialog.h"
 #include "DbPlugin.h"
 #include "../../../pics/newchart.xpm"
-#include "../../../pics/selectall.xpm"
-#include "../../../pics/unselectall.xpm"
 #include "HelpWindow.h"
 #include "Config.h"
 #include <qinputdialog.h>
@@ -38,8 +36,8 @@ YahooDialog::YahooDialog (QWidget *p, QString d) : QTabDialog (p, "YahooDialog",
 {
   helpFile = d;
 
-  dataPath = QDir::homeDirPath();
-  dataPath.append("/Qtstalker/data/Stocks");
+  Config config;
+  dataPath = config.getData(Config::DataPath) + "/Stocks/Yahoo";
 
   QWidget *w = new QWidget(this);
   
@@ -53,15 +51,9 @@ YahooDialog::YahooDialog (QWidget *p, QString d) : QTabDialog (p, "YahooDialog",
   toolbar->addButton("new", newchart, tr("New Symbol"));
   QObject::connect(toolbar->getButton("new"), SIGNAL(clicked()), this, SLOT(newStock()));
   
-  toolbar->addButton("selectAll", selectall, tr("Select All Symbols"));
-  QObject::connect(toolbar->getButton("selectAll"), SIGNAL(clicked()), this, SLOT(selectAll()));
-  
-  toolbar->addButton("unselectAll", unselectall, tr("Unselect All Symbols"));
-  QObject::connect(toolbar->getButton("unselectAll"), SIGNAL(clicked()), this, SLOT(unselectAll()));
-  
   vbox->addSpacing(10);
   
-  QGridLayout *grid = new QGridLayout(vbox, 6, 2);
+  QGridLayout *grid = new QGridLayout(vbox, 5, 2);
   grid->setSpacing(5);
   grid->setColStretch(1, 1);
   
@@ -104,7 +96,7 @@ YahooDialog::YahooDialog (QWidget *p, QString d) : QTabDialog (p, "YahooDialog",
   timeout = new QSpinBox(1, 99, 1, w);
   grid->addWidget(timeout, 4, 1);
   
-  vbox->addSpacing(5);
+//  vbox->addSpacing(5);
   
   adjustment = new QCheckBox(tr("Adjustment"), w);
   vbox->addWidget(adjustment);
@@ -117,11 +109,11 @@ YahooDialog::YahooDialog (QWidget *p, QString d) : QTabDialog (p, "YahooDialog",
   vbox->addWidget(sep);
   vbox->addSpacing(10);
   
-  label = new QLabel(tr("Download Symbols:"), w);
-  vbox->addWidget(label);
+  allSymbols = new QCheckBox(tr("All Symbols"), w);
+  connect(allSymbols, SIGNAL(toggled(bool)), this, SLOT(allSymbolsChecked(bool)));
+  vbox->addWidget(allSymbols);
   
-  list = new QListBox(w);
-  list->setMultiSelection(TRUE);
+  list = new FileButton(w, QStringList(), dataPath);
   vbox->addWidget(list);
 
   addTab(w, tr("Yahoo"));
@@ -132,9 +124,6 @@ YahooDialog::YahooDialog (QWidget *p, QString d) : QTabDialog (p, "YahooDialog",
   QObject::connect(this, SIGNAL(helpButtonPressed()), this, SLOT(help()));
 
   resize(300, 400);
-      
-  updateList();
-  selectAll();
 }
 
 YahooDialog::~YahooDialog ()
@@ -169,7 +158,20 @@ void YahooDialog::newStock ()
   Config config;
   for (loop = 0; loop < (int) l.count(); loop++)
   {
-    QString s = dataPath;
+    QString s = dataPath + "/";
+    QFileInfo fi(l[loop]);
+    if (fi.extension(FALSE).length())
+    {
+      s.append(fi.extension(FALSE).upper());
+      if (! dir.exists(s, TRUE))
+        dir.mkdir(s);
+    }
+    else
+    {
+      s.append("US");
+      if (! dir.exists(s, TRUE))
+        dir.mkdir(s);
+    }
     s.append("/");
     s.append(l[loop]);
     if (dir.exists(s, TRUE))
@@ -193,42 +195,16 @@ void YahooDialog::newStock ()
     
     config.closePlugin("Stocks");
   }
-  
-  updateList();
 }
 
-void YahooDialog::updateList ()
+void YahooDialog::setList (QStringList l)
 {
-  list->clear();
-  
-  QDir dir(dataPath);
-  int loop;
-  for (loop = 2; loop < (int) dir.count(); loop++)
-    list->insertItem(dir[loop]);
-  list->sort();
+  list->setFile(l);
 }
 
 QStringList YahooDialog::getList ()
 {
-  QStringList l;
-  int loop;
-  for (loop = 0; loop < (int) list->count(); loop++)
-  {
-    if (list->isSelected(loop))
-      l.append(list->text(loop));
-  }
-  
-  return l;
-}
-
-void YahooDialog::selectAll ()
-{
-  list->selectAll(TRUE);
-}
-
-void YahooDialog::unselectAll ()
-{
-  list->selectAll(FALSE);
+  return list->getFile();
 }
 
 void YahooDialog::setAdjustment (bool d)
@@ -356,3 +332,20 @@ void YahooDialog::help ()
   reject();
 }
 
+void YahooDialog::allSymbolsChecked (bool d)
+{
+  if (d)
+    list->setEnabled(FALSE);
+  else
+    list->setEnabled(TRUE);
+}
+
+void YahooDialog::setAllSymbols (bool d)
+{
+  allSymbols->setChecked(d);
+}
+
+bool YahooDialog::getAllSymbols ()
+{
+  return allSymbols->isChecked();
+}

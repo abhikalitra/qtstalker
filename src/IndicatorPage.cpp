@@ -383,6 +383,7 @@ void IndicatorPage::editIndicator (QString d)
     if (set.getInt("enable"))
     {
       set.setData("File", s);
+      set.setData("Name", d);
       Setting *set2 = new Setting;
       set2->parse(set.getString());      
       emit signalEditIndicator(set2);

@@ -354,15 +354,22 @@ void CSVDialog::deleteRule ()
 
 void CSVDialog::saveRule ()
 {
-  if (directory->text().contains("/"))
+  if (! directory->text().length())
   {
-    QMessageBox::information(this, tr("Error"), tr("No sub directories allowed.\nDirectory name must be one word only."));
+    QMessageBox::information(this, tr("Error"), tr("Must inlcude a directory."));
     return;
   }
-  
+
   if (directory->text().contains(" "))
   {
     QMessageBox::information(this, tr("Error"), tr("No spaces allowed in directory name."));
+    return;
+  }
+  
+  if (directory->text().right(1).compare("/") ||
+      directory->text().left(1).compare("/"))
+  {
+    QMessageBox::information(this, tr("Error"), tr("Invalid directory name."));
     return;
   }
   

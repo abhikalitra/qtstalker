@@ -248,16 +248,8 @@ Bar * CC::getBar (QString k, QString d)
 
 void CC::setBar (Bar *bar)
 {
-  if (getHeaderField(BarType).toInt())
-  {
-    if (! bar->getTickFlag())
-      return;
-  }
-  else
-  {
-    if (bar->getTickFlag())
-      return;
-  }
+  if (getHeaderField(BarType).toInt() != bar->getTickFlag())
+    return;
 
   QStringList l;
   l.append(QString::number(bar->getOpen()));

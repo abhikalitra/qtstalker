@@ -134,6 +134,13 @@ void CSV::parse ()
 
   // get the optional directory path offset
   QString directory = rule->getData("Directory");
+  if (! directory.length())
+  {
+    emit statusLogMessage(tr("Directory not found"));
+    emit done();
+    delete rule;
+    return;
+  }
   
   // check for time field and set the tickflag  
   bool tickFlag = FALSE;
@@ -485,8 +492,18 @@ QString CSV::getTime (QString d)
   QString time;
   
   if (! d.contains(":"))
-    return time;
-
+  {
+    if (d.length() == 6)
+    {
+      time = d;
+      time.insert(4, ":");
+      time.insert(2, ":");
+      return time;
+    }
+    else
+      return time;
+  }
+    
   QStringList l = QStringList::split(":", d, FALSE);
   if (l.count() != 3)
     return time;
