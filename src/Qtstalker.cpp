@@ -289,7 +289,11 @@ QtstalkerApp::QtstalkerApp()
   for (loop = 0; loop < (int) l.count(); loop++)
   {
     Setting *set = config->getIndicator(l[loop]);
-    addIndicatorButton(l[loop], (Indicator::PlotType) set->getData("plotType").toInt());
+    s = set->getData("plotType");
+    if (! s.length())
+      addIndicatorButton(l[loop], Indicator::TabPlot);
+    else
+      addIndicatorButton(l[loop], (Indicator::PlotType) s.toInt());
     delete set;
   }
 
