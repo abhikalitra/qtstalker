@@ -31,6 +31,7 @@
 #include <qmessagebox.h>
 #include <qobject.h>
 
+
 CC::CC ()
 {
   helpFile = "cc.html";
@@ -168,6 +169,8 @@ void CC::update ()
   if (! dir.exists(baseDir, TRUE))
     return;
     
+  emit signalStatusMessage(QString(tr("Updating chart...")));
+  
   s = "Maximum Years";
   getData(s, s2);
   int maxYears = s2.toInt();
@@ -190,6 +193,8 @@ void CC::update ()
   int loop;
   for (loop = 2; loop < (int) dir.count(); loop++)
   {
+    emit signalProgMessage(loop, dir.count());
+
     QString s = dir[loop].right(5);
     s.truncate(4);
     
@@ -255,6 +260,8 @@ void CC::update ()
     if (flag)
       break;
   }
+  
+  emit signalProgMessage(-1, -1);
 }
 
 void CC::createNew ()

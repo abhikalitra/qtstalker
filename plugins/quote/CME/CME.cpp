@@ -20,10 +20,8 @@
  */
 
 #include "CME.h"
-#include "DbPlugin.h"
 #include "PrefDialog.h"
 #include "Bar.h"
-#include "Config.h"
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qnetwork.h>
@@ -41,6 +39,7 @@ CME::CME ()
   helpFile = "cme.html";
   downloadIndex = 0;
   cancelFlag = FALSE;
+  plug = 0;
   
   fd.getSymbolList(pluginName, symbolList);
   symbolList.sort();
@@ -48,8 +47,15 @@ CME::CME ()
   connect(this, SIGNAL(signalCopyFileDone(QString)), this, SLOT(fileDone(QString)));
   connect(this, SIGNAL(signalTimeout()), this, SLOT(timeoutError()));
   
-  Config config;
   file = config.getData(Config::Home) + "/download";
+  
+  QString plugin("Futures");  
+  plug = config.getDbPlugin(plugin);
+  if (! plug)
+  {
+    config.closePlugin(plugin);
+    qDebug("CME::cannot load Futures plugin");
+  }
   
   loadSettings();
   qInitNetworkProtocols();
@@ -57,10 +63,19 @@ CME::CME ()
 
 CME::~CME ()
 {
+  if (plug)
+  {
+    QString plugin("Futures");  
+    config.closePlugin(plugin);
+  }
 }
 
 void CME::update ()
 {
+  if (! plug)
+    return;
+    
+  plug->close();
   urlList.clear();
   symbolLoop = 0;
   errorLoop = 0;
@@ -75,7 +90,6 @@ void CME::update ()
   else
   {
     downloadIndex = 0;
-    Config config;
     QString s = config.getData(Config::Home);
   
     // remove any old files
@@ -186,6 +200,9 @@ void CME::timeoutError ()
 
 void CME::parseToday ()
 {
+  if (! plug)
+    return;
+    
   QFile f(file);
   if (! f.open(IO_ReadOnly))
     return;
@@ -586,6 +603,9 @@ void CME::parseToday ()
 
 void CME::parseHistory ()
 {
+  if (! plug)
+    return;
+    
   QString s2 = file2;
   s2.append("/");
   s2.append(downloadSymbolList[downloadIndex].lower());
@@ -865,6 +885,9 @@ void CME::saveTodayData (QStringList &l)
 
 void CME::parse (Setting &data)
 {
+  if (! plug)
+    return;
+    
   QString s = data.getData("CSymbol");
   if (fd.setSymbol(s))
     return;
@@ -938,56 +961,46 @@ void CME::parse (Setting &data)
   s = tr("Updating ") + data.getData("Symbol");
   emit statusLogMessage(s);
 
-  Config config;
-  QString plugin("Futures");
-  DbPlugin *db = config.getDbPlugin(plugin);
-  if (! db)
-  {
-    config.closePlugin(plugin);
-    return;
-  }
-  
   s = path + "/" + data.getData("Symbol");
-  if (db->openChart(s))
+  if (plug->openChart(s))
   {
     emit statusLogMessage(tr("Could not open db."));
-    config.closePlugin(plugin);
     return;
   }
 
   // verify if this chart can be updated by this plugin
-  db->getHeaderField(DbPlugin::QuotePlugin, s);
+  plug->getHeaderField(DbPlugin::QuotePlugin, s);
   if (! s.length())
-    db->setHeaderField(DbPlugin::QuotePlugin, pluginName);
+    plug->setHeaderField(DbPlugin::QuotePlugin, pluginName);
   else
   {
     if (s.compare(pluginName))
     {
       s = data.getData("Symbol") + tr(" - skipping update. Source does not match destination.");
       emit statusLogMessage(s);
-      config.closePlugin(plugin);
+      plug->close();
       return;
     }
   }
       
-  db->getHeaderField(DbPlugin::Symbol, s);
+  plug->getHeaderField(DbPlugin::Symbol, s);
   if (! s.length())
   {
-    db->createNew();
+    plug->createNew();
     
     s = data.getData("Symbol");
-    db->setHeaderField(DbPlugin::Symbol, s);
+    plug->setHeaderField(DbPlugin::Symbol, s);
     
     s = fd.getName();
-    db->setHeaderField(DbPlugin::Title, s);
+    plug->setHeaderField(DbPlugin::Title, s);
     
     QString s2 = fd.getSymbol();
     s = "FuturesType";
-    db->setData(s, s2);
+    plug->setData(s, s2);
     
     s2 = data.getData("Month");
     s = "FuturesMonth";
-    db->setData(s, s2);
+    plug->setData(s, s2);
   }
   
   Bar bar;
@@ -995,7 +1008,7 @@ void CME::parse (Setting &data)
   if (bar.setDate(s))
   {
     emit statusLogMessage("Bad date " + data.getData("Date"));
-    config.closePlugin(plugin);
+    plug->close();
     return;
   }
   bar.setOpen(open);
@@ -1004,11 +1017,9 @@ void CME::parse (Setting &data)
   bar.setClose(close);
   bar.setVolume(volume);
   bar.setOI((int) oi);
-  db->setBar(bar);
+  plug->setBar(bar);
 	     
-  config.closePlugin(plugin);
-
-//  emit dataLogMessage(data->getData("Symbol"));
+  plug->close();
 }
 
 void CME::cancelUpdate ()

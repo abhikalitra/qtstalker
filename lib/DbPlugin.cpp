@@ -310,7 +310,7 @@ void DbPlugin::getHistory (BarData *bd)
   getHeaderField(BarType, s);
   int barType = s.toInt();
   barData->setBarType((BarData::BarType) barType);  
-    
+  
   switch(barCompression)
   {
     case BarData::Minute1:

@@ -26,7 +26,6 @@
 #include <qcombobox.h>
 #include <qtextedit.h>
 #include <qtabdialog.h>
-#include <qcheckbox.h>
 #include "Toolbar.h"
 #include "Config.h"
 
@@ -51,18 +50,15 @@ class QuoteDialog : public QTabDialog
     void cancelDownload ();
     void pluginSettings ();
     void printStatusLogMessage (QString);
-    void printDataLogMessage (QString);
     void help ();
 
   private:
     Config config;
     QComboBox *ruleCombo;
     QString plugin;
-    QTextEdit *dataLog;
     QTextEdit *statusLog;
     QPushButton *settingButton;
     Toolbar *toolbar;
-    QCheckBox *showData;
 };
 
 #endif

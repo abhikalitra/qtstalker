@@ -549,14 +549,6 @@ void Tester::test ()
   if (checkFormula(5))
     return;
 
-  QProgressDialog prog(tr("Testing..."),
-                       tr("Cancel"),
-		       bars->value(),
-		       this,
-		       "progress",
-		       TRUE);
-  prog.show();
-
   QString s = symbolButton->getPath();
   QString plugin = config.parseDbPlugin(s);
   DbPlugin *db = config.getDbPlugin(plugin);
@@ -632,6 +624,16 @@ void Tester::test ()
     return;
   }
 
+  QProgressDialog prog(tr("Testing..."),
+                       tr("Cancel"),
+		       bars->value(),
+		       this,
+		       "progress",
+		       TRUE);
+  prog.show();
+  
+  this->setEnabled(FALSE);
+  
   status = 0;
   testLoop = 0;
   for (; testLoop < (int) recordList->count(); testLoop++)
@@ -740,6 +742,8 @@ void Tester::test ()
   createEquityCurve();
   
   config.closePlugin(plugin);
+  
+  this->setEnabled(TRUE);
 }
 
 void Tester::checkAlerts ()

@@ -30,7 +30,6 @@
 #include <qmessagebox.h>
 #include <qobject.h>
 
-
 Index::Index ()
 {
   data.setAutoDelete(TRUE);
@@ -122,10 +121,14 @@ void Index::updateIndex ()
   if (! l.count())
     return;
     
+  emit signalStatusMessage(QString(tr("Updating index...")));
+    
   int loop;
   int count = 0;
   for (loop = 0; loop < (int) l.count(); loop = loop + 2)
   {
+    emit signalProgMessage(loop, l.count());
+  
     QString symbol = l[loop];
     float weight = l[loop + 1].toFloat();
     if (weight == 0)
@@ -177,6 +180,7 @@ void Index::updateIndex ()
   }
 
   data.clear();
+  emit signalProgMessage(-1, -1);
 }
 
 void Index::loadData (QString &symbol, float weight)

@@ -118,8 +118,6 @@ void IndicatorPlot::setData (BarData *l)
 
   data = l;
   
-  createXGrid();
-  
   QDictIterator<COPlugin> it(coPlugins);
   for (; it.current(); ++it)
   {
@@ -601,6 +599,11 @@ bool IndicatorPlot::getMainFlag ()
   return mainFlag;
 }
 
+void IndicatorPlot::setXGrid (QMemArray<int> &d)
+{
+  xGrid = d;
+}
+
 void IndicatorPlot::drawXGrid ()
 {
   if (gridFlag == FALSE)
@@ -621,72 +624,6 @@ void IndicatorPlot::drawXGrid ()
   }
 
   painter.end();
-}
-
-void IndicatorPlot::createXGrid ()
-{
-  xGrid.resize(0);
-  int loop = 0;
-  QDate oldDate = data->getDate(loop).getDate();
-  BarData::BarType barType = data->getBarType();
-
-  for (loop = 0; loop < (int) data->count(); loop++)
-  {
-    QDate date = data->getDate(loop).getDate();
-    
-    if (barType == BarData::Daily)
-    {
-      switch (interval)
-      {
-//        case BarData::WeeklyBar:
-        case BarData::MonthlyBar:
-          if (date.year() != oldDate.year())
-          {
-            oldDate = date;
-	    xGrid.resize(xGrid.size() + 1);
-	    xGrid[xGrid.size() - 1] = loop;
-          }
-          break;
-        default:
-          if (date.month() != oldDate.month())
-          {
-            oldDate = date;
-	    xGrid.resize(xGrid.size() + 1);
-	    xGrid[xGrid.size() - 1] = loop;
-          }
-          break;
-      }
-    }
-    else
-    {
-      if (date.day() != oldDate.day())
-      {
-        oldDate = date;
-	xGrid.resize(xGrid.size() + 1);
-	xGrid[xGrid.size() - 1] = loop;
-      }
-/*      
-      switch (interval)
-      {
-        case BarData::Minute1:
-        case BarData::Minute5:
-        case BarData::Minute10:
-        case BarData::Minute15:
-        case BarData::Minute30:
-        case BarData::Minute60:
-          break;
-        default:
-          if (date.day() != oldDate.day())
-          {
-            oldDate = date;
-	    xGrid.resize(xGrid.size() + 1);
-	    xGrid[xGrid.size() - 1] = loop;
-          }
-          break;
-      }
-*/      
-    }
-  }
 }
 
 void IndicatorPlot::addIndicator (QString &d, Indicator *i)

@@ -110,6 +110,23 @@ void Scanner::scan ()
     return;
   }
   
+  // open the CUS plugin
+  QString iplugin("CUS");
+  IndicatorPlugin *plug = config.getIndicatorPlugin(iplugin);
+  if (! plug)
+  {
+    config.closePlugin(iplugin);
+    return;
+  }
+  int loop;
+  for (loop = 0; loop < list->getLines(); loop++)
+  {
+    QString s(list->getLine(loop));
+    plug->setCustomFunction(s);
+  }
+  
+  this->setEnabled(FALSE);
+  
   // clear dir for scan symbols
   QDir dir;
   QString s = config.getData(Config::GroupPath);
@@ -137,7 +154,7 @@ void Scanner::scan ()
     fileList = trav->getList();
     delete trav;
   }
-
+  
   QProgressDialog prog(tr("Scanning..."),
                        tr("Cancel"),
 		       fileList.count(),
@@ -146,29 +163,19 @@ void Scanner::scan ()
 		       TRUE);
   prog.show();
   
-  // open the CUS plugin
-  QString plugin("CUS");
-  IndicatorPlugin *plug = config.getIndicatorPlugin(plugin);
-  if (! plug)
-  {
-    config.closePlugin(plugin);
-    return;
-  }
-  int loop;
-  for (loop = 0; loop < list->getLines(); loop++)
-  {
-    QString s(list->getLine(loop));
-    plug->setCustomFunction(s);
-  }
-  
   int minBars = plug->getMinBars();
+  
+  emit message(QString("Scanning..."));
   
   for (loop = 0; loop < (int) fileList.count(); loop++)
   {
     prog.setProgress(loop);
     emit message(QString());
     if (prog.wasCancelled())
+    {
+      emit message(QString("Scan cancelled"));
       break;
+    }
 
     QString plugin = config.parseDbPlugin(fileList[loop]);
     DbPlugin *db = config.getDbPlugin(plugin);
@@ -228,7 +235,12 @@ void Scanner::scan ()
     emit message(QString());
   }
   
-  config.closePlugin(plugin);
+  if (! prog.wasCancelled())
+    emit message(QString("Scan complete"));
+  
+  config.closePlugin(iplugin);
+  
+  this->setEnabled(TRUE);
 }
 
 void Scanner::saveRule ()

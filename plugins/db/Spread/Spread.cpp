@@ -31,7 +31,6 @@
 #include <qmessagebox.h>
 #include <qobject.h>
 
-
 Spread::Spread ()
 {
   data.setAutoDelete(TRUE);
@@ -173,14 +172,19 @@ void Spread::updateSpread ()
   getData(s, ss);
   if (! ss.length())
     return;
+    
+  emit signalStatusMessage(QString(tr("Updating spread...")));
+  emit signalProgMessage(0, 3);
   
   s = "Method";
   QString meth;
   getData(s, meth);
 
   loadData(fs, meth);
-
+  emit signalProgMessage(1, 3);
+  
   loadData(ss, meth);
+  emit signalProgMessage(2, 3);
 
   Bar *r = data.find(QString::number(fdate, 'f', 0));
   if (r)
@@ -215,6 +219,7 @@ void Spread::updateSpread ()
   }
 
   data.clear();
+  emit signalProgMessage(-1, -1);
 }
 
 void Spread::loadData (QString &symbol, QString &method)

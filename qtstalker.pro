@@ -79,4 +79,4 @@ SUBDIRS += plugins/co/TrendLine
 SUBDIRS += plugins/co/FiboLine
 SUBDIRS += plugins/co/Cycle
 
-SUBDIRS += docs
+#SUBDIRS += docs

@@ -22,7 +22,6 @@
 #include "MySQLPlugin.h"
 #include "PrefDialog.h"
 #include "Setting.h"
-#include "Config.h"
 #include "Bar.h"
 #include <qdir.h>
 #include <qtimer.h>
@@ -41,7 +40,16 @@ MySQLPlugin::MySQLPlugin ()
   pluginName = "MySQL";
   helpFile = "mysql.html";
   cancelFlag = FALSE;
+  plug = 0;
 
+  QString plugin("Stocks");  
+  plug = config.getDbPlugin(plugin);
+  if (! plug)
+  {
+    config.closePlugin(plugin);
+    qDebug("MySQL::cannot load Stocks plugin");
+  }
+  
   // get settings persisted last time
   retrieveSettings();
 }
@@ -51,6 +59,11 @@ MySQLPlugin::MySQLPlugin ()
  */
 MySQLPlugin::~MySQLPlugin ()
 {
+  if (plug)
+  {
+    QString plugin("Stocks");  
+    config.closePlugin(plugin);
+  }
 }
 
 /**
@@ -104,6 +117,11 @@ void MySQLPlugin::storeSettings()
  */
 void MySQLPlugin::update () 
 {
+  if (! plug)
+    return;
+    
+  plug->close();
+  
   QTimer::singleShot(250, this, SLOT(performUpdate()));
 }
 
@@ -114,10 +132,12 @@ void MySQLPlugin::update ()
  */
 void MySQLPlugin::performUpdate ()
 {
+  if (! plug)
+    return;
+    
   if (openDatabase()) 
   {
     // verify and create the directory if needed  
-    Config config;
     QString s = config.getData(Config::DataPath) + "/Stocks";
     QDir dir(s);
     if (! dir.exists() && ! dir.mkdir(s))
@@ -170,53 +190,43 @@ void MySQLPlugin::updateSymbol(QString &symbol)
   emit statusLogMessage("Updating " + symbol);
 
   // create the new chart
-  Config config;
   QString chartpath = config.getData(Config::DataPath) + "/Stocks/MySQL/" + symbol;
   
-  QString plugin = config.parseDbPlugin(chartpath);
-  DbPlugin *db = config.getDbPlugin(plugin);
-  if (! db)
-  {
-    config.closePlugin(plugin);
-    return;
-  }
-  
-  if (db->openChart(chartpath))
+  if (plug->openChart(chartpath))
   {
     emit statusLogMessage("Qtstalker::MySQL::updateSymbol:Could not open db.");
-    config.closePlugin(plugin);
     return;
   }
   
   // verify if this chart can be updated by this plugin
   QString s;
-  db->getHeaderField(DbPlugin::QuotePlugin, s);
+  plug->getHeaderField(DbPlugin::QuotePlugin, s);
   if (! s.length())
-    db->setHeaderField(DbPlugin::QuotePlugin, pluginName);
+    plug->setHeaderField(DbPlugin::QuotePlugin, pluginName);
   else
   {
     if (s.compare(pluginName))
     {
       s = symbol + " - skipping update. Source does not match destination.";
       emit statusLogMessage(s);
-      config.closePlugin(plugin);
+      plug->close();
       return;
     }
   }
   
-  db->getHeaderField(DbPlugin::Symbol, s);
+  plug->getHeaderField(DbPlugin::Symbol, s);
   if (! s.length())
   {
-    db->createNew();
-    db->setHeaderField(DbPlugin::Symbol, symbol);
-    db->setHeaderField(DbPlugin::Title, symbol);
+    plug->createNew();
+    plug->setHeaderField(DbPlugin::Symbol, symbol);
+    plug->setHeaderField(DbPlugin::Title, symbol);
   }
 
   QDate lastdate;
 
   if (incremental == TRUE) 
   {
-    Bar *bar = db->getLastBar();
+    Bar *bar = plug->getLastBar();
     if (bar)
     {
       lastdate = bar->getDate().getDate();
@@ -231,9 +241,9 @@ void MySQLPlugin::updateSymbol(QString &symbol)
   sql.replace("$SYMBOL$", symbol);
   sql.replace("$LASTDAY$", lastdate.toString(Qt::ISODate));
 
-  doQuery(sql, db);
+  doQuery(sql);
   
-  config.closePlugin(plugin);
+  plug->close();
 }
 
 /**
@@ -274,7 +284,7 @@ void MySQLPlugin::closeDatabase()
  * 
  * Perform sql query and store results in Qtstalker db
  */
-void MySQLPlugin::doQuery (QString &sql, DbPlugin *db)
+void MySQLPlugin::doQuery (QString &sql)
 {
   MYSQL_RES *res;
  
@@ -315,9 +325,7 @@ void MySQLPlugin::doQuery (QString &sql, DbPlugin *db)
       bar.setClose(close.toDouble());
       bar.setVolume(volume.toDouble());
       bar.setOI(oi.toInt());
-      db->setBar(bar);
-      
-//      emit dataLogMessage(db.getDetail(ChartDb::Symbol) + " " + bar->getString());
+      plug->setBar(bar);
     }
    
     mysql_free_result(res);

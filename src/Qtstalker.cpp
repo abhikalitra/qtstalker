@@ -179,6 +179,9 @@ QtstalkerApp::QtstalkerApp()
   
   // catch any kill signals and try to save config
   connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(slotQuit()));
+  
+  progBar = new QProgressBar(this);
+  statusBar()->addWidget(progBar, 0, TRUE);
 
   statusBar()->message(tr("Ready"), 2000);
 }
@@ -478,13 +481,22 @@ void QtstalkerApp::loadChart (QString &d)
     return;
   }
   
+  connect(plug, SIGNAL(signalProgMessage(int, int)), this, SLOT(slotProgMessage(int, int)));
+  connect(plug, SIGNAL(signalStatusMessage(QString)), this, SLOT(slotStatusMessage(QString)));
+  
   plug->setBarCompression((BarData::BarCompression) toolbar2->getCompressionInt());
   plug->setBarRange(toolbar2->getBars());
   
   if (recordList)
     delete recordList;
   recordList = new BarData;
+  
+  slotStatusMessage(tr("Loading chart..."));
+  
   plug->getHistory(recordList);
+  
+  slotProgMessage(1, 3);
+  slotStatusMessage(tr("Loading indicators..."));
   
   plug->getHeaderField(DbPlugin::Title, chartName);
   plug->getHeaderField(DbPlugin::Type, chartType);
@@ -527,6 +539,9 @@ void QtstalkerApp::loadChart (QString &d)
       i->setPlotType((Indicator::PlotType) set.getData("plotType").toInt());
     loadIndicator(i);
   }
+  
+  slotProgMessage(2, 3);
+  slotStatusMessage(tr("Loading chart objects..."));
 
   plug->getChartObjects(l);
   Setting co;
@@ -564,6 +579,9 @@ void QtstalkerApp::loadChart (QString &d)
   ip->updateList();
 
   setCaption(getWindowCaption());
+  
+  slotProgMessage(-1, 3);
+  slotStatusMessage(QString());
 }
 
 void QtstalkerApp::loadIndicator (Indicator *i)
@@ -1210,6 +1228,16 @@ void QtstalkerApp::slotStopMacro ()
   mp->updateList();
   slotStatusMessage(tr("Recording macro finished."));
   QMessageBox::information(this, tr("Qtstalker:Info"), tr("Macro session ended."));
+}
+
+void QtstalkerApp::slotProgMessage (int p, int t)
+{
+  if (p == -1)
+    progBar->reset();
+  else
+    progBar->setProgress(p, t);
+    
+  qApp->processEvents();
 }
 
 //**********************************************************************

@@ -26,6 +26,7 @@
 #include <qpixmap.h>
 #include <qcolor.h>
 #include <qfont.h>
+#include <qmemarray.h>
 #include "BarData.h"
 
 
@@ -47,7 +48,7 @@ class DatePlot : public QWidget
     ~DatePlot ();
     void clear ();
     void setData (BarData *);
-    void createXGrid ();
+    QMemArray<int> & getXGrid ();
 
   public slots:
     void draw();
@@ -81,6 +82,7 @@ class DatePlot : public QWidget
     QColor borderColor;
     BarData *data;
     QPtrList<TickItem> dateList;
+    QMemArray<int> xGrid;
 };
 
 #endif

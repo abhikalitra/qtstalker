@@ -21,6 +21,8 @@
 
 #include "QuotePlugin.h"
 #include "FuturesData.h"
+#include "DbPlugin.h"
+#include "Config.h"
 
 class NYBOT : public QuotePlugin
 {
@@ -39,10 +41,12 @@ class NYBOT : public QuotePlugin
     void parse ();
     
   private:
-    FuturesData *fd;
+    FuturesData fd;
     QStringList list;
     QString lastPath;
     bool cancelFlag;
+    DbPlugin *plug;
+    Config config;
 };
 
 extern "C"

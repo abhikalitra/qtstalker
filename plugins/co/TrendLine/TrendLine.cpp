@@ -200,6 +200,8 @@ void TrendLine::prefDialog ()
   QString ub = tr("Use Bar");
   QString el = tr("Extend Line");
   QString bf = tr("Bar Field");
+  QString sl = tr("Start Value");
+  QString dl = tr("End Value");
   
   PrefDialog *dialog = new PrefDialog();
   dialog->setCaption(tr("Edit TrendLine"));
@@ -213,6 +215,8 @@ void TrendLine::prefDialog ()
   dialog->addCheckItem(ub, pl, f);
   f = selected->getExtend();
   dialog->addCheckItem(el, pl, f);
+  dialog->addFloatItem(sl, pl, selected->getValue());
+  dialog->addFloatItem(dl, pl, selected->getValue2());
   dialog->addCheckItem(sd, pl, FALSE);
   
   int rc = dialog->exec();
@@ -223,6 +227,9 @@ void TrendLine::prefDialog ()
     selected->setBar(dialog->getCombo(bf));
     selected->setUseBar(dialog->getCheck(ub));
     selected->setExtend(dialog->getCheck(el));
+    selected->setValue(dialog->getFloat(sl));
+    selected->setValue2(dialog->getFloat(dl));
+    
     selected->setSaveFlag(TRUE);
     
     bool f = dialog->getCheck(sd);

@@ -22,6 +22,8 @@
 #include "QuotePlugin.h"
 #include <qstring.h>
 #include "Setting.h"
+#include "DbPlugin.h"
+#include "Config.h"
 
 class Yahoo : public QuotePlugin
 {
@@ -63,6 +65,8 @@ class Yahoo : public QuotePlugin
     QString dataPath;
     QStringList fileList;
     QStringList errorList;
+    DbPlugin *plug;
+    Config config;
 };
 
 extern "C"

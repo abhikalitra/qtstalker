@@ -21,8 +21,6 @@
 
 #include "Yahoo.h"
 #include "YahooDialog.h"
-#include "DbPlugin.h"
-#include "Config.h"
 #include "Bar.h"
 #include <qfile.h>
 #include <qtextstream.h>
@@ -38,10 +36,18 @@ Yahoo::Yahoo ()
   allSymbols = FALSE;
   url.setAutoDelete(TRUE);
   currentUrl = 0;
+  plug = 0;
   
-  Config config;
   dataPath = config.getData(Config::DataPath) + "/Stocks/Yahoo";
   file = config.getData(Config::Home) + "/download";
+  
+  QString plugin("Stocks");  
+  plug = config.getDbPlugin(plugin);
+  if (! plug)
+  {
+    config.closePlugin(plugin);
+    qDebug("Yahoo::cannot load Stocks plugin");
+  }
   
   sdate = QDateTime::currentDateTime();
   if (sdate.date().dayOfWeek() == 6)
@@ -75,11 +81,19 @@ Yahoo::Yahoo ()
 
 Yahoo::~Yahoo ()
 {
+  if (plug)
+  {
+    QString plugin("Stocks");  
+    config.closePlugin(plugin);
+  }
 }
 
 void Yahoo::update ()
 {
-  Config config;
+  if (! plug)
+    return;
+    
+  plug->close();
   errorLoop = 0;
   url.clear();
   errorList.clear();
@@ -209,6 +223,9 @@ void Yahoo::parseHistory ()
 
   if (data.contains("No Prices in this date range"))
     return;
+    
+  if (! plug)
+    return;
 
   // strip off the header
   QString s = "Date,Open,High,Low,Close";
@@ -228,7 +245,6 @@ void Yahoo::parseHistory ()
     return;
   stream.setDevice(&f);
 
-  Config config;
   s = dataPath + "/";
   QFileInfo fi(currentUrl->getData("symbol"));
   if (fi.extension(FALSE).length())
@@ -238,20 +254,10 @@ void Yahoo::parseHistory ()
   s.append("/");
   s.append(currentUrl->getData("symbol"));
 
-  QString plugin("Stocks");  
-  DbPlugin *plug = config.getDbPlugin(plugin);
-  if (! plug)
-  {
-    config.closePlugin(plugin);
-    f.close();
-    return;
-  }
-
   if (plug->openChart(s))
   {
     emit statusLogMessage("Could not open db.");
     f.close();
-    config.closePlugin(plugin);
     return;
   }
 
@@ -266,7 +272,7 @@ void Yahoo::parseHistory ()
       s = currentUrl->getData("symbol") + " - skipping update. Source does not match destination.";
       emit statusLogMessage(s);
       f.close();
-      config.closePlugin(plugin);
+      plug->close();
       return;
     }
   }
@@ -366,19 +372,17 @@ void Yahoo::parseHistory ()
     bar.setClose(close);
     bar.setVolume(volume);
     plug->setBar(bar);
-    
-//    s = currentUrl->getData("symbol") + " " + date + " " + open + " " + high + " " + low
-//        + " " + close + " " + volume;
-	
-//    emit dataLogMessage(s);
   }
 
   f.close();
-  config.closePlugin(plugin);
+  plug->close();
 }
 
 void Yahoo::parseQuote ()
 {
+  if (! plug)
+    return;
+    
   if (! data.length())
     return;
 
@@ -394,7 +398,6 @@ void Yahoo::parseQuote ()
     return;
   stream.setDevice(&f);
 
-  Config config;
   QString s = dataPath + "/";
   QFileInfo fi(currentUrl->getData("symbol"));
   if (fi.extension(FALSE).length())
@@ -404,20 +407,10 @@ void Yahoo::parseQuote ()
   s.append("/");
   s.append(currentUrl->getData("symbol"));
   
-  QString plugin("Stocks");
-  DbPlugin *plug = config.getDbPlugin(plugin);
-  if (! plug)
-  {
-    config.closePlugin(plugin);
-    f.close();
-    return;
-  }
-  
   if (plug->openChart(s))
   {
     emit statusLogMessage("Could not open db.");
     f.close();
-    config.closePlugin(plugin);
     return;
   }
 
@@ -432,7 +425,7 @@ void Yahoo::parseQuote ()
       s = currentUrl->getData("symbol") + " - skipping update. Source does not match destination.";
       emit statusLogMessage(s);
       f.close();
-      config.closePlugin(plugin);
+      plug->close();
       return;
     }
   }
@@ -518,15 +511,10 @@ void Yahoo::parseQuote ()
     bar.setClose(close);
     bar.setVolume(volume);
     plug->setBar(bar);
-    
-//    s = currentUrl->getData("symbol") + " " + date + " " + open + " " + high + " " + low
-//        + " " + close + " " + volume;
-	
-//    emit dataLogMessage(s);
   }
 
   f.close();
-  config.closePlugin(plugin);
+  plug->close();
 }
 
 QString Yahoo::parseDate (QString &d)
@@ -736,6 +724,9 @@ void Yahoo::cancelUpdate ()
 
 void Yahoo::parseFundamental ()
 {
+  if (! plug)
+    return;
+    
   if (! data.length())
     return;
 
@@ -786,7 +777,6 @@ void Yahoo::parseFundamental ()
     fund.setData(k, d);
   }
       
-  Config config;
   QString s = dataPath + "/";
   QFileInfo fi(currentUrl->getData("symbol"));
   if (fi.extension(FALSE).length())
@@ -796,18 +786,9 @@ void Yahoo::parseFundamental ()
   s.append("/");
   s.append(currentUrl->getData("symbol"));
   
-  QString plugin("Stocks");
-  DbPlugin *plug = config.getDbPlugin(plugin);
-  if (! plug)
-  {
-    config.closePlugin(plugin);
-    return;
-  }
-  
   if (plug->openChart(s))
   {
     emit statusLogMessage("Could not open db.");
-    config.closePlugin(plugin);
     return;
   }
   
@@ -821,7 +802,7 @@ void Yahoo::parseFundamental ()
     {
       s = currentUrl->getData("symbol") + " - skipping update. Source does not match destination.";
       emit statusLogMessage(s);
-      config.closePlugin(plugin);
+      plug->close();
       return;
     }
   }
@@ -886,10 +867,7 @@ void Yahoo::parseFundamental ()
   s = "Fundamentals";
   plug->setData(s, s2);
     
-  s = "Updating " + currentUrl->getData("symbol");
-  emit dataLogMessage(s);
-  
-  config.closePlugin(plugin);
+  plug->close();
 }
 
 void Yahoo::loadAllSymbols ()
@@ -988,19 +966,11 @@ void Yahoo::createHistoryUrls (QString &d)
 
 void Yahoo::createAutoHistoryUrls (QString &path, QString &d)
 {
-  Config config;
-  QString plugin("Stocks");
-  DbPlugin *plug = config.getDbPlugin(plugin);
   if (! plug)
-  {
-    config.closePlugin(plugin);
-    qDebug("Yahoo::createAutoHistoryUrls:could not open plugin");
     return;
-  }
-	
+    	
   if (plug->openChart(path))
   {
-    config.closePlugin(plugin);
     qDebug("Yahoo::createAutoHistoryUrls:could not open db");
     return;
   }
@@ -1014,8 +984,8 @@ void Yahoo::createAutoHistoryUrls (QString &path, QString &d)
   {
     if (s.compare(pluginName))
     {
-      config.closePlugin(plugin);
       qDebug("Yahoo::createAutoHistoryUrls:source not same as destination");
+      plug->close();
       return;
     }
   }
@@ -1042,8 +1012,8 @@ void Yahoo::createAutoHistoryUrls (QString &path, QString &d)
   if (bar->getDate().getDate() == edate.date())
   {
     delete bar;
-    config.closePlugin(plugin);
     qDebug("Yahoo::createAutoHistoryUrls:barDate == endDate");
+    plug->close();
     return;
   }
 		
@@ -1064,7 +1034,7 @@ void Yahoo::createAutoHistoryUrls (QString &path, QString &d)
   s.append("&g=d&q=q&y=0&x=.csv");
 	
   delete bar;
-  config.closePlugin(plugin);
+  plug->close();
   
   Setting *set = new Setting;
   set->setData("url", s);

@@ -26,6 +26,7 @@
 #include <qsplitter.h>
 #include <qmultilineedit.h>
 #include <qdict.h>
+#include <qprogressbar.h>
 
 #include "Indicator.h"
 #include "Plot.h"
@@ -123,6 +124,7 @@ class QtstalkerApp : public QMainWindow
     void slotRunMacro (QString);
     void slotRecordMacro (QString);
     void slotStopMacro ();
+    void slotProgMessage (int, int);
     
   private:
     QToolBar *toolbar;
@@ -155,6 +157,7 @@ class QtstalkerApp : public QMainWindow
     GroupPage *gp;
     MacroPage *mp;
     Macro *currentMacro;
+    QProgressBar *progBar;
 };
 
 #endif

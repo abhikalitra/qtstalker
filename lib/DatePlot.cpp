@@ -209,11 +209,14 @@ void DatePlot::setInterval (BarData::BarCompression d)
 
 void DatePlot::getMinuteDate ()
 {
+  xGrid.resize(0);
   int loop = 0;
   BarDate nextHour = data->getDate(loop);
   BarDate oldDay = data->getDate(loop);
   nextHour.setTime(nextHour.getHour(), 0, 0);
-  if ((nextHour.getHour() % 2) == 0)
+  
+//  if ((nextHour.getHour() % 2) == 0)
+  if (interval != BarData::Minute1)
     nextHour.addSecs(7200);
   else
     nextHour.addSecs(3600);
@@ -231,6 +234,9 @@ void DatePlot::getMinuteDate ()
       item->tick = 1;
       item->text = date.getDate().toString("MMM d");
       oldDay = date;
+      
+      xGrid.resize(xGrid.size() + 1);
+      xGrid[xGrid.size() - 1] = loop;
     }
     else
     {
@@ -241,6 +247,9 @@ void DatePlot::getMinuteDate ()
           item->flag = 1;
           item->tick = 0;
           item->text = QString::number(date.getHour()) + ":00";
+	  
+          xGrid.resize(xGrid.size() + 1);
+          xGrid[xGrid.size() - 1] = loop;
 	}
       }
     }
@@ -249,7 +258,8 @@ void DatePlot::getMinuteDate ()
     {
       nextHour = date;
       nextHour.setTime(date.getHour(), 0, 0);
-      if ((date.getHour() % 2) == 0)
+//      if ((date.getHour() % 2) == 0)
+      if (interval != BarData::Minute1)
         nextHour.addSecs(7200);
       else
         nextHour.addSecs(3600);
@@ -263,6 +273,7 @@ void DatePlot::getMinuteDate ()
 void DatePlot::getDailyDate ()
 {
   int loop = 0;
+  xGrid.resize(0);
 
   QDate oldDate = data->getDate(loop).getDate();
   QDate oldWeek = oldDate;
@@ -283,6 +294,9 @@ void DatePlot::getDailyDate ()
       oldDate = date;
       oldWeek = date;
       oldWeek = oldWeek.addDays(7 - oldWeek.dayOfWeek());
+      
+      xGrid.resize(xGrid.size() + 1);
+      xGrid[xGrid.size() - 1] = loop;
     }
     else
     {
@@ -304,7 +318,7 @@ void DatePlot::getDailyDate ()
 
 void DatePlot::getWeeklyDate ()
 {
-  QFontMetrics fm(plotFont);
+  xGrid.resize(0);
   int loop = 0;
 
   QDate oldMonth = data->getDate(loop).getDate();
@@ -316,6 +330,12 @@ void DatePlot::getWeeklyDate ()
   
     QDate date = data->getDate(loop).getDate();
 
+    if (date.year() != oldMonth.year())
+    {
+      xGrid.resize(xGrid.size() + 1);
+      xGrid[xGrid.size() - 1] = loop;
+    }
+    
     if (date.month() != oldMonth.month())
     {
       oldMonth = date;
@@ -329,7 +349,7 @@ void DatePlot::getWeeklyDate ()
         item->text = date.toString("MMM'yy");
       }
     }
-
+    
     dateList.append(item);
     loop++;
   }
@@ -337,6 +357,7 @@ void DatePlot::getWeeklyDate ()
 
 void DatePlot::getMonthlyDate ()
 {
+  xGrid.resize(0);
   int loop = 0;
   QDate oldYear = data->getDate(loop).getDate();
 
@@ -353,10 +374,18 @@ void DatePlot::getMonthlyDate ()
       item->flag = 1;
       item->tick = 1;
       item->text = date.toString("yyyy");
+      
+      xGrid.resize(xGrid.size() + 1);
+      xGrid[xGrid.size() - 1] = loop;
     }
 
     dateList.append(item);
     loop++;
   }
+}
+
+QMemArray<int> & DatePlot::getXGrid ()
+{
+  return xGrid;
 }
 

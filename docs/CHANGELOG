@@ -274,7 +274,14 @@
           chart at a regular interval from a starting point. This allows the user to
 	  spot regular intervals between peaks and troughs by varying the interval time.
 	  
-	  	  
+20050323: Added value parms to all chart objects so users can fine tune placement.
+
+20050324: Added a progress bar to the status bar of the main window.
+
+20050324: Removed the data log message page from the quotes dialog. This was creating a lot
+          of unused signal overhead.
+	  
+	  	  	  
 	  	  
 0.29
 ====

@@ -30,7 +30,6 @@
 #include <qdir.h>
 #include <qsettings.h>
 
-
 CSV::CSV ()
 {
   pluginName = "CSV";
@@ -383,8 +382,6 @@ void CSV::parse ()
 
         db->setBar(bar);
 	
-	r.getString(s);
-	emit dataLogMessage(t + " " + s);
         emit statusLogMessage("Updating " + r.getData("Symbol"));
 	config.closePlugin(type);
 	db = 0;
@@ -395,9 +392,6 @@ void CSV::parse ()
 	if (s.length())
 	  db->setHeaderField(DbPlugin::Title, s);
         db->setBar(bar);
-	
-	r.getString(s);
-	emit dataLogMessage(symbol + " " + s);
       }
     }
 

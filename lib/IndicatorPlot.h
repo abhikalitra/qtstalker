@@ -99,6 +99,7 @@ class IndicatorPlot : public QWidget
     void setScaler (Scaler &);
     Scaler & getScaler ();
     void getInfo (int);
+    void setXGrid (QMemArray<int> &);
    
   public slots:
     void draw();
@@ -140,7 +141,6 @@ class IndicatorPlot : public QWidget
     void setScale ();
     int getXFromDate (BarDate &);
     void getXY (int, int);
-    void createXGrid ();
     void slotMessage (QString);
     void toggleCrosshairs ();
     void slotEditIndicator (int);

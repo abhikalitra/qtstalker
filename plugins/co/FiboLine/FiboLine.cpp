@@ -201,6 +201,8 @@ void FiboLine::prefDialog ()
   QString l4 = tr("Line 4");
   QString l5 = tr("Line 5");
   QString l6 = tr("Line 6");
+  QString hl = tr("High");
+  QString ll = tr("Low");
 
   PrefDialog *dialog = new PrefDialog();
   dialog->setCaption(tr("Edit FiboLine"));
@@ -208,6 +210,8 @@ void FiboLine::prefDialog ()
   dialog->setHelpFile (helpFile);
   QColor color = selected->getColor();
   dialog->addColorItem(cl, pl, color);
+  dialog->addFloatItem(hl, pl, selected->getHigh());
+  dialog->addFloatItem(ll, pl, selected->getLow());
   dialog->addCheckItem(sd, pl, FALSE);
 
   pl = tr("Levels");
@@ -230,6 +234,10 @@ void FiboLine::prefDialog ()
     selected->setLine(4, dialog->getFloat(l4));
     selected->setLine(5, dialog->getFloat(l5));
     selected->setLine(6, dialog->getFloat(l6));
+    selected->setHigh(dialog->getFloat(hl));
+    selected->setLow(dialog->getFloat(ll));
+    
+    selected->setSaveFlag(TRUE);
     
     bool f = dialog->getCheck(sd);
     if (f)

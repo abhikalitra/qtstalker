@@ -89,6 +89,7 @@ void FuturesData::getSymbolList (QString &d, QStringList &l)
         l.append(it.current()->getData(symbolKey));
     }
   }
+  l.sort();
 }
 
 void FuturesData::getMonthList (QStringList &l)

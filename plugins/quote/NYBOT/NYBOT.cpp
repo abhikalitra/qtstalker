@@ -20,11 +20,9 @@
  */
 
 #include "NYBOT.h"
-#include "DbPlugin.h"
 #include "PrefDialog.h"
 #include "Setting.h"
 #include "Bar.h"
-#include "Config.h"
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qtimer.h>
@@ -37,20 +35,37 @@ NYBOT::NYBOT ()
 {
   pluginName = "NYBOT";
   helpFile = "nybot.html";
-  fd = new FuturesData;
   lastPath = QDir::homeDirPath();
   cancelFlag = FALSE;
+  plug = 0;
+  
+  QString plugin("Futures");  
+  plug = config.getDbPlugin(plugin);
+  if (! plug)
+  {
+    config.closePlugin(plugin);
+    qDebug("NYBOT::cannot load Futures plugin");
+  }
   
   loadSettings();
 }
 
 NYBOT::~NYBOT ()
 {
-  delete fd;
+  if (plug)
+  {
+    QString plugin("Futures");  
+    config.closePlugin(plugin);
+  }
 }
 
 void NYBOT::update ()
 {
+  if (! plug)
+    return;
+    
+  plug->close();
+    
   QTimer::singleShot(250, this, SLOT(parse()));
 }
 
@@ -264,7 +279,7 @@ void NYBOT::parse ()
           break;
       }
 
-      if (fd->setSymbol(symbol))
+      if (fd.setSymbol(symbol))
         continue;
 
       if (year.length())
@@ -279,7 +294,7 @@ void NYBOT::parse ()
       else
         continue;
 
-      s = "Futures/" + fd->getExchange() + "/" + fd->getSymbol();
+      s = "Futures/" + fd.getExchange() + "/" + fd.getSymbol();
       QString path = createDirectory(s);
       if (! path.length())
       {
@@ -297,53 +312,43 @@ void NYBOT::parse ()
         continue;
       }
       
-      Config config;
-      QString plugin("Futures");
-      DbPlugin *db = config.getDbPlugin(plugin);
-      if (! db)
-      {
-        config.closePlugin(plugin);
-        continue;
-      }
-      
       s = path + "/" + symbol;
-      if (db->openChart(s))
+      if (plug->openChart(s))
       {
         emit statusLogMessage("Could not open db.");
-        config.closePlugin(plugin);
         return;
       }
 
       // verify if this chart can be updated by this plugin
-      db->getHeaderField(DbPlugin::QuotePlugin, s);
+      plug->getHeaderField(DbPlugin::QuotePlugin, s);
       if (! s.length())
-        db->setHeaderField(DbPlugin::QuotePlugin, pluginName);
+        plug->setHeaderField(DbPlugin::QuotePlugin, pluginName);
       else
       {
         if (s.compare(pluginName))
         {
           s = symbol + " - skipping update. Source does not match destination.";
           emit statusLogMessage(s);
-          config.closePlugin(plugin);
+          plug->close();
           return;
         }
       }
       
-      db->getHeaderField(DbPlugin::Symbol, s);
+      plug->getHeaderField(DbPlugin::Symbol, s);
       if (! s.length())
       {
-        db->createNew();
-        db->setHeaderField(DbPlugin::Symbol, symbol);
+        plug->createNew();
+        plug->setHeaderField(DbPlugin::Symbol, symbol);
 	
-	s = fd->getName();
-        db->setHeaderField(DbPlugin::Title, s);
+	s = fd.getName();
+        plug->setHeaderField(DbPlugin::Title, s);
 	
 	s = "FuturesType";
-	QString s2 = fd->getSymbol();
-        db->setData(s, s2);
+	QString s2 = fd.getSymbol();
+        plug->setData(s, s2);
 	
 	s = "FuturesMonth";
-        db->setData(s, month);
+        plug->setData(s, month);
       }
       
       bar.setOpen(open);
@@ -352,10 +357,10 @@ void NYBOT::parse ()
       bar.setClose(close);
       bar.setVolume(volume);
       bar.setOI((int) oi);
-      db->setBar(bar);
+      plug->setBar(bar);
 		 
 //      emit dataLogMessage(symbol);
-      config.closePlugin(plugin);
+      plug->close();
     }
 
     f.close();

@@ -36,10 +36,10 @@ class QuotePlugin : public QObject
     void done ();
     void message (QString);
     void statusLogMessage (QString);
-    void dataLogMessage (QString);
     void signalGetFileDone (bool);
     void signalCopyFileDone (QString);
     void signalTimeout ();
+    void signalProgMessage (int, int);
 
   public:
     QuotePlugin ();

@@ -26,13 +26,20 @@
 #include <qptrlist.h>
 #include <qstringlist.h>
 #include <db.h>
+#include <qobject.h>
 #include "Setting.h"
 #include "BarData.h"
 #include "Bar.h"
 #include "BarDate.h"
 
-class DbPlugin
+class DbPlugin : public QObject
 {
+  Q_OBJECT
+  
+  signals:
+    void signalProgMessage (int, int);
+    void signalStatusMessage (QString);
+
   public:
   
     enum HeaderField

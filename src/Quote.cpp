@@ -94,28 +94,6 @@ QuoteDialog::QuoteDialog () : QTabDialog (0, "QuoteDialog", FALSE, WDestructiveC
   
   addTab(w, tr("Quotes"));
 
-  // create the data page
-    
-  w = new QWidget(this);
-  
-  vbox = new QVBoxLayout(w);
-  vbox->setMargin(10);
-  vbox->setSpacing(2);
-  
-  showData = new QCheckBox(tr("Show Data Log"), w);
-  vbox->addWidget(showData);
-  vbox->addSpacing(10);
-  
-  label = new QLabel(tr("Download Data:"), w);
-  vbox->addWidget(label);
-  
-  dataLog = new QTextEdit(w);
-  dataLog->setTextFormat(Qt::LogText);
-  dataLog->setReadOnly(TRUE);
-  vbox->addWidget(dataLog);
-
-  addTab(w, tr("Data"));
-  
   setOkButton(tr("&Done"));
   QObject::connect(this, SIGNAL(applyButtonPressed()), this, SLOT(accept()));
   
@@ -137,7 +115,6 @@ QuoteDialog::~QuoteDialog ()
 void QuoteDialog::getQuotes ()
 {
   statusLog->clear();
-  dataLog->clear();
   
   printStatusLogMessage(tr("Starting update..."));
 
@@ -179,7 +156,6 @@ void QuoteDialog::ruleChanged (int)
 
   connect (plug, SIGNAL(done()), this, SLOT(downloadComplete()));
   connect (plug, SIGNAL(statusLogMessage(QString)), this, SLOT(printStatusLogMessage(QString)));
-  connect (plug, SIGNAL(dataLogMessage(QString)), this, SLOT(printDataLogMessage(QString)));
   
   config.setData(Config::LastQuotePlugin, plugin);
 }
@@ -234,15 +210,6 @@ void QuoteDialog::disableGUI ()
 void QuoteDialog::printStatusLogMessage (QString d)
 {
   statusLog->append(d);
-  emit message(QString());
-}
-
-void QuoteDialog::printDataLogMessage (QString d)
-{
-  if (! showData->isChecked())
-    return;
-    
-  dataLog->append(d);
   emit message(QString());
 }
 

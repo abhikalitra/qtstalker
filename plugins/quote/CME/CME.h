@@ -24,6 +24,8 @@
 #include "Setting.h"
 #include <qstring.h>
 #include <qcombobox.h>
+#include "DbPlugin.h"
+#include "Config.h"
 
 class CME : public QuotePlugin
 {
@@ -61,6 +63,8 @@ class CME : public QuotePlugin
     bool allSymbols;
     int downloadIndex;
     bool cancelFlag;
+    DbPlugin *plug;
+    Config config;
 };
 
 extern "C"

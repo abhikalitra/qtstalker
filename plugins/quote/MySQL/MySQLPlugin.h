@@ -20,9 +20,10 @@
  */
 
 #include "QuotePlugin.h"
-#include "DbPlugin.h"
 #include <qstring.h>
 #include <mysql.h>
+#include "DbPlugin.h"
+#include "Config.h"
 
 class MySQLPlugin : public QuotePlugin
 {
@@ -44,7 +45,7 @@ class MySQLPlugin : public QuotePlugin
     void retrieveSettings();
     void storeSettings();
     void updateSymbol(QString &);
-    void doQuery (QString &, DbPlugin *);
+    void doQuery (QString &);
     bool openDatabase();
     void closeDatabase();
 
@@ -58,6 +59,8 @@ class MySQLPlugin : public QuotePlugin
     QString sqlquery;
     bool incremental;
     bool cancelFlag;
+    DbPlugin *plug;
+    Config config;
 };
 
 extern "C"
