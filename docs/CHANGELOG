@@ -123,6 +123,9 @@
 	  naming convention due to qmake ignoring the version parm when building plugins.
 	  
 20040523: Merged CMEHistory plugin into CME plugin.
+
+20040527: Yahoo changed historical url. Updated yahoo plugin.
+
 	  
 	
 0.25

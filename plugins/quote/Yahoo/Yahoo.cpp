@@ -81,7 +81,8 @@ void Yahoo::update ()
     
     if (! method.compare(tr("History")))
     {
-      s = "http://chart.yahoo.com/table.csv?s=";
+//      s = "http://chart.yahoo.com/table.csv?s=";
+      s = "http://ichart.yahoo.com/table.csv?s=";
       s.append(symbolList[loop]);
       s.append("&a=");
       s.append(QString::number(sdate.date().month() - 1));
