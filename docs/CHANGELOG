@@ -3,12 +3,12 @@
 
 - Feature request #824930 applied. Moved html docs into /usr/share/doc/qtstalker/html
 
-- Bug #824922 fixed.
+- Fixed bug #824922 - License is GPL not LGPL.
 
 - Thanks to Marco van Zwetselaar for creating a Debian package. Marco is working on getting qtstalker into the main Debian
   distribution. This is exciting news.
 
-- Fixed bug #825827.
+- Fixed bug #825827 - MySQL plugin RH9 compile problem.
 
 - Repackaged the db source to minimize size.
 
@@ -16,9 +16,9 @@
 
 - Added DDMMYYY date format to the CSV plugin. Also added auto detection for date field delimiters (/-.).
 
-- Fixed bug #830024.
+- Fixed bug #830024 - single-click versus double-click with SymbolDialog.
 
-- Fixed bug #830357.
+- Fixed bug #830357 - sychronised cross-hairs, data values were switched.
 
 - Changed the new indicator dialog. Combined several steps and dialogs into one. Introduces an option to put the
   indicator in either the tabs or stackable.
@@ -38,7 +38,7 @@
   each box, leaving this value at zero uses the default box sizing formula. "P&F Reversal" indicates
   the number of boxes before a reversal takes place. The default is 3.
 
-- Applied patch #834376.
+- Applied patch #834376 - enhance chart search and tooltip.
 
 - Lowered the minimum bar spacing to 3 for line charts as per request.
 
@@ -64,7 +64,10 @@
   
 - Added new indicator PRICE. This allows you to plot a number of different price plot formulas.
 
-- Applied patches #816926, #816927 from David Crossley.
+- Applied patch #816926 - BB indicator not showing BBU value.
+
+- Applied patch #816927 - Added a new "Data Panel" doc. Further clarify the
+candlesticks. Updated FAQ to encourage more contributions.
 
 - Added an additional include path to all the plugins to help in compiling with older qmake versions. (Debian).
 
