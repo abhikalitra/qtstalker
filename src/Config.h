@@ -26,6 +26,7 @@
 #include <qstringlist.h>
 #include "Setting.h"
 
+
 class Config
 {
   public:

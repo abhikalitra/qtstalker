@@ -275,16 +275,20 @@ void SettingView::fileDialog (int row)
 void SettingView::symbolDialog (int row)
 {
   SymbolDialog *dialog = new SymbolDialog(this,
-  							   dataPath,
-							   "*");
+  					  dataPath,
+					  "*");
   dialog->setCaption(tr("Select Chart"));
 
   int rc = dialog->exec();
 
   if (rc == QDialog::Accepted)
   {
-    list->setText(row, 1, dialog->selectedFile());
-    settings->setData(list->text(row, 0), list->text(row, 1));
+    QStringList l = dialog->selectedFiles();
+    if (l.count())
+    {
+      list->setText(row, 1, l[0]);
+      settings->setData(list->text(row, 0), list->text(row, 1));
+    }
   }
 
   delete dialog;

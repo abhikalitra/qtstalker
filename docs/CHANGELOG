@@ -16,6 +16,8 @@
 
 - Added DDMMYYY date format to the CSV plugin. Also added auto detection for date field delimiters (/-.).
 
+- Fixed bug #830024.
+
 
 0.22
 ====
