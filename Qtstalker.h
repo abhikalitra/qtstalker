@@ -141,6 +141,7 @@ class QtstalkerApp : public QMainWindow
     QTabWidget *tabs;
     QTabWidget *navTab;
     QWidget *baseWidget;
+    QWidget *navBase;
     Navigator *chartNav;
     Navigator *groupNav;
     Plot *mainPlot;

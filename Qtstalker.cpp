@@ -94,10 +94,10 @@ QtstalkerApp::QtstalkerApp()
   navSplitter->setOrientation(Horizontal);
   hbox->addWidget(navSplitter);
 
-  QWidget *tw = new QWidget(navSplitter);
-  QVBoxLayout *vbox = new QVBoxLayout(tw);
+  navBase = new QWidget(navSplitter);
+  QVBoxLayout *vbox = new QVBoxLayout(navBase);
 
-  navTab = new QTabWidget(tw);
+  navTab = new QTabWidget(navBase);
   vbox->addWidget(navTab, 1, 0);
 
   initChartNav();
@@ -105,7 +105,7 @@ QtstalkerApp::QtstalkerApp()
   initPortfolioNav();
   initTestNav();
 
-  infoLabel = new QLabel(tw);
+  infoLabel = new QLabel(navBase);
   infoLabel->setAlignment(AlignTop | AlignLeft);
   infoLabel->setMargin(5);
   infoLabel->setFrameStyle(QFrame::StyledPanel | QFrame::Sunken);
@@ -1575,9 +1575,9 @@ void QtstalkerApp::slotHideNav (bool d)
   actionNav->setOn(d);
 
   if (d)
-    navTab->show();
+    navBase->show();
   else
-    navTab->hide();
+    navBase->hide();
 }
 
 void QtstalkerApp::slotUpdateInfo (Setting *r)
