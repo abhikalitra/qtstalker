@@ -42,11 +42,11 @@ Candle::~Candle ()
 // find out which chart style to draw
 void Candle::drawChart (int startX, int startIndex, int pixelspace)
 {
-  if (! style.compare(tr("Candle")))
+  if (! style.compare("Candle"))
     drawCandles(startX, startIndex, pixelspace);
   else
   {
-    if (! style.compare(tr("Candle QS")))
+    if (! style.compare("Candle QS"))
       drawQSCandles(startX, startIndex, pixelspace);
     else
       drawVolumeCandles(startX, startIndex, pixelspace);
@@ -337,9 +337,9 @@ void Candle::drawVolumeCandles (int startX, int startIndex, int pixelspace)
 void Candle::prefDialog (QWidget *w)
 {
   QStringList l;
-  l.append(tr("Candle"));
-  l.append(tr("Candle QS"));
-  l.append(tr("Volume Candle"));
+  l.append("Candle");
+  l.append("Candle QS");
+  l.append("Volume Candle");
 
   dialog = new PrefDialog(w);
   dialog->setCaption(tr("Candle Chart Prefs"));
@@ -364,11 +364,11 @@ void Candle::prefDialog (QWidget *w)
     minPixelspace = dialog->getInt(tr("Min Bar Spacing"));
     expandCandles = dialog->getCheck(tr("Expand Candles"));
     
-    if (! style.compare(tr("Candle")))
+    if (! style.compare("Candle"))
       candleColor = dialog->getColor(tr("Candle Color"));
     else
     {
-      if (! style.compare(tr("Candle QS")))
+      if (! style.compare("Candle QS"))
       {
         qsNeutralColor = dialog->getColor(tr("Neutral Color"));
         qsUpColor = dialog->getColor(tr("Up Color"));
@@ -412,7 +412,7 @@ void Candle::styleChanged (const QString &)
 
   style = dialog->getCombo(tr("Style"));
     
-  if (! style.compare(tr("Candle")))
+  if (! style.compare("Candle"))
   {
     dialog->deletePage(tr("Volume Candle"));
     dialog->deletePage(tr("Volume Colors"));
@@ -424,7 +424,7 @@ void Candle::styleChanged (const QString &)
     return;
   }
   
-  if (! style.compare(tr("Candle QS")))
+  if (! style.compare("Candle QS"))
   {
     dialog->deletePage(tr("Volume Candle"));
     dialog->deletePage(tr("Volume Colors"));
@@ -438,7 +438,7 @@ void Candle::styleChanged (const QString &)
     return;
   }
   
-  if (! style.compare(tr("Volume Candle")))
+  if (! style.compare("Volume Candle"))
   {
     dialog->deletePage(tr("Color"));
     
@@ -470,7 +470,7 @@ void Candle::loadSettings ()
   QSettings settings;
   settings.beginGroup("/Qtstalker/Candle plugin");
   
-  style = settings.readEntry("/style", tr("Candle"));
+  style = settings.readEntry("/style", "Candle");
 
   QString s = settings.readEntry("/expandCandles", "0");
   expandCandles = s.toInt();

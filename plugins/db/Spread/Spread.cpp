@@ -50,8 +50,8 @@ void Spread::dbPrefDialog ()
 {
   Config config;
   QStringList l;
-  l.append(QObject::tr("Subtract"));
-  l.append(QObject::tr("Divide"));
+  l.append("Subtract");
+  l.append("Divide");
   
   QString s = config.getData(Config::DataPath);
   
@@ -182,10 +182,10 @@ void Spread::loadData (QString symbol, QString method)
     }
     else
     {
-      if (! method.compare(QObject::tr("Subtract")))
+      if (! method.compare("Subtract"))
         r->setClose(r->getClose() - recordList->getClose(loop));
 
-      if (! method.compare(QObject::tr("Divide")))
+      if (! method.compare("Divide"))
         r->setClose(r->getClose() / recordList->getClose(loop));
       
       r->setData("Count", 2);

@@ -30,12 +30,12 @@ MATH::MATH ()
   pluginName = "MATH";
   customFlag = TRUE;
   
-  methodList.append(QObject::tr("ADD"));
-  methodList.append(QObject::tr("DIV"));
-  methodList.append(QObject::tr("MUL"));
-  methodList.append(QObject::tr("SUB"));
-  methodList.append(QObject::tr("MIN"));
-  methodList.append(QObject::tr("MAX"));
+  methodList.append("ADD");
+  methodList.append("DIV");
+  methodList.append("MUL");
+  methodList.append("SUB");
+  methodList.append("MIN");
+  methodList.append("MAX");
 
   helpFile = "math.html";
     

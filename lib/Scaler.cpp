@@ -26,6 +26,15 @@ Scaler::Scaler ()
 {
   dateHeight = DATE_HEIGHT;
 
+  scaleList.append(".00001");
+  scaleList.append(".00002");
+  scaleList.append(".00005");
+  scaleList.append(".0001");
+  scaleList.append(".0002");
+  scaleList.append(".0005");
+  scaleList.append(".001");
+  scaleList.append(".002");
+  scaleList.append(".005");
   scaleList.append(".01");
   scaleList.append(".02");
   scaleList.append(".05");
@@ -76,6 +85,9 @@ Scaler::~Scaler ()
 
 void Scaler::set (int ht, double h, double l, double lh, double lr, bool lf)
 {
+  if (h - l == 0)
+    return;
+    
   height = ht;
   logScale = lf;
   scaleHigh = h;
@@ -128,23 +140,26 @@ QMemArray<double> Scaler::getScaleArray ()
   ticks--;
   if (ticks > 10)
     ticks = 10;
-
+    
   double interval = 0;
   int loop;
   for (loop = 0; loop < (int) scaleList.count(); loop++)
   {
-    QString t = scaleList[loop];
-    if ((range / t.toDouble()) < ticks)
-    {
-      interval = t.toDouble();
+    interval = scaleList[loop].toDouble();
+    if ((range / interval) < ticks)
       break;
-    }
   }
 
-  scaleArray.resize(11);
+  scaleArray.resize(20);
 
   loop = 0;
-  double t = 0 - (ticks * interval);
+//  double t = 0 - (ticks * interval);
+  double t = scaleLow;
+  if (t < 0)
+    t = 0 - (ticks * interval);
+  else
+    t = t - interval;
+  
   while (t <= scaleHigh)
   {
     t = t + interval;

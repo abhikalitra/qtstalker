@@ -62,10 +62,10 @@ YahooDialog::YahooDialog (QWidget *p, QString d) : QTabDialog (p, "YahooDialog",
   grid->addWidget(label, 0, 0);
   
   method = new QComboBox(w);
-  method->insertItem(tr("History"), 0);
-  method->insertItem(tr("Auto History"), 1);
-  method->insertItem(tr("Quote"), 2);
-  method->insertItem(tr("Fundamental"), 3);
+  method->insertItem("History", 0);
+  method->insertItem("Auto History", 1);
+  method->insertItem("Quote", 2);
+  method->insertItem("Fundamental", 3);
   QObject::connect(method, SIGNAL(activated(int)), this, SLOT(methodChanged(int)));
   grid->addWidget(method, 0, 1);
   
@@ -269,21 +269,21 @@ QString YahooDialog::getMethod ()
 
 void YahooDialog::setMethod (QString d)
 {
-  if (! d.compare(tr("History")))
+  if (! d.compare("History"))
   {
     method->setCurrentItem(0);
     methodChanged(0);
   }
   else
   {
-    if (! d.compare(tr("Auto History")))
+    if (! d.compare("Auto History"))
     {
       method->setCurrentItem(1);
       methodChanged(1);
     }
     else
     {
-      if (! d.compare(tr("Quote")))
+      if (! d.compare("Quote"))
       {
         method->setCurrentItem(2);
         methodChanged(2);

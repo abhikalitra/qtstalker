@@ -82,8 +82,8 @@ void CSVRuleDialog::createRulePage ()
   grid->addWidget(label, 1, 0);
   
   type = new QComboBox(w);
-  type->insertItem(tr(tr("Stocks")), -1);
-  type->insertItem(tr(tr("Futures")), -1);
+  type->insertItem("Stocks", -1);
+  type->insertItem("Futures", -1);
   connect(type, SIGNAL(activated(int)), this, SLOT(comboChanged(int)));
   grid->addWidget(type, 1, 1);
   
@@ -119,22 +119,22 @@ void CSVRuleDialog::createRulePage ()
   
   fieldList = new QListBox(w);
   fieldList->setSelectionMode(QListBox::Extended);
-  fieldList->insertItem(tr("Symbol"), -1);
-  fieldList->insertItem(tr("Date:YYYYMMDD"), -1);
-  fieldList->insertItem(tr("Date:YYMMDD"), -1);
-  fieldList->insertItem(tr("Date:MMDDYY"), -1);
-  fieldList->insertItem(tr("Date:MMDDYYYY"), -1);
-  fieldList->insertItem(tr("Date:DDMMYYYY"), -1);
-  fieldList->insertItem(tr("Date:MMDDYYYYHHMMSS"), -1);
-  fieldList->insertItem(tr("Time"), -1);
-  fieldList->insertItem(tr("Open"), -1);
-  fieldList->insertItem(tr("High"), -1);
-  fieldList->insertItem(tr("Low"), -1);
-  fieldList->insertItem(tr("Close"), -1);
-  fieldList->insertItem(tr("Volume"), -1);
-  fieldList->insertItem(tr("OI"), -1);
-  fieldList->insertItem(tr("Ignore"), -1);
-  fieldList->insertItem(tr("Name"), -1);
+  fieldList->insertItem("Symbol", -1);
+  fieldList->insertItem("Date:YYYYMMDD", -1);
+  fieldList->insertItem("Date:YYMMDD", -1);
+  fieldList->insertItem("Date:MMDDYY", -1);
+  fieldList->insertItem("Date:MMDDYYYY", -1);
+  fieldList->insertItem("Date:DDMMYYYY", -1);
+  fieldList->insertItem("Date:MMDDYYYYHHMMSS", -1);
+  fieldList->insertItem("Time", -1);
+  fieldList->insertItem("Open", -1);
+  fieldList->insertItem("High", -1);
+  fieldList->insertItem("Low", -1);
+  fieldList->insertItem("Close", -1);
+  fieldList->insertItem("Volume", -1);
+  fieldList->insertItem("OI", -1);
+  fieldList->insertItem("Ignore", -1);
+  fieldList->insertItem("Name", -1);
   QObject::connect(fieldList, SIGNAL(highlighted(int)), this, SLOT(fieldListSelected(int)));
   hbox->addWidget(fieldList);
   

@@ -38,7 +38,6 @@ ColorButton::~ColorButton ()
 
 void ColorButton::setColorButton ()
 {
-//  pix.resize(this->width(), this->height() - 5);
   pix.fill(color);
   setPixmap(pix);
 }

@@ -65,7 +65,7 @@ void CME::update ()
   symbolLoop = 0;
   errorLoop = 0;
 
-  if (! method.compare(tr("Today")))
+  if (! method.compare("Today"))
   {
     urlList.append("ftp://ftp.cme.com//pub/settle/stlags");
     urlList.append("ftp://ftp.cme.com//pub/settle/stlcur");
@@ -131,7 +131,7 @@ void CME::fileDone (QString d)
     return;
   }
 
-  if (! method.compare(tr("Today")))
+  if (! method.compare("Today"))
   {
     parseToday();
     
@@ -163,7 +163,7 @@ void CME::timeoutError ()
   
     errorLoop = 0;
     
-    if (! method.compare(tr("Today")))
+    if (! method.compare("Today"))
     {
       symbolLoop++;
       if (symbolLoop >= (int) urlList.count())
@@ -1018,8 +1018,8 @@ void CME::prefDialog (QWidget *w)
   dialog->setHelpFile(helpFile);
 
   QStringList l2;
-  l2.append(tr("Today"));
-  l2.append(tr("History"));
+  l2.append("Today");
+  l2.append("History");
   dialog->addComboItem(tr("Method"), tr("Details"), l2, method);
   connect(dialog->getComboWidget(tr("Method")),
           SIGNAL(activated(const QString &)),
@@ -1086,7 +1086,7 @@ void CME::methodChanged (const QString & d)
 {
   method = d;
   
-  if (! method.compare(tr("Today")))
+  if (! method.compare("Today"))
     symbolCombo->setEnabled(FALSE);
   else
     symbolCombo->setEnabled(TRUE);

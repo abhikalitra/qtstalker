@@ -86,7 +86,7 @@ void PortfolioPage::newPortfolio()
   QString s = QInputDialog::getText(tr("New Portfolio"),
   				    tr("Enter new portfolio name."),
 				    QLineEdit::Normal,
-				    tr("New Portfolio"),
+				    tr("NewPortfolio"),
 				    &ok,
 				    this);
   if ((ok) && (! s.isNull()))

@@ -99,15 +99,15 @@ void Yahoo::update ()
     if (! dir.exists(path, TRUE))
       continue;
       
-    if (! method.compare(tr("History")))
+    if (! method.compare("History"))
       createHistoryUrls(symbolList[loop]);
     else
     {
-      if (! method.compare(tr("Auto History")))
+      if (! method.compare("Auto History"))
         createAutoHistoryUrls(path, symbolList[loop]);
       else
       {
-        if (! method.compare(tr("Quote")))
+        if (! method.compare("Quote"))
           createQuoteUrls(symbolList[loop]);
 	else
           createFundamentalUrls(symbolList[loop]);
@@ -145,11 +145,11 @@ void Yahoo::fileDone (bool d)
     return;
   }
 
-  if (method.contains(tr("History")))
+  if (method.contains("History"))
     parseHistory();
   else
   {
-    if (method.contains(tr("Quote")))
+    if (method.contains("Quote"))
       parseQuote();
     else
       parseFundamental();
@@ -668,7 +668,7 @@ void Yahoo::loadSettings ()
   QString s = settings.readEntry("/Adjustment", "0");
   adjustment = s.toInt();
   
-  method = settings.readEntry("/Method", tr("History"));
+  method = settings.readEntry("/Method", "History");
   
   s = settings.readEntry("/Retries", "3");
   retries = s.toInt();

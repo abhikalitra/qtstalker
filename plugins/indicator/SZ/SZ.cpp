@@ -33,8 +33,8 @@ SZ::SZ ()
 {
   pluginName = "SZ";
   setDefaults();
-  methodList.append(QObject::tr("Long"));
-  methodList.append(QObject::tr("Short"));
+  methodList.append("Long");
+  methodList.append("Short");
   helpFile = "sz.html";
 }
 
@@ -49,7 +49,7 @@ void SZ::setDefaults ()
   coefficient = 2.5;
   period = 10;
   no_decline_period = 2;
-  method = QObject::tr("Long");
+  method = "Long";
   label = pluginName;
 }
 
@@ -61,7 +61,7 @@ void SZ::calculate ()
   int display_uptrend = 0;
   int display_dntrend = 0;
   int position = 1;
-  if (! method.compare(QObject::tr("Long")))
+  if (! method.compare("Long"))
     position = 1;
   else
     position = 2;

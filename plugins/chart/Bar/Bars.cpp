@@ -46,7 +46,7 @@ Bars::~Bars ()
 
 void Bars::drawChart (int startX, int startIndex, int pixelspace)
 {
-  if (! style.compare(tr("Bar")))
+  if (! style.compare("Bar"))
     drawBars(startX, startIndex, pixelspace);
   else
     drawPaintBars(startX, startIndex, pixelspace);
@@ -209,7 +209,7 @@ void Bars::loadSettings ()
   settings.beginGroup("/Qtstalker/Bar plugin");
 
   minPixelspace = settings.readNumEntry("/minPixelspace", 4);
-  style = settings.readEntry("/style", tr("Bar"));
+  style = settings.readEntry("/style", "Bar");
 
   // bar settings  
   barNeutralColor.setNamedColor(settings.readEntry("/barNeutralColor", "blue"));

@@ -861,9 +861,8 @@ void IndicatorPlot::setScale ()
     }
     else
     {
-      int x = startX;
-      int loop = startIndex;
-      while ((x < buffer->width()) && (loop < (int) data->count()))
+      int loop;
+      for (loop = startIndex; loop < (int) data->count(); loop++)
       {
 	double t = data->getHigh(loop);
         if (t > scaleHigh)
@@ -872,9 +871,6 @@ void IndicatorPlot::setScale ()
 	t = data->getLow(loop);
         if (t < scaleLow)
 	  scaleLow = t;
-
-        x = x + pixelspace;
-        loop++;
       }
     }
   }
@@ -931,9 +927,8 @@ void IndicatorPlot::setScale ()
         if (line->getScaleFlag())
           continue;
         
-	int x = startX;
         int loop2 = line->getSize() - data->count() + startIndex;
-        while ((x < buffer->width()) && (loop2 < (int) line->getSize()))
+	for (; loop2 < line->getSize(); loop2++)
         {
           if (loop2 > -1)
           {
@@ -943,9 +938,6 @@ void IndicatorPlot::setScale ()
             if (line->getData(loop2) < scaleLow)
               scaleLow = line->getData(loop2);
           }
-
-          x = x + pixelspace;
-          loop2++;
         }
       }
     }
@@ -966,11 +958,14 @@ void IndicatorPlot::setScale ()
     }
   }
 
+// this was creating too much range on very small ranges disabled
+/*  
   scaleHigh = scaleHigh * 1.01;
   if (scaleLow < 0)
     scaleLow = scaleLow * 1.1;
   else
     scaleLow = scaleLow * 0.99;
+*/
 
   double logScaleHigh = 1;
   double logRange = 0;
@@ -1239,21 +1234,6 @@ void IndicatorPlot::slotNewChartObject (int id)
   for(; it.current(); ++it)
     it.current()->getNameList(l);
   
-/*  
-  QStringList l;
-  QString plugin = config.parseDbPlugin(chartPath);
-  DbPlugin *db = config.getDbPlugin(plugin);
-  if (! db)
-  {
-    config.closePlugin(plugin);
-    return;
-  }
-  
-  db->openChart(chartPath);
-  db->getChartObjectsList(l);
-  config.closePlugin(plugin);
-*/  
-  
   int loop = 0;
   QString name;
   while (1)
@@ -1367,8 +1347,6 @@ void IndicatorPlot::slotDeleteAllChartObjects ()
     return;
   }
     
-//  QStringList l = config.getPluginList(Config::COPluginPath);
-
   int loop;
   PrefDialog *dialog = new PrefDialog;
   dialog->setCaption(tr("Delete All Chart Objects"));

@@ -88,7 +88,7 @@ void SYMBOL::calculate ()
     Setting *r2 = dict[data->getDate(loop).getDateTimeString(FALSE)];
     if (r2)
     {
-      val = r2->getFloat(QObject::tr("Close"));
+      val = r2->getFloat("Close");
       line->append(val);
     }
   }

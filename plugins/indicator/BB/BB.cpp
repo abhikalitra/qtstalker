@@ -29,8 +29,8 @@ BB::BB ()
 {
   pluginName = "BB";
   
-  bandList.append(QObject::tr("Upper"));
-  bandList.append(QObject::tr("Lower"));
+  bandList.append("Upper");
+  bandList.append("Lower");
   
   helpFile = "bb.html";
   
@@ -48,7 +48,7 @@ void BB::setDefaults ()
   deviation = 2;
   period = 20;
   maType = 1;
-  customBand = QObject::tr("Upper");
+  customBand = "Upper";
   label = pluginName;
 }
 
@@ -62,7 +62,7 @@ void BB::calculate ()
   PlotLine *sma = getMA(in, maType, period);
   sma->setColor(color);
   sma->setType(lineType);
-  sma->setLabel(QObject::tr("BBM"));
+  sma->setLabel("BBM");
   int smaLoop = sma->getSize() - 1;
 
   if ((int) sma->getSize() < period * 2)
@@ -75,12 +75,12 @@ void BB::calculate ()
   PlotLine *bbu = new PlotLine;
   bbu->setColor(color);
   bbu->setType(lineType);
-  bbu->setLabel(QObject::tr("BBU"));
+  bbu->setLabel("BBU");
   
   PlotLine *bbl = new PlotLine;
   bbl->setColor(color);
   bbl->setType(lineType);
-  bbl->setLabel(QObject::tr("BBL"));
+  bbl->setLabel("BBL");
 
   int inputLoop = in->getSize() - 1;
   while (inputLoop >= period && smaLoop >= period)
@@ -197,7 +197,7 @@ PlotLine * BB::calculateCustom (QDict<PlotLine> *)
 {
   clearOutput();
   calculate();
-  if (! customBand.compare(QObject::tr("Upper")))
+  if (! customBand.compare("Upper"))
     return output->getLine(0);
   else
     return output->getLine(1);

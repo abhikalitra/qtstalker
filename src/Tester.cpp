@@ -2024,7 +2024,7 @@ QString Tester::newTest ()
   QString s = QInputDialog::getText(tr("New Backtest Rule"),
   				    tr("Enter new backtest rule name."),
   				    QLineEdit::Normal,
-				    tr("New Rule"),
+				    tr("NewRule"),
 				    &ok,
 				    this);
 

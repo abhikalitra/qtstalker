@@ -67,11 +67,11 @@ ChartPage::ChartPage (QWidget *w) : QWidget (w)
   vbox->addWidget(nav);
 
   newMenu = new QPopupMenu(this);
-  int id = newMenu->insertItem(QPixmap(newchart), tr("&CC"), this, SLOT(newChart(int)));
+  int id = newMenu->insertItem(QPixmap(newchart), "&CC", this, SLOT(newChart(int)));
   newMenu->setItemParameter(id, id);
-  id = newMenu->insertItem(QPixmap(newchart), tr("&Index"), this, SLOT(newChart(int)));
+  id = newMenu->insertItem(QPixmap(newchart), "&Index", this, SLOT(newChart(int)));
   newMenu->setItemParameter(id, id);
-  id = newMenu->insertItem(QPixmap(newchart), tr("&Spread"), this, SLOT(newChart(int)));
+  id = newMenu->insertItem(QPixmap(newchart), "&Spread", this, SLOT(newChart(int)));
   newMenu->setItemParameter(id, id);
   
   menu = new QPopupMenu(this);

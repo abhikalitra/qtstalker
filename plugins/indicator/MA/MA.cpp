@@ -343,10 +343,10 @@ PlotLine * MA::getMA (PlotLine *in, int type, int period)
 QStringList MA::getMATypes ()
 {
   QStringList l;
-  l.append(QObject::tr("EMA"));
-  l.append(QObject::tr("SMA"));
-  l.append(QObject::tr("WMA"));
-  l.append(QObject::tr("Wilder"));
+  l.append("EMA");
+  l.append("SMA");
+  l.append("WMA");
+  l.append("Wilder");
   return l;
 }
 
@@ -356,19 +356,19 @@ int MA::getMAType (QString d)
   
   while (1)
   {
-    if (! d.compare(QObject::tr("EMA")))
+    if (! d.compare("EMA"))
     {
       type = (int) EMA;
       break;
     }
     
-    if (! d.compare(QObject::tr("WMA")))
+    if (! d.compare("WMA"))
     {
       type = (int) WMA;
       break;
     }
   
-    if (! d.compare(QObject::tr("Wilder")))
+    if (! d.compare("Wilder"))
       type = (int) Wilder;
       
     break;

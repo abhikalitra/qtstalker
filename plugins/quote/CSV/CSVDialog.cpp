@@ -153,7 +153,7 @@ void CSVDialog::newRule ()
   QString s = QInputDialog::getText(tr("New Rule"),
   				    tr("Enter new rule name."),
 				    QLineEdit::Normal,
-				    tr("New Rule"),
+				    tr("NewRule"),
 				    &ok,
 				    this);
   if ((! ok) || (s.isNull()))

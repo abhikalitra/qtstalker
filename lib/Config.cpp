@@ -213,7 +213,7 @@ QString Config::getData (Parm p)
       s = settings.readEntry("/Qtstalker/IndicatorPath");
       break;
     case ChartStyle:
-      s = settings.readEntry("/Qtstalker/ChartStyle", QObject::tr("Bar"));
+      s = settings.readEntry("/Qtstalker/ChartStyle", "Bar");
       break;
     case Compression:
       s = settings.readEntry("/Qtstalker/Compression", "4");
@@ -564,10 +564,11 @@ void Config::getIndicator (QString d, Setting &set)
       continue;
       
     QStringList l = QStringList::split("=", s, FALSE);
-    if (l.count() != 2)
+    if (l.count() < 2)
       continue;
 
-    set.setData(l[0], l[1]);      
+    s = s.remove(0, l[0].length() + 1); // do this in case the data portion has an = sign in it.
+    set.setData(l[0], s);      
   }
   
   f.close();
@@ -593,7 +594,6 @@ void Config::setIndicator (QString d, Setting &set)
 
 void Config::deleteIndicator (QString d)
 {
-//  QString s = getData(IndicatorPath) + "/" + d + "/" + n;
   QDir dir;
   dir.remove(d);
 }
@@ -660,7 +660,6 @@ ChartPlugin * Config::getChartPlugin (QString p)
   if (plug)
     return plug;
 
-//  QString s = getData(ChartPluginPath) + "/lib" + p + "." + version + ".so";
   QString s = getData(ChartPluginPath) + "/lib" + p + "." + version;
 
   QLibrary *lib = new QLibrary(s);
@@ -687,7 +686,6 @@ DbPlugin * Config::getDbPlugin (QString p)
   if (plug)
     return plug;
 
-//  QString s = getData(DbPluginPath) + "/lib" + p + "." + version + ".so";
   QString s = getData(DbPluginPath) + "/lib" + p + "." + version;
 
   QLibrary *lib = new QLibrary(s);
@@ -714,7 +712,6 @@ IndicatorPlugin * Config::getIndicatorPlugin (QString p)
   if (plug)
     return plug;
 
-//  QString s = getData(IndicatorPluginPath) + "/lib" + p + "." + version + ".so";
   QString s = getData(IndicatorPluginPath) + "/lib" + p + "." + version;
 
   QLibrary *lib = new QLibrary(s);
@@ -741,7 +738,6 @@ QuotePlugin * Config::getQuotePlugin (QString p)
   if (plug)
     return plug;
 
-//  QString s = getData(QuotePluginPath) + "/lib" + p + "." + version + ".so";
   QString s = getData(QuotePluginPath) + "/lib" + p + "." + version;
 
   QLibrary *lib = new QLibrary(s);
@@ -768,7 +764,6 @@ COPlugin * Config::getCOPlugin (QString p)
   if (plug)
     return plug;
 
-//  QString s = getData(COPluginPath) + "/lib" + p + "." + version + ".so";
   QString s = getData(COPluginPath) + "/lib" + p + "." + version;
 
   QLibrary *lib = new QLibrary(s);

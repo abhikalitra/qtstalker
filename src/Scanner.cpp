@@ -61,9 +61,6 @@ Scanner::Scanner (QString n) : QTabDialog (0, 0, FALSE)
   gbox = new QHGroupBox(tr("Compression"), w);  
   vbox->addWidget(gbox);
   
-//  bars = new QSpinBox(1, 9999, 1, gbox);
-//  bars->setValue(275);
-  
   period = new QComboBox(gbox);
   period->insertItem(tr("Daily"), -1);
   period->insertItem(tr("Weekly"), -1);

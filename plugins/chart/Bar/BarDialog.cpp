@@ -61,8 +61,8 @@ void BarDialog::createMainPage ()
   grid->setColStretch(1, 1);
 
   QStringList l;
-  l.append(tr("Bar"));
-  l.append(tr("Paint Bar"));
+  l.append("Bar");
+  l.append("Paint Bar");
   
   QLabel *label = new QLabel(tr("Style"), w);
   grid->addWidget(label, 0, 0);

@@ -245,7 +245,21 @@
 	  flexibility for storage options. The conversion should be seamless for users, it will
 	  be handled automatically the first time the user loads the CSV plugin dialog.
 	  
+20050310: Fixed bug in Scaler that locked up if the range was zero.
 
+20050310: Added finer scaling to very small bar ranges. Now to 4 decimal places.
+
+20050310: Fixed DatePlot to show euro time format for intraday bars instead of am/pm.
+
+20050310: Some strings that are used internally by various plugins were wrongfully marked
+          for translation. Code review to correct these errors. Translation files will need
+	  to be corrected to remove those strings. Not many were found, about 50 or so.
+	  
+20050310: Added new /i18n source tree directory. This will contain all the translation files
+          needed for i18n support. Added our first translation file (Polish) thanks to the
+	  great effort of Benedict. 
+
+	  	  	  
 	  	  
 0.29
 ====

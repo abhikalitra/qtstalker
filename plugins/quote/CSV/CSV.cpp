@@ -418,25 +418,25 @@ void CSV::parse ()
 
 void CSV::setDelimiter (QString d)
 {
-  if (! d.compare(tr("Comma")))
+  if (! d.compare("Comma"))
   {
     delim = ",";
     return;
   }
 
-  if (! d.compare(tr("Tab")))
+  if (! d.compare("Tab"))
   {
     delim = "	";
     return;
   }
 
-  if (! d.compare(tr("Space")))
+  if (! d.compare("Space"))
   {
     delim = " ";
     return;
   }
 
-  if (! d.compare(tr("Semicolon")))
+  if (! d.compare("Semicolon"))
   {
     delim = ";";
     return;

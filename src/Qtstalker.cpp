@@ -754,6 +754,9 @@ void QtstalkerApp::slotEnableIndicator (QString name)
   if (! set.count())
     return;
     
+  if (set.getInt("enable") == 0)
+    return;
+  
   addIndicatorButton(name, (Indicator::PlotType) set.getData("plotType").toInt());
   
   Indicator *i = new Indicator;
@@ -780,7 +783,7 @@ void QtstalkerApp::slotEnableIndicator (QString name)
 
 void QtstalkerApp::slotPixelspaceChanged (int d)
 {
-  int ov = mainPlot->getPixelspace();
+//  int ov = mainPlot->getPixelspace();
   
   emit signalPixelspace(d);
   
