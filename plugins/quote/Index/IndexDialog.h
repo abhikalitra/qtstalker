@@ -19,40 +19,46 @@
  *  USA.
  */
 
-#include "QuotePlugin.h"
-#include <qstring.h>
-#include <qurloperator.h>
-#include <qstringlist.h>
-#include <qnetworkprotocol.h>
+#include <qlistview.h>
+#include <qpushbutton.h>
+#include <qtabdialog.h>
+#include <qlabel.h>
+#include <qdict.h>
 
-class YahooQuote : public QuotePlugin
+class IndexDialog : public QTabDialog
 {
   Q_OBJECT
-
+  
   public:
-    YahooQuote ();
-    virtual ~YahooQuote ();
-    void update ();
-    QString parseDate (QString);
-    void parse ();
-    Setting * getCreateDetails ();
-    void createChart (Setting *);
-
+    IndexDialog ();
+    ~IndexDialog ();
+    void setList (QString);
+    QString getList ();
+    void saveData ();
+    
   public slots:
-    void getFile ();
-    void opDone (QNetworkOperation *);
-    void dataReady (const QByteArray &, QNetworkOperation *);
-
+    void addItem ();
+    void editItem ();
+    void deleteItem ();
+    void buttonStatus ();
+    void newIndex ();
+    void openIndex ();
+    void saveIndex ();
+    void okPressed ();
+          
   private:
-    QString data;
-    QUrlOperator *op;
-    QStringList symbolList;
-    QStringList urlList;
-    int symbolLoop;
+    bool saveFlag;
+    QString symbol;
+    QString file;
+    QString dataPath;
+    QListView *list;
+    QPushButton *addButton;
+    QPushButton *editButton;
+    QPushButton *deleteButton;
+    QPushButton *newButton;
+    QPushButton *openButton;
+    QPushButton *saveButton;
+    QLabel *name;
+    QDict<QString> symbolDict;
 };
-
-extern "C"
-{
-  Plugin * create ();
-}
 
