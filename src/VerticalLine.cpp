@@ -22,6 +22,7 @@
 #include "VerticalLine.h"
 #include "PrefDialog.h"
 #include <qpainter.h>
+#include <qpointarray.h>
 
 VerticalLine::VerticalLine (QPixmap *p, QString indicator, QString n, BarDate d)
 {
@@ -50,17 +51,55 @@ void VerticalLine::draw (int x, int)
 
   painter.drawLine (x, 0, x, buffer->height());
   
-  QRegion r(x, 0, 1, buffer->height(), QRegion::Rectangle);
-  area = r;
+  selectionArea.clear();
+  QPointArray array;
+  array.putPoints(0,
+  		  4,
+		  x - (HANDLE_WIDTH / 2), 0,
+		  x + (HANDLE_WIDTH / 2), 0,
+		  x + (HANDLE_WIDTH / 2), buffer->height(),
+		  x - (HANDLE_WIDTH / 2), buffer->height());
+  selectionArea.append(new QRegion(array));
   
   if (status)
   {
+    grabHandles.clear();
     int t = (int) buffer->height() / 4;
-    painter.fillRect(x - 3, 0, 6, 6, color);
-    painter.fillRect(x - 3, t, 6, 6, color);
-    painter.fillRect(x - 3, t * 2, 6, 6, color);
-    painter.fillRect(x - 3, t * 3, 6, 6, color);
-    painter.fillRect(x - 3, t * 4, 6, 6, color);
+    
+    grabHandles.append(new QRegion(x - (HANDLE_WIDTH / 2),
+             			   0,
+				   HANDLE_WIDTH,
+				   HANDLE_WIDTH,
+				   QRegion::Rectangle));
+    painter.fillRect(x - (HANDLE_WIDTH / 2), 0, HANDLE_WIDTH, HANDLE_WIDTH, color);
+    
+    grabHandles.append(new QRegion(x - (HANDLE_WIDTH / 2),
+             			   t,
+				   HANDLE_WIDTH,
+				   HANDLE_WIDTH,
+				   QRegion::Rectangle));
+    painter.fillRect(x - (HANDLE_WIDTH / 2), t, HANDLE_WIDTH, HANDLE_WIDTH, color);
+    
+    grabHandles.append(new QRegion(x - (HANDLE_WIDTH / 2),
+             			   t * 2,
+				   HANDLE_WIDTH,
+				   HANDLE_WIDTH,
+				   QRegion::Rectangle));
+    painter.fillRect(x - (HANDLE_WIDTH / 2), t * 2, HANDLE_WIDTH, HANDLE_WIDTH, color);
+    
+    grabHandles.append(new QRegion(x - (HANDLE_WIDTH / 2),
+             			   t * 3,
+				   HANDLE_WIDTH,
+				   HANDLE_WIDTH,
+				   QRegion::Rectangle));
+    painter.fillRect(x - (HANDLE_WIDTH / 2), t * 3, HANDLE_WIDTH, HANDLE_WIDTH, color);
+    
+    grabHandles.append(new QRegion(x - (HANDLE_WIDTH / 2),
+             			   t * 4,
+				   HANDLE_WIDTH,
+				   HANDLE_WIDTH,
+				   QRegion::Rectangle));
+    painter.fillRect(x - (HANDLE_WIDTH / 2), t * 4, HANDLE_WIDTH, HANDLE_WIDTH, color);
   }
 
   painter.end();

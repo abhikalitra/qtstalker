@@ -23,6 +23,7 @@
 #define SELLARROW_HPP
 
 #include "ChartObject.h"
+#include <qpointarray.h>
 
 class SellArrow : public ChartObject
 {
@@ -40,6 +41,7 @@ class SellArrow : public ChartObject
     void prefDialog ();
     
   protected:
+    QPointArray arrow;
 };
 
 #endif

@@ -22,6 +22,7 @@
 #include "TrendLine.h"
 #include "PrefDialog.h"
 #include <qpainter.h>
+#include <qpointarray.h>
 
 TrendLine::TrendLine (Scaler *s, QPixmap *p, BarData *d, QString indicator, QString n,
                       BarDate dt, double v, BarDate dt2, double v2)
@@ -40,9 +41,9 @@ TrendLine::TrendLine (Scaler *s, QPixmap *p, BarData *d, QString indicator, QStr
   useBar = FALSE;
   barField = tr("Close");
   
-  menu->insertItem(tr("Edit Trend Line"), this, SLOT(prefDialog()));
-  menu->insertItem(tr("Move Trend Line"), this, SLOT(moveObject()));
-  menu->insertItem(tr("Delete Trend Line"), this, SLOT(remove()));
+  menu->insertItem(tr("Edit Trend Line"), this, SLOT(prefDialog()), tr("Ctrl+E"));
+  menu->insertItem(tr("Move Trend Line"), this, SLOT(moveObject()), tr("Ctrl+M"));
+  menu->insertItem(tr("Delete Trend Line"), this, SLOT(remove()), tr("Ctrl+D"));
   
   loadDefaults("TrendLine");
 }
@@ -106,14 +107,6 @@ void TrendLine::draw (int x, int x2)
 
   painter.drawLine (x, y, x2, y2);
 
-  // store the selectable area the line occupies
-  selectionArea.putPoints(0, 4, x, y - 4, x, y + 4, x2, y2 - 4, x2, y2 + 4);
-    
-  QRegion r(x - 4, y - 4, 8, 8, QRegion::Rectangle);
-  area = r;
-  QRegion r2(x2 - 4, y2 - 4, 8, 8, QRegion::Rectangle);
-  area2 = r2;
-
   // save old values;
   int tx2 = x2;
   int ty2 = y2;
@@ -131,10 +124,29 @@ void TrendLine::draw (int x, int x2)
     painter.drawLine (x, y, x2, y2);
   }
 
+  // store the selectable area the line occupies
+  selectionArea.clear();
+  QPointArray array;
+  array.putPoints(0, 4, tx, ty - 4, tx, ty + 4, x2, y2 + 4, x2, y2 - 4);
+  selectionArea.append(new QRegion(array));
+  
   if (status)
   {
-    painter.fillRect(tx - 3, ty - 3, 6, 6, color);
-    painter.fillRect(tx2 - 3, ty2 - 3, 6, 6, color);
+    grabHandles.clear();
+
+    grabHandles.append(new QRegion(tx,
+             			   ty - (HANDLE_WIDTH / 2),
+				   HANDLE_WIDTH,
+				   HANDLE_WIDTH,
+				   QRegion::Rectangle));
+    painter.fillRect(tx, ty - (HANDLE_WIDTH / 2), HANDLE_WIDTH, HANDLE_WIDTH, color);
+      
+    grabHandles.append(new QRegion(tx2,
+             			   ty2 - (HANDLE_WIDTH / 2),
+				   HANDLE_WIDTH,
+				   HANDLE_WIDTH,
+				   QRegion::Rectangle));
+    painter.fillRect(tx2, ty2 - (HANDLE_WIDTH / 2), HANDLE_WIDTH, HANDLE_WIDTH, color);
   }
   
   painter.end();
@@ -205,17 +217,19 @@ void TrendLine::move (BarDate d, double v)
   }
 }
 
-bool TrendLine::isClicked (int x, int y)
+bool TrendLine::handleClicked (int x, int y)
 {
   bool flag = FALSE;
   move2Flag = FALSE;
   QPoint p(x,y);
-  
-  if (area.contains(p))
+
+  QRegion *r = grabHandles.at(0);  
+  if (r->contains(p))
     flag = TRUE;
   else
   {
-    if (area2.contains(p))
+    r = grabHandles.at(1);  
+    if (r->contains(p))
       flag = TRUE;
     move2Flag = TRUE;
   }
@@ -224,20 +238,6 @@ bool TrendLine::isClicked (int x, int y)
     moveObject();
       
   return flag;
-}
-
-void TrendLine::selected (int x, int y)
-{
-  if (status)
-    return;
-
-  QRegion r(selectionArea);
-  if (! r.contains(QPoint(x,y)))
-    return;
-    
-  status = TRUE;
-  emit signalDraw();
-  emit signalChartObjectSelected(this);
 }
 
 Setting * TrendLine::getSettings ()

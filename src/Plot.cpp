@@ -429,15 +429,16 @@ void Plot::mousePressEvent (QMouseEvent *event)
 	  newChartObject();
 	break;
       case COSelected:
-        if (! tco->isClicked(event->x(), event->y()))
+        if (tco->handleClicked(event->x(), event->y()))
+	{
+          tx = event->x();
+          ty = event->y();
+	  break;
+	}
+        if (! tco->isSelected(event->x(), event->y()))
 	{
 	  tco->unselect();
 	  mouseFlag = None;
-	}
-	else
-	{
-          tx = event->x();
-	  ty = event->y();
 	}
         break;
       case Moving:
@@ -448,7 +449,7 @@ void Plot::mousePressEvent (QMouseEvent *event)
       default:
         tx = event->x();
 	ty = event->y();
-        emit signalMouseLeftClick(event->x(), event->y());
+        isChartObjectSelected(event->x(), event->y());
 	break;
     }
   }
@@ -604,6 +605,12 @@ void Plot::mouseDoubleClickEvent (QMouseEvent *event)
 
 void Plot::keyPressEvent (QKeyEvent *key)
 {
+  if (mouseFlag == COSelected)
+  {
+    tco->keyEvent(key);
+    return;
+  }
+  
   switch (key->key())
   {
     case Qt::Key_Left:
@@ -1870,7 +1877,7 @@ void Plot::newChartObject ()
     QObject::connect(co, SIGNAL(signalDraw()), this, SLOT(draw()));
     QObject::connect(co, SIGNAL(signalRefresh()), this, SLOT(drawRefresh()));
     QObject::connect(co, SIGNAL(signalMoving()), this, SLOT(objectMoving()));
-    QObject::connect(this, SIGNAL(signalMouseLeftClick(int, int)), co, SLOT(selected(int, int)));
+//    QObject::connect(this, SIGNAL(signalMouseLeftClick(int, int)), co, SLOT(selected(int, int)));
     QObject::connect(co, SIGNAL(signalChartObjectSelected(ChartObject *)), this, SLOT(slotChartObjectSelected(ChartObject *)));
     QObject::connect(co, SIGNAL(signalDeleteChartObject(QString)), this, SLOT(slotDeleteChartObject(QString)));
     QObject::connect(co, SIGNAL(message(QString)), this, SLOT(slotMessage(QString)));
@@ -2085,7 +2092,7 @@ void Plot::addChartObject (Setting *set)
   QObject::connect(co, SIGNAL(signalDraw()), this, SLOT(draw()));
   QObject::connect(co, SIGNAL(signalRefresh()), this, SLOT(drawRefresh()));
   QObject::connect(co, SIGNAL(signalMoving()), this, SLOT(objectMoving()));
-  QObject::connect(this, SIGNAL(signalMouseLeftClick(int, int)), co, SLOT(selected(int, int)));
+//  QObject::connect(this, SIGNAL(signalMouseLeftClick(int, int)), co, SLOT(selected(int, int)));
   QObject::connect(co, SIGNAL(signalChartObjectSelected(ChartObject *)), this, SLOT(slotChartObjectSelected(ChartObject *)));
   QObject::connect(co, SIGNAL(signalDeleteChartObject(QString)), this, SLOT(slotDeleteChartObject(QString)));
   QObject::connect(co, SIGNAL(message(QString)), this, SLOT(slotMessage(QString)));
@@ -2233,4 +2240,17 @@ void Plot::slotDeleteAllChartObjects ()
 void Plot::objectMoving ()
 {
   mouseFlag = Moving;
+}
+
+void Plot::isChartObjectSelected (int x, int y)
+{
+  QDictIterator<ChartObject> it(chartObjects);
+  for (; it.current(); ++it)
+  {
+    if (it.current()->isSelected(x, y))
+    {
+      it.current()->selected();
+      break;
+    }
+  }
 }

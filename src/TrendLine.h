@@ -23,7 +23,6 @@
 #define TRENDLINE_HPP
 
 #include "ChartObject.h"
-#include <qpointarray.h>
 
 class TrendLine : public ChartObject
 {
@@ -36,18 +35,15 @@ class TrendLine : public ChartObject
     void move (BarDate, double);
     Setting * getSettings ();
     void setSettings (Setting *);
-    bool isClicked (int, int);
+    bool handleClicked (int, int);
     
   public slots:
     void prefDialog ();
-    void selected (int, int);
     
   protected:
-    QRegion area2;
     bool move2Flag;
     bool useBar;
     QString barField;
-    QPointArray selectionArea;
 };
 
 #endif

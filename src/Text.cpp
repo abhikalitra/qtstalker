@@ -59,13 +59,19 @@ void Text::draw (int x, int)
   painter.drawText(x, y, label);
   
   QFontMetrics fm = painter.fontMetrics();
-  QRegion r(x, y - fm.height(), fm.width(label, -1), fm.height(), QRegion::Rectangle);
-  area = r;
+  selectionArea.clear();
+  selectionArea.append(new QRegion(x, y - fm.height(), fm.width(label, -1), fm.height(), QRegion::Rectangle));
   
   if (status)
   {
-    QRect r = area.boundingRect();
-    painter.drawRect(r.topLeft().x() - 2, r.topLeft().y() - 2, r.width() + 4, r.height() + 4);
+    grabHandles.clear();
+
+    grabHandles.append(new QRegion(x + fm.width(label, -1),
+             			   y - (fm.height() / 2),
+				   HANDLE_WIDTH,
+				   HANDLE_WIDTH,
+				   QRegion::Rectangle));
+    painter.fillRect(x + fm.width(label, -1), y - (fm.height() / 2), HANDLE_WIDTH, HANDLE_WIDTH, color);
   }
 
   painter.end();

@@ -55,7 +55,6 @@ class Plot : public QWidget
     void signalEditIndicator (QString, Plot *);
     void signalDeleteIndicator (QString, Plot *);
     void signalNewIndicator ();
-    void signalMouseLeftClick (int, int);
     void signalMinPixelspace (int);
     void signalCrosshairsStatus (bool);
 
@@ -99,6 +98,7 @@ class Plot : public QWidget
     void addChartObject (ChartObject *);
     void addChartObject (Setting *);
     QStringList getChartObjects ();
+    void isChartObjectSelected (int x, int y);
 
     int getWidth ();
     int getPixelspace ();
