@@ -7,7 +7,13 @@
 
 20041009: Fixed bug #1043037 - help path configuration.
 
-
+20041021: New indicator plugin SYMBOL. This allows user to overlay a plot of the close
+          of any symbol (ticker) onto any indicator.
+	  
+20041021: Removed the OVRLY indicator. Now redundant due to the SYMBOL plugin and
+          CUS language functions.
+	  
+	  	 
 
 0.28
 ====

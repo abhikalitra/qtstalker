@@ -8,7 +8,7 @@ HEADERS += Candle.h
 
 SOURCES += Candle.cpp
 
-TARGET = Candle.0.27
+TARGET = Candle.0.29
 
 INCLUDEPATH += ../../../lib
 INCLUDEPATH += ../../../db-2.7.7/build_unix

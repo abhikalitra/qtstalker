@@ -1369,7 +1369,10 @@ void Plot::setScale ()
 	if (line->getType() == PlotLine::Invisible)
 	  continue;
 
-        if (line->getHigh() > scaleHigh)
+        if (line->getScaleFlag())
+          continue;
+        
+	if (line->getHigh() > scaleHigh)
           scaleHigh = line->getHigh();
 
         if (line->getLow() < scaleLow)
@@ -1396,7 +1399,10 @@ void Plot::setScale ()
 	if (line->getType() == PlotLine::Invisible)
 	  continue;
 
-        int x = startX;
+        if (line->getScaleFlag())
+          continue;
+        
+	int x = startX;
         int loop2 = line->getSize() - data->count() + startIndex;
         while ((x < _width) && (loop2 < (int) line->getSize()))
         {

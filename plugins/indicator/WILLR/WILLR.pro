@@ -8,7 +8,7 @@ HEADERS += WILLR.h
 
 SOURCES += WILLR.cpp
 
-TARGET = WILLR.0.27
+TARGET = WILLR.0.29
 
 INCLUDEPATH += ../../../lib
 INCLUDEPATH += ../../../db-2.7.7/build_unix

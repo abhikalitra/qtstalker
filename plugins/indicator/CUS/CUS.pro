@@ -10,7 +10,7 @@ HEADERS += CUSDialog.h
 SOURCES += CUS.cpp
 SOURCES += CUSDialog.cpp
 
-TARGET = CUS.0.27
+TARGET = CUS.0.29
 
 INCLUDEPATH += ../../../lib
 INCLUDEPATH += ../../../db-2.7.7/build_unix

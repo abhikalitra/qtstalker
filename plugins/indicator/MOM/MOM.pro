@@ -8,7 +8,7 @@ HEADERS += MOM.h
 
 SOURCES += MOM.cpp
 
-TARGET = MOM.0.27
+TARGET = MOM.0.29
 
 INCLUDEPATH += ../../../lib
 INCLUDEPATH += ../../../db-2.7.7/build_unix

@@ -8,7 +8,7 @@ HEADERS += MA.h
 
 SOURCES += MA.cpp
 
-TARGET = MA.0.27
+TARGET = MA.0.29
 
 INCLUDEPATH += ../../../lib
 INCLUDEPATH += ../../../db-2.7.7/build_unix

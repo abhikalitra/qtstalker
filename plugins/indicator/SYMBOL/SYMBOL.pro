@@ -4,11 +4,11 @@ CONFIG += thread warn_on plugin
 
 QMAKE_CXXFLAGS += -ffast-math -Os
 
-HEADERS += OVRLY.h
+HEADERS += SYMBOL.h
 
-SOURCES += OVRLY.cpp
+SOURCES += SYMBOL.cpp
 
-TARGET = OVRLY.0.27
+TARGET = SYMBOL.0.29
 
 INCLUDEPATH += ../../../lib
 INCLUDEPATH += ../../../db-2.7.7/build_unix

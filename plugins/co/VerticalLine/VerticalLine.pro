@@ -10,7 +10,7 @@ HEADERS += VerticalLineObject.h
 SOURCES += VerticalLine.cpp
 SOURCES += VerticalLineObject.cpp
 
-TARGET = VerticalLine.0.27
+TARGET = VerticalLine.0.29
 
 INCLUDEPATH += ../../../lib
 INCLUDEPATH += ../../../db-2.7.7/build_unix

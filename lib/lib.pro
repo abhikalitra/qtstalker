@@ -57,7 +57,7 @@ SOURCES += COPlugin.cpp
 SOURCES += HelpWindow.cpp
     
 TARGET = qtstalker
-VERSION = 0.27.0
+VERSION = 0.29.0
      
 INCLUDEPATH += ../db-2.7.7/build_unix
 

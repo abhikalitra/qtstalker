@@ -21,32 +21,25 @@
 
 #include "IndicatorPlugin.h"
 
-class OVRLY : public IndicatorPlugin
+class SYMBOL : public IndicatorPlugin
 {
   public:
-    OVRLY ();
-    virtual ~OVRLY ();
+    SYMBOL ();
+    virtual ~SYMBOL ();
     void calculate ();
-    PlotLine * getSymbolLine (QString);
-    void comparePrice ();
-    void comparePerformance ();
     void loadIndicatorSettings (QString);
     void saveIndicatorSettings (QString);
     int indicatorPrefDialog (QWidget *);
     void setDefaults();
     Setting getIndicatorSettings ();
     void setIndicatorSettings (Setting);
+    PlotLine * calculateCustom (QDict<PlotLine> *);
     
   private:
     QColor color;
-    QColor baseColor;
     PlotLine::LineType lineType;
-    PlotLine::LineType baseLineType;
     QString label;
-    QString baseLabel;
-    QStringList methodList;
-    QString baseSymbol;
-    QString method;
+    QString symbol;
 };
 
 extern "C"

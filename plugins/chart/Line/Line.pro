@@ -10,7 +10,7 @@ HEADERS += LineDialog.h
 SOURCES += Line.cpp
 SOURCES += LineDialog.cpp
 
-TARGET = Line.0.27
+TARGET = Line.0.29
 
 INCLUDEPATH += ../../../lib
 INCLUDEPATH += ../../../db-2.7.7/build_unix

@@ -10,7 +10,7 @@ HEADERS += SellArrowObject.h
 SOURCES += SellArrow.cpp
 SOURCES += SellArrowObject.cpp
 
-TARGET = SellArrow.0.27
+TARGET = SellArrow.0.29
 
 INCLUDEPATH += ../../../lib
 INCLUDEPATH += ../../../db-2.7.7/build_unix

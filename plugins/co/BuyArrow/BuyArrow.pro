@@ -10,7 +10,7 @@ HEADERS += BuyArrowObject.h
 SOURCES += BuyArrow.cpp
 SOURCES += BuyArrowObject.cpp
 
-TARGET = BuyArrow.0.27
+TARGET = BuyArrow.0.29
 
 INCLUDEPATH += ../../../lib
 INCLUDEPATH += ../../../db-2.7.7/build_unix

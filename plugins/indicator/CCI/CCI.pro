@@ -8,7 +8,7 @@ HEADERS += CCI.h
 
 SOURCES += CCI.cpp
 
-TARGET = CCI.0.27
+TARGET = CCI.0.29
 
 INCLUDEPATH += ../../../lib
 INCLUDEPATH += ../../../db-2.7.7/build_unix

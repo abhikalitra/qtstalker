@@ -8,7 +8,7 @@ HEADERS += COUNTER.h
 
 SOURCES += COUNTER.cpp
 
-TARGET = COUNTER.0.27
+TARGET = COUNTER.0.29
 
 INCLUDEPATH += ../../../lib
 INCLUDEPATH += ../../../db-2.7.7/build_unix

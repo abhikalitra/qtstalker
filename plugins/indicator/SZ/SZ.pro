@@ -8,7 +8,7 @@ HEADERS += SZ.h
 
 SOURCES += SZ.cpp
 
-TARGET = SZ.0.27
+TARGET = SZ.0.29
 
 INCLUDEPATH += ../../../lib
 INCLUDEPATH += ../../../db-2.7.7/build_unix

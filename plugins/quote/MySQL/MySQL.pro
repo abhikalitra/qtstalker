@@ -8,7 +8,7 @@ HEADERS += MySQLPlugin.h
 
 SOURCES += MySQLPlugin.cpp
 
-TARGET = MySQL.0.27
+TARGET = MySQL.0.29
 
 INCLUDEPATH += ../../../lib
 INCLUDEPATH += /usr/include/mysql
