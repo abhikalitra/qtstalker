@@ -51,7 +51,7 @@ class IndicatorPage : public QWidget
     {
       NewIndicatorGroup,
       DeleteIndicatorGroup,
-      AddIndicator,
+      NewIndicator,
       DeleteIndicator,
       EditIndicator,
       MoveIndicator,

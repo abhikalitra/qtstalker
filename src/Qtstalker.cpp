@@ -747,23 +747,7 @@ void QtstalkerApp::slotEditIndicator (Setting *set)
 
 void QtstalkerApp::slotDeleteIndicator (QString text)
 {
-  int rc = QMessageBox::warning(this,
-    			        tr("Qtstalker: Warning"),
-			        tr("Are you sure you want to permanently delete this indicator?"),
-			        QMessageBox::Yes,
-			        QMessageBox::No,
-			        QMessageBox::NoButton);
-  if (rc == QMessageBox::No)
-    return;
-
-  QDir dir;
   QString s = config.getData(Config::IndicatorPath) + "/" + ip->getIndicatorGroup() + "/" + text;
-  if (! dir.exists(s, TRUE))
-  {
-    qDebug("QtstalkerApp::deleteIndicator: indicator not found %s", s.latin1());
-    return;
-  }
-  
   Setting *set = config.getIndicator(s);
   if (! set->count())
   {
@@ -788,55 +772,6 @@ void QtstalkerApp::slotDeleteIndicator (QString text)
   }
 
   delete set;
-  
-  if (chartPath.length())
-  {
-    QString plugin = config.parseDbPlugin(chartPath);
-    DbPlugin *db = config.getDbPlugin(plugin);
-    if (! db)
-    {
-      qDebug("QtstalkerApp::slotDeleteIndicator:can't get db plugin");
-      config.closePlugin(plugin);
-      return;
-    }
-    
-    if (db->openChart(chartPath))
-    {
-      qDebug("QtstalkerApp::slotDeleteIndicator: can't open chart");
-      config.closePlugin(plugin);
-      return;
-    }
-    
-    QPtrList<Setting> l = db->getChartObjects ();
-    QPtrListIterator<Setting> it(l);
-    for (; it.current(); ++it)
-    {
-      Setting *co = it.current();
-      if (! co->getData("Plot").compare(text))
-        db->deleteChartObject(co->getData("Name"));
-    }
-    
-    QStringList l2 = QStringList::split(",", db->getHeaderField(DbPlugin::LocalIndicators), FALSE);
-    Setting tset;
-    for (QStringList::Iterator it = l2.begin(); it != l2.end(); ++it )
-    {
-      tset.parse(*it);
-      if (! tset.getData("Name").compare(text))
-      {
-        l2.remove(*it);
-	break;
-      }
-      else
-        tset.clear();
-    }
-    
-    if (l2.count())
-      db->setHeaderField(DbPlugin::LocalIndicators, l2.join(","));
-    else
-      db->setHeaderField(DbPlugin::LocalIndicators, "");
-    
-    config.closePlugin(plugin);
-  }
 
   if (! mainFlag)
   {
