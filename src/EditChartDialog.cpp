@@ -274,7 +274,7 @@ void EditChartDialog::slotDateSearch ()
       saveRecordFlag = FALSE;
   }
 
-  QString key = dateSearch->dateTime().toString("yyyy-MM-ddmm:hh:ss");
+  QString key = dateSearch->dateTime().toString("yyyyMMddmmhhss");
 
   clearRecordFields();
   

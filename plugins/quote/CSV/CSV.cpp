@@ -100,7 +100,6 @@ void CSV::parse ()
   }
 
   QString type = rule->getData("Type");
-  QString symbol = symbolOveride;
   QStringList fieldList = QStringList::split(",", rule->getData("Rule"), FALSE);
   
   int loop;
@@ -111,6 +110,7 @@ void CSV::parse ()
       continue;
     QTextStream stream(&f);
 
+    QString symbol = symbolOveride;
     if (! symbol.length() && fieldList.findIndex("Symbol") == -1)
     {
       QStringList l = QStringList::split("/", list[loop], FALSE);
@@ -205,17 +205,17 @@ void CSV::parse ()
 	continue;
       }
       
-      int loop;
+      int fieldLoop;
       bool flag = FALSE;
       Setting *r = new Setting;
-      for (loop = 0; loop < (int) fieldList.count(); loop++)
+      for (fieldLoop = 0; fieldLoop < (int) fieldList.count(); fieldLoop++)
       {
-        if (fieldList[loop].contains("Date:"))
+        if (fieldList[fieldLoop].contains("Date:"))
 	{
-          QDate dt = getDate(fieldList[loop], l[loop]);
+          QDate dt = getDate(fieldList[fieldLoop], l[fieldLoop]);
           if (! dt.isValid())
 	  {
-	    qDebug("CSV::parse:Bad date %s", l[loop].latin1());
+	    qDebug("CSV::parse:Bad date %s", l[fieldLoop].latin1());
             emit statusLogMessage("Bad date");
 	    flag = TRUE;
 	    break;
@@ -233,12 +233,12 @@ void CSV::parse ()
 	  continue;
 	}
 
-        if (! fieldList[loop].compare("Time"))
+        if (! fieldList[fieldLoop].compare("Time"))
 	{
-          s = getTime(l[loop]);
+          s = getTime(l[fieldLoop]);
           if (! s.length())
 	  {
-	    qDebug("CSV::parse:Bad time %s", l[loop].latin1());
+	    qDebug("CSV::parse:Bad time %s", l[fieldLoop].latin1());
             emit statusLogMessage("Bad time");
 	    flag = TRUE;
 	    break;
@@ -247,27 +247,27 @@ void CSV::parse ()
 	  continue;
 	}
 	
-        if (! fieldList[loop].compare("Symbol"))
+        if (! fieldList[fieldLoop].compare("Symbol"))
 	{
-	  r->setData("Symbol", l[loop]);
+	  r->setData("Symbol", l[fieldLoop]);
 	  continue;
 	}
 	
-        if (! fieldList[loop].compare("Open") ||
-	    ! fieldList[loop].compare("High") ||
-	    ! fieldList[loop].compare("Low") ||
-	    ! fieldList[loop].compare("Close") ||
-	    ! fieldList[loop].compare("Volume") ||
-	    ! fieldList[loop].compare("OI"))
+        if (! fieldList[fieldLoop].compare("Open") ||
+	    ! fieldList[fieldLoop].compare("High") ||
+	    ! fieldList[fieldLoop].compare("Low") ||
+	    ! fieldList[fieldLoop].compare("Close") ||
+	    ! fieldList[fieldLoop].compare("Volume") ||
+	    ! fieldList[fieldLoop].compare("OI"))
 	{
-          if (setTFloat(l[loop]))
+          if (setTFloat(l[fieldLoop]))
 	  {
-	    qDebug("CSV::parse:Bad %s value", fieldList[loop].latin1());
+	    qDebug("CSV::parse:Bad %s value", fieldList[fieldLoop].latin1());
             emit statusLogMessage("Bad value");
 	    flag = TRUE;
 	    break;
 	  }
-	  r->setData(fieldList[loop], QString::number(tfloat));
+	  r->setData(fieldList[fieldLoop], QString::number(tfloat));
 	  continue;
 	}
       }
@@ -318,7 +318,7 @@ void CSV::parse ()
       else
       {
         db->setBar(bar);
-	emit dataLogMessage(r->getData("Symbol") + " " + bar->getString());
+	emit dataLogMessage(symbol + " " + bar->getString());
       }
 
       delete r;
