@@ -22,6 +22,7 @@
 #include "IndicatorPage.h"
 #include "HelpWindow.h"
 #include "Config.h"
+#include "Macro.h"
 #include "help.xpm"
 #include "ok.xpm"
 #include "disable.xpm"
@@ -30,25 +31,37 @@
 #include "newchart.xpm"
 #include <qcursor.h>
 #include <qdir.h>
+#include <qaccel.h>
 
 IndicatorPage::IndicatorPage (QWidget *w) : QListBox (w)
 {
+  keyFlag = FALSE;
+  
   connect(this, SIGNAL(doubleClicked(QListBoxItem *)), this, SLOT(doubleClick(QListBoxItem *)));
   connect(this, SIGNAL(contextMenuRequested(QListBoxItem *, const QPoint &)), this,
           SLOT(rightClick(QListBoxItem *)));
   connect(this, SIGNAL(highlighted(const QString &)), this, SLOT(itemSelected(const QString &)));
 
-  menu = new QPopupMenu();
-  menu->insertItem(QPixmap(newchart), tr("&New Indicator"), this, SLOT(newIndicator()), CTRL+Key_N);
-  menu->insertItem(QPixmap(edit), tr("&Edit Indicator"), this, SLOT(editIndicator()), CTRL+Key_E);
-  menu->insertItem(QPixmap(deleteitem), tr("&Delete Indicator"), this, SLOT(deleteIndicator()), CTRL+Key_D);
+  menu = new QPopupMenu(this);
+  menu->insertItem(QPixmap(newchart), tr("&New Indicator	Ctrl+N"), this, SLOT(newIndicator()));
+  menu->insertItem(QPixmap(edit), tr("&Edit Indicator		Ctrl+E"), this, SLOT(editIndicator()));
+  menu->insertItem(QPixmap(deleteitem), tr("&Delete Indicator	Ctrl+D"), this, SLOT(deleteIndicator()));
   menu->insertSeparator(-1);
-  menu->insertItem(QPixmap(help), tr("&Help"), this, SLOT(slotHelp()), CTRL+Key_H);
+  menu->insertItem(QPixmap(help), tr("&Help		Ctrl+H"), this, SLOT(slotHelp()));
+
+  QAccel *a = new QAccel(this);
+  a->insertItem(CTRL+Key_N, 0);
+  a->connectItem(0, this, SLOT(newIndicator()));
+  a->insertItem(CTRL+Key_D, 1);
+  a->connectItem(1, this, SLOT(deleteIndicator()));
+  a->insertItem(CTRL+Key_E, 2);
+  a->connectItem(2, this, SLOT(editIndicator()));
+  a->insertItem(CTRL+Key_H, 3);
+  a->connectItem(3, this, SLOT(slotHelp()));
 }
 
 IndicatorPage::~IndicatorPage ()
 {
-  delete menu;
 }
 
 void IndicatorPage::itemSelected (const QString &d)
@@ -171,55 +184,40 @@ QStringList IndicatorPage::getDisabledIndicators ()
   return l2;
 }
 
+bool IndicatorPage::getIndicatorStatus (QString d)
+{
+  return (bool) statusList.getInt(d);
+}
+
+void IndicatorPage::setKeyFlag (bool d)
+{
+  keyFlag = d;
+}
+
 void IndicatorPage::keyPressEvent (QKeyEvent *key)
 {
-  emit signalKeyPressed (2, key);
+  if (keyFlag)
+    emit signalKeyPressed (Macro::IndicatorPage, key->state(), key->key(), key->ascii(), key->text());
+    
   doKeyPress(key);  
 }
 
 void IndicatorPage::doKeyPress (QKeyEvent *key)
 {
-  if (key->state() == Qt::ControlButton)
+  switch (key->key())
   {
-    switch (key->key())
-    {
-      case Qt::Key_N:
-        key->accept();
-        newIndicator();
-        break;
-      case Qt::Key_E:
-        key->accept();
-        editIndicator();
-        break;
-      case Qt::Key_Delete:
-        key->accept();
-        deleteIndicator();
-        break;
-      case Qt::Key_H:
-        key->accept();
-        slotHelp();
-        break;
-      default:
-        break;
-    }
-  }
-  else
-  {
-    switch (key->key())
-    {
-      case Qt::Key_Left: // segfaults if we dont trap this
-      case Qt::Key_Right: // segfaults if we dont trap this
-        key->accept();
-        break;      
-      case Qt::Key_Enter:
-      case Qt::Key_Return:
-        key->accept();
-        changeIndicator(currentText(), currentItem());
-        break;
-      default:
-        key->ignore();
-        QListBox::keyPressEvent(key);
-        break;
-    }
+    case Qt::Key_Left: // segfaults if we dont trap this
+    case Qt::Key_Right: // segfaults if we dont trap this
+      key->accept();
+      break;      
+    case Qt::Key_Enter:
+    case Qt::Key_Return:
+      key->accept();
+      changeIndicator(currentText(), currentItem());
+      break;
+    default:
+      key->accept();
+      QListBox::keyPressEvent(key);
+      break;
   }
 }

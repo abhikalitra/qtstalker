@@ -265,6 +265,42 @@ QString Config::getData (Parm p)
     case Menubar:
       s = settings.readEntry("/Qtstalker/Menubar", "1");
       break;
+    case MacroF1:
+      s = settings.readEntry("/Qtstalker/MacroF1");
+      break;
+    case MacroF2:
+      s = settings.readEntry("/Qtstalker/MacroF2");
+      break;
+    case MacroF3:
+      s = settings.readEntry("/Qtstalker/MacroF3");
+      break;
+    case MacroF4:
+      s = settings.readEntry("/Qtstalker/MacroF4");
+      break;
+    case MacroF5:
+      s = settings.readEntry("/Qtstalker/MacroF5");
+      break;
+    case MacroF6:
+      s = settings.readEntry("/Qtstalker/MacroF6");
+      break;
+    case MacroF7:
+      s = settings.readEntry("/Qtstalker/MacroF7");
+      break;
+    case MacroF8:
+      s = settings.readEntry("/Qtstalker/MacroF8");
+      break;
+    case MacroF9:
+      s = settings.readEntry("/Qtstalker/MacroF9");
+      break;
+    case MacroF10:
+      s = settings.readEntry("/Qtstalker/MacroF10");
+      break;
+    case MacroF11:
+      s = settings.readEntry("/Qtstalker/MacroF11");
+      break;
+    case MacroF12:
+      s = settings.readEntry("/Qtstalker/MacroF12");
+      break;
     default:
       break;
   }
@@ -401,6 +437,42 @@ void Config::setData (Parm p, QString d)
       break;
     case Menubar:
       settings.writeEntry("/Qtstalker/Menubar", d);
+      break;
+    case MacroF1:
+      settings.writeEntry("/Qtstalker/MacroF1", d);
+      break;
+    case MacroF2:
+      settings.writeEntry("/Qtstalker/MacroF2", d);
+      break;
+    case MacroF3:
+      settings.writeEntry("/Qtstalker/MacroF3", d);
+      break;
+    case MacroF4:
+      settings.writeEntry("/Qtstalker/MacroF4", d);
+      break;
+    case MacroF5:
+      settings.writeEntry("/Qtstalker/MacroF5", d);
+      break;
+    case MacroF6:
+      settings.writeEntry("/Qtstalker/MacroF6", d);
+      break;
+    case MacroF7:
+      settings.writeEntry("/Qtstalker/MacroF7", d);
+      break;
+    case MacroF8:
+      settings.writeEntry("/Qtstalker/MacroF8", d);
+      break;
+    case MacroF9:
+      settings.writeEntry("/Qtstalker/MacroF9", d);
+      break;
+    case MacroF10:
+      settings.writeEntry("/Qtstalker/MacroF10", d);
+      break;
+    case MacroF11:
+      settings.writeEntry("/Qtstalker/MacroF11", d);
+      break;
+    case MacroF12:
+      settings.writeEntry("/Qtstalker/MacroF12", d);
       break;
     default:
       break;

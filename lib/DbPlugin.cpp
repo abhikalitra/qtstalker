@@ -592,9 +592,6 @@ BarData * DbPlugin::getHistory ()
   else
     barData->setBarType(BarData::Tick);
   
-  QTime timer;
-  timer.start();
-  
   if (fseek(db, -recordSize, SEEK_END) == -1)
   {
     qDebug("DbPlugin::getHistory:seek end failed");
@@ -639,8 +636,6 @@ BarData * DbPlugin::getHistory ()
     default:
       break;
   }
-  
-  qDebug("Chart load: %i", timer.elapsed());
   
   barData->createDateList();
   

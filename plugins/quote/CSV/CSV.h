@@ -59,6 +59,7 @@ class CSV : public QuotePlugin
     QString futuresSymbol;
     QString futuresMonth;
     bool cancelFlag;
+    QString lastPath;
 };
 
 extern "C"

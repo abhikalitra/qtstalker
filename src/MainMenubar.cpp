@@ -20,7 +20,9 @@
  */
 
 #include "MainMenubar.h"
+#include "Macro.h"
 #include "Config.h"
+#include <qaccel.h>
 #include "done.xpm"
 #include "grid.xpm"
 #include "datawindow.xpm"
@@ -38,6 +40,7 @@
 
 MainMenubar::MainMenubar (QMainWindow *mw) : QMenuBar (mw, "mainMenubar")
 {
+  keyFlag = FALSE;
   actions.setAutoDelete(FALSE);
   Config config;
   
@@ -154,48 +157,32 @@ MainMenubar::MainMenubar (QMainWindow *mw) : QMenuBar (mw, "mainMenubar")
   connect(action, SIGNAL(activated()), mw, SLOT(slotHelp()));
   actions.replace(Help, action);
   
-  
-  
-  // sets a key accel for setting main plot focus
-  action = new QAction(mw, 0, FALSE);
-  action->setAccel(CTRL+Key_C);
-  connect(action, SIGNAL(activated()), this, SLOT(slotChartPanelFocus()));
-  actions.replace(ChartPanelFocus, action);
 
-  action = new QAction(mw, 0, FALSE);
-  action->setAccel(CTRL+Key_G);
-  connect(action, SIGNAL(activated()), this, SLOT(slotGroupPanelFocus()));
-  actions.replace(GroupPanelFocus, action);
-  
-  action = new QAction(mw, 0, FALSE);
-  action->setAccel(CTRL+Key_I);
-  connect(action, SIGNAL(activated()), this, SLOT(slotIndicatorPanelFocus()));
-  actions.replace(IndicatorPanelFocus, action);
-
-  action = new QAction(mw, 0, FALSE);
-  action->setAccel(CTRL+Key_P);
-  connect(action, SIGNAL(activated()), this, SLOT(slotPortfolioPanelFocus()));
-  actions.replace(PortfolioPanelFocus, action);
-
-  action = new QAction(mw, 0, FALSE);
-  action->setAccel(CTRL+Key_T);
-  connect(action, SIGNAL(activated()), this, SLOT(slotTestPanelFocus()));
-  actions.replace(TestPanelFocus, action);
-
-  action = new QAction(mw, 0, FALSE);
-  action->setAccel(CTRL+Key_S);
-  connect(action, SIGNAL(activated()), this, SLOT(slotScannerPanelFocus()));
-  actions.replace(ScannerPanelFocus, action);
-
-  action = new QAction(mw, 0, FALSE);
-  action->setAccel(CTRL+Key_M);
-  connect(action, SIGNAL(activated()), this, SLOT(slotMacroPanelFocus()));
-  actions.replace(MacroPanelFocus, action);
-          
-  action = new QAction(mw, 0, FALSE);
-  action->setAccel(CTRL+Key_B);
-  connect(action, SIGNAL(activated()), mw, SLOT(slotToolbarFocus()));
-  actions.replace(ToolbarFocus, action);
+ QAccel *a = new QAccel(mw);
+ a->insertItem(CTRL+Key_C, 0);
+ a->connectItem(0, this, SLOT(slotChartPanelFocus()));
+ a->insertItem(CTRL+Key_G, 1);
+ a->connectItem(1, this, SLOT(slotGroupPanelFocus()));
+ a->insertItem(CTRL+Key_I, 2);
+ a->connectItem(2, this, SLOT(slotIndicatorPanelFocus()));
+ a->insertItem(CTRL+Key_P, 3);
+ a->connectItem(3, this, SLOT(slotPortfolioPanelFocus()));
+ a->insertItem(CTRL+Key_T, 4);
+ a->connectItem(4, this, SLOT(slotTestPanelFocus()));
+ a->insertItem(CTRL+Key_S, 5);
+ a->connectItem(5, this, SLOT(slotScannerPanelFocus()));
+ a->insertItem(CTRL+Key_M, 6);
+ a->connectItem(6, this, SLOT(slotMacroPanelFocus()));
+ a->insertItem(CTRL+Key_B, 7);
+ a->connectItem(7, this, SLOT(slotToolbarFocus()));
+ a->insertItem(CTRL+Key_Escape, 8);
+ a->connectItem(8, mw, SLOT(slotStopMacro()));
+ 
+  // test for tab
+//  action = new QAction(mw, 0, FALSE);
+//  action->setAccel(Key_Tab);
+//  connect(action, SIGNAL(activated()), this, SLOT(slotDummy()));
+//  actions.replace(99, action);
   
   createMenus();
   
@@ -265,38 +252,64 @@ void MainMenubar::saveSettings ()
   config.setData(Config::DrawMode, QString::number(getStatus(DrawMode)));
 }
 
+void MainMenubar::setKeyFlag (bool d)
+{
+  keyFlag = d;
+}
+
 void MainMenubar::slotChartPanelFocus ()
 {
-  emit signalFocusEvent(0);
+  emit signalFocusEvent(Macro::ChartPage);
+  if (keyFlag)
+    emit signalKeyPressed (Macro::SidePanel, ControlButton, Key_C, 0, QString());
 }
 
 void MainMenubar::slotGroupPanelFocus()
 {
-  emit signalFocusEvent(1);
+  emit signalFocusEvent(Macro::GroupPage);
+  if (keyFlag)
+    emit signalKeyPressed (Macro::SidePanel, ControlButton, Key_G, 0, QString());
 }
 
 void MainMenubar::slotIndicatorPanelFocus()
 {
-  emit signalFocusEvent(2);
+  emit signalFocusEvent(Macro::IndicatorPage);
+  if (keyFlag)
+    emit signalKeyPressed (Macro::SidePanel, ControlButton, Key_I, 0, QString());
 }
 
 void MainMenubar::slotPortfolioPanelFocus()
 {
-  emit signalFocusEvent(3);
+  emit signalFocusEvent(Macro::PortfolioPage);
+  if (keyFlag)
+    emit signalKeyPressed (Macro::SidePanel, ControlButton, Key_P, 0, QString());
 }
 
 void MainMenubar::slotTestPanelFocus()
 {
-  emit signalFocusEvent(4);
+  emit signalFocusEvent(Macro::TestPage);
+  if (keyFlag)
+    emit signalKeyPressed (Macro::SidePanel, ControlButton, Key_T, 0, QString());
 }
 
 void MainMenubar::slotScannerPanelFocus()
 {
-  emit signalFocusEvent(5);
+  emit signalFocusEvent(Macro::ScannerPage);
+  if (keyFlag)
+    emit signalKeyPressed (Macro::SidePanel, ControlButton, Key_S, 0, QString());
 }
 
 void MainMenubar::slotMacroPanelFocus()
 {
-  emit signalFocusEvent(6);
+  emit signalFocusEvent(Macro::MacroPage);
+  if (keyFlag)
+    emit signalKeyPressed (Macro::SidePanel, ControlButton, Key_M, 0, QString());
+}
+
+void MainMenubar::slotToolbarFocus()
+{
+  emit signalToolbarFocusEvent();
+  if (keyFlag)
+    emit signalKeyPressed (Macro::ChartToolbar, ControlButton, Key_B, 0, QString());
 }
 

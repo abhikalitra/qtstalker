@@ -221,10 +221,56 @@ void NavigatorTab::buttonPressed (int id)
 void NavigatorTab::pressButton (int id) 
 {
   if (bg->selectedId() == id)
+  {
+    buttonPressed(id);
     return;
+  }
     
   bg->find(id)->toggle();
   buttonPressed(id);
 }
+
+void NavigatorTab::doKeyPress (QKeyEvent *key)
+{
+  if (key->state() == Qt::ControlButton)
+  {
+    switch (key->key())
+    {
+      case Qt::Key_C:
+        key->accept();
+	pressButton(0);
+        break;
+      case Qt::Key_G:
+        key->accept();
+	pressButton(1);
+        break;
+      case Qt::Key_I:
+        key->accept();
+	pressButton(2);
+        break;
+      case Qt::Key_P:
+        key->accept();
+	pressButton(3);
+        break;
+      case Qt::Key_T:
+        key->accept();
+	pressButton(4);
+        break;
+      case Qt::Key_S:
+        key->accept();
+	pressButton(5);
+        break;
+      case Qt::Key_M:
+        key->accept();
+	pressButton(6);
+        break;
+      default:
+        break;
+    }
+  }
+  else
+    key->ignore();
+}
+
 
 

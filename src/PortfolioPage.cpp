@@ -23,6 +23,7 @@
 #include "PortfolioDialog.h"
 #include "SymbolDialog.h"
 #include "HelpWindow.h"
+#include "Macro.h"
 #include "help.xpm"
 #include "open.xpm"
 #include "newchart.xpm"
@@ -32,28 +33,42 @@
 #include <qmessagebox.h>
 #include <qcursor.h>
 #include <qfile.h>
+#include <qaccel.h>
 
 PortfolioPage::PortfolioPage (QWidget *w) : QListBox (w)
 {
+  keyFlag = FALSE;
+  
   connect(this, SIGNAL(contextMenuRequested(QListBoxItem *, const QPoint &)), this, SLOT(rightClick(QListBoxItem *)));
   connect(this, SIGNAL(highlighted(const QString &)), this, SLOT(portfolioSelected(const QString &)));
   connect(this, SIGNAL(doubleClicked(QListBoxItem *)), this, SLOT(doubleClick(QListBoxItem *)));
   
-  menu = new QPopupMenu();
-  menu->insertItem(QPixmap(newchart), tr("&New Portfolio"), this, SLOT(newPortfolio()), CTRL+Key_N);
-  menu->insertItem(QPixmap(open), tr("&Open Portfolio"), this, SLOT(openPortfolio()), CTRL+Key_O);
-  menu->insertItem(QPixmap(deleteitem), tr("&Delete Portfolio"), this, SLOT(deletePortfolio()), CTRL+Key_D);
-  menu->insertItem(QPixmap(renam), tr("&Rename Portfolio"), this, SLOT(renamePortfolio()), CTRL+Key_R);
+  menu = new QPopupMenu(this);
+  menu->insertItem(QPixmap(newchart), tr("&New Portfolio	Ctrl+N"), this, SLOT(newPortfolio()));
+  menu->insertItem(QPixmap(open), tr("&Open Portfolio		Ctrl+O"), this, SLOT(openPortfolio()));
+  menu->insertItem(QPixmap(deleteitem), tr("&Delete Portfolio	Ctrl+D"), this, SLOT(deletePortfolio()));
+  menu->insertItem(QPixmap(renam), tr("&Rename Portfolio	Ctrl+R"), this, SLOT(renamePortfolio()));
   menu->insertSeparator(-1);
-  menu->insertItem(QPixmap(help), tr("&Help"), this, SLOT(slotHelp()), CTRL+Key_H);
+  menu->insertItem(QPixmap(help), tr("&Help		Ctrl+H"), this, SLOT(slotHelp()));
 
+  QAccel *a = new QAccel(this);
+  a->insertItem(CTRL+Key_N, 0);
+  a->connectItem(0, this, SLOT(newPortfolio()));
+  a->insertItem(CTRL+Key_O, 1);
+  a->connectItem(1, this, SLOT(openPortfolio()));
+  a->insertItem(CTRL+Key_D, 2);
+  a->connectItem(2, this, SLOT(deletePortfolio()));
+  a->insertItem(CTRL+Key_R, 3);
+  a->connectItem(3, this, SLOT(renamePortfolio()));
+  a->insertItem(CTRL+Key_H, 4);
+  a->connectItem(4, this, SLOT(slotHelp()));
+  
   updateList();
   portfolioSelected(QString());
 }
 
 PortfolioPage::~PortfolioPage ()
 {
-  delete menu;
 }
 
 void PortfolioPage::openPortfolio ()
@@ -234,60 +249,40 @@ void PortfolioPage::slotHelp ()
   hw->show();
 }
 
+void PortfolioPage::setKeyFlag (bool d)
+{
+  keyFlag = d;
+}
+
 void PortfolioPage::keyPressEvent (QKeyEvent *key)
 {
-  emit signalKeyPressed (3, key);
+  if (keyFlag)
+    emit signalKeyPressed (Macro::PortfolioPage, key->state(), key->key(), key->ascii(), key->text());
+    
   doKeyPress(key);  
 }
 
 void PortfolioPage::doKeyPress (QKeyEvent *key)
 {
-  if (key->state() == Qt::ControlButton)
+  switch (key->key())
   {
-    switch (key->key())
-    {
-      case Qt::Key_N:
-        key->accept();
-        newPortfolio();
-        break;
-      case Qt::Key_O:
-        key->accept();
-        openPortfolio();
-        break;
-      case Qt::Key_R:
-        key->accept();
-        renamePortfolio();
-        break;
-      case Qt::Key_H:
-        key->accept();
-        slotHelp();
-        break;
-      default:
-        break;
-    }
-  }
-  else
-  {
-    switch (key->key())
-    {
-      case Qt::Key_Delete:
-        key->accept();
-        deletePortfolio();
-	break;
-      case Qt::Key_Left: // segfaults if we dont trap this
-      case Qt::Key_Right: // segfaults if we dont trap this
-        key->accept();
-        break;      
-      case Qt::Key_Enter:
-      case Qt::Key_Return:
-        key->accept();
-        openPortfolio();
-        break;
-      default:
-        key->ignore();
-        QListBox::keyPressEvent(key);
-        break;
-    }
+    case Qt::Key_Delete:
+      key->accept();
+      deletePortfolio();
+      break;
+    case Qt::Key_Left: // segfaults if we dont trap this
+    case Qt::Key_Right: // segfaults if we dont trap this
+      key->accept();
+      break;      
+    case Qt::Key_Enter:
+    case Qt::Key_Return:
+      key->accept();
+      openPortfolio();
+      break;
+    default:
+      key->accept();
+      QListBox::keyPressEvent(key);
+      break;
   }
 }
 

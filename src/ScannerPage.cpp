@@ -23,6 +23,7 @@
 #include "Scanner.h"
 #include "SymbolDialog.h"
 #include "HelpWindow.h"
+#include "Macro.h"
 #include "help.xpm"
 #include "open.xpm"
 #include "newchart.xpm"
@@ -31,28 +32,42 @@
 #include <qinputdialog.h>
 #include <qmessagebox.h>
 #include <qcursor.h>
+#include <qaccel.h>
 
 ScannerPage::ScannerPage (QWidget *w) : QListBox (w)
 {
+  keyFlag = FALSE;
+
   connect(this, SIGNAL(contextMenuRequested(QListBoxItem *, const QPoint &)), this, SLOT(rightClick(QListBoxItem *)));
   connect(this, SIGNAL(highlighted(const QString &)), this, SLOT(scannerSelected(const QString &)));
   connect(this, SIGNAL(doubleClicked(QListBoxItem *)), this, SLOT(doubleClick(QListBoxItem *)));
   
-  menu = new QPopupMenu();
-  menu->insertItem(QPixmap(newchart), tr("&New Scanner"), this, SLOT(newScanner()), CTRL+Key_N);
-  menu->insertItem(QPixmap(open), tr("&Open Scanner"), this, SLOT(openScanner()), CTRL+Key_O);
-  menu->insertItem(QPixmap(deleteitem), tr("&Delete Scanner"), this, SLOT(deleteScanner()), CTRL+Key_D);
-  menu->insertItem(QPixmap(renam), tr("&Rename Scanner"), this, SLOT(renameScanner()), CTRL+Key_R);
+  menu = new QPopupMenu(this);
+  menu->insertItem(QPixmap(newchart), tr("&New Scanner		Ctrl+N"), this, SLOT(newScanner()));
+  menu->insertItem(QPixmap(open), tr("&Open Scanner		Ctrl+O"), this, SLOT(openScanner()));
+  menu->insertItem(QPixmap(deleteitem), tr("&Delete Scanner	Ctrl+D"), this, SLOT(deleteScanner()));
+  menu->insertItem(QPixmap(renam), tr("&Rename Scanner		Ctrl+R"), this, SLOT(renameScanner()));
   menu->insertSeparator(-1);
-  menu->insertItem(QPixmap(help), tr("&Help"), this, SLOT(slotHelp()), CTRL+Key_H);
+  menu->insertItem(QPixmap(help), tr("&Help		Ctrl+H"), this, SLOT(slotHelp()));
 
+  QAccel *a = new QAccel(this);
+  a->insertItem(CTRL+Key_N, 0);
+  a->connectItem(0, this, SLOT(newScanner()));
+  a->insertItem(CTRL+Key_O, 1);
+  a->connectItem(1, this, SLOT(openScanner()));
+  a->insertItem(CTRL+Key_D, 2);
+  a->connectItem(2, this, SLOT(deleteScanner()));
+  a->insertItem(CTRL+Key_R, 3);
+  a->connectItem(3, this, SLOT(renameScanner()));
+  a->insertItem(CTRL+Key_H, 4);
+  a->connectItem(4, this, SLOT(slotHelp()));
+  
   refreshList();
   scannerSelected(QString());
 }
 
 ScannerPage::~ScannerPage ()
 {
-  delete menu;
 }
 
 void ScannerPage::openScanner ()
@@ -234,60 +249,40 @@ void ScannerPage::slotHelp ()
   hw->show();
 }
 
+void ScannerPage::setKeyFlag (bool d)
+{
+  keyFlag = d;
+}
+
 void ScannerPage::keyPressEvent (QKeyEvent *key)
 {
-  emit signalKeyPressed (5, key);
+  if (keyFlag)
+    emit signalKeyPressed (Macro::ScannerPage, key->state(), key->key(), key->ascii(), key->text());
+  
   doKeyPress(key);  
 }
 
 void ScannerPage::doKeyPress (QKeyEvent *key)
 {
-  if (key->state() == Qt::ControlButton)
+  switch (key->key())
   {
-    switch (key->key())
-    {
-      case Qt::Key_N:
-        key->accept();
-        newScanner();
-        break;
-      case Qt::Key_O:
-        key->accept();
-        openScanner();
-        break;
-      case Qt::Key_R:
-        key->accept();
-        renameScanner();
-        break;
-      case Qt::Key_H:
-        key->accept();
-        slotHelp();
-        break;
-      default:
-        break;
-    }
-  }
-  else
-  {
-    switch (key->key())
-    {
-      case Qt::Key_Delete:
-        key->accept();
-        deleteScanner();
-	break;
-      case Qt::Key_Left: // segfaults if we dont trap this
-      case Qt::Key_Right: // segfaults if we dont trap this
-        key->accept();
-        break;      
-      case Qt::Key_Enter:
-      case Qt::Key_Return:
-        key->accept();
-        openScanner();
-        break;
-      default:
-        key->ignore();
-        QListBox::keyPressEvent(key);
-        break;
-    }
+    case Qt::Key_Delete:
+      key->accept();
+      deleteScanner();
+      break;
+    case Qt::Key_Left: // segfaults if we dont trap this
+    case Qt::Key_Right: // segfaults if we dont trap this
+      key->accept();
+      break;      
+    case Qt::Key_Enter:
+    case Qt::Key_Return:
+      key->accept();
+      openScanner();
+      break;
+    default:
+      key->accept();
+      QListBox::keyPressEvent(key);
+      break;
   }
 }
 

@@ -23,7 +23,7 @@ HEADERS += ScannerPage.h
 HEADERS += Scanner.h
 HEADERS += MacroPage.h
 #HEADERS += MacroDialog.h
-#HEADERS += Macro.h
+HEADERS += Macro.h
 HEADERS += ChartToolbar.h
 HEADERS += MainMenubar.h
 
@@ -45,7 +45,7 @@ SOURCES += ScannerPage.cpp
 SOURCES += Scanner.cpp
 SOURCES += MacroPage.cpp
 #SOURCES += MacroDialog.cpp
-#SOURCES += Macro.cpp
+SOURCES += Macro.cpp
 SOURCES += ChartToolbar.cpp
 SOURCES += MainMenubar.cpp
 

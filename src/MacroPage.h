@@ -34,18 +34,19 @@ class MacroPage : public QListBox
 
   signals:
     void signalRunMacro (QString);
-    void signalKeyPressed (int, QKeyEvent *);
+    void signalRecordMacro (QString);
+    void signalKeyPressed (int, int, int, int, QString);
 
   public:
     MacroPage (QWidget *);
     ~MacroPage ();
 
   public slots:
-    void openMacro ();
-    void openMacro (QString);
+    void editMacro ();
     void renameMacro ();
     void newMacro ();
     void deleteMacro ();
+    void assignMacro ();
     void macroSelected (const QString &);
     void rightClick (QListBoxItem *);
     void slotHelp ();
@@ -53,12 +54,14 @@ class MacroPage : public QListBox
     void updateList ();
     void doKeyPress (QKeyEvent *);
     void runMacro ();
+    void setKeyFlag (bool);
 
   private:
     virtual void keyPressEvent (QKeyEvent *);
   
     Config config;
     QPopupMenu *menu;
+    bool keyFlag;
 };
 
 #endif

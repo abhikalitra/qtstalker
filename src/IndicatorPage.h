@@ -39,7 +39,7 @@ class IndicatorPage : public QListBox
     void signalEditIndicator (QString);
     void signalDeleteIndicator (QString);
     void signalNewIndicator ();
-    void signalKeyPressed (int, QKeyEvent *);
+    void signalKeyPressed (int, int, int, int, QString);
   
   public:
     IndicatorPage (QWidget *);
@@ -58,12 +58,15 @@ class IndicatorPage : public QListBox
     QStringList getDisabledIndicators ();
     void doKeyPress (QKeyEvent *);
     void changeIndicator (QString, int);
+    void setKeyFlag (bool);
+    bool getIndicatorStatus (QString);
 
   protected:
     virtual void keyPressEvent (QKeyEvent *);
     
     QPopupMenu *menu;
     Setting statusList;
+    bool keyFlag;
 };
 
 #endif

@@ -34,7 +34,7 @@ class ScannerPage : public QListBox
 
   signals:
     void message (QString);
-    void signalKeyPressed (int, QKeyEvent *);
+    void signalKeyPressed (int, int, int, int, QString);
   
   public:
     ScannerPage (QWidget *);
@@ -53,12 +53,14 @@ class ScannerPage : public QListBox
     void slotHelp ();
     void doubleClick (QListBoxItem *);
     void doKeyPress (QKeyEvent *);
+    void setKeyFlag (bool);
 
   private:
     virtual void keyPressEvent (QKeyEvent *);
   
     Config config;
     QPopupMenu *menu;
+    bool keyFlag;
 };
 
 #endif

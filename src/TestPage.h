@@ -34,7 +34,7 @@ class TestPage : public QListBox
 
   signals:
     void message (QString);
-    void signalKeyPressed (int, QKeyEvent *);
+    void signalKeyPressed (int, int, int, int, QString);
   
   public:
     TestPage (QWidget *);
@@ -54,12 +54,14 @@ class TestPage : public QListBox
     void slotHelp ();
     void doubleClick (QListBoxItem *);
     void doKeyPress (QKeyEvent *);
+    void setKeyFlag (bool);
 
   private:
     virtual void keyPressEvent (QKeyEvent *);
   
     Config config;
     QPopupMenu *menu;
+    bool keyFlag;
 };
 
 #endif

@@ -44,6 +44,7 @@
 #include "MacroPage.h"
 #include "ChartToolbar.h"
 #include "MainMenubar.h"
+#include "Macro.h"
 
 #define DEFAULT_INDICATOR_HEIGHT 125
 
@@ -62,6 +63,7 @@ class QtstalkerApp : public QMainWindow
     void signalIndicatorPageRefresh ();
     void signalChartPath (QString);
     void signalCrosshairsStatus(bool);
+    void signalSetKeyFlag (bool);
 
   public:
 
@@ -123,6 +125,9 @@ class QtstalkerApp : public QMainWindow
     void slotDisableIndicator (QString);
     void slotEnableIndicator (QString);
     void slotToolbarFocus ();
+    void slotRunMacro (QString);
+    void slotRecordMacro (QString);
+    void slotStopMacro ();
     
   private:
     QToolBar *toolbar;
@@ -154,7 +159,7 @@ class QtstalkerApp : public QMainWindow
     TestPage *tp;
     GroupPage *gp;
     MacroPage *mp;
-//    KeyFilter *keyFilter;
+    Macro *currentMacro;
 };
 
 #endif

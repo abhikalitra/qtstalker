@@ -51,10 +51,8 @@ class GroupPage : public QWidget
     void groupSelected (QString);
     void groupNoSelection ();
     void rightClick (QListBoxItem *);
-    void editChart ();
-    void refreshList ();
     void slotHelp ();
-    void doKeyPress (QKeyEvent *);
+    void setKeyFlag (bool);
 
   protected:
     Navigator *nav;

@@ -24,6 +24,7 @@
 #include "SymbolDialog.h"
 #include "ChartDb.h"
 #include "HelpWindow.h"
+#include "Macro.h"
 #include "edit.xpm"
 #include "delete.xpm"
 #include "export.xpm"
@@ -33,6 +34,7 @@
 #include <qcursor.h>
 #include <qtooltip.h>
 #include <qlayout.h>
+#include <qaccel.h>
 
 ChartPage::ChartPage (QWidget *w) : QWidget (w)
 {
@@ -50,35 +52,45 @@ ChartPage::ChartPage (QWidget *w) : QWidget (w)
   connect(nav, SIGNAL(noSelection()), this, SLOT(chartNoSelection()));
   connect(nav, SIGNAL(contextMenuRequested(QListBoxItem *, const QPoint &)), this,
           SLOT(rightClick(QListBoxItem *)));
-  connect(nav, SIGNAL(keyPress(QKeyEvent *)), this, SLOT(doKeyPress(QKeyEvent *)));
+  connect(nav, SIGNAL(keyPress(int, int)), this, SLOT(doKeyPress(int, int)));
   nav->updateList();
-  nav->setId(0);
+  nav->setId(Macro::ChartPage);
   vbox->addWidget(nav);
 
-  newMenu = new QPopupMenu;
-  int id = newMenu->insertItem(QPixmap(newchart), tr("CC"), this, SLOT(newChart(int)));
+  newMenu = new QPopupMenu(this);
+  int id = newMenu->insertItem(QPixmap(newchart), tr("&CC"), this, SLOT(newChart(int)));
   newMenu->setItemParameter(id, id);
-  id = newMenu->insertItem(QPixmap(newchart), tr("Index"), this, SLOT(newChart(int)));
+  id = newMenu->insertItem(QPixmap(newchart), tr("&Index"), this, SLOT(newChart(int)));
   newMenu->setItemParameter(id, id);
-  id = newMenu->insertItem(QPixmap(newchart), tr("Spread"), this, SLOT(newChart(int)));
+  id = newMenu->insertItem(QPixmap(newchart), tr("&Spread"), this, SLOT(newChart(int)));
   newMenu->setItemParameter(id, id);
   
-  menu = new QPopupMenu();
+  menu = new QPopupMenu(this);
   menu->insertItem(QPixmap(newchart), tr("&New..."), newMenu);
-  menu->insertItem(QPixmap(edit), tr("&Edit Chart"), this, SLOT(editChart()), CTRL+Key_E);
-  menu->insertItem(QPixmap(deleteitem), tr("&Delete Chart"), this, SLOT(deleteChart()), CTRL+Key_D);
-  menu->insertItem(QPixmap(exportfile), tr("E&xport Chart CSV"), this, SLOT(exportSymbol()), CTRL+Key_X);
-  menu->insertItem(QPixmap(exportfile), tr("D&ump Chart"), this, SLOT(dumpSymbol()), CTRL+Key_U);
+  menu->insertItem(QPixmap(edit), tr("&Edit Chart	Ctrl+E"), this, SLOT(editChart()));
+  menu->insertItem(QPixmap(deleteitem), tr("&Delete Chart	Ctrl+D"), this, SLOT(deleteChart()));
+  menu->insertItem(QPixmap(exportfile), tr("E&xport Chart CSV	Ctrl+X"), this, SLOT(exportSymbol()));
+  menu->insertItem(QPixmap(exportfile), tr("D&ump Chart		Ctrl+U"), this, SLOT(dumpSymbol()));
   menu->insertSeparator(-1);
-  menu->insertItem(QPixmap(help), tr("&Help"), this, SLOT(slotHelp()), CTRL+Key_H);
+  menu->insertItem(QPixmap(help), tr("&Help	Ctrl+H"), this, SLOT(slotHelp()));
 
+  QAccel *a = new QAccel(this);
+  a->insertItem(CTRL+Key_D, 0);
+  a->connectItem(0, this, SLOT(deleteChart()));
+  a->insertItem(CTRL+Key_E, 1);
+  a->connectItem(1, this, SLOT(editChart()));
+  a->insertItem(CTRL+Key_X, 2);
+  a->connectItem(2, this, SLOT(exportSymbol()));
+  a->insertItem(CTRL+Key_U, 3);
+  a->connectItem(3, this, SLOT(dumpSymbol()));
+  a->insertItem(CTRL+Key_H, 4);
+  a->connectItem(4, this, SLOT(slotHelp()));
+  
   chartNoSelection();
 }
 
 ChartPage::~ChartPage ()
 {
-  delete newMenu;
-  delete menu;
 }
 
 void ChartPage::deleteChart ()
@@ -225,7 +237,6 @@ void ChartPage::chartSelected (QString d)
   emit fileSelected(d);
 }
 
-
 void ChartPage::chartNoSelection ()
 {
   menu->setItemEnabled(menu->idAt(1), FALSE);
@@ -268,25 +279,18 @@ void ChartPage::setFocus ()
   nav->setFocus();
 }
 
-void ChartPage::doKeyPress (QKeyEvent *key)
+void ChartPage::setKeyFlag (bool d)
 {
-  switch (key->key())
+  nav->setKeyFlag(d);
+}
+
+void ChartPage::doKeyPress (int, int key)
+{
+  switch (key)
   {
     case Qt::Key_Delete:
     case Qt::Key_D:
       deleteChart();
-      break;
-    case Qt::Key_E:
-      editChart();
-      break;
-    case Qt::Key_X:
-      exportSymbol();
-      break;
-    case Qt::Key_U:
-      dumpSymbol();
-      break;
-    case Qt::Key_H:
-      slotHelp();
       break;
     default:
       break;

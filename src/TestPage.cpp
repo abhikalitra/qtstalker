@@ -22,6 +22,7 @@
 #include "TestPage.h"
 #include "Tester.h"
 #include "HelpWindow.h"
+#include "Macro.h"
 #include "help.xpm"
 #include "open.xpm"
 #include "newchart.xpm"
@@ -34,29 +35,45 @@
 #include <qcursor.h>
 #include <qdir.h>
 #include <stdlib.h>
+#include <qaccel.h>
 
 TestPage::TestPage (QWidget *w) : QListBox (w)
 {
+  keyFlag = FALSE;
+
   connect(this, SIGNAL(contextMenuRequested(QListBoxItem *, const QPoint &)), this, SLOT(rightClick(QListBoxItem *)));
   connect(this, SIGNAL(highlighted(const QString &)), this, SLOT(testSelected(const QString &)));
   connect(this, SIGNAL(doubleClicked(QListBoxItem *)), this, SLOT(doubleClick(QListBoxItem *)));
   
-  menu = new QPopupMenu();
-  menu->insertItem(QPixmap(newchart), tr("&New Backtest Rule"), this, SLOT(newTest()), CTRL+Key_N);
-  menu->insertItem(QPixmap(open), tr("&Open Backtest Rule"), this, SLOT(openTest()), CTRL+Key_O);
-  menu->insertItem(QPixmap(deleteitem), tr("&Delete Backtest Rule"), this, SLOT(deleteTest()), CTRL+Key_D);
-  menu->insertItem(QPixmap(renam), tr("&Rename Backtest Rule"), this, SLOT(renameTest()), CTRL+Key_R);
-  menu->insertItem(QPixmap(copy), tr("&Copy Backtest Rule"), this, SLOT(copyTest()), CTRL+Key_C);
+  menu = new QPopupMenu(this);
+  menu->insertItem(QPixmap(newchart), tr("&New Rule		Ctrl+N"), this, SLOT(newTest()));
+  menu->insertItem(QPixmap(open), tr("&Open Rule		Ctrl+O"), this, SLOT(openTest()));
+  menu->insertItem(QPixmap(deleteitem), tr("&Delete Rule	Ctrl+D"), this, SLOT(deleteTest()));
+  menu->insertItem(QPixmap(renam), tr("&Rename Rule		Ctrl+R"), this, SLOT(renameTest()));
+  menu->insertItem(QPixmap(copy), tr("&Copy Rule		Ctrl+Y"), this, SLOT(copyTest()));
   menu->insertSeparator(-1);
-  menu->insertItem(QPixmap(help), tr("&Help"), this, SLOT(slotHelp()), CTRL+Key_H);
+  menu->insertItem(QPixmap(help), tr("&Help		Ctrl+H"), this, SLOT(slotHelp()));
 
+  QAccel *a = new QAccel(this);
+  a->insertItem(CTRL+Key_N, 0);
+  a->connectItem(0, this, SLOT(newTest()));
+  a->insertItem(CTRL+Key_O, 1);
+  a->connectItem(1, this, SLOT(openTest()));
+  a->insertItem(CTRL+Key_D, 2);
+  a->connectItem(2, this, SLOT(deleteTest()));
+  a->insertItem(CTRL+Key_R, 3);
+  a->connectItem(3, this, SLOT(renameTest()));
+  a->insertItem(CTRL+Key_Y, 4);
+  a->connectItem(4, this, SLOT(copyTest()));
+  a->insertItem(CTRL+Key_H, 5);
+  a->connectItem(5, this, SLOT(slotHelp()));
+  
   updateList();
   testNoSelection();
 }
 
 TestPage::~TestPage ()
 {
-  delete menu;
 }
 
 void TestPage::openTest ()
@@ -255,64 +272,40 @@ void TestPage::slotHelp ()
   hw->show();
 }
 
+void TestPage::setKeyFlag (bool d)
+{
+  keyFlag = d;
+}
+
 void TestPage::keyPressEvent (QKeyEvent *key)
 {
-  emit signalKeyPressed (4, key);
+  if (keyFlag)
+    emit signalKeyPressed (Macro::TestPage, key->state(), key->key(), key->ascii(), key->text());
+  
   doKeyPress(key);
 }
 
 void TestPage::doKeyPress (QKeyEvent *key)
 {
-  if (key->state() == Qt::ControlButton)
+  switch (key->key())
   {
-    switch (key->key())
-    {
-      case Qt::Key_N:
-        key->accept();
-        newTest();
-        break;
-      case Qt::Key_O:
-        key->accept();
-        openTest();
-        break;
-      case Qt::Key_R:
-        key->accept();
-        renameTest();
-        break;
-      case Qt::Key_H:
-        key->accept();
-        slotHelp();
-        break;
-      case Qt::Key_C:
-        key->accept();
-        copyTest();
-        break;
-      default:
-        break;
-    }
-  }
-  else
-  {
-    switch (key->key())
-    {
-      case Qt::Key_Delete:
-        key->accept();
-        deleteTest();
-	break;
-      case Qt::Key_Left: // segfaults if we dont trap this
-      case Qt::Key_Right: // segfaults if we dont trap this
-        key->accept();
-        break;      
-      case Qt::Key_Enter:
-      case Qt::Key_Return:
-        key->accept();
-        openTest();
-        break;
-      default:
-        key->ignore();
-        QListBox::keyPressEvent(key);
-        break;
-    }
+    case Qt::Key_Delete:
+      key->accept();
+      deleteTest();
+      break;
+    case Qt::Key_Left: // segfaults if we dont trap this
+    case Qt::Key_Right: // segfaults if we dont trap this
+      key->accept();
+      break;      
+    case Qt::Key_Enter:
+    case Qt::Key_Return:
+      key->accept();
+      openTest();
+      break;
+    default:
+      key->accept();
+      QListBox::keyPressEvent(key);
+      break;
   }
 }
 

@@ -26,6 +26,7 @@
 
 ChartToolbar::ChartToolbar (QMainWindow *mw) : QToolBar (mw, "chartToolbar")
 {
+  keyFlag = FALSE;
   Config config;
   
   compressionCombo = new QComboBox(this);
@@ -173,6 +174,11 @@ void ChartToolbar::saveSettings ()
 void ChartToolbar::setFocus ()
 {
   compressionCombo->setFocus();
+}
+
+void ChartToolbar::setKeyFlag (bool d)
+{
+  keyFlag = d;
 }
 
 

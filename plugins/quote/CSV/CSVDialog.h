@@ -34,7 +34,7 @@ class CSVDialog : public QTabDialog
   Q_OBJECT
   
   public:
-    CSVDialog (QWidget *, QString);
+    CSVDialog (QWidget *, QString, QString);
     ~CSVDialog ();
     void createMainPage ();
     void createRulePage ();

@@ -76,7 +76,19 @@ class Config
       ScannerPath,
       IndicatorPageStatus,
       PlotSizes,
-      Menubar
+      Menubar,
+      MacroF1,
+      MacroF2,
+      MacroF3,
+      MacroF4,
+      MacroF5,
+      MacroF6,
+      MacroF7,
+      MacroF8,
+      MacroF9,
+      MacroF10,
+      MacroF11,
+      MacroF12
     };
 
     Config ();

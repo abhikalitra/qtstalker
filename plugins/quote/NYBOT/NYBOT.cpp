@@ -38,6 +38,7 @@ NYBOT::NYBOT ()
   helpFile = "nybot.html";
   fd = new FuturesData;
   lastPath = QDir::homeDirPath();
+  cancelFlag = FALSE;
   
   loadSettings();
 }
@@ -364,13 +365,14 @@ void NYBOT::prefDialog (QWidget *w)
   {
     list = dialog->getFile(tr("File Input"));
     
+    saveFlag = TRUE;
+    
     if (list.count())
     {
       QFileInfo fi(list[0]);
       lastPath = fi.dirPath(TRUE);
+      saveSettings();
     }
-    
-    saveFlag = TRUE;
   }
   
   delete dialog;

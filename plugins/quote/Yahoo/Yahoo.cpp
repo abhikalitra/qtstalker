@@ -357,9 +357,6 @@ void Yahoo::parseHistory ()
     delete set;
   }
 
-  QTime timer;
-  timer.start();
-  
   while(stream.atEnd() == 0)
   {
     s = stream.readLine();
@@ -450,8 +447,6 @@ void Yahoo::parseHistory ()
     emit dataLogMessage(s);
   }
 
-  qDebug("yahoo chart update: %i", timer.elapsed());
-  
   f.close();
   delete plug;
 }

@@ -29,11 +29,13 @@ Navigator::Navigator (QWidget *w, QString bp) : QListBox(w)
 {
   basePath = bp;
   id = 0;
+  keyFlag = FALSE;
 
   currentDir.setPath(bp);
+  currentDir.setMatchAllDirs(TRUE);
 
   setSelectionMode(QListBox::Single);
-  connect(this, SIGNAL(currentChanged(QListBoxItem *)), this, SLOT(fileSelection(QListBoxItem *)));
+//  connect(this, SIGNAL(currentChanged(QListBoxItem *)), this, SLOT(fileSelection(QListBoxItem *)));
   connect(this, SIGNAL(selected(QListBoxItem *)), this, SLOT(checkDirectory(QListBoxItem *)));
 }
 
@@ -49,18 +51,9 @@ void Navigator::updateList ()
 
   int loop;
   if (! basePath.compare(currentDir.absPath()))
-  {
-    currentDir.setMatchAllDirs(FALSE);
     loop = 2;
-  }
   else
     loop = 1;
-
-  if (currentDir.nameFilter().compare("*"))
-  {
-    currentDir.setMatchAllDirs(TRUE);
-    loop = 0;
-  }
 
   for (; loop < (int) currentDir.count(); loop++)
   {
@@ -169,26 +162,34 @@ void Navigator::setId (int d)
   id = d;
 }
 
+void Navigator::setKeyFlag (bool d)
+{
+  keyFlag = d;
+}
+
+void Navigator::setHome ()
+{
+  QString s = basePath;
+  currentDir.setPath(s);
+  updateList();
+  emit noSelection();
+}
+
 void Navigator::keyPressEvent (QKeyEvent *key)
 {
-  emit signalKeyPressed (id, key);
+  if (keyFlag)
+    emit signalKeyPressed (id, key->state(), key->key(), key->ascii(), key->text());
+    
   doKeyPress(key);  
 }
 
 void Navigator::doKeyPress (QKeyEvent *key)
 {
-  if (key->state() == Qt::ControlButton)
-  {
-    key->accept();
-    emit keyPress(key);
-    return;
-  }
-
   switch (key->key())
   {
     case Qt::Key_Delete:
       key->accept();
-      emit keyPress(key);
+      emit keyPress(key->state(), key->key());
       break;
     case Qt::Key_Left: // segfaults if we dont trap this
     case Qt::Key_Right: // segfaults if we dont trap this
@@ -199,8 +200,13 @@ void Navigator::doKeyPress (QKeyEvent *key)
       key->accept();
       checkDirectory(item(currentItem()));
       break;
+    case Qt::Key_Home:
+      key->accept();
+      setHome();
+      QListBox::keyPressEvent(key);
+      break;
     default:
-      key->ignore();
+      key->accept();
       QListBox::keyPressEvent(key);
       break;
   }

@@ -14,6 +14,16 @@ To Do:
   so users have a bunch of examples and things to play with
 - rename indicator function (possible main plot indicator panel revision)
 - allow indicator plugins to allow for choosing a plugin as a smoothing option.
+- scanner saves symbols selected between sessions
+- apply specific indicators to specific symbols (not sure about this one)
+- run multiple scanners
+- allow position of indicators to be changed. Tabbed, Stacked etc.
+- fix: stacked indicator widget insertion resizing is ugly, to to fix.
+- allow point selection on plots to display values past the ends of the chart. (future dates and values)
+- global keyboard shortcuts for chart panning
+- add a reload timer to the CSV plugin
+- add a chart reload timer to toolbar
+
 
 
 Maybe some day:

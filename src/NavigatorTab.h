@@ -46,6 +46,7 @@ class NavigatorTab : public QWidget
     void togglePosition (int);
     void buttonPressed (int);
     void pressButton (int);
+    void doKeyPress (QKeyEvent *);
 
   protected:
     virtual void contextMenuEvent (QContextMenuEvent *);

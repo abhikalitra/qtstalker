@@ -36,16 +36,17 @@
 #include <qsettings.h>
 #include <qdir.h>
 
-CSVDialog::CSVDialog (QWidget *p, QString d) : QTabDialog (p, "CSVDialog", TRUE)
+CSVDialog::CSVDialog (QWidget *p, QString d, QString lp) : QTabDialog (p, "CSVDialog", TRUE)
 {
   helpFile = d;
+  lastPath = lp;
+  
   createMainPage();
   createRulePage();
   setOkButton();
   setCancelButton();
   setHelpButton();
   QObject::connect(this, SIGNAL(helpButtonPressed()), this, SLOT(help()));
-  lastPath = QDir::homeDirPath();
   
   resize(325, 325);
   updateRules();

@@ -42,6 +42,8 @@ class MainMenubar : public QMenuBar
     void signalLog (bool);
     void signalHideMain (bool);
     void signalFocusEvent (int);
+    void signalKeyPressed (int, int, int, int, QString);
+    void signalToolbarFocusEvent ();
     
   public:
   
@@ -60,15 +62,7 @@ class MainMenubar : public QMenuBar
       HideMain,
       IndicatorDate,
       DrawMode,
-      Help,
-      ChartPanelFocus,
-      GroupPanelFocus,
-      IndicatorPanelFocus,
-      PortfolioPanelFocus,
-      TestPanelFocus,
-      ScannerPanelFocus,
-      MacroPanelFocus,
-      ToolbarFocus
+      Help
     };
   
     MainMenubar(QMainWindow *);
@@ -87,6 +81,8 @@ class MainMenubar : public QMenuBar
     void slotTestPanelFocus();
     void slotScannerPanelFocus();
     void slotMacroPanelFocus();
+    void slotToolbarFocus();
+    void setKeyFlag (bool);
     
   private:
     QPopupMenu *fileMenu;
@@ -95,6 +91,7 @@ class MainMenubar : public QMenuBar
     QPopupMenu *toolMenu;
     QPopupMenu *helpMenu;
     QIntDict<QAction> actions;
+    bool keyFlag;
 };
 
 #endif

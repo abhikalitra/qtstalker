@@ -46,6 +46,7 @@ QtstalkerApp::QtstalkerApp()
   status = None;
   plotList.setAutoDelete(TRUE);
   setIcon(qtstalker);
+  currentMacro = 0;
 
   config.setup();
 
@@ -72,7 +73,8 @@ QtstalkerApp::QtstalkerApp()
   
   // setup the side panels
   navTab = new NavigatorTab(dpSplitter);
-  QObject::connect(navTab, SIGNAL(signalPositionChanged(int)), this, SLOT(slotNavigatorPosition(int)));
+  connect(navTab, SIGNAL(signalPositionChanged(int)), this, SLOT(slotNavigatorPosition(int)));
+  connect(menubar, SIGNAL(signalFocusEvent(int)), navTab, SLOT(pressButton(int)));
   
   // setup the data panel area
   infoLabel = new QMultiLineEdit(dpSplitter);
@@ -92,11 +94,11 @@ QtstalkerApp::QtstalkerApp()
   mainPlot->setMainFlag(TRUE);
   initPlot(mainPlot);
   mainPlot->setLogScale(menubar->getStatus(MainMenubar::Log));
-  QObject::connect(menubar, SIGNAL(signalLog(bool)), mainPlot, SLOT(slotLogScaleChanged(bool)));
-  QObject::connect(menubar, SIGNAL(signalHideMain(bool)), mainPlot, SLOT(slotHideMainChanged(bool)));
+  connect(menubar, SIGNAL(signalLog(bool)), mainPlot, SLOT(slotLogScaleChanged(bool)));
+  connect(menubar, SIGNAL(signalHideMain(bool)), mainPlot, SLOT(slotHideMainChanged(bool)));
 
   tabs = new IndicatorTab(split);
-  QObject::connect(tabs, SIGNAL(currentChanged(QWidget *)), this, SLOT(slotTabChanged(QWidget *)));
+  connect(tabs, SIGNAL(currentChanged(QWidget *)), this, SLOT(slotTabChanged(QWidget *)));
 
   // set the nav splitter size
   QString s = config.getData(Config::NavAreaSize);
@@ -186,10 +188,7 @@ QtstalkerApp::QtstalkerApp()
   navTab->buttonPressed(0);
   
   // catch any kill signals and try to save config
-  QObject::connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(slotQuit()));
-  
-  // connect side panel focus key events
-  connect(menubar, SIGNAL(signalFocusEvent(int)), navTab, SLOT(pressButton(int)));
+  connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(slotQuit()));
   
   statusBar()->message(tr("Ready"), 2000);
 }
@@ -202,6 +201,7 @@ void QtstalkerApp::initMenuBar()
 {
   menubar = new MainMenubar(this);
   connect(menubar, SIGNAL(signalExit()), qApp, SLOT(quit()));
+  connect(this, SIGNAL(signalSetKeyFlag(bool)), menubar, SLOT(setKeyFlag(bool)));
 }
 
 void QtstalkerApp::initToolBar()
@@ -226,6 +226,8 @@ void QtstalkerApp::initToolBar()
   connect(toolbar2, SIGNAL(signalCompressionChanged(int)), this, SLOT(slotCompressionChanged(int)));
   connect(toolbar2, SIGNAL(signalChartTypeChanged(int)), this, SLOT(slotChartTypeChanged(int)));
   connect(toolbar2, SIGNAL(signalPixelspaceChanged(int)), this, SLOT(slotPixelspaceChanged(int)));
+  connect(menubar, SIGNAL(signalToolbarFocusEvent()), toolbar2, SLOT(setFocus()));
+  connect(this, SIGNAL(signalSetKeyFlag(bool)), toolbar2, SLOT(setKeyFlag(bool)));
 }
 
 void QtstalkerApp::slotQuit()
@@ -271,6 +273,9 @@ void QtstalkerApp::slotQuit()
     
   if (quoteDialog)
     delete quoteDialog;
+    
+  if (currentMacro)
+    delete currentMacro;
 }
 
 void QtstalkerApp::slotAbout()
@@ -303,9 +308,9 @@ void QtstalkerApp::slotQuotes ()
   else
   {
     quoteDialog = new QuoteDialog();
-    QObject::connect(quoteDialog, SIGNAL(chartUpdated()), this, SLOT(slotChartUpdated()));
-    QObject::connect(quoteDialog, SIGNAL(message(QString)), this, SLOT(slotStatusMessage(QString)));
-    QObject::connect(quoteDialog, SIGNAL(destroyed()), this, SLOT(slotExitQuoteDialog()));
+    connect(quoteDialog, SIGNAL(chartUpdated()), this, SLOT(slotChartUpdated()));
+    connect(quoteDialog, SIGNAL(message(QString)), this, SLOT(slotStatusMessage(QString)));
+    connect(quoteDialog, SIGNAL(destroyed()), this, SLOT(slotExitQuoteDialog()));
     quoteDialog->show();
   }
 }
@@ -790,19 +795,22 @@ void QtstalkerApp::slotEditIndicator (QString selection)
   if (rc)
   {
     plug->saveIndicatorSettings(s);
-
-    Indicator *i = new Indicator;    
-    i->setName(selection);
-    i->setFile(s);
-    i->setType(type);
-    if (set->getData("plotType").length())
-      i->setPlotType((Indicator::PlotType) set->getData("plotType").toInt());
-    loadIndicator(i);
     
-    if (i->getPlotType() == Indicator::MainPlot)
-      mainPlot->draw();
-    else
-      slotTabChanged(0);
+    if (ip->getIndicatorStatus(selection))
+    {
+      Indicator *i = new Indicator;    
+      i->setName(selection);
+      i->setFile(s);
+      i->setType(type);
+      if (set->getData("plotType").length())
+        i->setPlotType((Indicator::PlotType) set->getData("plotType").toInt());
+      loadIndicator(i);
+    
+      if (i->getPlotType() == Indicator::MainPlot)
+        mainPlot->draw();
+      else
+        slotTabChanged(0);
+    }
   }
 
   config.closePlugin(type);
@@ -927,6 +935,15 @@ void QtstalkerApp::slotEnableIndicator (QString name)
   
   if (i->getPlotType() == Indicator::MainPlot)
     mainPlot->draw();
+  else
+  {
+    QDictIterator<Plot> it(plotList);
+    for(; it.current(); ++it)
+    {
+      if (! it.current()->getTabFlag())
+        it.current()->draw();
+    }
+  }
 }
 
 void QtstalkerApp::slotPixelspaceChanged (int d)
@@ -989,7 +1006,7 @@ void QtstalkerApp::addIndicatorButton (QString d, Indicator::PlotType tabFlag)
   initPlot(plot);
 
   plot->setDateFlag(menubar->getStatus(MainMenubar::IndicatorDate));
-  QObject::connect(menubar, SIGNAL(signalPlotDate(bool)), plot, SLOT(slotDateFlagChanged(bool)));
+  connect(menubar, SIGNAL(signalPlotDate(bool)), plot, SLOT(slotDateFlagChanged(bool)));
 
   if (tabFlag == Indicator::TabPlot)
   {
@@ -1003,18 +1020,18 @@ void QtstalkerApp::initPlot (Plot *plot)
 {
   QColor color;
   color.setNamedColor(config.getData(Config::BackgroundColor));
-  QObject::connect(this, SIGNAL(signalBackgroundColor(QColor)), plot, SLOT(setBackgroundColor(QColor)));
+  connect(this, SIGNAL(signalBackgroundColor(QColor)), plot, SLOT(setBackgroundColor(QColor)));
   plot->setBackgroundColor(color);
 
   color.setNamedColor(config.getData(Config::BorderColor));
-  QObject::connect(this, SIGNAL(signalBorderColor(QColor)), plot, SLOT(setBorderColor(QColor)));
+  connect(this, SIGNAL(signalBorderColor(QColor)), plot, SLOT(setBorderColor(QColor)));
   plot->setBorderColor(color);
 
   color.setNamedColor(config.getData(Config::GridColor));
-  QObject::connect(this, SIGNAL(signalGridColor(QColor)), plot, SLOT(setGridColor(QColor)));
+  connect(this, SIGNAL(signalGridColor(QColor)), plot, SLOT(setGridColor(QColor)));
   plot->setGridColor(color);
 
-  QObject::connect(this, SIGNAL(signalPlotFont(QFont)), plot, SLOT(setPlotFont(QFont)));
+  connect(this, SIGNAL(signalPlotFont(QFont)), plot, SLOT(setPlotFont(QFont)));
   QStringList l = QStringList::split(",", config.getData(Config::PlotFont), FALSE);
   if (l.count() == 3)
   {
@@ -1032,24 +1049,23 @@ void QtstalkerApp::initPlot (Plot *plot)
   plot->setCrosshairsStatus(config.getData(Config::Crosshairs).toInt());  
   plot->setDrawMode(menubar->getStatus(MainMenubar::DrawMode));
     
-  QObject::connect(plot, SIGNAL(signalNewIndicator()), this, SLOT(slotNewIndicator()));
-  QObject::connect(plot, SIGNAL(signalEditIndicator(QString)), this, SLOT(slotEditIndicator(QString)));
-  QObject::connect(plot, SIGNAL(statusMessage(QString)), this, SLOT(slotStatusMessage(QString)));
-  QObject::connect(plot, SIGNAL(infoMessage(Setting *)), this, SLOT(slotUpdateInfo(Setting *)));
-  QObject::connect(plot, SIGNAL(leftMouseButton(int, int, bool)), this, SLOT(slotPlotLeftMouseButton(int, int, bool)));
-//  QObject::connect(plot, SIGNAL(keyPressed(QKeyEvent *)), this, SLOT(slotPlotKeyPressed(QKeyEvent *)));
-  QObject::connect(plot, SIGNAL(signalMinPixelspace(int)), this, SLOT(slotMinPixelspaceChanged(int)));
-  QObject::connect(plot, SIGNAL(signalCrosshairsStatus(bool)), this, SLOT(slotCrosshairsStatus(bool)));
-  QObject::connect(this, SIGNAL(signalCrosshairsStatus(bool)), plot, SLOT(setCrosshairsStatus(bool)));
-  QObject::connect(this, SIGNAL(signalPixelspace(int)), plot, SLOT(setPixelspace(int)));
-  QObject::connect(this, SIGNAL(signalIndex(int)), plot, SLOT(setIndex(int)));
-  QObject::connect(this, SIGNAL(signalInterval(BarData::BarCompression)), plot, SLOT(setInterval(BarData::BarCompression)));
-  QObject::connect(this, SIGNAL(signalChartPath(QString)), plot, SLOT(setChartPath(QString)));
+  connect(plot, SIGNAL(signalNewIndicator()), this, SLOT(slotNewIndicator()));
+  connect(plot, SIGNAL(signalEditIndicator(QString)), this, SLOT(slotEditIndicator(QString)));
+  connect(plot, SIGNAL(statusMessage(QString)), this, SLOT(slotStatusMessage(QString)));
+  connect(plot, SIGNAL(infoMessage(Setting *)), this, SLOT(slotUpdateInfo(Setting *)));
+  connect(plot, SIGNAL(leftMouseButton(int, int, bool)), this, SLOT(slotPlotLeftMouseButton(int, int, bool)));
+  connect(plot, SIGNAL(signalMinPixelspace(int)), this, SLOT(slotMinPixelspaceChanged(int)));
+  connect(plot, SIGNAL(signalCrosshairsStatus(bool)), this, SLOT(slotCrosshairsStatus(bool)));
+  connect(this, SIGNAL(signalCrosshairsStatus(bool)), plot, SLOT(setCrosshairsStatus(bool)));
+  connect(this, SIGNAL(signalPixelspace(int)), plot, SLOT(setPixelspace(int)));
+  connect(this, SIGNAL(signalIndex(int)), plot, SLOT(setIndex(int)));
+  connect(this, SIGNAL(signalInterval(BarData::BarCompression)), plot, SLOT(setInterval(BarData::BarCompression)));
+  connect(this, SIGNAL(signalChartPath(QString)), plot, SLOT(setChartPath(QString)));
   
-  QObject::connect(toolbar2, SIGNAL(signalSliderChanged(int)), plot, SLOT(slotSliderChanged(int)));
-  QObject::connect(menubar, SIGNAL(signalGrid(bool)), plot, SLOT(slotGridChanged(bool)));
-  QObject::connect(menubar, SIGNAL(signalScale(bool)), plot, SLOT(slotScaleToScreenChanged(bool)));
-  QObject::connect(menubar, SIGNAL(signalDraw(bool)), plot, SLOT(slotDrawModeChanged(bool)));
+  connect(toolbar2, SIGNAL(signalSliderChanged(int)), plot, SLOT(slotSliderChanged(int)));
+  connect(menubar, SIGNAL(signalGrid(bool)), plot, SLOT(slotGridChanged(bool)));
+  connect(menubar, SIGNAL(signalScale(bool)), plot, SLOT(slotScaleToScreenChanged(bool)));
+  connect(menubar, SIGNAL(signalDraw(bool)), plot, SLOT(slotDrawModeChanged(bool)));
 }
 
 void QtstalkerApp::slotChartUpdated ()
@@ -1081,6 +1097,7 @@ void QtstalkerApp::initGroupNav ()
 {
   gp = new GroupPage(baseWidget);
   connect(gp, SIGNAL(fileSelected(QString)), this, SLOT(slotOpenChart(QString)));
+  connect(this, SIGNAL(signalSetKeyFlag(bool)), gp, SLOT(setKeyFlag(bool)));
   navTab->addWidget(gp, 1);
 }
 
@@ -1088,12 +1105,14 @@ void QtstalkerApp::initChartNav ()
 {
   chartNav = new ChartPage(baseWidget);
   connect(chartNav, SIGNAL(fileSelected(QString)), this, SLOT(slotOpenChart(QString)));
+  connect(this, SIGNAL(signalSetKeyFlag(bool)), chartNav, SLOT(setKeyFlag(bool)));
   navTab->addWidget(chartNav, 0);
 }
 
 void QtstalkerApp::initPortfolioNav ()
 {
   pp = new PortfolioPage(baseWidget);
+  connect(this, SIGNAL(signalSetKeyFlag(bool)), pp, SLOT(setKeyFlag(bool)));
   navTab->addWidget(pp, 3);
 }
 
@@ -1101,6 +1120,7 @@ void QtstalkerApp::initTestNav ()
 {
   tp = new TestPage(baseWidget);
   connect(tp, SIGNAL(message(QString)), this, SLOT(slotStatusMessage(QString)));
+  connect(this, SIGNAL(signalSetKeyFlag(bool)), tp, SLOT(setKeyFlag(bool)));
   navTab->addWidget(tp, 4);
 }
 
@@ -1113,6 +1133,7 @@ void QtstalkerApp::initIndicatorNav ()
   connect(ip, SIGNAL(signalNewIndicator()), this, SLOT(slotNewIndicator()));
   connect(ip, SIGNAL(signalEditIndicator(QString)), this, SLOT(slotEditIndicator(QString)));
   connect(ip, SIGNAL(signalDeleteIndicator(QString)), this, SLOT(slotDeleteIndicator(QString)));
+  connect(this, SIGNAL(signalSetKeyFlag(bool)), ip, SLOT(setKeyFlag(bool)));
   navTab->addWidget(ip, 2);
 }
 
@@ -1121,13 +1142,6 @@ void QtstalkerApp::initScannerNav ()
   sp = new ScannerPage(baseWidget);
   connect(sp, SIGNAL(message(QString)), this, SLOT(slotStatusMessage(QString)));
   navTab->addWidget(sp, 5);
-}
-
-void QtstalkerApp::initMacroNav ()
-{
-  mp = new MacroPage(baseWidget);
-//  QObject::connect(mp, SIGNAL(message(QString)), this, SLOT(slotStatusMessage(QString)));
-  navTab->addWidget(mp, 6);
 }
 
 void QtstalkerApp::slotHideNav (bool d)
@@ -1224,6 +1238,121 @@ void QtstalkerApp::slotHelp ()
 void QtstalkerApp::slotExitQuoteDialog ()
 {
   quoteDialog = 0;
+}
+
+//***************************************************************
+//*********** MACRO FUNCTIONS ***********************************
+//***************************************************************
+
+void QtstalkerApp::initMacroNav ()
+{
+  mp = new MacroPage(baseWidget);
+  connect(mp, SIGNAL(signalRunMacro(QString)), this, SLOT(slotRunMacro(QString)));
+  connect(mp, SIGNAL(signalRecordMacro(QString)), this, SLOT(slotRecordMacro(QString)));
+  connect(this, SIGNAL(signalSetKeyFlag(bool)), mp, SLOT(setKeyFlag(bool)));
+  navTab->addWidget(mp, 6);
+}
+
+void QtstalkerApp::slotRunMacro (QString d)
+{
+  slotStatusMessage(tr("Running macro..."));
+
+  Macro *m = new Macro(d);
+  m->load();
+  
+  int loop;
+  for (loop = 0; loop < (int) m->getCount(); loop++)
+  {
+    m->setKey(loop);
+    
+    switch(m->getZone())
+    {
+      case Macro::ChartPage:
+        chartNav->getNav()->doKeyPress(m->getKey());
+	break;
+      case Macro::GroupPage:
+        gp->getNav()->doKeyPress(m->getKey());
+	break;
+      case Macro::IndicatorPage:
+        ip->doKeyPress(m->getKey());
+	break;
+      case Macro::PortfolioPage:
+        pp->doKeyPress(m->getKey());
+	break;
+      case Macro::TestPage:
+        tp->doKeyPress(m->getKey());
+	break;
+      case Macro::ScannerPage:
+        sp->doKeyPress(m->getKey());
+	break;
+      case Macro::MacroPage:
+        mp->doKeyPress(m->getKey());
+	break;
+      case Macro::SidePanel:
+        navTab->doKeyPress(m->getKey());
+	break;
+      case Macro::ChartToolbar:
+//        toolbar2->doKeyPress(m->getKey());
+	break;
+      default:
+        break;
+    }
+  }
+  
+  delete m;
+  
+  slotStatusMessage(tr("Macro finished"));
+}
+
+void QtstalkerApp::slotRecordMacro (QString d)
+{
+  QString s = tr("Macro recording session about to begin.\n");
+  s.append(tr("Press CTRL+ESC to stop recording.\n\n"));
+  s.append(tr("Proceed?"));
+  
+  int rc = QMessageBox::warning(this,
+    			        tr("Qtstalker: Warning"),
+			        s,
+			        QMessageBox::Yes,
+			        QMessageBox::No,
+			        QMessageBox::NoButton);
+
+  if (rc == QMessageBox::No)
+    return;
+
+  if (currentMacro)
+    delete currentMacro;
+    
+  currentMacro = new Macro(d);
+  connect(menubar, SIGNAL(signalKeyPressed(int, int, int, int, QString)), currentMacro, SLOT(recordKey(int, int, int, int, QString)));
+  connect(ip, SIGNAL(signalKeyPressed(int, int, int, int, QString)), currentMacro, SLOT(recordKey(int, int, int, int, QString)));
+  connect(chartNav->getNav(), SIGNAL(signalKeyPressed(int, int, int, int, QString)), currentMacro, SLOT(recordKey(int, int, int, int, QString)));
+  connect(gp->getNav(), SIGNAL(signalKeyPressed(int, int, int, int, QString)), currentMacro, SLOT(recordKey(int, int, int, int, QString)));
+  connect(pp, SIGNAL(signalKeyPressed(int, int, int, int, QString)), currentMacro, SLOT(recordKey(int, int, int, int, QString)));
+  connect(tp, SIGNAL(signalKeyPressed(int, int, int, int, QString)), currentMacro, SLOT(recordKey(int, int, int, int, QString)));
+  connect(sp, SIGNAL(signalKeyPressed(int, int, int, int, QString)), currentMacro, SLOT(recordKey(int, int, int, int, QString)));
+  connect(mp, SIGNAL(signalKeyPressed(int, int, int, int, QString)), currentMacro, SLOT(recordKey(int, int, int, int, QString)));
+  
+  emit signalSetKeyFlag(TRUE);
+  
+  currentMacro->record();
+  
+  slotStatusMessage(tr("Recording macro session..."));
+}
+
+void QtstalkerApp::slotStopMacro ()
+{
+  if (! currentMacro)
+    return;
+    
+  emit signalSetKeyFlag(FALSE);
+    
+  currentMacro->stop();
+  delete currentMacro;
+  currentMacro = 0;
+  mp->updateList();
+  slotStatusMessage(tr("Recording macro finished."));
+  QMessageBox::information(this, tr("Qtstalker:Info"), tr("Macro session ended."));
 }
 
 //**********************************************************************

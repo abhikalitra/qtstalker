@@ -37,6 +37,7 @@ CSV::CSV ()
   db = 0;
   dateFlag = FALSE;
   helpFile = "csv.html";
+  cancelFlag = FALSE;
   
   edate = QDateTime::currentDateTime();
   if (edate.date().dayOfWeek() == 6)
@@ -597,7 +598,7 @@ bool CSV::openDb (QString path, QString symbol, QString type)
 
 void CSV::prefDialog (QWidget *w)
 {
-  CSVDialog *dialog = new CSVDialog(w, helpFile);
+  CSVDialog *dialog = new CSVDialog(w, helpFile, lastPath);
   dialog->setCaption(tr("CSV Prefs"));
   dialog->setStartDate(sdate);
   dialog->setEndDate(edate);
@@ -617,6 +618,13 @@ void CSV::prefDialog (QWidget *w)
     dateFlag = dialog->getDateRange();
     
     saveFlag = TRUE;
+    
+    if (list.count())
+    {
+      QFileInfo fi(list[0]);
+      lastPath = fi.dirPath(TRUE);
+      saveSettings();
+    }
   }
   
   delete dialog;
@@ -632,6 +640,8 @@ void CSV::loadSettings ()
   QString s = settings.readEntry("/DateRange", "0");
   dateFlag = s.toInt();
   
+  lastPath = settings.readEntry("/lastPath", QDir::homeDirPath());
+  
   settings.endGroup();
 }
 
@@ -645,6 +655,7 @@ void CSV::saveSettings ()
 
   settings.writeEntry("/RuleName", ruleName);
   settings.writeEntry("/DateRange", QString::number(dateFlag));
+  settings.writeEntry("/lastPath", lastPath);
   
   settings.endGroup();
 }

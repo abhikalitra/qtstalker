@@ -23,49 +23,63 @@
 #include "SymbolDialog.h"
 //#include "MacroDialog.h"
 #include "HelpWindow.h"
+#include "PrefDialog.h"
+#include "Macro.h"
 #include "help.xpm"
-#include "open.xpm"
+#include "edit.xpm"
 #include "newchart.xpm"
 #include "delete.xpm"
 #include "rename.xpm"
 #include <qinputdialog.h>
 #include <qmessagebox.h>
 #include <qcursor.h>
-#include <qfile.h>
 #include <qdir.h>
+#include <qaccel.h>
 
 MacroPage::MacroPage (QWidget *w) : QListBox (w)
 {
+  keyFlag = FALSE;
+  
   connect(this, SIGNAL(contextMenuRequested(QListBoxItem *, const QPoint &)), this, SLOT(rightClick(QListBoxItem *)));
   connect(this, SIGNAL(highlighted(const QString &)), this, SLOT(macroSelected(const QString &)));
   connect(this, SIGNAL(doubleClicked(QListBoxItem *)), this, SLOT(doubleClick(QListBoxItem *)));
   
-  menu = new QPopupMenu();
-  menu->insertItem(QPixmap(newchart), tr("&New Macro"), this, SLOT(newMacro()), CTRL+Key_N);
-  menu->insertItem(QPixmap(open), tr("&Open Macro"), this, SLOT(openMacro()), CTRL+Key_O);
-  menu->insertItem(QPixmap(deleteitem), tr("&Delete Macro"), this, SLOT(deleteMacro()), CTRL+Key_D);
-  menu->insertItem(QPixmap(renam), tr("&Rename Macro"), this, SLOT(renameMacro()), CTRL+Key_R);
+  menu = new QPopupMenu(this);
+  menu->insertItem(QPixmap(newchart), tr("&New Macro		Ctrl+N"), this, SLOT(newMacro()));
+  menu->insertItem(QPixmap(edit), tr("&Edit Macro		Ctrl+E"), this, SLOT(editMacro()));
+  menu->insertItem(QPixmap(deleteitem), tr("&Delete Macro	Ctrl+D"), this, SLOT(deleteMacro()));
+  menu->insertItem(QPixmap(renam), tr("&Rename Macro		Ctrl+R"), this, SLOT(renameMacro()));
+  menu->insertItem(tr("&Assign Macro		Ctrl+A"), this, SLOT(assignMacro()));
   menu->insertSeparator(-1);
-  menu->insertItem(QPixmap(renam), tr("R&un Macro"), this, SLOT(runMacro()), CTRL+Key_U);
+  menu->insertItem(QPixmap(renam), tr("R&un Macro		Ctrl+U"), this, SLOT(runMacro()));
   menu->insertSeparator(-1);
-  menu->insertItem(QPixmap(help), tr("&Help"), this, SLOT(slotHelp()), CTRL+Key_H);
+  menu->insertItem(QPixmap(help), tr("&Help		Ctrl+H"), this, SLOT(slotHelp()));
 
+  QAccel *a = new QAccel(this);
+  a->insertItem(CTRL+Key_N, 0);
+  a->connectItem(0, this, SLOT(newMacro()));
+  a->insertItem(CTRL+Key_E, 1);
+  a->connectItem(1, this, SLOT(editMacro()));
+  a->insertItem(CTRL+Key_D, 2);
+  a->connectItem(2, this, SLOT(deleteMacro()));
+  a->insertItem(CTRL+Key_R, 3);
+  a->connectItem(3, this, SLOT(renameMacro()));
+  a->insertItem(CTRL+Key_A, 4);
+  a->connectItem(4, this, SLOT(assignMacro()));
+  a->insertItem(CTRL+Key_U, 5);
+  a->connectItem(5, this, SLOT(runMacro()));
+  a->insertItem(CTRL+Key_H, 6);
+  a->connectItem(6, this, SLOT(slotHelp()));
+  
   updateList();
   macroSelected(QString());
 }
 
 MacroPage::~MacroPage ()
 {
-  delete menu;
 }
 
-void MacroPage::openMacro ()
-{
-//  MacroDialog *dialog = new MacroDialog(currentText());
-//  dialog->show();
-}
-
-void MacroPage::openMacro (QString d)
+void MacroPage::editMacro ()
 {
 //  MacroDialog *dialog = new MacroDialog(d);
 //  dialog->show();
@@ -101,15 +115,7 @@ void MacroPage::newMacro()
       return;
     }
 
-    // create the empty file    
-    QFile f(s);
-    if (! f.open(IO_WriteOnly))
-      return;
-    f.close();
-    
-    updateList();
-
-    openMacro(selection);
+    emit signalRecordMacro(s);
   }
 }
 
@@ -192,6 +198,51 @@ void MacroPage::renameMacro ()
   }
 }
 
+void MacroPage::assignMacro ()
+{
+  PrefDialog *dialog = new PrefDialog;
+  dialog->setCaption(tr("Assign Macro"));
+  dialog->setHelpFile("macro.html");
+
+  QString s = config.getData(Config::MacroPath);
+  
+  dialog->createPage(tr("Keys F1-F6"));
+  dialog->addSymbolItem("CTRL+F1", tr("Keys F1-F6"), s, config.getData(Config::MacroF1));
+  dialog->addSymbolItem("CTRL+F2", tr("Keys F1-F6"), s, config.getData(Config::MacroF2));
+  dialog->addSymbolItem("CTRL+F3", tr("Keys F1-F6"), s, config.getData(Config::MacroF3));
+  dialog->addSymbolItem("CTRL+F4", tr("Keys F1-F6"), s, config.getData(Config::MacroF4));
+  dialog->addSymbolItem("CTRL+F5", tr("Keys F1-F6"), s, config.getData(Config::MacroF5));
+  dialog->addSymbolItem("CTRL+F6", tr("Keys F1-F6"), s, config.getData(Config::MacroF6));
+  
+  dialog->createPage(tr("Keys F7-F12"));
+  dialog->addSymbolItem("CTRL+F7", tr("Keys F7-F12"), s, config.getData(Config::MacroF7));
+  dialog->addSymbolItem("CTRL+F8", tr("Keys F7-F12"), s, config.getData(Config::MacroF8));
+  dialog->addSymbolItem("CTRL+F9", tr("Keys F7-F12"), s, config.getData(Config::MacroF9));
+  dialog->addSymbolItem("CTRL+F10", tr("Keys F7-F12"), s, config.getData(Config::MacroF10));
+  dialog->addSymbolItem("CTRL+F11", tr("Keys F7-F12"), s, config.getData(Config::MacroF11));
+  dialog->addSymbolItem("CTRL+F12", tr("Keys F7-F12"), s, config.getData(Config::MacroF12));
+
+  int rc = dialog->exec();
+    
+  if (rc == QDialog::Accepted)
+  {
+    config.setData(Config::MacroF1, dialog->getSymbol("CTRL+F1"));
+    config.setData(Config::MacroF2, dialog->getSymbol("CTRL+F2"));
+    config.setData(Config::MacroF3, dialog->getSymbol("CTRL+F3"));
+    config.setData(Config::MacroF4, dialog->getSymbol("CTRL+F4"));
+    config.setData(Config::MacroF5, dialog->getSymbol("CTRL+F5"));
+    config.setData(Config::MacroF6, dialog->getSymbol("CTRL+F6"));
+    config.setData(Config::MacroF7, dialog->getSymbol("CTRL+F7"));
+    config.setData(Config::MacroF8, dialog->getSymbol("CTRL+F8"));
+    config.setData(Config::MacroF9, dialog->getSymbol("CTRL+F9"));
+    config.setData(Config::MacroF10, dialog->getSymbol("CTRL+F10"));
+    config.setData(Config::MacroF11, dialog->getSymbol("CTRL+F11"));
+    config.setData(Config::MacroF12, dialog->getSymbol("CTRL+F12"));
+  }
+  
+  delete dialog;  
+}
+
 void MacroPage::macroSelected (const QString &d)
 {
   if (d.length())
@@ -199,14 +250,14 @@ void MacroPage::macroSelected (const QString &d)
     menu->setItemEnabled(menu->idAt(1), TRUE);
     menu->setItemEnabled(menu->idAt(2), TRUE);
     menu->setItemEnabled(menu->idAt(3), TRUE);
-    menu->setItemEnabled(menu->idAt(5), TRUE);
+    menu->setItemEnabled(menu->idAt(6), TRUE);
   }
   else
   {
     menu->setItemEnabled(menu->idAt(1), FALSE);
     menu->setItemEnabled(menu->idAt(2), FALSE);
     menu->setItemEnabled(menu->idAt(3), FALSE);
-    menu->setItemEnabled(menu->idAt(5), FALSE);
+    menu->setItemEnabled(menu->idAt(6), FALSE);
   }
 }
 
@@ -230,7 +281,8 @@ void MacroPage::doubleClick (QListBoxItem *item)
   if (! item)
     return;
     
-  openMacro(item->text());
+  QString s = config.getData(Config::MacroPath) + "/" + item->text();
+  emit signalRunMacro(s);
 }
 
 void MacroPage::slotHelp ()
@@ -241,67 +293,45 @@ void MacroPage::slotHelp ()
 
 void MacroPage::keyPressEvent (QKeyEvent *key)
 {
-  emit signalKeyPressed (6, key);
+  if (keyFlag)
+    emit signalKeyPressed (Macro::MacroPage, key->state(), key->key(), key->ascii(), key->text());
+    
   doKeyPress(key);  
 }
 
 void MacroPage::doKeyPress (QKeyEvent *key)
 {
-  if (key->state() == Qt::ControlButton)
+  switch (key->key())
   {
-    switch (key->key())
-    {
-      case Qt::Key_N:
-        key->accept();
-        newMacro();
-        break;
-      case Qt::Key_O:
-        key->accept();
-        openMacro();
-        break;
-      case Qt::Key_R:
-        key->accept();
-        renameMacro();
-        break;
-      case Qt::Key_H:
-        key->accept();
-        slotHelp();
-        break;
-      case Qt::Key_U:
-        key->accept();
-        runMacro();
-        break;
-      default:
-        break;
-    }
-  }
-  else
-  {
-    switch (key->key())
-    {
-      case Qt::Key_Delete:
-        key->accept();
-        deleteMacro();
-        break;
-      case Qt::Key_Left: // segfaults if we dont trap this
-      case Qt::Key_Right: // segfaults if we dont trap this
-        key->accept();
-        break;      
-      case Qt::Key_Enter:
-      case Qt::Key_Return:
-        key->accept();
-        openMacro();
-        break;
-      default:
-        key->ignore();
-        QListBox::keyPressEvent(key);
-        break;
-    }
+    case Qt::Key_Delete:
+      key->accept();
+      deleteMacro();
+      break;
+    case Qt::Key_Left: // segfaults if we dont trap this
+    case Qt::Key_Right: // segfaults if we dont trap this
+      key->accept();
+      break;      
+    case Qt::Key_Enter:
+    case Qt::Key_Return:
+      key->accept();
+      runMacro();
+      break;
+    default:
+      key->accept();
+      QListBox::keyPressEvent(key);
+      break;
   }
 }
 
 void MacroPage::runMacro ()
 {
-  emit signalRunMacro(currentText());
+  QString s = config.getData(Config::MacroPath) + "/" + currentText();
+  emit signalRunMacro(s);
 }
+
+void MacroPage::setKeyFlag (bool d)
+{
+  keyFlag = d;
+}
+
 

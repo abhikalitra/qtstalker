@@ -56,7 +56,8 @@ class ChartPage : public QWidget
     void refreshList ();
     void searchChanged (const QString &);
     void slotHelp ();
-    void doKeyPress (QKeyEvent *);
+    void setKeyFlag (bool);
+    void doKeyPress (int, int);
 
   protected:
     Navigator *nav;
@@ -64,6 +65,7 @@ class ChartPage : public QWidget
     QPopupMenu *menu;
     QPopupMenu *newMenu;
     QLineEdit *search;
+    bool keyFlag;
 };
 
 #endif

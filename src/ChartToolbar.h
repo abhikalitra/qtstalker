@@ -54,7 +54,10 @@ class ChartToolbar : public QToolBar
     int getSlider ();
     int setSliderStart (int ov, bool flag, int width, int records);
     void saveSettings ();
+    
+  public slots:
     void setFocus ();
+    void setKeyFlag (bool);
   
   private:
     QComboBox *compressionCombo;
@@ -62,6 +65,7 @@ class ChartToolbar : public QToolBar
     QSpinBox *pixelspace;
     QSpinBox *barCount;
     QSlider *slider;
+    bool keyFlag;
 };
 
 #endif

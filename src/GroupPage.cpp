@@ -21,14 +21,13 @@
 
 #include "GroupPage.h"
 #include "SymbolDialog.h"
-#include "ChartDb.h"
 #include "HelpWindow.h"
+#include "Macro.h"
 #include "help.xpm"
 #include "delete.xpm"
 #include "newchart.xpm"
 #include "insert.xpm"
 #include "stop.xpm"
-#include "edit.xpm"
 #include "rename.xpm"
 #include <qmessagebox.h>
 #include <qlineedit.h>
@@ -39,6 +38,7 @@
 #include <qtooltip.h>
 #include <qlayout.h>
 #include <qfileinfo.h>
+#include <qaccel.h>
 
 GroupPage::GroupPage (QWidget *w) : QWidget (w)
 {
@@ -56,29 +56,38 @@ GroupPage::GroupPage (QWidget *w) : QWidget (w)
   connect(nav, SIGNAL(fileSelected(QString)), this, SLOT(groupSelected(QString)));
   connect(nav, SIGNAL(noSelection()), this, SLOT(groupNoSelection()));
   connect(nav, SIGNAL(contextMenuRequested(QListBoxItem *, const QPoint &)), this, SLOT(rightClick(QListBoxItem *)));
-  connect(nav, SIGNAL(keyPress(QKeyEvent *)), this, SLOT(doKeyPress(QKeyEvent *)));
   nav->updateList();
-  nav->setId(1);
+  nav->setId(Macro::GroupPage);
   vbox->addWidget(nav);
 
-  menu = new QPopupMenu();
-  menu->insertItem(QPixmap(newchart), tr("&New Group"), this, SLOT(newGroup()), CTRL+Key_N);
-  menu->insertItem(QPixmap(insert), tr("&Add Group Items"), this, SLOT(addGroupItem()), CTRL+Key_A);
-  menu->insertItem(QPixmap(deleteitem), tr("&Delete Group Items"), this, SLOT(deleteGroupItem()), CTRL+Key_D);
-  menu->insertItem(QPixmap(stop), tr("Delete &Group"), this, SLOT(deleteGroup()), CTRL+Key_G);
-  menu->insertItem(QPixmap(renam), tr("&Rename Group"), this, SLOT(renameGroup()), CTRL+Key_R);
-  menu->insertItem(tr("&Refresh"), this, SLOT(refreshList()), CTRL+Key_F);
+  menu = new QPopupMenu(this);
+  menu->insertItem(QPixmap(newchart), tr("&New Group		Ctrl+N"), this, SLOT(newGroup()));
+  menu->insertItem(QPixmap(insert), tr("&Add Group Items	Ctrl+A"), this, SLOT(addGroupItem()));
+  menu->insertItem(QPixmap(deleteitem), tr("&Delete Group Items	Ctrl+D"), this, SLOT(deleteGroupItem()));
+  menu->insertItem(QPixmap(stop), tr("De&lete Group	Ctrl+L"), this, SLOT(deleteGroup()));
+  menu->insertItem(QPixmap(renam), tr("&Rename Group	Ctrl+R"), this, SLOT(renameGroup()));
   menu->insertSeparator(-1);
-  menu->insertItem(QPixmap(edit), tr("&Edit Chart"), this, SLOT(editChart()), CTRL+Key_E);
-  menu->insertSeparator(-1);
-  menu->insertItem(QPixmap(help), tr("&Help"), this, SLOT(slotHelp()), CTRL+Key_H);
+  menu->insertItem(QPixmap(help), tr("&Help		Ctrl+H"), this, SLOT(slotHelp()));
 
+  QAccel *a = new QAccel(this);
+  a->insertItem(CTRL+Key_N, 0);
+  a->connectItem(0, this, SLOT(newGroup()));
+  a->insertItem(CTRL+Key_A, 1);
+  a->connectItem(1, this, SLOT(addGroupItem()));
+  a->insertItem(CTRL+Key_D, 2);
+  a->connectItem(2, this, SLOT(deleteGroupItem()));
+  a->insertItem(CTRL+Key_L, 3);
+  a->connectItem(3, this, SLOT(deleteGroup()));
+  a->insertItem(CTRL+Key_R, 4);
+  a->connectItem(4, this, SLOT(renameGroup()));
+  a->insertItem(CTRL+Key_H, 5);
+  a->connectItem(5, this, SLOT(slotHelp()));
+  
   groupNoSelection();
 }
 
 GroupPage::~GroupPage ()
 {
-  delete menu;
 }
 
 void GroupPage::newGroup()
@@ -268,6 +277,7 @@ void GroupPage::renameGroup ()
 void GroupPage::groupSelected (QString d)
 {
   menu->setItemEnabled(menu->idAt(1), TRUE);
+  menu->setItemEnabled(menu->idAt(2), TRUE);
   menu->setItemEnabled(menu->idAt(3), TRUE);
   menu->setItemEnabled(menu->idAt(4), TRUE);
   
@@ -284,6 +294,7 @@ void GroupPage::groupNoSelection ()
     group->setText(s2.right(s2.length() - s.length() - 1));
 
     menu->setItemEnabled(menu->idAt(1), TRUE);
+    menu->setItemEnabled(menu->idAt(2), TRUE);
     menu->setItemEnabled(menu->idAt(3), TRUE);
     menu->setItemEnabled(menu->idAt(4), TRUE);
   }
@@ -292,6 +303,7 @@ void GroupPage::groupNoSelection ()
     group->clear();
 
     menu->setItemEnabled(menu->idAt(1), FALSE);
+    menu->setItemEnabled(menu->idAt(2), FALSE);
     menu->setItemEnabled(menu->idAt(3), FALSE);
     menu->setItemEnabled(menu->idAt(4), FALSE);
   }
@@ -300,23 +312,6 @@ void GroupPage::groupNoSelection ()
 void GroupPage::rightClick (QListBoxItem *)
 {
   menu->exec(QCursor::pos());
-}
-
-void GroupPage::editChart ()
-{
-  QString symbol = nav->getFileSelection();
-  if (! symbol.length())
-    return;
-
-  QFileInfo fi(symbol);
-  ChartDb *db = new ChartDb;
-  db->dbPrefDialog(fi.readLink());
-  delete db;
-}
-
-void GroupPage::refreshList ()
-{
-  nav->updateList();
 }
 
 void GroupPage::slotHelp ()
@@ -330,37 +325,9 @@ void GroupPage::setFocus ()
   nav->setFocus();
 }
 
-void GroupPage::doKeyPress (QKeyEvent *key)
+void GroupPage::setKeyFlag (bool d)
 {
-  switch (key->key())
-  {
-    case Qt::Key_N:
-      newGroup();
-      break;
-    case Qt::Key_A:
-      addGroupItem();
-      break;
-    case Qt::Key_Delete:
-      deleteGroupItem();
-      break;
-    case Qt::Key_G:
-      deleteGroup();
-      break;
-    case Qt::Key_R:
-      renameGroup();
-      break;
-    case Qt::Key_F:
-      refreshList();
-      break;
-    case Qt::Key_E:
-      editChart();
-      break;
-    case Qt::Key_H:
-      slotHelp();
-      break;
-    default:
-      break;
-  }
+  nav->setKeyFlag(d);
 }
 
 Navigator * GroupPage::getNav ()

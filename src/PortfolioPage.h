@@ -33,7 +33,7 @@ class PortfolioPage : public QListBox
   Q_OBJECT
   
   signals:
-    void signalKeyPressed (int, QKeyEvent *);
+    void signalKeyPressed (int, int, int, int, QString);
 
   public:
     PortfolioPage (QWidget *);
@@ -51,12 +51,14 @@ class PortfolioPage : public QListBox
     void doubleClick (QListBoxItem *);
     void updateList ();
     void doKeyPress (QKeyEvent *);
+    void setKeyFlag (bool);
 
   private:
     virtual void keyPressEvent (QKeyEvent *);
   
     Config config;
     QPopupMenu *menu;
+    bool keyFlag;
 };
 
 #endif
