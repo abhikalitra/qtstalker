@@ -40,6 +40,7 @@ class HorizontalLine : public ChartObject
     void prefDialog ();
     
   protected:
+    int ty;
 };
 
 #endif

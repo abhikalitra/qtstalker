@@ -39,6 +39,8 @@ class ChartObject : public QObject
   
   signals:
     void signalDraw();
+    void signalRefresh();
+    void signalMoving();
     void signalChartObjectSelected(ChartObject *);
     void signalDeleteChartObject (QString);
     void message (QString);
@@ -78,6 +80,7 @@ class ChartObject : public QObject
     virtual void prefDialog ();
     void selected (int, int);
     void remove ();
+    void moveObject ();
     
   protected:
     BarData *data;

@@ -75,6 +75,11 @@ void ChartObject::remove ()
   emit signalDeleteChartObject(name);
 }
 
+void ChartObject::moveObject ()
+{
+  emit signalMoving();
+}
+
 bool ChartObject::isClicked (int x, int y)
 {
   return area.contains(QPoint(x,y));

@@ -34,6 +34,7 @@ HorizontalLine::HorizontalLine (Scaler *s, QPixmap *p, QString indicator, QStrin
   color.setNamedColor("white");
   
   menu->insertItem(tr("Edit Horizontal Line"), this, SLOT(prefDialog()));
+  menu->insertItem(tr("Move Horizontal Line"), this, SLOT(moveObject()));
   menu->insertItem(tr("Delete Horizontal Line"), this, SLOT(remove()));
 }
 
@@ -48,6 +49,7 @@ void HorizontalLine::draw (int, int)
   painter.setPen(color);
 
   int y = scaler->convertToY(value);
+  ty = y;
 
   painter.drawLine (0, y, buffer->width(), y);
   painter.drawText(0, y - 1, QString::number(value), -1);

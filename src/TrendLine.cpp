@@ -42,6 +42,7 @@ TrendLine::TrendLine (Scaler *s, QPixmap *p, BarData *d, QString indicator, QStr
   barField = tr("Close");
   
   menu->insertItem(tr("Edit Trend Line"), this, SLOT(prefDialog()));
+  menu->insertItem(tr("Move Trend Line"), this, SLOT(moveObject()));
   menu->insertItem(tr("Delete Trend Line"), this, SLOT(remove()));
 }
 
@@ -155,7 +156,7 @@ void TrendLine::prefDialog ()
   if (rc == QDialog::Accepted)
   {
     color = dialog->getColor(tr("Color"));
-    useBar = dialog->getCheckString(tr("Use Bar"));
+    useBar = dialog->getCheck(tr("Use Bar"));
     barField = dialog->getCombo(tr("Bar Field"));
     saveFlag = TRUE;
     emit signalDraw();

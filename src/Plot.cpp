@@ -291,6 +291,11 @@ void Plot::draw ()
   paintEvent(0);
 }
 
+void Plot::drawRefresh ()
+{
+  paintEvent(0);
+}
+
 void Plot::drawLines ()
 {
   if (mainFlag)
@@ -400,11 +405,12 @@ void Plot::mousePressEvent (QMouseEvent *event)
 	getXY(event->x(), event->y(), 0);
         if (objectFlag == ChartObject::TrendLine || objectFlag == ChartObject::FibonacciLine)
 	{
+          emit statusMessage(QString());
           mouseFlag = ClickWait2;
-          if (objectFlag == ChartObject::TrendLine)
-            emit statusMessage(tr("Select end point of trend line..."));
-	  else
-            emit statusMessage(tr("Select low point of fibonacci line..."));
+          tx = event->x();
+	  ty = event->y();
+	  tx2 = -1;
+	  ty2 = -1;
 	}
 	else
 	  newChartObject();
@@ -415,8 +421,20 @@ void Plot::mousePressEvent (QMouseEvent *event)
 	  tco->unselect();
 	  mouseFlag = None;
 	}
+	else
+	{
+          tx = event->x();
+	  ty = event->y();
+	}
+        break;
+      case Moving:
+	mouseFlag = COSelected;
+        tx = event->x();
+        ty = event->y();
         break;
       default:
+        tx = event->x();
+	ty = event->y();
         emit signalMouseLeftClick(event->x(), event->y());
 	break;
     }
@@ -426,12 +444,7 @@ void Plot::mousePressEvent (QMouseEvent *event)
     if (event->button() == RightButton)
     {
       if (mouseFlag == COSelected)
-      {
-        if (tco->isClicked(event->x(), event->y()))
-          tco->showMenu();
-	else
-          showPopupMenu();
-      }
+        tco->showMenu();
       else
         showPopupMenu();
     }
@@ -455,13 +468,54 @@ void Plot::mouseMoveEvent (QMouseEvent *event)
     return;
    
   // are we trying to drag a chart object?
-  if ((mouseFlag == COSelected) && (event->state() == LeftButton) && drawMode)
+  if (mouseFlag == Moving && drawMode)
   {
     getXY(event->x(), event->y(), 0);
+    tx = event->x();
+    ty = event->y();
     tco->move(x1, y1);
     return;
   }
 
+  // are we drawing the second point of a chart object?
+  if (mouseFlag == ClickWait2 && drawMode)
+  {
+    if (objectFlag == ChartObject::TrendLine || objectFlag == ChartObject::FibonacciLine)
+    {
+      QPainter painter;
+      painter.begin(buffer);
+      painter.setRasterOp(Qt::XorROP);
+      painter.setPen(borderColor);
+      
+      // erase the previous line drawn
+      if (tx2 != -1 && ty2 != -1)
+      {
+        if (objectFlag == ChartObject::TrendLine)
+          painter.drawLine (tx, ty, tx2, ty2);
+	else
+	{
+          painter.drawLine (tx, ty, tx2, ty);
+          painter.drawLine (tx, ty2, tx2, ty2);
+	}
+      }
+      
+      // draw the new line
+      if (objectFlag == ChartObject::TrendLine)
+        painter.drawLine (tx, ty, event->x(), event->y());
+      else
+      {
+        painter.drawLine (tx, ty, event->x(), ty);
+        painter.drawLine (tx, event->y(), event->x(), event->y());
+      }
+      
+      tx2 = event->x();
+      ty2 = event->y();
+      painter.end();
+      paintEvent(0);
+      return;
+    }
+  }
+  
   int i = (event->x() / pixelspace) + startIndex;
   if (i >= (int) data->count())
     i = data->count() - 1;
@@ -502,6 +556,28 @@ void Plot::mouseMoveEvent (QMouseEvent *event)
     emit infoMessage(r);
   else
     delete r;
+}
+
+void Plot::mouseDoubleClickEvent (QMouseEvent *event)
+{
+  if (mainFlag)
+  {
+    if (! data)
+      return;
+  }
+  else
+  {
+    if (! indicators.count())
+      return;
+  }
+
+  if (event->x() > buffer->width() - SCALE_WIDTH)
+    return;
+
+  if (mouseFlag != COSelected)
+    return;
+    
+  tco->prefDialog();
 }
 
 void Plot::keyPressEvent (QKeyEvent *key)
@@ -1751,6 +1827,8 @@ void Plot::newChartObject ()
   if (! cancelFlag)
   {
     QObject::connect(co, SIGNAL(signalDraw()), this, SLOT(draw()));
+    QObject::connect(co, SIGNAL(signalRefresh()), this, SLOT(drawRefresh()));
+    QObject::connect(co, SIGNAL(signalMoving()), this, SLOT(objectMoving()));
     QObject::connect(this, SIGNAL(signalMouseLeftClick(int, int)), co, SLOT(selected(int, int)));
     QObject::connect(co, SIGNAL(signalChartObjectSelected(ChartObject *)), this, SLOT(slotChartObjectSelected(ChartObject *)));
     QObject::connect(co, SIGNAL(signalDeleteChartObject(QString)), this, SLOT(slotDeleteChartObject(QString)));
@@ -1952,6 +2030,8 @@ void Plot::addChartObject (Setting *set)
   co->setSettings(set);
   
   QObject::connect(co, SIGNAL(signalDraw()), this, SLOT(draw()));
+  QObject::connect(co, SIGNAL(signalRefresh()), this, SLOT(drawRefresh()));
+  QObject::connect(co, SIGNAL(signalMoving()), this, SLOT(objectMoving()));
   QObject::connect(this, SIGNAL(signalMouseLeftClick(int, int)), co, SLOT(selected(int, int)));
   QObject::connect(co, SIGNAL(signalChartObjectSelected(ChartObject *)), this, SLOT(slotChartObjectSelected(ChartObject *)));
   QObject::connect(co, SIGNAL(signalDeleteChartObject(QString)), this, SLOT(slotDeleteChartObject(QString)));
@@ -2057,6 +2137,8 @@ void Plot::slotChartObjectSelected (ChartObject *co)
 {
   tco = co;
   mouseFlag = COSelected;
+  tx = QCursor::pos().x();
+  ty = QCursor::pos().y();
 }
 
 void Plot::slotDeleteAllChartObjects ()
@@ -2085,4 +2167,10 @@ void Plot::slotDeleteAllChartObjects ()
   delete db;
   mouseFlag = None;
   draw();
+}
+
+void Plot::objectMoving ()
+{
+  mouseFlag = Moving;
+//  QCursor::setPos(tx, ty);
 }

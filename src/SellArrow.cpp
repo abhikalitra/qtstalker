@@ -36,6 +36,7 @@ SellArrow::SellArrow (Scaler *s, QPixmap *p, QString indicator, QString n, BarDa
   color.setNamedColor("red");
   
   menu->insertItem(tr("Edit Sell Arrow"), this, SLOT(prefDialog()));
+  menu->insertItem(tr("Move Sell Arrow"), this, SLOT(moveObject()));
   menu->insertItem(tr("Delete Sell Arrow"), this, SLOT(remove()));
 }
 

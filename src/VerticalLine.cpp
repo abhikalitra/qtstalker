@@ -33,6 +33,7 @@ VerticalLine::VerticalLine (QPixmap *p, QString indicator, QString n, BarDate d)
   color.setNamedColor("white");
   
   menu->insertItem(tr("Edit Vertical Line"), this, SLOT(prefDialog()));
+  menu->insertItem(tr("Move Vertical Line"), this, SLOT(moveObject()));
   menu->insertItem(tr("Delete Vertical Line"), this, SLOT(remove()));
 }
 

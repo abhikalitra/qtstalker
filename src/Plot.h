@@ -64,7 +64,8 @@ class Plot : public QWidget
       None,
       ClickWait,
       ClickWait2,
-      COSelected
+      COSelected,
+      Moving
     };
 
     Plot (QWidget *);
@@ -104,6 +105,7 @@ class Plot : public QWidget
 
   public slots:
     void draw();
+    void drawRefresh();
     void setGridFlag (bool);
     void setScaleToScreen (bool);
     void setPixelspace (int);
@@ -127,6 +129,7 @@ class Plot : public QWidget
     virtual void mousePressEvent (QMouseEvent *);
     virtual void mouseMoveEvent (QMouseEvent *);
     virtual void keyPressEvent (QKeyEvent *);
+    virtual void mouseDoubleClickEvent (QMouseEvent *);
 
   private slots:
     void drawObjects ();
@@ -142,6 +145,7 @@ class Plot : public QWidget
     void getXY (int, int, int);
     void createXGrid ();
     void slotMessage (QString);
+    void objectMoving ();
     
     void drawDate ();
     void drawDailyDate ();
@@ -188,6 +192,8 @@ class Plot : public QWidget
     bool drawMode;
     int crossHairX;
     int crossHairY;
+    int tx, tx2; // temp x coords for drawing chart objects
+    int ty, ty2;  // temp y coords for drawing chart objects
 
     int scaleWidth;
     double mainHigh;

@@ -22,7 +22,6 @@
 #include "BuyArrow.h"
 #include "PrefDialog.h"
 #include <qpainter.h>
-#include <qpointarray.h>
 #include <qpoint.h>
 
 BuyArrow::BuyArrow (Scaler *s, QPixmap *p, QString indicator, QString n, BarDate d, double v)
@@ -37,6 +36,7 @@ BuyArrow::BuyArrow (Scaler *s, QPixmap *p, QString indicator, QString n, BarDate
   color.setNamedColor("green");
   
   menu->insertItem(tr("Edit Buy Arrow"), this, SLOT(prefDialog()));
+  menu->insertItem(tr("Move Buy Arrow"), this, SLOT(moveObject()));
   menu->insertItem(tr("Delete Buy Arrow"), this, SLOT(remove()));
 }
 
@@ -51,8 +51,8 @@ void BuyArrow::draw (int x, int)
   
   int y = scaler->convertToY(value);
 
-  QPointArray array;
-  array.setPoints(7, x, y,
+  arrow.truncate(0);
+  arrow.setPoints(7, x, y,
                   x + 5, y + 5,
                   x + 2, y + 5,
                   x + 2, y + 11,
@@ -60,9 +60,9 @@ void BuyArrow::draw (int x, int)
 	          x - 2, y + 5,
                   x - 5, y + 5);
   painter.setBrush(color);
-  painter.drawPolygon(array, TRUE, 0, -1);
+  painter.drawPolygon(arrow, TRUE, 0, -1);
   
-  QRegion r(array, FALSE);
+  QRegion r(arrow, FALSE);
   area = r;
   
   if (status)
@@ -102,6 +102,7 @@ void BuyArrow::move (BarDate d, double v)
   date = d;
   value = v;
   saveFlag = TRUE;
+  
   emit signalDraw();
   
   QString s = d.getDateString(TRUE) + " " + QString::number(v);

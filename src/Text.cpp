@@ -39,6 +39,7 @@ Text::Text (Scaler *s, QPixmap *p, QString indicator, QString n, BarDate d, doub
   textFont = QApplication::font();
   
   menu->insertItem(tr("Edit Text"), this, SLOT(prefDialog()));
+  menu->insertItem(tr("Move Text"), this, SLOT(moveObject()));
   menu->insertItem(tr("Delete Text"), this, SLOT(remove()));
 }
 
