@@ -42,6 +42,7 @@
 #include "IndicatorTab.h"
 #include "NavigatorTab.h"
 #include "Quote.h"
+#include "IndicatorPage.h"
 
 #define DEFAULT_INDICATOR_HEIGHT 125
 
@@ -183,6 +184,7 @@ class QtstalkerApp : public QMainWindow
     BarData *recordList;
     QMultiLineEdit *infoLabel;
     QuoteDialog *quoteDialog;
+    IndicatorPage *ip;
 };
 
 #endif

@@ -21,6 +21,7 @@
 
 #include "IndicatorPage.h"
 #include "HelpWindow.h"
+#include "Config.h"
 #include "help.xpm"
 #include "ok.xpm"
 #include "disable.xpm"
@@ -137,6 +138,34 @@ void IndicatorPage::rightClick (QListBoxItem *)
   menu->exec(QCursor::pos());
 }
 
+void IndicatorPage::setStartStatus ()
+{
+  Config config;
+  QStringList l = QStringList::split(",", config.getData(Config::IndicatorPageStatus), FALSE);
+  int loop;
+  for (loop = 0; loop < (int) list->count(); loop++)
+  {
+    int i = l.findIndex(list->text(loop));
+    if (i > -1)
+    {
+      list->changeItem(disable, list->text(loop), loop);
+      Indicator *i = plot->getIndicator(list->text(loop));
+      i->setEnable(FALSE);
+    }
+  }
+}
 
+void IndicatorPage::saveStatus ()
+{
+  QStringList l;
+  int loop;
+  for (loop = 0; loop < (int) list->count(); loop++)
+  {
+    Indicator *i = plot->getIndicator(list->text(loop));
+    if (! i->getEnable())
+      l.append(list->text(loop));
+  }
 
-
+  Config config;
+  config.setData(Config::IndicatorPageStatus, l.join(","));
+}

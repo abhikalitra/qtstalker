@@ -248,10 +248,20 @@ QString Config::getData (Parm p)
     case LastQuotePlugin:
       s = settings.readEntry("/Qtstalker/LastQuotePlugin");
       break;
+    case IndicatorPageStatus:
+      s = settings.readEntry("/Qtstalker/IndicatorPageStatus");
+      break;
     default:
       break;
   }
 
+  return s;
+}
+
+QString Config::getData (QString p)
+{
+  QSettings settings;
+  QString s = settings.readEntry("/Qtstalker/" + p);
   return s;
 }
 
@@ -369,9 +379,18 @@ void Config::setData (Parm p, QString d)
     case LastQuotePlugin:
       settings.writeEntry("/Qtstalker/LastQuotePlugin", d);
       break;
+    case IndicatorPageStatus:
+      settings.writeEntry("/Qtstalker/IndicatorPageStatus", d);
+      break;
     default:
       break;
   }
+}
+
+void Config::setData (QString p, QString d)
+{
+  QSettings settings;
+  settings.writeEntry("/Qtstalker/" + p, d);
 }
 
 QStringList Config::getIndicators ()

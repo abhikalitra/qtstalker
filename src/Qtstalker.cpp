@@ -39,7 +39,6 @@
 #include "GroupPage.h"
 #include "PortfolioPage.h"
 #include "TestPage.h"
-#include "IndicatorPage.h"
 #include "PlotLine.h"
 #include "PrefDialog.h"
 #include "ScannerPage.h"
@@ -528,6 +527,9 @@ void QtstalkerApp::initToolBar()
 
 void QtstalkerApp::slotQuit()
 {
+  // save indicatorPage status
+  ip->saveStatus();
+  
   // save any chart data
   mainPlot->clear();
   
@@ -1437,9 +1439,10 @@ void QtstalkerApp::initTestNav ()
 
 void QtstalkerApp::initIndicatorNav ()
 {
-  IndicatorPage *ip = new IndicatorPage(baseWidget, mainPlot);
+  ip = new IndicatorPage(baseWidget, mainPlot);
   connect(this, SIGNAL(signalIndicatorPageRefresh()), ip, SLOT(refreshList()));
   navTab->addWidget(ip, 2);
+  ip->setStartStatus();
 }
 
 void QtstalkerApp::initScannerNav ()

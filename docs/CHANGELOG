@@ -58,7 +58,12 @@
 20041202: Applied feature request patch 1076502 - low band pass filter (LOWPASS).
           Thanks to Jim Nolan for the patch.
 	  
+20050104: The status of enabled/disabled indicators on the main chart are now saved between
+          sessions as per user request.
 	  
+20050105: Fixed bug that locks up app if during the creation of a trendline or fiboline,
+          the end point is before the start point.
+	  	  	  
 	  	  
 0.28
 ====

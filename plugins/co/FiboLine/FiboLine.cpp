@@ -394,6 +394,9 @@ void FiboLine::pointerMoving (QPoint point, BarDate x, double y)
 
 void FiboLine::drawMovingPointer (QPoint point)
 {
+  if (point.x() < mpx)
+    return;
+
   QPainter painter;
   painter.begin(buffer);
   painter.setRasterOp(Qt::XorROP);

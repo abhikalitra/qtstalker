@@ -42,6 +42,8 @@ class IndicatorPage : public QWidget
     void refreshList ();
     void slotHelp ();
     void rightClick (QListBoxItem *);
+    void setStartStatus ();
+    void saveStatus ();
 
   protected:
     QListBox *list;

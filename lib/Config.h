@@ -74,13 +74,15 @@ class Config
       X,
       Y,
       ScannerPath,
-      CandleColor //unused
+      IndicatorPageStatus
     };
 
     Config ();
     ~Config ();
     void setData(Parm, QString);
+    void setData(QString, QString);
     QString getData (Parm);
+    QString getData(QString);
     QStringList getDirList (QString);
     void setup ();
     QString parseDbPlugin (QString);

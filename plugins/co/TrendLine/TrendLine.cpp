@@ -22,11 +22,11 @@
 #include "TrendLine.h"
 #include "PrefDialog.h"
 #include "ChartDb.h"
+#include "Config.h"
 #include "../../../src/delete.xpm"
 #include "../../../src/edit.xpm"
 #include "../../../src/rename.xpm"
 #include <qpainter.h>
-#include <qsettings.h>
 #include <qcursor.h>
 
 TrendLine::TrendLine ()
@@ -372,6 +372,9 @@ void TrendLine::pointerMoving (QPoint point, BarDate x, double y)
 
 void TrendLine::drawMovingPointer (QPoint point)
 {
+  if (point.x() < mpx)
+    return;
+
   QPainter painter;
   painter.begin(buffer);
   painter.setRasterOp(Qt::XorROP);
@@ -424,44 +427,44 @@ void TrendLine::saveObjects (QString chartPath)
 
 void TrendLine::loadDefaults ()
 {
-  QSettings settings;
+  Config settings;
   
-  QString s = "/Qtstalker/DefaultTrendLineColor";
-  s = settings.readEntry(s);
+  QString s = "DefaultTrendLineColor";
+  s = settings.getData(s);
   if (s.length())
     defaultColor.setNamedColor(s);
 
-  s = "/Qtstalker/DefaultTrendLineBar";
-  s = settings.readEntry(s);
+  s = "DefaultTrendLineBar";
+  s = settings.getData(s);
   if (s.length())
     bar = s;
 
-  s = "/Qtstalker/DefaultTrendLineExtend";
-  s = settings.readEntry(s);
+  s = "DefaultTrendLineExtend";
+  s = settings.getData(s);
   if (s.length())
     extend = s.toInt();
 
-  s = "/Qtstalker/DefaultTrendLineUseBar";
-  s = settings.readEntry(s);
+  s = "DefaultTrendLineUseBar";
+  s = settings.getData(s);
   if (s.length())
     usebar = s.toInt();
 }
 
 void TrendLine::saveDefaults ()
 {
-  QSettings settings;
+  Config config;
   
-  QString s = "/Qtstalker/DefaultTrendLineColor";
-  settings.writeEntry(s, defaultColor.name());
+  QString s = "DefaultTrendLineColor";
+  config.setData(s, defaultColor.name());
 
-  s = "/Qtstalker/DefaultTrendLineBar";
-  settings.writeEntry(s, bar);
+  s = "DefaultTrendLineBar";
+  config.setData(s, bar);
 
-  s = "/Qtstalker/DefaultTrendLineExtend";
-  settings.writeEntry(s, QString::number(extend));
+  s = "DefaultTrendLineExtend";
+  config.setData(s, QString::number(extend));
 
-  s = "/Qtstalker/DefaultTrendLineUseBar";
-  settings.writeEntry(s, QString::number(usebar));
+  s = "DefaultTrendLineUseBar";
+  config.setData(s, QString::number(usebar));
 }
 
 void TrendLine::keyEvent (QKeyEvent *key)
