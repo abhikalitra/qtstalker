@@ -215,9 +215,6 @@ void SettingView::itemChanged (int row, int)
     case Setting::InputField:
       textChanged(row);
       break;
-    case Setting::Bool:
-      boolChanged(row);
-      break;
     default:
       break;
   }
@@ -248,15 +245,6 @@ void SettingView::floatChanged (int row)
 void SettingView::textChanged (int row)
 {
   settings->setData(list->text(row, 0), list->text(row, 1));
-}
-
-void SettingView::boolChanged (int row)
-{
-  QCheckTableItem *item = (QCheckTableItem *) list->item(row, 1);
-  if (item->isChecked())
-    settings->setData(list->text(row, 0), tr("True"));
-  else
-    settings->setData(list->text(row, 0), tr("False"));
 }
 
 void SettingView::fileDialog (int row)
@@ -334,17 +322,29 @@ void SettingView::clearRows ()
 void SettingView::updateSettings ()
 {
   int loop;
+  ColorItem *color;
+  QCheckTableItem *check;
+  QTableItem *item;
+
   for (loop = 0; loop < (int) list->numRows(); loop++)
   {
-    if (settings->getType(list->text(loop, 0)) == Setting::Color)
+    switch(settings->getType(list->text(loop, 0)))
     {
-      ColorItem *item = (ColorItem *) list->item(loop, 1);
-      settings->setData(list->text(loop, 0), item->getColor());
-    }
-    else
-    {
-      QTableItem *item = list->item(loop, 1);
-      settings->setData(list->text(loop, 0), item->text());
+      case Setting::Color:
+        color = (ColorItem *) list->item(loop, 1);
+        settings->setData(list->text(loop, 0), color->getColor());
+	break;
+      case Setting::Bool:
+        check = (QCheckTableItem *) list->item(loop, 1);
+          if (check->isChecked())
+          settings->setData(list->text(loop, 0), tr("True"));
+          else
+          settings->setData(list->text(loop, 0), tr("False"));
+         break;
+      default:
+        item = list->item(loop, 1);
+        settings->setData(list->text(loop, 0), item->text());
+	break;
     }
   }
 }

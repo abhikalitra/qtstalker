@@ -88,7 +88,6 @@ class SettingView : public QWidget
     void symbolDialog (int);
     void fontDialog (int);
     void textChanged (int);
-    void boolChanged (int);
     void clear ();
     void clearRows ();
     void updateSettings ();
