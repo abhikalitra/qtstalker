@@ -253,7 +253,6 @@ QString ENV::getCustomSettings ()
   s.append("," + maType);
   s.append("," + QString::number(period));
   s.append("," + QString::number(input));
-  s.append("," + QString::number(bandFlag));
   
   s.append("," + upperColor.name());
   s.append("," + QString::number(upperLineType));
@@ -279,20 +278,19 @@ void ENV::setCustomSettings (QString d)
   maType = (IndicatorPlugin::MAType) l[1].toInt();
   period = l[2].toInt();
   input = (BarData::InputType) l[3].toInt();
-  bandFlag = l[4].toInt();
   
-  upperColor.setNamedColor(l[5]);
-  upperLineType = (PlotLine::LineType) l[6].toInt();
-  upperLabel = l[7];
-  upperPercent = l[8].toDouble();
+  upperColor.setNamedColor(l[4]);
+  upperLineType = (PlotLine::LineType) l[5].toInt();
+  upperLabel = l[6];
+  upperPercent = l[7].toDouble();
 
-  lowerColor.setNamedColor(l[9]);
-  lowerLineType = (PlotLine::LineType) l[10].toInt();
-  lowerLabel = l[11];
-  lowerPercent = l[12].toDouble();
+  lowerColor.setNamedColor(l[8]);
+  lowerLineType = (PlotLine::LineType) l[9].toInt();
+  lowerLabel = l[10];
+  lowerPercent = l[11].toDouble();
   
-  customBand = l[13];
-  customInput = l[14];
+  customBand = l[12];
+  customInput = l[13];
   
 }
 

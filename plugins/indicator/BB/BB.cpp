@@ -194,7 +194,6 @@ QString BB::getCustomSettings ()
   s.append("," + maType);
   s.append("," + QString::number(period));
   s.append("," + QString::number(deviation));
-  s.append("," + QString::number(bandFlag));
   s.append("," + color.name());
   s.append("," + QString::number(lineType));
   s.append("," + customBand);
@@ -209,10 +208,9 @@ void BB::setCustomSettings (QString d)
   maType = (IndicatorPlugin::MAType) l[1].toInt();
   period = l[2].toInt();
   deviation = l[3].toDouble();
-  bandFlag = l[4].toInt();
-  color.setNamedColor(l[5]);
-  lineType = (PlotLine::LineType) l[6].toInt();
-  customBand = l[7];
+  color.setNamedColor(l[4]);
+  lineType = (PlotLine::LineType) l[5].toInt();
+  customBand = l[6];
 }
 
 Plugin * create ()
