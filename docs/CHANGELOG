@@ -11,6 +11,8 @@
 
 - added new MA support for WilderMA and fixed TR function to include first bar thanks to Glen for the patch
 
+- New quote plugin 'Ratio'. This is a composite that divides two symbols.
+
 0.15
 ======
 
