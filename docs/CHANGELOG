@@ -25,7 +25,7 @@
 
 - Made a major GUI change by adding a tabbed section on the left of the main screen. This area can be used to expand
   stuff in the future. I merged all the chart, group, portfolio and backtest dialogs onto the tabs. This allows quick and easy
-  access to all the major stuff without having bring up dialogs all the time. To navigate through a group, just use the mouse
+  access to all the major stuff without having to bring up dialogs all the time. To navigate through a group, just use the mouse
   or the keyboard arrow keys to move back and forth.
 
 - Added start and end date controls to the Yahoo plugin for more precise downloads. Hopefully this will solve some of the
@@ -34,6 +34,8 @@
 - Did some tuning to various classes for better speed and memory usage.
 
 - Added individual pixmaps for each type chart object for better id.
+
+- Updated the docs.
 
 0.17
 ====
