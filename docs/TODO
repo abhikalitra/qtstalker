@@ -18,7 +18,11 @@ To Do:
 - change Quote behaviour in yahoo plugin to create separate symbols for intraday and daily
   data. also put a timer on yahoo plugin for intraday tick downloads every X minutes. same limitations
   will apply as in the CSV timer
-  
+- discuss adding adjustment data along with close data from yahoo so that we can flip the chart
+  to use either data.
+- create a date range for loading charts, then step through bar by bar to simulate paper trading
+
+    
 
 Maybe some day:
 ===============

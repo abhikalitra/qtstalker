@@ -207,3 +207,8 @@ void Bar::setTickFlag (bool d)
   date.setTickFlag(d);
 }
 
+int Bar::count ()
+{
+  return data.count();
+}
+

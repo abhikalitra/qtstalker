@@ -30,7 +30,7 @@
 #include <qdir.h>
 #include <qprogressdialog.h>
 #include "Tester.h"
-#include "ChartDb.h"
+#include "DbPlugin.h"
 #include "IndicatorPlugin.h"
 #include "HelpWindow.h"
 
@@ -547,7 +547,7 @@ void Tester::test ()
   if (checkFormula(5))
     return;
 
-QProgressDialog prog(tr("Testing..."),
+  QProgressDialog prog(tr("Testing..."),
                        tr("Cancel"),
 		       bars->value(),
 		       this,
@@ -555,12 +555,19 @@ QProgressDialog prog(tr("Testing..."),
 		       TRUE);
   prog.show();
 
-  ChartDb *db = new ChartDb;
+  QString plugin = config.parseDbPlugin(symbolButton->getPath());
+  DbPlugin *db = config.getDbPlugin(plugin);
+  if (! db)
+  {
+    config.closePlugin(plugin);
+    return;
+  }
+  
   db->openChart(symbolButton->getPath());
   
   chartType = db->getHeaderField(DbPlugin::Type);
   if (! chartType.compare(tr("Futures")))
-    fd.setSymbol(db->getHeaderField(DbPlugin::FuturesType));
+    fd.setSymbol(db->getData("FuturesType"));
 
   tradeList->setNumRows(0);
 
@@ -581,25 +588,25 @@ QProgressDialog prog(tr("Testing..."),
 
   if (loadAlerts(0))
   {
-    delete db;
+    config.closePlugin(plugin);
     return;
   }
   
   if (loadAlerts(1))
   {
-    delete db;
+    config.closePlugin(plugin);
     return;
   }
   
   if (loadAlerts(2))
   {
-    delete db;
+    config.closePlugin(plugin);
     return;
   }
   
   if (loadAlerts(3))
   {
-    delete db;
+    config.closePlugin(plugin);
     return;
   }
 
@@ -607,13 +614,13 @@ QProgressDialog prog(tr("Testing..."),
   
   if (loadCustomLongStop())
   {
-    delete db;
+    config.closePlugin(plugin);
     return;
   }
   
   if (loadCustomShortStop())
   {
-    delete db;
+    config.closePlugin(plugin);
     return;
   }
 
@@ -723,7 +730,7 @@ QProgressDialog prog(tr("Testing..."),
 
   createEquityCurve();
   
-  delete db;
+  config.closePlugin(plugin);
 }
 
 void Tester::checkAlerts ()

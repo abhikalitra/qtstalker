@@ -13,6 +13,7 @@ TARGET = AD.0.30
 INCLUDEPATH += ../../../lib
 
 LIBS += -L../../../lib -lqtstalker
+LIBS += -ldb
 
 unix:linux-g++:LIBS += -ldl
 

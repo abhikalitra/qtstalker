@@ -66,6 +66,7 @@ ChartToolbar::ChartToolbar (QMainWindow *mw) : QToolBar (mw, "chartToolbar")
   QToolTip::add(barCount, tr("Total bars to load"));
   connect(barCount, SIGNAL(signalKeyPressed(int, int, int, int, QString)),
           this, SIGNAL(signalKeyPressed(int, int, int, int, QString)));
+  connect (barCount, SIGNAL(valueChanged(int)), this, SIGNAL(signalBarsChanged(int)));
 	  
   addSeparator();
 

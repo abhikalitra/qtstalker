@@ -63,6 +63,7 @@ class Bar
     double getMax ();
     bool getTickFlag ();
     void setTickFlag (bool);
+    int count ();
     
   protected:
     BarDate date;

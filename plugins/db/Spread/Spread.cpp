@@ -21,22 +21,20 @@
 
 #include "Spread.h"
 #include "PrefDialog.h"
-#include "ChartDb.h"
+#include "DbPlugin.h"
 #include "Config.h"
 #include "Bar.h"
+#include "BarData.h"
 #include <qdir.h>
 #include <qinputdialog.h>
 #include <qmessagebox.h>
 #include <qobject.h>
-#include <qtextstream.h>
-#include <qfile.h>
+
 
 Spread::Spread ()
 {
   data.setAutoDelete(TRUE);
   helpFile = "spread.html";
-  recordSize = sizeof(SpreadRecord);
-  memset(&record, 0, recordSize);
 }
 
 Spread::~Spread ()
@@ -62,26 +60,24 @@ void Spread::dbPrefDialog ()
   dialog->setCaption(QObject::tr("Spread Prefs"));
   dialog->createPage (QObject::tr("Details"));
   dialog->setHelpFile (helpFile);
-  dialog->addSymbolItem(QObject::tr("First Symbol"), QObject::tr("Details"), s, header->mvar1); // First Symbol
-  dialog->addSymbolItem(QObject::tr("Second Symbol"), QObject::tr("Details"), s, header->lvar1); // Second Symbol
-  dialog->addComboItem(QObject::tr("Method"), QObject::tr("Details"), l, header->svar1); // Method
-  dialog->addCheckItem(QObject::tr("Rebuild"), QObject::tr("Details"), header->bool1); // Rebuild
+  dialog->addSymbolItem(QObject::tr("First Symbol"), QObject::tr("Details"), s, getData("First Symbol")); // First Symbol
+  dialog->addSymbolItem(QObject::tr("Second Symbol"), QObject::tr("Details"), s, getData("Second Symbol")); // Second Symbol
+  dialog->addComboItem(QObject::tr("Method"), QObject::tr("Details"), l, getData("Method")); // Method
+  dialog->addCheckItem(QObject::tr("Rebuild"), QObject::tr("Details"), getData("Rebuild").toInt()); // Rebuild
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
     QString s = dialog->getSymbol(QObject::tr("First Symbol"));
     if (s.length())
-      strncpy(header->mvar1, s.ascii(), MSIZE);
+      setData("First Symbol", s);
       
     s = dialog->getSymbol(QObject::tr("Second Symbol"));
     if (s.length())
-      strncpy(header->lvar1, s.ascii(), MSIZE);
+      setData("Second Symbol", s);
       
-    strncpy(header->svar1, dialog->getCombo(QObject::tr("Method")), SSIZE);
-    header->bool1 = dialog->getCheck(QObject::tr("Rebuild"));
-
-    saveFlag = TRUE;
+    setData("Method", dialog->getCombo(QObject::tr("Method")));
+    setData("Rebuild", QString::number(dialog->getCheck(QObject::tr("Rebuild"))));
   }
   
   delete dialog;
@@ -92,15 +88,15 @@ void Spread::updateSpread ()
   data.clear();
   fdate = 99999999999999.0;
   
-  QString fs = header->mvar1;
+  QString fs = getData("First Symbol");
   if (! fs.length())
     return;
     
-  QString ss = header->lvar1;
+  QString ss = getData("Second Symbol");
   if (! ss.length())
     return;
   
-  QString meth = header->svar1;
+  QString meth = getData("Method");
 
   loadData(fs, meth);
 
@@ -137,18 +133,26 @@ void Spread::updateSpread ()
 
 void Spread::loadData (QString symbol, QString method)
 {
-  ChartDb *db = new ChartDb;
+  Config config;
+  QString plugin = config.parseDbPlugin(symbol);
+  DbPlugin *db = config.getDbPlugin(plugin);
+  if (! db)
+  {
+    config.closePlugin(plugin);
+    return;
+  }
+
   if (db->openChart(symbol))
   {
     qDebug("Spread::loadData: can't open db");
-    delete db;
+    config.closePlugin(plugin);
     return;
   }
   
   db->setBarCompression(BarData::DailyBar);
   db->setBarRange(99999999);
   
-  bool rebuild = header->bool1;
+  bool rebuild = getData("Rebuild").toInt();
   if (! rebuild)
   {
     Bar *bar = getLastBar();
@@ -189,10 +193,10 @@ void Spread::loadData (QString symbol, QString method)
     }
   }
 
-  delete db;
+  config.closePlugin(plugin);
 }
 
-QString Spread::createNew ()
+void Spread::createNew ()
 {
   bool ok = FALSE;
   QString spread = QInputDialog::getText(QObject::tr("New Spread"),
@@ -202,7 +206,7 @@ QString Spread::createNew ()
 					 &ok,
 					 0);
   if (! spread.length() || ok == FALSE)
-    return QString();
+    return;
 
   QDir dir;
   Config config;
@@ -214,7 +218,7 @@ QString Spread::createNew ()
       QMessageBox::information(0,
                                QObject::tr("Qtstalker: Error"),
 			       QObject::tr("Could not create ~/Qtstalker/data/Spread directory."));
-      return QString();
+      return;
     }
   }
   
@@ -224,128 +228,51 @@ QString Spread::createNew ()
     QMessageBox::information(0,
                              QObject::tr("Qtstalker: Error"),
 			     QObject::tr("This Spread already exists."));
-    return QString();
+    return;
   }
 
-  return s;  
-}
+  openChart(s);
 
-void Spread::saveDbDefaults (Setting *set)
-{
-  strncpy(header->symbol, set->getData("Symbol").ascii(), SSIZE);
-  strncpy(header->type, (char *) "Spread", SSIZE);
-  strncpy(header->title, set->getData("Title").ascii(), TITLESIZE);
-  header->barType = set->getData("BarType").toInt();
-  strncpy(header->plugin, (char *) "Spread", SSIZE);
-  saveFlag = TRUE;
-}
-
-void Spread::dump (QString d, bool f)
-{
-  QFile outFile(d);
-  if (! outFile.open(IO_WriteOnly))
-    return;
-  QTextStream outStream(&outFile);
+  setHeaderField(Symbol, spread);  
+  setHeaderField(Type, "Spread");  
+  setHeaderField(Title, spread);  
+  setHeaderField(BarType, QString::number(BarData::Daily));  
+  setHeaderField(Plugin, "Spread");  
   
-  if (! f)
-    dumpHeader(outStream);
-
-  fseek(db, sizeof(ChartHeader), SEEK_SET);
-  while (fread(&record, recordSize, 1, db))
-  {
-    if (! record.state)
-      continue;
-  
-    outStream << QString::number(record.date, 'f', 0) << ",";
-    outStream << QString::number(record.open, 'f', 4) << ",";
-    outStream << QString::number(record.high, 'f', 4) << ",";
-    outStream << QString::number(record.low, 'f', 4) << ",";
-    outStream << QString::number(record.close, 'f', 4) << "\n";
-  }  
-
-  outFile.close();
+  dbPrefDialog();
 }
 
-void Spread::deleteBar (QString d)
+Bar * Spread::getBar (QString k, QString d)
 {
-  if (! findRecord(d))
-    return;
-    
-  fseek(db, -recordSize, SEEK_CUR);
-  memset(&record, 0, recordSize);
-  record.date = d.toDouble();
-  fwrite(&record, recordSize, 1, db);
-}
-
-int Spread::readRecord ()
-{
-  return fread(&record, recordSize, 1, db);
-}
-
-int Spread::writeRecord ()
-{
-  return fwrite(&record, recordSize, 1, db);
-}
-
-bool Spread::getRecordState ()
-{
-  return record.state;
-}
-
-void Spread::fillBar (Bar *bar)
-{
-  bar->setDate(QString::number(record.date, 'f', 0));
-  bar->setOpen(record.open);
-  bar->setHigh(record.high);
-  bar->setLow(record.low);
-  bar->setClose(record.close);
-}
-
-double Spread::getRecordDate ()
-{
-  return record.date;
-}
-
-void Spread::fillRecord (Bar *bar)
-{
-  record.state = TRUE;
-  record.date = bar->getDate().getDateValue();
-  record.open = bar->getOpen();  
-  record.high = bar->getHigh();  
-  record.low = bar->getLow();
-  record.close = bar->getClose();  
-}
-
-void Spread::setRecordDate (double d)
-{
-  record.date = d;
-}
-
-void Spread::clearRecord ()
-{
-  memset(&record, 0, recordSize);
-}
-
-int Spread::writeTempRecord ()
-{
-  return fwrite(&record, recordSize, 1, tdb);
-}
-
-void Spread::setBarString (QString d)
-{
-  QStringList l = QStringList::split(",", d, FALSE);
-  if (l.count() < 5)
-    return;
-  
   Bar *bar = new Bar;
-  bar->setDate(l[0]);
-  bar->setOpen(l[1].toDouble());
-  bar->setHigh(l[2].toDouble());
-  bar->setLow(l[3].toDouble());
-  bar->setClose(l[4].toDouble());
-  
-  setBar(bar);
-  delete bar;
+  QStringList l = QStringList::split(",", d, FALSE);
+  bar->setDate(k);
+  bar->setOpen(l[0].toDouble());
+  bar->setHigh(l[1].toDouble());
+  bar->setLow(l[2].toDouble());
+  bar->setClose(l[3].toDouble());
+  return bar;
+}
+
+void Spread::setBar (Bar *bar)
+{
+  if (getHeaderField(BarType).toInt())
+  {
+    if (! bar->getTickFlag())
+      return;
+  }
+  else
+  {
+    if (bar->getTickFlag())
+      return;
+  }
+
+  QStringList l;
+  l.append(QString::number(bar->getOpen()));
+  l.append(QString::number(bar->getHigh()));
+  l.append(QString::number(bar->getLow()));
+  l.append(QString::number(bar->getClose()));
+  setData(bar->getDate().getDateTimeString(FALSE), l.join(","));
 }
 
 //********************************************************************

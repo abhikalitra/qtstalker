@@ -20,7 +20,7 @@
  */
 
 #include "SYMBOL.h"
-#include "ChartDb.h"
+#include "DbPlugin.h"
 #include <qdatetime.h>
 #include <qdict.h>
 #include "PrefDialog.h"
@@ -47,10 +47,18 @@ void SYMBOL::setDefaults ()
 
 void SYMBOL::calculate ()
 {
-  ChartDb *db = new ChartDb;
+  Config config;
+  QString plugin = config.parseDbPlugin(symbol);
+  DbPlugin *db = config.getDbPlugin(plugin);
+  if (! db)
+  {
+    config.closePlugin(plugin);
+    return;
+  }
+  
   if (db->openChart(symbol))
   {
-    delete db;
+    config.closePlugin(plugin);
     return;
   }
   
@@ -86,7 +94,7 @@ void SYMBOL::calculate ()
   }
 
   delete recordList;
-  delete db;
+  config.closePlugin(plugin);
 
   line->setColor(color);
   line->setType(lineType);

@@ -41,6 +41,7 @@ class ChartToolbar : public QToolBar
     void signalPixelspaceChanged (int);
     void signalSliderChanged (int);
     void signalKeyPressed (int, int, int, int, QString);
+    void signalBarsChanged (int);
     
   public:
   

@@ -35,8 +35,6 @@ class QtstalkerFormat : public QuotePlugin
     void cancelUpdate ();
     void loadSettings ();
     void saveSettings ();
-    void importDB ();
-    void importNative ();
     bool createDirectories (QString);
 
   public slots:
@@ -44,7 +42,6 @@ class QtstalkerFormat : public QuotePlugin
     
   private:
     QStringList list;
-    QString method;
     bool cancelFlag;
 };
 

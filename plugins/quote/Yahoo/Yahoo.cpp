@@ -21,7 +21,7 @@
 
 #include "Yahoo.h"
 #include "YahooDialog.h"
-#include "ChartDb.h"
+#include "DbPlugin.h"
 #include "Config.h"
 #include "Bar.h"
 #include <qfile.h>
@@ -137,11 +137,17 @@ void Yahoo::update ()
 	if (! dir.exists(s2))
 	  break;
 	  
-        ChartDb *plug = new ChartDb;
-        plug->setPlugin("Stocks");
+        Config config;
+        DbPlugin *plug = config.getDbPlugin("Stocks");
+        if (! plug)
+        {
+          config.closePlugin("Stocks");
+          break;
+        }
+	
         if (plug->openChart(s2))
         {
-          delete plug;
+          config.closePlugin("Stocks");
           break;
         }
 	
@@ -166,7 +172,7 @@ void Yahoo::update ()
 	if (bar->getDate().getDate() == edate.date())
 	{
 	  delete bar;
-	  delete plug;
+          config.closePlugin("Stocks");
 	  break;
 	}
 		
@@ -187,7 +193,7 @@ void Yahoo::update ()
         s.append("&g=d&q=q&y=0&x=.csv");
 	
 	delete bar;
-	delete plug;
+        config.closePlugin("Stocks");
 	break;
       }
       
@@ -335,26 +341,28 @@ void Yahoo::parseHistory ()
 
   Config config;
   s = config.getData(Config::DataPath) + "/Stocks/" + downloadList[index];
-  
-  ChartDb *plug = new ChartDb;
-  plug->setPlugin("Stocks");
+  DbPlugin *plug = config.getDbPlugin("Stocks");
+  if (! plug)
+  {
+    config.closePlugin("Stocks");
+    f.close();
+    return;
+  }
+
   if (plug->openChart(s))
   {
     emit statusLogMessage("Could not open db.");
     f.close();
-    delete plug;
+    config.closePlugin("Stocks");
     return;
   }
 
   s = plug->getHeaderField(DbPlugin::Symbol);
   if (! s.length())
   {
-    Setting *set = new Setting;
-    set->setData("BarType", QString::number(BarData::Daily));
-    set->setData("Symbol", downloadList[index]);
-    set->setData("Title", downloadList[index]);
-    plug->saveDbDefaults(set);
-    delete set;
+    plug->createNew();
+    plug->setHeaderField(DbPlugin::Symbol, downloadList[index]);
+    plug->setHeaderField(DbPlugin::Title, downloadList[index]);
   }
 
   while(stream.atEnd() == 0)
@@ -448,7 +456,7 @@ void Yahoo::parseHistory ()
   }
 
   f.close();
-  delete plug;
+  config.closePlugin("Stocks");
 }
 
 void Yahoo::parseQuote ()
@@ -471,25 +479,28 @@ void Yahoo::parseQuote ()
   Config config;  
   QString s = config.getData(Config::DataPath) + "/Stocks/" + downloadList[index];
   
-  ChartDb *plug = new ChartDb;
-  plug->setPlugin("Stocks");
+  DbPlugin *plug = config.getDbPlugin("Stocks");
+  if (! plug)
+  {
+    config.closePlugin("Stocks");
+    f.close();
+    return;
+  }
+  
   if (plug->openChart(s))
   {
     emit statusLogMessage("Could not open db.");
     f.close();
-    delete plug;
+    config.closePlugin("Stocks");
     return;
   }
   
   s = plug->getHeaderField(DbPlugin::Symbol);
   if (! s.length())
   {
-    Setting *set = new Setting;
-    set->setData("BarType", QString::number(BarData::Daily));
-    set->setData("Symbol", downloadList[index]);
-    set->setData("Title", downloadList[index]);
-    plug->saveDbDefaults(set);
-    delete set;
+    plug->createNew();
+    plug->setHeaderField(DbPlugin::Symbol, downloadList[index]);
+    plug->setHeaderField(DbPlugin::Title, downloadList[index]);
   }
   
   while(stream.atEnd() == 0)
@@ -569,7 +580,7 @@ void Yahoo::parseQuote ()
   }
 
   f.close();
-  delete plug;
+  config.closePlugin("Stocks");
 }
 
 QString Yahoo::parseDate (QString d)
@@ -840,21 +851,25 @@ void Yahoo::parseFundamental ()
   Config config;
   QString s = config.getData(Config::DataPath) + "/Stocks/" + downloadList[index];
   
-  ChartDb *plug = new ChartDb;
-  plug->setPlugin("Stocks");
+  DbPlugin *plug = config.getDbPlugin("Stocks");
+  if (! plug)
+  {
+    config.closePlugin("Stocks");
+    return;
+  }
+  
   if (plug->openChart(s))
   {
     emit statusLogMessage("Could not open db.");
-    delete plug;
+    config.closePlugin("Stocks");
     return;
   }
   
   s = plug->getHeaderField(DbPlugin::Symbol);
   if (! s.length())
   {
-    Setting *set = new Setting;
-    set->setData("BarType", QString::number(BarData::Daily));
-    set->setData("Symbol", downloadList[index]);
+    plug->createNew();
+    plug->setHeaderField(DbPlugin::Symbol, downloadList[index]);
     
     QString title = downloadList[index];
     int p = data.find("yfnc_leftnav1", 0, TRUE);
@@ -867,97 +882,21 @@ void Yahoo::parseFundamental ()
         if (p2 != -1)
           title = data.mid(p, p2 - p);
       }
-    }   
-    set->setData("Title", title);
+    }
     
-    plug->saveDbDefaults(set);
-    delete set;
+    plug->setHeaderField(DbPlugin::Title, title);
   }
 
   // include date of this update
   QDate dt = QDate::currentDate();
   fund.setData("updateDate", dt.toString("yyyy-MM-dd"));
   
-  // remove useless data
-  QStringList key = fund.getKeyList();
-  for (loop = 0; loop < (int) key.count(); loop++)
-  {
-    if (key[loop].contains("(ttm"))
-    {
-      QString d = fund.getData(key[loop]);
-      QString k = key[loop].left(key[loop].find("(ttm", 0, TRUE) - 1);
-      fund.remove(key[loop]);
-      fund.setData(k, d);
-      continue;
-    }
-  
-    if (key[loop].contains("(mrq"))
-    {
-      QString d = fund.getData(key[loop]);
-      QString k = key[loop].left(key[loop].find("(mrq", 0, TRUE) - 1);
-      fund.remove(key[loop]);
-      fund.setData(k, d);
-      continue;
-    }
-    
-    if (key[loop].contains("(lfy"))
-    {
-      QString d = fund.getData(key[loop]);
-      QString k = key[loop].left(key[loop].find("(lfy", 0, TRUE) - 1);
-      fund.remove(key[loop]);
-      fund.setData(k, d);
-      continue;
-    }
-
-    if (key[loop].contains("(new per"))
-    {
-      QString d = fund.getData(key[loop]);
-      QString k = key[loop].left(key[loop].find("(new per", 0, TRUE) - 1);
-      fund.remove(key[loop]);
-      fund.setData(k, d);
-      continue;
-    }
-    
-    if (key[loop].contains("(intra"))
-    {
-      QString d = fund.getData(key[loop]);
-      QString k = key[loop].left(key[loop].find("(intra", 0, TRUE) - 1);
-      fund.remove(key[loop]);
-      fund.setData(k, d);
-      continue;
-    }
-    
-    if (key[loop].contains("(5 yr"))
-    {
-      QString d = fund.getData(key[loop]);
-      QString k = key[loop].left(key[loop].find("(5 yr", 0, TRUE) - 1);
-      fund.remove(key[loop]);
-      fund.setData(k, d);
-      continue;
-    }
-    
-    if (key[loop].contains("Moving Average"))
-    {
-      fund.remove(key[loop]);
-      continue;
-    }
-  
-    if (key[loop].contains("Volume"))
-    {
-      fund.remove(key[loop]);
-      continue;
-    }
-    
-    if (key[loop].contains("52-Week"))
-      fund.remove(key[loop]);
-  }
-  
-  plug->setHeaderField(DbPlugin::Lvar1, fund.getString());
+  plug->setData("Fundamentals", fund.getString());
     
   s = "Updating " + downloadList[index];
   emit dataLogMessage(s);
   
-  delete plug;
+  config.closePlugin("Stocks");
 }
 
 //***********************************************************************

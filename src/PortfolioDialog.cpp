@@ -23,7 +23,7 @@
 #include "Setting.h"
 #include "FuturesData.h"
 #include "PrefDialog.h"
-#include "ChartDb.h"
+#include "DbPlugin.h"
 #include "HelpWindow.h"
 #include "newchart.xpm"
 #include "edit.xpm"
@@ -145,17 +145,24 @@ void PortfolioDialog::updatePortfolioItems ()
     if (! dir.exists(s, TRUE))
       continue;
 
-    ChartDb *plug = new ChartDb;
+    QString plugin = config.parseDbPlugin(s);
+    DbPlugin *plug = config.getDbPlugin(plugin);
+    if (! plug)
+    {
+      config.closePlugin(plugin);
+      continue;
+    }
+      
     plug->openChart(s);
     
     QString type = plug->getHeaderField(DbPlugin::Type);
-    QString futuresType = plug->getHeaderField(DbPlugin::FuturesType);
+    QString futuresType = plug->getData("FuturesType");
     Bar *bar = plug->getLastBar();
     
     if (! bar)
     {
       delete bar;
-      delete plug;
+      config.closePlugin(plugin);
       continue;
     }
     
@@ -176,7 +183,7 @@ void PortfolioDialog::updatePortfolioItems ()
     item->setText(6, QString::number(total));
     
     delete bar;
-    delete plug;
+    config.closePlugin(plugin);
   }
 }
 

@@ -26,10 +26,11 @@
 #include <qdir.h>
 #include <qhgroupbox.h>
 #include <qprogressdialog.h>
+#include <stdlib.h>
 #include "Scanner.h"
 #include "BarData.h"
 #include "SymbolDialog.h"
-#include "ChartDb.h"
+#include "DbPlugin.h"
 #include "IndicatorPlugin.h"
 #include "HelpWindow.h"
 
@@ -165,8 +166,15 @@ void Scanner::scan ()
     emit message(QString());
     if (prog.wasCancelled())
       break;
-  
-    ChartDb *db = new ChartDb;
+
+    QString plugin = config.parseDbPlugin(fileList[loop]);
+    DbPlugin *db = config.getDbPlugin(plugin);
+    if (! db)
+    {
+      config.closePlugin(plugin);
+      continue;
+    }
+        
     db->openChart(fileList[loop]);
 
     if (! period->currentText().compare(tr("Daily")))
@@ -191,7 +199,7 @@ void Scanner::scan ()
     if (! i->getLines())
     {
       delete recordList;
-      delete db;
+      config.closePlugin(plugin);
       continue;
     }
     
@@ -211,7 +219,7 @@ void Scanner::scan ()
     }
     
     delete recordList;
-    delete db;
+    config.closePlugin(plugin);
     
     emit message(QString());
   }

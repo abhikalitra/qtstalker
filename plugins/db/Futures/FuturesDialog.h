@@ -27,7 +27,7 @@
 #include <qtabdialog.h>
 #include <qlineedit.h>
 #include "Toolbar.h"
-#include "ChartDb.h"
+#include "DbPlugin.h"
 #include "Config.h"
 
 class FuturesDialog : public QTabDialog
@@ -35,7 +35,7 @@ class FuturesDialog : public QTabDialog
   Q_OBJECT
 
   public:
-    FuturesDialog (QString, QString);
+    FuturesDialog (QString, DbPlugin *);
     ~FuturesDialog ();
     void createDetailsPage ();
     void createDataPage ();
@@ -51,7 +51,7 @@ class FuturesDialog : public QTabDialog
 
   private:
     QDateTimeEdit *dateSearch;
-    ChartDb *db;
+    DbPlugin *db;
     Config config;
     QLineEdit *date;
     QLineEdit *title;

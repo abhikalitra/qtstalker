@@ -35,16 +35,14 @@
 #include <qpixmap.h>
 #include <qdir.h>
 
-FuturesDialog::FuturesDialog (QString d, QString p) : QTabDialog (0, "FuturesDialog", TRUE)
+FuturesDialog::FuturesDialog (QString p, DbPlugin *d) : QTabDialog (0, "FuturesDialog", TRUE)
 {
   helpFile = p;
+  db = d;
 
   saveRecordFlag = FALSE;
   ignoreSaveRecordFlag = FALSE;
   setCaption(tr("Qtstalker: Edit Futures"));
-  
-  db = new ChartDb;
-  db->openChart(d);
   
   createDetailsPage();
   createDataPage();
@@ -58,7 +56,6 @@ FuturesDialog::FuturesDialog (QString d, QString p) : QTabDialog (0, "FuturesDia
 
 FuturesDialog::~FuturesDialog ()
 {
-  delete db;
 }
 
 void FuturesDialog::createDetailsPage ()
@@ -92,14 +89,14 @@ void FuturesDialog::createDetailsPage ()
   label = new QLabel(tr("Futures Type"), w);
   grid->addWidget(label, 3, 0);
   
-  edit = new QLineEdit(db->getHeaderField(DbPlugin::FuturesType), w);
+  edit = new QLineEdit(db->getData("FuturesType"), w);
   edit->setReadOnly(TRUE);
   grid->addWidget(edit, 3, 1);
 
   label = new QLabel(tr("Futures Month"), w);
   grid->addWidget(label, 4, 0);
   
-  edit = new QLineEdit(db->getHeaderField(DbPlugin::FuturesMonth), w);
+  edit = new QLineEdit(db->getData("FuturesMonth"), w);
   edit->setReadOnly(TRUE);
   grid->addWidget(edit, 4, 1);
   

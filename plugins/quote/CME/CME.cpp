@@ -20,9 +20,10 @@
  */
 
 #include "CME.h"
-#include "ChartDb.h"
+#include "DbPlugin.h"
 #include "PrefDialog.h"
 #include "Bar.h"
+#include "Config.h"
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qnetwork.h>
@@ -982,29 +983,31 @@ void CME::parse (Setting *data)
   s = tr("Updating ") + data->getData("Symbol");
   emit statusLogMessage(s);
 
-  ChartDb *db = new ChartDb;
-  db->setPlugin("Futures");
+  Config config;
+  DbPlugin *db = config.getDbPlugin("Futures");
+  if (! db)
+  {
+    config.closePlugin("Futures");
+    return;
+  }
   s = path;
   s.append("/");
   s.append(data->getData("Symbol"));
   if (db->openChart(s))
   {
     emit statusLogMessage("Could not open db.");
-    delete db;
+    config.closePlugin("Futures");
     return;
   }
   
   s = db->getHeaderField(DbPlugin::Symbol);
   if (! s.length())
   {
-    Setting *set = new Setting;
-    set->setData("BarType", QString::number(BarData::Daily));
-    set->setData("Symbol", data->getData("Symbol"));
-    set->setData("Title", fd.getName());
-    set->setData("FuturesType", fd.getSymbol());
-    set->setData("FuturesMonth", data->getData("Month"));
-    db->saveDbDefaults(set);
-    delete set;
+    db->createNew();
+    db->setHeaderField(DbPlugin::Symbol, data->getData("Symbol"));
+    db->setHeaderField(DbPlugin::Title, fd.getName());
+    db->setData("FuturesType", fd.getSymbol());
+    db->setData("FuturesMonth", data->getData("Month"));
   }
   
   Bar *bar = new Bar;
@@ -1012,6 +1015,7 @@ void CME::parse (Setting *data)
   {
     emit statusLogMessage("Bad date " + data->getData("Date"));
     delete bar;
+    config.closePlugin("Futures");
     return;
   }
   bar->setOpen(open.toDouble());
@@ -1023,7 +1027,7 @@ void CME::parse (Setting *data)
   db->setBar(bar);
   delete bar;
 	     
-  delete db;
+  config.closePlugin("Futures");
 
 //  emit dataLogMessage(data->getData("Symbol"));
 }

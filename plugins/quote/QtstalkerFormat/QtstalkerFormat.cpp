@@ -20,7 +20,7 @@
  */
 
 #include "QtstalkerFormat.h"
-#include "ChartDb.h"
+#include "DbPlugin.h"
 #include "PrefDialog.h"
 #include "Config.h"
 #include <qfile.h>
@@ -34,7 +34,6 @@ QtstalkerFormat::QtstalkerFormat ()
 {
   pluginName = "QtstalkerFormat";
   helpFile = "qtstalker.html";
-  method = "Qtstalker";
   cancelFlag = FALSE;
   
   loadSettings();
@@ -50,14 +49,6 @@ void QtstalkerFormat::update ()
 }
 
 void QtstalkerFormat::parse ()
-{
-  if (! method.compare("DB"))
-    importDB();
-  else
-    importNative();
-}
-
-void QtstalkerFormat::importDB ()
 {
   int loop;
   for (loop = 0; loop < (int) list.count(); loop++)
@@ -106,11 +97,19 @@ void QtstalkerFormat::importDB ()
     QDir dir;
     dir.remove(path, TRUE);
     
-    ChartDb *db = new ChartDb;
+    Config config;
+    QString plugin = config.parseDbPlugin(path);
+    DbPlugin *db = config.getDbPlugin(plugin);
+    if (! db)
+    {
+      config.closePlugin(plugin);
+      continue;
+    }
+    
     if (db->openChart(path))
     {
       emit statusLogMessage("Could not open db. Skipping file.");
-      delete db;
+      config.closePlugin(plugin);
       f.close();
       continue;
     }
@@ -147,14 +146,17 @@ void QtstalkerFormat::importDB ()
 	  bool ok;
 	  key.toDouble(&ok);
 	  if (ok)
-	  {
-	    QString s2 = key + "," + s;
-	    db->setBarString(s2);
-	  }
+	    db->setData(key, s);
 	  break;
 	}
       
-        if (! key.compare("Plugin"))
+        if (! key.compare("BarType"))
+	{
+	  db->setHeaderField(DbPlugin::BarType, s);
+	  break;
+	}
+        
+	if (! key.compare("Plugin"))
 	{
 	  db->setHeaderField(DbPlugin::Plugin, s);
 	  break;
@@ -180,13 +182,13 @@ void QtstalkerFormat::importDB ()
 	
         if (! key.compare("FuturesType"))
 	{
-	  db->setHeaderField(DbPlugin::FuturesType, s);
+	  db->setData(key, s);
 	  break;
 	}
         
         if (! key.compare("FuturesMonth"))
 	{
-	  db->setHeaderField(DbPlugin::FuturesMonth, s);
+	  db->setData(key, s);
 	  break;
 	}
 	
@@ -206,92 +208,7 @@ void QtstalkerFormat::importDB ()
       db->setHeaderField(DbPlugin::CO, co.join(","));
       
     f.close();
-    delete db;
-    
-    if (cancelFlag)
-    {
-      cancelFlag = FALSE;
-      emit done();
-      emit statusLogMessage("Canceled");
-      return;
-    }
-  }
-
-  emit done();
-  emit statusLogMessage(tr("Done"));
-}
-
-void QtstalkerFormat::importNative ()
-{
-  int loop;
-  for (loop = 0; loop < (int) list.count(); loop++)
-  {
-    QFile f(list[loop]);
-    if (! f.open(IO_ReadOnly))
-      continue;
-    QTextStream stream(&f);
-
-    Setting *set = new Setting;
-    QString s;
-    while(stream.atEnd() == 0)
-    {
-      s = stream.readLine();
-      s = s.stripWhiteSpace();
-      if (! s.length())
-        continue;
-      
-      if (! s.contains("="))
-        break;
-	
-      QStringList l = QStringList::split("=", s, FALSE);
-      QString s2 = s;
-      s2 = s2.remove(0, l[0].length() + 1);
-      set->setData(l[0], s2);
-    }
-      
-    if (createDirectories(set->getData("Path")))
-    {
-      f.close();
-      emit statusLogMessage("CreateDirectories failed. Skipping file.");
-      delete set;
-      continue;
-    }
-    
-    // delete the db if it exists
-    QDir dir;
-    dir.remove(set->getData("Path"), TRUE);
-    
-    ChartDb *db = new ChartDb;
-    db->setPlugin(set->getData("Plugin"));
-    if (db->openChart(set->getData("Path")))
-    {
-      emit statusLogMessage("Could not open db. Skipping file.");
-      delete db;
-      delete set;
-      f.close();
-      continue;
-    }
-    
-    db->setHeader(set);
-    db->setBarString(s); // left over from the header loading above
-    
-    s = tr("Updating ");
-    s.append(set->getData("Symbol"));
-    emit statusLogMessage(s);
-    
-    while(stream.atEnd() == 0)
-    {
-      s = stream.readLine();
-      s = s.stripWhiteSpace();
-      if (! s.length())
-        continue;
-
-      db->setBarString(s);
-    }
-
-    f.close();
-    delete db;
-    delete set;
+    config.closePlugin(plugin);
     
     if (cancelFlag)
     {
@@ -339,11 +256,6 @@ void QtstalkerFormat::prefDialog (QWidget *w)
   dialog->createPage (tr("Details"));
   dialog->setHelpFile(helpFile);
   
-  QStringList l;
-  l.append("DB");
-  l.append("Qtstalker");
-  dialog->addComboItem(tr("Method"), tr("Details"), l, method);
-
   Config config;  
   QString s = config.getData(Config::Home) + "/export";
   dialog->addFileItem(tr("File Input"), tr("Details"), list, s);
@@ -353,8 +265,6 @@ void QtstalkerFormat::prefDialog (QWidget *w)
   if (rc == QDialog::Accepted)
   {
     list = dialog->getFile(tr("File Input"));
-    method = dialog->getCombo(tr("Method"));
-    saveFlag = TRUE;
   }
   
   delete dialog;
@@ -362,25 +272,23 @@ void QtstalkerFormat::prefDialog (QWidget *w)
 
 void QtstalkerFormat::loadSettings ()
 {
+/*
   QSettings settings;
   settings.beginGroup("/Qtstalker/QtstalkerFormat plugin");
-
-  method = settings.readEntry("/Method", "Qtstalker");
-  
   settings.endGroup();
+*/  
 }
 
 void QtstalkerFormat::saveSettings ()
 {
+/*
   if (! saveFlag)
     return;
 
   QSettings settings;
   settings.beginGroup("/Qtstalker/QtstalkerFormat plugin");
-  
-  settings.writeEntry("/Method", method);
-  
   settings.endGroup();
+*/  
 }
 
 void QtstalkerFormat::cancelUpdate ()

@@ -34,9 +34,9 @@
 #include "ChartPage.h"
 #include "PlotLine.h"
 #include "PrefDialog.h"
-#include "ChartDb.h"
 #include "HelpWindow.h"
 #include "MacroKey.h"
+#include "DbPlugin.h"
 
 #include "qtstalker.xpm"
 
@@ -232,6 +232,7 @@ void QtstalkerApp::initToolBar()
   connect(toolbar2, SIGNAL(signalChartTypeChanged(int)), this, SLOT(slotChartTypeChanged(int)));
   connect(toolbar2, SIGNAL(signalPixelspaceChanged(int)), this, SLOT(slotPixelspaceChanged(int)));
   connect(this, SIGNAL(signalSetKeyFlag(bool)), toolbar2, SLOT(setKeyFlag(bool)));
+  connect(toolbar2, SIGNAL(signalBarsChanged(int)), this, SLOT(slotChartUpdated()));
 }
 
 void QtstalkerApp::slotQuit()
@@ -428,14 +429,22 @@ void QtstalkerApp::loadChart (QString d)
     
   // make sure we change db's after Plot saves previous db edits
   emit signalChartPath(chartPath);
+
+  QString plugin = config.parseDbPlugin(chartPath);
+  DbPlugin *plug = config.getDbPlugin(plugin);
+  if (! plug)
+  {
+    config.closePlugin(plugin);
+    return;
+  }
   
-  ChartDb *plug = new ChartDb;
   if (plug->openChart(chartPath))
   {
     qDebug("QtstalkerApp::loadChart: can't open db");
-    delete plug;
+    config.closePlugin(plugin);
     return;
   }
+  
   plug->setBarCompression((BarData::BarCompression) toolbar2->getCompressionInt());
   plug->setBarRange(toolbar2->getBars());
   
@@ -496,7 +505,8 @@ void QtstalkerApp::loadChart (QString d)
         plot->addChartObject(co);
     }
   }
-  delete plug;
+  
+  config.closePlugin(plugin);
 
   // update the pixelspace
   toolbar2->setMinPixelspace(mainPlot->getMinPixelspace());
@@ -856,7 +866,15 @@ void QtstalkerApp::slotDeleteIndicator (QString text)
   
   if (! mainFlag)
   {
-    ChartDb *db = new ChartDb;
+    QString plugin = config.parseDbPlugin(chartPath);
+    DbPlugin *db = config.getDbPlugin(plugin);
+    if (! db)
+    {
+      config.closePlugin(plugin);
+      delete set;
+      return;
+    }
+  
     db->openChart(chartPath);
     QPtrList<Setting> l = db->getChartObjects ();
     QPtrListIterator<Setting> it(l);
@@ -866,7 +884,8 @@ void QtstalkerApp::slotDeleteIndicator (QString text)
       if (! co->getData("Plot").compare(text))
         db->deleteChartObject(co->getData("Name"));
     }
-    delete db;
+    
+    config.closePlugin(plugin);
   }
 
   if (! mainFlag)

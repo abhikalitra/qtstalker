@@ -21,7 +21,8 @@
 
 #include "SellArrow.h"
 #include "PrefDialog.h"
-#include "ChartDb.h"
+#include "DbPlugin.h"
+#include "Config.h"
 #include "../../../src/delete.xpm"
 #include "../../../src/edit.xpm"
 #include "../../../src/rename.xpm"
@@ -239,7 +240,15 @@ void SellArrow::saveObjects (QString chartPath)
   if (! chartPath.length())
     return;
 
-  ChartDb *db =  new ChartDb;
+  Config config;
+  QString plugin = config.parseDbPlugin(chartPath);
+  DbPlugin *db = config.getDbPlugin(plugin);
+  if (! db)
+  {
+    config.closePlugin(plugin);
+    return;
+  }
+  
   db->openChart(chartPath);
 
   QDictIterator<SellArrowObject> it(objects);
@@ -261,7 +270,7 @@ void SellArrow::saveObjects (QString chartPath)
     }
   }
   
-  delete db;
+  config.closePlugin(plugin);
 }
 
 void SellArrow::loadDefaults ()

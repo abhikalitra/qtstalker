@@ -20,7 +20,7 @@
  */
 
 #include "QuotePlugin.h"
-#include "ChartDb.h"
+#include "DbPlugin.h"
 #include <qstring.h>
 #include <mysql.h>
 
@@ -44,7 +44,7 @@ class MySQLPlugin : public QuotePlugin
     void retrieveSettings();
     void storeSettings();
     void updateSymbol(QString);
-    void doQuery (QString, ChartDb&);
+    void doQuery (QString, DbPlugin *);
     bool openDatabase();
     void closeDatabase();
 

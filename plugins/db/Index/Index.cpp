@@ -22,21 +22,19 @@
 #include "Index.h"
 #include "IndexDialog.h"
 #include "Config.h"
-#include "ChartDb.h"
+#include "DbPlugin.h"
 #include "Bar.h"
+#include "BarData.h"
 #include <qdir.h>
 #include <qinputdialog.h>
 #include <qmessagebox.h>
 #include <qobject.h>
-#include <qtextstream.h>
-#include <qfile.h>
+
 
 Index::Index ()
 {
   data.setAutoDelete(TRUE);
   helpFile = "indexes.html";
-  recordSize = sizeof(IndexRecord);
-  memset(&record, 0, recordSize);
 }
 
 Index::~Index ()
@@ -52,28 +50,17 @@ BarData * Index::getHistory ()
 void Index::dbPrefDialog ()
 {
   IndexDialog *dialog = new IndexDialog(helpFile);
-  dialog->setList(header->lvar1);
-  dialog->setRebuild(header->bool1);
-  dialog->setName(header->symbol);
+  dialog->setList(getData("Index"));
+  dialog->setRebuild(getData("Rebuild").toInt());
+  dialog->setName(getData("Symbol"));
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
     QString s = dialog->getList();
-    if (s.length() < LSIZE)
-      strncpy(header->lvar1, s.ascii(), LSIZE);
-    else
-    {
-      QMessageBox::warning(0,
-                           QObject::tr("Qtstalker: Error"),
-			   QObject::tr("Too many Index items. Out of strorage room.\nRemove item(s) and try again."));
-      delete dialog;
-      return;		
-    }
-    
-    header->bool1 = dialog->getRebuild();
-    
-    saveFlag = TRUE;
+    if (s.length())
+      setData("Index", s);
+    setData("Rebuild", QString::number(dialog->getRebuild()));
   }
   
   delete dialog;
@@ -84,7 +71,7 @@ void Index::updateIndex ()
   data.clear();
   fdate = 99999999999999.0;
   
-  QStringList l = QStringList::split(":", header->lvar1, FALSE);
+  QStringList l = QStringList::split(":", getData("Index"), FALSE);
   if (! l.count())
     return;
     
@@ -140,18 +127,26 @@ void Index::updateIndex ()
 
 void Index::loadData (QString symbol, float weight)
 {
-  ChartDb *db = new ChartDb;
+  Config config;
+  QString plugin = config.parseDbPlugin(symbol);
+  DbPlugin *db = config.getDbPlugin(plugin);
+  if (! db)
+  {
+    config.closePlugin(plugin);
+    return;
+  }
+
   if (db->openChart(symbol))
   {
     qDebug("Index::loadData: can't open db");
-    delete db;
+    config.closePlugin(plugin);
     return;
   }
   
   db->setBarCompression(BarData::DailyBar);
   db->setBarRange(99999999);
   
-  bool rebuild = header->bool1;
+  bool rebuild = getData("Rebuild").toInt();
   if (! rebuild)
   {
     Bar *bar = getLastBar();
@@ -164,7 +159,7 @@ void Index::loadData (QString symbol, float weight)
   }
 
   BarData *recordList = db->getHistory();
-
+  
   int loop;
   for (loop = 0; loop < (int) recordList->count(); loop++)
   {
@@ -193,10 +188,10 @@ void Index::loadData (QString symbol, float weight)
     }
   }
 
-  delete db;
+  config.closePlugin(plugin);
 }
 
-QString Index::createNew ()
+void Index::createNew ()
 {
   bool ok = FALSE;
   QString index = QInputDialog::getText(QObject::tr("New Index"),
@@ -206,7 +201,7 @@ QString Index::createNew ()
 					&ok,
 					0);
   if (! index.length() || ok == FALSE)
-    return QString();
+    return;
 
   QDir dir;
   Config config;
@@ -218,7 +213,7 @@ QString Index::createNew ()
       QMessageBox::information(0,
                                QObject::tr("Qtstalker: Error"),
 			       QObject::tr("Could not create ~/Qtstalker/data/Index directory."));
-      return QString();
+      return;
     }
   }
   
@@ -228,128 +223,51 @@ QString Index::createNew ()
     QMessageBox::information(0,
                              QObject::tr("Qtstalker: Error"),
 			     QObject::tr("This Index already exists."));
-    return QString();
+    return;
   }
   
-  return s;
-}
+  openChart(s);
 
-void Index::saveDbDefaults (Setting *set)
-{
-  strncpy(header->symbol, set->getData("Symbol").ascii(), SSIZE);
-  strncpy(header->type, (char *) "Index", SSIZE);
-  strncpy(header->title, set->getData("Title").ascii(), TITLESIZE);
-  header->barType = set->getData("BarType").toInt();
-  strncpy(header->plugin, (char *) "Index", SSIZE);
-  saveFlag = TRUE;
-}
-
-void Index::dump (QString d, bool f)
-{
-  QFile outFile(d);
-  if (! outFile.open(IO_WriteOnly))
-    return;
-  QTextStream outStream(&outFile);
+  setHeaderField(Symbol, index);  
+  setHeaderField(Type, "Index");  
+  setHeaderField(Title, index);  
+  setHeaderField(BarType, QString::number(BarData::Daily));  
+  setHeaderField(Plugin, "Index");  
   
-  if (! f)
-    dumpHeader(outStream);
-
-  fseek(db, sizeof(ChartHeader), SEEK_SET);
-  while (fread(&record, recordSize, 1, db))
-  {
-    if (! record.state)
-      continue;
-  
-    outStream << QString::number(record.date, 'f', 0) << ",";
-    outStream << QString::number(record.open, 'f', 4) << ",";
-    outStream << QString::number(record.high, 'f', 4) << ",";
-    outStream << QString::number(record.low, 'f', 4) << ",";
-    outStream << QString::number(record.close, 'f', 4) << "\n";
-  }  
-
-  outFile.close();
+  dbPrefDialog();
 }
 
-void Index::deleteBar (QString d)
+Bar * Index::getBar (QString k, QString d)
 {
-  if (! findRecord(d))
-    return;
-    
-  fseek(db, -recordSize, SEEK_CUR);
-  memset(&record, 0, recordSize);
-  record.date = d.toDouble();
-  fwrite(&record, recordSize, 1, db);
-}
-
-int Index::readRecord ()
-{
-  return fread(&record, recordSize, 1, db);
-}
-
-int Index::writeRecord ()
-{
-  return fwrite(&record, recordSize, 1, db);
-}
-
-bool Index::getRecordState ()
-{
-  return record.state;
-}
-
-void Index::fillBar (Bar *bar)
-{
-  bar->setDate(QString::number(record.date, 'f', 0));
-  bar->setOpen(record.open);
-  bar->setHigh(record.high);
-  bar->setLow(record.low);
-  bar->setClose(record.close);
-}
-
-double Index::getRecordDate ()
-{
-  return record.date;
-}
-
-void Index::fillRecord (Bar *bar)
-{
-  record.state = TRUE;
-  record.date = bar->getDate().getDateValue();
-  record.open = bar->getOpen();  
-  record.high = bar->getHigh();  
-  record.low = bar->getLow();
-  record.close = bar->getClose();  
-}
-
-void Index::setRecordDate (double d)
-{
-  record.date = d;
-}
-
-void Index::clearRecord ()
-{
-  memset(&record, 0, recordSize);
-}
-
-int Index::writeTempRecord ()
-{
-  return fwrite(&record, recordSize, 1, tdb);
-}
-
-void Index::setBarString (QString d)
-{
-  QStringList l = QStringList::split(",", d, FALSE);
-  if (l.count() < 5)
-    return;
-  
   Bar *bar = new Bar;
-  bar->setDate(l[0]);
-  bar->setOpen(l[1].toDouble());
-  bar->setHigh(l[2].toDouble());
-  bar->setLow(l[3].toDouble());
-  bar->setClose(l[4].toDouble());
-  
-  setBar(bar);
-  delete bar;
+  QStringList l = QStringList::split(",", d, FALSE);
+  bar->setDate(k);
+  bar->setOpen(l[0].toDouble());
+  bar->setHigh(l[1].toDouble());
+  bar->setLow(l[2].toDouble());
+  bar->setClose(l[3].toDouble());
+  return bar;
+}
+
+void Index::setBar (Bar *bar)
+{
+  if (getHeaderField(BarType).toInt())
+  {
+    if (! bar->getTickFlag())
+      return;
+  }
+  else
+  {
+    if (bar->getTickFlag())
+      return;
+  }
+
+  QStringList l;
+  l.append(QString::number(bar->getOpen()));
+  l.append(QString::number(bar->getHigh()));
+  l.append(QString::number(bar->getLow()));
+  l.append(QString::number(bar->getClose()));
+  setData(bar->getDate().getDateTimeString(FALSE), l.join(","));
 }
 
 //********************************************************************

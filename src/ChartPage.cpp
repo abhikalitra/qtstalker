@@ -22,7 +22,7 @@
 #include "ChartPage.h"
 #include "Setting.h"
 #include "SymbolDialog.h"
-#include "ChartDb.h"
+#include "DbPlugin.h"
 #include "HelpWindow.h"
 #include "edit.xpm"
 #include "delete.xpm"
@@ -141,9 +141,18 @@ void ChartPage::editChart ()
   if (! symbol.length())
     return;
 
-  ChartDb *db = new ChartDb;
-  db->dbPrefDialog(symbol);
-  delete db;
+  QString plugin = config.parseDbPlugin(symbol);
+  DbPlugin *db = config.getDbPlugin(plugin);
+  if (! db)
+  {
+    config.closePlugin(plugin);
+    return;
+  }
+
+  db->openChart(symbol);    
+  db->dbPrefDialog();
+  
+  config.closePlugin(plugin);
 }
 
 void ChartPage::exportSymbol ()
@@ -216,7 +225,14 @@ void ChartPage::dumpSymbol ()
 
 void ChartPage::exportChart (QString path, bool f)
 {
-  ChartDb *db = new ChartDb;
+  QString plugin = config.parseDbPlugin(path);
+  DbPlugin *db = config.getDbPlugin(plugin);
+  if (! db)
+  {
+    config.closePlugin(plugin);
+    return;
+  }
+
   db->openChart(path);
 
   QString s = config.getData(Config::Home);
@@ -233,13 +249,12 @@ void ChartPage::exportChart (QString path, bool f)
 
   db->dump(s, f);
 
-  delete db;
+  config.closePlugin(plugin);
 }
 
 void ChartPage::chartSelected (QString)
 {
   menu->setItemEnabled(menu->idAt(1), TRUE);
-//  emit fileSelected(d);
 }
 
 void ChartPage::chartOpened (QString d)
@@ -270,11 +285,19 @@ void ChartPage::searchChanged (const QString &d)
 void ChartPage::newChart (int id)
 {
   QString dbPlugin = newMenu->text(id);
+  dbPlugin.remove(dbPlugin.find("&", 0, TRUE), 1);
 
-  ChartDb *db = new ChartDb;
-  db->setPlugin(dbPlugin);
-  db->createNew(dbPlugin);
-  delete db;
+  DbPlugin *db = config.getDbPlugin(dbPlugin);
+  if (! db)
+  {
+    config.closePlugin(dbPlugin);
+    return;
+  }
+  
+  db->createNew();
+  
+  config.closePlugin(dbPlugin);
+  
   refreshList();
 }
 

@@ -20,9 +20,10 @@
  */
 
 #include "COT.h"
-#include "ChartDb.h"
+#include "DbPlugin.h"
 #include "PrefDialog.h"
 #include "Bar.h"
+#include "Config.h"
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qnetwork.h>
@@ -295,10 +296,16 @@ void COT::saveData (Setting *set)
     return;
   }
 
+  Config config;
+  DbPlugin *db = config.getDbPlugin("Futures");
+  if (! db)
+  {
+    config.closePlugin("Futures");
+    return;
+  }
+  
   s.append("/");
   s.append(set->getData("Symbol"));
-  ChartDb *db = new ChartDb();
-  db->setPlugin("Futures");
   db->openChart(s);
 
   s = tr("Updating ");
@@ -308,14 +315,12 @@ void COT::saveData (Setting *set)
   s = db->getHeaderField(DbPlugin::Symbol);
   if (! s.length())
   {
-    Setting *set2 = new Setting;
-    set2->setData("BarType", QString::number(BarData::Daily));
-    set2->setData("Symbol", set->getData("Symbol"));
-    set2->setData("Title", set->getData("Title"));
-    set2->setData("FuturesType", set->getData("Symbol"));
-    set2->setData("FuturesMonth", "Z");
-    db->saveDbDefaults(set2);
-    delete set2;
+    db->createNew();
+    db->setHeaderField(DbPlugin::BarType, QString::number(BarData::Daily));
+    db->setHeaderField(DbPlugin::Symbol, set->getData("Symbol"));
+    db->setHeaderField(DbPlugin::Title, set->getData("Title"));
+    db->setData("FuturesType", set->getData("Symbol"));
+    db->setData("FuturesMonth", "Z");
   }
 
   Bar *bar = new Bar;
@@ -323,7 +328,7 @@ void COT::saveData (Setting *set)
   {
     emit statusLogMessage("Bad date " + set->getData("Date"));
     delete bar;
-    delete db;
+    config.closePlugin("Futures");
     return;
   }
   bar->setOpen(set->getFloat("Non Commercial"));
@@ -338,7 +343,7 @@ void COT::saveData (Setting *set)
   emit dataLogMessage(s);
   
   delete bar;
-  delete db;
+  config.closePlugin("Futures");
 }
 
 QString COT::getSymbol (QString dat)

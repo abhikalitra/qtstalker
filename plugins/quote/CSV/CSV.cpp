@@ -22,6 +22,8 @@
 #include "CSV.h"
 #include "CSVDialog.h"
 #include "Bar.h"
+#include "Config.h"
+
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qtimer.h>
@@ -142,7 +144,7 @@ void CSV::parse ()
       tickFlag = TRUE;
   }
 
-      
+  Config config;      
   int loop;
   for (loop = 0; loop < (int) list.count(); loop++)
   {
@@ -374,7 +376,7 @@ void CSV::parse ()
         db->setBar(bar);
 	emit dataLogMessage(r->getData("Symbol") + " " + r->getString());
         emit statusLogMessage("Updating " + r->getData("Symbol"));
-        delete db;
+	config.closePlugin(db->getHeaderField(DbPlugin::Plugin));
 	db = 0;
       }
       else
@@ -391,7 +393,7 @@ void CSV::parse ()
 
     if (db)
     {
-      delete db;
+      config.closePlugin(db->getHeaderField(DbPlugin::Plugin));
       db = 0;
     }
     f.close();
@@ -588,12 +590,18 @@ QDate CSV::getDate (QString k, QString d, Setting *r)
 
 bool CSV::openDb (QString path, QString symbol, QString type, bool tickFlag)
 {
-  db = new ChartDb;
-  db->setPlugin(type);
+  Config config;
+  db = config.getDbPlugin(type);
+  if (! db)
+  {
+    config.closePlugin(type);
+    return TRUE;
+  }
+
   if (db->openChart(path))
   {
-    emit statusLogMessage("Could not open db.");
-    delete db;
+    emit statusLogMessage("CSV::OpenDb:Could not open db.");
+    config.closePlugin(type);
     db = 0;
     return TRUE;
   }
@@ -601,20 +609,18 @@ bool CSV::openDb (QString path, QString symbol, QString type, bool tickFlag)
   QString s = db->getHeaderField(DbPlugin::Symbol);
   if (! s.length())
   {
-    Setting *set = new Setting;
-    set->setData("BarType", QString::number(tickFlag));
-    set->setData("Symbol", symbol);
-    set->setData("Title", symbol);
+    db->createNew();
+    
+    db->setHeaderField(DbPlugin::Symbol, symbol);
+    db->setHeaderField(DbPlugin::Title, symbol);
+    db->setHeaderField(DbPlugin::BarType, QString::number(tickFlag));
     
     if (! type.compare("Futures"))
     {
-      set->setData("Title", fd.getName());
-      set->setData("FuturesType", fd.getSymbol());
-      set->setData("FuturesMonth", futuresMonth);
+      db->setHeaderField(DbPlugin::Title, fd.getName());
+      db->setData("FuturesType", fd.getSymbol());
+      db->setData("FuturesMonth", futuresMonth);
     }
-    
-    db->saveDbDefaults(set);
-    delete set;
   }
   
   return FALSE;

@@ -22,7 +22,6 @@
 #include "MySQLPlugin.h"
 #include "PrefDialog.h"
 #include "Setting.h"
-#include "ChartDb.h"
 #include "Config.h"
 #include "Bar.h"
 #include <qdir.h>
@@ -31,6 +30,7 @@
 #include <qsettings.h>
 #include <qmessagebox.h>
 #include <qstringlist.h>
+
 
 /**
  * constructor
@@ -169,30 +169,35 @@ void MySQLPlugin::updateSymbol(QString symbol)
   // create the new chart
   Config config;
   QString chartpath = config.getData(Config::DataPath) + "/Stocks/" + symbol;
-  ChartDb db;
-  db.setPlugin("Stocks");
-  if (db.openChart(chartpath))
+  
+  QString plugin = config.parseDbPlugin(chartpath);
+  DbPlugin *db = config.getDbPlugin(plugin);
+  if (! db)
   {
-    emit statusLogMessage("Qtstalker::MySQL::updateSymbol:Could not open db.");
+    config.closePlugin(plugin);
     return;
   }
   
-  QString s = db.getHeaderField(DbPlugin::Symbol);
+  if (db->openChart(chartpath))
+  {
+    emit statusLogMessage("Qtstalker::MySQL::updateSymbol:Could not open db.");
+    config.closePlugin(plugin);
+    return;
+  }
+  
+  QString s = db->getHeaderField(DbPlugin::Symbol);
   if (! s.length())
   {
-    Setting *set = new Setting;
-    set->setData("BarType", QString::number(BarData::Daily));
-    set->setData("Symbol", symbol);
-    set->setData("Title", symbol);
-    db.saveDbDefaults(set);
-    delete set;
+    db->createNew();
+    db->setHeaderField(DbPlugin::Symbol, symbol);
+    db->setHeaderField(DbPlugin::Title, symbol);
   }
 
   QDate lastdate;
 
   if (incremental == TRUE) 
   {
-    Bar *bar = db.getLastBar();
+    Bar *bar = db->getLastBar();
     if (bar)
     {
       lastdate = bar->getDate().getDate();
@@ -208,6 +213,8 @@ void MySQLPlugin::updateSymbol(QString symbol)
   sql.replace("$LASTDAY$", lastdate.toString(Qt::ISODate));
 
   doQuery(sql, db);
+  
+  config.closePlugin(plugin);
 }
 
 /**
@@ -248,7 +255,7 @@ void MySQLPlugin::closeDatabase()
  * 
  * Perform sql query and store results in Qtstalker db
  */
-void MySQLPlugin::doQuery (QString sql, ChartDb &db)
+void MySQLPlugin::doQuery (QString sql, DbPlugin *db)
 {
   MYSQL_RES *res;
  
@@ -290,7 +297,7 @@ void MySQLPlugin::doQuery (QString sql, ChartDb &db)
       bar->setClose(close.toDouble());
       bar->setVolume(volume.toDouble());
       bar->setOI(oi.toInt());
-      db.setBar(bar);
+      db->setBar(bar);
       delete bar;
       
 //      emit dataLogMessage(db.getDetail(ChartDb::Symbol) + " " + bar->getString());

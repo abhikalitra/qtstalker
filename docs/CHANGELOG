@@ -122,7 +122,13 @@
 	  only downside to this is the scaled plot will not match the Y axis of the other
 	  unscaled plots.
 	  
+20050224: It seems that my sharks swam amok and pointed their fricken lasers at each other and
+          self destructed. In other words, the home grown DB functions were a failure. Had to bite
+	  the bullet and port back to Berkeley DB 4. Oh well...I'm going to have several drinks now....
+	  This means that CVS users will have to install Berkeley DB 4.* and convert all their data
+	  to using the new format.
 	  
+20050224: Removed the ENV and PC indicators. Can easily be reproduced by a CUS formula.
 	  
 	  
 	  	  

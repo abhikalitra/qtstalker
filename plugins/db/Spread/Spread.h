@@ -24,21 +24,8 @@
 
 #include "DbPlugin.h"
 #include "Bar.h"
-#include "Setting.h"
 #include <qstring.h>
 #include <qdict.h>
-
-typedef struct
-{
-  bool state;
-  double date;
-  float open;
-  float high;
-  float low;
-  float close;
-
-} SpreadRecord;
-
 
 class Spread : public DbPlugin
 {
@@ -48,25 +35,13 @@ class Spread : public DbPlugin
     BarData * getHistory ();
     void updateSpread ();
     void loadData (QString, QString);
-    QString createNew ();
+    void createNew ();
     void dbPrefDialog ();
-    void saveDbDefaults (Setting *);
-    void dump (QString, bool);
-    void deleteBar (QString);
-    int readRecord ();
-    int writeRecord ();
-    bool getRecordState ();
-    void fillBar (Bar *);
-    double getRecordDate ();
-    void fillRecord (Bar *);
-    void clearRecord ();
-    void setRecordDate (double);
-    int writeTempRecord ();
-    void setBarString (QString);
+    void setBar (Bar *);
+    Bar *getBar (QString, QString);
     
   private:
     QDict<Bar> data;
-    SpreadRecord record;
     double fdate;
 };
 

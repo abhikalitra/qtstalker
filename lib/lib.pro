@@ -11,7 +11,6 @@ HEADERS += DbPlugin.h
 HEADERS += Setting.h
 HEADERS += FuturesData.h
 HEADERS += PlotLine.h
-HEADERS += ChartDb.h
 HEADERS += BarData.h
 HEADERS += Scaler.h
 HEADERS += PrefDialog.h
@@ -43,7 +42,6 @@ SOURCES += DbPlugin.cpp
 SOURCES += Setting.cpp
 SOURCES += FuturesData.cpp
 SOURCES += PlotLine.cpp
-SOURCES += ChartDb.cpp
 SOURCES += BarData.cpp
 SOURCES += Scaler.cpp
 SOURCES += PrefDialog.cpp
@@ -71,6 +69,8 @@ SOURCES += Macro.cpp
     
 TARGET = qtstalker
 VERSION = 0.30.0
+
+LIBS += -ldb
      
 # linux options
 unix:linux-g++:LIBS += -ldl

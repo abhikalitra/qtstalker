@@ -21,7 +21,7 @@
 
 #include "QuotePlugin.h"
 #include "FuturesData.h"
-#include "ChartDb.h"
+#include "DbPlugin.h"
 #include "Setting.h"
 #include <qdatetime.h>
 #include <qtimer.h>
@@ -53,7 +53,7 @@ class CSV : public QuotePlugin
     bool dateFlag;
     QDateTime sdate;
     QDateTime edate;
-    ChartDb *db;
+    DbPlugin *db;
     QStringList list;
     QString symbolOveride;
     QString ruleName;

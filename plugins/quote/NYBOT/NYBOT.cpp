@@ -20,10 +20,11 @@
  */
 
 #include "NYBOT.h"
-#include "ChartDb.h"
+#include "DbPlugin.h"
 #include "PrefDialog.h"
 #include "Setting.h"
 #include "Bar.h"
+#include "Config.h"
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qtimer.h>
@@ -299,30 +300,33 @@ void NYBOT::parse ()
         continue;
       }
       
-      ChartDb *db = new ChartDb;
-      db->setPlugin("Futures");
+      Config config;
+      DbPlugin *db = config.getDbPlugin("Futures");
+      if (! db)
+      {
+        config.closePlugin("Futures");
+	delete bar;
+        continue;
+      }
       s = path;
       s.append("/");
       s.append(symbol);
       if (db->openChart(s))
       {
         emit statusLogMessage("Could not open db.");
-        delete db;
+        config.closePlugin("Futures");
+	delete bar;
         return;
       }
 
       s = db->getHeaderField(DbPlugin::Symbol);
       if (! s.length())
       {
-        Setting *set = new Setting;
-        set->setData("BarType", QString::number(BarData::Daily));
-        set->setData("Symbol", symbol);
-        set->setData("Title", fd->getName());
-        set->setData("FuturesType", fd->getSymbol());
-        set->setData("FuturesMonth", month);
-        db->saveDbDefaults(set);
-	delete set;
-      
+        db->createNew();
+        db->setHeaderField(DbPlugin::Symbol, symbol);
+        db->setHeaderField(DbPlugin::Title, fd->getName());
+        db->setData("FuturesType", fd->getSymbol());
+        db->setData("FuturesMonth", month);
       }
       
       bar->setOpen(open.toDouble());
@@ -335,7 +339,7 @@ void NYBOT::parse ()
       delete bar;
 		 
 //      emit dataLogMessage(symbol);
-      delete db;
+      config.closePlugin("Futures");
     }
 
     f.close();

@@ -20,7 +20,7 @@
  */
 
 #include "Plot.h"
-#include "ChartDb.h"
+#include "DbPlugin.h"
 #include <qpainter.h>
 #include <qpen.h>
 #include <qpoint.h>
@@ -1732,10 +1732,17 @@ void Plot::slotNewChartObject (int id)
   }
   
   QStringList l;
-  ChartDb *db = new ChartDb;
+  QString plugin = config.parseDbPlugin(chartPath);
+  DbPlugin *db = config.getDbPlugin(plugin);
+  if (! db)
+  {
+    config.closePlugin(plugin);
+    return;
+  }
+  
   db->openChart(chartPath);
   l = db->getChartObjectsList();
-  delete db;
+  config.closePlugin(plugin);
   
   int loop = 0;
   QString name;
@@ -1846,8 +1853,15 @@ void Plot::slotDeleteAllChartObjects ()
   QDir dir;
   if (! dir.exists(chartPath))
     return;
-    
-  ChartDb *db = new ChartDb;
+
+  QString plugin = config.parseDbPlugin(chartPath);
+  DbPlugin *db = config.getDbPlugin(plugin);
+  if (! db)
+  {
+    config.closePlugin(plugin);
+    return;
+  }
+        
   db->openChart(chartPath);
   
   QStringList l = db->getChartObjectsList();
@@ -1855,7 +1869,8 @@ void Plot::slotDeleteAllChartObjects ()
   int loop;  
   for (loop = 0; loop < (int) l.count(); loop++)
     db->deleteChartObject(l[loop]);
-  delete db;
+    
+  config.closePlugin(plugin);
   
   QDictIterator<COPlugin> it(coPlugins);
   for (; it.current(); ++it)

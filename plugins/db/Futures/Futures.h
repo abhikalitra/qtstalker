@@ -24,22 +24,7 @@
 
 #include "DbPlugin.h"
 #include "Bar.h"
-#include "Setting.h"
 #include <qstring.h>
-
-typedef struct
-{
-  bool state;
-  double date;
-  float open;
-  float high;
-  float low;
-  float close;
-  double volume;
-  unsigned int oi;
-
-} FuturesRecord;
-
 
 class Futures : public DbPlugin
 {
@@ -47,23 +32,13 @@ class Futures : public DbPlugin
     Futures ();
     ~Futures ();
     void dbPrefDialog ();
-    void saveDbDefaults (Setting *);
-    void dump (QString, bool);
-    void deleteBar (QString);
-    int readRecord ();
-    int writeRecord ();
-    bool getRecordState ();
-    void fillBar (Bar *);
-    double getRecordDate ();
-    void fillRecord (Bar *);
-    void clearRecord ();
-    void setRecordDate (double);
-    int writeTempRecord ();
-    void setBarString (QString);
+    void setBar (Bar *);
+    Bar *getBar (QString, QString);
+    void createNew ();
     
   private:
-    FuturesRecord record;
 };
+
 
 extern "C"
 {

@@ -21,7 +21,7 @@
 
 #include "TrendLine.h"
 #include "PrefDialog.h"
-#include "ChartDb.h"
+#include "DbPlugin.h"
 #include "Config.h"
 #include "../../../src/delete.xpm"
 #include "../../../src/edit.xpm"
@@ -405,7 +405,15 @@ void TrendLine::saveObjects (QString chartPath)
   if (! chartPath.length())
     return;
 
-  ChartDb *db =  new ChartDb;
+  Config config;
+  QString plugin = config.parseDbPlugin(chartPath);
+  DbPlugin *db = config.getDbPlugin(plugin);
+  if (! db)
+  {
+    config.closePlugin(plugin);
+    return;
+  }
+  
   db->openChart(chartPath);
 
   QDictIterator<TrendLineObject> it(objects);
@@ -427,7 +435,7 @@ void TrendLine::saveObjects (QString chartPath)
     }
   }
   
-  delete db;
+  config.closePlugin(plugin);
 }
 
 void TrendLine::loadDefaults ()

@@ -35,16 +35,14 @@
 #include <qpixmap.h>
 #include <qdir.h>
 
-StocksDialog::StocksDialog (QString d, QString p) : QTabDialog (0, "StocksDialog", TRUE)
+StocksDialog::StocksDialog (QString p, DbPlugin *d) : QTabDialog (0, "StocksDialog", TRUE)
 {
   helpFile = p;
+  db = d;
 
   saveRecordFlag = FALSE;
   ignoreSaveRecordFlag = FALSE;
   setCaption(tr("Qtstalker: Edit Stock"));
-  
-  db = new ChartDb;
-  db->openChart(d);
   
   createDetailsPage();
   createDataPage();
@@ -59,7 +57,6 @@ StocksDialog::StocksDialog (QString d, QString p) : QTabDialog (0, "StocksDialog
 
 StocksDialog::~StocksDialog ()
 {
-  delete db;
 }
 
 void StocksDialog::createDetailsPage ()
@@ -100,7 +97,7 @@ void StocksDialog::createDetailsPage ()
   // fundamentals section
     
   Setting fund;
-  fund.parse(db->getHeaderField(DbPlugin::Lvar1));
+  fund.parse(db->getData("Fundamentals"));
   QString s = tr("Fundamentals: last updated ");
   s.append(fund.getData("updateDate"));
   fund.remove("updateDate");
