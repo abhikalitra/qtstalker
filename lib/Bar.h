@@ -46,6 +46,7 @@ class Bar
     void setOI (int);
     int getOI ();
     QString getString ();
+    double getAverage();
     
   protected:
     BarDate date;

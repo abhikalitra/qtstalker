@@ -38,6 +38,7 @@
 #include <qslider.h>
 #include <qtable.h>
 #include <qtoolbutton.h>
+#include <qcombobox.h>
 #include "Config.h"
 #include "Indicator.h"
 #include "Setting.h"
@@ -73,6 +74,7 @@ class Tester : public QTabDialog
     void checkAlerts ();
     void createSummary ();
     void getVolume ();
+    double getPrice (int);
 
   public slots:
     void editIndicator ();
@@ -123,6 +125,7 @@ class Tester : public QTabDialog
     QSpinBox *account;
     QSpinBox *volumePercent;
     QSpinBox *margin;
+    QSpinBox *delay;
     QDateEdit *startDate;
     QDateEdit *endDate;
     QDoubleValidator *validator;
@@ -131,6 +134,7 @@ class Tester : public QTabDialog
     QToolButton *addIndicatorButton;
     QToolButton *editIndicatorButton;
     QToolButton *deleteIndicatorButton;
+    QComboBox *priceField;
 
     int status;
     int testLoop;
@@ -145,7 +149,8 @@ class Tester : public QTabDialog
     int exitLongCount;
     int enterShortCount;
     int exitShortCount;
-    int volume;
+    double volume;
+    QStringList fieldList;
 
     QLabel *summaryNetProfit;
     QLabel *summaryNetPercentage;

@@ -133,3 +133,8 @@ QString Bar::getString ()
   return s;
 }
 
+double Bar::getAverage ()
+{
+  return ((open + high + low + close) / 4);
+}
+

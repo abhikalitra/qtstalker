@@ -54,6 +54,10 @@ Tester::Tester (Config *c, QString n) : QTabDialog (0, 0, TRUE)
   exitLongAlerts.setAutoDelete(TRUE);
   enterShortAlerts.setAutoDelete(TRUE);
   exitShortAlerts.setAutoDelete(TRUE);
+  
+  fieldList.append(tr("Open"));
+  fieldList.append(tr("Close"));
+  fieldList.append(tr("Average"));
 
   setCaption ("Back Tester");
 
@@ -268,12 +272,17 @@ void Tester::createTestPage ()
   tradeShort = new QCheckBox(tr("Short"), gbox);
   gbox->addSpace(0);
 
+  QLabel *label = new QLabel(tr("Delay"), gbox);
+    
+  delay = new QSpinBox(0, 999999, 1, gbox);
+  delay->setValue(0);
+
   gbox = new QVGroupBox(tr("Date Range"), w);
   gbox->setInsideSpacing(2);
   gbox->setColumns(2);
   grid->addWidget(gbox, 0, 1);
 
-  QLabel *label = new QLabel(tr("Start Date"), gbox);
+  label = new QLabel(tr("Start Date"), gbox);
 
   startDate = new QDateEdit(QDate::currentDate(), gbox);
   startDate->setOrder(QDateEdit::YMD);
@@ -293,12 +302,12 @@ void Tester::createTestPage ()
   label = new QLabel(tr("Entry Commission"), gbox);
 
   entryCom = new QSpinBox(0, 999999, 1, gbox);
-  entryCom->setValue(25);
+  entryCom->setValue(10);
 
   label = new QLabel(tr("Exit Commission"), gbox);
 
   exitCom = new QSpinBox(0, 999999, 1, gbox);
-  exitCom->setValue(25);
+  exitCom->setValue(10);
 
   label = new QLabel(tr("Account Balance"), gbox);
 
@@ -324,6 +333,14 @@ void Tester::createTestPage ()
   label = new QLabel(tr("Account %"), gbox);
 
   volumePercent = new QSpinBox(0, 100, 1, gbox);
+  
+  gbox = new QVGroupBox(tr("Entry/Exit Price"), w);
+  gbox->setInsideSpacing(2);
+  gbox->setColumns(2);
+  grid->addWidget(gbox, 2, 1);
+
+  priceField = new QComboBox(gbox);
+  priceField->insertStringList(fieldList,-1);
 
   testButton = new QPushButton(tr("Perform Test"), w);
   connect(testButton, SIGNAL(clicked()), this, SLOT(test()));
@@ -351,8 +368,8 @@ void Tester::createReportPage ()
   header->setLabel(3, tr("Exit"), 70);
   header->setLabel(4, tr("Exit Price"), 70);
   header->setLabel(5, tr("Signal"), 100);
-  header->setLabel(6, tr("Profit"), 70);
-  header->setLabel(7, tr("Account"), 70);
+  header->setLabel(6, tr("Profit"), 90);
+  header->setLabel(7, tr("Account"), 90);
   header->setLabel(8, tr("Volume"), 50);
   vbox->addWidget(tradeList);
   
@@ -842,7 +859,7 @@ void Tester::enterLong ()
 
   status = 1;
   buyRecord = currentRecord;
-  trailingHigh = recordList->getClose(buyRecord);
+  trailingHigh = getPrice(buyRecord);
   equity = equity - entryCom->value();
   getVolume();
 
@@ -863,7 +880,7 @@ void Tester::enterShort ()
 
   status = -1;
   buyRecord = currentRecord;
-  trailingLow = recordList->getClose(buyRecord);
+  trailingLow = getPrice(buyRecord);
   equity = equity - entryCom->value();
   getVolume();
 
@@ -879,8 +896,8 @@ void Tester::exitShort ()
 
 void Tester::exitPosition (QString signal)
 {
-  double enterPrice = recordList->getClose(buyRecord);
-  double exitPrice = recordList->getClose(currentRecord);
+  double enterPrice = getPrice(buyRecord);
+  double exitPrice = getPrice(currentRecord);
   double profit = 0;
   QString type;
 
@@ -911,9 +928,9 @@ void Tester::exitPosition (QString signal)
   tradeList->setNumRows(tradeList->numRows() + 1);
   tradeList->setText(tradeList->numRows() - 1, 0, type);
   tradeList->setText(tradeList->numRows() - 1, 1, recordList->getDate(buyRecord).getDateString(FALSE));
-  tradeList->setText(tradeList->numRows() - 1, 2, QString::number(recordList->getClose(buyRecord)));
+  tradeList->setText(tradeList->numRows() - 1, 2, QString::number(enterPrice));
   tradeList->setText(tradeList->numRows() - 1, 3, recordList->getDate(currentRecord).getDateString(FALSE));
-  tradeList->setText(tradeList->numRows() - 1, 4, QString::number(recordList->getClose(currentRecord)));
+  tradeList->setText(tradeList->numRows() - 1, 4, QString::number(exitPrice));
   tradeList->setText(tradeList->numRows() - 1, 5, signal);
   tradeList->setText(tradeList->numRows() - 1, 6, QString::number(profit));
   tradeList->setText(tradeList->numRows() - 1, 7, QString::number(equity));
@@ -925,9 +942,12 @@ bool Tester::maximumLoss ()
   if (! maximumLossCheck->isChecked())
     return FALSE;
 
+  double enterPrice = getPrice(buyRecord);
+  double exitPrice = getPrice(currentRecord);
+    
   if ((status == 1) && (maximumLossLong->isChecked()))
   {
-    double t = ((recordList->getClose(currentRecord) - recordList->getClose(buyRecord)) / recordList->getClose(buyRecord)) * 100;
+    double t = ((exitPrice - enterPrice) / enterPrice) * 100;
     if (t < 0)
     {
       t = -t;
@@ -943,7 +963,7 @@ bool Tester::maximumLoss ()
 
   if ((status == -1) && (maximumLossShort->isChecked()))
   {
-    double t = ((recordList->getClose(buyRecord) - recordList->getClose(currentRecord)) / recordList->getClose(buyRecord)) * 100;
+    double t = ((enterPrice - exitPrice) / enterPrice) * 100;
     if (t < 0)
     {
       t = -t;
@@ -965,9 +985,12 @@ bool Tester::profit ()
   if (! profitCheck->isChecked())
     return FALSE;
 
+  double enterPrice = getPrice(buyRecord);
+  double exitPrice = getPrice(currentRecord);
+    
   if ((status == 1) && (profitLong->isChecked()))
   {
-    double t = ((recordList->getClose(currentRecord) - recordList->getClose(buyRecord)) / recordList->getClose(buyRecord)) * 100;
+    double t = ((exitPrice - enterPrice) / enterPrice) * 100;
     if (t > 0)
     {
       if (t >= profitEdit->text().toDouble())
@@ -982,7 +1005,7 @@ bool Tester::profit ()
 
   if ((status == -1) && (profitShort->isChecked()))
   {
-    double t = ((recordList->getClose(buyRecord) - recordList->getClose(currentRecord)) / recordList->getClose(buyRecord)) * 100;
+    double t = ((enterPrice - exitPrice) / enterPrice) * 100;
     if (t > 0)
     {
       if (t >= profitEdit->text().toDouble())
@@ -1003,12 +1026,14 @@ bool Tester::trailing ()
   if (! trailingCheck->isChecked())
     return FALSE;
 
+  double exitPrice = getPrice(currentRecord);
+    
   if ((status == 1) && (trailingLong->isChecked()))
   {
-    if (recordList->getClose(currentRecord) > trailingHigh)
-      trailingHigh = recordList->getClose(currentRecord);
+    if (exitPrice > trailingHigh)
+      trailingHigh = exitPrice;
 
-    double t = ((recordList->getClose(currentRecord) - trailingHigh) / trailingHigh) * 100;
+    double t = ((exitPrice - trailingHigh) / trailingHigh) * 100;
     if (t < 0)
     {
       t = -t;
@@ -1024,10 +1049,10 @@ bool Tester::trailing ()
 
   if ((status == -1) && (trailingShort->isChecked()))
   {
-    if (recordList->getClose(currentRecord) < trailingLow)
-      trailingLow = recordList->getClose(currentRecord);
+    if (exitPrice < trailingLow)
+      trailingLow = exitPrice;
 
-    double t = ((trailingLow - recordList->getClose(currentRecord)) / trailingLow) * 100;
+    double t = ((trailingLow - exitPrice) / trailingLow) * 100;
     if (t < 0)
     {
       t = -t;
@@ -1336,7 +1361,7 @@ void Tester::saveRule ()
     stream << "Enter Short=" + i->getName() + "," + i->getType() + "," + i->getFile() << "\n";
   }
   
-  QDictIterator<Indicator> it4(enterLongIndicators);
+  QDictIterator<Indicator> it4(exitShortIndicators);
   for (; it4.current(); ++it4)
   {
     Indicator *i = it4.current();
@@ -1412,6 +1437,26 @@ void Tester::saveRule ()
   s.append(trailingEdit->text());
   stream << s << "\n";
 
+  s = "Volume Percent=";
+  s.append(volumePercent->text());
+  stream << s << "\n";
+  
+  s = "Entry Com=";
+  s.append(entryCom->text());
+  stream << s << "\n";
+  
+  s = "Exit Com=";
+  s.append(exitCom->text());
+  stream << s << "\n";
+  
+  s = "Delay=";
+  s.append(delay->text());
+  stream << s << "\n";
+  
+  s = "Price Field=";
+  s.append(priceField->currentText());
+  stream << s << "\n";
+  
   f.close();
 }
 
@@ -1562,7 +1607,40 @@ void Tester::loadRule ()
     }
 
     if (! l2[0].compare("Trailing Edit"))
+    {
       trailingEdit->setText(l2[1]);
+      continue;
+    }
+    
+    if (! l2[0].compare("Volume Percent"))
+    {
+      volumePercent->setValue(l2[1].toInt());
+      continue;
+    }
+  
+    if (! l2[0].compare("Entry Com"))
+    {
+      entryCom->setValue(l2[1].toInt());
+      continue;
+    }
+  
+    if (! l2[0].compare("Exit Com"))
+    {
+      exitCom->setValue(l2[1].toInt());
+      continue;
+    }
+    
+    if (! l2[0].compare("Delay"))
+    {
+      delay->setValue(l2[1].toInt());
+      continue;
+    }
+  
+    if (! l2[0].compare("Price Field"))
+    {
+      priceField->setCurrentText(l2[1]);
+      continue;
+    }
   }
   
   f.close();
@@ -1690,10 +1768,27 @@ void Tester::getVolume ()
   if (margin->value())
     volume = (int) (balance / margin->value());
   else
-    volume = (int) (balance / recordList->getClose(buyRecord));
+    volume = (int) (balance / getPrice(buyRecord));
 
   if (volume < 1)
     volume = 1;
+}
+
+double Tester::getPrice (int i)
+{
+  double price = 0;
+  
+  if (! priceField->currentText().compare(tr("Open")))
+    price = recordList->getOpen(i);
+  else
+  {
+    if (! priceField->currentText().compare(tr("Close")))
+      price = recordList->getClose(i);
+    else
+      price = recordList->getAverage(i);
+  }
+  
+  return price;
 }
 
 
