@@ -657,7 +657,6 @@ void QtstalkerApp::compressionChanged ()
 {
   // the compression has changed
   
-//  config.setData(Config::Compression, QString::number(toolbar2->getCompressionInt()));
   emit signalInterval((BarData::BarCompression) toolbar2->getCompressionInt());
 }
 
@@ -669,13 +668,10 @@ void QtstalkerApp::slotChartTypeChanged (int)
   if (mainPlot->setChartType(s))
     return;
 
-//  config.setData(Config::ChartStyle, toolbar2->getChartType());
-
   emit signalPixelspace(mainPlot->getPixelspace());
 
   toolbar2->setPixelspace(mainPlot->getMinPixelspace(), mainPlot->getPixelspace());
   
-//  setSliderStart(toolbar2->getPixelspace(), FALSE);
   setSliderStart(toolbar2->getPixelspace(), TRUE);
   
   emit signalIndex(toolbar2->getSlider());
@@ -692,52 +688,30 @@ void QtstalkerApp::slotChartTypeChanged (int)
   tabs->drawCurrent();
 }
 
-void QtstalkerApp::slotNewIndicator (Setting *set)
+void QtstalkerApp::slotNewIndicator (Indicator *i)
 {
   // add a new indicator slot
-
-  QString str = set->getData("File");
-  addIndicatorButton(str, (Indicator::PlotType) set->getInt("PlotType"));
-    
-  Indicator *i = new Indicator;
-  str = set->getData("File");
-  i->setFile(str);
-  str = set->getData("Name");
-  i->setName(str);
-  str = set->getData("Indicator");
-  i->setType(str);
-  i->setPlotType((Indicator::PlotType) set->getInt("PlotType"));
+  
+  QString str = i->getFile();
+  addIndicatorButton(str, i->getPlotType());
   loadIndicator(i);
 
   if (i->getPlotType() == Indicator::MainPlot)
     mainPlot->draw();
     
-  delete set;
-
   ip->updateList();
 }
 
-void QtstalkerApp::slotEditIndicator (Setting *set)
+void QtstalkerApp::slotEditIndicator (Indicator *i)
 {
   // edit indicator slot
 
-  Indicator *i = new Indicator;
-  QString str = set->getData("Name");
-  i->setName(str);
-  str = set->getData("File");
-  i->setFile(str);
-  str = set->getData("plugin");
-  i->setType(str);
-  if (set->getData("plotType").length())
-    i->setPlotType((Indicator::PlotType) set->getData("plotType").toInt());
   loadIndicator(i);
     
   if (i->getPlotType() == Indicator::MainPlot)
     mainPlot->draw();
   else
     tabs->drawCurrent();
-    
-  delete set;
 }
 
 void QtstalkerApp::slotDeleteIndicator (QString text)
@@ -1021,8 +995,8 @@ void QtstalkerApp::initIndicatorNav ()
   ip = new IndicatorPage(baseWidget);
   connect(ip, SIGNAL(signalDisableIndicator(QString)), this, SLOT(slotDisableIndicator(QString)));
   connect(ip, SIGNAL(signalEnableIndicator(QString)), this, SLOT(slotEnableIndicator(QString)));
-  connect(ip, SIGNAL(signalNewIndicator(Setting *)), this, SLOT(slotNewIndicator(Setting *)));
-  connect(ip, SIGNAL(signalEditIndicator(Setting *)), this, SLOT(slotEditIndicator(Setting *)));
+  connect(ip, SIGNAL(signalNewIndicator(Indicator *)), this, SLOT(slotNewIndicator(Indicator *)));
+  connect(ip, SIGNAL(signalEditIndicator(Indicator *)), this, SLOT(slotEditIndicator(Indicator *)));
   connect(ip, SIGNAL(signalDeleteIndicator(QString)), this, SLOT(slotDeleteIndicator(QString)));
   connect(this, SIGNAL(signalSetKeyFlag(bool)), ip, SLOT(setKeyFlag(bool)));
   connect(menubar, SIGNAL(signalNewIndicator()), ip, SLOT(newIndicator()));

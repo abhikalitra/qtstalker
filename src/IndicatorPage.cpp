@@ -24,7 +24,6 @@
 #include "Config.h"
 #include "PrefDialog.h"
 #include "SymbolDialog.h"
-#include "Indicator.h"
 #include "IndicatorPlugin.h"
 #include "../pics/help.xpm"
 #include "../pics/ok.xpm"
@@ -232,10 +231,10 @@ void IndicatorPage::deleteIndicatorGroup ()
 
 void IndicatorPage::newIndicator ()
 {
-  Indicator *ti = new Indicator;
+  Indicator *i = new Indicator;
   QStringList l;
-  ti->getPlotTypes(l);
-  delete ti;
+  i->getPlotTypes(l);
+  delete i;
 
   Config config;  
   PrefDialog *idialog = new PrefDialog;
@@ -357,12 +356,12 @@ void IndicatorPage::newIndicator ()
     
     config.closePlugin(indicator);
     
-    Setting *set = new Setting;
-    set->setData("Name", name);
-    set->setData("PlotType", QString::number(plotType));
-    set->setData("File", s);
-    set->setData("Indicator", indicator);
-    emit signalNewIndicator(set);
+    i = new Indicator;
+    i->setName(name);
+    i->setPlotType((Indicator::PlotType) plotType);
+    i->setFile(s);
+    i->setType(indicator);
+    emit signalNewIndicator(i);
   }
   else
     config.closePlugin(indicator);
@@ -418,12 +417,12 @@ void IndicatorPage::editIndicator (QString d)
     
     if (set.getInt("enable"))
     {
-      set.setData("File", s);
-      set.setData("Name", d);
-      Setting *set2 = new Setting;
-      set.getString(s);
-      set2->parse(s);      
-      emit signalEditIndicator(set2);
+      Indicator *i = new Indicator;
+      i->setName(d);
+      i->setPlotType((Indicator::PlotType) set.getInt("plotType"));
+      i->setFile(s);
+      i->setType(type);
+      emit signalEditIndicator(i);
     }
   }
   else

@@ -102,8 +102,8 @@ class QtstalkerApp : public QMainWindow
     void slotQuotes ();
     void slotOptions ();
     void slotDataWindow ();
-    void slotNewIndicator (Setting *);
-    void slotEditIndicator (Setting *);
+    void slotNewIndicator (Indicator *);
+    void slotEditIndicator (Indicator *);
     void slotDeleteIndicator (QString);
     void slotCompressionChanged (int);
     void slotChartTypeChanged (int);

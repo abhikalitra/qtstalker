@@ -30,6 +30,7 @@
 #include "MacroKey.h"
 #include "MyComboBox.h"
 #include "MyListBox.h"
+#include "Indicator.h"
 
 
 class IndicatorPage : public QWidget
@@ -39,9 +40,9 @@ class IndicatorPage : public QWidget
   signals:
     void signalDisableIndicator (QString);
     void signalEnableIndicator (QString);
-    void signalEditIndicator (Setting *);
+    void signalEditIndicator (Indicator *);
     void signalDeleteIndicator (QString);
-    void signalNewIndicator (Setting *);
+    void signalNewIndicator (Indicator *);
     void signalKeyPressed (int, int, int, int, QString);
     void signalReloadChart ();
   
