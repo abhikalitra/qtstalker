@@ -40,8 +40,9 @@
 
 #define BUTTON_SIZE 24
 
-FormulaEdit::FormulaEdit (QWidget *w) : QWidget(w)
+FormulaEdit::FormulaEdit (QWidget *w, int t) : QWidget(w)
 {
+  type = (FormulaEditType) t;
   functionList = config.getPluginList(Config::IndicatorPluginPath);
   
   QHBoxLayout *hbox = new QHBoxLayout(this);
@@ -299,7 +300,25 @@ void FormulaEdit::openRule ()
 
 void FormulaEdit::saveRule ()
 {
-  bool ok;
+  bool ok = checkError();
+  if (ok)
+  {
+    if (type == Logic)
+    {
+      QMessageBox::information(this,
+                               tr("Qtstalker: Error"),
+			       tr("Must have one COMP step checked."));
+      return;
+    }
+    else
+    {
+      QMessageBox::information(this,
+                               tr("Qtstalker: Error"),
+			       tr("No step(s) have been checked to plot."));
+      return;
+    }
+  }
+  
   QString selection = QInputDialog::getText(tr("Save Rule"),
   					    tr("Enter name for rule."),
 					    QLineEdit::Normal,
@@ -342,5 +361,42 @@ void FormulaEdit::saveRule ()
     stream << QString::number(loop + 1) << "=" << getLine(loop) << "\n";
 
   f.close(); 
+}
+
+bool FormulaEdit::checkError ()
+{
+  bool rc = TRUE;
+  int loop;
+  int comp = 0;
+  Setting set;
+  for (loop = 0; loop < list->numRows(); loop++)
+  {
+    set.parse(getLine(loop));
+    
+    bool p = set.getInt("plot");
+    
+    if (type == Indicator)
+    {
+      if (p)
+      {
+        rc = FALSE;
+	break;
+      }
+    }
+    else
+    {
+      QString s = set.getData("plugin");
+      if (! s.compare("COMP") && p == TRUE)
+        comp++;
+    }
+  }
+  
+  if (type == Logic)
+  {
+    if (comp == 1)
+      rc = FALSE;
+  }
+  
+  return rc;
 }
 

@@ -88,7 +88,7 @@ class Plot : public QWidget
     void addIndicator (QString, Indicator *);
     Indicator * getIndicator (QString);
     QStringList getIndicators ();
-    void deleteIndicator (QString);
+    bool deleteIndicator (QString);
     void addChartObject (Setting *);
 
     int getWidth ();
@@ -100,6 +100,7 @@ class Plot : public QWidget
     void setScaleToScreen (bool);
     void setDrawMode (bool);
     void setDateFlag (bool);
+    void setCrosshairsFlag (bool);
 
   public slots:
     void draw();

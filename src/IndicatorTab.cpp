@@ -22,6 +22,7 @@
 #include "IndicatorTab.h"
 #include <qcursor.h>
 #include <qsettings.h>
+#include <qstringlist.h>
 
 IndicatorTabBar::IndicatorTabBar (QWidget *w) : QTabBar (w)
 {
@@ -69,6 +70,9 @@ IndicatorTab::IndicatorTab (QWidget *w) : QTabWidget (w)
   QObject::connect(bar, SIGNAL(signalPositionChanged(QTabWidget::TabPosition)),
                    this, SLOT(toggleTabPosition(QTabWidget::TabPosition)));
   setTabBar(bar);
+  
+  connect(this, SIGNAL(currentChanged(QWidget *)), this, SLOT(slotTabChanged(QWidget *)));
+  
   loadSettings();
 }
 
@@ -99,5 +103,45 @@ void IndicatorTab::loadSettings()
     setTabPosition(QTabWidget::Top);
   else
     setTabPosition(QTabWidget::Bottom);
+}
+
+void IndicatorTab::slotTabChanged (QWidget *w) 
+{
+  ((Plot *) w)->draw();
+}
+
+void IndicatorTab::drawCurrent () 
+{
+  if (count() == 0)
+    return;
+
+  ((Plot *) currentPage())->draw();
+}
+
+int IndicatorTab::getInsertIndex (QString d) 
+{
+  QStringList l;
+  int loop;
+  for (loop = 0; loop < (int) count(); loop++)
+    l.append(label(loop));
+  l.append(d);
+  l.sort();
+  return l.findIndex(d);
+}
+
+bool IndicatorTab::deleteTab (QString d) 
+{
+  QStringList l;
+  int loop;
+  for (loop = 0; loop < (int) count(); loop++)
+    l.append(label(loop));
+    
+  loop = l.findIndex(d);
+  if (loop == -1)
+    return FALSE;
+    
+  removePage(page(loop));
+  
+  return TRUE;
 }
 

@@ -69,7 +69,7 @@ LineDialog::LineDialog (QString d) : QTabDialog (0, "LineDialog", TRUE)
   
   vbox->addSpacing(10);
   
-  list = new FormulaEdit(w);
+  list = new FormulaEdit(w, FormulaEdit::Indicator);
   vbox->addWidget(list);
   
   addTab(w, tr("Parms"));

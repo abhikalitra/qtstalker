@@ -41,7 +41,7 @@ void CUS::calculate ()
 {
   int loop;
   customLines = new QDict<PlotLine>;
-  customLines->setAutoDelete(FALSE);
+  customLines->setAutoDelete(TRUE);
   
   for (loop = 0; loop < (int) formulaList.count(); loop++)
   {
@@ -83,7 +83,11 @@ void CUS::calculate ()
     {
       PlotLine *pl = customLines->find(QString::number(loop + 1));
       if (pl)
-        output->addLine(pl);
+      {
+        PlotLine *tline = new PlotLine;
+        tline->copy(pl);
+        output->addLine(tline);
+      }
     }
   }
 

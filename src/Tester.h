@@ -33,6 +33,7 @@
 #include <qtable.h>
 #include <qcombobox.h>
 #include <qslider.h>
+#include <qsplitter.h>
 #include "Config.h"
 #include "Setting.h"
 #include "BarData.h"
@@ -85,6 +86,7 @@ class Tester : public QTabDialog
     void saveCustomStopRule ();
     void loadCustomStopRule ();
     QString newTest ();
+    bool checkFormula (int);
 
   public slots:
     void test ();
@@ -99,6 +101,8 @@ class Tester : public QTabDialog
     void customLongStopToggled (bool);
     void customShortStopToggled (bool);
     void slotHelp ();
+    void slotScaleToScreen (bool);
+    void slotLogScaling (bool);
 
   protected:
     Config config;
@@ -188,6 +192,8 @@ class Tester : public QTabDialog
     QLabel *summaryLargestLose;
     QLabel *summaryLoseLongTrades;
     QLabel *summaryLoseShortTrades;
+    
+    QSplitter *split;
 };
 
 #endif

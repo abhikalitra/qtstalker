@@ -20,7 +20,6 @@
  */
 
 #include "TestPage.h"
-#include "Tester.h"
 #include "HelpWindow.h"
 #include "help.xpm"
 #include "open.xpm"
@@ -36,11 +35,12 @@
 #include <stdlib.h>
 #include <qaccel.h>
 
-TestPage::TestPage (QWidget *w) : QListBox (w)
+TestPage::TestPage (QWidget *w, MainMenubar *mb) : QListBox (w)
 {
   keyFlag = FALSE;
   macroFlag = FALSE;
   macro = 0;
+  menubar = mb;
 
   connect(this, SIGNAL(contextMenuRequested(QListBoxItem *, const QPoint &)), this, SLOT(rightClick(QListBoxItem *)));
   connect(this, SIGNAL(highlighted(const QString &)), this, SLOT(testSelected(const QString &)));
@@ -75,6 +75,8 @@ TestPage::~TestPage ()
 void TestPage::openTest ()
 {
   Tester *dialog = new Tester(currentText());
+  connect(menubar, SIGNAL(signalScale(bool)), dialog, SLOT(slotScaleToScreen(bool)));
+  connect(menubar, SIGNAL(signalLog(bool)), dialog, SLOT(slotLogScaling(bool)));
   dialog->show();
 }
 
@@ -90,6 +92,8 @@ void TestPage::newTest()
   updateList();
   
   dialog = new Tester(name);
+  connect(menubar, SIGNAL(signalScale(bool)), dialog, SLOT(slotScaleToScreen(bool)));
+  connect(menubar, SIGNAL(signalLog(bool)), dialog, SLOT(slotLogScaling(bool)));
   dialog->show();
 }
 
@@ -382,5 +386,4 @@ void TestPage::runMacro (Macro *d)
   
   macroFlag = FALSE;
 }
-
 

@@ -127,22 +127,22 @@ void Tester::createFormulaPage ()
   QVGroupBox *gbox = new QVGroupBox(tr("Enter Long"), w);
   grid->addWidget(gbox, 0, 0);
 
-  enterLongEdit = new FormulaEdit(gbox);  
+  enterLongEdit = new FormulaEdit(gbox, FormulaEdit::Logic);  
   
   gbox = new QVGroupBox(tr("Exit Long"), w);
   grid->addWidget(gbox, 0, 1);
 
-  exitLongEdit = new FormulaEdit(gbox);  
+  exitLongEdit = new FormulaEdit(gbox, FormulaEdit::Logic);  
 
   gbox = new QVGroupBox(tr("Enter Short"), w);
   grid->addWidget(gbox, 1, 0);
 
-  enterShortEdit = new FormulaEdit(gbox);  
+  enterShortEdit = new FormulaEdit(gbox, FormulaEdit::Logic);  
   
   gbox = new QVGroupBox(tr("Exit Short"), w);
   grid->addWidget(gbox, 1, 1);
 
-  exitShortEdit = new FormulaEdit(gbox);  
+  exitShortEdit = new FormulaEdit(gbox, FormulaEdit::Logic);  
   
   addTab(w, tr("Rules"));
 }
@@ -231,7 +231,7 @@ void Tester::createStopPage ()
   customLongStopCheck = new QCheckBox(tr("Enabled"), gbox);
   connect(customLongStopCheck, SIGNAL(toggled(bool)), this, SLOT(customLongStopToggled(bool)));
 
-  customLongStopEdit = new FormulaEdit(gbox);  
+  customLongStopEdit = new FormulaEdit(gbox, FormulaEdit::Logic);  
 
   gbox = new QVGroupBox(tr("Custom Short Stop"), w);
   gbox->setInsideSpacing(2);
@@ -241,7 +241,7 @@ void Tester::createStopPage ()
   customShortStopCheck = new QCheckBox(tr("Enabled"), gbox);
   connect(customShortStopCheck, SIGNAL(toggled(bool)), this, SLOT(customShortStopToggled(bool)));
 
-  customShortStopEdit = new FormulaEdit(gbox);  
+  customShortStopEdit = new FormulaEdit(gbox, FormulaEdit::Logic);  
   
   maximumLossToggled(FALSE);
   profitToggled(FALSE);
@@ -465,40 +465,47 @@ void Tester::createChartPage ()
   QVBoxLayout *vbox = new QVBoxLayout(w);
   vbox->setMargin(5);
   vbox->setSpacing(5);
+  
+  split = new QSplitter(w);
+  split->setOrientation(Vertical);
+  vbox->addWidget(split);
 
-  equityPlot = new Plot (w);
-  equityPlot->setGridFlag(FALSE);
-  equityPlot->setScaleToScreen(FALSE);
+  bool logFlag = config.getData(Config::LogScale).toInt();
+  bool scaleToScreenFlag = config.getData(Config::ScaleToScreen).toInt();
+  
+  equityPlot = new Plot (split);
+  equityPlot->setGridFlag(TRUE);
+  equityPlot->setScaleToScreen(scaleToScreenFlag);
+//  equityPlot->setLogScale(logFlag);
   equityPlot->setPixelspace(5);
   equityPlot->setIndex(0);
-  equityPlot->setDateFlag(FALSE);
+  equityPlot->setDateFlag(TRUE);
   equityPlot->setMainFlag(FALSE);
   equityPlot->setInfoFlag(FALSE);
+  equityPlot->setCrosshairsFlag (FALSE); // turn off crosshairs
   QObject::connect(this, SIGNAL(signalIndex(int)), equityPlot, SLOT(setIndex(int)));
   QStringList l = QStringList::split(",", config.getData(Config::PlotFont), FALSE);
   QFont font(l[0], l[1].toInt(), l[2].toInt());
   equityPlot->setPlotFont(font);
-  vbox->addWidget(equityPlot);
-  equityPlot->setMinimumHeight(150);
-  equityPlot->setMaximumHeight(150);
   
-  plot = new Plot (w);
-  plot->setGridFlag(FALSE);
-  plot->setScaleToScreen(FALSE);
+  plot = new Plot (split);
+  plot->setGridFlag(TRUE);
+  plot->setScaleToScreen(scaleToScreenFlag);
+  plot->setLogScale(logFlag);
   plot->setPixelspace(5);
   plot->setIndex(0);
   plot->setDateFlag(TRUE);
   plot->setMainFlag(FALSE);
   plot->setInfoFlag(FALSE);
+  plot->setCrosshairsFlag (FALSE); // turn off crosshairs
   QObject::connect(this, SIGNAL(signalIndex(int)), plot, SLOT(setIndex(int)));
   plot->setPlotFont(font);
-  vbox->addWidget(plot);
-  
+
   slider = new QSlider(w);
   slider->setOrientation(Qt::Horizontal);
   connect (slider, SIGNAL(valueChanged(int)), this, SLOT(slotSliderChanged(int)));
   vbox->addWidget(slider);
-  
+    
   addTab(w, tr("Chart"));
 }
 
@@ -522,7 +529,25 @@ void Tester::test ()
   if (! symbol.length())
     return;
     
-  QProgressDialog prog(tr("Testing..."),
+  if (checkFormula(0))
+    return;
+    
+  if (checkFormula(1))
+    return;
+  
+  if (checkFormula(2))
+    return;
+
+  if (checkFormula(3))
+    return;
+
+  if (checkFormula(4))
+    return;
+
+  if (checkFormula(5))
+    return;
+
+QProgressDialog prog(tr("Testing..."),
                        tr("Cancel"),
 		       bars->value(),
 		       this,
@@ -2093,5 +2118,65 @@ void Tester::slotHelp ()
   
   if (hw)
     hw->show();
+}
+
+void Tester::slotScaleToScreen (bool d)
+{
+  plot->setScaleToScreen(d);
+  equityPlot->setScaleToScreen(d);
+  equityPlot->draw();
+  plot->draw();
+}
+
+void Tester::slotLogScaling (bool d)
+{
+  plot->setLogScale(d);
+//  equityPlot->setLogScale(d);
+//  equityPlot->draw();
+  plot->draw();
+}
+
+bool Tester::checkFormula (int d)
+{
+  bool ok = FALSE;
+  QString s;
+  
+  switch(d)
+  {
+    case 0:
+      ok = enterLongEdit->checkError();
+      s.append(tr("Enter Long: "));
+      break;
+    case 1:
+      ok = exitLongEdit->checkError();
+      s.append(tr("Exit Long: "));
+      break;
+    case 2:
+      ok = enterShortEdit->checkError();
+      s.append(tr("Enter Short: "));
+      break;
+    case 3:
+      ok = exitShortEdit->checkError();
+      s.append(tr("Exit Short: "));
+      break;
+    case 4:
+      ok = customLongStopEdit->checkError();
+      s.append(tr("Custom Long Stop: "));
+      break;
+    case 5:
+      ok = customShortStopEdit->checkError();
+      s.append(tr("Custom Short Stop: "));
+      break;
+    default:
+      break;
+  }
+  
+  if (ok)
+  {
+    s.append(tr("Must have one COMP step checked."));
+    QMessageBox::information(this, tr("Qtstalker: Error"), s);
+  }
+  
+  return ok;
 }
 

@@ -83,7 +83,17 @@
 20050218: The position of indicators can now be changed. Use the 'Move Indicator' menu option
           in the indicator panel.
 	  
+20050218: Plugged a memory leak that was first reported to appear in the scanner. Traced into
+          the CUS plugin when unplotted PlotLine's were not being freed.
 	  
+20050219: Added log/scale to screen options on the tester charts. The tester charts now link
+          to the main app toolbar settings.
+	  
+20050219: Added a splitter to the Tester charts.
+	  
+	  
+	  
+	  	  
 0.29
 ====
 

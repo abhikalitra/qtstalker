@@ -25,6 +25,8 @@
 #include <qtabwidget.h>
 #include <qpopupmenu.h>
 #include <qtabbar.h>
+#include "Plot.h"
+
 
 class IndicatorTabBar : public QTabBar
 {
@@ -57,9 +59,13 @@ class IndicatorTab : public QTabWidget
     ~IndicatorTab ();
     void loadSettings();
     void saveSettings();
+    void drawCurrent ();
+    int getInsertIndex (QString);
+    bool deleteTab (QString);
 
   private slots:
     void toggleTabPosition (QTabWidget::TabPosition);
+    void slotTabChanged (QWidget *);
 };
 
 #endif

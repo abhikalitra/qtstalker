@@ -99,7 +99,6 @@ QtstalkerApp::QtstalkerApp()
   connect(menubar, SIGNAL(signalHideMain(bool)), mainPlot, SLOT(slotHideMainChanged(bool)));
 
   tabs = new IndicatorTab(split);
-  connect(tabs, SIGNAL(currentChanged(QWidget *)), this, SLOT(slotTabChanged(QWidget *)));
 
   // set the nav splitter size
   QString s = config.getData(Config::NavAreaSize);
@@ -513,7 +512,7 @@ void QtstalkerApp::loadChart (QString d)
       it.current()->draw();
   }
 
-  slotTabChanged(0);
+  tabs->drawCurrent();
 
   setCaption(getWindowCaption());
 }
@@ -687,7 +686,7 @@ void QtstalkerApp::slotChartTypeChanged (int)
       it.current()->draw();
   }
 
-  slotTabChanged(0);
+  tabs->drawCurrent();
 }
 
 void QtstalkerApp::slotNewIndicator ()
@@ -815,7 +814,7 @@ void QtstalkerApp::slotEditIndicator (QString selection)
       if (i->getPlotType() == Indicator::MainPlot)
         mainPlot->draw();
       else
-        slotTabChanged(0);
+        tabs->drawCurrent();
     }
   }
 
@@ -873,8 +872,7 @@ void QtstalkerApp::slotDeleteIndicator (QString text)
 
   if (! mainFlag)
   {
-    if (tabFlag)
-      tabs->removePage((QWidget *) plotList[text]);
+    tabs->deleteTab(text);
     plotList.remove(text);
   }
   else
@@ -890,31 +888,12 @@ void QtstalkerApp::slotDeleteIndicator (QString text)
 
 void QtstalkerApp::slotDisableIndicator (QString name)
 {
-  QStringList l = mainPlot->getIndicators();
-  if (l.findIndex(name) != -1)
-  {
-    mainPlot->deleteIndicator(name);
+  if (mainPlot->deleteIndicator(name))
     mainPlot->draw();
-  }
   else
   {
-    QDictIterator<Plot> it(plotList);
-    for(; it.current(); ++it)
-    {
-      l = it.current()->getIndicators();
-      if (l.findIndex(name) != -1)
-      {
-        if (it.current()->getTabFlag())
-	{
-          tabs->removePage((QWidget *) it.current());
-          plotList.remove(name);
-	}
-	else
-          plotList.remove(name);
-	  
-	break;
-      }
-    }
+    tabs->deleteTab(name);
+    plotList.remove(name);
   }
 }
 
@@ -969,7 +948,7 @@ void QtstalkerApp::slotPixelspaceChanged (int d)
       it.current()->draw();
   }
 
-  slotTabChanged(0);
+  tabs->drawCurrent();
 }
 
 void QtstalkerApp::slotMinPixelspaceChanged (int d)
@@ -1016,8 +995,8 @@ void QtstalkerApp::addIndicatorButton (QString d, Indicator::PlotType tabFlag)
 
   if (tabFlag == Indicator::TabPlot)
   {
-    tabs->addTab(plot, d);
-    tabs->showPage(plot);
+    tabs->insertTab(plot, d, tabs->getInsertIndex(d));
+//    tabs->showPage(plot);
     tabs->adjustSize();
   }
 }
@@ -1090,15 +1069,6 @@ void QtstalkerApp::slotStatusMessage (QString d)
   qApp->processEvents();
 }
 
-void QtstalkerApp::slotTabChanged (QWidget *)
-{
-  if (tabs->count())
-  {
-    Plot *plot = plotList[tabs->label(tabs->currentPageIndex())];
-    plot->draw();
-  }
-}
-
 void QtstalkerApp::initGroupNav ()
 {
   gp = new GroupPage(baseWidget);
@@ -1124,7 +1094,7 @@ void QtstalkerApp::initPortfolioNav ()
 
 void QtstalkerApp::initTestNav ()
 {
-  tp = new TestPage(baseWidget);
+  tp = new TestPage(baseWidget, menubar);
   connect(tp, SIGNAL(message(QString)), this, SLOT(slotStatusMessage(QString)));
   connect(this, SIGNAL(signalSetKeyFlag(bool)), tp, SLOT(setKeyFlag(bool)));
   navTab->addWidget(tp, 4);
@@ -1193,7 +1163,7 @@ void QtstalkerApp::slotPlotLeftMouseButton (int x, int y, bool mainFlag)
       it.current()->crossHair(x, y, FALSE);
   }
   
-  slotTabChanged(0);
+  tabs->drawCurrent();
 }
 
 void QtstalkerApp::slotCrosshairsStatus (bool status)

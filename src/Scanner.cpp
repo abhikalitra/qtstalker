@@ -68,7 +68,7 @@ Scanner::Scanner (QString n) : QTabDialog (0, 0, FALSE)
   period->insertItem(tr("Weekly"), -1);
   period->insertItem(tr("Monthly"), -1);
   
-  list = new FormulaEdit(w);
+  list = new FormulaEdit(w, FormulaEdit::Logic);
   vbox->addWidget(list);
   
   setDefaultButton(tr("&Scan"));
@@ -104,23 +104,7 @@ void Scanner::scan ()
     return;
   }
 
-  int loop;
-  bool flag = FALSE;
-  for (loop = 0; loop < list->getLines(); loop++)
-  {
-    Setting set;
-    set.parse(list->getLine(loop));
-    if (! set.getData("plugin").compare("COMP"))
-    {
-      if (set.getData("plot").toInt())
-      {
-        flag = TRUE;
-	break;
-      }
-    }
-  }
-  
-  if (! flag)
+  if (list->checkError())
   {
     QMessageBox::information(this,
                              tr("Qtstalker: Error"),
@@ -162,6 +146,7 @@ void Scanner::scan ()
 		       TRUE);
   prog.show();
 
+  int loop;
   for (loop = 0; loop < (int) fileList.count(); loop++)
   {
     prog.setProgress(loop);

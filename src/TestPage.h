@@ -28,6 +28,8 @@
 #include <qlistbox.h>
 #include "Config.h"
 #include "Macro.h"
+#include "Tester.h"
+#include "MainMenubar.h"
 
 
 class TestPage : public QListBox
@@ -50,7 +52,7 @@ class TestPage : public QListBox
       Help
     };
   
-    TestPage (QWidget *);
+    TestPage (QWidget *, MainMenubar *);
     ~TestPage ();
 
   public slots:
@@ -79,6 +81,7 @@ class TestPage : public QListBox
     bool keyFlag;
     Macro *macro;
     bool macroFlag;
+    MainMenubar *menubar;
 };
 
 #endif

@@ -40,7 +40,7 @@ CUSDialog::CUSDialog (QString d) : QTabDialog (0, "CUSDialog", TRUE)
   vbox->setMargin(5);
   vbox->setSpacing(0);
   
-  list = new FormulaEdit(w);
+  list = new FormulaEdit(w, FormulaEdit::Indicator);
   vbox->addWidget(list);
   
   addTab(w, tr("Settings"));

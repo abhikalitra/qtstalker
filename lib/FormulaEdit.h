@@ -33,11 +33,19 @@ class FormulaEdit : public QWidget
   Q_OBJECT
 
   public:
-    FormulaEdit (QWidget *);
+  
+    enum FormulaEditType
+    {
+      Indicator,
+      Logic
+    };
+  
+    FormulaEdit (QWidget *, int);
     ~FormulaEdit ();
     void setLine (QString);
     QString getLine (int);
     int getLines ();
+    bool checkError ();
 
   public slots:
     void addItem ();
@@ -52,6 +60,7 @@ class FormulaEdit : public QWidget
     Toolbar *toolbar;
     QStringList functionList;
     Config config;
+    FormulaEditType type;
 };
 
 #endif

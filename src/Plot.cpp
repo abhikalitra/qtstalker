@@ -1078,9 +1078,9 @@ Indicator * Plot::getIndicator (QString d)
   return indicators[d];
 }
 
-void Plot::deleteIndicator (QString d)
+bool Plot::deleteIndicator (QString d)
 {
-  indicators.remove(d);
+  return indicators.remove(d);
 }
 
 void Plot::setHeight ()
@@ -1878,3 +1878,9 @@ int Plot::convertXToDataIndex (int x)
   
   return i;
 }
+
+void Plot::setCrosshairsFlag (bool d)
+{
+  crosshairs = d;
+}
+

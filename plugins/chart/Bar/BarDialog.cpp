@@ -146,7 +146,7 @@ void BarDialog::createPaintBarPage ()
   
   vbox->addSpacing(10);
   
-  list = new FormulaEdit(w);
+  list = new FormulaEdit(w, FormulaEdit::Logic);
   vbox->addWidget(list);
   
   addTab(w, tr("Paint Bars"));
