@@ -144,7 +144,7 @@ void QtstalkerFormat::prefDialog (QWidget *w)
   dialog->setCaption(tr("QtstalkerFormat Prefs"));
   dialog->createPage (tr("Details"));
   dialog->setHelpFile(helpFile);
-  dialog->addFileItem(tr("File Input"), tr("Details"));
+  dialog->addFileItem(tr("File Input"), tr("Details"), list);
   
   int rc = dialog->exec();
   

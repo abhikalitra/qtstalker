@@ -31,9 +31,11 @@ class FileButton : public QPushButton
   Q_OBJECT
 
   public:
-    FileButton (QWidget *);
+    FileButton (QWidget *, QStringList);
     ~FileButton ();
     QStringList getFile ();
+    void setFile (QStringList);
+    void updateButtonText ();
 
   public slots:
     void fileDialog ();

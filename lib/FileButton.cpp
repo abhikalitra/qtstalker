@@ -21,13 +21,15 @@
 
 #include "FileButton.h"
 #include <qfiledialog.h>
+#include <qfileinfo.h>
 
-FileButton::FileButton (QWidget *w) : QPushButton (w)
+FileButton::FileButton (QWidget *w, QStringList l) : QPushButton (w)
 {
   QObject::connect(this, SIGNAL(clicked()), this, SLOT(fileDialog()));
   setMaximumHeight(25);
   setToggleButton(FALSE);
-  setText(tr("0 Files"));
+  fileList = l;
+  updateButtonText();
 }
 
 FileButton::~FileButton ()
@@ -39,12 +41,30 @@ QStringList FileButton::getFile ()
   return fileList;
 }
 
+void FileButton::setFile (QStringList l)
+{
+  fileList = l;
+  updateButtonText();
+}
+
 void FileButton::fileDialog ()
 {
   QString path = "*";
-
-  fileList = QFileDialog::getOpenFileNames("*", path, this, "file dialog");
+  if (fileList.count())
+  {
+    QFileInfo fi(fileList[0]);
+    path = fi.dirPath(TRUE);
+  }
   
+  QStringList l = QFileDialog::getOpenFileNames("*", path, this, "file dialog");
+  if (l.count())
+    fileList = l;
+  
+  updateButtonText();
+}
+
+void FileButton::updateButtonText ()
+{
   QString s = QString::number(fileList.count());
   s.append(" ");
   s.append(tr("Files"));

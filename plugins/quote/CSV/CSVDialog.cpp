@@ -69,7 +69,7 @@ void CSVDialog::createMainPage ()
   QLabel *label = new QLabel(tr("Input:"), w);
   grid->addWidget(label, 0, 0);
   
-  file = new FileButton(w);
+  file = new FileButton(w, QStringList());
   grid->addWidget(file, 0, 1);
 
   label = new QLabel(tr("Symbol:"), w);
@@ -387,9 +387,19 @@ QStringList CSVDialog::getFiles ()
   return file->getFile();
 }
 
+void CSVDialog::setFiles (QStringList l)
+{
+  file->setFile(l);
+}
+
 QString CSVDialog::getSymbol ()
 {
   return symbol->text();
+}
+
+void CSVDialog::setSymbol (QString d)
+{
+  symbol->setText(d);
 }
 
 void CSVDialog::setStartDate (QDateTime dt)

@@ -589,6 +589,8 @@ void CSV::prefDialog (QWidget *w)
   dialog->setEndDate(edate);
   dialog->setDateRange(dateFlag);
   dialog->setRuleName(ruleName);
+  dialog->setFiles(list);
+  dialog->setSymbol(symbolOveride);
           
   int rc = dialog->exec();
   

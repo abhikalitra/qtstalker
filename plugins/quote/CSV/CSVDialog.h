@@ -40,7 +40,9 @@ class CSVDialog : public QTabDialog
     void createRulePage ();
 
     QStringList getFiles ();
+    void setFiles (QStringList);
     QString getSymbol ();
+    void setSymbol (QString);
     void setStartDate (QDateTime);
     QDateTime getStartDate ();
     void setEndDate (QDateTime);

@@ -114,6 +114,8 @@
 	  
 20050122: Fixed bug that didn't remove grab handles from objects when drawmode was turned off.
 
+20050123: As per user request, the CSV plugin now remembers symbol and input file selections.
+
 	  	  	  	  
 0.28
 ====

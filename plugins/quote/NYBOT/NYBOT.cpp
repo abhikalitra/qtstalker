@@ -343,7 +343,7 @@ void NYBOT::prefDialog (QWidget *w)
   dialog->setCaption(tr("NYBOT Prefs"));
   dialog->createPage (tr("Details"));
   dialog->setHelpFile(helpFile);
-  dialog->addFileItem(tr("File Input"), tr("Details"));
+  dialog->addFileItem(tr("File Input"), tr("Details"), list);
   
   int rc = dialog->exec();
   
