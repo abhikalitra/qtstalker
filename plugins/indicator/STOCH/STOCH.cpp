@@ -39,10 +39,12 @@ STOCH::~STOCH ()
 void STOCH::setDefaults ()
 {
   dcolor.setNamedColor("yellow");
+  kcolor.setNamedColor("red");
+  buyColor.setNamedColor("gray");
+  sellColor.setNamedColor("gray");
   dlineType = PlotLine::Dash;
   dlabel = "%D";
   dperiod = 3;
-  kcolor.setNamedColor("red");
   klineType = PlotLine::Line;
   klabel = "%K";
   kperiod = 3;
@@ -147,6 +149,24 @@ void STOCH::calculate ()
     d->setLabel(dlabel);
     output->addLine(d);
   }
+  
+  if (buyLine)
+  {
+    PlotLine *bline = new PlotLine();
+    bline->setColor(buyColor);
+    bline->setType(PlotLine::Horizontal);
+    bline->append(buyLine);
+    output->addLine(bline);
+  }
+  
+  if (sellLine)
+  {
+    PlotLine *sline = new PlotLine();
+    sline->setColor(sellColor);
+    sline->setType(PlotLine::Horizontal);
+    sline->append(sellLine);
+    output->addLine(sline);
+  }
 }
 
 int STOCH::indicatorPrefDialog (QWidget *w)
@@ -157,8 +177,7 @@ int STOCH::indicatorPrefDialog (QWidget *w)
   dialog->setHelpFile(helpFile);
   dialog->addIntItem(QObject::tr("Period"), QObject::tr("Parms"), period, 1, 99999999);
   dialog->addComboItem(QObject::tr("Smoothing Type"), QObject::tr("Parms"), getMATypes(), maType);
-  dialog->addFloatItem(QObject::tr("Buy Line"), QObject::tr("Parms"), buyLine, 0, 100);
-  dialog->addFloatItem(QObject::tr("Sell Line"), QObject::tr("Parms"), sellLine, 0, 100);
+  
   if (customFlag)
   {
     dialog->addTextItem(QObject::tr("Label"), QObject::tr("Parms"), label);
@@ -177,6 +196,13 @@ int STOCH::indicatorPrefDialog (QWidget *w)
   dialog->addTextItem(QObject::tr("%D Label"), QObject::tr("%D Parms"), dlabel);
   dialog->addIntItem(QObject::tr("%D Smoothing"), QObject::tr("%D Parms"), dperiod, 0, 99999999);
   
+  dialog->createPage (QObject::tr("Zones"));
+  dialog->addColorItem(QObject::tr("Buy Zone Color"), QObject::tr("Zones"), buyColor);
+  dialog->addColorItem(QObject::tr("Sell Zone Color"), QObject::tr("Zones"), sellColor);
+  dialog->addIntItem(QObject::tr("Buy Zone"), QObject::tr("Zones"), buyLine, 0, 100);
+  dialog->addIntItem(QObject::tr("Sell Zone"), QObject::tr("Zones"), sellLine, 0, 100);
+  
+  
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
@@ -191,13 +217,17 @@ int STOCH::indicatorPrefDialog (QWidget *w)
     klabel = dialog->getText(QObject::tr("%K Label"));
     period = dialog->getInt(QObject::tr("Period"));
     maType = dialog->getComboIndex(QObject::tr("Smoothing Type"));
-    buyLine = dialog->getFloat(QObject::tr("Buy Line"));
-    sellLine = dialog->getFloat(QObject::tr("Sell Line"));
+    
     if (customFlag)
     {
       label = dialog->getText(QObject::tr("Label"));
       customInput = dialog->getFormulaInput(QObject::tr("Input"));
     }
+    
+    buyColor = dialog->getColor(QObject::tr("Buy Zone Color"));
+    sellColor = dialog->getColor(QObject::tr("Sell Zone Color"));
+    buyLine = dialog->getInt(QObject::tr("Buy Zone"));
+    sellLine = dialog->getInt(QObject::tr("Sell Zone"));
     
     rc = TRUE;
   }
@@ -222,6 +252,14 @@ void STOCH::setIndicatorSettings (Setting &dict)
   s = dict.getData("kcolor");
   if (s.length())
     kcolor.setNamedColor(s);
+  
+  s = dict.getData("buyColor");
+  if (s.length())
+    buyColor.setNamedColor(s);
+  
+  s = dict.getData("sellColor");
+  if (s.length())
+    sellColor.setNamedColor(s);
   
   s = dict.getData("dlineType");
   if (s.length())
@@ -257,11 +295,11 @@ void STOCH::setIndicatorSettings (Setting &dict)
 
   s = dict.getData("buyLine");
   if (s.length())
-    buyLine = s.toFloat();
+    buyLine = s.toInt();
 
   s = dict.getData("sellLine");
   if (s.length())
-    sellLine = s.toFloat();
+    sellLine = s.toInt();
 
   s = dict.getData("customInput");
   if (s.length())
@@ -275,6 +313,8 @@ void STOCH::setIndicatorSettings (Setting &dict)
 void STOCH::getIndicatorSettings (Setting &dict)
 {
   dict.setData("dcolor", dcolor.name());
+  dict.setData("buyColor", buyColor.name());
+  dict.setData("sellColor", sellColor.name());
   dict.setData("dlineType", QString::number(dlineType));
   dict.setData("dperiod", QString::number(dperiod));
   dict.setData("dlabel", dlabel);

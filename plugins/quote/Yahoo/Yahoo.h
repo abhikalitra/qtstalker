@@ -21,9 +21,6 @@
 
 #include "QuotePlugin.h"
 #include <qstring.h>
-#include <qurloperator.h>
-#include <qnetworkprotocol.h>
-#include <qtimer.h>
 #include "Setting.h"
 
 class Yahoo : public QuotePlugin
@@ -50,28 +47,22 @@ class Yahoo : public QuotePlugin
     void createFundamentalUrls (QString);
       
   public slots:
-    void opDone (QNetworkOperation *);
-    void dataReady (const QByteArray &, QNetworkOperation *);
-    void getFile ();
-    void downloadError ();
+    void startDownload ();
+    void fileDone (bool);
+    void timeoutError ();
 
   private:
-    QString data;
-    QUrlOperator *op;
     QStringList symbolList;
     bool adjustment;
     QDateTime sdate;
     QDateTime edate;
     QString method;
-    int retries;
     QPtrList<Setting> url;
     Setting *currentUrl;
-    int errorLoop;
-    QTimer *timer;
-    int timeout;
     bool allSymbols;
     QString dataPath;
     QStringList fileList;
+    QStringList errorList;
 };
 
 extern "C"

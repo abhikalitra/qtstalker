@@ -25,7 +25,6 @@
 #include <qcheckbox.h>
 #include <qdatetimeedit.h>
 #include <qstringlist.h>
-#include <qlistbox.h>
 #include <qspinbox.h>
 #include "FileButton.h"
 #include "Toolbar.h"
@@ -38,8 +37,6 @@ class CSVDialog : public QTabDialog
     CSVDialog (QWidget *, QString, QString);
     ~CSVDialog ();
     void createMainPage ();
-    void createRulePage ();
-
     QStringList getFiles ();
     void setFiles (QStringList);
     QString getSymbol ();
@@ -61,31 +58,19 @@ class CSVDialog : public QTabDialog
     void newRule ();
     void editRule ();
     void deleteRule ();
-    void saveRule ();
-    void insertField ();
-    void deleteField ();
-    void fieldSelected (int);
     void help ();
-    void comboChanged (int);
-    void textChanged (const QString &);
           
   private:
     FileButton *file;
     QLineEdit *symbol;
-    QComboBox *type;
-    QComboBox *delimiter;
-    QComboBox *fieldCombo;
     QComboBox *ruleCombo;
     QDateEdit *sdate;
     QDateEdit *edate;
     QCheckBox *dateRange;
-    Toolbar *ruleToolbar;
-    QListBox *ruleList;
-    QLineEdit *ruleName;
+    Toolbar *toolbar;
     QString helpFile;
     QString lastPath;
     QSpinBox *minutes;
-    QLineEdit *directory;
-    QLineEdit *symbolFilter;
+    QString ruleDir;
 };
 

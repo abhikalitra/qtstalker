@@ -22,8 +22,6 @@
 #include "QuotePlugin.h"
 #include "Setting.h"
 #include <qstring.h>
-#include <qnetworkprotocol.h>
-#include <qurloperator.h>
 
 class COT : public QuotePlugin
 {
@@ -42,17 +40,13 @@ class COT : public QuotePlugin
     void prefDialog (QWidget *);
 
   public slots:
-    void getFile ();
-    void getFile2 ();
-    void opDone (QNetworkOperation *);
-    void opDone2 (QNetworkOperation *);
-    void dataReady (const QByteArray &, QNetworkOperation *);
+    void slotCopyFileDone (QString);
+    void slotGetFileDone (bool);
+    void timeoutError ();
 
   private:
-    QUrlOperator *op;
-    QString url;
-    QString data;
     QString format;
+    QString url;
 };
 
 extern "C"

@@ -24,6 +24,9 @@
 
 #include <qstring.h>
 #include <qobject.h>
+#include <qnetworkprotocol.h>
+#include <qurloperator.h>
+#include <qtimer.h>
 
 class QuotePlugin : public QObject
 {
@@ -34,6 +37,9 @@ class QuotePlugin : public QObject
     void message (QString);
     void statusLogMessage (QString);
     void dataLogMessage (QString);
+    void signalGetFileDone (bool);
+    void signalCopyFileDone (QString);
+    void signalTimeout ();
 
   public:
     QuotePlugin ();
@@ -43,10 +49,18 @@ class QuotePlugin : public QObject
     QString createDirectory (QString);
     QString getPluginName ();
     QString getHelpFile ();
-
+    
     virtual void update ();
     virtual void cancelUpdate ();
     virtual void prefDialog (QWidget *);
+    
+  public slots:
+    void getFile (QString);
+    void copyFile (QString, QString);
+    void getFileDone (QNetworkOperation *);
+    void copyFileDone (QNetworkOperation *);
+    void dataReady (const QByteArray &, QNetworkOperation *);
+    void slotTimeout ();
     
   protected:
     QString file;
@@ -54,6 +68,12 @@ class QuotePlugin : public QObject
     bool saveFlag;
     QString pluginName;
     QString helpFile;
+    QUrlOperator *op;
+    QString data;
+    QTimer *timer;
+    int errorLoop;
+    int retries;
+    int timeout;
 };
 
 #endif

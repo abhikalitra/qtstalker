@@ -30,7 +30,6 @@
 #include <qdir.h>
 #include <qsettings.h>
 
-
 QtstalkerFormat::QtstalkerFormat ()
 {
   pluginName = "QtstalkerFormat";

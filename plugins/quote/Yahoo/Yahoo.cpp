@@ -29,25 +29,19 @@
 #include <qdir.h>
 #include <qdatetime.h>
 #include <qnetwork.h>
-#include <qtimer.h>
 #include <qsettings.h>
-
 
 Yahoo::Yahoo ()
 {
   pluginName = "Yahoo";
-  op = 0;
   helpFile = "yahoo.html";
-  errorLoop = 0;
   allSymbols = FALSE;
   url.setAutoDelete(TRUE);
   currentUrl = 0;
   
   Config config;
   dataPath = config.getData(Config::DataPath) + "/Stocks/Yahoo";
-  
-  timer = new QTimer(this);
-  connect(timer, SIGNAL(timeout()), this, SLOT(downloadError()));
+  file = config.getData(Config::Home) + "/download";
   
   sdate = QDateTime::currentDateTime();
   if (sdate.date().dayOfWeek() == 6)
@@ -72,32 +66,25 @@ Yahoo::Yahoo ()
   
   loadSettings();
   
+  connect(this, SIGNAL(signalGetFileDone(bool)), this, SLOT(fileDone(bool)));
+  connect(this, SIGNAL(signalTimeout()), this, SLOT(timeoutError()));
+  
   // preload all symbols to download for default
 //  loadAllSymbols();
 }
 
 Yahoo::~Yahoo ()
 {
-  if (op)
-  {
-    op->stop();
-    delete op;
-  }
-
-  delete timer;
 }
 
 void Yahoo::update ()
 {
-  url.clear();
-  data.truncate(0);
   Config config;
   errorLoop = 0;
+  url.clear();
+  errorList.clear();
 
-  QDir dir = QDir::home();
-  file = dir.path();
-  file.append("/Qtstalker/download");
-  
+  QDir dir;
   int loop;
   for (loop = 0; loop < (int) symbolList.count(); loop++)
   {
@@ -134,90 +121,79 @@ void Yahoo::update ()
     emit statusLogMessage(tr("No symbols selected. Done."));
     return;
   }
-
-  currentUrl = url.first();
   
-  QTimer::singleShot(250, this, SLOT(getFile()));
+  currentUrl = url.first();
+
+  QTimer::singleShot(250, this, SLOT(startDownload()));
 }
 
-void Yahoo::opDone (QNetworkOperation *o)
+void Yahoo::startDownload ()
 {
-  if (! o)
-    return;
+  QString s = tr("Downloading ") + currentUrl->getData("symbol");
+  emit statusLogMessage(s);
 
-  if (o->state() == QNetworkProtocol::StDone && o->operation() == QNetworkProtocol::OpGet)
+  getFile(currentUrl->getData("url"));
+}
+
+void Yahoo::fileDone (bool d)
+{
+  if (d)
   {
-    timer->stop();
-    
-    if (method.contains(tr("History")))
-      parseHistory();
-    else
-    {
-      if (method.contains(tr("Quote")))
-        parseQuote();
-      else
-        parseFundamental();
-    }
+    emit statusLogMessage(tr("Network error aborting"));
+    emit statusLogMessage(tr("Done"));
+    emit done();
+    return;
+  }
 
-    url.remove();
-    if (! url.count())
+  if (method.contains(tr("History")))
+    parseHistory();
+  else
+  {
+    if (method.contains(tr("Quote")))
+      parseQuote();
+    else
+      parseFundamental();
+  }
+
+  currentUrl = url.next();
+  if (! currentUrl)
+  {
+    emit done();
+    emit statusLogMessage(tr("Done"));
+    printErrorList();
+    return;
+  }
+
+  errorLoop = 0;
+  startDownload();    
+}
+
+void Yahoo::timeoutError ()
+{
+  errorLoop++;
+  if (errorLoop == retries)
+  {
+    emit statusLogMessage(tr("Timeout: retry limit skipping") + currentUrl->getData("symbol") + tr(" skipped"));
+    errorList.append(currentUrl->getData("symbol"));
+    
+    errorLoop = 0;
+    currentUrl = url.next();
+    if (! currentUrl)
     {
       emit done();
       emit statusLogMessage(tr("Done"));
+      printErrorList();
       return;
     }
-    else
-      currentUrl = url.current();
-    
-    if (! currentUrl)
-    {
-      errorLoop++;
-      
-      if (errorLoop == retries)
-      {
-        emit done();
-        emit statusLogMessage(tr("Done"));
-	printErrorList();
-        return;
-      }
-      else
-	currentUrl = url.first();
-    }
 
-    data.truncate(0);
-    getFile();
-    return;
+    startDownload();
   }
-
-  if (o->state() == QNetworkProtocol::StFailed)
-    downloadError();
-}
-
-void Yahoo::getFile ()
-{
-  if (op)
+  else
   {
-    op->stop();
-    delete op;
+    QString s = tr("Timeout: retry ") + QString::number(errorLoop + 1) + " " + currentUrl->getData("symbol");
+    emit statusLogMessage(s);
+    startDownload();
   }
-
-  timer->start(timeout * 1000, TRUE);
-  
-  op = new QUrlOperator(currentUrl->getData("url"));
-  connect(op, SIGNAL(finished(QNetworkOperation *)), this, SLOT(opDone(QNetworkOperation *)));
-  connect(op, SIGNAL(data(const QByteArray &, QNetworkOperation *)), this, SLOT(dataReady(const QByteArray &, QNetworkOperation *)));
-  op->get();
-  
-  QString s = tr("Downloading ");
-  s.append(currentUrl->getData("symbol"));
-  emit statusLogMessage(s);
-}
-
-void Yahoo::dataReady (const QByteArray &d, QNetworkOperation *)
-{
-  int loop;
-  for (loop = 0; loop < (int) d.size(); loop++)
-    data.append(d[loop]);
 }
 
 void Yahoo::parseHistory ()
@@ -725,10 +701,10 @@ void Yahoo::saveSettings ()
 
 void Yahoo::printErrorList ()
 {
-  for (url.first(); url.current() != 0; url.next())
+  int loop;
+  for (loop = 0; loop < (int) errorList.count(); loop++)
   {
-    QString s = tr("Unable to download ");
-    s.append(url.current()->getData("symbol"));
+    QString s = tr("Unable to download ") + errorList[loop];
     emit statusLogMessage(s);
   }
 }	
@@ -739,42 +715,10 @@ void Yahoo::cancelUpdate ()
   {
     timer->stop();
     op->stop();
-    emit done();
   }
-}
-
-void Yahoo::downloadError ()
-{
-  timer->stop();
-   
-  emit statusLogMessage(tr("Download error ") + currentUrl->getData("symbol") + tr(" skipped"));
-    
-  currentUrl = url.next();
-  if (! url.count())
-  {
-    emit done();
-    emit statusLogMessage(tr("Done"));
-    printErrorList();
-    return;
-  }
-    
-  if (! currentUrl)
-  {
-    errorLoop++;
-    
-    if (errorLoop == retries)
-    {
-      emit done();
-      emit statusLogMessage(tr("Done"));
-      printErrorList();
-      return;
-    }
-    else
-      currentUrl = url.first();
-  }
-    
-  data.truncate(0);
-  getFile();
+  
+  emit done();
+  emit statusLogMessage(tr("Canceled"));
 }
 
 void Yahoo::parseFundamental ()

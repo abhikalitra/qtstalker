@@ -21,19 +21,19 @@
 
 #include "CSVDialog.h"
 #include "../../../pics/newchart.xpm"
-#include "../../../pics/insert.xpm"
 #include "../../../pics/edit.xpm"
 #include "../../../pics/delete.xpm"
-#include "../../../pics/filesave.xpm"
 #include "Setting.h"
 #include "HelpWindow.h"
+#include "SymbolDialog.h"
+#include "CSVRuleDialog.h"
+#include "Config.h"
 #include <qdir.h>
 #include <qmessagebox.h>
 #include <qlayout.h>
 #include <qlabel.h>
 #include <qtooltip.h>
 #include <qinputdialog.h>
-#include <qsettings.h>
 #include <qdir.h>
 
 CSVDialog::CSVDialog (QWidget *p, QString d, QString lp) : QTabDialog (p, "CSVDialog", TRUE)
@@ -41,14 +41,23 @@ CSVDialog::CSVDialog (QWidget *p, QString d, QString lp) : QTabDialog (p, "CSVDi
   helpFile = d;
   lastPath = lp;
   
+  Config config;
+  ruleDir = config.getData(Config::QuotePluginStorage) + "/CSV";
+  QDir dir;
+  if (! dir.exists(ruleDir))
+  {
+    if (! dir.mkdir(ruleDir, TRUE))
+      qDebug("CSVDialog::could not create storage directory %s", ruleDir.latin1());
+  }
+  
   createMainPage();
-  createRulePage();
   setOkButton();
   setCancelButton();
   setHelpButton();
   QObject::connect(this, SIGNAL(helpButtonPressed()), this, SLOT(help()));
   
   resize(325, 325);
+  
   updateRules();
 }
 
@@ -64,27 +73,41 @@ void CSVDialog::createMainPage ()
   vbox->setMargin(5);
   vbox->setSpacing(0);
   
+  toolbar = new Toolbar(w, 30, 30, FALSE);
+  vbox->addWidget(toolbar);
+  
+  toolbar->addButton("new", newchart, tr("New Rule"));
+  QObject::connect(toolbar->getButton("new"), SIGNAL(clicked()), this, SLOT(newRule()));
+  
+  toolbar->addButton("edit", edit, tr("Edit Rule"));
+  QObject::connect(toolbar->getButton("edit"), SIGNAL(clicked()), this, SLOT(editRule()));
+  
+  toolbar->addButton("delete", deleteitem, tr("Delete Rule"));
+  QObject::connect(toolbar->getButton("delete"), SIGNAL(clicked()), this, SLOT(deleteRule()));
+  
+  vbox->addSpacing(10);
+  
   QGridLayout *grid = new QGridLayout(vbox, 4, 1);
   grid->setSpacing(5);
   grid->setColStretch(1, 1);
   
-  QLabel *label = new QLabel(tr("Input:"), w);
+  QLabel *label = new QLabel(tr("Rule:"), w);
   grid->addWidget(label, 0, 0);
-  
-  file = new FileButton(w, QStringList(), lastPath);
-  grid->addWidget(file, 0, 1);
-
-  label = new QLabel(tr("Symbol:"), w);
-  grid->addWidget(label, 1, 0);
-  
-  symbol = new QLineEdit(w);
-  grid->addWidget(symbol, 1, 1);
-  
-  label = new QLabel(tr("Rule:"), w);
-  grid->addWidget(label, 2, 0);
 
   ruleCombo = new QComboBox(w);
-  grid->addWidget(ruleCombo, 2, 1);
+  grid->addWidget(ruleCombo, 0, 1);
+  
+  label = new QLabel(tr("Input:"), w);
+  grid->addWidget(label, 1, 0);
+  
+  file = new FileButton(w, QStringList(), lastPath);
+  grid->addWidget(file, 1, 1);
+
+  label = new QLabel(tr("Symbol:"), w);
+  grid->addWidget(label, 2, 0);
+  
+  symbol = new QLineEdit(w);
+  grid->addWidget(symbol, 2, 1);
   
   label = new QLabel(tr("Auto Reload:"), w);
   grid->addWidget(label, 3, 0);
@@ -124,315 +147,115 @@ void CSVDialog::createMainPage ()
   addTab(w, tr("General"));
 }
 
-void CSVDialog::createRulePage ()
-{
-  QWidget *w = new QWidget(this);
-  
-  QVBoxLayout *vbox = new QVBoxLayout(w);
-  vbox->setMargin(5);
-  vbox->setSpacing(0);
-  
-  ruleToolbar = new Toolbar(w, 30, 30, FALSE);
-  vbox->addWidget(ruleToolbar);
-  
-  ruleToolbar->addButton("new", newchart, tr("New Rule"));
-  QObject::connect(ruleToolbar->getButton("new"), SIGNAL(clicked()), this, SLOT(newRule()));
-  
-  ruleToolbar->addButton("edit", edit, tr("Edit Rule"));
-  QObject::connect(ruleToolbar->getButton("edit"), SIGNAL(clicked()), this, SLOT(editRule()));
-  
-  ruleToolbar->addButton("delete", deleteitem, tr("Delete Rule"));
-  QObject::connect(ruleToolbar->getButton("delete"), SIGNAL(clicked()), this, SLOT(deleteRule()));
-  ruleToolbar->setButtonStatus("delete", FALSE);
-  
-  ruleToolbar->addButton("save", filesave, tr("Save Rule"));
-  QObject::connect(ruleToolbar->getButton("save"), SIGNAL(clicked()), this, SLOT(saveRule()));
-  ruleToolbar->setButtonStatus("save", FALSE);
-  
-  ruleToolbar->addButton("insert", insert, tr("Insert Field"));
-  QObject::connect(ruleToolbar->getButton("insert"), SIGNAL(clicked()), this, SLOT(insertField()));
-  ruleToolbar->setButtonStatus("insert", FALSE);
-  
-  ruleToolbar->addButton("deleteitem", deleteitem, tr("Delete Field"));
-  QObject::connect(ruleToolbar->getButton("deleteitem"), SIGNAL(clicked()), this, SLOT(deleteField()));
-  ruleToolbar->setButtonStatus("deleteitem", FALSE);
-  
-  vbox->addSpacing(10);
-  
-  QGridLayout *grid = new QGridLayout(vbox, 6, 2);
-  grid->setSpacing(5);
-  grid->setColStretch(1, 1);
-  
-  QLabel *label = new QLabel(tr("Rule:"), w);
-  grid->addWidget(label, 0, 0);
-  
-  ruleName = new QLineEdit(w);
-  grid->addWidget(ruleName, 0, 1);
-  ruleName->setReadOnly(TRUE);
-  
-  label = new QLabel(tr("Chart Type:"), w);
-  grid->addWidget(label, 1, 0);
-  
-  type = new QComboBox(w);
-  type->insertItem(tr(tr("Stocks")), -1);
-  type->insertItem(tr(tr("Futures")), -1);
-  connect(type, SIGNAL(activated(int)), this, SLOT(comboChanged(int)));
-  grid->addWidget(type, 1, 1);
-  
-  label = new QLabel(tr("Delimiter:"), w);
-  grid->addWidget(label, 2, 0);
-  
-  delimiter = new QComboBox(w);
-  delimiter->insertItem(tr("Comma"), -1);
-  delimiter->insertItem(tr("Tab"), -1);
-  delimiter->insertItem(tr("Space"), -1);
-  delimiter->insertItem(tr("Semicolon"), -1);
-  connect(type, SIGNAL(activated(int)), this, SLOT(comboChanged(int)));
-  grid->addWidget(delimiter, 2, 1);
-  
-  label = new QLabel(tr("Data Directory:"), w);
-  grid->addWidget(label, 3, 0);
-  
-  directory = new QLineEdit(w);
-  connect(directory, SIGNAL(textChanged(const QString &)), this, SLOT(textChanged(const QString &)));
-  grid->addWidget(directory, 3, 1);
-
-  label = new QLabel(tr("Symbol Filter:"), w);
-  grid->addWidget(label, 4, 0);
-  
-  symbolFilter = new QLineEdit(w);
-  connect(symbolFilter, SIGNAL(textChanged(const QString &)), this, SLOT(textChanged(const QString &)));
-  grid->addWidget(symbolFilter, 4, 1);
-  
-  label = new QLabel(tr("Fields:"), w);
-  grid->addWidget(label, 5, 0);
-  
-  fieldCombo = new QComboBox(w);
-  fieldCombo->insertItem(tr("Date:YYYYMMDD"), -1);
-  fieldCombo->insertItem(tr("Date:YYMMDD"), -1);
-  fieldCombo->insertItem(tr("Date:MMDDYY"), -1);
-  fieldCombo->insertItem(tr("Date:MMDDYYYY"), -1);
-  fieldCombo->insertItem(tr("Date:DDMMYYYY"), -1);
-  fieldCombo->insertItem(tr("Date:MMDDYYYYHHMMSS"), -1);
-  fieldCombo->insertItem(tr("Time"), -1);
-  fieldCombo->insertItem(tr("Symbol"), -1);
-  fieldCombo->insertItem(tr("Open"), -1);
-  fieldCombo->insertItem(tr("High"), -1);
-  fieldCombo->insertItem(tr("Low"), -1);
-  fieldCombo->insertItem(tr("Close"), -1);
-  fieldCombo->insertItem(tr("Volume"), -1);
-  fieldCombo->insertItem(tr("OI"), -1);
-  fieldCombo->insertItem(tr("Ignore"), -1);
-  fieldCombo->insertItem(tr("Name"), -1);
-  grid->addWidget(fieldCombo, 5, 1);
-  
-  vbox->addSpacing(10);
-
-  label = new QLabel(tr("Rule Contents:"), w);
-  vbox->addWidget(label);
-  
-  ruleList = new QListBox(w);
-  QObject::connect(ruleList, SIGNAL(highlighted(int)), this, SLOT(fieldSelected(int)));
-  vbox->addWidget(ruleList);
-  
-  addTab(w, tr("Rule"));
-}
-
 void CSVDialog::newRule ()
 {
   bool ok = FALSE;
-  QString name = QInputDialog::getText(tr("New Rule"),
-  				       tr("Enter new rule name."),
-				       QLineEdit::Normal,
-				       tr("New Rule"),
-				       &ok,
-				       this);
-  if ((! ok) || (name.isNull()))
+  QString s = QInputDialog::getText(tr("New Rule"),
+  				    tr("Enter new rule name."),
+				    QLineEdit::Normal,
+				    tr("New Rule"),
+				    &ok,
+				    this);
+  if ((! ok) || (s.isNull()))
     return;
     
-  QSettings settings;
-  settings.beginGroup("/Qtstalker/CSV plugin");
-  QStringList l = QStringList::split(",", settings.readEntry("/RuleList"), FALSE);
-  
-  if (l.findIndex(name) != -1)
+  // remove any bad chars
+  int loop;
+  QString name;
+  for (loop = 0; loop < (int) s.length(); loop++)
+  {
+    QChar c = s.at(loop);
+    if (c.isLetterOrNumber())
+      name.append(c);
+  }
+    
+  QDir dir;
+  s = ruleDir + "/" + name;
+  if (dir.exists(s))
   {
     QMessageBox::information(this, tr("Warning"), tr("This rule already exists."));
-    settings.endGroup();
     return;
   }
+    
+  CSVRuleDialog *dialog = new CSVRuleDialog(this, s);
+          
+  int rc = dialog->exec();
   
-  l.append(name);
-  settings.writeEntry("/RuleList", l.join(","));
-  settings.endGroup();
+  if (rc == QDialog::Accepted)
+  {
+    updateRules();
+  }
   
-  ruleName->setText(name);
-  ruleList->clear();
-  
-  directory->clear();
-  
-  symbolFilter->clear();
-  
-  saveRule();
-  
-  ruleToolbar->setButtonStatus("delete", TRUE);
-  ruleToolbar->setButtonStatus("save", FALSE);
-  ruleToolbar->setButtonStatus("insert", TRUE);
-  
-  updateRules();
+  delete dialog;
 }
 
 void CSVDialog::editRule ()
 {
-  QSettings settings;
-  settings.beginGroup("/Qtstalker/CSV plugin");
-  QStringList l = QStringList::split(",", settings.readEntry("/RuleList"), FALSE);
+  SymbolDialog *dialog = new SymbolDialog(this,
+  				          ruleDir,
+					  "*",
+					  QFileDialog::ExistingFiles);
+  dialog->setCaption(tr("Select Rule To Edit"));
 
-  bool ok = FALSE;
-  QString name = QInputDialog::getItem(tr("Edit Rule"),
-  				       tr("Select rule to edit."),
-				       l,
-				       0,
-				       FALSE,
-				       &ok,
-				       this);
-  if (! ok)
+  int rc = dialog->exec();
+
+  if (rc == QDialog::Rejected)
   {
-    settings.endGroup();
+    delete dialog;
     return;
   }
-  
-  ruleList->clear();
-  
-  Setting *set = new Setting;
-  QString s = "/Rule_" + name;
-  set->parse(settings.readEntry(s));
-    
-  ruleName->setText(name);
-  
-  delimiter->setCurrentText(set->getData("Delimiter"));
-  
-  type->setCurrentText(set->getData("Type"));
-  
-  directory->setText(set->getData("Directory"));
-  
-  symbolFilter->setText(set->getData("SymbolFilter"));
-  
-  l = QStringList::split(",", set->getData("Rule"));
-  ruleList->insertStringList(l, -1);
-  
-  ruleToolbar->setButtonStatus("delete", TRUE);
-  ruleToolbar->setButtonStatus("save", FALSE);
-  ruleToolbar->setButtonStatus("insert", TRUE);
 
-  settings.endGroup();
-  delete set;
+  QStringList l = dialog->selectedFiles();
+  delete dialog;
+  if (! l.count())
+    return;
+
+  CSVRuleDialog *rdialog = new CSVRuleDialog(this, l[0]);
+          
+  rc = rdialog->exec();
+  
+  delete rdialog;
 }
 
 void CSVDialog::deleteRule ()
 {
-  int rc = QMessageBox::warning(this,
-  				tr("Warning"),
-				tr("Are you sure you want to delete this rule?"),
-				QMessageBox::Yes,
-				QMessageBox::No,
-				QMessageBox::NoButton);
+  SymbolDialog *dialog = new SymbolDialog(this,
+  				          ruleDir,
+					  "*",
+					  QFileDialog::ExistingFiles);
+  dialog->setCaption(tr("Select Rules To Delete"));
 
-  if (rc == QMessageBox::No)
-    return;
+  int rc = dialog->exec();
 
-  QSettings settings;
-  settings.beginGroup("/Qtstalker/CSV plugin");
-  QString s = "/Rule_" + ruleName->text();
-  settings.removeEntry(s);
-  
-  QStringList l = QStringList::split(",", settings.readEntry("/RuleList"), FALSE);
-  l.remove(ruleName->text());
-  settings.writeEntry("/RuleList", l.join(","));
-  
-  settings.endGroup();
-  
-  ruleName->clear();
-  ruleList->clear();
-  directory->clear();
-  symbolFilter->clear();
-  
-  ruleToolbar->setButtonStatus("delete", FALSE);
-  ruleToolbar->setButtonStatus("save", FALSE);
-  ruleToolbar->setButtonStatus("insert", FALSE);
-  ruleToolbar->setButtonStatus("deleteitem", FALSE);
-  
-  updateRules();
-}
-
-void CSVDialog::saveRule ()
-{
-  if (! directory->text().length())
+  if (rc == QDialog::Accepted)
   {
-    QMessageBox::information(this, tr("Error"), tr("Must inlcude a directory."));
-    return;
-  }
+    rc = QMessageBox::warning(this,
+  			      tr("Qtstalker: Warning"),
+			      tr("Are you sure you want to delete this rule?"),
+			      QMessageBox::Yes,
+			      QMessageBox::No,
+			      QMessageBox::NoButton);
 
-  if (directory->text().contains(" "))
-  {
-    QMessageBox::information(this, tr("Error"), tr("No spaces allowed in directory name."));
-    return;
-  }
-  
-  if (directory->text().right(1).compare("/") ||
-      directory->text().left(1).compare("/"))
-  {
-    QMessageBox::information(this, tr("Error"), tr("Invalid directory name."));
-    return;
-  }
-  
-  QSettings settings;
-  settings.beginGroup("/Qtstalker/CSV plugin");
-  QString key = "/Rule_" + ruleName->text();
-  
-  Setting *set = new Setting;
-  set->setData("Delimiter", delimiter->currentText());
-  set->setData("Type", type->currentText());
-  set->setData("Directory", directory->text());
-  set->setData("SymbolFilter", symbolFilter->text());
-  int loop;
-  QStringList l;
-  for (loop = 0; loop < (int) ruleList->count(); loop++)
-    l.append(ruleList->text(loop));
-  set->setData("Rule", l.join(","));
-  
-  settings.writeEntry(key, set->getString());
-  
-  ruleToolbar->setButtonStatus("save", FALSE);
-  
-  settings.endGroup();
-  delete set;
-}
+    if (rc == QMessageBox::No)
+    {
+      delete dialog;
+      return;
+    }
 
-void CSVDialog::insertField ()
-{
-  ruleList->insertItem(fieldCombo->currentText(), ruleList->currentItem());
-  ruleToolbar->setButtonStatus("save", TRUE);
-}
-
-void CSVDialog::deleteField ()
-{
-  if (ruleList->currentItem() != -1)
-  {
-    ruleList->removeItem(ruleList->currentItem());
-    ruleToolbar->setButtonStatus("save", TRUE);
-  }    
-}
-
-void CSVDialog::fieldSelected (int)
-{
-  if (ruleList->currentItem() != -1)
-  {
-    ruleToolbar->setButtonStatus("deleteitem", TRUE);
+    QStringList l = dialog->selectedFiles();
+    delete dialog;
+    if (! l.count())
+      return;
+    
+    int loop;
+    QDir dir;
+    for (loop = 0; loop < (int) l.count(); loop++)
+      dir.remove(l[loop]);
+    
+    updateRules();
   }
   else
-  {
-    ruleToolbar->setButtonStatus("deleteitem", FALSE);
-  }
+    delete dialog;
 }
 
 void CSVDialog::dateRangeChanged (bool d)
@@ -498,14 +321,23 @@ bool CSVDialog::getDateRange ()
 
 void CSVDialog::updateRules ()
 {
+  QString current = ruleCombo->currentText();
+  
   ruleCombo->clear();
   
-  QSettings settings;
-  settings.beginGroup("/Qtstalker/CSV plugin");
-  QStringList l = QStringList::split(",", settings.readEntry("/RuleList"), FALSE);
-  if (l.count())
-    ruleCombo->insertStringList(l, -1);
-  settings.endGroup();
+  QStringList l;
+  QDir dir(ruleDir);
+  int loop;
+  for (loop = 2; loop < (int) dir.count(); loop++)
+  {
+    QString s = dir.absPath() + "/" + dir[loop];
+    QFileInfo fi(s);
+    if (! fi.isDir())
+      l.append(dir[loop]);
+  }
+  ruleCombo->insertStringList(l, -1);
+
+  ruleCombo->setCurrentItem(l.findIndex(current));
 }
 
 void CSVDialog::setRuleName (QString d)
@@ -535,15 +367,4 @@ int CSVDialog::getReloadInterval ()
 {
   return minutes->value();
 }
-
-void CSVDialog::comboChanged (int)
-{
-  ruleToolbar->setButtonStatus("save", TRUE);
-}
-
-void CSVDialog::textChanged (const QString &)
-{
-  ruleToolbar->setButtonStatus("save", TRUE);
-}
-
 

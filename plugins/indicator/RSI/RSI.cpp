@@ -40,6 +40,8 @@ RSI::~RSI ()
 void RSI::setDefaults ()
 {
   color.setNamedColor("red");
+  buyColor.setNamedColor("gray");
+  sellColor.setNamedColor("gray");
   lineType = PlotLine::Line;
   label = pluginName;
   period = 14;
@@ -108,6 +110,24 @@ void RSI::calculate ()
     rsi->setLabel(label);
     output->addLine(rsi);
   }
+  
+  if (buyLine)
+  {
+    PlotLine *bline = new PlotLine();
+    bline->setColor(buyColor);
+    bline->setType(PlotLine::Horizontal);
+    bline->append(buyLine);
+    output->addLine(bline);
+  }
+  
+  if (sellLine)
+  {
+    PlotLine *sline = new PlotLine();
+    sline->setColor(sellColor);
+    sline->setType(PlotLine::Horizontal);
+    sline->append(sellLine);
+    output->addLine(sline);
+  }
 
   if (! customFlag)
     delete in;
@@ -125,12 +145,17 @@ int RSI::indicatorPrefDialog (QWidget *w)
   dialog->addIntItem(QObject::tr("Period"), QObject::tr("Parms"), period, 1, 99999999);
   dialog->addComboItem(QObject::tr("Smoothing Type"), QObject::tr("Parms"), getMATypes(), maType);
   dialog->addIntItem(QObject::tr("Smoothing"), QObject::tr("Parms"), smoothing, 0, 99999999);
+  
   if (customFlag)
     dialog->addFormulaInputItem(QObject::tr("Input"), QObject::tr("Parms"), FALSE, customInput);
   else
     dialog->addComboItem(QObject::tr("Input"), QObject::tr("Parms"), inputTypeList, input);
-  dialog->addFloatItem(QObject::tr("Buy Line"), QObject::tr("Parms"), buyLine, 0, 100);
-  dialog->addFloatItem(QObject::tr("Sell Line"), QObject::tr("Parms"), sellLine, 0, 100);
+    
+  dialog->createPage (QObject::tr("Zones"));
+  dialog->addColorItem(QObject::tr("Buy Zone Color"), QObject::tr("Zones"), buyColor);
+  dialog->addColorItem(QObject::tr("Sell Zone Color"), QObject::tr("Zones"), sellColor);
+  dialog->addIntItem(QObject::tr("Buy Zone"), QObject::tr("Zones"), buyLine, 0, 100);
+  dialog->addIntItem(QObject::tr("Sell Zone"), QObject::tr("Zones"), sellLine, 0, 100);
   
   int rc = dialog->exec();
   
@@ -142,12 +167,16 @@ int RSI::indicatorPrefDialog (QWidget *w)
     label = dialog->getText(QObject::tr("Label"));
     maType = dialog->getComboIndex(QObject::tr("Smoothing Type"));
     smoothing = dialog->getInt(QObject::tr("Smoothing"));
+    
     if (customFlag)
       customInput = dialog->getFormulaInput(QObject::tr("Input"));
     else
       input = (BarData::InputType) dialog->getComboIndex(QObject::tr("Input"));
-    buyLine = dialog->getFloat(QObject::tr("Buy Line"));
-    sellLine = dialog->getFloat(QObject::tr("Sell Line"));
+      
+    buyColor = dialog->getColor(QObject::tr("Buy Zone Color"));
+    sellColor = dialog->getColor(QObject::tr("Sell Zone Color"));
+    buyLine = dialog->getInt(QObject::tr("Buy Zone"));
+    sellLine = dialog->getInt(QObject::tr("Sell Zone"));
     
     rc = TRUE;
   }
@@ -169,6 +198,14 @@ void RSI::setIndicatorSettings (Setting &dict)
   if (s.length())
     color.setNamedColor(s);
     
+  s = dict.getData("buyColor");
+  if (s.length())
+    buyColor.setNamedColor(s);
+  
+  s = dict.getData("sellColor");
+  if (s.length())
+    sellColor.setNamedColor(s);
+  
   s = dict.getData("lineType");
   if (s.length())
     lineType = (PlotLine::LineType) s.toInt();
@@ -195,11 +232,11 @@ void RSI::setIndicatorSettings (Setting &dict)
 
   s = dict.getData("buyLine");
   if (s.length())
-    buyLine = s.toFloat();
+    buyLine = s.toInt();
 
   s = dict.getData("sellLine");
   if (s.length())
-    sellLine = s.toFloat();
+    sellLine = s.toInt();
 
   s = dict.getData("customInput");
   if (s.length())
@@ -209,6 +246,8 @@ void RSI::setIndicatorSettings (Setting &dict)
 void RSI::getIndicatorSettings (Setting &dict)
 {
   dict.setData("color", color.name());
+  dict.setData("buyColor", buyColor.name());
+  dict.setData("sellColor", sellColor.name());
   dict.setData("lineType", QString::number(lineType));
   dict.setData("period", QString::number(period));
   dict.setData("label", label);

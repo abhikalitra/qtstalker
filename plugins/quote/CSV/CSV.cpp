@@ -63,6 +63,8 @@ CSV::CSV ()
   reloadTimer = new QTimer(this);
   connect(reloadTimer, SIGNAL(timeout()), SLOT(parse()));
   
+  ruleDir = config.getData(Config::QuotePluginStorage) + "/CSV";
+  
   loadSettings();
 }
 
@@ -77,29 +79,28 @@ void CSV::update ()
 
 void CSV::parse ()
 {
-  Setting *rule = getRule();
-  if (! rule->count())
+  Setting rule;
+  getRule(rule);
+  
+  if (! rule.count())
   {
     emit statusLogMessage("Empty rule");
     emit done();
-    delete rule;
     return;
   }
 
-  if (! rule->getData("Rule").contains("Date:"))
+  if (! rule.getData("Rule").contains("Date:"))
   {
     emit statusLogMessage("Rule missing Date field");
     emit done();
-    delete rule;
     return;
   }
 
-  QString s = rule->getData("Delimiter");
+  QString s = rule.getData("Delimiter");
   if (! s.length())
   {
     emit statusLogMessage(tr("Delimiter not found"));
     emit done();
-    delete rule;
     return;
   }
   setDelimiter(s);
@@ -110,49 +111,45 @@ void CSV::parse ()
     {
       emit statusLogMessage(tr("Done"));
       emit done();
-      delete rule;
       return;
     }
   }
 
-  QString type = rule->getData("Type");
+  QString type = rule.getData("Type");
   if (! type.length())
   {
     emit statusLogMessage(tr("Type not found"));
     emit done();
-    delete rule;
     return;
   }
   
-  QStringList fieldList = QStringList::split(",", rule->getData("Rule"), FALSE);
+  QStringList fieldList = QStringList::split(",", rule.getData("Rule"), FALSE);
   if (! fieldList.count())
   {
     emit statusLogMessage(tr("No rule found"));
     emit done();
-    delete rule;
     return;
   }
 
-  // get the optional directory path offset
-  QString directory = rule->getData("Directory");
+  // get the directory path offset
+  QString directory = rule.getData("Directory");
   if (! directory.length())
   {
     emit statusLogMessage(tr("Directory not found"));
     emit done();
-    delete rule;
     return;
   }
   
   // get the symbol filter
-  QStringList symbolFilter = QStringList::split(",", rule->getData("SymbolFilter"), FALSE);
+  QStringList symbolFilter = QStringList::split(",", rule.getData("SymbolFilter"), FALSE);
   
   // check for time field and set the tickflag  
   bool tickFlag = FALSE;
-  if (rule->getData("Rule").contains("Time"))
+  if (rule.getData("Rule").contains("Time"))
     tickFlag = TRUE;
   else
   {
-    if (rule->getData("Rule").contains("HHMMSS"))
+    if (rule.getData("Rule").contains("HHMMSS"))
       tickFlag = TRUE;
   }
 
@@ -193,7 +190,6 @@ void CSV::parse ()
         emit statusLogMessage("Unable to create directory");
         emit done();
         f.close();
-        delete rule;
         return;
       }
     }
@@ -208,7 +204,6 @@ void CSV::parse ()
           emit statusLogMessage("Unable to create directory");
           emit done();
           f.close();
-          delete rule;
           return;
         }
 	
@@ -223,21 +218,8 @@ void CSV::parse ()
           emit statusLogMessage("Bad futures symbol");
           emit done();
           f.close();
-	  delete rule;
           return;
 	}
-
-//	QString s = "Futures/";
-//	s.append(fd.getSymbol());
-//        path = createDirectory(s);
-//        if (! path.length())
-//        {
-//          emit statusLogMessage("Unable to create futures symbol directory");
-//          emit done();
-//          f.close();
-//	  delete rule;
-//          return;
-//        }
       }
     }
 
@@ -267,7 +249,7 @@ void CSV::parse ()
       
       int fieldLoop;
       bool flag = FALSE;
-      Setting *r = new Setting;
+      Setting r;
       for (fieldLoop = 0; fieldLoop < (int) fieldList.count(); fieldLoop++)
       {
         if (fieldList[fieldLoop].contains("Date:"))
@@ -289,7 +271,7 @@ void CSV::parse ()
 	      break;
 	    }
           }
-	  r->setData("Date", dt.toString("yyyyMMdd"));
+	  r.setData("Date", dt.toString("yyyyMMdd"));
 	  continue;
 	}
 
@@ -303,7 +285,7 @@ void CSV::parse ()
 	    flag = TRUE;
 	    break;
 	  }
-	  r->setData("Time", s);
+	  r.setData("Time", s);
 	  continue;
 	}
 	
@@ -318,13 +300,13 @@ void CSV::parse ()
 	    }
 	  }
 	  
-	  r->setData("Symbol", l[fieldLoop]);
+	  r.setData("Symbol", l[fieldLoop]);
 	  continue;
 	}
 	
         if (! fieldList[fieldLoop].compare("Name"))
 	{
-	  r->setData("Name", l[fieldLoop]);
+	  r.setData("Name", l[fieldLoop]);
 	  continue;
 	}
         
@@ -340,7 +322,7 @@ void CSV::parse ()
 	    flag = TRUE;
 	    break;
 	  }
-	  r->setData(fieldList[fieldLoop], QString::number(tfloat));
+	  r.setData(fieldList[fieldLoop], QString::number(tfloat));
 	  continue;
 	}
 	
@@ -354,74 +336,65 @@ void CSV::parse ()
 	    flag = TRUE;
 	    break;
 	  }
-	  r->setData(fieldList[fieldLoop], QString::number(tfloat));
+	  r.setData(fieldList[fieldLoop], QString::number(tfloat));
 	  continue;
 	}
       }
       
       if (flag)
-      {
-        delete r;
 	continue;
-      }      
 
-      s = r->getData("Date");
+      s = r.getData("Date");
       if (! s.length())
-      {
-	delete r;
 	continue;
-      }
       
-      if (r->getData("Time"))
-        s.append(r->getData("Time"));
+      if (r.getData("Time"))
+        s.append(r.getData("Time"));
       else
         s.append("000000");
 	
       Bar *bar = new Bar;
       if (bar->setDate(s))
       {
-        emit statusLogMessage("Bad date " + r->getData("Date"));
-        delete r;
+        emit statusLogMessage("Bad date " + r.getData("Date"));
 	delete bar;
         continue;
       }
       bar->setTickFlag(tickFlag);
-      bar->setOpen(r->getData("Open").toDouble());
-      bar->setHigh(r->getData("High").toDouble());
-      bar->setLow(r->getData("Low").toDouble());
-      bar->setClose(r->getData("Close").toDouble());
-      bar->setVolume(r->getData("Volume").toDouble());
-      bar->setOI(r->getData("OI").toInt());
+      bar->setOpen(r.getData("Open").toDouble());
+      bar->setHigh(r.getData("High").toDouble());
+      bar->setLow(r.getData("Low").toDouble());
+      bar->setClose(r.getData("Close").toDouble());
+      bar->setVolume(r.getData("Volume").toDouble());
+      bar->setOI(r.getData("OI").toInt());
       
       if (! symbol.length())
       {
 	s = path;
-	s.append(r->getData("Symbol"));
-	if (openDb(s, r->getData("Symbol"), type, tickFlag))
+	s.append(r.getData("Symbol"));
+	if (openDb(s, r.getData("Symbol"), type, tickFlag))
 	{
-	  delete r;
 	  delete bar;
 	  continue;
 	}
 	
-	if (r->getData("Name").length())
-	  db->setHeaderField(DbPlugin::Title, r->getData("Name"));
+	if (r.getData("Name").length())
+	  db->setHeaderField(DbPlugin::Title, r.getData("Name"));
 
         db->setBar(bar);
-	emit dataLogMessage(r->getData("Symbol") + " " + r->getString());
-        emit statusLogMessage("Updating " + r->getData("Symbol"));
+	emit dataLogMessage(r.getData("Symbol") + " " + r.getString());
+        emit statusLogMessage("Updating " + r.getData("Symbol"));
 	config.closePlugin(type);
 	db = 0;
       }
       else
       {
-	if (r->getData("Name").length())
-	  db->setHeaderField(DbPlugin::Title, r->getData("Name"));
+	if (r.getData("Name").length())
+	  db->setHeaderField(DbPlugin::Title, r.getData("Name"));
         db->setBar(bar);
-	emit dataLogMessage(symbol + " " + r->getString());
+	emit dataLogMessage(symbol + " " + r.getString());
       }
 
-      delete r;
       delete bar;
     }
 
@@ -433,8 +406,6 @@ void CSV::parse ()
     f.close();
   }
 
-  delete rule;
-  
   emit done();
   if (cancelFlag)
   {
@@ -502,7 +473,7 @@ QString CSV::getTime (QString d)
   return time;    
 }
 
-QDate CSV::getDate (QString k, QString d, Setting *r)
+QDate CSV::getDate (QString k, QString d, Setting &r)
 {
   QDate date;
   QStringList l;
@@ -611,7 +582,7 @@ QDate CSV::getDate (QString k, QString d, Setting *r)
     {
       QString s = getTime(timeString);
       if (s.length())
-        r->setData("Time", s);
+        r.setData("Time", s);
       else
         break;
       
@@ -742,6 +713,55 @@ void CSV::loadSettings ()
   s = settings.readEntry("/ReloadInterval", "0");
   reloadInterval = s.toInt();
     
+  // tmp function to convert CSV rule files, remove after a few more versions are released
+  QStringList l = QStringList::split(",", settings.readEntry("/RuleList"), FALSE);
+  if (l.count())
+  {
+    Config config;
+    QDir dir;
+    QString ruleDir = config.getData(Config::QuotePluginStorage) + "/CSV";
+    if (! dir.exists(ruleDir))
+    {
+      if (! dir.mkdir(ruleDir, TRUE))
+      {
+        qDebug("CSV::loadSettings:could not create storage directory %s", ruleDir.latin1());
+        settings.endGroup();
+	return;
+      }
+    }
+    
+    int loop;
+    for (loop = 0; loop < (int) l.count(); loop++)
+    {
+      QString s = "/Rule_" + l[loop];
+      if (! s.length())
+        continue;
+	
+      Setting set;
+      set.parse(settings.readEntry(s));
+      
+      QString s2 = ruleDir + "/" + l[loop];
+      QFile f(s2);
+      if (! f.open(IO_WriteOnly))
+      {
+        qDebug("CSV::loadSettings:cannot save rule.");
+        continue;
+      }
+      QTextStream stream(&f);
+  
+      QStringList l2 = set.getKeyList();
+      int loop2;
+      for (loop2 = 0; loop2 < (int) l2.count(); loop2++)
+        stream << l2[loop2] << "=" << set.getData(l2[loop2]) << "\n";
+	
+      f.close();  
+      
+      settings.removeEntry(s);
+    }
+  
+    settings.removeEntry("/RuleList");
+  }
+  
   settings.endGroup();
 }
 
@@ -761,19 +781,32 @@ void CSV::saveSettings ()
   settings.endGroup();
 }
 
-Setting * CSV::getRule ()
+void CSV::getRule (Setting &set)
 {
-  QSettings settings;
-  settings.beginGroup("/Qtstalker/CSV plugin");
-  QStringList l = QStringList::split(",", settings.readEntry("/RuleList"), FALSE);
+  QString s = ruleDir +"/" + ruleName;
+  QFile f(s);
+  if (! f.open(IO_ReadOnly))
+  {
+    qDebug("CSV::getRule:cannot read file.");
+    return;
+  }
+  QTextStream stream(&f);
+
+  while(stream.atEnd() == 0)
+  {
+    QString s = stream.readLine();
+    s = s.stripWhiteSpace();
+    if (! s.length())
+      continue;
+      
+    QStringList l = QStringList::split("=", s, FALSE);
+    if (l.count() != 2)
+      continue;
+      
+    set.setData(l[0], l[1]);
+  }
   
-  Setting *set = new Setting;
-  QString s = "/Rule_" + ruleName;
-  QString s2 = settings.readEntry(s);
-  set->parse(s2);
-    
-  settings.endGroup();
-  return set;
+  f.close();
 }
 
 void CSV::cancelUpdate ()

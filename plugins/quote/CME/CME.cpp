@@ -30,7 +30,6 @@
 #include <qdir.h>
 #include <qstringlist.h>
 #include <stdlib.h>
-#include <qtimer.h>
 #include <qsettings.h>
 #include <qfileinfo.h>
 
@@ -38,7 +37,6 @@
 CME::CME ()
 {
   pluginName = "CME";
-  op = 0;
   symbolCombo = 0;
   helpFile = "cme.html";
   downloadIndex = 0;
@@ -47,7 +45,11 @@ CME::CME ()
   symbolList = fd.getSymbolList("CME");
   symbolList.sort();
   
-  connect(&opHistory, SIGNAL(finished(QNetworkOperation *)), this, SLOT(opHistoryDone(QNetworkOperation *)));
+  connect(this, SIGNAL(signalCopyFileDone(QString)), this, SLOT(fileDone(QString)));
+  connect(this, SIGNAL(signalTimeout()), this, SLOT(timeoutError()));
+  
+  Config config;
+  file = config.getData(Config::Home) + "/download";
   
   loadSettings();
   qInitNetworkProtocols();
@@ -59,154 +61,127 @@ CME::~CME ()
 
 void CME::update ()
 {
+  urlList.clear();
+  symbolLoop = 0;
+  errorLoop = 0;
+
   if (! method.compare(tr("Today")))
   {
-    urlList.clear();
-    symbolLoop = 0;
-    op = 0;
-
-    QDir dir = QDir::home();
-    file = dir.path();
-    file.append("/Qtstalker/download");
-
     urlList.append("ftp://ftp.cme.com//pub/settle/stlags");
     urlList.append("ftp://ftp.cme.com//pub/settle/stlcur");
     urlList.append("ftp://ftp.cme.com//pub/settle/stleqt");
     urlList.append("ftp://ftp.cme.com//pub/settle/stlint");
-
-    QTimer::singleShot(250, this, SLOT(getFile()));
   }
   else
   {
     downloadIndex = 0;
-    QTimer::singleShot(250, this, SLOT(getFileHistory()));
-  }
-}
+    Config config;
+    QString s = config.getData(Config::Home);
+  
+    // remove any old files
+    QDir dir(s);
+    int loop;
+    for (loop = 2; loop < (int) dir.count(); loop++)
+    {
+      QString t = dir.absPath() + "/" + dir[loop];
+      QFileInfo fi(t);
+      if (fi.isDir())
+        continue;
+      
+      if (! fi.extension(TRUE).compare("zip"))
+      {
+        dir.remove(fi.absFilePath());
+        continue;
+      }
+    
+      if (! fi.extension(TRUE).compare("eod"))
+        dir.remove(fi.absFilePath());
+    }
 
-void CME::opDone (QNetworkOperation *o)
-{
-  if (! o)
-    return;
+    file2 = s;
+    s.append("/download.zip");
+    file = s;
 
-  if (o->state() != QNetworkProtocol::StDone)
-    return;
-
-  if (o->errorCode() != QNetworkProtocol::NoError)
-  {
-    QString s = o->protocolDetail();
-    qDebug(s.latin1());
-    delete op;
-    emit statusLogMessage("Done");
-    emit done();
-    return;
+    s = "ftp://ftp.cme.com//pub/hist_eod/";
+    s.append(downloadSymbolList[downloadIndex].lower());
+    s.append("ytd.zip");
+    urlList.append(s);
   }
   
-  QDir dir(file);
-  if (! dir.exists(file, TRUE))
-    return;
-
-  parseToday();
-
-  symbolLoop++;
-
-  if (symbolLoop >= (int) urlList.count())
-  {
-    emit statusLogMessage("Done");
-    emit done();
-    delete op;
-    return;
-  }
-
-  getFile();
+  QTimer::singleShot(250, this, SLOT(startDownload()));
 }
 
-void CME::opHistoryDone (QNetworkOperation *o)
+void CME::startDownload ()
 {
-  if (! o)
-    return;
+  QString s = tr("Downloading ");
+  s.append(urlList[symbolLoop]);
+  emit statusLogMessage(s);
 
-  if (o->state() != QNetworkProtocol::StDone)
-    return;
+  copyFile(urlList[symbolLoop], file);
+}
 
-  if (o->errorCode() != QNetworkProtocol::NoError)
+void CME::fileDone (QString d)
+{
+  if (d.length())
   {
-    emit statusLogMessage(tr("Download error: bailing out"));
-    QString s = o->protocolDetail();
-    qDebug(s.latin1());
+    qDebug(d.latin1());
+    emit statusLogMessage(d);
+    emit statusLogMessage(tr("Done"));
     emit done();
     return;
   }
 
-  QDir dir(file);
-  if (! dir.exists(file, TRUE))
-    return;
+  if (! method.compare(tr("Today")))
+  {
+    parseToday();
+    
+    symbolLoop++;
+    
+    if (symbolLoop >= (int) urlList.count())
+    {
+      emit statusLogMessage(tr("Done"));
+      emit done();
+      return;
+    }
 
-  parseHistory();
-  
-  downloadIndex++;
-  if (downloadIndex < (int) downloadSymbolList.count())
-    getFileHistory();
+    startDownload();    
+  }
   else
   {
+    parseHistory();
     emit statusLogMessage(tr("Done"));
     emit done();
   }
 }
 
-void CME::getFile ()
+void CME::timeoutError ()
 {
-  if (op)
-    delete op;
-    
-  QDir dir(file);
-  dir.remove(file);
-
-  op = new QUrlOperator();
-  connect(op, SIGNAL(finished(QNetworkOperation *)), this, SLOT(opDone(QNetworkOperation *)));
-  op->copy(urlList[symbolLoop], file, FALSE, FALSE);
-  
-  QString s = "Downloading ";
-  s.append(urlList[symbolLoop]);
-  emit statusLogMessage(s);
-}
-
-void CME::getFileHistory ()
-{
-  QString s = QDir::homeDirPath();
-  s.append("/Qtstalker");
-  QDir dir(s);
-  int loop;
-  for (loop = 2; loop < (int) dir.count(); loop++)
+  errorLoop++;
+  if (errorLoop == retries)
   {
-    QString t = dir.absPath() + "/" + dir[loop];
-    QFileInfo fi(t);
-    if (fi.isDir())
-      continue;
-      
-    if (! fi.extension(TRUE).compare("zip"))
-    {
-      dir.remove(fi.absFilePath());
-      continue;
-    }
-    
-    if (! fi.extension(TRUE).compare("eod"))
-      dir.remove(fi.absFilePath());
-  }
-
-  file2 = s;
-  s.append("/download.zip");
-  file = s;
-
-  url = "ftp://ftp.cme.com//pub/hist_eod/";
-  url.append(downloadSymbolList[downloadIndex].lower());
-  url.append("ytd.zip");
-
-  opHistory.copy(url, file, FALSE, FALSE);
+    emit statusLogMessage(tr("Timeout: retry limit skipping file"));
   
-  s = tr("Downloading");
-  s.append(" ");
-  s.append(url);
-  emit statusLogMessage(s);
+    errorLoop = 0;
+    
+    if (! method.compare(tr("Today")))
+    {
+      symbolLoop++;
+      if (symbolLoop >= (int) urlList.count())
+      {
+        emit statusLogMessage(tr("Done"));
+        emit done();
+        return;
+      }
+
+      startDownload();
+    }
+  }
+  else
+  {
+    QString s = tr("Timeout: retry ") + QString::number(errorLoop + 1);
+    emit statusLogMessage(s);
+    startDownload();
+  }
 }
 
 void CME::parseToday ()
@@ -628,7 +603,7 @@ void CME::parseHistory ()
   QFile f(s2);
   if (! f.open(IO_ReadOnly))
   {
-    emit statusLogMessage("could not open parse history file");
+    emit statusLogMessage(tr("could not open parse history file"));
     return;
   }
   QTextStream stream(&f);
@@ -953,7 +928,7 @@ void CME::parse (Setting *data)
   QString path = createDirectory(s);
   if (! path.length())
   {
-    emit statusLogMessage("Unable to create futures directory");
+    emit statusLogMessage(tr("Unable to create futures directory"));
     return;
   }
 
@@ -971,7 +946,7 @@ void CME::parse (Setting *data)
   s = path + "/" + data->getData("Symbol");
   if (db->openChart(s))
   {
-    emit statusLogMessage("Could not open db.");
+    emit statusLogMessage(tr("Could not open db."));
     config.closePlugin("Futures");
     return;
   }
@@ -984,7 +959,7 @@ void CME::parse (Setting *data)
   {
     if (s.compare(pluginName))
     {
-      s = data->getData("Symbol") + " - skipping update. Source does not match destination.";
+      s = data->getData("Symbol") + tr(" - skipping update. Source does not match destination.");
       emit statusLogMessage(s);
       config.closePlugin("Futures");
       return;
@@ -1025,16 +1000,14 @@ void CME::parse (Setting *data)
 
 void CME::cancelUpdate ()
 {
-  if (! method.compare(tr("Today")))
+  if (op)
   {
-    if (op)
-      op->stop();
+    timer->stop();
+    op->stop();
   }
-  else
-    opHistory.stop();
   
   emit done();
-  emit statusLogMessage("Canceled");
+  emit statusLogMessage(tr("Canceled"));
 }
 
 void CME::prefDialog (QWidget *w)
@@ -1045,8 +1018,8 @@ void CME::prefDialog (QWidget *w)
   dialog->setHelpFile(helpFile);
 
   QStringList l2;
-  l2.append("Today");
-  l2.append("History");
+  l2.append(tr("Today"));
+  l2.append(tr("History"));
   dialog->addComboItem(tr("Method"), tr("Details"), l2, method);
   connect(dialog->getComboWidget(tr("Method")),
           SIGNAL(activated(const QString &)),
@@ -1055,8 +1028,10 @@ void CME::prefDialog (QWidget *w)
     
   dialog->addComboItem(tr("Symbol"), tr("Details"), symbolList, currentSymbol);
   symbolCombo = dialog->getComboWidget(tr("Symbol"));
-  
   methodChanged (method);
+
+  dialog->addIntItem(tr("Retry"), tr("Details"), retries, 0, 99);  
+  dialog->addIntItem(tr("Timeout"), tr("Details"), timeout, 0, 99);  
   
   int rc = dialog->exec();
   
@@ -1064,6 +1039,8 @@ void CME::prefDialog (QWidget *w)
   {
     downloadSymbolList = dialog->getCombo(tr("Symbol"));
     currentSymbol = dialog->getCombo(tr("Symbol"));
+    timeout = dialog->getInt(tr("Timeout"));
+    retries = dialog->getInt(tr("Retry"));
     
     saveFlag = TRUE;
     saveSettings();
@@ -1080,6 +1057,12 @@ void CME::loadSettings ()
   method = settings.readEntry("/Method", "Today");
   currentSymbol = settings.readEntry("/Symbol", "AD");
   
+  QString s = settings.readEntry("/Retry", "3");
+  retries = s.toInt();
+  
+  s = settings.readEntry("/Timeout", "15");
+  timeout = s.toInt();
+  
   settings.endGroup();
 }
 
@@ -1093,6 +1076,8 @@ void CME::saveSettings ()
   
   settings.writeEntry("/Method", method);
   settings.writeEntry("/Symbol", currentSymbol);
+  settings.writeEntry("/Retry", QString::number(retries));
+  settings.writeEntry("/Timeout", QString::number(timeout));
   
   settings.endGroup();
 }

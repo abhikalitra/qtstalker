@@ -33,7 +33,6 @@
 #include <qdir.h>
 #include <qsettings.h>
 
-
 NYBOT::NYBOT ()
 {
   pluginName = "NYBOT";

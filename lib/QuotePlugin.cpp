@@ -26,10 +26,24 @@
 QuotePlugin::QuotePlugin ()
 {
   saveFlag = FALSE;
+  op = 0;
+  errorLoop = 0;
+  retries = 1;
+  timeout = 15;
+  
+  timer = new QTimer(this);
+  connect(timer, SIGNAL(timeout()), this, SLOT(slotTimeout()));
 }
 
 QuotePlugin::~QuotePlugin ()
 {
+  if (op)
+  {
+    op->stop();
+    delete op;
+  }
+
+  delete timer;
 }
 
 QString QuotePlugin::stripJunk (QString d)
@@ -113,6 +127,101 @@ QString QuotePlugin::getPluginName ()
 QString QuotePlugin::getHelpFile ()
 {
   return helpFile;
+}
+
+void QuotePlugin::getFile (QString url)
+{
+  if (op)
+  {
+    op->stop();
+    delete op;
+  }
+
+  data.truncate(0);
+  
+  timer->start(timeout * 1000, TRUE);
+  
+  op = new QUrlOperator(url);
+  connect(op, SIGNAL(finished(QNetworkOperation *)), this, SLOT(getFileDone(QNetworkOperation *)));
+  connect(op, SIGNAL(data(const QByteArray &, QNetworkOperation *)), this, SLOT(dataReady(const QByteArray &, QNetworkOperation *)));
+  op->get();
+}
+
+void QuotePlugin::copyFile (QString url, QString file)
+{
+  if (op)
+  {
+    op->stop();
+    delete op;
+  }
+    
+  timer->start(timeout * 1000, TRUE);
+  
+  QDir dir(file);
+  dir.remove(file);
+
+  op = new QUrlOperator();
+  connect(op, SIGNAL(finished(QNetworkOperation *)), this, SLOT(copyFileDone(QNetworkOperation *)));
+  op->copy(url, file, FALSE, FALSE);
+}
+
+void QuotePlugin::getFileDone (QNetworkOperation *o)
+{
+  if (! o)
+    return;
+
+  if (o->state() == QNetworkProtocol::StDone && o->operation() == QNetworkProtocol::OpGet)
+  {
+    timer->stop();
+    emit signalGetFileDone(FALSE);
+    return;
+  }
+
+  if (o->state() == QNetworkProtocol::StFailed)
+  {
+    timer->stop();
+    emit signalGetFileDone(TRUE);
+  }
+}
+
+void QuotePlugin::copyFileDone (QNetworkOperation *o)
+{
+  if (! o)
+    return;
+
+  if (o->state() != QNetworkProtocol::StDone)
+    return;
+
+  if (o->errorCode() != QNetworkProtocol::NoError)
+  {
+    timer->stop();
+    QString s = QObject::tr("Download error: ") + o->protocolDetail();
+    emit signalCopyFileDone(s);
+    return;
+  }
+  
+  QDir dir(file);
+  if (! dir.exists(file, TRUE))
+    return;
+  
+  timer->stop();
+
+  emit signalCopyFileDone(QString());
+}
+
+void QuotePlugin::dataReady (const QByteArray &d, QNetworkOperation *)
+{
+  int loop;
+  for (loop = 0; loop < (int) d.size(); loop++)
+    data.append(d[loop]);
+}
+
+void QuotePlugin::slotTimeout ()
+{
+  timer->stop();
+  if (op)
+    op->stop();
+  emit signalTimeout();
 }
 
 //**************************************************************************

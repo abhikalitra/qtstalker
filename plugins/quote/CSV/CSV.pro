@@ -6,9 +6,11 @@ QMAKE_CXXFLAGS += -ffast-math -Os
 
 HEADERS += CSV.h
 HEADERS += CSVDialog.h
+HEADERS += CSVRuleDialog.h
 
 SOURCES += CSV.cpp
 SOURCES += CSVDialog.cpp
+SOURCES += CSVRuleDialog.cpp
 
 TARGET = CSV.0.30
 

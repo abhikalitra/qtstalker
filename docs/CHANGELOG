@@ -230,7 +230,20 @@
 	  
 20050307: Added a new lib to the MySQL plugin for 64bit systems that need the MySQL 64bit lib.
 
-20050307: Changed quotes dialog shortcut key to CTRL+Q because ALT+2 is picked up by the WM.
+20050307: Changed quotes dialog shortcut key to CTRL+Q because ALT+2 is picked up by some WM's.
+	  
+20050308: The RSI and STOCH zone lines are missing. Put them back.
+
+20050308: Moved various common network functions from Quote plugins into QuotePlugin base class.
+          This is for future CSV network functions being planned.
+	  
+20050309: Made some GUI changes to the CSV plugin. Removed the rule page from the dialog and
+          created a dialog to edit rules. Rules are simpler to edit now.
+	  
+20050309: Moved the CSV rule storage out of qtstalkerrc and created a directory tree in
+          ~/Qtstalker/plugin/quote/CSV/* All the rules will be stored here now. Much better
+	  flexibility for storage options. The conversion should be seamless for users, it will
+	  be handled automatically the first time the user loads the CSV plugin dialog.
 	  
 
 	  	  

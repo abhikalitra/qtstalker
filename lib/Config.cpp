@@ -155,6 +155,21 @@ void Config::setup ()
   }
   setData(MacroPath, s);
   
+  s = home + "/plugin";
+  if (! dir.exists(s, TRUE))
+  {
+    if (! dir.mkdir(s, TRUE))
+      qDebug("Unable to create ~/Qtstalker/plugin directory.");
+  }
+  
+  s.append("/quote");
+  if (! dir.exists(s, TRUE))
+  {
+    if (! dir.mkdir(s, TRUE))
+      qDebug("Unable to create ~/Qtstalker/plugin/quote directory.");
+  }
+  setData(QuotePluginStorage, s);
+  
   s = getData(AppFont);
   if (! s.length())
   {
@@ -332,6 +347,9 @@ QString Config::getData (Parm p)
     case IndicatorGroup:
       s = settings.readEntry("/Qtstalker/IndicatorGroup", "Indicators");
       break;
+    case QuotePluginStorage:
+      s = settings.readEntry("/Qtstalker/QuotePluginStorage");
+      break;
     default:
       break;
   }
@@ -507,6 +525,9 @@ void Config::setData (Parm p, QString d)
       break;
     case IndicatorGroup:
       settings.writeEntry("/Qtstalker/IndicatorGroup", d);
+      break;
+    case QuotePluginStorage:
+      settings.writeEntry("/Qtstalker/QuotePluginStorage", d);
       break;
     default:
       break;

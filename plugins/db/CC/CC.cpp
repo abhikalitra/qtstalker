@@ -84,21 +84,21 @@ void CC::update ()
     else
       setData("Last Rebuild Date", startDate.toString("yyyyMMdd000000"));
   }
-  
-  Config config;
-  QString baseDir = config.getData(Config::DataPath) + "/Futures/" + getHeaderField(Symbol);
-  QDir dir(baseDir);
-  if (! dir.exists(baseDir, TRUE))
-    return;
-    
-  int maxYears = getData("Maximum Years").toInt();
-  
+
   FuturesData fd;
   if (fd.setSymbol(getHeaderField(Symbol)))
   {
     qDebug("CC::newChart:invalid futures symbol");
     return;
   }
+    
+  Config config;
+  QString baseDir = config.getData(Config::DataPath) + "/Futures/" + fd.getExchange() + "/" + fd.getSymbol();
+  QDir dir(baseDir);
+  if (! dir.exists(baseDir, TRUE))
+    return;
+    
+  int maxYears = getData("Maximum Years").toInt();
   
   QString lastChart = fd.getCurrentContract(startDate);
   QString ey = lastChart.right(5);

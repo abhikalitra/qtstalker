@@ -37,6 +37,8 @@ class STOCH : public IndicatorPlugin
   private:
     QColor dcolor;
     QColor kcolor;
+    QColor buyColor;
+    QColor sellColor;
     PlotLine::LineType dlineType;
     PlotLine::LineType klineType;
     QString dlabel;
@@ -44,8 +46,8 @@ class STOCH : public IndicatorPlugin
     int dperiod;
     int kperiod;
     int period;
-    double buyLine;
-    double sellLine;
+    int buyLine;
+    int sellLine;
     int maType;
     QString customInput;
     QString label;

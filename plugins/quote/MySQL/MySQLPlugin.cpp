@@ -32,7 +32,6 @@
 #include <qstringlist.h>
 
 
-
 /**
  * constructor
  */

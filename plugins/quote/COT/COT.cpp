@@ -38,9 +38,12 @@
 COT::COT ()
 {
   pluginName = "COT";
-  op = 0;
   helpFile = "cot.html";
   
+  connect(this, SIGNAL(signalCopyFileDone(QString)), this, SLOT(slotCopyFileDone(QString)));
+  connect(this, SIGNAL(signalGetFileDone(bool)), this, SLOT(slotGetFileDone(bool)));
+  connect(this, SIGNAL(signalTimeout()), this, SLOT(timeoutError()));
+
   loadSettings();
   qInitNetworkProtocols();
 }
@@ -51,132 +54,103 @@ COT::~COT ()
 
 void COT::update ()
 {
-  data.truncate(0);
-  op = 0;
+  errorLoop = 0;
 
   if (! format.compare("Current"))
   {
+    Config config;
+    file = config.getData(Config::Home) + "/download";
+  
     url = "http://www.cftc.gov/dea/newcot/deafut.txt";
-    QTimer::singleShot(250, this, SLOT(getFile()));
+    QString s = tr("Downloading ") + url;
+    emit statusLogMessage(s);
+
+    getFile(url);
+    
+//    QTimer::singleShot(250, this, SLOT(getFile()));
   }
   else
   {
+    Config config;
+    file = config.getData(Config::Home) + "/download.zip";
+    QDir dir;
+    dir.remove(file);
+    
     url = "http://www.cftc.gov/files/dea/history/deacot";
     QDate dt = QDate::currentDate();
     url.append(QString::number(dt.year()));
     url.append(".zip");
-    QTimer::singleShot(250, this, SLOT(getFile2()));
+    
+    QString s = tr("Downloading ") + url;
+    emit statusLogMessage(s);
+    
+    copyFile(url, file);
+    
+//    QTimer::singleShot(250, this, SLOT(getFile2()));
   }
 }
 
-void COT::getFile ()
+void COT::slotGetFileDone (bool d)
 {
-  QDir dir = QDir::home();
-  file = dir.path();
-  file.append("/Qtstalker/download");
-
-  op = new QUrlOperator(url);
-  connect(op, SIGNAL(finished(QNetworkOperation *)), this, SLOT(opDone(QNetworkOperation *)));
-  connect(op, SIGNAL(data(const QByteArray &, QNetworkOperation *)), this, SLOT(dataReady(const QByteArray &, QNetworkOperation *)));
-  op->get();
-  
-  QString s = tr("Downloading");
-  s.append(" ");
-  s.append(url);
-  emit statusLogMessage(s);
-}
-
-void COT::getFile2 ()
-{
-  QDir dir = QDir::home();
-  file = dir.path();
-  file.append("/Qtstalker/download.zip");
-  dir.remove(file);
-
-  op = new QUrlOperator();
-  connect(op, SIGNAL(finished(QNetworkOperation *)), this, SLOT(opDone2(QNetworkOperation *)));
-  op->copy(url, file, FALSE, FALSE);
-  
-  QString s = tr("Downloading");
-  s.append(" ");
-  s.append(url);
-  emit statusLogMessage(s);
-}
-
-void COT::opDone (QNetworkOperation *o)
-{
-  if (! o)
-    return;
-
-  if (o->state() == QNetworkProtocol::StDone && o->operation() == QNetworkProtocol::OpGet)
-  {
-    QFile f(file);
-    if (! f.open(IO_WriteOnly))
-      return;
-    QTextStream stream(&f);
-    stream << data;
-    f.close();
-
-    delete op;
-    parse();
-    emit statusLogMessage(tr("Done"));
-    emit done();
-    return;
-  }
-
-  if (o->state() == QNetworkProtocol::StFailed)
+  if (d)
   {
     emit statusLogMessage(tr("Download error"));
     emit done();
-    delete op;
     return;
   }
+
+  QFile f(file);
+  if (! f.open(IO_WriteOnly))
+  {
+    emit statusLogMessage(tr("Unable to create temp file"));
+    emit done();
+    return;
+  }
+  QTextStream stream(&f);
+  stream << data;
+  f.close();
+
+  parse();
+  
+  emit statusLogMessage(tr("Done"));
+  emit done();
 }
 
-void COT::opDone2 (QNetworkOperation *o)
+void COT::slotCopyFileDone (QString d)
 {
-  if (! o)
-    return;
-
-  if (o->state() != QNetworkProtocol::StDone)
-    return;
-
-  if (o->errorCode() != QNetworkProtocol::NoError)
+  if (d.length())
   {
-    emit statusLogMessage(tr("Download error"));
-    QString s = o->protocolDetail();
-    qDebug(s.latin1());
-    delete op;
+    emit statusLogMessage(d);
     emit done();
     return;
   }
 
   QDir dir(file);
   if (! dir.exists(file, TRUE))
+  {
+    emit statusLogMessage(tr("Unable to create temp file"));
+    emit done();
     return;
+  }
 
-  QString tfile = dir.homeDirPath();
-  tfile.append("/Qtstalker/ANNUAL.TXT");
+  Config config;
+  QString tfile = config.getData(Config::Home) + "/ANNUAL.TXT";
   if (dir.exists(tfile))
     dir.remove(tfile, TRUE);
   else
   {
-    tfile = dir.homeDirPath();
-    tfile.append("/Qtstalker/annual.txt");
+    tfile = config.getData(Config::Home) + "/annual.txt";
     dir.remove(tfile, TRUE);
   }
 
-  QString s = dir.homeDirPath();
-  s.append("/Qtstalker");
-
+  QString s = config.getData(Config::Home);
   QString s2 = "unzip ";
   s2.append(file);
   s2.append(" -d ");
   s2.append(s);
   if (system(s2))
   {
-    delete op;
-    emit statusLogMessage(tr("Done"));
+    emit statusLogMessage(tr("Unzip file failed."));
     emit done();
     return;
   }
@@ -185,17 +159,30 @@ void COT::opDone2 (QNetworkOperation *o)
 
   parse();
 
-  delete op;
-
   emit statusLogMessage(tr("Done"));
   emit done();
 }
 
-void COT::dataReady (const QByteArray &d, QNetworkOperation *)
+void COT::timeoutError ()
 {
-  int loop;
-  for (loop = 0; loop < (int) d.size(); loop++)
-    data.append(d[loop]);
+  errorLoop++;
+  
+  if (errorLoop == retries)
+  {
+    emit statusLogMessage(tr("Timeout: retry limit."));
+    emit done();
+    return;
+  }
+  else
+  {
+    QString s = tr("Timeout: retry ") + QString::number(errorLoop + 1);
+    emit statusLogMessage(s);
+    
+    if (! format.compare("Current"))
+      getFile(url);
+    else
+      copyFile(url, file);
+  }
 }
 
 void COT::parse ()
@@ -612,9 +599,13 @@ QString COT::getSymbol (QString dat)
 void COT::cancelUpdate ()
 {
   if (op)
+  {
+    timer->stop();
     op->stop();
+  }
+  
   emit done();
-  emit statusLogMessage(tr("Cancelled"));
+  emit statusLogMessage(tr("Canceled"));
 }
 
 void COT::prefDialog (QWidget *w)
@@ -628,12 +619,19 @@ void COT::prefDialog (QWidget *w)
   dialog->createPage (tr("Details"));
   dialog->setHelpFile(helpFile);
   dialog->addComboItem(tr("Format"), tr("Details"), l, format);
+  dialog->addIntItem(tr("Retry"), tr("Details"), retries, 0, 99);  
+  dialog->addIntItem(tr("Timeout"), tr("Details"), timeout, 0, 99);  
+  
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
     format = dialog->getCombo(tr("Format"));
+    timeout = dialog->getInt(tr("Timeout"));
+    retries = dialog->getInt(tr("Retry"));
+    
     saveFlag = TRUE;
+    saveSettings();
   }
   
   delete dialog;
@@ -645,6 +643,12 @@ void COT::loadSettings ()
   settings.beginGroup("/Qtstalker/COT plugin");
 
   format = settings.readEntry("/Format", "Current");
+  
+  QString s = settings.readEntry("/Retry", "3");
+  retries = s.toInt();
+  
+  s = settings.readEntry("/Timeout", "15");
+  timeout = s.toInt();
   
   settings.endGroup();
 }
@@ -658,6 +662,8 @@ void COT::saveSettings ()
   settings.beginGroup("/Qtstalker/COT plugin");
   
   settings.writeEntry("/Format", format);
+  settings.writeEntry("/Retry", QString::number(retries));
+  settings.writeEntry("/Timeout", QString::number(timeout));
   
   settings.endGroup();
 }

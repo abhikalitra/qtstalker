@@ -36,12 +36,14 @@ class RSI : public IndicatorPlugin
     
   private:
     QColor color;
+    QColor buyColor;
+    QColor sellColor;
     PlotLine::LineType lineType;
     QString label;
     int period;
     int smoothing;
-    double buyLine;
-    double sellLine;
+    int buyLine;
+    int sellLine;
     int maType;
     BarData::InputType input;
     QString customInput;

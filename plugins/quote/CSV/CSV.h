@@ -36,13 +36,13 @@ class CSV : public QuotePlugin
     virtual ~CSV ();
     void update ();
     void setDelimiter (QString);
-    QDate getDate (QString, QString, Setting *);
+    QDate getDate (QString, QString, Setting &);
     QString getTime (QString);
     bool openDb (QString, QString, QString, bool);
     void loadSettings ();
     void saveSettings ();
     void prefDialog (QWidget *);
-    Setting * getRule ();
+    void getRule (Setting &);
     void cancelUpdate ();
 
   public slots:
@@ -65,6 +65,7 @@ class CSV : public QuotePlugin
     QString lastPath;
     int reloadInterval;
     QTimer *reloadTimer;
+    QString ruleDir;
 };
 
 extern "C"

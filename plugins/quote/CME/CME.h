@@ -23,8 +23,6 @@
 #include "FuturesData.h"
 #include "Setting.h"
 #include <qstring.h>
-#include <qnetworkprotocol.h>
-#include <qurloperator.h>
 #include <qcombobox.h>
 
 class CME : public QuotePlugin
@@ -36,29 +34,25 @@ class CME : public QuotePlugin
     virtual ~CME ();
     void update ();
     void parseToday ();
+    void parseHistory ();
     void saveTodayData (QStringList);
     void parse (Setting *);
     void cancelUpdate ();
     void loadSettings ();
     void saveSettings ();
     void prefDialog (QWidget *);
-    void parseHistory ();
 
   public slots:
-    void getFile ();
-    void getFileHistory ();
-    void opDone (QNetworkOperation *);
-    void opHistoryDone (QNetworkOperation *);
     void methodChanged (const QString &);
+    void startDownload ();
+    void fileDone (QString);
+    void timeoutError ();
 
   private:
     FuturesData fd;
-    QUrlOperator *op;
     QStringList urlList;
     int symbolLoop;
     QString file2;
-    QUrlOperator opHistory;
-    QString url;
     QString method;
     QString currentSymbol;
     QComboBox *symbolCombo;

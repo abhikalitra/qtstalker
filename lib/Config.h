@@ -90,7 +90,8 @@ class Config
       Macro10,
       Macro11,
       Macro12,
-      IndicatorGroup
+      IndicatorGroup,
+      QuotePluginStorage
     };
 
     Config ();
