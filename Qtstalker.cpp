@@ -326,9 +326,9 @@ void QtstalkerApp::initToolBar()
   toolbar = new QToolBar(this, "toolbar");
 
   actionNav->addTo(toolbar);
-  actionNewIndicator->addTo(toolbar);
   actionGrid->addTo(toolbar);
   actionScaleToScreen->addTo(toolbar);
+  actionNewIndicator->addTo(toolbar);
   actionDatawindow->addTo(toolbar);
   actionQuotes->addTo(toolbar);
 

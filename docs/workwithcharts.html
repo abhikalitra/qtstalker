@@ -1,122 +1,55 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML Basic 1.0//EN" "http://www.w3.org/TR/xhtml-basic/xhtml-basic10.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-       
   <meta http-equiv="Content-Type"
  content="text/html; charset=iso-8859-1">
   <title>Qtstalker - Work with Charts</title>
-             
   <meta name="generator"
  content="amaya 6.1, see http://www.w3.org/Amaya/">
 </head>
-  <body xml:lang="en" lang="en">
-   
-<h2><u>Work with Charts</u></h2>
-    
-<h1><img alt="work with charts menu" src="filemenu1.png">
-  </h1>
-    
+<body xml:lang="en" lang="en">
+<h2><u>Chart Tab</u></h2>
 <p></p>
-    
 <h3>Description:</h3>
- 
-<p>The work with charts dialog allows you to open, edit, delete, export charts. 
-All items that appear in the list can be either a chart or a directory. A 
-directory will have a blue folder icon beside the text. Selecting the directory 
-will move into it and update the list with the contents. Here is an example.</p>
-      
-<p>Selecting a symbol from the list updates the current info on the chart:</p>
-   
-<ul>
-    <li>Symbol is the ticker symbol of the chart</li>
-    <li>Title is the name of the chart.</li>
-    <li>Type is chart type. eg stock, futures, spread etc.</li>
-    <li>First date is the first tick of data available to plot.</li>
-    <li>Last date is the most recent tick of data to plot.</li>
-   
-</ul>
-    
-<p></p>
-    
-<p><img alt="work with charts dialog" src="workwithcharts1.png">
- </p>
-    
-<p></p>
-    
-<p>The button functions are as follows:</p>
-    
-<h3><img src="open.png" alt="" width="24" height="24">
-  Open</h3>
- 
-<p>This will load and display the selected chart. eg ^IXIC</p>
-        
-<h3><img src="stop.png" alt="" width="24" height="24">
-  Cancel</h3>
-    
-<p>This exits the dialog.</p>
-    
-<p></p>
-    
-<h3><img src="up.png" alt="" width="24" height="24">
-  Up Directory</h3>
-    
-<p>If applicable, this will move up one directory level. All charts are children 
-of the /data directory.</p>
-    
-<p></p>
-    
-<h3><img src="edit.png" alt="" width="22" height="22">
-  Edit</h3>
-    
-<p>Opens a dialog that allows you to edit some of the chart parameters and
-chart data. Only  the parms listed can be edited. Parms are dependent on
-the chart types, so  not every chart shares the same parms.</p>
-    
-<p></p>
-    
-<p><img alt="blah" src="workwithcharts2.png">
-<br>
+<p>The work with chart tab allows you to view, edit, delete, export
+charts. All items that appear in the list can be either a chart or a
+directory. A directory will have a blue folder icon beside the text.
+Selecting the directory will move into it and update the list with the
+contents. Selecting a chart will display it. Here is an example.<br>
 </p>
-<p>Here is where you can edit the tick data. Just select a date and the data
-will display in the list. To edit a field, just click on the data and a dialog
-will popup and allow to enter data. To save your changes press the save button.
-To delete a record press the delete button.</p>
-<p><img src="workwithcharts3.png" alt="" width="309" height="301">
-<br>
- </p>
-    
+<p><img src="chartnav.png" title="" alt="Chart Tab"
+ style="width: 182px; height: 354px;"><br>
+</p>
 <p></p>
-    
-<h3><img src="delete.png" alt="" width="22" height="22">
-  Delete</h3>
-    
+<p>The button functions are as follows:</p>
+<h3><img src="edit.png" alt="" width="22" height="22"> Edit</h3>
+<p>Opens a dialog that allows you to edit some of the chart parameters
+and chart data. Only  the parms listed can be edited. Parms are
+dependent on the chart types, so  not every chart shares the same parms.</p>
+<p></p>
+<p><img alt="blah" src="workwithcharts2.png"> <br>
+</p>
+<p>Here is where you can edit the tick data. Just select a date and the
+data will display in the list. To edit a field, just click on the data
+and a dialog will popup and allow to enter data. To save your changes
+press the save button. To delete a record press the delete button.</p>
+<p><img src="workwithcharts3.png" alt="" width="309" height="301"> <br>
+</p>
+<p></p>
+<h3><img src="delete.png" alt="" width="22" height="22"> Delete</h3>
 <p>Permanently delete the chart selected.</p>
-    
 <p></p>
-    
-<h3><img src="export.png" alt="" width="22" height="22">
-  Export Symbol</h3>
-    
-<p>Clicking this button will dump the contents of the selected file to ASCII.
- The exported file will be placed in the Qtstalker export directory. The
-exported file is in the Qtstalker format of key/data pairs, so it will not
-be useful for most of you. I include it for use in correcting data errors
-and for disaster recovery operations. The Qtstalker quote plugin can import
-this file format to rebuild the chart. Don't do this unless you know what
-you are doing.</p>
-    
+<h3><img src="export.png" alt="" width="22" height="22"> Export Symbols</h3>
+<p>Clicking this button will bring up a dialog that allows you to
+select charts you wish to dump the contents to ASCII.  The exported
+files will be placed in the Qtstalker export directory. The exported
+file is in the Qtstalker format of key/data pairs, so it will not be
+useful for most of you. I include it for use in correcting data errors
+and for disaster recovery operations. The Qtstalker quote plugin can
+import this file format to rebuild the chart. Don't do this unless you
+know what you are doing.</p>
 <p></p>
-    
-<h3><img src="export.png" alt="" width="22" height="22">
-  Export All Symbols</h3>
-    
-<p>This is the same as the Export Symbol button except all charts will be
- exported.</p>
-    
-<p></p>
-    
-<p></p>
-  <br>
- <br>
+<br>
+<br>
 </body>
 </html>

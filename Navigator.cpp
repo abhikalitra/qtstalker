@@ -42,7 +42,7 @@ Navigator::~Navigator ()
 void Navigator::updateList ()
 {
   clear();
-  
+
   currentDir.refresh();
 
   int loop;
@@ -62,7 +62,7 @@ void Navigator::updateList ()
     else
       insertItem(currentDir[loop], -1);
   }
-  
+
   clearSelection();
 }
 
