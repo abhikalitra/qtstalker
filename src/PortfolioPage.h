@@ -31,6 +31,9 @@
 class PortfolioPage : public QListBox
 {
   Q_OBJECT
+  
+  signals:
+    void signalKeyPressed (int, QKeyEvent *);
 
   public:
     PortfolioPage (QWidget *);

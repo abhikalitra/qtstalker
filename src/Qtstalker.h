@@ -19,20 +19,13 @@
 #define QTSTALKER_H
 
 #include <qmainwindow.h>
-#include <qaction.h>
 #include <qmenubar.h>
 #include <qtoolbar.h>
 #include <qstring.h>
-#include <qpixmap.h>
-#include <qcombobox.h>
-#include <qslider.h>
-#include <qspinbox.h>
 #include <qtabwidget.h>
 #include <qsplitter.h>
-#include <qtoolbutton.h>
-#include <qptrlist.h>
 #include <qmultilineedit.h>
-#include <qbuttongroup.h>
+#include <qdict.h>
 
 #include "Indicator.h"
 #include "Plot.h"
@@ -59,8 +52,6 @@ class QtstalkerApp : public QMainWindow
   Q_OBJECT
   
   signals:
-    void signalGrid (bool);
-    void signalScaleToScreen (bool);
     void signalPixelspace (int);
     void signalBackgroundColor (QColor);
     void signalBorderColor (QColor);
@@ -69,9 +60,7 @@ class QtstalkerApp : public QMainWindow
     void signalIndex (int);
     void signalInterval(BarData::BarCompression);
     void signalIndicatorPageRefresh ();
-    void signalPlotDate (bool);
     void signalChartPath (QString);
-    void signalDrawMode (bool);
     void signalCrosshairsStatus(bool);
 
   public:
@@ -103,9 +92,9 @@ class QtstalkerApp : public QMainWindow
     void traverse(QString);
     void loadIndicator (Indicator *);
     void setSliderStart (int, bool);
+    void initPlot (Plot *);
 
   public slots:
-
     void slotAbout ();
     void slotQuit();
     void slotOpenChart (QString);
@@ -115,44 +104,26 @@ class QtstalkerApp : public QMainWindow
     void slotNewIndicator ();
     void slotEditIndicator (QString);
     void slotDeleteIndicator (QString);
-    void slotGrid (bool);
     void slotCompressionChanged (int);
     void slotChartTypeChanged (int);
-    void slotSliderChanged (int);
     void slotPixelspaceChanged (int);
-    void slotScaleToScreen (bool);
     void slotChartUpdated ();
     void slotStatusMessage (QString);
     void slotTabChanged (QWidget *);
     void slotHideNav (bool);
     void slotUpdateInfo (Setting *);
-    void slotLogScale (bool);
-    void slotHideMainPlot (bool);
-    void slotPlotDate (bool);
     void slotPlotLeftMouseButton (int, int, bool);
-    void slotPlotKeyPressed (QKeyEvent *);
-    void slotDrawMode (bool);
     void slotMinPixelspaceChanged (int);
     void slotCrosshairsStatus (bool);
     void slotNavigatorPosition (int);
     void slotMainPlotFocus ();
     void slotTabIndicatorFocus ();
-    void slotNavigatorButtonPressed (int);
     void slotHelp ();
     void slotExitQuoteDialog ();
     void slotDisableIndicator (QString);
     void slotEnableIndicator (QString);
-
-/*        
-    void slotChartPanelFocus ();
-    void slotGroupPanelFocus ();
-    void slotIndicatorPanelFocus ();
-    void slotPortfolioPanelFocus ();
-    void slotTesterPanelFocus ();
-    void slotScannerPanelFocus ();
-    void slotMacroPanelFocus ();
-*/
-
+    void slotToolbarFocus ();
+    
   private:
     QToolBar *toolbar;
     ChartToolbar *toolbar2;
@@ -183,7 +154,7 @@ class QtstalkerApp : public QMainWindow
     TestPage *tp;
     GroupPage *gp;
     MacroPage *mp;
-    QButtonGroup *bg;
+//    KeyFilter *keyFilter;
 };
 
 #endif

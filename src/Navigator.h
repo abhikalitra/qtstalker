@@ -34,6 +34,7 @@ class Navigator : public QListBox
     void fileSelected (QString);
     void noSelection ();
     void keyPress (QKeyEvent *);
+    void signalKeyPressed (int, QKeyEvent *);
 
   public:
     Navigator (QWidget *, QString);
@@ -42,6 +43,7 @@ class Navigator : public QListBox
     void setDirectory (QString);
     QString getCurrentPath ();
     void setFilter (QString);
+    void setId (int);
 
   public slots:
     void upDirectory ();
@@ -55,6 +57,7 @@ class Navigator : public QListBox
   
     QString basePath;
     QDir currentDir;
+    int id;
 };
 
 #endif

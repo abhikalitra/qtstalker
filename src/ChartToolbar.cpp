@@ -170,4 +170,56 @@ void ChartToolbar::saveSettings ()
   config.setData(Config::Bars, QString::number(getBars()));
 }
 
+void ChartToolbar::setFocus ()
+{
+  compressionCombo->setFocus();
+}
+
+
+// old key stuff needs to be done
+/*
+  switch (key->key())
+  {
+    case Qt::Key_Left:
+      slider->setValue(slider->value() - 1);
+      break;
+    case Qt::Key_Right:
+      slider->setValue(slider->value() + 1);
+      break;
+    case Qt::Key_Home:
+      slider->setValue(0);
+      break;
+    case Qt::Key_End:
+      slider->setValue(slider->maxValue());
+      break;
+    case Qt::Key_Prior:
+      slider->addStep();
+      break;
+    case Qt::Key_Next:
+      slider->subtractStep();
+      break;
+    case Qt::Key_Minus:
+      pixelspace->stepDown();
+      break;
+    case Qt::Key_Plus:
+      pixelspace->stepUp();
+      break;
+    case Qt::Key_Up:
+      if (compressionCombo->currentItem() != (compressionCombo->count() - 1))
+      {
+        compressionCombo->setCurrentItem(compressionCombo->currentItem() + 1);
+        slotCompressionChanged(compressionCombo->currentItem());
+      }
+      break;
+    case Qt::Key_Down:
+      if (compressionCombo->currentItem() != 0)
+      {
+        compressionCombo->setCurrentItem(compressionCombo->currentItem() - 1);
+        slotCompressionChanged(compressionCombo->currentItem());
+      }
+      break;
+    default:
+      break;
+  }
+*/
 

@@ -40,7 +40,8 @@ class ChartPage : public QWidget
     ChartPage (QWidget *);
     ~ChartPage ();
     void exportChart (QString);
-    void setNavFocus ();
+    void setFocus ();
+    Navigator * getNav ();
 
   public slots:
     void deleteChart ();

@@ -28,6 +28,7 @@
 Navigator::Navigator (QWidget *w, QString bp) : QListBox(w)
 {
   basePath = bp;
+  id = 0;
 
   currentDir.setPath(bp);
 
@@ -163,9 +164,15 @@ void Navigator::setFilter (QString d)
   emit noSelection();
 }
 
+void Navigator::setId (int d)
+{
+  id = d;
+}
+
 void Navigator::keyPressEvent (QKeyEvent *key)
 {
-  doKeyPress(key);
+  emit signalKeyPressed (id, key);
+  doKeyPress(key);  
 }
 
 void Navigator::doKeyPress (QKeyEvent *key)

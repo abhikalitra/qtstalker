@@ -26,7 +26,7 @@
 #include <qmenubar.h>
 #include <qmainwindow.h>
 #include <qpopupmenu.h>
-#include <qdict.h>
+#include <qintdict.h>
 #include <qaction.h>
 
 class MainMenubar : public QMenuBar
@@ -35,24 +35,66 @@ class MainMenubar : public QMenuBar
   
   signals:
     void signalExit ();
-
+    void signalGrid (bool);
+    void signalScale (bool);
+    void signalDraw (bool);
+    void signalPlotDate (bool);
+    void signalLog (bool);
+    void signalHideMain (bool);
+    void signalFocusEvent (int);
+    
   public:
+  
+    enum MenuAction
+    {
+      Exit,
+      NewIndicator,
+      Options,
+      Grid,
+      Quotes,
+      DataWindow,
+      About,
+      ScaleToScreen,
+      SidePanel,
+      Log,
+      HideMain,
+      IndicatorDate,
+      DrawMode,
+      Help,
+      ChartPanelFocus,
+      GroupPanelFocus,
+      IndicatorPanelFocus,
+      PortfolioPanelFocus,
+      TestPanelFocus,
+      ScannerPanelFocus,
+      MacroPanelFocus,
+      ToolbarFocus
+    };
+  
     MainMenubar(QMainWindow *);
     ~MainMenubar();
     void createMenus ();
-    QAction * getAction (QString);
-    bool getStatus (QString);
-    void setStatus (QString, bool);
+    QAction * getAction (int);
+    bool getStatus (int);
+    void setStatus (int, bool);
     void saveSettings ();
-  
+    
+  public slots:
+    void slotChartPanelFocus ();
+    void slotGroupPanelFocus();
+    void slotIndicatorPanelFocus();
+    void slotPortfolioPanelFocus();
+    void slotTestPanelFocus();
+    void slotScannerPanelFocus();
+    void slotMacroPanelFocus();
+    
   private:
     QPopupMenu *fileMenu;
     QPopupMenu *editMenu;
     QPopupMenu *viewMenu;
     QPopupMenu *toolMenu;
     QPopupMenu *helpMenu;
-    
-    QDict<QAction> actions;
+    QIntDict<QAction> actions;
 };
 
 #endif

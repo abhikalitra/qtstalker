@@ -1659,6 +1659,47 @@ void Plot::slotMessage (QString d)
   emit statusMessage(d);
 }
 
+void Plot::slotSliderChanged (int v)
+{
+  setIndex(v);
+  draw();
+}
+
+void Plot::slotGridChanged (bool d)
+{
+  setGridFlag(d);
+  draw();
+}
+
+void Plot::slotScaleToScreenChanged (bool d)
+{
+  setScaleToScreen(d);
+  draw();
+}
+
+void Plot::slotDrawModeChanged (bool d)
+{
+  setDrawMode(d);
+}
+
+void Plot::slotDateFlagChanged (bool d)
+{
+  setDateFlag(d);
+  draw();
+}
+
+void Plot::slotLogScaleChanged (bool d)
+{
+  setLogScale(d);
+  draw();
+}
+
+void Plot::slotHideMainChanged (bool d)
+{
+  setHideMainPlot(d);
+  draw();
+}
+
 //*************************************************************************
 //******************** chart object functions *****************************
 //*************************************************************************

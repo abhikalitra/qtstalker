@@ -38,6 +38,7 @@ class ChartToolbar : public QToolBar
     void signalChartTypeChanged (int);
     void signalPixelspaceChanged (int);
     void signalSliderChanged (int);
+    void signalKeyPressed (int, QKeyEvent *);
     
   public:
     ChartToolbar(QMainWindow *);
@@ -53,6 +54,7 @@ class ChartToolbar : public QToolBar
     int getSlider ();
     int setSliderStart (int ov, bool flag, int width, int records);
     void saveSettings ();
+    void setFocus ();
   
   private:
     QComboBox *compressionCombo;

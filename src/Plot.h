@@ -96,12 +96,14 @@ class Plot : public QWidget
     int getMinPixelspace ();
     QString strip (double, int);
     int convertXToDataIndex (int);
+    void setGridFlag (bool);
+    void setScaleToScreen (bool);
+    void setDrawMode (bool);
+    void setDateFlag (bool);
 
   public slots:
     void draw();
     void drawRefresh();
-    void setGridFlag (bool);
-    void setScaleToScreen (bool);
     void setPixelspace (int);
     void setBackgroundColor (QColor);
     void setBorderColor (QColor);
@@ -109,13 +111,18 @@ class Plot : public QWidget
     void setPlotFont (QFont);
     void setIndex (int);
     void setInterval(BarData::BarCompression);
-    void setDateFlag (bool);
     void crossHair (int, int, bool);
     void printChart ();
     void showPopupMenu ();
     void setChartPath (QString);
-    void setDrawMode (bool);
     void setCrosshairsStatus (bool);
+    void slotSliderChanged (int);
+    void slotGridChanged (bool);
+    void slotScaleToScreenChanged (bool);
+    void slotDrawModeChanged (bool);
+    void slotDateFlagChanged (bool);
+    void slotLogScaleChanged (bool);
+    void slotHideMainChanged (bool);
 
   protected:
     virtual void paintEvent (QPaintEvent *);

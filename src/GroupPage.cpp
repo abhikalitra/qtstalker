@@ -58,6 +58,7 @@ GroupPage::GroupPage (QWidget *w) : QWidget (w)
   connect(nav, SIGNAL(contextMenuRequested(QListBoxItem *, const QPoint &)), this, SLOT(rightClick(QListBoxItem *)));
   connect(nav, SIGNAL(keyPress(QKeyEvent *)), this, SLOT(doKeyPress(QKeyEvent *)));
   nav->updateList();
+  nav->setId(1);
   vbox->addWidget(nav);
 
   menu = new QPopupMenu();
@@ -324,7 +325,7 @@ void GroupPage::slotHelp ()
   hw->show();
 }
 
-void GroupPage::setNavFocus ()
+void GroupPage::setFocus ()
 {
   nav->setFocus();
 }
@@ -360,5 +361,10 @@ void GroupPage::doKeyPress (QKeyEvent *key)
     default:
       break;
   }
+}
+
+Navigator * GroupPage::getNav ()
+{
+  return nav;
 }
 

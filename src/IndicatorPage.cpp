@@ -173,7 +173,8 @@ QStringList IndicatorPage::getDisabledIndicators ()
 
 void IndicatorPage::keyPressEvent (QKeyEvent *key)
 {
-  doKeyPress(key);
+  emit signalKeyPressed (2, key);
+  doKeyPress(key);  
 }
 
 void IndicatorPage::doKeyPress (QKeyEvent *key)

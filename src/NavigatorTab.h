@@ -24,8 +24,10 @@
 
 #include <qpopupmenu.h>
 #include <qwidgetstack.h>
+#include <qwidget.h>
+#include <qbuttongroup.h>
 
-class NavigatorTab : public QWidgetStack
+class NavigatorTab : public QWidget
 {
   Q_OBJECT
 
@@ -38,9 +40,12 @@ class NavigatorTab : public QWidgetStack
     void loadSettings();
     void saveSettings();
     int getPosition ();
+    void addWidget (QWidget *w, int);
 
   public slots:
     void togglePosition (int);
+    void buttonPressed (int);
+    void pressButton (int);
 
   protected:
     virtual void contextMenuEvent (QContextMenuEvent *);
@@ -49,6 +54,8 @@ class NavigatorTab : public QWidgetStack
     int position;
     QPopupMenu *menu;
     QPopupMenu *positionMenu;
+    QWidgetStack *stack;
+    QButtonGroup *bg;
 };
 
 #endif

@@ -241,7 +241,8 @@ void MacroPage::slotHelp ()
 
 void MacroPage::keyPressEvent (QKeyEvent *key)
 {
-  doKeyPress(key);
+  emit signalKeyPressed (6, key);
+  doKeyPress(key);  
 }
 
 void MacroPage::doKeyPress (QKeyEvent *key)

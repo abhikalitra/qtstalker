@@ -257,6 +257,7 @@ void TestPage::slotHelp ()
 
 void TestPage::keyPressEvent (QKeyEvent *key)
 {
+  emit signalKeyPressed (4, key);
   doKeyPress(key);
 }
 

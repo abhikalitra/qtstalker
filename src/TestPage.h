@@ -34,6 +34,7 @@ class TestPage : public QListBox
 
   signals:
     void message (QString);
+    void signalKeyPressed (int, QKeyEvent *);
   
   public:
     TestPage (QWidget *);

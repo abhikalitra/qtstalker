@@ -34,6 +34,7 @@ class MacroPage : public QListBox
 
   signals:
     void signalRunMacro (QString);
+    void signalKeyPressed (int, QKeyEvent *);
 
   public:
     MacroPage (QWidget *);

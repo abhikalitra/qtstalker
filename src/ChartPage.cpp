@@ -52,6 +52,7 @@ ChartPage::ChartPage (QWidget *w) : QWidget (w)
           SLOT(rightClick(QListBoxItem *)));
   connect(nav, SIGNAL(keyPress(QKeyEvent *)), this, SLOT(doKeyPress(QKeyEvent *)));
   nav->updateList();
+  nav->setId(0);
   vbox->addWidget(nav);
 
   newMenu = new QPopupMenu;
@@ -262,7 +263,7 @@ void ChartPage::slotHelp ()
   hw->show();
 }
 
-void ChartPage::setNavFocus ()
+void ChartPage::setFocus ()
 {
   nav->setFocus();
 }
@@ -291,3 +292,9 @@ void ChartPage::doKeyPress (QKeyEvent *key)
       break;
   }
 }
+
+Navigator * ChartPage::getNav ()
+{
+  return nav;
+}
+

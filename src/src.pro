@@ -26,6 +26,7 @@ HEADERS += MacroPage.h
 #HEADERS += Macro.h
 HEADERS += ChartToolbar.h
 HEADERS += MainMenubar.h
+HEADERS += KeyFilter.h
 
 SOURCES += Qtstalker.cpp
 SOURCES += PortfolioDialog.cpp
@@ -48,6 +49,7 @@ SOURCES += MacroPage.cpp
 #SOURCES += Macro.cpp
 SOURCES += ChartToolbar.cpp
 SOURCES += MainMenubar.cpp
+SOURCES += KeyFilter.cpp
 
 TARGET = qtstalker
 

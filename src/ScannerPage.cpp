@@ -236,7 +236,8 @@ void ScannerPage::slotHelp ()
 
 void ScannerPage::keyPressEvent (QKeyEvent *key)
 {
-  doKeyPress(key);
+  emit signalKeyPressed (5, key);
+  doKeyPress(key);  
 }
 
 void ScannerPage::doKeyPress (QKeyEvent *key)

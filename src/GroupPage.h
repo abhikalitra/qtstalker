@@ -39,7 +39,8 @@ class GroupPage : public QWidget
   public:
     GroupPage (QWidget *);
     ~GroupPage ();
-    void setNavFocus ();
+    void setFocus ();
+    Navigator * getNav ();
 
   public slots:
     void newGroup ();

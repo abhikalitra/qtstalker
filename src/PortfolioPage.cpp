@@ -236,7 +236,8 @@ void PortfolioPage::slotHelp ()
 
 void PortfolioPage::keyPressEvent (QKeyEvent *key)
 {
-  doKeyPress(key);
+  emit signalKeyPressed (3, key);
+  doKeyPress(key);  
 }
 
 void PortfolioPage::doKeyPress (QKeyEvent *key)

@@ -39,6 +39,7 @@ class IndicatorPage : public QListBox
     void signalEditIndicator (QString);
     void signalDeleteIndicator (QString);
     void signalNewIndicator ();
+    void signalKeyPressed (int, QKeyEvent *);
   
   public:
     IndicatorPage (QWidget *);
