@@ -301,29 +301,13 @@ void Plot::drawRefresh ()
 
 void Plot::drawLines ()
 {
-  if (mainFlag)
+  QDictIterator<Indicator> it(indicators);
+  for (; it.current(); ++it)
   {
-    QDictIterator<Indicator> it(indicators);
-    for (; it.current(); ++it)
-    {
-      Indicator *i = it.current();
-
-      if (! i->getEnable())
-        continue;
-
-      int loop;
-      for (loop = 0; loop < i->getLines(); loop++)
-      {
-        currentLine = i->getLine(loop);
-        currentLine->draw(data->count(), startX, startIndex, pixelspace);
-      }
-    }
-  }
-  else
-  {
-    QDictIterator<Indicator> it(indicators);
-    it.toFirst();
     Indicator *i = it.current();
+
+    if (! i->getEnable())
+      continue;
 
     int loop;
     for (loop = 0; loop < i->getLines(); loop++)
@@ -1263,39 +1247,13 @@ void Plot::drawInfo ()
     pos = pos + fm.width(s);
   }
 
-  if (mainFlag)
+  QDictIterator<Indicator> it(indicators);
+  for (; it.current(); ++it)
   {
-    QDictIterator<Indicator> it(indicators);
-    for (; it.current(); ++it)
-    {
-      Indicator *i = it.current();
-
-      if (! i->getEnable())
-        continue;
-
-      int loop;
-      for (loop = 0; loop < (int) i->getLines(); loop++)
-      {
-        PlotLine *line = i->getLine(loop);
-        if (line->getSize() > 1)
-        {
-          s = line->getLabel();
-          s.append("=");
-          s.append(strip(line->getData(line->getSize() - 1)));
-          s.append(" ");
-
-          painter.setPen(line->getColor());
-          painter.drawText(pos, 10, s, -1);
-          pos = pos + fm.width(s);
-        }
-      }
-    }
-  }
-  else
-  {
-    QDictIterator<Indicator> it(indicators);
-    it.toFirst();
     Indicator *i = it.current();
+
+    if (! i->getEnable())
+      continue;
 
     int loop;
     for (loop = 0; loop < (int) i->getLines(); loop++)
@@ -1314,7 +1272,7 @@ void Plot::drawInfo ()
       }
     }
   }
-
+  
   painter.end();
 }
 

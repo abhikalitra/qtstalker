@@ -87,7 +87,6 @@ void PlotLine::setType (QString d)
     return;
   }
 
-  
   if (! d.compare(tr("Dash")))
   {
     lineType = Dash;
@@ -292,14 +291,18 @@ void PlotLine::drawLine (int dataSize, int startX, int startIndex, int pixelspac
   int y2 = -1;
   int loop = getSize() - dataSize + startIndex;
   
-  Scaler *scale = new Scaler;
-  scale->set(scaler->getHeight(),
-  	     getHigh(),
-	     getLow(),
-	     scaler->getLogScaleHigh(),
-	     scaler->getLogRange(),
-	     scaler->getDateFlag(),
-	     scaler->getLogFlag());
+  Scaler *scale = 0;
+  if (getScaleFlag())
+  {  
+    scale = new Scaler;
+    scale->set(scaler->getHeight(),
+  	       getHigh(),
+	       getLow(),
+	       scaler->getLogScaleHigh(),
+	       scaler->getLogRange(),
+	       scaler->getDateFlag(),
+	       scaler->getLogFlag());
+  }
 
   while ((x2 < buffer->width()) && (loop < (int) getSize()))
   {
@@ -322,14 +325,14 @@ void PlotLine::drawLine (int dataSize, int startX, int startIndex, int pixelspac
 
   painter.end();
 
-  delete scale;
+  if (scale)
+    delete scale;
 }
 
 void PlotLine::drawHorizontalLine (int startX)
 {
   QPainter painter;
   painter.begin(buffer);
-//  painter.setFont(plotFont);
 
   QPen pen;
   pen.setColor(getColor());
@@ -355,15 +358,19 @@ void PlotLine::drawDot (int dataSize, int startX, int startIndex, int pixelspace
 
   int x = startX;
   int loop = getSize() - dataSize + startIndex;
-
-  Scaler *scale = new Scaler;
-  scale->set(scaler->getHeight(),
-  	     getHigh(),
-	     getLow(),
-	     scaler->getLogScaleHigh(),
-	     scaler->getLogRange(),
-	     scaler->getDateFlag(),
-	     scaler->getLogFlag());
+  
+  Scaler *scale = 0;
+  if (getScaleFlag())
+  {
+    scale = new Scaler;
+    scale->set(scaler->getHeight(),
+  	       getHigh(),
+	       getLow(),
+	       scaler->getLogScaleHigh(),
+	       scaler->getLogRange(),
+	       scaler->getDateFlag(),
+	       scaler->getLogFlag());
+  }
 
   while ((x < buffer->width()) && (loop < (int) getSize()))
   {
@@ -384,7 +391,8 @@ void PlotLine::drawDot (int dataSize, int startX, int startIndex, int pixelspace
 
   painter.end();
 
-  delete scale;
+  if (scale)
+    delete scale;
 }
 
 void PlotLine::drawHistogram (int dataSize, int startX, int startIndex, int pixelspace)
@@ -394,22 +402,24 @@ void PlotLine::drawHistogram (int dataSize, int startX, int startIndex, int pixe
   painter.setPen(getColor());
   painter.setBrush(getColor());
 
-  Scaler *scale = new Scaler;
-  scale->set(scaler->getHeight(),
-  	     getHigh(),
-	     getLow(),
-	     scaler->getLogScaleHigh(),
-	     scaler->getLogRange(),
-	     scaler->getDateFlag(),
-	     scaler->getLogFlag());
-
   int loop = getSize() - dataSize + startIndex;
 
   QPointArray pa(4);
 
   int zero = 0;
+  Scaler *scale = 0;
   if (getScaleFlag())
+  {
+    scale = new Scaler;
+    scale->set(scaler->getHeight(),
+  	       getHigh(),
+	       getLow(),
+	       scaler->getLogScaleHigh(),
+	       scaler->getLogRange(),
+	       scaler->getDateFlag(),
+	       scaler->getLogFlag());
     zero = scale->convertToY(0);
+  }
   else
     zero = scaler->convertToY(0);
 
@@ -444,7 +454,8 @@ void PlotLine::drawHistogram (int dataSize, int startX, int startIndex, int pixe
 
   painter.end();
 
-  delete scale;
+  if (scale)
+    delete scale;
 }
 
 void PlotLine::drawHistogramBar (int dataSize, int startX, int startIndex, int pixelspace)
@@ -454,19 +465,21 @@ void PlotLine::drawHistogramBar (int dataSize, int startX, int startIndex, int p
 
   QColor color(getColor());
 
-  Scaler *scale = new Scaler;
-  scale->set(scaler->getHeight(),
-  	     getHigh(),
-	     getLow(),
-	     scaler->getLogScaleHigh(),
-	     scaler->getLogRange(),
-	     scaler->getDateFlag(),
-	     scaler->getLogFlag());
-
   int x = startX;
   int zero = 0;
+  Scaler *scale = 0;
   if (getScaleFlag())
+  {
+    scale = new Scaler;
+    scale->set(scaler->getHeight(),
+  	       getHigh(),
+	       getLow(),
+	       scaler->getLogScaleHigh(),
+	       scaler->getLogRange(),
+	       scaler->getDateFlag(),
+	       scaler->getLogFlag());
     zero = scale->convertToY(0);
+  }
   else
     zero = scaler->convertToY(0);
 
@@ -494,7 +507,8 @@ void PlotLine::drawHistogramBar (int dataSize, int startX, int startIndex, int p
 
   painter.end();
 
-  delete scale;
+  if (scale)
+    delete scale;
 }
 
 QString PlotLine::strip (double d)

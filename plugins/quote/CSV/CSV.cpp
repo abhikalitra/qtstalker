@@ -202,7 +202,7 @@ void CSV::parse ()
       QStringList l = QStringList::split(delim, s, FALSE);
       if (l.count() != fieldList.count())
       {
-        qDebug("CSV::parse:File fields (%i) != rule format (%i)", fieldList.count(), l.count());
+        qDebug("CSV::parse:File fields (%i) != rule format (%i)", l.count(), fieldList.count());
         emit statusLogMessage("File fields != rule format");
 	continue;
       }
@@ -609,7 +609,9 @@ Setting * CSV::getRule ()
   
   Setting *set = new Setting;
   QString s = "/Rule_" + ruleName;
-  set->parse(settings.readEntry(s));
+  QString s2 = settings.readEntry(s);
+  s2.remove(0, s.length() - 1);
+  set->parse(s2);
     
   settings.endGroup();
   return set;

@@ -7,7 +7,6 @@ To Do:
 - key binding scripting
 - fix trendlines and fibo objects to plot on weekly and monthly charts as well
 - make a freshmeat entry
-- context sensitive help
 - allow negative displacement for line plots
 - add indicator chart to the tester chart so buy/sell points have a reference
 - allow log/scale to screen options on the tester charts
