@@ -21,7 +21,6 @@
 
 #include "DataWindow.h"
 #include <qlayout.h>
-#include <qpushbutton.h>
 
 DataWindow::DataWindow (int cols, int rows) : QDialog (0, "DataWindow", FALSE, WDestructiveClose)
 {
@@ -35,10 +34,6 @@ DataWindow::DataWindow (int cols, int rows) : QDialog (0, "DataWindow", FALSE, W
   table->setSelectionMode(QTable::Single);
   hHeader = table->horizontalHeader();
   vbox->addWidget (table);
-
-  QPushButton *button = new QPushButton (tr("OK"), this);
-  connect (button, SIGNAL (clicked()), this, SLOT (reject()));
-  vbox->addWidget (button);
 }
 
 DataWindow::~DataWindow ()

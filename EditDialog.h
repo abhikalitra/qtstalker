@@ -23,7 +23,7 @@
 #define EDITDIALOG_HPP
 
 #include <qdialog.h>
-#include <qpushbutton.h>
+#include <qtoolbutton.h>
 #include <qstring.h>
 #include <qlayout.h>
 #include <qdatetimeedit.h>
@@ -60,9 +60,9 @@ class EditDialog : public QDialog
     Setting *settings;
     QVBoxLayout *baseBox;
     QVBoxLayout *topBox;
-    QPushButton *okButton;
-    QPushButton *cancelButton;
-    QGridLayout *grid;
+    QToolButton *okButton;
+    QToolButton *cancelButton;
+    QGridLayout *toolbar;
     SettingItem *settingItem;
     QIntValidator *ivalid;
     QDoubleValidator *dvalid;

@@ -20,19 +20,28 @@
  */
 
 #include "CompositeDialog.h"
+#include "insert.xpm"
+#include "delete.xpm"
 #include <qfiledialog.h>
+#include <qtooltip.h>
 
 CompositeDialog::CompositeDialog (Config *c) : EditDialog (c)
 {
-  grid->expand(5, 1);
+  toolbar->expand(1, 5);
+  
+  insertButton = new QToolButton(this);
+  QToolTip::add(insertButton, tr("Insert"));
+  insertButton->setPixmap(QPixmap(insert));
+  connect(insertButton, SIGNAL(clicked()), this, SLOT(newComposite()));
+  insertButton->setMaximumWidth(30);
+  toolbar->addWidget(insertButton, 0, 2);
 
-  insertButton = new QPushButton (tr("Insert"), this);
-  connect (insertButton, SIGNAL (clicked()), this, SLOT (newComposite()));
-  grid->addWidget(insertButton, 2, 0);
-
-  deleteButton = new QPushButton (tr("Delete"), this);
-  connect (deleteButton, SIGNAL (clicked()), this, SLOT (deleteComposite()));
-  grid->addWidget(deleteButton, 3, 0);
+  deleteButton = new QToolButton(this);
+  QToolTip::add(deleteButton, tr("Delete"));
+  deleteButton->setPixmap(QPixmap(deletefile));
+  connect(deleteButton, SIGNAL(clicked()), this, SLOT(deleteComposite()));
+  deleteButton->setMaximumWidth(30);
+  toolbar->addWidget(deleteButton, 0, 3);
 }
 
 CompositeDialog::~CompositeDialog ()

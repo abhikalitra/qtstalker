@@ -49,7 +49,7 @@ WorkwithChartsDialog::WorkwithChartsDialog (Config *c) : QDialog (0, 0, FALSE)
   vbox->setSpacing(5);
 
   QGridLayout *grid = new QGridLayout(vbox, 1, 8);
-  grid->setSpacing(0);
+  grid->setSpacing(1);
 
   openButton = new QToolButton(this);
   QToolTip::add(openButton, tr("Open Chart"));
@@ -92,13 +92,17 @@ WorkwithChartsDialog::WorkwithChartsDialog (Config *c) : QDialog (0, 0, FALSE)
   connect(exportAllButton, SIGNAL(clicked()), this, SLOT(exportAll()));
   exportAllButton->setMaximumWidth(30);
   grid->addWidget(exportAllButton, 0, 5);
-  
+
   QToolButton *button = new QToolButton(this);
   QToolTip::add(button, tr("Done"));
   button->setPixmap(QPixmap(finished));
   connect(button, SIGNAL(clicked()), this, SLOT(reject()));
   button->setMaximumWidth(30);
   grid->addWidget(button, 0, 6);
+  
+  QFrame *sep = new QFrame(this);
+  sep->setFrameStyle(QFrame::HLine | QFrame::Sunken);
+  vbox->addWidget(sep);
 
   QHBoxLayout *hbox = new QHBoxLayout(vbox);
 

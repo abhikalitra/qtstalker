@@ -20,9 +20,8 @@
  */
 
 #include "Quote.h"
-#include "quotes.xpm"
-#include "stop.xpm"
-#include "done.xpm"
+#include "download.xpm"
+#include "canceldownload.xpm"
 #include <qlayout.h>
 #include <qstringlist.h>
 #include <qmessagebox.h>
@@ -36,39 +35,30 @@ QuoteDialog::QuoteDialog (Config *c) : EditDialog (c)
 
   setCaption (tr("Qtstalker: Quotes"));
 
-  QGridLayout *toolbar = new QGridLayout(topBox, 1, 4);
-  toolbar->setSpacing(0);
+  toolbar->expand(1, 5);
 
   downloadButton = new QToolButton(this);
   QToolTip::add(downloadButton, tr("Download"));
-  downloadButton->setPixmap(QPixmap(quotes));
+  downloadButton->setPixmap(QPixmap(download));
   connect(downloadButton, SIGNAL(clicked()), this, SLOT(getQuotes()));
   downloadButton->setMaximumWidth(30);
-  toolbar->addWidget(downloadButton, 0, 0);
+  toolbar->addWidget(downloadButton, 0, 2);
 
   cancelDownloadButton = new QToolButton(this);
-  QToolTip::add(cancelDownloadButton, tr("Cancel"));
-  cancelDownloadButton->setPixmap(QPixmap(stop));
+  QToolTip::add(cancelDownloadButton, tr("Cancel Download"));
+  cancelDownloadButton->setPixmap(QPixmap(canceldownload));
   connect(cancelDownloadButton, SIGNAL(clicked()), this, SLOT(cancelDownload()));
   cancelDownloadButton->setMaximumWidth(30);
-  toolbar->addWidget(cancelDownloadButton, 0, 1);
+  toolbar->addWidget(cancelDownloadButton, 0, 3);
   cancelDownloadButton->setEnabled(FALSE);
-
-  doneButton = new QToolButton(this);
-  QToolTip::add(doneButton, tr("Done"));
-  doneButton->setPixmap(QPixmap(finished));
-  connect(doneButton, SIGNAL(clicked()), this, SLOT(reject()));
-  doneButton->setMaximumWidth(30);
-  toolbar->addWidget(doneButton, 0, 2);
 
   QStringList l = QStringList::split(",", config->getData(Config::QuotePlugin), FALSE);
   ruleCombo = new QComboBox(this);
   ruleCombo->insertStringList(l, -1);
   connect (ruleCombo, SIGNAL(activated(int)), this, SLOT(ruleChanged(int)));
   topBox->addWidget(ruleCombo, 1, 0);
-  
-  okButton->hide();
-  cancelButton->hide();
+
+  okButton->setEnabled(FALSE);
 
   ruleChanged(0);
 }

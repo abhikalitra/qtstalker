@@ -22,7 +22,7 @@
 #ifndef GROUPDIALOG_HPP
 #define GROUPDIALOG_HPP
 
-#include <qpushbutton.h>
+#include <qtoolbutton.h>
 #include <qlistbox.h>
 #include "Config.h"
 #include "EditDialog.h"
@@ -41,8 +41,8 @@ class GroupDialog : public EditDialog
     void deleteItem ();
 
   private:
-    QPushButton *deleteButton;
-    QPushButton *insertButton;
+    QToolButton *deleteButton;
+    QToolButton *insertButton;
     QListBox *list;
 };
 

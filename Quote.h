@@ -56,7 +56,6 @@ class QuoteDialog : public EditDialog
     QLibrary *lib;
     QToolButton *downloadButton;
     QToolButton *cancelDownloadButton;
-    QToolButton *doneButton;
 };
 
 #endif

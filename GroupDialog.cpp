@@ -20,7 +20,10 @@
  */
 
 #include "GroupDialog.h"
+#include "insert.xpm"
+#include "delete.xpm"
 #include <qfiledialog.h>
+#include <qtooltip.h>
 
 GroupDialog::GroupDialog (Config *c) : EditDialog (c)
 {
@@ -33,15 +36,21 @@ GroupDialog::GroupDialog (Config *c) : EditDialog (c)
   list->setMinimumWidth(200);
   topBox->addWidget(list);
 
-  grid->expand(5, 1);
+  toolbar->expand(1, 5);
 
-  insertButton = new QPushButton (tr("Insert"), this);
-  connect (insertButton, SIGNAL (clicked()), this, SLOT (insertItem()));
-  grid->addWidget(insertButton, 2, 0);
+  insertButton = new QToolButton(this);
+  QToolTip::add(insertButton, tr("Insert"));
+  insertButton->setPixmap(QPixmap(insert));
+  connect(insertButton, SIGNAL(clicked()), this, SLOT(insertItem()));
+  insertButton->setMaximumWidth(30);
+  toolbar->addWidget(insertButton, 0, 2);
 
-  deleteButton = new QPushButton (tr("Delete"), this);
-  connect (deleteButton, SIGNAL (clicked()), this, SLOT (deleteItem()));
-  grid->addWidget(deleteButton, 3, 0);
+  deleteButton = new QToolButton(this);
+  QToolTip::add(deleteButton, tr("Delete"));
+  deleteButton->setPixmap(QPixmap(deletefile));
+  connect(deleteButton, SIGNAL(clicked()), this, SLOT(deleteItem()));
+  deleteButton->setMaximumWidth(30);
+  toolbar->addWidget(deleteButton, 0, 3);
 }
 
 GroupDialog::~GroupDialog ()

@@ -22,7 +22,7 @@
 #ifndef COMPOSITEDIALOG_HPP
 #define COMPOSITEDIALOG_HPP
 
-#include <qpushbutton.h>
+#include <qtoolbutton.h>
 #include "Config.h"
 #include "EditDialog.h"
 
@@ -41,8 +41,8 @@ class CompositeDialog : public EditDialog
     void deleteComposite ();
 
   private:
-    QPushButton *deleteButton;
-    QPushButton *insertButton;
+    QToolButton *deleteButton;
+    QToolButton *insertButton;
 };
 
 #endif

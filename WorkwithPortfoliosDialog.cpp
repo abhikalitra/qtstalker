@@ -46,7 +46,7 @@ WorkwithPortfoliosDialog::WorkwithPortfoliosDialog (Config *c) : QDialog (0, 0, 
   vbox->setSpacing(5);
 
   QGridLayout *grid = new QGridLayout(vbox, 1, 7);
-  grid->setSpacing(0);
+  grid->setSpacing(1);
 
   openButton = new QToolButton(this);
   QToolTip::add(openButton, tr("Open Portfolio"));
@@ -89,6 +89,10 @@ WorkwithPortfoliosDialog::WorkwithPortfoliosDialog (Config *c) : QDialog (0, 0, 
   connect(button, SIGNAL(clicked()), this, SLOT(reject()));
   button->setMaximumWidth(30);
   grid->addWidget(button, 0, 5);
+  
+  QFrame *sep = new QFrame(this);
+  sep->setFrameStyle(QFrame::HLine | QFrame::Sunken);
+  vbox->addWidget(sep);
 
   list = new QListView(this);
   list->addColumn(0, 200);

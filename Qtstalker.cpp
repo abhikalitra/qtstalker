@@ -57,7 +57,7 @@
 #include "indicator.xpm"
 #include "portfolio.xpm"
 #include "quotes.xpm"
-#include "exit.xpm"
+#include "done.xpm"
 #include "configure.xpm"
 #include "openchart.xpm"
 #include "minuspixelspace.xpm"
@@ -191,7 +191,7 @@ void QtstalkerApp::initActions()
   actionWorkwithGroup->setStatusTip(tr("Open, create, delete, edit or rename groups."));
   connect(actionWorkwithGroup, SIGNAL(activated()), this, SLOT(slotWorkwithGroup()));
 
-  icon = exitpix;
+  icon = finished;
   actionQuit = new QAction(tr("Exit"), icon, tr("Exit"), 0, this);
   actionQuit->setStatusTip(tr("Quit Qtstalker."));
   connect(actionQuit, SIGNAL(activated()), this, SLOT(slotQuit()));

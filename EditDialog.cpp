@@ -20,12 +20,16 @@
  */
 
 #include "EditDialog.h"
+#include "ok.xpm"
+#include "stop.xpm"
 #include <qcolordialog.h>
 #include <qmessagebox.h>
 #include <qcolor.h>
 #include <qfiledialog.h>
 #include <qstringlist.h>
 #include <qdatetime.h>
+#include <qtooltip.h>
+#include <qpushbutton.h>
 
 EditDialog::EditDialog (Config *c) : QDialog (0, "EditDialog", TRUE)
 {
@@ -35,16 +39,32 @@ EditDialog::EditDialog (Config *c) : QDialog (0, "EditDialog", TRUE)
   ivalid = new QIntValidator(this);
   dvalid = new QDoubleValidator(this);
 
-  QHBoxLayout *hbox = new QHBoxLayout(this);
-  hbox->setSpacing(10);
-  hbox->setMargin(10);
-
-  baseBox = new QVBoxLayout(hbox);
+  baseBox = new QVBoxLayout(this);
   baseBox->setMargin(5);
-  baseBox->setSpacing(10);
+  baseBox->setSpacing(5);
+
+  toolbar = new QGridLayout(baseBox, 1, 3);
+  toolbar->setSpacing(1);
+
+  okButton = new QToolButton(this);
+  QToolTip::add(okButton, tr("OK"));
+  okButton->setPixmap(QPixmap(ok));
+  connect(okButton, SIGNAL(clicked()), this, SLOT(accept()));
+  okButton->setMaximumWidth(30);
+  toolbar->addWidget(okButton, 0, 0);
+
+  cancelButton = new QToolButton(this);
+  QToolTip::add(cancelButton, tr("Cancel"));
+  cancelButton->setPixmap(QPixmap(stop));
+  connect(cancelButton, SIGNAL(clicked()), this, SLOT(reject()));
+  cancelButton->setMaximumWidth(30);
+  toolbar->addWidget(cancelButton, 0, 1);
+
+  QFrame *sep = new QFrame(this);
+  sep->setFrameStyle(QFrame::HLine | QFrame::Sunken);
+  baseBox->addWidget(sep);
 
   topBox = new QVBoxLayout(baseBox);
-  topBox->setSpacing(5);
 
   table = new QTable (0, 2, this);
   QHeader *head = table->horizontalHeader();
@@ -55,17 +75,6 @@ EditDialog::EditDialog (Config *c) : QDialog (0, "EditDialog", TRUE)
   connect(table, SIGNAL(valueChanged(int, int)), this, SLOT(valueChanged(int, int)));
   baseBox->addWidget(table);
   table->setMinimumWidth(200);
-
-  grid = new QGridLayout(hbox, 3, 1);
-  grid->setSpacing(2);
-
-  okButton = new QPushButton (tr("OK"), this);
-  connect (okButton, SIGNAL (clicked()), this, SLOT (accept()));
-  grid->addWidget(okButton, 0, 0);
-
-  cancelButton = new QPushButton (tr("Cancel"), this);
-  connect (cancelButton, SIGNAL (clicked()), this, SLOT (reject()));
-  grid->addWidget(cancelButton, 1, 0);
 }
 
 EditDialog::~EditDialog ()
