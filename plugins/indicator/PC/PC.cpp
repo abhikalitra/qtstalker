@@ -41,29 +41,20 @@ void PC::setDefaults ()
   lineType = PlotLine::Histogram;
   label = pluginName;
   period = 1;
-  input = IndicatorPlugin::Close;
+  input = BarData::Close;
 }
 
 void PC::calculate ()
 {
-  PlotLine *in = getInput(input);
-
-  PlotLine *pc = new PlotLine();
-
-  int loop;
-  for (loop = period; loop < (int) in->getSize(); loop++)
-  {
-    double t = in->getData(loop) - in->getData(loop - period);
-    double t2 = (t / in->getData(loop - period)) * 100;
-    pc->append(t2);
-  }
-
+  QSMath *t = new QSMath();
+  PlotLine *in = data->getInput(input);
+  PlotLine *pc = t->getPC(in, period);
   pc->setColor(color);
   pc->setType(lineType);
   pc->setLabel(label);
   output.append(pc);
-
   delete in;
+  delete t;
 }
 
 int PC::indicatorPrefDialog ()
@@ -75,7 +66,7 @@ int PC::indicatorPrefDialog ()
   dialog->addComboItem(tr("Line Type"), 1, lineTypes, lineType);
   dialog->addTextItem(tr("Label"), 1, label);
   dialog->addIntItem(tr("Period"), 1, period, 1, 99999999);
-  dialog->addComboItem(tr("Input"), 1, getInputFields(), input);
+  dialog->addComboItem(tr("Input"), 1, inputTypeList, input);
   
   int rc = dialog->exec();
   
@@ -85,7 +76,7 @@ int PC::indicatorPrefDialog ()
     lineType = (PlotLine::LineType) dialog->getComboIndex(tr("Line Type"));
     period = dialog->getInt(tr("Period"));
     label = dialog->getText(tr("Label"));
-    input = (IndicatorPlugin::InputType) dialog->getComboIndex(tr("Input"));
+    input = (BarData::InputType) dialog->getComboIndex(tr("Input"));
     rc = TRUE;
   }
   else
@@ -121,7 +112,7 @@ void PC::loadIndicatorSettings (QString file)
       
   s = dict["input"];
   if (s)
-    input = (IndicatorPlugin::InputType) s->left(s->length()).toInt();
+    input = (BarData::InputType) s->left(s->length()).toInt();
 }
 
 void PC::saveIndicatorSettings (QString file)

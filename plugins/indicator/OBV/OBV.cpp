@@ -44,31 +44,13 @@ void OBV::setDefaults ()
 
 void OBV::calculate ()
 {
-  PlotLine *obv = new PlotLine();
-
-  int loop;
-  double t = 0;
-  for (loop = 1; loop < (int) data->count(); loop++)
-  {
-    double close = data->getClose(loop);
-    double volume = data->getVolume(loop);
-    double yclose = data->getClose(loop - 1);
-
-    if (close > yclose)
-      t = t + volume;
-    else
-    {
-      if (close < yclose)
-      	t = t - volume;
-    }
-
-    obv->append(t);
-  }
-
+  QSMath *t = new QSMath(data);
+  PlotLine *obv = t->getOBV();
   obv->setColor(color);
   obv->setType(lineType);
   obv->setLabel(label);
   output.append(obv);
+  delete t;
 }
 
 int OBV::indicatorPrefDialog ()

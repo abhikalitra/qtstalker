@@ -41,21 +41,23 @@ void ATR::setDefaults ()
   lineType = PlotLine::Line;
   label = pluginName;
   smoothing = 14;
-  maType = IndicatorPlugin::SMA;  
+  maType = QSMath::SMA;  
 }
 
 void ATR::calculate ()
 {
-  PlotLine *line = getTR();
+  QSMath *t = new QSMath(data);
 
-  PlotLine *ma = getMA(line, maType, smoothing);
+  PlotLine *line = t->getTR();
+
+  PlotLine *ma = t->getMA(line, maType, smoothing);
   ma->setColor(color);
   ma->setType(lineType);
   ma->setLabel(label);
-
-  delete line;
-
   output.append(ma);
+  
+  delete line;
+  delete t;
 }
 
 QMemArray<int> ATR::getAlerts ()
@@ -120,7 +122,7 @@ int ATR::indicatorPrefDialog ()
   dialog->addTextItem(tr("Label"), 1, label);
   dialog->addComboItem(tr("Line Type"), 1, lineTypes, lineType);
   dialog->addIntItem(tr("Smoothing"), 1, smoothing, 1, 99999999);
-  dialog->addComboItem(tr("Smoothing Type"), 1, getMATypes(), maType);
+  dialog->addComboItem(tr("Smoothing Type"), 1, maTypeList, maType);
   
   int rc = dialog->exec();
   
@@ -130,7 +132,7 @@ int ATR::indicatorPrefDialog ()
     lineType = (PlotLine::LineType) dialog->getComboIndex(tr("Line Type"));
     label = dialog->getText(tr("Label"));
     smoothing = dialog->getInt(tr("Smoothing"));
-    maType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("Smoothing Type"));
+    maType = (QSMath::MAType) dialog->getComboIndex(tr("Smoothing Type"));
     rc = TRUE;
   }
   else
@@ -166,7 +168,7 @@ void ATR::loadIndicatorSettings (QString file)
 
   s = dict["maType"];
   if (s)
-    maType = (IndicatorPlugin::MAType) s->left(s->length()).toInt();
+    maType = (QSMath::MAType) s->left(s->length()).toInt();
 }
 
 void ATR::saveIndicatorSettings (QString file)

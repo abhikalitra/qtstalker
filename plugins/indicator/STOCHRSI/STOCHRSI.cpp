@@ -42,15 +42,14 @@ void STOCHRSI::setDefaults ()
   lineType = PlotLine::Line;
   label = pluginName;
   period = 14;
-  input = IndicatorPlugin::Close;
+  input = BarData::Close;
 }
 
 void STOCHRSI::calculate ()
 {
-  PlotLine *in = getInput(input);
-
-  PlotLine *rsi = getRSI(in, period);
-
+  QSMath *t = new QSMath();
+  PlotLine *in = data->getInput(input);
+  PlotLine *rsi = t->getRSI(in, period);
   PlotLine *data = new PlotLine();
 
   int loop;
@@ -87,40 +86,7 @@ void STOCHRSI::calculate ()
 
   delete in;
   delete rsi;
-}
-
-PlotLine * STOCHRSI::getRSI (PlotLine *in, int period)
-{
-  PlotLine *rsi = new PlotLine();
-
-  int loop;
-  for (loop = period; loop < (int) in->getSize(); loop++)
-  {
-    double loss = 0;
-    double gain = 0;
-    int loop2;
-    for (loop2 = 0; loop2 < period; loop2++)
-    {
-      double t = in->getData(loop - loop2) - in->getData(loop - loop2 - 1);
-      if (t > 0)
-        gain = gain + t;
-      if (t < 0)
-        loss = loss + fabs(t);
-    }
-
-    double again = gain / period;
-    double aloss = loss / period;
-    double rs = again / aloss;
-    double t = 100 - (100 / (1 + rs));
-    if (t > 100)
-      t = 100;
-    if (t < 0)
-      t = 0;
-
-    rsi->append(t);
-  }
-
-  return rsi;
+  delete t;
 }
 
 int STOCHRSI::indicatorPrefDialog ()
@@ -132,7 +98,7 @@ int STOCHRSI::indicatorPrefDialog ()
   dialog->addComboItem(tr("Line Type"), 1, lineTypes, lineType);
   dialog->addTextItem(tr("Label"), 1, label);
   dialog->addIntItem(tr("Period"), 1, period, 1, 99999999);
-  dialog->addComboItem(tr("Input"), 1, getInputFields(), input);
+  dialog->addComboItem(tr("Input"), 1, inputTypeList, input);
   
   int rc = dialog->exec();
   
@@ -142,7 +108,7 @@ int STOCHRSI::indicatorPrefDialog ()
     lineType = (PlotLine::LineType) dialog->getComboIndex(tr("Line Type"));
     period = dialog->getInt(tr("Period"));
     label = dialog->getText(tr("Label"));
-    input = (IndicatorPlugin::InputType) dialog->getComboIndex(tr("Input"));
+    input = (BarData::InputType) dialog->getComboIndex(tr("Input"));
     rc = TRUE;
   }
   else
@@ -178,7 +144,7 @@ void STOCHRSI::loadIndicatorSettings (QString file)
       
   s = dict["input"];
   if (s)
-    input = (IndicatorPlugin::InputType) s->left(s->length()).toInt();
+    input = (BarData::InputType) s->left(s->length()).toInt();
 }
 
 void STOCHRSI::saveIndicatorSettings (QString file)

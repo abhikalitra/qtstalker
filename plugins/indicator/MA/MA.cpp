@@ -42,22 +42,23 @@ void MA::setDefaults ()
   label = pluginName;
   period = 10;
   displace = 0;  
-  maType = IndicatorPlugin::SMA;  
-  input = IndicatorPlugin::Close;
+  maType = QSMath::SMA;  
+  input = BarData::Close;
 }
 
 void MA::calculate ()
 {
-  PlotLine *in = getInput(input);
+  QSMath *t = new QSMath();
 
-  PlotLine *data = getMA(in, maType, period, displace);
-
+  PlotLine *in = data->getInput(input);
+  PlotLine *d = t->getMA(in, maType, period, displace);
   delete in;
+  delete t;
 
-  data->setColor(color);
-  data->setType(lineType);
-  data->setLabel(label);
-  output.append(data);
+  d->setColor(color);
+  d->setType(lineType);
+  d->setLabel(label);
+  output.append(d);
 }
 
 QMemArray<int> MA::getAlerts ()
@@ -69,7 +70,7 @@ QMemArray<int> MA::getAlerts ()
 
   PlotLine *line = output.at(0);
 
-  PlotLine *in = getInput(input);
+  PlotLine *in = data->getInput(input);
 
   int listLoop = data->count() - line->getSize() + 1;
   int lineLoop;
@@ -114,8 +115,8 @@ int MA::indicatorPrefDialog ()
   dialog->addComboItem(tr("Line Type"), 1, lineTypes, lineType);
   dialog->addTextItem(tr("Label"), 1, label);
   dialog->addIntItem(tr("Period"), 1, period, 1, 99999999);
-  dialog->addComboItem(tr("MA Type"), 1, getMATypes(), maType);
-  dialog->addComboItem(tr("Input"), 1, getInputFields(), input);
+  dialog->addComboItem(tr("MA Type"), 1, maTypeList, maType);
+  dialog->addComboItem(tr("Input"), 1, inputTypeList, input);
   dialog->addIntItem(tr("Displace"), 1, displace, 0, 99999999);
   
   int rc = dialog->exec();
@@ -126,9 +127,9 @@ int MA::indicatorPrefDialog ()
     lineType = (PlotLine::LineType) dialog->getComboIndex(tr("Line Type"));
     period = dialog->getInt(tr("Period"));
     label = dialog->getText(tr("Label"));
-    maType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("MA Type"));
+    maType = (QSMath::MAType) dialog->getComboIndex(tr("MA Type"));
     displace = dialog->getInt(tr("Displace"));
-    input = (IndicatorPlugin::InputType) dialog->getComboIndex(tr("Input"));
+    input = (BarData::InputType) dialog->getComboIndex(tr("Input"));
     rc = TRUE;
   }
   else
@@ -164,11 +165,11 @@ void MA::loadIndicatorSettings (QString file)
       
   s = dict["maType"];
   if (s)
-    maType = (IndicatorPlugin::MAType) s->left(s->length()).toInt();
+    maType = (QSMath::MAType) s->left(s->length()).toInt();
     
   s = dict["input"];
   if (s)
-    input = (IndicatorPlugin::InputType) s->left(s->length()).toInt();
+    input = (BarData::InputType) s->left(s->length()).toInt();
     
   s = dict["displace"];
   if (s)

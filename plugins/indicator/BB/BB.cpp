@@ -20,7 +20,6 @@
  */
 
 #include "BB.h"
-#include <math.h>
 #include "PrefDialog.h"
 #include <qdict.h>
 
@@ -42,59 +41,34 @@ void BB::setDefaults ()
   lineType = PlotLine::Line;
   deviation = 2;
   period = 20;
-  maType = IndicatorPlugin::SMA;  
+  maType = QSMath::SMA;  
 }
 
 void BB::calculate ()
 {
-  PlotLine *in = getTP();
-
-  PlotLine *sma = getMA(in, maType, period);
-  int smaLoop = sma->getSize() - 1;
-
-  if ((int) sma->getSize() < period * 2)
-    return;
-
-  PlotLine *bbu = new PlotLine();
-  PlotLine *bbl = new PlotLine();
-
-  int inputLoop = in->getSize() - 1;
-
-  while (inputLoop >= period && smaLoop >= period)
-  {
-    int count;
-    double t2 = 0;
-    for (count = 0, t2 = 0; count < period; count++)
-    {
-      double t = in->getData(inputLoop - count) - sma->getData(smaLoop - count);
-      t2 = t2 + (t * t);
-    }
-
-    double t = sqrt(t2 / period);
-
-    bbu->prepend(sma->getData(smaLoop) + (deviation * t));
-    bbl->prepend(sma->getData(smaLoop) - (deviation * t));
-
-    inputLoop--;
-    smaLoop--;
-  }
-
-  delete in;
-
+  QSMath *t = new QSMath(data);
+  
+  PlotLine *bbu = t->getBB(maType, period, deviation, 1);
   bbu->setColor(color);
   bbu->setType(lineType);
   bbu->setLabel(tr("BBU"));
-  output.append(bbu);
-
-  sma->setColor(color);
-  sma->setType(lineType);
-  sma->setLabel(tr("BBM"));
-  output.append(sma);
-
+  
+  PlotLine *bbl = t->getBB(maType, period, deviation, 0);
   bbl->setColor(color);
   bbl->setType(lineType);
   bbl->setLabel(tr("BBL"));
+  
+  PlotLine *in = t->getTP();
+  PlotLine *sma = t->getMA(in, maType, period);
+  sma->setColor(color);
+  sma->setType(lineType);
+  sma->setLabel(tr("BBM"));
+  delete in;
+
+  output.append(bbu);
+  output.append(sma);
   output.append(bbl);
+  delete t;
 }
 
 QMemArray<int> BB::getAlerts ()
@@ -173,7 +147,7 @@ int BB::indicatorPrefDialog ()
   dialog->addComboItem(tr("Line Type"), 1, lineTypes, lineType);
   dialog->addIntItem(tr("Period"), 1, period, 1, 99999999);
   dialog->addFloatItem(tr("Deviation"), 1, deviation, 0, 99999999);
-  dialog->addComboItem(tr("MA Type"), 1, getMATypes(), maType);
+  dialog->addComboItem(tr("MA Type"), 1, maTypeList, maType);
   
   int rc = dialog->exec();
   
@@ -182,7 +156,7 @@ int BB::indicatorPrefDialog ()
     color = dialog->getColor(tr("Color"));
     lineType = (PlotLine::LineType) dialog->getComboIndex(tr("Line Type"));
     period = dialog->getInt(tr("Period"));
-    maType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("MA Type"));
+    maType = (QSMath::MAType) dialog->getComboIndex(tr("MA Type"));
     deviation = dialog->getFloat(tr("Deviation"));
     rc = TRUE;
   }
@@ -219,7 +193,7 @@ void BB::loadIndicatorSettings (QString file)
   
   s = dict["maType"];
   if (s)
-    maType = (IndicatorPlugin::MAType) s->left(s->length()).toInt();
+    maType = (QSMath::MAType) s->left(s->length()).toInt();
 }
 
 void BB::saveIndicatorSettings (QString file)

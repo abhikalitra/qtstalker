@@ -46,12 +46,12 @@ void VOL::setDefaults ()
   maLabel = "MAVol";
   period = 0;
   displace = 0;
-  maType = IndicatorPlugin::SMA;
+  maType = QSMath::SMA;
 }
 
 void VOL::calculate ()
 {
-  PlotLine *pl = getInput(IndicatorPlugin::Volume);
+  PlotLine *pl = data->getInput(BarData::Volume);
   pl->setType(volLineType);
   pl->setLabel(volLabel);
   pl->setColorFlag(TRUE);
@@ -73,11 +73,13 @@ void VOL::calculate ()
   if (period < 1)
     return;
 
-  PlotLine *ma = getMA(pl, maType, period, displace);
+  QSMath *t = new QSMath();
+  PlotLine *ma = t->getMA(pl, maType, period, displace);
   ma->setColor(maColor);
   ma->setType(maLineType);
   ma->setLabel(maLabel);
   output.append(ma);
+  delete t;
 }
 
 int VOL::indicatorPrefDialog ()
@@ -96,7 +98,7 @@ int VOL::indicatorPrefDialog ()
   dialog->addIntItem(tr("MA Period"), 2, period, 0, 99999999);
   dialog->addTextItem(tr("MA Label"), 2, maLabel);
   dialog->addComboItem(tr("MA Line Type"), 2, lineTypes, maLineType);
-  dialog->addComboItem(tr("MA Type"), 2, getMATypes(), maType);
+  dialog->addComboItem(tr("MA Type"), 2, maTypeList, maType);
   dialog->addIntItem(tr("Displacement"), 2, displace, 0, 99999999);
   
   int rc = dialog->exec();
@@ -112,7 +114,7 @@ int VOL::indicatorPrefDialog ()
     period = dialog->getInt(tr("MA Period"));
     maLabel = dialog->getText(tr("MA Label"));
     maLineType = (PlotLine::LineType) dialog->getComboIndex(tr("MA Line Type"));
-    maType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("MA Type"));
+    maType = (QSMath::MAType) dialog->getComboIndex(tr("MA Type"));
     displace = dialog->getInt(tr("Displacement"));
     
     rc = TRUE;
@@ -166,7 +168,7 @@ void VOL::loadIndicatorSettings (QString file)
         
   s = dict["maType"];
   if (s)
-    maType = (IndicatorPlugin::MAType) s->left(s->length()).toInt();
+    maType = (QSMath::MAType) s->left(s->length()).toInt();
         
   s = dict["maDisplace"];
   if (s)

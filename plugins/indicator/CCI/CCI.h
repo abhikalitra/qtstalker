@@ -42,7 +42,7 @@ class CCI : public IndicatorPlugin
     QString alertType;
     int period;
     int smoothing;
-    IndicatorPlugin::MAType maType;
+    QSMath::MAType maType;
     QStringList alertList;
 };
 

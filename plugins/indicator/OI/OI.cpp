@@ -45,12 +45,12 @@ void OI::setDefaults ()
   maLabel = "MAOI";
   period = 0;
   displace = 0;
-  maType = IndicatorPlugin::SMA;
+  maType = QSMath::SMA;
 }
 
 void OI::calculate ()
 {
-  PlotLine *pl = getInput(IndicatorPlugin::OpenInterest);
+  PlotLine *pl = data->getInput(BarData::OpenInterest);
   pl->setColor(oiColor);
   pl->setType(oiLineType);
   pl->setLabel(oiLabel);
@@ -59,11 +59,13 @@ void OI::calculate ()
   if (period < 1)
     return;
 
-  PlotLine *ma = getMA(pl, maType, period, displace);
+  QSMath *t = new QSMath();
+  PlotLine *ma = t->getMA(pl, maType, period, displace);
   ma->setColor(maColor);
   ma->setType(maLineType);
   ma->setLabel(maLabel);
   output.append(ma);
+  delete t;
 }
 
 int OI::indicatorPrefDialog ()
@@ -81,7 +83,7 @@ int OI::indicatorPrefDialog ()
   dialog->addIntItem(tr("MA Period"), 2, period, 0, 99999999);
   dialog->addTextItem(tr("MA Label"), 2, maLabel);
   dialog->addComboItem(tr("MA Line Type"), 2, lineTypes, maLineType);
-  dialog->addComboItem(tr("MA Type"), 2, getMATypes(), maType);
+  dialog->addComboItem(tr("MA Type"), 2, maTypeList, maType);
   dialog->addIntItem(tr("Displacement"), 2, displace, 0, 99999999);
   
   int rc = dialog->exec();
@@ -96,7 +98,7 @@ int OI::indicatorPrefDialog ()
     period = dialog->getInt(tr("MA Period"));
     maLabel = dialog->getText(tr("MA Label"));
     maLineType = (PlotLine::LineType) dialog->getComboIndex(tr("MA Line Type"));
-    maType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("MA Type"));
+    maType = (QSMath::MAType) dialog->getComboIndex(tr("MA Type"));
     displace = dialog->getInt(tr("Displacement"));
     
     rc = TRUE;
@@ -146,7 +148,7 @@ void OI::loadIndicatorSettings (QString file)
         
   s = dict["maType"];
   if (s)
-    maType = (IndicatorPlugin::MAType) s->left(s->length()).toInt();
+    maType = (QSMath::MAType) s->left(s->length()).toInt();
         
   s = dict["maDisplace"];
   if (s)

@@ -46,8 +46,8 @@ class MACD : public IndicatorPlugin
     int fastPeriod;
     int slowPeriod;
     int trigPeriod;
-    IndicatorPlugin::MAType macdMAType;
-    IndicatorPlugin::InputType macdInput;
+    QSMath::MAType macdMAType;
+    BarData::InputType macdInput;
     bool oscScaleFlag;
 };
 

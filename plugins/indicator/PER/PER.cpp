@@ -40,26 +40,20 @@ void PER::setDefaults ()
   color.setNamedColor("red");
   lineType = PlotLine::Histogram;
   label = pluginName;
-  input = IndicatorPlugin::Close;
+  input = BarData::Close;
 }
 
 void PER::calculate ()
 {
-  PlotLine *in = getInput(input);
-
-  PlotLine *per = new PlotLine();
-
-  double base = in->getData(0);
-  int loop;
-  for (loop = 1; loop < (int) in->getSize(); loop++)
-    per->append(((in->getData(loop) - base) / base) * 100);
-
+  QSMath *t = new QSMath();
+  PlotLine *in = data->getInput(input);
+  PlotLine *per = t->getPER(in);
   per->setColor(color);
   per->setType(lineType);
   per->setLabel(label);
   output.append(per);
-
   delete in;
+  delete t;
 }
 
 int PER::indicatorPrefDialog ()
@@ -70,7 +64,7 @@ int PER::indicatorPrefDialog ()
   dialog->addColorItem(tr("Color"), 1, color);
   dialog->addComboItem(tr("Line Type"), 1, lineTypes, lineType);
   dialog->addTextItem(tr("Label"), 1, label);
-  dialog->addComboItem(tr("Input"), 1, getInputFields(), input);
+  dialog->addComboItem(tr("Input"), 1, inputTypeList, input);
   
   int rc = dialog->exec();
   
@@ -79,7 +73,7 @@ int PER::indicatorPrefDialog ()
     color = dialog->getColor(tr("Color"));
     lineType = (PlotLine::LineType) dialog->getComboIndex(tr("Line Type"));
     label = dialog->getText(tr("Label"));
-    input = (IndicatorPlugin::InputType) dialog->getComboIndex(tr("Input"));
+    input = (BarData::InputType) dialog->getComboIndex(tr("Input"));
     rc = TRUE;
   }
   else
@@ -111,7 +105,7 @@ void PER::loadIndicatorSettings (QString file)
       
   s = dict["input"];
   if (s)
-    input = (IndicatorPlugin::InputType) s->left(s->length()).toInt();
+    input = (BarData::InputType) s->left(s->length()).toInt();
 }
 
 void PER::saveIndicatorSettings (QString file)

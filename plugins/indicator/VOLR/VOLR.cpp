@@ -45,28 +45,13 @@ void VOLR::setDefaults ()
 
 void VOLR::calculate ()
 {
-  PlotLine *trg = getTR();
-  int trgLoop = trg->getSize() - 1;
-
-  PlotLine *ma = getEMA(trg, period);
-  int maLoop = ma->getSize() - 1;
-
-  PlotLine *volr = new PlotLine;
-
-  while (maLoop > -1 && trgLoop > -1)
-  {
-    volr->prepend(trg->getData(trgLoop) / ma->getData(maLoop));
-    maLoop--;
-    trgLoop--;
-  }
-
+  QSMath *t = new QSMath(data);
+  PlotLine *volr = t->getVOLR(period);
   volr->setColor(color);
   volr->setType(lineType);
   volr->setLabel(label);
   output.append(volr);
-
-  delete trg;
-  delete ma;
+  delete t;
 }
 
 QMemArray<int> VOLR::getAlerts ()

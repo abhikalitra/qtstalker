@@ -52,12 +52,14 @@ void THERM::setDefaults ()
   threshold = 3;
   smoothing = 2;
   maPeriod = 22;
-  maType = IndicatorPlugin::EMA;
-  smoothType = IndicatorPlugin::EMA;
+  maType = QSMath::EMA;
+  smoothType = QSMath::EMA;
 }
 
 void THERM::calculate ()
 {
+  QSMath *t = new QSMath();
+  
   PlotLine *therm = new PlotLine();
 
   int loop;
@@ -77,7 +79,7 @@ void THERM::calculate ()
 
   if (smoothing > 1)
   {
-    PlotLine *ma = getMA(therm, smoothType, smoothing);
+    PlotLine *ma = t->getMA(therm, smoothType, smoothing);
     output.append(ma);
     delete therm;
     therm = ma;
@@ -85,11 +87,12 @@ void THERM::calculate ()
   else
     output.append(therm);
 
-  PlotLine *therm_ma = getMA(therm, maType, maPeriod);
+  PlotLine *therm_ma = t->getMA(therm, maType, maPeriod);
   therm_ma->setColor(maColor);
   therm_ma->setType(maLineType);
   therm_ma->setLabel(maLabel);
   output.append(therm_ma);
+  delete t;
 
   // assign the therm colors
 
@@ -136,14 +139,14 @@ int THERM::indicatorPrefDialog ()
   dialog->addTextItem(tr("Label"), 1, label);
   dialog->addFloatItem(tr("Threshold"), 1, threshold, 1, 99999999);
   dialog->addIntItem(tr("Smoothing"), 1, smoothing, 0, 99999999);
-  dialog->addComboItem(tr("Smoothing Type"), 1, getMATypes(), smoothType);
+  dialog->addComboItem(tr("Smoothing Type"), 1, maTypeList, smoothType);
   
   dialog->createPage (tr("MA Parms"));
   dialog->addColorItem(tr("MA Color"), 2, maColor);
   dialog->addComboItem(tr("MA Line Type"), 2, lineTypes, maLineType);
   dialog->addTextItem(tr("MA Label"), 2, maLabel);
   dialog->addIntItem(tr("MA Period"), 2, maPeriod, 0, 99999999);
-  dialog->addComboItem(tr("MA Type"), 2, getMATypes(), maType);
+  dialog->addComboItem(tr("MA Type"), 2, maTypeList, maType);
   
   int rc = dialog->exec();
   
@@ -155,13 +158,13 @@ int THERM::indicatorPrefDialog ()
     label = dialog->getText(tr("Label"));
     threshold = dialog->getFloat(tr("Threshold"));
     smoothing = dialog->getInt(tr("Smoothing"));
-    smoothType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("Smoothing Type"));
+    smoothType = (QSMath::MAType) dialog->getComboIndex(tr("Smoothing Type"));
     
     maColor = dialog->getColor(tr("MA Color"));
     maLineType = (PlotLine::LineType) dialog->getComboIndex(tr("MA Line Type"));
     maLabel = dialog->getText(tr("MA Label"));
     maPeriod = dialog->getInt(tr("MA Period"));
-    maType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("MA Type"));
+    maType = (QSMath::MAType) dialog->getComboIndex(tr("MA Type"));
     rc = TRUE;
   }
   else
@@ -209,7 +212,7 @@ void THERM::loadIndicatorSettings (QString file)
   
   s = dict["smoothType"];
   if (s)
-    smoothType = (IndicatorPlugin::MAType) s->left(s->length()).toInt();
+    smoothType = (QSMath::MAType) s->left(s->length()).toInt();
   
   s = dict["maLineType"];
   if (s)
@@ -225,7 +228,7 @@ void THERM::loadIndicatorSettings (QString file)
 
   s = dict["maType"];
   if (s)
-    maType = (IndicatorPlugin::MAType) s->left(s->length()).toInt();
+    maType = (QSMath::MAType) s->left(s->length()).toInt();
 }
 
 void THERM::saveIndicatorSettings (QString file)

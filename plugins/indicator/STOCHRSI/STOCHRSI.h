@@ -27,7 +27,6 @@ class STOCHRSI : public IndicatorPlugin
     STOCHRSI ();
     virtual ~STOCHRSI ();
     void calculate ();
-    PlotLine * getRSI (PlotLine *in, int period);
     void loadIndicatorSettings (QString);
     void saveIndicatorSettings (QString);
     int indicatorPrefDialog ();
@@ -38,7 +37,7 @@ class STOCHRSI : public IndicatorPlugin
     PlotLine::LineType lineType;
     QString label;
     int period;
-    IndicatorPlugin::InputType input;
+    BarData::InputType input;
 };
 
 extern "C"

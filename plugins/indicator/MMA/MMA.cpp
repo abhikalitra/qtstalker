@@ -57,8 +57,8 @@ void MMA::setDefaults ()
   fastDisplace4 = 0;  
   fastDisplace5 = 0;  
   fastDisplace6 = 0;  
-  fastMaType = IndicatorPlugin::EMA;  
-  fastInput = IndicatorPlugin::Close;
+  fastMaType = QSMath::EMA;  
+  fastInput = BarData::Close;
 
   slowColor.setNamedColor("yellow");
   slowLineType = PlotLine::Line;
@@ -80,85 +80,87 @@ void MMA::setDefaults ()
   slowDisplace4 = 0;  
   slowDisplace5 = 0;  
   slowDisplace6 = 0;  
-  slowMaType = IndicatorPlugin::EMA;  
-  slowInput = IndicatorPlugin::Close;
+  slowMaType = QSMath::EMA;  
+  slowInput = BarData::Close;
   
   longColor.setNamedColor("blue");
   longLineType = PlotLine::Line;
   longLabel = "MMAL";
   longPeriod = 150;
   longDisplace = 0;  
-  longMaType = IndicatorPlugin::SMA;  
-  longInput = IndicatorPlugin::Close;
+  longMaType = QSMath::SMA;  
+  longInput = BarData::Close;
 }
 
 void MMA::calculate ()
 {
-  PlotLine *fin = getInput(fastInput);
-  PlotLine *sin = getInput(slowInput);
-  PlotLine *lin = getInput(longInput);
+  QSMath *t = new QSMath();
 
-  PlotLine *fma1 = getMA(fin, fastMaType, fastPeriod, fastDisplace);
+  PlotLine *fin = data->getInput(fastInput);
+  PlotLine *sin = data->getInput(slowInput);
+  PlotLine *lin = data->getInput(longInput);
+
+  PlotLine *fma1 = t->getMA(fin, fastMaType, fastPeriod, fastDisplace);
   fma1->setColor(fastColor);
   fma1->setType(fastLineType);
   fma1->setLabel(fastLabel);
   
-  PlotLine *fma2 = getMA(fin, fastMaType, fastPeriod2, fastDisplace2);
+  PlotLine *fma2 = t->getMA(fin, fastMaType, fastPeriod2, fastDisplace2);
   fma2->setColor(fastColor);
   fma2->setType(fastLineType);
   fma2->setLabel(fastLabel2);
   
-  PlotLine *fma3 = getMA(fin, fastMaType, fastPeriod3, fastDisplace3);
+  PlotLine *fma3 = t->getMA(fin, fastMaType, fastPeriod3, fastDisplace3);
   fma3->setColor(fastColor);
   fma3->setType(fastLineType);
   fma3->setLabel(fastLabel3);
   
-  PlotLine *fma4 = getMA(fin, fastMaType, fastPeriod4, fastDisplace4);
+  PlotLine *fma4 = t->getMA(fin, fastMaType, fastPeriod4, fastDisplace4);
   fma4->setColor(fastColor);
   fma4->setType(fastLineType);
   fma4->setLabel(fastLabel4);
   
-  PlotLine *fma5 = getMA(fin, fastMaType, fastPeriod5, fastDisplace5);
+  PlotLine *fma5 = t->getMA(fin, fastMaType, fastPeriod5, fastDisplace5);
   fma5->setColor(fastColor);
   fma5->setType(fastLineType);
   fma5->setLabel(fastLabel5);
   
-  PlotLine *fma6 = getMA(fin, fastMaType, fastPeriod6, fastDisplace6);
+  PlotLine *fma6 = t->getMA(fin, fastMaType, fastPeriod6, fastDisplace6);
   fma6->setColor(fastColor);
   fma6->setType(fastLineType);
   fma6->setLabel(fastLabel6);
 
-  PlotLine *sma1 = getMA(sin, slowMaType, slowPeriod, slowDisplace);
+  PlotLine *sma1 = t->getMA(sin, slowMaType, slowPeriod, slowDisplace);
   sma1->setColor(slowColor);
   sma1->setType(slowLineType);
   sma1->setLabel(slowLabel);
   
-  PlotLine *sma2 = getMA(sin, slowMaType, slowPeriod2, slowDisplace2);
+  PlotLine *sma2 = t->getMA(sin, slowMaType, slowPeriod2, slowDisplace2);
   sma2->setColor(slowColor);
   sma2->setType(slowLineType);
   sma2->setLabel(slowLabel2);
   
-  PlotLine *sma3 = getMA(sin, slowMaType, slowPeriod3, slowDisplace3);
+  PlotLine *sma3 = t->getMA(sin, slowMaType, slowPeriod3, slowDisplace3);
   sma3->setColor(slowColor);
   sma3->setType(slowLineType);
   sma3->setLabel(slowLabel3);
   
-  PlotLine *sma4 = getMA(sin, slowMaType, slowPeriod4, slowDisplace4);
+  PlotLine *sma4 = t->getMA(sin, slowMaType, slowPeriod4, slowDisplace4);
   sma4->setColor(slowColor);
   sma4->setType(slowLineType);
   sma4->setLabel(slowLabel4);
   
-  PlotLine *sma5 = getMA(sin, slowMaType, slowPeriod5, slowDisplace5);
+  PlotLine *sma5 = t->getMA(sin, slowMaType, slowPeriod5, slowDisplace5);
   sma5->setColor(slowColor);
   sma5->setType(slowLineType);
   sma5->setLabel(slowLabel5);
   
-  PlotLine *sma6 = getMA(sin, slowMaType, slowPeriod6, slowDisplace6);
+  PlotLine *sma6 = t->getMA(sin, slowMaType, slowPeriod6, slowDisplace6);
   sma6->setColor(slowColor);
   sma6->setType(slowLineType);
   sma6->setLabel(slowLabel6);
 
-  PlotLine *lma = getMA(lin, longMaType, longPeriod, longDisplace);
+  PlotLine *lma = t->getMA(lin, longMaType, longPeriod, longDisplace);
   lma->setColor(longColor);
   lma->setType(longLineType);
   lma->setLabel(longLabel);
@@ -166,6 +168,7 @@ void MMA::calculate ()
   delete fin;
   delete sin;
   delete lin;
+  delete t;
 
   if (fma1->getSize())
     output.append(fma1);
@@ -258,8 +261,8 @@ int MMA::indicatorPrefDialog ()
   dialog->addIntItem(tr("Fast Displace 4"), 1, fastDisplace4, 0, 99999999);
   dialog->addIntItem(tr("Fast Displace 5"), 1, fastDisplace5, 0, 99999999);
   dialog->addIntItem(tr("Fast Displace 6"), 1, fastDisplace6, 0, 99999999);
-  dialog->addComboItem(tr("Fast MA Type"), 1, getMATypes(), fastMaType);
-  dialog->addComboItem(tr("Fast Input"), 1, getInputFields(), fastInput);
+  dialog->addComboItem(tr("Fast MA Type"), 1, maTypeList, fastMaType);
+  dialog->addComboItem(tr("Fast Input"), 1, inputTypeList, fastInput);
   
   dialog->createPage (tr("Slow MA"));
   dialog->addColorItem(tr("Slow Color"), 2, slowColor);
@@ -282,8 +285,8 @@ int MMA::indicatorPrefDialog ()
   dialog->addIntItem(tr("Slow Displace 4"), 2, slowDisplace4, 0, 99999999);
   dialog->addIntItem(tr("Slow Displace 5"), 2, slowDisplace5, 0, 99999999);
   dialog->addIntItem(tr("Slow Displace 6"), 2, slowDisplace6, 0, 99999999);
-  dialog->addComboItem(tr("Slow MA Type"), 2, getMATypes(), slowMaType);
-  dialog->addComboItem(tr("Slow Input"), 2, getInputFields(), slowInput);
+  dialog->addComboItem(tr("Slow MA Type"), 2, maTypeList, slowMaType);
+  dialog->addComboItem(tr("Slow Input"), 2, inputTypeList, slowInput);
   
   dialog->createPage (tr("Long MA"));
   dialog->addColorItem(tr("Long Color"), 3, longColor);
@@ -291,8 +294,8 @@ int MMA::indicatorPrefDialog ()
   dialog->addTextItem(tr("Long Label"), 3, longLabel);
   dialog->addIntItem(tr("Long Period"), 3, longPeriod, 1, 99999999);
   dialog->addIntItem(tr("Long Displace"), 3, longDisplace, 0, 99999999);
-  dialog->addComboItem(tr("Long MA Type"), 3, getMATypes(), longMaType);
-  dialog->addComboItem(tr("Long Input"), 3, getInputFields(), longInput);
+  dialog->addComboItem(tr("Long MA Type"), 3, maTypeList, longMaType);
+  dialog->addComboItem(tr("Long Input"), 3, inputTypeList, longInput);
   
   int rc = dialog->exec();
   
@@ -318,8 +321,8 @@ int MMA::indicatorPrefDialog ()
     fastDisplace4 = dialog->getInt(tr("Fast Displace 4"));
     fastDisplace5 = dialog->getInt(tr("Fast Displace 5"));
     fastDisplace6 = dialog->getInt(tr("Fast Displace 6"));
-    fastMaType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("Fast MA Type"));
-    fastInput = (IndicatorPlugin::InputType) dialog->getComboIndex(tr("Fast Input"));
+    fastMaType = (QSMath::MAType) dialog->getComboIndex(tr("Fast MA Type"));
+    fastInput = (BarData::InputType) dialog->getComboIndex(tr("Fast Input"));
     
     slowColor = dialog->getColor(tr("Slow Color"));
     slowLineType = (PlotLine::LineType) dialog->getComboIndex(tr("Slow Line Type"));
@@ -341,16 +344,16 @@ int MMA::indicatorPrefDialog ()
     slowDisplace4 = dialog->getInt(tr("Slow Displace 4"));
     slowDisplace5 = dialog->getInt(tr("Slow Displace 5"));
     slowDisplace6 = dialog->getInt(tr("Slow Displace 6"));
-    slowMaType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("Slow MA Type"));
-    slowInput = (IndicatorPlugin::InputType) dialog->getComboIndex(tr("Slow Input"));
+    slowMaType = (QSMath::MAType) dialog->getComboIndex(tr("Slow MA Type"));
+    slowInput = (BarData::InputType) dialog->getComboIndex(tr("Slow Input"));
 
     longColor = dialog->getColor(tr("Long Color"));
     longLineType = (PlotLine::LineType) dialog->getComboIndex(tr("Long Line Type"));
     longPeriod = dialog->getInt(tr("Long Period"));
     longLabel = dialog->getText(tr("Long Label"));
     longDisplace = dialog->getInt(tr("Long Displace"));
-    longMaType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("Long MA Type"));
-    longInput = (IndicatorPlugin::InputType) dialog->getComboIndex(tr("Long Input"));
+    longMaType = (QSMath::MAType) dialog->getComboIndex(tr("Long MA Type"));
+    longInput = (BarData::InputType) dialog->getComboIndex(tr("Long Input"));
         
     rc = TRUE;
   }
@@ -453,11 +456,11 @@ void MMA::loadIndicatorSettings (QString file)
   
   s = dict["fastMaType"];
   if (s)
-    fastMaType = (IndicatorPlugin::MAType) s->left(s->length()).toInt();
+    fastMaType = (QSMath::MAType) s->left(s->length()).toInt();
     
   s = dict["fastInput"];
   if (s)
-    fastInput = (IndicatorPlugin::InputType) s->left(s->length()).toInt();
+    fastInput = (BarData::InputType) s->left(s->length()).toInt();
 
   // slow
   
@@ -543,11 +546,11 @@ void MMA::loadIndicatorSettings (QString file)
   
   s = dict["slowMaType"];
   if (s)
-    slowMaType = (IndicatorPlugin::MAType) s->left(s->length()).toInt();
+    slowMaType = (QSMath::MAType) s->left(s->length()).toInt();
     
   s = dict["slowInput"];
   if (s)
-    slowInput = (IndicatorPlugin::InputType) s->left(s->length()).toInt();
+    slowInput = (BarData::InputType) s->left(s->length()).toInt();
     
   // long
   
@@ -573,11 +576,11 @@ void MMA::loadIndicatorSettings (QString file)
   
   s = dict["longMaType"];
   if (s)
-    longMaType = (IndicatorPlugin::MAType) s->left(s->length()).toInt();
+    longMaType = (QSMath::MAType) s->left(s->length()).toInt();
     
   s = dict["longInput"];
   if (s)
-    longInput = (IndicatorPlugin::InputType) s->left(s->length()).toInt();
+    longInput = (BarData::InputType) s->left(s->length()).toInt();
 }
 
 void MMA::saveIndicatorSettings (QString file)

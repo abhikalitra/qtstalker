@@ -75,7 +75,7 @@ void OVRLY::calculate ()
 
 void OVRLY::comparePrice ()
 {
-  PlotLine *line1 = getInput(IndicatorPlugin::Close);
+  PlotLine *line1 = data->getInput(BarData::Close);
   line1->setColor(color);
   line1->setType(lineType);
   line1->setLabel(label);

@@ -54,68 +54,33 @@ void DMI::setDefaults ()
   adxLabel = "ADX";
   period = 14;
   smoothing = 9;
-  maType = IndicatorPlugin::SMA;  
+  maType = QSMath::SMA;  
   alertType = tr("Crossover");
 }
 
 void DMI::calculate ()
 {
-  PlotLine *mdi = getMDI(period);
-  int mdiLoop = mdi->getSize() - 1;
+  QSMath *t = new QSMath(data);
 
-  PlotLine *pdi = getPDI(period);
-  int pdiLoop = pdi->getSize() - 1;
-
-  PlotLine *disum = new PlotLine;
-  PlotLine *didiff = new PlotLine;
-
-  while (pdiLoop > -1 && mdiLoop > -1)
-  {
-    disum->prepend(pdi->getData(pdiLoop) + mdi->getData(mdiLoop));
-    didiff->prepend(fabs(pdi->getData(pdiLoop) - mdi->getData(mdiLoop)));
-    pdiLoop--;
-    mdiLoop--;
-  }
-
-  int sumLoop = disum->getSize() - 1;
-  int diffLoop = didiff->getSize() - 1;
-
-  PlotLine *dx = new PlotLine;
-
-  while (sumLoop > -1 && diffLoop > -1)
-  {
-    int t = (int) ((didiff->getData(diffLoop) / disum->getData(sumLoop)) * 100);
-    if (t > 100)
-      t = 100;
-    if (t < 0)
-      t = 0;
-
-    dx->prepend(t);
-
-    sumLoop--;
-    diffLoop--;
-  }
-
-  PlotLine *adx = getMA(dx, maType, smoothing);
-  adx->setColor(adxColor);
-  adx->setType(adxLineType);
-  adx->setLabel(adxLabel);
-
-  delete disum;
-  delete didiff;
-  delete dx;
-
+  PlotLine *mdi = t->getMDI(period);
   mdi->setColor(mdiColor);
   mdi->setType(mdiLineType);
   mdi->setLabel(mdiLabel);
   output.append(mdi);
-
+  
+  PlotLine *pdi = t->getPDI(period);
   pdi->setColor(pdiColor);
   pdi->setType(pdiLineType);
   pdi->setLabel(pdiLabel);
   output.append(pdi);
 
+  PlotLine *adx = t->getADX(mdi, pdi, maType, smoothing);
+  adx->setColor(adxColor);
+  adx->setType(adxLineType);
+  adx->setLabel(adxLabel);
   output.append(adx);
+  
+  delete t;
 }
 
 QMemArray<int> DMI::getAlerts ()
@@ -291,122 +256,6 @@ QMemArray<int> ADX::getAlerts ()
 }
 */
 
-PlotLine * DMI::getMDI (int period)
-{
-  PlotLine *mdm = new PlotLine();
-
-  int loop;
-  for (loop = 1; loop < (int) data->count(); loop++)
-  {
-    double high = data->getHigh(loop);
-    double low = data->getLow(loop);
-    double yhigh = data->getHigh(loop - 1);
-    double ylow = data->getLow(loop - 1);
-    double t = 0;
-
-    if (high > yhigh)
-      t = 0;
-    else
-    {
-      if (low < ylow)
-        t = ylow - low;
-      else
-	t = 0;
-    }
-
-    mdm->append(t);
-  }
-
-  PlotLine *tr = getTR();
-
-  PlotLine *smamdm = getSMA(mdm, period);
-  int mdmLoop = smamdm->getSize() - 1;
-
-  PlotLine *smatr = getSMA(tr, period);
-  int trLoop = smatr->getSize() - 1;
-
-  PlotLine *mdi = new PlotLine();
-
-  while (mdmLoop > -1 && trLoop > -1)
-  {
-    int t = (int) ((smamdm->getData(mdmLoop) / smatr->getData(trLoop)) * 100);
-    if (t > 100)
-      t = 100;
-    if (t < 0)
-      t = 0;
-
-    mdi->prepend(t);
-
-    mdmLoop--;
-    trLoop--;
-  }
-
-  delete mdm;
-  delete tr;
-  delete smamdm;
-  delete smatr;
-
-  return mdi;
-}
-
-PlotLine * DMI::getPDI (int period)
-{
-  PlotLine *pdm = new PlotLine();
-
-  int loop;
-  for (loop = 1; loop < (int) data->count(); loop++)
-  {
-    double high = data->getHigh(loop);
-    double low = data->getLow(loop);
-    double yhigh = data->getHigh(loop - 1);
-    double ylow = data->getLow(loop - 1);
-    double t = 0;
-
-    if (high > yhigh)
-      t = high - yhigh;
-    else
-    {
-      if (low < ylow)
-	t = 0;
-      else
-      	t = 0;
-    }
-
-    pdm->append(t);
-  }
-
-  PlotLine *tr = getTR();
-
-  PlotLine *smapdm = getSMA(pdm, period);
-  int pdmLoop = smapdm->getSize() - 1;
-
-  PlotLine *smatr = getSMA(tr, period);
-  int trLoop = smatr->getSize() - 1;
-
-  PlotLine *pdi = new PlotLine();
-
-  while (pdmLoop > -1 && trLoop > -1)
-  {
-    int t = (int) ((smapdm->getData(pdmLoop) / smatr->getData(trLoop)) * 100);
-    if (t > 100)
-      t = 100;
-    if (t < 0)
-      t = 0;
-
-    pdi->prepend(t);
-
-    pdmLoop--;
-    trLoop--;
-  }
-
-  delete pdm;
-  delete tr;
-  delete smapdm;
-  delete smatr;
-
-  return pdi;
-}
-
 int DMI::indicatorPrefDialog ()
 {
   PrefDialog *dialog = new PrefDialog();
@@ -415,7 +264,7 @@ int DMI::indicatorPrefDialog ()
   dialog->createPage (tr("DMI"));
   dialog->addIntItem(tr("Period"), 1, period, 1, 99999999);
   dialog->addIntItem(tr("Smoothing"), 1, smoothing, 1, 99999999);
-  dialog->addComboItem(tr("Smoothing Type"), 1, getMATypes(), maType);
+  dialog->addComboItem(tr("Smoothing Type"), 1, maTypeList, maType);
   dialog->addComboItem(tr("Alert"), 1, alertList, alertType);
   
   dialog->createPage (tr("+DM"));
@@ -439,7 +288,7 @@ int DMI::indicatorPrefDialog ()
   {
     period = dialog->getInt(tr("Period"));
     smoothing = dialog->getInt(tr("Smoothing"));
-    maType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("Smoothing Type"));
+    maType = (QSMath::MAType) dialog->getComboIndex(tr("Smoothing Type"));
     alertType = dialog->getCombo(tr("Alert"));
     
     pdiColor = dialog->getColor(tr("+DM Color"));
@@ -493,7 +342,7 @@ void DMI::loadIndicatorSettings (QString file)
     
   s = dict["maType"];
   if (s)
-    maType = (IndicatorPlugin::MAType) s->left(s->length()).toInt();
+    maType = (QSMath::MAType) s->left(s->length()).toInt();
     
   s = dict["alertType"];
   if (s)

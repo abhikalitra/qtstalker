@@ -42,23 +42,19 @@ void MOM::setDefaults ()
   label = pluginName;
   period = 10;
   smoothing = 10;  
-  maType = IndicatorPlugin::SMA;  
-  input = IndicatorPlugin::Close;
+  maType = QSMath::SMA;  
+  input = BarData::Close;
 }
 
 void MOM::calculate ()
 {
-  PlotLine *in = getInput(input);
+  QSMath *t = new QSMath();
+  PlotLine *in = data->getInput(input);
+  PlotLine *mom = t->getMOM(in, period);
 
-  PlotLine *mom = new PlotLine();
-
-  int loop;
-  for (loop = period; loop < (int) in->getSize(); loop++)
-    mom->append(in->getData(loop) - in->getData(loop - period));
-    
   if (smoothing > 1)
   {
-    PlotLine *ma = getMA(mom, maType, smoothing);
+    PlotLine *ma = t->getMA(mom, maType, smoothing);
     ma->setColor(color);
     ma->setType(lineType);
     ma->setLabel(label);
@@ -74,6 +70,7 @@ void MOM::calculate ()
   }
 
   delete in;
+  delete t;
 }
 
 QMemArray<int> MOM::getAlerts ()
@@ -126,8 +123,8 @@ int MOM::indicatorPrefDialog ()
   dialog->addComboItem(tr("Line Type"), 1, lineTypes, lineType);
   dialog->addTextItem(tr("Label"), 1, label);
   dialog->addIntItem(tr("Period"), 1, period, 1, 99999999);
-  dialog->addComboItem(tr("Smoothing Type"), 1, getMATypes(), maType);
-  dialog->addComboItem(tr("Input"), 1, getInputFields(), input);
+  dialog->addComboItem(tr("Smoothing Type"), 1, maTypeList, maType);
+  dialog->addComboItem(tr("Input"), 1, inputTypeList, input);
   dialog->addIntItem(tr("Smoothing"), 1, smoothing, 0, 99999999);
   
   int rc = dialog->exec();
@@ -138,9 +135,9 @@ int MOM::indicatorPrefDialog ()
     lineType = (PlotLine::LineType) dialog->getComboIndex(tr("Line Type"));
     period = dialog->getInt(tr("Period"));
     label = dialog->getText(tr("Label"));
-    maType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("Smoothing Type"));
+    maType = (QSMath::MAType) dialog->getComboIndex(tr("Smoothing Type"));
     smoothing = dialog->getInt(tr("Smoothing"));
-    input = (IndicatorPlugin::InputType) dialog->getComboIndex(tr("Input"));
+    input = (BarData::InputType) dialog->getComboIndex(tr("Input"));
     rc = TRUE;
   }
   else
@@ -176,11 +173,11 @@ void MOM::loadIndicatorSettings (QString file)
       
   s = dict["maType"];
   if (s)
-    maType = (IndicatorPlugin::MAType) s->left(s->length()).toInt();
+    maType = (QSMath::MAType) s->left(s->length()).toInt();
     
   s = dict["input"];
   if (s)
-    input = (IndicatorPlugin::InputType) s->left(s->length()).toInt();
+    input = (BarData::InputType) s->left(s->length()).toInt();
     
   s = dict["smoothing"];
   if (s)

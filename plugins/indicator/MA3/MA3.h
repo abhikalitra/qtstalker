@@ -46,12 +46,12 @@ class MA3 : public IndicatorPlugin
     int fastPeriod;
     int midPeriod;
     int slowPeriod;
-    IndicatorPlugin::MAType fastMAType;
-    IndicatorPlugin::MAType midMAType;
-    IndicatorPlugin::MAType slowMAType;
-    IndicatorPlugin::InputType fastInput;
-    IndicatorPlugin::InputType midInput;
-    IndicatorPlugin::InputType slowInput;
+    QSMath::MAType fastMAType;
+    QSMath::MAType midMAType;
+    QSMath::MAType slowMAType;
+    BarData::InputType fastInput;
+    BarData::InputType midInput;
+    BarData::InputType slowInput;
     int fastDisplace;
     int midDisplace;
     int slowDisplace;

@@ -27,7 +27,6 @@
 Line::Line ()
 {
   pluginName = "Line";
-//  minPixelspace = 3;
   startX = 0;
   indicatorFlag = FALSE;
   type = Close;

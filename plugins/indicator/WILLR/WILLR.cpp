@@ -45,40 +45,13 @@ void WILLR::setDefaults ()
 
 void WILLR::calculate ()
 {
-  PlotLine *willr = new PlotLine();
-
-  int loop;
-  for (loop = period; loop < (int) data->count(); loop++)
-  {
-    int loop2;
-    double lw;
-    double hg;
-    for (loop2 = 0, lw = 9999999, hg = 0; loop2 < period; loop2++)
-    {
-      double high = data->getHigh(loop - loop2);
-      double low = data->getLow(loop - loop2);
-
-      if (high > hg)
-        hg = high;
-
-      if (low < lw)
-        lw = low;
-    }
-
-    double t = ((hg - data->getClose(loop)) / (hg - lw)) * 100;
-    if (t > 100)
-      t = 100;
-    if (t < 0)
-      t = 0;
-    t *= -1;
-
-    willr->append(t);
-  }
-
+  QSMath *t = new QSMath(data);
+  PlotLine *willr = t->getWILLR(period);
   willr->setColor(color);
   willr->setType(lineType);
   willr->setLabel(label);
   output.append(willr);
+  delete t;
 }
 
 int WILLR::indicatorPrefDialog ()

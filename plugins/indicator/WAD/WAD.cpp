@@ -44,42 +44,13 @@ void WAD::setDefaults ()
 
 void WAD::calculate ()
 {
-  PlotLine *wad = new PlotLine();
-
-  int loop;
-  double accum = 0;
-  for (loop = 1; loop < (int) data->count(); loop++)
-  {
-    double high = data->getHigh(loop);
-    double low = data->getLow(loop);
-    double close = data->getClose(loop);
-    double yclose = data->getClose(loop - 1);
-
-    double h = high;
-    if (yclose > h)
-      h = yclose;
-
-    double l = low;
-    if (yclose < l)
-      l = yclose;
-
-    if (close > yclose)
-      accum = accum + (close - l);
-    else
-    {
-      if (yclose == close)
-        ;
-      else
-        accum = accum - (h - close);
-    }
-
-    wad->append(accum);
-  }
-
+  QSMath *t = new QSMath(data);
+  PlotLine *wad = t->getWAD();
   wad->setColor(color);
   wad->setType(lineType);
   wad->setLabel(label);
   output.append(wad);
+  delete t;
 }
 
 int WAD::indicatorPrefDialog ()

@@ -42,38 +42,25 @@ void MAOSC::setDefaults ()
   label = pluginName;
   fastPeriod = 9;
   slowPeriod = 18;
-  fastMaType = IndicatorPlugin::SMA;  
-  slowMaType = IndicatorPlugin::SMA;  
-  input = IndicatorPlugin::Close;
+  fastMaType = QSMath::SMA;  
+  slowMaType = QSMath::SMA;  
+  input = BarData::Close;
 }
 
 void MAOSC::calculate ()
 {
-  PlotLine *in = getInput(input);
+  QSMath *t = new QSMath();
+
+  PlotLine *in = data->getInput(input);
   
-  PlotLine *ma = new PlotLine();
-
-  PlotLine *fma = getMA(in, fastMaType, fastPeriod);
-  int fmaLoop = fma->getSize() - 1;
-
-  PlotLine *sma = getMA(in, slowMaType, slowPeriod);
-  int smaLoop = sma->getSize() - 1;
-
-  while (fmaLoop > -1 && smaLoop > -1)
-  {
-    ma->prepend(fma->getData(fmaLoop) - sma->getData(smaLoop));
-    fmaLoop--;
-    smaLoop--;
-  }
-
+  PlotLine *ma = t->getOSC(in, slowMaType, fastMaType, slowPeriod, fastPeriod);
   ma->setColor(color);
   ma->setType(lineType);
   ma->setLabel(label);
   output.append(ma);
 
   delete in;
-  delete fma;
-  delete sma;
+  delete t;
 }
 
 QMemArray<int> MAOSC::getAlerts ()
@@ -126,9 +113,9 @@ int MAOSC::indicatorPrefDialog ()
   dialog->addTextItem(tr("Label"), 1, label);
   dialog->addIntItem(tr("Fast Period"), 1, fastPeriod, 1, 99999999);
   dialog->addIntItem(tr("Slow Period"), 1, slowPeriod, 1, 99999999);
-  dialog->addComboItem(tr("Fast MA Type"), 1, getMATypes(), fastMaType);
-  dialog->addComboItem(tr("Slow MA Type"), 1, getMATypes(), slowMaType);
-  dialog->addComboItem(tr("Input"), 1, getInputFields(), input);
+  dialog->addComboItem(tr("Fast MA Type"), 1, maTypeList, fastMaType);
+  dialog->addComboItem(tr("Slow MA Type"), 1, maTypeList, slowMaType);
+  dialog->addComboItem(tr("Input"), 1, inputTypeList, input);
   
   int rc = dialog->exec();
   
@@ -139,9 +126,9 @@ int MAOSC::indicatorPrefDialog ()
     fastPeriod = dialog->getInt(tr("Fast Period"));
     slowPeriod = dialog->getInt(tr("Slow Period"));
     label = dialog->getText(tr("Label"));
-    fastMaType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("Fast MA Type"));
-    slowMaType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("Slow MA Type"));
-    input = (IndicatorPlugin::InputType) dialog->getComboIndex(tr("Input"));
+    fastMaType = (QSMath::MAType) dialog->getComboIndex(tr("Fast MA Type"));
+    slowMaType = (QSMath::MAType) dialog->getComboIndex(tr("Slow MA Type"));
+    input = (BarData::InputType) dialog->getComboIndex(tr("Input"));
     rc = TRUE;
   }
   else
@@ -181,15 +168,15 @@ void MAOSC::loadIndicatorSettings (QString file)
       
   s = dict["fastMaType"];
   if (s)
-    fastMaType = (IndicatorPlugin::MAType) s->left(s->length()).toInt();
+    fastMaType = (QSMath::MAType) s->left(s->length()).toInt();
     
   s = dict["slowMaType"];
   if (s)
-    slowMaType = (IndicatorPlugin::MAType) s->left(s->length()).toInt();
+    slowMaType = (QSMath::MAType) s->left(s->length()).toInt();
   
   s = dict["input"];
   if (s)
-    input = (IndicatorPlugin::InputType) s->left(s->length()).toInt();
+    input = (BarData::InputType) s->left(s->length()).toInt();
 }
 
 void MAOSC::saveIndicatorSettings (QString file)

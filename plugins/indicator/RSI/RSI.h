@@ -41,8 +41,8 @@ class RSI : public IndicatorPlugin
     int smoothing;
     double buyLine;
     double sellLine;
-    IndicatorPlugin::MAType maType;
-    IndicatorPlugin::InputType input;
+    QSMath::MAType maType;
+    BarData::InputType input;
 };
 
 extern "C"

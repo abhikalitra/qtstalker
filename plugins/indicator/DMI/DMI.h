@@ -31,8 +31,6 @@ class DMI : public IndicatorPlugin
     void saveIndicatorSettings (QString);
     int indicatorPrefDialog ();
     void setDefaults();
-    PlotLine * getMDI (int period);
-    PlotLine * getPDI (int period);
     QMemArray<int> getAlerts ();
     void alertCrossover ();
     void alertExtremePoint ();
@@ -50,7 +48,7 @@ class DMI : public IndicatorPlugin
     QString adxLabel;
     int period;
     int smoothing;
-    IndicatorPlugin::MAType maType;
+    QSMath::MAType maType;
     QStringList alertList;
     QString alertType;
 };

@@ -44,35 +44,15 @@ void AD::setDefaults ()
 
 void AD::calculate ()
 {
-  PlotLine *line = new PlotLine;
+  QSMath *t = new QSMath(data);
+  
+  PlotLine *line = t->getAD();
   line->setColor(color);
   line->setType(lineType);
   line->setLabel(label);
-
-  int loop;
-  double accum = 0;
-  for (loop = 0; loop < (int) data->count(); loop++)
-  {
-    double volume = data->getVolume(loop);
-    if (volume > 0)
-    {
-      double high = data->getHigh(loop);
-      double low = data->getLow(loop);
-
-      double t = high - low;
-
-      if (t != 0)
-      {
-        double close = data->getClose(loop);
-        double t2 = (close - low) - (high - close);
-        accum = accum + ((t2 / t) * volume);
-      }
-    }
-
-    line->append(accum);
-  }
-
   output.append(line);
+  
+  delete t;
 }
 
 int AD::indicatorPrefDialog ()

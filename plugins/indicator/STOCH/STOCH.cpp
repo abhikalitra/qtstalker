@@ -48,78 +48,28 @@ void STOCH::setDefaults ()
   period = 14;
   buyLine = 20;
   sellLine = 80;
-  maType = IndicatorPlugin::SMA;  
+  maType = QSMath::SMA;  
 }
 
 void STOCH::calculate ()
 {
-  PlotLine *k = new PlotLine();
+  QSMath *t = new QSMath(data);
+  PlotLine *k = t->getSTOCH(maType, period, kperiod);
   k->setColor(kcolor);
   k->setType(klineType);
   k->setLabel(klabel);
+  output.append(k);
 
-  int loop;
-  for (loop = period; loop < (int) data->count(); loop++)
+  if (dperiod > 1)
   {
-    int loop2;
-    double l;
-    double h;
-    for (loop2 = 0, l = 9999999, h = 0; loop2 < period; loop2++)
-    {
-      double high = data->getHigh(loop - loop2);
-      double low = data->getLow(loop - loop2);
-
-      double t = high;
-      if (t > h)
-        h = t;
-
-      t = low;
-      if (t < l)
-        l = t;
-    }
-
-    double close = data->getClose(loop);
-    double t = ((close - l) / (h - l)) * 100;
-    if (t > 100)
-      t = 100;
-    if (t < 0)
-      t = 0;
-
-    k->append(t);
+    PlotLine *d = t->getMA(k, maType, dperiod);
+    d->setColor(dcolor);
+    d->setType(dlineType);
+    d->setLabel(dlabel);
+    output.append(d);
   }
-
-  if (kperiod > 1)
-  {
-    PlotLine *k2 = getMA(k, maType, kperiod);
-    k2->setColor(kcolor);
-    k2->setType(klineType);
-    k2->setLabel(klabel);
-    output.append(k2);
-    delete k;
-  }
-  else
-    output.append(k);
-
-  k = output.at(0);
-
-  PlotLine *d;
-
-  if (dperiod)
-    d = getMA(k, maType, dperiod);
-  else
-  {
-    d = new PlotLine();
-
-    int loop;
-    for (loop = 0; loop < (int) k->getSize(); loop++)
-      d->append(k->getData(loop));
-  }
-
-  d->setColor(dcolor);
-  d->setType(dlineType);
-  d->setLabel(dlabel);
-
-  output.append(d);
+  
+  delete t;
 }
 
 QMemArray<int> STOCH::getAlerts ()
@@ -169,7 +119,7 @@ int STOCH::indicatorPrefDialog ()
   dialog->setCaption(tr("STOCH Indicator"));
   dialog->createPage (tr("Parms"));
   dialog->addIntItem(tr("Period"), 1, period, 1, 99999999);
-  dialog->addComboItem(tr("Smoothing Type"), 1, getMATypes(), maType);
+  dialog->addComboItem(tr("Smoothing Type"), 1, maTypeList, maType);
   dialog->addFloatItem(tr("Buy Line"), 1, buyLine, 0, 100);
   dialog->addFloatItem(tr("Sell Line"), 1, sellLine, 0, 100);
   
@@ -198,7 +148,7 @@ int STOCH::indicatorPrefDialog ()
     kperiod = dialog->getInt(tr("%K Smoothing"));
     klabel = dialog->getText(tr("%K Label"));
     period = dialog->getInt(tr("Period"));
-    maType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("Smoothing Type"));
+    maType = (QSMath::MAType) dialog->getComboIndex(tr("Smoothing Type"));
     buyLine = dialog->getFloat(tr("Buy Line"));
     sellLine = dialog->getFloat(tr("Sell Line"));
     rc = TRUE;
@@ -256,7 +206,7 @@ void STOCH::loadIndicatorSettings (QString file)
   
   s = dict["maType"];
   if (s)
-    maType = (IndicatorPlugin::MAType) s->left(s->length()).toInt();
+    maType = (QSMath::MAType) s->left(s->length()).toInt();
 
   s = dict["buyLine"];
   if (s)

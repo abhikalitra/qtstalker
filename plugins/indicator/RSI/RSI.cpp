@@ -43,48 +43,21 @@ void RSI::setDefaults ()
   label = pluginName;
   period = 14;
   smoothing = 10;  
-  maType = IndicatorPlugin::SMA;  
-  input = IndicatorPlugin::Close;
+  maType = QSMath::SMA;  
+  input = BarData::Close;
   buyLine = 25;
   sellLine = 75;
 }
 
 void RSI::calculate ()
 {
-  PlotLine *in = getInput(input);
-
-  PlotLine *rsi = new PlotLine();
-
-  int loop;
-  for (loop = period; loop < (int) in->getSize(); loop++)
-  {
-    double loss = 0;
-    double gain = 0;
-    int loop2;
-    for (loop2 = 0; loop2 < period; loop2++)
-    {
-      double t = in->getData(loop - loop2) - in->getData(loop - loop2 - 1);
-      if (t > 0)
-        gain = gain + t;
-      if (t < 0)
-        loss = loss + fabs(t);
-    }
-
-    double again = gain / period;
-    double aloss = loss / period;
-    double rs = again / aloss;
-    double t = 100 - (100 / (1 + rs));
-    if (t > 100)
-      t = 100;
-    if (t < 0)
-      t = 0;
-
-    rsi->append(t);
-  }
+  QSMath *t = new QSMath();
+  PlotLine *in = data->getInput(input);
+  PlotLine *rsi = t->getRSI(in, period);
 
   if (smoothing > 1)
   {
-    PlotLine *ma = getMA(rsi, maType, smoothing);
+    PlotLine *ma = t->getMA(rsi, maType, smoothing);
     ma->setColor(color);
     ma->setType(lineType);
     ma->setLabel(label);
@@ -100,6 +73,7 @@ void RSI::calculate ()
   }
 
   delete in;
+  delete t;
 }
 
 QMemArray<int> RSI::getAlerts ()
@@ -152,9 +126,9 @@ int RSI::indicatorPrefDialog ()
   dialog->addComboItem(tr("Line Type"), 1, lineTypes, lineType);
   dialog->addTextItem(tr("Label"), 1, label);
   dialog->addIntItem(tr("Period"), 1, period, 1, 99999999);
-  dialog->addComboItem(tr("Smoothing Type"), 1, getMATypes(), maType);
+  dialog->addComboItem(tr("Smoothing Type"), 1, maTypeList, maType);
   dialog->addIntItem(tr("Smoothing"), 1, smoothing, 0, 99999999);
-  dialog->addComboItem(tr("Input"), 1, getInputFields(), input);
+  dialog->addComboItem(tr("Input"), 1, inputTypeList, input);
   dialog->addFloatItem(tr("Buy Line"), 1, buyLine, 0, 100);
   dialog->addFloatItem(tr("Sell Line"), 1, sellLine, 0, 100);
   
@@ -166,9 +140,9 @@ int RSI::indicatorPrefDialog ()
     lineType = (PlotLine::LineType) dialog->getComboIndex(tr("Line Type"));
     period = dialog->getInt(tr("Period"));
     label = dialog->getText(tr("Label"));
-    maType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("Smoothing Type"));
+    maType = (QSMath::MAType) dialog->getComboIndex(tr("Smoothing Type"));
     smoothing = dialog->getInt(tr("Smoothing"));
-    input = (IndicatorPlugin::InputType) dialog->getComboIndex(tr("Input"));
+    input = (BarData::InputType) dialog->getComboIndex(tr("Input"));
     buyLine = dialog->getFloat(tr("Buy Line"));
     sellLine = dialog->getFloat(tr("Sell Line"));
     
@@ -207,11 +181,11 @@ void RSI::loadIndicatorSettings (QString file)
       
   s = dict["maType"];
   if (s)
-    maType = (IndicatorPlugin::MAType) s->left(s->length()).toInt();
+    maType = (QSMath::MAType) s->left(s->length()).toInt();
     
   s = dict["input"];
   if (s)
-    input = (IndicatorPlugin::InputType) s->left(s->length()).toInt();
+    input = (BarData::InputType) s->left(s->length()).toInt();
     
   s = dict["smoothing"];
   if (s)

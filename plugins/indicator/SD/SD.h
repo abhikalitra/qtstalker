@@ -37,7 +37,7 @@ class SD : public IndicatorPlugin
     PlotLine::LineType lineType;
     QString label;
     int period;
-    IndicatorPlugin::InputType input;
+    BarData::InputType input;
 };
 
 extern "C"

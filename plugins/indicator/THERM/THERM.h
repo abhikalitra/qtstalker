@@ -44,8 +44,8 @@ class THERM : public IndicatorPlugin
     double threshold;
     int smoothing;
     int maPeriod;
-    IndicatorPlugin::MAType maType;
-    IndicatorPlugin::MAType smoothType;
+    QSMath::MAType maType;
+    QSMath::MAType smoothType;
 };
 
 extern "C"

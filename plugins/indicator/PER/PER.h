@@ -36,7 +36,7 @@ class PER : public IndicatorPlugin
     QColor color;
     PlotLine::LineType lineType;
     QString label;
-    IndicatorPlugin::InputType input;
+    BarData::InputType input;
 };
 
 extern "C"

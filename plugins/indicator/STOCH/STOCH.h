@@ -45,7 +45,7 @@ class STOCH : public IndicatorPlugin
     int period;
     double buyLine;
     double sellLine;
-    IndicatorPlugin::MAType maType;
+    QSMath::MAType maType;
 };
 
 extern "C"

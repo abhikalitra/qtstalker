@@ -47,38 +47,19 @@ void CCI::setDefaults ()
   label = pluginName;
   smoothing = 3;
   period = 20;
-  maType = IndicatorPlugin::SMA;
+  maType = QSMath::SMA;
   alertType = tr("100 Rule");
 }
 
 void CCI::calculate ()
 {
-  PlotLine *tp = getTP();
-  int tpLoop = tp->getSize() - 1;
-
-  PlotLine *sma = getSMA(tp, period);
-  int smaLoop = sma->getSize() - 1;
-
-  PlotLine *cci = new PlotLine();
-
-  while (tpLoop >= period && smaLoop >= period)
-  {
-    double md = 0;
-    int loop;
-    for (loop = 0; loop < period; loop++)
-      md = md + fabs(tp->getData(tpLoop - loop) - sma->getData(smaLoop - loop));
-    md = md / period;
-
-    double t = (tp->getData(tpLoop) - sma->getData(smaLoop)) / (0.015 * md);
-    cci->prepend(t);
-
-    tpLoop--;
-    smaLoop--;
-  }
+  QSMath *t = new QSMath(data);
+  
+  PlotLine *cci = t->getCCI(period);
 
   if (smoothing > 1)
   {
-    PlotLine *ma = getMA(cci, maType, smoothing);
+    PlotLine *ma = t->getMA(cci, maType, smoothing);
     ma->setColor(color);
     ma->setType(lineType);
     ma->setLabel(label);
@@ -93,8 +74,7 @@ void CCI::calculate ()
     output.append(cci);
   }
 
-  delete tp;
-  delete sma;
+  delete t;
 }
 
 QMemArray<int> CCI::getAlerts ()
@@ -191,7 +171,7 @@ int CCI::indicatorPrefDialog ()
   dialog->addTextItem(tr("Label"), 1, label);
   dialog->addIntItem(tr("Period"), 1, period, 1, 99999999);
   dialog->addIntItem(tr("Smoothing"), 1, smoothing, 0, 99999999);
-  dialog->addComboItem(tr("Smoothing Type"), 1, getMATypes(), maType);
+  dialog->addComboItem(tr("Smoothing Type"), 1, maTypeList, maType);
   dialog->addComboItem(tr("Alert"), 1, alertList, alertType);
   
   int rc = dialog->exec();
@@ -203,7 +183,7 @@ int CCI::indicatorPrefDialog ()
     period = dialog->getInt(tr("Period"));
     label = dialog->getText(tr("Label"));
     smoothing = dialog->getInt(tr("Smoothing"));
-    maType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("Smoothing Type"));
+    maType = (QSMath::MAType) dialog->getComboIndex(tr("Smoothing Type"));
     alertType = dialog->getCombo(tr("Alert"));
     rc = TRUE;
   }
@@ -244,7 +224,7 @@ void CCI::loadIndicatorSettings (QString file)
       
   s = dict["maType"];
   if (s)
-    maType = (IndicatorPlugin::MAType) s->left(s->length()).toInt();
+    maType = (QSMath::MAType) s->left(s->length()).toInt();
 
   s = dict["alertType"];
   if (s)

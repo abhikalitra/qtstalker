@@ -39,9 +39,9 @@ class MAOSC : public IndicatorPlugin
     QString label;
     int fastPeriod;
     int slowPeriod;
-    IndicatorPlugin::MAType fastMaType;
-    IndicatorPlugin::MAType slowMaType;
-    IndicatorPlugin::InputType input;
+    QSMath::MAType fastMaType;
+    QSMath::MAType slowMaType;
+    BarData::InputType input;
 };
 
 extern "C"

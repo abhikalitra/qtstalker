@@ -44,24 +44,13 @@ void PVT::setDefaults ()
 
 void PVT::calculate ()
 {
-  PlotLine *pvt = new PlotLine();
-
-  int loop = 0;
-  double pv = 0;
-  for (loop = 1; loop < (int) data->count(); loop++)
-  {
-    double close = data->getClose(loop);
-    double volume = data->getVolume(loop);
-    double yclose = data->getClose(loop - 1);
-
-    pv = pv + (((close - yclose) / yclose) * volume);
-    pvt->append(pv);
-  }
-
+  QSMath *t = new QSMath(data);
+  PlotLine *pvt = t->getPVT();
   pvt->setColor(color);
   pvt->setType(lineType);
   pvt->setLabel(label);
   output.append(pvt);
+  delete t;
 }
 
 int PVT::indicatorPrefDialog ()

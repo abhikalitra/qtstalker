@@ -43,8 +43,8 @@ class ENV : public IndicatorPlugin
     int period;
     double upperPercent;
     double lowerPercent;
-    IndicatorPlugin::InputType input;
-    IndicatorPlugin::MAType maType;
+    BarData::InputType input;
+    QSMath::MAType maType;
 };
 
 extern "C"

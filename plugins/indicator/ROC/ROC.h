@@ -39,8 +39,8 @@ class ROC : public IndicatorPlugin
     QString label;
     int period;
     int smoothing;
-    IndicatorPlugin::MAType maType;
-    IndicatorPlugin::InputType input;
+    QSMath::MAType maType;
+    BarData::InputType input;
 };
 
 extern "C"

@@ -39,8 +39,8 @@ class MA : public IndicatorPlugin
     QString label;
     int period;
     int displace;
-    IndicatorPlugin::MAType maType;
-    IndicatorPlugin::InputType input;
+    QSMath::MAType maType;
+    BarData::InputType input;
 };
 
 extern "C"

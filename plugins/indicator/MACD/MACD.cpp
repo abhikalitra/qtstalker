@@ -49,37 +49,23 @@ void MACD::setDefaults ()
   fastPeriod = 12;
   slowPeriod = 26;
   trigPeriod = 9;
-  macdMAType = IndicatorPlugin::EMA;  
-  macdInput = IndicatorPlugin::Close;
+  macdMAType = QSMath::EMA;  
+  macdInput = BarData::Close;
   oscScaleFlag = FALSE;
 }
 
 void MACD::calculate ()
 {
-  PlotLine *d = getInput(macdInput);
+  QSMath *t = new QSMath();
 
-  PlotLine *slow = getMA(d, macdMAType, slowPeriod);
-  if (slow->getSize() == 0)
-    return;
-
-  PlotLine *fast = getMA(d, macdMAType, fastPeriod);
-
-  PlotLine *macd = new PlotLine();
+  PlotLine *d = data->getInput(macdInput);
+  
+  PlotLine *macd = t->getOSC(d, macdMAType, macdMAType, fastPeriod, slowPeriod);
   macd->setColor(macdColor);
   macd->setType(macdLineType);
   macd->setLabel(macdLabel);
-
-  int floop = fast->getSize() - 1;
-  int sloop = slow->getSize() - 1;
-
-  while (floop > -1 && sloop > -1)
-  {
-    macd->prepend(fast->getData(floop) - slow->getData(sloop));
-    floop--;
-    sloop--;
-  }
-
-  PlotLine *signal = getMA(macd, macdMAType, trigPeriod);
+  
+  PlotLine *signal = t->getMA(macd, macdMAType, trigPeriod);
   signal->setColor(trigColor);
   signal->setType(trigLineType);
   signal->setLabel(trigLabel);
@@ -90,8 +76,8 @@ void MACD::calculate ()
   osc->setLabel(oscLabel);
   osc->setScaleFlag(oscScaleFlag);
 
-  floop = macd->getSize() - 1;
-  sloop = signal->getSize() - 1;
+  int floop = macd->getSize() - 1;
+  int sloop = signal->getSize() - 1;
 
   while (floop > -1 && sloop > -1)
   {
@@ -105,8 +91,7 @@ void MACD::calculate ()
   output.append(signal);
 
   delete d;
-  delete slow;
-  delete fast;
+  delete t;
 }
 
 QMemArray<int> MACD::getAlerts ()
@@ -163,8 +148,8 @@ int MACD::indicatorPrefDialog ()
   dialog->addIntItem(tr("Slow Period"), 1, slowPeriod, 1, 99999999);
   dialog->addTextItem(tr("MACD Label"), 1, macdLabel);
   dialog->addComboItem(tr("MACD Line Type"), 1, lineTypes, macdLineType);
-  dialog->addComboItem(tr("MACD MA Type"), 1, getMATypes(), macdMAType);
-  dialog->addComboItem(tr("MACD Input"), 1, getInputFields(), macdInput);
+  dialog->addComboItem(tr("MACD MA Type"), 1, maTypeList, macdMAType);
+  dialog->addComboItem(tr("MACD Input"), 1, inputTypeList, macdInput);
   
   dialog->createPage (tr("Trigger"));
   dialog->addColorItem(tr("Trigger Color"), 2, trigColor);
@@ -187,8 +172,8 @@ int MACD::indicatorPrefDialog ()
     slowPeriod = dialog->getInt(tr("Slow Period"));
     macdLabel = dialog->getText(tr("MACD Label"));
     macdLineType = (PlotLine::LineType) dialog->getComboIndex(tr("MACD Line Type"));
-    macdMAType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("MACD MA Type"));
-    macdInput = (IndicatorPlugin::InputType) dialog->getComboIndex(tr("MACD Input"));
+    macdMAType = (QSMath::MAType) dialog->getComboIndex(tr("MACD MA Type"));
+    macdInput = (BarData::InputType) dialog->getComboIndex(tr("MACD Input"));
     
     trigColor = dialog->getColor(tr("Trigger Color"));
     trigPeriod = dialog->getInt(tr("Trigger Period"));
@@ -239,11 +224,11 @@ void MACD::loadIndicatorSettings (QString file)
         
   s = dict["macdMAType"];
   if (s)
-    macdMAType = (IndicatorPlugin::MAType) s->left(s->length()).toInt();
+    macdMAType = (QSMath::MAType) s->left(s->length()).toInt();
         
   s = dict["macdInput"];
   if (s)
-    macdInput = (IndicatorPlugin::InputType) s->left(s->length()).toInt();
+    macdInput = (BarData::InputType) s->left(s->length()).toInt();
 
   s = dict["trigColor"];
   if (s)

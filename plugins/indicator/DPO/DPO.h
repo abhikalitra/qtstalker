@@ -37,7 +37,7 @@ class DPO : public IndicatorPlugin
     PlotLine::LineType lineType;
     QString label;
     int period;
-    IndicatorPlugin::MAType maType;
+    QSMath::MAType maType;
 };
 
 extern "C"

@@ -45,19 +45,17 @@ void TRIX::setDefaults ()
   trigLabel = tr("TRIX Trig");
   period = 12;
   tperiod = 9;
-  input = IndicatorPlugin::Close;
-  maType = IndicatorPlugin::SMA;  
+  input = BarData::Close;
+  maType = QSMath::SMA;  
 }
 
 void TRIX::calculate ()
 {
-  PlotLine *in = getInput(input);
-
-  PlotLine *ema = getEMA(in, period);
-
-  PlotLine *ema2 = getEMA(ema, period);
-
-  PlotLine *ema3 = getEMA(ema2, period);
+  QSMath *t = new QSMath();
+  PlotLine *in = data->getInput(input);
+  PlotLine *ema = t->getEMA(in, period);
+  PlotLine *ema2 = t->getEMA(ema, period);
+  PlotLine *ema3 = t->getEMA(ema2, period);
   int emaLoop = ema3->getSize() - 1;
 
   PlotLine *trix = new PlotLine();
@@ -68,7 +66,7 @@ void TRIX::calculate ()
     emaLoop--;
   }
 
-  PlotLine *trigger = getMA(trix, maType, tperiod);
+  PlotLine *trigger = t->getMA(trix, maType, tperiod);
   trigger->setColor(trigColor);
   trigger->setType(trigLineType);
   trigger->setLabel(trigLabel);
@@ -84,6 +82,7 @@ void TRIX::calculate ()
   delete ema;
   delete ema2;
   delete ema3;
+  delete t;
 }
 
 QMemArray<int> TRIX::getAlerts ()
@@ -138,14 +137,14 @@ int TRIX::indicatorPrefDialog ()
   dialog->addComboItem(tr("Line Type"), 1, lineTypes, lineType);
   dialog->addTextItem(tr("Label"), 1, label);
   dialog->addIntItem(tr("Period"), 1, period, 1, 99999999);
-  dialog->addComboItem(tr("Input"), 1, getInputFields(), input);
+  dialog->addComboItem(tr("Input"), 1, inputTypeList, input);
   
   dialog->createPage (tr("Trigger Parms"));
   dialog->addColorItem(tr("Trigger Color"), 2, trigColor);
   dialog->addComboItem(tr("Trigger Line Type"), 2, lineTypes, trigLineType);
   dialog->addTextItem(tr("Trigger Label"), 2, trigLabel);
   dialog->addIntItem(tr("Trigger Period"), 2, tperiod, 1, 99999999);
-  dialog->addComboItem(tr("Trigger Type"), 2, getMATypes(), maType);
+  dialog->addComboItem(tr("Trigger Type"), 2, maTypeList, maType);
   
   int rc = dialog->exec();
   
@@ -155,13 +154,13 @@ int TRIX::indicatorPrefDialog ()
     lineType = (PlotLine::LineType) dialog->getComboIndex(tr("Line Type"));
     period = dialog->getInt(tr("Period"));
     label = dialog->getText(tr("Label"));
-    input = (IndicatorPlugin::InputType) dialog->getComboIndex(tr("Input"));
+    input = (BarData::InputType) dialog->getComboIndex(tr("Input"));
     
     trigColor = dialog->getColor(tr("Trigger Color"));
     trigLineType = (PlotLine::LineType) dialog->getComboIndex(tr("Trigger Line Type"));
     tperiod = dialog->getInt(tr("Trigger Period"));
     trigLabel = dialog->getText(tr("Trigger Label"));
-    maType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("Trigger Type"));
+    maType = (QSMath::MAType) dialog->getComboIndex(tr("Trigger Type"));
     rc = TRUE;
   }
   else
@@ -197,7 +196,7 @@ void TRIX::loadIndicatorSettings (QString file)
       
   s = dict["input"];
   if (s)
-    input = (IndicatorPlugin::InputType) s->left(s->length()).toInt();
+    input = (BarData::InputType) s->left(s->length()).toInt();
   
   s = dict["trigColor"];
   if (s)
@@ -217,7 +216,7 @@ void TRIX::loadIndicatorSettings (QString file)
   
   s = dict["maType"];
   if (s)
-    maType = (IndicatorPlugin::MAType) s->left(s->length()).toInt();
+    maType = (QSMath::MAType) s->left(s->length()).toInt();
 }
 
 void TRIX::saveIndicatorSettings (QString file)

@@ -41,13 +41,12 @@ void FI::setDefaults ()
   lineType = PlotLine::HistogramBar;
   label = pluginName;
   smoothing = 2;
-  maType = IndicatorPlugin::EMA;
+  maType = QSMath::EMA;
 }
 
 void FI::calculate ()
 {
   PlotLine *fi = new PlotLine();
-
   int loop;
   double force = 0;
   for (loop = 1; loop < (int) data->count(); loop++)
@@ -59,12 +58,14 @@ void FI::calculate ()
 
   if (smoothing > 1)
   {
-    PlotLine *ma = getMA(fi, maType, smoothing);
+    QSMath *t = new QSMath();
+    PlotLine *ma = t->getMA(fi, maType, smoothing);
     ma->setColor(color);
     ma->setType(lineType);
     ma->setLabel(label);
     output.append(ma);
     delete fi;
+    delete t;
   }
   else
   {
@@ -84,7 +85,7 @@ int FI::indicatorPrefDialog ()
   dialog->addComboItem(tr("Line Type"), 1, lineTypes, lineType);
   dialog->addTextItem(tr("Label"), 1, label);
   dialog->addIntItem(tr("Smoothing"), 1, smoothing, 0, 99999999);
-  dialog->addComboItem(tr("Smoothing Type"), 1, getMATypes(), maType);
+  dialog->addComboItem(tr("Smoothing Type"), 1, maTypeList, maType);
   
   int rc = dialog->exec();
   
@@ -94,7 +95,7 @@ int FI::indicatorPrefDialog ()
     lineType = (PlotLine::LineType) dialog->getComboIndex(tr("Line Type"));
     smoothing = dialog->getInt(tr("Smoothing"));
     label = dialog->getText(tr("Label"));
-    maType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("Smoothing Type"));
+    maType = (QSMath::MAType) dialog->getComboIndex(tr("Smoothing Type"));
     rc = TRUE;
   }
   else
@@ -130,7 +131,7 @@ void FI::loadIndicatorSettings (QString file)
       
   s = dict["maType"];
   if (s)
-    maType = (IndicatorPlugin::MAType) s->left(s->length()).toInt();
+    maType = (QSMath::MAType) s->left(s->length()).toInt();
 }
 
 void FI::saveIndicatorSettings (QString file)

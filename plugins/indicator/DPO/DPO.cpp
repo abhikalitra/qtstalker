@@ -41,16 +41,22 @@ void DPO::setDefaults ()
   lineType = PlotLine::Line;
   label = pluginName;
   period = 21;
-  maType = IndicatorPlugin::SMA;
+  maType = QSMath::SMA;
 }
 
 void DPO::calculate ()
 {
-  PlotLine *c = getInput(IndicatorPlugin::Close);
+  QSMath *m = new QSMath();
 
-  PlotLine *ma = getMA(c, maType, period);
+  PlotLine *c = data->getInput(BarData::Close);
+
+  PlotLine *ma = m->getMA(c, maType, period);
 
   PlotLine *dpo = new PlotLine();
+  dpo->setColor(color);
+  dpo->setType(lineType);
+  dpo->setLabel(label);
+  output.append(dpo);
 
   int maLoop = ma->getSize() - 1;
   int closeLoop = c->getSize() - 1;
@@ -65,11 +71,7 @@ void DPO::calculate ()
 
   delete c;
   delete ma;
-
-  dpo->setColor(color);
-  dpo->setType(lineType);
-  dpo->setLabel(label);
-  output.append(dpo);
+  delete m;
 }
 
 int DPO::indicatorPrefDialog ()
@@ -81,7 +83,7 @@ int DPO::indicatorPrefDialog ()
   dialog->addComboItem(tr("Line Type"), 1, lineTypes, lineType);
   dialog->addTextItem(tr("Label"), 1, label);
   dialog->addIntItem(tr("Period"), 1, period, 1, 99999999);
-  dialog->addComboItem(tr("MA Type"), 1, getMATypes(), maType);
+  dialog->addComboItem(tr("MA Type"), 1, maTypeList, maType);
   
   int rc = dialog->exec();
   
@@ -91,7 +93,7 @@ int DPO::indicatorPrefDialog ()
     lineType = (PlotLine::LineType) dialog->getComboIndex(tr("Line Type"));
     period = dialog->getInt(tr("Period"));
     label = dialog->getText(tr("Label"));
-    maType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("MA Type"));
+    maType = (QSMath::MAType) dialog->getComboIndex(tr("MA Type"));
     rc = TRUE;
   }
   else
@@ -127,7 +129,7 @@ void DPO::loadIndicatorSettings (QString file)
       
   s = dict["maType"];
   if (s)
-    maType = (IndicatorPlugin::MAType) s->left(s->length()).toInt();
+    maType = (QSMath::MAType) s->left(s->length()).toInt();
 }
 
 void DPO::saveIndicatorSettings (QString file)

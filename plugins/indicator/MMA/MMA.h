@@ -53,8 +53,8 @@ class MMA : public IndicatorPlugin
     int fastDisplace4;
     int fastDisplace5;
     int fastDisplace6;
-    IndicatorPlugin::MAType fastMaType;
-    IndicatorPlugin::InputType fastInput;
+    QSMath::MAType fastMaType;
+    BarData::InputType fastInput;
   
     QColor slowColor;
     PlotLine::LineType slowLineType;
@@ -76,16 +76,16 @@ class MMA : public IndicatorPlugin
     int slowDisplace4;
     int slowDisplace5;
     int slowDisplace6;
-    IndicatorPlugin::MAType slowMaType;
-    IndicatorPlugin::InputType slowInput;
+    QSMath::MAType slowMaType;
+    BarData::InputType slowInput;
     
     QColor longColor;
     PlotLine::LineType longLineType;
     QString longLabel;
     int longPeriod;
     int longDisplace;
-    IndicatorPlugin::MAType longMaType;
-    IndicatorPlugin::InputType longInput;
+    QSMath::MAType longMaType;
+    BarData::InputType longInput;
 };
 
 extern "C"

@@ -47,15 +47,16 @@ void UO::setDefaults ()
 
 void UO::calculate ()
 {
-  PlotLine *trg = getTR();
+  QSMath *t = new QSMath(data);
+  PlotLine *trg = t->getTR();
 
-  PlotLine *atr = getSMA(trg, shortPeriod);
+  PlotLine *atr = t->getSMA(trg, shortPeriod);
   int atrLoop = atr->getSize() - 1;
 
-  PlotLine *atr2 = getSMA(trg, medPeriod);
+  PlotLine *atr2 = t->getSMA(trg, medPeriod);
   int atr2Loop = atr2->getSize() - 1;
 
-  PlotLine *atr3 = getSMA(trg, longPeriod);
+  PlotLine *atr3 = t->getSMA(trg, longPeriod);
   int atr3Loop = atr3->getSize() - 1;
 
   PlotLine *f = new PlotLine();
@@ -64,13 +65,13 @@ void UO::calculate ()
   for (loop = 0; loop < (int) data->count(); loop++)
     f->append(data->getClose(loop) - data->getLow(loop));
 
-  PlotLine *sma = getSMA(f, shortPeriod);
+  PlotLine *sma = t->getSMA(f, shortPeriod);
   int smaLoop = sma->getSize() - 1;
 
-  PlotLine *sma2 = getSMA(f, medPeriod);
+  PlotLine *sma2 = t->getSMA(f, medPeriod);
   int sma2Loop = sma2->getSize() - 1;
 
-  PlotLine *sma3 = getSMA(f, longPeriod);
+  PlotLine *sma3 = t->getSMA(f, longPeriod);
   int sma3Loop = sma3->getSize() - 1;
 
   PlotLine *uo = new PlotLine();
@@ -105,6 +106,7 @@ void UO::calculate ()
   delete sma2;
   delete sma3;
   delete f;
+  delete t;
 }
 
 int UO::indicatorPrefDialog ()

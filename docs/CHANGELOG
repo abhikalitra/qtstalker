@@ -83,7 +83,10 @@
 20040324: Modified patch #911112 - volume candle plugin - and pulled it into the Candle plugin.
           Thanks to Dany Daw for this cool patch.
 	  
+20040326: Modified indicator plugins to use QSMath class for often used TA functions.
 
+
+	  
 0.25
 ====
 

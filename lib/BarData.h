@@ -24,7 +24,9 @@
 
 #include <qlist.h>
 #include <qdict.h>
+#include <qstringlist.h>
 #include "Bar.h"
+#include "PlotLine.h"
 
 class BarData
 {
@@ -39,7 +41,17 @@ class BarData
       Daily,
       Tick
     };
-      
+
+    enum InputType
+    {
+      Open,
+      High,
+      Low,
+      Close,
+      Volume,
+      OpenInterest
+    };
+
     BarData ();
     ~BarData ();
     int count ();
@@ -57,6 +69,8 @@ class BarData
     void createDateList ();
     void setBarType (BarData::BarType);
     BarData::BarType getBarType ();
+    QStringList getInputFields ();
+    PlotLine * getInput (BarData::InputType);
     
   protected:
     QList<Bar> barList;

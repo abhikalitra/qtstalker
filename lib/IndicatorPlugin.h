@@ -24,6 +24,7 @@
 
 #include "Plugin.h"
 #include "PlotLine.h"
+#include "QSMath.h"
 #include <qstring.h>
 #include <qlist.h>
 #include <qmemarray.h>
@@ -33,30 +34,6 @@
 class IndicatorPlugin : public Plugin
 {
   public:
-  
-    enum MAType
-    {
-      EMA,
-      SMA,
-      WMA,
-      Wilder
-    };
-
-    enum InputType
-    {
-      Open,
-      High,
-      Low,
-      Close,
-      Volume,
-      OpenInterest,
-      AveragePrice,
-      TypicalPrice,
-      WeightedPrice,
-      HLPrice,
-      OCPrice
-    };
-    
     IndicatorPlugin();
     virtual ~IndicatorPlugin();
     QMemArray<int> getAlerts ();
@@ -64,26 +41,11 @@ class IndicatorPlugin : public Plugin
     void setIndicatorInput (BarData *);
     int getIndicatorLines ();
     void clearOutput ();
-    QStringList getMATypes ();
-    QStringList getInputFields ();
     bool getPlotFlag ();
     bool getAlertFlag ();
     QDict<QString> loadFile (QString);
     void saveFile (QString, QDict<QString>);
     PlotLine * getIndicatorLine (int);
-    PlotLine * getInput (IndicatorPlugin::InputType);
-    PlotLine * getMA (PlotLine *, MAType, int, int);
-    PlotLine * getMA (PlotLine *, MAType, int);
-    PlotLine * getSMA (PlotLine *, int);
-    PlotLine * getEMA (PlotLine *, int);
-    PlotLine * getWilderMA (PlotLine *, int);
-    PlotLine * getWMA (PlotLine *, int);
-    PlotLine * getTR (); // true range
-    PlotLine * getTP (); // typical price H+L+C/3
-    PlotLine * getAP (); // average price O+H+L+C/4
-    PlotLine * getWP (); // weighted price H+L+C+C/4
-    PlotLine * getHL (); // weighted price H+L/2
-    PlotLine * getOC (); // weighted price O+C/2
 
   protected:
     BarData *data;
@@ -91,6 +53,8 @@ class IndicatorPlugin : public Plugin
     QMemArray<int> alerts;
     QList<QColor> paintBars;
     QStringList lineTypes;
+    QStringList maTypeList;
+    QStringList inputTypeList;
     bool plotFlag;
     bool alertFlag;
     bool saveFlag;

@@ -47,30 +47,33 @@ void MA2::setDefaults ()
   slowPeriod = 20;
   fastDisplace = 0;  
   slowDisplace = 0;  
-  fastMaType = IndicatorPlugin::SMA;  
-  slowMaType = IndicatorPlugin::SMA;  
-  fastInput = IndicatorPlugin::Close;
-  slowInput = IndicatorPlugin::Close;
+  fastMaType = QSMath::SMA;  
+  slowMaType = QSMath::SMA;  
+  fastInput = BarData::Close;
+  slowInput = BarData::Close;
 }
 
 void MA2::calculate ()
 {
-  PlotLine *fin = getInput(fastInput);
-  PlotLine *sin = getInput(slowInput);
+  QSMath *t = new QSMath();
 
-  PlotLine *fma = getMA(fin, fastMaType, fastPeriod, fastDisplace);
+  PlotLine *fin = data->getInput(fastInput);
+  PlotLine *sin = data->getInput(slowInput);
+
+  PlotLine *fma = t->getMA(fin, fastMaType, fastPeriod, fastDisplace);
   fma->setColor(fastColor);
   fma->setType(fastLineType);
   fma->setLabel(fastLabel);
 
-  PlotLine *sma = getMA(sin, slowMaType, slowPeriod, slowDisplace);
+  PlotLine *sma = t->getMA(sin, slowMaType, slowPeriod, slowDisplace);
   sma->setColor(slowColor);
   sma->setType(slowLineType);
   sma->setLabel(slowLabel);
 
   delete fin;
   delete sin;
-
+  delete t;
+  
   if (fma->getSize())
     output.append(fma);
   else
@@ -141,8 +144,8 @@ int MA2::indicatorPrefDialog ()
   dialog->addComboItem(tr("Fast Line Type"), 1, lineTypes, fastLineType);
   dialog->addTextItem(tr("Fast Label"), 1, fastLabel);
   dialog->addIntItem(tr("Fast Period"), 1, fastPeriod, 1, 99999999);
-  dialog->addComboItem(tr("Fast MA Type"), 1, getMATypes(), fastMaType);
-  dialog->addComboItem(tr("Fast Input"), 1, getInputFields(), fastInput);
+  dialog->addComboItem(tr("Fast MA Type"), 1, maTypeList, fastMaType);
+  dialog->addComboItem(tr("Fast Input"), 1, inputTypeList, fastInput);
   dialog->addIntItem(tr("Fast Displace"), 1, fastDisplace, 0, 99999999);
   
   dialog->createPage (tr("Slow MA"));
@@ -150,8 +153,8 @@ int MA2::indicatorPrefDialog ()
   dialog->addComboItem(tr("Slow Line Type"), 2, lineTypes, slowLineType);
   dialog->addTextItem(tr("Slow Label"), 2, slowLabel);
   dialog->addIntItem(tr("Slow Period"), 2, slowPeriod, 1, 99999999);
-  dialog->addComboItem(tr("Slow MA Type"), 2, getMATypes(), slowMaType);
-  dialog->addComboItem(tr("Slow Input"), 2, getInputFields(), slowInput);
+  dialog->addComboItem(tr("Slow MA Type"), 2, maTypeList, slowMaType);
+  dialog->addComboItem(tr("Slow Input"), 2, inputTypeList, slowInput);
   dialog->addIntItem(tr("Slow Displace"), 2, slowDisplace, 0, 99999999);
   
   int rc = dialog->exec();
@@ -162,16 +165,16 @@ int MA2::indicatorPrefDialog ()
     fastLineType = (PlotLine::LineType) dialog->getComboIndex(tr("Fast Line Type"));
     fastPeriod = dialog->getInt(tr("Fast Period"));
     fastLabel = dialog->getText(tr("Fast Label"));
-    fastMaType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("Fast MA Type"));
+    fastMaType = (QSMath::MAType) dialog->getComboIndex(tr("Fast MA Type"));
     fastDisplace = dialog->getInt(tr("Fast Displace"));
-    fastInput = (IndicatorPlugin::InputType) dialog->getComboIndex(tr("Fast Input"));
+    fastInput = (BarData::InputType) dialog->getComboIndex(tr("Fast Input"));
     slowColor = dialog->getColor(tr("Slow Color"));
     slowLineType = (PlotLine::LineType) dialog->getComboIndex(tr("Slow Line Type"));
     slowPeriod = dialog->getInt(tr("Slow Period"));
     slowLabel = dialog->getText(tr("Slow Label"));
-    slowMaType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("Slow MA Type"));
+    slowMaType = (QSMath::MAType) dialog->getComboIndex(tr("Slow MA Type"));
     slowDisplace = dialog->getInt(tr("Slow Displace"));
-    slowInput = (IndicatorPlugin::InputType) dialog->getComboIndex(tr("Slow Input"));
+    slowInput = (BarData::InputType) dialog->getComboIndex(tr("Slow Input"));
     rc = TRUE;
   }
   else
@@ -207,11 +210,11 @@ void MA2::loadIndicatorSettings (QString file)
       
   s = dict["fastMaType"];
   if (s)
-    fastMaType = (IndicatorPlugin::MAType) s->left(s->length()).toInt();
+    fastMaType = (QSMath::MAType) s->left(s->length()).toInt();
     
   s = dict["fastInput"];
   if (s)
-    fastInput = (IndicatorPlugin::InputType) s->left(s->length()).toInt();
+    fastInput = (BarData::InputType) s->left(s->length()).toInt();
     
   s = dict["fastDisplace"];
   if (s)
@@ -235,11 +238,11 @@ void MA2::loadIndicatorSettings (QString file)
       
   s = dict["slowMaType"];
   if (s)
-    slowMaType = (IndicatorPlugin::MAType) s->left(s->length()).toInt();
+    slowMaType = (QSMath::MAType) s->left(s->length()).toInt();
     
   s = dict["slowInput"];
   if (s)
-    slowInput = (IndicatorPlugin::InputType) s->left(s->length()).toInt();
+    slowInput = (BarData::InputType) s->left(s->length()).toInt();
     
   s = dict["slowDisplace"];
   if (s)

@@ -38,7 +38,7 @@ class BB : public IndicatorPlugin
     PlotLine::LineType lineType;
     int period;
     double deviation;
-    IndicatorPlugin::MAType maType;
+    QSMath::MAType maType;
 };
 
 extern "C"

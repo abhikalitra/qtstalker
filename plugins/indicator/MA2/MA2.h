@@ -44,10 +44,10 @@ class MA2 : public IndicatorPlugin
     int slowPeriod;
     int slowDisplace;
     int fastDisplace;
-    IndicatorPlugin::MAType fastMaType;
-    IndicatorPlugin::MAType slowMaType;
-    IndicatorPlugin::InputType fastInput;
-    IndicatorPlugin::InputType slowInput;
+    QSMath::MAType fastMaType;
+    QSMath::MAType slowMaType;
+    BarData::InputType fastInput;
+    BarData::InputType slowInput;
 };
 
 extern "C"

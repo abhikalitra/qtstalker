@@ -20,6 +20,7 @@
  */
 
 #include "BarData.h"
+#include <qobject.h>
 
 BarData::BarData ()
 {
@@ -34,6 +35,49 @@ BarData::~BarData ()
 {
 }
 
+QStringList BarData::getInputFields ()
+{
+  QStringList l;
+  l.append(QObject::tr("Open"));
+  l.append(QObject::tr("High"));
+  l.append(QObject::tr("Low"));
+  l.append(QObject::tr("Close"));
+  l.append(QObject::tr("Volume"));
+  l.append(QObject::tr("Open Interest"));
+  return l;
+}
+
+PlotLine * BarData::getInput (BarData::InputType field)
+{
+  PlotLine *in = new PlotLine();
+  int loop;
+  for (loop = 0; loop < (int) barList.count(); loop++)
+  {
+    switch(field)
+    {
+      case Open:
+        in->append(getOpen(loop));
+	break;
+      case High:
+        in->append(getHigh(loop));
+	break;
+      case Low:
+        in->append(getLow(loop));
+	break;
+      case Volume:
+        in->append(getVolume(loop));
+	break;
+      case OpenInterest:
+        in->append(getOI(loop));
+	break;
+      default:
+        in->append(getClose(loop));
+        break;
+    }
+  }
+
+  return in;
+}
 
 int BarData::count ()
 {

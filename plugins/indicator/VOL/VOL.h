@@ -42,7 +42,7 @@ class VOL : public IndicatorPlugin
     QString maLabel;
     int period;
     int displace;
-    IndicatorPlugin::MAType maType;
+    QSMath::MAType maType;
 };
 
 extern "C"

@@ -46,17 +46,19 @@ void ENV::setDefaults ()
   period = 10;
   upperPercent = 1.02;
   lowerPercent = 0.98;
-  input = IndicatorPlugin::Close;
-  maType = IndicatorPlugin::SMA;
+  input = BarData::Close;
+  maType = QSMath::SMA;
 }
 
 void ENV::calculate ()
 {
-  PlotLine *in = getInput(input);
+  QSMath *t = new QSMath();
 
-  PlotLine *uma = getMA(in, maType, period);
+  PlotLine *in = data->getInput(input);
 
-  PlotLine *lma = getMA(in, maType, period);
+  PlotLine *uma = t->getMA(in, maType, period);
+
+  PlotLine *lma = t->getMA(in, maType, period);
 
   int maLoop = uma->getSize() - 1;
 
@@ -82,6 +84,8 @@ void ENV::calculate ()
   lma->setType(lowerLineType);
   lma->setLabel(lowerLabel);
   output.append(lma);
+  
+  delete t;
 }
 
 QMemArray<int> ENV::getAlerts ()
@@ -136,8 +140,8 @@ int ENV::indicatorPrefDialog ()
   dialog->setCaption(tr("ENV Indicator"));
   dialog->createPage (tr("Parms"));
   dialog->addIntItem(tr("Period"), 1, period, 1, 99999999);
-  dialog->addComboItem(tr("MA Type"), 1, getMATypes(), maType);
-  dialog->addComboItem(tr("Input"), 1, getInputFields(), input);
+  dialog->addComboItem(tr("MA Type"), 1, maTypeList, maType);
+  dialog->addComboItem(tr("Input"), 1, inputTypeList, input);
   
   dialog->createPage (tr("Upper"));
   dialog->addColorItem(tr("Upper Color"), 2, upperColor);
@@ -156,8 +160,8 @@ int ENV::indicatorPrefDialog ()
   if (rc == QDialog::Accepted)
   {
     period = dialog->getInt(tr("Period"));
-    maType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("MA Type"));
-    input = (IndicatorPlugin::InputType) dialog->getComboIndex(tr("Input"));
+    maType = (QSMath::MAType) dialog->getComboIndex(tr("MA Type"));
+    input = (BarData::InputType) dialog->getComboIndex(tr("Input"));
     
     upperColor = dialog->getColor(tr("Upper Color"));
     upperLineType = (PlotLine::LineType) dialog->getComboIndex(tr("Upper Line Type"));
@@ -192,11 +196,11 @@ void ENV::loadIndicatorSettings (QString file)
   
   s = dict["maType"];
   if (s)
-    maType = (IndicatorPlugin::MAType) s->left(s->length()).toInt();
+    maType = (QSMath::MAType) s->left(s->length()).toInt();
 
   s = dict["input"];
   if (s)
-    input = (IndicatorPlugin::InputType) s->left(s->length()).toInt();
+    input = (BarData::InputType) s->left(s->length()).toInt();
       
   s = dict["upperColor"];
   if (s)

@@ -37,7 +37,7 @@ class FI : public IndicatorPlugin
     PlotLine::LineType lineType;
     QString label;
     int smoothing;
-    IndicatorPlugin::MAType maType;
+    QSMath::MAType maType;
 };
 
 extern "C"
