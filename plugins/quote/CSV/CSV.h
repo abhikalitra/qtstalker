@@ -19,9 +19,9 @@
  *  USA.
  */
 
-#include "../../../src/QuotePlugin.h"
-#include "../../../src/FuturesData.h"
-#include "../../../src/ChartDb.h"
+#include "QuotePlugin.h"
+#include "FuturesData.h"
+#include "ChartDb.h"
 #include <qdatetime.h>
 
 class CSV : public QuotePlugin

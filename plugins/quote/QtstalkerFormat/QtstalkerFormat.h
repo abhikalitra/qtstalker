@@ -19,7 +19,7 @@
  *  USA.
  */
 
-#include "../../../src/QuotePlugin.h"
+#include "QuotePlugin.h"
 
 class QtstalkerFormat : public QuotePlugin
 {

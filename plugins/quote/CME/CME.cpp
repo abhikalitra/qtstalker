@@ -20,7 +20,7 @@
  */
 
 #include "CME.h"
-#include "../../../src/ChartDb.h"
+#include "ChartDb.h"
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qnetwork.h>

@@ -19,9 +19,9 @@
  *  USA.
  */
 
-#include "../../../src/QuotePlugin.h"
-#include "../../../src/ChartDb.h"
-#include "../../../src/FuturesData.h"
+#include "QuotePlugin.h"
+#include "ChartDb.h"
+#include "FuturesData.h"
 #include <qstring.h>
 #include <qdir.h>
 

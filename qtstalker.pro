@@ -1,5 +1,7 @@
 TEMPLATE = subdirs
 
+SUBDIRS += lib
+
 SUBDIRS += src
 
 SUBDIRS += plugins/quote/CC
@@ -60,11 +62,4 @@ SUBDIRS += plugins/indicator/WAD
 SUBDIRS += plugins/indicator/WILLR
 
 SUBDIRS += docs
-
-
-
-
-
-
-
 

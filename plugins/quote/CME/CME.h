@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#include "../../../src/QuotePlugin.h"
-#include "../../../src/FuturesData.h"
+#include "QuotePlugin.h"
+#include "FuturesData.h"
 #include <qstring.h>
 #include <qnetworkprotocol.h>
 #include <qurloperator.h>

@@ -19,7 +19,7 @@
  *  USA.
  */
 
-#include "../../../src/IndicatorPlugin.h"
+#include "IndicatorPlugin.h"
 
 class VOL : public IndicatorPlugin
 {

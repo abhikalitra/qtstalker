@@ -20,7 +20,7 @@
  */
 
 #include "Spread.h"
-#include "../../../src/ChartDb.h"
+#include "ChartDb.h"
 #include <qdir.h>
 #include <qstringlist.h>
 #include <qmessagebox.h>

@@ -20,7 +20,7 @@
  */
 
 #include "OVRLY.h"
-#include "../../../src/ChartDb.h"
+#include "ChartDb.h"
 #include <qdatetime.h>
 #include <qdict.h>
 

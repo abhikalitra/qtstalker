@@ -44,6 +44,10 @@
 
 - Applied patch #836996 - changelog shows a bit more detail
 
+- Applied patch #837617 - patch to create libqtstalker.so. Kudos to Marco van Zwetselaar for moving the shared classes into a
+  library. This has reduced the size of the executable and plugins by as much 2 thirds! Great patch Marco, we are back on track
+  to being lean and mean.
+  
   
 0.22
 ====

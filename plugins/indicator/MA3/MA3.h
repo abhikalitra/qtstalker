@@ -19,7 +19,7 @@
  *  USA.
  */
 
-#include "../../../src/IndicatorPlugin.h"
+#include "IndicatorPlugin.h"
 
 class MA3 : public IndicatorPlugin
 {

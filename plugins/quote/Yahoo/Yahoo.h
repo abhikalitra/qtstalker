@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#include "../../../src/QuotePlugin.h"
-#include "../../../src/ChartDb.h"
+#include "QuotePlugin.h"
+#include "ChartDb.h"
 #include <qstring.h>
 #include <qurloperator.h>
 #include <qnetworkprotocol.h>

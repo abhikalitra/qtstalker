@@ -19,7 +19,7 @@
  *  USA.
  */
 
-#include "../../../src/QuotePlugin.h"
+#include "QuotePlugin.h"
 #include <qstring.h>
 #include <qdict.h>
 #include <qdatetime.h>
