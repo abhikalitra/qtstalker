@@ -26,6 +26,7 @@
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qdir.h>
+#include <qhgroupbox.h>
 #include "Scanner.h"
 #include "stop.xpm"
 #include "ok.xpm"
@@ -56,23 +57,23 @@ Scanner::Scanner (QString n) : QDialog (0, 0, TRUE)
   
   toolbar->addButton("scan", scanner, tr("Scan"));
   connect(toolbar->getButton("scan"), SIGNAL(clicked()), this, SLOT(scan()));
-
-  QHBoxLayout *hbox = new QHBoxLayout(vbox);
-  hbox->setSpacing(5);
   
-  allSymbols = new QCheckBox(tr("All symbols"), this);
-  hbox->addWidget(allSymbols);
+  QHGroupBox *gbox = new QHGroupBox(tr("Symbol Selection"), this);  
+  vbox->addWidget(gbox);
+
+  allSymbols = new QCheckBox(tr("All symbols"), gbox);
   connect(allSymbols, SIGNAL(toggled(bool)), this, SLOT(allSymbolsToggled(bool)));
 
-  fileButton = new QPushButton(tr("Symbols..."), this);
+  fileButton = new QPushButton(tr("Symbols..."), gbox);
   connect(fileButton, SIGNAL(clicked()), this, SLOT(getSymbols()));
-  hbox->addWidget(fileButton);
 
-  period = new QComboBox(this);
+  gbox = new QHGroupBox(tr("Compression"), this);  
+  vbox->addWidget(gbox);
+  
+  period = new QComboBox(gbox);
   period->insertItem(tr("Daily"), -1);
   period->insertItem(tr("Weekly"), -1);
   period->insertItem(tr("Monthly"), -1);
-  vbox->addWidget(period);
 
   list = new FormulaEdit(this);
   vbox->addWidget(list);

@@ -2630,10 +2630,10 @@ QString QSMath::getCOMPARE (int i, QStringList l)
   double inputNum = 0;
   if (! input2)
   {
-    if (l[2].contains("#"))
+    if (l[3].contains("#"))
     {
-      l[2].remove(0, 1);
-      inputNum = l[2].toDouble(&ok);
+      l[3].remove(0, 1);
+      inputNum = l[3].toDouble(&ok);
       if (! ok)
       {
         delete input;
@@ -2959,6 +2959,9 @@ QString QSMath::calculateCustomFormula (QStringList fl, QStringList pl)
 
   if (err.length())
   {
+    err.prepend("Line ");
+    err.prepend(QString::number(loop + 1));
+    err.prepend(": ");
     qDebug(err);
     clearCustomLines();
   }

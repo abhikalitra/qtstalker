@@ -100,7 +100,7 @@ QtstalkerApp::QtstalkerApp()
   
   QHBoxLayout *hbox2 = new QHBoxLayout(vbox);
   hbox2->setSpacing(1);
-  hbox2->setMargin(1);
+  hbox2->setMargin(2);
   
   QButtonGroup *bg = new QButtonGroup(navBase);
   QObject::connect(bg, SIGNAL(clicked(int)), this, SLOT(slotNavigatorButtonPressed(int)));
@@ -148,7 +148,7 @@ QtstalkerApp::QtstalkerApp()
     
   hbox2 = new QHBoxLayout(vbox);
   hbox2->setSpacing(1);
-  hbox2->setMargin(1);
+  hbox2->setMargin(2);
 
   button = new QPushButton(navBase);
   QToolTip::add(button, tr("Workwith Backtesting"));

@@ -36,6 +36,7 @@ class ColorButton : public QPushButton
     ~ColorButton ();
     QColor getColor ();
     void setColorButton ();
+    void setColor (QColor);
 
   public slots:
     void colorDialog ();

@@ -20,16 +20,17 @@
  */
 
 #include "Bars.h"
-#include "Config.h"
+#include "BarDialog.h"
+#include "QSMath.h"
 #include <qpainter.h>
 #include <qsettings.h>
+#include <qmessagebox.h>
 
 Bars::Bars ()
 {
   pluginName = "Bar";
   startX = 2;
   indicatorFlag = FALSE;
-  dialog = 0;
 
   loadSettings();  
 }
@@ -111,46 +112,50 @@ void Bars::drawBars (int startX, int startIndex, int pixelspace)
 
 void Bars::drawPaintBars (int startX, int startIndex, int pixelspace)
 {
-  Config *config = new Config;
-  
-  Setting *set = config->getIndicator(indicator);
-  
-  Plugin *plug = config->getPlugin(Config::IndicatorPluginPath, set->getData("plugin"));
-  if (! plug)
+  PlotLine *line = 0;
+  QSMath *t = new QSMath(data);
+  QString err = t->calculateCustomFormula(formulaList, plotList);
+  if (err.length())
   {
-    delete config;
-    delete set;
+    QMessageBox::warning(0,
+    			 QObject::tr("Qtstalker: Custom Function Error"),
+			 err);
+    delete t;
     return;
   }
   
-  plug->setIndicatorInput(data);
-  plug->loadIndicatorSettings(config->getData(Config::IndicatorPath) + "/" + indicator);
-  plug->calculate();
-  plug->getAlerts();
-  paintBars = plug->getAlerts();
-  delete set;
-  delete config;
+  int loop;
+  for (loop = plotList.count() - 1; loop > -1; loop--)
+  {
+    if (plotList[loop].toInt())
+    {
+      line = t->getCustomLine(loop + 1);
+      break;
+    }
+  }
+  delete t;
+  
+  if (! line)
+    return;
 
   QPainter painter;
   painter.begin(buffer);
 
   int x = startX;
-  int loop = startIndex;
+  loop = startIndex;
+  int lineLoop = line->getSize() - data->count() + loop;
   
   while ((x < buffer->width()) && (loop < (int) data->count()))
   {
-    switch (paintBars.at(loop))
+    if (lineLoop > -1 && lineLoop < line->getSize())
     {
-      case 1:
+      if (line->getData(lineLoop))
         painter.setPen(paintUpColor);
-	break;
-      case -1:
+      else
         painter.setPen(paintDownColor);
-	break;
-      default:
-        painter.setPen(barNeutralColor);
-        break;
     }
+    else
+      painter.setPen(barNeutralColor);
     
     int y;
     if (data->getOpen(loop) != 0)
@@ -168,6 +173,7 @@ void Bars::drawPaintBars (int startX, int startIndex, int pixelspace)
 
     x = x + pixelspace;
     loop++;
+    lineLoop++;
   }
 
   painter.end();
@@ -175,80 +181,42 @@ void Bars::drawPaintBars (int startX, int startIndex, int pixelspace)
 
 void Bars::prefDialog ()
 {
-  QStringList l;
-  l.append(tr("Bar"));
-  l.append(tr("Paint Bar"));
+  BarDialog *dialog = new BarDialog();
+  dialog->setBarColors(barUpColor, barDownColor, barNeutralColor);
+  dialog->setPaintBarColors(paintUpColor, paintDownColor);
+  dialog->setStyle(style);
+  dialog->setSpacing(minPixelspace);
   
-  dialog = new PrefDialog();
-  dialog->setCaption(tr("Bar Chart Prefs"));
-  dialog->createPage (tr("Prefs"));
-  
-  dialog->addComboItem(tr("Style"), tr("Prefs"), l, style);
-  QObject::connect(dialog->getComboWidget("Style"),
-                   SIGNAL(activated(const QString &)),
-                   this,
-		   SLOT(styleChanged(const QString &)));
-  
-  dialog->addIntItem(tr("Min Bar Spacing"), tr("Prefs"), minPixelspace, 4, 99);
-  
-  styleChanged(style);
+  int loop;
+  for (loop = 0; loop < (int) formulaList.count(); loop++)
+    dialog->setLine(formulaList[loop] + "|" + plotList[loop]);
   
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
-    minPixelspace = dialog->getInt(tr("Min Bar Spacing"));
-    style = dialog->getCombo(tr("Style"));
+    minPixelspace = dialog->getSpacing();
+    style = dialog->getStyle();
+    barUpColor = dialog->getBarUpColor();
+    barDownColor = dialog->getBarDownColor();
+    barNeutralColor = dialog->getBarNeutralColor();
+    paintUpColor = dialog->getPaintUpColor();
+    paintDownColor = dialog->getPaintDownColor();
     
-    if (! style.compare(tr("Bar")))
+    int loop;
+    formulaList.clear();
+    plotList.clear();
+    for (loop = 0; loop < (int) dialog->getLines(); loop++)
     {
-      barNeutralColor = dialog->getColor(tr("Bar Neutral Color"));
-      barUpColor = dialog->getColor(tr("Bar Up Color"));
-      barDownColor = dialog->getColor(tr("Bar Down Color"));
+      formulaList.append(dialog->getFunction(loop));
+      plotList.append(dialog->getPlot(loop));
     }
-    else
-    {
-      paintUpColor = dialog->getColor(tr("Paint Bar Up Color"));
-      paintDownColor = dialog->getColor(tr("Paint Bar Down Color"));
-      indicator = dialog->getCombo(tr("Indicator"));
-    }
-    
+        
     saveFlag = TRUE;
     emit draw();
   }
   
   delete dialog;
-  dialog = 0;
-}
-
-void Bars::styleChanged (const QString &)
-{
-  if (! dialog)
-    return;
-
-  style = dialog->getCombo(tr("Style"));
-    
-  if (! style.compare(tr("Bar")))
-  {
-    dialog->deletePage(tr("Parms"));
-    
-    dialog->createPage (tr("Parms"));
-    dialog->addColorItem(tr("Bar Neutral Color"), tr("Parms"), barNeutralColor);
-    dialog->addColorItem(tr("Bar Up Color"), tr("Parms"), barUpColor);
-    dialog->addColorItem(tr("Bar Down Color"), tr("Parms"), barDownColor);
-  }
-  else
-  {
-    dialog->deletePage(tr("Parms"));
-    
-    dialog->createPage (tr("Parms"));
-    dialog->addColorItem(tr("Paint Bar Up Color"), tr("Parms"), paintUpColor);
-    dialog->addColorItem(tr("Paint Bar Down Color"), tr("Parms"), paintDownColor);
-    
-    Config *config = new Config;
-    dialog->addComboItem(tr("Indicator"), tr("Parms"), config->getIndicators(), indicator);
-    delete config;
-  }
 }
 
 void Bars::loadSettings ()
@@ -267,8 +235,16 @@ void Bars::loadSettings ()
   // paint bar settings  
   paintUpColor.setNamedColor(settings.readEntry("/paintUpColor", "green"));
   paintDownColor.setNamedColor(settings.readEntry("/paintDownColor", "red"));
-  indicator = settings.readEntry("/indicator");
-  
+
+  QString s = settings.readEntry("/formula");
+  QStringList l = QStringList::split("|", s, FALSE);
+  int loop;
+  for (loop = 0; loop < (int) l.count(); loop = loop + 2)
+  {
+    formulaList.append(l[loop]);
+    plotList.append(l[loop + 1]);
+  }
+    
   settings.endGroup();
 }
 
@@ -291,7 +267,18 @@ void Bars::saveSettings ()
   // paint bar settings
   settings.writeEntry("/paintUpColor", paintUpColor.name());
   settings.writeEntry("/paintDownColor", paintDownColor.name());
-  settings.writeEntry("/indicator", indicator);
+  
+  int loop;
+  QString s;
+  for (loop = 0; loop < (int) formulaList.count(); loop++)
+  {
+    s.append("|");
+    s.append(formulaList[loop]);
+    s.append("|");
+    s.append(plotList[loop]);
+  }
+  s.remove(0, 1);
+  settings.writeEntry("/formula", s);
   
   settings.endGroup();
 }

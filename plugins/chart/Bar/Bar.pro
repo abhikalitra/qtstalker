@@ -4,8 +4,10 @@ CONFIG += thread warn_on plugin
 QMAKE_CXXFLAGS += -Os
 
 HEADERS += Bars.h
+HEADERS += BarDialog.h
 
 SOURCES += Bars.cpp
+SOURCES += BarDialog.cpp
 
 TARGET = Bar.0.26
 

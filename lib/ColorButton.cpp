@@ -58,3 +58,11 @@ void ColorButton::colorDialog ()
   }
 }
 
+void ColorButton::setColor (QColor c)
+{
+  color = c;
+  pix.fill(color);
+  setPixmap(pix);
+}
+
+

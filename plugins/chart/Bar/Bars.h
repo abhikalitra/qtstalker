@@ -23,7 +23,6 @@
 #define BARS_HPP
 
 #include "ChartPlugin.h"
-#include "PrefDialog.h"
 #include <qcolor.h>
 
 class Bars : public ChartPlugin
@@ -40,19 +39,15 @@ class Bars : public ChartPlugin
     void loadSettings ();
     void saveSettings ();
     
-  public slots:
-    void styleChanged (const QString &);
-
   protected:
     QString style;
-    QString indicator;
-    QMemArray<int> paintBars;
     QColor barNeutralColor;
     QColor barUpColor;
     QColor barDownColor;
     QColor paintUpColor;
     QColor paintDownColor;
-    PrefDialog *dialog;
+    QStringList formulaList;
+    QStringList plotList;
 };
 
 extern "C"
