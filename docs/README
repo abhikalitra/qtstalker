@@ -65,7 +65,7 @@ Indicator plugins included are:
   Williams %R
   Weighted Moving Average
 
-Chart type included are:
+Chart styles included are:
 
   Line
   Bar
@@ -79,10 +79,14 @@ Quote plugins included are:
 
   CBOT - Chicago Board of Trade Futures
   CME - Chicago Mercantile Exchange Futures
+  CMEHistory - Current history for Chicago Mercantile Exchange Futures
+  COT - Commitment of Traders futures reports.
+  Index - Custom index composites.
   NYBOT - New York Board Of Trade Futures
+  Qtstalker - Files that have been exported by qtstalker ASCII export function
+  Spread - Custom spread composites.
   Yahoo - Yahoo historical quotes
   YahooQuote - Yahoo single delayed quotes
-  Qtstalker - Files that have been exported by qtstalker ASCII export function
 
 Chart drawing objects:
 
@@ -100,11 +104,11 @@ Chart compression types:
 
 Investment types include:
 
-  Stocks
+  Stock
   Futures
-  Spreads
+  Spread
   Index
-  Ratio
+  Custom
 
 Scaling options include:
 

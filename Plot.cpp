@@ -47,6 +47,7 @@ Plot::Plot (QWidget *w) : QWidget(w)
   interval = Daily;
   mainFlag = FALSE;
   scaleToScreen = FALSE;
+  otherFlag = FALSE;
   startIndex = 0;
   scaleHigh = 0;
   scaleLow = 0;
@@ -63,6 +64,8 @@ Plot::Plot (QWidget *w) : QWidget(w)
 
   lineCount = 0;
   lineList.setAutoDelete(TRUE);
+
+  data.setAutoDelete(TRUE);
 }
 
 Plot::~Plot ()
@@ -76,66 +79,48 @@ void Plot::clear ()
   scaleLow = 0;
   mainHigh = 0;
   mainLow = 0;
-
-  openArray.truncate(0);
-  highArray.truncate(0);
-  lowArray.truncate(0);
-  closeArray.truncate(0);
-}
-
-void Plot::clearDate ()
-{
-  dateArray.truncate(0);
+  data.clear();
 }
 
 void Plot::setData (QList<Setting> l)
 {
-  dateArray.resize(l.count());
+  data.clear();
+  
+  if (! l.count())
+    return;
 
   if (mainFlag)
   {
-    openArray.resize(l.count());
-    highArray.resize(l.count());
-    lowArray.resize(l.count());
-    closeArray.resize(l.count());
     alerts.resize(l.count());
     alerts.fill(0, -1);
   }
-  
+
   bool flag = FALSE;
   int loop;
   for (loop = 0; loop < (int) l.count(); loop++)
   {
-    Setting *set = l.at(loop);
+    Setting *r = l.at(loop);
 
-    QString s = set->getData("Date");
-    s.insert(4, "-");
-    s.insert(7, "-");
-    s.insert(12, ":");
-    s.insert(15, ":");
-    dateArray[loop] = QDateTime::fromString(s, Qt::ISODate);
+    Setting *r2 = new Setting;
+    r2->parse(r->getString());
+    data.append(r2);
 
     if (mainFlag)
     {
       if (! flag)
       {
-        mainHigh = set->getFloat("High");
-        mainLow = set->getFloat("Low");
+        mainHigh = r->getFloat("High");
+        mainLow = r->getFloat("Low");
 	flag = TRUE;
       }
 ;
-      double t = set->getFloat("High");
+      double t = r->getFloat("High");
       if (t > mainHigh)
         mainHigh = t;
 
-      t = set->getFloat("Low");
+      t = r->getFloat("Low");
       if (t < mainLow)
 	mainLow = t;
-
-      openArray[loop] = set->getFloat("Open");
-      highArray[loop] = set->getFloat("High");
-      lowArray[loop] = set->getFloat("Low");
-      closeArray[loop] = set->getFloat("Close");
     }
   }
 }
@@ -188,7 +173,7 @@ void Plot::setChartType (QString d)
       dateFlag = TRUE;
       break;
     }
-
+    
     break;
   }
 
@@ -210,7 +195,7 @@ void Plot::draw ()
 {
   buffer.fill(backgroundColor);
 
-  if (dateArray.size())
+  if (data.count())
   {
     setHeight();
 
@@ -225,46 +210,61 @@ void Plot::draw ()
 
     drawYGrid();
 
-    if (chartType.compare("None"))
+    if (mainFlag)
     {
-      while (1)
+      if (otherFlag)
+        drawLines();
+      else
       {
-        if (! chartType.compare(tr("Bar")))
+        while (1)
         {
-          drawBars();
+          if (! chartType.compare(tr("Bar")))
+          {
+            drawBars();
+            drawLines();
+            drawObjects();
+            break;
+          }
+
+          if (! chartType.compare(tr("Candle")))
+          {
+            drawCandle();
+            drawLines();
+            drawObjects();
+            break;
+          }
+
+          if (! chartType.compare(tr("Line")))
+          {
+            drawLineChart();
+            drawLines();
+            drawObjects();
+            break;
+          }
+
+          if (! chartType.compare(tr("Paint Bar")))
+          {
+            drawPaintBar();
+            drawLines();
+            drawObjects();
+            break;
+          }
+
+          if (! chartType.compare(tr("Point And Figure")))
+	  {
+            drawPointAndFigure();
+	    break;
+	  }
+
           break;
         }
-
-        if (! chartType.compare(tr("Candle")))
-        {
-          drawCandle();
-          break;
-        }
-
-        if (! chartType.compare(tr("Line")))
-        {
-          drawLineChart();
-          break;
-        }
-
-        if (! chartType.compare(tr("Paint Bar")))
-        {
-          drawPaintBar();
-          break;
-        }
-
-        if (! chartType.compare(tr("Point And Figure")))
-          drawPointAndFigure();
-
-        break;
       }
     }
-
-    if (chartType.compare(tr("Point And Figure")))
+    else
+    {
       drawLines();
-
-    if (chartType.compare(tr("Point And Figure")))
       drawObjects();
+    }
 
     drawScale();
 
@@ -427,7 +427,7 @@ void Plot::mousePressEvent (QMouseEvent *event)
 {
   if (mainFlag)
   {
-    if (! dateArray.size())
+    if (! data.count())
       return;
   }
   else
@@ -510,6 +510,16 @@ void Plot::setGridFlag (bool d)
   gridFlag = d;
 }
 
+void Plot::setOtherFlag (bool d)
+{
+  otherFlag = d;
+}
+
+bool Plot::getOtherFlag ()
+{
+  return otherFlag;
+}
+
 void Plot::setPixelspace (int d)
 {
   pixelspace = d;
@@ -537,13 +547,15 @@ void Plot::drawDate ()
 
   if (interval == Daily)
   {
-    QDateTime oldDate = dateArray[loop];
+    Setting *r = data.at(loop);
+    QDateTime oldDate = getDateTime(r->getData("Date"));
     QDateTime oldWeek = oldDate;
     oldWeek = oldWeek.addDays(7 - oldWeek.date().dayOfWeek());
 
-    while(x <= _width && loop < (int) dateArray.size())
+    while(x <= _width && loop < (int) data.count())
     {
-      QDateTime date = dateArray[loop];
+      r = data.at(loop);
+      QDateTime date = getDateTime(r->getData("Date"));
 
       if (date.date().month() != oldDate.date().month())
       {
@@ -600,11 +612,13 @@ void Plot::drawDate ()
   {
     if (interval == Weekly)
     {
-      QDateTime oldMonth = dateArray[loop];
+      Setting *r = data.at(loop);
+      QDateTime oldMonth = getDateTime(r->getData("Date"));
 
-      while(x <= _width && loop < (int) dateArray.size())
+      while(x <= _width && loop < (int) data.count())
       {
-        QDateTime date = dateArray[loop];
+        r = data.at(loop);
+        QDateTime date = getDateTime(r->getData("Date"));
 
         if (date.date().month() != oldMonth.date().month())
         {
@@ -640,11 +654,13 @@ void Plot::drawDate ()
     }
     else
     {
-      QDateTime oldYear = dateArray[loop];
+      Setting *r = data.at(loop);
+      QDateTime oldYear = getDateTime(r->getData("Date"));
 
-      while(x <= _width && loop < (int) dateArray.size())
+      while(x <= _width && loop < (int) data.count())
       {
-        QDateTime date = dateArray[loop];
+        r = data.at(loop);
+        QDateTime date = getDateTime(r->getData("Date"));
 
         if (date.date().year() != oldYear.date().year())
         {
@@ -677,11 +693,13 @@ void Plot::drawXGrid ()
 
   if (interval == Daily)
   {
-    QDateTime oldDate = dateArray[loop];
+    Setting *r = data.at(loop);
+    QDateTime oldDate = getDateTime(r->getData("Date"));
 
-    while(x <= _width && loop < (int) dateArray.size())
+    while(x <= _width && loop < (int) data.count())
     {
-      QDateTime date = dateArray[loop];
+      r = data.at(loop);
+      QDateTime date = getDateTime(r->getData("Date"));
 
       if (date.date().month() != oldDate.date().month())
       {
@@ -696,11 +714,13 @@ void Plot::drawXGrid ()
   }
   else
   {
-    QDateTime oldYear = dateArray[loop];
+    Setting *r = data.at(loop);
+    QDateTime oldYear = getDateTime(r->getData("Date"));
 
-    while(x <= _width && loop < (int) dateArray.size())
+    while(x <= _width && loop < (int) data.count())
     {
-      QDateTime date = dateArray[loop];
+      r = data.at(loop);
+      QDateTime date = getDateTime(r->getData("Date"));
 
       if (date.date().year() != oldYear.date().year())
       {
@@ -879,7 +899,7 @@ void Plot::drawLine ()
   int x2 = startX;
   int y = -1;
   int y2 = -1;
-  int loop = currentLine->data.size() - dateArray.size() + startIndex;
+  int loop = currentLine->data.size() - data.count() + startIndex;
 
   while ((x2 < _width) && (loop < (int) currentLine->data.size()))
   {
@@ -928,7 +948,7 @@ void Plot::drawDot ()
   painter.setPen(pen);
 
   int x = startX;
-  int loop = currentLine->data.size() - dateArray.size() + startIndex;
+  int loop = currentLine->data.size() - data.count() + startIndex;
 
   while ((x < _width) && (loop < (int) currentLine->data.size()))
   {
@@ -952,7 +972,7 @@ void Plot::drawHistogram ()
   painter.setPen(currentLine->color);
   painter.setBrush(currentLine->color);
 
-  int loop = currentLine->data.size() - dateArray.size() + startIndex;
+  int loop = currentLine->data.size() - data.count() + startIndex;
 
   QPointArray pa(4);
   int zero = convertToY(0);
@@ -995,7 +1015,7 @@ void Plot::drawHistogramBar ()
   int x = startX;
   int zero = convertToY(0);
 
-  int loop = currentLine->data.size() - dateArray.size() + startIndex;
+  int loop = currentLine->data.size() - data.count() + startIndex;
 
   while ((x < _width) && (loop < (int) currentLine->data.size()))
   {
@@ -1023,28 +1043,33 @@ void Plot::drawInfo ()
   int pos = startX;
 
   QString s = "D=";
-  s.append(dateArray[dateArray.size() - 1].toString("yyyyMMdd"));
+  Setting *r = data.at(data.count() - 1);
+  QDateTime date = getDateTime(r->getData("Date"));
+  s.append(date.toString("yyyyMMdd"));
   s.append(" ");
   painter.drawText(pos, 10, s, -1);
   pos = pos + fm.width(s);
 
-  if (closeArray.size())
+  if (data.count() && mainFlag && ! otherFlag)
   {
     s = "O=";
-    s.append(QString::number(openArray[openArray.size() - 1]));
+    s.append(r->getData("Open"));
     s.append(" H=");
-    s.append(QString::number(highArray[highArray.size() - 1]));
+    s.append(r->getData("High"));
     s.append(" L=");
-    s.append(QString::number(lowArray[lowArray.size() - 1]));
+    s.append(r->getData("Low"));
     s.append(" C=");
-    s.append(QString::number(closeArray[closeArray.size() - 1]));
+    s.append(r->getData("Close"));
     s.append(" ");
     painter.drawText(pos, 10, s, -1);
     pos = pos + fm.width(s);
 
     double ch = 0;
-    if (dateArray.size() > 1)
-      ch = closeArray[closeArray.size() - 1] - closeArray[closeArray.size() - 2];
+    if (data.count() > 1)
+    {
+      Setting *pr = data.at(data.count() - 2);
+      ch = r->getFloat("Close") - pr->getFloat("Close");
+    }
     s = "CH=";
     s.append(QString::number(ch));
     s.append(" ");
@@ -1066,7 +1091,7 @@ void Plot::drawInfo ()
   while (it.current())
   {
     PlotLine *line = it.current();
-    
+
     if (line->show == FALSE)
     {
       ++it;
@@ -1105,12 +1130,14 @@ void Plot::crossHair (int x, int y)
   painter.drawLine (x, 0, x, buffer.height());
 
   int i = (x / pixelspace) + startIndex;
-  if (i >= (int) dateArray.size())
-    i = dateArray.size() - 1;
+  if (i >= (int) data.count())
+    i = data.count() - 1;
   if (i < startIndex)
     i = startIndex;
 
-  QString s = dateArray[i].toString("yyyyMMdd");
+  Setting *r = data.at(i);
+  QDateTime date = getDateTime(r->getData("Date"));
+  QString s = date.toString("yyyyMMdd");
   s.append(" ");
   s.append(QString::number(convertToVal(y)));
   emit statusMessage(s);
@@ -1265,8 +1292,8 @@ void Plot::setScale ()
   scaleHigh = 0;
   scaleLow = 0;
   bool flag = FALSE;
-
-  if (mainFlag)
+  
+  if (mainFlag && ! otherFlag)
   {
     if (! scaleToScreen)
     {
@@ -1278,20 +1305,24 @@ void Plot::setScale ()
     {
       int x = startX;
       int loop = startIndex;
-      while ((x < _width) && (loop < (int) dateArray.size()))
+      while ((x < _width) && (loop < (int) data.count()))
       {
+        Setting *r = data.at(loop);
+
         if (! flag)
 	{
-          scaleHigh = highArray[loop];
-          scaleLow = lowArray[loop];
+          scaleHigh = r->getFloat("High");
+          scaleLow = r->getFloat("Low");
 	  flag = TRUE;
 	}
 
-        if (highArray[loop] > scaleHigh)
-	  scaleHigh = highArray[loop];
+	float t = r->getFloat("High");
+        if (t > scaleHigh)
+	  scaleHigh = t;
 
-        if (lowArray[loop] < scaleLow)
-	  scaleLow = lowArray[loop];
+	t = r->getFloat("Low");
+        if (t < scaleLow)
+	  scaleLow = t;
 
         x = x + pixelspace;
         loop++;
@@ -1342,7 +1373,7 @@ void Plot::setScale ()
       }
 
       int x = startX;
-      int loop = line->data.size() - dateArray.size() + startIndex;
+      int loop = line->data.size() - data.count() + startIndex;
       while ((x < _width) && (loop < (int) line->data.size()))
       {
         if (loop > -1)
@@ -1545,13 +1576,16 @@ int Plot::getXFromDate (QDateTime d)
   int x = startX;
   int loop = startIndex;
 
-  QDateTime date = dateArray[startIndex];
+  Setting *r = data.at(startIndex);
+  QDateTime date = getDateTime(r->getData("Date"));
   if (d.date() < date.date())
     return -1;
 
-  while(x <= _width && loop < (int) dateArray.size())
+  while(x <= _width && loop < (int) data.count())
   {
-    QDateTime date = dateArray[loop];
+    r = data.at(loop);
+    date = getDateTime(r->getData("Date"));
+
     if (date.date() >= d.date())
       break;
 
@@ -1596,7 +1630,8 @@ void Plot::drawBars ()
   // set first bar as neutral
   painter.setPen(neutralColor);
 
-  double t = openArray[loop];
+  Setting *r = data.at(loop);
+  double t = r->getFloat("Open");
   int y;
   if (t)
   {
@@ -1604,41 +1639,44 @@ void Plot::drawBars ()
     painter.drawLine (x - 2, y, x, y);
   }
 
-  y = convertToY(closeArray[loop]);
+  y = convertToY(r->getFloat("Close"));
   painter.drawLine (x + 2, y, x, y);
 
-  int h = convertToY(highArray[loop]);
+  int h = convertToY(r->getFloat("High"));
 
-  int l = convertToY(lowArray[loop]);
+  int l = convertToY(r->getFloat("Low"));
   painter.drawLine (x, h, x, l);
 
   x = x + pixelspace;
   loop++;
 
-  while ((x < _width) && (loop < (int) dateArray.size()))
+  while ((x < _width) && (loop < (int) data.count()))
   {
-    if (closeArray[loop] > closeArray[loop - 1])
+    r = data.at(loop);
+    Setting *pr = data.at(loop - 1);
+
+    if (r->getFloat("Close") > pr->getFloat("Close"))
       painter.setPen(upColor);
     else
     {
-      if (closeArray[loop] < closeArray[loop - 1])
+      if (r->getFloat("Close") < pr->getFloat("Close"))
         painter.setPen(downColor);
       else
         painter.setPen(neutralColor);
     }
 
-    t = openArray[loop];
+    t = r->getFloat("Open");
     if (t)
     {
       y = convertToY(t);
       painter.drawLine (x - 2, y, x, y);
     }
 
-    y = convertToY(closeArray[loop]);
+    y = convertToY(r->getFloat("Close"));
     painter.drawLine (x + 2, y, x, y);
 
-    h = convertToY(highArray[loop]);
-    l = convertToY(lowArray[loop]);
+    h = convertToY(r->getFloat("High"));
+    l = convertToY(r->getFloat("Low"));
     painter.drawLine (x, h, x, l);
 
     x = x + pixelspace;
@@ -1658,14 +1696,15 @@ void Plot::drawCandle ()
 
   painter.setPen(neutralColor);
 
-  int h = convertToY(highArray[loop]);
-  int l = convertToY(lowArray[loop]);
-  int c = convertToY(closeArray[loop]);
-  int o = convertToY(openArray[loop]);
-  
+  Setting *r = data.at(loop);
+  int h = convertToY(r->getFloat("High"));
+  int l = convertToY(r->getFloat("Low"));
+  int c = convertToY(r->getFloat("Close"));
+  int o = convertToY(r->getFloat("Open"));
+
   painter.drawLine (x, h, x, l);
 
-  if (openArray[loop] != 0)
+  if (r->getFloat("Open") != 0)
   {
     if (c > o)
     {
@@ -1679,26 +1718,29 @@ void Plot::drawCandle ()
   loop++;
   x = x + pixelspace;
 
-  while ((x < _width) && (loop < (int) dateArray.size()))
+  while ((x < _width) && (loop < (int) data.count()))
   {
-    if (closeArray[loop] > closeArray[loop - 1])
+    r = data.at(loop);
+    Setting *pr = data.at(loop - 1);
+
+    if (r->getFloat("Close") > pr->getFloat("Close"))
       painter.setPen(upColor);
     else
     {
-      if (closeArray[loop] < closeArray[loop - 1])
+      if (r->getFloat("Close") < pr->getFloat("Close"))
         painter.setPen(downColor);
       else
         painter.setPen(neutralColor);
     }
 
-    h = convertToY(highArray[loop]);
-    l = convertToY(lowArray[loop]);
-    c = convertToY(closeArray[loop]);
-    o = convertToY(openArray[loop]);
+    h = convertToY(r->getFloat("High"));
+    l = convertToY(r->getFloat("Low"));
+    c = convertToY(r->getFloat("Close"));
+    o = convertToY(r->getFloat("Open"));
 
     painter.drawLine (x, h, x, l);
 
-    if (openArray[loop] != 0)
+    if (r->getFloat("Open") != 0)
     {
       if (c > o)
       {
@@ -1729,9 +1771,11 @@ void Plot::drawLineChart ()
 
   painter.setPen(upColor);
 
-  while ((x < _width) && (loop < (int) dateArray.size()))
+  while ((x < _width) && (loop < (int) data.count()))
   {
-    y2 = convertToY(closeArray[loop]);
+    Setting *r = data.at(loop);
+
+    y2 = convertToY(r->getFloat("Close"));
     painter.drawLine (x, y, x2, y2);
     x = x2;
     y = y2;
@@ -1751,7 +1795,7 @@ void Plot::drawPaintBar ()
   int x = startX;
   int loop = startIndex;
 
-  while ((x < _width) && (loop < (int) dateArray.size()))
+  while ((x < _width) && (loop < (int) data.count()))
   {
     switch (alerts[loop])
     {
@@ -1766,18 +1810,20 @@ void Plot::drawPaintBar ()
 	break;
     }
 
+    Setting *r = data.at(loop);
+
     int y;
-    if (openArray[loop] != 0)
+    if (r->getFloat("Open") != 0)
     {
-      y = convertToY(openArray[loop]);
+      y = convertToY(r->getFloat("Open"));
       painter.drawLine (x - 2, y, x, y);
     }
 
-    y = convertToY(closeArray[loop]);
+    y = convertToY(r->getFloat("Close"));
     painter.drawLine (x + 2, y, x, y);
 
-    int h = convertToY(highArray[loop]);
-    int l = convertToY(lowArray[loop]);
+    int h = convertToY(r->getFloat("High"));
+    int l = convertToY(r->getFloat("Low"));
     painter.drawLine (x, h, x, l);
 
     x = x + pixelspace;
@@ -1805,9 +1851,11 @@ void Plot::drawPointAndFigure ()
   int reversal = 3;
   int symbol;
 
-  double ph = highArray[loop];
-  double pl = lowArray[loop];
-  double t2 = closeArray[loop];
+  Setting *r = data.at(loop);
+
+  double ph = r->getFloat("High");
+  double pl = r->getFloat("Low");
+  double t2 = r->getFloat("Close");
   if (((ph - pl) / 2) + pl > t2)
     symbol = TRUE;
   else
@@ -1822,10 +1870,12 @@ void Plot::drawPointAndFigure ()
   loop++;
   x2 = x2 + pixelspace;
   
-  while ((x2 < _width) && (loop < (int) dateArray.size()))
+  while ((x2 < _width) && (loop < (int) data.count()))
   {
-    double h = highArray[loop];
-    double l = lowArray[loop];
+    r = data.at(loop);
+
+    double h = r->getFloat("High");
+    double l = r->getFloat("Low");
 
     if (! symbol)
     {
@@ -1919,10 +1969,8 @@ void Plot::drawBuyArrow (Setting *co)
   painter.begin(&buffer);
 
   QString s = co->getData(QObject::tr("Date"));
-  s.insert(4, "-");
-  s.insert(7, "-");
-  s.append("00:00:00");
-  QDateTime dt = QDateTime::fromString(s, Qt::ISODate);
+  s.append("000000");
+  QDateTime dt = getDateTime(s);
 
   int x = getXFromDate(dt);
   if (x == -1)
@@ -2111,10 +2159,8 @@ void Plot::drawSellArrow (Setting *co)
   painter.begin(&buffer);
 
   QString s = co->getData(QObject::tr("Date"));
-  s.insert(4, "-");
-  s.insert(7, "-");
-  s.append("00:00:00");
-  QDateTime dt = QDateTime::fromString(s, Qt::ISODate);
+  s.append("000000");
+  QDateTime dt = getDateTime(s);
 
   int x = getXFromDate(dt);
   if (x == -1)
@@ -2145,10 +2191,8 @@ void Plot::drawText (Setting *co)
   painter.setFont(plotFont);
 
   QString s = co->getData(QObject::tr("Date"));
-  s.insert(4, "-");
-  s.insert(7, "-");
-  s.append("00:00:00");
-  QDateTime dt = QDateTime::fromString(s, Qt::ISODate);
+  s.append("000000");
+  QDateTime dt = getDateTime(s);
 
   int x = getXFromDate(dt);
   if (x == -1)
@@ -2170,20 +2214,16 @@ void Plot::drawTrendLine (Setting *co)
   painter.begin(&buffer);
 
   QString s = co->getData(QObject::tr("End Date"));
-  s.insert(4, "-");
-  s.insert(7, "-");
-  s.append("00:00:00");
-  QDateTime dt = QDateTime::fromString(s, Qt::ISODate);
+  s.append("000000");
+  QDateTime dt = getDateTime(s);
 
   int x2 = getXFromDate(dt);
   if (x2 == -1)
     return;
 
   s = co->getData(QObject::tr("Start Date"));
-  s.insert(4, "-");
-  s.insert(7, "-");
-  s.append("00:00:00");
-  dt = QDateTime::fromString(s, Qt::ISODate);
+  s.append("000000");
+  dt = getDateTime(s);
 
   int x = getXFromDate(dt);
   if (x == -1)
@@ -2206,10 +2246,8 @@ void Plot::drawVerticalLine (Setting *co)
   painter.begin(&buffer);
 
   QString s = co->getData(QObject::tr("Date"));
-  s.insert(4, "-");
-  s.insert(7, "-");
-  s.append("00:00:00");
-  QDateTime dt = QDateTime::fromString(s, Qt::ISODate);
+  s.append("000000");
+  QDateTime dt = getDateTime(s);
 
   int x = getXFromDate(dt);
   if (x == -1)
@@ -2225,34 +2263,55 @@ void Plot::drawVerticalLine (Setting *co)
 
 int Plot::getDataSize ()
 {
-  return (int) dateArray.size();
+  return (int) data.count();
 }
 
 QDateTime Plot::getDate (int d)
 {
-  return dateArray[d];
+  Setting *r = data.at(d);
+  return getDateTime(r->getData("Date"));
 }
 
 double Plot::getOpen (int d)
 {
-  return openArray[d];
+  Setting *r = data.at(d);
+  return r->getFloat("Open");
 }
 
 double Plot::getHigh (int d)
 {
-  return highArray[d];
+  Setting *r = data.at(d);
+  return r->getFloat("High");
 }
 
 double Plot::getLow (int d)
 {
-  return lowArray[d];
+  Setting *r = data.at(d);
+  return r->getFloat("Low");
 }
 
 double Plot::getClose (int d)
 {
-  return closeArray[d];
+  Setting *r = data.at(d);
+  return r->getFloat("Close");
 }
 
+QDateTime Plot::getDateTime (QString d)
+{
+  QDateTime dt;
+
+  if (d.length() != 14)
+    return dt;
+
+  QString s = d;
+  s.insert(4, "-");
+  s.insert(7, "-");
+  s.insert(12, ":");
+  s.insert(15, ":");
+  dt = QDateTime::fromString(s, Qt::ISODate);
+
+  return dt;
+}
 
 
 

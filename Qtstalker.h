@@ -36,6 +36,7 @@
 #include <qslider.h>
 #include <qdict.h>
 #include <qtabbar.h>
+#include <qspinbox.h>
 
 #define DEFAULT_INDICATOR_HEIGHT 125
 
@@ -94,9 +95,7 @@ class QtstalkerApp : public QMainWindow
     void plotPopupMenu (int);
     void mainPlotPopupMenu ();
     void indicatorPlotPopupMenu ();
-    void slotMinusPixelspace ();
-    void slotPlusPixelspace ();
-    void slotUpdateSpaceButtons ();
+    void slotPixelspaceChanged (int);
     void slotScaleToScreen (bool);
     void slotIndicatorSelected (int);
     void slotNewPlugin ();
@@ -133,8 +132,6 @@ class QtstalkerApp : public QMainWindow
     QAction *actionNewIndicator;
     QAction *actionPortfolio;
     QAction *actionQuotes;
-    QAction *actionMinusPixelspace;
-    QAction *actionPlusPixelspace;
     QAction *actionScaleToScreen;
     QAction *actionNewPlugin;
     QAction *actionTester;
@@ -155,6 +152,7 @@ class QtstalkerApp : public QMainWindow
     Plot *indicatorPlot;
     QComboBox *groupCombo;
     QComboBox *barCombo;
+    QSpinBox *pixelspace;
     Config *config;
     QSlider *slider;
     chartStatus status;

@@ -35,6 +35,7 @@
 #include <qfontmetrics.h>
 #include <qstringlist.h>
 #include <qlibrary.h>
+#include <qtooltip.h>
 
 #include "Qtstalker.h"
 #include "GroupDialog.h"
@@ -59,8 +60,6 @@
 #include "done.xpm"
 #include "configure.xpm"
 #include "openchart.xpm"
-#include "minuspixelspace.xpm"
-#include "pluspixelspace.xpm"
 #include "scaletoscreen.xpm"
 #include "plugin.xpm"
 #include "bar.xpm"
@@ -319,18 +318,6 @@ void QtstalkerApp::initActions()
   actionAbout->setStatusTip(tr("About Qtstalker."));
   connect(actionAbout, SIGNAL(activated()), this, SLOT(slotAbout()));
 
-  icon = minuspixelspace;
-  actionMinusPixelspace = new QAction(tr("Decrease Bar Spacing"), icon, tr("Decrease Bar Spacing"), 0, this);
-  actionMinusPixelspace->setStatusTip(tr("Decrease the space between each data bar."));
-  connect(actionMinusPixelspace, SIGNAL(activated()), this, SLOT(slotMinusPixelspace()));
-  actionMinusPixelspace->setEnabled(FALSE);
-
-  icon = pluspixelspace;
-  actionPlusPixelspace = new QAction(tr("Increase Bar Spacing"), icon, tr("Increase Bar Spacing"), 0, this);
-  actionPlusPixelspace->setStatusTip(tr("Increase the space between each data bar."));
-  connect(actionPlusPixelspace, SIGNAL(activated()), this, SLOT(slotPlusPixelspace()));
-  actionPlusPixelspace->setEnabled(FALSE);
-
   icon = scaletoscreen;
   actionScaleToScreen = new QAction(tr("Scale To Screen"), icon, tr("Scale To Screen"), 0, this, 0, true);
   actionScaleToScreen->setStatusTip(tr("Scale chart to current screen data."));
@@ -372,9 +359,6 @@ void QtstalkerApp::initMenuBar()
   viewMenu->insertSeparator();
   actionBack->addTo(viewMenu);
   actionNext->addTo(viewMenu);
-  viewMenu->insertSeparator();
-  actionMinusPixelspace->addTo(viewMenu);
-  actionPlusPixelspace->addTo(viewMenu);
 
   pluginMenu = new QPopupMenu();
   actionNewPlugin->addTo(pluginMenu);
@@ -434,8 +418,9 @@ void QtstalkerApp::initToolBar()
 
   toolbar->addSeparator();
 
-  actionMinusPixelspace->addTo(toolbar);
-  actionPlusPixelspace->addTo(toolbar);
+  pixelspace = new QSpinBox(toolbar);
+  connect (pixelspace, SIGNAL(valueChanged(int)), this, SLOT(slotPixelspaceChanged(int)));
+  QToolTip::add(pixelspace, tr("Bar Spacing"));
 
   toolbar->addSeparator();
 
@@ -451,11 +436,13 @@ void QtstalkerApp::initToolBar()
   navToolbar = new QToolBar(this, "nav toolbar");
 
   barCombo = new QComboBox(navToolbar);
+  QToolTip::add(barCombo, tr("Bars"));
 
   navToolbar->addSeparator();
 
   groupCombo = new QComboBox(navToolbar);
   groupCombo->setMinimumWidth(125);
+  QToolTip::add(groupCombo, tr("Group Contents"));
 
   actionBack->addTo(navToolbar);
 
@@ -467,6 +454,7 @@ void QtstalkerApp::initToolBar()
   slider->setOrientation(Qt::Horizontal);
   connect (slider, SIGNAL(valueChanged(int)), this, SLOT(slotSliderChanged(int)));
   slider->setEnabled(FALSE);
+  QToolTip::add(slider, tr("Pan Chart"));
 
   QStringList l = config->getIndicators();
   int loop;
@@ -508,8 +496,6 @@ void QtstalkerApp::slotOpenChart (QString selection)
   actionNewIndicator->setEnabled(TRUE);
   barCombo->setEnabled(TRUE);
   groupCombo->setEnabled(FALSE);
-  actionMinusPixelspace->setEnabled(TRUE);
-  actionPlusPixelspace->setEnabled(TRUE);
 
   groupCombo->clear();
 
@@ -535,8 +521,6 @@ void QtstalkerApp::slotOpenGroup(QString selection)
   actionNewIndicator->setEnabled(TRUE);
   barCombo->setEnabled(TRUE);
   groupCombo->setEnabled(TRUE);
-  actionMinusPixelspace->setEnabled(TRUE);
-  actionPlusPixelspace->setEnabled(TRUE);
 
   groupCombo->clear();
 
@@ -679,12 +663,10 @@ void QtstalkerApp::loadChart (QString d)
   }
 
   mainPlot->clear();
-  mainPlot->clearDate();
   mainPlot->clearChartObjects();
   mainPlot->clearLines();
   indicatorList.clear();
   indicatorPlot->clear();
-  indicatorPlot->clearDate();
   indicatorPlot->clearChartObjects();
   indicatorPlot->clearLines();
 
@@ -694,6 +676,28 @@ void QtstalkerApp::loadChart (QString d)
   chartSymbol = set->getData("Symbol");
   QDateTime fd = db->getDateTime(set->getData("First Date"));
   QDateTime date = db->getDateTime(set->getData("Last Date"));
+  
+  if (chartType.compare(tr("Stock"))
+      && chartType.compare(tr("Futures"))
+      && chartType.compare(tr("Index"))
+      && chartType.compare(tr("Spread")))
+  {
+    actionBar->setEnabled(FALSE);
+    actionPaintBar->setEnabled(FALSE);
+    actionCandle->setEnabled(FALSE);
+    actionLine->setEnabled(FALSE);
+    actionPoint->setEnabled(FALSE);
+    mainPlot->setOtherFlag(TRUE);
+  }
+  else
+  {
+    actionBar->setEnabled(TRUE);
+    actionPaintBar->setEnabled(TRUE);
+    actionCandle->setEnabled(TRUE);
+    actionLine->setEnabled(TRUE);
+    actionPoint->setEnabled(TRUE);
+    mainPlot->setOtherFlag(FALSE);
+  }
 
   if (! date.isValid())
   {
@@ -749,7 +753,7 @@ void QtstalkerApp::loadChart (QString d)
       indicatorPlot->setInterval(Plot::Monthly);
     }
   }
-
+  
   mainPlot->setData(db->getRecordList());
   indicatorPlot->setData(db->getRecordList());
 
@@ -786,7 +790,7 @@ void QtstalkerApp::loadChart (QString d)
       {
         Setting *set = plug->getIndicatorLineSettings(loop2);
 
-	if (i->getMainPlot())
+	if (i->getMainPlot() && ! mainPlot->getOtherFlag())
 	{
 	  int num = mainPlot->addLine(i->getData(set->getData("Color")),
 	                              i->getData(set->getData("Line Type")),
@@ -818,7 +822,43 @@ void QtstalkerApp::loadChart (QString d)
     delete lib;
   }
 
-  indicatorList.insert(tr("Main Plot"), new Indicator);
+  Indicator *i = new Indicator;
+  if (mainPlot->getOtherFlag() && db->getDataSize())
+  {
+    Setting *r = db->getRecordIndex(0);
+    QStringList keys = r->getKeyList();
+    keys.remove("Date");
+    keys.remove("Open");
+    keys.remove("High");
+    keys.remove("Low");
+    keys.remove("Close");
+    keys.remove("Volume");
+    keys.remove("Open Interest");
+
+    int loop;
+    for (loop = 0; loop < (int) keys.count(); loop++)
+    {
+      QMemArray<double> array(db->getDataSize());
+      int loop2;
+      for (loop2 = 0; loop2 < (int) db->getDataSize(); loop2++)
+      {
+        r = db->getRecordIndex(loop2);
+	array[loop2] = r->getFloat(keys[loop]);
+      }
+      
+      QString s = keys[loop];
+      s.append(tr(" Color"));
+      QString c = set->getData(s);
+
+      s = keys[loop];
+      s.append(tr(" Line Type"));
+      QString lt = set->getData(s);
+
+      int num = mainPlot->addLine(c, lt, keys[loop], array);
+      i->addLine(num);
+    }
+  }
+  indicatorList.insert(tr("Main Plot"), i);
 
   l = db->getChartObjects();
   for (loop = 0; loop < (int) l.count(); loop++)
@@ -856,12 +896,16 @@ void QtstalkerApp::loadChart (QString d)
   slider->blockSignals(TRUE);
   slider->setValue(max);
   slider->blockSignals(FALSE);
-  
+
   indicatorPlot->setIndex(max);
   mainPlot->setIndex(max);
 
   indicatorPlot->hideLines();
   indicatorPlot->hideChartObjects();
+
+  pixelspace->blockSignals(TRUE);
+  pixelspace->setRange(mainPlot->getMinPixelspace(), 99);
+  pixelspace->blockSignals(FALSE);
 
   mainPlot->draw();
 
@@ -870,8 +914,6 @@ void QtstalkerApp::loadChart (QString d)
 
   setCaption(getWindowCaption());
 
-  slotUpdateSpaceButtons();
-  
   delete db;
 }
 
@@ -1071,6 +1113,42 @@ void QtstalkerApp::slotWorkwithPortfolio ()
 
 void QtstalkerApp::slotDataWindow ()
 {
+  if (mainPlot->getOtherFlag())
+  {
+    Indicator *i = indicatorList[tr("Main Plot")];
+
+    QMemArray<int> a = i->getLines();
+
+    DataWindow *dw = new DataWindow(a.size(), mainPlot->getDataSize());
+
+    dw->setCaption(getWindowCaption());
+
+    int loop;
+    int col = 0;
+    dw->setHeader(col, tr("Date"));
+    for (loop = 0; loop < (int) mainPlot->getDataSize(); loop++)
+    {
+      QDateTime dt = mainPlot->getDate(loop);
+      dw->setData(loop, col, dt.toString("yyyyMMdd"));
+    }
+
+    col++;
+    for (loop = 0; loop < (int) a.size(); loop++, col++)
+    {
+      QMemArray<double> d;
+      dw->setHeader(col, mainPlot->getLineLabel(a[loop]));
+      d = mainPlot->getLineData(a[loop]);
+      int loop2;
+      int offset = mainPlot->getDataSize() - d.size();
+      for (loop2 = 0; loop2 < (int) d.size(); loop2++)
+        dw->setData(loop2 + offset, col, mainPlot->strip(d[loop2]));
+    }
+
+    dw->show();
+
+    return;
+  }
+
   DataWindow *dw = new DataWindow(5, mainPlot->getDataSize());
   dw->setCaption(getWindowCaption());
   dw->setHeader(0, QObject::tr("Date"));
@@ -1245,7 +1323,9 @@ void QtstalkerApp::slotChartTypeChanged (QAction *action)
     }
   }
 
-  slotUpdateSpaceButtons();
+  pixelspace->blockSignals(TRUE);
+  pixelspace->setRange(mainPlot->getMinPixelspace(), 99);
+  pixelspace->blockSignals(FALSE);
 
   mainPlot->draw();
   indicatorPlot->draw();
@@ -1378,38 +1458,13 @@ void QtstalkerApp::slotDeleteIndicator (int id)
   loadChart(chartPath);
 }
 
-void QtstalkerApp::slotUpdateSpaceButtons ()
+void QtstalkerApp::slotPixelspaceChanged (int d)
 {
-  if (mainPlot->getPixelspace() <= mainPlot->getMinPixelspace())
-    actionMinusPixelspace->setEnabled(FALSE);
-  else
-    actionMinusPixelspace->setEnabled(TRUE);
-}
-
-void QtstalkerApp::slotMinusPixelspace ()
-{
-  int ps = mainPlot->getPixelspace();
-  ps--;
-  mainPlot->setPixelspace(ps);
-  indicatorPlot->setPixelspace(ps);
+  mainPlot->setPixelspace(d);
+  indicatorPlot->setPixelspace(d);
 
   mainPlot->draw();
   indicatorPlot->draw();
-
-  slotUpdateSpaceButtons();
-}
-
-void QtstalkerApp::slotPlusPixelspace ()
-{
-  int ps = mainPlot->getPixelspace();
-  ps++;
-  mainPlot->setPixelspace(ps);
-  indicatorPlot->setPixelspace(ps);
-
-  mainPlot->draw();
-  indicatorPlot->draw();
-
-  slotUpdateSpaceButtons();
 }
 
 void QtstalkerApp::slotSliderChanged (int v)

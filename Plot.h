@@ -69,7 +69,6 @@ class Plot : public QWidget
     Plot (QWidget *);
     ~Plot ();
     void clear ();
-    void clearDate ();
     void setData (QList<Setting>);
     void setInterval(TimeInterval);
     void setScaleWidth (int);
@@ -84,9 +83,12 @@ class Plot : public QWidget
     void setGridFlag (bool);
     void setMainFlag (bool);
     void setScaleToScreen (bool);
+    void setOtherFlag (bool);
+    bool getOtherFlag ();
     void setPixelspace (int);
     void setChartType (QString);
     void setAlerts (QMemArray<int>);
+    QDateTime getDateTime (QString);
 
     void hideLines ();
     int addLine (QString, QString, QString, QMemArray<double>);
@@ -181,6 +183,7 @@ class Plot : public QWidget
     bool gridFlag;
     bool mainFlag;
     bool scaleToScreen;
+    bool otherFlag;
 
     int scaleWidth;
     double scaleHigh;
@@ -192,12 +195,8 @@ class Plot : public QWidget
 
     QString chartType;
 
-    QMemArray<QDateTime> dateArray;
-    QMemArray<double> openArray;
-    QMemArray<double> highArray;
-    QMemArray<double> lowArray;
-    QMemArray<double> closeArray;
-    
+    QList<Setting> data;
+
     int objectCount;
     QIntDict<Setting> objectList;
     

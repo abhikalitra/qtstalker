@@ -34,5 +34,9 @@ qmake -o Makefile Index.pro
 make
 cp libIndex.so.0.2.0 Index.so
 
+qmake -o Makefile COT.pro
+make
+cp libCOT.so.0.2.0 COT.so
+
 rm -f lib*
 
