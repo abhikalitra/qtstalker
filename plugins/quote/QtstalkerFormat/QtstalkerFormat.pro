@@ -7,7 +7,7 @@ HEADERS += QtstalkerFormat.h
 
 SOURCES += QtstalkerFormat.cpp
 
-TARGET = QtstalkerFormat
+TARGET = QtstalkerFormat.0.26
 
 INCLUDEPATH += ../../../lib
 INCLUDEPATH += ../../../db-2.7.7/build_unix

@@ -448,7 +448,7 @@ void Tester::addIndicator ()
   PrefDialog *idialog = new PrefDialog();
   idialog->setCaption(tr("New Indicator"));
   idialog->createPage (tr("Details"));
-  idialog->addComboItem(tr("Indicator"), tr("Details"), config->getIndicatorPlugins(), 0);
+  idialog->addComboItem(tr("Indicator"), tr("Details"), config->getPluginList(Config::IndicatorPluginPath), 0);
   idialog->addTextItem(tr("Name"), tr("Details"), tr("New Indicator"));
   int rc = idialog->exec();
   if (rc == QDialog::Rejected)

@@ -7,7 +7,7 @@ HEADERS += EP.h
 
 SOURCES += EP.cpp
 
-TARGET = EP
+TARGET = EP.0.26
 
 INCLUDEPATH += ../../../lib
 

@@ -1,13 +1,13 @@
 TEMPLATE = lib
 
 CONFIG += thread warn_on plugin
-#QMAKE_CXXFLAGS += -Os
+QMAKE_CXXFLAGS += -Os
 
 HEADERS += Bars.h
 
 SOURCES += Bars.cpp
 
-TARGET = Bar
+TARGET = Bar.0.26
 
 INCLUDEPATH += ../../../lib
 

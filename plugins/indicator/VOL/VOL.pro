@@ -7,7 +7,7 @@ HEADERS += VOL.h
 
 SOURCES += VOL.cpp
 
-TARGET = VOL
+TARGET = VOL.0.26
 
 INCLUDEPATH += ../../../lib
 

@@ -7,7 +7,7 @@ HEADERS += SZ.h
 
 SOURCES += SZ.cpp
 
-TARGET = SZ
+TARGET = SZ.0.26
 
 INCLUDEPATH += ../../../lib
 

@@ -29,7 +29,6 @@
 #include "Plugin.h"
 #include "Setting.h"
 
-
 class Config
 {
   public:
@@ -65,7 +64,7 @@ class Config
       IndicatorTabs, // unused
       StackedIndicator,
       PAFBoxSize, // unused
-      PAFReversal, // unused
+      Version, // unused
       Height,
       Width,
       X,
@@ -87,9 +86,7 @@ class Config
     void deleteIndicator (QString);
     QStringList getIndicatorList ();
 
-    QStringList getIndicatorPlugins ();
-    QStringList getQuotePlugins ();
-    QStringList getChartPlugins ();
+    QStringList getPluginList (Config::Parm);
     Plugin * getPlugin (Config::Parm, QString);
     void closePlugins ();
     void closePlugin (QString);
@@ -97,6 +94,7 @@ class Config
   protected:
     QDict<QLibrary> libs;
     QDict<Plugin> plugins;
+    QString version;
 };
 
 #endif

@@ -7,7 +7,7 @@ HEADERS += MACD.h
 
 SOURCES += MACD.cpp
 
-TARGET = MACD
+TARGET = MACD.0.26
 
 INCLUDEPATH += ../../../lib
 

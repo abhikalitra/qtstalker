@@ -7,7 +7,7 @@ HEADERS += WILLR.h
 
 SOURCES += WILLR.cpp
 
-TARGET = WILLR
+TARGET = WILLR.0.26
 
 INCLUDEPATH += ../../../lib
 

@@ -7,7 +7,7 @@ HEADERS += PF.h
 
 SOURCES += PF.cpp
 
-TARGET = PF
+TARGET = PF.0.26
 
 INCLUDEPATH += ../../../lib
 

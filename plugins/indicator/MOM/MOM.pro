@@ -7,7 +7,7 @@ HEADERS += MOM.h
 
 SOURCES += MOM.cpp
 
-TARGET = MOM
+TARGET = MOM.0.26
 
 INCLUDEPATH += ../../../lib
 

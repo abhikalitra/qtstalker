@@ -66,7 +66,7 @@ QuoteDialog::QuoteDialog (Config *c) : QTabDialog (0, "QuoteDialog", TRUE)
   grid->setColStretch(0, 1);
   
   ruleCombo = new QComboBox(w);
-  ruleCombo->insertStringList(config->getQuotePlugins(), -1);
+  ruleCombo->insertStringList(config->getPluginList(Config::QuotePluginPath), -1);
   connect (ruleCombo, SIGNAL(activated(int)), this, SLOT(ruleChanged(int)));
   grid->addWidget(ruleCombo, 0, 0);
   

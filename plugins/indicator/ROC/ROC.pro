@@ -7,7 +7,7 @@ HEADERS += ROC.h
 
 SOURCES += ROC.cpp
 
-TARGET = ROC
+TARGET = ROC.0.26
 
 INCLUDEPATH += ../../../lib
 

@@ -407,7 +407,7 @@ void QtstalkerApp::initToolBar()
 
   chartTypeCombo = new QComboBox(toolbar2);
   chartTypeCombo->show();
-  chartTypeCombo->insertStringList(config->getChartPlugins(), -1);
+  chartTypeCombo->insertStringList(config->getPluginList(Config::IndicatorPluginPath), -1);
   QToolTip::add(chartTypeCombo, tr("Chart Type"));
   chartTypeCombo->setCurrentText(config->getData(Config::ChartStyle));
   connect(chartTypeCombo, SIGNAL(activated(int)), this, SLOT(slotChartTypeChanged(int)));
@@ -965,7 +965,7 @@ void QtstalkerApp::slotNewIndicator ()
   PrefDialog *idialog = new PrefDialog();
   idialog->setCaption(tr("New Indicator"));
   idialog->createPage (tr("Details"));
-  idialog->addComboItem(tr("Indicator"), tr("Details"), config->getIndicatorPlugins(), 0);
+  idialog->addComboItem(tr("Indicator"), tr("Details"), config->getPluginList(Config::IndicatorPluginPath), 0);
   idialog->addTextItem(tr("Name"), tr("Details"), tr("New Indicator"));
   idialog->addCheckItem(tr("Create Tab"), tr("Details"), TRUE);
   

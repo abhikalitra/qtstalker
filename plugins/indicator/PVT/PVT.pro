@@ -7,7 +7,7 @@ HEADERS += PVT.h
 
 SOURCES += PVT.cpp
 
-TARGET = PVT
+TARGET = PVT.0.26
 
 INCLUDEPATH += ../../../lib
 

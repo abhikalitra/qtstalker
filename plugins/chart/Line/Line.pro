@@ -7,7 +7,7 @@ HEADERS += Line.h
 
 SOURCES += Line.cpp
 
-TARGET = Line
+TARGET = Line.0.26
 
 INCLUDEPATH += ../../../lib
 

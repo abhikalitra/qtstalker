@@ -7,7 +7,7 @@ HEADERS += OVRLY.h
 
 SOURCES += OVRLY.cpp
 
-TARGET = OVRLY
+TARGET = OVRLY.0.26
 
 INCLUDEPATH += ../../../lib
 INCLUDEPATH += ../../../db-2.7.7/build_unix

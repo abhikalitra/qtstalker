@@ -7,7 +7,7 @@ HEADERS += PER.h
 
 SOURCES += PER.cpp
 
-TARGET = PER
+TARGET = PER.0.26
 
 INCLUDEPATH += ../../../lib
 

@@ -7,7 +7,7 @@ HEADERS += OI.h
 
 SOURCES += OI.cpp
 
-TARGET = OI
+TARGET = OI.0.26
 
 INCLUDEPATH += ../../../lib
 

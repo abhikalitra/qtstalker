@@ -7,7 +7,7 @@ HEADERS += DPO.h
 
 SOURCES += DPO.cpp
 
-TARGET = DPO
+TARGET = DPO.0.26
 
 INCLUDEPATH += ../../../lib
 

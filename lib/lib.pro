@@ -47,7 +47,7 @@ SOURCES += QSMath.cpp
 SOURCES += Config.cpp
     
 TARGET = qtstalker
-VERSION = 0.23.0
+VERSION = 0.26.0
      
 INCLUDEPATH += ../db-2.7.7/build_unix
 

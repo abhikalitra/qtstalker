@@ -7,7 +7,7 @@ HEADERS += MMA.h
 
 SOURCES += MMA.cpp
 
-TARGET = MMA
+TARGET = MMA.0.26
 
 INCLUDEPATH += ../../../lib
 

@@ -7,7 +7,7 @@ HEADERS += ENV.h
 
 SOURCES += ENV.cpp
 
-TARGET = ENV
+TARGET = ENV.0.26
 
 INCLUDEPATH += ../../../lib
 

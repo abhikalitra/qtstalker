@@ -7,7 +7,7 @@ HEADERS += CC.h
 
 SOURCES += CC.cpp
 
-TARGET = CC
+TARGET = CC.0.26
 
 INCLUDEPATH += ../../../lib
 INCLUDEPATH += ../../../db-2.7.7/build_unix

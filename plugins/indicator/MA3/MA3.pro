@@ -7,7 +7,7 @@ HEADERS += MA3.h
 
 SOURCES += MA3.cpp
 
-TARGET = MA3
+TARGET = MA3.0.26
 
 INCLUDEPATH += ../../../lib
 

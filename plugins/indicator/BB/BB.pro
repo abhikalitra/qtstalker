@@ -7,7 +7,7 @@ HEADERS += BB.h
 
 SOURCES += BB.cpp
 
-TARGET = BB
+TARGET = BB.0.26
 
 INCLUDEPATH += ../../../lib
 

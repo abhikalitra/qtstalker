@@ -33,6 +33,7 @@ Config::Config ()
 {
   libs.setAutoDelete(TRUE);
   plugins.setAutoDelete(TRUE);
+  version = "0.26";  // only this version of plugin is allowed to be loaded
 }
 
 Config::~Config ()
@@ -402,51 +403,35 @@ QStringList Config::getDirList (QString path)
   return l;
 }
 
-QStringList Config::getIndicatorPlugins ()
+QStringList Config::getPluginList (Config::Parm d) 
 {
-  QStringList l = getDirList(getData(IndicatorPluginPath));
-
-  int loop;
-  for (loop = 0; loop < (int) l.count(); loop++)
-  {
-    l[loop].truncate(l[loop].length() - 3);
-    l[loop].remove(0, 3);
-  }
-
-  // ignore any old removed plugins
-  l.remove(QObject::tr("PRICE"));
-  l.remove(QObject::tr("EP"));
+  QStringList l;
   
-  return l;
-}
-
-QStringList Config::getQuotePlugins ()
-{
-  QStringList l = getDirList(getData(QuotePluginPath));
-
-  int loop;
-  for (loop = 0; loop < (int) l.count(); loop++)
+  switch (d)
   {
-    l[loop].truncate(l[loop].length() - 3);
-    l[loop].remove(0, 3);
+    case IndicatorPluginPath:
+      l = getData(IndicatorPluginPath);
+      break;
+    case QuotePluginPath:
+      l = getData(QuotePluginPath);
+      break;
+    case ChartPluginPath:
+      l = getData(ChartPluginPath);
+      break;
+    default:
+      break;
   }
-
-  // ignore any old removed plugins
-  l.remove(QObject::tr("CBOT"));
-  l.remove(QObject::tr("Ratio"));
-  l.remove(QObject::tr("YahooQuote"));
-
-  return l;
-}
-
-QStringList Config::getChartPlugins ()
-{
-  QStringList l = getDirList(getData(ChartPluginPath));
-
+  
+  if (! l.count())
+    return l;
+  
   int loop;
   for (loop = 0; loop < (int) l.count(); loop++)
   {
-    l[loop].truncate(l[loop].length() - 3);
+    if (! l[loop].contains(version))
+      continue;
+      
+    l[loop].truncate(l[loop].length() - 8);
     l[loop].remove(0, 3);
   }
 
@@ -478,6 +463,8 @@ Plugin * Config::getPlugin (Config::Parm t, QString p)
 
   s.append("/lib");
   s.append(p);
+  s.append(".");
+  s.append(getData(Config::Version));
   s.append(".so");
 
   QLibrary *lib = new QLibrary(s);

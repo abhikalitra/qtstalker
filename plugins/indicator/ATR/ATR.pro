@@ -7,7 +7,7 @@ HEADERS += ATR.h
 
 SOURCES += ATR.cpp
 
-TARGET = ATR
+TARGET = ATR.0.26
 
 INCLUDEPATH += ../../../lib
 
