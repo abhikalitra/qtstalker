@@ -45,6 +45,8 @@
 
 - Changed SettingView class to remove user sorting of the table. Instead the key sorting will be done internally.
 
+- Applied patch #789058 from David Crossley to fix candles not being drawn properly when open == close.
+
 
 0.20
 ====

@@ -8,7 +8,8 @@ Lurking in the shadows and corners.
 
 FIX:
 
-- Hide nav function doesn't hide the data panel just the navigator.
+Log scaling does not handle plots < 0. Need to add logic to handle it.
+
 
   
   

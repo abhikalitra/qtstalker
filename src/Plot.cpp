@@ -1877,6 +1877,8 @@ void Plot::drawCandle ()
       painter.fillRect(x - 2, c, 5, o - c, backgroundColor);
       painter.drawRect(x - 2, c, 5, o - c);
     }
+    else if (c == o)
+      painter.drawLine (x - 2, o, x + 2, o);
     else
       painter.fillRect(x - 2, o, 5, c - o, painter.brush());
   }
@@ -1913,6 +1915,8 @@ void Plot::drawCandle ()
         painter.fillRect(x - 2, c, 5, o - c, backgroundColor);
         painter.drawRect(x - 2, c, 5, o - c);
       }
+      else if (c == o)
+        painter.drawLine (x - 2, o, x + 2, o);
       else
         painter.fillRect(x - 2, o, 5, c - o, painter.pen().color());
     }
