@@ -29,6 +29,7 @@
 #include <qprinter.h>
 #include <qpaintdevicemetrics.h>
 #include <qimage.h>
+#include <qmessagebox.h>
 
 #include "indicator.xpm"
 #include "edit.xpm"
@@ -1553,6 +1554,8 @@ void Plot::getXY (int x, int y, int f)
 
 void Plot::newChartObject ()
 {
+  bool cancelFlag = FALSE;
+  
   Setting *set = new Setting();
   if (mainFlag)
     set->set(QObject::tr("Plot"), QObject::tr("Main Plot"), Setting::None);
@@ -1606,6 +1609,14 @@ void Plot::newChartObject ()
       set->set(QObject::tr("Color"), borderColor.name(), Setting::Color);
       break;
     case TrendLine:
+      if (x2 <= x1)
+      {
+	cancelFlag = TRUE;
+        QMessageBox::information(this, tr("Qtstalker: Error"),
+    			         tr("Trendline end point <= start point."));
+        break;
+      }
+      
       set->set(QObject::tr("Start Date"), x1, Setting::Date);
       set->set(QObject::tr("Start Value"), y1, Setting::Float);
       set->set(QObject::tr("Start Bar"), QObject::tr("Close"), Setting::InputField);
@@ -1627,17 +1638,18 @@ void Plot::newChartObject ()
       break;
   }
 
+  if (! cancelFlag)
+  {
+    emit chartObjectCreated(set);
+
+    Indicator *i = indicators[set->getData(tr("Plot"))];
+    i->addChartObject(set);
+
+    draw();
+  }
+  
   mouseFlag = None;
-
-  emit chartObjectCreated(set);
-
-  Indicator *i = indicators[set->getData(tr("Plot"))];
-  i->addChartObject(set);
-
-  draw();
-  
   emit statusMessage("");
-  
   setCursor(QCursor(Qt::ArrowCursor));
 }
 
