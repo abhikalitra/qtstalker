@@ -2,7 +2,7 @@
                           qtstalker.h  -  description
                              -------------------
     begin                : Thu Mar  7 22:43:41 EST 2002
-    copyright            : (C) 2001,2002 by Stefan Stratigakos
+    copyright            : (C) 2001-2003 by Stefan Stratigakos
     email                : 
  ***************************************************************************/
 

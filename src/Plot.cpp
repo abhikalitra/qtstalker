@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  *
- *  Copyright (C) 2001,2002 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2003 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -793,9 +793,9 @@ void Plot::drawDate ()
         // if start of new week make a tick
         if (date > oldWeek)
 	{
-  	  if (pixelspace >= 11)
+  	  if (pixelspace >= 15)
 	  {
-            QString s = date.toString("dd");
+            QString s = date.toString("d");
             painter.drawText (x - (fm.width(s, -1) / 2), buffer.height() - 2, s, -1);
 	  }
 
@@ -1898,7 +1898,8 @@ void Plot::drawLineChart ()
     Setting *r = data->at(loop);
 
     y2 = convertToY(r->getFloat("Close"));
-    painter.drawLine (x, y, x2, y2);
+    if (y != -1)
+      painter.drawLine (x, y, x2, y2);
     x = x2;
     y = y2;
 
