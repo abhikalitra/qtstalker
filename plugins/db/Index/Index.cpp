@@ -30,6 +30,7 @@
 #include <qmessagebox.h>
 #include <qobject.h>
 
+
 Index::Index ()
 {
   data.setAutoDelete(TRUE);

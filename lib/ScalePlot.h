@@ -27,7 +27,6 @@
 #include <qcolor.h>
 #include <qfont.h>
 #include "Scaler.h"
-#include "BarData.h"
 
 class ScalePlot : public QWidget
 {
@@ -37,7 +36,7 @@ class ScalePlot : public QWidget
     ScalePlot (QWidget *);
     ~ScalePlot ();
     void clear ();
-    void setData (BarData *);
+    void setData (double);
     void setScaleWidth (int);
     void setLogScale (bool);
     void setScaleToScreen (bool);
@@ -67,11 +66,10 @@ class ScalePlot : public QWidget
     bool scaleToScreen;
     bool logScale;
     int scaleWidth;
-    double mainHigh;
-    double mainLow;
+    double close;
     Scaler *scaler;
-    BarData *data;
     bool mainFlag;
+    bool activeFlag;
 };
 
 #endif

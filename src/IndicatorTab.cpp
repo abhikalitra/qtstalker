@@ -118,7 +118,7 @@ void IndicatorTab::drawCurrent ()
   ((Plot *) currentPage())->draw();
 }
 
-int IndicatorTab::getInsertIndex (QString d) 
+int IndicatorTab::getInsertIndex (QString &d) 
 {
   QStringList l;
   int loop;
@@ -129,7 +129,7 @@ int IndicatorTab::getInsertIndex (QString d)
   return l.findIndex(d);
 }
 
-bool IndicatorTab::deleteTab (QString d) 
+bool IndicatorTab::deleteTab (QString &d) 
 {
   QStringList l;
   int loop;

@@ -223,6 +223,11 @@ void IndicatorPlot::setInfoFlag (bool d)
   infoFlag = d;
 }
 
+void IndicatorPlot::setInterval (BarData::BarCompression d)
+{
+  interval = d;
+}
+
 void IndicatorPlot::draw ()
 {
   buffer->fill(backgroundColor);
@@ -631,7 +636,7 @@ void IndicatorPlot::createXGrid ()
     {
       switch (interval)
       {
-        case BarData::WeeklyBar:
+//        case BarData::WeeklyBar:
         case BarData::MonthlyBar:
           if (date.year() != oldDate.year())
           {
@@ -652,12 +657,21 @@ void IndicatorPlot::createXGrid ()
     }
     else
     {
+      if (date.day() != oldDate.day())
+      {
+        oldDate = date;
+	xGrid.resize(xGrid.size() + 1);
+	xGrid[xGrid.size() - 1] = loop;
+      }
+/*      
       switch (interval)
       {
         case BarData::Minute5:
         case BarData::Minute15:
         case BarData::Minute30:
         case BarData::Minute60:
+          break;
+        default:
           if (date.day() != oldDate.day())
           {
             oldDate = date;
@@ -665,26 +679,8 @@ void IndicatorPlot::createXGrid ()
 	    xGrid[xGrid.size() - 1] = loop;
           }
           break;
-        case BarData::DailyBar:
-          if (date.month() != oldDate.month())
-          {
-            oldDate = date;
-	    xGrid.resize(xGrid.size() + 1);
-	    xGrid[xGrid.size() - 1] = loop;
-          }
-          break;
-        case BarData::WeeklyBar:
-        case BarData::MonthlyBar:
-          if (date.year() != oldDate.year())
-          {
-            oldDate = date;
-	    xGrid.resize(xGrid.size() + 1);
-	    xGrid[xGrid.size() - 1] = loop;
-          }
-          break;
-        default:
-          break;
       }
+*/      
     }
   }
 }
@@ -916,58 +912,36 @@ void IndicatorPlot::setScale ()
     }
   }
 
-  if (! scaleToScreen)
+  QDictIterator<Indicator> it(indicators);
+  if (! mainFlag)
+    it.toFirst();
+  for (; it.current(); ++it)
   {
-    QDictIterator<Indicator> it(indicators);
-    if (! mainFlag)
-      it.toFirst();
-    for (; it.current(); ++it)
-    {
-      Indicator *i = it.current();
+    Indicator *i = it.current();
 
-      if (! i->getEnable())
+    if (! i->getEnable())
+      continue;
+
+    int loop;
+    for (loop = 0; loop < i->getLines(); loop++)
+    {
+      PlotLine *line = i->getLine(loop);
+      if (line->getType() == PlotLine::Invisible)
+	continue;
+
+      if (line->getScaleFlag())
         continue;
 
-      int loop;
-      for (loop = 0; loop < i->getLines(); loop++)
+      if (! scaleToScreen)
       {
-	PlotLine *line = i->getLine(loop);
-	if (line->getType() == PlotLine::Invisible)
-	  continue;
-
-        if (line->getScaleFlag())
-          continue;
-        
 	if (line->getHigh() > scaleHigh)
           scaleHigh = line->getHigh();
 
         if (line->getLow() < scaleLow)
           scaleLow = line->getLow();
       }
-    }
-  }
-  else
-  {
-    QDictIterator<Indicator> it(indicators);
-    if (! mainFlag)
-      it.toFirst();
-    for (; it.current(); ++it)
-    {
-      Indicator *i = it.current();
-
-      if (! i->getEnable())
-        continue;
-
-      int loop;
-      for (loop = 0; loop < i->getLines(); loop++)
-      {
-	PlotLine *line = i->getLine(loop);
-	if (line->getType() == PlotLine::Invisible)
-	  continue;
-
-        if (line->getScaleFlag())
-          continue;
-        
+      else
+      {        
         int loop2 = line->getSize() - data->count() + startIndex;
 	for (; loop2 < line->getSize(); loop2++)
         {

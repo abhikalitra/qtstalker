@@ -43,8 +43,8 @@ class MySQLPlugin : public QuotePlugin
   protected:
     void retrieveSettings();
     void storeSettings();
-    void updateSymbol(QString);
-    void doQuery (QString, DbPlugin *);
+    void updateSymbol(QString &);
+    void doQuery (QString &, DbPlugin *);
     bool openDatabase();
     void closeDatabase();
 

@@ -371,9 +371,10 @@ void CSV::parse ()
       
       if (! symbol.length())
       {
+        QString t = r.getData("Symbol");
 	s = path;
-	s.append(r.getData("Symbol"));
-	if (openDb(s, r.getData("Symbol"), type, tickFlag))
+	s.append(t);
+	if (openDb(s, t, type, tickFlag))
 	  continue;
 	
 	s = r.getData("Name");
@@ -383,7 +384,7 @@ void CSV::parse ()
         db->setBar(bar);
 	
 	r.getString(s);
-	emit dataLogMessage(r.getData("Symbol") + " " + s);
+	emit dataLogMessage(t + " " + s);
         emit statusLogMessage("Updating " + r.getData("Symbol"));
 	config.closePlugin(type);
 	db = 0;
@@ -418,7 +419,7 @@ void CSV::parse ()
     emit statusLogMessage(tr("Done"));
 }
 
-void CSV::setDelimiter (QString d)
+void CSV::setDelimiter (QString &d)
 {
   if (! d.compare("Comma"))
   {
@@ -445,7 +446,7 @@ void CSV::setDelimiter (QString d)
   }
 }
 
-QString CSV::getTime (QString d)
+QString CSV::getTime (QString &d)
 {
   QString time;
   
@@ -475,7 +476,7 @@ QString CSV::getTime (QString d)
   return time;    
 }
 
-QDate CSV::getDate (QString k, QString d, Setting &r)
+QDate CSV::getDate (QString &k, QString &d, Setting &r)
 {
   QDate date;
   QStringList l;
@@ -605,7 +606,7 @@ QDate CSV::getDate (QString k, QString d, Setting &r)
   return date;
 }
 
-bool CSV::openDb (QString path, QString symbol, QString type, bool tickFlag)
+bool CSV::openDb (QString &path, QString &symbol, QString &type, bool tickFlag)
 {
   db = config.getDbPlugin(type);
   if (! db)
@@ -684,7 +685,7 @@ void CSV::prefDialog (QWidget *w)
   
   if (rc == QDialog::Accepted)
   {
-    list = dialog->getFiles();
+    dialog->getFiles(list);
     symbolOveride = dialog->getSymbol();
     ruleName = dialog->getRuleName();
     sdate = dialog->getStartDate();

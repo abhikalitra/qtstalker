@@ -138,7 +138,10 @@ void MySQLPlugin::performUpdate ()
       if (cancelFlag)
 	break;
       else
-        updateSymbol(*iter++);
+      {
+        QString t = *iter++;
+        updateSymbol(t);
+      }
     }
 
     closeDatabase();
@@ -162,7 +165,7 @@ void MySQLPlugin::performUpdate ()
  *
  * Update the quotes for given stock.
  */
-void MySQLPlugin::updateSymbol(QString symbol) 
+void MySQLPlugin::updateSymbol(QString &symbol) 
 {
   emit statusLogMessage("Updating " + symbol);
 
@@ -271,7 +274,7 @@ void MySQLPlugin::closeDatabase()
  * 
  * Perform sql query and store results in Qtstalker db
  */
-void MySQLPlugin::doQuery (QString sql, DbPlugin *db)
+void MySQLPlugin::doQuery (QString &sql, DbPlugin *db)
 {
   MYSQL_RES *res;
  

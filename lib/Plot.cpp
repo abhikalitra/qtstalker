@@ -64,7 +64,7 @@ void Plot::setData (BarData *l)
     return;
 
   datePlot->setData(l);
-  scalePlot->setData(l);
+  scalePlot->setData(l->getClose(l->count() - 1));
   indicatorPlot->setData(l);
 }
 
@@ -201,6 +201,7 @@ bool Plot::getMainFlag ()
 void Plot::setInterval (BarData::BarCompression d)
 {
   datePlot->setInterval(d);    
+  indicatorPlot->setInterval(d);    
 }
 
 void Plot::setDateFlag (bool d)

@@ -41,10 +41,9 @@ ScalePlot::ScalePlot (QWidget *w) : QWidget(w)
   mainFlag = FALSE;
   scaleToScreen = FALSE;
   logScale = FALSE;
-  mainHigh = -99999999;
-  mainLow = 99999999;
-  data = 0;
   scaler = 0;
+  close = 0;
+  activeFlag = FALSE;
 
   plotFont.setFamily("Helvetica");
   plotFont.setPointSize(12);
@@ -61,23 +60,13 @@ ScalePlot::~ScalePlot ()
 
 void ScalePlot::clear ()
 {
-  mainHigh = -99999999;
-  mainLow = 99999999;
-  data = 0;
+  close = 0;
 }
 
-void ScalePlot::setData (BarData *l)
+void ScalePlot::setData (double c)
 {
-  if (! l->count())
-    return;
-
-  data = l;
-  
-  if (mainFlag)
-  {
-    mainHigh = data->getMax();
-    mainLow = data->getMin();
-  }
+  close = c;
+  activeFlag = TRUE;
 }
 
 void ScalePlot::setMainFlag (bool d)
@@ -99,7 +88,7 @@ void ScalePlot::draw ()
 {
   buffer->fill(backgroundColor);
 
-  if (data)
+  if (activeFlag)
     drawScale();
 
   paintEvent(0);
@@ -149,20 +138,20 @@ void ScalePlot::drawScale ()
   QPainter painter;
   painter.begin(buffer);
   painter.setFont(plotFont);
-
-  QFontMetrics fm = painter.fontMetrics();
+  painter.setPen(QPen(borderColor, 1, QPen::SolidLine));
 
   painter.fillRect(0, 0, buffer->width(), buffer->height(), backgroundColor);
   
   QMemArray<double> scaleArray;
   scaler->getScaleArray(scaleArray);
+  
+  QFontMetrics fm(plotFont);
 
   int x = 0;
   int loop;
   for (loop = 0; loop < (int) scaleArray.size(); loop++)
   {
     int y = scaler->convertToY(scaleArray[loop]);
-    painter.setPen(QPen(borderColor, 1, QPen::SolidLine));
     painter.drawLine (x, y, x + 4, y);
 
     // draw the text
@@ -209,13 +198,12 @@ void ScalePlot::drawScale ()
     painter.drawText(x + 7, y + (fm.height() / 2), s);
   }
 
-  painter.setPen(QPen(borderColor, 1, QPen::SolidLine));
   painter.drawLine (x, 0, x, buffer->height());
   
   // draw the last value pointer on the scale of main plot
   if (mainFlag)
   {
-    int y = scaler->convertToY(data->getClose(data->count() - 1));
+    int y = scaler->convertToY(close);
     
     QPointArray array;
     array.setPoints(3, x + 2, y,

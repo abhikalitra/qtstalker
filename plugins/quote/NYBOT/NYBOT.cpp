@@ -386,7 +386,7 @@ void NYBOT::prefDialog (QWidget *w)
   if (rc == QDialog::Accepted)
   {
     s = tr("File Input");
-    list = dialog->getFile(s);
+    dialog->getFile(s, list);
     
     saveFlag = TRUE;
     

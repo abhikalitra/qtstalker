@@ -35,7 +35,7 @@ class QtstalkerFormat : public QuotePlugin
     void cancelUpdate ();
     void loadSettings ();
     void saveSettings ();
-    bool createDirectories (QString);
+    bool createDirectories (QString &);
 
   public slots:
     void parse ();

@@ -33,7 +33,7 @@
 #include <qdir.h>
 
 
-YahooDialog::YahooDialog (QWidget *p, QString d) : QTabDialog (p, "YahooDialog", TRUE)
+YahooDialog::YahooDialog (QWidget *p, QString &d) : QTabDialog (p, "YahooDialog", TRUE)
 {
   helpFile = d;
 
@@ -222,16 +222,15 @@ void YahooDialog::newStock ()
   }
 }
 
-void YahooDialog::setList (QStringList l)
+void YahooDialog::setList (QStringList &l)
 {
   list->setFile(l);
 }
 
-QStringList YahooDialog::getList ()
+void YahooDialog::getList (QStringList &l)
 {
-  QStringList l;
+  l.clear();
   list->getFile(l);
-  return l;
 }
 
 void YahooDialog::setAdjustment (bool d)

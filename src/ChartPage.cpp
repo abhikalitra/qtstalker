@@ -231,7 +231,7 @@ void ChartPage::dumpSymbol ()
   delete dialog;
 }
 
-void ChartPage::exportChart (QString path, bool f)
+void ChartPage::exportChart (QString &path, bool f)
 {
   QString plugin = config.parseDbPlugin(path);
   DbPlugin *db = config.getDbPlugin(plugin);

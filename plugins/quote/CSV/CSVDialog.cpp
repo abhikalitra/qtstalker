@@ -36,7 +36,7 @@
 #include <qinputdialog.h>
 #include <qdir.h>
 
-CSVDialog::CSVDialog (QWidget *p, QString d, QString lp) : QTabDialog (p, "CSVDialog", TRUE)
+CSVDialog::CSVDialog (QWidget *p, QString &d, QString &lp) : QTabDialog (p, "CSVDialog", TRUE)
 {
   helpFile = d;
   lastPath = lp;
@@ -273,14 +273,13 @@ void CSVDialog::dateRangeChanged (bool d)
   edate->setEnabled(d);
 }
 
-QStringList CSVDialog::getFiles ()
+void CSVDialog::getFiles (QStringList &l)
 {
-  QStringList l;
+  l.clear();
   file->getFile(l);
-  return l;
 }
 
-void CSVDialog::setFiles (QStringList l)
+void CSVDialog::setFiles (QStringList &l)
 {
   file->setFile(l);
 }
@@ -290,7 +289,7 @@ QString CSVDialog::getSymbol ()
   return symbol->text();
 }
 
-void CSVDialog::setSymbol (QString d)
+void CSVDialog::setSymbol (QString &d)
 {
   symbol->setText(d);
 }
@@ -351,7 +350,7 @@ void CSVDialog::updateRules ()
   ruleCombo->setCurrentItem(l.findIndex(current));
 }
 
-void CSVDialog::setRuleName (QString d)
+void CSVDialog::setRuleName (QString &d)
 {
   if (d.length())
     ruleCombo->setCurrentText(d);

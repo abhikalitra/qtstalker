@@ -728,7 +728,8 @@ void Tester::test ()
 
   if (status != 0)
   {
-    exitPosition("End of test");
+    QString t = tr("End of test");
+    exitPosition(t);
     status = 0;
   }
 
@@ -798,7 +799,10 @@ void Tester::clearAlertCounts ()
 void Tester::enterLong ()
 {
   if (status != 0)
-    exitPosition("Enter Long");
+  {
+    QString t = tr("Enter Long");
+    exitPosition(t);
+  }
 
   status = 1;
   buyRecord = currentRecord;
@@ -811,7 +815,8 @@ void Tester::enterLong ()
 
 void Tester::exitLong ()
 {
-  exitPosition("Exit Long");
+  QString t = tr("Exit Long");
+  exitPosition(t);
   status = 0;
   clearAlertCounts();
 }
@@ -819,7 +824,10 @@ void Tester::exitLong ()
 void Tester::enterShort ()
 {
   if (status != 0)
-    exitPosition("Enter Short");
+  {
+    QString t = tr("Enter Short");
+    exitPosition(t);
+  }
 
   status = -1;
   buyRecord = currentRecord;
@@ -832,12 +840,13 @@ void Tester::enterShort ()
 
 void Tester::exitShort ()
 {
-  exitPosition("Exit Short");
+  QString t = tr("Exit Short");
+  exitPosition(t);
   status = 0;
   clearAlertCounts();
 }
 
-void Tester::exitPosition (QString signal)
+void Tester::exitPosition (QString &signal)
 {
   double enterPrice = getPrice(buyRecord);
   double exitPrice = getPrice(currentRecord);
@@ -923,7 +932,8 @@ bool Tester::maximumLoss ()
     double t = enterPrice * (1 - (maximumLossEdit->text().toDouble() / 100));
     if (exitPrice <= t)
     {
-      exitPosition("Maximum Loss");
+      QString t = tr("Maximum Loss");
+      exitPosition(t);
       status = 0;
       clearAlertCounts();
       return TRUE;
@@ -935,7 +945,8 @@ bool Tester::maximumLoss ()
     double t = enterPrice * (1 + (maximumLossEdit->text().toDouble() / 100));
     if (exitPrice >= t)
     {
-      exitPosition("Maximum Loss");
+      QString t = tr("Maximum Loss");
+      exitPosition(t);
       status = 0;
       clearAlertCounts();
       return TRUE;
@@ -958,7 +969,8 @@ bool Tester::profit ()
     double t = enterPrice * (1 + (profitEdit->text().toDouble() / 100));
     if (exitPrice >= t)
     {
-      exitPosition("Profit");
+      QString t = tr("Profit");
+      exitPosition(t);
       status = 0;
       clearAlertCounts();
       return TRUE;
@@ -970,7 +982,8 @@ bool Tester::profit ()
     double t = enterPrice * (1 - (profitEdit->text().toDouble() / 100));
     if (exitPrice <= t)
     {
-      exitPosition("Profit");
+      QString t = tr("Profit");
+      exitPosition(t);
       status = 0;
       clearAlertCounts();
       return TRUE;
@@ -998,7 +1011,8 @@ bool Tester::trailing ()
       t = -t;
       if (t >= trailingEdit->text().toDouble())
       {
-        exitPosition("Trailing");
+        QString t = tr("Trailing");
+        exitPosition(t);
         status = 0;
         clearAlertCounts();
         return TRUE;
@@ -1017,7 +1031,8 @@ bool Tester::trailing ()
       t = -t;
       if (t >= trailingEdit->text().toDouble())
       {
-        exitPosition("Trailing");
+        QString t = tr("Trailing");
+        exitPosition(t);
         status = 0;
         clearAlertCounts();
         return TRUE;
@@ -1038,7 +1053,8 @@ bool Tester::customStop ()
     {
       if (customLongStopLine->getData(i) == 1)
       {
-        exitPosition("Custom Long Stop");
+        QString t = tr("Custom Long Stop");
+        exitPosition(t);
         status = 0;
         clearAlertCounts();
         return TRUE;
@@ -1054,7 +1070,8 @@ bool Tester::customStop ()
     {
       if (customShortStopLine->getData(i) == 1)
       {
-        exitPosition("Custom Short Stop");
+        QString t = tr("Custom Short Stop");
+        exitPosition(t);
         status = 0;
         clearAlertCounts();
         return TRUE;

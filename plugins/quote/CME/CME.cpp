@@ -615,17 +615,17 @@ void CME::parseHistory ()
     if (! s.length())
       continue;
 
-    Setting *set = new Setting;
+    Setting set;
 
     // date
     s2 = s.mid(31, 6);
     s2.prepend("20");
     s2.append("000000");
-    set->setData("Date", s2);
+    set.setData("Date", s2);
 
     // csymbol
     s2 = s.mid(37, 2);
-    set->setData("CSymbol", s2);
+    set.setData("CSymbol", s2);
 
     // symbol
     s2 = s.mid(37, 2);
@@ -673,56 +673,54 @@ void CME::parseHistory ()
         break;
     }
     s2.append(month);
-    set->setData("Symbol", s2);
+    set.setData("Symbol", s2);
 
-    set->setData("Month", month);
+    set.setData("Month", month);
 
     QString dec = s.mid(30, 1);
     
     // fix decimal for JY
-    s2 = set->getData("CSymbol");
+    s2 = set.getData("CSymbol");
     if (! s2.compare("JY"))
       dec = QString::number(dec.toInt() - 2);
 
     // open
     s2 = s.mid(53, 9);
     s2 = s2.insert(s2.length() - dec.toInt(), ".");
-    set->setData("Open", s2);
+    set.setData("Open", s2);
 
     // high
     s2 = s.mid(73, 9);
     s2 = s2.insert(s2.length() - dec.toInt(), ".");
-    set->setData("High", s2);
+    set.setData("High", s2);
 
     // low
     s2 = s.mid(83, 9);
     s2 = s2.insert(s2.length() - dec.toInt(), ".");
-    set->setData("Low", s2);
+    set.setData("Low", s2);
 
     // close
     s2 = s.mid(113, 9);
     s2 = s2.insert(s2.length() - dec.toInt(), ".");
-    set->setData("Close", s2);
+    set.setData("Close", s2);
 
     // volume
     s2 = s.mid(122, 7);
-    set->setData("Volume", s2);
+    set.setData("Volume", s2);
 
     // oi
     s2 = s.mid(136, 7);
-    set->setData("OI", s2);
+    set.setData("OI", s2);
 
     parse(set);
-
-    delete set;
   }
 
   f.close();
 }
 
-void CME::saveTodayData (QStringList l)
+void CME::saveTodayData (QStringList &l)
 {
-  Setting *set = new Setting();
+  Setting set;
 
   QString symbol = l[0];
   symbol.append("20");
@@ -807,14 +805,14 @@ void CME::saveTodayData (QStringList l)
   }
   symbol.append(month);
 
-  set->setData("CSymbol", l[0]);
-  set->setData("Symbol", symbol);
+  set.setData("CSymbol", l[0]);
+  set.setData("Symbol", symbol);
 
   s = l[1];
   s.append("000000");
-  set->setData("Date", s);
+  set.setData("Date", s);
 
-  set->setData("Month", month);
+  set.setData("Month", month);
   
   QString open = l[3];
   QString high = l[4];
@@ -855,27 +853,25 @@ void CME::saveTodayData (QStringList l)
       close.prepend(".");
   }
 
-  set->setData("Open", open);
-  set->setData("High", high);
-  set->setData("Low", low);
-  set->setData("Close", close);
-  set->setData("Volume", volume);
-  set->setData("OI", oi);
+  set.setData("Open", open);
+  set.setData("High", high);
+  set.setData("Low", low);
+  set.setData("Close", close);
+  set.setData("Volume", volume);
+  set.setData("OI", oi);
 
   parse(set);
-
-  delete set;
 }
 
-void CME::parse (Setting *data)
+void CME::parse (Setting &data)
 {
-  QString s = data->getData("CSymbol");
+  QString s = data.getData("CSymbol");
   if (fd.setSymbol(s))
     return;
 
   // open
   double open = 0;
-  s = data->getData("Open");
+  s = data.getData("Open");
   if (setTFloat(s, FALSE))
     return;
   else
@@ -883,7 +879,7 @@ void CME::parse (Setting *data)
 
   // high
   double high = 0;
-  s = data->getData("High");
+  s = data.getData("High");
   if (setTFloat(s, FALSE))
     return;
   else
@@ -891,7 +887,7 @@ void CME::parse (Setting *data)
 
   // low
   double low = 0;
-  s = data->getData("Low");
+  s = data.getData("Low");
   if (setTFloat(s, FALSE))
     return;
   else
@@ -899,7 +895,7 @@ void CME::parse (Setting *data)
 
   // close
   double close = 0;
-  s = data->getData("Close");
+  s = data.getData("Close");
   if (setTFloat(s, FALSE))
     return;
   else
@@ -907,7 +903,7 @@ void CME::parse (Setting *data)
 
   // volume
   double volume = 0;
-  s = data->getData("Volume");
+  s = data.getData("Volume");
   if (setTFloat(s, FALSE))
     return;
   else
@@ -915,7 +911,7 @@ void CME::parse (Setting *data)
 
   // oi
   double oi = 0;
-  s = data->getData("OI");
+  s = data.getData("OI");
   if (setTFloat(s, FALSE))
     return;
   else
@@ -939,7 +935,7 @@ void CME::parse (Setting *data)
     return;
   }
 
-  s = tr("Updating ") + data->getData("Symbol");
+  s = tr("Updating ") + data.getData("Symbol");
   emit statusLogMessage(s);
 
   Config config;
@@ -951,7 +947,7 @@ void CME::parse (Setting *data)
     return;
   }
   
-  s = path + "/" + data->getData("Symbol");
+  s = path + "/" + data.getData("Symbol");
   if (db->openChart(s))
   {
     emit statusLogMessage(tr("Could not open db."));
@@ -967,7 +963,7 @@ void CME::parse (Setting *data)
   {
     if (s.compare(pluginName))
     {
-      s = data->getData("Symbol") + tr(" - skipping update. Source does not match destination.");
+      s = data.getData("Symbol") + tr(" - skipping update. Source does not match destination.");
       emit statusLogMessage(s);
       config.closePlugin(plugin);
       return;
@@ -979,7 +975,7 @@ void CME::parse (Setting *data)
   {
     db->createNew();
     
-    s = data->getData("Symbol");
+    s = data.getData("Symbol");
     db->setHeaderField(DbPlugin::Symbol, s);
     
     s = fd.getName();
@@ -989,16 +985,16 @@ void CME::parse (Setting *data)
     s = "FuturesType";
     db->setData(s, s2);
     
-    s2 = data->getData("Month");
+    s2 = data.getData("Month");
     s = "FuturesMonth";
     db->setData(s, s2);
   }
   
   Bar bar;
-  s = data->getData("Date");
+  s = data.getData("Date");
   if (bar.setDate(s))
   {
-    emit statusLogMessage("Bad date " + data->getData("Date"));
+    emit statusLogMessage("Bad date " + data.getData("Date"));
     config.closePlugin(plugin);
     return;
   }

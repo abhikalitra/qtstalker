@@ -31,6 +31,7 @@
 #include <qmessagebox.h>
 #include <qobject.h>
 
+
 Spread::Spread ()
 {
   data.setAutoDelete(TRUE);
@@ -127,31 +128,30 @@ void Spread::dbPrefDialog ()
     setHeaderField(DbPlugin::Title, t2);
 
     t = QObject::tr("First Symbol");
-    QString s = dialog->getSymbol(t);
-    QString s2;
-    if (s.length())
+    t2 = dialog->getSymbol(t);
+    if (t2.length())
     {
-      s2 = "First Symbol";
-      setData(s2, s);
+      t = "First Symbol";
+      setData(t, t2);
     }
       
     t = QObject::tr("Second Symbol");
-    s = dialog->getSymbol(t);
-    if (s.length())
+    t2 = dialog->getSymbol(t);
+    if (t2.length())
     {
-      s2 = "Second Symbol";
-      setData(s2, s);
+      t = "Second Symbol";
+      setData(t, t2);
     }
 
     t = QObject::tr("Method");
-    s = "Method";
-    s2 = dialog->getCombo(t);
-    setData(s, s2);
+    t2 = dialog->getCombo(t);
+    t = "Method";
+    setData(t, t2);
     
     t = QObject::tr("Rebuild");
-    s = "Rebuild";
-    s2 = QString::number(dialog->getCheck(t));
-    setData(s, s2);
+    t2 = QString::number(dialog->getCheck(t));
+    t = "Rebuild";
+    setData(t, t2);
   }
   
   delete dialog;

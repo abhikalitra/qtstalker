@@ -436,7 +436,7 @@ void QtstalkerApp::slotOptions ()
   delete dialog;
 }
 
-void QtstalkerApp::loadChart (QString d)
+void QtstalkerApp::loadChart (QString &d)
 {
   // do all the stuff we need to do to load a chart
   if (d.length() == 0)
@@ -633,7 +633,7 @@ void QtstalkerApp::slotDataWindow ()
   
   DataWindow *dw = new DataWindow();
   dw->setCaption(getWindowCaption());
-  
+
   dw->setBars(recordList);
   
   dw->setPlot(mainPlot);
@@ -695,11 +695,12 @@ void QtstalkerApp::slotChartTypeChanged (int)
 void QtstalkerApp::slotNewIndicator (Setting *set)
 {
   // add a new indicator slot
-  
-  addIndicatorButton(set->getData("File"), (Indicator::PlotType) set->getInt("PlotType"));
+
+  QString str = set->getData("File");
+  addIndicatorButton(str, (Indicator::PlotType) set->getInt("PlotType"));
     
   Indicator *i = new Indicator;
-  QString str = set->getData("File");
+  str = set->getData("File");
   i->setFile(str);
   str = set->getData("Name");
   i->setName(str);
@@ -865,7 +866,7 @@ void QtstalkerApp::slotMinPixelspaceChanged (int d)
   slotPixelspaceChanged(d);
 }
 
-void QtstalkerApp::addIndicatorButton (QString d, Indicator::PlotType tabFlag)
+void QtstalkerApp::addIndicatorButton (QString &d, Indicator::PlotType tabFlag)
 {
   Setting set;
   config.getIndicator(d, set);
@@ -905,7 +906,8 @@ void QtstalkerApp::addIndicatorButton (QString d, Indicator::PlotType tabFlag)
 
   if (tabFlag == Indicator::TabPlot)
   {
-    int page = tabs->getInsertIndex(fi.fileName());
+    QString t = fi.fileName();
+    int page = tabs->getInsertIndex(t);
     tabs->insertTab(plot, fi.fileName(), page);
     tabs->setCurrentPage(page);
     tabs->adjustSize();
@@ -958,7 +960,7 @@ void QtstalkerApp::initPlot (Plot *plot)
   connect(this, SIGNAL(signalCrosshairsStatus(bool)), plot->getIndicatorPlot(), SLOT(setCrosshairsStatus(bool)));
   connect(this, SIGNAL(signalPixelspace(int)), plot, SLOT(setPixelspace(int)));
   connect(this, SIGNAL(signalIndex(int)), plot, SLOT(setIndex(int)));
-  connect(this, SIGNAL(signalInterval(BarData::BarCompression)), plot->getDatePlot(), SLOT(setInterval(BarData::BarCompression)));
+  connect(this, SIGNAL(signalInterval(BarData::BarCompression)), plot, SLOT(setInterval(BarData::BarCompression)));
   connect(this, SIGNAL(signalChartPath(QString)), plot, SLOT(setChartPath(QString)));
   
   connect(toolbar2, SIGNAL(signalSliderChanged(int)), plot, SLOT(slotSliderChanged(int)));

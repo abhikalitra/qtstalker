@@ -41,12 +41,12 @@ DataWindow::~DataWindow ()
 {
 }
 
-void DataWindow::setData (int row, int col, QString data)
+void DataWindow::setData (int row, int col, QString &data)
 {
   table->setText(row, col, data);
 }
 
-void DataWindow::setHeader (int col, QString d)
+void DataWindow::setHeader (int col, QString &d)
 {
   if (col >= table->numCols())
     table->setNumCols(table->numCols() + 1);

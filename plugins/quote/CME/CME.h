@@ -35,8 +35,8 @@ class CME : public QuotePlugin
     void update ();
     void parseToday ();
     void parseHistory ();
-    void saveTodayData (QStringList);
-    void parse (Setting *);
+    void saveTodayData (QStringList &);
+    void parse (Setting &);
     void cancelUpdate ();
     void loadSettings ();
     void saveSettings ();

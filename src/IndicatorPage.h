@@ -65,10 +65,10 @@ class IndicatorPage : public QWidget
     void getIndicatorGroups (QStringList &);
     QString getIndicatorGroup ();
     void setFocus ();
-    void setChartPath (QString);
+    void setChartPath (QString &);
     void removeLocalIndicators ();
-    void addLocalIndicators (QString);
-    void saveLocalIndicator (QString d, Setting &);
+    void addLocalIndicators (QString &);
+    void saveLocalIndicator (QString &d, Setting &);
 
   public slots:
     void doubleClick (QListBoxItem *);
@@ -80,7 +80,7 @@ class IndicatorPage : public QWidget
     void editIndicator ();
     void deleteIndicator ();
     void itemSelected (const QString &);
-    void changeIndicator (QString);
+    void changeIndicator (QString &);
     void setKeyFlag (bool);
     void slotAccel (int);
     void doKeyPress (QKeyEvent *key);

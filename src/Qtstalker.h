@@ -86,11 +86,11 @@ class QtstalkerApp : public QMainWindow
     void initMacroNav ();
     QString getWindowCaption ();
     void setChartType (int);
-    void loadChart (QString);
+    void loadChart (QString &);
     void compressionChanged ();
-    void addIndicatorButton (QString, Indicator::PlotType);
-    void exportChart (QString);
-    void traverse(QString);
+    void addIndicatorButton (QString &, Indicator::PlotType);
+    void exportChart (QString &);
+    void traverse(QString &);
     void loadIndicator (Indicator *);
     void setSliderStart (int, bool);
     void initPlot (Plot *);
@@ -103,7 +103,7 @@ class QtstalkerApp : public QMainWindow
     void slotOptions ();
     void slotDataWindow ();
     void slotNewIndicator (Setting *);
-    void slotEditIndicator (Setting *set);
+    void slotEditIndicator (Setting *);
     void slotDeleteIndicator (QString);
     void slotCompressionChanged (int);
     void slotChartTypeChanged (int);

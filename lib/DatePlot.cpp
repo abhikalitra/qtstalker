@@ -31,7 +31,6 @@ DatePlot::DatePlot (QWidget *w) : QWidget(w)
   buffer = new QPixmap;
   setBackgroundMode(NoBackground);
   scaleWidth = SCALE_WIDTH;
-  dateHeight = DATE_HEIGHT;
   startX = 2;
   backgroundColor.setNamedColor("black");
   borderColor.setNamedColor("white");
@@ -39,15 +38,17 @@ DatePlot::DatePlot (QWidget *w) : QWidget(w)
   interval = BarData::DailyBar;
   startIndex = 0;
   data = 0;
-  setMouseTracking(TRUE);
+//  setMouseTracking(TRUE);
   setFocusPolicy(QWidget::ClickFocus);
 
   plotFont.setFamily("Helvetica");
   plotFont.setPointSize(12);
   plotFont.setWeight(50);
   
-  setMinimumHeight(dateHeight);
-  setMaximumHeight(dateHeight);
+  setMinimumHeight(DATE_HEIGHT);
+  setMaximumHeight(DATE_HEIGHT);
+  
+  dateList.setAutoDelete(TRUE);
 }
 
 DatePlot::~DatePlot ()
@@ -58,24 +59,103 @@ DatePlot::~DatePlot ()
 void DatePlot::clear ()
 {
   data = 0;
+  dateList.clear();
 }
 
 void DatePlot::setData (BarData *l)
 {
   if (! l->count())
     return;
-
+    
   data = l;
+  dateList.clear();
+    
+  if (l->getBarType() == BarData::Tick)
+  { 
+    switch (interval)
+    {
+      case BarData::Minute5:
+      case BarData::Minute15:
+      case BarData::Minute30:
+      case BarData::Minute60:
+        getMinuteDate();
+        break;
+      default:
+        getDailyDate();
+        break;
+    }
+  }
+  else
+  {
+    switch (interval)
+    {
+      case BarData::WeeklyBar:
+        getWeeklyDate();
+        break;
+      case BarData::MonthlyBar:
+        getMonthlyDate();
+        break;
+      default:
+        getDailyDate();
+        break;
+    }
+  }
 }
 
 void DatePlot::draw ()
 {
   buffer->fill(backgroundColor);
 
-  if (data)
+  if (dateList.count() && isShown())
   {
-    if (isShown())
-      drawDate();
+    QPainter painter;
+    painter.begin(buffer);
+    painter.setPen(borderColor);
+    painter.setFont(plotFont);
+
+    QFontMetrics fm(plotFont);
+    int x = startX;
+    int loop = startIndex;
+  
+    // clear date area
+    painter.fillRect(0, buffer->height(), buffer->width() - scaleWidth, buffer->height(), backgroundColor);
+
+    // draw the seperator line
+    painter.drawLine (0, 0, buffer->width() - scaleWidth, 0);
+
+    while(x <= (buffer->width() - scaleWidth) && loop < (int) dateList.count())
+    {
+      TickItem *item = dateList.at(loop);
+      
+      if (item->flag)
+      {
+        if (! item->tick)
+	{
+	  // draw the short tick
+          painter.drawLine (x, 1, x, 4);
+	  
+          painter.drawText (x - (fm.width(item->text, -1) / 2),
+	                    fm.height() + 2,
+			    item->text,
+			    -1);
+	}
+	else
+	{
+	  // draw the long tick
+          painter.drawLine (x, 1, x, buffer->height() - fm.height() - 2);
+	  
+          painter.drawText (x - (fm.width(item->text, -1) / 2),
+	                    buffer->height() - 2,
+			    item->text,
+			    -1);
+	}
+      }
+              
+      x = x + pixelspace;
+      loop++;
+    }
+    
+    painter.end();
   }
 
   paintEvent(0);
@@ -127,72 +207,9 @@ void DatePlot::setInterval (BarData::BarCompression d)
   interval = d;
 }
 
-void DatePlot::drawDate ()
+void DatePlot::getMinuteDate ()
 {
-  QPainter painter;
-  painter.begin(buffer);
-  painter.setPen(borderColor);
-  
-  // clear date area
-  painter.fillRect(0, buffer->height(), buffer->width() - scaleWidth, dateHeight, backgroundColor);
-
-  // draw the seperator line
-  painter.drawLine (0, 0, buffer->width() - scaleWidth, 0);
-
-  painter.end();
-  
-  if (data->getBarType() == BarData::Tick)
-  { 
-    switch (interval)
-    {
-      case BarData::Minute5:
-      case BarData::Minute15:
-        draw15Date();
-        break;
-      case BarData::Minute30:
-      case BarData::Minute60:
-        drawHourlyDate();
-        break;
-      case BarData::WeeklyBar:
-        drawWeeklyDate();
-        break;
-      case BarData::MonthlyBar:
-        drawMonthlyDate();
-        break;
-      default:
-        drawDailyDate();
-        break;
-    }
-  }
-  else
-  {
-    switch (interval)
-    {
-      case BarData::WeeklyBar:
-        drawWeeklyDate();
-        break;
-      case BarData::MonthlyBar:
-        drawMonthlyDate();
-        break;
-      default:
-        drawDailyDate();
-        break;
-    }
-  }
-}
-
-void DatePlot::draw15Date ()
-{
-  QPainter painter;
-  painter.begin(buffer);
-  painter.setPen(borderColor);
-  painter.setFont(plotFont);
-
-  QFontMetrics fm = painter.fontMetrics();
-  
-  int x = startX;
-  int loop = startIndex;
-
+  int loop = 0;
   BarDate nextHour = data->getDate(loop);
   BarDate oldDay = data->getDate(loop);
   nextHour.setTime(nextHour.getHour(), 0, 0);
@@ -201,29 +218,30 @@ void DatePlot::draw15Date ()
   else
     nextHour.addSecs(3600);
 
-  while(x <= (buffer->width() - scaleWidth) && loop < (int) data->count())
+  while(loop < (int) data->count())
   {
     BarDate date = data->getDate(loop);
     
+    TickItem *item = new TickItem;
+    item->flag = 0;
+    
     if (date.getDate().day() != oldDay.getDate().day())
     {
-      painter.drawLine (x, 1, x, dateHeight - fm.height() - 1);
-      QString s = date.getDate().toString("d");
-      painter.drawText (x - (fm.width(s, -1) / 2), buffer->height() - 2, s, -1);
+      item->flag = 1;
+      item->tick = 1;
+      item->text = date.getDate().toString("MMM d");
       oldDay = date;
     }
     else
     {
-      // every 2 hours make a small tick
       if (date.getDateValue() >= nextHour.getDateValue())
       {
-        painter.drawLine (x, 1, x, 4);
-
-        QString s = QString::number(date.getHour()) + ":00";
-        painter.drawText (x - (fm.width(s, -1) / 2),
-		          buffer->height() - dateHeight + fm.height() + 1,
-			  s,
-			  -1);
+        if (interval < BarData::Minute30)
+	{
+          item->flag = 1;
+          item->tick = 0;
+          item->text = QString::number(date.getHour()) + ":00";
+	}
       }
     }
     
@@ -237,78 +255,32 @@ void DatePlot::draw15Date ()
         nextHour.addSecs(3600);
     }
 
-    x = x + pixelspace;
+    dateList.append(item);
     loop++;
   }
-
-  painter.end();
 }
 
-void DatePlot::drawHourlyDate ()
+void DatePlot::getDailyDate ()
 {
-  QPainter painter;
-  painter.begin(buffer);
-  painter.setPen(borderColor);
-  painter.setFont(plotFont);
-
-  QFontMetrics fm = painter.fontMetrics();
-  
-  int x = startX;
-  int loop = startIndex;
-
-  QDate oldDay = data->getDate(loop).getDate();
-
-  while(x <= (buffer->width() - scaleWidth) && loop < (int) data->count())
-  {
-    QDate date = data->getDate(loop).getDate();
-
-    if (date.day() != oldDay.day())
-    {
-      oldDay = date;
-      painter.drawLine (x, 1, x, dateHeight / 3);
-      QString s = date.toString("d");
-      painter.drawText (x - (fm.width(s, -1) / 2),
-	  		(dateHeight / 3) + fm.height() + 2,
-			s,
-			-1);
-    }
-
-    x = x + pixelspace;
-    loop++;
-  }
-
-  painter.end();
-}
-
-void DatePlot::drawDailyDate ()
-{
-  QPainter painter;
-  painter.begin(buffer);
-  painter.setPen(borderColor);
-  painter.setFont(plotFont);
-
-  QFontMetrics fm = painter.fontMetrics();
-  
-  int x = startX;
-  int loop = startIndex;
+  int loop = 0;
 
   QDate oldDate = data->getDate(loop).getDate();
   QDate oldWeek = oldDate;
   oldWeek = oldWeek.addDays(7 - oldWeek.dayOfWeek());
 
-  while(x <= (buffer->width() - scaleWidth) && loop < (int) data->count())
+  while(loop < (int) data->count())
   {
+    TickItem *item = new TickItem;
+    item->flag = 0;
+  
     QDate date = data->getDate(loop).getDate();
 
     if (date.month() != oldDate.month())
     {
+      item->flag = 1;
+      item->tick = 1;
+      item->text = date.toString("MMM'yy");
       oldDate = date;
-
-      painter.drawLine (x, 1, x, dateHeight - fm.height() - 1);
-
-      QString s = date.toString("MMM'yy");
-      painter.drawText (x - (fm.width(s, -1) / 2), buffer->height() - 2, s, -1);
-
       oldWeek = date;
       oldWeek = oldWeek.addDays(7 - oldWeek.dayOfWeek());
     }
@@ -317,110 +289,74 @@ void DatePlot::drawDailyDate ()
       // if start of new week make a tick
       if (date > oldWeek)
       {
-        painter.drawLine (x, 1, x, 4);
-
-        QString s = date.toString("d");
-        painter.drawText (x - (fm.width(s, -1) / 2),
-			  buffer->height() - dateHeight + fm.height() + 1,
-			  s,
-			  -1);
-
+        item->flag = 1;
+        item->tick = 0;
+        item->text = date.toString("d");
   	oldWeek = date;
         oldWeek = oldWeek.addDays(7 - oldWeek.dayOfWeek());
       }
     }
 
-    x = x + pixelspace;
+    dateList.append(item);
     loop++;
   }
-
-  painter.end();
 }
 
-void DatePlot::drawWeeklyDate ()
+void DatePlot::getWeeklyDate ()
 {
-  QPainter painter;
-  painter.begin(buffer);
-  painter.setPen(borderColor);
-  painter.setFont(plotFont);
-
-  QFontMetrics fm = painter.fontMetrics();
-  
-  int x = startX;
-  int loop = startIndex;
+  QFontMetrics fm(plotFont);
+  int loop = 0;
 
   QDate oldMonth = data->getDate(loop).getDate();
 
-  while(x <= (buffer->width() - scaleWidth) && loop < (int) data->count())
+  while(loop < (int) data->count())
   {
+    TickItem *item = new TickItem;
+    item->flag = 0;
+  
     QDate date = data->getDate(loop).getDate();
 
     if (date.month() != oldMonth.month())
     {
       oldMonth = date;
-
-      painter.drawLine (x, 1, x, dateHeight / 3);
-
-      QString s;
-      s = date.toString("MMM'yy");
-
-      if (fm.width(s, -1) > 4 * pixelspace)
+      item->flag = 1;
+      item->tick = 0;
+      item->text = date.toString("MMM");
+      
+      if (date.month() == 1)
       {
-        if (date.month() == 1)
-          s = date.toString("yy");
-	else
-	{
-          s = date.toString("MMM");
-          s.truncate(1);
-	}
+        item->tick = 1;
+        item->text = date.toString("MMM'yy");
       }
-
-      painter.drawText (x - (fm.width(s, -1) / 2),
-  		        (dateHeight / 3) + fm.height() + 2,
-			s,
-			-1);
     }
 
-    x = x + pixelspace;
+    dateList.append(item);
     loop++;
   }
-  
-  painter.end();
 }
 
-void DatePlot::drawMonthlyDate ()
+void DatePlot::getMonthlyDate ()
 {
-  QPainter painter;
-  painter.begin(buffer);
-  painter.setPen(borderColor);
-  painter.setFont(plotFont);
-
-  QFontMetrics fm = painter.fontMetrics();
-  
-  int x = startX;
-  int loop = startIndex;
-
+  int loop = 0;
   QDate oldYear = data->getDate(loop).getDate();
 
-  while(x <= (buffer->width() - scaleWidth) && loop < (int) data->count())
+  while(loop < (int) data->count())
   {
+    TickItem *item = new TickItem;
+    item->flag = 0;
+  
     QDate date = data->getDate(loop).getDate();
 
     if (date.year() != oldYear.year())
     {
       oldYear = date;
-      painter.drawLine (x, 1, x, dateHeight / 3);
-      QString s = date.toString("yyyy");
-      painter.drawText (x - (fm.width(s, -1) / 2),
-	  		(dateHeight / 3) + fm.height() + 2,
-			s,
-			-1);
+      item->flag = 1;
+      item->tick = 1;
+      item->text = date.toString("yyyy");
     }
 
-    x = x + pixelspace;
+    dateList.append(item);
     loop++;
   }
-
-  painter.end();
 }
 

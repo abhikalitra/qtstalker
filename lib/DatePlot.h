@@ -28,6 +28,16 @@
 #include <qfont.h>
 #include "BarData.h"
 
+
+typedef struct
+{
+  QString text;
+  bool flag; // false == ignore
+  bool tick; // true == long tick
+
+} TickItem;
+
+
 class DatePlot : public QWidget
 {
   Q_OBJECT
@@ -54,18 +64,15 @@ class DatePlot : public QWidget
     virtual void resizeEvent (QResizeEvent *);
 
   private slots:
-    void drawDate ();
-    void drawDailyDate ();
-    void drawWeeklyDate ();
-    void drawMonthlyDate ();
-    void drawHourlyDate ();
-    void draw15Date ();
+    void getDailyDate ();
+    void getWeeklyDate ();
+    void getMonthlyDate ();
+    void getMinuteDate ();
 
   private:
     QFont plotFont;
     QPixmap *buffer;
     int pixelspace;
-    int dateHeight;
     int scaleWidth;
     int startX;
     int startIndex;
@@ -73,6 +80,7 @@ class DatePlot : public QWidget
     QColor backgroundColor;
     QColor borderColor;
     BarData *data;
+    QPtrList<TickItem> dateList;
 };
 
 #endif

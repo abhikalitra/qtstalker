@@ -529,7 +529,7 @@ void Yahoo::parseQuote ()
   config.closePlugin(plugin);
 }
 
-QString Yahoo::parseDate (QString d)
+QString Yahoo::parseDate (QString &d)
 {
   QString s;
 
@@ -654,7 +654,7 @@ void Yahoo::prefDialog (QWidget *w)
     
     if (! allSymbols)
     {
-      fileList = dialog->getList();
+      dialog->getList(fileList);
       int loop;
       symbolList.clear();
       for (loop = 0; loop < (int) fileList.count(); loop++)
@@ -914,7 +914,7 @@ void Yahoo::loadAllSymbols ()
   symbolList.sort();
 }
 
-void Yahoo::createHistoryUrls (QString d)
+void Yahoo::createHistoryUrls (QString &d)
 {
   if (sdate.date().daysTo(edate.date()) > 199) 
   { 
@@ -986,7 +986,7 @@ void Yahoo::createHistoryUrls (QString d)
   }
 }
 
-void Yahoo::createAutoHistoryUrls (QString path, QString d)
+void Yahoo::createAutoHistoryUrls (QString &path, QString &d)
 {
   Config config;
   QString plugin("Stocks");
@@ -1072,7 +1072,7 @@ void Yahoo::createAutoHistoryUrls (QString path, QString d)
   url.append(set);
 }
 
-void Yahoo::createQuoteUrls (QString d)
+void Yahoo::createQuoteUrls (QString &d)
 {
   // multiple quotes: quote.yahoo.com/d/quotes.csv?s=IBM+RHAT+SCOX+MSFT+GOLD&f=sl1d1t1c1ohgv 
   // multiple close only: quote.yahoo.com/d/quotes.csv?s=IBM+RHAT+SCOX+MSFT+GOLD&f=sl1
@@ -1088,7 +1088,7 @@ void Yahoo::createQuoteUrls (QString d)
   url.append(set);
 }
 
-void Yahoo::createFundamentalUrls (QString d)
+void Yahoo::createFundamentalUrls (QString &d)
 {
   QString s = "http://finance.yahoo.com/q/ks?s=" + d;
   Setting *set = new Setting;

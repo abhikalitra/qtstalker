@@ -80,7 +80,7 @@ class PrefDialog : public QTabDialog
     void addDateItem (QString &, QString &, QDateTime &);
     QDateTime getDate (QString &);
     void addFileItem (QString &, QString &, QStringList &, QString &);
-    QStringList getFile (QString &);
+    void getFile (QString &, QStringList &);
     void addSymbolItem (QString &, QString &, QString &, QString &);
     QString getSymbol (QString &);
     void addFormulaInputItem (QString &, QString &, bool, QString &);

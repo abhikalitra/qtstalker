@@ -60,7 +60,7 @@ class Tester : public QTabDialog
     void createTestPage();
     void createReportPage();
     void createChartPage ();
-    void exitPosition (QString);
+    void exitPosition (QString &);
     bool maximumLoss ();
     bool profit ();
     bool trailing ();

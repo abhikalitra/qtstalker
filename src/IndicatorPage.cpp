@@ -255,6 +255,7 @@ void IndicatorPage::newIndicator ()
   s2 = tr("Plot Type");
   idialog->addComboItem(s2, s, l, 1);
   s2 = tr("Indicator Group");
+  getIndicatorGroups(l);
   idialog->addComboItem(s2, s, l, 0);
   
   int rc = idialog->exec();
@@ -369,7 +370,8 @@ void IndicatorPage::newIndicator ()
 
 void IndicatorPage::editIndicator ()
 {
-  editIndicator(list->currentText());
+  QString s = list->currentText();
+  editIndicator(s);
 }
 
 void IndicatorPage::editIndicator (QString d)
@@ -604,8 +606,9 @@ void IndicatorPage::moveIndicator ()
   bool status = set.getInt("enable");
   if (status)
     emit signalDisableIndicator(s);
-    
-  saveLocalIndicator(list->currentText(), set);
+
+  t = list->currentText();
+  saveLocalIndicator(t, set);
   
   config.setIndicator(s, set);
   
@@ -656,11 +659,12 @@ void IndicatorPage::doubleClick (QListBoxItem *item)
 {
   if (! item)
     return;
-    
-  changeIndicator(item->text());
+
+  QString s = item->text();
+  changeIndicator(s);
 }
 
-void IndicatorPage::changeIndicator (QString d)
+void IndicatorPage::changeIndicator (QString &d)
 {
   if (! d.length())
     return;
@@ -904,12 +908,12 @@ void IndicatorPage::setFocus ()
   list->setFocus();
 }
 
-void IndicatorPage::setChartPath (QString d)
+void IndicatorPage::setChartPath (QString &d)
 {
   chartPath = d;
 }
 
-void IndicatorPage::addLocalIndicators (QString d)
+void IndicatorPage::addLocalIndicators (QString &d)
 {
   QStringList l = QStringList::split(",", d, FALSE);
   int loop;
@@ -945,7 +949,7 @@ void IndicatorPage::removeLocalIndicators ()
   localIndicators.clear();
 }
 
-void IndicatorPage::saveLocalIndicator (QString d, Setting &set)
+void IndicatorPage::saveLocalIndicator (QString &d, Setting &set)
 {
   if (localIndicators.findIndex(d) != -1)
   {

@@ -395,13 +395,12 @@ void PrefDialog::addFileItem (QString &name, QString &page, QStringList &l, QStr
   fileList.replace(name, button);
 }
 
-QStringList PrefDialog::getFile (QString &name)
+void PrefDialog::getFile (QString &name, QStringList &l)
 {
-  QStringList l;
+  l.clear();
   FileButton *button = fileList[name];
   if (button)
     button->getFile(l);
-  return l;
 }
 
 void PrefDialog::addSymbolItem (QString &name, QString &page, QString &path, QString &symbol)

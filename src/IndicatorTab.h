@@ -60,8 +60,8 @@ class IndicatorTab : public QTabWidget
     void loadSettings();
     void saveSettings();
     void drawCurrent ();
-    int getInsertIndex (QString);
-    bool deleteTab (QString);
+    int getInsertIndex (QString &);
+    bool deleteTab (QString &);
 
   private slots:
     void toggleTabPosition (QTabWidget::TabPosition);

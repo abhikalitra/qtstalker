@@ -226,7 +226,7 @@ void QtstalkerFormat::parse ()
   emit statusLogMessage(tr("Done"));
 }
 
-bool QtstalkerFormat::createDirectories (QString d)
+bool QtstalkerFormat::createDirectories (QString &d)
 {
   Config config;
   QString path = config.getData(Config::DataPath);
@@ -268,9 +268,7 @@ void QtstalkerFormat::prefDialog (QWidget *w)
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
-  {
-    list = dialog->getFile(s3);
-  }
+    dialog->getFile(s3, list);
   
   delete dialog;
 }

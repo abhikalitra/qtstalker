@@ -34,13 +34,13 @@ class CSVDialog : public QTabDialog
   Q_OBJECT
   
   public:
-    CSVDialog (QWidget *, QString, QString);
+    CSVDialog (QWidget *, QString &, QString &);
     ~CSVDialog ();
     void createMainPage ();
-    QStringList getFiles ();
-    void setFiles (QStringList);
+    void getFiles (QStringList &);
+    void setFiles (QStringList &);
     QString getSymbol ();
-    void setSymbol (QString);
+    void setSymbol (QString &);
     void setStartDate (QDateTime);
     QDateTime getStartDate ();
     void setEndDate (QDateTime);
@@ -48,7 +48,7 @@ class CSVDialog : public QTabDialog
     void setDateRange (bool);
     bool getDateRange ();
     void updateRules ();
-    void setRuleName (QString);
+    void setRuleName (QString &);
     QString getRuleName ();
     void setReloadInterval (int);
     int getReloadInterval ();

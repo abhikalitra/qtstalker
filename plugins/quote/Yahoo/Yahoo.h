@@ -31,7 +31,7 @@ class Yahoo : public QuotePlugin
     Yahoo ();
     virtual ~Yahoo ();
     void update ();
-    QString parseDate (QString);
+    QString parseDate (QString &);
     void parseHistory ();
     void parseQuote ();
     void loadSettings ();
@@ -41,10 +41,10 @@ class Yahoo : public QuotePlugin
     void cancelUpdate ();
     void parseFundamental ();
     void loadAllSymbols ();
-    void createHistoryUrls (QString);
-    void createAutoHistoryUrls (QString, QString);
-    void createQuoteUrls (QString);
-    void createFundamentalUrls (QString);
+    void createHistoryUrls (QString &);
+    void createAutoHistoryUrls (QString &, QString &);
+    void createQuoteUrls (QString &);
+    void createFundamentalUrls (QString &);
       
   public slots:
     void startDownload ();

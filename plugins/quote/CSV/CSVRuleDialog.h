@@ -35,7 +35,7 @@ class CSVRuleDialog : public QTabDialog
   Q_OBJECT
   
   public:
-    CSVRuleDialog (QWidget *, QString);
+    CSVRuleDialog (QWidget *, QString &);
     ~CSVRuleDialog ();
     void createRulePage ();
     void loadRule ();

@@ -28,6 +28,7 @@
 #include <qdir.h>
 #include <qfile.h>
 
+
 DbPlugin::DbPlugin ()
 {
   barCompression = BarData::DailyBar;

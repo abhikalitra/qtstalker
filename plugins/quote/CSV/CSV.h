@@ -35,10 +35,10 @@ class CSV : public QuotePlugin
     CSV ();
     virtual ~CSV ();
     void update ();
-    void setDelimiter (QString);
-    QDate getDate (QString, QString, Setting &);
-    QString getTime (QString);
-    bool openDb (QString, QString, QString, bool);
+    void setDelimiter (QString &);
+    QDate getDate (QString &, QString &, Setting &);
+    QString getTime (QString &);
+    bool openDb (QString &, QString &, QString &, bool);
     void loadSettings ();
     void saveSettings ();
     void prefDialog (QWidget *);

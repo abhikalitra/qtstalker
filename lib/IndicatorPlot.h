@@ -118,6 +118,7 @@ class IndicatorPlot : public QWidget
     void slotDrawModeChanged (bool);
     void slotLogScaleChanged (bool);
     void slotHideMainChanged (bool);
+    void setInterval(BarData::BarCompression);
 
   protected:
     virtual void paintEvent (QPaintEvent *);

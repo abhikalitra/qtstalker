@@ -360,7 +360,7 @@ void PortfolioDialog::buttonStatus (QListViewItem *i)
   }
 }
 
-float PortfolioDialog::futuresProfit (QString sym, float diff)
+float PortfolioDialog::futuresProfit (QString &sym, float diff)
 {
   FuturesData *fd = new FuturesData();
   fd->setSymbol(sym);

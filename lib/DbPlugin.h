@@ -31,7 +31,6 @@
 #include "Bar.h"
 #include "BarDate.h"
 
-
 class DbPlugin
 {
   public:

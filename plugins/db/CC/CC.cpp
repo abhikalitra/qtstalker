@@ -31,7 +31,6 @@
 #include <qmessagebox.h>
 #include <qobject.h>
 
-
 CC::CC ()
 {
   helpFile = "cc.html";
@@ -50,34 +49,74 @@ void CC::getHistory (BarData *bd)
 void CC::dbPrefDialog ()
 {
   PrefDialog *dialog = new PrefDialog(0);
+  dialog->setHelpFile(helpFile);
   dialog->setCaption(QObject::tr("CC Prefs"));
+  
   QString pl = QObject::tr("Details");
   dialog->createPage(pl);
-  dialog->setHelpFile(helpFile);
   
-  QString s = "Maximum Years";
-  QString s2;
-  getData(s, s2);
-  QString t = QObject::tr("Maximum Years");
-  dialog->addIntItem(t, pl, s2.toInt());
+  QString t = QObject::tr("Symbol");
+  QString t2;
+  getHeaderField(DbPlugin::Symbol, t2);
+  dialog->addLabelItem(t, pl, t2);
+
+  t = QObject::tr("Name");
+  getHeaderField(DbPlugin::Title, t2);
+  dialog->addTextItem(t, pl, t2);
+
+  t = QObject::tr("Type");
+  getHeaderField(DbPlugin::Type, t2);
+  dialog->addLabelItem(t, pl, t2);
   
-  s = "Details";
-  getData(s, s2);
+  t = QObject::tr("First Date");
+  t2.truncate(0);
+  Bar *bar = getFirstBar();
+  if (bar)
+  {
+    bar->getDate().getDateTimeString(TRUE, t2);
+    delete bar;
+  }
+  dialog->addLabelItem(t, pl, t2);
+  
+  t = QObject::tr("Last Date");
+  t2.truncate(0);
+  bar = getLastBar();
+  if (bar)
+  {
+    bar->getDate().getDateTimeString(TRUE, t2);
+    delete bar;
+  }
+  dialog->addLabelItem(t, pl, t2);
+  
+  pl = QObject::tr("Parms");
+  dialog->createPage (pl);
+  
+  t = "Maximum Years";
+  getData(t, t2);
+  t = QObject::tr("Maximum Years");
+  dialog->addIntItem(t, pl, t2.toInt());
+  
+  t = "Details";
+  getData(t, t2);
   t = QObject::tr("Rebuild");
-  dialog->addCheckItem(t, pl, s2.toInt());
+  dialog->addCheckItem(t, pl, t2.toInt());
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
-    s = "Maximum Years";
+    t = QObject::tr("Name");
+    t2 = dialog->getText(t);
+    setHeaderField(DbPlugin::Title, t2);
+  
     t = QObject::tr("Maximum Years");
-    s2 = QString::number(dialog->getInt(t));
-    setData(s, s2);
+    t2 = QString::number(dialog->getInt(t));
+    t = "Maximum Years";
+    setData(t, t2);
     
-    s = "Rebuild";
     t = QObject::tr("Rebuild");
-    s2 = QString::number(dialog->getCheck(t));
-    setData(s, s2);
+    t2 = QString::number(dialog->getCheck(t));
+    t = "Rebuild";
+    setData(t, t2);
   }
   
   delete dialog;

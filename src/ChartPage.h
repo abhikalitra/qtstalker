@@ -53,7 +53,7 @@ class ChartPage : public QWidget
   
     ChartPage (QWidget *);
     ~ChartPage ();
-    void exportChart (QString);
+    void exportChart (QString &);
     void setFocus ();
 
   public slots:
@@ -62,7 +62,7 @@ class ChartPage : public QWidget
     void newChart (int);
     void exportSymbol ();
     void dumpSymbol ();
-    void exportChart (QString, bool);
+    void exportChart (QString &, bool);
     void chartSelected (QString);
     void chartNoSelection ();
     void rightClick (QListBoxItem *);

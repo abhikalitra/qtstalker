@@ -34,10 +34,10 @@ class YahooDialog : public QTabDialog
   Q_OBJECT
   
   public:
-    YahooDialog (QWidget *, QString);
+    YahooDialog (QWidget *, QString &);
     ~YahooDialog ();
-    QStringList getList ();
-    void setList (QStringList);
+    void getList (QStringList &);
+    void setList (QStringList &);
     void setAdjustment (bool);
     bool getAdjustment ();
     void setAllSymbols (bool);

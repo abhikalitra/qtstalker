@@ -34,7 +34,7 @@
 #include <qfile.h>
 #include <qtextstream.h>
 
-CSVRuleDialog::CSVRuleDialog (QWidget *p, QString d) : QTabDialog (p, "CSVRuleDialog", TRUE)
+CSVRuleDialog::CSVRuleDialog (QWidget *p, QString &d) : QTabDialog (p, "CSVRuleDialog", TRUE)
 {
   helpFile = "csv.html";
   saveFlag = FALSE;
