@@ -7,6 +7,8 @@
 
 - Added new quote plugin CC. This creates a continuous adjusted futures chart for each futures symbol available.
 
+- Added status messages to all the quote plugins for monitoring download progress.
+
 0.16
 ======
 

@@ -485,6 +485,10 @@ void CBOT::parse ()
       }
     }
 
+    s = tr("Updating ");
+    s.append(fd->getSymbol());
+    emit message(s);
+
     Setting *r = new Setting;
     r->set("Date", date, Setting::Date);
     r->set("Open", open, Setting::Float);

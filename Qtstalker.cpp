@@ -489,7 +489,7 @@ void QtstalkerApp::slotQuit()
 
 void QtstalkerApp::slotAbout()
 {
-  QMessageBox::about(this, tr("About..."), tr("Qtstalker\nVersion 0.16 \n(C) 2001-2003 by Stefan Stratigakos"));
+  QMessageBox::about(this, tr("About..."), tr("Qtstalker\nVersion 0.17 \n(C) 2001-2003 by Stefan Stratigakos"));
 }
 
 void QtstalkerApp::slotWorkwithChart ()

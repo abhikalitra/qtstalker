@@ -339,6 +339,10 @@ void CMEHistory::parse (Setting *data)
     }
   }
 
+  s = tr("Updating ");
+  s.append(fd->getSymbol());
+  emit message(s);
+
   Setting *r = new Setting;
   r->set("Date", data->getData("Date"), Setting::Date);
   r->set("Open", open, Setting::Float);

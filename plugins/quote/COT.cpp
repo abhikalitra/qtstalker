@@ -296,6 +296,10 @@ void COT::saveData (Setting *set)
   s.append(set->getData("Symbol"));
   ChartDb *db = new ChartDb();
   db->openChart(s);
+  
+  s = tr("Updating ");
+  s.append(set->getData("Symbol"));
+  emit message(s);
 
   Setting *details = db->getDetails();
   if (! details->count())

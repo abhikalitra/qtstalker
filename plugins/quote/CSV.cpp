@@ -185,9 +185,13 @@ void CSV::parse ()
       db->saveDetails();
     }
 
+    QString s = tr("Updating ");
+    s.append(symbol);
+    emit message(s);
+
     while(stream.atEnd() == 0)
     {
-      QString s = stream.readLine();
+      s = stream.readLine();
       s = stripJunk(s);
 
       QStringList l = QStringList::split(",", s, FALSE);

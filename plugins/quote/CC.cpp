@@ -68,6 +68,10 @@ void CC::parse ()
   int symbolLoop;
   for (symbolLoop = 0; symbolLoop < (int) symbols.count(); symbolLoop++)
   {
+    s = tr("Updating ");
+    s.append(symbols[symbolLoop]);
+    emit message(s);
+
     s = dataPath;
     s.append("/Futures/");
     s.append(symbols[symbolLoop]);

@@ -82,9 +82,13 @@ void Qtstalker::parse ()
     ChartDb *db = new ChartDb();
     db->openChart(s);
 
+    s = tr("Updating ");
+    s.append(symbol);
+    emit message(s);
+
     while(stream.atEnd() == 0)
     {
-      QString s = stream.readLine();
+      s = stream.readLine();
       s = s.stripWhiteSpace();
 
       if (! s.length())

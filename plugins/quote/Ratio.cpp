@@ -85,6 +85,10 @@ void Ratio::updateRatio ()
       continue;
     }
 
+    s = tr("Updating ");
+    s.append(dir[loop]);
+    emit message(s);
+
     details = db->getDetails();
     details->parse(tdetails->getString());
     delete tdetails;
