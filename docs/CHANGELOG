@@ -114,6 +114,8 @@
             the popup menu listing only chart objects and indicators that apply to the chart clicked
 	    on.
 
+- 20040123: Updated the docs. Getting ready for the 0.23 release.
+
 
 0.22
 ====
