@@ -84,13 +84,14 @@ void MACD::calculate ()
   osc->setColor(getData(tr("Oscillator Color")));
   osc->setType(getData(tr("Oscillator Line Type")));
   osc->setLabel(getData(tr("Oscillator Label")));
+  osc->setScaleFlag(TRUE);
 
   floop = macd->getSize() - 1;
   sloop = signal->getSize() - 1;
 
   while (floop > -1 && sloop > -1)
   {
-    osc->prepend((macd->getData(floop) - signal->getData(sloop)) * 2);
+    osc->prepend((macd->getData(floop) - signal->getData(sloop)));
     floop--;
     sloop--;
   }

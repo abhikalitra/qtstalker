@@ -27,6 +27,8 @@ HEADERS += IndicatorPage.h
 HEADERS += NewIndicatorDialog.h
 #HEADERS += ScannerPage.h
 #HEADERS += Scanner.h
+HEADERS += Scaler.h
+
 
 SOURCES += Qtstalker.cpp
 SOURCES += PortfolioDialog.cpp
@@ -50,6 +52,7 @@ SOURCES += IndicatorPage.cpp
 SOURCES += NewIndicatorDialog.cpp
 #SOURCES += ScannerPage.cpp
 #SOURCES += Scanner.cpp
+SOURCES += Scaler.cpp
 
 TARGET = qtstalker
 

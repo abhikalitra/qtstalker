@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  *
- *  Copyright (C) 2001-2003 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2004 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -36,6 +36,7 @@ class PlotLine
   public:
     PlotLine ();
     ~PlotLine ();
+    void copy (PlotLine *);
     void setColor (QString);
     QString getColor ();
     void setType (QString);
@@ -52,6 +53,8 @@ class PlotLine
     double getLow ();
     void setLow (double);
     void checkHighLow (double);
+    void setScaleFlag (bool);
+    bool getScaleFlag ();
 
     void setColorFlag (bool);
     bool getColorFlag ();
@@ -68,6 +71,7 @@ class PlotLine
     double high;
     double low;
     bool colorBarFlag;
+    bool scaleFlag;
 };
 
 #endif

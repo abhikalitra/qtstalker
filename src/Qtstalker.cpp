@@ -953,20 +953,7 @@ void QtstalkerApp::loadIndicator (Indicator *i)
     {
       PlotLine *tpl = plug->getIndicatorLine(loop);
       PlotLine *pl = new PlotLine;
-      pl->setColor(tpl->getColor());
-      pl->setType(tpl->getType());
-      pl->setLabel(tpl->getLabel());
-      pl->setColorFlag(tpl->getColorFlag());
-
-      int loop2;
-      for (loop2 = 0; loop2 < (int) tpl->getSize(); loop2++)
-      {
-	pl->append(tpl->getData(loop2));
-
-	if (tpl->getColorFlag() == TRUE)
-          pl->appendColorBar(tpl->getColorBar(loop2));
-      }
-
+      pl->copy(tpl);
       i->addLine(pl);
     }
 

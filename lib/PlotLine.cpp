@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  *
- *  Copyright (C) 2001-2003 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2004 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -30,10 +30,29 @@ PlotLine::PlotLine ()
   high = -99999999;
   low = 99999999;
   colorBarFlag = FALSE;
+  scaleFlag = FALSE;
 }
 
 PlotLine::~PlotLine ()
 {
+}
+
+void PlotLine::copy (PlotLine *d)
+{
+  setColor(d->getColor());
+  setType(d->getType());
+  setLabel(d->getLabel());
+  setColorFlag(d->getColorFlag());
+  setScaleFlag(d->getScaleFlag());
+
+  int loop;
+  for (loop = 0; loop < (int) d->getSize(); loop++)
+  {
+    append(d->getData(loop));
+
+    if (d->getColorFlag() == TRUE)
+      appendColorBar(d->getColorBar(loop));
+  }
 }
 
 void PlotLine::setColor (QString d)
@@ -126,6 +145,16 @@ void PlotLine::checkHighLow (double d)
     high = d;
   if (d < low)
     low = d;
+}
+
+void PlotLine::setScaleFlag (bool d)
+{
+  scaleFlag = d;
+}
+
+bool PlotLine::getScaleFlag ()
+{
+  return scaleFlag;
 }
 
 void PlotLine::setColorFlag (bool d)

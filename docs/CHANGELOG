@@ -91,12 +91,20 @@
 - Added ability to print charts from pulldown and chart popup menus. Have not tested this, hope it works properly...
 
 - Applied patch #872874 - apply yahoo adjusted close column. Essentially the yahoo plugin can now do
-  adjusted splits for stocks. Consult the docs for the details on how this works.
+  adjusted splits for stocks. Consult the docs for the details on how this works. Thanks to Martin Flack
+  for this great patch.
 
 - Applied patch #872878 - double size of the MACD osc. Was appearing too small on some charts for easy viewing.
 
 - Applied patch #872881 - chart WILLR with 100 at bottom. This fixes the scaling to be faithful to the
-  original method.
+  original method. Values are converted to negative values in order to plot properly.
+
+- Added a flag to PlotLine to ignore shared scaling and scale relative to itself. Changed MACD plugin
+  to use this flag for the osc plot. Only minor flaw is the zero position for histograms does not match
+  up with the visible scale. Best use of this flag is for small ranges in multiple plots so that they
+  can better be seen by the user.
+
+- Added a new Scaler class for use in plotting flexibility. This is a utility class. 
 
 
 0.22

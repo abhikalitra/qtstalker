@@ -31,7 +31,6 @@
 #include <qimage.h>
 
 #define SCALE_WIDTH 60
-#define DATE_HEIGHT 30
 
 Plot::Plot (QWidget *w) : QWidget(w)
 {
@@ -56,10 +55,6 @@ Plot::Plot (QWidget *w) : QWidget(w)
   scaleToScreen = FALSE;
   logScale = FALSE;
   startIndex = 0;
-  scaleHigh = -99999999;
-  scaleLow = 99999999;
-  logScaleHigh = 1;
-  logRange = 0;
   mainHigh = -99999999;
   mainLow = 99999999;
   chartType = "None";
@@ -82,42 +77,6 @@ Plot::Plot (QWidget *w) : QWidget(w)
   setMouseTracking(TRUE);
 
   setFocusPolicy(QWidget::ClickFocus);
-  
-  scaleList.append(".01");
-  scaleList.append(".02");
-  scaleList.append(".05");
-  scaleList.append(".1");
-  scaleList.append(".2");
-  scaleList.append(".5");
-  scaleList.append("1");
-  scaleList.append("2");
-  scaleList.append("5");
-  scaleList.append("10");
-  scaleList.append("25");
-  scaleList.append("50");
-  scaleList.append("100");
-  scaleList.append("250");
-  scaleList.append("500");
-  scaleList.append("1000");
-  scaleList.append("2500");
-  scaleList.append("5000");
-  scaleList.append("10000");
-  scaleList.append("25000");
-  scaleList.append("50000");
-  scaleList.append("100000");
-  scaleList.append("250000");
-  scaleList.append("500000");
-  scaleList.append("1000000");
-  scaleList.append("2500000");
-  scaleList.append("5000000");
-  scaleList.append("10000000");
-  scaleList.append("25000000");
-  scaleList.append("50000000");
-  scaleList.append("100000000");
-  scaleList.append("250000000");
-  scaleList.append("500000000");
-  scaleList.append("1000000000");
-  scaleList.append("2500000000");
 }
 
 Plot::~Plot ()
@@ -126,10 +85,6 @@ Plot::~Plot ()
 
 void Plot::clear ()
 {
-  scaleHigh = -99999999;
-  scaleLow = 99999999;
-  logScaleHigh = 1;
-  logRange = 0;
   mainHigh = -99999999;
   mainLow = 99999999;
   indicators.clear();
@@ -1056,7 +1011,7 @@ void Plot::drawScale ()
   int loop;
   for (loop = 0; loop < (int) scaleArray.size(); loop++)
   {
-    int y = convertToY(scaleArray[loop]);
+    int y = scaler.convertToY(scaleArray[loop]);
     painter.setPen(QPen(borderColor, 1, QPen::SolidLine));
     painter.drawLine (x, y, x + 4, y);
 
@@ -1091,7 +1046,7 @@ void Plot::drawYGrid ()
   int loop;
   for (loop = 0; loop < (int) scaleArray.size(); loop++)
   {
-    int y = convertToY(scaleArray[loop]);
+    int y = scaler.convertToY(scaleArray[loop]);
     painter.drawLine (startX, y, _width, y);
   }
 
@@ -1118,11 +1073,24 @@ void Plot::drawLine ()
   int y2 = -1;
   int loop = currentLine->getSize() - data->count() + startIndex;
 
+  Scaler *scale = new Scaler;
+  scale->set(_height,
+  	     currentLine->getHigh(),
+	     currentLine->getLow(),
+	     scaler.getLogScaleHigh(),
+	     scaler.getLogRange(),
+	     dateFlag,
+	     logScale);
+
   while ((x2 < _width) && (loop < (int) currentLine->getSize()))
   {
     if (loop > -1)
     {
-      y2 = convertToY(currentLine->getData(loop));
+      if (currentLine->getScaleFlag())
+        y2 = scale->convertToY(currentLine->getData(loop));
+      else
+        y2 = scaler.convertToY(currentLine->getData(loop));
+
       if (y != -1)
         painter.drawLine (x, y, x2, y2);
       x = x2;
@@ -1134,6 +1102,8 @@ void Plot::drawLine ()
   }
 
   painter.end();
+
+  delete scale;
 }
 
 void Plot::drawHorizontalLine ()
@@ -1146,7 +1116,7 @@ void Plot::drawHorizontalLine ()
   pen.setColor(currentLine->getColor());
   painter.setPen(pen);
 
-  int y = convertToY(currentLine->getData(currentLine->getSize() - 1));
+  int y = scaler.convertToY(currentLine->getData(currentLine->getSize() - 1));
 
   painter.drawLine (0, y, _width, y);
 
@@ -1167,11 +1137,25 @@ void Plot::drawDot ()
   int x = startX;
   int loop = currentLine->getSize() - data->count() + startIndex;
 
+  Scaler *scale = new Scaler;
+  scale->set(_height,
+  	     currentLine->getHigh(),
+	     currentLine->getLow(),
+	     scaler.getLogScaleHigh(),
+	     scaler.getLogRange(),
+	     dateFlag,
+	     logScale);
+
   while ((x < _width) && (loop < (int) currentLine->getSize()))
   {
     if (loop > -1)
     {
-      int y = convertToY(currentLine->getData(loop));
+      int y;
+      if (currentLine->getScaleFlag())
+        y = scale->convertToY(currentLine->getData(loop));
+      else
+        y = scaler.convertToY(currentLine->getData(loop));
+
       painter.drawPoint(x, y);
     }
 
@@ -1180,6 +1164,8 @@ void Plot::drawDot ()
   }
 
   painter.end();
+
+  delete scale;
 }
 
 void Plot::drawHistogram ()
@@ -1189,10 +1175,25 @@ void Plot::drawHistogram ()
   painter.setPen(currentLine->getColor());
   painter.setBrush(currentLine->getColor());
 
+  Scaler *scale = new Scaler;
+  scale->set(_height,
+  	     currentLine->getHigh(),
+	     currentLine->getLow(),
+	     scaler.getLogScaleHigh(),
+	     scaler.getLogRange(),
+	     dateFlag,
+	     logScale);
+
   int loop = currentLine->getSize() - data->count() + startIndex;
 
   QPointArray pa(4);
-  int zero = convertToY(0);
+
+  int zero = 0;
+  if (currentLine->getScaleFlag())
+    zero = scale->convertToY(0);
+  else
+    zero = scaler.convertToY(0);
+
   int x = -1;
   int x2 = startX;
   int y = -1;
@@ -1202,7 +1203,10 @@ void Plot::drawHistogram ()
   {
     if (loop > -1)
     {
-      y2 = convertToY(currentLine->getData(loop));
+      if (currentLine->getScaleFlag())
+        y2 = scale->convertToY(currentLine->getData(loop));
+      else
+        y2 = scaler.convertToY(currentLine->getData(loop));
       pa.setPoint(0, x, zero);
       pa.setPoint(1, x, y);
       pa.setPoint(2, x2, y2);
@@ -1220,6 +1224,8 @@ void Plot::drawHistogram ()
   }
 
   painter.end();
+
+  delete scale;
 }
 
 void Plot::drawHistogramBar ()
@@ -1229,15 +1235,33 @@ void Plot::drawHistogramBar ()
 
   QColor color(currentLine->getColor());
 
+  Scaler *scale = new Scaler;
+  scale->set(_height,
+  	     currentLine->getHigh(),
+	     currentLine->getLow(),
+	     scaler.getLogScaleHigh(),
+	     scaler.getLogRange(),
+	     dateFlag,
+	     logScale);
+
   int x = startX;
-  int zero = convertToY(0);
+  int zero = 0;
+  if (currentLine->getScaleFlag())
+    zero = scale->convertToY(0);
+  else
+    zero = scaler.convertToY(0);
+
   int loop = currentLine->getSize() - data->count() + startIndex;
 
   while ((x < _width) && (loop < (int) currentLine->getSize()))
   {
     if (loop > -1)
     {
-      int y = convertToY(currentLine->getData(loop));
+      int y;
+      if (currentLine->getScaleFlag())
+        y = scale->convertToY(currentLine->getData(loop));
+      else
+        y = scaler.convertToY(currentLine->getData(loop));
 
       if (currentLine->getColorFlag() == TRUE)
 	color.setNamedColor(currentLine->getColorBar(loop));
@@ -1250,6 +1274,8 @@ void Plot::drawHistogramBar ()
   }
 
   painter.end();
+
+  delete scale;
 }
 
 void Plot::drawInfo ()
@@ -1390,7 +1416,7 @@ void Plot::updateStatusBar (int x, int y)
   QDateTime date = QDateTime::fromString(r->getDateTime("Date"), Qt::ISODate);
   QString s = date.toString("yyyyMMdd");
   s.append(" ");
-  s.append(QString::number(convertToVal(y)));
+  s.append(QString::number(scaler.convertToVal(y)));
   emit statusMessage(s);
 }
 
@@ -1409,12 +1435,12 @@ void Plot::getXY (int x, int y, int f)
   if (f == 0)
   {
     x1 = date.toString("yyyyMMdd");
-    y1 = QString::number(convertToVal(y));
+    y1 = QString::number(scaler.convertToVal(y));
   }
   else
   {
     x2 = date.toString("yyyyMMdd");
-    y2 = QString::number(convertToVal(y));
+    y2 = QString::number(scaler.convertToVal(y));
   }
 }
 
@@ -1523,8 +1549,8 @@ QStringList Plot::getChartObjectList ()
 
 void Plot::setScale ()
 {
-  scaleHigh = -99999999;
-  scaleLow = 99999999;
+  double scaleHigh = -99999999;
+  double scaleLow = 99999999;
 
   if (mainFlag)
   {
@@ -1681,9 +1707,9 @@ void Plot::setScale ()
     scaleLow = scaleLow * 1.1;
   else
     scaleLow = scaleLow * 0.99;
-  double range = scaleHigh - scaleLow;
-  scaler = _height / range;
 
+  double logScaleHigh = 1;
+  double logRange = 0;
   if (mainFlag && logScale)
   {
     logScaleHigh = scaleHigh > 0.0 ? log(scaleHigh) : 1;
@@ -1691,73 +1717,15 @@ void Plot::setScale ()
     logRange = logScaleHigh - logScaleLow;
   }
 
-  int ticks;
-  for (ticks = 2; (ticks * 15) < _height; ticks++)
-    ;
-  ticks--;
-  if (ticks > 10)
-    ticks = 10;
+  scaler.set(_height,
+  	     scaleHigh,
+	     scaleLow,
+	     logScaleHigh,
+	     logRange,
+	     dateFlag,
+	     logScale);
 
-  double interval = 0;
-  for (loop = 0; loop < (int) scaleList.count(); loop++)
-  {
-    QString t = scaleList[loop];
-    if ((range / t.toDouble()) < ticks)
-    {
-      interval = t.toDouble();
-      break;
-    }
-  }
-
-  scaleArray.resize(11);
-
-  loop = 0;
-  double t = 0 - (ticks * interval);
-  while (t <= scaleHigh)
-  {
-    t = t + interval;
-
-    if (t >= scaleLow)
-    {
-      scaleArray[loop] = t;
-      loop++;
-    }
-  }
-
-  scaleArray.resize(loop);
-}
-
-int Plot::convertToY (double val)
-{
-  if (mainFlag && logScale)
-  {
-    if (val <= 0.0)
-      return _height;
-    else
-      return (int) (_height * (logScaleHigh - log(val)) / logRange);
-  }
-
-  double t = val - scaleLow;
-  int y = (int) (t * scaler);
-  y = _height - y;
-  if (y > _height)
-    y = _height;
-  return y;
-}
-
-double Plot::convertToVal (int y)
-{
-  if (mainFlag && logScale)
-  {
-    if (y >= _height)
-      return scaleLow;
-    else
-      return exp(logScaleHigh - ((y * logRange) / _height));
-  }
-
-  int p = _height - y;
-  double val = scaleLow + (p / scaler) ;
-  return val;
+  scaleArray = scaler.getScaleArray();
 }
 
 int Plot::getWidth ()
@@ -1833,16 +1801,16 @@ void Plot::drawBars ()
   int y;
   if (t)
   {
-    y = convertToY(t);
+    y = scaler.convertToY(t);
     painter.drawLine (x - 2, y, x, y);
   }
 
-  y = convertToY(r->getFloat("Close"));
+  y = scaler.convertToY(r->getFloat("Close"));
   painter.drawLine (x + 2, y, x, y);
 
-  int h = convertToY(r->getFloat("High"));
+  int h = scaler.convertToY(r->getFloat("High"));
 
-  int l = convertToY(r->getFloat("Low"));
+  int l = scaler.convertToY(r->getFloat("Low"));
   painter.drawLine (x, h, x, l);
 
   x = x + pixelspace;
@@ -1866,15 +1834,15 @@ void Plot::drawBars ()
     t = r->getFloat("Open");
     if (t)
     {
-      y = convertToY(t);
+      y = scaler.convertToY(t);
       painter.drawLine (x - 2, y, x, y);
     }
 
-    y = convertToY(r->getFloat("Close"));
+    y = scaler.convertToY(r->getFloat("Close"));
     painter.drawLine (x + 2, y, x, y);
 
-    h = convertToY(r->getFloat("High"));
-    l = convertToY(r->getFloat("Low"));
+    h = scaler.convertToY(r->getFloat("High"));
+    l = scaler.convertToY(r->getFloat("Low"));
     painter.drawLine (x, h, x, l);
 
     x = x + pixelspace;
@@ -1895,10 +1863,10 @@ void Plot::drawCandle ()
   painter.setPen(neutralColor);
 
   Setting *r = data->at(loop);
-  int h = convertToY(r->getFloat("High"));
-  int l = convertToY(r->getFloat("Low"));
-  int c = convertToY(r->getFloat("Close"));
-  int o = convertToY(r->getFloat("Open"));
+  int h = scaler.convertToY(r->getFloat("High"));
+  int l = scaler.convertToY(r->getFloat("Low"));
+  int c = scaler.convertToY(r->getFloat("Close"));
+  int o = scaler.convertToY(r->getFloat("Open"));
 
   painter.drawLine (x, h, x, l);
 
@@ -1933,10 +1901,10 @@ void Plot::drawCandle ()
         painter.setPen(neutralColor);
     }
 
-    h = convertToY(r->getFloat("High"));
-    l = convertToY(r->getFloat("Low"));
-    c = convertToY(r->getFloat("Close"));
-    o = convertToY(r->getFloat("Open"));
+    h = scaler.convertToY(r->getFloat("High"));
+    l = scaler.convertToY(r->getFloat("Low"));
+    c = scaler.convertToY(r->getFloat("Close"));
+    o = scaler.convertToY(r->getFloat("Open"));
 
     painter.drawLine (x, h, x, l);
 
@@ -1977,7 +1945,7 @@ void Plot::drawLineChart ()
   {
     Setting *r = data->at(loop);
 
-    y2 = convertToY(r->getFloat("Close"));
+    y2 = scaler.convertToY(r->getFloat("Close"));
     if (y != -1)
       painter.drawLine (x, y, x2, y2);
     x = x2;
@@ -2019,15 +1987,15 @@ void Plot::drawPaintBar ()
     int y;
     if (r->getFloat("Open") != 0)
     {
-      y = convertToY(r->getFloat("Open"));
+      y = scaler.convertToY(r->getFloat("Open"));
       painter.drawLine (x - 2, y, x, y);
     }
 
-    y = convertToY(r->getFloat("Close"));
+    y = scaler.convertToY(r->getFloat("Close"));
     painter.drawLine (x + 2, y, x, y);
 
-    int h = convertToY(r->getFloat("High"));
-    int l = convertToY(r->getFloat("Low"));
+    int h = scaler.convertToY(r->getFloat("High"));
+    int l = scaler.convertToY(r->getFloat("Low"));
     painter.drawLine (x, h, x, l);
 
     x = x + pixelspace;
@@ -2066,8 +2034,8 @@ void Plot::drawSwing ()
         if (r->getFloat("High") < pr->getFloat("High") && r->getFloat("Low") < pr->getFloat("Low"))
 	{
 	  painter.setPen(upColor);
-          h = convertToY(high);
-          l = convertToY(low);
+          h = scaler.convertToY(high);
+          l = scaler.convertToY(low);
           painter.drawLine (x, h, x, l);
 
           painter.drawLine (oldx, l, x, l);
@@ -2086,8 +2054,8 @@ void Plot::drawSwing ()
         if (r->getFloat("High") > pr->getFloat("High") && r->getFloat("Low") > pr->getFloat("Low"))
 	{
 	  painter.setPen(downColor);
-          h = convertToY(high);
-          l = convertToY(low);
+          h = scaler.convertToY(high);
+          l = scaler.convertToY(low);
           painter.drawLine (x, h, x, l);
 
           painter.drawLine (oldx, h, x, h);
@@ -2132,15 +2100,15 @@ void Plot::drawSwing ()
   {
     case 1:
       painter.setPen(upColor);
-      h = convertToY(high);
-      l = convertToY(low);
+      h = scaler.convertToY(high);
+      l = scaler.convertToY(low);
       painter.drawLine (x, h, x, l);
       painter.drawLine (oldx, l, x, l);
         break;
     case -1:
       painter.setPen(downColor);
-      h = convertToY(high);
-      l = convertToY(low);
+      h = scaler.convertToY(high);
+      l = scaler.convertToY(low);
       painter.drawLine (x, h, x, l);
       painter.drawLine (oldx, h, x, h);
       break;
@@ -2202,14 +2170,14 @@ void Plot::drawPointAndFigure ()
       {
         if (h >= (pl + ((PAFReversal + 1) * size)))
         {
-	  int y = convertToY(ph);
-	  int y2= convertToY(pl);
+	  int y = scaler.convertToY(ph);
+	  int y2= scaler.convertToY(pl);
           painter.fillRect(x, y, x2 - x + pixelspace, y2 - y, downColor);
 
 	  double val = ph - size;
 	  while (val > pl)
 	  {
-	    y = convertToY(val);
+	    y = scaler.convertToY(val);
             painter.drawLine (x, y, x2 + pixelspace, y);
             val = val - size;
 	  }
@@ -2234,14 +2202,14 @@ void Plot::drawPointAndFigure ()
       {
         if (l <= (ph - ((PAFReversal + 1) * size)))
         {
-	  int y = convertToY(ph);
-	  int y2= convertToY(pl);
+	  int y = scaler.convertToY(ph);
+	  int y2= scaler.convertToY(pl);
           painter.fillRect(x, y, x2 - x + pixelspace, y2 - y, upColor);
 
 	  double val = ph - size;
 	  while (val > pl)
 	  {
-	    y = convertToY(val);
+	    y = scaler.convertToY(val);
             painter.drawLine (x, y, x2 + pixelspace, y);
             val = val - size;
 	  }
@@ -2260,8 +2228,8 @@ void Plot::drawPointAndFigure ()
     loop++;
   }
 
-  int y = convertToY(ph);
-  int y2= convertToY(pl);
+  int y = scaler.convertToY(ph);
+  int y2= scaler.convertToY(pl);
   if (! symbol)
     painter.fillRect(x, y, x2 - x + pixelspace, y2 - y, downColor);
   else
@@ -2269,7 +2237,7 @@ void Plot::drawPointAndFigure ()
   double val = ph - size;
   while (val > pl)
   {
-    y = convertToY(val);
+    y = scaler.convertToY(val);
     painter.drawLine (x, y, x2 + pixelspace, y);
     val = val - size;
   }
@@ -2288,7 +2256,7 @@ void Plot::drawBuyArrow (Setting *co)
   if (x == -1)
     return;
 
-  int y = convertToY(co->getFloat(QObject::tr("Value")));
+  int y = scaler.convertToY(co->getFloat(QObject::tr("Value")));
 
   QColor color(co->getData(QObject::tr("Color")));
 
@@ -2460,7 +2428,7 @@ void Plot::drawFibonacciLine2 (QColor color, QString label, double high, double 
     }
   }
 
-  int y = convertToY(r);
+  int y = scaler.convertToY(r);
   painter.drawLine (startX, y, _width, y);
 
   QString s = label;
@@ -2477,7 +2445,7 @@ void Plot::drawHorizontalLine (Setting *co)
   painter.begin(&buffer);
   painter.setFont(plotFont);
 
-  int y = convertToY(co->getFloat(QObject::tr("Value")));
+  int y = scaler.convertToY(co->getFloat(QObject::tr("Value")));
 
   QColor color(co->getData(QObject::tr("Color")));
   painter.setPen(color);
@@ -2499,7 +2467,7 @@ void Plot::drawSellArrow (Setting *co)
   if (x == -1)
     return;
 
-  int y = convertToY(co->getFloat(QObject::tr("Value")));
+  int y = scaler.convertToY(co->getFloat(QObject::tr("Value")));
 
   QColor color(co->getData(QObject::tr("Color")));
 
@@ -2529,7 +2497,7 @@ void Plot::drawText (Setting *co)
   if (x == -1)
     return;
 
-  int y = convertToY(co->getFloat(QObject::tr("Value")));
+  int y = scaler.convertToY(co->getFloat(QObject::tr("Value")));
 
   QColor color(co->getData(QObject::tr("Color")));
   painter.setPen(color);
@@ -2566,25 +2534,25 @@ void Plot::drawTrendLine (Setting *co)
     {
       if (! s.compare(QObject::tr("Open")))
       {
-        y = convertToY(r->getFloat("Open"));
+        y = scaler.convertToY(r->getFloat("Open"));
 	break;
       }
 
       if (! s.compare(QObject::tr("High")))
       {
-        y = convertToY(r->getFloat("High"));
+        y = scaler.convertToY(r->getFloat("High"));
 	break;
       }
 
       if (! s.compare(QObject::tr("Low")))
       {
-        y = convertToY(r->getFloat("Low"));
+        y = scaler.convertToY(r->getFloat("Low"));
 	break;
       }
 
       if (! s.compare(QObject::tr("Close")))
       {
-        y = convertToY(r->getFloat("Close"));
+        y = scaler.convertToY(r->getFloat("Close"));
 	break;
       }
 
@@ -2592,7 +2560,7 @@ void Plot::drawTrendLine (Setting *co)
     }
   }
   else
-    y = convertToY(co->getFloat(QObject::tr("Start Value")));
+    y = scaler.convertToY(co->getFloat(QObject::tr("Start Value")));
 
   int y2;
   if (! co->getData(QObject::tr("Use Bar")).compare(QObject::tr("True")))
@@ -2604,25 +2572,25 @@ void Plot::drawTrendLine (Setting *co)
     {
       if (! s.compare(QObject::tr("Open")))
       {
-        y2 = convertToY(r->getFloat("Open"));
+        y2 = scaler.convertToY(r->getFloat("Open"));
 	break;
       }
 
       if (! s.compare(QObject::tr("High")))
       {
-        y2 = convertToY(r->getFloat("High"));
+        y2 = scaler.convertToY(r->getFloat("High"));
 	break;
       }
 
       if (! s.compare(QObject::tr("Low")))
       {
-        y2 = convertToY(r->getFloat("Low"));
+        y2 = scaler.convertToY(r->getFloat("Low"));
 	break;
       }
 
       if (! s.compare(QObject::tr("Close")))
       {
-        y2 = convertToY(r->getFloat("Close"));
+        y2 = scaler.convertToY(r->getFloat("Close"));
 	break;
       }
 
@@ -2630,7 +2598,7 @@ void Plot::drawTrendLine (Setting *co)
     }
   }
   else
-    y2 = convertToY(co->getFloat(QObject::tr("End Value")));
+    y2 = scaler.convertToY(co->getFloat(QObject::tr("End Value")));
 
   QColor color(co->getData(QObject::tr("Color")));
   painter.setPen(color);

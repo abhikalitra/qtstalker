@@ -35,6 +35,7 @@
 #include "PlotLine.h"
 #include "Setting.h"
 #include "Indicator.h"
+#include "Scaler.h"
 
 class Plot : public QWidget
 {
@@ -161,8 +162,6 @@ class Plot : public QWidget
     void drawInfo ();
     void setHeight ();
     void setWidth ();
-    double convertToVal (int);
-    int convertToY (double);
     void setScale ();
     int getXFromDate (QDateTime);
     void getXY (int, int, int);
@@ -200,15 +199,16 @@ class Plot : public QWidget
     int crossHairY;
 
     int scaleWidth;
-    double scaleHigh;
-    double scaleLow;
-    double scaler;
+//    double scaleHigh;
+//    double scaleLow;
+//    double scaler;
     double mainHigh;
     double mainLow;
     QArray<double> scaleArray;
-    QStringList scaleList;
-    double logScaleHigh;
-    double logRange;
+//    QStringList scaleList;
+//    double logScaleHigh;
+//    double logRange;
+    Scaler scaler;
 
     QString y1;
     QString y2;
