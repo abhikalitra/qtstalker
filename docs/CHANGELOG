@@ -106,6 +106,8 @@
 
 - Added a new Scaler class for use in plotting flexibility. This is a utility class. 
 
+- 20040118: Updated copyright notice and cleaned up .pro files for indicator plugins.
+
 
 0.22
 ====
