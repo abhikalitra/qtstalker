@@ -822,7 +822,16 @@ void Plot::drawScale ()
     painter.drawLine (x, y, x + 4, y);
 
     // draw the text
-    painter.drawText(x + 7, y + (fm.height() / 2), QString::number(scaleArray[loop], 'f', 2));
+    QString s = QString::number(scaleArray[loop], 'f', 2);
+    if (s.contains(".00"))
+      s.truncate(s.length() - 3);
+    else
+    {
+      QString s2 = s.right(1);
+      if (! s2.compare("0"))
+        s.truncate(s.length() - 1);
+    }
+    painter.drawText(x + 7, y + (fm.height() / 2), s);
   }
 
   painter.setPen(QPen(borderColor, 1, QPen::SolidLine));

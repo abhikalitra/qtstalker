@@ -14,7 +14,6 @@
 
 - Added new Quote plugins:
     NYBOT
-    NYMEX
     Qtstalker - Used to import ASCII files that have been exported using qtstalker's export function.
 
 - Removed Variable plugin
@@ -50,6 +49,8 @@
 
 - changed the indicator area back to using tabs, arghh the button text was tool small for toolbar buttons
 
+- Removed NYMEX plugin because they have gone to a dynamic html format along with a click through EULA. Thanks alot NYMEX,
+  I guess you dont want to promote the exchange by making quotes easily available. 
 
 0.14
 ======

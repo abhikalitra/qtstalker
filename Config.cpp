@@ -383,6 +383,7 @@ void Config::deletePlugin (QString n)
   QString s = getData(PluginPath);
   s.append("/");
   s.append(n);
+  s.append(".so");
   QDir dir(s);
   dir.remove(s, TRUE);
 

@@ -14,10 +14,6 @@ qmake -o Makefile CME.pro
 make
 cp libCME.so.0.2.0 CME.so
 
-qmake -o Makefile NYMEX.pro
-make
-cp libNYMEX.so.0.2.0 NYMEX.so
-
 qmake -o Makefile NYBOT.pro
 make
 cp libNYBOT.so.0.2.0 NYBOT.so
