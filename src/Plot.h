@@ -123,6 +123,7 @@ class Plot : public QWidget
     void setInterval(Plot::TimeInterval);
     void setDateFlag (bool);
     void crossHair (int, int);
+    void print ();
 
   protected:
     virtual void paintEvent (QPaintEvent *);
@@ -165,6 +166,7 @@ class Plot : public QWidget
     void setScale ();
     int getXFromDate (QDateTime);
     void getXY (int, int, int);
+    void createXGrid ();
 
   private:
     QFont plotFont;
@@ -220,6 +222,9 @@ class Plot : public QWidget
     QList<Setting> *data;
     QDict<Indicator> indicators;
     QList<QColor> paintBars;
+
+    QDict<Setting> dateList;
+    QArray<int> xGrid;
 };
 
 #endif

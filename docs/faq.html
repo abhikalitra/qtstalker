@@ -39,8 +39,10 @@ Another option
 is if you don't want to GPL your formula, you may contract me to write
 a
 proprietary plugin for you for a fee.</p>
-<p>Of course, you can always develop the new indicator yourself. Just copy
-the code from an existing indicator that does similar things. Please consider
+<p>Of course, you can always develop the new indicator yourself. Just
+copy
+the code from an existing indicator that does similar things. Please
+consider
 contributing the new indicator back to this project. Everyone benefits.</p>
 <h3>I'm a day trader, how come there is no intraday charting functions ?</h3>
 <p>Qtstalker is an 'end of day' analysis tool. Personally I have no
@@ -83,7 +85,7 @@ Be sure you don't delete the directory itself, just the plugin *.so
 file.<br>
 <br>
 <h3>Why don't you use SQL for data storage?</h3>
-Two reasons, speed and simplicty. Once again I cite the KISS (Keep it
+Two reasons, speed and simplicty. Once again I cite the KISS (keep it
 simple, stupid!) philosophy. You can't beat Db btree functions for ease
 of use and speed. Using SQL would just add another layer of
 requirements and major speed penalties. It also means more
@@ -97,7 +99,15 @@ version the stable standard and include the source to keep things as
 simple as possible for the user. No need to hunt around for packages
 etc. Just compile and go.<br>
 <br>
-<br>
+<h3>How about a Mac OS X port?</h3>
+An attempt was made for version 0.22 before its release, but soon
+realized it won't happen. There are some major issues with the plugins
+and GUI flexibility. Firstly, the plugins are unable to be refreshed
+due
+to not having an unload option for dynamic libraries. Secondly, GUI
+flexibility. There are future GUI enhancements that Qt 3.2 contains,
+the project will be making use of (toolbox widget) that has no
+counterpart in the mac world.<br>
 <br>
 <br>
 <br>

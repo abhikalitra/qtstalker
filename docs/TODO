@@ -7,7 +7,6 @@ To Do:
 - chart scanner
 - intraday quotes
 - postgresql quote plugin
-- print charts
 - key bindings
 - key binding scripting
 
@@ -23,8 +22,6 @@ Maybe some day:
 - Intraday charting.
 
 - support for options
-
-- port to osx broken plugin system
 
 
 

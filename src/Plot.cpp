@@ -26,6 +26,9 @@
 #include <qpointarray.h>
 #include <qcursor.h>
 #include <math.h>
+#include <qprinter.h>
+#include <qpaintdevicemetrics.h>
+#include <qimage.h>
 
 #define SCALE_WIDTH 60
 #define DATE_HEIGHT 30
@@ -73,6 +76,7 @@ Plot::Plot (QWidget *w) : QWidget(w)
 
   indicators.setAutoDelete(TRUE);
   paintBars.setAutoDelete(TRUE);
+  dateList.setAutoDelete(TRUE);
   data = 0;
 
   setMouseTracking(TRUE);
@@ -131,6 +135,7 @@ void Plot::clear ()
   indicators.clear();
   data = 0;
   paintBars.clear();
+  dateList.clear();
 
   if (mainFlag)
     indicators.replace("Main Plot", new Indicator);
@@ -142,21 +147,21 @@ void Plot::setData (QList<Setting> *l)
     return;
 
   data = l;
-  
-  if (mainFlag)
-  {
-    int loop;
-    for (loop = 0; loop < (int) data->count(); loop++)
-      paintBars.append(new QColor(neutralColor.red(), neutralColor.green(), neutralColor.blue()));
-  }
 
   int loop;
-  for (loop = 0; loop < (int) l->count(); loop++)
+  for (loop = 0; loop < (int) data->count(); loop++)
   {
-    Setting *r = l->at(loop);
+    Setting *r = data->at(loop);
 
     if (mainFlag)
     {
+      paintBars.append(new QColor(neutralColor.red(), neutralColor.green(), neutralColor.blue()));
+
+      Setting *set = new Setting;
+      set->set("X", QString::number(loop), Setting::Integer);
+      QDateTime date = QDateTime::fromString(r->getDateTime("Date"), Qt::ISODate);
+      dateList.replace(date.toString("yyyyMMdd"), set);
+
       QString s = r->getData("High");
       if (s.length())
       {
@@ -172,6 +177,8 @@ void Plot::setData (QList<Setting> *l)
       }
     }
   }
+
+  createXGrid();
 }
 
 void Plot::setChartType (QString d)
@@ -353,7 +360,7 @@ void Plot::draw ()
     drawScale();
 
     drawInfo();
-    
+
     if (dateFlag)
       drawDate();
   }
@@ -959,52 +966,52 @@ void Plot::drawXGrid ()
   painter.begin(&buffer);
   painter.setPen(QPen(gridColor, 1, QPen::DotLine));
 
-  int x = startX;
-  int loop = startIndex;
-
-  if (interval == Daily)
+  int loop;
+  for (loop = 0; loop < (int) xGrid.size(); loop++)
   {
-    Setting *r = data->at(loop);
-    QDateTime oldDate = QDateTime::fromString(r->getDateTime("Date"), Qt::ISODate);
-
-    while(x <= _width && loop < (int) data->count())
+    if (xGrid[loop] >= startIndex)
     {
-      r = data->at(loop);
-      QDateTime date = QDateTime::fromString(r->getDateTime("Date"), Qt::ISODate);
-
-      if (date.date().month() != oldDate.date().month())
-      {
-        oldDate = date;
-        painter.drawLine (x, 0, x, _height);
-      }
-
-      x = x + pixelspace;
-
-      loop++;
-    }
-  }
-  else
-  {
-    Setting *r = data->at(loop);
-    QDateTime oldYear = QDateTime::fromString(r->getDateTime("Date"), Qt::ISODate);
-
-    while(x <= _width && loop < (int) data->count())
-    {
-      r = data->at(loop);
-      QDateTime date = QDateTime::fromString(r->getDateTime("Date"), Qt::ISODate);
-
-      if (date.date().year() != oldYear.date().year())
-      {
-        oldYear = date;
-        painter.drawLine (x, 0, x, _height);
-      }
-
-      x = x + pixelspace;
-      loop++;
+      int x = startX + (xGrid[loop] * pixelspace) - (startIndex * pixelspace);
+      painter.drawLine (x, 0, x, _height);
     }
   }
 
   painter.end();
+}
+
+void Plot::createXGrid ()
+{
+  xGrid.resize(0);
+
+  int loop = 0;
+
+  Setting *r = data->at(loop);
+  QDateTime oldDate = QDateTime::fromString(r->getDateTime("Date"), Qt::ISODate);
+
+  for (loop = 0; loop < (int) data->count(); loop++)
+  {
+    r = data->at(loop);
+    QDateTime date = QDateTime::fromString(r->getDateTime("Date"), Qt::ISODate);
+
+    if (interval == Daily)
+    {
+      if (date.date().month() != oldDate.date().month())
+      {
+        oldDate = date;
+	xGrid.resize(xGrid.size() + 1);
+	xGrid[xGrid.size() - 1] = loop;
+      }
+    }
+    else
+    {
+      if (date.date().year() != oldDate.date().year())
+      {
+        oldDate = date;
+	xGrid.resize(xGrid.size() + 1);
+	xGrid[xGrid.size() - 1] = loop;
+      }
+    }
+  }
 }
 
 void Plot::addIndicator (QString d, Indicator *i)
@@ -1770,25 +1777,19 @@ int Plot::getMinPixelspace ()
 
 int Plot::getXFromDate (QDateTime d)
 {
-  int x = startX;
-  int loop = startIndex;
-
   Setting *r = data->at(startIndex);
   QDateTime date = QDateTime::fromString(r->getDateTime("Date"), Qt::ISODate);
   if (d.date() < date.date())
     return -1;
 
-  while(x <= _width && loop < (int) data->count())
-  {
-    r = data->at(loop);
-    date = QDateTime::fromString(r->getDateTime("Date"), Qt::ISODate);
+  Setting *r2 = dateList[d.toString("yyyyMMdd")];
+  if (! r2)
+    return -1;
 
-    if (date.date() >= d.date())
-      break;
+  int x = startX + (r2->getInt("X") * pixelspace) - (startIndex * pixelspace);
 
-    x = x + pixelspace;
-    loop++;
-  }
+//  if (date.date() >= d.date())
+//      break;
 
   return x;
 }
@@ -2753,6 +2754,45 @@ void Plot::createChartObject (QString d, QString n)
     break;
   }
 }
+
+void Plot::print ()
+{
+  QPrinter printer;
+  printer.setPageSize(QPrinter::Letter);
+
+  if (printer.setup())
+  {
+    emit statusMessage(tr("Creating chart snapshot..."));
+    
+    printer.setFullPage(true);
+    QSize margins = printer.margins();
+    int leftMargin = margins.width();
+    int topMargin  = margins.height();
+
+    QPaintDeviceMetrics prm(&printer);
+    int prmw = prm.width() - leftMargin;
+    int prmh = prm.height() - topMargin;
+
+    QPixmap pix = buffer;
+
+    if ((pix.width() > prmw) || (pix.height() > prmh))
+    {
+      QImage image = pix.convertToImage();
+      image = image.smoothScale(prmw, prmh, QImage::ScaleMin);
+      pix.convertFromImage(image);
+    }
+
+    emit statusMessage(tr("Printing..."));
+
+    QPainter painter;
+    painter.begin(&printer);
+    painter.drawPixmap(leftMargin/2, topMargin/2, pix);
+    painter.end();
+
+    emit statusMessage(tr("Printing complete."));
+  }
+}
+
 
 
 

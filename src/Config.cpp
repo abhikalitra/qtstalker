@@ -82,6 +82,15 @@ Config::Config (QString p)
   }
   setData(TestPath, s);
 
+  s = home;
+  s.append("/scanner");
+  if (! dir.exists(s, TRUE))
+  {
+    if (! dir.mkdir(s, TRUE))
+      qDebug("Unable to create ~/Qtstalker/scanner directory.");
+  }
+  setData(ScannerPath, s);
+
   QStringList l = getIndicators();
   if (l.count() == 0)
     setIndicator(QObject::tr("Volume"), QStringList::split(",", VOLUME, FALSE));
@@ -140,6 +149,9 @@ QString Config::getData (Parm p)
       break;
     case TestPath:
       s = settings.readEntry("/Qtstalker/TestPath");
+      break;
+    case ScannerPath:
+      s = settings.readEntry("/Qtstalker/ScannerPath");
       break;
     case ChartStyle:
       s = settings.readEntry("/Qtstalker/ChartStyle", QObject::tr("Bar Chart"));
@@ -258,6 +270,9 @@ void Config::setData (Parm p, QString d)
       break;
     case TestPath:
       settings.writeEntry("/Qtstalker/TestPath", d);
+      break;
+    case ScannerPath:
+      settings.writeEntry("/Qtstalker/ScannerPath", d);
       break;
     case ChartStyle:
       settings.writeEntry("/Qtstalker/ChartStyle", d);

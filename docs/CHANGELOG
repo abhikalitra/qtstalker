@@ -86,6 +86,9 @@
   
 - Applied patch #860795 - fix for indicator setting bug.
 
+- Modified the drawing routines for Plot::drawXGrid, Plot::getXFromDate to increase speed.
+
+- Added ability to print charts from pulldown and chart popup menus. Have not tested this, hope it works properly...
 
 
 0.22

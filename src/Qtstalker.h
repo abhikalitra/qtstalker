@@ -82,6 +82,7 @@ class QtstalkerApp : public QMainWindow
     void initPortfolioNav();
     void initTestNav();
     void initIndicatorNav ();
+    void initScannerNav ();
     QString getWindowCaption ();
     void setChartType (int);
     void loadChart (QString);
@@ -126,6 +127,8 @@ class QtstalkerApp : public QMainWindow
     void slotPlotDate (bool);
     void slotPlotLeftMouseButton (int, int, bool);
     void slotPlotKeyPressed (QKeyEvent *);
+    void slotPrintMainChart ();
+    void slotPrintTabbedChart ();
 
   private:
     QPopupMenu *fileMenu;
@@ -153,6 +156,8 @@ class QtstalkerApp : public QMainWindow
     QAction *actionLogScale;
     QAction *actionHideMainPlot;
     QAction *actionPlotDate;
+    QAction *actionPrintMain;
+    QAction *actionPrintTabbed;
 
     QToolBar *toolbar;
     QToolBar *toolbar2;

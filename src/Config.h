@@ -69,7 +69,8 @@ class Config
       Height,
       Width,
       X,
-      Y
+      Y,
+      ScannerPath
     };
 
     Config (QString);

@@ -44,6 +44,7 @@
 #include "IndicatorPage.h"
 #include "NewIndicatorDialog.h"
 #include "PlotLine.h"
+//#include "ScannerPage.h"
 
 #include "grid.xpm"
 #include "datawindow.xpm"
@@ -71,6 +72,8 @@
 #include "loggrid.xpm"
 #include "hidechart.xpm"
 #include "date.xpm"
+//#include "scanner.xpm"
+#include "print.xpm"
 
 QtstalkerApp::QtstalkerApp()
 {
@@ -274,6 +277,7 @@ QtstalkerApp::QtstalkerApp()
   initIndicatorNav();
   initPortfolioNav();
   initTestNav();
+//  initScannerNav();
 
   resize(config->getData(Config::Width).toInt(), config->getData(Config::Height).toInt());
 }
@@ -346,6 +350,17 @@ void QtstalkerApp::initActions()
   actionPlotDate->setStatusTip(tr("Toggle indicator date."));
   connect(actionPlotDate, SIGNAL(toggled(bool)), this, SLOT(slotPlotDate(bool)));
 
+  icon = print;
+  actionPrintMain = new QAction(tr("Print Main Chart"), icon, tr("Print Main Chart"), 0, this);
+  actionPrintMain->setStatusTip(tr("Print main chart."));
+  actionPrintMain->setEnabled(FALSE);
+  connect(actionPrintMain, SIGNAL(activated()), this, SLOT(slotPrintMainChart()));
+
+  actionPrintTabbed = new QAction(tr("Print Tabbed Chart"), icon, tr("Print Tabbed Chart"), 0, this);
+  actionPrintTabbed->setStatusTip(tr("Print tabbed chart."));
+  actionPrintTabbed->setEnabled(FALSE);
+  connect(actionPrintTabbed, SIGNAL(activated()), this, SLOT(slotPrintTabbedChart()));
+
 //  QAction *action = new QAction(QString::null, icon, QString::null, CTRL+Key_M, this);
 //  connect(action, SIGNAL(activated()), this, SLOT(slotMainPlotFocus()));
 
@@ -356,6 +371,8 @@ void QtstalkerApp::initActions()
 void QtstalkerApp::initMenuBar()
 {
   fileMenu = new QPopupMenu();
+  actionPrintMain->addTo(fileMenu);
+  actionPrintTabbed->addTo(fileMenu);
   fileMenu->insertSeparator();
   actionQuit->addTo(fileMenu);
 
@@ -417,6 +434,10 @@ void QtstalkerApp::initMenuBar()
 
   chartMenu->insertItem (QPixmap(edit), tr("Edit Chart Object"), chartObjectEditMenu);
   chartMenu->insertItem (QPixmap(deletefile), tr("Delete Chart Object"), chartObjectDeleteMenu);
+
+  chartMenu->insertSeparator ();
+  chartMenu->insertItem(QPixmap(print), tr("Print Main Chart"), this, SLOT(slotPrintMainChart()));
+  chartMenu->insertItem(QPixmap(print), tr("Print Tabbed Chart"), this, SLOT(slotPrintTabbedChart()));
 }
 
 void QtstalkerApp::initToolBar()
@@ -515,6 +536,8 @@ void QtstalkerApp::slotOpenChart (QString selection)
   actionDatawindow->setEnabled(TRUE);
   actionNewIndicator->setEnabled(TRUE);
   barCombo->setEnabled(TRUE);
+  actionPrintMain->setEnabled(TRUE);
+  actionPrintTabbed->setEnabled(TRUE);
   status = Chart;
   qApp->processEvents();
   loadChart(selection);
@@ -1726,6 +1749,15 @@ void QtstalkerApp::initIndicatorNav ()
   connect(this, SIGNAL(signalIndicatorPageRefresh()), ip, SLOT(refreshList()));
 }
 
+void QtstalkerApp::initScannerNav ()
+{
+/*
+  ScannerPage *sp = new ScannerPage(baseWidget, config);
+  navTab->addTab(sp, QIconSet(QPixmap(scanner)), QString::null);
+  navTab->setTabToolTip(sp, tr("Workwith Scanners"));
+*/
+}
+
 void QtstalkerApp::slotHideNav (bool d)
 {
   actionNav->setOn(d);
@@ -1834,6 +1866,26 @@ void QtstalkerApp::slotPlotKeyPressed (QKeyEvent *key)
       break;
     default:
       break;
+  }
+}
+
+void QtstalkerApp::slotPrintMainChart ()
+{
+  if (status == None)
+    return;
+
+  mainPlot->print();
+}
+
+void QtstalkerApp::slotPrintTabbedChart ()
+{
+  if (status == None)
+    return;
+
+  if (plotList.count())
+  {
+    Plot *plot = plotList[tabs->label(tabs->currentPageIndex())];
+    plot->print();
   }
 }
 
