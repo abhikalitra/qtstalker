@@ -60,7 +60,7 @@ void CBOT::download ()
   s2.insert(7, "-");
   s2.append("00:00:00");
   QDateTime sdate = QDateTime::fromString(s2, Qt::ISODate);
-
+  
   if (sdate.date().month() < 10)
     s.append("0");
   s.append(QString::number(sdate.date().month()));
