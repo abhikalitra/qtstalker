@@ -122,7 +122,6 @@ void Candle::drawQSCandles (QPixmap &buffer, Scaler &scaler, int startX, int sta
 {
   QPainter painter;
   painter.begin(&buffer);
-  painter.setPen(qsNeutralColor);
 
   int x = startX;
   int loop = startIndex;
@@ -134,63 +133,27 @@ void Candle::drawQSCandles (QPixmap &buffer, Scaler &scaler, int startX, int sta
       w = 1;
   }
   
-  int h = scaler.convertToY(data->getHigh(loop));
-  int l = scaler.convertToY(data->getLow(loop));
-  int c = scaler.convertToY(data->getClose(loop));
-  int o = scaler.convertToY(data->getOpen(loop));
-
-  if (data->getOpen(loop) != 0)
-  {
-    if (c < o)
-    {
-      if (expandCandles)
-        painter.drawRect(x - w, c, 1+2*w, o - c);
-      else
-        painter.drawRect(x - 2, c, 5, o - c);
-	
-      painter.drawLine (x, h, x, c);
-      painter.drawLine (x, o, x, l);
-    }
-    else
-    {
-      painter.drawLine (x, h, x, l);
-    
-      if (c == o)
-      {
-        if (expandCandles)
-          painter.drawLine (x - w, o, x + w, o);
-	else
-          painter.drawLine (x - 2, o, x + 2, o);
-      }
-      else
-      {
-        if (expandCandles)
-          painter.fillRect(x - w, o, 1+2*w, c - o, painter.pen().color());
-	else
-          painter.fillRect(x - 2, o, 5, c - o, painter.pen().color());
-      }
-    }
-  }
-
-  loop++;
-  x = x + pixelspace;
-
   while ((x < buffer.width()) && (loop < (int) data->count()))
   {
-    if (data->getClose(loop) > data->getClose(loop - 1))
-      painter.setPen(qsUpColor);
-    else
+    if (loop > 0)
     {
-      if (data->getClose(loop) < data->getClose(loop - 1))
-        painter.setPen(qsDownColor);
+      if (data->getClose(loop) > data->getClose(loop - 1))
+        painter.setPen(qsUpColor);
       else
-        painter.setPen(qsNeutralColor);
+      {
+        if (data->getClose(loop) < data->getClose(loop - 1))
+          painter.setPen(qsDownColor);
+        else
+          painter.setPen(qsNeutralColor);
+      }
     }
+    else
+      painter.setPen(qsNeutralColor);
 
-    h = scaler.convertToY(data->getHigh(loop));
-    l = scaler.convertToY(data->getLow(loop));
-    c = scaler.convertToY(data->getClose(loop));
-    o = scaler.convertToY(data->getOpen(loop));
+    int h = scaler.convertToY(data->getHigh(loop));
+    int l = scaler.convertToY(data->getLow(loop));
+    int c = scaler.convertToY(data->getClose(loop));
+    int o = scaler.convertToY(data->getOpen(loop));
 
     if (data->getOpen(loop) != 0)
     {

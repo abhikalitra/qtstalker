@@ -316,7 +316,9 @@ BarData::InputType BarData::getInputType (QString &d)
 void BarData::getBarCompressionList (QStringList &l)
 {
   l.clear();
+  l.append(QObject::tr("1 Minute"));
   l.append(QObject::tr("5 Minute"));
+  l.append(QObject::tr("10 Minute"));
   l.append(QObject::tr("15 Minute"));
   l.append(QObject::tr("30 Minute"));
   l.append(QObject::tr("60 Minute"));
@@ -347,4 +349,13 @@ void BarData::deleteBar (int i)
 {
   barList.remove(i);
 }
+
+void BarData::clear ()
+{
+  high = -99999999;
+  low = 99999999;
+  dateList.clear();
+  barList.clear();
+}
+
 

@@ -56,6 +56,16 @@ class FuturesData
     QStringList monthList;
     float rate;
     QDict<Setting> data;
+    QString nameKey;
+    QString symbolKey;
+    QString rateKey;
+    QString monthKey;
+    QString exchangeKey;
+    QString limitKey;
+    QString cme;
+    QString cbot;
+    QString nymex;
+    QString nybot;
 };
 
 #endif

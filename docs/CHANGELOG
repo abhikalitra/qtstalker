@@ -263,7 +263,15 @@
           I will return it once there is a way to chart the data without having to create
 	  a chart plugin for it.
 	  
+20050320: Added the qtstalker_pl.qm file to i18n dir. Added a *.qm install procedure to the
+          docs .pro file. It will create a /usr/share/qtstalker/i18n dir and copy all the
+	  *.qm files there. Translations are now activated on a 'make install'. Cmon folks
+	  lets see those translation files now!
 	  
+20050321: Added 1 and 10 minute bar chart options.
+
+	  
+	  	  
 	  	  
 0.29
 ====

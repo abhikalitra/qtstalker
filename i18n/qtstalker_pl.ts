@@ -7,11 +7,11 @@
     </message>
     <message>
         <source>Bar</source>
-        <translation>Słupek</translation>
+        <translation type="obsolete">Słupek</translation>
     </message>
     <message>
         <source>Paint Bar</source>
-        <translation>Słupek Malowany</translation>
+        <translation type="obsolete">Słupek Malowany</translation>
     </message>
     <message>
         <source>Style</source>
@@ -51,14 +51,50 @@
     </message>
     <message>
         <source>Paint Bars</source>
-        <translation>Słupki malowane</translation>
+        <translation>Słupki Malowane</translation>
+    </message>
+</context>
+<context>
+    <name>BarEdit</name>
+    <message>
+        <source>Delete Record</source>
+        <translation>Usuń Rekord</translation>
+    </message>
+    <message>
+        <source>Save Record</source>
+        <translation>Zapisz Rekord</translation>
+    </message>
+    <message>
+        <source>Search</source>
+        <translation>Szukaj</translation>
+    </message>
+    <message>
+        <source>Date</source>
+        <translation>Data</translation>
+    </message>
+    <message>
+        <source>Delete record.</source>
+        <translation>Usuń rekord.</translation>
+    </message>
+    <message>
+        <source>Are you sure you want to delete record?</source>
+        <translation>Czy oby na pewno chcesz usunąć ten rekord?</translation>
+    </message>
+    <message>
+        <source>Warning</source>
+        <translation>Ostrzeżenie</translation>
+    </message>
+    <message>
+        <source>Record has been modified.
+Save changes?</source>
+        <translation>Dokonano modyfikacji rekordu. Zapisać?</translation>
     </message>
 </context>
 <context>
     <name>Bars</name>
     <message>
         <source>Bar</source>
-        <translation>Słupek</translation>
+        <translation type="obsolete">Słupek</translation>
     </message>
     <message>
         <source>Qtstalker: Error</source>
@@ -108,11 +144,11 @@
     <name>CME</name>
     <message>
         <source>Today</source>
-        <translation>Dziś</translation>
+        <translation type="obsolete">Dziś</translation>
     </message>
     <message>
         <source>Download error: bailing out</source>
-        <translation>Błąd pobierania: uwalnianie</translation>
+        <translation type="obsolete">Błąd pobierania: uwalnianie</translation>
     </message>
     <message>
         <source>Done</source>
@@ -120,7 +156,7 @@
     </message>
     <message>
         <source>Downloading</source>
-        <translation>Pobieranie</translation>
+        <translation type="obsolete">Pobieranie</translation>
     </message>
     <message>
         <source>Updating </source>
@@ -142,40 +178,80 @@
         <source>Symbol</source>
         <translation>Symbol</translation>
     </message>
+    <message>
+        <source>Downloading </source>
+        <translation>Pobieranie</translation>
+    </message>
+    <message>
+        <source>Timeout: retry limit skipping file</source>
+        <translation>Czas: wyczerpano próby, pomijanie pliku</translation>
+    </message>
+    <message>
+        <source>Timeout: retry </source>
+        <translation>Czas: ponowna próba</translation>
+    </message>
+    <message>
+        <source>could not open parse history file</source>
+        <translation>nie można otworzyć pliku historii składni</translation>
+    </message>
+    <message>
+        <source>Unable to create futures directory</source>
+        <translation>Nie można utworzyć katalogu kontraktów</translation>
+    </message>
+    <message>
+        <source>Could not open db.</source>
+        <translation>Nie można otworzyć bazy.</translation>
+    </message>
+    <message>
+        <source> - skipping update. Source does not match destination.</source>
+        <translation>- pomijanie aktualizacji. Źródło nie pasuje do miejsca docelowego.</translation>
+    </message>
+    <message>
+        <source>Canceled</source>
+        <translation>Anulowano</translation>
+    </message>
+    <message>
+        <source>Retry</source>
+        <translation>Wznawianie</translation>
+    </message>
+    <message>
+        <source>Timeout</source>
+        <translation>Wygasanie</translation>
+    </message>
 </context>
 <context>
     <name>COT</name>
     <message>
         <source>Downloading</source>
-        <translation>Pobieranie</translation>
+        <translation type="obsolete">Pobieranie</translation>
     </message>
     <message>
         <source>Done</source>
-        <translation>Zrobione</translation>
+        <translation type="obsolete">Zrobione</translation>
     </message>
     <message>
         <source>Download error</source>
-        <translation>Błąd Pobierania</translation>
+        <translation type="obsolete">Błąd Pobierania</translation>
     </message>
     <message>
         <source>Updating </source>
-        <translation>Aktualizacja</translation>
+        <translation type="obsolete">Aktualizacja</translation>
     </message>
     <message>
         <source>Cancelled</source>
-        <translation>Anulowano</translation>
+        <translation type="obsolete">Anulowano</translation>
     </message>
     <message>
         <source>COT Prefs</source>
-        <translation>Pref COT</translation>
+        <translation type="obsolete">Pref COT</translation>
     </message>
     <message>
         <source>Details</source>
-        <translation>Szczegóły</translation>
+        <translation type="obsolete">Szczegóły</translation>
     </message>
     <message>
         <source>Format</source>
-        <translation>Format</translation>
+        <translation type="obsolete">Format</translation>
     </message>
 </context>
 <context>
@@ -202,19 +278,19 @@
     </message>
     <message>
         <source>Comma</source>
-        <translation>Przecinek</translation>
+        <translation type="obsolete">Przecinek</translation>
     </message>
     <message>
         <source>Tab</source>
-        <translation>Tabulator</translation>
+        <translation type="obsolete">Tabulator</translation>
     </message>
     <message>
         <source>Space</source>
-        <translation>Spacja</translation>
+        <translation type="obsolete">Spacja</translation>
     </message>
     <message>
         <source>Semicolon</source>
-        <translation>Średnik</translation>
+        <translation type="obsolete">Średnik</translation>
     </message>
     <message>
         <source>CSV Prefs</source>
@@ -273,27 +349,207 @@
     </message>
     <message>
         <source>Save Rule</source>
-        <translation>Zapisz Regułę</translation>
+        <translation type="obsolete">Zapisz Regułę</translation>
     </message>
     <message>
         <source>Insert Field</source>
-        <translation>Wprowadź Pole</translation>
+        <translation type="obsolete">Wprowadź Pole</translation>
     </message>
     <message>
         <source>Delete Field</source>
-        <translation>Wymaż Pole</translation>
+        <translation type="obsolete">Wymaż Pole</translation>
+    </message>
+    <message>
+        <source>Chart Type:</source>
+        <translation type="obsolete">Styl Wykresu:</translation>
+    </message>
+    <message>
+        <source>Stocks</source>
+        <translation type="obsolete">Akcje</translation>
+    </message>
+    <message>
+        <source>Futures</source>
+        <translation type="obsolete">Kontrakty</translation>
+    </message>
+    <message>
+        <source>Delimiter:</source>
+        <translation type="obsolete">Przedziałka:</translation>
+    </message>
+    <message>
+        <source>Comma</source>
+        <translation type="obsolete">Przecinek</translation>
+    </message>
+    <message>
+        <source>Tab</source>
+        <translation type="obsolete">Tabulator</translation>
+    </message>
+    <message>
+        <source>Space</source>
+        <translation type="obsolete">Spacja</translation>
+    </message>
+    <message>
+        <source>Semicolon</source>
+        <translation type="obsolete">Średnik</translation>
+    </message>
+    <message>
+        <source>Fields:</source>
+        <translation type="obsolete">Pola:</translation>
+    </message>
+    <message>
+        <source>Date:YYYYMMDD</source>
+        <translation type="obsolete">Data:RRRRMMDD</translation>
+    </message>
+    <message>
+        <source>Date:YYMMDD</source>
+        <translation type="obsolete">Data:RRMMDD</translation>
+    </message>
+    <message>
+        <source>Date:MMDDYY</source>
+        <translation type="obsolete">Data:MMDDRR</translation>
+    </message>
+    <message>
+        <source>Date:MMDDYYYY</source>
+        <translation type="obsolete">Data:MMDDRRRR</translation>
+    </message>
+    <message>
+        <source>Date:DDMMYYYY</source>
+        <translation type="obsolete">Data:DDMMRRRR</translation>
+    </message>
+    <message>
+        <source>Date:MMDDYYYYHHMMSS</source>
+        <translation type="obsolete">Data:MMDDRRRRGGMMSS</translation>
+    </message>
+    <message>
+        <source>Time</source>
+        <translation type="obsolete">Czas</translation>
+    </message>
+    <message>
+        <source>Symbol</source>
+        <translation type="obsolete">Symbol</translation>
+    </message>
+    <message>
+        <source>Open</source>
+        <translation type="obsolete">Pierwszy</translation>
+    </message>
+    <message>
+        <source>High</source>
+        <translation type="obsolete">Maks</translation>
+    </message>
+    <message>
+        <source>Low</source>
+        <translation type="obsolete">Min</translation>
+    </message>
+    <message>
+        <source>Close</source>
+        <translation type="obsolete">Ostatni</translation>
+    </message>
+    <message>
+        <source>Volume</source>
+        <translation type="obsolete">Wolumen</translation>
+    </message>
+    <message>
+        <source>OI</source>
+        <translation type="obsolete">LOP</translation>
+    </message>
+    <message>
+        <source>Ignore</source>
+        <translation type="obsolete">Ignoruj</translation>
+    </message>
+    <message>
+        <source>Name</source>
+        <translation type="obsolete">Nazwa</translation>
+    </message>
+    <message>
+        <source>Rule Contents:</source>
+        <translation type="obsolete">Treść Reguły:</translation>
+    </message>
+    <message>
+        <source>Rule</source>
+        <translation type="obsolete">Reguła</translation>
+    </message>
+    <message>
+        <source>Enter new rule name.</source>
+        <translation>Wprowadź nazwę nowej reguły.</translation>
+    </message>
+    <message>
+        <source>Warning</source>
+        <translation>Ostrzeżenie</translation>
+    </message>
+    <message>
+        <source>This rule already exists.</source>
+        <translation>Taka reguła już istnieje.</translation>
+    </message>
+    <message>
+        <source>Select rule to edit.</source>
+        <translation type="obsolete">Wybierz regułę do edycji.</translation>
+    </message>
+    <message>
+        <source>Are you sure you want to delete this rule?</source>
+        <translation>Czy oby na pewno chcesz wymazać tę regułę?</translation>
+    </message>
+    <message>
+        <source>Data Directory:</source>
+        <translation type="obsolete">Katalog Danych:</translation>
+    </message>
+    <message>
+        <source>Error</source>
+        <translation type="obsolete">Błąd</translation>
+    </message>
+    <message>
+        <source>No sub directories allowed.
+Directory name must be one word only.</source>
+        <translation type="obsolete">Podkatalogi niedozwolone. Nazwa katalogu może składać się tylko z jednego słowa.</translation>
+    </message>
+    <message>
+        <source>No spaces allowed in directory name.</source>
+        <translation type="obsolete">Spacja w nazwie katalogu niedozwolona.</translation>
+    </message>
+    <message>
+        <source>Symbol Filter:</source>
+        <translation type="obsolete">Filtr Symbolu:</translation>
+    </message>
+    <message>
+        <source>Must inlcude a directory.</source>
+        <translation type="obsolete">Trzeba podać katalog.</translation>
+    </message>
+    <message>
+        <source>Invalid directory name.</source>
+        <translation type="obsolete">Nieprawidłowa nazwa katlogu.</translation>
+    </message>
+    <message>
+        <source>NewRule</source>
+        <translation>NowaReguła</translation>
+    </message>
+    <message>
+        <source>Select Rule To Edit</source>
+        <translation>Wybierz Regułę do Edycji</translation>
+    </message>
+    <message>
+        <source>Select Rules To Delete</source>
+        <translation>Wybierz Regułę do Usunięcia</translation>
+    </message>
+    <message>
+        <source>Qtstalker: Warning</source>
+        <translation>Qtstalker: Ostrzeżenie</translation>
+    </message>
+</context>
+<context>
+    <name>CSVRuleDialog</name>
+    <message>
+        <source>&amp;Save</source>
+        <translation>Zapi&amp;sz</translation>
+    </message>
+    <message>
+        <source>Editing CSV Rule: </source>
+        <translation>Edycja Reguły CSV:</translation>
+    </message>
+    <message>
+        <source>Rule:</source>
+        <translation>Reguła:</translation>
     </message>
     <message>
         <source>Chart Type:</source>
         <translation>Styl Wykresu:</translation>
-    </message>
-    <message>
-        <source>Stocks</source>
-        <translation>Akcje</translation>
-    </message>
-    <message>
-        <source>Futures</source>
-        <translation>Kontrakty</translation>
     </message>
     <message>
         <source>Delimiter:</source>
@@ -316,129 +572,52 @@
         <translation>Średnik</translation>
     </message>
     <message>
-        <source>Fields:</source>
-        <translation>Pola:</translation>
-    </message>
-    <message>
-        <source>Date:YYYYMMDD</source>
-        <translation>Data:RRRRMMDD</translation>
-    </message>
-    <message>
-        <source>Date:YYMMDD</source>
-        <translation>Data:RRMMDD</translation>
-    </message>
-    <message>
-        <source>Date:MMDDYY</source>
-        <translation>Data:MMDDRR</translation>
-    </message>
-    <message>
-        <source>Date:MMDDYYYY</source>
-        <translation>Data:MMDDRRRR</translation>
-    </message>
-    <message>
-        <source>Date:DDMMYYYY</source>
-        <translation>Data:DDMMRRRR</translation>
-    </message>
-    <message>
-        <source>Date:MMDDYYYYHHMMSS</source>
-        <translation>Data:MMDDRRRRGGMMSS</translation>
-    </message>
-    <message>
-        <source>Time</source>
-        <translation>Czas</translation>
-    </message>
-    <message>
-        <source>Symbol</source>
-        <translation>Symbol</translation>
-    </message>
-    <message>
-        <source>Open</source>
-        <translation>Pierwszy</translation>
-    </message>
-    <message>
-        <source>High</source>
-        <translation>Maks</translation>
-    </message>
-    <message>
-        <source>Low</source>
-        <translation>Min</translation>
-    </message>
-    <message>
-        <source>Close</source>
-        <translation>Ostatni</translation>
-    </message>
-    <message>
-        <source>Volume</source>
-        <translation>Wolumen</translation>
-    </message>
-    <message>
-        <source>OI</source>
-        <translation>LOP</translation>
-    </message>
-    <message>
-        <source>Ignore</source>
-        <translation>Ignoruj</translation>
-    </message>
-    <message>
-        <source>Name</source>
-        <translation>Nazwa</translation>
-    </message>
-    <message>
-        <source>Rule Contents:</source>
-        <translation>Treść Reguły:</translation>
-    </message>
-    <message>
-        <source>Rule</source>
-        <translation>Reguła</translation>
-    </message>
-    <message>
-        <source>Enter new rule name.</source>
-        <translation>Wprowadź nazwę nowej reguły.</translation>
-    </message>
-    <message>
-        <source>Warning</source>
-        <translation>Ostrzeżenie</translation>
-    </message>
-    <message>
-        <source>This rule already exists.</source>
-        <translation>Taka reguła już istnieje.</translation>
-    </message>
-    <message>
-        <source>Select rule to edit.</source>
-        <translation>Wybierz regułę do edycji.</translation>
-    </message>
-    <message>
-        <source>Are you sure you want to delete this rule?</source>
-        <translation>Czy oby na pewno chcesz wymazać tę regułę?</translation>
-    </message>
-    <message>
         <source>Data Directory:</source>
         <translation>Katalog Danych:</translation>
-    </message>
-    <message>
-        <source>Error</source>
-        <translation>Błąd</translation>
-    </message>
-    <message>
-        <source>No sub directories allowed.
-Directory name must be one word only.</source>
-        <translation type="obsolete">Podkatalogi niedozwolone. Nazwa katalogu może składać się tylko z jednego słowa.</translation>
-    </message>
-    <message>
-        <source>No spaces allowed in directory name.</source>
-        <translation>Spacja w nazwie katalogu niedozwolona.</translation>
     </message>
     <message>
         <source>Symbol Filter:</source>
         <translation>Filtr Symbolu:</translation>
     </message>
     <message>
+        <source>Insert Field</source>
+        <translation>Wprowadź Pole</translation>
+    </message>
+    <message>
+        <source>Delete Field</source>
+        <translation>Wymaż Pole</translation>
+    </message>
+    <message>
+        <source>Rule</source>
+        <translation>Reguła</translation>
+    </message>
+    <message>
+        <source>Error</source>
+        <translation>Błąd</translation>
+    </message>
+    <message>
         <source>Must inlcude a directory.</source>
         <translation>Trzeba podać katalog.</translation>
     </message>
     <message>
+        <source>No spaces allowed in directory name.</source>
+        <translation>Spacja w nazwie katalogu niedozwolona.</translation>
+    </message>
+    <message>
         <source>Invalid directory name.</source>
         <translation>Nieprawidłowa nazwa katlogu.</translation>
+    </message>
+    <message>
+        <source>Disk Error</source>
+        <translation>Błąd Dysku</translation>
+    </message>
+    <message>
+        <source>Cannot save file.</source>
+        <translation>Nie można zapisać pliku.</translation>
+    </message>
+    <message>
+        <source>Cannot read file.</source>
+        <translation>Nie można przeczytać pliku.</translation>
     </message>
 </context>
 <context>
@@ -456,11 +635,11 @@ Directory name must be one word only.</source>
     <name>Candle</name>
     <message>
         <source>Candle</source>
-        <translation>Świeczkowy</translation>
+        <translation type="obsolete">Świeczkowy</translation>
     </message>
     <message>
         <source>Candle QS</source>
-        <translation>Świeczkowy (Kolor.)</translation>
+        <translation type="obsolete">Świeczkowy (Kolor.)</translation>
     </message>
     <message>
         <source>Volume Candle</source>
@@ -579,15 +758,15 @@ Directory name must be one word only.</source>
     </message>
     <message>
         <source>&amp;CC</source>
-        <translation>&amp;KONT</translation>
+        <translation type="obsolete">&amp;KONT</translation>
     </message>
     <message>
         <source>&amp;Index</source>
-        <translation>&amp;Index</translation>
+        <translation type="obsolete">&amp;Index</translation>
     </message>
     <message>
         <source>&amp;Spread</source>
-        <translation>&amp;Spread</translation>
+        <translation type="obsolete">&amp;Spread</translation>
     </message>
     <message>
         <source>&amp;New...</source>
@@ -966,19 +1145,19 @@ Directory name must be one word only.</source>
     </message>
     <message>
         <source>Delete Record</source>
-        <translation>Usuń Rekord</translation>
+        <translation type="obsolete">Usuń Rekord</translation>
     </message>
     <message>
         <source>Save Record</source>
-        <translation>Zapisz Rekord</translation>
+        <translation type="obsolete">Zapisz Rekord</translation>
     </message>
     <message>
         <source>Search</source>
-        <translation>Szukaj</translation>
+        <translation type="obsolete">Szukaj</translation>
     </message>
     <message>
         <source>Date</source>
-        <translation>Data</translation>
+        <translation type="obsolete">Data</translation>
     </message>
     <message>
         <source>Open</source>
@@ -1010,11 +1189,11 @@ Directory name must be one word only.</source>
     </message>
     <message>
         <source>Delete record.</source>
-        <translation>Usuń rekord.</translation>
+        <translation type="obsolete">Usuń rekord.</translation>
     </message>
     <message>
         <source>Are you sure you want to delete record?</source>
-        <translation>Czy oby na pewno chcesz usunąć ten rekord?</translation>
+        <translation type="obsolete">Czy oby na pewno chcesz usunąć ten rekord?</translation>
     </message>
     <message>
         <source>Warning</source>
@@ -1024,6 +1203,14 @@ Directory name must be one word only.</source>
         <source>Record has been modified.
 Save changes?</source>
         <translation>Dokonano modyfikacji rekordu. Zapisać?</translation>
+    </message>
+    <message>
+        <source>First Date</source>
+        <translation>Pierwsza Data</translation>
+    </message>
+    <message>
+        <source>Last Date</source>
+        <translation>Ostatnia Data</translation>
     </message>
 </context>
 <context>
@@ -1212,6 +1399,18 @@ Save changes?</source>
     <message>
         <source>Edit Index Item</source>
         <translation>Edytuj Element Indeksu</translation>
+    </message>
+    <message>
+        <source>Type</source>
+        <translation>Rodzaj</translation>
+    </message>
+    <message>
+        <source>First Date</source>
+        <translation>Pierwsza Data</translation>
+    </message>
+    <message>
+        <source>Last Date</source>
+        <translation>Ostatnia Data</translation>
     </message>
 </context>
 <context>
@@ -1913,7 +2112,7 @@ Save changes?</source>
     <name>PortfolioPage</name>
     <message>
         <source>&amp;New Portfolio<byte value="x9"/>Ctrl+N</source>
-        <translation>&amp;Nowy PortfelCtrl+N</translation>
+        <translation>&amp;Nowy Portfel Ctrl+N</translation>
     </message>
     <message>
         <source>&amp;Open Portfolio<byte value="x9"/><byte value="x9"/>Ctrl+O</source>
@@ -1962,6 +2161,10 @@ Save changes?</source>
     <message>
         <source>Rename Portfolio</source>
         <translation>Zmień Portfel</translation>
+    </message>
+    <message>
+        <source>NewPortfolio</source>
+        <translation>NowyPortfel</translation>
     </message>
 </context>
 <context>
@@ -2035,7 +2238,7 @@ Save changes?</source>
     </message>
     <message>
         <source>Bar</source>
-        <translation>Słupek</translation>
+        <translation type="obsolete">Słupek</translation>
     </message>
     <message>
         <source>Main</source>
@@ -2048,22 +2251,6 @@ Save changes?</source>
     <message>
         <source>Stacked</source>
         <translation>Kaskadowy</translation>
-    </message>
-    <message>
-        <source>EMA</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>SMA</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>WMA</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Wilder</source>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Dot</source>
@@ -2107,11 +2294,11 @@ Save changes?</source>
     </message>
     <message>
         <source>Buy</source>
-        <translation type="unfinished"></translation>
+        <translation>Kupno</translation>
     </message>
     <message>
         <source>Last Date</source>
-        <translation type="unfinished"></translation>
+        <translation>Ostatnia Data</translation>
     </message>
     <message>
         <source>Value</source>
@@ -2135,11 +2322,11 @@ Save changes?</source>
     </message>
     <message>
         <source>Rebuild</source>
-        <translation type="unfinished"></translation>
+        <translation>Odbudowa</translation>
     </message>
     <message>
         <source>New CC</source>
-        <translation type="unfinished"></translation>
+        <translation>Nowy KONT</translation>
     </message>
     <message>
         <source>Select futures symbol to create.</source>
@@ -2155,7 +2342,7 @@ Save changes?</source>
     </message>
     <message>
         <source>This CC already exists.</source>
-        <translation type="unfinished"></translation>
+        <translation>Taki KONT już istnieje.</translation>
     </message>
     <message>
         <source>New Index</source>
@@ -2175,11 +2362,11 @@ Save changes?</source>
     </message>
     <message>
         <source>Subtract</source>
-        <translation>Odjąć</translation>
+        <translation type="obsolete">Odjąć</translation>
     </message>
     <message>
         <source>Divide</source>
-        <translation>Podzielić</translation>
+        <translation type="obsolete">Podzielić</translation>
     </message>
     <message>
         <source>Spread Prefs</source>
@@ -2246,36 +2433,16 @@ Save changes?</source>
         <translation>Rodzaj Wygładzania</translation>
     </message>
     <message>
-        <source>Upper</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Lower</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>BBM</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>BBU</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>BBL</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>BB Indicator</source>
-        <translation type="unfinished"></translation>
+        <translation>Wskaźnik BB</translation>
     </message>
     <message>
         <source>Period</source>
-        <translation type="unfinished"></translation>
+        <translation>Okres</translation>
     </message>
     <message>
         <source>Deviation</source>
-        <translation type="unfinished"></translation>
+        <translation>Dewiacja</translation>
     </message>
     <message>
         <source>MA Type</source>
@@ -2287,31 +2454,31 @@ Save changes?</source>
     </message>
     <message>
         <source>CCI Indicator</source>
-        <translation type="unfinished"></translation>
+        <translation>Wskaźnik CCI</translation>
     </message>
     <message>
         <source>COMP Indicator</source>
-        <translation type="unfinished"></translation>
+        <translation>Wskaźnik COMP</translation>
     </message>
     <message>
         <source>Data1</source>
-        <translation type="unfinished"></translation>
+        <translation>Dane1</translation>
     </message>
     <message>
         <source>Delay1</source>
-        <translation type="unfinished"></translation>
+        <translation>Zwłoka1</translation>
     </message>
     <message>
         <source>Data2</source>
-        <translation type="unfinished"></translation>
+        <translation>Dane2</translation>
     </message>
     <message>
         <source>Delay2</source>
-        <translation type="unfinished"></translation>
+        <translation>Zwłoka2</translation>
     </message>
     <message>
         <source>COUNTER Indicator</source>
-        <translation type="unfinished"></translation>
+        <translation>Wskaźnik COUNTER</translation>
     </message>
     <message>
         <source>Input</source>
@@ -2319,87 +2486,63 @@ Save changes?</source>
     </message>
     <message>
         <source>Reset</source>
-        <translation type="unfinished"></translation>
+        <translation>Zerowanie</translation>
     </message>
     <message>
         <source>No step checked to plot.</source>
-        <translation type="unfinished"></translation>
+        <translation>Brak zaznaczonych kroków do kreślenia.</translation>
     </message>
     <message>
         <source>DMI Indicator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>DMI</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>+DM</source>
-        <translation type="unfinished"></translation>
+        <translation>Wskaźnik DMI</translation>
     </message>
     <message>
         <source>+DM Color</source>
-        <translation type="unfinished"></translation>
+        <translation>Kolor +DM</translation>
     </message>
     <message>
         <source>+DM Label</source>
-        <translation type="unfinished"></translation>
+        <translation>Etykieta +DM</translation>
     </message>
     <message>
         <source>+DM Line Type</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>-DM</source>
-        <translation type="unfinished"></translation>
+        <translation>Styl Krzywej +DM</translation>
     </message>
     <message>
         <source>-DM Color</source>
-        <translation type="unfinished"></translation>
+        <translation>Kolor -DM</translation>
     </message>
     <message>
         <source>-DM Label</source>
-        <translation type="unfinished"></translation>
+        <translation>Etykieta -DM</translation>
     </message>
     <message>
         <source>-DM Line Type</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>ADX</source>
-        <translation type="unfinished"></translation>
+        <translation>Styl Krzywej -DM</translation>
     </message>
     <message>
         <source>ADX Color</source>
-        <translation type="unfinished"></translation>
+        <translation>Kolor ADX</translation>
     </message>
     <message>
         <source>ADX Label</source>
-        <translation type="unfinished"></translation>
+        <translation>Etykieta ADX</translation>
     </message>
     <message>
         <source>ADX Line Type</source>
-        <translation type="unfinished"></translation>
+        <translation>Styl Krzywej ADX</translation>
     </message>
     <message>
         <source>DPO Indicator</source>
-        <translation type="unfinished"></translation>
+        <translation>Wskaźnik DPO</translation>
     </message>
     <message>
         <source>FI Indicator</source>
-        <translation type="unfinished"></translation>
+        <translation>Wskaźnik FI</translation>
     </message>
     <message>
         <source>LOWPASS Indicator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>freq</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>width</source>
-        <translation type="unfinished"></translation>
+        <translation>Wskaźnik LOWPASS</translation>
     </message>
     <message>
         <source>MA Indicator</source>
@@ -2411,7 +2554,7 @@ Save changes?</source>
     </message>
     <message>
         <source>MACD</source>
-        <translation>MACD</translation>
+        <translation type="obsolete">MACD</translation>
     </message>
     <message>
         <source>MACD Color</source>
@@ -2443,47 +2586,47 @@ Save changes?</source>
     </message>
     <message>
         <source>Trigger</source>
-        <translation type="unfinished"></translation>
+        <translation>Sygnalna</translation>
     </message>
     <message>
         <source>Trigger Color</source>
-        <translation type="unfinished"></translation>
+        <translation>Kolor Sygnalnej</translation>
     </message>
     <message>
         <source>Trigger Period</source>
-        <translation type="unfinished"></translation>
+        <translation>Okres Sygnalnej</translation>
     </message>
     <message>
         <source>Trigger Label</source>
-        <translation type="unfinished"></translation>
+        <translation>Etykieta Sygnalnej</translation>
     </message>
     <message>
         <source>Trigger Line Type</source>
-        <translation type="unfinished"></translation>
+        <translation>Styl Krzywej Sygnalnej</translation>
     </message>
     <message>
         <source>Osc</source>
-        <translation type="unfinished"></translation>
+        <translation>Oscylator</translation>
     </message>
     <message>
         <source>Osc Color</source>
-        <translation type="unfinished"></translation>
+        <translation>Kolor Osc</translation>
     </message>
     <message>
         <source>Osc Label</source>
-        <translation type="unfinished"></translation>
+        <translation>Etykieta Osc</translation>
     </message>
     <message>
         <source>Osc Line Type</source>
-        <translation type="unfinished"></translation>
+        <translation>Styl Krzywej Osc</translation>
     </message>
     <message>
         <source>Osc Scaling Max</source>
-        <translation type="unfinished"></translation>
+        <translation>Maks Skalowania Osc</translation>
     </message>
     <message>
         <source>MAOSC Indicator</source>
-        <translation type="unfinished"></translation>
+        <translation>Wskaźnik MAOSC</translation>
     </message>
     <message>
         <source>Fast MA Type</source>
@@ -2495,159 +2638,151 @@ Save changes?</source>
     </message>
     <message>
         <source>ADD</source>
-        <translation>DODAWAJ</translation>
+        <translation type="obsolete">DODAWAJ</translation>
     </message>
     <message>
         <source>DIV</source>
-        <translation>DZIEL</translation>
+        <translation type="obsolete">DZIEL</translation>
     </message>
     <message>
         <source>MUL</source>
-        <translation>MNÓŻ</translation>
+        <translation type="obsolete">MNÓŻ</translation>
     </message>
     <message>
         <source>SUB</source>
-        <translation>ODEJMUJ</translation>
-    </message>
-    <message>
-        <source>MIN</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>MAX</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">ODEJMUJ</translation>
     </message>
     <message>
         <source>Select MATH Function</source>
-        <translation type="unfinished"></translation>
+        <translation>Wybierz Funkcję MATH</translation>
     </message>
     <message>
         <source>Select MATH function</source>
-        <translation type="unfinished"></translation>
+        <translation>Wybierz Funkcję MATH</translation>
     </message>
     <message>
         <source>MATH Indicator</source>
-        <translation type="unfinished"></translation>
+        <translation>Wskaźnik MATH</translation>
     </message>
     <message>
         <source>Data3</source>
-        <translation type="unfinished"></translation>
+        <translation>Dane3</translation>
     </message>
     <message>
         <source>Data4</source>
-        <translation type="unfinished"></translation>
+        <translation>Dane4</translation>
     </message>
     <message>
         <source>Data5</source>
-        <translation type="unfinished"></translation>
+        <translation>Dane5</translation>
     </message>
     <message>
         <source>MF Indicator</source>
-        <translation type="unfinished"></translation>
+        <translation>Wskaźnik MF</translation>
     </message>
     <message>
         <source>MOM Indicator</source>
-        <translation type="unfinished"></translation>
+        <translation>Wskaźnik MOM</translation>
     </message>
     <message>
         <source>PER Indicator</source>
-        <translation type="unfinished"></translation>
+        <translation>Wskaźnik PER</translation>
     </message>
     <message>
         <source>PP FS</source>
-        <translation type="unfinished"></translation>
+        <translation>PP 1Wsp</translation>
     </message>
     <message>
         <source>PP SS</source>
-        <translation type="unfinished"></translation>
+        <translation>PP 2Wsp</translation>
     </message>
     <message>
         <source>PP TS</source>
-        <translation type="unfinished"></translation>
+        <translation>PP 3Wsp</translation>
     </message>
     <message>
         <source>PP FR</source>
-        <translation type="unfinished"></translation>
+        <translation>PP 1Opór</translation>
     </message>
     <message>
         <source>PP SR</source>
-        <translation type="unfinished"></translation>
+        <translation>PP 2Opór</translation>
     </message>
     <message>
         <source>PP TR</source>
-        <translation type="unfinished"></translation>
+        <translation>PP 3Opór</translation>
     </message>
     <message>
         <source>PP Indicator</source>
-        <translation type="unfinished"></translation>
+        <translation>Wskaźnik PP</translation>
     </message>
     <message>
         <source>Support</source>
-        <translation type="unfinished"></translation>
+        <translation>Wsparcie</translation>
     </message>
     <message>
         <source>Support Color</source>
-        <translation type="unfinished"></translation>
+        <translation>Kolor Wsparcia</translation>
     </message>
     <message>
         <source>Support Line Type</source>
-        <translation type="unfinished"></translation>
+        <translation>Styl Krzywej Wsparcia</translation>
     </message>
     <message>
         <source>Label First Support</source>
-        <translation type="unfinished"></translation>
+        <translation>Etykieta Wsparcia 1</translation>
     </message>
     <message>
         <source>Label Second Support</source>
-        <translation type="unfinished"></translation>
+        <translation>Etykieta Wsparcia 2</translation>
     </message>
     <message>
         <source>Label Third Support</source>
-        <translation type="unfinished"></translation>
+        <translation>Etykieta Wsparcia 3</translation>
     </message>
     <message>
         <source>Resistance</source>
-        <translation type="unfinished"></translation>
+        <translation>Opór</translation>
     </message>
     <message>
         <source>Resistance Color</source>
-        <translation type="unfinished"></translation>
+        <translation>Kolor Oporu</translation>
     </message>
     <message>
         <source>Resistance Line Type</source>
-        <translation type="unfinished"></translation>
+        <translation>Styl Krzywej Oporu</translation>
     </message>
     <message>
         <source>Label First Resistance</source>
-        <translation type="unfinished"></translation>
+        <translation>Etykieta Oporu 1</translation>
     </message>
     <message>
         <source>Label Second Resistance</source>
-        <translation type="unfinished"></translation>
+        <translation>Etykieta Oporu 2</translation>
     </message>
     <message>
         <source>Label Third Resistance</source>
-        <translation type="unfinished"></translation>
+        <translation>Etykieta Oporu 3</translation>
     </message>
     <message>
         <source>REF Indicator</source>
-        <translation type="unfinished"></translation>
+        <translation>Wskaźnik REF</translation>
     </message>
     <message>
         <source>ROC Indicator</source>
-        <translation type="unfinished"></translation>
+        <translation>Wskaźnik ROC</translation>
     </message>
     <message>
         <source>RSI Indicator</source>
-        <translation type="unfinished"></translation>
+        <translation>Wskaźnik RSI</translation>
     </message>
     <message>
         <source>Buy Line</source>
-        <translation>Linia Kupuj</translation>
+        <translation type="obsolete">Linia Kupuj</translation>
     </message>
     <message>
         <source>Sell Line</source>
-        <translation>Linia Sprzedaj</translation>
+        <translation type="obsolete">Linia Sprzedaj</translation>
     </message>
     <message>
         <source>SAR Indicator</source>
@@ -2655,15 +2790,15 @@ Save changes?</source>
     </message>
     <message>
         <source>Initial</source>
-        <translation type="unfinished"></translation>
+        <translation>Początkowy</translation>
     </message>
     <message>
         <source>Add</source>
-        <translation type="unfinished">Dodaj</translation>
+        <translation>Dodaj</translation>
     </message>
     <message>
         <source>Limit</source>
-        <translation type="unfinished"></translation>
+        <translation>Limit</translation>
     </message>
     <message>
         <source>SD Indicator</source>
@@ -2675,63 +2810,63 @@ Save changes?</source>
     </message>
     <message>
         <source>%K Parms</source>
-        <translation type="unfinished"></translation>
+        <translation>Param %K</translation>
     </message>
     <message>
         <source>%K Color</source>
-        <translation type="unfinished"></translation>
+        <translation>Kolor %K</translation>
     </message>
     <message>
         <source>%K Line Type</source>
-        <translation type="unfinished"></translation>
+        <translation>Styl Krzywej %K</translation>
     </message>
     <message>
         <source>%K Label</source>
-        <translation type="unfinished"></translation>
+        <translation>Etykieta %K</translation>
     </message>
     <message>
         <source>%K Smoothing</source>
-        <translation type="unfinished"></translation>
+        <translation>Wygładzanie %K</translation>
     </message>
     <message>
         <source>%D Parms</source>
-        <translation type="unfinished"></translation>
+        <translation>Param %D</translation>
     </message>
     <message>
         <source>%D Color</source>
-        <translation type="unfinished"></translation>
+        <translation>Kolor %D</translation>
     </message>
     <message>
         <source>%D Line Type</source>
-        <translation type="unfinished"></translation>
+        <translation>Styl Krzywej %D</translation>
     </message>
     <message>
         <source>%D Label</source>
-        <translation type="unfinished"></translation>
+        <translation>Etykieta %D</translation>
     </message>
     <message>
         <source>%D Smoothing</source>
-        <translation type="unfinished"></translation>
+        <translation>Wygładzanie %D</translation>
     </message>
     <message>
         <source>SYMBOL Indicator</source>
-        <translation type="unfinished"></translation>
+        <translation>Wskaźnik SYMBOL</translation>
     </message>
     <message>
         <source>Long</source>
-        <translation type="unfinished">Długa</translation>
+        <translation type="obsolete">Długa</translation>
     </message>
     <message>
         <source>Short</source>
-        <translation type="unfinished">Krótka</translation>
+        <translation type="obsolete">Krótka</translation>
     </message>
     <message>
         <source>SZ LONG</source>
-        <translation type="unfinished"></translation>
+        <translation>DŁUGA SZ</translation>
     </message>
     <message>
         <source>SZ SHORT</source>
-        <translation type="unfinished"></translation>
+        <translation>KRÓTKA SZ</translation>
     </message>
     <message>
         <source>SZ Indicator</source>
@@ -2739,31 +2874,31 @@ Save changes?</source>
     </message>
     <message>
         <source>Position</source>
-        <translation type="unfinished"></translation>
+        <translation>Pozycja</translation>
     </message>
     <message>
         <source>Lookback Period</source>
-        <translation type="unfinished"></translation>
+        <translation>Okres Wsteczny</translation>
     </message>
     <message>
         <source>No Decline Period</source>
-        <translation type="unfinished"></translation>
+        <translation>Okres Bez Spadku</translation>
     </message>
     <message>
         <source>Coefficient</source>
-        <translation type="unfinished"></translation>
+        <translation>Współczynnik</translation>
     </message>
     <message>
         <source>THERM MA</source>
-        <translation type="unfinished"></translation>
+        <translation>ŚK THERM</translation>
     </message>
     <message>
         <source>THERM Indicator</source>
-        <translation type="unfinished"></translation>
+        <translation>Wskaźnik THERM</translation>
     </message>
     <message>
         <source>THERM Parms</source>
-        <translation type="unfinished"></translation>
+        <translation>Param THERM</translation>
     </message>
     <message>
         <source>Color Above MA</source>
@@ -2803,23 +2938,23 @@ Save changes?</source>
     </message>
     <message>
         <source>TRIX Trig</source>
-        <translation type="unfinished"></translation>
+        <translation>Sygnalna TRIX</translation>
     </message>
     <message>
         <source>TRIX Indicator</source>
-        <translation type="unfinished"></translation>
+        <translation>Wskaźnik TRIX</translation>
     </message>
     <message>
         <source>Trigger Parms</source>
-        <translation type="unfinished"></translation>
+        <translation>Param Sygnalnej</translation>
     </message>
     <message>
         <source>Trigger Type</source>
-        <translation type="unfinished"></translation>
+        <translation>Styl Sygnalnej</translation>
     </message>
     <message>
         <source>UO Indicator</source>
-        <translation type="unfinished"></translation>
+        <translation>Wskaźnik UO</translation>
     </message>
     <message>
         <source>Short Period</source>
@@ -2835,15 +2970,15 @@ Save changes?</source>
     </message>
     <message>
         <source>VFI Indicator</source>
-        <translation type="unfinished"></translation>
+        <translation>Wskaźnik VFI</translation>
     </message>
     <message>
         <source>VOL Indicator</source>
-        <translation type="unfinished"></translation>
+        <translation>Wskaźnik VOL</translation>
     </message>
     <message>
         <source>VOL</source>
-        <translation type="unfinished"></translation>
+        <translation>Wol</translation>
     </message>
     <message>
         <source>Up Color</source>
@@ -2855,43 +2990,43 @@ Save changes?</source>
     </message>
     <message>
         <source>VOL Label</source>
-        <translation type="unfinished"></translation>
+        <translation>Etykieta Wol</translation>
     </message>
     <message>
         <source>VOL Line Type</source>
-        <translation type="unfinished"></translation>
+        <translation>Styl Krzywej Wol</translation>
     </message>
     <message>
         <source>MA</source>
-        <translation type="unfinished"></translation>
+        <translation>ŚK</translation>
     </message>
     <message>
         <source>VOLR Indicator</source>
-        <translation type="unfinished"></translation>
+        <translation>Wskaźnik VOLR</translation>
     </message>
     <message>
         <source>VT Indicator</source>
-        <translation type="unfinished"></translation>
+        <translation>Wskaźnik VT</translation>
     </message>
     <message>
         <source>WILLR Indicator</source>
-        <translation type="unfinished"></translation>
+        <translation>Wskaźnik WILLR</translation>
     </message>
     <message>
         <source>Australian Dollar</source>
-        <translation type="unfinished"></translation>
+        <translation>Dolar Australijski</translation>
     </message>
     <message>
         <source>Soybean Oil</source>
-        <translation type="unfinished"></translation>
+        <translation>Olej Sojowy</translation>
     </message>
     <message>
         <source>British Pound</source>
-        <translation type="unfinished"></translation>
+        <translation>Funt Brytyjski</translation>
     </message>
     <message>
         <source>Corn</source>
-        <translation type="unfinished"></translation>
+        <translation>Kukurydza</translation>
     </message>
     <message>
         <source>Cocoa</source>
@@ -2899,11 +3034,11 @@ Save changes?</source>
     </message>
     <message>
         <source>Canadian Dollar</source>
-        <translation type="unfinished"></translation>
+        <translation>Dolar Kanadyjski</translation>
     </message>
     <message>
         <source>Crude Oil</source>
-        <translation type="unfinished"></translation>
+        <translation>Ropa</translation>
     </message>
     <message>
         <source>CRB Index</source>
@@ -2911,7 +3046,7 @@ Save changes?</source>
     </message>
     <message>
         <source>Cotton</source>
-        <translation type="unfinished"></translation>
+        <translation>Bawełna</translation>
     </message>
     <message>
         <source>Dow Jones Industrial Average</source>
@@ -2919,11 +3054,11 @@ Save changes?</source>
     </message>
     <message>
         <source>US Dollar Index</source>
-        <translation type="unfinished"></translation>
+        <translation>Indeks Dolara US</translation>
     </message>
     <message>
         <source>Euro</source>
-        <translation type="unfinished"></translation>
+        <translation>Euro</translation>
     </message>
     <message>
         <source>Eurodollar</source>
@@ -2939,7 +3074,7 @@ Save changes?</source>
     </message>
     <message>
         <source>Gold</source>
-        <translation type="unfinished"></translation>
+        <translation>Złoto</translation>
     </message>
     <message>
         <source>Goldman Sachs Commodity Index</source>
@@ -2947,27 +3082,27 @@ Save changes?</source>
     </message>
     <message>
         <source>Copper</source>
-        <translation type="unfinished"></translation>
+        <translation>Miedź</translation>
     </message>
     <message>
         <source>Heating Oil</source>
-        <translation type="unfinished"></translation>
+        <translation>Olej Opałowy</translation>
     </message>
     <message>
         <source>Unleaded Gasoline</source>
-        <translation type="unfinished"></translation>
+        <translation>Benzyna Bezołowiowa</translation>
     </message>
     <message>
         <source>Frozen Concentrated Orange Juice</source>
-        <translation type="unfinished"></translation>
+        <translation>Mrożony Koncetrat Soku Pomarańczowego</translation>
     </message>
     <message>
         <source>Japanese Yen</source>
-        <translation type="unfinished"></translation>
+        <translation>Yen Japoński</translation>
     </message>
     <message>
         <source>Coffee</source>
-        <translation type="unfinished"></translation>
+        <translation>Kawa</translation>
     </message>
     <message>
         <source>Lumber</source>
@@ -2987,7 +3122,7 @@ Save changes?</source>
     </message>
     <message>
         <source>Natural Gas</source>
-        <translation type="unfinished"></translation>
+        <translation>Gaz Ziemny</translation>
     </message>
     <message>
         <source>E-MINI NASDAQ 100</source>
@@ -3003,11 +3138,11 @@ Save changes?</source>
     </message>
     <message>
         <source>Frozen Pork Bellies</source>
-        <translation type="unfinished"></translation>
+        <translation>Mrożone Żołądki Wieprzowe</translation>
     </message>
     <message>
         <source>Platinum</source>
-        <translation type="unfinished"></translation>
+        <translation>Platyna</translation>
     </message>
     <message>
         <source>Soybeans</source>
@@ -3019,11 +3154,11 @@ Save changes?</source>
     </message>
     <message>
         <source>Swiss Franc</source>
-        <translation type="unfinished"></translation>
+        <translation>Frank Szwajcarski</translation>
     </message>
     <message>
         <source>Silver</source>
-        <translation type="unfinished"></translation>
+        <translation>Srebro</translation>
     </message>
     <message>
         <source>Soy Meal</source>
@@ -3051,7 +3186,51 @@ Save changes?</source>
     </message>
     <message>
         <source>WIG20 Index</source>
-        <translation type="unfinished"></translation>
+        <translation>Indeks Wig20</translation>
+    </message>
+    <message>
+        <source>Download error: </source>
+        <translation>Błąd pobierania:</translation>
+    </message>
+    <message>
+        <source>Zones</source>
+        <translation>Strefy</translation>
+    </message>
+    <message>
+        <source>Buy Zone Color</source>
+        <translation>Kolor Strefy Kupna</translation>
+    </message>
+    <message>
+        <source>Sell Zone Color</source>
+        <translation>Kolor Strefy Sprzedaży</translation>
+    </message>
+    <message>
+        <source>Buy Zone</source>
+        <translation>Strefa Kupna</translation>
+    </message>
+    <message>
+        <source>Sell Zone</source>
+        <translation>Strefa Sprzedaży</translation>
+    </message>
+    <message>
+        <source>Name</source>
+        <translation>Nazwa</translation>
+    </message>
+    <message>
+        <source>Type</source>
+        <translation>Rodzaj</translation>
+    </message>
+    <message>
+        <source>First Date</source>
+        <translation>Pierwsza Data</translation>
+    </message>
+    <message>
+        <source>Freq</source>
+        <translation>Częst</translation>
+    </message>
+    <message>
+        <source>Width</source>
+        <translation>Szerokość</translation>
     </message>
 </context>
 <context>
@@ -3469,19 +3648,19 @@ Ver CVS 0.30 (greased weasel)
     </message>
     <message>
         <source>Delete Record</source>
-        <translation>Usuń Rekord</translation>
+        <translation type="obsolete">Usuń Rekord</translation>
     </message>
     <message>
         <source>Save Record</source>
-        <translation>Zapisz Rekord</translation>
+        <translation type="obsolete">Zapisz Rekord</translation>
     </message>
     <message>
         <source>Search</source>
-        <translation>Szukaj</translation>
+        <translation type="obsolete">Szukaj</translation>
     </message>
     <message>
         <source>Date</source>
-        <translation>Data</translation>
+        <translation type="obsolete">Data</translation>
     </message>
     <message>
         <source>Open</source>
@@ -3509,11 +3688,11 @@ Ver CVS 0.30 (greased weasel)
     </message>
     <message>
         <source>Delete record.</source>
-        <translation>Usuń rekord.</translation>
+        <translation type="obsolete">Usuń rekord.</translation>
     </message>
     <message>
         <source>Are you sure you want to delete record?</source>
-        <translation>Czy oby na pewno chcesz usunąć ten rekord?</translation>
+        <translation type="obsolete">Czy oby na pewno chcesz usunąć ten rekord?</translation>
     </message>
     <message>
         <source>Warning</source>
@@ -3523,6 +3702,14 @@ Ver CVS 0.30 (greased weasel)
         <source>Record has been modified.
 Save changes?</source>
         <translation>Dokonano modyfikacji rekordu. Zapisać?</translation>
+    </message>
+    <message>
+        <source>First Date</source>
+        <translation>Pierwsza Data</translation>
+    </message>
+    <message>
+        <source>Last Date</source>
+        <translation>Ostatnia Data</translation>
     </message>
 </context>
 <context>
@@ -3690,7 +3877,7 @@ Save changes?</source>
     </message>
     <message>
         <source>Trailing</source>
-        <translation type="unfinished"></translation>
+        <translation>Stop Ruchomy</translation>
     </message>
     <message>
         <source>Custom Long Stop</source>
@@ -3910,7 +4097,7 @@ Save changes?</source>
     </message>
     <message>
         <source>New Rule</source>
-        <translation>Nowa Reguła</translation>
+        <translation type="obsolete">Nowa Reguła</translation>
     </message>
     <message>
         <source>This backtest rule already exists.</source>
@@ -3943,6 +4130,14 @@ Save changes?</source>
     <message>
         <source>Must have one COMP step checked.</source>
         <translation>Należy zaznaczyć jeden krok COMP.</translation>
+    </message>
+    <message>
+        <source>NewRule</source>
+        <translation>NowaReguła</translation>
+    </message>
+    <message>
+        <source>End of test</source>
+        <translation>Koniec testu</translation>
     </message>
 </context>
 <context>
@@ -4094,15 +4289,15 @@ Save changes?</source>
     <name>Yahoo</name>
     <message>
         <source>History</source>
-        <translation>Wycinek</translation>
+        <translation type="obsolete">Wycinek</translation>
     </message>
     <message>
         <source>Auto History</source>
-        <translation>Do dziś</translation>
+        <translation type="obsolete">Do dziś</translation>
     </message>
     <message>
         <source>Quote</source>
-        <translation>Bieżące</translation>
+        <translation type="obsolete">Bieżące</translation>
     </message>
     <message>
         <source>Fundamental</source>
@@ -4130,11 +4325,23 @@ Save changes?</source>
     </message>
     <message>
         <source>Download error </source>
-        <translation>Błąd pobierania</translation>
+        <translation type="obsolete">Błąd pobierania</translation>
     </message>
     <message>
         <source> skipped</source>
-        <translation>pominiete</translation>
+        <translation>pominięte</translation>
+    </message>
+    <message>
+        <source>Timeout: retry limit skipping</source>
+        <translation>Czas: osiągnieto limit, pomijanie</translation>
+    </message>
+    <message>
+        <source>Timeout: retry </source>
+        <translation>Czas: wznawianie</translation>
+    </message>
+    <message>
+        <source>Canceled</source>
+        <translation>Anulowano</translation>
     </message>
 </context>
 <context>
@@ -4157,19 +4364,19 @@ Save changes?</source>
     </message>
     <message>
         <source>History</source>
-        <translation>Historyczne</translation>
+        <translation type="obsolete">Historyczne</translation>
     </message>
     <message>
         <source>Auto History</source>
-        <translation>Historyczne do dziś</translation>
+        <translation type="obsolete">Historyczne do dziś</translation>
     </message>
     <message>
         <source>Quote</source>
-        <translation>Bieżące</translation>
+        <translation type="obsolete">Bieżące</translation>
     </message>
     <message>
         <source>Fundamental</source>
-        <translation>Fundamentalne</translation>
+        <translation type="obsolete">Fundamentalne</translation>
     </message>
     <message>
         <source>Start Date:</source>

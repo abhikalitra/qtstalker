@@ -72,7 +72,9 @@ void DatePlot::setData (BarData *l)
   { 
     switch (interval)
     {
+      case BarData::Minute1:
       case BarData::Minute5:
+      case BarData::Minute10:
       case BarData::Minute15:
       case BarData::Minute30:
       case BarData::Minute60:

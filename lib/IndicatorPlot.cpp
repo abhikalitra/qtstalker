@@ -668,7 +668,9 @@ void IndicatorPlot::createXGrid ()
 /*      
       switch (interval)
       {
+        case BarData::Minute1:
         case BarData::Minute5:
+        case BarData::Minute10:
         case BarData::Minute15:
         case BarData::Minute30:
         case BarData::Minute60:
@@ -1401,7 +1403,11 @@ void IndicatorPlot::slotDeleteAllChartObjects ()
   {
     COPlugin *plug = coPlugins[l2[loop]];
     if (plug)
+    {
       plug->clear();
+      coPlugins.remove(l2[loop]);
+      config.closePlugin(l2[loop]);
+    }
   }
   
   mouseFlag = None;

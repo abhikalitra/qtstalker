@@ -54,7 +54,9 @@ class BarData
 
     enum BarCompression
     {
+      Minute1,
       Minute5,
+      Minute10,
       Minute15,
       Minute30,
       Minute60,
@@ -87,6 +89,7 @@ class BarData
     Bar * getBar (int);
     void setMinMax ();
     void deleteBar (int);
+    void clear();
     
   protected:
     QPtrList<Bar> barList;
