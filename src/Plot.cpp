@@ -52,8 +52,8 @@ Plot::Plot (QWidget *w) : QWidget(w)
   startIndex = 0;
   scaleHigh = -99999999;
   scaleLow = 99999999;
-  logScaleHigh = 0;
-  logRange = -1;
+  logScaleHigh = 1;
+  logRange = 0;
   mainHigh = -99999999;
   mainLow = 99999999;
   chartType = "None";
@@ -68,6 +68,42 @@ Plot::Plot (QWidget *w) : QWidget(w)
   data = 0;
 
   setMouseTracking(TRUE);
+  
+  scaleList.append(".01");
+  scaleList.append(".02");
+  scaleList.append(".05");
+  scaleList.append(".1");
+  scaleList.append(".2");
+  scaleList.append(".5");
+  scaleList.append("1");
+  scaleList.append("2");
+  scaleList.append("5");
+  scaleList.append("10");
+  scaleList.append("25");
+  scaleList.append("50");
+  scaleList.append("100");
+  scaleList.append("250");
+  scaleList.append("500");
+  scaleList.append("1000");
+  scaleList.append("2500");
+  scaleList.append("5000");
+  scaleList.append("10000");
+  scaleList.append("25000");
+  scaleList.append("50000");
+  scaleList.append("100000");
+  scaleList.append("250000");
+  scaleList.append("500000");
+  scaleList.append("1000000");
+  scaleList.append("2500000");
+  scaleList.append("5000000");
+  scaleList.append("10000000");
+  scaleList.append("25000000");
+  scaleList.append("50000000");
+  scaleList.append("100000000");
+  scaleList.append("250000000");
+  scaleList.append("500000000");
+  scaleList.append("1000000000");
+  scaleList.append("2500000000");
 }
 
 Plot::~Plot ()
@@ -78,8 +114,8 @@ void Plot::clear ()
 {
   scaleHigh = -99999999;
   scaleLow = 99999999;
-  logScaleHigh = 0;
-  logRange = -1;
+  logScaleHigh = 1;
+  logRange = 0;
   mainHigh = -99999999;
   mainLow = 99999999;
   indicators.clear();
@@ -227,9 +263,6 @@ void Plot::draw ()
 
     setWidth();
 
-    if (dateFlag)
-      drawDate();
-
     setScale();
 
     drawXGrid();
@@ -296,6 +329,9 @@ void Plot::draw ()
     drawScale();
 
     drawInfo();
+    
+    if (dateFlag)
+      drawDate();
   }
 
   paintEvent(0);
@@ -700,6 +736,9 @@ void Plot::drawDate ()
   painter.setFont(plotFont);
 
   QFontMetrics fm = painter.fontMetrics();
+
+  // clear date area
+  painter.fillRect(0, buffer.height() - dateHeight, buffer.width() - scaleWidth, dateHeight, backgroundColor);
 
   // draw the seperator line
   painter.drawLine (0, buffer.height() - dateHeight, buffer.width() - scaleWidth, buffer.height() - dateHeight);
@@ -1439,35 +1478,14 @@ void Plot::setScale ()
 
   if (! scaleToScreen)
   {
-    if (mainFlag)
-    {
-      QDictIterator<Indicator> it(indicators);
-      for (; it.current(); ++it)
-      {
-        Indicator *i = it.current();
-	int loop;
-	for (loop = 0; loop < i->getLines(); loop++)
-	{
-	  PlotLine *line = i->getLine(loop);
-	  if (! line->getType().compare(tr("Invisible")))
-	    continue;
-
-          if (line->getHigh() > scaleHigh)
-            scaleHigh = line->getHigh();
-
-          if (line->getLow() < scaleLow)
-            scaleLow = line->getLow();
-	}
-      }
-    }
-    else
-    {
-      QDictIterator<Indicator> it(indicators);
+    QDictIterator<Indicator> it(indicators);
+    if (! mainFlag)
       it.toFirst();
+    for (; it.current(); ++it)
+    {
       Indicator *i = it.current();
-
       int loop;
-      for (loop = 0; loop < i->getLines(); loop++)
+        for (loop = 0; loop < i->getLines(); loop++)
       {
 	PlotLine *line = i->getLine(loop);
 	if (! line->getType().compare(tr("Invisible")))
@@ -1483,46 +1501,14 @@ void Plot::setScale ()
   }
   else
   {
-    if (mainFlag)
-    {
-      QDictIterator<Indicator> it(indicators);
-      for (; it.current(); ++it)
-      {
-        Indicator *i = it.current();
-	int loop;
-	for (loop = 0; loop < i->getLines(); loop++)
-	{
-	  PlotLine *line = i->getLine(loop);
-	  if (! line->getType().compare(tr("Invisible")))
-	    continue;
-
-          int x = startX;
-          int loop2 = line->getSize() - data->count() + startIndex;
-          while ((x < _width) && (loop2 < (int) line->getSize()))
-          {
-            if (loop2 > -1)
-            {
-              if (line->getData(loop2) > scaleHigh)
-                scaleHigh = line->getData(loop2);
-
-              if (line->getData(loop2) < scaleLow)
-                scaleLow = line->getData(loop2);
-            }
-
-            x = x + pixelspace;
-            loop2++;
-	  }
-        }
-      }
-    }
-    else
-    {
-      QDictIterator<Indicator> it(indicators);
+    QDictIterator<Indicator> it(indicators);
+    if (! mainFlag)
       it.toFirst();
+    for (; it.current(); ++it)
+    {
       Indicator *i = it.current();
-
       int loop;
-      for (loop = 0; loop < i->getLines(); loop++)
+        for (loop = 0; loop < i->getLines(); loop++)
       {
 	PlotLine *line = i->getLine(loop);
 	if (! line->getType().compare(tr("Invisible")))
@@ -1619,43 +1605,6 @@ void Plot::setScale ()
     logRange = logScaleHigh - logScaleLow;
   }
 
-  QStringList array;
-  array.append(".01");
-  array.append(".02");
-  array.append(".05");
-  array.append(".1");
-  array.append(".2");
-  array.append(".5");
-  array.append("1");
-  array.append("2");
-  array.append("5");
-  array.append("10");
-  array.append("25");
-  array.append("50");
-  array.append("100");
-  array.append("250");
-  array.append("500");
-  array.append("1000");
-  array.append("2500");
-  array.append("5000");
-  array.append("10000");
-  array.append("25000");
-  array.append("50000");
-  array.append("100000");
-  array.append("250000");
-  array.append("500000");
-  array.append("1000000");
-  array.append("2500000");
-  array.append("5000000");
-  array.append("10000000");
-  array.append("25000000");
-  array.append("50000000");
-  array.append("100000000");
-  array.append("250000000");
-  array.append("500000000");
-  array.append("1000000000");
-  array.append("2500000000");
-
   int ticks;
   for (ticks = 2; (ticks * 15) < _height; ticks++)
     ;
@@ -1664,9 +1613,9 @@ void Plot::setScale ()
     ticks = 10;
 
   double interval = 0;
-  for (loop = 0; loop < (int) array.count(); loop++)
+  for (loop = 0; loop < (int) scaleList.count(); loop++)
   {
-    QString t = array[loop];
+    QString t = scaleList[loop];
     if ((range / t.toDouble()) < ticks)
     {
       interval = t.toDouble();
@@ -1701,6 +1650,7 @@ int Plot::convertToY (double val)
     else
       return (int) (_height * (logScaleHigh - log(val)) / logRange);
   }
+
   double t = val - scaleLow;
   int y = (int) (t * scaler);
   y = _height - y;
@@ -1711,12 +1661,14 @@ int Plot::convertToY (double val)
 
 double Plot::convertToVal (int y)
 {
-  if (mainFlag && logScale) {
+  if (mainFlag && logScale)
+  {
     if (y >= _height)
       return scaleLow;
     else
       return exp(logScaleHigh - ((y * logRange) / _height));
   }
+
   int p = _height - y;
   double val = scaleLow + (p / scaler) ;
   return val;

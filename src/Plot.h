@@ -30,6 +30,8 @@
 #include <qmemarray.h>
 #include <qfont.h>
 #include <qdict.h>
+#include <qstringlist.h>
+
 #include "PlotLine.h"
 #include "Setting.h"
 #include "Indicator.h"
@@ -190,6 +192,7 @@ class Plot : public QWidget
     double mainHigh;
     double mainLow;
     QArray<double> scaleArray;
+    QStringList scaleList;
     double logScaleHigh;
     double logRange;
 

@@ -46,7 +46,7 @@
 #include "FuturesData.h"
 #include "SymbolDialog.h"
 
-Tester::Tester (Config *c, QString n) : QDialog (0, 0, FALSE)
+Tester::Tester (Config *c, QString n) : QDialog (0, 0, TRUE)
 {
   config = c;
   ruleName = n;
@@ -375,7 +375,7 @@ void Tester::createReportPage ()
   header->setLabel(2, tr("Entry Price"), 70);
   header->setLabel(3, tr("Exit"), 70);
   header->setLabel(4, tr("Exit Price"), 70);
-  header->setLabel(5, tr("Signal"), 70);
+  header->setLabel(5, tr("Signal"), 100);
   header->setLabel(6, tr("Profit"), 70);
   header->setLabel(7, tr("Account"), 70);
   header->setLabel(8, tr("Volume"), 50);
@@ -522,7 +522,7 @@ void Tester::addIndicator ()
   dialog->setCaption(tr("Edit Indicator"));
 
   QString s = config->getData(Config::IndicatorPluginPath);
-  s.append("/");
+  s.append("/lib");
   s.append(ind);
   s.append(".so");
 
@@ -1255,7 +1255,7 @@ void Tester::loadIndicators (int button)
     i->clearLines();
 
     QString s = config->getData(Config::IndicatorPluginPath);
-    s.append("/");
+    s.append("/lib");
     s.append(i->getData(QObject::tr("Type")));
     s.append(".so");
 
