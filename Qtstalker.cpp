@@ -23,7 +23,6 @@
 #include <qinputdialog.h>
 #include <qtextstream.h>
 #include <qfile.h>
-#include <qsplitter.h>
 #include <qapplication.h>
 #include <qfont.h>
 #include <qtextcodec.h>
@@ -65,11 +64,6 @@
 #include "openchart.xpm"
 #include "scaletoscreen.xpm"
 #include "plugin.xpm"
-#include "bar.xpm"
-#include "line.xpm"
-#include "paintbar.xpm"
-#include "candle.xpm"
-#include "point.xpm"
 #include "edit.xpm"
 #include "delete.xpm"
 #include "co.xpm"
@@ -81,7 +75,7 @@ QtstalkerApp::QtstalkerApp()
   config = 0;
   chartMenu = 0;
   status = None;
-  tabList.setAutoDelete(FALSE);
+  plotList.setAutoDelete(TRUE);
   this->setIcon(qtstalker);
 
   QString s(QDir::homeDirPath());
@@ -92,33 +86,26 @@ QtstalkerApp::QtstalkerApp()
 
   initMenuBar();
 
-  QWidget *w = new QWidget(this);
-  setCentralWidget (w);
+  baseWidget = new QWidget(this);
+  setCentralWidget (baseWidget);
 
-  QVBoxLayout *vbox = new QVBoxLayout(w);
+  QVBoxLayout *vbox = new QVBoxLayout(baseWidget);
 
-  QSplitter *split = new QSplitter(w);
+  split = new QSplitter(baseWidget);
   split->setOrientation(Vertical);
   vbox->addWidget(split);
 
   mainPlot = new Plot (split);
   mainPlot->setDateFlag(TRUE);
   mainPlot->setMainFlag(TRUE);
+  setPlotFont(mainPlot);
   QObject::connect(mainPlot, SIGNAL(rightMouseButton()), this, SLOT(mainPlotPopupMenu()));
   QObject::connect(mainPlot, SIGNAL(statusMessage(QString)), this, SLOT(slotStatusMessage(QString)));
 
-  tabBar = new QTabBar(split);
-  tabBar->setMaximumHeight(20);
-  tabBar->setMinimumHeight(20);
-  QObject::connect(tabBar, SIGNAL(selected(int)), this, SLOT(slotIndicatorSelected(int)));
-
-  indicatorPlot = new Plot (split);
-  QObject::connect(indicatorPlot, SIGNAL(rightMouseButton()), this, SLOT(indicatorPlotPopupMenu()));
-  QObject::connect(indicatorPlot, SIGNAL(statusMessage(QString)), this, SLOT(slotStatusMessage(QString)));
+  tabs = new QTabWidget(split);
+  QObject::connect(tabs, SIGNAL(currentChanged(QWidget *)), this, SLOT(slotTabChanged(QWidget *)));
 
   initToolBar();
-
-  setPlotColors();
 
   statusBar()->message(tr("Ready"), 2000);
 
@@ -158,7 +145,6 @@ QtstalkerApp::QtstalkerApp()
   else
     actionGrid->setOn(FALSE);
   mainPlot->setGridFlag(s.toInt());
-  indicatorPlot->setGridFlag(s.toInt());
 
   // set the scale to screen status
   s = config->getData(Config::ScaleToScreen);
@@ -167,18 +153,24 @@ QtstalkerApp::QtstalkerApp()
   else
     actionScaleToScreen->setOn(FALSE);
   mainPlot->setScaleToScreen(s.toInt());
-  indicatorPlot->setScaleToScreen(s.toInt());
 
   // set the splitter size
   QValueList<int> sizeList;
   s = config->getData(Config::MainPlotSize);
   sizeList.append(s.toInt());
-  sizeList.append(0);
   s = config->getData(Config::IndicatorPlotSize);
   sizeList.append(s.toInt());
   split->setSizes(sizeList);
+  
+  QStringList l = config->getIndicators();
+  for (loop = 0; loop < (int) l.count(); loop++)
+    addIndicatorButton(l[loop]);
 
-  slotChartTypeChanged(actionBar);
+  l = QStringList::split(" ", config->getData(Config::AppFont), FALSE);
+  QFont font(l[0], l[1].toInt(), l[2].toInt());
+  qApp->setFont(font, TRUE, 0);
+
+  slotChartTypeChanged(0);
 }
 
 QtstalkerApp::~QtstalkerApp()
@@ -212,79 +204,6 @@ void QtstalkerApp::initActions()
   actionOptions = new QAction(tr("Edit Preferences..."), icon, tr("Edit Preferences..."), 0, this);
   actionOptions->setStatusTip(tr("Modify user preferences."));
   connect(actionOptions, SIGNAL(activated()), this, SLOT(slotOptions()));
-
-  int pw = 30;
-  int ph = 30;
-  QPixmap pix(pw, ph);
-  pix.fill(this, 0, 0);
-  QPainter painter;
-  painter.begin(&pix);
-  painter.setPen(QColor("black"));
-  QFont f("Helvetica", 14, 75, FALSE);
-  painter.setFont(f);
-  QFontMetrics fm(f);
-  int w = fm.width("D", -1);
-  painter.drawText ((pw - w) / 2, 24, "D", -1);
-  painter.end();
-  actionDaily = new QAction(tr("Daily Compression"), pix, tr("Daily Compression"), 0, this, 0, TRUE);
-  actionDaily->setStatusTip(tr("Display daily chart data."));
-
-  pix.fill(this, 0, 0);
-  painter.begin(&pix);
-  painter.setPen(QColor("black"));
-  painter.setFont(f);
-  w = fm.width("W", -1);
-  painter.drawText ((pw - w) / 2, 24, "W", -1);
-  painter.end();
-  actionWeekly = new QAction(tr("Weekly Compression"), pix, tr("Weekly Compression"), 0, this, 0, TRUE);
-  actionWeekly->setStatusTip(tr("Display weekly chart data."));
-
-  pix.fill(this, 0, 0);
-  painter.begin(&pix);
-  painter.setPen(QColor("black"));
-  painter.setFont(f);
-  w = fm.width("M", -1);
-  painter.drawText ((pw - w) / 2, 24, "M", -1);
-  painter.end();
-  actionMonthly = new QAction(tr("Monthly Compression"), pix, tr("Monthly Compression"), 0, this,  0, TRUE);
-  actionMonthly->setStatusTip(tr("Display monthly chart data."));
-
-  compressionGroupAction = new QActionGroup(this, 0, true);
-  compressionGroupAction->insert(actionDaily);
-  compressionGroupAction->insert(actionWeekly);
-  compressionGroupAction->insert(actionMonthly);
-  connect(compressionGroupAction, SIGNAL(selected(QAction *)), this, SLOT(slotCompressionChanged(QAction *)));
-
-  // create chart types
-
-  icon = bar;
-  actionBar = new QAction(tr("Bar"), icon, tr("Bar"), 0, this, 0, true);
-  actionBar->setStatusTip(tr("Bar Chart"));
-
-  icon = paintbar;
-  actionPaintBar = new QAction(tr("Paint Bar"), icon, tr("Paint Bar"), 0, this, 0, true);
-  actionPaintBar->setStatusTip(tr("Paint Bar Chart"));
-
-  icon = line;
-  actionLine = new QAction(tr("Line"), icon, tr("Line"), 0, this, 0, true);
-  actionLine->setStatusTip(tr("Line Chart"));
-
-  icon = candle;
-  actionCandle = new QAction(tr("Candle"), icon, tr("Candle"), 0, this, 0, true);
-  actionCandle->setStatusTip(tr("Candle Chart"));
-
-  icon = point;
-  actionPoint = new QAction(tr("Point And Figure"), icon, tr("Point And Figure"), 0, this, 0, true);
-  actionPoint->setStatusTip(tr("Point And Figure Chart"));
-
-  chartTypeGroupAction = new QActionGroup(this, 0, true);
-  chartTypeGroupAction->insert(actionBar);
-  chartTypeGroupAction->insert(actionPaintBar);
-  chartTypeGroupAction->insert(actionLine);
-  chartTypeGroupAction->insert(actionCandle);
-  chartTypeGroupAction->insert(actionPoint);
-  actionBar->setOn(TRUE);
-  connect(chartTypeGroupAction, SIGNAL(selected(QAction *)), this, SLOT(slotChartTypeChanged(QAction *)));
 
   icon = gridicon;
   actionGrid = new QAction(tr("Chart Grid"), icon, tr("Chart Grid"), 0, this, 0, true);
@@ -355,16 +274,6 @@ void QtstalkerApp::initMenuBar()
 
   viewMenu = new QPopupMenu();
   viewMenu->setCheckable(true);
-  actionDaily->addTo(viewMenu);
-  actionWeekly->addTo(viewMenu);
-  actionMonthly->addTo(viewMenu);
-  viewMenu->insertSeparator();
-  actionBar->addTo(viewMenu);
-  actionPaintBar->addTo(viewMenu);
-  actionLine->addTo(viewMenu);
-  actionCandle->addTo(viewMenu);
-  actionPoint->addTo(viewMenu);
-  viewMenu->insertSeparator();
   actionGrid->addTo(viewMenu);
   actionScaleToScreen->addTo(viewMenu);
   viewMenu->insertSeparator();
@@ -413,34 +322,36 @@ void QtstalkerApp::initToolBar()
   actionPortfolio->addTo(toolbar);
   actionWorkwithTest->addTo(toolbar);
   actionNewIndicator->addTo(toolbar);
+  actionGrid->addTo(toolbar);
+  actionScaleToScreen->addTo(toolbar);
+  actionDatawindow->addTo(toolbar);
+  actionQuotes->addTo(toolbar);
 
-  toolbar->addSeparator();
+  compressionCombo = new QComboBox(toolbar);
+  compressionCombo->show();
+  QStringList l;
+  l.append(tr("Daily"));
+  l.append(tr("Weekly"));
+  l.append(tr("Monthly"));
+  compressionCombo->insertStringList(l, -1);
+  QToolTip::add(compressionCombo, tr("Chart Compression"));
+  connect(compressionCombo, SIGNAL(activated(int)), this, SLOT(slotCompressionChanged(int)));
 
-  actionDaily->addTo(toolbar);
-  actionWeekly->addTo(toolbar);
-  actionMonthly->addTo(toolbar);
-
-  toolbar->addSeparator();
-
-  actionBar->addTo(toolbar);
-  actionPaintBar->addTo(toolbar);
-  actionLine->addTo(toolbar);
-  actionCandle->addTo(toolbar);
-  actionPoint->addTo(toolbar);
-
-  toolbar->addSeparator();
+  chartTypeCombo = new QComboBox(toolbar);
+  chartTypeCombo->show();
+  l.clear();
+  l.append(tr("Bar"));
+  l.append(tr("Paint Bar"));
+  l.append(tr("Line"));
+  l.append(tr("Candle"));
+  l.append(tr("Point and Figure"));
+  chartTypeCombo->insertStringList(l, -1);
+  QToolTip::add(chartTypeCombo, tr("Chart Type"));
+  connect(chartTypeCombo, SIGNAL(activated(int)), this, SLOT(slotChartTypeChanged(int)));
 
   pixelspace = new QSpinBox(toolbar);
   connect (pixelspace, SIGNAL(valueChanged(int)), this, SLOT(slotPixelspaceChanged(int)));
   QToolTip::add(pixelspace, tr("Bar Spacing"));
-
-  actionGrid->addTo(toolbar);
-  actionScaleToScreen->addTo(toolbar);
-
-  toolbar->addSeparator();
-
-  actionDatawindow->addTo(toolbar);
-  actionQuotes->addTo(toolbar);
 
   // construct the navigation toolbar
   navToolbar = new QToolBar(this, "nav toolbar");
@@ -471,17 +382,13 @@ void QtstalkerApp::initToolBar()
   QToolTip::add(slider, tr("Pan Chart"));
 
   navToolbar->setStretchableWidget(slider);
-
-  QStringList l = config->getIndicators();
-  int loop;
-  for (loop = 0; loop < (int) l.count(); loop++)
-    addIndicatorButton(l[loop]);
 }
 
 void QtstalkerApp::slotQuit()
 {
-  config->setData(Config::MainPlotSize, QString::number(mainPlot->height()));
-  config->setData(Config::IndicatorPlotSize, QString::number(indicatorPlot->height()));
+  QValueList<int> list = split->sizes();
+  config->setData(Config::MainPlotSize, QString::number(list[0]));
+  config->setData(Config::IndicatorPlotSize, QString::number(list[1]));
   delete config;
 
   qApp->quit();
@@ -589,6 +496,7 @@ void QtstalkerApp::slotOptions ()
   set->set(tr("Paint Bar Indicator"), config->getData(Config::PaintBarIndicator), Setting::List);
   set->setList(tr("Paint Bar Indicator"), config->getIndicators());
   set->set(tr("Plot Font"), config->getData(Config::PlotFont), Setting::Font);
+  set->set(tr("App Font"), config->getData(Config::AppFont), Setting::Font);
 
   dialog->setItems(set);
 
@@ -597,9 +505,6 @@ void QtstalkerApp::slotOptions ()
   if (rc == QDialog::Accepted)
   {
     config->setData(Config::BackgroundColor, set->getData(tr("Color Background")));
-
-    qDebug(set->getData(tr("Color Border")).latin1());
-    
     config->setData(Config::BorderColor, set->getData(tr("Color Border")));
     config->setData(Config::GridColor, set->getData(tr("Color Grid")));
     config->setData(Config::UpColor, set->getData(tr("Color Up")));
@@ -607,8 +512,33 @@ void QtstalkerApp::slotOptions ()
     config->setData(Config::NeutralColor, set->getData(tr("Color Neutral")));
     config->setData(Config::PaintBarIndicator, set->getData(tr("Paint Bar Indicator")));
     config->setData(Config::PlotFont, set->getData(tr("Plot Font")));
+    config->setData(Config::AppFont, set->getData(tr("App Font")));
 
-    setPlotColors();
+    setPlotColor(mainPlot, Config::BackgroundColor);
+    setPlotColor(mainPlot, Config::BorderColor);
+    setPlotColor(mainPlot, Config::GridColor);
+    setPlotColor(mainPlot, Config::UpColor);
+    setPlotColor(mainPlot, Config::DownColor);
+    setPlotColor(mainPlot, Config::NeutralColor);
+
+    QDictIterator<Plot> it(plotList);
+    for(; it.current(); ++it)
+    {
+      setPlotColor(it.current(), Config::BackgroundColor);
+      setPlotColor(it.current(), Config::BorderColor);
+      setPlotColor(it.current(), Config::GridColor);
+      setPlotColor(it.current(), Config::UpColor);
+      setPlotColor(it.current(), Config::DownColor);
+      setPlotColor(it.current(), Config::NeutralColor);
+    }
+
+    QStringList l = QStringList::split(" ", config->getData(Config::AppFont), FALSE);
+    QFont font(l[0], l[1].toInt(), l[2].toInt());
+    qApp->setFont(font, TRUE, 0);
+
+    setPlotFont(mainPlot);
+    for(it.toFirst(); it.current(); ++it)
+      setPlotFont(it.current());
 
     loadChart(chartPath);
 
@@ -644,10 +574,11 @@ void QtstalkerApp::slotGrid (bool state)
   config->setData(Config::Grid, QString::number(state));
 
   mainPlot->setGridFlag(state);
-  indicatorPlot->setGridFlag(state);
-
   mainPlot->draw();
-  indicatorPlot->draw();
+
+  QDictIterator<Plot> it(plotList);
+  for(; it.current(); ++it)
+    it.current()->setGridFlag(state);
 }
 
 void QtstalkerApp::slotScaleToScreen (bool state)
@@ -655,10 +586,11 @@ void QtstalkerApp::slotScaleToScreen (bool state)
   config->setData(Config::ScaleToScreen, QString::number(state));
 
   mainPlot->setScaleToScreen(state);
-  indicatorPlot->setScaleToScreen(state);
-
   mainPlot->draw();
-  indicatorPlot->draw();
+
+  QDictIterator<Plot> it(plotList);
+  for(; it.current(); ++it)
+    it.current()->setScaleToScreen(state);
 }
 
 void QtstalkerApp::loadChart (QString d)
@@ -681,7 +613,10 @@ void QtstalkerApp::loadChart (QString d)
   }
 
   mainPlot->clear();
-  indicatorPlot->clear();
+
+  QDictIterator<Plot> it(plotList);
+  for(; it.current(); ++it)
+    it.current()->clear();
 
   Setting *set = db->getDetails();
   chartName = set->getData(tr("Title"));
@@ -696,21 +631,11 @@ void QtstalkerApp::loadChart (QString d)
       && chartType.compare(tr("Index"))
       && chartType.compare(tr("Spread")))
   {
-    actionBar->setEnabled(FALSE);
-    actionPaintBar->setEnabled(FALSE);
-    actionCandle->setEnabled(FALSE);
-    actionLine->setEnabled(FALSE);
-    actionPoint->setEnabled(FALSE);
+    chartTypeCombo->setEnabled(FALSE);
     otherFlag = TRUE;
   }
   else
-  {
-    actionBar->setEnabled(TRUE);
-    actionPaintBar->setEnabled(TRUE);
-    actionCandle->setEnabled(TRUE);
-    actionLine->setEnabled(TRUE);
-    actionPoint->setEnabled(TRUE);
-  }
+    chartTypeCombo->setEnabled(TRUE);
 
   if (! date.isValid())
   {
@@ -745,32 +670,32 @@ void QtstalkerApp::loadChart (QString d)
   }
 
   QString compression = config->getData(Config::Compression);
-  if (! compression.compare(QObject::tr("Daily Compression")))
+  Plot::TimeInterval pi = Plot::Daily;
+  ChartDb::Compression ci = ChartDb::Daily;
+  if (! compression.compare(QObject::tr("Weekly")))
   {
-    db->getHistory(ChartDb::Daily, date);
-    mainPlot->setInterval(Plot::Daily);
-    indicatorPlot->setInterval(Plot::Daily);
+    pi = Plot::Weekly;
+    ci = ChartDb::Weekly;
   }
   else
   {
-    if (! compression.compare(QObject::tr("Weekly Compression")))
+    if (! compression.compare(QObject::tr("Monthly")))
     {
-      db->getHistory(ChartDb::Weekly, date);
-      mainPlot->setInterval(Plot::Weekly);
-      indicatorPlot->setInterval(Plot::Weekly);
-    }
-    else
-    {
-      db->getHistory(ChartDb::Monthly, date);
-      mainPlot->setInterval(Plot::Monthly);
-      indicatorPlot->setInterval(Plot::Monthly);
+      pi = Plot::Monthly;
+      ci = ChartDb::Monthly;
     }
   }
-  
-  mainPlot->setData(db->getRecordList());
-  indicatorPlot->setData(db->getRecordList());
+  db->getHistory(ci, date);
+  mainPlot->setInterval(pi);
+  for(it.toFirst(); it.current(); ++it)
+    it.current()->setInterval(pi);
 
-  indicatorPlot->setPixelspace(mainPlot->getPixelspace());
+  mainPlot->setData(db->getRecordList());
+  for(it.toFirst(); it.current(); ++it)
+  {
+    it.current()->setData(db->getRecordList());
+    it.current()->setPixelspace(mainPlot->getPixelspace());
+  }
 
   QStringList l = config->getIndicators();
 
@@ -824,7 +749,10 @@ void QtstalkerApp::loadChart (QString d)
       if (i->getMainPlot())
         mainPlot->addIndicator(l[loop], i);
       else
-        indicatorPlot->addIndicator(l[loop], i);
+      {
+        Plot *plot = plotList[l[loop]];
+        plot->addIndicator(l[loop], i);
+      }
 
       delete plug;
     }
@@ -877,7 +805,11 @@ void QtstalkerApp::loadChart (QString d)
     Setting *co = db->getChartObject(l[loop]);
     Indicator *i = mainPlot->getIndicator(co->getData(tr("Plot")));
     if (! i)
-      i = indicatorPlot->getIndicator(co->getData(tr("Plot")));
+    {
+      Plot *plot = plotList[co->getData(tr("Plot"))];
+      i = plot->getIndicator(co->getData(tr("Plot")));
+    }
+
     if (i)
       i->addChartObject(co);
     else
@@ -891,7 +823,10 @@ void QtstalkerApp::loadChart (QString d)
     QString ind = config->getData(Config::PaintBarIndicator);
     Indicator *i = mainPlot->getIndicator(ind);
     if (! i)
-      i = indicatorPlot->getIndicator(ind);
+    {
+      Plot *plot = plotList[ind];
+      i = plot->getIndicator(ind);
+    }
       
     if (i)
       mainPlot->setAlerts(i->getAlerts());
@@ -906,17 +841,17 @@ void QtstalkerApp::loadChart (QString d)
   slider->setValue(max);
   slider->blockSignals(FALSE);
 
-  indicatorPlot->setIndex(max);
   mainPlot->setIndex(max);
+  for(it.toFirst(); it.current(); ++it)
+    it.current()->setIndex(max);
 
   pixelspace->blockSignals(TRUE);
   pixelspace->setRange(mainPlot->getMinPixelspace(), 99);
   pixelspace->blockSignals(FALSE);
 
   mainPlot->draw();
-
-  if (tabBar->count())
-    slotIndicatorSelected(tabBar->currentTab());
+  Plot *plot = plotList[tabs->label(tabs->currentPageIndex())];
+  plot->draw();
 
   setCaption(getWindowCaption());
 
@@ -971,7 +906,7 @@ void QtstalkerApp::slotNewChartObject (int id)
   Setting *co = mainPlot->newChartObject(selection);
   co->set("Name", name, Setting::None);
   if (id)
-    co->set(tr("Plot"), indicatorGroupText, Setting::None);
+    co->set(tr("Plot"), tabs->label(tabs->currentPageIndex()), Setting::None);
 
   dialog->setItems(co);
 
@@ -988,14 +923,20 @@ void QtstalkerApp::slotNewChartObject (int id)
     if (id == 0)
       i = mainPlot->getIndicator(co->getData(tr("Plot")));
     else
-      i = indicatorPlot->getIndicator(co->getData(tr("Plot")));
+    {
+      Plot *plot = plotList[co->getData(tr("Plot"))];
+      i = plot->getIndicator(co->getData(tr("Plot")));
+    }
 
     i->addChartObject(co);
 
     if (id == 0)
       mainPlot->draw();
     else
-      indicatorPlot->draw();
+    {
+      Plot *plot = plotList[tabs->label(tabs->currentPageIndex())];
+      plot->draw();
+    }
   }
   else
     delete co;
@@ -1011,7 +952,8 @@ void QtstalkerApp::slotEditChartObject (int id)
   Setting *co = i->getChartObject(name);
   if (! co)
   {
-    i = indicatorPlot->getIndicator(indicatorGroupText);
+    Plot *plot = plotList[tabs->label(tabs->currentPageIndex())];
+    i = plot->getIndicator(tabs->label(tabs->currentPageIndex()));
     co = i->getChartObject(name);
     flag = TRUE;
   }
@@ -1037,7 +979,10 @@ void QtstalkerApp::slotEditChartObject (int id)
     if (! flag)
       mainPlot->draw();
     else
-      indicatorPlot->draw();
+    {
+      Plot *plot = plotList[tabs->label(tabs->currentPageIndex())];
+      plot->draw();
+    }
   }
 
   delete dialog;
@@ -1051,7 +996,8 @@ void QtstalkerApp::slotDeleteChartObject (int id)
   Setting *co = i->getChartObject(name);
   if (! co)
   {
-    i = indicatorPlot->getIndicator(indicatorGroupText);
+    Plot *plot = plotList[tabs->label(tabs->currentPageIndex())];
+    i = plot->getIndicator(tabs->label(tabs->currentPageIndex()));
     co = i->getChartObject(name);
     flag = TRUE;
   }
@@ -1066,7 +1012,10 @@ void QtstalkerApp::slotDeleteChartObject (int id)
   if (! flag)
     mainPlot->draw();
   else
-    indicatorPlot->draw();
+  {
+    Plot *plot = plotList[tabs->label(tabs->currentPageIndex())];
+    plot->draw();
+  }
 }
 
 QString QtstalkerApp::getWindowCaption ()
@@ -1160,10 +1109,11 @@ void QtstalkerApp::slotDataWindow ()
     }
   }
 
-  l = indicatorPlot->getIndicators();
+  Plot *plot = plotList[tabs->label(tabs->currentPageIndex())];
+  l = plot->getIndicators();
   for (loop = 0; loop < (int) l.count(); loop++)
   {
-    i = indicatorPlot->getIndicator(l[loop]);
+    i = plot->getIndicator(l[loop]);
     int loop2;
     for (loop2 = 0; loop2 < i->getLines(); loop2++, col++)
     {
@@ -1223,7 +1173,7 @@ void QtstalkerApp::mainPlotPopupMenu ()
 
 void QtstalkerApp::indicatorPlotPopupMenu ()
 {
-  if (! indicatorGroupText.length())
+  if (status == None)
     return;
 
   plotPopupMenu(1);
@@ -1231,7 +1181,8 @@ void QtstalkerApp::indicatorPlotPopupMenu ()
   chartObjectEditMenu->clear();
   chartObjectDeleteMenu->clear();
 
-  Indicator *i = indicatorPlot->getIndicator(indicatorGroupText);
+  Plot *plot = plotList[tabs->label(tabs->currentPageIndex())];
+  Indicator *i = plot->getIndicator(tabs->label(tabs->currentPageIndex()));
   QStringList l = i->getChartObjects();
   int loop;
   for (loop = 0; loop < (int) l.count(); loop++)
@@ -1246,9 +1197,9 @@ void QtstalkerApp::indicatorPlotPopupMenu ()
   chartMenu->exec(QCursor::pos());
 }
 
-void QtstalkerApp::slotCompressionChanged (QAction *action)
+void QtstalkerApp::slotCompressionChanged (int)
 {
-  compressionChanged(action->text());
+  compressionChanged(compressionCombo->currentText());
   loadChart(chartPath);
 }
 
@@ -1258,34 +1209,31 @@ void QtstalkerApp::compressionChanged (QString d)
 
   Plot::TimeInterval t;
 
-  if (! d.compare(actionDaily->text()))
-  {
-    actionDaily->setOn(TRUE);
+  if (! d.compare(tr("Daily")))
     t = Plot::Daily;
-  }
   else
   {
-    if (! d.compare(actionWeekly->text()))
-    {
-      actionWeekly->setOn(TRUE);
+    if (! d.compare(tr("Weekly")))
       t = Plot::Weekly;
-    }
     else
-    {
-      actionMonthly->setOn(TRUE);
       t = Plot::Monthly;
-    }
   }
 
   mainPlot->setInterval(t);
-  indicatorPlot->setInterval(t);
+
+  QDictIterator<Plot> it(plotList);
+  for(; it.current(); ++it)
+    it.current()->setInterval(t);
 }
 
-void QtstalkerApp::slotChartTypeChanged (QAction *action)
+void QtstalkerApp::slotChartTypeChanged (int)
 {
-  config->setData(Config::ChartStyle, action->text());
-  mainPlot->setChartType(action->text());
-  indicatorPlot->setPixelspace(mainPlot->getPixelspace());
+  config->setData(Config::ChartStyle, chartTypeCombo->currentText());
+  mainPlot->setChartType(chartTypeCombo->currentText());
+
+  QDictIterator<Plot> it(plotList);
+  for(; it.current(); ++it)
+    it.current()->setPixelspace(mainPlot->getPixelspace());
 
   QString s = config->getData(Config::ChartStyle);
   if (! s.compare(tr("Paint Bar")))
@@ -1295,7 +1243,10 @@ void QtstalkerApp::slotChartTypeChanged (QAction *action)
     {
       Indicator *i = mainPlot->getIndicator(ind);
       if (! i)
-        i = indicatorPlot->getIndicator(ind);
+      {
+        Plot *plot = plotList[tabs->label(tabs->currentPageIndex())];
+        i = plot->getIndicator(ind);
+      }
 
       if (i)
         mainPlot->setAlerts(i->getAlerts());
@@ -1307,7 +1258,8 @@ void QtstalkerApp::slotChartTypeChanged (QAction *action)
   pixelspace->blockSignals(FALSE);
 
   mainPlot->draw();
-  indicatorPlot->draw();
+  Plot *plot = plotList[tabs->label(tabs->currentPageIndex())];
+  plot->draw();
 }
 
 void QtstalkerApp::slotNewIndicator ()
@@ -1438,21 +1390,14 @@ void QtstalkerApp::slotDeleteIndicator (int id)
 
   Indicator *i = mainPlot->getIndicator(text);
   if (! i)
-    i = indicatorPlot->getIndicator(text);
+  {
+    Plot *plot = plotList[text];
+    i = plot->getIndicator(text);
+  }
 
   if (! i->getMainPlot())
   {
-    int loop;
-    for (loop = 0; loop < (int) tabList.count(); loop++)
-    {
-      QTab *tab = tabList.at(loop);
-      if (! text.compare(tab->text()))
-      {
-        tabList.remove(tab);
-	tabBar->removeTab(tab);
-        break;
-      }
-    }
+    tabs->removePage(tabs->currentPage());
 
     // delete any chart objects that belong to the indicator
     QStringList l = i->getChartObjects();
@@ -1460,6 +1405,7 @@ void QtstalkerApp::slotDeleteIndicator (int id)
     ChartDb *db = new ChartDb;
     db->openChart(chartPath);
 
+    int loop;
     for (loop = 0; loop < (int) l.count(); loop++)
       db->deleteChartObject(l[loop]);
 
@@ -1472,10 +1418,14 @@ void QtstalkerApp::slotDeleteIndicator (int id)
 void QtstalkerApp::slotPixelspaceChanged (int d)
 {
   mainPlot->setPixelspace(d);
-  indicatorPlot->setPixelspace(d);
-
   mainPlot->draw();
-  indicatorPlot->draw();
+
+  QDictIterator<Plot> it(plotList);
+  for(; it.current(); ++it)
+    it.current()->setPixelspace(d);
+
+  Plot *plot = plotList[tabs->label(tabs->currentPageIndex())];
+  plot->draw();
 }
 
 void QtstalkerApp::slotSliderChanged (int v)
@@ -1484,23 +1434,14 @@ void QtstalkerApp::slotSliderChanged (int v)
     return;
 
   mainPlot->setIndex(v);
-  indicatorPlot->setIndex(v);
-
   mainPlot->draw();
-  indicatorPlot->draw();
-}
 
-void QtstalkerApp::slotIndicatorSelected (int id)
-{
-  QTab *tab = tabBar->tab(id);
-  indicatorGroupText = tab->text();
+  QDictIterator<Plot> it(plotList);
+  for(; it.current(); ++it)
+    it.current()->setIndex(v);
 
-  if (status == None)
-    return;
-
-  indicatorPlot->setCurrentIndicator(indicatorGroupText);
-
-  indicatorPlot->draw();
+  Plot *plot = plotList[tabs->label(tabs->currentPageIndex())];
+  plot->draw();
 }
 
 void QtstalkerApp::addIndicatorButton (QString d)
@@ -1515,10 +1456,23 @@ void QtstalkerApp::addIndicatorButton (QString d)
     return;
   }
 
-  QTab *tab = new QTab(d);
-  tabBar->addTab(tab);
-  tabList.append(tab);
-  tabBar->repaint();
+  Plot *plot = new Plot (baseWidget);
+  QObject::connect(plot, SIGNAL(rightMouseButton()), this, SLOT(indicatorPlotPopupMenu()));
+  QObject::connect(plot, SIGNAL(statusMessage(QString)), this, SLOT(slotStatusMessage(QString)));
+  plotList.replace(d, plot);
+  plot->setGridFlag(config->getData(Config::Grid).toInt());
+  plot->setScaleToScreen(config->getData(Config::ScaleToScreen).toInt());
+
+  setPlotColor(plot, Config::BackgroundColor);
+  setPlotColor(plot, Config::BorderColor);
+  setPlotColor(plot, Config::GridColor);
+  setPlotColor(plot, Config::UpColor);
+  setPlotColor(plot, Config::DownColor);
+  setPlotColor(plot, Config::NeutralColor);
+
+  setPlotFont(plot);
+
+  tabs->addTab(plot, d);
 
   delete i;
 }
@@ -1542,44 +1496,7 @@ void QtstalkerApp::slotChartUpdated ()
 void QtstalkerApp::slotStatusMessage (QString d)
 {
   statusBar()->message(d);
-  statusBar()->update();
-  statusBar()->repaint();
-}
-
-void QtstalkerApp::setPlotColors ()
-{
-  QColor color;
-
-  color.setNamedColor(config->getData(Config::BackgroundColor));
-  mainPlot->setBackgroundColor(color);
-  indicatorPlot->setBackgroundColor(color);
-
-  color.setNamedColor(config->getData(Config::BorderColor));
-  mainPlot->setBorderColor(color);
-  indicatorPlot->setBorderColor(color);
-
-  color.setNamedColor(config->getData(Config::GridColor));
-  mainPlot->setGridColor(color);
-  indicatorPlot->setGridColor(color);
-
-  color.setNamedColor(config->getData(Config::UpColor));
-  mainPlot->setUpColor(color);
-  indicatorPlot->setUpColor(color);
-
-  color.setNamedColor(config->getData(Config::DownColor));
-  mainPlot->setDownColor(color);
-  indicatorPlot->setDownColor(color);
-
-  color.setNamedColor(config->getData(Config::NeutralColor));
-  mainPlot->setNeutralColor(color);
-  indicatorPlot->setNeutralColor(color);
-  
-  QStringList l = QStringList::split(" ", config->getData(Config::PlotFont), FALSE);
-  QFont font(l[0], l[1].toInt(), l[2].toInt());
-  mainPlot->setPlotFont(font);
-  indicatorPlot->setPlotFont(font);
-
-  qApp->setFont(font, TRUE, 0);
+  qApp->processEvents();
 }
 
 void QtstalkerApp::slotWorkwithTest ()
@@ -1588,6 +1505,49 @@ void QtstalkerApp::slotWorkwithTest ()
   dialog->updateList();
   dialog->show();
   statusBar()->message(tr("Ready"), 2000);
+}
+
+void QtstalkerApp::slotTabChanged (QWidget *)
+{
+  Plot *plot = plotList[tabs->label(tabs->currentPageIndex())];
+  plot->draw();
+}
+
+void QtstalkerApp::setPlotFont (Plot *plot)
+{
+  QStringList l = QStringList::split(" ", config->getData(Config::PlotFont), FALSE);
+  QFont font(l[0], l[1].toInt(), l[2].toInt());
+  plot->setPlotFont(font);
+}
+
+void QtstalkerApp::setPlotColor (Plot *plot, Config::Parm parm)
+{
+  QColor color;
+  color.setNamedColor(config->getData(parm));
+  
+  switch(parm)
+  {
+    case Config::BackgroundColor:
+      plot->setBackgroundColor(color);
+      break;
+    case Config::BorderColor:
+      plot->setBorderColor(color);
+      break;
+    case Config::GridColor:
+      plot->setGridColor(color);
+      break;
+    case Config::UpColor:
+      plot->setUpColor(color);
+      break;
+    case Config::DownColor:
+      plot->setDownColor(color);
+      break;
+    case Config::NeutralColor:
+      plot->setNeutralColor(color);
+      break;
+    default:
+      break;
+  }
 }
 
 //**********************************************************************
@@ -1602,7 +1562,7 @@ int main(int argc, char *argv[])
   // set the location where your .qm files are in load() below as the last parameter instead of "."
   // for development, use "/" to use the english original as
   // .qm files are stored in the base project directory.
-  tor.load( QString("qtstalker.") + QTextCodec::locale(), "." );
+  tor.load(QString("qtstalker.") + QTextCodec::locale(), "." );
   a.installTranslator( &tor );
 
   QtstalkerApp *qtstalker = new QtstalkerApp();

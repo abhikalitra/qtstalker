@@ -83,7 +83,6 @@ class Plot : public QWidget
     Indicator * getIndicator (QString);
     QStringList getIndicators ();
     void deleteIndicator (QString);
-    void setCurrentIndicator (QString);
     QStringList getChartObjectList ();
     Setting * newChartObject (QString);
 
@@ -174,7 +173,6 @@ class Plot : public QWidget
     QArray<double> scaleArray;
 
     QString chartType;
-    QString currentIndicator;
     QList<Setting> data;
     QDict<Indicator> indicators;
 };

@@ -13,9 +13,12 @@
 - Removed the charts from the backtesting dialog. This was bloat and fluff we don't need. Everything that is 
   important is in the summary.
   
-- Having some font issues with Qt upgrades. Changed the font setting for the chart plot to be global for the app.
+- Added a global font preference for the app.
 
 - Changed the dialogs to edit values in place instead of popping up a dialog.
+
+- Made some minor GUI changes to the toolbar. Replaced chart type and chart compression buttons with combo boxes.
+
 
 0.17
 ====

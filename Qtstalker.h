@@ -34,8 +34,9 @@
 #include <qlist.h>
 #include <qarray.h>
 #include <qslider.h>
-#include <qtabbar.h>
 #include <qspinbox.h>
+#include <qtabwidget.h>
+#include <qsplitter.h>
 
 #define DEFAULT_INDICATOR_HEIGHT 125
 
@@ -63,7 +64,8 @@ class QtstalkerApp : public QMainWindow
     void loadChart (QString);
     void compressionChanged (QString);
     void addIndicatorButton (QString);
-    void setPlotColors ();
+    void setPlotFont (Plot *);
+    void setPlotColor (Plot *, Config::Parm);
 
   public slots:
 
@@ -88,19 +90,19 @@ class QtstalkerApp : public QMainWindow
     void slotEditChartObject (int);
     void slotDeleteChartObject (int);
     void slotGrid (bool);
-    void slotCompressionChanged (QAction *);
-    void slotChartTypeChanged (QAction *);
+    void slotCompressionChanged (int);
+    void slotChartTypeChanged (int);
     void slotSliderChanged (int);
     void plotPopupMenu (int);
     void mainPlotPopupMenu ();
     void indicatorPlotPopupMenu ();
     void slotPixelspaceChanged (int);
     void slotScaleToScreen (bool);
-    void slotIndicatorSelected (int);
     void slotNewPlugin ();
     void slotChartUpdated ();
     void slotStatusMessage (QString);
     void slotWorkwithTest ();
+    void slotTabChanged (QWidget *);
 
   private:
     QPopupMenu *fileMenu;
@@ -121,9 +123,6 @@ class QtstalkerApp : public QMainWindow
     QAction *actionWorkwithChart;
     QAction *actionWorkwithGroup;
     QAction *actionOptions;
-    QAction *actionDaily;
-    QAction *actionWeekly;
-    QAction *actionMonthly;
     QAction *actionGrid;
     QAction *actionDatawindow;
     QAction *actionBack;
@@ -133,24 +132,21 @@ class QtstalkerApp : public QMainWindow
     QAction *actionQuotes;
     QAction *actionScaleToScreen;
     QAction *actionNewPlugin;
-    QAction *actionBar;
-    QAction *actionPaintBar;
-    QAction *actionLine;
-    QAction *actionCandle;
-    QAction *actionPoint;
     QAction *actionWorkwithTest;
-
-    QActionGroup *compressionGroupAction;
-    QActionGroup *chartTypeGroupAction;
 
     QScrollView *view;
     QToolBar *toolbar;
     QToolBar *navToolbar;
     QMenuBar *menubar;
+    QSplitter *split;
+    QTabWidget *tabs;
+    QWidget *baseWidget;
     Plot *mainPlot;
-    Plot *indicatorPlot;
+    QDict<Plot> plotList;
     QComboBox *barCombo;
     QComboBox *groupCombo;
+    QComboBox *compressionCombo;
+    QComboBox *chartTypeCombo;
     QSpinBox *pixelspace;
     Config *config;
     QSlider *slider;
@@ -159,10 +155,7 @@ class QtstalkerApp : public QMainWindow
     QString chartName;
     QString chartType;
     QString chartSymbol;
-    QString indicatorGroupText;
     int chartObjectId;
-    QTabBar *tabBar;
-    QList<QTab> tabList;
 };
 
 #endif 

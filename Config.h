@@ -53,7 +53,8 @@ class Config
       PortfolioPath,
       Group,
       TestPath,
-      PlotFont
+      PlotFont,
+      AppFont
     };
 
     Config (QString);

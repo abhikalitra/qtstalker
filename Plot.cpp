@@ -164,7 +164,7 @@ void Plot::setChartType (QString d)
       break;
     }
 
-    if (! d.compare(tr("Point And Figure")))
+    if (! d.compare(tr("Point and Figure")))
     {
       minPixelspace = 4;
       startX = 0;
@@ -254,7 +254,7 @@ void Plot::draw ()
           break;
         }
 
-        if (! chartType.compare(tr("Point And Figure")))
+        if (! chartType.compare(tr("Point and Figure")))
         {
           drawPointAndFigure();
 	  break;
@@ -283,7 +283,11 @@ void Plot::drawObjects ()
   if (mainFlag)
     i = indicators["Main Plot"];
   else
-    i = indicators[currentIndicator];
+  {
+    QDictIterator<Indicator> it(indicators);
+    it.toFirst();
+    i = it.current();
+  }
 
   QStringList l = i->getChartObjects();
 
@@ -393,7 +397,9 @@ void Plot::drawLines ()
   }
   else
   {
-    Indicator *i = indicators[currentIndicator];
+    QDictIterator<Indicator> it(indicators);
+    it.toFirst();
+    Indicator *i = it.current();
 
     int loop;
     for (loop = 0; loop < i->getLines(); loop++)
@@ -1070,7 +1076,10 @@ void Plot::drawInfo ()
   }
   else
   {
-    Indicator *i = indicators[currentIndicator];
+    QDictIterator<Indicator> it(indicators);
+    it.toFirst();
+    Indicator *i = it.current();
+
     int loop;
     for (loop = 0; loop < (int) i->getLines(); loop++)
     {
@@ -1269,7 +1278,10 @@ void Plot::setScale ()
     }
     else
     {
-      Indicator *i = indicators[currentIndicator];
+      QDictIterator<Indicator> it(indicators);
+      it.toFirst();
+      Indicator *i = it.current();
+      
       int loop;
       for (loop = 0; loop < i->getLines(); loop++)
       {
@@ -1317,7 +1329,10 @@ void Plot::setScale ()
     }
     else
     {
-      Indicator *i = indicators[currentIndicator];
+      QDictIterator<Indicator> it(indicators);
+      it.toFirst();
+      Indicator *i = it.current();
+      
       int loop;
       for (loop = 0; loop < i->getLines(); loop++)
       {
@@ -1347,8 +1362,13 @@ void Plot::setScale ()
   if (mainFlag)
     i = indicators["Main Plot"];
   else
-    i = indicators[currentIndicator];
+  {
+    QDictIterator<Indicator> it(indicators);
+    it.toFirst();
+    i = it.current();
+  }
   QStringList l = i->getChartObjects();
+
   int loop;
   for (loop = 0; loop < (int) l.count(); loop++)
   {
@@ -2218,11 +2238,6 @@ double Plot::getClose (int d)
 {
   Setting *r = data.at(d);
   return r->getFloat("Close");
-}
-
-void Plot::setCurrentIndicator (QString d)
-{
-  currentIndicator = d;
 }
 
 QStringList Plot::getIndicators ()
