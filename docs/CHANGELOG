@@ -26,7 +26,12 @@
   
 - Removed the install plugins stuff. Not really needed since all you have to do is plop the lib into the dir for it to work.
 
-- Fixed plugin path change when upgrading to 0.21 by removing them from the rc file.
+- Rewrote the paint bar functions in Plot class to accept colors from indicator plugins. Added a new function to Plugin class
+  to handle color bars from indicators.
+
+- New indicator Exhaustion Points (EP). This was originally code from Plot class that was moved into an indicator instead.
+
+- New line type "Invisible" added. This allows data plots to be hidden, but the data to be visible in the side panel or data window.
 
 0.20
 ====
