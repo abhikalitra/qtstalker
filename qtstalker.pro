@@ -17,7 +17,6 @@ SUBDIRS += plugins/chart/Swing
 #compile quote plugins
 SUBDIRS += plugins/quote/CC
 SUBDIRS += plugins/quote/CME
-SUBDIRS += plugins/quote/CMEHistory
 SUBDIRS += plugins/quote/COT
 SUBDIRS += plugins/quote/CSV
 SUBDIRS += plugins/quote/Index

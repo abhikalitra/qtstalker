@@ -25,6 +25,7 @@
 #include <qstring.h>
 #include <qnetworkprotocol.h>
 #include <qurloperator.h>
+#include <qcombobox.h>
 
 class CME : public QuotePlugin
 {
@@ -38,16 +39,29 @@ class CME : public QuotePlugin
     void saveTodayData (QStringList);
     void parse (Setting *);
     void cancelUpdate ();
+    void loadSettings ();
+    void saveSettings ();
+    void prefDialog ();
+    void parseHistory ();
 
   public slots:
     void getFile ();
+    void getFileHistory ();
     void opDone (QNetworkOperation *);
+    void opHistoryDone (QNetworkOperation *);
+    void methodChanged (const QString &);
 
   private:
-    FuturesData *fd;
+    FuturesData fd;
     QUrlOperator *op;
     QStringList urlList;
     int symbolLoop;
+    QString file2;
+    QUrlOperator opHistory;
+    QString url;
+    QString currentSymbol;
+    QString method;
+    QComboBox *symbolCombo;
 };
 
 extern "C"

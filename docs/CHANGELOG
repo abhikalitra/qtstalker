@@ -121,6 +121,9 @@
 20040520: Added a version number to plugin file names. Will use the file versions to control
           proper plugin loading. Note the plugin filename is slightly different than dynamic lib
 	  naming convention due to qmake ignoring the version parm when building plugins.
+	  
+20040523: Merged CMEHistory plugin into CME plugin.
+	  
 	
 0.25
 ====

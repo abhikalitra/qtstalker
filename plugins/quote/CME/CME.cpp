@@ -21,6 +21,7 @@
 
 #include "CME.h"
 #include "ChartDb.h"
+#include "PrefDialog.h"
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qnetwork.h>
@@ -28,37 +29,45 @@
 #include <qstringlist.h>
 #include <stdlib.h>
 #include <qtimer.h>
+#include <qsettings.h>
 
 CME::CME ()
 {
   pluginName = "CME";
-  fd = new FuturesData;
   op = 0;
+  symbolCombo = 0;
   
+  connect(&opHistory, SIGNAL(finished(QNetworkOperation *)), this, SLOT(opHistoryDone(QNetworkOperation *)));
+  
+  loadSettings();
   qInitNetworkProtocols();
 }
 
 CME::~CME ()
 {
-  delete fd;
 }
 
 void CME::update ()
 {
-  urlList.clear();
-  symbolLoop = 0;
-  op = 0;
+  if (! method.compare(tr("Today")))
+  {
+    urlList.clear();
+    symbolLoop = 0;
+    op = 0;
 
-  QDir dir = QDir::home();
-  file = dir.path();
-  file.append("/Qtstalker/download");
+    QDir dir = QDir::home();
+    file = dir.path();
+    file.append("/Qtstalker/download");
 
-  urlList.append("ftp://ftp.cme.com//pub/settle/stlags");
-  urlList.append("ftp://ftp.cme.com//pub/settle/stlcur");
-  urlList.append("ftp://ftp.cme.com//pub/settle/stleqt");
-  urlList.append("ftp://ftp.cme.com//pub/settle/stlint");
+    urlList.append("ftp://ftp.cme.com//pub/settle/stlags");
+    urlList.append("ftp://ftp.cme.com//pub/settle/stlcur");
+    urlList.append("ftp://ftp.cme.com//pub/settle/stleqt");
+    urlList.append("ftp://ftp.cme.com//pub/settle/stlint");
 
-  QTimer::singleShot(250, this, SLOT(getFile()));
+    QTimer::singleShot(250, this, SLOT(getFile()));
+  }
+  else  
+    QTimer::singleShot(250, this, SLOT(getFileHistory()));
 }
 
 void CME::opDone (QNetworkOperation *o)
@@ -98,6 +107,33 @@ void CME::opDone (QNetworkOperation *o)
   getFile();
 }
 
+void CME::opHistoryDone (QNetworkOperation *o)
+{
+  if (! o)
+    return;
+
+  if (o->state() != QNetworkProtocol::StDone)
+    return;
+
+  if (o->errorCode() != QNetworkProtocol::NoError)
+  {
+    emit statusLogMessage(tr("Download error: bailing out"));
+    QString s = o->protocolDetail();
+    qDebug(s.latin1());
+    emit done();
+    return;
+  }
+
+  QDir dir(file);
+  if (! dir.exists(file, TRUE))
+    return;
+
+  parseHistory();
+
+  emit statusLogMessage(tr("Done"));
+  emit done();
+}
+
 void CME::getFile ()
 {
   if (op)
@@ -112,6 +148,28 @@ void CME::getFile ()
   
   QString s = "Downloading ";
   s.append(urlList[symbolLoop]);
+  emit statusLogMessage(s);
+}
+
+void CME::getFileHistory ()
+{
+  QDir dir = QDir::home();
+  file = dir.path();
+  file.append("/Qtstalker/download.zip");
+  dir.remove(file);
+
+  file2 = dir.path();
+  file2.append("/Qtstalker");
+
+  url = "ftp://ftp.cme.com//pub/hist_eod/";
+  url.append(currentSymbol.lower());
+  url.append("ytd.zip");
+
+  opHistory.copy(url, file, FALSE, FALSE);
+  
+  QString s = tr("Downloading");
+  s.append(" ");
+  s.append(url);
   emit statusLogMessage(s);
 }
 
@@ -515,6 +573,142 @@ void CME::parseToday ()
   f.close();
 }
 
+void CME::parseHistory ()
+{
+  QString s2 = file2;
+  s2.append("/");
+  s2.append(currentSymbol.lower());
+  s2.append("ytd.eod");
+  QDir dir(s2);
+  dir.remove(s2);
+
+  QString s = "unzip ";
+  s.append(file);
+  s.append(" -d ");
+  s.append(file2);
+  if (system(s))
+    return;
+
+  QFile f(s2);
+  if (! f.open(IO_ReadOnly))
+  {
+    emit statusLogMessage("could not open parse history file");
+    return;
+  }
+  QTextStream stream(&f);
+  
+  while(stream.atEnd() == 0)
+  {
+    s = stream.readLine();
+    s = s.stripWhiteSpace();
+    if (! s.length())
+      continue;
+
+    Setting *set = new Setting;
+
+    // date
+    s2 = s.mid(31, 6);
+    s2.prepend("20");
+    s2.append("000000");
+    set->setData("Date", s2);
+
+    // csymbol
+    s2 = s.mid(37, 2);
+    set->setData("CSymbol", s2);
+
+    // symbol
+    s2 = s.mid(37, 2);
+    s2.append("20");
+    s2.append(s.mid(41, 2));
+
+    QString month = s.mid(43, 2);
+    switch (month.toInt())
+    {
+      case 1:
+        month = "F";
+        break;
+      case 2:
+        month = "G";
+        break;
+      case 3:
+        month = "H";
+        break;
+      case 4:
+        month = "J";
+        break;
+      case 5:
+        month = "K";
+        break;
+      case 6:
+        month = "M";
+        break;
+      case 7:
+        month = "N";
+        break;
+      case 8:
+        month = "Q";
+        break;
+      case 9:
+        month = "U";
+        break;
+      case 10:
+        month = "V";
+        break;
+      case 11:
+        month = "X";
+        break;
+      default:
+        month = "Z";
+        break;
+    }
+    s2.append(month);
+    set->setData("Symbol", s2);
+
+    set->setData("Month", month);
+
+    QString dec = s.mid(30, 1);
+    
+    // fix decimal for JY
+    s2 = set->getData("CSymbol");
+    if (! s2.compare("JY"))
+      dec = QString::number(dec.toInt() - 2);
+
+    // open
+    s2 = s.mid(53, 9);
+    s2 = s2.insert(s2.length() - dec.toInt(), ".");
+    set->setData("Open", s2);
+
+    // high
+    s2 = s.mid(73, 9);
+    s2 = s2.insert(s2.length() - dec.toInt(), ".");
+    set->setData("High", s2);
+
+    // low
+    s2 = s.mid(83, 9);
+    s2 = s2.insert(s2.length() - dec.toInt(), ".");
+    set->setData("Low", s2);
+
+    // close
+    s2 = s.mid(113, 9);
+    s2 = s2.insert(s2.length() - dec.toInt(), ".");
+    set->setData("Close", s2);
+
+    // volume
+    s2 = s.mid(122, 7);
+    set->setData("Volume", s2);
+
+    // oi
+    s2 = s.mid(136, 7);
+    set->setData("OI", s2);
+
+    parse(set);
+
+    delete set;
+  }
+
+  f.close();
+}
+
 void CME::saveTodayData (QStringList l)
 {
   Setting *set = new Setting();
@@ -664,7 +858,7 @@ void CME::saveTodayData (QStringList l)
 
 void CME::parse (Setting *data)
 {
-  if (fd->setSymbol(data->getData("CSymbol")))
+  if (fd.setSymbol(data->getData("CSymbol")))
     return;
 
   // open
@@ -727,7 +921,7 @@ void CME::parse (Setting *data)
   }
 
   QString s = "Futures/";
-  s.append(fd->getSymbol());
+  s.append(fd.getSymbol());
   path = createDirectory(s);
   if (! path.length())
   {
@@ -762,9 +956,9 @@ void CME::parse (Setting *data)
   if (! s.length())
   {
     db->setDetail(ChartDb::Symbol, data->getData("Symbol"));
-    db->setDetail(ChartDb::Title, fd->getName());
+    db->setDetail(ChartDb::Title, fd.getName());
     db->setDetail(ChartDb::Type, "Futures");
-    db->setDetail(ChartDb::FuturesType, fd->getSymbol());
+    db->setDetail(ChartDb::FuturesType, fd.getSymbol());
     db->setDetail(ChartDb::FuturesMonth, data->getData("Month"));
     db->setDetail(ChartDb::BarType, QString::number(BarData::Daily));
   }
@@ -777,10 +971,102 @@ void CME::parse (Setting *data)
 
 void CME::cancelUpdate ()
 {
-  if (op)
-    op->stop();
+  if (! method.compare(tr("Today")))
+  {
+    if (op)
+      op->stop();
+  }
+  else
+    opHistory.stop();
+  
   emit done();
   emit statusLogMessage("Canceled");
+}
+
+void CME::prefDialog ()
+{
+  QStringList l;
+  l.append("AD");
+  l.append("CD");
+  l.append("EC");
+  l.append("ES");
+  l.append("JY");
+  l.append("FC");
+  l.append("GI");
+  l.append("LB");
+  l.append("LC");
+  l.append("LN");
+  l.append("NB");
+  l.append("ND");
+  l.append("PB");
+  l.append("SF");
+  l.append("NQ");
+  l.append("SP");
+  l.append("ED");
+  l.sort();
+
+  PrefDialog *dialog = new PrefDialog();
+  dialog->setCaption(tr("CME Prefs"));
+  dialog->createPage (tr("Details"));
+
+  QStringList l2;
+  l2.append("Today");
+  l2.append("History");
+  dialog->addComboItem(tr("Method"), tr("Details"), l2, method);
+  connect(dialog->getComboWidget(tr("Method")),
+          SIGNAL(activated(const QString &)),
+	  this,
+	  SLOT(methodChanged(const QString &)));
+    
+  dialog->addComboItem(tr("Symbol"), tr("Details"), l, currentSymbol);
+  symbolCombo = dialog->getComboWidget(tr("Symbol"));
+  
+  methodChanged (method);
+  
+  int rc = dialog->exec();
+  
+  if (rc == QDialog::Accepted)
+  {
+    currentSymbol = dialog->getCombo(tr("Symbol"));
+    saveFlag = TRUE;
+  }
+  
+  delete dialog;
+}
+
+void CME::loadSettings ()
+{
+  QSettings settings;
+  settings.beginGroup("/Qtstalker/CME plugin");
+
+  method = settings.readEntry("/Method", "Today");
+  currentSymbol = settings.readEntry("/Symbol", "AD");
+  
+  settings.endGroup();
+}
+
+void CME::saveSettings ()
+{
+  if (! saveFlag)
+    return;
+
+  QSettings settings;
+  settings.beginGroup("/Qtstalker/CME plugin");
+  
+  settings.writeEntry("/Method", method);
+  settings.writeEntry("/Symbol", currentSymbol);
+  
+  settings.endGroup();
+}
+
+void CME::methodChanged (const QString & d)
+{
+  method = d;
+  
+  if (! method.compare(tr("Today")))
+    symbolCombo->setEnabled(FALSE);
+  else  
+    symbolCombo->setEnabled(TRUE);
 }
 
 Plugin * create ()
