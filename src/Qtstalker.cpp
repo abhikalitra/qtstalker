@@ -16,7 +16,6 @@
  ***************************************************************************/
 
 #include <qlayout.h>
-#include <qstatusbar.h>
 #include <qmessagebox.h>
 #include <qdir.h>
 #include <qfiledialog.h>
@@ -55,6 +54,8 @@ QtstalkerApp::QtstalkerApp()
   initMenuBar();
   
   initToolBar();
+  
+  statusbar = statusBar();
   
   baseWidget = new QWidget(this);
   setCentralWidget (baseWidget);
@@ -181,10 +182,10 @@ QtstalkerApp::QtstalkerApp()
   connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(slotQuit()));
   
   progBar = new QProgressBar(this);
-  statusBar()->addWidget(progBar, 0, TRUE);
+  statusbar->addWidget(progBar, 0, TRUE);
   progBar->setMaximumHeight(progBar->height() - 10);
 
-  statusBar()->message(tr("Ready"), 2000);
+  statusbar->message(tr("Ready"), 2000);
 }
 
 QtstalkerApp::~QtstalkerApp()
@@ -434,7 +435,7 @@ void QtstalkerApp::slotOptions ()
     
     loadChart(chartPath);
 
-    statusBar()->message (tr("Preferences saved."));
+    statusbar->message (tr("Preferences saved."));
   }
 
   delete dialog;
@@ -969,7 +970,7 @@ void QtstalkerApp::slotChartUpdated ()
 
 void QtstalkerApp::slotStatusMessage (QString d)
 {
-  statusBar()->message(d);
+  statusbar->message(d);
   qApp->processEvents();
 }
 

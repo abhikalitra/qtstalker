@@ -139,6 +139,17 @@ Save changes?</source>
         <source>Select point to place BuyArrow...</source>
         <translation>Wybierz punkt połozenia StrzałkiKupuj...</translation>
     </message>
+    <message>
+        <source>Value</source>
+        <translation>Wartość</translation>
+    </message>
+</context>
+<context>
+    <name>CC</name>
+    <message>
+        <source>Updating chart...</source>
+        <translation>Aktualizacja wykresu...</translation>
+    </message>
 </context>
 <context>
     <name>CME</name>
@@ -833,6 +844,45 @@ Directory name must be one word only.</source>
     </message>
 </context>
 <context>
+    <name>Cycle</name>
+    <message>
+        <source>&amp;Edit Cycle</source>
+        <translation>&amp;Edycja Cyklu</translation>
+    </message>
+    <message>
+        <source>&amp;Move Cycle</source>
+        <translation>&amp;Przesuń Cykl</translation>
+    </message>
+    <message>
+        <source>&amp;Delete Cycle</source>
+        <translation>&amp;Wymaż Cykl</translation>
+    </message>
+    <message>
+        <source>Details</source>
+        <translation>Szczegóły</translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation>Kolor</translation>
+    </message>
+    <message>
+        <source>Interval</source>
+        <translation>Interwał</translation>
+    </message>
+    <message>
+        <source>Set Default</source>
+        <translation>Ustaw domyślnie</translation>
+    </message>
+    <message>
+        <source>Edit Cycle</source>
+        <translation>Edycja Cyklu</translation>
+    </message>
+    <message>
+        <source>Select starting point of Cycle...</source>
+        <translation>Wybierz punkt startowy Cyklu...</translation>
+    </message>
+</context>
+<context>
     <name>DataWindow</name>
     <message>
         <source>Date</source>
@@ -991,6 +1041,18 @@ Directory name must be one word only.</source>
     <message>
         <source>Select FiboLine low point...</source>
         <translation>Wybierz niżższy punkt FiboLinii...</translation>
+    </message>
+    <message>
+        <source>High</source>
+        <translation>Wyższy</translation>
+    </message>
+    <message>
+        <source>Low</source>
+        <translation>Niższy</translation>
+    </message>
+    <message>
+        <source>Extend</source>
+        <translation>Przedłuż</translation>
     </message>
 </context>
 <context>
@@ -1344,6 +1406,17 @@ Save changes?</source>
     <message>
         <source>Select point to place HorizontalLine...</source>
         <translation>Wybierz punkt połozenia LiniiPoziomej...</translation>
+    </message>
+    <message>
+        <source>Value</source>
+        <translation>Wartość</translation>
+    </message>
+</context>
+<context>
+    <name>Index</name>
+    <message>
+        <source>Updating index...</source>
+        <translation>Aktualizacja indeksu...</translation>
     </message>
 </context>
 <context>
@@ -2958,15 +3031,15 @@ Save changes?</source>
     </message>
     <message>
         <source>Short Period</source>
-        <translation type="unfinished"></translation>
+        <translation>Okres Krótki</translation>
     </message>
     <message>
         <source>Medium Period</source>
-        <translation type="unfinished"></translation>
+        <translation>Okres Średni</translation>
     </message>
     <message>
         <source>Long Period</source>
-        <translation type="unfinished"></translation>
+        <translation>Okres Długi</translation>
     </message>
     <message>
         <source>VFI Indicator</source>
@@ -3030,7 +3103,7 @@ Save changes?</source>
     </message>
     <message>
         <source>Cocoa</source>
-        <translation type="unfinished"></translation>
+        <translation>Kakao</translation>
     </message>
     <message>
         <source>Canadian Dollar</source>
@@ -3042,7 +3115,7 @@ Save changes?</source>
     </message>
     <message>
         <source>CRB Index</source>
-        <translation type="unfinished"></translation>
+        <translation>Indeks CRB</translation>
     </message>
     <message>
         <source>Cotton</source>
@@ -3050,7 +3123,7 @@ Save changes?</source>
     </message>
     <message>
         <source>Dow Jones Industrial Average</source>
-        <translation type="unfinished"></translation>
+        <translation>Średnia Przemysłu Dow Jones</translation>
     </message>
     <message>
         <source>US Dollar Index</source>
@@ -3062,7 +3135,7 @@ Save changes?</source>
     </message>
     <message>
         <source>Eurodollar</source>
-        <translation type="unfinished"></translation>
+        <translation>Eurodolar</translation>
     </message>
     <message>
         <source>E-MINI S&amp;P 500</source>
@@ -3232,6 +3305,14 @@ Save changes?</source>
         <source>Width</source>
         <translation>Szerokość</translation>
     </message>
+    <message>
+        <source>1 Minute</source>
+        <translation>1 Minuta</translation>
+    </message>
+    <message>
+        <source>10 Minute</source>
+        <translation>10 Minut</translation>
+    </message>
 </context>
 <context>
     <name>QtstalkerApp</name>
@@ -3344,6 +3425,18 @@ Ver CVS 0.30 (greased weasel)
         <source>Macro session ended.</source>
         <translation>Sesja makro zakończyła się.</translation>
     </message>
+    <message>
+        <source>Loading chart...</source>
+        <translation>Ładowanie wykresu...</translation>
+    </message>
+    <message>
+        <source>Loading indicators...</source>
+        <translation>Ładowanie wskaźników...</translation>
+    </message>
+    <message>
+        <source>Loading chart objects...</source>
+        <translation>Ładowanie objektów wykresu...</translation>
+    </message>
 </context>
 <context>
     <name>QtstalkerFormat</name>
@@ -3404,15 +3497,15 @@ Ver CVS 0.30 (greased weasel)
     </message>
     <message>
         <source>Show Data Log</source>
-        <translation>Pokaż Dziennik Danych</translation>
+        <translation type="obsolete">Pokaż Dziennik Danych</translation>
     </message>
     <message>
         <source>Download Data:</source>
-        <translation>Pobierane Dane:</translation>
+        <translation type="obsolete">Pobierane Dane:</translation>
     </message>
     <message>
         <source>Data</source>
-        <translation>Dane</translation>
+        <translation type="obsolete">Dane</translation>
     </message>
     <message>
         <source>&amp;Done</source>
@@ -3598,6 +3691,17 @@ Ver CVS 0.30 (greased weasel)
     <message>
         <source>Select point to place SellArrow...</source>
         <translation>Wybierz punkt połozenia StrzałkiSprzedaj...</translation>
+    </message>
+    <message>
+        <source>Value</source>
+        <translation>Wartość</translation>
+    </message>
+</context>
+<context>
+    <name>Spread</name>
+    <message>
+        <source>Updating spread...</source>
+        <translation>Aktualizacja spredu...</translation>
     </message>
 </context>
 <context>
@@ -4182,6 +4286,10 @@ Save changes?</source>
         <source>Select point to place Text...</source>
         <translation>Wybierz punkt, by umieścić Tekst...</translation>
     </message>
+    <message>
+        <source>Value</source>
+        <translation>Wartość</translation>
+    </message>
 </context>
 <context>
     <name>TrendLine</name>
@@ -4248,6 +4356,14 @@ Save changes?</source>
     <message>
         <source>Select TrendLine ending point...</source>
         <translation>Wybierz punkt końcowy Linii Trendu...</translation>
+    </message>
+    <message>
+        <source>Start Value</source>
+        <translation>Wartość Początkowa</translation>
+    </message>
+    <message>
+        <source>End Value</source>
+        <translation>Wartość Końcowa</translation>
     </message>
 </context>
 <context>

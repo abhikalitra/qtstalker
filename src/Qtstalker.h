@@ -27,6 +27,7 @@
 #include <qmultilineedit.h>
 #include <qdict.h>
 #include <qprogressbar.h>
+#include <qstatusbar.h>
 
 #include "Indicator.h"
 #include "Plot.h"
@@ -158,6 +159,7 @@ class QtstalkerApp : public QMainWindow
     MacroPage *mp;
     Macro *currentMacro;
     QProgressBar *progBar;
+    QStatusBar *statusbar;
 };
 
 #endif
