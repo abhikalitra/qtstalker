@@ -38,6 +38,9 @@
 #include "Indicator.h"
 #include "Scaler.h"
 #include "BarData.h"
+#include "ChartObject.h"
+#include "Config.h"
+#include "Plugin.h"
 
 class Plot : public QWidget
 {
@@ -45,13 +48,13 @@ class Plot : public QWidget
 
   signals:
     void statusMessage (QString);
-    void chartObjectCreated (Setting *);
+    void chartObjectCreated (ChartObject *);
     void infoMessage (Setting *);
     void leftMouseButton (int, int, bool);
     void keyPressed (QKeyEvent *);
     void signalEditIndicator (QString, Plot *);
     void signalDeleteIndicator (QString, Plot *);
-    void signalEditChartObject (Setting *, Plot *);
+    void signalEditChartObject (ChartObject *, Plot *);
     void signalDeleteChartObject (QString, Plot *);
     void signalNewIndicator ();
     void signalNewChartObject (QString, Plot *);
@@ -63,17 +66,6 @@ class Plot : public QWidget
       Daily,
       Weekly,
       Monthly
-    };
-
-    enum ObjectType
-    {
-      VerticalLine,
-      HorizontalLine,
-      TrendLine,
-      Text,
-      BuyArrow,
-      SellArrow,
-      FibonacciLine
     };
 
     enum MouseStatus
@@ -92,17 +84,16 @@ class Plot : public QWidget
     void setMainFlag (bool);
     void setLogScale (bool);
     void setChartType (QString);
+    void setChartInput ();
+    void setConfig (Config *);
     void createChartObject (QString, QString);
-    void setPaintBars (QList<QColor>);
+//    void setPaintBars (QList<QColor>);
     void setHideMainPlot (bool);
     bool getHideMainPlot ();
     void updateStatusBar (int, int);
     void setTabFlag (bool);
     bool getTabFlag ();
-    void setPAFBoxSize (double);
-    void setPAFReversal (int);
     bool getMainFlag ();
-    QStringList getChartTypes ();
 
     void addIndicator (QString, Indicator *);
     Indicator * getIndicator (QString);
@@ -110,6 +101,7 @@ class Plot : public QWidget
     void deleteIndicator (QString);
     QStringList getChartObjectList ();
     void newChartObject ();
+    void addChartObject (ChartObject *);
     void addChartObject (Setting *);
     QStringList getChartObjects ();
 
@@ -126,10 +118,6 @@ class Plot : public QWidget
     void setBackgroundColor (QColor);
     void setBorderColor (QColor);
     void setGridColor (QColor);
-    void setUpColor (QColor);
-    void setDownColor (QColor);
-    void setNeutralColor (QColor);
-    void setCandleColor (QColor);
     void setPlotFont (QFont);
     void setIndex (int);
     void setInterval(Plot::TimeInterval);
@@ -146,32 +134,12 @@ class Plot : public QWidget
     virtual void keyPressEvent (QKeyEvent *);
 
   private slots:
-    void drawVerticalLine (Setting *);
-    void drawTrendLine (Setting *);
-    void drawText (Setting *);
-    void drawSellArrow (Setting *);
-    void drawHorizontalLine (Setting *);
-    void drawFibonacciLine (Setting *);
-    void drawFibonacciLine2 (QColor, QString, double, double, double);
-    void drawBuyArrow (Setting *);
-    void drawPointAndFigure ();
-    void drawPaintBar ();
-    void drawLineChart ();
-    void drawCandle ();
-    void drawCandle2 ();
-    void drawBars ();
-    void drawSwing ();
     void drawObjects ();
     void drawLines ();
     void drawDate ();
     void drawXGrid ();
     void drawScale ();
     void drawYGrid ();
-    void drawLine ();
-    void drawHorizontalLine ();
-    void drawHistogram ();
-    void drawHistogramBar ();
-    void drawDot ();
     void drawInfo ();
     void setHeight ();
     void setWidth ();
@@ -186,12 +154,15 @@ class Plot : public QWidget
     void slotDeleteChartObject (int);
     void slotNewIndicator ();
     void slotNewChartObject (int);
-
+    
+    void slotEditChartPrefs ();
 
   private:
     QFont plotFont;
     PlotLine *currentLine;
-    QPixmap buffer;
+    QPixmap *buffer;
+    Plugin *chartPlugin;
+    Config *config;
     int pixelspace;
     int minPixelspace;
     int dateHeight;
@@ -199,16 +170,10 @@ class Plot : public QWidget
     int _width;
     int startX;
     int startIndex;
-    double PAFBoxSize;
-    int PAFReversal;
     TimeInterval interval;
     QColor backgroundColor;
     QColor gridColor;
     QColor borderColor;
-    QColor upColor;
-    QColor downColor;
-    QColor neutralColor;
-    QColor candleColor;
     bool dateFlag;
     bool gridFlag;
     bool mainFlag;
@@ -224,7 +189,7 @@ class Plot : public QWidget
     double mainHigh;
     double mainLow;
     QArray<double> scaleArray;
-    Scaler scaler;
+    Scaler *scaler;
 
     QString y1;
     QString y2;
@@ -232,13 +197,13 @@ class Plot : public QWidget
     QString x2;
     QString objectName;
     MouseStatus mouseFlag;
-    ObjectType objectFlag;
+    ChartObject::ObjectType objectFlag;
 
     QString chartType;
     BarData *data;
     QDict<Indicator> indicators;
-    QDict<Setting> chartObjects;
-    QList<QColor> paintBars;
+    QDict<ChartObject> chartObjects;
+//    QList<QColor> paintBars;
     QArray<int> xGrid;
 
     QPopupMenu *chartMenu;

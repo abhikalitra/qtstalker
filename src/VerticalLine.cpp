@@ -23,28 +23,31 @@
 #include <qpainter.h>
 #include <qcolor.h>
 
-VerticalLine::VerticalLine (QString indicator, QString name, QString date)
+VerticalLine::VerticalLine (QPixmap *p, QString indicator, QString name, QString date)
 {
+  buffer = p;
+  
   settings.set("Type", "Vertical Line", Setting::None);
   settings.set(tr("Date"), date, Setting::Date);
   settings.set(tr("Color"), "white", Setting::Color);
   settings.set("Plot", indicator, Setting::None);
   settings.set("Name", name, Setting::None);
+  settings.set("ObjectType", QString::number(ChartObject::VerticalLine), Setting::None);
 }
 
 VerticalLine::~VerticalLine ()
 {
 }
 
-void VerticalLine::draw (Scaler &, QPixmap &buffer, int x, int)
+void VerticalLine::draw (int x, int)
 {
   QPainter painter;
-  painter.begin(&buffer);
+  painter.begin(buffer);
 
   QColor color(settings.getData(tr("Color")));
   painter.setPen(color);
 
-  painter.drawLine (x, 0, x, buffer.height());
+  painter.drawLine (x, 0, x, buffer->height());
 
   painter.end();
 }

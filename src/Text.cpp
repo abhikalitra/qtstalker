@@ -23,8 +23,11 @@
 #include <qpainter.h>
 #include <qcolor.h>
 
-Text::Text (QString indicator, QString name, QString date, QString value)
+Text::Text (Scaler *s, QPixmap *p, QString indicator, QString name, QString date, QString value)
 {
+  scaler = s;
+  buffer = p;
+  
   settings.set("Type", "Text", Setting::None);
   settings.set(tr("Date"), date, Setting::Date);
   settings.set(tr("Value"), value, Setting::Float);
@@ -33,19 +36,20 @@ Text::Text (QString indicator, QString name, QString date, QString value)
   settings.set("Name", name, Setting::None);
   settings.set(tr("Label"), tr("Text"), Setting::Text);
 //  settings.set(tr("Font"), " ", Setting::Font);
+  settings.set("ObjectType", QString::number(ChartObject::Text), Setting::None);
 }
 
 Text::~Text ()
 {
 }
 
-void Text::draw (Scaler &scaler, QPixmap &buffer, int x, int)
+void Text::draw (int x, int)
 {
   QPainter painter;
-  painter.begin(&buffer);
+  painter.begin(buffer);
 //  painter.setFont(plotFont);
 
-  int y = scaler.convertToY(settings.getFloat(tr("Value")));
+  int y = scaler->convertToY(settings.getFloat(tr("Value")));
 
   QColor color(settings.getData(tr("Color")));
   painter.setPen(color);

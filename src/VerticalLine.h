@@ -29,9 +29,9 @@ class VerticalLine : public ChartObject
   Q_OBJECT
 
   public:
-    VerticalLine (QString, QString, QString);
+    VerticalLine (QPixmap *, QString, QString, QString);
     ~VerticalLine ();
-    void draw (Scaler &, QPixmap &, int, int);
+    void draw (int, int);
     QString getDate ();
 };
 

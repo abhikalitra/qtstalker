@@ -24,26 +24,30 @@
 #include <qcolor.h>
 #include <qpointarray.h>
 
-SellArrow::SellArrow (QString indicator, QString name, QString date, QString value)
+SellArrow::SellArrow (Scaler *s, QPixmap *p, QString indicator, QString name, QString date, QString value)
 {
+  scaler = s;
+  buffer = p;
+  
   settings.set("Type", "Sell Arrow", Setting::None);
   settings.set(tr("Date"), date, Setting::Date);
   settings.set(tr("Value"), value, Setting::Float);
   settings.set(tr("Color"), "red", Setting::Color);
   settings.set("Plot", indicator, Setting::None);
   settings.set("Name", name, Setting::None);
+  settings.set("ObjectType", QString::number(ChartObject::SellArrow), Setting::None);
 }
 
 SellArrow::~SellArrow ()
 {
 }
 
-void SellArrow::draw (Scaler &scaler, QPixmap &buffer, int x, int)
+void SellArrow::draw (int x, int)
 {
   QPainter painter;
-  painter.begin(&buffer);
+  painter.begin(buffer);
 
-  int y = scaler.convertToY(settings.getFloat(tr("Value")));
+  int y = scaler->convertToY(settings.getFloat(tr("Value")));
 
   QColor color(settings.getData(tr("Color")));
 

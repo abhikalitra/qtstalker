@@ -10,6 +10,9 @@ HEADERS += FuturesData.h
 HEADERS += PlotLine.h
 HEADERS += ChartDb.h
 HEADERS += BarData.h
+HEADERS += Scaler.h
+HEADERS += ChartPlugin.h
+HEADERS += PrefDialog.h
    
 SOURCES += Plugin.cpp
 SOURCES += QuotePlugin.cpp
@@ -19,6 +22,9 @@ SOURCES += FuturesData.cpp
 SOURCES += PlotLine.cpp
 SOURCES += ChartDb.cpp
 SOURCES += BarData.cpp
+SOURCES += Scaler.cpp
+SOURCES += ChartPlugin.cpp
+SOURCES += PrefDialog.cpp
     
 TARGET = qtstalker
 VERSION = 0.23.0

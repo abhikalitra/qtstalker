@@ -40,6 +40,7 @@ MACD::MACD ()
   set(tr("Slow Period"), "26", Setting::Integer);
   set(tr("Signal Period"), "9", Setting::Integer);
   set(tr("MA Type"), tr("EMA"), Setting::MAType);
+  set(tr("Oscillator Scaling Max"), tr("False"), Setting::Bool);
   set(tr("Plot"), tr("False"), Setting::None);
   set(tr("Alert"), tr("True"), Setting::None);
 
@@ -84,7 +85,8 @@ void MACD::calculate ()
   osc->setColor(getData(tr("Oscillator Color")));
   osc->setType(getData(tr("Oscillator Line Type")));
   osc->setLabel(getData(tr("Oscillator Label")));
-  osc->setScaleFlag(TRUE);
+  if (! getData(tr("Oscillator Scaling Max")).compare(tr("True")))
+    osc->setScaleFlag(TRUE);
 
   floop = macd->getSize() - 1;
   sloop = signal->getSize() - 1;

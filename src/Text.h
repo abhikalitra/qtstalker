@@ -29,9 +29,9 @@ class Text : public ChartObject
   Q_OBJECT
 
   public:
-    Text (QString indicator, QString name, QString date, QString value);
+    Text (Scaler *, QPixmap *, QString indicator, QString name, QString date, QString value);
     ~Text ();
-    void draw (Scaler &, QPixmap &, int, int);
+    void draw (int, int);
     QString getDate ();
 };
 

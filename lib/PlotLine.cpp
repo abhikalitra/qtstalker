@@ -20,9 +20,13 @@
  */
 
 #include "PlotLine.h"
+#include <qpainter.h>
+#include <qpointarray.h>
 
 PlotLine::PlotLine ()
 {
+  scaler = 0;
+  buffer = 0;
   data.setAutoDelete(TRUE);
   colorBars.setAutoDelete(TRUE);
   color = "red";
@@ -186,6 +190,295 @@ QString PlotLine::getColorBar (int d)
 
   QString *r = colorBars.at(d);
   return r->left(r->length());
+}
+
+void PlotLine::draw (int dataSize, int startX, int startIndex, int pixelspace)
+{
+  while (1)
+  {
+    if (! getType().compare("Histogram"))
+    {
+      drawHistogram(dataSize, startX, startIndex, pixelspace);
+      break;
+    }
+
+    if (! getType().compare("Histogram Bar"))
+    {
+      drawHistogramBar(dataSize, startX, startIndex, pixelspace);
+      break;
+    }
+
+    if (! getType().compare("Dot"))
+    {
+      drawDot(dataSize, startX, startIndex, pixelspace);
+      break;
+    }
+
+    if (! getType().compare("Line") || ! getType().compare("Dash"))
+    {
+      drawLine(dataSize, startX, startIndex, pixelspace);
+      break;
+    }
+
+    if (! getType().compare("Horizontal"))
+      drawHorizontalLine(startX);
+
+    break;
+  }
+}
+
+void PlotLine::drawLine (int dataSize, int startX, int startIndex, int pixelspace)
+{
+  QPainter painter;
+  painter.begin(buffer);
+
+  QPen pen;
+  pen.setColor(getColor());
+
+  if (! getType().compare("Dash"))
+    pen.setStyle(Qt::DotLine);
+  else
+    pen.setStyle(Qt::SolidLine);
+  painter.setPen(pen);
+
+  int x = -1;
+  int x2 = startX;
+  int y = -1;
+  int y2 = -1;
+  int loop = getSize() - dataSize + startIndex;
+  
+  Scaler *scale = new Scaler;
+  scale->set(scaler->getHeight(),
+  	     getHigh(),
+	     getLow(),
+	     scaler->getLogScaleHigh(),
+	     scaler->getLogRange(),
+	     scaler->getDateFlag(),
+	     scaler->getLogFlag());
+
+  while ((x2 < buffer->width()) && (loop < (int) getSize()))
+  {
+    if (loop > -1)
+    {
+      if (getScaleFlag())
+        y2 = scale->convertToY(getData(loop));
+      else
+        y2 = scaler->convertToY(getData(loop));
+
+      if (y != -1)
+        painter.drawLine (x, y, x2, y2);
+      x = x2;
+      y = y2;
+    }
+
+    x2 = x2 + pixelspace;
+    loop++;
+  }
+
+  painter.end();
+
+  delete scale;
+}
+
+void PlotLine::drawHorizontalLine (int startX)
+{
+  QPainter painter;
+  painter.begin(buffer);
+//  painter.setFont(plotFont);
+
+  QPen pen;
+  pen.setColor(getColor());
+  painter.setPen(pen);
+
+  int y = scaler->convertToY(getData(getSize() - 1));
+
+  painter.drawLine (0, y, buffer->width(), y);
+
+  painter.drawText(startX, y - 1, strip(getData(getSize() - 1)));
+
+  painter.end();
+}
+
+void PlotLine::drawDot (int dataSize, int startX, int startIndex, int pixelspace)
+{
+  QPainter painter;
+  painter.begin(buffer);
+
+  QPen pen;
+  pen.setColor(getColor());
+  painter.setPen(pen);
+
+  int x = startX;
+  int loop = getSize() - dataSize + startIndex;
+
+  Scaler *scale = new Scaler;
+  scale->set(scaler->getHeight(),
+  	     getHigh(),
+	     getLow(),
+	     scaler->getLogScaleHigh(),
+	     scaler->getLogRange(),
+	     scaler->getDateFlag(),
+	     scaler->getLogFlag());
+
+  while ((x < buffer->width()) && (loop < (int) getSize()))
+  {
+    if (loop > -1)
+    {
+      int y;
+      if (getScaleFlag())
+        y = scale->convertToY(getData(loop));
+      else
+        y = scaler->convertToY(getData(loop));
+
+      painter.drawPoint(x, y);
+    }
+
+    x = x + pixelspace;
+    loop++;
+  }
+
+  painter.end();
+
+  delete scale;
+}
+
+void PlotLine::drawHistogram (int dataSize, int startX, int startIndex, int pixelspace)
+{
+  QPainter painter;
+  painter.begin(buffer);
+  painter.setPen(getColor());
+  painter.setBrush(getColor());
+
+  Scaler *scale = new Scaler;
+  scale->set(scaler->getHeight(),
+  	     getHigh(),
+	     getLow(),
+	     scaler->getLogScaleHigh(),
+	     scaler->getLogRange(),
+	     scaler->getDateFlag(),
+	     scaler->getLogFlag());
+
+  int loop = getSize() - dataSize + startIndex;
+
+  QPointArray pa(4);
+
+  int zero = 0;
+  if (getScaleFlag())
+    zero = scale->convertToY(0);
+  else
+    zero = scaler->convertToY(0);
+
+  int x = -1;
+  int x2 = startX;
+  int y = -1;
+  int y2 = -1;
+
+  while ((x < buffer->width()) && (loop < (int) getSize()))
+  {
+    if (loop > -1)
+    {
+      if (getScaleFlag())
+        y2 = scale->convertToY(getData(loop));
+      else
+        y2 = scaler->convertToY(getData(loop));
+      pa.setPoint(0, x, zero);
+      pa.setPoint(1, x, y);
+      pa.setPoint(2, x2, y2);
+      pa.setPoint(3, x2, zero);
+
+      if (y != -1)
+        painter.drawPolygon(pa, TRUE, 0, -1);
+
+      x = x2;
+      y = y2;
+    }
+
+    x2 = x2 + pixelspace;
+    loop++;
+  }
+
+  painter.end();
+
+  delete scale;
+}
+
+void PlotLine::drawHistogramBar (int dataSize, int startX, int startIndex, int pixelspace)
+{
+  QPainter painter;
+  painter.begin(buffer);
+
+  QColor color(getColor());
+
+  Scaler *scale = new Scaler;
+  scale->set(scaler->getHeight(),
+  	     getHigh(),
+	     getLow(),
+	     scaler->getLogScaleHigh(),
+	     scaler->getLogRange(),
+	     scaler->getDateFlag(),
+	     scaler->getLogFlag());
+
+  int x = startX;
+  int zero = 0;
+  if (getScaleFlag())
+    zero = scale->convertToY(0);
+  else
+    zero = scaler->convertToY(0);
+
+  int loop = getSize() - dataSize + startIndex;
+
+  while ((x < buffer->width()) && (loop < (int) getSize()))
+  {
+    if (loop > -1)
+    {
+      int y;
+      if (getScaleFlag())
+        y = scale->convertToY(getData(loop));
+      else
+        y = scaler->convertToY(getData(loop));
+
+      if (getColorFlag() == TRUE)
+	color.setNamedColor(getColorBar(loop));
+
+      painter.fillRect(x, y, pixelspace - 1, zero - y, color);
+    }
+
+    x = x + pixelspace;
+    loop++;
+  }
+
+  painter.end();
+
+  delete scale;
+}
+
+QString PlotLine::strip (double d)
+{
+  QString s = QString::number(d, 'f', 4);
+
+  while (1)
+  {
+    if (s.find('.', -1, TRUE) != -1)
+    {
+      s.truncate(s.length() - 1);
+      break;
+    }
+    else
+    {
+      if (s.find('0', -1, TRUE) != -1)
+        s.truncate(s.length() - 1);
+      else
+        break;
+    }
+  }
+
+  return s;
+}
+
+void PlotLine::setPointers (Scaler *s, QPixmap *p)
+{
+  scaler = s;
+  buffer = p;
 }
 
 

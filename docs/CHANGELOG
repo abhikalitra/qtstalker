@@ -5,8 +5,22 @@
           input bar interface. This structural change in preparation for future design changes.
 
 20040222: Added a small current close arrow pointer to the scale area of the main plot. Helps with
-          tracking where the last close is located on the scale.	  
+          tracking where the last close is located on the scale.
+	  
+20040224: Moved chart object logic out of Plot:: and split each chart object off into it's own
+          class. Moving towards a proper OO framework.
 
+20040228: Moved PlotLine line type logic out of Plot:: and into PlotLine::
+          Moving towards a proper OO framework.
+	  
+20040228: Moved chart type logic out of Plot:: and split each chart type off into it's own
+          plugin. We now have chart plugins. Chart plugins now have their own pref dialogs
+	  to handle colors and any parms that are specific to that chart style.
+	  
+20040228: Added new option to MACD plugin. Option controls the osc scaling. True turns on full
+          scaling and false reverts to normal scaling.
+	  
+	  
 0.25
 ====
 

@@ -29,9 +29,9 @@ class BuyArrow : public ChartObject
   Q_OBJECT
 
   public:
-    BuyArrow (QString, QString, QString, QString);
+    BuyArrow (Scaler *, QPixmap *, QString, QString, QString, QString);
     ~BuyArrow ();
-    void draw (Scaler &, QPixmap &, int, int);
+    void draw (int, int);
     QString getDate ();
 };
 

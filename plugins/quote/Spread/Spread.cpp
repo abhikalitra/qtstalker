@@ -128,7 +128,7 @@ void Spread::loadData (QString symbol, QString method)
 
   QDateTime dt = tdb->getDateTime(details->getData("First Date"));
 
-  BarData *recordList = tdb->getHistory(ChartDb::Daily, dt);
+  BarData *recordList = tdb->getHistory(ChartDb::Daily, dt, BarData::Bars);
 
   int loop;
   for (loop = 0; loop < (int) recordList->count(); loop++)

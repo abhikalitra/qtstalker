@@ -29,9 +29,9 @@ class SellArrow : public ChartObject
   Q_OBJECT
 
   public:
-    SellArrow (QString, QString, QString, QString);
+    SellArrow (Scaler *, QPixmap *, QString, QString, QString, QString);
     ~SellArrow ();
-    void draw (Scaler &, QPixmap &, int, int);
+    void draw (int, int);
     QString getDate ();
 };
 

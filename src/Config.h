@@ -44,10 +44,10 @@ class Config
       BackgroundColor,
       BorderColor,
       GridColor,
-      UpColor,
-      DownColor,
-      NeutralColor,
-      PaintBarIndicator,
+      ChartPluginPath,
+      DownColor, // unused
+      NeutralColor, // unused
+      PaintBarIndicator, // unused
       MainPlotSize,
       IndicatorPlotSize,
       ScaleToScreen,
@@ -64,14 +64,14 @@ class Config
       NavigatorPosition,
       IndicatorTabs,
       StackedIndicator,
-      PAFBoxSize,
-      PAFReversal,
+      PAFBoxSize, // unused
+      PAFReversal, // unused
       Height,
       Width,
       X,
       Y,
       ScannerPath,
-      CandleColor
+      CandleColor //unused
     };
 
     Config (QString);
@@ -89,14 +89,20 @@ class Config
 
     QStringList getIndicatorPlugins ();
     QStringList getQuotePlugins ();
+    QStringList getChartPlugins ();
 
     Plugin * getPlugin (Config::Parm, QString);
+    Plugin * getChartPlugin (QString);
+    
     void closePlugins ();
+    void closeChartPlugin ();
 
   protected:
     QString path;
     QDict<QLibrary> libs;
     QDict<Plugin> plugins;
+    QLibrary *chartLib;
+    Plugin *chartPlugin;
 };
 
 #endif

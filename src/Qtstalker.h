@@ -40,6 +40,7 @@
 #include "Setting.h"
 #include "ChartPage.h"
 #include "BarData.h"
+#include "ChartObject.h"
 
 #define DEFAULT_INDICATOR_HEIGHT 125
 
@@ -54,10 +55,6 @@ class QtstalkerApp : public QMainWindow
     void signalBackgroundColor (QColor);
     void signalBorderColor (QColor);
     void signalGridColor (QColor);
-    void signalUpColor (QColor);
-    void signalDownColor (QColor);
-    void signalNeutralColor (QColor);
-    void signalCandleColor (QColor);
     void signalPlotFont (QFont);
     void signalIndex (int);
     void signalInterval(Plot::TimeInterval);
@@ -106,7 +103,7 @@ class QtstalkerApp : public QMainWindow
     void slotEditIndicator (QString, Plot *);
     void slotDeleteIndicator (QString, Plot *);
     void slotNewChartObject (QString, Plot *);
-    void slotEditChartObject (Setting *, Plot *);
+    void slotEditChartObject (ChartObject *, Plot *);
     void slotDeleteChartObject (QString, Plot *);
     void slotGrid (bool);
     void slotCompressionChanged (int);
@@ -117,7 +114,7 @@ class QtstalkerApp : public QMainWindow
     void slotChartUpdated ();
     void slotStatusMessage (QString);
     void slotTabChanged (QWidget *);
-    void slotChartObjectCreated (Setting *);
+    void slotChartObjectCreated (ChartObject *);
     void slotHideNav (bool);
     void slotUpdateInfo (Setting *);
     void slotLogScale (bool);

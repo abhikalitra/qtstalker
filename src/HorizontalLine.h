@@ -29,9 +29,9 @@ class HorizontalLine : public ChartObject
   Q_OBJECT
 
   public:
-    HorizontalLine (QString, QString, QString);
+    HorizontalLine (Scaler *, QPixmap *, QString, QString, QString);
     ~HorizontalLine ();
-    void draw (Scaler &, QPixmap &, int, int);
+    void draw (int, int);
 };
 
 #endif

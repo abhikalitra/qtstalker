@@ -51,8 +51,6 @@ QString Plugin::getAbout ()
   s.append(" Version ");
   s.append(QString::number(version));
   s.append("\n");
-  s.append(COPYRIGHT);
-  s.append("\n");
   s.append(about);
 
   return s;
@@ -142,4 +140,35 @@ bool Plugin::getCreateFlag ()
   return FALSE;
 }
 
+
+//**********************************************************
+//************** chart plugin interface ********************
+//**********************************************************
+
+void Plugin::drawChart (int, int, int)
+{
+}
+
+void Plugin::setChartInput (BarData *, Scaler *, QPixmap *)
+{
+}
+
+void Plugin::prefDialog ()
+{
+}
+
+int Plugin::getMinPixelspace ()
+{
+  return 0;
+}
+
+int Plugin::getStartX ()
+{
+  return 0;
+}
+
+bool Plugin::getIndicatorFlag ()
+{
+  return FALSE;
+}
 

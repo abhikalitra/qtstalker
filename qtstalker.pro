@@ -1,9 +1,22 @@
 TEMPLATE = subdirs
 
+#compile qtstalker lib
 SUBDIRS += lib
 
+#compile app
 SUBDIRS += src
 
+#compile chart plugins
+SUBDIRS += plugins/chart/Bar
+SUBDIRS += plugins/chart/Candle
+SUBDIRS += plugins/chart/CandleQS
+SUBDIRS += plugins/chart/Line
+SUBDIRS += plugins/chart/PF
+SUBDIRS += plugins/chart/PaintBar
+SUBDIRS += plugins/chart/Swing
+
+
+#compile quote plugins
 SUBDIRS += plugins/quote/CC
 SUBDIRS += plugins/quote/CME
 SUBDIRS += plugins/quote/CMEHistory
@@ -20,6 +33,8 @@ exists(/usr/include/mysql/mysql.h){
   SUBDIRS += plugins/quote/MySQL
 }
 
+
+#compile indicator plugins
 SUBDIRS += plugins/indicator/AD
 SUBDIRS += plugins/indicator/ATR
 SUBDIRS += plugins/indicator/BB

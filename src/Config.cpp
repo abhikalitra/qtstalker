@@ -34,6 +34,8 @@ Config::Config (QString p)
   path = p;
   libs.setAutoDelete(TRUE);
   plugins.setAutoDelete(TRUE);
+  chartLib = 0;
+  chartPlugin = 0;
 
   QDir dir(QDir::homeDirPath());
   dir.convertToAbs();
@@ -126,6 +128,7 @@ Config::~Config ()
 {
   plugins.clear();
   libs.clear();
+  closeChartPlugin();
 }
 
 QString Config::getData (Parm p)
@@ -174,21 +177,6 @@ QString Config::getData (Parm p)
     case GridColor:
       s = settings.readEntry("/Qtstalker/GridColor", "#626262");
       break;
-    case UpColor:
-      s = settings.readEntry("/Qtstalker/UpColor", "green");
-      break;
-    case DownColor:
-      s = settings.readEntry("/Qtstalker/DownColor", "red");
-      break;
-    case NeutralColor:
-      s = settings.readEntry("/Qtstalker/NeutralColor", "blue");
-      break;
-    case CandleColor:
-      s = settings.readEntry("/Qtstalker/CandleColor", "green");
-      break;
-    case PaintBarIndicator:
-      s = settings.readEntry("/Qtstalker/PaintBarIndicator", "");
-      break;
     case MainPlotSize:
       s = settings.readEntry("/Qtstalker/MainPlotSize", "150");
       break;
@@ -203,6 +191,9 @@ QString Config::getData (Parm p)
       break;
     case QuotePluginPath:
       s = settings.readEntry("/Qtstalker/QuotePluginPath", "/usr/lib/qtstalker/quote");
+      break;
+    case ChartPluginPath:
+      s = settings.readEntry("/Qtstalker/ChartPluginPath", "/usr/lib/qtstalker/chart");
       break;
     case Group:
       s = settings.readEntry("/Qtstalker/Group");
@@ -227,12 +218,6 @@ QString Config::getData (Parm p)
       break;
     case StackedIndicator:
       s = settings.readEntry("/Qtstalker/StackedIndicator", "");
-      break;
-    case PAFBoxSize:
-      s = settings.readEntry("/Qtstalker/PAFBoxSize", "0");
-      break;
-    case PAFReversal:
-      s = settings.readEntry("/Qtstalker/PAFReversal", "3");
       break;
     case Height:
       s = settings.readEntry("/Qtstalker/Height", "640");
@@ -298,21 +283,6 @@ void Config::setData (Parm p, QString d)
     case GridColor:
       settings.writeEntry("/Qtstalker/GridColor", d);
       break;
-    case UpColor:
-      settings.writeEntry("/Qtstalker/UpColor", d);
-      break;
-    case DownColor:
-      settings.writeEntry("/Qtstalker/DownColor", d);
-      break;
-    case NeutralColor:
-      settings.writeEntry("/Qtstalker/NeutralColor", d);
-      break;
-    case CandleColor:
-      settings.writeEntry("/Qtstalker/CandleColor", d);
-      break;
-    case PaintBarIndicator:
-      settings.writeEntry("/Qtstalker/PaintBarIndicator", d);
-      break;
     case MainPlotSize:
       settings.writeEntry("/Qtstalker/MainPlotSize", d);
       break;
@@ -327,6 +297,9 @@ void Config::setData (Parm p, QString d)
       break;
     case QuotePluginPath:
       settings.writeEntry("/Qtstalker/QuotePluginPath", d);
+      break;
+    case ChartPluginPath:
+      settings.writeEntry("/Qtstalker/ChartPluginPath", d);
       break;
     case Group:
       settings.writeEntry("/Qtstalker/Group", d);
@@ -351,12 +324,6 @@ void Config::setData (Parm p, QString d)
       break;
     case StackedIndicator:
       settings.writeEntry("/Qtstalker/StackedIndicator", d);
-      break;
-    case PAFBoxSize:
-      settings.writeEntry("/Qtstalker/PAFBoxSize", d);
-      break;
-    case PAFReversal:
-      settings.writeEntry("/Qtstalker/PAFReversal", d);
       break;
     case Height:
       settings.writeEntry("/Qtstalker/Height", d);
@@ -449,6 +416,20 @@ QStringList Config::getQuotePlugins ()
   return l;
 }
 
+QStringList Config::getChartPlugins ()
+{
+  QStringList l = getDirList(getData(ChartPluginPath));
+
+  int loop;
+  for (loop = 0; loop < (int) l.count(); loop++)
+  {
+    l[loop].truncate(l[loop].length() - 3);
+    l[loop].remove(0, 3);
+  }
+
+  return l;
+}
+
 Plugin * Config::getPlugin (Config::Parm t, QString p)
 {
   Plugin *plug = plugins[p];
@@ -491,10 +472,49 @@ Plugin * Config::getPlugin (Config::Parm t, QString p)
   }
 }
 
+Plugin * Config::getChartPlugin (QString p)
+{
+  QString s = getData(ChartPluginPath);
+  s.append("/lib");
+  s.append(p);
+  s.append(".so");
+
+  chartLib = new QLibrary(s);
+  Plugin *(*so)() = 0;
+  so = (Plugin *(*)()) chartLib->resolve("create");
+  if (so)
+  {
+    chartPlugin = (*so)();
+    return chartPlugin;
+  }
+  else
+  {
+    qDebug("Quote::Dll error\n");
+    delete chartLib;
+    return 0;
+  }
+}
+
+
 void Config::closePlugins ()
 {
   plugins.clear();
   libs.clear();
+}
+
+void Config::closeChartPlugin ()
+{
+  if (chartPlugin)
+  {
+    delete chartPlugin;
+    chartPlugin = 0;
+  }
+  
+  if (chartLib)
+  {
+    delete chartLib;
+    chartLib = 0;
+  }
 }
 
 

@@ -23,30 +23,34 @@
 #include <qpainter.h>
 #include <qcolor.h>
 
-HorizontalLine::HorizontalLine (QString indicator, QString name, QString value)
+HorizontalLine::HorizontalLine (Scaler *s, QPixmap *p, QString indicator, QString name, QString value)
 {
+  scaler = s;
+  buffer = p;
+  
   settings.set("Type", "Horizontal Line", Setting::None);
   settings.set(tr("Value"), value, Setting::Date);
   settings.set(tr("Color"), "white", Setting::Color);
   settings.set("Plot", indicator, Setting::None);
   settings.set("Name", name, Setting::None);
+  settings.set("ObjectType", QString::number(ChartObject::HorizontalLine), Setting::None);
 }
 
 HorizontalLine::~HorizontalLine ()
 {
 }
 
-void HorizontalLine::draw (Scaler &scaler, QPixmap &buffer, int, int)
+void HorizontalLine::draw (int, int)
 {
   QPainter painter;
-  painter.begin(&buffer);
+  painter.begin(buffer);
 
-  int y = scaler.convertToY(settings.getFloat(tr("Value")));
+  int y = scaler->convertToY(settings.getFloat(tr("Value")));
 
   QColor color(settings.getData(tr("Color")));
   painter.setPen(color);
 
-  painter.drawLine (0, y, buffer.width(), y);
+  painter.drawLine (0, y, buffer->width(), y);
   painter.drawText(0, y - 1, settings.getData(tr("Value")), -1);
 
   painter.end();

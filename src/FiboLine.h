@@ -29,9 +29,9 @@ class FiboLine : public ChartObject
   Q_OBJECT
 
   public:
-    FiboLine (QString, QString, QString, QString);
+    FiboLine (Scaler *, QPixmap *, QString, QString, QString, QString);
     ~FiboLine ();
-    void draw (Scaler &, QPixmap &, int, int);
+    void draw (int, int);
     double getY (QString, double, double, double);
 };
 

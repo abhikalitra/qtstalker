@@ -20,6 +20,13 @@
  */
 
 #include "Plot.h"
+#include "BuyArrow.h"
+#include "SellArrow.h"
+#include "TrendLine.h"
+#include "HorizontalLine.h"
+#include "VerticalLine.h"
+#include "FiboLine.h"
+#include "Text.h"
 #include <qpainter.h>
 #include <qpen.h>
 #include <qpoint.h>
@@ -48,6 +55,10 @@
 
 Plot::Plot (QWidget *w) : QWidget(w)
 {
+  buffer = new QPixmap;
+  scaler = new Scaler;
+  chartPlugin = 0;
+  config = 0;
   setBackgroundMode(NoBackground);
   scaleWidth = SCALE_WIDTH;
   dateHeight = DATE_HEIGHT;
@@ -57,10 +68,6 @@ Plot::Plot (QWidget *w) : QWidget(w)
   backgroundColor.setNamedColor("black");
   borderColor.setNamedColor("white");
   gridColor.setNamedColor("#626262");
-  upColor.setNamedColor("green");
-  downColor.setNamedColor("red");
-  neutralColor.setNamedColor("blue");
-  candleColor.setNamedColor("green");
   pixelspace = 0;
   minPixelspace = 0;
   dateFlag = FALSE;
@@ -77,8 +84,6 @@ Plot::Plot (QWidget *w) : QWidget(w)
   hideMainPlot = FALSE;
   tabFlag = TRUE;
   crossHairFlag = FALSE;
-  PAFBoxSize = 0;
-  PAFReversal = 3;
   chartMenu = 0;
 
   plotFont.setFamily("Helvetica");
@@ -86,7 +91,7 @@ Plot::Plot (QWidget *w) : QWidget(w)
   plotFont.setWeight(50);
 
   indicators.setAutoDelete(TRUE);
-  paintBars.setAutoDelete(TRUE);
+//  paintBars.setAutoDelete(TRUE);
   chartObjects.setAutoDelete(TRUE);
   data = 0;
 
@@ -96,6 +101,10 @@ Plot::Plot (QWidget *w) : QWidget(w)
 
   // set up the popup menu
   chartMenu = new QPopupMenu();
+  
+  chartMenu->insertItem(tr("Chart Prefs"), this, SLOT(slotEditChartPrefs()));
+  chartMenu->insertSeparator ();
+  
   chartMenu->insertItem(QPixmap(indicator), tr("New Indicator"), this, SLOT(slotNewIndicator()));
   chartDeleteMenu = new QPopupMenu();
   chartEditMenu = new QPopupMenu();
@@ -133,6 +142,8 @@ Plot::Plot (QWidget *w) : QWidget(w)
 
 Plot::~Plot ()
 {
+  delete buffer;
+  delete scaler;
 }
 
 void Plot::clear ()
@@ -140,7 +151,7 @@ void Plot::clear ()
   mainHigh = -99999999;
   mainLow = 99999999;
   indicators.clear();
-  paintBars.clear();
+//  paintBars.clear();
   chartObjects.clear();
   data = 0;
 }
@@ -157,9 +168,9 @@ void Plot::setData (BarData *l)
     mainHigh = data->getMax();
     mainLow = data->getMin();
     
-    int loop;
-    for (loop = 0; loop < (int) data->count(); loop++)
-      paintBars.append(new QColor(neutralColor.red(), neutralColor.green(), neutralColor.blue()));
+//    int loop;
+//    for (loop = 0; loop < (int) data->count(); loop++)
+//      paintBars.append(new QColor(neutralColor.red(), neutralColor.green(), neutralColor.blue()));
   }
 
   createXGrid();
@@ -167,67 +178,38 @@ void Plot::setData (BarData *l)
 
 void Plot::setChartType (QString d)
 {
-  while (1)
+  config->closeChartPlugin();
+  
+  chartPlugin = config->getChartPlugin(d);
+  if (! chartPlugin)
   {
-    if (! d.compare(tr("Bar")))
-    {
-      minPixelspace = 4;
-      startX = 2;
-      chartType = d;
-      dateFlag = TRUE;
-      break;
-    }
-
-    if (! d.compare(tr("Candle")) || ! d.compare(tr("Candle 2")))
-    {
-      minPixelspace = 6;
-      startX = 2;
-      chartType = d;
-      dateFlag = TRUE;
-      break;
-    }
-
-    if (! d.compare(tr("Line")))
-    {
-      minPixelspace = 3;
-      startX = 0;
-      chartType = d;
-      dateFlag = TRUE;
-      break;
-    }
-
-    if (! d.compare(tr("Paint Bar")))
-    {
-      minPixelspace = 4;
-      startX = 2;
-      chartType = d;
-      dateFlag = TRUE;
-      break;
-    }
-
-    if (! d.compare(tr("P&F")))
-    {
-      minPixelspace = 4;
-      startX = 0;
-      chartType = d;
-      dateFlag = TRUE;
-      break;
-    }
-
-    if (! d.compare(tr("Swing")))
-    {
-      minPixelspace = 4;
-      startX = 0;
-      chartType = d;
-      dateFlag = TRUE;
-      break;
-    }
-
-    break;
+    qDebug("Plot::setChartType:unable to open %s chart plugin", d.latin1());
+    return;
   }
-
+  
+  if (chartType.length())
+    setChartInput();
+      
+  chartType = d;
+  
+  minPixelspace = chartPlugin->getMinPixelspace();
+  startX = chartPlugin->getStartX();
+  dateFlag = TRUE;  
+  
   if (minPixelspace > pixelspace)
     pixelspace = minPixelspace;
+    
+  QObject::connect(chartPlugin, SIGNAL(draw()), this, SLOT(draw()));
+}
+
+void Plot::setChartInput ()
+{
+  chartPlugin->setChartInput(data, scaler, buffer);
+}
+
+void Plot::setConfig (Config *c)
+{
+  config = c;
 }
 
 void Plot::setMainFlag (bool d)
@@ -259,7 +241,7 @@ void Plot::draw ()
 {
   crossHairFlag = FALSE;
 
-  buffer.fill(backgroundColor);
+  buffer->fill(backgroundColor);
 
   if (data)
   {
@@ -284,68 +266,20 @@ void Plot::draw ()
 
     if (mainFlag)
     {
-      while (1)
+      if (hideMainPlot == TRUE)
       {
-        if (hideMainPlot == TRUE)
-	{
-          drawLines();
-          drawObjects();
-          break;
-	}
-
-        if (! chartType.compare(tr("Bar")))
+        drawLines();
+        drawObjects();
+      }
+      else
+      {
+        chartPlugin->drawChart(startX, startIndex, pixelspace);
+	
+        if (! chartPlugin->getIndicatorFlag())
         {
-          drawBars();
           drawLines();
           drawObjects();
-          break;
         }
-
-        if (! chartType.compare(tr("Candle")))
-        {
-          drawCandle();
-          drawLines();
-          drawObjects();
-          break;
-        }
-
-        if (! chartType.compare(tr("Candle 2")))
-        {
-          drawCandle2();
-          drawLines();
-          drawObjects();
-          break;
-        }
-        
-	if (! chartType.compare(tr("Line")))
-        {
-          drawLineChart();
-          drawLines();
-          drawObjects();
-          break;
-        }
-
-        if (! chartType.compare(tr("Paint Bar")))
-        {
-          drawPaintBar();
-          drawLines();
-          drawObjects();
-          break;
-        }
-
-        if (! chartType.compare(tr("P&F")))
-        {
-          drawPointAndFigure();
-	  break;
-	}
-
-        if (! chartType.compare(tr("Swing")))
-        {
-          drawSwing();
-	  break;
-	}
-
-	break;
       }
     }
     else
@@ -367,35 +301,41 @@ void Plot::draw ()
 
 void Plot::drawObjects ()
 {
-  QDictIterator<Setting> it(chartObjects);
+  QDictIterator<ChartObject> it(chartObjects);
   for (; it.current(); ++it)
   {
-    Setting *co = it.current();
+    int x = -1;
+    int x2 = -1;
+    
+    ChartObject *co = it.current();
 
-    switch (co->getInt("ObjectType"))
+    if (co->getDate().length())
     {
-      case Plot::VerticalLine:
-        drawVerticalLine(co);
-	break;
-      case Plot::HorizontalLine:
-        drawHorizontalLine(co);
-	break;
-      case Plot::TrendLine:
-        drawTrendLine(co);
-	break;
-      case Plot::Text:
-        drawText(co);
-	break;
-      case Plot::BuyArrow:
-        drawBuyArrow(co);
-	break;
-      case Plot::SellArrow:
-        drawSellArrow(co);
-	break;
-      case Plot::FibonacciLine:
-        drawFibonacciLine(co);
-	break;
+      QDateTime dt = QDateTime::fromString(co->getDate(), Qt::ISODate);
+      if (! dt.isValid())
+      {
+        qDebug("Plot::drawObjects:invalid date %s", co->getDate().latin1());
+        continue;
+      }
+      x = getXFromDate(dt);
+      if (x == -1)
+        continue;
     }
+    
+    if (co->getDate2().length())
+    {
+      QDateTime dt = QDateTime::fromString(co->getDate2(), Qt::ISODate);
+      if (! dt.isValid())
+      {
+        qDebug("Plot::drawObjects:invalid date2 %s", co->getDate2().latin1());
+        continue;
+      }
+      x2 = getXFromDate(dt);
+      if (x2 == -1)
+        continue;
+    }
+    
+    co->draw(x, x2);
   }
 }
 
@@ -415,38 +355,7 @@ void Plot::drawLines ()
       for (loop = 0; loop < i->getLines(); loop++)
       {
         currentLine = i->getLine(loop);
-
-        while (1)
-        {
-          if (! currentLine->getType().compare("Histogram"))
-          {
-            drawHistogram();
-	    break;
-          }
-
-          if (! currentLine->getType().compare("Histogram Bar"))
-          {
-            drawHistogramBar();
-	    break;
-          }
-
-          if (! currentLine->getType().compare("Dot"))
-          {
-            drawDot();
-	    break;
-          }
-
-          if (! currentLine->getType().compare("Line") || ! currentLine->getType().compare("Dash"))
-          {
-            drawLine();
-	    break;
-          }
-
-          if (! currentLine->getType().compare("Horizontal"))
-            drawHorizontalLine();
-
-          break;
-        }
+        currentLine->draw(data->count(), startX, startIndex, pixelspace);
       }
     }
   }
@@ -460,45 +369,14 @@ void Plot::drawLines ()
     for (loop = 0; loop < i->getLines(); loop++)
     {
       currentLine = i->getLine(loop);
-
-      while (1)
-      {
-        if (! currentLine->getType().compare("Histogram"))
-        {
-          drawHistogram();
-	  break;
-        }
-
-        if (! currentLine->getType().compare("Histogram Bar"))
-        {
-          drawHistogramBar();
-	  break;
-        }
-
-        if (! currentLine->getType().compare("Dot"))
-        {
-          drawDot();
-	  break;
-        }
-	
-        if (! currentLine->getType().compare("Line") || ! currentLine->getType().compare("Dash"))
-        {
-          drawLine();
-	  break;
-        }
-
-        if (! currentLine->getType().compare("Horizontal"))
-          drawHorizontalLine();
-
-        break;
-      }
+      currentLine->draw(data->count(), startX, startIndex, pixelspace);
     }
   }
 }
 
 void Plot::paintEvent (QPaintEvent *)
 {
-  bitBlt(this, 0, 0, &buffer);
+  bitBlt(this, 0, 0, buffer);
 
   // redraw the crosshair
   if (crossHairFlag)
@@ -506,15 +384,15 @@ void Plot::paintEvent (QPaintEvent *)
     QPainter painter;
     painter.begin(this);
     painter.setPen(QPen(borderColor, 1, QPen::DotLine));
-    painter.drawLine (0, crossHairY, buffer.width() - SCALE_WIDTH, crossHairY);
-    painter.drawLine (crossHairX, 0, crossHairX, buffer.height());
+    painter.drawLine (0, crossHairY, buffer->width() - SCALE_WIDTH, crossHairY);
+    painter.drawLine (crossHairX, 0, crossHairX, buffer->height());
     painter.end();
   }
 }
 
 void Plot::resizeEvent (QResizeEvent *event)
 {
-  buffer.resize(event->size());
+  buffer->resize(event->size());
 
   setHeight();
 
@@ -536,7 +414,7 @@ void Plot::mousePressEvent (QMouseEvent *event)
       return;
   }
 
-  if (event->x() > buffer.width() - SCALE_WIDTH)
+  if (event->x() > buffer->width() - SCALE_WIDTH)
     return;
 
   if (mouseFlag != None)
@@ -551,10 +429,10 @@ void Plot::mousePressEvent (QMouseEvent *event)
 	  break;
         default:
 	  getXY(event->x(), event->y(), 0);
-          if (objectFlag == TrendLine || objectFlag == FibonacciLine)
+          if (objectFlag == ChartObject::TrendLine || objectFlag == ChartObject::FibonacciLine)
 	  {
             mouseFlag = ClickWait2;
-            if (objectFlag == TrendLine)
+            if (objectFlag == ChartObject::TrendLine)
              emit statusMessage(tr("Select end point of trend line..."));
 	    else
              emit statusMessage(tr("Select low point of fibonacci line..."));
@@ -598,7 +476,7 @@ void Plot::mouseMoveEvent (QMouseEvent *event)
       return;
   }
 
-  if (event->x() > buffer.width() - SCALE_WIDTH)
+  if (event->x() > buffer->width() - SCALE_WIDTH)
     return;
 
   int i = (event->x() / pixelspace) + startIndex;
@@ -701,26 +579,6 @@ void Plot::setGridColor (QColor d)
   gridColor = d;
 }
 
-void Plot::setUpColor (QColor d)
-{
-  upColor = d;
-}
-
-void Plot::setDownColor (QColor d)
-{
-  downColor = d;
-}
-
-void Plot::setNeutralColor (QColor d)
-{
-  neutralColor = d;
-}
-
-void Plot::setCandleColor (QColor d)
-{
-  candleColor = d;
-}
-
 void Plot::setPlotFont (QFont d)
 {
   plotFont = d;
@@ -756,16 +614,6 @@ bool Plot::getTabFlag ()
   return tabFlag;
 }
 
-void Plot::setPAFBoxSize (double d)
-{
-  PAFBoxSize = d;
-}
-
-void Plot::setPAFReversal (int d)
-{
-  PAFReversal = d;
-}
-
 bool Plot::getMainFlag ()
 {
   return mainFlag;
@@ -774,17 +622,17 @@ bool Plot::getMainFlag ()
 void Plot::drawDate ()
 {
   QPainter painter;
-  painter.begin(&buffer);
+  painter.begin(buffer);
   painter.setPen(borderColor);
   painter.setFont(plotFont);
 
   QFontMetrics fm = painter.fontMetrics();
 
   // clear date area
-  painter.fillRect(0, buffer.height() - dateHeight, buffer.width() - scaleWidth, dateHeight, backgroundColor);
+  painter.fillRect(0, buffer->height() - dateHeight, buffer->width() - scaleWidth, dateHeight, backgroundColor);
 
   // draw the seperator line
-  painter.drawLine (0, buffer.height() - dateHeight, buffer.width() - scaleWidth, buffer.height() - dateHeight);
+  painter.drawLine (0, buffer->height() - dateHeight, buffer->width() - scaleWidth, buffer->height() - dateHeight);
 
   int x = startX;
   int loop = startIndex;
@@ -806,7 +654,7 @@ void Plot::drawDate ()
         painter.drawLine (x, _height + 1, x, _height + dateHeight - fm.height() - 1);
 
         QString s = date.toString("MMM'yy");
-        painter.drawText (x - (fm.width(s, -1) / 2), buffer.height() - 2, s, -1);
+        painter.drawText (x - (fm.width(s, -1) / 2), buffer->height() - 2, s, -1);
 
         oldWeek = date;
         oldWeek = oldWeek.addDays(7 - oldWeek.date().dayOfWeek());
@@ -820,7 +668,7 @@ void Plot::drawDate ()
 
           QString s = date.toString("d");
           painter.drawText (x - (fm.width(s, -1) / 2),
-	   		    buffer.height() - dateHeight + fm.height() + 1,
+	   		    buffer->height() - dateHeight + fm.height() + 1,
 			    s,
 			    -1);
 
@@ -907,7 +755,7 @@ void Plot::drawXGrid ()
     return;
 
   QPainter painter;
-  painter.begin(&buffer);
+  painter.begin(buffer);
   painter.setPen(QPen(gridColor, 1, QPen::DotLine));
 
   int loop;
@@ -959,6 +807,14 @@ void Plot::createXGrid ()
 void Plot::addIndicator (QString d, Indicator *i)
 {
   indicators.replace(d, i);
+  
+  // dont forget to update plotlines with this plots drawing pointers
+  int loop;
+  for (loop = 0; loop < i->getLines(); loop++)
+  {
+    PlotLine *pl = i->getLine(loop);
+    pl->setPointers(scaler, buffer);
+  }
 }
 
 Indicator * Plot::getIndicator (QString d)
@@ -973,32 +829,32 @@ void Plot::deleteIndicator (QString d)
 
 void Plot::setHeight ()
 {
-  _height = buffer.height();
+  _height = buffer->height();
   if (dateFlag)
     _height = _height - dateHeight - 1;
 }
 
 void Plot::setWidth ()
 {
-  _width = buffer.width() - scaleWidth - startX;
+  _width = buffer->width() - scaleWidth - startX;
 }
 
 void Plot::drawScale ()
 {
   QPainter painter;
-  painter.begin(&buffer);
+  painter.begin(buffer);
   painter.setFont(plotFont);
 
   QFontMetrics fm = painter.fontMetrics();
 
-  painter.fillRect(buffer.width() - scaleWidth, 0, scaleWidth, _height + 1, backgroundColor);
+  painter.fillRect(buffer->width() - scaleWidth, 0, scaleWidth, _height + 1, backgroundColor);
 
-  int x = buffer.width() - scaleWidth;
+  int x = buffer->width() - scaleWidth;
 
   int loop;
   for (loop = 0; loop < (int) scaleArray.size(); loop++)
   {
-    int y = scaler.convertToY(scaleArray[loop]);
+    int y = scaler->convertToY(scaleArray[loop]);
     painter.setPen(QPen(borderColor, 1, QPen::SolidLine));
     painter.drawLine (x, y, x + 4, y);
 
@@ -1051,7 +907,7 @@ void Plot::drawScale ()
   // draw the last value pointer on the scale of main plot
   if (mainFlag && ! hideMainPlot)
   {
-    int y = scaler.convertToY(data->getClose(data->count() - 1));
+    int y = scaler->convertToY(data->getClose(data->count() - 1));
     
     QPointArray array;
     array.setPoints(3, x + 2, y,
@@ -1070,248 +926,23 @@ void Plot::drawYGrid ()
     return;
 
   QPainter painter;
-  painter.begin(&buffer);
+  painter.begin(buffer);
   painter.setPen(QPen(gridColor, 1, QPen::DotLine));
 
   int loop;
   for (loop = 0; loop < (int) scaleArray.size(); loop++)
   {
-    int y = scaler.convertToY(scaleArray[loop]);
+    int y = scaler->convertToY(scaleArray[loop]);
     painter.drawLine (startX, y, _width, y);
   }
 
   painter.end();
 }
 
-void Plot::drawLine ()
-{
-  QPainter painter;
-  painter.begin(&buffer);
-
-  QPen pen;
-  pen.setColor(currentLine->getColor());
-
-  if (! currentLine->getType().compare("Dash"))
-    pen.setStyle(Qt::DotLine);
-  else
-    pen.setStyle(Qt::SolidLine);
-  painter.setPen(pen);
-
-  int x = -1;
-  int x2 = startX;
-  int y = -1;
-  int y2 = -1;
-  int loop = currentLine->getSize() - data->count() + startIndex;
-
-  Scaler *scale = new Scaler;
-  scale->set(_height,
-  	     currentLine->getHigh(),
-	     currentLine->getLow(),
-	     scaler.getLogScaleHigh(),
-	     scaler.getLogRange(),
-	     dateFlag,
-	     logScale);
-
-  while ((x2 < _width) && (loop < (int) currentLine->getSize()))
-  {
-    if (loop > -1)
-    {
-      if (currentLine->getScaleFlag())
-        y2 = scale->convertToY(currentLine->getData(loop));
-      else
-        y2 = scaler.convertToY(currentLine->getData(loop));
-
-      if (y != -1)
-        painter.drawLine (x, y, x2, y2);
-      x = x2;
-      y = y2;
-    }
-
-    x2 = x2 + pixelspace;
-    loop++;
-  }
-
-  painter.end();
-
-  delete scale;
-}
-
-void Plot::drawHorizontalLine ()
-{
-  QPainter painter;
-  painter.begin(&buffer);
-  painter.setFont(plotFont);
-
-  QPen pen;
-  pen.setColor(currentLine->getColor());
-  painter.setPen(pen);
-
-  int y = scaler.convertToY(currentLine->getData(currentLine->getSize() - 1));
-
-  painter.drawLine (0, y, _width, y);
-
-  painter.drawText(startX, y - 1, strip(currentLine->getData(currentLine->getSize() - 1)));
-
-  painter.end();
-}
-
-void Plot::drawDot ()
-{
-  QPainter painter;
-  painter.begin(&buffer);
-
-  QPen pen;
-  pen.setColor(currentLine->getColor());
-  painter.setPen(pen);
-
-  int x = startX;
-  int loop = currentLine->getSize() - data->count() + startIndex;
-
-  Scaler *scale = new Scaler;
-  scale->set(_height,
-  	     currentLine->getHigh(),
-	     currentLine->getLow(),
-	     scaler.getLogScaleHigh(),
-	     scaler.getLogRange(),
-	     dateFlag,
-	     logScale);
-
-  while ((x < _width) && (loop < (int) currentLine->getSize()))
-  {
-    if (loop > -1)
-    {
-      int y;
-      if (currentLine->getScaleFlag())
-        y = scale->convertToY(currentLine->getData(loop));
-      else
-        y = scaler.convertToY(currentLine->getData(loop));
-
-      painter.drawPoint(x, y);
-    }
-
-    x = x + pixelspace;
-    loop++;
-  }
-
-  painter.end();
-
-  delete scale;
-}
-
-void Plot::drawHistogram ()
-{
-  QPainter painter;
-  painter.begin(&buffer);
-  painter.setPen(currentLine->getColor());
-  painter.setBrush(currentLine->getColor());
-
-  Scaler *scale = new Scaler;
-  scale->set(_height,
-  	     currentLine->getHigh(),
-	     currentLine->getLow(),
-	     scaler.getLogScaleHigh(),
-	     scaler.getLogRange(),
-	     dateFlag,
-	     logScale);
-
-  int loop = currentLine->getSize() - data->count() + startIndex;
-
-  QPointArray pa(4);
-
-  int zero = 0;
-  if (currentLine->getScaleFlag())
-    zero = scale->convertToY(0);
-  else
-    zero = scaler.convertToY(0);
-
-  int x = -1;
-  int x2 = startX;
-  int y = -1;
-  int y2 = -1;
-
-  while ((x < _width) && (loop < (int) currentLine->getSize()))
-  {
-    if (loop > -1)
-    {
-      if (currentLine->getScaleFlag())
-        y2 = scale->convertToY(currentLine->getData(loop));
-      else
-        y2 = scaler.convertToY(currentLine->getData(loop));
-      pa.setPoint(0, x, zero);
-      pa.setPoint(1, x, y);
-      pa.setPoint(2, x2, y2);
-      pa.setPoint(3, x2, zero);
-
-      if (y != -1)
-        painter.drawPolygon(pa, TRUE, 0, -1);
-
-      x = x2;
-      y = y2;
-    }
-
-    x2 = x2 + pixelspace;
-    loop++;
-  }
-
-  painter.end();
-
-  delete scale;
-}
-
-void Plot::drawHistogramBar ()
-{
-  QPainter painter;
-  painter.begin(&buffer);
-
-  QColor color(currentLine->getColor());
-
-  Scaler *scale = new Scaler;
-  scale->set(_height,
-  	     currentLine->getHigh(),
-	     currentLine->getLow(),
-	     scaler.getLogScaleHigh(),
-	     scaler.getLogRange(),
-	     dateFlag,
-	     logScale);
-
-  int x = startX;
-  int zero = 0;
-  if (currentLine->getScaleFlag())
-    zero = scale->convertToY(0);
-  else
-    zero = scaler.convertToY(0);
-
-  int loop = currentLine->getSize() - data->count() + startIndex;
-
-  while ((x < _width) && (loop < (int) currentLine->getSize()))
-  {
-    if (loop > -1)
-    {
-      int y;
-      if (currentLine->getScaleFlag())
-        y = scale->convertToY(currentLine->getData(loop));
-      else
-        y = scaler.convertToY(currentLine->getData(loop));
-
-      if (currentLine->getColorFlag() == TRUE)
-	color.setNamedColor(currentLine->getColorBar(loop));
-
-      painter.fillRect(x, y, pixelspace - 1, zero - y, color);
-    }
-
-    x = x + pixelspace;
-    loop++;
-  }
-
-  painter.end();
-
-  delete scale;
-}
-
 void Plot::drawInfo ()
 {
   QPainter painter;
-  painter.begin(&buffer);
+  painter.begin(buffer);
   painter.setPen(borderColor);
   painter.setFont(plotFont);
 
@@ -1346,13 +977,13 @@ void Plot::drawInfo ()
     s.append(strip(ch));
     s.append(" ");
     if (ch < 0)
-      painter.setPen(downColor);
+      painter.setPen(QColor("red"));
     else
     {
       if (ch > 0)
-        painter.setPen(upColor);
+        painter.setPen(QColor("green"));
       else
-        painter.setPen(neutralColor);
+        painter.setPen(QColor("blue"));
     }
 
     painter.drawText(pos, 10, s, -1);
@@ -1425,8 +1056,8 @@ void Plot::crossHair (int x, int y)
   QPainter painter;
   painter.begin(this);
   painter.setPen(QPen(borderColor, 1, QPen::DotLine));
-  painter.drawLine (0, y, buffer.width() - SCALE_WIDTH, y);
-  painter.drawLine (x, 0, x, buffer.height());
+  painter.drawLine (0, y, buffer->width() - SCALE_WIDTH, y);
+  painter.drawLine (x, 0, x, buffer->height());
   painter.end();
 }
 
@@ -1441,7 +1072,7 @@ void Plot::updateStatusBar (int x, int y)
   QDateTime date = data->getDate(i);
   QString s = date.toString("yyyyMMdd");
   s.append(" ");
-  s.append(strip(scaler.convertToVal(y)));
+  s.append(strip(scaler->convertToVal(y)));
   emit statusMessage(s);
 }
 
@@ -1458,73 +1089,63 @@ void Plot::getXY (int x, int y, int f)
   if (f == 0)
   {
     x1 = date.toString("yyyyMMdd");
-    y1 = strip(scaler.convertToVal(y));
+    y1 = strip(scaler->convertToVal(y));
   }
   else
   {
     x2 = date.toString("yyyyMMdd");
-    y2 = strip(scaler.convertToVal(y));
+    y2 = strip(scaler->convertToVal(y));
   }
 }
 
 void Plot::newChartObject ()
 {
   bool cancelFlag = FALSE;
-  
-  Setting *set = new Setting();
-  if (mainFlag)
-    set->set(QObject::tr("Plot"), QObject::tr("Main Plot"), Setting::None);
-  else
+  ChartObject *co = 0;
+  QString name = objectName;
+  QString pl = "Main Plot";
+  if (! mainFlag)
   {
     QDictIterator<Indicator> it(indicators);
     it.toFirst();
-    set->set(QObject::tr("Plot"), it.currentKey(), Setting::None);
+    pl = it.currentKey();
   }
-  set->set("Name", objectName, Setting::None);
-  set->set("ObjectType", QString::number(objectFlag), Setting::None);
 
-  switch(objectFlag)
+  while (1)
   {
-    case BuyArrow:
-      set->set(QObject::tr("Date"), x1, Setting::Date);
-      set->set(QObject::tr("Value"), y1, Setting::Float);
-      set->set(QObject::tr("Type"), QObject::tr("Buy Arrow"), Setting::None);
-      set->set(QObject::tr("Color"), upColor.name(), Setting::Color);
+    if (objectFlag == ChartObject::BuyArrow)
+    {
+      co = new BuyArrow(scaler, buffer, pl, name, x1, y1);
       break;
-    case SellArrow:
-      set->set(QObject::tr("Date"), x1, Setting::Date);
-      set->set(QObject::tr("Value"), y1, Setting::Float);
-      set->set(QObject::tr("Type"), QObject::tr("Sell Arrow"), Setting::None);
-      set->set(QObject::tr("Color"), downColor.name(), Setting::Color);
+    }
+    
+    if (objectFlag == ChartObject::SellArrow)
+    {
+      co = new SellArrow(scaler, buffer, pl, name, x1, y1);
       break;
-    case FibonacciLine:
-      set->set(QObject::tr("High"), y1, Setting::Float);
-      set->set(QObject::tr("Low"), y2, Setting::Float);
-      set->set(QObject::tr("Support"), QObject::tr("False"), Setting::Bool);
-      set->set("0", QObject::tr("True"), Setting::Bool);
-      set->set("0.238", QObject::tr("True"), Setting::Bool);
-      set->set("0.383", QObject::tr("True"), Setting::Bool);
-      set->set("0.5", QObject::tr("True"), Setting::Bool);
-      set->set("0.618", QObject::tr("True"), Setting::Bool);
-      set->set("1", QObject::tr("False"), Setting::Bool);
-      set->set("1.618", QObject::tr("False"), Setting::Bool);
-      set->set("2.618", QObject::tr("False"), Setting::Bool);
-      set->set("4.236", QObject::tr("False"), Setting::Bool);
-      set->set(QObject::tr("Type"), QObject::tr("Fibonacci Line"), Setting::None);
-      set->set(QObject::tr("Color"), borderColor.name(), Setting::Color);
+    }
+    
+    if (objectFlag == ChartObject::FibonacciLine)
+    {
+      co = new FiboLine(scaler, buffer, pl, name, y1, y2);
       break;
-    case HorizontalLine:
-      set->set(QObject::tr("Value"), y1, Setting::Float);
-      set->set(QObject::tr("Type"), QObject::tr("Horizontal Line"), Setting::None);
-      set->set(QObject::tr("Color"), borderColor.name(), Setting::Color);
+    }
+    
+    if (objectFlag == ChartObject::HorizontalLine)
+    {
+      co = new HorizontalLine(scaler, buffer, pl, name, y1);
       break;
-    case VerticalLine:
-      set->set(QObject::tr("Date"), x1, Setting::Date);
-      set->set(QObject::tr("Type"), QObject::tr("Vertical Line"), Setting::None);
-      set->set(QObject::tr("Color"), borderColor.name(), Setting::Color);
+    }
+    
+    if (objectFlag == ChartObject::VerticalLine)
+    {
+      co = new VerticalLine(buffer, pl, name, x1);
       break;
-    case TrendLine:
-      if (x2 <= x1)
+    }
+    
+    if (objectFlag == ChartObject::TrendLine)
+    {
+      if (x2.toFloat() <= x1.toFloat())
       {
 	cancelFlag = TRUE;
         QMessageBox::information(this, tr("Qtstalker: Error"),
@@ -1532,31 +1153,23 @@ void Plot::newChartObject ()
         break;
       }
       
-      set->set(QObject::tr("Start Date"), x1, Setting::Date);
-      set->set(QObject::tr("Start Value"), y1, Setting::Float);
-      set->set(QObject::tr("Start Bar"), QObject::tr("Close"), Setting::InputField);
-      set->set(QObject::tr("End Date"), x2, Setting::Date);
-      set->set(QObject::tr("End Value"), y2, Setting::Float);
-      set->set(QObject::tr("End Bar"), QObject::tr("Close"), Setting::InputField);
-      set->set(QObject::tr("Use Bar"), QObject::tr("False"), Setting::Bool);
-      set->set(QObject::tr("Type"), QObject::tr("Trend Line"), Setting::None);
-      set->set(QObject::tr("Color"), borderColor.name(), Setting::Color);
+      co = new TrendLine(scaler, buffer, data, pl, name, x1, y1, x2, y2);
       break;
-    case Text:
-      set->set(QObject::tr("Date"), x1, Setting::Date);
-      set->set(QObject::tr("Value"), y1, Setting::Float);
-      set->set(QObject::tr("Label"), QObject::tr("Text"), Setting::Text);
-      set->set(QObject::tr("Type"), QObject::tr("Text"), Setting::None);
-      set->set(QObject::tr("Color"), borderColor.name(), Setting::Color);
+    }
+    
+    if (objectFlag == ChartObject::Text)
+    {
+      co = new Text(scaler, buffer, pl, name, x1, y1);
       break;
-    default:
-      break;
+    }
+    
+    break;
   }
 
   if (! cancelFlag)
   {
-    emit chartObjectCreated(set);
-    addChartObject(set);
+    emit chartObjectCreated(co);
+    addChartObject(co);
     draw();
   }
   
@@ -1676,10 +1289,10 @@ void Plot::setScale ()
     }
   }
 
-  QDictIterator<Setting> it(chartObjects);
+  QDictIterator<ChartObject> it(chartObjects);
   for (; it.current(); ++it)
   {
-    Setting *co = it.current();
+    ChartObject *co = it.current();
 
     QString type = co->getData(QObject::tr("Type"));
     if (! type.compare(QObject::tr("Vertical Line")))
@@ -1687,8 +1300,8 @@ void Plot::setScale ()
 
     if (! type.compare(QObject::tr("Trend Line")))
     {
-      double v = co->getFloat(QObject::tr("Start Value"));
-      double v2 = co->getFloat(QObject::tr("End Value"));
+      double v = co->getData(QObject::tr("Start Value")).toFloat();
+      double v2 = co->getData(QObject::tr("End Value")).toFloat();
       if (v > scaleHigh)
         scaleHigh = v;
       if (v2 > scaleHigh)
@@ -1704,8 +1317,8 @@ void Plot::setScale ()
 
     if (! type.compare(QObject::tr("Fibonacci Line")))
     {
-      double v = co->getFloat(QObject::tr("High"));
-      double v2 = co->getFloat(QObject::tr("Low"));
+      double v = co->getData(QObject::tr("High")).toFloat();
+      double v2 = co->getData(QObject::tr("Low")).toFloat();
       if (v > scaleHigh)
         scaleHigh = v;
       if (v2 < scaleLow)
@@ -1713,7 +1326,7 @@ void Plot::setScale ()
       continue;
     }
 
-    double v = co->getFloat(QObject::tr("Value"));
+    double v = co->getData(QObject::tr("Value")).toFloat();
     if (v > scaleHigh)
       scaleHigh = v;
     if (v < scaleLow)
@@ -1735,7 +1348,7 @@ void Plot::setScale ()
     logRange = logScaleHigh - logScaleLow;
   }
 
-  scaler.set(_height,
+  scaler->set(_height,
   	     scaleHigh,
 	     scaleLow,
 	     logScaleHigh,
@@ -1743,7 +1356,7 @@ void Plot::setScale ()
 	     dateFlag,
 	     logScale);
 
-  scaleArray = scaler.getScaleArray();
+  scaleArray = scaler->getScaleArray();
 }
 
 int Plot::getWidth ()
@@ -1795,208 +1408,7 @@ QString Plot::strip (double d)
   return s;
 }
 
-void Plot::drawBars ()
-{
-  QPainter painter;
-  painter.begin(&buffer);
-
-  int x = startX;
-  int loop = startIndex;
-
-  // set first bar as neutral
-  painter.setPen(neutralColor);
-
-  double t = data->getOpen(loop);
-  int y;
-  if (t)
-  {
-    y = scaler.convertToY(t);
-    painter.drawLine (x - 2, y, x, y);
-  }
-
-  y = scaler.convertToY(data->getClose(loop));
-  painter.drawLine (x + 2, y, x, y);
-
-  int h = scaler.convertToY(data->getHigh(loop));
-
-  int l = scaler.convertToY(data->getLow(loop));
-  painter.drawLine (x, h, x, l);
-
-  x = x + pixelspace;
-  loop++;
-
-  while ((x < _width) && (loop < (int) data->count()))
-  {
-    if (data->getClose(loop) > data->getClose(loop - 1))
-      painter.setPen(upColor);
-    else
-    {
-      if (data->getClose(loop) < data->getClose(loop - 1))
-        painter.setPen(downColor);
-      else
-        painter.setPen(neutralColor);
-    }
-
-    t = data->getOpen(loop);
-    if (t)
-    {
-      y = scaler.convertToY(t);
-      painter.drawLine (x - 2, y, x, y);
-    }
-
-    y = scaler.convertToY(data->getClose(loop));
-    painter.drawLine (x + 2, y, x, y);
-
-    h = scaler.convertToY(data->getHigh(loop));
-    l = scaler.convertToY(data->getLow(loop));
-    painter.drawLine (x, h, x, l);
-
-    x = x + pixelspace;
-    loop++;
-  }
-
-  painter.end();
-}
-
-void Plot::drawCandle ()
-{
-  QPainter painter;
-  painter.begin(&buffer);
-
-  int x = startX;
-  int loop = startIndex;
-
-  painter.setPen(candleColor);
-
-  while ((x < _width) && (loop < (int) data->count()))
-  {
-    int h = scaler.convertToY(data->getHigh(loop));
-    int l = scaler.convertToY(data->getLow(loop));
-    int c = scaler.convertToY(data->getClose(loop));
-    int o = scaler.convertToY(data->getOpen(loop));
-
-    painter.drawLine (x, h, x, l);
-
-    if (data->getOpen(loop) != 0)
-    {
-      if (c < o)
-      {
-        painter.fillRect(x - 2, c, 5, o - c, backgroundColor);
-        painter.drawRect(x - 2, c, 5, o - c);
-      }
-      else if (c == o)
-        painter.drawLine (x - 2, o, x + 2, o);
-      else
-        painter.fillRect(x - 2, o, 5, c - o, painter.pen().color());
-    }
-
-    x = x + pixelspace;
-    loop++;
-  }
-
-  painter.end();
-}
-
-void Plot::drawCandle2 ()
-{
-  QPainter painter;
-  painter.begin(&buffer);
-
-  int x = startX;
-  int loop = startIndex;
-
-  painter.setPen(neutralColor);
-
-  int h = scaler.convertToY(data->getHigh(loop));
-  int l = scaler.convertToY(data->getLow(loop));
-  int c = scaler.convertToY(data->getClose(loop));
-  int o = scaler.convertToY(data->getOpen(loop));
-
-  painter.drawLine (x, h, x, l);
-
-  if (data->getOpen(loop) != 0)
-  {
-    if (c < o)
-    {
-      painter.fillRect(x - 2, c, 5, o - c, backgroundColor);
-      painter.drawRect(x - 2, c, 5, o - c);
-    }
-    else if (c == o)
-      painter.drawLine (x - 2, o, x + 2, o);
-    else
-      painter.fillRect(x - 2, o, 5, c - o, painter.brush());
-  }
-
-  loop++;
-  x = x + pixelspace;
-
-  while ((x < _width) && (loop < (int) data->count()))
-  {
-    if (data->getClose(loop) > data->getClose(loop - 1))
-      painter.setPen(upColor);
-    else
-    {
-      if (data->getClose(loop) < data->getClose(loop - 1))
-        painter.setPen(downColor);
-      else
-        painter.setPen(neutralColor);
-    }
-
-    h = scaler.convertToY(data->getHigh(loop));
-    l = scaler.convertToY(data->getLow(loop));
-    c = scaler.convertToY(data->getClose(loop));
-    o = scaler.convertToY(data->getOpen(loop));
-
-    painter.drawLine (x, h, x, l);
-
-    if (data->getOpen(loop) != 0)
-    {
-      if (c < o)
-      {
-        painter.fillRect(x - 2, c, 5, o - c, backgroundColor);
-        painter.drawRect(x - 2, c, 5, o - c);
-      }
-      else if (c == o)
-        painter.drawLine (x - 2, o, x + 2, o);
-      else
-        painter.fillRect(x - 2, o, 5, c - o, painter.pen().color());
-    }
-
-    x = x + pixelspace;
-    loop++;
-  }
-
-  painter.end();
-}
-
-void Plot::drawLineChart ()
-{
-  QPainter painter;
-  painter.begin(&buffer);
-
-  int x = -1;
-  int x2 = startX;
-  int y = -1;
-  int y2 = -1;
-  int loop = startIndex;
-
-  painter.setPen(upColor);
-
-  while ((x < _width) && (loop < (int) data->count()))
-  {
-    y2 = scaler.convertToY(data->getClose(loop));
-    if (y != -1)
-      painter.drawLine (x, y, x2, y2);
-    x = x2;
-    y = y2;
-
-    x2 = x2 + pixelspace;
-    loop++;
-  }
-
-  painter.end();
-}
-
+/*
 void Plot::setPaintBars (QList<QColor> d)
 {
   paintBars.clear();
@@ -2007,668 +1419,7 @@ void Plot::setPaintBars (QList<QColor> d)
     paintBars.append(new QColor(color->red(), color->green(), color->blue()));
   }
 }
-
-void Plot::drawPaintBar ()
-{
-  QPainter painter;
-  painter.begin(&buffer);
-
-  int x = startX;
-  int loop = startIndex;
-  
-  while ((x < _width) && (loop < (int) data->count()))
-  {
-    QColor *color = paintBars.at(loop);
-    painter.setPen(QColor(color->red(), color->green(), color->blue()));
-
-    int y;
-    if (data->getOpen(loop) != 0)
-    {
-      y = scaler.convertToY(data->getOpen(loop));
-      painter.drawLine (x - 2, y, x, y);
-    }
-
-    y = scaler.convertToY(data->getClose(loop));
-    painter.drawLine (x + 2, y, x, y);
-
-    int h = scaler.convertToY(data->getHigh(loop));
-    int l = scaler.convertToY(data->getLow(loop));
-    painter.drawLine (x, h, x, l);
-
-    x = x + pixelspace;
-    loop++;
-  }
-
-  painter.end();
-}
-
-void Plot::drawSwing ()
-{
-  QPainter painter;
-  painter.begin(&buffer);
-  painter.setPen(neutralColor);
-
-  int status = 0;
-  int x = startX;
-  int loop = startIndex;
-  int h;
-  int l;
-  double high = -99999999;
-  double low = 99999999;
-
-  int oldx = x;
-  loop++;
-  x = x + pixelspace;
-
-  while ((x < _width) && (loop < (int) data->count()))
-  {
-    switch (status)
-    {
-      case 1:
-        if (data->getHigh(loop) < data->getHigh(loop - 1) && data->getLow(loop) < data->getLow(loop - 1))
-	{
-	  painter.setPen(upColor);
-          h = scaler.convertToY(high);
-          l = scaler.convertToY(low);
-          painter.drawLine (x, h, x, l);
-
-          painter.drawLine (oldx, l, x, l);
-
-	  status = -1;
-	  oldx = x;
-          low = data->getLow(loop);
-	}
-	else
-	{
-          if (data->getHigh(loop) > high)
-           high = data->getHigh(loop);
-	}
-	break;
-      case -1:
-        if (data->getHigh(loop) > data->getHigh(loop - 1) && data->getLow(loop) > data->getLow(loop - 1))
-	{
-	  painter.setPen(downColor);
-          h = scaler.convertToY(high);
-          l = scaler.convertToY(low);
-          painter.drawLine (x, h, x, l);
-
-          painter.drawLine (oldx, h, x, h);
-
-	  status = 1;
-	  oldx = x;
-          high = data->getHigh(loop);
-	}
-	else
-	{
-          if (data->getLow(loop) < low)
-           low = data->getLow(loop);
-        }
-	break;
-      default:
-        if (data->getHigh(loop) < data->getHigh(loop - 1) && data->getLow(loop) < data->getLow(loop - 1))
-	{
-	  status = -1;
-	  oldx = x;
-          high = data->getHigh(loop);
-          low = data->getLow(loop);
-	}
-	else
-	{
-          if (data->getHigh(loop) > data->getHigh(loop - 1) && data->getLow(loop) > data->getLow(loop - 1))
-	  {
-	    status = 1;
-	    oldx = x;
-            high = data->getHigh(loop);
-            low = data->getLow(loop);
-	  }
-        }
-	break;
-    }
-
-    x = x + pixelspace;
-    loop++;
-  }
-
-  // draw the leftover
-  switch (status)
-  {
-    case 1:
-      painter.setPen(upColor);
-      h = scaler.convertToY(high);
-      l = scaler.convertToY(low);
-      painter.drawLine (x, h, x, l);
-      painter.drawLine (oldx, l, x, l);
-        break;
-    case -1:
-      painter.setPen(downColor);
-      h = scaler.convertToY(high);
-      l = scaler.convertToY(low);
-      painter.drawLine (x, h, x, l);
-      painter.drawLine (oldx, h, x, h);
-      break;
-    default:
-      break;
-  }
-
-  painter.end();
-}
-
-void Plot::drawPointAndFigure ()
-{
-  QPainter painter;
-  painter.begin(&buffer);
-  painter.setPen(backgroundColor);
-
-  int x = startX;
-  int x2 = startX;
-  int loop = startIndex;
-  double size = PAFBoxSize;
-  if (size == 0)
-    size = (scaleArray[1] - scaleArray[0]) / 4.0;
-  int symbol;
-
-  double ph = data->getHigh(loop);
-  double pl = data->getLow(loop);
-  double t2 = data->getClose(loop);
-  if (((ph - pl) / 2) + pl > t2)
-    symbol = TRUE;
-  else
-    symbol = FALSE;
-
-  int t = (int) (ph / size);
-  ph = t * size;
-
-  t = (int) (pl / size);
-  pl = t * size;
-
-  loop++;
-  x2 = x2 + pixelspace;
-
-  while ((x2 < _width) && (loop < (int) data->count()))
-  {
-    double h = data->getHigh(loop);
-    double l = data->getLow(loop);
-
-    if (! symbol)
-    {
-      if (l <= (pl - size))
-      {
-        t = (int) (l / size);
-        pl = t * size;
-      }
-      else
-      {
-        if (h >= (pl + ((PAFReversal + 1) * size)))
-        {
-	  int y = scaler.convertToY(ph);
-	  int y2= scaler.convertToY(pl);
-          painter.fillRect(x, y, x2 - x + pixelspace, y2 - y, downColor);
-
-	  double val = ph - size;
-	  while (val > pl)
-	  {
-	    y = scaler.convertToY(val);
-            painter.drawLine (x, y, x2 + pixelspace, y);
-            val = val - size;
-	  }
-
-	  x = x2 + pixelspace;
-
-          symbol = TRUE;
-          pl = pl + size;
-          int t = (int) (h / size);
-          ph = t * size;
-        }
-      }
-    }
-    else
-    {
-      if (h >= (ph + size))
-      {
-        int t = (int) (h / size);
-        ph = t * size;
-      }
-      else
-      {
-        if (l <= (ph - ((PAFReversal + 1) * size)))
-        {
-	  int y = scaler.convertToY(ph);
-	  int y2= scaler.convertToY(pl);
-          painter.fillRect(x, y, x2 - x + pixelspace, y2 - y, upColor);
-
-	  double val = ph - size;
-	  while (val > pl)
-	  {
-	    y = scaler.convertToY(val);
-            painter.drawLine (x, y, x2 + pixelspace, y);
-            val = val - size;
-	  }
-
-	  x = x2 + pixelspace;
-
-          symbol = FALSE;
-          ph = ph - size;
-          t = (int) (l / size);
-          pl = t * size;
-        }
-      }
-    }
-
-    x2 = x2 + pixelspace;
-    loop++;
-  }
-
-  int y = scaler.convertToY(ph);
-  int y2= scaler.convertToY(pl);
-  if (! symbol)
-    painter.fillRect(x, y, x2 - x + pixelspace, y2 - y, downColor);
-  else
-    painter.fillRect(x, y, x2 - x + pixelspace, y2 - y, upColor);
-  double val = ph - size;
-  while (val > pl)
-  {
-    y = scaler.convertToY(val);
-    painter.drawLine (x, y, x2 + pixelspace, y);
-    val = val - size;
-  }
-
-  painter.end();
-}
-
-void Plot::drawBuyArrow (Setting *co)
-{
-  QPainter painter;
-  painter.begin(&buffer);
-
-  QDateTime dt = QDateTime::fromString(co->getDateTime(QObject::tr("Date")), Qt::ISODate);
-
-  int x = getXFromDate(dt);
-  if (x == -1)
-    return;
-
-  int y = scaler.convertToY(co->getFloat(QObject::tr("Value")));
-
-  QColor color(co->getData(QObject::tr("Color")));
-
-  QPointArray array;
-  array.setPoints(7, x, y,
-                  x + 4, y + 4,
-                  x + 1, y + 4,
-                  x + 1, y + 10,
-	          x - 1, y + 10,
-	          x - 1, y + 4,
-                  x - 4, y + 4);
-  painter.setBrush(color);
-  painter.drawPolygon(array, TRUE, 0, -1);
-
-  painter.end();
-}
-
-void Plot::drawFibonacciLine (Setting *co)
-{
-  QColor color(co->getData(QObject::tr("Color")));
-  double high = co->getFloat(QObject::tr("High"));
-  double low = co->getFloat(QObject::tr("Low"));
-
-  bool support = FALSE;
-  QString s = co->getData(QObject::tr("Support"));
-  if (! s.compare(QObject::tr("True")))
-    support = TRUE;
-
-  QString label;
-  QString v = "0";
-  s = co->getData(v);
-  if (! s.compare(QObject::tr("True")))
-  {
-    label = "0%";
-    if (! support)
-    {
-      v.prepend("-");
-      label.prepend("-");
-    }
-    drawFibonacciLine2(color, label, high, low, v.toFloat());
-  }
-
-  v = "0.238";
-  s = co->getData(v);
-  if (! s.compare(QObject::tr("True")))
-  {
-    label = "23.8%";
-    if (! support)
-    {
-      v.prepend("-");
-      label.prepend("-");
-    }
-    drawFibonacciLine2(color, label, high, low, v.toFloat());
-  }
-
-  v = "0.383";
-  s = co->getData(v);
-  if (! s.compare(QObject::tr("True")))
-  {
-    label = "38.3%";
-    if (! support)
-    {
-      v.prepend("-");
-      label.prepend("-");
-    }
-    drawFibonacciLine2(color, label, high, low, v.toFloat());
-  }
-
-  v = "0.5";
-  s = co->getData(v);
-  if (! s.compare(QObject::tr("True")))
-  {
-    label = "50%";
-    if (! support)
-    {
-      v.prepend("-");
-      label.prepend("-");
-    }
-    drawFibonacciLine2(color, label, high, low, v.toFloat());
-  }
-
-  v = "0.618";
-  s = co->getData(v);
-  if (! s.compare(QObject::tr("True")))
-  {
-    label = "61.8%";
-    if (! support)
-    {
-      v.prepend("-");
-      label.prepend("-");
-    }
-    drawFibonacciLine2(color, label, high, low, v.toFloat());
-  }
-
-  v = "1";
-  s = co->getData(v);
-  if (! s.compare(QObject::tr("True")))
-  {
-    label = "100%";
-    if (! support)
-    {
-      v.prepend("-");
-      label.prepend("-");
-    }
-    drawFibonacciLine2(color, label, high, low, v.toFloat());
-  }
-
-  v = "1.618";
-  s = co->getData(v);
-  if (! s.compare(QObject::tr("True")))
-  {
-    label = "161.8%";
-    if (! support)
-    {
-      v.prepend("-");
-      label.prepend("-");
-    }
-    drawFibonacciLine2(color, label, high, low, v.toFloat());
-  }
-
-  v = "2.618";
-  s = co->getData(v);
-  if (! s.compare(QObject::tr("True")))
-  {
-    label = "261.8%";
-    if (! support)
-    {
-      v.prepend("-");
-      label.prepend("-");
-    }
-    drawFibonacciLine2(color, label, high, low, v.toFloat());
-  }
-
-  v = "4.236";
-  s = co->getData(v);
-  if (! s.compare(QObject::tr("True")))
-  {
-    label = "423.6%";
-    if (! support)
-    {
-      v.prepend("-");
-      label.prepend("-");
-    }
-    drawFibonacciLine2(color, label, high, low, v.toFloat());
-  }
-}
-
-void Plot::drawFibonacciLine2 (QColor color, QString label, double high, double low, double v)
-{
-  QPainter painter;
-  painter.begin(&buffer);
-  painter.setFont(plotFont);
-  painter.setPen(color);
-
-  double range = high - low;
-  double r = 0;
-  if (v < 0)
-    r = high + (range * v);
-  else
-  {
-    if (v > 0)
-      r = low + (range * v);
-    else
-    {
-      if (label.contains("-"))
-        r = high;
-      else
-        r = low;
-    }
-  }
-
-  int y = scaler.convertToY(r);
-  painter.drawLine (startX, y, _width, y);
-
-  QString s = label;
-  s.append(" - ");
-  s.append(strip(r));
-  painter.drawText(startX, y - 1, s, -1);
-
-  painter.end();
-}
-
-void Plot::drawHorizontalLine (Setting *co)
-{
-  QPainter painter;
-  painter.begin(&buffer);
-  painter.setFont(plotFont);
-
-  int y = scaler.convertToY(co->getFloat(QObject::tr("Value")));
-
-  QColor color(co->getData(QObject::tr("Color")));
-  painter.setPen(color);
-
-  painter.drawLine (startX, y, _width, y);
-  painter.drawText(startX, y - 1, co->getData(QObject::tr("Value")), -1);
-
-  painter.end();
-}
-
-void Plot::drawSellArrow (Setting *co)
-{
-  QPainter painter;
-  painter.begin(&buffer);
-
-  QDateTime dt = QDateTime::fromString(co->getDateTime(QObject::tr("Date")), Qt::ISODate);
-
-  int x = getXFromDate(dt);
-  if (x == -1)
-    return;
-
-  int y = scaler.convertToY(co->getFloat(QObject::tr("Value")));
-
-  QColor color(co->getData(QObject::tr("Color")));
-
-  QPointArray array;
-  array.setPoints(7, x, y,
-                  x + 4, y - 4,
-	          x + 1, y - 4,
-	          x + 1, y - 10,
-	          x - 1, y - 10,
-	          x - 1, y - 4,
-                  x - 4, y - 4);
-  painter.setBrush(color);
-  painter.drawPolygon(array, TRUE, 0, -1);
-
-  painter.end();
-}
-
-void Plot::drawText (Setting *co)
-{
-  QPainter painter;
-  painter.begin(&buffer);
-  painter.setFont(plotFont);
-
-  QDateTime dt = QDateTime::fromString(co->getDateTime(QObject::tr("Date")), Qt::ISODate);
-
-  int x = getXFromDate(dt);
-  if (x == -1)
-    return;
-
-  int y = scaler.convertToY(co->getFloat(QObject::tr("Value")));
-
-  QColor color(co->getData(QObject::tr("Color")));
-  painter.setPen(color);
-
-  painter.drawText(x, y, co->getData(QObject::tr("Label")));
-
-  painter.end();
-}
-
-void Plot::drawTrendLine (Setting *co)
-{
-  QPainter painter;
-  painter.begin(&buffer);
-
-  QDateTime dt = QDateTime::fromString(co->getDateTime(QObject::tr("End Date")), Qt::ISODate);
-
-  int x2 = getXFromDate(dt);
-  if (x2 == -1)
-    return;
-  int i2 = data->getX(dt);
-
-  dt = QDateTime::fromString(co->getDateTime(QObject::tr("Start Date")), Qt::ISODate);
-
-  int x = getXFromDate(dt);
-  if (x == -1)
-    return;
-  int i = data->getX(dt);
-
-  int y;
-  if (! co->getData(QObject::tr("Use Bar")).compare(QObject::tr("True")))
-  {
-    QString s = co->getData(QObject::tr("Start Bar"));
-    
-    while (1)
-    {
-      if (! s.compare(QObject::tr("Open")))
-      {
-        y = scaler.convertToY(data->getOpen(i));
-	break;
-      }
-
-      if (! s.compare(QObject::tr("High")))
-      {
-        y = scaler.convertToY(data->getHigh(i));
-	break;
-      }
-
-      if (! s.compare(QObject::tr("Low")))
-      {
-        y = scaler.convertToY(data->getLow(i));
-	break;
-      }
-
-      if (! s.compare(QObject::tr("Close")))
-      {
-        y = scaler.convertToY(data->getClose(i));
-	break;
-      }
-
-      return;
-    }
-  }
-  else
-    y = scaler.convertToY(co->getFloat(QObject::tr("Start Value")));
-
-  int y2;
-  if (! co->getData(QObject::tr("Use Bar")).compare(QObject::tr("True")))
-  {
-    QString s = co->getData(QObject::tr("End Bar"));
-
-    while (1)
-    {
-      if (! s.compare(QObject::tr("Open")))
-      {
-        y2 = scaler.convertToY(data->getOpen(i2));
-	break;
-      }
-
-      if (! s.compare(QObject::tr("High")))
-      {
-        y2 = scaler.convertToY(data->getHigh(i2));
-	break;
-      }
-
-      if (! s.compare(QObject::tr("Low")))
-      {
-        y2 = scaler.convertToY(data->getLow(i2));
-	break;
-      }
-
-      if (! s.compare(QObject::tr("Close")))
-      {
-        y2 = scaler.convertToY(data->getClose(i2));
-	break;
-      }
-
-      return;
-    }
-  }
-  else
-    y2 = scaler.convertToY(co->getFloat(QObject::tr("End Value")));
-
-  QColor color(co->getData(QObject::tr("Color")));
-  painter.setPen(color);
-
-  painter.drawLine (x, y, x2, y2);
-
-  int ydiff = y - y2;
-  int xdiff = x2 - x;
-  dt = data->getDate(data->count() - 1);
-  int end = getXFromDate(dt);
-  while (x2 < end)
-  {
-    x = x2;
-    y = y2;
-    x2 = x2 + xdiff;
-    y2 = y2 - ydiff;
-    painter.drawLine (x, y, x2, y2);
-  }
-
-  painter.end();
-}
-
-void Plot::drawVerticalLine (Setting *co)
-{
-  QPainter painter;
-  painter.begin(&buffer);
-
-  QDateTime dt = QDateTime::fromString(co->getDateTime(QObject::tr("Date")), Qt::ISODate);
-
-  int x = getXFromDate(dt);
-  if (x == -1)
-    return;
-
-  QColor color(co->getData(QObject::tr("Color")));
-  painter.setPen(color);
-
-  painter.drawLine (x, 0, x, _height);
-
-  painter.end();
-}
+*/
 
 QStringList Plot::getIndicators ()
 {
@@ -2692,7 +1443,7 @@ void Plot::createChartObject (QString d, QString n)
     if (! d.compare(tr("Vertical Line")))
     {
       mouseFlag = ClickWait;
-      objectFlag = VerticalLine;
+      objectFlag = ChartObject::VerticalLine;
       emit statusMessage(tr("Select point to place vertical line..."));
       break;
     }
@@ -2700,7 +1451,7 @@ void Plot::createChartObject (QString d, QString n)
     if (! d.compare(tr("Horizontal Line")))
     {
       mouseFlag = ClickWait;
-      objectFlag = HorizontalLine;
+      objectFlag = ChartObject::HorizontalLine;
       emit statusMessage(tr("Select point to place horizontal line..."));
       break;
     }
@@ -2708,7 +1459,7 @@ void Plot::createChartObject (QString d, QString n)
     if (! d.compare(tr("Text")))
     {
       mouseFlag = ClickWait;
-      objectFlag = Text;
+      objectFlag = ChartObject::Text;
       emit statusMessage(tr("Select point to place text..."));
       break;
     }
@@ -2716,7 +1467,7 @@ void Plot::createChartObject (QString d, QString n)
     if (! d.compare(tr("Trend Line")))
     {
       mouseFlag = ClickWait;
-      objectFlag = TrendLine;
+      objectFlag = ChartObject::TrendLine;
       emit statusMessage(tr("Select start point of trend line..."));
       break;
     }
@@ -2724,7 +1475,7 @@ void Plot::createChartObject (QString d, QString n)
     if (! d.compare(tr("Buy Arrow")))
     {
       mouseFlag = ClickWait;
-      objectFlag = BuyArrow;
+      objectFlag = ChartObject::BuyArrow;
       emit statusMessage(tr("Select point to place buy arrow..."));
       break;
     }
@@ -2732,7 +1483,7 @@ void Plot::createChartObject (QString d, QString n)
     if (! d.compare(tr("Sell Arrow")))
     {
       mouseFlag = ClickWait;
-      objectFlag = SellArrow;
+      objectFlag = ChartObject::SellArrow;
       emit statusMessage(tr("Select point to place sell arrow..."));
       break;
     }
@@ -2740,7 +1491,7 @@ void Plot::createChartObject (QString d, QString n)
     if (! d.compare(tr("Fibonacci Line")))
     {
       mouseFlag = ClickWait;
-      objectFlag = FibonacciLine;
+      objectFlag = ChartObject::FibonacciLine;
       emit statusMessage(tr("Select high point of fibonacci line..."));
       break;
     }
@@ -2757,13 +1508,16 @@ void Plot::printChart ()
   if (printer.setup())
   {
     emit statusMessage(tr("Creating chart snapshot..."));
-    
+
+// FIXME
+/*    
     printer.setFullPage(true);
     QSize margins = printer.margins();
     int leftMargin = margins.width();
     int topMargin  = margins.height();
 
     QPaintDeviceMetrics prm(&printer);
+    
     int prmw = prm.width() - leftMargin;
     int prmh = prm.height() - topMargin;
 
@@ -2782,7 +1536,7 @@ void Plot::printChart ()
     painter.begin(&printer);
     painter.drawPixmap(leftMargin/2, topMargin/2, pix);
     painter.end();
-
+*/
     emit statusMessage(tr("Printing complete."));
   }
 }
@@ -2810,51 +1564,52 @@ void Plot::showPopupMenu ()
     }
   }
 
-  QDictIterator<Setting> it2(chartObjects);
+  QDictIterator<ChartObject> it2(chartObjects);
   for (; it2.current(); ++it2)
   {
-    Setting *co = it2.current();
+    ChartObject *co = it2.current();
     QPixmap icon;
+    int ot = co->getData("ObjectType").toInt();
 
     while (1)
     {
-      if (co->getInt("ObjectType") == Plot::VerticalLine)
+      if (ot == ChartObject::VerticalLine)
       {
         icon = QPixmap(vertical);
 	break;
       }
 
-      if (co->getInt("ObjectType") == Plot::HorizontalLine)
+      if (ot == ChartObject::HorizontalLine)
       {
         icon = QPixmap(horizontal);
 	break;
       }
 
-      if (co->getInt("ObjectType") == Plot::TrendLine)
+      if (ot == ChartObject::TrendLine)
       {
         icon = QPixmap(trend);
 	break;
       }
 
-      if (co->getInt("ObjectType") == Plot::Text)
+      if (ot == ChartObject::Text)
       {
         icon = QPixmap(text);
 	break;
       }
 
-      if (co->getInt("ObjectType") == Plot::BuyArrow)
+      if (ot == ChartObject::BuyArrow)
       {
         icon = QPixmap(buyarrow);
 	break;
       }
 
-      if (co->getInt("ObjectType") == Plot::SellArrow)
+      if (ot == ChartObject::SellArrow)
       {
         icon = QPixmap(sellarrow);
 	break;
       }
 
-      if (co->getInt("ObjectType") == Plot::FibonacciLine)
+      if (ot == ChartObject::FibonacciLine)
       {
         icon = QPixmap(fib);
 	break;
@@ -2909,32 +1664,81 @@ void Plot::slotNewChartObject (int id)
   emit signalNewChartObject(s, this);
 }
 
-void Plot::addChartObject (Setting *co)
+void Plot::addChartObject (ChartObject *co)
 {
+  chartObjects.replace(co->getData("Name"), co);
+}
+
+void Plot::addChartObject (Setting *set)
+{
+  ChartObject *co = 0;
+  int ot = set->getData("ObjectType").toInt();
+  
+  while (1)
+  {
+    if (ot == ChartObject::BuyArrow)
+    {
+      co = new BuyArrow(scaler, buffer, QString(), QString(), QString(), QString());
+      break;
+    }
+      
+    if (ot == ChartObject::SellArrow)
+    {
+      co = new SellArrow(scaler, buffer, QString(), QString(), QString(), QString());
+      break;
+    }
+    
+    if (ot == ChartObject::FibonacciLine)
+    {
+      co = new FiboLine(scaler, buffer, QString(), QString(), QString(), QString());
+      break;
+    }
+    
+    if (ot == ChartObject::HorizontalLine)
+    {
+      co = new HorizontalLine(scaler, buffer, QString(), QString(), QString());
+      break;
+    }
+    
+    if (ot == ChartObject::VerticalLine)
+    {
+      co = new VerticalLine(buffer, QString(), QString(), QString());
+      break;
+    }
+    
+    if (ot == ChartObject::TrendLine)
+    {
+      co = new TrendLine(scaler, buffer, data, QString(), QString(), QString(), QString(),
+                         QString(), QString());
+      break;
+    }
+    
+    if (ot == ChartObject::Text)
+    {
+      co = new Text(scaler, buffer, QString(), QString(), QString(), QString());
+      break;
+    }
+    
+    break;
+  }
+
+  co->setData(set->getString());
+  
   chartObjects.replace(co->getData("Name"), co);
 }
 
 QStringList Plot::getChartObjects ()
 {
   QStringList l;
-  QDictIterator<Setting> it(chartObjects);
+  QDictIterator<ChartObject> it(chartObjects);
   for (; it.current(); ++it)
     l.append(it.currentKey());
 
   return l;
 }
 
-QStringList Plot::getChartTypes ()
+void Plot::slotEditChartPrefs ()
 {
-  QStringList l;
-  l.append(tr("Bar"));
-  l.append(tr("Paint Bar"));
-  l.append(tr("Line"));
-  l.append(tr("Candle"));
-  l.append(tr("Candle 2"));
-  l.append(tr("P&F"));
-  l.append(tr("Swing"));
-  return l;
+  chartPlugin->prefDialog();
 }
-
 

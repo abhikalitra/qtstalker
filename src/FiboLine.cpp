@@ -23,8 +23,11 @@
 #include <qpainter.h>
 #include <qcolor.h>
 
-FiboLine::FiboLine (QString indicator, QString name, QString value, QString value2)
+FiboLine::FiboLine (Scaler *s, QPixmap *p, QString indicator, QString name, QString value, QString value2)
 {
+  scaler = s;
+  buffer = p;
+  
   settings.set("Type", "Fibonacci Line", Setting::None);
   settings.set(tr("Color"), "white", Setting::Color);
   settings.set("Plot", indicator, Setting::None);
@@ -44,13 +47,14 @@ FiboLine::FiboLine (QString indicator, QString name, QString value, QString valu
   settings.set("1.618", tr("False"), Setting::Bool);
   settings.set("2.618", tr("False"), Setting::Bool);
   settings.set("4.236", tr("False"), Setting::Bool);
+  settings.set("ObjectType", QString::number(ChartObject::FibonacciLine), Setting::None);
 }
 
 FiboLine::~FiboLine ()
 {
 }
 
-void FiboLine::draw (Scaler &scaler, QPixmap &buffer, int, int)
+void FiboLine::draw (int, int)
 {
   QColor color(settings.getData(tr("Color")));
   double high = settings.getFloat(tr("High"));
@@ -62,7 +66,7 @@ void FiboLine::draw (Scaler &scaler, QPixmap &buffer, int, int)
     support = TRUE;
     
   QPainter painter;
-  painter.begin(&buffer);
+  painter.begin(buffer);
 //  painter.setFont(plotFont);
   painter.setPen(color);
 
@@ -78,8 +82,8 @@ void FiboLine::draw (Scaler &scaler, QPixmap &buffer, int, int)
       label.prepend("-");
     }
     double r = getY(label, high, low, v.toFloat());
-    int y = scaler.convertToY(r);
-    painter.drawLine (0, y, buffer.width(), y);
+    int y = scaler->convertToY(r);
+    painter.drawLine (0, y, buffer->width(), y);
     QString s = label;
     s.append(" - ");
     s.append(QString::number(r));
@@ -97,8 +101,8 @@ void FiboLine::draw (Scaler &scaler, QPixmap &buffer, int, int)
       label.prepend("-");
     }
     double r = getY(label, high, low, v.toFloat());
-    int y = scaler.convertToY(r);
-    painter.drawLine (0, y, buffer.width(), y);
+    int y = scaler->convertToY(r);
+    painter.drawLine (0, y, buffer->width(), y);
     QString s = label;
     s.append(" - ");
     s.append(QString::number(r));
@@ -116,8 +120,8 @@ void FiboLine::draw (Scaler &scaler, QPixmap &buffer, int, int)
       label.prepend("-");
     }
     double r = getY(label, high, low, v.toFloat());
-    int y = scaler.convertToY(r);
-    painter.drawLine (0, y, buffer.width(), y);
+    int y = scaler->convertToY(r);
+    painter.drawLine (0, y, buffer->width(), y);
     QString s = label;
     s.append(" - ");
     s.append(QString::number(r));
@@ -135,8 +139,8 @@ void FiboLine::draw (Scaler &scaler, QPixmap &buffer, int, int)
       label.prepend("-");
     }
     double r = getY(label, high, low, v.toFloat());
-    int y = scaler.convertToY(r);
-    painter.drawLine (0, y, buffer.width(), y);
+    int y = scaler->convertToY(r);
+    painter.drawLine (0, y, buffer->width(), y);
     QString s = label;
     s.append(" - ");
     s.append(QString::number(r));
@@ -154,8 +158,8 @@ void FiboLine::draw (Scaler &scaler, QPixmap &buffer, int, int)
       label.prepend("-");
     }
     double r = getY(label, high, low, v.toFloat());
-    int y = scaler.convertToY(r);
-    painter.drawLine (0, y, buffer.width(), y);
+    int y = scaler->convertToY(r);
+    painter.drawLine (0, y, buffer->width(), y);
     QString s = label;
     s.append(" - ");
     s.append(QString::number(r));
@@ -173,8 +177,8 @@ void FiboLine::draw (Scaler &scaler, QPixmap &buffer, int, int)
       label.prepend("-");
     }
     double r = getY(label, high, low, v.toFloat());
-    int y = scaler.convertToY(r);
-    painter.drawLine (0, y, buffer.width(), y);
+    int y = scaler->convertToY(r);
+    painter.drawLine (0, y, buffer->width(), y);
     QString s = label;
     s.append(" - ");
     s.append(QString::number(r));
@@ -192,8 +196,8 @@ void FiboLine::draw (Scaler &scaler, QPixmap &buffer, int, int)
       label.prepend("-");
     }
     double r = getY(label, high, low, v.toFloat());
-    int y = scaler.convertToY(r);
-    painter.drawLine (0, y, buffer.width(), y);
+    int y = scaler->convertToY(r);
+    painter.drawLine (0, y, buffer->width(), y);
     QString s = label;
     s.append(" - ");
     s.append(QString::number(r));
@@ -211,8 +215,8 @@ void FiboLine::draw (Scaler &scaler, QPixmap &buffer, int, int)
       label.prepend("-");
     }
     double r = getY(label, high, low, v.toFloat());
-    int y = scaler.convertToY(r);
-    painter.drawLine (0, y, buffer.width(), y);
+    int y = scaler->convertToY(r);
+    painter.drawLine (0, y, buffer->width(), y);
     QString s = label;
     s.append(" - ");
     s.append(QString::number(r));
@@ -230,8 +234,8 @@ void FiboLine::draw (Scaler &scaler, QPixmap &buffer, int, int)
       label.prepend("-");
     }
     double r = getY(label, high, low, v.toFloat());
-    int y = scaler.convertToY(r);
-    painter.drawLine (0, y, buffer.width(), y);
+    int y = scaler->convertToY(r);
+    painter.drawLine (0, y, buffer->width(), y);
     QString s = label;
     s.append(" - ");
     s.append(QString::number(r));

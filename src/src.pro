@@ -3,7 +3,7 @@ TEMPLATE = app
 CONFIG += thread warn_on debug
 
 QMAKE_CXXFLAGS += -rdynamic
-QMAKE_CXXFLAGS += -Os
+#QMAKE_CXXFLAGS += -Os
 
 HEADERS += Qtstalker.h
 HEADERS += PortfolioDialog.h
@@ -25,9 +25,6 @@ HEADERS += PortfolioPage.h
 HEADERS += TestPage.h
 HEADERS += IndicatorPage.h
 HEADERS += NewIndicatorDialog.h
-HEADERS += Scaler.h
-
-#test
 HEADERS += ChartObject.h
 HEADERS += BuyArrow.h
 HEADERS += FiboLine.h
@@ -58,9 +55,6 @@ SOURCES += PortfolioPage.cpp
 SOURCES += TestPage.cpp
 SOURCES += IndicatorPage.cpp
 SOURCES += NewIndicatorDialog.cpp
-SOURCES += Scaler.cpp
-
-#test
 SOURCES += ChartObject.cpp
 SOURCES += BuyArrow.cpp
 SOURCES += FiboLine.cpp

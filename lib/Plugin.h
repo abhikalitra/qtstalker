@@ -27,11 +27,11 @@
 #include <qmemarray.h>
 #include <qobject.h>
 #include <qcolor.h>
+#include <qpixmap.h>
 #include "Setting.h"
 #include "PlotLine.h"
 #include "BarData.h"
-
-#define COPYRIGHT "(C) 2001-2003 Stefan Stratigakos"
+#include "Scaler.h"
 
 class Plugin : public Setting, public QObject
 {
@@ -54,6 +54,14 @@ class Plugin : public Setting, public QObject
     virtual Setting * getCreateDetails ();
     virtual void createChart (Setting *);
     virtual bool getCreateFlag ();
+    
+    // chart plugin interface
+    virtual void drawChart (int, int, int);
+    virtual void setChartInput (BarData *, Scaler *, QPixmap *);
+    virtual void prefDialog ();
+    virtual int getMinPixelspace ();
+    virtual int getStartX ();
+    virtual bool getIndicatorFlag ();
 
     // base plugin functions
     QString getPluginType ();

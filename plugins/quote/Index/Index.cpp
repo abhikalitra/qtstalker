@@ -153,7 +153,7 @@ int Index::loadData (QString symbol, float weight)
 
   QDateTime dt = db->getDateTime(details->getData("First Date"));
 
-  BarData *recordList = db->getHistory(ChartDb::Daily, dt);
+  BarData *recordList = db->getHistory(ChartDb::Daily, dt, BarData::Bars);
 
   int loop;
   for (loop = 0; loop < (int) recordList->count(); loop++)

@@ -24,13 +24,15 @@
 ChartObject::ChartObject ()
 {
   data = 0;
+  scaler = 0;
+  buffer = 0;
 }
 
 ChartObject::~ChartObject ()
 {
 }
 
-void ChartObject::draw (Scaler &, QPixmap &, int, int)
+void ChartObject::draw (int, int)
 {
 }
 
@@ -48,5 +50,15 @@ void ChartObject::setData (QString d)
 {
   settings.clear();
   settings.parse(d);
+}
+
+QString ChartObject::getData (QString d)
+{
+  return settings.getData(d);
+}
+
+QString ChartObject::getString ()
+{
+  return settings.getString();
 }
 

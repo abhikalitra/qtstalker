@@ -34,16 +34,32 @@ class ChartObject : public QObject
   Q_OBJECT
 
   public:
+  
+    enum ObjectType
+    {
+      VerticalLine,
+      HorizontalLine,
+      TrendLine,
+      Text,
+      BuyArrow,
+      SellArrow,
+      FibonacciLine
+    };
+  
     ChartObject ();
     virtual ~ChartObject ();
-    virtual void draw (Scaler &, QPixmap &, int, int);
+    virtual void draw (int, int);
     virtual QString getDate ();
     virtual QString getDate2 ();
     void setData (QString);
+    QString getData (QString);
+    QString getString ();
     
   protected:
     Setting settings;
     BarData *data;
+    Scaler *scaler;
+    QPixmap *buffer;
 };
 
 #endif

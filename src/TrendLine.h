@@ -29,9 +29,9 @@ class TrendLine : public ChartObject
   Q_OBJECT
 
   public:
-    TrendLine (BarData *, QString, QString, QString, QString, QString, QString);
+    TrendLine (Scaler *, QPixmap *, BarData *, QString, QString, QString, QString, QString, QString);
     ~TrendLine ();
-    void draw (Scaler &, QPixmap &, int, int);
+    void draw (int, int);
     QString getDate ();
     QString getDate2 ();
 };
