@@ -1,0 +1,92 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <title>Chart - Exhaustion Points</title>
+  <meta http-equiv="content-type"
+ content="text/html; charset=ISO-8859-1">
+</head>
+  <body>
+                                                   
+<h2><u>Chart - Exhaustion Points</u></h2>
+<p><b>NOTE:</b> This chart type is experimental. See notes below.
+</p>
+<p>
+"Outside Bars" (yellow-to-red) - the trading range encompasses the previous bar.
+"Inside Bars" (pink-to-blue) - the trading range is encompassed by the previous bar.
+</p>
+<p>
+May indicate short-term reversal.
+Must be accompanied by volume and preceded by a trend.
+</p>
+<p>
+The outside bar at 20030313 is a classic. It is even more strong as it
+encompasses both previous bars and has a large body.
+</p>
+<p>
+<img src="exhaustion.png" title="Exhaustion Points" alt="Exhaustion Points"
+     width="713" height="759">
+<img src="exhaustion-legend.png" title="Exhaustion Legend" alt="Exhaustion Legend"
+     width="256" height="256">
+</p>
+
+<h3>Ranking of bars</h3>
+<p>Colour is used to denote the significance of bars. A five-point ranking
+scheme is used as shown in the legend.</p>
+<p>When an outside/inside bar is detected, it is assigned a default ranking
+of one point. For each other significance factor, half a point is added.
+The final rank is truncated to an integer between one and five.</p>
+<p>Many factors contribute to significance. Here are the few that are
+currently being used. 
+</p>
+<p>
+Outside bars:
+</p>
+<ul>
+  <li>encompass more (2, 3, 4) previous bars - add 0.5 each</li>
+  <li>much bigger range than the previous bar (500%) - add 0.5</li>
+  <li>much bigger range than the previous bar (900%) - add 0.5</li>
+  <li>greater volume than the previous bar (150%) - add 0.5</li>
+  <li>greater volume than the previous bar (300%) - add 0.5</li>
+  <li></li>
+</ul>
+<p>
+Inside bars:
+</p>
+<ul>
+  <li>much smaller range than the previous bar (25%) - add 0.5</li>
+  <li>much smaller range than the previous bar (10%) - add 0.5</li>
+  <li>lesser volume than the previous bar (50%) - add 0.5</li>
+  <li>lesser volume than the previous bar (20%) - add 0.5</li>
+  <li></li>
+</ul>
+<p>You will need to apply more weight from your visual observations, e.g.
+a sharper preceding trend.
+</p>
+
+<h3>Development notes</h3>
+<p>Not yet automatically detecting that there is associated volume.
+You must verify that visually.
+</p>
+
+<p>Not yet automatically detecting that an up or down trend is in place.
+You must verify that visually.
+</p>
+
+<p>The ranking scheme needs to be fine-tuned, e.g. perhaps more weight should
+be added to certain situations.
+Note that you can tweak these weights yourself in Plot.cpp
+(search for "Exhaustion or Rank").
+</p>
+
+<p>More significance patterns need to be detected - currently only doing a few.
+(The maximum rank that can currently be achieved is three, i.e. you will not
+yet see any orange or red outside bars nor any blue inside bars.)
+</p>
+
+<p>There are other price patterns that indicate exhaustion points,
+e.g. two-bar reversals, exhaustion bars. However we are only attempting
+outside and inside bars.
+</p>
+
+</body>
+</html>
