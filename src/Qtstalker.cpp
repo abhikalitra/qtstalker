@@ -169,15 +169,11 @@ QtstalkerApp::QtstalkerApp()
   dpSplitter->setOrientation(Vertical);
   vbox->addWidget(dpSplitter);
   
-//  navTab = new NavigatorTab(navBase);
   navTab = new NavigatorTab(dpSplitter);
   QObject::connect(navTab, SIGNAL(signalPositionChanged(int)), this, SLOT(slotNavigatorPosition(int)));
-//  vbox->addWidget(navTab, 1, 0);
   
-//  infoLabel = new QMultiLineEdit(navBase);
   infoLabel = new QMultiLineEdit(dpSplitter);
   infoLabel->setReadOnly(TRUE);
-//  vbox->addWidget(infoLabel, 1, 0);
 
   // construct the chart areas
 
@@ -217,8 +213,8 @@ QtstalkerApp::QtstalkerApp()
     emit signalPlotFont(QFont());
 
   QObject::connect(mainPlot, SIGNAL(signalNewIndicator()), this, SLOT(slotNewIndicator()));
-  QObject::connect(mainPlot, SIGNAL(signalEditIndicator(QString, Plot *)), this, SLOT(slotEditIndicator(QString, Plot *)));
-  QObject::connect(mainPlot, SIGNAL(signalDeleteIndicator(QString, Plot *)), this, SLOT(slotDeleteIndicator(QString, Plot *)));
+  QObject::connect(mainPlot, SIGNAL(signalEditIndicator(QString)), this, SLOT(slotEditIndicator(QString)));
+  QObject::connect(mainPlot, SIGNAL(signalDeleteIndicator(QString)), this, SLOT(slotDeleteIndicator(QString)));
 
   QObject::connect(mainPlot, SIGNAL(statusMessage(QString)), this, SLOT(slotStatusMessage(QString)));
   QObject::connect(mainPlot, SIGNAL(infoMessage(Setting *)), this, SLOT(slotUpdateInfo(Setting *)));
@@ -288,9 +284,20 @@ QtstalkerApp::QtstalkerApp()
   // place navigator on left/right side
   if (navTab->getPosition() == 0)
     navSplitter->moveToLast(navBase);
+    
+  initChartNav();
+  initGroupNav();
+  initIndicatorNav();
+  initPortfolioNav();
+  initTestNav();
+  initScannerNav();
 
   l = config.getIndicators();
+  QStringList l2 = QStringList::split(",", config.getData(Config::IndicatorPageStatus), FALSE);
   int loop;
+  for (loop = 0; loop < (int) l2.count(); loop++)
+    l.remove(l2[loop]);
+  
   for (loop = 0; loop < (int) l.count(); loop++)
   {
     Setting *set = config.getIndicator(l[loop]);
@@ -323,7 +330,7 @@ QtstalkerApp::QtstalkerApp()
   
   // set the indicator splitter sizes
   sizeList = split->sizes();
-  QStringList l2 = QStringList::split(",", config.getData(Config::PlotSizes), FALSE);
+  l2 = QStringList::split(",", config.getData(Config::PlotSizes), FALSE);
   for (loop = 0; loop < (int) l2.count(); loop++)
     sizeList[loop] = l2[loop].toInt();
   split->setSizes(sizeList);
@@ -342,13 +349,6 @@ QtstalkerApp::QtstalkerApp()
   // set the last used chart type
   slotChartTypeChanged(0);
 
-  initChartNav();
-  initGroupNav();
-  initIndicatorNav();
-  initPortfolioNav();
-  initTestNav();
-  initScannerNav();
-
   resize(config.getData(Config::Width).toInt(), config.getData(Config::Height).toInt());
   
   // set crosshairs status for all the plots
@@ -363,6 +363,9 @@ QtstalkerApp::QtstalkerApp()
   emit signalDrawMode(s.toInt());
   
   navTab->togglePosition(navTab->getPosition());
+
+  // setup the indicator page  
+  ip->refreshList();
   
   // catch any kill signals and try to save config
   QObject::connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(slotQuit()));
@@ -751,15 +754,7 @@ void QtstalkerApp::loadChart (QString d)
   chartPath = d;
   
   // get a list of disabled indicators before you kill them
-  QStringList l = mainPlot->getIndicators();
-  QStringList di;
-  int loop;
-  for (loop = 0; loop < (int) l.count(); loop++)
-  {
-    Indicator *i = mainPlot->getIndicator(l[loop]);
-    if (i->getEnable() == FALSE)
-      di.append(l[loop]);
-  }
+  QStringList di = ip->getDisabledIndicators();
 
   mainPlot->clear();
 
@@ -797,7 +792,10 @@ void QtstalkerApp::loadChart (QString d)
     
   mainPlot->setChartInput ();
 
-  l = config.getIndicators();
+  QStringList l = config.getIndicators();
+  int loop;
+  for (loop = 0; loop < (int) di.count(); loop++)
+    l.remove(di[loop]);
 
   for (loop = 0; loop < (int) l.count(); loop++)
   {
@@ -816,13 +814,6 @@ void QtstalkerApp::loadChart (QString d)
       i->setPlotType((Indicator::PlotType) set->getData("plotType").toInt());
     delete set;
     loadIndicator(i);
-
-    if (i->getPlotType() == Indicator::MainPlot)
-    {
-      // restore the enable status of this main chart indicator
-      if (di.findIndex(l[loop]) != -1)
-	i->setEnable(FALSE);
-    }
   }
 
   QPtrList<Setting> col = plug->getChartObjects();
@@ -861,8 +852,6 @@ void QtstalkerApp::loadChart (QString d)
   slotTabChanged(0);
 
   setCaption(getWindowCaption());
-
-  emit signalIndicatorPageRefresh();
 }
 
 void QtstalkerApp::loadIndicator (Indicator *i)
@@ -1124,7 +1113,7 @@ void QtstalkerApp::slotNewIndicator ()
   config.closePlugin(indicator);
 }
 
-void QtstalkerApp::slotEditIndicator (QString selection, Plot *plot)
+void QtstalkerApp::slotEditIndicator (QString selection)
 {
   Setting *set = config.getIndicator(selection);
   if (! set->count())
@@ -1160,18 +1149,39 @@ void QtstalkerApp::slotEditIndicator (QString selection, Plot *plot)
       i->setPlotType((Indicator::PlotType) set->getData("plotType").toInt());
     loadIndicator(i);
     
-    plot->draw();
+    if (i->getPlotType() == Indicator::MainPlot)
+      mainPlot->draw();
+    else
+      slotTabChanged(0);
   }
 
   config.closePlugin(type);
   delete set;
 }
 
-void QtstalkerApp::slotDeleteIndicator (QString text, Plot *plot)
+void QtstalkerApp::slotDeleteIndicator (QString text)
 {
+  Setting *set = config.getIndicator(text);
+  if (! set->count())
+  {
+    delete set;
+    qDebug("QtstalkerApp::slotDeleteIndicator:indicator settings empty");
+  }
+
   // delete any chart objects that belong to the indicator
-  bool mainFlag = plot->getMainFlag();
-  bool tabFlag = plot->getTabFlag();
+  bool mainFlag = FALSE;
+  bool tabFlag = FALSE;
+  switch (set->getInt("plotType"))
+  {
+    case Indicator::MainPlot:
+      mainFlag = TRUE;
+      break;
+    case Indicator::TabPlot:
+      tabFlag = TRUE;
+      break;
+    default:
+      break;      
+  }
   
   if (! mainFlag)
   {
@@ -1191,21 +1201,72 @@ void QtstalkerApp::slotDeleteIndicator (QString text, Plot *plot)
   if (! mainFlag)
   {
     if (tabFlag)
-    {
-      tabs->removePage((QWidget *) plot);
-      plotList.remove(text);
-    }
-    else
-      plotList.remove(text);
+      tabs->removePage((QWidget *) plotList[text]);
+    plotList.remove(text);
   }
   else
-    plot->deleteIndicator(text);
+    mainPlot->deleteIndicator(text);
 
   config.deleteIndicator(text);
 
   emit signalIndicatorPageRefresh();
 
   if (mainFlag)
+    mainPlot->draw();
+}
+
+void QtstalkerApp::slotDisableIndicator (QString name)
+{
+  QStringList l = mainPlot->getIndicators();
+  if (l.findIndex(name) != -1)
+  {
+    mainPlot->deleteIndicator(name);
+    mainPlot->draw();
+  }
+  else
+  {
+    QDictIterator<Plot> it(plotList);
+    for(; it.current(); ++it)
+    {
+      l = it.current()->getIndicators();
+      if (l.findIndex(name) != -1)
+      {
+        if (it.current()->getTabFlag())
+	{
+          tabs->removePage((QWidget *) it.current());
+          plotList.remove(name);
+	}
+	else
+          plotList.remove(name);
+	  
+	break;
+      }
+    }
+  }
+}
+
+void QtstalkerApp::slotEnableIndicator (QString name)
+{
+  Config config;
+  Setting *set = config.getIndicator(name);
+  if (! set->count())
+  {
+    delete set;
+    return;
+  }
+    
+  addIndicatorButton(name, (Indicator::PlotType) set->getData("plotType").toInt());
+  
+  Indicator *i = new Indicator;
+  i->setName(name);
+  i->setFile(config.getData(Config::IndicatorPath) + "/" + name);
+  i->setType(set->getData("plugin"));
+  if (set->getData("plotType").length())
+    i->setPlotType((Indicator::PlotType) set->getData("plotType").toInt());
+  delete set;
+  loadIndicator(i);
+  
+  if (i->getPlotType() == Indicator::MainPlot)
     mainPlot->draw();
 }
 
@@ -1289,8 +1350,8 @@ void QtstalkerApp::addIndicatorButton (QString d, Indicator::PlotType tabFlag)
   plotList.replace(d, plot);
 
   QObject::connect(plot, SIGNAL(signalNewIndicator()), this, SLOT(slotNewIndicator()));
-  QObject::connect(plot, SIGNAL(signalEditIndicator(QString, Plot *)), this, SLOT(slotEditIndicator(QString, Plot *)));
-  QObject::connect(plot, SIGNAL(signalDeleteIndicator(QString, Plot *)), this, SLOT(slotDeleteIndicator(QString, Plot *)));
+  QObject::connect(plot, SIGNAL(signalEditIndicator(QString)), this, SLOT(slotEditIndicator(QString)));
+  QObject::connect(plot, SIGNAL(signalDeleteIndicator(QString)), this, SLOT(slotDeleteIndicator(QString)));
   QObject::connect(plot, SIGNAL(statusMessage(QString)), this, SLOT(slotStatusMessage(QString)));
   QObject::connect(plot, SIGNAL(infoMessage(Setting *)), this, SLOT(slotUpdateInfo(Setting *)));
   
@@ -1407,10 +1468,15 @@ void QtstalkerApp::initTestNav ()
 
 void QtstalkerApp::initIndicatorNav ()
 {
-  ip = new IndicatorPage(baseWidget, mainPlot);
+  ip = new IndicatorPage(baseWidget);
   connect(this, SIGNAL(signalIndicatorPageRefresh()), ip, SLOT(refreshList()));
+  connect(ip, SIGNAL(signalDisableIndicator(QString)), this, SLOT(slotDisableIndicator(QString)));
+  connect(ip, SIGNAL(signalEnableIndicator(QString)), this, SLOT(slotEnableIndicator(QString)));
+  connect(ip, SIGNAL(signalNewIndicator()), this, SLOT(slotNewIndicator()));
+  connect(ip, SIGNAL(signalEditIndicator(QString)), this, SLOT(slotEditIndicator(QString)));
+  connect(ip, SIGNAL(signalDeleteIndicator(QString)), this, SLOT(slotDeleteIndicator(QString)));
+  
   navTab->addWidget(ip, 2);
-  ip->setStartStatus();
 }
 
 void QtstalkerApp::initScannerNav ()

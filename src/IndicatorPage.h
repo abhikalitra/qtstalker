@@ -25,31 +25,40 @@
 #include <qstring.h>
 #include <qwidget.h>
 #include <qlistbox.h>
-#include <qcheckbox.h>
-#include "Plot.h"
+#include <qpopupmenu.h>
+#include "Setting.h"
 
 class IndicatorPage : public QWidget
 {
   Q_OBJECT
 
+  signals:
+    void signalDisableIndicator (QString);
+    void signalEnableIndicator (QString);
+    void signalEditIndicator (QString);
+    void signalDeleteIndicator (QString);
+    void signalNewIndicator ();
+  
   public:
-    IndicatorPage (QWidget *, Plot *);
+    IndicatorPage (QWidget *);
     ~IndicatorPage ();
 
   public slots:
     void doubleClick (QListBoxItem *);
-    void mainToggled ();
     void refreshList ();
     void slotHelp ();
     void rightClick (QListBoxItem *);
-    void setStartStatus ();
     void saveStatus ();
+    void newIndicator ();
+    void editIndicator ();
+    void deleteIndicator ();
+    void itemSelected(const QString &);
+    QStringList getDisabledIndicators ();
 
   protected:
     QListBox *list;
-    QCheckBox *enableMain;
-    Plot *plot;
     QPopupMenu *menu;
+    Setting statusList;
 };
 
 #endif

@@ -25,15 +25,15 @@
 #include "help.xpm"
 #include "ok.xpm"
 #include "disable.xpm"
-#include <qtooltip.h>
+#include "edit.xpm"
+#include "delete.xpm"
+#include "newchart.xpm"
 #include <qlayout.h>
-#include <qpopupmenu.h>
 #include <qcursor.h>
+#include <qdir.h>
 
-IndicatorPage::IndicatorPage (QWidget *w, Plot *pl) : QWidget (w)
+IndicatorPage::IndicatorPage (QWidget *w) : QWidget (w)
 {
-  plot = pl;
-
   QVBoxLayout *vbox = new QVBoxLayout(this);
   vbox->setMargin(2);
   vbox->setSpacing(5);
@@ -42,18 +42,15 @@ IndicatorPage::IndicatorPage (QWidget *w, Plot *pl) : QWidget (w)
   connect(list, SIGNAL(doubleClicked(QListBoxItem *)), this, SLOT(doubleClick(QListBoxItem *)));
   connect(list, SIGNAL(contextMenuRequested(QListBoxItem *, const QPoint &)), this,
           SLOT(rightClick(QListBoxItem *)));
-  
+  connect(list, SIGNAL(highlighted(const QString &)), this, SLOT(itemSelected(const QString &)));
   vbox->addWidget(list);
 
-  enableMain = new QCheckBox(tr("Disable All"), this);
-  QToolTip::add(enableMain, tr("Disable All Main Chart Indicators"));
-  connect(enableMain, SIGNAL(clicked()), this, SLOT(mainToggled()));
-  vbox->addWidget(enableMain);
-  
   menu = new QPopupMenu();
+  menu->insertItem(QPixmap(newchart), tr("&New Indicator"), this, SLOT(newIndicator()), CTRL+Key_N);
+  menu->insertItem(QPixmap(edit), tr("&Edit Indicator"), this, SLOT(editIndicator()), CTRL+Key_E);
+  menu->insertItem(QPixmap(deleteitem), tr("&Delete Indicator"), this, SLOT(deleteIndicator()), CTRL+Key_D);
+  menu->insertSeparator(-1);
   menu->insertItem(QPixmap(help), tr("&Help"), this, SLOT(slotHelp()), CTRL+Key_H);
-
-  refreshList();
 }
 
 IndicatorPage::~IndicatorPage ()
@@ -61,70 +58,80 @@ IndicatorPage::~IndicatorPage ()
   delete menu;
 }
 
+void IndicatorPage::itemSelected (const QString &d)
+{
+  if (d.length())
+  {
+    menu->setItemEnabled(menu->idAt(1), TRUE);
+    menu->setItemEnabled(menu->idAt(2), TRUE);
+    menu->setItemEnabled(menu->idAt(3), TRUE);
+  }
+  else
+  {
+    menu->setItemEnabled(menu->idAt(1), FALSE);
+    menu->setItemEnabled(menu->idAt(2), FALSE);
+    menu->setItemEnabled(menu->idAt(3), FALSE);
+  }
+}
+
+void IndicatorPage::newIndicator ()
+{
+  emit signalNewIndicator();
+}
+
+void IndicatorPage::editIndicator ()
+{
+  emit signalEditIndicator(list->currentText());
+}
+
+void IndicatorPage::deleteIndicator ()
+{
+  emit signalDeleteIndicator(list->currentText());
+}
+
 void IndicatorPage::refreshList ()
 {
   list->clear();
+  statusList.clear();
 
-  QStringList l = plot->getIndicators();
-
+  Config config;
+  QDir dir(config.getData(Config::IndicatorPath));
+  QStringList l = QStringList::split(",", config.getData(Config::IndicatorPageStatus), FALSE);
   int loop;
-  for (loop = 0; loop < (int) l.count(); loop++)
+  for (loop = 2; loop < (int) dir.count(); loop++)
   {
-    Indicator *i = plot->getIndicator(l[loop]);
-
-    if (i->getEnable())
-      list->insertItem(ok, l[loop], -1);
+    if (l.findIndex(dir[loop]) == -1)
+    {
+      list->insertItem(ok, dir[loop], -1);
+      statusList.setData(dir[loop], "1");
+    }
     else
-      list->insertItem(disable, l[loop], -1);
+    {
+      list->insertItem(disable, dir[loop], -1);
+      statusList.setData(dir[loop], "0");
+    }
   }
 }
 
 void IndicatorPage::doubleClick (QListBoxItem *item)
 {
+  if (! item)
+    return;
+    
+  QString s = item->text();
   int index = list->index(item);
-
-  Indicator *i = plot->getIndicator(item->text());
-  if (i->getEnable())
+  if (statusList.getInt(s))
   {
-    list->changeItem(disable, item->text(), index);
-    i->setEnable(FALSE);
+    list->changeItem(disable, s, index);
+    statusList.setData(s, "0");
+    emit signalDisableIndicator(s);
   }
   else
   {
-    i->setEnable(TRUE);
-    list->changeItem(ok, item->text(), index);
+    list->changeItem(ok, s, index);
+    statusList.setData(s, "1");
+    emit signalEnableIndicator(s);
   }
-
-  plot->draw();
-}
-
-void IndicatorPage::mainToggled ()
-{
-  QStringList l = plot->getIndicators();
-
-  int loop;
-  for (loop = 0; loop < (int) l.count(); loop++)
-  {
-    Indicator *i = plot->getIndicator(l[loop]);
-
-    if (enableMain->isChecked() == TRUE)
-    {
-      list->changeItem(disable, list->text(loop), loop);
-      i->setEnable(FALSE);
-    }
-    else
-    {
-      list->changeItem(ok, list->text(loop), loop);
-      i->setEnable(TRUE);
-    }
-  }
-
-  if (enableMain->isChecked() == TRUE)
-    list->setEnabled(FALSE);
-  else
-    list->setEnabled(TRUE);
-
-  plot->draw();
 }
 
 void IndicatorPage::slotHelp ()
@@ -138,34 +145,32 @@ void IndicatorPage::rightClick (QListBoxItem *)
   menu->exec(QCursor::pos());
 }
 
-void IndicatorPage::setStartStatus ()
-{
-  Config config;
-  QStringList l = QStringList::split(",", config.getData(Config::IndicatorPageStatus), FALSE);
-  int loop;
-  for (loop = 0; loop < (int) list->count(); loop++)
-  {
-    int i = l.findIndex(list->text(loop));
-    if (i > -1)
-    {
-      list->changeItem(disable, list->text(loop), loop);
-      Indicator *i = plot->getIndicator(list->text(loop));
-      i->setEnable(FALSE);
-    }
-  }
-}
-
 void IndicatorPage::saveStatus ()
 {
-  QStringList l;
+  QStringList l = statusList.getKeyList();
+  QStringList l2;
   int loop;
-  for (loop = 0; loop < (int) list->count(); loop++)
+  for (loop = 0; loop < (int) l.count(); loop++)
   {
-    Indicator *i = plot->getIndicator(list->text(loop));
-    if (! i->getEnable())
-      l.append(list->text(loop));
+    if (! statusList.getInt(l[loop]))
+      l2.append(l[loop]);
   }
 
   Config config;
-  config.setData(Config::IndicatorPageStatus, l.join(","));
+  config.setData(Config::IndicatorPageStatus, l2.join(","));
 }
+
+QStringList IndicatorPage::getDisabledIndicators ()
+{
+  QStringList l = statusList.getKeyList();
+  QStringList l2;
+  int loop;
+  for (loop = 0; loop < (int) l.count(); loop++)
+  {
+    if (! statusList.getInt(l[loop]))
+      l2.append(l[loop]);
+  }
+
+  return l2;
+}
+

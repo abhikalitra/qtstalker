@@ -105,8 +105,8 @@ class QtstalkerApp : public QMainWindow
     void slotOptions ();
     void slotDataWindow ();
     void slotNewIndicator ();
-    void slotEditIndicator (QString, Plot *);
-    void slotDeleteIndicator (QString, Plot *);
+    void slotEditIndicator (QString);
+    void slotDeleteIndicator (QString);
     void slotGrid (bool);
     void slotCompressionChanged (int);
     void slotChartTypeChanged (int);
@@ -132,6 +132,8 @@ class QtstalkerApp : public QMainWindow
     void slotNavigatorButtonPressed (int);
     void slotHelp ();
     void slotExitQuoteDialog ();
+    void slotDisableIndicator (QString);
+    void slotEnableIndicator (QString);
 
   private:
     QPopupMenu *fileMenu;

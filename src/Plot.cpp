@@ -1646,13 +1646,13 @@ void Plot::setCrosshairsStatus (bool status)
 void Plot::slotEditIndicator (int id)
 {
   QString s = chartEditMenu->text(id);
-  emit signalEditIndicator(s, this);
+  emit signalEditIndicator(s);
 }
 
 void Plot::slotDeleteIndicator (int id)
 {
   QString s = chartDeleteMenu->text(id);
-  emit signalDeleteIndicator(s, this);
+  emit signalDeleteIndicator(s);
 }
 
 void Plot::slotNewIndicator ()

@@ -34,7 +34,14 @@
 
 20050206: Added a splitter to the data panel.
 
-
+20050207: Applied patch #1117680 - patch docs broken links. Thanks to David Crossley for the patch.
+          This fixes some broken doc links.
+	  
+20050207: Changed the indicator panel behaviour to list all indicators. The user can now turn on/off
+          any indicators in the Qtstalker/indicators directory. There is also a context menu available
+	  for each indicator in the list.
+	  
+	  	  
 	  
 0.29
 ====

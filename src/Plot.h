@@ -51,8 +51,8 @@ class Plot : public QWidget
     void infoMessage (Setting *);
     void leftMouseButton (int, int, bool);
     void keyPressed (QKeyEvent *);
-    void signalEditIndicator (QString, Plot *);
-    void signalDeleteIndicator (QString, Plot *);
+    void signalEditIndicator (QString);
+    void signalDeleteIndicator (QString);
     void signalNewIndicator ();
     void signalMinPixelspace (int);
     void signalCrosshairsStatus (bool);
