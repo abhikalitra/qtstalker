@@ -258,8 +258,6 @@ void CC::updateChart (ChartDb *db, QString symbol, FuturesData *fd, QDir dir)
   }
 
   delete pr;
-
-  emit done();
 }
 
 Plugin * create ()
