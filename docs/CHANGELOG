@@ -2,6 +2,8 @@
 0.16
 ======
 
+- added an icon for qtstalker (qtstalker.xpm)
+
 - added font preference for charts
 
 - Fixed bug that didn't update filelist after deleting a chart
