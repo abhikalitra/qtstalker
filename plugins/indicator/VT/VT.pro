@@ -3,11 +3,11 @@ TEMPLATE = lib
 CONFIG += thread warn_on plugin
 QMAKE_CXXFLAGS += -Os
 
-HEADERS += PVI.h
+HEADERS += VT.h
 
-SOURCES += PVI.cpp
+SOURCES += VT.cpp
 
-TARGET = PVI.0.27
+TARGET = VT.0.27
 
 INCLUDEPATH += ../../../lib
 

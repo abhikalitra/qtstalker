@@ -107,6 +107,8 @@
 	  
 20040815: Merged WAD plugin with the AD plugin. Removed WAD.
 
+20040815: Merged OBV,NVI,PVI,PVT plugins into new VT (Volume Trends) plugin. Removed OBV,NVI,PVI,PVT.
+
 	  
 	  	  
 0.26

@@ -19,29 +19,108 @@
  *  USA.
  */
 
-#include "PVI.h"
+#include "VT.h"
 #include "PrefDialog.h"
 #include <qdict.h>
 
-PVI::PVI ()
+VT::VT ()
 {
-  pluginName = "PVI";
+  pluginName = "VT";
   plotFlag = FALSE;
+  
+  methodList.append("NVI");
+  methodList.append("OBV");
+  methodList.append("PVI");
+  methodList.append("PVT");
+  
   setDefaults();
 }
 
-PVI::~PVI ()
+VT::~VT ()
 {
 }
 
-void PVI::setDefaults ()
+void VT::setDefaults ()
 {
   color.setNamedColor("red");
   lineType = PlotLine::Line;
   label = pluginName;
+  method = "OBV";
 }
 
-void PVI::calculate ()
+void VT::calculate ()
+{
+  if (! method.compare("OBV"))
+    calculateOBV();
+  else
+  {
+    if (! method.compare("NVI"))
+      calculateNVI();
+    else
+    {
+      if (! method.compare("PVI"))
+        calculatePVI();
+      else
+        calculatePVT();
+    }
+  }
+}
+
+void VT::calculateOBV ()
+{
+  PlotLine *obv = new PlotLine();
+  obv->setColor(color);
+  obv->setType(lineType);
+  obv->setLabel(label);
+
+  int loop;
+  double t = 0;
+  for (loop = 1; loop < (int) data->count(); loop++)
+  {
+    double close = data->getClose(loop);
+    double volume = data->getVolume(loop);
+    double yclose = data->getClose(loop - 1);
+
+    if (close > yclose)
+      t = t + volume;
+    else
+    {
+      if (close < yclose)
+      	t = t - volume;
+    }
+
+    obv->append(t);
+  }
+  
+  output.append(obv);
+}
+
+void VT::calculateNVI ()
+{
+  PlotLine *nvi = new PlotLine();
+  nvi->setColor(color);
+  nvi->setType(lineType);
+  nvi->setLabel(label);
+
+  int loop;
+  double nv = 1000;
+  for (loop = 1; loop < (int) data->count(); loop++)
+  {
+    double volume = data->getVolume(loop);
+    double close = data->getClose(loop);
+    double yvolume = data->getVolume(loop - 1);
+    double yclose = data->getClose(loop - 1);
+
+    if (volume < yvolume)
+      nv = nv + ((close - yclose) / yclose) * nv;
+
+    nvi->append(nv);
+  }
+  
+  output.append(nvi);
+}
+
+void VT::calculatePVI ()
 {
   PlotLine *pvi = new PlotLine();
   pvi->setColor(color);
@@ -66,14 +145,37 @@ void PVI::calculate ()
   output.append(pvi);
 }
 
-int PVI::indicatorPrefDialog (QWidget *w)
+void VT::calculatePVT ()
+{
+  PlotLine *pvt = new PlotLine();
+  pvt->setColor(color);
+  pvt->setType(lineType);
+  pvt->setLabel(label);
+
+  int loop = 0;
+  double pv = 0;
+  for (loop = 1; loop < (int) data->count(); loop++)
+  {
+    double close = data->getClose(loop);
+    double volume = data->getVolume(loop);
+    double yclose = data->getClose(loop - 1);
+
+    pv = pv + (((close - yclose) / yclose) * volume);
+    pvt->append(pv);
+  }
+
+  output.append(pvt);
+}
+
+int VT::indicatorPrefDialog (QWidget *w)
 {
   PrefDialog *dialog = new PrefDialog(w);
-  dialog->setCaption(tr("PVI Indicator"));
+  dialog->setCaption(tr("VT Indicator"));
   dialog->createPage (tr("Parms"));
   dialog->addColorItem(tr("Color"), tr("Parms"), color);
   dialog->addComboItem(tr("Line Type"), tr("Parms"), lineTypes, lineType);
   dialog->addTextItem(tr("Label"), tr("Parms"), label);
+  dialog->addComboItem(tr("Method"), tr("Parms"), methodList, method);
   
   int rc = dialog->exec();
   
@@ -82,6 +184,7 @@ int PVI::indicatorPrefDialog (QWidget *w)
     color = dialog->getColor(tr("Color"));
     lineType = (PlotLine::LineType) dialog->getComboIndex(tr("Line Type"));
     label = dialog->getText(tr("Label"));
+    method = dialog->getCombo(tr("Method"));
     rc = TRUE;
   }
   else
@@ -91,17 +194,17 @@ int PVI::indicatorPrefDialog (QWidget *w)
   return rc;
 }
 
-void PVI::loadIndicatorSettings (QString file)
+void VT::loadIndicatorSettings (QString file)
 {
   setIndicatorSettings(loadFile(file));
 }
 
-void PVI::saveIndicatorSettings (QString file)
+void VT::saveIndicatorSettings (QString file)
 {
   saveFile(file, getIndicatorSettings());
 }
 
-void PVI::setIndicatorSettings (Setting dict)
+void VT::setIndicatorSettings (Setting dict)
 {
   setDefaults();
   
@@ -119,19 +222,24 @@ void PVI::setIndicatorSettings (Setting dict)
   s = dict.getData("label");
   if (s.length())
     label = s;
+
+  s = dict.getData("method");
+  if (s.length())
+    method = s;
 }
 
-Setting PVI::getIndicatorSettings ()
+Setting VT::getIndicatorSettings ()
 {
   Setting dict;
   dict.setData("color", color.name());
   dict.setData("lineType", QString::number(lineType));
   dict.setData("label", label);
+  dict.setData("method", method);
   dict.setData("plugin", pluginName);
   return dict;
 }
 
-PlotLine * PVI::calculateCustom (QDict<PlotLine> *)
+PlotLine * VT::calculateCustom (QDict<PlotLine> *)
 {
   clearOutput();
   calculate();
@@ -140,7 +248,8 @@ PlotLine * PVI::calculateCustom (QDict<PlotLine> *)
 
 Plugin * create ()
 {
-  PVI *o = new PVI;
+  VT *o = new VT;
   return ((Plugin *) o);
 }
+
 

@@ -21,16 +21,20 @@
 
 #include "IndicatorPlugin.h"
 
-class PVT : public IndicatorPlugin
+class VT : public IndicatorPlugin
 {
   public:
-    PVT ();
-    virtual ~PVT ();
+    VT ();
+    virtual ~VT ();
     void calculate ();
     void loadIndicatorSettings (QString);
     void saveIndicatorSettings (QString);
     int indicatorPrefDialog (QWidget *);
     void setDefaults();
+    void calculateOBV ();
+    void calculateNVI ();
+    void calculatePVI ();
+    void calculatePVT ();
     PlotLine * calculateCustom (QDict<PlotLine> *);
     Setting getIndicatorSettings ();
     void setIndicatorSettings (Setting);
@@ -39,6 +43,8 @@ class PVT : public IndicatorPlugin
     QColor color;
     PlotLine::LineType lineType;
     QString label;
+    QStringList methodList;
+    QString method;
 };
 
 extern "C"
