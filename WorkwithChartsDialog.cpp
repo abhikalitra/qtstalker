@@ -332,9 +332,9 @@ void WorkwithChartsDialog::newComposite()
     db->openChart();
 
     Setting *details = new Setting();
-    details->set(tr("Title"), name, Setting::Text);
     details->set("Symbol", name, Setting::None);
     details->set("Chart Type", type, Setting::None);
+    details->set(tr("Title"), name, Setting::Text);
     db->setDetails(details);
     delete details;
 
