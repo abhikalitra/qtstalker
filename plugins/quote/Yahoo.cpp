@@ -40,8 +40,6 @@ Yahoo::Yahoo ()
 
 Yahoo::~Yahoo ()
 {
-  if (op)
-    delete op;
 }
 
 void Yahoo::update ()

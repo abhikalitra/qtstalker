@@ -27,18 +27,16 @@
 #include "edit.xpm"
 #include "delete.xpm"
 #include "export.xpm"
-#include "newchart.xpm"
 #include <qinputdialog.h>
 #include <qtooltip.h>
 #include <qlayout.h>
 #include <qdir.h>
 #include <qmessagebox.h>
 #include <qgroupbox.h>
-#include <qlibrary.h>
 
 WorkwithChartsDialog::WorkwithChartsDialog (Config *c) : EditDialog (c)
 {
-  toolbar->expand(1, 9);
+  toolbar->expand(1, 8);
   okButton->hide();
 
   openButton = new QToolButton(this);
@@ -49,21 +47,13 @@ WorkwithChartsDialog::WorkwithChartsDialog (Config *c) : EditDialog (c)
   openButton->setAutoRaise(TRUE);
   toolbar->addWidget(openButton, 0, 0);
 
-  newButton = new QToolButton(this);
-  QToolTip::add(newButton, tr("New Chart"));
-  newButton->setPixmap(QPixmap(newchart));
-  connect(newButton, SIGNAL(clicked()), this, SLOT(newChart()));
-  newButton->setMaximumWidth(30);
-  newButton->setAutoRaise(TRUE);
-  toolbar->addWidget(newButton, 0, 3);
-
   editButton = new QToolButton(this);
   QToolTip::add(editButton, tr("Edit Chart"));
   editButton->setPixmap(QPixmap(edit));
   connect(editButton, SIGNAL(clicked()), this, SLOT(editChart()));
   editButton->setMaximumWidth(30);
   editButton->setAutoRaise(TRUE);
-  toolbar->addWidget(editButton, 0, 4);
+  toolbar->addWidget(editButton, 0, 3);
 
   deleteButton = new QToolButton(this);
   QToolTip::add(deleteButton, tr("Delete Chart"));
@@ -71,7 +61,7 @@ WorkwithChartsDialog::WorkwithChartsDialog (Config *c) : EditDialog (c)
   connect(deleteButton, SIGNAL(clicked()), this, SLOT(deleteChart()));
   deleteButton->setMaximumWidth(30);
   deleteButton->setAutoRaise(TRUE);
-  toolbar->addWidget(deleteButton, 0, 5);
+  toolbar->addWidget(deleteButton, 0, 4);
 
   exportButton = new QToolButton(this);
   QToolTip::add(exportButton, tr("Export Chart"));
@@ -79,7 +69,7 @@ WorkwithChartsDialog::WorkwithChartsDialog (Config *c) : EditDialog (c)
   connect(exportButton, SIGNAL(clicked()), this, SLOT(exportSymbol()));
   exportButton->setMaximumWidth(30);
   exportButton->setAutoRaise(TRUE);
-  toolbar->addWidget(exportButton, 0, 6);
+  toolbar->addWidget(exportButton, 0, 5);
 
   exportAllButton = new QToolButton(this);
   QToolTip::add(exportAllButton, tr("Export All Charts"));
@@ -87,7 +77,7 @@ WorkwithChartsDialog::WorkwithChartsDialog (Config *c) : EditDialog (c)
   connect(exportAllButton, SIGNAL(clicked()), this, SLOT(exportAll()));
   exportAllButton->setMaximumWidth(30);
   exportAllButton->setAutoRaise(TRUE);
-  toolbar->addWidget(exportAllButton, 0, 7);
+  toolbar->addWidget(exportAllButton, 0, 6);
 
   connect(fileList, SIGNAL(doubleClicked(QListViewItem *)), this, SLOT(openSymbol()));
 
@@ -171,88 +161,12 @@ void WorkwithChartsDialog::editChart ()
   delete db;
 }
 
-void WorkwithChartsDialog::newChart()
-{
-  QStringList l = config->getQuotePlugins();
-  QStringList l2;
-  int loop;
-  for (loop = 0; loop < (int) l.count(); loop++)
-  {
-    QString s = config->getData(Config::QuotePluginPath);
-    s.append("/");
-    s.append(l[loop]);
-    s.append(".so");
-
-    QLibrary *lib = new QLibrary(s);
-    Plugin *(*so)() = 0;
-    so = (Plugin *(*)()) lib->resolve("create");
-    if (so)
-    {
-      Plugin *plug = (*so)();
-
-      if (plug->getCreateFlag())
-        l2.append(plug->getPluginName());
-
-      delete plug;
-    }
-
-    delete lib;
-  }
-
-  bool ok = FALSE;
-  QString type = QInputDialog::getItem(tr("New Chart Type"), tr("Choose chart type to create."),
- 	                               l2, 0, FALSE, &ok, this);
-  if (! ok || type.isNull())
-    return;
-
-  QString s = config->getData(Config::QuotePluginPath);
-  s.append("/");
-  s.append(type);
-  s.append(".so");
-
-  QLibrary *lib = new QLibrary(s);
-  Plugin *(*so)() = 0;
-  so = (Plugin *(*)()) lib->resolve("create");
-  if (! so)
-  {
-    delete lib;
-    return;
-  }
-  Plugin *plug = (*so)();
-
-  plug->setDataPath(config->getData(Config::DataPath));
-
-  Setting *details = plug->getCreateDetails();
-
-  EditDialog *dialog = new EditDialog(config);
-
-  s = tr("Qtstalker: New ");
-  s.append(type);
-  dialog->setCaption(s);
-
-  dialog->setItems(details);
-
-  int rc = dialog->exec();
-
-  if (rc == QDialog::Accepted)
-  {
-    plug->createChart(details);
-    currentDir.setPath(currentDir.path());
-    updateFileList();
-  }
-
-  delete details;
-  delete dialog;
-  delete plug;
-  delete lib;
-}
-
 void WorkwithChartsDialog::exportSymbol ()
 {
   item = fileList->selectedItem();
   if (! item)
     return;
-    
+
   if (item->pixmap(0))
     return;
 

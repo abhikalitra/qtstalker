@@ -41,7 +41,6 @@ class WorkwithChartsDialog : public EditDialog
     void setStartDir (QString);
 
   public slots:
-    void newChart ();
     void deleteChart ();
     void openSymbol ();
     void editChart ();
@@ -54,7 +53,6 @@ class WorkwithChartsDialog : public EditDialog
     QToolButton *deleteButton;
     QToolButton *exportButton;
     QToolButton *exportAllButton;
-    QToolButton *newButton;
 };
 
 #endif

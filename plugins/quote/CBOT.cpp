@@ -45,9 +45,6 @@ CBOT::CBOT ()
 
 CBOT::~CBOT ()
 {
-  if (op)
-    delete op;
-
   delete fd;
 }
 

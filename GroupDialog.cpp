@@ -35,12 +35,10 @@ GroupDialog::GroupDialog (Config *c) : EditDialog (c)
   gbox->show();
   upButton->show();
 
-  list2 = new QListBox(this);
-  list2->setSelectionMode(QListBox::Multi);
-  list2->setMinimumWidth(200);
-//  topBox->addWidget(list2);
-
-  fileBox->insertWidget(0, list2);
+  list2 = new QListView(this);
+  list2->setSelectionMode(QListView::Multi);
+  list2->addColumn(tr("Group Items"));
+  topBox->addWidget(list2);
 
   toolbar->expand(1, 6);
 
@@ -69,14 +67,28 @@ GroupDialog::~GroupDialog ()
 
 void GroupDialog::setGroup (QStringList l)
 {
-  group = l;
   list2->clear();
-  list2->insertStringList(l, -1);
+
+  int loop;
+  for (loop = 0; loop < (int) l.count(); loop++)
+    item = new QListViewItem(list2, l[loop]);
+
+  item = 0;
 }
 
 QStringList GroupDialog::getGroup ()
 {
-  return group;
+  QStringList l;
+  
+  QListViewItemIterator it(list2);
+  while(it.current() != 0)
+  {
+    item = it.current();
+    l.append(item->text(0));
+    ++it;
+  }
+
+  return l;
 }
 
 void GroupDialog::insertItem ()
@@ -92,29 +104,28 @@ void GroupDialog::insertItem ()
   QString s2 = config->getData(Config::DataPath);
   s.remove(0, s2.length() + 1);
 
-  list2->insertItem(s, -1);
-  group.append(s);
-  flag = TRUE;
+  item = new QListViewItem(list2, s);
 
-  list2->sort(TRUE);
-  group.sort();
+  flag = TRUE;
 }
 
 void GroupDialog::deleteItem ()
 {
-  if (list2->currentItem() != -1)
+  QList<QListViewItem> dl;
+  dl.setAutoDelete(TRUE);
+
+  QListViewItemIterator it(list2);
+  while(it.current() != 0)
   {
-    int loop;
-    for (loop = 0; loop < (int) list2->count(); loop++)
-    {
-      if (list2->isSelected(loop))
-      {
-	group.remove(list2->text(loop));
-        list2->removeItem(loop);
-        flag = TRUE;
-      }
-    }
+    item = it.current();
+    if (item->isSelected())
+      dl.append(item);
+    ++it;
   }
+
+  dl.clear();
+  
+  flag = TRUE;
 }
 
 bool GroupDialog::getFlag ()

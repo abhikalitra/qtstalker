@@ -40,8 +40,6 @@ YahooQuote::YahooQuote ()
 
 YahooQuote::~YahooQuote ()
 {
-  if (op)
-    delete op;
 }
 
 void YahooQuote::update ()

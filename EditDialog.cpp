@@ -74,16 +74,12 @@ EditDialog::EditDialog (Config *c) : QDialog (0, "EditDialog", TRUE)
   upButton->hide();
   toolbar->addWidget(upButton, 0, 2);
 
-//  QFrame *sep = new QFrame(this);
-//  sep->setFrameStyle(QFrame::HLine | QFrame::Sunken);
-//  baseBox->addWidget(sep);
-
   topBox = new QVBoxLayout(baseBox);
   
   fileBox = new QHBoxLayout(topBox);
 
   fileList = new QListView(this);
-  fileList->addColumn(tr("Symbol"), 200);
+  fileList->addColumn(tr("Symbol"), 150);
   fileList->setSelectionMode(QListView::Single);
   connect(fileList, SIGNAL(clicked(QListViewItem *)), this, SLOT(fileSelection(QListViewItem *)));
   fileBox->addWidget(fileList);
@@ -94,6 +90,7 @@ EditDialog::EditDialog (Config *c) : QDialog (0, "EditDialog", TRUE)
 
   QLabel *label = new QLabel(tr("Symbol"), gbox);
   symbol = new QLabel(0, gbox);
+  symbol->setMinimumWidth(75);
 
   label = new QLabel(tr("Title"), gbox);
   title = new QLabel(0, gbox);

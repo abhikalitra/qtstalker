@@ -22,6 +22,7 @@
 #include "Quote.h"
 #include "download.xpm"
 #include "canceldownload.xpm"
+#include "newchart.xpm"
 #include <qlayout.h>
 #include <qstringlist.h>
 #include <qmessagebox.h>
@@ -35,7 +36,7 @@ QuoteDialog::QuoteDialog (Config *c) : EditDialog (c)
 
   setCaption (tr("Qtstalker: Quotes"));
 
-  toolbar->expand(1, 5);
+  toolbar->expand(1, 6);
 
   downloadButton = new QToolButton(this);
   QToolTip::add(downloadButton, tr("Update"));
@@ -53,6 +54,15 @@ QuoteDialog::QuoteDialog (Config *c) : EditDialog (c)
   toolbar->addWidget(cancelDownloadButton, 0, 3);
   cancelDownloadButton->setEnabled(FALSE);
   cancelDownloadButton->setAutoRaise(TRUE);
+
+  newButton = new QToolButton(this);
+  QToolTip::add(newButton, tr("New Chart"));
+  newButton->setPixmap(QPixmap(newchart));
+  connect(newButton, SIGNAL(clicked()), this, SLOT(newChart()));
+  newButton->setMaximumWidth(30);
+  toolbar->addWidget(newButton, 0, 4);
+  newButton->setEnabled(FALSE);
+  newButton->setAutoRaise(TRUE);
 
   ruleCombo = new QComboBox(this);
   ruleCombo->insertStringList(config->getQuotePlugins(), -1);
@@ -129,6 +139,9 @@ void QuoteDialog::ruleChanged (int)
   connect (plug, SIGNAL(done()), this, SLOT(downloadComplete()));
 
   plug->setDataPath(config->getData(Config::DataPath));
+  
+  if (plug->getCreateFlag())
+    newButton->setEnabled(TRUE);
 
   list->clear();
 
@@ -165,6 +178,8 @@ void QuoteDialog::enableGUI ()
   ruleCombo->setEnabled(TRUE);
   cancelButton->setEnabled(TRUE);
   cancelDownloadButton->setEnabled(FALSE);
+  if (plug->getCreateFlag())
+    newButton->setEnabled(TRUE);
 }
 
 void QuoteDialog::disableGUI ()
@@ -174,6 +189,26 @@ void QuoteDialog::disableGUI ()
   ruleCombo->setEnabled(FALSE);
   cancelButton->setEnabled(FALSE);
   cancelDownloadButton->setEnabled(TRUE);
+  newButton->setEnabled(FALSE);
+}
+
+void QuoteDialog::newChart ()
+{
+  Setting *details = plug->getCreateDetails();
+
+  EditDialog *dialog = new EditDialog(config);
+
+  dialog->setCaption(tr("Qtstalker: New Chart"));
+
+  dialog->setItems(details);
+
+  int rc = dialog->exec();
+
+  if (rc == QDialog::Accepted)
+    plug->createChart(details);
+
+  delete details;
+  delete dialog;
 }
 
 

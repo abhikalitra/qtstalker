@@ -43,9 +43,6 @@ CME::CME ()
 
 CME::~CME ()
 {
-  if (op)
-    delete op;
-
   delete fd;
 }
 
@@ -767,7 +764,8 @@ void CME::parse (Setting *data)
 
 void CME::cancelUpdate ()
 {
-  op->stop();
+  if (op)
+    op->stop();
   emit done();
 }
 

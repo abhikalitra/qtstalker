@@ -43,10 +43,9 @@ class CMEHistory : public QuotePlugin
 
   private:
     QString file2;
-    QUrlOperator *op;
-    QStringList symbolList;
-    QStringList urlList;
-    int symbolLoop;
+    QUrlOperator op;
+    QString symbolList;
+    QString url;
     FuturesData *fd;
 };
 

@@ -49,6 +49,7 @@ class QuoteDialog : public EditDialog
     void ruleChanged (int);
     void downloadComplete ();
     void cancelDownload ();
+    void newChart ();
 
   private:
     QComboBox *ruleCombo;
@@ -56,6 +57,7 @@ class QuoteDialog : public EditDialog
     QLibrary *lib;
     QToolButton *downloadButton;
     QToolButton *cancelDownloadButton;
+    QToolButton *newButton;
 };
 
 #endif

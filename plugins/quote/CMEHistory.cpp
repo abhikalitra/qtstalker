@@ -35,7 +35,30 @@ CMEHistory::CMEHistory ()
   version = 0.2;
   fd = new FuturesData;
   createFlag = FALSE;
-  op = 0;
+  connect(&op, SIGNAL(finished(QNetworkOperation *)), this, SLOT(opDone(QNetworkOperation *)));
+
+  QStringList l;
+  l.append("AD");
+  l.append("CD");
+  l.append("EC");
+  l.append("ES");
+  l.append("JY");
+  l.append("FC");
+  l.append("GI");
+  l.append("LB");
+  l.append("LC");
+  l.append("LN");
+  l.append("NB");
+  l.append("ND");
+  l.append("PB");
+  l.append("SF");
+  l.append("NQ");
+  l.append("SP");
+  l.append("ED");
+  l.sort();
+
+  set(tr("Symbol"), "AD", Setting::List);
+  setList(tr("Symbol"), l);
 
   about = "Downloads daily settlement quotes from CME\n";
   about.append("and imports it directly into qtstalker.");
@@ -43,77 +66,11 @@ CMEHistory::CMEHistory ()
 
 CMEHistory::~CMEHistory ()
 {
-  if (op)
-    delete op;
-
   delete fd;
 }
 
 void CMEHistory::update ()
 {
-  symbolList.clear();
-  urlList.clear();
-  symbolLoop = 0;
-  op = 0;
-
-  QDir dir = QDir::home();
-  file = dir.path();
-  file.append("/Qtstalker/download.zip");
-
-  file2 = dir.path();
-  file2.append("/Qtstalker");
-
-  urlList.append("ftp://ftp.cme.com//pub/hist_eod/fcytd.zip");
-  symbolList.append("FC");
-
-  urlList.append("ftp://ftp.cme.com//pub/hist_eod/lbytd.zip");
-  symbolList.append("LB");
-
-  urlList.append("ftp://ftp.cme.com//pub/hist_eod/lcytd.zip");
-  symbolList.append("LC");
-
-  urlList.append("ftp://ftp.cme.com//pub/hist_eod/lnytd.zip");
-  symbolList.append("LN");
-
-  urlList.append("ftp://ftp.cme.com//pub/hist_eod/pbytd.zip");
-  symbolList.append("PB");
-
-  urlList.append("ftp://ftp.cme.com//pub/hist_eod/adytd.zip");
-  symbolList.append("AD");
-
-  urlList.append("ftp://ftp.cme.com//pub/hist_eod/nbytd.zip");
-  symbolList.append("NB");
-
-  urlList.append("ftp://ftp.cme.com//pub/hist_eod/cdytd.zip");
-  symbolList.append("CD");
-
-  urlList.append("ftp://ftp.cme.com//pub/hist_eod/ecytd.zip");
-  symbolList.append("EC");
-
-  urlList.append("ftp://ftp.cme.com//pub/hist_eod/jyytd.zip");
-  symbolList.append("JY");
-
-  urlList.append("ftp://ftp.cme.com//pub/hist_eod/sfytd.zip");
-  symbolList.append("SF");
-
-  urlList.append("ftp://ftp.cme.com//pub/hist_eod/esytd.zip");
-  symbolList.append("ES");
-
-  urlList.append("ftp://ftp.cme.com//pub/hist_eod/giytd.zip");
-  symbolList.append("GI");
-
-  urlList.append("ftp://ftp.cme.com//pub/hist_eod/ndytd.zip");
-  symbolList.append("ND");
-
-  urlList.append("ftp://ftp.cme.com//pub/hist_eod/nqytd.zip");
-  symbolList.append("NQ");
-
-  urlList.append("ftp://ftp.cme.com//pub/hist_eod/spytd.zip");
-  symbolList.append("SP");
-
-  urlList.append("ftp://ftp.cme.com//pub/hist_eod/edytd.zip");
-  symbolList.append("ED");
-
   qInitNetworkProtocols();
 
   QTimer::singleShot(250, this, SLOT(getFile()));
@@ -121,15 +78,21 @@ void CMEHistory::update ()
 
 void CMEHistory::getFile ()
 {
-  if (op)
-    delete op;
-
-  QDir dir(file);
+  QDir dir = QDir::home();
+  file = dir.path();
+  file.append("/Qtstalker/download.zip");
   dir.remove(file);
 
-  op = new QUrlOperator();
-  connect(op, SIGNAL(finished(QNetworkOperation *)), this, SLOT(opDone(QNetworkOperation *)));
-  op->copy(urlList[symbolLoop], file, FALSE, FALSE);
+  file2 = dir.path();
+  file2.append("/Qtstalker");
+
+  symbolList = getData(tr("Symbol"));
+
+  url = "ftp://ftp.cme.com//pub/hist_eod/";
+  url.append(symbolList.lower());
+  url.append("ytd.zip");
+
+  op.copy(url, file, FALSE, FALSE);
 }
 
 void CMEHistory::opDone (QNetworkOperation *o)
@@ -141,7 +104,6 @@ void CMEHistory::opDone (QNetworkOperation *o)
   {
     QString s = o->protocolDetail();
     qDebug(s.latin1());
-    delete op;
     emit done();
     return;
   }
@@ -152,23 +114,14 @@ void CMEHistory::opDone (QNetworkOperation *o)
 
   parseHistory();
 
-  symbolLoop++;
-
-  if (symbolLoop >= (int) symbolList.count())
-  {
-    emit done();
-    delete op;
-    return;
-  }
-
-  getFile();
+  emit done();
 }
 
 void CMEHistory::parseHistory ()
 {
   QString s2 = file2;
   s2.append("/");
-  s2.append(symbolList[symbolLoop].lower());
+  s2.append(symbolList.lower());
   s2.append("ytd.eod");
   QDir dir(s2);
   dir.remove(s2);
@@ -359,7 +312,7 @@ void CMEHistory::parse (Setting *data)
     
   QString s = dataPath;
   s.append("/");
-  s.append(symbolList[symbolLoop]);
+  s.append(symbolList);
   QDir dir(s);
   if (! dir.exists(s, TRUE))
   {
@@ -381,7 +334,7 @@ void CMEHistory::parse (Setting *data)
 
   s = dataPath;
   s.append("/");
-  s.append(symbolList[symbolLoop]);
+  s.append(symbolList);
   s.append("/");
   s.append(data->getData("Symbol"));
   ChartDb *db = new ChartDb();
@@ -406,7 +359,7 @@ void CMEHistory::parse (Setting *data)
 
 void CMEHistory::cancelUpdate ()
 {
-  op->stop();
+  op.stop();
   emit done();
 }
 

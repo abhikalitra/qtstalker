@@ -23,7 +23,6 @@
 #define GROUPDIALOG_HPP
 
 #include <qtoolbutton.h>
-#include <qlistbox.h>
 #include "Config.h"
 #include "EditDialog.h"
 
@@ -45,8 +44,7 @@ class GroupDialog : public EditDialog
   private:
     QToolButton *deleteButton;
     QToolButton *insertButton;
-    QListBox *list2;
-    QStringList group;
+    QListView *list2;
     bool flag;
 };
 
