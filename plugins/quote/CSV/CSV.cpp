@@ -189,6 +189,7 @@ void CSV::parse ()
       QString s = path;
       s.append(symbol);
       openDb(s, symbol, type);
+      emit statusLogMessage("Updating " + symbol);
     }
 
     while(stream.atEnd() == 0)
@@ -223,8 +224,10 @@ void CSV::parse ()
           if (dateFlag)
           {
             if (dt < sdate.date() || dt > edate.date())
-	    flag = TRUE;
-	    break;
+	    {
+	      flag = TRUE;
+	      break;
+	    }
           }
 	  r->setData("Date", dt.toString("yyyyMMdd"));
 	  continue;
@@ -277,7 +280,13 @@ void CSV::parse ()
 
       Bar *bar = new Bar;
       s = r->getData("Date");
-      if (r->getData("Time").length())
+      if (! s.length())
+      {
+        delete bar;
+	delete r;
+	continue;
+      }
+      if (r->getData("Time"))
         s.append(r->getData("Time"));
       else
         s.append("000000");
@@ -302,20 +311,16 @@ void CSV::parse ()
 	openDb(s, r->getData("Symbol"), type);
         db->setBar(bar);
 	emit dataLogMessage(r->getData("Symbol") + " " + bar->getString());
+        emit statusLogMessage("Updating " + r->getData("Symbol"));
         delete db;
 	db = 0;
-        s = tr("Updating ");
-        s.append(r->getData("Symbol"));
       }
       else
       {
         db->setBar(bar);
 	emit dataLogMessage(r->getData("Symbol") + " " + bar->getString());
-        s = tr("Updating ");
-        s.append(symbol);
       }
 
-      emit statusLogMessage(s);
       delete r;
       delete bar;
     }
@@ -408,7 +413,7 @@ QDate CSV::getDate (QString k, QString d)
 
   while (1)
   {
-    if (k.contains("YYYYMMDD"))
+    if (! k.compare("Date:YYYYMMDD"))
     {
       if (l.count())
         date.setYMD(l[0].toInt(), l[1].toInt(), l[2].toInt());
@@ -420,7 +425,7 @@ QDate CSV::getDate (QString k, QString d)
       break;
     }
 
-    if (k.contains("YYMMDD"))
+    if (! k.compare("Date:YYMMDD"))
     {
       if (l.count())
         date.setYMD(l[0].toInt(), l[1].toInt(), l[2].toInt());
@@ -432,7 +437,7 @@ QDate CSV::getDate (QString k, QString d)
       break;
     }
 
-    if (k.contains("MMDDYYYY"))
+    if (! k.compare("Date:MMDDYYYY"))
     {
       if (l.count())
         date.setYMD(l[2].toInt(), l[0].toInt(), l[1].toInt());
@@ -444,7 +449,7 @@ QDate CSV::getDate (QString k, QString d)
       break;
     }
 
-    if (k.contains("MMDDYY"))
+    if (! k.compare("Date:MMDDYY"))
     {
       if (l.count())
         date.setYMD(l[2].toInt(), l[0].toInt(), l[1].toInt());
@@ -456,7 +461,7 @@ QDate CSV::getDate (QString k, QString d)
       break;
     }
 
-    if (k.contains("DDMMYYYY"))
+    if (! k.compare("Date:DDMMYYYY"))
     {
       if (l.count())
         date.setYMD(l[2].toInt(), l[1].toInt(), l[0].toInt());
