@@ -1042,7 +1042,7 @@ void QtstalkerApp::slotNewIndicator ()
   PrefDialog *idialog = new PrefDialog();
   idialog->setCaption(tr("New Indicator"));
   idialog->createPage (tr("Details"));
-  idialog->addComboItem(tr("Indicator"), tr("Details"), config->getPluginList(Config::IndicatorPluginPath), 0);
+  idialog->addComboItem(tr("Indicator"), tr("Details"), config->getIndicatorList(), 0);
   idialog->addTextItem(tr("Name"), tr("Details"), tr("New Indicator"));
   idialog->addCheckItem(tr("Create Tab"), tr("Details"), TRUE);
   

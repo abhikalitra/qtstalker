@@ -83,7 +83,7 @@ void GroupPage::newGroup()
   if ((! ok) || (selection.isNull()))
     return;
 
-  QString s = config->getData(Config::GroupPath);
+  QString s = nav->getCurrentPath();
   s.append("/");
   s.append(selection);
   QDir dir(s);
@@ -114,24 +114,19 @@ void GroupPage::addGroupItem()
 
   if (rc == QDialog::Accepted)
   {
-    QFileInfo fi(nav->getCurrentPath());
-
-    QString s = config->getData(Config::GroupPath);
-    s.append("/");
-    s.append(fi.fileName());
-
     int loop;
     QStringList l = dialog->selectedFiles();
     for (loop = 0; loop < (int) l.count(); loop++)
     {
-      QString s2 = "ln -s ";
-      s2.append(l[loop]);
-      s2.append(" ");
-      s2.append(s);
-      s2.append("/");
       QFileInfo fi(l[loop]);
-      s2.append(fi.fileName());
-      system (s2);
+    
+      QString s = "ln -s ";
+      s.append(l[loop]);
+      s.append(" ");
+      s.append(nav->getCurrentPath());
+      s.append("/");
+      s.append(fi.fileName());
+      system (s);
     }
 
     nav->updateList();
@@ -143,8 +138,8 @@ void GroupPage::addGroupItem()
 void GroupPage::deleteGroupItem()
 {
   SymbolDialog *dialog = new SymbolDialog(this,
-  							   nav->getCurrentPath(),
-							   "*");
+  					  nav->getCurrentPath(),
+					  "*");
   dialog->setCaption(tr("Select Group Items To Delete"));
 
   int rc = dialog->exec();
@@ -183,9 +178,12 @@ void GroupPage::deleteGroupItem()
 
 void GroupPage::deleteGroup()
 {
+  QFileInfo fi(nav->getCurrentPath());
+  QString s = tr("Are you sure you want to delete current group ");
+  s.append(fi.fileName());
   int rc = QMessageBox::warning(this,
   				tr("Qtstalker: Warning"),
-				tr("Are you sure you want to delete this group?"),
+				s,
 				QMessageBox::Yes,
 				QMessageBox::No,
 				QMessageBox::NoButton);
@@ -193,16 +191,13 @@ void GroupPage::deleteGroup()
   if (rc == QMessageBox::No)
     return;
 
-  QFileInfo fi(nav->getCurrentPath());
-
-  QString s =  "rm -r ";
-  s.append(config->getData(Config::GroupPath));
-  s.append("/");
-  s.append(fi.fileName());
+  s = nav->getCurrentPath();
+  if (! s.compare(config->getData(Config::GroupPath)))
+    return;
+  
+  s =  "rm -r ";
+  s.append(nav->getCurrentPath());
   system (s);
-
-  s = config->getData(Config::GroupPath);
-  s.append("/x");
   nav->upDirectory();
   nav->updateList();
   groupNoSelection();
@@ -218,25 +213,33 @@ void GroupPage::renameGroup ()
 					    fi.fileName(),
 					    &ok,
 					    this);
-  if ((ok) && (! selection.isNull()))
-  {
-    QString s = config->getData(Config::GroupPath);
-    s.append("/");
-    s.append(selection);
-    QDir dir(s);
-    if (dir.exists(s, TRUE))
-    {
-      QMessageBox::information(this, tr("Qtstalker: Error"), tr("This chart group exists."));
-      return;
-    }
-
-    dir.rename(fi.absFilePath(), s, TRUE);
-
-    s.append("/x");
-    nav->setDirectory(s);
+  if ((! ok) || (selection.isNull()))
+    return;
     
-    groupNoSelection();
+  QString s = nav->getCurrentPath();
+    
+  QStringList l = QStringList::split("/", s, FALSE);
+  l[l.count() - 1] = selection;
+  QString s2 = l.join("/");
+  s2.prepend("/");
+  
+  QDir dir(s2);
+  if (dir.exists(s2, TRUE))
+  {
+    QMessageBox::information(this, tr("Qtstalker: Error"), tr("This chart group exists."));
+    return;
   }
+
+  if (! dir.rename(s, s2, TRUE))
+  {
+    QMessageBox::information(this, tr("Qtstalker: Error"), tr("Group rename failed."));
+    return;
+  }
+  
+  nav->setDirectory(s2 + "/x");
+  nav->updateList();
+  
+  groupNoSelection();
 }
 
 void GroupPage::groupSelected (QString d)

@@ -1117,13 +1117,23 @@ void Tester::saveRule ()
   QString s = config->getData(Config::TestPath);
   s.append("/");
   s.append(ruleName);
-  s.append("/");
-  s.append(ruleName);
+  s.append("/rule");
 
   QFile f(s);
   if (! f.open(IO_WriteOnly))
     return;
   QTextStream stream(&f);
+  
+  int loop;
+  for (loop = 0; loop < (int) tradeList->numRows(); loop++)
+  {
+    s = "Trade=";
+    QStringList l;
+    int loop2;
+    for (loop2 = 0; loop2 < 9; loop2++)
+      l.append(tradeList->text(loop, loop2));
+    stream << s << l.join(",") << "\n";
+  }
   
   // save max loss stop
   if (maximumLossCheck->isChecked())
@@ -1242,6 +1252,10 @@ void Tester::saveRule ()
   s.append(bars->text());
   stream << s << "\n";
   
+  s = "Symbol=";
+  s.append(symbolButton->getPath());
+  stream << s << "\n";
+  
   f.close();
 }
 
@@ -1255,8 +1269,10 @@ void Tester::loadRule ()
   QString s = config->getData(Config::TestPath);
   s.append("/");
   s.append(ruleName);
-  s.append("/");
-  s.append(ruleName);
+  s.append("/rule");
+  
+  while (tradeList->numRows())
+    tradeList->removeRow(0);
 
   QFile f(s);
   if (! f.open(IO_ReadOnly))
@@ -1421,7 +1437,25 @@ void Tester::loadRule ()
       priceField->setCurrentText(l2[1]);
       continue;
     }
+  
+    if (! l2[0].compare("Symbol"))
+    {
+      symbolButton->setSymbol(l2[1]);
+      continue;
+    }
+    
+    if (! l2[0].compare("Trade"))
+    {
+      QStringList l3 = QStringList::split(",", l2[1], FALSE);
+      int loop;
+      tradeList->setNumRows(tradeList->numRows() + 1);
+      for (loop = 0; loop < (int) l3.count(); loop++)
+        tradeList->setText(tradeList->numRows() - 1, loop, l3[loop]);
+      continue;
+    }
   }
+  
+  createSummary();
   
   f.close();
 }

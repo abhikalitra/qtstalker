@@ -1,0 +1,77 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML Basic 1.0//EN" "http://www.w3.org/TR/xhtml-basic/xhtml-basic10.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type"
+ content="text/html; charset=iso-8859-1">
+  <title>Qtstalker - Work with Scanner</title>
+  <meta name="generator"
+ content="amaya 6.1, see http://www.w3.org/Amaya/">
+</head>
+<body xml:lang="en" lang="en">
+<h2><u>Scanner Panel<br>
+</u></h2>
+<p>The scanner tab allows you scan symbols using a user defined
+formula. All the symbols that meet the criteria of the scan are put
+into chart group. The chart group will use the same name as the scan
+name, and be located as a folder under the "Scanner" group.</p>
+<p><br>
+<img style="width: 185px; height: 255px;" alt="" src="scannernav.png"><br>
+</p>
+<br>
+<img src="file:///home/me/mystuff/prog/qtstalker/docs/open.png" alt=""
+ width="24" height="24"> Open Scanner
+<p>This will load and display the selected scanner in the scanner
+dialog.</p>
+<h3><img src="file:///home/me/mystuff/prog/qtstalker/docs/newchart.png"
+ alt="" width="24" height="24"> New Scanner<br>
+</h3>
+<p>Here you can create a new scanner. Selecting this will bring up a
+series of dialogs. First you are asked for a name to call your new
+scanner. The name must be unique, if not an error message will
+display. After that, the scanner dialog will appear.<br>
+</p>
+<h3><img src="file:///home/me/mystuff/prog/qtstalker/docs/delete.png"
+ alt="" width="22" height="22"> Delete Scanner</h3>
+<p>Deletes the selected scanner.<br>
+</p>
+<h3><img src="file:///home/me/mystuff/prog/qtstalker/docs/rename.png"
+ alt="" width="22" height="22"> Rename Scanner<br>
+</h3>
+<p>This brings up a dialog that allows you to enter the new name of the
+selected scanner.</p>
+<br>
+<h2>Scanner Dialog</h2>
+<img style="width: 344px; height: 377px;" alt="" src="scannerdialog.png"><br>
+<br>
+The "Scan" button will perform the scan. The "Apply" button will save
+the scan rule.<br>
+<br>
+Symbol Selection: Checking the "All symbols" box will choose all
+symbols in the qtstalker database for scanning. Pressing the symbols
+button will bring up a file selector dialog that allows you to choose a
+specific group of symbols.<br>
+<br>
+Compression: The compression to use when scanning symbols. ie. Daily,
+Weekly, Monthly.<br>
+<br>
+Scanner Formula: This is where we enter the formula to scan symbols
+with. Here the above shot is using a simple SMA crossover formula. Here
+is a breakdown of the formula.<br>
+<br>
+1. REF function grabs an array of close bars.<br>
+2. MA function creates a 20 period SMA with step 1 as the input.<br>
+3. COMP function that compares step 1 with step 2. If step 1 is greater
+than step 2, than a TRUE result is returned and the symbol being
+scanned will be put into the scan group.<br>
+<br>
+**CRITICAL**<br>
+In order for this formula to work, you must have a COMP step somewhere
+in the formula to generate the boolean array that will generate the
+scan logic. Note also that the only step that is checked in the plot
+column must be the COMP step. The checked step is the one that tells
+qtstalker which step contains the logic for selecting symbols. If a non
+COMP step or multiple steps are checked, the results will be unreliable.<br>
+<br>
+<br>
+</body>
+</html>

@@ -426,6 +426,15 @@ QStringList Config::getPluginList (Config::Parm d)
   return l2;
 }
 
+QStringList Config::getIndicatorList () 
+{
+  QStringList l = getPluginList(IndicatorPluginPath);
+  l.remove("COMP");
+  l.remove("MATH");
+  l.remove("REF");
+  return l;
+}
+
 Plugin * Config::getPlugin (Config::Parm t, QString p)
 {
   Plugin *plug = plugins[p];

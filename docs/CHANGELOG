@@ -92,7 +92,11 @@
 20040805: Plugins removed: MA2, MA3, MMA. Trying to reduce the number of plugins, these plugins
           are easily reproduced by using a CUS formula.
 
-	  
+20040807: Added ability to create sub-groups in the chart group panel.
+
+20040807: Tester now saves/loads the results of a test run.
+
+
 0.26
 ====
 
