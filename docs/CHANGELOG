@@ -15,6 +15,13 @@
 	  
 20041025: Fixed bug in MATH::MIN/MAX that didn't include the current bar in the calculation.
           Current bar is now included.
+	  
+20041030: Enabled chart context menu to allow creation and editing of indicators without the
+          need for a chart to be loaded.
+	  
+20041030: Fixed bug in COMP plugin that didn't check for displace value greater than the
+          timeLoop value. Was causing segfaults.
+	  
 	  	  	 
 
 0.28

@@ -292,6 +292,16 @@ QtstalkerApp::QtstalkerApp()
       addIndicatorButton(l[loop], Indicator::TabPlot);
     else
       addIndicatorButton(l[loop], (Indicator::PlotType) s.toInt());
+      
+    Indicator *i = new Indicator;    
+    i->setName(l[loop]);
+    QString s2 = config.getData(Config::IndicatorPath) + "/" + l[loop];
+    i->setFile(s2);
+    i->setType(set->getData("plugin"));
+    if (s.length())
+      i->setPlotType((Indicator::PlotType) s.toInt());
+    loadIndicator(i);
+      
     delete set;
   }
 
@@ -361,7 +371,6 @@ void QtstalkerApp::initActions()
   actionNewIndicator = new QAction(tr("New Indicator..."), icon, tr("New &Indicator..."), CTRL+Key_I, this);
   actionNewIndicator->setStatusTip(tr("Add a new indicator to chart."));
   connect(actionNewIndicator, SIGNAL(activated()), this, SLOT(slotNewIndicator()));
-  actionNewIndicator->setEnabled(FALSE);
 
   icon = configure;
   actionOptions = new QAction(tr("Edit Preferences..."), icon, tr("Edit &Preferences..."), CTRL+Key_P, this);
@@ -382,7 +391,6 @@ void QtstalkerApp::initActions()
   actionDatawindow = new QAction(tr("Data Window..."), icon, tr("&Data Window..."), CTRL+Key_D, this);
   actionDatawindow->setStatusTip(tr("Show the data window."));
   connect(actionDatawindow, SIGNAL(activated()), this, SLOT(slotDataWindow()));
-  actionDatawindow->setEnabled(FALSE);
 
   icon = qtstalker;
   actionAbout = new QAction(tr("About"), icon, tr("&About..."), CTRL+Key_A, this);
@@ -563,8 +571,6 @@ void QtstalkerApp::slotAbout()
 void QtstalkerApp::slotOpenChart (QString selection)
 {
   slider->setEnabled(TRUE);
-  actionDatawindow->setEnabled(TRUE);
-  actionNewIndicator->setEnabled(TRUE);
   status = Chart;
   qApp->processEvents();
   loadChart(selection);
@@ -888,9 +894,11 @@ void QtstalkerApp::loadIndicator (Indicator *i)
   IndicatorPlugin *plug = config.getIndicatorPlugin(i->getType());
   if (plug)
   {
-    plug->setIndicatorInput(recordList);
+    if (recordList)
+      plug->setIndicatorInput(recordList);
     plug->loadIndicatorSettings(i->getFile());
-    plug->calculate();
+    if (recordList)
+      plug->calculate();
     i->copy(plug->getIndicator());
 
     if (i->getPlotType() == Indicator::MainPlot)
@@ -899,7 +907,8 @@ void QtstalkerApp::loadIndicator (Indicator *i)
     {
       Plot *plot = plotList[i->getName()];
       plot->addIndicator(i->getName(), i);
-      plot->setData(recordList);
+      if (recordList)
+        plot->setData(recordList);
     }
   }
   
@@ -933,9 +942,17 @@ QString QtstalkerApp::getWindowCaption ()
 
 void QtstalkerApp::slotDataWindow ()
 {
+  if (! recordList)
+  {
+    DataWindow *dw = new DataWindow(0, 0);
+    dw->setCaption(getWindowCaption());
+    dw->show();
+    return;
+  }
+  
   DataWindow *dw = new DataWindow(0, recordList->count());
   dw->setCaption(getWindowCaption());
-
+  
   dw->setHeader(0, tr("Date"));
   dw->setHeader(1, tr("Time"));
   int loop;
@@ -1114,7 +1131,7 @@ void QtstalkerApp::slotNewIndicator ()
     plug->saveIndicatorSettings(s);
     
     addIndicatorButton(name, plotType);
-
+    
     Indicator *i = new Indicator;
     i->setFile(s);
     i->setName(name);

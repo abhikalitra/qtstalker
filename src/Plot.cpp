@@ -351,7 +351,7 @@ void Plot::mousePressEvent (QMouseEvent *event)
   }
   else
   {
-    if (! indicators.count())
+    if (! indicators.count() || ! data)
       return;
   }
 
@@ -433,6 +433,7 @@ void Plot::mousePressEvent (QMouseEvent *event)
 
 void Plot::contextMenuEvent (QContextMenuEvent *)
 {
+/*
   if (mainFlag)
   {
     if (! data)
@@ -443,6 +444,7 @@ void Plot::contextMenuEvent (QContextMenuEvent *)
     if (! indicators.count())
       return;
   }
+*/
 
   if (drawMode && mouseFlag == COSelected)
     coPlugin->showMenu();
@@ -459,7 +461,7 @@ void Plot::mouseMoveEvent (QMouseEvent *event)
   }
   else
   {
-    if (! indicators.count())
+    if (! indicators.count() || ! data)
       return;
   }
 
@@ -535,7 +537,7 @@ void Plot::mouseDoubleClickEvent (QMouseEvent *event)
   }
   else
   {
-    if (! indicators.count())
+    if (! indicators.count() || ! data)
       return;
   }
 
@@ -1563,12 +1565,12 @@ void Plot::printChart ()
 
 void Plot::showPopupMenu ()
 {
-  if (! data->count())
-    return;
+//  if (! data->count())
+//    return;
 
   chartMenu->clear();
     
-  if (mainFlag)
+  if (mainFlag && data)
   {
     chartMenu->insertItem(tr("&Chart Prefs"), this, SLOT(slotEditChartPrefs()), CTRL+Key_C);
     chartMenu->insertSeparator ();
@@ -1591,7 +1593,7 @@ void Plot::showPopupMenu ()
 
   int id = chartMenu->insertItem (QPixmap(co), tr("New Chart Object"), chartObjectMenu);
   
-  if (! drawMode)
+  if (! drawMode || ! data->count())
     chartObjectMenu->setEnabled(FALSE);
   else
     chartObjectMenu->setEnabled(TRUE);

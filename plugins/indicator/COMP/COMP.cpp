@@ -138,11 +138,11 @@ void COMP::calculate ()
   
   Operator op = getOperator(method);
   
-  while (loop-displace1 > -1)
+  while (loop - displace1 > -1 && loop - displace1 <= timeLoop1)
   {
     if (input2)
     {
-      if (loop2-displace2 < 0)
+      if (loop2 - displace2 < 0 || loop2 - displace2 > timeLoop2)
         break;
     }
     
@@ -151,48 +151,48 @@ void COMP::calculate ()
     if (! input2)
       t = inputNum;
     else
-      t = input2->getData(loop2-displace2);
+      t = input2->getData(loop2 - displace2);
       
     switch (op)
     {
       case Equal:
-        if (input->getData(loop-displace1) == t)
+        if (input->getData(loop - displace1) == t)
           line->prepend(1);
 	else
           line->prepend(0);
         break;
       case LessThan:
-        if (input->getData(loop-displace1) < t)
+        if (input->getData(loop - displace1) < t)
           line->prepend(1);
 	else
           line->prepend(0);
         break;
       case LessThanEqual:
-        if (input->getData(loop-displace1) <= t)
+        if (input->getData(loop - displace1) <= t)
           line->prepend(1);
 	else
           line->prepend(0);
         break;
       case GreaterThan:
-        if (input->getData(loop-displace1) > t)
+        if (input->getData(loop - displace1) > t)
           line->prepend(1);
 	else
           line->prepend(0);
         break;
       case GreaterThanEqual:
-        if (input->getData(loop-displace1) >= t)
+        if (input->getData(loop - displace1) >= t)
           line->prepend(1);
 	else
           line->prepend(0);
         break;
       case And:
-        if (input->getData(loop-displace1) && t)
+        if (input->getData(loop - displace1) && t)
           line->prepend(1);
 	else
           line->prepend(0);
         break;
       case Or:
-        if (input->getData(loop-displace1) || t)
+        if (input->getData(loop - displace1) || t)
           line->prepend(1);
 	else
           line->prepend(0);
