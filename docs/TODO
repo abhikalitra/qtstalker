@@ -12,6 +12,7 @@ To Do:
 - add subgroups to groups ability
 - update plugin howto for BarData usage
 - add new dialog interface for indicator and quote plugins
+- fix trendlines and fibo objects to plot on weekly and monthly charts as well
 
 
 Maybe some day:

@@ -98,53 +98,18 @@ Plot::Plot (QWidget *w) : QWidget(w)
   chartObjects.setAutoDelete(TRUE);
   data = 0;
 
+  chartMenu = new QPopupMenu();
+  
   setMouseTracking(TRUE);
 
   setFocusPolicy(QWidget::ClickFocus);
-
-  // set up the popup menu
-  chartMenu = new QPopupMenu();
-  
-  chartMenu->insertItem(tr("Chart Prefs"), this, SLOT(slotEditChartPrefs()));
-  chartMenu->insertSeparator ();
-  
-  chartMenu->insertItem(QPixmap(indicator), tr("New Indicator"), this, SLOT(slotNewIndicator()));
-  chartDeleteMenu = new QPopupMenu();
-  chartEditMenu = new QPopupMenu();
-  chartMenu->insertItem(QPixmap(edit), tr("Edit Indicator"), chartEditMenu);
-  chartMenu->insertItem (QPixmap(deletefile), tr("Delete Indicator"), chartDeleteMenu);
-  chartMenu->insertSeparator ();
-
-  chartObjectMenu = new QPopupMenu();
-  QStringList l = getChartObjectList();
-  int id = chartObjectMenu->insertItem(QPixmap(buyarrow), l[0], this, SLOT(slotNewChartObject(int)));
-  chartObjectMenu->setItemParameter(id, id);
-  id = chartObjectMenu->insertItem(QPixmap(sellarrow), l[1], this, SLOT(slotNewChartObject(int)));
-  chartObjectMenu->setItemParameter(id, id);
-  id = chartObjectMenu->insertItem(QPixmap(fib), l[2], this, SLOT(slotNewChartObject(int)));
-  chartObjectMenu->setItemParameter(id, id);
-  id = chartObjectMenu->insertItem(QPixmap(horizontal), l[3], this, SLOT(slotNewChartObject(int)));
-  chartObjectMenu->setItemParameter(id, id);
-  id = chartObjectMenu->insertItem(QPixmap(vertical), l[4], this, SLOT(slotNewChartObject(int)));
-  chartObjectMenu->setItemParameter(id, id);
-  id = chartObjectMenu->insertItem(QPixmap(trend), l[5], this, SLOT(slotNewChartObject(int)));
-  chartObjectMenu->setItemParameter(id, id);
-  id = chartObjectMenu->insertItem(QPixmap(text), l[6], this, SLOT(slotNewChartObject(int)));
-  chartObjectMenu->setItemParameter(id, id);
-
-  chartMenu->insertItem (QPixmap(co), tr("New Chart Object"), chartObjectMenu);
-  chartObjectMenu->setEnabled(FALSE);
-
-  chartMenu->insertItem(QPixmap(deletefile), tr("Delete All Chart Objects"), this, SLOT(slotDeleteAllChartObjects()));
-
-  chartMenu->insertSeparator ();
-  chartMenu->insertItem(QPixmap(print), tr("Print Chart"), this, SLOT(printChart()));
 }
 
 Plot::~Plot ()
 {
   delete buffer;
   delete scaler;
+  delete chartMenu;
 }
 
 void Plot::clear ()
@@ -253,11 +218,6 @@ void Plot::setChartPath (QString d)
 void Plot::setDrawMode (bool d)
 {
   drawMode = d;
-  
-  if (d)
-    chartObjectMenu->setEnabled(TRUE);
-  else
-    chartObjectMenu->setEnabled(FALSE);
 }
 
 void Plot::draw ()
@@ -1384,9 +1344,48 @@ void Plot::showPopupMenu ()
   if (! data->count())
     return;
 
-  chartEditMenu->clear();
-  chartDeleteMenu->clear();
+  chartMenu->clear();
+    
+  if (mainFlag)
+  {
+    chartMenu->insertItem(tr("Chart Prefs"), this, SLOT(slotEditChartPrefs()));
+    chartMenu->insertSeparator ();
+  }
+  
+  chartMenu->insertItem(QPixmap(indicator), tr("New Indicator"), this, SLOT(slotNewIndicator()));
+  chartDeleteMenu = new QPopupMenu();
+  chartEditMenu = new QPopupMenu();
+  chartMenu->insertItem(QPixmap(edit), tr("Edit Indicator"), chartEditMenu);
+  chartMenu->insertItem (QPixmap(deletefile), tr("Delete Indicator"), chartDeleteMenu);
+  chartMenu->insertSeparator ();
 
+  if (drawMode)
+  {
+    chartObjectMenu = new QPopupMenu();
+    QStringList l = getChartObjectList();
+    int id = chartObjectMenu->insertItem(QPixmap(buyarrow), l[0], this, SLOT(slotNewChartObject(int)));
+    chartObjectMenu->setItemParameter(id, id);
+    id = chartObjectMenu->insertItem(QPixmap(sellarrow), l[1], this, SLOT(slotNewChartObject(int)));
+    chartObjectMenu->setItemParameter(id, id);
+    id = chartObjectMenu->insertItem(QPixmap(fib), l[2], this, SLOT(slotNewChartObject(int)));
+    chartObjectMenu->setItemParameter(id, id);
+    id = chartObjectMenu->insertItem(QPixmap(horizontal), l[3], this, SLOT(slotNewChartObject(int)));
+    chartObjectMenu->setItemParameter(id, id);
+    id = chartObjectMenu->insertItem(QPixmap(vertical), l[4], this, SLOT(slotNewChartObject(int)));
+    chartObjectMenu->setItemParameter(id, id);
+    id = chartObjectMenu->insertItem(QPixmap(trend), l[5], this, SLOT(slotNewChartObject(int)));
+    chartObjectMenu->setItemParameter(id, id);
+    id = chartObjectMenu->insertItem(QPixmap(text), l[6], this, SLOT(slotNewChartObject(int)));
+    chartObjectMenu->setItemParameter(id, id);
+
+    chartMenu->insertItem (QPixmap(co), tr("New Chart Object"), chartObjectMenu);
+  }
+
+  chartMenu->insertItem(QPixmap(deletefile), tr("Delete All Chart Objects"), this, SLOT(slotDeleteAllChartObjects()));
+
+  chartMenu->insertSeparator ();
+  chartMenu->insertItem(QPixmap(print), tr("Print Chart"), this, SLOT(printChart()));
+    
   QDictIterator<Indicator> it(indicators);
   for(; it.current(); ++it)
   {

@@ -57,12 +57,20 @@ void FiboLine::draw (int x, int x2)
   QPainter painter;
   painter.begin(buffer);
   painter.setPen(color);
+  
+  double high = value;
+  double low = value2;
 
   if (line1 != 0)
   {
     double r = getY(line1, value, value2);
     int y = scaler->convertToY(r);
     painter.drawLine (x, y, x2, y);
+    
+    if (r > high)
+      high = r;
+    if (r < low)
+      low = r;
   }
 
   if (line2 != 0)
@@ -70,6 +78,11 @@ void FiboLine::draw (int x, int x2)
     double r = getY(line2, value, value2);
     int y = scaler->convertToY(r);
     painter.drawLine (x, y, x2, y);
+    
+    if (r > high)
+      high = r;
+    if (r < low)
+      low = r;
   }
 
   if (line3 != 0)
@@ -77,6 +90,11 @@ void FiboLine::draw (int x, int x2)
     double r = getY(line3, value, value2);
     int y = scaler->convertToY(r);
     painter.drawLine (x, y, x2, y);
+  
+    if (r > high)
+      high = r;
+    if (r < low)
+      low = r;
   }
 
   if (line4 != 0)
@@ -84,6 +102,11 @@ void FiboLine::draw (int x, int x2)
     double r = getY(line4, value, value2);
     int y = scaler->convertToY(r);
     painter.drawLine (x, y, x2, y);
+  
+    if (r > high)
+      high = r;
+    if (r < low)
+      low = r;
   }
 
   if (line5 != 0)
@@ -91,6 +114,11 @@ void FiboLine::draw (int x, int x2)
     double r = getY(line5, value, value2);
     int y = scaler->convertToY(r);
     painter.drawLine (x, y, x2, y);
+  
+    if (r > high)
+      high = r;
+    if (r < low)
+      low = r;
   }
 
   if (line6 != 0)
@@ -98,16 +126,29 @@ void FiboLine::draw (int x, int x2)
     double r = getY(line6, value, value2);
     int y = scaler->convertToY(r);
     painter.drawLine (x, y, x2, y);
+  
+    if (r > high)
+      high = r;
+    if (r < low)
+      low = r;
   }
+  
+  // draw the low line
+  int y = scaler->convertToY(value2);
+  painter.drawLine (x, y, x2, y);
+  
+  // draw the high line
+  int y2 = scaler->convertToY(value);
+  painter.drawLine (x, y2, x2, y2);
 
   //bottom left corner
-  int y = scaler->convertToY(value2);
+  y = scaler->convertToY(low);
   QRegion r(x - 4, y - 4, 8, 8, QRegion::Rectangle);
   area = r;
   painter.drawLine (x, y, x2, y);
   
   //top right corner
-  int y2 = scaler->convertToY(value);
+  y2 = scaler->convertToY(high);
   QRegion r2(x2 - 4, y2 - 4, 8, 8, QRegion::Rectangle);
   area2 = r2;
   painter.drawLine (x, y2, x2, y2);

@@ -39,6 +39,7 @@ class Candle : public ChartPlugin
 
   protected:
     QColor color;
+    bool expandCandles;
 };
 
 extern "C"

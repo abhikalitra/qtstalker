@@ -24,7 +24,14 @@
           here and there still. But it works. This is a big step forward in usability. Overhauled
 	  the Fibonacci and trendlines. 
 	  	  
+
+20040303: Applied patch #909286 - thin and fat candles. Added an option to turn this feature on
+          and off to compliment it. Thanks to Dany Daw.
 	  
+20040303: Applied patch #903981 - new doc explain cvs, development, contribution. Thanks to
+          David Crossley.
+	  
+	  	  
 0.25
 ====
 

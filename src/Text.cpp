@@ -23,6 +23,7 @@
 #include "PrefDialog.h"
 #include <qpainter.h>
 #include <qfontmetrics.h>
+#include <qapplication.h>
 
 Text::Text (Scaler *s, QPixmap *p, QString indicator, QString n, QDateTime d, double v)
 {
@@ -35,6 +36,7 @@ Text::Text (Scaler *s, QPixmap *p, QString indicator, QString n, QDateTime d, do
   value = v;
   color.setNamedColor("white");
   label = tr("Text");
+  textFont = QApplication::font();
   
   menu->insertItem(tr("Edit Text"), this, SLOT(prefDialog()));
   menu->insertItem(tr("Delete Text"), this, SLOT(remove()));
@@ -48,7 +50,7 @@ void Text::draw (int x, int)
 {
   QPainter painter;
   painter.begin(buffer);
-//  painter.setFont(plotFont);
+  painter.setFont(textFont);
   painter.setPen(color);
 
   int y = scaler->convertToY(value);
@@ -74,6 +76,7 @@ void Text::prefDialog ()
   dialog->setCaption(tr("Edit Text"));
   dialog->createPage (tr("Details"));
   dialog->addColorItem(tr("Color"), 1, color);
+  dialog->addFontItem(tr("Font"), 1, textFont);
   dialog->addTextItem(tr("Label"), 1, label);
   
   int rc = dialog->exec();
@@ -82,6 +85,8 @@ void Text::prefDialog ()
   {
     color = dialog->getColor(tr("Color"));
     label = dialog->getText(tr("Label"));
+    textFont = dialog->getFont(tr("Font"));
+    
     saveFlag = TRUE;
     emit signalDraw();
   }
@@ -111,6 +116,14 @@ Setting * Text::getSettings ()
   set->set("Name", name, Setting::None);
   set->set("ObjectType", QString::number(type), Setting::None);
   set->set("Label", label, Setting::None);
+
+  QString s = textFont.family();
+  s.append(" ");
+  s.append(QString::number(textFont.pointSize()));
+  s.append(" ");
+  s.append(QString::number(textFont.weight()));
+  set->set("Font", s, Setting::None);
+  
   return set;
 }
 
@@ -123,5 +136,12 @@ void Text::setSettings (Setting *set)
   name = set->getData("Name");
   type = (ChartObject::ObjectType) set->getInt("ObjectType");
   label = set->getData("Label");
+  
+  QStringList l = QStringList::split(" ", set->getData("Font"), FALSE);
+  if (l.count())
+  {
+    QFont font(l[0], l[1].toInt(), l[2].toInt());
+    textFont = font;
+  }
 }
 
