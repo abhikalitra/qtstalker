@@ -46,7 +46,10 @@ Tester::Tester (QString n) : QTabDialog (0, 0, FALSE)
   fieldList.append(tr("Open"));
   fieldList.append(tr("Close"));
 
-  setCaption ("Qtstalker Back Tester" + ": " + ruleName);
+  QString s = "Qtstalker Back Tester";
+  s.append(": ");
+  s.append(ruleName);
+  setCaption (s);
 
   setDefaultButton(tr("&Test"));
   connect(this, SIGNAL(defaultButtonPressed()), this, SLOT(test()));

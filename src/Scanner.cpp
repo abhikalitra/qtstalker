@@ -35,7 +35,10 @@ Scanner::Scanner (QString n) : QTabDialog (0, 0, FALSE)
 {
   scannerName = n;
   
-  setCaption (tr("Qtstalker Scanner") + ": " + scannerName);
+  QString s = "Qtstalker Scanner";
+  s.append(": ");
+  s.append(scannerName);
+  setCaption (s);
 
   QWidget *w = new QWidget(this);
   
