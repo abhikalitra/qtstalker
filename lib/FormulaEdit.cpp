@@ -39,14 +39,18 @@ FormulaEdit::FormulaEdit (QWidget *w) : QWidget(w)
   hbox->setMargin(0);
   hbox->setSpacing(1);
   
-  list = new QTable(0, 2, this);
+  list = new QTable(0, 3, this);
   list->setSelectionMode(QTable::Single);
   list->setSorting(FALSE);
   list->horizontalHeader()->setLabel(0, tr("Function"));
   list->horizontalHeader()->setLabel(1, tr("Plot"));
+  list->horizontalHeader()->setLabel(2, tr("Parms"));
   list->setColumnWidth(0, 75);
   list->setColumnWidth(1, 50);
+  list->setColumnWidth(2, 50);
   list->setColumnReadOnly(0, TRUE);
+  list->setColumnReadOnly(2, TRUE);
+  list->hideColumn(2);
   hbox->addWidget(list);
   
   toolbar = new Toolbar(this, 30, 30, TRUE);
@@ -106,7 +110,7 @@ void FormulaEdit::addItem ()
   
   list->setText(list->numRows() - 1, 0, type);
   
-  steps.setData(QString::number(list->numRows() - 1), set.getString());
+  list->setText(list->numRows() - 1, 2, set.getString());
   
   QCheckTableItem *check = new QCheckTableItem(list, QString::null);
   check->setChecked(FALSE);
@@ -152,22 +156,7 @@ void FormulaEdit::insertItem ()
   
   list->setText(list->currentRow(), 0, type);
   
-  int loop;
-  for (loop = steps.count(); loop >= list->currentRow(); loop--)
-  {
-    if (loop > list->currentRow())
-    {
-      QString s = steps.getData(QString::number(loop - 1));
-      steps.setData(QString::number(loop), s);
-    }
-    else
-    {
-      if (loop == list->currentRow())
-      {
-        steps.setData(QString::number(loop), set.getString());
-      }
-    }
-  }
+  list->setText(list->currentRow(), 2, set.getString());
   
   QCheckTableItem *check = new QCheckTableItem(list, QString::null);
   check->setChecked(FALSE);
@@ -179,7 +168,7 @@ void FormulaEdit::insertItem ()
 void FormulaEdit::editItem ()
 {
   Setting set;
-  set.parse(steps.getData(QString::number(list->currentRow())));
+  set.parse(list->text(list->currentRow(), 2));
   
   Plugin *plug = config.getPlugin(Config::IndicatorPluginPath, set.getData("plugin"));
   if (! plug)
@@ -200,14 +189,13 @@ void FormulaEdit::editItem ()
 
   Setting set2 = plug->getIndicatorSettings();
     
-  steps.setData(QString::number(list->currentRow()), set2.getString());
+  list->setText(list->currentRow(), 2, set2.getString());
   
   config.closePlugin(set2.getData("plugin"));
 }
 
 void FormulaEdit::deleteItem ()
 {
-  steps.remove(QString::number(list->currentRow()));
   list->removeRow(list->currentRow());
 }
 
@@ -220,7 +208,7 @@ void FormulaEdit::setLine (QString d)
     
   list->setText(list->numRows() - 1, 0, set.getData("plugin"));
   
-  steps.setData(QString::number(list->numRows() - 1), set.getString());
+  list->setText(list->numRows() - 1, 2, set.getString());
   
   QCheckTableItem *check = new QCheckTableItem(list, QString::null);
   if (! set.getData("plot").toInt())
@@ -233,7 +221,7 @@ void FormulaEdit::setLine (QString d)
 QString FormulaEdit::getLine (int i)
 {
   Setting set;
-  set.parse(steps.getData(QString::number(i)));
+  set.parse(list->text(i, 2));
   QCheckTableItem *check = (QCheckTableItem *) list->item(i, 1);
   set.setData("plot", QString::number(check->isChecked()));
   return set.getString();

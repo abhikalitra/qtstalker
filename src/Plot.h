@@ -40,7 +40,7 @@
 #include "ChartObject.h"
 #include "Config.h"
 #include "Plugin.h"
-#include "ChartDb.h"
+#include "BarData.h"
 
 class Plot : public QWidget
 {
@@ -78,7 +78,6 @@ class Plot : public QWidget
     void setLogScale (bool);
     int setChartType (QString);
     void setChartInput ();
-    void setConfig (Config *);
     void createChartObject (QString, QString);
     void setHideMainPlot (bool);
     bool getHideMainPlot ();
@@ -117,7 +116,7 @@ class Plot : public QWidget
     void setGridColor (QColor);
     void setPlotFont (QFont);
     void setIndex (int);
-    void setInterval(ChartDb::BarCompression);
+    void setInterval(BarData::BarCompression);
     void setDateFlag (bool);
     void crossHair (int, int);
     void printChart ();
@@ -175,7 +174,7 @@ class Plot : public QWidget
     PlotLine *currentLine;
     QPixmap *buffer;
     Plugin *chartPlugin;
-    Config *config;
+    Config config;
     int pixelspace;
     int minPixelspace;
     int dateHeight;
@@ -183,7 +182,7 @@ class Plot : public QWidget
     int _width;
     int startX;
     int startIndex;
-    ChartDb::BarCompression interval;
+    BarData::BarCompression interval;
     QColor backgroundColor;
     QColor gridColor;
     QColor borderColor;

@@ -34,34 +34,44 @@ BarDate::~BarDate ()
 
 int BarDate::setDate (QString d)
 {
-  if (d.length() != 14)
+  QString s = d;
+  while (s.contains("-"))
+    s = s.remove(s.find("-", 0, TRUE), 1);
+  
+  while (s.contains(":"))
+    s = s.remove(s.find(":", 0, TRUE), 1);
+
+  while (s.contains(" "))
+    s = s.remove(s.find(" ", 0, TRUE), 1);
+  
+  if (s.length() != 14)
   {
-    qDebug("BarDate::setDate:bad string length %i", d.length());
+    qDebug("BarDate::setDate:bad string length %i", s.length());
     return TRUE;
   }
     
-  date = QDate(d.left(4).toInt(), d.mid(4, 2).toInt(), d.mid(6, 2).toInt());
+  date = QDate(s.left(4).toInt(), s.mid(4, 2).toInt(), s.mid(6, 2).toInt());
   if (! date.isValid())
   {
-    qDebug("BarDate::setDate: invalid date %s", d.latin1());
+    qDebug("BarDate::setDate: invalid date %s", s.latin1());
     return TRUE;
   }
   
-  hour = d.mid(8, 2).toInt();
+  hour = s.mid(8, 2).toInt();
   if (hour < 0 || hour > 23)
   {
     qDebug("BarDate::setDate: hour out of range %i", hour);
     return TRUE;
   }
     
-  min = d.mid(10, 2).toInt();
+  min = s.mid(10, 2).toInt();
   if (min < 0 || min > 59)
   {
     qDebug("BarDate::setDate: minute out of range %i", min);
     return TRUE;
   }
   
-  sec = d.mid(12, 2).toInt();
+  sec = s.mid(12, 2).toInt();
   if (sec < 0 || sec > 59)
   {
     qDebug("BarDate::setDate: second out of range %i", sec);

@@ -23,6 +23,7 @@
 #define QUOTEPLUGIN_HPP
 
 #include "Plugin.h"
+#include "Config.h"
 #include <qstring.h>
 
 class QuotePlugin : public Plugin
@@ -46,6 +47,7 @@ class QuotePlugin : public Plugin
     QString file;
     float tfloat;
     bool saveFlag;
+    Config config;
 };
 
 #endif

@@ -146,7 +146,7 @@ PlotLine * OVRLY::getSymbolLine (QString d)
   
   BarDate date = data->getDate(0);
   
-  db->setBarCompression(ChartDb::Daily);
+  db->setBarCompression(BarData::DailyBar);
   db->setBarRange(data->count());
   BarData *recordList = db->getHistory();
 

@@ -39,7 +39,6 @@
 #include "Navigator.h"
 #include "Setting.h"
 #include "ChartPage.h"
-#include "ChartDb.h"
 #include "ChartObject.h"
 #include "IndicatorTab.h"
 #include "NavigatorTab.h"
@@ -59,7 +58,7 @@ class QtstalkerApp : public QMainWindow
     void signalGridColor (QColor);
     void signalPlotFont (QFont);
     void signalIndex (int);
-    void signalInterval(ChartDb::BarCompression);
+    void signalInterval(BarData::BarCompression);
     void signalIndicatorPageRefresh ();
     void signalPlotDate (bool);
     void signalChartPath (QString);
@@ -170,13 +169,14 @@ class QtstalkerApp : public QMainWindow
     QComboBox *compressionCombo;
     QComboBox *chartTypeCombo;
     QSpinBox *pixelspace;
-    Config *config;
+    Config config;
     QSlider *slider;
     chartStatus status;
     QString chartPath;
     QString chartName;
     QString chartType;
     QString chartSymbol;
+    QString dbPlugin;
     BarData *recordList;
     QMultiLineEdit *infoLabel;
 };

@@ -22,6 +22,7 @@
 #include "Yahoo.h"
 #include "YahooDialog.h"
 #include "ChartDb.h"
+#include "Config.h"
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qdir.h>
@@ -214,25 +215,24 @@ void Yahoo::parseHistory ()
     return;
   stream.setDevice(&f);
 
-  s = dataPath;
-  s.append("/Stocks/");
-  s.append(symbolList[symbolLoop]);
+  Config config;
+  s = config.getData(Config::DataPath) + "/Stocks/" + symbolList[symbolLoop];
   
-  ChartDb *db = new ChartDb;
-  if (db->openChart(s))
+  ChartDb *plug = new ChartDb;
+  plug->setPlugin("Stocks");
+  if (plug->openChart(s))
   {
     emit statusLogMessage("Could not open db.");
     f.close();
-    delete db;
+    delete plug;
     return;
   }
 
-  s = db->getDetail(ChartDb::Symbol);
+  s = plug->getData("Symbol");
   if (! s.length())
   {
-    db->setDetail(ChartDb::Symbol, symbolList[symbolLoop]);
-    db->setDetail(ChartDb::Title, symbolList[symbolLoop]);
-    db->setDetail(ChartDb::Type, "Stock");
+    plug->saveDbDefaults(BarData::Daily, symbolList[symbolLoop], symbolList[symbolLoop], QString(),
+                         QString(), QString(), QString());
   }
 
   while(stream.atEnd() == 0)
@@ -304,27 +304,23 @@ void Yahoo::parseHistory ()
       }
     }
 
-    Bar *bar = new Bar;
-    if (bar->setDate(date))
+    BarDate bd;    
+    if (bd.setDate(date))
     {
       emit statusLogMessage("Bad date " + date);
-      delete bar;
       continue;
     }
-    bar->setOpen(open.toFloat());
-    bar->setHigh(high.toFloat());
-    bar->setLow(low.toFloat());
-    bar->setClose(close.toFloat());
-    bar->setVolume(volume.toFloat());
-    db->setBar(bar);
+    plug->setBar(bd, open.toDouble(), high.toDouble(), low.toDouble(),
+                 close.toDouble(), volume.toDouble(), 0);
     
-    s = symbolList[symbolLoop] + " " + bar->getString();
+    s = symbolList[symbolLoop] + " " + date + " " + open + " " + high + " " + low
+        + " " + close + " " + volume;
+	
     emit dataLogMessage(s);
-    delete bar;
   }
 
   f.close();
-  delete db;
+  delete plug;
 }
 
 void Yahoo::parseQuote ()
@@ -343,27 +339,25 @@ void Yahoo::parseQuote ()
   if (! f.open(IO_ReadOnly))
     return;
   stream.setDevice(&f);
+
+  Config config;  
+  QString s = config.getData(Config::DataPath) + "/Stocks/" + symbolList[symbolLoop];
   
-  QString s = dataPath;
-  s.append("/Stocks/");
-  s.append(symbolList[symbolLoop]);
-  
-  ChartDb *db = new ChartDb;
-  if (db->openChart(s))
+  ChartDb *plug = new ChartDb;
+  plug->setPlugin("Stocks");
+  if (plug->openChart(s))
   {
     emit statusLogMessage("Could not open db.");
     f.close();
-    delete db;
+    delete plug;
     return;
   }
   
-  s = db->getDetail(ChartDb::Symbol);
+  s = plug->getData("Symbol");
   if (! s.length())
   {
-    db->setDetail(ChartDb::Symbol, symbolList[symbolLoop]);
-    db->setDetail(ChartDb::Title, symbolList[symbolLoop]);
-    db->setDetail(ChartDb::Type, "Stock");
-    db->setDetail(ChartDb::BarType, QString::number(BarData::Daily));
+    plug->saveDbDefaults(BarData::Daily, symbolList[symbolLoop], symbolList[symbolLoop], QString(),
+                         QString(), QString(), QString());
   }
   
   while(stream.atEnd() == 0)
@@ -421,27 +415,23 @@ void Yahoo::parseQuote ()
     if (l.count() == 10)
       volume = l[9];
       
-    Bar *bar = new Bar;
-    if (bar->setDate(date))
+    BarDate bd;    
+    if (bd.setDate(date))
     {
       emit statusLogMessage("Bad date " + date);
-      delete bar;
       continue;
     }
-    bar->setOpen(open.toFloat());
-    bar->setHigh(high.toFloat());
-    bar->setLow(low.toFloat());
-    bar->setClose(close.toFloat());
-    bar->setVolume(volume.toFloat());
-    db->setBar(bar);
+    plug->setBar(bd, open.toDouble(), high.toDouble(), low.toDouble(),
+                 close.toDouble(), volume.toDouble(), 0);
     
-    s = symbolList[symbolLoop] + " " + bar->getString();
+    s = symbolList[symbolLoop] + " " + date + " " + open + " " + high + " " + low
+        + " " + close + " " + volume;
+	
     emit dataLogMessage(s);
-    delete bar;
   }
 
   f.close();
-  delete db;
+  delete plug;
 }
 
 QString Yahoo::parseDate (QString d)

@@ -15,14 +15,11 @@ SUBDIRS += plugins/chart/PF
 SUBDIRS += plugins/chart/Swing
 
 #compile quote plugins
-SUBDIRS += plugins/quote/CC
 SUBDIRS += plugins/quote/CME
 SUBDIRS += plugins/quote/COT
 SUBDIRS += plugins/quote/CSV
-SUBDIRS += plugins/quote/Index
 SUBDIRS += plugins/quote/NYBOT
 SUBDIRS += plugins/quote/QtstalkerFormat
-SUBDIRS += plugins/quote/Spread
 SUBDIRS += plugins/quote/Yahoo
 
 exists(/usr/include/mysql/mysql.h){
@@ -65,6 +62,13 @@ SUBDIRS += plugins/indicator/VOL
 SUBDIRS += plugins/indicator/VOLR
 SUBDIRS += plugins/indicator/VT
 SUBDIRS += plugins/indicator/WILLR
+
+#compile db plugins
+SUBDIRS += plugins/db/Stocks
+SUBDIRS += plugins/db/Futures
+SUBDIRS += plugins/db/Spread
+SUBDIRS += plugins/db/Index
+SUBDIRS += plugins/db/CC
 
 SUBDIRS += docs
 

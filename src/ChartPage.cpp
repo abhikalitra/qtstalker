@@ -20,22 +20,20 @@
  */
 
 #include "ChartPage.h"
-#include "EditChartDialog.h"
-#include "ChartDb.h"
 #include "Setting.h"
 #include "SymbolDialog.h"
+#include "ChartDb.h"
 #include "edit.xpm"
 #include "delete.xpm"
 #include "export.xpm"
+#include "newchart.xpm"
 #include <qmessagebox.h>
 #include <qcursor.h>
 #include <qtooltip.h>
 #include <qlayout.h>
 
-ChartPage::ChartPage (QWidget *w, Config *c) : QWidget (w)
+ChartPage::ChartPage (QWidget *w) : QWidget (w)
 {
-  config = c;
-
   QVBoxLayout *vbox = new QVBoxLayout(this);
   vbox->setMargin(2);
   vbox->setSpacing(5);
@@ -45,7 +43,7 @@ ChartPage::ChartPage (QWidget *w, Config *c) : QWidget (w)
   QToolTip::add(search, tr("List Filter, e.g. s* or sb*"));
   vbox->addWidget(search);
 
-  nav = new Navigator(this, config->getData(Config::DataPath));
+  nav = new Navigator(this, config.getData(Config::DataPath));
   connect(nav, SIGNAL(fileSelected(QString)), this, SLOT(chartSelected(QString)));
   connect(nav, SIGNAL(noSelection()), this, SLOT(chartNoSelection()));
   connect(nav, SIGNAL(contextMenuRequested(QListBoxItem *, const QPoint &)), this,
@@ -53,7 +51,16 @@ ChartPage::ChartPage (QWidget *w, Config *c) : QWidget (w)
   nav->updateList();
   vbox->addWidget(nav);
 
+  newMenu = new QPopupMenu;
+  int id = newMenu->insertItem(QPixmap(newchart), tr("CC"), this, SLOT(newChart(int)));
+  newMenu->setItemParameter(id, id);
+  id = newMenu->insertItem(QPixmap(newchart), tr("Index"), this, SLOT(newChart(int)));
+  newMenu->setItemParameter(id, id);
+  id = newMenu->insertItem(QPixmap(newchart), tr("Spread"), this, SLOT(newChart(int)));
+  newMenu->setItemParameter(id, id);
+  
   menu = new QPopupMenu();
+  menu->insertItem(QPixmap(newchart), tr("&New..."), newMenu);
   menu->insertItem(QPixmap(edit), tr("&Edit Chart"), this, SLOT(editChart()), CTRL+Key_E);
   menu->insertItem(QPixmap(deleteitem), tr("&Delete Chart"), this, SLOT(deleteChart()), CTRL+Key_D);
   menu->insertItem(QPixmap(exportfile), tr("E&xport Chart"), this, SLOT(exportSymbol()), CTRL+Key_X);
@@ -63,6 +70,7 @@ ChartPage::ChartPage (QWidget *w, Config *c) : QWidget (w)
 
 ChartPage::~ChartPage ()
 {
+  delete newMenu;
   delete menu;
 }
 
@@ -106,25 +114,23 @@ void ChartPage::editChart ()
   if (! symbol.length())
     return;
 
-  EditChartDialog *dialog = new EditChartDialog(symbol);
-
-  dialog->exec();
-
-  delete dialog;
+  ChartDb *db = new ChartDb;
+  db->dbPrefDialog(symbol);
+  delete db;
 }
 
 void ChartPage::exportSymbol ()
 {
   SymbolDialog *dialog = new SymbolDialog(this,
-  							   config->getData(Config::DataPath),
-							   "*");
+  					  config.getData(Config::DataPath),
+					  "*");
   dialog->setCaption(tr("Select Charts"));
 
   int rc = dialog->exec();
 
   if (rc == QDialog::Accepted)
   {
-    QString s = config->getData(Config::Home);
+    QString s = config.getData(Config::Home);
     s.append("/export");
     QDir dir(s);
     if (! dir.exists(s, TRUE))
@@ -148,17 +154,13 @@ void ChartPage::exportSymbol ()
 
 void ChartPage::exportChart (QString path)
 {
-  ChartDb *db = new ChartDb();
-  if(db->openChart(path))
-  {
-    delete db;
-    return;
-  }
+  ChartDb *db = new ChartDb;
+  db->openChart(path);
 
-  QString s = config->getData(Config::Home);
+  QString s = config.getData(Config::Home);
   s.append("/export/");
   
-  QString s2 = db->getDetail(ChartDb::Symbol);
+  QString s2 = db->getData(tr("Symbol"));
   if (! s2.length())
   {
     QStringList l = QStringList::split("/", path, FALSE);
@@ -174,14 +176,14 @@ void ChartPage::exportChart (QString path)
 
 void ChartPage::chartSelected (QString d)
 {
-  menu->setItemEnabled(menu->idAt(0), TRUE);
+  menu->setItemEnabled(menu->idAt(1), TRUE);
   emit fileSelected(d);
 }
 
 
 void ChartPage::chartNoSelection ()
 {
-  menu->setItemEnabled(menu->idAt(0), FALSE);
+  menu->setItemEnabled(menu->idAt(1), FALSE);
 }
 
 void ChartPage::rightClick (QListBoxItem *)
@@ -199,4 +201,14 @@ void ChartPage::searchChanged (const QString &d)
   nav->setFilter(d);
 }
 
+void ChartPage::newChart (int id)
+{
+  QString dbPlugin = newMenu->text(id);
+
+  ChartDb *db = new ChartDb;
+  db->setPlugin(dbPlugin);
+  db->createNew(dbPlugin);
+  delete db;
+  refreshList();
+}
 

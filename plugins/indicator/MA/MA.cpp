@@ -41,6 +41,7 @@ void MA::setDefaults ()
   period = 10;
   maType = IndicatorPlugin::SMA;  
   input = BarData::Close;
+  customInput = "1";
 }
 
 void MA::calculate ()

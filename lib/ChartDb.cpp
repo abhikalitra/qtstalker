@@ -20,299 +20,115 @@
  */
 
 #include "ChartDb.h"
-#include <qobject.h>
-#include <qdict.h>
-#include <qdatetime.h>
 #include <qtextstream.h>
 #include <qfile.h>
-#include <qdir.h>
+#include <qfileinfo.h>
 
 ChartDb::ChartDb ()
 {
   db = 0;
-  barCompression = Daily;
-  barRange = 275;
+  plug = 0;
 }
 
 ChartDb::~ChartDb ()
 {
+  if (plug)
+    config.closePlugin(dbPlugin);
+    
   if (db)
     db->close(db, 0);
 }
 
 int ChartDb::openChart (QString path)
 {
-  if (db_open((char *) path.latin1(), DB_BTREE, DB_CREATE, 0664, NULL, NULL, &db) != 0)
+  if (open(path))
     return TRUE;
-  else
-    return FALSE;
+    
+  if (loadPlugin())
+    return TRUE;
+
+  plug->setDb(db);
+  
+  return FALSE;
 }
 
 QString ChartDb::getData (QString k)
 {
-  DBT key;
-  DBT data;
-  memset(&key, 0, sizeof(DBT));
-  memset(&data, 0, sizeof(DBT));
-
-  key.data = (char *) k.latin1();
-  key.size = k.length() + 1;
-
-  QString s;
-  if (db->get(db, NULL, &key, &data, 0) == 0)
-    s = (char *) data.data;
-
-  return s;
+  if (! plug)
+    return QString();
+    
+  return plug->getData(k);
 }
 
 void ChartDb::setData (QString k, QString d)
 {
-  DBT key;
-  DBT data;
-  memset(&key, 0, sizeof(DBT));
-  memset(&data, 0, sizeof(DBT));
-
-  key.data = (char *) k.latin1();
-  key.size = k.length() + 1;
-
-  data.data = (char *) d.latin1();
-  data.size = d.length() + 1;
-
-  db->put(db, NULL, &key, &data, 0);
+  if (! plug)
+    return;
+    
+  plug->setData(k, d);
 }
 
 void ChartDb::deleteData (QString k)
 {
-  DBT key;
-  memset(&key, 0, sizeof(DBT));
-
-  key.data = (char *) k.latin1();
-  key.size = k.length() + 1;
-
-  db->del(db, NULL, &key, 0);
+  if (! plug)
+    return;
+  
+  plug->deleteData(k);
 }
 
 BarData * ChartDb::getHistory ()
 {
-  DBT key;
-  DBT data;
-  DBC *cursor;
-  memset(&key, 0, sizeof(DBT));
-  memset(&data, 0, sizeof(DBT));
-  
-  BarData *barData = new BarData;
-  if (barCompression >= Daily)
-    barData->setBarType(BarData::Daily);
-  else
-    barData->setBarType(BarData::Tick);
-  Bar *bar = 0;
-  int barCount = 0;
-  BarDate prevDate;
-
-  db->cursor(db, NULL, &cursor, 0);
-  
-  while (! cursor->c_get(cursor, &key, &data, DB_PREV))
-  {
-    if (key.size != 15)
-      continue;
+  if (! plug)
+    return 0;
     
-    BarDate dt;
-    if (dt.setDate((char *) key.data))
-      continue;
-
-    if (barCount >= barRange)
-      break;
-
-    if (! bar)
-    {
-      bar = getBar((char *) key.data, (char *) data.data);
-      prevDate = getPrevDate(dt);
-      continue;
-    }
-      
-    if (dt.getDateValue() < prevDate.getDateValue())
-    {
-      barData->prepend(bar);
-      barCount++;
-      
-      bar = getBar((char *) key.data, (char *) data.data);
-      if (barData->getBarType() == BarData::Tick)
-        bar->setDate(prevDate.getDateTimeString(FALSE));
-      prevDate = getPrevDate(dt);
-    }
-    else
-    {
-      Bar *tbar = getBar((char *) key.data, (char *) data.data);
-    
-      bar->setOpen(tbar->getOpen());
-      
-      if (tbar->getHigh() > bar->getHigh())
-        bar->setHigh(tbar->getHigh());
-	
-      if (tbar->getLow() < bar->getLow())
-        bar->setLow(tbar->getLow());
-	
-      bar->setVolume(bar->getVolume() + tbar->getVolume());
-	
-      delete tbar;
-    }
-  }
-  
-  if (bar)
-    barData->prepend(bar);
-  
-  cursor->c_close(cursor);
-  
-  barData->createDateList();
-  
-  return barData;
+  return plug->getHistory();
 }
 
-BarDate ChartDb::getPrevDate (BarDate date)
+void ChartDb::setBar (BarDate bd, double o, double h, double l, double c, double v, double oi)
 {
-  BarDate dt;
-  dt.setDate(date.getDateTimeString(FALSE));
-  QDate dt2;
-  int m = 0;
+  if (! plug)
+    return;
   
-  switch(barCompression)
-  {
-    case Minute5:
-      m = (int) dt.getMinute() / 5;
-      m = dt.getMinute() - (m * 5);
-      if (m == 0)
-        dt.subMinutes(5);
-      else
-        dt.subMinutes(m);
-      break;
-    case Minute15:
-      m = (int) dt.getMinute() / 15;
-      m = dt.getMinute() - (m * 15);
-      if (m == 0)
-        dt.subMinutes(15);
-      else
-        dt.subMinutes(m);
-      break;
-    case Minute30:
-      m = (int) dt.getMinute() / 30;
-      m = dt.getMinute() - (m * 30);
-      if (m == 0)
-        dt.subMinutes(30);
-      else
-        dt.subMinutes(m);
-      break;
-    case Minute60:
-      m = (int) dt.getMinute() / 60;
-      m = dt.getMinute() - (m * 60);
-      if (m == 0)
-        dt.subMinutes(60);
-      else
-        dt.subMinutes(m);
-      break;
-    case Daily:
-      dt.setTime(0, 0, 0);
-      break;
-    case Weekly:
-      dt2 = dt.getDate();
-      dt2 = dt2.addDays(-(dt2.dayOfWeek() - 1));
-      dt.setDate(dt2);
-      dt.setTime(0, 0, 0);
-      break;
-    case Monthly:
-      dt.setDate(QDate(dt.getDate().year(), dt.getDate().month(), 1));
-      dt.setTime(0, 0, 0);
-      break;
-    default:
-      break;
-  }
-  
-  return dt;
-}
-
-Bar * ChartDb::getBar (QString k, QString d)
-{
-  QStringList l = QStringList::split(",", d, FALSE);
-
-  Bar *bar = new Bar;
-  bar->setDate(k);
-  bar->setOpen(l[0].toDouble());
-  bar->setHigh(l[1].toDouble());
-  bar->setLow(l[2].toDouble());
-  bar->setClose(l[3].toDouble());
-  bar->setVolume(l[4].toDouble());
-  bar->setOI(l[5].toInt());
-  
-  return bar;
-}
-
-void ChartDb::setBar (Bar *bar)
-{
-  QString k = bar->getDate().getDateTimeString(FALSE);
-  QStringList l;
-  l.append(QString::number(bar->getOpen()));
-  l.append(QString::number(bar->getHigh()));
-  l.append(QString::number(bar->getLow()));
-  l.append(QString::number(bar->getClose()));
-  l.append(QString::number(bar->getVolume(), 'f', 0));
-  l.append(QString::number(bar->getOI()));
-  QString d = l.join(",");  
-  
-  setData(k, d);
+  plug->setBar(bd, o, h, l, c, v, oi);
 }
 
 QStringList ChartDb::getChartObjectsList ()
 {
-  QStringList l;
-  QString s = getData("CHARTOBJECTS");
-  if (s.length())
-    l = QStringList::split(",", s, FALSE);
-  return l;
+  if (! plug)
+    return QStringList();
+
+  return plug->getChartObjectsList();
 }
 
-QPtrList<Setting> *ChartDb::getChartObjects ()
+QPtrList<Setting> * ChartDb::getChartObjects ()
 {
-  QPtrList<Setting> *list = new QPtrList<Setting>;
-  list->setAutoDelete(TRUE);
-
-  QStringList l = getChartObjectsList();
-  int loop;
-  for (loop = 0; loop < (int) l.count(); loop++)
-  {
-    Setting *set = new Setting;
-    set->parse(getData(l[loop]));
-    list->append(set);
-  }  
+  if (! plug)
+    return 0;
   
-  return list;
+  return plug->getChartObjects();
 }
 
 void ChartDb::setChartObject (QString d, Setting *set)
 {
-  QStringList l = getChartObjectsList();
-  
-  if (l.findIndex(d) == -1)
-  {
-    l.append(d);
-    setData("CHARTOBJECTS", l.join(","));
-  }
-  
-  setData(d, set->getString());
+  if (! plug)
+    return;
+
+  plug->setChartObject (d, set);
 }
 
 void ChartDb::deleteChartObject (QString d)
 {
-  QStringList l = getChartObjectsList();
-  l.remove(d);
-  if (l.count())
-    setData("CHARTOBJECTS", l.join(","));
-  else
-    setData("CHARTOBJECTS", "");
+  if (! plug)
+    return;
 
-  deleteData(d);
+  plug->deleteChartObject(d);
 }
 
 void ChartDb::dump (QString d)
 {
+  if (! db)
+    return;
+
   QFile outFile(d);
   if (! outFile.open(IO_WriteOnly))
     return;
@@ -333,150 +149,163 @@ void ChartDb::dump (QString d)
   outFile.close();
 }
 
-QStringList ChartDb::getBarCompressionList ()
+void ChartDb::setBarCompression (BarData::BarCompression d)
 {
-  QStringList l;
-  l.append(QObject::tr("5 Minute"));
-  l.append(QObject::tr("15 Minute"));
-  l.append(QObject::tr("30 Minute"));
-  l.append(QObject::tr("60 Minute"));
-  l.append(QObject::tr("Daily"));
-  l.append(QObject::tr("Weekly"));
-  l.append(QObject::tr("Monthly"));
-  return l;  
-}
+  if (! plug)
+    return;
 
-void ChartDb::setBarCompression (ChartDb::BarCompression d)
-{
-  barCompression = d;
-}
-
-ChartDb::BarCompression ChartDb::getBarCompression ()
-{
-  return barCompression;
+  plug->setBarCompression(d);
 }
 
 void ChartDb::setBarRange (int d)
 {
-  barRange = d;
-}
-
-int ChartDb::getBarRange ()
-{
-  return barRange;
+  if (! plug)
+    return;
+  
+  plug->setBarRange(d);
 }
 
 Bar * ChartDb::getLastBar ()
 {
-  DBT key;
-  DBT data;
-  DBC *cursor;
-  memset(&key, 0, sizeof(DBT));
-  memset(&data, 0, sizeof(DBT));
-  Bar *bar = 0;
-
-  db->cursor(db, NULL, &cursor, 0);
-  while (! cursor->c_get(cursor, &key, &data, DB_PREV))
-  {
-    if (key.size != 15)
-      continue;
+  if (! plug)
+    return 0;
     
-    BarDate dt;
-    if (dt.setDate((char *) key.data))
-      continue;
-
-    bar = getBar((char *) key.data, (char *) data.data);
-    
-    break;
-  }
-  cursor->c_close(cursor);
-  
-  return bar;
+  return plug->getLastBar();
 }
 
 Bar * ChartDb::getFirstBar ()
 {
-  DBT key;
-  DBT data;
-  DBC *cursor;
-  memset(&key, 0, sizeof(DBT));
-  memset(&data, 0, sizeof(DBT));
-  Bar *bar = 0;
+  if (! plug)
+    return 0;
 
-  db->cursor(db, NULL, &cursor, 0);
-  while (! cursor->c_get(cursor, &key, &data, DB_NEXT))
-  {
-    if (key.size != 15)
-      continue;
-    
-    BarDate dt;
-    if (dt.setDate((char *) key.data))
-      continue;
-
-    bar = getBar((char *) key.data, (char *) data.data);
-    
-    break;
-  }
-  cursor->c_close(cursor);
-  
-  return bar;
+  return plug->getFirstBar();
 }
 
-void ChartDb::setDetail (Detail k, QString d)
+Bar * ChartDb::getBar (QString k, QString d)
 {
-  switch (k)
-  {
-    case Symbol:
-      setData("Symbol", d);
-      break;
-    case Title:
-      setData("Title", d);
-      break;
-    case Type:
-      setData("Type", d);
-      break;
-    case FuturesType:
-      setData("FuturesType", d);
-      break;
-    case FuturesMonth:
-      setData("FuturesMonth", d);
-      break;
-    case BarType:
-      setData("BarType", d);
-      break;
-    default:
-      break;
-  }
+  if (! plug)
+    return 0;
+    
+  return plug->getBar(k, d);
 }
 
-QString ChartDb::getDetail (Detail k)
+void ChartDb::createNew (QString d)
 {
-  QString s;
+  dbPlugin = d;
+  if (loadPlugin())
+    return;
+      
+  path = plug->createNew();
+  if (! path.length())
+    return;
+
+  if (open(path))
+    return;
+    
+  plug->setDb(db);
   
-  switch (k)
+  QFileInfo fi(path);
+  plug->saveDbDefaults(BarData::Daily, fi.fileName(), fi.fileName(), QString(), QString(),
+                       QString(), QString());
+  
+  plug->dbPrefDialog();
+}
+
+void ChartDb::dbPrefDialog (QString d)
+{
+  if (open(d))
+    return;
+
+  if (loadPlugin())
+    return;
+    
+  plug->setDb(db);
+  plug->setDbPath(path);
+  
+  plug->dbPrefDialog();
+}
+
+void ChartDb::setPlugin (QString d)
+{
+  dbPlugin = d;
+}
+
+int ChartDb::open (QString d)
+{
+  if (db)
   {
-    case Symbol:
-      s = getData("Symbol");
-      break;
-    case Title:
-      s = getData("Title");
-      break;
-    case Type:
-      s = getData("Type");
-      break;
-    case FuturesType:
-      s = getData("FuturesType");
-      break;
-    case FuturesMonth:
-      s = getData("FuturesMonth");
-      break;
-    case BarType:
-      s = getData("BarType");
-      break;
-    default:
-      break;
+    qDebug("ChartDb::open: db already open");
+    return TRUE;
   }
   
-  return s;
+  if (db_open((char *) d.latin1(), DB_BTREE, DB_CREATE, 0664, NULL, NULL, &db) != 0)
+  {
+    qDebug("ChartDb::open: can't open db");
+    return TRUE;
+  }
+  
+  path = d;
+  return FALSE;
+}
+
+int ChartDb::loadPlugin ()
+{
+  if (! dbPlugin.length())
+  {
+    if (! db)
+    {
+      qDebug("ChartDb::loadPlugin: db not open");
+      return TRUE;
+    }
+    
+    DBT key;
+    DBT data;
+    memset(&key, 0, sizeof(DBT));
+    memset(&data, 0, sizeof(DBT));
+
+    QString k = "Plugin";
+    key.data = (char *) k.latin1();
+    key.size = k.length() + 1;
+
+    if (db->get(db, NULL, &key, &data, 0) == 0)
+      dbPlugin = (char *) data.data;
+    
+    if (! dbPlugin.length())
+    {
+      dbPlugin = config.parseDbPlugin(path);
+      if (dbPlugin)
+      {
+        key.data = (char *) k.latin1();
+        key.size = k.length() + 1;
+        data.data = (char *) dbPlugin.latin1();
+        data.size = dbPlugin.length() + 1;
+        db->put(db, NULL, &key, &data, 0);
+      }
+      else
+      {
+        qDebug("ChartDb::loadPlugin: can't resolve db plugin");
+        return TRUE;
+      }
+    }
+  }
+    
+  plug = config.getPlugin(Config::DbPluginPath, dbPlugin);
+  if (! plug)
+  {
+    config.closePlugin(dbPlugin);
+    qDebug("ChartDb::loadPlugin: can't open db plugin");
+    return TRUE;
+  }
+  
+  return FALSE;
+}
+
+void ChartDb::saveDbDefaults (BarData::BarType bt, QString s1, QString s2, QString s3,
+                             QString s4, QString s5, QString s6)
+{
+  if (! plug)
+    return;
+    
+  plug->saveDbDefaults (bt, s1, s2, s3, s4, s5, s6);
 }
 

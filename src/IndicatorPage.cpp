@@ -25,9 +25,8 @@
 #include <qtooltip.h>
 #include <qlayout.h>
 
-IndicatorPage::IndicatorPage (QWidget *w, Config *c, Plot *pl) : QWidget (w)
+IndicatorPage::IndicatorPage (QWidget *w, Plot *pl) : QWidget (w)
 {
-  config = c;
   plot = pl;
 
   QVBoxLayout *vbox = new QVBoxLayout(this);

@@ -280,42 +280,39 @@ void NYBOT::parse ()
 
       s = tr("Updating ") + symbol;
       emit statusLogMessage(s);
-
-      Bar *bar = new Bar;
-      if (bar->setDate(date))
+      
+      BarDate bd;
+      if (bd.setDate(date))
       {
-        delete bar;
         emit statusLogMessage("Bad date " + date);
         continue;
       }
-      bar->setOpen(open.toDouble());
-      bar->setHigh(high.toDouble());
-      bar->setLow(low.toDouble());
-      bar->setClose(close.toDouble());
-      bar->setVolume(volume.toDouble());
-      bar->setOI(oi.toInt());
-
+      
+      ChartDb *db = new ChartDb;
+      db->setPlugin("Futures");
       s = path;
       s.append("/");
       s.append(symbol);
-      ChartDb *db = new ChartDb();
-      db->openChart(s);
+      if (db->openChart(s))
+      {
+        emit statusLogMessage("Could not open db.");
+        delete db;
+        return;
+      }
 
-      s = db->getDetail(ChartDb::Symbol);
+      s = db->getData("Symbol");
       if (! s.length())
       {
-        db->setDetail(ChartDb::Symbol, symbol);
-        db->setDetail(ChartDb::Type, "Futures");
-        db->setDetail(ChartDb::Title, fd->getName());
-        db->setDetail(ChartDb::FuturesType, fd->getSymbol());
-        db->setDetail(ChartDb::FuturesMonth, month);
-        db->setDetail(ChartDb::BarType, QString::number(BarData::Daily));
+        db->saveDbDefaults(BarData::Daily, symbol, fd->getName(), fd->getSymbol(),
+                           month, QString(), QString());
+      
       }
       
-      db->setBar(bar);
-      emit dataLogMessage(symbol + " " + bar->getString());
+      db->setBar(bd, open.toDouble(), high.toDouble(), low.toDouble(), close.toDouble(),
+	         volume.toDouble(), oi.toDouble());
+		 
+//      emit dataLogMessage(symbol);
       delete db;
-      delete bar;
     }
 
     f.close();

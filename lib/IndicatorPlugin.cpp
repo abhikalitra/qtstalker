@@ -102,7 +102,9 @@ Setting IndicatorPlugin::loadFile (QString file)
   
   f.close();
   
-  plotType = dict.getData("plotType").toInt();
+  QString s = dict.getData("plotType");
+  if (s.length())
+    plotType = s.toInt();
 
   return dict;
 }

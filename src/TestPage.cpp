@@ -31,10 +31,8 @@
 #include <qlayout.h>
 #include <qdir.h>
 
-TestPage::TestPage (QWidget *w, Config *c) : QWidget (w)
+TestPage::TestPage (QWidget *w) : QWidget (w)
 {
-  config = c;
-
   QVBoxLayout *vbox = new QVBoxLayout(this);
   vbox->setMargin(2);
   vbox->setSpacing(5);
@@ -61,7 +59,7 @@ TestPage::~TestPage ()
 
 void TestPage::openTest ()
 {
-  Tester *dialog = new Tester(config, list->currentText());
+  Tester *dialog = new Tester(list->currentText());
   dialog->show();
 }
 
@@ -78,7 +76,7 @@ void TestPage::newTest()
   if ((! ok) || (selection.isNull()))
     return;
 
-  QString s = config->getData(Config::TestPath);
+  QString s = config.getData(Config::TestPath);
   s.append("/");
   s.append(selection);
   QDir dir(s);
@@ -120,7 +118,7 @@ void TestPage::newTest()
 
   updateList();
   
-  Tester *dialog = new Tester(config, selection);
+  Tester *dialog = new Tester(selection);
   dialog->show();
 }
 
@@ -140,7 +138,7 @@ void TestPage::deleteTest()
     return;
 
   QString s = "rm -r ";
-  s.append(config->getData(Config::TestPath));
+  s.append(config.getData(Config::TestPath));
   s.append("/");
   s.append(list->currentText());
   if (system(s.latin1()) == -1)
@@ -170,7 +168,7 @@ void TestPage::renameTest ()
   if ((! ok) || (selection.isNull()))
     return;
 
-  QString s = config->getData(Config::TestPath);
+  QString s = config.getData(Config::TestPath);
   s.append("/");
   s.append(selection);
   QDir dir(s);
@@ -180,7 +178,7 @@ void TestPage::renameTest ()
     return;
   }
 
-  QString s2 = config->getData(Config::TestPath);
+  QString s2 = config.getData(Config::TestPath);
   s2.append("/");
   s2.append(list->currentText());
   dir.rename(s2, s, TRUE);
@@ -211,7 +209,7 @@ void TestPage::updateList ()
 {
   list->clear();
   
-  QDir dir(config->getData(Config::TestPath));
+  QDir dir(config.getData(Config::TestPath));
   int loop;
   for (loop = 2; loop < (int) dir.count(); loop++)
     list->insertItem(dir[loop], -1);

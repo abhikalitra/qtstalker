@@ -25,66 +25,48 @@
 #include <qstring.h>
 #include <qptrlist.h>
 #include <qstringlist.h>
-#include <db.h>
+#include "Plugin.h"
 #include "Setting.h"
 #include "BarData.h"
 #include "Bar.h"
 #include "BarDate.h"
+#include "Config.h"
 
 class ChartDb
 {
   public:
-    enum BarCompression
-    {
-      Minute5,
-      Minute15,
-      Minute30,
-      Minute60,
-      Daily,
-      Weekly,
-      Monthly
-    };
-
-    enum Detail
-    {
-      Symbol,
-      Title,
-      Type,
-      FuturesType,
-      FuturesMonth,
-      BarType
-    };
-      
     ChartDb ();
     ~ChartDb ();
     int openChart (QString);
-    QString getData (QString);
-    void setData (QString, QString);
-    void deleteData (QString);
-    Bar * getBar (QString, QString);
-    void setBar (Bar *);
-    BarData * getHistory ();
-    void dump (QString);
-    void setBarCompression (ChartDb::BarCompression);
-    ChartDb::BarCompression getBarCompression ();
+    void setBarCompression (BarData::BarCompression);
     void setBarRange (int);
-    int getBarRange ();
-    QStringList getBarCompressionList ();
+    void dump (QString);
     Bar * getLastBar ();
     Bar * getFirstBar ();
-    BarDate getPrevDate (BarDate);
+    Bar * getBar (QString, QString);
     QStringList getChartObjectsList ();    
     QPtrList<Setting> * getChartObjects ();
     void setChartObject (QString, Setting *);
     void deleteChartObject (QString);
-    QString getDetail (Detail);
-    void setDetail (Detail, QString);
-
+    QString getData (QString);
+    void setData (QString, QString);
+    void setBar (BarDate, double, double, double, double, double, double);
+    BarData * getHistory ();
+    void deleteData (QString);
+    void dbPrefDialog (QString);
+    void createNew (QString);
+    void setPlugin (QString);
+    int open (QString);
+    int loadPlugin ();
+    void saveDbDefaults (BarData::BarType, QString, QString, QString,
+                         QString, QString, QString);
+    
   private:
-    QString dataPath;
     DB *db;
-    int barRange;
-    BarCompression barCompression;
+    Plugin *plug;
+    QString dbPlugin;
+    Config config;
+    QString path;
 };
 
 #endif

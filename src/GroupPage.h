@@ -37,7 +37,7 @@ class GroupPage : public QWidget
     void fileSelected (QString);
 
   public:
-    GroupPage (QWidget *, Config *);
+    GroupPage (QWidget *);
     ~GroupPage ();
 
   public slots:
@@ -52,7 +52,7 @@ class GroupPage : public QWidget
 
   protected:
     Navigator *nav;
-    Config *config;
+    Config config;
     QPopupMenu *menu;
     QLineEdit *group;
 };

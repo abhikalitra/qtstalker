@@ -27,11 +27,14 @@
 #include <qobject.h>
 #include <qpixmap.h>
 #include <qdict.h>
+#include <qptrlist.h>
+#include <db.h>
 #include "PlotLine.h"
 #include "BarData.h"
 #include "Scaler.h"
 #include "Setting.h"
 #include "Indicator.h"
+#include "BarDate.h"
 
 class Plugin : public QObject
 {
@@ -41,7 +44,8 @@ class Plugin : public QObject
     {
       IndicatorPlug,
       QuotePlug,
-      ChartPlug
+      ChartPlug,
+      DbPlug
     };
   
     Plugin ();
@@ -75,15 +79,36 @@ class Plugin : public QObject
     virtual bool getIndicatorFlag ();
     virtual void saveSettings ();
     
+    // db plugin interface
+    virtual int openChart (QString);
+    virtual void setBarCompression (int);
+    virtual void setBarRange (int);
+    virtual void dump (QString);
+    virtual Bar * getBar (QString, QString);
+    virtual Bar * getLastBar ();
+    virtual Bar * getFirstBar ();
+    virtual QStringList getChartObjectsList ();    
+    virtual QPtrList<Setting> * getChartObjects ();
+    virtual void setChartObject (QString, Setting *);
+    virtual void deleteChartObject (QString);
+    virtual QString getData (QString);
+    virtual void setData (QString, QString);
+    virtual void setBar (BarDate, double, double, double, double, double, double);
+    virtual BarData * getHistory ();
+    virtual void deleteData (QString);
+    virtual void dbPrefDialog ();
+    virtual QString createNew ();
+    virtual void setDb (DB *);
+    virtual void saveDbDefaults (BarData::BarType, QString, QString, QString, QString, QString, QString);
+    virtual void setDbPath (QString);
+    
     // base plugin functions
     Plugin::PluginType getPluginType ();
     QString getPluginName ();
-    void setDataPath (QString);
 
   protected:
     PluginType pluginType;
     QString pluginName;
-    QString dataPath;
 };
 
 extern "C"

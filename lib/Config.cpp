@@ -195,6 +195,9 @@ QString Config::getData (Parm p)
     case ChartPluginPath:
       s = settings.readEntry("/Qtstalker/ChartPluginPath", "/usr/lib/qtstalker/chart");
       break;
+    case DbPluginPath:
+      s = settings.readEntry("/Qtstalker/DbPluginPath", "/usr/lib/qtstalker/db");
+      break;
     case Group:
       s = settings.readEntry("/Qtstalker/Group");
       break;
@@ -209,9 +212,6 @@ QString Config::getData (Parm p)
       break;
     case LogScale:
       s = settings.readEntry("/Qtstalker/LogScale", "0");
-      break;
-    case StackedIndicator:
-      s = settings.readEntry("/Qtstalker/StackedIndicator", "");
       break;
     case Height:
       s = settings.readEntry("/Qtstalker/Height", "640");
@@ -304,6 +304,9 @@ void Config::setData (Parm p, QString d)
     case ChartPluginPath:
       settings.writeEntry("/Qtstalker/ChartPluginPath", d);
       break;
+    case DbPluginPath:
+      settings.writeEntry("/Qtstalker/DbPluginPath", d);
+      break;
     case Group:
       settings.writeEntry("/Qtstalker/Group", d);
       break;
@@ -318,9 +321,6 @@ void Config::setData (Parm p, QString d)
       break;
     case LogScale:
       settings.writeEntry("/Qtstalker/LogScale", d);
-      break;
-    case StackedIndicator:
-      settings.writeEntry("/Qtstalker/StackedIndicator", d);
       break;
     case Height:
       settings.writeEntry("/Qtstalker/Height", d);
@@ -443,7 +443,7 @@ Plugin * Config::getPlugin (Config::Parm t, QString p)
     return plug;
 
   QString s;
-
+  
   switch (t)
   {
     case Config::IndicatorPluginPath:
@@ -454,6 +454,9 @@ Plugin * Config::getPlugin (Config::Parm t, QString p)
       break;
     case Config::ChartPluginPath:
       s = getData(ChartPluginPath);
+      break;
+    case Config::DbPluginPath:
+      s = getData(DbPluginPath);
       break;
     default:
       break;
@@ -521,3 +524,10 @@ void Config::closePlugin (QString d)
   libs.remove(d);
 }
 
+QString Config::parseDbPlugin (QString d)
+{
+  QStringList l = QStringList::split("/", d, FALSE);
+  int i = l.findIndex("Qtstalker");
+  i = i + 2;
+  return l[i];
+}

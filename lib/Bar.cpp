@@ -23,6 +23,8 @@
 
 Bar::Bar ()
 {
+  max = -9999999999.0;
+  min = 9999999999.0;
   data.setAutoDelete(TRUE);
 }
 
@@ -178,5 +180,28 @@ void Bar::setData (QString k, double d)
   BarItem *r = new BarItem;
   r->v = d;
   data.replace(k, r);
+  
+  if (d > max)
+    max = d;
+  if (d < min)
+    min = d;
+}
+
+void Bar::copy (Bar *d)
+{
+  QDictIterator<BarItem> it(data);
+  for(; it.current(); ++it)
+    d->setData(it.currentKey(), it.current()->v);
+  d->setDate(date);
+}
+
+double Bar::getMin ()
+{
+  return min;
+}
+
+double Bar::getMax ()
+{
+  return max;
 }
 

@@ -32,10 +32,8 @@
 #include <qpixmap.h>
 #include <qtooltip.h>
 
-QuoteDialog::QuoteDialog (Config *c) : QTabDialog (0, "QuoteDialog", TRUE)
+QuoteDialog::QuoteDialog () : QTabDialog (0, "QuoteDialog", TRUE)
 {
-  config = c;
-  
   setCaption (tr("Qtstalker: Quotes"));
   
   QWidget *w = new QWidget(this);
@@ -66,7 +64,7 @@ QuoteDialog::QuoteDialog (Config *c) : QTabDialog (0, "QuoteDialog", TRUE)
   grid->setColStretch(0, 1);
   
   ruleCombo = new QComboBox(w);
-  ruleCombo->insertStringList(config->getPluginList(Config::QuotePluginPath), -1);
+  ruleCombo->insertStringList(config.getPluginList(Config::QuotePluginPath), -1);
   connect (ruleCombo, SIGNAL(activated(int)), this, SLOT(ruleChanged(int)));
   grid->addWidget(ruleCombo, 0, 0);
   
@@ -131,7 +129,7 @@ void QuoteDialog::getQuotes ()
   
   printStatusLogMessage(tr("Starting update..."));
 
-  Plugin *plug = config->getPlugin(Config::QuotePluginPath, ruleCombo->currentText());
+  Plugin *plug = config.getPlugin(Config::QuotePluginPath, ruleCombo->currentText());
   if (! plug)
   {
     qDebug("QuoteDialog::getQuotes - could not open plugin");
@@ -154,10 +152,10 @@ void QuoteDialog::ruleChanged (int)
   }
 
   if (plugin.length())
-    config->closePlugin(plugin);
+    config.closePlugin(plugin);
   plugin = ruleCombo->currentText();
 
-  Plugin *plug = config->getPlugin(Config::QuotePluginPath, ruleCombo->currentText());
+  Plugin *plug = config.getPlugin(Config::QuotePluginPath, ruleCombo->currentText());
   if (! plug)
   {
     qDebug("QuoteDialog::ruleChanged - could not open plugin");
@@ -167,8 +165,6 @@ void QuoteDialog::ruleChanged (int)
   connect (plug, SIGNAL(done()), this, SLOT(downloadComplete()));
   connect (plug, SIGNAL(statusLogMessage(QString)), this, SLOT(printStatusLogMessage(QString)));
   connect (plug, SIGNAL(dataLogMessage(QString)), this, SLOT(printDataLogMessage(QString)));
-
-  plug->setDataPath(config->getData(Config::DataPath));
 }
 
 void QuoteDialog::downloadComplete ()
@@ -179,7 +175,7 @@ void QuoteDialog::downloadComplete ()
 
 void QuoteDialog::cancelDownload ()
 {
-  Plugin *plug = config->getPlugin(Config::QuotePluginPath, ruleCombo->currentText());
+  Plugin *plug = config.getPlugin(Config::QuotePluginPath, ruleCombo->currentText());
   if (! plug)
   {
     qDebug("QuoteDialog::cancelDownload - could not open plugin");
@@ -198,7 +194,7 @@ void QuoteDialog::enableGUI ()
   toolbar->setButtonStatus("update", TRUE);
   toolbar->setButtonStatus("cancelDownload", FALSE);
 
-  Plugin *plug = config->getPlugin(Config::QuotePluginPath, ruleCombo->currentText());
+  Plugin *plug = config.getPlugin(Config::QuotePluginPath, ruleCombo->currentText());
   if (! plug)
   {
     qDebug("QuoteDialog::enableGUI - could not open plugin");
@@ -231,7 +227,7 @@ void QuoteDialog::printDataLogMessage (QString d)
 
 void QuoteDialog::pluginSettings ()
 {
-  Plugin *plug = config->getPlugin(Config::QuotePluginPath, ruleCombo->currentText());
+  Plugin *plug = config.getPlugin(Config::QuotePluginPath, ruleCombo->currentText());
   if (! plug)
   {
     qDebug("QuoteDialog::pluginSettings - could not open plugin");

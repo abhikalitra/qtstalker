@@ -27,7 +27,6 @@
 #include <qtable.h>
 #include "Toolbar.h"
 #include "Config.h"
-#include "Setting.h"
 
 class FormulaEdit : public QWidget
 {
@@ -51,7 +50,6 @@ class FormulaEdit : public QWidget
     Toolbar *toolbar;
     QStringList functionList;
     Config config;
-    Setting steps;
 };
 
 #endif

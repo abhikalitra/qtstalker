@@ -20,7 +20,7 @@
  */
 
 #include "YahooDialog.h"
-#include "ChartDb.h"
+#include "Config.h"
 #include "../../../src/newchart.xpm"
 #include "../../../src/selectall.xpm"
 #include "../../../src/unselectall.xpm"
@@ -144,6 +144,7 @@ void YahooDialog::newStock ()
   }
   
   int loop;
+  Config config;
   for (loop = 0; loop < (int) l.count(); loop++)
   {
     QString s = dataPath;
@@ -152,10 +153,15 @@ void YahooDialog::newStock ()
     if (dir.exists(s, TRUE))
       continue;
 
-    ChartDb *db = new ChartDb;
-    if (db->openChart(s))
+    Plugin *plug = config.getPlugin(Config::DbPluginPath, "Stocks");
+    if (! plug)
+    {
+      config.closePlugin("Stocks");
+      continue;
+    }
+    if (plug->openChart(s))
       qDebug("YahooDialog::newStock: could not open db %s", s.latin1());
-    delete db;
+    config.closePlugin("Stocks");
   }
   
   updateList();

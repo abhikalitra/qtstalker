@@ -22,6 +22,8 @@
 #include "MySQLPlugin.h"
 #include "PrefDialog.h"
 #include "Setting.h"
+#include "ChartDb.h"
+#include "Config.h"
 #include <qdir.h>
 #include <qtimer.h>
 #include <qdatetime.h>
@@ -137,8 +139,8 @@ void MySQLPlugin::updateSymbol(QString symbol)
   emit statusLogMessage("Updating " + symbol);
 
   // verify and create the directory if needed  
-  QString chartpath = dataPath;
-  chartpath.append("/Stocks");
+  Config config;
+  QString chartpath = config.getData(Config::DataPath) + "/Stocks";
   QDir dir(chartpath);
   if (!dir.exists() && !dir.mkdir(chartpath))
   {
@@ -148,20 +150,23 @@ void MySQLPlugin::updateSymbol(QString symbol)
     emit statusLogMessage("MySQL Plugin Error: "+ errstr);
     return;
   }
-  chartpath.append("/");
-  chartpath.append(symbol);
+  chartpath.append("/" + symbol);
 
   // create the new chart
 
   ChartDb db;
-  db.openChart(chartpath);
-  QString s = db.getDetail(ChartDb::Symbol);
+  db.setPlugin("Stocks");
+  if (db.openChart(chartpath))
+  {
+    emit statusLogMessage("Could not open db.");
+    return;
+  }
+  
+  QString s = db.getData("Symbol");
   if (! s.length())
   {
-    db.setDetail(ChartDb::Symbol, symbol);
-    db.setDetail(ChartDb::Type, "Stock");
-    db.setDetail(ChartDb::Title, symbol);
-    db.setDetail(ChartDb::BarType, QString::number(BarData::Daily));
+    db.saveDbDefaults(BarData::Daily, symbol, symbol, QString(),
+                      QString(), QString(), QString());
   }
 
   QDate lastdate;
@@ -225,7 +230,7 @@ void MySQLPlugin::closeDatabase()
  * 
  * Perform sql query and store results in Qtstalker db
  */
-void MySQLPlugin::doQuery (QString sql, ChartDb& db)
+void MySQLPlugin::doQuery (QString sql, ChartDb &db)
 {
   MYSQL_RES *res;
  
@@ -239,43 +244,30 @@ void MySQLPlugin::doQuery (QString sql, ChartDb& db)
 
     while ((row = mysql_fetch_row(res)) != NULL) 
     {
-      Bar *bar = new Bar;
-      
       QString d = row[0];
       d = d.remove('-');
       d.append("000000");
-      if (bar->setDate(d))
+      BarDate barDate;
+      if (barDate.setDate(d))
       {
-        delete bar;
         emit statusLogMessage("Bad date " + d);
         continue;
       }
       
-      d = row[1];
-      bar->setOpen(d.toDouble());
-      
-      d = row[2];
-      bar->setHigh(d.toDouble());
-      
-      d = row[3];
-      bar->setLow(d.toDouble());
-      
-      d = row[4];
-      bar->setClose(d.toDouble());
-      
-      d = row[5];
-      bar->setVolume(d.toDouble());
+      QString open = row[1];
+      QString high = row[2];
+      QString low = row[3];
+      QString close = row[4];
+      QString volume = row[5];
+      QString oi("0");
       
       if (with_oi)
-      {
-        d = row[6];
-        bar->setOI(d.toInt());
-      }
+        oi = row[6];
       
-      db.setBar(bar);
+      db.setBar(barDate, open.toDouble(), high.toDouble(), low.toDouble(),
+                close.toDouble(), volume.toDouble(), oi.toDouble());
       
-      emit dataLogMessage(db.getDetail(ChartDb::Symbol) + " " + bar->getString());
-      delete bar;
+//      emit dataLogMessage(db.getDetail(ChartDb::Symbol) + " " + bar->getString());
     }
    
     mysql_free_result(res);

@@ -59,10 +59,15 @@ class Bar
     QStringList getFields ();
     void setData (QString, double);
     double getData (QString);
+    void copy (Bar *);
+    double getMin ();
+    double getMax ();
     
   protected:
     BarDate date;
     QDict<BarItem> data;
+    double min;
+    double max;
 };
 
 #endif

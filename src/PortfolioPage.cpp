@@ -32,15 +32,13 @@
 #include <qlayout.h>
 #include <qfile.h>
 
-PortfolioPage::PortfolioPage (QWidget *w, Config *c) : QWidget (w)
+PortfolioPage::PortfolioPage (QWidget *w) : QWidget (w)
 {
-  config = c;
-
   QVBoxLayout *vbox = new QVBoxLayout(this);
   vbox->setMargin(2);
   vbox->setSpacing(5);
   
-  nav = new Navigator(this, config->getData(Config::PortfolioPath));
+  nav = new Navigator(this, config.getData(Config::PortfolioPath));
   connect(nav, SIGNAL(fileSelected(QString)), this, SLOT(portfolioSelected(QString)));
   connect(nav, SIGNAL(noSelection()), this, SLOT(portfolioNoSelection()));
   connect(nav, SIGNAL(contextMenuRequested(QListBoxItem *, const QPoint &)), this, SLOT(rightClick(QListBoxItem *)));
@@ -63,7 +61,7 @@ PortfolioPage::~PortfolioPage ()
 
 void PortfolioPage::openPortfolio ()
 {
-  PortfolioDialog *dialog = new PortfolioDialog(config, nav->currentText());
+  PortfolioDialog *dialog = new PortfolioDialog(nav->currentText());
   dialog->show();
 }
 
@@ -78,7 +76,7 @@ void PortfolioPage::newPortfolio()
 					    this);
   if ((ok) && (! selection.isNull()))
   {
-    QString s = config->getData(Config::PortfolioPath);
+    QString s = config.getData(Config::PortfolioPath);
     s.append("/");
     s.append(selection);
     QDir dir(s);
@@ -96,7 +94,7 @@ void PortfolioPage::newPortfolio()
     
     nav->updateList();
 
-    PortfolioDialog *dialog = new PortfolioDialog(config, selection);
+    PortfolioDialog *dialog = new PortfolioDialog(selection);
     dialog->show();
   }
 }
@@ -149,7 +147,7 @@ void PortfolioPage::renamePortfolio ()
 					    this);
   if ((ok) && (! selection.isNull()))
   {
-    QString s = config->getData(Config::PortfolioPath);
+    QString s = config.getData(Config::PortfolioPath);
     s.append("/");
     s.append(selection);
     QDir dir(s);
@@ -159,7 +157,7 @@ void PortfolioPage::renamePortfolio ()
       return;
     }
 
-    QString s2 = config->getData(Config::PortfolioPath);
+    QString s2 = config.getData(Config::PortfolioPath);
     s2.append("/");
     s2.append(nav->currentText());
 

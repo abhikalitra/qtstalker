@@ -286,42 +286,36 @@ void COT::saveData (Setting *set)
     return;
   }
   
-  Bar *r = new Bar;
-  if (r->setDate(set->getData("Date")))
+  BarDate bd;
+  if (bd.setDate(set->getData("Date")))
   {
-    delete r;
     emit statusLogMessage("Bad date " + set->getData("Date"));
     return;
   }
-  r->setOpen(set->getFloat("Non Commercial"));
-  r->setHigh(set->getFloat("Commercial"));
-  r->setLow(set->getFloat("Non Reportable"));
-  r->setOI(set->getInt("Open Interest"));
 
   s.append("/");
   s.append(set->getData("Symbol"));
   ChartDb *db = new ChartDb();
+  db->setPlugin("Futures");
   db->openChart(s);
 
   s = tr("Updating ");
   s.append(set->getData("Symbol"));
   emit statusLogMessage(s);
 
-  s = db->getDetail(ChartDb::Symbol);
+  s = db->getData("Symbol");
   if (! s.length())
   {
-    db->setDetail(ChartDb::Symbol, set->getData("Symbol"));
-    db->setDetail(ChartDb::Title, set->getData("Title"));
-    db->setDetail(ChartDb::Type, "COT");
-    db->setDetail(ChartDb::BarType, QString::number(BarData::Daily));
+    db->saveDbDefaults(BarData::Daily, set->getData("Symbol"), set->getData("Title"), QString(),
+                         QString(), QString(), QString());
   }
 
-  db->setBar(r);
+  db->setBar(bd, set->getFloat("Non Commercial"), set->getFloat("Commercial"),
+             set->getFloat("Non Reportable"), 0, 0, set->getFloat("Open Interest"));
   
-  s = set->getData("Symbol") + " " + r->getString();
-  emit dataLogMessage(s);
+//  s = set->getData("Symbol") + " " + r->getString();
+//  emit dataLogMessage(s);
   
-  delete r;
   delete db;
 }
 

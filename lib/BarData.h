@@ -52,6 +52,17 @@ class BarData
       OpenInterest
     };
 
+    enum BarCompression
+    {
+      Minute5,
+      Minute15,
+      Minute30,
+      Minute60,
+      DailyBar,
+      WeeklyBar,
+      MonthlyBar
+    };
+    
     BarData ();
     ~BarData ();
     int count ();
@@ -73,6 +84,11 @@ class BarData
     QStringList getInputFields ();
     PlotLine * getInput (BarData::InputType);
     BarData::InputType getInputType (QString);
+    QStringList getBarCompressionList ();
+    void copy (BarData *);
+    Bar * getBar (int);
+    void setMinMax ();
+    void deleteBar (int);
     
   protected:
     QPtrList<Bar> barList;

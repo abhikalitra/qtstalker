@@ -39,7 +39,7 @@ class QuoteDialog : public QTabDialog
     void message (QString);
 
   public:
-    QuoteDialog (Config *);
+    QuoteDialog ();
     ~QuoteDialog ();
     void enableGUI ();
     void disableGUI ();
@@ -54,7 +54,7 @@ class QuoteDialog : public QTabDialog
     void printDataLogMessage (QString);
 
   private:
-    Config *config;
+    Config config;
     QComboBox *ruleCombo;
     QString plugin;
     QTextEdit *dataLog;

@@ -932,41 +932,39 @@ void CME::parse (Setting *data)
   s = tr("Updating ") + data->getData("Symbol");
   emit statusLogMessage(s);
 
-  Bar *r = new Bar;
-  if (r->setDate(data->getData("Date")))
+  BarDate bd;
+  if (bd.setDate(data->getData("Date")))
   {
-    delete r;
     emit statusLogMessage("Bad date " + data->getData("Date"));
     return;
   }
-  r->setOpen(open.toDouble());
-  r->setHigh(high.toDouble());
-  r->setLow(low.toDouble());
-  r->setClose(close.toDouble());
-  r->setVolume(volume.toDouble());
-  r->setOI(oi.toInt());
-
+  
+  ChartDb *db = new ChartDb;
+  db->setPlugin("Futures");
   s = path;
   s.append("/");
   s.append(data->getData("Symbol"));
-  ChartDb *db = new ChartDb();
-  db->openChart(s);
-
-  s = db->getDetail(ChartDb::Symbol);
+  if (db->openChart(s))
+  {
+    emit statusLogMessage("Could not open db.");
+    delete db;
+    return;
+  }
+  
+  s = db->getData("Symbol");
   if (! s.length())
   {
-    db->setDetail(ChartDb::Symbol, data->getData("Symbol"));
-    db->setDetail(ChartDb::Title, fd.getName());
-    db->setDetail(ChartDb::Type, "Futures");
-    db->setDetail(ChartDb::FuturesType, fd.getSymbol());
-    db->setDetail(ChartDb::FuturesMonth, data->getData("Month"));
-    db->setDetail(ChartDb::BarType, QString::number(BarData::Daily));
+    db->saveDbDefaults(BarData::Daily, data->getData("Symbol"), fd.getName(),
+                       fd.getSymbol(), data->getData("Month"), QString(), QString());
   }
-  db->setBar(r);
+  
+  db->setBar(bd, data->getData("Open").toDouble(), data->getData("High").toDouble(),
+             data->getData("Low").toDouble(), data->getData("Close").toDouble(),
+	     data->getData("Volume").toDouble(), data->getData("OI").toDouble());
+	     
   delete db;
 
-  emit dataLogMessage(data->getData("Symbol") + " " + r->getString());
-  delete r;
+//  emit dataLogMessage(data->getData("Symbol"));
 }
 
 void CME::cancelUpdate ()

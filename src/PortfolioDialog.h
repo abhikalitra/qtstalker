@@ -33,7 +33,7 @@ class PortfolioDialog : public QTabDialog
   Q_OBJECT
 
   public:
-    PortfolioDialog (Config *, QString);
+    PortfolioDialog (QString);
     ~PortfolioDialog ();
     void updatePortfolio ();
     float futuresProfit (QString, float);
@@ -51,7 +51,7 @@ class PortfolioDialog : public QTabDialog
     QListViewItem *item;
     QString portfolio;
     Toolbar *toolbar;
-    Config *config;
+    Config config;
 };
 
 #endif

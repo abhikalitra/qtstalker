@@ -60,7 +60,7 @@ class Config
       AppFont,
       NavAreaSize,
       LogScale,
-      NavigatorPosition, // unused
+      DbPluginPath,
       IndicatorTabs, // unused
       StackedIndicator, //unused
       PAFBoxSize, // unused
@@ -79,6 +79,7 @@ class Config
     QString getData (Parm);
     QStringList getDirList (QString);
     void setup ();
+    QString parseDbPlugin (QString);
 
     QStringList getIndicators ();
     Setting * getIndicator (QString);

@@ -33,7 +33,7 @@ class TestPage : public QWidget
   Q_OBJECT
 
   public:
-    TestPage (QWidget *, Config *);
+    TestPage (QWidget *);
     ~TestPage ();
 
   public slots:
@@ -47,7 +47,7 @@ class TestPage : public QWidget
     void updateList ();
 
   private:
-    Config *config;
+    Config config;
     QListBox *list;
     QPopupMenu *menu;
 };

@@ -27,6 +27,7 @@
 #include "VerticalLine.h"
 #include "FiboLine.h"
 #include "Text.h"
+#include "ChartDb.h"
 #include <qpainter.h>
 #include <qpen.h>
 #include <qpoint.h>
@@ -61,7 +62,6 @@ Plot::Plot (QWidget *w) : QWidget(w)
   buffer = new QPixmap;
   scaler = new Scaler;
   chartPlugin = 0;
-  config = 0;
   setBackgroundMode(NoBackground);
   scaleWidth = SCALE_WIDTH;
   dateHeight = DATE_HEIGHT;
@@ -75,7 +75,7 @@ Plot::Plot (QWidget *w) : QWidget(w)
   minPixelspace = 0;
   dateFlag = FALSE;
   gridFlag = TRUE;
-  interval = ChartDb::Daily;
+  interval = BarData::DailyBar;
   mainFlag = FALSE;
   scaleToScreen = FALSE;
   logScale = FALSE;
@@ -146,9 +146,9 @@ void Plot::setData (BarData *l)
 int Plot::setChartType (QString d)
 {
   if (chartType.length())
-    config->closePlugin(chartType);
+    config.closePlugin(chartType);
   
-  chartPlugin = config->getPlugin(Config::ChartPluginPath, d);
+  chartPlugin = config.getPlugin(Config::ChartPluginPath, d);
   if (! chartPlugin)
   {
     qDebug("Plot::setChartType:unable to open %s chart plugin", d.latin1());
@@ -173,11 +173,6 @@ int Plot::setChartType (QString d)
 void Plot::setChartInput ()
 {
   chartPlugin->setChartInput(data, scaler, buffer);
-}
-
-void Plot::setConfig (Config *c)
-{
-  config = c;
 }
 
 void Plot::setMainFlag (bool d)
@@ -693,7 +688,7 @@ bool Plot::getMainFlag ()
 //******************** DATE FUNCTIONS ***********************************
 //***********************************************************************
 
-void Plot::setInterval (ChartDb::BarCompression d)
+void Plot::setInterval (BarData::BarCompression d)
 {
   interval = d;
 }
@@ -729,18 +724,18 @@ void Plot::drawDate ()
   { 
     switch (interval)
     {
-      case ChartDb::Minute5:
-      case ChartDb::Minute15:
+      case BarData::Minute5:
+      case BarData::Minute15:
         draw15Date();
         break;
-      case ChartDb::Minute30:
-      case ChartDb::Minute60:
+      case BarData::Minute30:
+      case BarData::Minute60:
         drawHourlyDate();
         break;
-      case ChartDb::Weekly:
+      case BarData::WeeklyBar:
         drawWeeklyDate();
         break;
-      case ChartDb::Monthly:
+      case BarData::MonthlyBar:
         drawMonthlyDate();
         break;
       default:
@@ -752,10 +747,10 @@ void Plot::drawDate ()
   {
     switch (interval)
     {
-      case ChartDb::Weekly:
+      case BarData::WeeklyBar:
         drawWeeklyDate();
         break;
-      case ChartDb::Monthly:
+      case BarData::MonthlyBar:
         drawMonthlyDate();
         break;
       default:
@@ -1058,8 +1053,8 @@ void Plot::createXGrid ()
     {
       switch (interval)
       {
-        case ChartDb::Weekly:
-        case ChartDb::Monthly:
+        case BarData::WeeklyBar:
+        case BarData::MonthlyBar:
           if (date.year() != oldDate.year())
           {
             oldDate = date;
@@ -1081,10 +1076,10 @@ void Plot::createXGrid ()
     {
       switch (interval)
       {
-        case ChartDb::Minute5:
-        case ChartDb::Minute15:
-        case ChartDb::Minute30:
-        case ChartDb::Minute60:
+        case BarData::Minute5:
+        case BarData::Minute15:
+        case BarData::Minute30:
+        case BarData::Minute60:
           if (date.day() != oldDate.day())
           {
             oldDate = date;
@@ -1092,7 +1087,7 @@ void Plot::createXGrid ()
 	    xGrid[xGrid.size() - 1] = loop;
           }
           break;
-        case ChartDb::Daily:
+        case BarData::DailyBar:
           if (date.month() != oldDate.month())
           {
             oldDate = date;
@@ -1100,8 +1095,8 @@ void Plot::createXGrid ()
 	    xGrid[xGrid.size() - 1] = loop;
           }
           break;
-        case ChartDb::Weekly:
-        case ChartDb::Monthly:
+        case BarData::WeeklyBar:
+        case BarData::MonthlyBar:
           if (date.year() != oldDate.year())
           {
             oldDate = date;
@@ -1880,7 +1875,7 @@ void Plot::newChartObject ()
     QDir dir;
     if (dir.exists(chartPath))
     {
-      ChartDb *db = new ChartDb();
+      ChartDb *db = new ChartDb;
       db->openChart(chartPath);
       Setting *set = co->getSettings();
       db->setChartObject(co->getName(), set);
@@ -1983,7 +1978,7 @@ void Plot::slotDeleteChartObject (QString s)
   QDir dir;
   if (dir.exists(chartPath))
   {
-    ChartDb *db = new ChartDb();
+    ChartDb *db = new ChartDb;
     db->openChart(chartPath);
     db->deleteChartObject(s);
     delete db;
@@ -2006,9 +2001,10 @@ void Plot::slotNewChartObject (int id)
   if (! dir.exists(chartPath))
     return;
   
-  ChartDb *db = new ChartDb();
+  QStringList l;
+  ChartDb *db = new ChartDb;
   db->openChart(chartPath);
-  QStringList l = db->getChartObjectsList();
+  l = db->getChartObjectsList();
   delete db;
   
   while (1)
@@ -2173,8 +2169,8 @@ void Plot::slotSaveChartObjects ()
   QDir dir;
   if (! dir.exists(chartPath))
     return;
-        
-  ChartDb *db = new ChartDb();
+
+  ChartDb *db = new ChartDb;
   db->openChart(chartPath);
 
   QDictIterator<ChartObject> it(chartObjects);
@@ -2216,8 +2212,9 @@ void Plot::slotDeleteAllChartObjects ()
   if (! dir.exists(chartPath))
     return;
     
-  ChartDb *db = new ChartDb();
+  ChartDb *db = new ChartDb;
   db->openChart(chartPath);
+  
   QStringList l = db->getChartObjectsList();
 
   int loop;  

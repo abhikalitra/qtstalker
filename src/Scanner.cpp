@@ -26,9 +26,9 @@
 #include <qdir.h>
 #include <qhgroupbox.h>
 #include "Scanner.h"
-#include "ChartDb.h"
 #include "BarData.h"
 #include "SymbolDialog.h"
+#include "ChartDb.h"
 
 Scanner::Scanner (QString n) : QTabDialog (0, 0, FALSE)
 {
@@ -148,21 +148,16 @@ void Scanner::scan ()
     emit message(QString());
   
     ChartDb *db = new ChartDb;
-    if (db->openChart(fileList[loop]))
-    {
-      delete db;
-      qDebug("Scanner: Cant open db");
-      continue;
-    }
+    db->openChart(fileList[loop]);
 
     if (! period->currentText().compare(tr("Daily")))
-      db->setBarCompression(ChartDb::Daily);
+      db->setBarCompression(BarData::DailyBar);
     else
     {
       if (! period->currentText().compare(tr("Weekly")))
-        db->setBarCompression(ChartDb::Weekly);
+        db->setBarCompression(BarData::WeeklyBar);
       else
-        db->setBarCompression(ChartDb::Monthly);
+        db->setBarCompression(BarData::MonthlyBar);
     }
     
     db->setBarRange(config.getData(Config::Bars).toInt());
@@ -170,29 +165,27 @@ void Scanner::scan ()
     BarData *recordList = db->getHistory();
     
     // open the CUS plugin   
-    Plugin *plug = config.getPlugin(Config::IndicatorPluginPath, "CUS");
-    if (! plug)
+    Plugin *plug2 = config.getPlugin(Config::IndicatorPluginPath, "CUS");
+    if (! plug2)
     {
       config.closePlugin("CUS");
-      delete recordList;
       delete db;
       continue;
     }
 
     int loop2;
     for (loop2 = 0; loop2 < list->getLines(); loop2++)
-      plug->setCustomFunction(list->getLine(loop2));
+      plug2->setCustomFunction(list->getLine(loop2));
   
     // load the CUS plugin and calculate
-    plug->setIndicatorInput(recordList);
-    plug->calculate();
-    Indicator *i = plug->getIndicator();
+    plug2->setIndicatorInput(recordList);
+    plug2->calculate();
+    Indicator *i = plug2->getIndicator();
     PlotLine *line = i->getLine(0);
     if (! line)
     {
       qDebug("Scanner::scan: no PlotLine returned");
       config.closePlugin("CUS");
-      delete recordList;
       delete db;
       continue;
     }
@@ -212,7 +205,6 @@ void Scanner::scan ()
     }
     
     config.closePlugin("CUS");
-    delete recordList;
     delete db;
   }
   

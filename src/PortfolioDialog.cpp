@@ -20,10 +20,10 @@
  */
 
 #include "PortfolioDialog.h"
-#include "ChartDb.h"
 #include "Setting.h"
 #include "FuturesData.h"
 #include "PrefDialog.h"
+#include "ChartDb.h"
 #include "newchart.xpm"
 #include "edit.xpm"
 #include "delete.xpm"
@@ -34,10 +34,9 @@
 #include <qtextstream.h>
 #include <qlayout.h>
 
-PortfolioDialog::PortfolioDialog (Config *c, QString p) : QTabDialog (0, "PortfolioDialog", TRUE)
+PortfolioDialog::PortfolioDialog (QString p) : QTabDialog (0, "PortfolioDialog", TRUE)
 {
   portfolio = p;
-  config = c;
   
   QString s = tr("Qtstalker: Portfolio");
   s.append(" ");
@@ -99,7 +98,7 @@ void PortfolioDialog::updatePortfolio ()
 {
   plist->clear();
 
-  QString s = config->getData(Config::PortfolioPath);
+  QString s = config.getData(Config::PortfolioPath);
   s.append("/");
   s.append(portfolio);
 
@@ -135,30 +134,24 @@ void PortfolioDialog::updatePortfolioItems ()
     QString volume = item->text(2);
     QString price = item->text(3);
 
-    QString s = config->getData(Config::DataPath);
+    QString s = config.getData(Config::DataPath);
     s.append("/");
     s.append(symbol);
     QDir dir(s);
     if (! dir.exists(s, TRUE))
       continue;
-      
-    ChartDb *db = new ChartDb();
-    if (db->openChart(s))
-    {
-      qDebug("Qtstalker: Portfolio: Unable to open chart db.");
-      delete db;
-      continue;
-    }
 
-    QString type = db->getDetail(ChartDb::Type);
-    QString futuresType = db->getDetail(ChartDb::FuturesType);
-    Bar *bar = db->getLastBar();
+    ChartDb *plug = new ChartDb;
+    plug->openChart(s);
     
-    delete db;
+    QString type = plug->getData(tr("Type"));
+    QString futuresType = plug->getData(tr("FuturesType"));
+    Bar *bar = plug->getLastBar();
     
     if (! bar)
     {
       delete bar;
+      delete plug;
       continue;
     }
     
@@ -179,12 +172,13 @@ void PortfolioDialog::updatePortfolioItems ()
     item->setText(6, QString::number(total));
     
     delete bar;
+    delete plug;
   }
 }
 
 void PortfolioDialog::savePortfolio ()
 {
-  QString s = config->getData(Config::PortfolioPath);
+  QString s = config.getData(Config::PortfolioPath);
   s.append("/");
   s.append(portfolio);
   QFile f(s);
@@ -216,7 +210,7 @@ void PortfolioDialog::addItem ()
   PrefDialog *dialog = new PrefDialog;
   dialog->createPage(tr("Details"));
   dialog->setCaption(tr("New Portfolio Item"));
-  dialog->addSymbolItem(tr("Symbol"), tr("Details"), config->getData(Config::DataPath), QString());
+  dialog->addSymbolItem(tr("Symbol"), tr("Details"), config.getData(Config::DataPath), QString());
 
   QStringList l;
   l.append(tr("Long"));
@@ -230,7 +224,7 @@ void PortfolioDialog::addItem ()
   if (rc == QDialog::Accepted)
   {
     QString symbol = dialog->getSymbol(tr("Symbol"));
-    symbol = symbol.remove(0, config->getData(Config::DataPath).length());
+    symbol = symbol.remove(0, config.getData(Config::DataPath).length());
     if (symbol.isNull())
       QMessageBox::information(this, tr("Qtstalker: Error"), tr("No symbol selected."));
     else
@@ -265,7 +259,7 @@ void PortfolioDialog::modifyItem ()
   PrefDialog *dialog = new PrefDialog;
   dialog->createPage(tr("Details"));
   dialog->setCaption(tr("Edit Portfolio Item"));
-  dialog->addSymbolItem(tr("Symbol"), tr("Details"), config->getData(Config::DataPath), item->text(0));
+  dialog->addSymbolItem(tr("Symbol"), tr("Details"), config.getData(Config::DataPath), item->text(0));
 
   QStringList l;
   l.append(tr("Long"));
@@ -279,7 +273,7 @@ void PortfolioDialog::modifyItem ()
   if (rc == QDialog::Accepted)
   {
     QString symbol = dialog->getSymbol(tr("Symbol"));
-    symbol = symbol.remove(0, config->getData(Config::DataPath).length());
+    symbol = symbol.remove(0, config.getData(Config::DataPath).length());
     if (symbol.isNull())
       QMessageBox::information(this, tr("Qtstalker: Error"), tr("No symbol selected."));
     else

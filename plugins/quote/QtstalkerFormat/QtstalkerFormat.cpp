@@ -62,14 +62,20 @@ void QtstalkerFormat::parse ()
       emit statusLogMessage(tr("Unable to create directory"));
       return;
     }
-
+    
     path.append("/");
     path.append(symbol);
     QDir dir(path);
     dir.remove(path, TRUE);
-
-    ChartDb *db = new ChartDb();
-    db->openChart(path);
+    
+    ChartDb *db = new ChartDb;
+    db->setPlugin("Stocks");
+    if (db->openChart(path))
+    {
+      emit statusLogMessage("Could not open db.");
+      delete db;
+      break;
+    }
 
     QString s = tr("Updating ");
     s.append(symbol);

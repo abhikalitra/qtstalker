@@ -39,11 +39,6 @@ QString Plugin::getPluginName ()
   return pluginName;
 }
 
-void Plugin::setDataPath (QString d)
-{
-  dataPath = d;
-}
-
 //**********************************************************
 //************** indicator plugin interface ****************
 //**********************************************************
@@ -151,4 +146,102 @@ bool Plugin::getIndicatorFlag ()
 void Plugin::saveSettings ()
 {
 }
+
+//**********************************************************
+//************** db plugin interface ***********************
+//**********************************************************
+
+int Plugin::openChart (QString)
+{
+  return 0;
+}
+
+void Plugin::setBarCompression (int)
+{
+}
+
+void Plugin::setBarRange (int)
+{
+}
+
+void Plugin::dump (QString)
+{
+}
+
+Bar * Plugin::getBar (QString, QString)
+{
+  return 0;
+}
+
+Bar * Plugin::getLastBar ()
+{
+  return 0;
+}
+
+Bar * Plugin::getFirstBar ()
+{
+  return 0;
+}
+
+QStringList Plugin::getChartObjectsList ()
+{
+  return QStringList();
+}
+
+QPtrList<Setting> * Plugin::getChartObjects ()
+{
+  return 0;
+}
+
+void Plugin::setChartObject (QString, Setting *)
+{
+}
+
+void Plugin::deleteChartObject (QString)
+{
+}
+
+QString Plugin::getData (QString)
+{
+  return QString();
+}
+
+void Plugin::setData (QString, QString)
+{
+}
+
+void Plugin::setBar (BarDate, double, double, double, double, double, double)
+{
+}
+
+BarData * Plugin::getHistory ()
+{
+  return 0;
+}
+
+void Plugin::deleteData (QString)
+{
+}
+
+void Plugin::dbPrefDialog ()
+{
+}
+
+QString Plugin::createNew ()
+{
+  return QString();
+}
+
+void Plugin::setDb (DB *)
+{
+}
+
+void Plugin::saveDbDefaults (BarData::BarType, QString, QString, QString, QString, QString, QString)
+{
+}
+
+void Plugin::setDbPath (QString)
+{
+}
+
 

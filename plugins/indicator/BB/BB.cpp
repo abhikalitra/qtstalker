@@ -173,6 +173,10 @@ void BB::setIndicatorSettings (Setting dict)
   s = dict.getData("maType");
   if (s.length())
     maType = (IndicatorPlugin::MAType) s.toInt();
+
+  s = dict.getData("customBand");
+  if (s.length())
+    customBand = s;
 }
 
 Setting BB::getIndicatorSettings ()
@@ -183,6 +187,7 @@ Setting BB::getIndicatorSettings ()
   dict.setData("period", QString::number(period));
   dict.setData("deviation", QString::number(deviation));
   dict.setData("maType", QString::number(maType));
+  dict.setData("customBand", customBand);
   dict.setData("plugin", pluginName);
   return dict;
 }

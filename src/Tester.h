@@ -35,7 +35,6 @@
 #include <qslider.h>
 #include "Config.h"
 #include "Setting.h"
-#include "ChartDb.h"
 #include "BarData.h"
 #include "SymbolButton.h"
 #include "FormulaEdit.h"
@@ -51,7 +50,7 @@ class Tester : public QTabDialog
     void signalIndex (int);
 
   public:
-    Tester (Config *, QString);
+    Tester (QString);
     ~Tester ();
     void createFormulaPage();
     void createStopPage();
@@ -91,7 +90,7 @@ class Tester : public QTabDialog
     void slotSliderChanged (int);
 
   protected:
-    Config *config;
+    Config config;
     QTable *tradeList;
     Setting *enterLongAlerts;
     Setting *exitLongAlerts;
@@ -124,6 +123,7 @@ class Tester : public QTabDialog
     QSpinBox *bars;
     QDoubleValidator *validator;
     QString ruleName;
+    QString chartType;
     QComboBox *priceField;
     FormulaEdit *enterLongEdit;
     FormulaEdit *enterShortEdit;
@@ -136,7 +136,6 @@ class Tester : public QTabDialog
 
     int status;
     int testLoop;
-    ChartDb *db;
     BarData *recordList;
     int currentRecord;
     int buyRecord;

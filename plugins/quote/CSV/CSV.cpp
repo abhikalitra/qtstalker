@@ -278,11 +278,9 @@ void CSV::parse ()
 	continue;
       }      
 
-      Bar *bar = new Bar;
       s = r->getData("Date");
       if (! s.length())
       {
-        delete bar;
 	delete r;
 	continue;
       }
@@ -290,39 +288,36 @@ void CSV::parse ()
         s.append(r->getData("Time"));
       else
         s.append("000000");
-      if (bar->setDate(s))
+      BarDate bd;
+      if (bd.setDate(s))
       {
-        delete bar;
         emit statusLogMessage("Bad date " + r->getData("Date"));
         delete r;
         continue;
       }
-      bar->setOpen(r->getFloat("Open"));
-      bar->setHigh(r->getFloat("High"));
-      bar->setLow(r->getFloat("Low"));
-      bar->setClose(r->getFloat("Close"));
-      bar->setVolume(r->getFloat("Volume"));
-      bar->setOI(r->getInt("OI"));
       
       if (! symbol.length())
       {
 	s = path;
 	s.append(r->getData("Symbol"));
 	openDb(s, r->getData("Symbol"), type);
-        db->setBar(bar);
-	emit dataLogMessage(r->getData("Symbol") + " " + bar->getString());
+        db->setBar(bd, r->getData("Open").toDouble(), r->getData("High").toDouble(),
+	           r->getData("Low").toDouble(), r->getData("Close").toDouble(),
+	           r->getData("Volume").toDouble(), r->getData("OI").toDouble());
+	emit dataLogMessage(r->getData("Symbol") + " " + r->getString());
         emit statusLogMessage("Updating " + r->getData("Symbol"));
         delete db;
 	db = 0;
       }
       else
       {
-        db->setBar(bar);
-	emit dataLogMessage(symbol + " " + bar->getString());
+        db->setBar(bd, r->getData("Open").toDouble(), r->getData("High").toDouble(),
+	           r->getData("Low").toDouble(), r->getData("Close").toDouble(),
+	           r->getData("Volume").toDouble(), r->getData("OI").toDouble());
+	emit dataLogMessage(symbol + " " + r->getString());
       }
 
       delete r;
-      delete bar;
     }
 
     if (db)
@@ -512,23 +507,30 @@ QDate CSV::getDate (QString k, QString d, Setting *r)
 
 void CSV::openDb (QString path, QString symbol, QString type)
 {
-  db = new ChartDb();
-  db->openChart(path);
+  db = new ChartDb;
+  if (! type.compare("Futures"))
+    db->setPlugin("Futures");
+  else
+    db->setPlugin("Stocks");
+  if (db->openChart(path))
+  {
+    emit statusLogMessage("Could not open db.");
+    delete db;
+    db = 0;
+    return;
+  }
 
-  QString s = db->getDetail(ChartDb::Symbol);
+  QString s = db->getData("Symbol");
   if (! s.length())
   {
-    db->setDetail(ChartDb::Symbol, symbol);
-    db->setDetail(ChartDb::Type, type);
-
+    db->saveDbDefaults(BarData::Daily, symbol, symbol, QString(),
+                       QString(), QString(), QString());
+    
     if (! type.compare("Futures"))
     {
-      db->setDetail(ChartDb::FuturesType, fd.getSymbol());
-      db->setDetail(ChartDb::FuturesMonth, futuresMonth);
-      db->setDetail(ChartDb::Title, fd.getName());
+      db->saveDbDefaults(BarData::Daily, symbol, fd.getName(), fd.getSymbol(),
+                         futuresMonth, QString(), QString());
     }
-    else
-      db->setDetail(ChartDb::Title, symbol);
   }
 }
 

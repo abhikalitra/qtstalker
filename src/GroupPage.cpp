@@ -35,10 +35,8 @@
 #include <qtooltip.h>
 #include <qlayout.h>
 
-GroupPage::GroupPage (QWidget *w, Config *c) : QWidget (w)
+GroupPage::GroupPage (QWidget *w) : QWidget (w)
 {
-  config = c;
-  
   QVBoxLayout *vbox = new QVBoxLayout(this);
   vbox->setMargin(2);
   vbox->setSpacing(5);
@@ -49,7 +47,7 @@ GroupPage::GroupPage (QWidget *w, Config *c) : QWidget (w)
   group->setFocusPolicy(QWidget::NoFocus);
   vbox->addWidget(group);
 
-  nav = new Navigator(this, config->getData(Config::GroupPath));
+  nav = new Navigator(this, config.getData(Config::GroupPath));
   connect(nav, SIGNAL(fileSelected(QString)), this, SLOT(groupSelected(QString)));
   connect(nav, SIGNAL(noSelection()), this, SLOT(groupNoSelection()));
   connect(nav, SIGNAL(contextMenuRequested(QListBoxItem *, const QPoint &)), this, SLOT(rightClick(QListBoxItem *)));
@@ -107,7 +105,7 @@ void GroupPage::newGroup()
 void GroupPage::addGroupItem()
 {
   SymbolDialog *dialog = new SymbolDialog(this,
-  					  config->getData(Config::DataPath),
+  					  config.getData(Config::DataPath),
 					  "*");
 
   int rc = dialog->exec();
@@ -192,7 +190,7 @@ void GroupPage::deleteGroup()
     return;
 
   s = nav->getCurrentPath();
-  if (! s.compare(config->getData(Config::GroupPath)))
+  if (! s.compare(config.getData(Config::GroupPath)))
     return;
   
   s =  "rm -r ";
@@ -247,12 +245,14 @@ void GroupPage::groupSelected (QString d)
   menu->setItemEnabled(menu->idAt(1), TRUE);
   menu->setItemEnabled(menu->idAt(3), TRUE);
   menu->setItemEnabled(menu->idAt(4), TRUE);
-  emit fileSelected(d);
+  
+  QFileInfo fi(d);
+  emit fileSelected(fi.readLink());
 }
 
 void GroupPage::groupNoSelection ()
 {
-  QString s = config->getData(Config::GroupPath);
+  QString s = config.getData(Config::GroupPath);
   QString s2 = nav->getCurrentPath();
   if (s.compare(s2))
   {

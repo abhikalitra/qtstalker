@@ -27,10 +27,10 @@
 #include <qfont.h>
 #include <qmessagebox.h>
 #include "Tester.h"
+#include "ChartDb.h"
 
-Tester::Tester (Config *c, QString n) : QTabDialog (0, 0, FALSE)
+Tester::Tester (QString n) : QTabDialog (0, 0, FALSE)
 {
-  config = c;
   ruleName = n;
   recordList = 0;
   enterLongAlerts = new Setting;
@@ -265,7 +265,7 @@ void Tester::createTestPage ()
   
   label = new QLabel(tr("Symbol"), gbox);
   
-  symbolButton = new SymbolButton(gbox, config->getData(Config::DataPath), QString());
+  symbolButton = new SymbolButton(gbox, config.getData(Config::DataPath), QString());
   connect(symbolButton, SIGNAL(symbolChanged()), this, SLOT(symbolButtonPressed()));
   
   label = new QLabel(tr("Bars"), gbox);
@@ -411,7 +411,7 @@ void Tester::createChartPage ()
   equityPlot->setMainFlag(FALSE);
   equityPlot->setInfoFlag(FALSE);
   QObject::connect(this, SIGNAL(signalIndex(int)), equityPlot, SLOT(setIndex(int)));
-  QStringList l = QStringList::split(" ", config->getData(Config::PlotFont), FALSE);
+  QStringList l = QStringList::split(" ", config.getData(Config::PlotFont), FALSE);
   QFont font(l[0], l[1].toInt(), l[2].toInt());
   equityPlot->setPlotFont(font);
   vbox->addWidget(equityPlot);
@@ -458,26 +458,24 @@ void Tester::test ()
   if (! symbol.length())
     return;
 
-  db = new ChartDb;
-  if (db->openChart(symbolButton->getPath()))
-  {
-    delete db;
-    qDebug("Tester: Cant open db");
-    return;
-  }
+  ChartDb *db = new ChartDb;
+  db->openChart(symbolButton->getPath());
   
-  QString s = db->getDetail(ChartDb::Type);
-  if (! s.compare(tr("Futures")))
-    fd.setSymbol(db->getDetail(ChartDb::FuturesType));
+  chartType = db->getData(tr("Type"));
+  if (! chartType.compare(tr("Futures")))
+    fd.setSymbol(db->getData(tr("FuturesType")));
 
   while (tradeList->numRows())
     tradeList->removeRow(0);
 
-  db->setBarCompression(ChartDb::Daily);
+  db->setBarCompression(BarData::DailyBar);
   db->setBarRange(bars->value());
   if (recordList)
     delete recordList;
-  recordList = db->getHistory();
+  BarData *trl = db->getHistory();
+  recordList = new BarData;
+  trl->copy(recordList);
+  delete trl;
 
   plot->clear();
   equityPlot->clear();
@@ -706,7 +704,6 @@ void Tester::exitPosition (QString signal)
     type = tr("Long");
   }
 
-  QString chartType = db->getDetail(ChartDb::Type);
   if (! chartType.compare(tr("Futures")))
     profit = fd.getRate() * profit;
 
@@ -751,7 +748,6 @@ void Tester::updateEquityCurve ()
     type = tr("Long");
   }
 
-  QString chartType = db->getDetail(ChartDb::Type);
   if (! chartType.compare(tr("Futures")))
     profit = fd.getRate() * profit;
 
@@ -1015,10 +1011,10 @@ void Tester::loadAlerts (int type)
   }
   
   // open the CUS plugin   
-  Plugin *plug = config->getPlugin(Config::IndicatorPluginPath, "CUS");
+  Plugin *plug = config.getPlugin(Config::IndicatorPluginPath, "CUS");
   if (! plug)
   {
-    config->closePlugin("CUS");
+    config.closePlugin("CUS");
     return;
   }
 
@@ -1033,13 +1029,13 @@ void Tester::loadAlerts (int type)
   if (! tline)
   {
     qDebug("Tester::loadAlerts: no PlotLine returned");
-    config->closePlugin("CUS");
+    config.closePlugin("CUS");
     return;
   }
     
   PlotLine *line = new PlotLine;
   line->copy(tline);
-  config->closePlugin("CUS");
+  config.closePlugin("CUS");
   
   loop = recordList->count() - line->getSize();
   int lineLoop = 0;
@@ -1075,7 +1071,7 @@ void Tester::loadAlerts (int type)
 void Tester::saveEditRule (int type)
 {
   FormulaEdit *edit = 0;
-  QString s = config->getData(Config::TestPath);
+  QString s = config.getData(Config::TestPath);
   s.append("/");
   s.append(ruleName);
   
@@ -1120,7 +1116,7 @@ void Tester::saveRule ()
   saveEditRule(2);
   saveEditRule(3);
 
-  QString s = config->getData(Config::TestPath);
+  QString s = config.getData(Config::TestPath);
   s.append("/");
   s.append(ruleName);
   s.append("/rule");
@@ -1272,7 +1268,7 @@ void Tester::loadRule ()
   loadEditRule(2);
   loadEditRule(3);
 
-  QString s = config->getData(Config::TestPath);
+  QString s = config.getData(Config::TestPath);
   s.append("/");
   s.append(ruleName);
   s.append("/rule");
@@ -1469,7 +1465,7 @@ void Tester::loadRule ()
 void Tester::loadEditRule (int type)
 {
   FormulaEdit *edit = 0;
-  QString s = config->getData(Config::TestPath);
+  QString s = config.getData(Config::TestPath);
   s.append("/");
   s.append(ruleName);
   

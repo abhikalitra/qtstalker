@@ -26,7 +26,6 @@
 #include <qwidget.h>
 #include <qlistbox.h>
 #include <qcheckbox.h>
-#include "Config.h"
 #include "Plot.h"
 
 class IndicatorPage : public QWidget
@@ -34,7 +33,7 @@ class IndicatorPage : public QWidget
   Q_OBJECT
 
   public:
-    IndicatorPage (QWidget *, Config *, Plot *);
+    IndicatorPage (QWidget *, Plot *);
     ~IndicatorPage ();
 
   public slots:
@@ -44,7 +43,6 @@ class IndicatorPage : public QWidget
 
   protected:
     QListBox *list;
-    Config *config;
     QCheckBox *enableMain;
     Plot *plot;
 };

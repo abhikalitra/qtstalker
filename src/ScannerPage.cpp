@@ -31,15 +31,13 @@
 #include <qcursor.h>
 #include <qlayout.h>
 
-ScannerPage::ScannerPage (QWidget *w, Config *c) : QWidget (w)
+ScannerPage::ScannerPage (QWidget *w) : QWidget (w)
 {
-  config = c;
-
   QVBoxLayout *vbox = new QVBoxLayout(this);
   vbox->setMargin(2);
   vbox->setSpacing(5);
   
-  nav = new Navigator(this, config->getData(Config::ScannerPath));
+  nav = new Navigator(this, config.getData(Config::ScannerPath));
   connect(nav, SIGNAL(fileSelected(QString)), this, SLOT(scannerSelected(QString)));
   connect(nav, SIGNAL(noSelection()), this, SLOT(scannerNoSelection()));
   connect(nav, SIGNAL(contextMenuRequested(QListBoxItem *, const QPoint &)), this, SLOT(rightClick(QListBoxItem *)));
@@ -79,7 +77,7 @@ void ScannerPage::newScanner()
 					    this);
   if ((ok) && (! selection.isNull()))
   {
-    QString s = config->getData(Config::ScannerPath);
+    QString s = config.getData(Config::ScannerPath);
     s.append("/");
     s.append(selection);
     QDir dir(s);
@@ -144,7 +142,7 @@ void ScannerPage::renameScanner ()
 					    this);
   if ((ok) && (! selection.isNull()))
   {
-    QString s = config->getData(Config::ScannerPath);
+    QString s = config.getData(Config::ScannerPath);
     s.append("/");
     s.append(selection);
     QDir dir(s);
@@ -154,7 +152,7 @@ void ScannerPage::renameScanner ()
       return;
     }
 
-    QString s2 = config->getData(Config::ScannerPath);
+    QString s2 = config.getData(Config::ScannerPath);
     s2.append("/");
     s2.append(nav->currentText());
 

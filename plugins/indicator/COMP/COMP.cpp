@@ -34,7 +34,7 @@ COMP::COMP ()
   opList.append(">");
   opList.append(">=");
   opList.append("&&");
-  opList.append("||");
+  opList.append("OR");
   
   setDefaults();
 }
@@ -308,7 +308,7 @@ COMP::Operator COMP::getOperator (QString d)
       break;
     }
     
-    if (! d.compare("||"))
+    if (! d.compare("OR"))
     {
       op = Or;
       break;

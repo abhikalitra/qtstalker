@@ -20,6 +20,7 @@
  */
 
 #include "QuotePlugin.h"
+#include "Config.h"
 #include <qdir.h>
 
 QuotePlugin::QuotePlugin ()
@@ -82,9 +83,8 @@ bool QuotePlugin::setTFloat (QString d)
 
 QString QuotePlugin::createDirectory (QString d)
 {
-  QString path = dataPath;
-  path.append("/");
-  path.append(d);
+  Config config;
+  QString path = config.getData(Config::DataPath) + "/" + d;
 
   QDir dir(path);
   if (! dir.exists(path, TRUE))

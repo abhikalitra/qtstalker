@@ -37,13 +37,14 @@ class ChartPage : public QWidget
     void fileSelected (QString);
 
   public:
-    ChartPage (QWidget *, Config *);
+    ChartPage (QWidget *);
     ~ChartPage ();
     void exportChart (QString);
 
   public slots:
     void deleteChart ();
     void editChart ();
+    void newChart (int);
     void exportSymbol ();
     void chartSelected (QString);
     void chartNoSelection ();
@@ -53,8 +54,9 @@ class ChartPage : public QWidget
 
   protected:
     Navigator *nav;
-    Config *config;
+    Config config;
     QPopupMenu *menu;
+    QPopupMenu *newMenu;
     QLineEdit *search;
 };
 

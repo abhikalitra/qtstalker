@@ -33,7 +33,7 @@ class PortfolioPage : public QWidget
   Q_OBJECT
 
   public:
-    PortfolioPage (QWidget *, Config *);
+    PortfolioPage (QWidget *);
     ~PortfolioPage ();
 
   public slots:
@@ -46,7 +46,7 @@ class PortfolioPage : public QWidget
     void rightClick (QListBoxItem *);
 
   private:
-    Config *config;
+    Config config;
     Navigator *nav;
     QPopupMenu *menu;
 };

@@ -36,7 +36,7 @@ class ScannerPage : public QWidget
     void message (QString);
   
   public:
-    ScannerPage (QWidget *, Config *);
+    ScannerPage (QWidget *);
     ~ScannerPage ();
 
   public slots:
@@ -51,7 +51,7 @@ class ScannerPage : public QWidget
     void slotMessage (QString);
 
   private:
-    Config *config;
+    Config config;
     Navigator *nav;
     QPopupMenu *menu;
 };

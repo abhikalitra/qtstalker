@@ -51,6 +51,7 @@
 #include "Text.h"
 #include "PrefDialog.h"
 #include "ScannerPage.h"
+#include "ChartDb.h"
 
 #include "grid.xpm"
 #include "datawindow.xpm"
@@ -73,14 +74,12 @@
 
 QtstalkerApp::QtstalkerApp()
 {
-  config = 0;
   recordList = 0;
   status = None;
   plotList.setAutoDelete(TRUE);
   setIcon(qtstalker);
 
-  config = new Config();
-  config->setup();
+  config.setup();
 
   initActions();
 
@@ -191,22 +190,21 @@ QtstalkerApp::QtstalkerApp()
   mainPlot = new Plot (split);
   mainPlot->setDateFlag(TRUE);
   mainPlot->setMainFlag(TRUE);
-  mainPlot->setConfig(config);
 
   QColor color;
-  color.setNamedColor(config->getData(Config::BackgroundColor));
+  color.setNamedColor(config.getData(Config::BackgroundColor));
   QObject::connect(this, SIGNAL(signalBackgroundColor(QColor)), mainPlot, SLOT(setBackgroundColor(QColor)));
   emit signalBackgroundColor(color);
 
-  color.setNamedColor(config->getData(Config::BorderColor));
+  color.setNamedColor(config.getData(Config::BorderColor));
   QObject::connect(this, SIGNAL(signalBorderColor(QColor)), mainPlot, SLOT(setBorderColor(QColor)));
   emit signalBorderColor(color);
 
-  color.setNamedColor(config->getData(Config::GridColor));
+  color.setNamedColor(config.getData(Config::GridColor));
   QObject::connect(this, SIGNAL(signalGridColor(QColor)), mainPlot, SLOT(setGridColor(QColor)));
   emit signalGridColor(color);
 
-  QStringList l = QStringList::split(" ", config->getData(Config::PlotFont), FALSE);
+  QStringList l = QStringList::split(" ", config.getData(Config::PlotFont), FALSE);
   QFont font(l[0], l[1].toInt(), l[2].toInt());
   QObject::connect(this, SIGNAL(signalPlotFont(QFont)), mainPlot, SLOT(setPlotFont(QFont)));
   emit signalPlotFont(font);
@@ -227,7 +225,7 @@ QtstalkerApp::QtstalkerApp()
   QObject::connect(this, SIGNAL(signalScaleToScreen(bool)), mainPlot, SLOT(setScaleToScreen(bool)));
   QObject::connect(this, SIGNAL(signalPixelspace(int)), mainPlot, SLOT(setPixelspace(int)));
   QObject::connect(this, SIGNAL(signalIndex(int)), mainPlot, SLOT(setIndex(int)));
-  QObject::connect(this, SIGNAL(signalInterval(ChartDb::BarCompression)), mainPlot, SLOT(setInterval(ChartDb::BarCompression)));
+  QObject::connect(this, SIGNAL(signalInterval(BarData::BarCompression)), mainPlot, SLOT(setInterval(BarData::BarCompression)));
   QObject::connect(this, SIGNAL(signalChartPath(QString)), mainPlot, SLOT(setChartPath(QString)));
   QObject::connect(this, SIGNAL(signalDrawMode(bool)), mainPlot, SLOT(setDrawMode(bool)));
 
@@ -239,17 +237,17 @@ QtstalkerApp::QtstalkerApp()
   statusBar()->message(tr("Ready"), 2000);
 
   // set up the number of bars to load
-  barCount->setValue(config->getData(Config::Bars).toInt());
+  barCount->setValue(config.getData(Config::Bars).toInt());
 
   // setup the compression list
-  ChartDb *db = new ChartDb();
-  compressionCombo->insertStringList(db->getBarCompressionList(), -1);
-  compressionCombo->setCurrentItem(config->getData(Config::Compression).toInt());
+  BarData *bd = new BarData;
+  compressionCombo->insertStringList(bd->getBarCompressionList(), -1);
+  compressionCombo->setCurrentItem((BarData::BarCompression) config.getData(Config::Compression).toInt());
   compressionChanged();
-  delete db;
+  delete bd;
 
   // set the grid status
-  QString s = config->getData(Config::Grid);
+  QString s = config.getData(Config::Grid);
   if (s.toInt())
     actionGrid->setOn(TRUE);
   else
@@ -257,7 +255,7 @@ QtstalkerApp::QtstalkerApp()
   emit signalGrid(s.toInt());
 
   // set the scale to screen status
-  s = config->getData(Config::ScaleToScreen);
+  s = config.getData(Config::ScaleToScreen);
   if (s.toInt())
     actionScaleToScreen->setOn(TRUE);
   else
@@ -265,7 +263,7 @@ QtstalkerApp::QtstalkerApp()
   emit signalScaleToScreen(s.toInt());
 
   // set the logscale status
-  s = config->getData(Config::LogScale);
+  s = config.getData(Config::LogScale);
   if (s.toInt())
     actionLogScale->setOn(TRUE);
   else
@@ -274,9 +272,9 @@ QtstalkerApp::QtstalkerApp()
 
   // set the nav splitter size
   QValueList<int> sizeList;
-  s = config->getData(Config::NavAreaSize);
+  s = config.getData(Config::NavAreaSize);
   sizeList.append(s.toInt());
-  QString s2 = config->getData(Config::Width);
+  QString s2 = config.getData(Config::Width);
   sizeList.append(s2.toInt() - s.toInt());
   navSplitter->setSizes(sizeList);
   
@@ -284,11 +282,11 @@ QtstalkerApp::QtstalkerApp()
   if (navTab->getPosition() == 0)
     navSplitter->moveToLast(navBase);
 
-  l = config->getIndicators();
+  l = config.getIndicators();
   int loop;
   for (loop = 0; loop < (int) l.count(); loop++)
   {
-    Setting *set = config->getIndicator(l[loop]);
+    Setting *set = config.getIndicator(l[loop]);
     s = set->getData("plotType");
     if (! s.length())
       addIndicatorButton(l[loop], Indicator::TabPlot);
@@ -297,7 +295,7 @@ QtstalkerApp::QtstalkerApp()
     delete set;
   }
 
-  l = QStringList::split(" ", config->getData(Config::AppFont), FALSE);
+  l = QStringList::split(" ", config.getData(Config::AppFont), FALSE);
   QFont font2(l[0], l[1].toInt(), l[2].toInt());
   qApp->setFont(font2, TRUE, 0);
   
@@ -305,12 +303,11 @@ QtstalkerApp::QtstalkerApp()
   sizeList = split->sizes();
   for (loop = 1; loop < (int) sizeList.count() - 1; loop++)
     sizeList[loop] = 75;
-  s = config->getData(Config::MainPlotSize);
+  s = config.getData(Config::MainPlotSize);
   sizeList[0] = s.toInt();
-  s = config->getData(Config::IndicatorPlotSize);
+  s = config.getData(Config::IndicatorPlotSize);
   sizeList[sizeList.count() - 1] = s.toInt();
   split->setSizes(sizeList);
-  
 
   // set the nav status
   slotHideNav(TRUE);
@@ -325,13 +322,13 @@ QtstalkerApp::QtstalkerApp()
   initTestNav();
   initScannerNav();
 
-  resize(config->getData(Config::Width).toInt(), config->getData(Config::Height).toInt());
+  resize(config.getData(Config::Width).toInt(), config.getData(Config::Height).toInt());
   
   // set crosshairs status for all the plots
-  emit signalCrosshairsStatus(config->getData(Config::Crosshairs).toInt());  
+  emit signalCrosshairsStatus(config.getData(Config::Crosshairs).toInt());  
   
   // set the drawmode status for all the plots
-  s = config->getData(Config::DrawMode);
+  s = config.getData(Config::DrawMode);
   if (s.toInt())
     actionDrawMode->setOn(TRUE);
   else
@@ -486,9 +483,9 @@ void QtstalkerApp::initToolBar()
 
   chartTypeCombo = new QComboBox(toolbar2);
   chartTypeCombo->show();
-  chartTypeCombo->insertStringList(config->getPluginList(Config::ChartPluginPath), -1);
+  chartTypeCombo->insertStringList(config.getPluginList(Config::ChartPluginPath), -1);
   QToolTip::add(chartTypeCombo, tr("Chart Type"));
-  chartTypeCombo->setCurrentText(config->getData(Config::ChartStyle));
+  chartTypeCombo->setCurrentText(config.getData(Config::ChartStyle));
   connect(chartTypeCombo, SIGNAL(activated(int)), this, SLOT(slotChartTypeChanged(int)));
 
   pixelspace = new QSpinBox(toolbar2);
@@ -520,17 +517,16 @@ void QtstalkerApp::slotQuit()
 
   // save app settings
   QValueList<int> list = split->sizes();
-  config->setData(Config::MainPlotSize, QString::number(list[0]));
-  config->setData(Config::IndicatorPlotSize, QString::number(list[1]));
-  config->setData(Config::Height, QString::number(this->height()));
-  config->setData(Config::Width, QString::number(this->width()));
-  config->setData(Config::X, QString::number(this->x()));
-  config->setData(Config::Y, QString::number(this->y()));
-  config->setData(Config::Bars, QString::number(barCount->value()));
-  config->setData(Config::Crosshairs, QString::number(mainPlot->getCrosshairsStatus()));
-  config->setData(Config::DrawMode, QString::number(actionDrawMode->isOn()));
-  config->closePlugins();
-  delete config;
+  config.setData(Config::MainPlotSize, QString::number(list[0]));
+  config.setData(Config::IndicatorPlotSize, QString::number(list[1]));
+  config.setData(Config::Height, QString::number(this->height()));
+  config.setData(Config::Width, QString::number(this->width()));
+  config.setData(Config::X, QString::number(this->x()));
+  config.setData(Config::Y, QString::number(this->y()));
+  config.setData(Config::Bars, QString::number(barCount->value()));
+  config.setData(Config::Crosshairs, QString::number(mainPlot->getCrosshairsStatus()));
+  config.setData(Config::DrawMode, QString::number(actionDrawMode->isOn()));
+  config.closePlugins();
 
   // delete any BarData
   if (recordList)
@@ -564,7 +560,7 @@ void QtstalkerApp::slotOpenChart (QString selection)
 
 void QtstalkerApp::slotQuotes ()
 {
-  QuoteDialog *dialog = new QuoteDialog(config);
+  QuoteDialog *dialog = new QuoteDialog();
   QObject::connect(dialog, SIGNAL(chartUpdated()), this, SLOT(slotChartUpdated()));
   QObject::connect(dialog, SIGNAL(message(QString)), this, SLOT(slotStatusMessage(QString)));
   dialog->show();
@@ -576,14 +572,14 @@ void QtstalkerApp::slotOptions ()
   dialog->setCaption(tr("Edit Prefs"));
 
   dialog->createPage(tr("Colors"));
-  dialog->addColorItem(tr("Chart Background"), tr("Colors"), QColor(config->getData(Config::BackgroundColor)));
-  dialog->addColorItem(tr("Chart Border"), tr("Colors"), QColor(config->getData(Config::BorderColor)));
-  dialog->addColorItem(tr("Chart Grid"), tr("Colors"), QColor(config->getData(Config::GridColor)));
+  dialog->addColorItem(tr("Chart Background"), tr("Colors"), QColor(config.getData(Config::BackgroundColor)));
+  dialog->addColorItem(tr("Chart Border"), tr("Colors"), QColor(config.getData(Config::BorderColor)));
+  dialog->addColorItem(tr("Chart Grid"), tr("Colors"), QColor(config.getData(Config::GridColor)));
 
   dialog->createPage(tr("Fonts"));
-  QStringList l = QStringList::split(" ", config->getData(Config::PlotFont), FALSE);
+  QStringList l = QStringList::split(" ", config.getData(Config::PlotFont), FALSE);
   dialog->addFontItem(tr("Plot Font"), tr("Fonts"), QFont(l[0], l[1].toInt(), l[2].toInt()));
-  l = QStringList::split(" ", config->getData(Config::AppFont), FALSE);
+  l = QStringList::split(" ", config.getData(Config::AppFont), FALSE);
   dialog->addFontItem(tr("App Font"), tr("Fonts"), QFont(l[0], l[1].toInt(), l[2].toInt()));
     
   int rc = dialog->exec();
@@ -591,15 +587,15 @@ void QtstalkerApp::slotOptions ()
   if (rc == QDialog::Accepted)
   {
     QColor color = dialog->getColor(tr("Chart Background"));
-    config->setData(Config::BackgroundColor, color.name());
+    config.setData(Config::BackgroundColor, color.name());
     emit signalBackgroundColor(color);
 
     color = dialog->getColor(tr("Chart Border"));
-    config->setData(Config::BorderColor, color.name());
+    config.setData(Config::BorderColor, color.name());
     emit signalBorderColor(color);
 
     color = dialog->getColor(tr("Chart Grid"));
-    config->setData(Config::GridColor, color.name());
+    config.setData(Config::GridColor, color.name());
     emit signalGridColor(color);
 
     // save plot font option
@@ -609,10 +605,10 @@ void QtstalkerApp::slotOptions ()
     s.append(QString::number(font.pointSize()));
     s.append(" ");
     s.append(QString::number(font.weight()));
-    QString s2 = config->getData(Config::PlotFont);
+    QString s2 = config.getData(Config::PlotFont);
     if (s.compare(s2))
     {
-      config->setData(Config::PlotFont, s);
+      config.setData(Config::PlotFont, s);
       emit signalPlotFont(font);
     }
 
@@ -623,10 +619,10 @@ void QtstalkerApp::slotOptions ()
     s.append(QString::number(font.pointSize()));
     s.append(" ");
     s.append(QString::number(font.weight()));
-    s2 = config->getData(Config::AppFont);
+    s2 = config.getData(Config::AppFont);
     if (s.compare(s2))
     {
-      config->setData(Config::AppFont, s);
+      config.setData(Config::AppFont, s);
       qApp->setFont(font, TRUE, 0);
     }
 
@@ -640,7 +636,7 @@ void QtstalkerApp::slotOptions ()
 
 void QtstalkerApp::slotGrid (bool state)
 {
-  config->setData(Config::Grid, QString::number(state));
+  config.setData(Config::Grid, QString::number(state));
   
   emit signalGrid(state);
 
@@ -658,7 +654,7 @@ void QtstalkerApp::slotGrid (bool state)
 
 void QtstalkerApp::slotScaleToScreen (bool state)
 {
-  config->setData(Config::ScaleToScreen, QString::number(state));
+  config.setData(Config::ScaleToScreen, QString::number(state));
 
   emit signalScaleToScreen(state);
 
@@ -676,7 +672,7 @@ void QtstalkerApp::slotScaleToScreen (bool state)
 
 void QtstalkerApp::slotLogScale (bool state)
 {
-  config->setData(Config::LogScale, QString::number(state));
+  config.setData(Config::LogScale, QString::number(state));
   mainPlot->setLogScale(state);
   mainPlot->draw();
 }
@@ -696,7 +692,7 @@ void QtstalkerApp::loadChart (QString d)
     reload = TRUE;
 
   chartPath = d;
-
+  
   // get a list of disabled indicators before you kill them
   QStringList l = mainPlot->getIndicators();
   QStringList di;
@@ -717,22 +713,26 @@ void QtstalkerApp::loadChart (QString d)
   // make sure we change db's after Plot saves previous db edits
   emit signalChartPath(chartPath);
   
-  ChartDb *db = new ChartDb;
-  db->setBarCompression((ChartDb::BarCompression) compressionCombo->currentItem());
-  db->setBarRange(barCount->value());
-  if (db->openChart(chartPath))
+  ChartDb *plug = new ChartDb;
+  if (plug->openChart(chartPath))
   {
-    qDebug("QtstalkerApp::loadChart: error opening %s", chartPath.latin1());
-    delete db;
+    qDebug("QtstalkerApp::loadChart: can't open db");
+    delete plug;
     return;
   }
+  plug->setBarCompression((BarData::BarCompression) compressionCombo->currentItem());
+  plug->setBarRange(barCount->value());
   
   if (recordList)
     delete recordList;
-  recordList = db->getHistory();
-  chartName = db->getDetail(ChartDb::Title);
-  chartType = db->getDetail(ChartDb::Type);
-  chartSymbol = db->getDetail(ChartDb::Symbol);
+  BarData *trl = plug->getHistory();
+  recordList = new BarData;
+  trl->copy(recordList);
+  delete trl;
+  
+  chartName = plug->getData(tr("Title"));
+  chartType = plug->getData(tr("Type"));
+  chartSymbol = plug->getData(tr("Symbol"));
   
   bool otherFlag = FALSE;
 // determine if chart is other type
@@ -763,11 +763,11 @@ void QtstalkerApp::loadChart (QString d)
     
   mainPlot->setChartInput ();
 
-  l = config->getIndicators();
+  l = config.getIndicators();
 
   for (loop = 0; loop < (int) l.count(); loop++)
   {
-    Setting *set = config->getIndicator(l[loop]);
+    Setting *set = config.getIndicator(l[loop]);
     if (! set->count())
     {
       delete set;
@@ -776,7 +776,7 @@ void QtstalkerApp::loadChart (QString d)
     
     Indicator *i = new Indicator;
     i->setName(l[loop]);
-    i->setFile(config->getData(Config::IndicatorPath) + "/" + l[loop]);
+    i->setFile(config.getData(Config::IndicatorPath) + "/" + l[loop]);
     i->setType(set->getData("plugin"));
     if (set->getData("plotType").length())
       i->setPlotType((Indicator::PlotType) set->getData("plotType").toInt());
@@ -827,7 +827,7 @@ void QtstalkerApp::loadChart (QString d)
   }
 */
 
-  QPtrList<Setting> *col = db->getChartObjects();
+  QPtrList<Setting> *col = plug->getChartObjects();
   for (loop = 0; loop < (int) col->count(); loop++)
   {
     Setting *co = col->at(loop);
@@ -843,7 +843,7 @@ void QtstalkerApp::loadChart (QString d)
     }
   }
   delete col;
-  delete db;
+  delete plug;
 
   // update the pixelspace
   pixelspace->blockSignals(TRUE);
@@ -869,7 +869,7 @@ void QtstalkerApp::loadChart (QString d)
 
 void QtstalkerApp::loadIndicator (Indicator *i)
 {
-  Plugin *plug = config->getPlugin(Config::IndicatorPluginPath, i->getType());
+  Plugin *plug = config.getPlugin(Config::IndicatorPluginPath, i->getType());
   if (plug)
   {
     plug->setIndicatorInput(recordList);
@@ -887,7 +887,7 @@ void QtstalkerApp::loadIndicator (Indicator *i)
     }
   }
   
-  config->closePlugin(i->getType());
+  config.closePlugin(i->getType());
 }
 
 QString QtstalkerApp::getWindowCaption ()
@@ -999,8 +999,8 @@ void QtstalkerApp::slotCompressionChanged (int)
 
 void QtstalkerApp::compressionChanged ()
 {
-  config->setData(Config::Compression, QString::number(compressionCombo->currentItem()));
-  emit signalInterval((ChartDb::BarCompression) compressionCombo->currentItem());
+  config.setData(Config::Compression, QString::number(compressionCombo->currentItem()));
+  emit signalInterval((BarData::BarCompression) compressionCombo->currentItem());
 }
 
 void QtstalkerApp::slotChartTypeChanged (int)
@@ -1008,7 +1008,7 @@ void QtstalkerApp::slotChartTypeChanged (int)
   if (mainPlot->setChartType(chartTypeCombo->currentText()))
     return;
 
-  config->setData(Config::ChartStyle, chartTypeCombo->currentText());
+  config.setData(Config::ChartStyle, chartTypeCombo->currentText());
 
   emit signalPixelspace(mainPlot->getPixelspace());
 
@@ -1040,7 +1040,7 @@ void QtstalkerApp::slotNewIndicator ()
   PrefDialog *idialog = new PrefDialog();
   idialog->setCaption(tr("New Indicator"));
   idialog->createPage (tr("Details"));
-  idialog->addComboItem(tr("Indicator"), tr("Details"), config->getIndicatorList(), 0);
+  idialog->addComboItem(tr("Indicator"), tr("Details"), config.getIndicatorList(), 0);
   idialog->addTextItem(tr("Name"), tr("Details"), tr("New Indicator"));
   idialog->addComboItem(tr("Plot Type"), tr("Details"), l, 0);
   
@@ -1063,17 +1063,17 @@ void QtstalkerApp::slotNewIndicator ()
   }
 
   QDir dir;
-  if (dir.exists(config->getData(Config::IndicatorPath) + "/" + name))
+  if (dir.exists(config.getData(Config::IndicatorPath) + "/" + name))
   {
     QMessageBox::information(this, tr("Qtstalker: Error"), tr("Duplicate indicator name."));
     return;
   }
 
-  Plugin *plug = config->getPlugin(Config::IndicatorPluginPath, indicator);
+  Plugin *plug = config.getPlugin(Config::IndicatorPluginPath, indicator);
   if (! plug)
   {
     qDebug("QtstalkerApp::slotNewIndicator - could not open plugin");
-    config->closePlugin(indicator);
+    config.closePlugin(indicator);
     return;
   }
 
@@ -1083,7 +1083,7 @@ void QtstalkerApp::slotNewIndicator ()
   {
     plug->setPlotType((int) plotType);
     
-    QString s = config->getData(Config::IndicatorPath) + "/" + name;
+    QString s = config.getData(Config::IndicatorPath) + "/" + name;
     plug->saveIndicatorSettings(s);
     
     addIndicatorButton(name, plotType);
@@ -1101,12 +1101,12 @@ void QtstalkerApp::slotNewIndicator ()
     emit signalIndicatorPageRefresh();
   }
 
-  config->closePlugin(indicator);
+  config.closePlugin(indicator);
 }
 
 void QtstalkerApp::slotEditIndicator (QString selection, Plot *plot)
 {
-  Setting *set = config->getIndicator(selection);
+  Setting *set = config.getIndicator(selection);
   if (! set->count())
   {
     delete set;
@@ -1114,34 +1114,37 @@ void QtstalkerApp::slotEditIndicator (QString selection, Plot *plot)
   }
   
   QString type = set->getData("plugin");
-  delete set;
   
-  Plugin *plug = config->getPlugin(Config::IndicatorPluginPath, type);
+  Plugin *plug = config.getPlugin(Config::IndicatorPluginPath, type);
   if (! plug)
   {
     qDebug("QtstalkerApp::slotEditIndicator - could not open plugin");
-    config->closePlugin(type);
+    config.closePlugin(type);
+    delete set;
     return;
   }
 
-  QString s = config->getData(Config::IndicatorPath) + "/" + selection;
+  QString s = config.getData(Config::IndicatorPath) + "/" + selection;
   plug->loadIndicatorSettings(s);
   int rc = plug->indicatorPrefDialog(this);
 
   if (rc)
   {
     plug->saveIndicatorSettings(s);
-    
-    Indicator *i = new Indicator;
-    i->setFile(s);
-    i->setName(selection);
-    i->setType(type);
-    loadIndicator(i);
 
+    Indicator *i = new Indicator;    
+    i->setName(selection);
+    i->setFile(s);
+    i->setType(type);
+    if (set->getData("plotType").length())
+      i->setPlotType((Indicator::PlotType) set->getData("plotType").toInt());
+    loadIndicator(i);
+    
     plot->draw();
   }
 
-  config->closePlugin(type);
+  config.closePlugin(type);
+  delete set;
 }
 
 void QtstalkerApp::slotDeleteIndicator (QString text, Plot *plot)
@@ -1160,12 +1163,17 @@ void QtstalkerApp::slotDeleteIndicator (QString text, Plot *plot)
   {
     QStringList l = plot->getChartObjects();
     
-    ChartDb *db = new ChartDb;
-    db->openChart(chartPath);
+    Plugin *plug = config.getPlugin(Config::DbPluginPath, dbPlugin);
+    if (! plug)
+    {
+      config.closePlugin(dbPlugin);
+      return;
+    }
+    plug->openChart(chartPath);
     int loop;
     for (loop = 0; loop < (int) l.count(); loop++)
-      db->deleteChartObject(l[loop]);
-    delete db;
+      plug->deleteChartObject(l[loop]);
+    config.closePlugin(dbPlugin);
   }
 
   if (! plot->getMainFlag())
@@ -1178,7 +1186,7 @@ void QtstalkerApp::slotDeleteIndicator (QString text, Plot *plot)
   else
     plot->deleteIndicator(text);
 
-  config->deleteIndicator(text);
+  config.deleteIndicator(text);
 
   emit signalIndicatorPageRefresh();
 
@@ -1234,7 +1242,7 @@ void QtstalkerApp::slotSliderChanged (int v)
 
 void QtstalkerApp::addIndicatorButton (QString d, Indicator::PlotType tabFlag)
 {
-  Setting *set = config->getIndicator(d);
+  Setting *set = config.getIndicator(d);
   if (! set->count())
   {
     delete set;
@@ -1273,32 +1281,32 @@ void QtstalkerApp::addIndicatorButton (QString d, Indicator::PlotType tabFlag)
   QObject::connect(this, SIGNAL(signalIndex(int)), plot, SLOT(setIndex(int)));
   QObject::connect(this, SIGNAL(signalDrawMode(bool)), plot, SLOT(setDrawMode(bool)));
 
-  QObject::connect(this, SIGNAL(signalInterval(ChartDb::BarCompression)), plot, SLOT(setInterval(ChartDb::BarCompression)));
+  QObject::connect(this, SIGNAL(signalInterval(BarData::BarCompression)), plot, SLOT(setInterval(BarData::BarCompression)));
   compressionChanged();
 
   QObject::connect(this, SIGNAL(signalGrid(bool)), plot, SLOT(setGridFlag(bool)));
-  emit signalGrid(config->getData(Config::Grid).toInt());
+  emit signalGrid(config.getData(Config::Grid).toInt());
 
   QObject::connect(this, SIGNAL(signalScaleToScreen(bool)), plot, SLOT(setScaleToScreen(bool)));
-  emit signalScaleToScreen(config->getData(Config::ScaleToScreen).toInt());
+  emit signalScaleToScreen(config.getData(Config::ScaleToScreen).toInt());
 
   QObject::connect(this, SIGNAL(signalPixelspace(int)), plot, SLOT(setPixelspace(int)));
   emit signalPixelspace(pixelspace->value());
 
   QColor color;
-  color.setNamedColor(config->getData(Config::BackgroundColor));
+  color.setNamedColor(config.getData(Config::BackgroundColor));
   QObject::connect(this, SIGNAL(signalBackgroundColor(QColor)), plot, SLOT(setBackgroundColor(QColor)));
   emit signalBackgroundColor(color);
 
-  color.setNamedColor(config->getData(Config::BorderColor));
+  color.setNamedColor(config.getData(Config::BorderColor));
   QObject::connect(this, SIGNAL(signalBorderColor(QColor)), plot, SLOT(setBorderColor(QColor)));
   emit signalBorderColor(color);
 
-  color.setNamedColor(config->getData(Config::GridColor));
+  color.setNamedColor(config.getData(Config::GridColor));
   QObject::connect(this, SIGNAL(signalGridColor(QColor)), plot, SLOT(setGridColor(QColor)));
   emit signalGridColor(color);
 
-  QStringList l = QStringList::split(" ", config->getData(Config::PlotFont), FALSE);
+  QStringList l = QStringList::split(" ", config.getData(Config::PlotFont), FALSE);
   QFont font(l[0], l[1].toInt(), l[2].toInt());
   QObject::connect(this, SIGNAL(signalPlotFont(QFont)), plot, SLOT(setPlotFont(QFont)));
   emit signalPlotFont(font);
@@ -1345,40 +1353,40 @@ void QtstalkerApp::slotTabChanged (QWidget *)
 
 void QtstalkerApp::initGroupNav ()
 {
-  GroupPage *gp = new GroupPage(baseWidget, config);
+  GroupPage *gp = new GroupPage(baseWidget);
   connect(gp, SIGNAL(fileSelected(QString)), this, SLOT(slotOpenChart(QString)));
   navTab->addWidget(gp, 1);
 }
 
 void QtstalkerApp::initChartNav ()
 {
-  chartNav = new ChartPage(baseWidget, config);
+  chartNav = new ChartPage(baseWidget);
   connect(chartNav, SIGNAL(fileSelected(QString)), this, SLOT(slotOpenChart(QString)));
   navTab->addWidget(chartNav, 0);
 }
 
 void QtstalkerApp::initPortfolioNav ()
 {
-  PortfolioPage *pp = new PortfolioPage(baseWidget, config);
+  PortfolioPage *pp = new PortfolioPage(baseWidget);
   navTab->addWidget(pp, 3);
 }
 
 void QtstalkerApp::initTestNav ()
 {
-  TestPage *tp = new TestPage(baseWidget, config);
+  TestPage *tp = new TestPage(baseWidget);
   navTab->addWidget(tp, 4);
 }
 
 void QtstalkerApp::initIndicatorNav ()
 {
-  IndicatorPage *ip = new IndicatorPage(baseWidget, config, mainPlot);
+  IndicatorPage *ip = new IndicatorPage(baseWidget, mainPlot);
   connect(this, SIGNAL(signalIndicatorPageRefresh()), ip, SLOT(refreshList()));
   navTab->addWidget(ip, 2);
 }
 
 void QtstalkerApp::initScannerNav ()
 {
-  ScannerPage *sp = new ScannerPage(baseWidget, config);
+  ScannerPage *sp = new ScannerPage(baseWidget);
   QObject::connect(sp, SIGNAL(message(QString)), this, SLOT(slotStatusMessage(QString)));
   navTab->addWidget(sp, 5);
 }
@@ -1584,7 +1592,6 @@ int main(int argc, char *argv[])
 
   return a.exec();
 }
-
 
 
 
