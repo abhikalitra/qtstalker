@@ -54,7 +54,7 @@ int CUS::indicatorPrefDialog ()
   CUSDialog *dialog = new CUSDialog();
   
   int loop;
-  for (loop = 0; loop < (int) functionList.count(); loop++)
+  for (loop = 0; loop < (int) formulaList.count(); loop++)
     dialog->setLine(formulaList[loop]);
     
   int rc = dialog->exec();
@@ -97,6 +97,11 @@ void CUS::loadIndicatorSettings (QString file)
     if (s)
     {
       formulaList.append(s->left(s->length()));
+      
+      QStringList l = QStringList::split("|", formulaList[loop - 1], FALSE);
+      functionList.append(l[0]);
+      plotList.append(l[1]);
+      
       loop++;
     }
     else
