@@ -407,7 +407,7 @@ void QtstalkerApp::initToolBar()
 
   chartTypeCombo = new QComboBox(toolbar2);
   chartTypeCombo->show();
-  chartTypeCombo->insertStringList(config->getPluginList(Config::IndicatorPluginPath), -1);
+  chartTypeCombo->insertStringList(config->getPluginList(Config::ChartPluginPath), -1);
   QToolTip::add(chartTypeCombo, tr("Chart Type"));
   chartTypeCombo->setCurrentText(config->getData(Config::ChartStyle));
   connect(chartTypeCombo, SIGNAL(activated(int)), this, SLOT(slotChartTypeChanged(int)));
