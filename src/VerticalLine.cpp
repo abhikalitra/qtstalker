@@ -19,38 +19,38 @@
  *  USA.
  */
 
-#ifndef INDICATOR_HPP
-#define INDICATOR_HPP
+#include "VerticalLine.h"
+#include <qpainter.h>
+#include <qcolor.h>
 
-#include <qstring.h>
-#include <qstringlist.h>
-#include <qmemarray.h>
-#include <qlist.h>
-#include "Setting.h"
-#include "PlotLine.h"
-
-class Indicator : public Setting
+VerticalLine::VerticalLine (QString indicator, QString name, QString date)
 {
-  public:
-    Indicator ();
-    ~Indicator ();
-    void clear ();
-    QMemArray<int> getAlerts ();
-    void setAlerts (QMemArray<int>);
-    int getAlert (int);
-    int getLines ();
-    void addLine (PlotLine *);
-    PlotLine * getLine (int);
-    bool getMainPlot ();
-    void clearLines ();
-    void setEnable (bool);
-    bool getEnable ();
+  settings.set("Type", "Vertical Line", Setting::None);
+  settings.set(tr("Date"), date, Setting::Date);
+  settings.set(tr("Color"), "white", Setting::Color);
+  settings.set("Plot", indicator, Setting::None);
+  settings.set("Name", name, Setting::None);
+}
 
-  private:
-    QList<PlotLine> lines;
-    QMemArray<int> alerts;
-    bool enable;
-};
+VerticalLine::~VerticalLine ()
+{
+}
 
-#endif
+void VerticalLine::draw (Scaler &, QPixmap &buffer, int x, int)
+{
+  QPainter painter;
+  painter.begin(&buffer);
+
+  QColor color(settings.getData(tr("Color")));
+  painter.setPen(color);
+
+  painter.drawLine (x, 0, x, buffer.height());
+
+  painter.end();
+}
+
+QString VerticalLine::getDate ()
+{
+  return settings.getDateTime(tr("Date"));
+}
 

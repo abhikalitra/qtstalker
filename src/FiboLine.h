@@ -19,38 +19,20 @@
  *  USA.
  */
 
-#ifndef INDICATOR_HPP
-#define INDICATOR_HPP
+#ifndef FIBOLINE_HPP
+#define FIBOLINE_HPP
 
-#include <qstring.h>
-#include <qstringlist.h>
-#include <qmemarray.h>
-#include <qlist.h>
-#include "Setting.h"
-#include "PlotLine.h"
+#include "ChartObject.h"
 
-class Indicator : public Setting
+class FiboLine : public ChartObject
 {
-  public:
-    Indicator ();
-    ~Indicator ();
-    void clear ();
-    QMemArray<int> getAlerts ();
-    void setAlerts (QMemArray<int>);
-    int getAlert (int);
-    int getLines ();
-    void addLine (PlotLine *);
-    PlotLine * getLine (int);
-    bool getMainPlot ();
-    void clearLines ();
-    void setEnable (bool);
-    bool getEnable ();
+  Q_OBJECT
 
-  private:
-    QList<PlotLine> lines;
-    QMemArray<int> alerts;
-    bool enable;
+  public:
+    FiboLine (QString, QString, QString, QString);
+    ~FiboLine ();
+    void draw (Scaler &, QPixmap &, int, int);
+    double getY (QString, double, double, double);
 };
 
 #endif
-

@@ -699,6 +699,7 @@ void QtstalkerApp::loadChart (QString d)
   QDateTime fd = QDateTime::fromString(set->getDateTime("First Date"), Qt::ISODate);
   QDateTime date = QDateTime::fromString(set->getDateTime("Last Date"), Qt::ISODate);
 
+  // determine if chart is other type
   bool otherFlag = FALSE;
   if (chartType.compare(tr("Stock"))
       && chartType.compare(tr("Futures"))
@@ -706,10 +707,17 @@ void QtstalkerApp::loadChart (QString d)
       && chartType.compare(tr("Spread")))
   {
     chartTypeCombo->setEnabled(FALSE);
+    mainPlot->setHideMainPlot(TRUE);
+    actionHideMainPlot->setEnabled(FALSE);
     otherFlag = TRUE;
   }
   else
+  {
     chartTypeCombo->setEnabled(TRUE);
+    actionHideMainPlot->setEnabled(TRUE);
+    if (! actionHideMainPlot->isOn())
+      mainPlot->setHideMainPlot(FALSE);
+  }
 
   if (! date.isValid())
   {
@@ -793,7 +801,7 @@ void QtstalkerApp::loadChart (QString d)
   {
     QStringList keys = recordList->getFormat();
 
-    Indicator *i = mainPlot->getIndicator("Main Plot");
+    Indicator *i = new Indicator;
 
     int loop;
     for (loop = 0; loop < (int) keys.count(); loop++)
@@ -815,23 +823,26 @@ void QtstalkerApp::loadChart (QString d)
 
       i->addLine(pl);
     }
+    
+    mainPlot->addIndicator(QString("Main Plot"), i);
   }
 
   l = db->getChartObjects();
   for (loop = 0; loop < (int) l.count(); loop++)
   {
     Setting *co = db->getChartObject(l[loop]);
-    Indicator *i = mainPlot->getIndicator(co->getData(tr("Plot")));
-    if (! i)
-    {
-      Plot *plot = plotList[co->getData(tr("Plot"))];
-      i = plot->getIndicator(co->getData(tr("Plot")));
-    }
-
-    if (i)
-      i->addChartObject(co);
+    
+    QString s = co->getData(tr("Plot"));
+    if (! s.compare(tr("Main Plot")))
+      mainPlot->addChartObject(co);
     else
-      delete co;
+    {
+      Plot *plot = plotList[s];
+      if (plot)
+        plot->addChartObject(co);
+      else
+        delete co;
+    }
   }
   
   int page = mainPlot->getWidth() / mainPlot->getPixelspace();
@@ -1031,8 +1042,7 @@ void QtstalkerApp::slotDataWindow ()
   }
 
   int col = 1;
-  Indicator *i = mainPlot->getIndicator("Main Plot");
-  if (! i->getLines())
+  if (! mainPlot->getHideMainPlot())
   {
     dw->setHeader(1, QObject::tr("Open"));
     dw->setHeader(2, QObject::tr("High"));
@@ -1053,7 +1063,7 @@ void QtstalkerApp::slotDataWindow ()
   QStringList l = mainPlot->getIndicators();
   for (loop = 0; loop < (int) l.count(); loop++)
   {
-    i = mainPlot->getIndicator(l[loop]);
+    Indicator *i = mainPlot->getIndicator(l[loop]);
     int loop2;
     for (loop2 = 0; loop2 < i->getLines(); loop2++, col++)
     {
@@ -1074,7 +1084,7 @@ void QtstalkerApp::slotDataWindow ()
     l = plot->getIndicators();
     for (loop = 0; loop < (int) l.count(); loop++)
     {
-      i = plot->getIndicator(l[loop]);
+      Indicator *i = plot->getIndicator(l[loop]);
       int loop2;
       for (loop2 = 0; loop2 < i->getLines(); loop2++, col++)
       {
@@ -1241,8 +1251,6 @@ void QtstalkerApp::slotEditIndicator (QString selection, Plot *plot)
 
 void QtstalkerApp::slotDeleteIndicator (QString text, Plot *plot)
 {
-  Indicator *i = plot->getIndicator(text);
-
   if (! plot->getMainFlag())
   {
     if (tabs->count() == 1)
@@ -1253,14 +1261,17 @@ void QtstalkerApp::slotDeleteIndicator (QString text, Plot *plot)
   }
 
   // delete any chart objects that belong to the indicator
-  QStringList l = i->getChartObjects();
+  if (! plot->getMainFlag())
+  {
+    QStringList l = plot->getChartObjects();
 
-  ChartDb *db = new ChartDb;
-  db->openChart(chartPath);
-  int loop;
-  for (loop = 0; loop < (int) l.count(); loop++)
-    db->deleteChartObject(l[loop]);
-  delete db;
+    ChartDb *db = new ChartDb;
+    db->openChart(chartPath);
+    int loop;
+    for (loop = 0; loop < (int) l.count(); loop++)
+      db->deleteChartObject(l[loop]);
+    delete db;
+  }
 
   if (! plot->getMainFlag())
   {

@@ -91,12 +91,11 @@ class Plot : public QWidget
     void setDateHeight (int);
     void setMainFlag (bool);
     void setLogScale (bool);
-    void setOtherFlag (bool);
-    bool getOtherFlag ();
     void setChartType (QString);
     void createChartObject (QString, QString);
     void setPaintBars (QList<QColor>);
     void setHideMainPlot (bool);
+    bool getHideMainPlot ();
     void updateStatusBar (int, int);
     void setTabFlag (bool);
     bool getTabFlag ();
@@ -111,6 +110,8 @@ class Plot : public QWidget
     void deleteIndicator (QString);
     QStringList getChartObjectList ();
     void newChartObject ();
+    void addChartObject (Setting *);
+    QStringList getChartObjects ();
 
     int getWidth ();
     int getPixelspace ();
@@ -236,6 +237,7 @@ class Plot : public QWidget
     QString chartType;
     BarData *data;
     QDict<Indicator> indicators;
+    QDict<Setting> chartObjects;
     QList<QColor> paintBars;
     QArray<int> xGrid;
 

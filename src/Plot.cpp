@@ -87,6 +87,7 @@ Plot::Plot (QWidget *w) : QWidget(w)
 
   indicators.setAutoDelete(TRUE);
   paintBars.setAutoDelete(TRUE);
+  chartObjects.setAutoDelete(TRUE);
   data = 0;
 
   setMouseTracking(TRUE);
@@ -139,11 +140,9 @@ void Plot::clear ()
   mainHigh = -99999999;
   mainLow = 99999999;
   indicators.clear();
-  data = 0;
   paintBars.clear();
-
-  if (mainFlag)
-    indicators.replace("Main Plot", new Indicator);
+  chartObjects.clear();
+  data = 0;
 }
 
 void Plot::setData (BarData *l)
@@ -249,6 +248,11 @@ void Plot::setLogScale (bool d)
 void Plot::setHideMainPlot (bool d)
 {
   hideMainPlot = d;
+}
+
+bool Plot::getHideMainPlot ()
+{
+  return hideMainPlot;
 }
 
 void Plot::draw ()
@@ -363,22 +367,10 @@ void Plot::draw ()
 
 void Plot::drawObjects ()
 {
-  Indicator *i;
-  if (mainFlag)
-    i = indicators["Main Plot"];
-  else
+  QDictIterator<Setting> it(chartObjects);
+  for (; it.current(); ++it)
   {
-    QDictIterator<Indicator> it(indicators);
-    it.toFirst();
-    i = it.current();
-  }
-
-  QStringList l = i->getChartObjects();
-
-  int loop;
-  for (loop = 0; loop < (int) l.count(); loop++)
-  {
-    Setting *co = i->getChartObject(l[loop]);
+    Setting *co = it.current();
 
     switch (co->getInt("ObjectType"))
     {
@@ -1055,6 +1047,19 @@ void Plot::drawScale ()
 
   painter.setPen(QPen(borderColor, 1, QPen::SolidLine));
   painter.drawLine (x, 0, x, _height);
+  
+  // draw the last value pointer on the scale of main plot
+  if (mainFlag && ! hideMainPlot)
+  {
+    int y = scaler.convertToY(data->getClose(data->count() - 1));
+    
+    QPointArray array;
+    array.setPoints(3, x + 2, y,
+                    x + 8, y - 4,
+	            x + 8, y + 4);
+    painter.setBrush(borderColor);
+    painter.drawPolygon(array, TRUE, 0, -1);
+  }
 
   painter.end();
 }
@@ -1551,10 +1556,7 @@ void Plot::newChartObject ()
   if (! cancelFlag)
   {
     emit chartObjectCreated(set);
-
-    Indicator *i = indicators[set->getData(tr("Plot"))];
-    i->addChartObject(set);
-
+    addChartObject(set);
     draw();
   }
   
@@ -1674,21 +1676,10 @@ void Plot::setScale ()
     }
   }
 
-  Indicator *i;
-  if (mainFlag)
-    i = indicators["Main Plot"];
-  else
+  QDictIterator<Setting> it(chartObjects);
+  for (; it.current(); ++it)
   {
-    QDictIterator<Indicator> it(indicators);
-    it.toFirst();
-    i = it.current();
-  }
-  QStringList l = i->getChartObjects();
-
-  int loop;
-  for (loop = 0; loop < (int) l.count(); loop++)
-  {
-    Setting *co = i->getChartObject(l[loop]);
+    Setting *co = it.current();
 
     QString type = co->getData(QObject::tr("Type"));
     if (! type.compare(QObject::tr("Vertical Line")))
@@ -2687,9 +2678,6 @@ QStringList Plot::getIndicators ()
   for (; it.current(); ++it)
     l.append(it.currentKey());
 
-  if (mainFlag)
-    l.remove("Main Plot");
-
   return l;
 }
 
@@ -2812,77 +2800,74 @@ void Plot::showPopupMenu ()
   QDictIterator<Indicator> it(indicators);
   for(; it.current(); ++it)
   {
-    Indicator *i = it.current();
-
     if (it.currentKey().compare("Main Plot"))
     {
-      int id = chartDeleteMenu->insertItem(QPixmap(indicator), i->getData("Name"), this, SLOT(slotDeleteIndicator(int)));
+      int id = chartDeleteMenu->insertItem(QPixmap(indicator), it.currentKey(), this, SLOT(slotDeleteIndicator(int)));
       chartDeleteMenu->setItemParameter(id, id);
 
-      id = chartEditMenu->insertItem(QPixmap(indicator), i->getData("Name"), this, SLOT(slotEditIndicator(int)));
+      id = chartEditMenu->insertItem(QPixmap(indicator), it.currentKey(), this, SLOT(slotEditIndicator(int)));
       chartEditMenu->setItemParameter(id, id);
     }
+  }
 
-    QStringList l = i->getChartObjects();
-    int loop;
-    for (loop = 0; loop < (int) l.count(); loop++)
+  QDictIterator<Setting> it2(chartObjects);
+  for (; it2.current(); ++it2)
+  {
+    Setting *co = it2.current();
+    QPixmap icon;
+
+    while (1)
     {
-      QPixmap icon;
-      Setting *co = i->getChartObject(l[loop]);
-
-      while (1)
+      if (co->getInt("ObjectType") == Plot::VerticalLine)
       {
-        if (co->getInt("ObjectType") == Plot::VerticalLine)
-	{
-          icon = QPixmap(vertical);
-	  break;
-	}
-
-        if (co->getInt("ObjectType") == Plot::HorizontalLine)
-	{
-          icon = QPixmap(horizontal);
-	  break;
-	}
-
-        if (co->getInt("ObjectType") == Plot::TrendLine)
-	{
-          icon = QPixmap(trend);
-	  break;
-	}
-
-        if (co->getInt("ObjectType") == Plot::Text)
-	{
-          icon = QPixmap(text);
-	  break;
-	}
-
-        if (co->getInt("ObjectType") == Plot::BuyArrow)
-	{
-          icon = QPixmap(buyarrow);
-	  break;
-	}
-
-        if (co->getInt("ObjectType") == Plot::SellArrow)
-	{
-          icon = QPixmap(sellarrow);
-	  break;
-	}
-
-        if (co->getInt("ObjectType") == Plot::FibonacciLine)
-	{
-          icon = QPixmap(fib);
-	  break;
-	}
-
+        icon = QPixmap(vertical);
 	break;
       }
 
-      int id = chartObjectEditMenu->insertItem(icon, l[loop], this, SLOT(slotEditChartObject(int)));
-      chartObjectEditMenu->setItemParameter(id, id);
+      if (co->getInt("ObjectType") == Plot::HorizontalLine)
+      {
+        icon = QPixmap(horizontal);
+	break;
+      }
 
-      id = chartObjectDeleteMenu->insertItem(icon, l[loop], this, SLOT(slotDeleteChartObject(int)));
-      chartObjectDeleteMenu->setItemParameter(id, id);
+      if (co->getInt("ObjectType") == Plot::TrendLine)
+      {
+        icon = QPixmap(trend);
+	break;
+      }
+
+      if (co->getInt("ObjectType") == Plot::Text)
+      {
+        icon = QPixmap(text);
+	break;
+      }
+
+      if (co->getInt("ObjectType") == Plot::BuyArrow)
+      {
+        icon = QPixmap(buyarrow);
+	break;
+      }
+
+      if (co->getInt("ObjectType") == Plot::SellArrow)
+      {
+        icon = QPixmap(sellarrow);
+	break;
+      }
+
+      if (co->getInt("ObjectType") == Plot::FibonacciLine)
+      {
+        icon = QPixmap(fib);
+	break;
+      }
+
+      break;
     }
+
+    int id = chartObjectEditMenu->insertItem(icon, it2.currentKey(), this, SLOT(slotEditChartObject(int)));
+    chartObjectEditMenu->setItemParameter(id, id);
+
+    id = chartObjectDeleteMenu->insertItem(icon, it2.currentKey(), this, SLOT(slotDeleteChartObject(int)));
+    chartObjectDeleteMenu->setItemParameter(id, id);
   }
 
   chartMenu->exec(QCursor::pos());
@@ -2903,36 +2888,13 @@ void Plot::slotDeleteIndicator (int id)
 void Plot::slotEditChartObject (int id)
 {
   QString s = chartObjectEditMenu->text(id);
-
-  Indicator *i;
-  if (mainFlag)
-    i = getIndicator("Main Plot");
-  else
-  {
-    QDictIterator<Indicator> it(indicators);
-    it.toFirst();
-    i = it.current();
-  }
-
-  emit signalEditChartObject(i->getChartObject(s), this);
+  emit signalEditChartObject(chartObjects[s], this);
 }
 
 void Plot::slotDeleteChartObject (int id)
 {
   QString s = chartObjectDeleteMenu->text(id);
-
-  Indicator *i;
-  if (mainFlag)
-    i = getIndicator("Main Plot");
-  else
-  {
-    QDictIterator<Indicator> it(indicators);
-    it.toFirst();
-    i = it.current();
-  }
-
-  i->deleteChartObject(s);
-
+  chartObjects.remove(s);
   emit signalDeleteChartObject(s, this);
 }
 
@@ -2947,6 +2909,21 @@ void Plot::slotNewChartObject (int id)
   emit signalNewChartObject(s, this);
 }
 
+void Plot::addChartObject (Setting *co)
+{
+  chartObjects.replace(co->getData("Name"), co);
+}
+
+QStringList Plot::getChartObjects ()
+{
+  QStringList l;
+  QDictIterator<Setting> it(chartObjects);
+  for (; it.current(); ++it)
+    l.append(it.currentKey());
+
+  return l;
+}
+
 QStringList Plot::getChartTypes ()
 {
   QStringList l;
@@ -2959,7 +2936,5 @@ QStringList Plot::getChartTypes ()
   l.append(tr("Swing"));
   return l;
 }
-
-
 
 

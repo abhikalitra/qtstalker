@@ -19,71 +19,37 @@
  *  USA.
  */
 
-#include "Indicator.h"
-#include <qobject.h>
+#include "HorizontalLine.h"
+#include <qpainter.h>
+#include <qcolor.h>
 
-Indicator::Indicator ()
+HorizontalLine::HorizontalLine (QString indicator, QString name, QString value)
 {
-  lines.setAutoDelete(TRUE);
-  enable = TRUE;
+  settings.set("Type", "Horizontal Line", Setting::None);
+  settings.set(tr("Value"), value, Setting::Date);
+  settings.set(tr("Color"), "white", Setting::Color);
+  settings.set("Plot", indicator, Setting::None);
+  settings.set("Name", name, Setting::None);
 }
 
-Indicator::~Indicator ()
+HorizontalLine::~HorizontalLine ()
 {
 }
 
-int Indicator::getLines ()
+void HorizontalLine::draw (Scaler &scaler, QPixmap &buffer, int, int)
 {
-  return (int) lines.count();
-}
+  QPainter painter;
+  painter.begin(&buffer);
 
-PlotLine * Indicator::getLine (int i)
-{
-  return lines.at(i);
-}
+  int y = scaler.convertToY(settings.getFloat(tr("Value")));
 
-void Indicator::addLine (PlotLine *l)
-{
-  lines.append(l);
-}
+  QColor color(settings.getData(tr("Color")));
+  painter.setPen(color);
 
-bool Indicator::getMainPlot ()
-{
-  QString s = getData(QObject::tr("Plot"));
-  if (! s.compare(QObject::tr("True")))
-    return TRUE;
-  else
-    return FALSE;
-}
+  painter.drawLine (0, y, buffer.width(), y);
+  painter.drawText(0, y - 1, settings.getData(tr("Value")), -1);
 
-QMemArray<int> Indicator::getAlerts ()
-{
-  return alerts;
-}
-
-void Indicator::setAlerts (QMemArray<int> d)
-{
-  alerts = d;
-}
-
-void Indicator::clearLines ()
-{
-  lines.clear();
-}
-
-int Indicator::getAlert (int i)
-{
-  return alerts[i];
-}
-
-void Indicator::setEnable (bool status)
-{
-  enable = status;
-}
-
-bool Indicator::getEnable ()
-{
-  return enable;
+  painter.end();
 }
 
 

@@ -19,38 +19,31 @@
  *  USA.
  */
 
-#ifndef INDICATOR_HPP
-#define INDICATOR_HPP
+#ifndef CHARTOBJECT_HPP
+#define CHARTOBJECT_HPP
 
-#include <qstring.h>
-#include <qstringlist.h>
-#include <qmemarray.h>
-#include <qlist.h>
+#include "Scaler.h"
 #include "Setting.h"
-#include "PlotLine.h"
+#include "BarData.h"
+#include <qpixmap.h>
+#include <qobject.h>
+#include <qstring.h>
 
-class Indicator : public Setting
+class ChartObject : public QObject
 {
-  public:
-    Indicator ();
-    ~Indicator ();
-    void clear ();
-    QMemArray<int> getAlerts ();
-    void setAlerts (QMemArray<int>);
-    int getAlert (int);
-    int getLines ();
-    void addLine (PlotLine *);
-    PlotLine * getLine (int);
-    bool getMainPlot ();
-    void clearLines ();
-    void setEnable (bool);
-    bool getEnable ();
+  Q_OBJECT
 
-  private:
-    QList<PlotLine> lines;
-    QMemArray<int> alerts;
-    bool enable;
+  public:
+    ChartObject ();
+    virtual ~ChartObject ();
+    virtual void draw (Scaler &, QPixmap &, int, int);
+    virtual QString getDate ();
+    virtual QString getDate2 ();
+    void setData (QString);
+    
+  protected:
+    Setting settings;
+    BarData *data;
 };
 
 #endif
-

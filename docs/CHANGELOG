@@ -3,7 +3,9 @@
 
 20040221: Added new BarData class to libqtstalker. Plot and all plugins were modified to handle the new
           input bar interface. This structural change in preparation for future design changes.
-	  
+
+20040222: Added a small current close arrow pointer to the scale area of the main plot. Helps with
+          tracking where the last close is located on the scale.	  
 
 0.25
 ====

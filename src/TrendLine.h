@@ -19,38 +19,21 @@
  *  USA.
  */
 
-#ifndef INDICATOR_HPP
-#define INDICATOR_HPP
+#ifndef TRENDLINE_HPP
+#define TRENDLINE_HPP
 
-#include <qstring.h>
-#include <qstringlist.h>
-#include <qmemarray.h>
-#include <qlist.h>
-#include "Setting.h"
-#include "PlotLine.h"
+#include "ChartObject.h"
 
-class Indicator : public Setting
+class TrendLine : public ChartObject
 {
-  public:
-    Indicator ();
-    ~Indicator ();
-    void clear ();
-    QMemArray<int> getAlerts ();
-    void setAlerts (QMemArray<int>);
-    int getAlert (int);
-    int getLines ();
-    void addLine (PlotLine *);
-    PlotLine * getLine (int);
-    bool getMainPlot ();
-    void clearLines ();
-    void setEnable (bool);
-    bool getEnable ();
+  Q_OBJECT
 
-  private:
-    QList<PlotLine> lines;
-    QMemArray<int> alerts;
-    bool enable;
+  public:
+    TrendLine (BarData *, QString, QString, QString, QString, QString, QString);
+    ~TrendLine ();
+    void draw (Scaler &, QPixmap &, int, int);
+    QString getDate ();
+    QString getDate2 ();
 };
 
 #endif
-

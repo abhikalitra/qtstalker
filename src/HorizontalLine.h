@@ -19,38 +19,19 @@
  *  USA.
  */
 
-#ifndef INDICATOR_HPP
-#define INDICATOR_HPP
+#ifndef HORIZONTALLINE_HPP
+#define HORIZONTALLINE_HPP
 
-#include <qstring.h>
-#include <qstringlist.h>
-#include <qmemarray.h>
-#include <qlist.h>
-#include "Setting.h"
-#include "PlotLine.h"
+#include "ChartObject.h"
 
-class Indicator : public Setting
+class HorizontalLine : public ChartObject
 {
-  public:
-    Indicator ();
-    ~Indicator ();
-    void clear ();
-    QMemArray<int> getAlerts ();
-    void setAlerts (QMemArray<int>);
-    int getAlert (int);
-    int getLines ();
-    void addLine (PlotLine *);
-    PlotLine * getLine (int);
-    bool getMainPlot ();
-    void clearLines ();
-    void setEnable (bool);
-    bool getEnable ();
+  Q_OBJECT
 
-  private:
-    QList<PlotLine> lines;
-    QMemArray<int> alerts;
-    bool enable;
+  public:
+    HorizontalLine (QString, QString, QString);
+    ~HorizontalLine ();
+    void draw (Scaler &, QPixmap &, int, int);
 };
 
 #endif
-

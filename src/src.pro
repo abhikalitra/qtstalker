@@ -26,10 +26,16 @@ HEADERS += TestPage.h
 HEADERS += IndicatorPage.h
 HEADERS += NewIndicatorDialog.h
 HEADERS += Scaler.h
-#HEADERS += ScannerPage.h
-#HEADERS += Scanner.h
-#HEADERS += PlotDate.h
-#HEADERS += PlotScale.h
+
+#test
+HEADERS += ChartObject.h
+HEADERS += BuyArrow.h
+HEADERS += FiboLine.h
+HEADERS += HorizontalLine.h
+HEADERS += SellArrow.h
+HEADERS += Text.h
+HEADERS += TrendLine.h
+HEADERS += VerticalLine.h
 
 
 SOURCES += Qtstalker.cpp
@@ -53,10 +59,16 @@ SOURCES += TestPage.cpp
 SOURCES += IndicatorPage.cpp
 SOURCES += NewIndicatorDialog.cpp
 SOURCES += Scaler.cpp
-#SOURCES += ScannerPage.cpp
-#SOURCES += Scanner.cpp
-#SOURCES += PlotDate.cpp
-#SOURCES += PlotScale.cpp
+
+#test
+SOURCES += ChartObject.cpp
+SOURCES += BuyArrow.cpp
+SOURCES += FiboLine.cpp
+SOURCES += HorizontalLine.cpp
+SOURCES += SellArrow.cpp
+SOURCES += Text.cpp
+SOURCES += TrendLine.cpp
+SOURCES += VerticalLine.cpp
 
 TARGET = qtstalker
 
