@@ -43,7 +43,7 @@ void VFI::setDefaults ()
   lineType = PlotLine::Line;
   label = pluginName;
   smoothing = 3;
-  maType = IndicatorPlugin::SMA;
+  maType = 1;
   period = 100;
 }
 
@@ -127,7 +127,7 @@ int VFI::indicatorPrefDialog (QWidget *w)
   dialog->addTextItem(QObject::tr("Label"), QObject::tr("Parms"), label);
   dialog->addIntItem(QObject::tr("Period"), QObject::tr("Parms"), period, 1, 99999999);
   dialog->addIntItem(QObject::tr("Smoothing"), QObject::tr("Parms"), smoothing, 0, 99999999);
-  dialog->addComboItem(QObject::tr("Smoothing Type"), QObject::tr("Parms"), maTypeList, maType);
+  dialog->addComboItem(QObject::tr("Smoothing Type"), QObject::tr("Parms"), getMATypes(), maType);
   
   int rc = dialog->exec();
   
@@ -138,7 +138,7 @@ int VFI::indicatorPrefDialog (QWidget *w)
     label = dialog->getText(QObject::tr("Label"));
     period = dialog->getInt(QObject::tr("Period"));
     smoothing = dialog->getInt(QObject::tr("Smoothing"));
-    maType = (IndicatorPlugin::MAType) dialog->getComboIndex(QObject::tr("Smoothing Type"));
+    maType = dialog->getComboIndex(QObject::tr("Smoothing Type"));
     rc = TRUE;
   }
   else
@@ -177,7 +177,7 @@ void VFI::setIndicatorSettings (Setting &dict)
 
   s = dict.getData("maType");
   if (s.length())
-    maType = (IndicatorPlugin::MAType) s.toInt();
+    maType = s.toInt();
 
 }
 

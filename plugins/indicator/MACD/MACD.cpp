@@ -51,7 +51,7 @@ void MACD::setDefaults ()
   fastPeriod = 12;
   slowPeriod = 26;
   trigPeriod = 9;
-  macdMAType = IndicatorPlugin::EMA;  
+  macdMAType = 0;  
   macdInput = BarData::Close;
   oscScaleFlag = FALSE;
 }
@@ -130,7 +130,7 @@ int MACD::indicatorPrefDialog (QWidget *w)
   dialog->addIntItem(QObject::tr("Slow Period"), QObject::tr("MACD"), slowPeriod, 1, 99999999);
   dialog->addTextItem(QObject::tr("MACD Label"), QObject::tr("MACD"), macdLabel);
   dialog->addComboItem(QObject::tr("MACD Line Type"), QObject::tr("MACD"), lineTypes, macdLineType);
-  dialog->addComboItem(QObject::tr("MACD MA Type"), QObject::tr("MACD"), maTypeList, macdMAType);
+  dialog->addComboItem(QObject::tr("MACD MA Type"), QObject::tr("MACD"), getMATypes(), macdMAType);
   if (customFlag)
     dialog->addFormulaInputItem(QObject::tr("MACD Input"), QObject::tr("MACD"), FALSE, customInput);
   else
@@ -158,7 +158,7 @@ int MACD::indicatorPrefDialog (QWidget *w)
     macdLabel = dialog->getText(QObject::tr("MACD Label"));
     label = macdLabel;
     macdLineType = (PlotLine::LineType) dialog->getComboIndex(QObject::tr("MACD Line Type"));
-    macdMAType = (IndicatorPlugin::MAType) dialog->getComboIndex(QObject::tr("MACD MA Type"));
+    macdMAType = dialog->getComboIndex(QObject::tr("MACD MA Type"));
     if (customFlag)
       customInput = dialog->getFormulaInput(QObject::tr("MACD Input"));
     else
@@ -212,7 +212,7 @@ void MACD::setIndicatorSettings (Setting &dict)
         
   s = dict.getData("macdMAType");
   if (s.length())
-    macdMAType = (IndicatorPlugin::MAType) s.toInt();
+    macdMAType = s.toInt();
         
   s = dict.getData("macdInput");
   if (s.length())

@@ -33,14 +33,6 @@
 class IndicatorPlugin
 {
   public:
-    enum MAType
-    {
-      EMA,
-      SMA,
-      WMA,
-      Wilder
-    };
-  
     IndicatorPlugin();
     virtual ~IndicatorPlugin();
     void setIndicatorInput (BarData *);
@@ -50,13 +42,6 @@ class IndicatorPlugin
     void loadFile (QString, Setting &);
     void saveFile (QString, Setting &);
     PlotLine * getInputLine (QString);
-    PlotLine * getEMA (PlotLine *d, int);
-    PlotLine * getSMA (PlotLine *d, int);
-    PlotLine * getWMA (PlotLine *d, int);
-    PlotLine * getWilderMA (PlotLine *d, int);
-    PlotLine * getMA (PlotLine *d, IndicatorPlugin::MAType, int);
-    QStringList getMATypes ();
-    IndicatorPlugin::MAType getMAType (QString);
     void setPlotType (int);
     QString getPluginName ();
     QString getHelpFile ();
@@ -70,6 +55,8 @@ class IndicatorPlugin
     virtual int getMinBars ();
     virtual void loadIndicatorSettings (QString);
     virtual void saveIndicatorSettings (QString);
+    virtual PlotLine * getMA (PlotLine *d, int, int);
+    virtual QStringList getMATypes ();
     
   protected:
     BarData *data;
@@ -79,7 +66,6 @@ class IndicatorPlugin
     bool saveFlag;
     bool customFlag;
     QDict<PlotLine> *customLines;
-    QStringList maTypeList;
     int plotType;
     QString pluginName;
     QString helpFile;

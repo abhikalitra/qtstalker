@@ -40,7 +40,7 @@ class MF : public IndicatorPlugin
     QString label;
     int period;
     int smoothing;
-    IndicatorPlugin::MAType maType;
+    int maType;
 };
 
 extern "C"

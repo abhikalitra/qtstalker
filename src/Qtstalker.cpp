@@ -471,21 +471,18 @@ void QtstalkerApp::loadChart (QString d)
   int loop;  
   for (loop = 0; loop < (int) l.count(); loop++)
   {
-    Setting *set = config.getIndicator(l[loop]);
-    if (! set->count() || ! set->getInt("enable"))
-    {
-      delete set;
+    Setting set;
+    config.getIndicator(l[loop], set);
+    if (! set.count() || ! set.getInt("enable"))
       continue;
-    }
     
     Indicator *i = new Indicator;
     QFileInfo fi(l[loop]);
     i->setName(fi.fileName());
     i->setFile(l[loop]);
-    i->setType(set->getData("plugin"));
-    if (set->getData("plotType").length())
-      i->setPlotType((Indicator::PlotType) set->getData("plotType").toInt());
-    delete set;
+    i->setType(set.getData("plugin"));
+    if (set.getData("plotType").length())
+      i->setPlotType((Indicator::PlotType) set.getData("plotType").toInt());
     loadIndicator(i);
   }
 
@@ -588,84 +585,19 @@ void QtstalkerApp::slotDataWindow ()
   // show the datawindow dialog
   
   if (! recordList)
-  {
-    DataWindow *dw = new DataWindow(0, 0);
-    dw->setCaption(getWindowCaption());
-    dw->show();
     return;
-  }
   
-  DataWindow *dw = new DataWindow(0, recordList->count());
+  DataWindow *dw = new DataWindow();
   dw->setCaption(getWindowCaption());
   
-  dw->setHeader(0, tr("Date"));
-  dw->setHeader(1, tr("Time"));
-  int loop;
-  for (loop = 0; loop < (int) recordList->count(); loop++)
-  {
-    BarDate dt = recordList->getDate(loop);
-    dw->setData(loop, 0, dt.getDateString(TRUE));
-    dw->setData(loop, 1, dt.getTimeString(TRUE));
-  }
-
-  int col = 2;
-  if (! mainPlot->getHideMainPlot())
-  {
-    dw->setHeader(2, tr("Open"));
-    dw->setHeader(3, tr("High"));
-    dw->setHeader(4, tr("Low"));
-    dw->setHeader(5, tr("Close"));
-
-    for (loop = 0; loop < (int) recordList->count(); loop++)
-    {
-      dw->setData(loop, 2, mainPlot->strip(recordList->getOpen(loop), 4));
-      dw->setData(loop, 3, mainPlot->strip(recordList->getHigh(loop), 4));
-      dw->setData(loop, 4, mainPlot->strip(recordList->getLow(loop), 4));
-      dw->setData(loop, 5, mainPlot->strip(recordList->getClose(loop), 4));
-    }
-
-    col = 6;
-  }
-
-  QStringList l = mainPlot->getIndicators();
-  for (loop = 0; loop < (int) l.count(); loop++)
-  {
-    Indicator *i = mainPlot->getIndicator(l[loop]);
-    int loop2;
-    for (loop2 = 0; loop2 < i->getLines(); loop2++, col++)
-    {
-      PlotLine *line = i->getLine(loop2);
-      dw->setHeader(col, line->getLabel());
-
-      int loop3;
-      int offset = recordList->count() - line->getSize();
-      for (loop3 = 0; loop3 < line->getSize(); loop3++)
-        dw->setData(loop3 + offset, col, mainPlot->strip(line->getData(loop3), 4));
-    }
-  }
-
+  dw->setBars(recordList);
+  
+  dw->setPlot(mainPlot);
+  
   QDictIterator<Plot> it(plotList);
   for (; it.current(); ++it)
-  {
-    Plot *plot = it.current();
-    l = plot->getIndicators();
-    for (loop = 0; loop < (int) l.count(); loop++)
-    {
-      Indicator *i = plot->getIndicator(l[loop]);
-      int loop2;
-      for (loop2 = 0; loop2 < i->getLines(); loop2++, col++)
-      {
-        PlotLine *line = i->getLine(loop2);
-        dw->setHeader(col, line->getLabel());
-
-        int loop3;
-        int offset = recordList->count() - line->getSize();
-        for (loop3 = 0; loop3 < line->getSize(); loop3++)
-          dw->setData(loop3 + offset, col, mainPlot->strip(line->getData(loop3), 4));
-      }
-    }
-  }
-
+    dw->setPlot(it.current());
+  
   dw->show();
 }
 
@@ -758,10 +690,10 @@ void QtstalkerApp::slotDeleteIndicator (QString text)
   // delete indicator slot
 
   QString s = config.getData(Config::IndicatorPath) + "/" + ip->getIndicatorGroup() + "/" + text;
-  Setting *set = config.getIndicator(s);
-  if (! set->count())
+  Setting set;
+  config.getIndicator(s, set);
+  if (! set.count())
   {
-    delete set;
     qDebug("QtstalkerApp::slotDeleteIndicator:indicator settings empty");
     return;
   }
@@ -769,7 +701,7 @@ void QtstalkerApp::slotDeleteIndicator (QString text)
   // delete any chart objects that belong to the indicator
   bool mainFlag = FALSE;
   bool tabFlag = FALSE;
-  switch (set->getInt("plotType"))
+  switch (set.getInt("plotType"))
   {
     case Indicator::MainPlot:
       mainFlag = TRUE;
@@ -780,8 +712,6 @@ void QtstalkerApp::slotDeleteIndicator (QString text)
     default:
       break;      
   }
-
-  delete set;
 
   if (! mainFlag)
   {
@@ -817,23 +747,20 @@ void QtstalkerApp::slotEnableIndicator (QString name)
 {
   // add indicator
 
-  Setting *set = config.getIndicator(name);
-  if (! set->count())
-  {
-    delete set;
+  Setting set;
+  config.getIndicator(name, set);
+  if (! set.count())
     return;
-  }
     
-  addIndicatorButton(name, (Indicator::PlotType) set->getData("plotType").toInt());
+  addIndicatorButton(name, (Indicator::PlotType) set.getData("plotType").toInt());
   
   Indicator *i = new Indicator;
   QFileInfo fi(name);
   i->setName(fi.fileName());
   i->setFile(name);
-  i->setType(set->getData("plugin"));
-  if (set->getData("plotType").length())
-    i->setPlotType((Indicator::PlotType) set->getData("plotType").toInt());
-  delete set;
+  i->setType(set.getData("plugin"));
+  if (set.getData("plotType").length())
+    i->setPlotType((Indicator::PlotType) set.getData("plotType").toInt());
   loadIndicator(i);
   
   if (i->getPlotType() == Indicator::MainPlot)
@@ -877,15 +804,15 @@ void QtstalkerApp::slotMinPixelspaceChanged (int d)
 
 void QtstalkerApp::addIndicatorButton (QString d, Indicator::PlotType tabFlag)
 {
-  Setting *set = config.getIndicator(d);
-  if (! set->count())
+  Setting set;
+  config.getIndicator(d, set);
+  if (! set.count())
   {
-    delete set;
     qDebug("QtstalkerApp::addIndicatorButton:indicator settings empty");
+    return;
   }
   
-  QString type = set->getData("plugin");
-  delete set;
+  QString type = set.getData("plugin");
 
   if (tabFlag == Indicator::MainPlot)
     return;
@@ -1110,21 +1037,6 @@ void QtstalkerApp::slotNavigatorPosition (int d)
     navSplitter->moveToLast(navBase);
     
   navSplitter->refresh();
-}
-
-void QtstalkerApp::slotMainPlotFocus ()
-{
-  mainPlot->setFocus();
-}
-
-void QtstalkerApp::slotTabIndicatorFocus ()
-{
-  tabs->setFocus();
-}
-
-void QtstalkerApp::slotToolbarFocus ()
-{
-  toolbar2->setFocus();
 }
 
 void QtstalkerApp::slotHelp ()

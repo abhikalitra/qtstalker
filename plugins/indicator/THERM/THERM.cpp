@@ -53,8 +53,8 @@ void THERM::setDefaults ()
   threshold = 3;
   smoothing = 2;
   maPeriod = 22;
-  maType = IndicatorPlugin::EMA;
-  smoothType = IndicatorPlugin::EMA;
+  maType = 0;
+  smoothType = 0;
 }
 
 void THERM::calculate ()
@@ -137,14 +137,14 @@ int THERM::indicatorPrefDialog (QWidget *w)
   dialog->addTextItem(QObject::tr("Label"), QObject::tr("THERM Parms"), label);
   dialog->addFloatItem(QObject::tr("Threshold"), QObject::tr("THERM Parms"), threshold, 1, 99999999);
   dialog->addIntItem(QObject::tr("Smoothing"), QObject::tr("THERM Parms"), smoothing, 0, 99999999);
-  dialog->addComboItem(QObject::tr("Smoothing Type"), QObject::tr("THERM Parms"), maTypeList, smoothType);
+  dialog->addComboItem(QObject::tr("Smoothing Type"), QObject::tr("THERM Parms"), getMATypes(), smoothType);
   
   dialog->createPage (QObject::tr("MA Parms"));
   dialog->addColorItem(QObject::tr("MA Color"), QObject::tr("MA Parms"), maColor);
   dialog->addComboItem(QObject::tr("MA Line Type"), QObject::tr("MA Parms"), lineTypes, maLineType);
   dialog->addTextItem(QObject::tr("MA Label"), QObject::tr("MA Parms"), maLabel);
   dialog->addIntItem(QObject::tr("MA Period"), QObject::tr("MA Parms"), maPeriod, 0, 99999999);
-  dialog->addComboItem(QObject::tr("MA Type"), QObject::tr("MA Parms"), maTypeList, maType);
+  dialog->addComboItem(QObject::tr("MA Type"), QObject::tr("MA Parms"), getMATypes(), maType);
   
   int rc = dialog->exec();
   
@@ -156,13 +156,13 @@ int THERM::indicatorPrefDialog (QWidget *w)
     label = dialog->getText(QObject::tr("Label"));
     threshold = dialog->getFloat(QObject::tr("Threshold"));
     smoothing = dialog->getInt(QObject::tr("Smoothing"));
-    smoothType = (IndicatorPlugin::MAType) dialog->getComboIndex(QObject::tr("Smoothing Type"));
+    smoothType = dialog->getComboIndex(QObject::tr("Smoothing Type"));
     
     maColor = dialog->getColor(QObject::tr("MA Color"));
     maLineType = (PlotLine::LineType) dialog->getComboIndex(QObject::tr("MA Line Type"));
     maLabel = dialog->getText(QObject::tr("MA Label"));
     maPeriod = dialog->getInt(QObject::tr("MA Period"));
-    maType = (IndicatorPlugin::MAType) dialog->getComboIndex(QObject::tr("MA Type"));
+    maType = dialog->getComboIndex(QObject::tr("MA Type"));
     rc = TRUE;
   }
   else
@@ -209,7 +209,7 @@ void THERM::setIndicatorSettings (Setting &dict)
   
   s = dict.getData("smoothType");
   if (s.length())
-    smoothType = (IndicatorPlugin::MAType) s.toInt();
+    smoothType = s.toInt();
   
   s = dict.getData("maLineType");
   if (s.length())
@@ -225,7 +225,7 @@ void THERM::setIndicatorSettings (Setting &dict)
 
   s = dict.getData("maType");
   if (s.length())
-    maType = (IndicatorPlugin::MAType) s.toInt();
+    maType = s.toInt();
 }
 
 void THERM::getIndicatorSettings (Setting &dict)

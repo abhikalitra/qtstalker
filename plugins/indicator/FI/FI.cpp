@@ -42,7 +42,7 @@ void FI::setDefaults ()
   lineType = PlotLine::HistogramBar;
   label = pluginName;
   smoothing = 2;
-  maType = IndicatorPlugin::EMA;
+  maType = 0;
 }
 
 void FI::calculate ()
@@ -85,7 +85,7 @@ int FI::indicatorPrefDialog (QWidget *w)
   dialog->addComboItem(QObject::tr("Line Type"), QObject::tr("Parms"), lineTypes, lineType);
   dialog->addTextItem(QObject::tr("Label"), QObject::tr("Parms"), label);
   dialog->addIntItem(QObject::tr("Smoothing"), QObject::tr("Parms"), smoothing, 0, 99999999);
-  dialog->addComboItem(QObject::tr("Smoothing Type"), QObject::tr("Parms"), maTypeList, maType);
+  dialog->addComboItem(QObject::tr("Smoothing Type"), QObject::tr("Parms"), getMATypes(), maType);
   
   int rc = dialog->exec();
   
@@ -95,7 +95,7 @@ int FI::indicatorPrefDialog (QWidget *w)
     lineType = (PlotLine::LineType) dialog->getComboIndex(QObject::tr("Line Type"));
     smoothing = dialog->getInt(QObject::tr("Smoothing"));
     label = dialog->getText(QObject::tr("Label"));
-    maType = (IndicatorPlugin::MAType) dialog->getComboIndex(QObject::tr("Smoothing Type"));
+    maType = dialog->getComboIndex(QObject::tr("Smoothing Type"));
     rc = TRUE;
   }
   else
@@ -130,7 +130,7 @@ void FI::setIndicatorSettings (Setting &dict)
       
   s = dict.getData("maType");
   if (s.length())
-    maType = (IndicatorPlugin::MAType) s.toInt();
+    maType = s.toInt();
 }
 
 void FI::getIndicatorSettings (Setting &dict)

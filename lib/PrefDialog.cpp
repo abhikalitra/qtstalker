@@ -211,9 +211,12 @@ void PrefDialog::addCheckItem (QString name, QString page, bool flag)
   QGridLayout *grid = gridList[page];
   grid->expand(grid->numRows() + 1, grid->numCols());
   
-  QCheckBox *check = new QCheckBox(name, w);
+  QLabel *label = new QLabel(name, w);
+  grid->addWidget(label, grid->numRows() - 2, 0);
+  
+  QCheckBox *check = new QCheckBox(w);
   check->setChecked(flag);
-  grid->addWidget(check, grid->numRows() - 2, 0);
+  grid->addWidget(check, grid->numRows() - 2, 1);
   checkList.replace(name, check);
 }
 

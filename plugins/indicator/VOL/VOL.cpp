@@ -47,7 +47,7 @@ void VOL::setDefaults ()
   label = volLabel;
   maLabel = "MAVol";
   period = 0;
-  maType = IndicatorPlugin::SMA;
+  maType = 1;
 }
 
 void VOL::calculate ()
@@ -98,7 +98,7 @@ int VOL::indicatorPrefDialog (QWidget *w)
   dialog->addIntItem(QObject::tr("MA Period"), QObject::tr("MA"), period, 0, 99999999);
   dialog->addTextItem(QObject::tr("MA Label"), QObject::tr("MA"), maLabel);
   dialog->addComboItem(QObject::tr("MA Line Type"), QObject::tr("MA"), lineTypes, maLineType);
-  dialog->addComboItem(QObject::tr("MA Type"), QObject::tr("MA"), maTypeList, maType);
+  dialog->addComboItem(QObject::tr("MA Type"), QObject::tr("MA"), getMATypes(), maType);
   
   int rc = dialog->exec();
   
@@ -114,7 +114,7 @@ int VOL::indicatorPrefDialog (QWidget *w)
     period = dialog->getInt(QObject::tr("MA Period"));
     maLabel = dialog->getText(QObject::tr("MA Label"));
     maLineType = (PlotLine::LineType) dialog->getComboIndex(QObject::tr("MA Line Type"));
-    maType = (IndicatorPlugin::MAType) dialog->getComboIndex(QObject::tr("MA Type"));
+    maType = dialog->getComboIndex(QObject::tr("MA Type"));
     
     rc = TRUE;
   }
@@ -166,7 +166,7 @@ void VOL::setIndicatorSettings (Setting &dict)
         
   s = dict.getData("maType");
   if (s.length())
-    maType = (IndicatorPlugin::MAType) s.toInt();
+    maType = s.toInt();
 
   s = dict.getData("label");
   if (s.length())

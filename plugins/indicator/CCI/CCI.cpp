@@ -44,7 +44,7 @@ void CCI::setDefaults ()
   label = pluginName;
   smoothing = 3;
   period = 20;
-  maType = IndicatorPlugin::SMA;
+  maType = 1;
 }
 
 void CCI::calculate ()
@@ -57,7 +57,7 @@ void CCI::calculate ()
     tp->append((data->getHigh(loop) + data->getLow(loop) + data->getClose(loop)) / 3);
   int tpLoop = tp->getSize() - 1;
 
-  PlotLine *sma = getMA(tp, IndicatorPlugin::SMA, period);
+  PlotLine *sma = getMA(tp, maType, period);
   int smaLoop = sma->getSize() - 1;
 
   while (tpLoop >= period && smaLoop >= period)
@@ -107,7 +107,7 @@ int CCI::indicatorPrefDialog (QWidget *w)
   dialog->addTextItem(QObject::tr("Label"), QObject::tr("Parms"), label);
   dialog->addIntItem(QObject::tr("Period"), QObject::tr("Parms"), period, 1, 99999999);
   dialog->addIntItem(QObject::tr("Smoothing"), QObject::tr("Parms"), smoothing, 0, 99999999);
-  dialog->addComboItem(QObject::tr("Smoothing Type"), QObject::tr("Parms"), maTypeList, maType);
+  dialog->addComboItem(QObject::tr("Smoothing Type"), QObject::tr("Parms"), getMATypes(), maType);
   
   int rc = dialog->exec();
   
@@ -118,7 +118,7 @@ int CCI::indicatorPrefDialog (QWidget *w)
     period = dialog->getInt(QObject::tr("Period"));
     label = dialog->getText(QObject::tr("Label"));
     smoothing = dialog->getInt(QObject::tr("Smoothing"));
-    maType = (IndicatorPlugin::MAType) dialog->getComboIndex(QObject::tr("Smoothing Type"));
+    maType = dialog->getComboIndex(QObject::tr("Smoothing Type"));
     rc = TRUE;
   }
   else
@@ -157,7 +157,7 @@ void CCI::setIndicatorSettings (Setting &dict)
       
   s = dict.getData("maType");
   if (s.length())
-    maType = (IndicatorPlugin::MAType) s.toInt();
+    maType = s.toInt();
 }
 
 void CCI::getIndicatorSettings (Setting &dict)

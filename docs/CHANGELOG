@@ -168,6 +168,11 @@
 20050301: Changed the 'delete all chart objects' dialog to allow user to select which object type
           to delete.
 	  
+20050302: Moved MA functions from IndicatorPlugin:: into MA plugin.
+
+
+
+	  
 	  	  
 0.29
 ====

@@ -31,7 +31,6 @@
 #include <qmessagebox.h>
 #include <qobject.h>
 
-
 CC::CC ()
 {
   helpFile = "cc.html";

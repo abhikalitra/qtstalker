@@ -104,10 +104,10 @@ class Config
     QString parseDbPlugin (QString);
 
     QStringList getIndicators (QString);
-    Setting * getIndicator (QString);
+    void getIndicator (QString, Setting &);
     void deleteIndicator (QString);
     QStringList getIndicatorList ();
-    void setIndicator (QString, Setting *);
+    void setIndicator (QString, Setting &);
 
     QStringList getPluginList (Config::Parm);
     ChartPlugin * getChartPlugin (QString);

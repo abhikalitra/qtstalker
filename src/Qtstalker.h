@@ -116,13 +116,10 @@ class QtstalkerApp : public QMainWindow
     void slotMinPixelspaceChanged (int);
     void slotCrosshairsStatus (bool);
     void slotNavigatorPosition (int);
-    void slotMainPlotFocus ();
-    void slotTabIndicatorFocus ();
     void slotHelp ();
     void slotExitQuoteDialog ();
     void slotDisableIndicator (QString);
     void slotEnableIndicator (QString);
-    void slotToolbarFocus ();
     void slotRunMacro (QString);
     void slotRecordMacro (QString);
     void slotStopMacro ();

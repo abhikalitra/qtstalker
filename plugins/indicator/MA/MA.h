@@ -24,6 +24,14 @@
 class MA : public IndicatorPlugin
 {
   public:
+    enum MAType
+    {
+      EMA,
+      SMA,
+      WMA,
+      Wilder
+    };
+  
     MA ();
     virtual ~MA ();
     void calculate ();
@@ -33,15 +41,23 @@ class MA : public IndicatorPlugin
     void getIndicatorSettings (Setting &);
     void setIndicatorSettings (Setting &);
     int getMinBars ();
+    PlotLine * getEMA (PlotLine *d, int);
+    PlotLine * getSMA (PlotLine *d, int);
+    PlotLine * getWMA (PlotLine *d, int);
+    PlotLine * getWilderMA (PlotLine *d, int);
+    PlotLine * getMA (PlotLine *d, int, int);
+    QStringList getMATypes ();
+    int getMAType (QString);
     
   private:
     QColor color;
     PlotLine::LineType lineType;
     QString label;
     int period;
-    IndicatorPlugin::MAType maType;
+    int maType;
     BarData::InputType input;
     QString customInput;
+    QStringList maTypeList;
 };
 
 extern "C"

@@ -46,7 +46,7 @@ class STOCH : public IndicatorPlugin
     int period;
     double buyLine;
     double sellLine;
-    IndicatorPlugin::MAType maType;
+    int maType;
     QString customInput;
     QString label;
 };

@@ -43,8 +43,8 @@ void MAOSC::setDefaults ()
   label = pluginName;
   fastPeriod = 9;
   slowPeriod = 18;
-  fastMaType = IndicatorPlugin::SMA;  
-  slowMaType = IndicatorPlugin::SMA;  
+  fastMaType = 1;  
+  slowMaType = 1;  
   input = BarData::Close;
 }
 
@@ -99,8 +99,8 @@ int MAOSC::indicatorPrefDialog (QWidget *w)
   dialog->addTextItem(QObject::tr("Label"), QObject::tr("Parms"), label);
   dialog->addIntItem(QObject::tr("Fast Period"), QObject::tr("Parms"), fastPeriod, 1, 99999999);
   dialog->addIntItem(QObject::tr("Slow Period"), QObject::tr("Parms"), slowPeriod, 1, 99999999);
-  dialog->addComboItem(QObject::tr("Fast MA Type"), QObject::tr("Parms"), maTypeList, fastMaType);
-  dialog->addComboItem(QObject::tr("Slow MA Type"), QObject::tr("Parms"), maTypeList, slowMaType);
+  dialog->addComboItem(QObject::tr("Fast MA Type"), QObject::tr("Parms"), getMATypes(), fastMaType);
+  dialog->addComboItem(QObject::tr("Slow MA Type"), QObject::tr("Parms"), getMATypes(), slowMaType);
   if (customFlag)
     dialog->addFormulaInputItem(QObject::tr("Input"), QObject::tr("Parms"), FALSE, customInput);
   else
@@ -115,8 +115,8 @@ int MAOSC::indicatorPrefDialog (QWidget *w)
     fastPeriod = dialog->getInt(QObject::tr("Fast Period"));
     slowPeriod = dialog->getInt(QObject::tr("Slow Period"));
     label = dialog->getText(QObject::tr("Label"));
-    fastMaType = (IndicatorPlugin::MAType) dialog->getComboIndex(QObject::tr("Fast MA Type"));
-    slowMaType = (IndicatorPlugin::MAType) dialog->getComboIndex(QObject::tr("Slow MA Type"));
+    fastMaType = dialog->getComboIndex(QObject::tr("Fast MA Type"));
+    slowMaType = dialog->getComboIndex(QObject::tr("Slow MA Type"));
     if (customFlag)
       customInput = dialog->getFormulaInput(QObject::tr("Input"));
     else
@@ -159,11 +159,11 @@ void MAOSC::setIndicatorSettings (Setting &dict)
       
   s = dict.getData("fastMaType");
   if (s.length())
-    fastMaType = (IndicatorPlugin::MAType) s.toInt();
+    fastMaType = s.toInt();
     
   s = dict.getData("slowMaType");
   if (s.length())
-    slowMaType = (IndicatorPlugin::MAType) s.toInt();
+    slowMaType = s.toInt();
   
   s = dict.getData("input");
   if (s.length())

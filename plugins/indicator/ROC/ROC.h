@@ -40,7 +40,7 @@ class ROC : public IndicatorPlugin
     QString label;
     int period;
     int smoothing;
-    IndicatorPlugin::MAType maType;
+    int maType;
     BarData::InputType input;
     QString customInput;
 };

@@ -22,7 +22,7 @@
 #include "DataWindow.h"
 #include <qlayout.h>
 
-DataWindow::DataWindow (int cols, int rows) : QDialog (0, "DataWindow", FALSE, WDestructiveClose)
+DataWindow::DataWindow () : QDialog (0, "DataWindow", FALSE, WDestructiveClose)
 {
   resize(500, 350);
 
@@ -30,8 +30,9 @@ DataWindow::DataWindow (int cols, int rows) : QDialog (0, "DataWindow", FALSE, W
   vbox->setSpacing(5);
   vbox->setMargin(5);
 
-  table = new QTable(rows, cols, this);
+  table = new QTable(this);
   table->setSelectionMode(QTable::Single);
+  table->setReadOnly(TRUE);
   hHeader = table->horizontalHeader();
   vbox->addWidget (table);
 }
@@ -52,4 +53,83 @@ void DataWindow::setHeader (int col, QString d)
   table->setColumnWidth(col, 80);
   hHeader->setLabel(col, d);
 }
+
+void DataWindow::setBars (BarData *d)
+{
+  if (! d->count())
+    return;
+    
+  table->setNumCols(6);
+  table->setNumRows(d->count());
+  
+  hHeader->setLabel(0, tr("Date"));
+  hHeader->setLabel(1, tr("Time"));
+  hHeader->setLabel(2, tr("Open"));
+  hHeader->setLabel(3, tr("High"));
+  hHeader->setLabel(4, tr("Low"));
+  hHeader->setLabel(5, tr("Close"));
+  
+  int loop;
+  for (loop = 0; loop < (int) d->count(); loop++)
+  {
+    BarDate dt = d->getDate(loop);
+    table->setText(loop, 0, dt.getDateString(TRUE));
+    table->setText(loop, 1, dt.getTimeString(TRUE));
+    table->setText(loop, 2, strip(d->getOpen(loop), 4));
+    table->setText(loop, 3, strip(d->getHigh(loop), 4));
+    table->setText(loop, 4, strip(d->getLow(loop), 4));
+    table->setText(loop, 5, strip(d->getClose(loop), 4));
+  }
+  
+  for (loop = 0; loop < table->numCols(); loop++)
+    table->adjustColumn(loop);
+}
+
+void DataWindow::setPlot (Plot *d)
+{
+  QStringList l = d->getIndicators();
+  int loop;
+  for (loop = 0; loop < (int) l.count(); loop++)
+  {
+    Indicator *i = d->getIndicator(l[loop]);
+    int loop2;
+    for (loop2 = 0; loop2 < i->getLines(); loop2++)
+    {
+      table->setNumCols(table->numCols() + 1);
+      
+      PlotLine *line = i->getLine(loop2);
+      hHeader->setLabel(table->numCols() - 1, line->getLabel());
+
+      int loop3;
+      int offset = table->numRows() - line->getSize();
+      for (loop3 = 0; loop3 < line->getSize(); loop3++)
+        table->setText(loop3 + offset, table->numCols() - 1, strip(line->getData(loop3), 4));
+      table->adjustColumn(table->numCols() - 1);
+    }
+  }
+}
+
+QString DataWindow::strip (double d, int p)
+{
+  QString s = QString::number(d, 'f', p);
+
+  while (1)
+  {
+    if (s.find('.', -1, TRUE) != -1)
+    {
+      s.truncate(s.length() - 1);
+      break;
+    }
+    else
+    {
+      if (s.find('0', -1, TRUE) != -1)
+        s.truncate(s.length() - 1);
+      else
+        break;
+    }
+  }
+
+  return s;
+}
+
 

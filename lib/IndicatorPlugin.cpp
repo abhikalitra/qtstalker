@@ -38,8 +38,6 @@ IndicatorPlugin::IndicatorPlugin()
   lineTypes = pl->getLineTypes();
   delete pl;
 
-  maTypeList = getMATypes();
-      
   BarData *it = new BarData;
   inputTypeList = it->getInputFields();
   delete it;
@@ -70,8 +68,6 @@ void IndicatorPlugin::loadFile (QString file, Setting &dict)
 {
   output->clearLines();
 
-//  Setting dict;
-  
   QFile f(file);
   if (! f.open(IO_ReadOnly))
   {
@@ -111,8 +107,6 @@ void IndicatorPlugin::loadFile (QString file, Setting &dict)
   s = dict.getData("enable");
   if (s.length())
     enabled = s.toInt();
-  
-//  return dict;
 }
 
 void IndicatorPlugin::saveFile (QString file, Setting &dict)
@@ -157,203 +151,38 @@ PlotLine * IndicatorPlugin::getInputLine (QString d)
   return in;
 }
 
-PlotLine * IndicatorPlugin::getEMA (PlotLine *d, int period)
-{
-  PlotLine *ema = new PlotLine;
-
-  if (period >= (int) d->getSize())
-    return ema;
-
-  if (period < 1)
-    return ema;
-
-  double smoother = 2.0 / (period + 1);
-
-  double t = 0;
-  int loop;
-  for (loop = 0; loop < period; loop++)
-    t = t + d->getData(loop);
-
-  double yesterday = t / period;
-  ema->append(yesterday);
-
-  for (; loop < (int) d->getSize(); loop++)
-  {
-    double t  = (smoother * (d->getData(loop) - yesterday)) + yesterday;
-    yesterday = t;
-    ema->append(t);
-  }
-
-  return ema;
-}
-
-// NEW CODE - SINGLE PASS SMA
-PlotLine * IndicatorPlugin::getSMA (PlotLine *d, int period)
-{
-  PlotLine *sma = new PlotLine;
-
-  int size = d->getSize();
-
-  // weed out degenerate cases
-  
-  if (period < 1 || period >= size)	// STEVE: should be period > size
-    return sma;				// left this way to keep behaviour
-
-  // create the circular buffer and its running total
-  
-  double *values = new double[period];
-  double total = 0.0;
-  
-  // fill buffer first time around, keeping its running total
-
-  int loop = -1;
-  while (++loop < period) {
-    double val = d->getData(loop);
-    total += val;
-    values[loop] = val;
-  }
-
-  // buffer filled with first period values, output first sma value
-  
-  sma->append(total / period);
-
-  // loop over the rest, each time replacing oldest value in buffer
- 
-  --loop;
-  while (++loop < size) 
-  {
-    int index = loop % period;
-    double newval = d->getData(loop);
-    
-    total += newval;
-    total -= values[index];
-    values[index] = newval;
-
-    sma->append(total / period);
-  }
- 
-  // clean up 
-  
-  delete values;
-	
-  return sma;
-}
-
-PlotLine * IndicatorPlugin::getWMA (PlotLine *d, int period)
-{
-  PlotLine *wma = new PlotLine;
-
-  if (period >= (int) d->getSize())
-    return wma;
-
-  if (period < 1)
-    return wma;
-
-  int loop;
-  for (loop = period - 1; loop < (int) d->getSize(); loop++)
-  {
-    int loop2;
-    int weight;
-    int divider;
-    double total;
-    for (loop2 = period - 1, weight = 1, divider = 0, total = 0; loop2 >= 0; loop2--, weight++)
-    {
-      total = total + (d->getData(loop - loop2) * weight);
-      divider = divider + weight;
-    }
-
-    wma->append(total / divider);
-  }
-
-  return wma;
-}
-
-PlotLine * IndicatorPlugin::getWilderMA (PlotLine *d, int period)
-{
-  PlotLine *wilderma = new PlotLine;
-
-  if (period >= (int) d->getSize())
-    return wilderma;
-
-  if (period < 1)
-    return wilderma;
-
-  double t = 0;
-  int loop;
-  for (loop = 0; loop < period; loop++)
-    t = t + d->getData(loop);
-
-  double yesterday = t / period;
-
-  wilderma->append(yesterday);
-
-  for (; loop < (int) d->getSize(); loop++)
-  {
-    double t  = (yesterday * (period - 1) + d->getData(loop))/period;
-    yesterday = t;
-    wilderma->append(t);
-  }
-
-  return wilderma;
-}
-
 QStringList IndicatorPlugin::getMATypes ()
 {
   QStringList l;
-  l.append(QObject::tr("EMA"));
-  l.append(QObject::tr("SMA"));
-  l.append(QObject::tr("WMA"));
-  l.append(QObject::tr("Wilder"));
+  Config config;
+  IndicatorPlugin *plug = config.getIndicatorPlugin("MA");
+  if (! plug)
+  {
+    qDebug("IndicatorPlugin::getMATypes: cannot open MA plugin");
+    config.closePlugin("MA");
+    return l;
+  }
+  
+  l = plug->getMATypes();
+  config.closePlugin("MA");
+  
   return l;
 }
 
-IndicatorPlugin::MAType IndicatorPlugin::getMAType (QString d)
-{
-  MAType type = SMA;
-  
-  while (1)
-  {
-    if (! d.compare(QObject::tr("EMA")))
-    {
-      type = EMA;
-      break;
-    }
-    
-    if (! d.compare(QObject::tr("WMA")))
-    {
-      type = WMA;
-      break;
-    }
-  
-    if (! d.compare(QObject::tr("Wilder")))
-      type = Wilder;
-      
-    break;
-  }
-  
-  return type;
-}
-
-PlotLine * IndicatorPlugin::getMA (PlotLine *in, IndicatorPlugin::MAType type, int period)
+PlotLine * IndicatorPlugin::getMA (PlotLine *in, int type, int period)
 {
   PlotLine *ma = 0;
-  
-  switch (type)
+  Config config;
+  IndicatorPlugin *plug = config.getIndicatorPlugin("MA");
+  if (! plug)
   {
-    case EMA:  
-      ma = getEMA(in, period);
-      break;
-    case WMA:  
-      ma = getWMA(in, period);
-      break;
-    case Wilder:  
-      ma = getWilderMA(in, period);
-      break;
-    default:
-      ma = getSMA(in, period);
-      break;
+    qDebug("IndicatorPlugin::getMA: cannot open MA plugin");
+    config.closePlugin("MA");
+    return ma;
   }
 
+  ma = plug->getMA(in, type, period);
+  config.closePlugin("MA");
   return ma;  
 }
 

@@ -44,7 +44,7 @@ void ATR::setDefaults ()
   lineType = PlotLine::Line;
   label = pluginName;
   smoothing = 14;
-  maType = IndicatorPlugin::SMA;  
+  maType = 1;
 }
 
 void ATR::calculate ()
@@ -102,7 +102,7 @@ int ATR::indicatorPrefDialog (QWidget *w)
   dialog->addTextItem(QObject::tr("Label"), QObject::tr("Parms"), label);
   dialog->addComboItem(QObject::tr("Line Type"), QObject::tr("Parms"), lineTypes, lineType);
   dialog->addIntItem(QObject::tr("Smoothing"), QObject::tr("Parms"), smoothing, 1, 99999999);
-  dialog->addComboItem(QObject::tr("Smoothing Type"), QObject::tr("Parms"), maTypeList, maType);
+  dialog->addComboItem(QObject::tr("Smoothing Type"), QObject::tr("Parms"), getMATypes(), maType);
   
   int rc = dialog->exec();
   
@@ -112,7 +112,7 @@ int ATR::indicatorPrefDialog (QWidget *w)
     lineType = (PlotLine::LineType) dialog->getComboIndex(QObject::tr("Line Type"));
     label = dialog->getText(QObject::tr("Label"));
     smoothing = dialog->getInt(QObject::tr("Smoothing"));
-    maType = (IndicatorPlugin::MAType) dialog->getComboIndex(QObject::tr("Smoothing Type"));
+    maType = dialog->getComboIndex(QObject::tr("Smoothing Type"));
     rc = TRUE;
   }
   else
@@ -147,7 +147,7 @@ void ATR::setIndicatorSettings (Setting &dict)
 
   s = dict.getData("maType");
   if (s.length())
-    maType = (IndicatorPlugin::MAType) s.toInt();
+    maType = s.toInt();
 }
 
 void ATR::getIndicatorSettings (Setting &dict)

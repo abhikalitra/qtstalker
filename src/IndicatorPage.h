@@ -68,7 +68,7 @@ class IndicatorPage : public QWidget
     void setChartPath (QString);
     void removeLocalIndicators ();
     void addLocalIndicators (QString);
-    void saveLocalIndicator (QString d, Setting *);
+    void saveLocalIndicator (QString d, Setting &);
 
   public slots:
     void doubleClick (QListBoxItem *);

@@ -73,6 +73,9 @@ class DbPlugin
     void setHeaderField (int, QString);
     QString getHeaderField (int);
     void close ();
+    void deleteIndicator (QString);
+    void addIndicator (QString);
+    void setIndicator (QString, QString);
     
     virtual void dbPrefDialog ();
     virtual void createNew ();

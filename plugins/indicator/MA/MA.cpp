@@ -42,9 +42,10 @@ void MA::setDefaults ()
   lineType = PlotLine::Line;
   label = pluginName;
   period = 10;
-  maType = IndicatorPlugin::SMA;  
+  maType = (int) SMA;  
   input = BarData::Close;
   customInput = "1";
+  maTypeList = getMATypes();
 }
 
 void MA::calculate ()
@@ -95,7 +96,7 @@ int MA::indicatorPrefDialog (QWidget *w)
     lineType = (PlotLine::LineType) dialog->getComboIndex(QObject::tr("Line Type"));
     period = dialog->getInt(QObject::tr("Period"));
     label = dialog->getText(QObject::tr("Label"));
-    maType = (IndicatorPlugin::MAType) dialog->getComboIndex(QObject::tr("MA Type"));
+    maType = dialog->getComboIndex(QObject::tr("MA Type"));
     if (customFlag)
       customInput = dialog->getFormulaInput(QObject::tr("Input"));
     else
@@ -134,7 +135,7 @@ void MA::setIndicatorSettings (Setting &dict)
       
   s = dict.getData("maType");
   if (s.length())
-    maType = (IndicatorPlugin::MAType) s.toInt();
+    maType = s.toInt();
     
   s = dict.getData("input");
   if (s.length())
@@ -172,6 +173,208 @@ int MA::getMinBars ()
 {
   int t = minBars + period;
   return t;
+}
+
+PlotLine * MA::getEMA (PlotLine *d, int period)
+{
+  PlotLine *ema = new PlotLine;
+
+  if (period >= (int) d->getSize())
+    return ema;
+
+  if (period < 1)
+    return ema;
+
+  double smoother = 2.0 / (period + 1);
+
+  double t = 0;
+  int loop;
+  for (loop = 0; loop < period; loop++)
+    t = t + d->getData(loop);
+
+  double yesterday = t / period;
+  ema->append(yesterday);
+
+  for (; loop < (int) d->getSize(); loop++)
+  {
+    double t  = (smoother * (d->getData(loop) - yesterday)) + yesterday;
+    yesterday = t;
+    ema->append(t);
+  }
+
+  return ema;
+}
+
+// NEW CODE - SINGLE PASS SMA
+PlotLine * MA::getSMA (PlotLine *d, int period)
+{
+  PlotLine *sma = new PlotLine;
+
+  int size = d->getSize();
+
+  // weed out degenerate cases
+  
+  if (period < 1 || period >= size)	// STEVE: should be period > size
+    return sma;				// left this way to keep behaviour
+
+  // create the circular buffer and its running total
+  
+  double *values = new double[period];
+  double total = 0.0;
+  
+  // fill buffer first time around, keeping its running total
+
+  int loop = -1;
+  while (++loop < period) {
+    double val = d->getData(loop);
+    total += val;
+    values[loop] = val;
+  }
+
+  // buffer filled with first period values, output first sma value
+  
+  sma->append(total / period);
+
+  // loop over the rest, each time replacing oldest value in buffer
+ 
+  --loop;
+  while (++loop < size) 
+  {
+    int index = loop % period;
+    double newval = d->getData(loop);
+    
+    total += newval;
+    total -= values[index];
+    values[index] = newval;
+
+    sma->append(total / period);
+  }
+ 
+  // clean up 
+  
+  delete values;
+	
+  return sma;
+}
+
+PlotLine * MA::getWMA (PlotLine *d, int period)
+{
+  PlotLine *wma = new PlotLine;
+
+  if (period >= (int) d->getSize())
+    return wma;
+
+  if (period < 1)
+    return wma;
+
+  int loop;
+  for (loop = period - 1; loop < (int) d->getSize(); loop++)
+  {
+    int loop2;
+    int weight;
+    int divider;
+    double total;
+    for (loop2 = period - 1, weight = 1, divider = 0, total = 0; loop2 >= 0; loop2--, weight++)
+    {
+      total = total + (d->getData(loop - loop2) * weight);
+      divider = divider + weight;
+    }
+
+    wma->append(total / divider);
+  }
+
+  return wma;
+}
+
+PlotLine * MA::getWilderMA (PlotLine *d, int period)
+{
+  PlotLine *wilderma = new PlotLine;
+
+  if (period >= (int) d->getSize())
+    return wilderma;
+
+  if (period < 1)
+    return wilderma;
+
+  double t = 0;
+  int loop;
+  for (loop = 0; loop < period; loop++)
+    t = t + d->getData(loop);
+
+  double yesterday = t / period;
+
+  wilderma->append(yesterday);
+
+  for (; loop < (int) d->getSize(); loop++)
+  {
+    double t  = (yesterday * (period - 1) + d->getData(loop))/period;
+    yesterday = t;
+    wilderma->append(t);
+  }
+
+  return wilderma;
+}
+
+PlotLine * MA::getMA (PlotLine *in, int type, int period)
+{
+  PlotLine *ma = 0;
+  
+  switch (type)
+  {
+    case SMA:
+      ma = getSMA(in, period);
+      break;
+    case EMA:
+      ma = getEMA(in, period);
+      break;
+    case WMA:
+      ma = getWMA(in, period);
+      break;
+    case Wilder:
+      ma = getWilderMA(in, period);
+      break;
+    default:
+      break;    
+  }
+  
+  return ma;  
+}
+
+QStringList MA::getMATypes ()
+{
+  QStringList l;
+  l.append(QObject::tr("EMA"));
+  l.append(QObject::tr("SMA"));
+  l.append(QObject::tr("WMA"));
+  l.append(QObject::tr("Wilder"));
+  return l;
+}
+
+int MA::getMAType (QString d)
+{
+  int type = (int) SMA;
+  
+  while (1)
+  {
+    if (! d.compare(QObject::tr("EMA")))
+    {
+      type = (int) EMA;
+      break;
+    }
+    
+    if (! d.compare(QObject::tr("WMA")))
+    {
+      type = (int) WMA;
+      break;
+    }
+  
+    if (! d.compare(QObject::tr("Wilder")))
+      type = (int) Wilder;
+      
+    break;
+  }
+  
+  return type;
 }
 
 //*************************************************************************

@@ -39,7 +39,7 @@ class DPO : public IndicatorPlugin
     PlotLine::LineType lineType;
     QString label;
     int period;
-    IndicatorPlugin::MAType maType;
+    int maType;
     QString customInput;
     BarData::InputType input;
 };

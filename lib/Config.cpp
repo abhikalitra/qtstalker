@@ -525,17 +525,13 @@ QStringList Config::getIndicators (QString d)
   return getDirList(s, TRUE);
 }
 
-Setting * Config::getIndicator (QString d)
+void Config::getIndicator (QString d, Setting &set)
 {
-  Setting *set = new Setting;
-  
-//  QString s = getData(IndicatorPath) + "/" + d + "/" + n;
-  
   QFile f(d);
   if (! f.open(IO_ReadOnly))
   {
     qDebug("Config::getIndicator:can't open indicator file %s", d.latin1());
-    return set;
+    return;
   }
   QTextStream stream(&f);
   
@@ -550,15 +546,13 @@ Setting * Config::getIndicator (QString d)
     if (l.count() != 2)
       continue;
 
-    set->setData(l[0], l[1]);      
+    set.setData(l[0], l[1]);      
   }
   
   f.close();
-  
-  return set;
 }
 
-void Config::setIndicator (QString d, Setting *set)
+void Config::setIndicator (QString d, Setting &set)
 {
   QFile f(d);
   if (! f.open(IO_WriteOnly))
@@ -569,9 +563,9 @@ void Config::setIndicator (QString d, Setting *set)
   QTextStream stream(&f);
   
   int loop;
-  QStringList l = set->getKeyList();
+  QStringList l = set.getKeyList();
   for (loop = 0; loop < (int) l.count(); loop++)
-    stream << l[loop] << "=" << set->getData(l[loop]) << "\n";
+    stream << l[loop] << "=" << set.getData(l[loop]) << "\n";
   
   f.close();
 }

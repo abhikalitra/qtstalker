@@ -55,7 +55,7 @@ void DMI::setDefaults ()
   adxLabel = "ADX";
   period = 14;
   smoothing = 9;
-  maType = IndicatorPlugin::SMA;
+  maType = 1;
   lineRequest = "ADX";
   label = pluginName;
 }
@@ -74,7 +74,7 @@ int DMI::indicatorPrefDialog (QWidget *w)
   dialog->createPage (QObject::tr("DMI"));
   dialog->addIntItem(QObject::tr("Period"), QObject::tr("DMI"), period, 1, 99999999);
   dialog->addIntItem(QObject::tr("Smoothing"), QObject::tr("DMI"), smoothing, 1, 99999999);
-  dialog->addComboItem(QObject::tr("Smoothing Type"), QObject::tr("DMI"), maTypeList, maType);
+  dialog->addComboItem(QObject::tr("Smoothing Type"), QObject::tr("DMI"), getMATypes(), maType);
   if (customFlag)
   {
     dialog->addTextItem(QObject::tr("Label"), QObject::tr("DMI"), label);
@@ -102,7 +102,7 @@ int DMI::indicatorPrefDialog (QWidget *w)
   {
     period = dialog->getInt(QObject::tr("Period"));
     smoothing = dialog->getInt(QObject::tr("Smoothing"));
-    maType = (IndicatorPlugin::MAType) dialog->getComboIndex(QObject::tr("Smoothing Type"));
+    maType = dialog->getComboIndex(QObject::tr("Smoothing Type"));
     if (customFlag)
     {
       label = dialog->getText(QObject::tr("Label"));
@@ -159,7 +159,7 @@ void DMI::setIndicatorSettings (Setting &dict)
     
   s = dict.getData("maType");
   if (s.length())
-    maType = (IndicatorPlugin::MAType) s.toInt();
+    maType = s.toInt();
     
   s = dict.getData("pdiLabel");
   if (s.length())
@@ -269,13 +269,13 @@ void DMI::getDI (int period)
 
   PlotLine *tr = getTR();
 
-  PlotLine *smamdm = getMA(mdm, IndicatorPlugin::SMA, period);
+  PlotLine *smamdm = getMA(mdm, 1, period);
   int mdmLoop = smamdm->getSize() - 1;
 
-  PlotLine *smapdm = getMA(pdm, IndicatorPlugin::SMA, period);
+  PlotLine *smapdm = getMA(pdm, 1, period);
   int pdmLoop = smapdm->getSize() - 1;
   
-  PlotLine *smatr = getMA(tr, IndicatorPlugin::SMA, period);
+  PlotLine *smatr = getMA(tr, 1, period);
   int trLoop = smatr->getSize() - 1;
 
   PlotLine *mdi = new PlotLine();
@@ -322,7 +322,7 @@ void DMI::getDI (int period)
   output->addLine(pdi);
 }
 
-void DMI::getADX (IndicatorPlugin::MAType type, int period)
+void DMI::getADX (int type, int period)
 {
   PlotLine *mdi = output->getLine(0);
   if (! mdi)

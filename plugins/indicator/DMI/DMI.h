@@ -33,7 +33,7 @@ class DMI : public IndicatorPlugin
     void getIndicatorSettings (Setting &);
     void setIndicatorSettings (Setting &);
     void getDI (int period);
-    void getADX (IndicatorPlugin::MAType type, int period);
+    void getADX (int type, int period);
     PlotLine * getTR ();
     int getMinBars ();
     
@@ -49,7 +49,7 @@ class DMI : public IndicatorPlugin
     QString adxLabel;
     int period;
     int smoothing;
-    IndicatorPlugin::MAType maType;
+    int maType;
     QString lineRequest;
     QStringList lineList;
     QString label;

@@ -46,8 +46,8 @@ class THERM : public IndicatorPlugin
     double threshold;
     int smoothing;
     int maPeriod;
-    IndicatorPlugin::MAType maType;
-    IndicatorPlugin::MAType smoothType;
+    int maType;
+    int smoothType;
 };
 
 extern "C"

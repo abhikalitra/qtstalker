@@ -43,7 +43,7 @@ void ROC::setDefaults ()
   label = pluginName;
   period = 14;
   smoothing = 10;
-  maType = IndicatorPlugin::SMA;  
+  maType = 1;  
   input = BarData::Close;
 }
 
@@ -97,7 +97,7 @@ int ROC::indicatorPrefDialog (QWidget *w)
   dialog->addComboItem(QObject::tr("Line Type"), QObject::tr("Parms"), lineTypes, lineType);
   dialog->addTextItem(QObject::tr("Label"), QObject::tr("Parms"), label);
   dialog->addIntItem(QObject::tr("Period"), QObject::tr("Parms"), period, 1, 99999999);
-  dialog->addComboItem(QObject::tr("Smoothing Type"), QObject::tr("Parms"), maTypeList, maType);
+  dialog->addComboItem(QObject::tr("Smoothing Type"), QObject::tr("Parms"), getMATypes(), maType);
   if (customFlag)
     dialog->addFormulaInputItem(QObject::tr("Input"), QObject::tr("Parms"), FALSE, customInput);
   else
@@ -112,7 +112,7 @@ int ROC::indicatorPrefDialog (QWidget *w)
     lineType = (PlotLine::LineType) dialog->getComboIndex(QObject::tr("Line Type"));
     period = dialog->getInt(QObject::tr("Period"));
     label = dialog->getText(QObject::tr("Label"));
-    maType = (IndicatorPlugin::MAType) dialog->getComboIndex(QObject::tr("Smoothing Type"));
+    maType = dialog->getComboIndex(QObject::tr("Smoothing Type"));
     smoothing = dialog->getInt(QObject::tr("Smoothing"));
     if (customFlag)
       customInput = dialog->getFormulaInput(QObject::tr("Input"));
@@ -152,7 +152,7 @@ void ROC::setIndicatorSettings (Setting &dict)
       
   s = dict.getData("maType");
   if (s.length())
-    maType = (IndicatorPlugin::MAType) s.toInt();
+    maType = s.toInt();
     
   s = dict.getData("input");
   if (s.length())

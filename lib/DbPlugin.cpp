@@ -817,6 +817,51 @@ QString DbPlugin::getHeaderField (int k)
   return s;
 }
 
+void DbPlugin::deleteIndicator (QString d)
+{
+  QStringList l = QStringList::split(",", getHeaderField(LocalIndicators), FALSE);
+  Setting set;
+  for (QStringList::Iterator it = l.begin(); it != l.end(); ++it )
+  {
+    set.parse(*it);
+    if (! set.getData("Name").compare(d))
+    {
+      l.remove(*it);
+      break;
+    }
+  }
+  
+  if (l.count())
+    setHeaderField(LocalIndicators, l.join(","));
+  else
+    setHeaderField(LocalIndicators, "");
+}
+
+void DbPlugin::addIndicator (QString d)
+{
+  QStringList l = QStringList::split(",", getHeaderField(LocalIndicators), FALSE);
+  l.append(d);
+  setHeaderField(LocalIndicators, l.join(","));
+}
+
+void DbPlugin::setIndicator (QString k, QString d)
+{
+  QStringList l = QStringList::split(",", getHeaderField(LocalIndicators), FALSE);
+  Setting set;
+  int loop;
+  for (loop = 0; loop < (int) l.count(); loop++)
+  {
+    set.parse(l[loop]);
+    if (! set.getData("Name").compare(k))
+    {
+      l[loop] = d;
+      break;
+    }
+  }
+  
+  setHeaderField(LocalIndicators, l.join(","));
+}
+
 //*********************************************************
 //***************** VIRTUAL OVERRIDES *********************
 //*********************************************************

@@ -47,7 +47,7 @@ void BB::setDefaults ()
   lineType = PlotLine::Line;
   deviation = 2;
   period = 20;
-  maType = IndicatorPlugin::SMA;
+  maType = 1;
   customBand = QObject::tr("Upper");
   label = pluginName;
 }
@@ -119,7 +119,7 @@ int BB::indicatorPrefDialog (QWidget *w)
   dialog->addComboItem(QObject::tr("Line Type"), QObject::tr("Parms"), lineTypes, lineType);
   dialog->addIntItem(QObject::tr("Period"), QObject::tr("Parms"), period, 1, 99999999);
   dialog->addFloatItem(QObject::tr("Deviation"), QObject::tr("Parms"), deviation, 0, 99999999);
-  dialog->addComboItem(QObject::tr("MA Type"), QObject::tr("Parms"), maTypeList, maType);
+  dialog->addComboItem(QObject::tr("MA Type"), QObject::tr("Parms"), getMATypes(), maType);
   dialog->addTextItem(QObject::tr("Label"), QObject::tr("Parms"), label);
   if (customFlag)
     dialog->addComboItem(QObject::tr("Plot"), QObject::tr("Parms"), bandList, customBand);
@@ -131,7 +131,7 @@ int BB::indicatorPrefDialog (QWidget *w)
     color = dialog->getColor(QObject::tr("Color"));
     lineType = (PlotLine::LineType) dialog->getComboIndex(QObject::tr("Line Type"));
     period = dialog->getInt(QObject::tr("Period"));
-    maType = (IndicatorPlugin::MAType) dialog->getComboIndex(QObject::tr("MA Type"));
+    maType = dialog->getComboIndex(QObject::tr("MA Type"));
     deviation = dialog->getFloat(QObject::tr("Deviation"));
     label = dialog->getText(QObject::tr("Label"));
     if (customFlag)
@@ -170,7 +170,7 @@ void BB::setIndicatorSettings (Setting &dict)
   
   s = dict.getData("maType");
   if (s.length())
-    maType = (IndicatorPlugin::MAType) s.toInt();
+    maType = s.toInt();
 
   s = dict.getData("customBand");
   if (s.length())

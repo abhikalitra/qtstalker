@@ -39,7 +39,7 @@ class BB : public IndicatorPlugin
     PlotLine::LineType lineType;
     int period;
     double deviation;
-    IndicatorPlugin::MAType maType;
+    int maType;
     QString customBand;
     QStringList bandList;
     QString label;

@@ -226,7 +226,6 @@ void IndicatorPage::newIndicator ()
   idialog->addTextItem(tr("Name"), tr("Details"), tr("NewIndicator"));
   idialog->addComboItem(tr("Plot Type"), tr("Details"), l, 1);
   idialog->addComboItem(tr("Indicator Group"), tr("Details"), getIndicatorGroups(), 0);
-  idialog->addCheckItem(tr("Save Indicator To Library"), tr("Details"), FALSE);
   
   int rc = idialog->exec();
   if (rc == QDialog::Rejected)
@@ -238,7 +237,6 @@ void IndicatorPage::newIndicator ()
   QString name = idialog->getText(tr("Name"));
   QString indicator = idialog->getCombo(tr("Indicator"));
   Indicator::PlotType plotType = (Indicator::PlotType) idialog->getComboIndex(tr("Plot Type"));
-  bool saveLib = idialog->getCheck(tr("Save Indicator To Library"));
   QString igroup = idialog->getCombo(tr("Indicator Group"));
   delete idialog;
   
@@ -258,18 +256,6 @@ void IndicatorPage::newIndicator ()
       s.append(c);
   }
   name = s;
-
-  // check if we can save the indicator in the library
-  if (saveLib)
-  {
-    s = cusRulePath + "/" + name;
-    QDir dir;
-    if (dir.exists(s))
-    {
-      QMessageBox::information(this, tr("Qtstalker: Error"), tr("Duplicate library indicator name."));
-      return;
-    }
-  }
 
   // check if we can save this indicator in current group  
   QDir dir;  
@@ -323,9 +309,7 @@ void IndicatorPage::newIndicator ()
       tset.setData("plotType", QString::number(plotType));
       
       // save the local indicator to the db
-      QStringList l = QStringList::split(",", db->getHeaderField(DbPlugin::LocalIndicators), FALSE);
-      l.append(tset.getString());
-      db->setHeaderField(DbPlugin::LocalIndicators, l.join(","));
+      db->addIndicator(tset.getString());
       
       localIndicators.append(name);
       
@@ -334,13 +318,6 @@ void IndicatorPage::newIndicator ()
     
     plug->saveIndicatorSettings(s);
     
-    // save to indicator library if requested
-    if (saveLib)
-    {
-      s = cusRulePath + "/" + name;
-      plug->saveIndicatorSettings(s);
-    }
-      
     config.closePlugin(indicator);
     
     Setting *set = new Setting;
@@ -370,21 +347,21 @@ void IndicatorPage::editIndicator (QString d)
     return;
   }
   
-  Setting *set = config.getIndicator(s);
-  if (! set->count())
+  Setting set;
+  config.getIndicator(s, set);
+  if (! set.count())
   {
-    delete set;
     qDebug("IndicatorPage::editIndicator:indicator settings empty");
+    return;
   }
   
-  QString type = set->getData("plugin");
+  QString type = set.getData("plugin");
   
   IndicatorPlugin *plug = config.getIndicatorPlugin(type);
   if (! plug)
   {
     qDebug("IndicatorPage::editIndicator - could not open plugin");
     config.closePlugin(type);
-    delete set;
     return;
   }
 
@@ -397,14 +374,16 @@ void IndicatorPage::editIndicator (QString d)
     
     Setting tset;
     plug->getIndicatorSettings(tset);
-    saveLocalIndicator(d, &tset);
+    saveLocalIndicator(d, tset);
     
     config.closePlugin(type);
     
-    if (set->getInt("enable"))
+    if (set.getInt("enable"))
     {
-      set->setData("File", s);
-      emit signalEditIndicator(set);
+      set.setData("File", s);
+      Setting *set2 = new Setting;
+      set2->parse(set.getString());      
+      emit signalEditIndicator(set2);
     }
   }
   else
@@ -457,29 +436,13 @@ void IndicatorPage::deleteIndicator ()
       if (! co->getData("Plot").compare(list->currentText()))
         db->deleteChartObject(co->getData("Name"));
     }
-    
-    QStringList l2 = QStringList::split(",", db->getHeaderField(DbPlugin::LocalIndicators), FALSE);
-    Setting tset;
-    for (QStringList::Iterator it = l2.begin(); it != l2.end(); ++it )
-    {
-      tset.parse(*it);
-      if (! tset.getData("Name").compare(list->currentText()))
-      {
-        l2.remove(*it);
-	break;
-      }
-      else
-        tset.clear();
-    }
-    
-    if (l2.count())
-      db->setHeaderField(DbPlugin::LocalIndicators, l2.join(","));
-    else
-      db->setHeaderField(DbPlugin::LocalIndicators, "");
+  
+    db->deleteIndicator(list->currentText());  
     
     config.closePlugin(plugin);
   }
 
+  itemSelected(QString());
   localIndicators.remove(list->currentText());
   emit signalDeleteIndicator(list->currentText());
 }
@@ -492,37 +455,97 @@ void IndicatorPage::moveIndicator ()
 
   Config config;
   QDir dir;
-  QString s =  baseDir + "/" + group->currentText() + "/" + list->currentText();
+  QString s = baseDir + "/" + group->currentText() + "/" + list->currentText();
   if (! dir.exists(s, TRUE))
   {
     qDebug("IndicatorPage::moveIndicator: indicator not found %s", s.latin1());
     return;
   }
   
-  Setting *set = config.getIndicator(s);
-  if (! set->count())
+  Setting set;
+  config.getIndicator(s, set);
+  if (! set.count())
   {
-    delete set;
     qDebug("IndicatorPage::moveIndicator:indicator settings empty");
+    return;
   }
   
   PrefDialog *dialog = new PrefDialog;
   dialog->setCaption(tr("Move Indicator"));
   dialog->createPage (tr("Details"));
   dialog->setHelpFile("workwithmainindicators.html");
-  dialog->addComboItem(tr("Plot Type"), tr("Details"), pl, set->getInt("plotType"));
+  dialog->addComboItem(tr("Plot Type"), tr("Details"), pl, set.getInt("plotType"));
+  QString igroup = group->currentText();
+  if (localIndicators.findIndex(list->currentText()) != -1)
+    igroup = tr("Local");
+  dialog->addComboItem(tr("Indicator Group"), tr("Details"), getIndicatorGroups(), igroup);
   
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)
   {
     delete dialog;
-    delete set;
     return;
   }
   
-  set->setData("plotType", QString::number(dialog->getComboIndex(tr("Plot Type"))));
+  set.setData("plotType", QString::number(dialog->getComboIndex(tr("Plot Type"))));
+  
+  QString s2 = dialog->getCombo(tr("Indicator Group"));
+  if (! igroup.compare(tr("Local")))
+  {
+    if (s2.compare(tr("Local")))
+    {
+      Config config;
+      QString plugin = config.parseDbPlugin(chartPath);
+      DbPlugin *db = config.getDbPlugin(plugin);
+      if (! db)
+      {
+        qDebug("IndicatorPage::moveIndicator: can't open db plugin");
+        config.closePlugin(plugin);
+        return;
+      }
+  
+      if (db->openChart(chartPath))
+      {
+        qDebug("IndicatorPage::moveIndicator: can't open chart");
+        config.closePlugin(plugin);
+        return;
+      }
+      
+      db->deleteIndicator(list->currentText());
+      config.closePlugin(plugin);
+      
+      localIndicators.remove(list->currentText());
+    }
+  }
+  else
+  {
+    if (! s2.compare(tr("Local")))
+    {
+      Config config;
+      QString plugin = config.parseDbPlugin(chartPath);
+      DbPlugin *db = config.getDbPlugin(plugin);
+      if (! db)
+      {
+        qDebug("IndicatorPage::moveIndicator: can't open db plugin");
+        config.closePlugin(plugin);
+        return;
+      }
+  
+      if (db->openChart(chartPath))
+      {
+        qDebug("IndicatorPage::moveIndicator: can't open chart");
+        config.closePlugin(plugin);
+        return;
+      }
+      
+      db->addIndicator(set.getString());
+      localIndicators.append(list->currentText());
+      
+      config.closePlugin(plugin);
+    }
+  }
 
-  bool status = set->getInt("enable");
+  bool status = set.getInt("enable");
   if (status)
     emit signalDisableIndicator(s);
     
@@ -532,6 +555,8 @@ void IndicatorPage::moveIndicator ()
   
   if (status)
     emit signalEnableIndicator(s);
+    
+  updateList();  
 }
 
 void IndicatorPage::updateList ()
@@ -545,8 +570,9 @@ void IndicatorPage::updateList ()
   for (loop = 0; loop < (int) l.count(); loop++)
   {
     QFileInfo fi(l[loop]);
-    Setting *set = config.getIndicator(l[loop]);
-    if (! set->getInt("enable"))
+    Setting set;
+    config.getIndicator(l[loop], set);
+    if (! set.getInt("enable"))
     {
       if (localIndicators.findIndex(fi.fileName()) != -1)
         list->insertItem(disable_gray, fi.fileName(), -1);
@@ -563,8 +589,6 @@ void IndicatorPage::updateList ()
       if (updateEnableFlag)
         emit signalEnableIndicator(l[loop]);
     }
-      
-    delete set;
   }
 
   itemSelected(QString());
@@ -592,11 +616,12 @@ void IndicatorPage::changeIndicator (QString d)
   }
   
   Config config;
-  Setting *set = config.getIndicator(s);
-  int t = set->getInt("enable");
+  Setting set;
+  config.getIndicator(s, set);
+  int t = set.getInt("enable");
   if (t)
   {
-    set->setData("enable", "0");
+    set.setData("enable", "0");
     config.setIndicator(s, set);
     if (localIndicators.findIndex(list->currentText()) != -1)
       list->changeItem(disable_gray, d, list->currentItem());
@@ -607,7 +632,7 @@ void IndicatorPage::changeIndicator (QString d)
   }
   else
   {
-    set->setData("enable", "1");
+    set.setData("enable", "1");
     config.setIndicator(s, set);
     if (localIndicators.findIndex(list->currentText()) != -1)
       list->changeItem(ok_gray, d, list->currentItem());
@@ -616,8 +641,6 @@ void IndicatorPage::changeIndicator (QString d)
     saveLocalIndicator(d, set);
     emit signalEnableIndicator(s);
   }
-  
-  delete set;
 }
 
 void IndicatorPage::slotHelp ()
@@ -836,7 +859,7 @@ void IndicatorPage::addLocalIndicators (QString d)
   {
     set.parse(l[loop]);
     QString s = baseDir + "/" + group->currentText() + "/" + set.getData("Name");
-    config.setIndicator(s, &set);
+    config.setIndicator(s, set);
     if (set.getInt("enable"))
       emit signalEnableIndicator(s);
     localIndicators.append(set.getData("Name"));
@@ -862,7 +885,7 @@ void IndicatorPage::removeLocalIndicators ()
   localIndicators.clear();
 }
 
-void IndicatorPage::saveLocalIndicator (QString d, Setting *set)
+void IndicatorPage::saveLocalIndicator (QString d, Setting &set)
 {
   if (localIndicators.findIndex(d) != -1)
   {
@@ -884,18 +907,8 @@ void IndicatorPage::saveLocalIndicator (QString d, Setting *set)
     }
     
     // save the local indicator to the db
-    QStringList l = QStringList::split(",", db->getHeaderField(DbPlugin::LocalIndicators), FALSE);
-    int loop;
-    for (loop = 0; loop < (int) l.count(); loop++)
-    {
-      if (! set->getData("Name").compare(d))
-      {
-        l[loop] = set->getString();
-	break;
-      }
-    }
-    db->setHeaderField(DbPlugin::LocalIndicators, l.join(","));
-      
+    db->setIndicator(d, set.getString());
+    
     config.closePlugin(plugin);
   }
 }

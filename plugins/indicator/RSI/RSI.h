@@ -42,7 +42,7 @@ class RSI : public IndicatorPlugin
     int smoothing;
     double buyLine;
     double sellLine;
-    IndicatorPlugin::MAType maType;
+    int maType;
     BarData::InputType input;
     QString customInput;
 };

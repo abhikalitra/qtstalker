@@ -43,7 +43,7 @@ void MF::setDefaults ()
   label = pluginName;
   period = 10;
   smoothing = 10;  
-  maType = IndicatorPlugin::SMA;  
+  maType = 1;  
 }
 
 void MF::calculate ()
@@ -117,7 +117,7 @@ int MF::indicatorPrefDialog (QWidget *w)
   dialog->addTextItem(QObject::tr("Label"), QObject::tr("Parms"), label);
   dialog->addIntItem(QObject::tr("Period"), QObject::tr("Parms"), period, 1, 99999999);
   dialog->addIntItem(QObject::tr("Smoothing"), QObject::tr("Parms"), smoothing, 0, 99999999);
-  dialog->addComboItem(QObject::tr("Smoothing Type"), QObject::tr("Parms"), maTypeList, maType);
+  dialog->addComboItem(QObject::tr("Smoothing Type"), QObject::tr("Parms"), getMATypes(), maType);
   
   int rc = dialog->exec();
   
@@ -127,7 +127,7 @@ int MF::indicatorPrefDialog (QWidget *w)
     lineType = (PlotLine::LineType) dialog->getComboIndex(QObject::tr("Line Type"));
     period = dialog->getInt(QObject::tr("Period"));
     label = dialog->getText(QObject::tr("Label"));
-    maType = (IndicatorPlugin::MAType) dialog->getComboIndex(QObject::tr("Smoothing Type"));
+    maType = dialog->getComboIndex(QObject::tr("Smoothing Type"));
     smoothing = dialog->getInt(QObject::tr("Smoothing"));
     rc = TRUE;
   }
@@ -163,7 +163,7 @@ void MF::setIndicatorSettings (Setting &dict)
       
   s = dict.getData("maType");
   if (s.length())
-    maType = (IndicatorPlugin::MAType) s.toInt();
+    maType = s.toInt();
     
   s = dict.getData("smoothing");
   if (s.length())

@@ -26,16 +26,22 @@
 #include <qdialog.h>
 #include <qtable.h>
 #include <qheader.h>
+#include "BarData.h"
+#include "Plot.h"
+
 
 class DataWindow : public QDialog
 {
   Q_OBJECT
 
   public:
-    DataWindow(int, int);
+    DataWindow();
     ~DataWindow();
     void setData (int, int, QString);
     void setHeader (int, QString);
+    void setBars (BarData *);
+    void setPlot (Plot *);
+    QString strip (double, int);
 
   private:
     QTable *table;

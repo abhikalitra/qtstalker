@@ -49,7 +49,7 @@ void STOCH::setDefaults ()
   period = 14;
   buyLine = 20;
   sellLine = 80;
-  maType = IndicatorPlugin::SMA;
+  maType = 1;
   label = pluginName;
 }
 
@@ -156,7 +156,7 @@ int STOCH::indicatorPrefDialog (QWidget *w)
   dialog->createPage (QObject::tr("Parms"));
   dialog->setHelpFile(helpFile);
   dialog->addIntItem(QObject::tr("Period"), QObject::tr("Parms"), period, 1, 99999999);
-  dialog->addComboItem(QObject::tr("Smoothing Type"), QObject::tr("Parms"), maTypeList, maType);
+  dialog->addComboItem(QObject::tr("Smoothing Type"), QObject::tr("Parms"), getMATypes(), maType);
   dialog->addFloatItem(QObject::tr("Buy Line"), QObject::tr("Parms"), buyLine, 0, 100);
   dialog->addFloatItem(QObject::tr("Sell Line"), QObject::tr("Parms"), sellLine, 0, 100);
   if (customFlag)
@@ -190,7 +190,7 @@ int STOCH::indicatorPrefDialog (QWidget *w)
     kperiod = dialog->getInt(QObject::tr("%K Smoothing"));
     klabel = dialog->getText(QObject::tr("%K Label"));
     period = dialog->getInt(QObject::tr("Period"));
-    maType = (IndicatorPlugin::MAType) dialog->getComboIndex(QObject::tr("Smoothing Type"));
+    maType = dialog->getComboIndex(QObject::tr("Smoothing Type"));
     buyLine = dialog->getFloat(QObject::tr("Buy Line"));
     sellLine = dialog->getFloat(QObject::tr("Sell Line"));
     if (customFlag)
@@ -253,7 +253,7 @@ void STOCH::setIndicatorSettings (Setting &dict)
   
   s = dict.getData("maType");
   if (s.length())
-    maType = (IndicatorPlugin::MAType) s.toInt();
+    maType = s.toInt();
 
   s = dict.getData("buyLine");
   if (s.length())

@@ -47,7 +47,7 @@ void TRIX::setDefaults ()
   period = 12;
   tperiod = 9;
   input = BarData::Close;
-  maType = IndicatorPlugin::SMA;  
+  maType = 1;  
 }
 
 void TRIX::calculate ()
@@ -63,11 +63,11 @@ void TRIX::calculate ()
     return;
   }
 
-  PlotLine *ema = getMA(in, IndicatorPlugin::EMA, period);
+  PlotLine *ema = getMA(in, 0, period);
   
-  PlotLine *ema2 = getMA(ema, IndicatorPlugin::EMA, period);
+  PlotLine *ema2 = getMA(ema, 0, period);
   
-  PlotLine *ema3 = getMA(ema2, IndicatorPlugin::EMA, period);
+  PlotLine *ema3 = getMA(ema2, 0, period);
   int emaLoop = ema3->getSize() - 1;
 
   PlotLine *trix = new PlotLine();
@@ -117,7 +117,7 @@ int TRIX::indicatorPrefDialog (QWidget *w)
   dialog->addComboItem(QObject::tr("Trigger Line Type"), QObject::tr("Trigger Parms"), lineTypes, trigLineType);
   dialog->addTextItem(QObject::tr("Trigger Label"), QObject::tr("Trigger Parms"), trigLabel);
   dialog->addIntItem(QObject::tr("Trigger Period"), QObject::tr("Trigger Parms"), tperiod, 1, 99999999);
-  dialog->addComboItem(QObject::tr("Trigger Type"), QObject::tr("Trigger Parms"), maTypeList, maType);
+  dialog->addComboItem(QObject::tr("Trigger Type"), QObject::tr("Trigger Parms"), getMATypes(), maType);
   
   int rc = dialog->exec();
   
@@ -136,7 +136,7 @@ int TRIX::indicatorPrefDialog (QWidget *w)
     trigLineType = (PlotLine::LineType) dialog->getComboIndex(QObject::tr("Trigger Line Type"));
     tperiod = dialog->getInt(QObject::tr("Trigger Period"));
     trigLabel = dialog->getText(QObject::tr("Trigger Label"));
-    maType = (IndicatorPlugin::MAType) dialog->getComboIndex(QObject::tr("Trigger Type"));
+    maType = dialog->getComboIndex(QObject::tr("Trigger Type"));
     rc = TRUE;
   }
   else
@@ -191,7 +191,7 @@ void TRIX::setIndicatorSettings (Setting &dict)
   
   s = dict.getData("maType");
   if (s.length())
-    maType = (IndicatorPlugin::MAType) s.toInt();
+    maType = s.toInt();
 
   s = dict.getData("customInput");
   if (s.length())

@@ -43,7 +43,7 @@ class TRIX : public IndicatorPlugin
     QString trigLabel;
     int period;
     int tperiod;
-    IndicatorPlugin::MAType maType;
+    int maType;
     BarData::InputType input;
     QString customInput;
 };
