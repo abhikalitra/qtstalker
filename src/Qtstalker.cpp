@@ -69,6 +69,7 @@
 #include "trend.xpm"
 #include "loggrid.xpm"
 #include "hidechart.xpm"
+#include "date.xpm"
 
 QtstalkerApp::QtstalkerApp()
 {
@@ -154,7 +155,8 @@ QtstalkerApp::QtstalkerApp()
   QObject::connect(mainPlot, SIGNAL(statusMessage(QString)), this, SLOT(slotStatusMessage(QString)));
   QObject::connect(mainPlot, SIGNAL(chartObjectCreated(Setting *)), this, SLOT(slotChartObjectCreated(Setting *)));
   QObject::connect(mainPlot, SIGNAL(infoMessage(Setting *)), this, SLOT(slotUpdateInfo(Setting *)));
-  
+  QObject::connect(mainPlot, SIGNAL(leftMouseButton(int, bool)), this, SLOT(slotPlotLeftMouseButton(int, bool)));
+
   QObject::connect(this, SIGNAL(signalGrid(bool)), mainPlot, SLOT(setGridFlag(bool)));
   QObject::connect(this, SIGNAL(signalScaleToScreen(bool)), mainPlot, SLOT(setScaleToScreen(bool)));
   QObject::connect(this, SIGNAL(signalPixelspace(int)), mainPlot, SLOT(setPixelspace(int)));
@@ -162,8 +164,10 @@ QtstalkerApp::QtstalkerApp()
   QObject::connect(this, SIGNAL(signalInterval(Plot::TimeInterval)), mainPlot, SLOT(setInterval(Plot::TimeInterval)));
 
   tabs = new QTabWidget(split);
+  if (config->getData(Config::IndicatorTabs).toInt() == 0)
+    tabs->setTabPosition(QTabWidget::Bottom);
   QObject::connect(tabs, SIGNAL(currentChanged(QWidget *)), this, SLOT(slotTabChanged(QWidget *)));
-  
+
   initToolBar();
 
   statusBar()->message(tr("Ready"), 2000);
@@ -317,6 +321,11 @@ void QtstalkerApp::initActions()
   actionHideMainPlot = new QAction(tr("Hide Main Plot"), icon, tr("Hide Main Plot"), 0, this, 0, true);
   actionHideMainPlot->setStatusTip(tr("Hide the main plot."));
   connect(actionHideMainPlot, SIGNAL(toggled(bool)), this, SLOT(slotHideMainPlot(bool)));
+
+  icon = date;
+  actionPlotDate = new QAction(tr("Toggle Indicator Date"), icon, tr("Toggle Indicator Date"), 0, this, 0, true);
+  actionPlotDate->setStatusTip(tr("Toggle indicator date."));
+  connect(actionPlotDate, SIGNAL(toggled(bool)), this, SLOT(slotPlotDate(bool)));
 }
 
 void QtstalkerApp::initMenuBar()
@@ -336,6 +345,7 @@ void QtstalkerApp::initMenuBar()
   actionLogScale->addTo(viewMenu);
   actionNav->addTo(viewMenu);
   actionHideMainPlot->addTo(viewMenu);
+  actionPlotDate->addTo(viewMenu);
 
   toolMenu = new QPopupMenu();
   actionDatawindow->addTo(toolMenu);
@@ -350,7 +360,7 @@ void QtstalkerApp::initMenuBar()
   menuBar()->insertItem(tr("&Tools"), toolMenu);
   menuBar()->insertSeparator();
   menuBar()->insertItem(tr("&Help"), helpMenu);
-  
+
   chartMenu = new QPopupMenu();
   chartMenu->insertItem(QPixmap(indicator), tr("New Indicator"), this, SLOT(slotNewIndicator()));
   chartDeleteMenu = new QPopupMenu();
@@ -394,6 +404,7 @@ void QtstalkerApp::initToolBar()
   actionScaleToScreen->addTo(toolbar);
   actionLogScale->addTo(toolbar);
   actionHideMainPlot->addTo(toolbar);
+  actionPlotDate->addTo(toolbar);
   actionNewIndicator->addTo(toolbar);
   actionDatawindow->addTo(toolbar);
   actionQuotes->addTo(toolbar);
@@ -504,11 +515,16 @@ void QtstalkerApp::slotOptions ()
   set->setList(tr("Paint Bar Indicator"), config->getIndicators());
   set->set(tr("Plot Font"), config->getData(Config::PlotFont), Setting::Font);
   set->set(tr("App Font"), config->getData(Config::AppFont), Setting::Font);
-  
+
   if (config->getData(Config::NavigatorPosition).toInt() == 1)
     set->set(tr("Navigator Left"), tr("True"), Setting::Bool);
   else
     set->set(tr("Navigator Left"), tr("False"), Setting::Bool);
+
+  if (config->getData(Config::IndicatorTabs).toInt() == 1)
+    set->set(tr("Indicator Tabs Top"), tr("True"), Setting::Bool);
+  else
+    set->set(tr("Indicator Tabs Top"), tr("False"), Setting::Bool);
 
   dialog->setItems(set);
 
@@ -565,6 +581,17 @@ void QtstalkerApp::slotOptions ()
       navSplitter->moveToLast(navBase);
     }
     navSplitter->refresh();
+
+    if (! set->getData(tr("Indicator Tabs Top")).compare(tr("True")))
+    {
+      config->setData(Config::IndicatorTabs, "1");
+      tabs->setTabPosition(QTabWidget::Top);
+    }
+    else
+    {
+      config->setData(Config::IndicatorTabs, "0");
+      tabs->setTabPosition(QTabWidget::Bottom);
+    }
 
     loadChart(chartPath);
 
@@ -1473,7 +1500,6 @@ void QtstalkerApp::addIndicatorButton (QString d)
   }
 
   Plot *plot = new Plot (baseWidget);
-  plot->setDateFlag(TRUE);
   QObject::connect(plot, SIGNAL(rightMouseButton()), this, SLOT(indicatorPlotPopupMenu()));
   QObject::connect(plot, SIGNAL(statusMessage(QString)), this, SLOT(slotStatusMessage(QString)));
   QObject::connect(plot, SIGNAL(chartObjectCreated(Setting *)), this, SLOT(slotChartObjectCreated(Setting *)));
@@ -1481,7 +1507,7 @@ void QtstalkerApp::addIndicatorButton (QString d)
   plotList.replace(d, plot);
 
   QObject::connect(this, SIGNAL(signalIndex(int)), plot, SLOT(setIndex(int)));
-  
+
   QObject::connect(this, SIGNAL(signalInterval(Plot::TimeInterval)), plot, SLOT(setInterval(Plot::TimeInterval)));
   compressionChanged(config->getData(Config::Compression));
 
@@ -1523,6 +1549,12 @@ void QtstalkerApp::addIndicatorButton (QString d)
   QFont font(l[0], l[1].toInt(), l[2].toInt());
   QObject::connect(this, SIGNAL(signalPlotFont(QFont)), plot, SLOT(setPlotFont(QFont)));
   emit signalPlotFont(font);
+
+  plot->setDateFlag(actionPlotDate->isOn());
+  QObject::connect(this, SIGNAL(signalPlotDate(bool)), plot, SLOT(setDateFlag(bool)));
+
+  // setup the crosshair signals
+  QObject::connect(plot, SIGNAL(leftMouseButton(int, bool)), this, SLOT(slotPlotLeftMouseButton(int, bool)));
 
   tabs->addTab(plot, d);
 
@@ -1624,6 +1656,26 @@ void QtstalkerApp::slotHideMainPlot (bool d)
   mainPlot->draw();
 }
 
+void QtstalkerApp::slotPlotDate (bool d)
+{
+  actionPlotDate->setOn(d);
+  emit signalPlotDate (d);
+  slotTabChanged(0);
+}
+
+void QtstalkerApp::slotPlotLeftMouseButton (int x, bool mainFlag )
+{
+  if (mainFlag)
+  {
+    if (plotList.count())
+    {
+      Plot *plot = plotList[tabs->label(tabs->currentPageIndex())];
+      plot->crossHair(x, 0);
+    }
+  }
+  else
+    mainPlot->crossHair(x, 0);
+}
 
 //**********************************************************************
 //**********************************************************************

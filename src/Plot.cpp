@@ -587,6 +587,7 @@ void Plot::mousePressEvent (QMouseEvent *event)
   {
     case LeftButton:
       crossHair(event->x(), event->y());
+      emit leftMouseButton(event->x(), mainFlag);
       break;
     case RightButton:
       emit rightMouseButton();

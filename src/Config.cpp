@@ -203,6 +203,9 @@ QString Config::getData (Parm p)
     case NavigatorPosition:
       s = settings.readEntry("/Qtstalker/NavigatorPosition", "1");
       break;
+    case IndicatorTabs:
+      s = settings.readEntry("/Qtstalker/IndicatorTabs", "1");
+      break;
     default:
       break;
   }
@@ -296,6 +299,9 @@ void Config::setData (Parm p, QString d)
       break;
     case NavigatorPosition:
       settings.writeEntry("/Qtstalker/NavigatorPosition", d);
+      break;
+    case IndicatorTabs:
+      settings.writeEntry("/Qtstalker/IndicatorTabs", d);
       break;
     default:
       break;

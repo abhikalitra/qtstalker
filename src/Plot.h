@@ -45,6 +45,7 @@ class Plot : public QWidget
     void statusMessage (QString);
     void chartObjectCreated (Setting *);
     void infoMessage (Setting *);
+    void leftMouseButton (int, bool);
 
   public:
 
@@ -79,7 +80,6 @@ class Plot : public QWidget
     void setData (QList<Setting> *);
     void setScaleWidth (int);
     void setDateHeight (int);
-    void setDateFlag (bool);
     void setMainFlag (bool);
     void setLogScale (bool);
     void setOtherFlag (bool);
@@ -96,7 +96,6 @@ class Plot : public QWidget
     QStringList getChartObjectList ();
     void newChartObject ();
 
-    void crossHair (int, int);
     int getWidth ();
     int getPixelspace ();
     int getMinPixelspace ();
@@ -116,6 +115,8 @@ class Plot : public QWidget
     void setPlotFont (QFont);
     void setIndex (int);
     void setInterval(Plot::TimeInterval);
+    void setDateFlag (bool);
+    void crossHair (int, int);
 
   protected:
     virtual void paintEvent (QPaintEvent *);

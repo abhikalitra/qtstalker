@@ -61,6 +61,8 @@ class QtstalkerApp : public QMainWindow
     void signalIndex (int);
     void signalInterval(Plot::TimeInterval);
     void signalIndicatorPageRefresh ();
+    void signalPlotDate (bool);
+    void signalCrossHair (int, int);
 
   public:
 
@@ -121,6 +123,8 @@ class QtstalkerApp : public QMainWindow
     void slotUpdateInfo (Setting *);
     void slotLogScale (bool);
     void slotHideMainPlot (bool);
+    void slotPlotDate (bool);
+    void slotPlotLeftMouseButton (int, bool);
 
   private:
     QPopupMenu *fileMenu;
@@ -147,6 +151,7 @@ class QtstalkerApp : public QMainWindow
     QAction *actionNav;
     QAction *actionLogScale;
     QAction *actionHideMainPlot;
+    QAction *actionPlotDate;
 
     QToolBar *toolbar;
     QToolBar *toolbar2;

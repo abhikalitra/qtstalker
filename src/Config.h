@@ -57,7 +57,8 @@ class Config
       AppFont,
       NavAreaSize,
       LogScale,
-      NavigatorPosition
+      NavigatorPosition,
+      IndicatorTabs
     };
 
     Config (QString);
