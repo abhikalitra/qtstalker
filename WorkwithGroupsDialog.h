@@ -32,9 +32,9 @@
 class WorkwithGroupsDialog : public QDialog
 {
   Q_OBJECT
-
+  
   signals:
-    void groupOpened (QString);
+    void groupChanged ();
 
   public:
     WorkwithGroupsDialog (Config *);
@@ -42,7 +42,6 @@ class WorkwithGroupsDialog : public QDialog
     void updateList ();
 
   public slots:
-    void openGroup ();
     void renameGroup ();
     void newGroup ();
     void deleteGroup ();
@@ -54,7 +53,6 @@ class WorkwithGroupsDialog : public QDialog
     QListViewItem *item;
     Config *config;
     QToolButton *cancelButton;
-    QToolButton *openButton;
     QToolButton *editButton;
     QToolButton *deleteButton;
     QToolButton *newButton;

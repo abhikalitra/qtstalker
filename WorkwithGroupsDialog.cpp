@@ -21,7 +21,6 @@
 
 #include "WorkwithGroupsDialog.h"
 #include "GroupDialog.h"
-#include "open.xpm"
 #include "newchart.xpm"
 #include "edit.xpm"
 #include "delete.xpm"
@@ -34,12 +33,12 @@
 WorkwithGroupsDialog::WorkwithGroupsDialog (Config *c) : QDialog (0, "WorkwithGroupsDialog", TRUE)
 {
   config = c;
-  
+
   QVBoxLayout *vbox = new QVBoxLayout(this);
   vbox->setMargin(5);
   vbox->setSpacing(5);
 
-  toolbar = new QGridLayout(vbox, 1, 7);
+  toolbar = new QGridLayout(vbox, 1, 6);
   toolbar->setSpacing(1);
 
   cancelButton = new QToolButton(this);
@@ -50,22 +49,13 @@ WorkwithGroupsDialog::WorkwithGroupsDialog (Config *c) : QDialog (0, "WorkwithGr
   cancelButton->setAutoRaise(TRUE);
   toolbar->addWidget(cancelButton, 0, 0);
 
-  openButton = new QToolButton(this);
-  QToolTip::add(openButton, tr("Open Group"));
-  openButton->setPixmap(QPixmap(open));
-  connect(openButton, SIGNAL(clicked()), this, SLOT(openGroup()));
-  openButton->setMaximumWidth(30);
-  openButton->setAutoRaise(TRUE);
-  toolbar->addWidget(openButton, 0, 1);
-  openButton->setEnabled(FALSE);
-
   newButton = new QToolButton(this);
   QToolTip::add(newButton, tr("New Group"));
   newButton->setPixmap(QPixmap(newchart));
   connect(newButton, SIGNAL(clicked()), this, SLOT(newGroup()));
   newButton->setMaximumWidth(30);
   newButton->setAutoRaise(TRUE);
-  toolbar->addWidget(newButton, 0, 2);
+  toolbar->addWidget(newButton, 0, 1);
 
   editButton = new QToolButton(this);
   QToolTip::add(editButton, tr("Edit Group"));
@@ -73,7 +63,7 @@ WorkwithGroupsDialog::WorkwithGroupsDialog (Config *c) : QDialog (0, "WorkwithGr
   connect(editButton, SIGNAL(clicked()), this, SLOT(editGroup()));
   editButton->setMaximumWidth(30);
   editButton->setAutoRaise(TRUE);
-  toolbar->addWidget(editButton, 0, 3);
+  toolbar->addWidget(editButton, 0, 2);
   editButton->setEnabled(FALSE);
 
   deleteButton = new QToolButton(this);
@@ -82,7 +72,7 @@ WorkwithGroupsDialog::WorkwithGroupsDialog (Config *c) : QDialog (0, "WorkwithGr
   connect(deleteButton, SIGNAL(clicked()), this, SLOT(deleteGroup()));
   deleteButton->setMaximumWidth(30);
   deleteButton->setAutoRaise(TRUE);
-  toolbar->addWidget(deleteButton, 0, 4);
+  toolbar->addWidget(deleteButton, 0, 3);
   deleteButton->setEnabled(FALSE);
 
   renameButton = new QToolButton(this);
@@ -91,13 +81,12 @@ WorkwithGroupsDialog::WorkwithGroupsDialog (Config *c) : QDialog (0, "WorkwithGr
   connect(renameButton, SIGNAL(clicked()), this, SLOT(renameGroup()));
   renameButton->setMaximumWidth(30);
   renameButton->setAutoRaise(TRUE);
-  toolbar->addWidget(renameButton, 0, 5);
+  toolbar->addWidget(renameButton, 0, 4);
   renameButton->setEnabled(FALSE);
 
   list = new QListView(this);
   list->addColumn(tr("Group"), -1);
   list->setSelectionMode(QListView::Single);
-  connect(list, SIGNAL(doubleClicked(QListViewItem *)), this, SLOT(openGroup()));
   connect(list, SIGNAL(clicked(QListViewItem *)), this, SLOT(groupSelected(QListViewItem *)));
   vbox->addWidget(list);
 }
@@ -115,16 +104,6 @@ void WorkwithGroupsDialog::updateList ()
   int loop;
   for (loop = 0; loop < (int) l.count(); loop++)
     item = new QListViewItem(list, l[loop]);
-}
-
-void WorkwithGroupsDialog::openGroup ()
-{
-  item = list->selectedItem();
-  if (item)
-  {
-    emit groupOpened (item->text(0));
-    accept();
-  }
 }
 
 void WorkwithGroupsDialog::newGroup()
@@ -152,6 +131,7 @@ void WorkwithGroupsDialog::newGroup()
   {
     config->setGroup(selection, dialog->getGroup());
     updateList();
+    emit groupChanged();
   }
 
   delete dialog;
@@ -173,11 +153,7 @@ void WorkwithGroupsDialog::editGroup()
   {
     config->setGroup(item->text(0), dialog->getGroup());
     if (dialog->getFlag())
-    {
-      QString s = config->getData(Config::Group);
-      if (! s.compare(item->text(0)))
-        emit groupOpened (item->text(0));
-    }
+      emit groupChanged ();
   }
 
   delete dialog;
@@ -191,6 +167,8 @@ void WorkwithGroupsDialog::deleteGroup()
 
   config->deleteGroup(item->text(0));
   delete item;
+  
+  emit groupChanged();
 }
 
 void WorkwithGroupsDialog::renameGroup ()
@@ -216,6 +194,8 @@ void WorkwithGroupsDialog::renameGroup ()
     config->setGroup(selection, group);
 
     updateList();
+    
+    emit groupChanged();
   }
 }
 
@@ -223,14 +203,12 @@ void WorkwithGroupsDialog::groupSelected (QListViewItem *i)
 {
   if (! i)
   {
-    openButton->setEnabled(FALSE);
     editButton->setEnabled(FALSE);
     deleteButton->setEnabled(FALSE);
     renameButton->setEnabled(FALSE);
   }
   else
   {
-    openButton->setEnabled(TRUE);
     editButton->setEnabled(TRUE);
     deleteButton->setEnabled(TRUE);
     renameButton->setEnabled(TRUE);

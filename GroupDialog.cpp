@@ -84,7 +84,7 @@ GroupDialog::GroupDialog (Config *c) : QDialog (0, "GroupDialog", TRUE)
   upButton->setAutoRaise(TRUE);
   toolbar->addWidget(upButton, 0, 4);
 
-  fileSelector = new Navigator(this, config->getData(Config::DataPath));
+  fileSelector = new Navigator(this, config->getData(Config::DataPath), TRUE);
   connect(fileSelector, SIGNAL(fileSelected(QString)), this, SLOT(symbolSelected(QString)));
   vbox->addWidget(fileSelector);
   fileSelector->updateList();

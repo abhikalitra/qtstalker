@@ -17,11 +17,14 @@
 
 - Changed the dialogs to edit values in place instead of popping up a dialog.
 
-- Made some minor GUI changes to the toolbar. Replaced chart type and chart compression buttons with combo boxes.
+- Made some GUI changes to the toolbar. Replaced chart type and chart compression buttons with combo boxes.
+  Also removed the group functions as they are no longer needed.
 
 - Changed chart object creation to be alot simpler. After selecting an object to create, just click on the chart and the
   object will be created without user interaction.
-  
+
+- Made a major GUI change by adding a tabbed section on the left of the main screen. This area can be used to expand
+  stuff in the future. It now has a chart and group navigation pages used to quickly display charts.
   
 0.17
 ====

@@ -33,9 +33,6 @@ class WorkwithChartsDialog : public QDialog
 {
   Q_OBJECT
 
-  signals:
-    void chartOpened (QString);
-
   public:
     WorkwithChartsDialog (Config *);
     ~WorkwithChartsDialog ();
@@ -45,8 +42,6 @@ class WorkwithChartsDialog : public QDialog
 
   public slots:
     void deleteChart ();
-    void openSymbol ();
-    void openSymbol (QString);
     void editChart ();
     void exportSymbol ();
     void exportAll ();
@@ -56,7 +51,6 @@ class WorkwithChartsDialog : public QDialog
   private:
     Config *config;
     QToolButton *cancelButton;
-    QToolButton *openButton;
     QToolButton *editButton;
     QToolButton *deleteButton;
     QToolButton *exportButton;

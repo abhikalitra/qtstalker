@@ -23,7 +23,6 @@
 #include "ChartDb.h"
 #include "Setting.h"
 #include "EditChartDialog.h"
-#include "open.xpm"
 #include "edit.xpm"
 #include "delete.xpm"
 #include "export.xpm"
@@ -42,7 +41,7 @@ WorkwithChartsDialog::WorkwithChartsDialog (Config *c) : QDialog (0, "WorkwithCh
   vbox->setMargin(5);
   vbox->setSpacing(5);
 
-  toolbar = new QGridLayout(vbox, 1, 8);
+  toolbar = new QGridLayout(vbox, 1, 7);
   toolbar->setSpacing(1);
 
   cancelButton = new QToolButton(this);
@@ -53,22 +52,13 @@ WorkwithChartsDialog::WorkwithChartsDialog (Config *c) : QDialog (0, "WorkwithCh
   cancelButton->setAutoRaise(TRUE);
   toolbar->addWidget(cancelButton, 0, 0);
 
-  openButton = new QToolButton(this);
-  QToolTip::add(openButton, tr("Open Chart"));
-  openButton->setPixmap(QPixmap(open));
-  connect(openButton, SIGNAL(clicked()), this, SLOT(openSymbol()));
-  openButton->setMaximumWidth(30);
-  openButton->setAutoRaise(TRUE);
-  toolbar->addWidget(openButton, 0, 1);
-  openButton->setEnabled(FALSE);
-
   editButton = new QToolButton(this);
   QToolTip::add(editButton, tr("Edit Chart"));
   editButton->setPixmap(QPixmap(edit));
   connect(editButton, SIGNAL(clicked()), this, SLOT(editChart()));
   editButton->setMaximumWidth(30);
   editButton->setAutoRaise(TRUE);
-  toolbar->addWidget(editButton, 0, 2);
+  toolbar->addWidget(editButton, 0, 1);
   editButton->setEnabled(FALSE);
 
   deleteButton = new QToolButton(this);
@@ -77,7 +67,7 @@ WorkwithChartsDialog::WorkwithChartsDialog (Config *c) : QDialog (0, "WorkwithCh
   connect(deleteButton, SIGNAL(clicked()), this, SLOT(deleteChart()));
   deleteButton->setMaximumWidth(30);
   deleteButton->setAutoRaise(TRUE);
-  toolbar->addWidget(deleteButton, 0, 3);
+  toolbar->addWidget(deleteButton, 0, 2);
   deleteButton->setEnabled(FALSE);
 
   exportButton = new QToolButton(this);
@@ -86,7 +76,7 @@ WorkwithChartsDialog::WorkwithChartsDialog (Config *c) : QDialog (0, "WorkwithCh
   connect(exportButton, SIGNAL(clicked()), this, SLOT(exportSymbol()));
   exportButton->setMaximumWidth(30);
   exportButton->setAutoRaise(TRUE);
-  toolbar->addWidget(exportButton, 0, 4);
+  toolbar->addWidget(exportButton, 0, 3);
   exportButton->setEnabled(FALSE);
 
   exportAllButton = new QToolButton(this);
@@ -95,7 +85,7 @@ WorkwithChartsDialog::WorkwithChartsDialog (Config *c) : QDialog (0, "WorkwithCh
   connect(exportAllButton, SIGNAL(clicked()), this, SLOT(exportAll()));
   exportAllButton->setMaximumWidth(30);
   exportAllButton->setAutoRaise(TRUE);
-  toolbar->addWidget(exportAllButton, 0, 5);
+  toolbar->addWidget(exportAllButton, 0, 4);
 
   upButton = new QToolButton(this);
   QToolTip::add(upButton, tr("Parent Directory"));
@@ -103,35 +93,15 @@ WorkwithChartsDialog::WorkwithChartsDialog (Config *c) : QDialog (0, "WorkwithCh
   connect(upButton, SIGNAL(clicked()), this, SLOT(upDirectory()));
   upButton->setMaximumWidth(30);
   upButton->setAutoRaise(TRUE);
-  toolbar->addWidget(upButton, 0, 6);
+  toolbar->addWidget(upButton, 0, 5);
 
-  navigator = new Navigator(this, config->getData(Config::DataPath));
-  connect(navigator, SIGNAL(doubleClick(QString)), this, SLOT(openSymbol(QString)));
+  navigator = new Navigator(this, config->getData(Config::DataPath), TRUE);
   connect(navigator, SIGNAL(fileSelected(QString)), this, SLOT(symbolSelected(QString)));
   vbox->addWidget(navigator);
 }
 
 WorkwithChartsDialog::~WorkwithChartsDialog ()
 {
-}
-
-void WorkwithChartsDialog::openSymbol ()
-{
-  openSymbol(navigator->getFileSelection());
-}
-
-void WorkwithChartsDialog::openSymbol (QString symbol)
-{
-  if (! symbol.length())
-    return;
-
-  QString s = config->getData(Config::DataPath);
-  s.append("/");
-  s.append(symbol);
-
-  emit chartOpened (s);
-
-  reject();
 }
 
 void WorkwithChartsDialog::deleteChart ()
@@ -272,14 +242,12 @@ void WorkwithChartsDialog::symbolSelected (QString d)
 {
   if (! d.length())
   {
-    openButton->setEnabled(FALSE);
     editButton->setEnabled(FALSE);
     deleteButton->setEnabled(FALSE);
     exportButton->setEnabled(FALSE);
   }
   else
   {
-    openButton->setEnabled(TRUE);
     editButton->setEnabled(TRUE);
     deleteButton->setEnabled(TRUE);
     exportButton->setEnabled(TRUE);

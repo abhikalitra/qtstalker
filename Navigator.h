@@ -37,13 +37,14 @@ class Navigator : public QWidget
     void fileSelected (QString);
 
   public:
-    Navigator (QWidget *, QString);
+    Navigator (QWidget *, QString, bool);
     ~Navigator ();
     void updateList ();
     void clearFileInfo ();
     void setFileInfo ();
     QString getFileSelection ();
     void setDirectory (QString);
+    void setColumnText (QString);
 
   public slots:
     void upDirectory ();
@@ -60,6 +61,7 @@ class Navigator : public QWidget
     QLabel *firstDate;
     QLabel *lastDate;
     QDir currentDir;
+    bool infoFlag;
 };
 
 #endif

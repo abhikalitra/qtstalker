@@ -386,7 +386,7 @@ SymbolDialog::SymbolDialog (QString dataPath) : QDialog (0, "SymbolDialog", TRUE
   upButton->setAutoRaise(TRUE);
   toolbar->addWidget(upButton, 0, 2);
 
-  navigator = new Navigator(this, dataPath);
+  navigator = new Navigator(this, dataPath, TRUE);
   vbox->addWidget(navigator);
   connect(navigator, SIGNAL(doubleClick(QString)), this, SLOT(checkDoubleClick(QString)));
 

@@ -52,8 +52,8 @@
 #include "Tester.h"
 
 #include "dirclosed.xpm"
-#include "next.xpm"
-#include "prev.xpm"
+//#include "next.xpm"
+//#include "prev.xpm"
 #include "grid.xpm"
 #include "datawindow.xpm"
 #include "indicator.xpm"
@@ -89,9 +89,58 @@ QtstalkerApp::QtstalkerApp()
   baseWidget = new QWidget(this);
   setCentralWidget (baseWidget);
 
-  QVBoxLayout *vbox = new QVBoxLayout(baseWidget);
+  QHBoxLayout *hbox = new QHBoxLayout(baseWidget);
 
-  split = new QSplitter(baseWidget);
+  QSplitter *navSplitter = new QSplitter(baseWidget);
+  navSplitter->setOrientation(Horizontal);
+  hbox->addWidget(navSplitter);
+
+  QTabWidget *ttab = new QTabWidget(navSplitter);
+
+  // create chart nav tab
+
+  QWidget *w = new QWidget(baseWidget);
+
+  QVBoxLayout *vbox = new QVBoxLayout(w);
+
+  chartNav = new Navigator(w, config->getData(Config::DataPath), FALSE);
+  connect(chartNav, SIGNAL(fileSelected(QString)), this, SLOT(slotChartSelected(QString)));
+  chartNav->updateList();
+  vbox->addWidget(chartNav);
+
+  ttab->addTab(w, QIconSet(QPixmap("openchart")), "C");
+
+  // create group nav tab
+
+  w = new QWidget(baseWidget);
+
+  vbox = new QVBoxLayout(w);
+
+  groupNav = new Navigator(w, config->getData(Config::GroupPath), FALSE);
+  connect(groupNav, SIGNAL(fileSelected(QString)), this, SLOT(slotChartSelected(QString)));
+  groupNav->updateList();
+  vbox->addWidget(groupNav);
+
+  ttab->addTab(w, QIconSet(QPixmap("dirclosed")), "G");
+
+  // create info nav tab
+
+  w = new QWidget(baseWidget);
+
+  vbox = new QVBoxLayout(w);
+
+  infoLabel = new QLabel(w);
+  vbox->addWidget(infoLabel);
+
+  ttab->addTab(w, "I");
+
+  // construct the chart areas
+  
+  QWidget *chartBase = new QWidget(navSplitter);
+
+  vbox = new QVBoxLayout(chartBase);
+
+  split = new QSplitter(chartBase);
   split->setOrientation(Vertical);
   vbox->addWidget(split);
 
@@ -132,10 +181,6 @@ QtstalkerApp::QtstalkerApp()
   connect (barCombo, SIGNAL(activated(int)), this, SLOT(slotBarComboChanged(int)));
   barCombo->setEnabled(FALSE);
 
-  // setup the group combo
-  connect (groupCombo, SIGNAL(activated(int)), this, SLOT(slotGroupComboChanged(int)));
-  groupCombo->setEnabled(FALSE);
-
   // setup the compression buttons
   compressionChanged(config->getData(Config::Compression));
 
@@ -155,14 +200,19 @@ QtstalkerApp::QtstalkerApp()
     actionScaleToScreen->setOn(FALSE);
   mainPlot->setScaleToScreen(s.toInt());
 
-  // set the splitter size
+  // set the indicator splitter size
   QValueList<int> sizeList;
   s = config->getData(Config::MainPlotSize);
   sizeList.append(s.toInt());
   s = config->getData(Config::IndicatorPlotSize);
   sizeList.append(s.toInt());
   split->setSizes(sizeList);
-  
+
+  // set the nav splitter size
+  sizeList.clear();
+  sizeList.append(30);
+  navSplitter->setSizes(sizeList);
+
   QStringList l = config->getIndicators();
   for (loop = 0; loop < (int) l.count(); loop++)
     addIndicatorButton(l[loop]);
@@ -210,18 +260,6 @@ void QtstalkerApp::initActions()
   actionGrid = new QAction(tr("Chart Grid"), icon, tr("Chart Grid"), 0, this, 0, true);
   actionGrid->setStatusTip(tr("Toggle the chart grid."));
   connect(actionGrid, SIGNAL(toggled(bool)), this, SLOT(slotGrid(bool)));
-
-  icon = prev;
-  actionBack = new QAction(tr("Previous Chart"), icon, tr("Previous Chart"), 0, this);
-  actionBack->setStatusTip(tr("Display previous chart in current group."));
-  connect(actionBack, SIGNAL(activated()), this, SLOT(slotBack()));
-  actionBack->setEnabled(FALSE);
-
-  icon = nextpix;
-  actionNext = new QAction(tr("Next Chart"), icon, tr("Next Chart"), 0, this);
-  actionNext->setStatusTip(tr("Display next chart in current group."));
-  connect(actionNext, SIGNAL(activated()), this, SLOT(slotNext()));
-  actionNext->setEnabled(FALSE);
 
   icon = quotes;
   actionQuotes = new QAction(tr("Quotes..."), icon, tr("Quotes..."), 0, this);
@@ -277,9 +315,6 @@ void QtstalkerApp::initMenuBar()
   viewMenu->setCheckable(true);
   actionGrid->addTo(viewMenu);
   actionScaleToScreen->addTo(viewMenu);
-  viewMenu->insertSeparator();
-  actionBack->addTo(viewMenu);
-  actionNext->addTo(viewMenu);
 
   pluginMenu = new QPopupMenu();
   actionNewPlugin->addTo(pluginMenu);
@@ -364,35 +399,18 @@ void QtstalkerApp::initToolBar()
   connect (pixelspace, SIGNAL(valueChanged(int)), this, SLOT(slotPixelspaceChanged(int)));
   QToolTip::add(pixelspace, tr("Bar Spacing"));
 
-  // construct the navigation toolbar
-  navToolbar = new QToolBar(this, "nav toolbar");
-
-  barCombo = new QComboBox(navToolbar);
+  barCombo = new QComboBox(toolbar);
   QToolTip::add(barCombo, tr("Bars"));
 
-  navToolbar->addSeparator();
+  toolbar->addSeparator();
 
-  actionBack->addTo(navToolbar);
-
-  groupCombo = new QComboBox(navToolbar);
-  groupCombo->setMaximumWidth(20);
-  groupCombo->show();
-  QListBox *lbox = groupCombo->listBox();
-  if (lbox)
-    lbox->setVariableWidth(TRUE);
-  QToolTip::add(groupCombo, tr("Group Contents"));
-
-  actionNext->addTo(navToolbar);
-
-  navToolbar->addSeparator();
-
-  slider = new QSlider(navToolbar);
+  slider = new QSlider(toolbar);
   slider->setOrientation(Qt::Horizontal);
   connect (slider, SIGNAL(valueChanged(int)), this, SLOT(slotSliderChanged(int)));
   slider->setEnabled(FALSE);
   QToolTip::add(slider, tr("Pan Chart"));
 
-  navToolbar->setStretchableWidget(slider);
+  toolbar->setStretchableWidget(slider);
 }
 
 void QtstalkerApp::slotQuit()
@@ -413,7 +431,6 @@ void QtstalkerApp::slotAbout()
 void QtstalkerApp::slotWorkwithChart ()
 {
   WorkwithChartsDialog *dialog = new WorkwithChartsDialog(config);
-  QObject::connect(dialog, SIGNAL(chartOpened(QString)), this, SLOT(slotOpenChart(QString)));
   dialog->setStartDir(chartPath);
   dialog->show();
   statusBar()->message(tr("Ready"), 2000);
@@ -423,13 +440,8 @@ void QtstalkerApp::slotOpenChart (QString selection)
 {
   slider->setEnabled(TRUE);
   actionDatawindow->setEnabled(TRUE);
-  actionBack->setEnabled(FALSE);
-  actionNext->setEnabled(FALSE);
   actionNewIndicator->setEnabled(TRUE);
   barCombo->setEnabled(TRUE);
-  groupCombo->setEnabled(FALSE);
-
-  groupCombo->clear();
 
   status = Chart;
 
@@ -439,49 +451,9 @@ void QtstalkerApp::slotOpenChart (QString selection)
 void QtstalkerApp::slotWorkwithGroup ()
 {
   WorkwithGroupsDialog *dialog = new WorkwithGroupsDialog(config);
-  QObject::connect(dialog, SIGNAL(groupOpened(QString)), this, SLOT(slotOpenGroup(QString)));
+  connect (dialog, SIGNAL(groupChanged()), this, SLOT(slotGroupChanged()));
   dialog->updateList();
   dialog->show();
-}
-
-void QtstalkerApp::slotOpenGroup(QString selection)
-{
-  slider->setEnabled(TRUE);
-  actionDatawindow->setEnabled(TRUE);
-  actionBack->setEnabled(TRUE);
-  actionNext->setEnabled(TRUE);
-  actionNewIndicator->setEnabled(TRUE);
-  barCombo->setEnabled(TRUE);
-  groupCombo->setEnabled(TRUE);
-
-  groupCombo->clear();
-
-  config->setData(Config::Group, selection);
-
-  QStringList group = config->getGroup(selection);
-  group.sort();
-  groupCombo->insertStringList(group, -1);
-
-  if (group.count() > 1)
-  {
-    actionBack->setEnabled(TRUE);
-    actionNext->setEnabled(TRUE);
-  }
-  else
-  {
-    actionBack->setEnabled(FALSE);
-    actionNext->setEnabled(FALSE);
-  }
-
-  status = Group;
-
-  if (group.count())
-  {
-    QString s = config->getData(Config::DataPath);
-    s.append("/");
-    s.append(group[0]);
-    loadChart(s);
-  }
 }
 
 void QtstalkerApp::slotQuotes ()
@@ -558,26 +530,6 @@ void QtstalkerApp::slotOptions ()
 
   delete set;
   delete dialog;
-}
-
-void QtstalkerApp::slotBack ()
-{
-  int i = groupCombo->currentItem();
-  i--;
-  if (i < 0)
-    i = groupCombo->count() - 1;
-  groupCombo->setCurrentItem(i);
-  slotGroupComboChanged(i);
-}
-
-void QtstalkerApp::slotNext ()
-{
-  int i = groupCombo->currentItem();
-  i++;
-  if (i > groupCombo->count() - 1)
-    i = 0;
-  groupCombo->setCurrentItem(i);
-  slotGroupComboChanged(i);
 }
 
 void QtstalkerApp::slotGrid (bool state)
@@ -869,14 +821,6 @@ void QtstalkerApp::loadChart (QString d)
   delete db;
 }
 
-void QtstalkerApp::slotGroupComboChanged (int)
-{
-  QString s = config->getData(Config::DataPath);
-  s.append("/");
-  s.append(groupCombo->currentText());
-  loadChart(s);
-}
-
 void QtstalkerApp::slotBarComboChanged (int index)
 {
   config->setData(Config::Bars, barCombo->text(index));
@@ -1012,15 +956,6 @@ QString QtstalkerApp::getWindowCaption ()
         caption.append(chartSymbol);
       else
         caption.append(chartType);
-      caption.append(") ");
-      break;
-    case Group:
-      caption.append(": [");
-      caption.append(config->getData(Config::Group));
-      caption.append("] - ");
-      caption.append(chartName);
-      caption.append(" (");
-      caption.append(chartSymbol);
       caption.append(") ");
       break;
     default:
@@ -1507,7 +1442,7 @@ void QtstalkerApp::setPlotColor (Plot *plot, Config::Parm parm)
 {
   QColor color;
   color.setNamedColor(config->getData(parm));
-  
+
   switch(parm)
   {
     case Config::BackgroundColor:
@@ -1531,6 +1466,19 @@ void QtstalkerApp::setPlotColor (Plot *plot, Config::Parm parm)
     default:
       break;
   }
+}
+
+void QtstalkerApp::slotChartSelected (QString d)
+{
+  if (! d.length())
+    return;
+
+  slotOpenChart(d);
+}
+
+void QtstalkerApp::slotGroupChanged ()
+{
+  groupNav->updateList();
 }
 
 //**********************************************************************

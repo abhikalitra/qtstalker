@@ -284,7 +284,7 @@ QStringList Config::getGroup (QString n)
   QString s = getData(GroupPath);
   s.append("/");
   s.append(n);
-  return loadFile(s);
+  return getDirList(s);
 }
 
 QStringList Config::getGroupList ()
@@ -294,19 +294,36 @@ QStringList Config::getGroupList ()
 
 void Config::setGroup (QString n, QStringList l)
 {
+  deleteGroup(n);
+
   QString s = getData(GroupPath);
   s.append("/");
   s.append(n);
-  saveFile(s, l);
+
+  QDir dir;
+  dir.mkdir(s, TRUE);
+
+  int loop;
+  for (loop = 0; loop < (int) l.count(); loop++)
+  {
+    QString s2 = "ln -s ";
+    s2.append(l[loop]);
+    s2.append(" ");
+    s2.append(s);
+    s2.append("/");
+    QFileInfo fi(l[loop]);
+    s2.append(fi.fileName());
+    system (s2);
+  }
 }
 
 void Config::deleteGroup (QString n)
 {
-  QString s = getData(GroupPath);
-  QDir dir(s);
+  QString s =  "rm -r ";
+  s.append(getData(GroupPath));
   s.append("/");
   s.append(n);
-  dir.remove(s);
+  system (s);
 }
 
 QStringList Config::getPortfolio (QString n)

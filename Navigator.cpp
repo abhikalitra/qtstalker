@@ -27,10 +27,11 @@
 #include <qgroupbox.h>
 #include <qlayout.h>
 
-Navigator::Navigator (QWidget *w, QString bp) : QWidget(w)
+Navigator::Navigator (QWidget *w, QString bp, bool flag) : QWidget(w)
 {
   item = 0;
   basePath = bp;
+  infoFlag = flag;
 
   currentDir.setPath(bp);
 
@@ -44,6 +45,9 @@ Navigator::Navigator (QWidget *w, QString bp) : QWidget(w)
   connect(list, SIGNAL(clicked(QListViewItem *)), this, SLOT(fileSelection(QListViewItem *)));
   connect(list, SIGNAL(doubleClicked(QListViewItem *)), this, SLOT(slotDoubleClicked()));
   hbox->addWidget(list);
+
+  if (! infoFlag)
+    return;
 
   QGroupBox *gbox = new QGroupBox(this);
   gbox->setColumnLayout(2, Horizontal);
@@ -104,6 +108,9 @@ void Navigator::upDirectory ()
 
 void Navigator::clearFileInfo ()
 {
+  if (! infoFlag)
+    return;
+
   symbol->setText("");
   title->setText("");
   type->setText("");
@@ -113,6 +120,9 @@ void Navigator::clearFileInfo ()
 
 void Navigator::setFileInfo ()
 {
+  if (! infoFlag)
+    return;
+
   item = list->selectedItem();
   if (! item)
     return;
@@ -194,9 +204,6 @@ QString Navigator::getFileSelection ()
     s = currentDir.absPath();
     s.append("/");
     s.append(item->text(0));
-
-    QString s2 = basePath;
-    s.remove(0, s2.length() + 1);
   }
 
   return s;
@@ -211,9 +218,13 @@ void Navigator::setDirectory (QString d)
 {
   if (d.length())
   {
-    int i = d.findRev('/', -1, TRUE);
-    d.truncate(i);
-    currentDir.setPath(d);
+    QFileInfo fi(d);
+    currentDir.setPath(fi.dirPath(TRUE));
   }
+}
+
+void Navigator::setColumnText (QString d)
+{
+  list->setColumnText(0, d);
 }
 
