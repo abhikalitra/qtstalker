@@ -405,22 +405,7 @@ QStringList Config::getDirList (QString path)
 
 QStringList Config::getPluginList (Config::Parm d) 
 {
-  QStringList l;
-  
-  switch (d)
-  {
-    case IndicatorPluginPath:
-      l = getData(IndicatorPluginPath);
-      break;
-    case QuotePluginPath:
-      l = getData(QuotePluginPath);
-      break;
-    case ChartPluginPath:
-      l = getData(ChartPluginPath);
-      break;
-    default:
-      break;
-  }
+  QStringList l = getDirList(getData(d));
   
   if (! l.count())
     return l;
