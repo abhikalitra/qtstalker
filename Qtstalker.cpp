@@ -1575,6 +1575,8 @@ void QtstalkerApp::setPlotColors ()
   QFont font(l[0], l[1].toInt(), l[2].toInt());
   mainPlot->setPlotFont(font);
   indicatorPlot->setPlotFont(font);
+
+  qApp->setFont(font, TRUE, 0);
 }
 
 void QtstalkerApp::slotWorkwithTest ()
