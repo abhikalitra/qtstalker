@@ -1,2 +1,7 @@
 Lurking in the shadows and corners.
 
+- Sometimes when trying to download yahoo quotes, the plugin stalls on the first symbol and just sits there.
+  The Qt networking is not timing out as it should. The work around is just cancel the download and try it again.
+  It usually goes through on the second attempt. Not sure why this is happening, it seems to be a random bug.
+  
+  
