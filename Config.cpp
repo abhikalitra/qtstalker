@@ -25,6 +25,9 @@
 #include <qdir.h>
 #include <qlibrary.h>
 #include <qsettings.h>
+#include <qobject.h>
+
+#define VOLUME "Line Type,Histogram Bar,13,Type,VOL,0,Alert,False,0,Name,Volume,0,Color,red,5,Label,VOL,4,Plot,False,0"
 
 Config::Config (QString p)
 {
@@ -102,6 +105,31 @@ Config::Config (QString p)
       qDebug("Unable to create ~/Qtstalker/plugins/quote directory.");
   }
   setData(QuotePluginPath, s);
+
+  QStringList l = getIndicators();
+  if (l.count() == 0)
+    setIndicator(QObject::tr("Volume"), QStringList::split(",", VOLUME, FALSE));
+  else
+  {
+    int loop;
+    bool flag = TRUE;
+    Setting *i = new Setting;
+    for (loop = 0; loop < (int) l.count(); loop++)
+    {
+      i->clear();
+      i->parse(getIndicator(l[loop]));
+      if (! i->getData("Plot").compare("False"))
+      {
+        flag = FALSE;
+        break;
+      }
+    }
+
+    if (flag)
+      setIndicator(QObject::tr("Volume"), QStringList::split(",", VOLUME, FALSE));
+
+    delete i;
+  }
 }
 
 Config::~Config ()

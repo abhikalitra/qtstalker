@@ -24,6 +24,7 @@
 
 #include <qstring.h>
 #include <qwidget.h>
+#include <qpopupmenu.h>
 #include "Navigator.h"
 #include "BaseDialog.h"
 #include "Config.h"
@@ -43,10 +44,12 @@ class TestPage : public BaseDialog
     void deleteTest ();
     void testSelected (QString);
     void testNoSelection ();
+    void rightClick (QListBoxItem *);
 
   private:
     Config *config;
     Navigator *nav;
+    QPopupMenu *menu;
 };
 
 #endif

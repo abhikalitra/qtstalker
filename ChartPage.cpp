@@ -28,6 +28,7 @@
 #include "delete.xpm"
 #include "export.xpm"
 #include <qmessagebox.h>
+#include <qcursor.h>
 
 ChartPage::ChartPage (QWidget *w, Config *c) : BaseDialog(w)
 {
@@ -36,47 +37,57 @@ ChartPage::ChartPage (QWidget *w, Config *c) : BaseDialog(w)
   nav = new Navigator(this, config->getData(Config::DataPath));
   connect(nav, SIGNAL(fileSelected(QString)), this, SLOT(chartSelected(QString)));
   connect(nav, SIGNAL(noSelection()), this, SLOT(chartNoSelection()));
+  connect(nav, SIGNAL(contextMenuRequested(QListBoxItem *, const QPoint &)), this, SLOT(rightClick(QListBoxItem *)));
   nav->updateList();
   basebox->addWidget(nav);
 
-  setButton(QPixmap(edit), tr("Edit Chart"), 0);
-  connect(getButton(0), SIGNAL(clicked()), this, SLOT(editChart()));
-  setButtonStatus(0, FALSE);
-
-  setButton(QPixmap(deletefile), tr("Delete Chart"), 1);
-  connect(getButton(1), SIGNAL(clicked()), this, SLOT(deleteChart()));
-  setButtonStatus(1, FALSE);
-
-  setButton(QPixmap(exportfile), tr("Export Chart"), 2);
-  connect(getButton(2), SIGNAL(clicked()), this, SLOT(exportSymbol()));
+  menu = new QPopupMenu();
+  menu->insertItem(QPixmap(edit), tr("Edit Chart"), this, SLOT(editChart()));
+  menu->insertItem(QPixmap(deletefile), tr("Delete Chart"), this, SLOT(deleteChart()));
+  menu->insertItem(QPixmap(exportfile), tr("Export Chart"), this, SLOT(exportSymbol()));
+  
+  chartNoSelection();
 }
 
 ChartPage::~ChartPage ()
 {
+  delete menu;
 }
 
 void ChartPage::deleteChart ()
 {
-  QString symbol = nav->getFileSelection();
-  if (! symbol.length())
-    return;
+  SymbolDialog *dialog = new SymbolDialog(this,
+  							   nav->getCurrentPath(),
+							   "*");
+  dialog->setCaption(tr("Select Charts To Delete"));
 
-  int rc = QMessageBox::warning(this,
-  					    tr("Qtstalker: Warning"),
-					    tr("Are you sure you want to delete this chart?"),
-					    QMessageBox::Yes,
-					    QMessageBox::No,
-					    QMessageBox::NoButton);
+  int rc = dialog->exec();
 
-  if (rc == QMessageBox::No)
-    return;
+  if (rc == QDialog::Accepted)
+  {
+    rc = QMessageBox::warning(this,
+  				    	  tr("Qtstalker: Warning"),
+					  tr("Are you sure you want to delete selected charts?"),
+					  QMessageBox::Yes,
+					  QMessageBox::No,
+					  QMessageBox::NoButton);
 
-  QDir dir(symbol);
-  dir.remove(symbol, TRUE);
+    if (rc == QMessageBox::No)
+    {
+      delete dialog;
+      return;
+    }
 
-  nav->updateList();
-  
-  chartNoSelection();
+    QStringList l = dialog->selectedFiles();
+    int loop;
+    QDir dir;
+    for (loop = 0; loop < (int) l.count(); loop++)
+      dir.remove(l[loop], TRUE);
+      
+    nav->updateList();
+  }
+
+  delete dialog;
 }
 
 void ChartPage::editChart ()
@@ -147,14 +158,21 @@ void ChartPage::exportChart (QString path)
 
 void ChartPage::chartSelected (QString d)
 {
-  setButtonStatus(0, TRUE);
-  setButtonStatus(1, TRUE);
+  menu->setItemEnabled(menu->idAt(0), TRUE);
+  menu->setItemEnabled(menu->idAt(1), TRUE);
   emit fileSelected(d);
 }
 
+
 void ChartPage::chartNoSelection ()
 {
-  setButtonStatus(0, FALSE);
-  setButtonStatus(1, FALSE);
+  menu->setItemEnabled(menu->idAt(0), FALSE);
+  menu->setItemEnabled(menu->idAt(1), FALSE);
 }
+
+void ChartPage::rightClick (QListBoxItem *)
+{
+  menu->exec(QCursor::pos());
+}
+
 

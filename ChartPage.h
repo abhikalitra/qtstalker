@@ -24,6 +24,7 @@
 
 #include <qstring.h>
 #include <qwidget.h>
+#include <qpopupmenu.h>
 #include "Navigator.h"
 #include "BaseDialog.h"
 #include "Config.h"
@@ -46,10 +47,12 @@ class ChartPage : public BaseDialog
     void exportSymbol ();
     void chartSelected (QString);
     void chartNoSelection ();
+    void rightClick (QListBoxItem *);
 
   protected:
     Navigator *nav;
     Config *config;
+    QPopupMenu *menu;
 };
 
 #endif

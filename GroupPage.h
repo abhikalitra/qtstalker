@@ -24,6 +24,7 @@
 
 #include <qstring.h>
 #include <qwidget.h>
+#include <qpopupmenu.h>
 #include "Navigator.h"
 #include "BaseDialog.h"
 #include "Config.h"
@@ -47,10 +48,12 @@ class GroupPage : public BaseDialog
     void renameGroup ();
     void groupSelected (QString);
     void groupNoSelection ();
+    void rightClick (QListBoxItem *);
 
   protected:
     Navigator *nav;
     Config *config;
+    QPopupMenu *menu;
 };
 
 #endif

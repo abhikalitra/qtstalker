@@ -30,6 +30,7 @@
 #include <qlineedit.h>
 #include <qinputdialog.h>
 #include <qstringlist.h>
+#include <qcursor.h>
 
 GroupPage::GroupPage (QWidget *w, Config *c) : BaseDialog(w)
 {
@@ -38,32 +39,23 @@ GroupPage::GroupPage (QWidget *w, Config *c) : BaseDialog(w)
   nav = new Navigator(this, config->getData(Config::GroupPath));
   connect(nav, SIGNAL(fileSelected(QString)), this, SLOT(groupSelected(QString)));
   connect(nav, SIGNAL(noSelection()), this, SLOT(groupNoSelection()));
+  connect(nav, SIGNAL(contextMenuRequested(QListBoxItem *, const QPoint &)), this, SLOT(rightClick(QListBoxItem *)));
   nav->updateList();
   basebox->addWidget(nav);
+  
+  menu = new QPopupMenu();
+  menu->insertItem(QPixmap(newchart), tr("New Group"), this, SLOT(newGroup()));
+  menu->insertItem(QPixmap(insert), tr("Add Group Items"), this, SLOT(addGroupItem()));
+  menu->insertItem(QPixmap(deletefile), tr("Delete Group Items"), this, SLOT(deleteGroupItem()));
+  menu->insertItem(QPixmap(stop), tr("Delete Group"), this, SLOT(deleteGroup()));
+  menu->insertItem(QPixmap(renam), tr("Rename Group"), this, SLOT(renameGroup()));
 
-  setButton(QPixmap(newchart), tr("New Group"), 0);
-  connect(getButton(0), SIGNAL(clicked()), this, SLOT(newGroup()));
-  setButtonStatus(0, TRUE);
-
-  setButton(QPixmap(insert), tr("Add Group Items"), 1);
-  connect(getButton(1), SIGNAL(clicked()), this, SLOT(addGroupItem()));
-  setButtonStatus(1, FALSE);
-
-  setButton(QPixmap(deletefile), tr("Delete Group Items"), 2);
-  connect(getButton(2), SIGNAL(clicked()), this, SLOT(deleteGroupItem()));
-  setButtonStatus(2, FALSE);
-
-  setButton(QPixmap(stop), tr("Delete Group"), 3);
-  connect(getButton(3), SIGNAL(clicked()), this, SLOT(deleteGroup()));
-  setButtonStatus(3, FALSE);
-
-  setButton(QPixmap(renam), tr("Rename Group"), 4);
-  connect(getButton(4), SIGNAL(clicked()), this, SLOT(renameGroup()));
-  setButtonStatus(4, FALSE);
+  groupNoSelection();
 }
 
 GroupPage::~GroupPage ()
 {
+  delete menu;
 }
 
 void GroupPage::newGroup()
@@ -130,16 +122,40 @@ void GroupPage::addGroupItem()
 
 void GroupPage::deleteGroupItem()
 {
-  QString s = nav->getFileSelection();
-  if (! s.length())
-    return;
+  SymbolDialog *dialog = new SymbolDialog(this,
+  							   nav->getCurrentPath(),
+							   "*");
+  dialog->setCaption(tr("Select Group Items To Delete"));
 
-  QDir dir(s);
-  dir.remove(s, TRUE);
+  int rc = dialog->exec();
 
-  nav->updateList();
+  if (rc == QDialog::Accepted)
+  {
+    rc = QMessageBox::warning(this,
+  					  tr("Qtstalker: Warning"),
+					  tr("Are you sure you want to delete group items?"),
+					  QMessageBox::Yes,
+					  QMessageBox::No,
+					  QMessageBox::NoButton);
 
-  groupNoSelection();
+    if (rc == QMessageBox::No)
+    {
+      delete dialog;
+      return;
+    }
+
+    QStringList l = dialog->selectedFiles();
+    int loop;
+    QDir dir;
+    for (loop = 0; loop < (int) l.count(); loop++)
+      dir.remove(l[loop], TRUE);
+
+    nav->updateList();
+
+    groupNoSelection();
+  }
+  
+  delete dialog;
 }
 
 void GroupPage::deleteGroup()
@@ -200,10 +216,10 @@ void GroupPage::renameGroup ()
 
 void GroupPage::groupSelected (QString d)
 {
-  setButtonStatus(1, TRUE);
-  setButtonStatus(2, TRUE);
-  setButtonStatus(3, TRUE);
-  setButtonStatus(4, TRUE);
+  menu->setItemEnabled(menu->idAt(1), TRUE);
+  menu->setItemEnabled(menu->idAt(2), TRUE);
+  menu->setItemEnabled(menu->idAt(3), TRUE);
+  menu->setItemEnabled(menu->idAt(4), TRUE);
   emit fileSelected(d);
 }
 
@@ -212,18 +228,22 @@ void GroupPage::groupNoSelection ()
   QString s = config->getData(Config::GroupPath);
   if (s.compare(nav->getCurrentPath()))
   {
-    setButtonStatus(1, TRUE);
-    setButtonStatus(2, FALSE);
-    setButtonStatus(3, TRUE);
-    setButtonStatus(4, TRUE);
+    menu->setItemEnabled(menu->idAt(1), TRUE);
+    menu->setItemEnabled(menu->idAt(2), FALSE);
+    menu->setItemEnabled(menu->idAt(3), TRUE);
+    menu->setItemEnabled(menu->idAt(4), TRUE);
   }
   else
   {
-    setButtonStatus(1, FALSE);
-    setButtonStatus(2, FALSE);
-    setButtonStatus(3, FALSE);
-    setButtonStatus(4, FALSE);
+    menu->setItemEnabled(menu->idAt(1), FALSE);
+    menu->setItemEnabled(menu->idAt(2), FALSE);
+    menu->setItemEnabled(menu->idAt(3), FALSE);
+    menu->setItemEnabled(menu->idAt(4), FALSE);
   }
 }
 
+void GroupPage::rightClick (QListBoxItem *)
+{
+  menu->exec(QCursor::pos());
+}
 

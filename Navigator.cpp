@@ -33,6 +33,8 @@ Navigator::Navigator (QWidget *w, QString bp) : QListBox(w)
 
   setSelectionMode(QListBox::Single);
   connect(this, SIGNAL(currentChanged(QListBoxItem *)), this, SLOT(fileSelection(QListBoxItem *)));
+  connect(this, SIGNAL(selected(QListBoxItem *)), this, SLOT(checkDirectory(QListBoxItem *)));
+//  connect(this, SIGNAL(returnPressed(QListBoxItem *)), this, SLOT(checkDirectory(QListBoxItem *)));
 }
 
 Navigator::~Navigator ()
@@ -76,25 +78,18 @@ void Navigator::upDirectory ()
 void Navigator::fileSelection (QListBoxItem *item)
 {
   if (! item)
+  {
+    emit noSelection();
     return;
+  }
 
   if (item->pixmap())
   {
-    if (! item->text().compare(".."))
-    {
-      upDirectory();
-      return;
-    }
-
-    QString s = currentDir.absPath();
-    s.append("/");
-    s.append(item->text());
-    currentDir.setPath(s);
-    updateList();
     emit noSelection();
+    return;
   }
-  else
-    emit fileSelected(getFileSelection());
+
+  emit fileSelected(getFileSelection());
 }
 
 QString Navigator::getFileSelection ()
@@ -119,4 +114,31 @@ QString Navigator::getCurrentPath ()
   return currentDir.absPath();
 }
 
+void Navigator::checkDirectory (QListBoxItem *item)
+{
+  if (! item)
+  {
+    emit noSelection();
+    return;
+  }
+
+  if (! item->text().compare(".."))
+  {
+    upDirectory();
+    return;
+  }
+
+  if (item->pixmap())
+  {
+    QString s = currentDir.absPath();
+    s.append("/");
+    s.append(item->text());
+    currentDir.setPath(s);
+    updateList();
+    emit noSelection();
+    return;
+  }
+  
+  emit fileSelected(getFileSelection());
+}
 

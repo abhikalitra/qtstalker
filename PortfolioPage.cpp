@@ -21,12 +21,14 @@
 
 #include "PortfolioPage.h"
 #include "PortfolioDialog.h"
+#include "SymbolDialog.h"
 #include "open.xpm"
 #include "newchart.xpm"
 #include "delete.xpm"
 #include "rename.xpm"
 #include <qinputdialog.h>
 #include <qmessagebox.h>
+#include <qcursor.h>
 
 PortfolioPage::PortfolioPage (QWidget *w, Config *c) : BaseDialog (w)
 {
@@ -35,27 +37,22 @@ PortfolioPage::PortfolioPage (QWidget *w, Config *c) : BaseDialog (w)
   nav = new Navigator(this, config->getData(Config::PortfolioPath));
   connect(nav, SIGNAL(fileSelected(QString)), this, SLOT(portfolioSelected(QString)));
   connect(nav, SIGNAL(noSelection()), this, SLOT(portfolioNoSelection()));
+  connect(nav, SIGNAL(contextMenuRequested(QListBoxItem *, const QPoint &)), this, SLOT(rightClick(QListBoxItem *)));
   nav->updateList();
   basebox->addWidget(nav);
+  
+  menu = new QPopupMenu();
+  menu->insertItem(QPixmap(open), tr("Open Portfolio"), this, SLOT(openPortfolio()));
+  menu->insertItem(QPixmap(newchart), tr("New Portfolio"), this, SLOT(newPortfolio()));
+  menu->insertItem(QPixmap(deletefile), tr("Delete Portfolio"), this, SLOT(deletePortfolio()));
+  menu->insertItem(QPixmap(renam), tr("Rename Portfolio"), this, SLOT(renamePortfolio()));
 
-  setButton(QPixmap(open), tr("Open Portfolio"), 0);
-  connect(getButton(0), SIGNAL(clicked()), this, SLOT(openPortfolio()));
-  setButtonStatus(0, FALSE);
-
-  setButton(QPixmap(newchart), tr("New Portfolio"), 1);
-  connect(getButton(1), SIGNAL(clicked()), this, SLOT(newPortfolio()));
-
-  setButton(QPixmap(deletefile), tr("Delete Portfolio"), 2);
-  connect(getButton(2), SIGNAL(clicked()), this, SLOT(deletePortfolio()));
-  setButtonStatus(2, FALSE);
-
-  setButton(QPixmap(renam), tr("Rename Portfolio"), 3);
-  connect(getButton(3), SIGNAL(clicked()), this, SLOT(renamePortfolio()));
-  setButtonStatus(3, FALSE);
+  portfolioNoSelection();
 }
 
 PortfolioPage::~PortfolioPage ()
 {
+  delete menu;
 }
 
 void PortfolioPage::openPortfolio ()
@@ -92,24 +89,39 @@ void PortfolioPage::newPortfolio()
 
 void PortfolioPage::deletePortfolio()
 {
-  int rc = QMessageBox::warning(this,
-  					    tr("Qtstalker: Warning"),
-					    tr("Are you sure you want to delete this portfolio?"),
-					    QMessageBox::Yes,
-					    QMessageBox::No,
-					    QMessageBox::NoButton);
+  SymbolDialog *dialog = new SymbolDialog(this,
+  							   nav->getCurrentPath(),
+							   "*");
+  dialog->setCaption(tr("Select Portfolios To Delete"));
 
-  if (rc == QMessageBox::No)
-    return;
+  int rc = dialog->exec();
 
-  QString s = config->getData(Config::PortfolioPath);
-  s.append("/");
-  s.append(nav->currentText());
-  QDir dir(s);
-  dir.remove(s);
+  if (rc == QDialog::Accepted)
+  {
+    rc = QMessageBox::warning(this,
+  					  tr("Qtstalker: Warning"),
+					  tr("Are you sure you want to delete this portfolio?"),
+					  QMessageBox::Yes,
+					  QMessageBox::No,
+					  QMessageBox::NoButton);
 
-  nav->updateList();
-  portfolioNoSelection();
+    if (rc == QMessageBox::No)
+    {
+      delete dialog;
+      return;
+    }
+
+    QStringList l = dialog->selectedFiles();
+    int loop;
+    QDir dir;
+    for (loop = 0; loop < (int) l.count(); loop++)
+      dir.remove(l[loop], TRUE);
+
+    nav->updateList();
+    portfolioNoSelection();
+  }
+
+  delete dialog;
 }
 
 void PortfolioPage::renamePortfolio ()
@@ -146,15 +158,19 @@ void PortfolioPage::renamePortfolio ()
 
 void PortfolioPage::portfolioSelected (QString)
 {
-  setButtonStatus(0, TRUE);
-  setButtonStatus(2, TRUE);
-  setButtonStatus(3, TRUE);
+  menu->setItemEnabled(menu->idAt(0), TRUE);
+  menu->setItemEnabled(menu->idAt(2), TRUE);
+  menu->setItemEnabled(menu->idAt(3), TRUE);
 }
 
 void PortfolioPage::portfolioNoSelection ()
 {
-  setButtonStatus(0, FALSE);
-  setButtonStatus(2, FALSE);
-  setButtonStatus(3, FALSE);
+  menu->setItemEnabled(menu->idAt(0), FALSE);
+  menu->setItemEnabled(menu->idAt(2), FALSE);
+  menu->setItemEnabled(menu->idAt(3), FALSE);
 }
 
+void PortfolioPage::rightClick (QListBoxItem *)
+{
+  menu->exec(QCursor::pos());
+}

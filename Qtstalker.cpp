@@ -758,20 +758,24 @@ void QtstalkerApp::loadChart (QString d)
     max = 0;
   slider->blockSignals(TRUE);
   slider->setRange(0, recordList->count() - 1);
-  slider->setValue(max);
+  slider->setValue(max + 1);
   slider->blockSignals(FALSE);
 
-  mainPlot->setIndex(max);
+  mainPlot->setIndex(max + 1);
   for(it.toFirst(); it.current(); ++it)
-    it.current()->setIndex(max);
+    it.current()->setIndex(max + 1);
 
   pixelspace->blockSignals(TRUE);
   pixelspace->setRange(mainPlot->getMinPixelspace(), 99);
   pixelspace->blockSignals(FALSE);
 
   mainPlot->draw();
-  Plot *plot = plotList[tabs->label(tabs->currentPageIndex())];
-  plot->draw();
+  
+  if (plotList.count())
+  {
+    Plot *plot = plotList[tabs->label(tabs->currentPageIndex())];
+    plot->draw();
+  }
 
   setCaption(getWindowCaption());
 
@@ -1189,21 +1193,34 @@ void QtstalkerApp::slotChartTypeChanged (int)
   pixelspace->blockSignals(FALSE);
 
   mainPlot->draw();
-  Plot *plot = plotList[tabs->label(tabs->currentPageIndex())];
-  plot->draw();
+  
+  if (plotList.count())
+  {
+    Plot *plot = plotList[tabs->label(tabs->currentPageIndex())];
+    plot->draw();
+  }
 }
 
 void QtstalkerApp::slotNewIndicator ()
 {
   bool ok;
   QStringList list = config->getIndicatorPlugins();
-  QString selection = QInputDialog::getItem(tr("New Indicator"), tr("Select an indicator create."),
-  					    list, 0, FALSE, &ok, this);
+  QString selection = QInputDialog::getItem(tr("New Indicator"),
+  							   tr("Select an indicator create."),
+							   list,
+							   0,
+							   FALSE,
+							   &ok,
+							   this);
   if (! ok || ! selection.length())
     return;
 
-  QString name = QInputDialog::getText(tr("Indicator Name"), tr("Enter a unique name for this indicator."),
-                                       QLineEdit::Normal, tr("New Indicator"), &ok, this);
+  QString name = QInputDialog::getText(tr("Indicator Name"),
+  						      tr("Enter a unique name for this indicator."),
+						      QLineEdit::Normal,
+						      selection,
+						      &ok,
+						      this);
   if (! ok || ! name.length())
     return;
 
@@ -1317,18 +1334,19 @@ void QtstalkerApp::slotDeleteIndicator (int id)
 {
   QString text = chartDeleteMenu->text(id);
 
-  config->deleteIndicator(text);
-
   Indicator *i = mainPlot->getIndicator(text);
   if (! i)
   {
+    if (tabs->count() == 1)
+    {
+      QMessageBox::information(this, tr("Qtstalker: Error"), tr("Must leave at least one indicator tab."));
+      return;
+    }
+
     Plot *plot = plotList[text];
     i = plot->getIndicator(text);
-  }
 
-  if (! i->getMainPlot())
-  {
-    tabs->removePage(tabs->currentPage());
+    tabs->removePage((QWidget *) plot);
 
     // delete any chart objects that belong to the indicator
     QStringList l = i->getChartObjects();
@@ -1343,6 +1361,8 @@ void QtstalkerApp::slotDeleteIndicator (int id)
     delete db;
   }
 
+  config->deleteIndicator(text);
+
   loadChart(chartPath);
 }
 
@@ -1355,8 +1375,11 @@ void QtstalkerApp::slotPixelspaceChanged (int d)
   for(; it.current(); ++it)
     it.current()->setPixelspace(d);
 
-  Plot *plot = plotList[tabs->label(tabs->currentPageIndex())];
-  plot->draw();
+  if (plotList.count())
+  {
+    Plot *plot = plotList[tabs->label(tabs->currentPageIndex())];
+    plot->draw();
+  }
 }
 
 void QtstalkerApp::slotSliderChanged (int v)
@@ -1371,8 +1394,11 @@ void QtstalkerApp::slotSliderChanged (int v)
   for(; it.current(); ++it)
     it.current()->setIndex(v);
 
-  Plot *plot = plotList[tabs->label(tabs->currentPageIndex())];
-  plot->draw();
+  if (plotList.count())
+  {
+    Plot *plot = plotList[tabs->label(tabs->currentPageIndex())];
+    plot->draw();
+  }
 }
 
 void QtstalkerApp::addIndicatorButton (QString d)
@@ -1433,8 +1459,11 @@ void QtstalkerApp::slotStatusMessage (QString d)
 
 void QtstalkerApp::slotTabChanged (QWidget *)
 {
-  Plot *plot = plotList[tabs->label(tabs->currentPageIndex())];
-  plot->draw();
+  if (plotList.count())
+  {
+    Plot *plot = plotList[tabs->label(tabs->currentPageIndex())];
+    plot->draw();
+  }
 }
 
 void QtstalkerApp::setPlotFont (Plot *plot)

@@ -21,12 +21,14 @@
 
 #include "TestPage.h"
 #include "Tester.h"
+#include "SymbolDialog.h"
 #include "open.xpm"
 #include "newchart.xpm"
 #include "delete.xpm"
 #include "rename.xpm"
 #include <qinputdialog.h>
 #include <qmessagebox.h>
+#include <qcursor.h>
 
 TestPage::TestPage (QWidget *w, Config *c) : BaseDialog (w)
 {
@@ -35,27 +37,22 @@ TestPage::TestPage (QWidget *w, Config *c) : BaseDialog (w)
   nav = new Navigator(this, config->getData(Config::TestPath));
   connect(nav, SIGNAL(fileSelected(QString)), this, SLOT(testSelected(QString)));
   connect(nav, SIGNAL(noSelection()), this, SLOT(testNoSelection()));
+  connect(nav, SIGNAL(contextMenuRequested(QListBoxItem *, const QPoint &)), this, SLOT(rightClick(QListBoxItem *)));
   nav->updateList();
   basebox->addWidget(nav);
+  
+  menu = new QPopupMenu();
+  menu->insertItem(QPixmap(open), tr("Open Backtest Rule"), this, SLOT(openTest()));
+  menu->insertItem(QPixmap(newchart), tr("New Backtest Rule"), this, SLOT(newTest()));
+  menu->insertItem(QPixmap(deletefile), tr("Delete Backtest Rule"), this, SLOT(deleteTest()));
+  menu->insertItem(QPixmap(renam), tr("Rename Backtest Rule"), this, SLOT(renameTest()));
 
-  setButton(QPixmap(open), tr("Open Backtest Rule"), 0);
-  connect(getButton(0), SIGNAL(clicked()), this, SLOT(openTest()));
-  setButtonStatus(0, FALSE);
-
-  setButton(QPixmap(newchart), tr("New Backtest Rule"), 1);
-  connect(getButton(1), SIGNAL(clicked()), this, SLOT(newTest()));
-
-  setButton(QPixmap(deletefile), tr("Delete Backtest Rule"), 2);
-  connect(getButton(2), SIGNAL(clicked()), this, SLOT(deleteTest()));
-  setButtonStatus(2, FALSE);
-
-  setButton(QPixmap(renam), tr("Rename Backtest Rule"), 3);
-  connect(getButton(3), SIGNAL(clicked()), this, SLOT(renameTest()));
-  setButtonStatus(3, FALSE);
+  testNoSelection();
 }
 
 TestPage::~TestPage ()
 {
+  delete menu;
 }
 
 void TestPage::openTest ()
@@ -93,24 +90,39 @@ void TestPage::newTest()
 
 void TestPage::deleteTest()
 {
-  int rc = QMessageBox::warning(this,
-  					    tr("Qtstalker: Warning"),
-					    tr("Are you sure you want to delete this backtest rule?"),
-					    QMessageBox::Yes,
-					    QMessageBox::No,
-					    QMessageBox::NoButton);
+  SymbolDialog *dialog = new SymbolDialog(this,
+  							   nav->getCurrentPath(),
+							   "*");
+  dialog->setCaption(tr("Select Portfolios To Delete"));
 
-  if (rc == QMessageBox::No)
-    return;
+  int rc = dialog->exec();
 
-  QString s = config->getData(Config::TestPath);
-  s.append("/");
-  s.append(nav->currentText());
-  QDir dir(s);
-  dir.remove(s);
+  if (rc == QDialog::Accepted)
+  {
+    rc = QMessageBox::warning(this,
+  					  tr("Qtstalker: Warning"),
+					  tr("Are you sure you want to delete this backtest rule?"),
+					  QMessageBox::Yes,
+					  QMessageBox::No,
+					  QMessageBox::NoButton);
 
-  nav->updateList();
-  testNoSelection();
+    if (rc == QMessageBox::No)
+    {
+      delete dialog;
+      return;
+    }
+
+    QStringList l = dialog->selectedFiles();
+    int loop;
+    QDir dir;
+    for (loop = 0; loop < (int) l.count(); loop++)
+      dir.remove(l[loop], TRUE);
+
+    nav->updateList();
+    testNoSelection();
+  }
+  
+  delete dialog;
 }
 
 void TestPage::renameTest ()
@@ -148,15 +160,21 @@ void TestPage::renameTest ()
 
 void TestPage::testSelected (QString)
 {
-  setButtonStatus(0, TRUE);
-  setButtonStatus(2, TRUE);
-  setButtonStatus(3, TRUE);
+  menu->setItemEnabled(menu->idAt(0), TRUE);
+  menu->setItemEnabled(menu->idAt(2), TRUE);
+  menu->setItemEnabled(menu->idAt(3), TRUE);
 }
 
 void TestPage::testNoSelection ()
 {
-  setButtonStatus(0, FALSE);
-  setButtonStatus(2, FALSE);
-  setButtonStatus(3, FALSE);
+  menu->setItemEnabled(menu->idAt(0), FALSE);
+  menu->setItemEnabled(menu->idAt(2), FALSE);
+  menu->setItemEnabled(menu->idAt(3), FALSE);
 }
+
+void TestPage::rightClick (QListBoxItem *)
+{
+  menu->exec(QCursor::pos());
+}
+
 
