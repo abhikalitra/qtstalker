@@ -63,6 +63,8 @@ Plot::Plot (QWidget *w) : QWidget(w)
   mouseFlag = None;
   hideMainPlot = FALSE;
   tabFlag = TRUE;
+  PAFBoxSize = 0;
+  PAFReversal = 3;
 
   plotFont.setFamily("Helvetica");
   plotFont.setPointSize(12);
@@ -193,7 +195,7 @@ void Plot::setChartType (QString d)
 
     if (! d.compare(tr("Line")))
     {
-      minPixelspace = 4;
+      minPixelspace = 3;
       startX = 0;
       chartType = d;
       dateFlag = TRUE;
@@ -759,6 +761,16 @@ void Plot::setTabFlag (bool d)
 bool Plot::getTabFlag ()
 {
   return tabFlag;
+}
+
+void Plot::setPAFBoxSize (double d)
+{
+  PAFBoxSize = d;
+}
+
+void Plot::setPAFReversal (int d)
+{
+  PAFReversal = d;
 }
 
 void Plot::drawDate ()
@@ -2101,8 +2113,9 @@ void Plot::drawPointAndFigure ()
   int x = startX;
   int x2 = startX;
   int loop = startIndex;
-  double size = (scaleArray[1] - scaleArray[0]) / 4.0;
-  int reversal = 3;
+  double size = PAFBoxSize;
+  if (size == 0)
+    size = (scaleArray[1] - scaleArray[0]) / 4.0;
   int symbol;
 
   Setting *r = data->at(loop);
@@ -2140,7 +2153,7 @@ void Plot::drawPointAndFigure ()
       }
       else
       {
-        if (h >= (pl + ((reversal + 1) * size)))
+        if (h >= (pl + ((PAFReversal + 1) * size)))
         {
 	  int y = convertToY(ph);
 	  int y2= convertToY(pl);
@@ -2172,7 +2185,7 @@ void Plot::drawPointAndFigure ()
       }
       else
       {
-        if (l <= (ph - ((reversal + 1) * size)))
+        if (l <= (ph - ((PAFReversal + 1) * size)))
         {
 	  int y = convertToY(ph);
 	  int y2= convertToY(pl);

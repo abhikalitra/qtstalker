@@ -91,6 +91,8 @@ class Plot : public QWidget
     void updateStatusBar (int, int);
     void setTabFlag (bool);
     bool getTabFlag ();
+    void setPAFBoxSize (double);
+    void setPAFReversal (int);
 
     void addIndicator (QString, Indicator *);
     Indicator * getIndicator (QString);
@@ -173,6 +175,8 @@ class Plot : public QWidget
     int _width;
     int startX;
     int startIndex;
+    double PAFBoxSize;
+    int PAFReversal;
     TimeInterval interval;
     QColor backgroundColor;
     QColor gridColor;

@@ -32,9 +32,17 @@
 - Changed trend line dialog and creation functions to better handle extending them without user intervention. There are now
   2 starting point options. You can either use the bar data OHLC or specify a value. The "Use Bar" toggle selects the bar fields
   to be used instead of a specific value. Select an angle in degrees for the trend line to be used. 0 degrees is 3 o'clock, 90 degrees
-  is vertical, 180 degrees is 9 o'clock etc. Trend lines will automatically extend as bars are added to the chart.
+  is 12 o'clock, 180 degrees is 9 o'clock etc. Trend lines will automatically extend as bars are added to the chart.
 
+- Added Point and Figure chart options to the preferences dialog. "P&F Box Size" determines the size of
+  each box, leaving this value at zero uses the default box sizing formula. "P&F Reversal" indicates
+  the number of boxes before a reversal takes place. The default is 3.
 
+- Applied patch #834376.
+
+- Lowered the minimum bar spacing to 3 for line charts as per request.
+
+  
 0.22
 ====
 

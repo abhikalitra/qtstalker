@@ -60,7 +60,9 @@ class Config
       LogScale,
       NavigatorPosition,
       IndicatorTabs,
-      StackedIndicator
+      StackedIndicator,
+      PAFBoxSize,
+      PAFReversal
     };
 
     Config (QString);

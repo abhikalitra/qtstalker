@@ -35,9 +35,9 @@ ChartPage::ChartPage (QWidget *w, Config *c) : BaseDialog(w)
 {
   config = c;
 
-  search = new QLineEdit(this);
+  search = new QLineEdit("*", this);
   connect(search, SIGNAL(textChanged(const QString &)), this, SLOT(searchChanged(const QString &)));
-  QToolTip::add(search, tr("List Filter"));
+  QToolTip::add(search, tr("List Filter, e.g. s* or sb*"));
   basebox->addWidget(search);
 
   nav = new Navigator(this, config->getData(Config::DataPath));

@@ -209,6 +209,12 @@ QString Config::getData (Parm p)
     case StackedIndicator:
       s = settings.readEntry("/Qtstalker/StackedIndicator", "");
       break;
+    case PAFBoxSize:
+      s = settings.readEntry("/Qtstalker/PAFBoxSize", "0");
+      break;
+    case PAFReversal:
+      s = settings.readEntry("/Qtstalker/PAFReversal", "3");
+      break;
     default:
       break;
   }
@@ -308,6 +314,12 @@ void Config::setData (Parm p, QString d)
       break;
     case StackedIndicator:
       settings.writeEntry("/Qtstalker/StackedIndicator", d);
+      break;
+    case PAFBoxSize:
+      settings.writeEntry("/Qtstalker/PAFBoxSize", d);
+      break;
+    case PAFReversal:
+      settings.writeEntry("/Qtstalker/PAFReversal", d);
       break;
     default:
       break;

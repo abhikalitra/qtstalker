@@ -522,6 +522,8 @@ void QtstalkerApp::slotOptions ()
   set->setList(tr("Paint Bar Indicator"), config->getIndicators());
   set->set(tr("Plot Font"), config->getData(Config::PlotFont), Setting::Font);
   set->set(tr("App Font"), config->getData(Config::AppFont), Setting::Font);
+  set->set(tr("P&F Box Size"), config->getData(Config::PAFBoxSize), Setting::Float);
+  set->set(tr("P&F Reversal"), config->getData(Config::PAFReversal), Setting::Integer);
 
   if (config->getData(Config::NavigatorPosition).toInt() == 1)
     set->set(tr("Navigator Left"), tr("True"), Setting::Bool);
@@ -599,6 +601,12 @@ void QtstalkerApp::slotOptions ()
       config->setData(Config::IndicatorTabs, "0");
       tabs->setTabPosition(QTabWidget::Bottom);
     }
+
+    config->setData(Config::PAFBoxSize, set->getData(tr("P&F Box Size")));
+    mainPlot->setPAFBoxSize(set->getFloat(tr("P&F Box Size")));
+
+    config->setData(Config::PAFReversal, set->getData(tr("P&F Reversal")));
+    mainPlot->setPAFReversal(set->getInt(tr("P&F Reversal")));
 
     loadChart(chartPath);
 
