@@ -370,6 +370,9 @@ QStringList Config::getQuotePlugins ()
     l[loop].remove(0, 3);
   }
 
+  l.remove(QObject::tr("CBOT"));
+  l.remove(QObject::tr("Ratio"));
+
   return l;
 }
 
