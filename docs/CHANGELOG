@@ -53,7 +53,9 @@
 20041129: Added 3 more data inputs to the MATH plugin. Now the user can ADD/SUB/DIV/MUL up to
           5 data arrays at once.
           
-	  
+20041201: Fixed segfault when right clicking mouse on a empty chart and drawmode is off.
+
+	  	  
 0.28
 ====
 

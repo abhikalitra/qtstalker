@@ -446,7 +446,7 @@ void Plot::contextMenuEvent (QContextMenuEvent *)
   }
 */
 
-  if (drawMode && mouseFlag == COSelected)
+  if (drawMode && mouseFlag == COSelected && coPlugin)
     coPlugin->showMenu();
   else
     showPopupMenu();
