@@ -1742,6 +1742,14 @@ void QtstalkerApp::slotPlotDate (bool d)
 {
   actionPlotDate->setOn(d);
   emit signalPlotDate (d);
+
+  QDictIterator<Plot> it(plotList);
+  for(; it.current(); ++it)
+  {
+    if (! it.current()->getTabFlag())
+      it.current()->draw();
+  }
+
   slotTabChanged(0);
 }
 

@@ -1392,7 +1392,6 @@ void Plot::newChartObject ()
   set->set("Name", objectName, Setting::None);
   set->set("ObjectType", QString::number(objectFlag), Setting::None);
 
-  QStringList l;
   switch(objectFlag)
   {
     case BuyArrow:
@@ -1436,12 +1435,7 @@ void Plot::newChartObject ()
     case TrendLine:
       set->set(QObject::tr("Date"), x1, Setting::Date);
       set->set(QObject::tr("Value"), y1, Setting::Float);
-      l.append(QObject::tr("Open"));
-      l.append(QObject::tr("High"));
-      l.append(QObject::tr("Low"));
-      l.append(QObject::tr("Close"));
-      set->set(QObject::tr("Bar"), QObject::tr("Close"), Setting::List);
-      set->setList(QObject::tr("Bar"), l);
+      set->set(QObject::tr("Bar"), QObject::tr("Close"), Setting::InputField);
       set->set(QObject::tr("Angle"), "45", Setting::Integer);
       set->set(QObject::tr("Use Bar"), QObject::tr("False"), Setting::Bool);
       set->set(QObject::tr("Type"), QObject::tr("Trend Line"), Setting::None);
@@ -2542,7 +2536,7 @@ void Plot::drawTrendLine (Setting *co)
 	break;
       }
 
-      break;
+      return;
     }
   }
   else
