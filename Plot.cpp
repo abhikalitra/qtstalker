@@ -1899,9 +1899,7 @@ void Plot::drawBuyArrow (Setting *co)
   QPainter painter;
   painter.begin(&buffer);
 
-  QString s = co->getData(QObject::tr("Date"));
-  s.append("000000");
-  QDateTime dt = QDateTime::fromString(s, Qt::ISODate);
+  QDateTime dt = QDateTime::fromString(co->getDateTime(QObject::tr("Date")), Qt::ISODate);
 
   int x = getXFromDate(dt);
   if (x == -1)
@@ -2089,9 +2087,7 @@ void Plot::drawSellArrow (Setting *co)
   QPainter painter;
   painter.begin(&buffer);
 
-  QString s = co->getData(QObject::tr("Date"));
-  s.append("000000");
-  QDateTime dt = QDateTime::fromString(s, Qt::ISODate);
+  QDateTime dt = QDateTime::fromString(co->getDateTime(QObject::tr("Date")), Qt::ISODate);
 
   int x = getXFromDate(dt);
   if (x == -1)
@@ -2121,9 +2117,7 @@ void Plot::drawText (Setting *co)
   painter.begin(&buffer);
   painter.setFont(plotFont);
 
-  QString s = co->getData(QObject::tr("Date"));
-  s.append("000000");
-  QDateTime dt = QDateTime::fromString(s, Qt::ISODate);
+  QDateTime dt = QDateTime::fromString(co->getDateTime(QObject::tr("Date")), Qt::ISODate);
 
   int x = getXFromDate(dt);
   if (x == -1)
@@ -2144,17 +2138,13 @@ void Plot::drawTrendLine (Setting *co)
   QPainter painter;
   painter.begin(&buffer);
 
-  QString s = co->getData(QObject::tr("End Date"));
-  s.append("000000");
-  QDateTime dt = QDateTime::fromString(s, Qt::ISODate);
+  QDateTime dt = QDateTime::fromString(co->getDateTime(QObject::tr("End Date")), Qt::ISODate);
 
   int x2 = getXFromDate(dt);
   if (x2 == -1)
     return;
 
-  s = co->getData(QObject::tr("Start Date"));
-  s.append("000000");
-  dt = QDateTime::fromString(s, Qt::ISODate);
+  dt = QDateTime::fromString(co->getDateTime(QObject::tr("Start Date")), Qt::ISODate);
 
   int x = getXFromDate(dt);
   if (x == -1)
@@ -2176,9 +2166,7 @@ void Plot::drawVerticalLine (Setting *co)
   QPainter painter;
   painter.begin(&buffer);
 
-  QString s = co->getData(QObject::tr("Date"));
-  s.append("000000");
-  QDateTime dt = QDateTime::fromString(s, Qt::ISODate);
+  QDateTime dt = QDateTime::fromString(co->getDateTime(QObject::tr("Date")), Qt::ISODate);
 
   int x = getXFromDate(dt);
   if (x == -1)

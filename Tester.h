@@ -36,6 +36,7 @@
 #include <qlineedit.h>
 #include <qvalidator.h>
 #include <qbuttongroup.h>
+#include <qlabel.h>
 #include "Config.h"
 #include "Indicator.h"
 #include "Setting.h"
@@ -55,7 +56,6 @@ class Tester : public QDialog
     void createReportPage();
     void createChartPage();
     void exitPosition (QString);
-    bool breakeven ();
     bool maximumLoss ();
     bool profit ();
     bool trailing ();
@@ -70,6 +70,7 @@ class Tester : public QDialog
     void loadExitShortAlerts ();
     void clearAlertCounts ();
     void checkAlerts ();
+    void createSummary ();
 
   public slots:
     void editIndicator ();
@@ -77,7 +78,6 @@ class Tester : public QDialog
     void addIndicator ();
     void indicatorSelected (QListViewItem *);
     void test ();
-    void breakevenToggled (bool);
     void maximumLossToggled (bool);
     void profitToggled (bool);
     void trailingToggled (bool);
@@ -104,9 +104,6 @@ class Tester : public QDialog
     QToolButton *addIndicatorButton;
     QToolButton *editIndicatorButton;
     QToolButton *deleteIndicatorButton;
-    QCheckBox *breakevenCheck;
-    QCheckBox *breakevenLong;
-    QCheckBox *breakevenShort;
     QCheckBox *maximumLossCheck;
     QCheckBox *maximumLossLong;
     QCheckBox *maximumLossShort;
@@ -139,8 +136,6 @@ class Tester : public QDialog
     ChartDb *db;
     Setting *currentRecord;
     Setting *buyRecord;
-    bool ignoreLong;
-    bool ignoreShort;
     double trailingHigh;
     double trailingLow;
     double equity;
@@ -148,6 +143,27 @@ class Tester : public QDialog
     int exitLongCount;
     int enterShortCount;
     int exitShortCount;
+
+    QLabel *summaryNetProfit;
+    QLabel *summaryNetPercentage;
+    QLabel *summaryInvestment;
+    QLabel *summaryCommission;
+    QLabel *summaryDrawdown;
+    QLabel *summaryLongTrades;
+    QLabel *summaryShortTrades;
+    QLabel *summaryTrades;
+    QLabel *summaryWinTrades;
+    QLabel *summaryTotalWinTrades;
+    QLabel *summaryAverageWin;
+    QLabel *summaryLargestWin;
+    QLabel *summaryWinLongTrades;
+    QLabel *summaryWinShortTrades;
+    QLabel *summaryLoseTrades;
+    QLabel *summaryTotalLoseTrades;
+    QLabel *summaryAverageLose;
+    QLabel *summaryLargestLose;
+    QLabel *summaryLoseLongTrades;
+    QLabel *summaryLoseShortTrades;
 };
 
 #endif

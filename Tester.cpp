@@ -27,7 +27,6 @@
 #include <qlibrary.h>
 #include <qvgroupbox.h>
 #include <qinputdialog.h>
-#include <qlabel.h>
 #include <qsplitter.h>
 #include "Tester.h"
 #include "edit.xpm"
@@ -38,6 +37,7 @@
 #include "EditDialog.h"
 #include "Plugin.h"
 #include "SettingView.h"
+#include "FuturesData.h"
 
 Tester::Tester (Config *c, QString n) : QDialog (0, 0, FALSE)
 {
@@ -198,21 +198,10 @@ void Tester::createStopPage ()
   grid->setMargin(5);
   grid->setSpacing(5);
 
-  QVGroupBox *gbox = new QVGroupBox(tr("Breakeven"), w);
-  gbox->setInsideSpacing(2);
-  grid->addWidget(gbox, 0, 0);
-
-  breakevenCheck = new QCheckBox(tr("Enabled"), gbox);
-  connect(breakevenCheck, SIGNAL(toggled(bool)), this, SLOT(breakevenToggled(bool)));
-
-  breakevenLong = new QCheckBox(tr("Long"), gbox);
-
-  breakevenShort = new QCheckBox(tr("Short"), gbox);
-
-  gbox = new QVGroupBox(tr("Maximum Loss"), w);
+  QVGroupBox *gbox = new QVGroupBox(tr("Maximum Loss"), w);
   gbox->setInsideSpacing(2);
   gbox->setColumns(2);
-  grid->addWidget(gbox, 0, 1);
+  grid->addWidget(gbox, 0, 0);
 
   maximumLossCheck = new QCheckBox(tr("Enabled"), gbox);
   connect(maximumLossCheck, SIGNAL(toggled(bool)), this, SLOT(maximumLossToggled(bool)));
@@ -234,7 +223,7 @@ void Tester::createStopPage ()
   gbox = new QVGroupBox(tr("Profit"), w);
   gbox->setInsideSpacing(2);
   gbox->setColumns(2);
-  grid->addWidget(gbox, 1, 0);
+  grid->addWidget(gbox, 0, 1);
 
   profitCheck = new QCheckBox(tr("Enabled"), gbox);
   connect(profitCheck, SIGNAL(toggled(bool)), this, SLOT(profitToggled(bool)));
@@ -254,7 +243,7 @@ void Tester::createStopPage ()
   gbox = new QVGroupBox(tr("Trailing"), w);
   gbox->setInsideSpacing(2);
   gbox->setColumns(2);
-  grid->addWidget(gbox, 1, 1);
+  grid->addWidget(gbox, 1, 0);
 
   trailingCheck = new QCheckBox(tr("Enabled"), gbox);
   connect(trailingCheck, SIGNAL(toggled(bool)), this, SLOT(trailingToggled(bool)));
@@ -271,7 +260,6 @@ void Tester::createStopPage ()
   trailingEdit = new QLineEdit("0", gbox);
   trailingEdit->setValidator(validator);
 
-  breakevenToggled(FALSE);
   maximumLossToggled(FALSE);
   profitToggled(FALSE);
   trailingToggled(FALSE);
@@ -323,12 +311,12 @@ void Tester::createTestPage ()
   gbox->setColumns(2);
   grid->addWidget(gbox, 1, 0);
 
-  label = new QLabel(tr("Entry Commision"), gbox);
+  label = new QLabel(tr("Entry Commission"), gbox);
 
   entryCom = new QSpinBox(0, 999999, 1, gbox);
   entryCom->setValue(25);
 
-  label = new QLabel(tr("Exit Commision"), gbox);
+  label = new QLabel(tr("Exit Commission"), gbox);
 
   exitCom = new QSpinBox(0, 999999, 1, gbox);
   exitCom->setValue(25);
@@ -370,7 +358,92 @@ void Tester::createReportPage ()
   tradeList->addColumn(tr("Profit"), -1);
   tradeList->addColumn(tr("Account"), -1);
   tradeList->setSelectionMode(QListView::Single);
+  tradeList->setSorting(1, TRUE);
   vbox->addWidget(tradeList);
+  
+  // test summary
+
+  QVGroupBox *gbox = new QVGroupBox(tr("Test Summary"), w);
+  gbox->setInsideSpacing(2);
+  gbox->setColumns(2);
+  vbox->addWidget(gbox);
+
+  QLabel *label = new QLabel(tr("Net Profit"), gbox);
+  summaryNetProfit = new QLabel(" ", gbox);
+
+  label = new QLabel(tr("Net Profit %"), gbox);
+  summaryNetPercentage = new QLabel(" ", gbox);
+
+  label = new QLabel(tr("Initial Investment"), gbox);
+  summaryInvestment = new QLabel(" ", gbox);
+
+  label = new QLabel(tr("Commissions"), gbox);
+  summaryCommission = new QLabel(" ", gbox);
+
+  label = new QLabel(tr("Largest Drawdown"), gbox);
+  summaryDrawdown = new QLabel(" ", gbox);
+
+  label = new QLabel(tr("Trades"), gbox);
+  summaryTrades = new QLabel(" ", gbox);
+
+  label = new QLabel(tr("Long Trades"), gbox);
+  summaryLongTrades = new QLabel(" ", gbox);
+
+  label = new QLabel(tr("Short Trades"), gbox);
+  summaryShortTrades = new QLabel(" ", gbox);
+  
+  QHBoxLayout *hbox = new QHBoxLayout(vbox);
+  hbox->setSpacing(5);
+
+  // win summary
+
+  gbox = new QVGroupBox(tr("Winning Trades Summary"), w);
+  gbox->setInsideSpacing(2);
+  gbox->setColumns(2);
+  hbox->addWidget(gbox);
+
+  label = new QLabel(tr("Trades"), gbox);
+  summaryWinTrades = new QLabel(" ", gbox);
+
+  label = new QLabel(tr("Profit"), gbox);
+  summaryTotalWinTrades = new QLabel(" ", gbox);
+
+  label = new QLabel(tr("Average"), gbox);
+  summaryAverageWin = new QLabel(" ", gbox);
+
+  label = new QLabel(tr("Largest"), gbox);
+  summaryLargestWin = new QLabel(" ", gbox);
+
+  label = new QLabel(tr("Long Trades"), gbox);
+  summaryWinLongTrades = new QLabel(" ", gbox);
+
+  label = new QLabel(tr("Short Trades"), gbox);
+  summaryWinShortTrades = new QLabel(" ", gbox);
+
+  // lose summary
+
+  gbox = new QVGroupBox(tr("Losing Trades Summary"), w);
+  gbox->setInsideSpacing(2);
+  gbox->setColumns(2);
+  hbox->addWidget(gbox);
+
+  label = new QLabel(tr("Trades"), gbox);
+  summaryLoseTrades = new QLabel(" ", gbox);
+
+  label = new QLabel(tr("Profit"), gbox);
+  summaryTotalLoseTrades = new QLabel(" ", gbox);
+
+  label = new QLabel(tr("Average"), gbox);
+  summaryAverageLose = new QLabel(" ", gbox);
+
+  label = new QLabel(tr("Largest"), gbox);
+  summaryLargestLose = new QLabel(" ", gbox);
+
+  label = new QLabel(tr("Long Trades"), gbox);
+  summaryLoseLongTrades = new QLabel(" ", gbox);
+
+  label = new QLabel(tr("Short Trades"), gbox);
+  summaryLoseShortTrades = new QLabel(" ", gbox);
 
   tabs->addTab(w, tr("Reports"));
 }
@@ -395,6 +468,7 @@ void Tester::createChartPage ()
   closePlot->setDateFlag(TRUE);
   closePlot->setChartType("Line");
   closePlot->setMainFlag(TRUE);
+  closePlot->clear();
 
   tabs->addTab(w, tr("Charts"));
 }
@@ -757,9 +831,6 @@ void Tester::test ()
     if (status == 0)
       continue;
 
-    if (breakeven())
-      continue;
-
     if (maximumLoss())
       continue;
 
@@ -768,6 +839,9 @@ void Tester::test ()
 
     trailing();
   }
+
+//  if (status != 0)
+//    exitPosition("Open");
 
 /*
   equityPlot->clear();
@@ -784,11 +858,13 @@ void Tester::test ()
   ind->addLine(line);
   equityPlot->addIndicator("Equity", ind);
   equityPlot->draw();
-
-  closePlot->clear();
-  closePlot->setData(db->getRecordList());
-  closePlot->draw();
 */
+
+  closePlot->setData(db->getRecordList());
+
+  createSummary();
+  
+  closePlot->draw();
 
   delete db;
 }
@@ -900,7 +976,17 @@ void Tester::exitPosition (QString signal)
     type = tr("Long");
   }
 
+  Setting *details = db->getDetails();
+  if (! details->getData("Chart Type").compare(tr("Futures")))
+  {
+    FuturesData *fd = new FuturesData;
+    fd->setSymbol(details->getData("Futures Type"));
+    profit = fd->getRate() * profit;
+    delete fd;
+  }
+
   equity = equity + profit;
+
   equity = equity - exitCom->value();
 
   item = new QListViewItem(tradeList,
@@ -915,53 +1001,18 @@ void Tester::exitPosition (QString signal)
 
 }
 
-bool Tester::breakeven ()
-{
-  if (! breakevenCheck->isChecked())
-    return FALSE;
-
-  if ((status == 1) && (breakevenLong->isChecked()))
-  {
-    double t = currentRecord->getFloat("Close") - buyRecord->getFloat("Close");
-    if (t <= 0)
-    {
-      exitPosition("Breakeven");
-      status = 0;
-      clearAlertCounts();
-      return TRUE;
-    }
-  }
-
-  if ((status == -1) && (breakevenShort->isChecked()))
-  {
-    double t = buyRecord->getFloat("Close") - currentRecord->getFloat("Close");
-    if (t <= 0)
-    {
-      exitPosition("Breakeven");
-      status = 0;
-      clearAlertCounts();
-      return TRUE;
-    }
-  }
-
-  return FALSE;
-}
-
 bool Tester::maximumLoss ()
 {
   if (! maximumLossCheck->isChecked())
     return FALSE;
 
-  double loss = equity / maximumLossEdit->text().toDouble();
-  double t = 0;
-
   if ((status == 1) && (maximumLossLong->isChecked()))
   {
-    t = currentRecord->getFloat("Close") - buyRecord->getFloat("Close");
+    double t = ((currentRecord->getFloat("Close") - buyRecord->getFloat("Close")) / buyRecord->getFloat("Close")) * 100;
     if (t < 0)
     {
-      t = +t;
-      if (t >= loss)
+      t = -t;
+      if (t >= maximumLossEdit->text().toDouble())
       {
         exitPosition("Maximum Loss");
         status = 0;
@@ -973,11 +1024,11 @@ bool Tester::maximumLoss ()
 
   if ((status == -1) && (maximumLossShort->isChecked()))
   {
-    t = buyRecord->getFloat("Close") - currentRecord->getFloat("Close");
+    double t = ((buyRecord->getFloat("Close") - currentRecord->getFloat("Close")) / buyRecord->getFloat("Close")) * 100;
     if (t < 0)
     {
-      t = +t;
-      if (t >= loss)
+      t = -t;
+      if (t >= maximumLossEdit->text().toDouble())
       {
         exitPosition("Maximum Loss");
         status = 0;
@@ -995,15 +1046,12 @@ bool Tester::profit ()
   if (! profitCheck->isChecked())
     return FALSE;
 
-  double profit = equity / profitEdit->text().toDouble();
-  double t = 0;
-
   if ((status == 1) && (profitLong->isChecked()))
   {
-    t = currentRecord->getFloat("Close") - buyRecord->getFloat("Close");
+    double t = ((currentRecord->getFloat("Close") - buyRecord->getFloat("Close")) / buyRecord->getFloat("Close")) * 100;
     if (t > 0)
     {
-      if (t >= profit)
+      if (t >= profitEdit->text().toDouble())
       {
         exitPosition("Profit");
         status = 0;
@@ -1015,10 +1063,10 @@ bool Tester::profit ()
 
   if ((status == -1) && (profitShort->isChecked()))
   {
-    t = buyRecord->getFloat("Close") - currentRecord->getFloat("Close");
+    double t = ((buyRecord->getFloat("Close") - currentRecord->getFloat("Close")) / buyRecord->getFloat("Close")) * 100;
     if (t > 0)
     {
-      if (t >= profit)
+      if (t >= profitEdit->text().toDouble())
       {
         exitPosition("Profit");
         status = 0;
@@ -1036,19 +1084,16 @@ bool Tester::trailing ()
   if (! trailingCheck->isChecked())
     return FALSE;
 
-  double loss = trailingEdit->text().toDouble();
-  double t = 0;
-
   if ((status == 1) && (trailingLong->isChecked()))
   {
     if (currentRecord->getFloat("Close") > trailingHigh)
       trailingHigh = currentRecord->getFloat("Close");
 
-    t = ((currentRecord->getFloat("Close") - trailingHigh) / trailingHigh) * 100;
+    double t = ((currentRecord->getFloat("Close") - trailingHigh) / trailingHigh) * 100;
     if (t < 0)
     {
-      t = +t;
-      if (t >= loss)
+      t = -t;
+      if (t >= trailingEdit->text().toDouble())
       {
         exitPosition("Trailing");
         status = 0;
@@ -1063,11 +1108,11 @@ bool Tester::trailing ()
     if (currentRecord->getFloat("Close") < trailingLow)
       trailingLow = currentRecord->getFloat("Close");
 
-    t = ((trailingLow - currentRecord->getFloat("Close")) / trailingLow) * 100;
+    double t = ((trailingLow - currentRecord->getFloat("Close")) / trailingLow) * 100;
     if (t < 0)
     {
-      t = +t;
-      if (t >= loss)
+      t = -t;
+      if (t >= trailingEdit->text().toDouble())
       {
         exitPosition("Trailing");
         status = 0;
@@ -1078,20 +1123,6 @@ bool Tester::trailing ()
   }
 
   return FALSE;
-}
-
-void Tester::breakevenToggled (bool status)
-{
-  if (status)
-  {
-    breakevenLong->setEnabled(TRUE);
-    breakevenShort->setEnabled(TRUE);
-  }
-  else
-  {
-    breakevenLong->setEnabled(FALSE);
-    breakevenShort->setEnabled(FALSE);
-  }
 }
 
 void Tester::maximumLossToggled (bool status)
@@ -1419,23 +1450,6 @@ void Tester::saveRule ()
     l.append(s);
   }
 
-  // save breakeven stop
-  if (breakevenCheck->isChecked())
-    l.append("Breakeven Check=True");
-  else
-    l.append("Breakeven Check=False");
-
-  if (breakevenLong->isChecked())
-    l.append("Breakeven Long=True");
-  else
-    l.append("Breakeven Long=False");
-
-  if (breakevenShort->isChecked())
-    l.append("Breakeven Short=True");
-  else
-    l.append("Breakeven Short=False");
-
-
   // save max loss stop
   if (maximumLossCheck->isChecked())
     l.append("Maximum Loss Check=True");
@@ -1546,27 +1560,6 @@ void Tester::loadRule ()
       continue;
     }
 
-    if (! l2[0].compare("Breakeven Check"))
-    {
-      if (! l2[1].compare("True"))
-        breakevenCheck->setChecked(TRUE);
-      continue;
-    }
-
-    if (! l2[0].compare("Breakeven Long"))
-    {
-      if (! l2[1].compare("True"))
-        breakevenLong->setChecked(TRUE);
-      continue;
-    }
-
-    if (! l2[0].compare("Breakeven Short"))
-    {
-      if (! l2[1].compare("True"))
-        breakevenShort->setChecked(TRUE);
-      continue;
-    }
-
     if (! l2[0].compare("Maximum Loss Check"))
     {
       if (! l2[1].compare("True"))
@@ -1652,4 +1645,140 @@ void Tester::exitDialog ()
   saveRule();
   accept();
 }
+
+void Tester::createSummary ()
+{
+  int shortTrades = 0;
+  int longTrades = 0;
+  int winLongTrades = 0;
+  int loseLongTrades = 0;
+  int winShortTrades = 0;
+  int loseShortTrades = 0;
+  double totalWinLongTrades = 0;
+  double totalLoseLongTrades = 0;
+  double totalWinShortTrades = 0;
+  double totalLoseShortTrades = 0;
+  double largestWin = 0;
+  double largestLose = 0;
+  double accountDrawdown = account->value();
+  double commission = (tradeList->childCount() * entryCom->value()) + (tradeList->childCount() * exitCom->value());
+  double balance = 0;
+  
+  Indicator *i = closePlot->getIndicator("Main Plot");
+
+  int count = 0;
+  QListViewItemIterator it(tradeList);
+  for (; it.current() != 0; ++it)
+  {
+    QListViewItem *item = it.current();
+
+    // get long/short trades
+    QString s = item->text(0);
+    if (! s.compare(tr("Long")))
+    {
+      longTrades++;
+
+      s = item->text(6);
+      if (s.contains("-"))
+      {
+        loseLongTrades++;
+	totalLoseLongTrades = totalLoseLongTrades + s.toDouble();
+
+	if (s.toDouble() < largestLose)
+	  largestLose = s.toDouble();
+      }
+      else
+      {
+        winLongTrades++;
+	totalWinLongTrades = totalWinLongTrades + s.toDouble();
+
+	if (s.toDouble() > largestWin)
+	  largestWin = s.toDouble();
+      }
+      
+      Setting *co = closePlot->newChartObject(tr("Buy Arrow"));
+      count++;
+      co->set("Name", QString::number(count), Setting::None);
+      co->setData(tr("Date"), item->text(1));
+      co->setData(tr("Value"), QString::number(item->text(2).toDouble() * 0.99));
+      i->addChartObject(co);
+
+      co = closePlot->newChartObject(tr("Sell Arrow"));
+      count++;
+      co->set("Name", QString::number(count), Setting::None);
+      co->setData(tr("Date"), item->text(3));
+      co->setData(tr("Value"), QString::number(item->text(4).toDouble() * 1.01));
+      i->addChartObject(co);
+    }
+    else
+    {
+      shortTrades++;
+
+      s = item->text(6);
+      if (s.contains("-"))
+      {
+        loseShortTrades++;
+      	totalLoseShortTrades = totalLoseShortTrades + s.toDouble();
+
+	if (s.toDouble() < largestLose)
+	  largestLose = s.toDouble();
+      }
+      else
+      {
+        winShortTrades++;
+      	totalWinShortTrades = totalWinShortTrades + s.toDouble();
+
+	if (s.toDouble() > largestWin)
+	  largestWin = s.toDouble();
+      }
+
+      Setting *co = closePlot->newChartObject(tr("Sell Arrow"));
+      count++;
+      co->set("Name", QString::number(count), Setting::None);
+      co->setData(tr("Date"), item->text(1));
+      co->setData(tr("Value"), QString::number(item->text(2).toDouble() * 1.01));
+      i->addChartObject(co);
+
+      co = closePlot->newChartObject(tr("Buy Arrow"));
+      count++;
+      co->set("Name", QString::number(count), Setting::None);
+      co->setData(tr("Date"), item->text(3));
+      co->setData(tr("Value"), QString::number(item->text(4).toDouble() * 0.99));
+      i->addChartObject(co);
+    }
+
+    s = item->text(7);
+    if (s.toDouble() < accountDrawdown)
+      accountDrawdown = s.toDouble();
+
+    balance = s.toDouble();
+  }
+
+  // main summary
+  summaryNetProfit->setNum(balance - account->value());
+  summaryNetPercentage->setNum(((balance - account->value()) / account->value()) * 100);
+  summaryInvestment->setNum(account->value());
+  summaryCommission->setNum(commission);
+  summaryDrawdown->setNum(accountDrawdown - account->value());
+  summaryTrades->setNum(longTrades + shortTrades);
+  summaryLongTrades->setNum(longTrades);
+  summaryShortTrades->setNum(shortTrades);
+
+  // win summary
+  summaryWinTrades->setNum(winLongTrades + winShortTrades);
+  summaryTotalWinTrades->setNum(totalWinLongTrades + totalWinShortTrades);
+  summaryAverageWin->setNum((totalWinLongTrades + totalWinShortTrades) / (winLongTrades + winShortTrades));
+  summaryLargestWin->setNum(largestWin);
+  summaryWinLongTrades->setNum(winLongTrades);
+  summaryWinShortTrades->setNum(winShortTrades);
+
+  // lose summary
+  summaryLoseTrades->setNum(loseLongTrades + loseShortTrades);
+  summaryTotalLoseTrades->setNum(totalLoseLongTrades + totalLoseShortTrades);
+  summaryAverageLose->setNum((totalLoseLongTrades + totalLoseShortTrades) / (loseLongTrades + loseShortTrades));
+  summaryLargestLose->setNum(largestLose);
+  summaryLoseLongTrades->setNum(loseLongTrades);
+  summaryLoseShortTrades->setNum(loseShortTrades);
+}
+
 

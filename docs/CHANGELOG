@@ -11,6 +11,8 @@
 
 - New quote plugin "Ratio". This is a composite that divides two symbols to produce the ratio between them.
 
+- fixed bug that prevented chart objects with a date parm to draw
+
 0.15
 ======
 
