@@ -1096,8 +1096,9 @@ void QtstalkerApp::slotNewIndicator ()
   }
 
   EditDialog *dialog = new EditDialog(config);
-
   dialog->setCaption(tr("Edit Indicator"));
+  dialog->hideTabs(TRUE);
+  dialog->hideToolbar(TRUE);
 
   Plugin *plug = config->getPlugin(Config::IndicatorPluginPath, indicator);
   if (! plug)
@@ -1107,13 +1108,12 @@ void QtstalkerApp::slotNewIndicator ()
     config->closePlugin(indicator);
     return;
   }
+  
   Setting *set = plug->getPluginSettings();
   set->set("Name", name, Setting::None);
-
   dialog->setItems(set);
 
   rc = dialog->exec();
-
   if (rc == QDialog::Accepted)
   {
     config->setIndicator(name, set->getStringList());
@@ -1145,8 +1145,9 @@ void QtstalkerApp::slotNewIndicator ()
 void QtstalkerApp::slotEditIndicator (QString selection, Plot *plot)
 {
   EditDialog *dialog = new EditDialog(config);
-
   dialog->setCaption(tr("Edit Indicator"));
+  dialog->hideTabs(TRUE);
+  dialog->hideToolbar(TRUE);
 
   Setting *set = new Setting;
   set->parse(config->getIndicator(selection));

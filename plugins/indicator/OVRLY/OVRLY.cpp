@@ -185,25 +185,6 @@ PlotLine * OVRLY::getSymbolLine (QString d)
   return line;
 }
 
-/*
-PlotLine * OVRLY::normalize (PlotLine *input)
-{
-  PlotLine *line = new PlotLine();
-
-  int loop;
-  double high = input->getHigh();
-  double low = input->getLow();
-  double scaler = (high - low) / 100;
-
-  for (loop = 0; loop < input->getSize(); loop++)
-  {
-    double t = (input->getData(loop) - low) / scaler;
-    line->append(t);
-  }
-
-  return line;
-}
-*/
 Plugin * create ()
 {
   OVRLY *o = new OVRLY;

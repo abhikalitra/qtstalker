@@ -44,6 +44,8 @@ class EditDialog : public QDialog
     QPushButton * getButton (QString);
     void setButtonStatus (QString, bool);
     void hideSettingView (bool);
+    void hideTabs (bool);
+    void hideToolbar (bool);
 
   public slots:
     void saveSettings ();

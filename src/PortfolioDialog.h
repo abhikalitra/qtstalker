@@ -24,10 +24,11 @@
 
 #include <qlistview.h>
 #include <qstring.h>
+#include <qtabdialog.h>
 #include "Config.h"
-#include "EditDialog.h"
+#include "Toolbar.h"
 
-class PortfolioDialog : public EditDialog
+class PortfolioDialog : public QTabDialog
 {
   Q_OBJECT
 
@@ -49,6 +50,8 @@ class PortfolioDialog : public EditDialog
     QListView *plist;
     QListViewItem *item;
     QString portfolio;
+    Toolbar *toolbar;
+    Config *config;
 };
 
 #endif

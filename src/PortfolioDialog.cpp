@@ -23,6 +23,7 @@
 #include "ChartDb.h"
 #include "Setting.h"
 #include "FuturesData.h"
+#include "PrefDialog.h"
 #include "newchart.xpm"
 #include "edit.xpm"
 #include "delete.xpm"
@@ -31,36 +32,42 @@
 #include <qdir.h>
 #include <qfile.h>
 #include <qtextstream.h>
+#include <qlayout.h>
 
-PortfolioDialog::PortfolioDialog (Config *c, QString p) : EditDialog (c)
+PortfolioDialog::PortfolioDialog (Config *c, QString p) : QTabDialog (0, "PortfolioDialog", TRUE)
 {
   portfolio = p;
+  config = c;
   
-  hideSettingView(TRUE);
-
   QString s = tr("Qtstalker: Portfolio");
   s.append(" ");
   s.append(portfolio);
   setCaption(s);
 
-  disconnect(this, SIGNAL(applyButtonPressed()), 0, 0);
+  QWidget *w = new QWidget(this);
+    
+  QVBoxLayout *vbox = new QVBoxLayout(w);
+  vbox->setMargin(5);
+  vbox->setSpacing(0);
+
+  toolbar = new Toolbar(w, 30, 30);
+  vbox->addWidget(toolbar);
+  vbox->addSpacing(10);
+  
   connect(this, SIGNAL(applyButtonPressed()), this, SLOT(savePortfolio()));
 
-  //add = 2  
-  setButton("add", QPixmap(newchart), tr("Add"));
-  connect(getButton("add"), SIGNAL(clicked()), this, SLOT(addItem()));
+  toolbar->addButton("add", QPixmap(newchart), tr("Add"));
+  connect(toolbar->getButton("add"), SIGNAL(clicked()), this, SLOT(addItem()));
 
-  // edit = 3
-  setButton("edit", QPixmap(edit), tr("Edit"));
-  connect(getButton("edit"), SIGNAL(clicked()), this, SLOT(modifyItem()));
-  setButtonStatus("edit", FALSE);
+  toolbar->addButton("edit", QPixmap(edit), tr("Edit"));
+  connect(toolbar->getButton("edit"), SIGNAL(clicked()), this, SLOT(modifyItem()));
+  toolbar->setButtonStatus("edit", FALSE);
 
-  // delete = 4
-  setButton("delete", QPixmap(deleteitem), tr("Delete"));
-  connect(getButton("delete"), SIGNAL(clicked()), this, SLOT(deleteItem()));
-  setButtonStatus("delete", FALSE);
+  toolbar->addButton("delete", QPixmap(deleteitem), tr("Delete"));
+  connect(toolbar->getButton("delete"), SIGNAL(clicked()), this, SLOT(deleteItem()));
+  toolbar->setButtonStatus("delete", FALSE);
 
-  plist = new QListView(this);
+  plist = new QListView(w);
   plist->setSelectionMode(QListView::Single);
   plist->addColumn(QObject::tr("Ticker"), -1);
   plist->addColumn(QObject::tr("L/S"), -1);
@@ -70,7 +77,11 @@ PortfolioDialog::PortfolioDialog (Config *c, QString p) : EditDialog (c)
   plist->addColumn(QObject::tr("Value"), -1);
   plist->addColumn(QObject::tr("Profit"), -1);
   connect(plist, SIGNAL(clicked(QListViewItem *)), this, SLOT(buttonStatus(QListViewItem *)));
-  basebox->addWidget(plist);
+  vbox->insertWidget(2, plist);
+  
+  addTab(w, tr("Details"));
+  
+  setCancelButton();
 
   buttonStatus(0);
 
@@ -192,41 +203,37 @@ void PortfolioDialog::savePortfolio ()
 
 void PortfolioDialog::addItem ()
 {
-  EditDialog *dialog = new EditDialog(config);
+  PrefDialog *dialog = new PrefDialog;
+  dialog->createPage(tr("Details"));
   dialog->setCaption(tr("New Portfolio Item"));
+  dialog->addSymbolItem(tr("Symbol"), 1, config->getData(Config::DataPath), QString());
 
-  Setting *set = new Setting();
-  set->set(tr("Symbol"), "", Setting::Symbol);
   QStringList l;
   l.append(tr("Long"));
   l.append(tr("Short"));
-  set->set(tr("Action"), tr("Long"), Setting::List);
-  set->setList(tr("Action"), l);
-  set->set(tr("Price"), "0", Setting::Float);
-  set->set(tr("Volume"), "1", Setting::Integer);
-
-  dialog->setItems(set);
-
+  dialog->addComboItem(tr("Action"), 1, l, tr("Long"));
+  
+  dialog->addFloatItem(tr("Price"), 1, 0, 0, 9999999999.0);
+  dialog->addIntItem(tr("Volume"), 1, 1, 1, 99999999);
   int rc = dialog->exec();
-
+  
   if (rc == QDialog::Accepted)
   {
-    QString symbol = set->getData(tr("Symbol"));
+    QString symbol = dialog->getSymbol(tr("Symbol"));
     symbol = symbol.remove(0, config->getData(Config::DataPath).length());
     if (symbol.isNull())
       QMessageBox::information(this, tr("Qtstalker: Error"), tr("No symbol selected."));
     else
     {
-      QString action = set->getData(tr("Action"));
-      QString vol = set->getData(tr("Volume"));
-      QString price = set->getData(tr("Price"));
+      QString action = dialog->getCombo(tr("Action"));
+      int vol = dialog->getInt(tr("Volume"));
+      double price = dialog->getFloat(tr("Price"));
 
-      item = new QListViewItem(plist, symbol, action, vol, price);
+      new QListViewItem(plist, symbol, action, QString::number(vol), QString::number(price));
       updatePortfolioItems();
     }
   }
 
-  delete set;
   delete dialog;
 }
 
@@ -245,40 +252,41 @@ void PortfolioDialog::modifyItem ()
   if (! item)
     return;
 
-  EditDialog *dialog = new EditDialog(config);
+  PrefDialog *dialog = new PrefDialog;
+  dialog->createPage(tr("Details"));
   dialog->setCaption(tr("Edit Portfolio Item"));
+  dialog->addSymbolItem(tr("Symbol"), 1, config->getData(Config::DataPath), item->text(0));
 
-  Setting *set = new Setting();
-  set->set(tr("Symbol"), item->text(0), Setting::Symbol);
   QStringList l;
   l.append(tr("Long"));
   l.append(tr("Short"));
-  set->set(tr("Action"), item->text(1), Setting::List);
-  set->setList(tr("Action"), l);
-  set->set(tr("Price"), item->text(3), Setting::Float);
-  set->set(tr("Volume"), item->text(2), Setting::Integer);
-
-  dialog->setItems(set);
-
+  dialog->addComboItem(tr("Action"), 1, l, item->text(1));
+  
+  dialog->addFloatItem(tr("Price"), 1, item->text(3).toFloat(), 0, 9999999999.0);
+  dialog->addIntItem(tr("Volume"), 1, item->text(2).toInt(), 1, 99999999);
   int rc = dialog->exec();
 
   if (rc == QDialog::Accepted)
   {
-    QString symbol = set->getData(tr("Symbol"));
+    QString symbol = dialog->getSymbol(tr("Symbol"));
     symbol = symbol.remove(0, config->getData(Config::DataPath).length());
-    QString action = set->getData(tr("Action"));
-    QString vol = set->getData(tr("Volume"));
-    QString price = set->getData(tr("Price"));
+    if (symbol.isNull())
+      QMessageBox::information(this, tr("Qtstalker: Error"), tr("No symbol selected."));
+    else
+    {
+      QString action = dialog->getCombo(tr("Action"));
+      int vol = dialog->getInt(tr("Volume"));
+      double price = dialog->getFloat(tr("Price"));
+  
+      item->setText(0, symbol);
+      item->setText(1, action);
+      item->setText(2, QString::number(vol));
+      item->setText(3, QString::number(price));
 
-    item->setText(0, symbol);
-    item->setText(1, action);
-    item->setText(2, vol);
-    item->setText(3, price);
-
-    updatePortfolioItems();
+      updatePortfolioItems();
+    }
   }
 
-  delete set;
   delete dialog;
 }
 
@@ -286,13 +294,13 @@ void PortfolioDialog::buttonStatus (QListViewItem *i)
 {
   if (! i)
   {
-    setButtonStatus("edit", FALSE);
-    setButtonStatus("delete", FALSE);
+    toolbar->setButtonStatus("edit", FALSE);
+    toolbar->setButtonStatus("delete", FALSE);
   }
   else
   {
-    setButtonStatus("edit", TRUE);
-    setButtonStatus("delete", TRUE);
+    toolbar->setButtonStatus("edit", TRUE);
+    toolbar->setButtonStatus("delete", TRUE);
   }
 }
 

@@ -34,8 +34,6 @@
 #include "edit.xpm"
 #include "delete.xpm"
 #include "indicator.xpm"
-#include "stop.xpm"
-#include "ok.xpm"
 #include "enterlong.xpm"
 #include "entershort.xpm"
 #include "exitlong.xpm"
@@ -45,7 +43,7 @@
 #include "FuturesData.h"
 #include "SymbolDialog.h"
 
-Tester::Tester (Config *c, QString n) : QDialog (0, 0, TRUE)
+Tester::Tester (Config *c, QString n) : QTabDialog (0, 0, TRUE)
 {
   config = c;
   ruleName = n;
@@ -60,31 +58,9 @@ Tester::Tester (Config *c, QString n) : QDialog (0, 0, TRUE)
 
   setCaption ("Back Tester");
 
-  QVBoxLayout *vbox = new QVBoxLayout(this);
-  vbox->setMargin(5);
-  vbox->setSpacing(5);
-
-  QGridLayout *tb = new QGridLayout(vbox, 1, 3);
-  tb->setSpacing(1);
-
-  QToolButton *button = new QToolButton(this);
-  QToolTip::add(button, tr("OK"));
-  button->setPixmap(QPixmap(ok));
-  connect(button, SIGNAL(clicked()), this, SLOT(exitDialog()));
-  button->setMaximumWidth(30);
-  button->setAutoRaise(TRUE);
-  tb->addWidget(button, 0, 0);
-
-  button = new QToolButton(this);
-  QToolTip::add(button, tr("Cancel"));
-  button->setPixmap(QPixmap(stop));
-  connect(button, SIGNAL(clicked()), this, SLOT(reject()));
-  button->setMaximumWidth(30);
-  button->setAutoRaise(TRUE);
-  tb->addWidget(button, 0, 1);
-
-  tabs = new QTabWidget(this);
-  vbox->addWidget(tabs);
+  setOkButton();
+  connect(this, SIGNAL(applyButtonPressed()), this, SLOT(exitDialog()));
+  setCancelButton();  
 
   createFormulaPage();
 
@@ -191,7 +167,7 @@ void Tester::createFormulaPage ()
   buttonGroup->setButton(0);
   showRule(0);
 
-  tabs->addTab(w, tr("Rules"));
+  addTab(w, tr("Rules"));
 }
 
 void Tester::createStopPage ()
@@ -268,7 +244,7 @@ void Tester::createStopPage ()
   profitToggled(FALSE);
   trailingToggled(FALSE);
 
-  tabs->addTab(w, tr("Stops"));
+  addTab(w, tr("Stops"));
 }
 
 void Tester::createTestPage ()
@@ -354,7 +330,7 @@ void Tester::createTestPage ()
   connect(testButton, SIGNAL(clicked()), this, SLOT(test()));
   vbox->addWidget(testButton);
 
-  tabs->addTab(w, tr("Testing"));
+  addTab(w, tr("Testing"));
 }
 
 void Tester::createReportPage ()
@@ -464,7 +440,7 @@ void Tester::createReportPage ()
   label = new QLabel(tr("Short Trades"), gbox);
   summaryLoseShortTrades = new QLabel(" ", gbox);
 
-  tabs->addTab(w, tr("Reports"));
+  addTab(w, tr("Reports"));
 }
 
 void Tester::addIndicator ()
@@ -526,6 +502,8 @@ void Tester::addIndicator ()
 
   EditDialog *dialog = new EditDialog(config);
   dialog->setCaption(tr("Edit Indicator"));
+  dialog->hideTabs(TRUE);
+  dialog->hideToolbar(TRUE);
 
   dialog->setItems(set);
 
@@ -575,6 +553,8 @@ void Tester::editIndicator ()
 
   EditDialog *dialog = new EditDialog(config);
   dialog->setCaption(tr("Edit Indicator"));
+  dialog->hideTabs(TRUE);
+  dialog->hideToolbar(TRUE);
 
   int id = buttonGroup->id(buttonGroup->selected());
   Indicator *i = 0;

@@ -23,12 +23,10 @@
 #define TESTER_HPP
 
 #include <qstring.h>
-#include <qdialog.h>
-#include <qtabwidget.h>
+#include <qtabdialog.h>
 #include <qlistview.h>
 #include <qdict.h>
 #include <qlist.h>
-#include <qtoolbutton.h>
 #include <qcheckbox.h>
 #include <qpushbutton.h>
 #include <qspinbox.h>
@@ -39,13 +37,14 @@
 #include <qlabel.h>
 #include <qslider.h>
 #include <qtable.h>
+#include <qtoolbutton.h>
 #include "Config.h"
 #include "Indicator.h"
 #include "Setting.h"
 #include "ChartDb.h"
 #include "BarData.h"
 
-class Tester : public QDialog
+class Tester : public QTabDialog
 {
   Q_OBJECT
 
@@ -91,7 +90,6 @@ class Tester : public QDialog
 
   protected:
     Config *config;
-    QTabWidget *tabs;
     QListView *indicatorList;
     QTable *tradeList;
     QListViewItem *item;
@@ -103,9 +101,6 @@ class Tester : public QDialog
     QDict<Setting> exitLongAlerts;
     QDict<Setting> enterShortAlerts;
     QDict<Setting> exitShortAlerts;
-    QToolButton *addIndicatorButton;
-    QToolButton *editIndicatorButton;
-    QToolButton *deleteIndicatorButton;
     QCheckBox *maximumLossCheck;
     QCheckBox *maximumLossLong;
     QCheckBox *maximumLossShort;
@@ -132,6 +127,9 @@ class Tester : public QDialog
     QDoubleValidator *validator;
     QButtonGroup *buttonGroup;
     QString ruleName;
+    QToolButton *addIndicatorButton;
+    QToolButton *editIndicatorButton;
+    QToolButton *deleteIndicatorButton;
 
     int status;
     int testLoop;
