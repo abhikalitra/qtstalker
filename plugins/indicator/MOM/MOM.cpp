@@ -26,7 +26,6 @@
 MOM::MOM ()
 {
   pluginName = "MOM";
-  plotFlag = FALSE;
   setDefaults();
 }
 

@@ -29,8 +29,8 @@ IndicatorPlugin::IndicatorPlugin()
   output.setAutoDelete(TRUE);
   pluginType = IndicatorPlug;
   saveFlag = FALSE;
-  plotFlag = FALSE;
   customFlag = FALSE;
+  plotType = 1;
   
   PlotLine *pl = new PlotLine;
   lineTypes = pl->getLineTypes();
@@ -51,11 +51,6 @@ void IndicatorPlugin::setIndicatorInput (BarData *d)
 {
   data = d;
   output.clear();
-}
-
-bool IndicatorPlugin::getPlotFlag ()
-{
-  return plotFlag;
 }
 
 void IndicatorPlugin::setCustomFlag (bool d)
@@ -106,6 +101,8 @@ Setting IndicatorPlugin::loadFile (QString file)
   
   f.close();
   
+  plotType = dict.getData("plotType").toInt();
+
   return dict;
 }
 
@@ -118,6 +115,8 @@ void IndicatorPlugin::saveFile (QString file, Setting dict)
     return;
   }
   QTextStream stream(&f);
+  
+  dict.setData("plotType", QString::number(plotType));
   
   QStringList key = dict.getKeyList();
   
@@ -156,20 +155,6 @@ PlotLine * IndicatorPlugin::getInputLine (QString d)
 
   return in;
 }
-
-/*
-Plugin * IndicatorPlugin::getPlugin (QString d)
-{
-  Config config;
-  
-  // open the CUS plugin   
-  Plugin *plug = config.getPlugin(Config::IndicatorPluginPath, d);
-  if (! plug)
-    config.closePlugin(d);
-    
-  return plug;
-}
-*/
 
 PlotLine * IndicatorPlugin::getEMA (PlotLine *d, int period)
 {
@@ -333,12 +318,6 @@ IndicatorPlugin::MAType IndicatorPlugin::getMAType (QString d)
       break;
     }
     
-    if (! d.compare(QObject::tr("SMA")))
-    {
-      type = SMA;
-      break;
-    }
-  
     if (! d.compare(QObject::tr("WMA")))
     {
       type = WMA;
@@ -377,41 +356,8 @@ PlotLine * IndicatorPlugin::getMA (PlotLine *in, IndicatorPlugin::MAType type, i
   return ma;  
 }
 
-/*
-PlotLine * IndicatorPlugin::getMA (PlotLine *d, MAType type, int period)
+void IndicatorPlugin::setPlotType (int d)
 {
-  PlotLine *line = 0;
-  Config config;
-  
-  // open the CUS plugin   
-  Plugin *plug = config.getPlugin(Config::IndicatorPluginPath, "MA");
-  if (! plug)
-  {
-    config.closePlugin("MA");
-    return line;
-  }
-
-  // load the plugin and calculate
-  Setting set = plug->getIndicatorSettings();
-  set.setData("maType", QString::number(type));
-  set.setData("period", QString::number(period));
-  plug->setIndicatorSettings(set);
-  
-  plug->setIndicatorInput(data);
-  plug->calculate();
-  PlotLine *nline = plug->getIndicatorLine(0);
-  if (! nline)
-  {
-    qDebug("IndicatorPlugin::getMA: no PlotLine returned");
-    config.closePlugin("MA");
-    return line;
-  }
-    
-  line = new PlotLine;
-  line->copy(nline);
-  config.closePlugin("MA");
-  
-  return line;
+  plotType = d;
 }
-*/
 

@@ -26,7 +26,6 @@
 VFI::VFI ()
 {
   pluginName = "VFI";
-  plotFlag = FALSE;
   setDefaults();
 }
 

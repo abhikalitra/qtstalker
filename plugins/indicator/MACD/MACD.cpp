@@ -26,7 +26,6 @@
 MACD::MACD ()
 {
   pluginName = "MACD";
-  plotFlag = FALSE;
   setDefaults();
 }
 

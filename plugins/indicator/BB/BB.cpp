@@ -26,7 +26,6 @@
 BB::BB ()
 {
   pluginName = "BB";
-  plotFlag = TRUE;
   
   bandList.append(tr("Upper"));
   bandList.append(tr("Lower"));

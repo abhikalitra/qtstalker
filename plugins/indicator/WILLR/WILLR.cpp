@@ -26,7 +26,6 @@
 WILLR::WILLR ()
 {
   pluginName = "WILLR";
-  plotFlag = FALSE;
   setDefaults();
 }
 

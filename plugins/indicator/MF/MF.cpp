@@ -26,7 +26,6 @@
 MF::MF ()
 {
   pluginName = "MF";
-  plotFlag = FALSE;
   setDefaults();
 }
 

@@ -111,7 +111,12 @@
 
 20040815: Removed STOCHRSI. Can easily be reproduced by a CUS formula.
 
-	  
+20040816: Removed HLC. Can easily be reproduced by a CUS formula. Added MIN/MAX functions to the MATH plugin.
+
+20040816: Added option for all indicators to be placed either on the main chart, the tabbed charts or
+          stacked positions. Now users's can place them anywhere. Beware, some indicators placed on
+	  the main chart will mess the chart up because of scaling differences ie. VOL.
+
 	  	  
 0.26
 ====

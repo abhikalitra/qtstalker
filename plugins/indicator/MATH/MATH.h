@@ -31,6 +31,8 @@ class MATH : public IndicatorPlugin
     void saveIndicatorSettings (QString);
     int indicatorPrefDialog (QWidget *);
     void setDefaults();
+    void calculateMinMax ();
+    void calculateOper ();
     PlotLine * calculateCustom (QDict<PlotLine> *);
     Setting getIndicatorSettings ();
     void setIndicatorSettings (Setting);
@@ -43,6 +45,7 @@ class MATH : public IndicatorPlugin
     QString data2;
     QString method;
     QStringList methodList;
+    int period;
 };
 
 extern "C"

@@ -26,7 +26,6 @@
 REF::REF ()
 {
   pluginName = "REF";
-  plotFlag = FALSE;
   customFlag = TRUE;
   setDefaults();
 }

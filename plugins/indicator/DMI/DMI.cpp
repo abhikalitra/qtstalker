@@ -27,7 +27,6 @@
 DMI::DMI ()
 {
   pluginName = "DMI";
-  plotFlag = FALSE;
   
   lineList.append("ADX");
   lineList.append("MDI");

@@ -26,7 +26,6 @@
 UO::UO ()
 {
   pluginName = "UO";
-  plotFlag = FALSE;
   setDefaults();
 }
 

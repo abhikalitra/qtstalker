@@ -26,7 +26,6 @@
 VT::VT ()
 {
   pluginName = "VT";
-  plotFlag = FALSE;
   
   methodList.append("NVI");
   methodList.append("OBV");

@@ -22,17 +22,19 @@
 #include "MATH.h"
 #include "PrefDialog.h"
 #include <qdict.h>
+#include <qinputdialog.h>
 
 MATH::MATH ()
 {
   pluginName = "MATH";
-  plotFlag = FALSE;
   customFlag = TRUE;
   
   methodList.append(tr("ADD"));
   methodList.append(tr("DIV"));
   methodList.append(tr("MUL"));
   methodList.append(tr("SUB"));
+  methodList.append(tr("MIN"));
+  methodList.append(tr("MAX"));
   
   setDefaults();
 }
@@ -46,17 +48,65 @@ void MATH::setDefaults ()
   color.setNamedColor("red");
   lineType = PlotLine::Line;
   label = pluginName;
-  method = "ADD";
   data1 = "1";
   data2 = "2";
+  period = 10;
 }
 
 void MATH::calculate ()
 {
+  if (! method.compare("MIN") || ! method.compare("MAX"))
+    calculateMinMax();
+  else
+    calculateOper();
+}
+
+void MATH::calculateMinMax ()
+{
   PlotLine *input = customLines->find(data1);
   if (! input)
   {
-    qDebug("MATH::calculate: no data1 input %s", data1.latin1());
+    qDebug("MATH::calculateMinMax: no data1 input %s", data1.latin1());
+    return;
+  }
+    
+  PlotLine *line = new PlotLine;
+  line->setColor(color);
+  line->setType(lineType);
+  line->setLabel(label);
+  
+  int type = methodList.findIndex(method);
+  
+  int loop;
+  for (loop = period; loop < (int) input->getSize(); loop++)
+  {
+    int loop2;
+    double h = -99999999;
+    double l = 99999999;
+    for (loop2 = 1; loop2 <= period; loop2++)
+    {
+      double t = input->getData(loop - loop2);
+      if (t > h)
+        h = t;
+      if (t < l)
+        l = t;
+    }
+
+    if (type == 4)
+      line->append(l);
+    else
+      line->append(h);
+  }
+  
+  output.append(line);
+}
+
+void MATH::calculateOper ()
+{
+  PlotLine *input = customLines->find(data1);
+  if (! input)
+  {
+    qDebug("MATH::calculateOper: no data1 input %s", data1.latin1());
     return;
   }
   int loop = input->getSize() - 1;
@@ -132,6 +182,20 @@ void MATH::calculate ()
 
 int MATH::indicatorPrefDialog (QWidget *w)
 {
+  if (! method.length())
+  {
+    bool ok = FALSE;
+    method = QInputDialog::getItem(tr("Select MATH Function"),
+                                   tr("Select MATH function"),
+				   methodList,
+				   0,
+				   FALSE,
+				   &ok,
+				   w);
+    if (! ok)
+      return FALSE;
+  }
+
   PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(tr("MATH Indicator"));
   dialog->createPage (tr("Parms"));
@@ -139,8 +203,15 @@ int MATH::indicatorPrefDialog (QWidget *w)
   dialog->addTextItem(tr("Label"), tr("Parms"), label);
   dialog->addComboItem(tr("Line Type"), tr("Parms"), lineTypes, lineType);
   dialog->addFormulaInputItem(tr("Data1"), tr("Parms"), FALSE, data1);
-  dialog->addComboItem(tr("Method"), tr("Parms"), methodList, method);
-  dialog->addFormulaInputItem(tr("Data2"), tr("Parms"), TRUE, data2);
+  
+  QStringList l;
+  l.append(method);
+  dialog->addComboItem(tr("Method"), tr("Parms"), l, method);
+  
+  if (! method.compare("MIN") || ! method.compare("MAX"))
+    dialog->addIntItem(tr("Period"), tr("Parms"), period, 1, 99999999);
+  else
+    dialog->addFormulaInputItem(tr("Data2"), tr("Parms"), TRUE, data2);
   
   int rc = dialog->exec();
   
@@ -149,9 +220,13 @@ int MATH::indicatorPrefDialog (QWidget *w)
     color = dialog->getColor(tr("Color"));
     lineType = (PlotLine::LineType) dialog->getComboIndex(tr("Line Type"));
     label = dialog->getText(tr("Label"));
-    method = dialog->getCombo(tr("Method"));
     data1 = dialog->getFormulaInput(tr("Data1"));
-    data2 = dialog->getFormulaInput(tr("Data2"));
+    
+    if (! method.compare("MIN") || ! method.compare("MAX"))
+      period = dialog->getInt(tr("Period"));
+    else
+      data2 = dialog->getFormulaInput(tr("Data2"));
+      
     rc = TRUE;
   }
   else
@@ -201,6 +276,10 @@ void MATH::setIndicatorSettings (Setting dict)
   s = dict.getData("data2");
   if (s.length())
     data2 = s;
+
+  s = dict.getData("period");
+  if (s.length())
+    period = s.toInt();
 }
 
 Setting MATH::getIndicatorSettings ()
@@ -213,6 +292,7 @@ Setting MATH::getIndicatorSettings ()
   dict.setData("method", method);
   dict.setData("data1", data1);
   dict.setData("data2", data2);
+  dict.setData("period", QString::number(period));
   return dict;
 }
 

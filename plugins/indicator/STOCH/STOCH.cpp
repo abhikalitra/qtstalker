@@ -26,7 +26,6 @@
 STOCH::STOCH ()
 {
   pluginName = "STOCH";
-  plotFlag = FALSE;
   setDefaults();
 }
 

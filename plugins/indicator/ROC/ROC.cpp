@@ -26,7 +26,6 @@
 ROC::ROC ()
 {
   pluginName = "ROC";
-  plotFlag = FALSE;
   setDefaults();
 }
 

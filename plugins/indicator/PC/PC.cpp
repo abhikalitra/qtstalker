@@ -26,7 +26,6 @@
 PC::PC ()
 {
   pluginName = "PC";
-  plotFlag = FALSE;
   setDefaults();
 }
 

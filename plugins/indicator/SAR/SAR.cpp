@@ -26,7 +26,6 @@
 SAR::SAR ()
 {
   pluginName = "SAR";
-  plotFlag = TRUE;
   setDefaults();
 }
 

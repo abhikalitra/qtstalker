@@ -26,7 +26,6 @@
 AD::AD ()
 {
   pluginName = "AD";
-  plotFlag = FALSE;
   
   methodList.append("AD");
   methodList.append("WAD");

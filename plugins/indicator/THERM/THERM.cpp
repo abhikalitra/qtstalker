@@ -30,7 +30,6 @@
 THERM::THERM ()
 {
   pluginName = "THERM";
-  plotFlag = FALSE;
   setDefaults();
 }
 

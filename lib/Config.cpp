@@ -121,6 +121,7 @@ void Config::setup ()
     else
     {
       QString s = getData(Config::IndicatorPath) + "/Volume";
+      plug->setPlotType(1);
       plug->saveIndicatorSettings(s);
       closePlugin("VOL");
     }

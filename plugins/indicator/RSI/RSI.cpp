@@ -27,7 +27,6 @@
 RSI::RSI ()
 {
   pluginName = "RSI";
-  plotFlag = FALSE;
   setDefaults();
 }
 

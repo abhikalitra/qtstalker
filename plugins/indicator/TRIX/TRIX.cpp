@@ -26,7 +26,6 @@
 TRIX::TRIX ()
 {
   pluginName = "TRIX";
-  plotFlag = FALSE;
   setDefaults();
 }
 

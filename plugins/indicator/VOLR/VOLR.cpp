@@ -26,7 +26,6 @@
 VOLR::VOLR ()
 {
   pluginName = "VOLR";
-  plotFlag = FALSE;
   setDefaults();
 }
 

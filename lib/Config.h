@@ -62,7 +62,7 @@ class Config
       LogScale,
       NavigatorPosition, // unused
       IndicatorTabs, // unused
-      StackedIndicator,
+      StackedIndicator, //unused
       PAFBoxSize, // unused
       Version, // unused
       Height,

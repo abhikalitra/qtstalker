@@ -26,7 +26,6 @@
 MA::MA ()
 {
   pluginName = "MA";
-  plotFlag = TRUE;
   setDefaults();
 }
 

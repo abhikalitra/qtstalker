@@ -26,7 +26,6 @@
 ENV::ENV ()
 {
   pluginName = "ENV";
-  plotFlag = TRUE;
   
   bandList.append(tr("Upper"));
   bandList.append(tr("Lower"));

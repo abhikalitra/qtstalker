@@ -46,7 +46,6 @@ class IndicatorPlugin : public Plugin
     void setIndicatorInput (BarData *);
     int getIndicatorLines ();
     void clearOutput ();
-    bool getPlotFlag ();
     void setCustomFlag (bool);
     Setting loadFile (QString);
     void saveFile (QString, Setting);
@@ -59,17 +58,18 @@ class IndicatorPlugin : public Plugin
     PlotLine * getMA (PlotLine *d, IndicatorPlugin::MAType, int);
     QStringList getMATypes ();
     IndicatorPlugin::MAType getMAType (QString);
+    void setPlotType (int);
 
   protected:
     BarData *data;
     QPtrList<PlotLine> output;
     QStringList lineTypes;
     QStringList inputTypeList;
-    bool plotFlag;
     bool saveFlag;
     bool customFlag;
     QDict<PlotLine> *customLines;
     QStringList maTypeList;
+    int plotType;
 };
 
 #endif

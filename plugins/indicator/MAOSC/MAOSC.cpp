@@ -26,7 +26,6 @@
 MAOSC::MAOSC ()
 {
   pluginName = "MAOSC";
-  plotFlag = FALSE;
   setDefaults();
 }
 

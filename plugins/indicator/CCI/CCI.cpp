@@ -27,7 +27,6 @@
 CCI::CCI ()
 {
   pluginName = "CCI";
-  plotFlag = FALSE;
   setDefaults();
 }
 

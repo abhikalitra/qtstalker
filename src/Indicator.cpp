@@ -26,6 +26,7 @@ Indicator::Indicator ()
 {
   lines.setAutoDelete(TRUE);
   enable = TRUE;
+  plotType = TabPlot;
 }
 
 Indicator::~Indicator ()
@@ -47,14 +48,14 @@ void Indicator::addLine (PlotLine *l)
   lines.append(l);
 }
 
-void Indicator::setMainPlot (bool d)
+void Indicator::setPlotType (Indicator::PlotType d)
 {
-  plot = d;
+  plotType = d;
 }
 
-bool Indicator::getMainPlot ()
+Indicator::PlotType Indicator::getPlotType ()
 {
-  return plot;
+  return plotType;
 }
 
 void Indicator::clearLines ()
@@ -100,5 +101,38 @@ void Indicator::setFile (QString d)
 QString Indicator::getFile ()
 {
   return file;
+}
+
+QStringList Indicator::getPlotTypes ()
+{
+  QStringList l;
+  l.append(QObject::tr("Main"));
+  l.append(QObject::tr("Tabbed"));
+  l.append(QObject::tr("Stacked"));
+  return l;
+}
+
+Indicator::PlotType Indicator::getPlotType (QString d)
+{
+  PlotType type = MainPlot;
+  
+  while (1)
+  {
+    if (! d.compare(QObject::tr("Tabbed")))
+    {
+      type = TabPlot;
+      break;
+    }
+  
+    if (! d.compare(QObject::tr("Stacked")))
+    {
+      type = StackedPlot;
+      break;
+    }
+      
+    break;
+  }
+  
+  return type;
 }
 

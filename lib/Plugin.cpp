@@ -70,11 +70,6 @@ void Plugin::clearOutput ()
 {
 }
 
-bool Plugin::getPlotFlag ()
-{
-  return FALSE;
-}
-
 int Plugin::indicatorPrefDialog (QWidget *)
 {
   return 0;
@@ -108,6 +103,10 @@ void Plugin::setCustomFlag (bool)
 }
 
 void Plugin::setCustomFunction (QString)
+{
+}
+
+void Plugin::setPlotType (int)
 {
 }
 

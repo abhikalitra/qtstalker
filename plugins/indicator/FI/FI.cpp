@@ -26,7 +26,6 @@
 FI::FI ()
 {
   pluginName = "FI";
-  plotFlag = FALSE;
   setDefaults();
 }
 

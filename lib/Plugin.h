@@ -52,7 +52,6 @@ class Plugin : public QObject
     virtual PlotLine * getIndicatorLine (int);
     virtual void calculate ();
     virtual void clearOutput ();
-    virtual bool getPlotFlag ();
     virtual int indicatorPrefDialog (QWidget *);
     virtual void loadIndicatorSettings (QString);
     virtual void saveIndicatorSettings (QString);
@@ -61,6 +60,7 @@ class Plugin : public QObject
     virtual void setIndicatorSettings (Setting);
     virtual void setCustomFlag (bool);
     virtual void setCustomFunction (QString);
+    virtual void setPlotType (int);
 
     // quote plugin interface
     virtual void update ();

@@ -1670,7 +1670,7 @@ void Tester::updateChart ()
   Indicator *i = new Indicator;
   i->setName("tester");
   i->addLine(close);
-  i->setMainPlot(FALSE);
+//  i->setMainPlot(FALSE);
   plot->addIndicator(i->getName(), i);
 
   //set up arrows
@@ -1720,7 +1720,7 @@ void Tester::createEquityCurve ()
   Indicator *i = new Indicator;
   i->setName("equity");
   i->addLine(equityCurve);
-  i->setMainPlot(FALSE);
+//  i->setMainPlot(FALSE);
   equityPlot->addIndicator(i->getName(), i);
 
   equityPlot->draw();

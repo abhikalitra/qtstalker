@@ -26,7 +26,6 @@
 ATR::ATR ()
 {
   pluginName = "ATR";
-  plotFlag = FALSE;
   setDefaults();
 }
 

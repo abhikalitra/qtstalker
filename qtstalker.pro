@@ -40,7 +40,6 @@ SUBDIRS += plugins/indicator/DMI
 SUBDIRS += plugins/indicator/DPO
 SUBDIRS += plugins/indicator/ENV
 SUBDIRS += plugins/indicator/FI
-SUBDIRS += plugins/indicator/HLC
 SUBDIRS += plugins/indicator/MA
 SUBDIRS += plugins/indicator/MACD
 SUBDIRS += plugins/indicator/MAOSC
