@@ -15,8 +15,7 @@
 supported exchanges are available
 with this plugin.<br>
 </p>
-<p><br>
-</p>
+<br>
 <h4>Adjustments:</h4>
 Yahoo provides an Adjusted Close column in its data,
 scaling prior closing prices to the most recent price based on stock
@@ -39,25 +38,39 @@ prices.<br>
 Most of the yahoo exchanges (except NA markets) have a 200 bar limit to
 the number of historical quotes that can be downloaded at one time. A
 work around for this is to download the data you need by doing it in
-several chunks of 250 days at a time. So, gettting many years worth of
+several chunks of 6 month intervals. So, gettting many years worth of
 data would take 6 or 7 download sessions by adjusting the start and end
-dates by 250 days at a time.<br>
+dates by 6 months at a time.<br>
 <br>
 <br>
 <h3>Input Parameters:</h3>
 <ul>
-  <li>Method - History for multiple quotes within the start and end
-dates input, or the most current single quote to download.<br>
+  <li>Method - The type of download quote data you want:<br>
   </li>
-  <li>End Date - The most recent date to include for update.</li>
-  <li>Start Date - The most distant date to include for update.</li>
+  <ul>
+    <li>History - Update history using a specific date range.<br>
+    </li>
+    <li>Auto History - Updates to the most recent history.<br>
+    </li>
+    <li>Quote - Updates the most recent intraday delayed quote.<br>
+    </li>
+  </ul>
+  <li>End Date - The most recent date to include for update. Used only
+for History method.<br>
+  </li>
+  <li>Start Date - The most distant date to include for update. Used
+only for History method.</li>
+  <li>Error Retry - The number of attempts to make if an error
+downloading the symbol occurs.</li>
+  <li>Timeout - The number of seconds to wait while downloading a
+symbol before moving on to the next symbol in the list.</li>
   <li>Adjustment - Propagate the Close/Adjusted Close factor to all
 price columns (i.e. adjust for stock splits and dividends).</li>
   <li>Download Symbols - Select the symbols to download by highlighting
 them.</li>
 </ul>
 <p></p>
-<img style="width: 308px; height: 435px;" alt="" src="yahoo1.png"><br>
+<img alt="" src="yahoo1.png" style="width: 324px; height: 500px;"><br>
 <p></p>
 <p></p>
 <p><br>
@@ -73,6 +86,9 @@ you want to download quotes.<br>
 <p><br>
 </p>
 <br>
+ border="0" height="32" width="32"></a>
+ border="0" height="32" width="32"></a><a href="toc.html"><img
+ src="home.png" alt="Home" border="0" height="32" width="32"></a>
 <a href="qtstalker.html" target="_self"><img src="back.png" border="0" width="32" height="32" alt="Back"></a>
 <a href="buyarrow.html" target="_self"><img src="next.png" border="0" width="32" height="32" alt="Next"></a>
 <a href="toc.html"><img src="home.png" border="0" width="32" height="32" alt="Home"></a>

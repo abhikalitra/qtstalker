@@ -95,7 +95,7 @@ class Plot : public QWidget
     int getWidth ();
     int getPixelspace ();
     int getMinPixelspace ();
-    QString strip (double);
+    QString strip (double, int);
     int convertXToDataIndex (int);
 
   public slots:

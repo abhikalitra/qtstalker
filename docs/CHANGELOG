@@ -88,8 +88,15 @@
           arrow. If drawmode is off then cursor is a cross.
 	  
 20050116: The export chart function now saves the original db path so the QtstalkerFormat
-          plugin can restore it properly.
+          plugin can restore it properly without having to manually move the imported chart.
+	  
+20050116: Fixed bug that segfaults when context menu is called with no chart loaded at startup.	  
 	  	  
+20050117: Added a percentage changed field next to the change field in the plot info string
+          as per user request.
+	  
+20050117: Fixed key shortcut for drawmode to ctrl+w. Data window is ctrl+d.
+
 	  
 	  	  	  	  
 0.28

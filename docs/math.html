@@ -12,20 +12,31 @@
 This plugin is only used in <a
  href="file:///home/me/mystuff/prog/qtstalker/docs/cus.html">CUS</a>
 type formulas. This plugin is used to either add, divide, multiply or
-subtract the
-data1 array by the data2 array.<br>
+subtract data arrays or value constants. You can select up to 5
+seperate data arrays or constants. The math follows a linear logic in
+the way the arrays are used. The plugin goes from data1 to data2 to
+data3 all the way to data5. So the order of how you set the various
+data arrays is critical for the result desired.<br>
 <br>
-Example: If the method used was ADD, then the Data1 array value would
-be added to the Data2 array value and the result returned. If the
-method used was DIV, then the Data1 array value would be divided by the
-Data2 array value and the result returned.<br>
+For example: We decide to add some data. We set data1 to use step 1. We
+set data2 to use step 2. We set data3 to a constant value of 1.5. This
+means the plugin would take the data1 array and then add the data2
+array to it. Finally the value constant of data3 is added to the sum of
+data1 and data2. This works the same for all the math functions of
+Add/Subtract/Divide/Multiply. In written math it would like this
+((data1 + data2) + data3).<br>
+<br>
+Using the above example and multiplying instead. The logic would take
+data1 and multiply it by data2. Then data3 would be multiplied with the
+result of data1 x data2. In written math it would like this ((data1 *
+data2) * data3). <br>
 <br>
 <h3>Parameters:</h3>
 <ul>
   <li>Color - plot color</li>
   <li>Line Type - The type of plot to draw</li>
   <li>Label - The text that identifies the plot</li>
-  <li><a href="ctypes.html">Data1</a> - The step # in a CUS formula<br>
+  <li><a href="ctypes.html">Data1</a> - The step # in a CUS formula.<br>
   </li>
   <li>Method - The math function to apply.</li>
   <ul>
@@ -40,12 +51,21 @@ division</li>
   <li><a href="file:///home/me/mystuff/prog/qtstalker/docs/ctypes.html">Data2</a>
 - The step # or constant value in
 a CUS formula</li>
+  <li><a href="ctypes.html">Data3</a> - The step # or constant value in
+a CUS formula</li>
+  <li><a href="ctypes.html">Data4</a> - The step # or constant value in
+a CUS formula</li>
+  <li><a href="ctypes.html">Data5</a> - The step # or constant value in
+a CUS formula</li>
   <li>Period - The period used for MIN and MAX functions only.</li>
 </ul>
 <ul>
 </ul>
 <br>
 <br>
+ border="0" height="32" width="32"></a>
+ border="0" height="32" width="32"></a><a href="toc.html"><img
+ src="home.png" alt="Home" border="0" height="32" width="32"></a>
 <a href="lowpass.html" target="_self"><img src="back.png" border="0" width="32" height="32" alt="Back"></a>
 <a href="ma.html" target="_self"><img src="next.png" border="0" width="32" height="32" alt="Next"></a>
 <a href="toc.html"><img src="home.png" border="0" width="32" height="32" alt="Home"></a>

@@ -419,7 +419,7 @@ void QtstalkerApp::initActions()
   connect(actionPlotDate, SIGNAL(toggled(bool)), this, SLOT(slotPlotDate(bool)));
 
   icon = co;
-  actionDrawMode = new QAction(tr("Toggle Draw Mode"), icon, tr("Toggle &Draw Mode"), CTRL+Key_D, this, 0, true);
+  actionDrawMode = new QAction(tr("Toggle Draw Mode"), icon, tr("Toggle Dra&w Mode"), CTRL+Key_W, this, 0, true);
   actionDrawMode->setStatusTip(tr("Toggle drawing mode."));
   connect(actionDrawMode, SIGNAL(toggled(bool)), this, SLOT(slotDrawMode(bool)));
   
@@ -456,6 +456,7 @@ void QtstalkerApp::initMenuBar()
   actionNav->addTo(viewMenu);
   actionHideMainPlot->addTo(viewMenu);
   actionPlotDate->addTo(viewMenu);
+  actionDrawMode->addTo(viewMenu);
 
   toolMenu = new QPopupMenu();
   actionDatawindow->addTo(toolMenu);
@@ -925,10 +926,10 @@ void QtstalkerApp::slotDataWindow ()
 
     for (loop = 0; loop < (int) recordList->count(); loop++)
     {
-      dw->setData(loop, 2, mainPlot->strip(recordList->getOpen(loop)));
-      dw->setData(loop, 3, mainPlot->strip(recordList->getHigh(loop)));
-      dw->setData(loop, 4, mainPlot->strip(recordList->getLow(loop)));
-      dw->setData(loop, 5, mainPlot->strip(recordList->getClose(loop)));
+      dw->setData(loop, 2, mainPlot->strip(recordList->getOpen(loop), 4));
+      dw->setData(loop, 3, mainPlot->strip(recordList->getHigh(loop), 4));
+      dw->setData(loop, 4, mainPlot->strip(recordList->getLow(loop), 4));
+      dw->setData(loop, 5, mainPlot->strip(recordList->getClose(loop), 4));
     }
 
     col = 6;
@@ -947,7 +948,7 @@ void QtstalkerApp::slotDataWindow ()
       int loop3;
       int offset = recordList->count() - line->getSize();
       for (loop3 = 0; loop3 < line->getSize(); loop3++)
-        dw->setData(loop3 + offset, col, mainPlot->strip(line->getData(loop3)));
+        dw->setData(loop3 + offset, col, mainPlot->strip(line->getData(loop3), 4));
     }
   }
 
@@ -968,7 +969,7 @@ void QtstalkerApp::slotDataWindow ()
         int loop3;
         int offset = recordList->count() - line->getSize();
         for (loop3 = 0; loop3 < line->getSize(); loop3++)
-          dw->setData(loop3 + offset, col, mainPlot->strip(line->getData(loop3)));
+          dw->setData(loop3 + offset, col, mainPlot->strip(line->getData(loop3), 4));
       }
     }
   }

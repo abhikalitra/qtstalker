@@ -78,6 +78,7 @@ Plot::Plot (QWidget *w) : QWidget(w)
   drawMode = FALSE;
   crosshairs = TRUE;
   infoFlag = TRUE;
+  coPlugin = 0;
 
   plotFont.setFamily("Helvetica");
   plotFont.setPointSize(12);
@@ -476,10 +477,10 @@ void Plot::mouseMoveEvent (QMouseEvent *event)
   
   if (mainFlag)
   {
-    r->setData("O", strip(data->getOpen(i)));
-    r->setData("H", strip(data->getHigh(i)));
-    r->setData("L", strip(data->getLow(i)));
-    r->setData("C", strip(data->getClose(i)));
+    r->setData("O", strip(data->getOpen(i), 4));
+    r->setData("H", strip(data->getHigh(i), 4));
+    r->setData("L", strip(data->getLow(i), 4));
+    r->setData("C", strip(data->getClose(i), 4));
   }
 
   QDictIterator<Indicator> it(indicators);
@@ -496,7 +497,7 @@ void Plot::mouseMoveEvent (QMouseEvent *event)
       PlotLine *line = ind->getLine(loop);
       int li = line->getSize() - data->count() + i;
       if (li > -1 && li <= line->getSize())
-        r->setData(line->getLabel(), strip(line->getData(li)));
+        r->setData(line->getLabel(), strip(line->getData(li), 4));
     }
   }
 
@@ -1098,7 +1099,7 @@ void Plot::drawScale ()
     painter.drawLine (x, y, x + 4, y);
 
     // draw the text
-    QString s = strip(scaleArray[loop]);
+    QString s = strip(scaleArray[loop], 4);
     
     // abbreviate too many (>=3) trailing zeroes in large numbers on y-axes
     if (! mainFlag)
@@ -1113,21 +1114,21 @@ void Plot::drawScale ()
       
       if (s.toDouble() >= 1000000000)
       {
-        s = strip(s.toDouble() / 1000000000);
+        s = strip(s.toDouble() / 1000000000, 4);
 	s.append("b");
       }
       else
       {
         if (s.toDouble() >= 1000000)
         {
-          s = strip(s.toDouble() / 1000000);
+          s = strip(s.toDouble() / 1000000, 4);
 	  s.append("m");
         }
         else
         {
           if (s.toDouble() >= 1000)
           {
-            s = strip(s.toDouble() / 1000);
+            s = strip(s.toDouble() / 1000, 4);
 	    s.append("k");
 	  }
 	}
@@ -1196,23 +1197,29 @@ void Plot::drawInfo ()
   if (data->count() && mainFlag)
   {
     s = "O=";
-    s.append(strip(data->getOpen(data->count() - 1)));
+    s.append(strip(data->getOpen(data->count() - 1), 4));
     s.append(" H=");
-    s.append(strip(data->getHigh(data->count() - 1)));
+    s.append(strip(data->getHigh(data->count() - 1), 4));
     s.append(" L=");
-    s.append(strip(data->getLow(data->count() - 1)));
+    s.append(strip(data->getLow(data->count() - 1), 4));
     s.append(" C=");
-    s.append(strip(data->getClose(data->count() - 1)));
+    s.append(strip(data->getClose(data->count() - 1), 4));
     s.append(" ");
     painter.drawText(pos, 10, s, -1);
     pos = pos + fm.width(s);
 
     double ch = 0;
+    double per = 0;
     if (data->count() > 1)
+    {
       ch = data->getClose(data->count() - 1) - data->getClose(data->count() - 2);
+      per = (ch / data->getClose(data->count() - 2)) * 100;
+    }
     s = "CH=";
-    s.append(strip(ch));
-    s.append(" ");
+    s.append(strip(ch, 4));
+    s.append(" (");
+    s.append(strip(per, 2));
+    s.append("%)");
     if (ch < 0)
       painter.setPen(QColor("red"));
     else
@@ -1243,7 +1250,7 @@ void Plot::drawInfo ()
       {
         s = line->getLabel();
         s.append("=");
-        s.append(strip(line->getData(line->getSize() - 1)));
+        s.append(strip(line->getData(line->getSize() - 1), 4));
         s.append(" ");
 
         painter.setPen(line->getColor());
@@ -1290,7 +1297,7 @@ void Plot::updateStatusBar (int x, int y)
   int i = convertXToDataIndex(x);
   QString s = data->getDate(i).getDateTimeString(TRUE);
   s.append(" ");
-  s.append(strip(scaler->convertToVal(y)));
+  s.append(strip(scaler->convertToVal(y), 4));
   emit statusMessage(s);
 }
 
@@ -1472,9 +1479,9 @@ int Plot::getXFromDate (BarDate d)
   return x;
 }
 
-QString Plot::strip (double d)
+QString Plot::strip (double d, int p)
 {
-  QString s = QString::number(d, 'f', 4);
+  QString s = QString::number(d, 'f', p);
 
   while (1)
   {
@@ -1571,7 +1578,7 @@ void Plot::showPopupMenu ()
 
   int id = chartMenu->insertItem (QPixmap(co), tr("New Chart Object"), chartObjectMenu);
   
-  if (! drawMode || ! data->count())
+  if (! drawMode || ! data)
     chartObjectMenu->setEnabled(FALSE);
   else
     chartObjectMenu->setEnabled(TRUE);
