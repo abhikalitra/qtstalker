@@ -53,8 +53,12 @@
 20041129: Added 3 more data inputs to the MATH plugin. Now the user can ADD/SUB/DIV/MUL up to
           5 data arrays at once.
           
-20041201: Fixed segfault when right clicking mouse on a empty chart and drawmode is off.
+20041201: Fixed segfault bug when right clicking mouse on a empty chart and drawmode is off.
 
+20041202: Applied feature request patch 1076502 - low band pass filter (LOWPASS).
+          Thanks to Jim Nolan for the patch.
+	  
+	  
 	  	  
 0.28
 ====
