@@ -3,7 +3,7 @@ TEMPLATE = app
 CONFIG += thread warn_on debug
 
 QMAKE_CXXFLAGS += -rdynamic
-#QMAKE_CXXFLAGS += -O2
+#QMAKE_CXXFLAGS += -Os
 
 HEADERS	+= Qtstalker.h
 HEADERS	+= PortfolioDialog.h

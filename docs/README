@@ -82,6 +82,7 @@ Quote plugins included are:
   Index - Custom index composites.
   NYBOT - New York Board Of Trade Futures
   Qtstalker - Files that have been exported by qtstalker ASCII export function
+  Ratio - Ratio composites.
   Spread - Custom spread composites.
   Yahoo - Yahoo historical quotes
   YahooQuote - Yahoo single delayed quotes

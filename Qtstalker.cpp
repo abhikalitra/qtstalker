@@ -74,6 +74,7 @@
 #include "delete.xpm"
 #include "co.xpm"
 #include "test.xpm"
+#include "qtstalker.xpm"
 
 QtstalkerApp::QtstalkerApp()
 {
@@ -81,6 +82,7 @@ QtstalkerApp::QtstalkerApp()
   chartMenu = 0;
   status = None;
   tabList.setAutoDelete(FALSE);
+  this->setIcon(qtstalker);
 
   QString s(QDir::homeDirPath());
   s.append("/Qtstalker/config");
