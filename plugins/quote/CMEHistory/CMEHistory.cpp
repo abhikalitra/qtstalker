@@ -314,28 +314,21 @@ void CMEHistory::parse (Setting *data)
     high = close;
   if (low.toFloat() == 0)
     low = close;
-    
-  QString s = dataPath;
-  s.append("/Futures");
-  QDir dir(s);
-  if (! dir.exists(s, TRUE))
+
+  QString path = createDirectory("Futures");
+  if (! path.length())
   {
-    if (! dir.mkdir(s, TRUE))
-    {
-      qDebug("CMEHistory plugin: Unable to create futures directory");
-      return;
-    }
+    qDebug("CMEHistory plugin: Unable to create futures directory");
+    return;
   }
 
-  s.append("/");
+  QString s = "Futures/";
   s.append(symbolList);
-  if (! dir.exists(s, TRUE))
+  path = createDirectory(s);
+  if (! path.length())
   {
-    if (! dir.mkdir(s, TRUE))
-    {
-      qDebug("CMEHistory plugin: Unable to create symbol directory");
-      return;
-    }
+    qDebug("CMEHistory plugin: Unable to create symbol directory");
+    return;
   }
 
   s = tr("Updating ");
@@ -351,9 +344,7 @@ void CMEHistory::parse (Setting *data)
   r->set("Volume", volume, Setting::Float);
   r->set("Open Interest", oi, Setting::Float);
 
-  s = dataPath;
-  s.append("/Futures/");
-  s.append(symbolList);
+  s = path;
   s.append("/");
   s.append(data->getData("Symbol"));
   ChartDb *db = new ChartDb();

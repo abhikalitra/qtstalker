@@ -63,25 +63,22 @@ void QtstalkerFormat::parse ()
     QStringList l = QStringList::split("/", list[loop], FALSE);
     QString symbol = l[l.count() - 1];
 
-    QString s = dataPath;
-    s.append("/Import");
-    QDir dir(s);
-    if (! dir.exists(s, TRUE))
+    QString path = createDirectory("Import");
+    if (! path.length())
     {
-      if (! dir.mkdir(s, TRUE))
-      {
-        qDebug("QtstalkerFormat plugin: Unable to create directory");
-        return;
-      }
+      qDebug("QtstalkerFormat plugin: Unable to create directory");
+      return;
     }
-    s.append("/");
-    s.append(symbol);
-    dir.remove(s, TRUE);
+
+    path.append("/");
+    path.append(symbol);
+    QDir dir(path);
+    dir.remove(path, TRUE);
 
     ChartDb *db = new ChartDb();
-    db->openChart(s);
+    db->openChart(path);
 
-    s = tr("Updating ");
+    QString s = tr("Updating ");
     s.append(symbol);
     emit message(s);
 

@@ -33,6 +33,7 @@ CSV::CSV ()
 {
   pluginName = "CSV";
   createFlag = FALSE;
+  delimiter = ",";
 
   set(tr("Input"), "", Setting::FileList);
   
@@ -57,8 +58,24 @@ CSV::CSV ()
   l.clear();
   l.append("DOHLCV");
   l.append("DOHLCVI");
+  l.append("Yahoo");
   set(tr("Format"), l[0], Setting::List);
   setList(tr("Format"), l);
+
+  l.clear();
+  l.append(tr("Comma"));
+  l.append(tr("Tab"));
+  l.append(tr("Space"));
+  set(tr("Delimiter"), tr("Comma"), Setting::List);
+  setList(tr("Delimiter"), l);
+
+  l.clear();
+  l.append(tr("YYYYMMDD"));
+  l.append(tr("YYMMDD"));
+  l.append(tr("MMDDYY"));
+  l.append(tr("MMDDYYYY"));
+  set(tr("Date Format"), tr("YYYYMMDD"), Setting::List);
+  setList(tr("Date Format"), l);
 
   delete fd;
   
@@ -76,6 +93,8 @@ void CSV::update ()
 
 void CSV::parse ()
 {
+  setDelimiter();
+
   FuturesData *fd = new FuturesData;
 
   QStringList list = getList(tr("Input"));
@@ -103,52 +122,39 @@ void CSV::parse ()
 
     QString type = getData(tr("Chart Type"));
 
-    QString path = dataPath;
+    QString path;
     if (! type.compare("Stock"))
     {
-      path.append("/Stocks");
-
-      QDir dir(path);
-      if (! dir.exists(path, TRUE))
+      path = createDirectory("Stocks");
+      if (! path.length())
       {
-        if (! dir.mkdir(path, TRUE))
-        {
-          qDebug("CSV plugin: Unable to create stocks directory");
-          f.close();
-          return;
-        }
+        qDebug("CSV plugin: Unable to create stocks directory");
+        f.close();
+        return;
       }
     }
     else
     {
       if (! type.compare("Futures"))
       {
-        path.append("/Futures");
-
-        QDir dir(path);
-        if (! dir.exists(path, TRUE))
-        {
-          if (! dir.mkdir(path, TRUE))
-          {
-            qDebug("CSV plugin: Unable to create futures directory");
-            f.close();
-            return;
-          }
+        path = createDirectory("Futures");
+        if (! path.length())
+	{
+          qDebug("CSV plugin: Unable to create futures directory");
+          f.close();
+          return;
         }
-
-        path.append("/");
 
         fd->setSymbol(getData(tr("Futures Symbol")));
 
-        path.append(fd->getSymbol());
-        if (! dir.exists(path, TRUE))
+	QString s = "Futures/";
+	s.append(fd->getSymbol());
+        path = createDirectory(s);
+        if (! path.length())
         {
-          if (! dir.mkdir(path, TRUE))
-          {
-            qDebug("CSV plugin: Unable to create futures symbol directory");
-            f.close();
-            return;
-          }
+          qDebug("CSV plugin: Unable to create futures symbol directory");
+          f.close();
+          return;
         }
       }
     }
@@ -194,7 +200,7 @@ void CSV::parse ()
       s = stream.readLine();
       s = stripJunk(s);
 
-      QStringList l = QStringList::split(",", s, FALSE);
+      QStringList l = QStringList::split(delimiter, s, FALSE);
       
       // date
       QString date = l[0];
@@ -294,6 +300,34 @@ void CSV::parse ()
   delete fd;
 
   emit done();
+}
+
+void CSV::setDelimiter ()
+{
+  if (! getData(tr("Delimiter")).compare(tr("Comma")))
+  {
+    delimiter = ",";
+    return;
+  }
+
+  if (! getData(tr("Delimiter")).compare(tr("Tab")))
+  {
+    delimiter = "	";
+    return;
+  }
+
+  if (! getData(tr("Delimiter")).compare(tr("Space")))
+  {
+    delimiter = " ";
+    return;
+  }
+}
+
+QString CSV::getDate (QString d)
+{
+  QString date;
+  date = d;
+  return date;
 }
 
 Plugin * create ()

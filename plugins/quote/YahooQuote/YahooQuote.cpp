@@ -336,25 +336,20 @@ void YahooQuote::createChart (Setting *set)
 {
   QStringList symbols = QStringList::split(" ", set->getData("New Symbols"), FALSE);
 
-  QString base = dataPath;
-  base.append("/Stocks");
-  QDir dir(base);
-  if (! dir.exists(base, TRUE))
+  QString path = createDirectory("Stocks");
+  if (! path.length())
   {
-    if (! dir.mkdir(base, TRUE))
-    {
-      qDebug("Yahoo plugin: Unable to create directory");
-      return;
-    }
+    qDebug("Yahoo plugin: Unable to create directory");
+    return;
   }
-  base.append("/");
+  path.append("/");
 
   int loop;
   for (loop = 0; loop < (int) symbols.count(); loop++)
   {
-    QString s = base;
+    QString s = path;
     s.append(symbols[loop]);
-
+    QDir dir(s);
     if (dir.exists(s, TRUE))
       continue;
 

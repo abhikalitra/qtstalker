@@ -278,23 +278,18 @@ void COT::parse ()
 
 void COT::saveData (Setting *set)
 {
-  QString s = dataPath;
-  s.append("/COT");
-  QDir dir(s);
-  if (! dir.exists(s, TRUE))
+  QString s = createDirectory("COT");
+  if (! s.length())
   {
-    if (! dir.mkdir(s, TRUE))
-    {
-      qDebug("COT plugin: Unable to create directory");
-      return;
-    }
+    qDebug("COT plugin: Unable to create directory");
+    return;
   }
 
   s.append("/");
   s.append(set->getData("Symbol"));
   ChartDb *db = new ChartDb();
   db->openChart(s);
-  
+
   s = tr("Updating ");
   s.append(set->getData("Symbol"));
   emit message(s);

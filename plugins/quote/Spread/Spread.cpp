@@ -32,13 +32,6 @@ Spread::Spread ()
   createFlag = TRUE;
   data.setAutoDelete(TRUE);
 
-  QStringList l;
-  l.append(tr("Subtract"));
-  l.append(tr("Divide"));
-  l.sort();
-  set(tr("Method"), tr("Subtract"), Setting::List);
-  setList(tr("Method"), l);
-
   about = "Creates and updates a chart to form a spread chart.\n";
 }
 
@@ -98,10 +91,12 @@ void Spread::updateSpread ()
     details = db->getDetails();
     details->parse(tdetails->getString());
     delete tdetails;
+    db->saveDetails();
+    db->setFormat();
 
-    loadData(details->getData(tr("First Symbol")));
+    loadData(details->getData(tr("First Symbol")), details->getData(tr("Method")));
 
-    loadData(details->getData(tr("Second Symbol")));
+    loadData(details->getData(tr("Second Symbol")), details->getData(tr("Method")));
 
     QDictIterator<Setting> it(data);
     for (; it.current(); ++it)
@@ -110,34 +105,30 @@ void Spread::updateSpread ()
       if (r->getInt("Count") == 2)
         db->setRecord(r);
     }
-    
+
     delete db;
 
     data.clear();
   }
-  
+
   emit done();
 }
 
-void Spread::loadData (QString symbol)
+void Spread::loadData (QString symbol, QString method)
 {
-  QString s = dataPath;
-  s.append("/");
-  s.append(symbol);
-
-  ChartDb *db = new ChartDb();
-  if (db->openChart(s))
+  ChartDb *tdb = new ChartDb();
+  if (tdb->openChart(symbol))
   {
     qDebug("could not open db");
-    delete db;
+    delete tdb;
     return;
   }
-  
-  Setting *details = db->getDetails();
 
-  QDateTime dt = db->getDateTime(details->getData("First Date"));
+  Setting *details = tdb->getDetails();
 
-  QList<Setting> *recordList = db->getHistory(ChartDb::Daily, dt);
+  QDateTime dt = tdb->getDateTime(details->getData("First Date"));
+
+  QList<Setting> *recordList = tdb->getHistory(ChartDb::Daily, dt);
 
   int loop;
   for (loop = 0; loop < (int) recordList->count(); loop++)
@@ -159,14 +150,14 @@ void Spread::loadData (QString symbol)
     }
     else
     {
-      if (! getData(QObject::tr("Method")).compare(QObject::tr("Subtract")))
+      if (! method.compare(QObject::tr("Subtract")))
       {
         r->setData("Close", QString::number(r->getFloat("Close") - (tr->getFloat("Close"))));
         r->setData("Volume", QString::number(r->getFloat("Volume") - (tr->getFloat("Volume"))));
         r->setData("Open Interest", QString::number(r->getFloat("Open Interest") - (tr->getFloat("Open Interest"))));
       }
 
-      if (! getData(QObject::tr("Method")).compare(QObject::tr("Divide")))
+      if (! method.compare(QObject::tr("Divide")))
       {
         r->setData("Close", QString::number(r->getFloat("Close") / (tr->getFloat("Close"))));
         r->setData("Volume", QString::number(r->getFloat("Volume") / (tr->getFloat("Volume"))));
@@ -176,12 +167,12 @@ void Spread::loadData (QString symbol)
       r->setData("Open", r->getData("Close"));
       r->setData("High", r->getData("Close"));
       r->setData("Low", r->getData("Close"));
-      r->setData("Count", QString::number(r->getFloat("Count") + 1));
+      r->setData("Count", "2");
     }
   }
 
   delete recordList;
-  delete db;
+  delete tdb;
 }
 
 Setting * Spread::getCreateDetails ()
@@ -189,6 +180,14 @@ Setting * Spread::getCreateDetails ()
   Setting *set = new Setting;
   set->set(tr("First Symbol"), "", Setting::Symbol);
   set->set(tr("Second Symbol"), "", Setting::Symbol);
+
+  QStringList l;
+  l.append(tr("Subtract"));
+  l.append(tr("Divide"));
+  l.sort();
+  set->set(tr("Method"), tr("Subtract"), Setting::List);
+  set->setList(tr("Method"), l);
+
   return set;
 }
 
@@ -208,18 +207,12 @@ void Spread::createChart (Setting *set)
     return;
   }
 
-  QString base = dataPath;
-  base.append("/Spread");
-  QDir dir(base);
-  if (! dir.exists(base, TRUE))
+  QString path = createDirectory("Spread");
+  if (! path.length())
   {
-    if (! dir.mkdir(base, TRUE))
-    {
-      qDebug("Spread plugin: Unable to create directory");
-      return;
-    }
+    qDebug("Spread plugin: Unable to create directory");
+    return;
   }
-  base.append("/");
 
   QStringList l = QStringList::split("/", set->getData(tr("First Symbol")), FALSE);
   QString symbol = l[l.count() - 1];
@@ -227,20 +220,22 @@ void Spread::createChart (Setting *set)
   l = QStringList::split("/", set->getData(tr("Second Symbol")), FALSE);
   symbol.append(l[l.count() - 1]);
 
-  s = base;
-  s.append(symbol);
-  if (dir.exists(s, TRUE))
+  path.append("/");
+  path.append(symbol);
+  QDir dir(path);
+  if (dir.exists(path, TRUE))
   {
     QMessageBox::information(0, tr("Error"), tr("Duplicate chart"), 0, 0, QMessageBox::Ok);
     return;
   }
 
   ChartDb *db = new ChartDb();
-  db->openChart(s);
+  db->openChart(path);
 
   Setting *details = db->getDetails();
   details->set("Format", "Open|High|Low|Close|Volume|Open Interest", Setting::None);
   details->set("Chart Type", tr("Spread"), Setting::None);
+  details->set("Method", set->getData(tr("Method")), Setting::None);
   details->set("Symbol", symbol, Setting::None);
   details->set("Title", symbol, Setting::Text);
   details->set("First Symbol", set->getData(tr("First Symbol")), Setting::Symbol);

@@ -37,13 +37,17 @@ GroupPage::GroupPage (QWidget *w, Config *c) : BaseDialog(w)
 {
   config = c;
 
+  group = new QLineEdit(this);
+  group->setReadOnly(TRUE);
+  basebox->addWidget(group);
+
   nav = new Navigator(this, config->getData(Config::GroupPath));
   connect(nav, SIGNAL(fileSelected(QString)), this, SLOT(groupSelected(QString)));
   connect(nav, SIGNAL(noSelection()), this, SLOT(groupNoSelection()));
   connect(nav, SIGNAL(contextMenuRequested(QListBoxItem *, const QPoint &)), this, SLOT(rightClick(QListBoxItem *)));
   nav->updateList();
   basebox->addWidget(nav);
-  
+
   menu = new QPopupMenu();
   menu->insertItem(QPixmap(newchart), tr("New Group"), this, SLOT(newGroup()));
   menu->insertItem(QPixmap(insert), tr("Add Group Items"), this, SLOT(addGroupItem()));
@@ -227,8 +231,11 @@ void GroupPage::groupSelected (QString d)
 void GroupPage::groupNoSelection ()
 {
   QString s = config->getData(Config::GroupPath);
-  if (s.compare(nav->getCurrentPath()))
+  QString s2 = nav->getCurrentPath();
+  if (s.compare(s2))
   {
+    group->setText(s2.right(s2.length() - s.length() - 1));
+
     menu->setItemEnabled(menu->idAt(1), TRUE);
     menu->setItemEnabled(menu->idAt(2), FALSE);
     menu->setItemEnabled(menu->idAt(3), TRUE);
@@ -236,6 +243,8 @@ void GroupPage::groupNoSelection ()
   }
   else
   {
+    group->clear();
+
     menu->setItemEnabled(menu->idAt(1), FALSE);
     menu->setItemEnabled(menu->idAt(2), FALSE);
     menu->setItemEnabled(menu->idAt(3), FALSE);

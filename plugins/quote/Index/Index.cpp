@@ -251,29 +251,24 @@ void Index::createChart (Setting *set)
     return;
   }
 
-  QString base = dataPath;
-  base.append("/Index");
-  QDir dir(base);
-  if (! dir.exists(base, TRUE))
+  QString path = createDirectory("Index");
+  if (! path.length())
   {
-    if (! dir.mkdir(base, TRUE))
-    {
-      qDebug("Index plugin: Unable to create directory");
-      return;
-    }
+    qDebug("Index plugin: Unable to create directory");
+    return;
   }
-  base.append("/");
 
-  QString s = base;
-  s.append(symbol);
-  if (dir.exists(s, TRUE))
+  path.append("/");
+  path.append(symbol);
+  QDir dir(path);
+  if (dir.exists(path, TRUE))
   {
     QMessageBox::information(0, tr("Error"), tr("Duplicate chart"), 0, 0, QMessageBox::Ok);
     return;
   }
 
   ChartDb *db = new ChartDb();
-  db->openChart(s);
+  db->openChart(path);
 
   Setting *details = db->getDetails();
   details->set("Format", "Open|High|Low|Close|Volume|Open Interest", Setting::None);

@@ -48,17 +48,13 @@ void CC::update ()
 
 void CC::parse ()
 {
-  QString s = dataPath;
-  s.append("/CC");
-  QDir dir(s);
-  if (! dir.exists(s, TRUE))
+  QString path = createDirectory("CC");
+  if (! path.length())
   {
-    if (! dir.mkdir(s, TRUE))
-    {
-      qDebug("CC plugin: Unable to create directory");
-      return;
-    }
+    qDebug("CC plugin: Unable to create directory");
+    return;
   }
+  path.append("/");
 
   FuturesData *fd = new FuturesData;
   QStringList symbols = fd->getSymbolList();
@@ -66,21 +62,21 @@ void CC::parse ()
   int symbolLoop;
   for (symbolLoop = 0; symbolLoop < (int) symbols.count(); symbolLoop++)
   {
-    s = tr("Updating ");
+    QString s = tr("Updating ");
     s.append(symbols[symbolLoop]);
     emit message(s);
 
     s = dataPath;
     s.append("/Futures/");
     s.append(symbols[symbolLoop]);
+    QDir dir(s);
     if (! dir.exists(s, TRUE))
       continue;
     dir.setPath(s);
 
-    s = dataPath;
-    s.append("/CC/");
+    s = path;
     s.append(symbols[symbolLoop]);
-    
+
     dir.remove(s, TRUE);
 
     ChartDb *db = new ChartDb();

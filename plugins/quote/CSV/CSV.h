@@ -29,9 +29,14 @@ class CSV : public QuotePlugin
     CSV ();
     virtual ~CSV ();
     void update ();
+    void setDelimiter ();
+    QString getDate (QString);
 
   public slots:
     void parse ();
+
+  private:
+    QString delimiter;
 };
 
 extern "C"

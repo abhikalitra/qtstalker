@@ -20,6 +20,7 @@
  */
 
 #include "QuotePlugin.h"
+#include <qdir.h>
 
 QuotePlugin::QuotePlugin ()
 {
@@ -83,4 +84,21 @@ bool QuotePlugin::getCreateFlag ()
 {
   return createFlag;
 }
+
+QString QuotePlugin::createDirectory (QString d)
+{
+  QString path = dataPath;
+  path.append("/");
+  path.append(d);
+
+  QDir dir(path);
+  if (! dir.exists(path, TRUE))
+  {
+    if (! dir.mkdir(path, TRUE))
+      return QString::null;
+  }
+
+  return path;
+}
+
 

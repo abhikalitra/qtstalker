@@ -59,6 +59,10 @@
 
 - Removed Ratio quote plugin. Moved ratio functions into the Spread quote plugin.
 
+- Applied patch #806926 from David Crossley.
+
+- Put a lebel in the group navigator tab to indicate what the current group is.
+
 
 0.20
 ====

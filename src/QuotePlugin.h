@@ -39,6 +39,7 @@ class QuotePlugin : public Plugin
     bool setTFloat (QString);
     QString stripJunk (QString);
     bool getCreateFlag ();
+    QString createDirectory (QString);
 
   protected:
     QString file;

@@ -25,6 +25,7 @@
 #include <qstring.h>
 #include <qwidget.h>
 #include <qpopupmenu.h>
+#include <qlineedit.h>
 #include "Navigator.h"
 #include "BaseDialog.h"
 #include "Config.h"
@@ -54,6 +55,7 @@ class GroupPage : public BaseDialog
     Navigator *nav;
     Config *config;
     QPopupMenu *menu;
+    QLineEdit *group;
 };
 
 #endif

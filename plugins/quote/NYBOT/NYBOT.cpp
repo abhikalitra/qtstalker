@@ -269,28 +269,21 @@ void NYBOT::parse ()
       }
       else
         continue;
-	
-      s = dataPath;
-      s.append("/Futures");
-      QDir dir(s);
-      if (! dir.exists(s, TRUE))
+
+      QString path = createDirectory("Futures");
+      if (! path.length())
       {
-        if (! dir.mkdir(s, TRUE))
-        {
-          qDebug("NYBOT plugin: Unable to create futures directory");
-          return;
-        }
+        qDebug("NYBOT plugin: Unable to create futures directory");
+        return;
       }
 
-      s.append("/");
+      s = "Futures/";
       s.append(fd->getSymbol());
-      if (! dir.exists(s, TRUE))
+      path = createDirectory(s);
+      if (! path.length())
       {
-        if (! dir.mkdir(s, TRUE))
-        {
-          qDebug("NYBOT plugin: Unable to create directory");
-          return;
-        }
+        qDebug("NYBOT plugin: Unable to create directory");
+        return;
       }
 
       s = tr("Updating ");
@@ -306,9 +299,7 @@ void NYBOT::parse ()
       r->set("Volume", volume, Setting::Float);
       r->set("Open Interest", oi, Setting::Float);
 
-      s = dataPath;
-      s.append("/Futures/");
-      s.append(fd->getSymbol());
+      s = path;
       s.append("/");
       s.append(symbol);
       ChartDb *db = new ChartDb();

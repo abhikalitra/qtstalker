@@ -34,7 +34,6 @@ Navigator::Navigator (QWidget *w, QString bp) : QListBox(w)
   setSelectionMode(QListBox::Single);
   connect(this, SIGNAL(currentChanged(QListBoxItem *)), this, SLOT(fileSelection(QListBoxItem *)));
   connect(this, SIGNAL(selected(QListBoxItem *)), this, SLOT(checkDirectory(QListBoxItem *)));
-//  connect(this, SIGNAL(returnPressed(QListBoxItem *)), this, SLOT(checkDirectory(QListBoxItem *)));
 }
 
 Navigator::~Navigator ()
