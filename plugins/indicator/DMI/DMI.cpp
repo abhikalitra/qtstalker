@@ -48,32 +48,29 @@ void DMI::setDefaults ()
   adxLabel = "ADX";
   period = 14;
   smoothing = 9;
-  maType = QSMath::SMA;  
+  maType = IndicatorPlugin::SMA;
+  lineRequest = "ADX";
 }
 
 void DMI::calculate ()
 {
-  QSMath *t = new QSMath(data);
-
-  PlotLine *mdi = t->getMDI(period);
+  PlotLine *mdi = getMDI(period);
   mdi->setColor(mdiColor);
   mdi->setType(mdiLineType);
   mdi->setLabel(mdiLabel);
   output.append(mdi);
   
-  PlotLine *pdi = t->getPDI(period);
+  PlotLine *pdi = getPDI(period);
   pdi->setColor(pdiColor);
   pdi->setType(pdiLineType);
   pdi->setLabel(pdiLabel);
   output.append(pdi);
 
-  PlotLine *adx = t->getADX(mdi, pdi, maType, smoothing);
+  PlotLine *adx = getADX(mdi, pdi, maType, smoothing);
   adx->setColor(adxColor);
   adx->setType(adxLineType);
   adx->setLabel(adxLabel);
   output.append(adx);
-  
-  delete t;
 }
 
 int DMI::indicatorPrefDialog ()
@@ -107,7 +104,7 @@ int DMI::indicatorPrefDialog ()
   {
     period = dialog->getInt(tr("Period"));
     smoothing = dialog->getInt(tr("Smoothing"));
-    maType = (QSMath::MAType) dialog->getComboIndex(tr("Smoothing Type"));
+    maType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("Smoothing Type"));
     
     pdiColor = dialog->getColor(tr("+DM Color"));
     pdiLineType = (PlotLine::LineType) dialog->getComboIndex(tr("+DM Line Type"));
@@ -160,7 +157,7 @@ void DMI::loadIndicatorSettings (QString file)
     
   s = dict["maType"];
   if (s)
-    maType = (QSMath::MAType) s->left(s->length()).toInt();
+    maType = (IndicatorPlugin::MAType) s->left(s->length()).toInt();
     
   s = dict["pdiLabel"];
   if (s)
@@ -207,6 +204,214 @@ void DMI::saveIndicatorSettings (QString file)
   dict.replace("plugin", new QString(pluginName));
 
   saveFile(file, dict);
+}
+
+PlotLine * DMI::calculateCustom (QDict<PlotLine> *)
+{
+  clearOutput();
+  calculate();
+  if (! lineRequest.compare("MDI"))
+    return output.at(0);
+  else
+  {
+    if (! lineRequest.compare("PDI"))
+      return output.at(1);
+    else
+      return output.at(2);
+  }
+}
+
+QString DMI::getCustomSettings ()
+{
+  QString s("DMI");
+  s.append("," + maType);
+  s.append("," + QString::number(period));
+  s.append("," + QString::number(smoothing));
+  s.append("," + mdiColor.name());
+  s.append("," + QString::number(mdiLineType));
+  s.append("," + mdiLabel);
+  s.append("," + pdiColor.name());
+  s.append("," + QString::number(pdiLineType));
+  s.append("," + pdiLabel);
+  s.append("," + adxColor.name());
+  s.append("," + QString::number(adxLineType));
+  s.append("," + adxLabel);
+  return s;
+}
+
+void DMI::setCustomSettings (QString d)
+{
+  customFlag = TRUE;
+
+  QStringList l = QStringList::split(",", d, FALSE);
+  maType = (IndicatorPlugin::MAType) l[1].toInt();
+  period = l[2].toInt();
+  smoothing = l[3].toInt();
+  mdiColor.setNamedColor(l[4]);
+  mdiLineType = (PlotLine::LineType) l[5].toInt();
+  mdiLabel = l[6];
+  pdiColor.setNamedColor(l[7]);
+  pdiLineType = (PlotLine::LineType) l[8].toInt();
+  pdiLabel = l[9];
+  adxColor.setNamedColor(l[10]);
+  adxLineType = (PlotLine::LineType) l[11].toInt();
+  adxLabel = l[12];
+}
+
+PlotLine * DMI::getMDI (int period)
+{
+  PlotLine *mdm = new PlotLine();
+  int loop;
+  for (loop = 1; loop < (int) data->count(); loop++)
+  {
+    double high = data->getHigh(loop);
+    double low = data->getLow(loop);
+    double yhigh = data->getHigh(loop - 1);
+    double ylow = data->getLow(loop - 1);
+    double t = 0;
+
+    if (high > yhigh)
+      t = 0;
+    else
+    {
+      if (low < ylow)
+        t = ylow - low;
+      else
+	t = 0;
+    }
+
+    mdm->append(t);
+  }
+
+  PlotLine *tr = getTR();
+
+  PlotLine *smamdm = getSMA(mdm, period);
+  int mdmLoop = smamdm->getSize() - 1;
+
+  PlotLine *smatr = getSMA(tr, period);
+  int trLoop = smatr->getSize() - 1;
+
+  PlotLine *mdi = new PlotLine();
+
+  while (mdmLoop > -1 && trLoop > -1)
+  {
+    int t = (int) ((smamdm->getData(mdmLoop) / smatr->getData(trLoop)) * 100);
+    if (t > 100)
+      t = 100;
+    if (t < 0)
+      t = 0;
+
+    mdi->prepend(t);
+
+    mdmLoop--;
+    trLoop--;
+  }
+
+  delete mdm;
+  delete tr;
+  delete smamdm;
+  delete smatr;
+  return mdi;
+}
+
+PlotLine * DMI::getPDI (int period)
+{
+  PlotLine *pdm = new PlotLine();
+
+  int loop;
+  for (loop = 1; loop < (int) data->count(); loop++)
+  {
+    double high = data->getHigh(loop);
+    double low = data->getLow(loop);
+    double yhigh = data->getHigh(loop - 1);
+    double ylow = data->getLow(loop - 1);
+    double t = 0;
+
+    if (high > yhigh)
+      t = high - yhigh;
+    else
+    {
+      if (low < ylow)
+	t = 0;
+      else
+      	t = 0;
+    }
+
+    pdm->append(t);
+  }
+
+  PlotLine *tr = getTR();
+
+  PlotLine *smapdm = getSMA(pdm, period);
+  int pdmLoop = smapdm->getSize() - 1;
+
+  PlotLine *smatr = getSMA(tr, period);
+  int trLoop = smatr->getSize() - 1;
+
+  PlotLine *pdi = new PlotLine();
+
+  while (pdmLoop > -1 && trLoop > -1)
+  {
+    int t = (int) ((smapdm->getData(pdmLoop) / smatr->getData(trLoop)) * 100);
+    if (t > 100)
+      t = 100;
+    if (t < 0)
+      t = 0;
+
+    pdi->prepend(t);
+
+    pdmLoop--;
+    trLoop--;
+  }
+
+  delete pdm;
+  delete tr;
+  delete smapdm;
+  delete smatr;
+  return pdi;
+}
+
+PlotLine * DMI::getADX (PlotLine *mdi, PlotLine *pdi, MAType maType, int period)
+{
+  int mdiLoop = mdi->getSize() - 1;
+  int pdiLoop = pdi->getSize() - 1;
+
+  PlotLine *disum = new PlotLine;
+  PlotLine *didiff = new PlotLine;
+
+  while (pdiLoop > -1 && mdiLoop > -1)
+  {
+    disum->prepend(pdi->getData(pdiLoop) + mdi->getData(mdiLoop));
+    didiff->prepend(fabs(pdi->getData(pdiLoop) - mdi->getData(mdiLoop)));
+    pdiLoop--;
+    mdiLoop--;
+  }
+
+  int sumLoop = disum->getSize() - 1;
+  int diffLoop = didiff->getSize() - 1;
+
+  PlotLine *dx = new PlotLine;
+
+  while (sumLoop > -1 && diffLoop > -1)
+  {
+    int t = (int) ((didiff->getData(diffLoop) / disum->getData(sumLoop)) * 100);
+    if (t > 100)
+      t = 100;
+    if (t < 0)
+      t = 0;
+
+    dx->prepend(t);
+
+    sumLoop--;
+    diffLoop--;
+  }
+
+  PlotLine *adx = getMA(dx, maType, period);
+
+  delete disum;
+  delete didiff;
+  delete dx;
+  return adx;
 }
 
 Plugin * create ()

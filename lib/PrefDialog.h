@@ -79,7 +79,7 @@ class PrefDialog : public QTabDialog
     QStringList getFile (QString);
     void addSymbolItem (QString, QString, QString, QString);
     QString getSymbol (QString);
-    void addFormulaInputItem (QString, QString, bool, int, QString);
+    void addFormulaInputItem (QString, QString, bool, QString);
     QString getFormulaInput (QString);
 
   private:

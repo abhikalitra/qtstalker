@@ -45,15 +45,34 @@ void PC::setDefaults ()
 
 void PC::calculate ()
 {
-  QSMath *t = new QSMath();
-  PlotLine *in = data->getInput(input);
-  PlotLine *pc = t->getPC(in, period);
+  PlotLine *in = 0;
+  if (customFlag)
+    in = getInputLine(customInput);
+  else
+    in = data->getInput(input);
+  if (! in)
+  {
+    qDebug("PC::calculate: no input");
+    return;
+  }
+
+  PlotLine *pc = new PlotLine();
   pc->setColor(color);
   pc->setType(lineType);
   pc->setLabel(label);
+
+  int loop;
+  for (loop = period; loop < (int) in->getSize(); loop++)
+  {
+    double t = in->getData(loop) - in->getData(loop - period);
+    double t2 = (t / in->getData(loop - period)) * 100;
+    pc->append(t2);
+  }
+  
   output.append(pc);
-  delete in;
-  delete t;
+  
+  if (! customFlag)
+    delete in;
 }
 
 int PC::indicatorPrefDialog ()
@@ -65,7 +84,10 @@ int PC::indicatorPrefDialog ()
   dialog->addComboItem(tr("Line Type"), tr("Parms"), lineTypes, lineType);
   dialog->addTextItem(tr("Label"), tr("Parms"), label);
   dialog->addIntItem(tr("Period"), tr("Parms"), period, 1, 99999999);
-  dialog->addComboItem(tr("Input"), tr("Parms"), inputTypeList, input);
+  if (customFlag)
+    dialog->addFormulaInputItem(tr("Input"), tr("Parms"), FALSE, customInput);
+  else
+    dialog->addComboItem(tr("Input"), tr("Parms"), inputTypeList, input);
   
   int rc = dialog->exec();
   
@@ -75,7 +97,10 @@ int PC::indicatorPrefDialog ()
     lineType = (PlotLine::LineType) dialog->getComboIndex(tr("Line Type"));
     period = dialog->getInt(tr("Period"));
     label = dialog->getText(tr("Label"));
-    input = (BarData::InputType) dialog->getComboIndex(tr("Input"));
+    if (customFlag)
+      customInput = dialog->getFormulaInput(tr("Input"));
+    else
+      input = (BarData::InputType) dialog->getComboIndex(tr("Input"));
     rc = TRUE;
   }
   else
@@ -127,6 +152,36 @@ void PC::saveIndicatorSettings (QString file)
   dict.replace("plugin", new QString(pluginName));
 
   saveFile(file, dict);
+}
+
+PlotLine * PC::calculateCustom (QDict<PlotLine> *d)
+{
+  customLines = d;
+  clearOutput();
+  calculate();
+  return output.at(0);
+}
+
+QString PC::getCustomSettings ()
+{
+  QString s("PC");
+  s.append("," + customInput);
+  s.append("," + QString::number(period));
+  s.append("," + color.name());
+  s.append("," + QString::number(lineType));
+  s.append("," + label);
+  return s;
+}
+
+void PC::setCustomSettings (QString d)
+{
+  customFlag = TRUE;
+  QStringList l = QStringList::split(",", d, FALSE);
+  customInput = l[1];
+  period = l[2].toInt();
+  color.setNamedColor(l[3]);
+  lineType = (PlotLine::LineType) l[4].toInt();
+  label = l[5];
 }
 
 Plugin * create ()

@@ -26,6 +26,7 @@
 #include <qstring.h>
 #include <qobject.h>
 #include <qpixmap.h>
+#include <qdict.h>
 #include "PlotLine.h"
 #include "BarData.h"
 #include "Scaler.h"
@@ -54,6 +55,11 @@ class Plugin : public QObject
     virtual int indicatorPrefDialog ();
     virtual void loadIndicatorSettings (QString);
     virtual void saveIndicatorSettings (QString);
+    virtual PlotLine * calculateCustom (QDict<PlotLine> *);
+    virtual QString getCustomSettings ();
+    virtual void setCustomSettings (QString);
+    virtual void setCustomFlag (bool);
+    virtual void setCustomFunction (QString);
 
     // quote plugin interface
     virtual void update ();

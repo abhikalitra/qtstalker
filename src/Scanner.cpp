@@ -23,8 +23,6 @@
 #include <qinputdialog.h>
 #include <qmessagebox.h>
 #include <qdatetime.h>
-#include <qfile.h>
-#include <qtextstream.h>
 #include <qdir.h>
 #include <qhgroupbox.h>
 #include "Scanner.h"
@@ -33,7 +31,6 @@
 #include "scanner.xpm"
 #include "ChartDb.h"
 #include "BarData.h"
-#include "QSMath.h"
 #include "SymbolDialog.h"
 
 Scanner::Scanner (QString n) : QDialog (0, 0, TRUE)
@@ -88,8 +85,6 @@ Scanner::~Scanner ()
 void Scanner::scan ()
 {
   int loop;
-  QStringList functionList;
-  QStringList plotList;
   
   // clear dir for scan symbols
   QDir dir;
@@ -109,12 +104,6 @@ void Scanner::scan ()
     dir.mkdir(s, TRUE);
   }
   
-  for (loop = 0; loop < list->getLines(); loop++)
-  {
-    functionList.append(list->getFormula(loop));
-    plotList.append(list->getPlot(loop));
-  }
-
   if (allSymbols->isChecked())
   {
     Traverse *trav = new Traverse();
@@ -147,11 +136,38 @@ void Scanner::scan ()
 
     BarData *recordList = db->getHistory();
     
-    QSMath *math = new QSMath(recordList);
+    // open the CUS plugin   
+    Plugin *plug = config.getPlugin(Config::IndicatorPluginPath, "CUS");
+    if (! plug)
+    {
+      config.closePlugin("CUS");
+      delete recordList;
+      delete db;
+      continue;
+    }
+
+    QStringList l;
+    for (loop = 0; loop < list->getLines(); loop++)
+      l.append(list->getLine(loop));
+  
+    // load the CUS plugin and calculate
+    plug->setCustomFunction(l.join("|"));
+    plug->setIndicatorInput(recordList);
+    plug->calculate();
+    PlotLine *tline = plug->getIndicatorLine(0);
+    if (! tline)
+    {
+      qDebug("Scanner::scan: no PlotLine returned");
+      config.closePlugin("CUS");
+      delete recordList;
+      delete db;
+      continue;
+    }
     
-    math->calculateCustomFormula(functionList, plotList);
+    PlotLine *line = new PlotLine;
+    line->copy(tline);
+    config.closePlugin("CUS");
     
-    PlotLine *line = math->getCustomLine(list->getLines());
     if (line)
     {
       if (line->getData(line->getSize() - 1) > 0)
@@ -168,7 +184,7 @@ void Scanner::scan ()
     
     delete recordList;
     delete db;
-    delete math;
+    delete line;
   }
 }
 

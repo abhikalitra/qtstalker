@@ -24,7 +24,6 @@
 
 #include "Plugin.h"
 #include "PlotLine.h"
-#include "QSMath.h"
 #include <qstring.h>
 #include <qptrlist.h>
 #include <qdict.h>
@@ -32,15 +31,35 @@
 class IndicatorPlugin : public Plugin
 {
   public:
+    enum MAType
+    {
+      EMA,
+      SMA,
+      WMA,
+      Wilder
+    };
+    
     IndicatorPlugin();
     virtual ~IndicatorPlugin();
     void setIndicatorInput (BarData *);
     int getIndicatorLines ();
     void clearOutput ();
     bool getPlotFlag ();
+    void setCustomFlag (bool);
     QDict<QString> loadFile (QString);
     void saveFile (QString, QDict<QString>);
     PlotLine * getIndicatorLine (int);
+    QStringList getMATypes ();
+    IndicatorPlugin::MAType getMAType (QString);
+    PlotLine * getMA (PlotLine *d, MAType type, int period, int displace);
+    PlotLine * getMA (PlotLine *d, MAType type, int period);
+    PlotLine * getEMA (PlotLine *d, int period);
+    PlotLine * getSMA (PlotLine *d, int period);
+    PlotLine * getWMA (PlotLine *d, int period);
+    PlotLine * getWilderMA (PlotLine *d, int period);
+    PlotLine * getTR ();
+    PlotLine * getTP ();
+    PlotLine * getInputLine (QString);
 
   protected:
     BarData *data;
@@ -50,6 +69,8 @@ class IndicatorPlugin : public Plugin
     QStringList inputTypeList;
     bool plotFlag;
     bool saveFlag;
+    bool customFlag;
+    QDict<PlotLine> *customLines;
 };
 
 #endif

@@ -40,7 +40,7 @@ void FI::setDefaults ()
   lineType = PlotLine::HistogramBar;
   label = pluginName;
   smoothing = 2;
-  maType = QSMath::EMA;
+  maType = IndicatorPlugin::EMA;
 }
 
 void FI::calculate ()
@@ -57,14 +57,12 @@ void FI::calculate ()
 
   if (smoothing > 1)
   {
-    QSMath *t = new QSMath();
-    PlotLine *ma = t->getMA(fi, maType, smoothing);
+    PlotLine *ma = getMA(fi, maType, smoothing);
     ma->setColor(color);
     ma->setType(lineType);
     ma->setLabel(label);
     output.append(ma);
     delete fi;
-    delete t;
   }
   else
   {
@@ -94,7 +92,7 @@ int FI::indicatorPrefDialog ()
     lineType = (PlotLine::LineType) dialog->getComboIndex(tr("Line Type"));
     smoothing = dialog->getInt(tr("Smoothing"));
     label = dialog->getText(tr("Label"));
-    maType = (QSMath::MAType) dialog->getComboIndex(tr("Smoothing Type"));
+    maType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("Smoothing Type"));
     rc = TRUE;
   }
   else
@@ -130,7 +128,7 @@ void FI::loadIndicatorSettings (QString file)
       
   s = dict["maType"];
   if (s)
-    maType = (QSMath::MAType) s->left(s->length()).toInt();
+    maType = (IndicatorPlugin::MAType) s->left(s->length()).toInt();
 }
 
 void FI::saveIndicatorSettings (QString file)
@@ -146,6 +144,36 @@ void FI::saveIndicatorSettings (QString file)
   dict.replace("plugin", new QString(pluginName));
 
   saveFile(file, dict);
+}
+
+PlotLine * FI::calculateCustom (QDict<PlotLine> *)
+{
+  clearOutput();
+  calculate();
+  return output.at(0);
+}
+
+QString FI::getCustomSettings ()
+{
+  QString s("FI");
+  s.append("," + maType);
+  s.append("," + QString::number(smoothing));
+  s.append("," + color.name());
+  s.append("," + QString::number(lineType));
+  s.append("," + label);
+  return s;
+}
+
+void FI::setCustomSettings (QString d)
+{
+  customFlag = TRUE;
+
+  QStringList l = QStringList::split(",", d, FALSE);
+  maType = (IndicatorPlugin::MAType) l[1].toInt();
+  smoothing = l[2].toInt();
+  color.setNamedColor(l[3]);
+  lineType = (PlotLine::LineType) l[4].toInt();
+  label = l[5];
 }
 
 Plugin * create ()

@@ -31,6 +31,9 @@ class STOCHRSI : public IndicatorPlugin
     void saveIndicatorSettings (QString);
     int indicatorPrefDialog ();
     void setDefaults();
+    PlotLine * calculateCustom (QDict<PlotLine> *);
+    QString getCustomSettings ();
+    void setCustomSettings (QString);
     
   private:
     QColor color;
@@ -38,6 +41,7 @@ class STOCHRSI : public IndicatorPlugin
     QString label;
     int period;
     BarData::InputType input;
+    QString customInput;
 };
 
 extern "C"

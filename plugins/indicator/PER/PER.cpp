@@ -44,15 +44,31 @@ void PER::setDefaults ()
 
 void PER::calculate ()
 {
-  QSMath *t = new QSMath();
-  PlotLine *in = data->getInput(input);
-  PlotLine *per = t->getPER(in);
+  PlotLine *in = 0;
+  if (customFlag)
+    in = getInputLine(customInput);
+  else
+    in = data->getInput(input);
+  if (! in)
+  {
+    qDebug("PC::calculate: no input");
+    return;
+  }
+
+  PlotLine *per = new PlotLine();
   per->setColor(color);
   per->setType(lineType);
   per->setLabel(label);
+
+  double base = in->getData(0);
+  int loop;
+  for (loop = 1; loop < (int) in->getSize(); loop++)
+    per->append(((in->getData(loop) - base) / base) * 100);
+
   output.append(per);
-  delete in;
-  delete t;
+  
+  if (! customFlag)
+    delete in;
 }
 
 int PER::indicatorPrefDialog ()
@@ -63,7 +79,10 @@ int PER::indicatorPrefDialog ()
   dialog->addColorItem(tr("Color"), tr("Parms"), color);
   dialog->addComboItem(tr("Line Type"), tr("Parms"), lineTypes, lineType);
   dialog->addTextItem(tr("Label"), tr("Parms"), label);
-  dialog->addComboItem(tr("Input"), tr("Parms"), inputTypeList, input);
+  if (customFlag)
+    dialog->addFormulaInputItem(tr("Input"), tr("Parms"), FALSE, customInput);
+  else
+    dialog->addComboItem(tr("Input"), tr("Parms"), inputTypeList, input);
   
   int rc = dialog->exec();
   
@@ -72,7 +91,10 @@ int PER::indicatorPrefDialog ()
     color = dialog->getColor(tr("Color"));
     lineType = (PlotLine::LineType) dialog->getComboIndex(tr("Line Type"));
     label = dialog->getText(tr("Label"));
-    input = (BarData::InputType) dialog->getComboIndex(tr("Input"));
+    if (customFlag)
+      customInput = dialog->getFormulaInput(tr("Input"));
+    else
+      input = (BarData::InputType) dialog->getComboIndex(tr("Input"));
     rc = TRUE;
   }
   else
@@ -119,6 +141,34 @@ void PER::saveIndicatorSettings (QString file)
   dict.replace("plugin", new QString(pluginName));
 
   saveFile(file, dict);
+}
+
+PlotLine * PER::calculateCustom (QDict<PlotLine> *d)
+{
+  customLines = d;
+  clearOutput();
+  calculate();
+  return output.at(0);
+}
+
+QString PER::getCustomSettings ()
+{
+  QString s("PER");
+  s.append("," + customInput);
+  s.append("," + color.name());
+  s.append("," + QString::number(lineType));
+  s.append("," + label);
+  return s;
+}
+
+void PER::setCustomSettings (QString d)
+{
+  customFlag = TRUE;
+  QStringList l = QStringList::split(",", d, FALSE);
+  customInput = l[1];
+  color.setNamedColor(l[2]);
+  lineType = (PlotLine::LineType) l[3].toInt();
+  label = l[4];
 }
 
 Plugin * create ()

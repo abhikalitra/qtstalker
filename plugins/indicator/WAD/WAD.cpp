@@ -43,13 +43,42 @@ void WAD::setDefaults ()
 
 void WAD::calculate ()
 {
-  QSMath *t = new QSMath(data);
-  PlotLine *wad = t->getWAD();
+  PlotLine *wad = new PlotLine();
   wad->setColor(color);
   wad->setType(lineType);
   wad->setLabel(label);
+
+  int loop;
+  double accum = 0;
+  for (loop = 1; loop < (int) data->count(); loop++)
+  {
+    double high = data->getHigh(loop);
+    double low = data->getLow(loop);
+    double close = data->getClose(loop);
+    double yclose = data->getClose(loop - 1);
+
+    double h = high;
+    if (yclose > h)
+      h = yclose;
+
+    double l = low;
+    if (yclose < l)
+      l = yclose;
+
+    if (close > yclose)
+      accum = accum + (close - l);
+    else
+    {
+      if (yclose == close)
+        ;
+      else
+        accum = accum - (h - close);
+    }
+
+    wad->append(accum);
+  }
+
   output.append(wad);
-  delete t;
 }
 
 int WAD::indicatorPrefDialog ()
@@ -109,6 +138,31 @@ void WAD::saveIndicatorSettings (QString file)
   dict.replace("plugin", new QString(pluginName));
 
   saveFile(file, dict);
+}
+
+PlotLine * WAD::calculateCustom (QDict<PlotLine> *)
+{
+  clearOutput();
+  calculate();
+  return output.at(0);
+}
+
+QString WAD::getCustomSettings ()
+{
+  QString s("WAD");
+  s.append("," + color.name());
+  s.append("," + QString::number(lineType));
+  s.append("," + label);
+  return s;
+}
+
+void WAD::setCustomSettings (QString d)
+{
+  customFlag = TRUE;
+  QStringList l = QStringList::split(",", d, FALSE);
+  color.setNamedColor(l[1]);
+  lineType = (PlotLine::LineType) l[2].toInt();
+  label = l[3];
 }
 
 Plugin * create ()

@@ -44,13 +44,40 @@ void WILLR::setDefaults ()
 
 void WILLR::calculate ()
 {
-  QSMath *t = new QSMath(data);
-  PlotLine *willr = t->getWILLR(period);
+  PlotLine *willr = new PlotLine();
   willr->setColor(color);
   willr->setType(lineType);
   willr->setLabel(label);
+
+  int loop;
+  for (loop = period; loop < (int) data->count(); loop++)
+  {
+    int loop2;
+    double lw;
+    double hg;
+    for (loop2 = 0, lw = 9999999, hg = 0; loop2 < period; loop2++)
+    {
+      double high = data->getHigh(loop - loop2);
+      double low = data->getLow(loop - loop2);
+
+      if (high > hg)
+        hg = high;
+
+      if (low < lw)
+        lw = low;
+    }
+
+    double t = ((hg - data->getClose(loop)) / (hg - lw)) * 100;
+    if (t > 100)
+      t = 100;
+    if (t < 0)
+      t = 0;
+    t *= -1;
+
+    willr->append(t);
+  }
+
   output.append(willr);
-  delete t;
 }
 
 int WILLR::indicatorPrefDialog ()
@@ -117,6 +144,33 @@ void WILLR::saveIndicatorSettings (QString file)
   dict.replace("plugin", new QString(pluginName));
 
   saveFile(file, dict);
+}
+
+PlotLine * WILLR::calculateCustom (QDict<PlotLine> *)
+{
+  clearOutput();
+  calculate();
+  return output.at(0);
+}
+
+QString WILLR::getCustomSettings ()
+{
+  QString s("WILLR");
+  s.append("," + QString::number(period));
+  s.append("," + color.name());
+  s.append("," + QString::number(lineType));
+  s.append("," + label);
+  return s;
+}
+
+void WILLR::setCustomSettings (QString d)
+{
+  customFlag = TRUE;
+  QStringList l = QStringList::split(",", d, FALSE);
+  period = l[1].toInt();
+  color.setNamedColor(l[2]);
+  lineType = (PlotLine::LineType) l[3].toInt();
+  label = l[4];
 }
 
 Plugin * create ()

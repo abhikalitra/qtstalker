@@ -43,13 +43,24 @@ void PVT::setDefaults ()
 
 void PVT::calculate ()
 {
-  QSMath *t = new QSMath(data);
-  PlotLine *pvt = t->getPVT();
+  PlotLine *pvt = new PlotLine();
   pvt->setColor(color);
   pvt->setType(lineType);
   pvt->setLabel(label);
+
+  int loop = 0;
+  double pv = 0;
+  for (loop = 1; loop < (int) data->count(); loop++)
+  {
+    double close = data->getClose(loop);
+    double volume = data->getVolume(loop);
+    double yclose = data->getClose(loop - 1);
+
+    pv = pv + (((close - yclose) / yclose) * volume);
+    pvt->append(pv);
+  }
+
   output.append(pvt);
-  delete t;
 }
 
 int PVT::indicatorPrefDialog ()
@@ -109,6 +120,31 @@ void PVT::saveIndicatorSettings (QString file)
   dict.replace("plugin", new QString(pluginName));
 
   saveFile(file, dict);
+}
+
+PlotLine * PVT::calculateCustom (QDict<PlotLine> *)
+{
+  clearOutput();
+  calculate();
+  return output.at(0);
+}
+
+QString PVT::getCustomSettings ()
+{
+  QString s("PVT");
+  s.append("," + color.name());
+  s.append("," + QString::number(lineType));
+  s.append("," + label);
+  return s;
+}
+
+void PVT::setCustomSettings (QString d)
+{
+  customFlag = TRUE;
+  QStringList l = QStringList::split(",", d, FALSE);
+  color.setNamedColor(l[1]);
+  lineType = (PlotLine::LineType) l[2].toInt();
+  label = l[3];
 }
 
 Plugin * create ()

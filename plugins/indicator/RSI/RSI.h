@@ -31,6 +31,9 @@ class RSI : public IndicatorPlugin
     void saveIndicatorSettings (QString);
     int indicatorPrefDialog ();
     void setDefaults();
+    PlotLine * calculateCustom (QDict<PlotLine> *);
+    QString getCustomSettings ();
+    void setCustomSettings (QString);
     
   private:
     QColor color;
@@ -40,8 +43,9 @@ class RSI : public IndicatorPlugin
     int smoothing;
     double buyLine;
     double sellLine;
-    QSMath::MAType maType;
+    IndicatorPlugin::MAType maType;
     BarData::InputType input;
+    QString customInput;
 };
 
 extern "C"

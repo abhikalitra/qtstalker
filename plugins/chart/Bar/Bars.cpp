@@ -21,10 +21,12 @@
 
 #include "Bars.h"
 #include "BarDialog.h"
-#include "QSMath.h"
+#include "Config.h"
 #include <qpainter.h>
 #include <qsettings.h>
 #include <qmessagebox.h>
+#include <qfile.h>
+#include <qtextstream.h>
 
 Bars::Bars ()
 {
@@ -112,21 +114,7 @@ void Bars::drawBars (int startX, int startIndex, int pixelspace)
 
 void Bars::drawPaintBars (int startX, int startIndex, int pixelspace)
 {
-  PlotLine *line = 0;
-  QSMath *t = new QSMath(data);
-  t->calculateCustomFormula(formulaList, plotList);
-  
-  int loop;
-  for (loop = plotList.count() - 1; loop > -1; loop--)
-  {
-    if (plotList[loop].toInt())
-    {
-      line = t->getCustomLine(loop + 1);
-      break;
-    }
-  }
-  delete t;
-  
+  PlotLine *line = getBoolLine();
   if (! line)
     return;
 
@@ -134,7 +122,7 @@ void Bars::drawPaintBars (int startX, int startIndex, int pixelspace)
   painter.begin(buffer);
 
   int x = startX;
-  loop = startIndex;
+  int loop = startIndex;
   int lineLoop = line->getSize() - data->count() + loop;
   
   while ((x < buffer->width()) && (loop < (int) data->count()))
@@ -169,6 +157,8 @@ void Bars::drawPaintBars (int startX, int startIndex, int pixelspace)
   }
 
   painter.end();
+  
+  delete line;
 }
 
 void Bars::prefDialog ()
@@ -181,7 +171,7 @@ void Bars::prefDialog ()
   
   int loop;
   for (loop = 0; loop < (int) formulaList.count(); loop++)
-    dialog->setLine(formulaList[loop] + "|" + plotList[loop]);
+    dialog->setLine(formulaList[loop]);
   
   int rc = dialog->exec();
   
@@ -197,12 +187,8 @@ void Bars::prefDialog ()
     
     int loop;
     formulaList.clear();
-    plotList.clear();
     for (loop = 0; loop < (int) dialog->getLines(); loop++)
-    {
-      formulaList.append(dialog->getFunction(loop));
-      plotList.append(dialog->getPlot(loop));
-    }
+      formulaList.append(dialog->getLine(loop));
         
     saveFlag = TRUE;
     emit draw();
@@ -232,10 +218,7 @@ void Bars::loadSettings ()
   QStringList l = QStringList::split("|", s, FALSE);
   int loop;
   for (loop = 0; loop < (int) l.count(); loop = loop + 2)
-  {
-    formulaList.append(l[loop]);
-    plotList.append(l[loop + 1]);
-  }
+    formulaList.append(l[loop] + "|" + l[loop + 1]);
     
   settings.endGroup();
 }
@@ -260,19 +243,42 @@ void Bars::saveSettings ()
   settings.writeEntry("/paintUpColor", paintUpColor.name());
   settings.writeEntry("/paintDownColor", paintDownColor.name());
   
-  int loop;
-  QString s;
-  for (loop = 0; loop < (int) formulaList.count(); loop++)
-  {
-    s.append("|");
-    s.append(formulaList[loop]);
-    s.append("|");
-    s.append(plotList[loop]);
-  }
-  s.remove(0, 1);
-  settings.writeEntry("/formula", s);
+  settings.writeEntry("/formula", formulaList.join("|"));
   
   settings.endGroup();
+}
+
+PlotLine * Bars::getBoolLine ()
+{
+  PlotLine *line = 0;
+  Config config;
+  
+  // open the CUS plugin   
+  Plugin *plug = config.getPlugin(Config::IndicatorPluginPath, "CUS");
+  if (! plug)
+  {
+    config.closePlugin("CUS");
+    return line;
+  }
+
+  // load the CUS plugin and calculate
+  plug->setCustomFunction(formulaList.join("|"));
+  plug->setIndicatorInput(data);
+  plug->calculate();
+  line = plug->getIndicatorLine(0);
+  if (! line)
+  {
+    qDebug("Bars::getBoolLine: no PlotLine returned");
+    config.closePlugin("CUS");
+    return 0;
+  }
+    
+  PlotLine *nline = new PlotLine;
+  nline->copy(line);
+  
+  config.closePlugin("CUS");
+  
+  return nline;
 }
 
 //*************************************************

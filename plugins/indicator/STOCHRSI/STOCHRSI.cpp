@@ -46,12 +46,50 @@ void STOCHRSI::setDefaults ()
 
 void STOCHRSI::calculate ()
 {
-  QSMath *t = new QSMath();
-  PlotLine *in = data->getInput(input);
-  PlotLine *rsi = t->getRSI(in, period);
-  PlotLine *data = new PlotLine();
+  PlotLine *in = 0;
+  if (customFlag)
+    in = getInputLine(customInput);
+  else
+    in = data->getInput(input);
+  if (! in)
+  {
+    qDebug("STOCHRSI::calculate: no input");
+    return;
+  }
 
+  PlotLine *rsi = new PlotLine();
   int loop;
+  for (loop = period; loop < (int) in->getSize(); loop++)
+  {
+    double loss = 0;
+    double gain = 0;
+    int loop2;
+    for (loop2 = 0; loop2 < period; loop2++)
+    {
+      double t = in->getData(loop - loop2) - in->getData(loop - loop2 - 1);
+      if (t > 0)
+        gain = gain + t;
+      if (t < 0)
+        loss = loss + fabs(t);
+    }
+
+    double again = gain / period;
+    double aloss = loss / period;
+    double rs = again / aloss;
+    double t = 100 - (100 / (1 + rs));
+    if (t > 100)
+      t = 100;
+    if (t < 0)
+      t = 0;
+
+    rsi->append(t);
+  }
+  
+  PlotLine *data = new PlotLine();
+  data->setColor(color);
+  data->setType(lineType);
+  data->setLabel(label);
+
   for (loop = period - 1; loop < (int) rsi->getSize(); loop++)
   {
     int loop2;
@@ -78,14 +116,11 @@ void STOCHRSI::calculate ()
     data->append(t);
   }
 
-  data->setColor(color);
-  data->setType(lineType);
-  data->setLabel(label);
   output.append(data);
 
-  delete in;
+  if (! customFlag)
+    delete in;
   delete rsi;
-  delete t;
 }
 
 int STOCHRSI::indicatorPrefDialog ()
@@ -97,7 +132,10 @@ int STOCHRSI::indicatorPrefDialog ()
   dialog->addComboItem(tr("Line Type"), tr("Parms"), lineTypes, lineType);
   dialog->addTextItem(tr("Label"), tr("Parms"), label);
   dialog->addIntItem(tr("Period"), tr("Parms"), period, 1, 99999999);
-  dialog->addComboItem(tr("Input"), tr("Parms"), inputTypeList, input);
+  if (customFlag)
+    dialog->addFormulaInputItem(tr("Input"), tr("Parms"), FALSE, customInput);
+  else
+    dialog->addComboItem(tr("Input"), tr("Parms"), inputTypeList, input);
   
   int rc = dialog->exec();
   
@@ -107,7 +145,10 @@ int STOCHRSI::indicatorPrefDialog ()
     lineType = (PlotLine::LineType) dialog->getComboIndex(tr("Line Type"));
     period = dialog->getInt(tr("Period"));
     label = dialog->getText(tr("Label"));
-    input = (BarData::InputType) dialog->getComboIndex(tr("Input"));
+    if (customFlag)
+      customInput = dialog->getFormulaInput(tr("Input"));
+    else
+      input = (BarData::InputType) dialog->getComboIndex(tr("Input"));
     rc = TRUE;
   }
   else
@@ -159,6 +200,36 @@ void STOCHRSI::saveIndicatorSettings (QString file)
   dict.replace("plugin", new QString(pluginName));
 
   saveFile(file, dict);
+}
+
+PlotLine * STOCHRSI::calculateCustom (QDict<PlotLine> *d)
+{
+  customLines = d;
+  clearOutput();
+  calculate();
+  return output.at(0);
+}
+
+QString STOCHRSI::getCustomSettings ()
+{
+  QString s("STOCHRSI");
+  s.append("," + customInput);
+  s.append("," + QString::number(period));
+  s.append("," + color.name());
+  s.append("," + QString::number(lineType));
+  s.append("," + label);
+  return s;
+}
+
+void STOCHRSI::setCustomSettings (QString d)
+{
+  customFlag = TRUE;
+  QStringList l = QStringList::split(",", d, FALSE);
+  customInput = l[1];
+  period = l[2].toInt();
+  color.setNamedColor(l[3]);
+  lineType = (PlotLine::LineType) l[4].toInt();
+  label = l[5];
 }
 
 Plugin * create ()

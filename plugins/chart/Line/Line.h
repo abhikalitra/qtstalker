@@ -37,11 +37,11 @@ class Line : public ChartPlugin
     void prefDialog ();
     void loadSettings ();
     void saveSettings ();
+    PlotLine * getBoolLine ();
   
   protected:
     QColor color;
     QStringList formulaList;
-    QStringList plotList;
 };
 
 extern "C"

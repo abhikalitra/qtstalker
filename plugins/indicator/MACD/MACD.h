@@ -31,6 +31,9 @@ class MACD : public IndicatorPlugin
     void saveIndicatorSettings (QString);
     int indicatorPrefDialog ();
     void setDefaults();
+    PlotLine * calculateCustom (QDict<PlotLine> *);
+    QString getCustomSettings ();
+    void setCustomSettings (QString);
 
   private:
     QColor macdColor;
@@ -45,9 +48,10 @@ class MACD : public IndicatorPlugin
     int fastPeriod;
     int slowPeriod;
     int trigPeriod;
-    QSMath::MAType macdMAType;
+    IndicatorPlugin::MAType macdMAType;
     BarData::InputType macdInput;
     bool oscScaleFlag;
+    QString customInput;
 };
 
 extern "C"

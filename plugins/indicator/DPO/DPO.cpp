@@ -40,16 +40,14 @@ void DPO::setDefaults ()
   lineType = PlotLine::Line;
   label = pluginName;
   period = 21;
-  maType = QSMath::SMA;
+  maType = IndicatorPlugin::SMA;
 }
 
 void DPO::calculate ()
 {
-  QSMath *m = new QSMath();
-
   PlotLine *c = data->getInput(BarData::Close);
 
-  PlotLine *ma = m->getMA(c, maType, period);
+  PlotLine *ma = getMA(c, maType, period);
 
   PlotLine *dpo = new PlotLine();
   dpo->setColor(color);
@@ -70,7 +68,6 @@ void DPO::calculate ()
 
   delete c;
   delete ma;
-  delete m;
 }
 
 int DPO::indicatorPrefDialog ()
@@ -92,7 +89,7 @@ int DPO::indicatorPrefDialog ()
     lineType = (PlotLine::LineType) dialog->getComboIndex(tr("Line Type"));
     period = dialog->getInt(tr("Period"));
     label = dialog->getText(tr("Label"));
-    maType = (QSMath::MAType) dialog->getComboIndex(tr("MA Type"));
+    maType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("MA Type"));
     rc = TRUE;
   }
   else
@@ -128,7 +125,7 @@ void DPO::loadIndicatorSettings (QString file)
       
   s = dict["maType"];
   if (s)
-    maType = (QSMath::MAType) s->left(s->length()).toInt();
+    maType = (IndicatorPlugin::MAType) s->left(s->length()).toInt();
 }
 
 void DPO::saveIndicatorSettings (QString file)
@@ -144,6 +141,36 @@ void DPO::saveIndicatorSettings (QString file)
   dict.replace("plugin", new QString(pluginName));
 
   saveFile(file, dict);
+}
+
+PlotLine * DPO::calculateCustom (QDict<PlotLine> *)
+{
+  clearOutput();
+  calculate();
+  return output.at(0);
+}
+
+QString DPO::getCustomSettings ()
+{
+  QString s("DPO");
+  s.append("," + maType);
+  s.append("," + QString::number(period));
+  s.append("," + color.name());
+  s.append("," + QString::number(lineType));
+  s.append("," + label);
+  return s;
+}
+
+void DPO::setCustomSettings (QString d)
+{
+  customFlag = TRUE;
+
+  QStringList l = QStringList::split(",", d, FALSE);
+  maType = (IndicatorPlugin::MAType) l[1].toInt();
+  period = l[2].toInt();
+  color.setNamedColor(l[3]);
+  lineType = (PlotLine::LineType) l[4].toInt();
+  label = l[5];
 }
 
 Plugin * create ()

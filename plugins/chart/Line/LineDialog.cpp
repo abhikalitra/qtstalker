@@ -75,14 +75,9 @@ int LineDialog::getLines ()
   return list->getLines();
 }
 
-QString LineDialog::getFunction (int row)
+QString LineDialog::getLine (int row)
 {
-  return list->getFormula(row);
-}
-
-QString LineDialog::getPlot (int row)
-{
-  return list->getPlot(row);
+  return list->getLine(row);
 }
 
 void LineDialog::setLine (QString d)

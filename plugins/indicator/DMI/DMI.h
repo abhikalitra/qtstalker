@@ -31,6 +31,12 @@ class DMI : public IndicatorPlugin
     void saveIndicatorSettings (QString);
     int indicatorPrefDialog ();
     void setDefaults();
+    PlotLine * calculateCustom (QDict<PlotLine> *);
+    QString getCustomSettings ();
+    void setCustomSettings (QString);
+    PlotLine * getMDI (int period);
+    PlotLine * getPDI (int period);
+    PlotLine * getADX (PlotLine *mdi, PlotLine *pdi, MAType maType, int period);
     
   private:
     QColor mdiColor;
@@ -44,7 +50,8 @@ class DMI : public IndicatorPlugin
     QString adxLabel;
     int period;
     int smoothing;
-    QSMath::MAType maType;
+    IndicatorPlugin::MAType maType;
+    QString lineRequest;
 };
 
 extern "C"

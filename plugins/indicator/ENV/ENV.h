@@ -31,6 +31,9 @@ class ENV : public IndicatorPlugin
     void saveIndicatorSettings (QString);
     int indicatorPrefDialog ();
     void setDefaults();
+    PlotLine * calculateCustom (QDict<PlotLine> *);
+    QString getCustomSettings ();
+    void setCustomSettings (QString);
     
   private:
     QColor upperColor;
@@ -43,7 +46,8 @@ class ENV : public IndicatorPlugin
     double upperPercent;
     double lowerPercent;
     BarData::InputType input;
-    QSMath::MAType maType;
+    IndicatorPlugin::MAType maType;
+    bool bandFlag;
 };
 
 extern "C"

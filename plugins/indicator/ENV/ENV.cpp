@@ -46,12 +46,13 @@ void ENV::setDefaults ()
   upperPercent = 1.02;
   lowerPercent = 0.98;
   input = BarData::Close;
-  maType = QSMath::SMA;
+  maType = IndicatorPlugin::SMA;
+  bandFlag = FALSE;
 }
 
 void ENV::calculate ()
 {
-  QSMath *t = new QSMath();
+  IndicatorPlugin *t = new IndicatorPlugin();
 
   PlotLine *in = data->getInput(input);
 
@@ -113,7 +114,7 @@ int ENV::indicatorPrefDialog ()
   if (rc == QDialog::Accepted)
   {
     period = dialog->getInt(tr("Period"));
-    maType = (QSMath::MAType) dialog->getComboIndex(tr("MA Type"));
+    maType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("MA Type"));
     input = (BarData::InputType) dialog->getComboIndex(tr("Input"));
     
     upperColor = dialog->getColor(tr("Upper Color"));
@@ -149,7 +150,7 @@ void ENV::loadIndicatorSettings (QString file)
   
   s = dict["maType"];
   if (s)
-    maType = (QSMath::MAType) s->left(s->length()).toInt();
+    maType = (IndicatorPlugin::MAType) s->left(s->length()).toInt();
 
   s = dict["input"];
   if (s)
@@ -210,6 +211,58 @@ void ENV::saveIndicatorSettings (QString file)
   dict.replace("plugin", new QString(pluginName));
   
   saveFile(file, dict);
+}
+
+PlotLine * ENV::calculateCustom (QDict<PlotLine> *)
+{
+  clearOutput();
+  calculate();
+  if (bandFlag)
+    return output.at(0);
+  else
+    return output.at(1);
+}
+
+QString ENV::getCustomSettings ()
+{
+  QString s("ENV");
+  s.append("," + maType);
+  s.append("," + QString::number(period));
+  s.append("," + QString::number(input));
+  s.append("," + QString::number(bandFlag));
+  
+  s.append("," + upperColor.name());
+  s.append("," + QString::number(upperLineType));
+  s.append("," + upperLabel);
+  s.append("," + QString::number(upperPercent));
+  
+  s.append("," + lowerColor.name());
+  s.append("," + QString::number(lowerLineType));
+  s.append("," + lowerLabel);
+  s.append("," + QString::number(lowerPercent));
+  
+  return s;
+}
+
+void ENV::setCustomSettings (QString d)
+{
+  customFlag = TRUE;
+
+  QStringList l = QStringList::split(",", d, FALSE);
+  maType = (IndicatorPlugin::MAType) l[1].toInt();
+  period = l[2].toInt();
+  input = (BarData::InputType) l[3].toInt();
+  bandFlag = l[4].toInt();
+  
+  upperColor.setNamedColor(l[5]);
+  upperLineType = (PlotLine::LineType) l[6].toInt();
+  upperLabel = l[7];
+  upperPercent = l[8].toDouble();
+
+  lowerColor.setNamedColor(l[9]);
+  lowerLineType = (PlotLine::LineType) l[10].toInt();
+  lowerLabel = l[11];
+  lowerPercent = l[12].toDouble();
 }
 
 Plugin * create ()

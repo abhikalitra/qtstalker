@@ -43,6 +43,7 @@ void HLC::setDefaults ()
   upperLabel = tr("HLCU");
   lowerLabel = tr("HLCL");
   period = 20;
+  bandFlag = FALSE;
 }
 
 void HLC::calculate ()
@@ -172,6 +173,45 @@ void HLC::saveIndicatorSettings (QString file)
   dict.replace("plugin", new QString(pluginName));
 
   saveFile(file, dict);
+}
+
+PlotLine * HLC::calculateCustom (QDict<PlotLine> *)
+{
+  clearOutput();
+  calculate();
+  if (bandFlag)
+    return output.at(1);
+  else
+    return output.at(0);
+}
+
+QString HLC::getCustomSettings ()
+{
+  QString s("HLC");
+  s.append("," + QString::number(period));
+  s.append("," + QString::number(bandFlag));
+  s.append("," + upperColor.name());
+  s.append("," + QString::number(upperLineType));
+  s.append("," + upperLabel);
+  s.append("," + lowerColor.name());
+  s.append("," + QString::number(lowerLineType));
+  s.append("," + lowerLabel);
+  return s;
+}
+
+void HLC::setCustomSettings (QString d)
+{
+  customFlag = TRUE;
+
+  QStringList l = QStringList::split(",", d, FALSE);
+  period = l[1].toInt();
+  bandFlag = l[2].toInt();
+  upperColor.setNamedColor(l[3]);
+  upperLineType = (PlotLine::LineType) l[4].toInt();
+  upperLabel = l[5];
+  lowerColor.setNamedColor(l[6]);
+  lowerLineType = (PlotLine::LineType) l[7].toInt();
+  lowerLabel = l[8];
 }
 
 Plugin * create ()

@@ -47,13 +47,50 @@ void STOCH::setDefaults ()
   period = 14;
   buyLine = 20;
   sellLine = 80;
-  maType = QSMath::SMA;  
+  maType = IndicatorPlugin::SMA;  
 }
 
 void STOCH::calculate ()
 {
-  QSMath *t = new QSMath(data);
-  PlotLine *k = t->getSTOCH(maType, period, kperiod);
+  PlotLine *k = new PlotLine();
+
+  int loop;
+  for (loop = period; loop < (int) data->count(); loop++)
+  {
+    int loop2;
+    double l;
+    double h;
+    for (loop2 = 0, l = 9999999, h = 0; loop2 < period; loop2++)
+    {
+      double high = data->getHigh(loop - loop2);
+      double low = data->getLow(loop - loop2);
+
+      double t = high;
+      if (t > h)
+        h = t;
+
+      t = low;
+      if (t < l)
+        l = t;
+    }
+
+    double close = data->getClose(loop);
+    double t = ((close - l) / (h - l)) * 100;
+    if (t > 100)
+      t = 100;
+    if (t < 0)
+      t = 0;
+
+    k->append(t);
+  }
+
+  if (kperiod > 1)
+  {
+    PlotLine *k2 = getMA(k, maType, kperiod);
+    delete k;
+    k = k2;
+  }
+  
   k->setColor(kcolor);
   k->setType(klineType);
   k->setLabel(klabel);
@@ -61,14 +98,12 @@ void STOCH::calculate ()
 
   if (dperiod > 1)
   {
-    PlotLine *d = t->getMA(k, maType, dperiod);
+    PlotLine *d = getMA(k, maType, dperiod);
     d->setColor(dcolor);
     d->setType(dlineType);
     d->setLabel(dlabel);
     output.append(d);
   }
-  
-  delete t;
 }
 
 int STOCH::indicatorPrefDialog ()
@@ -106,7 +141,7 @@ int STOCH::indicatorPrefDialog ()
     kperiod = dialog->getInt(tr("%K Smoothing"));
     klabel = dialog->getText(tr("%K Label"));
     period = dialog->getInt(tr("Period"));
-    maType = (QSMath::MAType) dialog->getComboIndex(tr("Smoothing Type"));
+    maType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("Smoothing Type"));
     buyLine = dialog->getFloat(tr("Buy Line"));
     sellLine = dialog->getFloat(tr("Sell Line"));
     rc = TRUE;
@@ -164,7 +199,7 @@ void STOCH::loadIndicatorSettings (QString file)
   
   s = dict["maType"];
   if (s)
-    maType = (QSMath::MAType) s->left(s->length()).toInt();
+    maType = (IndicatorPlugin::MAType) s->left(s->length()).toInt();
 
   s = dict["buyLine"];
   if (s)
@@ -195,6 +230,35 @@ void STOCH::saveIndicatorSettings (QString file)
   dict.replace("plugin", new QString(pluginName));
 
   saveFile(file, dict);
+}
+
+PlotLine * STOCH::calculateCustom (QDict<PlotLine> *)
+{
+  clearOutput();
+  calculate();
+  return output.at(0);
+}
+
+QString STOCH::getCustomSettings ()
+{
+  QString s("STOCH");
+  s.append("," + QString::number(maType));
+  s.append("," + QString::number(period));
+  s.append("," + kcolor.name());
+  s.append("," + QString::number(klineType));
+  s.append("," + klabel);
+  return s;
+}
+
+void STOCH::setCustomSettings (QString d)
+{
+  customFlag = TRUE;
+  QStringList l = QStringList::split(",", d, FALSE);
+  maType = (IndicatorPlugin::MAType) l[1].toInt();
+  period = l[2].toInt();
+  kcolor.setNamedColor(l[3]);
+  klineType = (PlotLine::LineType) l[4].toInt();
+  klabel = l[5];
 }
 
 Plugin * create ()

@@ -41,18 +41,54 @@ void MF::setDefaults ()
   label = pluginName;
   period = 10;
   smoothing = 10;  
-  maType = QSMath::SMA;  
+  maType = IndicatorPlugin::SMA;  
 }
 
 void MF::calculate ()
 {
-  QSMath *t = new QSMath(data);
+  PlotLine *d = new PlotLine();
+  int loop;
+  for (loop = period; loop < (int) data->count(); loop++)
+  {
+    double pmf = 0;
+    double nmf = 0;
+    int loop2;
+    for (loop2 = 0; loop2 < period; loop2++)
+    {
+      double high = data->getHigh(loop - loop2);
+      double low = data->getLow(loop - loop2);
+      double close = data->getClose(loop - loop2);
+      double volume = data->getVolume(loop - loop2);
 
-  PlotLine *d = t->getMF(period);
+      double ttp = (high + low + close) / 3;
+      double mf = ttp * volume;
+
+      high = data->getHigh(loop - loop2 - 1);
+      low = data->getLow(loop - loop2 - 1);
+      close = data->getClose(loop - loop2 - 1);
+
+      double ytp = (high + low + close) / 3;
+
+      if (ttp > ytp)
+        pmf = pmf + mf;
+
+      if (ytp > ttp)
+        nmf = nmf + mf;
+    }
+
+    double mfi = 100 - (100 / (1 + (pmf / nmf)));
+
+    if (mfi > 100)
+      mfi = 100;
+    if (mfi < 0)
+      mfi = 0;
+
+    d->append(mfi);
+  }
 
   if (smoothing > 1)
   {
-    PlotLine *ma = t->getMA(d, maType, smoothing);
+    PlotLine *ma = getMA(d, maType, smoothing);
     ma->setColor(color);
     ma->setType(lineType);
     ma->setLabel(label);
@@ -66,8 +102,6 @@ void MF::calculate ()
     d->setLabel(label);
     output.append(d);
   }
-  
-  delete t;
 }
 
 int MF::indicatorPrefDialog ()
@@ -90,7 +124,7 @@ int MF::indicatorPrefDialog ()
     lineType = (PlotLine::LineType) dialog->getComboIndex(tr("Line Type"));
     period = dialog->getInt(tr("Period"));
     label = dialog->getText(tr("Label"));
-    maType = (QSMath::MAType) dialog->getComboIndex(tr("Smoothing Type"));
+    maType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("Smoothing Type"));
     smoothing = dialog->getInt(tr("Smoothing"));
     rc = TRUE;
   }
@@ -127,7 +161,7 @@ void MF::loadIndicatorSettings (QString file)
       
   s = dict["maType"];
   if (s)
-    maType = (QSMath::MAType) s->left(s->length()).toInt();
+    maType = (IndicatorPlugin::MAType) s->left(s->length()).toInt();
     
   s = dict["smoothing"];
   if (s)
@@ -148,6 +182,37 @@ void MF::saveIndicatorSettings (QString file)
   dict.replace("plugin", new QString(pluginName));
 
   saveFile(file, dict);
+}
+
+PlotLine * MF::calculateCustom (QDict<PlotLine> *)
+{
+  clearOutput();
+  calculate();
+  return output.at(0);
+}
+
+QString MF::getCustomSettings ()
+{
+  QString s("MF");
+  s.append("," + QString::number(maType));
+  s.append("," + QString::number(period));
+  s.append("," + QString::number(smoothing));
+  s.append("," + color.name());
+  s.append("," + QString::number(lineType));
+  s.append("," + label);
+  return s;
+}
+
+void MF::setCustomSettings (QString d)
+{
+  customFlag = TRUE;
+  QStringList l = QStringList::split(",", d, FALSE);
+  maType = (IndicatorPlugin::MAType) l[1].toInt();
+  period = l[2].toInt();
+  smoothing = l[3].toInt();
+  color.setNamedColor(l[4]);
+  lineType = (PlotLine::LineType) l[5].toInt();
+  label = l[6];
 }
 
 Plugin * create ()

@@ -44,13 +44,28 @@ void VOLR::setDefaults ()
 
 void VOLR::calculate ()
 {
-  QSMath *t = new QSMath(data);
-  PlotLine *volr = t->getVOLR(period);
+  PlotLine *volr = new PlotLine();
   volr->setColor(color);
   volr->setType(lineType);
   volr->setLabel(label);
+
+  PlotLine *trg = getTR();
+  int trgLoop = trg->getSize() - 1;
+
+  PlotLine *ma = getEMA(trg, period);
+  int maLoop = ma->getSize() - 1;
+
+  while (maLoop > -1 && trgLoop > -1)
+  {
+    volr->prepend(trg->getData(trgLoop) / ma->getData(maLoop));
+    maLoop--;
+    trgLoop--;
+  }
+
+  delete trg;
+  delete ma;
+
   output.append(volr);
-  delete t;
 }
 
 int VOLR::indicatorPrefDialog ()
@@ -117,6 +132,31 @@ void VOLR::saveIndicatorSettings (QString file)
   dict.replace("plugin", new QString(pluginName));
 
   saveFile(file, dict);
+}
+
+PlotLine * VOLR::calculateCustom (QDict<PlotLine> *)
+{
+  clearOutput();
+  calculate();
+  return output.at(0);
+}
+
+QString VOLR::getCustomSettings ()
+{
+  QString s("VOLR");
+  s.append("," + color.name());
+  s.append("," + QString::number(lineType));
+  s.append("," + label);
+  return s;
+}
+
+void VOLR::setCustomSettings (QString d)
+{
+  customFlag = TRUE;
+  QStringList l = QStringList::split(",", d, FALSE);
+  color.setNamedColor(l[1]);
+  lineType = (PlotLine::LineType) l[2].toInt();
+  label = l[3];
 }
 
 Plugin * create ()

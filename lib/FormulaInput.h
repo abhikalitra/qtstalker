@@ -35,7 +35,7 @@ class FormulaInput : public QWidget
   Q_OBJECT
 
   public:
-    FormulaInput (QWidget *, bool f, int lines, QString in);
+    FormulaInput (QWidget *, bool f, QString in);
     ~FormulaInput ();
     QString getInput ();
     void setInput (QString);
@@ -44,7 +44,6 @@ class FormulaInput : public QWidget
     void buttonChecked (int);
 
   protected:
-    QComboBox *fields;
     QComboBox *method;
     QSpinBox *line;
     QLineEdit *edit;

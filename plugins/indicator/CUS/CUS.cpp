@@ -21,12 +21,13 @@
 
 #include "CUS.h"
 #include "CUSDialog.h"
-#include <qdict.h>
+#include "Config.h"
 
 CUS::CUS ()
 {
   pluginName = "CUS";
   plotFlag = FALSE;
+  customFlag = TRUE;
 }
 
 CUS::~CUS ()
@@ -35,17 +36,50 @@ CUS::~CUS ()
 
 void CUS::calculate ()
 {
-  QSMath *t = new QSMath(data);
-  t->calculateCustomFormula(functionList, plotList);
-  
   int loop;
-  for (loop = 0; loop < (int) functionList.count(); loop++)
+  customLines = new QDict<PlotLine>;
+  customLines->setAutoDelete(FALSE);
+  
+  for (loop = 0; loop < (int) formulaList.count(); loop++)
+  {
+    QStringList l = QStringList::split(",", formulaList[loop], FALSE);
+
+    Config config;
+    Plugin *plug = config.getPlugin(Config::IndicatorPluginPath, l[0]);
+    if (! plug)
+    {
+      config.closePlugin(l[0]);
+      continue;
+    }
+  
+    plug->setIndicatorInput(data);
+    plug->setCustomSettings(functionList[loop]);
+    PlotLine *line = plug->calculateCustom(customLines);
+    if (! line)
+    {
+      qDebug("CUS::calculate: no PlotLine returned");
+      config.closePlugin(l[0]);
+      continue;
+    }
+
+    PlotLine *nline = new PlotLine;
+    nline->copy(line);
+    customLines->replace(QString::number(loop + 1), nline);
+    
+    config.closePlugin(l[0]);
+  }
+
+  for (loop = 0; loop < (int) formulaList.count(); loop++)
   {
     if (plotList[loop].toInt())
-      output.append(t->getCustomLine(loop + 1));
+    {
+      PlotLine *pl = customLines->find(QString::number(loop + 1));
+      if (pl)
+        output.append(pl);
+    }
   }
-  
-  delete t;
+
+  delete customLines;
 }
 
 int CUS::indicatorPrefDialog ()
@@ -67,9 +101,9 @@ int CUS::indicatorPrefDialog ()
     formulaList.clear();
     for (loop = 0; loop < max; loop++)
     {
-      functionList.append(dialog->getFunction(loop));
       plotList.append(dialog->getPlot(loop));
       formulaList.append(dialog->getLine(loop));
+      functionList.append(dialog->getFunction(loop));
     }
     
     rc = TRUE;
@@ -84,23 +118,23 @@ int CUS::indicatorPrefDialog ()
 void CUS::loadIndicatorSettings (QString file)
 {
   formulaList.clear();
+  plotList.clear();
+  functionList.clear();
   
-  QDict<QString> dict = loadFile(file);
-  if (! dict.count())
+  QDict<QString> d = loadFile(file);
+  if (! d.count())
     return;
-    
+
   int loop = 1;
   while (loop)
   {
-    QString *s = dict[QString::number(loop)];
+    QString *s = d[QString::number(loop)];
     if (s)
     {
       formulaList.append(s->left(s->length()));
-      
       QStringList l = QStringList::split("|", formulaList[loop - 1], FALSE);
       functionList.append(l[0]);
       plotList.append(l[1]);
-      
       loop++;
     }
     else
@@ -110,23 +144,41 @@ void CUS::loadIndicatorSettings (QString file)
 
 void CUS::saveIndicatorSettings (QString file)
 {
-  QDict<QString>dict;
-  dict.setAutoDelete(TRUE);
+  QDict<QString>d;
+  d.setAutoDelete(TRUE);
   
   int loop;
-  for (loop = 0; loop < (int) functionList.count(); loop++)
-    dict.replace(QString::number(loop + 1), new QString(formulaList[loop]));
+  for (loop = 0; loop < (int) formulaList.count(); loop++)
+    d.replace(QString::number(loop + 1), new QString(formulaList[loop]));
 
-  dict.replace("plugin", new QString(pluginName));
+  d.replace("plugin", new QString(pluginName));
 
-  saveFile(file, dict);
+  saveFile(file, d);
 }
+
+void CUS::setCustomFunction (QString d)
+{
+  formulaList.clear();
+  plotList.clear();
+  functionList.clear();
+
+  QStringList l = QStringList::split("|", d, FALSE);
+  int loop;
+  for (loop = 0; loop < (int) l.count(); loop = loop + 2)
+  {
+    formulaList.append(l[loop] + "|" + l[loop + 1]);
+    functionList.append(l[loop]);
+    plotList.append(l[loop + 1]);
+  }
+}
+
+//*********************************************************************************
+//*********************************************************************************
+//*********************************************************************************
 
 Plugin * create ()
 {
   CUS *o = new CUS;
   return ((Plugin *) o);
 }
-
-
 

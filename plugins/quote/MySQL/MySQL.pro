@@ -14,6 +14,7 @@ INCLUDEPATH += /usr/include/mysql
 INCLUDEPATH += ../../../db-2.7.7/build_unix
 
 LIBS += -lmysqlclient
+LIBS += -L../../../lib -lqtstalker
 
 # for redhat
 LIBS += -L/usr/lib/mysql

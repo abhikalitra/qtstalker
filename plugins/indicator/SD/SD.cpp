@@ -46,15 +46,46 @@ void SD::setDefaults ()
 
 void SD::calculate ()
 {
-  QSMath *t = new QSMath();
-  PlotLine *in = data->getInput(input);
-  PlotLine *sd = t->getSD(in, period);
+  PlotLine *in = 0;
+  if (customFlag)
+    in = getInputLine(customInput);
+  else
+    in = data->getInput(input);
+  if (! in)
+  {
+    qDebug("SD::calculate: no input");
+    return;
+  }
+
+  PlotLine *sd = new PlotLine();
   sd->setColor(color);
   sd->setType(lineType);
   sd->setLabel(label);
+
+  int loop;
+  for (loop = period; loop < (int) in->getSize(); loop++)
+  {
+    double mean = 0;
+    int loop2;
+    for (loop2 = 0; loop2 < period; loop2++)
+      mean = mean + in->getData(loop - loop2);
+    mean = mean / period;
+
+    double ds = 0;
+    for (loop2 = 0; loop2 < period; loop2++)
+    {
+      double t = in->getData(loop - loop2) - mean;
+      ds = ds + (t * t);
+    }
+    ds = ds / period;
+
+    sd->append(ds);
+  }
+
   output.append(sd);
-  delete in;
-  delete t;
+  
+  if (! customFlag)
+    delete in;
 }
 
 int SD::indicatorPrefDialog ()
@@ -66,7 +97,10 @@ int SD::indicatorPrefDialog ()
   dialog->addComboItem(tr("Line Type"), tr("Parms"), lineTypes, lineType);
   dialog->addTextItem(tr("Label"), tr("Parms"), label);
   dialog->addIntItem(tr("Period"), tr("Parms"), period, 1, 99999999);
-  dialog->addComboItem(tr("Input"), tr("Parms"), inputTypeList, input);
+  if (customFlag)
+    dialog->addFormulaInputItem(tr("Input"), tr("Parms"), FALSE, customInput);
+  else
+    dialog->addComboItem(tr("Input"), tr("Parms"), inputTypeList, input);
   
   int rc = dialog->exec();
   
@@ -76,7 +110,10 @@ int SD::indicatorPrefDialog ()
     lineType = (PlotLine::LineType) dialog->getComboIndex(tr("Line Type"));
     period = dialog->getInt(tr("Period"));
     label = dialog->getText(tr("Label"));
-    input = (BarData::InputType) dialog->getComboIndex(tr("Input"));
+    if (customFlag)
+      customInput = dialog->getFormulaInput(tr("Input"));
+    else
+      input = (BarData::InputType) dialog->getComboIndex(tr("Input"));
     rc = TRUE;
   }
   else
@@ -128,6 +165,36 @@ void SD::saveIndicatorSettings (QString file)
   dict.replace("plugin", new QString(pluginName));
 
   saveFile(file, dict);
+}
+
+PlotLine * SD::calculateCustom (QDict<PlotLine> *d)
+{
+  customLines = d;
+  clearOutput();
+  calculate();
+  return output.at(0);
+}
+
+QString SD::getCustomSettings ()
+{
+  QString s("SD");
+  s.append("," + customInput);
+  s.append("," + QString::number(period));
+  s.append("," + color.name());
+  s.append("," + QString::number(lineType));
+  s.append("," + label);
+  return s;
+}
+
+void SD::setCustomSettings (QString d)
+{
+  customFlag = TRUE;
+  QStringList l = QStringList::split(",", d, FALSE);
+  customInput = l[1];
+  period = l[2].toInt();
+  color.setNamedColor(l[3]);
+  lineType = (PlotLine::LineType) l[4].toInt();
+  label = l[5];
 }
 
 Plugin * create ()

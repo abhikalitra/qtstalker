@@ -26,7 +26,7 @@
 
 #define BUTTON_SIZE 24
 
-FormulaInput::FormulaInput (QWidget *w, bool f, int lines, QString in) : QWidget(w)
+FormulaInput::FormulaInput (QWidget *w, bool f, QString in) : QWidget(w)
 {
   flag = f;
   
@@ -40,9 +40,7 @@ FormulaInput::FormulaInput (QWidget *w, bool f, int lines, QString in) : QWidget
   grid->setColStretch(0, 1);
   
   method = new QComboBox(this);
-  method->insertItem(tr("Bar"), -1);
-  if (lines > 0)
-    method->insertItem(tr("Step"), -1);
+  method->insertItem(tr("Step"), -1);
   if (flag)
     method->insertItem(tr("Value"), -1);
   QObject::connect(method, SIGNAL(activated(int)), this, SLOT(buttonChecked(int)));
@@ -51,19 +49,15 @@ FormulaInput::FormulaInput (QWidget *w, bool f, int lines, QString in) : QWidget
   stack = new QWidgetStack(this);
   grid->addWidget(stack, 0, 1);
   
-  fields = new QComboBox(this);
-  fields->insertStringList(inputTypeList, -1);
-  stack->addWidget(fields, 1);
-    
-  line = new QSpinBox(1, lines, 1, this);
-  stack->addWidget(line, 2);
+  line = new QSpinBox(1, 100, 1, this);
+  stack->addWidget(line, 1);
 
   QDoubleValidator *dv = new QDoubleValidator(-99999999, 99999999, 4, this, 0);
   
   edit = new QLineEdit(this);
   edit->setValidator(dv);
   edit->setText("0");
-  stack->addWidget(edit, 3);
+  stack->addWidget(edit, 2);
   
   setInput(in);
 }
@@ -84,12 +78,9 @@ QString FormulaInput::getInput ()
   switch (id)
   {
     case 1:
-      s = fields->currentText();
-      break;
-    case 2:
       s = line->text();
       break;
-    case 3:
+    case 2:
       s = edit->text();
       if (! s.length())
         s = "#0";
@@ -105,27 +96,17 @@ QString FormulaInput::getInput ()
 
 void FormulaInput::setInput (QString d)
 {
-  int i = inputTypeList.findIndex(d);
-  if (i != -1)
+  if (d.contains("#") && flag)
   {
-    method->setCurrentItem(0);
-    fields->setCurrentItem(i);
-    stack->raiseWidget(1);
+    method->setCurrentItem(1);
+    edit->setText(d.right(d.length() - 1));
+    stack->raiseWidget(2);
   }
   else
   {
-    if (d.contains("#") && flag)
-    {
-      method->setCurrentItem(2);
-      edit->setText(d.right(d.length() - 1));
-      stack->raiseWidget(3);
-    }
-    else
-    {
-      method->setCurrentItem(1);
-      line->setValue(d.toInt());
-      stack->raiseWidget(2);
-    }
+    method->setCurrentItem(0);
+    line->setValue(d.toInt());
+    stack->raiseWidget(1);
   }
 }
 

@@ -31,6 +31,9 @@ class STOCH : public IndicatorPlugin
     void saveIndicatorSettings (QString);
     int indicatorPrefDialog ();
     void setDefaults();
+    PlotLine * calculateCustom (QDict<PlotLine> *);
+    QString getCustomSettings ();
+    void setCustomSettings (QString);
     
   private:
     QColor dcolor;
@@ -44,7 +47,7 @@ class STOCH : public IndicatorPlugin
     int period;
     double buyLine;
     double sellLine;
-    QSMath::MAType maType;
+    IndicatorPlugin::MAType maType;
 };
 
 extern "C"

@@ -43,15 +43,35 @@ void AD::setDefaults ()
 
 void AD::calculate ()
 {
-  QSMath *t = new QSMath(data);
-  
-  PlotLine *line = t->getAD();
+  PlotLine *line = new PlotLine();
   line->setColor(color);
   line->setType(lineType);
   line->setLabel(label);
-  output.append(line);
   
-  delete t;
+  int loop;
+  double accum = 0;
+  for (loop = 0; loop < (int) data->count(); loop++)
+  {
+    double volume = data->getVolume(loop);
+    if (volume > 0)
+    {
+      double high = data->getHigh(loop);
+      double low = data->getLow(loop);
+
+      double t = high - low;
+
+      if (t != 0)
+      {
+        double close = data->getClose(loop);
+        double t2 = (close - low) - (high - close);
+        accum = accum + ((t2 / t) * volume);
+      }
+    }
+
+    line->append(accum);
+  }
+  
+  output.append(line);
 }
 
 int AD::indicatorPrefDialog ()
@@ -113,6 +133,31 @@ void AD::saveIndicatorSettings (QString file)
   saveFile(file, dict);
 }
 
+PlotLine * AD::calculateCustom (QDict<PlotLine> *)
+{
+  clearOutput();
+  calculate();
+  return output.at(0);
+}
+
+QString AD::getCustomSettings ()
+{
+  QString s("AD");
+  s.append("," + color.name());
+  s.append("," + QString::number(lineType));
+  s.append("," + label);
+  return s;
+}
+
+void AD::setCustomSettings (QString d)
+{
+  customFlag = TRUE;
+
+  QStringList l = QStringList::split(",", d, FALSE);
+  color.setNamedColor(l[1]);
+  lineType = (PlotLine::LineType) l[2].toInt();
+  label = l[3];
+}
 
 Plugin * create ()
 {

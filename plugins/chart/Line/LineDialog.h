@@ -33,8 +33,7 @@ class LineDialog : public QTabDialog
     LineDialog ();
     ~LineDialog ();
     int getLines ();
-    QString getFunction (int);
-    QString getPlot (int);
+    QString getLine (int);
     void setLine (QString);
     void setColor (QColor);
     QColor getColor ();

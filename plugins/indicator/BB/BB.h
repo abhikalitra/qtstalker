@@ -31,13 +31,17 @@ class BB : public IndicatorPlugin
     void saveIndicatorSettings (QString);
     int indicatorPrefDialog ();
     void setDefaults();
+    PlotLine * calculateCustom (QDict<PlotLine> *);
+    QString getCustomSettings ();
+    void setCustomSettings (QString);
     
   private:
     QColor color;
     PlotLine::LineType lineType;
     int period;
     double deviation;
-    QSMath::MAType maType;
+    IndicatorPlugin::MAType maType;
+    bool bandFlag;
 };
 
 extern "C"

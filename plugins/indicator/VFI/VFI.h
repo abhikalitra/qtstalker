@@ -31,6 +31,9 @@ class VFI : public IndicatorPlugin
     void saveIndicatorSettings (QString);
     int indicatorPrefDialog ();
     void setDefaults();
+    PlotLine * calculateCustom (QDict<PlotLine> *);
+    QString getCustomSettings ();
+    void setCustomSettings (QString);
     
   private:
     QColor color;
@@ -38,7 +41,7 @@ class VFI : public IndicatorPlugin
     QString label;
     int period;
     int smoothing;
-    QSMath::MAType maType;
+    IndicatorPlugin::MAType maType;
 };
 
 extern "C"

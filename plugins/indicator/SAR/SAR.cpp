@@ -46,13 +46,143 @@ void SAR::setDefaults ()
 
 void SAR::calculate ()
 {
-  QSMath *t = new QSMath(data);
-  PlotLine *d = t->getSAR(initial, add, limit);
+  PlotLine *d = new PlotLine();
   d->setColor(color);
   d->setType(lineType);
   d->setLabel(label);
+
+  double high = data->getHigh(1);
+  double low = data->getLow(1);
+  double yhigh = data->getHigh(0);
+  double ylow = data->getLow(0);
+
+  int flag = 0;
+  double ep = 0;
+  double sar = 0;
+  double psar = 0;
+  double a = initial;
+  double t = yhigh;
+  double t2 = high;
+  if (t2 > t)
+  {
+    // we are long
+    flag = 0;
+    t = ylow;
+    t2 = low;
+    if (t < t2)
+      ep = t;
+    else
+      ep = t2;
+
+    sar = ep;
+    psar = ep;
+  }
+  else
+  {
+    // we are short
+    flag = 1;
+    t = yhigh;
+    t2 = high;
+    if (t > t2)
+      ep = t;
+    else
+      ep = t2;
+
+    sar = ep;
+    psar = ep;
+  }
+
+  d->append(sar);
+
+  int loop;
+  for (loop = 2; loop < (int) data->count(); loop++)
+  {
+    high = data->getHigh(loop);
+    low = data->getLow(loop);
+    yhigh = data->getHigh(loop - 1);
+    ylow = data->getLow(loop - 1);
+
+    // are we short?
+    if (flag)
+    {
+      // check for a switch
+      t = high;
+      if (t >= sar)
+      {
+        sar = ep;
+        psar = sar;
+        ep = t;
+        flag = 0;
+        a = initial;
+      }
+      else
+      {
+        t = low;
+        if (t  < ep)
+        {
+          ep = t;
+          a = a + add;
+          if (a > limit)
+            a = limit;
+        }
+
+        t = psar + (a * (ep - psar));
+        t2 = high;
+        if (t < t2)
+        {
+          double t3 = yhigh;
+          if (t3 > t2)
+            t = t3;
+          else
+            t = t2;
+        }
+        psar = sar;
+        sar = t;
+      }
+    }
+    else
+    {
+      // we are long
+      // check for a switch
+      t = low;
+      if (t <= sar)
+      {
+        sar = ep;
+        psar = sar;
+        ep = t;
+        flag = 1;
+        a = initial;
+      }
+      else
+      {
+        t = high;
+        if (t  > ep)
+        {
+          ep = t;
+          a = a + add;
+          if (a > limit)
+            a = limit;
+        }
+
+        t = psar + (a * (ep - psar));
+        t2 = low;
+        if (t > t2)
+        {
+          double t3 = ylow;
+          if (t3 < t2)
+            t = t3;
+          else
+            t = t2;
+        }
+        psar = sar;
+        sar = t;
+      }
+    }
+
+    d->append(sar);
+  }
+
   output.append(d);
-  delete t;
 }
 
 int SAR::indicatorPrefDialog ()
@@ -133,6 +263,37 @@ void SAR::saveIndicatorSettings (QString file)
   dict.replace("plugin", new QString(pluginName));
 
   saveFile(file, dict);
+}
+
+PlotLine * SAR::calculateCustom (QDict<PlotLine> *)
+{
+  clearOutput();
+  calculate();
+  return output.at(0);
+}
+
+QString SAR::getCustomSettings ()
+{
+  QString s("SAR");
+  s.append("," + QString::number(initial));
+  s.append("," + QString::number(add));
+  s.append("," + QString::number(limit));
+  s.append("," + color.name());
+  s.append("," + QString::number(lineType));
+  s.append("," + label);
+  return s;
+}
+
+void SAR::setCustomSettings (QString d)
+{
+  customFlag = TRUE;
+  QStringList l = QStringList::split(",", d, FALSE);
+  initial = l[1].toDouble();
+  add = l[2].toDouble();
+  limit = l[3].toDouble();
+  color.setNamedColor(l[4]);
+  lineType = (PlotLine::LineType) l[5].toInt();
+  label = l[6];
 }
 
 Plugin * create ()

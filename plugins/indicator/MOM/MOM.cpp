@@ -41,19 +41,35 @@ void MOM::setDefaults ()
   label = pluginName;
   period = 10;
   smoothing = 10;  
-  maType = QSMath::SMA;  
+  maType = IndicatorPlugin::SMA;  
   input = BarData::Close;
 }
 
 void MOM::calculate ()
 {
-  QSMath *t = new QSMath();
-  PlotLine *in = data->getInput(input);
-  PlotLine *mom = t->getMOM(in, period);
+  PlotLine *in = 0;
+  if (customFlag)
+    in = getInputLine(customInput);
+  else
+    in = data->getInput(input);
+  if (! in)
+  {
+    qDebug("MOM::calculate: no input");
+    return;
+  }
+
+  PlotLine *mom = new PlotLine();
+
+  int loop;
+  for (loop = period; loop < (int) in->getSize(); loop++)
+    mom->append(in->getData(loop) - in->getData(loop - period));
+    
+  if (! customFlag)
+    delete in;
 
   if (smoothing > 1)
   {
-    PlotLine *ma = t->getMA(mom, maType, smoothing);
+    PlotLine *ma = getMA(mom, maType, smoothing);
     ma->setColor(color);
     ma->setType(lineType);
     ma->setLabel(label);
@@ -67,9 +83,6 @@ void MOM::calculate ()
     mom->setLabel(label);
     output.append(mom);
   }
-
-  delete in;
-  delete t;
 }
 
 int MOM::indicatorPrefDialog ()
@@ -82,7 +95,10 @@ int MOM::indicatorPrefDialog ()
   dialog->addTextItem(tr("Label"), tr("Parms"), label);
   dialog->addIntItem(tr("Period"), tr("Parms"), period, 1, 99999999);
   dialog->addComboItem(tr("Smoothing Type"), tr("Parms"), maTypeList, maType);
-  dialog->addComboItem(tr("Input"), tr("Parms"), inputTypeList, input);
+  if (customFlag)
+    dialog->addFormulaInputItem(tr("Input"), tr("Parms"), FALSE, customInput);
+  else
+    dialog->addComboItem(tr("Input"), tr("Parms"), inputTypeList, input);
   dialog->addIntItem(tr("Smoothing"), tr("Parms"), smoothing, 0, 99999999);
   
   int rc = dialog->exec();
@@ -93,9 +109,12 @@ int MOM::indicatorPrefDialog ()
     lineType = (PlotLine::LineType) dialog->getComboIndex(tr("Line Type"));
     period = dialog->getInt(tr("Period"));
     label = dialog->getText(tr("Label"));
-    maType = (QSMath::MAType) dialog->getComboIndex(tr("Smoothing Type"));
+    maType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("Smoothing Type"));
     smoothing = dialog->getInt(tr("Smoothing"));
-    input = (BarData::InputType) dialog->getComboIndex(tr("Input"));
+    if (customFlag)
+      customInput = dialog->getFormulaInput(tr("Input"));
+    else
+      input = (BarData::InputType) dialog->getComboIndex(tr("Input"));
     rc = TRUE;
   }
   else
@@ -131,7 +150,7 @@ void MOM::loadIndicatorSettings (QString file)
       
   s = dict["maType"];
   if (s)
-    maType = (QSMath::MAType) s->left(s->length()).toInt();
+    maType = (IndicatorPlugin::MAType) s->left(s->length()).toInt();
     
   s = dict["input"];
   if (s)
@@ -157,6 +176,40 @@ void MOM::saveIndicatorSettings (QString file)
   dict.replace("plugin", new QString(pluginName));
 
   saveFile(file, dict);
+}
+
+PlotLine * MOM::calculateCustom (QDict<PlotLine> *d)
+{
+  customLines = d;
+  clearOutput();
+  calculate();
+  return output.at(0);
+}
+
+QString MOM::getCustomSettings ()
+{
+  QString s("MOM");
+  s.append("," + QString::number(maType));
+  s.append("," + customInput);
+  s.append("," + QString::number(period));
+  s.append("," + QString::number(smoothing));
+  s.append("," + color.name());
+  s.append("," + QString::number(lineType));
+  s.append("," + label);
+  return s;
+}
+
+void MOM::setCustomSettings (QString d)
+{
+  customFlag = TRUE;
+  QStringList l = QStringList::split(",", d, FALSE);
+  maType = (IndicatorPlugin::MAType) l[1].toInt();
+  customInput = l[2];
+  period = l[3].toInt();
+  smoothing = l[4].toInt();
+  color.setNamedColor(l[5]);
+  lineType = (PlotLine::LineType) l[6].toInt();
+  label = l[7];
 }
 
 Plugin * create ()

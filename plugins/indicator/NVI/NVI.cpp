@@ -43,13 +43,27 @@ void NVI::setDefaults ()
 
 void NVI::calculate ()
 {
-  QSMath *t = new QSMath(data);
-  PlotLine *nvi = t->getNVI();
+  PlotLine *nvi = new PlotLine();
   nvi->setColor(color);
   nvi->setType(lineType);
   nvi->setLabel(label);
+
+  int loop;
+  double nv = 1000;
+  for (loop = 1; loop < (int) data->count(); loop++)
+  {
+    double volume = data->getVolume(loop);
+    double close = data->getClose(loop);
+    double yvolume = data->getVolume(loop - 1);
+    double yclose = data->getClose(loop - 1);
+
+    if (volume < yvolume)
+      nv = nv + ((close - yclose) / yclose) * nv;
+
+    nvi->append(nv);
+  }
+  
   output.append(nvi);
-  delete t;
 }
 
 int NVI::indicatorPrefDialog ()
@@ -109,6 +123,31 @@ void NVI::saveIndicatorSettings (QString file)
   dict.replace("plugin", new QString(pluginName));
 
   saveFile(file, dict);
+}
+
+PlotLine * NVI::calculateCustom (QDict<PlotLine> *)
+{
+  clearOutput();
+  calculate();
+  return output.at(0);
+}
+
+QString NVI::getCustomSettings ()
+{
+  QString s("NVI");
+  s.append("," + color.name());
+  s.append("," + QString::number(lineType));
+  s.append("," + label);
+  return s;
+}
+
+void NVI::setCustomSettings (QString d)
+{
+  customFlag = TRUE;
+  QStringList l = QStringList::split(",", d, FALSE);
+  color.setNamedColor(l[1]);
+  lineType = (PlotLine::LineType) l[2].toInt();
+  label = l[3];
 }
 
 Plugin * create ()

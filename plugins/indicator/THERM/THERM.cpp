@@ -51,16 +51,13 @@ void THERM::setDefaults ()
   threshold = 3;
   smoothing = 2;
   maPeriod = 22;
-  maType = QSMath::EMA;
-  smoothType = QSMath::EMA;
+  maType = IndicatorPlugin::EMA;
+  smoothType = IndicatorPlugin::EMA;
 }
 
 void THERM::calculate ()
 {
-  QSMath *t = new QSMath();
-  
   PlotLine *therm = new PlotLine();
-
   int loop;
   double thermometer = 0;
   for (loop = 1; loop < (int) data->count(); loop++)
@@ -78,7 +75,7 @@ void THERM::calculate ()
 
   if (smoothing > 1)
   {
-    PlotLine *ma = t->getMA(therm, smoothType, smoothing);
+    PlotLine *ma = getMA(therm, smoothType, smoothing);
     output.append(ma);
     delete therm;
     therm = ma;
@@ -86,12 +83,11 @@ void THERM::calculate ()
   else
     output.append(therm);
 
-  PlotLine *therm_ma = t->getMA(therm, maType, maPeriod);
+  PlotLine *therm_ma = getMA(therm, maType, maPeriod);
   therm_ma->setColor(maColor);
   therm_ma->setType(maLineType);
   therm_ma->setLabel(maLabel);
   output.append(therm_ma);
-  delete t;
 
   // assign the therm colors
 
@@ -157,13 +153,13 @@ int THERM::indicatorPrefDialog ()
     label = dialog->getText(tr("Label"));
     threshold = dialog->getFloat(tr("Threshold"));
     smoothing = dialog->getInt(tr("Smoothing"));
-    smoothType = (QSMath::MAType) dialog->getComboIndex(tr("Smoothing Type"));
+    smoothType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("Smoothing Type"));
     
     maColor = dialog->getColor(tr("MA Color"));
     maLineType = (PlotLine::LineType) dialog->getComboIndex(tr("MA Line Type"));
     maLabel = dialog->getText(tr("MA Label"));
     maPeriod = dialog->getInt(tr("MA Period"));
-    maType = (QSMath::MAType) dialog->getComboIndex(tr("MA Type"));
+    maType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("MA Type"));
     rc = TRUE;
   }
   else
@@ -211,7 +207,7 @@ void THERM::loadIndicatorSettings (QString file)
   
   s = dict["smoothType"];
   if (s)
-    smoothType = (QSMath::MAType) s->left(s->length()).toInt();
+    smoothType = (IndicatorPlugin::MAType) s->left(s->length()).toInt();
   
   s = dict["maLineType"];
   if (s)
@@ -227,7 +223,7 @@ void THERM::loadIndicatorSettings (QString file)
 
   s = dict["maType"];
   if (s)
-    maType = (QSMath::MAType) s->left(s->length()).toInt();
+    maType = (IndicatorPlugin::MAType) s->left(s->length()).toInt();
 }
 
 void THERM::saveIndicatorSettings (QString file)
@@ -251,6 +247,39 @@ void THERM::saveIndicatorSettings (QString file)
   dict.replace("plugin", new QString(pluginName));
   
   saveFile(file, dict);
+}
+
+PlotLine * THERM::calculateCustom (QDict<PlotLine> *)
+{
+  clearOutput();
+  calculate();
+  return output.at(0);
+}
+
+QString THERM::getCustomSettings ()
+{
+  QString s("THERM");
+  s.append("," + QString::number(smoothType));
+  s.append("," + QString::number(smoothing));
+  s.append("," + QString::number(threshold));
+  s.append("," + upColor.name());
+  s.append("," + downColor.name());
+  s.append("," + threshColor.name());
+  s.append("," + label);
+  return s;
+}
+
+void THERM::setCustomSettings (QString d)
+{
+  customFlag = TRUE;
+  QStringList l = QStringList::split(",", d, FALSE);
+  smoothType = (IndicatorPlugin::MAType) l[1].toInt();
+  smoothing = l[2].toInt();
+  threshold = l[3].toDouble();
+  upColor.setNamedColor(l[4]);
+  downColor.setNamedColor(l[5]);
+  threshColor.setNamedColor(l[6]);
+  label = l[7];
 }
 
 Plugin * create ()

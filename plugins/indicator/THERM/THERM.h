@@ -31,6 +31,9 @@ class THERM : public IndicatorPlugin
     void saveIndicatorSettings (QString);
     int indicatorPrefDialog ();
     void setDefaults();
+    PlotLine * calculateCustom (QDict<PlotLine> *);
+    QString getCustomSettings ();
+    void setCustomSettings (QString);
     
   private:
     QColor downColor;
@@ -44,8 +47,8 @@ class THERM : public IndicatorPlugin
     double threshold;
     int smoothing;
     int maPeriod;
-    QSMath::MAType maType;
-    QSMath::MAType smoothType;
+    IndicatorPlugin::MAType maType;
+    IndicatorPlugin::MAType smoothType;
 };
 
 extern "C"

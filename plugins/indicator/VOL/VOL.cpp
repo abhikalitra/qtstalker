@@ -45,7 +45,7 @@ void VOL::setDefaults ()
   maLabel = "MAVol";
   period = 0;
   displace = 0;
-  maType = QSMath::SMA;
+  maType = IndicatorPlugin::SMA;
 }
 
 void VOL::calculate ()
@@ -72,13 +72,11 @@ void VOL::calculate ()
   if (period < 1)
     return;
 
-  QSMath *t = new QSMath();
-  PlotLine *ma = t->getMA(pl, maType, period, displace);
+  PlotLine *ma = getMA(pl, maType, period);
   ma->setColor(maColor);
   ma->setType(maLineType);
   ma->setLabel(maLabel);
   output.append(ma);
-  delete t;
 }
 
 int VOL::indicatorPrefDialog ()
@@ -113,7 +111,7 @@ int VOL::indicatorPrefDialog ()
     period = dialog->getInt(tr("MA Period"));
     maLabel = dialog->getText(tr("MA Label"));
     maLineType = (PlotLine::LineType) dialog->getComboIndex(tr("MA Line Type"));
-    maType = (QSMath::MAType) dialog->getComboIndex(tr("MA Type"));
+    maType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("MA Type"));
     displace = dialog->getInt(tr("Displacement"));
     
     rc = TRUE;
@@ -167,7 +165,7 @@ void VOL::loadIndicatorSettings (QString file)
         
   s = dict["maType"];
   if (s)
-    maType = (QSMath::MAType) s->left(s->length()).toInt();
+    maType = (IndicatorPlugin::MAType) s->left(s->length()).toInt();
         
   s = dict["maDisplace"];
   if (s)

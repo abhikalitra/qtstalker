@@ -253,6 +253,37 @@ void SZ::saveIndicatorSettings (QString file)
   saveFile(file, dict);
 }
 
+PlotLine * SZ::calculateCustom (QDict<PlotLine> *)
+{
+  clearOutput();
+  calculate();
+  return output.at(0);
+}
+
+QString SZ::getCustomSettings ()
+{
+  QString s("SZ");
+  s.append("," + method);
+  s.append("," + QString::number(period));
+  s.append("," + QString::number(no_decline_period));
+  s.append("," + QString::number(coefficient));
+  s.append("," + color.name());
+  s.append("," + QString::number(lineType));
+  return s;
+}
+
+void SZ::setCustomSettings (QString d)
+{
+  customFlag = TRUE;
+  QStringList l = QStringList::split(",", d, FALSE);
+  method = l[1];
+  period = l[2].toInt();
+  no_decline_period = l[3].toInt();
+  coefficient = l[4].toDouble();
+  color.setNamedColor(l[5]);
+  lineType = (PlotLine::LineType) l[6].toInt();
+}
+
 Plugin * create ()
 {
   SZ *o = new SZ;

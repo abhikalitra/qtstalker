@@ -42,7 +42,7 @@ void RSI::setDefaults ()
   label = pluginName;
   period = 14;
   smoothing = 10;  
-  maType = QSMath::SMA;  
+  maType = IndicatorPlugin::SMA;  
   input = BarData::Close;
   buyLine = 30;
   sellLine = 70;
@@ -50,13 +50,49 @@ void RSI::setDefaults ()
 
 void RSI::calculate ()
 {
-  QSMath *t = new QSMath();
-  PlotLine *in = data->getInput(input);
-  PlotLine *rsi = t->getRSI(in, period);
+  PlotLine *in = 0;
+  if (customFlag)
+    in = getInputLine(customInput);
+  else
+    in = data->getInput(input);
+  if (! in)
+  {
+    qDebug("RSI::calculate: no input");
+    return;
+  }
 
+  PlotLine *rsi = new PlotLine();
+
+  int loop;
+  for (loop = period; loop < (int) in->getSize(); loop++)
+  {
+    double loss = 0;
+    double gain = 0;
+    int loop2;
+    for (loop2 = 0; loop2 < period; loop2++)
+    {
+      double t = in->getData(loop - loop2) - in->getData(loop - loop2 - 1);
+      if (t > 0)
+        gain = gain + t;
+      if (t < 0)
+        loss = loss + fabs(t);
+    }
+
+    double again = gain / period;
+    double aloss = loss / period;
+    double rs = again / aloss;
+    double t = 100 - (100 / (1 + rs));
+    if (t > 100)
+      t = 100;
+    if (t < 0)
+      t = 0;
+
+    rsi->append(t);
+  }
+  
   if (smoothing > 1)
   {
-    PlotLine *ma = t->getMA(rsi, maType, smoothing);
+    PlotLine *ma = getMA(rsi, maType, smoothing);
     ma->setColor(color);
     ma->setType(lineType);
     ma->setLabel(label);
@@ -71,8 +107,8 @@ void RSI::calculate ()
     output.append(rsi);
   }
 
-  delete in;
-  delete t;
+  if (! customFlag)
+    delete in;
 }
 
 int RSI::indicatorPrefDialog ()
@@ -86,7 +122,10 @@ int RSI::indicatorPrefDialog ()
   dialog->addIntItem(tr("Period"), tr("Parms"), period, 1, 99999999);
   dialog->addComboItem(tr("Smoothing Type"), tr("Parms"), maTypeList, maType);
   dialog->addIntItem(tr("Smoothing"), tr("Parms"), smoothing, 0, 99999999);
-  dialog->addComboItem(tr("Input"), tr("Parms"), inputTypeList, input);
+  if (customFlag)
+    dialog->addFormulaInputItem(tr("Input"), tr("Parms"), FALSE, customInput);
+  else
+    dialog->addComboItem(tr("Input"), tr("Parms"), inputTypeList, input);
   dialog->addFloatItem(tr("Buy Line"), tr("Parms"), buyLine, 0, 100);
   dialog->addFloatItem(tr("Sell Line"), tr("Parms"), sellLine, 0, 100);
   
@@ -98,9 +137,12 @@ int RSI::indicatorPrefDialog ()
     lineType = (PlotLine::LineType) dialog->getComboIndex(tr("Line Type"));
     period = dialog->getInt(tr("Period"));
     label = dialog->getText(tr("Label"));
-    maType = (QSMath::MAType) dialog->getComboIndex(tr("Smoothing Type"));
+    maType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("Smoothing Type"));
     smoothing = dialog->getInt(tr("Smoothing"));
-    input = (BarData::InputType) dialog->getComboIndex(tr("Input"));
+    if (customFlag)
+      customInput = dialog->getFormulaInput(tr("Input"));
+    else
+      input = (BarData::InputType) dialog->getComboIndex(tr("Input"));
     buyLine = dialog->getFloat(tr("Buy Line"));
     sellLine = dialog->getFloat(tr("Sell Line"));
     
@@ -139,7 +181,7 @@ void RSI::loadIndicatorSettings (QString file)
       
   s = dict["maType"];
   if (s)
-    maType = (QSMath::MAType) s->left(s->length()).toInt();
+    maType = (IndicatorPlugin::MAType) s->left(s->length()).toInt();
     
   s = dict["input"];
   if (s)
@@ -175,6 +217,40 @@ void RSI::saveIndicatorSettings (QString file)
   dict.replace("plugin", new QString(pluginName));
 
   saveFile(file, dict);
+}
+
+PlotLine * RSI::calculateCustom (QDict<PlotLine> *d)
+{
+  customLines = d;
+  clearOutput();
+  calculate();
+  return output.at(0);
+}
+
+QString RSI::getCustomSettings ()
+{
+  QString s("RSI");
+  s.append("," + QString::number(maType));
+  s.append("," + customInput);
+  s.append("," + QString::number(period));
+  s.append("," + QString::number(smoothing));
+  s.append("," + color.name());
+  s.append("," + QString::number(lineType));
+  s.append("," + label);
+  return s;
+}
+
+void RSI::setCustomSettings (QString d)
+{
+  customFlag = TRUE;
+  QStringList l = QStringList::split(",", d, FALSE);
+  maType = (IndicatorPlugin::MAType) l[1].toInt();
+  customInput = l[2];
+  period = l[3].toInt();
+  smoothing = l[4].toInt();
+  color.setNamedColor(l[5]);
+  lineType = (PlotLine::LineType) l[6].toInt();
+  label = l[7];
 }
 
 Plugin * create ()

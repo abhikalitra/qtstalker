@@ -50,47 +50,57 @@ void PP::setDefaults ()
 
 void PP::calculate ()
 {
-  QSMath *t = new QSMath();
-
   double high = data->getHigh(data->count() - 1);
   double low = data->getLow(data->count() - 1);
   double close = data->getClose(data->count() - 1);
-
+  
   PlotLine *fr = new PlotLine();
   fr->setColor(resColor);
   fr->setType(resLineType);
   fr->setLabel(resLabel);
-  fr->append(t->getPPFR(high, low, close));
+  double pp = (high + low + close) / 3;
+  double t = (2 * pp) - low;
+  fr->append(t);
 
   PlotLine *sr = new PlotLine();
   sr->setColor(resColor);
   sr->setType(resLineType);
   sr->setLabel(resLabel2);
-  sr->append(t->getPPSR(high, low, close));
+  pp = (high + low + close) / 3;
+  t = pp + (high - low);
+  sr->append(t);
 
   PlotLine *thr = new PlotLine();
   thr->setColor(resColor);
   thr->setType(resLineType);
   thr->setLabel(resLabel3);
-  thr->append(t->getPPTR(high, low, close));
+  pp = (high + low + close) / 3;
+  t = (2 * pp) + (high - (2 * low));
+  thr->append(t);
 
   PlotLine *fs = new PlotLine();
   fs->setColor(supColor);
   fs->setType(supLineType);
   fs->setLabel(supLabel);
-  fs->append(t->getPPFS(high, low, close));
+  pp = (high + low + close) / 3;
+  t = (2 * pp) - high;
+  fs->append(t);
 
   PlotLine *ss = new PlotLine();
   ss->setColor(supColor);
   ss->setType(supLineType);
   ss->setLabel(supLabel2);
-  ss->append(t->getPPSS(high, low, close));
+  pp = (high + low + close) / 3;
+  t = pp - (high - low);
+  ss->append(t);
 
   PlotLine *ts = new PlotLine();
   ts->setColor(supColor);
   ts->setType(supLineType);
   ts->setLabel(supLabel3);
-  ts->append(t->getPPTS(high, low, close));
+  pp = (high + low + close) / 3;
+  t = (2 * pp) - ((2 * high) - low);
+  ts->append(t);
 
   output.append(ts);
   output.append(ss);
@@ -98,7 +108,6 @@ void PP::calculate ()
   output.append(fr);
   output.append(sr);
   output.append(thr);
-  delete t;
 }
 
 int PP::indicatorPrefDialog ()

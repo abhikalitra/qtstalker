@@ -40,23 +40,18 @@ void ATR::setDefaults ()
   lineType = PlotLine::Line;
   label = pluginName;
   smoothing = 14;
-  maType = QSMath::SMA;  
+  maType = IndicatorPlugin::SMA;  
 }
 
 void ATR::calculate ()
 {
-  QSMath *t = new QSMath(data);
-
-  PlotLine *line = t->getTR();
-
-  PlotLine *ma = t->getMA(line, maType, smoothing);
+  PlotLine *tr = getTR();
+  PlotLine *ma = getMA(tr, maType, smoothing);
   ma->setColor(color);
   ma->setType(lineType);
   ma->setLabel(label);
   output.append(ma);
-  
-  delete line;
-  delete t;
+  delete tr;
 }
 
 int ATR::indicatorPrefDialog ()
@@ -78,7 +73,7 @@ int ATR::indicatorPrefDialog ()
     lineType = (PlotLine::LineType) dialog->getComboIndex(tr("Line Type"));
     label = dialog->getText(tr("Label"));
     smoothing = dialog->getInt(tr("Smoothing"));
-    maType = (QSMath::MAType) dialog->getComboIndex(tr("Smoothing Type"));
+    maType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("Smoothing Type"));
     rc = TRUE;
   }
   else
@@ -114,7 +109,7 @@ void ATR::loadIndicatorSettings (QString file)
 
   s = dict["maType"];
   if (s)
-    maType = (QSMath::MAType) s->left(s->length()).toInt();
+    maType = (IndicatorPlugin::MAType) s->left(s->length()).toInt();
 }
 
 void ATR::saveIndicatorSettings (QString file)
@@ -130,6 +125,36 @@ void ATR::saveIndicatorSettings (QString file)
   dict.replace("plugin", new QString(pluginName));
 
   saveFile(file, dict);
+}
+
+PlotLine * ATR::calculateCustom (QDict<PlotLine> *)
+{
+  clearOutput();
+  calculate();
+  return output.at(0);
+}
+
+QString ATR::getCustomSettings ()
+{
+  QString s("ATR");
+  s.append("," + maType);
+  s.append("," + QString::number(smoothing));
+  s.append("," + color.name());
+  s.append("," + QString::number(lineType));
+  s.append("," + label);
+  return s;
+}
+
+void ATR::setCustomSettings (QString d)
+{
+  customFlag = TRUE;
+
+  QStringList l = QStringList::split(",", d, FALSE);
+  maType = (IndicatorPlugin::MAType) l[1].toInt();
+  smoothing = l[2].toInt();
+  color.setNamedColor(l[3]);
+  lineType = (PlotLine::LineType) l[4].toInt();
+  label = l[5];
 }
 
 Plugin * create ()

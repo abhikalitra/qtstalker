@@ -13,6 +13,8 @@ TARGET = Bar.0.27
 
 INCLUDEPATH += ../../../lib
 
+LIBS += -L../../../lib -lqtstalker
+
 unix:linux-g++:LIBS += -ldl
 
 target.path = /usr/lib/qtstalker/chart

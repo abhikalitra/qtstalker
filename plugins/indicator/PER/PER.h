@@ -31,12 +31,16 @@ class PER : public IndicatorPlugin
     void saveIndicatorSettings (QString);
     int indicatorPrefDialog ();
     void setDefaults();
+    PlotLine * calculateCustom (QDict<PlotLine> *);
+    QString getCustomSettings ();
+    void setCustomSettings (QString);
     
   private:
     QColor color;
     PlotLine::LineType lineType;
     QString label;
     BarData::InputType input;
+    QString customInput;
 };
 
 extern "C"

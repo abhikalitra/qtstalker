@@ -26,7 +26,6 @@
 #include <qtextstream.h>
 #include <qfont.h>
 #include "Tester.h"
-#include "QSMath.h"
 
 Tester::Tester (Config *c, QString n) : QTabDialog (0, 0, FALSE)
 {
@@ -938,8 +937,6 @@ void Tester::symbolButtonPressed ()
 
 void Tester::loadAlerts (int type)
 {
-  QStringList formulaList;
-  QStringList plotList;
   int loop;
   FormulaEdit *edit = 0;
   int delays = 0;
@@ -969,25 +966,34 @@ void Tester::loadAlerts (int type)
     default:
       break;
   }
-  
-  for (loop = 0; loop < edit->getLines(); loop++)
-  {
-    formulaList.append(edit->getFormula(loop));
-    plotList.append(edit->getPlot(loop));
-  }
-  
-  QSMath *t = new QSMath(recordList);
-  t->calculateCustomFormula(formulaList, plotList);
 
-  PlotLine *line = new PlotLine;
-  for (loop = plotList.count() - 1; loop > -1; loop--)
+  // open the CUS plugin   
+  Plugin *plug = config->getPlugin(Config::IndicatorPluginPath, "CUS");
+  if (! plug)
   {
-    if (plotList[loop].toInt())
-    {
-      line = t->getCustomLine(loop + 1);
-      break;
-    }
+    config->closePlugin("CUS");
+    return;
   }
+
+  QStringList l;
+  for (loop = 0; loop < edit->getLines(); loop++)
+    l.append(edit->getLine(loop));
+  
+  // load the CUS plugin and calculate
+  plug->setCustomFunction(l.join("|"));
+  plug->setIndicatorInput(recordList);
+  plug->calculate();
+  PlotLine *tline = plug->getIndicatorLine(0);
+  if (! tline)
+  {
+    qDebug("Tester::loadAlerts: no PlotLine returned");
+    config->closePlugin("CUS");
+    return;
+  }
+    
+  PlotLine *line = new PlotLine;
+  line->copy(tline);
+  config->closePlugin("CUS");
   
   loop = recordList->count() - line->getSize();
   int lineLoop = 0;
@@ -1058,7 +1064,6 @@ void Tester::loadAlerts (int type)
   
   if (line)
     delete line;
-  delete t;
 }
 
 void Tester::saveEditRule (int type)
@@ -1579,22 +1584,24 @@ void Tester::createSummary ()
 
 void Tester::getVolume ()
 {
+  double balance = equity;
   if (volumePercent->value() == 0)
   {
-    volume = 1;
+//    volume = 1;
+    balance = account->text().toDouble();
+    volume = (balance / getPrice(buyRecord));
     return;
   }
 
-  double balance = equity;
   balance = balance * ((double) volumePercent->value() / 100.0);
 
   if (margin->value())
-    volume = (int) (balance / margin->value());
+    volume = (double) (balance / margin->value());
   else
-    volume = (int) (balance / getPrice(buyRecord));
+    volume = (double) (balance / getPrice(buyRecord));
 
-  if (volume < 1)
-    volume = 1;
+//  if (volume < 1)
+//    volume = 1;
 }
 
 double Tester::getPrice (int i)

@@ -41,25 +41,38 @@ void MAOSC::setDefaults ()
   label = pluginName;
   fastPeriod = 9;
   slowPeriod = 18;
-  fastMaType = QSMath::SMA;  
-  slowMaType = QSMath::SMA;  
+  fastMaType = IndicatorPlugin::SMA;  
+  slowMaType = IndicatorPlugin::SMA;  
   input = BarData::Close;
 }
 
 void MAOSC::calculate ()
 {
-  QSMath *t = new QSMath();
-
   PlotLine *in = data->getInput(input);
   
-  PlotLine *ma = t->getOSC(in, slowMaType, fastMaType, slowPeriod, fastPeriod);
-  ma->setColor(color);
-  ma->setType(lineType);
-  ma->setLabel(label);
-  output.append(ma);
+  PlotLine *fma = getMA(in, fastMaType, fastPeriod);
+  int fmaLoop = fma->getSize() - 1;
 
+  PlotLine *sma = getMA(in, slowMaType, slowPeriod);
+  int smaLoop = sma->getSize() - 1;
+
+  PlotLine *osc = new PlotLine();
+  osc->setColor(color);
+  osc->setType(lineType);
+  osc->setLabel(label);
+  
+  while (fmaLoop > -1 && smaLoop > -1)
+  {
+    osc->prepend(fma->getData(fmaLoop) - sma->getData(smaLoop));
+    fmaLoop--;
+    smaLoop--;
+  }
+
+  output.append(osc);
+  
+  delete fma;
+  delete sma;
   delete in;
-  delete t;
 }
 
 int MAOSC::indicatorPrefDialog ()
@@ -85,8 +98,8 @@ int MAOSC::indicatorPrefDialog ()
     fastPeriod = dialog->getInt(tr("Fast Period"));
     slowPeriod = dialog->getInt(tr("Slow Period"));
     label = dialog->getText(tr("Label"));
-    fastMaType = (QSMath::MAType) dialog->getComboIndex(tr("Fast MA Type"));
-    slowMaType = (QSMath::MAType) dialog->getComboIndex(tr("Slow MA Type"));
+    fastMaType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("Fast MA Type"));
+    slowMaType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("Slow MA Type"));
     input = (BarData::InputType) dialog->getComboIndex(tr("Input"));
     rc = TRUE;
   }
@@ -127,11 +140,11 @@ void MAOSC::loadIndicatorSettings (QString file)
       
   s = dict["fastMaType"];
   if (s)
-    fastMaType = (QSMath::MAType) s->left(s->length()).toInt();
+    fastMaType = (IndicatorPlugin::MAType) s->left(s->length()).toInt();
     
   s = dict["slowMaType"];
   if (s)
-    slowMaType = (QSMath::MAType) s->left(s->length()).toInt();
+    slowMaType = (IndicatorPlugin::MAType) s->left(s->length()).toInt();
   
   s = dict["input"];
   if (s)

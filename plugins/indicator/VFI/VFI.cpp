@@ -40,18 +40,64 @@ void VFI::setDefaults ()
   lineType = PlotLine::Line;
   label = pluginName;
   smoothing = 3;
-  maType = QSMath::SMA;
+  maType = IndicatorPlugin::SMA;
   period = 100;
 }
 
 void VFI::calculate ()
 {
-  QSMath *t = new QSMath(data);
-  PlotLine *vfi = t->getVFI(period);
+  PlotLine *vfi = new PlotLine();
+  int loop;
+  for (loop = period; loop < (int) data->count(); loop++)
+  {
+    double inter = 0.0;
+    double sma_vol = 0.0;
+    int i;
+    double close = data->getClose(loop-period);
+    double high = data->getHigh(loop-period);
+    double low = data->getLow(loop-period);
+    double typical = (high+low+close)/3.0;
+    for(i=loop-period+1; i<=loop; i++) {
+      double ytypical = typical;
+      close = data->getClose(i);
+      high = data->getHigh(i);
+      low = data->getLow(i);
+      typical = (high+low+close)/3.0;
+      double delta = (log(typical) - log(ytypical));
+      inter += delta*delta;
+      sma_vol += data->getVolume(i);
+      }
+    inter = 0.2*sqrt(inter/(double)period)*typical;
+    sma_vol /= (double)period;
+
+    close = data->getClose(loop-period);
+    high = data->getHigh(loop-period);
+    low = data->getLow(loop-period);
+    typical = (high+low+close)/3.0;
+    double t = 0;
+    for(i=loop-period+1; i<=loop; i++) {
+      double ytypical = typical;
+      double volume = data->getVolume(i);
+      close = data->getClose(i);
+      high = data->getHigh(i);
+      low = data->getLow(i);
+      typical = (high+low+close)/3.0;
+
+      if (typical > ytypical+inter)
+        t = t + log(1.0 + volume/sma_vol);
+      else
+      {
+        if (typical < ytypical-inter)
+          t = t - log(1.0 + volume/sma_vol);
+      }
+    }
+
+    vfi->append(t);
+  }
 
   if (smoothing > 1)
   {
-    PlotLine *ma = t->getMA(vfi, maType, smoothing);
+    PlotLine *ma = getMA(vfi, maType, smoothing);
     ma->setColor(color);
     ma->setType(lineType);
     ma->setLabel(label);
@@ -65,7 +111,6 @@ void VFI::calculate ()
     vfi->setLabel(label);
     output.append(vfi);
   }
-  delete t;
 }
 
 int VFI::indicatorPrefDialog ()
@@ -89,7 +134,7 @@ int VFI::indicatorPrefDialog ()
     label = dialog->getText(tr("Label"));
     period = dialog->getInt(tr("Period"));
     smoothing = dialog->getInt(tr("Smoothing"));
-    maType = (QSMath::MAType) dialog->getComboIndex(tr("Smoothing Type"));
+    maType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("Smoothing Type"));
     rc = TRUE;
   }
   else
@@ -129,7 +174,7 @@ void VFI::loadIndicatorSettings (QString file)
 
   s = dict["maType"];
   if (s)
-    maType = (QSMath::MAType) s->left(s->length()).toInt();
+    maType = (IndicatorPlugin::MAType) s->left(s->length()).toInt();
 
 }
 
@@ -147,6 +192,37 @@ void VFI::saveIndicatorSettings (QString file)
   dict.replace("plugin", new QString(pluginName));
 
   saveFile(file, dict);
+}
+
+PlotLine * VFI::calculateCustom (QDict<PlotLine> *)
+{
+  clearOutput();
+  calculate();
+  return output.at(0);
+}
+
+QString VFI::getCustomSettings ()
+{
+  QString s("VFI");
+  s.append("," + QString::number(maType));
+  s.append("," + QString::number(period));
+  s.append("," + QString::number(smoothing));
+  s.append("," + color.name());
+  s.append("," + QString::number(lineType));
+  s.append("," + label);
+  return s;
+}
+
+void VFI::setCustomSettings (QString d)
+{
+  customFlag = TRUE;
+  QStringList l = QStringList::split(",", d, FALSE);
+  maType = (IndicatorPlugin::MAType) l[1].toInt();
+  period = l[2].toInt();
+  smoothing = l[3].toInt();
+  color.setNamedColor(l[4]);
+  lineType = (PlotLine::LineType) l[5].toInt();
+  label = l[6];
 }
 
 Plugin * create ()

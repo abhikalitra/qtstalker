@@ -151,14 +151,9 @@ int BarDialog::getLines ()
   return list->getLines();
 }
 
-QString BarDialog::getFunction (int row)
+QString BarDialog::getLine (int row)
 {
-  return list->getFormula(row);
-}
-
-QString BarDialog::getPlot (int row)
-{
-  return list->getPlot(row);
+  return list->getLine(row);
 }
 
 void BarDialog::setLine (QString d)

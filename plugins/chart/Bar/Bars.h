@@ -38,6 +38,7 @@ class Bars : public ChartPlugin
     void prefDialog ();
     void loadSettings ();
     void saveSettings ();
+    PlotLine * getBoolLine ();
     
   protected:
     QString style;
@@ -47,7 +48,6 @@ class Bars : public ChartPlugin
     QColor paintUpColor;
     QColor paintDownColor;
     QStringList formulaList;
-    QStringList plotList;
 };
 
 extern "C"

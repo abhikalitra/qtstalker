@@ -31,6 +31,9 @@ class HLC : public IndicatorPlugin
     void saveIndicatorSettings (QString);
     int indicatorPrefDialog ();
     void setDefaults();
+    PlotLine * calculateCustom (QDict<PlotLine> *);
+    QString getCustomSettings ();
+    void setCustomSettings (QString);
     
   private:
     QColor upperColor;
@@ -40,6 +43,7 @@ class HLC : public IndicatorPlugin
     QString upperLabel;
     QString lowerLabel;
     int period;
+    bool bandFlag;
 };
 
 extern "C"

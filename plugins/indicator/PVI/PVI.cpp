@@ -43,13 +43,27 @@ void PVI::setDefaults ()
 
 void PVI::calculate ()
 {
-  QSMath *t = new QSMath(data);
-  PlotLine *pvi = t->getPVI();
+  PlotLine *pvi = new PlotLine();
   pvi->setColor(color);
   pvi->setType(lineType);
   pvi->setLabel(label);
+
+  int loop = 0;
+  double pv = 1000;
+  for (loop = 1; loop < (int) data->count(); loop++)
+  {
+    double volume = data->getVolume(loop);
+    double close = data->getClose(loop);
+    double yvolume = data->getVolume(loop - 1);
+    double yclose = data->getClose(loop - 1);
+
+    if (volume > yvolume)
+      pv = pv + ((close - yclose) / yclose) * pv;
+
+    pvi->append(pv);
+  }
+
   output.append(pvi);
-  delete t;
 }
 
 int PVI::indicatorPrefDialog ()
@@ -109,6 +123,31 @@ void PVI::saveIndicatorSettings (QString file)
   dict.replace("plugin", new QString(pluginName));
 
   saveFile(file, dict);
+}
+
+PlotLine * PVI::calculateCustom (QDict<PlotLine> *)
+{
+  clearOutput();
+  calculate();
+  return output.at(0);
+}
+
+QString PVI::getCustomSettings ()
+{
+  QString s("PVI");
+  s.append("," + color.name());
+  s.append("," + QString::number(lineType));
+  s.append("," + label);
+  return s;
+}
+
+void PVI::setCustomSettings (QString d)
+{
+  customFlag = TRUE;
+  QStringList l = QStringList::split(",", d, FALSE);
+  color.setNamedColor(l[1]);
+  lineType = (PlotLine::LineType) l[2].toInt();
+  label = l[3];
 }
 
 Plugin * create ()

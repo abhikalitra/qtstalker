@@ -31,6 +31,9 @@ class TRIX : public IndicatorPlugin
     void saveIndicatorSettings (QString);
     int indicatorPrefDialog ();
     void setDefaults();
+    PlotLine * calculateCustom (QDict<PlotLine> *);
+    QString getCustomSettings ();
+    void setCustomSettings (QString);
     
   private:
     QColor color;
@@ -41,8 +44,9 @@ class TRIX : public IndicatorPlugin
     QString trigLabel;
     int period;
     int tperiod;
-    QSMath::MAType maType;
+    IndicatorPlugin::MAType maType;
     BarData::InputType input;
+    QString customInput;
 };
 
 extern "C"

@@ -20,8 +20,8 @@
  */
 
 #include "CCI.h"
-#include <math.h>
 #include "PrefDialog.h"
+#include <math.h>
 #include <qdict.h>
 
 CCI::CCI ()
@@ -42,18 +42,40 @@ void CCI::setDefaults ()
   label = pluginName;
   smoothing = 3;
   period = 20;
-  maType = QSMath::SMA;
+  maType = IndicatorPlugin::SMA;
 }
 
 void CCI::calculate ()
 {
-  QSMath *t = new QSMath(data);
-  
-  PlotLine *cci = t->getCCI(period);
+  PlotLine *cci = new PlotLine();
+
+  PlotLine *tp = getTP();
+  int tpLoop = tp->getSize() - 1;
+
+  PlotLine *sma = getSMA(tp, period);
+  int smaLoop = sma->getSize() - 1;
+
+  while (tpLoop >= period && smaLoop >= period)
+  {
+    double md = 0;
+    int loop;
+    for (loop = 0; loop < period; loop++)
+      md = md + fabs(tp->getData(tpLoop - loop) - sma->getData(smaLoop - loop));
+    md = md / period;
+
+    double t = (tp->getData(tpLoop) - sma->getData(smaLoop)) / (0.015 * md);
+    cci->prepend(t);
+
+    tpLoop--;
+    smaLoop--;
+  }
+
+  delete tp;
+  delete sma;
 
   if (smoothing > 1)
   {
-    PlotLine *ma = t->getMA(cci, maType, smoothing);
+    PlotLine *ma = getMA(cci, maType, smoothing);
     ma->setColor(color);
     ma->setType(lineType);
     ma->setLabel(label);
@@ -67,8 +89,6 @@ void CCI::calculate ()
     cci->setLabel(label);
     output.append(cci);
   }
-
-  delete t;
 }
 
 int CCI::indicatorPrefDialog ()
@@ -92,7 +112,7 @@ int CCI::indicatorPrefDialog ()
     period = dialog->getInt(tr("Period"));
     label = dialog->getText(tr("Label"));
     smoothing = dialog->getInt(tr("Smoothing"));
-    maType = (QSMath::MAType) dialog->getComboIndex(tr("Smoothing Type"));
+    maType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("Smoothing Type"));
     rc = TRUE;
   }
   else
@@ -132,7 +152,7 @@ void CCI::loadIndicatorSettings (QString file)
       
   s = dict["maType"];
   if (s)
-    maType = (QSMath::MAType) s->left(s->length()).toInt();
+    maType = (IndicatorPlugin::MAType) s->left(s->length()).toInt();
 }
 
 void CCI::saveIndicatorSettings (QString file)
@@ -149,6 +169,38 @@ void CCI::saveIndicatorSettings (QString file)
   dict.replace("plugin", new QString(pluginName));
 
   saveFile(file, dict);
+}
+
+PlotLine * CCI::calculateCustom (QDict<PlotLine> *)
+{
+  clearOutput();
+  calculate();
+  return output.at(0);
+}
+
+QString CCI::getCustomSettings ()
+{
+  QString s("CCI");
+  s.append("," + maType);
+  s.append("," + QString::number(period));
+  s.append("," + QString::number(smoothing));
+  s.append("," + color.name());
+  s.append("," + QString::number(lineType));
+  s.append("," + label);
+  return s;
+}
+
+void CCI::setCustomSettings (QString d)
+{
+  customFlag = TRUE;
+
+  QStringList l = QStringList::split(",", d, FALSE);
+  maType = (IndicatorPlugin::MAType) l[1].toInt();
+  period = l[2].toInt();
+  smoothing = l[3].toInt();
+  color.setNamedColor(l[4]);
+  lineType = (PlotLine::LineType) l[5].toInt();
+  label = l[6];
 }
 
 Plugin * create ()

@@ -40,34 +40,61 @@ void BB::setDefaults ()
   lineType = PlotLine::Line;
   deviation = 2;
   period = 20;
-  maType = QSMath::SMA;  
+  maType = IndicatorPlugin::SMA;
+  bandFlag = FALSE;
 }
 
 void BB::calculate ()
 {
-  QSMath *t = new QSMath(data);
+  PlotLine *in = getTP();
+  PlotLine *sma = getMA(in, maType, period);
+  sma->setColor(color);
+  sma->setType(lineType);
+  sma->setLabel(tr("BBM"));
+  int smaLoop = sma->getSize() - 1;
+
+  if ((int) sma->getSize() < period * 2)
+  {
+    delete in;
+    delete sma;
+    return;
+  }
   
-  PlotLine *bbu = t->getBB(maType, period, deviation, 1);
+  PlotLine *bbu = new PlotLine;
   bbu->setColor(color);
   bbu->setType(lineType);
   bbu->setLabel(tr("BBU"));
   
-  PlotLine *bbl = t->getBB(maType, period, deviation, 0);
+  PlotLine *bbl = new PlotLine;
   bbl->setColor(color);
   bbl->setType(lineType);
   bbl->setLabel(tr("BBL"));
-  
-  PlotLine *in = t->getTP();
-  PlotLine *sma = t->getMA(in, maType, period);
-  sma->setColor(color);
-  sma->setType(lineType);
-  sma->setLabel(tr("BBM"));
+
+  int inputLoop = in->getSize() - 1;
+  while (inputLoop >= period && smaLoop >= period)
+  {
+    int count;
+    double t2 = 0;
+    for (count = 0, t2 = 0; count < period; count++)
+    {
+      double t = in->getData(inputLoop - count) - sma->getData(smaLoop - count);
+      t2 = t2 + (t * t);
+    }
+
+    double t = sqrt(t2 / period);
+
+    bbu->prepend(sma->getData(smaLoop) + (deviation * t)); // upper band
+    bbl->prepend(sma->getData(smaLoop) - (deviation * t)); // lower band
+
+    inputLoop--;
+    smaLoop--;
+  }
+
   delete in;
+  delete sma;
 
   output.append(bbu);
-  output.append(sma);
   output.append(bbl);
-  delete t;
 }
 
 int BB::indicatorPrefDialog ()
@@ -88,7 +115,7 @@ int BB::indicatorPrefDialog ()
     color = dialog->getColor(tr("Color"));
     lineType = (PlotLine::LineType) dialog->getComboIndex(tr("Line Type"));
     period = dialog->getInt(tr("Period"));
-    maType = (QSMath::MAType) dialog->getComboIndex(tr("MA Type"));
+    maType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("MA Type"));
     deviation = dialog->getFloat(tr("Deviation"));
     rc = TRUE;
   }
@@ -125,7 +152,7 @@ void BB::loadIndicatorSettings (QString file)
   
   s = dict["maType"];
   if (s)
-    maType = (QSMath::MAType) s->left(s->length()).toInt();
+    maType = (IndicatorPlugin::MAType) s->left(s->length()).toInt();
 }
 
 void BB::saveIndicatorSettings (QString file)
@@ -141,6 +168,41 @@ void BB::saveIndicatorSettings (QString file)
   dict.replace("plugin", new QString(pluginName));
 
   saveFile(file, dict);
+}
+
+PlotLine * BB::calculateCustom (QDict<PlotLine> *)
+{
+  clearOutput();
+  calculate();
+  if (bandFlag)
+    return output.at(0);
+  else
+    return output.at(1);
+}
+
+QString BB::getCustomSettings ()
+{
+  QString s("BB");
+  s.append("," + maType);
+  s.append("," + QString::number(period));
+  s.append("," + QString::number(deviation));
+  s.append("," + QString::number(bandFlag));
+  s.append("," + color.name());
+  s.append("," + QString::number(lineType));
+  return s;
+}
+
+void BB::setCustomSettings (QString d)
+{
+  customFlag = TRUE;
+
+  QStringList l = QStringList::split(",", d, FALSE);
+  maType = (IndicatorPlugin::MAType) l[1].toInt();
+  period = l[2].toInt();
+  deviation = l[3].toDouble();
+  bandFlag = l[4].toInt();
+  color.setNamedColor(l[5]);
+  lineType = (PlotLine::LineType) l[6].toInt();
 }
 
 Plugin * create ()

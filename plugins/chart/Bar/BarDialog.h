@@ -34,8 +34,7 @@ class BarDialog : public QTabDialog
     BarDialog ();
     ~BarDialog ();
     int getLines ();
-    QString getFunction (int);
-    QString getPlot (int);
+    QString getLine (int);
     void setLine (QString);
     void createMainPage ();
     void createBarPage ();

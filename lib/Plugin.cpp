@@ -88,6 +88,28 @@ void Plugin::saveIndicatorSettings (QString)
 {
 }
 
+PlotLine * Plugin::calculateCustom (QDict<PlotLine> *)
+{
+  return 0;
+}
+
+QString Plugin::getCustomSettings ()
+{
+  return QString();
+}
+
+void Plugin::setCustomSettings (QString)
+{
+}
+
+void Plugin::setCustomFlag (bool)
+{
+}
+
+void Plugin::setCustomFunction (QString)
+{
+}
+
 //**********************************************************
 //************** quote plugin interface ********************
 //**********************************************************

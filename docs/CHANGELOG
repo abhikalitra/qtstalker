@@ -79,7 +79,15 @@
 20040801: Added trade delays for each backtester rule for enter/exit. Also added an apply button
           to the backtester dialog which saves the backtester rule at the user's wish.
 	  
-
+20040805: Removed the QSMath class and merged all it's code back into the indicator plugins.
+          Figured out how the plugins can use other plugins now, so we can keep plugin framework
+	  totaly OO in design. Bit of a speed hit, but barely noticable on a slow machine.
+	  
+20040805: New indicator plugins to be used for the CUS language. COMP, used to compare 2 data arrays
+          and return a boolean array. MATH, used to add, divide, multiply or subtract to data arrays.
+	  REF, returns a data array of bar values (open, close etc.). Need to update DOCS.
+	  
+20040805: Applied patch #1002999 - volume in tester. Thanks to Xiaoguang Zhang.
 
 	  
 0.26

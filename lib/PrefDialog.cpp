@@ -404,7 +404,7 @@ QString PrefDialog::getSymbol (QString name)
   return s;
 }
 
-void PrefDialog::addFormulaInputItem (QString name, QString page, bool flag, int lines, QString in)
+void PrefDialog::addFormulaInputItem (QString name, QString page, bool flag, QString in)
 {
   QWidget *w = widgetList[page];
   
@@ -414,7 +414,7 @@ void PrefDialog::addFormulaInputItem (QString name, QString page, bool flag, int
   QLabel *label = new QLabel(name, w);
   grid->addWidget(label, grid->numRows() - 2, 0);
 
-  FormulaInput *fi = new FormulaInput(w, flag, lines, in);
+  FormulaInput *fi = new FormulaInput(w, flag, in);
   grid->addWidget(fi, grid->numRows() - 2, 1);
   formulaInputList.replace(name, fi);
 }

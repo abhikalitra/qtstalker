@@ -20,6 +20,7 @@
  */
 
 #include "IndicatorPlugin.h"
+#include <qdict.h>
 
 class CUS : public IndicatorPlugin
 {
@@ -30,11 +31,12 @@ class CUS : public IndicatorPlugin
     void loadIndicatorSettings (QString);
     void saveIndicatorSettings (QString);
     int indicatorPrefDialog ();
+    void setCustomFunction (QString);
     
   protected:
-    QStringList functionList;
     QStringList plotList;
     QStringList formulaList;
+    QStringList functionList;
 };
 
 extern "C"

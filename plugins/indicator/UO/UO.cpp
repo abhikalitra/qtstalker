@@ -46,16 +46,15 @@ void UO::setDefaults ()
 
 void UO::calculate ()
 {
-  QSMath *t = new QSMath(data);
-  PlotLine *trg = t->getTR();
+  PlotLine *trg = getTR();
 
-  PlotLine *atr = t->getSMA(trg, shortPeriod);
+  PlotLine *atr = getSMA(trg, shortPeriod);
   int atrLoop = atr->getSize() - 1;
 
-  PlotLine *atr2 = t->getSMA(trg, medPeriod);
+  PlotLine *atr2 = getSMA(trg, medPeriod);
   int atr2Loop = atr2->getSize() - 1;
 
-  PlotLine *atr3 = t->getSMA(trg, longPeriod);
+  PlotLine *atr3 = getSMA(trg, longPeriod);
   int atr3Loop = atr3->getSize() - 1;
 
   PlotLine *f = new PlotLine();
@@ -64,13 +63,13 @@ void UO::calculate ()
   for (loop = 0; loop < (int) data->count(); loop++)
     f->append(data->getClose(loop) - data->getLow(loop));
 
-  PlotLine *sma = t->getSMA(f, shortPeriod);
+  PlotLine *sma = getSMA(f, shortPeriod);
   int smaLoop = sma->getSize() - 1;
 
-  PlotLine *sma2 = t->getSMA(f, medPeriod);
+  PlotLine *sma2 = getSMA(f, medPeriod);
   int sma2Loop = sma2->getSize() - 1;
 
-  PlotLine *sma3 = t->getSMA(f, longPeriod);
+  PlotLine *sma3 = getSMA(f, longPeriod);
   int sma3Loop = sma3->getSize() - 1;
 
   PlotLine *uo = new PlotLine();
@@ -105,7 +104,6 @@ void UO::calculate ()
   delete sma2;
   delete sma3;
   delete f;
-  delete t;
 }
 
 int UO::indicatorPrefDialog ()
@@ -186,6 +184,37 @@ void UO::saveIndicatorSettings (QString file)
   dict.replace("plugin", new QString(pluginName));
 
   saveFile(file, dict);
+}
+
+PlotLine * UO::calculateCustom (QDict<PlotLine> *)
+{
+  clearOutput();
+  calculate();
+  return output.at(0);
+}
+
+QString UO::getCustomSettings ()
+{
+  QString s("UO");
+  s.append("," + QString::number(shortPeriod));
+  s.append("," + QString::number(medPeriod));
+  s.append("," + QString::number(longPeriod));
+  s.append("," + color.name());
+  s.append("," + QString::number(lineType));
+  s.append("," + label);
+  return s;
+}
+
+void UO::setCustomSettings (QString d)
+{
+  customFlag = TRUE;
+  QStringList l = QStringList::split(",", d, FALSE);
+  shortPeriod = l[1].toInt();
+  medPeriod = l[2].toInt();
+  longPeriod = l[3].toInt();
+  color.setNamedColor(l[4]);
+  lineType = (PlotLine::LineType) l[5].toInt();
+  label = l[6];
 }
 
 Plugin * create ()

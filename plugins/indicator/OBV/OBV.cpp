@@ -43,13 +43,31 @@ void OBV::setDefaults ()
 
 void OBV::calculate ()
 {
-  QSMath *t = new QSMath(data);
-  PlotLine *obv = t->getOBV();
+  PlotLine *obv = new PlotLine();
   obv->setColor(color);
   obv->setType(lineType);
   obv->setLabel(label);
+
+  int loop;
+  double t = 0;
+  for (loop = 1; loop < (int) data->count(); loop++)
+  {
+    double close = data->getClose(loop);
+    double volume = data->getVolume(loop);
+    double yclose = data->getClose(loop - 1);
+
+    if (close > yclose)
+      t = t + volume;
+    else
+    {
+      if (close < yclose)
+      	t = t - volume;
+    }
+
+    obv->append(t);
+  }
+  
   output.append(obv);
-  delete t;
 }
 
 int OBV::indicatorPrefDialog ()
@@ -109,6 +127,31 @@ void OBV::saveIndicatorSettings (QString file)
   dict.replace("plugin", new QString(pluginName));
 
   saveFile(file, dict);
+}
+
+PlotLine * OBV::calculateCustom (QDict<PlotLine> *)
+{
+  clearOutput();
+  calculate();
+  return output.at(0);
+}
+
+QString OBV::getCustomSettings ()
+{
+  QString s("OBV");
+  s.append("," + color.name());
+  s.append("," + QString::number(lineType));
+  s.append("," + label);
+  return s;
+}
+
+void OBV::setCustomSettings (QString d)
+{
+  customFlag = TRUE;
+  QStringList l = QStringList::split(",", d, FALSE);
+  color.setNamedColor(l[1]);
+  lineType = (PlotLine::LineType) l[2].toInt();
+  label = l[3];
 }
 
 Plugin * create ()

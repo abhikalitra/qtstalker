@@ -41,18 +41,27 @@ void MA::setDefaults ()
   label = pluginName;
   period = 10;
   displace = 0;  
-  maType = QSMath::SMA;  
+  maType = IndicatorPlugin::SMA;  
   input = BarData::Close;
 }
 
 void MA::calculate ()
 {
-  QSMath *t = new QSMath();
-
-  PlotLine *in = data->getInput(input);
-  PlotLine *d = t->getMA(in, maType, period, displace);
-  delete in;
-  delete t;
+  PlotLine *in = 0;
+  if (customFlag)
+    in = getInputLine(customInput);
+  else
+    in = data->getInput(input);
+  if (! in)
+  {
+    qDebug("MA::calculate: no input");
+    return;
+  }
+  
+  PlotLine *d = getMA(in, maType, period, displace);
+  
+  if (! customFlag)
+    delete in;
 
   d->setColor(color);
   d->setType(lineType);
@@ -70,8 +79,11 @@ int MA::indicatorPrefDialog ()
   dialog->addTextItem(tr("Label"), tr("Parms"), label);
   dialog->addIntItem(tr("Period"), tr("Parms"), period, 1, 99999999);
   dialog->addComboItem(tr("MA Type"), tr("Parms"), maTypeList, maType);
-  dialog->addComboItem(tr("Input"), tr("Parms"), inputTypeList, input);
   dialog->addIntItem(tr("Displace"), tr("Parms"), displace, 0, 99999999);
+  if (customFlag)
+    dialog->addFormulaInputItem(tr("Input"), tr("Parms"), FALSE, customInput);
+  else
+    dialog->addComboItem(tr("Input"), tr("Parms"), inputTypeList, input);
   
   int rc = dialog->exec();
   
@@ -81,9 +93,12 @@ int MA::indicatorPrefDialog ()
     lineType = (PlotLine::LineType) dialog->getComboIndex(tr("Line Type"));
     period = dialog->getInt(tr("Period"));
     label = dialog->getText(tr("Label"));
-    maType = (QSMath::MAType) dialog->getComboIndex(tr("MA Type"));
+    maType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("MA Type"));
     displace = dialog->getInt(tr("Displace"));
-    input = (BarData::InputType) dialog->getComboIndex(tr("Input"));
+    if (customFlag)
+      customInput = dialog->getFormulaInput(tr("Input"));
+    else
+      input = (BarData::InputType) dialog->getComboIndex(tr("Input"));
     rc = TRUE;
   }
   else
@@ -119,7 +134,7 @@ void MA::loadIndicatorSettings (QString file)
       
   s = dict["maType"];
   if (s)
-    maType = (QSMath::MAType) s->left(s->length()).toInt();
+    maType = (IndicatorPlugin::MAType) s->left(s->length()).toInt();
     
   s = dict["input"];
   if (s)
@@ -145,6 +160,43 @@ void MA::saveIndicatorSettings (QString file)
   dict.replace("plugin", new QString(pluginName));
 
   saveFile(file, dict);
+}
+
+PlotLine * MA::calculateCustom (QDict<PlotLine> *d)
+{
+  customLines = d;
+  clearOutput();
+  calculate();
+  if (output.count())
+    return output.at(0);
+  else
+    return 0;
+}
+
+QString MA::getCustomSettings ()
+{
+  QString s("MA");
+  s.append("," + QString::number(maType));
+  s.append("," + customInput);
+  s.append("," + QString::number(period));
+  s.append("," + QString::number(displace));
+  s.append("," + color.name());
+  s.append("," + QString::number(lineType));
+  s.append("," + label);
+  return s;
+}
+
+void MA::setCustomSettings (QString d)
+{
+  customFlag = TRUE;
+  QStringList l = QStringList::split(",", d, FALSE);
+  maType = (IndicatorPlugin::MAType) l[1].toInt();
+  customInput = l[2];
+  period = l[3].toInt();
+  displace = l[4].toInt();
+  color.setNamedColor(l[5]);
+  lineType = (PlotLine::LineType) l[6].toInt();
+  label = l[7];
 }
 
 Plugin * create ()
