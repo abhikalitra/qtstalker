@@ -21,11 +21,13 @@
 
 #include "GroupPage.h"
 #include "SymbolDialog.h"
+#include "ChartDb.h"
 #include "delete.xpm"
 #include "newchart.xpm"
 #include "insert.xpm"
 #include "rename.xpm"
 #include "stop.xpm"
+#include "edit.xpm"
 #include <qmessagebox.h>
 #include <qlineedit.h>
 #include <qinputdialog.h>
@@ -34,6 +36,7 @@
 #include <stdlib.h>
 #include <qtooltip.h>
 #include <qlayout.h>
+#include <qfileinfo.h>
 
 GroupPage::GroupPage (QWidget *w) : QWidget (w)
 {
@@ -60,6 +63,9 @@ GroupPage::GroupPage (QWidget *w) : QWidget (w)
   menu->insertItem(QPixmap(deleteitem), tr("&Delete Group Items"), this, SLOT(deleteGroupItem()), CTRL+Key_D);
   menu->insertItem(QPixmap(stop), tr("Delete &Group"), this, SLOT(deleteGroup()), CTRL+Key_G);
   menu->insertItem(QPixmap(renam), tr("&Rename Group"), this, SLOT(renameGroup()), CTRL+Key_R);
+  menu->insertSeparator(-1);
+  menu->insertItem(QPixmap(edit), tr("&Edit Chart"), this, SLOT(editChart()), CTRL+Key_E);
+
 
   groupNoSelection();
 }
@@ -275,5 +281,17 @@ void GroupPage::groupNoSelection ()
 void GroupPage::rightClick (QListBoxItem *)
 {
   menu->exec(QCursor::pos());
+}
+
+void GroupPage::editChart ()
+{
+  QString symbol = nav->getFileSelection();
+  if (! symbol.length())
+    return;
+
+  QFileInfo fi(symbol);
+  ChartDb *db = new ChartDb;
+  db->dbPrefDialog(fi.readLink());
+  delete db;
 }
 

@@ -51,6 +51,7 @@ class Tester : public QTabDialog
 
   public:
     Tester (QString);
+    Tester ();
     ~Tester ();
     void createFormulaPage();
     void createStopPage();
@@ -61,12 +62,13 @@ class Tester : public QTabDialog
     bool maximumLoss ();
     bool profit ();
     bool trailing ();
+    bool customStop ();
     PlotLine * loadIndicator (FormulaEdit *);
     void enterLong ();
     void exitLong ();
     void enterShort ();
     void exitShort ();
-    void loadAlerts (int);
+    bool loadAlerts (int);
     void clearAlertCounts ();
     void checkAlerts ();
     void createSummary ();
@@ -77,6 +79,11 @@ class Tester : public QTabDialog
     void updateChart ();
     void updateEquityCurve ();
     void createEquityCurve ();
+    bool loadCustomLongStop ();
+    bool loadCustomShortStop ();
+    void saveCustomStopRule ();
+    void loadCustomStopRule ();
+    QString newTest ();
 
   public slots:
     void test ();
@@ -88,6 +95,8 @@ class Tester : public QTabDialog
     void exitDialog ();
     void loadRule ();
     void slotSliderChanged (int);
+    void customLongStopToggled (bool);
+    void customShortStopToggled (bool);
 
   protected:
     Config config;
@@ -107,6 +116,8 @@ class Tester : public QTabDialog
     QCheckBox *trailingShort;
     QCheckBox *tradeLong;
     QCheckBox *tradeShort;
+    QCheckBox *customLongStopCheck;
+    QCheckBox *customShortStopCheck;
     QLineEdit *maximumLossEdit;
     QLineEdit *profitEdit;
     QLineEdit *trailingEdit;
@@ -129,6 +140,8 @@ class Tester : public QTabDialog
     FormulaEdit *enterShortEdit;
     FormulaEdit *exitLongEdit;
     FormulaEdit *exitShortEdit;
+    FormulaEdit *customShortStopEdit;
+    FormulaEdit *customLongStopEdit;
     Plot *plot;
     Plot *equityPlot;
     QSlider *slider;
@@ -149,6 +162,8 @@ class Tester : public QTabDialog
     double volume;
     QStringList fieldList;
     PlotLine *equityCurve;
+    PlotLine *customShortStopLine;
+    PlotLine *customLongStopLine;
 
     QLabel *summaryBalance;
     QLabel *summaryNetProfit;

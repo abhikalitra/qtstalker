@@ -49,6 +49,7 @@ class GroupPage : public QWidget
     void groupSelected (QString);
     void groupNoSelection ();
     void rightClick (QListBoxItem *);
+    void editChart ();
 
   protected:
     Navigator *nav;

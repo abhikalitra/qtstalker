@@ -48,6 +48,7 @@ void SZ::setDefaults ()
   period = 10;
   no_decline_period = 2;
   method = tr("Long");
+  label = pluginName;
 }
 
 void SZ::calculate ()
@@ -183,6 +184,7 @@ int SZ::indicatorPrefDialog (QWidget *w)
   dialog->addIntItem(tr("Lookback Period"), tr("Parms"), period, 1, 99999999);
   dialog->addIntItem(tr("No Decline Period"), tr("Parms"), no_decline_period, 1, 99999999);
   dialog->addFloatItem(tr("Coefficient"), tr("Parms"), coefficient, 0, 99999999);
+  dialog->addTextItem(tr("Label"), tr("Parms"), label);
   
   int rc = dialog->exec();
   
@@ -194,6 +196,7 @@ int SZ::indicatorPrefDialog (QWidget *w)
     no_decline_period = dialog->getInt(tr("No Decline Period"));
     coefficient = dialog->getFloat(tr("Coefficient"));
     method = dialog->getCombo(tr("Position"));
+    label = dialog->getText(tr("Label"));
     rc = TRUE;
   }
   else
@@ -243,6 +246,10 @@ void SZ::setIndicatorSettings (Setting dict)
   s = dict.getData("method");
   if (s.length())
     method = s;
+
+  s = dict.getData("label");
+  if (s.length())
+    label = s;
 }
 
 Setting SZ::getIndicatorSettings ()
@@ -254,6 +261,7 @@ Setting SZ::getIndicatorSettings ()
   dict.setData("noDeclinePeriod", QString::number(no_decline_period));
   dict.setData("coefficient", QString::number(coefficient));
   dict.setData("method", method);
+  dict.setData("label", label);
   dict.setData("plugin", pluginName);
   return dict;
 }

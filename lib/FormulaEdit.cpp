@@ -108,7 +108,7 @@ void FormulaEdit::addItem ()
     
   list->setNumRows(list->numRows() + 1);
   
-  list->setText(list->numRows() - 1, 0, type);
+  list->setText(list->numRows() - 1, 0, set.getData("label"));
   
   list->setText(list->numRows() - 1, 2, set.getString());
   
@@ -154,7 +154,7 @@ void FormulaEdit::insertItem ()
     
   list->insertRows(list->currentRow(), 1);
   
-  list->setText(list->currentRow(), 0, type);
+  list->setText(list->currentRow(), 0, set.getData("label"));
   
   list->setText(list->currentRow(), 2, set.getString());
   
@@ -190,6 +190,7 @@ void FormulaEdit::editItem ()
   Setting set2 = plug->getIndicatorSettings();
     
   list->setText(list->currentRow(), 2, set2.getString());
+  list->setText(list->currentRow(), 0, set2.getData("label"));
   
   config.closePlugin(set2.getData("plugin"));
 }
@@ -206,7 +207,7 @@ void FormulaEdit::setLine (QString d)
 
   list->setNumRows(list->numRows() + 1);
     
-  list->setText(list->numRows() - 1, 0, set.getData("plugin"));
+  list->setText(list->numRows() - 1, 0, set.getData("label"));
   
   list->setText(list->numRows() - 1, 2, set.getString());
   

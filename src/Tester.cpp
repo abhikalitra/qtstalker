@@ -26,6 +26,8 @@
 #include <qtextstream.h>
 #include <qfont.h>
 #include <qmessagebox.h>
+#include <qinputdialog.h>
+#include <qdir.h>
 #include "Tester.h"
 #include "ChartDb.h"
 
@@ -33,6 +35,8 @@ Tester::Tester (QString n) : QTabDialog (0, 0, FALSE)
 {
   ruleName = n;
   recordList = 0;
+  customShortStopLine = 0;
+  customLongStopLine = 0;
   enterLongAlerts = new Setting;
   exitLongAlerts = new Setting;
   enterShortAlerts = new Setting;
@@ -66,11 +70,21 @@ Tester::Tester (QString n) : QTabDialog (0, 0, FALSE)
   loadRule();
 }
 
+Tester::Tester () : QTabDialog (0, 0, FALSE)
+{
+}
+
 Tester::~Tester ()
 {
   if (recordList)
     delete recordList;
     
+  if (customLongStopLine)
+    delete customLongStopLine;
+  
+  if (customShortStopLine)
+    delete customShortStopLine;
+  
   delete enterLongAlerts;
   delete exitLongAlerts;
   delete enterShortAlerts;
@@ -113,15 +127,18 @@ void Tester::createFormulaPage ()
 void Tester::createStopPage ()
 {
   QWidget *w = new QWidget(this);
-
-  QGridLayout *grid = new QGridLayout(w, 2, 2);
-  grid->setMargin(5);
-  grid->setSpacing(5);
+  
+  QVBoxLayout *vbox = new QVBoxLayout(w);
+  vbox->setMargin(5);
+  vbox->setSpacing(10);
+  
+  QHBoxLayout *hbox = new QHBoxLayout(vbox);
+  hbox->setSpacing(5);
 
   QVGroupBox *gbox = new QVGroupBox(tr("Maximum Loss"), w);
   gbox->setInsideSpacing(2);
   gbox->setColumns(2);
-  grid->addWidget(gbox, 0, 0);
+  hbox->addWidget(gbox);
 
   maximumLossCheck = new QCheckBox(tr("Enabled"), gbox);
   connect(maximumLossCheck, SIGNAL(toggled(bool)), this, SLOT(maximumLossToggled(bool)));
@@ -143,7 +160,7 @@ void Tester::createStopPage ()
   gbox = new QVGroupBox(tr("Profit"), w);
   gbox->setInsideSpacing(2);
   gbox->setColumns(2);
-  grid->addWidget(gbox, 0, 1);
+  hbox->addWidget(gbox);
 
   profitCheck = new QCheckBox(tr("Enabled"), gbox);
   connect(profitCheck, SIGNAL(toggled(bool)), this, SLOT(profitToggled(bool)));
@@ -163,7 +180,7 @@ void Tester::createStopPage ()
   gbox = new QVGroupBox(tr("Trailing"), w);
   gbox->setInsideSpacing(2);
   gbox->setColumns(2);
-  grid->addWidget(gbox, 1, 0);
+  hbox->addWidget(gbox);
 
   trailingCheck = new QCheckBox(tr("Enabled"), gbox);
   connect(trailingCheck, SIGNAL(toggled(bool)), this, SLOT(trailingToggled(bool)));
@@ -179,10 +196,35 @@ void Tester::createStopPage ()
 
   trailingEdit = new QLineEdit("0", gbox);
   trailingEdit->setValidator(validator);
+  
+  hbox = new QHBoxLayout(vbox);
+  hbox->setSpacing(5);
+  
+  gbox = new QVGroupBox(tr("Custom Long Stop"), w);
+  gbox->setInsideSpacing(2);
+  gbox->setColumns(1);
+  hbox->addWidget(gbox);
+  
+  customLongStopCheck = new QCheckBox(tr("Enabled"), gbox);
+  connect(customLongStopCheck, SIGNAL(toggled(bool)), this, SLOT(customLongStopToggled(bool)));
 
+  customLongStopEdit = new FormulaEdit(gbox);  
+
+  gbox = new QVGroupBox(tr("Custom Short Stop"), w);
+  gbox->setInsideSpacing(2);
+  gbox->setColumns(1);
+  hbox->addWidget(gbox);
+  
+  customShortStopCheck = new QCheckBox(tr("Enabled"), gbox);
+  connect(customShortStopCheck, SIGNAL(toggled(bool)), this, SLOT(customShortStopToggled(bool)));
+
+  customShortStopEdit = new FormulaEdit(gbox);  
+  
   maximumLossToggled(FALSE);
   profitToggled(FALSE);
   trailingToggled(FALSE);
+  customLongStopToggled(FALSE);
+  customShortStopToggled(FALSE);
 
   addTab(w, tr("Stops"));
 }
@@ -482,12 +524,43 @@ void Tester::test ()
   equityCurve = new PlotLine;
   equityCurve->setColor(QString("green"));
 
-  loadAlerts(0);
-  loadAlerts(1);
-  loadAlerts(2);
-  loadAlerts(3);
+  if (loadAlerts(0))
+  {
+    delete db;
+    return;
+  }
+  
+  if (loadAlerts(1))
+  {
+    delete db;
+    return;
+  }
+  
+  if (loadAlerts(2))
+  {
+    delete db;
+    return;
+  }
+  
+  if (loadAlerts(3))
+  {
+    delete db;
+    return;
+  }
 
   clearAlertCounts();
+  
+  if (loadCustomLongStop())
+  {
+    delete db;
+    return;
+  }
+  
+  if (loadCustomShortStop())
+  {
+    delete db;
+    return;
+  }
 
   status = 0;
   testLoop = 0;
@@ -572,6 +645,9 @@ void Tester::test ()
     if (profit())
       continue;
 
+    if (customStop())
+      continue;
+    
     trailing();
   }
 
@@ -887,6 +963,43 @@ bool Tester::trailing ()
   return FALSE;
 }
 
+bool Tester::customStop ()
+{
+  if (status == 1 && customLongStopCheck->isChecked() && customLongStopEdit->getLines() &&
+      customLongStopLine)
+  {
+    int i = customLongStopLine->getSize() - currentRecord;
+    if (i > -1)
+    {
+      if (customLongStopLine->getData(i) == 1)
+      {
+        exitPosition("Custom Long Stop");
+        status = 0;
+        clearAlertCounts();
+        return TRUE;
+      }
+    }
+  }
+
+  if (status == -1 && customShortStopCheck->isChecked() && customShortStopEdit->getLines() &&
+      customShortStopLine)
+  {
+    int i = customShortStopLine->getSize() - currentRecord;
+    if (i > -1)
+    {
+      if (customShortStopLine->getData(i) == 1)
+      {
+        exitPosition("Custom Short Stop");
+        status = 0;
+        clearAlertCounts();
+        return TRUE;
+      }
+    }
+  }
+
+  return FALSE;
+}
+
 void Tester::maximumLossToggled (bool status)
 {
   if (status)
@@ -935,12 +1048,28 @@ void Tester::trailingToggled (bool status)
   }
 }
 
+void Tester::customShortStopToggled (bool status)
+{
+  if (status)
+    customShortStopEdit->setEnabled(TRUE);
+  else
+    customShortStopEdit->setEnabled(FALSE);
+}
+
+void Tester::customLongStopToggled (bool status)
+{
+  if (status)
+    customLongStopEdit->setEnabled(TRUE);
+  else
+    customLongStopEdit->setEnabled(FALSE);
+}
+
 void Tester::symbolButtonPressed ()
 {
   QString symbol = symbolButton->getPath();
 }
 
-void Tester::loadAlerts (int type)
+bool Tester::loadAlerts (int type)
 {
   int loop;
   FormulaEdit *edit = 0;
@@ -983,7 +1112,7 @@ void Tester::loadAlerts (int type)
   }
   
   if (! edit->getLines())
-    return;
+    return FALSE;
   
   bool cflag = FALSE;
   for (loop = 0; loop < edit->getLines(); loop++)
@@ -1006,7 +1135,7 @@ void Tester::loadAlerts (int type)
     QMessageBox::information(this,
                              tr("Qtstalker: Error"),
 			     s);
-    return;
+    return TRUE;
   }
   
   // open the CUS plugin   
@@ -1014,7 +1143,7 @@ void Tester::loadAlerts (int type)
   if (! plug)
   {
     config.closePlugin("CUS");
-    return;
+    return TRUE;
   }
 
   for (loop = 0; loop < edit->getLines(); loop++)
@@ -1029,7 +1158,7 @@ void Tester::loadAlerts (int type)
   {
     qDebug("Tester::loadAlerts: no PlotLine returned");
     config.closePlugin("CUS");
-    return;
+    return TRUE;
   }
     
   loop = recordList->count() - line->getSize();
@@ -1063,6 +1192,8 @@ void Tester::loadAlerts (int type)
   }
   
   config.closePlugin("CUS");
+  
+  return FALSE;
 }
 
 void Tester::saveEditRule (int type)
@@ -1112,6 +1243,7 @@ void Tester::saveRule ()
   saveEditRule(1);
   saveEditRule(2);
   saveEditRule(3);
+  saveCustomStopRule();
 
   QString s = config.getData(Config::TestPath);
   s.append("/");
@@ -1264,6 +1396,7 @@ void Tester::loadRule ()
   loadEditRule(1);
   loadEditRule(2);
   loadEditRule(3);
+  loadCustomStopRule();
 
   QString s = config.getData(Config::TestPath);
   s.append("/");
@@ -1714,5 +1847,252 @@ void Tester::createEquityCurve ()
   equityPlot->addIndicator(i->getName(), i);
 
   equityPlot->draw();
+}
+
+bool Tester::loadCustomShortStop ()
+{
+  if (customShortStopLine)
+  {
+    delete customShortStopLine;
+    customShortStopLine = 0;
+  }
+  
+  if (! customShortStopEdit->getLines() || ! customShortStopCheck->isChecked())
+    return FALSE;
+    
+  bool cflag = FALSE;
+  int loop;
+  for (loop = 0; loop < customShortStopEdit->getLines(); loop++)
+  {
+    Setting set;
+    set.parse(customShortStopEdit->getLine(loop));
+    if (! set.getData("plugin").compare("COMP"))
+    {
+      if (set.getData("plot").toInt())
+      {
+        cflag = TRUE;
+	break;
+      }
+    }
+  }
+  
+  if (! cflag)
+  {
+    QMessageBox::information(this,
+                             tr("Qtstalker: Error"),
+			     tr("No COMP step or COMP step not checked in Custom Short Stop."));
+    return TRUE;
+  }
+  
+  Plugin *plug = config.getPlugin(Config::IndicatorPluginPath, "CUS");
+  if (! plug)
+  {
+    config.closePlugin("CUS");
+    return TRUE;
+  }
+
+  for (loop = 0; loop < customShortStopEdit->getLines(); loop++)
+    plug->setCustomFunction(customShortStopEdit->getLine(loop));
+  
+  // load the CUS plugin and calculate
+  plug->setIndicatorInput(recordList);
+  plug->calculate();
+  Indicator *i = plug->getIndicator();
+  PlotLine *line = i->getLine(0);
+  if (! line)
+  {
+    qDebug("Tester::loadCustomShortStop: no PlotLine returned");
+    config.closePlugin("CUS");
+    return TRUE;
+  }
+    
+  customShortStopLine = new PlotLine;
+  customLongStopLine->copy(line);
+    
+  config.closePlugin("CUS");
+  
+  return FALSE;
+}
+
+bool Tester::loadCustomLongStop ()
+{
+  if (customLongStopLine)
+  {
+    delete customLongStopLine;
+    customLongStopLine = 0;
+  }
+  
+  if (! customLongStopEdit->getLines() || ! customLongStopCheck->isChecked())
+    return FALSE;
+    
+  bool cflag = FALSE;
+  int loop;
+  for (loop = 0; loop < customLongStopEdit->getLines(); loop++)
+  {
+    Setting set;
+    set.parse(customLongStopEdit->getLine(loop));
+    if (! set.getData("plugin").compare("COMP"))
+    {
+      if (set.getData("plot").toInt())
+      {
+        cflag = TRUE;
+	break;
+      }
+    }
+  }
+  
+  if (! cflag)
+  {
+    QMessageBox::information(this,
+                             tr("Qtstalker: Error"),
+			     tr("No COMP step or COMP step not checked in Custom Long Stop."));
+    return TRUE;
+  }
+  
+  Plugin *plug = config.getPlugin(Config::IndicatorPluginPath, "CUS");
+  if (! plug)
+  {
+    config.closePlugin("CUS");
+    return TRUE;
+  }
+
+  for (loop = 0; loop < customLongStopEdit->getLines(); loop++)
+    plug->setCustomFunction(customLongStopEdit->getLine(loop));
+  
+  // load the CUS plugin and calculate
+  plug->setIndicatorInput(recordList);
+  plug->calculate();
+  Indicator *i = plug->getIndicator();
+  PlotLine *line = i->getLine(0);
+  if (! line)
+  {
+    qDebug("Tester::loadCustomShortStop: no PlotLine returned");
+    config.closePlugin("CUS");
+    return TRUE;
+  }
+    
+  customLongStopLine = new PlotLine;
+  customLongStopLine->copy(line);
+    
+  config.closePlugin("CUS");
+  
+  return FALSE;
+}
+
+void Tester::loadCustomStopRule ()
+{
+  QString s = config.getData(Config::TestPath) + "/" + ruleName + "/customLongStop";
+  QFile f(s);
+  if (! f.open(IO_ReadOnly))
+    return;
+  QTextStream stream(&f);
+
+  while(stream.atEnd() == 0)
+  {
+    s = stream.readLine();
+    s = s.stripWhiteSpace();
+    if (! s.length())
+      continue;
+  
+    customLongStopEdit->setLine(s);
+  }  
+  
+  f.close();
+  
+  s = config.getData(Config::TestPath) + "/" + ruleName + "/customShortStop";
+  f.setName(s);
+  if (! f.open(IO_ReadOnly))
+    return;
+
+  while(stream.atEnd() == 0)
+  {
+    s = stream.readLine();
+    s = s.stripWhiteSpace();
+    if (! s.length())
+      continue;
+  
+    customShortStopEdit->setLine(s);
+  }  
+  
+  f.close();
+}
+
+void Tester::saveCustomStopRule ()
+{
+  QString s = config.getData(Config::TestPath) + "/" + ruleName + "/customShortStop";
+  QFile f(s);
+  if (! f.open(IO_WriteOnly))
+    return;
+  QTextStream stream(&f);
+
+  int loop;
+  for (loop = 0; loop < customShortStopEdit->getLines(); loop++)
+    stream << customShortStopEdit->getLine(loop) << "\n";
+  
+  f.close();
+  
+  s = config.getData(Config::TestPath) + "/" + ruleName + "/customLongStop";
+  f.setName(s);
+  if (! f.open(IO_WriteOnly))
+    return;
+
+  for (loop = 0; loop < customLongStopEdit->getLines(); loop++)
+    stream << customLongStopEdit->getLine(loop) << "\n";
+  
+  f.close();
+}
+
+QString Tester::newTest ()
+{
+  bool ok;
+  QString selection = QInputDialog::getText(tr("New Backtest Rule"),
+  					    tr("Enter new backtest rule name."),
+  					    QLineEdit::Normal,
+					    tr("New Rule"),
+					    &ok,
+					    this);
+
+  if ((! ok) || (selection.isNull()))
+    return selection;
+
+  QString s = config.getData(Config::TestPath) + "/" + selection;
+  QDir dir(s);
+  if (dir.exists(s, TRUE))
+  {
+    QMessageBox::information(this, tr("Qtstalker: Error"), tr("This backtest rule already exists."));
+    return selection;
+  }
+
+  if (! dir.mkdir(s, TRUE))
+  {
+    qDebug("TestPage::newTest:can't create dir %s", s.latin1());
+    return selection;
+  }
+  
+  if (! dir.mkdir(s + "/el", TRUE))
+  {
+    qDebug("TestPage::newTest:can't create el dir");
+    return selection;
+  }
+  
+  if (! dir.mkdir(s + "/xl", TRUE))
+  {
+    qDebug("TestPage::newTest:can't create xl dir");
+    return selection;
+  }
+  
+  if (! dir.mkdir(s + "/es", TRUE))
+  {
+    qDebug("TestPage::newTest:can't create es dir");
+    return selection;
+  }
+  
+  if (! dir.mkdir(s + "/xs", TRUE))
+  {
+    qDebug("TestPage::newTest:can't create xs dir");
+    return selection;
+  }
+  
+  return selection;
 }
 

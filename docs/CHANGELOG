@@ -132,7 +132,9 @@
 20040825: Fixed bug in COMP plugin that created problems parsing parms using the "=" as the
           delimiter. Had to change all the COMP operators to use abbreviations ie. GT instead of >.
 	  
-	  	  
+20040826: Added custom long and short stops to the tester module.
+
+	  	  	  
 0.26
 ====
 

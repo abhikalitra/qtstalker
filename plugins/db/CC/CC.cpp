@@ -101,6 +101,7 @@ void CC::saveDbDefaults (BarData::BarType barType, QString symbol, QString name,
   setData("Plugin", "CC");
   setData("Rollover", "20");
   setData("MaxYears", "10");
+  setData("Rebuild", "0");
 }
 
 void CC::update ()
@@ -213,6 +214,80 @@ void CC::update ()
 
   delete pr;
 }
+
+/*
+void CC::update ()
+{
+  Config config;
+  QString baseDir = config.getData(Config::DataPath) + "/Futures/" + getData("Symbol");
+  QDir dir(s);
+  if (! dir.exists(s, TRUE))
+    return;
+    
+  int rollover = getData("Rollover").toInt();
+  int maxYears = getData("MaxYears").toInt();
+  bool rebuild = getData("Rebuild").toInt();
+  
+  FuturesData fd;
+  if (fd.setSymbol(getData("Symbol")))
+  {
+    qDebug("CC::newChart:invalid futures symbol");
+    return;
+  }
+  
+  QDateTime startDate = QDateTime::currentDateTime();
+  QDateTime endDate = QDateTime::currentDateTime();
+  if (rebuild)
+    startDate = startDate.addYears(-maxYears);
+  else
+  {
+    Bar *bar = getLastbar();
+    if (! bar)
+      startDate = startDate.addYears(-maxYears);
+    else
+      startDate.setDate(bar->getDate().getDate());
+  }
+
+  QString currentContract = fd.getContract(startDate);
+  
+  s = baseDir + currentContract;
+  ChartDb *db = new ChartDb;
+  db->openChart(s);
+  db->setBarCompression(BarData::DailyBar);
+    
+  while (startDate <= endDate)
+  {
+    s = fd.getContract(startDate);
+    if (s.compare(currentContract))
+    {
+      delete db;
+      currentContract = s;
+      s = baseDir + currentContract;
+      db = new ChartDb;
+      db->openChart(s);
+      db->setBarCompression(BarData::DailyBar);
+    }
+    
+    s = startDate.toString("yyyyMMdd000000");
+    Bar *bar = db->getBar(s, getData(s));
+    if (! bar)
+    {
+      startDate = startDate.addDays(1);
+      continue;
+    }
+    
+    setBar(bar->getDate(), bar->getOpen(), bar->getHigh(), bar->getLow(), bar->getClose(),
+           bar->getVolume(), bar->getOI());
+      
+    startDate = startDate.addDays(1);
+    
+    delete bar;
+  }
+
+  if (db)
+    delete db;
+}
+*/
 
 QString CC::createNew ()
 {

@@ -65,60 +65,16 @@ void TestPage::openTest ()
 
 void TestPage::newTest()
 {
-  bool ok;
-  QString selection = QInputDialog::getText(tr("New Backtest Rule"),
-  					    tr("Enter new backtest rule name."),
-  					    QLineEdit::Normal,
-					    tr("New Rule"),
-					    &ok,
-					    this);
-
-  if ((! ok) || (selection.isNull()))
-    return;
-
-  QString s = config.getData(Config::TestPath);
-  s.append("/");
-  s.append(selection);
-  QDir dir(s);
-  if (dir.exists(s, TRUE))
-  {
-    QMessageBox::information(this, tr("Qtstalker: Error"), tr("This backtest rule already exists."));
-    return;
-  }
-
-  if (! dir.mkdir(s, TRUE))
-  {
-    qDebug("TestPage::newTest:can't create dir %s", s.latin1());
-    return;
-  }
+  Tester *dialog = new Tester;
+  QString name = dialog->newTest();
+  delete dialog;
   
-  if (! dir.mkdir(s + "/el", TRUE))
-  {
-    qDebug("TestPage::newTest:can't create el dir");
+  if (! name.length())
     return;
-  }
   
-  if (! dir.mkdir(s + "/xl", TRUE))
-  {
-    qDebug("TestPage::newTest:can't create xl dir");
-    return;
-  }
-  
-  if (! dir.mkdir(s + "/es", TRUE))
-  {
-    qDebug("TestPage::newTest:can't create es dir");
-    return;
-  }
-  
-  if (! dir.mkdir(s + "/xs", TRUE))
-  {
-    qDebug("TestPage::newTest:can't create xs dir");
-    return;
-  }
-
   updateList();
   
-  Tester *dialog = new Tester(selection);
+  dialog = new Tester(name);
   dialog->show();
 }
 

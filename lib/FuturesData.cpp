@@ -21,7 +21,6 @@
 
 #include "FuturesData.h"
 #include <qobject.h>
-#include <qdatetime.h>
 
 FuturesData::FuturesData ()
 {
@@ -150,7 +149,7 @@ int FuturesData::setSymbol (QString d)
   monthList = QStringList::split(",", set->getData("Month"), FALSE);
   limit = set->getFloat("Limit");
   exchange = set->getData("Exchange");
-  contract = getCurrentContract();
+  contract = getCurrentContract(QDateTime::currentDateTime());
   
   return FALSE;
 }
@@ -566,10 +565,8 @@ void FuturesData::loadData ()
   data.replace("YX", set);
 }
 
-QString FuturesData::getCurrentContract ()
+QString FuturesData::getCurrentContract (QDateTime dt)
 {
-  QDateTime dt = QDateTime::currentDateTime();
-
   QString contract = symbol;
   bool yearFlag = FALSE;
 

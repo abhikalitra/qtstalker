@@ -43,6 +43,7 @@ class SZ : public IndicatorPlugin
     int no_decline_period;
     QString method;
     QStringList methodList;
+    QString label;
 };
 
 extern "C"

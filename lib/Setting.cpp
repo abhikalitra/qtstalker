@@ -60,7 +60,15 @@ int Setting::getInt (QString k)
 
 void Setting::setData (QString k, QString d)
 {
-  dict.replace(k, new QString(d));
+  QString s = d;
+  
+  while (s.contains("="))
+    s = s.remove(s.find("=", 0, TRUE), 1);
+    
+  while (s.contains("|"))
+    s = s.remove(s.find("|", 0, TRUE), 1);
+
+  dict.replace(k, new QString(s));
 }
 
 QStringList Setting::getKeyList ()

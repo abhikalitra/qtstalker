@@ -26,6 +26,7 @@
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qdict.h>
+#include <qdatetime.h>
 #include "Setting.h"
 
 class FuturesData
@@ -44,7 +45,7 @@ class FuturesData
     QStringList getMonthList ();
     QStringList getMonths ();
     QStringList getSymbolList ();
-    QString getCurrentContract ();
+    QString getCurrentContract (QDateTime);
 
   protected:
     QString name;

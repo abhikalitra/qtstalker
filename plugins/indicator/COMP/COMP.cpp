@@ -48,7 +48,7 @@ void COMP::setDefaults ()
   color.setNamedColor("red");
   lineType = PlotLine::Line;
   label = pluginName;
-  method = "==";
+  method = "EQ";
   data1 = "1";
   data2 = "2";
   displace1 = 0;

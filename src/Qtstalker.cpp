@@ -1162,18 +1162,12 @@ void QtstalkerApp::slotDeleteIndicator (QString text, Plot *plot)
   if (! plot->getMainFlag())
   {
     QStringList l = plot->getChartObjects();
-    
-    Plugin *plug = config.getPlugin(Config::DbPluginPath, dbPlugin);
-    if (! plug)
-    {
-      config.closePlugin(dbPlugin);
-      return;
-    }
-    plug->openChart(chartPath);
+    ChartDb *db = new ChartDb;
+    db->openChart(chartPath);
     int loop;
     for (loop = 0; loop < (int) l.count(); loop++)
-      plug->deleteChartObject(l[loop]);
-    config.closePlugin(dbPlugin);
+      db->deleteChartObject(l[loop]);
+    delete db;
   }
 
   if (! plot->getMainFlag())
