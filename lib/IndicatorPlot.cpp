@@ -455,8 +455,13 @@ void IndicatorPlot::mouseMoveEvent (QMouseEvent *event)
   
   if (! infoFlag)
     return;
-    
-  int i = convertXToDataIndex(event->x());
+  else
+    getInfo(event->x());
+}
+
+void IndicatorPlot::getInfo (int x)
+{
+  int i = convertXToDataIndex(x);
 
   Setting *r = new Setting;
   QString s;
@@ -888,7 +893,10 @@ void IndicatorPlot::setScale ()
     else
     {
       int loop;
-      for (loop = startIndex; loop < (int) data->count(); loop++)
+      int end = (buffer.width() / pixelspace) + startIndex;
+      if (end > data->count())
+        end = data->count();
+      for (loop = startIndex; loop < end; loop++)
       {
 	double t = data->getHigh(loop);
         if (t > scaleHigh)
@@ -932,7 +940,12 @@ void IndicatorPlot::setScale ()
       else
       {        
         int loop2 = line->getSize() - data->count() + startIndex;
-	for (; loop2 < line->getSize(); loop2++)
+	
+        int end = (buffer.width() / pixelspace) + loop2;
+        if (end > line->getSize())
+          end = line->getSize();
+	
+	for (; loop2 < end; loop2++)
         {
           if (loop2 > -1)
           {
