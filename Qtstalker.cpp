@@ -695,12 +695,12 @@ void QtstalkerApp::loadChart (QString d)
 
   Setting *set = db->getDetails();
   chartName = set->getData(tr("Title"));
+  chartType = set->getData("Chart Type");
+  chartSymbol = set->getData("Symbol");
+  QDateTime fd = db->getDateTime(set->getData("First Date"));
+  QDateTime date = db->getDateTime(set->getData("Last Date"));
   delete set;
-  chartType = db->getChartType();
-  chartSymbol = db->getSymbol();
 
-  QDateTime fd = db->getFirstRecord();
-  QDateTime date = db->getLastRecord();
   if (! date.isValid())
   {
     date = QDateTime::currentDateTime();

@@ -50,7 +50,11 @@
 - changed the indicator area back to using tabs, arghh the button text was tool small for toolbar buttons
 
 - Removed NYMEX plugin because they have gone to a dynamic html format along with a click through EULA. Thanks alot NYMEX,
-  I guess you dont want to promote the exchange by making quotes easily available. 
+  I guess you dont want to promote the exchange by making quotes easily available.
+  
+- Oh boy, I changed db's again... I keep flip flopping, but I did some tests with db-2.7.7 against gdbm-1.8 and managed a
+  25% speed increase. So, I replaced gdbm with db. Btree is actually faster than hashing...go figure.
+
 
 0.14
 ======

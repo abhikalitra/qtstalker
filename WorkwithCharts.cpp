@@ -157,38 +157,31 @@ void WorkwithCharts::updateList ()
 void WorkwithCharts::updateChartList ()
 {
   list->clear();
-
-  QDir dir(config->getData(Config::DataPath));
+  
   QPixmap pix = plainitem;
 
+  ChartDb *index = new ChartDb();
+  index->setPath(config->getData(Config::IndexPath));
+  index->openChart();
+  QStringList l = index->getKeyList();
+
   int loop;
-  for (loop = 2; loop < (int) dir.count(); loop++)
+  for (loop = 0; loop < (int) l.count(); loop++)
   {
-    QString s = dir.absPath();
-    s.append("/");
-    s.append(dir[loop]);
+    Setting *details = new Setting;
+    details->parse(index->getData(l[loop]));
 
-    ChartDb *db = new ChartDb();
-    db->setPath(s);
-    db->openChart();
+    QDateTime dt = index->getDateTime(details->getData("First Date"));
+    QDateTime dt2 = index->getDateTime(details->getData("Last Date"));
 
-    QString fd;
-    QString ld;
-
-    QDateTime dt = db->getFirstRecord();
-    if (dt.isValid())
-      fd = dt.toString("yyyyMMdd");
-
-    dt = db->getLastRecord();
-    if (dt.isValid())
-      ld = dt.toString("yyyyMMdd");
-
-    item = new QListViewItem(list, dir[loop], db->getChartType(), fd, ld);
+    item = new QListViewItem(list, l[loop], details->getData("Chart Type"), dt.toString("yyyyMMdd"), dt2.toString("yyyyMMdd"));
 
     item->setPixmap(0, pix);
 
-    delete db;
+    delete details;
   }
+
+  delete index;
 }
 
 void WorkwithCharts::openSymbol (QListViewItem *)
@@ -272,13 +265,11 @@ void WorkwithCharts::renameSymbol ()
   item = list->selectedItem();
   if (item)
   {
-    if (! type.compare("Chart"))
-      renameChart();
+    if (! type.compare("Group"))
+      renameGroup();
     else
     {
-      if (! type.compare("Group"))
-        renameGroup();
-      else
+      if (! type.compare("Portfolio"))
         renamePortfolio();
     }
   }
@@ -336,9 +327,12 @@ void WorkwithCharts::editChart ()
     return;
   }
 
-  QString chartType = db->getChartType();
+  Setting *set = db->getDetails();
+
+  QString chartType = set->getData("Chart Type");
   if (! chartType.compare(tr("Spread")) || ! chartType.compare(tr("Ratio")) || ! chartType.compare(tr("Index")))
   {
+    delete set;
     delete db;
     editComposite();
     return;
@@ -346,7 +340,6 @@ void WorkwithCharts::editChart ()
 
   EditDialog *dialog = new EditDialog(config);
 
-  Setting *set = db->getDetails();
   delete db;
 
   QString s = tr("Qtstalker: Edit ");
@@ -382,11 +375,13 @@ void WorkwithCharts::editComposite ()
   db->openChart();
 
   Setting *set = db->getComposite();
+  Setting *details = db->getDetails();
 
   QString s = tr("Qtstalker: Edit ");
-  s.append(db->getChartType());
+  s.append(details->getData("Chart Type"));
   dialog->setCaption(s);
 
+  delete details;
   delete db;
 
   dialog->setItems(set);
@@ -465,11 +460,11 @@ void WorkwithCharts::newComposite()
     ChartDb *db = new ChartDb();
     db->setPath(path);
     db->openChart();
-    db->setSymbol(name);
-    db->setChartType(type);
 
     Setting *details = new Setting();
     details->set(tr("Title"), name, Setting::Text);
+    details->set("Symbol", name, Setting::None);
+    details->set("Chart Type", type, Setting::None);
     db->setDetails(details);
     delete details;
 
@@ -483,39 +478,6 @@ void WorkwithCharts::newComposite()
 
   delete set;
   delete dialog;
-}
-
-void WorkwithCharts::renameChart ()
-{
-  bool ok;
-  QString selection = QInputDialog::getText(tr("Rename Chart"), tr("Enter new chart symbol."),
-  					    QLineEdit::Normal, item->text(0), &ok, this);
-  if ((ok) && (! selection.isNull()))
-  {
-    QString path = config->getData(Config::DataPath);
-    path.append("/");
-    path.append(selection);
-    QDir dir(path);
-    if (dir.exists(path, TRUE))
-    {
-      QMessageBox::information(this, tr("Qtstalker: Error"), tr("This chart already exists."));
-      return;
-    }
-
-    QString s = config->getData(Config::DataPath);
-    s.append("/");
-    s.append(item->text(0));
-    dir.rename(s, path, TRUE);
-
-    ChartDb *db = new ChartDb();
-    db->setPath(path);
-    db->openChart();
-    db->setSymbol(selection);
-    delete db;
-
-    updateList();
-    buttonStatus();
-  }
 }
 
 void WorkwithCharts::newGroup()
@@ -697,10 +659,12 @@ void WorkwithCharts::exportSymbol ()
       delete db;
       continue;
     }
-
+    
+    Setting *set = db->getDetails();
     QString s = path;
     s.append("/");
-    s.append(db->getSymbol());
+    s.append(set->getData("Symbol"));
+    delete set;
 
     QFile outFile(s);
     if (! outFile.open(IO_WriteOnly))

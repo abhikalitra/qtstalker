@@ -20,7 +20,6 @@
  */
 
 #include "Qtstalker.h"
-#include "ChartDb.h"
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qtimer.h>
@@ -60,9 +59,8 @@ void Qtstalker::parse ()
       continue;
     QTextStream stream(&f);
 
-    QString symbol = list[loop];
-    int pos = symbol.findRev('/', -1, TRUE);
-    symbol.remove(0, pos);
+    QStringList l = QStringList::split("/", list[loop], FALSE);
+    QString symbol = l[l.count() - 1];
 
     QString s = dataPath;
     s.append("/");
@@ -92,6 +90,7 @@ void Qtstalker::parse ()
 
     f.close();
     delete db;
+    updateChartIndex(symbol);
   }
 
   emit done();

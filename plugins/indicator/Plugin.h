@@ -49,6 +49,7 @@ class Plugin : public Setting, public QObject
     virtual void download ();
     virtual void cancelDownload ();
     virtual void setDataPath (QString);
+    virtual void setIndexPath (QString);
 
     // base plugin functions
     QString getPluginType ();

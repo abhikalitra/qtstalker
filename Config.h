@@ -50,7 +50,8 @@ class Config
       ScaleToScreen,
       PluginPath,
       IndicatorPlugin,
-      QuotePlugin
+      QuotePlugin,
+      IndexPath
     };
 
     Config (QString);
@@ -86,7 +87,7 @@ class Config
     void deletePlugin (QString);
     QStringList getPluginList ();
     void scanPlugins ();
-
+    
   protected:
     QString path;
 };

@@ -46,7 +46,6 @@ class WorkwithCharts : public QDialog
     void editChart ();
     void editComposite ();
     void newComposite ();
-    void renameChart ();
     void newGroup();
     void editGroup();
     void deleteGroup();
@@ -61,11 +60,11 @@ class WorkwithCharts : public QDialog
     void openSymbol (QListViewItem *);
     void openSymbol ();
     void newSymbol ();
-    void renameSymbol ();
     void editSymbol ();
     void buttonStatus();
     void exportSymbol ();
     void renameGroup ();
+    void renameSymbol ();
 
   private:
     QString type;

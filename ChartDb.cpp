@@ -131,7 +131,9 @@ void ChartDb::getHistory (Compression c, QDateTime sd)
   compression = c;
   startDate = sd;
 
-  QString s = getChartType();
+  Setting *set = getDetails();
+  QString s = set->getData("Chart Type");
+  delete set;
   if (s.contains(QObject::tr("Stock")) || s.contains(QObject::tr("Future")))
   {
     switch (compression)
@@ -401,6 +403,31 @@ void ChartDb::setRecord (Setting *set)
   l.append(set->getData("Open Interest"));
 
   setData(date, l.join(","));
+
+  Setting *details = getDetails();
+
+  QDateTime dt = getDateTime(date);
+
+  QDateTime dt2 = getDateTime(details->getData("First Date"));
+  if (dt2.isValid())
+  {
+    if (dt < dt2)
+      details->setData("First Date", dt.toString(DATE_FORMAT));
+  }
+  else
+    details->setData("First Date", dt.toString(DATE_FORMAT));
+
+  dt2 = getDateTime(details->getData("Last Date"));
+  if (dt2.isValid())
+  {
+    if (dt > dt2)
+      details->setData("Last Date", dt.toString(DATE_FORMAT));
+  }
+  else
+    details->setData("Last Date", dt.toString(DATE_FORMAT));
+
+  setDetails(details);
+  delete details;
 }
 
 Setting * ChartDb::getRecord (QString k, QString d)
@@ -834,36 +861,6 @@ Setting * ChartDb::getRecordIndex (int d)
 QList<Setting> ChartDb::getRecordList ()
 {
   return recordList;
-}
-
-void ChartDb::setSymbol (QString d)
-{
-  setData("SYMBOL", d);
-}
-
-QString ChartDb::getSymbol ()
-{
-  return getData("SYMBOL");
-}
-
-void ChartDb::setChartType (QString d)
-{
-  setData("CHART_TYPE", d);
-}
-
-QString ChartDb::getChartType ()
-{
-  return getData("CHART_TYPE");
-}
-
-void ChartDb::setSource (QString d)
-{
-  setData("SOURCE", d);
-}
-
-QString ChartDb::getSource ()
-{
-  return getData("SOURCE");
 }
 
 void ChartDb::setDetails (Setting *d)

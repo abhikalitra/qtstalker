@@ -20,7 +20,6 @@
  */
 
 #include "NYBOT.h"
-#include "ChartDb.h"
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qtimer.h>
@@ -240,23 +239,22 @@ void NYBOT::parse ()
       db->setPath(s);
       db->openChart();
 
-      s = db->getChartType();
-      if (! s.length())
+      Setting *details = db->getDetails();
+      if (! details->count())
       {
-        db->setChartType(tr("Futures"));
-        db->setSymbol(symbol);
-        db->setSource(pluginName);
-
-        Setting *set = new Setting;
-        set->set("Futures Month", month, Setting::None);
-        set->set("Futures Type", futureSymbol, Setting::None);
-        set->set("Title", futureName, Setting::Text);
-        db->setDetails(set);
-        delete set;
+        details->set("Chart Type", tr("Futures"), Setting::None);
+        details->set("Symbol", symbol, Setting::None);
+        details->set("Source", pluginName, Setting::None);
+        details->set("Futures Month", month, Setting::None);
+        details->set("Futures Type", futureSymbol, Setting::None);
+        details->set("Title", futureName, Setting::Text);
+        db->setDetails(details);
       }
+      delete details;
 
       db->setRecord(r);
       delete db;
+      updateChartIndex(symbol);
 
       if (! symbol.compare(cc))
       {
@@ -270,24 +268,23 @@ void NYBOT::parse ()
         db->setPath(s);
         db->openChart();
 
-        s = db->getChartType();
-        if (! s.length())
+        details = db->getDetails();
+        if (! details->count())
         {
-          db->setChartType(tr("CC Futures"));
-          db->setSymbol(symbol);
-          db->setSource(pluginName);
-
-          Setting *set = new Setting;
-          set->set("Futures Type", futureSymbol, Setting::None);
+          details->set("Chart Type", tr("CC Futures"), Setting::None);
+          details->set("Symbol", symbol, Setting::None);
+          details->set("Source", pluginName, Setting::None);
+          details->set("Futures Type", futureSymbol, Setting::None);
           s = QObject::tr("Continuous ");
           s.append(futureSymbol);
-          set->set("Title", s, Setting::Text);
-          db->setDetails(set);
-          delete set;
+          details->set("Title", s, Setting::Text);
+          db->setDetails(details);
         }
+	delete details;
 
         db->setRecord(r);
         delete db;
+        updateChartIndex(symbol);
       }
 
       delete r;
@@ -304,3 +301,5 @@ Plugin * create ()
   NYBOT *o = new NYBOT;
   return ((Plugin *) o);
 }
+
+

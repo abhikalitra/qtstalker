@@ -20,7 +20,6 @@
  */
 
 #include "Yahoo.h"
-#include "ChartDb.h"
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qtimer.h>
@@ -70,20 +69,20 @@ void Yahoo::download ()
   symbols = QStringList::split(",", getData("New Symbols"), FALSE);
   if (symbols.count() == 0)
   {
-    dir.setPath(dataPath);
+    ChartDb *db = new ChartDb();
+    db->setPath(indexPath);
+    db->openChart();
+    QStringList l = db->getKeyList();
+
     int loop;
-    for (loop = 2; loop < (int) dir.count(); loop++)
+    for (loop = 0; loop < (int) l.count(); loop++)
     {
-      s = dataPath;
-      s.append("/");
-      s.append(dir[loop]);
-      ChartDb *db = new ChartDb();
-      db->setPath(s);
-      db->openChart();
-      s = db->getSource();
+      Setting *details = new Setting;
+      details->parse(db->getData(l[loop]));
+      s = details->getData("Source");
       if (! s.compare(pluginName))
-        symbols.append(db->getSymbol());
-      delete db;
+        symbols.append(l[loop]);
+      delete details;
     }
   }
 
@@ -192,19 +191,17 @@ void Yahoo::parse ()
   ChartDb *db = new ChartDb();
   db->setPath(s);
   db->openChart();
-
-  s = db->getChartType();
-  if (! s.length())
+  
+  Setting *details = db->getDetails();
+  if (! details->count())
   {
-    db->setChartType(tr("Stock"));
-    db->setSymbol(symbols[symbolLoop]);
-    db->setSource(pluginName);
-
-    Setting *set = new Setting;
-    set->set("Title", symbols[symbolLoop], Setting::Text);
-    db->setDetails(set);
-    delete set;
+    details->set("Chart Type", tr("Stock"), Setting::None);
+    details->set("Symbol", symbols[symbolLoop], Setting::None);
+    details->set("Source", pluginName, Setting::None);
+    details->set("Title", symbols[symbolLoop], Setting::Text);
+    db->setDetails(details);
   }
+  delete details;
 
   while(stream.atEnd() == 0)
   {
@@ -267,6 +264,7 @@ void Yahoo::parse ()
 
   f.close();
   delete db;
+  updateChartIndex(symbols[symbolLoop]);
 }
 
 QString Yahoo::parseDate (QString d)

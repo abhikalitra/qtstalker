@@ -136,6 +136,7 @@ void QuoteDialog::ruleChanged (int)
   connect (plug, SIGNAL(done()), this, SLOT(downloadComplete()));
 
   plug->setDataPath(config->getData(Config::DataPath));
+  plug->setIndexPath(config->getData(Config::IndexPath));
 
   Setting *set = new Setting;
   QStringList l = plug->getKeyList();
@@ -180,7 +181,6 @@ void QuoteDialog::disableGUI ()
   cancelButton->setEnabled(FALSE);
   cancelDownloadButton->setEnabled(TRUE);
 }
-
 
 
 

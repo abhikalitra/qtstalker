@@ -136,8 +136,11 @@ void PortfolioDialog::updatePortfolioItems ()
       continue;
     }
     
-    QDateTime dt = db->getLastRecord();
+    Setting *details = db->getDetails();
+
+    QDateTime dt = db->getDateTime(details->getData("Last Date"));
     item->setText(4, dt.toString("yyyyMMdd"));
+
     QString last = QString::number(db->getCloseData(dt));
     item->setText(5, last);
 
@@ -147,16 +150,13 @@ void PortfolioDialog::updatePortfolioItems ()
     else
       total = volume.toFloat() * (price.toFloat() - last.toFloat());
 
-    QString type = db->getChartType();
+    QString type = details->getData("Chart Type");
     if (! type.compare("Futures"))
-    {
-      Setting *set = db->getDetails();
-      total = futuresProfit(set->getData("Futures Type"), total);
-      delete set;
-    }
+      total = futuresProfit(details->getData("Futures Type"), total);
 
     item->setText(6, QString::number(total));
 
+    delete details;
     delete db;
   }
 }

@@ -62,12 +62,6 @@ class ChartDb
     void getRatio ();
     void getIndex ();
     void getHistory (Compression, QDateTime);
-    QString getSymbol ();
-    void setSymbol (QString);
-    QString getChartType ();
-    void setChartType (QString);
-    QString getSource ();
-    void setSource (QString);
     Setting * getDetails ();
     void setDetails (Setting *);
     void setComposite (Setting *);

@@ -21,6 +21,7 @@
 
 #include "Config.h"
 #include "Plugin.h"
+#include "ChartDb.h"
 #include <qobject.h>
 #include <qdir.h>
 #include <qstringlist.h>
@@ -59,6 +60,11 @@ Config::Config (QString p)
       qDebug("Unable to create ~/Qtstalker/plugins directory.");
   }
   setData(PluginPath, s);
+
+  s = home;
+  s.append("/index");
+  if (! dir.exists(s, TRUE))
+    setData(IndexPath, s);
 
   scanPlugins();
 }
@@ -134,6 +140,9 @@ QString Config::getData (Parm p)
     case QuotePlugin:
       s = settings.readEntry("/Qtstalker/QuotePlugin", "");
       break;
+    case IndexPath:
+      s = settings.readEntry("/Qtstalker/IndexPath");
+      break;
     default:
       break;
   }
@@ -206,6 +215,9 @@ void Config::setData (Parm p, QString d)
       break;
     case QuotePlugin:
       settings.writeEntry("/Qtstalker/QuotePlugin", d);
+      break;
+    case IndexPath:
+      settings.writeEntry("/Qtstalker/IndexPath", d);
       break;
     default:
       break;
@@ -457,5 +469,10 @@ void Config::scanPlugins ()
   qp.sort();
   setData(QuotePlugin, qp.join(","));
 }
+
+
+
+
+
 
 

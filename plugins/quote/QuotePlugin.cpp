@@ -995,5 +995,40 @@ void QuotePlugin::setDataPath (QString d)
   dataPath = d;
 }
 
+void QuotePlugin::setIndexPath (QString d)
+{
+  indexPath = d;
+}
+
+void QuotePlugin::updateChartIndex (QString d)
+{
+  ChartDb *index = new ChartDb();
+  index->setPath(indexPath);
+  index->openChart();
+
+  Setting *indexData = new Setting;
+  indexData->parse(index->getData(d));
+
+  QString s = dataPath;
+  s.append("/");
+  s.append(d);
+  ChartDb *db = new ChartDb();
+  db->setPath(s);
+  db->openChart();
+  Setting *details = db->getDetails();
+  delete db;
+
+  indexData->set("Symbol", details->getData("Symbol"), Setting::None);
+  indexData->set("First Date", details->getData("First Date"), Setting::None);
+  indexData->set("Last Date", details->getData("Last Date"), Setting::None);
+  indexData->set("Chart Type", details->getData("Chart Type"), Setting::None);
+  indexData->set("Source", details->getData("Source"), Setting::None);
+
+  index->setData(d, indexData->getString());
+  delete index;
+
+  delete indexData;
+  delete details;
+}
 
 
