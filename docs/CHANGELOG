@@ -79,7 +79,9 @@
 - Changed chart type name from "Point and Figure" to "P&F" to help shorten the width of the chart type
   combobox.
 
-  
+- Added a new functions Plugin::getPluginSettings and Setting::merge to better manipulate settings.
+
+
 0.22
 ====
 

@@ -1386,21 +1386,16 @@ void QtstalkerApp::slotNewIndicator ()
 
   dialog->setCaption(tr("Edit Indicator"));
 
-  Setting *set = new Setting;
-  set->set("Name", idialog->getName(), Setting::None);
-
   Plugin *plug = config->getPlugin(Config::IndicatorPluginPath, idialog->getIndicator());
-  if (plug)
+  if (! plug)
   {
-    QStringList key = plug->getKeyList();
-
-    int loop;
-    for(loop = 0; loop < (int) key.count(); loop++)
-    {
-      set->set(key[loop], plug->getData(key[loop]), plug->getType(key[loop]));
-      set->setList(key[loop], plug->getList(key[loop]));
-    }
+    delete idialog;
+    delete dialog;
+    qDebug("QtstalkerApp::slotNewIndicator - could not open plugin");
+    return;
   }
+  Setting *set = plug->getPluginSettings();
+  set->set("Name", idialog->getName(), Setting::None);
 
   dialog->setItems(set);
 
@@ -1425,7 +1420,6 @@ void QtstalkerApp::slotNewIndicator ()
 
   delete idialog;
   delete dialog;
-  delete set;
 }
 
 void QtstalkerApp::slotEditIndicator (int id)
@@ -1436,38 +1430,33 @@ void QtstalkerApp::slotEditIndicator (int id)
 
   dialog->setCaption(tr("Edit Indicator"));
 
-  Setting *set = new Setting();
+  Setting *set = new Setting;
   set->parse(config->getIndicator(selection));
 
   Plugin *plug = config->getPlugin(Config::IndicatorPluginPath, set->getData("Type"));
-  if (plug)
+  if (! plug)
   {
-    QStringList key = plug->getKeyList();
-
-    int loop;
-    for(loop = 0; loop < (int) key.count(); loop++)
-    {
-      // add any new parms if plugin has been updated
-      if (! set->getData(key[loop]).length())
-        set->set(key[loop], plug->getData(key[loop]), plug->getType(key[loop]));
-
-      set->setList(key[loop], plug->getList(key[loop]));
-    }
+    delete dialog;
+    qDebug("QtstalkerApp::slotEditIndicator - could not open plugin");
+    return;
   }
 
-  dialog->setItems(set);
+  Setting *set2 = plug->getPluginSettings();
+  set2->merge(set->getStringList());
+  delete set;
+
+  dialog->setItems(set2);
 
   int rc = dialog->exec();
 
   if (rc == QDialog::Accepted)
   {
-    config->setIndicator(set->getData(tr("Name")), set->getStringList());
+    config->setIndicator(set2->getData(tr("Name")), set2->getStringList());
     loadChart(chartPath);
   }
 
   config->closePlugins();
 
-  delete set;
   delete dialog;
 }
 

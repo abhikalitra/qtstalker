@@ -76,6 +76,7 @@ class Setting
     void clear ();
     int count ();
     QString getDateTime (QString);
+    void merge (QStringList);
 
   protected:
     QDict<SettingItem> dict;

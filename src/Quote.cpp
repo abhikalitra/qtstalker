@@ -58,9 +58,6 @@ QuoteDialog::QuoteDialog (Config *c) : EditDialog (c)
 QuoteDialog::~QuoteDialog ()
 {
   config->closePlugins();
-
-  if (settings)
-    delete settings;
 }
 
 void QuoteDialog::getQuotes ()
@@ -68,6 +65,11 @@ void QuoteDialog::getQuotes ()
   emit message(tr("Starting update..."));
 
   Plugin *plug = config->getPlugin(Config::QuotePluginPath, ruleCombo->currentText());
+  if (! plug)
+  {
+    qDebug("QuoteDialog::getQuotes - could not open plugin");
+    return;
+  }
 
   disableGUI();
 
@@ -75,13 +77,7 @@ void QuoteDialog::getQuotes ()
 
   list->updateSettings();
 
-  QStringList l = settings->getKeyList();
-  int loop;
-  for (loop = 0; loop < (int) l.count(); loop++)
-  {
-    plug->setData(l[loop], settings->getData(l[loop]));
-    plug->setList(l[loop], settings->getList(l[loop]));
-  }
+  plug->merge(settings->getStringList());
 
   plug->update();
 }
@@ -100,7 +96,10 @@ void QuoteDialog::ruleChanged (int)
 
   Plugin *plug = config->getPlugin(Config::QuotePluginPath, ruleCombo->currentText());
   if (! plug)
+  {
+    qDebug("QuoteDialog::ruleChanged - could not open plugin");
     return;
+  }
 
   connect (plug, SIGNAL(done()), this, SLOT(downloadComplete()));
   connect (plug, SIGNAL(message(QString)), this, SLOT(printMessage(QString)));
@@ -112,14 +111,7 @@ void QuoteDialog::ruleChanged (int)
   else
     setButtonStatus(4, FALSE);
 
-  settings = new Setting;
-  QStringList l = plug->getKeyList();
-  int loop;
-  for (loop = 0; loop < (int) l.count(); loop++)
-  {
-    settings->set(l[loop], plug->getData(l[loop]), plug->getType(l[loop]));
-    settings->setList(l[loop], plug->getList(l[loop]));
-  }
+  settings = plug->getPluginSettings();
 
   list->setItems(settings);
 }
@@ -134,6 +126,12 @@ void QuoteDialog::downloadComplete ()
 void QuoteDialog::cancelDownload ()
 {
   Plugin *plug = config->getPlugin(Config::QuotePluginPath, ruleCombo->currentText());
+  if (! plug)
+  {
+    qDebug("QuoteDialog::cancelDownload - could not open plugin");
+    return;
+  }
+
   plug->cancelUpdate();
   enableGUI();
   emit message(tr("Update cancelled."));
@@ -149,6 +147,12 @@ void QuoteDialog::enableGUI ()
   setButtonStatus(3, FALSE);
 
   Plugin *plug = config->getPlugin(Config::QuotePluginPath, ruleCombo->currentText());
+  if (! plug)
+  {
+    qDebug("QuoteDialog::enableGUI - could not open plugin");
+    return;
+  }
+
   if (plug->getCreateFlag())
     setButtonStatus(4, TRUE);
 }
@@ -167,6 +171,11 @@ void QuoteDialog::disableGUI ()
 void QuoteDialog::newChart ()
 {
   Plugin *plug = config->getPlugin(Config::QuotePluginPath, ruleCombo->currentText());
+  if (! plug)
+  {
+    qDebug("QuoteDialog::newChart - could not open plugin");
+    return;
+  }
 
   Setting *details = plug->getCreateDetails();
 

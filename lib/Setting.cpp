@@ -230,4 +230,10 @@ QString Setting::getDateTime (QString k)
   return date;
 }
 
+void Setting::merge (QStringList l)
+{
+  int loop;
+  for (loop = 0; loop < (int) l.count(); loop = loop + 3)
+    setData(l[loop], l[loop + 1]);
+}
 

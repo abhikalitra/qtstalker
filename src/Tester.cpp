@@ -514,24 +514,17 @@ void Tester::addIndicator ()
   if (! ok || ! ind.length())
     return;
 
+  Plugin *plug = config->getPlugin(Config::IndicatorPluginPath, ind);
+  if (! plug)
+  {
+    qDebug("Tester::addIndicator - could not open plugin");
+    return;
+  }
+  Setting *set = plug->getPluginSettings();
   i = new Indicator;
-  Setting *set = new Setting;
 
   EditDialog *dialog = new EditDialog(config);
   dialog->setCaption(tr("Edit Indicator"));
-
-  Plugin *plug = config->getPlugin(Config::IndicatorPluginPath, ind);
-  if (plug)
-  {
-    QStringList key = plug->getKeyList();
-
-    int loop;
-    for(loop = 0; loop < (int) key.count(); loop++)
-    {
-      set->set(key[loop], plug->getData(key[loop]), plug->getType(key[loop]));
-      set->setList(key[loop], plug->getList(key[loop]));
-    }
-  }
 
   dialog->setItems(set);
 
@@ -539,14 +532,7 @@ void Tester::addIndicator ()
 
   if (rc == QDialog::Accepted)
   {
-    QStringList key = set->getKeyList();
-    int loop;
-    for(loop = 0; loop < (int) key.count(); loop++)
-    {
-      i->set(key[loop], set->getData(key[loop]), set->getType(key[loop]));
-      i->setList(key[loop], set->getList(key[loop]));
-    }
-
+    i->parse(set->getStringList());
     i->set("Name", name, Setting::None);
 
     switch (id)
@@ -572,8 +558,9 @@ void Tester::addIndicator ()
     item = new QListViewItem(indicatorList, name);
   }
 
+  config->closePlugins();
+
   delete dialog;
-  delete set;
 }
 
 void Tester::editIndicator ()
@@ -605,32 +592,25 @@ void Tester::editIndicator ()
       break;
   }
 
-  QStringList key = i->getKeyList();
-  int loop;
-  Setting *set = new Setting;
-  for(loop = 0; loop < (int) key.count(); loop++)
+  Plugin *plug = config->getPlugin(Config::IndicatorPluginPath, i->getData(tr("Type")));
+  if (! plug)
   {
-    set->set(key[loop], i->getData(key[loop]), i->getType(key[loop]));
-    set->setList(key[loop], i->getList(key[loop]));
+    qDebug("Tester::editIndicator - could not open plugin");
+    return;
   }
+  Setting *set = plug->getPluginSettings();
+  set->merge(i->getStringList());
 
   dialog->setItems(set);
 
   int rc = dialog->exec();
 
   if (rc == QDialog::Accepted)
-  {
-    QStringList key = set->getKeyList();
-    int loop;
-    for(loop = 0; loop < (int) key.count(); loop++)
-    {
-      i->set(key[loop], set->getData(key[loop]), set->getType(key[loop]));
-      i->setList(key[loop], set->getList(key[loop]));
-    }
-  }
+    i->merge(set->getStringList());
+
+  config->closePlugins();
 
   delete dialog;
-  delete set;
 }
 
 void Tester::deleteIndicator ()
@@ -1241,23 +1221,26 @@ void Tester::loadIndicators (int button)
     i->clearLines();
 
     Plugin *plug = config->getPlugin(Config::IndicatorPluginPath, i->getData(QObject::tr("Type")));
-    if (plug)
+    if (! plug)
     {
-      plug->setIndicatorInput(recordList);
-
-      plug->parse(i->getString());
-
-      plug->calculate();
-
-      QString s = i->getData(QObject::tr("Alert"));
-      if (! s.compare(QObject::tr("True")))
-        i->setAlerts(plug->getAlerts());
-
-      i->clearLines();
-
-      plug->clearOutput();
+      qDebug("Tester::loadIndicators - could not open plugin");
+      continue;
     }
+
+    plug->setIndicatorInput(recordList);
+    plug->parse(i->getString());
+    plug->calculate();
+
+    QString s = i->getData(QObject::tr("Alert"));
+    if (! s.compare(QObject::tr("True")))
+      i->setAlerts(plug->getAlerts());
+
+    i->clearLines();
+
+    plug->clearOutput();
   }
+
+  config->closePlugins();
 }
 
 void Tester::loadEnterLongAlerts ()

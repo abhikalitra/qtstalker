@@ -31,7 +31,7 @@
 #include "Setting.h"
 #include "PlotLine.h"
 
-#define COPYRIGHT "(C) 2001, 2002 Stefan Stratigakos"
+#define COPYRIGHT "(C) 2001-2003 Stefan Stratigakos"
 
 class Plugin : public Setting, public QObject
 {
@@ -61,6 +61,7 @@ class Plugin : public Setting, public QObject
     QString getVersion ();
     QString getAbout ();
     void setDataPath (QString);
+    Setting * getPluginSettings ();
 
   protected:
     QString pluginType;

@@ -63,6 +63,22 @@ void Plugin::setDataPath (QString d)
   dataPath = d;
 }
 
+Setting * Plugin::getPluginSettings ()
+{
+  Setting *set = new Setting;
+
+  QStringList key = getKeyList();
+
+  int loop;
+  for(loop = 0; loop < (int) key.count(); loop++)
+  {
+    set->set(key[loop], getData(key[loop]), getType(key[loop]));
+    set->setList(key[loop], getList(key[loop]));
+  }
+
+  return set;
+}
+
 //**********************************************************
 //************** indicator plugin interface ****************
 //**********************************************************
