@@ -20,9 +20,7 @@
  */
 
 #include "SettingView.h"
-#include "ok.xpm"
-#include "stop.xpm"
-#include "up.xpm"
+#include "SymbolDialog.h"
 #include <qcolordialog.h>
 #include <qmessagebox.h>
 #include <qcolor.h>
@@ -273,14 +271,16 @@ void SettingView::fileDialog (int row)
 
 void SettingView::symbolDialog (int row)
 {
-  SymbolDialog *dialog = new SymbolDialog(dataPath);
+  SymbolDialog *dialog = new SymbolDialog(this,
+  							   dataPath,
+							   "*");
   dialog->setCaption(tr("Select Chart"));
 
   int rc = dialog->exec();
 
   if (rc == QDialog::Accepted)
   {
-    list->setText(row, 1, dialog->getSymbol());
+    list->setText(row, 1, dialog->selectedFile());
     settings->setData(list->text(row, 0), list->text(row, 1));
   }
 
@@ -347,70 +347,6 @@ void SettingView::updateSettings ()
 	break;
     }
   }
-}
-
-//**********************************************************************
-//*********************** SYMBOL DIALOG ********************************
-//**********************************************************************
-
-SymbolDialog::SymbolDialog (QString dataPath) : QDialog (0, "SymbolDialog", TRUE)
-{
-  QVBoxLayout *vbox = new QVBoxLayout(this);
-  vbox->setSpacing(5);
-  vbox->setMargin(5);
-
-  toolbar = new QGridLayout(vbox, 1, 4);
-  toolbar->setSpacing(1);
-
-  okButton = new QToolButton(this);
-  QToolTip::add(okButton, tr("OK"));
-  okButton->setPixmap(QPixmap(ok));
-  connect(okButton, SIGNAL(clicked()), this, SLOT(accept()));
-  okButton->setMaximumWidth(30);
-  okButton->setAutoRaise(TRUE);
-  toolbar->addWidget(okButton, 0, 0);
-
-  cancelButton = new QToolButton(this);
-  QToolTip::add(cancelButton, tr("Cancel"));
-  cancelButton->setPixmap(QPixmap(stop));
-  connect(cancelButton, SIGNAL(clicked()), this, SLOT(reject()));
-  cancelButton->setMaximumWidth(30);
-  cancelButton->setAutoRaise(TRUE);
-  toolbar->addWidget(cancelButton, 0, 1);
-  
-  upButton = new QToolButton(this);
-  QToolTip::add(upButton, tr("Parent Directory"));
-  upButton->setPixmap(QPixmap(up));
-  connect(upButton, SIGNAL(clicked()), this, SLOT(upDirectory()));
-  upButton->setMaximumWidth(30);
-  upButton->setAutoRaise(TRUE);
-  toolbar->addWidget(upButton, 0, 2);
-
-  navigator = new Navigator(this, dataPath, TRUE);
-  vbox->addWidget(navigator);
-  connect(navigator, SIGNAL(doubleClick(QString)), this, SLOT(checkDoubleClick(QString)));
-
-  navigator->updateList();
-}
-
-SymbolDialog::~SymbolDialog ()
-{
-}
-
-QString SymbolDialog::getSymbol ()
-{
-  return navigator->getFileSelection();
-}
-
-void SymbolDialog::checkDoubleClick (QString symbol)
-{
-  if (symbol.length())
-    accept();
-}
-
-void SymbolDialog::upDirectory ()
-{
-  navigator->upDirectory();
 }
 
 //**********************************************************************

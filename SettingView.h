@@ -102,26 +102,5 @@ class SettingView : public QWidget
     QTable *list;
 };
 
-class SymbolDialog : public QDialog
-{
-  Q_OBJECT
-
-  public:
-    SymbolDialog (QString);
-    ~SymbolDialog ();
-    QString getSymbol ();
-    
-  public slots:
-    void checkDoubleClick (QString);
-    void upDirectory ();
-
-  private:
-    QGridLayout *toolbar;
-    QToolButton *okButton;
-    QToolButton *cancelButton;
-    QToolButton *upButton;
-    Navigator *navigator;
-};
-
 #endif
 

@@ -30,7 +30,6 @@
 #include <qspinbox.h>
 #include <qtabwidget.h>
 #include <qsplitter.h>
-#include <qlabel.h>
 #include <qtoolbutton.h>
 
 #include "Indicator.h"
@@ -60,7 +59,6 @@ class QtstalkerApp : public QMainWindow
     void initToolBar ();
     void initGroupNav ();
     void initChartNav ();
-    void initInfoNav ();
     QString getWindowCaption ();
     void setChartType (int);
     void loadChart (QString);
@@ -103,12 +101,14 @@ class QtstalkerApp : public QMainWindow
     void slotTabChanged (QWidget *);
     void slotChartObjectCreated (Setting *);
     void slotChartSelected (QString);
+    void slotChartNoSelection ();
     void slotNewGroup ();
     void slotAddGroupItem ();
     void slotDeleteGroupItem ();
     void slotDeleteGroup ();
     void slotRenameGroup ();
     void slotGroupSelected (QString);
+    void slotGroupNoSelection ();
     void slotEditChart ();
     void slotDeleteChart ();
     void slotExportSymbol ();
@@ -141,16 +141,6 @@ class QtstalkerApp : public QMainWindow
     QAction *actionNewPlugin;
     QAction *actionWorkwithTest;
 
-    QToolButton *groupNewButton;
-    QToolButton *groupAddButton;
-    QToolButton *groupDeleteButton;
-    QToolButton *groupDeleteItemButton;
-    QToolButton *groupRenameButton;
-    QToolButton *chartEditButton;
-    QToolButton *chartDeleteButton;
-    QToolButton *chartExportButton;
-    QToolButton *chartExportAllButton;
-
     QToolBar *toolbar;
     QMenuBar *menubar;
     QSplitter *split;
@@ -174,7 +164,6 @@ class QtstalkerApp : public QMainWindow
     QString chartType;
     QString chartSymbol;
     int chartObjectId;
-    QLabel *infoLabel;
 };
 
 #endif 

@@ -20,55 +20,44 @@
  */
 
 #include "Navigator.h"
-#include "ChartDb.h"
-#include "Setting.h"
 #include "dirclosed.xpm"
-#include <qpixmap.h>
-#include <qgroupbox.h>
-#include <qlayout.h>
+#include "up.xpm"
+#include <qtooltip.h>
 
-Navigator::Navigator (QWidget *w, QString bp, bool flag) : QWidget(w)
+#define BUTTON_SIZE 24
+
+Navigator::Navigator (QWidget *w, QString bp) : QWidget(w)
 {
-  item = 0;
+  buttonList.setAutoDelete(TRUE);
   basePath = bp;
-  infoFlag = flag;
 
   currentDir.setPath(bp);
 
-  QHBoxLayout *hbox = new QHBoxLayout(this);
+  QVBoxLayout *vbox = new QVBoxLayout(this);
+  vbox->setMargin(0);
+  vbox->setSpacing(5);
+
+  toolbar = new QGridLayout(vbox, 1, 2);
+  toolbar->setSpacing(1);
+
+  upButton = new QToolButton(this);
+  QToolTip::add(upButton, tr("Up Directory"));
+  upButton->setPixmap(QPixmap(up));
+  upButton->setMaximumWidth(BUTTON_SIZE);
+  upButton->setMaximumHeight(BUTTON_SIZE);
+  upButton->setAutoRaise(TRUE);
+  toolbar->addWidget(upButton, 0, 0);
+  upButton->setEnabled(FALSE);
+  connect(upButton, SIGNAL(clicked()), this, SLOT(upDirectory()));
+
+  QHBoxLayout *hbox = new QHBoxLayout(vbox);
   hbox->setMargin(0);
   hbox->setSpacing(5);
 
-  list = new QListView(this);
-  list->addColumn(tr("Symbol"), 150);
-  list->setSelectionMode(QListView::Single);
-  connect(list, SIGNAL(clicked(QListViewItem *)), this, SLOT(fileSelection(QListViewItem *)));
-  connect(list, SIGNAL(doubleClicked(QListViewItem *)), this, SLOT(slotDoubleClicked()));
+  list = new QListBox(this);
+  list->setSelectionMode(QListBox::Single);
+  connect(list, SIGNAL(selectionChanged()), this, SLOT(fileSelection()));
   hbox->addWidget(list);
-
-  if (! infoFlag)
-    return;
-
-  QGroupBox *gbox = new QGroupBox(this);
-  gbox->setColumnLayout(2, Horizontal);
-  hbox->addWidget(gbox);
-  gbox->setMinimumWidth(200);
-  gbox->setMaximumWidth(200);
-
-  QLabel *label = new QLabel(tr("Symbol"), gbox);
-  symbol = new QLabel(0, gbox);
-
-  label = new QLabel(tr("Title"), gbox);
-  title = new QLabel(0, gbox);
-
-  label = new QLabel(tr("Type"), gbox);
-  type = new QLabel(0, gbox);
-
-  label = new QLabel(tr("First Date"), gbox);
-  firstDate = new QLabel(0, gbox);
-
-  label = new QLabel(tr("Last Date"), gbox);
-  lastDate = new QLabel(0, gbox);
 }
 
 Navigator::~Navigator ()
@@ -78,137 +67,57 @@ Navigator::~Navigator ()
 void Navigator::updateList ()
 {
   list->clear();
-  
+
   currentDir.setPath(currentDir.absPath());
 
   int loop;
-  for (loop = 1; loop < (int) currentDir.count(); loop++)
+  for (loop = 2; loop < (int) currentDir.count(); loop++)
   {
-    item = new QListViewItem(list, currentDir[loop]);
-
     QString s = currentDir.absPath();
     s.append("/");
     s.append(currentDir[loop]);
     QFileInfo info(s);
     if (info.isDir())
-      item->setPixmap(0, QPixmap(dirclosed));
+      list->insertItem(QPixmap(dirclosed), currentDir[loop], -1);
+    else
+      list->insertItem(currentDir[loop], -1);
   }
-
-  item = 0;
 }
 
 void Navigator::upDirectory ()
 {
-  if (basePath.compare(currentDir.absPath()))
-  {
-    currentDir.cdUp();
-    updateList();
-    emit fileSelected(getFileSelection());
-  }
+  currentDir.cdUp();
+  updateList();
+  emit noSelection();
+
+  if (! basePath.compare(currentDir.absPath()))
+    upButton->setEnabled(FALSE);
+  else
+    upButton->setEnabled(TRUE);
 }
 
-void Navigator::clearFileInfo ()
+void Navigator::fileSelection ()
 {
-  if (! infoFlag)
-    return;
-
-  symbol->setText("");
-  title->setText("");
-  type->setText("");
-  firstDate->setText("");
-  lastDate->setText("");
-}
-
-void Navigator::setFileInfo ()
-{
-  if (! infoFlag)
-    return;
-
-  item = list->selectedItem();
-  if (! item)
-    return;
-
-  QString s = currentDir.absPath();
-  s.append("/");
-  s.append(item->text(0));
-
-  ChartDb *db = new ChartDb;
-  if (db->openChart(s))
-  {
-    delete db;
-    clearFileInfo();
-    return;
-  }
-
-  Setting *set = db->getDetails();
-
-  symbol->setText(set->getData("Symbol"));
-
-  title->setText(set->getData("Title"));
-
-  type->setText(set->getData("Chart Type"));
-
-  s = set->getData("First Date");
-  s.truncate(s.length() - 6);
-  firstDate->setText(s);
-
-  s = set->getData("Last Date");
-  s.truncate(s.length() - 6);
-  lastDate->setText(s);
-
-  delete db;
-}
-
-void Navigator::fileSelection (QListViewItem *item)
-{
-  if (! item)
-    return;
-
-  QString s = item->text(0);
-  if (! s.compare(".."))
-  {
-    upDirectory();
-    return;
-  }
-
-  if (item->pixmap(0))
+  if (list->pixmap(list->currentItem()))
   {
     QString s = currentDir.absPath();
     s.append("/");
-    s.append(item->text(0));
+    s.append(list->currentText());
     currentDir.setPath(s);
     updateList();
-    clearFileInfo();
-    emit fileSelected(getFileSelection());
+    emit noSelection();
+    upButton->setEnabled(TRUE);
   }
   else
-  {
-    setFileInfo();
     emit fileSelected(getFileSelection());
-  }
 }
 
 QString Navigator::getFileSelection ()
 {
-  QString s;
-
-  item = list->selectedItem();
-  if (! item)
-    return s;
-
-  if (! item->pixmap(0))
-  {
-    s = currentDir.absPath();
-    s.append("/");
-    s.append(item->text(0));
-  }
-
+  QString s = currentDir.absPath();
+  s.append("/");
+  s.append(list->currentText());
   return s;
-}
-
-void Navigator::slotDoubleClicked ()
-{
-  emit doubleClick(getFileSelection());
 }
 
 void Navigator::setDirectory (QString d)
@@ -220,13 +129,33 @@ void Navigator::setDirectory (QString d)
   }
 }
 
-void Navigator::setColumnText (QString d)
-{
-  list->setColumnText(0, d);
-}
-
 QString Navigator::getCurrentPath ()
 {
   return currentDir.absPath();
 }
+
+void Navigator::setButton (QPixmap pix, QString tt, int pos)
+{
+  QToolButton *button = new QToolButton(this);
+  QToolTip::add(button, tt);
+  button->setPixmap(pix);
+  button->setMaximumWidth(BUTTON_SIZE);
+  button->setMaximumHeight(BUTTON_SIZE);
+  button->setAutoRaise(TRUE);
+  toolbar->addWidget(button, 0, pos + 1);
+  buttonList.append(button);
+  toolbar->expand(1, toolbar->numCols() + 1);
+}
+
+QToolButton * Navigator::getButton (int pos)
+{
+  return buttonList.at(pos);
+}
+
+void Navigator::setButtonStatus (int pos, bool status)
+{
+  QToolButton *button = buttonList.at(pos);
+  button->setEnabled(status);
+}
+
 

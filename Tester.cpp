@@ -42,6 +42,7 @@
 #include "EditDialog.h"
 #include "Plugin.h"
 #include "FuturesData.h"
+#include "SymbolDialog.h"
 
 Tester::Tester (Config *c, QString n) : QDialog (0, 0, FALSE)
 {
@@ -1146,14 +1147,16 @@ void Tester::trailingToggled (bool status)
 
 void Tester::symbolButtonPressed ()
 {
-  SymbolDialog *dialog = new SymbolDialog(config->getData(Config::DataPath));
+  SymbolDialog *dialog = new SymbolDialog(this,
+  							   config->getData(Config::DataPath),
+							   "*");
   dialog->setCaption(tr("Select Chart"));
 
   int rc = dialog->exec();
 
   if (rc == QDialog::Accepted)
   {
-    QString symbol = dialog->getSymbol();
+    QString symbol = dialog->selectedFile();
     if (! symbol.length())
     {
       delete dialog;

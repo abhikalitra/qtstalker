@@ -190,7 +190,7 @@ QString Config::getData (Parm p)
       s = settings.readEntry("/Qtstalker/AppFont", "Helvetica 9 50");
       break;
     case NavAreaSize:
-      s = settings.readEntry("/Qtstalker/NavAreaSize", "25");
+      s = settings.readEntry("/Qtstalker/NavAreaSize", "20");
       break;
     default:
       break;

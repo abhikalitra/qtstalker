@@ -19,48 +19,27 @@
  *  USA.
  */
 
-#ifndef NAVIGATOR_HPP
-#define NAVIGATOR_HPP
+#ifndef SYMBOLDIALOG_HPP
+#define SYMBOLDIALOG_HPP
 
-#include <qwidget.h>
+#include <qfiledialog.h>
 #include <qstring.h>
-#include <qlistbox.h>
-#include <qdir.h>
-#include <qlist.h>
-#include <qlayout.h>
-#include <qpixmap.h>
-#include <qtoolbutton.h>
+#include <qwidget.h>
 
-class Navigator : public QWidget
+class SymbolDialog : public QFileDialog
 {
   Q_OBJECT
 
-  signals:
-    void fileSelected (QString);
-    void noSelection ();
-
   public:
-    Navigator (QWidget *, QString);
-    ~Navigator ();
-    void updateList ();
-    QString getFileSelection ();
-    void setDirectory (QString);
-    QString getCurrentPath ();
-    void setButton (QPixmap, QString, int);
-    QToolButton * getButton (int);
-    void setButtonStatus (int, bool);
+    SymbolDialog (QWidget *, QString, QString);
+    ~SymbolDialog ();
 
   public slots:
-    void upDirectory ();
-    void fileSelection ();
-
-  protected:
+    void dirSelected (const QString &);
+    
+  private:
     QString basePath;
-    QListBox *list;
-    QDir currentDir;
-    QList<QToolButton> buttonList;
-    QGridLayout *toolbar;
-    QToolButton *upButton;
 };
 
 #endif
+
