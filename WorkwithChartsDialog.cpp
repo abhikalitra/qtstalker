@@ -31,6 +31,7 @@
 #include <qtooltip.h>
 #include <qdir.h>
 #include <qmessagebox.h>
+#include <qfileinfo.h>
 
 WorkwithChartsDialog::WorkwithChartsDialog (Config *c) : QDialog (0, "WorkwithChartsDialog", TRUE)
 {
@@ -224,16 +225,32 @@ void WorkwithChartsDialog::exportAll ()
     s = dir.path();
     s.append("/");
     s.append(dir[loop]);
-    QDir dir2(s);
+    traverse(s);
+  }
+}
 
-    int loop2;
-    for (loop2 = 2; loop2 < (int) dir2.count(); loop2++)
+void WorkwithChartsDialog::traverse(QString dirname)
+{
+  QDir dir(dirname);
+  dir.setFilter(QDir::Dirs|QDir::Files);
+
+  const QFileInfoList *fileinfolist = dir.entryInfoList();
+  QFileInfoListIterator it(*fileinfolist);
+  QFileInfo *fi;
+  while((fi = it.current()))
+  {
+    if(fi->fileName() == "." || fi->fileName() == "..")
     {
-      s = dir2.path();
-      s.append("/");
-      s.append(dir2[loop2]);
-      exportChart(s);
+      ++it;
+      continue;
     }
+
+    if(fi->isDir() && fi->isReadable())
+      traverse(fi->absFilePath());
+    else
+      exportChart(fi->absFilePath());
+
+    ++it;
   }
 }
 

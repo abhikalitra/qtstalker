@@ -115,7 +115,7 @@ PlotLine * IndicatorPlugin::getInput (QString field)
 
 PlotLine * IndicatorPlugin::getMA (PlotLine *d, QString type, int period)
 {
-  PlotLine *ma;
+  PlotLine *ma = 0;
   if (! type.compare(tr("SMA")))
     ma = getSMA(d, period);
   else
@@ -123,7 +123,12 @@ PlotLine * IndicatorPlugin::getMA (PlotLine *d, QString type, int period)
     if (! type.compare(tr("EMA")))
       ma = getEMA(d, period);
     else
-      ma = getWMA(d, period);
+    {
+      if (! type.compare(tr("WMA")))
+        ma = getWMA(d, period);
+      else
+        ma = getWilderMA(d, period);
+    }
   }
 
   return ma;
@@ -212,18 +217,53 @@ PlotLine * IndicatorPlugin::getWMA (PlotLine *data, int period)
   return wma;
 }
 
+PlotLine * IndicatorPlugin::getWilderMA (PlotLine *data, int period)
+{
+  PlotLine *wilderma = new PlotLine;
+
+  if (period >= (int) data->getSize())
+    return wilderma;
+
+  if (period < 1)
+    return wilderma;
+
+  double t = 0;
+  int loop;
+  for (loop = 0; loop < period; loop++)
+    t = t + data->getData(loop);
+
+  double yesterday = t / period;
+
+  wilderma->append(yesterday);
+
+  for (; loop < (int) data->getSize(); loop++)
+  {
+    double t  = (yesterday * (period - 1) + data->getData(loop))/period;
+    yesterday = t;
+    wilderma->append(t);
+  }
+
+  return wilderma;
+}
+
 PlotLine * IndicatorPlugin::getTR ()
 {
   PlotLine *tr = new PlotLine;
 
   int loop;
-  for (loop = 1; loop < (int) data.count(); loop++)
+  for (loop = 0; loop < (int) data.count(); loop++)
   {
     Setting *set = data.at(loop);
     double high = set->getFloat("High");
     double low = set->getFloat("Low");
-    set = data.at(loop - 1);
-    double close = set->getFloat("Close");
+    double close;
+    if (loop > 0)
+    {
+      set = data.at(loop - 1);
+      close = set->getFloat("Close");
+    }
+    else
+      close = high;
 
     double t = high - low;
 

@@ -50,6 +50,7 @@ void Setting::set (QString k, QString d, Setting::Type t)
     case MAType:
       set->list.append(QObject::tr("EMA"));
       set->list.append(QObject::tr("SMA"));
+      set->list.append(QObject::tr("WilderMA"));
       set->list.append(QObject::tr("WMA"));
       break;
     case InputField:

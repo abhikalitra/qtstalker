@@ -41,6 +41,7 @@ class IndicatorPlugin : public Plugin
     PlotLine * getMA (PlotLine *, QString, int);
     PlotLine * getSMA (PlotLine *, int);
     PlotLine * getEMA (PlotLine *, int);
+    PlotLine * getWilderMA (PlotLine *, int);
     PlotLine * getWMA (PlotLine *, int);
     PlotLine * getTR ();
     PlotLine * getTP ();

@@ -1,3 +1,17 @@
+0.16
+======
+
+- fixed bug that skipped previous date when calculating MA's 
+
+- created 2 custom widgets SettingView and Navigator for dialogs
+
+- added a compile option to increase speed "march=i686 -O3" this will be good for everyone that runs pentium II's or better
+  for those of you that cant use this, comment out the line in the Qtstalker.pro file.
+  
+- fixed export all bug when trying to export all charts
+
+- added new MA support for WilderMA and fixed TR function to include first bar thanks to Glen for the patch
+
 0.15
 ======
 

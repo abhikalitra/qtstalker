@@ -451,8 +451,10 @@ void QtstalkerApp::initToolBar()
 
   groupCombo = new QComboBox(navToolbar);
   groupCombo->setMaximumWidth(20);
+  groupCombo->show();
   QListBox *lbox = groupCombo->listBox();
-  lbox->setVariableWidth(TRUE);
+  if (lbox)
+    lbox->setVariableWidth(TRUE);
   QToolTip::add(groupCombo, tr("Group Contents"));
 
   actionNext->addTo(navToolbar);

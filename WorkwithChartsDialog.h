@@ -41,6 +41,7 @@ class WorkwithChartsDialog : public QDialog
     ~WorkwithChartsDialog ();
     void exportChart (QString);
     void setStartDir (QString);
+    void traverse(QString);
 
   public slots:
     void deleteChart ();
