@@ -31,6 +31,7 @@
 #include <qfont.h>
 #include <qdict.h>
 #include <qstringlist.h>
+#include <qpopupmenu.h>
 
 #include "PlotLine.h"
 #include "Setting.h"
@@ -42,12 +43,17 @@ class Plot : public QWidget
   Q_OBJECT
 
   signals:
-    void rightMouseButton ();
     void statusMessage (QString);
     void chartObjectCreated (Setting *);
     void infoMessage (Setting *);
     void leftMouseButton (int, int, bool);
     void keyPressed (QKeyEvent *);
+    void signalEditIndicator (QString, Plot *);
+    void signalDeleteIndicator (QString, Plot *);
+    void signalEditChartObject (Setting *, Plot *);
+    void signalDeleteChartObject (QString, Plot *);
+    void signalNewIndicator ();
+    void signalNewChartObject (QString, Plot *);
 
   public:
 
@@ -95,6 +101,7 @@ class Plot : public QWidget
     bool getTabFlag ();
     void setPAFBoxSize (double);
     void setPAFReversal (int);
+    bool getMainFlag ();
 
     void addIndicator (QString, Indicator *);
     Indicator * getIndicator (QString);
@@ -124,7 +131,8 @@ class Plot : public QWidget
     void setInterval(Plot::TimeInterval);
     void setDateFlag (bool);
     void crossHair (int, int);
-    void print ();
+    void printChart ();
+    void showPopupMenu ();
 
   protected:
     virtual void paintEvent (QPaintEvent *);
@@ -167,6 +175,14 @@ class Plot : public QWidget
     void getXY (int, int, int);
     void createXGrid ();
 
+    void slotEditIndicator (int);
+    void slotDeleteIndicator (int);
+    void slotEditChartObject (int);
+    void slotDeleteChartObject (int);
+    void slotNewIndicator ();
+    void slotNewChartObject (int);
+
+
   private:
     QFont plotFont;
     PlotLine *currentLine;
@@ -199,15 +215,9 @@ class Plot : public QWidget
     int crossHairY;
 
     int scaleWidth;
-//    double scaleHigh;
-//    double scaleLow;
-//    double scaler;
     double mainHigh;
     double mainLow;
     QArray<double> scaleArray;
-//    QStringList scaleList;
-//    double logScaleHigh;
-//    double logRange;
     Scaler scaler;
 
     QString y1;
@@ -225,6 +235,13 @@ class Plot : public QWidget
 
     QDict<Setting> dateList;
     QArray<int> xGrid;
+
+    QPopupMenu *chartMenu;
+    QPopupMenu *chartEditMenu;
+    QPopupMenu *chartDeleteMenu;
+    QPopupMenu *chartObjectDeleteMenu;
+    QPopupMenu *chartObjectEditMenu;
+    QPopupMenu *chartObjectMenu;
 };
 
 #endif

@@ -53,32 +53,20 @@
 #include "done.xpm"
 #include "configure.xpm"
 #include "scaletoscreen.xpm"
-#include "edit.xpm"
-#include "delete.xpm"
-#include "co.xpm"
 #include "qtstalker.xpm"
 #include "nav.xpm"
 #include "dirclosed.xpm"
 #include "plainitem.xpm"
 #include "portfolio.xpm"
 #include "test.xpm"
-#include "text.xpm"
-#include "buyarrow.xpm"
-#include "sellarrow.xpm"
-#include "fib.xpm"
-#include "horizontal.xpm"
-#include "vertical.xpm"
-#include "trend.xpm"
 #include "loggrid.xpm"
 #include "hidechart.xpm"
 #include "date.xpm"
 //#include "scanner.xpm"
-#include "print.xpm"
 
 QtstalkerApp::QtstalkerApp()
 {
   config = 0;
-  chartMenu = 0;
   recordList = 0;
   status = None;
   plotList.setAutoDelete(TRUE);
@@ -155,7 +143,13 @@ QtstalkerApp::QtstalkerApp()
   QObject::connect(this, SIGNAL(signalPlotFont(QFont)), mainPlot, SLOT(setPlotFont(QFont)));
   emit signalPlotFont(font);
 
-  QObject::connect(mainPlot, SIGNAL(rightMouseButton()), this, SLOT(mainPlotPopupMenu()));
+  QObject::connect(mainPlot, SIGNAL(signalNewIndicator()), this, SLOT(slotNewIndicator()));
+  QObject::connect(mainPlot, SIGNAL(signalNewChartObject(QString, Plot *)), this, SLOT(slotNewChartObject(QString, Plot *)));
+  QObject::connect(mainPlot, SIGNAL(signalEditChartObject(Setting *, Plot *)), this, SLOT(slotEditChartObject(Setting *, Plot *)));
+  QObject::connect(mainPlot, SIGNAL(signalDeleteChartObject(QString, Plot *)), this, SLOT(slotDeleteChartObject(QString, Plot *)));
+  QObject::connect(mainPlot, SIGNAL(signalEditIndicator(QString, Plot *)), this, SLOT(slotEditIndicator(QString, Plot *)));
+  QObject::connect(mainPlot, SIGNAL(signalDeleteIndicator(QString, Plot *)), this, SLOT(slotDeleteIndicator(QString, Plot *)));
+
   QObject::connect(mainPlot, SIGNAL(statusMessage(QString)), this, SLOT(slotStatusMessage(QString)));
   QObject::connect(mainPlot, SIGNAL(chartObjectCreated(Setting *)), this, SLOT(slotChartObjectCreated(Setting *)));
   QObject::connect(mainPlot, SIGNAL(infoMessage(Setting *)), this, SLOT(slotUpdateInfo(Setting *)));
@@ -350,17 +344,6 @@ void QtstalkerApp::initActions()
   actionPlotDate->setStatusTip(tr("Toggle indicator date."));
   connect(actionPlotDate, SIGNAL(toggled(bool)), this, SLOT(slotPlotDate(bool)));
 
-  icon = print;
-  actionPrintMain = new QAction(tr("Print Main Chart"), icon, tr("Print Main Chart"), 0, this);
-  actionPrintMain->setStatusTip(tr("Print main chart."));
-  actionPrintMain->setEnabled(FALSE);
-  connect(actionPrintMain, SIGNAL(activated()), this, SLOT(slotPrintMainChart()));
-
-  actionPrintTabbed = new QAction(tr("Print Tabbed Chart"), icon, tr("Print Tabbed Chart"), 0, this);
-  actionPrintTabbed->setStatusTip(tr("Print tabbed chart."));
-  actionPrintTabbed->setEnabled(FALSE);
-  connect(actionPrintTabbed, SIGNAL(activated()), this, SLOT(slotPrintTabbedChart()));
-
 //  QAction *action = new QAction(QString::null, icon, QString::null, CTRL+Key_M, this);
 //  connect(action, SIGNAL(activated()), this, SLOT(slotMainPlotFocus()));
 
@@ -371,9 +354,6 @@ void QtstalkerApp::initActions()
 void QtstalkerApp::initMenuBar()
 {
   fileMenu = new QPopupMenu();
-  actionPrintMain->addTo(fileMenu);
-  actionPrintTabbed->addTo(fileMenu);
-  fileMenu->insertSeparator();
   actionQuit->addTo(fileMenu);
 
   editMenu = new QPopupMenu();
@@ -402,42 +382,6 @@ void QtstalkerApp::initMenuBar()
   menuBar()->insertItem(tr("&Tools"), toolMenu);
   menuBar()->insertSeparator();
   menuBar()->insertItem(tr("&Help"), helpMenu);
-
-  chartMenu = new QPopupMenu();
-  chartMenu->insertItem(QPixmap(indicator), tr("New Indicator"), this, SLOT(slotNewIndicator()));
-  chartDeleteMenu = new QPopupMenu();
-  chartEditMenu = new QPopupMenu();
-  chartMenu->insertItem(QPixmap(edit), tr("Edit Indicator"), chartEditMenu);
-  chartMenu->insertItem (QPixmap(deletefile), tr("Delete Indicator"), chartDeleteMenu);
-  chartMenu->insertSeparator ();
-  chartObjectDeleteMenu = new QPopupMenu();
-  chartObjectEditMenu = new QPopupMenu();
-
-  chartObjectMenu = new QPopupMenu();
-  QStringList l = mainPlot->getChartObjectList();
-  int id = chartObjectMenu->insertItem(QPixmap(buyarrow), l[0], this, SLOT(slotNewChartObject(int)));
-  chartObjectMenu->setItemParameter(id, id);
-  id = chartObjectMenu->insertItem(QPixmap(sellarrow), l[1], this, SLOT(slotNewChartObject(int)));
-  chartObjectMenu->setItemParameter(id, id);
-  id = chartObjectMenu->insertItem(QPixmap(fib), l[2], this, SLOT(slotNewChartObject(int)));
-  chartObjectMenu->setItemParameter(id, id);
-  id = chartObjectMenu->insertItem(QPixmap(horizontal), l[3], this, SLOT(slotNewChartObject(int)));
-  chartObjectMenu->setItemParameter(id, id);
-  id = chartObjectMenu->insertItem(QPixmap(vertical), l[4], this, SLOT(slotNewChartObject(int)));
-  chartObjectMenu->setItemParameter(id, id);
-  id = chartObjectMenu->insertItem(QPixmap(trend), l[5], this, SLOT(slotNewChartObject(int)));
-  chartObjectMenu->setItemParameter(id, id);
-  id = chartObjectMenu->insertItem(QPixmap(text), l[6], this, SLOT(slotNewChartObject(int)));
-  chartObjectMenu->setItemParameter(id, id);
-
-  chartMenu->insertItem (QPixmap(co), tr("New Chart Object"), chartObjectMenu);
-
-  chartMenu->insertItem (QPixmap(edit), tr("Edit Chart Object"), chartObjectEditMenu);
-  chartMenu->insertItem (QPixmap(deletefile), tr("Delete Chart Object"), chartObjectDeleteMenu);
-
-  chartMenu->insertSeparator ();
-  chartMenu->insertItem(QPixmap(print), tr("Print Main Chart"), this, SLOT(slotPrintMainChart()));
-  chartMenu->insertItem(QPixmap(print), tr("Print Tabbed Chart"), this, SLOT(slotPrintTabbedChart()));
 }
 
 void QtstalkerApp::initToolBar()
@@ -536,8 +480,6 @@ void QtstalkerApp::slotOpenChart (QString selection)
   actionDatawindow->setEnabled(TRUE);
   actionNewIndicator->setEnabled(TRUE);
   barCombo->setEnabled(TRUE);
-  actionPrintMain->setEnabled(TRUE);
-  actionPrintTabbed->setEnabled(TRUE);
   status = Chart;
   qApp->processEvents();
   loadChart(selection);
@@ -986,17 +928,15 @@ void QtstalkerApp::slotBarComboChanged (int index)
   loadChart(chartPath);
 }
 
-void QtstalkerApp::slotNewChartObject (int id)
+void QtstalkerApp::slotNewChartObject (QString selection, Plot *plot)
 {
-  QString selection = chartObjectMenu->text(id);
-
   bool ok = FALSE;
   QString name = QInputDialog::getText(tr("Chart Object Name"),
-  						      tr("Enter a unique name for this chart object."),
-						      QLineEdit::Normal,
-						      tr("New Chart Object"),
-						      &ok,
-						      this);
+  				       tr("Enter a unique name for this chart object."),
+				       QLineEdit::Normal,
+				       tr("New Chart Object"),
+				       &ok,
+				       this);
   if (ok == FALSE)
     return;
 
@@ -1010,13 +950,7 @@ void QtstalkerApp::slotNewChartObject (int id)
     return;
   }
 
-  if (chartObjectId)
-  {
-    Plot *plot = plotList[tabs->label(tabs->currentPageIndex())];
-    plot->createChartObject(selection, name);
-  }
-  else
-    mainPlot->createChartObject(selection, name);
+  plot->createChartObject(selection, name);
 }
 
 void QtstalkerApp::slotChartObjectCreated (Setting *co)
@@ -1027,20 +961,8 @@ void QtstalkerApp::slotChartObjectCreated (Setting *co)
   delete db;
 }
 
-void QtstalkerApp::slotEditChartObject (int id)
+void QtstalkerApp::slotEditChartObject (Setting *co, Plot *plot)
 {
-  QString name = chartObjectEditMenu->text(id);
-  bool flag = FALSE;
-  Indicator *i = mainPlot->getIndicator("Main Plot");
-  Setting *co = i->getChartObject(name);
-  if (! co)
-  {
-    Plot *plot = plotList[tabs->label(tabs->currentPageIndex())];
-    i = plot->getIndicator(tabs->label(tabs->currentPageIndex()));
-    co = i->getChartObject(name);
-    flag = TRUE;
-  }
-
   EditDialog *dialog = new EditDialog(config);
 
   QString s = tr("Edit Chart Object");
@@ -1059,56 +981,19 @@ void QtstalkerApp::slotEditChartObject (int id)
     db->setChartObject(co->getData("Name"), co);
     delete db;
 
-    if (! flag)
-      mainPlot->draw();
-    else
-    {
-      QDictIterator<Plot> it(plotList);
-      for(; it.current(); ++it)
-      {
-        if (! it.current()->getTabFlag())
-          it.current()->draw();
-      }
-      slotTabChanged(0);
-    }
+    plot->draw();
   }
 
   delete dialog;
 }
 
-void QtstalkerApp::slotDeleteChartObject (int id)
+void QtstalkerApp::slotDeleteChartObject (QString name, Plot *plot)
 {
-  QString name = chartObjectDeleteMenu->text(id);
-  bool flag = FALSE;
-  Indicator *i = mainPlot->getIndicator("Main Plot");
-  Setting *co = i->getChartObject(name);
-  if (! co)
-  {
-    Plot *plot = plotList[tabs->label(tabs->currentPageIndex())];
-    i = plot->getIndicator(tabs->label(tabs->currentPageIndex()));
-    co = i->getChartObject(name);
-    flag = TRUE;
-  }
-
-  i->deleteChartObject(name);
-
   ChartDb *db = new ChartDb();
   db->openChart(chartPath);
   db->deleteChartObject(name);
   delete db;
-
-  if (! flag)
-    mainPlot->draw();
-  else
-  {
-    QDictIterator<Plot> it(plotList);
-    for(; it.current(); ++it)
-    {
-      if (! it.current()->getTabFlag())
-        it.current()->draw();
-    }
-    slotTabChanged(0);
-  }
+  plot->draw();
 }
 
 QString QtstalkerApp::getWindowCaption ()
@@ -1211,133 +1096,6 @@ void QtstalkerApp::slotDataWindow ()
   }
 
   dw->show();
-}
-
-void QtstalkerApp::plotPopupMenu (int area)
-{
-  chartEditMenu->clear();
-  chartDeleteMenu->clear();
-
-  int loop;
-  QStringList l = config->getIndicators();
-  for (loop = 0; loop < (int) l.count(); loop++)
-  {
-    int id = chartDeleteMenu->insertItem(QPixmap(indicator), l[loop], this, SLOT(slotDeleteIndicator(int)));
-    chartDeleteMenu->setItemParameter(id, id);
-
-    id = chartEditMenu->insertItem(QPixmap(indicator), l[loop], this, SLOT(slotEditIndicator(int)));
-    chartEditMenu->setItemParameter(id, id);
-  }
-
-  chartMenu->setItemParameter(chartObjectId, area);
-}
-
-void QtstalkerApp::mainPlotPopupMenu ()
-{
-  plotPopupMenu(0);
-  
-  chartObjectEditMenu->clear();
-  chartObjectDeleteMenu->clear();
-
-  Indicator *i = mainPlot->getIndicator("Main Plot");
-  QStringList l = i->getChartObjects();
-  int loop;
-  for (loop = 0; loop < (int) l.count(); loop++)
-  {
-    QPixmap icon;
-    Setting *co = i->getChartObject(l[loop]);
-    switch (co->getInt("ObjectType"))
-    {
-      case Plot::VerticalLine:
-        icon = vertical;
-        break;
-      case Plot::HorizontalLine:
-        icon = horizontal;
-        break;
-      case Plot::TrendLine:
-        icon = trend;
-        break;
-      case Plot::Text:
-        icon = text;
-        break;
-      case Plot::BuyArrow:
-        icon = buyarrow;
-        break;
-      case Plot::SellArrow:
-        icon = sellarrow;
-        break;
-      case Plot::FibonacciLine:
-        icon = fib;
-        break;
-      default:
-        break;
-    }
-
-    int id = chartObjectEditMenu->insertItem(icon, l[loop], this, SLOT(slotEditChartObject(int)));
-    chartObjectEditMenu->setItemParameter(id, id);
-
-    id = chartObjectDeleteMenu->insertItem(icon, l[loop], this, SLOT(slotDeleteChartObject(int)));
-    chartObjectDeleteMenu->setItemParameter(id, id);
-  }
-
-  chartObjectId = 0;
-  chartMenu->exec(QCursor::pos());
-}
-
-void QtstalkerApp::indicatorPlotPopupMenu ()
-{
-  if (status == None)
-    return;
-
-  plotPopupMenu(1);
-
-  chartObjectEditMenu->clear();
-  chartObjectDeleteMenu->clear();
-
-  Plot *plot = plotList[tabs->label(tabs->currentPageIndex())];
-  Indicator *i = plot->getIndicator(tabs->label(tabs->currentPageIndex()));
-  QStringList l = i->getChartObjects();
-  int loop;
-  for (loop = 0; loop < (int) l.count(); loop++)
-  {
-    QPixmap icon;
-    Setting *co = i->getChartObject(l[loop]);
-    switch (co->getInt("ObjectType"))
-    {
-      case Plot::VerticalLine:
-        icon = vertical;
-        break;
-      case Plot::HorizontalLine:
-        icon = horizontal;
-        break;
-      case Plot::TrendLine:
-        icon = trend;
-        break;
-      case Plot::Text:
-        icon = text;
-        break;
-      case Plot::BuyArrow:
-        icon = buyarrow;
-        break;
-      case Plot::SellArrow:
-        icon = sellarrow;
-        break;
-      case Plot::FibonacciLine:
-        icon = fib;
-        break;
-      default:
-        break;
-    }
-
-    int id = chartObjectEditMenu->insertItem(icon, l[loop], this, SLOT(slotEditChartObject(int)));
-    chartObjectEditMenu->setItemParameter(id, id);
-
-    id = chartObjectDeleteMenu->insertItem(icon, l[loop], this, SLOT(slotDeleteChartObject(int)));
-    chartObjectDeleteMenu->setItemParameter(id, id);
-  }
-
-  chartObjectId = 1;
-  chartMenu->exec(QCursor::pos());
 }
 
 void QtstalkerApp::slotCompressionChanged (int)
@@ -1445,10 +1203,8 @@ void QtstalkerApp::slotNewIndicator ()
   delete dialog;
 }
 
-void QtstalkerApp::slotEditIndicator (int id)
+void QtstalkerApp::slotEditIndicator (QString selection, Plot *plot)
 {
-  QString selection = chartEditMenu->text(id);
-
   EditDialog *dialog = new EditDialog(config);
 
   dialog->setCaption(tr("Edit Indicator"));
@@ -1480,10 +1236,7 @@ void QtstalkerApp::slotEditIndicator (int id)
     i->parse(config->getIndicator(set2->getData(tr("Name"))));
     loadIndicator(i);
 
-    if (i->getMainPlot())
-      mainPlot->draw();
-    else
-      slotTabChanged(0);
+    plot->draw();
   }
 
   config->closePlugins();
@@ -1491,28 +1244,17 @@ void QtstalkerApp::slotEditIndicator (int id)
   delete dialog;
 }
 
-void QtstalkerApp::slotDeleteIndicator (int id)
+void QtstalkerApp::slotDeleteIndicator (QString text, Plot *plot)
 {
-  bool mainFlag = FALSE;
+  Indicator *i = plot->getIndicator(text);
 
-  QString text = chartDeleteMenu->text(id);
-
-  Indicator *i = mainPlot->getIndicator(text);
-  if (! i)
+  if (! plot->getMainFlag())
   {
     if (tabs->count() == 1)
     {
       QMessageBox::information(this, tr("Qtstalker: Error"), tr("Must leave at least one indicator tab."));
       return;
     }
-
-    Plot *plot = plotList[text];
-    i = plot->getIndicator(text);
-  }
-  else
-  {
-    i = mainPlot->getIndicator(text);
-    mainFlag = TRUE;
   }
 
   // delete any chart objects that belong to the indicator
@@ -1525,10 +1267,8 @@ void QtstalkerApp::slotDeleteIndicator (int id)
     db->deleteChartObject(l[loop]);
   delete db;
 
-  if (! mainFlag)
+  if (! plot->getMainFlag())
   {
-    Plot *plot = plotList[text];
-
     if (plot->getTabFlag())
       tabs->removePage((QWidget *) plot);
     else
@@ -1540,13 +1280,13 @@ void QtstalkerApp::slotDeleteIndicator (int id)
     }
   }
   else
-    mainPlot->deleteIndicator(text);
+    plot->deleteIndicator(text);
 
   config->deleteIndicator(text);
 
   emit signalIndicatorPageRefresh();
 
-  if (mainFlag)
+  if (plot->getMainFlag())
     mainPlot->draw();
 }
 
@@ -1613,7 +1353,13 @@ void QtstalkerApp::addIndicatorButton (QString d, bool tabFlag)
   }
   plotList.replace(d, plot);
 
-  QObject::connect(plot, SIGNAL(rightMouseButton()), this, SLOT(indicatorPlotPopupMenu()));
+  QObject::connect(plot, SIGNAL(signalNewIndicator()), this, SLOT(slotNewIndicator()));
+  QObject::connect(plot, SIGNAL(signalNewChartObject(QString, Plot *)), this, SLOT(slotNewChartObject(QString, Plot *)));
+  QObject::connect(plot, SIGNAL(signalEditChartObject(Setting *, Plot *)), this, SLOT(slotEditChartObject(Setting *, Plot *)));
+  QObject::connect(plot, SIGNAL(signalDeleteChartObject(QString, Plot *)), this, SLOT(slotDeleteChartObject(QString, Plot *)));
+  QObject::connect(plot, SIGNAL(signalEditIndicator(QString, Plot *)), this, SLOT(slotEditIndicator(QString, Plot *)));
+  QObject::connect(plot, SIGNAL(signalDeleteIndicator(QString, Plot *)), this, SLOT(slotDeleteIndicator(QString, Plot *)));
+
   QObject::connect(plot, SIGNAL(statusMessage(QString)), this, SLOT(slotStatusMessage(QString)));
   QObject::connect(plot, SIGNAL(chartObjectCreated(Setting *)), this, SLOT(slotChartObjectCreated(Setting *)));
   QObject::connect(plot, SIGNAL(infoMessage(Setting *)), this, SLOT(slotUpdateInfo(Setting *)));
@@ -1855,26 +1601,6 @@ void QtstalkerApp::slotPlotKeyPressed (QKeyEvent *key)
       break;
     default:
       break;
-  }
-}
-
-void QtstalkerApp::slotPrintMainChart ()
-{
-  if (status == None)
-    return;
-
-  mainPlot->print();
-}
-
-void QtstalkerApp::slotPrintTabbedChart ()
-{
-  if (status == None)
-    return;
-
-  if (plotList.count())
-  {
-    Plot *plot = plotList[tabs->label(tabs->currentPageIndex())];
-    plot->print();
   }
 }
 

@@ -71,7 +71,7 @@
   distributions when compiling. The old /usr/lib/libqtstalker was being linked instead of the newly compiled library in
   the source tree. This shows up as undefined references to functions when make tries to link the qtstalker binary to the
   old library instead of the new library. Hopefully, this will fix it.
-  
+
 - App now saves and restores window height, width, x and y positions.
 
 - Bar position is restored if chart is reloaded. No longer resets to the last bar.
@@ -88,7 +88,7 @@
 
 - Modified the drawing routines for Plot::drawXGrid, Plot::getXFromDate to increase speed.
 
-- Added ability to print charts from pulldown and chart popup menus. Have not tested this, hope it works properly...
+- Added ability to print charts chart popup menus. Have not tested this, hope it works properly...
 
 - Applied patch #872874 - apply yahoo adjusted close column. Essentially the yahoo plugin can now do
   adjusted splits for stocks. Consult the docs for the details on how this works. Thanks to Martin Flack
@@ -106,7 +106,13 @@
 
 - Added a new Scaler class for use in plotting flexibility. This is a utility class. 
 
-- 20040118: Updated copyright notice and cleaned up .pro files for indicator plugins.
+- 20040118: Updated copyright notice and cleaned up .pro files for quote plugins.
+
+- 20040121: Updated copyright notice and cleaned up .pro files for indicator plugins.
+
+- 20040122: Moved the chart popup menu creation routines to Plot class. This also has the effect of
+            the popup menu listing only chart objects and indicators that apply to the chart clicked
+	    on.
 
 
 0.22

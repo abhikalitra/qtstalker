@@ -56,18 +56,11 @@ SOURCES += Scaler.cpp
 
 TARGET = qtstalker
 
-#INCLUDEPATH += ../db-2.7.7/build_unix
 INCLUDEPATH += ../lib
 
-#LIBS += -L../db-2.7.7/build_unix -ldb
-#LIBS += -L/usr/lib
 LIBS += -L../lib -lqtstalker
 
-# linux options
 unix:linux-g++:LIBS += -ldl
-
-# mac os x options
-macx:QMAKE_CXXFLAGS += -bundle
 
 target.path = /usr/bin
 INSTALLS += target

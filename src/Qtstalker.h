@@ -21,7 +21,6 @@
 #include <qmainwindow.h>
 #include <qaction.h>
 #include <qmenubar.h>
-#include <qpopupmenu.h>
 #include <qtoolbar.h>
 #include <qstring.h>
 #include <qpixmap.h>
@@ -102,18 +101,15 @@ class QtstalkerApp : public QMainWindow
     void slotDataWindow ();
     void slotBarComboChanged (int);
     void slotNewIndicator ();
-    void slotEditIndicator (int);
-    void slotDeleteIndicator (int);
-    void slotNewChartObject (int);
-    void slotEditChartObject (int);
-    void slotDeleteChartObject (int);
+    void slotEditIndicator (QString, Plot *);
+    void slotDeleteIndicator (QString, Plot *);
+    void slotNewChartObject (QString, Plot *);
+    void slotEditChartObject (Setting *, Plot *);
+    void slotDeleteChartObject (QString, Plot *);
     void slotGrid (bool);
     void slotCompressionChanged (int);
     void slotChartTypeChanged (int);
     void slotSliderChanged (int);
-    void plotPopupMenu (int);
-    void mainPlotPopupMenu ();
-    void indicatorPlotPopupMenu ();
     void slotPixelspaceChanged (int);
     void slotScaleToScreen (bool);
     void slotChartUpdated ();
@@ -127,8 +123,6 @@ class QtstalkerApp : public QMainWindow
     void slotPlotDate (bool);
     void slotPlotLeftMouseButton (int, int, bool);
     void slotPlotKeyPressed (QKeyEvent *);
-    void slotPrintMainChart ();
-    void slotPrintTabbedChart ();
 
   private:
     QPopupMenu *fileMenu;
@@ -136,13 +130,6 @@ class QtstalkerApp : public QMainWindow
     QPopupMenu *viewMenu;
     QPopupMenu *toolMenu;
     QPopupMenu *helpMenu;
-
-    QPopupMenu *chartMenu;
-    QPopupMenu *chartEditMenu;
-    QPopupMenu *chartDeleteMenu;
-    QPopupMenu *chartObjectDeleteMenu;
-    QPopupMenu *chartObjectEditMenu;
-    QPopupMenu *chartObjectMenu;
 
     QAction *actionQuit;
     QAction *actionAbout;
@@ -156,8 +143,6 @@ class QtstalkerApp : public QMainWindow
     QAction *actionLogScale;
     QAction *actionHideMainPlot;
     QAction *actionPlotDate;
-    QAction *actionPrintMain;
-    QAction *actionPrintTabbed;
 
     QToolBar *toolbar;
     QToolBar *toolbar2;
@@ -182,7 +167,6 @@ class QtstalkerApp : public QMainWindow
     QString chartName;
     QString chartType;
     QString chartSymbol;
-    int chartObjectId;
     QList<Setting> *recordList;
     QMultiLineEdit *infoLabel;
 };
