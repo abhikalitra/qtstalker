@@ -31,6 +31,7 @@
 #include <qtabwidget.h>
 #include <qsplitter.h>
 #include <qlabel.h>
+#include <qtoolbutton.h>
 
 #include "Indicator.h"
 #include "Plot.h"
@@ -57,6 +58,9 @@ class QtstalkerApp : public QMainWindow
     void initActions ();
     void initMenuBar ();
     void initToolBar ();
+    void initGroupNav ();
+    void initChartNav ();
+    void initInfoNav ();
     QString getWindowCaption ();
     void setChartType (int);
     void loadChart (QString);
@@ -64,13 +68,13 @@ class QtstalkerApp : public QMainWindow
     void addIndicatorButton (QString);
     void setPlotFont (Plot *);
     void setPlotColor (Plot *, Config::Parm);
+    void exportChart (QString);
+    void traverse(QString);
 
   public slots:
 
     void slotAbout ();
     void slotQuit();
-    void slotWorkwithChart ();
-    void slotWorkwithGroup ();
     void slotWorkwithPortfolio ();
     void slotOpenChart (QString);
     void slotQuotes ();
@@ -99,7 +103,16 @@ class QtstalkerApp : public QMainWindow
     void slotTabChanged (QWidget *);
     void slotChartObjectCreated (Setting *);
     void slotChartSelected (QString);
-    void slotGroupChanged ();
+    void slotNewGroup ();
+    void slotAddGroupItem ();
+    void slotDeleteGroupItem ();
+    void slotDeleteGroup ();
+    void slotRenameGroup ();
+    void slotGroupSelected (QString);
+    void slotEditChart ();
+    void slotDeleteChart ();
+    void slotExportSymbol ();
+    void slotExportAll ();
 
   private:
     QPopupMenu *fileMenu;
@@ -118,8 +131,6 @@ class QtstalkerApp : public QMainWindow
 
     QAction *actionQuit;
     QAction *actionAbout;
-    QAction *actionWorkwithChart;
-    QAction *actionWorkwithGroup;
     QAction *actionOptions;
     QAction *actionGrid;
     QAction *actionDatawindow;
@@ -130,10 +141,22 @@ class QtstalkerApp : public QMainWindow
     QAction *actionNewPlugin;
     QAction *actionWorkwithTest;
 
+    QToolButton *groupNewButton;
+    QToolButton *groupAddButton;
+    QToolButton *groupDeleteButton;
+    QToolButton *groupDeleteItemButton;
+    QToolButton *groupRenameButton;
+    QToolButton *chartEditButton;
+    QToolButton *chartDeleteButton;
+    QToolButton *chartExportButton;
+    QToolButton *chartExportAllButton;
+
     QToolBar *toolbar;
     QMenuBar *menubar;
     QSplitter *split;
+    QSplitter *navSplitter;
     QTabWidget *tabs;
+    QTabWidget *navTab;
     QWidget *baseWidget;
     Navigator *chartNav;
     Navigator *groupNav;

@@ -54,7 +54,8 @@ class Config
       Group,
       TestPath,
       PlotFont,
-      AppFont
+      AppFont,
+      NavAreaSize
     };
 
     Config (QString);

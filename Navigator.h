@@ -45,6 +45,7 @@ class Navigator : public QWidget
     QString getFileSelection ();
     void setDirectory (QString);
     void setColumnText (QString);
+    QString getCurrentPath ();
 
   public slots:
     void upDirectory ();

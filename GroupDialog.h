@@ -37,7 +37,6 @@ class GroupDialog : public QDialog
   public:
     GroupDialog (Config *);
     ~GroupDialog ();
-    void setGroup (QStringList);
     QStringList getGroup ();
     bool getFlag ();
 

@@ -103,6 +103,7 @@ void Navigator::upDirectory ()
   {
     currentDir.cdUp();
     updateList();
+    emit fileSelected(getFileSelection());
   }
 }
 
@@ -161,16 +162,12 @@ void Navigator::setFileInfo ()
 void Navigator::fileSelection (QListViewItem *item)
 {
   if (! item)
-  {
-    emit fileSelected(getFileSelection());
     return;
-  }
 
   QString s = item->text(0);
   if (! s.compare(".."))
   {
     upDirectory();
-    emit fileSelected(getFileSelection());
     return;
   }
 
@@ -226,5 +223,10 @@ void Navigator::setDirectory (QString d)
 void Navigator::setColumnText (QString d)
 {
   list->setColumnText(0, d);
+}
+
+QString Navigator::getCurrentPath ()
+{
+  return currentDir.absPath();
 }
 

@@ -51,7 +51,7 @@ Config::Config (QString p)
       qDebug("Unable to create ~/Qtstalker/data directory.");
   }
   setData(DataPath, s);
-  
+
   s = home;
   s.append("/group");
   if (! dir.exists(s, TRUE))
@@ -189,6 +189,9 @@ QString Config::getData (Parm p)
     case AppFont:
       s = settings.readEntry("/Qtstalker/AppFont", "Helvetica 9 50");
       break;
+    case NavAreaSize:
+      s = settings.readEntry("/Qtstalker/NavAreaSize", "25");
+      break;
     default:
       break;
   }
@@ -274,6 +277,9 @@ void Config::setData (Parm p, QString d)
     case AppFont:
       settings.writeEntry("/Qtstalker/AppFont", d);
       break;
+    case NavAreaSize:
+      settings.writeEntry("/Qtstalker/NavAreaSize", d);
+      break;
     default:
       break;
   }
@@ -294,8 +300,6 @@ QStringList Config::getGroupList ()
 
 void Config::setGroup (QString n, QStringList l)
 {
-  deleteGroup(n);
-
   QString s = getData(GroupPath);
   s.append("/");
   s.append(n);

@@ -100,17 +100,6 @@ GroupDialog::~GroupDialog ()
 {
 }
 
-void GroupDialog::setGroup (QStringList l)
-{
-  list->clear();
-
-  int loop;
-  for (loop = 0; loop < (int) l.count(); loop++)
-    item = new QListViewItem(list, l[loop]);
-
-  item = 0;
-}
-
 QStringList GroupDialog::getGroup ()
 {
   QStringList l;
