@@ -29,6 +29,7 @@
 
 Navigator::Navigator (QWidget *w, QString bp) : QWidget(w)
 {
+  item = 0;
   basePath = bp;
 
   currentDir.setPath(bp);

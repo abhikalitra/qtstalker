@@ -38,6 +38,7 @@
 #include <qbuttongroup.h>
 #include <qlabel.h>
 #include <qslider.h>
+#include <qtable.h>
 #include "Config.h"
 #include "Indicator.h"
 #include "Setting.h"
@@ -72,6 +73,7 @@ class Tester : public QDialog
     void clearAlertCounts ();
     void checkAlerts ();
     void createSummary ();
+    void getVolume ();
 
   public slots:
     void editIndicator ();
@@ -93,7 +95,7 @@ class Tester : public QDialog
     Config *config;
     QTabWidget *tabs;
     QListView *indicatorList;
-    QListView *tradeList;
+    QTable *tradeList;
     QListViewItem *item;
     QDict<Indicator> enterLongIndicators;
     QDict<Indicator> exitLongIndicators;
@@ -125,6 +127,8 @@ class Tester : public QDialog
     QSpinBox *entryCom;
     QSpinBox *exitCom;
     QSpinBox *account;
+    QSpinBox *volumePercent;
+    QSpinBox *margin;
     QDateEdit *startDate;
     QDateEdit *endDate;
     QDoubleValidator *validator;
@@ -146,6 +150,7 @@ class Tester : public QDialog
     int exitLongCount;
     int enterShortCount;
     int exitShortCount;
+    int volume;
 
     QLabel *summaryNetProfit;
     QLabel *summaryNetPercentage;

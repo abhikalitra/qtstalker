@@ -28,6 +28,7 @@
 #include <qvgroupbox.h>
 #include <qinputdialog.h>
 #include <qsplitter.h>
+#include <qheader.h>
 #include "Tester.h"
 #include "edit.xpm"
 #include "delete.xpm"
@@ -279,7 +280,7 @@ void Tester::createTestPage ()
   vbox->setMargin(5);
   vbox->setSpacing(5);
   
-  QGridLayout *grid = new QGridLayout(vbox, 2, 2);
+  QGridLayout *grid = new QGridLayout(vbox);
   grid->setSpacing(5);
 
   QVGroupBox *gbox = new QVGroupBox(tr("Trades"), w);
@@ -329,6 +330,10 @@ void Tester::createTestPage ()
 
   account = new QSpinBox(0, 999999, 1, gbox);
   account->setValue(10000);
+  
+  label = new QLabel(tr("Futures Margin"), gbox);
+
+  margin = new QSpinBox(0, 999999, 1, gbox);
 
   gbox = new QVGroupBox(tr("Symbol"), w);
   gbox->setInsideSpacing(2);
@@ -337,6 +342,15 @@ void Tester::createTestPage ()
   symbolButton = new QPushButton(gbox);
   connect(symbolButton, SIGNAL(clicked()), this, SLOT(symbolButtonPressed()));
 
+  gbox = new QVGroupBox(tr("Volume"), w);
+  gbox->setInsideSpacing(2);
+  gbox->setColumns(2);
+  grid->addWidget(gbox, 2, 0);
+
+  label = new QLabel(tr("Account %"), gbox);
+
+  volumePercent = new QSpinBox(0, 100, 1, gbox);
+  
   testButton = new QPushButton(tr("Perform Test"), w);
   connect(testButton, SIGNAL(clicked()), this, SLOT(test()));
   vbox->addWidget(testButton);
@@ -352,17 +366,19 @@ void Tester::createReportPage ()
   vbox->setMargin(5);
   vbox->setSpacing(5);
 
-  tradeList = new QListView(w);
-  tradeList->addColumn(tr("Type"), -1);
-  tradeList->addColumn(tr("Entry"), -1);
-  tradeList->addColumn(tr("Entry price"), -1);
-  tradeList->addColumn(tr("Exit"), -1);
-  tradeList->addColumn(tr("Exit price"), -1);
-  tradeList->addColumn(tr("Signal"), -1);
-  tradeList->addColumn(tr("Profit"), -1);
-  tradeList->addColumn(tr("Account"), -1);
-  tradeList->setSelectionMode(QListView::Single);
-  tradeList->setSorting(1, TRUE);
+  tradeList = new QTable(0, 9, w);
+  tradeList->setSelectionMode(QTable::Single);
+  tradeList->setSorting(FALSE);
+  QHeader *header = tradeList->horizontalHeader();
+  header->setLabel(0, tr("Type"), 40);
+  header->setLabel(1, tr("Entry"), 70);
+  header->setLabel(2, tr("Entry Price"), 70);
+  header->setLabel(3, tr("Exit"), 70);
+  header->setLabel(4, tr("Exit Price"), 70);
+  header->setLabel(5, tr("Signal"), 70);
+  header->setLabel(6, tr("Profit"), 70);
+  header->setLabel(7, tr("Account"), 70);
+  header->setLabel(8, tr("Volume"), 40);
   vbox->addWidget(tradeList);
   
   // test summary
@@ -465,15 +481,17 @@ void Tester::createChartPage ()
   vbox->addWidget(split);
 
   equityPlot = new Plot (split);
-  equityPlot->setDateFlag(FALSE);
+  equityPlot->setDateFlag(TRUE);
+  equityPlot->setChartType("Line");
   equityPlot->setMainFlag(FALSE);
-  
+  equityPlot->clear();
+
   closePlot = new Plot (split);
   closePlot->setDateFlag(TRUE);
   closePlot->setChartType("Line");
   closePlot->setMainFlag(TRUE);
   closePlot->clear();
-  
+
   slider = new QSlider(w);
   slider->setOrientation(Qt::Horizontal);
   connect (slider, SIGNAL(valueChanged(int)), this, SLOT(sliderChanged(int)));
@@ -667,7 +685,7 @@ void Tester::deleteIndicator ()
   item = indicatorList->selectedItem();
   if (! item)
     return;
-    
+
   int id = buttonGroup->id(buttonGroup->selected());
   switch (id)
   {
@@ -740,7 +758,8 @@ void Tester::test ()
     return;
   }
 
-  tradeList->clear();
+  while (tradeList->numRows())
+    tradeList->removeRow(0);
 
   db->getHistory(ChartDb::Daily, sd);
   
@@ -755,7 +774,7 @@ void Tester::test ()
   loadExitShortAlerts ();
   
   clearAlertCounts();
-
+  
   for (testLoop = 0; testLoop < db->getDataSize(); testLoop++)
   {
     currentRecord = db->getRecordIndex(testLoop);
@@ -856,24 +875,34 @@ void Tester::test ()
   closePlot->setData(db->getRecordList());
   equityPlot->setData(db->getRecordList());
 
-/*
   PlotLine *line = new PlotLine;
+  line->setLabel("Equity");
+  line->setColor("green");
   Indicator *ind = new Indicator;
   ind->set("Plot", "True", Setting::None);
-  QListViewItemIterator it(tradeList);
   int loop;
+  int loop2 = 0;
+  double t = account->value();
   for (loop = 0; loop < db->getDataSize(); loop++)
   {
-    for (; it.current() != 0; ++it)
+    if (loop2 < tradeList->numRows())
     {
-      QListViewItem *i = it.current();
-      QString s = i->text(7);
-      line->append(s.toDouble());
+      Setting *r = db->getRecordIndex(loop);
+
+      QString s = r->getData("Date");
+      s.truncate(s.length() - 6);
+      if (! s.compare(tradeList->text(loop2, 3)))
+      {
+        t = tradeList->text(loop2, 7).toDouble();
+	loop2++;
+      }
     }
+
+    line->append(t);
   }
   ind->addLine(line);
   equityPlot->addIndicator("Equity", ind);
-*/
+  equityPlot->setCurrentIndicator("Equity");
 
   createSummary();
 
@@ -950,6 +979,7 @@ void Tester::enterLong ()
   buyRecord = currentRecord;
   trailingHigh = buyRecord->getFloat("Close");
   equity = equity - entryCom->value();
+  getVolume();
 
   clearAlertCounts();
 }
@@ -970,6 +1000,7 @@ void Tester::enterShort ()
   buyRecord = currentRecord;
   trailingLow = buyRecord->getFloat("Close");
   equity = equity - entryCom->value();
+  getVolume();
 
   clearAlertCounts();
 }
@@ -990,12 +1021,12 @@ void Tester::exitPosition (QString signal)
 
   if (status == -1)
   {
-    profit = enterPrice - exitPrice;
+    profit = (enterPrice - exitPrice) * volume;
     type = tr("Short");
   }
   else
   {
-    profit = exitPrice - enterPrice;
+    profit = (exitPrice - enterPrice) * volume;
     type = tr("Long");
   }
 
@@ -1012,16 +1043,16 @@ void Tester::exitPosition (QString signal)
 
   equity = equity - exitCom->value();
 
-  item = new QListViewItem(tradeList,
-  			   type,
-			   buyRecord->getData("Date").left(8),
-			   buyRecord->getData("Close"),
-			   currentRecord->getData("Date").left(8),
-			   currentRecord->getData("Close"),
-			   signal,
-			   QString::number(profit),
-			   QString::number(equity));
-
+  tradeList->setNumRows(tradeList->numRows() + 1);
+  tradeList->setText(tradeList->numRows() - 1, 0, type);
+  tradeList->setText(tradeList->numRows() - 1, 1, buyRecord->getData("Date").left(8));
+  tradeList->setText(tradeList->numRows() - 1, 2, buyRecord->getData("Close"));
+  tradeList->setText(tradeList->numRows() - 1, 3, currentRecord->getData("Date").left(8));
+  tradeList->setText(tradeList->numRows() - 1, 4, currentRecord->getData("Close"));
+  tradeList->setText(tradeList->numRows() - 1, 5, signal);
+  tradeList->setText(tradeList->numRows() - 1, 6, QString::number(profit));
+  tradeList->setText(tradeList->numRows() - 1, 7, QString::number(equity));
+  tradeList->setText(tradeList->numRows() - 1, 8, QString::number(volume));
 }
 
 bool Tester::maximumLoss ()
@@ -1205,16 +1236,25 @@ void Tester::symbolButtonPressed ()
 
   if (rc == QDialog::Accepted)
   {
-    symbolButton->setText(dialog->getSymbol());
+    QString symbol = dialog->getSymbol();
+    if (! symbol.length())
+    {
+      delete dialog;
+      return;
+    }
+
+    symbolButton->setText(symbol);
 
     QString s = config->getData(Config::DataPath);
     s.append("/");
-    s.append(dialog->getSymbol());
-    ChartDb *db = new ChartDb;
+    s.append(symbol);
+    db = new ChartDb;
     if (db->openChart(s))
     {
       delete db;
+      delete dialog;
       qDebug("Tester: Cant open db");
+      return;
     }
     
     Setting *details = db->getDetails();
@@ -1684,24 +1724,22 @@ void Tester::createSummary ()
   double largestWin = 0;
   double largestLose = 0;
   double accountDrawdown = account->value();
-  double commission = (tradeList->childCount() * entryCom->value()) + (tradeList->childCount() * exitCom->value());
+  double commission = (tradeList->numRows() * entryCom->value()) + (tradeList->numRows() * exitCom->value());
   double balance = 0;
   
   Indicator *i = closePlot->getIndicator("Main Plot");
 
   int count = 0;
-  QListViewItemIterator it(tradeList);
-  for (; it.current() != 0; ++it)
+  int loop;
+  for (loop = 0; loop < tradeList->numRows(); loop++)
   {
-    QListViewItem *item = it.current();
-
     // get long/short trades
-    QString s = item->text(0);
+    QString s = tradeList->text(loop, 0);
     if (! s.compare(tr("Long")))
     {
       longTrades++;
 
-      s = item->text(6);
+      s = tradeList->text(loop, 6);
       if (s.contains("-"))
       {
         loseLongTrades++;
@@ -1719,18 +1757,18 @@ void Tester::createSummary ()
 	  largestWin = s.toDouble();
       }
       
-      Setting *co = closePlot->newChartObject(tr("Vertical Line"));
+      Setting *co = closePlot->newChartObject(tr("Buy Arrow"));
       count++;
       co->set("Name", QString::number(count), Setting::None);
-      co->setData(tr("Date"), item->text(1));
-      co->setData(tr("Color"), "green");
+      co->setData(tr("Date"), tradeList->text(loop, 1));
+      co->setData(tr("Value"), QString::number(tradeList->text(loop, 2).toDouble() * .99));
       i->addChartObject(co);
     }
     else
     {
       shortTrades++;
 
-      s = item->text(6);
+      s = tradeList->text(loop, 6);
       if (s.contains("-"))
       {
         loseShortTrades++;
@@ -1748,15 +1786,15 @@ void Tester::createSummary ()
 	  largestWin = s.toDouble();
       }
 
-      Setting *co = closePlot->newChartObject(tr("Vertical Line"));
+      Setting *co = closePlot->newChartObject(tr("Sell Arrow"));
       count++;
       co->set("Name", QString::number(count), Setting::None);
-      co->setData(tr("Date"), item->text(1));
-      co->setData(tr("Color"), "red");
+      co->setData(tr("Date"), tradeList->text(loop, 1));
+      co->setData(tr("Value"), QString::number(tradeList->text(loop, 2).toDouble() * 1.01));
       i->addChartObject(co);
     }
 
-    s = item->text(7);
+    s = tradeList->text(loop, 7);
     if (s.toDouble() < accountDrawdown)
       accountDrawdown = s.toDouble();
 
@@ -1798,4 +1836,26 @@ void Tester::sliderChanged (int v)
   equityPlot->draw();
   closePlot->draw();
 }
+
+void Tester::getVolume ()
+{
+  if (volumePercent->value() == 0)
+  {
+    volume = 1;
+    return;
+  }
+
+  double balance = equity;
+  balance = balance * ((double) volumePercent->value() / 100.0);
+
+  if (margin->value())
+    volume = (int) (balance / margin->value());
+  else
+    volume = (int) (balance / buyRecord->getFloat("Close"));
+
+  if (volume < 1)
+    volume = 1;
+}
+
+
 

@@ -30,6 +30,7 @@ ChartDb::ChartDb ()
 {
   recordList.setAutoDelete(TRUE);
   db = 0;
+  details = 0;
 }
 
 ChartDb::~ChartDb ()
@@ -37,7 +38,8 @@ ChartDb::~ChartDb ()
   if (db)
     db->close(db, 0);
 
-  delete details;
+  if (details)
+    delete details;
 }
 
 int ChartDb::openChart (QString path)
