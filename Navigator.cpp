@@ -74,6 +74,8 @@ Navigator::~Navigator ()
 void Navigator::updateList ()
 {
   list->clear();
+  
+  currentDir.setPath(currentDir.absPath());
 
   int loop;
   for (loop = 1; loop < (int) currentDir.count(); loop++)

@@ -2,9 +2,13 @@
 0.16
 ======
 
+- Fixed bug that didn't update filelist after deleting a chart
+
+- COT changed filenames for the annual file, updated COT quote plugin to handle old and new names.
+
 - Fixed bug that skipped previous date when calculating MA's.
 
-- Added a compile option to increase speed "-O2".
+- Added a compile option to increase speed "-Os".
 
 - Fixed "export" all bug that seg faults when trying to export all charts.
 

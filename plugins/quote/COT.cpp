@@ -137,7 +137,14 @@ void COT::opDone2 (QNetworkOperation *o)
 
   QString tfile = dir.homeDirPath();
   tfile.append("/Qtstalker/ANNUAL.TXT");
-  dir.remove(tfile, TRUE);
+  if (dir.exists(tfile))
+    dir.remove(tfile, TRUE);
+  else
+  {
+    tfile = dir.homeDirPath();
+    tfile.append("/Qtstalker/annual.txt");
+    dir.remove(tfile, TRUE);
+  }
 
   QString s = dir.homeDirPath();
   s.append("/Qtstalker");

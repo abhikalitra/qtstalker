@@ -1,7 +1,7 @@
 TEMPLATE = lib
 
 CONFIG += thread warn_on debug dll
-QMAKE_CXXFLAGS += -O2
+QMAKE_CXXFLAGS += -Os
 
 VERSION = 0.2
 
