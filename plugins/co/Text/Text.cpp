@@ -271,7 +271,8 @@ void Text::saveObjects (QString chartPath)
     
     if (co->getStatus() == TextObject::Delete)
     {
-      db->deleteChartObject(co->getName());
+      QString s = co->getName();
+      db->deleteChartObject(s);
       continue;
     }
     
@@ -279,7 +280,8 @@ void Text::saveObjects (QString chartPath)
     {
       Setting set;
       co->getSettings(set);
-      db->setChartObject(co->getName(), set);
+      QString s = co->getName();
+      db->setChartObject(s, set);
     }
   }
   

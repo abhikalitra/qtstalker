@@ -41,7 +41,7 @@ DbPlugin::~DbPlugin ()
     db->close(db, 0);
 }
 
-int DbPlugin::openChart (QString d)
+int DbPlugin::openChart (QString &d)
 {
   if (db)
   {
@@ -69,7 +69,7 @@ int DbPlugin::openChart (QString d)
   }
 
   if (flag)
-    setHeaderField(Path, d.ascii());
+    setHeaderField(Path, d);
   
   return FALSE;
 }
@@ -83,7 +83,7 @@ void DbPlugin::close ()
   }
 }
 
-QString DbPlugin::getData (QString k)
+void DbPlugin::getData (QString &k, QString &d)
 {
   DBT key;
   DBT data;
@@ -93,14 +93,11 @@ QString DbPlugin::getData (QString k)
   key.data = (char *) k.latin1();
   key.size = k.length() + 1;
 
-  QString s;
   if (db->get(db, NULL, &key, &data, 0) == 0)
-    s = (char *) data.data;
-
-  return s;
+    d = (char *) data.data;
 }
 
-void DbPlugin::setData (QString k, QString d)
+void DbPlugin::setData (QString &k, QString &d)
 {
   DBT key;
   DBT data;
@@ -116,7 +113,7 @@ void DbPlugin::setData (QString k, QString d)
   db->put(db, NULL, &key, &data, 0);
 }
 
-void DbPlugin::deleteData (QString k)
+void DbPlugin::deleteData (QString &k)
 {
   DBT key;
   memset(&key, 0, sizeof(DBT));
@@ -137,14 +134,16 @@ void DbPlugin::setBarRange (int d)
   barRange = d;
 }
 
-QString DbPlugin::getHelpFile ()
+void DbPlugin::getHelpFile (QString &d)
 {
-  return helpFile;
+  d = helpFile;
 }
 
 void DbPlugin::getChartObjectsList (QStringList &d)
 {
-  QStringList l = QStringList::split(",", getHeaderField(CO), FALSE);
+  QString s;
+  getHeaderField(CO, s);
+  QStringList l = QStringList::split(",", s, FALSE);
   int loop;
   Setting ts;
   for (loop = 0; loop < (int) l.count(); loop++)
@@ -156,12 +155,17 @@ void DbPlugin::getChartObjectsList (QStringList &d)
 
 void DbPlugin::getChartObjects (QStringList &d)
 {
-  d = QStringList::split(",", getHeaderField(CO), FALSE);
+  QString s;
+  getHeaderField(CO, s);
+  d = QStringList::split(",", s, FALSE);
 }
 
-void DbPlugin::setChartObject (QString d, Setting &set)
+void DbPlugin::setChartObject (QString &d, Setting &set)
 {
-  QStringList l = QStringList::split(",", getHeaderField(CO), FALSE);
+  QString s;
+  getHeaderField(CO, s);
+  QStringList l = QStringList::split(",", s, FALSE);
+  
   int loop;
   Setting ts;
   bool flag= FALSE;
@@ -183,12 +187,18 @@ void DbPlugin::setChartObject (QString d, Setting &set)
   }
   
   if (flag)
-    setHeaderField(CO, l.join(","));
+  {
+    s = l.join(",");
+    setHeaderField(CO, s);
+  }
 }
 
-void DbPlugin::deleteChartObject (QString d)
+void DbPlugin::deleteChartObject (QString &d)
 {
-  QStringList l = QStringList::split(",", getHeaderField(CO), FALSE);
+  QString s;
+  getHeaderField(CO, s);
+  QStringList l = QStringList::split(",", s, FALSE);
+  
   Setting ts;
   for (QStringList::Iterator it = l.begin(); it != l.end(); ++it)
   {
@@ -202,14 +212,16 @@ void DbPlugin::deleteChartObject (QString d)
   
   if (! l.count())
   {
-    setHeaderField(CO, "");
+    s = "";
+    setHeaderField(CO, s);
     return;
   }
-  
-  setHeaderField(CO, l.join(","));
+
+  s = l.join(",");
+  setHeaderField(CO, s);
 }
 
-void DbPlugin::dump (QString d, bool f)
+void DbPlugin::dump (QString &d, bool f)
 {
   QFile outFile(d);
   if (! outFile.open(IO_WriteOnly))
@@ -265,8 +277,10 @@ Bar * DbPlugin::getFirstBar ()
     if (dt.setDate((char *) key.data))
       continue;
 
-    bar = getBar((char *) key.data, (char *) data.data);
-    
+    QString k = (char *) key.data;
+    QString d = (char *) data.data;
+    bar = getBar(k, d);
+   
     break;
   }
   cursor->c_close(cursor);
@@ -293,7 +307,9 @@ Bar * DbPlugin::getLastBar ()
     if (dt.setDate((char *) key.data))
       continue;
 
-    bar = getBar((char *) key.data, (char *) data.data);
+    QString k = (char *) key.data;
+    QString d = (char *) data.data;
+    bar = getBar(k, d);
     
     break;
   }
@@ -302,24 +318,23 @@ Bar * DbPlugin::getLastBar ()
   return bar;
 }
 
-Bar * DbPlugin::getBar (QString k)
+Bar * DbPlugin::getBar (QString &k)
 {
-  QString d = getData(k);
+  QString d;
+  getData(k, d);
   if (d.length())
     return getBar(k, d);
   else
     return 0;
 }
 
-BarData * DbPlugin::getHistory ()
+void DbPlugin::getHistory (BarData *bd)
 {
-  barData = new BarData;
-  if (barCompression >= BarData::DailyBar)
-    barData->setBarType(BarData::Daily);
-  else
-    barData->setBarType(BarData::Tick);
-
-  int barType = getHeaderField(BarType).toInt();
+  barData = bd;
+  QString s;
+  getHeaderField(BarType, s);
+  int barType = s.toInt();
+  barData->setBarType((BarData::BarType) barType);  
     
   switch(barCompression)
   {
@@ -358,8 +373,6 @@ BarData * DbPlugin::getHistory ()
   }
   
   barData->createDateList();
-  
-  return barData;
 }
 
 void DbPlugin::getDailyHistory ()
@@ -370,7 +383,9 @@ void DbPlugin::getDailyHistory ()
   memset(&key, 0, sizeof(DBT));
   memset(&data, 0, sizeof(DBT));
 
-  int barType = getHeaderField(BarType).toInt();
+  QString s;
+  getHeaderField(BarType, s);
+  int barType = s.toInt();
   
   db->cursor(db, NULL, &cursor, 0);
   
@@ -385,8 +400,10 @@ void DbPlugin::getDailyHistory ()
     BarDate dt;
     if (dt.setDate((char *) key.data))
       continue;
-      
-    Bar *bar = getBar((char *) key.data, (char *) data.data);
+
+    QString k = (char *) key.data;
+    QString d = (char *) data.data;
+    Bar *bar = getBar(k, d);
     bar->setTickFlag(barType);
     barData->prepend(bar);
   }
@@ -419,7 +436,9 @@ void DbPlugin::getDailyTickHistory ()
     if (dt.setDate((char *) key.data))
       continue;
     
-    tbar = getBar((char *) key.data, (char *) data.data);
+    QString k = (char *) key.data;
+    QString d = (char *) data.data;
+    tbar = getBar(k, d);
     
     if (bar)
     {
@@ -511,7 +530,9 @@ void DbPlugin::getWeeklyHistory ()
       else
         barData->prepend(bar);
 	
-      bar = getBar((char *) key.data, (char *) data.data);
+      QString k = (char *) key.data;
+      QString d = (char *) data.data;
+      bar = getBar(k, d);
     }
     else
     {
@@ -524,11 +545,15 @@ void DbPlugin::getWeeklyHistory ()
         else
           barData->prepend(bar);
 	
-        bar = getBar((char *) key.data, (char *) data.data);
+        QString k = (char *) key.data;
+        QString d = (char *) data.data;
+        bar = getBar(k, d);
       }
     }      
 
-    Bar *tbar = getBar((char *) key.data, (char *) data.data);
+    QString k = (char *) key.data;
+    QString d = (char *) data.data;
+    Bar *tbar = getBar(k, d);
     if (tbar->getHigh() > bar->getHigh())
       bar->setHigh(tbar->getHigh());
     if (tbar->getLow() < bar->getLow())
@@ -583,7 +608,9 @@ void DbPlugin::getMonthlyHistory ()
       else
         barData->prepend(bar);
 	
-      bar = getBar((char *) key.data, (char *) data.data);
+      QString k = (char *) key.data;
+      QString d = (char *) data.data;
+      bar = getBar(k, d);
     }
     else
     {
@@ -596,11 +623,15 @@ void DbPlugin::getMonthlyHistory ()
         else
           barData->prepend(bar);
 	
-        bar = getBar((char *) key.data, (char *) data.data);
+        QString k = (char *) key.data;
+        QString d = (char *) data.data;
+        bar = getBar(k, d);
       }
     }      
 
-    Bar *tbar = getBar((char *) key.data, (char *) data.data);
+    QString k = (char *) key.data;
+    QString d = (char *) data.data;
+    Bar *tbar = getBar(k, d);
     if (tbar->getHigh() > bar->getHigh())
       bar->setHigh(tbar->getHigh());
     if (tbar->getLow() < bar->getLow())
@@ -642,7 +673,10 @@ void DbPlugin::getTickHistory (int mins)
   sd.setDate(ed.getDateTimeString(FALSE));
   sd.addSecs(-(mins * 60));
   
-  int barType = getHeaderField(BarType).toInt();  
+  QString s;
+  getHeaderField(BarType, s);
+  int barType = s.toInt();
+  
   Bar *tbar = new Bar;
   Bar *bar = new Bar;
   bar->setTickFlag(barType);
@@ -661,11 +695,13 @@ void DbPlugin::getTickHistory (int mins)
     BarDate dt;
     if (dt.setDate((char *) key.data))
       continue;
-    
+
     if (dt.getDateValue() < ed.getDateValue() && dt.getDateValue() >= sd.getDateValue())
     {
       delete tbar;
-      tbar = getBar((char *) key.data, (char *) data.data);
+      QString k = (char *) key.data;
+      QString d = (char *) data.data;
+      tbar = getBar(k, d);
 	
       if (bar->getOpen())
       {
@@ -693,14 +729,21 @@ void DbPlugin::getTickHistory (int mins)
         bar = new Bar;
       }
       
-      ed.addSecs(-(mins * 60));
-      sd.addSecs(-(mins * 60));
+      while (1)
+      {
+        ed.addSecs(-(mins * 60));
+        sd.addSecs(-(mins * 60));
+	if (dt.getDateValue() < ed.getDateValue() && dt.getDateValue() >= sd.getDateValue())
+	  break;
+      }
 	
       bar->setTickFlag(barType);
       bar->setDate(QString::number(ed.getDateValue(), 'f', 0));
       
       delete tbar;
-      tbar = getBar((char *) key.data, (char *) data.data);
+      QString k = (char *) key.data;
+      QString d = (char *) data.data;
+      tbar = getBar(k, d);
 	
       if (bar->getOpen())
       {
@@ -732,89 +775,97 @@ void DbPlugin::getTickHistory (int mins)
     delete bar;
 }
 
-void DbPlugin::setHeaderField (int k, QString d)
+void DbPlugin::setHeaderField (int i, QString &d)
 {
   QString s = d;
+  QString k;
   if (! s.length())
     s = "";
     
-  switch (k)
+  switch (i)
   {
     case BarType:
-      setData("BarType", s);
+      k = "BarType";
       break;
     case Plugin:
-      setData("Plugin", s);
+      k = "Plugin";
       break;
     case Symbol:
-      setData("Symbol", s);
+      k = "Symbol";
       break;
     case Type:
-      setData("Type", s);
+      k = "Type";
       break;
     case Title:
-      setData("Title", s);
+      k = "Title";
       break;
     case Path:
-      setData("Path", s);
+      k = "Path";
       break;
     case CO:
-      setData("CO", s);
+      k = "CO";
       break;
     case LocalIndicators:
-      setData("LocalIndicators", s);
+      k = "LocalIndicators";
       break;
     case QuotePlugin:
-      setData("QuotePlugin", s);
+      k = "QuotePlugin";
       break;
     default:
       break;
   }
+
+  if (k.length())  
+    setData(k, s);
 }
 
-QString DbPlugin::getHeaderField (int k)
+void DbPlugin::getHeaderField (int i, QString &d)
+{
+  QString k;
+  
+  switch (i)
+  {
+    case BarType:
+      k = "BarType";
+      break;
+    case Plugin:
+      k = "Plugin";
+      break;
+    case Symbol:
+      k = "Symbol";
+      break;
+    case Type:
+      k = "Type";
+      break;
+    case Title:
+      k = "Title";
+      break;
+    case Path:
+      k = "Path";
+      break;
+    case CO:
+      k = "CO";
+      break;
+    case LocalIndicators:
+      k = "LocalIndicators";
+      break;
+    case QuotePlugin:
+      k = "QuotePlugin";
+      break;
+    default:
+      break;
+  }
+  
+  if (k.length())
+    getData(k, d);
+}
+
+void DbPlugin::deleteIndicator (QString &d)
 {
   QString s;
+  getHeaderField(LocalIndicators, s);
+  QStringList l = QStringList::split(",", s, FALSE);
   
-  switch (k)
-  {
-    case BarType:
-      s = getData("BarType");
-      break;
-    case Plugin:
-      s = getData("Plugin");
-      break;
-    case Symbol:
-      s = getData("Symbol");
-      break;
-    case Type:
-      s = getData("Type");
-      break;
-    case Title:
-      s = getData("Title");
-      break;
-    case Path:
-      s = getData("Path");
-      break;
-    case CO:
-      s = getData("CO");
-      break;
-    case LocalIndicators:
-      s = getData("LocalIndicators");
-      break;
-    case QuotePlugin:
-      s = getData("QuotePlugin");
-      break;
-    default:
-      break;
-  }
-  
-  return s;
-}
-
-void DbPlugin::deleteIndicator (QString d)
-{
-  QStringList l = QStringList::split(",", getHeaderField(LocalIndicators), FALSE);
   Setting set;
   for (QStringList::Iterator it = l.begin(); it != l.end(); ++it )
   {
@@ -827,21 +878,34 @@ void DbPlugin::deleteIndicator (QString d)
   }
   
   if (l.count())
-    setHeaderField(LocalIndicators, l.join(","));
+  {
+    s = l.join(",");
+    setHeaderField(LocalIndicators, s);
+  }
   else
-    setHeaderField(LocalIndicators, "");
+  {
+    s = "";
+    setHeaderField(LocalIndicators, s);
+  }
 }
 
-void DbPlugin::addIndicator (QString d)
+void DbPlugin::addIndicator (QString &d)
 {
-  QStringList l = QStringList::split(",", getHeaderField(LocalIndicators), FALSE);
+  QString s;
+  getHeaderField(LocalIndicators, s);
+  QStringList l = QStringList::split(",", s, FALSE);
+  
   l.append(d);
-  setHeaderField(LocalIndicators, l.join(","));
+  s = l.join(",");
+  setHeaderField(LocalIndicators, s);
 }
 
-void DbPlugin::setIndicator (QString k, QString d)
+void DbPlugin::setIndicator (QString &k, QString &d)
 {
-  QStringList l = QStringList::split(",", getHeaderField(LocalIndicators), FALSE);
+  QString s;
+  getHeaderField(LocalIndicators, s);
+  QStringList l = QStringList::split(",", s, FALSE);
+  
   Setting set;
   int loop;
   for (loop = 0; loop < (int) l.count(); loop++)
@@ -854,7 +918,8 @@ void DbPlugin::setIndicator (QString k, QString d)
     }
   }
   
-  setHeaderField(LocalIndicators, l.join(","));
+  s = l.join(",");
+  setHeaderField(LocalIndicators, s);
 }
 
 //*********************************************************
@@ -869,11 +934,11 @@ void DbPlugin::dbPrefDialog ()
 {
 }
 
-Bar * DbPlugin::getBar (QString, QString)
+Bar * DbPlugin::getBar (QString &, QString &)
 {
   return 0;
 }
 
-void DbPlugin::setBar (Bar *)
+void DbPlugin::setBar (Bar &)
 {
 }

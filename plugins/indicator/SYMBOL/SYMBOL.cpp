@@ -68,7 +68,8 @@ void SYMBOL::calculate ()
   
   db->setBarCompression(BarData::DailyBar);
   db->setBarRange(data->count());
-  BarData *recordList = db->getHistory();
+  BarData *recordList = new BarData;
+  db->getHistory(recordList);
 
   QDict<Setting> dict;
   dict.setAutoDelete(TRUE);

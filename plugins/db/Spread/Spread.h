@@ -32,13 +32,13 @@ class Spread : public DbPlugin
   public:
     Spread ();
     ~Spread ();
-    BarData * getHistory ();
+    void getHistory (BarData *);
     void updateSpread ();
-    void loadData (QString, QString);
+    void loadData (QString &, QString &);
     void createNew ();
     void dbPrefDialog ();
-    void setBar (Bar *);
-    Bar *getBar (QString, QString);
+    void setBar (Bar &);
+    Bar *getBar (QString &, QString &);
     
   private:
     QDict<Bar> data;

@@ -51,38 +51,38 @@ class DbPlugin
   
     DbPlugin ();
     virtual ~DbPlugin ();
-    int openChart (QString);
+    int openChart (QString &);
     void setBarCompression (BarData::BarCompression);
     void setBarRange (int);
-    QString getHelpFile ();
+    void getHelpFile (QString &);
     void getChartObjectsList (QStringList &);    
     void getChartObjects (QStringList &);
-    void setChartObject (QString, Setting &);
-    void deleteChartObject (QString);
-    void dump (QString, bool);
+    void setChartObject (QString &, Setting &);
+    void deleteChartObject (QString &);
+    void dump (QString &, bool);
     Bar * getLastBar ();
     Bar * getFirstBar ();
-    QString getData (QString);
-    void setData (QString, QString);
-    void deleteData (QString);
-    Bar * getBar (QString);
+    void getData (QString &, QString &);
+    void setData (QString &, QString &);
+    void deleteData (QString &);
+    Bar * getBar (QString &);
     void getDailyHistory ();
     void getWeeklyHistory ();
     void getMonthlyHistory ();
     void getTickHistory (int);
     void getDailyTickHistory ();
-    void setHeaderField (int, QString);
-    QString getHeaderField (int);
+    void setHeaderField (int, QString &);
+    void getHeaderField (int, QString &);
     void close ();
-    void deleteIndicator (QString);
-    void addIndicator (QString);
-    void setIndicator (QString, QString);
+    void deleteIndicator (QString &);
+    void addIndicator (QString &);
+    void setIndicator (QString &, QString &);
     
     virtual void dbPrefDialog ();
     virtual void createNew ();
-    virtual BarData * getHistory ();
-    virtual void setBar (Bar *);
-    virtual Bar * getBar (QString, QString);
+    virtual void getHistory (BarData *);
+    virtual void setBar (Bar &);
+    virtual Bar * getBar (QString &, QString &);
     
   protected:
     DB *db;

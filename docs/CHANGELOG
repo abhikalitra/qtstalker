@@ -226,8 +226,8 @@
 20050306: Added FW20* futures from Warsaw exchange to the futures database.
 
 20050306: Yahoo Fundamental option now updates the Name field for stocks. NOTE: Composites
-          and derivatives don't have a name field so cannot be updated. Just real stocks.
-	  
+          and derivatives don't have fundamental data at yahoo so cannot be updated. Just real stocks.
+	  	  
 20050307: Added a new lib to the MySQL plugin for 64bit systems that need the MySQL 64bit lib.
 
 20050307: Changed quotes dialog shortcut key to CTRL+Q because ALT+2 is picked up by some WM's.
@@ -259,7 +259,11 @@
           needed for i18n support. Added our first translation file (Polish) thanks to the
 	  great effort of Benedict. 
 
-	  	  	  
+20050311: Removed the COT quote plugin. There is no method to chart the data right now. Maybe
+          I will return it once there is a way to chart the data without having to create
+	  a chart plugin for it.
+	  
+	  
 	  	  
 0.29
 ====

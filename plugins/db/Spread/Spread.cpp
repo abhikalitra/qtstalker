@@ -40,10 +40,10 @@ Spread::~Spread ()
 {
 }
 
-BarData * Spread::getHistory ()
+void Spread::getHistory (BarData *bd)
 {
   updateSpread();
-  return DbPlugin::getHistory();
+  DbPlugin::getHistory(bd);
 }
 
 void Spread::dbPrefDialog ()
@@ -59,24 +59,49 @@ void Spread::dbPrefDialog ()
   dialog->setCaption(QObject::tr("Spread Prefs"));
   dialog->createPage (QObject::tr("Details"));
   dialog->setHelpFile (helpFile);
-  dialog->addSymbolItem(QObject::tr("First Symbol"), QObject::tr("Details"), s, getData("First Symbol")); // First Symbol
-  dialog->addSymbolItem(QObject::tr("Second Symbol"), QObject::tr("Details"), s, getData("Second Symbol")); // Second Symbol
-  dialog->addComboItem(QObject::tr("Method"), QObject::tr("Details"), l, getData("Method")); // Method
-  dialog->addCheckItem(QObject::tr("Rebuild"), QObject::tr("Details"), getData("Rebuild").toInt()); // Rebuild
+  
+  QString t = "First Symbol";
+  QString t2;
+  getData(t, t2);
+  dialog->addSymbolItem(QObject::tr("First Symbol"), QObject::tr("Details"), s, t2); // First Symbol
+
+  t = "Second Symbol";
+  getData(t, t2);
+  dialog->addSymbolItem(QObject::tr("Second Symbol"), QObject::tr("Details"), s, t2); // Second Symbol
+  
+  t = "Method";
+  getData(t, t2);
+  dialog->addComboItem(QObject::tr("Method"), QObject::tr("Details"), l, t2); // Method
+  
+  t = "Rebuild";
+  getData(t, t2);
+  dialog->addCheckItem(QObject::tr("Rebuild"), QObject::tr("Details"), t2.toInt()); // Rebuild
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
     QString s = dialog->getSymbol(QObject::tr("First Symbol"));
+    QString s2;
     if (s.length())
-      setData("First Symbol", s);
+    {
+      s2 = "First Symbol";
+      setData(s2, s);
+    }
       
     s = dialog->getSymbol(QObject::tr("Second Symbol"));
     if (s.length())
-      setData("Second Symbol", s);
-      
-    setData("Method", dialog->getCombo(QObject::tr("Method")));
-    setData("Rebuild", QString::number(dialog->getCheck(QObject::tr("Rebuild"))));
+    {
+      s2 = "Second Symbol";
+      setData(s2, s);
+    }
+
+    s = "Method";
+    s2 = dialog->getCombo(QObject::tr("Method"));
+    setData(s, s2);
+    
+    s = "Rebuild";
+    s2 = QString::number(dialog->getCheck(QObject::tr("Rebuild")));
+    setData(s, s2);
   }
   
   delete dialog;
@@ -87,15 +112,21 @@ void Spread::updateSpread ()
   data.clear();
   fdate = 99999999999999.0;
   
-  QString fs = getData("First Symbol");
+  QString s = "First Symbol";
+  QString fs;
+  getData(s, fs);
   if (! fs.length())
     return;
-    
-  QString ss = getData("Second Symbol");
+  
+  s = "Second Symbol";
+  QString ss;
+  getData(s, ss);
   if (! ss.length())
     return;
   
-  QString meth = getData("Method");
+  s = "Method";
+  QString meth;
+  getData(s, meth);
 
   loadData(fs, meth);
 
@@ -104,10 +135,14 @@ void Spread::updateSpread ()
   Bar *r = data.find(QString::number(fdate, 'f', 0));
   if (r)
   {
-    setBar(r);
+    Bar &bar = *r;
+    setBar(bar);
     
     if (r->getData("Count") != 2)
-      deleteData(QString::number(fdate, 'f', 0));
+    {
+      s = QString::number(fdate, 'f', 0);
+      deleteData(s);
+    }
   }
   
   QDictIterator<Bar> it(data);
@@ -116,21 +151,20 @@ void Spread::updateSpread ()
     r = it.current();
     if (r->getData("Count") == 2)
     {
-      Bar *bar = new Bar;
-      bar->setDate(r->getDate());
-      bar->setOpen(r->getClose());
-      bar->setHigh(r->getClose());
-      bar->setLow(r->getClose());
-      bar->setClose(r->getClose());
+      Bar bar;
+      bar.setDate(r->getDate());
+      bar.setOpen(r->getClose());
+      bar.setHigh(r->getClose());
+      bar.setLow(r->getClose());
+      bar.setClose(r->getClose());
       setBar(bar);
-      delete bar;
     }
   }
 
   data.clear();
 }
 
-void Spread::loadData (QString symbol, QString method)
+void Spread::loadData (QString &symbol, QString &method)
 {
   Config config;
   QString plugin = config.parseDbPlugin(symbol);
@@ -151,7 +185,10 @@ void Spread::loadData (QString symbol, QString method)
   db->setBarCompression(BarData::DailyBar);
   db->setBarRange(99999999);
   
-  bool rebuild = getData("Rebuild").toInt();
+  QString s = "Rebuild";
+  QString s2;
+  getData(s, s2);  
+  bool rebuild = s2.toInt();
   if (! rebuild)
   {
     Bar *bar = getLastBar();
@@ -163,7 +200,8 @@ void Spread::loadData (QString symbol, QString method)
     }
   }
 
-  BarData *recordList = db->getHistory();
+  BarData *recordList = new BarData;
+  db->getHistory(recordList);
 
   int loop;
   for (loop = 0; loop < (int) recordList->count(); loop++)
@@ -192,6 +230,7 @@ void Spread::loadData (QString symbol, QString method)
     }
   }
 
+  delete recordList;
   config.closePlugin(plugin);
 }
 
@@ -232,16 +271,19 @@ void Spread::createNew ()
 
   openChart(s);
 
-  setHeaderField(Symbol, spread);  
-  setHeaderField(Type, "Spread");  
-  setHeaderField(Title, spread);  
-  setHeaderField(BarType, QString::number(BarData::Daily));  
-  setHeaderField(Plugin, "Spread");  
+  setHeaderField(Symbol, spread);
+  
+  s = "Spread";
+  setHeaderField(Type, s);  
+  setHeaderField(Plugin, s);  
+  setHeaderField(Title, spread);
+  s = QString::number(BarData::Daily);
+  setHeaderField(BarType, s);  
   
   dbPrefDialog();
 }
 
-Bar * Spread::getBar (QString k, QString d)
+Bar * Spread::getBar (QString &k, QString &d)
 {
   Bar *bar = new Bar;
   QStringList l = QStringList::split(",", d, FALSE);
@@ -253,17 +295,19 @@ Bar * Spread::getBar (QString k, QString d)
   return bar;
 }
 
-void Spread::setBar (Bar *bar)
+void Spread::setBar (Bar &bar)
 {
-  if (getHeaderField(BarType).toInt() != bar->getTickFlag())
+  QString k;
+  getHeaderField(BarType, k);
+  if (k.toInt() != bar.getTickFlag())
     return;
 
-  QStringList l;
-  l.append(QString::number(bar->getOpen()));
-  l.append(QString::number(bar->getHigh()));
-  l.append(QString::number(bar->getLow()));
-  l.append(QString::number(bar->getClose()));
-  setData(bar->getDate().getDateTimeString(FALSE), l.join(","));
+  k = bar.getDate().getDateTimeString(FALSE);
+  
+  QString d = QString::number(bar.getOpen()) + "," + QString::number(bar.getHigh()) + "," +
+              QString::number(bar.getLow()) + "," + QString::number(bar.getClose());
+  
+  setData(k, d);
 }
 
 //********************************************************************

@@ -326,7 +326,8 @@ void IndicatorPage::newIndicator ()
       tset.setData("plotType", QString::number(plotType));
       
       // save the local indicator to the db
-      db->addIndicator(tset.getString());
+      QString s2 = tset.getString();
+      db->addIndicator(s2);
       
       localIndicators.append(name);
       
@@ -454,10 +455,14 @@ void IndicatorPage::deleteIndicator ()
     {
       set.parse(l[loop]);
       if (! set.getData("Plot").compare(list->currentText()))
-        db->deleteChartObject(set.getData("Name"));
+      {
+        s = set.getData("Name");
+        db->deleteChartObject(s);
+      }
     }
   
-    db->deleteIndicator(list->currentText());  
+    s = list->currentText();
+    db->deleteIndicator(s);  
     
     config.closePlugin(plugin);
   }
@@ -530,8 +535,10 @@ void IndicatorPage::moveIndicator ()
         config.closePlugin(plugin);
         return;
       }
+
+      QString t = list->currentText();
+      db->deleteIndicator(t);
       
-      db->deleteIndicator(list->currentText());
       config.closePlugin(plugin);
       
       localIndicators.remove(list->currentText());
@@ -558,7 +565,8 @@ void IndicatorPage::moveIndicator ()
         return;
       }
       
-      db->addIndicator(set.getString());
+      QString t = set.getString();
+      db->addIndicator(t);
       localIndicators.append(list->currentText());
       
       config.closePlugin(plugin);
@@ -930,7 +938,8 @@ void IndicatorPage::saveLocalIndicator (QString d, Setting &set)
     }
     
     // save the local indicator to the db
-    db->setIndicator(d, set.getString());
+    QString t = set.getString();
+    db->setIndicator(d, t);
     
     config.closePlugin(plugin);
   }

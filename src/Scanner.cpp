@@ -188,7 +188,8 @@ void Scanner::scan ()
     
     db->setBarRange(minBars);
 
-    BarData *recordList = db->getHistory();
+    BarData *recordList = new BarData;
+    db->getHistory(recordList);
     
     // load the CUS plugin and calculate
     plug->clearOutput();
@@ -238,7 +239,6 @@ void Scanner::saveRule ()
   QTextStream stream(&f);
   
   stream << "allSymbols=" << QString::number(allSymbols->isChecked()) << "\n";
-//  stream << "bars=" << QString::number(bars->value()) << "\n";
   stream << "compression=" << period->currentText() << "\n";
   
   int loop;
@@ -287,12 +287,6 @@ void Scanner::loadRule ()
       allSymbols->setChecked(l[1].toInt());
       continue;
     }
-    
-//    if (! l[0].compare("bars"))
-//    {
-//      bars->setValue(l[1].toInt());
-//      continue;
-//    }
     
     if (! l[0].compare("compression"))
     {

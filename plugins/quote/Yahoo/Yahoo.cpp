@@ -139,20 +139,22 @@ void Yahoo::fileDone (bool d)
 {
   if (d)
   {
-    emit statusLogMessage(tr("Network error aborting"));
-    emit statusLogMessage(tr("Done"));
-    emit done();
-    return;
+//    emit statusLogMessage(tr("Network error aborting"));
+//    emit statusLogMessage(tr("Done"));
+//    emit done();
+//    return;
   }
-
-  if (method.contains("History"))
-    parseHistory();
   else
   {
-    if (method.contains("Quote"))
-      parseQuote();
+    if (method.contains("History"))
+      parseHistory();
     else
-      parseFundamental();
+    {
+      if (method.contains("Quote"))
+        parseQuote();
+      else
+        parseFundamental();
+    }
   }
 
   currentUrl = url.next();
@@ -252,7 +254,7 @@ void Yahoo::parseHistory ()
   }
 
   // verify if this chart can be updated by this plugin
-  s = plug->getHeaderField(DbPlugin::QuotePlugin);
+  plug->getHeaderField(DbPlugin::QuotePlugin, s);
   if (! s.length())
     plug->setHeaderField(DbPlugin::QuotePlugin, pluginName);
   else
@@ -267,12 +269,13 @@ void Yahoo::parseHistory ()
     }
   }
   
-  s = plug->getHeaderField(DbPlugin::Symbol);
+  plug->getHeaderField(DbPlugin::Symbol, s);
   if (! s.length())
   {
     plug->createNew();
-    plug->setHeaderField(DbPlugin::Symbol, currentUrl->getData("symbol"));
-    plug->setHeaderField(DbPlugin::Title, currentUrl->getData("symbol"));
+    s = currentUrl->getData("symbol");
+    plug->setHeaderField(DbPlugin::Symbol, s);
+    plug->setHeaderField(DbPlugin::Title, s);
   }
 
   while(stream.atEnd() == 0)
@@ -344,20 +347,18 @@ void Yahoo::parseHistory ()
       }
     }
 
-    Bar *bar = new Bar;
-    if (bar->setDate(date))
+    Bar bar;
+    if (bar.setDate(date))
     {
       emit statusLogMessage("Bad date " + date);
-      delete bar;
       continue;
     }
-    bar->setOpen(open.toDouble());
-    bar->setHigh(high.toDouble());
-    bar->setLow(low.toDouble());
-    bar->setClose(close.toDouble());
-    bar->setVolume(volume.toDouble());
+    bar.setOpen(open.toDouble());
+    bar.setHigh(high.toDouble());
+    bar.setLow(low.toDouble());
+    bar.setClose(close.toDouble());
+    bar.setVolume(volume.toDouble());
     plug->setBar(bar);
-    delete bar;
     
     s = currentUrl->getData("symbol") + " " + date + " " + open + " " + high + " " + low
         + " " + close + " " + volume;
@@ -413,7 +414,7 @@ void Yahoo::parseQuote ()
   }
 
   // verify if this chart can be updated by this plugin
-  s = plug->getHeaderField(DbPlugin::QuotePlugin);
+  plug->getHeaderField(DbPlugin::QuotePlugin, s);
   if (! s.length())
     plug->setHeaderField(DbPlugin::QuotePlugin, pluginName);
   else
@@ -428,12 +429,13 @@ void Yahoo::parseQuote ()
     }
   }
     
-  s = plug->getHeaderField(DbPlugin::Symbol);
+  plug->getHeaderField(DbPlugin::Symbol, s);
   if (! s.length())
   {
     plug->createNew();
-    plug->setHeaderField(DbPlugin::Symbol, currentUrl->getData("symbol"));
-    plug->setHeaderField(DbPlugin::Title, currentUrl->getData("symbol"));
+    s = currentUrl->getData("symbol");
+    plug->setHeaderField(DbPlugin::Symbol, s);
+    plug->setHeaderField(DbPlugin::Title, s);
   }
   
   while(stream.atEnd() == 0)
@@ -491,20 +493,18 @@ void Yahoo::parseQuote ()
     if (l.count() == 10)
       volume = l[9];
       
-    Bar *bar = new Bar;
-    if (bar->setDate(date))
+    Bar bar;
+    if (bar.setDate(date))
     {
       emit statusLogMessage("Bad date " + date);
-      delete bar;
       continue;
     }
-    bar->setOpen(open.toDouble());
-    bar->setHigh(high.toDouble());
-    bar->setLow(low.toDouble());
-    bar->setClose(close.toDouble());
-    bar->setVolume(volume.toDouble());
+    bar.setOpen(open.toDouble());
+    bar.setHigh(high.toDouble());
+    bar.setLow(low.toDouble());
+    bar.setClose(close.toDouble());
+    bar.setVolume(volume.toDouble());
     plug->setBar(bar);
-    delete bar;
     
     s = currentUrl->getData("symbol") + " " + date + " " + open + " " + high + " " + low
         + " " + close + " " + volume;
@@ -798,7 +798,7 @@ void Yahoo::parseFundamental ()
   }
   
   // verify if this chart can be updated by this plugin
-  s = plug->getHeaderField(DbPlugin::QuotePlugin);
+  plug->getHeaderField(DbPlugin::QuotePlugin, s);
   if (! s.length())
     plug->setHeaderField(DbPlugin::QuotePlugin, pluginName);
   else
@@ -812,11 +812,12 @@ void Yahoo::parseFundamental ()
     }
   }
   
-  s = plug->getHeaderField(DbPlugin::Symbol);
+  plug->getHeaderField(DbPlugin::Symbol, s);
   if (! s.length())
   {
     plug->createNew();
-    plug->setHeaderField(DbPlugin::Symbol, currentUrl->getData("symbol"));
+    s = currentUrl->getData("symbol");
+    plug->setHeaderField(DbPlugin::Symbol, s);
     
     QString title = currentUrl->getData("symbol");
     int p = data.find("yfnc_leftnav1", 0, TRUE);
@@ -840,7 +841,8 @@ void Yahoo::parseFundamental ()
   }
   else
   {
-    QString s2 = plug->getHeaderField(DbPlugin::Title);
+    QString s2;
+    plug->getHeaderField(DbPlugin::Title, s2);
     if (! s.compare(s2))
     {
       int p = data.find("yfnc_leftnav1", 0, TRUE);
@@ -865,8 +867,9 @@ void Yahoo::parseFundamental ()
   // include date of this update
   QDate dt = QDate::currentDate();
   fund.setData("updateDate", dt.toString("yyyy-MM-dd"));
-  
-  plug->setData("Fundamentals", fund.getString());
+  QString s2 = fund.getString();
+  s = "Fundamentals";
+  plug->setData(s, s2);
     
   s = "Updating " + currentUrl->getData("symbol");
   emit dataLogMessage(s);
@@ -987,7 +990,8 @@ void Yahoo::createAutoHistoryUrls (QString path, QString d)
   }
 	
   // verify if this chart can be updated by this plugin
-  QString s = plug->getHeaderField(DbPlugin::QuotePlugin);
+  QString s;
+  plug->getHeaderField(DbPlugin::QuotePlugin, s);
   if (! s.length())
     plug->setHeaderField(DbPlugin::QuotePlugin, pluginName);
   else

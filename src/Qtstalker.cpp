@@ -445,14 +445,12 @@ void QtstalkerApp::loadChart (QString d)
   
   if (recordList)
     delete recordList;
-  BarData *trl = plug->getHistory();
   recordList = new BarData;
-  trl->copy(recordList);
-  delete trl;
+  plug->getHistory(recordList);
   
-  chartName = plug->getHeaderField(DbPlugin::Title);
-  chartType = plug->getHeaderField(DbPlugin::Type);
-  chartSymbol = plug->getHeaderField(DbPlugin::Symbol);
+  plug->getHeaderField(DbPlugin::Title, chartName);
+  plug->getHeaderField(DbPlugin::Type, chartType);
+  plug->getHeaderField(DbPlugin::Symbol, chartSymbol);
   
   mainPlot->setData(recordList);
   for(it.toFirst(); it.current(); ++it)
@@ -464,7 +462,9 @@ void QtstalkerApp::loadChart (QString d)
   if (! reload)
   {
     ip->removeLocalIndicators();
-    ip->addLocalIndicators(plug->getHeaderField(DbPlugin::LocalIndicators));
+    QString s;
+    plug->getHeaderField(DbPlugin::LocalIndicators, s);
+    ip->addLocalIndicators(s);
   }
   QStringList l = config.getIndicators(ip->getIndicatorGroup());
 

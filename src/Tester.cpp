@@ -562,12 +562,18 @@ void Tester::test ()
     config.closePlugin(plugin);
     return;
   }
+
+  QString s = symbolButton->getPath();
+  db->openChart(s);
   
-  db->openChart(symbolButton->getPath());
-  
-  chartType = db->getHeaderField(DbPlugin::Type);
+  db->getHeaderField(DbPlugin::Type, chartType);
   if (! chartType.compare(tr("Futures")))
-    fd.setSymbol(db->getData("FuturesType"));
+  {
+    s = "FuturesType";
+    QString s2;
+    db->getData(s, s2);
+    fd.setSymbol(s2);
+  }
 
   tradeList->setNumRows(0);
 
@@ -575,10 +581,8 @@ void Tester::test ()
   db->setBarRange(bars->value());
   if (recordList)
     delete recordList;
-  BarData *trl = db->getHistory();
   recordList = new BarData;
-  trl->copy(recordList);
-  delete trl;
+  db->getHistory(recordList);
 
   plot->clear();
   equityPlot->clear();

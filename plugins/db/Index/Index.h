@@ -32,13 +32,13 @@ class Index : public DbPlugin
   public:
     Index ();
     ~Index ();
-    BarData * getHistory ();
+    void getHistory (BarData *);
     void updateIndex ();
-    void loadData (QString, float);
+    void loadData (QString &, float);
     void createNew ();
     void dbPrefDialog ();
-    void setBar (Bar *);
-    Bar *getBar (QString, QString);
+    void setBar (Bar &);
+    Bar *getBar (QString &, QString &);
     
   private:
     QDict<Bar> data;

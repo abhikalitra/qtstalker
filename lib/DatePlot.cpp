@@ -219,22 +219,7 @@ void DatePlot::draw15Date ()
       {
         painter.drawLine (x, 1, x, 4);
 
-        QString s = QString::number(date.getHour());
-/*	
-        if (date.getHour() >= 12)
-	{
-	  if (date.getHour() == 12)
-            s = QString::number(date.getHour());
-	  else
-            s = QString::number(date.getHour() - 12);	
-	  s.append("p");
-	}
-	else
-	{
-          s = QString::number(date.getHour());	
-	  s.append("a");
-	}
-*/	
+        QString s = QString::number(date.getHour()) + ":00";
         painter.drawText (x - (fm.width(s, -1) / 2),
 		          buffer->height() - dateHeight + fm.height() + 1,
 			  s,

@@ -40,26 +40,43 @@ Index::~Index ()
 {
 }
 
-BarData * Index::getHistory ()
+void Index::getHistory (BarData *bd)
 {
   updateIndex();
-  return DbPlugin::getHistory();
+  DbPlugin::getHistory(bd);
 }
 
 void Index::dbPrefDialog ()
 {
   IndexDialog *dialog = new IndexDialog(helpFile);
-  dialog->setList(getData("Index"));
-  dialog->setRebuild(getData("Rebuild").toInt());
-  dialog->setName(getData("Symbol"));
+  
+  QString s = "Index";
+  QString s2;
+  getData(s, s2);
+  dialog->setList(s2);
+  
+  s = "Rebuild";
+  getData(s, s2);
+  dialog->setRebuild(s2.toInt());
+  
+  s = "Symbol";
+  getData(s, s2);
+  dialog->setName(s2);
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
     QString s = dialog->getList();
+    QString s2;
     if (s.length())
-      setData("Index", s);
-    setData("Rebuild", QString::number(dialog->getRebuild()));
+    {
+      s2 = "Index";
+      setData(s2, s);
+    }
+    
+    s = "Rebuild";
+    s2 = QString::number(dialog->getRebuild());
+    setData(s, s2);
   }
   
   delete dialog;
@@ -70,7 +87,10 @@ void Index::updateIndex ()
   data.clear();
   fdate = 99999999999999.0;
   
-  QStringList l = QStringList::split(":", getData("Index"), FALSE);
+  QString s = "Index";
+  QString s2;
+  getData(s, s2);  
+  QStringList l = QStringList::split(":", s2, FALSE);
   if (! l.count())
     return;
     
@@ -90,10 +110,14 @@ void Index::updateIndex ()
   Bar *r = data.find(QString::number(fdate, 'f', 0));
   if (r)
   {
-    setBar(r);
+    Bar &bar = *r;
+    setBar(bar);
     
     if (r->getData("Count") != count)
-      deleteData(QString::number(fdate, 'f', 0));
+    {
+      s = QString::number(fdate, 'f', 0);
+      deleteData(s);
+    }
   }
   
   QDictIterator<Bar> it(data);
@@ -117,14 +141,15 @@ void Index::updateIndex ()
       if (r->getClose() < r->getLow())
 	r->setLow(r->getClose());
 	
-      setBar(r);
+      Bar &bar = *r;
+      setBar(bar);
     }
   }
 
   data.clear();
 }
 
-void Index::loadData (QString symbol, float weight)
+void Index::loadData (QString &symbol, float weight)
 {
   Config config;
   QString plugin = config.parseDbPlugin(symbol);
@@ -145,7 +170,10 @@ void Index::loadData (QString symbol, float weight)
   db->setBarCompression(BarData::DailyBar);
   db->setBarRange(99999999);
   
-  bool rebuild = getData("Rebuild").toInt();
+  QString s = "Rebuild";
+  QString s2;
+  getData(s, s2);
+  bool rebuild = s2.toInt();
   if (! rebuild)
   {
     Bar *bar = getLastBar();
@@ -157,7 +185,8 @@ void Index::loadData (QString symbol, float weight)
     }
   }
 
-  BarData *recordList = db->getHistory();
+  BarData *recordList = new BarData;  
+  db->getHistory(recordList);
   
   int loop;
   for (loop = 0; loop < (int) recordList->count(); loop++)
@@ -187,6 +216,7 @@ void Index::loadData (QString symbol, float weight)
     }
   }
 
+  delete recordList;
   config.closePlugin(plugin);
 }
 
@@ -227,16 +257,19 @@ void Index::createNew ()
   
   openChart(s);
 
-  setHeaderField(Symbol, index);  
-  setHeaderField(Type, "Index");  
-  setHeaderField(Title, index);  
-  setHeaderField(BarType, QString::number(BarData::Daily));  
-  setHeaderField(Plugin, "Index");  
+  setHeaderField(Symbol, index);
+  
+  s = "Index";
+  setHeaderField(Type, s);  
+  setHeaderField(Plugin, s);  
+  setHeaderField(Title, index);
+  s = QString::number(BarData::Daily);
+  setHeaderField(BarType, s);  
   
   dbPrefDialog();
 }
 
-Bar * Index::getBar (QString k, QString d)
+Bar * Index::getBar (QString &k, QString &d)
 {
   Bar *bar = new Bar;
   QStringList l = QStringList::split(",", d, FALSE);
@@ -248,17 +281,19 @@ Bar * Index::getBar (QString k, QString d)
   return bar;
 }
 
-void Index::setBar (Bar *bar)
+void Index::setBar (Bar &bar)
 {
-  if (getHeaderField(BarType).toInt() != bar->getTickFlag())
+  QString k;
+  getHeaderField(BarType, k);
+  if (k.toInt() != bar.getTickFlag())
     return;
 
-  QStringList l;
-  l.append(QString::number(bar->getOpen()));
-  l.append(QString::number(bar->getHigh()));
-  l.append(QString::number(bar->getLow()));
-  l.append(QString::number(bar->getClose()));
-  setData(bar->getDate().getDateTimeString(FALSE), l.join(","));
+  k = bar.getDate().getDateTimeString(FALSE);
+  
+  QString d = QString::number(bar.getOpen()) + "," + QString::number(bar.getHigh()) + "," +
+              QString::number(bar.getLow()) + "," + QString::number(bar.getClose());
+  
+  setData(k, d);
 }
 
 //********************************************************************

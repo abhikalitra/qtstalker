@@ -16,7 +16,6 @@ SUBDIRS += plugins/chart/Swing
 
 #compile quote plugins
 SUBDIRS += plugins/quote/CME
-SUBDIRS += plugins/quote/COT
 SUBDIRS += plugins/quote/CSV
 SUBDIRS += plugins/quote/NYBOT
 SUBDIRS += plugins/quote/QtstalkerFormat

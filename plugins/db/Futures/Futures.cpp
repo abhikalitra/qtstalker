@@ -39,7 +39,7 @@ void Futures::dbPrefDialog ()
   delete dialog;
 }
 
-Bar * Futures::getBar (QString k, QString d)
+Bar * Futures::getBar (QString &k, QString &d)
 {
   Bar *bar = new Bar;
   QStringList l = QStringList::split(",", d, FALSE);
@@ -53,26 +53,29 @@ Bar * Futures::getBar (QString k, QString d)
   return bar;
 }
 
-void Futures::setBar (Bar *bar)
+void Futures::setBar (Bar &bar)
 {
-  if (getHeaderField(BarType).toInt() != bar->getTickFlag())
+  QString k;
+  getHeaderField(BarType, k);
+  if (k.toInt() != bar.getTickFlag())
     return;
 
-  QStringList l;
-  l.append(QString::number(bar->getOpen()));
-  l.append(QString::number(bar->getHigh()));
-  l.append(QString::number(bar->getLow()));
-  l.append(QString::number(bar->getClose()));
-  l.append(QString::number(bar->getVolume(), 'f', 0));
-  l.append(QString::number(bar->getOI()));
-  setData(bar->getDate().getDateTimeString(FALSE), l.join(","));
+  k = bar.getDate().getDateTimeString(FALSE);
+  
+  QString d = QString::number(bar.getOpen()) + "," + QString::number(bar.getHigh()) + "," +
+              QString::number(bar.getLow()) + "," + QString::number(bar.getClose()) + "," +
+	      QString::number(bar.getVolume(), 'f', 0) + "," + QString::number(bar.getOI());
+  
+  setData(k, d);
 }
 
 void Futures::createNew ()
 {
-  setHeaderField(BarType, QString::number(BarData::Daily));
-  setHeaderField(Type, "Futures");
-  setHeaderField(Plugin, "Futures");
+  QString s = QString::number(BarData::Daily);
+  setHeaderField(BarType, s);
+  s = "Futures";
+  setHeaderField(Type, s);
+  setHeaderField(Plugin, s);
 }
 
 //********************************************************************

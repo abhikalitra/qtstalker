@@ -186,7 +186,8 @@ void MySQLPlugin::updateSymbol(QString symbol)
   }
   
   // verify if this chart can be updated by this plugin
-  QString s = db->getHeaderField(DbPlugin::QuotePlugin);
+  QString s;
+  db->getHeaderField(DbPlugin::QuotePlugin, s);
   if (! s.length())
     db->setHeaderField(DbPlugin::QuotePlugin, pluginName);
   else
@@ -200,7 +201,7 @@ void MySQLPlugin::updateSymbol(QString symbol)
     }
   }
   
-  s = db->getHeaderField(DbPlugin::Symbol);
+  db->getHeaderField(DbPlugin::Symbol, s);
   if (! s.length())
   {
     db->createNew();
@@ -288,11 +289,10 @@ void MySQLPlugin::doQuery (QString sql, DbPlugin *db)
       d = d.remove('-');
       d.append("000000");
       
-      Bar *bar = new Bar;
-      if (bar->setDate(d))
+      Bar bar;
+      if (bar.setDate(d))
       {
         emit statusLogMessage("Bad date " + d);
-	delete bar;
         continue;
       }
       
@@ -306,14 +306,13 @@ void MySQLPlugin::doQuery (QString sql, DbPlugin *db)
       if (with_oi)
         oi = row[6];
       
-      bar->setOpen(open.toDouble());
-      bar->setHigh(high.toDouble());
-      bar->setLow(low.toDouble());
-      bar->setClose(close.toDouble());
-      bar->setVolume(volume.toDouble());
-      bar->setOI(oi.toInt());
+      bar.setOpen(open.toDouble());
+      bar.setHigh(high.toDouble());
+      bar.setLow(low.toDouble());
+      bar.setClose(close.toDouble());
+      bar.setVolume(volume.toDouble());
+      bar.setOI(oi.toInt());
       db->setBar(bar);
-      delete bar;
       
 //      emit dataLogMessage(db.getDetail(ChartDb::Symbol) + " " + bar->getString());
     }

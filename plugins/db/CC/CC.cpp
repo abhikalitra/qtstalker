@@ -41,26 +41,38 @@ CC::~CC ()
 {
 }
 
-BarData * CC::getHistory ()
+void CC::getHistory (BarData *bd)
 {
   update();
-  return DbPlugin::getHistory();
+  DbPlugin::getHistory(bd);
 }
 
 void CC::dbPrefDialog ()
 {
   PrefDialog *dialog = new PrefDialog(0);
   dialog->setCaption(QObject::tr("CC Prefs"));
-  dialog->createPage (QObject::tr("Details"));
-  dialog->setHelpFile (helpFile);
-  dialog->addIntItem(QObject::tr("Maximum Years"), QObject::tr("Details"), getData("Maximum Years").toInt());
-  dialog->addCheckItem(QObject::tr("Rebuild"), QObject::tr("Details"), getData("Details").toInt());
+  dialog->createPage(QObject::tr("Details"));
+  dialog->setHelpFile(helpFile);
+  
+  QString s = "Maximum Years";
+  QString s2;
+  getData(s, s2);
+  dialog->addIntItem(QObject::tr("Maximum Years"), QObject::tr("Details"), s2.toInt());
+  
+  s = "Details";
+  getData(s, s2);
+  dialog->addCheckItem(QObject::tr("Rebuild"), QObject::tr("Details"), s2.toInt());
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
-    setData("Maximum Years", QString::number(dialog->getInt(QObject::tr("Maximum Years"))));
-    setData("Rebuild", QString::number(dialog->getCheck(QObject::tr("Rebuild"))));
+    s = "Maximum Years";
+    s2 = QString::number(dialog->getInt(QObject::tr("Maximum Years")));
+    setData(s, s2);
+    
+    s = "Rebuild";
+    s2 = QString::number(dialog->getCheck(QObject::tr("Rebuild")));
+    setData(s, s2);
   }
   
   delete dialog;
@@ -71,22 +83,36 @@ void CC::update ()
   QDateTime startDate = QDateTime::currentDateTime();
 
   // figure out if we have to rebuild chart
-  if (! getData("Rebuild").toInt())
+  QString s = "Rebuild";
+  QString s2;
+  getData(s, s2);
+  if (! s2.toInt())
   {
     BarDate dt;
-    if (! dt.setDate(getData("Last Rebuild Date")))
+    s = "Last Rebuild Date";
+    getData(s, s2);
+    if (! dt.setDate(s2))
     {
       if (dt.getDate() == startDate.date())
         return; // no rebuild since chart was updated this same day
       else
-        setData("Last Rebuild Date", startDate.toString("yyyyMMdd000000"));
+      {
+        s = "Last Rebuild Date";
+	s2 = startDate.toString("yyyyMMdd000000");
+        setData(s, s2);
+      }
     }
     else
-      setData("Last Rebuild Date", startDate.toString("yyyyMMdd000000"));
+    {
+      s = "Last Rebuild Date";
+      s2 = startDate.toString("yyyyMMdd000000");
+      setData(s, s2);
+    }
   }
 
   FuturesData fd;
-  if (fd.setSymbol(getHeaderField(Symbol)))
+  getHeaderField(Symbol, s2);
+  if (fd.setSymbol(s2))
   {
     qDebug("CC::newChart:invalid futures symbol");
     return;
@@ -98,7 +124,9 @@ void CC::update ()
   if (! dir.exists(baseDir, TRUE))
     return;
     
-  int maxYears = getData("Maximum Years").toInt();
+  s = "Maximum Years";
+  getData(s, s2);
+  int maxYears = s2.toInt();
   
   QString lastChart = fd.getCurrentContract(startDate);
   QString ey = lastChart.right(5);
@@ -145,7 +173,8 @@ void CC::update ()
     tdb->setBarCompression(BarData::DailyBar);
     tdb->setBarRange(100);
 
-    BarData *recordList = tdb->getHistory();
+    BarData *recordList = new BarData;
+    tdb->getHistory(recordList);
 
     int loop2;
     for (loop2 = 1; loop2 < (int) recordList->count(); loop2++)
@@ -159,18 +188,17 @@ void CC::update ()
       double l = c - (recordList->getClose(loop2) - recordList->getLow(loop2));
       double o = h - (recordList->getHigh(loop2) - recordList->getOpen(loop2));
 	
-      Bar *bar = new Bar;
-      bar->setDate(recordList->getDate(loop2));
-      bar->setOpen(o);
-      bar->setHigh(h);
-      bar->setLow(l);
-      bar->setClose(c);
-      bar->setVolume(recordList->getVolume(loop2));
-      bar->setOI((int) recordList->getOI(loop2));
+      Bar bar;
+      bar.setDate(recordList->getDate(loop2));
+      bar.setOpen(o);
+      bar.setHigh(h);
+      bar.setLow(l);
+      bar.setClose(c);
+      bar.setVolume(recordList->getVolume(loop2));
+      bar.setOI((int) recordList->getOI(loop2));
       setBar(bar);
       pr = c;
-      data.insert(bar->getDate().getDateTimeString(FALSE), new Dummy);
-      delete bar;
+      data.insert(bar.getDate().getDateTimeString(FALSE), new Dummy);
     }
 
     delete recordList;
@@ -221,19 +249,25 @@ void CC::createNew ()
   openChart(s);
   
   setHeaderField(Symbol, symbol);  
-  setHeaderField(Type, "CC");  
+  
+  s = "CC";
+  setHeaderField(Type, s);  
+  setHeaderField(Plugin, s);  
   
   s = symbol + " - Continuous Adjusted";
   setHeaderField(Title, s);  
   
-  setHeaderField(BarType, QString::number(BarData::Daily));  
-  setHeaderField(Plugin, "CC");  
-  setData("Maximum Years", QString::number(10)); // MAXYEARS
+  s = QString::number(BarData::Daily);
+  setHeaderField(BarType, s);
+  
+  s = "Maximum Years";
+  QString s2 = QString::number(10);
+  setData(s, s2); // MAXYEARS
   
   dbPrefDialog();
 }
 
-Bar * CC::getBar (QString k, QString d)
+Bar * CC::getBar (QString &k, QString &d)
 {
   Bar *bar = new Bar;
   QStringList l = QStringList::split(",", d, FALSE);
@@ -247,19 +281,20 @@ Bar * CC::getBar (QString k, QString d)
   return bar;
 }
 
-void CC::setBar (Bar *bar)
+void CC::setBar (Bar &bar)
 {
-  if (getHeaderField(BarType).toInt() != bar->getTickFlag())
+  QString k;
+  getHeaderField(BarType, k);
+  if (k.toInt() != bar.getTickFlag())
     return;
 
-  QStringList l;
-  l.append(QString::number(bar->getOpen()));
-  l.append(QString::number(bar->getHigh()));
-  l.append(QString::number(bar->getLow()));
-  l.append(QString::number(bar->getClose()));
-  l.append(QString::number(bar->getVolume(), 'f', 0));
-  l.append(QString::number(bar->getOI()));
-  setData(bar->getDate().getDateTimeString(FALSE), l.join(","));
+  k = bar.getDate().getDateTimeString(FALSE);
+  
+  QString d = QString::number(bar.getOpen()) + "," + QString::number(bar.getHigh()) + "," +
+              QString::number(bar.getLow()) + "," + QString::number(bar.getClose()) + "," +
+	      QString::number(bar.getVolume(), 'f', 0) + "," + QString::number(bar.getOI());
+  
+  setData(k, d);
 }
 
 //***********************************************************

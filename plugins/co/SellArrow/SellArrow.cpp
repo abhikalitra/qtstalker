@@ -258,7 +258,8 @@ void SellArrow::saveObjects (QString chartPath)
     
     if (co->getStatus() == SellArrowObject::Delete)
     {
-      db->deleteChartObject(co->getName());
+      QString s = co->getName();
+      db->deleteChartObject(s);
       continue;
     }
     
@@ -266,7 +267,8 @@ void SellArrow::saveObjects (QString chartPath)
     {
       Setting set;
       co->getSettings(set);
-      db->setChartObject(co->getName(), set);
+      QString s = co->getName();
+      db->setChartObject(s, set);
     }
   }
   

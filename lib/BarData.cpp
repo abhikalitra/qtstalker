@@ -126,7 +126,7 @@ BarDate BarData::getDate (int i)
   }
 }
 
-int BarData::getX (BarDate date)
+int BarData::getX (BarDate &date)
 {
   X *x = 0;
   
@@ -255,7 +255,7 @@ BarData::BarType BarData::getBarType ()
   return barType;
 }
 
-BarData::InputType BarData::getInputType (QString d)
+BarData::InputType BarData::getInputType (QString &d)
 {
   InputType t = Close;
   
@@ -316,21 +316,6 @@ QStringList BarData::getBarCompressionList ()
 Bar * BarData::getBar (int d)
 {
   return barList.at(d);
-}
-
-void BarData::copy (BarData *d)
-{
-  int loop;
-  for (loop = barList.count() - 1; loop > -1; loop--)
-  {
-    Bar *bar = new Bar;
-    Bar *tbar = getBar(loop);
-    tbar->copy(bar);
-    d->prepend(bar);
-  }
-  
-  d->createDateList();
-  d->setBarType(getBarType());
 }
 
 void BarData::setMinMax ()

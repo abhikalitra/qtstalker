@@ -239,7 +239,8 @@ void ChartPage::exportChart (QString path, bool f)
   QString s = config.getData(Config::Home);
   s.append("/export/");
   
-  QString s2 = db->getHeaderField(DbPlugin::Symbol);
+  QString s2;
+  db->getHeaderField(DbPlugin::Symbol, s2);
   if (! s2.length())
   {
     QStringList l = QStringList::split("/", path, FALSE);

@@ -205,7 +205,10 @@ void QtstalkerFormat::parse ()
     }
 
     if (co.count())
-      db->setHeaderField(DbPlugin::CO, co.join(","));
+    {
+      QString t = co.join(",");
+      db->setHeaderField(DbPlugin::CO, t);
+    }
       
     f.close();
     config.closePlugin(plugin);

@@ -74,7 +74,7 @@ class BarData
     double getVolume (int);
     double getOI (int);
     void prepend (Bar *bar);
-    int getX (BarDate);
+    int getX (BarDate &);
     double getMax ();
     double getMin ();
     void createDateList ();
@@ -82,9 +82,8 @@ class BarData
     BarData::BarType getBarType ();
     QStringList getInputFields ();
     PlotLine * getInput (BarData::InputType);
-    BarData::InputType getInputType (QString);
+    BarData::InputType getInputType (QString &);
     QStringList getBarCompressionList ();
-    void copy (BarData *);
     Bar * getBar (int);
     void setMinMax ();
     void deleteBar (int);

@@ -153,13 +153,14 @@ QMemArray<double> Scaler::getScaleArray ()
   scaleArray.resize(20);
 
   loop = 0;
-//  double t = 0 - (ticks * interval);
+  double t = 0 - (ticks * interval);
+/*  
   double t = scaleLow;
   if (t < 0)
     t = 0 - (ticks * interval);
   else
     t = t - interval;
-  
+*/  
   while (t <= scaleHigh)
   {
     t = t + interval;

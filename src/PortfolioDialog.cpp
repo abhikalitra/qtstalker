@@ -155,8 +155,13 @@ void PortfolioDialog::updatePortfolioItems ()
       
     plug->openChart(s);
     
-    QString type = plug->getHeaderField(DbPlugin::Type);
-    QString futuresType = plug->getData("FuturesType");
+    QString type;
+    plug->getHeaderField(DbPlugin::Type, type);
+    
+    QString futuresType;
+    s = "FuturesType";
+    plug->getData(s, futuresType);
+    
     Bar *bar = plug->getLastBar();
     
     if (! bar)

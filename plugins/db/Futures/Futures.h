@@ -32,8 +32,8 @@ class Futures : public DbPlugin
     Futures ();
     ~Futures ();
     void dbPrefDialog ();
-    void setBar (Bar *);
-    Bar *getBar (QString, QString);
+    void setBar (Bar &);
+    Bar *getBar (QString &, QString &);
     void createNew ();
     
   private:

@@ -32,8 +32,8 @@ class Stocks : public DbPlugin
     Stocks ();
     ~Stocks ();
     void dbPrefDialog ();
-    void setBar (Bar *);
-    Bar *getBar (QString, QString);
+    void setBar (Bar &);
+    Bar *getBar (QString &, QString &);
     void createNew ();
     
   private:

@@ -822,13 +822,31 @@ void IndicatorPlot::drawCrossHair ()
     
   int y = scaler->convertToY(crossHairY);
   int x = startX + (data->getX(crossHairX) * pixelspace) - (startIndex * pixelspace);
-
+  
   QPainter painter;
   painter.begin(buffer);
   painter.setPen(QPen(borderColor, 1, QPen::DotLine));
   painter.drawLine (0, y, buffer->width(), y);
   painter.drawLine (x, 0, x, buffer->height());
   painter.end();
+}
+
+void IndicatorPlot::getXY (int x, int y)
+{
+  int i = convertXToDataIndex(x);
+  x1 = data->getDate(i);
+  y1 = scaler->convertToVal(y);
+}
+
+int IndicatorPlot::convertXToDataIndex (int x)
+{
+  int i = (x / pixelspace) + startIndex;
+  if (i >= (int) data->count())
+    i = data->count() - 1;
+  if (i < startIndex)
+    i = startIndex;
+  
+  return i;
 }
 
 void IndicatorPlot::updateStatusBar (int x, int y)
@@ -838,13 +856,6 @@ void IndicatorPlot::updateStatusBar (int x, int y)
   s.append(" ");
   s.append(strip(scaler->convertToVal(y), 4));
   emit statusMessage(s);
-}
-
-void IndicatorPlot::getXY (int x, int y)
-{
-  int i = convertXToDataIndex(x);
-  x1 = data->getDate(i);
-  y1 = scaler->convertToVal(y);
 }
 
 void IndicatorPlot::setScale ()
@@ -1390,7 +1401,10 @@ void IndicatorPlot::slotDeleteAllChartObjects ()
     set.parse(l3[loop]);
     QString s = set.getData("Plugin");
     if (l2.findIndex(s) != -1)
-      db->deleteChartObject(set.getData("Name"));
+    {
+      QString d = set.getData("Name");
+      db->deleteChartObject(d);
+    }
   }
   
   config.closePlugin(plugin);
@@ -1404,17 +1418,6 @@ void IndicatorPlot::slotDeleteAllChartObjects ()
   
   mouseFlag = None;
   draw();
-}
-
-int IndicatorPlot::convertXToDataIndex (int x)
-{
-  int i = (x / pixelspace) + startIndex;
-  if (i >= (int) data->count())
-    i = data->count() - 1;
-  if (i < startIndex)
-    i = startIndex;
-  
-  return i;
 }
 
 void IndicatorPlot::setCrosshairsFlag (bool d)

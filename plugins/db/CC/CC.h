@@ -38,10 +38,10 @@ class CC : public DbPlugin
     CC ();
     ~CC ();
     void update ();
-    BarData * getHistory ();
+    void getHistory (BarData *);
     void dbPrefDialog ();
-    void setBar (Bar *);
-    Bar *getBar (QString, QString);
+    void setBar (Bar &);
+    Bar *getBar (QString &, QString &);
     void createNew ();
         
   private:

@@ -353,33 +353,30 @@ void CSV::parse ()
       else
         s.append("000000");
 	
-      Bar *bar = new Bar;
-      if (bar->setDate(s))
+      Bar bar;
+      if (bar.setDate(s))
       {
         emit statusLogMessage("Bad date " + r.getData("Date"));
-	delete bar;
         continue;
       }
-      bar->setTickFlag(tickFlag);
-      bar->setOpen(r.getData("Open").toDouble());
-      bar->setHigh(r.getData("High").toDouble());
-      bar->setLow(r.getData("Low").toDouble());
-      bar->setClose(r.getData("Close").toDouble());
-      bar->setVolume(r.getData("Volume").toDouble());
-      bar->setOI(r.getData("OI").toInt());
+      bar.setTickFlag(tickFlag);
+      bar.setOpen(r.getData("Open").toDouble());
+      bar.setHigh(r.getData("High").toDouble());
+      bar.setLow(r.getData("Low").toDouble());
+      bar.setClose(r.getData("Close").toDouble());
+      bar.setVolume(r.getData("Volume").toDouble());
+      bar.setOI(r.getData("OI").toInt());
       
       if (! symbol.length())
       {
 	s = path;
 	s.append(r.getData("Symbol"));
 	if (openDb(s, r.getData("Symbol"), type, tickFlag))
-	{
-	  delete bar;
 	  continue;
-	}
 	
-	if (r.getData("Name").length())
-	  db->setHeaderField(DbPlugin::Title, r.getData("Name"));
+	s = r.getData("Name");
+	if (s.length())
+	  db->setHeaderField(DbPlugin::Title, s);
 
         db->setBar(bar);
 	emit dataLogMessage(r.getData("Symbol") + " " + r.getString());
@@ -389,13 +386,12 @@ void CSV::parse ()
       }
       else
       {
-	if (r.getData("Name").length())
-	  db->setHeaderField(DbPlugin::Title, r.getData("Name"));
+	s = r.getData("Name");
+	if (s.length())
+	  db->setHeaderField(DbPlugin::Title, s);
         db->setBar(bar);
 	emit dataLogMessage(symbol + " " + r.getString());
       }
-
-      delete bar;
     }
 
     if (db)
@@ -623,7 +619,8 @@ bool CSV::openDb (QString path, QString symbol, QString type, bool tickFlag)
   }
   
   // verify if this chart can be updated by this plugin
-  QString s = db->getHeaderField(DbPlugin::QuotePlugin);
+  QString s;
+  db->getHeaderField(DbPlugin::QuotePlugin, s);
   if (! s.length())
     db->setHeaderField(DbPlugin::QuotePlugin, pluginName);
   else
@@ -638,20 +635,28 @@ bool CSV::openDb (QString path, QString symbol, QString type, bool tickFlag)
     }
   }
 
-  s = db->getHeaderField(DbPlugin::Symbol);
+  db->getHeaderField(DbPlugin::Symbol, s);
   if (! s.length())
   {
     db->createNew();
     
     db->setHeaderField(DbPlugin::Symbol, symbol);
     db->setHeaderField(DbPlugin::Title, symbol);
-    db->setHeaderField(DbPlugin::BarType, QString::number(tickFlag));
+    
+    s = QString::number(tickFlag);
+    db->setHeaderField(DbPlugin::BarType, s);
     
     if (! type.compare("Futures"))
     {
-      db->setHeaderField(DbPlugin::Title, fd.getName());
-      db->setData("FuturesType", fd.getSymbol());
-      db->setData("FuturesMonth", futuresMonth);
+      s = fd.getName();
+      db->setHeaderField(DbPlugin::Title, s);
+      
+      QString s2 = fd.getSymbol();
+      s = "FuturesType";
+      db->setData(s, s2);
+      
+      s = "FuturesMonth";
+      db->setData(s, futuresMonth);
     }
   }
   

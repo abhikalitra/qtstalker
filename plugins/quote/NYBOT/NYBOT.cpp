@@ -284,11 +284,10 @@ void NYBOT::parse ()
       s = tr("Updating ") + symbol;
       emit statusLogMessage(s);
       
-      Bar *bar = new Bar;
-      if (bar->setDate(date))
+      Bar bar;
+      if (bar.setDate(date))
       {
         emit statusLogMessage("Bad date " + date);
-	delete bar;
         continue;
       }
       
@@ -297,7 +296,6 @@ void NYBOT::parse ()
       if (! db)
       {
         config.closePlugin("Futures");
-	delete bar;
         continue;
       }
       
@@ -306,12 +304,11 @@ void NYBOT::parse ()
       {
         emit statusLogMessage("Could not open db.");
         config.closePlugin("Futures");
-	delete bar;
         return;
       }
 
       // verify if this chart can be updated by this plugin
-      s = db->getHeaderField(DbPlugin::QuotePlugin);
+      db->getHeaderField(DbPlugin::QuotePlugin, s);
       if (! s.length())
         db->setHeaderField(DbPlugin::QuotePlugin, pluginName);
       else
@@ -321,29 +318,34 @@ void NYBOT::parse ()
           s = symbol + " - skipping update. Source does not match destination.";
           emit statusLogMessage(s);
           config.closePlugin("Futures");
-	  delete bar;
           return;
         }
       }
       
-      s = db->getHeaderField(DbPlugin::Symbol);
+      db->getHeaderField(DbPlugin::Symbol, s);
       if (! s.length())
       {
         db->createNew();
         db->setHeaderField(DbPlugin::Symbol, symbol);
-        db->setHeaderField(DbPlugin::Title, fd->getName());
-        db->setData("FuturesType", fd->getSymbol());
-        db->setData("FuturesMonth", month);
+	
+	s = fd->getName();
+        db->setHeaderField(DbPlugin::Title, s);
+	
+	s = "FuturesType";
+	QString s2 = fd->getSymbol();
+        db->setData(s, s2);
+	
+	s = "FuturesMonth";
+        db->setData(s, month);
       }
       
-      bar->setOpen(open.toDouble());
-      bar->setHigh(high.toDouble());
-      bar->setLow(low.toDouble());
-      bar->setClose(close.toDouble());
-      bar->setVolume(volume.toDouble());
-      bar->setOI(oi.toInt());
+      bar.setOpen(open.toDouble());
+      bar.setHigh(high.toDouble());
+      bar.setLow(low.toDouble());
+      bar.setClose(close.toDouble());
+      bar.setVolume(volume.toDouble());
+      bar.setOI(oi.toInt());
       db->setBar(bar);
-      delete bar;
 		 
 //      emit dataLogMessage(symbol);
       config.closePlugin("Futures");

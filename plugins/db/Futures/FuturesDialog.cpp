@@ -69,35 +69,44 @@ void FuturesDialog::createDetailsPage ()
   
   QLabel *label = new QLabel(tr("Symbol"), w);
   grid->addWidget(label, 0, 0);
-  
-  QLineEdit *edit = new QLineEdit(db->getHeaderField(DbPlugin::Symbol), w);
+
+  QString s;
+  db->getHeaderField(DbPlugin::Symbol, s);
+  QLineEdit *edit = new QLineEdit(s, w);
   edit->setReadOnly(TRUE);
   grid->addWidget(edit, 0, 1);
   
   label = new QLabel(tr("Name"), w);
   grid->addWidget(label, 1, 0);
   
-  title = new QLineEdit(db->getHeaderField(DbPlugin::Title), w);
+  db->getHeaderField(DbPlugin::Title, s);
+  title = new QLineEdit(s, w);
   grid->addWidget(title, 1, 1);
   
   label = new QLabel(tr("Type"), w);
   grid->addWidget(label, 2, 0);
   
-  edit = new QLineEdit(db->getHeaderField(DbPlugin::Type), w);
+  db->getHeaderField(DbPlugin::Type, s);
+  edit = new QLineEdit(s, w);
   edit->setReadOnly(TRUE);
   grid->addWidget(edit, 2, 1);
   
   label = new QLabel(tr("Futures Type"), w);
   grid->addWidget(label, 3, 0);
   
-  edit = new QLineEdit(db->getData("FuturesType"), w);
+  s = "FuturesType";
+  QString s2;
+  db->getData(s, s2);
+  edit = new QLineEdit(s2, w);
   edit->setReadOnly(TRUE);
   grid->addWidget(edit, 3, 1);
 
   label = new QLabel(tr("Futures Month"), w);
   grid->addWidget(label, 4, 0);
   
-  edit = new QLineEdit(db->getData("FuturesMonth"), w);
+  s = "FuturesMonth";
+  db->getData(s, s2);
+  edit = new QLineEdit(s, w);
   edit->setReadOnly(TRUE);
   grid->addWidget(edit, 4, 1);
   
@@ -140,7 +149,9 @@ void FuturesDialog::createDataPage ()
   dateSearch = new QDateTimeEdit(dt, w);
   dateSearch->setAutoAdvance(TRUE);
   dateSearch->dateEdit()->setOrder(QDateEdit::YMD);
-  if (! db->getHeaderField(DbPlugin::BarType).toInt())
+  QString s;
+  db->getHeaderField(DbPlugin::BarType, s);
+  if (! s.toInt())
     dateSearch->timeEdit()->setEnabled(FALSE);
   grid->addWidget(dateSearch, 0, 1);
   
@@ -233,7 +244,8 @@ void FuturesDialog::deleteRecord ()
       return;
   }
 
-  db->deleteData(dateSearch->dateTime().toString("yyyyMMddmmhhss"));
+  QString s = dateSearch->dateTime().toString("yyyyMMddmmhhss");
+  db->deleteData(s);
   
   clearRecordFields();
   
@@ -244,16 +256,15 @@ void FuturesDialog::deleteRecord ()
 
 void FuturesDialog::saveRecord ()
 {
-  Bar *bar = new Bar;
-  bar->setDate(date->text());
-  bar->setOpen(open->text().toDouble());
-  bar->setHigh(high->text().toDouble());
-  bar->setLow(low->text().toDouble());
-  bar->setClose(close->text().toDouble());
-  bar->setVolume(volume->text().toDouble());
-  bar->setOI(oi->text().toInt());
+  Bar bar;
+  bar.setDate(date->text());
+  bar.setOpen(open->text().toDouble());
+  bar.setHigh(high->text().toDouble());
+  bar.setLow(low->text().toDouble());
+  bar.setClose(close->text().toDouble());
+  bar.setVolume(volume->text().toDouble());
+  bar.setOI(oi->text().toInt());
   db->setBar(bar);
-  delete bar;
   
   toolbar->setButtonStatus("save", FALSE);
   saveRecordFlag = FALSE;
@@ -306,7 +317,8 @@ void FuturesDialog::slotDateSearch ()
 
 void FuturesDialog::saveChart ()
 {
-  db->setHeaderField(DbPlugin::Title, title->text());
+  QString s = title->text();
+  db->setHeaderField(DbPlugin::Title, s);
 
   if (saveRecordFlag)
   {  

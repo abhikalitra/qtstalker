@@ -42,14 +42,20 @@ CSVRuleDialog::CSVRuleDialog (QWidget *p, QString d) : QTabDialog (p, "CSVRuleDi
   
   createRulePage();
   setOkButton();
+  setApplyButton(tr("&Save"));  
+  connect(this, SIGNAL(applyButtonPressed()), this, SLOT(saveRule()));
   setCancelButton();
   setHelpButton();
   QObject::connect(this, SIGNAL(helpButtonPressed()), this, SLOT(help()));
-  QObject::connect(this, SIGNAL(applyButtonPressed()), this, SLOT(saveRule()));
   
   resize(375, 375);
   
-  loadRule();
+  QFileInfo fi(rulePath);
+  ruleName->setText(fi.fileName());
+  
+  QDir dir;
+  if (dir.exists(rulePath))
+    loadRule();
 
   QString s = tr("Editing CSV Rule: ") + ruleName->text();  
   setCaption(s);
@@ -173,8 +179,8 @@ void CSVRuleDialog::saveRule ()
     return;
   }
   
-  if (directory->text().right(1).compare("/") ||
-      directory->text().left(1).compare("/"))
+  if (! directory->text().right(1).compare("/") ||
+      ! directory->text().left(1).compare("/"))
   {
     QMessageBox::information(this, tr("Error"), tr("Invalid directory name."));
     return;
@@ -257,11 +263,6 @@ void CSVRuleDialog::loadRule ()
   }
   
   f.close();
-  
-  QFileInfo fi(rulePath);
-  ruleName->setText(fi.fileName());
-  
-  saveFlag = FALSE;
 }
 
 void CSVRuleDialog::insertField ()

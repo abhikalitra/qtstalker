@@ -41,7 +41,7 @@ void Stocks::dbPrefDialog ()
   delete dialog;
 }
 
-Bar * Stocks::getBar (QString k, QString d)
+Bar * Stocks::getBar (QString &k, QString &d)
 {
   Bar *bar = new Bar;
   QStringList l = QStringList::split(",", d, FALSE);
@@ -54,28 +54,40 @@ Bar * Stocks::getBar (QString k, QString d)
   return bar;
 }
 
-void Stocks::setBar (Bar *bar)
+void Stocks::setBar (Bar &bar)
 {
-  if (getHeaderField(BarType).toInt() != bar->getTickFlag())
+  QString k;
+  getHeaderField(BarType, k);
+  if (k.toInt() != bar.getTickFlag())
     return;
 
-  QStringList l;
-  l.append(QString::number(bar->getOpen()));
-  l.append(QString::number(bar->getHigh()));
-  l.append(QString::number(bar->getLow()));
-  l.append(QString::number(bar->getClose()));
-  l.append(QString::number(bar->getVolume(), 'f', 0));
-  setData(bar->getDate().getDateTimeString(FALSE), l.join(","));
+  k = bar.getDate().getDateTimeString(FALSE);
+  
+  QString d = QString::number(bar.getOpen()) + "," + QString::number(bar.getHigh()) + "," +
+              QString::number(bar.getLow()) + "," + QString::number(bar.getClose()) + "," +
+	      QString::number(bar.getVolume(), 'f', 0);
+  
+  setData(k, d);
 }
 
 void Stocks::createNew ()
 {
-  QFileInfo fi(getHeaderField(Path));
-  setHeaderField(BarType, QString::number(BarData::Daily));
-  setHeaderField(Symbol, fi.fileName());
-  setHeaderField(Title, fi.fileName());
-  setHeaderField(Type, "Stock");
-  setHeaderField(Plugin, "Stocks");
+  QString s;
+  getHeaderField(Path, s);
+  QFileInfo fi(s);
+  
+  s = QString::number(BarData::Daily);
+  setHeaderField(BarType, s);
+  
+  s = fi.fileName();
+  setHeaderField(Symbol, s);
+  setHeaderField(Title, s);
+  
+  s = "Stock";
+  setHeaderField(Type, s);
+  
+  s = "Stocks";
+  setHeaderField(Plugin, s);
 }
 
 //********************************************************************

@@ -74,21 +74,25 @@ void StocksDialog::createDetailsPage ()
   
   QLabel *label = new QLabel(tr("Symbol"), w);
   grid->addWidget(label, 0, 0);
-  
-  QLineEdit *edit = new QLineEdit(db->getHeaderField(DbPlugin::Symbol), w);
+
+  QString s;
+  db->getHeaderField(DbPlugin::Symbol, s);
+  QLineEdit *edit = new QLineEdit(s, w);
   edit->setReadOnly(TRUE);
   grid->addWidget(edit, 0, 1);
   
   label = new QLabel(tr("Name"), w);
   grid->addWidget(label, 1, 0);
   
-  title = new QLineEdit(db->getHeaderField(DbPlugin::Title), w);
+  db->getHeaderField(DbPlugin::Title, s);
+  title = new QLineEdit(s, w);
   grid->addWidget(title, 1, 1);
   
   label = new QLabel(tr("Type"), w);
   grid->addWidget(label, 2, 0);
   
-  edit = new QLineEdit(db->getHeaderField(DbPlugin::Type), w);
+  db->getHeaderField(DbPlugin::Type, s);
+  edit = new QLineEdit(s, w);
   edit->setReadOnly(TRUE);
   grid->addWidget(edit, 2, 1);
   
@@ -98,8 +102,12 @@ void StocksDialog::createDetailsPage ()
   // fundamentals section
     
   Setting fund;
-  fund.parse(db->getData("Fundamentals"));
-  QString s = tr("Fundamentals: last updated ");
+  s = "Fundamentals";
+  QString s2;
+  db->getData(s, s2); 
+  fund.parse(s2);
+  
+  s = tr("Fundamentals: last updated ");
   s.append(fund.getData("updateDate"));
   fund.remove("updateDate");
   QStringList key = fund.getKeyList();
@@ -157,7 +165,9 @@ void StocksDialog::createDataPage ()
   dateSearch = new QDateTimeEdit(dt, w);
   dateSearch->setAutoAdvance(TRUE);
   dateSearch->dateEdit()->setOrder(QDateEdit::YMD);
-  if (! db->getHeaderField(DbPlugin::BarType).toInt())
+  QString s;
+  db->getHeaderField(DbPlugin::BarType, s);  
+  if (! s.toInt())
     dateSearch->timeEdit()->setEnabled(FALSE);
   grid->addWidget(dateSearch, 0, 1);
   
@@ -241,7 +251,8 @@ void StocksDialog::deleteRecord ()
       return;
   }
 
-  db->deleteData(dateSearch->dateTime().toString("yyyyMMddmmhhss"));
+  QString s = dateSearch->dateTime().toString("yyyyMMddmmhhss");
+  db->deleteData(s);
   
   clearRecordFields();
   
@@ -252,15 +263,14 @@ void StocksDialog::deleteRecord ()
 
 void StocksDialog::saveRecord ()
 {
-  Bar *bar = new Bar;
-  bar->setDate(date->text());
-  bar->setOpen(open->text().toDouble());
-  bar->setHigh(high->text().toDouble());
-  bar->setLow(low->text().toDouble());
-  bar->setClose(close->text().toDouble());
-  bar->setVolume(volume->text().toDouble());
+  Bar bar;
+  bar.setDate(date->text());
+  bar.setOpen(open->text().toDouble());
+  bar.setHigh(high->text().toDouble());
+  bar.setLow(low->text().toDouble());
+  bar.setClose(close->text().toDouble());
+  bar.setVolume(volume->text().toDouble());
   db->setBar(bar);
-  delete bar;
   
   toolbar->setButtonStatus("save", FALSE);
   saveRecordFlag = FALSE;
@@ -312,7 +322,8 @@ void StocksDialog::slotDateSearch ()
 
 void StocksDialog::saveChart ()
 {
-  db->setHeaderField(DbPlugin::Title, title->text());
+  QString s = title->text();
+  db->setHeaderField(DbPlugin::Title, s);
 
   if (saveRecordFlag)
   {  
