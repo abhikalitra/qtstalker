@@ -82,7 +82,7 @@
 	  
 20050112: Fixed bug in crosshair draws that didn't draw on the left edge of plot.
 
-
+20050113: Fixed yahoo plugin to download symbols in sorted order.
 
 	  	  	  	  
 0.28

@@ -204,6 +204,7 @@ void Yahoo::update ()
   }
 
   downloadList = url.getKeyList();
+  downloadList.sort();
   
   QTimer::singleShot(250, this, SLOT(getFile()));
 }
@@ -252,37 +253,7 @@ void Yahoo::opDone (QNetworkOperation *o)
   }
 
   if (o->state() == QNetworkProtocol::StFailed)
-  {
     downloadError();
-
-/*        
-    timer->stop();
-    
-    emit statusLogMessage(tr("Download error ") + downloadList[index] + tr(" skipped"));
-    
-    index++;
-    if (index >= (int) downloadList.count())
-    {
-      errorLoop++;
-      if (errorLoop == retries || url.count() == 0)
-      {
-        emit done();
-        emit statusLogMessage(tr("Done"));
-	printErrorList();
-        return;
-      }
-      else
-      {
-        downloadList = url.getKeyList();
-	index = 0;
-      }
-    }
-    
-    data.truncate(0);
-    getFile();
-*/  
-    
-  }
 }
 
 void Yahoo::getFile ()
@@ -693,7 +664,6 @@ void Yahoo::prefDialog (QWidget *w)
     sdate = dialog->getStartDate();
     edate = dialog->getEndDate();
     symbolList = dialog->getList();
-    symbolList.sort();
     method = dialog->getMethod();
     retries = dialog->getRetries();
     timeout = dialog->getTimeout();
@@ -792,6 +762,7 @@ void Yahoo::downloadError ()
 //***********************************************************************
 //***********************************************************************
 //***********************************************************************
+
 QuotePlugin * createQuotePlugin ()
 {
   Yahoo *o = new Yahoo;

@@ -191,6 +191,7 @@ void YahooDialog::updateList ()
   int loop;
   for (loop = 2; loop < (int) dir.count(); loop++)
     list->insertItem(dir[loop]);
+  list->sort();
 }
 
 QStringList YahooDialog::getList ()
