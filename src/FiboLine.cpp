@@ -37,12 +37,12 @@ FiboLine::FiboLine (Scaler *s, QPixmap *p, QString indicator, QString n, QDateTi
   value = v;
   value2 = v2;
   color.setNamedColor("white");
-  line1 = 0.238;
-  line2 = 0.383;
-  line3 = 0.5;
-  line4 = 0.618;
-  line5 = 1;
-  line6 = 1.618;
+  line1 = 0.5;
+  line2 = 0;
+  line3 = 0;
+  line4 = 0;
+  line5 = 0;
+  line6 = 0;
 
   menu->insertItem(tr("Edit Fibonacci Line"), this, SLOT(prefDialog()));
   menu->insertItem(tr("Delete Fibonacci Line"), this, SLOT(remove()));

@@ -440,6 +440,14 @@ void QtstalkerApp::initToolBar()
 
 void QtstalkerApp::slotQuit()
 {
+  // save any chart data
+  mainPlot->slotSaveChartObjects();
+  
+  QDictIterator<Plot> it(plotList);
+  for(; it.current(); ++it)
+    it.current()->slotSaveChartObjects();
+
+  // save app settings
   QValueList<int> list = split->sizes();
   config->setData(Config::MainPlotSize, QString::number(list[0]));
   config->setData(Config::IndicatorPlotSize, QString::number(list[1]));
@@ -449,6 +457,7 @@ void QtstalkerApp::slotQuit()
   config->setData(Config::Y, QString::number(this->y()));
   delete config;
 
+  // delete any BarData
   if (recordList)
     delete recordList;
 

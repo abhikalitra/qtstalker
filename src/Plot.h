@@ -126,6 +126,7 @@ class Plot : public QWidget
     void showPopupMenu ();
     void setChartPath (QString);
     void setDrawMode (bool);
+    void slotSaveChartObjects ();
 
   protected:
     virtual void paintEvent (QPaintEvent *);
@@ -155,7 +156,6 @@ class Plot : public QWidget
     void slotDeleteChartObject (QString);
     void slotNewIndicator ();
     void slotNewChartObject (int);
-    void slotSaveChartObjects ();
     void slotChartObjectSelected (ChartObject *);
     void slotDeleteAllChartObjects ();
     

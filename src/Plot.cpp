@@ -1463,7 +1463,7 @@ void Plot::newChartObject ()
     
     if (objectFlag == ChartObject::FibonacciLine)
     {
-      if (y1 >= y2)
+      if (y1 <= y2)
       {
 	cancelFlag = TRUE;
         QMessageBox::information(this,
