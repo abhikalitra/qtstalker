@@ -59,7 +59,8 @@ class Config
       NavAreaSize,
       LogScale,
       NavigatorPosition,
-      IndicatorTabs
+      IndicatorTabs,
+      StackedIndicator
     };
 
     Config (QString);

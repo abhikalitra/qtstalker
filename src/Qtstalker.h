@@ -87,7 +87,7 @@ class QtstalkerApp : public QMainWindow
     void setChartType (int);
     void loadChart (QString);
     void compressionChanged (QString);
-    void addIndicatorButton (QString);
+    void addIndicatorButton (QString, bool);
     void exportChart (QString);
     void traverse(QString);
 

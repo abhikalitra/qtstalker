@@ -20,6 +20,11 @@
 
 - Fixed bug #830357.
 
+- Added a new dialog to create new indicators. Combined several steps and dialogs into one. Introduces an option to put the
+  indicator in either the tabs or stackable.
+  
+- Added ability to stack indicators or add them to the tabs. Now you can view more than one indicator at a time.
+
 
 
 0.22

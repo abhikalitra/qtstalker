@@ -43,6 +43,7 @@
 #include "PortfolioPage.h"
 #include "TestPage.h"
 #include "IndicatorPage.h"
+#include "NewIndicatorDialog.h"
 
 #include "grid.xpm"
 #include "datawindow.xpm"
@@ -240,8 +241,14 @@ QtstalkerApp::QtstalkerApp()
     navSplitter->moveToLast(navBase);
 
   l = config->getIndicators();
+  QStringList sl = QStringList::split(",", config->getData(Config::StackedIndicator), FALSE);
   for (loop = 0; loop < (int) l.count(); loop++)
-    addIndicatorButton(l[loop]);
+  {
+    if (sl.findIndex(l[loop]) != -1)
+      addIndicatorButton(l[loop], FALSE);
+    else
+      addIndicatorButton(l[loop], TRUE);
+  }
 
   l = QStringList::split(" ", config->getData(Config::AppFont), FALSE);
   QFont font2(l[0], l[1].toInt(), l[2].toInt());
@@ -609,7 +616,14 @@ void QtstalkerApp::slotGrid (bool state)
   emit signalGrid(state);
 
   mainPlot->draw();
-  
+
+  QDictIterator<Plot> it(plotList);
+  for(; it.current(); ++it)
+  {
+    if (! it.current()->getTabFlag())
+      it.current()->draw();
+  }
+
   slotTabChanged (0);
 }
 
@@ -620,7 +634,14 @@ void QtstalkerApp::slotScaleToScreen (bool state)
   emit signalScaleToScreen(state);
 
   mainPlot->draw();
-  
+
+  QDictIterator<Plot> it(plotList);
+  for(; it.current(); ++it)
+  {
+    if (! it.current()->getTabFlag())
+      it.current()->draw();
+  }
+
   slotTabChanged(0);
 }
 
@@ -902,7 +923,13 @@ void QtstalkerApp::loadChart (QString d)
   pixelspace->blockSignals(FALSE);
 
   mainPlot->draw();
-  
+
+  for(it.toFirst(); it.current(); ++it)
+  {
+    if (! it.current()->getTabFlag())
+      it.current()->draw();
+  }
+
   slotTabChanged(0);
 
   setCaption(getWindowCaption());
@@ -994,7 +1021,15 @@ void QtstalkerApp::slotEditChartObject (int id)
     if (! flag)
       mainPlot->draw();
     else
+    {
+      QDictIterator<Plot> it(plotList);
+      for(; it.current(); ++it)
+      {
+        if (! it.current()->getTabFlag())
+          it.current()->draw();
+      }
       slotTabChanged(0);
+    }
   }
 
   delete dialog;
@@ -1024,7 +1059,15 @@ void QtstalkerApp::slotDeleteChartObject (int id)
   if (! flag)
     mainPlot->draw();
   else
+  {
+    QDictIterator<Plot> it(plotList);
+    for(; it.current(); ++it)
+    {
+      if (! it.current()->getTabFlag())
+        it.current()->draw();
+    }
     slotTabChanged(0);
+  }
 }
 
 QString QtstalkerApp::getWindowCaption ()
@@ -1293,37 +1336,24 @@ void QtstalkerApp::slotChartTypeChanged (int)
   pixelspace->blockSignals(FALSE);
 
   mainPlot->draw();
-  
+
+  QDictIterator<Plot> it(plotList);
+  for(; it.current(); ++it)
+  {
+    if (! it.current()->getTabFlag())
+      it.current()->draw();
+  }
+
   slotTabChanged(0);
 }
 
 void QtstalkerApp::slotNewIndicator ()
 {
-  bool ok;
-  QStringList list = config->getIndicatorPlugins();
-  QString selection = QInputDialog::getItem(tr("New Indicator"),
-  							   tr("Select an indicator create."),
-							   list,
-							   0,
-							   FALSE,
-							   &ok,
-							   this);
-  if (! ok || ! selection.length())
-    return;
-
-  QString name = QInputDialog::getText(tr("Indicator Name"),
-  						      tr("Enter a unique name for this indicator."),
-						      QLineEdit::Normal,
-						      selection,
-						      &ok,
-						      this);
-  if (! ok || ! name.length())
-    return;
-
-  QStringList l = config->getIndicator(name);
-  if (l.count())
+  NewIndicatorDialog *idialog = new NewIndicatorDialog(config);
+  int rc = idialog->exec();
+  if (rc == QDialog::Rejected)
   {
-    QMessageBox::information(this, tr("Qtstalker: Error"), tr("Duplicate indicator name."));
+    delete idialog;
     return;
   }
 
@@ -1332,11 +1362,11 @@ void QtstalkerApp::slotNewIndicator ()
   dialog->setCaption(tr("Edit Indicator"));
 
   Setting *set = new Setting;
-  set->set("Name", name, Setting::None);
+  set->set("Name", idialog->getName(), Setting::None);
 
   QString s = config->getData(Config::IndicatorPluginPath);
   s.append("/lib");
-  s.append(selection);
+  s.append(idialog->getIndicator());
   s.append(".so");
 
   QLibrary *lib = new QLibrary(s);
@@ -1362,15 +1392,24 @@ void QtstalkerApp::slotNewIndicator ()
 
   dialog->setItems(set);
 
-  int rc = dialog->exec();
+  rc = dialog->exec();
 
   if (rc == QDialog::Accepted)
   {
-    config->setIndicator(name, set->getStringList());
-    addIndicatorButton(name);
+    config->setIndicator(idialog->getName(), set->getStringList());
+    addIndicatorButton(idialog->getName(), idialog->getTabFlag());
+
+    if (idialog->getTabFlag() == FALSE)
+    {
+      QStringList l = QStringList::split(",", config->getData(Config::StackedIndicator), FALSE);
+      l.append(idialog->getName());
+      config->setData(Config::StackedIndicator, l.join(","));
+    }
+
     loadChart(chartPath);
   }
 
+  delete idialog;
   delete dialog;
   delete set;
 }
@@ -1446,19 +1485,25 @@ void QtstalkerApp::slotDeleteIndicator (int id)
     Plot *plot = plotList[text];
     i = plot->getIndicator(text);
 
-    tabs->removePage((QWidget *) plot);
-
     // delete any chart objects that belong to the indicator
     QStringList l = i->getChartObjects();
 
     ChartDb *db = new ChartDb;
     db->openChart(chartPath);
-
     int loop;
     for (loop = 0; loop < (int) l.count(); loop++)
       db->deleteChartObject(l[loop]);
-
     delete db;
+
+    if (plot->getTabFlag())
+      tabs->removePage((QWidget *) plot);
+    else
+    {
+      QStringList l = QStringList::split(",", config->getData(Config::StackedIndicator), FALSE);
+      l.remove(text);
+      config->setData(Config::StackedIndicator, l.join(","));
+      plotList.remove(text);
+    }
   }
 
   config->deleteIndicator(text);
@@ -1471,7 +1516,14 @@ void QtstalkerApp::slotPixelspaceChanged (int d)
   emit signalPixelspace(d);
 
   mainPlot->draw();
-  
+
+  QDictIterator<Plot> it(plotList);
+  for(; it.current(); ++it)
+  {
+    if (! it.current()->getTabFlag())
+      it.current()->draw();
+  }
+
   slotTabChanged(0);
 }
 
@@ -1483,11 +1535,18 @@ void QtstalkerApp::slotSliderChanged (int v)
   emit signalIndex(v);
 
   mainPlot->draw();
-  
+
+  QDictIterator<Plot> it(plotList);
+  for(; it.current(); ++it)
+  {
+    if (! it.current()->getTabFlag())
+      it.current()->draw();
+  }
+
   slotTabChanged(0);
 }
 
-void QtstalkerApp::addIndicatorButton (QString d)
+void QtstalkerApp::addIndicatorButton (QString d, bool tabFlag)
 {
   Indicator *i = new Indicator;
   i->parse(config->getIndicator(d));
@@ -1499,12 +1558,26 @@ void QtstalkerApp::addIndicatorButton (QString d)
     return;
   }
 
-  Plot *plot = new Plot (baseWidget);
+  Plot *plot;
+  if (tabFlag)
+    plot = new Plot (baseWidget);
+  else
+  {
+    plot = new Plot (split);
+    plot->setTabFlag(FALSE);
+    split->moveToLast(tabs);
+    plot->show();
+
+    QValueList<int> a = split->sizes();
+    a[a.size() - 2] = 75;
+    split->setSizes(a);
+  }
+  plotList.replace(d, plot);
+
   QObject::connect(plot, SIGNAL(rightMouseButton()), this, SLOT(indicatorPlotPopupMenu()));
   QObject::connect(plot, SIGNAL(statusMessage(QString)), this, SLOT(slotStatusMessage(QString)));
   QObject::connect(plot, SIGNAL(chartObjectCreated(Setting *)), this, SLOT(slotChartObjectCreated(Setting *)));
   QObject::connect(plot, SIGNAL(infoMessage(Setting *)), this, SLOT(slotUpdateInfo(Setting *)));
-  plotList.replace(d, plot);
 
   QObject::connect(this, SIGNAL(signalIndex(int)), plot, SLOT(setIndex(int)));
 
@@ -1556,7 +1629,8 @@ void QtstalkerApp::addIndicatorButton (QString d)
   // setup the crosshair signals
   QObject::connect(plot, SIGNAL(leftMouseButton(int, bool)), this, SLOT(slotPlotLeftMouseButton(int, bool)));
 
-  tabs->addTab(plot, d);
+  if (tabFlag)
+    tabs->addTab(plot, d);
 
   delete i;
 }
@@ -1665,16 +1739,12 @@ void QtstalkerApp::slotPlotDate (bool d)
 
 void QtstalkerApp::slotPlotLeftMouseButton (int x, bool mainFlag )
 {
-  if (mainFlag)
-  {
-    if (plotList.count())
-    {
-      Plot *plot = plotList[tabs->label(tabs->currentPageIndex())];
-      plot->crossHair(x, 0);
-    }
-  }
-  else
+  if (! mainFlag)
     mainPlot->crossHair(x, 0);
+
+  QDictIterator<Plot> it(plotList);
+  for(; it.current(); ++it)
+    it.current()->crossHair(x, 0);
 }
 
 //**********************************************************************

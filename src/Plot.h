@@ -89,6 +89,8 @@ class Plot : public QWidget
     void setPaintBars (QList<QColor>);
     void setHideMainPlot (bool);
     void updateStatusBar (int, int);
+    void setTabFlag (bool);
+    bool getTabFlag ();
 
     void addIndicator (QString, Indicator *);
     Indicator * getIndicator (QString);
@@ -184,6 +186,7 @@ class Plot : public QWidget
     bool scaleToScreen;
     bool logScale;
     bool hideMainPlot;
+    bool tabFlag;
 
     int scaleWidth;
     double scaleHigh;

@@ -62,6 +62,7 @@ Plot::Plot (QWidget *w) : QWidget(w)
   chartType = "None";
   mouseFlag = None;
   hideMainPlot = FALSE;
+  tabFlag = TRUE;
 
   plotFont.setFamily("Helvetica");
   plotFont.setPointSize(12);
@@ -751,6 +752,16 @@ void Plot::setPixelspace (int d)
 void Plot::setIndex (int d)
 {
   startIndex = d;
+}
+
+void Plot::setTabFlag (bool d)
+{
+  tabFlag = d;
+}
+
+bool Plot::getTabFlag ()
+{
+  return tabFlag;
 }
 
 void Plot::drawDate ()

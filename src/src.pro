@@ -31,6 +31,8 @@ HEADERS += GroupPage.h
 HEADERS += PortfolioPage.h
 HEADERS += TestPage.h
 HEADERS += IndicatorPage.h
+HEADERS += NewIndicatorDialog.h
+
 
 SOURCES += Qtstalker.cpp
 SOURCES += PortfolioDialog.cpp
@@ -58,6 +60,7 @@ SOURCES += GroupPage.cpp
 SOURCES += PortfolioPage.cpp
 SOURCES += TestPage.cpp
 SOURCES += IndicatorPage.cpp
+SOURCES += NewIndicatorDialog.cpp
 
 TARGET = qtstalker
 
