@@ -50,8 +50,7 @@ class Config
       ScaleToScreen,
       PluginPath,
       IndicatorPlugin,
-      QuotePlugin,
-      IndexPath
+      QuotePlugin
     };
 
     Config (QString);

@@ -54,6 +54,7 @@ EditDialog::EditDialog (Config *c) : QDialog (0, "EditDialog", TRUE)
   connect(table, SIGNAL(clicked(int, int, int, const QPoint &)), this, SLOT(cellSelected(int, int)));
   connect(table, SIGNAL(valueChanged(int, int)), this, SLOT(valueChanged(int, int)));
   baseBox->addWidget(table);
+  table->setMinimumWidth(200);
 
   grid = new QGridLayout(hbox, 3, 1);
   grid->setSpacing(2);

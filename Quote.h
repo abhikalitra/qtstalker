@@ -23,9 +23,9 @@
 #define QUOTE_HPP
 
 #include <qstring.h>
-#include <qpushbutton.h>
 #include <qcombobox.h>
 #include <qlibrary.h>
+#include <qtoolbutton.h>
 #include "Config.h"
 #include "Plugin.h"
 #include "EditDialog.h"
@@ -51,12 +51,12 @@ class QuoteDialog : public EditDialog
     void cancelDownload ();
 
   private:
-    QPushButton *downloadButton;
-    QPushButton *cancelDownloadButton;
-    QPushButton *doneButton;
     QComboBox *ruleCombo;
     Plugin *plug;
     QLibrary *lib;
+    QToolButton *downloadButton;
+    QToolButton *cancelDownloadButton;
+    QToolButton *doneButton;
 };
 
 #endif

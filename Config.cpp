@@ -61,11 +61,6 @@ Config::Config (QString p)
   }
   setData(PluginPath, s);
 
-  s = home;
-  s.append("/index");
-  if (! dir.exists(s, TRUE))
-    setData(IndexPath, s);
-
   scanPlugins();
 }
 
@@ -140,9 +135,6 @@ QString Config::getData (Parm p)
     case QuotePlugin:
       s = settings.readEntry("/Qtstalker/QuotePlugin", "");
       break;
-    case IndexPath:
-      s = settings.readEntry("/Qtstalker/IndexPath");
-      break;
     default:
       break;
   }
@@ -215,9 +207,6 @@ void Config::setData (Parm p, QString d)
       break;
     case QuotePlugin:
       settings.writeEntry("/Qtstalker/QuotePlugin", d);
-      break;
-    case IndexPath:
-      settings.writeEntry("/Qtstalker/IndexPath", d);
       break;
     default:
       break;

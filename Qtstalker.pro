@@ -20,6 +20,10 @@ HEADERS	+= CompositeDialog.h
 HEADERS	+= WorkwithCharts.h
 HEADERS	+= Plugin.h
 
+HEADERS	+= WorkwithChartsDialog.h
+HEADERS	+= WorkwithGroupsDialog.h
+HEADERS	+= WorkwithPortfoliosDialog.h
+
 SOURCES += Qtstalker.cpp
 SOURCES	+= PortfolioDialog.cpp
 SOURCES	+= Indicator.cpp
@@ -35,6 +39,10 @@ SOURCES	+= EditDialog.cpp
 SOURCES	+= CompositeDialog.cpp
 SOURCES += WorkwithCharts.cpp
 SOURCES += Plugin.cpp
+
+SOURCES += WorkwithChartsDialog.cpp
+SOURCES += WorkwithGroupsDialog.cpp
+SOURCES += WorkwithPortfoliosDialog.cpp
 
 TARGET = qtstalker
 

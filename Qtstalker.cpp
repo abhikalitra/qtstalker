@@ -47,6 +47,10 @@
 #include "ChartDb.h"
 #include "WorkwithCharts.h"
 
+#include "WorkwithChartsDialog.h"
+#include "WorkwithGroupsDialog.h"
+#include "WorkwithPortfoliosDialog.h"
+
 #include "dirclosed.xpm"
 #include "next.xpm"
 #include "prev.xpm"
@@ -196,7 +200,7 @@ void QtstalkerApp::initActions()
   actionQuit->setStatusTip(tr("Quit Qtstalker."));
   connect(actionQuit, SIGNAL(activated()), this, SLOT(slotQuit()));
 
-  icon = newindicator;
+  icon = indicator;
   actionNewIndicator = new QAction(tr("New Indicator..."), icon, tr("New Indicator..."), 0, this);
   actionNewIndicator->setStatusTip(tr("Add a new indicator to chart."));
   connect(actionNewIndicator, SIGNAL(activated()), this, SLOT(slotNewIndicator()));
@@ -493,7 +497,8 @@ void QtstalkerApp::slotAbout()
 
 void QtstalkerApp::slotWorkwithChart ()
 {
-  WorkwithCharts *dialog = new WorkwithCharts(config, "Chart");
+//  WorkwithCharts *dialog = new WorkwithCharts(config, "Chart");
+  WorkwithChartsDialog *dialog = new WorkwithChartsDialog(config);
   QObject::connect(dialog, SIGNAL(chartOpened(QString)), this, SLOT(slotOpenChart(QString)));
   dialog->show();
   slotStatusMessage(tr("Scanning symbols..."));
@@ -522,7 +527,8 @@ void QtstalkerApp::slotOpenChart (QString selection)
 
 void QtstalkerApp::slotWorkwithGroup ()
 {
-  WorkwithCharts *dialog = new WorkwithCharts(config, "Group");
+//  WorkwithCharts *dialog = new WorkwithCharts(config, "Group");
+  WorkwithGroupsDialog *dialog = new WorkwithGroupsDialog(config);
   QObject::connect(dialog, SIGNAL(groupOpened(QString)), this, SLOT(slotOpenGroup(QString)));
   dialog->show();
   dialog->updateList();
@@ -1080,7 +1086,8 @@ QString QtstalkerApp::getWindowCaption ()
 
 void QtstalkerApp::slotWorkwithPortfolio ()
 {
-  WorkwithCharts *dialog = new WorkwithCharts(config, "Portfolio");
+//  WorkwithCharts *dialog = new WorkwithCharts(config, "Portfolio");
+  WorkwithPortfoliosDialog *dialog = new WorkwithPortfoliosDialog(config);
   dialog->show();
   dialog->updateList();
 }

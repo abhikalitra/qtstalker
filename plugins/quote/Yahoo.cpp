@@ -69,21 +69,33 @@ void Yahoo::download ()
   symbols = QStringList::split(",", getData("New Symbols"), FALSE);
   if (symbols.count() == 0)
   {
-    ChartDb *db = new ChartDb();
-    db->setPath(indexPath);
-    db->openChart();
-    QStringList l = db->getKeyList();
-
+    dir.setPath(dataPath);
     int loop;
-    for (loop = 0; loop < (int) l.count(); loop++)
+    for (loop = 2; loop < (int) dir.count(); loop++)
     {
-      Setting *details = new Setting;
-      details->parse(db->getData(l[loop]));
+      s = dataPath;
+      s.append("/");
+      s.append(dir[loop]);
+
+      ChartDb *db = new ChartDb();
+      db->setPath(s);
+      db->openChart();
+
+      Setting *details = db->getDetails();
+
       s = details->getData("Source");
       if (! s.compare(pluginName))
-        symbols.append(l[loop]);
+        symbols.append(dir[loop]);
+
       delete details;
+      delete db;
     }
+  }
+  
+  if (! symbols.count())
+  {
+    emit done();
+    return;
   }
 
   symbolLoop = 0;
@@ -264,7 +276,6 @@ void Yahoo::parse ()
 
   f.close();
   delete db;
-  updateChartIndex(symbols[symbolLoop]);
 }
 
 QString Yahoo::parseDate (QString d)

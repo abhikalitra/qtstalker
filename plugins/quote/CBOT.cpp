@@ -448,7 +448,6 @@ void CBOT::parse (QNetworkOperation *o)
 
     db->setRecord(r);
     delete db;
-    updateChartIndex(symbol);
 
     if (! symbol.compare(cc))
     {
@@ -478,7 +477,6 @@ void CBOT::parse (QNetworkOperation *o)
 
       db->setRecord(r);
       delete db;
-      updateChartIndex(symbol);
     }
 
     delete r;

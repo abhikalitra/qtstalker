@@ -82,10 +82,6 @@ void Plugin::setDataPath (QString)
 {
 }
 
-void Plugin::setIndexPath (QString)
-{
-}
-
 int Plugin::getIndicatorLines ()
 {
   return 0;

@@ -949,7 +949,6 @@ void CME::parse (Setting *data)
 
   db->setRecord(r);
   delete db;
-  updateChartIndex(data->getData("Symbol"));
 
   s = data->getData("Symbol");
   if (! s.compare(cc))
@@ -980,7 +979,6 @@ void CME::parse (Setting *data)
 
     db->setRecord(r);
     delete db;
-    updateChartIndex(symbol);
   }
 
   delete r;

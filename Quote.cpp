@@ -20,10 +20,13 @@
  */
 
 #include "Quote.h"
+#include "quotes.xpm"
+#include "stop.xpm"
+#include "done.xpm"
 #include <qlayout.h>
 #include <qstringlist.h>
 #include <qmessagebox.h>
-#include <qlabel.h>
+#include <qtooltip.h>
 
 QuoteDialog::QuoteDialog (Config *c) : EditDialog (c)
 {
@@ -33,35 +36,39 @@ QuoteDialog::QuoteDialog (Config *c) : EditDialog (c)
 
   setCaption (tr("Qtstalker: Quotes"));
 
-  QHBoxLayout *hbox = new QHBoxLayout(topBox);
-  hbox->setSpacing(5);
+  QGridLayout *toolbar = new QGridLayout(topBox, 1, 4);
+  toolbar->setSpacing(0);
 
-  QLabel *label = new QLabel(tr("Plugins"), this);
-  hbox->addWidget(label);
+  downloadButton = new QToolButton(this);
+  QToolTip::add(downloadButton, tr("Download"));
+  downloadButton->setPixmap(QPixmap(quotes));
+  connect(downloadButton, SIGNAL(clicked()), this, SLOT(getQuotes()));
+  downloadButton->setMaximumWidth(30);
+  toolbar->addWidget(downloadButton, 0, 0);
+
+  cancelDownloadButton = new QToolButton(this);
+  QToolTip::add(cancelDownloadButton, tr("Cancel"));
+  cancelDownloadButton->setPixmap(QPixmap(stop));
+  connect(cancelDownloadButton, SIGNAL(clicked()), this, SLOT(cancelDownload()));
+  cancelDownloadButton->setMaximumWidth(30);
+  toolbar->addWidget(cancelDownloadButton, 0, 1);
+  cancelDownloadButton->setEnabled(FALSE);
+
+  doneButton = new QToolButton(this);
+  QToolTip::add(doneButton, tr("Done"));
+  doneButton->setPixmap(QPixmap(finished));
+  connect(doneButton, SIGNAL(clicked()), this, SLOT(reject()));
+  doneButton->setMaximumWidth(30);
+  toolbar->addWidget(doneButton, 0, 2);
 
   QStringList l = QStringList::split(",", config->getData(Config::QuotePlugin), FALSE);
   ruleCombo = new QComboBox(this);
   ruleCombo->insertStringList(l, -1);
   connect (ruleCombo, SIGNAL(activated(int)), this, SLOT(ruleChanged(int)));
-  hbox->addWidget(ruleCombo, 1, 0);
-
+  topBox->addWidget(ruleCombo, 1, 0);
+  
   okButton->hide();
   cancelButton->hide();
-
-  grid->expand(4, 1);
-
-  downloadButton = new QPushButton (tr("Download"), this);
-  grid->addWidget(downloadButton, 0, 0);
-  connect (downloadButton, SIGNAL (clicked()), this, SLOT (getQuotes()));
-
-  cancelDownloadButton = new QPushButton (tr("Cancel"), this);
-  grid->addWidget(cancelDownloadButton, 1, 0);
-  connect (cancelDownloadButton, SIGNAL (clicked()), this, SLOT (cancelDownload()));
-  cancelDownloadButton->setEnabled(FALSE);
-
-  doneButton = new QPushButton (tr("Done"), this);
-  grid->addWidget(doneButton, 2, 0);
-  connect (doneButton, SIGNAL (clicked()), this, SLOT (reject()));
 
   ruleChanged(0);
 }
@@ -136,7 +143,6 @@ void QuoteDialog::ruleChanged (int)
   connect (plug, SIGNAL(done()), this, SLOT(downloadComplete()));
 
   plug->setDataPath(config->getData(Config::DataPath));
-  plug->setIndexPath(config->getData(Config::IndexPath));
 
   Setting *set = new Setting;
   QStringList l = plug->getKeyList();

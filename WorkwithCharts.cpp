@@ -161,7 +161,6 @@ void WorkwithCharts::updateChartList ()
   QPixmap pix = plainitem;
 
   ChartDb *index = new ChartDb();
-  index->setPath(config->getData(Config::IndexPath));
   index->openChart();
   QStringList l = index->getKeyList();
 

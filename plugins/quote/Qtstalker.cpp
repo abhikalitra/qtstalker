@@ -90,7 +90,6 @@ void Qtstalker::parse ()
 
     f.close();
     delete db;
-    updateChartIndex(symbol);
   }
 
   emit done();

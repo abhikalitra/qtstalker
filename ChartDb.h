@@ -76,9 +76,17 @@ class ChartDb
     float getCloseData (QDateTime);
     Setting * getRecordIndex (int);
     QList<Setting> getRecordList ();
+    
+    void openCursor ();
+    int getCursor ();
+    QString getCursorData ();
+    QString getCursorKey ();
+    void closeCursor ();
 
   private:
     QString path;
+    QString cursorData;
+    QString cursorKey;
     DB *db;
     DBC *dbc;
     QDateTime startDate;

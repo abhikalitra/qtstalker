@@ -875,5 +875,40 @@ Setting * ChartDb::getDetails ()
   return set;
 }
 
+void ChartDb::openCursor ()
+{
+  db->cursor(db, NULL, &dbc, 0);
+}
 
+int ChartDb::getCursor ()
+{
+  DBT key;
+  DBT data;
+  memset(&key, 0, sizeof(DBT));
+  memset(&data, 0, sizeof(DBT));
+
+  int rc = dbc->c_get(dbc, &key, &data, DB_NEXT);
+  if (! rc)
+  {
+    cursorKey = (char *) key.data;
+    cursorData = (char *) data.data;
+  }
+  
+  return rc;
+}
+
+QString ChartDb::getCursorKey ()
+{
+  return cursorKey;
+}
+
+QString ChartDb::getCursorData ()
+{
+  return cursorData;
+}
+
+void ChartDb::closeCursor ()
+{
+  dbc->c_close(dbc);
+}
 

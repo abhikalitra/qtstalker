@@ -43,13 +43,10 @@ class QuotePlugin : public Plugin
     void ccMonth2 (int);
     void ccMonth3 (int);
     void setDataPath (QString);
-    void setIndexPath (QString);
-    void updateChartIndex (QString);
 
   protected:
     QString file;
     QString dataPath;
-    QString indexPath;
     float tfloat;
     QString futureName;
     QString futureSymbol;

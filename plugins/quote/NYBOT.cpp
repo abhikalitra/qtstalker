@@ -254,7 +254,6 @@ void NYBOT::parse ()
 
       db->setRecord(r);
       delete db;
-      updateChartIndex(symbol);
 
       if (! symbol.compare(cc))
       {
@@ -284,7 +283,6 @@ void NYBOT::parse ()
 
         db->setRecord(r);
         delete db;
-        updateChartIndex(symbol);
       }
 
       delete r;
