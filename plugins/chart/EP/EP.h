@@ -21,13 +21,33 @@
 
 #include "IndicatorPlugin.h"
 
-class EP : public IndicatorPlugin
+#include "ChartPlugin.h"
+#include <qcolor.h>
+
+class EP : public ChartPlugin
 {
+  Q_OBJECT
+
   public:
     EP ();
     virtual ~EP ();
-    void calculate ();
-    QList<QColor> getColorBars (QString, QString, QString);
+    void drawChart (int startX, int startIndex, int pixelspace);
+    void prefDialog ();
+    void loadSettings ();
+    void saveSettings ();
+
+  protected:
+    QColor neutralColor;
+    QColor or1Color;
+    QColor or2Color;
+    QColor or3Color;
+    QColor or4Color;
+    QColor or5Color;
+    QColor ir1Color;
+    QColor ir2Color;
+    QColor ir3Color;
+    QColor ir4Color;
+    QColor ir5Color;
 };
 
 extern "C"
