@@ -19,7 +19,6 @@ SOURCES += AD.cpp
 
 TARGET = AD
 
-LIBS += -ldl
 LIBS += -L/usr/lib
 
 

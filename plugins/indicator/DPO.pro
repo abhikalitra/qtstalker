@@ -19,7 +19,6 @@ TARGET = DPO
 
 VERSION = 0.2
 
-LIBS += -ldl
 LIBS += -L/usr/lib
 
 

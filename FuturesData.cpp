@@ -21,9 +21,11 @@
 
 #include "FuturesData.h"
 #include <qobject.h>
+#include <qdatetime.h>
 
 FuturesData::FuturesData ()
 {
+  limit = 0;
 }
 
 FuturesData::~FuturesData ()
@@ -45,7 +47,12 @@ QString FuturesData::getExchange ()
   return exchange;
 }
 
-QString FuturesData::getLimit ()
+QString FuturesData::getContract ()
+{
+  return contract;
+}
+
+float FuturesData::getLimit ()
 {
   return limit;
 }
@@ -82,6 +89,7 @@ int FuturesData::setSymbol (QString d)
       symbol = d;
       rate = 1000;
       monthList = QStringList::split(",", "H,M,U,Z", FALSE);
+      contract = getCurrentContract();
       break;
     }
 
@@ -91,6 +99,8 @@ int FuturesData::setSymbol (QString d)
       symbol = d;
       rate = 600;
       monthList = QStringList::split(",", "F,H,K,N,Q,U,V,Z", FALSE);
+      limit = 2;
+      contract = getCurrentContract();
       break;
     }
 
@@ -100,6 +110,7 @@ int FuturesData::setSymbol (QString d)
       symbol = "NB";
       rate = 625;
       monthList = QStringList::split(",", "H,M,U,Z", FALSE);
+      contract = getCurrentContract();
       break;
     }
 
@@ -109,6 +120,8 @@ int FuturesData::setSymbol (QString d)
       symbol = d;
       rate = 50;
       monthList = QStringList::split(",", "H,K,N,U,Z", FALSE);
+      limit = 20;
+      contract = getCurrentContract();
       break;
     }
 
@@ -118,6 +131,7 @@ int FuturesData::setSymbol (QString d)
       symbol = "CC";
       rate = 10;
       monthList = QStringList::split(",", "H,K,N,U,Z", FALSE);
+      contract = getCurrentContract();
       break;
     }
 
@@ -127,6 +141,7 @@ int FuturesData::setSymbol (QString d)
       symbol = d;
       rate = 1000;
       monthList = QStringList::split(",", "H,M,U,Z", FALSE);
+      contract = getCurrentContract();
       break;
     }
 
@@ -136,6 +151,8 @@ int FuturesData::setSymbol (QString d)
       symbol = d;
       rate = 1000;
       monthList = QStringList::split(",", "F,G,H,J,K,M,N,Q,U,V,X,Z", FALSE);
+      limit = 3;
+      contract = getCurrentContract();
       break;
     }
 
@@ -144,6 +161,7 @@ int FuturesData::setSymbol (QString d)
       name = "CRB Index";
       symbol = d;
       monthList = QStringList::split(",", "F,G,J,M,Q,X", FALSE);
+      contract = getCurrentContract();
       break;
     }
 
@@ -153,6 +171,8 @@ int FuturesData::setSymbol (QString d)
       symbol = d;
       rate = 500;
       monthList = QStringList::split(",", "H,K,N,V,Z", FALSE);
+      limit = 3;
+      contract = getCurrentContract();
       break;
     }
 
@@ -161,6 +181,7 @@ int FuturesData::setSymbol (QString d)
       name = "Dow Jones Industrial Average";
       symbol = d;
       monthList = QStringList::split(",", "H,M,U,Z", FALSE);
+      contract = getCurrentContract();
       break;
     }
 
@@ -171,6 +192,7 @@ int FuturesData::setSymbol (QString d)
       symbol = d;
       rate = 1000;
       monthList = QStringList::split(",", "H,M,U,Z", FALSE);
+      contract = getCurrentContract();
       break;
     }
 
@@ -179,6 +201,7 @@ int FuturesData::setSymbol (QString d)
       name = "Euro";
       symbol = d;
       monthList = QStringList::split(",", "H,M,U,Z", FALSE);
+      contract = getCurrentContract();
       break;
     }
 
@@ -188,6 +211,7 @@ int FuturesData::setSymbol (QString d)
       symbol = d;
       rate = 2500;
       monthList = QStringList::split(",", "H,M,U,Z", FALSE);
+      contract = getCurrentContract();
       break;
     }
 
@@ -196,6 +220,7 @@ int FuturesData::setSymbol (QString d)
       name = "E-MINI S&P 500";
       symbol = d;
       monthList = QStringList::split(",", "H,M,U,Z", FALSE);
+      contract = getCurrentContract();
       break;
     }
 
@@ -205,6 +230,8 @@ int FuturesData::setSymbol (QString d)
       symbol = d;
       rate = 500;
       monthList = QStringList::split(",", "F,H,J,K,Q,U,V,X", FALSE);
+      limit = 1.5;
+      contract = getCurrentContract();
       break;
     }
 
@@ -214,6 +241,8 @@ int FuturesData::setSymbol (QString d)
       symbol = d;
       rate = 100;
       monthList = QStringList::split(",", "G,J,M,Q,V,Z", FALSE);
+      limit = 75;
+      contract = getCurrentContract();
       break;
     }
 
@@ -222,6 +251,7 @@ int FuturesData::setSymbol (QString d)
       name = "Goldman Sachs Commodity Index";
       symbol = d;
       monthList = QStringList::split(",", "F,G,H,J,K,M,N,Q,U,V,X,Z", FALSE);
+      contract = getCurrentContract();
       break;
     }
 
@@ -231,6 +261,8 @@ int FuturesData::setSymbol (QString d)
       symbol = d;
       rate = 250;
       monthList = QStringList::split(",", "H,K,N,U,Z", FALSE);
+      limit = 20;
+      contract = getCurrentContract();
       break;
     }
 
@@ -240,6 +272,8 @@ int FuturesData::setSymbol (QString d)
       symbol = d;
       rate = 400;
       monthList = QStringList::split(",", "F,G,H,J,K,M,N,Q,U,V,X,Z", FALSE);
+      limit = 6;
+      contract = getCurrentContract();
       break;
     }
 
@@ -249,6 +283,8 @@ int FuturesData::setSymbol (QString d)
       symbol = d;
       rate = 400;
       monthList = QStringList::split(",", "F,G,H,J,K,M,N,Q,U,V,X,Z", FALSE);
+      limit = 6;
+      contract = getCurrentContract();
       break;
     }
 
@@ -258,6 +294,8 @@ int FuturesData::setSymbol (QString d)
       symbol = "OJ";
       rate = 150;
       monthList = QStringList::split(",", "F,H,K,N,U,X", FALSE);
+      limit = 5;
+      contract = getCurrentContract();
       break;
     }
 
@@ -267,6 +305,7 @@ int FuturesData::setSymbol (QString d)
       symbol = d;
       rate = 1250;
       monthList = QStringList::split(",", "H,M,U,Z", FALSE);
+      contract = getCurrentContract();
       break;
     }
 
@@ -276,6 +315,7 @@ int FuturesData::setSymbol (QString d)
       symbol = d;
       rate = 375;
       monthList = QStringList::split(",", "H,K,N,U,Z", FALSE);
+      contract = getCurrentContract();
       break;
     }
 
@@ -285,6 +325,8 @@ int FuturesData::setSymbol (QString d)
       symbol = d;
       rate = 80;
       monthList = QStringList::split(",", "F,H,K,N,U,X", FALSE);
+      limit = 10;
+      contract = getCurrentContract();
       break;
     }
 
@@ -294,6 +336,8 @@ int FuturesData::setSymbol (QString d)
       symbol = d;
       rate = 400;
       monthList = QStringList::split(",", "G,J,M,Q,V,Z", FALSE);
+      limit = 1.5;
+      contract = getCurrentContract();
       break;
     }
 
@@ -303,6 +347,8 @@ int FuturesData::setSymbol (QString d)
       symbol = "LN";
       rate = 400;
       monthList = QStringList::split(",", "G,J,M,N,Q,V,Z", FALSE);
+      limit = 2;
+      contract = getCurrentContract();
       break;
     }
 
@@ -311,6 +357,7 @@ int FuturesData::setSymbol (QString d)
       name = "NASDAQ 100";
       symbol = d;
       monthList = QStringList::split(",", "H,M,U,Z", FALSE);
+      contract = getCurrentContract();
       break;
     }
 
@@ -320,6 +367,8 @@ int FuturesData::setSymbol (QString d)
       symbol = d;
       rate = 10000;
       monthList = QStringList::split(",", "F,G,H,J,K,M,N,Q,U,V,X,Z", FALSE);
+      limit = 1;
+      contract = getCurrentContract();
       break;
     }
 
@@ -328,6 +377,7 @@ int FuturesData::setSymbol (QString d)
       name = "E-MINI NASDAQ 100";
       symbol = d;
       monthList = QStringList::split(",", "H,M,U,Z", FALSE);
+      contract = getCurrentContract();
       break;
     }
 
@@ -337,6 +387,8 @@ int FuturesData::setSymbol (QString d)
       symbol = d;
       rate = 50;
       monthList = QStringList::split(",", "H,K,N,U,Z", FALSE);
+      limit = 20;
+      contract = getCurrentContract();
       break;
     }
 
@@ -346,6 +398,7 @@ int FuturesData::setSymbol (QString d)
       symbol = d;
       rate = 100;
       monthList = QStringList::split(",", "H,M,U,Z", FALSE);
+      contract = getCurrentContract();
       break;
     }
 
@@ -355,6 +408,8 @@ int FuturesData::setSymbol (QString d)
       symbol = d;
       rate = 400;
       monthList = QStringList::split(",", "G,H,K,N,Q", FALSE);
+      limit = 2;
+      contract = getCurrentContract();
       break;
     }
 
@@ -364,6 +419,8 @@ int FuturesData::setSymbol (QString d)
       symbol = d;
       rate = 50;
       monthList = QStringList::split(",", "F,J,N,V", FALSE);
+      limit = 50;
+      contract = getCurrentContract();
       break;
     }
 
@@ -373,6 +430,8 @@ int FuturesData::setSymbol (QString d)
       symbol = d;
       rate = 50;
       monthList = QStringList::split(",", "F,H,K,N,Q,U,X", FALSE);
+      limit = 50;
+      contract = getCurrentContract();
       break;
     }
 
@@ -382,6 +441,7 @@ int FuturesData::setSymbol (QString d)
       symbol = d;
       rate = 1120;
       monthList = QStringList::split(",", "H,K,N,V", FALSE);
+      contract = getCurrentContract();
       break;
     }
 
@@ -391,6 +451,7 @@ int FuturesData::setSymbol (QString d)
       symbol = d;
       rate = 1250;
       monthList = QStringList::split(",", "H,M,U,Z", FALSE);
+      contract = getCurrentContract();
       break;
     }
 
@@ -400,6 +461,8 @@ int FuturesData::setSymbol (QString d)
       symbol = d;
       rate = 100;
       monthList = QStringList::split(",", "F,H,K,N,U,Z", FALSE);
+      limit = 150;
+      contract = getCurrentContract();
       break;
     }
 
@@ -409,6 +472,8 @@ int FuturesData::setSymbol (QString d)
       symbol = d;
       rate = 100;
       monthList = QStringList::split(",", "F,H,K,N,Q,U,V,Z", FALSE);
+      limit = 20;
+      contract = getCurrentContract();
       break;
     }
 
@@ -417,6 +482,7 @@ int FuturesData::setSymbol (QString d)
       name = "S&P 500";
       symbol = d;
       monthList = QStringList::split(",", "H,M,U,Z", FALSE);
+      contract = getCurrentContract();
       break;
     }
 
@@ -426,6 +492,7 @@ int FuturesData::setSymbol (QString d)
       symbol = d;
       rate = 1000;
       monthList = QStringList::split(",", "H,M,U,Z", FALSE);
+      contract = getCurrentContract();
       break;
     }
 
@@ -435,6 +502,7 @@ int FuturesData::setSymbol (QString d)
       symbol = d;
       rate = 1000;
       monthList = QStringList::split(",", "H,M,U,Z", FALSE);
+      contract = getCurrentContract();
       break;
     }
 
@@ -444,6 +512,8 @@ int FuturesData::setSymbol (QString d)
       symbol = d;
       rate = 50;
       monthList = QStringList::split(",", "H,K,N,U,Z", FALSE);
+      limit = 30;
+      contract = getCurrentContract();
       break;
     }
 
@@ -453,4 +523,63 @@ int FuturesData::setSymbol (QString d)
   return FALSE;
 }
 
+QString FuturesData::getCurrentContract ()
+{
+  QDateTime dt = QDateTime::currentDateTime();
+
+  QString contract = symbol;
+  bool yearFlag = FALSE;
+
+  QStringList ml = getMonthList();
+  QStringList fml = getMonths();
+
+  int currentMonth = dt.date().month() - 1;
+
+  int i = ml.findIndex(fml[currentMonth]);
+  if (i != -1)
+  {
+    currentMonth++;
+
+    if (currentMonth == 12)
+    {
+      yearFlag = TRUE;
+      currentMonth = 0;
+    }
+  }
+
+  if (! symbol.compare("CL") ||
+      ! symbol.compare("HO") ||
+      ! symbol.compare("HU") ||
+      ! symbol.compare("NG"))
+  {
+    currentMonth++;
+
+    if (currentMonth == 12)
+    {
+      yearFlag = TRUE;
+      currentMonth = 0;
+    }
+  }
+
+  while (1)
+  {
+    QString s = fml[currentMonth];
+    int i = ml.findIndex(s);
+    if (i != -1)
+    {
+      if (yearFlag)
+        contract.append(QString::number(dt.date().year() + 1));
+      else
+        contract.append(QString::number(dt.date().year()));
+
+      contract.append(fml[currentMonth]);
+
+      break;
+    }
+    else
+      currentMonth++;
+  }
+
+  return contract;
+}
 

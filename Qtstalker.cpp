@@ -1539,6 +1539,8 @@ void QtstalkerApp::slotChartUpdated ()
 void QtstalkerApp::slotStatusMessage (QString d)
 {
   statusBar()->message(d);
+  statusBar()->update();
+  statusBar()->repaint();
 }
 
 void QtstalkerApp::setPlotColors ()

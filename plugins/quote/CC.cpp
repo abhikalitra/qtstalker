@@ -33,6 +33,8 @@ CC::CC ()
   pluginName = "CC";
   version = 0.2;
   createFlag = FALSE;
+  
+  set("Rollover","20", Setting::Integer);
 
   about = "Creates a continuous adjusted futures contract\n";
   about.append("for the selected futures symbol.");
@@ -51,7 +53,8 @@ void CC::parse ()
 {
   FuturesData *fd = new FuturesData;
   QStringList symbols = fd->getSymbolList();
-  delete fd;
+
+  int rollover = getInt("Rollover");
 
   QString s = dataPath;
   s.append("/CC");
@@ -82,32 +85,35 @@ void CC::parse ()
     s = dataPath;
     s.append("/CC/");
     s.append(symbols[symbolLoop]);
-    dir.remove(s);
 
     ChartDb *db = new ChartDb();
     db->openChart(s);
     Setting *details = db->getDetails();
-    details->set("Format", "Open|High|Low|Close|Volume|Open Interest", Setting::None);
-    details->set("Chart Type", tr("Futures"), Setting::None);
-    details->set("Symbol", symbols[symbolLoop], Setting::None);
-    s = symbols[symbolLoop];
-    s.append(" - Continuous Adjusted");
-    details->set("Title", s, Setting::Text);
-    details->set("Futures Type", symbols[symbolLoop], Setting::None);
-    db->saveDetails();
+    if (! details->count())
+    {
+      details->set("Format", "Open|High|Low|Close|Volume|Open Interest", Setting::None);
+      details->set("Chart Type", tr("Futures"), Setting::None);
+      details->set("Symbol", symbols[symbolLoop], Setting::None);
+      s = symbols[symbolLoop];
+      s.append(" - Continuous Adjusted");
+      details->set("Title", s, Setting::Text);
+      details->set("Futures Type", symbols[symbolLoop], Setting::None);
+      db->saveDetails();
+    }
 
     QDateTime startDate;
 
-    QDateTime dt = QDateTime::currentDateTime();
-    QString endYear = QString::number(dt.date().year() + 1);
+    fd->setSymbol(symbols[symbolLoop]);
+    QString currentContract = fd->getContract();
 
     Setting *pr = new Setting;
 
     int loop;
+    bool flag = FALSE;
     for (loop = 2; loop < (int) dir.count(); loop++)
     {
-      if (dir[loop].contains(endYear))
-        break;
+      if (! dir[loop].compare(currentContract))
+        flag = TRUE;
 
       s = dir.absPath();
       s.append("/");
@@ -122,11 +128,15 @@ void CC::parse ()
       tdb->getHistory(ChartDb::Daily, startDate);
 
       int loop2;
-      for (loop2 = 1; loop2 < tdb->getDataSize(); loop2++)
+      int count = tdb->getDataSize() - rollover;
+      if (flag)
+        count = tdb->getDataSize();
+
+      for (loop2 = 1; loop2 < count; loop2++)
       {
         Setting *r = tdb->getRecordIndex(loop2);
         Setting *r2 = tdb->getRecordIndex(loop2 - 1);
-	
+
 	if (! pr->count())
           pr->set("Close", r2->getData("Close"), Setting::Float);
 
@@ -146,16 +156,21 @@ void CC::parse ()
         pr->set("Volume", r->getData("Volume"), Setting::Float);
         pr->set("Open Interest", r->getData("Open Interest"), Setting::Float);
         db->setRecord(pr);
+	
+        startDate = QDateTime::fromString(r->getDateTime("Date"), Qt::ISODate);
       }
 
-      startDate = QDateTime::fromString(tdetails->getDateTime("Last Date"), Qt::ISODate);
-
       delete tdb;
+
+      if (flag)
+        break;
     }
 
     delete db;
     delete pr;
   }
+
+  delete fd;
 
   emit done();
 }
