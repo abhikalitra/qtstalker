@@ -45,6 +45,7 @@ class PortfolioDialog : public QTabDialog
     void deleteItem ();
     void savePortfolio ();
     void buttonStatus (QListViewItem *);
+    void slotHelp ();
 
   private:
     QListView *plist;

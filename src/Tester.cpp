@@ -32,6 +32,7 @@
 #include "Tester.h"
 #include "ChartDb.h"
 #include "IndicatorPlugin.h"
+#include "HelpWindow.h"
 
 Tester::Tester (QString n) : QTabDialog (0, 0, FALSE)
 {
@@ -60,7 +61,10 @@ Tester::Tester (QString n) : QTabDialog (0, 0, FALSE)
   
   setCancelButton(tr("&Cancel"));  
   
-  setOkButton(QString::null);  
+  setOkButton(QString::null);
+  
+  setHelpButton();
+  QObject::connect(this, SIGNAL(helpButtonPressed()), this, SLOT(slotHelp()));
 
   createFormulaPage();
 
@@ -2045,5 +2049,49 @@ QString Tester::newTest ()
   }
   
   return selection;
+}
+
+void Tester::slotHelp ()
+{
+  HelpWindow *hw = 0;
+  QString s = tabLabel(currentPage());
+  
+  while (s.length())
+  {
+    if (! s.compare("Rules"))
+    {
+      hw = new HelpWindow(this, "backtesterrules.html");
+      break;
+    }
+    
+    if (! s.compare("Stops"))
+    {
+      hw = new HelpWindow(this, "backtesterstops.html");
+      break;
+    }
+  
+    if (! s.compare("Testing"))
+    {
+      hw = new HelpWindow(this, "backtestertesting.html");
+      break;
+    }
+  
+    if (! s.compare("Reports"))
+    {
+      hw = new HelpWindow(this, "backtesterreports.html");
+      break;
+    }
+    
+    if (! s.compare("Chart"))
+    {
+      hw = new HelpWindow(this, "backtesterchart.html");
+      break;
+    }
+    
+    break;
+  }
+  
+  if (hw)
+    hw->show();
 }
 

@@ -98,6 +98,7 @@ class Tester : public QTabDialog
     void slotSliderChanged (int);
     void customLongStopToggled (bool);
     void customShortStopToggled (bool);
+    void slotHelp ();
 
   protected:
     Config config;

@@ -24,6 +24,7 @@
 #include "FuturesData.h"
 #include "PrefDialog.h"
 #include "ChartDb.h"
+#include "HelpWindow.h"
 #include "newchart.xpm"
 #include "edit.xpm"
 #include "delete.xpm"
@@ -84,6 +85,9 @@ PortfolioDialog::PortfolioDialog (QString p) : QTabDialog (0, "PortfolioDialog",
   addTab(w, tr("Details"));
   
   setCancelButton();
+  
+  setHelpButton();
+  QObject::connect(this, SIGNAL(helpButtonPressed()), this, SLOT(slotHelp()));
 
   buttonStatus(0);
 
@@ -317,5 +321,12 @@ float PortfolioDialog::futuresProfit (QString sym, float diff)
   delete fd;
 
   return t;
+}
+
+void PortfolioDialog::slotHelp ()
+{
+  HelpWindow *hw = new HelpWindow(this, "portfolios.html");
+  hw->show();
+  reject();
 }
 

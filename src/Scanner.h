@@ -62,6 +62,7 @@ class Scanner : public QTabDialog
     void loadRule ();
     void getSymbols ();
     void allSymbolsToggled (bool);
+    void slotHelp ();
 
   protected:
     FormulaEdit *list;

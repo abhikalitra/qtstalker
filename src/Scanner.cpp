@@ -31,6 +31,7 @@
 #include "SymbolDialog.h"
 #include "ChartDb.h"
 #include "IndicatorPlugin.h"
+#include "HelpWindow.h"
 
 Scanner::Scanner (QString n) : QTabDialog (0, 0, FALSE)
 {
@@ -80,6 +81,9 @@ Scanner::Scanner (QString n) : QTabDialog (0, 0, FALSE)
   connect(this, SIGNAL(cancelButtonPressed()), this, SLOT(exitDialog()));
   
   setOkButton(QString::null);  
+  
+  setHelpButton();
+  QObject::connect(this, SIGNAL(helpButtonPressed()), this, SLOT(slotHelp()));
   
   addTab(w, tr("Parms"));
 
@@ -299,6 +303,12 @@ void Scanner::allSymbolsToggled (bool d)
     fileButton->setEnabled(FALSE);
   else
     fileButton->setEnabled(TRUE);
+}
+
+void Scanner::slotHelp ()
+{
+  HelpWindow *hw = new HelpWindow(this, "workwithscanner.html");
+  hw->show();
 }
 
 //******************************************************
