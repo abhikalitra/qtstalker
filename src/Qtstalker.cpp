@@ -313,14 +313,11 @@ QtstalkerApp::QtstalkerApp()
   else
     qApp->setFont(QFont(), TRUE, 0);
   
-  // set the indicator splitter size
+  // set the indicator splitter sizes
   sizeList = split->sizes();
-  for (loop = 1; loop < (int) sizeList.count() - 1; loop++)
-    sizeList[loop] = 75;
-  s = config.getData(Config::MainPlotSize);
-  sizeList[0] = s.toInt();
-  s = config.getData(Config::IndicatorPlotSize);
-  sizeList[sizeList.count() - 1] = s.toInt();
+  QStringList l2 = QStringList::split(",", config.getData(Config::PlotSizes), FALSE);
+  for (loop = 0; loop < (int) l2.count(); loop++)
+    sizeList[loop] = l2[loop].toInt();
   split->setSizes(sizeList);
 
   // set the nav status
@@ -539,8 +536,12 @@ void QtstalkerApp::slotQuit()
 
   // save app settings
   QValueList<int> list = split->sizes();
-  config.setData(Config::MainPlotSize, QString::number(list[0]));
-  config.setData(Config::IndicatorPlotSize, QString::number(list[1]));
+  int loop;
+  QStringList l;
+  for (loop = 0; loop < (int) list.count(); loop++)
+    l.append(QString::number(list[loop]));
+  config.setData(Config::PlotSizes, l.join(","));
+  
   config.setData(Config::Height, QString::number(this->height()));
   config.setData(Config::Width, QString::number(this->width()));
   config.setData(Config::X, QString::number(this->x()));
@@ -561,7 +562,7 @@ void QtstalkerApp::slotQuit()
 void QtstalkerApp::slotAbout()
 {
   QMessageBox *dialog = new QMessageBox(tr("About Qtstalker"),
-  					tr("Qtstalker\nVer CVS 0.29\n(C) 2001-2004 by Stefan Stratigakos"),
+  					tr("Qtstalker\nVer CVS 0.29\n(C) 2001-2005 by Stefan Stratigakos"),
 					QMessageBox::NoIcon,
 					QMessageBox::Ok,
 					QMessageBox::NoButton,
@@ -766,29 +767,6 @@ void QtstalkerApp::loadChart (QString d)
   chartType = plug->getData(tr("Type"));
   chartSymbol = plug->getData(tr("Symbol"));
   
-  bool otherFlag = FALSE;
-// determine if chart is other type
-//FIXME
-/*  
-  if (chartType.compare(tr("Stock"))
-      && chartType.compare(tr("Futures"))
-      && chartType.compare(tr("Index"))
-      && chartType.compare(tr("Spread")))
-  {
-    chartTypeCombo->setEnabled(FALSE);
-    mainPlot->setHideMainPlot(TRUE);
-    actionHideMainPlot->setEnabled(FALSE);
-    otherFlag = TRUE;
-  }
-  else
-  {
-    chartTypeCombo->setEnabled(TRUE);
-    actionHideMainPlot->setEnabled(TRUE);
-    if (! actionHideMainPlot->isOn())
-      mainPlot->setHideMainPlot(FALSE);
-  }
-*/
-  
   mainPlot->setData(recordList);
   for(it.toFirst(); it.current(); ++it)
     it.current()->setData(recordList);
@@ -815,9 +793,6 @@ void QtstalkerApp::loadChart (QString d)
     delete set;
     loadIndicator(i);
 
-    if (otherFlag)
-      i->clearLines();
-
     if (i->getPlotType() == Indicator::MainPlot)
     {
       // restore the enable status of this main chart indicator
@@ -825,39 +800,6 @@ void QtstalkerApp::loadChart (QString d)
 	i->setEnable(FALSE);
     }
   }
-
-// FIXME: Other type plots are disbaled for now
-/*  
-  if (recordList->count() && otherFlag)
-  {
-    QStringList keys = recordList->getFormat();
-
-    Indicator *i = new Indicator;
-
-    int loop;
-    for (loop = 0; loop < (int) keys.count(); loop++)
-    {
-      PlotLine *pl = new PlotLine;
-      int loop2;
-      for (loop2 = 0; loop2 < (int) recordList->count(); loop2++)
-	pl->append(recordList->getOther(loop2, loop));
-
-      QString s = keys[loop];
-      s.append(tr(" Color"));
-      pl->setColor(set->getData(s));
-
-      s = keys[loop];
-      s.append(tr(" Line Type"));
-      pl->setType(set->getData(s));
-      
-      pl->setLabel(keys[loop]);
-
-      i->addLine(pl);
-    }
-    
-    mainPlot->addIndicator(QString("Main Plot"), i);
-  }
-*/
 
   QPtrList<Setting> col = plug->getChartObjects();
   QPtrListIterator<Setting> coit(col);
@@ -882,7 +824,7 @@ void QtstalkerApp::loadChart (QString d)
   pixelspace->setRange(mainPlot->getMinPixelspace(), 99);
   pixelspace->blockSignals(FALSE);
   
-  setSliderStart();
+  setSliderStart(pixelspace->value(), TRUE);
   
   mainPlot->draw();
 
@@ -1060,7 +1002,7 @@ void QtstalkerApp::slotChartTypeChanged (int)
   pixelspace->setValue(mainPlot->getMinPixelspace());
   pixelspace->blockSignals(FALSE);
   
-  setSliderStart();
+  setSliderStart(pixelspace->value(), FALSE);
 
   mainPlot->draw();
 
@@ -1245,9 +1187,11 @@ void QtstalkerApp::slotDeleteIndicator (QString text, Plot *plot)
 
 void QtstalkerApp::slotPixelspaceChanged (int d)
 {
+  int ov = mainPlot->getPixelspace();
+  
   emit signalPixelspace(d);
   
-  setSliderStart();
+  setSliderStart(ov, FALSE);
   
   mainPlot->draw();
 
@@ -1506,11 +1450,18 @@ void QtstalkerApp::slotPlotDate (bool d)
 void QtstalkerApp::slotPlotLeftMouseButton (int x, int y, bool mainFlag)
 {
   if (! mainFlag)
-    mainPlot->crossHair(x, y);
+    mainPlot->crossHair(x, y, TRUE);
 
   QDictIterator<Plot> it(plotList);
   for(; it.current(); ++it)
-    it.current()->crossHair(x, y);
+  {
+    if (! it.current()->getTabFlag())
+      it.current()->crossHair(x, y, TRUE);
+    else
+      it.current()->crossHair(x, y, FALSE);
+  }
+  
+  slotTabChanged(0);
 }
 
 void QtstalkerApp::slotCrosshairsStatus (bool status)
@@ -1573,11 +1524,13 @@ void QtstalkerApp::slotDrawMode (bool d)
   emit signalDrawMode(d);
 }
 
-void QtstalkerApp::setSliderStart ()
+void QtstalkerApp::setSliderStart (int ov, bool flag)
 {
   if (status == None)
     return;
 
+  int oldpage = mainPlot->getWidth() / ov;
+  int sv = slider->value();
   int page = mainPlot->getWidth() / pixelspace->value();
   int max = recordList->count() - page;
   if (max < 0)
@@ -1592,8 +1545,29 @@ void QtstalkerApp::setSliderStart ()
   }
   else
   {
-    slider->setValue(max + 1);
-    emit signalIndex(max + 1);
+    if (flag)
+    {
+      slider->setValue(max + 1);
+      emit signalIndex(max + 1);
+    }
+    else
+    {
+      if (oldpage < page)
+      {
+        int x = ((page - oldpage) / 2);
+	if ((sv - x) < 0)
+	  x = 0;
+        slider->setValue(sv - x);
+        emit signalIndex(sv - x);
+      }
+  
+      if (oldpage > page)
+      {
+        int x = ((oldpage - page) / 2);
+        slider->setValue(sv + x);
+        emit signalIndex(sv + x);
+      }
+    }
   }
   
   slider->blockSignals(FALSE);

@@ -168,6 +168,7 @@ void HorizontalLine::addObject (Setting *set)
 
 void HorizontalLine::newObject (QString ind, QString n)
 {
+  loadDefaults();
   indicator = ind;
   name = n;
   status = ClickWait;

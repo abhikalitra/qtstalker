@@ -171,6 +171,7 @@ void VerticalLine::addObject (Setting *set)
 
 void VerticalLine::newObject (QString ind, QString n)
 {
+  loadDefaults();
   indicator = ind;
   name = n;
   status = ClickWait;

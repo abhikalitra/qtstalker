@@ -157,6 +157,7 @@ void Text::addObject (Setting *set)
 
 void Text::newObject (QString ind, QString n)
 {
+  loadDefaults();
   indicator = ind;
   name = n;
   status = ClickWait;

@@ -51,8 +51,8 @@ class Config
       IndicatorPath,
       Crosshairs,
       DrawMode,
-      MainPlotSize,
-      IndicatorPlotSize,
+      MainPlotSize, // unused
+      IndicatorPlotSize, // unused
       ScaleToScreen,
       IndicatorPluginPath,
       QuotePluginPath,
@@ -74,7 +74,8 @@ class Config
       X,
       Y,
       ScannerPath,
-      IndicatorPageStatus
+      IndicatorPageStatus,
+      PlotSizes
     };
 
     Config ();

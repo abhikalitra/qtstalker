@@ -94,7 +94,7 @@ class QtstalkerApp : public QMainWindow
     void exportChart (QString);
     void traverse(QString);
     void loadIndicator (Indicator *);
-    void setSliderStart ();
+    void setSliderStart (int, bool);
 
   public slots:
 

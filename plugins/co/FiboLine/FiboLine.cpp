@@ -248,6 +248,7 @@ void FiboLine::addObject (Setting *set)
 
 void FiboLine::newObject (QString ind, QString n)
 {
+  loadDefaults();
   indicator = ind;
   name = n;
   mpx2 = -1;

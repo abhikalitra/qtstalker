@@ -212,6 +212,7 @@ void TrendLine::prefDialog ()
     selected->setBar(dialog->getCombo(tr("Bar Field")));
     selected->setUseBar(dialog->getCheck(tr("Use Bar")));
     selected->setExtend(dialog->getCheck(tr("Extend Line")));
+    selected->setSaveFlag(TRUE);
     
     bool f = dialog->getCheck(tr("Set Default"));
     if (f)
@@ -239,6 +240,7 @@ void TrendLine::addObject (Setting *set)
 
 void TrendLine::newObject (QString ind, QString n)
 {
+  loadDefaults();
   indicator = ind;
   name = n;
   mpx2 = -1;

@@ -84,6 +84,7 @@ class Plot : public QWidget
     bool getMainFlag ();
     bool getCrosshairsStatus ();
     void setInfoFlag (bool);
+    void drawCrossHair ();
 
     void addIndicator (QString, Indicator *);
     Indicator * getIndicator (QString);
@@ -95,6 +96,7 @@ class Plot : public QWidget
     int getPixelspace ();
     int getMinPixelspace ();
     QString strip (double);
+    int convertXToDataIndex (int);
 
   public slots:
     void draw();
@@ -109,7 +111,7 @@ class Plot : public QWidget
     void setIndex (int);
     void setInterval(BarData::BarCompression);
     void setDateFlag (bool);
-    void crossHair (int, int);
+    void crossHair (int, int, bool);
     void printChart ();
     void showPopupMenu ();
     void setChartPath (QString);
@@ -184,8 +186,8 @@ class Plot : public QWidget
     bool drawMode;
     bool crosshairs;
     bool infoFlag;
-    int crossHairX;
-    int crossHairY;
+    BarDate crossHairX;
+    double crossHairY;
 
     int scaleWidth;
     double mainHigh;

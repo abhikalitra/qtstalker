@@ -147,6 +147,7 @@ void BuyArrow::addObject (Setting *set)
 
 void BuyArrow::newObject (QString ind, QString n)
 {
+  loadDefaults();
   indicator = ind;
   name = n;
   status = ClickWait;

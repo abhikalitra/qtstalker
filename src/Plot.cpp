@@ -111,6 +111,7 @@ void Plot::clear ()
   indicators.clear();
   data = 0;
   mouseFlag = None;
+  crossHairFlag = FALSE;
 
   QDictIterator<COPlugin> it(coPlugins);
   for (; it.current(); ++it)
@@ -223,7 +224,7 @@ void Plot::setInfoFlag (bool d)
 
 void Plot::draw ()
 {
-  crossHairFlag = FALSE;
+//  crossHairFlag = FALSE;
 
   buffer->fill(backgroundColor);
 
@@ -282,6 +283,8 @@ void Plot::draw ()
       drawLines();
       drawObjects();
     }
+    
+    drawCrossHair();
 
     drawScale();
 
@@ -321,17 +324,6 @@ void Plot::drawLines ()
 void Plot::paintEvent (QPaintEvent *)
 {
   bitBlt(this, 0, 0, buffer);
-
-  // redraw the crosshair
-  if (crossHairFlag && crosshairs)
-  {
-    QPainter painter;
-    painter.begin(this);
-    painter.setPen(QPen(borderColor, 1, QPen::DotLine));
-    painter.drawLine (0, crossHairY, buffer->width() - SCALE_WIDTH, crossHairY);
-    painter.drawLine (crossHairX, 0, crossHairX, buffer->height());
-    painter.end();
-  }
 }
 
 void Plot::resizeEvent (QResizeEvent *event)
@@ -364,7 +356,7 @@ void Plot::mousePressEvent (QMouseEvent *event)
     {
       if (crosshairs)
       {
-        crossHair(event->x(), event->y());
+        crossHair(event->x(), event->y(), TRUE);
         updateStatusBar(event->x(), event->y());
         emit leftMouseButton(event->x(), event->y(), mainFlag);
       }
@@ -433,19 +425,6 @@ void Plot::mousePressEvent (QMouseEvent *event)
 
 void Plot::contextMenuEvent (QContextMenuEvent *)
 {
-/*
-  if (mainFlag)
-  {
-    if (! data)
-      return;
-  }
-  else
-  {
-    if (! indicators.count())
-      return;
-  }
-*/
-
   if (drawMode && mouseFlag == COSelected && coPlugin)
     coPlugin->showMenu();
   else
@@ -486,11 +465,7 @@ void Plot::mouseMoveEvent (QMouseEvent *event)
   if (! infoFlag)
     return;
     
-  int i = (event->x() / pixelspace) + startIndex;
-  if (i >= (int) data->count())
-    i = data->count() - 1;
-  if (i < startIndex)
-    i = startIndex;
+  int i = convertXToDataIndex(event->x());
 
   Setting *r = new Setting;
   r->setData("D", data->getDate(i).getDateString(TRUE));
@@ -1278,30 +1253,39 @@ void Plot::drawInfo ()
   painter.end();
 }
 
-void Plot::crossHair (int x, int y)
+void Plot::crossHair (int x, int y, bool f)
 {
   crossHairFlag = TRUE;
-  crossHairX = x;
-  crossHairY = y;
+  getXY(x, y);
+  crossHairY = y1;
+  crossHairX = x1;
+  if (f)
+    draw();
+}
 
-  paintEvent(0);
+void Plot::drawCrossHair ()
+{
+  if (! crosshairs)
+    return;
+    
+  if (! crossHairFlag)
+    return;
+    
+  int y = scaler->convertToY(crossHairY);
+  int x = startX + (data->getX(crossHairX) * pixelspace) - (startIndex * pixelspace);
 
   QPainter painter;
-  painter.begin(this);
+  painter.begin(buffer);
   painter.setPen(QPen(borderColor, 1, QPen::DotLine));
   painter.drawLine (0, y, buffer->width() - SCALE_WIDTH, y);
-  painter.drawLine (x, 0, x, buffer->height());
+  if (x >= startIndex)
+    painter.drawLine (x, 0, x, buffer->height());
   painter.end();
 }
 
 void Plot::updateStatusBar (int x, int y)
 {
-  int i = (x / pixelspace) + startIndex;
-  if (i >= (int) data->count())
-    i = data->count() - 1;
-  if (i < startIndex)
-    i = startIndex;
-
+  int i = convertXToDataIndex(x);
   QString s = data->getDate(i).getDateTimeString(TRUE);
   s.append(" ");
   s.append(strip(scaler->convertToVal(y)));
@@ -1310,12 +1294,7 @@ void Plot::updateStatusBar (int x, int y)
 
 void Plot::getXY (int x, int y)
 {
-  int i = (x / pixelspace) + startIndex;
-  if (i >= (int) data->count())
-    i = data->count() - 1;
-  if (i < startIndex)
-    i = startIndex;
-
+  int i = convertXToDataIndex(x);
   x1 = data->getDate(i);
   y1 = scaler->convertToVal(y);
 }
@@ -1565,9 +1544,6 @@ void Plot::printChart ()
 
 void Plot::showPopupMenu ()
 {
-//  if (! data->count())
-//    return;
-
   chartMenu->clear();
     
   if (mainFlag && data)
@@ -1637,6 +1613,7 @@ void Plot::toggleCrosshairs ()
 void Plot::setCrosshairsStatus (bool status)
 {
   crosshairs = status;
+  crossHairFlag = FALSE;
   draw();
 }
 
@@ -1835,3 +1812,13 @@ void Plot::slotDeleteAllChartObjects ()
   draw();
 }
 
+int Plot::convertXToDataIndex (int x)
+{
+  int i = (x / pixelspace) + startIndex;
+  if (i >= (int) data->count())
+    i = data->count() - 1;
+  if (i < startIndex)
+    i = startIndex;
+  
+  return i;
+}

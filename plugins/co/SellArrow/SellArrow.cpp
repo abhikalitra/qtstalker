@@ -143,6 +143,7 @@ void SellArrow::addObject (Setting *set)
 
 void SellArrow::newObject (QString ind, QString n)
 {
+  loadDefaults();
   indicator = ind;
   name = n;
   status = ClickWait;

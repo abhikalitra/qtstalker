@@ -12,12 +12,8 @@ To Do:
 - allow log/scale to screen options on the tester charts
 
 - add co plugin icons back to the context menus
-- switching tab indicators does not redraw the crosshairs
 - add yahoo plugin function to download fundamental data when a new symbol is created
 - add some default CSV plugin import rules
-- fix: defaults set chart objects for one plot is not set for all plots during session. only after a restart. 
-- fix: crosshair redraws are sometimes incomplete
-- change zoom behaviour to keep chart centered
 - add export symbol feature in CSV format
 
 

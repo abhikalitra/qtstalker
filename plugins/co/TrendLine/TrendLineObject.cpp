@@ -229,6 +229,7 @@ Setting * TrendLineObject::getSettings ()
 
 void TrendLineObject::setSettings (Setting *set)
 {
+  color.setNamedColor(set->getData("Color"));
   date.setDate(set->getData("Start Date"));
   date2.setDate(set->getData("End Date"));
   value = set->getFloat("Start Value");

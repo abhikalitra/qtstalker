@@ -64,7 +64,20 @@
 20050105: Fixed bug that locks up app if during the creation of a trendline or fiboline,
           the end point is before the start point.
 	  	  	  
-	  	  
+20050105: Fixed bug in trendline plugin that was not saving it's color.
+
+20050105: Fixed bug in chart objects that was not propagating default changes to all the active plot
+          classes.
+
+20050106: Fixed the crosshair partial redraws and tab switching bugs.
+
+20050106: Stacked indicators now restore their sizes properly between sessions.
+
+20050106: Changed bar spacing +/- behaviour to keep chart centered instead of defaulting to the
+          right edge of the chart.
+	  
+
+	  	  	  	  
 0.28
 ====
 

@@ -182,12 +182,6 @@ QString Config::getData (Parm p)
     case GridColor:
       s = settings.readEntry("/Qtstalker/GridColor", "#626262");
       break;
-    case MainPlotSize:
-      s = settings.readEntry("/Qtstalker/MainPlotSize", "150");
-      break;
-    case IndicatorPlotSize:
-      s = settings.readEntry("/Qtstalker/IndicatorPlotSize", "150");
-      break;
     case ScaleToScreen:
       s = settings.readEntry("/Qtstalker/ScaleToScreen", "0");
       break;
@@ -251,6 +245,9 @@ QString Config::getData (Parm p)
     case IndicatorPageStatus:
       s = settings.readEntry("/Qtstalker/IndicatorPageStatus");
       break;
+    case PlotSizes:
+      s = settings.readEntry("/Qtstalker/PlotSizes");
+      break;
     default:
       break;
   }
@@ -312,12 +309,6 @@ void Config::setData (Parm p, QString d)
       break;
     case GridColor:
       settings.writeEntry("/Qtstalker/GridColor", d);
-      break;
-    case MainPlotSize:
-      settings.writeEntry("/Qtstalker/MainPlotSize", d);
-      break;
-    case IndicatorPlotSize:
-      settings.writeEntry("/Qtstalker/IndicatorPlotSize", d);
       break;
     case ScaleToScreen:
       settings.writeEntry("/Qtstalker/ScaleToScreen", d);
@@ -381,6 +372,9 @@ void Config::setData (Parm p, QString d)
       break;
     case IndicatorPageStatus:
       settings.writeEntry("/Qtstalker/IndicatorPageStatus", d);
+      break;
+    case PlotSizes:
+      settings.writeEntry("/Qtstalker/PlotSizes", d);
       break;
     default:
       break;
