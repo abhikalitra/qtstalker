@@ -109,6 +109,8 @@
 
 20040815: Merged OBV,NVI,PVI,PVT plugins into new VT (Volume Trends) plugin. Removed OBV,NVI,PVI,PVT.
 
+20040815: Removed STOCHRSI. Can easily be reproduced by a CUS formula.
+
 	  
 	  	  
 0.26

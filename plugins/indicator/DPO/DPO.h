@@ -41,6 +41,8 @@ class DPO : public IndicatorPlugin
     QString label;
     int period;
     IndicatorPlugin::MAType maType;
+    QString customInput;
+    BarData::InputType input;
 };
 
 extern "C"

@@ -41,13 +41,23 @@ void DPO::setDefaults ()
   label = pluginName;
   period = 21;
   maType = IndicatorPlugin::SMA;
+  input = BarData::Close;
 }
 
 void DPO::calculate ()
 {
-  PlotLine *c = data->getInput(BarData::Close);
+  PlotLine *in = 0;
+  if (customFlag)
+    in = getInputLine(customInput);
+  else
+    in = data->getInput(input);
+  if (! in)
+  {
+    qDebug("DPO::calculate: no input");
+    return;
+  }
 
-  PlotLine *ma = getMA(c, maType, period);
+  PlotLine *ma = getMA(in, maType, period);
 
   PlotLine *dpo = new PlotLine();
   dpo->setColor(color);
@@ -56,17 +66,18 @@ void DPO::calculate ()
   output.append(dpo);
 
   int maLoop = ma->getSize() - 1;
-  int closeLoop = c->getSize() - 1;
+  int closeLoop = in->getSize() - 1;
   int t = (int) ((period / 2) + 1);
 
   while (maLoop >= t)
   {
-    dpo->prepend(c->getData(closeLoop) - ma->getData(maLoop - t));
+    dpo->prepend(in->getData(closeLoop) - ma->getData(maLoop - t));
     closeLoop--;
     maLoop--;
   }
 
-  delete c;
+  if (! customFlag)
+    delete in;
   delete ma;
 }
 
@@ -80,6 +91,10 @@ int DPO::indicatorPrefDialog (QWidget *w)
   dialog->addTextItem(tr("Label"), tr("Parms"), label);
   dialog->addIntItem(tr("Period"), tr("Parms"), period, 1, 99999999);
   dialog->addComboItem(tr("MA Type"), tr("Parms"), maTypeList, maType);
+  if (customFlag)
+    dialog->addFormulaInputItem(tr("Input"), tr("Parms"), FALSE, customInput);
+  else
+    dialog->addComboItem(tr("Input"), tr("Parms"), inputTypeList, input);
   
   int rc = dialog->exec();
   
@@ -90,6 +105,11 @@ int DPO::indicatorPrefDialog (QWidget *w)
     period = dialog->getInt(tr("Period"));
     label = dialog->getText(tr("Label"));
     maType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("MA Type"));
+    if (customFlag)
+      customInput = dialog->getFormulaInput(tr("Input"));
+    else
+      input = (BarData::InputType) dialog->getComboIndex(tr("Input"));
+    
     rc = TRUE;
   }
   else
@@ -135,6 +155,14 @@ void DPO::setIndicatorSettings (Setting dict)
   s = dict.getData("maType");
   if (s.length())
     maType = (IndicatorPlugin::MAType) s.toInt();
+
+  s = dict.getData("input");
+  if (s.length())
+    input = (BarData::InputType) s.toInt();
+
+  s = dict.getData("customInput");
+  if (s.length())
+    customInput = s;
 }
 
 Setting DPO::getIndicatorSettings ()
@@ -145,12 +173,15 @@ Setting DPO::getIndicatorSettings ()
   dict.setData("period", QString::number(period));
   dict.setData("label", label);
   dict.setData("maType", QString::number(maType));
+  dict.setData("customInput", customInput);
+  dict.setData("input", QString::number(input));
   dict.setData("plugin", pluginName);
   return dict;
 }
 
-PlotLine * DPO::calculateCustom (QDict<PlotLine> *)
+PlotLine * DPO::calculateCustom (QDict<PlotLine> *d)
 {
+  customLines = d;
   clearOutput();
   calculate();
   return output.at(0);

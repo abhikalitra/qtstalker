@@ -75,14 +75,14 @@ void STOCH::calculate ()
       double h;
       for (loop2 = 0, l = 9999999, h = 0; loop2 < period; loop2++)
       {
-        double t = data->getData(loop - loop2);
+        double t = in->getData(loop - loop2);
         if (t > h)
           h = t;
         if (t < l)
           l = t;
       }
 
-      double close = data->getData(loop);
+      double close = in->getData(loop);
       double t = ((close - l) / (h - l)) * 100;
       if (t > 100)
         t = 100;
