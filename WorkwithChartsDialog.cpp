@@ -313,8 +313,10 @@ void WorkwithChartsDialog::newComposite()
   {
     dialog->setInsertButton(FALSE);
     dialog->setDeleteButton(FALSE);
-    set->set("1", "Symbol 1", Setting::Composite);
-    set->set("2", "Symbol 1", Setting::Composite);
+    set->set(tr("First Symbol"), "Symbol", Setting::Symbol);
+    set->set(tr("First Weight"), "1", Setting::Float);
+    set->set(tr("Second Symbol"), "Symbol", Setting::Symbol);
+    set->set(tr("Second Weight"), "1", Setting::Float);
   }
 
   dialog->setItems(set);

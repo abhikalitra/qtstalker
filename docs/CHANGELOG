@@ -27,8 +27,6 @@
 - Added continuous contract chart type to the futures quote plugins. Whenever daily data is updated,
   a continuous contract will be built and updated.
 
-- Changed dialogs to use QTable instead of QListView to allow for easy in place editing of parms.
-
 - New indicators:
     MA2 - 2 plot MA
     MA3 - 3 plot MA

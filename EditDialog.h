@@ -26,9 +26,9 @@
 #include <qtoolbutton.h>
 #include <qstring.h>
 #include <qlayout.h>
+#include <qlistview.h>
+#include <qdatetime.h>
 #include <qdatetimeedit.h>
-#include <qtable.h>
-#include <qvalidator.h>
 
 #include "Setting.h"
 #include "Config.h"
@@ -41,31 +41,31 @@ class EditDialog : public QDialog
     EditDialog (Config *);
     ~EditDialog ();
     void setItems (Setting *);
-    void addColorButton ();
-    void dateDialog (int);
-    void addCheck ();
-    void symbolDialog (int);
-    void colorDialog (int);
-    void addList ();
-    void compositeDialog (int);
-    void fileDialog (int);
+    void makeSettings ();
+    void colorDialog ();
+    void dateDialog ();
+    void textDialog ();
+    void intDialog ();
+    void floatDialog ();
+    void fileDialog ();
+    void symbolDialog ();
+    void checkDialog ();
+    void listDialog ();
 
   public slots:
-    void cellSelected (int, int);
-    void valueChanged (int, int);
+    void cellSelected (QListViewItem *);
+    void saveData ();
 
   protected:
-    QTable *table;
     Config *config;
     Setting *settings;
     QVBoxLayout *baseBox;
     QVBoxLayout *topBox;
+    QListView *list;
+    QListViewItem *item;
     QToolButton *okButton;
     QToolButton *cancelButton;
     QGridLayout *toolbar;
-    SettingItem *settingItem;
-    QIntValidator *ivalid;
-    QDoubleValidator *dvalid;
 };
 
 class DateDialog : public QDialog
@@ -75,11 +75,11 @@ class DateDialog : public QDialog
   public:
     DateDialog ();
     ~DateDialog ();
-    void setDate (QDateTime);
-    QDateTime getDate ();
+    void setDate (QDate);
+    QDate getDate ();
 
   private:
-    QDateTimeEdit *date;
+    QDateEdit *date;
 };
 
 #endif

@@ -76,20 +76,19 @@ PortfolioDialog::PortfolioDialog (Config *c, QString p) : EditDialog (c)
   disconnect(cancelButton, SIGNAL(clicked()));
   connect(cancelButton, SIGNAL(clicked()), this, SLOT(savePortfolio()));
   
-  table->hide();
+  list->hide();
 
-  list = new QListView(this);
-  list->setSelectionMode(QListView::Single);
-  list->setRootIsDecorated(TRUE);
-  list->addColumn(QObject::tr("Ticker"), 150);
-  list->addColumn(QObject::tr("L/S"));
-  list->addColumn(QObject::tr("Vol"));
-  list->addColumn(QObject::tr("Buy"), 70);
-  list->addColumn(QObject::tr("Last Date"), 80);
-  list->addColumn(QObject::tr("Value"), 70);
-  list->addColumn(QObject::tr("Profit"), 70);
-  connect(list, SIGNAL(selectionChanged()), this, SLOT(buttonStatus()));
-  topBox->addWidget(list);
+  list2 = new QListView(this);
+  list2->setSelectionMode(QListView::Single);
+  list2->addColumn(QObject::tr("Ticker"), 150);
+  list2->addColumn(QObject::tr("L/S"));
+  list2->addColumn(QObject::tr("Vol"));
+  list2->addColumn(QObject::tr("Buy"), 70);
+  list2->addColumn(QObject::tr("Last Date"), 80);
+  list2->addColumn(QObject::tr("Value"), 70);
+  list2->addColumn(QObject::tr("Profit"), 70);
+  connect(list2, SIGNAL(selectionChanged()), this, SLOT(buttonStatus()));
+  topBox->addWidget(list2);
 
   buttonStatus();
 
@@ -102,20 +101,20 @@ PortfolioDialog::~PortfolioDialog ()
 
 void PortfolioDialog::updatePortfolio ()
 {
-  list->clear();
+  list2->clear();
 
   QStringList l = config->getPortfolio(portfolio);
 
   int loop;
   for (loop = 0; loop < (int) l.count(); loop = loop + 4)
-    item = new QListViewItem(list, l[loop], l[loop + 1], l[loop + 2], l[loop + 3]);
+    item = new QListViewItem(list2, l[loop], l[loop + 1], l[loop + 2], l[loop + 3]);
 
   updatePortfolioItems();
 }
 
 void PortfolioDialog::updatePortfolioItems ()
 {
-  QListViewItemIterator it(list);
+  QListViewItemIterator it(list2);
   for (; it.current(); ++it)
   {
     item = it.current();
@@ -170,7 +169,7 @@ void PortfolioDialog::savePortfolio ()
 {
   QStringList l;
 
-  QListViewItemIterator it(list);
+  QListViewItemIterator it(list2);
   for (; it.current(); ++it)
   {
     item = it.current();
@@ -200,8 +199,7 @@ void PortfolioDialog::addItem ()
   l.append(tr("Long"));
   l.append(tr("Short"));
   set->set(tr("Action"), tr("Long"), Setting::List);
-  SettingItem *i = set->getItem(tr("Action"));
-  i->list = l;
+  set->setList(tr("Action"), l);
   set->set(tr("Price"), "0", Setting::Float);
   set->set(tr("Volume"), "1", Setting::Integer);
 
@@ -220,7 +218,7 @@ void PortfolioDialog::addItem ()
       QString vol = set->getData(tr("Volume"));
       QString price = set->getData(tr("Price"));
 
-      item = new QListViewItem(list, symbol, action, vol, price);
+      item = new QListViewItem(list2, symbol, action, vol, price);
       updatePortfolioItems();
       buttonStatus();
     }
@@ -232,18 +230,18 @@ void PortfolioDialog::addItem ()
 
 void PortfolioDialog::deleteItem ()
 {
-  item = list->selectedItem();
+  item = list2->selectedItem();
   if (item)
     delete item;
 
-  list->selectAll(FALSE);
+  list2->selectAll(FALSE);
 
   buttonStatus();
 }
 
 void PortfolioDialog::modifyItem ()
 {
-  item = list->currentItem();
+  item = list2->currentItem();
   if (item)
   {
     EditDialog *dialog = new EditDialog(config);
@@ -255,8 +253,7 @@ void PortfolioDialog::modifyItem ()
     l.append(tr("Long"));
     l.append(tr("Short"));
     set->set(tr("Action"), item->text(1), Setting::List);
-    SettingItem *i = set->getItem(tr("Action"));
-    i->list = l;
+    set->setList(tr("Action"), l);
     set->set(tr("Price"), item->text(3), Setting::Float);
     set->set(tr("Volume"), item->text(2), Setting::Integer);
 
@@ -287,7 +284,7 @@ void PortfolioDialog::modifyItem ()
 
 void PortfolioDialog::buttonStatus ()
 {
-  item = list->selectedItem();
+  item = list2->selectedItem();
   if (item)
   {
     deleteButton->setEnabled(TRUE);

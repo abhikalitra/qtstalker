@@ -45,7 +45,7 @@ class GroupDialog : public EditDialog
   private:
     QToolButton *deleteButton;
     QToolButton *insertButton;
-    QListBox *list;
+    QListBox *list2;
     QStringList group;
     bool flag;
 };

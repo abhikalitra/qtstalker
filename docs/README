@@ -80,8 +80,7 @@ Quote plugins included are:
   CBOT - Chicago Board of Trade Futures
   CME - Chicago Mercantile Exchange Futures
   NYBOT - New York Board Of Trade Futures
-  NYMEX - New York Mercantile Exchange Futures
-  YahooHistory - Yahoo historical quotes
+  Yahoo - Yahoo historical quotes
   YahooQuote - Yahoo single delayed quotes
   Qtstalker - Files that have been exported by qtstalker ASCII export function
 

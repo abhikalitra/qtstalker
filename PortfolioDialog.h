@@ -54,13 +54,10 @@ class PortfolioDialog : public EditDialog
     void buttonStatus ();
 
   private:
-    Config *config;
     QToolButton *modifyButton;
     QToolButton *addButton;
     QToolButton *deleteButton;
-    QListView *list;
-    QListViewItem *item;
-    QListViewItem *parent;
+    QListView *list2;
     QString portfolio;
 };
 

@@ -461,13 +461,17 @@ void ChartDb::getSpread ()
   for (loop = 0; loop < 2; loop++)
   {
     QString s = base;
-    QStringList l;
+    float weight = 1;
     if (loop == 0)
-      l = QStringList::split(" ", comp->getData("1"), FALSE);
+    {
+      s.append(comp->getData(QObject::tr("First Symbol")));
+      weight = comp->getFloat(QObject::tr("First Weight"));
+    }
     else
-      l = QStringList::split(" ", comp->getData("2"), FALSE);
-    s.append(l[0]);
-    float weight = l[1].toFloat();
+    {
+      s.append(comp->getData(QObject::tr("Second Symbol")));
+      weight = comp->getFloat(QObject::tr("Second Weight"));
+    }
 
     ChartDb *tdb = new ChartDb();
     tdb->setPath(s);
@@ -565,13 +569,17 @@ void ChartDb::getRatio ()
   for (loop = 0; loop < 2; loop++)
   {
     QString s = base;
-    QStringList l;
+    float weight = 1;
     if (loop == 0)
-      l = QStringList::split(" ", comp->getData("1"), FALSE);
+    {
+      s.append(comp->getData(QObject::tr("First Symbol")));
+      weight = comp->getFloat(QObject::tr("First Weight"));
+    }
     else
-      l = QStringList::split(" ", comp->getData("2"), FALSE);
-    s.append(l[0]);
-    float weight = l[1].toFloat();
+    {
+      s.append(comp->getData(QObject::tr("Second Symbol")));
+      weight = comp->getFloat(QObject::tr("Second Weight"));
+    }
 
     ChartDb *tdb = new ChartDb();
     tdb->setPath(s);
@@ -665,16 +673,21 @@ void ChartDb::getIndex ()
 
   Setting *comp = getComposite();
   QStringList key = comp->getKeyList();
-
   int loop;
   for (loop = 0; loop < (int) key.count(); loop++)
   {
-    QStringList l = QStringList::split(" ", comp->getData(key[loop]), FALSE);
+    if (key[loop].contains(QObject::tr("Weight")))
+      key.remove(key[loop]);
+  }
 
+  for (loop = 0; loop < (int) key.count(); loop++)
+  {
     QString s = base;
-    s.append(l[0]);
+    s.append(comp->getData(key[loop]));
 
-    float weight = l[1].toFloat();
+    QString s2 = comp->getData(key[loop]);
+    s2.append(QObject::tr(" Weight"));
+    float weight = comp->getFloat(s2);
 
     ChartDb *tdb = new ChartDb();
     tdb->setPath(s);

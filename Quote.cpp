@@ -89,9 +89,8 @@ void QuoteDialog::getQuotes ()
   int loop;
   for (loop = 0; loop < (int) l.count(); loop++)
   {
-    SettingItem *i = settings->getItem(l[loop]);
-    plug->setData(i->key, i->data);
-    plug->setList(i->key, i->list);
+    plug->setData(l[loop], settings->getData(l[loop]));
+    plug->setList(l[loop], settings->getList(l[loop]));
   }
 
   plug->download();
@@ -110,9 +109,7 @@ void QuoteDialog::ruleChanged (int)
   if (settings)
     delete settings;
 
-  int loop = table->numRows();
-  for (; loop != -1; loop--)
-    table->removeRow(loop);
+  list->clear();
 
   QString s = config->getData(Config::PluginPath);
   s.append("/");
@@ -138,11 +135,11 @@ void QuoteDialog::ruleChanged (int)
 
   Setting *set = new Setting;
   QStringList l = plug->getKeyList();
+  int loop;
   for (loop = 0; loop < (int) l.count(); loop++)
   {
-    SettingItem *i = plug->getItem(l[loop]);
-    set->set(i->key, i->data, (Setting::Type) i->type);
-    set->setList(i->key, i->list);
+    set->set(l[loop], plug->getData(l[loop]), plug->getType(l[loop]));
+    set->setList(l[loop], plug->getList(l[loop]));
   }
 
   setItems(set);
@@ -164,7 +161,7 @@ void QuoteDialog::cancelDownload ()
 
 void QuoteDialog::enableGUI ()
 {
-  table->setEnabled(TRUE);
+  list->setEnabled(TRUE);
   downloadButton->setEnabled(TRUE);
   ruleCombo->setEnabled(TRUE);
   cancelButton->setEnabled(TRUE);
@@ -173,7 +170,7 @@ void QuoteDialog::enableGUI ()
 
 void QuoteDialog::disableGUI ()
 {
-  table->setEnabled(FALSE);
+  list->setEnabled(FALSE);
   downloadButton->setEnabled(FALSE);
   ruleCombo->setEnabled(FALSE);
   cancelButton->setEnabled(FALSE);

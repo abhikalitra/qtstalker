@@ -24,6 +24,7 @@
 #include "delete.xpm"
 #include <qfiledialog.h>
 #include <qtooltip.h>
+#include <qinputdialog.h>
 
 CompositeDialog::CompositeDialog (Config *c) : EditDialog (c)
 {
@@ -55,33 +56,49 @@ void CompositeDialog::newComposite ()
   QString selection = QFileDialog::getOpenFileName(config->getData(Config::DataPath), "*", this, "file dialog");
   if (! selection.isNull())
   {
+    list->clear();
+
     QStringList l = QStringList::split("/", selection, FALSE);
     QString symbol = l[l.count() - 1];
-    table->insertRows(table->numRows(), 1);
-    table->setItem(table->numRows() - 1, 0, new QTableItem(table, QTableItem::Never, QString::number(table->numRows())));
+    settings->set(symbol, symbol, Setting::Symbol);
+
     QString s = symbol;
-    s.append(" 1");
-    table->setItem(table->numRows() - 1, 1, new QTableItem(table, QTableItem::Never, s));
-    settings->set(QString::number(table->numRows()), s, Setting::Composite);
+    s.append(tr(" Weight"));
+    settings->set(s, "1", Setting::Float);
+
+    makeSettings();
   }
 }
 
 void CompositeDialog::deleteComposite ()
 {
-  int row = table->currentRow();
-  if (row != -1)
+  if (settings->count() == 0)
+    return;
+
+  QStringList l = settings->getKeyList();
+  int loop;
+  for (loop = 0; loop < (int) l.count(); loop++)
   {
-    table->removeRow(row);
-
-    settings->clear();
-
-    int loop;
-    for (loop = 0; loop < table->numRows(); loop++)
-    {
-      table->setText(loop, 0, QString::number(loop + 1));
-      settings->set(QString::number(loop + 1), table->text(loop, 1), Setting::Composite);
-    }
+    if (l[loop].contains(tr("Weight")))
+      l.remove(l[loop]);
   }
+
+  bool ok = FALSE;
+  QString selection = QInputDialog::getItem(tr("Delete Composite"),
+  					    tr("Select a composite item to delete."),
+  					    l, 0, FALSE, &ok, this);
+  if (ok == FALSE)
+    return;
+
+  settings->remove(selection);
+
+  QString s = selection;
+  s.append(tr(" Weight"));
+  settings->remove(s);
+  
+  list->clear();
+
+  makeSettings();
 }
 
 void CompositeDialog::setInsertButton (bool d)
@@ -93,5 +110,4 @@ void CompositeDialog::setDeleteButton (bool d)
 {
   deleteButton->setEnabled(d);
 }
-
 
