@@ -1,6 +1,6 @@
 /*
  *  Qtstalker stock charter
- * 
+ *
  *  Copyright (C) 2001,2002 Stefan S. Stratigakos
  * 
  *  This program is free software; you can redistribute it and/or modify
@@ -21,33 +21,25 @@
 
 #include "WorkwithChartsDialog.h"
 #include "ChartDb.h"
-#include "EditDialog.h"
-#include "CompositeDialog.h"
 #include "Setting.h"
+#include "Plugin.h"
 #include "open.xpm"
-#include "newchart.xpm"
 #include "edit.xpm"
 #include "delete.xpm"
 #include "export.xpm"
-#include "done.xpm"
+#include "newchart.xpm"
 #include <qinputdialog.h>
-#include <qtextstream.h>
 #include <qtooltip.h>
 #include <qlayout.h>
 #include <qdir.h>
 #include <qmessagebox.h>
 #include <qgroupbox.h>
+#include <qlibrary.h>
 
-WorkwithChartsDialog::WorkwithChartsDialog (Config *c) : QDialog (0, 0, FALSE)
+WorkwithChartsDialog::WorkwithChartsDialog (Config *c) : EditDialog (c)
 {
-  config = c;
-
-  QVBoxLayout *vbox = new QVBoxLayout(this);
-  vbox->setMargin(5);
-  vbox->setSpacing(5);
-
-  QGridLayout *grid = new QGridLayout(vbox, 1, 8);
-  grid->setSpacing(1);
+  toolbar->expand(1, 9);
+  okButton->hide();
 
   openButton = new QToolButton(this);
   QToolTip::add(openButton, tr("Open Chart"));
@@ -55,15 +47,15 @@ WorkwithChartsDialog::WorkwithChartsDialog (Config *c) : QDialog (0, 0, FALSE)
   connect(openButton, SIGNAL(clicked()), this, SLOT(openSymbol()));
   openButton->setMaximumWidth(30);
   openButton->setAutoRaise(TRUE);
-  grid->addWidget(openButton, 0, 0);
+  toolbar->addWidget(openButton, 0, 0);
 
   newButton = new QToolButton(this);
-  QToolTip::add(newButton, tr("New Composite"));
+  QToolTip::add(newButton, tr("New Chart"));
   newButton->setPixmap(QPixmap(newchart));
-  connect(newButton, SIGNAL(clicked()), this, SLOT(newComposite()));
+  connect(newButton, SIGNAL(clicked()), this, SLOT(newChart()));
   newButton->setMaximumWidth(30);
   newButton->setAutoRaise(TRUE);
-  grid->addWidget(newButton, 0, 1);
+  toolbar->addWidget(newButton, 0, 3);
 
   editButton = new QToolButton(this);
   QToolTip::add(editButton, tr("Edit Chart"));
@@ -71,7 +63,7 @@ WorkwithChartsDialog::WorkwithChartsDialog (Config *c) : QDialog (0, 0, FALSE)
   connect(editButton, SIGNAL(clicked()), this, SLOT(editChart()));
   editButton->setMaximumWidth(30);
   editButton->setAutoRaise(TRUE);
-  grid->addWidget(editButton, 0, 2);
+  toolbar->addWidget(editButton, 0, 4);
 
   deleteButton = new QToolButton(this);
   QToolTip::add(deleteButton, tr("Delete Chart"));
@@ -79,7 +71,7 @@ WorkwithChartsDialog::WorkwithChartsDialog (Config *c) : QDialog (0, 0, FALSE)
   connect(deleteButton, SIGNAL(clicked()), this, SLOT(deleteChart()));
   deleteButton->setMaximumWidth(30);
   deleteButton->setAutoRaise(TRUE);
-  grid->addWidget(deleteButton, 0, 3);
+  toolbar->addWidget(deleteButton, 0, 5);
 
   exportButton = new QToolButton(this);
   QToolTip::add(exportButton, tr("Export Chart"));
@@ -87,7 +79,7 @@ WorkwithChartsDialog::WorkwithChartsDialog (Config *c) : QDialog (0, 0, FALSE)
   connect(exportButton, SIGNAL(clicked()), this, SLOT(exportSymbol()));
   exportButton->setMaximumWidth(30);
   exportButton->setAutoRaise(TRUE);
-  grid->addWidget(exportButton, 0, 4);
+  toolbar->addWidget(exportButton, 0, 6);
 
   exportAllButton = new QToolButton(this);
   QToolTip::add(exportAllButton, tr("Export All Charts"));
@@ -95,102 +87,64 @@ WorkwithChartsDialog::WorkwithChartsDialog (Config *c) : QDialog (0, 0, FALSE)
   connect(exportAllButton, SIGNAL(clicked()), this, SLOT(exportAll()));
   exportAllButton->setMaximumWidth(30);
   exportAllButton->setAutoRaise(TRUE);
-  grid->addWidget(exportAllButton, 0, 5);
+  toolbar->addWidget(exportAllButton, 0, 7);
 
-  QToolButton *button = new QToolButton(this);
-  QToolTip::add(button, tr("Done"));
-  button->setPixmap(QPixmap(finished));
-  connect(button, SIGNAL(clicked()), this, SLOT(reject()));
-  button->setMaximumWidth(30);
-  button->setAutoRaise(TRUE);
-  grid->addWidget(button, 0, 6);
+  connect(fileList, SIGNAL(doubleClicked(QListViewItem *)), this, SLOT(openSymbol()));
 
-  QFrame *sep = new QFrame(this);
-  sep->setFrameStyle(QFrame::HLine | QFrame::Sunken);
-  vbox->addWidget(sep);
-
-  QHBoxLayout *hbox = new QHBoxLayout(vbox);
-
-  list = new QListView(this);
-  list->addColumn(tr("Symbol"), 200);
-  list->setSelectionMode(QListView::Single);
-  connect(list, SIGNAL(selectionChanged()), this, SLOT(buttonStatus()));
-  connect(list, SIGNAL(doubleClicked(QListViewItem *)), this, SLOT(openSymbol()));
-  hbox->addWidget(list);
-
-  QGroupBox *gbox = new QGroupBox(this);
-  gbox->setColumnLayout(2, Horizontal);
-  hbox->addWidget(gbox);
-
-  QLabel *label = new QLabel(tr("Symbol"), gbox);
-  symbol = new QLabel(0, gbox);
-
-  label = new QLabel(tr("Title"), gbox);
-  title = new QLabel(0, gbox);
-
-  label = new QLabel(tr("Type"), gbox);
-  type = new QLabel(0, gbox);
-
-  label = new QLabel(tr("First Date"), gbox);
-  firstDate = new QLabel(0, gbox);
-
-  label = new QLabel(tr("Last Date"), gbox);
-  lastDate = new QLabel(0, gbox);
-
-  buttonStatus();
+  fileList->show();
+  gbox->show();
+  list->hide();
+  upButton->show();
 }
 
 WorkwithChartsDialog::~WorkwithChartsDialog ()
 {
 }
 
-void WorkwithChartsDialog::updateList ()
-{
-  list->clear();
-
-  QDir dir(config->getData(Config::DataPath));
-  int loop;
-  for (loop = 2; loop < (int) dir.count(); loop++)
-    item = new QListViewItem(list, dir[loop]);
-
-}
-
 void WorkwithChartsDialog::openSymbol ()
 {
-  item = list->selectedItem();
-  if (item)
-  {
-    QString s = config->getData(Config::DataPath);
-    s.append("/");
-    s.append(item->text(0));
-    emit chartOpened (s);
-    reject();
-  }
+  item = fileList->selectedItem();
+  if (! item)
+    return;
+    
+  if (item->pixmap(0))
+    return;
+
+  QString s = currentDir.absPath();
+  s.append("/");
+  s.append(item->text(0));
+  emit chartOpened (s);
+
+  reject();
 }
 
 void WorkwithChartsDialog::deleteChart ()
 {
-  QString selection = config->getData(Config::DataPath);
-  selection.append("/");
-  selection.append(item->text(0));
+  item = fileList->selectedItem();
+  if (! item)
+    return;
 
-  QDir dir(selection);
-  dir.remove(selection, TRUE);
-  
+  QString s = currentDir.absPath();
+  s.append("/");
+  s.append(item->text(0));
+
+  currentDir.remove(s, TRUE);
+
   delete item;
-
-  buttonStatus();
 }
 
 void WorkwithChartsDialog::editChart ()
 {
-  QString selection = config->getData(Config::DataPath);
+  item = fileList->selectedItem();
+  if (! item)
+    return;
+
+  QString selection = currentDir.absPath();
   selection.append("/");
   selection.append(item->text(0));
 
   ChartDb *db = new ChartDb();
-  db->setPath(selection);
-  if (db->openChart())
+  if (db->openChart(selection))
   {
     QMessageBox::information(this, tr("Qtstalker: Error"), tr("Can't open chart."));
     delete db;
@@ -200,17 +154,8 @@ void WorkwithChartsDialog::editChart ()
   Setting *set = db->getDetails();
 
   QString chartType = set->getData("Chart Type");
-  if (! chartType.compare(tr("Spread")) || ! chartType.compare(tr("Ratio")) || ! chartType.compare(tr("Index")))
-  {
-    delete set;
-    delete db;
-    editComposite();
-    return;
-  }
 
   EditDialog *dialog = new EditDialog(config);
-
-  delete db;
 
   QString s = tr("Qtstalker: Edit ");
   s.append(chartType);
@@ -221,273 +166,174 @@ void WorkwithChartsDialog::editChart ()
   int rc = dialog->exec();
 
   if (rc == QDialog::Accepted)
-  {
-    ChartDb *db = new ChartDb();
-    db->setPath(selection);
-    db->openChart();
-    db->setDetails(set);
-    delete db;
-  }
+    db->saveDetails();
 
-  delete set;
-}
-
-void WorkwithChartsDialog::editComposite ()
-{
-  QString file = config->getData(Config::DataPath);
-  file.append("/");
-  file.append(item->text(0));
-
-  CompositeDialog *dialog = new CompositeDialog(config);
-
-  ChartDb *db = new ChartDb();
-  db->setPath(file);
-  db->openChart();
-
-  Setting *set = db->getComposite();
-  Setting *details = db->getDetails();
-
-  QString s = tr("Qtstalker: Edit ");
-  s.append(details->getData("Chart Type"));
-  dialog->setCaption(s);
-
-  delete details;
   delete db;
-
-  dialog->setItems(set);
-
-  int rc = dialog->exec();
-
-  if (rc == QDialog::Accepted)
-  {
-    db = new ChartDb();
-    db->setPath(file);
-    db->openChart();
-    db->setComposite(set);
-    delete db;
-  }
-
-  delete set;
-  delete dialog;
 }
 
-void WorkwithChartsDialog::newComposite()
+void WorkwithChartsDialog::newChart()
 {
-  bool ok;
-  QString name = QInputDialog::getText(tr("New Composite"), tr("Enter new composite symbol."),
-                                       QLineEdit::Normal, tr("New Composite"), &ok, this);
-  if ((! ok) || (name.isNull()))
-    return;
-
-  if (name.contains("/"))
+  QStringList l = config->getQuotePlugins();
+  QStringList l2;
+  int loop;
+  for (loop = 0; loop < (int) l.count(); loop++)
   {
-    QMessageBox::information(this, tr("Qtstalker: Error"), tr("Symbol cannot contain / character."));
-    return;
+    QString s = config->getData(Config::QuotePluginPath);
+    s.append("/");
+    s.append(l[loop]);
+    s.append(".so");
+
+    QLibrary *lib = new QLibrary(s);
+    Plugin *(*so)() = 0;
+    so = (Plugin *(*)()) lib->resolve("create");
+    if (so)
+    {
+      Plugin *plug = (*so)();
+
+      if (plug->getCreateFlag())
+        l2.append(plug->getPluginName());
+
+      delete plug;
+    }
+
+    delete lib;
   }
 
-  QString path = config->getData(Config::DataPath);
-  path.append("/");
-  path.append(name);
-  QDir dir(path);
-  if (dir.exists(path, TRUE))
-  {
-    QMessageBox::information(this, tr("Qtstalker: Error"), tr("This chart already exists."));
-    return;
-  }
-
-  QStringList l;
-  l.append(tr("Index"));
-  l.append(tr("Spread"));
-  l.append(tr("Ratio"));
-
-  QString type = QInputDialog::getItem(tr("New Composite Type"), tr("Choose composite type to create."),
- 	                               l, 0, FALSE, &ok, this);
-  if ((! ok) || (type.isNull()))
+  bool ok = FALSE;
+  QString type = QInputDialog::getItem(tr("New Chart Type"), tr("Choose chart type to create."),
+ 	                               l2, 0, FALSE, &ok, this);
+  if (! ok || type.isNull())
     return;
 
-  CompositeDialog *dialog = new CompositeDialog(config);
+  QString s = config->getData(Config::QuotePluginPath);
+  s.append("/");
+  s.append(type);
+  s.append(".so");
 
-  Setting *set = new Setting();
-
-  if (type.compare(tr("Index")))
+  QLibrary *lib = new QLibrary(s);
+  Plugin *(*so)() = 0;
+  so = (Plugin *(*)()) lib->resolve("create");
+  if (! so)
   {
-    dialog->setInsertButton(FALSE);
-    dialog->setDeleteButton(FALSE);
-    set->set(tr("First Symbol"), "Symbol", Setting::Symbol);
-    set->set(tr("First Weight"), "1", Setting::Float);
-    set->set(tr("Second Symbol"), "Symbol", Setting::Symbol);
-    set->set(tr("Second Weight"), "1", Setting::Float);
+    delete lib;
+    return;
   }
+  Plugin *plug = (*so)();
 
-  dialog->setItems(set);
+  plug->setDataPath(config->getData(Config::DataPath));
 
-  QString s = tr("Qtstalker: New ");
+  Setting *details = plug->getCreateDetails();
+
+  EditDialog *dialog = new EditDialog(config);
+
+  s = tr("Qtstalker: New ");
   s.append(type);
   dialog->setCaption(s);
 
+  dialog->setItems(details);
+
   int rc = dialog->exec();
 
   if (rc == QDialog::Accepted)
   {
-    ChartDb *db = new ChartDb();
-    db->setPath(path);
-    db->openChart();
-
-    Setting *details = new Setting();
-    details->set("Symbol", name, Setting::None);
-    details->set("Chart Type", type, Setting::None);
-    details->set(tr("Title"), name, Setting::Text);
-    db->setDetails(details);
-    delete details;
-
-    db->setComposite(set);
-
-    delete db;
-
-    updateList();
-    buttonStatus();
+    plug->createChart(details);
+    currentDir.setPath(currentDir.path());
+    updateFileList();
   }
 
-  delete set;
+  delete details;
   delete dialog;
+  delete plug;
+  delete lib;
 }
 
 void WorkwithChartsDialog::exportSymbol ()
 {
-  item = list->selectedItem();
+  item = fileList->selectedItem();
   if (! item)
+    return;
+    
+  if (item->pixmap(0))
     return;
 
   QString s = config->getData(Config::Home);
   s.append("/export");
-  QDir dir(s);
-  if (! dir.exists(s, TRUE))
+  if (! currentDir.exists(s, TRUE))
   {
-    if (! dir.mkdir(s, TRUE))
+    if (! currentDir.mkdir(s, TRUE))
     {
       qDebug("Unable to create export directory.");
       return;
     }
   }
 
-  exportChart(item->text(0));
+  s = currentDir.path();
+  s.append("/");
+  s.append(item->text(0));
+  exportChart(s);
 }
 
 void WorkwithChartsDialog::exportAll ()
 {
   QString s = config->getData(Config::Home);
   s.append("/export");
-  QDir dir(s);
-  if (! dir.exists(s, TRUE))
+  if (! currentDir.exists(s, TRUE))
   {
-    if (! dir.mkdir(s, TRUE))
+    if (! currentDir.mkdir(s, TRUE))
     {
       qDebug("Unable to create export directory.");
       return;
     }
   }
 
-  dir.setPath(config->getData(Config::DataPath));
+  QDir dir(config->getData(Config::DataPath));
+
   int loop;
   for (loop = 2; loop < (int) dir.count(); loop++)
-    exportChart(dir[loop]);
-}
-
-void WorkwithChartsDialog::exportChart (QString symbol)
-{
-  QString s = config->getData(Config::DataPath);
-  s.append("/");
-  s.append(symbol);
-
-  ChartDb *db = new ChartDb();
-  db->setPath(s);
-  if(db->openChart())
   {
-    delete db;
-    return;
-  }
-
-  s = config->getData(Config::Home);
-  s.append("/export/");
-  s.append(symbol);
-
-  QFile outFile(s);
-  if (! outFile.open(IO_WriteOnly))
-  {
-    QString mess = tr("Unable to create");
-    mess.append(" ");
-    mess.append(s);
-    qDebug(mess.latin1());
-    delete db;
-    return;
-  }
-  QTextStream outStream(&outFile);
-
-  db->openCursor();
-
-  while (1)
-  {
-    if (! db->getCursor())
-      outStream << db->getCursorKey() << "=" << db->getCursorData() << "\n";
-    else
-      break;
-  }
-
-  db->closeCursor();
-  delete db;
-
-  outFile.close();
-}
-
-void WorkwithChartsDialog::buttonStatus ()
-{
-  item = list->selectedItem();
-  if (item)
-  {
-    QString s = config->getData(Config::DataPath);
+    s = dir.path();
     s.append("/");
-    s.append(item->text(0));
+    s.append(dir[loop]);
+    QDir dir2(s);
 
-    ChartDb *db = new ChartDb;
-    db->setPath(s);
-    db->openChart();
-    Setting *set = db->getDetails();
-
-    symbol->setText(set->getData("Symbol"));
-
-    title->setText(set->getData("Title"));
-
-    type->setText(set->getData("Chart Type"));
-
-    s = set->getData("First Date");
-    s.truncate(s.length() - 6);
-    firstDate->setText(s);
-
-    s = set->getData("Last Date");
-    s.truncate(s.length() - 6);
-    lastDate->setText(s);
-
-    delete set;
-
-    openButton->setEnabled(TRUE);
-    deleteButton->setEnabled(TRUE);
-    editButton->setEnabled(TRUE);
-    exportButton->setEnabled(TRUE);
-  }
-  else
-  {
-    symbol->setText("");
-    title->setText("");
-    type->setText("");
-    firstDate->setText("");
-    lastDate->setText("");
-
-    openButton->setEnabled(FALSE);
-    deleteButton->setEnabled(FALSE);
-    editButton->setEnabled(FALSE);
-    exportButton->setEnabled(FALSE);
+    int loop2;
+    for (loop2 = 2; loop2 < (int) dir2.count(); loop2++)
+    {
+      s = dir2.path();
+      s.append("/");
+      s.append(dir2[loop2]);
+      exportChart(s);
+    }
   }
 }
 
+void WorkwithChartsDialog::exportChart (QString path)
+{
+  ChartDb *db = new ChartDb();
+  if(db->openChart(path))
+  {
+    delete db;
+    return;
+  }
 
+  Setting *details = db->getDetails();
+
+  QString s = config->getData(Config::Home);
+  s.append("/export/");
+  s.append(details->getData("Symbol"));
+
+  db->dump(s);
+
+  delete db;
+}
+
+void WorkwithChartsDialog::setStartDir (QString d)
+{
+  if (d.length())
+  {
+    int i = d.findRev('/', -1, TRUE);
+    d.truncate(i);
+    currentDir.setPath(d);
+  }
+}
 

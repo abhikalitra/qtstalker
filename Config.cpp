@@ -21,12 +21,12 @@
 
 #include "Config.h"
 #include "Plugin.h"
-#include "ChartDb.h"
 #include <qobject.h>
 #include <qdir.h>
-#include <qstringlist.h>
 #include <qlibrary.h>
 #include <qsettings.h>
+#include <qfile.h>
+#include <qtextstream.h>
 
 Config::Config (QString p)
 {
@@ -51,6 +51,24 @@ Config::Config (QString p)
       qDebug("Unable to create ~/Qtstalker/data directory.");
   }
   setData(DataPath, s);
+  
+  s = home;
+  s.append("/group");
+  if (! dir.exists(s, TRUE))
+  {
+    if (! dir.mkdir(s, TRUE))
+      qDebug("Unable to create ~/Qtstalker/group directory.");
+  }
+  setData(GroupPath, s);
+
+  s = home;
+  s.append("/portfolio");
+  if (! dir.exists(s, TRUE))
+  {
+    if (! dir.mkdir(s, TRUE))
+      qDebug("Unable to create ~/Qtstalker/portfolio directory.");
+  }
+  setData(PortfolioPath, s);
 
   s = home;
   s.append("/plugins");
@@ -59,9 +77,24 @@ Config::Config (QString p)
     if (! dir.mkdir(s, TRUE))
       qDebug("Unable to create ~/Qtstalker/plugins directory.");
   }
-  setData(PluginPath, s);
 
-  scanPlugins();
+  s = home;
+  s.append("/plugins/indicator");
+  if (! dir.exists(s, TRUE))
+  {
+    if (! dir.mkdir(s, TRUE))
+      qDebug("Unable to create ~/Qtstalker/plugins/indicator directory.");
+  }
+  setData(IndicatorPluginPath, s);
+
+  s = home;
+  s.append("/plugins/quote");
+  if (! dir.exists(s, TRUE))
+  {
+    if (! dir.mkdir(s, TRUE))
+      qDebug("Unable to create ~/Qtstalker/plugins/quote directory.");
+  }
+  setData(QuotePluginPath, s);
 }
 
 Config::~Config ()
@@ -81,8 +114,11 @@ QString Config::getData (Parm p)
     case DataPath:
       s = settings.readEntry("/Qtstalker/DataPath");
       break;
-    case PluginPath:
-      s = settings.readEntry("/Qtstalker/PluginPath");
+    case GroupPath:
+      s = settings.readEntry("/Qtstalker/GroupPath");
+      break;
+    case PortfolioPath:
+      s = settings.readEntry("/Qtstalker/PortfolioPath");
       break;
     case ChartStyle:
       s = settings.readEntry("/Qtstalker/ChartStyle", QObject::tr("Bar Chart"));
@@ -123,17 +159,17 @@ QString Config::getData (Parm p)
     case IndicatorPlotSize:
       s = settings.readEntry("/Qtstalker/IndicatorPlotSize", "150");
       break;
-    case Group:
-      s = settings.readEntry("/Qtstalker/Group", "");
-      break;
     case ScaleToScreen:
       s = settings.readEntry("/Qtstalker/ScaleToScreen", "0");
       break;
-    case IndicatorPlugin:
-      s = settings.readEntry("/Qtstalker/IndicatorPlugin", "");
+    case IndicatorPluginPath:
+      s = settings.readEntry("/Qtstalker/IndicatorPluginPath");
       break;
-    case QuotePlugin:
-      s = settings.readEntry("/Qtstalker/QuotePlugin", "");
+    case QuotePluginPath:
+      s = settings.readEntry("/Qtstalker/QuotePluginPath");
+      break;
+    case Group:
+      s = settings.readEntry("/Qtstalker/Group");
       break;
     default:
       break;
@@ -154,8 +190,11 @@ void Config::setData (Parm p, QString d)
     case DataPath:
       settings.writeEntry("/Qtstalker/DataPath", d);
       break;
-    case PluginPath:
-      settings.writeEntry("/Qtstalker/PluginPath", d);
+    case GroupPath:
+      settings.writeEntry("/Qtstalker/GroupPath", d);
+      break;
+    case PortfolioPath:
+      settings.writeEntry("/Qtstalker/PortfolioPath", d);
       break;
     case ChartStyle:
       settings.writeEntry("/Qtstalker/ChartStyle", d);
@@ -196,17 +235,17 @@ void Config::setData (Parm p, QString d)
     case IndicatorPlotSize:
       settings.writeEntry("/Qtstalker/IndicatorPlotSize", d);
       break;
-    case Group:
-      settings.writeEntry("/Qtstalker/Group", d);
-      break;
     case ScaleToScreen:
       settings.writeEntry("/Qtstalker/ScaleToScreen", d);
       break;
-    case IndicatorPlugin:
-      settings.writeEntry("/Qtstalker/IndicatorPlugin", d);
+    case IndicatorPluginPath:
+      settings.writeEntry("/Qtstalker/IndicatorPluginPath", d);
       break;
-    case QuotePlugin:
-      settings.writeEntry("/Qtstalker/QuotePlugin", d);
+    case QuotePluginPath:
+      settings.writeEntry("/Qtstalker/QuotePluginPath", d);
+      break;
+    case Group:
+      settings.writeEntry("/Qtstalker/Group", d);
       break;
     default:
       break;
@@ -215,62 +254,62 @@ void Config::setData (Parm p, QString d)
 
 QStringList Config::getGroup (QString n)
 {
-  QSettings settings;
-  QString s = "/Qtstalker/Group/";
+  QString s = getData(GroupPath);
+  s.append("/");
   s.append(n);
-  return settings.readListEntry(s, ',');
+  return loadFile(s);
 }
 
 QStringList Config::getGroupList ()
 {
-  QSettings settings;
-  return settings.entryList("/Qtstalker/Group");
+  return getDirList(getData(GroupPath));
 }
 
 void Config::setGroup (QString n, QStringList l)
 {
-  QSettings settings;
-  QString s = "/Qtstalker/Group/";
+  QString s = getData(GroupPath);
+  s.append("/");
   s.append(n);
-  settings.writeEntry(s, l, ',');
+  saveFile(s, l);
 }
 
 void Config::deleteGroup (QString n)
 {
-  QSettings settings;
-  QString s = "/Qtstalker/Group/";
+  QString s = getData(GroupPath);
+  QDir dir(s);
+  s.append("/");
   s.append(n);
-  settings.removeEntry(s);
+  dir.remove(s);
 }
 
 QStringList Config::getPortfolio (QString n)
 {
-  QSettings settings;
-  QString s = "/Qtstalker/Portfolio/";
+  QString s = getData(PortfolioPath);
+  s.append("/");
   s.append(n);
-  return settings.readListEntry(s, ',');
+  return loadFile(s);
 }
 
 QStringList Config::getPortfolioList ()
 {
-  QSettings settings;
-  return settings.entryList("/Qtstalker/Portfolio");
+  return getDirList(getData(PortfolioPath));
 }
 
 void Config::setPortfolio (QString n, QStringList l)
 {
-  QSettings settings;
-  QString s = "/Qtstalker/Portfolio/";
+  QString s = getData(PortfolioPath);
+  s.append("/");
   s.append(n);
-  settings.writeEntry(s, l, ',');
+  saveFile(s, l);
 }
 
 void Config::deletePortfolio (QString n)
 {
-  QSettings settings;
-  QString s = "/Qtstalker/Portfolio/";
+  QString s = getData(PortfolioPath);
+  QDir dir(s);
+  s.append("/");
   s.append(n);
-  settings.removeEntry(s);
+  dir.remove(s);
 }
 
 QStringList Config::getIndicators ()
@@ -316,13 +355,45 @@ QStringList Config::getDirList (QString path)
   return l;
 }
 
+QStringList Config::loadFile (QString path)
+{
+  QStringList l;
+
+  QFile f(path);
+  if (! f.open(IO_ReadOnly))
+    return l;
+  QTextStream stream(&f);
+
+  while(stream.atEnd() == 0)
+  {
+    QString s = stream.readLine();
+    s = s.stripWhiteSpace();
+
+    if (s.length())
+      l.append(s);
+  }
+
+  f.close();
+
+  return l;
+}
+
+void Config::saveFile (QString path, QStringList l)
+{
+  QFile f(path);
+  if (! f.open(IO_WriteOnly))
+    return;
+  QTextStream stream(&f);
+
+  int loop;
+  for (loop = 0; loop < (int) l.count(); loop++)
+    stream << l[loop] << "\n";
+
+  f.close();
+}
+
 void Config::installPlugin (QString selection)
 {
-  QString sys = "cp -f ";
-  sys.append(selection);
-  sys.append(" ");
-  sys.append(getData(PluginPath));
-
   QLibrary *lib = new QLibrary(selection);
   Plugin *(*so)() = 0;
   so = (Plugin *(*)()) lib->resolve("create");
@@ -334,34 +405,29 @@ void Config::installPlugin (QString selection)
 
     QString name = plug->getPluginName();
 
-    if (system(sys.latin1()) == -1)
-      qDebug("Qtstalker: Shell error, unable to install plugin.");
+    QString sys = "cp -f ";
+    sys.append(selection);
+    sys.append(" ");
 
     while (1)
     {
       if (! type.compare("Indicator"))
       {
-        QStringList pl = QStringList::split(",", getData(IndicatorPlugin), FALSE);
-        int i = pl.findIndex(name);
-	if (i == -1)
-	{
-          pl.append(name);
-	  pl.sort();
-	  setData(IndicatorPlugin, pl.join(","));
-	}
+        sys.append(getData(IndicatorPluginPath));
+
+        if (system(sys.latin1()) == -1)
+          qDebug("Qtstalker: Shell error, unable to install plugin.");
+
         break;
       }
 
       if (! type.compare("Quote"))
       {
-        QStringList pl = QStringList::split(",", getData(QuotePlugin), FALSE);
-        int i = pl.findIndex(name);
-        if (i == -1)
-        {
-          pl.append(name);
-  	  pl.sort();
-          setData(QuotePlugin, pl.join(","));
-        }
+        sys.append(getData(QuotePluginPath));
+
+        if (system(sys.latin1()) == -1)
+          qDebug("Qtstalker: Shell error, unable to install plugin.");
+
 	break;
       }
 
@@ -377,86 +443,27 @@ void Config::installPlugin (QString selection)
   delete lib;
 }
 
-void Config::deletePlugin (QString n)
+QStringList Config::getIndicatorPlugins ()
 {
-  QString s = getData(PluginPath);
-  s.append("/");
-  s.append(n);
-  s.append(".so");
-  QDir dir(s);
-  dir.remove(s, TRUE);
-
-  QStringList l = QStringList::split(",",  getData(IndicatorPlugin), FALSE);
-  l.remove(n);
-  setData(IndicatorPlugin, l.join(","));
-
-  l = QStringList::split(",",  getData(QuotePlugin), FALSE);
-  l.remove(n);
-  setData(QuotePlugin, l.join(","));
-}
-
-void Config::scanPlugins ()
-{
-  qDebug("scanning plugins...");
-
-  QString pp = getData(PluginPath);
-  QDir dir(pp);
-
-  QStringList ip;
-  QStringList qp;
+  QStringList l = getDirList(getData(IndicatorPluginPath));
 
   int loop;
-  for (loop = 2; loop < (int) dir.count(); loop++)
-  {
-    QString s = pp;
-    s.append("/");
-    s.append(dir[loop]);
+  for (loop = 0; loop < (int) l.count(); loop++)
+    l[loop].truncate(l[loop].length() - 3);
 
-    QLibrary *lib = new QLibrary(s);
-    Plugin *(*so)() = 0;
-    so = (Plugin *(*)()) lib->resolve("create");
-    if (so)
-    {
-      Plugin *plug = (*so)();
-
-      QString type = plug->getPluginType();
-
-      QString name = plug->getPluginName();
-
-      while (1)
-      {
-        if (! type.compare("Indicator"))
-        {
-          ip.append(name);
-          break;
-        }
-
-        if (! type.compare("Quote"))
-        {
-          qp.append(name);
-	  break;
-        }
-
-        qDebug("Qtstalker: %s invalid plugin.", dir[loop].latin1());
-
-        break;
-      }
-
-      delete plug;
-    }
-    else
-      qDebug("Qtstalker: Could not load %s plugin.", dir[loop].latin1());
-
-    delete lib;
-  }
-
-  ip.sort();
-  setData(IndicatorPlugin, ip.join(","));
-
-  qp.sort();
-  setData(QuotePlugin, qp.join(","));
+  return l;
 }
 
+QStringList Config::getQuotePlugins ()
+{
+  QStringList l = getDirList(getData(QuotePluginPath));
+
+  int loop;
+  for (loop = 0; loop < (int) l.count(); loop++)
+    l[loop].truncate(l[loop].length() - 3);
+
+  return l;
+}
 
 
 

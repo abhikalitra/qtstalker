@@ -28,7 +28,7 @@ class Qtstalker : public QuotePlugin
   public:
     Qtstalker ();
     virtual ~Qtstalker ();
-    void download ();
+    void update ();
 
   public slots:
     void parse ();

@@ -57,6 +57,15 @@ QString Plugin::getAbout ()
   return s;
 }
 
+void Plugin::setDataPath (QString d)
+{
+  dataPath = d;
+}
+
+//**********************************************************
+//************** indicator plugin interface ****************
+//**********************************************************
+
 void Plugin::calculate ()
 {
 }
@@ -68,18 +77,6 @@ void Plugin::setIndicatorInput (QList<Setting>)
 QMemArray<int> Plugin::getAlerts ()
 {
   return 0;
-}
-
-void Plugin::download ()
-{
-}
-
-void Plugin::cancelDownload ()
-{
-}
-
-void Plugin::setDataPath (QString)
-{
 }
 
 int Plugin::getIndicatorLines ()
@@ -96,4 +93,31 @@ QMemArray<double> Plugin::getIndicatorLineArray (int)
 {
   return 0;
 }
+
+//**********************************************************
+//************** quote plugin interface ********************
+//**********************************************************
+
+void Plugin::update ()
+{
+}
+
+void Plugin::cancelUpdate ()
+{
+}
+
+Setting * Plugin::getCreateDetails ()
+{
+  return 0;
+}
+
+void Plugin::createChart (Setting *)
+{
+}
+
+bool Plugin::getCreateFlag ()
+{
+  return FALSE;
+}
+
 

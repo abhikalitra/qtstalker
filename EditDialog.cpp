@@ -20,8 +20,11 @@
  */
 
 #include "EditDialog.h"
+#include "ChartDb.h"
 #include "ok.xpm"
 #include "stop.xpm"
+#include "up.xpm"
+#include "dirclosed.xpm"
 #include <qcolordialog.h>
 #include <qmessagebox.h>
 #include <qcolor.h>
@@ -36,12 +39,14 @@ EditDialog::EditDialog (Config *c) : QDialog (0, "EditDialog", TRUE)
 {
   config = c;
   settings = 0;
+  item = 0;
+  currentDir.setPath(config->getData(Config::DataPath));
 
   baseBox = new QVBoxLayout(this);
   baseBox->setMargin(5);
   baseBox->setSpacing(5);
 
-  toolbar = new QGridLayout(baseBox, 1, 3);
+  toolbar = new QGridLayout(baseBox, 1, 4);
   toolbar->setSpacing(1);
 
   okButton = new QToolButton(this);
@@ -60,11 +65,50 @@ EditDialog::EditDialog (Config *c) : QDialog (0, "EditDialog", TRUE)
   cancelButton->setAutoRaise(TRUE);
   toolbar->addWidget(cancelButton, 0, 1);
 
-  QFrame *sep = new QFrame(this);
-  sep->setFrameStyle(QFrame::HLine | QFrame::Sunken);
-  baseBox->addWidget(sep);
+  upButton = new QToolButton(this);
+  QToolTip::add(upButton, tr("Parent Directory"));
+  upButton->setPixmap(QPixmap(up));
+  connect(upButton, SIGNAL(clicked()), this, SLOT(upDirectory()));
+  upButton->setMaximumWidth(30);
+  upButton->setAutoRaise(TRUE);
+  upButton->hide();
+  toolbar->addWidget(upButton, 0, 2);
+
+//  QFrame *sep = new QFrame(this);
+//  sep->setFrameStyle(QFrame::HLine | QFrame::Sunken);
+//  baseBox->addWidget(sep);
 
   topBox = new QVBoxLayout(baseBox);
+  
+  fileBox = new QHBoxLayout(topBox);
+
+  fileList = new QListView(this);
+  fileList->addColumn(tr("Symbol"), 200);
+  fileList->setSelectionMode(QListView::Single);
+  connect(fileList, SIGNAL(clicked(QListViewItem *)), this, SLOT(fileSelection(QListViewItem *)));
+  fileBox->addWidget(fileList);
+
+  gbox = new QGroupBox(this);
+  gbox->setColumnLayout(2, Horizontal);
+  fileBox->addWidget(gbox);
+
+  QLabel *label = new QLabel(tr("Symbol"), gbox);
+  symbol = new QLabel(0, gbox);
+
+  label = new QLabel(tr("Title"), gbox);
+  title = new QLabel(0, gbox);
+
+  label = new QLabel(tr("Type"), gbox);
+  type = new QLabel(0, gbox);
+
+  label = new QLabel(tr("First Date"), gbox);
+  firstDate = new QLabel(0, gbox);
+
+  label = new QLabel(tr("Last Date"), gbox);
+  lastDate = new QLabel(0, gbox);
+
+  fileList->hide();
+  gbox->hide();
 
   list = new QListView(this);
   list->setSelectionMode(QListView::Single);
@@ -194,7 +238,7 @@ void EditDialog::dateDialog ()
 void EditDialog::textDialog ()
 {
   bool ok = FALSE;
-  
+
   QString s = tr("Edit ");
   s.append(item->text(0));
 
@@ -279,9 +323,9 @@ void EditDialog::symbolDialog ()
   QString selection = QFileDialog::getOpenFileName(config->getData(Config::DataPath), "*", this, "file dialog");
   if (! selection.isNull())
   {
-    QStringList l = QStringList::split("/", selection, FALSE);
-    QString symbol = l[l.count() - 1];
-    item->setText(1, symbol);
+    QString s = config->getData(Config::DataPath);
+    selection.remove(0, s.length() + 1);
+    item->setText(1, selection);
   }
 }
 
@@ -348,6 +392,104 @@ void EditDialog::saveData ()
   }
 
   accept();
+}
+
+//***********************************************************
+// *********** file list stuff ******************************
+//***********************************************************
+
+void EditDialog::updateFileList ()
+{
+  fileList->clear();
+
+  int loop;
+  for (loop = 2; loop < (int) currentDir.count(); loop++)
+  {
+    item = new QListViewItem(fileList, currentDir[loop]);
+
+    QString s = currentDir.absPath();
+    s.append("/");
+    s.append(currentDir[loop]);
+    QFileInfo info(s);
+    if (info.isDir())
+      item->setPixmap(0, QPixmap(dirclosed));
+  }
+  
+  item = 0;
+}
+
+void EditDialog::upDirectory ()
+{
+  QString s = config->getData(Config::DataPath);
+  if (s.compare(currentDir.absPath()))
+  {
+    currentDir.cdUp();
+    updateFileList();
+  }
+}
+
+void EditDialog::clearFileInfo ()
+{
+  symbol->setText("");
+  title->setText("");
+  type->setText("");
+  firstDate->setText("");
+  lastDate->setText("");
+}
+
+void EditDialog::setFileInfo ()
+{
+  item = fileList->selectedItem();
+  if (! item)
+    return;
+
+  QString s = currentDir.absPath();
+  s.append("/");
+  s.append(item->text(0));
+
+  ChartDb *db = new ChartDb;
+  if (db->openChart(s))
+  {
+    delete db;
+    clearFileInfo();
+    return;
+  }
+
+  Setting *set = db->getDetails();
+
+  symbol->setText(set->getData("Symbol"));
+
+  title->setText(set->getData("Title"));
+
+  type->setText(set->getData("Chart Type"));
+
+  s = set->getData("First Date");
+  s.truncate(s.length() - 6);
+  firstDate->setText(s);
+
+  s = set->getData("Last Date");
+  s.truncate(s.length() - 6);
+  lastDate->setText(s);
+
+  delete db;
+}
+
+void EditDialog::fileSelection (QListViewItem *item)
+{
+  if (! item)
+    return;
+
+  if (item->pixmap(0))
+  {
+    QString s = currentDir.absPath();
+    s.append("/");
+    s.append(item->text(0));
+    currentDir.setPath(s);
+    updateFileList();
+    clearFileInfo();
+  }
+  else
+    setFileInfo();
 }
 
 //**********************************************************************

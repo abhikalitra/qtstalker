@@ -20,6 +20,7 @@
  */
 
 #include "CBOT.h"
+#include "ChartDb.h"
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qnetwork.h>
@@ -29,10 +30,11 @@
 
 CBOT::CBOT ()
 {
-  connect(&op, SIGNAL(finished(QNetworkOperation *)), this, SLOT(parse(QNetworkOperation *)));
-
   pluginName = "CBOT";
   version = 0.2;
+  fd = new FuturesData;
+  createFlag = FALSE;
+  op = 0;
 
   QDateTime dt = QDateTime::currentDateTime();
   set("Date", dt.toString("yyyyMMdd"), Setting::Date);
@@ -43,15 +45,20 @@ CBOT::CBOT ()
 
 CBOT::~CBOT ()
 {
+  if (op)
+    delete op;
+
+  delete fd;
 }
 
-void CBOT::download ()
+void CBOT::update ()
 {
+  data.truncate(0);
+  op = 0;
+
   QDir dir = QDir::home();
   file = dir.path();
   file.append("/Qtstalker/download");
-
-  qInitNetworkProtocols();
 
   QString s  = "http://www.cbot.com/cbot/shared/charts/bot";
 
@@ -61,6 +68,19 @@ void CBOT::download ()
   s2.append("00:00:00");
   QDateTime sdate = QDateTime::fromString(s2, Qt::ISODate);
   
+  QDateTime dt = QDateTime::currentDateTime();
+  if (sdate > dt)
+  {
+    emit done();
+    return;
+  }
+
+  if (sdate.date().dayOfWeek() == 6 || sdate.date().dayOfWeek() == 7)
+  {
+    emit done();
+    return;
+  }
+
   if (sdate.date().month() < 10)
     s.append("0");
   s.append(QString::number(sdate.date().month()));
@@ -74,9 +94,21 @@ void CBOT::download ()
   s.append(y);
   s.append(".txt");
 
-  dir.remove(file, TRUE);
+  qInitNetworkProtocols();
 
-  op.copy(s, file, FALSE, FALSE);
+  if (op)
+    delete op;
+  op = new QUrlOperator(s);
+  connect(op, SIGNAL(finished(QNetworkOperation *)), this, SLOT(opDone(QNetworkOperation *)));
+  connect(op, SIGNAL(data(const QByteArray &, QNetworkOperation *)), this, SLOT(dataReady(const QByteArray &, QNetworkOperation *)));
+  op->get();
+}
+
+void CBOT::dataReady (const QByteArray &d, QNetworkOperation *)
+{
+  int loop;
+  for (loop = 0; loop < (int) d.size(); loop++)
+    data.append(d[loop]);
 }
 
 QString CBOT::translateFraction (QString d)
@@ -123,23 +155,30 @@ QString CBOT::translateFraction3 (QString d)
   return s;
 }
 
-void CBOT::parse (QNetworkOperation *o)
+void CBOT::opDone (QNetworkOperation *o)
 {
-  if (o->state() != QNetworkProtocol::StDone)
-    return;
-
-  if (o->errorCode() != QNetworkProtocol::NoError)
+  if (o->state() == QNetworkProtocol::StDone && o->operation() == QNetworkProtocol::OpGet)
   {
-    QString s = o->protocolDetail();
-    qDebug(s.latin1());
+    parse();
     emit done();
+    delete op;
     return;
   }
-
+}
+  
+void CBOT::parse ()
+{
   QFile f(file);
-  if (! f.open(IO_ReadOnly))
+  if (! f.open(IO_WriteOnly))
     return;
   QTextStream stream(&f);
+  stream << data;
+  f.close();
+
+  f.setName(file);
+  if (! f.open(IO_ReadOnly))
+    return;
+  stream.setDevice(&f);
 
   while(stream.atEnd() == 0)
   {
@@ -161,7 +200,7 @@ void CBOT::parse (QNetworkOperation *o)
     QString month = l[1];
     month.truncate(1);
 
-    if (setFutures(l[0]))
+    if (fd->setSymbol(l[0]))
       continue;
 
     // date
@@ -185,7 +224,7 @@ void CBOT::parse (QNetworkOperation *o)
       if (! l[0].compare("BO"))
       {
         if (setTFloat(l[3]))
-	{
+        {
           flag = TRUE;
 	  break;
 	}
@@ -416,6 +455,19 @@ void CBOT::parse (QNetworkOperation *o)
       continue;
     else
       oi = QString::number(tfloat);
+      
+    s = dataPath;
+    s.append("/");
+    s.append(fd->getSymbol());
+    QDir dir(s);
+    if (! dir.exists(s, TRUE))
+    {
+      if (! dir.mkdir(s, TRUE))
+      {
+        qDebug("CBOT plugin: Unable to create directory");
+        return;
+      }
+    }
 
     Setting *r = new Setting;
     r->set("Date", date, Setting::Date);
@@ -428,57 +480,26 @@ void CBOT::parse (QNetworkOperation *o)
 
     s = dataPath;
     s.append("/");
+    s.append(fd->getSymbol());
+    s.append("/");
     s.append(symbol);
     ChartDb *db = new ChartDb();
-    db->setPath(s);
-    db->openChart();
-    
+    db->openChart(s);
+
     Setting *details = db->getDetails();
     if (! details->count())
     {
+      details->set("Format", "Open|High|Low|Close|Volume|Open Interest", Setting::None);
       details->set("Chart Type", tr("Futures"), Setting::None);
       details->set("Symbol", symbol, Setting::None);
       details->set("Source", pluginName, Setting::None);
       details->set("Futures Month", month, Setting::None);
-      details->set("Futures Type", futureSymbol, Setting::None);
-      details->set("Title", futureName, Setting::Text);
-      db->setDetails(details);
+      details->set("Futures Type", fd->getSymbol(), Setting::None);
+      details->set("Title", fd->getName(), Setting::Text);
     }
-    delete details;
 
     db->setRecord(r);
     delete db;
-
-    if (! symbol.compare(cc))
-    {
-      symbol = "CC";
-      symbol.append(futureSymbol);
-
-      s = dataPath;
-      s.append("/");
-      s.append(symbol);
-      ChartDb *db = new ChartDb();
-      db->setPath(s);
-      db->openChart();
-
-      details = db->getDetails();
-      if (! details->count())
-      {
-        details->set("Chart Type", tr("CC Futures"), Setting::None);
-        details->set("Symbol", symbol, Setting::None);
-        details->set("Source", pluginName, Setting::None);
-        details->set("Futures Type", futureSymbol, Setting::None);
-        s = QObject::tr("Continuous ");
-        s.append(futureSymbol);
-        details->set("Title", s, Setting::Text);
-        db->setDetails(details);
-      }
-      delete details;
-
-      db->setRecord(r);
-      delete db;
-    }
-
     delete r;
   }
 
@@ -487,9 +508,10 @@ void CBOT::parse (QNetworkOperation *o)
   emit done();
 }
 
-void CBOT::cancelDownload ()
+void CBOT::cancelUpdate ()
 {
-  op.stop();
+  if (op)
+    op->stop();
   emit done();
 }
 

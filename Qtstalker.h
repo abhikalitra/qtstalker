@@ -100,7 +100,6 @@ class QtstalkerApp : public QMainWindow
     void slotScaleToScreen (bool);
     void slotIndicatorSelected (int);
     void slotNewPlugin ();
-    void slotDeletePlugin ();
     void slotChartUpdated ();
     void slotStatusMessage (QString);
 
@@ -138,7 +137,6 @@ class QtstalkerApp : public QMainWindow
     QAction *actionPlusPixelspace;
     QAction *actionScaleToScreen;
     QAction *actionNewPlugin;
-    QAction *actionDeletePlugin;
     QAction *actionTester;
     QAction *actionBar;
     QAction *actionPaintBar;

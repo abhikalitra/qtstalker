@@ -23,7 +23,6 @@
 #define QUOTEPLUGIN_HPP
 
 #include "Plugin.h"
-#include "ChartDb.h"
 #include <qstring.h>
 
 class QuotePlugin : public Plugin
@@ -38,20 +37,12 @@ class QuotePlugin : public Plugin
     virtual ~QuotePlugin ();
     bool setTFloat (QString);
     QString stripJunk (QString);
-    int setFutures (QString);
-    void ccMonth1 (int);
-    void ccMonth2 (int);
-    void ccMonth3 (int);
-    void setDataPath (QString);
+    bool getCreateFlag ();
 
   protected:
     QString file;
-    QString dataPath;
     float tfloat;
-    QString futureName;
-    QString futureSymbol;
-    QString cc;
-    int ccFlag;
+    bool createFlag;
 };
 
 #endif

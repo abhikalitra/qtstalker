@@ -20,6 +20,7 @@
  */
 
 #include "Qtstalker.h"
+#include "ChartDb.h"
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qtimer.h>
@@ -31,6 +32,7 @@ Qtstalker::Qtstalker ()
 {
   pluginName = "Qtstalker";
   version = 0.2;
+  createFlag = FALSE;
 
   set(tr("Input"), "", Setting::FileList);
 
@@ -42,9 +44,9 @@ Qtstalker::~Qtstalker ()
 {
 }
 
-void Qtstalker::download ()
+void Qtstalker::update ()
 {
-  QTimer::singleShot(1000, this, SLOT(parse()));
+  QTimer::singleShot(250, this, SLOT(parse()));
 }
 
 void Qtstalker::parse ()
@@ -63,15 +65,22 @@ void Qtstalker::parse ()
     QString symbol = l[l.count() - 1];
 
     QString s = dataPath;
+    s.append("/Import");
+    QDir dir(s);
+    if (! dir.exists(s, TRUE))
+    {
+      if (! dir.mkdir(s, TRUE))
+      {
+        qDebug("Qtstalker plugin: Unable to create directory");
+        return;
+      }
+    }
     s.append("/");
     s.append(symbol);
-
-    QDir dir(s);
     dir.remove(s, TRUE);
 
     ChartDb *db = new ChartDb();
-    db->setPath(s);
-    db->openChart();
+    db->openChart(s);
 
     while(stream.atEnd() == 0)
     {

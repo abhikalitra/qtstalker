@@ -20,47 +20,22 @@
  */
 
 #include "CME.h"
+#include "ChartDb.h"
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qnetwork.h>
 #include <qdir.h>
 #include <qstringlist.h>
 #include <stdlib.h>
+#include <qtimer.h>
 
 CME::CME ()
 {
-  connect(&op, SIGNAL(finished(QNetworkOperation *)), this, SLOT(error(QNetworkOperation *)));
-  connect(&op2, SIGNAL(finished(QNetworkOperation *)), this, SLOT(error2(QNetworkOperation *)));
-
   pluginName = "CME";
   version = 0.2;
-  
-  QStringList l;
-  l.append(tr("Today"));
-  l.append(tr("History"));
-  set(tr("Quote Type"), tr("Today"), Setting::List);
-  setList(tr("Quote Type"), l);
-
-  l.clear();
-  l.append("FC");
-  l.append("LB");
-  l.append("LC");
-  l.append("LN");
-  l.append("PB");
-  l.append("AD");
-  l.append("NB");
-  l.append("CD");
-  l.append("EC");
-  l.append("JY");
-  l.append("SF");
-  l.append("ES");
-  l.append("GI");
-  l.append("ND");
-  l.append("NQ");
-  l.append("SP");
-  l.append("ED");
-  set(tr("Symbol"), tr("FC"), Setting::List);
-  setList(tr("Symbol"), l);
+  fd = new FuturesData;
+  createFlag = FALSE;
+  op = 0;
 
   about = "Downloads daily settlement quotes from CME\n";
   about.append("and imports it directly into qtstalker.");
@@ -68,99 +43,33 @@ CME::CME ()
 
 CME::~CME ()
 {
+  if (op)
+    delete op;
+
+  delete fd;
 }
 
-void CME::download ()
+void CME::update ()
 {
-  fileCount = 0;
+  urlList.clear();
+  symbolLoop = 0;
+  op = 0;
 
   QDir dir = QDir::home();
   file = dir.path();
-  file.append("/Qtstalker");
+  file.append("/Qtstalker/download");
+
+  urlList.append("ftp://ftp.cme.com//pub/settle/stlags");
+  urlList.append("ftp://ftp.cme.com//pub/settle/stlcur");
+  urlList.append("ftp://ftp.cme.com//pub/settle/stleqt");
+  urlList.append("ftp://ftp.cme.com//pub/settle/stlint");
 
   qInitNetworkProtocols();
-  
-  QString s = getData(tr("Quote Type"));
-  if (! s.compare(tr("History")))
-  {
-    QString symbol = getData(tr("Symbol"));
-    symbol = symbol.lower();
 
-    dir.setPath(file);
-    symbolFile = file;
-    symbolFile.append("/");
-    symbolFile.append(symbol);
-    symbolFile.append("ytd.zip");
-    dir.remove(symbolFile, TRUE);
-
-    s = symbolFile;
-    s.truncate(s.length() - 3);
-    s.append("eod");
-    dir.remove(s, TRUE);
-
-    s = "ftp://ftp.cme.com//pub/hist_eod/";
-    s.append(symbol);
-    s.append("ytd.zip");
-
-    op2.copy(s, symbolFile, FALSE, FALSE);
-  }
-  else
-  {
-    dir.setPath(file);
-    QString s = file;
-    s.append("/stlags");
-    dir.remove(s, TRUE);
-
-    s = file;
-    s.append("/stlcur");
-    dir.remove(s, TRUE);
-
-    s = file;
-    s.append("/stleqt");
-    dir.remove(s, TRUE);
-
-    s = file;
-    s.append("/stlint");
-    dir.remove(s, TRUE);
-
-    QStringList l;
-    l.append("ftp://ftp.cme.com//pub/settle/stlags");
-    l.append("ftp://ftp.cme.com//pub/settle/stlcur");
-    l.append("ftp://ftp.cme.com//pub/settle/stleqt");
-    l.append("ftp://ftp.cme.com//pub/settle/stlint");
-
-    op.copy(l, file, FALSE);
-  }
+  QTimer::singleShot(250, this, SLOT(getFile()));
 }
 
-void CME::error (QNetworkOperation *o)
-{
-  if (o->state() == QNetworkProtocol::StDone && o->operation() == QNetworkProtocol::OpGet)
-    fileCount++;
-
-  if (fileCount == 4)
-  {
-    QString s = file;
-    s.append("/stlags");
-    parseToday(s);
-
-    s = file;
-    s.append("/stlcur");
-    parseToday(s);
-
-    s = file;
-    s.append("/stleqt");
-    parseToday(s);
-
-    s = file;
-    s.append("/stlint");
-    parseToday(s);
-
-    emit done();
-  }
-}
-
-void CME::error2 (QNetworkOperation *o)
+void CME::opDone (QNetworkOperation *o)
 {
   if (o->state() != QNetworkProtocol::StDone)
     return;
@@ -169,154 +78,45 @@ void CME::error2 (QNetworkOperation *o)
   {
     QString s = o->protocolDetail();
     qDebug(s.latin1());
+    delete op;
     emit done();
     return;
   }
-
+  
   QDir dir(file);
-  if (dir.exists(symbolFile, TRUE))
+  if (! dir.exists(file, TRUE))
+    return;
+
+  parseToday();
+
+  symbolLoop++;
+
+  if (symbolLoop >= (int) urlList.count())
   {
-    parseHistory();
     emit done();
+    delete op;
+    return;
   }
+
+  getFile();
 }
 
-void CME::parseHistory ()
+void CME::getFile ()
 {
-  QString s = "unzip ";
-  s.append(symbolFile);
-  s.append(" -d ");
-  s.append(file);
-  if (system(s))
-    return;
-
-  s = symbolFile;
-  s.truncate(s.length() - 3);
-  s.append("eod");
-
-  QFile f(s);
-  if (! f.open(IO_ReadOnly))
-  {
-    qDebug("could not open parse history file");
-    return;
-  }
-  QTextStream stream(&f);
-
-  while(stream.atEnd() == 0)
-  {
-    s = stream.readLine();
-    s = s.stripWhiteSpace();
-    if (! s.length())
-      continue;
-
-    Setting *set = new Setting;
-
-    // date
-    QString s2 = s.mid(31, 6);
-    s2.prepend("20");
-    s2.append("000000");
-    set->set("Date", s2, Setting::None);
-
-    // csymbol
-    s2 = s.mid(37, 2);
-    set->set("CSymbol", s2, Setting::None);
-
-    // symbol
-    s2 = s.mid(37, 2);
-    s2.append("20");
-    s2.append(s.mid(41, 2));
-
-    QString month = s.mid(43, 2);
-    switch (month.toInt())
-    {
-      case 1:
-        month = "F";
-        break;
-      case 2:
-        month = "G";
-        break;
-      case 3:
-        month = "H";
-        break;
-      case 4:
-        month = "J";
-        break;
-      case 5:
-        month = "K";
-        break;
-      case 6:
-        month = "M";
-        break;
-      case 7:
-        month = "N";
-        break;
-      case 8:
-        month = "Q";
-        break;
-      case 9:
-        month = "U";
-        break;
-      case 10:
-        month = "V";
-        break;
-      case 11:
-        month = "X";
-        break;
-      default:
-        month = "Z";
-        break;
-    }
-    s2.append(month);
-    set->set("Symbol", s2, Setting::None);
-
-    set->set("Month", month, Setting::None);
-
-    QString dec = s.mid(30, 1);
+  if (op)
+    delete op;
     
-    // fix decimal for JY
-    s2 = set->getData("CSymbol");
-    if (! s2.compare("JY"))
-      dec = QString::number(dec.toInt() - 2);
+  QDir dir(file);
+  dir.remove(file);
 
-    // open
-    s2 = s.mid(53, 9);
-    s2 = s2.insert(s2.length() - dec.toInt(), ".");
-    set->set("Open", s2, Setting::None);
-
-    // high
-    s2 = s.mid(73, 9);
-    s2 = s2.insert(s2.length() - dec.toInt(), ".");
-    set->set("High", s2, Setting::None);
-
-    // low
-    s2 = s.mid(83, 9);
-    s2 = s2.insert(s2.length() - dec.toInt(), ".");
-    set->set("Low", s2, Setting::None);
-
-    // close
-    s2 = s.mid(113, 9);
-    s2 = s2.insert(s2.length() - dec.toInt(), ".");
-    set->set("Close", s2, Setting::None);
-
-    // volume
-    s2 = s.mid(122, 7);
-    set->set("Volume", s2, Setting::None);
-
-    // oi
-    s2 = s.mid(136, 7);
-    set->set("OI", s2, Setting::None);
-
-    parse(set);
-
-    delete set;
-  }
-
-  f.close();
+  op = new QUrlOperator();
+  connect(op, SIGNAL(finished(QNetworkOperation *)), this, SLOT(opDone(QNetworkOperation *)));
+  op->copy(urlList[symbolLoop], file, FALSE, FALSE);
 }
 
-void CME::parseToday (QString filePath)
+void CME::parseToday ()
 {
-  QFile f(filePath);
+  QFile f(file);
   if (! f.open(IO_ReadOnly))
     return;
   QTextStream stream(&f);
@@ -863,7 +663,7 @@ void CME::saveTodayData (QStringList l)
 
 void CME::parse (Setting *data)
 {
-  if (setFutures(data->getData("CSymbol")))
+  if (fd->setSymbol(data->getData("CSymbol")))
     return;
 
   // open
@@ -917,6 +717,19 @@ void CME::parse (Setting *data)
     high = close;
   if (low.toFloat() == 0)
     low = close;
+    
+  QString s = dataPath;
+  s.append("/");
+  s.append(fd->getSymbol());
+  QDir dir(s);
+  if (! dir.exists(s, TRUE))
+  {
+    if (! dir.mkdir(s, TRUE))
+    {
+      qDebug("CME plugin: Unable to create directory");
+      return;
+    }
+  }
 
   Setting *r = new Setting;
   r->set("Date", data->getData("Date"), Setting::Date);
@@ -927,66 +740,34 @@ void CME::parse (Setting *data)
   r->set("Volume", volume, Setting::Float);
   r->set("Open Interest", oi, Setting::Float);
 
-  QString s = dataPath;
+  s = dataPath;
+  s.append("/");
+  s.append(fd->getSymbol());
   s.append("/");
   s.append(data->getData("Symbol"));
   ChartDb *db = new ChartDb();
-  db->setPath(s);
-  db->openChart();
+  db->openChart(s);
 
   Setting *details = db->getDetails();
   if (! details->count())
   {
+    details->set("Format", "Open|High|Low|Close|Volume|Open Interest", Setting::None);
     details->set("Chart Type", tr("Futures"), Setting::None);
     details->set("Symbol", data->getData("Symbol"), Setting::None);
     details->set("Source", pluginName, Setting::None);
     details->set("Futures Month", data->getData("Month"), Setting::None);
-    details->set("Futures Type", futureSymbol, Setting::None);
-    details->set("Title", futureName, Setting::Text);
-    db->setDetails(details);
+    details->set("Futures Type", fd->getSymbol(), Setting::None);
+    details->set("Title", fd->getName(), Setting::Text);
   }
-  delete details;
 
   db->setRecord(r);
   delete db;
-
-  s = data->getData("Symbol");
-  if (! s.compare(cc))
-  {
-    QString symbol = "CC";
-    symbol.append(futureSymbol);
-
-    s = dataPath;
-    s.append("/");
-    s.append(symbol);
-    ChartDb *db = new ChartDb();
-    db->setPath(s);
-    db->openChart();
-
-    details = db->getDetails();
-    if (! details->count())
-    {
-      details->set("Chart Type", tr("CC Futures"), Setting::None);
-      details->set("Symbol", symbol, Setting::None);
-      details->set("Source", pluginName, Setting::None);
-      details->set("Futures Type", futureSymbol, Setting::None);
-      s = QObject::tr("Continuous ");
-      s.append(futureSymbol);
-      details->set("Title", s, Setting::Text);
-      db->setDetails(details);
-    }
-    delete details;
-
-    db->setRecord(r);
-    delete db;
-  }
-
   delete r;
 }
 
-void CME::cancelDownload ()
+void CME::cancelUpdate ()
 {
-  op.stop();
+  op->stop();
   emit done();
 }
 

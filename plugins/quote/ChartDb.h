@@ -44,28 +44,21 @@ class ChartDb
 
     ChartDb ();
     ~ChartDb ();
-    int openChart ();
+    int openChart (QString);
     QString getData (QString);
     void setData (QString, QString);
-    void setPath (QString);
     void deleteData (QString);
-    QStringList getKeyList ();
     void getDailyHistory ();
     void getWeeklyHistory ();
     void getMonthlyHistory ();
     QDateTime getDateTime (QString);
-    QDateTime getLastRecord ();
-    QDateTime getFirstRecord ();
     Setting * getRecord (QString, QString);
     void setRecord (Setting *);
-    void getSpread ();
-    void getRatio ();
-    void getIndex ();
     void getHistory (Compression, QDateTime);
+    void loadDetails ();
     Setting * getDetails ();
-    void setDetails (Setting *);
-    void setComposite (Setting *);
-    Setting * getComposite ();
+    void saveDetails ();
+    void dump (QString);
 
     QStringList getChartObjects ();
     Setting * getChartObject (QString);
@@ -76,22 +69,14 @@ class ChartDb
     float getCloseData (QDateTime);
     Setting * getRecordIndex (int);
     QList<Setting> getRecordList ();
-    
-    void openCursor ();
-    int getCursor ();
-    QString getCursorData ();
-    QString getCursorKey ();
-    void closeCursor ();
 
   private:
-    QString path;
-    QString cursorData;
-    QString cursorKey;
+    QString dataPath;
     DB *db;
-    DBC *dbc;
     QDateTime startDate;
     Compression compression;
     QList<Setting> recordList;
+    Setting *details;
 };
 
 #endif

@@ -14,6 +14,10 @@ qmake -o Makefile CME.pro
 make
 cp libCME.so.0.2.0 CME.so
 
+qmake -o Makefile CMEHistory.pro
+make
+cp libCMEHistory.so.0.2.0 CMEHistory.so
+
 qmake -o Makefile NYBOT.pro
 make
 cp libNYBOT.so.0.2.0 NYBOT.so
@@ -21,6 +25,14 @@ cp libNYBOT.so.0.2.0 NYBOT.so
 qmake -o Makefile Qtstalker.pro
 make
 cp libQtstalker.so.0.2.0 Qtstalker.so
+
+qmake -o Makefile Spread.pro
+make
+cp libSpread.so.0.2.0 Spread.so
+
+qmake -o Makefile Index.pro
+make
+cp libIndex.so.0.2.0 Index.so
 
 rm -f lib*
 

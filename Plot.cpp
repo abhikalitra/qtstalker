@@ -98,6 +98,8 @@ void Plot::setData (QList<Setting> l)
     highArray.resize(l.count());
     lowArray.resize(l.count());
     closeArray.resize(l.count());
+    alerts.resize(l.count());
+    alerts.fill(0, -1);
   }
   
   bool flag = FALSE;

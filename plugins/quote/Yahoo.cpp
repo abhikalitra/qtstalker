@@ -22,21 +22,17 @@
 #include "Yahoo.h"
 #include <qfile.h>
 #include <qtextstream.h>
-#include <qtimer.h>
 #include <qdir.h>
+#include <qdatetime.h>
 #include <qnetwork.h>
+#include <qtimer.h>
 
 Yahoo::Yahoo ()
 {
   pluginName = "Yahoo";
   version = 0.2;
-  symbolLoop = 0;
-  data.truncate(0);
+  createFlag = TRUE;
   op = 0;
-
-  QDateTime dt = QDateTime::currentDateTime();
-  set("Start Date", dt.toString("yyyyMMdd"), Setting::Date);
-  set("New Symbols", "", Setting::Text);
 
   about = "Downloads Yahoo data\n";
   about.append("and imports it directly into qtstalker.\n");
@@ -48,63 +44,78 @@ Yahoo::~Yahoo ()
     delete op;
 }
 
-void Yahoo::download ()
+void Yahoo::update ()
 {
+  symbolList.clear();
+  urlList.clear();
+  data.truncate(0);
+  symbolLoop = 0;
+  op = 0;
+
   QDir dir = QDir::home();
   file = dir.path();
   file.append("/Qtstalker/download");
 
-  QString s = getData("Start Date");
-  s.insert(4, "-");
-  s.insert(7, "-");
-  s.append("00:00:00");
-  sdate = QDateTime::fromString(s, Qt::ISODate);
-
-  edate = QDateTime::currentDateTime();
+  QDateTime edate = QDateTime::currentDateTime();
   if (edate.date().dayOfWeek() == 6)
     edate = edate.addDays(-1);
   if (edate.date().dayOfWeek() == 7)
     edate = edate.addDays(-2);
 
-  symbols = QStringList::split(",", getData("New Symbols"), FALSE);
-  if (symbols.count() == 0)
+  QString s = dataPath;
+  s.append("/Stocks");
+  dir.setPath(s);
+
+  int loop;
+  for (loop = 2; loop < (int) dir.count(); loop++)
   {
-    dir.setPath(dataPath);
-    int loop;
-    for (loop = 2; loop < (int) dir.count(); loop++)
-    {
-      s = dataPath;
-      s.append("/");
-      s.append(dir[loop]);
+    s = dataPath;
+    s.append("/Stocks/");
+    s.append(dir[loop]);
 
-      ChartDb *db = new ChartDb();
-      db->setPath(s);
-      db->openChart();
+    ChartDb *db = new ChartDb();
+    db->openChart(s);
+    Setting *details = db->getDetails();
 
-      Setting *details = db->getDetails();
+    s = details->getData("Last Date");
+    s.insert(4, "-");
+    s.insert(7, "-");
+    s.append("00:00:00");
+    QDateTime sdate = QDateTime::fromString(s, Qt::ISODate);
+    if (! sdate.isValid())
+      sdate = QDateTime::fromString("1990-01-0100:00:00", Qt::ISODate);
 
-      s = details->getData("Source");
-      if (! s.compare(pluginName))
-        symbols.append(dir[loop]);
+    s = "http://chart.yahoo.com/table.csv?s=";
+    s.append(dir[loop]);
+    s.append("&a=");
+    s.append(QString::number(sdate.date().month() - 1));
+    s.append("&b=");
+    s.append(sdate.toString("dd"));
+    s.append("&c=");
+    s.append(sdate.toString("yy"));
+    s.append("&d=");
+    s.append(QString::number(edate.date().month() - 1));
+    s.append("&e=");
+    s.append(edate.toString("dd"));
+    s.append("&f=");
+    s.append(edate.toString("yy"));
+    s.append("&g=d&q=q&y=0&x=.csv");
+    
+    symbolList.append(dir[loop]);
+    urlList.append(s);
 
-      delete details;
-      delete db;
-    }
+    delete db;
   }
-  
-  if (! symbols.count())
+
+  if (! symbolList.count())
   {
     emit done();
     return;
   }
 
-  symbolLoop = 0;
-
-  data.truncate(0);
-
   qInitNetworkProtocols();
 
-  QTimer::singleShot(1000, this, SLOT(getFile()));
+  QTimer::singleShot(250, this, SLOT(getFile()));
 }
 
 void Yahoo::opDone (QNetworkOperation *o)
@@ -114,12 +125,15 @@ void Yahoo::opDone (QNetworkOperation *o)
     parse();
 
     symbolLoop++;
-    if (symbolLoop == (int) symbols.count())
+
+    if (symbolLoop == (int) symbolList.count())
     {
       emit done();
       delete op;
       return;
     }
+
+    data.truncate(0);
 
     getFile();
   }
@@ -127,28 +141,10 @@ void Yahoo::opDone (QNetworkOperation *o)
 
 void Yahoo::getFile ()
 {
-  data.truncate(0);
-
-  QString s = "http://chart.yahoo.com/table.csv?s=";
-  s.append(symbols[symbolLoop]);
-  s.append("&a=");
-  s.append(QString::number(sdate.date().month() - 1));
-  s.append("&b=");
-  s.append(sdate.toString("dd"));
-  s.append("&c=");
-  s.append(sdate.toString("yy"));
-  s.append("&d=");
-  s.append(QString::number(edate.date().month() - 1));
-  s.append("&e=");
-  s.append(edate.toString("dd"));
-  s.append("&f=");
-  s.append(edate.toString("yy"));
-  s.append("&g=d&q=q&y=0&x=.csv");
-
   if (op)
     delete op;
 
-  op = new QUrlOperator(s);
+  op = new QUrlOperator(urlList[symbolLoop]);
   connect(op, SIGNAL(finished(QNetworkOperation *)), this, SLOT(opDone(QNetworkOperation *)));
   connect(op, SIGNAL(data(const QByteArray &, QNetworkOperation *)), this, SLOT(dataReady(const QByteArray &, QNetworkOperation *)));
   op->get();
@@ -198,22 +194,10 @@ void Yahoo::parse ()
   stream.setDevice(&f);
 
   s = dataPath;
-  s.append("/");
-  s.append(symbols[symbolLoop]);
+  s.append("/Stocks/");
+  s.append(symbolList[symbolLoop]);
   ChartDb *db = new ChartDb();
-  db->setPath(s);
-  db->openChart();
-  
-  Setting *details = db->getDetails();
-  if (! details->count())
-  {
-    details->set("Chart Type", tr("Stock"), Setting::None);
-    details->set("Symbol", symbols[symbolLoop], Setting::None);
-    details->set("Source", pluginName, Setting::None);
-    details->set("Title", symbols[symbolLoop], Setting::Text);
-    db->setDetails(details);
-  }
-  delete details;
+  db->openChart(s);
 
   while(stream.atEnd() == 0)
   {
@@ -375,6 +359,54 @@ QString Yahoo::parseDate (QString d)
   s.append("000000");
 
   return s;
+}
+
+Setting * Yahoo::getCreateDetails ()
+{
+  Setting *set = new Setting;
+  set->set("New Symbols", "", Setting::Text);
+  return set;
+}
+
+void Yahoo::createChart (Setting *set)
+{
+  QStringList symbols = QStringList::split(" ", set->getData("New Symbols"), FALSE);
+
+  QString base = dataPath;
+  base.append("/Stocks");
+  QDir dir(base);
+  if (! dir.exists(base, TRUE))
+  {
+    if (! dir.mkdir(base, TRUE))
+    {
+      qDebug("Yahoo plugin: Unable to create directory");
+      return;
+    }
+  }
+  base.append("/");
+
+  int loop;
+  for (loop = 0; loop < (int) symbols.count(); loop++)
+  {
+    QString s = base;
+    s.append(symbols[loop]);
+
+    if (dir.exists(s, TRUE))
+      continue;
+
+    ChartDb *db = new ChartDb();
+    db->openChart(s);
+
+    Setting *details = db->getDetails();
+    details->set("Format", "Open|High|Low|Close|Volume", Setting::None);
+    details->set("Chart Type", tr("Stock"), Setting::None);
+    details->set("Symbol", symbols[loop], Setting::None);
+    details->set("Source", pluginName, Setting::None);
+    details->set("Title", symbols[loop], Setting::Text);
+    db->saveDetails();
+
+    delete db;
+  }
 }
 
 Plugin * create ()

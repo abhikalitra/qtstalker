@@ -46,11 +46,12 @@ class Config
       PaintBarIndicator,
       MainPlotSize,
       IndicatorPlotSize,
-      Group,
       ScaleToScreen,
-      PluginPath,
-      IndicatorPlugin,
-      QuotePlugin
+      IndicatorPluginPath,
+      QuotePluginPath,
+      GroupPath,
+      PortfolioPath,
+      Group
     };
 
     Config (QString);
@@ -80,13 +81,10 @@ class Config
 
     QStringList getIndicatorList ();
 
-    QString getPlugin (QString);
-    int getPluginType (QString);
     void installPlugin (QString selection);
-    void deletePlugin (QString);
-    QStringList getPluginList ();
-    void scanPlugins ();
-    
+    QStringList getIndicatorPlugins ();
+    QStringList getQuotePlugins ();
+
   protected:
     QString path;
 };

@@ -23,12 +23,12 @@
 #define WORKWITHGROUPSDIALOG_HPP
 
 #include <qstring.h>
-#include <qdialog.h>
 #include <qtoolbutton.h>
 #include <qlistview.h>
 #include "Config.h"
+#include "EditDialog.h"
 
-class WorkwithGroupsDialog : public QDialog
+class WorkwithGroupsDialog : public EditDialog
 {
   Q_OBJECT
 
@@ -46,12 +46,9 @@ class WorkwithGroupsDialog : public QDialog
     void newGroup ();
     void deleteGroup ();
     void editGroup ();
-    void buttonStatus();
 
   private:
-    Config *config;
-    QListView *list;
-    QListViewItem *item;
+    QListView *list2;
     QToolButton *openButton;
     QToolButton *editButton;
     QToolButton *deleteButton;

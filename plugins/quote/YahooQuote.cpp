@@ -20,6 +20,7 @@
  */
 
 #include "YahooQuote.h"
+#include "ChartDb.h"
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qtimer.h>
@@ -30,11 +31,8 @@ YahooQuote::YahooQuote ()
 {
   pluginName = "YahooQuote";
   version = 0.2;
-  symbolLoop = 0;
-  data.truncate(0);
+  createFlag = TRUE;
   op = 0;
-
-  set("New Symbols", "", Setting::Text);
 
   about = "Downloads YahooQuote data\n";
   about.append("and imports it directly into qtstalker.\n");
@@ -46,65 +44,60 @@ YahooQuote::~YahooQuote ()
     delete op;
 }
 
-void YahooQuote::download ()
+void YahooQuote::update ()
 {
+  symbolList.clear();
+  urlList.clear();
+  data.truncate(0);
+  symbolLoop = 0;
+  op = 0;
+
   QDir dir = QDir::home();
   file = dir.path();
   file.append("/Qtstalker/download");
 
-  symbols = QStringList::split(",", getData("New Symbols"), FALSE);
-  if (symbols.count() == 0)
+  QString s = dataPath;
+  s.append("/Stocks");
+  dir.setPath(s);
+
+  int loop;
+  for (loop = 2; loop < (int) dir.count(); loop++)
   {
-    dir.setPath(dataPath);
-    int loop;
-    for (loop = 2; loop < (int) dir.count(); loop++)
-    {
-      QString s = dataPath;
-      s.append("/");
-      s.append(dir[loop]);
+    s = "http://finance.yahoo.com/d/quotes.csv?s=";
+    s.append(dir[loop]);
+    s.append("&f=snl1d1t1c1ohgv&e=.csv");
 
-      ChartDb *db = new ChartDb();
-      db->setPath(s);
-      db->openChart();
-
-      Setting *details = db->getDetails();
-
-      s = details->getData("Source");
-      if (! s.compare("Yahoo"))
-        symbols.append(dir[loop]);
-
-      delete details;
-      delete db;
-    }
+    symbolList.append(dir[loop]);
+    urlList.append(s);
   }
 
-  if (! symbols.count())
+  if (! symbolList.count())
   {
     emit done();
     return;
   }
 
-  symbolLoop = 0;
-
-  data.truncate(0);
-
   qInitNetworkProtocols();
 
-  QTimer::singleShot(1000, this, SLOT(getFile()));
+  QTimer::singleShot(250, this, SLOT(getFile()));
 }
 
 void YahooQuote::opDone (QNetworkOperation *o)
 {
   if (o->state() == QNetworkProtocol::StDone && o->operation() == QNetworkProtocol::OpGet)
   {
+    parse();
+
     symbolLoop++;
-    if (symbolLoop == (int) symbols.count())
+
+    if (symbolLoop == (int) symbolList.count())
     {
-      parse();
       emit done();
       delete op;
       return;
     }
+
+    data.truncate(0);
 
     getFile();
   }
@@ -112,14 +105,10 @@ void YahooQuote::opDone (QNetworkOperation *o)
 
 void YahooQuote::getFile ()
 {
-  QString s = "http://finance.yahoo.com/d/quotes.csv?s=";
-  s.append(symbols[symbolLoop]);
-  s.append("&f=snl1d1t1c1ohgv&e=.csv");
-
   if (op)
     delete op;
 
-  op = new QUrlOperator(s);
+  op = new QUrlOperator(urlList[symbolLoop]);
   connect(op, SIGNAL(finished(QNetworkOperation *)), this, SLOT(opDone(QNetworkOperation *)));
   connect(op, SIGNAL(data(const QByteArray &, QNetworkOperation *)), this, SLOT(dataReady(const QByteArray &, QNetworkOperation *)));
   op->get();
@@ -148,6 +137,12 @@ void YahooQuote::parse ()
   if (! f.open(IO_ReadOnly))
     return;
   stream.setDevice(&f);
+  
+  QString s = dataPath;
+  s.append("/Stocks/");
+  s.append(symbolList[symbolLoop]);
+  ChartDb *db = new ChartDb();
+  db->openChart(s);
 
   while(stream.atEnd() == 0)
   {
@@ -204,26 +199,6 @@ void YahooQuote::parse ()
     if (l.count() == 10)
       volume = l[9];
 
-    s = dataPath;
-    s.append("/");
-    s.append(l[0]);
-    ChartDb *db = new ChartDb();
-    db->setPath(s);
-    db->openChart();
-
-    Setting *details = db->getDetails();
-    if (! details->count())
-    {
-      details->set("Chart Type", tr("Stock"), Setting::None);
-      details->set("Symbol", l[0], Setting::None);
-      details->set("Source", "Yahoo", Setting::None);
-      s = l[1];
-      s = s.stripWhiteSpace();
-      details->set("Title", s, Setting::Text);
-      db->setDetails(details);
-    }
-    delete details;
-
     Setting *r = new Setting;
     r->set("Date", date, Setting::Date);
     r->set("Open", open, Setting::Float);
@@ -231,14 +206,12 @@ void YahooQuote::parse ()
     r->set("Low", low, Setting::Float);
     r->set("Close", close, Setting::Float);
     r->set("Volume", volume, Setting::Float);
-    r->set("Open Interest", "0", Setting::Float);
     db->setRecord(r);
     delete r;
-
-    delete db;
   }
 
   f.close();
+  delete db;
 }
 
 QString YahooQuote::parseDate (QString d)
@@ -338,6 +311,54 @@ QString YahooQuote::parseDate (QString d)
   s.append("000000");
 
   return s;
+}
+
+Setting * YahooQuote::getCreateDetails ()
+{
+  Setting *set = new Setting;
+  set->set("New Symbols", "", Setting::Text);
+  return set;
+}
+
+void YahooQuote::createChart (Setting *set)
+{
+  QStringList symbols = QStringList::split(" ", set->getData("New Symbols"), FALSE);
+
+  QString base = dataPath;
+  base.append("/Stocks");
+  QDir dir(base);
+  if (! dir.exists(base, TRUE))
+  {
+    if (! dir.mkdir(base, TRUE))
+    {
+      qDebug("Yahoo plugin: Unable to create directory");
+      return;
+    }
+  }
+  base.append("/");
+
+  int loop;
+  for (loop = 0; loop < (int) symbols.count(); loop++)
+  {
+    QString s = base;
+    s.append(symbols[loop]);
+
+    if (dir.exists(s, TRUE))
+      continue;
+
+    ChartDb *db = new ChartDb();
+    db->openChart(s);
+
+    Setting *details = db->getDetails();
+    details->set("Format", "Open|High|Low|Close|Volume", Setting::None);
+    details->set("Chart Type", tr("Stock"), Setting::None);
+    details->set("Symbol", symbols[loop], Setting::None);
+    details->set("Source", pluginName, Setting::None);
+    details->set("Title", symbols[loop], Setting::Text);
+    db->saveDetails();
+
+    delete db;
+  }
 }
 
 Plugin * create ()

@@ -20,16 +20,20 @@
  */
 
 #include "NYBOT.h"
+#include "ChartDb.h"
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qtimer.h>
 #include <qstringlist.h>
 #include <qstring.h>
+#include <qdir.h>
 
 NYBOT::NYBOT ()
 {
   pluginName = "NYBOT";
   version = 0.2;
+  fd = new FuturesData;
+  createFlag = FALSE;
 
   set(tr("Input"), "", Setting::FileList);
 
@@ -41,11 +45,12 @@ NYBOT::NYBOT ()
 
 NYBOT::~NYBOT ()
 {
+  delete fd;
 }
 
-void NYBOT::download ()
+void NYBOT::update ()
 {
-  QTimer::singleShot(1000, this, SLOT(parse()));
+  QTimer::singleShot(250, this, SLOT(parse()));
 }
 
 void NYBOT::parse ()
@@ -59,6 +64,10 @@ void NYBOT::parse ()
     if (! f.open(IO_ReadOnly))
       continue;
     QTextStream stream(&f);
+    
+    QString s = stream.readLine();
+    s = stripJunk(s);
+    QStringList keys = QStringList::split(",", s, FALSE);
 
     while(stream.atEnd() == 0)
     {
@@ -66,14 +75,23 @@ void NYBOT::parse ()
       s = stripJunk(s);
 
       QStringList l = QStringList::split(",", s, FALSE);
-      if (l.count() != 19)
+
+      if (l.count() != keys.count())
         continue;
 
+      Setting *data = new Setting;
+      int loop2;
+      for (loop2 = 0; loop2 < (int) keys.count(); loop2++)
+        data->set(keys[loop2], l[loop2], Setting::None);
+
       // symbol
-      QString symbol = l[16];
+      QString symbol = data->getData("commoditySymbol");
       symbol = symbol.stripWhiteSpace();
       if (symbol.length() == 0)
+      {
+        delete data;
         continue;
+      }
 
       if (! symbol.compare("CC") || ! symbol.compare("CR") || ! symbol.compare("CT") ||
           ! symbol.compare("DX") || ! symbol.compare("KC") || ! symbol.compare("OJ") ||
@@ -81,52 +99,73 @@ void NYBOT::parse ()
       {
       }
       else
+      {
+        delete data;
         continue;
+      }
 
       // open
-      QString open = l[2];
+      QString open = data->getData("dailyOpenPrice1");
       if (open.toFloat() == 0)
-        open = l[3];
+        open = data->getData("dailyOpenPrice2");
       if (setTFloat(open))
+      {
+        delete data;
         continue;
+      }
       else
         open = QString::number(tfloat);
 
       // high
       QString high;
-      if (setTFloat(l[4]))
+      if (setTFloat(data->getData("dailyHigh")))
+      {
+        delete data;
         continue;
+      }
       else
         high = QString::number(tfloat);
 
       // low
       QString low;
-      if (setTFloat(l[5]))
+      if (setTFloat(data->getData("dailyLow")))
+      {
+        delete data;
         continue;
+      }
       else
         low = QString::number(tfloat);
 
       // close
       QString close;
-      if (setTFloat(l[8]))
+      if (setTFloat(data->getData("settlementPrice")))
+      {
+        delete data;
         continue;
+      }
       else
         close = QString::number(tfloat);
 
       // volume
       QString volume;
-      if (setTFloat(l[10]))
+      if (setTFloat(data->getData("tradeVolume")))
+      {
+        delete data;
         continue;
+      }
       else
         volume = QString::number(tfloat);
 
       // oi
       QString oi;
-      if (setTFloat(l[11]))
+      if (setTFloat(data->getData("openInterest")))
+      {
+        delete data;
         continue;
+      }
       else
         oi = QString::number(tfloat);
-	
+
       if (symbol.compare("CC"))
       {
         open = QString::number(open.toFloat() / 100);
@@ -137,19 +176,25 @@ void NYBOT::parse ()
 
       // check for bad values
       if (close.toFloat() == 0)
+      {
+        delete data;
         continue;
+      }
+
       if (open.toFloat() == 0 || high.toFloat() == 0 || low.toFloat() == 0 || volume.toFloat() == 0)
       {
         open = close;
 	high = close;
 	low = close;
       }
+
       if (open.toFloat() > high.toFloat() || open.toFloat() < low.toFloat())
       {
         open = close;
 	high = close;
 	low = close;
       }
+
       if (close.toFloat() > high.toFloat() || close.toFloat() < low.toFloat())
       {
         open = close;
@@ -158,13 +203,16 @@ void NYBOT::parse ()
       }
 
       // date
-      QString date = l[0];
+      QString date = data->getData("tradeDate");
       date.append("000000");
 
       //futures month
-      QString year = l[1].left(4);
-      QString month = l[1].right(2);
+      s = data->getData("contractMonth");
+      QString year = s.left(4);
+      QString month = s.right(2);
       QString fmonth;
+
+      delete data;
 
       switch (month.toInt())
       {
@@ -208,7 +256,7 @@ void NYBOT::parse ()
           break;
       }
 
-      if (setFutures(symbol))
+      if (fd->setSymbol(symbol))
         continue;
 
       if (year.length())
@@ -222,6 +270,19 @@ void NYBOT::parse ()
       }
       else
         continue;
+	
+      s = dataPath;
+      s.append("/");
+      s.append(fd->getSymbol());
+      QDir dir(s);
+      if (! dir.exists(s, TRUE))
+      {
+        if (! dir.mkdir(s, TRUE))
+        {
+          qDebug("NYBOT plugin: Unable to create directory");
+          return;
+        }
+      }
 
       Setting *r = new Setting;
       r->set("Date", date, Setting::Date);
@@ -234,57 +295,25 @@ void NYBOT::parse ()
 
       s = dataPath;
       s.append("/");
+      s.append(fd->getSymbol());
+      s.append("/");
       s.append(symbol);
       ChartDb *db = new ChartDb();
-      db->setPath(s);
-      db->openChart();
+      db->openChart(s);
 
       Setting *details = db->getDetails();
       if (! details->count())
       {
+        details->set("Format", "Open|High|Low|Close|Volume|Open Interest", Setting::None);
         details->set("Chart Type", tr("Futures"), Setting::None);
         details->set("Symbol", symbol, Setting::None);
         details->set("Source", pluginName, Setting::None);
         details->set("Futures Month", month, Setting::None);
-        details->set("Futures Type", futureSymbol, Setting::None);
-        details->set("Title", futureName, Setting::Text);
-        db->setDetails(details);
+        details->set("Futures Type", fd->getSymbol(), Setting::None);
+        details->set("Title", fd->getName(), Setting::Text);
       }
-      delete details;
-
       db->setRecord(r);
       delete db;
-
-      if (! symbol.compare(cc))
-      {
-        symbol = "CC";
-        symbol.append(futureSymbol);
-
-        s = dataPath;
-        s.append("/");
-        s.append(symbol);
-        ChartDb *db = new ChartDb();
-        db->setPath(s);
-        db->openChart();
-
-        details = db->getDetails();
-        if (! details->count())
-        {
-          details->set("Chart Type", tr("CC Futures"), Setting::None);
-          details->set("Symbol", symbol, Setting::None);
-          details->set("Source", pluginName, Setting::None);
-          details->set("Futures Type", futureSymbol, Setting::None);
-          s = QObject::tr("Continuous ");
-          s.append(futureSymbol);
-          details->set("Title", s, Setting::Text);
-          db->setDetails(details);
-        }
-	delete details;
-
-        db->setRecord(r);
-        delete db;
-      }
-
       delete r;
     }
 

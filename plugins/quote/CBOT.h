@@ -20,6 +20,7 @@
  */
 
 #include "QuotePlugin.h"
+#include "FuturesData.h"
 #include <qstring.h>
 #include <qnetworkprotocol.h>
 #include <qurloperator.h>
@@ -31,17 +32,21 @@ class CBOT : public QuotePlugin
   public:
     CBOT ();
     virtual ~CBOT ();
-    void download ();
+    void update ();
     QString translateFraction (QString);
     QString translateFraction2 (QString);
     QString translateFraction3 (QString);
-    void cancelDownload ();
+    void cancelUpdate ();
+    void parse();
 
   public slots:
-    void parse (QNetworkOperation *);
+    void opDone (QNetworkOperation *);
+    void dataReady (const QByteArray &, QNetworkOperation *);
 
   private:
-    QUrlOperator op;
+    QUrlOperator *op;
+    FuturesData *fd;
+    QString data;
 };
 
 extern "C"

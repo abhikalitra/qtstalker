@@ -38,7 +38,7 @@ QuoteDialog::QuoteDialog (Config *c) : EditDialog (c)
   toolbar->expand(1, 5);
 
   downloadButton = new QToolButton(this);
-  QToolTip::add(downloadButton, tr("Download"));
+  QToolTip::add(downloadButton, tr("Update"));
   downloadButton->setPixmap(QPixmap(download));
   connect(downloadButton, SIGNAL(clicked()), this, SLOT(getQuotes()));
   downloadButton->setMaximumWidth(30);
@@ -46,7 +46,7 @@ QuoteDialog::QuoteDialog (Config *c) : EditDialog (c)
   toolbar->addWidget(downloadButton, 0, 2);
 
   cancelDownloadButton = new QToolButton(this);
-  QToolTip::add(cancelDownloadButton, tr("Cancel Download"));
+  QToolTip::add(cancelDownloadButton, tr("Cancel Update"));
   cancelDownloadButton->setPixmap(QPixmap(canceldownload));
   connect(cancelDownloadButton, SIGNAL(clicked()), this, SLOT(cancelDownload()));
   cancelDownloadButton->setMaximumWidth(30);
@@ -54,14 +54,13 @@ QuoteDialog::QuoteDialog (Config *c) : EditDialog (c)
   cancelDownloadButton->setEnabled(FALSE);
   cancelDownloadButton->setAutoRaise(TRUE);
 
-  QStringList l = QStringList::split(",", config->getData(Config::QuotePlugin), FALSE);
   ruleCombo = new QComboBox(this);
-  ruleCombo->insertStringList(l, -1);
+  ruleCombo->insertStringList(config->getQuotePlugins(), -1);
   connect (ruleCombo, SIGNAL(activated(int)), this, SLOT(ruleChanged(int)));
   topBox->addWidget(ruleCombo, 1, 0);
 
   okButton->setEnabled(FALSE);
-
+  
   ruleChanged(0);
 }
 
@@ -79,12 +78,12 @@ QuoteDialog::~QuoteDialog ()
 
 void QuoteDialog::getQuotes ()
 {
-  emit message(tr("Starting download..."));
+  emit message(tr("Starting update..."));
 
   disableGUI();
 
   cancelDownloadButton->setEnabled(TRUE);
-  
+
   QListViewItemIterator it(list);
   for (; it.current(); ++it)
   {
@@ -93,7 +92,7 @@ void QuoteDialog::getQuotes ()
     plug->setList(item->text(0), settings->getList(item->text(0)));
   }
 
-  plug->download();
+  plug->update();
 }
 
 void QuoteDialog::ruleChanged (int)
@@ -109,9 +108,7 @@ void QuoteDialog::ruleChanged (int)
   if (settings)
     delete settings;
 
-  list->clear();
-
-  QString s = config->getData(Config::PluginPath);
+  QString s = config->getData(Config::QuotePluginPath);
   s.append("/");
   s.append(ruleCombo->currentText());
   s.append(".so");
@@ -133,6 +130,8 @@ void QuoteDialog::ruleChanged (int)
 
   plug->setDataPath(config->getData(Config::DataPath));
 
+  list->clear();
+
   Setting *set = new Setting;
   QStringList l = plug->getKeyList();
   int loop;
@@ -148,15 +147,15 @@ void QuoteDialog::ruleChanged (int)
 void QuoteDialog::downloadComplete ()
 {
   enableGUI();
-  emit message(tr("Download complete."));
+  emit message(tr("Update complete."));
   emit chartUpdated();
 }
 
 void QuoteDialog::cancelDownload ()
 {
-  plug->cancelDownload();
+  plug->cancelUpdate();
   enableGUI();
-  emit message(tr("Download cancelled."));
+  emit message(tr("Update cancelled."));
 }
 
 void QuoteDialog::enableGUI ()

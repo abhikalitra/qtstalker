@@ -20,6 +20,7 @@
  */
 
 #include "QuotePlugin.h"
+#include "FuturesData.h"
 #include <qstring.h>
 #include <qnetworkprotocol.h>
 #include <qurloperator.h>
@@ -31,22 +32,21 @@ class CME : public QuotePlugin
   public:
     CME ();
     virtual ~CME ();
-    void download ();
-    void parseToday (QString);
+    void update ();
+    void parseToday ();
     void saveTodayData (QStringList);
     void parse (Setting *);
-    void cancelDownload ();
-    void parseHistory ();
+    void cancelUpdate ();
 
   public slots:
-    void error (QNetworkOperation *);
-    void error2 (QNetworkOperation *);
+    void getFile ();
+    void opDone (QNetworkOperation *);
 
   private:
-    int fileCount;
-    QUrlOperator op;
-    QUrlOperator op2;
-    QString symbolFile;
+    FuturesData *fd;
+    QUrlOperator *op;
+    QStringList urlList;
+    int symbolLoop;
 };
 
 extern "C"

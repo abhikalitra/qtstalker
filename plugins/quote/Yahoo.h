@@ -20,10 +20,9 @@
  */
 
 #include "QuotePlugin.h"
+#include "ChartDb.h"
 #include <qstring.h>
 #include <qurloperator.h>
-#include <qstringlist.h>
-#include <qdatetime.h>
 #include <qnetworkprotocol.h>
 
 class Yahoo : public QuotePlugin
@@ -33,21 +32,22 @@ class Yahoo : public QuotePlugin
   public:
     Yahoo ();
     virtual ~Yahoo ();
-    void download ();
+    void update ();
     QString parseDate (QString);
     void parse ();
-
+    Setting * getCreateDetails ();
+    void createChart (Setting *);
+    
   public slots:
-    void getFile ();
     void opDone (QNetworkOperation *);
     void dataReady (const QByteArray &, QNetworkOperation *);
+    void getFile ();
 
   private:
     QString data;
     QUrlOperator *op;
-    QDateTime sdate;
-    QDateTime edate;
-    QStringList symbols;
+    QStringList symbolList;
+    QStringList urlList;
     int symbolLoop;
 };
 

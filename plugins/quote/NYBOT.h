@@ -20,6 +20,7 @@
  */
 
 #include "QuotePlugin.h"
+#include "FuturesData.h"
 
 class NYBOT : public QuotePlugin
 {
@@ -28,10 +29,13 @@ class NYBOT : public QuotePlugin
   public:
     NYBOT ();
     virtual ~NYBOT ();
-    void download ();
+    void update ();
 
   public slots:
     void parse ();
+    
+  private:
+    FuturesData *fd;
 };
 
 extern "C"

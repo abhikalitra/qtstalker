@@ -43,7 +43,6 @@
 #include "DataWindow.h"
 #include "EditDialog.h"
 #include "Setting.h"
-#include "CompositeDialog.h"
 #include "ChartDb.h"
 #include "WorkwithChartsDialog.h"
 #include "WorkwithGroupsDialog.h"
@@ -341,10 +340,6 @@ void QtstalkerApp::initActions()
   actionNewPlugin = new QAction(tr("Install new plugins..."), icon, tr("Install new plugins..."), 0, this);
   actionNewPlugin->setStatusTip(tr("Install new plugins."));
   connect(actionNewPlugin, SIGNAL(activated()), this, SLOT(slotNewPlugin()));
-
-  actionDeletePlugin = new QAction(tr("Delete plugins..."), icon, tr("Delete plugins..."), 0, this);
-  actionDeletePlugin->setStatusTip(tr("Delete plugins."));
-  connect(actionDeletePlugin, SIGNAL(activated()), this, SLOT(slotDeletePlugin()));
 }
 
 void QtstalkerApp::initMenuBar()
@@ -383,7 +378,6 @@ void QtstalkerApp::initMenuBar()
 
   pluginMenu = new QPopupMenu();
   actionNewPlugin->addTo(pluginMenu);
-  actionDeletePlugin->addTo(pluginMenu);
 
   toolMenu = new QPopupMenu();
   actionDatawindow->addTo(toolMenu);
@@ -500,7 +494,8 @@ void QtstalkerApp::slotWorkwithChart ()
   QObject::connect(dialog, SIGNAL(chartOpened(QString)), this, SLOT(slotOpenChart(QString)));
   dialog->show();
   slotStatusMessage(tr("Scanning symbols..."));
-  dialog->updateList();
+  dialog->setStartDir(chartPath);
+  dialog->updateFileList();
   statusBar()->message(tr("Ready"), 2000);
 }
 
@@ -547,11 +542,11 @@ void QtstalkerApp::slotOpenGroup(QString selection)
 
   config->setData(Config::Group, selection);
 
-  QStringList l = config->getGroup(selection);
-  l.sort();
-  groupCombo->insertStringList(l, -1);
+  QStringList group = config->getGroup(selection);
+  group.sort();
+  groupCombo->insertStringList(group, -1);
 
-  if (l.count() > 1)
+  if (group.count() > 1)
   {
     actionBack->setEnabled(TRUE);
     actionNext->setEnabled(TRUE);
@@ -564,11 +559,11 @@ void QtstalkerApp::slotOpenGroup(QString selection)
 
   status = Group;
 
-  if (l.count())
+  if (group.count())
   {
     QString s = config->getData(Config::DataPath);
     s.append("/");
-    s.append(groupCombo->currentText());
+    s.append(group[0]);
     loadChart(s);
   }
 }
@@ -676,8 +671,7 @@ void QtstalkerApp::loadChart (QString d)
   chartPath = d;
 
   ChartDb *db = new ChartDb();
-  db->setPath(chartPath);
-  if (db->openChart())
+  if (db->openChart(chartPath))
   {
     qDebug(tr("Unable to open chart."));
     delete db;
@@ -700,7 +694,6 @@ void QtstalkerApp::loadChart (QString d)
   chartSymbol = set->getData("Symbol");
   QDateTime fd = db->getDateTime(set->getData("First Date"));
   QDateTime date = db->getDateTime(set->getData("Last Date"));
-  delete set;
 
   if (! date.isValid())
   {
@@ -770,7 +763,7 @@ void QtstalkerApp::loadChart (QString d)
     Indicator *i = new Indicator;
     i->parse(config->getIndicator(l[loop]));
 
-    QString s = config->getData(Config::PluginPath);
+    QString s = config->getData(Config::IndicatorPluginPath);
     s.append("/");
     s.append(i->getData(QObject::tr("Type")));
     s.append(".so");
@@ -816,12 +809,6 @@ void QtstalkerApp::loadChart (QString d)
       s = i->getData(QObject::tr("Alert"));
       if (! s.compare(QObject::tr("True")))
         i->setAlerts(plug->getAlerts());
-      else
-      {
-        QMemArray<int> a(mainPlot->getDataSize());
-	a.fill(0, -1);
-	mainPlot->setAlerts(a);
-      }
 
       delete plug;
     }
@@ -917,8 +904,7 @@ void QtstalkerApp::slotNewChartObject (int id)
     return;
 
   ChartDb *db = new ChartDb();
-  db->setPath(chartPath);
-  db->openChart();
+  db->openChart(chartPath);
   QStringList l = db->getChartObjects();
   delete db;
   if (l.findIndex(name) != -1)
@@ -946,8 +932,7 @@ void QtstalkerApp::slotNewChartObject (int id)
   if (rc == QDialog::Accepted)
   {
     ChartDb *db = new ChartDb();
-    db->setPath(chartPath);
-    db->openChart();
+    db->openChart(chartPath);
     db->setChartObject(name, co);
     delete db;
 
@@ -995,8 +980,7 @@ void QtstalkerApp::slotEditChartObject (int id)
   if (rc == QDialog::Accepted)
   {
     ChartDb *db = new ChartDb();
-    db->setPath(chartPath);
-    db->openChart();
+    db->openChart(chartPath);
     db->setChartObject(co->getData("Name"), co);
     delete db;
 
@@ -1028,8 +1012,7 @@ void QtstalkerApp::slotDeleteChartObject (int id)
   i->deleteChartObject(name);
 
   ChartDb *db = new ChartDb();
-  db->setPath(chartPath);
-  db->openChart();
+  db->openChart(chartPath);
   db->deleteChartObject(name);
   delete db;
 
@@ -1271,7 +1254,7 @@ void QtstalkerApp::slotChartTypeChanged (QAction *action)
 void QtstalkerApp::slotNewIndicator ()
 {
   bool ok;
-  QStringList list = QStringList::split(",", config->getData(Config::IndicatorPlugin), FALSE);
+  QStringList list = config->getIndicatorPlugins();
   QString selection = QInputDialog::getItem(tr("New Indicator"), tr("Select an indicator create."),
   					    list, 0, FALSE, &ok, this);
   if (! ok || ! selection.length())
@@ -1296,7 +1279,7 @@ void QtstalkerApp::slotNewIndicator ()
   Setting *set = new Setting;
   set->set("Name", name, Setting::None);
 
-  QString s = config->getData(Config::PluginPath);
+  QString s = config->getData(Config::IndicatorPluginPath);
   s.append("/");
   s.append(selection);
   s.append(".so");
@@ -1384,8 +1367,7 @@ void QtstalkerApp::slotDeleteIndicator (int id)
     QStringList l = i->getChartObjectNames();
 
     ChartDb *db = new ChartDb;
-    db->setPath(chartPath);
-    db->openChart();
+    db->openChart(chartPath);
 
     for (loop = 0; loop < (int) l.count(); loop++)
       db->deleteChartObject(l[loop]);
@@ -1496,22 +1478,6 @@ void QtstalkerApp::slotNewPlugin ()
     for (loop = 0; loop < (int) l.count(); loop++)
       config->installPlugin(l[loop]);
   }
-}
-
-void QtstalkerApp::slotDeletePlugin ()
-{
-  bool ok;
-
-  QString s = config->getData(Config::IndicatorPlugin);
-  s.append(",");
-  s.append(config->getData(Config::QuotePlugin));
-  QStringList l = QStringList::split(",", s, FALSE);
-  l.sort();
-
-  QString selection = QInputDialog::getItem(tr("Delete Plugin"), tr("Select a plugin to delete."),
-  					    l, 0, FALSE, &ok, this);
-  if (ok && ! selection.isNull())
-    config->deletePlugin(selection);
 }
 
 void QtstalkerApp::slotChartUpdated ()

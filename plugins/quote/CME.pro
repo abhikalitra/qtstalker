@@ -6,12 +6,14 @@ HEADERS += Plugin.h
 HEADERS += QuotePlugin.h
 HEADERS += Setting.h
 HEADERS += ChartDb.h
+HEADERS += FuturesData.h
 HEADERS += CME.h
 
 SOURCES += Plugin.cpp
 SOURCES += QuotePlugin.cpp
 SOURCES += Setting.cpp
 SOURCES += ChartDb.cpp
+SOURCES += FuturesData.cpp
 SOURCES += CME.cpp
 
 TARGET = CME

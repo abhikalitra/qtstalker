@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  *
- *  Copyright (c) 2001,2002 Stefan S. Stratigakos
+ *  Copyright (C) 2001,2002 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,42 +19,32 @@
  *  USA.
  */
 
-#ifndef WORKWITHCHARTSDIALOG_HPP
-#define WORKWITHCHARTSDIALOG_HPP
-
+#include "QuotePlugin.h"
 #include <qstring.h>
-#include <qtoolbutton.h>
-#include "Config.h"
-#include "EditDialog.h"
+#include <qdict.h>
+#include <qdatetime.h>
 
-class WorkwithChartsDialog : public EditDialog
+class Index : public QuotePlugin
 {
   Q_OBJECT
 
-  signals:
-    void chartOpened (QString);
-
   public:
-    WorkwithChartsDialog (Config *);
-    ~WorkwithChartsDialog ();
-    void exportChart (QString);
-    void setStartDir (QString);
+    Index ();
+    virtual ~Index ();
+    void update ();
+    Setting * getCreateDetails ();
+    void createChart (Setting *);
+    int loadData (QString, float, QDateTime);
 
   public slots:
-    void newChart ();
-    void deleteChart ();
-    void openSymbol ();
-    void editChart ();
-    void exportSymbol ();
-    void exportAll ();
+    void updateIndex ();
 
   private:
-    QToolButton *openButton;
-    QToolButton *editButton;
-    QToolButton *deleteButton;
-    QToolButton *exportButton;
-    QToolButton *exportAllButton;
-    QToolButton *newButton;
+    QDict<Setting> data;
 };
 
-#endif
+extern "C"
+{
+  Plugin * create ();
+}
+

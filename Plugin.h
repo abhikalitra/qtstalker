@@ -46,19 +46,23 @@ class Plugin : public Setting, public QObject
     virtual void calculate ();
 
     // quote plugin interface
-    virtual void download ();
-    virtual void cancelDownload ();
-    virtual void setDataPath (QString);
+    virtual void update ();
+    virtual void cancelUpdate ();
+    virtual Setting * getCreateDetails ();
+    virtual void createChart (Setting *);
+    virtual bool getCreateFlag ();
 
     // base plugin functions
     QString getPluginType ();
     QString getPluginName ();
     QString getVersion ();
     QString getAbout ();
+    void setDataPath (QString);
 
   protected:
     QString pluginType;
     QString pluginName;
+    QString dataPath;
     QString about;
     float version;
 };

@@ -22,12 +22,12 @@
 #ifndef WORKWITHPORTFOLIOSDIALOG_HPP
 #define WORKWITHPORTFOLIOSDIALOG_HPP
 
-#include <qdialog.h>
 #include <qtoolbutton.h>
 #include <qlistview.h>
 #include "Config.h"
+#include "EditDialog.h"
 
-class WorkwithPortfoliosDialog : public QDialog
+class WorkwithPortfoliosDialog : public EditDialog
 {
   Q_OBJECT
 
@@ -42,12 +42,9 @@ class WorkwithPortfoliosDialog : public QDialog
     void newPortfolio ();
     void deletePortfolio ();
     void editPortfolio ();
-    void buttonStatus();
 
   private:
-    Config *config;
-    QListView *list;
-    QListViewItem *item;
+    QListView *list2;
     QToolButton *openButton;
     QToolButton *editButton;
     QToolButton *deleteButton;

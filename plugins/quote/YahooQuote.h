@@ -32,9 +32,11 @@ class YahooQuote : public QuotePlugin
   public:
     YahooQuote ();
     virtual ~YahooQuote ();
-    void download ();
+    void update ();
     QString parseDate (QString);
     void parse ();
+    Setting * getCreateDetails ();
+    void createChart (Setting *);
 
   public slots:
     void getFile ();
@@ -44,7 +46,8 @@ class YahooQuote : public QuotePlugin
   private:
     QString data;
     QUrlOperator *op;
-    QStringList symbols;
+    QStringList symbolList;
+    QStringList urlList;
     int symbolLoop;
 };
 

@@ -132,8 +132,7 @@ void PortfolioDialog::updatePortfolioItems ()
       continue;
       
     ChartDb *db = new ChartDb();
-    db->setPath(s);
-    if (db->openChart())
+    if (db->openChart(s))
     {
       qDebug("Qtstalker: Portfolio: Unable to open chart db.");
       delete db;
@@ -160,7 +159,6 @@ void PortfolioDialog::updatePortfolioItems ()
 
     item->setText(6, QString::number(total));
 
-    delete details;
     delete db;
   }
 }
