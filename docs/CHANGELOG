@@ -1,3 +1,13 @@
+0.23
+====
+
+- Feature request #824930 applied. Moved html docs into /usr/share/doc/qtstalker/html
+
+- Bug #824922 fixed.
+
+
+
+
 0.22
 ====
 
