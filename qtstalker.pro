@@ -34,6 +34,7 @@ SUBDIRS += plugins/indicator/AD
 SUBDIRS += plugins/indicator/ATR
 SUBDIRS += plugins/indicator/BB
 SUBDIRS += plugins/indicator/CCI
+SUBDIRS += plugins/indicator/CUS
 SUBDIRS += plugins/indicator/DMI
 SUBDIRS += plugins/indicator/DPO
 SUBDIRS += plugins/indicator/ENV

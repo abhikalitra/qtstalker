@@ -27,6 +27,10 @@
 	  
 20040628: fixed bug in PP indicator that didn't save linetype correctly.
 
+
+20040704: New indicator plugin CUS. This allows the user to create custom indicator
+          formulas. Need to update DOCS on how to use it.
+	  
 	  
 0.26
 ====

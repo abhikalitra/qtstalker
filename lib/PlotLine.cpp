@@ -79,6 +79,58 @@ void PlotLine::setType (PlotLine::LineType d)
   lineType = d;
 }
 
+void PlotLine::setType (QString d)
+{
+  if (! d.compare(tr("Dot")))
+  {
+    lineType = Dot;
+    return;
+  }
+
+  
+  if (! d.compare(tr("Dash")))
+  {
+    lineType = Dash;
+    return;
+  }
+  
+  if (! d.compare(tr("Histogram")))
+  {
+    lineType = Histogram;
+    return;
+  }
+  
+  if (! d.compare(tr("Dash")))
+  {
+    lineType = Dash;
+    return;
+  }
+
+  if (! d.compare(tr("Histogram Bar")))
+  {
+    lineType = HistogramBar;
+    return;
+  }
+
+  if (! d.compare(tr("Line")))
+  {
+    lineType = Line;
+    return;
+  }
+
+  if (! d.compare(tr("Invisible")))
+  {
+    lineType = Invisible;
+    return;
+  }
+
+  if (! d.compare(tr("Horizontal")))
+  {
+    lineType = Horizontal;
+    return;
+  }
+}
+
 PlotLine::LineType PlotLine::getType ()
 {
   return lineType;

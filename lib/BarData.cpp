@@ -264,4 +264,49 @@ BarData::BarType BarData::getBarType ()
   return barType;
 }
 
+BarData::InputType BarData::getInputType (QString d)
+{
+  InputType t = Close;
+  
+  while (1)
+  {
+    if (! d.compare(QObject::tr("Open")))
+    {
+      t = Open;
+      break;
+    }
+    
+    if (! d.compare(QObject::tr("High")))
+    {
+      t = High;
+      break;
+    }
+
+    if (! d.compare(QObject::tr("Low")))
+    {
+      t = Low;
+      break;
+    }
+
+    if (! d.compare(QObject::tr("Close")))
+    {
+      t = Close;
+      break;
+    }
+
+    if (! d.compare(QObject::tr("Volume")))
+    {
+      t = Volume;
+      break;
+    }
+
+    if (! d.compare(QObject::tr("Open Interest")))
+      t = OpenInterest;
+    
+    break;
+  }
+  
+  return t;
+}
+
 

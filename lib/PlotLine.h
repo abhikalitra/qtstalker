@@ -58,6 +58,7 @@ class PlotLine : public QObject
     void setColor (QColor);
     QColor getColor ();
     void setType (PlotLine::LineType);
+    void setType (QString);
     PlotLine::LineType getType ();
     void setLabel (QString);
     QString getLabel ();

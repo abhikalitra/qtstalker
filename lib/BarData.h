@@ -72,6 +72,7 @@ class BarData
     BarData::BarType getBarType ();
     QStringList getInputFields ();
     PlotLine * getInput (BarData::InputType);
+    BarData::InputType getInputType (QString);
     
   protected:
     QPtrList<Bar> barList;
