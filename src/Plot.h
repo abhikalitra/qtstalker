@@ -148,9 +148,7 @@ class Plot : public QWidget
     void drawWeeklyDate ();
     void drawMonthlyDate ();
     void drawHourlyDate ();
-    void draw30Date ();
     void draw15Date ();
-    void draw5Date ();
 
     void slotEditIndicator (int);
     void slotDeleteIndicator (int);

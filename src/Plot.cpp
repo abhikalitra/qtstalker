@@ -619,37 +619,157 @@ void Plot::drawDate ()
   painter.drawLine (0, buffer->height() - dateHeight, buffer->width() - scaleWidth, buffer->height() - dateHeight);
 
   painter.end();
-    
-  switch (interval)
-  {
-    case ChartDb::Daily:
-      drawDailyDate();
-      break;
-    case ChartDb::Weekly:
-      drawWeeklyDate();
-      break;
-    case ChartDb::Monthly:
-      drawMonthlyDate();
-      break;
-    default:
-      break;
+  
+  if (data->getBarType() == BarData::Tick)
+  { 
+    switch (interval)
+    {
+      case ChartDb::Minute5:
+      case ChartDb::Minute15:
+        draw15Date();
+        break;
+      case ChartDb::Minute30:
+      case ChartDb::Minute60:
+        drawHourlyDate();
+        break;
+      case ChartDb::Weekly:
+        drawWeeklyDate();
+        break;
+      case ChartDb::Monthly:
+        drawMonthlyDate();
+        break;
+      default:
+        drawDailyDate();
+        break;
+    }
   }
-}
-
-void Plot::draw5Date ()
-{
+  else
+  {
+    switch (interval)
+    {
+      case ChartDb::Weekly:
+        drawWeeklyDate();
+        break;
+      case ChartDb::Monthly:
+        drawMonthlyDate();
+        break;
+      default:
+        drawDailyDate();
+        break;
+    }
+  }
 }
 
 void Plot::draw15Date ()
 {
-}
+  QPainter painter;
+  painter.begin(buffer);
+  painter.setPen(borderColor);
+  painter.setFont(plotFont);
 
-void Plot::draw30Date ()
-{
+  QFontMetrics fm = painter.fontMetrics();
+  
+  int x = startX;
+  int loop = startIndex;
+
+  BarDate nextHour = data->getDate(loop);
+  BarDate oldDay = data->getDate(loop);
+  nextHour.setTime(nextHour.getHour(), 0, 0);
+  if ((nextHour.getHour() % 2) == 0)
+    nextHour.addMinutes(120);
+  else
+    nextHour.addMinutes(60);
+
+  while(x <= _width && loop < (int) data->count())
+  {
+    BarDate date = data->getDate(loop);
+    
+    if (date.getDate().day() != oldDay.getDate().day())
+    {
+      painter.drawLine (x, _height + 1, x, _height + dateHeight - fm.height() - 1);
+      QString s = date.getDate().toString("d");
+      painter.drawText (x - (fm.width(s, -1) / 2), buffer->height() - 2, s, -1);
+      oldDay = date;
+    }
+    else
+    {
+      // every 2 hours make a small tick
+      if (date.getDateValue() >= nextHour.getDateValue())
+      {
+        painter.drawLine (x, _height + 1, x, _height + 4);
+
+        QString s;
+        if (date.getHour() >= 12)
+	{
+	  if (date.getHour() == 12)
+            s = QString::number(date.getHour());
+	  else
+            s = QString::number(date.getHour() - 12);	
+	  s.append("p");
+	}
+	else
+	{
+          s = QString::number(date.getHour());	
+	  s.append("a");
+	}
+        painter.drawText (x - (fm.width(s, -1) / 2),
+		          buffer->height() - dateHeight + fm.height() + 1,
+			  s,
+			  -1);
+      }
+    }
+    
+    if (date.getDateValue() >= nextHour.getDateValue())
+    {
+      nextHour = date;
+      nextHour.setTime(date.getHour(), 0, 0);
+      if ((date.getHour() % 2) == 0)
+        nextHour.addMinutes(120);
+      else
+        nextHour.addMinutes(60);
+    }
+
+    x = x + pixelspace;
+    loop++;
+  }
+
+  painter.end();
 }
 
 void Plot::drawHourlyDate ()
 {
+  QPainter painter;
+  painter.begin(buffer);
+  painter.setPen(borderColor);
+  painter.setFont(plotFont);
+
+  QFontMetrics fm = painter.fontMetrics();
+  
+  int x = startX;
+  int loop = startIndex;
+
+  QDate oldDay = data->getDate(loop).getDate();
+
+  while(x <= _width && loop < (int) data->count())
+  {
+    QDate date = data->getDate(loop).getDate();
+
+    if (date.day() != oldDay.day())
+    {
+      oldDay = date;
+      painter.drawLine (x, _height + 1, x, _height + (dateHeight / 3));
+      QString s = date.toString("d");
+      painter.drawText (x - (fm.width(s, -1) / 2),
+	  		_height + (dateHeight / 3) + fm.height() + 2,
+			s,
+			-1);
+    }
+
+    x = x + pixelspace;
+    loop++;
+  }
+
+  painter.end();
 }
 
 void Plot::drawDailyDate ()
@@ -821,31 +941,71 @@ void Plot::drawXGrid ()
 void Plot::createXGrid ()
 {
   xGrid.resize(0);
-
   int loop = 0;
-
   QDate oldDate = data->getDate(loop).getDate();
+  BarData::BarType barType = data->getBarType();
 
   for (loop = 0; loop < (int) data->count(); loop++)
   {
     QDate date = data->getDate(loop).getDate();
-
-    if (interval == ChartDb::Daily)
+    
+    if (barType == BarData::Daily)
     {
-      if (date.month() != oldDate.month())
+      switch (interval)
       {
-        oldDate = date;
-	xGrid.resize(xGrid.size() + 1);
-	xGrid[xGrid.size() - 1] = loop;
+        case ChartDb::Weekly:
+        case ChartDb::Monthly:
+          if (date.year() != oldDate.year())
+          {
+            oldDate = date;
+	    xGrid.resize(xGrid.size() + 1);
+	    xGrid[xGrid.size() - 1] = loop;
+          }
+          break;
+        default:
+          if (date.month() != oldDate.month())
+          {
+            oldDate = date;
+	    xGrid.resize(xGrid.size() + 1);
+	    xGrid[xGrid.size() - 1] = loop;
+          }
+          break;
       }
     }
     else
     {
-      if (date.year() != oldDate.year())
+      switch (interval)
       {
-        oldDate = date;
-	xGrid.resize(xGrid.size() + 1);
-	xGrid[xGrid.size() - 1] = loop;
+        case ChartDb::Minute5:
+        case ChartDb::Minute15:
+        case ChartDb::Minute30:
+        case ChartDb::Minute60:
+          if (date.day() != oldDate.day())
+          {
+            oldDate = date;
+	    xGrid.resize(xGrid.size() + 1);
+	    xGrid[xGrid.size() - 1] = loop;
+          }
+          break;
+        case ChartDb::Daily:
+          if (date.month() != oldDate.month())
+          {
+            oldDate = date;
+	    xGrid.resize(xGrid.size() + 1);
+	    xGrid[xGrid.size() - 1] = loop;
+          }
+          break;
+        case ChartDb::Weekly:
+        case ChartDb::Monthly:
+          if (date.year() != oldDate.year())
+          {
+            oldDate = date;
+	    xGrid.resize(xGrid.size() + 1);
+	    xGrid[xGrid.size() - 1] = loop;
+          }
+          break;
+        default:
+          break;
       }
     }
   }
