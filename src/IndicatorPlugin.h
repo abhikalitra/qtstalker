@@ -38,7 +38,6 @@ class IndicatorPlugin : public Plugin
     QList<QColor> getColorBars (QString, QString, QString);
     void setIndicatorInput (QList<Setting> *);
     int getIndicatorLines ();
-//    long getColorNumber (QString);
     PlotLine * getIndicatorLine (int);
     PlotLine * getInput (QString);
     PlotLine * getMA (PlotLine *, QString, int);
