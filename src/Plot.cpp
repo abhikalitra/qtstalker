@@ -1056,6 +1056,40 @@ void Plot::drawScale ()
       if (! s2.compare("0"))
         s.truncate(s.length() - 1);
     }
+    
+    // abbreviate too many (>=3) trailing zeroes in large numbers on y-axes
+    if (! mainFlag)
+    {
+      bool flag = FALSE;
+      
+      if (s.toDouble() < 0)
+      {
+        flag = TRUE;
+	s.remove(0, 1);  
+      }
+      
+      if (s.toDouble() >= 1000000)
+      {
+        s = QString::number(s.toDouble() / 1000000, 'f', 1);
+        if (s.contains(".0"))
+          s.truncate(s.length() - 2);
+	s.append("m");
+      }
+      else
+      {
+        if (s.toDouble() >= 1000)
+        {
+          s = QString::number(s.toDouble() / 1000, 'f', 1);
+          if (s.contains(".0"))
+            s.truncate(s.length() - 2);
+	  s.append("k");
+	}
+      }
+      
+      if (flag)
+        s.prepend("-");
+    }
+    
     painter.drawText(x + 7, y + (fm.height() / 2), s);
   }
 
@@ -1903,7 +1937,7 @@ void Plot::drawCandle ()
 
   if (r->getFloat("Open") != 0)
   {
-    if (c > o)
+    if (c < o)
     {
       painter.fillRect(x - 2, c, 5, o - c, backgroundColor);
       painter.drawRect(x - 2, c, 5, o - c);
@@ -1941,7 +1975,7 @@ void Plot::drawCandle ()
 
     if (r->getFloat("Open") != 0)
     {
-      if (c > o)
+      if (c < o)
       {
         painter.fillRect(x - 2, c, 5, o - c, backgroundColor);
         painter.drawRect(x - 2, c, 5, o - c);

@@ -1,3 +1,15 @@
+0.24
+====
+
+- 20040208: Fixed MDK/Redhat compile bug for db.h file not found problem. This was preventing a full
+            compile on the big distributions.
+	     
+- 20040208: Modified Plot::drawScale to compress the y-axis scaling numbers above 1000.
+
+- 20040208: Found a new bug in the AD derived indicator plugins that can't handle really large numbers.
+            Fixed this by applying a divisor of 1000 to all volume values used in the calculations.
+	    
+
 0.23
 ====
 
