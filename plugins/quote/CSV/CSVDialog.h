@@ -25,7 +25,9 @@
 #include <qcheckbox.h>
 #include <qdatetimeedit.h>
 #include <qstringlist.h>
+#include <qlistbox.h>
 #include "FileButton.h"
+#include "Toolbar.h"
 
 class CSVDialog : public QTabDialog
 {
@@ -35,43 +37,42 @@ class CSVDialog : public QTabDialog
     CSVDialog ();
     ~CSVDialog ();
     void createMainPage ();
-    void createDatePage ();
+    void createRulePage ();
 
-    QString getType ();
     QStringList getFiles ();
     QString getSymbol ();
-    void setFuturesSymbol (QStringList, QString);
-    QString getFuturesSymbol ();
-    void setFuturesMonth (QStringList, QString);
-    QString getFuturesMonth ();
-    void setFormat (QStringList, QString);
-    QString getFormat ();
-    void setDelimiter (QStringList, QString);
-    QString getDelimiter ();
-    void setDateFormat (QStringList, QString);
-    QString getDateFormat ();
     void setStartDate (QDateTime);
     QDateTime getStartDate ();
     void setEndDate (QDateTime);
     QDateTime getEndDate ();
     void setDateRange (bool);
     bool getDateRange ();
+    void updateRules ();
+    void setRuleName (QString);
+    QString getRuleName ();
     
   public slots:
-    void typeChanged (int);
     void dateRangeChanged (bool);
+    void newRule ();
+    void editRule ();
+    void deleteRule ();
+    void saveRule ();
+    void insertField ();
+    void deleteField ();
+    void fieldSelected (int);
           
   private:
     FileButton *file;
     QLineEdit *symbol;
     QComboBox *type;
-    QComboBox *futuresSymbol;
-    QComboBox *futuresMonth;
-    QComboBox *format;
     QComboBox *delimiter;
-    QComboBox *dateFormat;
+    QComboBox *fieldCombo;
+    QComboBox *ruleCombo;
     QDateEdit *sdate;
     QDateEdit *edate;
     QCheckBox *dateRange;
+    Toolbar *ruleToolbar;
+    QListBox *ruleList;
+    QLineEdit *ruleName;
 };
 

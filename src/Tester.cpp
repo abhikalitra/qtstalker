@@ -38,7 +38,6 @@
 #include "entershort.xpm"
 #include "exitlong.xpm"
 #include "exitshort.xpm"
-#include "EditDialog.h"
 #include "Plugin.h"
 #include "FuturesData.h"
 #include "PrefDialog.h"

@@ -11,6 +11,7 @@ To Do:
 - add subgroups to groups ability
 - update plugin howto for BarData usage
 - fix trendlines and fibo objects to plot on weekly and monthly charts as well
+- improve FuturesData class speed with dicts.
 
 
 Maybe some day:

@@ -46,13 +46,13 @@ YahooDialog::YahooDialog () : QTabDialog (0, "YahooDialog", TRUE)
   vbox->addWidget(toolbar);
   
   toolbar->addButton("new", newchart, tr("New"));
-  QObject::connect(toolbar->getButton("new"), SIGNAL(pressed()), this, SLOT(newStock()));
+  QObject::connect(toolbar->getButton("new"), SIGNAL(clicked()), this, SLOT(newStock()));
   
   toolbar->addButton("selectAll", selectall, tr("Select All"));
-  QObject::connect(toolbar->getButton("selectAll"), SIGNAL(pressed()), this, SLOT(selectAll()));
+  QObject::connect(toolbar->getButton("selectAll"), SIGNAL(clicked()), this, SLOT(selectAll()));
   
   toolbar->addButton("unselectAll", unselectall, tr("Unselect All"));
-  QObject::connect(toolbar->getButton("unselectAll"), SIGNAL(pressed()), this, SLOT(unselectAll()));
+  QObject::connect(toolbar->getButton("unselectAll"), SIGNAL(clicked()), this, SLOT(unselectAll()));
   
   vbox->addSpacing(10);
   

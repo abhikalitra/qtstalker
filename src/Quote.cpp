@@ -48,10 +48,10 @@ QuoteDialog::QuoteDialog (Config *c) : QTabDialog (0, "QuoteDialog", TRUE)
   vbox->addWidget(toolbar);
 
   toolbar->addButton("update", download, tr("Update"));
-  QObject::connect(toolbar->getButton("update"), SIGNAL(pressed()), this, SLOT(getQuotes()));
+  QObject::connect(toolbar->getButton("update"), SIGNAL(clicked()), this, SLOT(getQuotes()));
   
   toolbar->addButton("cancelDownload", canceldownload, tr("Cancel Update"));
-  QObject::connect(toolbar->getButton("cancelDownload"), SIGNAL(pressed()), this, SLOT(cancelDownload()));
+  QObject::connect(toolbar->getButton("cancelDownload"), SIGNAL(clicked()), this, SLOT(cancelDownload()));
   toolbar->setButtonStatus("cancelDownload", FALSE);
   
   vbox->addSpacing(5);
@@ -69,7 +69,7 @@ QuoteDialog::QuoteDialog (Config *c) : QTabDialog (0, "QuoteDialog", TRUE)
   grid->addWidget(ruleCombo, 0, 0);
   
   settingButton = new QPushButton(tr("Settings..."), w);
-  QObject::connect(settingButton, SIGNAL(pressed()), this, SLOT(pluginSettings()));
+  QObject::connect(settingButton, SIGNAL(clicked()), this, SLOT(pluginSettings()));
   QToolTip::add(settingButton, tr("Settings"));
   settingButton->setPixmap(configure);
   grid->addWidget(settingButton, 0, 1);

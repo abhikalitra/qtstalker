@@ -50,13 +50,13 @@ SpreadDialog::SpreadDialog () : QTabDialog (0, "SpreadDialog", TRUE)
   vbox->addWidget(toolbar);
   
   toolbar->addButton("new", newchart, tr("New"));
-  QObject::connect(toolbar->getButton("new"), SIGNAL(pressed()), this, SLOT(newSpread()));
+  QObject::connect(toolbar->getButton("new"), SIGNAL(clicked()), this, SLOT(newSpread()));
   
   toolbar->addButton("open", openchart, tr("Open"));
-  QObject::connect(toolbar->getButton("open"), SIGNAL(pressed()), this, SLOT(openSpread()));
+  QObject::connect(toolbar->getButton("open"), SIGNAL(clicked()), this, SLOT(openSpread()));
   
   toolbar->addButton("save", filesave, tr("Save"));
-  QObject::connect(toolbar->getButton("save"), SIGNAL(pressed()), this, SLOT(saveSpread()));
+  QObject::connect(toolbar->getButton("save"), SIGNAL(clicked()), this, SLOT(saveSpread()));
   
   vbox->addSpacing(10);
   

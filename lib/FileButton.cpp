@@ -24,7 +24,7 @@
 
 FileButton::FileButton (QWidget *w) : QPushButton (w)
 {
-  QObject::connect(this, SIGNAL(pressed()), this, SLOT(fileDialog()));
+  QObject::connect(this, SIGNAL(clicked()), this, SLOT(fileDialog()));
   setMaximumHeight(25);
   setToggleButton(FALSE);
   setText(tr("0 Files"));

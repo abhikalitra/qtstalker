@@ -54,22 +54,22 @@ IndexDialog::IndexDialog () : QTabDialog (0, "IndexDialog", TRUE)
   vbox->addWidget(toolbar);
   
   toolbar->addButton("new", newchart, tr("New"));
-  QObject::connect(toolbar->getButton("new"), SIGNAL(pressed()), this, SLOT(newIndex()));
+  QObject::connect(toolbar->getButton("new"), SIGNAL(clicked()), this, SLOT(newIndex()));
   
   toolbar->addButton("open", openchart, tr("Open"));
-  QObject::connect(toolbar->getButton("open"), SIGNAL(pressed()), this, SLOT(openIndex()));
+  QObject::connect(toolbar->getButton("open"), SIGNAL(clicked()), this, SLOT(openIndex()));
   
   toolbar->addButton("save", filesave, tr("Save"));
-  QObject::connect(toolbar->getButton("save"), SIGNAL(pressed()), this, SLOT(saveIndex()));
+  QObject::connect(toolbar->getButton("save"), SIGNAL(clicked()), this, SLOT(saveIndex()));
   
   toolbar->addButton("add", insert, tr("Add Item"));
-  QObject::connect(toolbar->getButton("add"), SIGNAL(pressed()), this, SLOT(addItem()));
+  QObject::connect(toolbar->getButton("add"), SIGNAL(clicked()), this, SLOT(addItem()));
   
   toolbar->addButton("edit", edit, tr("Edit"));
-  QObject::connect(toolbar->getButton("edit"), SIGNAL(pressed()), this, SLOT(editItem()));
+  QObject::connect(toolbar->getButton("edit"), SIGNAL(clicked()), this, SLOT(editItem()));
   
   toolbar->addButton("delete", deleteitem, tr("Delete"));
-  QObject::connect(toolbar->getButton("delete"), SIGNAL(pressed()), this, SLOT(deleteItem()));
+  QObject::connect(toolbar->getButton("delete"), SIGNAL(clicked()), this, SLOT(deleteItem()));
   
   vbox->addSpacing(10);
 

@@ -143,7 +143,7 @@ void EditChartDialog::createDataPage ()
   grid->addWidget(dateSearch, 0, 1);
   
   QPushButton *button = new QPushButton(tr("Search"), w);
-  QObject::connect(button, SIGNAL(pressed()), this, SLOT(slotDateSearch()));
+  QObject::connect(button, SIGNAL(clicked()), this, SLOT(slotDateSearch()));
   QToolTip::add(button, tr("Search"));
   button->setPixmap(search);
   grid->addWidget(button, 0, 2);

@@ -25,7 +25,7 @@
 FontButton::FontButton (QWidget *w, QFont f) : QPushButton (w)
 {
   font = f;
-  QObject::connect(this, SIGNAL(pressed()), this, SLOT(fontDialog()));
+  QObject::connect(this, SIGNAL(clicked()), this, SLOT(fontDialog()));
   setMaximumHeight(25);
   setToggleButton(FALSE);
   setFontButton();

@@ -69,7 +69,24 @@ void CSV::update ()
 
 void CSV::parse ()
 {
-  setDelimiter();
+  Setting *rule = getRule();
+  if (! rule->count())
+  {
+    emit statusLogMessage("Empty rule");
+    emit done();
+    delete rule;
+    return;
+  }
+
+  if (! rule->getData("Rule").contains("Date:"))
+  {
+    emit statusLogMessage("Rule missing Date field");
+    emit done();
+    delete rule;
+    return;
+  }
+    
+  setDelimiter(rule->getData("Delimiter"));
 
   if (dateFlag)
   {
@@ -77,10 +94,15 @@ void CSV::parse ()
     {
       emit statusLogMessage(tr("Done"));
       emit done();
+      delete rule;
       return;
     }
   }
 
+  QString type = rule->getData("Type");
+  QString symbol = symbolOveride;
+  QStringList fieldList = QStringList::split(",", rule->getData("Rule"), FALSE);
+  
   int loop;
   for (loop = 0; loop < (int) list.count(); loop++)
   {
@@ -89,8 +111,7 @@ void CSV::parse ()
       continue;
     QTextStream stream(&f);
 
-    QString symbol = symbolOveride;
-    if (! symbol.length() && format.compare("SDOHLCV"))
+    if (! symbol.length() && fieldList.findIndex("Symbol") == -1)
     {
       QStringList l = QStringList::split("/", list[loop], FALSE);
       symbol = l[l.count() - 1];
@@ -98,11 +119,12 @@ void CSV::parse ()
       if (symbol.right(4).contains(".txt"))
         symbol.truncate(symbol.length() - 4);
 
+      if (symbol.right(4).contains(".TXT"))
+        symbol.truncate(symbol.length() - 4);
+      
       while (symbol.contains("_"))
         symbol = symbol.remove(symbol.find("_", 0, TRUE), 1);
     }
-
-    QString type = chartType;
 
     QString path;
     if (! type.compare("Stock"))
@@ -111,7 +133,9 @@ void CSV::parse ()
       if (! path.length())
       {
         emit statusLogMessage("Unable to create stocks directory");
+        emit done();
         f.close();
+	delete rule;
         return;
       }
     }
@@ -123,11 +147,26 @@ void CSV::parse ()
         if (! path.length())
 	{
           emit statusLogMessage("Unable to create futures directory");
+          emit done();
           f.close();
+	  delete rule;
           return;
         }
+	
+	if (symbol.length() == 7)
+	  futuresSymbol = symbol.left(2);
+	else
+	  futuresSymbol = symbol.left(1);
+	futuresMonth = symbol.right(1);
 
-        fd.setSymbol(futuresSymbol);
+	if (fd.setSymbol(futuresSymbol))
+	{
+          emit statusLogMessage("Bad futures symbol");
+          emit done();
+          f.close();
+	  delete rule;
+          return;
+	}
 
 	QString s = "Futures/";
 	s.append(fd.getSymbol());
@@ -135,7 +174,9 @@ void CSV::parse ()
         if (! path.length())
         {
           emit statusLogMessage("Unable to create futures symbol directory");
+          emit done();
           f.close();
+	  delete rule;
           return;
         }
       }
@@ -156,79 +197,127 @@ void CSV::parse ()
       s = stripJunk(s);
 
       QStringList l = QStringList::split(delim, s, FALSE);
-
-      Setting *r = 0;
-
-      while (1)
+      if (l.count() != fieldList.count())
       {
-        if (! format.compare("DOHLCV"))
-        {
-	  r = getDOHLCV(l);
-          break;
-        }
-
-        if (! format.compare("DOHLCVI"))
-        {
-	  r = getDOHLCVI(l);
-          break;
-        }
-
-        if (! format.compare("DTOHLC"))
-        {
-	  r = getDTOHLC(l);
-          break;
-        }
-
-        if (! format.compare("SDOHLCV"))
-        {
-	  r = getSDOHLCV(l);
-          break;
-        }
-
-	break;
+        qDebug("CSV::parse:File fields (%i) != rule format (%i)", fieldList.count(), l.count());
+        emit statusLogMessage("File fields != rule format");
+	continue;
       }
-
-      if (r)
-      {
-        Bar *bar = new Bar;
-        if (bar->setDate(r->getData("Date")))
-        {
-          delete bar;
-          emit statusLogMessage("Bad date " + r->getData("Date"));
-	  delete r;
-          continue;
-        }
-        bar->setOpen(r->getFloat("Open"));
-        bar->setHigh(r->getFloat("High"));
-        bar->setLow(r->getFloat("Low"));
-        bar->setClose(r->getFloat("Close"));
-        bar->setVolume(r->getFloat("Volume"));
-        bar->setOI(r->getInt("OI"));
       
-        if (! symbol.length())
+      int loop;
+      bool flag = FALSE;
+      Setting *r = new Setting;
+      for (loop = 0; loop < (int) fieldList.count(); loop++)
+      {
+        if (fieldList[loop].contains("Date:"))
 	{
-	  s = path;
-	  s.append(r->getData("Symbol"));
-	  openDb(s, r->getData("Symbol"), type);
-          db->setBar(bar);
-	  emit dataLogMessage(r->getData("Symbol") + " " + bar->getString());
-          delete db;
-	  db = 0;
-          s = tr("Updating ");
-          s.append(r->getData("Symbol"));
-	}
-	else
-	{
-          db->setBar(bar);
-	  emit dataLogMessage(r->getData("Symbol") + " " + bar->getString());
-          s = tr("Updating ");
-          s.append(symbol);
+          QDate dt = getDate(fieldList[loop], l[loop]);
+          if (! dt.isValid())
+	  {
+	    qDebug("CSV::parse:Bad date %s", l[loop].latin1());
+            emit statusLogMessage("Bad date");
+	    flag = TRUE;
+	    break;
+	  }
+	  
+          if (dateFlag)
+          {
+            if (dt < sdate.date() || dt > edate.date())
+	    flag = TRUE;
+	    break;
+          }
+	  r->setData("Date", dt.toString("yyyyMMdd"));
+	  continue;
 	}
 
-        emit statusLogMessage(s);
-        delete r;
-	delete bar;
+        if (! fieldList[loop].compare("Time"))
+	{
+          s = getTime(l[loop]);
+          if (! s.length())
+	  {
+	    qDebug("CSV::parse:Bad time %s", l[loop].latin1());
+            emit statusLogMessage("Bad time");
+	    flag = TRUE;
+	    break;
+	  }
+	  r->setData("Time", s);
+	  continue;
+	}
+	
+        if (! fieldList[loop].compare("Symbol"))
+	{
+	  r->setData("Symbol", l[loop]);
+	  continue;
+	}
+	
+        if (! fieldList[loop].compare("Open") ||
+	    ! fieldList[loop].compare("High") ||
+	    ! fieldList[loop].compare("Low") ||
+	    ! fieldList[loop].compare("Close") ||
+	    ! fieldList[loop].compare("Volume") ||
+	    ! fieldList[loop].compare("OI"))
+	{
+          if (setTFloat(l[loop]))
+	  {
+	    qDebug("CSV::parse:Bad %s value", fieldList[loop].latin1());
+            emit statusLogMessage("Bad value");
+	    flag = TRUE;
+	    break;
+	  }
+	  r->setData(fieldList[loop], QString::number(tfloat));
+	  continue;
+	}
       }
+      
+      if (flag)
+      {
+        delete r;
+	continue;
+      }      
+
+      Bar *bar = new Bar;
+      s = r->getData("Date");
+      if (r->getData("Time").length())
+        s.append(r->getData("Time"));
+      else
+        s.append("000000");
+      if (bar->setDate(s))
+      {
+        delete bar;
+        emit statusLogMessage("Bad date " + r->getData("Date"));
+        delete r;
+        continue;
+      }
+      bar->setOpen(r->getFloat("Open"));
+      bar->setHigh(r->getFloat("High"));
+      bar->setLow(r->getFloat("Low"));
+      bar->setClose(r->getFloat("Close"));
+      bar->setVolume(r->getFloat("Volume"));
+      bar->setOI(r->getInt("OI"));
+      
+      if (! symbol.length())
+      {
+	s = path;
+	s.append(r->getData("Symbol"));
+	openDb(s, r->getData("Symbol"), type);
+        db->setBar(bar);
+	emit dataLogMessage(r->getData("Symbol") + " " + bar->getString());
+        delete db;
+	db = 0;
+        s = tr("Updating ");
+        s.append(r->getData("Symbol"));
+      }
+      else
+      {
+        db->setBar(bar);
+	emit dataLogMessage(r->getData("Symbol") + " " + bar->getString());
+        s = tr("Updating ");
+        s.append(symbol);
+      }
+
+      emit statusLogMessage(s);
+      delete r;
+      delete bar;
     }
 
     if (db)
@@ -239,32 +328,50 @@ void CSV::parse ()
     f.close();
   }
 
+  delete rule;
+  
   emit statusLogMessage(tr("Done"));
   emit done();
 }
 
-void CSV::setDelimiter ()
+void CSV::setDelimiter (QString d)
 {
-  if (! delimiter.compare(tr("Comma")))
+  if (! d.compare(tr("Comma")))
   {
     delim = ",";
     return;
   }
 
-  if (! delimiter.compare(tr("Tab")))
+  if (! d.compare(tr("Tab")))
   {
     delim = "	";
     return;
   }
 
-  if (! delimiter.compare(tr("Space")))
+  if (! d.compare(tr("Space")))
   {
     delim = " ";
     return;
   }
 }
 
-QDate CSV::getDate (QString d)
+QString CSV::getTime (QString d)
+{
+  QString time;
+  
+  if (! d.contains(":"))
+    return time;
+
+  QStringList l = QStringList::split(":", d, FALSE);
+  if (l.count() != 3)
+    return time;
+    
+  time = l[0] + l[1] + l[2];  
+    
+  return time;    
+}
+
+QDate CSV::getDate (QString k, QString d)
 {
   QDate date;
   QStringList l;
@@ -301,7 +408,7 @@ QDate CSV::getDate (QString d)
 
   while (1)
   {
-    if (! dateFormat.compare(tr("YYYYMMDD")))
+    if (k.contains("YYYYMMDD"))
     {
       if (l.count())
         date.setYMD(l[0].toInt(), l[1].toInt(), l[2].toInt());
@@ -313,7 +420,7 @@ QDate CSV::getDate (QString d)
       break;
     }
 
-    if (! dateFormat.compare(tr("YYMMDD")))
+    if (k.contains("YYMMDD"))
     {
       if (l.count())
         date.setYMD(l[0].toInt(), l[1].toInt(), l[2].toInt());
@@ -325,7 +432,7 @@ QDate CSV::getDate (QString d)
       break;
     }
 
-    if (! dateFormat.compare(tr("MMDDYYYY")))
+    if (k.contains("MMDDYYYY"))
     {
       if (l.count())
         date.setYMD(l[2].toInt(), l[0].toInt(), l[1].toInt());
@@ -337,7 +444,7 @@ QDate CSV::getDate (QString d)
       break;
     }
 
-    if (! dateFormat.compare(tr("MMDDYY")))
+    if (k.contains("MMDDYY"))
     {
       if (l.count())
         date.setYMD(l[2].toInt(), l[0].toInt(), l[1].toInt());
@@ -349,7 +456,7 @@ QDate CSV::getDate (QString d)
       break;
     }
 
-    if (! dateFormat.compare(tr("DDMMYYYY")))
+    if (k.contains("DDMMYYYY"))
     {
       if (l.count())
         date.setYMD(l[2].toInt(), l[1].toInt(), l[0].toInt());
@@ -385,401 +492,18 @@ void CSV::openDb (QString path, QString symbol, QString type)
       db->setDetail(ChartDb::Title, fd.getName());
     }
     else
-      db->setDetail(ChartDb::Title, type);
+      db->setDetail(ChartDb::Title, symbol);
   }
-}
-
-Setting * CSV::getDOHLCV (QStringList l)
-{
-  Setting *r = 0;
-
-  QDate dt = getDate(l[0]);
-  if (! dt.isValid())
-    return r;
-
-  if (dateFlag)
-  {
-    if (dt < sdate.date() || dt > edate.date())
-      return r;
-  }
-
-  // date
-  QString date = dt.toString("yyyyMMdd");
-  date.append("000000");
-
-  // open
-  QString open;
-  if (setTFloat(l[1]))
-    return r;
-  else
-    open = QString::number(tfloat);
-
-  // high
-  QString high;
-  if (setTFloat(l[2]))
-    return r;
-  else
-    high = QString::number(tfloat);
-
-  // low
-  QString low;
-  if (setTFloat(l[3]))
-    return r;
-  else
-    low = QString::number(tfloat);
-
-  // close
-  QString close;
-  if (setTFloat(l[4]))
-    return r;
-  else
-    close = QString::number(tfloat);
-
-  // volume
-  QString volume;
-  if (setTFloat(l[5]))
-    return r;
-  else
-    volume = QString::number(tfloat);
-
-  // check for bad values
-  if (close.toFloat() == 0)
-    return r;
-
-  if (open.toFloat() == 0 || high.toFloat() == 0 || low.toFloat() == 0 || volume.toFloat() == 0)
-  {
-    open = close;
-    high = close;
-    low = close;
-  }
-
-  if (open.toFloat() > high.toFloat() || open.toFloat() < low.toFloat())
-  {
-    open = close;
-    high = close;
-    low = close;
-  }
-
-  if (close.toFloat() > high.toFloat() || close.toFloat() < low.toFloat())
-  {
-    open = close;
-    high = close;
-    low = close;
-  }
-
-  r = new Setting;
-  r->setData("Date", date);
-  r->setData("Open", open);
-  r->setData("High", high);
-  r->setData("Low", low);
-  r->setData("Close", close);
-  r->setData("Volume", volume);
-
-  return r;
-}
-
-Setting * CSV::getDOHLCVI (QStringList l)
-{
-  Setting *r = 0;
-
-  QDate dt = getDate(l[0]);
-  if (! dt.isValid())
-    return r;
-
-  if (dateFlag)
-  {
-    if (dt < sdate.date() || dt > edate.date())
-      return r;
-  }
-
-  // date
-  QString date = dt.toString("yyyyMMdd");
-  date.append("000000");
-
-  // open
-  QString open;
-  if (setTFloat(l[1]))
-    return r;
-  else
-    open = QString::number(tfloat);
-
-  // high
-  QString high;
-  if (setTFloat(l[2]))
-    return r;
-  else
-    high = QString::number(tfloat);
-
-  // low
-  QString low;
-  if (setTFloat(l[3]))
-    return r;
-  else
-    low = QString::number(tfloat);
-
-  // close
-  QString close;
-  if (setTFloat(l[4]))
-    return r;
-  else
-    close = QString::number(tfloat);
-
-  // volume
-  QString volume;
-  if (setTFloat(l[5]))
-    return r;
-  else
-    volume = QString::number(tfloat);
-
-  // oi
-  QString oi;
-  if (setTFloat(l[6]))
-    return r;
-  else
-    oi = QString::number(tfloat);
-
-  // check for bad values
-  if (close.toFloat() == 0)
-    return r;
-
-  if (open.toFloat() == 0 || high.toFloat() == 0 || low.toFloat() == 0 || volume.toFloat() == 0)
-  {
-    open = close;
-    high = close;
-    low = close;
-  }
-
-  if (open.toFloat() > high.toFloat() || open.toFloat() < low.toFloat())
-  {
-    open = close;
-    high = close;
-    low = close;
-  }
-
-  if (close.toFloat() > high.toFloat() || close.toFloat() < low.toFloat())
-  {
-    open = close;
-    high = close;
-    low = close;
-  }
-
-  r = new Setting;
-  r->setData("Date", date);
-  r->setData("Open", open);
-  r->setData("High", high);
-  r->setData("Low", low);
-  r->setData("Close", close);
-  r->setData("Volume", volume);
-  r->setData("OI", oi);
-
-  return r;
-}
-
-Setting * CSV::getDTOHLC (QStringList l)
-{
-  Setting *r = 0;
-
-  QDate dt = getDate(l[0]);
-  if (! dt.isValid())
-    return r;
-
-  if (dateFlag)
-  {
-    if (dt < sdate.date() || dt > edate.date())
-      return r;
-  }
-
-  // date
-  QString date = dt.toString("yyyyMMdd");
-  date.append("000000");
-
-  // open
-  QString open;
-  if (setTFloat(l[2]))
-    return r;
-  else
-    open = QString::number(tfloat);
-
-  // high
-  QString high;
-  if (setTFloat(l[3]))
-    return r;
-  else
-    high = QString::number(tfloat);
-
-  // low
-  QString low;
-  if (setTFloat(l[4]))
-    return r;
-  else
-    low = QString::number(tfloat);
-
-  // close
-  QString close;
-  if (setTFloat(l[5]))
-    return r;
-  else
-    close = QString::number(tfloat);
-
-  // check for bad values
-  if (close.toFloat() == 0)
-    return r;
-
-  if (open.toFloat() == 0 || high.toFloat() == 0 || low.toFloat() == 0)
-  {
-    open = close;
-    high = close;
-    low = close;
-  }
-
-  if (open.toFloat() > high.toFloat() || open.toFloat() < low.toFloat())
-  {
-    open = close;
-    high = close;
-    low = close;
-  }
-
-  if (close.toFloat() > high.toFloat() || close.toFloat() < low.toFloat())
-  {
-    open = close;
-    high = close;
-    low = close;
-  }
-
-  r = new Setting;
-  r->setData("Date", date);
-  r->setData("Open", open);
-  r->setData("High", high);
-  r->setData("Low", low);
-  r->setData("Close", close);
-
-  return r;
-}
-
-Setting * CSV::getSDOHLCV (QStringList l)
-{
-  Setting *r = 0;
-
-  QDate dt = getDate(l[1]);
-  if (! dt.isValid())
-    return r;
-
-  if (dateFlag)
-  {
-    if (dt < sdate.date() || dt > edate.date())
-      return r;
-  }
-
-  // date
-  QString date = dt.toString("yyyyMMdd");
-  date.append("000000");
-
-  // symbol
-  QString symbol = l[0];
-
-  // open
-  QString open;
-  if (setTFloat(l[2]))
-    return r;
-  else
-    open = QString::number(tfloat);
-
-  // high
-  QString high;
-  if (setTFloat(l[3]))
-    return r;
-  else
-    high = QString::number(tfloat);
-
-  // low
-  QString low;
-  if (setTFloat(l[4]))
-    return r;
-  else
-    low = QString::number(tfloat);
-
-  // close
-  QString close;
-  if (setTFloat(l[5]))
-    return r;
-  else
-    close = QString::number(tfloat);
-
-  // volume
-  QString volume;
-  if (setTFloat(l[6]))
-    return r;
-  else
-    volume = QString::number(tfloat);
-
-  // check for bad values
-  if (close.toFloat() == 0)
-    return r;
-
-  if (open.toFloat() == 0 || high.toFloat() == 0 || low.toFloat() == 0)
-  {
-    open = close;
-    high = close;
-    low = close;
-  }
-
-  if (open.toFloat() > high.toFloat() || open.toFloat() < low.toFloat())
-  {
-    open = close;
-    high = close;
-    low = close;
-  }
-
-  if (close.toFloat() > high.toFloat() || close.toFloat() < low.toFloat())
-  {
-    open = close;
-    high = close;
-    low = close;
-  }
-
-  r = new Setting;
-  r->setData("Symbol", symbol);
-  r->setData("Date", date);
-  r->setData("Open", open);
-  r->setData("High", high);
-  r->setData("Low", low);
-  r->setData("Close", close);
-  r->setData("Volume", volume);
-
-  return r;
 }
 
 void CSV::prefDialog ()
 {
   CSVDialog *dialog = new CSVDialog();
   dialog->setCaption(tr("CSV Prefs"));
-  dialog->setFuturesSymbol(fd.getSymbolList(), futuresSymbol);
-  dialog->setFuturesMonth(fd.getMonths(), futuresMonth);
-
-  QStringList l;
-  l.append("DOHLCV");
-  l.append("DOHLCVI");
-  l.append("DTOHLC");
-  l.append("SDOHLCV");
-  dialog->setFormat(l, format);
-
-  l.clear();
-  l.append(tr("Comma"));
-  l.append(tr("Tab"));
-  l.append(tr("Space"));
-  dialog->setDelimiter(l, delimiter);
-
-  l.clear();
-  l.append(tr("YYYYMMDD"));
-  l.append(tr("YYMMDD"));
-  l.append(tr("MMDDYY"));
-  l.append(tr("MMDDYYYY"));
-  l.append(tr("DDMMYYYY"));
-  dialog->setDateFormat(l, dateFormat);
-
   dialog->setStartDate(sdate);
   dialog->setEndDate(edate);
   dialog->setDateRange(dateFlag);
+  dialog->setRuleName(ruleName);
           
   int rc = dialog->exec();
   
@@ -787,12 +511,7 @@ void CSV::prefDialog ()
   {
     list = dialog->getFiles();
     symbolOveride = dialog->getSymbol();
-    chartType = dialog->getType();
-    futuresSymbol = dialog->getFuturesSymbol();
-    futuresMonth = dialog->getFuturesMonth();
-    format = dialog->getFormat();
-    delimiter = dialog->getDelimiter();
-    dateFormat = dialog->getFormat();
+    ruleName = dialog->getRuleName();
     sdate = dialog->getStartDate();
     edate = dialog->getEndDate();
     dateFlag = dialog->getDateRange();
@@ -808,13 +527,8 @@ void CSV::loadSettings ()
   QSettings settings;
   settings.beginGroup("/Qtstalker/CSV plugin");
 
-  chartType = settings.readEntry("/ChartType", tr("Stock"));
-  futuresSymbol = settings.readEntry("/FuturesSymbol", "AD");
-  futuresMonth = settings.readEntry("/FuturesMonth", "F");
-  format = settings.readEntry("/Format", "DOHLCV");
-  delimiter = settings.readEntry("/Delimiter", tr("Comma"));
-  dateFormat = settings.readEntry("/DateFormat", tr("YYYYMMDD"));
-  
+  ruleName = settings.readEntry("/RuleName");
+
   QString s = settings.readEntry("/DateRange", "0");
   dateFlag = s.toInt();
   
@@ -828,16 +542,31 @@ void CSV::saveSettings ()
 
   QSettings settings;
   settings.beginGroup("/Qtstalker/CSV plugin");
-  
-  settings.writeEntry("/ChartType", chartType);
-  settings.writeEntry("/FuturesSymbol", futuresSymbol);
-  settings.writeEntry("/FuturesMonth", futuresMonth);
-  settings.writeEntry("/Delimiter", delimiter);
-  settings.writeEntry("/DateFormat", dateFormat);
+
+  settings.writeEntry("/RuleName", ruleName);
   settings.writeEntry("/DateRange", QString::number(dateFlag));
   
   settings.endGroup();
 }
+
+Setting * CSV::getRule ()
+{
+  QSettings settings;
+  settings.beginGroup("/Qtstalker/CSV plugin");
+  QStringList l = QStringList::split(",", settings.readEntry("/RuleList"), FALSE);
+  
+  Setting *set = new Setting;
+  QString s = "/Rule_" + ruleName;
+  set->parse(settings.readEntry(s));
+    
+  settings.endGroup();
+  return set;
+}
+
+
+//**********************************************************
+//**********************************************************
+//**********************************************************
 
 Plugin * create ()
 {

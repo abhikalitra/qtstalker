@@ -517,6 +517,15 @@ int FuturesData::setSymbol (QString d)
       break;
     }
 
+    if (! d.compare("YX"))
+    {
+      name = "NYSE";
+      symbol = d;
+      monthList = QStringList::split(",", "H,M,U,Z", FALSE);
+      contract = getCurrentContract();
+      break;
+    }
+    
     return TRUE;
   }
 

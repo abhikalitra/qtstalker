@@ -33,23 +33,20 @@ class CSV : public QuotePlugin
     CSV ();
     virtual ~CSV ();
     void update ();
-    void setDelimiter ();
-    QDate getDate (QString);
+    void setDelimiter (QString);
+    QDate getDate (QString, QString);
+    QString getTime (QString);
     void openDb (QString, QString, QString);
-    Setting * getDOHLCV (QStringList);
-    Setting * getDOHLCVI (QStringList);
-    Setting * getDTOHLC (QStringList);
-    Setting * getSDOHLCV (QStringList);
     void loadSettings ();
     void saveSettings ();
     void prefDialog ();
+    Setting * getRule ();
 
   public slots:
     void parse ();
 
   private:
     QString delim;
-    QString dateFormat;
     FuturesData fd;
     bool dateFlag;
     QDateTime sdate;
@@ -57,11 +54,9 @@ class CSV : public QuotePlugin
     ChartDb *db;
     QStringList list;
     QString symbolOveride;
-    QString chartType;
+    QString ruleName;
     QString futuresSymbol;
     QString futuresMonth;
-    QString format;
-    QString delimiter;
 };
 
 extern "C"

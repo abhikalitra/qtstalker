@@ -24,7 +24,7 @@
 
 SymbolButton::SymbolButton (QWidget *w, QString d, QString s) : QPushButton (w)
 {
-  QObject::connect(this, SIGNAL(pressed()), this, SLOT(fileDialog()));
+  QObject::connect(this, SIGNAL(clicked()), this, SLOT(fileDialog()));
   setMaximumHeight(25);
   setToggleButton(FALSE);
   setSymbol(s);
