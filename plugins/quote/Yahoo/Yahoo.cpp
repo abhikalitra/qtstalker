@@ -31,7 +31,6 @@
 
 Yahoo::Yahoo ()
 {
-  saveFlag = FALSE;
   pluginName = "Yahoo";
   op = 0;
   
@@ -61,8 +60,6 @@ Yahoo::Yahoo ()
 
 Yahoo::~Yahoo ()
 {
-  if (saveFlag)
-    saveSettings();
 }
 
 void Yahoo::update ()
@@ -530,6 +527,9 @@ void Yahoo::loadSettings ()
 
 void Yahoo::saveSettings ()
 {
+  if (! saveFlag)
+    return;
+    
   QSettings settings;
   settings.beginGroup("/Qtstalker/Yahoo plugin");
   

@@ -43,8 +43,6 @@ COT::COT ()
 
 COT::~COT ()
 {
-  if (saveFlag)
-    saveSettings();
 }
 
 void COT::update ()
@@ -606,6 +604,9 @@ void COT::loadSettings ()
 
 void COT::saveSettings ()
 {
+  if (! saveFlag)
+    return;
+
   QSettings settings;
   settings.beginGroup("/Qtstalker/COT plugin");
   

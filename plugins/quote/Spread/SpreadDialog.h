@@ -20,11 +20,11 @@
  */
 
 #include "SymbolButton.h"
-#include <qpushbutton.h>
+#include "Toolbar.h"
 #include <qcombobox.h>
 #include <qtabdialog.h>
 #include <qstring.h>
-#include <qlabel.h>
+#include <qlineedit.h>
 
 class SpreadDialog : public QTabDialog
 {
@@ -41,19 +41,17 @@ class SpreadDialog : public QTabDialog
     void openSpread ();
     void saveSpread ();
     void dataChanged ();
-    void methodChanged (const QString &);
+    void methodChanged (int);
           
   private:
     bool saveFlag;
     QString file;
     QString symbol;
-    QPushButton *newButton;
-    QPushButton *openButton;
-    QPushButton *saveButton;
     SymbolButton *firstButton;
     SymbolButton *secondButton;
     QComboBox *method;
-    QLabel *name;
+    QLineEdit *name;
     QString dataPath;
+    Toolbar *toolbar;
 };
 

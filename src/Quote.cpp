@@ -106,7 +106,7 @@ QuoteDialog::QuoteDialog (Config *c) : QTabDialog (0, "QuoteDialog", TRUE)
    
   ruleChanged(0);
   
-  resize(400, 300);
+  resize(350, 350);
 }
 
 QuoteDialog::~QuoteDialog ()

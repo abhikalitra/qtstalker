@@ -19,13 +19,13 @@
  *  USA.
  */
 
-#include <qlistview.h>
-#include <qpushbutton.h>
+#include <qlistbox.h>
 #include <qdatetimeedit.h>
 #include <qcheckbox.h>
 #include <qtabdialog.h>
 #include <qdatetime.h>
 #include <qcombobox.h>
+#include "Toolbar.h"
 
 class YahooDialog : public QTabDialog
 {
@@ -49,17 +49,16 @@ class YahooDialog : public QTabDialog
     void newStock ();
     void selectAll ();
     void unselectAll ();
+    void methodChanged (int);
           
   private:
-    QPushButton *newButton;
-    QPushButton *selectButton;
-    QPushButton *unselectButton;
-    QListView *list;
+    QListBox *list;
     QCheckBox *adjustment;
     QDateEdit *date;
     QDateEdit *date2;
     QComboBox *method;
     QString dataPath;
+    Toolbar *toolbar;
 };
 
     

@@ -29,14 +29,11 @@
 CC::CC ()
 {
   pluginName = "CC";
-  
   loadSettings();
 }
 
 CC::~CC ()
 {
-  if (saveFlag)
-    saveSettings();
 }
 
 void CC::update ()
@@ -196,14 +193,13 @@ void CC::prefDialog ()
   dialog->setCaption(tr("CC Prefs"));
   dialog->createPage (tr("Details"));
   dialog->addIntItem(tr("Rollover"), 1, rollover);
-  dialog->addColorItem(tr("Maximum Years"), 1, maxYears);
+  dialog->addIntItem(tr("Maximum Years"), 1, maxYears);
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
     rollover = dialog->getInt(tr("Rollover"));
     maxYears = dialog->getInt(tr("Maximum Years"));
-    
     saveFlag = TRUE;
   }
   
@@ -226,6 +222,9 @@ void CC::loadSettings ()
 
 void CC::saveSettings ()
 {
+  if (! saveFlag)
+    return;
+    
   QSettings settings;
   settings.beginGroup("/Qtstalker/CC plugin");
   

@@ -454,6 +454,7 @@ void QtstalkerApp::slotQuit()
   config->setData(Config::Width, QString::number(this->width()));
   config->setData(Config::X, QString::number(this->x()));
   config->setData(Config::Y, QString::number(this->y()));
+  config->closePlugins();
   delete config;
 
   // delete any BarData

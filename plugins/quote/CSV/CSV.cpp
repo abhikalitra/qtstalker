@@ -20,7 +20,7 @@
  */
 
 #include "CSV.h"
-#include "PrefDialog.h"
+#include "CSVDialog.h"
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qtimer.h>
@@ -60,8 +60,6 @@ CSV::CSV ()
 
 CSV::~CSV ()
 {
-  if (saveFlag)
-    saveSettings();
 }
 
 void CSV::update ()
@@ -769,32 +767,23 @@ Setting * CSV::getSDOHLCV (QStringList l)
 
 void CSV::prefDialog ()
 {
-  PrefDialog *dialog = new PrefDialog();
+  CSVDialog *dialog = new CSVDialog();
   dialog->setCaption(tr("CSV Prefs"));
-  dialog->createPage (tr("Details"));
-  dialog->addFileItem(tr("Input Files"), 1);
-  dialog->addTextItem(tr("Symbol"), 1, symbolOveride);
-  
+  dialog->setFuturesSymbol(fd.getSymbolList(), futuresSymbol);
+  dialog->setFuturesMonth(fd.getMonths(), futuresMonth);
+
   QStringList l;
-  l.append(tr("Stock"));
-  l.append(tr("Futures"));
-  dialog->addComboItem(tr("Chart Type"), 1, l, chartType);
-
-  dialog->addComboItem(tr("Futures Symbol"), 1, fd.getSymbolList(), futuresSymbol);
-  dialog->addComboItem(tr("Futures Month"), 1, fd.getMonths(), futuresSymbol);
-
-  l.clear();
   l.append("DOHLCV");
   l.append("DOHLCVI");
   l.append("DTOHLC");
   l.append("SDOHLCV");
-  dialog->addComboItem(tr("Format"), 1, l, format);
+  dialog->setFormat(l, format);
 
   l.clear();
   l.append(tr("Comma"));
   l.append(tr("Tab"));
   l.append(tr("Space"));
-  dialog->addComboItem(tr("Delimiter"), 1, l, delimiter);
+  dialog->setDelimiter(l, delimiter);
 
   l.clear();
   l.append(tr("YYYYMMDD"));
@@ -802,27 +791,27 @@ void CSV::prefDialog ()
   l.append(tr("MMDDYY"));
   l.append(tr("MMDDYYYY"));
   l.append(tr("DDMMYYYY"));
-  dialog->addComboItem(tr("Date Format"), 1, l, dateFormat);
+  dialog->setDateFormat(l, dateFormat);
 
-  dialog->addDateItem(tr("Date Start"), 1, sdate);
-  dialog->addDateItem(tr("Date End"), 1, edate);
-  dialog->addCheckItem(tr("Select Date Range"), 1, dateFlag);
+  dialog->setStartDate(sdate);
+  dialog->setEndDate(edate);
+  dialog->setDateRange(dateFlag);
           
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
-    list = dialog->getFile(tr("Input Files"));
-    symbolOveride = dialog->getText(tr("Symbol"));
-    chartType = dialog->getCombo(tr("Chart Type"));
-    futuresSymbol = dialog->getCombo(tr("Futures Symbol"));
-    futuresMonth = dialog->getCombo(tr("Futures Month"));
-    format = dialog->getCombo(tr("Format"));
-    delimiter = dialog->getCombo(tr("Delimiter"));
-    dateFormat = dialog->getCombo(tr("Date Format"));
-    sdate = dialog->getDate(tr("Date Start"));
-    edate = dialog->getDate(tr("Date End"));
-    dateFlag = dialog->getCheck(tr("Select Date Range"));
+    list = dialog->getFiles();
+    symbolOveride = dialog->getSymbol();
+    chartType = dialog->getType();
+    futuresSymbol = dialog->getFuturesSymbol();
+    futuresMonth = dialog->getFuturesMonth();
+    format = dialog->getFormat();
+    delimiter = dialog->getDelimiter();
+    dateFormat = dialog->getFormat();
+    sdate = dialog->getStartDate();
+    edate = dialog->getEndDate();
+    dateFlag = dialog->getDateRange();
     
     saveFlag = TRUE;
   }
@@ -850,6 +839,9 @@ void CSV::loadSettings ()
 
 void CSV::saveSettings ()
 {
+  if (! saveFlag)
+    return;
+
   QSettings settings;
   settings.beginGroup("/Qtstalker/CSV plugin");
   

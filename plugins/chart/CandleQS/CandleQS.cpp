@@ -36,8 +36,6 @@ CandleQS::CandleQS ()
 
 CandleQS::~CandleQS ()
 {
-  if (saveFlag)
-    saveSettings();
 }
 
 void CandleQS::drawChart (int startX, int startIndex, int pixelspace)
@@ -163,6 +161,9 @@ void CandleQS::loadSettings ()
 
 void CandleQS::saveSettings ()
 {
+  if (! saveFlag)
+    return;
+
   QSettings settings;
   settings.beginGroup("/Qtstalker/CandleQS plugin");
   

@@ -36,8 +36,6 @@ Swing::Swing ()
 
 Swing::~Swing ()
 {
-  if (saveFlag)
-    saveSettings();
 }
 
 void Swing::drawChart (int startX, int startIndex, int pixelspace)
@@ -192,6 +190,9 @@ void Swing::loadSettings ()
 
 void Swing::saveSettings ()
 {
+  if (! saveFlag)
+    return;
+
   QSettings settings;
   settings.beginGroup("/Qtstalker/Swing plugin");
   

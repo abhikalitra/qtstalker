@@ -37,8 +37,6 @@ Candle::Candle ()
 
 Candle::~Candle ()
 {
-  if (saveFlag)
-    saveSettings();
 }
 
 void Candle::drawChart (int startX, int startIndex, int pixelspace)
@@ -140,6 +138,9 @@ void Candle::loadSettings ()
 
 void Candle::saveSettings ()
 {
+  if (! saveFlag)
+    return;
+
   QSettings settings;
   settings.beginGroup("/Qtstalker/Candle plugin");
   settings.writeEntry("/Color", color.name());

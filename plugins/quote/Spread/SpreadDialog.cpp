@@ -26,6 +26,10 @@
 #include <qdir.h>
 #include <qmessagebox.h>
 #include <qlayout.h>
+#include <qlabel.h>
+#include "../../../src/newchart.xpm"
+#include "../../../src/openchart.xpm"
+#include "../../../src/filesave.xpm"
 
 SpreadDialog::SpreadDialog () : QTabDialog (0, "SpreadDialog", TRUE)
 {
@@ -38,20 +42,33 @@ SpreadDialog::SpreadDialog () : QTabDialog (0, "SpreadDialog", TRUE)
   
   QWidget *w = new QWidget(this);
   
-  QHBoxLayout *hbox = new QHBoxLayout(w);
-  hbox->setMargin(5);
-  hbox->setSpacing(5);
+  QVBoxLayout *vbox = new QVBoxLayout(w);
+  vbox->setMargin(5);
+  vbox->setSpacing(0);
   
-  QGridLayout *grid = new QGridLayout(hbox, 5, 2);
-  grid->setMargin(5);
+  toolbar = new Toolbar(w, 30, 30);
+  vbox->addWidget(toolbar);
+  
+  toolbar->addButton("new", newchart, tr("New"));
+  QObject::connect(toolbar->getButton("new"), SIGNAL(pressed()), this, SLOT(newSpread()));
+  
+  toolbar->addButton("open", openchart, tr("Open"));
+  QObject::connect(toolbar->getButton("open"), SIGNAL(pressed()), this, SLOT(openSpread()));
+  
+  toolbar->addButton("save", filesave, tr("Save"));
+  QObject::connect(toolbar->getButton("save"), SIGNAL(pressed()), this, SLOT(saveSpread()));
+  
+  vbox->addSpacing(10);
+  
+  QGridLayout *grid = new QGridLayout(vbox, 5, 2);
   grid->setSpacing(5);
   grid->setColStretch(1, 1);
   
   QLabel *label = new QLabel(tr("Name"), w);
   grid->addWidget(label, 0, 0);
   
-  name = new QLabel(w);
-  name->setFrameStyle(QFrame::WinPanel);
+  name = new QLineEdit(w);
+  name->setReadOnly(TRUE);
   grid->addWidget(name, 0, 1);
   
   label = new QLabel(tr("Method"), w);
@@ -60,7 +77,7 @@ SpreadDialog::SpreadDialog () : QTabDialog (0, "SpreadDialog", TRUE)
   method = new QComboBox(w);
   method->insertItem(tr("Subtract"), -1);
   method->insertItem(tr("Divide"), -1);
-  QObject::connect(method, SIGNAL(textChanged(const QString &)), this, SLOT(methodChanged(const QString &)));
+  QObject::connect(method, SIGNAL(activated(int)), this, SLOT(methodChanged(int)));
   grid->addWidget(method, 1, 1);
   
   label = new QLabel(tr("First Symbol"), w);
@@ -77,32 +94,14 @@ SpreadDialog::SpreadDialog () : QTabDialog (0, "SpreadDialog", TRUE)
   QObject::connect(secondButton, SIGNAL(symbolChanged()), this, SLOT(dataChanged()));
   grid->addWidget(secondButton, 3, 1);
   
-  QFrame *sep = new QFrame(w);
-  sep->setFrameStyle(QFrame::VLine | QFrame::Sunken);
-  hbox->addWidget(sep);
-  
-  grid = new QGridLayout(hbox, 4, 1);
-  grid->setMargin(5);
-  grid->setSpacing(5);
-  
-  newButton = new QPushButton(tr("New"), w);
-  QObject::connect(newButton, SIGNAL(pressed()), this, SLOT(newSpread()));
-  grid->addWidget(newButton, 0, 0);
-  
-  openButton = new QPushButton(tr("Open"), w);
-  QObject::connect(openButton, SIGNAL(pressed()), this, SLOT(openSpread()));
-  grid->addWidget(openButton, 1, 0);
-  
-  saveButton = new QPushButton(tr("Save"), w);
-  QObject::connect(saveButton, SIGNAL(pressed()), this, SLOT(saveSpread()));
-  grid->addWidget(saveButton, 2, 0);
-  
   addTab(w, tr("Spread"));
 
   setOkButton();
   setCancelButton();
     
   buttonStatus();
+  
+  resize(325, 250);
 }
 
 SpreadDialog::~SpreadDialog ()
@@ -112,9 +111,9 @@ SpreadDialog::~SpreadDialog ()
 void SpreadDialog::buttonStatus ()
 {
   if (saveFlag)
-    saveButton->setEnabled(TRUE);
+    toolbar->setButtonStatus("save", TRUE);
   else
-    saveButton->setEnabled(FALSE);
+    toolbar->setButtonStatus("save", FALSE);
     
   if (! name->text().length())
   {
@@ -279,7 +278,7 @@ void SpreadDialog::dataChanged ()
   buttonStatus();
 }
 
-void SpreadDialog::methodChanged (const QString &)
+void SpreadDialog::methodChanged (int)
 {
   saveFlag = TRUE;
   buttonStatus();

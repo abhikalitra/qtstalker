@@ -44,8 +44,6 @@ CMEHistory::CMEHistory ()
 CMEHistory::~CMEHistory ()
 {
   delete fd;
-  if (saveFlag)
-    saveSettings();
 }
 
 void CMEHistory::update ()
@@ -405,6 +403,9 @@ void CMEHistory::loadSettings ()
 
 void CMEHistory::saveSettings ()
 {
+  if (! saveFlag)
+    return;
+
   QSettings settings;
   settings.beginGroup("/Qtstalker/CMEHistory plugin");
   

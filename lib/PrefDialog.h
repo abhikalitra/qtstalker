@@ -51,9 +51,11 @@ class PrefDialog : public QTabDialog
     void createPage (QString);
     void addColorItem (QString, int, QColor);
     QColor getColor (QString);
+    void addFloatItem (QString, int, double, double, double);
     void addFloatItem (QString, int, double);
     double getFloat (QString);
     void addIntItem (QString, int, int);
+    void addIntItem (QString, int, int, int, int);
     int getInt (QString);
     void addCheckItem (QString, int, bool);
     void addCheckItem (QString, int, QString);
@@ -73,7 +75,6 @@ class PrefDialog : public QTabDialog
     QString getSymbol (QString);
 
   private:
-    QDoubleValidator *dv;
     QList<QWidget> widgetList;
     QList<QGridLayout> gridList;
     QDict<ColorButton> colorButtonList;
@@ -86,6 +87,7 @@ class PrefDialog : public QTabDialog
     QDict<QDateEdit> dateList;
     QDict<FileButton> fileList;
     QDict<SymbolButton> symbolList;
+    QDict<QDoubleValidator> dvList;
 };
 
 #endif

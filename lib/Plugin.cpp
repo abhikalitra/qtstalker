@@ -126,6 +126,9 @@ void Plugin::cancelUpdate ()
 {
 }
 
+void Plugin::saveSettings ()
+{
+}
 
 //**********************************************************
 //************** chart plugin interface ********************

@@ -36,8 +36,7 @@ PrefDialog::PrefDialog () : QTabDialog (0, "PrefDialog", TRUE)
   dateList.setAutoDelete(TRUE);
   fileList.setAutoDelete(TRUE);
   symbolList.setAutoDelete(TRUE);
-  
-  dv = new QDoubleValidator(-99999999, 99999999, 4, this, 0);
+  dvList.setAutoDelete(TRUE);
   
   resize(300, 200);
   
@@ -47,7 +46,6 @@ PrefDialog::PrefDialog () : QTabDialog (0, "PrefDialog", TRUE)
 
 PrefDialog::~PrefDialog ()
 {
-  delete dv;
 }
 
 void PrefDialog::createPage (QString name)
@@ -93,6 +91,11 @@ QColor PrefDialog::getColor (QString name)
 
 void PrefDialog::addFloatItem (QString name, int page, double num)
 {
+  addFloatItem(name, page, num, -9999999999.0, 9999999999.0);
+}
+
+void PrefDialog::addFloatItem (QString name, int page, double num, double low, double high)
+{
   QWidget *w = widgetList.at(page - 1);
   
   QGridLayout *grid = gridList.at(page - 1);
@@ -100,6 +103,9 @@ void PrefDialog::addFloatItem (QString name, int page, double num)
   
   QLabel *label = new QLabel(name, w);
   grid->addWidget(label, grid->numRows() - 2, 0);
+  
+  QDoubleValidator *dv = new QDoubleValidator(low, high, 4, this, 0);
+  dvList.insert(name, dv);
   
   QLineEdit *edit = new QLineEdit(QString::number(num), w);
   edit->setValidator(dv);
@@ -120,6 +126,11 @@ double PrefDialog::getFloat (QString name)
 
 void PrefDialog::addIntItem (QString name, int page, int num)
 {
+  addIntItem(name, page, num, -999999999, 999999999);
+}
+
+void PrefDialog::addIntItem (QString name, int page, int num, int min, int max)
+{
   QWidget *w = widgetList.at(page - 1);
   
   QGridLayout *grid = gridList.at(page - 1);
@@ -128,7 +139,7 @@ void PrefDialog::addIntItem (QString name, int page, int num)
   QLabel *label = new QLabel(name, w);
   grid->addWidget(label, grid->numRows() - 2, 0);
   
-  QSpinBox *spin = new QSpinBox(w);
+  QSpinBox *spin = new QSpinBox(min, max, 1, w);
   spin->setValue(num);
   grid->addWidget(spin, grid->numRows() - 2, 1);
   intList.insert(name, spin);

@@ -51,6 +51,7 @@ class Plugin : public Setting, public QObject
     // quote plugin interface
     virtual void update ();
     virtual void cancelUpdate ();
+    virtual void saveSettings ();
     
     // chart plugin interface
     virtual void drawChart (int, int, int);

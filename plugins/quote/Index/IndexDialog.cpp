@@ -27,6 +27,13 @@
 #include <qdir.h>
 #include <qmessagebox.h>
 #include <qlayout.h>
+#include <qlabel.h>
+#include "../../../src/newchart.xpm"
+#include "../../../src/openchart.xpm"
+#include "../../../src/filesave.xpm"
+#include "../../../src/insert.xpm"
+#include "../../../src/edit.xpm"
+#include "../../../src/delete.xpm"
 
 IndexDialog::IndexDialog () : QTabDialog (0, "IndexDialog", TRUE)
 {
@@ -39,54 +46,54 @@ IndexDialog::IndexDialog () : QTabDialog (0, "IndexDialog", TRUE)
   
   QWidget *w = new QWidget(this);
   
-  QHBoxLayout *hbox = new QHBoxLayout(w);
-  hbox->setMargin(5);
-  hbox->setSpacing(5);
+  QVBoxLayout *vbox = new QVBoxLayout(w);
+  vbox->setMargin(5);
+  vbox->setSpacing(0);
   
-  QVBoxLayout *vbox = new QVBoxLayout(hbox);
+  toolbar = new Toolbar(w, 30, 30);
+  vbox->addWidget(toolbar);
   
-  QGridLayout *grid = new QGridLayout(vbox, 2, 1);
+  toolbar->addButton("new", newchart, tr("New"));
+  QObject::connect(toolbar->getButton("new"), SIGNAL(pressed()), this, SLOT(newIndex()));
   
-  QLabel *label = new QLabel(tr("Name"), w);
+  toolbar->addButton("open", openchart, tr("Open"));
+  QObject::connect(toolbar->getButton("open"), SIGNAL(pressed()), this, SLOT(openIndex()));
+  
+  toolbar->addButton("save", filesave, tr("Save"));
+  QObject::connect(toolbar->getButton("save"), SIGNAL(pressed()), this, SLOT(saveIndex()));
+  
+  toolbar->addButton("add", insert, tr("Add Item"));
+  QObject::connect(toolbar->getButton("add"), SIGNAL(pressed()), this, SLOT(addItem()));
+  
+  toolbar->addButton("edit", edit, tr("Edit"));
+  QObject::connect(toolbar->getButton("edit"), SIGNAL(pressed()), this, SLOT(editItem()));
+  
+  toolbar->addButton("delete", deleteitem, tr("Delete"));
+  QObject::connect(toolbar->getButton("delete"), SIGNAL(pressed()), this, SLOT(deleteItem()));
+  
+  vbox->addSpacing(10);
+
+  QGridLayout *grid = new QGridLayout(vbox, 1, 1);
+  grid->setSpacing(5);
+  grid->setColStretch(1, 1);
+  
+  QLabel *label = new QLabel(tr("Name:"), w);
   grid->addWidget(label, 0, 0);
   
-  name = new QLabel(w);
-  name->setFrameStyle(QFrame::WinPanel || QFrame::Sunken);
+  name = new QLineEdit(w);
+  name->setReadOnly(TRUE);
   grid->addWidget(name, 0, 1);
+
+  vbox->addSpacing(10);
+    
+  label = new QLabel(tr("Index Items:"), w);
+  vbox->addWidget(label);
   
   list = new QListView(w);
   list->addColumn(tr("Symbol"), 200);
   list->addColumn(tr("Weight"), -1);
   QObject::connect(list, SIGNAL(selectionChanged()), this, SLOT(buttonStatus()));
   vbox->addWidget(list);
-  
-  grid = new QGridLayout(hbox, 7, 1);
-  grid->setMargin(5);
-  grid->setSpacing(5);
-  
-  newButton = new QPushButton(tr("New"), w);
-  QObject::connect(newButton, SIGNAL(pressed()), this, SLOT(newIndex()));
-  grid->addWidget(newButton, 0, 0);
-  
-  openButton = new QPushButton(tr("Open"), w);
-  QObject::connect(openButton, SIGNAL(pressed()), this, SLOT(openIndex()));
-  grid->addWidget(openButton, 1, 0);
-  
-  saveButton = new QPushButton(tr("Save"), w);
-  QObject::connect(saveButton, SIGNAL(pressed()), this, SLOT(saveIndex()));
-  grid->addWidget(saveButton, 2, 0);
-  
-  addButton = new QPushButton(tr("Add"), w);
-  QObject::connect(addButton, SIGNAL(pressed()), this, SLOT(addItem()));
-  grid->addWidget(addButton, 3, 0);
-  
-  editButton = new QPushButton(tr("Edit"), w);
-  QObject::connect(editButton, SIGNAL(pressed()), this, SLOT(editItem()));
-  grid->addWidget(editButton, 4, 0);
-
-  deleteButton = new QPushButton(tr("Delete"), w);
-  QObject::connect(deleteButton, SIGNAL(pressed()), this, SLOT(deleteItem()));
-  grid->addWidget(deleteButton, 5, 0);
   
   addTab(w, tr("Index"));
   
@@ -95,6 +102,8 @@ IndexDialog::IndexDialog () : QTabDialog (0, "IndexDialog", TRUE)
   setCancelButton();
   
   buttonStatus();
+  
+  resize(325, 350);
 }
 
 IndexDialog::~IndexDialog ()
@@ -202,31 +211,31 @@ void IndexDialog::buttonStatus ()
 {
   if (! name->text().length())
   {
-    saveButton->setEnabled(FALSE);
-    editButton->setEnabled(FALSE);
-    deleteButton->setEnabled(FALSE);
-    addButton->setEnabled(FALSE);
+    toolbar->setButtonStatus("save", FALSE);
+    toolbar->setButtonStatus("edit", FALSE);
+    toolbar->setButtonStatus("delete", FALSE);
+    toolbar->setButtonStatus("add", FALSE);
     return;
   }
   else
-    addButton->setEnabled(TRUE);
+    toolbar->setButtonStatus("add", TRUE);
 
   QListViewItem *item = list->selectedItem();
   if (! item)
   {
-    editButton->setEnabled(FALSE);
-    deleteButton->setEnabled(FALSE);
+    toolbar->setButtonStatus("edit", FALSE);
+    toolbar->setButtonStatus("delete", FALSE);
   }
   else
   {
-    editButton->setEnabled(TRUE);
-    deleteButton->setEnabled(TRUE);
+    toolbar->setButtonStatus("edit", TRUE);
+    toolbar->setButtonStatus("delete", TRUE);
   }
   
   if (saveFlag)
-    saveButton->setEnabled(TRUE);
+    toolbar->setButtonStatus("save", TRUE);
   else
-    saveButton->setEnabled(FALSE);
+    toolbar->setButtonStatus("save", FALSE);
 }
 
 void IndexDialog::setList (QString d)

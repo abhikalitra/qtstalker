@@ -36,8 +36,6 @@ PF::PF ()
 
 PF::~PF ()
 {
-  if (saveFlag)
-    saveSettings();
 }
 
 void PF::drawChart (int startX, int startIndex, int pixelspace)
@@ -213,6 +211,9 @@ void PF::loadSettings ()
 
 void PF::saveSettings ()
 {
+  if (! saveFlag)
+    return;
+
   QSettings settings;
   settings.beginGroup("/Qtstalker/PF plugin");
   

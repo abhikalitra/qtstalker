@@ -475,12 +475,20 @@ Plugin * Config::getPlugin (Config::Parm t, QString p)
 
 void Config::closePlugins ()
 {
+  QDictIterator<Plugin> it(plugins);
+  for (; it.current(); ++it)
+    it.current()->saveSettings();
+  
   plugins.clear();
   libs.clear();
 }
 
 void Config::closePlugin (QString d)
 {
+  Plugin *plug = plugins[d];
+  if (plug)
+    plug->saveSettings();
+    
   plugins.remove(d);
   libs.remove(d);
 }

@@ -36,8 +36,6 @@ PaintBar::PaintBar ()
 
 PaintBar::~PaintBar ()
 {
-  if (saveFlag)
-    saveSettings();
 }
 
 void PaintBar::drawChart (int startX, int startIndex, int pixelspace)
@@ -118,6 +116,9 @@ void PaintBar::loadSettings ()
 
 void PaintBar::saveSettings ()
 {
+  if (! saveFlag)
+    return;
+
   QSettings settings;
   settings.beginGroup("/Qtstalker/PaintBar plugin");
   

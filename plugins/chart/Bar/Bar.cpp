@@ -36,8 +36,6 @@ Bar::Bar ()
 
 Bar::~Bar ()
 {
-  if (saveFlag)
-    saveSettings();
 }
 
 void Bar::drawChart (int startX, int startIndex, int pixelspace)
@@ -146,6 +144,9 @@ void Bar::loadSettings ()
 
 void Bar::saveSettings ()
 {
+  if (! saveFlag)
+    return;
+
   QSettings settings;
   settings.beginGroup("/Qtstalker/Bar plugin");
   

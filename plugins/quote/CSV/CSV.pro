@@ -4,8 +4,10 @@ CONFIG += thread warn_on plugin
 QMAKE_CXXFLAGS += -Os
 
 HEADERS += CSV.h
+HEADERS += CSVDialog.h
 
 SOURCES += CSV.cpp
+SOURCES += CSVDialog.cpp
 
 TARGET = CSV
 

@@ -20,10 +20,10 @@
  */
 
 #include <qlistview.h>
-#include <qpushbutton.h>
 #include <qtabdialog.h>
-#include <qlabel.h>
 #include <qdict.h>
+#include <qlineedit.h>
+#include "Toolbar.h"
 
 class IndexDialog : public QTabDialog
 {
@@ -52,13 +52,8 @@ class IndexDialog : public QTabDialog
     QString file;
     QString dataPath;
     QListView *list;
-    QPushButton *addButton;
-    QPushButton *editButton;
-    QPushButton *deleteButton;
-    QPushButton *newButton;
-    QPushButton *openButton;
-    QPushButton *saveButton;
-    QLabel *name;
+    QLineEdit *name;
     QDict<QString> symbolDict;
+    Toolbar *toolbar;
 };
 

@@ -31,6 +31,8 @@ Toolbar::Toolbar (QWidget *w, int h, int wi) : QFrame (w)
   setFrameShape(Box);
   setFrameShadow(Sunken);
   setLineWidth(1);
+  setMinimumHeight(height + 2);
+  setMaximumHeight(height + 2);
 
   QHBoxLayout *hbox = new QHBoxLayout(this);  
   hbox->setSpacing(0);

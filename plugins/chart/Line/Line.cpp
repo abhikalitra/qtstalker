@@ -37,8 +37,6 @@ Line::Line ()
 
 Line::~Line ()
 {
-  if (saveFlag)
-    saveSettings();
 }
 
 void Line::drawChart (int startX, int startIndex, int pixelspace)
@@ -149,6 +147,9 @@ void Line::loadSettings ()
 
 void Line::saveSettings ()
 {
+  if (! saveFlag)
+    return;
+
   QSettings settings;
   settings.beginGroup("/Qtstalker/Line plugin");
   

@@ -21,11 +21,15 @@
 
 #include "YahooDialog.h"
 #include "ChartDb.h"
+#include "../../../src/newchart.xpm"
+#include "../../../src/selectall.xpm"
+#include "../../../src/unselectall.xpm"
 #include <qinputdialog.h>
 #include <qdir.h>
 #include <qmessagebox.h>
 #include <qlayout.h>
 #include <qlabel.h>
+#include <qframe.h>
 
 YahooDialog::YahooDialog () : QTabDialog (0, "YahooDialog", TRUE)
 {
@@ -34,24 +38,38 @@ YahooDialog::YahooDialog () : QTabDialog (0, "YahooDialog", TRUE)
 
   QWidget *w = new QWidget(this);
   
-  QHBoxLayout *hbox = new QHBoxLayout(w);
+  QVBoxLayout *vbox = new QVBoxLayout(w);
+  vbox->setMargin(5);
+  vbox->setSpacing(0);
   
-  QVBoxLayout *vbox = new QVBoxLayout(hbox);
+  toolbar = new Toolbar(w, 30, 30);
+  vbox->addWidget(toolbar);
   
-  QGridLayout *grid = new QGridLayout(vbox, 5, 2);
-  grid->setMargin(5);
+  toolbar->addButton("new", newchart, tr("New"));
+  QObject::connect(toolbar->getButton("new"), SIGNAL(pressed()), this, SLOT(newStock()));
+  
+  toolbar->addButton("selectAll", selectall, tr("Select All"));
+  QObject::connect(toolbar->getButton("selectAll"), SIGNAL(pressed()), this, SLOT(selectAll()));
+  
+  toolbar->addButton("unselectAll", unselectall, tr("Unselect All"));
+  QObject::connect(toolbar->getButton("unselectAll"), SIGNAL(pressed()), this, SLOT(unselectAll()));
+  
+  vbox->addSpacing(10);
+  
+  QGridLayout *grid = new QGridLayout(vbox, 4, 2);
   grid->setSpacing(5);
   grid->setColStretch(1, 1);
   
-  QLabel *label = new QLabel(tr("Quote Type"), w);
+  QLabel *label = new QLabel(tr("Method:"), w);
   grid->addWidget(label, 0, 0);
   
   method = new QComboBox(w);
-  method->insertItem(tr("History"), -1);
-  method->insertItem(tr("Quote"), -1);
+  method->insertItem(tr("History"), 0);
+  method->insertItem(tr("Quote"), 1);
+  QObject::connect(method, SIGNAL(activated(int)), this, SLOT(methodChanged(int)));
   grid->addWidget(method, 0, 1);
   
-  label = new QLabel(tr("Start Date"), w);
+  label = new QLabel(tr("Start Date:"), w);
   grid->addWidget(label, 1, 0);
 
   date = new QDateEdit(QDate::currentDate(), w);
@@ -59,7 +77,7 @@ YahooDialog::YahooDialog () : QTabDialog (0, "YahooDialog", TRUE)
   date->setOrder(QDateEdit::YMD);
   grid->addWidget(date, 1, 1);
 
-  label = new QLabel(tr("End Date"), w);
+  label = new QLabel(tr("End Date:"), w);
   grid->addWidget(label, 2, 0);
   
   date2 = new QDateEdit(QDate::currentDate(), w);
@@ -67,35 +85,32 @@ YahooDialog::YahooDialog () : QTabDialog (0, "YahooDialog", TRUE)
   date2->setOrder(QDateEdit::YMD);
   grid->addWidget(date2, 2, 1);
   
-  adjustment = new QCheckBox(tr("Adjustment"), w);
-  grid->addWidget(adjustment, 3, 0);
+  vbox->addSpacing(5);
   
-  list = new QListView(w);
-  list->addColumn(tr("Symbol"), 200);
+  adjustment = new QCheckBox(tr("Adjustment"), w);
+  vbox->addWidget(adjustment);
+  vbox->addSpacing(10);
+  
+  QFrame *sep = new QFrame(w);
+  sep->setFrameShape(QFrame::HLine);
+  sep->setFrameShadow(QFrame::Sunken);
+  vbox->addWidget(sep);
+  vbox->addSpacing(10);
+  
+  label = new QLabel(tr("Download Symbols:"), w);
+  vbox->addWidget(label);
+  
+  list = new QListBox(w);
   list->setMultiSelection(TRUE);
   vbox->addWidget(list);
 
-  grid = new QGridLayout(hbox, 4, 1);
-  grid->setMargin(5);
-  grid->setSpacing(5);
-  
-  newButton = new QPushButton(tr("New"), w);
-  QObject::connect(newButton, SIGNAL(pressed()), this, SLOT(newStock()));
-  grid->addWidget(newButton, 0, 0);
-  
-  selectButton = new QPushButton(tr("Select All"), w);
-  QObject::connect(selectButton, SIGNAL(pressed()), this, SLOT(selectAll()));
-  grid->addWidget(selectButton, 1, 0);
-  
-  unselectButton = new QPushButton(tr("Unselect All"), w);
-  QObject::connect(unselectButton, SIGNAL(pressed()), this, SLOT(unselectAll()));
-  grid->addWidget(unselectButton, 2, 0);
-  
   addTab(w, tr("Yahoo"));
 
   setOkButton();
   setCancelButton();
-    
+
+  resize(300, 400);
+      
   updateList();
 }
 
@@ -158,19 +173,17 @@ void YahooDialog::updateList ()
   QDir dir(dataPath);
   int loop;
   for (loop = 2; loop < (int) dir.count(); loop++)
-    new QListViewItem(list, dir[loop]);
+    list->insertItem(dir[loop]);
 }
 
 QStringList YahooDialog::getList ()
 {
   QStringList l;
-  QListViewItem *item = list->firstChild();
-  while (item)
+  int loop;
+  for (loop = 0; loop < (int) list->count(); loop++)
   {
-    if (item->isSelected())
-      l.append(item->text(0));
-      
-    item = item->nextSibling();
+    if (list->isSelected(loop))
+      l.append(list->text(loop));
   }
   
   return l;
@@ -227,6 +240,27 @@ QString YahooDialog::getMethod ()
 
 void YahooDialog::setMethod (QString d)
 {
-  method->setCurrentText(d);
+  if (! d.compare(tr("History")))
+    method->setCurrentItem(0);
+  else
+    method->setCurrentItem(1);
+    
+  methodChanged(0);
+}
+
+void YahooDialog::methodChanged (int)
+{
+  if (method->currentItem() == 1)
+  {
+    adjustment->setEnabled(FALSE);
+    date->setEnabled(FALSE);
+    date2->setEnabled(FALSE);
+  }
+  else
+  {
+    adjustment->setEnabled(TRUE);
+    date->setEnabled(TRUE);
+    date2->setEnabled(TRUE);
+  }
 }
 
