@@ -102,7 +102,6 @@ class QtstalkerApp : public QMainWindow
     void slotStatusMessage (QString);
 
   private:
-  
     QPopupMenu *fileMenu;
     QPopupMenu *editMenu;
     QPopupMenu *viewMenu;
@@ -149,8 +148,8 @@ class QtstalkerApp : public QMainWindow
     QMenuBar *menubar;
     Plot *mainPlot;
     Plot *indicatorPlot;
-    QComboBox *groupCombo;
     QComboBox *barCombo;
+    QComboBox *groupCombo;
     QSpinBox *pixelspace;
     Config *config;
     QSlider *slider;
