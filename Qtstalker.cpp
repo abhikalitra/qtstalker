@@ -49,6 +49,7 @@
 #include "WorkwithChartsDialog.h"
 #include "WorkwithGroupsDialog.h"
 #include "WorkwithPortfoliosDialog.h"
+#include "Tester.h"
 
 #include "dirclosed.xpm"
 #include "next.xpm"
@@ -71,6 +72,7 @@
 #include "edit.xpm"
 #include "delete.xpm"
 #include "co.xpm"
+#include "test.xpm"
 
 QtstalkerApp::QtstalkerApp()
 {
@@ -327,6 +329,11 @@ void QtstalkerApp::initActions()
   actionNewPlugin = new QAction(tr("Install new plugins..."), icon, tr("Install new plugins..."), 0, this);
   actionNewPlugin->setStatusTip(tr("Install new plugins."));
   connect(actionNewPlugin, SIGNAL(activated()), this, SLOT(slotNewPlugin()));
+  
+  icon = test;
+  actionTester = new QAction(tr("Back Testing"), icon, tr("Back Testing"), 0, this);
+  actionTester->setStatusTip(tr("Back Testing"));
+  connect(actionTester, SIGNAL(activated()), this, SLOT(slotTester()));
 }
 
 void QtstalkerApp::initMenuBar()
@@ -366,6 +373,7 @@ void QtstalkerApp::initMenuBar()
   toolMenu = new QPopupMenu();
   actionDatawindow->addTo(toolMenu);
   actionQuotes->addTo(toolMenu);
+  actionTester->addTo(toolMenu);
 
   helpMenu = new QPopupMenu();
   actionAbout->addTo(helpMenu);
@@ -429,6 +437,7 @@ void QtstalkerApp::initToolBar()
 
   actionDatawindow->addTo(toolbar);
   actionQuotes->addTo(toolbar);
+  actionTester->addTo(toolbar);
 
   // construct the navigation toolbar
   navToolbar = new QToolBar(this, "nav toolbar");
@@ -485,7 +494,6 @@ void QtstalkerApp::slotWorkwithChart ()
   dialog->show();
   slotStatusMessage(tr("Scanning symbols..."));
   dialog->setStartDir(chartPath);
-  dialog->updateFileList();
   statusBar()->message(tr("Ready"), 2000);
 }
 
@@ -1555,6 +1563,12 @@ void QtstalkerApp::setPlotColors ()
   color.setNamedColor(config->getData(Config::NeutralColor));
   mainPlot->setNeutralColor(color);
   indicatorPlot->setNeutralColor(color);
+}
+
+void QtstalkerApp::slotTester ()
+{
+  Tester *dialog = new Tester(config);
+  dialog->show();
 }
 
 //**********************************************************************

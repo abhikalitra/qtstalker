@@ -143,7 +143,7 @@ PlotLine * IndicatorPlugin::getEMA (PlotLine *data, int period)
 
   int count;
   double t = 0;
-  int loop = period;
+  int loop = period - 1;
   for (count = 0; count < period; count++)
     t = t + data->getData(loop - count);
 
@@ -170,7 +170,7 @@ PlotLine * IndicatorPlugin::getSMA (PlotLine *data, int period)
     return sma;
 
   int loop;
-  for (loop = period; loop < (int) data->getSize(); loop++)
+  for (loop = period - 1; loop < (int) data->getSize(); loop++)
   {
     double total = 0;
     int loop2;
@@ -194,7 +194,7 @@ PlotLine * IndicatorPlugin::getWMA (PlotLine *data, int period)
     return wma;
 
   int loop;
-  for (loop = period; loop < (int) data->getSize(); loop++)
+  for (loop = period - 1; loop < (int) data->getSize(); loop++)
   {
     int loop2;
     int weight;

@@ -24,15 +24,9 @@
 
 #include <qdialog.h>
 #include <qtoolbutton.h>
-#include <qstring.h>
 #include <qlayout.h>
 #include <qlistview.h>
-#include <qdatetime.h>
-#include <qdatetimeedit.h>
-#include <qlabel.h>
-#include <qdir.h>
-#include <qgroupbox.h>
-
+#include "SettingView.h"
 #include "Setting.h"
 #include "Config.h"
 
@@ -44,62 +38,19 @@ class EditDialog : public QDialog
     EditDialog (Config *);
     ~EditDialog ();
     void setItems (Setting *);
-    void makeSettings ();
-    void colorDialog ();
-    void dateDialog ();
-    void textDialog ();
-    void intDialog ();
-    void floatDialog ();
-    void fileDialog ();
-    void symbolDialog ();
-    void checkDialog ();
-    void listDialog ();
-    void updateFileList ();
-    void clearFileInfo ();
-    void setFileInfo ();
-    void setFileSelector ();
-    QString getFileSelection ();
 
   public slots:
-    void cellSelected (QListViewItem *);
     void saveData ();
-    void upDirectory ();
-    void fileSelection (QListViewItem *);
 
   protected:
     Config *config;
     Setting *settings;
-    QVBoxLayout *baseBox;
-    QVBoxLayout *topBox;
-    QHBoxLayout *fileBox;
-    QGroupBox *gbox;
-    QListView *list;
-    QListView *fileList;
+    SettingView *list;
     QListViewItem *item;
     QToolButton *okButton;
     QToolButton *cancelButton;
-    QToolButton *upButton;
     QGridLayout *toolbar;
-    QLabel *symbol;
-    QLabel *title;
-    QLabel *type;
-    QLabel *firstDate;
-    QLabel *lastDate;
-    QDir currentDir;
-};
-
-class DateDialog : public QDialog
-{
-  Q_OBJECT
-
-  public:
-    DateDialog ();
-    ~DateDialog ();
-    void setDate (QDate);
-    QDate getDate ();
-
-  private:
-    QDateEdit *date;
+    QVBoxLayout *vbox;
 };
 
 #endif

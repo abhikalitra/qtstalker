@@ -23,19 +23,13 @@
 #define PORTFOLIODIALOG_HPP
 
 #include "Config.h"
-#include "EditDialog.h"
 #include <qstring.h>
 #include <qdialog.h>
 #include <qtoolbutton.h>
 #include <qlistview.h>
-#include <qlineedit.h>
-#include <qspinbox.h>
-#include <qcombobox.h>
-#include <qlabel.h>
-#include <qpixmap.h>
-#include <qvalidator.h>
+#include <qlayout.h>
 
-class PortfolioDialog : public EditDialog
+class PortfolioDialog : public QDialog
 {
   Q_OBJECT
 
@@ -51,14 +45,19 @@ class PortfolioDialog : public EditDialog
     void addItem ();
     void deleteItem ();
     void savePortfolio ();
-    void buttonStatus ();
+    void buttonStatus (QListViewItem *);
 
   private:
+    QListView *list;
+    QListViewItem *item;
+    Config *config;
+    QToolButton *okButton;
+    QToolButton *cancelButton;
     QToolButton *modifyButton;
     QToolButton *addButton;
     QToolButton *deleteButton;
-    QListView *list2;
     QString portfolio;
+    QGridLayout *toolbar;
 };
 
 #endif

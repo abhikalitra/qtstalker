@@ -22,22 +22,34 @@
 #include "WorkwithChartsDialog.h"
 #include "ChartDb.h"
 #include "Setting.h"
-#include "Plugin.h"
+#include "EditDialog.h"
 #include "open.xpm"
 #include "edit.xpm"
 #include "delete.xpm"
 #include "export.xpm"
-#include <qinputdialog.h>
+#include "stop.xpm"
 #include <qtooltip.h>
-#include <qlayout.h>
 #include <qdir.h>
 #include <qmessagebox.h>
-#include <qgroupbox.h>
 
-WorkwithChartsDialog::WorkwithChartsDialog (Config *c) : EditDialog (c)
+WorkwithChartsDialog::WorkwithChartsDialog (Config *c) : QDialog (0, "WorkwithChartsDialog", TRUE)
 {
-  toolbar->expand(1, 8);
-  okButton->hide();
+  config = c;
+  
+  QVBoxLayout *vbox = new QVBoxLayout(this);
+  vbox->setMargin(5);
+  vbox->setSpacing(5);
+
+  toolbar = new QGridLayout(vbox, 1, 7);
+  toolbar->setSpacing(1);
+
+  cancelButton = new QToolButton(this);
+  QToolTip::add(cancelButton, tr("Cancel"));
+  cancelButton->setPixmap(QPixmap(stop));
+  connect(cancelButton, SIGNAL(clicked()), this, SLOT(reject()));
+  cancelButton->setMaximumWidth(30);
+  cancelButton->setAutoRaise(TRUE);
+  toolbar->addWidget(cancelButton, 0, 0);
 
   openButton = new QToolButton(this);
   QToolTip::add(openButton, tr("Open Chart"));
@@ -45,7 +57,8 @@ WorkwithChartsDialog::WorkwithChartsDialog (Config *c) : EditDialog (c)
   connect(openButton, SIGNAL(clicked()), this, SLOT(openSymbol()));
   openButton->setMaximumWidth(30);
   openButton->setAutoRaise(TRUE);
-  toolbar->addWidget(openButton, 0, 0);
+  toolbar->addWidget(openButton, 0, 1);
+  openButton->setEnabled(FALSE);
 
   editButton = new QToolButton(this);
   QToolTip::add(editButton, tr("Edit Chart"));
@@ -53,7 +66,8 @@ WorkwithChartsDialog::WorkwithChartsDialog (Config *c) : EditDialog (c)
   connect(editButton, SIGNAL(clicked()), this, SLOT(editChart()));
   editButton->setMaximumWidth(30);
   editButton->setAutoRaise(TRUE);
-  toolbar->addWidget(editButton, 0, 3);
+  toolbar->addWidget(editButton, 0, 2);
+  editButton->setEnabled(FALSE);
 
   deleteButton = new QToolButton(this);
   QToolTip::add(deleteButton, tr("Delete Chart"));
@@ -61,7 +75,8 @@ WorkwithChartsDialog::WorkwithChartsDialog (Config *c) : EditDialog (c)
   connect(deleteButton, SIGNAL(clicked()), this, SLOT(deleteChart()));
   deleteButton->setMaximumWidth(30);
   deleteButton->setAutoRaise(TRUE);
-  toolbar->addWidget(deleteButton, 0, 4);
+  toolbar->addWidget(deleteButton, 0, 3);
+  deleteButton->setEnabled(FALSE);
 
   exportButton = new QToolButton(this);
   QToolTip::add(exportButton, tr("Export Chart"));
@@ -69,7 +84,8 @@ WorkwithChartsDialog::WorkwithChartsDialog (Config *c) : EditDialog (c)
   connect(exportButton, SIGNAL(clicked()), this, SLOT(exportSymbol()));
   exportButton->setMaximumWidth(30);
   exportButton->setAutoRaise(TRUE);
-  toolbar->addWidget(exportButton, 0, 5);
+  toolbar->addWidget(exportButton, 0, 4);
+  exportButton->setEnabled(FALSE);
 
   exportAllButton = new QToolButton(this);
   QToolTip::add(exportAllButton, tr("Export All Charts"));
@@ -77,11 +93,12 @@ WorkwithChartsDialog::WorkwithChartsDialog (Config *c) : EditDialog (c)
   connect(exportAllButton, SIGNAL(clicked()), this, SLOT(exportAll()));
   exportAllButton->setMaximumWidth(30);
   exportAllButton->setAutoRaise(TRUE);
-  toolbar->addWidget(exportAllButton, 0, 6);
+  toolbar->addWidget(exportAllButton, 0, 5);
 
-  connect(fileList, SIGNAL(doubleClicked(QListViewItem *)), this, SLOT(openSymbol()));
-
-  setFileSelector();
+  navigator = new Navigator(this, config->getData(Config::DataPath));
+  connect(navigator, SIGNAL(doubleClick(QString)), this, SLOT(openSymbol(QString)));
+  connect(navigator, SIGNAL(fileSelected(QString)), this, SLOT(symbolSelected(QString)));
+  vbox->addWidget(navigator);
 }
 
 WorkwithChartsDialog::~WorkwithChartsDialog ()
@@ -90,16 +107,17 @@ WorkwithChartsDialog::~WorkwithChartsDialog ()
 
 void WorkwithChartsDialog::openSymbol ()
 {
-  item = fileList->selectedItem();
-  if (! item)
-    return;
-    
-  if (item->pixmap(0))
+  openSymbol(navigator->getFileSelection());
+}
+
+void WorkwithChartsDialog::openSymbol (QString symbol)
+{
+  if (! symbol.length())
     return;
 
-  QString s = currentDir.absPath();
+  QString s = config->getData(Config::DataPath);
   s.append("/");
-  s.append(item->text(0));
+  s.append(symbol);
 
   emit chartOpened (s);
 
@@ -108,28 +126,29 @@ void WorkwithChartsDialog::openSymbol ()
 
 void WorkwithChartsDialog::deleteChart ()
 {
-  item = fileList->selectedItem();
-  if (! item)
+  QString symbol = navigator->getFileSelection();
+  if (! symbol.length())
     return;
 
-  QString s = currentDir.absPath();
+  QString s = config->getData(Config::DataPath);
   s.append("/");
-  s.append(item->text(0));
+  s.append(symbol);
 
-  currentDir.remove(s, TRUE);
+  QDir dir(s);
+  dir.remove(s, TRUE);
 
-  delete item;
+  navigator->updateList();
 }
 
 void WorkwithChartsDialog::editChart ()
 {
-  item = fileList->selectedItem();
-  if (! item)
+  QString symbol = navigator->getFileSelection();
+  if (! symbol.length())
     return;
 
-  QString selection = currentDir.absPath();
+  QString selection = config->getData(Config::DataPath);
   selection.append("/");
-  selection.append(item->text(0));
+  selection.append(symbol);
 
   ChartDb *db = new ChartDb();
   if (db->openChart(selection))
@@ -161,27 +180,25 @@ void WorkwithChartsDialog::editChart ()
 
 void WorkwithChartsDialog::exportSymbol ()
 {
-  item = fileList->selectedItem();
-  if (! item)
-    return;
-
-  if (item->pixmap(0))
+  QString symbol = navigator->getFileSelection();
+  if (! symbol.length())
     return;
 
   QString s = config->getData(Config::Home);
   s.append("/export");
-  if (! currentDir.exists(s, TRUE))
+  QDir dir(s);
+  if (! dir.exists(s, TRUE))
   {
-    if (! currentDir.mkdir(s, TRUE))
+    if (! dir.mkdir(s, TRUE))
     {
       qDebug("Unable to create export directory.");
       return;
     }
   }
 
-  s = currentDir.path();
+  s = config->getData(Config::DataPath);
   s.append("/");
-  s.append(item->text(0));
+  s.append(symbol);
   exportChart(s);
 }
 
@@ -189,16 +206,17 @@ void WorkwithChartsDialog::exportAll ()
 {
   QString s = config->getData(Config::Home);
   s.append("/export");
-  if (! currentDir.exists(s, TRUE))
+  QDir dir(s);
+  if (! dir.exists(s, TRUE))
   {
-    if (! currentDir.mkdir(s, TRUE))
+    if (! dir.mkdir(s, TRUE))
     {
       qDebug("Unable to create export directory.");
       return;
     }
   }
 
-  QDir dir(config->getData(Config::DataPath));
+  dir.setPath(config->getData(Config::DataPath));
 
   int loop;
   for (loop = 2; loop < (int) dir.count(); loop++)
@@ -241,11 +259,26 @@ void WorkwithChartsDialog::exportChart (QString path)
 
 void WorkwithChartsDialog::setStartDir (QString d)
 {
-  if (d.length())
+  navigator->setDirectory(d);
+  navigator->updateList();
+}
+
+void WorkwithChartsDialog::symbolSelected (QString d)
+{
+  if (! d.length())
   {
-    int i = d.findRev('/', -1, TRUE);
-    d.truncate(i);
-    currentDir.setPath(d);
+    openButton->setEnabled(FALSE);
+    editButton->setEnabled(FALSE);
+    deleteButton->setEnabled(FALSE);
+    exportButton->setEnabled(FALSE);
+  }
+  else
+  {
+    openButton->setEnabled(TRUE);
+    editButton->setEnabled(TRUE);
+    deleteButton->setEnabled(TRUE);
+    exportButton->setEnabled(TRUE);
   }
 }
+
 

@@ -21,6 +21,7 @@
 
 #include "WorkwithPortfoliosDialog.h"
 #include "PortfolioDialog.h"
+#include "stop.xpm"
 #include "open.xpm"
 #include "newchart.xpm"
 #include "edit.xpm"
@@ -31,11 +32,24 @@
 #include <qmessagebox.h>
 #include <qstring.h>
 
-WorkwithPortfoliosDialog::WorkwithPortfoliosDialog (Config *c) : EditDialog (c)
+WorkwithPortfoliosDialog::WorkwithPortfoliosDialog (Config *c) : QDialog (0, "WorkwithPortfoliosDialog", TRUE)
 {
-  list->hide();
+  config = c;
 
-  toolbar->expand(1, 7);
+  QVBoxLayout *vbox = new QVBoxLayout(this);
+  vbox->setMargin(5);
+  vbox->setSpacing(5);
+
+  toolbar = new QGridLayout(vbox, 1, 7);
+  toolbar->setSpacing(1);
+
+  cancelButton = new QToolButton(this);
+  QToolTip::add(cancelButton, tr("Cancel"));
+  cancelButton->setPixmap(QPixmap(stop));
+  connect(cancelButton, SIGNAL(clicked()), this, SLOT(reject()));
+  cancelButton->setMaximumWidth(30);
+  cancelButton->setAutoRaise(TRUE);
+  toolbar->addWidget(cancelButton, 0, 0);
 
   openButton = new QToolButton(this);
   QToolTip::add(openButton, tr("Open Portfolio"));
@@ -43,7 +57,8 @@ WorkwithPortfoliosDialog::WorkwithPortfoliosDialog (Config *c) : EditDialog (c)
   connect(openButton, SIGNAL(clicked()), this, SLOT(openPortfolio()));
   openButton->setMaximumWidth(30);
   openButton->setAutoRaise(TRUE);
-  toolbar->addWidget(openButton, 0, 0);
+  toolbar->addWidget(openButton, 0, 1);
+  openButton->setEnabled(FALSE);
 
   newButton = new QToolButton(this);
   QToolTip::add(newButton, tr("New Portfolio"));
@@ -60,6 +75,7 @@ WorkwithPortfoliosDialog::WorkwithPortfoliosDialog (Config *c) : EditDialog (c)
   editButton->setMaximumWidth(30);
   editButton->setAutoRaise(TRUE);
   toolbar->addWidget(editButton, 0, 3);
+  editButton->setEnabled(FALSE);
 
   deleteButton = new QToolButton(this);
   QToolTip::add(deleteButton, tr("Delete Portfolio"));
@@ -68,6 +84,7 @@ WorkwithPortfoliosDialog::WorkwithPortfoliosDialog (Config *c) : EditDialog (c)
   deleteButton->setMaximumWidth(30);
   deleteButton->setAutoRaise(TRUE);
   toolbar->addWidget(deleteButton, 0, 4);
+  deleteButton->setEnabled(FALSE);
 
   renameButton = new QToolButton(this);
   QToolTip::add(renameButton, tr("Rename Portfolio"));
@@ -76,12 +93,14 @@ WorkwithPortfoliosDialog::WorkwithPortfoliosDialog (Config *c) : EditDialog (c)
   renameButton->setMaximumWidth(30);
   renameButton->setAutoRaise(TRUE);
   toolbar->addWidget(renameButton, 0, 5);
+  renameButton->setEnabled(FALSE);
 
-  list2 = new QListView(this);
-  list2->addColumn(tr("Portfolio"), 200);
-  list2->setSelectionMode(QListView::Single);
-  connect(list2, SIGNAL(doubleClicked(QListViewItem *)), this, SLOT(openPortfolio()));
-  baseBox->addWidget(list2);
+  list = new QListView(this);
+  list->addColumn(tr("Portfolio"), -1);
+  list->setSelectionMode(QListView::Single);
+  connect(list, SIGNAL(doubleClicked(QListViewItem *)), this, SLOT(openPortfolio()));
+  connect(list, SIGNAL(clicked(QListViewItem *)), this, SLOT(portfolioSelected(QListViewItem *)));
+  vbox->addWidget(list);
 }
 
 WorkwithPortfoliosDialog::~WorkwithPortfoliosDialog ()
@@ -90,18 +109,18 @@ WorkwithPortfoliosDialog::~WorkwithPortfoliosDialog ()
 
 void WorkwithPortfoliosDialog::updateList ()
 {
-  list2->clear();
+  list->clear();
 
   QStringList l = config->getPortfolioList();
 
   int loop;
   for (loop = 0; loop < (int) l.count(); loop++)
-    item = new QListViewItem(list2, l[loop]);
+    item = new QListViewItem(list, l[loop]);
 }
 
 void WorkwithPortfoliosDialog::openPortfolio ()
 {
-  item = list2->selectedItem();
+  item = list->selectedItem();
   if (! item)
     return;
 
@@ -133,7 +152,7 @@ void WorkwithPortfoliosDialog::newPortfolio()
 
 void WorkwithPortfoliosDialog::editPortfolio()
 {
-  item = list2->selectedItem();
+  item = list->selectedItem();
   if (! item)
     return;
 
@@ -144,7 +163,7 @@ void WorkwithPortfoliosDialog::editPortfolio()
 
 void WorkwithPortfoliosDialog::deletePortfolio()
 {
-  item = list2->selectedItem();
+  item = list->selectedItem();
   if (! item)
     return;
 
@@ -154,7 +173,7 @@ void WorkwithPortfoliosDialog::deletePortfolio()
 
 void WorkwithPortfoliosDialog::renamePortfolio ()
 {
-  item = list2->selectedItem();
+  item = list->selectedItem();
   if (! item)
     return;
 
@@ -175,6 +194,24 @@ void WorkwithPortfoliosDialog::renamePortfolio ()
     config->setPortfolio(selection, l);
 
     updateList();
+  }
+}
+
+void WorkwithPortfoliosDialog::portfolioSelected (QListViewItem *i)
+{
+  if (! i)
+  {
+    openButton->setEnabled(FALSE);
+    editButton->setEnabled(FALSE);
+    deleteButton->setEnabled(FALSE);
+    renameButton->setEnabled(FALSE);
+  }
+  else
+  {
+    openButton->setEnabled(TRUE);
+    editButton->setEnabled(TRUE);
+    deleteButton->setEnabled(TRUE);
+    renameButton->setEnabled(TRUE);
   }
 }
 

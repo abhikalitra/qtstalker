@@ -100,6 +100,7 @@ class QtstalkerApp : public QMainWindow
     void slotNewPlugin ();
     void slotChartUpdated ();
     void slotStatusMessage (QString);
+    void slotTester ();
 
   private:
     QPopupMenu *fileMenu;

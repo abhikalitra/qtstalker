@@ -24,10 +24,12 @@
 
 #include <qstring.h>
 #include <qtoolbutton.h>
+#include <qlayout.h>
+#include <qdialog.h>
 #include "Config.h"
-#include "EditDialog.h"
+#include "Navigator.h"
 
-class WorkwithChartsDialog : public EditDialog
+class WorkwithChartsDialog : public QDialog
 {
   Q_OBJECT
 
@@ -43,16 +45,22 @@ class WorkwithChartsDialog : public EditDialog
   public slots:
     void deleteChart ();
     void openSymbol ();
+    void openSymbol (QString);
     void editChart ();
     void exportSymbol ();
     void exportAll ();
+    void symbolSelected (QString);
 
   private:
+    Config *config;
+    QToolButton *cancelButton;
     QToolButton *openButton;
     QToolButton *editButton;
     QToolButton *deleteButton;
     QToolButton *exportButton;
     QToolButton *exportAllButton;
+    Navigator *navigator;
+    QGridLayout *toolbar;
 };
 
 #endif

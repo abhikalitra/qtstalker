@@ -26,11 +26,14 @@
 #include <qcombobox.h>
 #include <qlibrary.h>
 #include <qtoolbutton.h>
+#include <qdialog.h>
+#include <qlayout.h>
+#include <qlistview.h>
 #include "Config.h"
 #include "Plugin.h"
-#include "EditDialog.h"
+#include "SettingView.h"
 
-class QuoteDialog : public EditDialog
+class QuoteDialog : public QDialog
 {
   Q_OBJECT
 
@@ -52,12 +55,18 @@ class QuoteDialog : public EditDialog
     void newChart ();
 
   private:
+    Setting *settings;
     QComboBox *ruleCombo;
     Plugin *plug;
     QLibrary *lib;
+    QToolButton *cancelButton;
     QToolButton *downloadButton;
     QToolButton *cancelDownloadButton;
     QToolButton *newButton;
+    Config *config;
+    SettingView *list;
+    QListViewItem *item;
+    QGridLayout *toolbar;
 };
 
 #endif

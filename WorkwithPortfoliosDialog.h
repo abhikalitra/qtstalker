@@ -24,10 +24,11 @@
 
 #include <qtoolbutton.h>
 #include <qlistview.h>
+#include <qdialog.h>
+#include <qlayout.h>
 #include "Config.h"
-#include "EditDialog.h"
 
-class WorkwithPortfoliosDialog : public EditDialog
+class WorkwithPortfoliosDialog : public QDialog
 {
   Q_OBJECT
 
@@ -42,14 +43,19 @@ class WorkwithPortfoliosDialog : public EditDialog
     void newPortfolio ();
     void deletePortfolio ();
     void editPortfolio ();
+    void portfolioSelected (QListViewItem *);
 
   private:
-    QListView *list2;
+    QListView *list;
+    QListViewItem *item;
+    Config *config;
+    QToolButton *cancelButton;
     QToolButton *openButton;
     QToolButton *editButton;
     QToolButton *deleteButton;
     QToolButton *newButton;
     QToolButton *renameButton;
+    QGridLayout *toolbar;
 };
 
 #endif

@@ -20,23 +20,38 @@
  */
 
 #include "Quote.h"
+#include "EditDialog.h"
 #include "download.xpm"
 #include "canceldownload.xpm"
 #include "newchart.xpm"
-#include <qlayout.h>
+#include "stop.xpm"
 #include <qstringlist.h>
 #include <qmessagebox.h>
 #include <qtooltip.h>
 
-QuoteDialog::QuoteDialog (Config *c) : EditDialog (c)
+QuoteDialog::QuoteDialog (Config *c) : QDialog (0, "QuoteDialog", TRUE)
 {
+  config = c;
+  settings = 0;
   lib = 0;
   plug = 0;
-  settings = 0;
-
+  
   setCaption (tr("Qtstalker: Quotes"));
 
-  toolbar->expand(1, 6);
+  QVBoxLayout *vbox = new QVBoxLayout(this);
+  vbox->setMargin(5);
+  vbox->setSpacing(5);
+
+  toolbar = new QGridLayout(vbox, 1, 5);
+  toolbar->setSpacing(1);
+
+  cancelButton = new QToolButton(this);
+  QToolTip::add(cancelButton, tr("Cancel"));
+  cancelButton->setPixmap(QPixmap(stop));
+  connect(cancelButton, SIGNAL(clicked()), this, SLOT(reject()));
+  cancelButton->setMaximumWidth(30);
+  cancelButton->setAutoRaise(TRUE);
+  toolbar->addWidget(cancelButton, 0, 0);
 
   downloadButton = new QToolButton(this);
   QToolTip::add(downloadButton, tr("Update"));
@@ -44,14 +59,14 @@ QuoteDialog::QuoteDialog (Config *c) : EditDialog (c)
   connect(downloadButton, SIGNAL(clicked()), this, SLOT(getQuotes()));
   downloadButton->setMaximumWidth(30);
   downloadButton->setAutoRaise(TRUE);
-  toolbar->addWidget(downloadButton, 0, 2);
+  toolbar->addWidget(downloadButton, 0, 1);
 
   cancelDownloadButton = new QToolButton(this);
   QToolTip::add(cancelDownloadButton, tr("Cancel Update"));
   cancelDownloadButton->setPixmap(QPixmap(canceldownload));
   connect(cancelDownloadButton, SIGNAL(clicked()), this, SLOT(cancelDownload()));
   cancelDownloadButton->setMaximumWidth(30);
-  toolbar->addWidget(cancelDownloadButton, 0, 3);
+  toolbar->addWidget(cancelDownloadButton, 0, 2);
   cancelDownloadButton->setEnabled(FALSE);
   cancelDownloadButton->setAutoRaise(TRUE);
 
@@ -60,17 +75,18 @@ QuoteDialog::QuoteDialog (Config *c) : EditDialog (c)
   newButton->setPixmap(QPixmap(newchart));
   connect(newButton, SIGNAL(clicked()), this, SLOT(newChart()));
   newButton->setMaximumWidth(30);
-  toolbar->addWidget(newButton, 0, 4);
+  toolbar->addWidget(newButton, 0, 3);
   newButton->setEnabled(FALSE);
   newButton->setAutoRaise(TRUE);
 
   ruleCombo = new QComboBox(this);
   ruleCombo->insertStringList(config->getQuotePlugins(), -1);
   connect (ruleCombo, SIGNAL(activated(int)), this, SLOT(ruleChanged(int)));
-  topBox->addWidget(ruleCombo, 1, 0);
+  vbox->insertWidget(1, ruleCombo, 0, 0);
 
-  okButton->setEnabled(FALSE);
-  
+  list = new SettingView (this, config->getData(Config::DataPath));
+  vbox->addWidget(list);
+
   ruleChanged(0);
 }
 
@@ -93,11 +109,13 @@ void QuoteDialog::getQuotes ()
   disableGUI();
 
   cancelDownloadButton->setEnabled(TRUE);
+  
+  QList<QListViewItem> l = list->getList();
 
-  QListViewItemIterator it(list);
-  for (; it.current(); ++it)
+  int loop;
+  for (loop = 0; loop < (int) l.count(); loop++)
   {
-    item = it.current();
+    item = l.at(loop);
     plug->setData(item->text(0), item->text(1));
     plug->setList(item->text(0), settings->getList(item->text(0)));
   }
@@ -145,18 +163,16 @@ void QuoteDialog::ruleChanged (int)
   else
     newButton->setEnabled(FALSE);
 
-  list->clear();
-
-  Setting *set = new Setting;
+  settings = new Setting;
   QStringList l = plug->getKeyList();
   int loop;
   for (loop = 0; loop < (int) l.count(); loop++)
   {
-    set->set(l[loop], plug->getData(l[loop]), plug->getType(l[loop]));
-    set->setList(l[loop], plug->getList(l[loop]));
+    settings->set(l[loop], plug->getData(l[loop]), plug->getType(l[loop]));
+    settings->setList(l[loop], plug->getList(l[loop]));
   }
 
-  setItems(set);
+  list->setItems(settings);
 }
 
 void QuoteDialog::downloadComplete ()

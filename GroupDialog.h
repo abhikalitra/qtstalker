@@ -23,10 +23,14 @@
 #define GROUPDIALOG_HPP
 
 #include <qtoolbutton.h>
+#include <qlayout.h>
+#include <qdialog.h>
+#include <qlist.h>
+#include <qstringlist.h>
 #include "Config.h"
-#include "EditDialog.h"
+#include "Navigator.h"
 
-class GroupDialog : public EditDialog
+class GroupDialog : public QDialog
 {
   Q_OBJECT
 
@@ -40,12 +44,20 @@ class GroupDialog : public EditDialog
   public slots:
     void insertItem ();
     void deleteItem ();
+    void symbolSelected (QString);
+    void listSelected (QListViewItem *i);
 
   private:
+    Config *config;
+    QToolButton *okButton;
+    QToolButton *cancelButton;
     QToolButton *deleteButton;
     QToolButton *insertButton;
-    QListView *list2;
+    QGridLayout *toolbar;
+    QListView *list;
+    QListViewItem *item;
     bool flag;
+    Navigator *fileSelector;
 };
 
 #endif

@@ -25,10 +25,11 @@
 #include <qstring.h>
 #include <qtoolbutton.h>
 #include <qlistview.h>
+#include <qlayout.h>
+#include <qdialog.h>
 #include "Config.h"
-#include "EditDialog.h"
 
-class WorkwithGroupsDialog : public EditDialog
+class WorkwithGroupsDialog : public QDialog
 {
   Q_OBJECT
 
@@ -46,14 +47,19 @@ class WorkwithGroupsDialog : public EditDialog
     void newGroup ();
     void deleteGroup ();
     void editGroup ();
+    void groupSelected (QListViewItem *);
 
   private:
-    QListView *list2;
+    QListView *list;
+    QListViewItem *item;
+    Config *config;
+    QToolButton *cancelButton;
     QToolButton *openButton;
     QToolButton *editButton;
     QToolButton *deleteButton;
     QToolButton *newButton;
     QToolButton *renameButton;
+    QGridLayout *toolbar;
 };
 
 #endif

@@ -22,22 +22,40 @@
 #include "GroupDialog.h"
 #include "insert.xpm"
 #include "delete.xpm"
+#include "ok.xpm"
+#include "stop.xpm"
 #include <qtooltip.h>
 
-GroupDialog::GroupDialog (Config *c) : EditDialog (c)
+GroupDialog::GroupDialog (Config *c) : QDialog (0, "GroupDialog", TRUE)
 {
+  config = c;
   flag = FALSE;
 
   setCaption(tr("Qtstalker: Edit Group"));
   
-  setFileSelector();
+  QVBoxLayout *vbox = new QVBoxLayout(this);
+  vbox->setMargin(5);
+  vbox->setSpacing(5);
+  
+  toolbar = new QGridLayout(vbox, 1, 5);
+  toolbar->setSpacing(1);
 
-  list2 = new QListView(this);
-  list2->setSelectionMode(QListView::Multi);
-  list2->addColumn(tr("Group Items"));
-  topBox->addWidget(list2);
+  okButton = new QToolButton(this);
+  QToolTip::add(okButton, tr("OK"));
+  okButton->setPixmap(QPixmap(ok));
+  connect(okButton, SIGNAL(clicked()), this, SLOT(accept()));
+  okButton->setMaximumWidth(30);
+  okButton->setAutoRaise(TRUE);
+  toolbar->addWidget(okButton, 0, 0);
+  okButton->setEnabled(FALSE);
 
-  toolbar->expand(1, 6);
+  cancelButton = new QToolButton(this);
+  QToolTip::add(cancelButton, tr("Cancel"));
+  cancelButton->setPixmap(QPixmap(stop));
+  connect(cancelButton, SIGNAL(clicked()), this, SLOT(reject()));
+  cancelButton->setMaximumWidth(30);
+  cancelButton->setAutoRaise(TRUE);
+  toolbar->addWidget(cancelButton, 0, 1);
 
   insertButton = new QToolButton(this);
   QToolTip::add(insertButton, tr("Insert"));
@@ -45,7 +63,8 @@ GroupDialog::GroupDialog (Config *c) : EditDialog (c)
   connect(insertButton, SIGNAL(clicked()), this, SLOT(insertItem()));
   insertButton->setMaximumWidth(30);
   insertButton->setAutoRaise(TRUE);
-  toolbar->addWidget(insertButton, 0, 3);
+  toolbar->addWidget(insertButton, 0, 2);
+  insertButton->setEnabled(FALSE);
 
   deleteButton = new QToolButton(this);
   QToolTip::add(deleteButton, tr("Delete"));
@@ -53,9 +72,19 @@ GroupDialog::GroupDialog (Config *c) : EditDialog (c)
   connect(deleteButton, SIGNAL(clicked()), this, SLOT(deleteItem()));
   deleteButton->setMaximumWidth(30);
   deleteButton->setAutoRaise(TRUE);
-  toolbar->addWidget(deleteButton, 0, 4);
-  
-  updateFileList();
+  toolbar->addWidget(deleteButton, 0, 3);
+  deleteButton->setEnabled(FALSE);
+
+  fileSelector = new Navigator(this, config->getData(Config::DataPath));
+  connect(fileSelector, SIGNAL(fileSelected(QString)), this, SLOT(symbolSelected(QString)));
+  vbox->addWidget(fileSelector);
+  fileSelector->updateList();
+
+  list = new QListView(this);
+  connect(list, SIGNAL(clicked(QListViewItem *)), this, SLOT(listSelected(QListViewItem *)));
+  list->setSelectionMode(QListView::Multi);
+  list->addColumn(tr("Group Items"), -1);
+  vbox->addWidget(list);
 }
 
 GroupDialog::~GroupDialog ()
@@ -64,11 +93,11 @@ GroupDialog::~GroupDialog ()
 
 void GroupDialog::setGroup (QStringList l)
 {
-  list2->clear();
+  list->clear();
 
   int loop;
   for (loop = 0; loop < (int) l.count(); loop++)
-    item = new QListViewItem(list2, l[loop]);
+    item = new QListViewItem(list, l[loop]);
 
   item = 0;
 }
@@ -76,8 +105,8 @@ void GroupDialog::setGroup (QStringList l)
 QStringList GroupDialog::getGroup ()
 {
   QStringList l;
-  
-  QListViewItemIterator it(list2);
+
+  QListViewItemIterator it(list);
   while(it.current() != 0)
   {
     item = it.current();
@@ -90,13 +119,15 @@ QStringList GroupDialog::getGroup ()
 
 void GroupDialog::insertItem ()
 {
-  QString s = getFileSelection();
+  QString s = fileSelector->getFileSelection();
   if (! s.length())
     return;
 
-  item = new QListViewItem(list2, s);
+  item = new QListViewItem(list, s);
 
   flag = TRUE;
+
+  okButton->setEnabled(TRUE);
 }
 
 void GroupDialog::deleteItem ()
@@ -104,7 +135,7 @@ void GroupDialog::deleteItem ()
   QList<QListViewItem> dl;
   dl.setAutoDelete(TRUE);
 
-  QListViewItemIterator it(list2);
+  QListViewItemIterator it(list);
   while(it.current() != 0)
   {
     item = it.current();
@@ -114,13 +145,43 @@ void GroupDialog::deleteItem ()
   }
 
   dl.clear();
-  
+
   flag = TRUE;
+  
+  okButton->setEnabled(TRUE);
 }
 
 bool GroupDialog::getFlag ()
 {
   return flag;
+}
+
+void GroupDialog::symbolSelected (QString d)
+{
+  if (! d.length())
+    insertButton->setEnabled(FALSE);
+  else
+    insertButton->setEnabled(TRUE);
+}
+
+void GroupDialog::listSelected (QListViewItem *)
+{
+  bool flag = FALSE;
+  QListViewItemIterator it(list);
+  for (; it.current(); ++it)
+  {
+    item = it.current();
+    if (item->isSelected())
+    {
+      flag = TRUE;
+      break;
+    }
+  }
+
+  if (! flag)
+    deleteButton->setEnabled(FALSE);
+  else
+    deleteButton->setEnabled(TRUE);
 }
 
 
