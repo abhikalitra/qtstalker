@@ -14,7 +14,6 @@ To Do:
 - rename indicator function (possible main plot indicator panel revision)
 - fix: stacked indicator widget insertion resizing is ugly.
 - allow point selection on plots to display values past the ends of the chart. (future dates and values)
-- allow individual indicators to be applied to individual charts
 - change Quote behaviour in yahoo plugin to create separate symbols for intraday and daily
   data. also put a timer on yahoo plugin for intraday tick downloads every X minutes. same limitations
   will apply as in the CSV timer

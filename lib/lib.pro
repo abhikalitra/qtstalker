@@ -79,3 +79,4 @@ unix:linux-g++:LIBS += -ldl
 
 target.path = /usr/lib
 INSTALLS += target
+

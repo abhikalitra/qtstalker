@@ -28,7 +28,9 @@
 #include "IndicatorPlugin.h"
 #include "help.xpm"
 #include "ok.xpm"
+#include "ok_gray.xpm"
 #include "disable.xpm"
+#include "disable_gray.xpm"
 #include "edit.xpm"
 #include "delete.xpm"
 #include "newchart.xpm"
@@ -545,10 +547,19 @@ void IndicatorPage::updateList ()
     QFileInfo fi(l[loop]);
     Setting *set = config.getIndicator(l[loop]);
     if (! set->getInt("enable"))
-      list->insertItem(disable, fi.fileName(), -1);
+    {
+      if (localIndicators.findIndex(fi.fileName()) != -1)
+        list->insertItem(disable_gray, fi.fileName(), -1);
+      else
+        list->insertItem(disable, fi.fileName(), -1);
+    }
     else
     {
-      list->insertItem(ok, fi.fileName(), -1);
+      if (localIndicators.findIndex(fi.fileName()) != -1)
+        list->insertItem(ok_gray, fi.fileName(), -1);
+      else
+        list->insertItem(ok, fi.fileName(), -1);
+	
       if (updateEnableFlag)
         emit signalEnableIndicator(l[loop]);
     }
@@ -587,7 +598,10 @@ void IndicatorPage::changeIndicator (QString d)
   {
     set->setData("enable", "0");
     config.setIndicator(s, set);
-    list->changeItem(disable, d, list->currentItem());
+    if (localIndicators.findIndex(list->currentText()) != -1)
+      list->changeItem(disable_gray, d, list->currentItem());
+    else
+      list->changeItem(disable, d, list->currentItem());
     saveLocalIndicator(d, set);
     emit signalDisableIndicator(s);
   }
@@ -595,7 +609,10 @@ void IndicatorPage::changeIndicator (QString d)
   {
     set->setData("enable", "1");
     config.setIndicator(s, set);
-    list->changeItem(ok, d, list->currentItem());
+    if (localIndicators.findIndex(list->currentText()) != -1)
+      list->changeItem(ok_gray, d, list->currentItem());
+    else
+      list->changeItem(ok, d, list->currentItem());
     saveLocalIndicator(d, set);
     emit signalEnableIndicator(s);
   }
@@ -766,14 +783,7 @@ void IndicatorPage::slotGroupChanged (int)
 void IndicatorPage::updateGroups ()
 {
   group->clear();
-  group->insertStringList(getIndicatorGroups(), -1);
-  if (currentGroup.length())  
-    group->setCurrentText(currentGroup);
-}
-
-QStringList IndicatorPage::getIndicatorGroups ()
-{
-/*
+  
   QStringList l;
   QDir dir(baseDir);
   int loop;
@@ -784,7 +794,14 @@ QStringList IndicatorPage::getIndicatorGroups ()
     if (fi.isDir())
       l.append(dir[loop]);
   }
-*/
+  group->insertStringList(l, -1);
+  
+  if (currentGroup.length())  
+    group->setCurrentText(currentGroup);
+}
+
+QStringList IndicatorPage::getIndicatorGroups ()
+{
   QStringList l;
   l.append(group->currentText());
   

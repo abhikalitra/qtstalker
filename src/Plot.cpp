@@ -21,6 +21,7 @@
 
 #include "Plot.h"
 #include "DbPlugin.h"
+#include "PrefDialog.h"
 #include <qpainter.h>
 #include <qpen.h>
 #include <qpoint.h>
@@ -1837,21 +1838,39 @@ void Plot::drawObjects ()
 
 void Plot::slotDeleteAllChartObjects ()
 {
-  int  rc = QMessageBox::warning(this,
-  			         tr("Qtstalker: Warning"),
-				 tr("Are you sure you want to delete all chart objects?"),
-				 QMessageBox::Yes,
-				 QMessageBox::No,
-				 QMessageBox::NoButton);
-
-  if (rc == QMessageBox::No)
-    return;
-   
   if (! chartPath.length())
     return;
     
   QDir dir;
   if (! dir.exists(chartPath))
+    return;
+
+  QStringList l = config.getPluginList(Config::COPluginPath);
+  int loop;
+  
+  PrefDialog *dialog = new PrefDialog;
+  dialog->setCaption(tr("Delete All Chart Objects"));
+  dialog->createPage (tr("Details"));
+  for (loop = 0; loop < (int) l.count(); loop++)
+    dialog->addCheckItem(l[loop], tr("Details"), FALSE);
+  
+  int rc = dialog->exec();
+  if (rc == QDialog::Rejected)
+  {
+    delete dialog;
+    return;
+  }
+  
+  QStringList l2;
+  for (loop = 0; loop < (int) l.count(); loop++)
+  {
+    if (dialog->getCheck(l[loop]))
+      l2.append(l[loop]);
+  }
+  
+  delete dialog;
+  
+  if (! l2.count())
     return;
 
   QString plugin = config.parseDbPlugin(chartPath);
@@ -1861,22 +1880,24 @@ void Plot::slotDeleteAllChartObjects ()
     config.closePlugin(plugin);
     return;
   }
-        
   db->openChart(chartPath);
   
-  QStringList l = db->getChartObjectsList();
-
-  int loop;  
-  for (loop = 0; loop < (int) l.count(); loop++)
-    db->deleteChartObject(l[loop]);
-    
+  QPtrList<Setting> col = db->getChartObjects();
+  QPtrListIterator<Setting> coit(col);
+  for (; coit.current(); ++coit)
+  {
+    QString s = coit.current()->getData("Plugin");
+    if (l2.findIndex(s) != -1)
+      db->deleteChartObject(coit.current()->getData("Name"));
+  }
+  
   config.closePlugin(plugin);
   
-  QDictIterator<COPlugin> it(coPlugins);
-  for (; it.current(); ++it)
+  for (loop = 0; loop < (int) l2.count(); loop++)
   {
-    COPlugin *plug = it.current();
-    plug->clear();
+    COPlugin *plug = coPlugins[l2[loop]];
+    if (plug)
+      plug->clear();
   }
   
   mouseFlag = None;

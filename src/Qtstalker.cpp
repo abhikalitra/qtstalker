@@ -49,6 +49,7 @@ QtstalkerApp::QtstalkerApp()
   setIcon(qtstalker);
   currentMacro = 0;
 
+  // setup the disk environment
   config.setup();
   
   initMenuBar();
@@ -90,6 +91,7 @@ QtstalkerApp::QtstalkerApp()
   split->setOrientation(Vertical);
   vbox->addWidget(split);
 
+  // setup the main plot
   mainPlot = new Plot (split);
   mainPlot->setDateFlag(TRUE);
   mainPlot->setMainFlag(TRUE);
@@ -97,6 +99,7 @@ QtstalkerApp::QtstalkerApp()
   connect(menubar, SIGNAL(signalLog(bool)), mainPlot, SLOT(slotLogScaleChanged(bool)));
   connect(menubar, SIGNAL(signalHideMain(bool)), mainPlot, SLOT(slotHideMainChanged(bool)));
 
+  // setup the indicator tabs
   tabs = new IndicatorTab(split);
 
   // set the nav splitter size
@@ -111,6 +114,7 @@ QtstalkerApp::QtstalkerApp()
   if (navTab->getPosition() == 0)
     navSplitter->moveToLast(navBase);
     
+  // create the side panels
   initChartNav();
   initGroupNav();
   initIndicatorNav();
@@ -122,36 +126,14 @@ QtstalkerApp::QtstalkerApp()
   // set up the mainPlot signals
   initPlot(mainPlot);
 
+  // setup the initial indicators
   QString igroup = config.getData(Config::IndicatorGroup);
   QStringList l = config.getIndicators(igroup);
   int loop;
   for (loop = 0; loop < (int) l.count(); loop++)
-  {
-    Setting *set = config.getIndicator(l[loop]);
-    if (! set->getInt("enable"))
-    {
-      delete set;
-      continue;
-    }
-    
-    s = set->getData("plotType");
-    if (! s.length())
-      addIndicatorButton(l[loop], Indicator::TabPlot);
-    else
-      addIndicatorButton(l[loop], (Indicator::PlotType) s.toInt());
-      
-    Indicator *i = new Indicator;
-    QFileInfo fi(l[loop]);
-    i->setName(fi.fileName());
-    i->setFile(l[loop]);
-    i->setType(set->getData("plugin"));
-    if (s.length())
-      i->setPlotType((Indicator::PlotType) s.toInt());
-    loadIndicator(i);
-      
-    delete set;
-  }
+    slotEnableIndicator(l[loop]);
 
+  // set the app font
   l = QStringList::split(",", config.getData(Config::AppFont), FALSE);
   if (l.count() == 3)
   {
@@ -182,8 +164,10 @@ QtstalkerApp::QtstalkerApp()
   // set the last used chart type
   slotChartTypeChanged(0);
 
+  // restore the size of the app
   resize(config.getData(Config::Width).toInt(), config.getData(Config::Height).toInt());
   
+  // restore the side panel position
   navTab->togglePosition(navTab->getPosition());
 
   // setup the indicator page  
@@ -204,6 +188,7 @@ QtstalkerApp::~QtstalkerApp()
 
 void QtstalkerApp::initMenuBar()
 {
+  // create the main menubar
   menubar = new MainMenubar(this);
   connect(menubar, SIGNAL(signalExit()), qApp, SLOT(quit()));
   connect(this, SIGNAL(signalSetKeyFlag(bool)), menubar, SLOT(setKeyFlag(bool)));
@@ -215,7 +200,7 @@ void QtstalkerApp::initMenuBar()
 
 void QtstalkerApp::initToolBar()
 {
-  // construct the chart toolbar
+  // construct the button toolbar
   toolbar = new QToolBar(this, "buttonToolbar");
   menubar->getAction(MainMenubar::Exit)->addTo(toolbar);
   menubar->getAction(MainMenubar::Options)->addTo(toolbar);
@@ -231,7 +216,8 @@ void QtstalkerApp::initToolBar()
   menubar->getAction(MainMenubar::Quotes)->addTo(toolbar);
   menubar->getAction(MainMenubar::Help)->addTo(toolbar);
 
-  toolbar2 = new ChartToolbar(this);//new
+  // construct the chart toolbar
+  toolbar2 = new ChartToolbar(this);
   connect(toolbar2, SIGNAL(signalCompressionChanged(int)), this, SLOT(slotCompressionChanged(int)));
   connect(toolbar2, SIGNAL(signalChartTypeChanged(int)), this, SLOT(slotChartTypeChanged(int)));
   connect(toolbar2, SIGNAL(signalPixelspaceChanged(int)), this, SLOT(slotPixelspaceChanged(int)));
@@ -244,6 +230,7 @@ void QtstalkerApp::slotQuit()
   // save any chart data
   mainPlot->clear();
   
+  // do this to save any pending chart object edits
   QDictIterator<Plot> it(plotList);
   for(; it.current(); ++it)
     it.current()->clear();
@@ -271,7 +258,7 @@ void QtstalkerApp::slotQuit()
   config.setData(Config::IndicatorGroup, ip->getIndicatorGroup());
   config.closePlugins();
   
-  // make sure we clean up before we quit
+  // make sure we clean up the local indicators before we quit
   ip->removeLocalIndicators();
   
   menubar->saveSettings();
@@ -290,6 +277,7 @@ void QtstalkerApp::slotQuit()
 
 void QtstalkerApp::slotAbout()
 {
+  // display the about dialog
   QMessageBox *dialog = new QMessageBox(tr("About Qtstalker"),
   					tr("Qtstalker\nVer CVS 0.30 (greased weasel)\n(C) 2001-2005 by Stefan Stratigakos"),
 					QMessageBox::NoIcon,
@@ -305,7 +293,8 @@ void QtstalkerApp::slotAbout()
 
 void QtstalkerApp::slotOpenChart (QString selection)
 {
-  toolbar2->enableSlider(TRUE);//new
+  // load a chart slot
+  toolbar2->enableSlider(TRUE);
   status = Chart;
   qApp->processEvents();
   loadChart(selection);
@@ -313,6 +302,7 @@ void QtstalkerApp::slotOpenChart (QString selection)
 
 void QtstalkerApp::slotQuotes ()
 {
+  // display the quotes dialog
   if (quoteDialog)
     quoteDialog->raise();
   else
@@ -327,6 +317,7 @@ void QtstalkerApp::slotQuotes ()
 
 void QtstalkerApp::slotOptions ()
 {
+  // display the prefs dialog
   PrefDialog *dialog = new PrefDialog;
   dialog->setCaption(tr("Edit Prefs"));
   dialog->setHelpFile("preferences.html");
@@ -409,6 +400,7 @@ void QtstalkerApp::slotOptions ()
 
 void QtstalkerApp::loadChart (QString d)
 {
+  // do all the stuff we need to do to load a chart
   if (d.length() == 0)
     return;
 
@@ -538,6 +530,8 @@ void QtstalkerApp::loadChart (QString d)
 
 void QtstalkerApp::loadIndicator (Indicator *i)
 {
+  // create and prep an indicator for display
+  
   IndicatorPlugin *plug = config.getIndicatorPlugin(i->getType());
   if (plug)
   {
@@ -564,6 +558,8 @@ void QtstalkerApp::loadIndicator (Indicator *i)
 
 QString QtstalkerApp::getWindowCaption ()
 {
+  // update the main window text
+  
   QString caption = tr("Qtstalker");
 
   switch (status)
@@ -589,6 +585,8 @@ QString QtstalkerApp::getWindowCaption ()
 
 void QtstalkerApp::slotDataWindow ()
 {
+  // show the datawindow dialog
+  
   if (! recordList)
   {
     DataWindow *dw = new DataWindow(0, 0);
@@ -673,18 +671,24 @@ void QtstalkerApp::slotDataWindow ()
 
 void QtstalkerApp::slotCompressionChanged (int)
 {
+  // the compression has changed slot
+  
   compressionChanged();
   loadChart(chartPath);
 }
 
 void QtstalkerApp::compressionChanged ()
 {
+  // the compression has changed
+  
   config.setData(Config::Compression, QString::number(toolbar2->getCompressionInt()));
   emit signalInterval((BarData::BarCompression) toolbar2->getCompressionInt());
 }
 
 void QtstalkerApp::slotChartTypeChanged (int)
 {
+  // the chart type has changed
+
   if (mainPlot->setChartType(toolbar2->getChartType()))
     return;
 
@@ -710,6 +714,8 @@ void QtstalkerApp::slotChartTypeChanged (int)
 
 void QtstalkerApp::slotNewIndicator (Setting *set)
 {
+  // add a new indicator slot
+  
   addIndicatorButton(set->getData("File"), (Indicator::PlotType) set->getInt("PlotType"));
     
   Indicator *i = new Indicator;
@@ -729,6 +735,8 @@ void QtstalkerApp::slotNewIndicator (Setting *set)
 
 void QtstalkerApp::slotEditIndicator (Setting *set)
 {
+  // edit indicator slot
+
   Indicator *i = new Indicator;    
   i->setName(set->getData("Name"));
   i->setFile(set->getData("File"));
@@ -747,6 +755,8 @@ void QtstalkerApp::slotEditIndicator (Setting *set)
 
 void QtstalkerApp::slotDeleteIndicator (QString text)
 {
+  // delete indicator slot
+
   QString s = config.getData(Config::IndicatorPath) + "/" + ip->getIndicatorGroup() + "/" + text;
   Setting *set = config.getIndicator(s);
   if (! set->count())
@@ -791,6 +801,8 @@ void QtstalkerApp::slotDeleteIndicator (QString text)
 
 void QtstalkerApp::slotDisableIndicator (QString name)
 {
+  // remove indicator
+
   QFileInfo fi(name);
   if (mainPlot->deleteIndicator(fi.fileName()))
     mainPlot->draw();
@@ -803,7 +815,8 @@ void QtstalkerApp::slotDisableIndicator (QString name)
 
 void QtstalkerApp::slotEnableIndicator (QString name)
 {
-  Config config;
+  // add indicator
+
   Setting *set = config.getIndicator(name);
   if (! set->count())
   {
@@ -1255,7 +1268,7 @@ int main(int argc, char *argv[])
   // set the location where your .qm files are in load() below as the last parameter instead of "."
   // for development, use "/" to use the english original as
   // .qm files are stored in the base project directory.
-  tor.load(QString("qtstalker.") + QTextCodec::locale(), "." );
+  tor.load(QString("qtstalker_") + QTextCodec::locale(), "." );
   a.installTranslator( &tor );
 
   QtstalkerApp *qtstalker = new QtstalkerApp();
