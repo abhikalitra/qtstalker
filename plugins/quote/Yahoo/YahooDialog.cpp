@@ -42,7 +42,7 @@ YahooDialog::YahooDialog () : QTabDialog (0, "YahooDialog", TRUE)
   vbox->setMargin(5);
   vbox->setSpacing(0);
   
-  toolbar = new Toolbar(w, 30, 30);
+  toolbar = new Toolbar(w, 30, 30, FALSE);
   vbox->addWidget(toolbar);
   
   toolbar->addButton("new", newchart, tr("New Symbol"));

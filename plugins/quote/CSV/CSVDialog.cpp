@@ -115,7 +115,7 @@ void CSVDialog::createRulePage ()
   vbox->setMargin(5);
   vbox->setSpacing(0);
   
-  ruleToolbar = new Toolbar(w, 30, 30);
+  ruleToolbar = new Toolbar(w, 30, 30, FALSE);
   vbox->addWidget(ruleToolbar);
   
   ruleToolbar->addButton("new", newchart, tr("New Rule"));
