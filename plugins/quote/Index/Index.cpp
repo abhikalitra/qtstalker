@@ -29,7 +29,6 @@
 Index::Index ()
 {
   pluginName = "Index";
-  version = 0.2;
   createFlag = TRUE;
   data.setAutoDelete(TRUE);
 

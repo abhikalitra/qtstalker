@@ -32,7 +32,6 @@
 CMEHistory::CMEHistory ()
 {
   pluginName = "CMEHistory";
-  version = 0.2;
   fd = new FuturesData;
   createFlag = FALSE;
   connect(&op, SIGNAL(finished(QNetworkOperation *)), this, SLOT(opDone(QNetworkOperation *)));

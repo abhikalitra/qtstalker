@@ -24,7 +24,6 @@
 MACD::MACD ()
 {
   pluginName = "MACD";
-  version = 0.2;
 
   set(tr("Type"), pluginName, Setting::None);
   set(tr("MACD Color"), "red", Setting::Color);

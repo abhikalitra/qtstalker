@@ -30,7 +30,6 @@
 Yahoo::Yahoo ()
 {
   pluginName = "Yahoo";
-  version = 0.2;
   createFlag = TRUE;
   op = 0;
   

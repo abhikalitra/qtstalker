@@ -10,7 +10,6 @@ SUBDIRS += plugins/quote/CSV
 SUBDIRS += plugins/quote/Index
 SUBDIRS += plugins/quote/NYBOT
 SUBDIRS += plugins/quote/QtstalkerFormat
-SUBDIRS += plugins/quote/Ratio
 SUBDIRS += plugins/quote/Spread
 SUBDIRS += plugins/quote/Yahoo
 SUBDIRS += plugins/quote/YahooQuote

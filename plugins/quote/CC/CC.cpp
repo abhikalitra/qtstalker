@@ -27,9 +27,8 @@
 CC::CC ()
 {
   pluginName = "CC";
-  version = 0.2;
   createFlag = FALSE;
-  
+
   set("Rollover","20", Setting::Integer);
 
   set("Maximum Years","10", Setting::Integer);

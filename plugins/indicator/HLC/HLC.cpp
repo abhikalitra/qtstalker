@@ -24,7 +24,6 @@
 HLC::HLC ()
 {
   pluginName = "HLC";
-  version = 0.2;
 
   set(tr("Type"), pluginName, Setting::None);
   set(tr("High Color"), "red", Setting::Color);

@@ -24,7 +24,6 @@
 MMA::MMA ()
 {
   pluginName = "MMA";
-  version = 0.1;
 
   set(tr("Type"), pluginName, Setting::None);
   set(tr("Fast Color"), "red", Setting::Color);

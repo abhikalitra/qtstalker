@@ -24,7 +24,6 @@
 OI::OI ()
 {
   pluginName = "OI";
-  version = 0.2;
 
   set(tr("Type"), pluginName, Setting::None);
   set(tr("Color"), "yellow", Setting::Color);

@@ -32,7 +32,6 @@
 CSV::CSV ()
 {
   pluginName = "CSV";
-  version = 0.2;
   createFlag = FALSE;
 
   set(tr("Input"), "", Setting::FileList);

@@ -24,7 +24,6 @@
 MA2::MA2 ()
 {
   pluginName = "MA2";
-  version = 0.2;
 
   set(tr("Type"), pluginName, Setting::None);
   set(tr("Fast Color"), "red", Setting::Color);

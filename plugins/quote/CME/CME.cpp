@@ -32,7 +32,6 @@
 CME::CME ()
 {
   pluginName = "CME";
-  version = 0.2;
   fd = new FuturesData;
   createFlag = FALSE;
   op = 0;

@@ -25,7 +25,6 @@
 STOCHRSI::STOCHRSI ()
 {
   pluginName = "STOCHRSI";
-  version = 0.2;
 
   set(tr("Type"), pluginName, Setting::None);
   set(tr("Color"), "red", Setting::Color);

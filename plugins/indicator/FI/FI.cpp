@@ -24,7 +24,6 @@
 FI::FI ()
 {
   pluginName = "FI";
-  version = 0.1;
 
   set(tr("Type"), pluginName, Setting::None);
   set(tr("Color"), "orange", Setting::Color);

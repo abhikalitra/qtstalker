@@ -24,7 +24,6 @@
 STOCH::STOCH ()
 {
   pluginName = "STOCH";
-  version = 0.2;
 
   set(tr("Type"), pluginName, Setting::None);
   set(tr("%D Color"), "yellow", Setting::Color);

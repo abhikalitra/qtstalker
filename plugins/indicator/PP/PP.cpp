@@ -24,7 +24,6 @@
 PP::PP ()
 {
   pluginName = "PP";
-  version = 0.2;
 
   set(tr("Type"), pluginName, Setting::None);
   set(tr("Color Resistance"), "red", Setting::Color);

@@ -31,7 +31,6 @@
 NYBOT::NYBOT ()
 {
   pluginName = "NYBOT";
-  version = 0.2;
   fd = new FuturesData;
   createFlag = FALSE;
 

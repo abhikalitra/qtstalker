@@ -24,7 +24,6 @@
 ENV::ENV ()
 {
   pluginName = "ENV";
-  version = 0.2;
 
   set(tr("Type"), pluginName, Setting::None);
   set(tr("Upper Color"), "red", Setting::Color);

@@ -30,7 +30,6 @@
 YahooQuote::YahooQuote ()
 {
   pluginName = "YahooQuote";
-  version = 0.2;
   createFlag = TRUE;
   op = 0;
 

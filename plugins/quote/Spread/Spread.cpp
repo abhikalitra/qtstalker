@@ -29,9 +29,15 @@
 Spread::Spread ()
 {
   pluginName = "Spread";
-  version = 0.2;
   createFlag = TRUE;
   data.setAutoDelete(TRUE);
+
+  QStringList l;
+  l.append(tr("Subtract"));
+  l.append(tr("Divide"));
+  l.sort();
+  set(tr("Method"), tr("Subtract"), Setting::List);
+  setList(tr("Method"), l);
 
   about = "Creates and updates a chart to form a spread chart.\n";
 }
@@ -153,9 +159,20 @@ void Spread::loadData (QString symbol)
     }
     else
     {
-      r->setData("Close", QString::number(r->getFloat("Close") - (tr->getFloat("Close"))));
-      r->setData("Volume", QString::number(r->getFloat("Volume") - (tr->getFloat("Volume"))));
-      r->setData("Open Interest", QString::number(r->getFloat("Open Interest") - (tr->getFloat("Open Interest"))));
+      if (! getData(QObject::tr("Method")).compare(QObject::tr("Subtract")))
+      {
+        r->setData("Close", QString::number(r->getFloat("Close") - (tr->getFloat("Close"))));
+        r->setData("Volume", QString::number(r->getFloat("Volume") - (tr->getFloat("Volume"))));
+        r->setData("Open Interest", QString::number(r->getFloat("Open Interest") - (tr->getFloat("Open Interest"))));
+      }
+
+      if (! getData(QObject::tr("Method")).compare(QObject::tr("Divide")))
+      {
+        r->setData("Close", QString::number(r->getFloat("Close") / (tr->getFloat("Close"))));
+        r->setData("Volume", QString::number(r->getFloat("Volume") / (tr->getFloat("Volume"))));
+        r->setData("Open Interest", QString::number(r->getFloat("Open Interest") / (tr->getFloat("Open Interest"))));
+      }
+
       r->setData("Open", r->getData("Close"));
       r->setData("High", r->getData("Close"));
       r->setData("Low", r->getData("Close"));

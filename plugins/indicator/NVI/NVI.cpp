@@ -24,7 +24,6 @@
 NVI::NVI ()
 {
   pluginName = "NVI";
-  version = 0.2;
 
   set(tr("Type"), pluginName, Setting::None);
   set(tr("Color"), "red", Setting::Color);

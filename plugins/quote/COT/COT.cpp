@@ -33,7 +33,6 @@
 COT::COT ()
 {
   pluginName = "COT";
-  version = 0.2;
   createFlag = FALSE;
   op = 0;
 

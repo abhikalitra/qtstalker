@@ -24,7 +24,6 @@
 MA3::MA3 ()
 {
   pluginName = "MA3";
-  version = 0.2;
 
   set(tr("Type"), pluginName, Setting::None);
   set(tr("Fast Color"), "red", Setting::Color);

@@ -57,6 +57,8 @@
 - Added new option to all MA's to displace them if desired. 0 for no displacement and > 0 for bars of displacement. Updated the
   MA, MA2, MA3, MMA plugins with the new parm.
 
+- Removed Ratio quote plugin. Moved ratio functions into the Spread quote plugin.
+
 
 0.20
 ====
