@@ -45,13 +45,13 @@ YahooDialog::YahooDialog () : QTabDialog (0, "YahooDialog", TRUE)
   toolbar = new Toolbar(w, 30, 30);
   vbox->addWidget(toolbar);
   
-  toolbar->addButton("new", newchart, tr("New"));
+  toolbar->addButton("new", newchart, tr("New Symbol"));
   QObject::connect(toolbar->getButton("new"), SIGNAL(clicked()), this, SLOT(newStock()));
   
-  toolbar->addButton("selectAll", selectall, tr("Select All"));
+  toolbar->addButton("selectAll", selectall, tr("Select All Symbols"));
   QObject::connect(toolbar->getButton("selectAll"), SIGNAL(clicked()), this, SLOT(selectAll()));
   
-  toolbar->addButton("unselectAll", unselectall, tr("Unselect All"));
+  toolbar->addButton("unselectAll", unselectall, tr("Unselect All Symbols"));
   QObject::connect(toolbar->getButton("unselectAll"), SIGNAL(clicked()), this, SLOT(unselectAll()));
   
   vbox->addSpacing(10);
@@ -112,6 +112,7 @@ YahooDialog::YahooDialog () : QTabDialog (0, "YahooDialog", TRUE)
   resize(300, 400);
       
   updateList();
+  selectAll();
 }
 
 YahooDialog::~YahooDialog ()
@@ -137,7 +138,7 @@ void YahooDialog::newStock ()
   {
     if (! dir.mkdir(dataPath))
     {
-      qDebug("Yahoo plugin: Unable to create directory");
+      qDebug("YahooDialog::newStock: Unable to create directory");
       return;
     }
   }

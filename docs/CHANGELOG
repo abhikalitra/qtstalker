@@ -77,7 +77,14 @@
 	  the fields in the ascii file from top to bottom in the list. Probably should create some
 	  default formats for users to play with initially.
 
-	  	  
+20040324: Consolidated PaintBar plugin into the Bar plugin. Removed PaintBar plugin.
+
+20040324: Consolidated CandleQS plugin into the Candle plugin. Removed CandleQS plugin.
+
+20040324: Modified patch #911112 - volume candle plugin - and pulled it into the Candle plugin.
+          Thanks to Dany Daw for this cool patch.
+	  
+
 0.25
 ====
 

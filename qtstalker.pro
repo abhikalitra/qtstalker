@@ -9,11 +9,9 @@ SUBDIRS += src
 #compile chart plugins
 SUBDIRS += plugins/chart/Bar
 SUBDIRS += plugins/chart/Candle
-SUBDIRS += plugins/chart/CandleQS
 SUBDIRS += plugins/chart/EP
 SUBDIRS += plugins/chart/Line
 SUBDIRS += plugins/chart/PF
-SUBDIRS += plugins/chart/PaintBar
 SUBDIRS += plugins/chart/Swing
 
 #compile quote plugins

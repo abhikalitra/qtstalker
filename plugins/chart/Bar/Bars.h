@@ -33,14 +33,19 @@ class Bars : public ChartPlugin
     Bars ();
     virtual ~Bars ();
     void drawChart (int startX, int startIndex, int pixelspace);
+    void drawBars (int startX, int startIndex, int pixelspace);
+    void drawPaintBars (int startX, int startIndex, int pixelspace);
     void prefDialog ();
     void loadSettings ();
     void saveSettings ();
 
   protected:
-    QColor neutralColor;
-    QColor upColor;
-    QColor downColor;
+    QString style;
+    QColor barNeutralColor;
+    QColor barUpColor;
+    QColor barDownColor;
+    QColor paintUpColor;
+    QColor paintDownColor;
 };
 
 extern "C"

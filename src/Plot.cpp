@@ -1595,9 +1595,16 @@ void Plot::newChartObject ()
     QObject::connect(co, SIGNAL(signalChartObjectSelected(ChartObject *)), this, SLOT(slotChartObjectSelected(ChartObject *)));
     QObject::connect(co, SIGNAL(signalDeleteChartObject(QString)), this, SLOT(slotDeleteChartObject(QString)));
     QObject::connect(co, SIGNAL(message(QString)), this, SLOT(slotMessage(QString)));
+    
+    // update the db chartobject list
+    ChartDb *db = new ChartDb();
+    db->openChart(chartPath);
+    Setting *set = co->getSettings();
+    db->setChartObject(co->getName(), set);
+    delete set;
+    delete db;
 
     addChartObject(co);
-    co->setSaveFlag(TRUE);
     draw();
   }
 

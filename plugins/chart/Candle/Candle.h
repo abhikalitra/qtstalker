@@ -33,13 +33,33 @@ class Candle : public ChartPlugin
     Candle ();
     virtual ~Candle ();
     void drawChart (int startX, int startIndex, int pixelspace);
+    void drawCandles (int startX, int startIndex, int pixelspace);
+    void drawQSCandles (int startX, int startIndex, int pixelspace);
+    void drawVolumeCandles (int startX, int startIndex, int pixelspace);
+    QColor volumeColor (int index);
     void prefDialog ();
     void loadSettings ();
     void saveSettings ();
 
   protected:
-    QColor color;
+    QString style;
     bool expandCandles;
+    
+    // candle vars
+    QColor candleColor;
+    
+    // qs vars
+    QColor qsNeutralColor;
+    QColor qsUpColor;
+    QColor qsDownColor;
+
+    // volume vars
+    QColor c0, c1, c2, c3, c4, c5;  // persistant values holding color prefs
+    double vr1, vr2, vr3, vr4, vr5; // persistant values holding trigger points
+    int vma;                        // persistant value holding ma period for volume
+    int minCandleRadius;
+    int fixedCandleRadius;
+    int maxCandleGap;
 };
 
 extern "C"

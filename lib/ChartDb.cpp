@@ -277,8 +277,12 @@ QList<Setting> *ChartDb::getChartObjects ()
 void ChartDb::setChartObject (QString d, Setting *set)
 {
   QStringList l = getChartObjectsList();
-  l.append(d);
-  setData("CHARTOBJECTS", l.join(","));
+  
+  if (l.findIndex(d) == -1)
+  {
+    l.append(d);
+    setData("CHARTOBJECTS", l.join(","));
+  }
   
   setData(d, set->getString());
 }
