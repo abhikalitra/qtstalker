@@ -49,7 +49,6 @@ SUBDIRS += plugins/indicator/MF
 SUBDIRS += plugins/indicator/MOM
 SUBDIRS += plugins/indicator/NVI
 SUBDIRS += plugins/indicator/OBV
-#SUBDIRS += plugins/indicator/OI
 SUBDIRS += plugins/indicator/OVRLY
 SUBDIRS += plugins/indicator/PC
 SUBDIRS += plugins/indicator/PER

@@ -102,7 +102,10 @@
           that doesn't depend on field order. Developers will have to recreate any custom indicators,
 	  tester rules etc. Also a complete recompile will be needed to update the plugins.
 	  
-
+20040815: Removed OI indicator plugin. Easily replaced by using a REF custom function now. Part
+          of a plugin consolidation revue in progress.
+	  
+	  
 0.26
 ====
 
