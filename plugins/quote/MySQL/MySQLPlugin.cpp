@@ -185,7 +185,22 @@ void MySQLPlugin::updateSymbol(QString symbol)
     return;
   }
   
-  QString s = db->getHeaderField(DbPlugin::Symbol);
+  // verify if this chart can be updated by this plugin
+  QString s = db->getHeaderField(DbPlugin::QuotePlugin);
+  if (! s.length())
+    db->setHeaderField(DbPlugin::QuotePlugin, pluginName);
+  else
+  {
+    if (s.compare(pluginName))
+    {
+      s = symbol + " - skipping update. Source does not match destination.";
+      emit statusLogMessage(s);
+      config.closePlugin(plugin);
+      return;
+    }
+  }
+  
+  s = db->getHeaderField(DbPlugin::Symbol);
   if (! s.length())
   {
     db->createNew();

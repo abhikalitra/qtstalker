@@ -151,7 +151,20 @@ void Yahoo::update ()
           break;
         }
 	
-        edate = QDateTime::currentDateTime();
+        // verify if this chart can be updated by this plugin
+        s2 = plug->getHeaderField(DbPlugin::QuotePlugin);
+        if (! s2.length())
+          plug->setHeaderField(DbPlugin::QuotePlugin, pluginName);
+        else
+        {
+          if (s2.compare(pluginName))
+          {
+            config.closePlugin("Stocks");
+            break;
+          }
+        }
+        
+	edate = QDateTime::currentDateTime();
         if (edate.date().dayOfWeek() == 6)
           edate = edate.addDays(-1);
         else
@@ -357,6 +370,22 @@ void Yahoo::parseHistory ()
     return;
   }
 
+  // verify if this chart can be updated by this plugin
+  s = plug->getHeaderField(DbPlugin::QuotePlugin);
+  if (! s.length())
+    plug->setHeaderField(DbPlugin::QuotePlugin, pluginName);
+  else
+  {
+    if (s.compare(pluginName))
+    {
+      s = downloadList[index] + " - skipping update. Source does not match destination.";
+      emit statusLogMessage(s);
+      f.close();
+      config.closePlugin("Stocks");
+      return;
+    }
+  }
+  
   s = plug->getHeaderField(DbPlugin::Symbol);
   if (! s.length())
   {
@@ -494,7 +523,23 @@ void Yahoo::parseQuote ()
     config.closePlugin("Stocks");
     return;
   }
-  
+
+  // verify if this chart can be updated by this plugin
+  s = plug->getHeaderField(DbPlugin::QuotePlugin);
+  if (! s.length())
+    plug->setHeaderField(DbPlugin::QuotePlugin, pluginName);
+  else
+  {
+    if (s.compare(pluginName))
+    {
+      s = downloadList[index] + " - skipping update. Source does not match destination.";
+      emit statusLogMessage(s);
+      f.close();
+      config.closePlugin("Stocks");
+      return;
+    }
+  }
+    
   s = plug->getHeaderField(DbPlugin::Symbol);
   if (! s.length())
   {
@@ -863,6 +908,21 @@ void Yahoo::parseFundamental ()
     emit statusLogMessage("Could not open db.");
     config.closePlugin("Stocks");
     return;
+  }
+  
+  // verify if this chart can be updated by this plugin
+  s = plug->getHeaderField(DbPlugin::QuotePlugin);
+  if (! s.length())
+    plug->setHeaderField(DbPlugin::QuotePlugin, pluginName);
+  else
+  {
+    if (s.compare(pluginName))
+    {
+      s = downloadList[index] + " - skipping update. Source does not match destination.";
+      emit statusLogMessage(s);
+      config.closePlugin("Stocks");
+      return;
+    }
   }
   
   s = plug->getHeaderField(DbPlugin::Symbol);

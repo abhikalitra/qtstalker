@@ -159,7 +159,7 @@ void CSVDialog::createRulePage ()
   
   vbox->addSpacing(10);
   
-  QGridLayout *grid = new QGridLayout(vbox, 5, 2);
+  QGridLayout *grid = new QGridLayout(vbox, 6, 2);
   grid->setSpacing(5);
   grid->setColStretch(1, 1);
   
@@ -189,9 +189,16 @@ void CSVDialog::createRulePage ()
   delimiter->insertItem(tr("Semicolon"), -1);
   connect(type, SIGNAL(activated(int)), this, SLOT(comboChanged(int)));
   grid->addWidget(delimiter, 2, 1);
+  
+  label = new QLabel(tr("Data Directory:"), w);
+  grid->addWidget(label, 3, 0);
+  
+  directory = new QLineEdit(w);
+  connect(directory, SIGNAL(textChanged(const QString &)), this, SLOT(textChanged(const QString &)));
+  grid->addWidget(directory, 3, 1);
 
   label = new QLabel(tr("Fields:"), w);
-  grid->addWidget(label, 3, 0);
+  grid->addWidget(label, 4, 0);
   
   fieldCombo = new QComboBox(w);
   fieldCombo->insertItem(tr("Date:YYYYMMDD"), -1);
@@ -210,7 +217,7 @@ void CSVDialog::createRulePage ()
   fieldCombo->insertItem(tr("OI"), -1);
   fieldCombo->insertItem(tr("Ignore"), -1);
   fieldCombo->insertItem(tr("Name"), -1);
-  grid->addWidget(fieldCombo, 3, 1);
+  grid->addWidget(fieldCombo, 4, 1);
   
   vbox->addSpacing(10);
 
@@ -254,6 +261,8 @@ void CSVDialog::newRule ()
   ruleName->setText(name);
   ruleList->clear();
   
+  directory->clear();
+  
   saveRule();
   
   ruleToolbar->setButtonStatus("delete", TRUE);
@@ -295,6 +304,8 @@ void CSVDialog::editRule ()
   
   type->setCurrentText(set->getData("Type"));
   
+  directory->setText(set->getData("Directory"));
+  
   l = QStringList::split(",", set->getData("Rule"));
   ruleList->insertStringList(l, -1);
   
@@ -331,6 +342,7 @@ void CSVDialog::deleteRule ()
   
   ruleName->clear();
   ruleList->clear();
+  directory->clear();
   
   ruleToolbar->setButtonStatus("delete", FALSE);
   ruleToolbar->setButtonStatus("save", FALSE);
@@ -342,6 +354,18 @@ void CSVDialog::deleteRule ()
 
 void CSVDialog::saveRule ()
 {
+  if (directory->text().contains("/"))
+  {
+    QMessageBox::information(this, tr("Error"), tr("No sub directories allowed.\nDirectory name must be one word only."));
+    return;
+  }
+  
+  if (directory->text().contains(" "))
+  {
+    QMessageBox::information(this, tr("Error"), tr("No spaces allowed in directory name."));
+    return;
+  }
+  
   QSettings settings;
   settings.beginGroup("/Qtstalker/CSV plugin");
   QString key = "/Rule_" + ruleName->text();
@@ -349,6 +373,7 @@ void CSVDialog::saveRule ()
   Setting *set = new Setting;
   set->setData("Delimiter", delimiter->currentText());
   set->setData("Type", type->currentText());
+  set->setData("Directory", directory->text());
   int loop;
   QStringList l;
   for (loop = 0; loop < (int) ruleList->count(); loop++)
@@ -492,6 +517,11 @@ int CSVDialog::getReloadInterval ()
 }
 
 void CSVDialog::comboChanged (int)
+{
+  ruleToolbar->setButtonStatus("save", TRUE);
+}
+
+void CSVDialog::textChanged (const QString &)
 {
   ruleToolbar->setButtonStatus("save", TRUE);
 }

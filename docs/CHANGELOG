@@ -175,6 +175,15 @@
 
 20050303: Code clean up, moved all pixmaps from /src into new directory /pics. 
 
+20050303: Changed quote plugins to verify the source of updates match original source that
+          created the chart. This is in response to data corruption by the CSV plugin attempting
+	  to update charts with matching symbol names and different data formats.
+	  
+20050303: Added a 'Data Directory' option to the CSV plugin. If this option is used, then
+          all updates will be forwarded to this directory. This is to help partition data
+	  better for custom uses.
+	  	  
+
 
 	  	  
 0.29

@@ -132,6 +132,9 @@ void CSV::parse ()
     return;
   }
 
+  // get the optional directory path offset
+  QString directory = rule->getData("Directory");
+  
   // check for time field and set the tickflag  
   bool tickFlag = FALSE;
   if (rule->getData("Rule").contains("Time"))
@@ -181,6 +184,21 @@ void CSV::parse ()
 	delete rule;
         return;
       }
+      
+      // handle any custom directories
+      if (directory.length())
+      {
+        QString tmp = "Stocks/" + directory;
+        path = createDirectory(tmp);
+        if (! path.length())
+        {
+          emit statusLogMessage("Unable to create custom stocks directory");
+          emit done();
+          f.close();
+	  delete rule;
+          return;
+        }
+      }
     }
     else
     {
@@ -194,6 +212,21 @@ void CSV::parse ()
           f.close();
 	  delete rule;
           return;
+        }
+	
+        // handle any custom directories
+        if (directory.length())
+        {
+          QString tmp = "Futures/" + directory;
+          path = createDirectory(tmp);
+          if (! path.length())
+          {
+            emit statusLogMessage("Unable to create custom futures directory");
+            emit done();
+            f.close();
+	    delete rule;
+            return;
+          }
         }
 	
 	if (symbol.length() == 7)
@@ -615,8 +648,24 @@ bool CSV::openDb (QString path, QString symbol, QString type, bool tickFlag)
     db = 0;
     return TRUE;
   }
+  
+  // verify if this chart can be updated by this plugin
+  QString s = db->getHeaderField(DbPlugin::QuotePlugin);
+  if (! s.length())
+    db->setHeaderField(DbPlugin::QuotePlugin, pluginName);
+  else
+  {
+    if (s.compare(pluginName))
+    {
+      s = symbol + " - skipping update. Source does not match destination.";
+      emit statusLogMessage(s);
+      config.closePlugin(type);
+      db = 0;
+      return TRUE;
+    }
+  }
 
-  QString s = db->getHeaderField(DbPlugin::Symbol);
+  s = db->getHeaderField(DbPlugin::Symbol);
   if (! s.length())
   {
     db->createNew();

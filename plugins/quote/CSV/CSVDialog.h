@@ -67,6 +67,7 @@ class CSVDialog : public QTabDialog
     void fieldSelected (int);
     void help ();
     void comboChanged (int);
+    void textChanged (const QString &);
           
   private:
     FileButton *file;
@@ -84,5 +85,6 @@ class CSVDialog : public QTabDialog
     QString helpFile;
     QString lastPath;
     QSpinBox *minutes;
+    QLineEdit *directory;
 };
 

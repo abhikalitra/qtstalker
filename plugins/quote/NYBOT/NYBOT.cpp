@@ -319,6 +319,22 @@ void NYBOT::parse ()
         return;
       }
 
+      // verify if this chart can be updated by this plugin
+      s = db->getHeaderField(DbPlugin::QuotePlugin);
+      if (! s.length())
+        db->setHeaderField(DbPlugin::QuotePlugin, pluginName);
+      else
+      {
+        if (s.compare(pluginName))
+        {
+          s = symbol + " - skipping update. Source does not match destination.";
+          emit statusLogMessage(s);
+          config.closePlugin("Futures");
+	  delete bar;
+          return;
+        }
+      }
+      
       s = db->getHeaderField(DbPlugin::Symbol);
       if (! s.length())
       {

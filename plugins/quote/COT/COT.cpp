@@ -306,7 +306,27 @@ void COT::saveData (Setting *set)
   
   s.append("/");
   s.append(set->getData("Symbol"));
-  db->openChart(s);
+  if (db->openChart(s))
+  {
+    emit statusLogMessage("Could not open db.");
+    config.closePlugin("Futures");
+    return;
+  }
+  
+  // verify if this chart can be updated by this plugin
+  s = db->getHeaderField(DbPlugin::QuotePlugin);
+  if (! s.length())
+    db->setHeaderField(DbPlugin::QuotePlugin, pluginName);
+  else
+  {
+    if (s.compare(pluginName))
+    {
+      s = set->getData("Symbol") + " - skipping update. Source does not match destination.";
+      emit statusLogMessage(s);
+      config.closePlugin("Futures");
+      return;
+    }
+  }
 
   s = tr("Updating ");
   s.append(set->getData("Symbol"));

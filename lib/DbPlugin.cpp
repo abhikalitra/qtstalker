@@ -760,6 +760,9 @@ void DbPlugin::setHeaderField (int k, QString d)
     case LocalIndicators:
       setData("LocalIndicators", d);
       break;
+    case QuotePlugin:
+      setData("QuotePlugin", d);
+      break;
     default:
       break;
   }
@@ -794,6 +797,9 @@ QString DbPlugin::getHeaderField (int k)
       break;
     case LocalIndicators:
       s = getData("LocalIndicators");
+      break;
+    case QuotePlugin:
+      s = getData("QuotePlugin");
       break;
     default:
       break;
