@@ -885,8 +885,8 @@ void QtstalkerApp::loadChart (QString d)
   int max = db->getDataSize() - page;
   if (max < 0)
     max = 0;
-  slider->setRange(0, db->getDataSize() - 1);
   slider->blockSignals(TRUE);
+  slider->setRange(0, db->getDataSize() - 1);
   slider->setValue(max);
   slider->blockSignals(FALSE);
 
@@ -1098,22 +1098,26 @@ void QtstalkerApp::slotDataWindow ()
 {
   DataWindow *dw = new DataWindow(0, mainPlot->getDataSize());
   dw->setCaption(getWindowCaption());
+  
+  dw->setHeader(0, QObject::tr("Date"));
+  int loop;
+  for (loop = 0; loop < (int) mainPlot->getDataSize(); loop++)
+  {
+    QDateTime dt = mainPlot->getDate(loop);
+    dw->setData(loop, 0, dt.toString("yyyyMMdd"));
+  }
 
-  int col = 0;
+  int col = 1;
   Indicator *i = mainPlot->getIndicator("Main Plot");
   if (! i->getLines())
   {
-    dw->setHeader(0, QObject::tr("Date"));
     dw->setHeader(1, QObject::tr("Open"));
     dw->setHeader(2, QObject::tr("High"));
     dw->setHeader(3, QObject::tr("Low"));
     dw->setHeader(4, QObject::tr("Close"));
 
-    int loop;
     for (loop = 0; loop < (int) mainPlot->getDataSize(); loop++)
     {
-      QDateTime dt = mainPlot->getDate(loop);
-      dw->setData(loop, 0, dt.toString("yyyyMMdd"));
       dw->setData(loop, 1, QString::number(mainPlot->getOpen(loop)));
       dw->setData(loop, 2, QString::number(mainPlot->getHigh(loop)));
       dw->setData(loop, 3, QString::number(mainPlot->getLow(loop)));
@@ -1124,7 +1128,6 @@ void QtstalkerApp::slotDataWindow ()
   }
 
   QStringList l = mainPlot->getIndicators();
-  int loop;
   for (loop = 0; loop < (int) l.count(); loop++)
   {
     i = mainPlot->getIndicator(l[loop]);

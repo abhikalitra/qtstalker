@@ -130,7 +130,7 @@ QString Config::getData (Parm p)
       s = settings.readEntry("/Qtstalker/Grid", "1");
       break;
     case Bars:
-      s = settings.readEntry("/Qtstalker/Bars", QObject::tr("All"));
+      s = settings.readEntry("/Qtstalker/Bars", QObject::tr("1 Year"));
       break;
     case BackgroundColor:
       s = settings.readEntry("/Qtstalker/BackgroundColor", "black");

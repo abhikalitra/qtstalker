@@ -98,7 +98,11 @@ void Plot::setData (QList<Setting> l)
     Setting *r = l.at(loop);
 
     Setting *r2 = new Setting;
-    r2->parse(r->getString());
+    if (! mainFlag)
+      r2->set("Date", r->getData("Date"), Setting::Date);
+    else
+      r2->parse(r->getString());
+
     data.append(r2);
 
     if (mainFlag)
@@ -192,6 +196,15 @@ void Plot::draw ()
 
   if (data.count())
   {
+    if (! mainFlag)
+    {
+      if (! indicators.count())
+      {
+        paintEvent(0);
+        return;
+      }
+    }
+
     setHeight();
 
     setWidth();
