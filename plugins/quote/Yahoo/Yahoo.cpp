@@ -53,6 +53,8 @@ Yahoo::Yahoo ()
   }
   set("Start Date", date.toString("yyyyMMdd"), Setting::Date);
 
+  set("Adjustments", tr("False"), Setting::Bool);
+
   about = "Downloads Yahoo data\n";
   about.append("and imports it directly into qtstalker.\n");
   
@@ -197,6 +199,10 @@ void Yahoo::parse ()
   if (data.contains("No Prices in this date range"))
     return;
 
+  int adjust = 0;
+  if (! getData(tr("Adjustments")).compare(tr("True")))
+    adjust = 1;
+
   // strip off the header
   QString s = "Date,Open,High,Low,Close";
   int p = data.find(s, 0, TRUE);
@@ -267,6 +273,30 @@ void Yahoo::parse ()
     QString volume = "0";
     if (l.count() >= 6)
       volume = l[5];
+
+    // adjusted close
+    if (adjust)
+    {
+      QString adjclose = "0";
+      if (l.count() >= 7)
+      {
+	if (setTFloat(l[6]))
+	  continue;
+	else
+	  adjclose = QString::number(tfloat);
+	// apply yahoo's adjustments through all the data, not just closing price
+	// i.e. adjust for stock splits and dividends
+	float factor = close.toFloat() / adjclose.toFloat();
+	if (factor != 1)
+	{
+	  high   = QString::number(high.toFloat()   / factor);
+	  low    = QString::number(low.toFloat()    / factor);
+	  open   = QString::number(open.toFloat()   / factor);
+	  close  = QString::number(close.toFloat()  / factor);
+	  volume = QString::number(volume.toFloat() * factor);
+	}
+      }
+    }
 
     Setting *r = new Setting;
     r->set("Date", date, Setting::Date);

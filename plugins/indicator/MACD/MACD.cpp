@@ -90,7 +90,7 @@ void MACD::calculate ()
 
   while (floop > -1 && sloop > -1)
   {
-    osc->prepend(macd->getData(floop) - signal->getData(sloop));
+    osc->prepend((macd->getData(floop) - signal->getData(sloop)) * 2);
     floop--;
     sloop--;
   }

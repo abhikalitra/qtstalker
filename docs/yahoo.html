@@ -18,8 +18,9 @@ symbols to update.</p>
 <h3>Input Parameters:</h3>
 <ul>
   <li>End Date - The most recent date to include for update</li>
-  <li>Start Date - The most distant date to include for update.<br>
-  </li>
+  <li>Start Date - The most distant date to include for update.</li>
+  <li>Adjustments - Propagate the Close/Adjusted Close factor to all
+  price columns (i.e. adjust for stock splits and dividends).</li>
 </ul>
 <p></p>
 <img src="yahoo1.png" title="" alt=""
@@ -35,6 +36,21 @@ space between the symbols.<br>
 you want to download quotes. They will be updated every time choose the
 update function.<br>
 </p>
+<p>Adjustments: Yahoo provides an Adjusted Close column in its data,
+scaling prior closing prices to the most recent price based on stock
+splits and dividends. For example, if a 2-for-1 split occurs halfway
+through the data, the Adjusted Close price from before the split will
+be half of the Close price. If the Adjustments option is checked, the
+plugin will calculate the factor between the Close price and the
+Adjusted Close price and apply it to Open, Close, High, Low, and
+Volume. It divides the prices and multiplies the volume, so in any
+case Close x Volume is the same as before the conversion. This allows
+you to display continuous graphs and analyze the movement of an issue
+without large jumps due to stock splits, although the caveat is that
+absolute prices are a factor different from what occurred on the
+exchange that day. Having said that, factoring for historical events
+in this manner is a common approach for visually graphing stock
+prices.</p>
 <p></p>
 <p></p>
 <p></p>

@@ -71,6 +71,7 @@ void WILLR::calculate ()
       t = 100;
     if (t < 0)
       t = 0;
+    t *= -1;
 
     willr->append(t);
   }

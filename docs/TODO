@@ -9,7 +9,8 @@ To Do:
 - postgresql quote plugin
 - key bindings
 - key binding scripting
-
+- add scaling option to PlotLine
+- add alerts to SZ & THERM plugins
 
 Maybe some day:
 ===============

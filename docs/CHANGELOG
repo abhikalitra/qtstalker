@@ -90,6 +90,14 @@
 
 - Added ability to print charts from pulldown and chart popup menus. Have not tested this, hope it works properly...
 
+- Applied patch #872874 - apply yahoo adjusted close column. Essentially the yahoo plugin can now do
+  adjusted splits for stocks. Consult the docs for the details on how this works.
+
+- Applied patch #872878 - double size of the MACD osc. Was appearing too small on some charts for easy viewing.
+
+- Applied patch #872881 - chart WILLR with 100 at bottom. This fixes the scaling to be faithful to the
+  original method.
+
 
 0.22
 ====
