@@ -32,25 +32,18 @@
 #include <qinputdialog.h>
 #include <qmessagebox.h>
 #include <qcursor.h>
-#include <qlayout.h>
 #include <qdir.h>
 #include <stdlib.h>
 
-TestPage::TestPage (QWidget *w) : QWidget (w)
+TestPage::TestPage (QWidget *w) : QListBox (w)
 {
-  QVBoxLayout *vbox = new QVBoxLayout(this);
-  vbox->setMargin(2);
-  vbox->setSpacing(5);
-  
-  list = new QListBox(this);
-  connect(list, SIGNAL(contextMenuRequested(QListBoxItem *, const QPoint &)), this, SLOT(rightClick(QListBoxItem *)));
-  connect(list, SIGNAL(highlighted(const QString &)), this, SLOT(testSelected(const QString &)));
-  connect(list, SIGNAL(doubleClicked(QListBoxItem *)), this, SLOT(doubleClick(QListBoxItem *)));
-  vbox->addWidget(list);
+  connect(this, SIGNAL(contextMenuRequested(QListBoxItem *, const QPoint &)), this, SLOT(rightClick(QListBoxItem *)));
+  connect(this, SIGNAL(highlighted(const QString &)), this, SLOT(testSelected(const QString &)));
+  connect(this, SIGNAL(doubleClicked(QListBoxItem *)), this, SLOT(doubleClick(QListBoxItem *)));
   
   menu = new QPopupMenu();
-  menu->insertItem(QPixmap(open), tr("&Open Backtest Rule"), this, SLOT(openTest()), CTRL+Key_O);
   menu->insertItem(QPixmap(newchart), tr("&New Backtest Rule"), this, SLOT(newTest()), CTRL+Key_N);
+  menu->insertItem(QPixmap(open), tr("&Open Backtest Rule"), this, SLOT(openTest()), CTRL+Key_O);
   menu->insertItem(QPixmap(deleteitem), tr("&Delete Backtest Rule"), this, SLOT(deleteTest()), CTRL+Key_D);
   menu->insertItem(QPixmap(renam), tr("&Rename Backtest Rule"), this, SLOT(renameTest()), CTRL+Key_R);
   menu->insertItem(QPixmap(copy), tr("&Copy Backtest Rule"), this, SLOT(copyTest()), CTRL+Key_C);
@@ -68,7 +61,7 @@ TestPage::~TestPage ()
 
 void TestPage::openTest ()
 {
-  Tester *dialog = new Tester(list->currentText());
+  Tester *dialog = new Tester(currentText());
   dialog->show();
 }
 
@@ -127,14 +120,14 @@ void TestPage::deleteTest()
 
 void TestPage::renameTest ()
 {
-  if (list->currentItem() == -1)
+  if (currentItem() == -1)
     return;
 
   bool ok;
   QString s = QInputDialog::getText(tr("Rename Backtest Rule"),
   				    tr("Enter new backtest rule name."),
   				    QLineEdit::Normal,
-				    list->currentText(),
+				    currentText(),
 				    &ok,
 				    this);
 
@@ -162,22 +155,22 @@ void TestPage::renameTest ()
 
   QString s2 = config.getData(Config::TestPath);
   s2.append("/");
-  s2.append(list->currentText());
+  s2.append(currentText());
   dir.rename(s2, s, TRUE);
   
-  list->changeItem(selection, list->currentItem());
+  changeItem(selection, currentItem());
 }
 
 void TestPage::copyTest ()
 {
-  if (list->currentItem() == -1)
+  if (currentItem() == -1)
     return;
 
   bool ok;
   QString s = QInputDialog::getText(tr("Copy Backtest Rule"),
   				    tr("Enter new name of copy."),
   				    QLineEdit::Normal,
-				    list->currentText(),
+				    currentText(),
 				    &ok,
 				    this);
 
@@ -201,7 +194,7 @@ void TestPage::copyTest ()
     return;
   }
 
-  s = "cp -R " + config.getData(Config::TestPath) + "/" + list->currentText() + " ";
+  s = "cp -R " + config.getData(Config::TestPath) + "/" + currentText() + " ";
   s.append(config.getData(Config::TestPath) + "/" + selection);
 
   if (system(s.latin1()) == -1)
@@ -213,7 +206,7 @@ void TestPage::copyTest ()
 
 void TestPage::testSelected (const QString &) 
 {
-  menu->setItemEnabled(menu->idAt(0), TRUE);
+  menu->setItemEnabled(menu->idAt(1), TRUE);
   menu->setItemEnabled(menu->idAt(2), TRUE);
   menu->setItemEnabled(menu->idAt(3), TRUE);
   menu->setItemEnabled(menu->idAt(4), TRUE);
@@ -221,7 +214,7 @@ void TestPage::testSelected (const QString &)
 
 void TestPage::testNoSelection ()
 {
-  menu->setItemEnabled(menu->idAt(0), FALSE);
+  menu->setItemEnabled(menu->idAt(1), FALSE);
   menu->setItemEnabled(menu->idAt(2), FALSE);
   menu->setItemEnabled(menu->idAt(3), FALSE);
   menu->setItemEnabled(menu->idAt(4), FALSE);
@@ -234,12 +227,12 @@ void TestPage::rightClick (QListBoxItem *)
 
 void TestPage::updateList ()
 {
-  list->clear();
+  clear();
   
   QDir dir(config.getData(Config::TestPath));
   int loop;
   for (loop = 2; loop < (int) dir.count(); loop++)
-    list->insertItem(dir[loop], -1);
+    insertItem(dir[loop], -1);
 }
 
 void TestPage::slotMessage (QString d)
@@ -260,6 +253,66 @@ void TestPage::slotHelp ()
 {
   HelpWindow *hw = new HelpWindow(this, "workwithbacktest.html");
   hw->show();
+}
+
+void TestPage::keyPressEvent (QKeyEvent *key)
+{
+  doKeyPress(key);
+}
+
+void TestPage::doKeyPress (QKeyEvent *key)
+{
+  if (key->state() == Qt::ControlButton)
+  {
+    switch (key->key())
+    {
+      case Qt::Key_N:
+        key->accept();
+        newTest();
+        break;
+      case Qt::Key_O:
+        key->accept();
+        openTest();
+        break;
+      case Qt::Key_R:
+        key->accept();
+        renameTest();
+        break;
+      case Qt::Key_H:
+        key->accept();
+        slotHelp();
+        break;
+      case Qt::Key_C:
+        key->accept();
+        copyTest();
+        break;
+      default:
+        break;
+    }
+  }
+  else
+  {
+    switch (key->key())
+    {
+      case Qt::Key_Delete:
+        key->accept();
+        deleteTest();
+	break;
+      case Qt::Key_Left: // segfaults if we dont trap this
+      case Qt::Key_Right: // segfaults if we dont trap this
+        key->accept();
+        break;      
+      case Qt::Key_Enter:
+      case Qt::Key_Return:
+        key->accept();
+        openTest();
+        break;
+      default:
+        key->ignore();
+        QListBox::keyPressEvent(key);
+        break;
+    }
+  }
 }
 
 

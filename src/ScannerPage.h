@@ -28,7 +28,7 @@
 #include <qlistbox.h>
 #include "Config.h"
 
-class ScannerPage : public QWidget
+class ScannerPage : public QListBox
 {
   Q_OBJECT
 
@@ -51,10 +51,12 @@ class ScannerPage : public QWidget
     void slotMessage (QString);
     void slotHelp ();
     void doubleClick (QListBoxItem *);
+    void doKeyPress (QKeyEvent *);
 
   private:
+    virtual void keyPressEvent (QKeyEvent *);
+  
     Config config;
-    QListBox *list;
     QPopupMenu *menu;
 };
 

@@ -50,6 +50,7 @@ ChartPage::ChartPage (QWidget *w) : QWidget (w)
   connect(nav, SIGNAL(noSelection()), this, SLOT(chartNoSelection()));
   connect(nav, SIGNAL(contextMenuRequested(QListBoxItem *, const QPoint &)), this,
           SLOT(rightClick(QListBoxItem *)));
+  connect(nav, SIGNAL(keyPress(QKeyEvent *)), this, SLOT(doKeyPress(QKeyEvent *)));
   nav->updateList();
   vbox->addWidget(nav);
 
@@ -261,3 +262,32 @@ void ChartPage::slotHelp ()
   hw->show();
 }
 
+void ChartPage::setNavFocus ()
+{
+  nav->setFocus();
+}
+
+void ChartPage::doKeyPress (QKeyEvent *key)
+{
+  switch (key->key())
+  {
+    case Qt::Key_Delete:
+    case Qt::Key_D:
+      deleteChart();
+      break;
+    case Qt::Key_E:
+      editChart();
+      break;
+    case Qt::Key_X:
+      exportSymbol();
+      break;
+    case Qt::Key_U:
+      dumpSymbol();
+      break;
+    case Qt::Key_H:
+      slotHelp();
+      break;
+    default:
+      break;
+  }
+}

@@ -33,6 +33,7 @@ class Navigator : public QListBox
   signals:
     void fileSelected (QString);
     void noSelection ();
+    void keyPress (QKeyEvent *);
 
   public:
     Navigator (QWidget *, QString);
@@ -47,8 +48,11 @@ class Navigator : public QListBox
     void fileSelection (QListBoxItem *);
     void checkDirectory (QListBoxItem *);
     void updateList ();
+    void doKeyPress (QKeyEvent *);
 
   protected:
+    virtual void keyPressEvent (QKeyEvent *);
+  
     QString basePath;
     QDir currentDir;
 };

@@ -31,25 +31,18 @@
 #include <qinputdialog.h>
 #include <qmessagebox.h>
 #include <qcursor.h>
-#include <qlayout.h>
 
-ScannerPage::ScannerPage (QWidget *w) : QWidget (w)
+ScannerPage::ScannerPage (QWidget *w) : QListBox (w)
 {
-  QVBoxLayout *vbox = new QVBoxLayout(this);
-  vbox->setMargin(2);
-  vbox->setSpacing(5);
-  
-  list = new QListBox(this);
-  connect(list, SIGNAL(contextMenuRequested(QListBoxItem *, const QPoint &)), this, SLOT(rightClick(QListBoxItem *)));
-  connect(list, SIGNAL(highlighted(const QString &)), this, SLOT(scannerSelected(const QString &)));
-  connect(list, SIGNAL(doubleClicked(QListBoxItem *)), this, SLOT(doubleClick(QListBoxItem *)));
-  vbox->addWidget(list);
+  connect(this, SIGNAL(contextMenuRequested(QListBoxItem *, const QPoint &)), this, SLOT(rightClick(QListBoxItem *)));
+  connect(this, SIGNAL(highlighted(const QString &)), this, SLOT(scannerSelected(const QString &)));
+  connect(this, SIGNAL(doubleClicked(QListBoxItem *)), this, SLOT(doubleClick(QListBoxItem *)));
   
   menu = new QPopupMenu();
-  menu->insertItem(QPixmap(open), tr("Open Scanner"), this, SLOT(openScanner()));
-  menu->insertItem(QPixmap(newchart), tr("New Scanner"), this, SLOT(newScanner()));
-  menu->insertItem(QPixmap(deleteitem), tr("Delete Scanner"), this, SLOT(deleteScanner()));
-  menu->insertItem(QPixmap(renam), tr("Rename Scanner"), this, SLOT(renameScanner()));
+  menu->insertItem(QPixmap(newchart), tr("&New Scanner"), this, SLOT(newScanner()), CTRL+Key_N);
+  menu->insertItem(QPixmap(open), tr("&Open Scanner"), this, SLOT(openScanner()), CTRL+Key_O);
+  menu->insertItem(QPixmap(deleteitem), tr("&Delete Scanner"), this, SLOT(deleteScanner()), CTRL+Key_D);
+  menu->insertItem(QPixmap(renam), tr("&Rename Scanner"), this, SLOT(renameScanner()), CTRL+Key_R);
   menu->insertSeparator(-1);
   menu->insertItem(QPixmap(help), tr("&Help"), this, SLOT(slotHelp()), CTRL+Key_H);
 
@@ -64,7 +57,7 @@ ScannerPage::~ScannerPage ()
 
 void ScannerPage::openScanner ()
 {
-  Scanner *dialog = new Scanner(list->currentText());
+  Scanner *dialog = new Scanner(currentText());
   connect(dialog, SIGNAL(exitScanner()), this, SLOT(refreshList()));
   connect(dialog, SIGNAL(message(QString)), this, SLOT(slotMessage(QString)));
   dialog->show();
@@ -156,7 +149,7 @@ void ScannerPage::renameScanner ()
   QString s = QInputDialog::getText(tr("Rename Scanner"),
   				    tr("Enter new scanner name."),
 				    QLineEdit::Normal,
-				    list->currentText(),
+				    currentText(),
 				    &ok,
 				    this);
   if ((ok) && (! s.isNull()))
@@ -182,7 +175,7 @@ void ScannerPage::renameScanner ()
 
     QString s2 = config.getData(Config::ScannerPath);
     s2.append("/");
-    s2.append(list->currentText());
+    s2.append(currentText());
 
     dir.rename(s2, s, TRUE);
 
@@ -195,13 +188,13 @@ void ScannerPage::scannerSelected (const QString &d)
 {
   if (d.length())
   {
-    menu->setItemEnabled(menu->idAt(0), TRUE);
+    menu->setItemEnabled(menu->idAt(1), TRUE);
     menu->setItemEnabled(menu->idAt(2), TRUE);
     menu->setItemEnabled(menu->idAt(3), TRUE);
   }
   else
   {
-    menu->setItemEnabled(menu->idAt(0), FALSE);
+    menu->setItemEnabled(menu->idAt(1), FALSE);
     menu->setItemEnabled(menu->idAt(2), FALSE);
     menu->setItemEnabled(menu->idAt(3), FALSE);
   }
@@ -214,12 +207,12 @@ void ScannerPage::rightClick (QListBoxItem *)
 
 void ScannerPage::refreshList ()
 {
-  list->clear();
+  clear();
   
   QDir dir(config.getData(Config::ScannerPath));
   int loop;
   for (loop = 2; loop < (int) dir.count(); loop++)
-    list->insertItem(dir[loop], -1);
+    insertItem(dir[loop], -1);
 }
 
 void ScannerPage::slotMessage (QString d)
@@ -239,5 +232,61 @@ void ScannerPage::slotHelp ()
 {
   HelpWindow *hw = new HelpWindow(this, "workwithscanner.html");
   hw->show();
+}
+
+void ScannerPage::keyPressEvent (QKeyEvent *key)
+{
+  doKeyPress(key);
+}
+
+void ScannerPage::doKeyPress (QKeyEvent *key)
+{
+  if (key->state() == Qt::ControlButton)
+  {
+    switch (key->key())
+    {
+      case Qt::Key_N:
+        key->accept();
+        newScanner();
+        break;
+      case Qt::Key_O:
+        key->accept();
+        openScanner();
+        break;
+      case Qt::Key_R:
+        key->accept();
+        renameScanner();
+        break;
+      case Qt::Key_H:
+        key->accept();
+        slotHelp();
+        break;
+      default:
+        break;
+    }
+  }
+  else
+  {
+    switch (key->key())
+    {
+      case Qt::Key_Delete:
+        key->accept();
+        deleteScanner();
+	break;
+      case Qt::Key_Left: // segfaults if we dont trap this
+      case Qt::Key_Right: // segfaults if we dont trap this
+        key->accept();
+        break;      
+      case Qt::Key_Enter:
+      case Qt::Key_Return:
+        key->accept();
+        openScanner();
+        break;
+      default:
+        key->ignore();
+        QListBox::keyPressEvent(key);
+        break;
+    }
+  }
 }
 

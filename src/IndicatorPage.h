@@ -28,7 +28,8 @@
 #include <qpopupmenu.h>
 #include "Setting.h"
 
-class IndicatorPage : public QWidget
+
+class IndicatorPage : public QListBox
 {
   Q_OBJECT
 
@@ -54,9 +55,12 @@ class IndicatorPage : public QWidget
     void deleteIndicator ();
     void itemSelected(const QString &);
     QStringList getDisabledIndicators ();
+    void doKeyPress (QKeyEvent *);
+    void changeIndicator (QString, int);
 
   protected:
-    QListBox *list;
+    virtual void keyPressEvent (QKeyEvent *);
+    
     QPopupMenu *menu;
     Setting statusList;
 };

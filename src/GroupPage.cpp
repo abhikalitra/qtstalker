@@ -56,6 +56,7 @@ GroupPage::GroupPage (QWidget *w) : QWidget (w)
   connect(nav, SIGNAL(fileSelected(QString)), this, SLOT(groupSelected(QString)));
   connect(nav, SIGNAL(noSelection()), this, SLOT(groupNoSelection()));
   connect(nav, SIGNAL(contextMenuRequested(QListBoxItem *, const QPoint &)), this, SLOT(rightClick(QListBoxItem *)));
+  connect(nav, SIGNAL(keyPress(QKeyEvent *)), this, SLOT(doKeyPress(QKeyEvent *)));
   nav->updateList();
   vbox->addWidget(nav);
 
@@ -321,5 +322,43 @@ void GroupPage::slotHelp ()
 {
   HelpWindow *hw = new HelpWindow(this, "workwithgroups.html");
   hw->show();
+}
+
+void GroupPage::setNavFocus ()
+{
+  nav->setFocus();
+}
+
+void GroupPage::doKeyPress (QKeyEvent *key)
+{
+  switch (key->key())
+  {
+    case Qt::Key_N:
+      newGroup();
+      break;
+    case Qt::Key_A:
+      addGroupItem();
+      break;
+    case Qt::Key_Delete:
+      deleteGroupItem();
+      break;
+    case Qt::Key_G:
+      deleteGroup();
+      break;
+    case Qt::Key_R:
+      renameGroup();
+      break;
+    case Qt::Key_F:
+      refreshList();
+      break;
+    case Qt::Key_E:
+      editChart();
+      break;
+    case Qt::Key_H:
+      slotHelp();
+      break;
+    default:
+      break;
+  }
 }
 

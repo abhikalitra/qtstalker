@@ -119,6 +119,14 @@ void Config::setup ()
   }
   setData(CUSRulePath, s);
 
+  s = home + "/macro";
+  if (! dir.exists(s, TRUE))
+  {
+    if (! dir.mkdir(s, TRUE))
+      qDebug("Unable to create ~/Qtstalker/macro directory.");
+  }
+  setData(MacroPath, s);
+  
   s = getData(AppFont);
   if (! s.length())
   {
@@ -251,6 +259,12 @@ QString Config::getData (Parm p)
     case DataPanelSize:
       s = settings.readEntry("/Qtstalker/DataPanelSize");
       break;
+    case MacroPath:
+      s = settings.readEntry("/Qtstalker/MacroPath");
+      break;
+    case Menubar:
+      s = settings.readEntry("/Qtstalker/Menubar", "1");
+      break;
     default:
       break;
   }
@@ -381,6 +395,12 @@ void Config::setData (Parm p, QString d)
       break;
     case DataPanelSize:
       settings.writeEntry("/Qtstalker/DataPanelSize", d);
+      break;
+    case MacroPath:
+      settings.writeEntry("/Qtstalker/MacroPath", d);
+      break;
+    case Menubar:
+      settings.writeEntry("/Qtstalker/Menubar", d);
       break;
     default:
       break;

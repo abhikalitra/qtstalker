@@ -163,3 +163,39 @@ void Navigator::setFilter (QString d)
   emit noSelection();
 }
 
+void Navigator::keyPressEvent (QKeyEvent *key)
+{
+  doKeyPress(key);
+}
+
+void Navigator::doKeyPress (QKeyEvent *key)
+{
+  if (key->state() == Qt::ControlButton)
+  {
+    key->accept();
+    emit keyPress(key);
+    return;
+  }
+
+  switch (key->key())
+  {
+    case Qt::Key_Delete:
+      key->accept();
+      emit keyPress(key);
+      break;
+    case Qt::Key_Left: // segfaults if we dont trap this
+    case Qt::Key_Right: // segfaults if we dont trap this
+      key->accept();
+      break;      
+    case Qt::Key_Enter:
+    case Qt::Key_Return:
+      key->accept();
+      checkDirectory(item(currentItem()));
+      break;
+    default:
+      key->ignore();
+      QListBox::keyPressEvent(key);
+      break;
+  }
+}
+

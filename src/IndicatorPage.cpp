@@ -28,22 +28,15 @@
 #include "edit.xpm"
 #include "delete.xpm"
 #include "newchart.xpm"
-#include <qlayout.h>
 #include <qcursor.h>
 #include <qdir.h>
 
-IndicatorPage::IndicatorPage (QWidget *w) : QWidget (w)
+IndicatorPage::IndicatorPage (QWidget *w) : QListBox (w)
 {
-  QVBoxLayout *vbox = new QVBoxLayout(this);
-  vbox->setMargin(2);
-  vbox->setSpacing(5);
-  
-  list = new QListBox(this);
-  connect(list, SIGNAL(doubleClicked(QListBoxItem *)), this, SLOT(doubleClick(QListBoxItem *)));
-  connect(list, SIGNAL(contextMenuRequested(QListBoxItem *, const QPoint &)), this,
+  connect(this, SIGNAL(doubleClicked(QListBoxItem *)), this, SLOT(doubleClick(QListBoxItem *)));
+  connect(this, SIGNAL(contextMenuRequested(QListBoxItem *, const QPoint &)), this,
           SLOT(rightClick(QListBoxItem *)));
-  connect(list, SIGNAL(highlighted(const QString &)), this, SLOT(itemSelected(const QString &)));
-  vbox->addWidget(list);
+  connect(this, SIGNAL(highlighted(const QString &)), this, SLOT(itemSelected(const QString &)));
 
   menu = new QPopupMenu();
   menu->insertItem(QPixmap(newchart), tr("&New Indicator"), this, SLOT(newIndicator()), CTRL+Key_N);
@@ -64,13 +57,11 @@ void IndicatorPage::itemSelected (const QString &d)
   {
     menu->setItemEnabled(menu->idAt(1), TRUE);
     menu->setItemEnabled(menu->idAt(2), TRUE);
-    menu->setItemEnabled(menu->idAt(3), TRUE);
   }
   else
   {
     menu->setItemEnabled(menu->idAt(1), FALSE);
     menu->setItemEnabled(menu->idAt(2), FALSE);
-    menu->setItemEnabled(menu->idAt(3), FALSE);
   }
 }
 
@@ -81,17 +72,17 @@ void IndicatorPage::newIndicator ()
 
 void IndicatorPage::editIndicator ()
 {
-  emit signalEditIndicator(list->currentText());
+  emit signalEditIndicator(currentText());
 }
 
 void IndicatorPage::deleteIndicator ()
 {
-  emit signalDeleteIndicator(list->currentText());
+  emit signalDeleteIndicator(currentText());
 }
 
 void IndicatorPage::refreshList ()
 {
-  list->clear();
+  clear();
   statusList.clear();
 
   Config config;
@@ -102,12 +93,12 @@ void IndicatorPage::refreshList ()
   {
     if (l.findIndex(dir[loop]) == -1)
     {
-      list->insertItem(ok, dir[loop], -1);
+      insertItem(ok, dir[loop], -1);
       statusList.setData(dir[loop], "1");
     }
     else
     {
-      list->insertItem(disable, dir[loop], -1);
+      insertItem(disable, dir[loop], -1);
       statusList.setData(dir[loop], "0");
     }
   }
@@ -118,19 +109,25 @@ void IndicatorPage::doubleClick (QListBoxItem *item)
   if (! item)
     return;
     
-  QString s = item->text();
-  int index = list->index(item);
-  if (statusList.getInt(s))
+  changeIndicator(item->text(), index(item));
+}
+
+void IndicatorPage::changeIndicator (QString d, int i)
+{
+  if (! d.length())
+    return;
+    
+  if (statusList.getInt(d))
   {
-    list->changeItem(disable, s, index);
-    statusList.setData(s, "0");
-    emit signalDisableIndicator(s);
+    changeItem(disable, d, i);
+    statusList.setData(d, "0");
+    emit signalDisableIndicator(d);
   }
   else
   {
-    list->changeItem(ok, s, index);
-    statusList.setData(s, "1");
-    emit signalEnableIndicator(s);
+    changeItem(ok, d, i);
+    statusList.setData(d, "1");
+    emit signalEnableIndicator(d);
   }
 }
 
@@ -174,3 +171,54 @@ QStringList IndicatorPage::getDisabledIndicators ()
   return l2;
 }
 
+void IndicatorPage::keyPressEvent (QKeyEvent *key)
+{
+  doKeyPress(key);
+}
+
+void IndicatorPage::doKeyPress (QKeyEvent *key)
+{
+  if (key->state() == Qt::ControlButton)
+  {
+    switch (key->key())
+    {
+      case Qt::Key_N:
+        key->accept();
+        newIndicator();
+        break;
+      case Qt::Key_E:
+        key->accept();
+        editIndicator();
+        break;
+      case Qt::Key_Delete:
+        key->accept();
+        deleteIndicator();
+        break;
+      case Qt::Key_H:
+        key->accept();
+        slotHelp();
+        break;
+      default:
+        break;
+    }
+  }
+  else
+  {
+    switch (key->key())
+    {
+      case Qt::Key_Left: // segfaults if we dont trap this
+      case Qt::Key_Right: // segfaults if we dont trap this
+        key->accept();
+        break;      
+      case Qt::Key_Enter:
+      case Qt::Key_Return:
+        key->accept();
+        changeIndicator(currentText(), currentItem());
+        break;
+      default:
+        key->ignore();
+        QListBox::keyPressEvent(key);
+        break;
+    }
+  }
+}

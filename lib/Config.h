@@ -52,7 +52,7 @@ class Config
       Crosshairs,
       DrawMode,
       DataPanelSize,
-      IndicatorPlotSize, // unused
+      MacroPath,
       ScaleToScreen,
       IndicatorPluginPath,
       QuotePluginPath,
@@ -75,7 +75,8 @@ class Config
       Y,
       ScannerPath,
       IndicatorPageStatus,
-      PlotSizes
+      PlotSizes,
+      Menubar
     };
 
     Config ();

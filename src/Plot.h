@@ -52,7 +52,6 @@ class Plot : public QWidget
     void leftMouseButton (int, int, bool);
     void keyPressed (QKeyEvent *);
     void signalEditIndicator (QString);
-    void signalDeleteIndicator (QString);
     void signalNewIndicator ();
     void signalMinPixelspace (int);
     void signalCrosshairsStatus (bool);
@@ -151,7 +150,6 @@ class Plot : public QWidget
     void draw15Date ();
 
     void slotEditIndicator (int);
-    void slotDeleteIndicator (int);
     void slotNewIndicator ();
     void slotNewChartObject (int);
     void slotDeleteAllChartObjects ();
@@ -210,7 +208,6 @@ class Plot : public QWidget
 
     QPopupMenu *chartMenu;
     QPopupMenu *chartEditMenu;
-    QPopupMenu *chartDeleteMenu;
     QPopupMenu *chartObjectMenu;
 };
 

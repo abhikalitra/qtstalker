@@ -1,8 +1,8 @@
 /*
  *  Qtstalker stock charter
- *
+ * 
  *  Copyright (C) 2001-2004 Stefan S. Stratigakos
- *
+ * 
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
@@ -15,45 +15,44 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, 
  *  USA.
  */
 
-#ifndef PORTFOLIOPAGE_HPP
-#define PORTFOLIOPAGE_HPP
+#ifndef MAINMENUBAR_HPP
+#define MAINMENUBAR_HPP
 
 #include <qstring.h>
-#include <qwidget.h>
+#include <qmenubar.h>
+#include <qmainwindow.h>
 #include <qpopupmenu.h>
-#include <qlistbox.h>
-#include "Config.h"
+#include <qdict.h>
+#include <qaction.h>
 
-class PortfolioPage : public QListBox
+class MainMenubar : public QMenuBar
 {
   Q_OBJECT
+  
+  signals:
+    void signalExit ();
 
   public:
-    PortfolioPage (QWidget *);
-    ~PortfolioPage ();
-
-  public slots:
-    void openPortfolio ();
-    void openPortfolio (QString);
-    void renamePortfolio ();
-    void newPortfolio ();
-    void deletePortfolio ();
-    void portfolioSelected (const QString &);
-    void rightClick (QListBoxItem *);
-    void slotHelp ();
-    void doubleClick (QListBoxItem *);
-    void updateList ();
-    void doKeyPress (QKeyEvent *);
-
-  private:
-    virtual void keyPressEvent (QKeyEvent *);
+    MainMenubar(QMainWindow *);
+    ~MainMenubar();
+    void createMenus ();
+    QAction * getAction (QString);
+    bool getStatus (QString);
+    void setStatus (QString, bool);
+    void saveSettings ();
   
-    Config config;
-    QPopupMenu *menu;
+  private:
+    QPopupMenu *fileMenu;
+    QPopupMenu *editMenu;
+    QPopupMenu *viewMenu;
+    QPopupMenu *toolMenu;
+    QPopupMenu *helpMenu;
+    
+    QDict<QAction> actions;
 };
 
 #endif

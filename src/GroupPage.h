@@ -39,6 +39,7 @@ class GroupPage : public QWidget
   public:
     GroupPage (QWidget *);
     ~GroupPage ();
+    void setNavFocus ();
 
   public slots:
     void newGroup ();
@@ -52,6 +53,7 @@ class GroupPage : public QWidget
     void editChart ();
     void refreshList ();
     void slotHelp ();
+    void doKeyPress (QKeyEvent *);
 
   protected:
     Navigator *nav;

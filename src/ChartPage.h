@@ -40,6 +40,7 @@ class ChartPage : public QWidget
     ChartPage (QWidget *);
     ~ChartPage ();
     void exportChart (QString);
+    void setNavFocus ();
 
   public slots:
     void deleteChart ();
@@ -54,6 +55,7 @@ class ChartPage : public QWidget
     void refreshList ();
     void searchChanged (const QString &);
     void slotHelp ();
+    void doKeyPress (QKeyEvent *);
 
   protected:
     Navigator *nav;

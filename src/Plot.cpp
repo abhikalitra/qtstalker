@@ -1579,10 +1579,8 @@ void Plot::showPopupMenu ()
   }
   
   chartMenu->insertItem(QPixmap(indicator), tr("New &Indicator"), this, SLOT(slotNewIndicator()), CTRL+Key_I);
-  chartDeleteMenu = new QPopupMenu();
   chartEditMenu = new QPopupMenu();
   chartMenu->insertItem(QPixmap(edit), tr("Edit Indicator"), chartEditMenu);
-  chartMenu->insertItem (QPixmap(deleteitem), tr("Delete Indicator"), chartDeleteMenu);
   chartMenu->insertSeparator ();
 
   chartObjectMenu = new QPopupMenu();
@@ -1616,10 +1614,7 @@ void Plot::showPopupMenu ()
   {
     if (it.currentKey().compare("Main Plot"))
     {
-      int id = chartDeleteMenu->insertItem(QPixmap(indicator), it.currentKey(), this, SLOT(slotDeleteIndicator(int)));
-      chartDeleteMenu->setItemParameter(id, id);
-
-      id = chartEditMenu->insertItem(QPixmap(indicator), it.currentKey(), this, SLOT(slotEditIndicator(int)));
+      int id = chartEditMenu->insertItem(QPixmap(indicator), it.currentKey(), this, SLOT(slotEditIndicator(int)));
       chartEditMenu->setItemParameter(id, id);
     }
   }
@@ -1647,12 +1642,6 @@ void Plot::slotEditIndicator (int id)
 {
   QString s = chartEditMenu->text(id);
   emit signalEditIndicator(s);
-}
-
-void Plot::slotDeleteIndicator (int id)
-{
-  QString s = chartDeleteMenu->text(id);
-  emit signalDeleteIndicator(s);
 }
 
 void Plot::slotNewIndicator ()

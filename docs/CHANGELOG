@@ -41,7 +41,14 @@
           any indicators in the Qtstalker/indicators directory. There is also a context menu available
 	  for each indicator in the list.
 	  
-	  	  
+20050210: Code cleanup. Moved menubar functions into a new class MainMenubar. Moved toolbar2 functions
+          into new class ChartToolbar. QtstalkerApp is getting too big, need to spin off more code
+	  into new classes.
+	  
+20050210: Added new option to the Pref's dialog. The 'Main Menubar' checkbox allows user to hide
+          the main menubar if left unchecked.
+	  
+	  
 	  
 0.29
 ====

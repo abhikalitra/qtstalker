@@ -32,6 +32,7 @@
 #include <qtoolbutton.h>
 #include <qptrlist.h>
 #include <qmultilineedit.h>
+#include <qbuttongroup.h>
 
 #include "Indicator.h"
 #include "Plot.h"
@@ -43,6 +44,13 @@
 #include "NavigatorTab.h"
 #include "Quote.h"
 #include "IndicatorPage.h"
+#include "ScannerPage.h"
+#include "PortfolioPage.h"
+#include "TestPage.h"
+#include "GroupPage.h"
+#include "MacroPage.h"
+#include "ChartToolbar.h"
+#include "MainMenubar.h"
 
 #define DEFAULT_INDICATOR_HEIGHT 125
 
@@ -77,7 +85,6 @@ class QtstalkerApp : public QMainWindow
     QtstalkerApp ();
     ~QtstalkerApp ();
     void initConfig ();
-    void initActions ();
     void initMenuBar ();
     void initToolBar ();
     void initGroupNav ();
@@ -86,6 +93,7 @@ class QtstalkerApp : public QMainWindow
     void initTestNav();
     void initIndicatorNav ();
     void initScannerNav ();
+    void initMacroNav ();
     QString getWindowCaption ();
     void setChartType (int);
     void loadChart (QString);
@@ -135,33 +143,20 @@ class QtstalkerApp : public QMainWindow
     void slotDisableIndicator (QString);
     void slotEnableIndicator (QString);
 
-  private:
-    QPopupMenu *fileMenu;
-    QPopupMenu *editMenu;
-    QPopupMenu *viewMenu;
-    QPopupMenu *toolMenu;
-    QPopupMenu *helpMenu;
+/*        
+    void slotChartPanelFocus ();
+    void slotGroupPanelFocus ();
+    void slotIndicatorPanelFocus ();
+    void slotPortfolioPanelFocus ();
+    void slotTesterPanelFocus ();
+    void slotScannerPanelFocus ();
+    void slotMacroPanelFocus ();
+*/
 
-    QAction *actionQuit;
-    QAction *actionAbout;
-    QAction *actionOptions;
-    QAction *actionGrid;
-    QAction *actionDatawindow;
-    QAction *actionNewIndicator;
-    QAction *actionQuotes;
-    QAction *actionScaleToScreen;
-    QAction *actionNav;
-    QAction *actionLogScale;
-    QAction *actionHideMainPlot;
-    QAction *actionPlotDate;
-    QAction *actionDrawMode;
-    QAction *actionPlotFocus;
-    QAction *actionTabIndicatorFocus;
-    QAction *actionHelp;
-    
+  private:
     QToolBar *toolbar;
-    QToolBar *toolbar2;
-    QMenuBar *menubar;
+    ChartToolbar *toolbar2;
+    MainMenubar *menubar;
     QSplitter *split;
     QSplitter *navSplitter;
     QSplitter *dpSplitter;
@@ -172,12 +167,7 @@ class QtstalkerApp : public QMainWindow
     ChartPage *chartNav;
     Plot *mainPlot;
     QDict<Plot> plotList;
-    QSpinBox *barCount;
-    QComboBox *compressionCombo;
-    QComboBox *chartTypeCombo;
-    QSpinBox *pixelspace;
     Config config;
-    QSlider *slider;
     chartStatus status;
     QString chartPath;
     QString chartName;
@@ -188,6 +178,12 @@ class QtstalkerApp : public QMainWindow
     QMultiLineEdit *infoLabel;
     QuoteDialog *quoteDialog;
     IndicatorPage *ip;
+    PortfolioPage *pp;
+    ScannerPage *sp;
+    TestPage *tp;
+    GroupPage *gp;
+    MacroPage *mp;
+    QButtonGroup *bg;
 };
 
 #endif

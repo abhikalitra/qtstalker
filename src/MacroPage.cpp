@@ -19,9 +19,9 @@
  *  USA.
  */
 
-#include "PortfolioPage.h"
-#include "PortfolioDialog.h"
+#include "MacroPage.h"
 #include "SymbolDialog.h"
+//#include "MacroDialog.h"
 #include "HelpWindow.h"
 #include "help.xpm"
 #include "open.xpm"
@@ -32,49 +32,52 @@
 #include <qmessagebox.h>
 #include <qcursor.h>
 #include <qfile.h>
+#include <qdir.h>
 
-PortfolioPage::PortfolioPage (QWidget *w) : QListBox (w)
+MacroPage::MacroPage (QWidget *w) : QListBox (w)
 {
   connect(this, SIGNAL(contextMenuRequested(QListBoxItem *, const QPoint &)), this, SLOT(rightClick(QListBoxItem *)));
-  connect(this, SIGNAL(highlighted(const QString &)), this, SLOT(portfolioSelected(const QString &)));
+  connect(this, SIGNAL(highlighted(const QString &)), this, SLOT(macroSelected(const QString &)));
   connect(this, SIGNAL(doubleClicked(QListBoxItem *)), this, SLOT(doubleClick(QListBoxItem *)));
   
   menu = new QPopupMenu();
-  menu->insertItem(QPixmap(newchart), tr("&New Portfolio"), this, SLOT(newPortfolio()), CTRL+Key_N);
-  menu->insertItem(QPixmap(open), tr("&Open Portfolio"), this, SLOT(openPortfolio()), CTRL+Key_O);
-  menu->insertItem(QPixmap(deleteitem), tr("&Delete Portfolio"), this, SLOT(deletePortfolio()), CTRL+Key_D);
-  menu->insertItem(QPixmap(renam), tr("&Rename Portfolio"), this, SLOT(renamePortfolio()), CTRL+Key_R);
+  menu->insertItem(QPixmap(newchart), tr("&New Macro"), this, SLOT(newMacro()), CTRL+Key_N);
+  menu->insertItem(QPixmap(open), tr("&Open Macro"), this, SLOT(openMacro()), CTRL+Key_O);
+  menu->insertItem(QPixmap(deleteitem), tr("&Delete Macro"), this, SLOT(deleteMacro()), CTRL+Key_D);
+  menu->insertItem(QPixmap(renam), tr("&Rename Macro"), this, SLOT(renameMacro()), CTRL+Key_R);
+  menu->insertSeparator(-1);
+  menu->insertItem(QPixmap(renam), tr("R&un Macro"), this, SLOT(runMacro()), CTRL+Key_U);
   menu->insertSeparator(-1);
   menu->insertItem(QPixmap(help), tr("&Help"), this, SLOT(slotHelp()), CTRL+Key_H);
 
   updateList();
-  portfolioSelected(QString());
+  macroSelected(QString());
 }
 
-PortfolioPage::~PortfolioPage ()
+MacroPage::~MacroPage ()
 {
   delete menu;
 }
 
-void PortfolioPage::openPortfolio ()
+void MacroPage::openMacro ()
 {
-  PortfolioDialog *dialog = new PortfolioDialog(currentText());
-  dialog->show();
+//  MacroDialog *dialog = new MacroDialog(currentText());
+//  dialog->show();
 }
 
-void PortfolioPage::openPortfolio (QString d)
+void MacroPage::openMacro (QString d)
 {
-  PortfolioDialog *dialog = new PortfolioDialog(d);
-  dialog->show();
+//  MacroDialog *dialog = new MacroDialog(d);
+//  dialog->show();
 }
 
-void PortfolioPage::newPortfolio()
+void MacroPage::newMacro()
 {
   bool ok;
-  QString s = QInputDialog::getText(tr("New Portfolio"),
-  				    tr("Enter new portfolio name."),
+  QString s = QInputDialog::getText(tr("New Macro"),
+  				    tr("Enter new macro name."),
 				    QLineEdit::Normal,
-				    tr("New Portfolio"),
+				    tr("NewMacro"),
 				    &ok,
 				    this);
   if ((ok) && (! s.isNull()))
@@ -88,13 +91,13 @@ void PortfolioPage::newPortfolio()
         selection.append(c);
     }
   
-    s = config.getData(Config::PortfolioPath);
+    s = config.getData(Config::MacroPath);
     s.append("/");
     s.append(selection);
     QDir dir(s);
     if (dir.exists(s, TRUE))
     {
-      QMessageBox::information(this, tr("Qtstalker: Error"), tr("This portfolio already exists."));
+      QMessageBox::information(this, tr("Qtstalker: Error"), tr("This macro already exists."));
       return;
     }
 
@@ -106,17 +109,17 @@ void PortfolioPage::newPortfolio()
     
     updateList();
 
-    openPortfolio(selection);
+    openMacro(selection);
   }
 }
 
-void PortfolioPage::deletePortfolio()
+void MacroPage::deleteMacro()
 {
   SymbolDialog *dialog = new SymbolDialog(this,
-  				          config.getData(Config::PortfolioPath),
+  				          config.getData(Config::MacroPath),
 					  "*",
 					  QFileDialog::ExistingFiles);
-  dialog->setCaption(tr("Select Portfolios To Delete"));
+  dialog->setCaption(tr("Select Macros To Delete"));
 
   int rc = dialog->exec();
 
@@ -124,7 +127,7 @@ void PortfolioPage::deletePortfolio()
   {
     rc = QMessageBox::warning(this,
   			      tr("Qtstalker: Warning"),
-			      tr("Are you sure you want to delete this portfolio?"),
+			      tr("Are you sure you want to delete this macro?"),
 			      QMessageBox::Yes,
 			      QMessageBox::No,
 			      QMessageBox::NoButton);
@@ -142,17 +145,17 @@ void PortfolioPage::deletePortfolio()
       dir.remove(l[loop], TRUE);
 
     updateList();
-    portfolioSelected(QString());
+    macroSelected(QString());
   }
 
   delete dialog;
 }
 
-void PortfolioPage::renamePortfolio ()
+void MacroPage::renameMacro ()
 {
   bool ok;
-  QString s = QInputDialog::getText(tr("Rename Portfolio"),
-  				    tr("Enter new portfolio name."),
+  QString s = QInputDialog::getText(tr("Rename Macro"),
+  				    tr("Enter new macro name."),
 				    QLineEdit::Normal,
 				    currentText(),
 				    &ok,
@@ -168,78 +171,80 @@ void PortfolioPage::renamePortfolio ()
         selection.append(c);
     }
   
-    s = config.getData(Config::PortfolioPath);
+    s = config.getData(Config::MacroPath);
     s.append("/");
     s.append(selection);
     QDir dir(s);
     if (dir.exists(s, TRUE))
     {
-      QMessageBox::information(this, tr("Qtstalker: Error"), tr("This portfolio already exists."));
+      QMessageBox::information(this, tr("Qtstalker: Error"), tr("This macro already exists."));
       return;
     }
 
-    QString s2 = config.getData(Config::PortfolioPath);
+    QString s2 = config.getData(Config::MacroPath);
     s2.append("/");
     s2.append(currentText());
 
     dir.rename(s2, s, TRUE);
 
     updateList();
-    portfolioSelected(QString());
+    macroSelected(QString());
   }
 }
 
-void PortfolioPage::portfolioSelected (const QString &d)
+void MacroPage::macroSelected (const QString &d)
 {
   if (d.length())
   {
     menu->setItemEnabled(menu->idAt(1), TRUE);
     menu->setItemEnabled(menu->idAt(2), TRUE);
     menu->setItemEnabled(menu->idAt(3), TRUE);
+    menu->setItemEnabled(menu->idAt(5), TRUE);
   }
   else
   {
     menu->setItemEnabled(menu->idAt(1), FALSE);
     menu->setItemEnabled(menu->idAt(2), FALSE);
     menu->setItemEnabled(menu->idAt(3), FALSE);
+    menu->setItemEnabled(menu->idAt(5), FALSE);
   }
 }
 
-void PortfolioPage::rightClick (QListBoxItem *)
+void MacroPage::rightClick (QListBoxItem *)
 {
   menu->exec(QCursor::pos());
 }
 
-void PortfolioPage::updateList ()
+void MacroPage::updateList ()
 {
   clear();
   
-  QDir dir(config.getData(Config::PortfolioPath));
+  QDir dir(config.getData(Config::MacroPath));
   int loop;
   for (loop = 2; loop < (int) dir.count(); loop++)
     insertItem(dir[loop], -1);
 }
 
-void PortfolioPage::doubleClick (QListBoxItem *item)
+void MacroPage::doubleClick (QListBoxItem *item)
 {
   if (! item)
     return;
     
-  openPortfolio(item->text());
+  openMacro(item->text());
 }
 
-void PortfolioPage::slotHelp ()
+void MacroPage::slotHelp ()
 {
-  HelpWindow *hw = new HelpWindow(this, "workwithportfolios.html");
+  HelpWindow *hw = new HelpWindow(this, "workwithmacros.html");
   hw->show();
 }
 
-void PortfolioPage::keyPressEvent (QKeyEvent *key)
+void MacroPage::keyPressEvent (QKeyEvent *key)
 {
   doKeyPress(key);
 }
 
-void PortfolioPage::doKeyPress (QKeyEvent *key)
+void MacroPage::doKeyPress (QKeyEvent *key)
 {
   if (key->state() == Qt::ControlButton)
   {
@@ -247,19 +252,23 @@ void PortfolioPage::doKeyPress (QKeyEvent *key)
     {
       case Qt::Key_N:
         key->accept();
-        newPortfolio();
+        newMacro();
         break;
       case Qt::Key_O:
         key->accept();
-        openPortfolio();
+        openMacro();
         break;
       case Qt::Key_R:
         key->accept();
-        renamePortfolio();
+        renameMacro();
         break;
       case Qt::Key_H:
         key->accept();
         slotHelp();
+        break;
+      case Qt::Key_U:
+        key->accept();
+        runMacro();
         break;
       default:
         break;
@@ -271,8 +280,8 @@ void PortfolioPage::doKeyPress (QKeyEvent *key)
     {
       case Qt::Key_Delete:
         key->accept();
-        deletePortfolio();
-	break;
+        deleteMacro();
+        break;
       case Qt::Key_Left: // segfaults if we dont trap this
       case Qt::Key_Right: // segfaults if we dont trap this
         key->accept();
@@ -280,7 +289,7 @@ void PortfolioPage::doKeyPress (QKeyEvent *key)
       case Qt::Key_Enter:
       case Qt::Key_Return:
         key->accept();
-        openPortfolio();
+        openMacro();
         break;
       default:
         key->ignore();
@@ -288,5 +297,10 @@ void PortfolioPage::doKeyPress (QKeyEvent *key)
         break;
     }
   }
+}
+
+void MacroPage::runMacro ()
+{
+  emit signalRunMacro(currentText());
 }
 

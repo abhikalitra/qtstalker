@@ -32,6 +32,25 @@ indicator similar to a moving average without the attendant lag.&nbsp;
 It is extremely useful for smoothing other&nbsp; indicators with a
 configurable delay.<br>
 <br>
+The Lowpass filter comes out of Digital Signal Possessing (DSP) where
+the intent is to sample a comlex (analog) waveform and filter or
+decompose it into its various frequency components. The width and freq
+parameters have real mathematical meanings having to do with
+determining the Nyquist frequency (i.e. one half of the bandwidth of
+the input signal) and the cutoff frequency for the filter. All of which
+are probably not appropriate for this forum. A net search on "DSP",
+"Nyquist Theorem", "Time Series Analysis", "DSP Filters", etc. will
+provide a reading list for the next few years. The best book I know on
+the subject is: Neural, Novel &amp; Hybrid Algorithms for Time Series
+Prediction by Timothy Masters. <br>
+&nbsp; <br>
+As a practical matter, the standard low bandpass filters like SMA or
+EMA induce a lag from the input signal while the DSP version minimizes
+the lag and (in theory) makes for more responsive indicators. I would
+suggest experimentation. Plot and SMA, compare with Lowpass then play
+around with the parameters (ignoring the absolute values) to see if you
+find it useful. <br>
+<br>
 There are two input parameters:<br>
 &nbsp;&nbsp;&nbsp;&nbsp; <br>
 Width (0.0 to 0.5) adjusts the weighting exponent to alter the
@@ -48,8 +67,10 @@ The FFT routine used was written by Laurent de Soras and freely
 available for use (see notes in code).<br>
 <br>
 <br>
-<a href="fi.html" target="_self"><img src="back.png" border="0" width="32" height="32" alt="Back"></a>
-<a href="math.html" target="_self"><img src="next.png" border="0" width="32" height="32" alt="Next"></a>
-<a href="toc.html"><img src="home.png" border="0" width="32" height="32" alt="Home"></a>
+<a href="fi.html" target="_self"><img src="back.png" alt="Back"
+ border="0" height="32" width="32"></a>
+<a href="math.html" target="_self"><img src="next.png" alt="Next"
+ border="0" height="32" width="32"></a><a href="toc.html"><img
+ src="home.png" alt="Home" border="0" height="32" width="32"></a>
 </body>
 </html>

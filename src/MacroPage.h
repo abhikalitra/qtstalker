@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef PORTFOLIOPAGE_HPP
-#define PORTFOLIOPAGE_HPP
+#ifndef MACROPAGE_HPP
+#define MACROPAGE_HPP
 
 #include <qstring.h>
 #include <qwidget.h>
@@ -28,26 +28,30 @@
 #include <qlistbox.h>
 #include "Config.h"
 
-class PortfolioPage : public QListBox
+class MacroPage : public QListBox
 {
   Q_OBJECT
 
+  signals:
+    void signalRunMacro (QString);
+
   public:
-    PortfolioPage (QWidget *);
-    ~PortfolioPage ();
+    MacroPage (QWidget *);
+    ~MacroPage ();
 
   public slots:
-    void openPortfolio ();
-    void openPortfolio (QString);
-    void renamePortfolio ();
-    void newPortfolio ();
-    void deletePortfolio ();
-    void portfolioSelected (const QString &);
+    void openMacro ();
+    void openMacro (QString);
+    void renameMacro ();
+    void newMacro ();
+    void deleteMacro ();
+    void macroSelected (const QString &);
     void rightClick (QListBoxItem *);
     void slotHelp ();
     void doubleClick (QListBoxItem *);
     void updateList ();
     void doKeyPress (QKeyEvent *);
+    void runMacro ();
 
   private:
     virtual void keyPressEvent (QKeyEvent *);
