@@ -11,7 +11,11 @@
 	    
 - 20040210: Changed Candle charts to display hollow and filled properly.
 
-
+- 20040211: Fixed bug for weekly and monthly charts when volume values exceed the double type limit.
+            This fix just disables the values. The proper fix will have to come in the next version
+	    using Qt3.3 due to qt limits on long double conversion.
+	    
+	    
 0.23
 ====
 

@@ -203,9 +203,11 @@ QList<Setting> * ChartDb::getWeeklyHistory ()
           tr->setData("Low", r->getData("Low"));
       }
 
+/*      
       s = r->getData("Volume");
       if (s.length())
         tr->setData("Volume", QString::number(tr->getFloat("Volume") + r->getFloat("Volume")));
+*/
 
       s = r->getData("Open Interest");
       if (s.length())
@@ -282,9 +284,11 @@ QList<Setting> * ChartDb::getMonthlyHistory ()
           tr->setData("Low", r->getData("Low"));
       }
 
+/*      
       s = r->getData("Volume");
       if (s.length())
         tr->setData("Volume", QString::number(tr->getFloat("Volume") + r->getFloat("Volume")));
+*/
 
       s = r->getData("Open Interest");
       if (s.length())
