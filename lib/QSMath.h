@@ -46,18 +46,11 @@ class QSMath
 
     PlotLine * getMA (PlotLine *, MAType, int, int);
     PlotLine * getMA (PlotLine *, MAType, int);
-    
     PlotLine * getSMA (PlotLine *, int);
-    QString getSMA2 (int, QStringList);
-    
     PlotLine * getEMA (PlotLine *, int);
-    QString getEMA2 (int, QStringList);
-    
     PlotLine * getWilderMA (PlotLine *, int);
-    QString getWilderMA2 (int, QStringList);
-    
     PlotLine * getWMA (PlotLine *, int);
-    QString getWMA2 (int, QStringList);
+    QString getMA2 (int, QStringList);
     
     PlotLine * getTR (); // true range
     QString getTR2 (int i, QStringList);
@@ -150,7 +143,7 @@ class QSMath
     QString getDIV (int i, QStringList); // divide plotline
     QString getSUB (int i, QStringList); // subtract plotline
     QString getADD (int i, QStringList); // add plotline
-    QString getLINE (int i, QStringList); // plotline data array
+    QString getREF (int i, QStringList); // days back or current data array
     
     // custom functions
     void clearCustomLines ();

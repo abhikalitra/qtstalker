@@ -29,7 +29,8 @@
 
 
 20040704: New indicator plugin CUS. This allows the user to create custom indicator
-          formulas. Need to update DOCS on how to use it.
+          formulas. See DOCS for more info on usage.
+	  
 	  
 	  
 0.26

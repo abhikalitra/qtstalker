@@ -1,0 +1,1175 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <title>Custom - CUS</title>
+  <meta http-equiv="content-type"
+ content="text/html; charset=ISO-8859-1">
+</head>
+<body>
+<h2><u>Custom - CUS</u></h2>
+<br>
+<img style="width: 432px; height: 273px;" alt="" src="cus1.png"><br>
+<h3> Description:</h3>
+Allows the user to create custom indicators to plot. The user builds an
+indicator in a step by step manner. Using the above pic as an example
+to build a copy of the built in MACD indicator manually. The first
+function uses the OSC function to create a MACD. We check the Plot
+column here if we want this particular function to appear on the plot.
+Step 2 then creates the trigger plot by applying an EMA using step 1 as
+the input. We also want to plot this. Step 3 then builds a histogram
+of&nbsp; the MACD and trigger plots by subtracting step 2 from step 1
+using the SUB function. We check this to plot as well.<br>
+<br>
+By using all the functions available, we are able to build almost any
+kind of indicator quickly and simply without having to learn a new
+scripting language. Complicated intensive indicators would best be left
+to creating a plugin instead of long series of functions for speed and
+memory considerations.<br>
+<br>
+<h3>Alerts:&nbsp;</h3>
+<p>None<br>
+</p>
+<h3>Function Reference:</h3>
+<ul>
+  <li>data1 - This is a data array of values. It can either be an array
+of bar fields like (Open, High, Low, Close, Volume or Open Interest),
+or it can refer to a previous function in the formula. ie 1 refering to
+line 1 in the formula.</li>
+  <li>data2 - This is a data array of values. It allows 3 different
+values. It behaves exactly like data1 as well as being able to use a
+constant value. ie #10.375. To specify a value constant use the # sign
+to distinguish between a constant value and a formula line number.</li>
+  <li>color - The color assigned to the plot.</li>
+  <li><a href="ctypes.html">line type</a> - The line type in which to
+plot.<br>
+  </li>
+  <li>label - The text used to identify the plot in the data window and
+plot.</li>
+  <li><a href="ctypes.html">matype</a> - The type of moving average to
+use.<br>
+  </li>
+</ul>
+<br>
+<br>
+<span style="font-weight: bold;"></span><span style="font-weight: bold;"></span><span
+ style="font-weight: bold;"></span><span style="font-weight: bold;"></span>
+<table style="text-align: left; width: 1178px; height: 144px;"
+ border="1" cellspacing="2" cellpadding="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; width: 10%; background-color: rgb(204, 204, 204);">NAME</td>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">Accumulation
+Distribution<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">SYNTAX<br>
+      </td>
+      <td style="vertical-align: top;">AD,color,line
+type,label<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">FUNCTION<br>
+      </td>
+      <td style="vertical-align: top;">Calculates the predefined
+Accumulation/Distribution indicator. See AD indicator for more info. </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">EXAMPLE<br>
+      </td>
+      <td style="vertical-align: top;">"ADD,red,Line,AD"<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 1178px; height: 144px;"
+ border="1" cellspacing="2" cellpadding="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; width: 10%; background-color: rgb(204, 204, 204);">NAME</td>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">Addition<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">SYNTAX<br>
+      </td>
+      <td style="vertical-align: top;">ADD,data1,data2,color,line
+type,label<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">FUNCTION<br>
+      </td>
+      <td style="vertical-align: top;">The sum of data1 and data2. <br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">EXAMPLE<br>
+      </td>
+      <td style="vertical-align: top;">"ADD,Close,Open,red,Line,test"
+adds the close and open and plots a 'red' line type with label 'test'<br>
+"ADD,2,Close,yellow,Dash,test" adds the result of line 2 of the formula
+to the close, and plots a yellow dashed line with 'test' as the label.<br>
+"ADD,Close,#10.375,green,Histogram,test" adds the close and a constant
+value of 10.375, and plots a 'green' 'histogram' with label 'test'.<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<span style="font-weight: bold;"></span><span style="font-weight: bold;"></span><span
+ style="font-weight: bold;"></span><span style="font-weight: bold;"></span><br>
+<table style="text-align: left; width: 1178px; height: 144px;"
+ border="1" cellspacing="2" cellpadding="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; width: 10%; background-color: rgb(204, 204, 204);">NAME</td>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">Average
+Directional Movement<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">SYNTAX<br>
+      </td>
+      <td style="vertical-align: top;">ADX,matype,period,color,line
+type,label<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">FUNCTION<br>
+      </td>
+      <td style="vertical-align: top;">Calculates the predefined
+Average Directional Movement indicator. See ADX indicator for more
+info. </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">EXAMPLE<br>
+      </td>
+      <td style="vertical-align: top;">"ADX,SMA,14,yellow,Line,ADX"<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 1178px; height: 144px;"
+ border="1" cellspacing="2" cellpadding="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; width: 10%; background-color: rgb(204, 204, 204);">NAME</td>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">Bollinger
+Band<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">SYNTAX<br>
+      </td>
+      <td style="vertical-align: top;">BB,matype,period,deviation,flag,color,line
+type,label<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">FUNCTION<br>
+      </td>
+      <td style="vertical-align: top;">Calculates the predefined
+Bollinger Band indicator. See BB indicator for more info. The flag parm
+is either 0 or 1. 0 value returns the lower band and a value of 1
+returns the upper band. </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">EXAMPLE<br>
+      </td>
+      <td style="vertical-align: top;">"BB,SMA,20,2,0,red,Line,BBL"
+lower band<br>
+"BB,SMA,20,2,1,red,Line,BBU" upper band<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 1178px; height: 144px;"
+ border="1" cellspacing="2" cellpadding="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; width: 10%; background-color: rgb(204, 204, 204);">NAME</td>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">Commodity
+Channel Index<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">SYNTAX<br>
+      </td>
+      <td style="vertical-align: top;">CCI,period,color,line
+type,label<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">FUNCTION<br>
+      </td>
+      <td style="vertical-align: top;">Calculates the predefined
+Commodity Channel Index indicator. See CCI indicator for more info. </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">EXAMPLE<br>
+      </td>
+      <td style="vertical-align: top;">"CCI,14,red,Line,CCI"<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 1178px; height: 144px;"
+ border="1" cellspacing="2" cellpadding="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; width: 10%; background-color: rgb(204, 204, 204);">NAME</td>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">Division<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">SYNTAX<br>
+      </td>
+      <td style="vertical-align: top;">DIV,data1,data2,color,line
+type,label<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">FUNCTION<br>
+      </td>
+      <td style="vertical-align: top;">Divides data1 by data2.<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">EXAMPLE<br>
+      </td>
+      <td style="vertical-align: top;">"DIV,Close,Open,red,Line,test"
+divides the close by the open and plots a 'red' line type with label
+'test'<br>
+"DIV,2,Close,yellow,Dash,test" divides line 2 of the formula
+by the close, and plots a yellow dashed line with 'test' as the label.<br>
+"DIV,Close,#10.375,green,Histogram,test" divides the close by the
+constant
+value of 10.375, and plots a 'green' 'histogram' with label 'test'.<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 1178px; height: 144px;"
+ border="1" cellspacing="2" cellpadding="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; width: 10%; background-color: rgb(204, 204, 204);">NAME</td>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">Minus
+Directional Movement<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">SYNTAX<br>
+      </td>
+      <td style="vertical-align: top;">MDI,period,color,line
+type,label<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">FUNCTION<br>
+      </td>
+      <td style="vertical-align: top;">Calculates the predefined Minus
+Directional Movement indicator. See ADX indicator for more info. </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">EXAMPLE<br>
+      </td>
+      <td style="vertical-align: top;">"MDI,14,red,Line,MDI"<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 1178px; height: 144px;"
+ border="1" cellspacing="2" cellpadding="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; width: 10%; background-color: rgb(204, 204, 204);">NAME</td>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">Momentum<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">SYNTAX<br>
+      </td>
+      <td style="vertical-align: top;">MOM,period,color,line
+type,label<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">FUNCTION<br>
+      </td>
+      <td style="vertical-align: top;">Calculates the predefined
+Momentum indicator. See MOM indicator for more info. </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">EXAMPLE<br>
+      </td>
+      <td style="vertical-align: top;">"MOM,14,red,Histogram,MOM"<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 1178px; height: 144px;"
+ border="1" cellspacing="2" cellpadding="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; width: 10%; background-color: rgb(204, 204, 204);">NAME</td>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">Money
+Flow<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">SYNTAX<br>
+      </td>
+      <td style="vertical-align: top;">MF,period,color,line
+type,label<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">FUNCTION<br>
+      </td>
+      <td style="vertical-align: top;">Calculates the predefined Money
+Flow indicator. See MF indicator for more info. </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">EXAMPLE<br>
+      </td>
+      <td style="vertical-align: top;">"MF,10,red,Histogram Bar,MF"<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 1178px; height: 144px;"
+ border="1" cellspacing="2" cellpadding="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; width: 10%; background-color: rgb(204, 204, 204);">NAME</td>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">Moving
+Average<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">SYNTAX<br>
+      </td>
+      <td style="vertical-align: top;">MA,matype,data1,period,color,line
+type,label<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">FUNCTION<br>
+      </td>
+      <td style="vertical-align: top;">Calculates the predefined Moving
+Average indicator. See MA indicator for more info. </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">EXAMPLE<br>
+      </td>
+      <td style="vertical-align: top;">"MA,SMA,Close,10,red,Line,SMA"<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 1178px; height: 144px;"
+ border="1" cellspacing="2" cellpadding="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; width: 10%; background-color: rgb(204, 204, 204);">NAME</td>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">Multiplication<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">SYNTAX<br>
+      </td>
+      <td style="vertical-align: top;">MUL,data1,data2,color,line
+type,label<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">FUNCTION<br>
+      </td>
+      <td style="vertical-align: top;">Multiplies data1 by data2.<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">EXAMPLE<br>
+      </td>
+      <td style="vertical-align: top;">"MUL,Close,Open,red,Line,test"
+multiplies the close by the open and plots a 'red' line type with label
+'test'<br>
+"MUL,2,Close,yellow,Dash,test" multiplies line 2 of the formula
+by the close, and plots a yellow dashed line with 'test' as the label.<br>
+"MUL,Close,#10.375,green,Histogram,test" multiplies the close by the
+constant
+value of 10.375, and plots a 'green' 'histogram' with label 'test'.<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 1178px; height: 144px;"
+ border="1" cellspacing="2" cellpadding="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; width: 10%; background-color: rgb(204, 204, 204);">NAME</td>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">Oscillator<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">SYNTAX<br>
+      </td>
+      <td style="vertical-align: top;">OSC,data1,fast matype,slow
+matype,fast period,slow period,color,line
+type,label<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">FUNCTION<br>
+      </td>
+      <td style="vertical-align: top;">Calculates the predefined
+Oscillator
+indicator. See OSC indicator for more info. </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">EXAMPLE<br>
+      </td>
+      <td style="vertical-align: top;">"OSC,Close,SMA,SMA,5,10,red,Histogram,OSC"</td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 1178px; height: 144px;"
+ border="1" cellspacing="2" cellpadding="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; width: 10%; background-color: rgb(204, 204, 204);">NAME</td>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">On
+Balance Volume<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">SYNTAX<br>
+      </td>
+      <td style="vertical-align: top;">OBV,color,line
+type,label<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">FUNCTION<br>
+      </td>
+      <td style="vertical-align: top;">Calculates the predefined On
+Balance Volume indicator. See OBV indicator for more info. </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">EXAMPLE<br>
+      </td>
+      <td style="vertical-align: top;">"OBV,red,Line,OBV"<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 1178px; height: 144px;"
+ border="1" cellspacing="2" cellpadding="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; width: 10%; background-color: rgb(204, 204, 204);">NAME</td>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">Negative
+Volume Index<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">SYNTAX<br>
+      </td>
+      <td style="vertical-align: top;">NVI,color,line
+type,label<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">FUNCTION<br>
+      </td>
+      <td style="vertical-align: top;">Calculates the predefined
+Negative Volume Index indicator. See NVI indicator for more info. </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">EXAMPLE<br>
+      </td>
+      <td style="vertical-align: top;">"NVI,red,Line,NVI"<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 1178px; height: 144px;"
+ border="1" cellspacing="2" cellpadding="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; width: 10%; background-color: rgb(204, 204, 204);">NAME</td>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">Parabolic
+SAR<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">SYNTAX<br>
+      </td>
+      <td style="vertical-align: top;">SAR,initial,add,limit,color,line
+type,label<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">FUNCTION<br>
+      </td>
+      <td style="vertical-align: top;">Calculates the predefined
+Parabolic SAR indicator. See SAR indicator for more info. </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">EXAMPLE<br>
+      </td>
+      <td style="vertical-align: top;">"SAR,0.02,0.02,0.2,white,Dot,SAR"<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 1178px; height: 144px;"
+ border="1" cellspacing="2" cellpadding="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; width: 10%; background-color: rgb(204, 204, 204);">NAME</td>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">Percent
+Change<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">SYNTAX<br>
+      </td>
+      <td style="vertical-align: top;">PC,data1,period,color,line
+type,label<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">FUNCTION<br>
+      </td>
+      <td style="vertical-align: top;">Calculates the predefined
+Percent Change indicator. See PC indicator for more info. </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">EXAMPLE<br>
+      </td>
+      <td style="vertical-align: top;">"PC,Close,10,red,Line,PC"<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 1178px; height: 144px;"
+ border="1" cellspacing="2" cellpadding="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; width: 10%; background-color: rgb(204, 204, 204);">NAME</td>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">Performance<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">SYNTAX<br>
+      </td>
+      <td style="vertical-align: top;">PER,color,line
+type,label<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">FUNCTION<br>
+      </td>
+      <td style="vertical-align: top;">Calculates the predefined
+Performance indicator. See PER indicator for more info. </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">EXAMPLE<br>
+      </td>
+      <td style="vertical-align: top;">"PER,red,Histogram,PER"<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 1178px; height: 144px;"
+ border="1" cellspacing="2" cellpadding="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; width: 10%; background-color: rgb(204, 204, 204);">NAME</td>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">Plus
+Directional Movement<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">SYNTAX<br>
+      </td>
+      <td style="vertical-align: top;">PDI,period,color,line
+type,label<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">FUNCTION<br>
+      </td>
+      <td style="vertical-align: top;">Calculates the predefined Plus
+Directional Movement indicator. See ADX indicator for more info. </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">EXAMPLE<br>
+      </td>
+      <td style="vertical-align: top;">"PDI,14,green,Line,PDI"<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 1178px; height: 144px;"
+ border="1" cellspacing="2" cellpadding="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; width: 10%; background-color: rgb(204, 204, 204);">NAME</td>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">Positive
+Volume Index<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">SYNTAX<br>
+      </td>
+      <td style="vertical-align: top;">PVI,color,line
+type,label<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">FUNCTION<br>
+      </td>
+      <td style="vertical-align: top;">Calculates the predefined
+Positive Volume Index indicator. See PVI indicator for more info. </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">EXAMPLE<br>
+      </td>
+      <td style="vertical-align: top;">"PVI,red,Line,PVI"<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 1178px; height: 144px;"
+ border="1" cellspacing="2" cellpadding="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; width: 10%; background-color: rgb(204, 204, 204);">NAME</td>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">Price
+Volume Trend<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">SYNTAX<br>
+      </td>
+      <td style="vertical-align: top;">PVT,color,line
+type,label<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">FUNCTION<br>
+      </td>
+      <td style="vertical-align: top;">Calculates the predefined Price
+Volume Trend indicator. See PVT indicator for more info. </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">EXAMPLE<br>
+      </td>
+      <td style="vertical-align: top;">"PVT,red,Line,PVT"<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 1178px; height: 144px;"
+ border="1" cellspacing="2" cellpadding="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; width: 10%; background-color: rgb(204, 204, 204);">NAME</td>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">Rate
+of Change<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">SYNTAX<br>
+      </td>
+      <td style="vertical-align: top;">ROC,data1,period,color,line
+type,label<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">FUNCTION<br>
+      </td>
+      <td style="vertical-align: top;">Calculates the predefined Rate
+of Change indicator. See ROC indicator for more info. </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">EXAMPLE<br>
+      </td>
+      <td style="vertical-align: top;">"ROC,Close,14,red,Histogram,ROC"<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 1178px; height: 144px;"
+ border="1" cellspacing="2" cellpadding="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; width: 10%; background-color: rgb(204, 204, 204);">NAME</td>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">Reference<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">SYNTAX<br>
+      </td>
+      <td style="vertical-align: top;">REF,data1,period,color,line
+type,label<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">FUNCTION<br>
+      </td>
+      <td style="vertical-align: top;">Returns a data array of current
+or previous data bars. A period of 0 returns current data. A period of
+10 returns data displaced 10 bars into the past.<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">EXAMPLE<br>
+      </td>
+      <td style="vertical-align: top;">"REF,Close,10,red,Line,REF"<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 1178px; height: 144px;"
+ border="1" cellspacing="2" cellpadding="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; width: 10%; background-color: rgb(204, 204, 204);">NAME</td>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">Relative
+Strength Index<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">SYNTAX<br>
+      </td>
+      <td style="vertical-align: top;">RSI,data1,period,color,line
+type,label<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">FUNCTION<br>
+      </td>
+      <td style="vertical-align: top;">Calculates the predefined
+Relative Strength Index indicator. See RSI indicator for more info. </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">EXAMPLE<br>
+      </td>
+      <td style="vertical-align: top;">"RSI,Close,14,red,Line,RSI"<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 1178px; height: 144px;"
+ border="1" cellspacing="2" cellpadding="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; width: 10%; background-color: rgb(204, 204, 204);">NAME</td>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">Standard
+Deviation<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">SYNTAX<br>
+      </td>
+      <td style="vertical-align: top;">SD,data1,period,color,line
+type,label<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">FUNCTION<br>
+      </td>
+      <td style="vertical-align: top;">Calculates the predefined
+Standard Deviation indicator. See SD indicator for more info. </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">EXAMPLE<br>
+      </td>
+      <td style="vertical-align: top;">"SD,Close,14,red,Line,SD"<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 1178px; height: 144px;"
+ border="1" cellspacing="2" cellpadding="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; width: 10%; background-color: rgb(204, 204, 204);">NAME</td>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">Stochastic
+Oscillator<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">SYNTAX<br>
+      </td>
+      <td style="vertical-align: top;">STOCH,matype,%d period,%k
+period,color,line
+type,label<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">FUNCTION<br>
+      </td>
+      <td style="vertical-align: top;">Calculates the predefined
+Stochastic Oscillator indicator. See STOCH indicator for more info. </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">EXAMPLE<br>
+      </td>
+      <td style="vertical-align: top;">"STOCH,SMA,14,3,red,Line,STOCH"<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 1178px; height: 144px;"
+ border="1" cellspacing="2" cellpadding="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; width: 10%; background-color: rgb(204, 204, 204);">NAME</td>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">Subtraction<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">SYNTAX<br>
+      </td>
+      <td style="vertical-align: top;">SUB,data1,data2,color,line
+type,label<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">FUNCTION<br>
+      </td>
+      <td style="vertical-align: top;">Subtracts data2 from data1.<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">EXAMPLE<br>
+      </td>
+      <td style="vertical-align: top;">"SUB,Close,Open,red,Line,test"
+subtracts the open from the close<br>
+"SUB,2,Close,yellow,Dash,test" subtracts the close from line 2 of the
+formula<br>
+"SUB,Close,#10.375,green,Histogram,test" subtracts 10.375 from the close<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 1178px; height: 144px;"
+ border="1" cellspacing="2" cellpadding="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; width: 10%; background-color: rgb(204, 204, 204);">NAME</td>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">Typical
+Price<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">SYNTAX<br>
+      </td>
+      <td style="vertical-align: top;">TP,color,line
+type,label<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">FUNCTION<br>
+      </td>
+      <td style="vertical-align: top;">Calculates the predefined
+Typical Price indicator. </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">EXAMPLE<br>
+      </td>
+      <td style="vertical-align: top;">"TP,red,Line,TP"<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 1178px; height: 144px;"
+ border="1" cellspacing="2" cellpadding="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; width: 10%; background-color: rgb(204, 204, 204);">NAME</td>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">True
+Range<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">SYNTAX<br>
+      </td>
+      <td style="vertical-align: top;">TR,color,line
+type,label<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">FUNCTION<br>
+      </td>
+      <td style="vertical-align: top;">Calculates the predefined True
+Range indicator. </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">EXAMPLE<br>
+      </td>
+      <td style="vertical-align: top;">"TR,red,Line,TR"<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 1178px; height: 144px;"
+ border="1" cellspacing="2" cellpadding="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; width: 10%; background-color: rgb(204, 204, 204);">NAME</td>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">Volume
+Flow Index<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">SYNTAX<br>
+      </td>
+      <td style="vertical-align: top;">VFI,period,color,line
+type,label<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">FUNCTION<br>
+      </td>
+      <td style="vertical-align: top;">Calculates the predefined Volume
+Flow Index indicator. See VFI indicator for more info. </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">EXAMPLE<br>
+      </td>
+      <td style="vertical-align: top;">"VFI,10,red,Line,VFI"<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 1178px; height: 144px;"
+ border="1" cellspacing="2" cellpadding="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; width: 10%; background-color: rgb(204, 204, 204);">NAME</td>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">Volatility
+Ratio<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">SYNTAX<br>
+      </td>
+      <td style="vertical-align: top;">VOLR,period,color,line
+type,label<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">FUNCTION<br>
+      </td>
+      <td style="vertical-align: top;">Calculates the predefined
+Volatility Ratio indicator. See VOLR indicator for more info. </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">EXAMPLE<br>
+      </td>
+      <td style="vertical-align: top;">"VOLR,10,red,Line,VOLR"<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 1178px; height: 144px;"
+ border="1" cellspacing="2" cellpadding="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; width: 10%; background-color: rgb(204, 204, 204);">NAME</td>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">Weighted
+Moving Average<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">SYNTAX<br>
+      </td>
+      <td style="vertical-align: top;">WMA,data1,period,color,line
+type,label<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">FUNCTION<br>
+      </td>
+      <td style="vertical-align: top;">Calculates the predefined
+Weighted Moving Average indicator. See WMA indicator for more info. </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">EXAMPLE<br>
+      </td>
+      <td style="vertical-align: top;">"WMA,Close,10,red,Line,WMA"<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 1178px; height: 144px;"
+ border="1" cellspacing="2" cellpadding="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; width: 10%; background-color: rgb(204, 204, 204);">NAME</td>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">William's
+Accumulation Distribution<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">SYNTAX<br>
+      </td>
+      <td style="vertical-align: top;">WAD,color,line
+type,label<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">FUNCTION<br>
+      </td>
+      <td style="vertical-align: top;">Calculates the predefined
+William's Accumulation Distribution indicator. See WAD indicator for
+more info. </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">EXAMPLE<br>
+      </td>
+      <td style="vertical-align: top;">"WAD,red,Line,WAD"<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 1178px; height: 144px;"
+ border="1" cellspacing="2" cellpadding="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; width: 10%; background-color: rgb(204, 204, 204);">NAME</td>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">William's
+%R<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">SYNTAX<br>
+      </td>
+      <td style="vertical-align: top;">WILLR,period,color,line
+type,label<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">FUNCTION<br>
+      </td>
+      <td style="vertical-align: top;">Calculates the predefined
+William's %R indicator. See WILLR indicator for more info. </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">EXAMPLE<br>
+      </td>
+      <td style="vertical-align: top;">"WILLR,14,red,Line,WILLR"<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<br>
+<span style="font-weight: bold;"></span><span style="font-weight: bold;"></span><span
+ style="font-weight: bold;"></span><span style="font-weight: bold;"></span>
+</body>
+</html>
