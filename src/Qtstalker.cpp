@@ -468,14 +468,14 @@ void QtstalkerApp::slotQuit()
 void QtstalkerApp::slotAbout()
 {
   QMessageBox *dialog = new QMessageBox(tr("About Qtstalker"),
-  							    tr("Qtstalker\nVersion 0.22 \n(C) 2001-2003 by Stefan Stratigakos"),
-							    QMessageBox::NoIcon,
-							    QMessageBox::Ok,
-							    QMessageBox::NoButton,
-							    QMessageBox::NoButton,
-							    this,
-							    "AboutDialog",
-							    FALSE);
+  					tr("Qtstalker\nVersion 0.22 \n(C) 2001-2003 by Stefan Stratigakos"),
+					QMessageBox::NoIcon,
+					QMessageBox::Ok,
+					QMessageBox::NoButton,
+					QMessageBox::NoButton,
+					this,
+					"AboutDialog",
+					FALSE);
   dialog->setIconPixmap(qtstalker);
   dialog->show();
 }
