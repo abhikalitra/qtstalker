@@ -32,6 +32,7 @@
 #include <qstringlist.h>
 #include <qcursor.h>
 #include <stdlib.h>
+#include <qtooltip.h>
 
 GroupPage::GroupPage (QWidget *w, Config *c) : BaseDialog(w)
 {
@@ -39,6 +40,7 @@ GroupPage::GroupPage (QWidget *w, Config *c) : BaseDialog(w)
 
   group = new QLineEdit(this);
   group->setReadOnly(TRUE);
+  QToolTip::add(group, tr("Current Group"));
   basebox->addWidget(group);
 
   nav = new Navigator(this, config->getData(Config::GroupPath));
