@@ -59,6 +59,7 @@ Plot::Plot (QWidget *w) : QWidget(w)
   upColor.setNamedColor("green");
   downColor.setNamedColor("red");
   neutralColor.setNamedColor("blue");
+  candleColor.setNamedColor("green");
   pixelspace = 0;
   minPixelspace = 0;
   dateFlag = FALSE;
@@ -199,7 +200,7 @@ void Plot::setChartType (QString d)
       break;
     }
 
-    if (! d.compare(tr("Candle")))
+    if (! d.compare(tr("Candle")) || ! d.compare(tr("Candle 2")))
     {
       minPixelspace = 6;
       startX = 2;
@@ -325,7 +326,15 @@ void Plot::draw ()
           break;
         }
 
-        if (! chartType.compare(tr("Line")))
+        if (! chartType.compare(tr("Candle 2")))
+        {
+          drawCandle2();
+          drawLines();
+          drawObjects();
+          break;
+        }
+        
+	if (! chartType.compare(tr("Line")))
         {
           drawLineChart();
           drawLines();
@@ -755,6 +764,11 @@ void Plot::setDownColor (QColor d)
 void Plot::setNeutralColor (QColor d)
 {
   neutralColor = d;
+}
+
+void Plot::setCandleColor (QColor d)
+{
+  candleColor = d;
 }
 
 void Plot::setPlotFont (QFont d)
@@ -1953,6 +1967,47 @@ void Plot::drawCandle ()
   int x = startX;
   int loop = startIndex;
 
+  painter.setPen(candleColor);
+
+  while ((x < _width) && (loop < (int) data->count()))
+  {
+    Setting *r = data->at(loop);
+
+    int h = scaler.convertToY(r->getFloat("High"));
+    int l = scaler.convertToY(r->getFloat("Low"));
+    int c = scaler.convertToY(r->getFloat("Close"));
+    int o = scaler.convertToY(r->getFloat("Open"));
+
+    painter.drawLine (x, h, x, l);
+
+    if (r->getFloat("Open") != 0)
+    {
+      if (c < o)
+      {
+        painter.fillRect(x - 2, c, 5, o - c, backgroundColor);
+        painter.drawRect(x - 2, c, 5, o - c);
+      }
+      else if (c == o)
+        painter.drawLine (x - 2, o, x + 2, o);
+      else
+        painter.fillRect(x - 2, o, 5, c - o, painter.pen().color());
+    }
+
+    x = x + pixelspace;
+    loop++;
+  }
+
+  painter.end();
+}
+
+void Plot::drawCandle2 ()
+{
+  QPainter painter;
+  painter.begin(&buffer);
+
+  int x = startX;
+  int loop = startIndex;
+
   painter.setPen(neutralColor);
 
   Setting *r = data->at(loop);
@@ -3000,6 +3055,19 @@ void Plot::slotNewChartObject (int id)
 {
   QString s = chartObjectMenu->text(id);
   emit signalNewChartObject(s, this);
+}
+
+QStringList Plot::getChartTypes ()
+{
+  QStringList l;
+  l.append(tr("Bar"));
+  l.append(tr("Paint Bar"));
+  l.append(tr("Line"));
+  l.append(tr("Candle"));
+  l.append(tr("Candle 2"));
+  l.append(tr("P&F"));
+  l.append(tr("Swing"));
+  return l;
 }
 
 

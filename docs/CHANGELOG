@@ -24,6 +24,9 @@
 
 20040214: Fixed bug that didn't refresh the group page if the group is renamed.
 
+20040215: Added new chart type Candle and Candle 2. Candle is the traditional way of plotting candle
+          charts. Candle 2 is the qtstalker custom way of candles.
+	  
 
 0.23
 ====

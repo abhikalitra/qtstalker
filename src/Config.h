@@ -70,7 +70,8 @@ class Config
       Width,
       X,
       Y,
-      ScannerPath
+      ScannerPath,
+      CandleColor
     };
 
     Config (QString);

@@ -137,6 +137,10 @@ QtstalkerApp::QtstalkerApp()
   color.setNamedColor(config->getData(Config::NeutralColor));
   QObject::connect(this, SIGNAL(signalNeutralColor(QColor)), mainPlot, SLOT(setNeutralColor(QColor)));
   emit signalNeutralColor(color);
+  
+  color.setNamedColor(config->getData(Config::CandleColor));
+  QObject::connect(this, SIGNAL(signalCandleColor(QColor)), mainPlot, SLOT(setCandleColor(QColor)));
+  emit signalCandleColor(color);
 
   QStringList l = QStringList::split(" ", config->getData(Config::PlotFont), FALSE);
   QFont font(l[0], l[1].toInt(), l[2].toInt());
@@ -415,14 +419,7 @@ void QtstalkerApp::initToolBar()
 
   chartTypeCombo = new QComboBox(toolbar2);
   chartTypeCombo->show();
-  l.clear();
-  l.append(tr("Bar"));
-  l.append(tr("Paint Bar"));
-  l.append(tr("Line"));
-  l.append(tr("Candle"));
-  l.append(tr("P&F"));
-  l.append(tr("Swing"));
-  chartTypeCombo->insertStringList(l, -1);
+  chartTypeCombo->insertStringList(mainPlot->getChartTypes(), -1);
   QToolTip::add(chartTypeCombo, tr("Chart Type"));
   connect(chartTypeCombo, SIGNAL(activated(int)), this, SLOT(slotChartTypeChanged(int)));
 
@@ -507,6 +504,7 @@ void QtstalkerApp::slotOptions ()
   set->set(tr("Color Up"), config->getData(Config::UpColor), Setting::Color);
   set->set(tr("Color Down"), config->getData(Config::DownColor), Setting::Color);
   set->set(tr("Color Neutral"), config->getData(Config::NeutralColor), Setting::Color);
+  set->set(tr("Color Candle"), config->getData(Config::CandleColor), Setting::Color);
   set->set(tr("Paint Bar Indicator"), config->getData(Config::PaintBarIndicator), Setting::List);
   set->setList(tr("Paint Bar Indicator"), config->getIndicators());
   set->set(tr("Plot Font"), config->getData(Config::PlotFont), Setting::Font);
@@ -556,6 +554,10 @@ void QtstalkerApp::slotOptions ()
     color.setNamedColor(set->getData(tr("Color Neutral")));
     emit signalNeutralColor(color);
 
+    config->setData(Config::CandleColor, set->getData(tr("Color Candle")));
+    color.setNamedColor(set->getData(tr("Color Candle")));
+    emit signalCandleColor(color);
+    
     config->setData(Config::PlotFont, set->getData(tr("Plot Font")));
     QStringList l = QStringList::split(" ", set->getData(tr("Plot Font")), FALSE);
     QFont font(l[0], l[1].toInt(), l[2].toInt());

@@ -56,6 +56,7 @@ class QtstalkerApp : public QMainWindow
     void signalUpColor (QColor);
     void signalDownColor (QColor);
     void signalNeutralColor (QColor);
+    void signalCandleColor (QColor);
     void signalPlotFont (QFont);
     void signalIndex (int);
     void signalInterval(Plot::TimeInterval);

@@ -102,6 +102,7 @@ class Plot : public QWidget
     void setPAFBoxSize (double);
     void setPAFReversal (int);
     bool getMainFlag ();
+    QStringList getChartTypes ();
 
     void addIndicator (QString, Indicator *);
     Indicator * getIndicator (QString);
@@ -126,6 +127,7 @@ class Plot : public QWidget
     void setUpColor (QColor);
     void setDownColor (QColor);
     void setNeutralColor (QColor);
+    void setCandleColor (QColor);
     void setPlotFont (QFont);
     void setIndex (int);
     void setInterval(Plot::TimeInterval);
@@ -154,6 +156,7 @@ class Plot : public QWidget
     void drawPaintBar ();
     void drawLineChart ();
     void drawCandle ();
+    void drawCandle2 ();
     void drawBars ();
     void drawSwing ();
     void drawObjects ();
@@ -203,6 +206,7 @@ class Plot : public QWidget
     QColor upColor;
     QColor downColor;
     QColor neutralColor;
+    QColor candleColor;
     bool dateFlag;
     bool gridFlag;
     bool mainFlag;

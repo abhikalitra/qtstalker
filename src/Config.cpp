@@ -183,6 +183,9 @@ QString Config::getData (Parm p)
     case NeutralColor:
       s = settings.readEntry("/Qtstalker/NeutralColor", "blue");
       break;
+    case CandleColor:
+      s = settings.readEntry("/Qtstalker/CandleColor", "green");
+      break;
     case PaintBarIndicator:
       s = settings.readEntry("/Qtstalker/PaintBarIndicator", "");
       break;
@@ -303,6 +306,9 @@ void Config::setData (Parm p, QString d)
       break;
     case NeutralColor:
       settings.writeEntry("/Qtstalker/NeutralColor", d);
+      break;
+    case CandleColor:
+      settings.writeEntry("/Qtstalker/CandleColor", d);
       break;
     case PaintBarIndicator:
       settings.writeEntry("/Qtstalker/PaintBarIndicator", d);
