@@ -255,10 +255,10 @@ int FuturesData::setSymbol (QString d)
       break;
     }
 
-    if (! d.compare("HG") || ! d.compare("RHG"))
+    if (! d.compare("HG"))
     {
       name = "Copper";
-      symbol = "HG";
+      symbol = d;
       rate = 250;
       monthList = QStringList::split(",", "H,K,N,U,Z", FALSE);
       limit = 20;
