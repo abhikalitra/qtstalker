@@ -96,7 +96,6 @@ Plot::Plot (QWidget *w) : QWidget(w)
   plotFont.setWeight(50);
 
   indicators.setAutoDelete(TRUE);
-//  paintBars.setAutoDelete(TRUE);
   chartObjects.setAutoDelete(TRUE);
   data = 0;
 
@@ -119,7 +118,6 @@ void Plot::clear ()
   mainHigh = -99999999;
   mainLow = 99999999;
   indicators.clear();
-//  paintBars.clear();
   
   slotSaveChartObjects();
   chartObjects.clear();
@@ -139,11 +137,6 @@ void Plot::setData (BarData *l)
   {
     mainHigh = data->getMax();
     mainLow = data->getMin();
-
-//    FIXME
-//    int loop;
-//    for (loop = 0; loop < (int) data->count(); loop++)
-//      paintBars.append(new QColor(neutralColor.red(), neutralColor.green(), neutralColor.blue()));
   }
 
   createXGrid();
@@ -600,12 +593,14 @@ void Plot::mouseDoubleClickEvent (QMouseEvent *event)
 
 void Plot::keyPressEvent (QKeyEvent *key)
 {
+  // if chart object selected then pass keyevent to it
   if (mouseFlag == COSelected)
   {
     tco->keyEvent(key);
     return;
   }
   
+  // process for plot keyevents
   switch (key->key())
   {
     case Qt::Key_Left:
@@ -1606,20 +1601,6 @@ QString Plot::strip (double d)
   return s;
 }
 
-// FIXME
-/*
-void Plot::setPaintBars (QList<QColor> d)
-{
-  paintBars.clear();
-  int loop;
-  for (loop = 0; loop < (int) d.count(); loop++)
-  {
-    QColor *color = d.at(loop);
-    paintBars.append(new QColor(color->red(), color->green(), color->blue()));
-  }
-}
-*/
-
 QStringList Plot::getIndicators ()
 {
   QStringList l;
@@ -1689,35 +1670,37 @@ void Plot::showPopupMenu ()
   chartMenu->insertItem (QPixmap(deleteitem), tr("Delete Indicator"), chartDeleteMenu);
   chartMenu->insertSeparator ();
 
-  if (drawMode)
-  {
-    chartObjectMenu = new QPopupMenu();
-    QStringList l = getChartObjectList();
-    int id = chartObjectMenu->insertItem(QPixmap(buyarrow), l[0], this, SLOT(slotNewChartObject(int)));
-    chartObjectMenu->setItemParameter(id, id);
-    id = chartObjectMenu->insertItem(QPixmap(sellarrow), l[1], this, SLOT(slotNewChartObject(int)));
-    chartObjectMenu->setItemParameter(id, id);
-    id = chartObjectMenu->insertItem(QPixmap(fib), l[2], this, SLOT(slotNewChartObject(int)));
-    chartObjectMenu->setItemParameter(id, id);
-    id = chartObjectMenu->insertItem(QPixmap(horizontal), l[3], this, SLOT(slotNewChartObject(int)));
-    chartObjectMenu->setItemParameter(id, id);
-    id = chartObjectMenu->insertItem(QPixmap(vertical), l[4], this, SLOT(slotNewChartObject(int)));
-    chartObjectMenu->setItemParameter(id, id);
-    id = chartObjectMenu->insertItem(QPixmap(trend), l[5], this, SLOT(slotNewChartObject(int)));
-    chartObjectMenu->setItemParameter(id, id);
-    id = chartObjectMenu->insertItem(QPixmap(text), l[6], this, SLOT(slotNewChartObject(int)));
-    chartObjectMenu->setItemParameter(id, id);
+  chartObjectMenu = new QPopupMenu();
+  QStringList l = getChartObjectList();
+  int id = chartObjectMenu->insertItem(QPixmap(buyarrow), l[0], this, SLOT(slotNewChartObject(int)));
+  chartObjectMenu->setItemParameter(id, id);
+  id = chartObjectMenu->insertItem(QPixmap(sellarrow), l[1], this, SLOT(slotNewChartObject(int)));
+  chartObjectMenu->setItemParameter(id, id);
+  id = chartObjectMenu->insertItem(QPixmap(fib), l[2], this, SLOT(slotNewChartObject(int)));
+  chartObjectMenu->setItemParameter(id, id);
+  id = chartObjectMenu->insertItem(QPixmap(horizontal), l[3], this, SLOT(slotNewChartObject(int)));
+  chartObjectMenu->setItemParameter(id, id);
+  id = chartObjectMenu->insertItem(QPixmap(vertical), l[4], this, SLOT(slotNewChartObject(int)));
+  chartObjectMenu->setItemParameter(id, id);
+  id = chartObjectMenu->insertItem(QPixmap(trend), l[5], this, SLOT(slotNewChartObject(int)));
+  chartObjectMenu->setItemParameter(id, id);
+  id = chartObjectMenu->insertItem(QPixmap(text), l[6], this, SLOT(slotNewChartObject(int)));
+  chartObjectMenu->setItemParameter(id, id);
 
-    chartMenu->insertItem (QPixmap(co), tr("New Chart Object"), chartObjectMenu);
-  }
-
+  id = chartMenu->insertItem (QPixmap(co), tr("New Chart Object"), chartObjectMenu);
+  
+  if (! drawMode)
+    chartObjectMenu->setEnabled(FALSE);
+  else
+    chartObjectMenu->setEnabled(TRUE);
+  
   chartMenu->insertItem(QPixmap(deleteitem), tr("Delete All Chart Objects"), this, SLOT(slotDeleteAllChartObjects()));
 
   chartMenu->insertSeparator ();
   chartMenu->insertItem(QPixmap(print), tr("Print Chart"), this, SLOT(printChart()));
     
   chartMenu->insertSeparator ();
-  int id = chartMenu->insertItem(QPixmap(crosshair), tr("Crosshairs"), this, SLOT(toggleCrosshairs()));
+  id = chartMenu->insertItem(QPixmap(crosshair), tr("Crosshairs"), this, SLOT(toggleCrosshairs()));
   chartMenu->setItemChecked(id, crosshairs);
   
   QDictIterator<Indicator> it(indicators);
@@ -1872,7 +1855,6 @@ void Plot::newChartObject ()
     QObject::connect(co, SIGNAL(signalDraw()), this, SLOT(draw()));
     QObject::connect(co, SIGNAL(signalRefresh()), this, SLOT(drawRefresh()));
     QObject::connect(co, SIGNAL(signalMoving()), this, SLOT(objectMoving()));
-//    QObject::connect(this, SIGNAL(signalMouseLeftClick(int, int)), co, SLOT(selected(int, int)));
     QObject::connect(co, SIGNAL(signalChartObjectSelected(ChartObject *)), this, SLOT(slotChartObjectSelected(ChartObject *)));
     QObject::connect(co, SIGNAL(signalDeleteChartObject(QString)), this, SLOT(slotDeleteChartObject(QString)));
     QObject::connect(co, SIGNAL(message(QString)), this, SLOT(slotMessage(QString)));
@@ -2087,7 +2069,6 @@ void Plot::addChartObject (Setting *set)
   QObject::connect(co, SIGNAL(signalDraw()), this, SLOT(draw()));
   QObject::connect(co, SIGNAL(signalRefresh()), this, SLOT(drawRefresh()));
   QObject::connect(co, SIGNAL(signalMoving()), this, SLOT(objectMoving()));
-//  QObject::connect(this, SIGNAL(signalMouseLeftClick(int, int)), co, SLOT(selected(int, int)));
   QObject::connect(co, SIGNAL(signalChartObjectSelected(ChartObject *)), this, SLOT(slotChartObjectSelected(ChartObject *)));
   QObject::connect(co, SIGNAL(signalDeleteChartObject(QString)), this, SLOT(slotDeleteChartObject(QString)));
   QObject::connect(co, SIGNAL(message(QString)), this, SLOT(slotMessage(QString)));

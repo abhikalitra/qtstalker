@@ -95,7 +95,17 @@
 20040401: Added a set defaults function for chart objects. Each object type can have set
           defaults when created. So far, only color and font are defaulted.
 
-	  
+20040410: After much discussion the chart object user interface has a workable method now.
+          Left mouse click to select an object. An object is selected when 1 or more boxes
+	  appear next or on top of it. Left mouse click a selected object on any of the boxes
+	  will put object into move mode. Move mode then tracks the position of the mouse pointer
+	  allowing drag and drop action of the object. To place the object a left mouse
+	  click on the point you wish to drop it. Right mouse click with a selected object
+	  brings up the context menu. To unselect an object just click anywhere else on the chart
+	  other than the bounds of the chart object currently selected. A double left mouse click
+	  on a selection brings up the edit dialog. Keyboard shortcuts for a selected object are
+	  CTRL-E for edit dialog, CTRL-M for move mode and CTRL-D for object delete.
+	
 0.25
 ====
 

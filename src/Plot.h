@@ -80,7 +80,6 @@ class Plot : public QWidget
     void setChartInput ();
     void setConfig (Config *);
     void createChartObject (QString, QString);
-//    void setPaintBars (QList<QColor>);
     void setHideMainPlot (bool);
     bool getHideMainPlot ();
     void updateStatusBar (int, int);
@@ -220,7 +219,6 @@ class Plot : public QWidget
     BarData *data;
     QDict<Indicator> indicators;
     QDict<ChartObject> chartObjects;
-//    QList<QColor> paintBars;
     QArray<int> xGrid;
 
     QPopupMenu *chartMenu;
