@@ -21,7 +21,6 @@
 
 #include "CSV.h"
 #include "../../../src/ChartDb.h"
-#include "../../../src/FuturesData.h"
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qtimer.h>
@@ -36,7 +35,7 @@ CSV::CSV ()
   delimiter = ",";
 
   set(tr("Input"), "", Setting::FileList);
-  
+
   set(tr("Symbol"), "", Setting::Text);
 
   QStringList l;
@@ -45,19 +44,18 @@ CSV::CSV ()
   set(tr("Chart Type"), "Stock", Setting::List);
   setList(tr("Chart Type"), l);
 
-  FuturesData *fd = new FuturesData;
-
-  l = fd->getSymbolList();
+  l = fd.getSymbolList();
   set(tr("Futures Symbol"), l[0], Setting::List);
   setList(tr("Futures Symbol"), l);
 
-  l = fd->getMonths();
+  l = fd.getMonths();
   set(tr("Futures Month"), l[0], Setting::List);
   setList(tr("Futures Month"), l);
-  
+
   l.clear();
   l.append("DOHLCV");
   l.append("DOHLCVI");
+  l.append("DTOHLC");
   set(tr("Format"), l[0], Setting::List);
   setList(tr("Format"), l);
 
@@ -98,8 +96,6 @@ CSV::CSV ()
 
   set("Select Date Range", tr("False"), Setting::Bool);
 
-  delete fd;
-
   about = "Imports ASCII CSV files.\n";
 }
 
@@ -114,20 +110,24 @@ void CSV::update ()
 
 void CSV::parse ()
 {
+  QStringList list = getList(tr("Input"));
+
   dateFormat = getData(tr("Date Format"));
 
   setDelimiter();
 
-  FuturesData *fd = new FuturesData;
-
-  QStringList list = getList(tr("Input"));
-
-  QDateTime sdate = QDateTime::fromString(getDateTime("Start Date"), Qt::ISODate);
-  QDateTime edate = QDateTime::fromString(getDateTime("End Date"), Qt::ISODate);
-
-  bool dateFlag = FALSE;
+  dateFlag = FALSE;
   if (! getData(tr("Select Date Range")).compare(tr("True")))
+  {
     dateFlag = TRUE;
+    sdate = QDateTime::fromString(getDateTime("Date Start"), Qt::ISODate);
+    edate = QDateTime::fromString(getDateTime("Date End"), Qt::ISODate);
+    if (sdate >= edate || edate <= sdate)
+    {
+      emit done();
+      return;
+    }
+  }
 
   int loop;
   for (loop = 0; loop < (int) list.count(); loop++)
@@ -175,10 +175,10 @@ void CSV::parse ()
           return;
         }
 
-        fd->setSymbol(getData(tr("Futures Symbol")));
+        fd.setSymbol(getData(tr("Futures Symbol")));
 
 	QString s = "Futures/";
-	s.append(fd->getSymbol());
+	s.append(fd.getSymbol());
         path = createDirectory(s);
         if (! path.length())
         {
@@ -199,20 +199,16 @@ void CSV::parse ()
     Setting *details = db->getDetails();
     if (! details->count())
     {
-      if (! format.compare("DOHLCV"))
-        details->set("Format", "Open|High|Low|Close|Volume", Setting::None);
-      else
-        details->set("Format", "Open|High|Low|Close|Volume|Open Interest", Setting::None);
+      newChart(details);
 
       details->set("Chart Type", type, Setting::None);
-
       details->set("Symbol", symbol, Setting::None);
 
       if (! type.compare("Futures"))
       {
-        details->set("Futures Type", fd->getSymbol(), Setting::None);
+        details->set("Futures Type", fd.getSymbol(), Setting::None);
         details->set("Futures Month", getData(tr("Futures Month")), Setting::None);
-        details->set("Title", fd->getName(), Setting::Text);
+        details->set("Title", fd.getName(), Setting::Text);
       }
       else
         details->set("Title", symbol, Setting::Text);
@@ -232,110 +228,41 @@ void CSV::parse ()
 
       QStringList l = QStringList::split(delimiter, s, FALSE);
 
-      QDate dt = getDate(l[0]);
-      if (! dt.isValid())
-        continue;
+      Setting *r = 0;
 
-      if (dateFlag)
+      while (1)
       {
-        if (dt < sdate.date() || dt > edate.date())
-	  continue;
+        if (! format.compare("DOHLCV"))
+        {
+	  r = getDOHLCV(l);
+          break;
+        }
+
+        if (! format.compare("DOHLCVI"))
+        {
+	  r = getDOHLCVI(l);
+          break;
+        }
+
+        if (! format.compare("DTOHLC"))
+        {
+	  r = getDTOHLC(l);
+          break;
+        }
+
+        break;
       }
 
-      // date
-      QString date = dt.toString("yyyyMMdd");
-      date.append("000000");
-
-      // open
-      QString open;
-      if (setTFloat(l[1]))
-        continue;
-      else
-        open = QString::number(tfloat);
-
-      // high
-      QString high;
-      if (setTFloat(l[2]))
-        continue;
-      else
-        high = QString::number(tfloat);
-
-      // low
-      QString low;
-      if (setTFloat(l[3]))
-        continue;
-      else
-        low = QString::number(tfloat);
-
-      // close
-      QString close;
-      if (setTFloat(l[4]))
-        continue;
-      else
-        close = QString::number(tfloat);
-
-      // volume
-      QString volume;
-      if (setTFloat(l[5]))
-        continue;
-      else
-        volume = QString::number(tfloat);
-
-      // oi
-      QString oi;
-      if (l.count() == 7)
+      if (r)
       {
-        if (setTFloat(l[6]))
-          continue;
-        else
-          oi = QString::number(tfloat);
+        db->setRecord(r);
+        delete r;
       }
-
-      // check for bad values
-      if (close.toFloat() == 0)
-        continue;
-
-      if (open.toFloat() == 0 || high.toFloat() == 0 || low.toFloat() == 0 || volume.toFloat() == 0)
-      {
-        open = close;
-	high = close;
-	low = close;
-      }
-
-      if (open.toFloat() > high.toFloat() || open.toFloat() < low.toFloat())
-      {
-        open = close;
-	high = close;
-	low = close;
-      }
-
-      if (close.toFloat() > high.toFloat() || close.toFloat() < low.toFloat())
-      {
-        open = close;
-	high = close;
-	low = close;
-      }
-
-      Setting *r = new Setting;
-      r->set("Date", date, Setting::Date);
-      r->set("Open", open, Setting::Float);
-      r->set("High", high, Setting::Float);
-      r->set("Low", low, Setting::Float);
-      r->set("Close", close, Setting::Float);
-      r->set("Volume", volume, Setting::Float);
-      if (oi.length())
-        r->set("Open Interest", oi, Setting::Float);
-
-      db->setRecord(r);
-
-      delete r;
     }
 
     delete db;
     f.close();
   }
-
-  delete fd;
 
   emit done();
 }
@@ -410,6 +337,301 @@ QDate CSV::getDate (QString d)
   }
 
   return date;
+}
+
+void CSV::newChart (Setting *details)
+{
+  QString format = getData(tr("Format"));
+
+  while (1)
+  {
+    if (! format.compare("DOHLCV"))
+    {
+      details->set("Format", "Open|High|Low|Close|Volume", Setting::None);
+      break;
+    }
+
+    if (! format.compare("DOHLCVI"))
+    {
+      details->set("Format", "Open|High|Low|Close|Volume|Open Interest", Setting::None);
+      break;
+    }
+
+    if (! format.compare("DTOHLC"))
+    {
+      details->set("Format", "Open|High|Low|Close", Setting::None);
+      break;
+    }
+
+    break;
+  }
+}
+
+Setting * CSV::getDOHLCV (QStringList l)
+{
+  Setting *r = 0;
+
+  QDate dt = getDate(l[0]);
+  if (! dt.isValid())
+    return r;
+
+  if (dateFlag)
+  {
+    if (dt < sdate.date() || dt > edate.date())
+      return r;
+  }
+
+  // date
+  QString date = dt.toString("yyyyMMdd");
+  date.append("000000");
+
+  // open
+  QString open;
+  if (setTFloat(l[1]))
+    return r;
+  else
+    open = QString::number(tfloat);
+
+  // high
+  QString high;
+  if (setTFloat(l[2]))
+    return r;
+  else
+    high = QString::number(tfloat);
+
+  // low
+  QString low;
+  if (setTFloat(l[3]))
+    return r;
+  else
+    low = QString::number(tfloat);
+
+  // close
+  QString close;
+  if (setTFloat(l[4]))
+    return r;
+  else
+    close = QString::number(tfloat);
+
+  // volume
+  QString volume;
+  if (setTFloat(l[5]))
+    return r;
+  else
+    volume = QString::number(tfloat);
+
+  // check for bad values
+  if (close.toFloat() == 0)
+    return r;
+
+  if (open.toFloat() == 0 || high.toFloat() == 0 || low.toFloat() == 0 || volume.toFloat() == 0)
+  {
+    open = close;
+    high = close;
+    low = close;
+  }
+
+  if (open.toFloat() > high.toFloat() || open.toFloat() < low.toFloat())
+  {
+    open = close;
+    high = close;
+    low = close;
+  }
+
+  if (close.toFloat() > high.toFloat() || close.toFloat() < low.toFloat())
+  {
+    open = close;
+    high = close;
+    low = close;
+  }
+
+  r = new Setting;
+  r->set("Date", date, Setting::Date);
+  r->set("Open", open, Setting::Float);
+  r->set("High", high, Setting::Float);
+  r->set("Low", low, Setting::Float);
+  r->set("Close", close, Setting::Float);
+  r->set("Volume", volume, Setting::Float);
+
+  return r;
+}
+
+Setting * CSV::getDOHLCVI (QStringList l)
+{
+  Setting *r = 0;
+
+  QDate dt = getDate(l[0]);
+  if (! dt.isValid())
+    return r;
+
+  if (dateFlag)
+  {
+    if (dt < sdate.date() || dt > edate.date())
+      return r;
+  }
+
+  // date
+  QString date = dt.toString("yyyyMMdd");
+  date.append("000000");
+
+  // open
+  QString open;
+  if (setTFloat(l[1]))
+    return r;
+  else
+    open = QString::number(tfloat);
+
+  // high
+  QString high;
+  if (setTFloat(l[2]))
+    return r;
+  else
+    high = QString::number(tfloat);
+
+  // low
+  QString low;
+  if (setTFloat(l[3]))
+    return r;
+  else
+    low = QString::number(tfloat);
+
+  // close
+  QString close;
+  if (setTFloat(l[4]))
+    return r;
+  else
+    close = QString::number(tfloat);
+
+  // volume
+  QString volume;
+  if (setTFloat(l[5]))
+    return r;
+  else
+    volume = QString::number(tfloat);
+
+  // oi
+  QString oi;
+  if (setTFloat(l[6]))
+    return r;
+  else
+    oi = QString::number(tfloat);
+
+  // check for bad values
+  if (close.toFloat() == 0)
+    return r;
+
+  if (open.toFloat() == 0 || high.toFloat() == 0 || low.toFloat() == 0 || volume.toFloat() == 0)
+  {
+    open = close;
+    high = close;
+    low = close;
+  }
+
+  if (open.toFloat() > high.toFloat() || open.toFloat() < low.toFloat())
+  {
+    open = close;
+    high = close;
+    low = close;
+  }
+
+  if (close.toFloat() > high.toFloat() || close.toFloat() < low.toFloat())
+  {
+    open = close;
+    high = close;
+    low = close;
+  }
+
+  r = new Setting;
+  r->set("Date", date, Setting::Date);
+  r->set("Open", open, Setting::Float);
+  r->set("High", high, Setting::Float);
+  r->set("Low", low, Setting::Float);
+  r->set("Close", close, Setting::Float);
+  r->set("Volume", volume, Setting::Float);
+  r->set("Open Interest", oi, Setting::Float);
+
+  return r;
+}
+
+Setting * CSV::getDTOHLC (QStringList l)
+{
+  Setting *r = 0;
+
+  QDate dt = getDate(l[0]);
+  if (! dt.isValid())
+    return r;
+
+  if (dateFlag)
+  {
+    if (dt < sdate.date() || dt > edate.date())
+      return r;
+  }
+
+  // date
+  QString date = dt.toString("yyyyMMdd");
+  date.append("000000");
+
+  // open
+  QString open;
+  if (setTFloat(l[2]))
+    return r;
+  else
+    open = QString::number(tfloat);
+
+  // high
+  QString high;
+  if (setTFloat(l[3]))
+    return r;
+  else
+    high = QString::number(tfloat);
+
+  // low
+  QString low;
+  if (setTFloat(l[4]))
+    return r;
+  else
+    low = QString::number(tfloat);
+
+  // close
+  QString close;
+  if (setTFloat(l[5]))
+    return r;
+  else
+    close = QString::number(tfloat);
+
+  // check for bad values
+  if (close.toFloat() == 0)
+    return r;
+
+  if (open.toFloat() == 0 || high.toFloat() == 0 || low.toFloat() == 0)
+  {
+    open = close;
+    high = close;
+    low = close;
+  }
+
+  if (open.toFloat() > high.toFloat() || open.toFloat() < low.toFloat())
+  {
+    open = close;
+    high = close;
+    low = close;
+  }
+
+  if (close.toFloat() > high.toFloat() || close.toFloat() < low.toFloat())
+  {
+    open = close;
+    high = close;
+    low = close;
+  }
+
+  r = new Setting;
+  r->set("Date", date, Setting::Date);
+  r->set("Open", open, Setting::Float);
+  r->set("High", high, Setting::Float);
+  r->set("Low", low, Setting::Float);
+  r->set("Close", close, Setting::Float);
+
+  return r;
 }
 
 Plugin * create ()

@@ -42,6 +42,7 @@
 #include "GroupPage.h"
 #include "PortfolioPage.h"
 #include "TestPage.h"
+#include "IndicatorPage.h"
 
 #include "grid.xpm"
 #include "datawindow.xpm"
@@ -100,10 +101,12 @@ QtstalkerApp::QtstalkerApp()
   navTab = new QTabWidget(navBase);
   vbox->addWidget(navTab, 1, 0);
 
+/*
   initChartNav();
   initGroupNav();
   initPortfolioNav();
   initTestNav();
+ */
 
   infoLabel = new QMultiLineEdit(navBase);
   infoLabel->setReadOnly(TRUE);
@@ -250,6 +253,12 @@ QtstalkerApp::QtstalkerApp()
   slotHideNav(TRUE);
 
   slotChartTypeChanged(0);
+
+  initChartNav();
+  initGroupNav();
+  initIndicatorNav();
+  initPortfolioNav();
+  initTestNav();
 }
 
 QtstalkerApp::~QtstalkerApp()
@@ -687,10 +696,8 @@ void QtstalkerApp::loadChart (QString d)
   if (recordList)
     delete recordList;
   recordList = db->getHistory(ci, date);
-//  emit signalInterval(pi);
 
   mainPlot->setData(recordList);
-//  emit signalPixelspace(mainPlot->getPixelspace());
   for(it.toFirst(); it.current(); ++it)
     it.current()->setData(recordList);
 
@@ -853,6 +860,8 @@ void QtstalkerApp::loadChart (QString d)
   slotTabChanged(0);
 
   setCaption(getWindowCaption());
+
+  emit signalIndicatorPageRefresh();
 
   delete db;
 }
@@ -1548,6 +1557,14 @@ void QtstalkerApp::initTestNav ()
   TestPage *tp = new TestPage(baseWidget, config);
   navTab->addTab(tp, QIconSet(QPixmap(test)), QString::null);
   navTab->setTabToolTip(tp, tr("Workwith Backtests"));
+}
+
+void QtstalkerApp::initIndicatorNav ()
+{
+  IndicatorPage *ip = new IndicatorPage(baseWidget, config, mainPlot);
+  navTab->addTab(ip, QIconSet(QPixmap(indicator)), QString::null);
+  navTab->setTabToolTip(ip, tr("Workwith Main Chart Indicators"));
+  connect(this, SIGNAL(signalIndicatorPageRefresh()), ip, SLOT(refreshList()));
 }
 
 void QtstalkerApp::slotHideNav (bool d)

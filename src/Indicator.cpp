@@ -26,6 +26,7 @@ Indicator::Indicator ()
 {
   chartObjects.setAutoDelete(TRUE);
   lines.setAutoDelete(TRUE);
+  enable = TRUE;
 }
 
 Indicator::~Indicator ()
@@ -99,6 +100,16 @@ void Indicator::clearLines ()
 int Indicator::getAlert (int i)
 {
   return alerts[i];
+}
+
+void Indicator::setEnable (bool status)
+{
+  enable = status;
+}
+
+bool Indicator::getEnable ()
+{
+  return enable;
 }
 
 

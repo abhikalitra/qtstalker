@@ -56,9 +56,7 @@ ChartPage::~ChartPage ()
 
 void ChartPage::deleteChart ()
 {
-  SymbolDialog *dialog = new SymbolDialog(this,
-  							   nav->getCurrentPath(),
-							   "*");
+  SymbolDialog *dialog = new SymbolDialog(this,nav->getCurrentPath(), "*");
   dialog->setCaption(tr("Select Charts To Delete"));
 
   int rc = dialog->exec();
@@ -66,11 +64,11 @@ void ChartPage::deleteChart ()
   if (rc == QDialog::Accepted)
   {
     rc = QMessageBox::warning(this,
-  				    	  tr("Qtstalker: Warning"),
-					  tr("Are you sure you want to delete selected charts?"),
-					  QMessageBox::Yes,
-					  QMessageBox::No,
-					  QMessageBox::NoButton);
+    			      tr("Qtstalker: Warning"),
+			      tr("Are you sure you want to delete selected charts?"),
+			      QMessageBox::Yes,
+			      QMessageBox::No,
+			      QMessageBox::NoButton);
 
     if (rc == QMessageBox::No)
     {
@@ -159,7 +157,6 @@ void ChartPage::exportChart (QString path)
 void ChartPage::chartSelected (QString d)
 {
   menu->setItemEnabled(menu->idAt(0), TRUE);
-  menu->setItemEnabled(menu->idAt(1), TRUE);
   emit fileSelected(d);
 }
 
@@ -167,7 +164,6 @@ void ChartPage::chartSelected (QString d)
 void ChartPage::chartNoSelection ()
 {
   menu->setItemEnabled(menu->idAt(0), FALSE);
-  menu->setItemEnabled(menu->idAt(1), FALSE);
 }
 
 void ChartPage::rightClick (QListBoxItem *)

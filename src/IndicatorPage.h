@@ -19,44 +19,35 @@
  *  USA.
  */
 
-#ifndef INDICATOR_HPP
-#define INDICATOR_HPP
+#ifndef INDICATORPAGE_HPP
+#define INDICATORPAGE_HPP
 
 #include <qstring.h>
-#include <qstringlist.h>
-#include <qmemarray.h>
-#include <qdict.h>
-#include <qlist.h>
-#include "Setting.h"
-#include "PlotLine.h"
+#include <qwidget.h>
+#include <qlistbox.h>
+#include <qcheckbox.h>
+#include "BaseDialog.h"
+#include "Config.h"
+#include "Plot.h"
 
-class Indicator : public Setting
+class IndicatorPage : public BaseDialog
 {
-  public:
-    Indicator ();
-    ~Indicator ();
-    void clear ();
-    QMemArray<int> getAlerts ();
-    void setAlerts (QMemArray<int>);
-    int getAlert (int);
-    int getLines ();
-    void addLine (PlotLine *);
-    PlotLine * getLine (int);
-    QStringList getChartObjects ();
-    Setting * getChartObject (QString);
-    void addChartObject (Setting *);
-    void deleteChartObject (QString);
-    bool getMainPlot ();
-    void clearLines ();
-    void setEnable (bool);
-    bool getEnable ();
+  Q_OBJECT
 
-  private:
-    QList<PlotLine> lines;
-    QMemArray<int> alerts;
-    QDict<Setting> chartObjects;
-    bool enable;
+  public:
+    IndicatorPage (QWidget *, Config *, Plot *);
+    ~IndicatorPage ();
+
+  public slots:
+    void doubleClick (QListBoxItem *);
+    void mainToggled ();
+    void refreshList ();
+
+  protected:
+    QListBox *list;
+    Config *config;
+    QCheckBox *enableMain;
+    Plot *plot;
 };
 
 #endif
-

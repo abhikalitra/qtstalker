@@ -20,6 +20,7 @@
  */
 
 #include "../../../src/QuotePlugin.h"
+#include "../../../src/FuturesData.h"
 #include <qdatetime.h>
 
 class CSV : public QuotePlugin
@@ -32,6 +33,10 @@ class CSV : public QuotePlugin
     void update ();
     void setDelimiter ();
     QDate getDate (QString);
+    void newChart (Setting *);
+    Setting * getDOHLCV (QStringList);
+    Setting * getDOHLCVI (QStringList);
+    Setting * getDTOHLC (QStringList);
 
   public slots:
     void parse ();
@@ -39,6 +44,10 @@ class CSV : public QuotePlugin
   private:
     QString delimiter;
     QString dateFormat;
+    FuturesData fd;
+    bool dateFlag;
+    QDateTime sdate;
+    QDateTime edate;
 };
 
 extern "C"

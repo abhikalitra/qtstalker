@@ -3,6 +3,18 @@
 
 - Added MA options to the VOL, OI plugins.
 
+- Updated the date area of charts to include more detail.
+
+- Fixed compile error in the /src/src.pro file that didn't compile QuotePlugin and IndicatorPlugin classes.
+
+- Added a new side panel to allow the user to enable/disable main chart indicators on the fly.
+  Double click on the indicator in the list to enable or disable the indicator.
+
+- Added 0% line option to fibo chart object.
+
+- Added DTOHLC format option to the CSV plugin.
+
+
 
 0.21
 ====

@@ -419,6 +419,9 @@ void Plot::drawLines ()
     {
       Indicator *i = it.current();
 
+      if (! i->getEnable())
+        continue;
+
       int loop;
       for (loop = 0; loop < i->getLines(); loop++)
       {
@@ -639,6 +642,10 @@ void Plot::mouseMoveEvent (QMouseEvent *event)
   for (; it.current(); ++it)
   {
     Indicator *ind = it.current();
+
+    if (! ind->getEnable())
+      continue;
+
     int loop;
     for (loop = 0; loop < (int) ind->getLines(); loop++)
     {
@@ -1233,6 +1240,10 @@ void Plot::drawInfo ()
     for (; it.current(); ++it)
     {
       Indicator *i = it.current();
+
+      if (! i->getEnable())
+        continue;
+
       int loop;
       for (loop = 0; loop < (int) i->getLines(); loop++)
       {
@@ -1362,6 +1373,7 @@ void Plot::newChartObject ()
       set->set(QObject::tr("High"), y1, Setting::Float);
       set->set(QObject::tr("Low"), y2, Setting::Float);
       set->set(QObject::tr("Support"), QObject::tr("False"), Setting::Bool);
+      set->set("0", QObject::tr("True"), Setting::Bool);
       set->set("0.238", QObject::tr("True"), Setting::Bool);
       set->set("0.383", QObject::tr("True"), Setting::Bool);
       set->set("0.5", QObject::tr("True"), Setting::Bool);
@@ -1471,6 +1483,10 @@ void Plot::setScale ()
     for (; it.current(); ++it)
     {
       Indicator *i = it.current();
+
+      if (! i->getEnable())
+        continue;
+
       int loop;
         for (loop = 0; loop < i->getLines(); loop++)
       {
@@ -1494,6 +1510,10 @@ void Plot::setScale ()
     for (; it.current(); ++it)
     {
       Indicator *i = it.current();
+
+      if (! i->getEnable())
+        continue;
+
       int loop;
         for (loop = 0; loop < i->getLines(); loop++)
       {
@@ -2224,7 +2244,20 @@ void Plot::drawFibonacciLine (Setting *co)
     support = TRUE;
 
   QString label;
-  QString v = "0.238";
+  QString v = "0";
+  s = co->getData(v);
+  if (! s.compare(QObject::tr("True")))
+  {
+    label = "0%";
+    if (! support)
+    {
+      v.prepend("-");
+      label.prepend("-");
+    }
+    drawFibonacciLine2(color, label, high, low, v.toFloat());
+  }
+
+  v = "0.238";
   s = co->getData(v);
   if (! s.compare(QObject::tr("True")))
   {
@@ -2341,7 +2374,17 @@ void Plot::drawFibonacciLine2 (QColor color, QString label, double high, double 
   if (v < 0)
     r = high + (range * v);
   else
-    r = low + (range * v);
+  {
+    if (v > 0)
+      r = low + (range * v);
+    else
+    {
+      if (label.contains("-"))
+        r = high;
+      else
+        r = low;
+    }
+  }
 
   int y = convertToY(r);
   painter.drawLine (startX, y, _width, y);

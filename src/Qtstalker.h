@@ -60,6 +60,7 @@ class QtstalkerApp : public QMainWindow
     void signalPlotFont (QFont);
     void signalIndex (int);
     void signalInterval(Plot::TimeInterval);
+    void signalIndicatorPageRefresh ();
 
   public:
 
@@ -79,6 +80,7 @@ class QtstalkerApp : public QMainWindow
     void initChartNav ();
     void initPortfolioNav();
     void initTestNav();
+    void initIndicatorNav ();
     QString getWindowCaption ();
     void setChartType (int);
     void loadChart (QString);
