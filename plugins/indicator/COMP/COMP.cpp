@@ -28,12 +28,12 @@ COMP::COMP ()
   pluginName = "COMP";
   customFlag = TRUE;
   
-  opList.append("==");
-  opList.append("<");
-  opList.append("<=");
-  opList.append(">");
-  opList.append(">=");
-  opList.append("&&");
+  opList.append("EQ");
+  opList.append("LT");
+  opList.append("LTEQ");
+  opList.append("GT");
+  opList.append("GTEQ");
+  opList.append("AND");
   opList.append("OR");
   
   setDefaults();
@@ -278,31 +278,31 @@ COMP::Operator COMP::getOperator (QString d)
   
   while (1)
   {
-    if (! d.compare("=="))
+    if (! d.compare("EQ"))
     {
       op = Equal;
       break;
     }
     
-    if (! d.compare("<"))
+    if (! d.compare("LT"))
     {
       op = LessThan;
       break;
     }
   
-    if (! d.compare("<="))
+    if (! d.compare("LTEQ"))
     {
       op = LessThanEqual;
       break;
     }
       
-    if (! d.compare(">"))
+    if (! d.compare("GT"))
     {
       op = GreaterThan;
       break;
     }
     
-    if (! d.compare("&&"))
+    if (! d.compare("AND"))
     {
       op = And;
       break;
@@ -314,7 +314,7 @@ COMP::Operator COMP::getOperator (QString d)
       break;
     }
     
-    if (! d.compare(">="))
+    if (! d.compare("GTEQ"))
       op = GreaterThanEqual;
     
     break;

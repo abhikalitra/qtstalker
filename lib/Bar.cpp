@@ -148,15 +148,6 @@ QString Bar::getString ()
   return s;
 }
 
-double Bar::getAverage ()
-{
-  double t = 0;
-  QDictIterator<BarItem> it(data);
-  for(; it.current(); ++it)
-    t = t + it.current()->v;
-  return (t / data.count());
-}
-
 QStringList Bar::getFields ()
 {
   QStringList l;

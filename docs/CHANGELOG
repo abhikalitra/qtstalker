@@ -123,6 +123,14 @@
 20040821: Moved Indicator class into qtstalkerlib so that plugins could return an Indicator
           instead of individual PlotLines.
 	  
+20040825: New class of plugins added. db plugins will be used to manage storage of bar and chart
+          data. This allows more efficient use of storage, editing and extendibility. The plugins
+	  added so far are Stocks, Futures, Index, Spread and CC. 
+	  
+20040825: Removed quote plugins CC, Spread, Index. No longer needed.
+
+20040825: Fixed bug in COMP plugin that created problems parsing parms using the "=" as the
+          delimiter. Had to change all the COMP operators to use abbreviations ie. GT instead of >.
 	  
 	  	  
 0.26

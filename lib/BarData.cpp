@@ -235,15 +235,6 @@ double BarData::getOI (int i)
     return 0;
 }
 
-double BarData::getAverage (int i)
-{
-  Bar *bar = barList.at(i);
-  if (bar)
-    return bar->getAverage();
-  else
-    return 0;
-}
-
 double BarData::getMax ()
 {
   return high;

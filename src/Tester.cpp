@@ -40,7 +40,6 @@ Tester::Tester (QString n) : QTabDialog (0, 0, FALSE)
   
   fieldList.append(tr("Open"));
   fieldList.append(tr("Close"));
-  fieldList.append(tr("Average"));
 
   setCaption ("Back Tester");
 
@@ -1025,18 +1024,14 @@ void Tester::loadAlerts (int type)
   plug->setIndicatorInput(recordList);
   plug->calculate();
   Indicator *i = plug->getIndicator();
-  PlotLine *tline = i->getLine(0);
-  if (! tline)
+  PlotLine *line = i->getLine(0);
+  if (! line)
   {
     qDebug("Tester::loadAlerts: no PlotLine returned");
     config.closePlugin("CUS");
     return;
   }
     
-  PlotLine *line = new PlotLine;
-  line->copy(tline);
-  config.closePlugin("CUS");
-  
   loop = recordList->count() - line->getSize();
   int lineLoop = 0;
   for (; loop < (int) recordList->count(); loop++, lineLoop++)
@@ -1045,27 +1040,29 @@ void Tester::loadAlerts (int type)
     {
       if (delays)
       {
-        int loop2;
-	bool df = FALSE;
-        for (loop2 = delays; loop2 > -1; loop2--)
+        if ((lineLoop - delays) > -1)
 	{
-          if (line->getData(lineLoop - loop2) != 1)
+          int loop2;
+	  bool df = FALSE;
+          for (loop2 = delays; loop2 > -1; loop2--)
 	  {
-            df = TRUE;
-	    break;
+            if (line->getData(lineLoop - loop2) != 1)
+	    {
+              df = TRUE;
+	      break;
+	    }
 	  }
-	}
 	
-	if (! df)
-          alerts->setData(recordList->getDate(loop).getDateString(FALSE), "1");
+	  if (! df)
+            alerts->setData(recordList->getDate(loop).getDateString(FALSE), "1");
+	}
       }
       else
         alerts->setData(recordList->getDate(loop).getDateString(FALSE), "1");
     }
   }
   
-  if (line)
-    delete line;
+  config.closePlugin("CUS");
 }
 
 void Tester::saveEditRule (int type)
@@ -1647,12 +1644,7 @@ double Tester::getPrice (int i)
   if (! priceField->currentText().compare(tr("Open")))
     price = recordList->getOpen(i);
   else
-  {
-    if (! priceField->currentText().compare(tr("Close")))
-      price = recordList->getClose(i);
-    else
-      price = recordList->getAverage(i);
-  }
+    price = recordList->getClose(i);
   
   return price;
 }

@@ -55,7 +55,6 @@ class Bar
     void setOI (int);
     double getOI ();
     QString getString ();
-    double getAverage();
     QStringList getFields ();
     void setData (QString, double);
     double getData (QString);
