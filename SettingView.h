@@ -51,6 +51,7 @@ class SettingView : public QWidget
     void symbolDialog ();
     void checkDialog ();
     void listDialog ();
+    void fontDialog ();
     QList<QListViewItem> getList();
     void clear ();
 

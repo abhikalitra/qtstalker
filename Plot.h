@@ -68,6 +68,7 @@ class Plot : public QWidget
     void setUpColor (QColor);
     void setDownColor (QColor);
     void setNeutralColor (QColor);
+    void setPlotFont (QFont);
     void setDateFlag (bool);
     void setGridFlag (bool);
     void setMainFlag (bool);

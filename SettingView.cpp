@@ -33,6 +33,8 @@
 #include <qstring.h>
 #include <qpushbutton.h>
 #include <qtooltip.h>
+#include <qfontdialog.h>
+#include <qfont.h>
 
 SettingView::SettingView (QWidget *w, QString dp) : QWidget (w)
 {
@@ -125,6 +127,9 @@ void SettingView::cellSelected (QListViewItem *i)
     case Setting::Symbol:
       symbolDialog();
       break;
+    case Setting::Font:
+      fontDialog();
+      break;
     default:
       break;
   }
@@ -136,12 +141,12 @@ void SettingView::colorDialog ()
   if (color.isValid())
   {
     item->setText(1, color.name());
-    
+
     QPixmap pix;
     pix.resize(25, item->height());
     pix.fill(QColor(item->text(1)));
     item->setPixmap(1, pix);
-    
+
     settings->setData(item->text(0), item->text(1));
   }
 }
@@ -335,8 +340,27 @@ void SettingView::listDialog ()
     return;
 
   item->setText(1, s);
-  
+
   settings->setData(item->text(0), item->text(1));
+}
+
+void SettingView::fontDialog ()
+{
+  bool ok;
+  QStringList l = QStringList::split(" ", item->text(1), FALSE);
+  QFont font = QFontDialog::getFont(&ok, QFont(l[0], l[1].toInt(), l[2].toInt()), this);
+  if (ok)
+  {
+    QString s = font.family();
+    s.append(" ");
+    s.append(QString::number(font.pointSize()));
+    s.append(" ");
+    s.append(QString::number(font.weight()));
+
+    item->setText(1, s);
+
+    settings->setData(item->text(0), item->text(1));
+  }
 }
 
 QList<QListViewItem> SettingView::getList ()

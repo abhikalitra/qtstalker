@@ -37,25 +37,19 @@ class FuturesData
     QString getSymbol ();
     QString getExchange ();
     QString getLimit ();
-    QString getCC ();
     float getRate ();
     int setSymbol (QString);
     QStringList getMonthList ();
     QStringList getMonths ();
     QStringList getSymbolList ();
-    void ccMonth1 (int);
-    void ccMonth2 (int);
-    void ccMonth3 (int);
 
   protected:
     QString name;
     QString symbol;
     QString exchange;
     QString limit;
-    QString cc;
     QStringList monthList;
     float rate;
-    int ccFlag;
 };
 
 #endif

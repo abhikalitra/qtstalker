@@ -586,6 +586,7 @@ void QtstalkerApp::slotOptions ()
   set->set(tr("Color Neutral"), config->getData(Config::NeutralColor), Setting::Color);
   set->set(tr("Paint Bar Indicator"), config->getData(Config::PaintBarIndicator), Setting::List);
   set->setList(tr("Paint Bar Indicator"), config->getIndicators());
+  set->set(tr("Plot Font"), config->getData(Config::PlotFont), Setting::Font);
 
   dialog->setItems(set);
 
@@ -600,6 +601,7 @@ void QtstalkerApp::slotOptions ()
     config->setData(Config::DownColor, set->getData(tr("Color Down")));
     config->setData(Config::NeutralColor, set->getData(tr("Color Neutral")));
     config->setData(Config::PaintBarIndicator, set->getData(tr("Paint Bar Indicator")));
+    config->setData(Config::PlotFont, set->getData(tr("Plot Font")));
 
     setPlotColors();
 
@@ -1564,6 +1566,11 @@ void QtstalkerApp::setPlotColors ()
   color.setNamedColor(config->getData(Config::NeutralColor));
   mainPlot->setNeutralColor(color);
   indicatorPlot->setNeutralColor(color);
+  
+  QStringList l = QStringList::split(" ", config->getData(Config::PlotFont), FALSE);
+  QFont font(l[0], l[1].toInt(), l[2].toInt());
+  mainPlot->setPlotFont(font);
+  indicatorPlot->setPlotFont(font);
 }
 
 void QtstalkerApp::slotWorkwithTest ()

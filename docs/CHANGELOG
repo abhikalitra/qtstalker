@@ -2,6 +2,8 @@
 0.16
 ======
 
+- added font preference for charts
+
 - Fixed bug that didn't update filelist after deleting a chart
 
 - COT changed filenames for the annual file, updated COT quote plugin to handle old and new names.

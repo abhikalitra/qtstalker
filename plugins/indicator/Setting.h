@@ -49,7 +49,7 @@ class Setting
       Date,
       Symbol,
       FileList,
-      Composite, // not in use
+      Font,
       List,
       MAType,
       InputField,

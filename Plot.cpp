@@ -528,6 +528,11 @@ void Plot::setNeutralColor (QColor d)
   neutralColor = d;
 }
 
+void Plot::setPlotFont (QFont d)
+{
+  plotFont = d;
+}
+
 void Plot::setDateFlag (bool d)
 {
   dateFlag = d;

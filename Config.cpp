@@ -183,6 +183,9 @@ QString Config::getData (Parm p)
     case Group:
       s = settings.readEntry("/Qtstalker/Group");
       break;
+    case PlotFont:
+      s = settings.readEntry("/Qtstalker/PlotFont", "Helvetica 12 50");
+      break;
     default:
       break;
   }
@@ -261,6 +264,9 @@ void Config::setData (Parm p, QString d)
       break;
     case Group:
       settings.writeEntry("/Qtstalker/Group", d);
+      break;
+    case PlotFont:
+      settings.writeEntry("/Qtstalker/PlotFont", d);
       break;
     default:
       break;
