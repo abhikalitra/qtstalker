@@ -34,13 +34,13 @@ Text::Text (Scaler *s, QPixmap *p, QString indicator, QString n, BarDate d, doub
   name = n;
   date = d;
   value = v;
-  color.setNamedColor("red");
   label = tr("Text");
-  textFont = QApplication::font();
   
   menu->insertItem(tr("Edit Text"), this, SLOT(prefDialog()));
   menu->insertItem(tr("Move Text"), this, SLOT(moveObject()));
   menu->insertItem(tr("Delete Text"), this, SLOT(remove()));
+  
+  loadDefaults("Text");
 }
 
 Text::~Text ()
@@ -51,7 +51,7 @@ void Text::draw (int x, int)
 {
   QPainter painter;
   painter.begin(buffer);
-  painter.setFont(textFont);
+  painter.setFont(font);
   painter.setPen(color);
 
   int y = scaler->convertToY(value);
@@ -77,8 +77,9 @@ void Text::prefDialog ()
   dialog->setCaption(tr("Edit Text"));
   dialog->createPage (tr("Details"));
   dialog->addColorItem(tr("Color"), 1, color);
-  dialog->addFontItem(tr("Font"), 1, textFont);
+  dialog->addFontItem(tr("Font"), 1, font);
   dialog->addTextItem(tr("Label"), 1, label);
+  dialog->addCheckItem(tr("Set Default"), 1, FALSE);
   
   int rc = dialog->exec();
   
@@ -86,7 +87,11 @@ void Text::prefDialog ()
   {
     color = dialog->getColor(tr("Color"));
     label = dialog->getText(tr("Label"));
-    textFont = dialog->getFont(tr("Font"));
+    font = dialog->getFont(tr("Font"));
+    
+    bool f = dialog->getCheck(tr("Set Default"));
+    if (f)
+      saveDefaults("Text");
     
     saveFlag = TRUE;
     emit signalDraw();
@@ -117,11 +122,11 @@ Setting * Text::getSettings ()
   set->setData("ObjectType", QString::number(type));
   set->setData("Label", label);
 
-  QString s = textFont.family();
+  QString s = font.family();
   s.append(" ");
-  s.append(QString::number(textFont.pointSize()));
+  s.append(QString::number(font.pointSize()));
   s.append(" ");
-  s.append(QString::number(textFont.weight()));
+  s.append(QString::number(font.weight()));
   set->setData("Font", s);
   
   return set;
@@ -139,9 +144,6 @@ void Text::setSettings (Setting *set)
   
   QStringList l = QStringList::split(" ", set->getData("Font"), FALSE);
   if (l.count())
-  {
-    QFont font(l[0], l[1].toInt(), l[2].toInt());
-    textFont = font;
-  }
+    font = QFont(l[0], l[1].toInt(), l[2].toInt());
 }
 

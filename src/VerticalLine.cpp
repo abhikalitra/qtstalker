@@ -30,11 +30,12 @@ VerticalLine::VerticalLine (QPixmap *p, QString indicator, QString n, BarDate d)
   plot = indicator;
   name = n;
   date = d;
-  color.setNamedColor("red");
   
   menu->insertItem(tr("Edit Vertical Line"), this, SLOT(prefDialog()));
   menu->insertItem(tr("Move Vertical Line"), this, SLOT(moveObject()));
   menu->insertItem(tr("Delete Vertical Line"), this, SLOT(remove()));
+
+  loadDefaults("VerticalLine");
 }
 
 VerticalLine::~VerticalLine ()
@@ -71,12 +72,18 @@ void VerticalLine::prefDialog ()
   dialog->setCaption(tr("Edit Vertical Line"));
   dialog->createPage (tr("Details"));
   dialog->addColorItem(tr("Color"), 1, color);
+  dialog->addCheckItem(tr("Set Default"), 1, FALSE);
   
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
     color = dialog->getColor(tr("Color"));
+    
+    bool f = dialog->getCheck(tr("Set Default"));
+    if (f)
+      saveDefaults("VerticalLine");
+    
     saveFlag = TRUE;
     emit signalDraw();
   }

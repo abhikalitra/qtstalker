@@ -37,13 +37,14 @@ TrendLine::TrendLine (Scaler *s, QPixmap *p, BarData *d, QString indicator, QStr
   date2 = dt2;
   value = v;
   value2 = v2;
-  color.setNamedColor("red");
   useBar = FALSE;
   barField = tr("Close");
   
   menu->insertItem(tr("Edit Trend Line"), this, SLOT(prefDialog()));
   menu->insertItem(tr("Move Trend Line"), this, SLOT(moveObject()));
   menu->insertItem(tr("Delete Trend Line"), this, SLOT(remove()));
+  
+  loadDefaults("TrendLine");
 }
 
 TrendLine::~TrendLine ()
@@ -150,6 +151,7 @@ void TrendLine::prefDialog ()
   dialog->addColorItem(tr("Color"), 1, color);
   dialog->addComboItem(tr("Bar Field"), 1, l, barField);
   dialog->addCheckItem(tr("Use Bar"), 1, useBar);
+  dialog->addCheckItem(tr("Set Default"), 1, FALSE);
   
   int rc = dialog->exec();
   
@@ -158,6 +160,11 @@ void TrendLine::prefDialog ()
     color = dialog->getColor(tr("Color"));
     useBar = dialog->getCheck(tr("Use Bar"));
     barField = dialog->getCombo(tr("Bar Field"));
+    
+    bool f = dialog->getCheck(tr("Set Default"));
+    if (f)
+      saveDefaults("TrendLine");
+    
     saveFlag = TRUE;
     emit signalDraw();
   }

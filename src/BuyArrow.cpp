@@ -38,6 +38,8 @@ BuyArrow::BuyArrow (Scaler *s, QPixmap *p, QString indicator, QString n, BarDate
   menu->insertItem(tr("Edit Buy Arrow"), this, SLOT(prefDialog()));
   menu->insertItem(tr("Move Buy Arrow"), this, SLOT(moveObject()));
   menu->insertItem(tr("Delete Buy Arrow"), this, SLOT(remove()));
+  
+  loadDefaults("BuyArrow");
 }
 
 BuyArrow::~BuyArrow ()
@@ -82,12 +84,17 @@ void BuyArrow::prefDialog ()
   dialog->setCaption(tr("Edit Buy Arrow"));
   dialog->createPage (tr("Details"));
   dialog->addColorItem(tr("Color"), 1, color);
+  dialog->addCheckItem(tr("Set Default"), 1, FALSE);
   
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
     color = dialog->getColor(tr("Color"));
+    
+    bool f = dialog->getCheck(tr("Set Default"));
+    if (f)
+      saveDefaults("BuyArrow");
     
     saveFlag = TRUE;
     

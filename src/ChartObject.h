@@ -32,6 +32,7 @@
 #include <qregion.h>
 #include <qdatetime.h>
 #include <qcolor.h>
+#include <qfont.h>
 
 class ChartObject : public QObject
 {
@@ -75,6 +76,8 @@ class ChartObject : public QObject
     double getValue ();
     double getValue2 ();
     QString getName ();
+    void loadDefaults (QString);
+    void saveDefaults (QString);
 
   public slots:    
     virtual void prefDialog ();
@@ -94,6 +97,7 @@ class ChartObject : public QObject
     QString plot;
     QString name;
     QColor color;
+    QFont font;
     BarDate date;
     BarDate date2;
     double value;

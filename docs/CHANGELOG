@@ -89,6 +89,12 @@
 
 20040330: Draw mode state is now saved between sessions.
 
+20040331: Added a drawing function to allow the user to draw in newly created trendlines and
+          fibo's instead of just clicking the start and end points.
+
+20040401: Added a set defaults function for chart objects. Each object type can have set
+          defaults when created. So far, only color and font are defaulted.
+
 	  
 0.25
 ====

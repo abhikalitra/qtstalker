@@ -33,11 +33,12 @@ SellArrow::SellArrow (Scaler *s, QPixmap *p, QString indicator, QString n, BarDa
   name = n;
   date = d;
   value = v;
-  color.setNamedColor("red");
   
   menu->insertItem(tr("Edit Sell Arrow"), this, SLOT(prefDialog()));
   menu->insertItem(tr("Move Sell Arrow"), this, SLOT(moveObject()));
   menu->insertItem(tr("Delete Sell Arrow"), this, SLOT(remove()));
+  
+  loadDefaults("SellArrow");
 }
 
 SellArrow::~SellArrow ()
@@ -82,12 +83,18 @@ void SellArrow::prefDialog ()
   dialog->setCaption(tr("Edit Sell Arrow"));
   dialog->createPage (tr("Details"));
   dialog->addColorItem(tr("Color"), 1, color);
+  dialog->addCheckItem(tr("Set Default"), 1, FALSE);
   
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
     color = dialog->getColor(tr("Color"));
+    
+    bool f = dialog->getCheck(tr("Set Default"));
+    if (f)
+      saveDefaults("SellArrow");
+    
     saveFlag = TRUE;
     emit signalDraw();
   }

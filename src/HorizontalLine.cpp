@@ -31,11 +31,12 @@ HorizontalLine::HorizontalLine (Scaler *s, QPixmap *p, QString indicator, QStrin
   plot = indicator;
   name = n;
   value = v;
-  color.setNamedColor("red");
   
   menu->insertItem(tr("Edit Horizontal Line"), this, SLOT(prefDialog()));
   menu->insertItem(tr("Move Horizontal Line"), this, SLOT(moveObject()));
   menu->insertItem(tr("Delete Horizontal Line"), this, SLOT(remove()));
+  
+  loadDefaults("HorizontalLine");
 }
 
 HorizontalLine::~HorizontalLine ()
@@ -76,11 +77,18 @@ void HorizontalLine::prefDialog ()
   dialog->setCaption(tr("Edit Horizontal Line"));
   dialog->createPage (tr("Details"));
   dialog->addColorItem(tr("Color"), 1, color);
+  dialog->addCheckItem(tr("Set Default"), 1, FALSE);
+  
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
     color = dialog->getColor(tr("Color"));
+    
+    bool f = dialog->getCheck(tr("Set Default"));
+    if (f)
+      saveDefaults("HorizontalLine");
+    
     saveFlag = TRUE;
     emit signalDraw();
   }

@@ -36,7 +36,6 @@ FiboLine::FiboLine (Scaler *s, QPixmap *p, QString indicator, QString n, BarDate
   date2 = d2;
   value = v;
   value2 = v2;
-  color.setNamedColor("red");
   line1 = 0.5;
   line2 = 0;
   line3 = 0;
@@ -47,6 +46,8 @@ FiboLine::FiboLine (Scaler *s, QPixmap *p, QString indicator, QString n, BarDate
   menu->insertItem(tr("Edit Fibonacci Line"), this, SLOT(prefDialog()));
   menu->insertItem(tr("Move Fibonacci Line"), this, SLOT(moveObject()));
   menu->insertItem(tr("Delete Fibonacci Line"), this, SLOT(remove()));
+  
+  loadDefaults("FiboLine");
 }
 
 FiboLine::~FiboLine ()
@@ -200,6 +201,7 @@ void FiboLine::prefDialog ()
   dialog->setCaption(tr("Edit Fibonacci Lines"));
   dialog->createPage (tr("Details"));
   dialog->addColorItem(tr("Color"), 1, color);
+  dialog->addCheckItem(tr("Set Default"), 1, FALSE);
 
   dialog->createPage (tr("Levels"));
   dialog->addFloatItem(tr("Line 1"), 2, line1);
@@ -220,6 +222,10 @@ void FiboLine::prefDialog ()
     line4 = dialog->getFloat(tr("Line 4"));
     line5 = dialog->getFloat(tr("Line 5"));
     line6 = dialog->getFloat(tr("Line 6"));
+    
+    bool f = dialog->getCheck(tr("Set Default"));
+    if (f)
+      saveDefaults("FiboLine");
 
     saveFlag = TRUE;
     emit signalDraw();

@@ -23,7 +23,6 @@
 #define TEXT_HPP
 
 #include "ChartObject.h"
-#include <qfont.h>
 
 class Text : public ChartObject
 {
@@ -42,7 +41,6 @@ class Text : public ChartObject
     
   protected:
     QString label;
-    QFont textFont;
 };
 
 #endif

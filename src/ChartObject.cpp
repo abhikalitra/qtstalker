@@ -21,6 +21,8 @@
 
 #include "ChartObject.h"
 #include <qcursor.h>
+#include <qapplication.h>
+#include <qsettings.h>
 
 ChartObject::ChartObject ()
 {
@@ -29,6 +31,8 @@ ChartObject::ChartObject ()
   buffer = 0;
   saveFlag = FALSE;
   status = FALSE;
+  font = QApplication::font();
+  color.setNamedColor("red");
   
   menu = new QPopupMenu();
 }
@@ -136,5 +140,36 @@ double ChartObject::getValue2 ()
 QString ChartObject::getName ()
 {
   return name;
+}
+
+void ChartObject::loadDefaults (QString key)
+{
+  QSettings settings;
+  
+  QString s = "/Qtstalker/Default" + key + "Color";
+  s = settings.readEntry(s);
+  if (s.length())
+    color.setNamedColor(s);
+
+  s = "/Qtstalker/Default" + key + "Font";
+  s = settings.readEntry(s);
+  if (s.length())
+  {
+    QStringList l = QStringList::split(",", s, FALSE);
+    font = QFont(l[0], l[1].toInt(), l[2].toInt());
+  }
+}
+
+void ChartObject::saveDefaults (QString key)
+{
+  QSettings settings;
+  
+  QString s = "/Qtstalker/Default" + key + "Color";
+  settings.writeEntry(s, color.name());
+  
+  s = "/Qtstalker/Default" + key + "Font";
+  settings.writeEntry(s, font.family() + "," +
+                      QString::number(font.pointSize()) + "," +
+		      QString::number(font.weight()));
 }
 
