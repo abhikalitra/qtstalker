@@ -45,31 +45,25 @@ the code from an existing indicator that does similar things. Please
 consider
 contributing the new indicator back to this project. Everyone benefits.</p>
 <h3>I'm a day trader, how come there is no intraday charting functions ?</h3>
-<p>Qtstalker is an 'end of day' analysis tool. Personally I have no
-interest in day trading, I prefer to trade positions, and since this
-project arose to fill my personal needs, there are none. So, I have no
-plans to add them. If someone wants to add these functions, I would
-gladly help out if needed. It would be possible without too much
-difficulty. Anyway, you need real
-time quotes, and real time quotes need proprietary software to decrypt
-them, and if you can afford to day trade, then you can afford real time
-quotes and the $ for the software. So there. Besides, are you sure you
-want to sit in front of a screen all day when you could be getting a
-life ?</p>
-<p></p>
+<p>There is currently basic support for tick data limited to a HH:MM:SS
+resolution. However, there are currently no quote plugins that download
+free tick data. It is left up to the user to provide quotes from a data
+service on an individual basis. You may use the CSV quote plugin to
+import ascii files with tick data.</p>
 <h3>Does Qtstalker handle stock splits ?</h3>
 Nope. To keep things simple, there is an easy way to handle splits.
 Just delete the chart that had a split, create the chart with the yahoo
 plugin and then update the data. This will pull in all the new
 corrected data. Nice and simple. Yes, a little more work for the user
-but reduces overhead and keeps things nice and snappy. <br>
+but reduces overhead and keeps things nice and snappy. NOTE: the yahoo
+quote plugin allows the user to use the 'adjusted' price, however this
+is not the actual trading price but an adjusted one for chart sanity.<br>
 <br>
 <h3>Where does the name Qtstalker come from ?</h3>
 Well if you really must know...The Qt part comes from the GNU/Linux
 tradition of prefixing an X app with the GUI toolkit used. The stalker
 part is just cheesy word play stemming from the idea of "stock search"
-or "stalking stocks". I also just like the word "stalker" being the
-title of my favourite movie.<br>
+or "stalking stocks". I also just like the word "stalker".<br>
 <br>
 <h3>Why don't you make this into a KDE app ?</h3>
 I want to keep things as simple, efficient and portable as possible. Qt

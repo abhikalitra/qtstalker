@@ -1,134 +1,83 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML Basic 1.0//EN" "http://www.w3.org/TR/xhtml-basic/xhtml-basic10.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <meta http-equiv="Content-Type"
+ content="text/html; charset=iso-8859-1">
   <title>Qtstalker - Quote Plugin - MySQL</title>
-  <meta name="description" content="Documentation for MySQL plugin for Qtstalker" />
-  <meta name="author" content="Marco van Zwetselaar" />
+  <meta name="description"
+ content="Documentation for MySQL plugin for Qtstalker">
+  <meta name="author" content="Marco van Zwetselaar">
 </head>
 <body>
- 
 <h2><u>MySQL Plugin</u></h2>
-  
 <h3>Description</h3>
-  
 <p>Import values from a MySQL database.</p>
-
-<p>Using this plugin you can synchronise your qtstalker charts with 
+<p>Using this plugin you can synchronise your qtstalker charts with
 quote data you keep in a MySQL database. The plugin does not depend
-on specific table or field names. Instead, you configure it by 
+on specific table or field names. Instead, you configure it by
 specifying the SQL query it should execute.</p>
-
 <p>This plugin requires the mysql client libraries on the machine
-it is running on.  Check if you have
+it is running on. Check if you have
 <code>/usr/lib/libmysqlclient.so</code> (or something similar).</p>
-
-<p>If you want to compile this plugin yourself, you'll need the 
-mysql client development package. This provides the C header
+<p>If you want to compile this plugin yourself, you'll need the mysql
+client development package. This provides the C header
 files for the MySQL API.</p>
-
-<h3>Creating a new chart</h3>
-
-<p>The plugin has a simple dialog for creating new charts.  Pressing
-the "New" button from the main plugin dialog will bring up this dialog:</p>
-
-<img alt="MySQL new dialog" src="mysql1.png" />
-
-<p>Specify the following parameters for the new chart:</p>
-
-<ul>
-   <li><b>Format</b> - type of quote data, currently supports DOHLCV
-   and DOHLCVI</li>
-   <li><b>Symbol</b> - the symbol for the chart; this will be the name
-   of the datafile in qtstalker</li>
-   <li><b>Title</b> - your own descriptive name for the chart</li>
-</ul>
-
-<p><b>Note:</b> a newly created symbol does not (yet) get added 
-automatically to the list of symbols in the main plugin dialog.
-You must add it manually after closing the "New" dialog.</p>
-
 <h3>Plugin Parameters</h3>
-
-<img alt="MySQL update dialog" src="mysql2.png" />
-
+<img style="width: 308px; height: 314px;" alt="" src="mysql1.png"><br>
 <ul>
-   <li><b>Database</b> - Name of the MySQL database to connect to.</li>
-   <li><b>Host</b> - Name of the machine hosting the MySQL database</li>
-   <li><b>Incremental</b> - If checked then only quotes newer than the 
-   latest quote found in qtstalker for each symbol will be imported.
-   (See discussion of SQL Query below.) If not checked, then all quotes
-   for each symbol will be imported.</li>
-   <li><b>Password</b> - The password for connecting to the MySQL database. 
-   <b>Note:</b> this password will be stored in plaintext on your machine.
-   For the security-aware, the best thing to do is to define a 'qtstalker'
-   user on the database, whose rights are restricted to doing SELECTs
-   on the quote tables. This user could do without a password.</li>
-   <li><b>SQL Query</b> - The query string to use (see below for explanation)</li>
-   <li><b>Symbols</b> - The list of the symbols to update, separated by spaces. 
-   These symbols must refer to qtstalker datafiles that have already been
-   created. To create a new datafile, press the "New" button.</li>
-   <li><b>Username</b> - The username for connecting to the MySQL database.
-   See discussion of password above. This MySQL user must have SELECT
-   rights on the appropriate table(s).</li>
+  <li><b>Database</b> - Name of the MySQL database to connect to.</li>
+  <li><b>Host</b> - Name of the machine hosting the MySQL database</li>
+  <li><b>Incremental</b> - If checked then only quotes newer than the
+latest quote found in qtstalker for each symbol will be imported. (See
+discussion of SQL Query below.) If not checked, then all quotes for
+each symbol will be imported.</li>
+  <li><b>Password</b> - The password for connecting to the MySQL
+database. <b>Note:</b> this password will be stored in plaintext on
+your machine. For the security-aware, the best thing to do is to define
+a 'qtstalker' user on the database, whose rights are restricted to
+doing SELECTs on the quote tables. This user could do without a
+password.</li>
+  <li><b>SQL Query</b> - The query string to use (see below for
+explanation)</li>
+  <li><b>Symbols</b> - The list of the symbols to update, separated by
+spaces.</li>
+  <li><b>Username</b> - The username for connecting to the MySQL
+database. See discussion of password above. This MySQL user must have
+SELECT rights on the appropriate table(s).</li>
 </ul>
-
 <p>Note that you need to specify all these settings only once. They
 are remembered between uses of the plugin.</p>
-
 <h4>The SQL Query</h4>
-
-<p>In order to keep this plugin maximally flexible, you must provide 
+<p>In order to keep this plugin maximally flexible, you must provide
 the SQL query to extract quotes for a specific symbol from the database.</p>
-  
 <p>The query you specify can be arbitrarily complex, as long as it is
 a single SQL SELECT statement which meets the following requirements:</p>
 <ul>
-   <li>The names of the fields returned do not matter, but their order does. 
-   The order must be date, open, high, low, close, volume, open interest.
-   (Open interest is optional.)</li>
-   <li>The statement must return quotes for one single symbol. Use the
-   placeholder $SYMBOL$ whereever the actual symbol name must be
-   substituted in the statement.</li>
-   <li>Use the placeholder $LASTDAY$ in a WHERE clause if you want to use
-   the 'Incremental' feature (see examples below). The substring $LASTDAY$
-   will be replaced with the date of the last quote present in the qtstalker
-   datafile for the symbol being updated. (If the 'Incremental' checkbox is
-   not checked, it will be replaced with a prehistoric date.)</li>
+  <li>The names of the fields returned do not matter, but their order
+does. The order must be date, open, high, low, close, volume, open
+interest. (Open interest is optional.)</li>
+  <li>The statement must return quotes for one single symbol. Use the
+placeholder $SYMBOL$ whereever the actual symbol name must be
+substituted in the statement.</li>
+  <li>Use the placeholder $LASTDAY$ in a WHERE clause if you want to
+use the 'Incremental' feature (see examples below). The substring
+$LASTDAY$ will be replaced with the date of the last quote present in
+the qtstalker datafile for the symbol being updated. (If the
+'Incremental' checkbox is not checked, it will be replaced with a
+prehistoric date.)</li>
 </ul>
-
 <p>Here is an example for someone using one table per symbol, table
 name corresponding to symbol name.</p>
-<pre>
-   SELECT day,open,high,low,close,volume
-   FROM $SYMBOL$
-   WHERE day &gt; '$LASTDAY$'
-   ORDER BY day
-</pre>
-
+<pre>   SELECT day,open,high,low,close,volume<br>   FROM $SYMBOL$<br>   WHERE day &gt; '$LASTDAY$'<br>   ORDER BY day<br></pre>
 <p>Here is another example, for someone using a single table for
 all quotes for all symbols.</p>
-<pre>
-   SELECT day,open,high,low,close,volume
-   FROM Quotes
-   WHERE symbol = '$SYMBOL$' AND day &gt; '$LASTDAY$'
-   ORDER BY day
-</pre>
-
+<pre>   SELECT day,open,high,low,close,volume<br>   FROM Quotes<br>   WHERE symbol = '$SYMBOL$' AND day &gt; '$LASTDAY$'<br>   ORDER BY day<br></pre>
 <p>One more example, which looks like my set-up. I have a Quotes
 table and a Symbols table, which both have a foreign key (stockId)
 referring to a shared primary key in a Stocks table.</p>
-<pre>
-   SELECT day,open,high,low,close,volume 
-   FROM Symbols JOIN Quotes USING (stockId) 
-   WHERE symbol = '$SYMBOL$' AND day &gt; '$LASTDAY$' 
-   ORDER BY day
-</pre>
-
-<i>If any of the above is incorrect or unclear, please let me know. 
-   I'll be happy to explain, and improve these docs. Please contact
-   the maintainers via the qtstalker forums on SourceForge.</i>
-
+<pre>   SELECT day,open,high,low,close,volume <br>   FROM Symbols JOIN Quotes USING (stockId) <br>   WHERE symbol = '$SYMBOL$' AND day &gt; '$LASTDAY$' <br>   ORDER BY day<br></pre>
+<i>If any of the above is incorrect or unclear, please let me know.
+I'll be happy to explain, and improve these docs. Please contact the
+maintainers via the qtstalker forums on SourceForge.</i>
 </body>
 </html>
-

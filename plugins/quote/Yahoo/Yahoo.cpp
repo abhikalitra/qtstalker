@@ -147,10 +147,19 @@ void Yahoo::opDone (QNetworkOperation *o)
 
   if (o->state() == QNetworkProtocol::StFailed)
   {
-    emit done();
-    emit statusLogMessage(tr("Download error"));
-    delete op;
-    return;
+    if (symbolLoop + 1 >= (int) symbolList.count())
+    {
+      emit done();
+      emit statusLogMessage(tr("Done"));
+      delete op;
+    }
+    else
+    {
+      emit statusLogMessage(tr("Download error ") + symbolList[symbolLoop] + tr(" skipped"));
+      symbolLoop++;
+      data.truncate(0);
+      getFile();
+    }
   }
 }
 

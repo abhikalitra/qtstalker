@@ -262,6 +262,8 @@ void CSVDialog::editRule ()
     return;
   }
   
+  ruleList->clear();
+  
   Setting *set = new Setting;
   QString s = "/Rule_" + name;
   set->parse(settings.readEntry(s));

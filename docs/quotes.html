@@ -13,19 +13,26 @@
 <h3>Description</h3>
 <p>This is the quote update center. You use the various quote plugins
 to create and update the data you want and import them into Qtstalker.
-Each plugin will use different input data parameters. Once all the
+Each plugin will use different input data parameters. You can modify
+the settings for each plugin by pressing the "Settings" button located
+just to the right of the plugins combo box. Once all the
 input parameters are satisfied, pressing the "Update" button will start
 the update. If you want to interrupt an update, press the "Cancel
-Update" button. You may change the settings by selecting the setting
-with the mouse. Depending on the setting type, a dialog will be popup
-and allow you to select and enter data.</p>
+Update" button.<br>
+</p>
+<p>The download status area displays the progress of the plugin once
+update is started. Any information and errors will display here.<br>
+</p>
+<p>The data page can display the actual data being imported. To display
+the data during an update, check the "Show Data Log" box. The default
+is off.<br>
+</p>
 <p></p>
 <p>The available plugins are:</p>
 <ul>
   <li><a href="cc.html"><u>CC</u></a><br>
   </li>
   <li><a href="cme.html">CME</a></li>
-  <li><a href="cmehistory.html">CMEHistory</a></li>
   <li><a href="cot.html">COT</a></li>
   <li><a href="csv.html">CSV</a><br>
   </li>
@@ -36,19 +43,13 @@ and allow you to select and enter data.</p>
   <li><a href="qtstalker.html">QtstalkerFormat</a></li>
   <li><a href="spread.html">Spread</a></li>
   <li><a href="yahoo.html">Yahoo</a></li>
-  <li><a href="yahooquote.html">YahooQuote</a></li>
 </ul>
 <p></p>
 <p>Here is a basic example of the quotes dialog.</p>
-<p><img src="quote1.png" alt="blah"> </p>
+<p><img style="width: 294px; height: 335px;" alt="" src="quote1.png"><br>
+</p>
 <p></p>
 <p>The button functions are as follows:</p>
-<p></p>
-<h3><img height="14" width="16" alt="" src="ok.png"> Ok</h3>
-<p>This is disabled as it is not needed.</p>
-<p></p>
-<h3><img height="24" width="24" alt="" src="stop.png"> Cancel </h3>
-<p>Exits the dialog.</p>
 <p></p>
 <h3><img style="width: 22px; height: 22px;" alt="download" title=""
  src="download.png">&nbsp; Update</h3>
@@ -57,16 +58,13 @@ and allow you to select and enter data.</p>
 <h3><img style="width: 22px; height: 22px;" alt="cancel download"
  title="" src="canceldownload.png">&nbsp; Cancel Update</h3>
 <p>Interrupts any pending updates. Only available when an update is
-running.</p>
+running.<br>
+</p>
 <p></p>
-<h3><img height="24" width="24" alt="" src="newchart.png"> New Chart</h3>
-<p>This button is available only if it required by the plugin. eg.
-Yahoo uses this function as a way to input new symbols to download.
-Pressing this will bring up a dialog to enter parameters needed to
-create new charts for the selected plugin.</p>
-<p></p>
-<p></p>
-<p></p>
+<h3><img style="width: 16px; height: 16px;" alt="" src="configure.png">
+Settings</h3>
+Displays the settings dialog for the current plugin.<br>
+<br>
 <br>
 <br>
 <br>

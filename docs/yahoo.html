@@ -11,30 +11,9 @@
 <h2><u>Yahoo Plugin</u></h2>
 <p></p>
 <h3>Description:</h3>
-<p>Historical quotes from all yahoo supported exchanges are available
-with this plugin. Pressing the "New" button allows you to enter new
-symbols to update.</p>
-<p></p>
-<h3>Input Parameters:</h3>
-<ul>
-  <li>End Date - The most recent date to include for update</li>
-  <li>Start Date - The most distant date to include for update.</li>
-  <li>Adjustments - Propagate the Close/Adjusted Close factor to all
-price columns (i.e. adjust for stock splits and dividends).</li>
-</ul>
-<p></p>
-<img src="yahoo1.png" alt="" style="width: 221px; height: 188px;"><br>
-<p></p>
-<p></p>
-<p>Pressing the "New" button will bring up the following dialog.</p>
-<p><img src="yahoo2.png" alt="" style="width: 242px; height: 124px;"><br>
-</p>
-<p>Here we will be adding MSFT, IBM, RHAT to our database. Leave a
-space between the symbols.<br>
-</p>
-<p>NOTE: You only have to create the symbols once and not every time
-you want to download quotes. They will be updated every time choose the
-update function.<br>
+<p>Historical and 10 - 20 minute delayed quotes from all yahoo
+supported exchanges are available
+with this plugin.<br>
 </p>
 <p>Adjustments: Yahoo provides an Adjusted Close column in its data,
 scaling prior closing prices to the most recent price based on stock
@@ -50,10 +29,36 @@ without large jumps due to stock splits, although the caveat is that
 absolute prices are a factor different from what occurred on the
 exchange that day. Having said that, factoring for historical events
 in this manner is a common approach for visually graphing stock
-prices.</p>
+prices.
+</p>
+<h3>Input Parameters:</h3>
+<ul>
+  <li>Method - History for multiple quotes within the start and end
+dates input, or the most current single quote to download.<br>
+  </li>
+  <li>End Date - The most recent date to include for update.</li>
+  <li>Start Date - The most distant date to include for update.</li>
+  <li>Adjustment - Propagate the Close/Adjusted Close factor to all
+price columns (i.e. adjust for stock splits and dividends).</li>
+  <li>Download Symbols - Select the symbols to download by highlighting
+them.</li>
+</ul>
+<p></p>
+<img style="width: 308px; height: 435px;" alt="" src="yahoo1.png"><br>
 <p></p>
 <p></p>
-<p></p>
+<p><br>
+Pressing the "New Symbol" button will bring up the following dialog.</p>
+<p><img style="width: 408px; height: 126px;" alt="" src="yahoo2.png"><br>
+</p>
+<p>Here we will be adding MSFT, IBM, RHAT to our database. Leave a
+space between the symbols.<br>
+</p>
+<p>NOTE: You only have to create the symbols once and not every time
+you want to download quotes.<br>
+</p>
+<p><br>
+</p>
 <br>
 </body>
 </html>

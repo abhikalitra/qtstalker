@@ -14,53 +14,114 @@
 Perhaps
 you already have a collection of files in this format ... end-of-day
 data
-managed as a separate concern by some other application. </p>
-<p>This plugin can currently import the following field formats,
-and
-can easily be modified to support other field formats.<br>
+managed as a separate concern by some other application. This plugin is
+further flexible in that it uses user created "rules" to import many
+different formats. The rule describes the field format of each line of
+data to import. <br>
 </p>
+<h3>General Input Parameters:</h3>
 <ul>
-  <li>DOHLCV - Date,Open,High,Low,Close,Volume<br>
-  </li>
-  <li>DOHLCVI - Date,Open,High,Low,Close,Volume,Open Interest<br>
-  </li>
-  <li>DTOHLC - Date,Time,Open,High,Low,Close</li>
-  <li>SDOHLCV - Symbol,Date,Open,High,Low,Close,Volume<br>
-  </li>
-</ul>
-<p> </p>
-<p>Here is an example snippet from a DOHLCV file called SBM.AX.txt </p>
-<pre>...<br>20030205,0.120,0.120,0.115,0.120,1129504<br>20030206,0.115,0.115,0.100,0.105,2559171<br>...<br></pre>
-<h3>Input Parameters:</h3>
-<ul>
-  <li>Chart Type - The chart to create can be stock or futures chart.</li>
-  <li>Date Format - The format of the date field used.</li>
-  <li>Delimiter - The delimiter used between fields. <br>
-  </li>
-  <li>End Date - Specify a ending date for record filtering. Only used
-if "Select Date Range' option is checked.</li>
-  <li>Format - The record field format used.</li>
-  <li>Futures Month - The futures month used if importing futures data.</li>
-  <li>Futures Symbol - The futures symbol used if importing futures
-data.<br>
-  </li>
   <li>Input - The ASCII file to be imported from your local filesystem.</li>
+  <li>Symbol - If you do not specify a symbol field in the rule, the
+symbol field will enable allowing you to enter a symbol. If no symbol
+is entered, then the basename part
+of the filename will be used.</li>
+  <li>Rule - The field format rule to apply to the input file selected.</li>
   <li>Select Date Range - Select a date range of records to import. If
 checked, the Start Date and End Date options are required.</li>
-  <li>Start Date - Specify a start date for record filtering. Only used
+  <li>Date Start - Specify a start date for record filtering. Only used
 if "Select Date Range' option is checked.</li>
-  <li>Symbol - If you do not specify a symbol, then the basename part
-of the filename will be used, e.g. SBM.AX</li>
+  <li>Date End - Specify a ending date for record filtering. Only used
+if "Select Date Range' option is checked.</li>
 </ul>
-<p><img style="width: 274px; height: 336px;" alt="" title=""
- src="csv1.png">&nbsp; <img src="csv2.png" height="321" width="406"
- alt="screenshot"> </p>
-<p>Select the file to be imported and press the "update" button. Then
-go
-to "Working with Graphs" to see your new graph. </p>
-<p>Hint: To import/update a whole directory of files, select multiple
-files
-using shift-click and ctrl-click.<br>
+<img style="width: 333px; height: 368px;" alt="" src="csv1.png"><br>
+<ul>
+  <br>
+</ul>
+<h3>Rule Page Parameters:</h3>
+Use this page to create, edit or delete rules.<br>
+<ul>
+  <li>Rule - The name of the rule.<br>
+  </li>
+  <li>Chart Type - The chart to create can be stock or futures chart.</li>
+  <li>Delimiter - The delimiter used between fields. </li>
+  <li>Fields - The field type you want to insert. Currently the
+following fields are available:<br>
+  </li>
+  <ul>
+    <li>Date:YYYYMMDD - date field<br>
+    </li>
+  </ul>
+  <ul>
+    <li>Date:YYMMDD - date field<br>
+    </li>
+  </ul>
+  <ul>
+    <li>Date:MMDDYY - date field<br>
+    </li>
+  </ul>
+  <ul>
+    <li>Date:MMDDYYYY - date field</li>
+  </ul>
+  <ul>
+    <li>Date:DDMMYYYY - date field</li>
+  </ul>
+  <ul>
+    <li>Date:MMDDYYYYHHMMSS - ISO date field<br>
+    </li>
+  </ul>
+  <ul>
+    <li>Time - time field eg. 23:59:59<br>
+    </li>
+  </ul>
+  <ul>
+    <li>Symbol - symbol or ticker name<br>
+    </li>
+  </ul>
+  <ul>
+    <li>Open<br>
+    </li>
+  </ul>
+  <ul>
+    <li>High<br>
+    </li>
+  </ul>
+  <ul>
+    <li>Low<br>
+    </li>
+  </ul>
+  <ul>
+    <li>Close<br>
+    </li>
+  </ul>
+  <ul>
+    <li>Volume<br>
+    </li>
+  </ul>
+  <ul>
+    <li>OI - open interest<br>
+    </li>
+  </ul>
+  <ul>
+    <li>Ignore - use this to ignore any unwanted data fields in the
+record</li>
+  </ul>
+  <li>Rule Contents - The contents of the rule.<br>
+  </li>
+</ul>
+<img style="width: 329px; height: 420px;" alt="" src="csv2.png"><br>
+<br>
+<p>Use the buttons on the button bar to create and modify the rule. You
+create a new rule and insert the field format of the ascii file into
+the Rule Contents list. The fields in the list should match the fields
+in the ascii file from top to bottom in the list. Using the above
+picture as an example; The rule would import a record that had the
+format of "Date:MMDDYYYYHHMMSS,Open,High,Low,Close,Volume". An actual
+data record would look something like "12/31/1999
+23:59:59,100,101,99,100,999999".<br>
+<br>
+</p>
+<p><br>
 <br>
 </p>
 </body>
