@@ -30,6 +30,7 @@ unix:linux-g++:LIBS += -ldl
 macx:QMAKE_CXXFLAGS += -bundle
 
 unix:OBJECTS_DIR = ../../../src
+unix:MOC_DIR = ../../../src
 
 target.path = /usr/lib/qtstalker/quote
 INSTALLS += target
