@@ -973,6 +973,9 @@ void Tester::loadAlerts (int type)
       break;
   }
   
+  if (! edit->getLines())
+    return;
+  
   bool cflag = FALSE;
   for (loop = 0; loop < edit->getLines(); loop++)
   {

@@ -233,7 +233,7 @@ PlotLine * DMI::calculateCustom (QDict<PlotLine> *)
 QString DMI::getCustomSettings ()
 {
   QString s("DMI");
-  s.append("," + maType);
+  s.append("," + QString::number(maType));
   s.append("," + QString::number(period));
   s.append("," + QString::number(smoothing));
   s.append("," + mdiColor.name());

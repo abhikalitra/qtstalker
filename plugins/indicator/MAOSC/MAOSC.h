@@ -31,6 +31,9 @@ class MAOSC : public IndicatorPlugin
     void saveIndicatorSettings (QString);
     int indicatorPrefDialog (QWidget *);
     void setDefaults();
+    PlotLine * calculateCustom (QDict<PlotLine> *);
+    QString getCustomSettings ();
+    void setCustomSettings (QString);
     
   private:
     QColor color;
@@ -41,6 +44,7 @@ class MAOSC : public IndicatorPlugin
     IndicatorPlugin::MAType fastMaType;
     IndicatorPlugin::MAType slowMaType;
     BarData::InputType input;
+    QString customInput;
 };
 
 extern "C"

@@ -156,7 +156,7 @@ PlotLine * FI::calculateCustom (QDict<PlotLine> *)
 QString FI::getCustomSettings ()
 {
   QString s("FI");
-  s.append("," + maType);
+  s.append("," + QString::number(maType));
   s.append("," + QString::number(smoothing));
   s.append("," + color.name());
   s.append("," + QString::number(lineType));

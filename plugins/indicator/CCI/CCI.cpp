@@ -181,7 +181,7 @@ PlotLine * CCI::calculateCustom (QDict<PlotLine> *)
 QString CCI::getCustomSettings ()
 {
   QString s("CCI");
-  s.append("," + maType);
+  s.append("," + QString::number(maType));
   s.append("," + QString::number(period));
   s.append("," + QString::number(smoothing));
   s.append("," + color.name());

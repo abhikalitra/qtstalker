@@ -153,7 +153,7 @@ PlotLine * DPO::calculateCustom (QDict<PlotLine> *)
 QString DPO::getCustomSettings ()
 {
   QString s("DPO");
-  s.append("," + maType);
+  s.append("," + QString::number(maType));
   s.append("," + QString::number(period));
   s.append("," + color.name());
   s.append("," + QString::number(lineType));

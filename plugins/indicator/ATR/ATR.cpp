@@ -137,7 +137,7 @@ PlotLine * ATR::calculateCustom (QDict<PlotLine> *)
 QString ATR::getCustomSettings ()
 {
   QString s("ATR");
-  s.append("," + maType);
+  s.append("," + QString::number(maType));
   s.append("," + QString::number(smoothing));
   s.append("," + color.name());
   s.append("," + QString::number(lineType));

@@ -191,7 +191,7 @@ PlotLine * BB::calculateCustom (QDict<PlotLine> *)
 QString BB::getCustomSettings ()
 {
   QString s("BB");
-  s.append("," + maType);
+  s.append("," + QString::number(maType));
   s.append("," + QString::number(period));
   s.append("," + QString::number(deviation));
   s.append("," + color.name());

@@ -48,7 +48,16 @@ void MAOSC::setDefaults ()
 
 void MAOSC::calculate ()
 {
-  PlotLine *in = data->getInput(input);
+  PlotLine *in = 0;
+  if (customFlag)
+    in = getInputLine(customInput);
+  else
+    in = data->getInput(input);
+  if (! in)
+  {
+    qDebug("MAOSC::calculate: no input");
+    return;
+  }
   
   PlotLine *fma = getMA(in, fastMaType, fastPeriod);
   int fmaLoop = fma->getSize() - 1;
@@ -70,9 +79,11 @@ void MAOSC::calculate ()
 
   output.append(osc);
   
+  if (! customFlag)
+    delete in;
+  
   delete fma;
   delete sma;
-  delete in;
 }
 
 int MAOSC::indicatorPrefDialog (QWidget *w)
@@ -87,7 +98,10 @@ int MAOSC::indicatorPrefDialog (QWidget *w)
   dialog->addIntItem(tr("Slow Period"), tr("Parms"), slowPeriod, 1, 99999999);
   dialog->addComboItem(tr("Fast MA Type"), tr("Parms"), maTypeList, fastMaType);
   dialog->addComboItem(tr("Slow MA Type"), tr("Parms"), maTypeList, slowMaType);
-  dialog->addComboItem(tr("Input"), tr("Parms"), inputTypeList, input);
+  if (customFlag)
+    dialog->addFormulaInputItem(tr("Input"), tr("Parms"), FALSE, customInput);
+  else
+    dialog->addComboItem(tr("Input"), tr("Parms"), inputTypeList, input);
   
   int rc = dialog->exec();
   
@@ -100,7 +114,10 @@ int MAOSC::indicatorPrefDialog (QWidget *w)
     label = dialog->getText(tr("Label"));
     fastMaType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("Fast MA Type"));
     slowMaType = (IndicatorPlugin::MAType) dialog->getComboIndex(tr("Slow MA Type"));
-    input = (BarData::InputType) dialog->getComboIndex(tr("Input"));
+    if (customFlag)
+      customInput = dialog->getFormulaInput(tr("Input"));
+    else
+      input = (BarData::InputType) dialog->getComboIndex(tr("Input"));
     rc = TRUE;
   }
   else
@@ -167,6 +184,42 @@ void MAOSC::saveIndicatorSettings (QString file)
   dict.replace("plugin", new QString(pluginName));
 
   saveFile(file, dict);
+}
+
+PlotLine * MAOSC::calculateCustom (QDict<PlotLine> *d)
+{
+  customLines = d;
+  clearOutput();
+  calculate();
+  return output.at(0);
+}
+
+QString MAOSC::getCustomSettings ()
+{
+  QString s("MAOSC");
+  s.append("," + customInput);
+  s.append("," + QString::number(fastMaType));
+  s.append("," + QString::number(slowMaType));
+  s.append("," + QString::number(fastPeriod));
+  s.append("," + QString::number(slowPeriod));
+  s.append("," + color.name());
+  s.append("," + QString::number(lineType));
+  s.append("," + label);
+  return s;
+}
+
+void MAOSC::setCustomSettings (QString d)
+{
+  customFlag = TRUE;
+  QStringList l = QStringList::split(",", d, FALSE);
+  customInput = l[1];
+  fastMaType = (IndicatorPlugin::MAType) l[2].toInt();
+  slowMaType = (IndicatorPlugin::MAType) l[3].toInt();
+  fastPeriod = l[4].toInt();
+  slowPeriod = l[5].toInt();
+  color.setNamedColor(l[6]);
+  lineType = (PlotLine::LineType) l[7].toInt();
+  label = l[8];
 }
 
 Plugin * create ()

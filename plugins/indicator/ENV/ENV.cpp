@@ -250,7 +250,7 @@ PlotLine * ENV::calculateCustom (QDict<PlotLine> *d)
 QString ENV::getCustomSettings ()
 {
   QString s("ENV");
-  s.append("," + maType);
+  s.append("," + QString::number(maType));
   s.append("," + QString::number(period));
   s.append("," + QString::number(input));
   
