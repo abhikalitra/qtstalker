@@ -296,7 +296,6 @@ void Yahoo::parse ()
     r->set("Low", low, Setting::Float);
     r->set("Close", close, Setting::Float);
     r->set("Volume", volume, Setting::Float);
-    r->set("Open Interest", "0", Setting::Float);
     db->setRecord(r);
     delete r;
   }
