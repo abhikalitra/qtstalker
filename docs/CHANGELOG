@@ -79,7 +79,10 @@
 20050110: Added a timeout parm to the yahoo plugin. This sets how many seconds are allowed
           to elapse during each symbol being downloaded. If a symbol takes more than the set
 	  time to complete, the download will abort and move on to the next symbol.
-	  	  	  
+	  
+20050112: Fixed bug in crosshair draws that didn't draw on the left edge of plot.
+
+
 
 	  	  	  	  
 0.28

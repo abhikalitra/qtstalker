@@ -224,8 +224,6 @@ void Plot::setInfoFlag (bool d)
 
 void Plot::draw ()
 {
-//  crossHairFlag = FALSE;
-
   buffer->fill(backgroundColor);
 
   if (data)
@@ -1278,8 +1276,7 @@ void Plot::drawCrossHair ()
   painter.begin(buffer);
   painter.setPen(QPen(borderColor, 1, QPen::DotLine));
   painter.drawLine (0, y, buffer->width() - SCALE_WIDTH, y);
-  if (x >= startIndex)
-    painter.drawLine (x, 0, x, buffer->height());
+  painter.drawLine (x, 0, x, buffer->height());
   painter.end();
 }
 
