@@ -33,6 +33,19 @@
 class IndicatorPlugin
 {
   public:
+  
+    enum Operator
+    {
+      NoOp,
+      Equal,
+      LessThan,
+      LessThanEqual,
+      GreaterThan,
+      GreaterThanEqual,
+      And,
+      Or
+    };
+  
     IndicatorPlugin();
     virtual ~IndicatorPlugin();
     void setIndicatorInput (BarData *);
@@ -45,6 +58,7 @@ class IndicatorPlugin
     void setPlotType (int);
     QString getPluginName ();
     QString getHelpFile ();
+    IndicatorPlugin::Operator getOperator (QString);
 
     virtual void calculate ();
     virtual int indicatorPrefDialog (QWidget *);
@@ -63,6 +77,7 @@ class IndicatorPlugin
     Indicator *output;
     QStringList lineTypes;
     QStringList inputTypeList;
+    QStringList opList;
     bool saveFlag;
     bool customFlag;
     QDict<PlotLine> *customLines;

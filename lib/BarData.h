@@ -49,7 +49,11 @@ class BarData
       Low,
       Close,
       Volume,
-      OpenInterest
+      OpenInterest,
+      Day,
+      Week,
+      Month,
+      DayOfWeek
     };
 
     enum BarCompression

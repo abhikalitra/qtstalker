@@ -36,6 +36,7 @@ MATH::MATH ()
   methodList.append("SUB");
   methodList.append("MIN");
   methodList.append("MAX");
+  methodList.append("ACCUM");
 
   helpFile = "math.html";
     
@@ -64,7 +65,12 @@ void MATH::calculate ()
   if (! method.compare("MIN") || ! method.compare("MAX"))
     calculateMinMax();
   else
-    calculateOper();
+  {
+    if (! method.compare("ACCUM"))
+      calculateAccum();
+    else
+      calculateOper();
+  }
 }
 
 void MATH::calculateMinMax ()
@@ -102,6 +108,31 @@ void MATH::calculateMinMax ()
       line->append(l);
     else
       line->append(h);
+  }
+  
+  output->addLine(line);
+}
+
+void MATH::calculateAccum ()
+{
+  PlotLine *input = customLines->find(data1);
+  if (! input)
+  {
+    qDebug("MATH::calculateAccum: no data1 input %s", data1.latin1());
+    return;
+  }
+    
+  PlotLine *line = new PlotLine;
+  line->setColor(color);
+  line->setType(lineType);
+  line->setLabel(label);
+  
+  int loop;
+  double accum = 0;
+  for (loop = 0; loop < (int) input->getSize(); loop++)
+  {
+    accum = accum + input->getData(loop);
+    line->append(accum);
   }
   
   output->addLine(line);
@@ -437,10 +468,12 @@ int MATH::indicatorPrefDialog (QWidget *w)
   dialog->addComboItem(ml, pl, l, method);
   
   dialog->addFormulaInputItem(d1l, pl, FALSE, data1);
-  
+
   if (! method.compare("MIN") || ! method.compare("MAX"))
     dialog->addIntItem(perl, pl, period, 1, 99999999);
-  else
+    
+  if (! method.compare("ADD") || ! method.compare("DIV") ||
+      ! method.compare("MUL") || ! method.compare("SUB"))
   {
     dialog->addFormulaInputItem(d2l, pl, TRUE, data2);
     dialog->addFormulaInputItem(d3l, pl, TRUE, data3);
@@ -459,7 +492,9 @@ int MATH::indicatorPrefDialog (QWidget *w)
     
     if (! method.compare("MIN") || ! method.compare("MAX"))
       period = dialog->getInt(perl);
-    else
+      
+    if (! method.compare("ADD") || ! method.compare("DIV") ||
+        ! method.compare("MUL") || ! method.compare("SUB"))
     {
       data2 = dialog->getFormulaInput(d2l);
       data3 = dialog->getFormulaInput(d3l);

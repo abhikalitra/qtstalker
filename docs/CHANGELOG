@@ -296,6 +296,26 @@
           to drag the cycle across the chart. Selecting any other grab box will allow user to
 	  change the cycle interval.
 	  
+20050330: Added ACCUM function to the MATH plugin. This performs an accumulation total of the input
+          data.
+	  
+20050330: Added new input values to the BarData class. In addition to open, high, low close etc.
+          we can now use date and time values as input. Day the day number of the month. Week is
+	  the week number of the year. Month is the month number. DayOfWeek is the day of the week
+	  number 1 = Monday, 7 = Sunday.
+	  
+20050330: Expanded the functionality of the COMP plugin to a full if/then/else type logic behaviour.
+          Users are now able to compare 2 sets of data arrays with AND and OR options as well.
+	  THEN and ELSE will allow you to use the values of other steps and constants if desired.
+	  You will now be able to do something like this: 
+	  
+          if (step1 > 0 && step2 < 100) 
+            step3 
+          else 
+            0 
+	    
+	    
+	  
 	  	  
 0.29
 ====

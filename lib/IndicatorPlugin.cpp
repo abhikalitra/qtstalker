@@ -41,6 +41,14 @@ IndicatorPlugin::IndicatorPlugin()
   BarData *it = new BarData;
   it->getInputFields(inputTypeList);
   delete it;
+  
+  opList.append("EQ");
+  opList.append("LT");
+  opList.append("LTEQ");
+  opList.append("GT");
+  opList.append("GTEQ");
+  opList.append("AND");
+  opList.append("OR");
 }
 
 IndicatorPlugin::~IndicatorPlugin()
@@ -202,6 +210,57 @@ QString IndicatorPlugin::getPluginName ()
 QString IndicatorPlugin::getHelpFile ()
 {
   return helpFile;
+}
+
+IndicatorPlugin::Operator IndicatorPlugin::getOperator (QString d)
+{
+  Operator op = NoOp;
+  
+  while (1)
+  {
+    if (! d.compare("EQ"))
+    {
+      op = Equal;
+      break;
+    }
+    
+    if (! d.compare("LT"))
+    {
+      op = LessThan;
+      break;
+    }
+  
+    if (! d.compare("LTEQ"))
+    {
+      op = LessThanEqual;
+      break;
+    }
+      
+    if (! d.compare("GT"))
+    {
+      op = GreaterThan;
+      break;
+    }
+    
+    if (! d.compare("AND"))
+    {
+      op = And;
+      break;
+    }
+    
+    if (! d.compare("OR"))
+    {
+      op = Or;
+      break;
+    }
+    
+    if (! d.compare("GTEQ"))
+      op = GreaterThanEqual;
+    
+    break;
+  }
+  
+  return op;
 }
 
 //***************************************************************

@@ -24,19 +24,6 @@
 class COMP : public IndicatorPlugin
 {
   public:
-  
-    enum Operator
-    {
-      NoOp,
-      Equal,
-      LessThan,
-      LessThanEqual,
-      GreaterThan,
-      GreaterThanEqual,
-      And,
-      Or
-    };
-  
     COMP ();
     virtual ~COMP ();
     void calculate ();
@@ -45,8 +32,10 @@ class COMP : public IndicatorPlugin
     PlotLine * calculateCustom (QDict<PlotLine> *);
     void getIndicatorSettings (Setting &);
     void setIndicatorSettings (Setting &);
-    COMP::Operator getOperator (QString);
     int getMinBars ();
+    void calculateIf ();
+    void calculateAndOr ();
+    void calculateThen ();
   
   private:
     QColor color;
@@ -54,10 +43,17 @@ class COMP : public IndicatorPlugin
     QString label;
     QString data1;
     QString data2;
+    QString data3;
+    QString data4;
+    QString data5;
+    QString data6;
     QString method;
-    QStringList opList;
+    QString method2;
     QString delay1;
     QString delay2;
+    QString delay3;
+    QString delay4;
+    QString andor;
 };
 
 extern "C"

@@ -44,12 +44,17 @@ void BarData::getInputFields (QStringList &l)
   l.append(QObject::tr("Close"));
   l.append(QObject::tr("Volume"));
   l.append(QObject::tr("Open Interest"));
+  l.append(QObject::tr("Day"));
+  l.append(QObject::tr("Week"));
+  l.append(QObject::tr("Month"));
+  l.append(QObject::tr("DayOfWeek"));
 }
 
 PlotLine * BarData::getInput (BarData::InputType field)
 {
   PlotLine *in = new PlotLine();
   int loop;
+  BarDate dt;
   for (loop = 0; loop < (int) barList.count(); loop++)
   {
     switch(field)
@@ -68,6 +73,18 @@ PlotLine * BarData::getInput (BarData::InputType field)
 	break;
       case OpenInterest:
         in->append(getOI(loop));
+	break;
+      case Day:
+        in->append(getDate(loop).getDate().day());
+	break;
+      case Week:
+        in->append(getDate(loop).getDate().weekNumber());
+	break;
+      case Month:
+        in->append(getDate(loop).getDate().month());
+	break;
+      case DayOfWeek:
+        in->append(getDate(loop).getDate().dayOfWeek());
 	break;
       default:
         in->append(getClose(loop));
@@ -305,7 +322,34 @@ BarData::InputType BarData::getInputType (QString &d)
     }
 
     if (! d.compare(QObject::tr("Open Interest")))
+    {
       t = OpenInterest;
+      break;
+    }
+    
+    if (! d.compare(QObject::tr("Day")))
+    {
+      t = Day;
+      break;
+    }
+    
+    if (! d.compare(QObject::tr("Week")))
+    {
+      t = Week;
+      break;
+    }
+    
+    if (! d.compare(QObject::tr("Month")))
+    {
+      t = Month;
+      break;
+    }
+    
+    if (! d.compare(QObject::tr("DayofWeek")))
+    {
+      t = DayOfWeek;
+      break;
+    }
     
     break;
   }

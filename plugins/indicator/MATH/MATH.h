@@ -35,6 +35,7 @@ class MATH : public IndicatorPlugin
     void getIndicatorSettings (Setting &);
     void setIndicatorSettings (Setting &);
     int getMinBars ();
+    void calculateAccum ();
   
   private:
     QColor color;
