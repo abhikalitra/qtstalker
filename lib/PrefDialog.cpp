@@ -208,7 +208,7 @@ bool PrefDialog::getCheck (QString name)
 
 QString PrefDialog::getCheckString (QString name)
 {
-  QString flag = FALSE;
+  QString flag;
   
   QCheckBox *check = checkList[name];
   if (check)

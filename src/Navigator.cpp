@@ -81,8 +81,11 @@ void Navigator::updateList ()
 
 void Navigator::upDirectory ()
 {
+  QString s = currentDir.dirName();
   currentDir.cdUp();
   updateList();
+  setCurrentItem(findItem(s, Qt::ExactMatch));
+  ensureCurrentVisible();
   emit noSelection();
 }
 
