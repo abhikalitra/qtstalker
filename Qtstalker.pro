@@ -59,8 +59,12 @@ INCLUDEPATH += db-2.7.7/build_unix
 
 LIBS += -Ldb-2.7.7/build_unix -ldb
 LIBS += -L/usr/lib
+
+# linux options
 unix:linux-g++:LIBS += -ldl
 
+# mac os x options
+macx:QMAKE_CXXFLAGS += -bundle
 
 
 

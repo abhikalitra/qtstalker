@@ -1,6 +1,6 @@
 TEMPLATE = lib
 
-CONFIG += thread warn_on debug dll
+CONFIG += thread warn_on debug plugin
 QMAKE_CXXFLAGS += -Os
 
 VERSION = 0.2
@@ -21,5 +21,8 @@ TARGET = AD
 
 LIBS += -L/usr/lib
 unix:linux-g++:LIBS += -ldl
+
+# mac os x options
+macx:QMAKE_CXXFLAGS += -bundle
 
 

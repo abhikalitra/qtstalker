@@ -1,54 +1,54 @@
 qmake -o Makefile Yahoo.pro
 make
-cp libYahoo.so.0.2.0 Yahoo.so
+cp libYahoo.so Yahoo.so
 
 qmake -o Makefile YahooQuote.pro
 make
-cp libYahooQuote.so.0.2.0 YahooQuote.so
+cp libYahooQuote.so YahooQuote.so
 
 qmake -o Makefile CBOT.pro
 make
-cp libCBOT.so.0.2.0 CBOT.so
+cp libCBOT.so CBOT.so
 
 qmake -o Makefile CME.pro
 make
-cp libCME.so.0.2.0 CME.so
+cp libCME.so CME.so
 
 qmake -o Makefile CMEHistory.pro
 make
-cp libCMEHistory.so.0.2.0 CMEHistory.so
+cp libCMEHistory.so CMEHistory.so
 
 qmake -o Makefile NYBOT.pro
 make
-cp libNYBOT.so.0.2.0 NYBOT.so
+cp libNYBOT.so NYBOT.so
 
 qmake -o Makefile Qtstalker.pro
 make
-cp libQtstalker.so.0.2.0 Qtstalker.so
+cp libQtstalker.so Qtstalker.so
 
 qmake -o Makefile Spread.pro
 make
-cp libSpread.so.0.2.0 Spread.so
+cp libSpread.so Spread.so
 
 qmake -o Makefile Index.pro
 make
-cp libIndex.so.0.2.0 Index.so
+cp libIndex.so Index.so
 
 qmake -o Makefile COT.pro
 make
-cp libCOT.so.0.2.0 COT.so
+cp libCOT.so COT.so
 
 qmake -o Makefile CSV.pro
 make
-cp libCSV.so.0.2.0 CSV.so
+cp libCSV.so CSV.so
 
 qmake -o Makefile Ratio.pro
 make
-cp libRatio.so.0.2.0 Ratio.so
+cp libRatio.so Ratio.so
 
 qmake -o Makefile CC.pro
 make
-cp libCC.so.0.2.0 CC.so
+cp libCC.so CC.so
 
 rm -f lib*
 

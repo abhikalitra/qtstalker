@@ -1,142 +1,142 @@
 qmake -o Makefile AD.pro
 make
-cp libAD.so.0.2.0 AD.so
+cp libAD.so AD.so
 
 qmake -o Makefile ATR.pro
 make
-cp libATR.so.0.2.0 ATR.so
+cp libATR.so ATR.so
 
 qmake -o Makefile BB.pro
 make
-cp libBB.so.0.2.0 BB.so
+cp libBB.so BB.so
 
 qmake -o Makefile CCI.pro
 make
-cp libCCI.so.0.2.0 CCI.so
+cp libCCI.so CCI.so
 
 qmake -o Makefile DMI.pro
 make
-cp libDMI.so.0.2.0 DMI.so
+cp libDMI.so DMI.so
 
 qmake -o Makefile DPO.pro
 make
-cp libDPO.so.0.2.0 DPO.so
+cp libDPO.so DPO.so
 
 qmake -o Makefile ENV.pro
 make
-cp libENV.so.0.2.0 ENV.so
+cp libENV.so ENV.so
 
 qmake -o Makefile HLC.pro
 make
-cp libHLC.so.0.2.0 HLC.so
+cp libHLC.so HLC.so
 
 qmake -o Makefile MA.pro
 make
-cp libMA.so.0.2.0 MA.so
+cp libMA.so MA.so
 
 qmake -o Makefile MA2.pro
 make
-cp libMA2.so.0.2.0 MA2.so
+cp libMA2.so MA2.so
 
 qmake -o Makefile MA3.pro
 make
-cp libMA3.so.0.2.0 MA3.so
+cp libMA3.so MA3.so
 
 qmake -o Makefile MACD.pro
 make
-cp libMACD.so.0.2.0 MACD.so
+cp libMACD.so MACD.so
 
 qmake -o Makefile MAOSC.pro
 make
-cp libMAOSC.so.0.2.0 MAOSC.so
+cp libMAOSC.so MAOSC.so
 
 qmake -o Makefile MF.pro
 make
-cp libMF.so.0.2.0 MF.so
+cp libMF.so MF.so
 
 qmake -o Makefile MOM.pro
 make
-cp libMOM.so.0.2.0 MOM.so
+cp libMOM.so MOM.so
 
 qmake -o Makefile NVI.pro
 make
-cp libNVI.so.0.2.0 NVI.so
+cp libNVI.so NVI.so
 
 qmake -o Makefile OBV.pro
 make
-cp libOBV.so.0.2.0 OBV.so
+cp libOBV.so OBV.so
 
 qmake -o Makefile OI.pro
 make
-cp libOI.so.0.2.0 OI.so
+cp libOI.so OI.so
 
 qmake -o Makefile PC.pro
 make
-cp libPC.so.0.2.0 PC.so
+cp libPC.so PC.so
 
 qmake -o Makefile PER.pro
 make
-cp libPER.so.0.2.0 PER.so
+cp libPER.so PER.so
 
 qmake -o Makefile PP.pro
 make
-cp libPP.so.0.2.0 PP.so
+cp libPP.so PP.so
 
 qmake -o Makefile PVI.pro
 make
-cp libPVI.so.0.2.0 PVI.so
+cp libPVI.so PVI.so
 
 qmake -o Makefile PVT.pro
 make
-cp libPVT.so.0.2.0 PVT.so
+cp libPVT.so PVT.so
 
 qmake -o Makefile ROC.pro
 make
-cp libROC.so.0.2.0 ROC.so
+cp libROC.so ROC.so
 
 qmake -o Makefile RSI.pro
 make
-cp libRSI.so.0.2.0 RSI.so
+cp libRSI.so RSI.so
 
 qmake -o Makefile SAR.pro
 make
-cp libSAR.so.0.2.0 SAR.so
+cp libSAR.so SAR.so
 
 qmake -o Makefile SD.pro
 make
-cp libSD.so.0.2.0 SD.so
+cp libSD.so SD.so
 
 qmake -o Makefile STOCH.pro
 make
-cp libSTOCH.so.0.2.0 STOCH.so
+cp libSTOCH.so STOCH.so
 
 qmake -o Makefile STOCHRSI.pro
 make
-cp libSTOCHRSI.so.0.2.0 STOCHRSI.so
+cp libSTOCHRSI.so STOCHRSI.so
 
 qmake -o Makefile TRIX.pro
 make
-cp libTRIX.so.0.2.0 TRIX.so
+cp libTRIX.so TRIX.so
 
 qmake -o Makefile UO.pro
 make
-cp libUO.so.0.2.0 UO.so
+cp libUO.so UO.so
 
 qmake -o Makefile VOL.pro
 make
-cp libVOL.so.0.2.0 VOL.so
+cp libVOL.so VOL.so
 
 qmake -o Makefile VOLR.pro
 make
-cp libVOLR.so.0.2.0 VOLR.so
+cp libVOLR.so VOLR.so
 
 qmake -o Makefile WAD.pro
 make
-cp libWAD.so.0.2.0 WAD.so
+cp libWAD.so WAD.so
 
 qmake -o Makefile WILLR.pro
 make
-cp libWILLR.so.0.2.0 WILLR.so
+cp libWILLR.so WILLR.so
 
 rm -f lib*
 

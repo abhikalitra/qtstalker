@@ -1,6 +1,6 @@
 TEMPLATE = lib
 
-CONFIG += thread warn_on debug dll
+CONFIG += thread warn_on debug plugin
 QMAKE_CXXFLAGS += -Os
 
 HEADERS += Plugin.h
@@ -27,3 +27,5 @@ LIBS += -L../../db-2.7.7/build_unix -ldb
 LIBS += -L/usr/lib
 unix:linux-g++:LIBS += -ldl
 
+# mac os x options
+macx:QMAKE_CXXFLAGS += -bundle
