@@ -43,6 +43,7 @@
 #include "Indicator.h"
 #include "Setting.h"
 #include "ChartDb.h"
+#include "BarData.h"
 
 class Tester : public QDialog
 {
@@ -135,9 +136,9 @@ class Tester : public QDialog
     int status;
     int testLoop;
     ChartDb *db;
-    QList<Setting> *recordList;
-    Setting *currentRecord;
-    Setting *buyRecord;
+    BarData *recordList;
+    int currentRecord;
+    int buyRecord;
     double trailingHigh;
     double trailingLow;
     double equity;

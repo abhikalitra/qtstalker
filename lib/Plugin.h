@@ -24,12 +24,12 @@
 
 #include <stdlib.h>
 #include <qstring.h>
-#include <qlist.h>
 #include <qmemarray.h>
 #include <qobject.h>
 #include <qcolor.h>
 #include "Setting.h"
 #include "PlotLine.h"
+#include "BarData.h"
 
 #define COPYRIGHT "(C) 2001-2003 Stefan Stratigakos"
 
@@ -40,7 +40,7 @@ class Plugin : public Setting, public QObject
     virtual ~Plugin ();
 
     // indicator plugin interface
-    virtual void setIndicatorInput (QList<Setting> *);
+    virtual void setIndicatorInput (BarData *);
     virtual int getIndicatorLines ();
     virtual PlotLine * getIndicatorLine (int);
     virtual QMemArray<int> getAlerts ();

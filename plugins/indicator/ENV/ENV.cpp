@@ -102,8 +102,7 @@ QMemArray<int> ENV::getAlerts ()
   int status = 0;
   for (maLoop = 0; maLoop < (int) uma->getSize(); maLoop++, listLoop++)
   {
-    Setting *set = data->at(listLoop);
-    double close = set->getFloat("Close");
+    double close = data->getClose(listLoop);
 
     double t = (close - lma->getData(maLoop)) / (uma->getData(maLoop) - lma->getData(maLoop));
 

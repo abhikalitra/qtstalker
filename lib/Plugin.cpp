@@ -87,7 +87,7 @@ void Plugin::calculate ()
 {
 }
 
-void Plugin::setIndicatorInput (QList<Setting> *)
+void Plugin::setIndicatorInput (BarData *)
 {
 }
 

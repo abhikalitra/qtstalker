@@ -58,9 +58,8 @@ void HLC::calculate ()
     double l = 99999999;
     for (loop2 = 1; loop2 <= period; loop2++)
     {
-      Setting *set = data->at(loop - loop2);
-      double high = set->getFloat("High");
-      double low = set->getFloat("Low");
+      double high = data->getHigh(loop - loop2);
+      double low = data->getLow(loop - loop2);
 
       if (high > h)
         h = high;
@@ -100,8 +99,7 @@ QMemArray<int> HLC::getAlerts ()
   int status = 0;
   for (loop = 0; loop < (int) u->getSize(); loop++, listLoop++)
   {
-    Setting *set = data->at(listLoop);
-    double close = set->getFloat("Close");
+    double close = data->getClose(listLoop);
 
     switch (status)
     {

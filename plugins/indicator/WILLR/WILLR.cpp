@@ -54,9 +54,8 @@ void WILLR::calculate ()
     double hg;
     for (loop2 = 0, lw = 9999999, hg = 0; loop2 < period; loop2++)
     {
-      Setting *set = data->at(loop - loop2);
-      double high = set->getFloat("High");
-      double low = set->getFloat("Low");
+      double high = data->getHigh(loop - loop2);
+      double low = data->getLow(loop - loop2);
 
       if (high > hg)
         hg = high;
@@ -65,8 +64,7 @@ void WILLR::calculate ()
         lw = low;
     }
 
-    Setting *set = data->at(loop);
-    double t = ((hg - set->getFloat("Close")) / (hg - lw)) * 100;
+    double t = ((hg - data->getClose(loop)) / (hg - lw)) * 100;
     if (t > 100)
       t = 100;
     if (t < 0)

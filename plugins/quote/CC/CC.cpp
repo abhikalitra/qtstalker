@@ -138,7 +138,7 @@ void CC::newChart (ChartDb *db, QString symbol, FuturesData *fd, QDir dir)
     if (! startDate.isValid())
       startDate = QDateTime::fromString(tdetails->getDateTime("First Date"), Qt::ISODate);
 
-    QList<Setting> *recordList = tdb->getHistory(ChartDb::Daily, startDate);
+    BarData *recordList = tdb->getHistory(ChartDb::Daily, startDate, BarData::Bars);
 
     int loop2;
     int count = recordList->count() - rollover;
@@ -153,30 +153,27 @@ void CC::newChart (ChartDb *db, QString symbol, FuturesData *fd, QDir dir)
 
     for (loop2 = 1; loop2 < count; loop2++)
     {
-      Setting *r = recordList->at(loop2);
-      Setting *r2 = recordList->at(loop2 - 1);
-
       if (! pr->count())
-        pr->set("Close", r2->getData("Close"), Setting::Float);
+        pr->set("Close", QString::number(recordList->getClose(loop2 - 1)), Setting::Float);
 
-      double c = pr->getFloat("Close") + (r->getFloat("Close") - r2->getFloat("Close"));
-      double h = c + (r->getFloat("High") - r->getFloat("Close"));
-      double l = c - (r->getFloat("Close") - r->getFloat("Low"));
-      double o = h - (r->getFloat("High") - r->getFloat("Open"));
+      double c = pr->getFloat("Close") + (recordList->getClose(loop2) - recordList->getClose(loop2 - 1));
+      double h = c + (recordList->getHigh(loop2) - recordList->getClose(loop2));
+      double l = c - (recordList->getClose(loop2) - recordList->getLow(loop2));
+      double o = h - (recordList->getHigh(loop2) - recordList->getOpen(loop2));
 
       delete pr;
 
       pr = new Setting;
-      pr->set("Date", r->getData("Date"), Setting::Date);
+      pr->set("Date", recordList->getDate(loop2).toString("yyyyMMdd000000"), Setting::Date);
       pr->set("Open", QString::number(o), Setting::Float);
       pr->set("High", QString::number(h), Setting::Float);
       pr->set("Low", QString::number(l), Setting::Float);
       pr->set("Close", QString::number(c), Setting::Float);
-      pr->set("Volume", r->getData("Volume"), Setting::Float);
-      pr->set("Open Interest", r->getData("Open Interest"), Setting::Float);
+      pr->set("Volume", QString::number(recordList->getVolume(loop2)), Setting::Float);
+      pr->set("Open Interest", QString::number(recordList->getOI(loop2)), Setting::Float);
       db->setRecord(pr);
 
-      startDate = QDateTime::fromString(r->getDateTime("Date"), Qt::ISODate);
+      startDate = recordList->getDate(loop2);
     }
 
     details->set("Last Contract", dir[loop], Setting::None);

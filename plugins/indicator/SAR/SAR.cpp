@@ -52,12 +52,10 @@ void SAR::calculate ()
 
   PlotLine *d = new PlotLine();
 
-  Setting *set = data->at(1);
-  double high = set->getFloat("High");
-  double low = set->getFloat("Low");
-  set = data->at(0);
-  double yhigh = set->getFloat("High");
-  double ylow = set->getFloat("Low");
+  double high = data->getHigh(1);
+  double low = data->getLow(1);
+  double yhigh = data->getHigh(0);
+  double ylow = data->getLow(0);
 
   int flag = 0;
   double ep = 0;
@@ -100,12 +98,10 @@ void SAR::calculate ()
   int loop;
   for (loop = 2; loop < (int) data->count(); loop++)
   {
-    set = data->at(loop);
-    high = set->getFloat("High");
-    low = set->getFloat("Low");
-    set = data->at(loop - 1);
-    yhigh = set->getFloat("High");
-    ylow = set->getFloat("Low");
+    high = data->getHigh(loop);
+    low = data->getLow(loop);
+    yhigh = data->getHigh(loop - 1);
+    ylow = data->getLow(loop - 1);
 
     // are we short?
     if (flag)
@@ -207,9 +203,8 @@ QMemArray<int> SAR::getAlerts ()
   int status = 0;
   for (lineLoop = 0; lineLoop < (int) line->getSize(); lineLoop++, listLoop++)
   {
-    Setting *set = data->at(listLoop);
-    double high = set->getFloat("High");
-    double low = set->getFloat("Low");
+    double high = data->getHigh(listLoop);
+    double low = data->getLow(listLoop);
 
     switch (status)
     {

@@ -108,12 +108,10 @@ void SZ::calculate ()
     double dntrend_noise_cnt = 0;
     for (lbloop = lbstart; lbloop < loop; lbloop++)
     {
-      Setting *r = data->at(lbloop);
-      Setting *pr = data->at(lbloop - 1);
-      double lo_curr = r->getFloat("Low");
-      double lo_last = pr->getFloat("Low");
-      double hi_curr = r->getFloat("High");
-      double hi_last = pr->getFloat("High");
+      double lo_curr = data->getLow(lbloop);
+      double lo_last = data->getLow(lbloop - 1);
+      double hi_curr = data->getHigh(lbloop);
+      double hi_last = data->getHigh(lbloop - 1);
       if (lo_last > lo_curr)
       {
 	uptrend_noise_avg += lo_last - lo_curr;
@@ -131,9 +129,8 @@ void SZ::calculate ()
     if (dntrend_noise_cnt > 0)
       dntrend_noise_avg /= dntrend_noise_cnt;
 
-    Setting *pr = data->at(loop - 1);
-    double lo_last = pr->getFloat("Low");
-    double hi_last = pr->getFloat("High");
+    double lo_last = data->getLow(loop - 1);
+    double hi_last = data->getHigh(loop - 1);
     uptrend_stop = lo_last - coefficient * uptrend_noise_avg;
     dntrend_stop = hi_last + coefficient * dntrend_noise_avg;
 

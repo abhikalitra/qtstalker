@@ -36,7 +36,7 @@ class IndicatorPlugin : public Plugin
     virtual ~IndicatorPlugin();
     QMemArray<int> getAlerts ();
     QList<QColor> getColorBars (QString, QString, QString);
-    void setIndicatorInput (QList<Setting> *);
+    void setIndicatorInput (BarData *);
     int getIndicatorLines ();
     void clearOutput ();
     PlotLine * getIndicatorLine (int);
@@ -55,7 +55,7 @@ class IndicatorPlugin : public Plugin
     PlotLine * getOC (); // weighted price O+C/2
 
   protected:
-    QList<Setting> *data;
+    BarData *data;
     QList<PlotLine> output;
     QMemArray<int> alerts;
     QList<QColor> paintBars;

@@ -98,10 +98,11 @@ void ChartDb::deleteData (QString k)
   db->del(db, NULL, &key, 0);
 }
 
-QList<Setting> * ChartDb::getHistory (Compression c, QDateTime sd)
+BarData * ChartDb::getHistory (Compression c, QDateTime sd, BarData::BarType bt)
 {
   compression = c;
   startDate = sd;
+  barType = bt;
 
   switch (compression)
   {
@@ -117,7 +118,7 @@ QList<Setting> * ChartDb::getHistory (Compression c, QDateTime sd)
   }
 }
 
-QList<Setting> * ChartDb::getDailyHistory ()
+BarData * ChartDb::getDailyHistory ()
 {
   DBT key;
   DBT data;
@@ -127,8 +128,11 @@ QList<Setting> * ChartDb::getDailyHistory ()
 
   db->cursor(db, NULL, &cursor, 0);
   
-  QList<Setting> *recordList = new QList<Setting>;
-  recordList->setAutoDelete(TRUE);
+  BarData *recordList;
+  if (barType == BarData::Other)
+    recordList = new BarData(format);
+  else
+    recordList = new BarData;
 
   while (! cursor->c_get(cursor, &key, &data, DB_PREV))
   {
@@ -144,10 +148,12 @@ QList<Setting> * ChartDb::getDailyHistory ()
 
   cursor->c_close(cursor);
   
+  recordList->createDateList();
+  
   return recordList;
 }
 
-QList<Setting> * ChartDb::getWeeklyHistory ()
+BarData * ChartDb::getWeeklyHistory ()
 {
   DBT key;
   DBT data;
@@ -160,8 +166,11 @@ QList<Setting> * ChartDb::getWeeklyHistory ()
   Setting *tr = 0;
   QDateTime tdate = QDateTime::currentDateTime();
   
-  QList<Setting> *recordList = new QList<Setting>;
-  recordList->setAutoDelete(TRUE);
+  BarData *recordList;
+  if (barType == BarData::Other)
+    recordList = new BarData(format);
+  else
+    recordList = new BarData;
 
   while (! cursor->c_get(cursor, &key, &data, DB_PREV))
   {
@@ -223,10 +232,12 @@ QList<Setting> * ChartDb::getWeeklyHistory ()
 
   cursor->c_close(cursor);
 
+  recordList->createDateList();
+  
   return recordList;
 }
 
-QList<Setting> * ChartDb::getMonthlyHistory ()
+BarData * ChartDb::getMonthlyHistory ()
 {
   DBT key;
   DBT data;
@@ -239,8 +250,11 @@ QList<Setting> * ChartDb::getMonthlyHistory ()
   int month = -1;
   Setting *tr = 0;
 
-  QList<Setting> *recordList = new QList<Setting>;
-  recordList->setAutoDelete(TRUE);
+  BarData *recordList;
+  if (barType == BarData::Other)
+    recordList = new BarData(format);
+  else
+    recordList = new BarData;
 
   while (! cursor->c_get(cursor, &key, &data, DB_PREV))
   {
@@ -302,6 +316,8 @@ QList<Setting> * ChartDb::getMonthlyHistory ()
 
   cursor->c_close(cursor);
 
+  recordList->createDateList();
+  
   return recordList;
 }
 

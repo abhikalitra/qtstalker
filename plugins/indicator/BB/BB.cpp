@@ -114,8 +114,7 @@ QMemArray<int> BB::getAlerts ()
 
   for (; listLoop < (int) data->count(); listLoop++, bbLoop++)
   {
-    Setting *set = data->at(listLoop);
-    double close = set->getFloat("Close");
+    double close = data->getClose(listLoop);
     double t = close - bbl->getData(bbLoop);
     double t2 = bbu->getData(bbLoop) - bbl->getData(bbLoop);
     double t3 = t / t2;
@@ -125,9 +124,8 @@ QMemArray<int> BB::getAlerts ()
     double l = 99999999;
     for (loop = 1; loop <= 9; loop++)
     {
-      set = data->at(listLoop - loop);
-      double high = set->getFloat("High");
-      double low = set->getFloat("Low");
+      double high = data->getHigh(listLoop - loop);
+      double low = data->getLow(listLoop - loop);
 
       if (high > h)
 	h = high;
@@ -136,11 +134,9 @@ QMemArray<int> BB::getAlerts ()
 	l = low;
     }
 
-    set = data->at(listLoop);
-    double high = set->getFloat("High");
-    double low = set->getFloat("Low");
-    set = data->at(listLoop - 1);
-    double yclose = set->getFloat("Close");
+    double high = data->getHigh(listLoop);
+    double low = data->getLow(listLoop);
+    double yclose = data->getClose(listLoop - 1);
 
     switch (status)
     {

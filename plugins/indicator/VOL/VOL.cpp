@@ -63,10 +63,7 @@ void VOL::calculate ()
   int loop;
   for (loop = 1; loop < (int) data->count(); loop++)
   {
-    Setting *r = data->at(loop);
-    Setting *pr = data->at(loop - 1);;
-
-    if (r->getFloat("Close") > pr->getFloat("Close"))
+    if (data->getClose(loop) > data->getClose(loop - 1))
       pl->appendColorBar(upColor);
     else
       pl->appendColorBar(downColor);

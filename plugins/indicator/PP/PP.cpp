@@ -48,10 +48,9 @@ PP::~PP ()
 
 void PP::calculate ()
 {
-  Setting *set = data->at(data->count() - 1);
-  double high = set->getFloat("High");
-  double low = set->getFloat("Low");
-  double close = set->getFloat("Close");
+  double high = data->getHigh(data->count() - 1);
+  double low = data->getLow(data->count() - 1);
+  double close = data->getClose(data->count() - 1);
   double pp = (high + low + close) / 3;
 
   PlotLine *fr = new PlotLine();

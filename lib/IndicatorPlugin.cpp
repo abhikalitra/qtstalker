@@ -33,7 +33,7 @@ IndicatorPlugin::~IndicatorPlugin()
 {
 }
 
-void IndicatorPlugin::setIndicatorInput (QList<Setting> *d)
+void IndicatorPlugin::setIndicatorInput (BarData *d)
 {
   data = d;
   output.clear();
@@ -142,27 +142,25 @@ PlotLine * IndicatorPlugin::getInput (QString field)
   int loop;
   for (loop = 0; loop < (int) data->count(); loop++)
   {
-    Setting *set = data->at(loop);
-
     switch(f)
     {
       case 0:
-        in->append(set->getFloat("Open"));
+        in->append(data->getOpen(loop));
 	break;
       case 1:
-        in->append(set->getFloat("High"));
+        in->append(data->getHigh(loop));
 	break;
       case 2:
-        in->append(set->getFloat("Low"));
+        in->append(data->getLow(loop));
 	break;
       case 3:
-        in->append(set->getFloat("Volume"));
+        in->append(data->getVolume(loop));
 	break;
       case 4:
-        in->append(set->getFloat("Open Interest"));
+        in->append(data->getOI(loop));
 	break;
       default:
-        in->append(set->getFloat("Close"));
+        in->append(data->getClose(loop));
         break;
     }
   }
@@ -325,15 +323,11 @@ PlotLine * IndicatorPlugin::getTR ()
   int loop;
   for (loop = 0; loop < (int) data->count(); loop++)
   {
-    Setting *set = data->at(loop);
-    double high = set->getFloat("High");
-    double low = set->getFloat("Low");
+    double high = data->getHigh(loop);
+    double low = data->getLow(loop);
     double close;
     if (loop > 0)
-    {
-      set = data->at(loop - 1);
-      close = set->getFloat("Close");
-    }
+      close = data->getClose(loop - 1);
     else
       close = high;
 
@@ -359,10 +353,7 @@ PlotLine * IndicatorPlugin::getTP ()
 
   int loop;
   for (loop = 0; loop < (int) data->count(); loop++)
-  {
-    Setting *set = data->at(loop);
-    tp->append((set->getFloat("High") + set->getFloat("Low") + set->getFloat("Close")) / 3);
-  }
+    tp->append((data->getHigh(loop) + data->getLow(loop) + data->getClose(loop)) / 3);
 
   return tp;
 }
@@ -373,10 +364,7 @@ PlotLine * IndicatorPlugin::getAP ()
 
   int loop;
   for (loop = 0; loop < (int) data->count(); loop++)
-  {
-    Setting *set = data->at(loop);
-    ap->append((set->getFloat("Open") + set->getFloat("High") + set->getFloat("Low") + set->getFloat("Close")) / 4);
-  }
+    ap->append((data->getOpen(loop) + data->getHigh(loop) + data->getLow(loop) + data->getClose(loop)) / 4);
 
   return ap;
 }
@@ -387,10 +375,7 @@ PlotLine * IndicatorPlugin::getWP ()
 
   int loop;
   for (loop = 0; loop < (int) data->count(); loop++)
-  {
-    Setting *set = data->at(loop);
-    wp->append((set->getFloat("High") + set->getFloat("Low") + set->getFloat("Close") + set->getFloat("Close")) / 4);
-  }
+    wp->append((data->getHigh(loop) + data->getLow(loop) + data->getClose(loop) + data->getClose(loop)) / 4);
 
   return wp;
 }
@@ -401,10 +386,7 @@ PlotLine * IndicatorPlugin::getHL ()
 
   int loop;
   for (loop = 0; loop < (int) data->count(); loop++)
-  {
-    Setting *set = data->at(loop);
-    hl->append((set->getFloat("High") + set->getFloat("Low")) / 2);
-  }
+    hl->append((data->getHigh(loop) + data->getLow(loop)) / 2);
 
   return hl;
 }
@@ -415,10 +397,7 @@ PlotLine * IndicatorPlugin::getOC ()
 
   int loop;
   for (loop = 0; loop < (int) data->count(); loop++)
-  {
-    Setting *set = data->at(loop);
-    oc->append((set->getFloat("Open") + set->getFloat("Close")) / 2);
-  }
+    oc->append((data->getOpen(loop) + data->getClose(loop)) / 2);
 
   return oc;
 }

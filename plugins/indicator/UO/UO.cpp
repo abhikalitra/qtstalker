@@ -65,10 +65,7 @@ void UO::calculate ()
 
   int loop;
   for (loop = 0; loop < (int) data->count(); loop++)
-  {
-    Setting *set = data->at(loop);
-    f->append(set->getFloat("Close") - set->getFloat("Low"));
-  }
+    f->append(data->getClose(loop) - data->getLow(loop));
 
   PlotLine *sma = getSMA(f, shortPeriod);
   int smaLoop = sma->getSize() - 1;

@@ -49,10 +49,8 @@ void FI::calculate ()
   double force = 0;
   for (loop = 1; loop < (int) data->count(); loop++)
   {
-    Setting *r = data->at(loop);
-    Setting *pr = data->at(loop - 1);
-    double cdiff = r->getFloat("Close") - pr->getFloat("Close");
-    force = r->getFloat("Volume") * cdiff;
+    double cdiff = data->getClose(loop) - data->getClose(loop - 1);
+    force = data->getVolume(loop) * cdiff;
     fi->append(force);
   }
 

@@ -128,20 +128,20 @@ void Spread::loadData (QString symbol, QString method)
 
   QDateTime dt = tdb->getDateTime(details->getData("First Date"));
 
-  QList<Setting> *recordList = tdb->getHistory(ChartDb::Daily, dt);
+  BarData *recordList = tdb->getHistory(ChartDb::Daily, dt);
 
   int loop;
   for (loop = 0; loop < (int) recordList->count(); loop++)
   {
-    Setting *tr = recordList->at(loop);
-    Setting *r = data.find(tr->getData("Date"));
+//    Setting *tr = recordList->at(loop);
+    Setting *r = data.find(recordList->getDate(loop).toString("yyyyMMdd000000"));
     if (! r)
     {
       r = new Setting;
-      r->set("Date", tr->getData("Date"), Setting::Date);
-      r->set("Close", QString::number(tr->getFloat("Close")), Setting::Float);
-      r->set("Volume", QString::number(tr->getFloat("Volume")), Setting::Float);
-      r->set("Open Interest", QString::number(tr->getFloat("Open Interest")), Setting::Float);
+      r->set("Date", recordList->getDate(loop).toString("yyyyMMdd000000"), Setting::Date);
+      r->set("Close", QString::number(recordList->getClose(loop)), Setting::Float);
+      r->set("Volume", QString::number(recordList->getVolume(loop)), Setting::Float);
+      r->set("Open Interest", QString::number(recordList->getOI(loop)), Setting::Float);
       r->set("Open", r->getData("Close"), Setting::Float);
       r->set("High", r->getData("Close"), Setting::Float);
       r->set("Low", r->getData("Close"), Setting::Float);
@@ -152,16 +152,16 @@ void Spread::loadData (QString symbol, QString method)
     {
       if (! method.compare(QObject::tr("Subtract")))
       {
-        r->setData("Close", QString::number(r->getFloat("Close") - (tr->getFloat("Close"))));
-        r->setData("Volume", QString::number(r->getFloat("Volume") - (tr->getFloat("Volume"))));
-        r->setData("Open Interest", QString::number(r->getFloat("Open Interest") - (tr->getFloat("Open Interest"))));
+        r->setData("Close", QString::number(r->getFloat("Close") - (recordList->getClose(loop))));
+        r->setData("Volume", QString::number(r->getFloat("Volume") - (recordList->getVolume(loop))));
+        r->setData("Open Interest", QString::number(r->getFloat("Open Interest") - (recordList->getOI(loop))));
       }
 
       if (! method.compare(QObject::tr("Divide")))
       {
-        r->setData("Close", QString::number(r->getFloat("Close") / (tr->getFloat("Close"))));
-        r->setData("Volume", QString::number(r->getFloat("Volume") / (tr->getFloat("Volume"))));
-        r->setData("Open Interest", QString::number(r->getFloat("Open Interest") / (tr->getFloat("Open Interest"))));
+        r->setData("Close", QString::number(r->getFloat("Close") / (recordList->getClose(loop))));
+        r->setData("Volume", QString::number(r->getFloat("Volume") / (recordList->getVolume(loop))));
+        r->setData("Open Interest", QString::number(r->getFloat("Open Interest") / (recordList->getOI(loop))));
       }
 
       r->setData("Open", r->getData("Close"));

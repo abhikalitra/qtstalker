@@ -78,7 +78,6 @@ void OVRLY::calculate ()
 
 void OVRLY::comparePrice ()
 {
-
   PlotLine *tline = getInput(tr("Close"));
   PlotLine *line1 = normalize(tline);
   line1->setColor(getData(tr("Color")));
@@ -135,14 +134,12 @@ void OVRLY::comparePerformance ()
   }
   line1Loop++;
   line2Loop++;
-  Setting *r = data->at(line1Loop);
-  double line1base = r->getFloat("Close");
+  double line1base = data->getClose(line1Loop);
   double line2base = tline->getData(line2Loop);
 
   for (; line1Loop < (int) data->count() && line2Loop < tline->getSize(); line1Loop++, line2Loop++)
   {
-    r = data->at(line1Loop);
-    line1->append(((r->getFloat("Close") - line1base) / line1base) * 100);
+    line1->append(((data->getClose(line1Loop) - line1base) / line1base) * 100);
     line2->append(((tline->getData(line2Loop) - line2base) / line2base) * 100);
   }
 
@@ -156,16 +153,16 @@ PlotLine * OVRLY::getSymbolLine (QString d)
 {
   ChartDb *db = new ChartDb;
   db->openChart(d);
-  Setting *r = data->at(0);
-  QDateTime date = QDateTime::fromString(r->getDateTime("Date"), Qt::ISODate);
-  QList<Setting> *recordList = db->getHistory(ChartDb::Daily, date);
+  QDateTime date = data->getDate(0);
+  BarData *recordList = db->getHistory(ChartDb::Daily, date, BarData::Bars);
 
   QDict<Setting> dict;
   int loop;
   for (loop = 0; loop < (int) recordList->count(); loop++)
   {
-    r = recordList->at(loop);
-    dict.insert(r->getData("Date"), r);
+    Setting *r = new Setting;
+    r->set("Close", QString::number(recordList->getClose(loop)), Setting::Float);
+    dict.insert(recordList->getDate(loop).toString("yyyyMMdd000000"), r);
   }
 
   PlotLine *line = new PlotLine();
@@ -174,8 +171,7 @@ PlotLine * OVRLY::getSymbolLine (QString d)
 
   for (loop = 0; loop < (int) data->count(); loop++)
   {
-    r = data->at(loop);
-    Setting *r2 = dict[r->getData("Date")];
+    Setting *r2 = dict[recordList->getDate(loop).toString("yyyyMMdd000000")];
     if (! r2)
       line->append(val);
     else

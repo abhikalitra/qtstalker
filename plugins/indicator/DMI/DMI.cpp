@@ -173,17 +173,15 @@ void DMI::alertExtremePoint ()
   double point = 0;
   for (loop = 0; loop < (int) mdi->getSize(); loop++, dataLoop++)
   {
-    Setting *r = data->at(dataLoop);
-
     if (pdi->getData(loop) > mdi->getData(loop))
     {
       if (status != 1)
       {
         if (point == 0)
-          point = r->getFloat("High");
+          point = data->getHigh(dataLoop);
         else
         {
-	  if (r->getFloat("Close") > point)
+	  if (data->getClose(dataLoop) > point)
           {
             status = 1;
 	    point = 0;
@@ -197,10 +195,10 @@ void DMI::alertExtremePoint ()
       if (status != -1)
       {
         if (point == 0)
-          point = r->getFloat("Low");
+          point = data->getLow(dataLoop);
         else
         {
-          if (r->getFloat("Close") < point)
+          if (data->getClose(dataLoop) < point)
 	  {
 	    status = -1;
 	    point = 0;
@@ -302,12 +300,10 @@ PlotLine * DMI::getMDI (int period)
   int loop;
   for (loop = 1; loop < (int) data->count(); loop++)
   {
-    Setting *set = data->at(loop);
-    double high = set->getFloat("High");
-    double low = set->getFloat("Low");
-    set = data->at(loop - 1);
-    double yhigh = set->getFloat("High");
-    double ylow = set->getFloat("Low");
+    double high = data->getHigh(loop);
+    double low = data->getLow(loop);
+    double yhigh = data->getHigh(loop - 1);
+    double ylow = data->getLow(loop - 1);
     double t = 0;
 
     if (high > yhigh)
@@ -362,12 +358,10 @@ PlotLine * DMI::getPDI (int period)
   int loop;
   for (loop = 1; loop < (int) data->count(); loop++)
   {
-    Setting *set = data->at(loop);
-    double high = set->getFloat("High");
-    double low = set->getFloat("Low");
-    set = data->at(loop - 1);
-    double yhigh = set->getFloat("High");
-    double ylow = set->getFloat("Low");
+    double high = data->getHigh(loop);
+    double low = data->getLow(loop);
+    double yhigh = data->getHigh(loop - 1);
+    double ylow = data->getLow(loop - 1);
     double t = 0;
 
     if (high > yhigh)

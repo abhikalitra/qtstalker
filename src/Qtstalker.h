@@ -39,6 +39,7 @@
 #include "Navigator.h"
 #include "Setting.h"
 #include "ChartPage.h"
+#include "BarData.h"
 
 #define DEFAULT_INDICATOR_HEIGHT 125
 
@@ -168,7 +169,7 @@ class QtstalkerApp : public QMainWindow
     QString chartName;
     QString chartType;
     QString chartSymbol;
-    QList<Setting> *recordList;
+    BarData *recordList;
     QMultiLineEdit *infoLabel;
 };
 

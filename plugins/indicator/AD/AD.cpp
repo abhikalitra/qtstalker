@@ -50,18 +50,17 @@ void AD::calculate ()
   double accum = 0;
   for (loop = 0; loop < (int) data->count(); loop++)
   {
-    Setting *set = data->at(loop);
-    double volume = set->getFloat("Volume");
+    double volume = data->getVolume(loop);
     if (volume > 0)
     {
-      double high = set->getFloat("High");
-      double low = set->getFloat("Low");
+      double high = data->getHigh(loop);
+      double low = data->getLow(loop);
 
       double t = high - low;
 
       if (t != 0)
       {
-        double close = set->getFloat("Close");
+        double close = data->getClose(loop);
         double t2 = (close - low) - (high - close);
         accum = accum + ((t2 / t) * volume);
       }

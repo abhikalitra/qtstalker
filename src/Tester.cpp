@@ -694,7 +694,7 @@ void Tester::test ()
   while (tradeList->numRows())
     tradeList->removeRow(0);
 
-  recordList = db->getHistory(ChartDb::Daily, sd);
+  recordList = db->getHistory(ChartDb::Daily, sd, BarData::Bars);
 
   loadIndicators(0);
   loadIndicators(1);
@@ -710,8 +710,8 @@ void Tester::test ()
 
   for (testLoop = 0; testLoop < (int) recordList->count(); testLoop++)
   {
-    currentRecord = recordList->at(testLoop);
-    QDateTime td = QDateTime::fromString(currentRecord->getDateTime("Date"), ISODate);
+    currentRecord = testLoop;
+    QDateTime td = recordList->getDate(currentRecord);
     if (td >= sd)
       break;
   }
@@ -719,9 +719,8 @@ void Tester::test ()
   status = 0;
   for (; testLoop < (int) recordList->count(); testLoop++)
   {
-    currentRecord = recordList->at(testLoop);
-
-    QDateTime dt = QDateTime::fromString(currentRecord->getDateTime("Date"), ISODate);
+    currentRecord = testLoop;
+    QDateTime dt = recordList->getDate(currentRecord);
     if (dt > ed)
       break;
 
@@ -810,7 +809,7 @@ void Tester::test ()
 
 void Tester::checkAlerts ()
 {
-  QString key = currentRecord->getData("Date").left(8);
+  QString key = recordList->getDate(currentRecord).toString("yyyyMMdd");
 
   QDictIterator<Setting> it(enterLongAlerts);
   for (; it.current(); ++it)
@@ -864,7 +863,7 @@ void Tester::enterLong ()
 
   status = 1;
   buyRecord = currentRecord;
-  trailingHigh = buyRecord->getFloat("Close");
+  trailingHigh = recordList->getClose(buyRecord);
   equity = equity - entryCom->value();
   getVolume();
 
@@ -885,7 +884,7 @@ void Tester::enterShort ()
 
   status = -1;
   buyRecord = currentRecord;
-  trailingLow = buyRecord->getFloat("Close");
+  trailingLow = recordList->getClose(buyRecord);
   equity = equity - entryCom->value();
   getVolume();
 
@@ -901,8 +900,8 @@ void Tester::exitShort ()
 
 void Tester::exitPosition (QString signal)
 {
-  double enterPrice = buyRecord->getFloat("Close");
-  double exitPrice = currentRecord->getFloat("Close");
+  double enterPrice = recordList->getClose(buyRecord);
+  double exitPrice = recordList->getClose(currentRecord);
   double profit = 0;
   QString type;
 
@@ -932,10 +931,10 @@ void Tester::exitPosition (QString signal)
 
   tradeList->setNumRows(tradeList->numRows() + 1);
   tradeList->setText(tradeList->numRows() - 1, 0, type);
-  tradeList->setText(tradeList->numRows() - 1, 1, buyRecord->getData("Date").left(8));
-  tradeList->setText(tradeList->numRows() - 1, 2, buyRecord->getData("Close"));
-  tradeList->setText(tradeList->numRows() - 1, 3, currentRecord->getData("Date").left(8));
-  tradeList->setText(tradeList->numRows() - 1, 4, currentRecord->getData("Close"));
+  tradeList->setText(tradeList->numRows() - 1, 1, recordList->getDate(buyRecord).toString("yyyyMMdd"));
+  tradeList->setText(tradeList->numRows() - 1, 2, QString::number(recordList->getClose(buyRecord)));
+  tradeList->setText(tradeList->numRows() - 1, 3, recordList->getDate(currentRecord).toString("yyyyMMdd"));
+  tradeList->setText(tradeList->numRows() - 1, 4, QString::number(recordList->getClose(currentRecord)));
   tradeList->setText(tradeList->numRows() - 1, 5, signal);
   tradeList->setText(tradeList->numRows() - 1, 6, QString::number(profit));
   tradeList->setText(tradeList->numRows() - 1, 7, QString::number(equity));
@@ -949,7 +948,7 @@ bool Tester::maximumLoss ()
 
   if ((status == 1) && (maximumLossLong->isChecked()))
   {
-    double t = ((currentRecord->getFloat("Close") - buyRecord->getFloat("Close")) / buyRecord->getFloat("Close")) * 100;
+    double t = ((recordList->getClose(currentRecord) - recordList->getClose(buyRecord)) / recordList->getClose(buyRecord)) * 100;
     if (t < 0)
     {
       t = -t;
@@ -965,7 +964,7 @@ bool Tester::maximumLoss ()
 
   if ((status == -1) && (maximumLossShort->isChecked()))
   {
-    double t = ((buyRecord->getFloat("Close") - currentRecord->getFloat("Close")) / buyRecord->getFloat("Close")) * 100;
+    double t = ((recordList->getClose(buyRecord) - recordList->getClose(currentRecord)) / recordList->getClose(buyRecord)) * 100;
     if (t < 0)
     {
       t = -t;
@@ -989,7 +988,7 @@ bool Tester::profit ()
 
   if ((status == 1) && (profitLong->isChecked()))
   {
-    double t = ((currentRecord->getFloat("Close") - buyRecord->getFloat("Close")) / buyRecord->getFloat("Close")) * 100;
+    double t = ((recordList->getClose(currentRecord) - recordList->getClose(buyRecord)) / recordList->getClose(buyRecord)) * 100;
     if (t > 0)
     {
       if (t >= profitEdit->text().toDouble())
@@ -1004,7 +1003,7 @@ bool Tester::profit ()
 
   if ((status == -1) && (profitShort->isChecked()))
   {
-    double t = ((buyRecord->getFloat("Close") - currentRecord->getFloat("Close")) / buyRecord->getFloat("Close")) * 100;
+    double t = ((recordList->getClose(buyRecord) - recordList->getClose(currentRecord)) / recordList->getClose(buyRecord)) * 100;
     if (t > 0)
     {
       if (t >= profitEdit->text().toDouble())
@@ -1027,10 +1026,10 @@ bool Tester::trailing ()
 
   if ((status == 1) && (trailingLong->isChecked()))
   {
-    if (currentRecord->getFloat("Close") > trailingHigh)
-      trailingHigh = currentRecord->getFloat("Close");
+    if (recordList->getClose(currentRecord) > trailingHigh)
+      trailingHigh = recordList->getClose(currentRecord);
 
-    double t = ((currentRecord->getFloat("Close") - trailingHigh) / trailingHigh) * 100;
+    double t = ((recordList->getClose(currentRecord) - trailingHigh) / trailingHigh) * 100;
     if (t < 0)
     {
       t = -t;
@@ -1046,10 +1045,10 @@ bool Tester::trailing ()
 
   if ((status == -1) && (trailingShort->isChecked()))
   {
-    if (currentRecord->getFloat("Close") < trailingLow)
-      trailingLow = currentRecord->getFloat("Close");
+    if (recordList->getClose(currentRecord) < trailingLow)
+      trailingLow = recordList->getClose(currentRecord);
 
-    double t = ((trailingLow - currentRecord->getFloat("Close")) / trailingLow) * 100;
+    double t = ((trailingLow - recordList->getClose(currentRecord)) / trailingLow) * 100;
     if (t < 0)
     {
       t = -t;
@@ -1117,8 +1116,8 @@ void Tester::trailingToggled (bool status)
 void Tester::symbolButtonPressed ()
 {
   SymbolDialog *dialog = new SymbolDialog(this,
-  							   config->getData(Config::DataPath),
-							   "*");
+  					  config->getData(Config::DataPath),
+					  "*");
   dialog->setCaption(tr("Select Chart"));
 
   int rc = dialog->exec();
@@ -1226,7 +1225,7 @@ void Tester::loadIndicators (int button)
       qDebug("Tester::loadIndicators - could not open plugin");
       continue;
     }
-
+    
     plug->setIndicatorInput(recordList);
     plug->parse(i->getString());
     plug->calculate();
@@ -1260,8 +1259,7 @@ void Tester::loadEnterLongAlerts ()
       {
         if (! flag)
         {
-          Setting *r = recordList->at(loop);
-          set->set(r->getData("Date").left(8), "1", Setting::None);
+          set->set(recordList->getDate(loop).toString("yyyyMMdd"), "1", Setting::None);
 	  flag = TRUE;
         }
       }
@@ -1288,8 +1286,7 @@ void Tester::loadExitLongAlerts ()
       {
         if (! flag)
         {
-          Setting *r = recordList->at(loop);
-          set->set(r->getData("Date").left(8), "1", Setting::None);
+          set->set(recordList->getDate(loop).toString("yyyyMMdd"), "1", Setting::None);
 	  flag = TRUE;
         }
       }
@@ -1316,8 +1313,7 @@ void Tester::loadEnterShortAlerts ()
       {
         if (! flag)
         {
-          Setting *r = recordList->at(loop);
-          set->set(r->getData("Date").left(8), "1", Setting::None);
+          set->set(recordList->getDate(loop).toString("yyyyMMdd"), "1", Setting::None);
 	  flag = TRUE;
         }
       }
@@ -1344,8 +1340,7 @@ void Tester::loadExitShortAlerts ()
       {
         if (! flag)
         {
-          Setting *r = recordList->at(loop);
-          set->set(r->getData("Date").left(8), "1", Setting::None);
+          set->set(recordList->getDate(loop).toString("yyyyMMdd"), "1", Setting::None);
 	  flag = TRUE;
         }
       }
@@ -1735,7 +1730,7 @@ void Tester::getVolume ()
   if (margin->value())
     volume = (int) (balance / margin->value());
   else
-    volume = (int) (balance / buyRecord->getFloat("Close"));
+    volume = (int) (balance / recordList->getClose(buyRecord));
 
   if (volume < 1)
     volume = 1;

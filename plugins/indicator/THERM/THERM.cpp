@@ -61,10 +61,8 @@ void THERM::calculate ()
   double thermometer = 0;
   for (loop = 1; loop < (int) data->count(); loop++)
   {
-    Setting *r = data->at(loop);
-    Setting *pr = data->at(loop - 1);
-    double high = fabs(r->getFloat("High") - pr->getFloat("High"));
-    double lo = fabs(pr->getFloat("Low") - r->getFloat("Low"));
+    double high = fabs(data->getHigh(loop) - data->getHigh(loop - 1));
+    double lo = fabs(data->getLow(loop - 1) - data->getLow(loop));
     
     if (high > lo)
       thermometer = high;

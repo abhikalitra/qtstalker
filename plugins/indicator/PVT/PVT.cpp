@@ -47,11 +47,9 @@ void PVT::calculate ()
   double pv = 0;
   for (loop = 1; loop < (int) data->count(); loop++)
   {
-    Setting *set = data->at(loop);
-    double close = set->getFloat("Close");
-    double volume = set->getFloat("Volume");
-    set = data->at(loop - 1);
-    double yclose = set->getFloat("Close");
+    double close = data->getClose(loop);
+    double volume = data->getVolume(loop);
+    double yclose = data->getClose(loop - 1);
 
     pv = pv + (((close - yclose) / yclose) * volume);
     pvt->append(pv);

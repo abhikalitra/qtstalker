@@ -37,6 +37,7 @@
 #include "Setting.h"
 #include "Indicator.h"
 #include "Scaler.h"
+#include "BarData.h"
 
 class Plot : public QWidget
 {
@@ -85,7 +86,7 @@ class Plot : public QWidget
     Plot (QWidget *);
     ~Plot ();
     void clear ();
-    void setData (QList<Setting> *);
+    void setData (BarData *);
     void setScaleWidth (int);
     void setDateHeight (int);
     void setMainFlag (bool);
@@ -233,11 +234,9 @@ class Plot : public QWidget
     ObjectType objectFlag;
 
     QString chartType;
-    QList<Setting> *data;
+    BarData *data;
     QDict<Indicator> indicators;
     QList<QColor> paintBars;
-
-    QDict<Setting> dateList;
     QArray<int> xGrid;
 
     QPopupMenu *chartMenu;

@@ -72,9 +72,6 @@ void EP::calculate ()
   int loop;
   for (loop = 1; loop < (int) data->count(); loop++)
   {
-    Setting *r = data->at(loop);
-    Setting *pr = data->at(loop - 1);
-
 /* FIXME
 * - Initial implementation only attempts "outside bars" and "inside bars".
 * - Not yet doing "exhaustion bars" or "two-bar reversals".
@@ -85,16 +82,16 @@ void EP::calculate ()
 */
     float exhaustionOutsideRank = 0;
     float exhaustionInsideRank = 0;
-    double exhaustionVolume = r->getFloat("Volume");
-    double exhaustionVolumePr = pr->getFloat("Volume");
+    double exhaustionVolume = data->getVolume(loop);
+    double exhaustionVolumePr = data->getVolume(loop - 1);
     double exhaustionVolumeDiff = exhaustionVolume / exhaustionVolumePr * 100;
-    float exhaustionRange = r->getFloat("High") - r->getFloat("Low");
-    float exhaustionRangePr = pr->getFloat("High") - pr->getFloat("Low");
+    float exhaustionRange = data->getHigh(loop) - data->getLow(loop);
+    float exhaustionRangePr = data->getHigh(loop - 1) - data->getLow(loop - 1);
     float exhaustionRangeDiff = exhaustionRange / exhaustionRangePr * 100;
 
     // outside bar
-    if ((r->getFloat("High") > pr->getFloat("High")) &&
-        (r->getFloat("Low") < pr->getFloat("Low"))
+    if ((data->getHigh(loop) > data->getHigh(loop - 1)) &&
+        (data->getLow(loop) < data->getLow(loop - 1))
        )
     {
       exhaustionOutsideRank = 1;
@@ -106,25 +103,22 @@ void EP::calculate ()
       // encompass more previous bars
       if ((loop - 2) >= 0)
       {
-        Setting *pr2 = data->at(loop - 2);
-        if ((r->getFloat("High") > pr2->getFloat("High")) &&
-            (r->getFloat("Low") < pr2->getFloat("Low"))
+        if ((data->getHigh(loop) > data->getHigh(loop - 2)) &&
+            (data->getLow(loop) < data->getLow(loop - 2))
            )
         {
           exhaustionOutsideRank += 0.5;
           if ((loop - 3) >= 0)
           {
-            Setting *pr3 = data->at(loop - 3);
-            if ((r->getFloat("High") > pr3->getFloat("High")) &&
-                (r->getFloat("Low") < pr3->getFloat("Low"))
+            if ((data->getHigh(loop) > data->getHigh(loop - 3)) &&
+                (data->getLow(loop) < data->getLow(loop - 3))
                )
             {
               exhaustionOutsideRank += 0.5;
               if ((loop - 4) >= 0)
               {
-                Setting *pr4 = data->at(loop - 4);
-                if ((r->getFloat("High") > pr4->getFloat("High")) &&
-                    (r->getFloat("Low") < pr4->getFloat("Low"))
+                if ((data->getHigh(loop) > data->getHigh(loop - 4)) &&
+                    (data->getLow(loop) < data->getLow(loop - 4))
                    )
                 {
                   exhaustionOutsideRank += 0.5;
@@ -173,10 +167,10 @@ void EP::calculate ()
     }
 
     // inside bar
-    else if ((r->getFloat("High") < pr->getFloat("High")) &&
-             (r->getFloat("Low") > pr->getFloat("Low")) &&
+    else if ((data->getHigh(loop) < data->getHigh(loop - 1)) &&
+             (data->getLow(loop) > data->getLow(loop - 1)) &&
 // need better volume test
-             (r->getFloat("Volume") > 0) && (pr->getFloat("Volume") > 0)
+             (data->getVolume(loop) > 0) && (data->getVolume(loop - 1) > 0)
        )
     {
       exhaustionInsideRank = 1;

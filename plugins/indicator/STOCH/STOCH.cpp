@@ -69,9 +69,8 @@ void STOCH::calculate ()
     double h;
     for (loop2 = 0, l = 9999999, h = 0; loop2 < period; loop2++)
     {
-      Setting *set = data->at(loop - loop2);
-      double high = set->getFloat("High");
-      double low = set->getFloat("Low");
+      double high = data->getHigh(loop - loop2);
+      double low = data->getLow(loop - loop2);
 
       double t = high;
       if (t > h)
@@ -82,8 +81,7 @@ void STOCH::calculate ()
         l = t;
     }
 
-    Setting *set = data->at(loop);
-    double close = set->getFloat("Close");
+    double close = data->getClose(loop);
     double t = ((close - l) / (h - l)) * 100;
     if (t > 100)
       t = 100;

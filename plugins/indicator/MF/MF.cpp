@@ -56,19 +56,17 @@ void MF::calculate ()
     int loop2;
     for (loop2 = 0; loop2 < period; loop2++)
     {
-      Setting *set = data->at(loop - loop2);
-      double high = set->getFloat("High");
-      double low = set->getFloat("Low");
-      double close = set->getFloat("Close");
-      double volume = set->getFloat("Volume");
+      double high = data->getHigh(loop - loop2);
+      double low = data->getLow(loop - loop2);
+      double close = data->getClose(loop - loop2);
+      double volume = data->getVolume(loop - loop2);
 
       double ttp = (high + low + close) / 3;
       double mf = ttp * volume;
 
-      set = data->at(loop - loop2 - 1);
-      high = set->getFloat("High");
-      low = set->getFloat("Low");
-      close = set->getFloat("Close");
+      high = data->getHigh(loop - loop2 - 1);
+      low = data->getLow(loop - loop2 - 1);
+      close = data->getClose(loop - loop2 - 1);
 
       double ytp = (high + low + close) / 3;
 

@@ -28,6 +28,7 @@
 #include <qdatetime.h>
 #include <db.h>
 #include "Setting.h"
+#include "BarData.h"
 
 #define DATE_FORMAT "yyyyMMddhhmmss"
 
@@ -48,14 +49,14 @@ class ChartDb
     QString getData (QString);
     void setData (QString, QString);
     void deleteData (QString);
-    QList<Setting> * getDailyHistory ();
-    QList<Setting> * getWeeklyHistory ();
-    QList<Setting> * getMonthlyHistory ();
+    BarData * getDailyHistory ();
+    BarData * getWeeklyHistory ();
+    BarData * getMonthlyHistory ();
     QDateTime getDateTime (QString);
     Setting * getRecord (QString, QString);
     void deleteRecord (Setting *);
     void setRecord (Setting *);
-    QList<Setting> * getHistory (Compression, QDateTime);
+    BarData * getHistory (Compression, QDateTime, BarData::BarType);
     void loadDetails ();
     Setting * getDetails ();
     void saveDetails ();
@@ -74,6 +75,7 @@ class ChartDb
     Compression compression;
     Setting *details;
     QStringList format;
+    BarData::BarType barType;
 };
 
 #endif
