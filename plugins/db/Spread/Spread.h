@@ -29,6 +29,8 @@
 
 class Spread : public DbPlugin
 {
+  Q_OBJECT
+
   public:
     Spread ();
     ~Spread ();

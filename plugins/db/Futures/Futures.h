@@ -28,6 +28,8 @@
 
 class Futures : public DbPlugin
 {
+  Q_OBJECT
+
   public:
     Futures ();
     ~Futures ();

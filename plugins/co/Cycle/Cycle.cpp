@@ -216,7 +216,9 @@ COPlugin::Status Cycle::pointerClick (QPoint &point, BarDate &x, double)
     
   if (status == Selected)
   {
-    if (selected->isGrabSelected(point))
+    if (selected->isGrabSelected(point) &&
+        selected->getGrabPosition() < 2 &&
+	selected->getGrabPosition() > -1)
     {
       tpoint = point;
       tpoint.setX(point.x() - (selected->getInterval() * tpixelspace));
@@ -283,22 +285,19 @@ void Cycle::pointerMoving (QPixmap &, QPoint &p, BarDate &x, double)
   }
   else
   {
-    if (gp > 0)
-    {
-      if (p.x() <= tpoint.x())
-        return;
+    if (p.x() <= tpoint.x())
+      return;
 	
-      int t = (p.x() - tpoint.x()) / tpixelspace;
-      if (t == 0)
-	return;
+    int t = (p.x() - tpoint.x()) / tpixelspace;
+    if (t == 0)
+      return;
 	  
-      selected->setInterval(t);
-      selected->setSaveFlag(TRUE);
+    selected->setInterval(t);
+    selected->setSaveFlag(TRUE);
 	
-      QString s = tr("Interval") + "=" + QString::number(t);
-      emit message(s);
-      emit signalDraw();
-    }
+    QString s = tr("Interval") + "=" + QString::number(t);
+    emit message(s);
+    emit signalDraw();
   }
 }
 

@@ -34,6 +34,8 @@ typedef struct
 
 class CC : public DbPlugin
 {
+  Q_OBJECT
+
   public:
     CC ();
     ~CC ();

@@ -28,6 +28,8 @@
 
 class Stocks : public DbPlugin
 {
+  Q_OBJECT
+
   public:
     Stocks ();
     ~Stocks ();

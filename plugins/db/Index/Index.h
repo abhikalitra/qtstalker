@@ -29,6 +29,8 @@
 
 class Index : public DbPlugin
 {
+  Q_OBJECT
+
   public:
     Index ();
     ~Index ();
