@@ -120,7 +120,7 @@ QtstalkerApp::QtstalkerApp()
   mainPlot = new Plot (split);
   mainPlot->setDateFlag(TRUE);
   mainPlot->setMainFlag(TRUE);
-  
+
   QColor color;
   color.setNamedColor(config->getData(Config::BackgroundColor));
   QObject::connect(this, SIGNAL(signalBackgroundColor(QColor)), mainPlot, SLOT(setBackgroundColor(QColor)));
