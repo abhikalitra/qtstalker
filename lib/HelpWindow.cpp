@@ -60,7 +60,7 @@ HelpWindow::HelpWindow (QWidget *, QString fn) : QDialog (0, "HelpWindow", FALSE
   
   QString s = homePath + fn;
   QDir dir;
-  if (dir.exists(s))
+  if (dir.exists(s) && s.contains(".html"))
     text->setSource(s);
   else
     text->setSource(tocPath);
