@@ -247,6 +247,8 @@ QString QSMath::getMA2 (int i, QStringList l)
 
 //********************************************************************
 
+// ORIGINAL SMA CODE
+/*
 PlotLine * QSMath::getSMA (PlotLine *d, int period)
 {
   PlotLine *sma = new PlotLine;
@@ -268,6 +270,59 @@ PlotLine * QSMath::getSMA (PlotLine *d, int period)
     sma->append(total / period);
   }
 
+  return sma;
+}
+*/
+
+// NEW CODE - SINGLE PASS SMA
+PlotLine * QSMath::getSMA (PlotLine *d, int period)
+{
+  PlotLine *sma = new PlotLine;
+
+  int size = d->getSize();
+
+  // weed out degenerate cases
+  
+  if (period < 1 || period >= size)	// STEVE: should be period > size
+    return sma;				// left this way to keep behaviour
+
+  // create the circular buffer and its running total
+  
+  double *values = new double[period];
+  double total = 0.0;
+  
+  // fill buffer first time around, keeping its running total
+
+  int loop = -1;
+  while (++loop < period) {
+    double val = d->getData(loop);
+    total += val;
+    values[loop] = val;
+  }
+
+  // buffer filled with first period values, output first sma value
+  
+  sma->append(total / period);
+
+  // loop over the rest, each time replacing oldest value in buffer
+ 
+  --loop;
+  while (++loop < size) 
+  {
+    int index = loop % period;
+    double newval = d->getData(loop);
+    
+    total += newval;
+    total -= values[index];
+    values[index] = newval;
+
+    sma->append(total / period);
+  }
+ 
+  // clean up 
+  
+  delete values;
+	
   return sma;
 }
 

@@ -46,6 +46,9 @@
 20040717: Changed the Line chart type to use a custom formula to plot. Now more flexible to use
           a user defined formula rather than the hard coded options. The last step that is checked
 	  to plot will be the one to plot. Need to update DOCS.
+
+20040724: Applied patches #997264 - single pass optimisation for SMA, #997252 - cvsignore updates.
+          Thanks to Marco van Zwetselaar.
 	  
 	  
 0.26
