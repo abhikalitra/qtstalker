@@ -34,8 +34,8 @@ MACD::MACD ()
   set(tr("Signal Line Type"), tr("Dash"), Setting::LineType);
   set(tr("Oscillator Line Type"), tr("Histogram"), Setting::LineType);
   set(tr("MACD Label"), pluginName, Setting::Text);
-  set(tr("Signal Label"), tr("MACD Trigger"), Setting::Text);
-  set(tr("Oscillator Label"), tr("MACD Oscillator"), Setting::Text);
+  set(tr("Signal Label"), tr("Trigger"), Setting::Text);
+  set(tr("Oscillator Label"), tr("Oscillator"), Setting::Text);
   set(tr("Input"), tr("Close"), Setting::InputField);
   set(tr("Fast Period"), "12", Setting::Integer);
   set(tr("Slow Period"), "26", Setting::Integer);
