@@ -462,11 +462,6 @@ void Plot::mousePressEvent (QMouseEvent *event)
       else
         showPopupMenu();
     }
-    else
-    {
-      if (event->button() == MidButton && mouseFlag == COSelected)
-        objectMoving();
-    }
   }
 }
 

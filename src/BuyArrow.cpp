@@ -53,8 +53,7 @@ void BuyArrow::draw (int x, int)
   
   int y = scaler->convertToY(value);
 
-  arrow.truncate(0);
-  arrow.setPoints(7, x, y,
+  arrow.putPoints(0, 7, x, y,
                   x + 5, y + 5,
                   x + 2, y + 5,
                   x + 2, y + 11,
@@ -63,16 +62,21 @@ void BuyArrow::draw (int x, int)
                   x - 5, y + 5);
   painter.setBrush(color);
   painter.drawPolygon(arrow, TRUE, 0, -1);
-  
-  QRegion r(arrow, FALSE);
-  area = r;
+
+  selectionArea.clear();
+  selectionArea.append(new QRegion(arrow));
   
   if (status)
   {
-    painter.setBrush(NoBrush);
-    painter.setPen(color);
-    QRect r = area.boundingRect();
-    painter.drawRect(r.topLeft().x() - 2, r.topLeft().y() - 2, r.width() + 4, r.height() + 4);
+    grabHandles.clear();
+    
+    grabHandles.append(new QRegion(x - (HANDLE_WIDTH / 2),
+             			   y - HANDLE_WIDTH,
+				   HANDLE_WIDTH,
+				   HANDLE_WIDTH,
+				   QRegion::Rectangle));
+				   
+    painter.fillRect(x - (HANDLE_WIDTH / 2), y - HANDLE_WIDTH, HANDLE_WIDTH, HANDLE_WIDTH, color);
   }
 
   painter.end();

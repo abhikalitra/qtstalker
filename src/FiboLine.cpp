@@ -22,6 +22,7 @@
 #include "FiboLine.h"
 #include "PrefDialog.h"
 #include <qpainter.h>
+#include <qpointarray.h>
 
 FiboLine::FiboLine (Scaler *s, QPixmap *p, QString indicator, QString n, BarDate d, double v,
                     BarDate d2, double v2)
@@ -139,35 +140,43 @@ void FiboLine::draw (int x, int x2)
   int y = scaler->convertToY(value2);
   painter.drawLine (x, y, x2, y);
 
+  selectionArea.clear();
+  QPointArray array;
+  
   // store the selectable area the low line occupies
-  selectionAreaLow.putPoints(0, 4, x, y - 4, x, y + 4, x2, y - 4, x2, y + 4);
+  array.putPoints(0, 4, x, y - 4, x, y + 4, x2, y + 4, x2, y - 4);
+  selectionArea.append(new QRegion(array));
     
   // draw the high line
   int y2 = scaler->convertToY(value);
   painter.drawLine (x, y2, x2, y2);
 
   // store the selectable area the high line occupies
-  selectionAreaHigh.putPoints(0, 4, x, y2 - 4, x, y2 + 4, x2, y2 - 4, x2, y2 + 4);
-
-  //bottom left corner
-  y = scaler->convertToY(low);
-  QRegion r(x - 4, y - 4, 8, 8, QRegion::Rectangle);
-  area = r;
-  painter.drawLine (x, y, x2, y);
-  
-  //top right corner
-  y2 = scaler->convertToY(high);
-  QRegion r2(x2 - 4, y2 - 4, 8, 8, QRegion::Rectangle);
-  area2 = r2;
-  painter.drawLine (x, y2, x2, y2);
+  array.putPoints(0, 4, x, y2 - 4, x, y2 + 4, x2, y2 + 4, x2, y2 - 4);
+  selectionArea.append(new QRegion(array));
 
   if (status)
   {
+    grabHandles.clear();
+  
     //bottom left corner
-    painter.fillRect(x - 3, y - 3, 6, 6, color);
+    y = scaler->convertToY(low);
+    grabHandles.append(new QRegion(x,
+             			   y - (HANDLE_WIDTH / 2),
+				   HANDLE_WIDTH,
+				   HANDLE_WIDTH,
+				   QRegion::Rectangle));
+    painter.fillRect(x, y - (HANDLE_WIDTH / 2), HANDLE_WIDTH, HANDLE_WIDTH, color);
+    
     
     //top right corner
-    painter.fillRect(x2 - 3, y2 - 3, 6, 6, color);
+    y2 = scaler->convertToY(high);
+    grabHandles.append(new QRegion(x2,
+             			   y2 - (HANDLE_WIDTH / 2),
+				   HANDLE_WIDTH,
+				   HANDLE_WIDTH,
+				   QRegion::Rectangle));
+    painter.fillRect(x2, y2 - (HANDLE_WIDTH / 2), HANDLE_WIDTH, HANDLE_WIDTH, color);
   }
   
   painter.end();
@@ -278,17 +287,19 @@ void FiboLine::move (BarDate d, double v)
   }
 }
 
-bool FiboLine::isClicked (int x, int y)
+bool FiboLine::handleClicked (int x, int y)
 {
   bool flag = FALSE;
   move2Flag = FALSE;
   QPoint p(x,y);
-  
-  if (area.contains(p))
+
+  QRegion *r = grabHandles.at(0);  
+  if (r->contains(p))
     flag = TRUE;
   else
   {
-    if (area2.contains(p))
+    r = grabHandles.at(1);  
+    if (r->contains(p))
       flag = TRUE;
     move2Flag = TRUE;
   }
@@ -297,24 +308,6 @@ bool FiboLine::isClicked (int x, int y)
     moveObject();
   
   return flag;
-}
-
-void FiboLine::selected (int x, int y)
-{
-  if (status)
-    return;
-
-  QRegion r(selectionAreaHigh);
-  if (! r.contains(QPoint(x,y)))
-  {
-    QRegion r2(selectionAreaLow);
-    if (! r2.contains(QPoint(x,y)))
-      return;
-  }
-    
-  status = TRUE;
-  emit signalDraw();
-  emit signalChartObjectSelected(this);
 }
 
 Setting * FiboLine::getSettings ()

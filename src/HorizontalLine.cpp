@@ -22,6 +22,7 @@
 #include "HorizontalLine.h"
 #include "PrefDialog.h"
 #include <qpainter.h>
+#include <qpointarray.h>
 
 HorizontalLine::HorizontalLine (Scaler *s, QPixmap *p, QString indicator, QString n, double v)
 {
@@ -55,17 +56,50 @@ void HorizontalLine::draw (int, int)
   painter.drawLine (0, y, buffer->width(), y);
   painter.drawText(0, y - 1, QString::number(value), -1);
   
-  QRegion r(0, y, buffer->width(), 1, QRegion::Rectangle);
-  area = r;
+  selectionArea.clear();
+  QPointArray array;
+  array.putPoints(0, 4, 0, y - 4, 0, y + 4, buffer->width(), y + 4, buffer->width(), y - 4);
+  selectionArea.append(new QRegion(array));
   
   if (status)
   {
+    grabHandles.clear();
     int t = (int) buffer->width() / 4;
-    painter.fillRect(0, y - 3, 6, 6, color);
-    painter.fillRect(t, y - 3, 6, 6, color);
-    painter.fillRect(t * 2, y - 3, 6, 6, color);
-    painter.fillRect(t * 3, y - 3, 6, 6, color);
-    painter.fillRect(t * 4, y - 3, 6, 6, color);
+    
+    grabHandles.append(new QRegion(0,
+             			   y - (HANDLE_WIDTH / 2),
+				   HANDLE_WIDTH,
+				   HANDLE_WIDTH,
+				   QRegion::Rectangle));
+    painter.fillRect(0, y - (HANDLE_WIDTH / 2), HANDLE_WIDTH, HANDLE_WIDTH, color);
+  
+    grabHandles.append(new QRegion(t,
+             			   y - (HANDLE_WIDTH / 2),
+				   HANDLE_WIDTH,
+				   HANDLE_WIDTH,
+				   QRegion::Rectangle));
+    painter.fillRect(t, y - (HANDLE_WIDTH / 2), HANDLE_WIDTH, HANDLE_WIDTH, color);
+    
+    grabHandles.append(new QRegion(t * 2,
+             			   y - (HANDLE_WIDTH / 2),
+				   HANDLE_WIDTH,
+				   HANDLE_WIDTH,
+				   QRegion::Rectangle));
+    painter.fillRect(t * 2, y - (HANDLE_WIDTH / 2), HANDLE_WIDTH, HANDLE_WIDTH, color);
+    
+    grabHandles.append(new QRegion(t * 3,
+             			   y - (HANDLE_WIDTH / 2),
+				   HANDLE_WIDTH,
+				   HANDLE_WIDTH,
+				   QRegion::Rectangle));
+    painter.fillRect(t * 3, y - (HANDLE_WIDTH / 2), HANDLE_WIDTH, HANDLE_WIDTH, color);
+    
+    grabHandles.append(new QRegion(t * 4,
+             			   y - (HANDLE_WIDTH / 2),
+				   HANDLE_WIDTH,
+				   HANDLE_WIDTH,
+				   QRegion::Rectangle));
+    painter.fillRect(t * 4, y - (HANDLE_WIDTH / 2), HANDLE_WIDTH, HANDLE_WIDTH, color);
   }
 
   painter.end();

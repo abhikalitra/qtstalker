@@ -33,6 +33,8 @@ ChartObject::ChartObject ()
   status = FALSE;
   font = QApplication::font();
   color.setNamedColor("red");
+  grabHandles.setAutoDelete(TRUE);
+  selectionArea.setAutoDelete(TRUE);
   
   menu = new QPopupMenu();
 }
@@ -84,9 +86,22 @@ void ChartObject::moveObject ()
   emit signalMoving();
 }
 
-bool ChartObject::isClicked (int x, int y)
+bool ChartObject::handleClicked (int x, int y)
 {
-  return area.contains(QPoint(x,y));
+  int loop;
+  bool rc = FALSE;
+  for (loop = 0; loop < (int) grabHandles.count(); loop++)
+  {
+    QRegion *r = grabHandles.at(loop);
+    rc = r->contains(QPoint(x,y));
+    if (rc)
+      break;
+  }
+    
+  if (rc)
+    moveObject();
+    
+  return rc;
 }
 
 void ChartObject::unselect ()
@@ -109,17 +124,24 @@ void ChartObject::setSaveFlag (bool d)
   saveFlag = d;
 }
 
-void ChartObject::selected (int x, int y)
+void ChartObject::selected ()
 {
-  if (status)
-    return;
-    
-  if (! area.contains(QPoint(x,y)))
-    return;
-    
   status = TRUE;
   emit signalDraw();
   emit signalChartObjectSelected(this);
+}
+
+bool ChartObject::isSelected (int x, int y)
+{
+  int loop;
+  for (loop = 0; loop < (int) selectionArea.count(); loop++)
+  {
+    QRegion *r = selectionArea.at(loop);
+    if (r->contains(QPoint(x,y)))
+      return TRUE;
+  }
+  
+  return FALSE;
 }
 
 ChartObject::ObjectType ChartObject::getType ()
@@ -173,3 +195,24 @@ void ChartObject::saveDefaults (QString key)
 		      QString::number(font.weight()));
 }
 
+void ChartObject::keyEvent (QKeyEvent *key)
+{
+  switch (key->key())
+  {
+    case Qt::Key_M:
+      if (key->state() == Qt::ControlButton)
+        moveObject();
+      break;
+    case Qt::Key_E:
+      if (key->state() == Qt::ControlButton)
+        prefDialog();
+      break;
+    case Qt::Key_D:
+      if (key->state() == Qt::ControlButton)
+        remove();
+      break;
+    default:
+      key->ignore();
+      break;
+  }
+}

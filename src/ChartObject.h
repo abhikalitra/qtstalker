@@ -33,6 +33,9 @@
 #include <qdatetime.h>
 #include <qcolor.h>
 #include <qfont.h>
+#include <qlist.h>
+
+#define HANDLE_WIDTH 6
 
 class ChartObject : public QObject
 {
@@ -63,7 +66,7 @@ class ChartObject : public QObject
     virtual ~ChartObject ();
     virtual void draw (int, int);
     virtual void move (BarDate, double);
-    virtual bool isClicked (int, int);
+    virtual bool handleClicked (int, int);
     virtual Setting * getSettings ();
     virtual void setSettings (Setting *);
     void unselect ();
@@ -78,10 +81,12 @@ class ChartObject : public QObject
     QString getName ();
     void loadDefaults (QString);
     void saveDefaults (QString);
+    void keyEvent (QKeyEvent *);
+    bool isSelected (int, int);
+    void selected ();
 
   public slots:    
     virtual void prefDialog ();
-    void selected (int, int);
     void remove ();
     void moveObject ();
     
@@ -92,7 +97,8 @@ class ChartObject : public QObject
     QPopupMenu *menu;
     bool saveFlag;
     bool status;
-    QRegion area;
+    QList<QRegion> grabHandles;
+    QList<QRegion> selectionArea;
     ObjectType type;
     QString plot;
     QString name;
