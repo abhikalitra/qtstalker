@@ -87,8 +87,16 @@ void CSV::parse ()
     delete rule;
     return;
   }
-    
-  setDelimiter(rule->getData("Delimiter"));
+
+  QString s = rule->getData("Delimiter");
+  if (! s.length())
+  {
+    emit statusLogMessage(tr("Delimiter not found"));
+    emit done();
+    delete rule;
+    return;
+  }
+  setDelimiter(s);
 
   if (dateFlag)
   {
@@ -536,8 +544,6 @@ QDate CSV::getDate (QString k, QString d, Setting *r)
 bool CSV::openDb (QString path, QString symbol, QString type)
 {
   db = new ChartDb;
-//  QDir dir;
-//  if (! dir.exists(path))
   db->setPlugin(type);
   if (db->openChart(path))
   {
@@ -631,7 +637,6 @@ Setting * CSV::getRule ()
   Setting *set = new Setting;
   QString s = "/Rule_" + ruleName;
   QString s2 = settings.readEntry(s);
-  s2.remove(0, s.length() - 1);
   set->parse(s2);
     
   settings.endGroup();
