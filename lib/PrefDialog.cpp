@@ -20,10 +20,8 @@
  */
 
 #include "PrefDialog.h"
-#include "Config.h"
 #include "HelpWindow.h"
 #include <qlabel.h>
-#include <qdir.h>
 
 PrefDialog::PrefDialog (QWidget *w) : QTabDialog (w, "PrefDialog", TRUE)
 {
@@ -100,19 +98,11 @@ void PrefDialog::deletePage (QString name)
 
 void PrefDialog::setHelpFile (QString d)
 {
-  Config config;
-  QString s = config.getData(Config::HelpFilePath) + "/" + d;
-  
-  QDir dir;
-  if (dir.exists(s))
-    helpFile = s;
+  helpFile = d;
 }
 
 void PrefDialog::help ()
 {
-  if (! helpFile.length())
-    return;
-    
   HelpWindow *hw = new HelpWindow(this, helpFile);
   hw->show();
   reject();

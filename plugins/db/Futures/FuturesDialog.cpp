@@ -25,7 +25,6 @@
 #include "../../../src/delete.xpm"
 #include "../../../src/export.xpm"
 #include "../../../src/search.xpm"
-#include "Config.h"
 #include "HelpWindow.h"
 #include <qlabel.h>
 #include <qlayout.h>
@@ -38,11 +37,7 @@
 
 FuturesDialog::FuturesDialog (QString d, QString p) : QTabDialog (0, "FuturesDialog", TRUE)
 {
-  Config config;
-  QString s = config.getData(Config::HelpFilePath) + "/" + p;
-  QDir dir;
-  if (dir.exists(s))
-    helpFile = s;
+  helpFile = p;
 
   saveRecordFlag = FALSE;
   ignoreSaveRecordFlag = FALSE;
@@ -355,10 +350,8 @@ void FuturesDialog::textChanged (const QString &)
 
 void FuturesDialog::help ()
 {
-  if (! helpFile.length())
-    return;
-    
   HelpWindow *hw = new HelpWindow(this, helpFile);
   hw->show();
+  reject();
 }
 

@@ -22,7 +22,6 @@
 #include "StocksDialog.h"
 #include "Bar.h"
 #include "BarDate.h"
-#include "Config.h"
 #include "HelpWindow.h"
 #include "../../../src/delete.xpm"
 #include "../../../src/export.xpm"
@@ -38,11 +37,7 @@
 
 StocksDialog::StocksDialog (QString d, QString p) : QTabDialog (0, "StocksDialog", TRUE)
 {
-  Config config;
-  QString s = config.getData(Config::HelpFilePath) + "/" + p;
-  QDir dir;
-  if (dir.exists(s))
-    helpFile = s;
+  helpFile = p;
 
   saveRecordFlag = FALSE;
   ignoreSaveRecordFlag = FALSE;
@@ -330,10 +325,8 @@ void StocksDialog::textChanged (const QString &)
 
 void StocksDialog::help ()
 {
-  if (! helpFile.length())
-    return;
-    
   HelpWindow *hw = new HelpWindow(this, helpFile);
   hw->show();
+  reject();
 }
 

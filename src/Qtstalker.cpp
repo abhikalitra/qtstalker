@@ -34,7 +34,6 @@
 #include <qbuttongroup.h>
 
 #include "Qtstalker.h"
-#include "Quote.h"
 #include "DataWindow.h"
 #include "ChartPage.h"
 #include "GroupPage.h"
@@ -45,6 +44,7 @@
 #include "PrefDialog.h"
 #include "ScannerPage.h"
 #include "ChartDb.h"
+#include "HelpWindow.h"
 
 #include "grid.xpm"
 #include "datawindow.xpm"
@@ -64,6 +64,7 @@
 #include "date.xpm"
 #include "co.xpm"
 #include "scanner.xpm"
+#include "help.xpm"
 
 QtstalkerApp::QtstalkerApp()
 {
@@ -393,7 +394,7 @@ void QtstalkerApp::initActions()
   connect(actionLogScale, SIGNAL(toggled(bool)), this, SLOT(slotLogScale(bool)));
 
   icon = hidechart;
-  actionHideMainPlot = new QAction(tr("Hide Main Plot"), icon, tr("&Hide Main Plot"), CTRL+Key_H, this, 0, true);
+  actionHideMainPlot = new QAction(tr("Hide Main Plot"), icon, tr("Hide &Main Plot"), CTRL+Key_M, this, 0, true);
   actionHideMainPlot->setStatusTip(tr("Hide the main plot."));
   connect(actionHideMainPlot, SIGNAL(toggled(bool)), this, SLOT(slotHideMainPlot(bool)));
 
@@ -406,6 +407,11 @@ void QtstalkerApp::initActions()
   actionDrawMode = new QAction(tr("Toggle Draw Mode"), icon, tr("Toggle &Draw Mode"), CTRL+Key_D, this, 0, true);
   actionDrawMode->setStatusTip(tr("Toggle drawing mode."));
   connect(actionDrawMode, SIGNAL(toggled(bool)), this, SLOT(slotDrawMode(bool)));
+  
+  icon = help;
+  actionHelp = new QAction(tr("Help"), icon, tr("&Help..."), CTRL+Key_H, this);
+  actionHelp->setStatusTip(tr("Display Help Dialog."));
+  connect(actionHelp, SIGNAL(activated()), this, SLOT(slotHelp()));
 
   // sets a key accel for setting main plot focus
   actionPlotFocus = new QAction(this, 0, FALSE);
@@ -442,7 +448,8 @@ void QtstalkerApp::initMenuBar()
 
   helpMenu = new QPopupMenu();
   actionAbout->addTo(helpMenu);
-
+  actionHelp->addTo(helpMenu);
+  
   menuBar()->insertItem(tr("&File"), fileMenu);
   menuBar()->insertItem(tr("&Edit"), editMenu);
   menuBar()->insertItem(tr("&View"), viewMenu);
@@ -466,6 +473,7 @@ void QtstalkerApp::initToolBar()
   actionNewIndicator->addTo(toolbar);
   actionDatawindow->addTo(toolbar);
   actionQuotes->addTo(toolbar);
+  actionHelp->addTo(toolbar);
 
   toolbar2 = new QToolBar(this, "toolbar2");
 
@@ -553,16 +561,29 @@ void QtstalkerApp::slotOpenChart (QString selection)
 
 void QtstalkerApp::slotQuotes ()
 {
-  QuoteDialog *dialog = new QuoteDialog();
-  QObject::connect(dialog, SIGNAL(chartUpdated()), this, SLOT(slotChartUpdated()));
-  QObject::connect(dialog, SIGNAL(message(QString)), this, SLOT(slotStatusMessage(QString)));
-  dialog->show();
+  if (quoteDialog)
+    quoteDialog->raise();
+  else
+  {
+    quoteDialog = new QuoteDialog();
+    QObject::connect(quoteDialog, SIGNAL(chartUpdated()), this, SLOT(slotChartUpdated()));
+    QObject::connect(quoteDialog, SIGNAL(message(QString)), this, SLOT(slotStatusMessage(QString)));
+    QObject::connect(quoteDialog, SIGNAL(exit()), this, SLOT(slotQuoteDialogExit()));
+    quoteDialog->show();
+  }
+}
+
+void QtstalkerApp::slotQuoteDialogExit ()
+{
+  delete quoteDialog;
+  quoteDialog = 0;
 }
 
 void QtstalkerApp::slotOptions ()
 {
   PrefDialog *dialog = new PrefDialog;
   dialog->setCaption(tr("Edit Prefs"));
+  dialog->setHelpFile("preferences.html");
 
   dialog->createPage(tr("Colors"));
   dialog->addColorItem(tr("Chart Background"), tr("Colors"), QColor(config.getData(Config::BackgroundColor)));
@@ -575,9 +596,6 @@ void QtstalkerApp::slotOptions ()
   l = QStringList::split(" ", config.getData(Config::AppFont), FALSE);
   dialog->addFontItem(tr("App Font"), tr("Fonts"), QFont(l[0], l[1].toInt(), l[2].toInt()));
   
-  dialog->createPage(tr("Help"));
-  dialog->addTextItem(tr("HTML Path"), tr("Help"), config.getData(Config::HelpFilePath));
-    
   int rc = dialog->exec();
 
   if (rc == QDialog::Accepted)
@@ -1039,6 +1057,7 @@ void QtstalkerApp::slotNewIndicator ()
   PrefDialog *idialog = new PrefDialog;
   idialog->setCaption(tr("New Indicator"));
   idialog->createPage (tr("Details"));
+  idialog->setHelpFile("newindicator.html");
   idialog->addComboItem(tr("Indicator"), tr("Details"), config.getIndicatorList(), 0);
   idialog->addTextItem(tr("Name"), tr("Details"), tr("NewIndicator"));
   idialog->addComboItem(tr("Plot Type"), tr("Details"), l, 1);
@@ -1571,6 +1590,12 @@ void QtstalkerApp::slotTabIndicatorFocus ()
 void QtstalkerApp::slotNavigatorButtonPressed (int id)
 {
   navTab->raiseWidget(id);
+}
+
+void QtstalkerApp::slotHelp ()
+{
+  HelpWindow *hw = new HelpWindow(this, "toc.html");
+  hw->show();
 }
 
 //**********************************************************************

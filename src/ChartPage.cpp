@@ -23,10 +23,12 @@
 #include "Setting.h"
 #include "SymbolDialog.h"
 #include "ChartDb.h"
+#include "HelpWindow.h"
 #include "edit.xpm"
 #include "delete.xpm"
 #include "export.xpm"
 #include "newchart.xpm"
+#include "help.xpm"
 #include <qmessagebox.h>
 #include <qcursor.h>
 #include <qtooltip.h>
@@ -64,6 +66,8 @@ ChartPage::ChartPage (QWidget *w) : QWidget (w)
   menu->insertItem(QPixmap(edit), tr("&Edit Chart"), this, SLOT(editChart()), CTRL+Key_E);
   menu->insertItem(QPixmap(deleteitem), tr("&Delete Chart"), this, SLOT(deleteChart()), CTRL+Key_D);
   menu->insertItem(QPixmap(exportfile), tr("E&xport Chart"), this, SLOT(exportSymbol()), CTRL+Key_X);
+  menu->insertSeparator(-1);
+  menu->insertItem(QPixmap(help), tr("&Help"), this, SLOT(slotHelp()), CTRL+Key_H);
 
   chartNoSelection();
 }
@@ -214,5 +218,11 @@ void ChartPage::newChart (int id)
   db->createNew(dbPlugin);
   delete db;
   refreshList();
+}
+
+void ChartPage::slotHelp ()
+{
+  HelpWindow *hw = new HelpWindow(this, "workwithcharts.html");
+  hw->show();
 }
 

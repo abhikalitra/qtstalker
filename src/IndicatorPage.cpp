@@ -20,10 +20,14 @@
  */
 
 #include "IndicatorPage.h"
+#include "HelpWindow.h"
+#include "help.xpm"
 #include "ok.xpm"
 #include "disable.xpm"
 #include <qtooltip.h>
 #include <qlayout.h>
+#include <qpopupmenu.h>
+#include <qcursor.h>
 
 IndicatorPage::IndicatorPage (QWidget *w, Plot *pl) : QWidget (w)
 {
@@ -35,18 +39,25 @@ IndicatorPage::IndicatorPage (QWidget *w, Plot *pl) : QWidget (w)
   
   list = new QListBox(this);
   connect(list, SIGNAL(doubleClicked(QListBoxItem *)), this, SLOT(doubleClick(QListBoxItem *)));
+  connect(list, SIGNAL(contextMenuRequested(QListBoxItem *, const QPoint &)), this,
+          SLOT(rightClick(QListBoxItem *)));
+  
   vbox->addWidget(list);
 
   enableMain = new QCheckBox(tr("Disable All"), this);
   QToolTip::add(enableMain, tr("Disable All Main Chart Indicators"));
   connect(enableMain, SIGNAL(clicked()), this, SLOT(mainToggled()));
   vbox->addWidget(enableMain);
+  
+  menu = new QPopupMenu();
+  menu->insertItem(QPixmap(help), tr("&Help"), this, SLOT(slotHelp()), CTRL+Key_H);
 
   refreshList();
 }
 
 IndicatorPage::~IndicatorPage ()
 {
+  delete menu;
 }
 
 void IndicatorPage::refreshList ()
@@ -113,6 +124,17 @@ void IndicatorPage::mainToggled ()
     list->setEnabled(TRUE);
 
   plot->draw();
+}
+
+void IndicatorPage::slotHelp ()
+{
+  HelpWindow *hw = new HelpWindow(this, "workwithmainindicators.html");
+  hw->show();
+}
+
+void IndicatorPage::rightClick (QListBoxItem *)
+{
+  menu->exec(QCursor::pos());
 }
 
 

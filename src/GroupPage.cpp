@@ -22,6 +22,8 @@
 #include "GroupPage.h"
 #include "SymbolDialog.h"
 #include "ChartDb.h"
+#include "HelpWindow.h"
+#include "help.xpm"
 #include "delete.xpm"
 #include "newchart.xpm"
 #include "insert.xpm"
@@ -66,7 +68,8 @@ GroupPage::GroupPage (QWidget *w) : QWidget (w)
   menu->insertItem(tr("&Refresh"), this, SLOT(refreshList()), CTRL+Key_F);
   menu->insertSeparator(-1);
   menu->insertItem(QPixmap(edit), tr("&Edit Chart"), this, SLOT(editChart()), CTRL+Key_E);
-
+  menu->insertSeparator(-1);
+  menu->insertItem(QPixmap(help), tr("&Help"), this, SLOT(slotHelp()), CTRL+Key_H);
 
   groupNoSelection();
 }
@@ -312,5 +315,11 @@ void GroupPage::editChart ()
 void GroupPage::refreshList ()
 {
   nav->updateList();
+}
+
+void GroupPage::slotHelp ()
+{
+  HelpWindow *hw = new HelpWindow(this, "workwithgroups.html");
+  hw->show();
 }
 

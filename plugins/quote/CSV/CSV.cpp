@@ -548,9 +548,9 @@ void CSV::openDb (QString path, QString symbol, QString type)
   }
 }
 
-void CSV::prefDialog (QWidget *)
+void CSV::prefDialog (QWidget *w)
 {
-  CSVDialog *dialog = new CSVDialog(helpFile);
+  CSVDialog *dialog = new CSVDialog(w, helpFile);
   dialog->setCaption(tr("CSV Prefs"));
   dialog->setStartDate(sdate);
   dialog->setEndDate(edate);

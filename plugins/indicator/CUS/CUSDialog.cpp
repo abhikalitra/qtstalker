@@ -20,7 +20,6 @@
  */
 
 #include "CUSDialog.h"
-#include "Config.h"
 #include "HelpWindow.h"
 #include <qinputdialog.h>
 #include <qmessagebox.h>
@@ -33,11 +32,7 @@ CUSDialog::CUSDialog (QString d) : QTabDialog (0, "CUSDialog", TRUE)
 {
   setCaption(tr("CUS Indicator"));
   
-  Config config;
-  QString s = config.getData(Config::HelpFilePath) + "/" + d;
-  QDir dir;
-  if (dir.exists(s))
-    helpFile = s;
+  helpFile = d;
 
   QWidget *w = new QWidget(this);
   
@@ -79,10 +74,8 @@ QString CUSDialog::getLine (int row)
 
 void CUSDialog::help ()
 {
-  if (! helpFile.length())
-    return;
-    
   HelpWindow *hw = new HelpWindow(this, helpFile);
   hw->show();
+  reject();
 }
 

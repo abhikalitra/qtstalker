@@ -20,24 +20,88 @@
  */
 
 #include "HelpWindow.h"
+#include "Config.h"
+#include "../src/next.xpm"
+#include "../src/home.xpm"
+#include "../src/previous.xpm"
+#include "../src/disable.xpm"
 #include <qlayout.h>
+#include <qdir.h>
 
-HelpWindow::HelpWindow (QWidget *, QString path) : QDialog (0, "HelpWindow", FALSE, WDestructiveClose)
+HelpWindow::HelpWindow (QWidget *, QString fn) : QDialog (0, "HelpWindow", FALSE, WDestructiveClose)
 {
-  resize(500, 350);
+  Config config;
+  homePath = config.getData(Config::HelpFilePath) + "/";
+  tocPath = homePath + "toc.html";
 
   QVBoxLayout *vbox = new QVBoxLayout (this);
   vbox->setSpacing(5);
   vbox->setMargin(5);
+  
+  toolbar = new Toolbar(this, 30, 30, FALSE);
+  vbox->addWidget(toolbar);
+  
+  toolbar->addButton("home", home, tr("Home"));
+  QObject::connect(toolbar->getButton("home"), SIGNAL(clicked()), this, SLOT(goHome()));
+  
+  toolbar->addButton("previous", previous, tr("Previous"));
+  QObject::connect(toolbar->getButton("previous"), SIGNAL(clicked()), this, SLOT(goPrevious()));
 
+  toolbar->addButton("next", next, tr("Next"));
+  QObject::connect(toolbar->getButton("next"), SIGNAL(clicked()), this, SLOT(goNext()));
+  
+  toolbar->addButton("exit", disable, tr("Close"));
+  QObject::connect(toolbar->getButton("exit"), SIGNAL(clicked()), this, SLOT(exit()));
+  
   text = new QTextBrowser(this);
-  text->setSource(path);
+  QObject::connect(text, SIGNAL(backwardAvailable(bool)), this, SLOT(previousStatus(bool)));
+  QObject::connect(text, SIGNAL(forwardAvailable(bool)), this, SLOT(nextStatus(bool)));
   vbox->addWidget (text);
   
-  setCaption("Qtstalker: " + text->documentTitle());
+  QString s = homePath + fn;
+  QDir dir;
+  if (dir.exists(s))
+    text->setSource(s);
+  else
+    text->setSource(tocPath);
+  
+  setCaption(text->documentTitle());
+
+  resize(500, 350);
 }
 
 HelpWindow::~HelpWindow ()
 {
 }
+
+void HelpWindow::goHome ()
+{
+  text->setSource(tocPath);
+}
+
+void HelpWindow::goPrevious ()
+{
+  text->backward();
+}
+
+void HelpWindow::goNext ()
+{
+  text->forward();
+}
+
+void HelpWindow::previousStatus (bool d)
+{
+  toolbar->setButtonStatus("previous", d);
+}
+
+void HelpWindow::nextStatus (bool d)
+{
+  toolbar->setButtonStatus("next", d);
+}
+
+void HelpWindow::exit ()
+{
+  done(0);
+}
+
 

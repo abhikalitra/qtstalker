@@ -21,6 +21,8 @@
 
 #include "TestPage.h"
 #include "Tester.h"
+#include "HelpWindow.h"
+#include "help.xpm"
 #include "open.xpm"
 #include "newchart.xpm"
 #include "delete.xpm"
@@ -50,6 +52,8 @@ TestPage::TestPage (QWidget *w) : QWidget (w)
   menu->insertItem(QPixmap(deleteitem), tr("&Delete Backtest Rule"), this, SLOT(deleteTest()), CTRL+Key_D);
   menu->insertItem(QPixmap(renam), tr("&Rename Backtest Rule"), this, SLOT(renameTest()), CTRL+Key_R);
   menu->insertItem(QPixmap(copy), tr("&Copy Backtest Rule"), this, SLOT(copyTest()), CTRL+Key_C);
+  menu->insertSeparator(-1);
+  menu->insertItem(QPixmap(help), tr("&Help"), this, SLOT(slotHelp()), CTRL+Key_H);
 
   updateList();
   testNoSelection();
@@ -239,6 +243,12 @@ void TestPage::updateList ()
 void TestPage::slotMessage (QString d)
 {
   emit message(d);
+}
+
+void TestPage::slotHelp ()
+{
+  HelpWindow *hw = new HelpWindow(this, "workwithbacktest.html");
+  hw->show();
 }
 
 

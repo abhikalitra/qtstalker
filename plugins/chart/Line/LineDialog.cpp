@@ -20,7 +20,6 @@
  */
 
 #include "LineDialog.h"
-#include "Config.h"
 #include "HelpWindow.h"
 #include <qinputdialog.h>
 #include <qmessagebox.h>
@@ -31,11 +30,7 @@
 
 LineDialog::LineDialog (QString d) : QTabDialog (0, "LineDialog", TRUE)
 {
-  Config config;
-  QString s = config.getData(Config::HelpFilePath) + "/" + d;
-  QDir dir;
-  if (dir.exists(s))
-    helpFile = s;
+  helpFile = d;
 
   defaultFlag = TRUE;
   
@@ -149,10 +144,8 @@ void LineDialog::defaultChecked (bool d)
 
 void LineDialog::help ()
 {
-  if (! helpFile.length())
-    return;
-    
   HelpWindow *hw = new HelpWindow(this, helpFile);
   hw->show();
+  reject();
 }
 

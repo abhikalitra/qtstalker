@@ -177,6 +177,10 @@
 20040920: Added -ffast-math compiler option to all *.pro files. There is a noticable improvement
           in speed. Very cool.
 	  
+20040922: Changed the quotes dialog to be modeless.
+
+20040922: Added help functions to menus and dialogs.
+
 
 	  	  	  
 0.26

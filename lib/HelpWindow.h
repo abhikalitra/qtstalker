@@ -25,15 +25,29 @@
 #include <qstring.h>
 #include <qdialog.h>
 #include <qtextbrowser.h>
+#include "Toolbar.h"
 
 class HelpWindow : public QDialog
 {
+  Q_OBJECT
+
   public:
     HelpWindow (QWidget *, QString);
     ~HelpWindow ();
+    
+  public slots:
+    void goNext ();
+    void goPrevious ();
+    void goHome ();
+    void previousStatus (bool);
+    void nextStatus (bool);
+    void exit ();
 
   private:
     QTextBrowser *text;
+    Toolbar *toolbar;
+    QString homePath;
+    QString tocPath;
 };
 
 #endif

@@ -20,7 +20,6 @@
  */
 
 #include "YahooDialog.h"
-#include "Config.h"
 #include "ChartDb.h"
 #include "../../../src/newchart.xpm"
 #include "../../../src/selectall.xpm"
@@ -34,13 +33,9 @@
 #include <qframe.h>
 #include <qdir.h>
 
-YahooDialog::YahooDialog (QString d) : QTabDialog (0, "YahooDialog", TRUE)
+YahooDialog::YahooDialog (QWidget *p, QString d) : QTabDialog (p, "YahooDialog", TRUE)
 {
-  Config config;
-  QString s = config.getData(Config::HelpFilePath) + "/" + d;
-  QDir dir;
-  if (dir.exists(s))
-    helpFile = s;
+  helpFile = d;
 
   dataPath = QDir::homeDirPath();
   dataPath.append("/Qtstalker/data/Stocks");
@@ -274,10 +269,8 @@ void YahooDialog::methodChanged (int)
 
 void YahooDialog::help ()
 {
-  if (! helpFile.length())
-    return;
-    
   HelpWindow *hw = new HelpWindow(this, helpFile);
   hw->show();
+  reject();
 }
 

@@ -44,6 +44,7 @@ class PortfolioPage : public QWidget
     void portfolioSelected (QString);
     void portfolioNoSelection ();
     void rightClick (QListBoxItem *);
+    void slotHelp ();
 
   private:
     Config config;

@@ -50,6 +50,7 @@ class TestPage : public QWidget
     void updateList ();
     void copyTest ();
     void slotMessage (QString);
+    void slotHelp ();
 
   private:
     Config config;

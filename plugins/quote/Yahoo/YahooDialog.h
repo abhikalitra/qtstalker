@@ -32,7 +32,7 @@ class YahooDialog : public QTabDialog
   Q_OBJECT
   
   public:
-    YahooDialog (QString);
+    YahooDialog (QWidget *, QString);
     ~YahooDialog ();
     QStringList getList ();
     void updateList ();

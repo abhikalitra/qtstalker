@@ -554,9 +554,9 @@ QString Yahoo::parseDate (QString d)
   return s;
 }
 
-void Yahoo::prefDialog (QWidget *)
+void Yahoo::prefDialog (QWidget *w)
 {
-  YahooDialog *dialog = new YahooDialog(helpFile);
+  YahooDialog *dialog = new YahooDialog(w, helpFile);
   dialog->setCaption(tr("Yahoo Prefs"));
   dialog->setAdjustment(adjustment);
   dialog->setStartDate(sdate);

@@ -51,6 +51,7 @@ class GroupPage : public QWidget
     void rightClick (QListBoxItem *);
     void editChart ();
     void refreshList ();
+    void slotHelp ();
 
   protected:
     Navigator *nav;

@@ -51,6 +51,7 @@ class ChartPage : public QWidget
     void rightClick (QListBoxItem *);
     void refreshList ();
     void searchChanged (const QString &);
+    void slotHelp ();
 
   protected:
     Navigator *nav;

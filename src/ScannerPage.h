@@ -49,6 +49,7 @@ class ScannerPage : public QWidget
     void rightClick (QListBoxItem *);
     void refreshList ();
     void slotMessage (QString);
+    void slotHelp ();
 
   private:
     Config config;

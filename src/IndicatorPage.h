@@ -40,11 +40,14 @@ class IndicatorPage : public QWidget
     void doubleClick (QListBoxItem *);
     void mainToggled ();
     void refreshList ();
+    void slotHelp ();
+    void rightClick (QListBoxItem *);
 
   protected:
     QListBox *list;
     QCheckBox *enableMain;
     Plot *plot;
+    QPopupMenu *menu;
 };
 
 #endif

@@ -22,6 +22,8 @@
 #include "ScannerPage.h"
 #include "Scanner.h"
 #include "SymbolDialog.h"
+#include "HelpWindow.h"
+#include "help.xpm"
 #include "open.xpm"
 #include "newchart.xpm"
 #include "delete.xpm"
@@ -49,6 +51,8 @@ ScannerPage::ScannerPage (QWidget *w) : QWidget (w)
   menu->insertItem(QPixmap(newchart), tr("New Scanner"), this, SLOT(newScanner()));
   menu->insertItem(QPixmap(deleteitem), tr("Delete Scanner"), this, SLOT(deleteScanner()));
   menu->insertItem(QPixmap(renam), tr("Rename Scanner"), this, SLOT(renameScanner()));
+  menu->insertSeparator(-1);
+  menu->insertItem(QPixmap(help), tr("&Help"), this, SLOT(slotHelp()), CTRL+Key_H);
 
   scannerNoSelection();
 }
@@ -210,5 +214,11 @@ void ScannerPage::refreshList ()
 void ScannerPage::slotMessage (QString d)
 {
   emit message(d);
+}
+
+void ScannerPage::slotHelp ()
+{
+  HelpWindow *hw = new HelpWindow(this, "workwithscanner.html");
+  hw->show();
 }
 

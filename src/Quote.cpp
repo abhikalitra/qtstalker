@@ -21,6 +21,7 @@
 
 #include "Quote.h"
 #include "QuotePlugin.h"
+#include "HelpWindow.h"
 #include "download.xpm"
 #include "canceldownload.xpm"
 #include "configure.xpm"
@@ -32,7 +33,7 @@
 #include <qpixmap.h>
 #include <qtooltip.h>
 
-QuoteDialog::QuoteDialog () : QTabDialog (0, "QuoteDialog", TRUE)
+QuoteDialog::QuoteDialog () : QTabDialog (0, "QuoteDialog", FALSE)
 {
   setCaption (tr("Qtstalker: Quotes"));
   
@@ -110,6 +111,10 @@ QuoteDialog::QuoteDialog () : QTabDialog (0, "QuoteDialog", TRUE)
   addTab(w, tr("Data"));
   
   setOkButton(tr("&Done"));
+  QObject::connect(this, SIGNAL(applyButtonPressed()), this, SLOT(done()));
+  
+  setHelpButton();
+  QObject::connect(this, SIGNAL(helpButtonPressed()), this, SLOT(help()));
    
   ruleChanged(0);
   
@@ -233,5 +238,16 @@ void QuoteDialog::pluginSettings ()
   }
   
   plug->prefDialog(this);
+}
+
+void QuoteDialog::help ()
+{
+  HelpWindow *hw = new HelpWindow(this, "quotes.html");
+  hw->show();
+}
+
+void QuoteDialog::done ()
+{
+  emit exit();
 }
 

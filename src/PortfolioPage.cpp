@@ -22,6 +22,8 @@
 #include "PortfolioPage.h"
 #include "PortfolioDialog.h"
 #include "SymbolDialog.h"
+#include "HelpWindow.h"
+#include "help.xpm"
 #include "open.xpm"
 #include "newchart.xpm"
 #include "delete.xpm"
@@ -50,6 +52,8 @@ PortfolioPage::PortfolioPage (QWidget *w) : QWidget (w)
   menu->insertItem(QPixmap(newchart), tr("&New Portfolio"), this, SLOT(newPortfolio()), CTRL+Key_N);
   menu->insertItem(QPixmap(deleteitem), tr("&Delete Portfolio"), this, SLOT(deletePortfolio()), CTRL+Key_D);
   menu->insertItem(QPixmap(renam), tr("&Rename Portfolio"), this, SLOT(renamePortfolio()), CTRL+Key_R);
+  menu->insertSeparator(-1);
+  menu->insertItem(QPixmap(help), tr("&Help"), this, SLOT(slotHelp()), CTRL+Key_H);
 
   portfolioNoSelection();
 }
@@ -205,3 +209,10 @@ void PortfolioPage::rightClick (QListBoxItem *)
 {
   menu->exec(QCursor::pos());
 }
+
+void PortfolioPage::slotHelp ()
+{
+  HelpWindow *hw = new HelpWindow(this, "workwithportfolios.html");
+  hw->show();
+}
+

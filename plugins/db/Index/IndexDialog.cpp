@@ -22,7 +22,6 @@
 #include "IndexDialog.h"
 #include "SymbolDialog.h"
 #include "PrefDialog.h"
-#include "Config.h"
 #include "HelpWindow.h"
 #include <qlayout.h>
 #include <qlabel.h>
@@ -33,11 +32,7 @@
 
 IndexDialog::IndexDialog (QString d) : QTabDialog (0, "IndexDialog", TRUE)
 {
-  Config config;
-  QString s = config.getData(Config::HelpFilePath) + "/" + d;
-  QDir dir;
-  if (dir.exists(s))
-    helpFile = s;
+  helpFile = d;
 
   QWidget *w = new QWidget(this);
   
@@ -261,10 +256,8 @@ void IndexDialog::setName (QString d)
 
 void IndexDialog::help ()
 {
-  if (! helpFile.length())
-    return;
-    
   HelpWindow *hw = new HelpWindow(this, helpFile);
   hw->show();
+  reject();
 }
 
