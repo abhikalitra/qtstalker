@@ -240,7 +240,9 @@ void Bars::loadSettings ()
   int loop;
   for (loop = 0; loop < (int) l.count(); loop++)
     formulaList.append(l[loop]);
-    
+
+  currentPixelspace = settings.readNumEntry("/pixelspace", 4);
+        
   settings.endGroup();
 }
 
@@ -303,6 +305,14 @@ PlotLine * Bars::getBoolLine ()
   config.closePlugin("CUS");
   
   return nline;
+}
+
+void Bars::savePixelspace ()
+{
+  QSettings settings;
+  settings.beginGroup("/Qtstalker/Bar plugin");
+  settings.writeEntry("/pixelspace", currentPixelspace);
+  settings.endGroup();
 }
 
 //*************************************************

@@ -726,6 +726,7 @@ void Yahoo::cancelUpdate ()
 {
   if (op)
   {
+    timer->stop();
     op->stop();
     emit done();
   }

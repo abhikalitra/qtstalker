@@ -150,7 +150,9 @@ void Line::loadSettings ()
   int loop;
   for (loop = 0; loop < (int) l.count(); loop++)
     formulaList.append(l[loop]);
-  
+
+  currentPixelspace = settings.readNumEntry("/pixelspace", 3);
+      
   settings.endGroup();
 }
 
@@ -212,6 +214,14 @@ PlotLine * Line::getBoolLine ()
   config.closePlugin("CUS");
   
   return nline;
+}
+
+void Line::savePixelspace ()
+{
+  QSettings settings;
+  settings.beginGroup("/Qtstalker/Line plugin");
+  settings.writeEntry("/pixelspace", currentPixelspace);
+  settings.endGroup();
 }
 
 //*************************************************

@@ -203,7 +203,9 @@ void PF::loadSettings ()
   PAFReversal = s.toInt();
 
   minPixelspace = settings.readNumEntry("/minPixelspace", 4);
-    
+
+  currentPixelspace = settings.readNumEntry("/pixelspace", 4);
+      
   settings.endGroup();
 }
 
@@ -221,6 +223,14 @@ void PF::saveSettings ()
   settings.writeEntry("/Reversal", QString::number(PAFReversal));
   settings.writeEntry("/minPixelspace", minPixelspace);
   
+  settings.endGroup();
+}
+
+void PF::savePixelspace ()
+{
+  QSettings settings;
+  settings.beginGroup("/Qtstalker/PF plugin");
+  settings.writeEntry("/pixelspace", currentPixelspace);
   settings.endGroup();
 }
 

@@ -121,6 +121,9 @@ void Plot::clear ()
     plug->saveObjects(chartPath);
     plug->clear();
   }
+  
+  if (chartPlugin)
+    chartPlugin->savePixelspace();
 }
 
 void Plot::setData (BarData *l)
@@ -149,7 +152,11 @@ void Plot::setData (BarData *l)
 int Plot::setChartType (QString d)
 {
   if (chartType.length())
+  {
+    if (chartPlugin)
+      chartPlugin->savePixelspace();
     config.closePlugin(chartType);
+  }
   
   chartPlugin = config.getChartPlugin(d);
   if (! chartPlugin)
@@ -164,7 +171,7 @@ int Plot::setChartType (QString d)
   chartType = d;
   
   minPixelspace = chartPlugin->getMinPixelspace();
-  pixelspace = minPixelspace;
+  pixelspace = chartPlugin->getPixelspace();
   startX = chartPlugin->getStartX();
   dateFlag = TRUE;  
   
@@ -595,6 +602,9 @@ void Plot::setGridFlag (bool d)
 void Plot::setPixelspace (int d)
 {
   pixelspace = d;
+
+  if (chartPlugin)
+    chartPlugin->setPixelspace(d);
 }
 
 void Plot::setIndex (int d)
@@ -1219,7 +1229,7 @@ void Plot::drawInfo ()
     s.append(strip(ch, 4));
     s.append(" (");
     s.append(strip(per, 2));
-    s.append("%)");
+    s.append("%) ");
     if (ch < 0)
       painter.setPen(QColor("red"));
     else

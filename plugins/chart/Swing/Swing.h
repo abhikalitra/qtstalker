@@ -36,6 +36,7 @@ class Swing : public ChartPlugin
     void prefDialog (QWidget *);
     void loadSettings ();
     void saveSettings ();
+    void savePixelspace ();
 
   protected:
     QColor upColor;

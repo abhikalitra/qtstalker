@@ -502,7 +502,9 @@ void Candle::loadSettings ()
   fixedCandleRadius = settings.readNumEntry("/fixedCandleRadius", 2);
   minCandleRadius = settings.readNumEntry("/minCandleRadius", 1);
   maxCandleGap = settings.readNumEntry("/maxCandleGap", 1);
-  
+
+  currentPixelspace = settings.readNumEntry("/pixelspace", 2);
+    
   settings.endGroup();
 }
 
@@ -545,6 +547,14 @@ void Candle::saveSettings ()
   settings.writeEntry("/fixedCandleRadius", fixedCandleRadius);
   settings.writeEntry("/maxCandleGap"     , maxCandleGap);
   
+  settings.endGroup();
+}
+
+void Candle::savePixelspace ()
+{
+  QSettings settings;
+  settings.beginGroup("/Qtstalker/Candle plugin");
+  settings.writeEntry("/pixelspace", currentPixelspace);
   settings.endGroup();
 }
 

@@ -314,6 +314,8 @@ void EP::loadSettings ()
   ir4Color.setNamedColor(settings.readEntry("/InsideRank4", "royalblue"));
   ir5Color.setNamedColor(settings.readEntry("/InsideRank5", "blue"));
   
+  currentPixelspace = settings.readNumEntry("/pixelspace", 4);
+  
   settings.endGroup();
 }
 
@@ -323,7 +325,7 @@ void EP::saveSettings ()
     return;
 
   QSettings settings;
-  settings.beginGroup("/Qtstalker/Bar plugin");
+  settings.beginGroup("/Qtstalker/EP plugin");
   
   settings.writeEntry("/minPixelspace", minPixelspace);
   settings.writeEntry("/NeutralColor", neutralColor.name());
@@ -338,6 +340,14 @@ void EP::saveSettings ()
   settings.writeEntry("/InsideRank4", ir4Color.name());
   settings.writeEntry("/InsideRank5", ir5Color.name());
   
+  settings.endGroup();
+}
+
+void EP::savePixelspace ()
+{
+  QSettings settings;
+  settings.beginGroup("/Qtstalker/EP plugin");
+  settings.writeEntry("/pixelspace", currentPixelspace);
   settings.endGroup();
 }
 

@@ -68,6 +68,16 @@ QString ChartPlugin::getHelpFile ()
   return helpFile;
 }
 
+int ChartPlugin::getPixelspace ()
+{
+  return currentPixelspace;
+}
+
+void ChartPlugin::setPixelspace (int d)
+{
+  currentPixelspace = d;
+}
+
 //**********************************************************
 //***************** VIRTUAL OVERRIDES **********************
 //**********************************************************
@@ -81,6 +91,10 @@ void ChartPlugin::saveSettings ()
 }
 
 void ChartPlugin::prefDialog (QWidget *)
+{
+}
+
+void ChartPlugin::savePixelspace ()
 {
 }
 

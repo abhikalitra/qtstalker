@@ -97,7 +97,8 @@
 	  
 20050117: Fixed key shortcut for drawmode to ctrl+w. Data window is ctrl+d.
 
-	  
+20050120: Bar spacing is now saved and restored for each chart type. 
+
 	  	  	  	  
 0.28
 ====

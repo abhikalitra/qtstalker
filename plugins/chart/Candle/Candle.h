@@ -41,6 +41,7 @@ class Candle : public ChartPlugin
     void prefDialog (QWidget *);
     void loadSettings ();
     void saveSettings ();
+    void savePixelspace ();
 
   public slots:
     void styleChanged (const QString &);

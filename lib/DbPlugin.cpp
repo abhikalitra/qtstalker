@@ -86,7 +86,7 @@ BarData * DbPlugin::getHistory ()
   DBC *cursor;
   memset(&key, 0, sizeof(DBT));
   memset(&data, 0, sizeof(DBT));
-  
+ 
   BarData *barData = new BarData;
   if (barCompression >= BarData::DailyBar)
     barData->setBarType(BarData::Daily);

@@ -43,10 +43,13 @@ class ChartPlugin : public QObject
     bool getIndicatorFlag ();
     QString getPluginName ();
     QString getHelpFile ();
+    int getPixelspace ();
+    void setPixelspace (int);
 
     virtual void drawChart (int, int, int);
     virtual void saveSettings ();
     virtual void prefDialog (QWidget *);
+    virtual void savePixelspace ();
     
   protected:
     Scaler *scaler;
@@ -58,6 +61,7 @@ class ChartPlugin : public QObject
     bool saveFlag;
     QString pluginName;
     QString helpFile;
+    int currentPixelspace;
 };
 
 extern "C"

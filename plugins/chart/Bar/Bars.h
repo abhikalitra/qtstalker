@@ -39,6 +39,7 @@ class Bars : public ChartPlugin
     void loadSettings ();
     void saveSettings ();
     PlotLine * getBoolLine ();
+    void savePixelspace ();
     
   protected:
     QString style;

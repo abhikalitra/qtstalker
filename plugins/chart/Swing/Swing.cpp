@@ -184,6 +184,8 @@ void Swing::loadSettings ()
   downColor.setNamedColor(settings.readEntry("/DownColor", "red"));
   minPixelspace = settings.readNumEntry("/minPixelspace", 4);
   
+  currentPixelspace = settings.readNumEntry("/pixelspace", 4);
+  
   settings.endGroup();
 }
 
@@ -200,6 +202,14 @@ void Swing::saveSettings ()
   settings.writeEntry("/DownColor", downColor.name());
   settings.writeEntry("/minPixelspace", minPixelspace);
   
+  settings.endGroup();
+}
+
+void Swing::savePixelspace ()
+{
+  QSettings settings;
+  settings.beginGroup("/Qtstalker/Swing plugin");
+  settings.writeEntry("/pixelspace", currentPixelspace);
   settings.endGroup();
 }
 

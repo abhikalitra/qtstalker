@@ -1000,7 +1000,7 @@ void QtstalkerApp::slotChartTypeChanged (int)
 
   pixelspace->blockSignals(TRUE);
   pixelspace->setRange(mainPlot->getMinPixelspace(), 99);
-  pixelspace->setValue(mainPlot->getMinPixelspace());
+  pixelspace->setValue(mainPlot->getPixelspace());
   pixelspace->blockSignals(FALSE);
   
   setSliderStart(pixelspace->value(), FALSE);
