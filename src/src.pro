@@ -3,7 +3,7 @@ TEMPLATE = app
 CONFIG += thread warn_on debug
 
 QMAKE_CXXFLAGS += -rdynamic
-#QMAKE_CXXFLAGS += -Os
+QMAKE_CXXFLAGS += -Os
 
 HEADERS += Qtstalker.h
 HEADERS += PortfolioDialog.h
@@ -57,6 +57,7 @@ SOURCES += Scaler.cpp
 TARGET = qtstalker
 
 INCLUDEPATH += ../lib
+INCLUDEPATH += ../db-2.7.7/build_unix
 
 LIBS += -L../lib -lqtstalker
 

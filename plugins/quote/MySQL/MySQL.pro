@@ -11,6 +11,7 @@ TARGET = MySQL
 
 INCLUDEPATH += ../../../lib
 INCLUDEPATH += /usr/include/mysql
+INCLUDEPATH += ../../../db-2.7.7/build_unix
 
 LIBS += -lmysqlclient
 

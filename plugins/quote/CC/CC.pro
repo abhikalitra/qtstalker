@@ -10,6 +10,7 @@ SOURCES += CC.cpp
 TARGET = CC
 
 INCLUDEPATH += ../../../lib
+INCLUDEPATH += ../../../db-2.7.7/build_unix
 
 unix:linux-g++:LIBS += -ldl
 
