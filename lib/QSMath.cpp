@@ -99,13 +99,13 @@ PlotLine * QSMath::getEMA (PlotLine *d, int period)
 
   double smoother = 2.0 / (period + 1);
 
-  int count;
   double t = 0;
-  int loop = period - 1;
-  for (count = 0; count < period; count++)
-    t = t + d->getData(loop - count);
+  int loop;
+  for (loop = 0; loop < period; loop++)
+    t = t + d->getData(loop);
 
   double yesterday = t / period;
+  ema->append(yesterday);
 
   for (; loop < (int) d->getSize(); loop++)
   {
