@@ -40,6 +40,8 @@
 
 20041102: Fixed bug in COT plugin that segs when first run.
 
+20041113: Added use of semicolon as a delimiter in the CSV plugin as per user request.
+
           
 	  
 0.28

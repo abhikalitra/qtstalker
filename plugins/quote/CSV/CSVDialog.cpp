@@ -174,6 +174,7 @@ void CSVDialog::createRulePage ()
   delimiter->insertItem(tr("Comma"), -1);
   delimiter->insertItem(tr("Tab"), -1);
   delimiter->insertItem(tr("Space"), -1);
+  delimiter->insertItem(tr("Semicolon"), -1);
   grid->addWidget(delimiter, 2, 1);
 
   label = new QLabel(tr("Fields:"), w);

@@ -389,6 +389,12 @@ void CSV::setDelimiter (QString d)
     delim = " ";
     return;
   }
+
+  if (! d.compare(tr("Semicolon")))
+  {
+    delim = ";";
+    return;
+  }
 }
 
 QString CSV::getTime (QString d)

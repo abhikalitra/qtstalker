@@ -672,6 +672,7 @@ void Yahoo::prefDialog (QWidget *w)
     sdate = dialog->getStartDate();
     edate = dialog->getEndDate();
     symbolList = dialog->getList();
+    symbolList.sort();
     method = dialog->getMethod();
     retries = dialog->getRetries();
     saveFlag = TRUE;
