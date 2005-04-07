@@ -25,8 +25,7 @@
 #include <qstring.h>
 #include <qptrlist.h>
 #include <qobject.h>
-#include <qpixmap.h>
-#include "Scaler.h"
+#include <qcolor.h>
 
 typedef struct
 {
@@ -75,20 +74,11 @@ class PlotLine : public QObject
     void setScaleFlag (bool);
     bool getScaleFlag ();
     void getLineTypes (QStringList &);
-
     void setColorFlag (bool);
     bool getColorFlag ();
     void appendColorBar (QColor &);
     void prependColorBar (QColor &);
     QColor getColorBar (int);
-
-    void draw (QPixmap &, Scaler &, int, int, int, int);
-    void drawLine (QPixmap &, Scaler &, int, int, int, int);
-    void drawHorizontalLine (QPixmap &, Scaler &, int);
-    void drawHistogram (QPixmap &, Scaler &, int, int, int, int);
-    void drawHistogramBar (QPixmap &, Scaler &, int, int, int, int);
-    void drawDot (QPixmap &, Scaler &, int, int, int, int);
-    QString strip (double);
     
   private:
     QPtrList<Val> data;

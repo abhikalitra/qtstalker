@@ -316,6 +316,16 @@
 	    
 20050404: Merged LOWPASS plugin into MA plugin. Removed LOWPASS plugin.
 	    
+20050407: Moved PlotLine drawing functions back into Plot. Probably better to keep all the
+          Plot related functions confined to Plot.
+	  
+20050407: Fixed bug in PortfolioDialog that dropped symbol name when trying to edit an item.
+
+20050407: Double click on portfolio item now opens the Portfolio Item edit dialog.
+
+20050407: Added a balance display to the PortfolioDialog.
+	  
+
 	  
 	  	  
 0.29

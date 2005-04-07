@@ -22,10 +22,8 @@ To Do:
 - overhaul CSV plugin to allow URL downloads and clean up code...it's a mess  
 - put in left/right chart justify option.
 - update docs to explain why Bars:paintbar is blank if no rule is set.
-- add 1 and 10 minute bar choices to charts
 - add more crosshairs behaviours to IndicatorPlot
 - user defined bar lengths for intraday charts
-
     
 
 Maybe some day:

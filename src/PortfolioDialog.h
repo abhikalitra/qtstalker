@@ -25,6 +25,8 @@
 #include <qlistview.h>
 #include <qstring.h>
 #include <qtabdialog.h>
+#include <qlabel.h>
+#include <qpoint.h>
 #include "Config.h"
 #include "Toolbar.h"
 
@@ -46,6 +48,7 @@ class PortfolioDialog : public QTabDialog
     void savePortfolio ();
     void buttonStatus (QListViewItem *);
     void slotHelp ();
+    void itemDoubleClicked (QListViewItem *, const QPoint &, int);
 
   private:
     QListView *plist;
@@ -53,6 +56,7 @@ class PortfolioDialog : public QTabDialog
     QString portfolio;
     Toolbar *toolbar;
     Config config;
+    QLabel *balance;
 };
 
 #endif

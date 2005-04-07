@@ -308,7 +308,28 @@ void IndicatorPlot::drawLines ()
     for (loop = 0; loop < i->getLines(); loop++)
     {
       currentLine = i->getLine(loop);
-      currentLine->draw(buffer, scaler, data->count(), startX, startIndex, pixelspace);
+      
+      switch (currentLine->getType())
+      {
+        case PlotLine::Histogram:
+          drawHistogram();
+          break;
+        case PlotLine::HistogramBar:
+          drawHistogramBar();
+          break;
+        case PlotLine::Dot:
+          drawDot();
+          break;
+        case PlotLine::Line:
+        case PlotLine::Dash:
+          drawLine();
+          break;
+        case PlotLine::Horizontal:
+          drawHorizontalLine();
+          break;
+        default:
+          break;
+      }
     }
   }
 }
@@ -1136,6 +1157,232 @@ void IndicatorPlot::slotHideMainChanged (bool d)
 {
   setHideMainPlot(d);
   draw();
+}
+
+//*************************************************************************
+//******************** draw line functions ********************************
+//*************************************************************************
+
+void IndicatorPlot::drawLine ()
+{
+  QPainter painter;
+  painter.begin(&buffer);
+
+  QPen pen;
+  pen.setColor(currentLine->getColor());
+
+  if (currentLine->getType() == PlotLine::Dash)
+    pen.setStyle(Qt::DotLine);
+  else
+    pen.setStyle(Qt::SolidLine);
+  painter.setPen(pen);
+
+  int x = -1;
+  int x2 = startX;
+  int y = -1;
+  int y2 = -1;
+  int loop = currentLine->getSize() - data->count() + startIndex;
+  
+  Scaler scale;
+  if (currentLine->getScaleFlag())
+  {  
+    scale.set(scaler.getHeight(),
+  	      currentLine->getHigh(),
+	      currentLine->getLow(),
+	      scaler.getLogScaleHigh(),
+	      scaler.getLogRange(),
+	      scaler.getLogFlag());
+  }
+
+  while ((x2 < buffer.width()) && (loop < (int) currentLine->getSize()))
+  {
+    if (loop > -1)
+    {
+      if (currentLine->getScaleFlag())
+        y2 = scale.convertToY(currentLine->getData(loop));
+      else
+        y2 = scaler.convertToY(currentLine->getData(loop));
+
+      if (y != -1)
+        painter.drawLine (x, y, x2, y2);
+      x = x2;
+      y = y2;
+    }
+
+    x2 = x2 + pixelspace;
+    loop++;
+  }
+
+  painter.end();
+}
+
+void IndicatorPlot::drawHorizontalLine ()
+{
+  QPainter painter;
+  painter.begin(&buffer);
+
+  QPen pen;
+  pen.setColor(currentLine->getColor());
+  painter.setPen(pen);
+
+  int y = scaler.convertToY(currentLine->getData(currentLine->getSize() - 1));
+
+  painter.drawLine (0, y, buffer.width(), y);
+
+  QString s;
+  strip(currentLine->getData(currentLine->getSize() - 1), 4, s);
+  painter.drawText(startX, y - 1, s);
+
+  painter.end();
+}
+
+void IndicatorPlot::drawDot ()
+{
+  QPainter painter;
+  painter.begin(&buffer);
+
+  QPen pen;
+  pen.setColor(currentLine->getColor());
+  painter.setPen(pen);
+
+  int x = startX;
+  int loop = currentLine->getSize() - data->count() + startIndex;
+  
+  Scaler scale;
+  if (currentLine->getScaleFlag())
+  {
+    scale.set(scaler.getHeight(),
+  	      currentLine->getHigh(),
+	      currentLine->getLow(),
+	      scaler.getLogScaleHigh(),
+	      scaler.getLogRange(),
+	      scaler.getLogFlag());
+  }
+
+  while ((x < buffer.width()) && (loop < (int) currentLine->getSize()))
+  {
+    if (loop > -1)
+    {
+      int y;
+      if (currentLine->getScaleFlag())
+        y = scale.convertToY(currentLine->getData(loop));
+      else
+        y = scaler.convertToY(currentLine->getData(loop));
+
+      painter.drawPoint(x, y);
+    }
+
+    x = x + pixelspace;
+    loop++;
+  }
+
+  painter.end();
+}
+
+void IndicatorPlot::drawHistogram ()
+{
+  QPainter painter;
+  painter.begin(&buffer);
+  painter.setPen(currentLine->getColor());
+  painter.setBrush(currentLine->getColor());
+
+  int loop = currentLine->getSize() - data->count() + startIndex;
+
+  QPointArray pa(4);
+
+  int zero = 0;
+  Scaler scale;
+  if (currentLine->getScaleFlag())
+  {
+    scale.set(scaler.getHeight(),
+  	      currentLine->getHigh(),
+	      currentLine->getLow(),
+	      scaler.getLogScaleHigh(),
+	      scaler.getLogRange(),
+	      scaler.getLogFlag());
+    zero = scale.convertToY(0);
+  }
+  else
+    zero = scaler.convertToY(0);
+
+  int x = -1;
+  int x2 = startX;
+  int y = -1;
+  int y2 = -1;
+
+  while ((x < buffer.width()) && (loop < (int) currentLine->getSize()))
+  {
+    if (loop > -1)
+    {
+      if (currentLine->getScaleFlag())
+        y2 = scale.convertToY(currentLine->getData(loop));
+      else
+        y2 = scaler.convertToY(currentLine->getData(loop));
+      pa.setPoint(0, x, zero);
+      pa.setPoint(1, x, y);
+      pa.setPoint(2, x2, y2);
+      pa.setPoint(3, x2, zero);
+
+      if (y != -1)
+        painter.drawPolygon(pa, TRUE, 0, -1);
+
+      x = x2;
+      y = y2;
+    }
+
+    x2 = x2 + pixelspace;
+    loop++;
+  }
+
+  painter.end();
+}
+
+void IndicatorPlot::drawHistogramBar ()
+{
+  QPainter painter;
+  painter.begin(&buffer);
+
+  QColor color(currentLine->getColor());
+
+  int x = startX;
+  int zero = 0;
+  Scaler scale;
+  if (currentLine->getScaleFlag())
+  {
+    scale.set(scaler.getHeight(),
+  	      currentLine->getHigh(),
+	      currentLine->getLow(),
+	      scaler.getLogScaleHigh(),
+	      scaler.getLogRange(),
+	      scaler.getLogFlag());
+    zero = scale.convertToY(0);
+  }
+  else
+    zero = scaler.convertToY(0);
+
+  int loop = currentLine->getSize() - data->count() + startIndex;
+
+  while ((x < buffer.width()) && (loop < (int) currentLine->getSize()))
+  {
+    if (loop > -1)
+    {
+      int y;
+      if (currentLine->getScaleFlag())
+        y = scale.convertToY(currentLine->getData(loop));
+      else
+        y = scaler.convertToY(currentLine->getData(loop));
+
+      if (currentLine->getColorFlag() == TRUE)
+	color = currentLine->getColorBar(loop);
+
+      painter.fillRect(x, y, pixelspace - 1, zero - y, color);
+    }
+
+    x = x + pixelspace;
+    loop++;
+  }
+
+  painter.end();
 }
 
 //*************************************************************************

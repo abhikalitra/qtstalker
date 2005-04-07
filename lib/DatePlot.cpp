@@ -25,6 +25,7 @@
 #include <qstring.h>
 
 #define SCALE_WIDTH 60
+#define DATE_HEIGHT 30
 
 DatePlot::DatePlot (QWidget *w) : QWidget(w)
 {

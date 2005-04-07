@@ -22,8 +22,6 @@
 #ifndef SCALER_HPP
 #define SCALER_HPP
 
-#define DATE_HEIGHT 30
-
 #include <qstringlist.h>
 #include <qmemarray.h>
 
@@ -45,7 +43,6 @@ class Scaler
 
   protected:
     int height;
-    int dateHeight;
     bool logScale;
     double scaleHigh;
     double scaleLow;
@@ -53,8 +50,6 @@ class Scaler
     double logRange;
     double range;
     double scaler;
-
-//    QMemArray<double> scaleArray;
     QStringList scaleList;
 };
 

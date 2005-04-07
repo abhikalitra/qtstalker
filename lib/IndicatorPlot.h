@@ -100,6 +100,12 @@ class IndicatorPlot : public QWidget
     Scaler & getScaler ();
     void getInfo (int);
     void setXGrid (QMemArray<int> &);
+    
+    void drawLine ();
+    void drawHorizontalLine ();
+    void drawHistogram ();
+    void drawHistogramBar ();
+    void drawDot ();
    
   public slots:
     void draw();

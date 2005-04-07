@@ -24,8 +24,6 @@
 
 Scaler::Scaler ()
 {
-  dateHeight = DATE_HEIGHT;
-
   scaleList.append(".00001");
   scaleList.append(".00002");
   scaleList.append(".00005");
