@@ -360,16 +360,20 @@ void Tester::createReportPage ()
   tradeList->setSorting(FALSE);
   QHeader *header = tradeList->horizontalHeader();
   header->setLabel(0, tr("Type"), 40);
-  header->setLabel(1, tr("Entry"), 70);
-  header->setLabel(2, tr("Entry Price"), 70);
-  header->setLabel(3, tr("Exit"), 70);
-  header->setLabel(4, tr("Exit Price"), 70);
-  header->setLabel(5, tr("Signal"), 100);
-  header->setLabel(6, tr("Profit"), 90);
-  header->setLabel(7, tr("Account"), 90);
-  header->setLabel(8, tr("Vol"), 50);
+  header->setLabel(1, tr("Entry"), 80);
+  header->setLabel(2, tr("Entry Price"), 80);
+  header->setLabel(3, tr("Exit"), 80);
+  header->setLabel(4, tr("Exit Price"), 80);
+  header->setLabel(5, tr("Signal"), -1);
+  header->setLabel(6, tr("Profit"), 80);
+  header->setLabel(7, tr("Account"), -1);
+  header->setLabel(8, tr("Vol"), 60);
   vbox->addWidget(tradeList);
-  
+
+  int loop;
+  for (loop = 0; loop < 9; loop++)
+    tradeList->setColumnReadOnly(loop, TRUE);
+    
   // test summary
   
   QHBoxLayout *hbox = new QHBoxLayout(vbox);

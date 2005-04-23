@@ -29,6 +29,7 @@
 #include <qnetwork.h>
 #include <qsettings.h>
 
+
 Yahoo::Yahoo ()
 {
   pluginName = "Yahoo";

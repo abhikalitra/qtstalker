@@ -20,110 +20,63 @@
  */
 
 #include "IndicatorTab.h"
-#include <qcursor.h>
-#include <qsettings.h>
 #include <qstringlist.h>
 
-IndicatorTabBar::IndicatorTabBar (QWidget *w) : QTabBar (w)
+
+IndicatorTab::IndicatorTab (QWidget *w) : QWidget (w)
 {
-  menu = new QPopupMenu;
+  vbox = new QVBoxLayout(this);
+  vbox->setMargin(0);
+  vbox->setSpacing(0);
   
-  positionMenu = new QPopupMenu();
-  int id = positionMenu->insertItem(tr("Top"), this, SLOT(toggleTabPosition(int)));
-  positionMenu->setItemParameter(id, 0);
-  id = positionMenu->insertItem(tr("Bottom"), this, SLOT(toggleTabPosition(int)));
-  positionMenu->setItemParameter(id, 1);
-  menu->insertItem (tr("Tab Position"), positionMenu);
-}
+  stack = new QWidgetStack(this);
+  vbox->addWidget(stack);
 
-IndicatorTabBar::~IndicatorTabBar ()
-{
-  delete menu;
-}
-
-void IndicatorTabBar::contextMenuEvent (QContextMenuEvent *event)
-{
-  event->accept();
-  menu->exec(QCursor::pos());
-}
-
-void IndicatorTabBar::toggleTabPosition (int pos)
-{
-  switch (pos)
-  {
-    case 1:
-      emit signalPositionChanged(QTabWidget::Bottom);
-      break;
-    default:
-      emit signalPositionChanged(QTabWidget::Top);
-      break;
-  }
-}
-
-//*****************************************************************
-//*****************************************************************
-//*****************************************************************
-
-IndicatorTab::IndicatorTab (QWidget *w) : QTabWidget (w)
-{
-  IndicatorTabBar *bar = new IndicatorTabBar(this);
-  QObject::connect(bar, SIGNAL(signalPositionChanged(QTabWidget::TabPosition)),
-                   this, SLOT(toggleTabPosition(QTabWidget::TabPosition)));
-  setTabBar(bar);
-  
-  connect(this, SIGNAL(currentChanged(QWidget *)), this, SLOT(slotTabChanged(QWidget *)));
-  
-  loadSettings();
+  tab = new QTabBar(this);
+  connect(tab, SIGNAL(selected(int)), this, SLOT(slotTabChanged(int)));
+  tab->setShape(QTabBar::RoundedBelow);
+  vbox->addWidget(tab);
 }
 
 IndicatorTab::~IndicatorTab ()
 {
 }
 
-void IndicatorTab::toggleTabPosition (QTabWidget::TabPosition pos)
+void IndicatorTab::slotTabChanged (int id) 
 {
-  setTabPosition(pos);
-  saveSettings();
-}
+  stack->raiseWidget(id);
+  Plot *p = (Plot *) stack->visibleWidget();
+  if (! p)
+    return;
 
-void IndicatorTab::saveSettings()
-{
-  QSettings settings;
-  if (tabPosition() == QTabWidget::Top)
-    settings.writeEntry("/Qtstalker/IndicatorTabs", TRUE);
-  else
-    settings.writeEntry("/Qtstalker/IndicatorTabs", FALSE);
-}
-
-void IndicatorTab::loadSettings() 
-{
-  QSettings settings;
-  bool pos = settings.readBoolEntry("/Qtstalker/IndicatorTabs", TRUE);
-  if (pos == TRUE)
-    setTabPosition(QTabWidget::Top);
-  else
-    setTabPosition(QTabWidget::Bottom);
-}
-
-void IndicatorTab::slotTabChanged (QWidget *w) 
-{
-  ((Plot *) w)->draw();
+  p->draw();
 }
 
 void IndicatorTab::drawCurrent () 
 {
-  if (count() == 0)
+  Plot *p = (Plot *) stack->visibleWidget();
+  if (! p)
     return;
 
-  ((Plot *) currentPage())->draw();
+  p->draw();
+}
+
+void IndicatorTab::getTabList (QStringList &l) 
+{
+  l.clear();
+  
+  int loop;
+  for (loop = 0; loop < (int) tab->count(); loop++)
+  {
+    QTab *t = tab->tabAt(loop);
+    l.append(t->text());
+  }
 }
 
 int IndicatorTab::getInsertIndex (QString &d) 
 {
   QStringList l;
-  int loop;
-  for (loop = 0; loop < (int) count(); loop++)
-    l.append(label(loop));
+  getTabList(l);
   l.append(d);
   l.sort();
   return l.findIndex(d);
@@ -131,17 +84,39 @@ int IndicatorTab::getInsertIndex (QString &d)
 
 bool IndicatorTab::deleteTab (QString &d) 
 {
-  QStringList l;
-  int loop;
-  for (loop = 0; loop < (int) count(); loop++)
-    l.append(label(loop));
-    
-  loop = l.findIndex(d);
-  if (loop == -1)
+  QString s = idList.getData(d);
+  if (! s.length())
     return FALSE;
     
-  removePage(page(loop));
+  QTab *t = tab->tab(s.toInt());
+  tab->removeTab(t);
   
+  stack->removeWidget(stack->widget(s.toInt()));
+  
+  idList.remove(d);
+  
+  slotTabChanged(tab->currentTab());
+        
   return TRUE;
 }
+
+void IndicatorTab::insertTab (QWidget *w, QString n, int p)
+{
+  QTab *t = new QTab(n);
+  int id = tab->insertTab(t, p);
+  
+  idList.setData(n, QString::number(id));
+  
+  stack->addWidget(w, id);
+
+  tab->update();
+  
+  tab->setCurrentTab(id);
+    
+//  slotTabChanged(id);
+  
+//  ((Plot *) w)->draw();
+}
+
+
 

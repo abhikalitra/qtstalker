@@ -22,50 +22,35 @@
 #ifndef INDICATORTAB_HPP
 #define INDICATORTAB_HPP
 
-#include <qtabwidget.h>
-#include <qpopupmenu.h>
 #include <qtabbar.h>
+#include <qwidgetstack.h>
+#include <qlayout.h>
+
 #include "Plot.h"
+#include "Setting.h"
 
 
-class IndicatorTabBar : public QTabBar
-{
-  Q_OBJECT
-  
-  signals:
-    void signalPositionChanged (QTabWidget::TabPosition);
-
-  public:
-    IndicatorTabBar (QWidget *);
-    ~IndicatorTabBar ();
-
-  protected:
-    virtual void contextMenuEvent (QContextMenuEvent *);
-    
-  private slots:
-    void toggleTabPosition (int);
-  
-  private:
-    QPopupMenu *menu;
-    QPopupMenu *positionMenu;
-};
-
-class IndicatorTab : public QTabWidget
+class IndicatorTab : public QWidget
 {
   Q_OBJECT
 
   public:
     IndicatorTab (QWidget *);
     ~IndicatorTab ();
-    void loadSettings();
-    void saveSettings();
     void drawCurrent ();
     int getInsertIndex (QString &);
     bool deleteTab (QString &);
+    void getTabList (QStringList &);
+    void insertTab (QWidget *, QString, int);
 
   private slots:
-    void toggleTabPosition (QTabWidget::TabPosition);
-    void slotTabChanged (QWidget *);
+    void slotTabChanged (int);
+    
+  private:
+    QTabBar *tab;
+    QWidgetStack *stack;
+    QVBoxLayout *vbox;
+    Setting idList;
 };
 
 #endif

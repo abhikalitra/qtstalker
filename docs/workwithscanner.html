@@ -15,30 +15,29 @@ formula. All the symbols that meet the criteria of the scan are put
 into chart group. The chart group will use the same name as the scan
 name, and be located as a folder under the "Scanner" group.</p>
 <p><br>
-<img style="width: 185px; height: 255px;" alt="" src="scannernav.png"><br>
+<img alt="" src="scannernav.png" style="width: 232px; height: 258px;"><br>
 </p>
-<br>
-<h3>Open Scanner
-</h3>
-<p>This will load and display the selected scanner in the scanner
-dialog.</p>
-<h3>New Scanner<br>
-</h3>
-<p>Here you can create a new scanner. Selecting this will bring up a
+<h4>New Scanner</h4>
+Here you can create a new scanner. Selecting this will bring up a
 series of dialogs. First you are asked for a name to call your new
 scanner. The name must be unique, if not an error message will
 display. After that, the scanner dialog will appear.<br>
-</p>
-<h3>Delete Scanner</h3>
-<p>Deletes the selected scanner.<br>
-</p>
+<br>
+<h4>Open Scanner</h4>
+This will load and display the selected scanner in the scanner
+dialog.
+<h4>Delete Scanner</h4>
+Deletes the selected scanner.<br>
 <h3>Rename Scanner<br>
 </h3>
 <p>This brings up a dialog that allows you to enter the new name of the
 selected scanner.</p>
+<h4>Run Scanner</h4>
+Allows the user to select a list scanners to run in sequence.<br>
+<br>
 <br>
 <h2>Scanner Dialog</h2>
-<img style="width: 338px; height: 461px;" alt="" src="scannerdialog.png"><br>
+<img alt="" src="scannerdialog.png" style="width: 370px; height: 401px;"><br>
 <br>
 The "Scan" button will perform the scan. The "Apply" button will save
 the scan rule.<br>
@@ -48,19 +47,18 @@ symbols in the qtstalker database for scanning. Pressing the symbols
 button will bring up a file selector dialog that allows you to choose a
 specific group of symbols.<br>
 <br>
-Bars/Compression: Bars is the number of bars to load. Compression to
+Compression: the bar compression to
 use when scanning symbols. ie. Daily,
 Weekly, Monthly.<br>
 <br>
-Scanner Formula: This is where we enter the formula to scan symbols
-with. Here the above shot is using a simple SMA crossover formula. Here
-is a breakdown of the formula.<br>
+Scanner Formula: This is where the user must enter a CUS type of
+formula to use for the scanning logic. See the indicator plugin CUS for
+details on how to construct a formula.<br>
 <br>
-1. REF function grabs an array of close bars.<br>
-2. MA function creates a 20 period SMA with step 1 as the input.<br>
-3. COMP function that compares step 1 with step 2. If step 1 is greater
-than step 2, than a TRUE result is returned and the symbol being
-scanned will be put into the scan group.<br>
+Once all the parameters are entered, the user presses the Scan button
+to perform the scan. A progress dialog will then display the progress
+of the scan. The scan can be aborted by pressing the Cancel button from
+the progress dialog.<br>
 <br>
 **CRITICAL**<br>
 In order for this formula to work, you must have a COMP step somewhere
@@ -71,6 +69,9 @@ qtstalker which step contains the logic for selecting symbols. If a non
 COMP step or multiple steps are checked, the results will be unreliable.<br>
 <br>
 <br>
+ alt="Back" border="0" height="32" width="32"></a>
+ border="0" height="32" width="32"></a><a href="toc.html"><img
+ src="home.png" alt="Home" border="0" height="32" width="32"></a>
 <a href="workwithbacktest.html" target="_self"><img src="back.png" border="0" width="32" height="32" alt="Back"></a>
 <a href="toolbars.html" target="_self"><img src="next.png" border="0" width="32" height="32" alt="Next"></a>
 <a href="toc.html"><img src="home.png" border="0" width="32" height="32" alt="Home"></a>

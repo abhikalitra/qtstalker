@@ -51,7 +51,7 @@ TestPage::TestPage (QWidget *w, MainMenubar *mb) : QListBox (w)
   menu->insertItem(QPixmap(open), tr("&Open Rule		Ctrl+O"), this, SLOT(openTest()));
   menu->insertItem(QPixmap(deleteitem), tr("&Delete Rule	Ctrl+D"), this, SLOT(deleteTest()));
   menu->insertItem(QPixmap(renam), tr("&Rename Rule		Ctrl+R"), this, SLOT(renameTest()));
-  menu->insertItem(QPixmap(copy), tr("&Copy Rule		Ctrl+Y"), this, SLOT(copyTest()));
+  menu->insertItem(QPixmap(copypic), tr("&Copy Rule		Ctrl+Y"), this, SLOT(copyTest()));
   menu->insertSeparator(-1);
   menu->insertItem(QPixmap(help), tr("&Help		Ctrl+H"), this, SLOT(slotHelp()));
 

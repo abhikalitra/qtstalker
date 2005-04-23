@@ -28,8 +28,12 @@ Plot::Plot (QWidget *w) : QWidget(w)
   tabFlag = TRUE;
   
   QVBoxLayout *vbox = new QVBoxLayout(this);
+  vbox->setMargin(0);
+  vbox->setSpacing(0);
   
   QHBoxLayout *hbox = new QHBoxLayout(vbox);
+  hbox->setMargin(0);
+  hbox->setSpacing(0);
 
   indicatorPlot = new IndicatorPlot(this);
   hbox->addWidget(indicatorPlot, 1, 0);

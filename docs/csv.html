@@ -21,12 +21,16 @@ data to import. <br>
 </p>
 <h3>General Input Parameters:</h3>
 <ul>
+  <li>Rule - The field format rule to apply to the input files selected.</li>
   <li>Input - The ASCII file to be imported from your local filesystem.</li>
   <li>Symbol - If you do not specify a symbol field in the rule, the
 symbol field will enable allowing you to enter a symbol. If no symbol
 is entered, then the basename part
 of the filename will be used.</li>
-  <li>Rule - The field format rule to apply to the input file selected.</li>
+  <li>Auto Reload - If set &gt; 0 minutes, will import the input files
+every ? minutes. This can be used as a way of updating intraday quotes
+via some other app that is downloading ascii quotes to a file.<br>
+  </li>
   <li>Select Date Range - Select a date range of records to import. If
 checked, the Start Date and End Date options are required.</li>
   <li>Date Start - Specify a start date for record filtering. Only used
@@ -34,7 +38,7 @@ if "Select Date Range' option is checked.</li>
   <li>Date End - Specify a ending date for record filtering. Only used
 if "Select Date Range' option is checked.</li>
 </ul>
-<img style="width: 333px; height: 368px;" alt="" src="csv1.png"><br>
+<img alt="" src="csv1.png" style="width: 281px; height: 353px;"><br>
 <ul>
   <br>
 </ul>
@@ -44,7 +48,14 @@ Use this page to create, edit or delete rules.<br>
   <li>Rule - The name of the rule.<br>
   </li>
   <li>Chart Type - The chart to create can be stock or futures chart.</li>
-  <li>Delimiter - The delimiter used between fields. </li>
+  <li>Delimiter - The delimiter used between fields.</li>
+  <li>Data Directory - The directory offset used to place the imported
+data. The above example will update charts located in the MyStocks
+directory.</li>
+  <li>Symbol Filter - If you wish to select specific symbol names from
+an input file. Separate symbols with a comma. If left blank all symbols
+will be imported.<br>
+  </li>
   <li>Fields - The field type you want to insert. Currently the
 following fields are available:<br>
   </li>
@@ -105,25 +116,28 @@ following fields are available:<br>
   <ul>
     <li>Ignore - use this to ignore any unwanted data fields in the
 record</li>
+    <li>Name - The symbol name. eg. Microsoft Corporation<br>
+    </li>
   </ul>
-  <li>Rule Contents - The contents of the rule.<br>
-  </li>
 </ul>
-<img style="width: 329px; height: 420px;" alt="" src="csv2.png"><br>
 <br>
-<p>Use the buttons on the button bar to create and modify the rule. You
-create a new rule and insert the field format of the ascii file into
-the Rule Contents list. The fields in the list should match the fields
+<img alt="" src="csv2.png" style="width: 401px; height: 398px;"><br>
+<br>
+<p>The left side list contains all the available import fields. The
+right side list contains the rule fields used. Use the buttons on the
+button bar to insert or delete items. The fields in the list should
+match the fields
 in the ascii file from top to bottom in the list. Using the above
 picture as an example; The rule would import a record that had the
-format of "Date:MMDDYYYYHHMMSS,Open,High,Low,Close,Volume". An actual
+format of "Date:MMDDYYYYHHMMSS,Open,High,Low,Close,Volume,Ignore". An
+actual
 data record would look something like "12/31/1999
-23:59:59,100,101,99,100,999999".<br>
+23:59:59,100,101,99,100,999999,+0.25".
 <br>
 </p>
-<p><br>
-<br>
-</p>
+ border="0" height="32" width="32"></a>
+ border="0" height="32" width="32"></a><a href="toc.html"><img
+ src="home.png" alt="Home" border="0" height="32" width="32"></a>
 <a href="cot.html" target="_self"><img src="back.png" border="0" width="32" height="32" alt="Back"></a>
 <a href="mysql.html" target="_self"><img src="next.png" border="0" width="32" height="32" alt="Next"></a>
 <a href="toc.html"><img src="home.png" border="0" width="32" height="32" alt="Home"></a>

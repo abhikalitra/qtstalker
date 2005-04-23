@@ -82,11 +82,19 @@ void FuturesData::getSymbolList (QString &d, QStringList &l)
   for (; it.current(); ++it)
   {
     if (! d.compare("All"))
-      l.append(it.current()->getData(symbolKey));
+    {
+      QString s = it.current()->getData(symbolKey);
+      if (l.findIndex(s) == -1)
+        l.append(s);
+    }
     else
     {
       if (! it.current()->getData(exchangeKey).compare(d))
-        l.append(it.current()->getData(symbolKey));
+      {
+        QString s = it.current()->getData(symbolKey);
+        if (l.findIndex(s) == -1)
+          l.append(s);
+      }
     }
   }
   l.sort();
@@ -265,6 +273,7 @@ void FuturesData::loadData ()
   set->setData(symbolKey, "ES");
   set->setData(monthKey, "H,M,U,Z");
   set->setData(exchangeKey, cme);
+  set->setData(rateKey, "50");
   data.replace("ES", set);
 
   set = new Setting;
@@ -304,7 +313,7 @@ void FuturesData::loadData ()
   set = new Setting;
   set->setData(nameKey, QObject::tr("Heating Oil"));
   set->setData(symbolKey, "HO");
-  set->setData(rateKey, "400");
+  set->setData(rateKey, "40000");
   set->setData(monthKey, "F,G,H,J,K,M,N,Q,U,V,X,Z");
   set->setData(limitKey, "6");
   set->setData(exchangeKey, nymex);
@@ -313,7 +322,7 @@ void FuturesData::loadData ()
   set = new Setting;
   set->setData(nameKey, QObject::tr("Unleaded Gasoline"));
   set->setData(symbolKey, "HU");
-  set->setData(rateKey, "400");
+  set->setData(rateKey, "40000");
   set->setData(monthKey, "F,G,H,J,K,M,N,Q,U,V,X,Z");
   set->setData(limitKey, "6");
   set->setData(exchangeKey, nymex);
@@ -495,6 +504,7 @@ void FuturesData::loadData ()
   set->setData(symbolKey, "SP");
   set->setData(monthKey, "H,M,U,Z");
   set->setData(exchangeKey, cme);
+  set->setData(rateKey, "250");
   data.replace("SP", set);
 
   set = new Setting;

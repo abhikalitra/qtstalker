@@ -15,7 +15,8 @@
 supported exchanges are available
 with this plugin.<br>
 </p>
-<br>
+<h4><br>
+</h4>
 <h4>Adjustments:</h4>
 Yahoo provides an Adjusted Close column in its data,
 scaling prior closing prices to the most recent price based on stock
@@ -32,16 +33,6 @@ absolute prices are a factor different from what occurred on the
 exchange that day. Having said that, factoring for historical events
 in this manner is a common approach for visually graphing stock
 prices.<br>
-<h4><br>
-</h4>
-<h4>200 Bar Limit:</h4>
-Most of the yahoo exchanges (except NA markets) have a 200 bar limit to
-the number of historical quotes that can be downloaded at one time. A
-work around for this is to download the data you need by doing it in
-several chunks of 6 month intervals. So, gettting many years worth of
-data would take 6 or 7 download sessions by adjusting the start and end
-dates by 6 months at a time.<br>
-<br>
 <br>
 <h3>Input Parameters:</h3>
 <ul>
@@ -52,7 +43,8 @@ dates by 6 months at a time.<br>
     </li>
     <li>Auto History - Updates to the most recent history.<br>
     </li>
-    <li>Quote - Updates the most recent intraday delayed quote.<br>
+    <li>Quote - Updates the most recent intraday delayed quote.</li>
+    <li>Fundamental - Updates charts with yahoo fundmental data.<br>
     </li>
   </ul>
   <li>End Date - The most recent date to include for update. Used only
@@ -66,11 +58,11 @@ downloading the symbol occurs.</li>
 symbol before moving on to the next symbol in the list.</li>
   <li>Adjustment - Propagate the Close/Adjusted Close factor to all
 price columns (i.e. adjust for stock splits and dividends).</li>
-  <li>Download Symbols - Select the symbols to download by highlighting
-them.</li>
+  <li>All Symbols - If checked, all symbols will be selected.
+Unchecked, specific symbols can be selected by using the file selector.</li>
 </ul>
 <p></p>
-<img alt="" src="yahoo1.png" style="width: 324px; height: 500px;"><br>
+<img alt="" src="yahoo1.png" style="width: 281px; height: 363px;"><br>
 <p></p>
 <p></p>
 <p><br>
@@ -86,9 +78,10 @@ you want to download quotes.<br>
 <p><br>
 </p>
 <br>
-
-<a href="toc.html"><img
- src="home.png" alt="Home" border="0" height="32" width="32"></a>
+ width="32"></a>
+ border="0" height="32" width="32"></a><a href="buyarrow.html"
+ width="32"></a>
+ width="32"></a>
 <a href="qtstalker.html" target="_self"><img src="back.png" border="0" width="32" height="32" alt="Back"></a>
 <a href="buyarrow.html" target="_self"><img src="next.png" border="0" width="32" height="32" alt="Next"></a>
 <a href="toc.html"><img src="home.png" border="0" width="32" height="32" alt="Home"></a>

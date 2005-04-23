@@ -828,6 +828,8 @@ void QtstalkerApp::slotEnableIndicator (QString name)
       if (! it.current()->getTabFlag())
         it.current()->draw();
     }
+    
+    tabs->drawCurrent();
   }
 }
 
@@ -898,8 +900,8 @@ void QtstalkerApp::addIndicatorButton (QString &d, Indicator::PlotType tabFlag)
     QString t = fi.fileName();
     int page = tabs->getInsertIndex(t);
     tabs->insertTab(plot, fi.fileName(), page);
-    tabs->setCurrentPage(page);
-    tabs->adjustSize();
+//    tabs->drawCurrent();
+//    tabs->adjustSize();
   }
 }
 

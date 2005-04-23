@@ -32,6 +32,7 @@
 #include <qfileinfo.h>
 
 
+
 CME::CME ()
 {
   pluginName = "CME";

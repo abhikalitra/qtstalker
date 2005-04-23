@@ -35,7 +35,6 @@
 #include "Navigator.h"
 #include "Setting.h"
 #include "ChartPage.h"
-#include "IndicatorTab.h"
 #include "NavigatorTab.h"
 #include "Quote.h"
 #include "IndicatorPage.h"
@@ -47,6 +46,7 @@
 #include "ChartToolbar.h"
 #include "MainMenubar.h"
 #include "Macro.h"
+#include "IndicatorTab.h"
 
 #define DEFAULT_INDICATOR_HEIGHT 125
 

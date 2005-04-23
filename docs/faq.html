@@ -10,21 +10,20 @@
 <body xml:lang="en" lang="en">
 <h2><u>Frequently Asked Questions</u></h2>
 <h2> </h2>
-<h3>Can you make a binary package for Qtstalker ?</h3>
-<p>Nope. Binary packages are so problematic now that they are a
+<h4>Can you make a binary package for Qtstalker ?</h4>
+Nope. Binary packages are so problematic now that they are a
 nightmare for maintainers. I will leave it up to the distributions to
 provide binaries and support them. Besides, learning how to compile
 from source makes you a better person, brings world peace and makes you
 more attractive to women.<br>
-</p>
 <p>Qtstalker is now included in the Debian distribution thanks to the
 efforts of Marco van Zwetselaar. Marco is the maintainer for the binary
 package.<br>
 <br>
 </p>
 <p></p>
-<h3>What platforms are supported ?</h3>
-<p>Currently, Linux compatible and FreeBSD systems are supported. Some
+<h4>What platforms are supported ?</h4>
+Currently, Linux compatible and FreeBSD systems are supported. Some
 people have tried
 with some success on Solaris, IRIX and most unices. I'm afraid I cannot
 support any other platforms other than Linux compatible systems simply
@@ -34,29 +33,29 @@ So,
 if you want to port it, I can help as much as I am able. Due to ethical
 and political feelings, I will not help or support anyone trying to do
 a win32 port. The goal of this project is not to provide win32 users
-more gold bars for their prisons. So endith the lesson...</p>
+more gold bars for their prisons. So endith the lesson...
 <p></p>
-<h3>My favorite indicator(s) are not included in Qtstalker, what can I
-do ?</h3>
-<p>Beer and cash tend to work best, but you might also try asking me.
+<h4>My favorite indicator(s) are not included in Qtstalker, what can I
+do ?</h4>
+Beer and cash tend to work best, but you might also try asking me.
 I'd be glad to create a plugin for you provided you supply me with a
 formula and you agree to include it into Qtstalker under the GPL.
 Another option
 is if you don't want to GPL your formula, you may contract me to write
 a
-proprietary plugin for you for a fee.</p>
+proprietary plugin for you for a fee.
 <p>Of course, you can always develop the new indicator yourself. Just
 copy
 the code from an existing indicator that does similar things. Please
 consider
 contributing the new indicator back to this project. Everyone benefits.</p>
-<h3>I'm a day trader, how come there is no intraday charting functions ?</h3>
-<p>There is currently basic support for tick data limited to a HH:MM:SS
+<h4>I'm a day trader, how come there is no intraday charting functions ?</h4>
+There is currently basic support for tick data limited to a HH:MM:SS
 resolution. However, there are currently no quote plugins that download
 free tick data. It is left up to the user to provide quotes from a data
 service on an individual basis. You may use the CSV quote plugin to
-import ascii files with tick data.</p>
-<h3>Does Qtstalker handle stock splits ?</h3>
+import ascii files with tick data.
+<h4>Does Qtstalker handle stock splits ?</h4>
 Nope. To keep things simple, there is an easy way to handle splits.
 Just delete the chart that had a split, create the chart with the yahoo
 plugin and then update the data. This will pull in all the new
@@ -65,26 +64,26 @@ but reduces overhead and keeps things nice and snappy. NOTE: the yahoo
 quote plugin allows the user to use the 'adjusted' price, however this
 is not the actual trading price but an adjusted one for chart sanity.<br>
 <br>
-<h3>Where does the name Qtstalker come from ?</h3>
+<h4>Where does the name Qtstalker come from ?</h4>
 Well if you really must know...The Qt part comes from the GNU/Linux
 tradition of prefixing an X app with the GUI toolkit used. The stalker
 part is just cheesy word play stemming from the idea of "stock search"
 or "stalking stocks". I also just like the word "stalker".<br>
 <br>
-<h3>Why don't you make this into a KDE app ?</h3>
+<h4>Why don't you make this into a KDE app ?</h4>
 I want to keep things as simple, efficient and portable as possible. Qt
 does everything I need.<br>
 <br>
-<h3>There are alot of plugins I don't use taking up space. How do I get
+<h4>There are alot of plugins I don't use taking up space. How do I get
 rid
-of them ?</h3>
+of them ?</h4>
 If you are sure there are plugins you don't need, then all you have to
 do
 is delete them from the /usr/lib/qtstalker/* directory. Simple as that.
 Be sure you don't delete the directory itself, just the plugin *.so
 file.<br>
 <br>
-<h3>Why don't you use SQL for data storage?</h3>
+<h4>Why don't you use SQL for data storage?</h4>
 Two reasons, speed and simplicty. Once again I cite the KISS (keep it
 simple, stupid!) philosophy. You can't beat Db btree functions for ease
 of use and speed. Using SQL would just add another layer of
@@ -92,14 +91,10 @@ requirements and major speed penalties. It also means more
 administration hassles for the user to set up accounts, tables, logs
 etc. Why complicate things? Each chart is it's own compact, flexible,
 dynamic, self-contained db. Blows SQL away in this respect.<br>
-<br>
-<h3>Why is the Db 2.7.7 source included ?</h3>
-To avoid binary format changes in each major revision, I have made this
-version the stable standard and include the source to keep things as
-simple as possible for the user. No need to hunt around for packages
-etc. Just compile and go.<br>
-<br>
-<h3>How about a Mac OS X port?</h3>
+<span style="font-weight: bold;"><br>
+</span>
+<h4>How about a Mac OS X port?<br>
+</h4>
 An attempt was made for version 0.22 before its release, but soon
 realized it won't happen. There are some major issues with the plugins
 and GUI flexibility. Firstly, the plugins are unable to be refreshed
@@ -111,10 +106,9 @@ proprietary products and therefore untrustworthy. SCO to hell...SCO
 directly to hell...do not pass go.<br>
 <br>
 <br>
-<br>
-<br>
-<br>
-<br>
+ border="0" height="32" width="32"></a>
+ border="0" height="32" width="32"></a><a href="toc.html"><img
+ src="home.png" alt="Home" border="0" height="32" width="32"></a>
 <a href="plugintut.html" target="_self"><img src="back.png" border="0" width="32" height="32" alt="Back"></a>
 <a href="ctypes.html" target="_self"><img src="next.png" border="0" width="32" height="32" alt="Next"></a>
 <a href="toc.html"><img src="home.png" border="0" width="32" height="32" alt="Home"></a>

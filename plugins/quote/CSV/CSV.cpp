@@ -30,6 +30,7 @@
 #include <qdir.h>
 #include <qsettings.h>
 
+
 CSV::CSV ()
 {
   pluginName = "CSV";

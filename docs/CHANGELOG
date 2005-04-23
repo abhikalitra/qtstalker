@@ -325,7 +325,16 @@
 
 20050407: Added a balance display to the PortfolioDialog.
 	  
-
+20050419: Fixed a compile error for FreeBSD in TestPage. Changed static variable
+         'copy' to 'copypic'. Clash with some linked library function named 'copy'.
+	 
+20050421: Fixed indicator tab area to line up properly with the main chart by
+          removing the raised border that surrounds the chart.
+	  
+20050421: Moved the indicator tab area to the bottom of the page as the default.
+          This is the better position so the charts are closer together rather
+	  than separated by the tabs.
+	  
 	  
 	  	  
 0.29
