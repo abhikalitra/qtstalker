@@ -718,6 +718,8 @@ void QtstalkerApp::slotNewIndicator (Indicator *i)
 
   if (i->getPlotType() == Indicator::MainPlot)
     mainPlot->draw();
+  else
+    tabs->drawCurrent();
     
   ip->updateList();
 }

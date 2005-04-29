@@ -152,21 +152,26 @@ void Scaler::getScaleArray (QMemArray<double> &scaleArray)
 
   loop = 0;
   double t = 0 - (ticks * interval);
+  
 /*  
   double t = scaleLow;
   if (t < 0)
     t = 0 - (ticks * interval);
   else
     t = t - interval;
-*/  
-  while (t <= scaleHigh)
-  {
-    t = t + interval;
+*/
 
-    if (t >= scaleLow)
+  if (interval > 0)
+  {
+    while (t <= scaleHigh)
     {
-      scaleArray[loop] = t;
-      loop++;
+      t = t + interval;
+
+      if (t >= scaleLow)
+      {
+        scaleArray[loop] = t;
+        loop++;
+      }
     }
   }
 

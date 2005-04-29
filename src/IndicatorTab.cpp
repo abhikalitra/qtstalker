@@ -112,10 +112,6 @@ void IndicatorTab::insertTab (QWidget *w, QString n, int p)
   tab->update();
   
   tab->setCurrentTab(id);
-    
-//  slotTabChanged(id);
-  
-//  ((Plot *) w)->draw();
 }
 
 

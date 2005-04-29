@@ -308,7 +308,10 @@ void IndicatorPlot::drawLines ()
     for (loop = 0; loop < i->getLines(); loop++)
     {
       currentLine = i->getLine(loop);
-      
+
+      if (! currentLine->getSize())
+        continue;
+            
       switch (currentLine->getType())
       {
         case PlotLine::Histogram:

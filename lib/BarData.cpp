@@ -402,4 +402,3 @@ void BarData::clear ()
   barList.clear();
 }
 
-
