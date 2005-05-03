@@ -132,15 +132,18 @@ void Plot::setInfoFlag (bool d)
 void Plot::draw ()
 {
   datePlot->draw();
-  scalePlot->draw();
   indicatorPlot->draw();
+  scalePlot->setScaler(indicatorPlot->getScaler());
+  scalePlot->draw();
+//  indicatorPlot->draw();
 }
 
 void Plot::drawRefresh ()
 {
   datePlot->drawRefresh();
-  scalePlot->drawRefresh();
   indicatorPlot->drawRefresh();
+  scalePlot->drawRefresh();
+//  indicatorPlot->drawRefresh();
 }
 
 void Plot::setBackgroundColor (QColor d)

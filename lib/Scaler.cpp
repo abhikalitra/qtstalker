@@ -24,6 +24,15 @@
 
 Scaler::Scaler ()
 {
+  height = 0;
+  logScale = 0;
+  scaleHigh = 0;
+  scaleLow = 0;
+  logScaleHigh = 0;
+  logRange = 0;
+  range = 0;
+  scaler = 0;
+
   scaleList.append(".00001");
   scaleList.append(".00002");
   scaleList.append(".00005");
@@ -83,6 +92,15 @@ Scaler::~Scaler ()
 
 void Scaler::set (int ht, double h, double l, double lh, double lr, bool lf)
 {
+  height = 0;
+  logScale = 0;
+  scaleHigh = 0;
+  scaleLow = 0;
+  logScaleHigh = 0;
+  logRange = 0;
+  range = 0;
+  scaler = 0;
+
   if (h - l == 0)
     return;
     
@@ -125,6 +143,9 @@ double Scaler::convertToVal (int y)
       return exp(logScaleHigh - ((y * logRange) / height));
   }
 
+  if (height == 0)
+    return 0;
+    
   int p = height - y;
   double val = scaleLow + (p / scaler) ;
   return val;
