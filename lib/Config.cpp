@@ -217,7 +217,7 @@ QString Config::getData (Parm p)
       s = settings.readEntry("/Qtstalker/ChartStyle", "Bar");
       break;
     case Compression:
-      s = settings.readEntry("/Qtstalker/Compression", "4");
+      s = settings.readEntry("/Qtstalker/Compression", "6");
       break;
     case Grid:
       s = settings.readEntry("/Qtstalker/Grid", "1");

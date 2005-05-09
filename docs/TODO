@@ -18,7 +18,7 @@ To Do:
   data. also put a timer on yahoo plugin for intraday tick downloads every X minutes. same limitations
   will apply as in the CSV timer
 - create a date range for loading charts, then step through bar by bar to simulate paper trading
-- put CUS editors to define up, down, neutral colors in Bars plugin.
+- put a paint bars function for candles (replace volume candles with CUS?)
 - overhaul CSV plugin to allow URL downloads and clean up code...it's a mess  
 - put in left/right chart justify option.
 - update docs to explain why Bars:paintbar is blank if no rule is set.

@@ -54,9 +54,9 @@ YahooDialog::YahooDialog (QWidget *p, QString &d) : QTabDialog (p, "YahooDialog"
   toolbar->addButton(s, newchart, s2);
   QObject::connect(toolbar->getButton(s), SIGNAL(clicked()), this, SLOT(newStock()));
   
-  vbox->addSpacing(10);
+  vbox->addSpacing(5);
   
-  QGridLayout *grid = new QGridLayout(vbox, 5, 2);
+  QGridLayout *grid = new QGridLayout(vbox, 6, 2);
   grid->setSpacing(5);
   grid->setColStretch(1, 1);
   
@@ -100,23 +100,28 @@ YahooDialog::YahooDialog (QWidget *p, QString &d) : QTabDialog (p, "YahooDialog"
   grid->addWidget(timeout, 4, 1);
   
   adjustment = new QCheckBox(tr("Adjustment"), w);
-  vbox->addWidget(adjustment);
+  grid->addWidget(adjustment, 5, 0);
   
-  vbox->addSpacing(10);
+  vbox->addSpacing(5);
   
   QFrame *sep = new QFrame(w);
   sep->setFrameShape(QFrame::HLine);
   sep->setFrameShadow(QFrame::Sunken);
   vbox->addWidget(sep);
-  vbox->addSpacing(10);
+  vbox->addSpacing(5);
+  
+  QHBoxLayout *hbox = new QHBoxLayout(vbox);
+  hbox->setSpacing(5);
   
   allSymbols = new QCheckBox(tr("All Symbols"), w);
   connect(allSymbols, SIGNAL(toggled(bool)), this, SLOT(allSymbolsChecked(bool)));
-  vbox->addWidget(allSymbols);
+  hbox->addWidget(allSymbols);
 
   QStringList l;  
   list = new FileButton(w, l, dataPath);
-  vbox->addWidget(list);
+  hbox->addWidget(list);
+  
+  vbox->addStretch(1);
 
   addTab(w, tr("Yahoo"));
 
@@ -124,8 +129,6 @@ YahooDialog::YahooDialog (QWidget *p, QString &d) : QTabDialog (p, "YahooDialog"
   setCancelButton();
   setHelpButton();
   QObject::connect(this, SIGNAL(helpButtonPressed()), this, SLOT(help()));
-
-  resize(300, 400);
 }
 
 YahooDialog::~YahooDialog ()

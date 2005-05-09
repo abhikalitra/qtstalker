@@ -69,7 +69,7 @@ void PrefDialog::init ()
   formulaInputList.setAutoDelete(FALSE);
   labelList.setAutoDelete(FALSE);
   
-  resize(300, 200);
+//  resize(300, 200);
   
   setOkButton(tr("&OK"));
   setCancelButton(tr("&Cancel"));

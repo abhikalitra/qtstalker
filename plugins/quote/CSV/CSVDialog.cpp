@@ -56,7 +56,7 @@ CSVDialog::CSVDialog (QWidget *p, QString &d, QString &lp) : QTabDialog (p, "CSV
   setHelpButton();
   QObject::connect(this, SIGNAL(helpButtonPressed()), this, SLOT(help()));
   
-  resize(325, 325);
+//  resize(325, 325);
   
   updateRules();
 }

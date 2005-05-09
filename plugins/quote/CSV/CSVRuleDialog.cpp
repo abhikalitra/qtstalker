@@ -48,7 +48,7 @@ CSVRuleDialog::CSVRuleDialog (QWidget *p, QString &d) : QTabDialog (p, "CSVRuleD
   setHelpButton();
   QObject::connect(this, SIGNAL(helpButtonPressed()), this, SLOT(help()));
   
-  resize(375, 375);
+//  resize(375, 375);
   
   QFileInfo fi(rulePath);
   ruleName->setText(fi.fileName());
