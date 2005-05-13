@@ -334,6 +334,15 @@
 20050421: Moved the indicator tab area to the bottom of the page as the default.
           This is the better position so the charts are closer together rather
 	  than separated by the tabs.
+
+20050512: Added parms to all pro files to compile on FreeBSD 5.*.
+
+20050512: Fixed bug in Plot that segfaults randomly on first chart loaded. Thanks to Jim
+          for tracking the bug to ScalePlot trying to draw using an empty Scaler with no
+	  parms.
+	  
+20050512: Fixed bug that would segfault when trying to create the first tabbed indicator. Was
+          trying to draw a null pixmap.
 	  
 	  
 	  	  

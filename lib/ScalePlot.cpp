@@ -86,7 +86,15 @@ void ScalePlot::draw ()
   buffer.fill(backgroundColor);
 
   if (activeFlag)
+  {
+    if (buffer.isNull())
+    {
+      buffer.resize(this->width(), this->height());
+      buffer.fill(backgroundColor);
+    }
+  
     drawScale();
+  }
 
   paintEvent(0);
 }

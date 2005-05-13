@@ -135,7 +135,6 @@ void Plot::draw ()
   indicatorPlot->draw();
   scalePlot->setScaler(indicatorPlot->getScaler());
   scalePlot->draw();
-//  indicatorPlot->draw();
 }
 
 void Plot::drawRefresh ()
@@ -143,7 +142,6 @@ void Plot::drawRefresh ()
   datePlot->drawRefresh();
   indicatorPlot->drawRefresh();
   scalePlot->drawRefresh();
-//  indicatorPlot->drawRefresh();
 }
 
 void Plot::setBackgroundColor (QColor d)

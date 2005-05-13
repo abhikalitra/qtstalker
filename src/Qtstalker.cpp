@@ -902,8 +902,6 @@ void QtstalkerApp::addIndicatorButton (QString &d, Indicator::PlotType tabFlag)
     QString t = fi.fileName();
     int page = tabs->getInsertIndex(t);
     tabs->insertTab(plot, fi.fileName(), page);
-//    tabs->drawCurrent();
-//    tabs->adjustSize();
   }
 }
 
