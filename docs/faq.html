@@ -36,8 +36,10 @@ a win32 port. The goal of this project is not to provide win32 users
 more gold bars for their prisons. So endith the lesson...
 <h4>My favorite indicator(s) are not included in Qtstalker, what can I
 do ?</h4>
-Beer and cash tend to work best, but you might also try asking me.
-I'd be glad to create a plugin for you provided you supply me with a
+Bribes of beer or cash tend to work best, but you might also try asking
+me.
+I would be glad to create a plugin for you provided you supply me with
+a
 formula and you agree to include it into Qtstalker under the GPL.
 Another option
 is if you don't want to GPL your formula, you may contract me to write
@@ -85,7 +87,8 @@ file.<br>
 <br>
 <h4>Why don't you use SQL for data storage?</h4>
 Two reasons, speed and simplicty. Once again I cite the KISS (keep it
-simple, stupid!) philosophy. You can't beat Db btree functions for ease
+simple, stupid!) philosophy. You can't beat Berkeley DB btree functions
+for ease
 of use and speed. Using SQL would just add another layer of
 requirements and major speed penalties. It also means more
 administration hassles for the user to set up accounts, tables, logs
@@ -98,6 +101,30 @@ dynamic, self-contained db. Blows SQL away in this respect.<br>
 Currently it is possible to compile a (mostly) working qtstalker on OS
 X. However there are a few minor problems that are still not solved.
 The user community is actively working to solve the remaining bugs. <br>
+<br>
+<h4>Upgrading from version 0.29 to version 0.30 problems.</h4>
+With 0.30, qtstalker has removed the built in version of Berkeley 2.7.7
+and now requires the user to install a version equal to or greater than
+4.1.&nbsp; This was done to resolve upcoming issues with 64 bit
+systems. Unfortunately the Berkeley DB 4.* files are not backwards
+compatible with 2.7.7. What this means is that any charts created with
+qtstalker 0.29 or earlier will not work with future versions of
+qtstalker.<br>
+<br>
+There was also a restructuring of the chart storage directories in
+order to better organize and increase app performance. This will also
+cause confusion for the user, and render many charts unavailable for
+update. Any user groups created will also be broken due to directories
+being moved around.<br>
+<br>
+The simplest way to fix this is to delete your ~/.qt/qtstalkerrc file
+and your ~/Qtstalker directory and all of its contents. Yes this means
+you will lose all of your data and settings. There have been so many
+changes and improvements since 0.29 that it would be too difficult and
+complicated to create an upgrade workaround that would be prone to
+errors in implementing it for each user. We are talking hours of work
+for some.<br>
+<br>
 <br>
 <br>
 <a href="plugintut.html" target="_self"><img src="back.png" alt="Back"

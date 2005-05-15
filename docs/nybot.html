@@ -11,25 +11,26 @@
 <h2><u>NYBOT Plugin</u></h2>
 <h2> </h2>
 <h3>Description:</h3>
-<p>EOD futures quotes from the New York Board of Trade. As of now, they
-use dynamic html to serve quotes, which makes it very difficult to get
-in an automated manner. So you must download the data manually using a
-browser and then use this plugin to read the ASCII file. This plugin
-can read the format of the ASCII file only. You can get quotes from
-http://www.nybot.com/dmrs/download/downloadAllSelection.asp?commodityType=future<br>
+<p>EOD futures quotes from the New York Board of Trade. <br>
 </p>
 <p></p>
 <h3>Input Parameters:</h3>
 <ul>
-  <li>File Input - The ASCII file to import.</li>
+  <li>Date - The date of the EOD data requested.</li>
+  <li>Retries - The number of download attempts to make due to errors.</li>
+  <li>Timeout - The timeout in seconds if a download stalls before a
+retry is attempted.<br>
+  </li>
 </ul>
 <p></p>
-<p><img style="width: 308px; height: 235px;" alt="" src="nybot1.png"><br>
+<p><img alt="" src="nybot1.png" style="width: 293px; height: 196px;"><br>
 </p>
 <p></p>
 <br>
-<a href="mysql.html" target="_self"><img src="back.png" border="0" width="32" height="32" alt="Back"></a>
-<a href="qtstalker.html" target="_self"><img src="next.png" border="0" width="32" height="32" alt="Next"></a>
-<a href="toc.html"><img src="home.png" border="0" width="32" height="32" alt="Home"></a>
+<a href="mysql.html" target="_self"><img src="back.png" alt="Back"
+ border="0" height="32" width="32"></a>
+<a href="qtstalker.html" target="_self"><img src="next.png" alt="Next"
+ border="0" height="32" width="32"></a><a href="toc.html"><img
+ src="home.png" alt="Home" border="0" height="32" width="32"></a>
 </body>
 </html>
