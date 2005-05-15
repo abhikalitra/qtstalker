@@ -24,6 +24,7 @@ To Do:
 - update docs to explain why Bars:paintbar is blank if no rule is set.
 - add more crosshairs behaviours to IndicatorPlot
 - user defined bar lengths for intraday charts
+- fix: font change does not propagate to chart objects
     
 
 Maybe some day:

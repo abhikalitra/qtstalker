@@ -343,8 +343,10 @@
 	  
 20050512: Fixed bug that would segfault when trying to create the first tabbed indicator. Was
           trying to draw a null pixmap.
-	  
-	  
+
+20050515: Changed NYBOT plugin to download data instead of first manually saving the data file.
+          Yay!!
+
 	  	  
 0.29
 ====

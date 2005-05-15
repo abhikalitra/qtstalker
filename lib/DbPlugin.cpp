@@ -45,10 +45,9 @@ DbPlugin::~DbPlugin ()
 int DbPlugin::openChart (QString &d)
 {
   if (db)
-  {
-    qDebug("DbPlugin::openChart: db already open");
-    return TRUE;
-  }
+    close();
+//    qDebug("DbPlugin::openChart: db already open");
+//    return TRUE;
 
   bool flag = FALSE;  
   QDir dir(d);

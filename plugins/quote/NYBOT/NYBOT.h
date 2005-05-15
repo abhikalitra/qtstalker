@@ -19,6 +19,7 @@
  *  USA.
  */
 
+#include <qdatetime.h>
 #include "QuotePlugin.h"
 #include "FuturesData.h"
 #include "DbPlugin.h"
@@ -33,20 +34,23 @@ class NYBOT : public QuotePlugin
     virtual ~NYBOT ();
     void update ();
     void prefDialog (QWidget *);
+    void cancelUpdate ();
     void loadSettings ();
     void saveSettings ();
-    void cancelUpdate ();
 
   public slots:
     void parse ();
+    void fileDone (bool);
+    void timeoutError ();
     
   private:
     FuturesData fd;
-    QStringList list;
-    QString lastPath;
     bool cancelFlag;
     DbPlugin *plug;
     Config config;
+    QDateTime date;
+    QString url;
+    QString file;
 };
 
 extern "C"
