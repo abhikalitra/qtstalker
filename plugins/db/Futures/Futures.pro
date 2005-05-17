@@ -10,7 +10,7 @@ HEADERS += FuturesDialog.h
 SOURCES += Futures.cpp
 SOURCES += FuturesDialog.cpp
 
-TARGET = Futures.0.30
+TARGET = Futures.0.31
 
 INCLUDEPATH += ../../../lib
 

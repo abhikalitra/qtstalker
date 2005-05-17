@@ -10,7 +10,7 @@ HEADERS += VerticalLineObject.h
 SOURCES += VerticalLine.cpp
 SOURCES += VerticalLineObject.cpp
 
-TARGET = VerticalLine.0.30
+TARGET = VerticalLine.0.31
 
 INCLUDEPATH += ../../../lib
 

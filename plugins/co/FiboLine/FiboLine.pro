@@ -10,7 +10,7 @@ HEADERS += FiboLineObject.h
 SOURCES += FiboLine.cpp
 SOURCES += FiboLineObject.cpp
 
-TARGET = FiboLine.0.30
+TARGET = FiboLine.0.31
 
 INCLUDEPATH += ../../../lib
 

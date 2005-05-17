@@ -10,7 +10,7 @@ HEADERS += YahooDialog.h
 SOURCES += Yahoo.cpp
 SOURCES += YahooDialog.cpp
 
-TARGET = Yahoo.0.30
+TARGET = Yahoo.0.31
 
 INCLUDEPATH += ../../../lib
 

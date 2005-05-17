@@ -8,7 +8,7 @@ HEADERS += TRIX.h
 
 SOURCES += TRIX.cpp
 
-TARGET = TRIX.0.30
+TARGET = TRIX.0.31
 
 INCLUDEPATH += ../../../lib
 

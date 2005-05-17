@@ -1,3 +1,25 @@
+0.32
+====
+
+20050515: Applied patch #1201695 - more math StdDev and TypPrice. Thanks to Jim for the patch.
+
+20050515: Applied new feature request #1202167 - Adaptive Stochastic Indicator. Thanks to Jim
+          for this patch.
+
+
+0.31
+====
+
+20050517: Bug fix release. In order to make the upgrade easier for users from 0.29
+          the storage path was changed from ~/Qtstalker to ~/.qtstalker This helps users
+          start with a fresh clean directory to minimze upgrade pain.
+
+20050517: Fixed bug with Line plugin. On startup the default was not working causing no
+          plot to be drawn.
+
+20050517: Added a warning dialog that appears on startup reminding users of the upgrade issues.
+
+
 0.30
 ====
 

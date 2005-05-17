@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  *
- *  Copyright (C) 2001-2004 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2005 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -24,6 +24,7 @@
 #include <qdict.h>
 #include <qinputdialog.h>
 #include <qobject.h>
+#include <math.h>
 
 MATH::MATH ()
 {
@@ -37,6 +38,8 @@ MATH::MATH ()
   methodList.append("MIN");
   methodList.append("MAX");
   methodList.append("ACCUM");
+  methodList.append("StdDev");
+  methodList.append("TypPrice");
 
   helpFile = "math.html";
     
@@ -68,6 +71,10 @@ void MATH::calculate ()
   {
     if (! method.compare("ACCUM"))
       calculateAccum();
+	if (! method.compare("StdDev"))
+	  calculateStdDev();
+	if(! method.compare("TypPrice"))
+	  calculateTypPrice();
     else
       calculateOper();
   }
@@ -427,6 +434,75 @@ void MATH::calculateOper ()
   output->addLine(line);
 }
 
+void MATH::calculateStdDev()
+{
+
+  PlotLine *input = customLines->find(data1);
+  if (! input)
+  {
+    qDebug("MATH::calculateStdDev: no data1 input %s", data1.latin1());
+    return;
+  }
+    
+  PlotLine *sd = new PlotLine;
+  sd->setColor(color);
+  sd->setType(lineType);
+  sd->setLabel(label);
+  
+  qDebug(" ----- in StdDev period = %i", period);
+ 
+  int loop;
+  
+  for (loop = period -1; loop < (int) input->getSize(); loop++)
+  {
+  
+    double mean = 0;
+    int loop2;
+    for (loop2 = 0; loop2 < period; loop2++)
+		mean += input->getData(loop - loop2);
+		
+	mean /= (double)period;
+	
+	double ds = 0;
+    for (loop2 = 0; loop2 < period; loop2++)
+    {
+      double t = input->getData(loop - loop2) - mean;
+      ds += (t * t);
+    }
+  
+    ds = sqrt(ds / (double)period);
+
+    sd->append(ds);
+  }
+  
+  output->addLine(sd);
+
+}
+
+void MATH::calculateTypPrice()
+{
+  // n.b. no ratl input here....
+  PlotLine *input = customLines->find(data1);
+  if (! input)
+  {
+    qDebug("MATH::calculateTypPrice: no data1 input %s", data1.latin1());
+    return;
+  }
+
+  PlotLine *typPrice = new PlotLine;
+  typPrice->setColor(color);
+  typPrice->setType(lineType);
+  typPrice->setLabel(label);
+
+  int loop;
+
+  for (loop = 0; loop < (int) data->count(); loop++)
+    typPrice->append((data->getHigh(loop) + data->getLow(loop) + data->getClose(loop)) / 3);
+	
+  output->addLine(typPrice);
+ 
+}
+
 int MATH::indicatorPrefDialog (QWidget *w)
 {
   if (! method.length())
@@ -469,7 +545,7 @@ int MATH::indicatorPrefDialog (QWidget *w)
   
   dialog->addFormulaInputItem(d1l, pl, FALSE, data1);
 
-  if (! method.compare("MIN") || ! method.compare("MAX"))
+  if (! method.compare("MIN") || ! method.compare("MAX") || ! method.compare("StdDev"))
     dialog->addIntItem(perl, pl, period, 1, 99999999);
     
   if (! method.compare("ADD") || ! method.compare("DIV") ||
@@ -490,7 +566,7 @@ int MATH::indicatorPrefDialog (QWidget *w)
     label = dialog->getText(ll);
     data1 = dialog->getFormulaInput(d1l);    
     
-    if (! method.compare("MIN") || ! method.compare("MAX"))
+    if (! method.compare("MIN") || ! method.compare("MAX") || ! method.compare("StdDev"))
       period = dialog->getInt(perl);
       
     if (! method.compare("ADD") || ! method.compare("DIV") ||

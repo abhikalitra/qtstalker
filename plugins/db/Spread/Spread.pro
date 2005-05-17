@@ -8,7 +8,7 @@ HEADERS += Spread.h
 
 SOURCES += Spread.cpp
 
-TARGET = Spread.0.30
+TARGET = Spread.0.31
 
 INCLUDEPATH += ../../../lib
 

@@ -8,7 +8,7 @@ HEADERS += NYBOT.h
 
 SOURCES += NYBOT.cpp
 
-TARGET = NYBOT.0.30
+TARGET = NYBOT.0.31
 
 INCLUDEPATH += ../../../lib
 

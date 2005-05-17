@@ -8,7 +8,7 @@ HEADERS += CC.h
 
 SOURCES += CC.cpp
 
-TARGET = CC.0.30
+TARGET = CC.0.31
 
 INCLUDEPATH += ../../../lib
 

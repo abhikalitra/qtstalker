@@ -8,7 +8,7 @@ HEREFERS += REF.h
 
 SOURCES += REF.cpp
 
-TARGET = REF.0.30
+TARGET = REF.0.31
 
 INCLUDEPATH += ../../../lib
 

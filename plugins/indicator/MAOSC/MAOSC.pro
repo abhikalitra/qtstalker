@@ -8,7 +8,7 @@ HEADERS += MAOSC.h
 
 SOURCES += MAOSC.cpp
 
-TARGET = MAOSC.0.30
+TARGET = MAOSC.0.31
 
 INCLUDEPATH += ../../../lib
 

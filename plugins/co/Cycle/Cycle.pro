@@ -10,7 +10,7 @@ HEADERS += CycleObject.h
 SOURCES += Cycle.cpp
 SOURCES += CycleObject.cpp
 
-TARGET = Cycle.0.30
+TARGET = Cycle.0.31
 
 INCLUDEPATH += ../../../lib
 

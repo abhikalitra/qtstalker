@@ -10,7 +10,7 @@ HEADERS += TrendLineObject.h
 SOURCES += TrendLine.cpp
 SOURCES += TrendLineObject.cpp
 
-TARGET = TrendLine.0.30
+TARGET = TrendLine.0.31
 
 INCLUDEPATH += ../../../lib
 

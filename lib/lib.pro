@@ -41,6 +41,7 @@ HEADERS += ScalePlot.h
 HEADERS += IndicatorPlot.h
 HEADERS += Navigator.h
 HEADERS += BarEdit.h
+HEADERS += UpgradeMessage.h
 
    
 SOURCES += QuotePlugin.cpp
@@ -80,10 +81,11 @@ SOURCES += ScalePlot.cpp
 SOURCES += IndicatorPlot.cpp
 SOURCES += Navigator.cpp
 SOURCES += BarEdit.cpp
+SOURCES += UpgradeMessage.cpp
 
     
 TARGET = qtstalker
-VERSION = 0.30.0
+VERSION = 0.31.0
 
 LIBS += -ldb
      

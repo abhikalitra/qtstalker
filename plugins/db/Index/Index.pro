@@ -10,7 +10,7 @@ HEADERS += IndexDialog.h
 SOURCES += Index.cpp
 SOURCES += IndexDialog.cpp
 
-TARGET = Index.0.30
+TARGET = Index.0.31
 
 INCLUDEPATH += ../../../lib
 

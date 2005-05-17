@@ -12,7 +12,7 @@ SOURCES += CSV.cpp
 SOURCES += CSVDialog.cpp
 SOURCES += CSVRuleDialog.cpp
 
-TARGET = CSV.0.30
+TARGET = CSV.0.31
 
 INCLUDEPATH += ../../../lib
 

@@ -8,7 +8,7 @@ HEADERS += FI.h
 
 SOURCES += FI.cpp
 
-TARGET = FI.0.30
+TARGET = FI.0.31
 
 INCLUDEPATH += ../../../lib
 

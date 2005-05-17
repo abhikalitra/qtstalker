@@ -10,7 +10,7 @@ HEADERS += BuyArrowObject.h
 SOURCES += BuyArrow.cpp
 SOURCES += BuyArrowObject.cpp
 
-TARGET = BuyArrow.0.30
+TARGET = BuyArrow.0.31
 
 INCLUDEPATH += ../../../lib
 

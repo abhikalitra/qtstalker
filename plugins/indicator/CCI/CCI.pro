@@ -8,7 +8,7 @@ HEADERS += CCI.h
 
 SOURCES += CCI.cpp
 
-TARGET = CCI.0.30
+TARGET = CCI.0.31
 
 INCLUDEPATH += ../../../lib
 

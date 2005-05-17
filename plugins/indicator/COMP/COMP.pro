@@ -8,7 +8,7 @@ HEADERS += COMP.h
 
 SOURCES += COMP.cpp
 
-TARGET = COMP.0.30
+TARGET = COMP.0.31
 
 INCLUDEPATH += ../../../lib
 

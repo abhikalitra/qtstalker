@@ -1,6 +1,19 @@
 echo "Building Makefile..."
 qmake "DEFINES += QT_NO_COMPAT" "CONFIG += qt" -o Makefile qtstalker.pro
 echo "Done"
+echo ""
+echo "/************ WARNING **********************"
+echo ""
+echo "This version of Qtstalker uses a new data format."
+echo "It can not read data files from previous versions."
+echo "This means that you will start with an empty workspace."
+echo "Your old data files have been preserved in $HOME/Qtstalker"
+echo "and can still be accessed by older Qtstalker versions."
+echo "If you don't intend to downgrade to a previous Qtstalker"
+echo "version, then you can remove that directory."
+echo ""
+
+
 
 
 

@@ -8,7 +8,7 @@ HEADERS += RSI.h
 
 SOURCES += RSI.cpp
 
-TARGET = RSI.0.30
+TARGET = RSI.0.31
 
 INCLUDEPATH += ../../../lib
 

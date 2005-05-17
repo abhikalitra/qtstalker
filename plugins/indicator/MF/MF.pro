@@ -8,7 +8,7 @@ HEADERS += MF.h
 
 SOURCES += MF.cpp
 
-TARGET = MF.0.30
+TARGET = MF.0.31
 
 INCLUDEPATH += ../../../lib
 

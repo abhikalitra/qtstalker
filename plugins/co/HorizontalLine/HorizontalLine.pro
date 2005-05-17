@@ -10,7 +10,7 @@ HEADERS += HorizontalLineObject.h
 SOURCES += HorizontalLine.cpp
 SOURCES += HorizontalLineObject.cpp
 
-TARGET = HorizontalLine.0.30
+TARGET = HorizontalLine.0.31
 
 INCLUDEPATH += ../../../lib
 

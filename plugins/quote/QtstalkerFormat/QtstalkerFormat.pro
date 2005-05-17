@@ -8,7 +8,7 @@ HEADERS += QtstalkerFormat.h
 
 SOURCES += QtstalkerFormat.cpp
 
-TARGET = QtstalkerFormat.0.30
+TARGET = QtstalkerFormat.0.31
 
 INCLUDEPATH += ../../../lib
 

@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  * 
- *  Copyright (C) 2001-2004 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2005 Stefan S. Stratigakos
  * 
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -75,7 +75,7 @@ class Config
       X,
       Y,
       ScannerPath,
-      IndicatorPageStatus, // unused
+      Version,
       PlotSizes,
       Menubar,
       Macro1,
@@ -91,7 +91,8 @@ class Config
       Macro11,
       Macro12,
       IndicatorGroup,
-      QuotePluginStorage
+      QuotePluginStorage,
+      ShowUpgradeMessage
     };
 
     Config ();
@@ -120,6 +121,7 @@ class Config
     void closePlugin (QString &);
     
     void copyIndicatorFile (QString &, QString &);
+    void checkUpgrade ();
 
   protected:
     QDict<QLibrary> libs;

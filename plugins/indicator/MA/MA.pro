@@ -10,7 +10,7 @@ HEADERS += qtsFFT.h
 SOURCES += MA.cpp
 SOURCES += qtsFFT.cpp
 
-TARGET = MA.0.30
+TARGET = MA.0.31
 
 INCLUDEPATH += ../../../lib
 

@@ -10,7 +10,7 @@ HEADERS += TextObject.h
 SOURCES += Text.cpp
 SOURCES += TextObject.cpp
 
-TARGET = Text.0.30
+TARGET = Text.0.31
 
 INCLUDEPATH += ../../../lib
 

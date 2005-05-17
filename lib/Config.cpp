@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  *
- *  Copyright (C) 2001-2004 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2005 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@
  */
 
 #include "Config.h"
+#include "UpgradeMessage.h"
 #include <qobject.h>
 #include <qdir.h>
 #include <qlibrary.h>
@@ -38,7 +39,7 @@ Config::Config ()
   indicatorPlugins.setAutoDelete(TRUE);
   quotePlugins.setAutoDelete(TRUE);
   coPlugins.setAutoDelete(TRUE);
-  version = "0.30";  // only this version of plugin is allowed to be loaded
+  version = "0.31";  // only this version of plugin is allowed to be loaded
 }
 
 Config::~Config ()
@@ -53,22 +54,24 @@ Config::~Config ()
 
 void Config::setup ()
 {
+  checkUpgrade();
+
   QDir dir(QDir::homeDirPath());
   dir.convertToAbs();
   QString home = dir.absPath();
-  home.append("/Qtstalker");
+  home.append("/.qtstalker");
   if (! dir.exists(home, TRUE))
   {
     if (! dir.mkdir(home, TRUE))
-      qDebug("Unable to create ~/Qtstalker directory.");
+      qDebug("Unable to create ~/.qtstalker directory.");
   }
   setData(Home, home);
 
-  QString s = home + "/data";
+  QString s = home + "/data0";
   if (! dir.exists(s, TRUE))
   {
     if (! dir.mkdir(s, TRUE))
-      qDebug("Unable to create ~/Qtstalker/data directory.");
+      qDebug("Unable to create ~/.qtstalker/data0 directory.");
   }
   setData(DataPath, s);
 
@@ -76,7 +79,7 @@ void Config::setup ()
   if (! dir.exists(s, TRUE))
   {
     if (! dir.mkdir(s, TRUE))
-      qDebug("Unable to create ~/Qtstalker/group directory.");
+      qDebug("Unable to create ~/.qtstalker/group directory.");
   }
   setData(GroupPath, s);
 
@@ -84,7 +87,7 @@ void Config::setup ()
   if (! dir.exists(s, TRUE))
   {
     if (! dir.mkdir(s, TRUE))
-      qDebug("Unable to create ~/Qtstalker/portfolio directory.");
+      qDebug("Unable to create ~/.qtstalker/portfolio directory.");
   }
   setData(PortfolioPath, s);
 
@@ -92,7 +95,7 @@ void Config::setup ()
   if (! dir.exists(s, TRUE))
   {
     if (! dir.mkdir(s, TRUE))
-      qDebug("Unable to create ~/Qtstalker/test directory.");
+      qDebug("Unable to create ~/.qtstalker/test directory.");
   }
   setData(TestPath, s);
 
@@ -100,7 +103,7 @@ void Config::setup ()
   if (! dir.exists(s, TRUE))
   {
     if (! dir.mkdir(s, TRUE))
-      qDebug("Unable to create ~/Qtstalker/scanner directory.");
+      qDebug("Unable to create ~/.qtstalker/scanner directory.");
   }
   setData(ScannerPath, s);
 
@@ -108,7 +111,7 @@ void Config::setup ()
   if (! dir.exists(s, TRUE))
   {
     if (! dir.mkdir(s, TRUE))
-      qDebug("Unable to create ~/Qtstalker/indicator directory.");
+      qDebug("Unable to create ~/.qtstalker/indicator directory.");
   }
   setData(IndicatorPath, s);
   
@@ -116,7 +119,7 @@ void Config::setup ()
   if (! dir.exists(s, TRUE))
   {
     if (! dir.mkdir(s, TRUE))
-      qDebug("Unable to create ~/Qtstalker/indicator/Indicators directory.");
+      qDebug("Unable to create ~/.qtstalker/indicator/Indicators directory.");
     else
     {
       QString str("Indicators");
@@ -144,7 +147,7 @@ void Config::setup ()
   if (! dir.exists(s, TRUE))
   {
     if (! dir.mkdir(s, TRUE))
-      qDebug("Unable to create ~/Qtstalker/cusrules directory.");
+      qDebug("Unable to create ~/.qtstalker/cusrules directory.");
   }
   setData(CUSRulePath, s);
 
@@ -152,7 +155,7 @@ void Config::setup ()
   if (! dir.exists(s, TRUE))
   {
     if (! dir.mkdir(s, TRUE))
-      qDebug("Unable to create ~/Qtstalker/macro directory.");
+      qDebug("Unable to create ~/.qtstalker/macro directory.");
   }
   setData(MacroPath, s);
   
@@ -160,14 +163,14 @@ void Config::setup ()
   if (! dir.exists(s, TRUE))
   {
     if (! dir.mkdir(s, TRUE))
-      qDebug("Unable to create ~/Qtstalker/plugin directory.");
+      qDebug("Unable to create ~/.qtstalker/plugin directory.");
   }
   
   s.append("/quote");
   if (! dir.exists(s, TRUE))
   {
     if (! dir.mkdir(s, TRUE))
-      qDebug("Unable to create ~/Qtstalker/plugin/quote directory.");
+      qDebug("Unable to create ~/.qtstalker/plugin/quote directory.");
   }
   setData(QuotePluginStorage, s);
   
@@ -183,6 +186,9 @@ void Config::setup ()
     setData(AppFont, s);
     setData(PlotFont, s);
   }
+
+  // set the version #
+  setData(Version, version);
 }
 
 QString Config::getData (Parm p)
@@ -235,7 +241,7 @@ QString Config::getData (Parm p)
       s = settings.readEntry("/Qtstalker/GridColor", "#626262");
       break;
     case ScaleToScreen:
-      s = settings.readEntry("/Qtstalker/ScaleToScreen", "0");
+      s = settings.readEntry("/Qtstalker/ScaleToScreen", "1");
       break;
     case IndicatorPluginPath:
       s = settings.readEntry("/Qtstalker/IndicatorPluginPath", "/usr/lib/qtstalker/indicator");
@@ -294,9 +300,6 @@ QString Config::getData (Parm p)
     case LastQuotePlugin:
       s = settings.readEntry("/Qtstalker/LastQuotePlugin");
       break;
-    case IndicatorPageStatus:
-      s = settings.readEntry("/Qtstalker/IndicatorPageStatus");
-      break;
     case PlotSizes:
       s = settings.readEntry("/Qtstalker/PlotSizes");
       break;
@@ -350,6 +353,12 @@ QString Config::getData (Parm p)
       break;
     case QuotePluginStorage:
       s = settings.readEntry("/Qtstalker/QuotePluginStorage");
+      break;
+    case Version:
+      s = settings.readEntry("/Qtstalker/Version");
+      break;
+    case ShowUpgradeMessage:
+      s = settings.readEntry("/Qtstalker/ShowUpgradeMessage", "1");
       break;
     default:
       break;
@@ -473,9 +482,6 @@ void Config::setData (Parm p, QString &d)
     case LastQuotePlugin:
       settings.writeEntry("/Qtstalker/LastQuotePlugin", d);
       break;
-    case IndicatorPageStatus:
-      settings.writeEntry("/Qtstalker/IndicatorPageStatus", d);
-      break;
     case PlotSizes:
       settings.writeEntry("/Qtstalker/PlotSizes", d);
       break;
@@ -529,6 +535,12 @@ void Config::setData (Parm p, QString &d)
       break;
     case QuotePluginStorage:
       settings.writeEntry("/Qtstalker/QuotePluginStorage", d);
+      break;
+    case Version:
+      settings.writeEntry("/Qtstalker/Version", d);
+      break;
+    case ShowUpgradeMessage:
+      settings.writeEntry("/Qtstalker/ShowUpgradeMessage", d);
       break;
     default:
       break;
@@ -815,7 +827,7 @@ void Config::closePlugin (QString &d)
 QString Config::parseDbPlugin (QString &d)
 {
   QStringList l = QStringList::split("/", d, FALSE);
-  int i = l.findIndex("Qtstalker");
+  int i = l.findIndex(".qtstalker");
   i = i + 2;
   return l[i];
 }
@@ -848,5 +860,34 @@ void Config::copyIndicatorFile (QString &d, QString &d2)
     
   f.close();
   f2.close();
+}
+
+void Config::checkUpgrade ()
+{
+  QDir dir(QDir::homeDirPath());
+  dir.convertToAbs();
+  QString s = dir.absPath() + "/Qtstalker";
+  if (! dir.exists(s, TRUE))
+    return;
+
+  s = getData(ShowUpgradeMessage);
+  if (! s.toInt())
+    return;
+
+  UpgradeMessage *dialog = new UpgradeMessage(UpgradeMessage::V031);
+  int rc = dialog->exec();
+
+  if (rc == QDialog::Accepted)
+  {
+    bool flag = dialog->getStatus();
+    if (flag)
+      s = QString::number(0);
+    else
+      s = QString::number(1);
+
+    setData(ShowUpgradeMessage, s);
+  }
+
+  delete dialog;
 }
 

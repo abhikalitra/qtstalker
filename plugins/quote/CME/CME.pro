@@ -8,7 +8,7 @@ HEADERS += CME.h
 
 SOURCES += CME.cpp
 
-TARGET = CME.0.30
+TARGET = CME.0.31
 
 INCLUDEPATH += ../../../lib
 

@@ -8,7 +8,7 @@ HEADERS += VT.h
 
 SOURCES += VT.cpp
 
-TARGET = VT.0.30
+TARGET = VT.0.31
 
 INCLUDEPATH += ../../../lib
 

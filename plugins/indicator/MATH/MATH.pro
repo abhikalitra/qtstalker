@@ -8,7 +8,7 @@ HEADERS += MATH.h
 
 SOURCES += MATH.cpp
 
-TARGET = MATH.0.30
+TARGET = MATH.0.31
 
 INCLUDEPATH += ../../../lib
 

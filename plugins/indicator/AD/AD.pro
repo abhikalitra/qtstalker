@@ -8,7 +8,7 @@ HEADERS += AD.h
 
 SOURCES += AD.cpp
 
-TARGET = AD.0.30
+TARGET = AD.0.31
 
 INCLUDEPATH += ../../../lib
 

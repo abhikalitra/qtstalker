@@ -10,7 +10,7 @@ HEADERS += StocksDialog.h
 SOURCES += Stocks.cpp
 SOURCES += StocksDialog.cpp
 
-TARGET = Stocks.0.30
+TARGET = Stocks.0.31
 
 INCLUDEPATH += ../../../lib
 

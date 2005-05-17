@@ -8,7 +8,7 @@ HEADERS += THERM.h
 
 SOURCES += THERM.cpp
 
-TARGET = THERM.0.30
+TARGET = THERM.0.31
 
 INCLUDEPATH += ../../../lib
 

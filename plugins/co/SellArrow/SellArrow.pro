@@ -10,7 +10,7 @@ HEADERS += SellArrowObject.h
 SOURCES += SellArrow.cpp
 SOURCES += SellArrowObject.cpp
 
-TARGET = SellArrow.0.30
+TARGET = SellArrow.0.31
 
 INCLUDEPATH += ../../../lib
 

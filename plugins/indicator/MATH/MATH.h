@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  *
- *  Copyright (C) 2001-2004 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2005 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -36,6 +36,8 @@ class MATH : public IndicatorPlugin
     void setIndicatorSettings (Setting &);
     int getMinBars ();
     void calculateAccum ();
+    void calculateStdDev();
+    void calculateTypPrice();
   
   private:
     QColor color;

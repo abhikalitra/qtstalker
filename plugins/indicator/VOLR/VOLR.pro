@@ -8,7 +8,7 @@ HEADERS += VOLR.h
 
 SOURCES += VOLR.cpp
 
-TARGET = VOLR.0.30
+TARGET = VOLR.0.31
 
 INCLUDEPATH += ../../../lib
 
