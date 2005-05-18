@@ -28,7 +28,7 @@ exists(/usr/include/mysql/mysql.h){
 
 #compile indicator plugins
 SUBDIRS += plugins/indicator/AD
-SUBDIRS += plugins/indicator/AdaptSTOCH
+#SUBDIRS += plugins/indicator/AdaptSTOCH
 SUBDIRS += plugins/indicator/ATR
 SUBDIRS += plugins/indicator/BB
 SUBDIRS += plugins/indicator/CCI
