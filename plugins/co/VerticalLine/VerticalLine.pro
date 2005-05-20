@@ -1,28 +1,14 @@
-TEMPLATE = lib
+pluginName = VerticalLine
 
-CONFIG += thread warn_on plugin
-
-QMAKE_CXXFLAGS += -ffast-math -Os
+!include( ../../../plugin.config ){
+  message( "Oops -- No custom build options specified" ) 
+} 
 
 HEADERS += VerticalLine.h
 HEADERS += VerticalLineObject.h
 
 SOURCES += VerticalLine.cpp
 SOURCES += VerticalLineObject.cpp
-
-TARGET = VerticalLine.0.31
-
-INCLUDEPATH += ../../../lib
-
-LIBS += -L../../../lib -lqtstalker
-LIBS += -ldb
-
-unix:linux-g++:LIBS += -ldl
-
-# FreeBSD options
-unix:freebsd-g++:INCLUDEPATH += /usr/X11R6/include
-unix:freebsd-g++:INCLUDEPATH += /usr/local/include/db42
-unix:freebsd-g++:LIBS += -L/usr/local/lib/db42
 
 target.path = /usr/lib/qtstalker/co
 INSTALLS += target

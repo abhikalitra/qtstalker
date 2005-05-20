@@ -142,7 +142,7 @@ void MySQLPlugin::performUpdate ()
     QDir dir(s);
     if (! dir.exists() && ! dir.mkdir(s))
     {
-      QString errstr = "Qtstalker::MySQL::performUpdate:unable to create directory: ";
+      QString errstr = "Qtstalker::MySQL::performUpdate:unable to create /Stocks directory: ";
       errstr.append(s);
       QMessageBox::critical(0, "MySQL Plugin Error", errstr);
       emit statusLogMessage("MySQL Plugin Error: "+ errstr);
@@ -150,6 +150,17 @@ void MySQLPlugin::performUpdate ()
       return;
     }
   
+    s.append("/MySQL");
+    if (! dir.exists() && ! dir.mkdir(s))
+    {
+      QString errstr = "Qtstalker::MySQL::performUpdate:unable to create /Stocks/MySQL directory: ";
+      errstr.append(s);
+      QMessageBox::critical(0, "MySQL Plugin Error", errstr);
+      emit statusLogMessage("MySQL Plugin Error: "+ errstr);
+      closeDatabase();
+      return;
+    }
+
     QStringList symbolList = QStringList::split(' ', symbols, FALSE);
     QStringList::const_iterator iter = symbolList.begin();
     

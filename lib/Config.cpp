@@ -65,13 +65,19 @@ void Config::setup ()
     if (! dir.mkdir(home, TRUE))
       qDebug("Unable to create ~/.qtstalker directory.");
   }
+  home.append("/data0");
+  if (! dir.exists(home, TRUE))
+  {
+    if (! dir.mkdir(home, TRUE))
+      qDebug("Unable to create ~/.qtstalker/data0 directory.");
+  }
   setData(Home, home);
 
-  QString s = home + "/data0";
+  QString s = home + "/data";
   if (! dir.exists(s, TRUE))
   {
     if (! dir.mkdir(s, TRUE))
-      qDebug("Unable to create ~/.qtstalker/data0 directory.");
+      qDebug("Unable to create ~/.qtstalker/data0/data directory.");
   }
   setData(DataPath, s);
 
@@ -79,7 +85,7 @@ void Config::setup ()
   if (! dir.exists(s, TRUE))
   {
     if (! dir.mkdir(s, TRUE))
-      qDebug("Unable to create ~/.qtstalker/group directory.");
+      qDebug("Unable to create ~/.qtstalker/data0/group directory.");
   }
   setData(GroupPath, s);
 
@@ -87,7 +93,7 @@ void Config::setup ()
   if (! dir.exists(s, TRUE))
   {
     if (! dir.mkdir(s, TRUE))
-      qDebug("Unable to create ~/.qtstalker/portfolio directory.");
+      qDebug("Unable to create ~/.qtstalker/data0/portfolio directory.");
   }
   setData(PortfolioPath, s);
 
@@ -95,7 +101,7 @@ void Config::setup ()
   if (! dir.exists(s, TRUE))
   {
     if (! dir.mkdir(s, TRUE))
-      qDebug("Unable to create ~/.qtstalker/test directory.");
+      qDebug("Unable to create ~/.qtstalker/data0/test directory.");
   }
   setData(TestPath, s);
 
@@ -103,7 +109,7 @@ void Config::setup ()
   if (! dir.exists(s, TRUE))
   {
     if (! dir.mkdir(s, TRUE))
-      qDebug("Unable to create ~/.qtstalker/scanner directory.");
+      qDebug("Unable to create ~/.qtstalker/data0/scanner directory.");
   }
   setData(ScannerPath, s);
 
@@ -111,7 +117,7 @@ void Config::setup ()
   if (! dir.exists(s, TRUE))
   {
     if (! dir.mkdir(s, TRUE))
-      qDebug("Unable to create ~/.qtstalker/indicator directory.");
+      qDebug("Unable to create ~/.qtstalker/data0/indicator directory.");
   }
   setData(IndicatorPath, s);
   
@@ -119,13 +125,14 @@ void Config::setup ()
   if (! dir.exists(s, TRUE))
   {
     if (! dir.mkdir(s, TRUE))
-      qDebug("Unable to create ~/.qtstalker/indicator/Indicators directory.");
+      qDebug("Unable to create ~/.qtstalker/data0/indicator/Indicators directory.");
     else
     {
       QString str("Indicators");
       setData(IndicatorGroup, str); // set the new default template
       
       // copy old indicators into new Indicators template
+/*
       s = home + "/indicator";
       QDir dir(s);
       int loop;
@@ -140,6 +147,7 @@ void Config::setup ()
 	  dir.remove(s2, TRUE);
 	}
       }
+*/
     }
   }
   
@@ -147,7 +155,7 @@ void Config::setup ()
   if (! dir.exists(s, TRUE))
   {
     if (! dir.mkdir(s, TRUE))
-      qDebug("Unable to create ~/.qtstalker/cusrules directory.");
+      qDebug("Unable to create ~/.qtstalker/data0/cusrules directory.");
   }
   setData(CUSRulePath, s);
 
@@ -155,7 +163,7 @@ void Config::setup ()
   if (! dir.exists(s, TRUE))
   {
     if (! dir.mkdir(s, TRUE))
-      qDebug("Unable to create ~/.qtstalker/macro directory.");
+      qDebug("Unable to create ~/.qtstalker/data0/macro directory.");
   }
   setData(MacroPath, s);
   
@@ -163,14 +171,14 @@ void Config::setup ()
   if (! dir.exists(s, TRUE))
   {
     if (! dir.mkdir(s, TRUE))
-      qDebug("Unable to create ~/.qtstalker/plugin directory.");
+      qDebug("Unable to create ~/.qtstalker/data0/plugin directory.");
   }
   
   s.append("/quote");
   if (! dir.exists(s, TRUE))
   {
     if (! dir.mkdir(s, TRUE))
-      qDebug("Unable to create ~/.qtstalker/plugin/quote directory.");
+      qDebug("Unable to create ~/.qtstalker/data0/plugin/quote directory.");
   }
   setData(QuotePluginStorage, s);
   
@@ -828,7 +836,7 @@ QString Config::parseDbPlugin (QString &d)
 {
   QStringList l = QStringList::split("/", d, FALSE);
   int i = l.findIndex(".qtstalker");
-  i = i + 2;
+  i = i + 3;
   return l[i];
 }
 
@@ -869,6 +877,14 @@ void Config::checkUpgrade ()
   QString s = dir.absPath() + "/Qtstalker";
   if (! dir.exists(s, TRUE))
     return;
+
+  // check if we need to delete the old qtstalkerrc file before we upgrade
+  s = dir.absPath() + "/.qtstalker";
+  if (! dir.exists(s, TRUE))
+  {
+    s = dir.absPath() + "/.qt/qtstalkerrc";
+    dir.remove(s, TRUE);
+  }
 
   s = getData(ShowUpgradeMessage);
   if (! s.toInt())
