@@ -6,6 +6,12 @@
 20050515: Applied new feature request #1202167 - Adaptive Stochastic Indicator. Thanks to Jim
           for this patch.
 
+20050522: Applied feature request #1206257 - Chande CMO indicator. Thanks to Jim for the patch.
+
+20050522: Applied feature request #1204641 - Ehler's Sine Wave indicator. Thanks to Jim for the patch.
+
+20050522: Applied feature request #1203183 - Ehler's LMS Predictor indicator. Thanks to Jim for the patch.
+
 
 0.31
 ====

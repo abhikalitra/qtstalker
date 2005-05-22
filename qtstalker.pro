@@ -28,16 +28,18 @@ exists(/usr/include/mysql/mysql.h){
 
 #compile indicator plugins
 SUBDIRS += plugins/indicator/AD
-#SUBDIRS += plugins/indicator/AdaptSTOCH
+SUBDIRS += plugins/indicator/AdaptSTOCH
 SUBDIRS += plugins/indicator/ATR
 SUBDIRS += plugins/indicator/BB
 SUBDIRS += plugins/indicator/CCI
+SUBDIRS += plugins/indicator/CMO
 SUBDIRS += plugins/indicator/COMP
 SUBDIRS += plugins/indicator/COUNTER
 SUBDIRS += plugins/indicator/CUS
 SUBDIRS += plugins/indicator/DMI
 SUBDIRS += plugins/indicator/DPO
 SUBDIRS += plugins/indicator/FI
+SUBDIRS += plugins/indicator/LMS
 SUBDIRS += plugins/indicator/MA
 SUBDIRS += plugins/indicator/MACD
 SUBDIRS += plugins/indicator/MAOSC
@@ -51,6 +53,7 @@ SUBDIRS += plugins/indicator/ROC
 SUBDIRS += plugins/indicator/RSI
 SUBDIRS += plugins/indicator/SAR
 SUBDIRS += plugins/indicator/SD
+SUBDIRS += plugins/indicator/SINWAV
 SUBDIRS += plugins/indicator/STOCH
 SUBDIRS += plugins/indicator/SYMBOL
 SUBDIRS += plugins/indicator/SZ
