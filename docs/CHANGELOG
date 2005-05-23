@@ -12,6 +12,14 @@
 
 20050522: Applied feature request #1203183 - Ehler's LMS Predictor indicator. Thanks to Jim for the patch.
 
+20050522: Removed StdDev function from MATH due to duplication in the SD plugin.
+
+20050522: Added a Normalize function to the MATH plugin.
+
+20050523: MATH plugin was getting too crowded. It will only contain the four ADD, DIV, MUL, SUB functions.
+          Split the rest into 2 new indicator plugins. The UTIL plugin will contain simple utility functions
+          like Normalize, ACCUM etc. The MINMAX plugin contains the MIN and MAX functions. 
+
 
 0.31
 ====

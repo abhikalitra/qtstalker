@@ -76,9 +76,7 @@ void AdaptSTOCH::calculate ()
     }
   }
   else
-  {
     in = data->getInput (BarData::Close);
-  }
   
   if ( in->getSize() < ( period + maxLookback + 5) )
   {
@@ -101,13 +99,9 @@ void AdaptSTOCH::calculate ()
   for (i = 0; i < v2->getSize(); i++)
   {
     if ( (v2->getData(i) - v3->getData(i)) > 0)
-    {
       v4->append( (v1->getData(i) - v3->getData(i)) / (v2->getData(i) - v3->getData(i)) );
-    }
     else
-    {
       v4->append(0);
-    }
   }
 
   // Calculate current effective length; if v4 = 1, then length = mininum 
@@ -115,9 +109,7 @@ void AdaptSTOCH::calculate ()
   PlotLine *currentLength = new PlotLine;;
 	
   for (i = 0; i < v4->getSize(); i++)
-  {	
     currentLength->append ( (int) ( minLookback + (maxLookback - minLookback) * (1 - v4->getData(i)) ) );
-  }
 	
   // now build indicator
   double stoch = 0;
@@ -135,20 +127,14 @@ void AdaptSTOCH::calculate ()
     for (loop2 = 0; loop2 < (int)currentLength->getData(i); loop2++)		// hihest high
     {			
       if ( data->getHigh(index - loop2) > hh)
-      {
         hh = data->getHigh(index - loop2);
-      }
 	
       if ( data->getLow(index - loop2) < ll)
-      {
         ll = data->getLow(index - loop2);
-      }		
     }
 				
     if ( (hh-ll) > 0 )
-    {
       stoch = ( ( (data->getClose(index) - ll)/(hh - ll)) * 100 );
-    }
     else
     {
       stoch = 0;
@@ -222,9 +208,7 @@ PlotLine *AdaptSTOCH::getHighest( PlotLine *line,  int period)
     for (loop2 = 0; loop2 < period; loop2++)
     {
       if ( line->getData(loop - loop2) > highest)
-      {
 	highest = line->getData(loop - loop2);
-      }
     }
   
     lineHigh->append(highest);
@@ -246,9 +230,7 @@ PlotLine *AdaptSTOCH::getLowest( PlotLine *line,  int period)
     for (loop2 = 0; loop2 < period; loop2++)
     {
       if ( line->getData(loop - loop2) < lowest)
-      {
 	lowest = line->getData(loop - loop2);
-      }
     }
   
     lineLow->append(lowest);
@@ -267,7 +249,7 @@ PlotLine *AdaptSTOCH::getStdDev( PlotLine *line,  int period )
     double mean = 0;
     int loop2;
     for (loop2 = 0; loop2 < period; loop2++)
-      mean += line->getData(loop - loop2);
+    mean += line->getData(loop - loop2);
 		
     mean /= (double)period;
 	
@@ -509,7 +491,6 @@ void AdaptSTOCH::getIndicatorSettings (Setting &dict)
   dict.setData("dMaType", QString::number(dMaType));
   dict.setData("minLookback", QString::number(minLookback));
   dict.setData("maxLookback", QString::number(maxLookback));
-  
 }
 
 PlotLine * AdaptSTOCH::calculateCustom (QDict<PlotLine> *d)

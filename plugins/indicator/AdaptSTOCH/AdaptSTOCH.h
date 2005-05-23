@@ -46,18 +46,18 @@ class AdaptSTOCH : public IndicatorPlugin
     int dperiod;
     int kperiod;
     int period;
-	int minLookback;
-  	int maxLookback;
-	int kMaType;
-	int dMaType;
+    int minLookback;
+    int maxLookback;
+    int kMaType;
+    int dMaType;
     int buyLine;
     int sellLine;
     QString customInput;
     QString label;
 	
-	PlotLine *getHighest( PlotLine *line, int period);
-	PlotLine *getLowest( PlotLine *line,  int period);
-	PlotLine *getStdDev( PlotLine *line,  int period );
+    PlotLine *getHighest( PlotLine *line, int period);
+    PlotLine *getLowest( PlotLine *line,  int period);
+    PlotLine *getStdDev( PlotLine *line,  int period );
 };
 
 extern "C"

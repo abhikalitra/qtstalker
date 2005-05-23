@@ -29,15 +29,10 @@ class MATH : public IndicatorPlugin
     void calculate ();
     int indicatorPrefDialog (QWidget *);
     void setDefaults();
-    void calculateMinMax ();
-    void calculateOper ();
     PlotLine * calculateCustom (QDict<PlotLine> *);
     void getIndicatorSettings (Setting &);
     void setIndicatorSettings (Setting &);
     int getMinBars ();
-    void calculateAccum ();
-    void calculateStdDev();
-    void calculateTypPrice();
   
   private:
     QColor color;
@@ -50,7 +45,6 @@ class MATH : public IndicatorPlugin
     QString data5;
     QString method;
     QStringList methodList;
-    int period;
 };
 
 extern "C"

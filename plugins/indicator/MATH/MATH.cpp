@@ -22,9 +22,7 @@
 #include "MATH.h"
 #include "PrefDialog.h"
 #include <qdict.h>
-#include <qinputdialog.h>
 #include <qobject.h>
-#include <math.h>
 
 MATH::MATH ()
 {
@@ -35,11 +33,6 @@ MATH::MATH ()
   methodList.append("DIV");
   methodList.append("MUL");
   methodList.append("SUB");
-  methodList.append("MIN");
-  methodList.append("MAX");
-  methodList.append("ACCUM");
-  methodList.append("StdDev");
-  methodList.append("TypPrice");
 
   helpFile = "math.html";
     
@@ -60,92 +53,10 @@ void MATH::setDefaults ()
   data3 = "#0";
   data4 = "#0";
   data5 = "#0";
-  period = 10;
+  method = "ADD";
 }
 
 void MATH::calculate ()
-{
-  if (! method.compare("MIN") || ! method.compare("MAX"))
-    calculateMinMax();
-  else
-  {
-    if (! method.compare("ACCUM"))
-      calculateAccum();
-	if (! method.compare("StdDev"))
-	  calculateStdDev();
-	if(! method.compare("TypPrice"))
-	  calculateTypPrice();
-    else
-      calculateOper();
-  }
-}
-
-void MATH::calculateMinMax ()
-{
-  PlotLine *input = customLines->find(data1);
-  if (! input)
-  {
-    qDebug("MATH::calculateMinMax: no data1 input %s", data1.latin1());
-    return;
-  }
-    
-  PlotLine *line = new PlotLine;
-  line->setColor(color);
-  line->setType(lineType);
-  line->setLabel(label);
-  
-  int type = methodList.findIndex(method);
-  
-  int loop;
-  for (loop = period; loop < (int) input->getSize(); loop++)
-  {
-    int loop2;
-    double h = -99999999;
-    double l = 99999999;
-    for (loop2 = 0; loop2 <= period; loop2++)
-    {
-      double t = input->getData(loop - loop2);
-      if (t > h)
-        h = t;
-      if (t < l)
-        l = t;
-    }
-
-    if (type == 4)
-      line->append(l);
-    else
-      line->append(h);
-  }
-  
-  output->addLine(line);
-}
-
-void MATH::calculateAccum ()
-{
-  PlotLine *input = customLines->find(data1);
-  if (! input)
-  {
-    qDebug("MATH::calculateAccum: no data1 input %s", data1.latin1());
-    return;
-  }
-    
-  PlotLine *line = new PlotLine;
-  line->setColor(color);
-  line->setType(lineType);
-  line->setLabel(label);
-  
-  int loop;
-  double accum = 0;
-  for (loop = 0; loop < (int) input->getSize(); loop++)
-  {
-    accum = accum + input->getData(loop);
-    line->append(accum);
-  }
-  
-  output->addLine(line);
-}
-
-void MATH::calculateOper ()
 {
   PlotLine *input = customLines->find(data1);
   if (! input)
@@ -434,91 +345,8 @@ void MATH::calculateOper ()
   output->addLine(line);
 }
 
-void MATH::calculateStdDev()
-{
-
-  PlotLine *input = customLines->find(data1);
-  if (! input)
-  {
-    qDebug("MATH::calculateStdDev: no data1 input %s", data1.latin1());
-    return;
-  }
-    
-  PlotLine *sd = new PlotLine;
-  sd->setColor(color);
-  sd->setType(lineType);
-  sd->setLabel(label);
-  
-  qDebug(" ----- in StdDev period = %i", period);
- 
-  int loop;
-  
-  for (loop = period -1; loop < (int) input->getSize(); loop++)
-  {
-  
-    double mean = 0;
-    int loop2;
-    for (loop2 = 0; loop2 < period; loop2++)
-		mean += input->getData(loop - loop2);
-		
-	mean /= (double)period;
-	
-	double ds = 0;
-    for (loop2 = 0; loop2 < period; loop2++)
-    {
-      double t = input->getData(loop - loop2) - mean;
-      ds += (t * t);
-    }
-  
-    ds = sqrt(ds / (double)period);
-
-    sd->append(ds);
-  }
-  
-  output->addLine(sd);
-
-}
-
-void MATH::calculateTypPrice()
-{
-  // n.b. no ratl input here....
-  PlotLine *input = customLines->find(data1);
-  if (! input)
-  {
-    qDebug("MATH::calculateTypPrice: no data1 input %s", data1.latin1());
-    return;
-  }
-
-  PlotLine *typPrice = new PlotLine;
-  typPrice->setColor(color);
-  typPrice->setType(lineType);
-  typPrice->setLabel(label);
-
-  int loop;
-
-  for (loop = 0; loop < (int) data->count(); loop++)
-    typPrice->append((data->getHigh(loop) + data->getLow(loop) + data->getClose(loop)) / 3);
-	
-  output->addLine(typPrice);
- 
-}
-
 int MATH::indicatorPrefDialog (QWidget *w)
 {
-  if (! method.length())
-  {
-    bool ok = FALSE;
-    method = QInputDialog::getItem(QObject::tr("Select MATH Function"),
-                                   QObject::tr("Select MATH function"),
-				   methodList,
-				   0,
-				   FALSE,
-				   &ok,
-				   w);
-    if (! ok)
-      return FALSE;
-  }
-
   QString pl = QObject::tr("Parms");
   QString cl = QObject::tr("Color");
   QString ll = QObject::tr("Label");
@@ -528,7 +356,6 @@ int MATH::indicatorPrefDialog (QWidget *w)
   QString d3l = QObject::tr("Data3");
   QString d4l = QObject::tr("Data4");
   QString d5l = QObject::tr("Data5");
-  QString perl = QObject::tr("Period");
   QString ml = QObject::tr("Method");
   
   PrefDialog *dialog = new PrefDialog(w);
@@ -538,24 +365,12 @@ int MATH::indicatorPrefDialog (QWidget *w)
   dialog->addColorItem(cl, pl, color);
   dialog->addTextItem(ll, pl, label);
   dialog->addComboItem(ltl, pl, lineTypes, lineType);
-  
-  QStringList l;
-  l.append(method);
-  dialog->addComboItem(ml, pl, l, method);
-  
+  dialog->addComboItem(ml, pl, methodList, method);
   dialog->addFormulaInputItem(d1l, pl, FALSE, data1);
-
-  if (! method.compare("MIN") || ! method.compare("MAX") || ! method.compare("StdDev"))
-    dialog->addIntItem(perl, pl, period, 1, 99999999);
-    
-  if (! method.compare("ADD") || ! method.compare("DIV") ||
-      ! method.compare("MUL") || ! method.compare("SUB"))
-  {
-    dialog->addFormulaInputItem(d2l, pl, TRUE, data2);
-    dialog->addFormulaInputItem(d3l, pl, TRUE, data3);
-    dialog->addFormulaInputItem(d4l, pl, TRUE, data4);
-    dialog->addFormulaInputItem(d5l, pl, TRUE, data5);
-  }
+  dialog->addFormulaInputItem(d2l, pl, TRUE, data2);
+  dialog->addFormulaInputItem(d3l, pl, TRUE, data3);
+  dialog->addFormulaInputItem(d4l, pl, TRUE, data4);
+  dialog->addFormulaInputItem(d5l, pl, TRUE, data5);
   
   int rc = dialog->exec();
   
@@ -564,19 +379,12 @@ int MATH::indicatorPrefDialog (QWidget *w)
     color = dialog->getColor(cl);
     lineType = (PlotLine::LineType) dialog->getComboIndex(ltl);
     label = dialog->getText(ll);
-    data1 = dialog->getFormulaInput(d1l);    
-    
-    if (! method.compare("MIN") || ! method.compare("MAX") || ! method.compare("StdDev"))
-      period = dialog->getInt(perl);
-      
-    if (! method.compare("ADD") || ! method.compare("DIV") ||
-        ! method.compare("MUL") || ! method.compare("SUB"))
-    {
-      data2 = dialog->getFormulaInput(d2l);
-      data3 = dialog->getFormulaInput(d3l);
-      data4 = dialog->getFormulaInput(d4l);
-      data5 = dialog->getFormulaInput(d5l);
-    }
+    data1 = dialog->getFormulaInput(d1l);
+    data2 = dialog->getFormulaInput(d2l);
+    data3 = dialog->getFormulaInput(d3l);
+    data4 = dialog->getFormulaInput(d4l);
+    data5 = dialog->getFormulaInput(d5l);
+    method = dialog->getCombo(ml);
       
     rc = TRUE;
   }
@@ -629,10 +437,6 @@ void MATH::setIndicatorSettings (Setting &dict)
   s = dict.getData("data5");
   if (s.length())
     data5 = s;
-  
-  s = dict.getData("period");
-  if (s.length())
-    period = s.toInt();
 }
 
 void MATH::getIndicatorSettings (Setting &dict)
@@ -647,7 +451,6 @@ void MATH::getIndicatorSettings (Setting &dict)
   dict.setData("data3", data3);
   dict.setData("data4", data4);
   dict.setData("data5", data5);
-  dict.setData("period", QString::number(period));
 }
 
 PlotLine * MATH::calculateCustom (QDict<PlotLine> *d)
@@ -660,7 +463,7 @@ PlotLine * MATH::calculateCustom (QDict<PlotLine> *d)
 
 int MATH::getMinBars ()
 {
-  int t = minBars + period;
+  int t = minBars;
   return t;
 }
 
