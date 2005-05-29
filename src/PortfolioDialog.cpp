@@ -152,9 +152,7 @@ void PortfolioDialog::updatePortfolioItems ()
     QString volume = item->text(2);
     QString price = item->text(3);
 
-    QString s = config.getData(Config::DataPath);
-    s.append("/");
-    s.append(symbol);
+    QString s = symbol;
     QDir dir(s);
     if (! dir.exists(s, TRUE))
       continue;
@@ -273,7 +271,6 @@ void PortfolioDialog::addItem ()
   if (rc == QDialog::Accepted)
   {
     QString symbol = dialog->getSymbol(sl);
-    symbol = symbol.remove(0, dpath.length());
     if (symbol.isNull())
       QMessageBox::information(this, tr("Qtstalker: Error"), tr("No symbol selected."));
     else
@@ -335,7 +332,6 @@ void PortfolioDialog::modifyItem ()
   if (rc == QDialog::Accepted)
   {
     QString symbol = dialog->getSymbol(sl);
-    symbol = symbol.remove(0, dpath.length());
     if (symbol.isNull())
       QMessageBox::information(this, tr("Qtstalker: Error"), tr("No symbol selected."));
     else

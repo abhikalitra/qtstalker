@@ -20,6 +20,11 @@
           Split the rest into 2 new indicator plugins. The UTIL plugin will contain simple utility functions
           like Normalize, ACCUM etc. The MINMAX plugin contains the MIN and MAX functions. 
 
+20050526: Portfolio was not parsing path properly. Removed parse function and now using full path in storage.
+
+20050529: Applied feature request #1206364 - Chande VIDYA indicator. Thanks to Jim for the patch.
+
+
 
 0.31
 ====

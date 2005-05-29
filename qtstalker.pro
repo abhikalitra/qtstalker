@@ -63,6 +63,7 @@ SUBDIRS += plugins/indicator/TRIX
 SUBDIRS += plugins/indicator/UO
 SUBDIRS += plugins/indicator/UTIL
 SUBDIRS += plugins/indicator/VFI
+SUBDIRS += plugins/indicator/VIDYA
 SUBDIRS += plugins/indicator/VOL
 SUBDIRS += plugins/indicator/VOLR
 SUBDIRS += plugins/indicator/VT
