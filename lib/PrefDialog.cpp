@@ -110,7 +110,7 @@ void PrefDialog::help ()
 {
   HelpWindow *hw = new HelpWindow(this, helpFile);
   hw->show();
-  reject();
+//  reject();
 }
 
 void PrefDialog::addColorItem (QString &name, QString &page, QColor &color)

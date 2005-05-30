@@ -1421,7 +1421,13 @@ void IndicatorPlot::slotNewChartObject (int id)
   QStringList l;
   QDictIterator<COPlugin> it(coPlugins);
   for(; it.current(); ++it)
-    it.current()->getNameList(l);
+  {
+    QStringList l2;
+    it.current()->getNameList(l2);
+    int loop;
+    for (loop = 0; loop < (int) l2.count(); loop++)
+      l.append(l2[loop]);
+  }
   
   int loop = 0;
   QString name;
@@ -1572,32 +1578,23 @@ void IndicatorPlot::slotDeleteAllChartObjects ()
   }
   db->openChart(chartPath);
 
-  QStringList l3;  
-  db->getChartObjects(l3);
-  Setting set;
-  for (loop = 0; loop < (int) l3.count(); loop++)
-  {
-    set.parse(l3[loop]);
-    QString s = set.getData("Plugin");
-    if (l2.findIndex(s) != -1)
-    {
-      QString d = set.getData("Name");
-      db->deleteChartObject(d);
-    }
-  }
-  
-  config.closePlugin(plugin);
-  
   for (loop = 0; loop < (int) l2.count(); loop++)
   {
     COPlugin *plug = coPlugins[l2[loop]];
-    if (plug)
-    {
-      plug->clear();
-      coPlugins.remove(l2[loop]);
-      config.closePlugin(l2[loop]);
-    }
+    if (! plug)
+      continue;
+
+    plug->getNameList(l);
+    int loop2;
+    for (loop2 = 0; loop2 < (int) l.count(); loop2++)
+      db->deleteChartObject(l[loop2]);
+
+    plug->clear();
+//    coPlugins.remove(l2[loop]);
+//    config.closePlugin(l2[loop]);
   }
+  
+  config.closePlugin(plugin);
   
   mouseFlag = None;
   draw();

@@ -365,7 +365,6 @@ void CSVDialog::help ()
 {
   HelpWindow *hw = new HelpWindow(this, helpFile);
   hw->show();
-  reject();
 }
 
 void CSVDialog::setReloadInterval (int d)

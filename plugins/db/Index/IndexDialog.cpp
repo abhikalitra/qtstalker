@@ -330,7 +330,6 @@ void IndexDialog::help ()
 {
   HelpWindow *hw = new HelpWindow(this, helpFile);
   hw->show();
-  reject();
 }
 
 void IndexDialog::setSymbol (QString &d)

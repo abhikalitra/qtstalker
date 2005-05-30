@@ -112,6 +112,7 @@ PortfolioDialog::~PortfolioDialog ()
 void PortfolioDialog::updatePortfolio ()
 {
   plist->clear();
+  files.clear();
 
   QString s = config.getData(Config::PortfolioPath);
   s.append("/");
@@ -128,7 +129,11 @@ void PortfolioDialog::updatePortfolio ()
     if (s.length())
     {
       QStringList l = QStringList::split(",", s, FALSE);
-      item = new QListViewItem(plist, l[0], l[1], l[2], l[3]);
+
+      QFileInfo fi(l[0]);
+      files.setData(fi.fileName(), l[0]);
+
+      item = new QListViewItem(plist, fi.fileName(), l[1], l[2], l[3]);
     }
   }
 
@@ -147,7 +152,7 @@ void PortfolioDialog::updatePortfolioItems ()
   {
     item = it.current();
 
-    QString symbol = item->text(0);
+    QString symbol = files.getData(item->text(0));
     QString action = item->text(1);
     QString volume = item->text(2);
     QString price = item->text(3);
@@ -207,8 +212,8 @@ void PortfolioDialog::updatePortfolioItems ()
     config.closePlugin(plugin);
   }
   
-  balance->setText(tr("Balance: ") + QString::number(bal) +
-                   " (" + QString::number(((bal / orig) * 100), 'f', 2) + " %)");
+  balance->setText(tr("Balance: ") + QString::number(bal));
+//                   " (" + QString::number(((bal / orig) * 100), 'f', 2) + " %)");
 }
 
 void PortfolioDialog::savePortfolio ()
@@ -225,7 +230,7 @@ void PortfolioDialog::savePortfolio ()
   for (; it.current(); ++it)
   {
     item = it.current();
-    s = item->text(0);
+    s = files.getData(item->text(0));
     s.append(",");
     s.append(item->text(1));
     s.append(",");
@@ -279,7 +284,11 @@ void PortfolioDialog::addItem ()
       int vol = dialog->getInt(vl);
       double price = dialog->getFloat(prl);
 
-      new QListViewItem(plist, symbol, action, QString::number(vol), QString::number(price));
+      QFileInfo fi(symbol);
+      files.setData(fi.fileName(), symbol);
+
+      new QListViewItem(plist, fi.fileName(), action, QString::number(vol), QString::number(price));
+
       updatePortfolioItems();
     }
   }
@@ -291,7 +300,10 @@ void PortfolioDialog::deleteItem ()
 {
   item = plist->selectedItem();
   if (item)
+  {
+    files.remove(item->text(0));
     delete item;
+  }
 
   buttonStatus(0);
 }
@@ -314,7 +326,10 @@ void PortfolioDialog::modifyItem ()
   dialog->createPage(pl);
 
   QString dpath(config.getData(Config::DataPath));
-  QString s(item->text(0));
+
+  QFileInfo fi(files.getData(item->text(0)));
+  QString s(files.getData(item->text(0)));
+
   dialog->addSymbolItem(sl, pl, dpath, s);
 
   QStringList l;
@@ -331,6 +346,8 @@ void PortfolioDialog::modifyItem ()
 
   if (rc == QDialog::Accepted)
   {
+    files.remove(fi.fileName());
+
     QString symbol = dialog->getSymbol(sl);
     if (symbol.isNull())
       QMessageBox::information(this, tr("Qtstalker: Error"), tr("No symbol selected."));
@@ -339,8 +356,11 @@ void PortfolioDialog::modifyItem ()
       QString action = dialog->getCombo(al);
       int vol = dialog->getInt(vl);
       double price = dialog->getFloat(prl);
+
+      QFileInfo fi2(symbol);
+      files.setData(fi2.fileName(), symbol);
   
-      item->setText(0, symbol);
+      item->setText(0, fi2.fileName());
       item->setText(1, action);
       item->setText(2, QString::number(vol));
       item->setText(3, QString::number(price));
@@ -393,6 +413,5 @@ void PortfolioDialog::slotHelp ()
   QString s = "portfolios.html";
   HelpWindow *hw = new HelpWindow(this, s);
   hw->show();
-  reject();
 }
 

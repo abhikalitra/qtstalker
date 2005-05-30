@@ -24,6 +24,13 @@
 
 20050529: Applied feature request #1206364 - Chande VIDYA indicator. Thanks to Jim for the patch.
 
+20050529: Changed help dialog windows to be non-modal.
+
+20050529: Changed portfolio to use only the symbol instead of the full path. It was too large. Now parses
+          properly.
+
+20050530: Fixed bug in chart objects that would remove previous objects and prevented multiple objects of the
+          same type from being created.
 
 
 0.31

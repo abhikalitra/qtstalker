@@ -29,6 +29,7 @@
 #include <qpoint.h>
 #include "Config.h"
 #include "Toolbar.h"
+#include "Setting.h"
 
 class PortfolioDialog : public QTabDialog
 {
@@ -57,6 +58,7 @@ class PortfolioDialog : public QTabDialog
     Toolbar *toolbar;
     Config config;
     QLabel *balance;
+    Setting files;
 };
 
 #endif

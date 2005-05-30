@@ -234,7 +234,6 @@ void BarDialog::help ()
 {
   HelpWindow *hw = new HelpWindow(this, helpFile);
   hw->show();
-  reject();
 }
 
 

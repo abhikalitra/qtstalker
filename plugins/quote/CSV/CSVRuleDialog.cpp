@@ -313,7 +313,6 @@ void CSVRuleDialog::help ()
 {
   HelpWindow *hw = new HelpWindow(this, helpFile);
   hw->show();
-  reject();
 }
 
 void CSVRuleDialog::comboChanged (int)

@@ -28,7 +28,7 @@
 #include <qlayout.h>
 #include <qdir.h>
 
-HelpWindow::HelpWindow (QWidget *, QString &fn) : QDialog (0, "HelpWindow", FALSE, WDestructiveClose)
+HelpWindow::HelpWindow (QWidget *w, QString &fn) : QDialog (w, "HelpWindow", FALSE, WDestructiveClose)
 {
   Config config;
   homePath = config.getData(Config::HelpFilePath) + "/";
@@ -75,7 +75,7 @@ HelpWindow::HelpWindow (QWidget *, QString &fn) : QDialog (0, "HelpWindow", FALS
   
   setCaption(text->documentTitle());
 
-  resize(500, 350);
+  resize(350, 350);
 }
 
 HelpWindow::~HelpWindow ()
