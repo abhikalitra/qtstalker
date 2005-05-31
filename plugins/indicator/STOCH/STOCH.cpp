@@ -131,7 +131,7 @@ void STOCH::calculate ()
 
   if (kperiod > 1)
   {
-    PlotLine *k2 = getMA(k, maType, kperiod);
+    PlotLine *k2 = getMA(k, maType, kperiod, 0, 0);
     delete k;
     k = k2;
   }
@@ -143,7 +143,7 @@ void STOCH::calculate ()
 
   if (dperiod > 1)
   {
-    PlotLine *d = getMA(k, maType, dperiod);
+    PlotLine *d = getMA(k, maType, dperiod, 0, 0);
     d->setColor(dcolor);
     d->setType(dlineType);
     d->setLabel(dlabel);

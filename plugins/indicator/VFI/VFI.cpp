@@ -100,7 +100,7 @@ void VFI::calculate ()
 
   if (smoothing > 1)
   {
-    PlotLine *ma = getMA(vfi, maType, smoothing);
+    PlotLine *ma = getMA(vfi, maType, smoothing, 0, 0);
     ma->setColor(color);
     ma->setType(lineType);
     ma->setLabel(label);

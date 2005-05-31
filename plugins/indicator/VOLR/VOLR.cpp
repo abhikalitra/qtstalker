@@ -55,7 +55,7 @@ void VOLR::calculate ()
   PlotLine *trg = getTR();
   int trgLoop = trg->getSize() - 1;
 
-  PlotLine *ma = getMA(trg, 0, period);
+  PlotLine *ma = getMA(trg, 0, period, 0, 0);
   int maLoop = ma->getSize() - 1;
 
   while (maLoop > -1 && trgLoop > -1)

@@ -148,7 +148,7 @@ void AdaptSTOCH::calculate ()
 	
   if (kperiod > 1)
   {
-    PlotLine *aStoch2 = getMA(aStoch, kMaType, kperiod);
+    PlotLine *aStoch2 = getMA(aStoch, kMaType, kperiod, 0, 0);
     delete aStoch;
     aStoch = aStoch2;
   }
@@ -167,7 +167,7 @@ void AdaptSTOCH::calculate ()
 
   if (dperiod > 1)
   {
-    PlotLine *d = getMA(aStoch, dMaType, dperiod);
+    PlotLine *d = getMA(aStoch, dMaType, dperiod, 0, 0);
     d->setColor(dcolor);
     d->setType(dlineType);
     d->setLabel(dlabel);

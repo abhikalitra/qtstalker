@@ -68,7 +68,7 @@ void ROC::calculate ()
 
   if (smoothing > 1)
   {
-    PlotLine *ma = getMA(roc, maType, smoothing);
+    PlotLine *ma = getMA(roc, maType, smoothing, 0, 0);
     ma->setColor(color);
     ma->setType(lineType);
     ma->setLabel(label);

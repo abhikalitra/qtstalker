@@ -77,7 +77,7 @@ void THERM::calculate ()
 
   if (smoothing > 1)
   {
-    PlotLine *ma = getMA(therm, smoothType, smoothing);
+    PlotLine *ma = getMA(therm, smoothType, smoothing, 0, 0);
     output->addLine(ma);
     delete therm;
     therm = ma;
@@ -85,7 +85,7 @@ void THERM::calculate ()
   else
     output->addLine(therm);
 
-  PlotLine *therm_ma = getMA(therm, maType, maPeriod);
+  PlotLine *therm_ma = getMA(therm, maType, maPeriod, 0, 0);
   therm_ma->setColor(maColor);
   therm_ma->setType(maLineType);
   therm_ma->setLabel(maLabel);

@@ -74,7 +74,7 @@ void VOL::calculate ()
   if (period < 1)
     return;
 
-  PlotLine *ma = getMA(pl, maType, period);
+  PlotLine *ma = getMA(pl, maType, period, 0, 0);
   ma->setColor(maColor);
   ma->setType(maLineType);
   ma->setLabel(maLabel);

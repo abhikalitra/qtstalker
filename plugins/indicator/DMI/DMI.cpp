@@ -301,13 +301,13 @@ void DMI::getDI (int period)
 
   PlotLine *tr = getTR();
 
-  PlotLine *smamdm = getMA(mdm, 1, period);
+  PlotLine *smamdm = getMA(mdm, 1, period, 0, 0);
   int mdmLoop = smamdm->getSize() - 1;
 
-  PlotLine *smapdm = getMA(pdm, 1, period);
+  PlotLine *smapdm = getMA(pdm, 1, period, 0, 0);
   int pdmLoop = smapdm->getSize() - 1;
   
-  PlotLine *smatr = getMA(tr, 1, period);
+  PlotLine *smatr = getMA(tr, 1, period, 0, 0);
   int trLoop = smatr->getSize() - 1;
 
   PlotLine *mdi = new PlotLine();
@@ -385,7 +385,7 @@ void DMI::getADX (int type, int period)
     mdiLoop--;
   }
 
-  PlotLine *adx = getMA(dx, type, period);
+  PlotLine *adx = getMA(dx, type, period, 0, 0);
   adx->setColor(adxColor);
   adx->setType(adxLineType);
   adx->setLabel(adxLabel);

@@ -69,10 +69,10 @@ void MACD::calculate ()
     return;
   }
   
-  PlotLine *fma = getMA(d, macdMAType, fastPeriod);
+  PlotLine *fma = getMA(d, macdMAType, fastPeriod, 0, 0);
   int fmaLoop = fma->getSize() - 1;
 
-  PlotLine *sma = getMA(d, macdMAType, slowPeriod);
+  PlotLine *sma = getMA(d, macdMAType, slowPeriod, 0, 0);
   int smaLoop = sma->getSize() - 1;
   
   if (! customFlag)
@@ -92,7 +92,7 @@ void MACD::calculate ()
   delete fma;
   delete sma;
 
-  PlotLine *signal = getMA(macd, macdMAType, trigPeriod);
+  PlotLine *signal = getMA(macd, macdMAType, trigPeriod, 0, 0);
   signal->setColor(trigColor);
   signal->setType(trigLineType);
   signal->setLabel(trigLabel);

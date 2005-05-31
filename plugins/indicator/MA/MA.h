@@ -47,8 +47,8 @@ class MA : public IndicatorPlugin
     PlotLine * getSMA (PlotLine *d, int);
     PlotLine * getWMA (PlotLine *d, int);
     PlotLine * getWilderMA (PlotLine *d, int);
-    PlotLine * getMA (PlotLine *d, int, int);
-    PlotLine *getLowpass (PlotLine *d);
+    PlotLine * getMA (PlotLine *d, int, int, double, double);
+    PlotLine * getLowpass (PlotLine *d, double, double);
     QStringList getMATypes ();
     int getMAType (QString);
     

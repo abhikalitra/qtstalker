@@ -61,10 +61,10 @@ void MAOSC::calculate ()
     return;
   }
   
-  PlotLine *fma = getMA(in, fastMaType, fastPeriod);
+  PlotLine *fma = getMA(in, fastMaType, fastPeriod, 0, 0);
   int fmaLoop = fma->getSize() - 1;
 
-  PlotLine *sma = getMA(in, slowMaType, slowPeriod);
+  PlotLine *sma = getMA(in, slowMaType, slowPeriod, 0, 0);
   int smaLoop = sma->getSize() - 1;
 
   PlotLine *osc = new PlotLine();

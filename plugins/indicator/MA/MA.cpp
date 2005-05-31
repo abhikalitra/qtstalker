@@ -21,6 +21,7 @@
 
 #include "MA.h"
 #include "PrefDialog.h"
+#include "MADialog.h"
 #include <qdict.h>
 #include <qobject.h>
 #include <math.h>
@@ -72,7 +73,7 @@ void MA::calculate ()
     return;
   }
   
-  PlotLine *ma = getMA(in, maType, period);
+  PlotLine *ma = getMA(in, maType, period, freq, width);
   
   if (! customFlag)
     delete in;
@@ -85,6 +86,7 @@ void MA::calculate ()
 
 int MA::indicatorPrefDialog (QWidget *w)
 {
+/*
   QString pl = QObject::tr("Parms");
   QString cl = QObject::tr("Color");
   QString ll = QObject::tr("Label");
@@ -130,6 +132,53 @@ int MA::indicatorPrefDialog (QWidget *w)
     // lowpass stuff
     freq = dialog->getFloat(fl);
     width = dialog->getFloat(wl);
+    if (freq < 0.0)
+      freq = 0.0;
+    if (freq > 0.5)
+      freq = 0.5;
+    if (width < 0.0001)
+      width = 0.0001;
+    if (width > 0.2)
+      width = 0.2;
+      
+    rc = TRUE;
+  }
+  else
+    rc = FALSE;
+  
+  delete dialog;
+  return rc;
+*/
+
+  MADialog *dialog = new MADialog(helpFile, customFlag);
+  dialog->setCaption(QObject::tr("MA Indicator"));
+  dialog->setColor(color);
+  dialog->setLineType(lineTypes, lineType);
+  dialog->setLabel(label);
+  dialog->setPeriod(period);
+  dialog->setMAType(maTypeList, maType);
+  if (customFlag)
+    dialog->setCustomInput(customInput);
+  else
+    dialog->setInput(inputTypeList, input);
+  dialog->setFreq(freq);
+  dialog->setWidth(width);
+  
+  int rc = dialog->exec();
+  
+  if (rc == QDialog::Accepted)
+  {
+    color = dialog->getColor();
+    lineType = (PlotLine::LineType) dialog->getLineType();
+    period = dialog->getPeriod();
+    label = dialog->getLabel();
+    maType = dialog->getMAType();
+    if (customFlag)
+      customInput = dialog->getCustomInput();
+    else
+      input = (BarData::InputType) dialog->getInput();
+    freq = dialog->getFreq();
+    width = dialog->getWidth();
     if (freq < 0.0)
       freq = 0.0;
     if (freq > 0.5)
@@ -257,7 +306,6 @@ PlotLine * MA::getEMA (PlotLine *d, int period)
   return ema;
 }
 
-// NEW CODE - SINGLE PASS SMA
 PlotLine * MA::getSMA (PlotLine *d, int period)
 {
   PlotLine *sma = new PlotLine;
@@ -277,7 +325,8 @@ PlotLine * MA::getSMA (PlotLine *d, int period)
   // fill buffer first time around, keeping its running total
 
   int loop = -1;
-  while (++loop < period) {
+  while (++loop < period)
+  {
     double val = d->getData(loop);
     total += val;
     values[loop] = val;
@@ -367,7 +416,7 @@ PlotLine * MA::getWilderMA (PlotLine *d, int period)
   return wilderma;
 }
 
-PlotLine * MA::getMA (PlotLine *in, int type, int period)
+PlotLine * MA::getMA (PlotLine *in, int type, int period, double fre, double wid)
 {
   PlotLine *ma = 0;
   
@@ -386,7 +435,7 @@ PlotLine * MA::getMA (PlotLine *in, int type, int period)
       ma = getWilderMA(in, period);
       break;
     case Lowpass:
-      ma = getLowpass(in);
+      ma = getLowpass(in, fre, wid);
       break;
     default:
       break;    
@@ -443,7 +492,7 @@ int MA::getMAType (QString d)
 //************************* LOWPASS ***************************************
 //*************************************************************************
 
-PlotLine * MA::getLowpass (PlotLine *in)
+PlotLine * MA::getLowpass (PlotLine *in, double fre, double wid)
 {
   PlotLine *out = new PlotLine;
   
@@ -485,11 +534,11 @@ PlotLine * MA::getLowpass (PlotLine *in)
   for (i = 0 ; i < halfn ; i++)
   {
     f = (double) i / (double) n ;  // Frequency
-    if (f <= freq)                 // Flat response
+    if (f <= fre)                 // Flat response
       wt = 1.0 ;
     else
     {
-      dist = (f - freq) / width ;
+      dist = (f - fre) / wid;
       wt = exp ( -dist * dist ) ;
     }
 
@@ -497,7 +546,7 @@ PlotLine * MA::getLowpass (PlotLine *in)
     fftFreq->setData(halfn + i, fftFreq->getData(halfn + i) * wt) ;
   }
 
-  dist = (0.5 - freq) / width ;     // Do Nyquist in fftFreq[0]
+  dist = (0.5 - fre) / wid;     // Do Nyquist in fftFreq[0]
   fftFreq->setData(halfn, freqSave * exp ( -dist * dist )) ;
 
   // Do inverse FFT to recover real domain

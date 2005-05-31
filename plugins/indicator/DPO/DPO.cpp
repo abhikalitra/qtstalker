@@ -59,7 +59,7 @@ void DPO::calculate ()
     return;
   }
 
-  PlotLine *ma = getMA(in, maType, period);
+  PlotLine *ma = getMA(in, maType, period, 0, 0);
 
   PlotLine *dpo = new PlotLine();
   dpo->setColor(color);

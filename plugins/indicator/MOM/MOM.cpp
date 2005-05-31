@@ -71,7 +71,7 @@ void MOM::calculate ()
 
   if (smoothing > 1)
   {
-    PlotLine *ma = getMA(mom, maType, smoothing);
+    PlotLine *ma = getMA(mom, maType, smoothing, 0, 0);
     ma->setColor(color);
     ma->setType(lineType);
     ma->setLabel(label);

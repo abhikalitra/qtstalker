@@ -76,7 +76,7 @@ void ATR::calculate ()
   
   if (smoothing > 1)
   {
-    PlotLine *ma = getMA(tr, maType, smoothing);
+    PlotLine *ma = getMA(tr, maType, smoothing, 0, 0);
     ma->setColor(color);
     ma->setType(lineType);
     ma->setLabel(label);

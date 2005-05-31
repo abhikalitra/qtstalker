@@ -90,7 +90,7 @@ void MF::calculate ()
 
   if (smoothing > 1)
   {
-    PlotLine *ma = getMA(d, maType, smoothing);
+    PlotLine *ma = getMA(d, maType, smoothing, 0, 0);
     ma->setColor(color);
     ma->setType(lineType);
     ma->setLabel(label);

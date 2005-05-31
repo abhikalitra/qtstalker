@@ -96,7 +96,7 @@ void RSI::calculate ()
   
   if (smoothing > 1)
   {
-    PlotLine *ma = getMA(rsi, maType, smoothing);
+    PlotLine *ma = getMA(rsi, maType, smoothing, 0, 0);
     ma->setColor(color);
     ma->setType(lineType);
     ma->setLabel(label);

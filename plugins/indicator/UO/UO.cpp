@@ -51,13 +51,13 @@ void UO::calculate ()
 {
   PlotLine *trg = getTR();
 
-  PlotLine *atr = getMA(trg, 1, shortPeriod);
+  PlotLine *atr = getMA(trg, 1, shortPeriod, 0, 0);
   int atrLoop = atr->getSize() - 1;
 
-  PlotLine *atr2 = getMA(trg, 1, medPeriod);
+  PlotLine *atr2 = getMA(trg, 1, medPeriod, 0, 0);
   int atr2Loop = atr2->getSize() - 1;
 
-  PlotLine *atr3 = getMA(trg, 1, longPeriod);
+  PlotLine *atr3 = getMA(trg, 1, longPeriod, 0, 0);
   int atr3Loop = atr3->getSize() - 1;
 
   PlotLine *f = new PlotLine();
@@ -66,13 +66,13 @@ void UO::calculate ()
   for (loop = 0; loop < (int) data->count(); loop++)
     f->append(data->getClose(loop) - data->getLow(loop));
 
-  PlotLine *sma = getMA(f, 1, shortPeriod);
+  PlotLine *sma = getMA(f, 1, shortPeriod, 0, 0);
   int smaLoop = sma->getSize() - 1;
 
-  PlotLine *sma2 = getMA(f, 1, medPeriod);
+  PlotLine *sma2 = getMA(f, 1, medPeriod, 0, 0);
   int sma2Loop = sma2->getSize() - 1;
 
-  PlotLine *sma3 = getMA(f, 1, longPeriod);
+  PlotLine *sma3 = getMA(f, 1, longPeriod, 0, 0);
   int sma3Loop = sma3->getSize() - 1;
 
   PlotLine *uo = new PlotLine();
