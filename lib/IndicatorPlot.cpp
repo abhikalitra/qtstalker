@@ -1456,41 +1456,6 @@ void IndicatorPlot::slotNewChartObject (int id)
 
 void IndicatorPlot::addChartObject (Setting &set)
 {
-  // routine to convert old chart objects to plugin format
-  // remove later when users have updated
-  QString s = set.getData("Plugin");
-  if (! s.length())
-  {
-    s = set.getData("ObjectType");
-    
-    switch (s.toInt())
-    {
-      case 0:
-        set.setData("Plugin", "VerticalLine");
-	break;
-      case 1:
-        set.setData("Plugin", "HorizontalLine");
-	break;
-      case 2:
-        set.setData("Plugin", "TrendLine");
-	break;
-      case 3:
-        set.setData("Plugin", "Text");
-	break;
-      case 4:
-        set.setData("Plugin", "BuyArrow");
-	break;
-      case 5:
-        set.setData("Plugin", "SellArrow");
-	break;
-      case 6:
-        set.setData("Plugin", "FiboLine");
-	break;
-      default:
-	break;
-    }
-  }
-
   QString plugin(set.getData("Plugin"));
   COPlugin *plug = coPlugins[plugin];
   if (! plug)
@@ -1590,8 +1555,6 @@ void IndicatorPlot::slotDeleteAllChartObjects ()
       db->deleteChartObject(l[loop2]);
 
     plug->clear();
-//    coPlugins.remove(l2[loop]);
-//    config.closePlugin(l2[loop]);
   }
   
   config.closePlugin(plugin);

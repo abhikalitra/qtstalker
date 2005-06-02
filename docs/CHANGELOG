@@ -36,6 +36,8 @@
 
 20050531: Added an enhanced dialog for editing MA's to hide/show unused parms depending on MA type chosen.
 
+20050601: Fixed MySQL plugin not compiling on FreeBSD.
+
 
 
 0.31

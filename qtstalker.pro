@@ -21,8 +21,13 @@ SUBDIRS += plugins/quote/NYBOT
 SUBDIRS += plugins/quote/QtstalkerFormat
 SUBDIRS += plugins/quote/Yahoo
 
-#conditional compile if user has mysql installed
-exists(/usr/include/mysql/mysql.h){
+#linux: conditional compile if user has mysql installed
+unix:linux-g++:exists(/usr/include/mysql/mysql.h){
+  SUBDIRS += plugins/quote/MySQL
+}
+
+#freebsd: conditional compile if user has mysql installed
+unix:freebsd-g++:exists(/usr/local/include/mysql/mysql.h){
   SUBDIRS += plugins/quote/MySQL
 }
 

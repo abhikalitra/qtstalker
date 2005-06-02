@@ -130,24 +130,6 @@ void Config::setup ()
     {
       QString str("Indicators");
       setData(IndicatorGroup, str); // set the new default template
-      
-      // copy old indicators into new Indicators template
-/*
-      s = home + "/indicator";
-      QDir dir(s);
-      int loop;
-      for (loop = 2; loop < (int) dir.count(); loop++)
-      {
-        QString s2 = dir.absPath() + "/" + dir[loop];
-        QFileInfo fi(s2);
-	if (! fi.isDir())
-	{
-	  s = dir.absPath() + "/Indicators/" + dir[loop];
-	  copyIndicatorFile(s2, s);
-	  dir.remove(s2, TRUE);
-	}
-      }
-*/
     }
   }
   
@@ -668,10 +650,6 @@ void Config::getIndicatorList (QStringList &l)
 {
   l.clear();
   getPluginList(IndicatorPluginPath, l);
-  l.remove("COMP");
-  l.remove("MATH");
-  l.remove("REF");
-  l.remove("COUNTER");
 }
 
 ChartPlugin * Config::getChartPlugin (QString &p)

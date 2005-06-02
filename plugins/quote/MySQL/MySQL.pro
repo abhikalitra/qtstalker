@@ -10,6 +10,10 @@ SOURCES += MySQLPlugin.cpp
 
 INCLUDEPATH += /usr/include/mysql
 
+# FreeBSD stuff
+unix:freebsd-g++:INCLUDEPATH += /usr/local/include/mysql
+unix:freebsd-g++:LIBS += -L/usr/local/lib/mysql
+
 LIBS += -lmysqlclient
 
 # for redhat
