@@ -374,6 +374,10 @@ void StocksDialog::split ()
   }
 
   delete bars;
+
+  QMessageBox::information(this,
+                           tr("Qtstalker: Split Complete"),
+                           tr("Split complete. Reload chart to view results"));
 }
 
 
