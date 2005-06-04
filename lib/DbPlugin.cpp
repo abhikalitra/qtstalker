@@ -46,8 +46,6 @@ int DbPlugin::openChart (QString &d)
 {
   if (db)
     close();
-//    qDebug("DbPlugin::openChart: db already open");
-//    return TRUE;
 
   bool flag = FALSE;  
   QDir dir(d);
@@ -203,13 +201,13 @@ void DbPlugin::dump (QString &d, bool f)
   
   DBT key;
   DBT data;
-  DBC *cursor;
+  DBC *cur;
   memset(&key, 0, sizeof(DBT));
   memset(&data, 0, sizeof(DBT));
 
-  db->cursor(db, NULL, &cursor, 0);
+  db->cursor(db, NULL, &cur, 0);
 
-  while (! cursor->c_get(cursor, &key, &data, DB_NEXT))
+  while (! cur->c_get(cur, &key, &data, DB_NEXT))
   {
     if (f)
     {
@@ -227,7 +225,7 @@ void DbPlugin::dump (QString &d, bool f)
       outStream << (char *) key.data << "=" << (char *) data.data << "\n";
   }
 
-  cursor->c_close(cursor);
+  cur->c_close(cur);
 
   outFile.close();
 }
@@ -236,13 +234,13 @@ Bar * DbPlugin::getFirstBar ()
 {
   DBT key;
   DBT data;
-  DBC *cursor;
+  DBC *cur;
   memset(&key, 0, sizeof(DBT));
   memset(&data, 0, sizeof(DBT));
   Bar *bar = 0;
 
-  db->cursor(db, NULL, &cursor, 0);
-  while (! cursor->c_get(cursor, &key, &data, DB_NEXT))
+  db->cursor(db, NULL, &cur, 0);
+  while (! cur->c_get(cur, &key, &data, DB_NEXT))
   {
     if (key.size != 15)
       continue;
@@ -257,7 +255,7 @@ Bar * DbPlugin::getFirstBar ()
    
     break;
   }
-  cursor->c_close(cursor);
+  cur->c_close(cur);
   
   return bar;
 }
@@ -266,13 +264,13 @@ Bar * DbPlugin::getLastBar ()
 {
   DBT key;
   DBT data;
-  DBC *cursor;
+  DBC *cur;
   memset(&key, 0, sizeof(DBT));
   memset(&data, 0, sizeof(DBT));
   Bar *bar = 0;
 
-  db->cursor(db, NULL, &cursor, 0);
-  while (! cursor->c_get(cursor, &key, &data, DB_PREV))
+  db->cursor(db, NULL, &cur, 0);
+  while (! cur->c_get(cur, &key, &data, DB_PREV))
   {
     if (key.size != 15)
       continue;
@@ -287,7 +285,7 @@ Bar * DbPlugin::getLastBar ()
     
     break;
   }
-  cursor->c_close(cursor);
+  cur->c_close(cur);
 
   return bar;
 }
@@ -361,7 +359,7 @@ void DbPlugin::getDailyHistory ()
 {
   DBT key;
   DBT data;
-  DBC *cursor;
+  DBC *cur;
   memset(&key, 0, sizeof(DBT));
   memset(&data, 0, sizeof(DBT));
 
@@ -369,9 +367,9 @@ void DbPlugin::getDailyHistory ()
   getHeaderField(BarType, s);
   int barType = s.toInt();
   
-  db->cursor(db, NULL, &cursor, 0);
+  db->cursor(db, NULL, &cur, 0);
   
-  while (! cursor->c_get(cursor, &key, &data, DB_PREV))
+  while (! cur->c_get(cur, &key, &data, DB_PREV))
   {
     if (barData->count() >= barRange)
       break;
@@ -390,23 +388,23 @@ void DbPlugin::getDailyHistory ()
     barData->prepend(bar);
   }
   
-  cursor->c_close(cursor);
+  cur->c_close(cur);
 }
   
 void DbPlugin::getDailyTickHistory ()
 {
   DBT key;
   DBT data;
-  DBC *cursor;
+  DBC *cur;
   memset(&key, 0, sizeof(DBT));
   memset(&data, 0, sizeof(DBT));
 
   Bar *tbar = 0;
   Bar *bar = 0;
     
-  db->cursor(db, NULL, &cursor, 0);
+  db->cursor(db, NULL, &cur, 0);
   
-  while (! cursor->c_get(cursor, &key, &data, DB_PREV))
+  while (! cur->c_get(cur, &key, &data, DB_PREV))
   {
     if (barData->count() >= barRange)
       break;
@@ -476,14 +474,14 @@ void DbPlugin::getDailyTickHistory ()
   else
     delete bar;
     
-  cursor->c_close(cursor);
+  cur->c_close(cur);
 }
 
 void DbPlugin::getWeeklyHistory ()
 {
   DBT key;
   DBT data;
-  DBC *cursor;
+  DBC *cur;
   memset(&key, 0, sizeof(DBT));
   memset(&data, 0, sizeof(DBT));
 
@@ -492,9 +490,9 @@ void DbPlugin::getWeeklyHistory ()
   int year = 0;
   int tyear = 0;
     
-  db->cursor(db, NULL, &cursor, 0);
+  db->cursor(db, NULL, &cur, 0);
   
-  while (! cursor->c_get(cursor, &key, &data, DB_PREV))
+  while (! cur->c_get(cur, &key, &data, DB_PREV))
   {
     if (barData->count() >= barRange)
       break;
@@ -548,7 +546,7 @@ void DbPlugin::getWeeklyHistory ()
     delete tbar;
   }
 
-  db->cursor(db, NULL, &cursor, 0);
+  db->cursor(db, NULL, &cur, 0);
 
   if (bar->count())
     barData->prepend(bar);
@@ -560,7 +558,7 @@ void DbPlugin::getMonthlyHistory ()
 {
   DBT key;
   DBT data;
-  DBC *cursor;
+  DBC *cur;
   memset(&key, 0, sizeof(DBT));
   memset(&data, 0, sizeof(DBT));
 
@@ -568,9 +566,9 @@ void DbPlugin::getMonthlyHistory ()
   int month = -1;
   int year = 0;
     
-  db->cursor(db, NULL, &cursor, 0);
+  db->cursor(db, NULL, &cur, 0);
   
-  while (! cursor->c_get(cursor, &key, &data, DB_PREV))
+  while (! cur->c_get(cur, &key, &data, DB_PREV))
   {
     if (barData->count() >= barRange)
       break;
@@ -625,7 +623,7 @@ void DbPlugin::getMonthlyHistory ()
     delete tbar;
   }
 
-  db->cursor(db, NULL, &cursor, 0);
+  db->cursor(db, NULL, &cur, 0);
 
   if (bar->count())
     barData->prepend(bar);
@@ -637,7 +635,7 @@ void DbPlugin::getTickHistory (int mins)
 {
   DBT key;
   DBT data;
-  DBC *cursor;
+  DBC *cur;
   memset(&key, 0, sizeof(DBT));
   memset(&data, 0, sizeof(DBT));
 
@@ -670,9 +668,9 @@ void DbPlugin::getTickHistory (int mins)
   s = QString::number(ed.getDateValue(), 'f', 0);
   bar->setDate(s);
 
-  db->cursor(db, NULL, &cursor, 0);
+  db->cursor(db, NULL, &cur, 0);
   
-  while (! cursor->c_get(cursor, &key, &data, DB_PREV))
+  while (! cur->c_get(cur, &key, &data, DB_PREV))
   {
     if (barData->count() >= barRange)
       break;
@@ -753,7 +751,7 @@ void DbPlugin::getTickHistory (int mins)
     }
   }
 
-  db->cursor(db, NULL, &cursor, 0);
+  db->cursor(db, NULL, &cur, 0);
     
   delete tbar;
   
@@ -910,6 +908,39 @@ void DbPlugin::setIndicator (QString &k, QString &d)
   setHeaderField(LocalIndicators, s);
 }
 
+void DbPlugin::getAllBars (BarData *bars)
+{
+  DBT key;
+  DBT data;
+  DBC *cur;
+  memset(&key, 0, sizeof(DBT));
+  memset(&data, 0, sizeof(DBT));
+
+  QString s;
+  getHeaderField(BarType, s);
+  int barType = s.toInt();
+
+  db->cursor(db, NULL, &cur, 0);
+
+  while (! cur->c_get(cur, &key, &data, DB_NEXT))
+  {
+    if (key.size != 15)
+      continue;
+    
+    BarDate dt;
+    QString k = (char *) key.data;
+    if (dt.setDate(k))
+      continue;
+
+    QString d = (char *) data.data;
+    Bar *bar = getBar(k, d);
+    bar->setTickFlag(barType);
+    bars->prepend(bar);
+  }
+
+  cur->c_close(cur);
+}
+
 //*********************************************************
 //***************** VIRTUAL OVERRIDES *********************
 //*********************************************************
@@ -930,3 +961,13 @@ Bar * DbPlugin::getBar (QString &, QString &)
 void DbPlugin::setBar (Bar &)
 {
 }
+
+
+
+
+
+
+
+
+
+

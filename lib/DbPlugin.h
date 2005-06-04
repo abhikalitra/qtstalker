@@ -83,6 +83,7 @@ class DbPlugin : public QObject
     void deleteIndicator (QString &);
     void addIndicator (QString &);
     void setIndicator (QString &, QString &);
+    void getAllBars (BarData *);
     
     virtual void dbPrefDialog ();
     virtual void createNew ();
@@ -99,3 +100,5 @@ class DbPlugin : public QObject
 };
 
 #endif
+
+

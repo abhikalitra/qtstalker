@@ -24,8 +24,10 @@ To Do:
 - update docs to explain why Bars:paintbar is blank if no rule is set.
 - add more crosshairs behaviours to IndicatorPlot
 - user defined bar lengths for intraday charts
-- fix: font change does not propagate to chart objects
+- fix: preferences font changes does not propagate to chart objects
 - add remember last file used for CSV plugin.
+- handle stock splits
+
 
     
 

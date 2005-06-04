@@ -25,6 +25,7 @@
 #include <qtabdialog.h>
 #include <qlineedit.h>
 #include <qlistview.h>
+#include <qdatetimeedit.h>
 #include "DbPlugin.h"
 #include "Config.h"
 #include "BarEdit.h"
@@ -38,6 +39,7 @@ class StocksDialog : public QTabDialog
     ~StocksDialog ();
     void createDetailsPage ();
     void createDataPage ();
+    void createSplitPage ();
 
   public slots:
     void deleteRecord (QString);
@@ -45,14 +47,17 @@ class StocksDialog : public QTabDialog
     void slotDateSearch (QString);
     void saveChart ();
     void help ();
+    void split ();
 
   private:
     DbPlugin *db;
     Config config;
     QLineEdit *title;
+    QLineEdit *splitRatio;
     QString helpFile;
     QListView *fundView;
     BarEdit *barEdit;
+    QDateEdit *splitDate;
 };
 
 #endif

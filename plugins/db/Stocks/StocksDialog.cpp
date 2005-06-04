@@ -35,6 +35,7 @@ StocksDialog::StocksDialog (QString p, DbPlugin *d) : QTabDialog (0, "StocksDial
   
   createDetailsPage();
   createDataPage();
+  createSplitPage();
   
   setOkButton(tr("&OK"));
   setCancelButton(tr("&Cancel"));
@@ -179,6 +180,40 @@ void StocksDialog::createDataPage ()
   addTab(w, tr("Data"));  
 }
 
+void StocksDialog::createSplitPage ()
+{
+  QWidget *w = new QWidget(this);
+    
+  QVBoxLayout *vbox = new QVBoxLayout(w);
+  vbox->setMargin(5);
+  vbox->setSpacing(5);
+
+  QGridLayout *grid = new QGridLayout(vbox);
+  grid->setMargin(0);
+  grid->setSpacing(5);
+  
+  QLabel *label = new QLabel(tr("Split Date"), w);
+  grid->addWidget(label, 0, 0);
+
+  splitDate = new QDateEdit(QDate::currentDate(), w);
+  splitDate->setOrder(QDateEdit::YMD);
+  grid->addWidget(splitDate, 0, 1);
+
+  label = new QLabel(tr("Split Ratio"), w);
+  grid->addWidget(label, 1, 0);
+  
+  splitRatio = new QLineEdit("2:1", w);
+  grid->addWidget(splitRatio, 1, 1);
+
+  QPushButton *button = new QPushButton(tr("Perform Split"), w);
+  connect(button, SIGNAL(clicked()), this, SLOT(split()));
+  vbox->addWidget(button);
+
+  vbox->addStretch(1);
+  
+  addTab(w, tr("Split"));  
+}
+
 void StocksDialog::deleteRecord (QString k)
 {
   db->deleteData(k);
@@ -265,4 +300,81 @@ void StocksDialog::help ()
   HelpWindow *hw = new HelpWindow(this, helpFile);
   hw->show();
 }
+
+void StocksDialog::split ()
+{
+  int rc = QMessageBox::warning(this,
+		                tr("Warning"),
+			        tr("Are you sure you want split the stock?"),
+			        QMessageBox::Yes,
+			        QMessageBox::No,
+			        QMessageBox::NoButton);
+
+  if (rc == QMessageBox::No)
+    return;
+
+  QDate dt = splitDate->date();
+  
+  // verify if split date < first bar
+  Bar *bar = db->getFirstBar();
+  if (bar)
+  {
+    if (dt < bar->getDate().getDate())
+    {
+      QMessageBox::information(this, tr("Qtstalker: Error"), tr("Invalid split date."));
+      delete bar;
+      return;
+    }
+
+    delete bar;
+  }
+
+  // verify if split date > last bar
+  bar = db->getLastBar();
+  if (bar)
+  {
+    if (dt > bar->getDate().getDate())
+    {
+      QMessageBox::information(this, tr("Qtstalker: Error"), tr("Invalid split date."));
+      delete bar;
+      return;
+    }
+
+    delete bar;
+  }
+
+  // verify if the ratio format is correct ?:?
+  QStringList l = QStringList::split(":", splitRatio->text(), FALSE);
+  if (l.count() != 2)
+  {
+    QMessageBox::information(this, tr("Qtstalker: Error"), tr("Invalid split ratio format.\neg. 2:1"));
+    return;
+  }
+
+  double plyer = l[1].toDouble() / l[0].toDouble();
+
+  BarData *bars = new BarData;
+  db->getAllBars(bars);
+
+  int loop;
+  for (loop = 0; loop < bars->count(); loop++)
+  {
+    bar = bars->getBar(loop);
+
+    if (bar->getDate().getDate() < dt)
+    {
+      bar->setOpen(bar->getOpen() * plyer);
+      bar->setHigh(bar->getHigh() * plyer);
+      bar->setLow(bar->getLow() * plyer);
+      bar->setClose(bar->getClose() * plyer);
+
+      Bar &rbar = *bar;
+      db->setBar(rbar);
+    }
+  }
+
+  delete bars;
+}
+
+
 

@@ -38,6 +38,7 @@
 
 20050601: Fixed MySQL plugin not compiling on FreeBSD.
 
+20050604: Stock splits can now be applied by using the Split page in the edit chart dialog.
 
 
 0.31
