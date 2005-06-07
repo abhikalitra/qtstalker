@@ -69,8 +69,6 @@ void PrefDialog::init ()
   formulaInputList.setAutoDelete(FALSE);
   labelList.setAutoDelete(FALSE);
   
-//  resize(300, 200);
-  
   setOkButton(tr("&OK"));
   setCancelButton(tr("&Cancel"));
   setHelpButton(tr("&Help"));
@@ -110,7 +108,6 @@ void PrefDialog::help ()
 {
   HelpWindow *hw = new HelpWindow(this, helpFile);
   hw->show();
-//  reject();
 }
 
 void PrefDialog::addColorItem (QString &name, QString &page, QColor &color)
@@ -466,4 +463,6 @@ void PrefDialog::addLabelItem (QString &name, QString &page, QString &l)
   grid->addWidget(label, grid->numRows() - 2, 1);
   labelList.replace(name, label);
 }
+
+
 

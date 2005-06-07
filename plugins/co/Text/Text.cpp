@@ -98,13 +98,13 @@ void Text::draw (QPixmap &buffer, Scaler &scaler, int startIndex, int pixelspace
     {
       co->clearGrabHandles();
     
-      co->setGrabHandle(new QRegion(x + fm.width(co->getLabel(), -1),
+      co->setGrabHandle(new QRegion(x - HANDLE_WIDTH - 1,
              			    y - (fm.height() / 2),
 				    HANDLE_WIDTH,
 				    HANDLE_WIDTH,
 				    QRegion::Rectangle));
 				    
-      painter.fillRect(x + fm.width(co->getLabel(), -1),
+      painter.fillRect(x - HANDLE_WIDTH - 1,
                        y - (fm.height() / 2),
 		       HANDLE_WIDTH,
 		       HANDLE_WIDTH,
