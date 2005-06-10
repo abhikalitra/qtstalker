@@ -3,6 +3,10 @@
 
 20050606: Moved the text grabbox from right side of text to the left side.
 
+20050608: Fixed bad indicator group list in the move indicator dialog.
+
+20050610: Changed SYMBOL indicator to recalculate when chart compression and bars loaded
+          are updated.
 
 
 0.32

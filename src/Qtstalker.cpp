@@ -676,7 +676,10 @@ void QtstalkerApp::slotCompressionChanged (int)
 void QtstalkerApp::compressionChanged ()
 {
   // the compression has changed
-  
+
+  QString s = QString::number(toolbar2->getCompressionInt());
+  config.setData(Config::Compression, s);
+
   emit signalInterval((BarData::BarCompression) toolbar2->getCompressionInt());
 }
 
@@ -967,6 +970,9 @@ void QtstalkerApp::slotChartUpdated ()
   if (status == None)
     return;
   
+  QString s = QString::number(toolbar2->getBars());
+  config.setData(Config::Bars, s);
+
   loadChart(chartPath);
 }
 

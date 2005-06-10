@@ -526,10 +526,12 @@ void IndicatorPage::moveIndicator ()
   dialog->createPage(t);
   QString t2(tr("Plot Type"));
   dialog->addComboItem(t2, t, pl, set.getInt("plotType"));
+
   QString igroup = group->currentText();
   if (localIndicators.findIndex(list->currentText()) != -1)
     igroup = tr("Local");
   t2 = tr("Indicator Group");
+  getIndicatorGroups(pl);
   dialog->addComboItem(t2, t, pl, igroup);
   
   int rc = dialog->exec();

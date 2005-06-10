@@ -66,8 +66,8 @@ void SYMBOL::calculate ()
   
   BarDate date = data->getDate(0);
   
-  db->setBarCompression(BarData::DailyBar);
-  db->setBarRange(data->count());
+  db->setBarCompression((BarData::BarCompression) config.getData(Config::Compression).toInt());
+  db->setBarRange(config.getData(Config::Bars).toInt());
   BarData *recordList = new BarData;
   db->getHistory(recordList);
 
