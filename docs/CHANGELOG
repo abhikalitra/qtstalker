@@ -8,6 +8,9 @@
 20050610: Changed SYMBOL indicator to recalculate when chart compression and bars loaded
           are updated.
 
+20050628: Applied patch #1227777 - install.html updates.
+
+
 
 0.32
 ====
