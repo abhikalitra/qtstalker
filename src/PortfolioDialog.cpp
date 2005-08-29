@@ -269,7 +269,7 @@ void PortfolioDialog::addItem ()
   
   dialog->addFloatItem(prl, pl, 0, 0, 9999999999.0);
   
-  dialog->addIntItem(vl, pl, 1, 1, 99999999);
+  dialog->addFloatItem(vl, pl, 1, 1, 99999999);
   
   int rc = dialog->exec();
   
@@ -281,7 +281,7 @@ void PortfolioDialog::addItem ()
     else
     {
       QString action = dialog->getCombo(al);
-      int vol = dialog->getInt(vl);
+      double vol = dialog->getFloat(vl);
       double price = dialog->getFloat(prl);
 
       QFileInfo fi(symbol);
@@ -340,7 +340,7 @@ void PortfolioDialog::modifyItem ()
   
   dialog->addFloatItem(prl, pl, item->text(3).toFloat(), 0, 9999999999.0);
   
-  dialog->addIntItem(vl, pl, item->text(2).toInt(), 1, 99999999);
+  dialog->addFloatItem(vl, pl, item->text(2).toFloat(), 1, 99999999);
   
   int rc = dialog->exec();
 
@@ -354,7 +354,7 @@ void PortfolioDialog::modifyItem ()
     else
     {
       QString action = dialog->getCombo(al);
-      int vol = dialog->getInt(vl);
+      double vol = dialog->getFloat(vl);
       double price = dialog->getFloat(prl);
 
       QFileInfo fi2(symbol);

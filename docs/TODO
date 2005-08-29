@@ -28,7 +28,15 @@ To Do:
 - add remember last file used for CSV plugin.
 - add a loop counter function to the COUNTER plugin
 - add multiple positions to the backtester
- 
+- fix: bars to load mouse scrolling problem, remove the scroll buttons?
+- fix: CSV to ignore '/' chars in date fields
+- add default to last used indicator in the new indicator dialog
+- add better icons for add/insert in the edit formula dialog widget, functions not obvious
+- change backtester/scanner edit formula widgets to remove plot/scale option fields from the list
+  they dont apply and confuse users. try to remove unused gui options 
+- change edit formula widgets to auto add the missing COMP step instead of warning user.
+
+  
     
 
 Maybe some day:

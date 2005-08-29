@@ -10,6 +10,9 @@
 
 20050628: Applied patch #1227777 - install.html updates.
 
+20050829: Appied patch #1261806 - change portfolio's 'volume' variable from int to float
+          Thanks to imoszarh for the patch.
+
 
 
 0.32
