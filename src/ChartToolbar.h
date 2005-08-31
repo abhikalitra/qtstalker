@@ -27,6 +27,7 @@
 #include <qmainwindow.h>
 #include "MyComboBox.h"
 #include "MySpinBox.h"
+#include "MyLineEdit.h"
 #include "MySlider.h"
 #include "Macro.h"
 
@@ -75,12 +76,14 @@ class ChartToolbar : public QToolBar
     void slotAccel (int);
     void doKeyPress (QKeyEvent *);
     void runMacro (Macro *);
+    void barsChanged ();
   
   private:
     MyComboBox *compressionCombo;
     MyComboBox *chartTypeCombo;
     MySpinBox *pixelspace;
-    MySpinBox *barCount;
+//    MySpinBox *barCount;
+    MyLineEdit *barCount;
     MySlider *slider;
     bool keyFlag;
     MenuAction focusFlag;

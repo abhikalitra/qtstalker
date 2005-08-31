@@ -24,6 +24,7 @@
 #include "BarData.h"
 #include <qtooltip.h>
 #include <qaccel.h>
+#include <qvalidator.h>
 
 ChartToolbar::ChartToolbar (QMainWindow *mw) : QToolBar (mw, "chartToolbar")
 {
@@ -61,6 +62,7 @@ ChartToolbar::ChartToolbar (QMainWindow *mw) : QToolBar (mw, "chartToolbar")
   connect(pixelspace, SIGNAL(signalKeyPressed(int, int, int, int, QString)),
           this, SIGNAL(signalKeyPressed(int, int, int, int, QString)));
 
+/*
   barCount = new MySpinBox(this, Macro::ChartToolbar);
   barCount->setMinValue(1);
   barCount->setMaxValue(99999999);
@@ -70,7 +72,19 @@ ChartToolbar::ChartToolbar (QMainWindow *mw) : QToolBar (mw, "chartToolbar")
   connect(barCount, SIGNAL(signalKeyPressed(int, int, int, int, QString)),
           this, SIGNAL(signalKeyPressed(int, int, int, int, QString)));
   connect(barCount, SIGNAL(valueChanged(int)), this, SIGNAL(signalBarsChanged(int)));
-	  
+*/
+
+  QIntValidator *iv = new QIntValidator(1, 99999, this, 0);
+
+  barCount = new MyLineEdit(this, Macro::ChartToolbar);
+  barCount->setValidator(iv);
+  barCount->setText(config.getData(Config::Bars));
+  barCount->setMaximumWidth(50);
+  QToolTip::add(barCount, tr("Total bars to load"));
+  connect(barCount, SIGNAL(signalKeyPressed(int, int, int, int, QString)),
+          this, SIGNAL(signalKeyPressed(int, int, int, int, QString)));
+  connect(barCount, SIGNAL(returnPressed()), this, SLOT(barsChanged()));
+
   addSeparator();
 
   slider = new MySlider(this, Macro::ChartToolbar);
@@ -101,7 +115,12 @@ ChartToolbar::~ChartToolbar ()
 
 int ChartToolbar::getBars ()
 {
-  return barCount->value();
+  bool ok;
+  int t = barCount->text().toInt(&ok);
+  if (ok)
+    return t;
+  else
+    return 0;
 }
 
 void ChartToolbar::enableSlider (bool d)
@@ -341,5 +360,13 @@ void ChartToolbar::runMacro (Macro *d)
   }
   
   macroFlag = FALSE;
+}
+
+void ChartToolbar::barsChanged ()
+{
+  bool ok;
+  int t = barCount->text().toInt(&ok);
+  if (ok)
+    emit signalBarsChanged(t);
 }
 

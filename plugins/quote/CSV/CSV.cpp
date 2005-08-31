@@ -492,6 +492,8 @@ QDate CSV::getDate (QString &k, QString &d, Setting &r)
       l = QStringList::split("/", dateString, FALSE);
       if (l.count() != 3)
         return date;
+      else
+        dateString = l.join(QString::null);
       break;
     }
 
@@ -500,6 +502,8 @@ QDate CSV::getDate (QString &k, QString &d, Setting &r)
       l = QStringList::split("-", dateString, FALSE);
       if (l.count() != 3)
         return date;
+      else
+        dateString = l.join(QString::null);
       break;
     }
 
@@ -508,6 +512,8 @@ QDate CSV::getDate (QString &k, QString &d, Setting &r)
       l = QStringList::split(".", dateString, FALSE);
       if (l.count() != 3)
         return date;
+      else
+        dateString = l.join(QString::null);
       break;
     }
 

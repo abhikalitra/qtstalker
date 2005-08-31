@@ -13,6 +13,11 @@
 20050829: Appied patch #1261806 - change portfolio's 'volume' variable from int to float
           Thanks to imoszarh for the patch.
 
+20050831: Fixed CSV plugin to ignore delimiter chars in date fields
+
+20050831: Fixed bars to load spinbox mouse scrolling problem. Replaced spinbox with a textbox.
+          User must now enter numbers with keyboard and press enter key to make change official.
+
 
 
 0.32
