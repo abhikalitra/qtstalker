@@ -92,7 +92,8 @@ class Config
       Macro12,
       IndicatorGroup,
       QuotePluginStorage,
-      ShowUpgradeMessage
+      ShowUpgradeMessage,
+      LastNewIndicator
     };
 
     Config ();

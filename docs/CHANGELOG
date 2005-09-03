@@ -18,6 +18,7 @@
 20050831: Fixed bars to load spinbox mouse scrolling problem. Replaced spinbox with a textbox.
           User must now enter numbers with keyboard and press enter key to make change official.
 
+20050831: New indicator dialog now defaults to last used indicator.
 
 
 0.32

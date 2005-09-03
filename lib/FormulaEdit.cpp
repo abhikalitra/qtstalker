@@ -154,6 +154,9 @@ void FormulaEdit::addItem ()
 
   set.getString(s);
   list->setText(list->numRows() - 1, 3, s);
+
+  // make this current row
+  list->selectRow(list->numRows() - 1);
   
   config.closePlugin(type);
 }
@@ -209,6 +212,9 @@ void FormulaEdit::insertItem ()
   
   set.getString(s);
   list->setText(row, 3, s);
+
+  // make this current row
+  list->selectRow(row - 1);
   
   config.closePlugin(type);
 }
@@ -279,6 +285,9 @@ void FormulaEdit::setLine (QString &d)
   QString s;
   set.getString(s);
   list->setText(list->numRows() - 1, 3, s);
+
+  // make this current row
+  list->selectRow(list->numRows() - 1);
 }
 
 QString FormulaEdit::getLine (int i)

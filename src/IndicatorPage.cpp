@@ -252,7 +252,8 @@ void IndicatorPage::newIndicator ()
   
   QStringList l2;
   config.getIndicatorList(l2);
-  idialog->addComboItem(il, pl, l2, 0);
+  s = config.getData(Config::LastNewIndicator);
+  idialog->addComboItem(il, pl, l2, l2.findIndex(s));
   
   s = tr("NewIndicator");
   idialog->addTextItem(nl, pl, s);
@@ -271,6 +272,7 @@ void IndicatorPage::newIndicator ()
   
   QString name = idialog->getText(nl);
   QString indicator = idialog->getCombo(il);
+  config.setData(Config::LastNewIndicator, indicator);
   Indicator::PlotType plotType = (Indicator::PlotType) idialog->getComboIndex(ptl);
   QString igroup = idialog->getCombo(igl);
   delete idialog;

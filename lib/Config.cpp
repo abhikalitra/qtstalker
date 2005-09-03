@@ -350,6 +350,9 @@ QString Config::getData (Parm p)
     case ShowUpgradeMessage:
       s = settings.readEntry("/Qtstalker/ShowUpgradeMessage", "1");
       break;
+    case LastNewIndicator:
+      s = settings.readEntry("/Qtstalker/LastNewIndicator", "MA");
+      break;
     default:
       break;
   }
@@ -531,6 +534,9 @@ void Config::setData (Parm p, QString &d)
       break;
     case ShowUpgradeMessage:
       settings.writeEntry("/Qtstalker/ShowUpgradeMessage", d);
+      break;
+    case LastNewIndicator:
+      settings.writeEntry("/Qtstalker/LastNewIndicator", d);
       break;
     default:
       break;
