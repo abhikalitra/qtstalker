@@ -595,6 +595,7 @@ void QtstalkerApp::loadIndicator (Indicator *i)
   IndicatorPlugin *plug = config.getIndicatorPlugin(plugin);
   if (plug)
   {
+    plug->clearOutput();
     if (recordList)
       plug->setIndicatorInput(recordList);
     QString s(i->getFile());
@@ -615,7 +616,7 @@ void QtstalkerApp::loadIndicator (Indicator *i)
     }
   }
   
-  config.closePlugin(plugin);
+//  config.closePlugin(plugin);
 }
 
 QString QtstalkerApp::getWindowCaption ()

@@ -20,6 +20,10 @@
 
 20050831: New indicator dialog now defaults to last used indicator.
 
+20050905: Removed the MySQL plugin from the distribution. There will be officially no support
+          for software authors/owners of products whose behaviour is disrespectful and harmful
+          to the OSS community. Sorry Marco, I know a lot of users appreciated the work you did
+          to support it. I will be looking at a possible postgres replacement in the future. 
 
 0.32
 ====
