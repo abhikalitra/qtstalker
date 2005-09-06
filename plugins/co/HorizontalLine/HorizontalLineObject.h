@@ -50,6 +50,8 @@ class HorizontalLineObject
     void setSelectionArea (QRegion *);
     QString getPlot ();
     QString getName ();
+    QString getText();
+    void setText(QString);
     void setColor (QColor);
     QColor getColor ();
     void setValue (double);
@@ -67,6 +69,7 @@ class HorizontalLineObject
     QPtrList<QRegion> selectionArea;
     QString plot;
     QString name;
+    QString text;
     QColor color;
     double value;
     Status status;

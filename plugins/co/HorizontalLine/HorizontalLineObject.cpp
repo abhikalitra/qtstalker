@@ -44,6 +44,7 @@ void HorizontalLineObject::init ()
   color.setNamedColor("red");
   saveFlag = FALSE;
   status = Plot;
+  text="";
   grabHandles.setAutoDelete(TRUE);
   selectionArea.setAutoDelete(TRUE);
 }
@@ -86,6 +87,16 @@ QString HorizontalLineObject::getPlot ()
 QString HorizontalLineObject::getName ()
 {
   return name;
+}
+
+QString HorizontalLineObject::getText ()
+{
+  return text;
+}
+
+void HorizontalLineObject::setText(QString t)
+{
+  text=t;
 }
 
 void HorizontalLineObject::setColor (QColor d)
@@ -150,6 +161,7 @@ void HorizontalLineObject::getSettings (Setting &set)
   set.setData("Color", color.name());
   set.setData("Plot", plot);
   set.setData("Name", name);
+  set.setData("Text", text);
   set.setData("Plugin", "HorizontalLine");
 }
 
@@ -159,5 +171,6 @@ void HorizontalLineObject::setSettings (Setting &set)
   color.setNamedColor(set.getData("Color"));
   plot = set.getData("Plot");
   name = set.getData("Name");
+  text = set.getData("Text");
 }
 

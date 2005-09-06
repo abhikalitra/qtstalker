@@ -25,6 +25,15 @@
           to the OSS community. Sorry Marco, I know a lot of users appreciated the work you did
           to support it. I will be looking at a possible postgres replacement in the future. 
 
+20050906: Applied patch that adds a text option to the HorizontalLine plugin. Thanks to Michal
+          for the patch.
+
+20050906: Appied patch #1283054 - delete dupe symbol in portfolio. Thanks to imoszarh for the patch.
+
+20050906: Appied patch #1283036 - show portfolio balance in percent. Thanks to imoszarh for the patch.
+
+
+
 0.32
 ====
 

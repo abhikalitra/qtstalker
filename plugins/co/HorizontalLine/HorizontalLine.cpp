@@ -76,9 +76,12 @@ void HorizontalLine::draw (QPixmap &buffer, Scaler &scaler, int, int, int)
       continue;
       
     painter.setPen(co->getColor());
-      
+    
+    QFontMetrics fm(font);
+    int pixelsWide=fm.width(co->getText());
     painter.drawLine (0, y, buffer.width(), y);
-    painter.drawText(0, y - 1, QString::number(co->getValue()), -1);
+    painter.drawText(0,y-1,co->getText(),-1);
+    painter.drawText(0+pixelsWide+1, y - 1, QString::number(co->getValue()), -1);
   
     co->clearSelectionArea();
     QPointArray array;
@@ -136,6 +139,8 @@ void HorizontalLine::prefDialog ()
   QString cl = tr("Color");
   QString sd = tr("Set Default");
   QString vl = tr("Value");
+  QString tx = tr("Text");
+  QString text=selected->getText();
 
   PrefDialog *dialog = new PrefDialog();
   dialog->setCaption(tr("Edit HorizontalLine"));
@@ -144,6 +149,7 @@ void HorizontalLine::prefDialog ()
   QColor color = selected->getColor();
   dialog->addColorItem(cl, pl, color);
   dialog->addFloatItem(vl, pl, selected->getValue());
+  dialog->addTextItem(tx, pl, text);  //cz odkazy na objekty definovane nahore
   dialog->addCheckItem(sd, pl, FALSE);
   
   int rc = dialog->exec();
@@ -153,7 +159,7 @@ void HorizontalLine::prefDialog ()
     color = dialog->getColor(cl);
     selected->setColor(color);
     selected->setValue(dialog->getFloat(vl));
-    
+    selected->setText(dialog->getText(tx));
     selected->setSaveFlag(TRUE);
     
     bool f = dialog->getCheck(sd);

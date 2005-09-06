@@ -206,14 +206,14 @@ void PortfolioDialog::updatePortfolioItems ()
     item->setText(6, QString::number(total));
     
     bal = bal + total;
-    orig = orig + price.toFloat();
+    orig = orig + price.toFloat() * volume.toFloat() * (action.compare(tr("Long"))?-1:1);
     
     delete bar;
     config.closePlugin(plugin);
   }
   
-  balance->setText(tr("Balance: ") + QString::number(bal));
-//                   " (" + QString::number(((bal / orig) * 100), 'f', 2) + " %)");
+  balance->setText(tr("Balance: ") + QString::number(bal) + 
+		  " (" + QString::number(((bal / orig) * 100), 'f', 2) + "%)");
 }
 
 void PortfolioDialog::savePortfolio ()
@@ -301,7 +301,15 @@ void PortfolioDialog::deleteItem ()
   item = plist->selectedItem();
   if (item)
   {
-    files.remove(item->text(0));
+    QListViewItemIterator it(plist);
+    int count = 0;
+    for (; it.current(); ++it)
+    {
+      if (it.current()->text(0) == item->text(0))
+        count++;
+    }
+    if (count == 1)
+      files.remove(item->text(0));
     delete item;
   }
 
