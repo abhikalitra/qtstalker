@@ -171,7 +171,7 @@ void SellArrowObject::setSettings (Setting &set)
 {
   QString s = set.getData("Date");
   date.setDate(s);
-  value = set.getFloat("Value");
+  value = set.getDouble("Value");
   color.setNamedColor(set.getData("Color"));
   plot = set.getData("Plot");
   name = set.getData("Name");

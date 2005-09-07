@@ -39,8 +39,8 @@ class FuturesData
     QString getSymbol ();
     QString getExchange ();
     QString getContract();
-    float getLimit ();
-    float getRate ();
+    double getLimit ();
+    double getRate ();
     int setSymbol (QString &);
     void getMonthList (QStringList &);
     void getMonths (QStringList &);
@@ -52,9 +52,9 @@ class FuturesData
     QString symbol;
     QString exchange;
     QString contract;
-    float limit;
+    double limit;
     QStringList monthList;
-    float rate;
+    double rate;
     QDict<Setting> data;
     QString nameKey;
     QString symbolKey;

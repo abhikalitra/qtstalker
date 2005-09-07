@@ -93,7 +93,7 @@ void SYMBOL::calculate ()
     Setting *r2 = dict[s];
     if (r2)
     {
-      val = r2->getFloat("Close");
+      val = r2->getDouble("Close");
       line->append(val);
     }
   }

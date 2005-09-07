@@ -358,15 +358,15 @@ void Candle::prefDialog (QWidget *w)
         s = tr("Volume MA Periods");
         vma = dialog->getInt(s);
 	s = tr("Volume Slow factor");
-        vr1 = dialog->getFloat(s);
+        vr1 = dialog->getDouble(s);
 	s = tr("Volume Active factor");
-        vr2 = dialog->getFloat(s);
+        vr2 = dialog->getDouble(s);
 	s = tr("Volume Hot factor");
-        vr3 = dialog->getFloat(s);
+        vr3 = dialog->getDouble(s);
 	s = tr("Volume Fire factor");
-        vr4 = dialog->getFloat(s);
+        vr4 = dialog->getDouble(s);
 	s = tr("Volume Crazy factor");
-        vr5 = dialog->getFloat(s);
+        vr5 = dialog->getDouble(s);
     
 	s = tr("Volume Slow color");
         c1 = dialog->getColor(s);
@@ -456,15 +456,15 @@ void Candle::styleChanged (const QString &)
     QString s2 = tr("Volume MA Periods");
     dialog->addIntItem (s2, s, vma, 2, 999); // ma periods
     s2 = tr("Volume Slow factor");
-    dialog->addFloatItem(s2, s, vr1);
+    dialog->addDoubleItem(s2, s, vr1);
     s2 = tr("Volume Active factor");
-    dialog->addFloatItem(s2, s, vr2);
+    dialog->addDoubleItem(s2, s, vr2);
     s2 = tr("Volume Hot factor");
-    dialog->addFloatItem(s2, s, vr3); // trigger points
+    dialog->addDoubleItem(s2, s, vr3); // trigger points
     s2 = tr("Volume Fire factor");
-    dialog->addFloatItem(s2, s, vr4);
+    dialog->addDoubleItem(s2, s, vr4);
     s2 = tr("Volume Crazy factor");
-    dialog->addFloatItem(s2, s, vr5);
+    dialog->addDoubleItem(s2, s, vr5);
     s2 = tr("Fixed Candle Radius (pixels)");
     dialog->addIntItem(s2, s, fixedCandleRadius, 2, 999);
     s2 = tr("Minimum Candle Radius (pixels)");

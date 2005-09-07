@@ -180,7 +180,7 @@ void IndexDialog::addItem ()
   QString t2 = config.getData(Config::DataPath);
   dialog->addSymbolItem(t, pl, t2, s);
   t = tr("Weight");
-  dialog->addFloatItem(t, pl, weight);
+  dialog->addDoubleItem(t, pl, weight);
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
@@ -194,7 +194,7 @@ void IndexDialog::addItem ()
     }
     
     t = tr("Weight");
-    weight = dialog->getFloat(t);
+    weight = dialog->getDouble(t);
     
     QStringList l = QStringList::split("/", s, FALSE);
     symbolDict.insert(l[l.count() - 1], new QString(s));
@@ -224,7 +224,7 @@ void IndexDialog::editItem ()
   QString t2 = config.getData(Config::DataPath);
   dialog->addSymbolItem(t, pl, t2, s);
   t = tr("Weight");
-  dialog->addFloatItem(t, pl, weight);
+  dialog->addDoubleItem(t, pl, weight);
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
@@ -238,7 +238,7 @@ void IndexDialog::editItem ()
     }
     
     t = tr("Weight");
-    weight = dialog->getFloat(t);
+    weight = dialog->getDouble(t);
     
     symbolDict.remove(item->text(0));
     QStringList l = QStringList::split("/", s, FALSE);

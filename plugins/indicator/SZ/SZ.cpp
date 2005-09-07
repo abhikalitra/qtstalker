@@ -197,7 +197,7 @@ int SZ::indicatorPrefDialog (QWidget *w)
   dialog->addComboItem(pos, pl, methodList, method);
   dialog->addIntItem(lp, pl, period, 1, 99999999);
   dialog->addIntItem(ndp, pl, no_decline_period, 1, 99999999);
-  dialog->addFloatItem(co, pl, coefficient, 0, 99999999);
+  dialog->addDoubleItem(co, pl, coefficient, 0, 99999999);
   dialog->addTextItem(ll, pl, label);
   
   int rc = dialog->exec();
@@ -208,7 +208,7 @@ int SZ::indicatorPrefDialog (QWidget *w)
     lineType = (PlotLine::LineType) dialog->getComboIndex(ltl);
     period = dialog->getInt(lp);
     no_decline_period = dialog->getInt(ndp);
-    coefficient = dialog->getFloat(co);
+    coefficient = dialog->getDouble(co);
     method = dialog->getCombo(pos);
     label = dialog->getText(ll);
     rc = TRUE;

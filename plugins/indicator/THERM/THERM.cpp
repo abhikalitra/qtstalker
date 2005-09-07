@@ -141,7 +141,7 @@ int THERM::indicatorPrefDialog (QWidget *w)
   t = QObject::tr("Label");
   dialog->addTextItem(t, pl, label);
   t = QObject::tr("Threshold");
-  dialog->addFloatItem(t, pl, threshold, 1, 99999999);
+  dialog->addDoubleItem(t, pl, threshold, 1, 99999999);
   t = QObject::tr("Smoothing");
   dialog->addIntItem(t, pl, smoothing, 0, 99999999);
   QStringList l = getMATypes();
@@ -174,7 +174,7 @@ int THERM::indicatorPrefDialog (QWidget *w)
     t = QObject::tr("Label");
     label = dialog->getText(t);
     t = QObject::tr("Threshold");
-    threshold = dialog->getFloat(t);
+    threshold = dialog->getDouble(t);
     t = QObject::tr("Smoothing");
     smoothing = dialog->getInt(t);
     t = QObject::tr("Smoothing Type");

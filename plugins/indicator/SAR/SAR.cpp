@@ -204,9 +204,9 @@ int SAR::indicatorPrefDialog (QWidget *w)
   dialog->addColorItem(cl, pl, color);
   dialog->addComboItem(ltl, pl, lineTypes, lineType);
   dialog->addTextItem(ll, pl, label);
-  dialog->addFloatItem(il, pl, initial, 0, 99999999);
-  dialog->addFloatItem(al, pl, add, 0, 99999999);
-  dialog->addFloatItem(liml, pl, limit, 0, 99999999);
+  dialog->addDoubleItem(il, pl, initial, 0, 99999999);
+  dialog->addDoubleItem(al, pl, add, 0, 99999999);
+  dialog->addDoubleItem(liml, pl, limit, 0, 99999999);
   
   int rc = dialog->exec();
   
@@ -215,9 +215,9 @@ int SAR::indicatorPrefDialog (QWidget *w)
     color = dialog->getColor(cl);
     lineType = (PlotLine::LineType) dialog->getComboIndex(ltl);
     label = dialog->getText(ll);
-    initial = dialog->getFloat(il);
-    add = dialog->getFloat(al);
-    limit = dialog->getFloat(liml);
+    initial = dialog->getDouble(il);
+    add = dialog->getDouble(al);
+    limit = dialog->getDouble(liml);
     rc = TRUE;
   }
   else

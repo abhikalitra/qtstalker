@@ -84,7 +84,7 @@ void MA::calculate ()
   output->addLine(ma);
 }
 
-int MA::indicatorPrefDialog (QWidget *w)
+int MA::indicatorPrefDialog (QWidget *)
 {
 /*
   QString pl = QObject::tr("Parms");

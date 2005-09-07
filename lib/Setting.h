@@ -32,7 +32,7 @@ class Setting
     Setting ();
     ~Setting ();
     QString getData (QString);
-    double getFloat (QString);
+    double getDouble (QString);
     int getInt (QString);
     void setData (QString, QString);
     void getKeyList (QStringList &);

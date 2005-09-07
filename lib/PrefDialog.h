@@ -58,9 +58,9 @@ class PrefDialog : public QTabDialog
     void setHelpFile (QString &);
     void addColorItem (QString &, QString &, QColor &);
     QColor getColor (QString &);
-    void addFloatItem (QString &, QString &, double, double, double);
-    void addFloatItem (QString &, QString &, double);
-    double getFloat (QString &);
+    void addDoubleItem (QString &, QString &, double, double, double);
+    void addDoubleItem (QString &, QString &, double);
+    double getDouble (QString &);
     void addIntItem (QString &, QString &, int);
     void addIntItem (QString &, QString &, int, int, int);
     int getInt (QString &);
@@ -95,7 +95,7 @@ class PrefDialog : public QTabDialog
     QDict<QGridLayout> gridList;
     QDict<ColorButton> colorButtonList;
     QDict<QSpinBox> intList;
-    QDict<QLineEdit> floatList;
+    QDict<QLineEdit> doubleList;
     QDict<QCheckBox> checkList;
     QDict<FontButton> fontButtonList;
     QDict<QLineEdit> textList;

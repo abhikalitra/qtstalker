@@ -215,8 +215,8 @@ void TrendLine::prefDialog ()
   dialog->addCheckItem(ub, pl, f);
   f = selected->getExtend();
   dialog->addCheckItem(el, pl, f);
-  dialog->addFloatItem(sl, pl, selected->getValue());
-  dialog->addFloatItem(dl, pl, selected->getValue2());
+  dialog->addDoubleItem(sl, pl, selected->getValue());
+  dialog->addDoubleItem(dl, pl, selected->getValue2());
   dialog->addCheckItem(sd, pl, FALSE);
   
   int rc = dialog->exec();
@@ -227,8 +227,8 @@ void TrendLine::prefDialog ()
     selected->setBar(dialog->getCombo(bf));
     selected->setUseBar(dialog->getCheck(ub));
     selected->setExtend(dialog->getCheck(el));
-    selected->setValue(dialog->getFloat(sl));
-    selected->setValue2(dialog->getFloat(dl));
+    selected->setValue(dialog->getDouble(sl));
+    selected->setValue2(dialog->getDouble(dl));
     
     selected->setSaveFlag(TRUE);
     

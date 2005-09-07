@@ -40,11 +40,11 @@ QString Setting::getData (QString k)
     return 0;
 }
 
-double Setting::getFloat (QString k)
+double Setting::getDouble (QString k)
 {
   QString *s = dict[k];
   if (s)
-    return s->toFloat();
+    return s->toDouble();
   else
     return 0;
 }

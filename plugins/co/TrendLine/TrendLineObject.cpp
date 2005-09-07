@@ -235,8 +235,8 @@ void TrendLineObject::setSettings (Setting &set)
   date.setDate(s);
   s = set.getData("End Date");
   date2.setDate(s);
-  value = set.getFloat("Start Value");
-  value2 = set.getFloat("End Value");
+  value = set.getDouble("Start Value");
+  value2 = set.getDouble("End Value");
   bar = set.getData("Bar Field");
   usebar = set.getInt("Use Bar");
   extend = set.getInt("Extend Line");

@@ -218,33 +218,33 @@ void FiboLine::prefDialog ()
   dialog->setHelpFile (helpFile);
   QColor color = selected->getColor();
   dialog->addColorItem(cl, pl, color);
-  dialog->addFloatItem(hl, pl, selected->getHigh());
-  dialog->addFloatItem(ll, pl, selected->getLow());
+  dialog->addDoubleItem(hl, pl, selected->getHigh());
+  dialog->addDoubleItem(ll, pl, selected->getLow());
   dialog->addCheckItem(el, pl, selected->getExtend());
   dialog->addCheckItem(sd, pl, FALSE);
 
   pl = tr("Levels");
   dialog->createPage (pl);
-  dialog->addFloatItem(l1, pl, selected->getLine(1));
-  dialog->addFloatItem(l2, pl, selected->getLine(2));
-  dialog->addFloatItem(l3, pl, selected->getLine(3));
-  dialog->addFloatItem(l4, pl, selected->getLine(4));
-  dialog->addFloatItem(l5, pl, selected->getLine(5));
-  dialog->addFloatItem(l6, pl, selected->getLine(6));
+  dialog->addDoubleItem(l1, pl, selected->getLine(1));
+  dialog->addDoubleItem(l2, pl, selected->getLine(2));
+  dialog->addDoubleItem(l3, pl, selected->getLine(3));
+  dialog->addDoubleItem(l4, pl, selected->getLine(4));
+  dialog->addDoubleItem(l5, pl, selected->getLine(5));
+  dialog->addDoubleItem(l6, pl, selected->getLine(6));
     
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
     selected->setColor(dialog->getColor(cl));
-    selected->setLine(1, dialog->getFloat(l1));
-    selected->setLine(2, dialog->getFloat(l2));
-    selected->setLine(3, dialog->getFloat(l3));
-    selected->setLine(4, dialog->getFloat(l4));
-    selected->setLine(5, dialog->getFloat(l5));
-    selected->setLine(6, dialog->getFloat(l6));
-    selected->setHigh(dialog->getFloat(hl));
-    selected->setLow(dialog->getFloat(ll));
+    selected->setLine(1, dialog->getDouble(l1));
+    selected->setLine(2, dialog->getDouble(l2));
+    selected->setLine(3, dialog->getDouble(l3));
+    selected->setLine(4, dialog->getDouble(l4));
+    selected->setLine(5, dialog->getDouble(l5));
+    selected->setLine(6, dialog->getDouble(l6));
+    selected->setHigh(dialog->getDouble(hl));
+    selected->setLow(dialog->getDouble(ll));
     selected->setExtend(dialog->getCheck(el));
     
     selected->setSaveFlag(TRUE);
@@ -253,12 +253,12 @@ void FiboLine::prefDialog ()
     if (f)
     {
       defaultColor = dialog->getColor(cl);
-      line1 = dialog->getFloat(l1);
-      line2 = dialog->getFloat(l2);
-      line3 = dialog->getFloat(l3);
-      line4 = dialog->getFloat(l4);
-      line5 = dialog->getFloat(l5);
-      line6 = dialog->getFloat(l6);
+      line1 = dialog->getDouble(l1);
+      line2 = dialog->getDouble(l2);
+      line3 = dialog->getDouble(l3);
+      line4 = dialog->getDouble(l4);
+      line5 = dialog->getDouble(l5);
+      line6 = dialog->getDouble(l6);
       
       saveDefaults();
     }

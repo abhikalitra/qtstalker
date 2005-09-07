@@ -174,7 +174,7 @@ void PF::prefDialog (QWidget *w)
   s2 = tr("Down Color");
   dialog->addColorItem(s2, s, downColor);
   s2 = tr("Box Size");
-  dialog->addFloatItem(s2, s, size);
+  dialog->addDoubleItem(s2, s, size);
   s2 = tr("Reversal");
   dialog->addIntItem(s2, s, PAFReversal);
   s2 = tr("Min Bar Spacing");
@@ -188,7 +188,7 @@ void PF::prefDialog (QWidget *w)
     s = tr("Down Color");
     downColor = dialog->getColor(s);
     s = tr("Box Size");
-    size = dialog->getFloat(s);
+    size = dialog->getDouble(s);
     s = tr("Reversal");
     PAFReversal = dialog->getInt(s);
     s = tr("Min Bar Spacing");

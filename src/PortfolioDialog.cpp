@@ -194,11 +194,11 @@ void PortfolioDialog::updatePortfolioItems ()
     QString last = QString::number(bar->getClose());
     item->setText(5, last);
 
-    float total;
+    double total;
     if (! action.compare(tr("Long")))
-      total = volume.toFloat() * (last.toFloat() - price.toFloat());
+      total = volume.toDouble() * (last.toDouble() - price.toDouble());
     else
-      total = volume.toFloat() * (price.toFloat() - last.toFloat());
+      total = volume.toDouble() * (price.toDouble() - last.toDouble());
 
     if (! type.compare("Futures"))
       total = futuresProfit(futuresType, total);
@@ -206,14 +206,17 @@ void PortfolioDialog::updatePortfolioItems ()
     item->setText(6, QString::number(total));
     
     bal = bal + total;
-    orig = orig + price.toFloat() * volume.toFloat() * (action.compare(tr("Long"))?-1:1);
+    orig = orig + price.toDouble() * volume.toDouble() * (action.compare(tr("Long"))?-1:1);
     
     delete bar;
     config.closePlugin(plugin);
   }
-  
-  balance->setText(tr("Balance: ") + QString::number(bal) + 
-		  " (" + QString::number(((bal / orig) * 100), 'f', 2) + "%)");
+
+  if (bal == 0 || orig == 0)
+    balance->setText(tr("Balance: ") + QString::number(bal) + " (0%)");
+  else  
+    balance->setText(tr("Balance: ") + QString::number(bal) + 
+		     " (" + QString::number(((bal / orig) * 100), 'f', 2) + "%)");
 }
 
 void PortfolioDialog::savePortfolio ()
@@ -267,9 +270,9 @@ void PortfolioDialog::addItem ()
   l.append(tr("Short"));
   dialog->addComboItem(al, pl, l, l[0]);
   
-  dialog->addFloatItem(prl, pl, 0, 0, 9999999999.0);
+  dialog->addDoubleItem(prl, pl, 0, 0, 9999999999.0);
   
-  dialog->addFloatItem(vl, pl, 1, 1, 99999999);
+  dialog->addDoubleItem(vl, pl, 1, 1, 99999999);
   
   int rc = dialog->exec();
   
@@ -281,8 +284,8 @@ void PortfolioDialog::addItem ()
     else
     {
       QString action = dialog->getCombo(al);
-      double vol = dialog->getFloat(vl);
-      double price = dialog->getFloat(prl);
+      double vol = dialog->getDouble(vl);
+      double price = dialog->getDouble(prl);
 
       QFileInfo fi(symbol);
       files.setData(fi.fileName(), symbol);
@@ -346,9 +349,9 @@ void PortfolioDialog::modifyItem ()
   s = item->text(1);
   dialog->addComboItem(al, pl, l, s);
   
-  dialog->addFloatItem(prl, pl, item->text(3).toFloat(), 0, 9999999999.0);
+  dialog->addDoubleItem(prl, pl, item->text(3).toDouble(), 0, 9999999999.0);
   
-  dialog->addFloatItem(vl, pl, item->text(2).toFloat(), 1, 99999999);
+  dialog->addDoubleItem(vl, pl, item->text(2).toDouble(), 1, 99999999);
   
   int rc = dialog->exec();
 
@@ -362,8 +365,8 @@ void PortfolioDialog::modifyItem ()
     else
     {
       QString action = dialog->getCombo(al);
-      double vol = dialog->getFloat(vl);
-      double price = dialog->getFloat(prl);
+      double vol = dialog->getDouble(vl);
+      double price = dialog->getDouble(prl);
 
       QFileInfo fi2(symbol);
       files.setData(fi2.fileName(), symbol);
@@ -397,12 +400,12 @@ void PortfolioDialog::buttonStatus (QListViewItem *i)
   }
 }
 
-float PortfolioDialog::futuresProfit (QString &sym, float diff)
+double PortfolioDialog::futuresProfit (QString &sym, double diff)
 {
   FuturesData *fd = new FuturesData();
   fd->setSymbol(sym);
-  float rate = fd->getRate();
-  float t = diff * rate;
+  double rate = fd->getRate();
+  double t = diff * rate;
   delete fd;
 
   return t;

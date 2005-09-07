@@ -39,7 +39,7 @@ class PortfolioDialog : public QTabDialog
     PortfolioDialog (QString);
     ~PortfolioDialog ();
     void updatePortfolio ();
-    float futuresProfit (QString &, float);
+    double futuresProfit (QString &, double);
     void updatePortfolioItems ();
 
   public slots:

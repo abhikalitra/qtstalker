@@ -38,7 +38,7 @@ PrefDialog::~PrefDialog ()
   gridList.clear();
   colorButtonList.clear();
   intList.clear();
-  floatList.clear();
+  doubleList.clear();
   checkList.clear();
   fontButtonList.clear();
   textList.clear();
@@ -57,7 +57,7 @@ void PrefDialog::init ()
   gridList.setAutoDelete(FALSE);
   colorButtonList.setAutoDelete(FALSE);
   intList.setAutoDelete(FALSE);
-  floatList.setAutoDelete(FALSE);
+  doubleList.setAutoDelete(FALSE);
   checkList.setAutoDelete(FALSE);
   fontButtonList.setAutoDelete(FALSE);
   textList.setAutoDelete(FALSE);
@@ -135,12 +135,12 @@ QColor PrefDialog::getColor (QString &name)
   return color;
 }
 
-void PrefDialog::addFloatItem (QString &name, QString &page, double num)
+void PrefDialog::addDoubleItem (QString &name, QString &page, double num)
 {
-  addFloatItem(name, page, num, -9999999999.0, 9999999999.0);
+  addDoubleItem(name, page, num, -9999999999.0, 9999999999.0);
 }
 
-void PrefDialog::addFloatItem (QString &name, QString &page, double num, double low, double high)
+void PrefDialog::addDoubleItem (QString &name, QString &page, double num, double low, double high)
 {
   QWidget *w = widgetList[page];
   
@@ -156,15 +156,15 @@ void PrefDialog::addFloatItem (QString &name, QString &page, double num, double 
   QLineEdit *edit = new QLineEdit(QString::number(num), w);
   edit->setValidator(dv);
   grid->addWidget(edit, grid->numRows() - 2, 1);
-  floatList.replace(name, edit);
+  doubleList.replace(name, edit);
 }
 
-double PrefDialog::getFloat (QString &name)
+double PrefDialog::getDouble (QString &name)
 {
   double num = 0;
-  QLineEdit *edit = floatList[name];
+  QLineEdit *edit = doubleList[name];
   if (edit)
-    num = edit->text().toFloat();
+    num = edit->text().toDouble();
   return num;
 }
 

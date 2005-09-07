@@ -134,7 +134,7 @@ void Text::prefDialog ()
   dialog->addFontItem(fl, pl, f);
   QString t = selected->getLabel();
   dialog->addTextItem(ll, pl, t);
-  dialog->addFloatItem(vl, pl, selected->getValue());
+  dialog->addDoubleItem(vl, pl, selected->getValue());
   dialog->addCheckItem(sd, pl, FALSE);
   
   int rc = dialog->exec();
@@ -144,7 +144,7 @@ void Text::prefDialog ()
     selected->setColor(dialog->getColor(cl));
     selected->setLabel(dialog->getText(ll));
     selected->setFont(dialog->getFont(fl));
-    selected->setValue(dialog->getFloat(vl));
+    selected->setValue(dialog->getDouble(vl));
     
     selected->setSaveFlag(TRUE);
     

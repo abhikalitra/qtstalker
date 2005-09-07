@@ -65,12 +65,12 @@ QString FuturesData::getContract ()
   return contract;
 }
 
-float FuturesData::getLimit ()
+double FuturesData::getLimit ()
 {
   return limit;
 }
 
-float FuturesData::getRate ()
+double FuturesData::getRate ()
 {
   return rate;
 }
@@ -133,9 +133,9 @@ int FuturesData::setSymbol (QString &d)
     
   name = set->getData(nameKey);
   symbol = set->getData(symbolKey);
-  rate = set->getFloat(rateKey);
+  rate = set->getDouble(rateKey);
   monthList = QStringList::split(",", set->getData(monthKey), FALSE);
-  limit = set->getFloat(limitKey);
+  limit = set->getDouble(limitKey);
   exchange = set->getData(exchangeKey);
   QDateTime dt = QDateTime::currentDateTime();
   contract = getCurrentContract(dt);

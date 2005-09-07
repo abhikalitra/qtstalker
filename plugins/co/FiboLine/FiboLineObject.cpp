@@ -269,18 +269,18 @@ void FiboLineObject::setSettings (Setting &set)
   color.setNamedColor(set.getData("Color"));
   plot = set.getData("Plot");
   name = set.getData("Name");
-  high = set.getFloat("High");
-  low = set.getFloat("Low");
+  high = set.getDouble("High");
+  low = set.getDouble("Low");
   QString s = set.getData("Start Date");
   startDate.setDate(s);
   s = set.getData("End Date");
   endDate.setDate(s);
-  line1 = set.getFloat("Line 1");
-  line2 = set.getFloat("Line 2");
-  line3 = set.getFloat("Line 3");
-  line4 = set.getFloat("Line 4");
-  line5 = set.getFloat("Line 5");
-  line6 = set.getFloat("Line 6");
+  line1 = set.getDouble("Line 1");
+  line2 = set.getDouble("Line 2");
+  line3 = set.getDouble("Line 3");
+  line4 = set.getDouble("Line 4");
+  line5 = set.getDouble("Line 5");
+  line6 = set.getDouble("Line 6");
   extend = set.getInt("Extend");
 }
 

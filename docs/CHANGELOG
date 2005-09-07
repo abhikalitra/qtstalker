@@ -32,6 +32,8 @@
 
 20050906: Appied patch #1283036 - show portfolio balance in percent. Thanks to imoszarh for the patch.
 
+20050907: Appied patch #1283865 - float to double type migration. Thanks to imoszarh for the patch.
+
 
 
 0.32

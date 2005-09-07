@@ -119,7 +119,7 @@ void SellArrow::prefDialog ()
   dialog->setHelpFile (helpFile);
   QColor color = selected->getColor();
   dialog->addColorItem(cl, pl, color);
-  dialog->addFloatItem(vl, pl, selected->getValue());
+  dialog->addDoubleItem(vl, pl, selected->getValue());
   dialog->addCheckItem(sd, pl, FALSE);
   
   int rc = dialog->exec();
@@ -128,7 +128,7 @@ void SellArrow::prefDialog ()
   {
     color = dialog->getColor(cl);
     selected->setColor(color);
-    selected->setValue(dialog->getFloat(vl));
+    selected->setValue(dialog->getDouble(vl));
     
     selected->setSaveFlag(TRUE);
     

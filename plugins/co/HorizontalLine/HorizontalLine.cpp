@@ -148,7 +148,7 @@ void HorizontalLine::prefDialog ()
   dialog->setHelpFile (helpFile);
   QColor color = selected->getColor();
   dialog->addColorItem(cl, pl, color);
-  dialog->addFloatItem(vl, pl, selected->getValue());
+  dialog->addDoubleItem(vl, pl, selected->getValue());
   dialog->addTextItem(tx, pl, text);  //cz odkazy na objekty definovane nahore
   dialog->addCheckItem(sd, pl, FALSE);
   
@@ -158,7 +158,7 @@ void HorizontalLine::prefDialog ()
   {
     color = dialog->getColor(cl);
     selected->setColor(color);
-    selected->setValue(dialog->getFloat(vl));
+    selected->setValue(dialog->getDouble(vl));
     selected->setText(dialog->getText(tx));
     selected->setSaveFlag(TRUE);
     

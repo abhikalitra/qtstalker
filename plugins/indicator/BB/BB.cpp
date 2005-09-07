@@ -129,7 +129,7 @@ int BB::indicatorPrefDialog (QWidget *w)
   dialog->addColorItem(cl, pl, color);
   dialog->addComboItem(ltl, pl, lineTypes, lineType);
   dialog->addIntItem(sl, pl, period, 1, 99999999);
-  dialog->addFloatItem(dl, pl, deviation, 0, 99999999);
+  dialog->addDoubleItem(dl, pl, deviation, 0, 99999999);
   QStringList l = getMATypes();
   dialog->addComboItem(stl, pl, l, maType);
   dialog->addTextItem(ll, pl, label);
@@ -147,7 +147,7 @@ int BB::indicatorPrefDialog (QWidget *w)
     lineType = (PlotLine::LineType) dialog->getComboIndex(ltl);
     period = dialog->getInt(sl);
     maType = dialog->getComboIndex(stl);
-    deviation = dialog->getFloat(dl);
+    deviation = dialog->getDouble(dl);
     label = dialog->getText(ll);
     if (customFlag)
     {

@@ -167,7 +167,7 @@ void HorizontalLineObject::getSettings (Setting &set)
 
 void HorizontalLineObject::setSettings (Setting &set)
 {
-  value = set.getFloat("Value");
+  value = set.getDouble("Value");
   color.setNamedColor(set.getData("Color"));
   plot = set.getData("Plot");
   name = set.getData("Name");
