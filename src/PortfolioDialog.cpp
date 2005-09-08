@@ -316,6 +316,8 @@ void PortfolioDialog::deleteItem ()
     delete item;
   }
 
+  updatePortfolioItems();
+
   buttonStatus(0);
 }
 

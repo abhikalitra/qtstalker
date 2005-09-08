@@ -34,6 +34,10 @@
 
 20050907: Appied patch #1283865 - float to double type migration. Thanks to imoszarh for the patch.
 
+20050908: NYBOT changed download url. Updated NYBOT plugin.
+
+20050908: PortfolioDialog was not updating after item is deleted. Fixed.
+
 
 
 0.32

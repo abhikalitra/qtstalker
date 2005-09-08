@@ -76,9 +76,8 @@ void NYBOT::update ()
 
   file = config.getData(Config::Home) + "/nybotDownload";
 
-  // http://www.nybot.com/dmrs/files/2005,05,13_ALL_futures.csv  
-
-  url = "http://www.nybot.com/dmrs/files/";
+  // http://www.nybot.com/reports/dmrs/files/2005,05,13_ALL_futures.csv
+  url = "http://www.nybot.com/reports/dmrs/files/";
   url.append(date.date().toString("yyyy,MM,dd"));
   url.append("_ALL_futures.csv");
   getFile(url);
