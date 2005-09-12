@@ -38,6 +38,14 @@
 
 20050908: PortfolioDialog was not updating after item is deleted. Fixed.
 
+20050909: Fixed MADialog focus.
+
+20050909: Changed COMP plugin 'then' parm default to true.
+
+20050912: Appied patch #1288467 - QtstalkerFormat plugin. Thanks to imoszarh for the patch.
+
+20050912: Added a 'Delete Chart' parm to the QtstalkerFormat plugin.
+
 
 
 0.32

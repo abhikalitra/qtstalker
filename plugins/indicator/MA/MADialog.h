@@ -33,7 +33,7 @@ class MADialog : public QTabDialog
   Q_OBJECT
   
   public:
-    MADialog (QString, bool);
+    MADialog (QWidget *, QString, bool);
     ~MADialog ();
     void setColor (QColor);
     QColor getColor ();

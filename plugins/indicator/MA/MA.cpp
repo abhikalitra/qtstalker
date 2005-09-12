@@ -84,7 +84,7 @@ void MA::calculate ()
   output->addLine(ma);
 }
 
-int MA::indicatorPrefDialog (QWidget *)
+int MA::indicatorPrefDialog (QWidget *w)
 {
 /*
   QString pl = QObject::tr("Parms");
@@ -150,7 +150,7 @@ int MA::indicatorPrefDialog (QWidget *)
   return rc;
 */
 
-  MADialog *dialog = new MADialog(helpFile, customFlag);
+  MADialog *dialog = new MADialog(w, helpFile, customFlag);
   dialog->setCaption(QObject::tr("MA Indicator"));
   dialog->setColor(color);
   dialog->setLineType(lineTypes, lineType);

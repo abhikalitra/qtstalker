@@ -35,6 +35,7 @@ QtstalkerFormat::QtstalkerFormat ()
 {
   pluginName = "QtstalkerFormat";
   helpFile = "qtstalker.html";
+  deleteFlag = FALSE;
   cancelFlag = FALSE;
   
   loadSettings();
@@ -95,8 +96,11 @@ void QtstalkerFormat::parse ()
     }
     
     // delete the db if it exists
-    QDir dir;
-    dir.remove(path, TRUE);
+    if (deleteFlag)
+    {
+      QDir dir;
+      dir.remove(path, TRUE);
+    }
     
     Config config;
     QString plugin = config.parseDbPlugin(path);
@@ -261,38 +265,58 @@ void QtstalkerFormat::prefDialog (QWidget *w)
   dialog->createPage (s);
   dialog->setHelpFile(helpFile);
   
-  Config config;  
-  QString s2 = config.getData(Config::Home) + "/export";
-  QString s3 = tr("File Input");
-  dialog->addFileItem(s3, s, list, s2);
+  QString s2 = tr("File Input");
+  dialog->addFileItem(s2, s, list, lastPath);
   
+  QString s3 = tr("Delete Chart");
+  dialog->addCheckItem(s3, s, deleteFlag);
+
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
-    dialog->getFile(s3, list);
+  {
+    dialog->getFile(s2, list);
+    deleteFlag = dialog->getCheck(s3);
+
+    saveFlag = TRUE;
+
+    if (list.count())
+    {
+      QFileInfo fi(list[0]);
+      lastPath = fi.dirPath(TRUE);
+      saveSettings();
+    }
+  }
   
   delete dialog;
 }
 
 void QtstalkerFormat::loadSettings ()
 {
-/*
   QSettings settings;
   settings.beginGroup("/Qtstalker/QtstalkerFormat plugin");
+
+  Config config;  
+  lastPath = settings.readEntry("/lastPath", config.getData(Config::Home) + "/export");
+
+  QString s = settings.readEntry("/deleteFlag", "1");
+  deleteFlag = s.toInt();
+
   settings.endGroup();
-*/  
 }
 
 void QtstalkerFormat::saveSettings ()
 {
-/*
   if (! saveFlag)
     return;
 
   QSettings settings;
   settings.beginGroup("/Qtstalker/QtstalkerFormat plugin");
+
+  settings.writeEntry("/lastPath", lastPath);
+  settings.writeEntry("/deleteFlag", QString::number(deleteFlag));
+
   settings.endGroup();
-*/  
 }
 
 void QtstalkerFormat::cancelUpdate ()

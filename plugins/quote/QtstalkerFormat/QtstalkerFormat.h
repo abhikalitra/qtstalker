@@ -42,7 +42,9 @@ class QtstalkerFormat : public QuotePlugin
     
   private:
     QStringList list;
+    QString lastPath;
     bool cancelFlag;
+    bool deleteFlag;
 };
 
 extern "C"

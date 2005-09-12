@@ -24,7 +24,7 @@
 #include <qlayout.h>
 #include <qvalidator.h>
 
-MADialog::MADialog (QString d, bool f) : QTabDialog (0, "MADialog", TRUE)
+MADialog::MADialog (QWidget *p, QString d, bool f) : QTabDialog (p, "MADialog", TRUE)
 {
   helpFile = d;
   customFlag = f;

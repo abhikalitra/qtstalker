@@ -48,7 +48,7 @@ void COMP::setDefaults ()
   data2 = "2";
   data3 = "1";
   data4 = "#0";
-  data5 = "#0";
+  data5 = "#1";
   data6 = "#0";
   delay1 = "#0";
   delay2 = "#0";
