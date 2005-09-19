@@ -1,6 +1,6 @@
 TEMPLATE = app
 
-CONFIG += thread warn_on debug
+CONFIG += qt thread warn_on debug
 
 QMAKE_CXXFLAGS += -rdynamic -ffast-math
 QMAKE_CXXFLAGS += -Os

@@ -1411,6 +1411,10 @@ Save changes?</source>
         <source>Value</source>
         <translation>Wartość</translation>
     </message>
+    <message>
+        <source>Text</source>
+        <translation>Tekst</translation>
+    </message>
 </context>
 <context>
     <name>Index</name>
@@ -1672,15 +1676,15 @@ Save changes?</source>
     <name>IndicatorTabBar</name>
     <message>
         <source>Top</source>
-        <translation>Góra</translation>
+        <translation type="obsolete">Góra</translation>
     </message>
     <message>
         <source>Bottom</source>
-        <translation>Dół</translation>
+        <translation type="obsolete">Dół</translation>
     </message>
     <message>
         <source>Tab Position</source>
-        <translation>Położenie Tabulatora</translation>
+        <translation type="obsolete">Położenie Tabulatora</translation>
     </message>
 </context>
 <context>
@@ -1711,6 +1715,45 @@ Save changes?</source>
     <message>
         <source>Default Plot</source>
         <translation>Krzywa domyślna</translation>
+    </message>
+    <message>
+        <source>Parms</source>
+        <translation>Param</translation>
+    </message>
+</context>
+<context>
+    <name>MADialog</name>
+    <message>
+        <source>MA Type</source>
+        <translation>Rodzaj ŚK</translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation>Kolor</translation>
+    </message>
+    <message>
+        <source>Line Type</source>
+        <translation>Styl Krzywej</translation>
+    </message>
+    <message>
+        <source>Label</source>
+        <translation>Etykieta</translation>
+    </message>
+    <message>
+        <source>Period</source>
+        <translation>Okres</translation>
+    </message>
+    <message>
+        <source>Input</source>
+        <translation>Źródło</translation>
+    </message>
+    <message>
+        <source>Freq</source>
+        <translation>Częst</translation>
+    </message>
+    <message>
+        <source>Width</source>
+        <translation>Szerokość</translation>
     </message>
     <message>
         <source>Parms</source>
@@ -1935,47 +1978,47 @@ Save changes?</source>
     <name>MySQLPlugin</name>
     <message>
         <source>Update cancelled.</source>
-        <translation>Aktualizacja anulowana.</translation>
+        <translation type="obsolete">Aktualizacja anulowana.</translation>
     </message>
     <message>
         <source>Done</source>
-        <translation>Zrobione</translation>
+        <translation type="obsolete">Zrobione</translation>
     </message>
     <message>
         <source>MySQL Prefs</source>
-        <translation>Preferencje MySQL</translation>
+        <translation type="obsolete">Preferencje MySQL</translation>
     </message>
     <message>
         <source>Details</source>
-        <translation>Szczegóły</translation>
+        <translation type="obsolete">Szczegóły</translation>
     </message>
     <message>
         <source>Database</source>
-        <translation>Baza danych</translation>
+        <translation type="obsolete">Baza danych</translation>
     </message>
     <message>
         <source>Host</source>
-        <translation>Serwer</translation>
+        <translation type="obsolete">Serwer</translation>
     </message>
     <message>
         <source>Username</source>
-        <translation>Użytkownik</translation>
+        <translation type="obsolete">Użytkownik</translation>
     </message>
     <message>
         <source>Password</source>
-        <translation>Hasło</translation>
+        <translation type="obsolete">Hasło</translation>
     </message>
     <message>
         <source>SQL Query</source>
-        <translation>Kwerenda SQL</translation>
+        <translation type="obsolete">Kwerenda SQL</translation>
     </message>
     <message>
         <source>Symbols</source>
-        <translation>Symbole</translation>
+        <translation type="obsolete">Symbole</translation>
     </message>
     <message>
         <source>Incremental</source>
-        <translation>Krokowo</translation>
+        <translation type="obsolete">Krokowo</translation>
     </message>
 </context>
 <context>
@@ -2006,11 +2049,31 @@ Save changes?</source>
     </message>
     <message>
         <source>Details</source>
-        <translation>Szczegóły</translation>
+        <translation type="obsolete">Szczegóły</translation>
     </message>
     <message>
         <source>File Input</source>
-        <translation>Źródło Plików</translation>
+        <translation type="obsolete">Źródło Plików</translation>
+    </message>
+    <message>
+        <source>Timeout: retry limit</source>
+        <translation>Czas: limit wznowień</translation>
+    </message>
+    <message>
+        <source>Timeout: retry </source>
+        <translation>Czas: wznawienie</translation>
+    </message>
+    <message>
+        <source>Date</source>
+        <translation>Data</translation>
+    </message>
+    <message>
+        <source>Timeout</source>
+        <translation>Wygasanie</translation>
+    </message>
+    <message>
+        <source>Retries</source>
+        <translation>Wznawianie</translation>
     </message>
 </context>
 <context>
@@ -2126,15 +2189,15 @@ Save changes?</source>
     </message>
     <message>
         <source>&amp;Add</source>
-        <translation>Dod&amp;aj</translation>
+        <translation type="obsolete">Dod&amp;aj</translation>
     </message>
     <message>
         <source>&amp;Edit</source>
-        <translation>&amp;Edytuj</translation>
+        <translation type="obsolete">&amp;Edytuj</translation>
     </message>
     <message>
         <source>&amp;Delete</source>
-        <translation>Us&amp;uń</translation>
+        <translation type="obsolete">Us&amp;uń</translation>
     </message>
     <message>
         <source>Details</source>
@@ -2179,6 +2242,46 @@ Save changes?</source>
     <message>
         <source>Edit Portfolio Item</source>
         <translation>Edytuj Element Portfela</translation>
+    </message>
+    <message>
+        <source>Add</source>
+        <translation>Dodaj</translation>
+    </message>
+    <message>
+        <source>Edit</source>
+        <translation>Edytuj</translation>
+    </message>
+    <message>
+        <source>Delete</source>
+        <translation>Usuń</translation>
+    </message>
+    <message>
+        <source>L/S</source>
+        <translation>D/K</translation>
+    </message>
+    <message>
+        <source>Vol</source>
+        <translation>Wol</translation>
+    </message>
+    <message>
+        <source>Buy</source>
+        <translation>Kupno</translation>
+    </message>
+    <message>
+        <source>Last Date</source>
+        <translation>Ostatnia Data</translation>
+    </message>
+    <message>
+        <source>Value</source>
+        <translation>Wartość</translation>
+    </message>
+    <message>
+        <source>Profit</source>
+        <translation>Zysk</translation>
+    </message>
+    <message>
+        <source>Balance: </source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2359,15 +2462,15 @@ Save changes?</source>
     </message>
     <message>
         <source>L/S</source>
-        <translation>D/K</translation>
+        <translation type="obsolete">D/K</translation>
     </message>
     <message>
         <source>Vol</source>
-        <translation>Wol</translation>
+        <translation type="obsolete">Wol</translation>
     </message>
     <message>
         <source>Buy</source>
-        <translation>Kupno</translation>
+        <translation type="obsolete">Kupno</translation>
     </message>
     <message>
         <source>Last Date</source>
@@ -2375,11 +2478,11 @@ Save changes?</source>
     </message>
     <message>
         <source>Value</source>
-        <translation>Wartość</translation>
+        <translation type="obsolete">Wartość</translation>
     </message>
     <message>
         <source>Profit</source>
-        <translation>Zysk</translation>
+        <translation type="obsolete">Zysk</translation>
     </message>
     <message>
         <source>CC Prefs</source>
@@ -2411,7 +2514,7 @@ Save changes?</source>
     </message>
     <message>
         <source>Could not create ~/Qtstalker/data/CC directory.</source>
-        <translation>Nie można utworyć katalogu ~/Qtstalker/data/CC.</translation>
+        <translation type="obsolete">Nie można utworyć katalogu ~/Qtstalker/data/CC.</translation>
     </message>
     <message>
         <source>This CC already exists.</source>
@@ -2427,7 +2530,7 @@ Save changes?</source>
     </message>
     <message>
         <source>Could not create ~/Qtstalker/data/Index directory.</source>
-        <translation>Nie można utworzyć katalogu ~/Qtstalker/data/Index.</translation>
+        <translation type="obsolete">Nie można utworzyć katalogu ~/Qtstalker/data/Index.</translation>
     </message>
     <message>
         <source>This Index already exists.</source>
@@ -2467,7 +2570,7 @@ Save changes?</source>
     </message>
     <message>
         <source>Could not create ~/Qtstalker/data/Spread directory.</source>
-        <translation>Nie można utworzyć katalogu ~/Qtstalker/data/Spread.</translation>
+        <translation type="obsolete">Nie można utworzyć katalogu ~/Qtstalker/data/Spread.</translation>
     </message>
     <message>
         <source>This Spread already exists.</source>
@@ -2615,7 +2718,7 @@ Save changes?</source>
     </message>
     <message>
         <source>LOWPASS Indicator</source>
-        <translation>Wskaźnik LOWPASS</translation>
+        <translation type="obsolete">Wskaźnik LOWPASS</translation>
     </message>
     <message>
         <source>MA Indicator</source>
@@ -2727,11 +2830,11 @@ Save changes?</source>
     </message>
     <message>
         <source>Select MATH Function</source>
-        <translation>Wybierz Funkcję MATH</translation>
+        <translation type="obsolete">Wybierz Funkcję MATH</translation>
     </message>
     <message>
         <source>Select MATH function</source>
-        <translation>Wybierz Funkcję MATH</translation>
+        <translation type="obsolete">Wybierz Funkcję MATH</translation>
     </message>
     <message>
         <source>MATH Indicator</source>
@@ -3139,7 +3242,7 @@ Save changes?</source>
     </message>
     <message>
         <source>E-MINI S&amp;P 500</source>
-        <translation type="unfinished"></translation>
+        <translation>E-MINI S&amp;P 500</translation>
     </message>
     <message>
         <source>Feeder Cattle</source>
@@ -3191,7 +3294,7 @@ Save changes?</source>
     </message>
     <message>
         <source>NASDAQ 100</source>
-        <translation type="unfinished"></translation>
+        <translation>NASDAQ 100</translation>
     </message>
     <message>
         <source>Natural Gas</source>
@@ -3199,7 +3302,7 @@ Save changes?</source>
     </message>
     <message>
         <source>E-MINI NASDAQ 100</source>
-        <translation type="unfinished"></translation>
+        <translation>E-MINI NASDAQ 100</translation>
     </message>
     <message>
         <source>Oats</source>
@@ -3239,7 +3342,7 @@ Save changes?</source>
     </message>
     <message>
         <source>S&amp;P 500</source>
-        <translation type="unfinished"></translation>
+        <translation>S&amp;P 500</translation>
     </message>
     <message>
         <source>Treasury Note 10 yr.</source>
@@ -3255,7 +3358,7 @@ Save changes?</source>
     </message>
     <message>
         <source>NYSE</source>
-        <translation type="unfinished"></translation>
+        <translation>NYSE</translation>
     </message>
     <message>
         <source>WIG20 Index</source>
@@ -3299,11 +3402,11 @@ Save changes?</source>
     </message>
     <message>
         <source>Freq</source>
-        <translation>Częst</translation>
+        <translation type="obsolete">Częst</translation>
     </message>
     <message>
         <source>Width</source>
-        <translation>Szerokość</translation>
+        <translation type="obsolete">Szerokość</translation>
     </message>
     <message>
         <source>1 Minute</source>
@@ -3312,6 +3415,212 @@ Save changes?</source>
     <message>
         <source>10 Minute</source>
         <translation>10 Minut</translation>
+    </message>
+    <message>
+        <source>Day</source>
+        <translation>Dzień</translation>
+    </message>
+    <message>
+        <source>Week</source>
+        <translation>Tydzień</translation>
+    </message>
+    <message>
+        <source>Month</source>
+        <translation>Miesiąc</translation>
+    </message>
+    <message>
+        <source>DayOfWeek</source>
+        <translation>DzieńTygodnia</translation>
+    </message>
+    <message>
+        <source>DayofWeek</source>
+        <translation>Dzieńtygodnia</translation>
+    </message>
+    <message>
+        <source>Could not create ~/.qtstalker/data/CC directory.</source>
+        <translation>Nie można utworzyć katalogu ~/.qtstalker/data/CC.</translation>
+    </message>
+    <message>
+        <source>Could not create ~/.qtstalker/data/Index directory.</source>
+        <translation>Nie można utworzyć katalogu ~/.qtstalker/data/Index.</translation>
+    </message>
+    <message>
+        <source>Could not create ~/.qtstalker/data/Spread directory.</source>
+        <translation>Nie można utworzyć katalogu ~/.qtstalker/data/Spread.</translation>
+    </message>
+    <message>
+        <source>Min Lookback Period</source>
+        <translation>Min Okres Wsteczny</translation>
+    </message>
+    <message>
+        <source>Max Lookback Period</source>
+        <translation>Max Okres Wsteczny</translation>
+    </message>
+    <message>
+        <source>%K Smoothing Type</source>
+        <translation>
+Rodzaj Wygładzania %K</translation>
+    </message>
+    <message>
+        <source>%D Smoothing Type</source>
+        <translation>
+Rodzaj Wygładzania %D</translation>
+    </message>
+    <message>
+        <source>%K Period</source>
+        <translation>Okres %K</translation>
+    </message>
+    <message>
+        <source>%D Period</source>
+        <translation>Okres %D</translation>
+    </message>
+    <message>
+        <source>AdaptSTOCH Indicator</source>
+        <translation>Wskaźnik AtaptSTOCH</translation>
+    </message>
+    <message>
+        <source>Adaptive CMO</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Min Lookback</source>
+        <translation>Min Okreswsteczny</translation>
+    </message>
+    <message>
+        <source>Max Lookback</source>
+        <translation>Max Okreswsteczny</translation>
+    </message>
+    <message>
+        <source>CMO Indicator</source>
+        <translation>Wskaźnik CMO</translation>
+    </message>
+    <message>
+        <source>Data6</source>
+        <translation>Dane6</translation>
+    </message>
+    <message>
+        <source>Delay3</source>
+        <translation>Zwłoka3</translation>
+    </message>
+    <message>
+        <source>Delay4</source>
+        <translation>Zwłoka4</translation>
+    </message>
+    <message>
+        <source>Method 2</source>
+        <translation>Metoda 2</translation>
+    </message>
+    <message>
+        <source>AND/OR</source>
+        <translation>I/LUB</translation>
+    </message>
+    <message>
+        <source>If</source>
+        <translation>Jeśli</translation>
+    </message>
+    <message>
+        <source>And/Or</source>
+        <translation>I/Lub</translation>
+    </message>
+    <message>
+        <source>Then</source>
+        <translation>Wówczas</translation>
+    </message>
+    <message>
+        <source>Else</source>
+        <translation>Inaczej</translation>
+    </message>
+    <message>
+        <source>SlowK Color</source>
+        <translation>Kolor SlowK</translation>
+    </message>
+    <message>
+        <source>2 Day prediction Color</source>
+        <translation>Kolor Predykcji 2 dniowej</translation>
+    </message>
+    <message>
+        <source>5 Day Prediction Color</source>
+        <translation>Kolor Predykcji 5 dniowej</translation>
+    </message>
+    <message>
+        <source>Line Type K</source>
+        <translation>Styl Krzywej K</translation>
+    </message>
+    <message>
+        <source>Line Type 2 Day</source>
+        <translation>Styl Krzywej 2 dniowej</translation>
+    </message>
+    <message>
+        <source>Line Type 5 Day</source>
+        <translation>Styl Krzywej 5 dniowej</translation>
+    </message>
+    <message>
+        <source>Show 2 Day Prediction</source>
+        <translation>Pokaż Predykcję 2 dniową</translation>
+    </message>
+    <message>
+        <source>Show 5 Day Prediction</source>
+        <translation>Pokaż Predykcję 5 dniową</translation>
+    </message>
+    <message>
+        <source>Fast K Period</source>
+        <translation>Okres Szybkiej K</translation>
+    </message>
+    <message>
+        <source>Slow K Period</source>
+        <translation>Okres Wolnej K</translation>
+    </message>
+    <message>
+        <source>Select Mode</source>
+        <translation>Tryb Wybierania</translation>
+    </message>
+    <message>
+        <source>Plot Test Pattern</source>
+        <translation>Rysuj Wzorzec Testowy</translation>
+    </message>
+    <message>
+        <source>LMS Indicator</source>
+        <translation>Wskaźnik LMS</translation>
+    </message>
+    <message>
+        <source>MINMAX Indicator</source>
+        <translation>Wskaźnik MINMAX</translation>
+    </message>
+    <message>
+        <source>Sine Color</source>
+        <translation>Kolor Sinusoidy</translation>
+    </message>
+    <message>
+        <source>Lead Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sine Line Type</source>
+        <translation>Styl Krzywej Sinusoidalnej</translation>
+    </message>
+    <message>
+        <source>Lead Line Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>SINWAV Indicator</source>
+        <translation>Wskaźnik SINWAV</translation>
+    </message>
+    <message>
+        <source>UTIL Indicator</source>
+        <translation>Wskaźnik UTIL</translation>
+    </message>
+    <message>
+        <source>Vidya period</source>
+        <translation>Okres Vidya</translation>
+    </message>
+    <message>
+        <source>Volatility Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>VIDYA Indicator</source>
+        <translation>Wskaźnik VIDYA</translation>
     </message>
 </context>
 <context>
@@ -3323,12 +3632,6 @@ Save changes?</source>
     <message>
         <source>About Qtstalker</source>
         <translation>O Qtstalker</translation>
-    </message>
-    <message>
-        <source>Qtstalker
-Ver CVS 0.30 (greased weasel)
-(C) 2001-2005 by Stefan Stratigakos</source>
-        <translation></translation>
     </message>
     <message>
         <source>Edit Prefs</source>
@@ -3437,6 +3740,15 @@ Ver CVS 0.30 (greased weasel)
         <source>Loading chart objects...</source>
         <translation>Ładowanie objektów wykresu...</translation>
     </message>
+    <message>
+        <source>Qtstalker
+Ver CVS 0.33 (working title)
+(C) 2001-2005 by Stefan Stratigakos</source>
+        <translation>Qtstalker
+Ver CVS 0.33 (working title)
+(C) 2001-2005 by Stefan Stratigakos
+Tłumaczenie polskie: Benedict P. Barszcz</translation>
+    </message>
 </context>
 <context>
     <name>QtstalkerFormat</name>
@@ -3459,6 +3771,10 @@ Ver CVS 0.30 (greased weasel)
     <message>
         <source>File Input</source>
         <translation>Źródło Plików</translation>
+    </message>
+    <message>
+        <source>Delete Chart</source>
+        <translation>Wymaż Wykres</translation>
     </message>
 </context>
 <context>
@@ -3814,6 +4130,47 @@ Save changes?</source>
     <message>
         <source>Last Date</source>
         <translation>Ostatnia Data</translation>
+    </message>
+    <message>
+        <source>Split Date</source>
+        <translation>Data Splitu</translation>
+    </message>
+    <message>
+        <source>Split Ratio</source>
+        <translation>Stosunek Splitu</translation>
+    </message>
+    <message>
+        <source>Perform Split</source>
+        <translation>Przeprowadź Split</translation>
+    </message>
+    <message>
+        <source>Split</source>
+        <translation>Split</translation>
+    </message>
+    <message>
+        <source>Are you sure you want split the stock?</source>
+        <translation>Czy jesteś pewien dokonać splitu waloru?</translation>
+    </message>
+    <message>
+        <source>Qtstalker: Error</source>
+        <translation>Qtstalker: Błąd</translation>
+    </message>
+    <message>
+        <source>Invalid split date.</source>
+        <translation>Nieprawidłowa data splitu.</translation>
+    </message>
+    <message>
+        <source>Invalid split ratio format.
+eg. 2:1</source>
+        <translation>Nieprawidłowy format stosunku splitu. np. 2:1</translation>
+    </message>
+    <message>
+        <source>Qtstalker: Split Complete</source>
+        <translation>Qtstalker: Split Ukończony</translation>
+    </message>
+    <message>
+        <source>Split complete. Reload chart to view results</source>
+        <translation>Split ukończony. Przeładuj wykres by zobaczyć rezultat</translation>
     </message>
 </context>
 <context>
@@ -4364,6 +4721,53 @@ Save changes?</source>
     <message>
         <source>End Value</source>
         <translation>Wartość Końcowa</translation>
+    </message>
+</context>
+<context>
+    <name>UpgradeMessage</name>
+    <message>
+        <source>This version of Qtstalker uses a new data format.</source>
+        <translation>Ta wersja Qtstalkera stosuje nowy format danych.</translation>
+    </message>
+    <message>
+        <source> It can not read data files from previous versions.</source>
+        <translation>Nie potrafi ona czytać plików z poprzednich wersji.</translation>
+    </message>
+    <message>
+        <source> This means that you will start with an empty workspace.</source>
+        <translation>To oznacza, że praca rozpocznie sie od czystej przestrzeni pracy.</translation>
+    </message>
+    <message>
+        <source> Your old data files have been preserved in $HOME/Qtstalker</source>
+        <translation> Twoje stare pliki danych zostały zapisane w $HOME/Qtstalker</translation>
+    </message>
+    <message>
+        <source> and can still be accessed by older Qtstalker versions.</source>
+        <translation>i mogą nadal być używane przez starsze wersje Qtstalkera.</translation>
+    </message>
+    <message>
+        <source> If you don&apos;t intend to downgrade to a previous Qtstalker</source>
+        <translation> Jeśli nie zamierzasz stosować niższej wersji Qtstalkera</translation>
+    </message>
+    <message>
+        <source> version, then you can remove that directory.</source>
+        <translation> możesz usunąć ten katalog.</translation>
+    </message>
+    <message>
+        <source>Do not show this message again.</source>
+        <translation>Nie pokazuj tego komunikatu w przyszłości.</translation>
+    </message>
+    <message>
+        <source>Warning</source>
+        <translation>Ostrzeżenie</translation>
+    </message>
+    <message>
+        <source>&amp;OK</source>
+        <translation>&amp;OK</translation>
+    </message>
+    <message>
+        <source>&amp;Cancel</source>
+        <translation>&amp;Anuluj</translation>
     </message>
 </context>
 <context>

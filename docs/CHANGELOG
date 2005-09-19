@@ -1,7 +1,7 @@
 0.33
 ====
 
-20050606: Moved the text grabbox from right side of text to the left side.
+20050606: Moved the text chart object grabbox from right side of text to the left side.
 
 20050608: Fixed bad indicator group list in the move indicator dialog.
 
@@ -46,6 +46,10 @@
 
 20050912: Added a 'Delete Chart' parm to the QtstalkerFormat plugin.
 
+20050919: Added "qt" config option to the src/src.pro file. Fix for strange qmake bug on some systems.
+
+20050919: Updated pl translation files from Benedict.
+  
 
 
 0.32
