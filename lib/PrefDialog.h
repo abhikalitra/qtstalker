@@ -86,6 +86,7 @@ class PrefDialog : public QTabDialog
     void addFormulaInputItem (QString &, QString &, bool, QString &);
     QString getFormulaInput (QString &);
     void addLabelItem (QString &, QString &, QString &);
+    QString getItem (QString &);
     
   public slots:
     void help ();

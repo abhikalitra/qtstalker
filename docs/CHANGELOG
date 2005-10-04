@@ -10,7 +10,7 @@
 
 20050628: Applied patch #1227777 - install.html updates.
 
-20050829: Appied patch #1261806 - change portfolio's 'volume' variable from int to float
+20050829: Applied patch #1261806 - change portfolio's 'volume' variable from int to float
           Thanks to imoszarh for the patch.
 
 20050831: Fixed CSV plugin to ignore delimiter chars in date fields
@@ -28,11 +28,11 @@
 20050906: Applied patch that adds a text option to the HorizontalLine plugin. Thanks to Michal
           for the patch.
 
-20050906: Appied patch #1283054 - delete dupe symbol in portfolio. Thanks to imoszarh for the patch.
+20050906: Applied patch #1283054 - delete dupe symbol in portfolio. Thanks to imoszarh for the patch.
 
-20050906: Appied patch #1283036 - show portfolio balance in percent. Thanks to imoszarh for the patch.
+20050906: Applied patch #1283036 - show portfolio balance in percent. Thanks to imoszarh for the patch.
 
-20050907: Appied patch #1283865 - float to double type migration. Thanks to imoszarh for the patch.
+20050907: Applied patch #1283865 - float to double type migration. Thanks to imoszarh for the patch.
 
 20050908: NYBOT changed download url. Updated NYBOT plugin.
 
@@ -42,7 +42,7 @@
 
 20050909: Changed COMP plugin 'then' parm default to true.
 
-20050912: Appied patch #1288467 - QtstalkerFormat plugin. Thanks to imoszarh for the patch.
+20050912: Applied patch #1288467 - QtstalkerFormat plugin. Thanks to imoszarh for the patch.
 
 20050912: Added a 'Delete Chart' parm to the QtstalkerFormat plugin.
 
@@ -50,6 +50,10 @@
 
 20050919: Updated pl translation files from Benedict.
   
+20051003: Applied patch #1311897 - AROON indicator. Thanks to Flynn for the patch.
+
+20051004: Applied patch #1312718 - AROON indicator fix. Thanks to Flynn for the patch.
+
 
 
 0.32

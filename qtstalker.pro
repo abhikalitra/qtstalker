@@ -24,6 +24,7 @@ SUBDIRS += plugins/quote/Yahoo
 #compile indicator plugins
 SUBDIRS += plugins/indicator/AD
 SUBDIRS += plugins/indicator/AdaptSTOCH
+SUBDIRS += plugins/indicator/AROON
 SUBDIRS += plugins/indicator/ATR
 SUBDIRS += plugins/indicator/BB
 SUBDIRS += plugins/indicator/CCI

@@ -34,6 +34,9 @@ To Do:
 - change edit formula widgets to auto add the missing COMP step instead of warning user.
 - create CUS tutorial.
 - add more indicator functions to existing plugins ie. Chaikin, Volume osc's etc.
+- fix: chart status data covers candles on the main chart.
+- add stock margins to the tester
+- add intraday trading to the tester
 
 
 

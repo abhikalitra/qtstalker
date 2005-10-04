@@ -464,5 +464,43 @@ void PrefDialog::addLabelItem (QString &name, QString &page, QString &l)
   labelList.replace(name, label);
 }
 
+QString PrefDialog::getItem (QString &name)
+{
+  QString s;
+
+  // check color
+  QColor color = getColor(name);
+  if (color.isValid())
+    return color.name();
+
+  // check for double
+  QLineEdit *edit = doubleList[name];
+  if (edit)
+  {
+    s = edit->text();
+    return s;
+  }
+
+  // check for int
+  QSpinBox *spin = intList[name];
+  if (spin)
+  {
+    s = spin->text();
+    return s;
+  }
+
+  s = getText(name);
+  if (s.length())
+    return s;
+
+  QComboBox *combo = comboList[name];
+  if (combo)
+  {
+    s = QString::number(combo->currentItem());
+    return s;
+  }
+
+  return s;
+}
 
 
