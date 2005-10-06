@@ -32,6 +32,8 @@ AD::AD ()
   
   methodList.append("AD");
   methodList.append("WAD");
+  methodList.append("CO");
+  methodList.append("CMF");
 
   helpFile = "ad.html";
     
@@ -48,6 +50,7 @@ void AD::setDefaults ()
   lineType = PlotLine::Line;
   label = pluginName;
   method = "AD";
+  cmfPeriod = 21;
 }
 
 void AD::calculate ()
@@ -55,15 +58,31 @@ void AD::calculate ()
   if (! method.compare("AD"))
     calculateAD();
   else
-    calculateWAD();
+  {
+    if (! method.compare("WAD"))
+      calculateWAD();
+    else
+    {
+      if (! method.compare("CO"))
+        calculateCO();
+      else
+        calculateCMF();
+    }
+  }
 }
 
 void AD::calculateAD ()
 {
-  PlotLine *line = new PlotLine();
+  PlotLine *line = getAD();
   line->setColor(color);
   line->setType(lineType);
   line->setLabel(label);
+  output->addLine(line);
+}
+
+PlotLine * AD::getAD ()
+{
+  PlotLine *line = new PlotLine();
   
   int loop;
   double accum = 0;
@@ -88,7 +107,7 @@ void AD::calculateAD ()
     line->append(accum);
   }
   
-  output->addLine(line);
+  return line;
 }
 
 void AD::calculateWAD ()
@@ -131,6 +150,64 @@ void AD::calculateWAD ()
   output->addLine(wad);
 }
 
+void AD::calculateCO ()
+{
+  PlotLine *co = new PlotLine();
+  co->setColor(color);
+  co->setType(lineType);
+  co->setLabel(label);
+
+  PlotLine *ad = getAD();
+
+  PlotLine *fma = getMA(ad, 0, 3, 0.0, 0.0);
+  int fmaLoop = fma->getSize() - 1;
+
+  PlotLine *sma = getMA(ad, 0, 10, 0.0, 0.0);
+  int smaLoop = sma->getSize() - 1;
+
+  while (fmaLoop > -1 && smaLoop > -1)
+  {
+    co->prepend(fma->getData(fmaLoop) - sma->getData(smaLoop));
+    fmaLoop--;
+    smaLoop--;
+  }
+
+  output->addLine(co);
+
+  delete ad;
+  delete fma;
+  delete sma;
+}
+
+void AD::calculateCMF ()
+{
+  PlotLine *cmf = new PlotLine();
+  cmf->setColor(color);
+  cmf->setType(lineType);
+  cmf->setLabel(label);
+
+  PlotLine *ad = getAD();
+
+  int loop;
+  for (loop = cmfPeriod - 1; loop < (int) data->count(); loop++)
+  {
+    double adsum = 0;  
+    double vsum = 0;
+    int loop2;
+    for (loop2 = cmfPeriod - 1; loop2 > -1; loop2--)
+    {
+      adsum = adsum + ad->getData(loop - loop2);
+      vsum = vsum + data->getVolume(loop - loop2);
+    }
+
+    cmf->append(adsum / vsum);
+  }
+
+  output->addLine(cmf);
+
+  delete ad;
+}
+
 int AD::indicatorPrefDialog (QWidget *w)
 {
   QString pl = QObject::tr("Parms");
@@ -138,6 +215,7 @@ int AD::indicatorPrefDialog (QWidget *w)
   QString ll = QObject::tr("Label");
   QString ltl = QObject::tr("Line Type");
   QString ml = QObject::tr("Method");
+  QString cmfpl = QObject::tr("Period");
   
   PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(QObject::tr("AD Indicator"));
@@ -147,6 +225,7 @@ int AD::indicatorPrefDialog (QWidget *w)
   dialog->addTextItem(ll, pl, label);
   dialog->addComboItem(ltl, pl, lineTypes, lineType);
   dialog->addComboItem(ml, pl, methodList, method);
+  dialog->addIntItem(cmfpl, pl, cmfPeriod, 1, 999999);
   
   int rc = dialog->exec();
   
@@ -156,6 +235,8 @@ int AD::indicatorPrefDialog (QWidget *w)
     lineType = (PlotLine::LineType) dialog->getComboIndex(ltl);
     label = dialog->getText(ll);
     method = dialog->getCombo(ml);
+    cmfPeriod = dialog->getInt(cmfpl);
+
     rc = TRUE;
   }
   else
@@ -178,6 +259,7 @@ void AD::getIndicatorSettings (Setting &dict)
   dict.setData("label", label);
   dict.setData("lineType", QString::number(lineType));
   dict.setData("method", method);
+  dict.setData("cmfPeriod", QString::number(cmfPeriod));
   dict.setData("plugin", pluginName);
 }
 
@@ -200,10 +282,27 @@ void AD::setIndicatorSettings (Setting &dict)
   if (s.length())
     lineType = (PlotLine::LineType) s.toInt();
 
+  s = dict.getData("cmfPeriod");
+  if (s.length())
+    cmfPeriod = s.toInt();
+
   s = dict.getData("method");
   if (s.length())
     method = s;
 }
+
+int AD::getMinBars ()
+{
+  int t = minBars;
+  if (! method.compare("CMF"))
+    t = t + cmfPeriod;
+  return t;
+}
+
+
+//*******************************************************
+//*******************************************************
+//*******************************************************
 
 IndicatorPlugin * createIndicatorPlugin ()
 {

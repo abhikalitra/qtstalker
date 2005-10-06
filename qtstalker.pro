@@ -49,7 +49,6 @@ SUBDIRS += plugins/indicator/REF
 SUBDIRS += plugins/indicator/ROC
 SUBDIRS += plugins/indicator/RSI
 SUBDIRS += plugins/indicator/SAR
-SUBDIRS += plugins/indicator/SD
 SUBDIRS += plugins/indicator/SINWAV
 SUBDIRS += plugins/indicator/STOCH
 SUBDIRS += plugins/indicator/SYMBOL
@@ -61,7 +60,7 @@ SUBDIRS += plugins/indicator/UTIL
 SUBDIRS += plugins/indicator/VFI
 SUBDIRS += plugins/indicator/VIDYA
 SUBDIRS += plugins/indicator/VOL
-SUBDIRS += plugins/indicator/VOLR
+SUBDIRS += plugins/indicator/VOLA
 SUBDIRS += plugins/indicator/VT
 SUBDIRS += plugins/indicator/WILLR
 

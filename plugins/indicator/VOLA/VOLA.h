@@ -21,26 +21,34 @@
 
 #include "IndicatorPlugin.h"
 
-class SD : public IndicatorPlugin
+class VOLA : public IndicatorPlugin
 {
   public:
-    SD ();
-    virtual ~SD ();
+    VOLA ();
+    virtual ~VOLA ();
     void calculate ();
+    void calculateCV ();
+    void calculateSD ();
+    void calculateVOLR ();
     int indicatorPrefDialog (QWidget *);
     void setDefaults();
     PlotLine * calculateCustom (QDict<PlotLine> *);
     void getIndicatorSettings (Setting &);
     void setIndicatorSettings (Setting &);
+    PlotLine * getTR ();
     int getMinBars ();
     
   private:
     QColor color;
     PlotLine::LineType lineType;
     QString label;
-    int period;
-    BarData::InputType input;
-    QString customInput;
+    int cvPeriod;
+    int sdPeriod;
+    int volrPeriod;
+    QString method;
+    QStringList methodList;
+    BarData::InputType sdInput;
+    QString sdCustomInput;
 };
 
 extern "C"

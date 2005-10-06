@@ -54,6 +54,15 @@
 
 20051004: Applied patch #1312718 - AROON indicator fix. Thanks to Flynn for the patch.
 
+20051006: Added Chaikin Oscillator method to the AD plugin.
+
+20051006: Added Chaikin Money Flow method to the AD plugin.
+
+20051006: New Indicator VOLA - volatility. This contains the new Chaikin Volatility indicator, SD indicator,
+          and the VOLR indicator.
+
+20051006: Removed the SD, VOLR plugins. They are folded into the VOLA plugin.
+
 
 
 0.32

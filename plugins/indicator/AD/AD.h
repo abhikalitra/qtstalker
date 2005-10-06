@@ -31,9 +31,13 @@ class AD : public IndicatorPlugin
     void setDefaults();
     void calculateAD ();
     void calculateWAD ();
+    void calculateCO ();
+    void calculateCMF ();
     PlotLine * calculateCustom (QDict<PlotLine> *);
     void getIndicatorSettings (Setting &);
     void setIndicatorSettings (Setting &);
+    PlotLine * getAD ();
+    int getMinBars ();
   
   private:
     QColor color;
@@ -41,6 +45,7 @@ class AD : public IndicatorPlugin
     QString label;
     QStringList methodList;
     QString method;
+    int cmfPeriod;
 };
 
 extern "C"

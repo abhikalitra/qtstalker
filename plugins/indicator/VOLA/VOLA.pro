@@ -1,12 +1,12 @@
-pluginName = VOLR
+pluginName = VOLA
 
 !include( ../../../plugin.config ){
   message( "Oops -- No custom build options specified" ) 
 } 
 
-HEADERS += VOLR.h
+HEADERS += VOLA.h
 
-SOURCES += VOLR.cpp
+SOURCES += VOLA.cpp
 
 target.path = /usr/lib/qtstalker/indicator
 INSTALLS += target

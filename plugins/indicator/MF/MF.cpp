@@ -43,7 +43,7 @@ void MF::setDefaults ()
   label = pluginName;
   period = 10;
   smoothing = 10;  
-  maType = 1;  
+  maType = 1;
 }
 
 void MF::calculate ()
