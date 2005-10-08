@@ -27,6 +27,8 @@
 
 class UpgradeMessage : public QTabDialog
 {
+  Q_OBJECT
+
   public:
 
     enum UpgradeMessageVersion
