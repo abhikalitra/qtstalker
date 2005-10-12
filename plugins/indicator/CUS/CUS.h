@@ -28,8 +28,6 @@ class CUS : public IndicatorPlugin
     CUS ();
     virtual ~CUS ();
     void calculate ();
-//    void loadIndicatorSettings (QString &);
-//    void saveIndicatorSettings (QString &);
     void getIndicatorSettings (Setting &);
     void setIndicatorSettings (Setting &);
     int indicatorPrefDialog (QWidget *);

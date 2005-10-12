@@ -195,50 +195,6 @@ int CUS::indicatorPrefDialog (QWidget *)
   return rc;
 }
 
-/*
-void CUS::loadIndicatorSettings (QString &file)
-{
-  formulaList.clear();
-
-  QFile f(file);
-  if (! f.open(IO_ReadOnly))
-  {
-    qDebug("CUS:can't read file %s", file.latin1());
-    return;
-  }
-  QTextStream stream(&f);
-  
-  while(stream.atEnd() == 0)
-  {
-    QString s = stream.readLine();
-    s = s.stripWhiteSpace();
-    if (! s.length())
-      continue;
-
-    formulaList.append(s);
-  }
-  
-  f.close();
-}
-
-void CUS::saveIndicatorSettings (QString &file)
-{
-  QFile f(file);
-  if (! f.open(IO_WriteOnly))
-  {
-    qDebug("IndicatorPlugin:can't save file %s", file.latin1());
-    return;
-  }
-  QTextStream stream(&f);
-  
-  int loop;
-  for(loop = 0; loop < (int) formulaList.count(); loop++)
-    stream << formulaList[loop] << "\n";
-  
-  f.close();
-}
-*/
-
 void CUS::setCustomFunction (QString &d)
 {
   formulaList.append(d);
@@ -247,7 +203,7 @@ void CUS::setCustomFunction (QString &d)
 int CUS::getMinBars ()
 {
   int loop;
-  int min = 0;
+  int min = minBars;
   for (loop = 0; loop < (int) formulaList.count(); loop++)
   {
     Setting set;
@@ -265,15 +221,12 @@ int CUS::getMinBars ()
   
     plug->setIndicatorSettings(set);
     
-    int t = plug->getMinBars();
-    if (t > min)
-      min = t;
+    min = min + plug->getMinBars();
     
     config.closePlugin(plugin);
   }
 
-  int t = minBars + min;
-  return t;
+  return min;
 }
 
 void CUS::getIndicatorSettings (Setting &dict)

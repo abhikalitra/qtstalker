@@ -73,6 +73,14 @@
 
 20051012: Removed the lib/FormulaInput.* files from CVS. Now deprecated.
 
+20051012: Fixed bug in STOCH that used BarData for high/low instead of user provided data.
+
+20051012: Had to remove the AND/OR and THEN/ELSE functionality from the COMP plugin. The new CUS format
+          makes this very difficult. Instead user will have to replace the removed logic with additional
+          steps in their CUS scripts. grrr more CUS breakage will ensue.
+
+20051012: Fixed bug in CUS::getMinBars that did not calculate minBars properly. This was causing the Scanner
+          to fail because not enough bars were being loaded.
 
 
 

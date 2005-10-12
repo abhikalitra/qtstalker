@@ -39,7 +39,7 @@ To Do:
 - add intraday trading to the tester
 - fix: scanner does not update directory when first run. app restart needed.
 - fix: tester entry on buy and sell signals does not execute on next bar but on current bar.
-- fix: STOCH is using bardata instead of user data for finding high/low range
+- update CUS docs for new format and rules and specs.
 
 
 
