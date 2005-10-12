@@ -66,6 +66,12 @@
 20051012: Revised the CUS gui/storage format. This breaks all the CUS formulas that use the old format.
           Need to update CUS docs for full details.
 
+20051012: Removed the i18n/qtstalker_pl.qm file from CVS. Configure now generates this file.
+
+20051012: Removed the COMP, COUNTER, MATH, REF plugins and folded them into the UTIL plugin. The switch
+          to the new CUS format allows us to do this.
+
+20051012: Removed the lib/FormulaInput.* files from CVS. Now deprecated.
 
 
 
