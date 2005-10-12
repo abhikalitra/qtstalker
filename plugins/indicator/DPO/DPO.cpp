@@ -48,17 +48,19 @@ void DPO::setDefaults ()
 
 void DPO::calculate ()
 {
-  PlotLine *in = 0;
-  if (customFlag)
-    in = getInputLine(customInput);
-  else
-    in = data->getInput(input);
+  PlotLine *in = data->getInput(input);
   if (! in)
   {
     qDebug("DPO::calculate: no input");
     return;
   }
 
+  calculate2(in);
+  delete in;
+}
+
+void DPO::calculate2 (PlotLine *in)
+{
   PlotLine *ma = getMA(in, maType, period, 0, 0);
 
   PlotLine *dpo = new PlotLine();
@@ -78,8 +80,6 @@ void DPO::calculate ()
     maLoop--;
   }
 
-  if (! customFlag)
-    delete in;
   delete ma;
 }
 
@@ -103,10 +103,7 @@ int DPO::indicatorPrefDialog (QWidget *w)
   dialog->addIntItem(perl, pl, period, 1, 99999999);
   QStringList l = getMATypes();
   dialog->addComboItem(stl, pl, l, maType);
-  if (customFlag)
-    dialog->addFormulaInputItem(il, pl, FALSE, customInput);
-  else
-    dialog->addComboItem(il, pl, inputTypeList, input);
+  dialog->addComboItem(il, pl, inputTypeList, input);
   
   int rc = dialog->exec();
   
@@ -117,10 +114,7 @@ int DPO::indicatorPrefDialog (QWidget *w)
     period = dialog->getInt(perl);
     label = dialog->getText(ll);
     maType = dialog->getComboIndex(stl);
-    if (customFlag)
-      customInput = dialog->getFormulaInput(il);
-    else
-      input = (BarData::InputType) dialog->getComboIndex(il);
+    input = (BarData::InputType) dialog->getComboIndex(il);
     
     rc = TRUE;
   }
@@ -161,10 +155,6 @@ void DPO::setIndicatorSettings (Setting &dict)
   s = dict.getData("input");
   if (s.length())
     input = (BarData::InputType) s.toInt();
-
-  s = dict.getData("customInput");
-  if (s.length())
-    customInput = s;
 }
 
 void DPO::getIndicatorSettings (Setting &dict)
@@ -174,16 +164,51 @@ void DPO::getIndicatorSettings (Setting &dict)
   dict.setData("period", QString::number(period));
   dict.setData("label", label);
   dict.setData("maType", QString::number(maType));
-  dict.setData("customInput", customInput);
   dict.setData("input", QString::number(input));
   dict.setData("plugin", pluginName);
 }
 
-PlotLine * DPO::calculateCustom (QDict<PlotLine> *d)
+PlotLine * DPO::calculateCustom (QString &p, QPtrList<PlotLine> &d)
 {
-  customLines = d;
+  // format1: ARRAY_INPUT, MA_TYPE, PERIOD
+
+  QStringList l = QStringList::split(",", p, FALSE);
+
+  if (l.count() == 3)
+    ;
+  else
+  {
+    qDebug("DPO::calculateCustom: invalid parm count");
+    return 0;
+  }
+
+  if (! d.count())
+  {
+    qDebug("DPO::calculateCustom: no input");
+    return 0;
+  }
+
+  QStringList mal = getMATypes();
+  if (mal.findIndex(l[1]) == -1)
+  {
+    qDebug("DPO::calculateCustom: invalid MA_TYPE parm");
+    return 0;
+  }
+  else
+    maType = mal.findIndex(l[1]);
+
+  bool ok;
+  int t = l[2].toInt(&ok);
+  if (ok)
+    period = t;
+  else
+  {
+    qDebug("DPO::calculateCustom: invalid PERIOD parm");
+    return 0;
+  }
+
   clearOutput();
-  calculate();
+  calculate2(d.at(0));
   return output->getLine(0);
 }
 

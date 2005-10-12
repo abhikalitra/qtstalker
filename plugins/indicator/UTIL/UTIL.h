@@ -26,23 +26,19 @@ class UTIL : public IndicatorPlugin
   public:
     UTIL ();
     virtual ~UTIL ();
-    void calculate ();
-    int indicatorPrefDialog (QWidget *);
-    void setDefaults();
-    PlotLine * calculateCustom (QDict<PlotLine> *);
-    void getIndicatorSettings (Setting &);
-    void setIndicatorSettings (Setting &);
-    int getMinBars ();
-    void calculateAccum ();
-    void calculateTypPrice();
-    void calculateNormal();
+    PlotLine * calculateCustom (QString &, QPtrList<PlotLine> &);
+    PlotLine * calculateAccum (QString &, QPtrList<PlotLine> &);
+    PlotLine * calculateTypPrice();
+    PlotLine * calculateNormal(QString &, QPtrList<PlotLine> &);
+    PlotLine * calculateCOMP (QString &p, QPtrList<PlotLine> &d);
+    PlotLine * calculateCOUNTER (QString &p, QPtrList<PlotLine> &d);
+    PlotLine * calculateREF (QString &p, QPtrList<PlotLine> &d);
+    PlotLine * calculateADD (QString &p, QPtrList<PlotLine> &d);
+    PlotLine * calculateDIV (QString &p, QPtrList<PlotLine> &d);
+    PlotLine * calculateMUL (QString &p, QPtrList<PlotLine> &d);
+    PlotLine * calculateSUB (QString &p, QPtrList<PlotLine> &d);
   
   private:
-    QColor color;
-    PlotLine::LineType lineType;
-    QString label;
-    QString data1;
-    QString method;
     QStringList methodList;
 };
 

@@ -51,18 +51,7 @@ void VIDYA::setDefaults ()
 
 void VIDYA::calculate ()
 {
-  PlotLine *in = 0;
-  if (customFlag)
-  {
-    in = getInputLine(customInput);
-    if (! in)
-    {
-      qDebug("VIDYA::calculate: no input");
-      return;
-    }
-  }
-  else
-    in = data->getInput (BarData::Close);
+  PlotLine *in = data->getInput (BarData::Close);
 	
   if ( in->getSize() < period )
   {
@@ -387,12 +376,6 @@ int VIDYA::indicatorPrefDialog (QWidget *w)
   dialog->addTextItem(ll, pl, label);
   dialog->addComboItem(ltl, pl, lineTypes, lineType);
   
-  if (customFlag)
-  {
-    dialog->addTextItem(ll, pl, label);
-    dialog->addFormulaInputItem(il, pl, FALSE, customInput);
-  }
-  
   pl = QObject::tr("Zones");
   dialog->createPage (pl);
   
@@ -406,12 +389,6 @@ int VIDYA::indicatorPrefDialog (QWidget *w)
     period = dialog->getInt(perl);	
     volPeriod = dialog->getInt(per2);	
 	
-    if (customFlag)
-    {
-      label = dialog->getText(ll);
-      customInput = dialog->getFormulaInput(il);
-    }
-	
     rc = TRUE;
   }
   else
@@ -422,10 +399,51 @@ int VIDYA::indicatorPrefDialog (QWidget *w)
   return rc;
 }
 
-PlotLine * VIDYA::calculateCustom (QDict<PlotLine> *)
+PlotLine * VIDYA::calculateCustom (QString &p, QPtrList<PlotLine> &d)
 {
+  // format1: ARRAY_INPUT, PERIOD, VOL_PERIOD
+
+  QStringList l = QStringList::split(",", p, FALSE);
+
+  if (l.count() == 3)
+    ;
+  else
+  {
+    qDebug("VIDYA::calculateCustom: invalid parm count");
+    return 0;
+  }
+
+  bool ok;
+  int t = l[1].toInt(&ok);
+  if (ok)
+    period = t;
+  else
+  {
+    qDebug("VIDYA::calculateCustom: invalid PERIOD parm");
+    return 0;
+  }
+
+  t = l[2].toInt(&ok);
+  if (ok)
+    volPeriod = t;
+  else
+  {
+    qDebug("VIDYA::calculateCustom: invalid VOL_PERIOD parm");
+    return 0;
+  }
+
   clearOutput();
-  calculate();
+
+  if (! d.count())
+  {
+    qDebug("VIDYA::calculateCustom: no input");
+    return 0;
+  }
+
+  PlotLine *out = new PlotLine;
+  calcVidya (out, d.at(0), volPeriod, period);
+  output->addLine(out);
+
   return output->getLine(0);
 }
 
@@ -472,6 +490,10 @@ int VIDYA::getMinBars ()
   int t = minBars + period;
   return t;
 }
+
+//****************************************************
+//****************************************************
+//****************************************************
 
 IndicatorPlugin * createIndicatorPlugin ()
 {

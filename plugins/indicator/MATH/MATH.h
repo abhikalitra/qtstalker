@@ -26,24 +26,9 @@ class MATH : public IndicatorPlugin
   public:
     MATH ();
     virtual ~MATH ();
-    void calculate ();
-    int indicatorPrefDialog (QWidget *);
-    void setDefaults();
-    PlotLine * calculateCustom (QDict<PlotLine> *);
-    void getIndicatorSettings (Setting &);
-    void setIndicatorSettings (Setting &);
-    int getMinBars ();
+    PlotLine * calculateCustom (QString &, QPtrList<PlotLine> &);
   
   private:
-    QColor color;
-    PlotLine::LineType lineType;
-    QString label;
-    QString data1;
-    QString data2;
-    QString data3;
-    QString data4;
-    QString data5;
-    QString method;
     QStringList methodList;
 };
 

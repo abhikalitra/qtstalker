@@ -26,7 +26,6 @@
 #include "FontButton.h"
 #include "FileButton.h"
 #include "SymbolButton.h"
-#include "FormulaInput.h"
 #include <qtabdialog.h>
 #include <qlayout.h>
 #include <qwidget.h>
@@ -83,8 +82,6 @@ class PrefDialog : public QTabDialog
     void getFile (QString &, QStringList &);
     void addSymbolItem (QString &, QString &, QString &, QString &);
     QString getSymbol (QString &);
-    void addFormulaInputItem (QString &, QString &, bool, QString &);
-    QString getFormulaInput (QString &);
     void addLabelItem (QString &, QString &, QString &);
     QString getItem (QString &);
     
@@ -105,7 +102,6 @@ class PrefDialog : public QTabDialog
     QDict<FileButton> fileList;
     QDict<SymbolButton> symbolList;
     QDict<QDoubleValidator> dvList;
-    QDict<FormulaInput> formulaInputList;
     QDict<QLabel> labelList;
     QString helpFile;
 };

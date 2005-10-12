@@ -24,7 +24,8 @@
 
 #include <qstring.h>
 #include <qwidget.h>
-#include <qtable.h>
+#include <qtextedit.h>
+#include <qlistbox.h>
 #include "Toolbar.h"
 #include "Config.h"
 
@@ -43,25 +44,29 @@ class FormulaEdit : public QWidget
     FormulaEdit (QWidget *, int);
     ~FormulaEdit ();
     void setLine (QString &);
-    QString getLine (int);
+    QString getText ();
     int getLines ();
-    bool checkError ();
 
   public slots:
-    void addItem ();
-    void editItem ();
-    void deleteItem ();
-    void insertItem ();
+    void editPlotItem ();
+    void deletePlotItem ();
+    void insertPlotItem ();
     void openRule ();
     void saveRule ();
-    void slotDoubleClicked(int, int, int, const QPoint &);
+    void slotDoubleClicked (QListBoxItem *);
 
   protected:
-    QTable *list;
-    Toolbar *toolbar;
+    QTextEdit *formula;
+    QListBox *plot;
+    Toolbar *ftoolbar;
+    Toolbar *ptoolbar;
     QStringList functionList;
+    QStringList lineTypes;
     Config config;
     FormulaEditType type;
+    QString enableLine;
+    QString plotTypeLine;
+    QString pluginLine;
 };
 
 #endif

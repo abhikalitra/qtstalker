@@ -175,12 +175,13 @@ void Bars::prefDialog (QWidget *)
     int loop;
     bool flag = FALSE;
     formulaList.clear();
-    for (loop = 0; loop < (int) dialog->getLines(); loop++)
+    QStringList l = QStringList::split("\n", dialog->getText(), FALSE);
+    for (loop = 0; loop < (int) l.count(); loop++)
     {
-      formulaList.append(dialog->getLine(loop));
+      formulaList.append(l[loop]);
       
       Setting set;
-      QString s = dialog->getLine(loop);
+      QString s = l[loop];
       set.parse(s);
       if (! set.getData("plugin").compare("COMP"))
         flag = TRUE;

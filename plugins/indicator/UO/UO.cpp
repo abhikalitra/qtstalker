@@ -192,8 +192,48 @@ void UO::getIndicatorSettings (Setting &dict)
   dict.setData("plugin", pluginName);
 }
 
-PlotLine * UO::calculateCustom (QDict<PlotLine> *)
+PlotLine * UO::calculateCustom (QString &p, QPtrList<PlotLine> &)
 {
+  // format1: SHORT_PERIOD, MED_PERIOD, LONG_PERIOD
+
+  QStringList l = QStringList::split(",", p, FALSE);
+
+  if (l.count() == 3)
+    ;
+  else
+  {
+    qDebug("UO::calculateCustom: invalid parm count");
+    return 0;
+  }
+
+  bool ok;
+  int t = l[0].toInt(&ok);
+  if (ok)
+    shortPeriod = t;
+  else
+  {
+    qDebug("UO::calculateCustom: invalid SHORT_PERIOD parm");
+    return 0;
+  }
+
+  t = l[1].toInt(&ok);
+  if (ok)
+    medPeriod = t;
+  else
+  {
+    qDebug("UO::calculateCustom: invalid MED_PERIOD parm");
+    return 0;
+  }
+
+  t = l[2].toInt(&ok);
+  if (ok)
+    longPeriod = t;
+  else
+  {
+    qDebug("UO::calculateCustom: invalid LONG_PERIOD parm");
+    return 0;
+  }
+
   clearOutput();
   calculate();
   return output->getLine(0);

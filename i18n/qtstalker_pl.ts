@@ -977,6 +977,17 @@ Directory name must be one word only.</source>
     </message>
 </context>
 <context>
+    <name>FG</name>
+    <message>
+        <source>Timeout: retry limit</source>
+        <translation type="unfinished">Czas: limit wznowień</translation>
+    </message>
+    <message>
+        <source>Timeout: retry </source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>FiboLine</name>
     <message>
         <source>&amp;Edit FiboLine</source>
@@ -1154,6 +1165,38 @@ Directory name must be one word only.</source>
     <message>
         <source>Rule already exists. Do you want to replace it?</source>
         <translation>Reguła już istnieje. Zamienić?</translation>
+    </message>
+    <message>
+        <source>Formula</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished">Kolor</translation>
+    </message>
+    <message>
+        <source>Label</source>
+        <translation type="unfinished">Etykieta</translation>
+    </message>
+    <message>
+        <source>Line Type</source>
+        <translation type="unfinished">Styl Krzywej</translation>
+    </message>
+    <message>
+        <source>Variable</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Insert Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Edit Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plot missing.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1758,6 +1801,29 @@ Save changes?</source>
     <message>
         <source>Parms</source>
         <translation>Param</translation>
+    </message>
+</context>
+<context>
+    <name>MacroDialog</name>
+    <message>
+        <source>Add</source>
+        <translation type="unfinished">Dodaj</translation>
+    </message>
+    <message>
+        <source>Insert</source>
+        <translation type="unfinished">Wprowadź</translation>
+    </message>
+    <message>
+        <source>Delete</source>
+        <translation type="unfinished">Usuń</translation>
+    </message>
+    <message>
+        <source>&amp;Apply</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Cancel</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2978,7 +3044,7 @@ Save changes?</source>
     </message>
     <message>
         <source>SD Indicator</source>
-        <translation>Wskaźnik SD</translation>
+        <translation type="obsolete">Wskaźnik SD</translation>
     </message>
     <message>
         <source>STOCH Indicator</source>
@@ -3178,7 +3244,7 @@ Save changes?</source>
     </message>
     <message>
         <source>VOLR Indicator</source>
-        <translation>Wskaźnik VOLR</translation>
+        <translation type="obsolete">Wskaźnik VOLR</translation>
     </message>
     <message>
         <source>VT Indicator</source>
@@ -3621,6 +3687,62 @@ Rodzaj Wygładzania %D</translation>
     <message>
         <source>VIDYA Indicator</source>
         <translation>Wskaźnik VIDYA</translation>
+    </message>
+    <message>
+        <source>AROON Indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>DOWN Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>DOWN Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>DOWN Line Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>UP Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>UP Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>UP Line Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>OSC Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>OSC Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>OSC Line Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>VOLA Indicator Selection</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select an indicator:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>VOLA Indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Updating </source>
+        <translation type="unfinished">Aktualizacja</translation>
     </message>
 </context>
 <context>

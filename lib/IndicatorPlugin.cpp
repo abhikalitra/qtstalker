@@ -31,7 +31,6 @@ IndicatorPlugin::IndicatorPlugin()
   
   output = new Indicator;
   saveFlag = FALSE;
-  customFlag = FALSE;
   plotType = 1;
   
   PlotLine *pl = new PlotLine;
@@ -60,11 +59,6 @@ void IndicatorPlugin::setIndicatorInput (BarData *d)
 {
   data = d;
   output->clearLines();
-}
-
-void IndicatorPlugin::setCustomFlag (bool d)
-{
-  customFlag = d;
 }
 
 void IndicatorPlugin::clearOutput ()
@@ -143,21 +137,6 @@ void IndicatorPlugin::saveFile (QString &file, Setting &dict)
 Indicator * IndicatorPlugin::getIndicator ()
 {
   return output;
-}
-
-PlotLine * IndicatorPlugin::getInputLine (QString &d)
-{
-  PlotLine *in = 0;
-  
-  if (d.contains("#"))
-    return in;
-      
-  bool ok;
-  d.toInt(&ok, 10);
-  if (ok)
-    in = customLines->find(d);
-
-  return in;
 }
 
 QStringList IndicatorPlugin::getMATypes ()
@@ -276,7 +255,7 @@ int IndicatorPlugin::indicatorPrefDialog (QWidget *)
   return 0;
 }
 
-PlotLine * IndicatorPlugin::calculateCustom (QDict<PlotLine> *)
+PlotLine * IndicatorPlugin::calculateCustom (QString &, QPtrList<PlotLine> &)
 {
   return 0;
 }
@@ -311,5 +290,4 @@ void IndicatorPlugin::loadIndicatorSettings (QString &d)
   loadFile(d, set);
   setIndicatorSettings(set);
 }
-
 

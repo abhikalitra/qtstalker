@@ -49,26 +49,25 @@ void MOM::setDefaults ()
 
 void MOM::calculate ()
 {
-  PlotLine *in = 0;
-  if (customFlag)
-    in = getInputLine(customInput);
-  else
-    in = data->getInput(input);
+  PlotLine *in = data->getInput(input);
   if (! in)
   {
     qDebug("MOM::calculate: no input");
     return;
   }
 
+  calculate2(in);
+  delete in;
+}
+
+void MOM::calculate2 (PlotLine *in)
+{
   PlotLine *mom = new PlotLine();
 
   int loop;
   for (loop = period; loop < (int) in->getSize(); loop++)
     mom->append(in->getData(loop) - in->getData(loop - period));
     
-  if (! customFlag)
-    delete in;
-
   if (smoothing > 1)
   {
     PlotLine *ma = getMA(mom, maType, smoothing, 0, 0);
@@ -108,10 +107,7 @@ int MOM::indicatorPrefDialog (QWidget *w)
   dialog->addIntItem(perl, pl, period, 1, 99999999);
   QStringList l = getMATypes();
   dialog->addComboItem(stl, pl, l, maType);
-  if (customFlag)
-    dialog->addFormulaInputItem(il, pl, FALSE, customInput);
-  else
-    dialog->addComboItem(il, pl, inputTypeList, input);
+  dialog->addComboItem(il, pl, inputTypeList, input);
   dialog->addIntItem(sl, pl, smoothing, 0, 99999999);
   
   int rc = dialog->exec();
@@ -124,10 +120,7 @@ int MOM::indicatorPrefDialog (QWidget *w)
     label = dialog->getText(ll);
     maType = dialog->getComboIndex(stl);
     smoothing = dialog->getInt(sl);
-    if (customFlag)
-      customInput = dialog->getFormulaInput(il);
-    else
-      input = (BarData::InputType) dialog->getComboIndex(il);
+    input = (BarData::InputType) dialog->getComboIndex(il);
     rc = TRUE;
   }
   else
@@ -171,10 +164,6 @@ void MOM::setIndicatorSettings (Setting &dict)
   s = dict.getData("smoothing");
   if (s.length())
     smoothing = s.toInt();
-
-  s = dict.getData("customInput");
-  if (s.length())
-    customInput = s;
 }
 
 void MOM::getIndicatorSettings (Setting &dict)
@@ -186,15 +175,59 @@ void MOM::getIndicatorSettings (Setting &dict)
   dict.setData("maType", QString::number(maType));
   dict.setData("input", QString::number(input));
   dict.setData("smoothing", QString::number(smoothing));
-  dict.setData("customInput", customInput);
   dict.setData("plugin", pluginName);
 }
 
-PlotLine * MOM::calculateCustom (QDict<PlotLine> *d)
+PlotLine * MOM::calculateCustom (QString &p, QPtrList<PlotLine> &d)
 {
-  customLines = d;
+  // format1: ARRAY_INPUT, MA_TYPE, PERIOD, SMOOTHING
+
+  QStringList l = QStringList::split(",", p, FALSE);
+
+  if (l.count() == 4)
+    ;
+  else
+  {
+    qDebug("MOM::calculateCustom: invalid parm count");
+    return 0;
+  }
+
+  if (! d.count())
+  {
+    qDebug("MOM::calculateCustom: no input");
+    return 0;
+  }
+
+  QStringList mal = getMATypes();
+  if (mal.findIndex(l[1]) == -1)
+  {
+    qDebug("MOM::calculateCustom: invalid MA_TYPE parm");
+    return 0;
+  }
+  else
+    maType = mal.findIndex(l[1]);
+
+  bool ok;
+  int t = l[2].toInt(&ok);
+  if (ok)
+    period = t;
+  else
+  {
+    qDebug("MOM::calculateCustom: invalid PERIOD parm");
+    return 0;
+  }
+
+  t = l[3].toInt(&ok);
+  if (ok)
+    smoothing = t;
+  else
+  {
+    qDebug("MOM::calculateCustom: invalid SMOOTHING parm");
+    return 0;
+  }
+
   clearOutput();
-  calculate();
+  calculate2(d.at(0));
   return output->getLine(0);
 }
 

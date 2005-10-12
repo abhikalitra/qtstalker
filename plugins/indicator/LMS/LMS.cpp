@@ -398,8 +398,87 @@ int LMS::indicatorPrefDialog(QWidget * w)
   return rc;
 }
 
-PlotLine *LMS::calculateCustom(QDict < PlotLine > *)
+PlotLine *LMS::calculateCustom (QString &p, QPtrList<PlotLine> &)
 {
+  // format1: FK_PERIOD, SK_PERIOD, CMB_INDEX, SHOW_2DAY, SHOW_5DAY, CYCLE_FLAG
+
+  QStringList l = QStringList::split(",", p, FALSE);
+
+  if (l.count() == 6)
+    ;
+  else
+  {
+    qDebug("LMS::calculateCustom: invalid parm count");
+    return 0;
+  }
+
+  bool ok;
+  int t = l[0].toInt(&ok);
+  if (ok)
+    fkPeriod = t;
+  else
+  {
+    qDebug("LMS::calculateCustom: invalid FK_PERIOD parm");
+    return 0;
+  }
+
+  t = l[1].toInt(&ok);
+  if (ok)
+    skPeriod = t;
+  else
+  {
+    qDebug("LMS::calculateCustom: invalid SK_PERIOD parm");
+    return 0;
+  }
+
+  t = l[2].toInt(&ok);
+  if (ok)
+    cmbIndex = t;
+  else
+  {
+    qDebug("LMS::calculateCustom: invalid CMB_INDEX parm");
+    return 0;
+  }
+
+  if (! l[3].compare("TRUE"))
+    show2Day = TRUE;
+  else
+  {
+    if (! l[3].compare("FALSE"))
+      show2Day = FALSE;
+    else
+    {
+      qDebug("LMS::calculateCustom: invalid SHOW_2DAY parm");
+      return 0;
+    }
+  }
+
+  if (! l[4].compare("TRUE"))
+    show5Day = TRUE;
+  else
+  {
+    if (! l[4].compare("FALSE"))
+      show5Day = FALSE;
+    else
+    {
+      qDebug("LMS::calculateCustom: invalid SHOW_5DAY parm");
+      return 0;
+    }
+  }
+
+  if (! l[5].compare("TRUE"))
+    cycleFlag = TRUE;
+  else
+  {
+    if (! l[5].compare("FALSE"))
+      cycleFlag = FALSE;
+    else
+    {
+      qDebug("LMS::calculateCustom: invalid CYCLE_FLAG parm");
+      return 0;
+    }
+  }
+
   clearOutput();
   calculate();
   return output->getLine(0);
@@ -486,6 +565,10 @@ void LMS::setIndicatorSettings(Setting & dict)
   if (s.length())
     testFlag = s.toInt();
 }
+
+//*******************************************************
+//*******************************************************
+//*******************************************************
 
 IndicatorPlugin * createIndicatorPlugin()
 {

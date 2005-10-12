@@ -87,14 +87,9 @@ LineDialog::~LineDialog ()
 {
 }
 
-int LineDialog::getLines ()
+QString LineDialog::getText ()
 {
-  return list->getLines();
-}
-
-QString LineDialog::getLine (int row)
-{
-  return list->getLine(row);
+  return list->getText();
 }
 
 void LineDialog::setLine (QString d)

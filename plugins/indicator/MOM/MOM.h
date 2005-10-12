@@ -27,9 +27,10 @@ class MOM : public IndicatorPlugin
     MOM ();
     virtual ~MOM ();
     void calculate ();
+    void calculate2 (PlotLine *);
     int indicatorPrefDialog (QWidget *);
     void setDefaults();
-    PlotLine * calculateCustom (QDict<PlotLine> *);
+    PlotLine * calculateCustom (QString &, QPtrList<PlotLine> &);
     void getIndicatorSettings (Setting &);
     void setIndicatorSettings (Setting &);
     int getMinBars ();
@@ -42,7 +43,6 @@ class MOM : public IndicatorPlugin
     int smoothing;
     int maType;
     BarData::InputType input;
-    QString customInput;
 };
 
 extern "C"

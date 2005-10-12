@@ -273,8 +273,65 @@ void THERM::getIndicatorSettings (Setting &dict)
   dict.setData("plugin", pluginName);
 }
 
-PlotLine * THERM::calculateCustom (QDict<PlotLine> *)
+PlotLine * THERM::calculateCustom (QString &p, QPtrList<PlotLine> &)
 {
+  // format1: MA_TYPE, MA_PERIOD, THRESHOLD, SMOOTHING_TYPE, SMOOTHING_PERIOD
+
+  QStringList l = QStringList::split(",", p, FALSE);
+
+  if (l.count() == 5)
+    ;
+  else
+  {
+    qDebug("THERM::calculateCustom: invalid parm count");
+    return 0;
+  }
+
+  QStringList mal = getMATypes();
+  if (mal.findIndex(l[0]) == -1)
+  {
+    qDebug("THERM::calculateCustom: invalid MA_TYPE parm");
+    return 0;
+  }
+  else
+    maType = mal.findIndex(l[0]);
+
+  bool ok;
+  int t = l[1].toInt(&ok);
+  if (ok)
+    maPeriod = t;
+  else
+  {
+    qDebug("THERM::calculateCustom: invalid MA_PERIOD parm");
+    return 0;
+  }
+
+  double t2 = l[2].toDouble(&ok);
+  if (ok)
+    threshold = t2;
+  else
+  {
+    qDebug("THERM::calculateCustom: invalid THRESHOLD parm");
+    return 0;
+  }
+
+  if (mal.findIndex(l[3]) == -1)
+  {
+    qDebug("THERM::calculateCustom: invalid SMOOTHING_TYPE parm");
+    return 0;
+  }
+  else
+    smoothType = mal.findIndex(l[3]);
+
+  t = l[4].toInt(&ok);
+  if (ok)
+    smoothing = t;
+  else
+  {
+    qDebug("THERM::calculateCustom: invalid SMOOTHING_PERIOD parm");
+    return 0;
+  }
+
   clearOutput();
   calculate();
   return output->getLine(0);

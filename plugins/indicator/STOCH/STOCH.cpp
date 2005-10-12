@@ -53,80 +53,49 @@ void STOCH::setDefaults ()
   sellLine = 80;
   maType = 1;
   label = pluginName;
+  input = BarData::Close;
 }
 
 void STOCH::calculate ()
 {
-  PlotLine *in = 0;
-  if (customFlag)
+  PlotLine *in = data->getInput(input);
+  if (! in)
   {
-    in = getInputLine(customInput);
-    if (! in)
-    {
-      qDebug("STOCH::calculate: no input");
-      return;
-    }
+    qDebug("STOCH::calculate: no input");
+    return;
   }
-  
+
+  calculate2(in);
+  delete in;
+}
+
+void STOCH::calculate2 (PlotLine *in)
+{
   PlotLine *k = new PlotLine();
   int loop;
   
-  if (customFlag)
+  for (loop = period; loop < (int) in->getSize(); loop++)
   {
-    for (loop = period; loop < (int) in->getSize(); loop++)
+    int loop2;
+    double l;
+    double h;
+    for (loop2 = 0, l = 9999999, h = 0; loop2 < period; loop2++)
     {
-      int loop2;
-      double l;
-      double h;
-      for (loop2 = 0, l = 9999999, h = 0; loop2 < period; loop2++)
-      {
-        double t = in->getData(loop - loop2);
-        if (t > h)
-          h = t;
-        if (t < l)
-          l = t;
-      }
-
-      double close = in->getData(loop);
-      double t = ((close - l) / (h - l)) * 100;
-      if (t > 100)
-        t = 100;
-      if (t < 0)
-        t = 0;
-
-      k->append(t);
+      double t = in->getData(loop - loop2);
+      if (t > h)
+        h = t;
+      if (t < l)
+        l = t;
     }
-  }
-  else
-  {  
-    for (loop = period; loop < (int) data->count(); loop++)
-    {
-      int loop2;
-      double l;
-      double h;
-      for (loop2 = 0, l = 9999999, h = 0; loop2 < period; loop2++)
-      {
-        double high = data->getHigh(loop - loop2);
-        double low = data->getLow(loop - loop2);
 
-        double t = high;
-        if (t > h)
-          h = t;
+    double close = in->getData(loop);
+    double t = ((close - l) / (h - l)) * 100;
+    if (t > 100)
+      t = 100;
+    if (t < 0)
+      t = 0;
 
-        t = low;
-        if (t < l)
-          l = t;
-      }
-
-      double close = data->getClose(loop);
-      double t = ((close - l) / (h - l)) * 100;
-      if (t > 100)
-        t = 100;
-      if (t < 0)
-        t = 0;
-
-      k->append(t);
-    }
+    k->append(t);
   }
 
   if (kperiod > 1)
@@ -188,12 +157,7 @@ int STOCH::indicatorPrefDialog (QWidget *w)
   dialog->addIntItem(perl, pl, period, 1, 99999999);
   QStringList l = getMATypes();
   dialog->addComboItem(stl, pl, l, maType);
-  
-  if (customFlag)
-  {
-    dialog->addTextItem(ll, pl, label);
-    dialog->addFormulaInputItem(il, pl, FALSE, customInput);
-  }
+  dialog->addComboItem(il, pl, inputTypeList, input);
   
   pl = QObject::tr("%K Parms");
   dialog->createPage (pl);
@@ -223,8 +187,7 @@ int STOCH::indicatorPrefDialog (QWidget *w)
   dialog->addColorItem(szc, pl, sellColor);
   dialog->addIntItem(bz, pl, buyLine, 0, 100);
   dialog->addIntItem(sz, pl, sellLine, 0, 100);
-  
-  
+    
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
@@ -247,12 +210,7 @@ int STOCH::indicatorPrefDialog (QWidget *w)
     klabel = dialog->getText(t);
     period = dialog->getInt(perl);
     maType = dialog->getComboIndex(stl);
-    
-    if (customFlag)
-    {
-      label = dialog->getText(ll);
-      customInput = dialog->getFormulaInput(il);
-    }
+    input = (BarData::InputType) dialog->getComboIndex(il);
     
     buyColor = dialog->getColor(bzc);
     sellColor = dialog->getColor(szc);
@@ -331,13 +289,13 @@ void STOCH::setIndicatorSettings (Setting &dict)
   if (s.length())
     sellLine = s.toInt();
 
-  s = dict.getData("customInput");
-  if (s.length())
-    customInput = s;
-
   s = dict.getData("label");
   if (s.length())
     label = s;
+
+  s = dict.getData("input");
+  if (s.length())
+    input = (BarData::InputType) s.toInt();
 }
 
 void STOCH::getIndicatorSettings (Setting &dict)
@@ -356,16 +314,70 @@ void STOCH::getIndicatorSettings (Setting &dict)
   dict.setData("period", QString::number(period));
   dict.setData("buyLine", QString::number(buyLine));
   dict.setData("sellLine", QString::number(sellLine));
-  dict.setData("customInput", customInput);
   dict.setData("label", label);
+  dict.setData("input", QString::number(input));
   dict.setData("plugin", pluginName);
 }
 
-PlotLine * STOCH::calculateCustom (QDict<PlotLine> *d)
+PlotLine * STOCH::calculateCustom (QString &p, QPtrList<PlotLine> &d)
 {
-  customLines = d;
+  // format1: ARRAY_INPUT, MA_TYPE, PERIOD, D_PERIOD, K_PERIOD
+
+  QStringList l = QStringList::split(",", p, FALSE);
+
+  if (l.count() == 5)
+    ;
+  else
+  {
+    qDebug("STOCH::calculateCustom: invalid parm count");
+    return 0;
+  }
+
+  if (! d.count())
+  {
+    qDebug("STOCH::calculateCustom: no input");
+    return 0;
+  }
+
+  QStringList mal = getMATypes();
+  if (mal.findIndex(l[1]) == -1)
+  {
+    qDebug("STOCH::calculateCustom: invalid MA_TYPE parm");
+    return 0;
+  }
+  else
+    maType = mal.findIndex(l[1]);
+
+  bool ok;
+  int t = l[2].toInt(&ok);
+  if (ok)
+    period = t;
+  else
+  {
+    qDebug("STOCH::calculateCustom: invalid PERIOD parm");
+    return 0;
+  }
+
+  t = l[3].toInt(&ok);
+  if (ok)
+    dperiod = t;
+  else
+  {
+    qDebug("STOCH::calculateCustom: invalid D_PERIOD parm");
+    return 0;
+  }
+
+  t = l[4].toInt(&ok);
+  if (ok)
+    kperiod = t;
+  else
+  {
+    qDebug("STOCH::calculateCustom: invalid K_PERIOD parm");
+    return 0;
+  }
+
   clearOutput();
-  calculate();
+  calculate2(d.at(0));
   return output->getLine(0);
 }
 

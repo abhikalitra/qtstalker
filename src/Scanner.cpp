@@ -102,6 +102,7 @@ void Scanner::scan ()
     return;
   }
 
+/*
   if (list->checkError())
   {
     QMessageBox::information(this,
@@ -109,6 +110,7 @@ void Scanner::scan ()
 			     tr("No COMP step or COMP step not checked."));
     return;
   }
+*/
   
   // open the CUS plugin
   QString iplugin("CUS");
@@ -118,10 +120,12 @@ void Scanner::scan ()
     config.closePlugin(iplugin);
     return;
   }
+
   int loop;
-  for (loop = 0; loop < list->getLines(); loop++)
+  QStringList l = QStringList::split("\n", list->getText(), FALSE);
+  for (loop = 0; loop < (int) l.count(); loop++)
   {
-    QString s(list->getLine(loop));
+    QString s(l[loop]);
     plug->setCustomFunction(s);
   }
   
@@ -267,8 +271,7 @@ void Scanner::saveRule ()
   for (loop = 0; loop < (int) fileList.count(); loop++)
     stream << "symbol=" << fileList[loop] << "\n";
   
-  for (loop = 0; loop < list->getLines(); loop++)
-    stream << list->getLine(loop) << "\n";
+  stream << list->getText() << "\n";
   
   f.close();
 }

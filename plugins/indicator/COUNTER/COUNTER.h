@@ -26,19 +26,7 @@ class COUNTER : public IndicatorPlugin
   public:
     COUNTER ();
     virtual ~COUNTER ();
-    void calculate ();
-    int indicatorPrefDialog (QWidget *);
-    void setDefaults();
-    PlotLine * calculateCustom (QDict<PlotLine> *);
-    void getIndicatorSettings (Setting &);
-    void setIndicatorSettings (Setting &);
-    
-  private:
-    QColor color;
-    PlotLine::LineType lineType;
-    QString label;
-    QString customInput;
-    QString customInput2;
+    PlotLine * calculateCustom (QString &, QPtrList<PlotLine> &);
 };
 
 extern "C"

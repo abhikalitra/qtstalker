@@ -26,20 +26,7 @@ class REF : public IndicatorPlugin
   public:
     REF ();
     virtual ~REF ();
-    void calculate ();
-    int indicatorPrefDialog (QWidget *);
-    void setDefaults();
-    PlotLine * calculateCustom (QDict<PlotLine> *);
-    void getIndicatorSettings (Setting &);
-    void setIndicatorSettings (Setting &);
-    int getMinBars ();
-  
-  private:
-    QColor color;
-    PlotLine::LineType lineType;
-    QString label;
-    BarData::InputType input;
-    int period;
+    PlotLine * calculateCustom (QString &, QPtrList<PlotLine> &);
 };
 
 extern "C"

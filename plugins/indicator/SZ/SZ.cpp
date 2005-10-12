@@ -268,8 +268,56 @@ void SZ::getIndicatorSettings (Setting &dict)
   dict.setData("plugin", pluginName);
 }
 
-PlotLine * SZ::calculateCustom (QDict<PlotLine> *)
+PlotLine * SZ::calculateCustom (QString &p, QPtrList<PlotLine> &)
 {
+  // format1: METHOD, PERIOD, NO_DECLINE_PERIOD, COEFFICIENT
+
+  QStringList l = QStringList::split(",", p, FALSE);
+
+  if (l.count() == 4)
+    ;
+  else
+  {
+    qDebug("SZ::calculateCustom: invalid parm count");
+    return 0;
+  }
+
+  if (methodList.findIndex(l[0]) == -1)
+  {
+    qDebug("SZ::calculateCustom: invalid METHOD parm");
+    return 0;
+  }
+  else
+    method = methodList.findIndex(l[0]);
+
+  bool ok;
+  int t = l[1].toInt(&ok);
+  if (ok)
+    period = t;
+  else
+  {
+    qDebug("SZ::calculateCustom: invalid PERIOD parm");
+    return 0;
+  }
+
+  t = l[2].toInt(&ok);
+  if (ok)
+    no_decline_period = t;
+  else
+  {
+    qDebug("SZ::calculateCustom: invalid NO_DECLINE_PERIOD parm");
+    return 0;
+  }
+
+  double t2 = l[3].toDouble(&ok);
+  if (ok)
+    coefficient = t2;
+  else
+  {
+    qDebug("SZ::calculateCustom: invalid coefficient parm");
+    return 0;
+  }
+
   clearOutput();
   calculate();
   return output->getLine(0);

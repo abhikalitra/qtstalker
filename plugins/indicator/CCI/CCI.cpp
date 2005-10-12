@@ -180,8 +180,48 @@ void CCI::getIndicatorSettings (Setting &dict)
   dict.setData("plugin", pluginName);
 }
 
-PlotLine * CCI::calculateCustom (QDict<PlotLine> *)
+PlotLine * CCI::calculateCustom (QString &p, QPtrList<PlotLine> &)
 {
+  // format: MA_TYPE, PERIOD, SMOOTHING
+
+  QStringList l = QStringList::split(",", p, FALSE);
+
+  if (l.count() == 3)
+    ;
+  else
+  {
+    qDebug("CCI::calculateCustom: invalid parm count");
+    return 0;
+  }
+
+  QStringList mal = getMATypes();
+  if (mal.findIndex(l[0]) == -1)
+  {
+    qDebug("CCI::calculateCustom: invalid MA_TYPE parm");
+    return 0;
+  }
+  else
+    maType = mal.findIndex(l[0]);
+
+  bool ok;
+  int t = l[1].toInt(&ok);
+  if (ok)
+    period = t;
+  else
+  {
+    qDebug("CCI::calculateCustom: invalid PERIOD parm");
+    return 0;
+  }
+
+  t = l[2].toInt(&ok);
+  if (ok)
+    smoothing = t;
+  else
+  {
+    qDebug("CCI::calculateCustom: invalid SMOOTHING parm");
+    return 0;
+  }
+
   clearOutput();
   calculate();
   return output->getLine(0);

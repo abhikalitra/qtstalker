@@ -46,17 +46,19 @@ void PER::setDefaults ()
 
 void PER::calculate ()
 {
-  PlotLine *in = 0;
-  if (customFlag)
-    in = getInputLine(customInput);
-  else
-    in = data->getInput(input);
+  PlotLine *in = data->getInput(input);
   if (! in)
   {
-    qDebug("PC::calculate: no input");
+    qDebug("PER::calculate: no input");
     return;
   }
 
+  calculate2(in);
+  delete in;
+}
+
+void PER::calculate2 (PlotLine *in)
+{
   PlotLine *per = new PlotLine();
   per->setColor(color);
   per->setType(lineType);
@@ -68,9 +70,6 @@ void PER::calculate ()
     per->append(((in->getData(loop) - base) / base) * 100);
 
   output->addLine(per);
-  
-  if (! customFlag)
-    delete in;
 }
 
 int PER::indicatorPrefDialog (QWidget *w)
@@ -88,10 +87,7 @@ int PER::indicatorPrefDialog (QWidget *w)
   dialog->addColorItem(cl, pl, color);
   dialog->addComboItem(ltl, pl, lineTypes, lineType);
   dialog->addTextItem(ll, pl, label);
-  if (customFlag)
-    dialog->addFormulaInputItem(il, pl, FALSE, customInput);
-  else
-    dialog->addComboItem(il, pl, inputTypeList, input);
+  dialog->addComboItem(il, pl, inputTypeList, input);
   
   int rc = dialog->exec();
   
@@ -100,10 +96,7 @@ int PER::indicatorPrefDialog (QWidget *w)
     color = dialog->getColor(cl);
     lineType = (PlotLine::LineType) dialog->getComboIndex(ltl);
     label = dialog->getText(ll);
-    if (customFlag)
-      customInput = dialog->getFormulaInput(il);
-    else
-      input = (BarData::InputType) dialog->getComboIndex(il);
+    input = (BarData::InputType) dialog->getComboIndex(il);
     rc = TRUE;
   }
   else
@@ -135,10 +128,6 @@ void PER::setIndicatorSettings (Setting &dict)
   s = dict.getData("input");
   if (s.length())
     input = (BarData::InputType) s.toInt();
-
-  s = dict.getData("customInput");
-  if (s.length())
-    customInput = s;
 }
 
 void PER::getIndicatorSettings (Setting &dict)
@@ -148,14 +137,30 @@ void PER::getIndicatorSettings (Setting &dict)
   dict.setData("label", label);
   dict.setData("input", QString::number(input));
   dict.setData("plugin", pluginName);
-  dict.setData("customInput", customInput);
 }
 
-PlotLine * PER::calculateCustom (QDict<PlotLine> *d)
+PlotLine * PER::calculateCustom (QString &p, QPtrList<PlotLine> &d)
 {
-  customLines = d;
+  // format1: ARRAY_INPUT
+
+  QStringList l = QStringList::split(",", p, FALSE);
+
+  if (l.count() == 1)
+    ;
+  else
+  {
+    qDebug("PER::calculateCustom: invalid parm count");
+    return 0;
+  }
+
+  if (! d.count())
+  {
+    qDebug("PER::calculateCustom: no input");
+    return 0;
+  }
+
   clearOutput();
-  calculate();
+  calculate2(d.at(0));
   return output->getLine(0);
 }
 

@@ -29,9 +29,8 @@ class CUSDialog : public QTabDialog
   public:
     CUSDialog (QString);
     ~CUSDialog ();
-    int getLines ();
     void setLine (QString);
-    QString getLine (int);
+    void getList (QStringList &);
     
   public slots:
     void help ();

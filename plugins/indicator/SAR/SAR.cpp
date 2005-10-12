@@ -270,8 +270,48 @@ void SAR::getIndicatorSettings (Setting &dict)
   dict.setData("plugin", pluginName);
 }
 
-PlotLine * SAR::calculateCustom (QDict<PlotLine> *)
+PlotLine * SAR::calculateCustom (QString &p, QPtrList<PlotLine> &)
 {
+  // format1: INITIAL, ADD, LIMIT
+
+  QStringList l = QStringList::split(",", p, FALSE);
+
+  if (l.count() == 3)
+    ;
+  else
+  {
+    qDebug("SAR::calculateCustom: invalid parm count");
+    return 0;
+  }
+
+  bool ok;
+  double t = l[0].toDouble(&ok);
+  if (ok)
+    initial = t;
+  else
+  {
+    qDebug("SAR::calculateCustom: invalid INITIAL parm");
+    return 0;
+  }
+
+  t = l[1].toDouble(&ok);
+  if (ok)
+    add = t;
+  else
+  {
+    qDebug("SAR::calculateCustom: invalid ADD parm");
+    return 0;
+  }
+
+  t = l[2].toDouble(&ok);
+  if (ok)
+    limit = t;
+  else
+  {
+    qDebug("SAR::calculateCustom: invalid LIMIT parm");
+    return 0;
+  }
+
   clearOutput();
   calculate();
   return output->getLine(0);

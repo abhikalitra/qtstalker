@@ -54,17 +54,19 @@ void RSI::setDefaults ()
 
 void RSI::calculate ()
 {
-  PlotLine *in = 0;
-  if (customFlag)
-    in = getInputLine(customInput);
-  else
-    in = data->getInput(input);
+  PlotLine *in = data->getInput(input);
   if (! in)
   {
     qDebug("RSI::calculate: no input");
     return;
   }
 
+  calculate2(in);
+  delete in;
+}
+
+void RSI::calculate2 (PlotLine *in)
+{
   PlotLine *rsi = new PlotLine();
 
   int loop;
@@ -128,9 +130,6 @@ void RSI::calculate ()
     sline->append(sellLine);
     output->addLine(sline);
   }
-
-  if (! customFlag)
-    delete in;
 }
 
 int RSI::indicatorPrefDialog (QWidget *w)
@@ -159,11 +158,7 @@ int RSI::indicatorPrefDialog (QWidget *w)
   QStringList l = getMATypes();
   dialog->addComboItem(stl, pl, l, maType);
   dialog->addIntItem(sl, pl, smoothing, 0, 99999999);
-  
-  if (customFlag)
-    dialog->addFormulaInputItem(il, pl, FALSE, customInput);
-  else
-    dialog->addComboItem(il, pl, inputTypeList, input);
+  dialog->addComboItem(il, pl, inputTypeList, input);
     
   pl = QObject::tr("Zones");
   dialog->createPage (pl);
@@ -182,11 +177,7 @@ int RSI::indicatorPrefDialog (QWidget *w)
     label = dialog->getText(ll);
     maType = dialog->getComboIndex(stl);
     smoothing = dialog->getInt(sl);
-    
-    if (customFlag)
-      customInput = dialog->getFormulaInput(il);
-    else
-      input = (BarData::InputType) dialog->getComboIndex(il);
+    input = (BarData::InputType) dialog->getComboIndex(il);
       
     buyColor = dialog->getColor(bzc);
     sellColor = dialog->getColor(szc);
@@ -252,10 +243,6 @@ void RSI::setIndicatorSettings (Setting &dict)
   s = dict.getData("sellLine");
   if (s.length())
     sellLine = s.toInt();
-
-  s = dict.getData("customInput");
-  if (s.length())
-    customInput = s;
 }
 
 void RSI::getIndicatorSettings (Setting &dict)
@@ -271,15 +258,59 @@ void RSI::getIndicatorSettings (Setting &dict)
   dict.setData("smoothing", QString::number(smoothing));
   dict.setData("buyLine", QString::number(buyLine));
   dict.setData("sellLine", QString::number(sellLine));
-  dict.setData("customInput", customInput);
   dict.setData("plugin", pluginName);
 }
 
-PlotLine * RSI::calculateCustom (QDict<PlotLine> *d)
+PlotLine * RSI::calculateCustom (QString &p, QPtrList<PlotLine> &d)
 {
-  customLines = d;
+  // format1: ARRAY_INPUT, MA_TYPE, PERIOD, SMOOTHING
+
+  QStringList l = QStringList::split(",", p, FALSE);
+
+  if (l.count() == 4)
+    ;
+  else
+  {
+    qDebug("RSI::calculateCustom: invalid parm count");
+    return 0;
+  }
+
+  if (! d.count())
+  {
+    qDebug("RSI::calculateCustom: no input");
+    return 0;
+  }
+
+  QStringList mal = getMATypes();
+  if (mal.findIndex(l[1]) == -1)
+  {
+    qDebug("RSI::calculateCustom: invalid MA_TYPE parm");
+    return 0;
+  }
+  else
+    maType = mal.findIndex(l[1]);
+
+  bool ok;
+  int t = l[2].toInt(&ok);
+  if (ok)
+    period = t;
+  else
+  {
+    qDebug("RSI::calculateCustom: invalid PERIOD parm");
+    return 0;
+  }
+
+  t = l[3].toInt(&ok);
+  if (ok)
+    smoothing = t;
+  else
+  {
+    qDebug("RSI::calculateCustom: invalid SMOOTHING parm");
+    return 0;
+  }
+
   clearOutput();
-  calculate();
+  calculate2(d.at(0));
   return output->getLine(0);
 }
 

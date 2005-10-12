@@ -177,12 +177,30 @@ void SYMBOL::getIndicatorSettings (Setting &dict)
   dict.setData("plugin", pluginName);
 }
 
-PlotLine * SYMBOL::calculateCustom (QDict<PlotLine> *)
+PlotLine * SYMBOL::calculateCustom (QString &p, QPtrList<PlotLine> &)
 {
+  // format1: SYMBOL
+
+  QStringList l = QStringList::split(",", p, FALSE);
+
+  if (l.count() == 1)
+    ;
+  else
+  {
+    qDebug("SYMBOL::calculateCustom: invalid parm count");
+    return 0;
+  }
+
+  symbol = l[0];
+
   clearOutput();
   calculate();
   return output->getLine(0);
 }
+
+//************************************************************
+//************************************************************
+//************************************************************
 
 IndicatorPlugin * createIndicatorPlugin ()
 {

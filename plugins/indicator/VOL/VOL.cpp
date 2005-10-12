@@ -209,13 +209,6 @@ void VOL::getIndicatorSettings (Setting &dict)
   dict.setData("plugin", pluginName);
 }
 
-PlotLine * VOL::calculateCustom (QDict<PlotLine> *)
-{
-  clearOutput();
-  calculate();
-  return output->getLine(0);
-}
-
 int VOL::getMinBars ()
 {
   int t = minBars + period;

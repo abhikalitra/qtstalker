@@ -27,9 +27,10 @@ class AdaptSTOCH : public IndicatorPlugin
     AdaptSTOCH ();
     virtual ~AdaptSTOCH ();
     void calculate ();
+    void calculate2 (PlotLine *);
     int indicatorPrefDialog (QWidget *);
     void setDefaults();
-    PlotLine * calculateCustom (QDict<PlotLine> *);
+    PlotLine * calculateCustom (QString &, QPtrList<PlotLine> &);
     void getIndicatorSettings (Setting &);
     void setIndicatorSettings (Setting &);
     int getMinBars ();

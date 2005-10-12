@@ -27,33 +27,48 @@
 REF::REF ()
 {
   pluginName = "REF";
-  customFlag = TRUE;
   helpFile = "ref.html";
-  
-  setDefaults();
 }
 
 REF::~REF ()
 {
 }
 
-void REF::setDefaults ()
+PlotLine * REF::calculateCustom (QString &p, QPtrList<PlotLine> &d)
 {
-  color.setNamedColor("red");
-  lineType = PlotLine::Line;
-  label = pluginName;
-  input = BarData::Close;
-  period = 0;
-}
+  // format1: ARRAY_INPUT, PERIOD
 
-void REF::calculate ()
-{
+  QStringList l = QStringList::split(",", p, FALSE);
+
+  if (l.count() == 2)
+    ;
+  else
+  {
+    qDebug("REF::calculateCustom: invalid parm count");
+    return 0;
+  }
+
+  if (! d.count())
+  {
+    qDebug("REF::calculateCustom: no input");
+    return 0;
+  }
+
+  bool ok;
+  int period;
+  int t = l[1].toInt(&ok);
+  if (ok)
+    period = t;
+  else
+  {
+    qDebug("REF::calculateCustom: invalid PERIOD parm");
+    return 0;
+  }
+
+  clearOutput();
+
   PlotLine *line = new PlotLine;
-  line->setColor(color);
-  line->setType(lineType);
-  line->setLabel(label);
-  
-  PlotLine *in = data->getInput(input);
+  PlotLine *in = d.at(0);
   
   int loop = 0;
   for (loop = 0; loop < in->getSize(); loop++)
@@ -66,95 +81,7 @@ void REF::calculate ()
   
   output->addLine(line);
   
-  delete in;
-}
-
-int REF::indicatorPrefDialog (QWidget *w)
-{
-  QString pl = QObject::tr("Parms");
-  QString cl = QObject::tr("Color");
-  QString ll = QObject::tr("Label");
-  QString ltl = QObject::tr("Line Type");
-  QString perl = QObject::tr("Period");
-  QString il = QObject::tr("Input");
-
-  PrefDialog *dialog = new PrefDialog(w);
-  dialog->setCaption(QObject::tr("REF Indicator"));
-  dialog->createPage (pl);
-  dialog->setHelpFile(helpFile);
-  dialog->addColorItem(cl, pl, color);
-  dialog->addTextItem(ll, pl, label);
-  dialog->addComboItem(ltl, pl, lineTypes, lineType);
-  dialog->addIntItem(perl, pl, period, 0, 999999);
-  dialog->addComboItem(il, pl, inputTypeList, input);
-  
-  int rc = dialog->exec();
-  
-  if (rc == QDialog::Accepted)
-  {
-    color = dialog->getColor(cl);
-    lineType = (PlotLine::LineType) dialog->getComboIndex(ltl);
-    label = dialog->getText(ll);
-    period = dialog->getInt(perl);
-    input = (BarData::InputType) dialog->getComboIndex(il);
-    rc = TRUE;
-  }
-  else
-    rc = FALSE;
-  
-  delete dialog;
-  return rc;
-}
-
-void REF::setIndicatorSettings (Setting &dict)
-{
-  setDefaults();
-  
-  if (! dict.count())
-    return;
-  
-  QString s = dict.getData("color");
-  if (s.length())
-    color.setNamedColor(s);
-    
-  s = dict.getData("label");
-  if (s.length())
-    label = s;
-        
-  s = dict.getData("lineType");
-  if (s.length())
-    lineType = (PlotLine::LineType) s.toInt();
-    
-  s = dict.getData("period");
-  if (s.length())
-    period = s.toInt();
-    
-  s = dict.getData("input");
-  if (s.length())
-    input = (BarData::InputType) s.toInt();
-}
-
-void REF::getIndicatorSettings (Setting &dict)
-{
-  dict.setData("color", color.name());
-  dict.setData("label", label);
-  dict.setData("lineType", QString::number(lineType));
-  dict.setData("plugin", pluginName);
-  dict.setData("period", QString::number(period));
-  dict.setData("input", QString::number(input));
-}
-
-PlotLine * REF::calculateCustom (QDict<PlotLine> *)
-{
-  clearOutput();
-  calculate();
   return output->getLine(0);
-}
-
-int REF::getMinBars ()
-{
-  int t = minBars + period;
-  return t;
 }
 
 //*******************************************************

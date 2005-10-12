@@ -168,8 +168,42 @@ void ATR::getIndicatorSettings (Setting &dict)
   dict.setData("plugin", pluginName);
 }
 
-PlotLine * ATR::calculateCustom (QDict<PlotLine> *)
+PlotLine * ATR::calculateCustom (QString &p, QPtrList<PlotLine> &)
 {
+  // format1: MA_TYPE, PERIOD
+
+  QStringList l = QStringList::split(",", p, FALSE);
+
+  if (l.count() == 2)
+    ;
+  else
+  {
+    qDebug("ATR::calculateCustom: invalid parm count");
+    return 0;
+  }
+
+  QStringList mal = getMATypes();
+  if (mal.findIndex(l[0]) == -1)
+  {
+    qDebug("ATR::calculateCustom: invalid MA_TYPE parm");
+    return 0;
+  }
+  else
+    maType = mal.findIndex(l[0]);
+
+  if (l.count() == 2)
+  {
+    bool ok;
+    int t = l[1].toInt(&ok);
+    if (ok)
+      smoothing = t;
+    else
+    {
+      qDebug("ATR::calculateCustom: invalid PERIOD parm");
+      return 0;
+    }
+  }
+
   clearOutput();
   calculate();
   return output->getLine(0);

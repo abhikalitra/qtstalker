@@ -52,17 +52,19 @@ void TRIX::setDefaults ()
 
 void TRIX::calculate ()
 {
-  PlotLine *in = 0;
-  if (customFlag)
-    in = getInputLine(customInput);
-  else
-    in = data->getInput(input);
+  PlotLine *in = data->getInput(input);
   if (! in)
   {
-    qDebug("MOM::calculate: no input");
+    qDebug("TRIX::calculate: no input");
     return;
   }
 
+  calculate2(in);
+  delete in;
+}
+
+void TRIX::calculate2 (PlotLine *in)
+{
   PlotLine *ema = getMA(in, 0, period, 0, 0);
   
   PlotLine *ema2 = getMA(ema, 0, period, 0, 0);
@@ -90,8 +92,6 @@ void TRIX::calculate ()
 
   output->addLine(trigger);
 
-  if (! customFlag)
-    delete in;
   delete ema;
   delete ema2;
   delete ema3;
@@ -114,10 +114,7 @@ int TRIX::indicatorPrefDialog (QWidget *w)
   dialog->addComboItem(ltl, pl, lineTypes, lineType);
   dialog->addTextItem(ll, pl, label);
   dialog->addIntItem(perl, pl, period, 1, 99999999);
-  if (customFlag)
-    dialog->addFormulaInputItem(il, pl, FALSE, customInput);
-  else
-    dialog->addComboItem(il, pl, inputTypeList, input);
+  dialog->addComboItem(il, pl, inputTypeList, input);
   
   pl = QObject::tr("Trigger Parms");
   dialog->createPage (pl);
@@ -141,10 +138,7 @@ int TRIX::indicatorPrefDialog (QWidget *w)
     lineType = (PlotLine::LineType) dialog->getComboIndex(ltl);
     period = dialog->getInt(perl);
     label = dialog->getText(ll);
-    if (customFlag)
-      customInput = dialog->getFormulaInput(il);
-    else
-      input = (BarData::InputType) dialog->getComboIndex(il);
+    input = (BarData::InputType) dialog->getComboIndex(il);
     
     t = QObject::tr("Trigger Color");
     trigColor = dialog->getColor(t);
@@ -211,10 +205,6 @@ void TRIX::setIndicatorSettings (Setting &dict)
   s = dict.getData("maType");
   if (s.length())
     maType = s.toInt();
-
-  s = dict.getData("customInput");
-  if (s.length())
-    customInput = s;
 }
 
 void TRIX::getIndicatorSettings (Setting &dict)
@@ -230,15 +220,59 @@ void TRIX::getIndicatorSettings (Setting &dict)
   dict.setData("tperiod", QString::number(tperiod));
   dict.setData("trigLabel", trigLabel);
   dict.setData("maType", QString::number(maType));
-  dict.setData("customInput", customInput);
   dict.setData("plugin", pluginName);
 }
 
-PlotLine * TRIX::calculateCustom (QDict<PlotLine> *d)
+PlotLine * TRIX::calculateCustom (QString &p, QPtrList<PlotLine> &d)
 {
-  customLines = d;
+  // format1: ARRAY_INPUT, MA_TYPE, PERIOD, T_PERIOD
+
+  QStringList l = QStringList::split(",", p, FALSE);
+
+  if (l.count() == 4)
+    ;
+  else
+  {
+    qDebug("TRIX::calculateCustom: invalid parm count");
+    return 0;
+  }
+
+  if (! d.count())
+  {
+    qDebug("TRIX::calculateCustom: no input");
+    return 0;
+  }
+
+  QStringList mal = getMATypes();
+  if (mal.findIndex(l[1]) == -1)
+  {
+    qDebug("TRIX::calculateCustom: invalid MA_TYPE parm");
+    return 0;
+  }
+  else
+    maType = mal.findIndex(l[1]);
+
+  bool ok;
+  int t = l[2].toInt(&ok);
+  if (ok)
+    period = t;
+  else
+  {
+    qDebug("TRIX::calculateCustom: invalid PERIOD parm");
+    return 0;
+  }
+
+  t = l[3].toInt(&ok);
+  if (ok)
+    tperiod = t;
+  else
+  {
+    qDebug("TRIX::calculateCustom: invalid T_PERIOD parm");
+    return 0;
+  }
+
   clearOutput();
-  calculate();
+  calculate2(d.at(0));
   return output->getLine(0);
 }
 

@@ -57,19 +57,15 @@ CUSDialog::~CUSDialog ()
 {
 }
 
-int CUSDialog::getLines ()
-{
-  return list->getLines();
-}
-
 void CUSDialog::setLine (QString d)
 {
   list->setLine(d);
 }
 
-QString CUSDialog::getLine (int row)
+void CUSDialog::getList (QStringList &l)
 {
-  return list->getLine(row);
+  l.clear();
+  l = QStringList::split("\n", list->getText(), FALSE);
 }
 
 void CUSDialog::help ()

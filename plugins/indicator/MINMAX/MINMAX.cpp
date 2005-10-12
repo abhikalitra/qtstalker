@@ -27,7 +27,6 @@
 MINMAX::MINMAX ()
 {
   pluginName = "MINMAX";
-  customFlag = TRUE;
   helpFile = "minmax.html";
 
   lineList.append("High");
@@ -45,20 +44,25 @@ void MINMAX::setDefaults ()
   color.setNamedColor("red");
   lineType = PlotLine::Line;
   label = pluginName;
-  data1 = "1";
+  input = BarData::Close;
   period = 10;
-  lineRequest = "High";
 }
 
 void MINMAX::calculate ()
 {
-  PlotLine *input = customLines->find(data1);
-  if (! input)
+  PlotLine *in = data->getInput(input);
+  if (! in)
   {
-    qDebug("MINMAX::calculate: no data1 input %s", data1.latin1());
+    qDebug("MINMAX::calculate: no input");
     return;
   }
-    
+
+  calculate2(in);
+  delete in;
+}
+
+void MINMAX::calculate2 (PlotLine *input)
+{
   PlotLine *hline = new PlotLine;
   hline->setColor(color);
   hline->setType(lineType);
@@ -98,7 +102,7 @@ int MINMAX::indicatorPrefDialog (QWidget *w)
   QString cl = QObject::tr("Color");
   QString ll = QObject::tr("Label");
   QString ltl = QObject::tr("Line Type");
-  QString d1l = QObject::tr("Data1");
+  QString d1l = QObject::tr("Input");
   QString perl = QObject::tr("Period");
   
   PrefDialog *dialog = new PrefDialog(w);
@@ -108,30 +112,17 @@ int MINMAX::indicatorPrefDialog (QWidget *w)
   dialog->addColorItem(cl, pl, color);
   dialog->addTextItem(ll, pl, label);
   dialog->addComboItem(ltl, pl, lineTypes, lineType);
-  dialog->addFormulaInputItem(d1l, pl, FALSE, data1);
+  dialog->addComboItem(d1l, pl, inputTypeList, input);
   dialog->addIntItem(perl, pl, period, 1, 99999999);
-
-  if (customFlag)
-  {
-    QString t = QObject::tr("Plot");
-    dialog->addComboItem(t, pl, lineList, lineRequest);
-  }
   
   int rc = dialog->exec();
-  
   if (rc == QDialog::Accepted)
   {
     color = dialog->getColor(cl);
     lineType = (PlotLine::LineType) dialog->getComboIndex(ltl);
     label = dialog->getText(ll);
-    data1 = dialog->getFormulaInput(d1l);    
+    input = (BarData::InputType) dialog->getComboIndex(d1l);
     period = dialog->getInt(perl);
-
-    if (customFlag)
-    {
-      QString t = QObject::tr("Plot");
-      lineRequest = dialog->getCombo(t);    
-    }
       
     rc = TRUE;
   }
@@ -161,17 +152,13 @@ void MINMAX::setIndicatorSettings (Setting &dict)
   if (s.length())
     lineType = (PlotLine::LineType) s.toInt();
     
-  s = dict.getData("data1");
+  s = dict.getData("input");
   if (s.length())
-    data1 = s;
+    input = (BarData::InputType) s.toInt();
 
   s = dict.getData("period");
   if (s.length())
     period = s.toInt();
-
-  s = dict.getData("lineRequest");
-  if (s.length())
-    lineRequest = s;
 }
 
 void MINMAX::getIndicatorSettings (Setting &dict)
@@ -180,16 +167,51 @@ void MINMAX::getIndicatorSettings (Setting &dict)
   dict.setData("label", label);
   dict.setData("lineType", QString::number(lineType));
   dict.setData("plugin", pluginName);
-  dict.setData("data1", data1);
+  dict.setData("input", QString::number(input));
   dict.setData("period", QString::number(period));
-  dict.setData("lineRequest", lineRequest);
 }
 
-PlotLine * MINMAX::calculateCustom (QDict<PlotLine> *d)
+PlotLine * MINMAX::calculateCustom (QString &p, QPtrList<PlotLine> &d)
 {
-  customLines = d;
+  // format1: ARRAY_INPUT, ARRAY_OUTPUT, PERIOD
+
+  QStringList l = QStringList::split(",", p, FALSE);
+
+  if (l.count() == 3)
+    ;
+  else
+  {
+    qDebug("MINMAX::calculateCustom: invalid parm count");
+    return 0;
+  }
+
+  if (! d.count())
+  {
+    qDebug("MINMAX::calculateCustom: no input");
+    return 0;
+  }
+
+  QString lineRequest;
+  if (lineList.findIndex(l[1]) == -1)
+  {
+    qDebug("MINMAX::calculateCustom: invalid ARRAY_OUTPUT parm");
+    return 0;
+  }
+  else
+    lineRequest = lineList.findIndex(l[1]);
+
+  bool ok;
+  int t = l[2].toInt(&ok);
+  if (ok)
+    period = t;
+  else
+  {
+    qDebug("MINMAX::calculateCustom: invalid PERIOD parm");
+    return 0;
+  }
+
   clearOutput();
-  calculate();
+  calculate2(d.at(0));
 
   if (! lineRequest.compare("High"))
     return output->getLine(0);

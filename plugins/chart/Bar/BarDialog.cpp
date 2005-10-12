@@ -157,14 +157,9 @@ void BarDialog::createPaintBarPage ()
   addTab(w, tr("Paint Bars"));
 }
 
-int BarDialog::getLines ()
+QString BarDialog::getText ()
 {
-  return list->getLines();
-}
-
-QString BarDialog::getLine (int row)
-{
-  return list->getLine(row);
+  return list->getText();
 }
 
 void BarDialog::setLine (QString d)

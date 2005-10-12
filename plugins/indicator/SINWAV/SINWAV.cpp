@@ -255,7 +255,7 @@ int SINWAV::indicatorPrefDialog (QWidget *w)
   return rc;
 }
 
-PlotLine * SINWAV::calculateCustom (QDict<PlotLine> *)
+PlotLine * SINWAV::calculateCustom (QString &, QPtrList<PlotLine> &)
 {
   clearOutput();
   calculate();
@@ -304,6 +304,10 @@ void SINWAV::setIndicatorSettings (Setting &dict)
   if (s.length())
     lineTypeLead = (PlotLine::LineType) s.toInt();
 }
+
+//*******************************************************
+//*******************************************************
+//*******************************************************
 
 IndicatorPlugin * createIndicatorPlugin ()
 {

@@ -62,7 +62,16 @@ void VOLA::calculate ()
   else
   {
     if (! method.compare("SD"))
-      calculateSD();
+    {
+      PlotLine *in = data->getInput(sdInput);
+      if (! in)
+      {
+        qDebug("VOLA::calculate: no input");
+        return;
+      }
+      calculateSD(in);
+      delete in;
+    }
     else
       calculateVOLR();
   }
@@ -95,19 +104,8 @@ void VOLA::calculateCV ()
   delete ema;
 }
 
-void VOLA::calculateSD ()
+void VOLA::calculateSD (PlotLine *in)
 {
-  PlotLine *in = 0;
-  if (customFlag)
-    in = getInputLine(sdCustomInput);
-  else
-    in = data->getInput(sdInput);
-  if (! in)
-  {
-    qDebug("SD::calculate: no input");
-    return;
-  }
-
   PlotLine *sd = new PlotLine();
   sd->setColor(color);
   sd->setType(lineType);
@@ -134,9 +132,6 @@ void VOLA::calculateSD ()
   }
 
   output->addLine(sd);
-  
-  if (! customFlag)
-    delete in;
 }
 
 void VOLA::calculateVOLR ()
@@ -216,10 +211,7 @@ int VOLA::indicatorPrefDialog (QWidget *w)
     if (! method.compare("SD"))
     {
       dialog->addIntItem(perl, pl, sdPeriod, 1, 99999999);
-      if (customFlag)
-        dialog->addFormulaInputItem(il, pl, FALSE, sdCustomInput);
-      else
-        dialog->addComboItem(il, pl, inputTypeList, sdInput);
+      dialog->addComboItem(il, pl, inputTypeList, sdInput);
       break;
     }
 
@@ -251,10 +243,7 @@ int VOLA::indicatorPrefDialog (QWidget *w)
       if (! method.compare("SD"))
       {
         sdPeriod = dialog->getInt(perl);
-        if (customFlag)
-          sdCustomInput = dialog->getFormulaInput(il);
-        else
-          sdInput = (BarData::InputType) dialog->getComboIndex(il);
+        sdInput = (BarData::InputType) dialog->getComboIndex(il);
         break;
       }
 
@@ -311,10 +300,6 @@ void VOLA::setIndicatorSettings (Setting &dict)
   if (s.length())
     sdInput = (BarData::InputType) s.toInt();
 
-  s = dict.getData("sdCustomInput");
-  if (s.length())
-    sdCustomInput = s;
-
   s = dict.getData("method");
   if (s.length())
     method = s;
@@ -329,16 +314,68 @@ void VOLA::getIndicatorSettings (Setting &dict)
   dict.setData("volrPeriod", QString::number(volrPeriod));
   dict.setData("label", label);
   dict.setData("sdInput", QString::number(sdInput));
-  dict.setData("sdCustomInput", sdCustomInput);
   dict.setData("method", method);
   dict.setData("plugin", pluginName);
 }
 
-PlotLine * VOLA::calculateCustom (QDict<PlotLine> *d)
+PlotLine * VOLA::calculateCustom (QString &p, QPtrList<PlotLine> &d)
 {
-  customLines = d;
+  // format1: METHOD, PERIOD
+  // format1: METHOD, PERIOD, ARRAY_INPUT
+
+  QStringList l = QStringList::split(",", p, FALSE);
+
+  if (l.count() == 2 || l.count() == 3)
+    ;
+  else
+  {
+    qDebug("VOLA::calculateCustom: invalid parm count");
+    return 0;
+  }
+
+  if (methodList.findIndex(l[0]) == -1)
+  {
+    qDebug("VOLA::calculateCustom: invalid METHOD parm");
+    return 0;
+  }
+  else
+    method = methodList.findIndex(l[0]);
+
+  bool ok;
+  int t = l[1].toInt(&ok);
+  if (ok)
+  {
+    if (! method.compare("CV"))
+      cvPeriod = t;
+    else
+    {
+      if (! method.compare("SD"))
+        sdPeriod = t;
+      else
+        volrPeriod = t;
+    }
+  }
+  else
+  {
+    qDebug("VOLA::calculateCustom: invalid PERIOD parm");
+    return 0;
+  }
+
   clearOutput();
-  calculate();
+
+  if (! method.compare("SD") && l.count() == 3)
+  {
+    if (d.count())
+      calculateSD(d.at(0));
+    else
+    {
+      qDebug("VOLA::calculateCustom: no input");
+      return 0;
+    }
+  }
+  else
+    calculate();
+
   return output->getLine(0);
 }
 

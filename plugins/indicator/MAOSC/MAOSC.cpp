@@ -50,17 +50,19 @@ void MAOSC::setDefaults ()
 
 void MAOSC::calculate ()
 {
-  PlotLine *in = 0;
-  if (customFlag)
-    in = getInputLine(customInput);
-  else
-    in = data->getInput(input);
+  PlotLine *in = data->getInput(input);
   if (! in)
   {
     qDebug("MAOSC::calculate: no input");
     return;
   }
-  
+
+  calculate2(in);
+  delete in;
+}
+
+void MAOSC::calculate2 (PlotLine *in)
+{
   PlotLine *fma = getMA(in, fastMaType, fastPeriod, 0, 0);
   int fmaLoop = fma->getSize() - 1;
 
@@ -80,9 +82,6 @@ void MAOSC::calculate ()
   }
 
   output->addLine(osc);
-  
-  if (! customFlag)
-    delete in;
   
   delete fma;
   delete sma;
@@ -112,10 +111,7 @@ int MAOSC::indicatorPrefDialog (QWidget *w)
   QStringList l = getMATypes();
   dialog->addComboItem(fml, pl, l, fastMaType);
   dialog->addComboItem(sml, pl, l, slowMaType);
-  if (customFlag)
-    dialog->addFormulaInputItem(il, pl, FALSE, customInput);
-  else
-    dialog->addComboItem(il, pl, inputTypeList, input);
+  dialog->addComboItem(il, pl, inputTypeList, input);
   
   int rc = dialog->exec();
   
@@ -128,10 +124,7 @@ int MAOSC::indicatorPrefDialog (QWidget *w)
     label = dialog->getText(ll);
     fastMaType = dialog->getComboIndex(fml);
     slowMaType = dialog->getComboIndex(sml);
-    if (customFlag)
-      customInput = dialog->getFormulaInput(il);
-    else
-      input = (BarData::InputType) dialog->getComboIndex(il);
+    input = (BarData::InputType) dialog->getComboIndex(il);
     rc = TRUE;
   }
   else
@@ -179,10 +172,6 @@ void MAOSC::setIndicatorSettings (Setting &dict)
   s = dict.getData("input");
   if (s.length())
     input = (BarData::InputType) s.toInt();
-
-  s = dict.getData("customInput");
-  if (s.length())
-    customInput = s;
 }
 
 void MAOSC::getIndicatorSettings (Setting &dict)
@@ -195,15 +184,67 @@ void MAOSC::getIndicatorSettings (Setting &dict)
   dict.setData("fastMaType", QString::number(fastMaType));
   dict.setData("slowMaType", QString::number(slowMaType));
   dict.setData("input", QString::number(input));
-  dict.setData("customInput", customInput);
   dict.setData("plugin", pluginName);
 }
 
-PlotLine * MAOSC::calculateCustom (QDict<PlotLine> *d)
+PlotLine * MAOSC::calculateCustom (QString &p, QPtrList<PlotLine> &d)
 {
-  customLines = d;
+  // format1: ARRAY_INPUT, FAST_MA_TYPE, SLOW_MA_TYPE, FAST_PERIOD, SLOW_PERIOD
+
+  QStringList l = QStringList::split(",", p, FALSE);
+
+  if (l.count() == 5)
+    ;
+  else
+  {
+    qDebug("MAOSC::calculateCustom: invalid parm count");
+    return 0;
+  }
+
+  if (! d.count())
+  {
+    qDebug("MAOSC::calculateCustom: no input");
+    return 0;
+  }
+
+  QStringList mal = getMATypes();
+  if (mal.findIndex(l[1]) == -1)
+  {
+    qDebug("MAOSC::calculateCustom: invalid FAST_MA_TYPE parm");
+    return 0;
+  }
+  else
+    fastMaType = mal.findIndex(l[1]);
+
+  if (mal.findIndex(l[2]) == -1)
+  {
+    qDebug("MAOSC::calculateCustom: invalid SLOW_MA_TYPE parm");
+    return 0;
+  }
+  else
+    slowMaType = mal.findIndex(l[2]);
+
+  bool ok;
+  int t = l[3].toInt(&ok);
+  if (ok)
+    fastPeriod = t;
+  else
+  {
+    qDebug("MAOSC::calculateCustom: invalid FAST_PERIOD parm");
+    return 0;
+  }
+
+  t = l[4].toInt(&ok);
+  if (ok)
+    slowPeriod = t;
+  else
+  {
+    qDebug("MAOSC::calculateCustom: invalid SLOW_PERIOD parm");
+    return 0;
+  }
+
   clearOutput();
-  calculate();
+  calculate2(d.at(0));
   return output->getLine(0);
 }
 

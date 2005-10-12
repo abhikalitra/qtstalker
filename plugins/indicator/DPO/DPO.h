@@ -27,9 +27,10 @@ class DPO : public IndicatorPlugin
     DPO ();
     virtual ~DPO ();
     void calculate ();
+    void calculate2 (PlotLine *);
     int indicatorPrefDialog (QWidget *);
     void setDefaults();
-    PlotLine * calculateCustom (QDict<PlotLine> *);
+    PlotLine * calculateCustom (QString &, QPtrList<PlotLine> &);
     void getIndicatorSettings (Setting &);
     void setIndicatorSettings (Setting &);
     int getMinBars ();
@@ -40,7 +41,6 @@ class DPO : public IndicatorPlugin
     QString label;
     int period;
     int maType;
-    QString customInput;
     BarData::InputType input;
 };
 

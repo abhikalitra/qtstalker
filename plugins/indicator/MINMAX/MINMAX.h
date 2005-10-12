@@ -27,9 +27,10 @@ class MINMAX : public IndicatorPlugin
     MINMAX ();
     virtual ~MINMAX ();
     void calculate ();
+    void calculate2 (PlotLine *);
     int indicatorPrefDialog (QWidget *);
     void setDefaults();
-    PlotLine * calculateCustom (QDict<PlotLine> *);
+    PlotLine * calculateCustom (QString &, QPtrList<PlotLine> &);
     void getIndicatorSettings (Setting &);
     void setIndicatorSettings (Setting &);
     int getMinBars ();
@@ -38,9 +39,8 @@ class MINMAX : public IndicatorPlugin
     QColor color;
     PlotLine::LineType lineType;
     QString label;
-    QString data1;
+    BarData::InputType input;
     int period;
-    QString lineRequest;
     QStringList lineList;
 };
 

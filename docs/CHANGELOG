@@ -63,6 +63,11 @@
 
 20051006: Removed the SD, VOLR plugins. They are folded into the VOLA plugin.
 
+20051012: Revised the CUS gui/storage format. This breaks all the CUS formulas that use the old format.
+          Need to update CUS docs for full details.
+
+
+
 
 
 0.32

@@ -26,14 +26,13 @@
 #include <qlineedit.h>
 #include <qlabel.h>
 #include "ColorButton.h"
-#include "FormulaInput.h"
 
 class MADialog : public QTabDialog
 {
   Q_OBJECT
   
   public:
-    MADialog (QWidget *, QString, bool);
+    MADialog (QWidget *, QString);
     ~MADialog ();
     void setColor (QColor);
     QColor getColor ();
@@ -47,8 +46,6 @@ class MADialog : public QTabDialog
     int getPeriod ();
     void setInput (QStringList, int);
     int getInput ();
-    void setCustomInput (QString);
-    QString getCustomInput ();
     void setFreq (double);
     double getFreq ();
     void setWidth (double);
@@ -67,9 +64,7 @@ class MADialog : public QTabDialog
     QLineEdit *width;
     QSpinBox *period;
     ColorButton *colorButton;
-    FormulaInput *customInput;
     QString helpFile;
-    bool customFlag;
     QLabel *freqLabel;
     QLabel *widthLabel;
 };

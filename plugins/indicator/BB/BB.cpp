@@ -133,11 +133,6 @@ int BB::indicatorPrefDialog (QWidget *w)
   QStringList l = getMATypes();
   dialog->addComboItem(stl, pl, l, maType);
   dialog->addTextItem(ll, pl, label);
-  if (customFlag)
-  {
-    QString s = QObject::tr("Plot");
-    dialog->addComboItem(s, pl, bandList, customBand);
-  }
   
   int rc = dialog->exec();
   
@@ -149,11 +144,6 @@ int BB::indicatorPrefDialog (QWidget *w)
     maType = dialog->getComboIndex(stl);
     deviation = dialog->getDouble(dl);
     label = dialog->getText(ll);
-    if (customFlag)
-    {
-      QString s = QObject::tr("Plot");
-      customBand = dialog->getCombo(s);
-    }
     rc = TRUE;
   }
   else
@@ -211,8 +201,56 @@ void BB::getIndicatorSettings (Setting &dict)
   dict.setData("plugin", pluginName);
 }
 
-PlotLine * BB::calculateCustom (QDict<PlotLine> *)
+PlotLine * BB::calculateCustom (QString &p, QPtrList<PlotLine> &)
 {
+  // format1: ARRAY_OUTPUT, MA_TYPE, PERIOD, DEVIATION
+
+  QStringList l = QStringList::split(",", p, FALSE);
+
+  if (l.count() == 4)
+    ;
+  else
+  {
+    qDebug("BB::calculateCustom: invalid parm count");
+    return 0;
+  }
+
+  if (bandList.findIndex(l[0]) == -1)
+  {
+    qDebug("BB::calculateCustom: invalid ARRAY_OUTPUT parm");
+    return 0;
+  }
+  else
+    customBand = l[0];
+
+  QStringList mal = getMATypes();
+  if (mal.findIndex(l[1]) == -1)
+  {
+    qDebug("BB::calculateCustom: invalid MA_TYPE parm");
+    return 0;
+  }
+  else
+    maType = mal.findIndex(l[1]);
+
+  bool ok;
+  int t = l[2].toInt(&ok);
+  if (ok)
+    period = t;
+  else
+  {
+    qDebug("BB::calculateCustom: invalid PERIOD parm");
+    return 0;
+  }
+
+  double t2 = l[3].toDouble(&ok);
+  if (ok)
+    deviation = t2;
+  else
+  {
+    qDebug("BB::calculateCustom: invalid DEVIATION parm");
+    return 0;
+  }
+
   clearOutput();
   calculate();
   if (! customBand.compare("Upper"))

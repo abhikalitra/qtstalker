@@ -59,19 +59,19 @@ void CMO::setDefaults ()
 
 void CMO::calculate ()
 {
-  PlotLine *in = 0;
-  if (customFlag)
+  PlotLine *in = data->getInput (BarData::Close);
+  if (! in)
   {
-    in = getInputLine(customInput);
-    if (! in)
-    {
-      qDebug("CMO::calculate: no input");
-      return;
-    }
+    qDebug("CMO::calculate: no input");
+    return;
   }
-  else
-    in = data->getInput (BarData::Close);
-	
+
+  calculate2(in);
+  delete in;
+}
+
+void CMO::calculate2 (PlotLine *in)
+{
   if ( in->getSize() < period )
   {
     qDebug("CMO::calculate: insufficient data");
@@ -386,12 +386,6 @@ int CMO::indicatorPrefDialog (QWidget *w)
   dialog->addIntItem(per2, pl, minLookback, 2, 100);
   dialog->addIntItem(per3, pl, maxLookback, 2, 100);
   
-  if (customFlag)
-  {
-    dialog->addTextItem(ll, pl, label);
-    dialog->addFormulaInputItem(il, pl, FALSE, customInput);
-  }
-  
   pl = QObject::tr("Zones");
   dialog->createPage (pl);
   dialog->addColorItem(bzc, pl, buyColor);
@@ -407,12 +401,6 @@ int CMO::indicatorPrefDialog (QWidget *w)
     lineType = (PlotLine::LineType) dialog->getComboIndex(ltl);
     label = dialog->getText(ll);
     period = dialog->getInt(perl);	
-	
-    if (customFlag)
-    {
-      label = dialog->getText(ll);
-      customInput = dialog->getFormulaInput(il);
-    }
 	
     buyColor = dialog->getColor(bzc);
     sellColor = dialog->getColor(szc);
@@ -445,10 +433,69 @@ int CMO::indicatorPrefDialog (QWidget *w)
   return rc;
 }
 
-PlotLine * CMO::calculateCustom (QDict<PlotLine> *)
+PlotLine * CMO::calculateCustom (QString &p, QPtrList<PlotLine> &d)
 {
+  // format1: ARRAY_INPUT, PERIOD, ADAPTFLAG, MIN_LOOKBACK, MAXLOOKBACK
+
+  QStringList l = QStringList::split(",", p, FALSE);
+
+  if (l.count() == 5)
+    ;
+  else
+  {
+    qDebug("CMO::calculateCustom: invalid parm count");
+    return 0;
+  }
+
+  if (! d.count())
+  {
+    qDebug("CMO::calculateCustom: no input");
+    return 0;
+  }
+
+  bool ok;
+  int t = l[1].toInt(&ok);
+  if (ok)
+    period = t;
+  else
+  {
+    qDebug("CMO::calculateCustom: invalid PERIOD parm");
+    return 0;
+  }
+
+  if (! l[2].compare("TRUE"))
+    adaptFlag = TRUE;
+  else
+  {
+    if (! l[2].compare("FALSE"))
+      adaptFlag = FALSE;
+    else
+    {
+      qDebug("CMO::calculateCustom: invalid ADAPTFLAG parm");
+      return 0;
+    }
+  }
+
+  t = l[3].toInt(&ok);
+  if (ok)
+    minLookback = t;
+  else
+  {
+    qDebug("CMO::calculateCustom: invalid MIN_LOOKBACK parm");
+    return 0;
+  }
+
+  t = l[4].toInt(&ok);
+  if (ok)
+    maxLookback = t;
+  else
+  {
+    qDebug("CMO::calculateCustom: invalid MAX_LOOKBACK parm");
+    return 0;
+  }
+
   clearOutput();
-  calculate();
+  calculate2(d.at(0));
   return output->getLine(0);
 }
 
@@ -515,6 +562,10 @@ int CMO::getMinBars ()
   int t = minBars + period;
   return t;
 }
+
+//***************************************************
+//***************************************************
+//***************************************************
 
 IndicatorPlugin * createIndicatorPlugin ()
 {

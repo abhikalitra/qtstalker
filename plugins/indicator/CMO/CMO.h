@@ -28,9 +28,10 @@ class CMO : public IndicatorPlugin
     CMO ();
     virtual ~CMO ();
     void calculate ();
+    void calculate2 (PlotLine *);
     int indicatorPrefDialog (QWidget *);
     void setDefaults();
-    PlotLine * calculateCustom (QDict<PlotLine> *d);
+    PlotLine * calculateCustom (QString &, QPtrList<PlotLine> &);
     void getIndicatorSettings (Setting &);
     void setIndicatorSettings (Setting &);
     int getMinBars ();
@@ -48,7 +49,6 @@ class CMO : public IndicatorPlugin
     QColor sellColor;
     PlotLine::LineType lineType;
     QString label;
-    QString customInput;
     int period;
     int buyLine;
     int sellLine;

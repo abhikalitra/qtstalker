@@ -246,8 +246,42 @@ int AD::indicatorPrefDialog (QWidget *w)
   return rc;
 }
 
-PlotLine * AD::calculateCustom (QDict<PlotLine> *)
+PlotLine * AD::calculateCustom (QString &p, QPtrList<PlotLine> &)
 {
+  // format1: AD_TYPE
+  // format2: AD_TYPE, PERIOD
+
+  QStringList l = QStringList::split(",", p, FALSE);
+
+  if (l.count() == 1 || l.count() == 2)
+    ;
+  else
+  {
+    qDebug("AD::calculateCustom: invalid parm count");
+    return 0;
+  }
+
+  if (methodList.findIndex(l[0]) == -1)
+  {
+    qDebug("AD::calculateCustom: invalid AD_TYPE parm");
+    return 0;
+  }
+  else
+    method = l[0];
+
+  if (l.count() == 2)
+  {
+    bool ok;
+    int t = l[1].toInt(&ok);
+    if (ok)
+      cmfPeriod = t;
+    else
+    {
+      qDebug("AD::calculateCustom: invalid PERIOD parm");
+      return 0;
+    }
+  }
+
   clearOutput();
   calculate();
   return output->getLine(0);
@@ -298,7 +332,6 @@ int AD::getMinBars ()
     t = t + cmfPeriod;
   return t;
 }
-
 
 //*******************************************************
 //*******************************************************

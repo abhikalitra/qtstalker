@@ -58,26 +58,25 @@ void MACD::setDefaults ()
 
 void MACD::calculate ()
 {
-  PlotLine *d = 0;
-  if (customFlag)
-    d = getInputLine(customInput);
-  else
-    d = data->getInput(macdInput);
-  if (! d)
+  PlotLine *in = data->getInput(macdInput);
+  if (! in)
   {
     qDebug("MACD::calculate: no input");
     return;
   }
-  
+
+  calculate2(in);
+  delete in;
+}
+
+void MACD::calculate2 (PlotLine *d)
+{
   PlotLine *fma = getMA(d, macdMAType, fastPeriod, 0, 0);
   int fmaLoop = fma->getSize() - 1;
 
   PlotLine *sma = getMA(d, macdMAType, slowPeriod, 0, 0);
   int smaLoop = sma->getSize() - 1;
   
-  if (! customFlag)
-    delete d;
-
   PlotLine *macd = new PlotLine();
   macd->setColor(macdColor);
   macd->setType(macdLineType);
@@ -140,10 +139,7 @@ int MACD::indicatorPrefDialog (QWidget *w)
   t = QObject::tr("MACD MA Type");
   dialog->addComboItem(t, pl, l, macdMAType);
   t = QObject::tr("MACD Input");
-  if (customFlag)
-    dialog->addFormulaInputItem(t, pl, FALSE, customInput);
-  else
-    dialog->addComboItem(t, pl, inputTypeList, macdInput);
+  dialog->addComboItem(t, pl, inputTypeList, macdInput);
   
   pl = QObject::tr("Trigger");
   dialog->createPage (pl);
@@ -185,10 +181,7 @@ int MACD::indicatorPrefDialog (QWidget *w)
     t = QObject::tr("MACD MA Type");
     macdMAType = dialog->getComboIndex(t);
     t = QObject::tr("MACD Input");
-    if (customFlag)
-      customInput = dialog->getFormulaInput(t);
-    else
-      macdInput = (BarData::InputType) dialog->getComboIndex(t);
+    macdInput = (BarData::InputType) dialog->getComboIndex(t);
     
     t = QObject::tr("Trigger Color");
     trigColor = dialog->getColor(t);
@@ -284,10 +277,6 @@ void MACD::setIndicatorSettings (Setting &dict)
   if (s.length())
     oscScaleFlag = s.toInt();
 
-  s = dict.getData("customInput");
-  if (s.length())
-    customInput = s;
-
   s = dict.getData("label");
   if (s.length())
     label = s;
@@ -313,16 +302,60 @@ void MACD::getIndicatorSettings (Setting &dict)
   dict.setData("oscLineType", QString::number(oscLineType));
   dict.setData("oscScaleFlag", QString::number(oscScaleFlag));
   
-  dict.setData("customInput", customInput);
   dict.setData("label", label);
   dict.setData("plugin", pluginName);
 }
 
-PlotLine * MACD::calculateCustom (QDict<PlotLine> *d)
+PlotLine * MACD::calculateCustom (QString &p, QPtrList<PlotLine> &d)
 {
-  customLines = d;
+  // format1: ARRAY_INPUT, MA_TYPE, FAST_PERIOD, SLOW_PERIOD
+
+  QStringList l = QStringList::split(",", p, FALSE);
+
+  if (l.count() == 4)
+    ;
+  else
+  {
+    qDebug("MACD::calculateCustom: invalid parm count");
+    return 0;
+  }
+
+  if (! d.count())
+  {
+    qDebug("MACD::calculateCustom: no input");
+    return 0;
+  }
+
+  QStringList mal = getMATypes();
+  if (mal.findIndex(l[1]) == -1)
+  {
+    qDebug("MACD::calculateCustom: invalid MA_TYPE parm");
+    return 0;
+  }
+  else
+    macdMAType = mal.findIndex(l[1]);
+
+  bool ok;
+  int t = l[2].toInt(&ok);
+  if (ok)
+    fastPeriod = t;
+  else
+  {
+    qDebug("MACD::calculateCustom: invalid FAST_PERIOD parm");
+    return 0;
+  }
+
+  t = l[3].toInt(&ok);
+  if (ok)
+    slowPeriod = t;
+  else
+  {
+    qDebug("MACD::calculateCustom: invalid SLOW_PERIOD parm");
+    return 0;
+  }
+
   clearOutput();
-  calculate();
+  calculate2(d.at(0));
   return output->getLine(1);
 }
 

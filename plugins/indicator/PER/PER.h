@@ -27,9 +27,10 @@ class PER : public IndicatorPlugin
     PER ();
     virtual ~PER ();
     void calculate ();
+    void calculate2 (PlotLine *);
     int indicatorPrefDialog (QWidget *);
     void setDefaults();
-    PlotLine * calculateCustom (QDict<PlotLine> *);
+    PlotLine * calculateCustom (QString &, QPtrList<PlotLine> &);
     void getIndicatorSettings (Setting &);
     void setIndicatorSettings (Setting &);
     int getMinBars ();
@@ -39,7 +40,6 @@ class PER : public IndicatorPlugin
     PlotLine::LineType lineType;
     QString label;
     BarData::InputType input;
-    QString customInput;
 };
 
 extern "C"

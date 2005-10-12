@@ -24,10 +24,9 @@
 #include <qlayout.h>
 #include <qvalidator.h>
 
-MADialog::MADialog (QWidget *p, QString d, bool f) : QTabDialog (p, "MADialog", TRUE)
+MADialog::MADialog (QWidget *p, QString d) : QTabDialog (p, "MADialog", TRUE)
 {
   helpFile = d;
-  customFlag = f;
 
   QWidget *w = new QWidget(this);
   
@@ -72,23 +71,11 @@ MADialog::MADialog (QWidget *p, QString d, bool f) : QTabDialog (p, "MADialog", 
   period = new QSpinBox(1, 99999, 1, w);
   grid->addWidget(period, 4, 1);
 
-  if (! customFlag)
-  {
-    label = new QLabel(tr("Input"), w);
-    grid->addWidget(label, 5, 0);
+  label = new QLabel(tr("Input"), w);
+  grid->addWidget(label, 5, 0);
 
-    input = new QComboBox(w);
-    grid->addWidget(input, 5, 1);
-  }
-  else
-  {
-    label = new QLabel(tr("Input"), w);
-    grid->addWidget(label, 5, 0);
-
-    QString s("1");
-    customInput = new FormulaInput(w, FALSE, s);
-    grid->addWidget(customInput, 5, 1);
-  }
+  input = new QComboBox(w);
+  grid->addWidget(input, 5, 1);
 
   freqLabel = new QLabel(tr("Freq"), w);
   grid->addWidget(freqLabel, 6, 0);
@@ -175,27 +162,13 @@ int MADialog::getPeriod ()
 
 void MADialog::setInput (QStringList l, int d)
 {
-  if (! customFlag)
-  {
-    input->insertStringList(l, -1);
-    input->setCurrentItem(d);
-  }
+  input->insertStringList(l, -1);
+  input->setCurrentItem(d);
 }
 
 int MADialog::getInput ()
 {
   return input->currentItem();
-}
-
-void MADialog::setCustomInput (QString d)
-{
-  if (customFlag)
-    customInput->setInput(d);
-}
-
-QString MADialog::getCustomInput ()
-{
-  return customInput->getInput();
 }
 
 void MADialog::setFreq (double d)

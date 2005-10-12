@@ -20,12 +20,9 @@
  */
 
 #include "FormulaEdit.h"
-#include "BarData.h"
 #include "PrefDialog.h"
-#include "Setting.h"
 #include "IndicatorPlugin.h"
 #include "SymbolDialog.h"
-#include "../pics/newchart.xpm"
 #include "../pics/delete.xpm"
 #include "../pics/edit.xpm"
 #include "../pics/insert.xpm"
@@ -34,10 +31,10 @@
 #include <qlayout.h>
 #include <qfile.h>
 #include <qtextstream.h>
-#include <qinputdialog.h>
 #include <qdir.h>
 #include <qmessagebox.h>
-#include <qpoint.h>
+#include <qtabwidget.h>
+#include <qinputdialog.h>
 
 #define BUTTON_SIZE 24
 
@@ -45,270 +42,219 @@ FormulaEdit::FormulaEdit (QWidget *w, int t) : QWidget(w)
 {
   type = (FormulaEditType) t;
   config.getPluginList(Config::IndicatorPluginPath, functionList);
+
+  PlotLine pl;
+  pl.getLineTypes(lineTypes);
   
   QHBoxLayout *hbox = new QHBoxLayout(this);
   hbox->setMargin(0);
   hbox->setSpacing(1);
-  
-  list = new QTable(0, 4, this);
-  list->setSelectionMode(QTable::Single);
-  list->setSorting(FALSE);
-  list->horizontalHeader()->setLabel(0, tr("Function"));
-  list->horizontalHeader()->setLabel(1, tr("Plot"));
-  list->horizontalHeader()->setLabel(2, tr("Scale"));
-  list->horizontalHeader()->setLabel(3, tr("Parms"));
-  list->setColumnStretchable(0, TRUE);
-  list->setColumnWidth(1, 35);
-  list->setColumnWidth(2, 40);
-  list->setColumnReadOnly(0, TRUE);
-  list->setColumnReadOnly(3, TRUE);
-  list->hideColumn(3);
-  QObject::connect(list, SIGNAL(doubleClicked(int, int, int, const QPoint &)), this,
-                   SLOT(slotDoubleClicked(int, int, int, const QPoint &)));
-  hbox->addWidget(list);
-  
-  toolbar = new Toolbar(this, 30, 30, TRUE);
-  hbox->addWidget(toolbar);
 
-  QString s("add");
-  QString s2(tr("Add"));
-  toolbar->addButton(s, newchart, s2);
-  QObject::connect(toolbar->getButton(s), SIGNAL(clicked()), this, SLOT(addItem()));
-  
-  s = "insert";
-  s2 = tr("Insert");
-  toolbar->addButton(s, insert, s2);
-  QObject::connect(toolbar->getButton(s), SIGNAL(clicked()), this, SLOT(insertItem()));
-  
-  s = "edit";
-  s2 = tr("Edit");
-  toolbar->addButton(s, edit, s2);
-  QObject::connect(toolbar->getButton(s), SIGNAL(clicked()), this, SLOT(editItem()));
-  
-  s = "delete";
-  s2 = tr("Delete");
-  toolbar->addButton(s, deleteitem, s2);
-  QObject::connect(toolbar->getButton(s), SIGNAL(clicked()), this, SLOT(deleteItem()));
+  QTabWidget *tab = new QTabWidget(this);
+  hbox->addWidget(tab);
 
-  s = "open";
-  s2 = tr("Open Rule");
-  toolbar->addButton(s, openchart, s2);
-  QObject::connect(toolbar->getButton(s), SIGNAL(clicked()), this, SLOT(openRule()));
+  // create formula page
+  QWidget *tw = new QWidget(this);
+
+  QHBoxLayout *thbox = new QHBoxLayout(tw);
+  thbox->setMargin(5);
+  thbox->setSpacing(0);
+
+  formula = new QTextEdit(tw);
+  thbox->addWidget(formula);
+
+  ftoolbar = new Toolbar(tw, 30, 30, TRUE);
+  thbox->addWidget(ftoolbar);
+
+  QString s = "open";
+  QString s2 = tr("Open Rule");
+  ftoolbar->addButton(s, openchart, s2);
+  QObject::connect(ftoolbar->getButton(s), SIGNAL(clicked()), this, SLOT(openRule()));
 
   s = "save";
   s2 = tr("Save Rule");
-  toolbar->addButton(s, filesave, s2);
-  QObject::connect(toolbar->getButton(s), SIGNAL(clicked()), this, SLOT(saveRule()));
+  ftoolbar->addButton(s, filesave, s2);
+  QObject::connect(ftoolbar->getButton(s), SIGNAL(clicked()), this, SLOT(saveRule()));
+  
+  tab->addTab(tw, tr("Formula"));
+
+  // create plot page
+  tw = new QWidget(this);
+
+  thbox = new QHBoxLayout(tw);
+  thbox->setMargin(5);
+  thbox->setSpacing(0);
+
+  plot = new QListBox(tw);
+  connect(plot, SIGNAL(doubleClicked(QListBoxItem *)), this, SLOT(slotDoubleClicked(QListBoxItem *)));
+  thbox->addWidget(plot);
+
+  ptoolbar = new Toolbar(tw, 30, 30, TRUE);
+  thbox->addWidget(ptoolbar);
+
+  s = "insert";
+  s2 = tr("Insert");
+  ptoolbar->addButton(s, insert, s2);
+  QObject::connect(ptoolbar->getButton(s), SIGNAL(clicked()), this, SLOT(insertPlotItem()));
+  
+  s = "edit";
+  s2 = tr("Edit");
+  ptoolbar->addButton(s, edit, s2);
+  QObject::connect(ptoolbar->getButton(s), SIGNAL(clicked()), this, SLOT(editPlotItem()));
+  
+  s = "delete";
+  s2 = tr("Delete");
+  ptoolbar->addButton(s, deleteitem, s2);
+  QObject::connect(ptoolbar->getButton(s), SIGNAL(clicked()), this, SLOT(deletePlotItem()));
+
+  s = "open";
+  s2 = tr("Open Rule");
+  ptoolbar->addButton(s, openchart, s2);
+  QObject::connect(ptoolbar->getButton(s), SIGNAL(clicked()), this, SLOT(openRule()));
+
+  s = "save";
+  s2 = tr("Save Rule");
+  ptoolbar->addButton(s, filesave, s2);
+  QObject::connect(ptoolbar->getButton(s), SIGNAL(clicked()), this, SLOT(saveRule()));
+
+  tab->addTab(tw, tr("Plot"));
 }
 
 FormulaEdit::~FormulaEdit ()
 {
 }
 
-void FormulaEdit::addItem ()
+void FormulaEdit::insertPlotItem ()
 {
+  QString pl = tr("Plot");
+  QString cl = tr("Color");
+  QString ll = tr("Label");
+  QString ltl = tr("Line Type");
+  QString vl = tr("Variable");
+
   PrefDialog *dialog = new PrefDialog(this);
-  dialog->setCaption(tr("ADD Function"));
-  QString s(tr("Functions")); 
-  dialog->createPage (s);
-  dialog->addComboItem(s, s, functionList, 0);
+  dialog->setCaption(tr("Insert Plot"));
+  dialog->createPage (pl);
+  QString s("Var");
+  dialog->addTextItem(vl, pl, s);
+  QColor c("red");
+  dialog->addColorItem(cl, pl, c);
+  s = "Label";
+  dialog->addTextItem(ll, pl, s);
+  dialog->addComboItem(ltl, pl, lineTypes, 0);
+
   int rc = dialog->exec();
   if (rc != QDialog::Accepted)
   {
     delete dialog;
     return;
   }
-  
-  QString type = functionList[dialog->getComboIndex(s)];
+
+  s = "plot (";
+  s.append(dialog->getText(vl));
+  s.append(",");
+  s.append(dialog->getColor(cl).name());
+  s.append(",");
+  s.append(dialog->getText(ll));
+  s.append(",");
+  s.append(dialog->getCombo(ltl));
+  s.append(")");
+  plot->insertItem(s, plot->currentItem() + 1);
+
   delete dialog;
-  
-  IndicatorPlugin *plug = config.getIndicatorPlugin(type);
-  if (! plug)
-  {
-    config.closePlugin(type);
-    return;
-  }
-  
-  plug->setCustomFlag(TRUE);
-  
-  if (! plug->indicatorPrefDialog(this))
-  {
-    config.closePlugin(type);
-    return;
-  }
-
-  Setting set;
-  plug->getIndicatorSettings(set);
-    
-  list->setNumRows(list->numRows() + 1);
-  
-  list->setText(list->numRows() - 1, 0, set.getData("label"));
-  
-  QCheckTableItem *check = new QCheckTableItem(list, QString::null);
-  check->setChecked(FALSE);
-  list->setItem(list->numRows() - 1, 1, check);
-  
-  check = new QCheckTableItem(list, QString::null);
-  check->setChecked(FALSE);
-  list->setItem(list->numRows() - 1, 2, check);
-
-  set.getString(s);
-  list->setText(list->numRows() - 1, 3, s);
-
-  // make this current row
-  list->selectRow(list->numRows() - 1);
-  
-  config.closePlugin(type);
 }
 
-void FormulaEdit::insertItem ()
+void FormulaEdit::editPlotItem ()
 {
+  QString s = plot->currentText();
+  if (! s.length())
+    return;
+  s.remove(0, s.find("(", 0, TRUE) + 1);
+  s.truncate(s.find(")", -1, TRUE));
+  QStringList l = QStringList::split(",", s, FALSE);
+  int loop;
+  for (loop = 0; loop < (int) l.count(); loop++)
+    l[loop] = l[loop].stripWhiteSpace();
+
+  QString pl = tr("Plot");
+  QString cl = tr("Color");
+  QString ll = tr("Label");
+  QString ltl = tr("Line Type");
+  QString vl = tr("Variable");
+
   PrefDialog *dialog = new PrefDialog(this);
-  dialog->setCaption(tr("Insert Function"));
-  QString s(tr("Functions")); 
-  dialog->createPage (s);
-  dialog->addComboItem(s, s, functionList, 0);
+  dialog->setCaption(tr("Edit Plot"));
+  dialog->createPage (pl);
+  dialog->addTextItem(vl, pl, l[0]);
+  QColor c(l[1]);
+  dialog->addColorItem(cl, pl, c);
+  dialog->addTextItem(ll, pl, l[2]);
+  dialog->addComboItem(ltl, pl, lineTypes, l[3]);
+
   int rc = dialog->exec();
   if (rc != QDialog::Accepted)
   {
     delete dialog;
     return;
   }
-  
-  QString type = functionList[dialog->getComboIndex(s)];
+
+  s = "plot (";
+  s.append(dialog->getText(vl));
+  s.append(",");
+  s.append(dialog->getColor(cl).name());
+  s.append(",");
+  s.append(dialog->getText(ll));
+  s.append(",");
+  s.append(dialog->getCombo(ltl));
+  s.append(")");
+  plot->changeItem(s, plot->currentItem());
+
   delete dialog;
-  
-  IndicatorPlugin *plug = config.getIndicatorPlugin(type);
-  if (! plug)
-  {
-    config.closePlugin(type);
-    return;
-  }
-  
-  plug->setCustomFlag(TRUE);
-  
-  if (! plug->indicatorPrefDialog(this))
-  {
-    config.closePlugin(type);
-    return;
-  }
-
-  Setting set;
-  plug->getIndicatorSettings(set);
-    
-  int row = list->currentRow();
-
-  list->insertRows(row, 1);
-  
-  list->setText(row, 0, set.getData("label"));
-  
-  QCheckTableItem *check = new QCheckTableItem(list, QString::null);
-  check->setChecked(FALSE);
-  list->setItem(row, 1, check);
-  
-  check = new QCheckTableItem(list, QString::null);
-  check->setChecked(FALSE);
-  list->setItem(row, 2, check);
-  
-  set.getString(s);
-  list->setText(row, 3, s);
-
-  // make this current row
-  list->selectRow(row - 1);
-  
-  config.closePlugin(type);
 }
 
-void FormulaEdit::editItem ()
+void FormulaEdit::deletePlotItem ()
 {
-  Setting set;
-  QString s = list->text(list->currentRow(), 3);
-  set.parse(s);
-
-  QString plugin(set.getData("plugin"));  
-  IndicatorPlugin *plug = config.getIndicatorPlugin(plugin);
-  if (! plug)
-  {
-    config.closePlugin(plugin);
-    return;
-  }
-
-  plug->setCustomFlag(TRUE);
-  
-  plug->setIndicatorSettings(set);
-  
-  if (! plug->indicatorPrefDialog(this))
-  {
-    config.closePlugin(plugin);
-    return;
-  }
-
-  Setting set2;
-  plug->getIndicatorSettings(set2);
-    
-  list->setText(list->currentRow(), 0, set2.getData("label"));
-  
-  set2.getString(s);
-  list->setText(list->currentRow(), 3, s);
-  
-  config.closePlugin(plugin);
-}
-
-void FormulaEdit::deleteItem ()
-{
-  list->removeRow(list->currentRow());
+  plot->removeItem(plot->currentItem());
 }
 
 void FormulaEdit::setLine (QString &d)
 {
-  Setting set;
-  set.parse(d);
+  if (d.contains("enable="))
+  {
+    enableLine = d;
+    return;
+  }
 
-  list->setNumRows(list->numRows() + 1);
-    
-  list->setText(list->numRows() - 1, 0, set.getData("label"));
-  
-  QCheckTableItem *check = new QCheckTableItem(list, QString::null);
-  if (! set.getData("plot").toInt())
-    check->setChecked(FALSE);
-  else
-    check->setChecked(TRUE);
-  list->setItem(list->numRows() - 1, 1, check);
-  
-  check = new QCheckTableItem(list, QString::null);
-  if (! set.getData("scale").toInt())
-    check->setChecked(FALSE);
-  else
-    check->setChecked(TRUE);
-  list->setItem(list->numRows() - 1, 2, check);
-  
-  QString s;
-  set.getString(s);
-  list->setText(list->numRows() - 1, 3, s);
+  if (d.contains("plugin="))
+  {
+    pluginLine = d;
+    return;
+  }
 
-  // make this current row
-  list->selectRow(list->numRows() - 1);
+  if (d.contains("plotType="))
+  {
+    plotTypeLine = d;
+    return;
+  }
+
+  if (d.contains("plot"))
+    plot->insertItem(d, -1);
+  else
+    formula->append(d);
 }
 
-QString FormulaEdit::getLine (int i)
+QString FormulaEdit::getText ()
 {
-  Setting set;
-  QString s = list->text(i, 3);
-  set.parse(s);
-  
-  QCheckTableItem *check = (QCheckTableItem *) list->item(i, 1);
-  set.setData("plot", QString::number(check->isChecked()));
-  
-  check = (QCheckTableItem *) list->item(i, 2);
-  set.setData("scale", QString::number(check->isChecked()));
-  
-  set.getString(s);
+  QString s = (enableLine + "\n");
+  s.append(pluginLine + "\n");
+  s.append(plotTypeLine + "\n");
+  s.append(formula->text()  + "\n");
+
+  int loop;
+  for (loop = 0; loop < (int) plot->count(); loop++)
+    s.append(plot->text(loop) + "\n");
+
   return s;
-}
-
-int FormulaEdit::getLines ()
-{
-  return list->numRows();
 }
 
 void FormulaEdit::openRule ()
@@ -334,7 +280,8 @@ void FormulaEdit::openRule ()
     }
     QTextStream stream(&f);
   
-    list->setNumRows(0);
+    formula->clear();
+    plot->clear();
     
     while(stream.atEnd() == 0)
     {
@@ -342,17 +289,7 @@ void FormulaEdit::openRule ()
       s = s.stripWhiteSpace();
       if (! s.length())
         continue;
-      
-      QStringList l = QStringList::split("=", s, FALSE);
-    
-      if (l.count() < 2)
-        continue;
-      
-      if (l.count() > 2)
-      {
-        s = s.remove(0, l[0].length() + 1);
-        setLine(s);
-      }
+      setLine(s);
     }
   
     f.close();
@@ -363,25 +300,15 @@ void FormulaEdit::openRule ()
 
 void FormulaEdit::saveRule ()
 {
-  bool ok = checkError();
-  if (ok)
+  if (! plot->count())
   {
-    if (type == Logic)
-    {
-      QMessageBox::information(this,
-                               tr("Qtstalker: Error"),
-			       tr("Must have one COMP step checked."));
-      return;
-    }
-    else
-    {
-      QMessageBox::information(this,
-                               tr("Qtstalker: Error"),
-			       tr("No step(s) have been checked to plot."));
-      return;
-    }
+    QMessageBox::information(this,
+                             tr("Qtstalker: Error"),
+			     tr("Plot missing."));
+    return;
   }
-  
+
+  bool ok;  
   QString selection = QInputDialog::getText(tr("Save Rule"),
   					    tr("Enter name for rule."),
 					    QLineEdit::Normal,
@@ -419,55 +346,18 @@ void FormulaEdit::saveRule ()
   }
   QTextStream stream(&f);
   
-  int loop;
-  for (loop = 0; loop < list->numRows(); loop++)
-    stream << QString::number(loop + 1) << "=" << getLine(loop) << "\n";
+  stream << getText() << "\n";
 
   f.close(); 
 }
 
-bool FormulaEdit::checkError ()
+void FormulaEdit::slotDoubleClicked (QListBoxItem *)
 {
-  bool rc = TRUE;
-  int loop;
-  int comp = 0;
-  Setting set;
-  QString s;
-  for (loop = 0; loop < list->numRows(); loop++)
-  {
-    s = getLine(loop);
-    set.parse(s);
-    
-    bool p = set.getInt("plot");
-    
-    if (type == Indicator)
-    {
-      if (p)
-      {
-        rc = FALSE;
-	break;
-      }
-    }
-    else
-    {
-      QString s = set.getData("plugin");
-      if (! s.compare("COMP") && p == TRUE)
-        comp++;
-    }
-  }
-  
-  if (type == Logic)
-  {
-    if (comp == 1)
-      rc = FALSE;
-  }
-  
-  return rc;
+  editPlotItem();
 }
 
-void FormulaEdit::slotDoubleClicked (int, int, int, const QPoint &)
+int FormulaEdit::getLines ()
 {
-  editItem();
+  return (int) formula->lines();
 }
-
 

@@ -1212,14 +1212,15 @@ bool Tester::loadAlerts (int type)
       break;
   }
   
-  if (! edit->getLines())
+  QStringList l = QStringList::split("\n", edit->getText());
+  if (! l.count())
     return FALSE;
   
   bool cflag = FALSE;
-  for (loop = 0; loop < edit->getLines(); loop++)
+  for (loop = 0; loop < (int) l.count(); loop++)
   {
     Setting set;
-    QString t = edit->getLine(loop);
+    QString t = l[loop];
     set.parse(t);
     if (! set.getData("plugin").compare("COMP"))
     {
@@ -1249,9 +1250,9 @@ bool Tester::loadAlerts (int type)
     return TRUE;
   }
 
-  for (loop = 0; loop < edit->getLines(); loop++)
+  for (loop = 0; loop < (int) l.count(); loop++)
   {
-    QString t(edit->getLine(loop));
+    QString t(l[loop]);
     plug->setCustomFunction(t);
   }
   
@@ -1344,9 +1345,7 @@ void Tester::saveEditRule (int type)
     return;
   QTextStream stream(&f);
 
-  int loop;
-  for (loop = 0; loop < edit->getLines(); loop++)
-    stream << edit->getLine(loop) << "\n";
+  stream << edit->getText() << "\n";
   
   f.close();
 }
@@ -1912,10 +1911,11 @@ bool Tester::loadCustomShortStop ()
     
   bool cflag = FALSE;
   int loop;
-  for (loop = 0; loop < customShortStopEdit->getLines(); loop++)
+  QStringList l = QStringList::split("\n", customShortStopEdit->getText(), FALSE);
+  for (loop = 0; loop < (int) l.count(); loop++)
   {
     Setting set;
-    QString t = customShortStopEdit->getLine(loop); 
+    QString t = l[loop];
     set.parse(t);
     if (! set.getData("plugin").compare("COMP"))
     {
@@ -1943,9 +1943,9 @@ bool Tester::loadCustomShortStop ()
     return TRUE;
   }
 
-  for (loop = 0; loop < customShortStopEdit->getLines(); loop++)
+  for (loop = 0; loop < (int) l.count(); loop++)
   {
-    QString t(customShortStopEdit->getLine(loop));
+    QString t(l[loop]);
     plug->setCustomFunction(t);
   }
   
@@ -1982,10 +1982,11 @@ bool Tester::loadCustomLongStop ()
     
   bool cflag = FALSE;
   int loop;
-  for (loop = 0; loop < customLongStopEdit->getLines(); loop++)
+  QStringList l = QStringList::split("\n", customLongStopEdit->getText(), FALSE);
+  for (loop = 0; loop < (int) l.count(); loop++)
   {
     Setting set;
-    QString t = customLongStopEdit->getLine(loop); 
+    QString t = l[loop]; 
     set.parse(t);
     if (! set.getData("plugin").compare("COMP"))
     {
@@ -2013,9 +2014,9 @@ bool Tester::loadCustomLongStop ()
     return TRUE;
   }
 
-  for (loop = 0; loop < customLongStopEdit->getLines(); loop++)
+  for (loop = 0; loop < (int) l.count(); loop++)
   {
-    QString t(customLongStopEdit->getLine(loop));
+    QString t(l[loop]);
     plug->setCustomFunction(t);
   }
   
@@ -2085,9 +2086,7 @@ void Tester::saveCustomStopRule ()
     return;
   QTextStream stream(&f);
 
-  int loop;
-  for (loop = 0; loop < customShortStopEdit->getLines(); loop++)
-    stream << customShortStopEdit->getLine(loop) << "\n";
+  stream << customShortStopEdit->getText() << "\n";
   
   f.close();
   
@@ -2096,8 +2095,7 @@ void Tester::saveCustomStopRule ()
   if (! f.open(IO_WriteOnly))
     return;
 
-  for (loop = 0; loop < customLongStopEdit->getLines(); loop++)
-    stream << customLongStopEdit->getLine(loop) << "\n";
+  stream << customLongStopEdit->getText() << "\n";
   
   f.close();
 }
@@ -2241,42 +2239,42 @@ bool Tester::checkFormula (int d)
     case 0:
       if (enterLongEdit->getLines())
       {
-        ok = enterLongEdit->checkError();
+//        ok = enterLongEdit->checkError();
         s.append(tr("Enter Long: "));
       }
       break;
     case 1:
       if (exitLongEdit->getLines())
       {
-        ok = exitLongEdit->checkError();
+//        ok = exitLongEdit->checkError();
         s.append(tr("Exit Long: "));
       }
       break;
     case 2:
       if (enterShortEdit->getLines())
       {
-        ok = enterShortEdit->checkError();
+//        ok = enterShortEdit->checkError();
         s.append(tr("Enter Short: "));
       }
       break;
     case 3:
       if (exitShortEdit->getLines())
       {
-        ok = exitShortEdit->checkError();
+//        ok = exitShortEdit->checkError();
         s.append(tr("Exit Short: "));
       }
       break;
     case 4:
       if (customLongStopEdit->getLines())
       {
-        ok = customLongStopEdit->checkError();
+//        ok = customLongStopEdit->checkError();
         s.append(tr("Custom Long Stop: "));
       }
       break;
     case 5:
       if (customShortStopEdit->getLines())
       {
-        ok = customShortStopEdit->checkError();
+//        ok = customShortStopEdit->checkError();
         s.append(tr("Custom Short Stop: "));
       }
       break;

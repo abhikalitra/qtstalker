@@ -29,69 +29,50 @@
 UTIL::UTIL ()
 {
   pluginName = "UTIL";
-  customFlag = TRUE;
   
   methodList.append("ACCUM");
   methodList.append("TypPrice");
   methodList.append("Normal");
+  methodList.append("ADD");
+  methodList.append("DIV");
+  methodList.append("MUL");
+  methodList.append("SUB");
+  methodList.append("COMP");
+  methodList.append("COUNTER");
+  methodList.append("REF");
+  methodList.sort();
 
   helpFile = "math.html";
-    
-  setDefaults();
 }
 
 UTIL::~UTIL ()
 {
 }
 
-void UTIL::setDefaults ()
+PlotLine * UTIL::calculateAccum (QString &p, QPtrList<PlotLine> &d)
 {
-  color.setNamedColor("red");
-  lineType = PlotLine::Line;
-  label = pluginName;
-  data1 = "1";
-  method = "ACCUM";
-}
+  // format: METHOD, INPUT_ARRAY
 
-void UTIL::calculate ()
-{
-  while (1)
+  QStringList l = QStringList::split(",", p, FALSE);
+
+  if (l.count() == 2)
+    ;
+  else
   {
-    if (! method.compare("ACCUM"))
-    {
-      calculateAccum();
-      break;
-    }
-
-    if (! method.compare("TypPrice"))
-    {
-      calculateTypPrice();
-      break;
-    }
-
-    if (! method.compare("Normal"))
-    {
-      calculateNormal();
-      break;
-    }
-
-    break;
+    qDebug("UTIL::calculateAccum: invalid parm count");
+    return 0;
   }
-}
 
-void UTIL::calculateAccum ()
-{
-  PlotLine *input = customLines->find(data1);
-  if (! input)
+  if (! d.count())
   {
-    qDebug("UTIL::calculateAccum: no data1 input %s", data1.latin1());
-    return;
+    qDebug("UTIL::calculateAccum: invalid ARRAY_INPUT parm");
+    return 0;
   }
-    
+
+  clearOutput();
+
   PlotLine *line = new PlotLine;
-  line->setColor(color);
-  line->setType(lineType);
-  line->setLabel(label);
+  PlotLine *input = d.at(0);
   
   int loop;
   double accum = 0;
@@ -102,45 +83,46 @@ void UTIL::calculateAccum ()
   }
   
   output->addLine(line);
+  return output->getLine(0);
 }
 
-void UTIL::calculateTypPrice()
+PlotLine * UTIL::calculateTypPrice()
 {
-  // n.b. no ratl input here....
-  PlotLine *input = customLines->find(data1);
-  if (! input)
-  {
-    qDebug("UTIL::calculateTypPrice: no data1 input %s", data1.latin1());
-    return;
-  }
-
   PlotLine *typPrice = new PlotLine;
-  typPrice->setColor(color);
-  typPrice->setType(lineType);
-  typPrice->setLabel(label);
 
   int loop;
-
   for (loop = 0; loop < (int) data->count(); loop++)
     typPrice->append((data->getHigh(loop) + data->getLow(loop) + data->getClose(loop)) / 3);
 	
   output->addLine(typPrice);
+  return output->getLine(0);
 }
 
-void UTIL::calculateNormal()
+PlotLine * UTIL::calculateNormal(QString &p, QPtrList<PlotLine> &d)
 {
-  PlotLine *input = customLines->find(data1);
-  if (! input)
+  // format: METHOD, INPUT_ARRAY
+
+  QStringList l = QStringList::split(",", p, FALSE);
+
+  if (l.count() == 2)
+    ;
+  else
   {
-    qDebug("UTIL::calculateNormal: no data1 input %s", data1.latin1());
-    return;
+    qDebug("UTIL::calculateNormal: invalid parm count");
+    return 0;
   }
 
-  PlotLine *normal = new PlotLine;
-  normal->setColor(color);
-  normal->setType(lineType);
-  normal->setLabel(label);
+  if (! d.count())
+  {
+    qDebug("UTIL::calculateNormal: invalid ARRAY_INPUT parm");
+    return 0;
+  }
 
+  clearOutput();
+
+  PlotLine *input = d.at(0);
+
+  PlotLine *normal = new PlotLine;
   int loop = 0;
   double range = 0;
   double max = -99999999.0;
@@ -164,100 +146,645 @@ void UTIL::calculateNormal()
   }
 	
   output->addLine(normal);
-}
-
-int UTIL::indicatorPrefDialog (QWidget *w)
-{
-  QString pl = QObject::tr("Parms");
-  QString cl = QObject::tr("Color");
-  QString ll = QObject::tr("Label");
-  QString ltl = QObject::tr("Line Type");
-  QString d1l = QObject::tr("Data1");
-  QString ml = QObject::tr("Method");
-  
-  PrefDialog *dialog = new PrefDialog(w);
-  dialog->setCaption(QObject::tr("UTIL Indicator"));
-  dialog->createPage (pl);
-  dialog->setHelpFile(helpFile);
-  dialog->addColorItem(cl, pl, color);
-  dialog->addTextItem(ll, pl, label);
-  dialog->addComboItem(ltl, pl, lineTypes, lineType);
-  dialog->addComboItem(ml, pl, methodList, method);
-  dialog->addFormulaInputItem(d1l, pl, FALSE, data1);
-
-  int rc = dialog->exec();
-  
-  if (rc == QDialog::Accepted)
-  {
-    color = dialog->getColor(cl);
-    lineType = (PlotLine::LineType) dialog->getComboIndex(ltl);
-    label = dialog->getText(ll);
-    data1 = dialog->getFormulaInput(d1l);    
-    method = dialog->getCombo(ml);
-      
-    rc = TRUE;
-  }
-  else
-    rc = FALSE;
-  
-  delete dialog;
-  return rc;
-}
-
-void UTIL::setIndicatorSettings (Setting &dict)
-{
-  setDefaults();
-  
-  if (! dict.count())
-    return;
-  
-  QString s = dict.getData("color");
-  if (s.length())
-    color.setNamedColor(s);
-    
-  s = dict.getData("label");
-  if (s.length())
-    label = s;
-        
-  s = dict.getData("lineType");
-  if (s.length())
-    lineType = (PlotLine::LineType) s.toInt();
-    
-  s = dict.getData("method");
-  if (s.length())
-    method = s;
-
-  s = dict.getData("data1");
-  if (s.length())
-    data1 = s;
-
-  s = dict.getData("method");
-  if (s.length())
-    method = s;
-}
-
-void UTIL::getIndicatorSettings (Setting &dict)
-{
-  dict.setData("color", color.name());
-  dict.setData("label", label);
-  dict.setData("lineType", QString::number(lineType));
-  dict.setData("plugin", pluginName);
-  dict.setData("method", method);
-  dict.setData("data1", data1);
-}
-
-PlotLine * UTIL::calculateCustom (QDict<PlotLine> *d)
-{
-  customLines = d;
-  clearOutput();
-  calculate();
   return output->getLine(0);
 }
 
-int UTIL::getMinBars ()
+PlotLine * UTIL::calculateCustom (QString &p, QPtrList<PlotLine> &d)
 {
-  int t = minBars;
-  return t;
+  QStringList l = QStringList::split(",", p, FALSE);
+
+  if (l.count() > 0)
+    ;
+  else
+  {
+    qDebug("UTIL::calculateCustom: invalid parm count");
+    return 0;
+  }
+
+  if (methodList.findIndex(l[0]) == -1)
+  {
+    qDebug("UTIL::calculateCustom: invalid METHOD parm");
+    return 0;
+  }
+
+  PlotLine *out = 0;
+
+  while (1)
+  {
+    if (! l[0].compare("ACCUM"))
+    {
+      out = calculateAccum(p, d);
+      break;
+    }
+
+    if (! l[0].compare("TypPrice"))
+    {
+      out = calculateTypPrice();
+      break;
+    }
+
+    if (! l[0].compare("Normal"))
+    {
+      out = calculateNormal(p, d);
+      break;
+    }
+
+    if (! l[0].compare("ADD"))
+    {
+      out = calculateADD(p, d);
+      break;
+    }
+
+    if (! l[0].compare("DIV"))
+    {
+      out = calculateDIV(p, d);
+      break;
+    }
+
+    if (! l[0].compare("MUL"))
+    {
+      out = calculateMUL(p, d);
+      break;
+    }
+
+    if (! l[0].compare("SUB"))
+    {
+      out = calculateSUB(p, d);
+      break;
+    }
+
+    if (! l[0].compare("COMP"))
+    {
+      out = calculateCOMP(p, d);
+      break;
+    }
+
+    if (! l[0].compare("COUNTER"))
+    {
+      out = calculateCOUNTER(p, d);
+      break;
+    }
+
+    if (! l[0].compare("REF"))
+    {
+      out = calculateREF(p, d);
+      break;
+    }
+
+    break;
+  }
+
+  return out;
+}
+
+PlotLine * UTIL::calculateCOUNTER (QString &p, QPtrList<PlotLine> &d)
+{
+  // format1: METHOD, ARRAY_INPUT
+  // format2: METHOD, ARRAY_INPUT, ARRAY_INPUT2
+
+  QStringList l = QStringList::split(",", p, FALSE);
+
+  if (l.count() == 2 || l.count() == 3)
+    ;
+  else
+  {
+    qDebug("UTIL::COUNTER: invalid parm count");
+    return 0;
+  }
+
+  PlotLine *in = 0;
+  PlotLine *in2 = 0;
+  if (! d.count())
+  {
+    qDebug("UTIL::COUNTER: invalid ARRAY_INPUT parm");
+    return 0;
+  }
+  else
+    in = d.at(0);
+
+  if (d.count() == 2)
+    in2 = d.at(1);
+
+  clearOutput();
+
+  int inLoop = 0;
+  int in2Loop = 0;
+  
+  if (in2)
+  {
+    in2Loop = in2->getSize() - in->getSize();
+    if (in2Loop < 0)
+    {
+      inLoop=-in2Loop;
+      in2Loop = 0;
+    }
+  }
+
+  int t = 0;
+  PlotLine *counter = new PlotLine;
+
+  while (inLoop < in->getSize())
+  {
+    if (in2)
+    {
+      if (in2->getData(in2Loop))
+        t = 0;
+      if (in->getData(inLoop))
+        t++;
+      in2Loop++;
+    }
+    else
+    {
+      if (in->getData(inLoop))
+        t = 1;
+      else
+        t++;
+    }
+    
+    counter->append(t);
+    inLoop++;
+  }
+
+  output->addLine(counter);
+
+  return output->getLine(0);
+}
+
+PlotLine * UTIL::calculateCOMP (QString &p, QPtrList<PlotLine> &d)
+{
+  // format1: METHOD, ARRAY_INPUT, DOUBLE, OPERATOR
+  // format2: METHOD, ARRAY_INPUT, ARRAY_INPUT2, OPERATOR
+
+  QStringList l = QStringList::split(",", p, FALSE);
+
+  if (l.count() == 4)
+    ;
+  else
+  {
+    qDebug("UTIL::COMP: invalid parm count");
+    return 0;
+  }
+
+  PlotLine *input = 0;
+  PlotLine *input2 = 0;
+  if (! d.count())
+  {
+    qDebug("UTIL::COMP: invalid ARRAY_INPUT parm");
+    return 0;
+  }
+  else
+    input = d.at(0);
+
+  double inputNum = 0;
+  if (d.count() == 1)
+  {
+    bool ok;
+    double t = l[2].toDouble(&ok);
+    if (ok)
+      inputNum = t;
+    else
+    {
+      qDebug("UTIL::COMP: invalid DOUBLE parm");
+      return 0;
+    }
+  }
+  else
+    input2 = d.at(1);
+
+  if (opList.findIndex(l[3]) == -1)
+  {
+    qDebug("UTIL::COMP: invalid METHOD parm");
+    return 0;
+  }
+
+  clearOutput();
+
+  int loop = input->getSize() - 1;
+  int loop2 = 0;
+  if (input2)
+    loop2 = input2->getSize() - 1;
+
+  PlotLine *line = new PlotLine;
+  
+  Operator op = getOperator(l[2]);
+  
+  while (loop > -1 && loop < input->getSize())
+  {
+    if (input2)
+    {
+      if (loop2 < 0 || loop2 >= input2->getSize())
+        break;
+    }
+    
+    double t = 0;
+    
+    if (! input2)
+      t = inputNum;
+    else
+      t = input2->getData(loop2);
+      
+    switch (op)
+    {
+      case Equal:
+        if (input->getData(loop) == t)
+          line->prepend(1);
+	else
+          line->prepend(0);
+        break;
+      case LessThan:
+        if (input->getData(loop) < t)
+          line->prepend(1);
+	else
+          line->prepend(0);
+        break;
+      case LessThanEqual:
+        if (input->getData(loop) <= t)
+          line->prepend(1);
+	else
+          line->prepend(0);
+        break;
+      case GreaterThan:
+        if (input->getData(loop) > t)
+          line->prepend(1);
+	else
+          line->prepend(0);
+        break;
+      case GreaterThanEqual:
+        if (input->getData(loop) >= t)
+          line->prepend(1);
+	else
+          line->prepend(0);
+        break;
+      case And:
+        if (input->getData(loop) && t)
+          line->prepend(1);
+	else
+          line->prepend(0);
+        break;
+      case Or:
+        if (input->getData(loop) || t)
+          line->prepend(1);
+	else
+          line->prepend(0);
+        break;
+      default:
+        break;
+    }
+      
+    loop--;
+    
+    if (input2)
+      loop2--;
+  }
+  
+  output->addLine(line);
+
+  return output->getLine(0);
+}
+
+PlotLine * UTIL::calculateADD (QString &p, QPtrList<PlotLine> &d)
+{
+  // format1: METHOD, ARRAY_INPUT, DOUBLE
+  // format2: METHOD, ARRAY_INPUT, ARRAY_INPUT2
+
+  QStringList l = QStringList::split(",", p, FALSE);
+
+  if (l.count() == 3)
+    ;
+  else
+  {
+    qDebug("UTIL::calculateADD::calculateCustom: invalid parm count");
+    return 0;
+  }
+
+  PlotLine *input = 0;
+  PlotLine *input2 = 0;
+  if (! d.count())
+  {
+    qDebug("UTIL::calculateADD: invalid ARRAY_INPUT parm");
+    return 0;
+  }
+  else
+    input = d.at(0);
+
+  if (d.count() == 2)
+    input2 = d.at(1);
+
+  double inputNum = 0;
+  if (! input2)
+  {
+    bool ok;
+    double t = l[2].toDouble(&ok);
+    if (ok)
+      inputNum = t;
+    else
+    {
+      qDebug("UTIL::calculateADD: invalid DOUBLE parm");
+      return 0;
+    }
+  }
+
+  clearOutput();
+
+  int loop = input->getSize() - 1;
+  int loop2 = 0;
+  if (input2)
+    loop2 = input2->getSize() - 1;
+    
+  PlotLine *line = new PlotLine;
+  
+  while (loop > -1)
+  {
+    double v = input->getData(loop);
+    
+    if (input2)
+    {
+      if (loop2 < 0)
+        break;
+      v = v + input2->getData(loop2);
+      loop2--;
+    }
+    else
+      v = v + inputNum;
+    
+    line->prepend(v);
+    loop--;
+  }
+  
+  output->addLine(line);
+  return output->getLine(0);
+}
+
+PlotLine * UTIL::calculateDIV (QString &p, QPtrList<PlotLine> &d)
+{
+  // format1: METHOD, ARRAY_INPUT, DOUBLE
+  // format2: METHOD, ARRAY_INPUT, ARRAY_INPUT2
+
+  QStringList l = QStringList::split(",", p, FALSE);
+
+  if (l.count() == 3)
+    ;
+  else
+  {
+    qDebug("UTIL::calculateDIV::calculateCustom: invalid parm count");
+    return 0;
+  }
+
+  PlotLine *input = 0;
+  PlotLine *input2 = 0;
+  if (! d.count())
+  {
+    qDebug("UTIL::calculateDIV: invalid ARRAY_INPUT parm");
+    return 0;
+  }
+  else
+    input = d.at(0);
+
+  if (d.count() == 2)
+    input2 = d.at(1);
+
+  double inputNum = 0;
+  if (! input2)
+  {
+    bool ok;
+    double t = l[2].toDouble(&ok);
+    if (ok)
+      inputNum = t;
+    else
+    {
+      qDebug("UTIL::calculateDIV: invalid DOUBLE parm");
+      return 0;
+    }
+  }
+
+  clearOutput();
+
+  int loop = input->getSize() - 1;
+  int loop2 = 0;
+  if (input2)
+    loop2 = input2->getSize() - 1;
+    
+  PlotLine *line = new PlotLine;
+  
+  while (loop > -1)
+  {
+    double v = input->getData(loop);
+    
+    if (input2)
+    {
+      if (loop2 < 0)
+        break;
+
+      v = v / input2->getData(loop2);
+      loop2--;
+    }
+    else
+      v = v / inputNum;
+    
+    line->prepend(v);
+    loop--;
+  }
+  
+  output->addLine(line);
+  return output->getLine(0);
+}
+
+PlotLine * UTIL::calculateMUL (QString &p, QPtrList<PlotLine> &d)
+{
+  // format1: METHOD, ARRAY_INPUT, DOUBLE
+  // format2: METHOD, ARRAY_INPUT, ARRAY_INPUT2
+
+  QStringList l = QStringList::split(",", p, FALSE);
+
+  if (l.count() == 3)
+    ;
+  else
+  {
+    qDebug("UTIL::calculateMUL::calculateCustom: invalid parm count");
+    return 0;
+  }
+
+  PlotLine *input = 0;
+  PlotLine *input2 = 0;
+  if (! d.count())
+  {
+    qDebug("UTIL::calculateMUL: invalid ARRAY_INPUT parm");
+    return 0;
+  }
+  else
+    input = d.at(0);
+
+  if (d.count() == 2)
+    input2 = d.at(1);
+
+  double inputNum = 0;
+  if (! input2)
+  {
+    bool ok;
+    double t = l[2].toDouble(&ok);
+    if (ok)
+      inputNum = t;
+    else
+    {
+      qDebug("UTIL::calculateMUL: invalid DOUBLE parm");
+      return 0;
+    }
+  }
+
+  clearOutput();
+
+  int loop = input->getSize() - 1;
+  int loop2 = 0;
+  if (input2)
+    loop2 = input2->getSize() - 1;
+    
+  PlotLine *line = new PlotLine;
+  
+  while (loop > -1)
+  {
+    double v = input->getData(loop);
+    
+    if (input2)
+    {
+      if (loop2 < 0)
+        break;
+
+      v = v * input2->getData(loop2);
+      loop2--;
+    }
+    else
+      v = v * inputNum;
+    
+    line->prepend(v);
+    loop--;
+  }
+  
+  output->addLine(line);
+  return output->getLine(0);
+}
+
+PlotLine * UTIL::calculateSUB (QString &p, QPtrList<PlotLine> &d)
+{
+  // format1: METHOD, ARRAY_INPUT, DOUBLE
+  // format2: METHOD, ARRAY_INPUT, ARRAY_INPUT2
+
+  QStringList l = QStringList::split(",", p, FALSE);
+
+  if (l.count() == 3)
+    ;
+  else
+  {
+    qDebug("UTIL::calculateSUB::calculateCustom: invalid parm count");
+    return 0;
+  }
+
+  PlotLine *input = 0;
+  PlotLine *input2 = 0;
+  if (! d.count())
+  {
+    qDebug("UTIL::calculateSUB: invalid ARRAY_INPUT parm");
+    return 0;
+  }
+  else
+    input = d.at(0);
+
+  if (d.count() == 2)
+    input2 = d.at(1);
+
+  double inputNum = 0;
+  if (! input2)
+  {
+    bool ok;
+    double t = l[2].toDouble(&ok);
+    if (ok)
+      inputNum = t;
+    else
+    {
+      qDebug("UTIL::calculateSUB: invalid DOUBLE parm");
+      return 0;
+    }
+  }
+
+  clearOutput();
+
+  int loop = input->getSize() - 1;
+  int loop2 = 0;
+  if (input2)
+    loop2 = input2->getSize() - 1;
+    
+  PlotLine *line = new PlotLine;
+  
+  while (loop > -1)
+  {
+    double v = input->getData(loop);
+    
+    if (input2)
+    {
+      if (loop2 < 0)
+        break;
+
+      v = v - input2->getData(loop2);
+      loop2--;
+    }
+    else
+      v = v - inputNum;
+    
+    line->prepend(v);
+    loop--;
+  }
+  
+  output->addLine(line);
+  return output->getLine(0);
+}
+
+PlotLine * UTIL::calculateREF (QString &p, QPtrList<PlotLine> &d)
+{
+  // format1: METHOD, ARRAY_INPUT, PERIOD
+
+  QStringList l = QStringList::split(",", p, FALSE);
+
+  if (l.count() == 3)
+    ;
+  else
+  {
+    qDebug("REF::calculateCustom: invalid parm count");
+    return 0;
+  }
+
+  if (! d.count())
+  {
+    qDebug("REF::calculateCustom: no input");
+    return 0;
+  }
+
+  bool ok;
+  int period;
+  int t = l[2].toInt(&ok);
+  if (ok)
+    period = t;
+  else
+  {
+    qDebug("REF::calculateCustom: invalid PERIOD parm");
+    return 0;
+  }
+
+  clearOutput();
+
+  PlotLine *line = new PlotLine;
+  PlotLine *in = d.at(0);
+  
+  int loop = 0;
+  for (loop = 0; loop < in->getSize(); loop++)
+  {
+    if (loop - period < 0)
+      continue;
+      
+    line->append(in->getData(loop - period));
+  }
+  
+  output->addLine(line);
+  
+  return output->getLine(0);
 }
 
 //******************************************************************

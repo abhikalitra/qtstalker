@@ -27,9 +27,10 @@ class TRIX : public IndicatorPlugin
     TRIX ();
     virtual ~TRIX ();
     void calculate ();
+    void calculate2 (PlotLine *);
     int indicatorPrefDialog (QWidget *);
     void setDefaults();
-    PlotLine * calculateCustom (QDict<PlotLine> *);
+    PlotLine * calculateCustom (QString &, QPtrList<PlotLine> &);
     void getIndicatorSettings (Setting &);
     void setIndicatorSettings (Setting &);
     int getMinBars ();
@@ -45,7 +46,6 @@ class TRIX : public IndicatorPlugin
     int tperiod;
     int maType;
     BarData::InputType input;
-    QString customInput;
 };
 
 extern "C"

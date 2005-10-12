@@ -51,10 +51,8 @@ class IndicatorPlugin
     void setIndicatorInput (BarData *);
     Indicator * getIndicator ();
     void clearOutput ();
-    void setCustomFlag (bool);
     void loadFile (QString &, Setting &);
     void saveFile (QString &, Setting &);
-    PlotLine * getInputLine (QString &);
     void setPlotType (int);
     QString getPluginName ();
     QString getHelpFile ();
@@ -62,7 +60,7 @@ class IndicatorPlugin
 
     virtual void calculate ();
     virtual int indicatorPrefDialog (QWidget *);
-    virtual PlotLine * calculateCustom (QDict<PlotLine> *);
+    virtual PlotLine * calculateCustom (QString &, QPtrList<PlotLine> &);
     virtual void getIndicatorSettings (Setting &);
     virtual void setIndicatorSettings (Setting &);
     virtual void setCustomFunction (QString &);
@@ -79,8 +77,6 @@ class IndicatorPlugin
     QStringList inputTypeList;
     QStringList opList;
     bool saveFlag;
-    bool customFlag;
-    QDict<PlotLine> *customLines;
     int plotType;
     QString pluginName;
     QString helpFile;

@@ -152,8 +152,39 @@ void FI::getIndicatorSettings (Setting &dict)
   dict.setData("plugin", pluginName);
 }
 
-PlotLine * FI::calculateCustom (QDict<PlotLine> *)
+PlotLine * FI::calculateCustom (QString &p, QPtrList<PlotLine> &)
 {
+  // format1: MA_TYPE, SMOOTHING
+
+  QStringList l = QStringList::split(",", p, FALSE);
+
+  if (l.count() == 2)
+    ;
+  else
+  {
+    qDebug("FI::calculateCustom: invalid parm count");
+    return 0;
+  }
+
+  QStringList mal = getMATypes();
+  if (mal.findIndex(l[0]) == -1)
+  {
+    qDebug("FI::calculateCustom: invalid MA_TYPE parm");
+    return 0;
+  }
+  else
+    maType = mal.findIndex(l[0]);
+
+  bool ok;
+  int t = l[1].toInt(&ok);
+  if (ok)
+    smoothing = t;
+  else
+  {
+    qDebug("FI::calculateCustom: invalid SMOOTHING parm");
+    return 0;
+  }
+
   clearOutput();
   calculate();
   return output->getLine(0);

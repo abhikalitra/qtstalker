@@ -31,7 +31,7 @@ class SYMBOL : public IndicatorPlugin
     void setDefaults();
     void getIndicatorSettings (Setting &);
     void setIndicatorSettings (Setting &);
-    PlotLine * calculateCustom (QDict<PlotLine> *);
+    PlotLine * calculateCustom (QString &, QPtrList<PlotLine> &);
     
   private:
     QColor color;

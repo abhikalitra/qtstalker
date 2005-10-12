@@ -28,6 +28,13 @@ PP::PP ()
 {
   pluginName = "PP";
   helpFile = "pp.html";
+
+  ppList.append("FR");
+  ppList.append("SR");
+  ppList.append("TR");
+  ppList.append("FS");
+  ppList.append("SS");
+  ppList.append("TS");
   
   setDefaults();
 }
@@ -132,12 +139,6 @@ int PP::indicatorPrefDialog (QWidget *w)
   t = QObject::tr("Label Third Support");
   dialog->addTextItem(t, pl, supLabel3);
   
-  if (customFlag)
-  {
-    t = QObject::tr("Label");
-    dialog->addTextItem(t, pl, label);
-  }
-  
   pl = QObject::tr("Resistance");
   dialog->createPage (pl);
   t = QObject::tr("Resistance Color");
@@ -155,12 +156,6 @@ int PP::indicatorPrefDialog (QWidget *w)
   
   if (rc == QDialog::Accepted)
   {
-    if (customFlag)
-    {
-      t = QObject::tr("Label");
-      label = dialog->getText(t);
-    }
-  
     t = QObject::tr("Support Color");
     supColor = dialog->getColor(t);
     t = QObject::tr("Resistance Color");
@@ -262,6 +257,33 @@ int PP::getMinBars ()
 {
   int t = minBars + 2;
   return t;
+}
+
+PlotLine * PP::calculateCustom (QString &p, QPtrList<PlotLine> &)
+{
+  // format1: PP_TYPE
+
+  QStringList l = QStringList::split(",", p, FALSE);
+
+  if (l.count() == 1)
+    ;
+  else
+  {
+    qDebug("PP::calculateCustom: invalid parm count");
+    return 0;
+  }
+
+  QString ppType;
+  int t = ppList.findIndex(l[0]);
+  if (t == -1)
+  {
+    qDebug("PP::calculateCustom: invalid PP_TYPE parm");
+    return 0;
+  }
+
+  clearOutput();
+  calculate();
+  return output->getLine(t);
 }
 
 //*******************************************************

@@ -65,19 +65,16 @@ void AdaptSTOCH::setDefaults ()
 
 void AdaptSTOCH::calculate ()
 {
-  PlotLine *in = 0;
-  if (customFlag)
-  {
-    in = getInputLine(customInput);
-    if (! in)
-    {
-      qDebug("AdaptSTOCH::calculate: no input");
-      return;
-    }
-  }
-  else
-    in = data->getInput (BarData::Close);
-  
+  PlotLine *in = data->getInput (BarData::Close);
+  if (! in)
+    return;
+
+  calculate2(in);
+  delete in;
+}
+
+void AdaptSTOCH::calculate2 (PlotLine *in)
+{
   if ( in->getSize() < ( period + maxLookback + 5) )
   {
     qDebug("AdaptSTOCH::calculate: insufficient data");
@@ -294,12 +291,6 @@ int AdaptSTOCH::indicatorPrefDialog (QWidget *w)
   dialog->addIntItem(perMin, pl, minLookback, 0, 99999999);
   dialog->addIntItem(perMax, pl, maxLookback, 0, 99999999);
   
-  if (customFlag)
-  {
-    dialog->addTextItem(ll, pl, label);
-    dialog->addFormulaInputItem(il, pl, FALSE, customInput);
-  }
-  
   pl = QObject::tr("%K Parms");
   dialog->createPage (pl);
   QString t = QObject::tr("%K Color");
@@ -334,7 +325,6 @@ int AdaptSTOCH::indicatorPrefDialog (QWidget *w)
   dialog->addIntItem(bz, pl, buyLine, 0, 100);
   dialog->addIntItem(sz, pl, sellLine, 0, 100);
   
-  
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
@@ -364,13 +354,6 @@ int AdaptSTOCH::indicatorPrefDialog (QWidget *w)
     kMaType = dialog->getComboIndex(stk);
     dMaType = dialog->getComboIndex(std);
 	
-    
-    if (customFlag)
-    {
-      label = dialog->getText(ll);
-      customInput = dialog->getFormulaInput(il);
-    }
-    
     buyColor = dialog->getColor(bzc);
     sellColor = dialog->getColor(szc);
     buyLine = dialog->getInt(bz);
@@ -493,11 +476,91 @@ void AdaptSTOCH::getIndicatorSettings (Setting &dict)
   dict.setData("maxLookback", QString::number(maxLookback));
 }
 
-PlotLine * AdaptSTOCH::calculateCustom (QDict<PlotLine> *d)
+PlotLine * AdaptSTOCH::calculateCustom (QString &p, QPtrList<PlotLine> &d)
 {
-  customLines = d;
+  // format1: ARRAY_INPUT, K_MA_TYPE, D_MA_TYPE, PERIOD, K_PERIOD, D_PERIOD, MIN_LOOKBACK, MAX_LOOKBACK
+
+  QStringList l = QStringList::split(",", p, FALSE);
+
+  if (l.count() == 8)
+    ;
+  else
+  {
+    qDebug("AdaptSTOCH::calculateCustom: invalid parm count");
+    return 0;
+  }
+
+  if (! d.count())
+  {
+    qDebug("AdaptSTOCH::calculateCustom: no input");
+    return 0;
+  }
+
+  QStringList mal = getMATypes();
+  if (mal.findIndex(l[1]) == -1)
+  {
+    qDebug("AdaptSTOCH::calculateCustom: invalid K_MA_TYPE parm");
+    return 0;
+  }
+  else
+    kMaType = mal.findIndex(l[1]);
+
+  if (mal.findIndex(l[2]) == -1)
+  {
+    qDebug("AdaptSTOCH::calculateCustom: invalid D_MA_TYPE parm");
+    return 0;
+  }
+  else
+    dMaType = mal.findIndex(l[2]);
+
+  bool ok;
+  int t = l[3].toInt(&ok);
+  if (ok)
+    period = t;
+  else
+  {
+    qDebug("AdaptSTOCH::calculateCustom: invalid PERIOD parm");
+    return 0;
+  }
+
+  t = l[4].toInt(&ok);
+  if (ok)
+    kperiod = t;
+  else
+  {
+    qDebug("AdaptSTOCH::calculateCustom: invalid K_PERIOD parm");
+    return 0;
+  }
+
+  t = l[5].toInt(&ok);
+  if (ok)
+    dperiod = t;
+  else
+  {
+    qDebug("AdaptSTOCH::calculateCustom: invalid D_PERIOD parm");
+    return 0;
+  }
+
+  t = l[6].toInt(&ok);
+  if (ok)
+    minLookback = t;
+  else
+  {
+    qDebug("AdaptSTOCH::calculateCustom: invalid MIN_LOOKBACK parm");
+    return 0;
+  }
+
+  t = l[7].toInt(&ok);
+  if (ok)
+    maxLookback = t;
+  else
+  {
+    qDebug("AdaptSTOCH::calculateCustom: invalid MAX_LOOKBACK parm");
+    return 0;
+  }
+
   clearOutput();
-  calculate();
+  calculate2(d.at(0));
   return output->getLine(0);
 }
 

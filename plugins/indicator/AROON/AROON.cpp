@@ -101,13 +101,6 @@ int AROON::indicatorPrefDialog (QWidget *w)
   dialog->createPage (pl);
   dialog->addIntItem(perl, pl, period, 1, 99999999);
   QStringList l = getMATypes();
-  if (customFlag)
-  {
-    QString t = QObject::tr("Label");
-    dialog->addTextItem(t, pl, label);
-    t = QObject::tr("Plot");
-    dialog->addComboItem(t, pl, lineList, lineRequest);
-  }
   
   pl = "DOWN";
   dialog->createPage (pl);
@@ -147,14 +140,6 @@ int AROON::indicatorPrefDialog (QWidget *w)
   if (rc == QDialog::Accepted)
   {
     period = dialog->getInt(perl);
-    if (customFlag)
-    {
-      t = QObject::tr("Label");
-      label = dialog->getText(t);
-      t = QObject::tr("Plot");
-      lineRequest = dialog->getCombo(t);    
-    }
-    
     buyColor = dialog->getColor(bzc);
     sellColor = dialog->getColor(szc);
     buyLine = dialog->getInt(bz);
@@ -283,15 +268,45 @@ void AROON::getIndicatorSettings (Setting &dict)
   dict.setData("lineRequest", lineRequest);
 }
 
-PlotLine * AROON::calculateCustom (QDict<PlotLine> *)
+PlotLine * AROON::calculateCustom (QString &p, QPtrList<PlotLine> &)
 {
+  // format1: ARRAY_OUTPUT, PERIOD
+
+  QStringList l = QStringList::split(",", p, FALSE);
+
+  if (l.count() == 2)
+    ;
+  else
+  {
+    qDebug("AROON::calculateCustom: invalid parm count");
+    return 0;
+  }
+
+  if (lineList.findIndex(l[0]) == -1)
+  {
+    qDebug("AROON::calculateCustom: invalid ARRAY_OUPUT parm");
+    return 0;
+  }
+  else
+    lineRequest = l[0];
+
+  bool ok;
+  int t = l[1].toInt(&ok);
+  if (ok)
+    period = t;
+  else
+  {
+    qDebug("AROON::calculateCustom: invalid PERIOD parm");
+    return 0;
+  }
+
   clearOutput();
   calculate();
-  if (! lineRequest.compare("DOWN"))
+  if (! lineRequest.compare("Up"))
     return output->getLine(0);
   else
   {
-    if (! lineRequest.compare("UP"))
+    if (! lineRequest.compare("Down"))
       return output->getLine(1);
     else
       return output->getLine(2);

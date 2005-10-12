@@ -33,7 +33,7 @@ class VT : public IndicatorPlugin
     void calculateNVI ();
     void calculatePVI ();
     void calculatePVT ();
-    PlotLine * calculateCustom (QDict<PlotLine> *);
+    PlotLine * calculateCustom (QString &, QPtrList<PlotLine> &);
     void getIndicatorSettings (Setting &);
     void setIndicatorSettings (Setting &);
     int getMinBars ();

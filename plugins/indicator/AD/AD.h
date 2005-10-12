@@ -33,7 +33,7 @@ class AD : public IndicatorPlugin
     void calculateWAD ();
     void calculateCO ();
     void calculateCMF ();
-    PlotLine * calculateCustom (QDict<PlotLine> *);
+    PlotLine * calculateCustom (QString &, QPtrList<PlotLine> &);
     void getIndicatorSettings (Setting &);
     void setIndicatorSettings (Setting &);
     PlotLine * getAD ();

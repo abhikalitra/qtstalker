@@ -27,9 +27,10 @@ class STOCH : public IndicatorPlugin
     STOCH ();
     virtual ~STOCH ();
     void calculate ();
+    void calculate2 (PlotLine *);
     int indicatorPrefDialog (QWidget *);
     void setDefaults();
-    PlotLine * calculateCustom (QDict<PlotLine> *);
+    PlotLine * calculateCustom (QString &, QPtrList<PlotLine> &);
     void getIndicatorSettings (Setting &);
     void setIndicatorSettings (Setting &);
     int getMinBars ();
@@ -49,8 +50,8 @@ class STOCH : public IndicatorPlugin
     int buyLine;
     int sellLine;
     int maType;
-    QString customInput;
     QString label;
+    BarData::InputType input;
 };
 
 extern "C"

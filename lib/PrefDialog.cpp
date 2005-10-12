@@ -47,7 +47,6 @@ PrefDialog::~PrefDialog ()
   fileList.clear();
   symbolList.clear();
   dvList.clear();
-  formulaInputList.clear();
   labelList.clear();
 }
 
@@ -66,7 +65,6 @@ void PrefDialog::init ()
   fileList.setAutoDelete(FALSE);
   symbolList.setAutoDelete(FALSE);
   dvList.setAutoDelete(FALSE);
-  formulaInputList.setAutoDelete(FALSE);
   labelList.setAutoDelete(FALSE);
   
   setOkButton(tr("&OK"));
@@ -421,30 +419,6 @@ QString PrefDialog::getSymbol (QString &name)
   SymbolButton *button = symbolList[name];
   if (button)
     s = button->getPath();
-  return s;
-}
-
-void PrefDialog::addFormulaInputItem (QString &name, QString &page, bool flag, QString &in)
-{
-  QWidget *w = widgetList[page];
-  
-  QGridLayout *grid = gridList[page];
-  grid->expand(grid->numRows() + 1, grid->numCols());
-  
-  QLabel *label = new QLabel(name, w);
-  grid->addWidget(label, grid->numRows() - 2, 0);
-
-  FormulaInput *fi = new FormulaInput(w, flag, in);
-  grid->addWidget(fi, grid->numRows() - 2, 1);
-  formulaInputList.replace(name, fi);
-}
-
-QString PrefDialog::getFormulaInput (QString &name)
-{
-  QString s;
-  FormulaInput *fi = formulaInputList[name];
-  if (fi)
-    s = fi->getInput();
   return s;
 }
 

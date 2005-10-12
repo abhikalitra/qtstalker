@@ -82,13 +82,6 @@ int DMI::indicatorPrefDialog (QWidget *w)
   dialog->addIntItem(sl, pl, smoothing, 1, 99999999);
   QStringList l = getMATypes();
   dialog->addComboItem(stl, pl, l, maType);
-  if (customFlag)
-  {
-    QString t = QObject::tr("Label");
-    dialog->addTextItem(t, pl, label);
-    t = QObject::tr("Plot");
-    dialog->addComboItem(t, pl, lineList, lineRequest);
-  }
   
   pl = "+DM";
   dialog->createPage (pl);
@@ -124,13 +117,6 @@ int DMI::indicatorPrefDialog (QWidget *w)
     period = dialog->getInt(perl);
     smoothing = dialog->getInt(sl);
     maType = dialog->getComboIndex(stl);
-    if (customFlag)
-    {
-      t = QObject::tr("Label");
-      label = dialog->getText(t);
-      t = QObject::tr("Plot");
-      lineRequest = dialog->getCombo(t);    
-    }
     
     t = QObject::tr("+DM Color");
     pdiColor = dialog->getColor(t);
@@ -220,10 +206,6 @@ void DMI::setIndicatorSettings (Setting &dict)
   s = dict.getData("label");
   if (s.length())
     label = s;
-
-  s = dict.getData("lineRequest");
-  if (s.length())
-    lineRequest = s;
 }
 
 void DMI::getIndicatorSettings (Setting &dict)
@@ -242,11 +224,58 @@ void DMI::getIndicatorSettings (Setting &dict)
   dict.setData("adxLabel", adxLabel);
   dict.setData("label", label);
   dict.setData("plugin", pluginName);
-  dict.setData("lineRequest", lineRequest);
 }
 
-PlotLine * DMI::calculateCustom (QDict<PlotLine> *)
+PlotLine * DMI::calculateCustom (QString &p, QPtrList<PlotLine> &)
 {
+  // format1: ARRAY_OUTPUT, MA_TYPE, PERIOD, SMOOTHING
+
+  QStringList l = QStringList::split(",", p, FALSE);
+
+  if (l.count() == 4)
+    ;
+  else
+  {
+    qDebug("DMI::calculateCustom: invalid parm count");
+    return 0;
+  }
+
+  if (lineList.findIndex(l[0]) == -1)
+  {
+    qDebug("DMI::calculateCustom: invalid ARRAY_OUTPUT parm");
+    return 0;
+  }
+  else
+    lineRequest = lineList.findIndex(l[0]);
+
+  QStringList mal = getMATypes();
+  if (mal.findIndex(l[1]) == -1)
+  {
+    qDebug("DMI::calculateCustom: invalid MA_TYPE parm");
+    return 0;
+  }
+  else
+    maType = mal.findIndex(l[1]);
+
+  bool ok;
+  int t = l[2].toInt(&ok);
+  if (ok)
+    period = t;
+  else
+  {
+    qDebug("DMI::calculateCustom: invalid PERIOD parm");
+    return 0;
+  }
+
+  t = l[3].toInt(&ok);
+  if (ok)
+    smoothing = t;
+  else
+  {
+    qDebug("DMI::calculateCustom: invalid SMOOTHING parm");
+    return 0;
+  }
+
   clearOutput();
   calculate();
   if (! lineRequest.compare("MDI"))

@@ -52,7 +52,6 @@ void MA::setDefaults ()
   period = 10;
   maType = (int) SMA;  
   input = BarData::Close;
-  customInput = "1";
   maTypeList = getMATypes();
   
   // lowpass stuff
@@ -62,11 +61,7 @@ void MA::setDefaults ()
 
 void MA::calculate ()
 {
-  PlotLine *in = 0;
-  if (customFlag)
-    in = getInputLine(customInput);
-  else
-    in = data->getInput(input);
+  PlotLine *in = data->getInput(input);
   if (! in)
   {
     qDebug("MA::calculate: no input");
@@ -75,92 +70,24 @@ void MA::calculate ()
   
   PlotLine *ma = getMA(in, maType, period, freq, width);
   
-  if (! customFlag)
-    delete in;
-
   ma->setColor(color);
   ma->setType(lineType);
   ma->setLabel(label);
   output->addLine(ma);
+
+  delete in;
 }
 
 int MA::indicatorPrefDialog (QWidget *w)
 {
-/*
-  QString pl = QObject::tr("Parms");
-  QString cl = QObject::tr("Color");
-  QString ll = QObject::tr("Label");
-  QString ltl = QObject::tr("Line Type");
-  QString perl = QObject::tr("Period");
-  QString stl = QObject::tr("MA Type");
-  QString il = QObject::tr("Input");
-  QString fl = QObject::tr("Freq");
-  QString wl = QObject::tr("Width");
-
-  PrefDialog *dialog = new PrefDialog(w);
-  dialog->setCaption(QObject::tr("MA Indicator"));
-  dialog->createPage (pl);
-  dialog->setHelpFile(helpFile);
-  dialog->addColorItem(cl, pl, color);
-  dialog->addComboItem(ltl, pl, lineTypes, lineType);
-  dialog->addTextItem(ll, pl, label);
-  dialog->addIntItem(perl, pl, period, 1, 99999999);
-  dialog->addComboItem(stl, pl, maTypeList, maType);
-  if (customFlag)
-    dialog->addFormulaInputItem(il, pl, FALSE, customInput);
-  else
-    dialog->addComboItem(il, pl, inputTypeList, input);
-
-  // lowpass stuff
-  dialog->addFloatItem(fl, pl, freq, .009, 99999999);
-  dialog->addFloatItem(wl, pl, width, .009, 99999999);
-  
-  int rc = dialog->exec();
-  
-  if (rc == QDialog::Accepted)
-  {
-    color = dialog->getColor(cl);
-    lineType = (PlotLine::LineType) dialog->getComboIndex(ltl);
-    period = dialog->getInt(perl);
-    label = dialog->getText(ll);
-    maType = dialog->getComboIndex(stl);
-    if (customFlag)
-      customInput = dialog->getFormulaInput(il);
-    else
-      input = (BarData::InputType) dialog->getComboIndex(il);
-      
-    // lowpass stuff
-    freq = dialog->getFloat(fl);
-    width = dialog->getFloat(wl);
-    if (freq < 0.0)
-      freq = 0.0;
-    if (freq > 0.5)
-      freq = 0.5;
-    if (width < 0.0001)
-      width = 0.0001;
-    if (width > 0.2)
-      width = 0.2;
-      
-    rc = TRUE;
-  }
-  else
-    rc = FALSE;
-  
-  delete dialog;
-  return rc;
-*/
-
-  MADialog *dialog = new MADialog(w, helpFile, customFlag);
+  MADialog *dialog = new MADialog(w, helpFile);
   dialog->setCaption(QObject::tr("MA Indicator"));
   dialog->setColor(color);
   dialog->setLineType(lineTypes, lineType);
   dialog->setLabel(label);
   dialog->setPeriod(period);
   dialog->setMAType(maTypeList, maType);
-  if (customFlag)
-    dialog->setCustomInput(customInput);
-  else
-    dialog->setInput(inputTypeList, input);
+  dialog->setInput(inputTypeList, input);
   dialog->setFreq(freq);
   dialog->setWidth(width);
   
@@ -173,10 +100,7 @@ int MA::indicatorPrefDialog (QWidget *w)
     period = dialog->getPeriod();
     label = dialog->getLabel();
     maType = dialog->getMAType();
-    if (customFlag)
-      customInput = dialog->getCustomInput();
-    else
-      input = (BarData::InputType) dialog->getInput();
+    input = (BarData::InputType) dialog->getInput();
     freq = dialog->getFreq();
     width = dialog->getWidth();
     if (freq < 0.0)
@@ -228,10 +152,6 @@ void MA::setIndicatorSettings (Setting &dict)
   if (s.length())
     input = (BarData::InputType) s.toInt();
 
-  s = dict.getData("customInput");
-  if (s.length())
-    customInput = s;
-    
   s = dict.getData("freq");
   if (s.length())
     freq = s.toFloat();
@@ -250,20 +170,76 @@ void MA::getIndicatorSettings (Setting &dict)
   dict.setData("maType", QString::number(maType));
   dict.setData("input", QString::number(input));
   dict.setData("plugin", pluginName);
-  dict.setData("customInput", customInput);
   dict.setData("freq", QString::number(freq));
   dict.setData("width", QString::number(width));
 }
 
-PlotLine * MA::calculateCustom (QDict<PlotLine> *d)
+PlotLine * MA::calculateCustom (QString &p, QPtrList<PlotLine> &d)
 {
-  customLines = d;
-  clearOutput();
-  calculate();
-  if (output->getLines())
-    return output->getLine(0);
+  // format1: DATA_ARRAY, MA_TYPE, PERIOD
+  // format2: DATA_ARRAY, MA_TYPE, PERIOD, FREQ, WIDTH
+
+  QStringList l = QStringList::split(",", p, FALSE);
+
+  if (l.count() == 3 || l.count() == 5)
+    ;
   else
+  {
+    qDebug("MA::calculateCustom: invalid parm count");
     return 0;
+  }
+
+  if (! d.count())
+  {
+    qDebug("MA::calculateCustom: no input");
+    return 0;
+  }
+
+  QStringList mal = getMATypes();
+  if (mal.findIndex(l[1]) == -1)
+  {
+    qDebug("MA::calculateCustom: invalid MA_TYPE parm: %s", l[1].latin1());
+    return 0;
+  }
+  else
+    maType = mal.findIndex(l[1]);
+
+  bool ok;
+  int t = l[2].toInt(&ok);
+  if (ok)
+    period = t;
+  else
+  {
+    qDebug("MA::calculateCustom: invalid PERIOD parm");
+    return 0;
+  }
+
+  freq = 0;
+  width = 0;
+  if (l.count() == 5)
+  {
+    double t2 = l[3].toDouble(&ok);
+    if (ok)
+      freq = t2;
+    else
+    {
+      qDebug("MA::calculateCustom: invalid FREQ parm");
+      return 0;
+    }
+
+    t2 = l[4].toDouble(&ok);
+    if (ok)
+      width = t2;
+    else
+    {
+      qDebug("MA::calculateCustom: invalid WIDTH parm");
+      return 0;
+    }
+  }
+
+  clearOutput();
+
+  return getMA(d.at(0), maType, period, freq, width);
 }
 
 int MA::getMinBars ()

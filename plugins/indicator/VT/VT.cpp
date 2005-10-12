@@ -236,8 +236,28 @@ void VT::getIndicatorSettings (Setting &dict)
   dict.setData("plugin", pluginName);
 }
 
-PlotLine * VT::calculateCustom (QDict<PlotLine> *)
+PlotLine * VT::calculateCustom (QString &p, QPtrList<PlotLine> &)
 {
+  // format1: METHOD
+
+  QStringList l = QStringList::split(",", p, FALSE);
+
+  if (l.count() == 1)
+    ;
+  else
+  {
+    qDebug("VT::calculateCustom: invalid parm count");
+    return 0;
+  }
+
+  if (methodList.findIndex(l[0]) == -1)
+  {
+    qDebug("VT::calculateCustom: invalid METHOD parm");
+    return 0;
+  }
+  else
+    method = methodList.findIndex(l[0]);
+
   clearOutput();
   calculate();
   return output->getLine(0);

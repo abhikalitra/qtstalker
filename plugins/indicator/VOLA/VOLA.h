@@ -28,11 +28,11 @@ class VOLA : public IndicatorPlugin
     virtual ~VOLA ();
     void calculate ();
     void calculateCV ();
-    void calculateSD ();
+    void calculateSD (PlotLine *);
     void calculateVOLR ();
     int indicatorPrefDialog (QWidget *);
     void setDefaults();
-    PlotLine * calculateCustom (QDict<PlotLine> *);
+    PlotLine * calculateCustom (QString &, QPtrList<PlotLine> &);
     void getIndicatorSettings (Setting &);
     void setIndicatorSettings (Setting &);
     PlotLine * getTR ();
@@ -48,7 +48,6 @@ class VOLA : public IndicatorPlugin
     QString method;
     QStringList methodList;
     BarData::InputType sdInput;
-    QString sdCustomInput;
 };
 
 extern "C"

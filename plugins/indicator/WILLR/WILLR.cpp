@@ -149,8 +149,30 @@ void WILLR::getIndicatorSettings (Setting &dict)
   dict.setData("plugin", pluginName);
 }
 
-PlotLine * WILLR::calculateCustom (QDict<PlotLine> *)
+PlotLine * WILLR::calculateCustom (QString &p, QPtrList<PlotLine> &)
 {
+  // format1: PERIOD
+
+  QStringList l = QStringList::split(",", p, FALSE);
+
+  if (l.count() == 1)
+    ;
+  else
+  {
+    qDebug("WILLR::calculateCustom: invalid parm count");
+    return 0;
+  }
+
+  bool ok;
+  int t = l[0].toInt(&ok);
+  if (ok)
+    period = t;
+  else
+  {
+    qDebug("WILLR::calculateCustom: invalid PERIOD parm");
+    return 0;
+  }
+
   clearOutput();
   calculate();
   return output->getLine(0);

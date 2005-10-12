@@ -33,8 +33,7 @@ class BarDialog : public QTabDialog
   public:
     BarDialog (QString);
     ~BarDialog ();
-    int getLines ();
-    QString getLine (int);
+    QString getText ();
     void setLine (QString);
     void createMainPage ();
     void createBarPage ();

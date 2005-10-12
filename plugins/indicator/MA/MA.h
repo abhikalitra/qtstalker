@@ -39,7 +39,7 @@ class MA : public IndicatorPlugin
     void calculate ();
     int indicatorPrefDialog (QWidget *);
     void setDefaults();
-    PlotLine * calculateCustom (QDict<PlotLine> *);
+    PlotLine * calculateCustom (QString &, QPtrList<PlotLine> &);
     void getIndicatorSettings (Setting &);
     void setIndicatorSettings (Setting &);
     int getMinBars ();
@@ -59,7 +59,6 @@ class MA : public IndicatorPlugin
     int period;
     int maType;
     BarData::InputType input;
-    QString customInput;
     QStringList maTypeList;
     
     // LOWPASS stuff
