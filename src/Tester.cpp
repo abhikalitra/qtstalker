@@ -1215,7 +1215,8 @@ bool Tester::loadAlerts (int type)
   QStringList l = QStringList::split("\n", edit->getText());
   if (! l.count())
     return FALSE;
-  
+
+/*  
   bool cflag = FALSE;
   for (loop = 0; loop < (int) l.count(); loop++)
   {
@@ -1240,6 +1241,7 @@ bool Tester::loadAlerts (int type)
 			     s);
     return TRUE;
   }
+*/
   
   // open the CUS plugin
   QString plugin("CUS");
@@ -1908,10 +1910,12 @@ bool Tester::loadCustomShortStop ()
   
   if (! customShortStopEdit->getLines() || ! customShortStopCheck->isChecked())
     return FALSE;
-    
+
+  QStringList l = QStringList::split("\n", customShortStopEdit->getText(), FALSE);
+
+/*    
   bool cflag = FALSE;
   int loop;
-  QStringList l = QStringList::split("\n", customShortStopEdit->getText(), FALSE);
   for (loop = 0; loop < (int) l.count(); loop++)
   {
     Setting set;
@@ -1934,6 +1938,7 @@ bool Tester::loadCustomShortStop ()
 			     tr("No COMP step or COMP step not checked in Custom Short Stop."));
     return TRUE;
   }
+*/
 
   QString plugin("CUS");  
   IndicatorPlugin *plug = config.getIndicatorPlugin(plugin);
@@ -1943,6 +1948,7 @@ bool Tester::loadCustomShortStop ()
     return TRUE;
   }
 
+  int loop;
   for (loop = 0; loop < (int) l.count(); loop++)
   {
     QString t(l[loop]);
@@ -1979,10 +1985,12 @@ bool Tester::loadCustomLongStop ()
   
   if (! customLongStopEdit->getLines() || ! customLongStopCheck->isChecked())
     return FALSE;
-    
+
+  QStringList l = QStringList::split("\n", customLongStopEdit->getText(), FALSE);
+
+/*    
   bool cflag = FALSE;
   int loop;
-  QStringList l = QStringList::split("\n", customLongStopEdit->getText(), FALSE);
   for (loop = 0; loop < (int) l.count(); loop++)
   {
     Setting set;
@@ -2005,6 +2013,7 @@ bool Tester::loadCustomLongStop ()
 			     tr("No COMP step or COMP step not checked in Custom Long Stop."));
     return TRUE;
   }
+*/
   
   QString plugin("CUS");  
   IndicatorPlugin *plug = config.getIndicatorPlugin(plugin);
@@ -2014,6 +2023,7 @@ bool Tester::loadCustomLongStop ()
     return TRUE;
   }
 
+  int loop;
   for (loop = 0; loop < (int) l.count(); loop++)
   {
     QString t(l[loop]);
@@ -2281,12 +2291,14 @@ bool Tester::checkFormula (int d)
     default:
       break;
   }
-  
+
+/*  
   if (ok)
   {
     s.append(tr("Must have one COMP step checked."));
     QMessageBox::information(this, tr("Qtstalker: Error"), s);
   }
+*/
   
   return ok;
 }

@@ -167,7 +167,8 @@ void Scanner::scan ()
 		       TRUE);
   prog.show();
   
-  int minBars = plug->getMinBars();
+//  int minBars = plug->getMinBars();
+  int minBars = 100; // FIXME gotta find a new way to get minbars before we calculate
   
   emit message(QString("Scanning..."));
   
@@ -271,7 +272,8 @@ void Scanner::saveRule ()
   for (loop = 0; loop < (int) fileList.count(); loop++)
     stream << "symbol=" << fileList[loop] << "\n";
   
-  stream << list->getText() << "\n";
+  QStringList l = QStringList::split("\n", list->getText(), FALSE);
+  stream << "script=" << l.join("|") << "\n";
   
   f.close();
 }
@@ -297,30 +299,42 @@ void Scanner::loadRule ()
     if (! s.length())
       continue;
       
-    if (s.contains("|"))
+    QString key;
+    QString dat;
+    if (s.contains("="))
     {
-      list->setLine(s);
+      int t = s.find("=", 0, TRUE);
+      key = s.left(t);
+      dat = s.right(s.length() - t - 1);
+    }
+    else
+      continue;
+
+    if (! key.compare("allSymbols"))
+    {
+      allSymbols->setChecked(dat.toInt());
+      continue;
+    }
+    
+    if (! key.compare("compression"))
+    {
+      period->setCurrentText(dat);
+      continue;
+    }
+    
+    if (! key.compare("symbol"))
+    {
+      fileList.append(dat);
       continue;
     }
 
-    QStringList l = QStringList::split("=", s, FALSE);
-    if (l.count() != 2)
-      continue;
-      
-    if (! l[0].compare("allSymbols"))
+    if (! key.compare("script"))
     {
-      allSymbols->setChecked(l[1].toInt());
-      continue;
+      QStringList l2 = QStringList::split("|", dat, FALSE);
+      int loop;
+      for (loop = 0; loop < (int) l2.count(); loop++)
+        list->setLine(l2[loop]);
     }
-    
-    if (! l[0].compare("compression"))
-    {
-      period->setCurrentText(l[1]);
-      continue;
-    }
-    
-    if (! l[0].compare("symbol"))
-      fileList.append(l[1]);
   }
 
   fileButton->setText(QString::number(fileList.count()) + " Symbols");

@@ -366,7 +366,7 @@ PlotLine * UTIL::calculateCOMP (QString &p, QPtrList<PlotLine> &d)
 
   PlotLine *line = new PlotLine;
   
-  Operator op = getOperator(l[2]);
+  Operator op = getOperator(l[3]);
   
   while (loop > -1 && loop < input->getSize())
   {

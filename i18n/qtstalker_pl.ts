@@ -98,11 +98,11 @@ Save changes?</source>
     </message>
     <message>
         <source>Qtstalker: Error</source>
-        <translation>Qtstalker: Błąd</translation>
+        <translation type="obsolete">Qtstalker: Błąd</translation>
     </message>
     <message>
         <source>No COMP step or COMP step not checked.</source>
-        <translation>Brak kroku COMP lub krok COMP nie jest zaznaczony.</translation>
+        <translation type="obsolete">Brak kroku COMP lub krok COMP nie jest zaznaczony.</translation>
     </message>
 </context>
 <context>
@@ -1084,7 +1084,7 @@ Directory name must be one word only.</source>
     <name>FormulaEdit</name>
     <message>
         <source>Function</source>
-        <translation>Funkcja</translation>
+        <translation type="obsolete">Funkcja</translation>
     </message>
     <message>
         <source>Plot</source>
@@ -1092,15 +1092,15 @@ Directory name must be one word only.</source>
     </message>
     <message>
         <source>Scale</source>
-        <translation>Skala</translation>
+        <translation type="obsolete">Skala</translation>
     </message>
     <message>
         <source>Parms</source>
-        <translation>Param</translation>
+        <translation type="obsolete">Param</translation>
     </message>
     <message>
         <source>Add</source>
-        <translation>Dodaj</translation>
+        <translation type="obsolete">Dodaj</translation>
     </message>
     <message>
         <source>Insert</source>
@@ -1124,15 +1124,15 @@ Directory name must be one word only.</source>
     </message>
     <message>
         <source>ADD Function</source>
-        <translation>DODAJ Funkcję</translation>
+        <translation type="obsolete">DODAJ Funkcję</translation>
     </message>
     <message>
         <source>Functions</source>
-        <translation>Funkcje</translation>
+        <translation type="obsolete">Funkcje</translation>
     </message>
     <message>
         <source>Insert Function</source>
-        <translation>Wprowadź Funkcję</translation>
+        <translation type="obsolete">Wprowadź Funkcję</translation>
     </message>
     <message>
         <source>Select rule to open.</source>
@@ -1144,11 +1144,11 @@ Directory name must be one word only.</source>
     </message>
     <message>
         <source>Must have one COMP step checked.</source>
-        <translation>Należy zaznaczyć jeden krok COMP.</translation>
+        <translation type="obsolete">Należy zaznaczyć jeden krok COMP.</translation>
     </message>
     <message>
         <source>No step(s) have been checked to plot.</source>
-        <translation>Brak zaznaczonych kroków do kreślenia.</translation>
+        <translation type="obsolete">Brak zaznaczonych kroków do kreślenia.</translation>
     </message>
     <message>
         <source>Enter name for rule.</source>
@@ -1203,11 +1203,11 @@ Directory name must be one word only.</source>
     <name>FormulaInput</name>
     <message>
         <source>Step</source>
-        <translation>Krok</translation>
+        <translation type="obsolete">Krok</translation>
     </message>
     <message>
         <source>Value</source>
-        <translation>Wartość</translation>
+        <translation type="obsolete">Wartość</translation>
     </message>
 </context>
 <context>
@@ -1734,11 +1734,11 @@ Save changes?</source>
     <name>Line</name>
     <message>
         <source>Qtstalker: Error</source>
-        <translation>Qtstalker: Błąd</translation>
+        <translation type="obsolete">Qtstalker: Błąd</translation>
     </message>
     <message>
         <source>Line chart: no step checked to plot.</source>
-        <translation>Wykres: brak zaznaczonych kroków do kreślenia.</translation>
+        <translation type="obsolete">Wykres: brak zaznaczonych kroków do kreślenia.</translation>
     </message>
 </context>
 <context>
@@ -2692,7 +2692,7 @@ Save changes?</source>
     </message>
     <message>
         <source>Plot</source>
-        <translation>Krzywa</translation>
+        <translation type="obsolete">Krzywa</translation>
     </message>
     <message>
         <source>CCI Indicator</source>
@@ -2700,27 +2700,27 @@ Save changes?</source>
     </message>
     <message>
         <source>COMP Indicator</source>
-        <translation>Wskaźnik COMP</translation>
+        <translation type="obsolete">Wskaźnik COMP</translation>
     </message>
     <message>
         <source>Data1</source>
-        <translation>Dane1</translation>
+        <translation type="obsolete">Dane1</translation>
     </message>
     <message>
         <source>Delay1</source>
-        <translation>Zwłoka1</translation>
+        <translation type="obsolete">Zwłoka1</translation>
     </message>
     <message>
         <source>Data2</source>
-        <translation>Dane2</translation>
+        <translation type="obsolete">Dane2</translation>
     </message>
     <message>
         <source>Delay2</source>
-        <translation>Zwłoka2</translation>
+        <translation type="obsolete">Zwłoka2</translation>
     </message>
     <message>
         <source>COUNTER Indicator</source>
-        <translation>Wskaźnik COUNTER</translation>
+        <translation type="obsolete">Wskaźnik COUNTER</translation>
     </message>
     <message>
         <source>Input</source>
@@ -2728,11 +2728,11 @@ Save changes?</source>
     </message>
     <message>
         <source>Reset</source>
-        <translation>Zerowanie</translation>
+        <translation type="obsolete">Zerowanie</translation>
     </message>
     <message>
         <source>No step checked to plot.</source>
-        <translation>Brak zaznaczonych kroków do kreślenia.</translation>
+        <translation type="obsolete">Brak zaznaczonych kroków do kreślenia.</translation>
     </message>
     <message>
         <source>DMI Indicator</source>
@@ -2904,19 +2904,19 @@ Save changes?</source>
     </message>
     <message>
         <source>MATH Indicator</source>
-        <translation>Wskaźnik MATH</translation>
+        <translation type="obsolete">Wskaźnik MATH</translation>
     </message>
     <message>
         <source>Data3</source>
-        <translation>Dane3</translation>
+        <translation type="obsolete">Dane3</translation>
     </message>
     <message>
         <source>Data4</source>
-        <translation>Dane4</translation>
+        <translation type="obsolete">Dane4</translation>
     </message>
     <message>
         <source>Data5</source>
-        <translation>Dane5</translation>
+        <translation type="obsolete">Dane5</translation>
     </message>
     <message>
         <source>MF Indicator</source>
@@ -3008,7 +3008,7 @@ Save changes?</source>
     </message>
     <message>
         <source>REF Indicator</source>
-        <translation>Wskaźnik REF</translation>
+        <translation type="obsolete">Wskaźnik REF</translation>
     </message>
     <message>
         <source>ROC Indicator</source>
@@ -3562,39 +3562,39 @@ Rodzaj Wygładzania %D</translation>
     </message>
     <message>
         <source>Data6</source>
-        <translation>Dane6</translation>
+        <translation type="obsolete">Dane6</translation>
     </message>
     <message>
         <source>Delay3</source>
-        <translation>Zwłoka3</translation>
+        <translation type="obsolete">Zwłoka3</translation>
     </message>
     <message>
         <source>Delay4</source>
-        <translation>Zwłoka4</translation>
+        <translation type="obsolete">Zwłoka4</translation>
     </message>
     <message>
         <source>Method 2</source>
-        <translation>Metoda 2</translation>
+        <translation type="obsolete">Metoda 2</translation>
     </message>
     <message>
         <source>AND/OR</source>
-        <translation>I/LUB</translation>
+        <translation type="obsolete">I/LUB</translation>
     </message>
     <message>
         <source>If</source>
-        <translation>Jeśli</translation>
+        <translation type="obsolete">Jeśli</translation>
     </message>
     <message>
         <source>And/Or</source>
-        <translation>I/Lub</translation>
+        <translation type="obsolete">I/Lub</translation>
     </message>
     <message>
         <source>Then</source>
-        <translation>Wówczas</translation>
+        <translation type="obsolete">Wówczas</translation>
     </message>
     <message>
         <source>Else</source>
-        <translation>Inaczej</translation>
+        <translation type="obsolete">Inaczej</translation>
     </message>
     <message>
         <source>SlowK Color</source>
@@ -3674,7 +3674,7 @@ Rodzaj Wygładzania %D</translation>
     </message>
     <message>
         <source>UTIL Indicator</source>
-        <translation>Wskaźnik UTIL</translation>
+        <translation type="obsolete">Wskaźnik UTIL</translation>
     </message>
     <message>
         <source>Vidya period</source>
@@ -3809,46 +3809,46 @@ Rodzaj Wygładzania %D</translation>
     </message>
     <message>
         <source>Qtstalker: Warning</source>
-        <translation>Qtstlaker: Ostrzeżenie</translation>
+        <translation type="obsolete">Qtstlaker: Ostrzeżenie</translation>
     </message>
     <message>
         <source>Running macro...</source>
-        <translation>Wykonywanie makro...</translation>
+        <translation type="obsolete">Wykonywanie makro...</translation>
     </message>
     <message>
         <source>Macro finished</source>
-        <translation>Makro zakończone</translation>
+        <translation type="obsolete">Makro zakończone</translation>
     </message>
     <message>
         <source>Macro recording session about to begin.
 </source>
-        <translation>Nastąpi rozpoczęcie sesji nagrywania makra.</translation>
+        <translation type="obsolete">Nastąpi rozpoczęcie sesji nagrywania makra.</translation>
     </message>
     <message>
         <source>Press CTRL+ESC to stop recording.
 
 </source>
-        <translation>Naciśnij CTRL+ESC, by zakończyć nagrywanie.</translation>
+        <translation type="obsolete">Naciśnij CTRL+ESC, by zakończyć nagrywanie.</translation>
     </message>
     <message>
         <source>Proceed?</source>
-        <translation>Dalej?</translation>
+        <translation type="obsolete">Dalej?</translation>
     </message>
     <message>
         <source>Recording macro session...</source>
-        <translation>Nagrywanie sesji makro...</translation>
+        <translation type="obsolete">Nagrywanie sesji makro...</translation>
     </message>
     <message>
         <source>Recording macro finished.</source>
-        <translation>Nagrywanie makra zakończone.</translation>
+        <translation type="obsolete">Nagrywanie makra zakończone.</translation>
     </message>
     <message>
         <source>Qtstalker:Info</source>
-        <translation>Qtstalker:Info</translation>
+        <translation type="obsolete">Qtstalker:Info</translation>
     </message>
     <message>
         <source>Macro session ended.</source>
-        <translation>Sesja makro zakończyła się.</translation>
+        <translation type="obsolete">Sesja makro zakończyła się.</translation>
     </message>
     <message>
         <source>Loading chart...</source>
@@ -4014,7 +4014,7 @@ Tłumaczenie polskie: Benedict P. Barszcz</translation>
     </message>
     <message>
         <source>No COMP step or COMP step not checked.</source>
-        <translation>Brak kroku COMP lub krok COMP nie jest zaznaczony.</translation>
+        <translation type="obsolete">Brak kroku COMP lub krok COMP nie jest zaznaczony.</translation>
     </message>
     <message>
         <source>Scanning...</source>
@@ -4664,11 +4664,11 @@ eg. 2:1</source>
     </message>
     <message>
         <source>No COMP step or COMP step not checked in Custom Short Stop.</source>
-        <translation>Brak kroku COMP lub krok COMP nie jest zaznaczony w oknie Własny Stop Krótkiej.</translation>
+        <translation type="obsolete">Brak kroku COMP lub krok COMP nie jest zaznaczony w oknie Własny Stop Krótkiej.</translation>
     </message>
     <message>
         <source>No COMP step or COMP step not checked in Custom Long Stop.</source>
-        <translation>Brak kroku COMP lub krok COMP nie jest zaznaczony w oknie Własny Stop Długiej.</translation>
+        <translation type="obsolete">Brak kroku COMP lub krok COMP nie jest zaznaczony w oknie Własny Stop Długiej.</translation>
     </message>
     <message>
         <source>New Backtest Rule</source>
@@ -4712,7 +4712,7 @@ eg. 2:1</source>
     </message>
     <message>
         <source>Must have one COMP step checked.</source>
-        <translation>Należy zaznaczyć jeden krok COMP.</translation>
+        <translation type="obsolete">Należy zaznaczyć jeden krok COMP.</translation>
     </message>
     <message>
         <source>NewRule</source>

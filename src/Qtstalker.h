@@ -42,10 +42,10 @@
 #include "PortfolioPage.h"
 #include "TestPage.h"
 #include "GroupPage.h"
-#include "MacroPage.h"
+//#include "MacroPage.h"
 #include "ChartToolbar.h"
 #include "MainMenubar.h"
-#include "Macro.h"
+//#include "Macro.h"
 #include "IndicatorTab.h"
 
 #define DEFAULT_INDICATOR_HEIGHT 125
@@ -85,7 +85,7 @@ class QtstalkerApp : public QMainWindow
     void initTestNav();
     void initIndicatorNav ();
     void initScannerNav ();
-    void initMacroNav ();
+//    void initMacroNav ();
     QString getWindowCaption ();
     void setChartType (int);
     void loadChart (QString &);
@@ -122,9 +122,9 @@ class QtstalkerApp : public QMainWindow
     void slotExitQuoteDialog ();
     void slotDisableIndicator (QString);
     void slotEnableIndicator (QString);
-    void slotRunMacro (QString);
-    void slotRecordMacro (QString);
-    void slotStopMacro ();
+//    void slotRunMacro (QString);
+//    void slotRecordMacro (QString);
+//    void slotStopMacro ();
     void slotProgMessage (int, int);
     
   private:
@@ -156,8 +156,8 @@ class QtstalkerApp : public QMainWindow
     ScannerPage *sp;
     TestPage *tp;
     GroupPage *gp;
-    MacroPage *mp;
-    Macro *currentMacro;
+//    MacroPage *mp;
+//    Macro *currentMacro;
     QProgressBar *progBar;
     QStatusBar *statusbar;
 };

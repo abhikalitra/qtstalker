@@ -82,6 +82,8 @@
 20051012: Fixed bug in CUS::getMinBars that did not calculate minBars properly. This was causing the Scanner
           to fail because not enough bars were being loaded.
 
+20051013: Removed the Macro functions. I am not satisfied with them as they appear half-assed.
+          They need to be revised at a later time.
 
 
 0.32

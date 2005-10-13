@@ -36,7 +36,7 @@ Line::Line ()
   startX = 0;
   indicatorFlag = FALSE;
   defaultFlag = TRUE;
-  defaultFormula = "plot=1|lineType=4|period=0|plugin=REF|input=3|color=#ff0000|label=REF|scale=0";
+  defaultFormula = "cpl := UTIL(REF, Close, 0)|plot (cpl, green, CLOSE, Line)";
   formulaList = defaultFormula;
   helpFile = "linechartplugin.html";
   line = 0;
@@ -107,28 +107,28 @@ void Line::prefDialog (QWidget *)
     if (! defaultFlag)
     {
       int loop;
-      bool flag = FALSE;
+//      bool flag = FALSE;
       QStringList l = QStringList::split("\n", dialog->getText(), FALSE);
       for (loop = 0; loop < (int) l.count(); loop++)
       {
         formulaList.append(l[loop]);
 	
-        Setting set;
-	QString s = l[loop]; 
-        set.parse(s);
-        if (set.getData("plot").toInt())
-          flag = TRUE;
+//        Setting set;
+//	QString s = l[loop]; 
+//        set.parse(s);
+//        if (set.getData("plot").toInt())
+//          flag = TRUE;
       }
-  
-      if (! flag && formulaList.count())
-      {
-        QMessageBox::information(0,
-                                 tr("Qtstalker: Error"),
-			         tr("Line chart: no step checked to plot."));
-        delete dialog;
-        saveFlag = TRUE;
-        return;
-      }
+
+//      if (! flag && formulaList.count())
+//      {
+//        QMessageBox::information(0,
+//                                 tr("Qtstalker: Error"),
+//			         tr("Line chart: no step checked to plot."));
+//        delete dialog;
+//        saveFlag = TRUE;
+//        return;
+//      }
     }
     else
       formulaList = defaultFormula;
@@ -155,7 +155,7 @@ void Line::loadSettings ()
   defaultFlag = settings.readBoolEntry("/defaultFlag", TRUE);
   
   QString s = settings.readEntry("/formula");
-  QStringList l = QStringList::split(",", s, FALSE);
+  QStringList l = QStringList::split("|", s, FALSE);
   int loop;
   for (loop = 0; loop < (int) l.count(); loop++)
     formulaList.append(l[loop]);
@@ -176,7 +176,7 @@ void Line::saveSettings ()
   settings.writeEntry("/Color", color.name());
   settings.writeEntry("/minPixelspace", minPixelspace);
   settings.writeEntry("/defaultFlag", defaultFlag);
-  settings.writeEntry("/formula", formulaList.join(","));
+  settings.writeEntry("/formula", formulaList.join("|"));
   
   settings.endGroup();
 }

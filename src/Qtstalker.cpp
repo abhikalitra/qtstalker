@@ -47,7 +47,7 @@ QtstalkerApp::QtstalkerApp()
   status = None;
   plotList.setAutoDelete(TRUE);
   setIcon(qtstalker);
-  currentMacro = 0;
+//  currentMacro = 0;
 
   // setup the disk environment
   config.setup();
@@ -123,7 +123,7 @@ QtstalkerApp::QtstalkerApp()
   initPortfolioNav();
   initTestNav();
   initScannerNav();
-  initMacroNav();
+//  initMacroNav();
 
   // set up the mainPlot signals
   initPlot(mainPlot);
@@ -286,8 +286,8 @@ void QtstalkerApp::slotQuit()
   if (quoteDialog)
     delete quoteDialog;
     
-  if (currentMacro)
-    delete currentMacro;
+//  if (currentMacro)
+//    delete currentMacro;
 }
 
 void QtstalkerApp::slotAbout()
@@ -1123,6 +1123,7 @@ void QtstalkerApp::slotExitQuoteDialog ()
 //*********** MACRO FUNCTIONS ***********************************
 //***************************************************************
 
+/*
 void QtstalkerApp::initMacroNav ()
 {
   mp = new MacroPage(baseWidget);
@@ -1131,7 +1132,9 @@ void QtstalkerApp::initMacroNav ()
   connect(this, SIGNAL(signalSetKeyFlag(bool)), mp, SLOT(setKeyFlag(bool)));
   navTab->addWidget(mp, 6);
 }
+*/
 
+/*
 void QtstalkerApp::slotRunMacro (QString d)
 {
   slotStatusMessage(tr("Running macro..."));
@@ -1183,7 +1186,8 @@ void QtstalkerApp::slotRunMacro (QString d)
   
   slotStatusMessage(tr("Macro finished"));
 }
-
+*/
+/*
 void QtstalkerApp::slotRecordMacro (QString d)
 {
   QString s = tr("Macro recording session about to begin.\n");
@@ -1221,7 +1225,9 @@ void QtstalkerApp::slotRecordMacro (QString d)
   
   slotStatusMessage(tr("Recording macro session..."));
 }
+*/
 
+/*
 void QtstalkerApp::slotStopMacro ()
 {
   if (! currentMacro)
@@ -1236,6 +1242,7 @@ void QtstalkerApp::slotStopMacro ()
   slotStatusMessage(tr("Recording macro finished."));
   QMessageBox::information(this, tr("Qtstalker:Info"), tr("Macro session ended."));
 }
+*/
 
 void QtstalkerApp::slotProgMessage (int p, int t)
 {

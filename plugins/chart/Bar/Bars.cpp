@@ -173,20 +173,22 @@ void Bars::prefDialog (QWidget *)
     paintDownColor = dialog->getPaintDownColor();
     
     int loop;
-    bool flag = FALSE;
+//    bool flag = FALSE;
     formulaList.clear();
     QStringList l = QStringList::split("\n", dialog->getText(), FALSE);
     for (loop = 0; loop < (int) l.count(); loop++)
     {
       formulaList.append(l[loop]);
-      
+
+/*      
       Setting set;
       QString s = l[loop];
       set.parse(s);
       if (! set.getData("plugin").compare("COMP"))
         flag = TRUE;
+*/
     }
-  
+/*  
     if (! flag && formulaList.count())
     {
       QMessageBox::information(0,
@@ -196,6 +198,7 @@ void Bars::prefDialog (QWidget *)
       delete dialog;
       return;
     }
+*/
 
     if (! style.compare("Paint Bar"))
       getBoolLine();
@@ -226,7 +229,7 @@ void Bars::loadSettings ()
   paintDownColor.setNamedColor(settings.readEntry("/paintDownColor", "red"));
 
   QString s = settings.readEntry("/formula");
-  QStringList l = QStringList::split(",", s, FALSE);
+  QStringList l = QStringList::split("|", s, FALSE);
   int loop;
   for (loop = 0; loop < (int) l.count(); loop++)
     formulaList.append(l[loop]);
@@ -256,7 +259,7 @@ void Bars::saveSettings ()
   settings.writeEntry("/paintUpColor", paintUpColor.name());
   settings.writeEntry("/paintDownColor", paintDownColor.name());
   
-  settings.writeEntry("/formula", formulaList.join(","));
+  settings.writeEntry("/formula", formulaList.join("|"));
   
   settings.endGroup();
 }
