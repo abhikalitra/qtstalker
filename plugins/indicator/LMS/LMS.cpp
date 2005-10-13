@@ -400,11 +400,11 @@ int LMS::indicatorPrefDialog(QWidget * w)
 
 PlotLine *LMS::calculateCustom (QString &p, QPtrList<PlotLine> &)
 {
-  // format1: FK_PERIOD, SK_PERIOD, CMB_INDEX, SHOW_2DAY, SHOW_5DAY, CYCLE_FLAG
+  // format1: FK_PERIOD, SK_PERIOD, CMB_INDEX, SHOW_2DAY, SHOW_5DAY
 
   QStringList l = QStringList::split(",", p, FALSE);
 
-  if (l.count() == 6)
+  if (l.count() == 5)
     ;
   else
   {
@@ -431,13 +431,23 @@ PlotLine *LMS::calculateCustom (QString &p, QPtrList<PlotLine> &)
     return 0;
   }
 
-  t = l[2].toInt(&ok);
-  if (ok)
-    cmbIndex = t;
+  if (! l[2].compare("Cycle"))
+  {
+    cmbIndex = 1;
+    cycleFlag = TRUE;
+  }
   else
   {
-    qDebug("LMS::calculateCustom: invalid CMB_INDEX parm");
-    return 0;
+    if (! l[2].compare("Counter Trend"))
+    {
+      cmbIndex = 0;
+      cycleFlag = FALSE;
+    }
+    else
+    {
+      qDebug("LMS::calculateCustom: invalid CMB_INDEX parm");
+      return 0;
+    }
   }
 
   if (! l[3].compare("TRUE"))
@@ -462,19 +472,6 @@ PlotLine *LMS::calculateCustom (QString &p, QPtrList<PlotLine> &)
     else
     {
       qDebug("LMS::calculateCustom: invalid SHOW_5DAY parm");
-      return 0;
-    }
-  }
-
-  if (! l[5].compare("TRUE"))
-    cycleFlag = TRUE;
-  else
-  {
-    if (! l[5].compare("FALSE"))
-      cycleFlag = FALSE;
-    else
-    {
-      qDebug("LMS::calculateCustom: invalid CYCLE_FLAG parm");
       return 0;
     }
   }

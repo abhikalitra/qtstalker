@@ -1,24 +1,30 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
-  <title>Qtstalker: Commodity Channel Index - CCI</title>
+  <title>Qtstalker: Chande Momentum Oscillator - CMO</title>
   <meta http-equiv="content-type"
  content="text/html; charset=ISO-8859-1">
 </head>
 <body>
-<h2><u>Commodity Channel Index - CCI</u></h2>
-&nbsp; <img src="cci1.png" title="" alt=""
- style="width: 661px; height: 182px;"><br>
+<h2><u>Chande Momentum Oscillator - CMO</u></h2>
+<img alt="" src="cmo1.png" style="width: 550px; height: 162px;"><br>
 <h3>Parameters:</h3>
 <ul>
-  <li>Color - CCI plot color</li>
+  <li>Period - The CMO period<br>
+  </li>
+  <li>Color - plot color</li>
   <li>Line Type - The type of plot to draw</li>
-  <li>Label - The text to identify the CCI plot<br>
+  <li>Label - The text to identify the plot</li>
+  <li>Adaptive CMO - Option to use adaptive method.<br>
   </li>
-  <li>Period - The period used for the CCI</li>
-  <li>Smoothing - The period used for smoothing the CCI<br>
+  <li>Min Lookback<br>
   </li>
-  <li>Smoothing Type - The type of MA to use for smoothing the CCI</li>
+  <li>Max Lookback</li>
+  <li>Buy Zone Color</li>
+  <li>Sell Zone Color</li>
+  <li>Buy Zone - The buy zone value</li>
+  <li>Sell Zone - The sell zone value<br>
+  </li>
 </ul>
 <h3>Description:</h3>
 <br>
@@ -30,19 +36,21 @@
     <tr>
       <td style="vertical-align: top;">Syntax<br>
       </td>
-      <td style="vertical-align: top;">CCI(MA TYPE, PERIOD, SMOOTHING)<br>
+      <td style="vertical-align: top;">CMO(ARRAY INPUT, PERIOD,
+ADAPTIVE CMO, MIN LOOKBACK, MAX LOOKBACK)<br>
       </td>
     </tr>
     <tr>
       <td style="vertical-align: top;">Function<br>
       </td>
-      <td style="vertical-align: top;"><br>
-      </td>
+      <td style="vertical-align: top;">ARRAY INPUT can be either an
+array of bars or a formula variable array of data. ADAPTIVE CMO is
+either TRUE or FALSE. </td>
     </tr>
     <tr>
       <td style="vertical-align: top;">Example<br>
       </td>
-      <td style="vertical-align: top;">CCI(SMA, 20, 3)<br>
+      <td style="vertical-align: top;">CMO(Close, 14, FALSE, 7, 10)<br>
       </td>
     </tr>
   </tbody>

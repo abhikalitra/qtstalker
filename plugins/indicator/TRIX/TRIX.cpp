@@ -225,11 +225,11 @@ void TRIX::getIndicatorSettings (Setting &dict)
 
 PlotLine * TRIX::calculateCustom (QString &p, QPtrList<PlotLine> &d)
 {
-  // format1: ARRAY_INPUT, MA_TYPE, PERIOD, T_PERIOD
+  // format1: ARRAY_INPUT, PERIOD
 
   QStringList l = QStringList::split(",", p, FALSE);
 
-  if (l.count() == 4)
+  if (l.count() == 2)
     ;
   else
   {
@@ -243,31 +243,13 @@ PlotLine * TRIX::calculateCustom (QString &p, QPtrList<PlotLine> &d)
     return 0;
   }
 
-  QStringList mal = getMATypes();
-  if (mal.findIndex(l[1]) == -1)
-  {
-    qDebug("TRIX::calculateCustom: invalid MA_TYPE parm");
-    return 0;
-  }
-  else
-    maType = mal.findIndex(l[1]);
-
   bool ok;
-  int t = l[2].toInt(&ok);
+  int t = l[1].toInt(&ok);
   if (ok)
     period = t;
   else
   {
     qDebug("TRIX::calculateCustom: invalid PERIOD parm");
-    return 0;
-  }
-
-  t = l[3].toInt(&ok);
-  if (ok)
-    tperiod = t;
-  else
-  {
-    qDebug("TRIX::calculateCustom: invalid T_PERIOD parm");
     return 0;
   }
 

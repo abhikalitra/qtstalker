@@ -1,0 +1,315 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <title>Qtstalker: Utilities - UTIL</title>
+  <meta http-equiv="content-type"
+ content="text/html; charset=ISO-8859-1">
+</head>
+<body>
+<h2><u>Utilities - UTIL</u></h2>
+<br>
+<h3>Parameters:</h3>
+<ul>
+  <li>Method - the function type to use</li>
+  <ul>
+    <li>ACCUM - accumulation<br>
+    </li>
+    <li>TypPrice - WIlder's typical price<br>
+    </li>
+    <li>Normal - normalize data<br>
+    </li>
+    <li>ADD - addition<br>
+    </li>
+    <li>DIV - division<br>
+    </li>
+    <li>MUL - multiplication<br>
+    </li>
+    <li>SUB - subtraction<br>
+    </li>
+    <li>COMP - compare one number with another using relational
+operators<br>
+    </li>
+    <li>COUNTER<br>
+    </li>
+    <li>REF - return an array of bars offset backwards<br>
+    </li>
+  </ul>
+</ul>
+<h3>Description:</h3>
+A collection of functions for use in creating custom indicators with
+the CUS indicator.<br>
+<br>
+<h4>Formula Reference:<br>
+</h4>
+<table style="text-align: left; width: 905px; height: 112px;" border="1"
+ cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;">ACCUM Syntax<br>
+      </td>
+      <td style="vertical-align: top;">UTIL(Method, ARRAY INPUT)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Function<br>
+      </td>
+      <td style="vertical-align: top;">ARRAY INPUT can be either an
+array of bars or a formula variable array of data.<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Example<br>
+      </td>
+      <td style="vertical-align: top;">UTIL(ACCUM, Close)<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 905px; height: 112px;" border="1"
+ cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;">TypPrice<br>
+      </td>
+      <td style="vertical-align: top;">UTIL(Method)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Function<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Example<br>
+      </td>
+      <td style="vertical-align: top;">UTIL(TypPrice)<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 905px; height: 112px;" border="1"
+ cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;">Normal Syntax<br>
+      </td>
+      <td style="vertical-align: top;">UTIL(Method, ARRAY INPUT)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Function<br>
+      </td>
+      <td style="vertical-align: top;">ARRAY INPUT can be either an
+array of bars or a formula variable array of data.<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Example<br>
+      </td>
+      <td style="vertical-align: top;">UTIL(Normal, Close)<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 905px; height: 112px;" border="1"
+ cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;">ADD Syntax<br>
+      </td>
+      <td style="vertical-align: top;">UTIL(Method, ARRAY INPUT, DOUBLE)<br>
+UTIL(Method, ARRAY INPUT, ARRAY INPUT2) </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Function<br>
+      </td>
+      <td style="vertical-align: top;">Adds the values of the ARRAY
+INPUT and ARRAY INPUT2/DOUBLE value. ARRAY INPUT and ARRAY INPUT2 can
+be either an
+array of bars or a formula variable array of data. The DOUBLE is a
+number. </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Example<br>
+      </td>
+      <td style="vertical-align: top;">UTIL(ADD, Close, Open) or
+UTIL(ADD, Close, 45.5)<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 905px; height: 112px;" border="1"
+ cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;">DIV Syntax<br>
+      </td>
+      <td style="vertical-align: top;">UTIL(Method, ARRAY INPUT, DOUBLE)<br>
+UTIL(Method, ARRAY INPUT, ARRAY INPUT2) </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Function<br>
+      </td>
+      <td style="vertical-align: top;">Divides the ARRAY INPUT value by
+the ARRAY INPUT2/DOUBLE value. ARRAY INPUT and ARRAY INPUT2 can be
+either an
+array of bars or a formula variable array of data. The DOUBLE is a
+number. </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Example<br>
+      </td>
+      <td style="vertical-align: top;">UTIL(DIV, Close, Open) or
+UTIL(DIV, Close, 45.5) </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 905px; height: 112px;" border="1"
+ cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;">MUL Syntax<br>
+      </td>
+      <td style="vertical-align: top;">UTIL(Method, ARRAY INPUT, DOUBLE)<br>
+UTIL(Method, ARRAY INPUT, ARRAY INPUT2) </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Function<br>
+      </td>
+      <td style="vertical-align: top;">Multiplies the ARRAY INPUT value
+by the ARRAY INPUT2/DOUBLE value. ARRAY INPUT and ARRAY INPUT2 can be
+either an
+array of bars or a formula variable array of data. The DOUBLE is a
+number. </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Example<br>
+      </td>
+      <td style="vertical-align: top;">UTIL(MUL, Close, Open) or
+UTIL(MUL, Close, 45.5) </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 905px; height: 112px;" border="1"
+ cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;">SUB Syntax<br>
+      </td>
+      <td style="vertical-align: top;">UTIL(Method, ARRAY INPUT, DOUBLE)<br>
+UTIL(Method, ARRAY INPUT, ARRAY INPUT2) </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Function<br>
+      </td>
+      <td style="vertical-align: top;">Subtracts the ARRAY INPUT2 value
+from the ARRAY INPUT/DOUBLE value. ARRAY INPUT and ARRAY INPUT2 can be
+either an
+array of bars or a formula variable array of data. The DOUBLE is a
+number. </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Example<br>
+      </td>
+      <td style="vertical-align: top;">UTIL(SUB, Close, Open) or
+UTIL(SUB, Close, 45.5) </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 905px; height: 112px;" border="1"
+ cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;">COMP Syntax<br>
+      </td>
+      <td style="vertical-align: top;">UTIL(Method, ARRAY INPUT,
+DOUBLE, OPERATOR)<br>
+UTIL(Method, ARRAY INPUT, ARRAY INPUT2, OPERATOR) </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Function<br>
+      </td>
+      <td style="vertical-align: top;">ARRAY INPUT and ARRAY INPUT2 can
+be either an
+array of bars or a formula variable array of data. The DOUBLE is a
+number. OPERATOR is a relational operator. </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Example<br>
+      </td>
+      <td style="vertical-align: top;">UTIL(COMP, Close, Open, LTEQ) or
+UTIL(COMP, Close, 45.5, GTEQ) </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 905px; height: 112px;" border="1"
+ cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;">COUNTER Syntax<br>
+      </td>
+      <td style="vertical-align: top;">UTIL(Method, ARRAY INPUT)<br>
+UTIL(Method, ARRAY INPUT, ARRAY INPUT2)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Function<br>
+      </td>
+      <td style="vertical-align: top;">ARRAY INPUT and ARRAY INPUT2 can
+be either an
+array of bars or a formula variable array of data. </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Example<br>
+      </td>
+      <td style="vertical-align: top;">UTIL(COUNTER, Close) or
+UTIL(COUNTER, Close, reset_array) </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 905px; height: 112px;" border="1"
+ cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;">REF Syntax<br>
+      </td>
+      <td style="vertical-align: top;">UTIL(Method, ARRAY INPUT, PERIOD)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Function<br>
+      </td>
+      <td style="vertical-align: top;">ARRAY INPUT can be either an
+array of bars or a formula variable array of data. PERIOD is the number
+of bars to offset backwards.<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Example<br>
+      </td>
+      <td style="vertical-align: top;">UTIL(REF, Close, 0) for no
+offset, UTIL(REF, Close, 10) to offset 10 bars backwards<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<br>
+<br>
+<a href="trix.html" target="_self"><img src="back.png" alt="Back"
+ border="0" height="32" width="32"></a>
+<a href="vol.html" target="_self"><img src="next.png" alt="Next"
+ border="0" height="32" width="32"></a><a href="toc.html"><img
+ src="home.png" alt="Home" border="0" height="32" width="32"></a>
+</body>
+</html>

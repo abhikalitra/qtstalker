@@ -7,39 +7,96 @@
 </head>
 <body>
 <h2><u>Custom - CUS</u></h2>
-<br>
-<img style="width: 343px; height: 297px;" alt="" src="cus1.png"><br>
-<h3> Description:</h3>
+<h4>Description:</h4>
 Allows the user to create custom indicators to plot. The user builds an
-indicator in a step by step manner. Using the above pic as an example
-to build a copy of the built in MACD indicator manually. Here is a
-breakdown of each step:<br>
-<br>
-1. We use a REF step to create an array of close bar fields. This will
-be used as the input data that later steps will build on. We don't
-check the plot column because we don't want to plot this.<br>
-2. We use a MACD step with step 1 as the input. We check the plot
-column so our MACD step will appear.<br>
-3. We use a MA to create the trigger plot by applying an EMA using step
-2 as
-the input. We check this to appear on the plot.<br>
-4. We use a MATH (subtraction) function to build a histogram
-of the MACD and trigger plots by subtracting step 3 from step 2. We
-check this to appear on the plot.<br>
-<br>
+indicator in a step by step manner.<br>
 By using all the indicator plugins available, we are able to build
-almost any
-kind of indicator quickly and simply without having to learn a new
-scripting language. Complicated, intensive indicators would best be
+most any
+kind of indicator quickly and simply. Complicated, intensive indicators
+would best be
 left
 to creating a plugin instead of long series of functions for speed and
 memory considerations.<br>
 <br>
+<h4>Formula Page:</h4>
+This is where we enter our script. We break our script down into steps.
+Each step basically defines a&nbsp; variable. Each variable represents
+the results of an indicator command. The format of the variable command
+is:<br>
+<br>
+&lt;variable&gt; := &lt;indicator&gt;(indicator parameters)<br>
+<br>
+<ul>
+  <li>&lt;variable&gt; - The variable name. It cannot contain a
+reserved word.</li>
+  <li>:= - This separates the variable name from the parms and lets the
+parser know we are defining a varible</li>
+  <li>&lt;indicator&gt;(indicator parameters) - This defines what
+indicator and its parameters to use. Consult the indicator reference
+for the format of each indicator.<br>
+  </li>
+</ul>
+<br>
+Here is an example of what the MACD indicator would look like if we
+constructed one manually instead of using the builtin version.<br>
+<br>
+macd := MACD(Close, EMA, 12, 26)<br>
+trig := MA(macd, EMA, 9)<br>
+osc := UTIL(SUB, macd, trig)<br>
+<br>
+Lets review what we did. The first line creates a variable called
+'macd'. We use the MACD indicator to get a MACD. The next line we
+create a variable called 'trig'. This will be the trigger of the MACD,
+which is just an EMA of the MACD. So we use the MA plugin and request
+an 9 period EMA of the 'macd' Notice we use the variable 'macd' as the
+input for the 'trig'. The last line we create a variable called 'osc'.
+This is an oscillator. An oscillator is simply the difference between 2
+variables. So we need to use the UTIL plugin that contains a
+subtraction (SUB) function. We input the parms to get an oscillator of
+(macd - trig). That's it.<br>
+<br>
+<h4>Plot Page:</h4>
+On this page we decide which variables from the formula page we choose
+to plot on our chart. Each plot command has 4 parameters. The format of
+the plot command is:<br>
+<br>
+plot (&lt;var&gt;, &lt;color&gt;, &lt;title&gt;, &lt;plot type&gt;)<br>
+<br>
+<ol>
+  <li>&lt;var&gt; - This is the variable name used in the formula page.</li>
+  <li>&lt;color&gt; - The color the plot should use.</li>
+  <li>&lt;title&gt; - The text label the plot will use.</li>
+  <li>&lt;plot type&gt; - The plot type to use. ie Line, Histogram etc.<br>
+  </li>
+</ol>
+<br>
+From our MACD example it looks like this:<br>
+<br>
+&lt;insert plot page pic here&gt;<br>
+<br>
+<br>
+<h4>Reserved Words:</h4>
+These words and symbols are reserved for use in CUS scripts. Do not use
+these words and symbols in or part of variable names or the script will
+fail or become unstable.<br>
+<br>
+:=<br>
+(<br>
+)<br>
+plot<br>
+TRUE<br>
+FALSE<br>
+Date, Open, High, Low, Close, Volume, Open Interest, Day, Week, Month,
+DayOfWeek<br>
+Dot, Dash, Histogram, HistogramBar, Line, Invisible, Horizontal<br>
+<br>
 <br>
 <span style="font-weight: bold;"></span><span style="font-weight: bold;"></span><span
  style="font-weight: bold;"></span><span style="font-weight: bold;"></span>
-<a href="counter.html" target="_self"><img src="back.png" border="0" width="32" height="32" alt="Back"></a>
-<a href="dpo.html" target="_self"><img src="next.png" border="0" width="32" height="32" alt="Next"></a>
-<a href="toc.html"><img src="home.png" border="0" width="32" height="32" alt="Home"></a>
+<a href="counter.html" target="_self"><img src="back.png" alt="Back"
+ border="0" height="32" width="32"></a><a href="dpo.html" target="_self"><img
+ src="next.png" alt="Next" border="0" height="32" width="32"></a><a
+ href="toc.html"><img src="home.png" alt="Home" border="0" height="32"
+ width="32"></a>
 </body>
 </html>
