@@ -199,7 +199,7 @@ void QtstalkerApp::initMenuBar()
   menubar = new MainMenubar(this);
   connect(menubar, SIGNAL(signalExit()), qApp, SLOT(quit()));
   connect(this, SIGNAL(signalSetKeyFlag(bool)), menubar, SLOT(setKeyFlag(bool)));
-  connect(menubar, SIGNAL(signalRunMacro(QString)), this, SLOT(slotRunMacro(QString)));
+//  connect(menubar, SIGNAL(signalRunMacro(QString)), this, SLOT(slotRunMacro(QString)));
   connect(menubar, SIGNAL(signalSidePanel(bool)), this, SLOT(slotHideNav(bool)));
   connect(menubar, SIGNAL(signalOptions()), this, SLOT(slotOptions()));
   connect(menubar, SIGNAL(signalQuotes()), this, SLOT(slotQuotes()));

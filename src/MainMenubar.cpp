@@ -202,7 +202,7 @@ MainMenubar::MainMenubar (QMainWindow *mw) : QMenuBar (mw, "mainMenubar")
   a->insertItem(CTRL+Key_Q, Quotes);
   
   a->insertItem(CTRL+Key_Escape, 8);
-  a->connectItem(8, mw, SLOT(slotStopMacro()));
+//  a->connectItem(8, mw, SLOT(slotStopMacro()));
  
   a->insertItem(Key_F1, Macro1);
   a->insertItem(Key_F2, Macro2);
