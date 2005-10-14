@@ -31,7 +31,8 @@ operators<br>
     </li>
     <li>COUNTER<br>
     </li>
-    <li>REF - return an array of bars offset backwards<br>
+    <li>REF - return an array of bars offset backwards</li>
+    <li>PER - Performance<br>
     </li>
   </ul>
 </ul>
@@ -39,13 +40,67 @@ operators<br>
 A collection of functions for use in creating custom indicators with
 the CUS indicator.<br>
 <br>
-<h4>Formula Reference:<br>
-</h4>
+<br>
+<span style="font-weight: bold;">ACCUM</span><br>
+Accumulation method.<br>
+<br>
+<span style="font-weight: bold;">TypPrice</span><br>
+This is WIlder's typical price method.<br>
+<br>
+<span style="font-weight: bold;">Normal</span><br>
+Used to normalize an array input.<br>
+<br>
+<span style="font-weight: bold;">COMP<br>
+</span>Used for comparing two sets of data
+arrays by a relational operator. The
+result is a
+boolean (TRUE/FALSE) data array of values. The comparison is made by
+comparing the first array with the second array. If the comparison
+between the 2 data arrays is true, a TRUE value is returned. If false,
+FALSE is returned.<br>
+<br>
+<span style="font-weight: bold;">ADD<br>
+</span>Used to add two data
+arrays.<br>
+<br>
+<span style="font-weight: bold;">DIV</span><br>
+Used to divide two data
+arrays.<br>
+<br>
+<span style="font-weight: bold;">MUL</span><br>
+Used to multiply two data
+arrays.<br>
+<br>
+<span style="font-weight: bold;">SUB</span><br>
+Used to subtract two data
+arrays.<br>
+<br>
+<span style="font-weight: bold;">COUNTER</span><br>
+Counts the number of TRUE signals that appear in the first array input.
+The count will continue until a TRUE signal is received in the
+reset array (array input 2). Once a reset is received, the counter
+value is plotted and
+the counter is reset back to zero and counting resumes.<br>
+<br>
+<span style="font-weight: bold;">REF</span><br>
+Used for returning a data array of bar
+values. An
+optional period parm can displace the data back a number of bars.<br>
+<br>
+<span style="font-weight: bold;">PER</span><br>
+Plots the performance of the array input from the first bar as the zero
+reference.<br>
+<br>
+<br>
+<span style="font-weight: bold;">Formula Reference:</span><br>
+<br>
+For a description of some types used. See <a href="ctypes.html">here.</a><br>
+<br>
 <table style="text-align: left; width: 905px; height: 112px;" border="1"
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">ACCUM Syntax<br>
+      <td style="vertical-align: top;">ACCUM<br>
       </td>
       <td style="vertical-align: top;">UTIL(Method, ARRAY INPUT)<br>
       </td>
@@ -94,7 +149,7 @@ array of bars or a formula variable array of data.<br>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">Normal Syntax<br>
+      <td style="vertical-align: top;">Normal<br>
       </td>
       <td style="vertical-align: top;">UTIL(Method, ARRAY INPUT)<br>
       </td>
@@ -119,7 +174,7 @@ array of bars or a formula variable array of data.<br>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">ADD Syntax<br>
+      <td style="vertical-align: top;">ADD<br>
       </td>
       <td style="vertical-align: top;">UTIL(Method, ARRAY INPUT, DOUBLE)<br>
 UTIL(Method, ARRAY INPUT, ARRAY INPUT2) </td>
@@ -147,7 +202,7 @@ UTIL(ADD, Close, 45.5)<br>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">DIV Syntax<br>
+      <td style="vertical-align: top;">DIV<br>
       </td>
       <td style="vertical-align: top;">UTIL(Method, ARRAY INPUT, DOUBLE)<br>
 UTIL(Method, ARRAY INPUT, ARRAY INPUT2) </td>
@@ -174,7 +229,7 @@ UTIL(DIV, Close, 45.5) </td>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">MUL Syntax<br>
+      <td style="vertical-align: top;">MUL<br>
       </td>
       <td style="vertical-align: top;">UTIL(Method, ARRAY INPUT, DOUBLE)<br>
 UTIL(Method, ARRAY INPUT, ARRAY INPUT2) </td>
@@ -201,7 +256,7 @@ UTIL(MUL, Close, 45.5) </td>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">SUB Syntax<br>
+      <td style="vertical-align: top;">SUB<br>
       </td>
       <td style="vertical-align: top;">UTIL(Method, ARRAY INPUT, DOUBLE)<br>
 UTIL(Method, ARRAY INPUT, ARRAY INPUT2) </td>
@@ -228,7 +283,7 @@ UTIL(SUB, Close, 45.5) </td>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">COMP Syntax<br>
+      <td style="vertical-align: top;">COMP<br>
       </td>
       <td style="vertical-align: top;">UTIL(Method, ARRAY INPUT,
 DOUBLE, OPERATOR)<br>
@@ -255,7 +310,7 @@ UTIL(COMP, Close, 45.5, GTEQ) </td>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">COUNTER Syntax<br>
+      <td style="vertical-align: top;">COUNTER<br>
       </td>
       <td style="vertical-align: top;">UTIL(Method, ARRAY INPUT)<br>
 UTIL(Method, ARRAY INPUT, ARRAY INPUT2)<br>
@@ -281,7 +336,7 @@ UTIL(COUNTER, Close, reset_array) </td>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">REF Syntax<br>
+      <td style="vertical-align: top;">REF<br>
       </td>
       <td style="vertical-align: top;">UTIL(Method, ARRAY INPUT, PERIOD)<br>
       </td>
@@ -299,6 +354,31 @@ of bars to offset backwards.<br>
       </td>
       <td style="vertical-align: top;">UTIL(REF, Close, 0) for no
 offset, UTIL(REF, Close, 10) to offset 10 bars backwards<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 905px; height: 112px;" border="1"
+ cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;">PER<br>
+      </td>
+      <td style="vertical-align: top;">UTIL(Method, ARRAY INPUT)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Function<br>
+      </td>
+      <td style="vertical-align: top;">ARRAY INPUT can be either an
+array of bars or a formula variable array of data.<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Example<br>
+      </td>
+      <td style="vertical-align: top;">UTIL(PER, Close)<br>
       </td>
     </tr>
   </tbody>

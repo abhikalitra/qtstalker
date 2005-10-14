@@ -27,14 +27,15 @@ class STOCH : public IndicatorPlugin
     STOCH ();
     virtual ~STOCH ();
     void calculate ();
-    void calculate2 (PlotLine *);
+    void calculateStandard (PlotLine *);
+    void calculateAdaptive (PlotLine *);
     int indicatorPrefDialog (QWidget *);
     void setDefaults();
     PlotLine * calculateCustom (QString &, QPtrList<PlotLine> &);
     void getIndicatorSettings (Setting &);
     void setIndicatorSettings (Setting &);
     int getMinBars ();
-    
+
   private:
     QColor dcolor;
     QColor kcolor;
@@ -49,9 +50,18 @@ class STOCH : public IndicatorPlugin
     int period;
     int buyLine;
     int sellLine;
-    int maType;
     QString label;
     BarData::InputType input;
+    int minLookback;
+    int maxLookback;
+    int kMaType;
+    int dMaType;
+    QString method;
+    QStringList methodList;
+	
+    PlotLine *getHighest( PlotLine *line, int period);
+    PlotLine *getLowest( PlotLine *line,  int period);
+    PlotLine *getStdDev( PlotLine *line,  int period );
 };
 
 extern "C"

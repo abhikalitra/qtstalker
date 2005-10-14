@@ -2170,7 +2170,7 @@ Save changes?</source>
     </message>
     <message>
         <source>Workwith Macro</source>
-        <translation>Zarządzaj Makrami</translation>
+        <translation type="obsolete">Zarządzaj Makrami</translation>
     </message>
     <message>
         <source>Left</source>
@@ -2928,7 +2928,7 @@ Save changes?</source>
     </message>
     <message>
         <source>PER Indicator</source>
-        <translation>Wskaźnik PER</translation>
+        <translation type="obsolete">Wskaźnik PER</translation>
     </message>
     <message>
         <source>PP FS</source>
@@ -3012,7 +3012,7 @@ Save changes?</source>
     </message>
     <message>
         <source>ROC Indicator</source>
-        <translation>Wskaźnik ROC</translation>
+        <translation type="obsolete">Wskaźnik ROC</translation>
     </message>
     <message>
         <source>RSI Indicator</source>
@@ -3524,25 +3524,25 @@ Save changes?</source>
     </message>
     <message>
         <source>%K Smoothing Type</source>
-        <translation>
+        <translation type="obsolete">
 Rodzaj Wygładzania %K</translation>
     </message>
     <message>
         <source>%D Smoothing Type</source>
-        <translation>
+        <translation type="obsolete">
 Rodzaj Wygładzania %D</translation>
     </message>
     <message>
         <source>%K Period</source>
-        <translation>Okres %K</translation>
+        <translation type="obsolete">Okres %K</translation>
     </message>
     <message>
         <source>%D Period</source>
-        <translation>Okres %D</translation>
+        <translation type="obsolete">Okres %D</translation>
     </message>
     <message>
         <source>AdaptSTOCH Indicator</source>
-        <translation>Wskaźnik AtaptSTOCH</translation>
+        <translation type="obsolete">Wskaźnik AtaptSTOCH</translation>
     </message>
     <message>
         <source>Adaptive CMO</source>
@@ -3743,6 +3743,14 @@ Rodzaj Wygładzania %D</translation>
     <message>
         <source>Updating </source>
         <translation type="unfinished">Aktualizacja</translation>
+    </message>
+    <message>
+        <source>%K MA Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%D MA Type</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

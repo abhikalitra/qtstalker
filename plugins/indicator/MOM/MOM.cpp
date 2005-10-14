@@ -28,6 +28,9 @@ MOM::MOM ()
 {
   pluginName = "MOM";
   helpFile = "mom.html";
+
+  methodList.append("MOM");
+  methodList.append("ROC");
   
   setDefaults();
 }
@@ -45,6 +48,7 @@ void MOM::setDefaults ()
   smoothing = 10;  
   maType = 1;  
   input = BarData::Close;
+  method = "MOM";
 }
 
 void MOM::calculate ()
@@ -65,9 +69,17 @@ void MOM::calculate2 (PlotLine *in)
   PlotLine *mom = new PlotLine();
 
   int loop;
-  for (loop = period; loop < (int) in->getSize(); loop++)
-    mom->append(in->getData(loop) - in->getData(loop - period));
-    
+  if (! method.compare("MOM"))
+  {
+    for (loop = period; loop < (int) in->getSize(); loop++)
+      mom->append(in->getData(loop) - in->getData(loop - period));
+  }
+  else
+  {
+    for (loop = period; loop < (int) in->getSize(); loop++)
+      mom->append(((in->getData(loop) - in->getData(loop - period)) / in->getData(loop - period)) * 100);
+  }
+
   if (smoothing > 1)
   {
     PlotLine *ma = getMA(mom, maType, smoothing, 0, 0);
@@ -96,11 +108,13 @@ int MOM::indicatorPrefDialog (QWidget *w)
   QString sl = QObject::tr("Smoothing");
   QString stl = QObject::tr("Smoothing Type");
   QString il = QObject::tr("Input");
+  QString ml = QObject::tr("Method");
 
   PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(QObject::tr("MOM Indicator"));
   dialog->createPage (pl);
   dialog->setHelpFile(helpFile);
+  dialog->addComboItem(ml, pl, methodList, method);
   dialog->addColorItem(cl, pl, color);
   dialog->addComboItem(ltl, pl, lineTypes, lineType);
   dialog->addTextItem(ll, pl, label);
@@ -121,6 +135,8 @@ int MOM::indicatorPrefDialog (QWidget *w)
     maType = dialog->getComboIndex(stl);
     smoothing = dialog->getInt(sl);
     input = (BarData::InputType) dialog->getComboIndex(il);
+    method = dialog->getCombo(ml);
+
     rc = TRUE;
   }
   else
@@ -164,7 +180,11 @@ void MOM::setIndicatorSettings (Setting &dict)
   s = dict.getData("smoothing");
   if (s.length())
     smoothing = s.toInt();
-}
+
+  s = dict.getData("method");
+  if (s.length())
+    method = s;
+}      
 
 void MOM::getIndicatorSettings (Setting &dict)
 {
@@ -175,16 +195,17 @@ void MOM::getIndicatorSettings (Setting &dict)
   dict.setData("maType", QString::number(maType));
   dict.setData("input", QString::number(input));
   dict.setData("smoothing", QString::number(smoothing));
+  dict.setData("method", method);
   dict.setData("plugin", pluginName);
 }
 
 PlotLine * MOM::calculateCustom (QString &p, QPtrList<PlotLine> &d)
 {
-  // format1: ARRAY_INPUT, MA_TYPE, PERIOD, SMOOTHING
+  // format1: ARRAY_INPUT, METHOD, MA_TYPE, PERIOD, SMOOTHING
 
   QStringList l = QStringList::split(",", p, FALSE);
 
-  if (l.count() == 4)
+  if (l.count() == 5)
     ;
   else
   {
@@ -198,17 +219,25 @@ PlotLine * MOM::calculateCustom (QString &p, QPtrList<PlotLine> &d)
     return 0;
   }
 
+  if (methodList.findIndex(l[1]) == -1)
+  {
+    qDebug("MOM::calculateCustom: invalid METHOD parm");
+    return 0;
+  }
+  else
+    method = methodList.findIndex(l[1]);
+  
   QStringList mal = getMATypes();
-  if (mal.findIndex(l[1]) == -1)
+  if (mal.findIndex(l[2]) == -1)
   {
     qDebug("MOM::calculateCustom: invalid MA_TYPE parm");
     return 0;
   }
   else
-    maType = mal.findIndex(l[1]);
+    maType = mal.findIndex(l[2]);
 
   bool ok;
-  int t = l[2].toInt(&ok);
+  int t = l[3].toInt(&ok);
   if (ok)
     period = t;
   else
@@ -217,7 +246,7 @@ PlotLine * MOM::calculateCustom (QString &p, QPtrList<PlotLine> &d)
     return 0;
   }
 
-  t = l[3].toInt(&ok);
+  t = l[4].toInt(&ok);
   if (ok)
     smoothing = t;
   else

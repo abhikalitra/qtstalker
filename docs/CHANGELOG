@@ -85,6 +85,16 @@
 20051013: Removed the Macro functions. I am not satisfied with them as they appear half-assed.
           They need to be revised at a later time.
 
+20051013: Merged AdaptiveSTOCH plugin into the STOCH plugin.
+
+20051013: Merged ROC plugin into the MOM plugin.
+
+20051013: Merged PER plugin into the UTIL plugin.
+
+20051014: Removed the MAOSC plugin. It duplicates the MACD plugin.
+
+
+
 
 0.32
 ====

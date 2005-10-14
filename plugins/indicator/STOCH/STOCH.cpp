@@ -23,11 +23,15 @@
 #include "PrefDialog.h"
 #include <qdict.h>
 #include <qobject.h>
+#include <math.h>
 
 STOCH::STOCH ()
 {
   pluginName = "STOCH";
   helpFile = "stoch.html";
+
+  methodList.append("Standard");
+  methodList.append("Adaptive");
   
   setDefaults();
 }
@@ -51,9 +55,13 @@ void STOCH::setDefaults ()
   period = 14;
   buyLine = 20;
   sellLine = 80;
-  maType = 1;
   label = pluginName;
   input = BarData::Close;
+  minLookback = 5;
+  maxLookback = 20;
+  kMaType = 0;
+  dMaType = 0;
+  method = "Standard";
 }
 
 void STOCH::calculate ()
@@ -65,11 +73,15 @@ void STOCH::calculate ()
     return;
   }
 
-  calculate2(in);
+  if (! method.compare("Standard"))
+    calculateStandard(in);
+  else
+    calculateAdaptive(in);
+
   delete in;
 }
 
-void STOCH::calculate2 (PlotLine *in)
+void STOCH::calculateStandard (PlotLine *in)
 {
   PlotLine *k = new PlotLine();
   int loop;
@@ -100,7 +112,7 @@ void STOCH::calculate2 (PlotLine *in)
 
   if (kperiod > 1)
   {
-    PlotLine *k2 = getMA(k, maType, kperiod, 0, 0);
+    PlotLine *k2 = getMA(k, kMaType, kperiod, 0, 0);
     delete k;
     k = k2;
   }
@@ -112,7 +124,7 @@ void STOCH::calculate2 (PlotLine *in)
 
   if (dperiod > 1)
   {
-    PlotLine *d = getMA(k, maType, dperiod, 0, 0);
+    PlotLine *d = getMA(k, dMaType, dperiod, 0, 0);
     d->setColor(dcolor);
     d->setType(dlineType);
     d->setLabel(dlabel);
@@ -138,6 +150,196 @@ void STOCH::calculate2 (PlotLine *in)
   }
 }
 
+void STOCH::calculateAdaptive (PlotLine *in)
+{
+  if ( in->getSize() < ( period + maxLookback + 5) )
+  {
+    qDebug("AdaptSTOCH::calculate: insufficient data");
+    return;
+  }
+  
+  //  Calculate 20-day std. Dev. And its 20-day range 
+  PlotLine *v1 = getStdDev(in, period);
+  PlotLine *v2 = getHighest(v1, period);
+  PlotLine *v3 = getLowest(v1, period); 
+	
+  // Create v4: stochastic oscillator for 20-day std. dev.
+  // if v1=v2 (highest level) => v4 = 1; if v1=v3 (lowest level) => v4=0 
+
+  PlotLine *v4 = new PlotLine;
+	
+  int i = 0;
+	
+  for (i = 0; i < v2->getSize(); i++)
+  {
+    if ( (v2->getData(i) - v3->getData(i)) > 0)
+      v4->append( (v1->getData(i) - v3->getData(i)) / (v2->getData(i) - v3->getData(i)) );
+    else
+      v4->append(0);
+  }
+
+  // Calculate current effective length; if v4 = 1, then length = mininum 
+
+  PlotLine *currentLength = new PlotLine;;
+	
+  for (i = 0; i < v4->getSize(); i++)
+    currentLength->append ( (int) ( minLookback + (maxLookback - minLookback) * (1 - v4->getData(i)) ) );
+	
+  // now build indicator
+  double stoch = 0;
+
+  PlotLine *aStoch = new PlotLine;
+	
+  // work backwards to insure alignment
+  int index = in->getSize() -1;
+  for (i = currentLength->getSize() - 1; i >= 0; i--)
+  {
+    double hh = -999999;
+    double ll = 999999;
+    int loop2;
+		
+    for (loop2 = 0; loop2 < (int)currentLength->getData(i); loop2++)		// hihest high
+    {			
+      if ( data->getHigh(index - loop2) > hh)
+        hh = data->getHigh(index - loop2);
+	
+      if ( data->getLow(index - loop2) < ll)
+        ll = data->getLow(index - loop2);
+    }
+				
+    if ( (hh-ll) > 0 )
+      stoch = ( ( (data->getClose(index) - ll)/(hh - ll)) * 100 );
+    else
+    {
+      stoch = 0;
+      qDebug("AdaptSTOCH::calculate: data error: high < low");
+    }
+		
+    aStoch->prepend(stoch);
+    index--;
+  }
+	
+	
+  if (kperiod > 1)
+  {
+    PlotLine *aStoch2 = getMA(aStoch, kMaType, kperiod, 0, 0);
+    delete aStoch;
+    aStoch = aStoch2;
+  }
+	
+  aStoch->setColor(kcolor);
+  aStoch->setType(klineType);
+  aStoch->setLabel(klabel);
+	
+  output->addLine(aStoch);
+
+  delete v1;
+  delete v2;
+  delete v3; 
+  delete v4;
+  delete currentLength;
+
+  if (dperiod > 1)
+  {
+    PlotLine *d = getMA(aStoch, dMaType, dperiod, 0, 0);
+    d->setColor(dcolor);
+    d->setType(dlineType);
+    d->setLabel(dlabel);
+    output->addLine(d);
+  }
+  
+  if (buyLine)
+  {
+    PlotLine *bline = new PlotLine();
+    bline->setColor(buyColor);
+    bline->setType(PlotLine::Horizontal);
+    bline->append(buyLine);
+    output->addLine(bline);
+  }
+  
+  if (sellLine)
+  {
+    PlotLine *sline = new PlotLine();
+    sline->setColor(sellColor);
+    sline->setType(PlotLine::Horizontal);
+    sline->append(sellLine);
+    output->addLine(sline);
+  }
+}
+
+PlotLine * STOCH::getHighest( PlotLine *line,  int period)
+{
+  int loop;
+  
+  PlotLine *lineHigh = new PlotLine;
+  
+  for (loop = period -1; loop < (int) line->getSize(); loop++)
+  {
+  
+    double highest = -999999;
+    int loop2;
+    
+    for (loop2 = 0; loop2 < period; loop2++)
+    {
+      if ( line->getData(loop - loop2) > highest)
+	highest = line->getData(loop - loop2);
+    }
+  
+    lineHigh->append(highest);
+  }
+  return lineHigh;
+}
+
+PlotLine * STOCH::getLowest( PlotLine *line,  int period)
+{
+  int loop;
+  
+  PlotLine *lineLow = new PlotLine;
+  
+  for (loop = period -1; loop < (int) line->getSize(); loop++)
+  {
+    double lowest = 999999;
+    int loop2;
+    
+    for (loop2 = 0; loop2 < period; loop2++)
+    {
+      if ( line->getData(loop - loop2) < lowest)
+	lowest = line->getData(loop - loop2);
+    }
+  
+    lineLow->append(lowest);
+  }
+  return lineLow;
+}
+
+PlotLine * STOCH::getStdDev( PlotLine *line,  int period )
+{
+  PlotLine *std = new PlotLine;
+ 
+  int loop;
+  
+  for (loop = period -1; loop < (int) line->getSize(); loop++)
+  {
+    double mean = 0;
+    int loop2;
+    for (loop2 = 0; loop2 < period; loop2++)
+    mean += line->getData(loop - loop2);
+		
+    mean /= (double)period;
+	
+    double ds = 0;
+    for (loop2 = 0; loop2 < period; loop2++)
+    {
+      double t = line->getData(loop - loop2) - mean;
+      ds += (t * t);
+    }
+  
+    ds = sqrt(ds / (double)period);
+    std->append(ds);
+  }
+  return std;
+}
+
 int STOCH::indicatorPrefDialog (QWidget *w)
 {
   QString pl = QObject::tr("Parms");
@@ -149,16 +351,20 @@ int STOCH::indicatorPrefDialog (QWidget *w)
   QString szc = QObject::tr("Sell Zone Color");
   QString bz = QObject::tr("Buy Zone");
   QString sz = QObject::tr("Sell Zone");
+  QString ml = QObject::tr("Method");
+  QString perMin = QObject::tr("Min Lookback Period");
+  QString perMax = QObject::tr("Max Lookback Period");
 
   PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(QObject::tr("STOCH Indicator"));
   dialog->createPage (pl);
   dialog->setHelpFile(helpFile);
+  dialog->addComboItem(ml, pl, methodList, method);
   dialog->addIntItem(perl, pl, period, 1, 99999999);
-  QStringList l = getMATypes();
-  dialog->addComboItem(stl, pl, l, maType);
   dialog->addComboItem(il, pl, inputTypeList, input);
-  
+  dialog->addIntItem(perMin, pl, minLookback, 0, 99999999);
+  dialog->addIntItem(perMax, pl, maxLookback, 0, 99999999);
+
   pl = QObject::tr("%K Parms");
   dialog->createPage (pl);
   QString t = QObject::tr("%K Color");
@@ -169,6 +375,9 @@ int STOCH::indicatorPrefDialog (QWidget *w)
   dialog->addTextItem(t, pl, klabel);
   t = QObject::tr("%K Smoothing");
   dialog->addIntItem(t, pl, kperiod, 0, 99999999);
+  QStringList l = getMATypes();
+  t = QObject::tr("%K MA Type");
+  dialog->addComboItem(t, pl, l, kMaType);
   
   pl = QObject::tr("%D Parms");
   dialog->createPage (pl);
@@ -180,6 +389,8 @@ int STOCH::indicatorPrefDialog (QWidget *w)
   dialog->addTextItem(t, pl, dlabel);
   t = QObject::tr("%D Smoothing");
   dialog->addIntItem(t, pl, dperiod, 0, 99999999);
+  t = QObject::tr("%D MA Type");
+  dialog->addComboItem(t, pl, l, dMaType);
   
   pl = QObject::tr("Zones");
   dialog->createPage (pl);
@@ -209,9 +420,18 @@ int STOCH::indicatorPrefDialog (QWidget *w)
     t = QObject::tr("%K Label");
     klabel = dialog->getText(t);
     period = dialog->getInt(perl);
-    maType = dialog->getComboIndex(stl);
     input = (BarData::InputType) dialog->getComboIndex(il);
-    
+    method = dialog->getCombo(ml);
+
+    t = QObject::tr("Min Lookback Period");
+    minLookback = dialog->getInt(t);
+    t = QObject::tr("Max Lookback Period");
+    maxLookback = dialog->getInt(t);
+
+    t = QObject::tr("%K MA Type");
+    kMaType = dialog->getComboIndex(t);
+    t = QObject::tr("%D MA Type");
+    dMaType = dialog->getComboIndex(t);
     buyColor = dialog->getColor(bzc);
     sellColor = dialog->getColor(szc);
     buyLine = dialog->getInt(bz);
@@ -277,10 +497,6 @@ void STOCH::setIndicatorSettings (Setting &dict)
   if (s.length())
     klabel = s;
   
-  s = dict.getData("maType");
-  if (s.length())
-    maType = s.toInt();
-
   s = dict.getData("buyLine");
   if (s.length())
     buyLine = s.toInt();
@@ -296,6 +512,26 @@ void STOCH::setIndicatorSettings (Setting &dict)
   s = dict.getData("input");
   if (s.length())
     input = (BarData::InputType) s.toInt();
+
+  s = dict.getData("kMaType");
+  if (s.length())
+    kMaType = s.toInt();
+	
+  s = dict.getData("dMaType");
+  if (s.length())
+    dMaType = s.toInt();
+	
+  s = dict.getData("minLookback");
+  if (s.length())
+    minLookback = s.toInt();   
+	
+  s = dict.getData("maxLookback");
+  if (s.length())
+    maxLookback = s.toInt();   
+
+  s = dict.getData("method");
+  if (s.length())
+    method = s;
 }
 
 void STOCH::getIndicatorSettings (Setting &dict)
@@ -310,22 +546,26 @@ void STOCH::getIndicatorSettings (Setting &dict)
   dict.setData("klineType", QString::number(klineType));
   dict.setData("kperiod", QString::number(kperiod));
   dict.setData("klabel", klabel);
-  dict.setData("maType", QString::number(maType));
   dict.setData("period", QString::number(period));
   dict.setData("buyLine", QString::number(buyLine));
   dict.setData("sellLine", QString::number(sellLine));
   dict.setData("label", label);
   dict.setData("input", QString::number(input));
   dict.setData("plugin", pluginName);
+  dict.setData("kMaType", QString::number(kMaType));
+  dict.setData("dMaType", QString::number(dMaType));
+  dict.setData("minLookback", QString::number(minLookback));
+  dict.setData("maxLookback", QString::number(maxLookback));
+  dict.setData("method", method);
 }
 
 PlotLine * STOCH::calculateCustom (QString &p, QPtrList<PlotLine> &d)
 {
-  // format1: ARRAY_INPUT, MA_TYPE, PERIOD, D_PERIOD, K_PERIOD
+  // format: ARRAY_INPUT, METHOD, K_MA_TYPE, D_MA_TYPE, PERIOD, K_PERIOD, D_PERIOD, MIN_LOOKBACK, MAX_LOOKBACK
 
   QStringList l = QStringList::split(",", p, FALSE);
 
-  if (l.count() == 5)
+  if (l.count() == 9)
     ;
   else
   {
@@ -339,17 +579,33 @@ PlotLine * STOCH::calculateCustom (QString &p, QPtrList<PlotLine> &d)
     return 0;
   }
 
-  QStringList mal = getMATypes();
-  if (mal.findIndex(l[1]) == -1)
+  if (methodList.findIndex(l[1]) == -1)
   {
-    qDebug("STOCH::calculateCustom: invalid MA_TYPE parm");
+    qDebug("STOCH::calculateCustom: invalid METHOD parm");
     return 0;
   }
   else
-    maType = mal.findIndex(l[1]);
+    method = methodList.findIndex(l[1]);
+
+  QStringList mal = getMATypes();
+  if (mal.findIndex(l[2]) == -1)
+  {
+    qDebug("STOCH::calculateCustom: invalid K_MA_TYPE parm");
+    return 0;
+  }
+  else
+    kMaType = mal.findIndex(l[2]);
+
+  if (mal.findIndex(l[3]) == -1)
+  {
+    qDebug("STOCH::calculateCustom: invalid D_MA_TYPE parm");
+    return 0;
+  }
+  else
+    dMaType = mal.findIndex(l[3]);
 
   bool ok;
-  int t = l[2].toInt(&ok);
+  int t = l[4].toInt(&ok);
   if (ok)
     period = t;
   else
@@ -358,16 +614,7 @@ PlotLine * STOCH::calculateCustom (QString &p, QPtrList<PlotLine> &d)
     return 0;
   }
 
-  t = l[3].toInt(&ok);
-  if (ok)
-    dperiod = t;
-  else
-  {
-    qDebug("STOCH::calculateCustom: invalid D_PERIOD parm");
-    return 0;
-  }
-
-  t = l[4].toInt(&ok);
+  t = l[5].toInt(&ok);
   if (ok)
     kperiod = t;
   else
@@ -376,8 +623,40 @@ PlotLine * STOCH::calculateCustom (QString &p, QPtrList<PlotLine> &d)
     return 0;
   }
 
+  t = l[6].toInt(&ok);
+  if (ok)
+    dperiod = t;
+  else
+  {
+    qDebug("STOCH::calculateCustom: invalid D_PERIOD parm");
+    return 0;
+  }
+
+  t = l[7].toInt(&ok);
+  if (ok)
+    minLookback = t;
+  else
+  {
+    qDebug("STOCH::calculateCustom: invalid MIN_LOOKBACK parm");
+    return 0;
+  }
+
+  t = l[8].toInt(&ok);
+  if (ok)
+    maxLookback = t;
+  else
+  {
+    qDebug("STOCH::calculateCustom: invalid MAX_LOOKBACK parm");
+    return 0;
+  }
+
   clearOutput();
-  calculate2(d.at(0));
+
+  if (! method.compare("Standard"))
+    calculateStandard(d.at(0));
+  else
+    calculateAdaptive(d.at(0));
+
   return output->getLine(0);
 }
 

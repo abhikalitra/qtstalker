@@ -11,22 +11,27 @@
  style="width: 707px; height: 204px;"><br>
 <h3>Parameters:</h3>
 <ul>
-  <li>Input - The input bar field to use.<br>
+  <li>Method - Standard or Adaptive stochastic method.<br>
   </li>
+  <li>Input - The input bar field to use.</li>
   <li>%D Color - %D color</li>
   <li>%D Line Type - %D line type</li>
   <li>%D Label - The text to identify the %D plot</li>
-  <li>%D Smoothing - %D smoothing period<br>
+  <li>%D Smoothing - %D smoothing period</li>
+  <li>%D Smoothing Type - %D smoothing type<br>
   </li>
   <li>%K Color - %K color</li>
   <li>%K Line Type - %K line type</li>
   <li>%K Label - The text to identify the %K plot</li>
   <li>%K Smoothing - %K smoothing period</li>
+  <li>%K Smoothing Type - %K smoothing type</li>
   <li>Buy Line - Buy signal threshold</li>
   <li>Sell Line - Sell signal threshold</li>
   <li>Period - STOCH period</li>
-  <li>Smoothing Type - Smoothing type to use on %D, %K plots<br>
-  </li>
+  <li>Min Lookback - The minimum lookback period for the Adaptive
+method only.</li>
+  <li>Max Lookback - The maximum lookback period for the Adaptive
+method only.</li>
 </ul>
 <h3>Description:</h3>
 <br>
@@ -38,22 +43,28 @@
     <tr>
       <td style="vertical-align: top;">Syntax<br>
       </td>
-      <td style="vertical-align: top;">STOCH(Input, Smoothing Type,
-Period, %D Smoothing, %K Smoothing)<br>
+      <td style="vertical-align: top;">STOCH(Input, Method, %K
+Smoothing Type,
+%D Smoothing Type, Period, %K Smoothing, %D Smoothing, Min Lookback,
+Max Lookback)<br>
       </td>
     </tr>
     <tr>
       <td style="vertical-align: top;">Function<br>
       </td>
       <td style="vertical-align: top;">Input can be either an
-array of bars or a formula variable array of data.<br>
+array of bars or a formula variable array of data. Method is either
+Standard or Adaptive. <br>
       </td>
     </tr>
     <tr>
       <td style="vertical-align: top;">Example<br>
       </td>
-      <td style="vertical-align: top;">STOCH(Close, SMA, 14,
-3, 3)<br>
+      <td style="vertical-align: top;">STOCH(Close, Standard, EMA, EMA,
+14,
+3, 3, 0, 0) or<br>
+STOCH(Close, Adaptive, EMA, EMA, 14,
+3, 3, 5, 20)<br>
       </td>
     </tr>
   </tbody>

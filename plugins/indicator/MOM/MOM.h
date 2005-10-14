@@ -43,6 +43,8 @@ class MOM : public IndicatorPlugin
     int smoothing;
     int maType;
     BarData::InputType input;
+    QString method;
+    QStringList methodList;
 };
 
 extern "C"

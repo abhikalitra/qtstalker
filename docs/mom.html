@@ -10,6 +10,8 @@
 <img src="mom1.png" title="" alt="" style="width: 693px; height: 230px;"><br>
 <h3>Parameters:</h3>
 <ul>
+  <li>Method - Either Momentum (MOM) or Rate of Change (ROC) methods.<br>
+  </li>
   <li>Input - The data field the MOM is based on</li>
   <li>Period - The MOM period</li>
   <li>Smoothing - The MOM smoothing period</li>
@@ -20,7 +22,21 @@
   <li>Label - The text to identify the MOM plot</li>
 </ul>
 <h3>Description:</h3>
-<br>
+Rate of Change is a simple momentum indicator calculating the rate
+at
+which the price changes over a specified period of time.
+<p>Uses the division method for comparing the price with that of the
+last
+period.</p>
+<h4><br>
+</h4>
+<h4>Some hints for interpretation</h4>
+<p>Use several momentum indicators for various time spans.</p>
+<p>Above equilibrium: greater than this time last period. Below
+equilibrium: less than this time last period.</p>
+<p>Rising momentum: bullish, expanding. Declining momentum: bearish.</p>
+<h4><br>
+</h4>
 <h4>Formula Reference:<br>
 </h4>
 <table style="text-align: left; width: 905px; height: 112px;" border="1"
@@ -29,7 +45,8 @@
     <tr>
       <td style="vertical-align: top;">Syntax<br>
       </td>
-      <td style="vertical-align: top;">MOM(Input, Smoothing Type,
+      <td style="vertical-align: top;">MOM(Input, Method, Smoothing
+Type,
 Period, Smoothing)<br>
       </td>
     </tr>
@@ -37,12 +54,15 @@ Period, Smoothing)<br>
       <td style="vertical-align: top;">Function<br>
       </td>
       <td style="vertical-align: top;">Input can be either an
-array of bars or a formula variable array of data. </td>
+array of bars or a formula variable array of data. Method is either MOM
+or ROC.<br>
+      </td>
     </tr>
     <tr>
       <td style="vertical-align: top;">Example<br>
       </td>
-      <td style="vertical-align: top;">MOM(Close, SMA, 10, 10)<br>
+      <td style="vertical-align: top;">MOM(Close, MOM, SMA, 10, 10)<br>
+MOM(Close, ROC, SMA, 10, 10)<br>
       </td>
     </tr>
   </tbody>

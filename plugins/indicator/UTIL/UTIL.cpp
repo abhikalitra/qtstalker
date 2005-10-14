@@ -40,6 +40,7 @@ UTIL::UTIL ()
   methodList.append("COMP");
   methodList.append("COUNTER");
   methodList.append("REF");
+  methodList.append("PER");
   methodList.sort();
 
   helpFile = "math.html";
@@ -228,6 +229,12 @@ PlotLine * UTIL::calculateCustom (QString &p, QPtrList<PlotLine> &d)
     if (! l[0].compare("REF"))
     {
       out = calculateREF(p, d);
+      break;
+    }
+
+    if (! l[0].compare("PER"))
+    {
+      out = calculatePER(p, d);
       break;
     }
 
@@ -784,6 +791,40 @@ PlotLine * UTIL::calculateREF (QString &p, QPtrList<PlotLine> &d)
   
   output->addLine(line);
   
+  return output->getLine(0);
+}
+
+PlotLine * UTIL::calculatePER (QString &p, QPtrList<PlotLine> &d)
+{
+  // format: METHOD, INPUT_ARRAY
+
+  QStringList l = QStringList::split(",", p, FALSE);
+
+  if (l.count() == 2)
+    ;
+  else
+  {
+    qDebug("UTIL::calculatePER: invalid parm count");
+    return 0;
+  }
+
+  if (! d.count())
+  {
+    qDebug("UTIL::calculatePER: invalid ARRAY_INPUT parm");
+    return 0;
+  }
+
+  clearOutput();
+
+  PlotLine *line = new PlotLine();
+  PlotLine *input = d.at(0);
+  
+  double base = input->getData(0);
+  int loop;
+  for (loop = 1; loop < (int) input->getSize(); loop++)
+    line->append(((input->getData(loop) - base) / base) * 100);
+
+  output->addLine(line);
   return output->getLine(0);
 }
 

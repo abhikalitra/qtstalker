@@ -23,7 +23,6 @@ SUBDIRS += plugins/quote/Yahoo
 
 #compile indicator plugins
 SUBDIRS += plugins/indicator/AD
-SUBDIRS += plugins/indicator/AdaptSTOCH
 SUBDIRS += plugins/indicator/AROON
 SUBDIRS += plugins/indicator/ATR
 SUBDIRS += plugins/indicator/BB
@@ -36,13 +35,10 @@ SUBDIRS += plugins/indicator/FI
 SUBDIRS += plugins/indicator/LMS
 SUBDIRS += plugins/indicator/MA
 SUBDIRS += plugins/indicator/MACD
-SUBDIRS += plugins/indicator/MAOSC
 SUBDIRS += plugins/indicator/MF
 SUBDIRS += plugins/indicator/MINMAX
 SUBDIRS += plugins/indicator/MOM
-SUBDIRS += plugins/indicator/PER
 SUBDIRS += plugins/indicator/PP
-SUBDIRS += plugins/indicator/ROC
 SUBDIRS += plugins/indicator/RSI
 SUBDIRS += plugins/indicator/SAR
 SUBDIRS += plugins/indicator/SINWAV

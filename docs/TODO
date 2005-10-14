@@ -41,6 +41,11 @@ To Do:
 - fix: tester entry on buy and sell signals does not execute on next bar but on current bar.
 - update CUS docs for new format and rules and specs.
 
+- *******before 0.33 put in routine in config to remove old CUS format files:*************
+	~/.qtstalker/data0/cusrules 
+  	~/.qtstalker/data0/scanner 
+	~/.qtstalker/data0/test
+	~/.qtstalker/data0/indicator (only remove CUS types and leave the rest)
 
 
 Maybe some day:
