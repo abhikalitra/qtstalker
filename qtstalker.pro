@@ -53,7 +53,6 @@ SUBDIRS += plugins/indicator/VFI
 SUBDIRS += plugins/indicator/VIDYA
 SUBDIRS += plugins/indicator/VOL
 SUBDIRS += plugins/indicator/VOLA
-SUBDIRS += plugins/indicator/VT
 SUBDIRS += plugins/indicator/WILLR
 
 #compile db plugins

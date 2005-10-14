@@ -2868,15 +2868,15 @@ Save changes?</source>
     </message>
     <message>
         <source>MAOSC Indicator</source>
-        <translation>Wskaźnik MAOSC</translation>
+        <translation type="obsolete">Wskaźnik MAOSC</translation>
     </message>
     <message>
         <source>Fast MA Type</source>
-        <translation>Szybki rodzaj ŚK</translation>
+        <translation type="obsolete">Szybki rodzaj ŚK</translation>
     </message>
     <message>
         <source>Slow MA Type</source>
-        <translation>Wolny rodzaj ŚK</translation>
+        <translation type="obsolete">Wolny rodzaj ŚK</translation>
     </message>
     <message>
         <source>ADD</source>
