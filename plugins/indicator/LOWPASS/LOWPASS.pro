@@ -1,12 +1,14 @@
-pluginName = MA
+pluginName = LOWPASS
 
 !include( ../../../plugin.config ){
   message( "Oops -- No custom build options specified" ) 
 } 
 
-HEADERS += MA.h
+HEADERS += LOWPASS.h
+HEADERS += qtsFFT.h
 
-SOURCES += MA.cpp
+SOURCES += LOWPASS.cpp
+SOURCES += qtsFFT.cpp
 
 target.path = /usr/lib/qtstalker/indicator
 INSTALLS += target

@@ -158,7 +158,7 @@ QStringList IndicatorPlugin::getMATypes ()
   return l;
 }
 
-PlotLine * IndicatorPlugin::getMA (PlotLine *in, int type, int period, double fre, double wid)
+PlotLine * IndicatorPlugin::getMA (PlotLine *in, int type, int period)
 {
   PlotLine *ma = 0;
   Config config;
@@ -171,7 +171,7 @@ PlotLine * IndicatorPlugin::getMA (PlotLine *in, int type, int period, double fr
     return ma;
   }
 
-  ma = plug->getMA(in, type, period, fre, wid);
+  ma = plug->getMA(in, type, period);
   config.closePlugin(s);
   return ma;  
 }

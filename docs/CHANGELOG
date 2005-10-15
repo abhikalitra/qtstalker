@@ -95,6 +95,8 @@
 
 20051014: Merged VT plugin into the VOL plugin.
 
+20051014: Moved the LOWPASS code out of the MA plugin back into it's own LOWPASS plugin. MA code was getting
+          messy to wrap easily.
 
 
 0.32

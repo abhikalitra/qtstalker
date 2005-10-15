@@ -33,6 +33,7 @@ SUBDIRS += plugins/indicator/DMI
 SUBDIRS += plugins/indicator/DPO
 SUBDIRS += plugins/indicator/FI
 SUBDIRS += plugins/indicator/LMS
+SUBDIRS += plugins/indicator/LOWPASS
 SUBDIRS += plugins/indicator/MA
 SUBDIRS += plugins/indicator/MACD
 SUBDIRS += plugins/indicator/MF

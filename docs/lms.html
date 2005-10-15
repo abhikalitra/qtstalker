@@ -34,6 +34,47 @@
   <li>Plot Test Pattern - A reference plot.<br>
   </li>
 </ul>
+<span style="font-weight: bold;">Description:<br>
+<br>
+</span>This is another indicator from the DSP (Digital Signal
+Processing) arena. Ehlers uses a least mean squares<br>
+technique to generate a 2 day and a 5 day prediction of a modified slow
+stochastic.<br>
+<br>
+There are two modes: <br>
+<br>
+Cycle mode where the indicator is plotted as a normal tabbed indicator
+and works best when there is rapid price movement and some cyclic
+content. Buy signals are generated when the SlowK line crosses over the
+2 or 5 day prediction line.<br>
+<br>
+The Counter Trend mode can be used in the same way but can also be
+ploted on the main chart with a low delay filter (e.g. EMA or even
+better LowPass) to indicate counter trend trades i.e. the signal to buy
+is when the low delay moving average crosses over the 2 or 5 day
+prediction.<br>
+<br>
+More information can be found at www.mesa.co.uk/articles/ in the
+article "Linear Prediction". There are more cycle oriented articles
+there as well.<br>
+<br>
+Some notes on the implementation: <br>
+<br>
+1. Included in the preferences dialog is the abiblty to change both the
+fast and slow "K" values. This is<br>
+not in Ehler's original code. he uses only one value for slowK and
+recommends the value of 10 periods -- the default is set for 5 periods.<br>
+<br>
+2. Also included is a "test pattern" which is a simple sine wave that
+replaces the price data. This pattern<br>
+will show how well the selected parameters can track the "ideal" signal
+and give some confidence to cyclic<br>
+doubters :-)<br>
+<br>
+Actually, item 2 is a confidence check that the code is actually
+corrrect! These signals have a tendency to<br>
+wander in their initial directions and are rather difficult to trust
+without some confirmation -- in trading or coding....<br>
 <br>
 <h4>Formula Reference:<br>
 </h4>

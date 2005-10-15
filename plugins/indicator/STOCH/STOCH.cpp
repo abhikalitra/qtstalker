@@ -112,7 +112,7 @@ void STOCH::calculateStandard (PlotLine *in)
 
   if (kperiod > 1)
   {
-    PlotLine *k2 = getMA(k, kMaType, kperiod, 0, 0);
+    PlotLine *k2 = getMA(k, kMaType, kperiod);
     delete k;
     k = k2;
   }
@@ -124,7 +124,7 @@ void STOCH::calculateStandard (PlotLine *in)
 
   if (dperiod > 1)
   {
-    PlotLine *d = getMA(k, dMaType, dperiod, 0, 0);
+    PlotLine *d = getMA(k, dMaType, dperiod);
     d->setColor(dcolor);
     d->setType(dlineType);
     d->setLabel(dlabel);
@@ -222,7 +222,7 @@ void STOCH::calculateAdaptive (PlotLine *in)
 	
   if (kperiod > 1)
   {
-    PlotLine *aStoch2 = getMA(aStoch, kMaType, kperiod, 0, 0);
+    PlotLine *aStoch2 = getMA(aStoch, kMaType, kperiod);
     delete aStoch;
     aStoch = aStoch2;
   }
@@ -241,7 +241,7 @@ void STOCH::calculateAdaptive (PlotLine *in)
 
   if (dperiod > 1)
   {
-    PlotLine *d = getMA(aStoch, dMaType, dperiod, 0, 0);
+    PlotLine *d = getMA(aStoch, dMaType, dperiod);
     d->setColor(dcolor);
     d->setType(dlineType);
     d->setLabel(dlabel);

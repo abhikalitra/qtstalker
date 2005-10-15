@@ -82,7 +82,7 @@ void MOM::calculate2 (PlotLine *in)
 
   if (smoothing > 1)
   {
-    PlotLine *ma = getMA(mom, maType, smoothing, 0, 0);
+    PlotLine *ma = getMA(mom, maType, smoothing);
     ma->setColor(color);
     ma->setType(lineType);
     ma->setLabel(label);

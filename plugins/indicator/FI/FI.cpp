@@ -59,7 +59,7 @@ void FI::calculate ()
 
   if (smoothing > 1)
   {
-    PlotLine *ma = getMA(fi, maType, smoothing, 0, 0);
+    PlotLine *ma = getMA(fi, maType, smoothing);
     ma->setColor(color);
     ma->setType(lineType);
     ma->setLabel(label);

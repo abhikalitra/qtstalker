@@ -122,7 +122,7 @@ void VOL::calculateVOL ()
   if (period < 1)
     return;
 
-  PlotLine *ma = getMA(pl, maType, period, 0, 0);
+  PlotLine *ma = getMA(pl, maType, period);
   ma->setColor(maColor);
   ma->setType(maLineType);
   ma->setLabel(maLabel);
@@ -160,7 +160,7 @@ void VOL::calculateOBV ()
   if (period < 1)
     return;
 
-  PlotLine *ma = getMA(obv, maType, period, 0, 0);
+  PlotLine *ma = getMA(obv, maType, period);
   ma->setColor(maColor);
   ma->setType(maLineType);
   ma->setLabel(maLabel);
@@ -194,7 +194,7 @@ void VOL::calculateNVI ()
   if (period < 1)
     return;
 
-  PlotLine *ma = getMA(nvi, maType, period, 0, 0);
+  PlotLine *ma = getMA(nvi, maType, period);
   ma->setColor(maColor);
   ma->setType(maLineType);
   ma->setLabel(maLabel);
@@ -228,7 +228,7 @@ void VOL::calculatePVI ()
   if (period < 1)
     return;
 
-  PlotLine *ma = getMA(pvi, maType, period, 0, 0);
+  PlotLine *ma = getMA(pvi, maType, period);
   ma->setColor(maColor);
   ma->setType(maLineType);
   ma->setLabel(maLabel);
@@ -259,7 +259,7 @@ void VOL::calculatePVT ()
   if (period < 1)
     return;
 
-  PlotLine *ma = getMA(pvt, maType, period, 0, 0);
+  PlotLine *ma = getMA(pvt, maType, period);
   ma->setColor(maColor);
   ma->setType(maLineType);
   ma->setLabel(maLabel);

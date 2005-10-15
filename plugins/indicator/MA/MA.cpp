@@ -21,16 +21,8 @@
 
 #include "MA.h"
 #include "PrefDialog.h"
-#include "MADialog.h"
 #include <qdict.h>
 #include <qobject.h>
-#include <math.h>
-
-#define MAXNUM 2147483647
-
-#if ! defined ( PI )
-#define PI 3.141592653589793
-#endif
 
 MA::MA ()
 {
@@ -52,11 +44,6 @@ void MA::setDefaults ()
   period = 10;
   maType = (int) SMA;  
   input = BarData::Close;
-  maTypeList = getMATypes();
-  
-  // lowpass stuff
-  freq = 0.05;		// values between 0.0 and 0.5
-  width = 0.2;		//values between 0.0001 and 0.2
 }
 
 void MA::calculate ()
@@ -68,49 +55,52 @@ void MA::calculate ()
     return;
   }
   
-  PlotLine *ma = getMA(in, maType, period, freq, width);
+  PlotLine *ma = getMA(in, maType, period);
+  
+  delete in;
+
+  if (! ma)
+    return;
   
   ma->setColor(color);
   ma->setType(lineType);
   ma->setLabel(label);
-  output->addLine(ma);
 
-  delete in;
+  output->addLine(ma);
 }
 
 int MA::indicatorPrefDialog (QWidget *w)
 {
-  MADialog *dialog = new MADialog(w, helpFile);
-  dialog->setCaption(QObject::tr("MA Indicator"));
-  dialog->setColor(color);
-  dialog->setLineType(lineTypes, lineType);
-  dialog->setLabel(label);
-  dialog->setPeriod(period);
-  dialog->setMAType(maTypeList, maType);
-  dialog->setInput(inputTypeList, input);
-  dialog->setFreq(freq);
-  dialog->setWidth(width);
+  QString pl = QObject::tr("Parms");
+  QString cl = QObject::tr("Color");
+  QString ll = QObject::tr("Label");
+  QString ltl = QObject::tr("Line Type");
+  QString mapl = QObject::tr("Period");
+  QString stl = QObject::tr("MA Type");
+  QString il = QObject::tr("Input");
   
+  PrefDialog *dialog = new PrefDialog(w);
+  dialog->setCaption(QObject::tr("MA Indicator"));
+  dialog->createPage (pl);
+  dialog->setHelpFile(helpFile);
+
+  dialog->addColorItem(cl, pl, color);
+  dialog->addTextItem(ll, pl, label);
+  dialog->addComboItem(ltl, pl, lineTypes, lineType);
+  dialog->addComboItem(stl, pl, maTypeList, maType);
+  dialog->addIntItem(mapl, pl, period, 1, 999999);
+  dialog->addComboItem(il, pl, inputTypeList, input);
+
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
-    color = dialog->getColor();
-    lineType = (PlotLine::LineType) dialog->getLineType();
-    period = dialog->getPeriod();
-    label = dialog->getLabel();
-    maType = dialog->getMAType();
-    input = (BarData::InputType) dialog->getInput();
-    freq = dialog->getFreq();
-    width = dialog->getWidth();
-    if (freq < 0.0)
-      freq = 0.0;
-    if (freq > 0.5)
-      freq = 0.5;
-    if (width < 0.0001)
-      width = 0.0001;
-    if (width > 0.2)
-      width = 0.2;
+    color = dialog->getColor(cl);
+    lineType = (PlotLine::LineType) dialog->getComboIndex(ltl);
+    period = dialog->getInt(mapl);
+    label = dialog->getText(ll);
+    maType = dialog->getComboIndex(stl);
+    input = (BarData::InputType) dialog->getComboIndex(il);
       
     rc = TRUE;
   }
@@ -151,14 +141,6 @@ void MA::setIndicatorSettings (Setting &dict)
   s = dict.getData("input");
   if (s.length())
     input = (BarData::InputType) s.toInt();
-
-  s = dict.getData("freq");
-  if (s.length())
-    freq = s.toFloat();
-    
-  s = dict.getData("width");
-  if (s.length())
-    width = s.toFloat();
 }
 
 void MA::getIndicatorSettings (Setting &dict)
@@ -170,18 +152,15 @@ void MA::getIndicatorSettings (Setting &dict)
   dict.setData("maType", QString::number(maType));
   dict.setData("input", QString::number(input));
   dict.setData("plugin", pluginName);
-  dict.setData("freq", QString::number(freq));
-  dict.setData("width", QString::number(width));
 }
 
 PlotLine * MA::calculateCustom (QString &p, QPtrList<PlotLine> &d)
 {
-  // format1: DATA_ARRAY, MA_TYPE, PERIOD
-  // format2: DATA_ARRAY, MA_TYPE, PERIOD, FREQ, WIDTH
+  // format: DATA_ARRAY, MA_TYPE, PERIOD
 
   QStringList l = QStringList::split(",", p, FALSE);
 
-  if (l.count() == 3 || l.count() == 5)
+  if (l.count() == 3)
     ;
   else
   {
@@ -214,41 +193,12 @@ PlotLine * MA::calculateCustom (QString &p, QPtrList<PlotLine> &d)
     return 0;
   }
 
-  freq = 0;
-  width = 0;
-  if (l.count() == 5)
-  {
-    double t2 = l[3].toDouble(&ok);
-    if (ok)
-      freq = t2;
-    else
-    {
-      qDebug("MA::calculateCustom: invalid FREQ parm");
-      return 0;
-    }
-
-    t2 = l[4].toDouble(&ok);
-    if (ok)
-      width = t2;
-    else
-    {
-      qDebug("MA::calculateCustom: invalid WIDTH parm");
-      return 0;
-    }
-  }
-
-  clearOutput();
-
-  return getMA(d.at(0), maType, period, freq, width);
+  return getMA(d.at(0), maType, period);
 }
 
 int MA::getMinBars ()
 {
-  int t = minBars;
-  if (maType == Lowpass)
-    t = t + 20;
-  else
-    t = t + period;
+  int t = minBars + period;
   return t;
 }
 
@@ -392,7 +342,7 @@ PlotLine * MA::getWilderMA (PlotLine *d, int period)
   return wilderma;
 }
 
-PlotLine * MA::getMA (PlotLine *in, int type, int period, double fre, double wid)
+PlotLine * MA::getMA (PlotLine *in, int type, int period)
 {
   PlotLine *ma = 0;
   
@@ -410,9 +360,6 @@ PlotLine * MA::getMA (PlotLine *in, int type, int period, double fre, double wid
     case Wilder:
       ma = getWilderMA(in, period);
       break;
-    case Lowpass:
-      ma = getLowpass(in, fre, wid);
-      break;
     default:
       break;    
   }
@@ -427,7 +374,6 @@ QStringList MA::getMATypes ()
   l.append("SMA");
   l.append("WMA");
   l.append("Wilder");
-  l.append("Lowpass");
   return l;
 }
 
@@ -455,149 +401,10 @@ int MA::getMAType (QString d)
       break;
     }
     
-    if (! d.compare("Lowpass"))
-      type = (int) Lowpass;
-      
     break;
   }
   
   return type;
-}
-
-//*************************************************************************
-//************************* LOWPASS ***************************************
-//*************************************************************************
-
-PlotLine * MA::getLowpass (PlotLine *in, double fre, double wid)
-{
-  PlotLine *out = new PlotLine;
-  
-  if (in->getSize() == 0)
-    return out;
-    
-// ----------------------------------------------------------------------
-  double slope = 0;       // will be modified on call to detrend
-  double intercept = 0;
-  int length = 0;      // original caller size
-  int n = 0;          // size raised to next power of 2 for fft
-  int i = 0;
-
-  length = in->getSize();
-
-  // Detrend input series
-  PlotLine *series = detrend(in, slope, intercept, true);
-
-  // Raise length to next power of 2, pad with zero
-  PlotLine *series2 = raise2Power(series, 0);
-
-  n = series2->getSize();
-
-  //qtsFFT fft(n);        // construct fft object
-  fft = new qtsFFT(n);
- 
-  // do fft
-  PlotLine * fftFreq = fft->do_FFTqts(series2);
-  //PlotLine * fftFreq = fft.do_FFTqts(series2);
-
-  // apply low pass filter
-  double f = 0; 
-  double dist = 0; 
-  double wt = 0;
-  int halfn = n/2;
-
-  double freqSave = fftFreq->getData(halfn);
-
-  for (i = 0 ; i < halfn ; i++)
-  {
-    f = (double) i / (double) n ;  // Frequency
-    if (f <= fre)                 // Flat response
-      wt = 1.0 ;
-    else
-    {
-      dist = (f - fre) / wid;
-      wt = exp ( -dist * dist ) ;
-    }
-
-    fftFreq->setData(i, fftFreq->getData(i) * wt) ;
-    fftFreq->setData(halfn + i, fftFreq->getData(halfn + i) * wt) ;
-  }
-
-  dist = (0.5 - fre) / wid;     // Do Nyquist in fftFreq[0]
-  fftFreq->setData(halfn, freqSave * exp ( -dist * dist )) ;
-
-  // Do inverse FFT to recover real domain
-  PlotLine *fftReal = fft->do_iFFTqts(fftFreq);
-  //PlotLine *fftReal = fft.do_iFFTqts(fftFreq);
-
-  // Retrend input series, n.b. original length
-  PlotLine *series3 = detrend(fftReal, slope, intercept, false);
-
-  for (i = 0; i < length; i++)
-    out->append(series3->getData(i));
-
-  delete series;
-  delete series2;
-  delete series3;
-  delete fftReal;
-  delete fftFreq;
-  delete fft;
-  
-  return out;
-}
-
-PlotLine * MA::detrend(PlotLine *x, double &slope, double &intercept, bool detrend)
-{
-// detrend = true (default) = detrebd x  , return slope/intercept
-// detrend = false = undo detrend using slope/intercept provided
-
-  int length = x->getSize();
-  int i = 0;
-
-  PlotLine *result = new PlotLine;
-
-  if (detrend)
-  {
-    intercept = x->getData(0) ;
-    slope = (x->getData(length-1) - intercept) / (length-1) ;
-
-    for(i = 0; i < length; i++)
-      result->append(x->getData(i)  - intercept - slope * i) ;
-  }
-  else         //retrend
-  {
-    for(i = 0; i < length; i++)
-      result->append(x->getData(i)   + intercept + slope * i ) ;
-  }
-
-  return result;
-}
-
-PlotLine * MA::raise2Power(PlotLine *x, double pad)
-{
-//   Raise the caller's n up to the next power of two
-//   pad remainder with pad, default = 0;
-
-  PlotLine *result = new PlotLine;
-
-  int length = x->getSize();
-  int n = 0;
-  int i = 0;
-
-  for (n = 2 ; n < MAXNUM / 2 ; n *= 2)
-  {
-    if (n >= length)
-      break ;
-  }
-
-  for (i = 0; i < n; i++)
-  {
-    if (i < length)
-      result->append(x->getData(i));
-    else
-      result->append(pad);      // pad with zero
-  }
-
-  return result;
 }
 
 //*************************************************************************

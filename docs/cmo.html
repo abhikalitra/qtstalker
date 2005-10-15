@@ -27,7 +27,43 @@
   </li>
 </ul>
 <h3>Description:</h3>
+The Chande Momentum Oscillator (CMO) was developed by Tushar Chande.
+Chande developed the CMO to&nbsp; capture what he calls &#8220;pure
+momentum.&#8221; For more information on the CMO and other indicators
+see&nbsp; the The New Technical Trader by Tushar Chande and Stanley
+Kroll. The CMO is closely related to other&nbsp; momentum oriented
+indicators such as RSI, Stochastic, Rate-of-Change, etc. It is most
+closely related to&nbsp; Welles Wilder&#8217;s RSI (see Relative Strength
+Index), yet it differs in several ways:<br>
 <br>
+* It uses data for both up days and down days in the numerator, thereby
+directly measuring momentum. <br>
+* The calculations are applied on unsmoothed data. Therefore,
+short-term extreme movements in price are not hidden. Once calculated,
+smoothing can be applied to the CMO, if desired.<br>
+* The scale is bounded between +100 and -100. allowing you to clearly
+see changes in net momentum&nbsp; using the 0 level. The bounded scale
+also allows comparisons between different securities.<br>
+<br>
+The CMO can be used in the usual ways. Overbought/oversold. The primary
+method of interpreting the&nbsp; CMO islooking for extreme overbought
+and oversold conditions. Chande quantifies an overbought level at +50
+and the oversold level at -50. At +50, up-day momentum is three times
+the down-day momentum. Like&nbsp; wise, at -50, down-day momentum is
+three times the up-day momentum. These levels correspond to the&nbsp;
+70/30 levels on the RSI indicator.<br>
+<br>
+Trendiness. The can also be used to measure trendiness. The higher the
+CMO, the stronger the trend.&nbsp; Low values of the CMO show a
+security in a sideways trading range.<br>
+<br>
+There are two modes for this indicator Standard and Adaptive. Standard
+(Adaptive not checked) computes the standard CMO using the period
+selected by the user. Adaptive (Adaptive checked) first computes the
+standard deviation of the input time series computed over the period
+selected by the user. It then uses that standard deviation to modify
+the lookback period used to compute the CMO between Min Loopback and
+Max Loopback as selected by the user.
 <h4>Formula Reference:<br>
 </h4>
 <table style="text-align: left; width: 905px; height: 112px;" border="1"

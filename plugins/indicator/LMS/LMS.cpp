@@ -310,7 +310,7 @@ PlotLine *LMS::slowK(PlotLine * inLine, int kPeriod, int slowKperiod)
     k->append(t);
   }
 
-  PlotLine *k2 = getMA(k, 0, slowKperiod, 0, 0);
+  PlotLine *k2 = getMA(k, 0, slowKperiod);
   delete k;
   k = k2;
 

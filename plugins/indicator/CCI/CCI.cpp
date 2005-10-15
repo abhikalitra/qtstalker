@@ -57,7 +57,7 @@ void CCI::calculate ()
     tp->append((data->getHigh(loop) + data->getLow(loop) + data->getClose(loop)) / 3);
   int tpLoop = tp->getSize() - 1;
 
-  PlotLine *sma = getMA(tp, maType, period, 0, 0);
+  PlotLine *sma = getMA(tp, maType, period);
   int smaLoop = sma->getSize() - 1;
 
   while (tpLoop >= period && smaLoop >= period)
@@ -80,7 +80,7 @@ void CCI::calculate ()
 
   if (smoothing > 1)
   {
-    PlotLine *ma = getMA(cci, maType, smoothing, 0, 0);
+    PlotLine *ma = getMA(cci, maType, smoothing);
     ma->setColor(color);
     ma->setType(lineType);
     ma->setLabel(label);

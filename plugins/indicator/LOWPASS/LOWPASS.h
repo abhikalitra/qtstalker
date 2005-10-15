@@ -20,43 +20,33 @@
  */
 
 #include "IndicatorPlugin.h"
+#include "qtsFFT.h"
 
-class MA : public IndicatorPlugin
+class LOWPASS : public IndicatorPlugin
 {
   public:
-    enum MAType
-    {
-      EMA,
-      SMA,
-      WMA,
-      Wilder
-    };
-  
-    MA ();
-    virtual ~MA ();
+    LOWPASS ();
+    virtual ~LOWPASS ();
     void calculate ();
+    void calculate2 (PlotLine *in, double fre, double wid);
     int indicatorPrefDialog (QWidget *);
     void setDefaults();
     PlotLine * calculateCustom (QString &, QPtrList<PlotLine> &);
     void getIndicatorSettings (Setting &);
     void setIndicatorSettings (Setting &);
     int getMinBars ();
-    PlotLine * getEMA (PlotLine *d, int);
-    PlotLine * getSMA (PlotLine *d, int);
-    PlotLine * getWMA (PlotLine *d, int);
-    PlotLine * getWilderMA (PlotLine *d, int);
-    PlotLine * getMA (PlotLine *d, int, int);
-    QStringList getMATypes ();
-    int getMAType (QString);
-
+  
   private:
     QColor color;
     PlotLine::LineType lineType;
     QString label;
-    int period;
-    int maType;
+    double freq;
+    double width;
     BarData::InputType input;
-    QStringList maTypeList;
+    qtsFFT * fft;
+    void detrend(PlotLine* inLine, double* slope, double* intercept);
+    PlotLine * detrend(PlotLine *x, double &slope, double &intercept, bool detrend = true);
+    PlotLine * raise2Power(PlotLine *x, double pad = 0.0);
 };
 
 extern "C"

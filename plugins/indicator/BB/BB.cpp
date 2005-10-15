@@ -59,7 +59,7 @@ void BB::calculate ()
   for (loop = 0; loop < (int) data->count(); loop++)
     in->append((data->getHigh(loop) + data->getLow(loop) + data->getClose(loop)) / 3);
     
-  PlotLine *sma = getMA(in, maType, period, 0, 0);
+  PlotLine *sma = getMA(in, maType, period);
   sma->setColor(color);
   sma->setType(lineType);
   QString s = "BBM";

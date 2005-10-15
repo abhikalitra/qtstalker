@@ -1802,6 +1802,22 @@ Save changes?</source>
         <source>Parms</source>
         <translation>Param</translation>
     </message>
+    <message>
+        <source>VIDYA Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>VIDYA Volume Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Lowpass</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>VIDYA</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>MacroDialog</name>
@@ -2784,7 +2800,7 @@ Save changes?</source>
     </message>
     <message>
         <source>LOWPASS Indicator</source>
-        <translation type="obsolete">Wskaźnik LOWPASS</translation>
+        <translation type="unfinished">Wskaźnik LOWPASS</translation>
     </message>
     <message>
         <source>MA Indicator</source>
@@ -3248,7 +3264,7 @@ Save changes?</source>
     </message>
     <message>
         <source>VT Indicator</source>
-        <translation>Wskaźnik VT</translation>
+        <translation type="obsolete">Wskaźnik VT</translation>
     </message>
     <message>
         <source>WILLR Indicator</source>
@@ -3468,11 +3484,11 @@ Save changes?</source>
     </message>
     <message>
         <source>Freq</source>
-        <translation type="obsolete">Częst</translation>
+        <translation type="unfinished">Częst</translation>
     </message>
     <message>
         <source>Width</source>
-        <translation type="obsolete">Szerokość</translation>
+        <translation type="unfinished">Szerokość</translation>
     </message>
     <message>
         <source>1 Minute</source>

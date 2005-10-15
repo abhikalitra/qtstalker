@@ -90,7 +90,7 @@ void VOLA::calculateCV ()
   for (loop = 0; loop < data->count(); loop++)
     hl->append(data->getHigh(loop) - data->getLow(loop));
 
-  PlotLine *ema = getMA(hl, 0, cvPeriod, 0.0, 0.0);
+  PlotLine *ema = getMA(hl, 0, cvPeriod);
 
   for (loop = cvPeriod; loop < (int) ema->getSize(); loop++)
   {
@@ -144,7 +144,7 @@ void VOLA::calculateVOLR ()
   PlotLine *trg = getTR();
   int trgLoop = trg->getSize() - 1;
 
-  PlotLine *ma = getMA(trg, 0, volrPeriod, 0, 0);
+  PlotLine *ma = getMA(trg, 0, volrPeriod);
   int maLoop = ma->getSize() - 1;
 
   while (maLoop > -1 && trgLoop > -1)

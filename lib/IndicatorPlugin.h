@@ -67,7 +67,7 @@ class IndicatorPlugin
     virtual int getMinBars ();
     virtual void loadIndicatorSettings (QString &);
     virtual void saveIndicatorSettings (QString &);
-    virtual PlotLine * getMA (PlotLine *d, int, int, double, double);
+    virtual PlotLine * getMA (PlotLine *d, int, int);
     virtual QStringList getMATypes ();
     
   protected:

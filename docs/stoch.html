@@ -34,6 +34,23 @@ method only.</li>
 method only.</li>
 </ul>
 <h3>Description:</h3>
+<span style="font-weight: bold;">Adaptive<br>
+<br>
+</span>Based on Tushar Chande's adaptave approach: <br>
+<br>
+"The strategy is to change the lookback length of the indicator by
+connecting it to market volatility. We<br>
+would like the indicator to have a long lookback period when prices are
+in a trading range (volatility is&nbsp; low). Conversely, we want a
+short lookback length when prices are moving rapidly. I feel that
+changing the lookback length for calculating indicators is more
+responsive than smoothing them with adaptive moving averages. The
+actual definition of long and short lookback lengths depends on your
+trading horizon."<br>
+<br>
+The volitility component in the indicator is the standard deviation or
+the close (configurable to any number of days --the default is set to
+14). Also configurable is the smoothing component for both %K and %D.<br>
 <br>
 <h4>Formula Reference:<br>
 </h4>

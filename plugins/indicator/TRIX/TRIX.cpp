@@ -65,11 +65,11 @@ void TRIX::calculate ()
 
 void TRIX::calculate2 (PlotLine *in)
 {
-  PlotLine *ema = getMA(in, 0, period, 0, 0);
+  PlotLine *ema = getMA(in, 0, period);
   
-  PlotLine *ema2 = getMA(ema, 0, period, 0, 0);
+  PlotLine *ema2 = getMA(ema, 0, period);
   
-  PlotLine *ema3 = getMA(ema2, 0, period, 0, 0);
+  PlotLine *ema3 = getMA(ema2, 0, period);
   int emaLoop = ema3->getSize() - 1;
 
   PlotLine *trix = new PlotLine();
@@ -80,7 +80,7 @@ void TRIX::calculate2 (PlotLine *in)
     emaLoop--;
   }
 
-  PlotLine *trigger = getMA(trix, maType, tperiod, 0, 0);
+  PlotLine *trigger = getMA(trix, maType, tperiod);
   trigger->setColor(trigColor);
   trigger->setType(trigLineType);
   trigger->setLabel(trigLabel);

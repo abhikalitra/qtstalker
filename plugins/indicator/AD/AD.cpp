@@ -159,10 +159,10 @@ void AD::calculateCO ()
 
   PlotLine *ad = getAD();
 
-  PlotLine *fma = getMA(ad, 0, 3, 0.0, 0.0);
+  PlotLine *fma = getMA(ad, 0, 3);
   int fmaLoop = fma->getSize() - 1;
 
-  PlotLine *sma = getMA(ad, 0, 10, 0.0, 0.0);
+  PlotLine *sma = getMA(ad, 0, 10);
   int smaLoop = sma->getSize() - 1;
 
   while (fmaLoop > -1 && smaLoop > -1)
