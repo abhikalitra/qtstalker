@@ -1768,55 +1768,39 @@ Save changes?</source>
     <name>MADialog</name>
     <message>
         <source>MA Type</source>
-        <translation>Rodzaj ŚK</translation>
+        <translation type="obsolete">Rodzaj ŚK</translation>
     </message>
     <message>
         <source>Color</source>
-        <translation>Kolor</translation>
+        <translation type="obsolete">Kolor</translation>
     </message>
     <message>
         <source>Line Type</source>
-        <translation>Styl Krzywej</translation>
+        <translation type="obsolete">Styl Krzywej</translation>
     </message>
     <message>
         <source>Label</source>
-        <translation>Etykieta</translation>
+        <translation type="obsolete">Etykieta</translation>
     </message>
     <message>
         <source>Period</source>
-        <translation>Okres</translation>
+        <translation type="obsolete">Okres</translation>
     </message>
     <message>
         <source>Input</source>
-        <translation>Źródło</translation>
+        <translation type="obsolete">Źródło</translation>
     </message>
     <message>
         <source>Freq</source>
-        <translation>Częst</translation>
+        <translation type="obsolete">Częst</translation>
     </message>
     <message>
         <source>Width</source>
-        <translation>Szerokość</translation>
+        <translation type="obsolete">Szerokość</translation>
     </message>
     <message>
         <source>Parms</source>
-        <translation>Param</translation>
-    </message>
-    <message>
-        <source>VIDYA Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>VIDYA Volume Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Lowpass</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>VIDYA</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Param</translation>
     </message>
 </context>
 <context>
@@ -2261,6 +2245,14 @@ Save changes?</source>
     <message>
         <source>Horizontal</source>
         <translation>Poziomo</translation>
+    </message>
+    <message>
+        <source>Bar</source>
+        <translation type="unfinished">Słupek</translation>
+    </message>
+    <message>
+        <source>Candle</source>
+        <translation type="unfinished">Świeczkowy</translation>
     </message>
 </context>
 <context>
@@ -3767,6 +3759,42 @@ Rodzaj Wygładzania %D</translation>
     <message>
         <source>%D MA Type</source>
         <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Neutral Color</source>
+        <translation type="unfinished">Kolor Neutralny</translation>
+    </message>
+    <message>
+        <source>BARS Indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>PERL Parms</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Perl Code</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Parameters</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>PERL Indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>BARS type Selection</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select a bar type:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Candle Color</source>
+        <translation type="unfinished">Kolor Świeczki</translation>
     </message>
 </context>
 <context>

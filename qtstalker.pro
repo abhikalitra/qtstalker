@@ -56,6 +56,9 @@ SUBDIRS += plugins/indicator/VOL
 SUBDIRS += plugins/indicator/VOLA
 SUBDIRS += plugins/indicator/WILLR
 
+SUBDIRS += plugins/indicator/BARS
+
+
 #compile db plugins
 SUBDIRS += plugins/db/Stocks
 SUBDIRS += plugins/db/Futures

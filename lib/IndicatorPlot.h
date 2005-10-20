@@ -106,6 +106,8 @@ class IndicatorPlot : public QWidget
     void drawHistogram ();
     void drawHistogramBar ();
     void drawDot ();
+    void drawBar ();
+    void drawCandle ();
    
   public slots:
     void draw();

@@ -330,6 +330,12 @@ void IndicatorPlot::drawLines ()
         case PlotLine::Horizontal:
           drawHorizontalLine();
           break;
+        case PlotLine::Bar:
+          drawBar();
+          break;
+        case PlotLine::Candle:
+          drawCandle();
+          break;
         default:
           break;
       }
@@ -903,22 +909,20 @@ void IndicatorPlot::setScale ()
       else
       {        
         int loop2 = line->getSize() - data->count() + startIndex;
+        if (loop2 < 0)
+          loop2 = 0;
 	
         int end = (buffer.width() / pixelspace) + loop2;
         if (end > line->getSize())
           end = line->getSize();
-	
-	for (; loop2 < end; loop2++)
-        {
-          if (loop2 > -1)
-          {
-            if (line->getData(loop2) > scaleHigh)
-              scaleHigh = line->getData(loop2);
 
-            if (line->getData(loop2) < scaleLow)
-              scaleLow = line->getData(loop2);
-          }
-        }
+        double h;
+        double l;
+        line->getHighLowRange(loop2, end - 1, h, l);
+        if (h > scaleHigh)
+          scaleHigh = h;
+        if (l < scaleLow)
+          scaleLow = l;
       }
     }
   }
@@ -1379,6 +1383,100 @@ void IndicatorPlot::drawHistogramBar ()
 	color = currentLine->getColorBar(loop);
 
       painter.fillRect(x, y, pixelspace - 1, zero - y, color);
+    }
+
+    x = x + pixelspace;
+    loop++;
+  }
+
+  painter.end();
+}
+
+void IndicatorPlot::drawBar ()
+{
+  QPainter painter;
+  painter.begin(&buffer);
+
+  int loop = currentLine->getSize() - data->count() + startIndex;
+  int x = startX;
+  double o = 0;
+  double h = 0;
+  double l = 0;
+  double cl = 0;
+  QColor c;
+
+  while ((x < buffer.width()) && (loop < (int) currentLine->getSize()))
+  {
+    if (loop > -1)
+    {
+      currentLine->getBar(loop, c, o, h, l, cl);
+
+      painter.setPen(c);
+
+      int y = scaler.convertToY(o);
+      painter.drawLine (x - 2, y, x, y);
+
+      y = scaler.convertToY(cl);
+      painter.drawLine (x + 2, y, x, y);
+
+      y = scaler.convertToY(h);
+      int y2 = scaler.convertToY(l);
+      painter.drawLine (x, y, x, y2);
+    }
+
+    x = x + pixelspace;
+    loop++;
+  }
+
+  painter.end();
+}
+
+void IndicatorPlot::drawCandle ()
+{
+  QPainter painter;
+  painter.begin(&buffer);
+
+  int loop = currentLine->getSize() - data->count() + startIndex;
+  int x = startX;
+  double o = 0;
+  double h = 0;
+  double l = 0;
+  double cl = 0;
+  QColor c;
+  bool ff = FALSE;
+
+  while ((x < buffer.width()) && (loop < (int) currentLine->getSize()))
+  {
+    if (loop > -1)
+    {
+      currentLine->getBar(loop, c, o, h, l, cl, ff);
+
+      painter.setPen(c);
+
+      int xh = scaler.convertToY(h);
+      int xl = scaler.convertToY(l);
+      int xc = scaler.convertToY(cl);
+      int xo = scaler.convertToY(o);
+
+      if (! ff)
+      {
+        painter.drawLine (x, xh, x, xc);
+        painter.drawLine (x, xo, x, xl);
+
+        if (xc == xo)
+          painter.drawLine (x - 2, xo, x + 2, xo);
+        else
+          painter.drawRect(x - 2, xc, 5, xo - xc);
+      }
+      else
+      {
+        painter.drawLine (x, xh, x, xl);
+      
+        if (xc == xo)
+          painter.drawLine (x - 2, xo, x + 2, xo);
+        else
+          painter.fillRect(x - 2, xo, 5, xc - xo, c);
+      }
     }
 
     x = x + pixelspace;

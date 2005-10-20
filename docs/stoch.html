@@ -34,6 +34,13 @@ method only.</li>
 method only.</li>
 </ul>
 <h3>Description:</h3>
+<span style="font-weight: bold;">Standard<br>
+</span>This is the standard stochastic formula.<br>
+<br>
+<span style="font-weight: bold;">Singular</span><br>
+This is the stochastic formula applied to a single input array of data.
+The high/low values are found within the input array.<br>
+<br>
 <span style="font-weight: bold;">Adaptive<br>
 <br>
 </span>Based on Tushar Chande's adaptave approach: <br>
@@ -60,10 +67,20 @@ the close (configurable to any number of days --the default is set to
     <tr>
       <td style="vertical-align: top;">Syntax<br>
       </td>
-      <td style="vertical-align: top;">STOCH(Input, Method, %K
+      <td style="vertical-align: top;">STOCH(Method, %K
+Smoothing Type,
+%D Smoothing Type, Period, %K Smoothing, %D Smoothing) *this is the
+standard format<br>
+      <br>
+STOCH(Method, Input, %K
+Smoothing Type,
+%D Smoothing Type, Period, %K Smoothing, %D Smoothing)&nbsp; *this is
+the singular format<br>
+      <br>
+STOCH(Method, Input, %K
 Smoothing Type,
 %D Smoothing Type, Period, %K Smoothing, %D Smoothing, Min Lookback,
-Max Lookback)<br>
+Max Lookback)&nbsp; *this is the adaptive format<br>
       </td>
     </tr>
     <tr>
@@ -77,10 +94,13 @@ Standard or Adaptive. <br>
     <tr>
       <td style="vertical-align: top;">Example<br>
       </td>
-      <td style="vertical-align: top;">STOCH(Close, Standard, EMA, EMA,
+      <td style="vertical-align: top;">STOCH(Standard, EMA, EMA,
 14,
-3, 3, 0, 0) or<br>
-STOCH(Close, Adaptive, EMA, EMA, 14,
+3, 3)<br>
+STOCH(Singular, Close, EMA, EMA,
+14,
+3, 3)<br>
+STOCH(Adaptive, Close, EMA, EMA, 14,
 3, 3, 5, 20)<br>
       </td>
     </tr>

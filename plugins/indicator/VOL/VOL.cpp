@@ -105,16 +105,18 @@ void VOL::calculateVOL ()
   pl->setLabel(volLabel);
   pl->setColorFlag(TRUE);
 
-  // set the first bar color
-  pl->appendColorBar(upColor);
-
   int loop;
-  for (loop = 1; loop < (int) data->count(); loop++)
+  for (loop = 0; loop < (int) data->count(); loop++)
   {
-    if (data->getClose(loop) > data->getClose(loop - 1))
-      pl->appendColorBar(upColor);
+    if (loop > 0)
+    {
+      if (data->getClose(loop) > data->getClose(loop - 1))
+        pl->setColorBar(loop, upColor);
+      else
+        pl->setColorBar(loop, downColor);
+    }
     else
-      pl->appendColorBar(downColor);
+      pl->setColorBar(loop, upColor);
   }
 
   output->addLine(pl);

@@ -107,17 +107,17 @@ void THERM::calculate ()
       double thrmma = therm_ma->getData(maLoop);
 
       if (thrm > (thrmma * threshold))
-        therm->prependColorBar(threshColor);
+        therm->setColorBar(thermLoop, threshColor);
       else
       {
         if (thrm > thrmma)
-          therm->prependColorBar(upColor);
+          therm->setColorBar(thermLoop, upColor);
         else
-          therm->prependColorBar(downColor);
+          therm->setColorBar(thermLoop, downColor);
       }
     }
     else
-      therm->prependColorBar(downColor);
+      therm->setColorBar(thermLoop, downColor);
 
     thermLoop--;
     maLoop--;

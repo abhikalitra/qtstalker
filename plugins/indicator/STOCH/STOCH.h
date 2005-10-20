@@ -27,7 +27,8 @@ class STOCH : public IndicatorPlugin
     STOCH ();
     virtual ~STOCH ();
     void calculate ();
-    void calculateStandard (PlotLine *);
+    void calculateStandard ();
+    void calculateSingular (PlotLine *);
     void calculateAdaptive (PlotLine *);
     int indicatorPrefDialog (QWidget *);
     void setDefaults();
@@ -35,6 +36,7 @@ class STOCH : public IndicatorPlugin
     void getIndicatorSettings (Setting &);
     void setIndicatorSettings (Setting &);
     int getMinBars ();
+    void createZones ();
 
   private:
     QColor dcolor;

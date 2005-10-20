@@ -30,6 +30,11 @@
 typedef struct
 {
   double v;
+  double open;
+  double high;
+  double low;
+  QColor color;
+  bool candleFill;
 
 } Val;
 
@@ -47,7 +52,9 @@ class PlotLine : public QObject
       HistogramBar,
       Line,
       Invisible,
-      Horizontal
+      Horizontal,
+      Bar,
+      Candle
     };
   
     PlotLine ();
@@ -73,23 +80,26 @@ class PlotLine : public QObject
     void checkHighLow (double);
     void setScaleFlag (bool);
     bool getScaleFlag ();
-    void getLineTypes (QStringList &);
     void setColorFlag (bool);
     bool getColorFlag ();
-    void appendColorBar (QColor &);
-    void prependColorBar (QColor &);
+    void getLineTypes (QStringList &);
+    void setColorBar (int, QColor &);
     QColor getColorBar (int);
+    void appendBar (QColor &, double, double, double, double);
+    void appendBar (QColor &, double, double, double, double, bool);
+    void getBar (int, QColor &, double &, double &, double &, double &);
+    void getBar (int, QColor &, double &, double &, double &, double &, bool &);
+    void getHighLowRange (int, int, double &, double &);
     
   private:
     QPtrList<Val> data;
-    QPtrList<QColor> colorBars;
     QColor color;
     PlotLine::LineType lineType;
     QString label;
     double high;
     double low;
-    bool colorBarFlag;
     bool scaleFlag;
+    bool colorFlag;
 };
 
 #endif

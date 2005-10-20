@@ -31,6 +31,7 @@ STOCH::STOCH ()
   helpFile = "stoch.html";
 
   methodList.append("Standard");
+  methodList.append("Singular");
   methodList.append("Adaptive");
   
   setDefaults();
@@ -66,22 +67,82 @@ void STOCH::setDefaults ()
 
 void STOCH::calculate ()
 {
-  PlotLine *in = data->getInput(input);
-  if (! in)
-  {
-    qDebug("STOCH::calculate: no input");
-    return;
-  }
-
   if (! method.compare("Standard"))
-    calculateStandard(in);
+    calculateStandard();
   else
-    calculateAdaptive(in);
+  {
+    PlotLine *in = data->getInput(input);
+    if (! in)
+    {
+      qDebug("STOCH::calculate: no input");
+      return;
+    }
 
-  delete in;
+    if (! method.compare("Singular"))
+      calculateSingular(in);
+    else
+      calculateAdaptive(in);
+
+    delete in;
+  }
 }
 
-void STOCH::calculateStandard (PlotLine *in)
+void STOCH::calculateStandard ()
+{
+  PlotLine *k = new PlotLine();
+  int loop;
+  
+  for (loop = period; loop < (int) data->count(); loop++)
+  {
+    int loop2;
+    double l = 0;
+    double h = 0;
+    for (loop2 = 0, l = 9999999, h = 0; loop2 < period; loop2++)
+    {
+      double t = data->getHigh(loop - loop2);
+      if (t > h)
+        h = t;
+
+      t = data->getLow(loop - loop2);
+      if (t < l)
+        l = t;
+    }
+
+    double close = data->getClose(loop);
+    double t = ((close - l) / (h - l)) * 100;
+    if (t > 100)
+      t = 100;
+    if (t < 0)
+      t = 0;
+
+    k->append(t);
+  }
+
+  if (kperiod > 1)
+  {
+    PlotLine *k2 = getMA(k, kMaType, kperiod);
+    delete k;
+    k = k2;
+  }
+  
+  k->setColor(kcolor);
+  k->setType(klineType);
+  k->setLabel(klabel);
+  output->addLine(k);
+
+  if (dperiod > 1)
+  {
+    PlotLine *d = getMA(k, dMaType, dperiod);
+    d->setColor(dcolor);
+    d->setType(dlineType);
+    d->setLabel(dlabel);
+    output->addLine(d);
+  }
+  
+  createZones();
+}
+
+void STOCH::calculateSingular (PlotLine *in)
 {
   PlotLine *k = new PlotLine();
   int loop;
@@ -131,23 +192,7 @@ void STOCH::calculateStandard (PlotLine *in)
     output->addLine(d);
   }
   
-  if (buyLine)
-  {
-    PlotLine *bline = new PlotLine();
-    bline->setColor(buyColor);
-    bline->setType(PlotLine::Horizontal);
-    bline->append(buyLine);
-    output->addLine(bline);
-  }
-  
-  if (sellLine)
-  {
-    PlotLine *sline = new PlotLine();
-    sline->setColor(sellColor);
-    sline->setType(PlotLine::Horizontal);
-    sline->append(sellLine);
-    output->addLine(sline);
-  }
+  createZones();
 }
 
 void STOCH::calculateAdaptive (PlotLine *in)
@@ -248,23 +293,7 @@ void STOCH::calculateAdaptive (PlotLine *in)
     output->addLine(d);
   }
   
-  if (buyLine)
-  {
-    PlotLine *bline = new PlotLine();
-    bline->setColor(buyColor);
-    bline->setType(PlotLine::Horizontal);
-    bline->append(buyLine);
-    output->addLine(bline);
-  }
-  
-  if (sellLine)
-  {
-    PlotLine *sline = new PlotLine();
-    sline->setColor(sellColor);
-    sline->setType(PlotLine::Horizontal);
-    sline->append(sellLine);
-    output->addLine(sline);
-  }
+  createZones();
 }
 
 PlotLine * STOCH::getHighest( PlotLine *line,  int period)
@@ -338,6 +367,27 @@ PlotLine * STOCH::getStdDev( PlotLine *line,  int period )
     std->append(ds);
   }
   return std;
+}
+
+void STOCH::createZones ()
+{
+  if (buyLine)
+  {
+    PlotLine *bline = new PlotLine();
+    bline->setColor(buyColor);
+    bline->setType(PlotLine::Horizontal);
+    bline->append(buyLine);
+    output->addLine(bline);
+  }
+  
+  if (sellLine)
+  {
+    PlotLine *sline = new PlotLine();
+    sline->setColor(sellColor);
+    sline->setType(PlotLine::Horizontal);
+    sline->append(sellLine);
+    output->addLine(sline);
+  }
 }
 
 int STOCH::indicatorPrefDialog (QWidget *w)
@@ -561,11 +611,13 @@ void STOCH::getIndicatorSettings (Setting &dict)
 
 PlotLine * STOCH::calculateCustom (QString &p, QPtrList<PlotLine> &d)
 {
-  // format: ARRAY_INPUT, METHOD, K_MA_TYPE, D_MA_TYPE, PERIOD, K_PERIOD, D_PERIOD, MIN_LOOKBACK, MAX_LOOKBACK
+  // format standard: METHOD, K_MA_TYPE, D_MA_TYPE, PERIOD, K_PERIOD, D_PERIOD
+  // format singular: METHOD, ARRAY_INPUT, K_MA_TYPE, D_MA_TYPE, PERIOD, K_PERIOD, D_PERIOD
+  // format2 adaptive: METHOD, ARRAY_INPUT, K_MA_TYPE, D_MA_TYPE, PERIOD, K_PERIOD, D_PERIOD, MIN_LOOKBACK, MAX_LOOKBACK
 
   QStringList l = QStringList::split(",", p, FALSE);
 
-  if (l.count() == 9)
+  if (l.count() == 6 || l.count() == 7 || l.count() == 9)
     ;
   else
   {
@@ -573,89 +625,198 @@ PlotLine * STOCH::calculateCustom (QString &p, QPtrList<PlotLine> &d)
     return 0;
   }
 
-  if (! d.count())
-  {
-    qDebug("STOCH::calculateCustom: no input");
-    return 0;
-  }
-
-  if (methodList.findIndex(l[1]) == -1)
+  if (methodList.findIndex(l[0]) == -1)
   {
     qDebug("STOCH::calculateCustom: invalid METHOD parm");
     return 0;
   }
   else
-    method = methodList.findIndex(l[1]);
+    method = methodList.findIndex(l[0]);
 
   QStringList mal = getMATypes();
-  if (mal.findIndex(l[2]) == -1)
-  {
-    qDebug("STOCH::calculateCustom: invalid K_MA_TYPE parm");
-    return 0;
-  }
-  else
-    kMaType = mal.findIndex(l[2]);
 
-  if (mal.findIndex(l[3]) == -1)
+  if (! method.compare("Standard"))
   {
-    qDebug("STOCH::calculateCustom: invalid D_MA_TYPE parm");
-    return 0;
-  }
-  else
-    dMaType = mal.findIndex(l[3]);
+    if (mal.findIndex(l[1]) == -1)
+    {
+      qDebug("STOCH::calculateCustom: invalid K_MA_TYPE parm");
+      return 0;
+    }
+    else
+      kMaType = mal.findIndex(l[1]);
 
-  bool ok;
-  int t = l[4].toInt(&ok);
-  if (ok)
-    period = t;
-  else
-  {
-    qDebug("STOCH::calculateCustom: invalid PERIOD parm");
-    return 0;
-  }
+    if (mal.findIndex(l[2]) == -1)
+    {
+      qDebug("STOCH::calculateCustom: invalid D_MA_TYPE parm");
+      return 0;
+    }
+    else
+      dMaType = mal.findIndex(l[2]);
 
-  t = l[5].toInt(&ok);
-  if (ok)
-    kperiod = t;
-  else
-  {
-    qDebug("STOCH::calculateCustom: invalid K_PERIOD parm");
-    return 0;
-  }
+    bool ok;
+    int t = l[3].toInt(&ok);
+    if (ok)
+      period = t;
+    else
+    {
+      qDebug("STOCH::calculateCustom: invalid PERIOD parm");
+      return 0;
+    }
 
-  t = l[6].toInt(&ok);
-  if (ok)
-    dperiod = t;
-  else
-  {
-    qDebug("STOCH::calculateCustom: invalid D_PERIOD parm");
-    return 0;
-  }
+    t = l[4].toInt(&ok);
+    if (ok)
+      kperiod = t;
+    else
+    {
+      qDebug("STOCH::calculateCustom: invalid K_PERIOD parm");
+      return 0;
+    }
 
-  t = l[7].toInt(&ok);
-  if (ok)
-    minLookback = t;
-  else
-  {
-    qDebug("STOCH::calculateCustom: invalid MIN_LOOKBACK parm");
-    return 0;
+    t = l[5].toInt(&ok);
+    if (ok)
+      dperiod = t;
+    else
+    {
+      qDebug("STOCH::calculateCustom: invalid D_PERIOD parm");
+      return 0;
+    }
   }
 
-  t = l[8].toInt(&ok);
-  if (ok)
-    maxLookback = t;
-  else
+  if (! method.compare("Singular"))
   {
-    qDebug("STOCH::calculateCustom: invalid MAX_LOOKBACK parm");
-    return 0;
+    if (! d.count())
+    {
+      qDebug("STOCH::calculateCustom: no input");
+      return 0;
+    }
+
+    if (mal.findIndex(l[2]) == -1)
+    {
+      qDebug("STOCH::calculateCustom: invalid K_MA_TYPE parm");
+      return 0;
+    }
+    else
+      kMaType = mal.findIndex(l[2]);
+
+    if (mal.findIndex(l[3]) == -1)
+    {
+      qDebug("STOCH::calculateCustom: invalid D_MA_TYPE parm");
+      return 0;
+    }
+    else
+      dMaType = mal.findIndex(l[3]);
+
+    bool ok;
+    int t = l[4].toInt(&ok);
+    if (ok)
+      period = t;
+    else
+    {
+      qDebug("STOCH::calculateCustom: invalid PERIOD parm");
+      return 0;
+    }
+
+    t = l[5].toInt(&ok);
+    if (ok)
+      kperiod = t;
+    else
+    {
+      qDebug("STOCH::calculateCustom: invalid K_PERIOD parm");
+      return 0;
+    }
+
+    t = l[6].toInt(&ok);
+    if (ok)
+      dperiod = t;
+    else
+    {
+      qDebug("STOCH::calculateCustom: invalid D_PERIOD parm");
+      return 0;
+    }
+  }
+
+  if (! method.compare("Adaptive"))
+  {
+    if (! d.count())
+    {
+      qDebug("STOCH::calculateCustom: no input");
+      return 0;
+    }
+
+    if (mal.findIndex(l[2]) == -1)
+    {
+      qDebug("STOCH::calculateCustom: invalid K_MA_TYPE parm");
+      return 0;
+    }
+    else
+      kMaType = mal.findIndex(l[2]);
+
+    if (mal.findIndex(l[3]) == -1)
+    {
+      qDebug("STOCH::calculateCustom: invalid D_MA_TYPE parm");
+      return 0;
+    }
+    else
+      dMaType = mal.findIndex(l[3]);
+
+    bool ok;
+    int t = l[4].toInt(&ok);
+    if (ok)
+      period = t;
+    else
+    {
+      qDebug("STOCH::calculateCustom: invalid PERIOD parm");
+      return 0;
+    }
+
+    t = l[5].toInt(&ok);
+    if (ok)
+      kperiod = t;
+    else
+    {
+      qDebug("STOCH::calculateCustom: invalid K_PERIOD parm");
+      return 0;
+    }
+
+    t = l[6].toInt(&ok);
+    if (ok)
+      dperiod = t;
+    else
+    {
+      qDebug("STOCH::calculateCustom: invalid D_PERIOD parm");
+      return 0;
+    }
+
+    t = l[7].toInt(&ok);
+    if (ok)
+      minLookback = t;
+    else
+    {
+      qDebug("STOCH::calculateCustom: invalid MIN_LOOKBACK parm");
+      return 0;
+    }
+
+    t = l[8].toInt(&ok);
+    if (ok)
+      maxLookback = t;
+    else
+    {
+      qDebug("STOCH::calculateCustom: invalid MAX_LOOKBACK parm");
+      return 0;
+    }
   }
 
   clearOutput();
 
   if (! method.compare("Standard"))
-    calculateStandard(d.at(0));
+    calculateStandard();
   else
-    calculateAdaptive(d.at(0));
+  {
+    if (! method.compare("Singular"))
+      calculateSingular(d.at(0));
+    else
+      calculateAdaptive(d.at(0));
+  }
 
   return output->getLine(0);
 }
