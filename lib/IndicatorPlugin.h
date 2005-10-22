@@ -63,7 +63,7 @@ class IndicatorPlugin
     virtual PlotLine * calculateCustom (QString &, QPtrList<PlotLine> &);
     virtual void getIndicatorSettings (Setting &);
     virtual void setIndicatorSettings (Setting &);
-    virtual void setCustomFunction (QString &);
+    virtual void setCustomFunction (QStringList &);
     virtual int getMinBars ();
     virtual void loadIndicatorSettings (QString &);
     virtual void saveIndicatorSettings (QString &);

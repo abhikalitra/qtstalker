@@ -295,6 +295,22 @@ void PlotLine::appendBar (QColor &c, double o, double h, double l, double cl)
   checkHighLow(cl);
 }
 
+void PlotLine::prependBar (QColor &c, double o, double h, double l, double cl)
+{
+  Val *r = new Val;
+  memset(r, 0, sizeof(Val));
+  r->color = c;
+  r->open = o;
+  r->high = h;
+  r->low = l;
+  r->v = cl;
+  data.prepend(r);
+  checkHighLow(o);
+  checkHighLow(h);
+  checkHighLow(l);
+  checkHighLow(cl);
+}
+
 void PlotLine::appendBar (QColor &c, double o, double h, double l, double cl, bool cf)
 {
   Val *r = new Val;
@@ -306,6 +322,23 @@ void PlotLine::appendBar (QColor &c, double o, double h, double l, double cl, bo
   r->v = cl;
   r->candleFill = cf;
   data.append(r);
+  checkHighLow(o);
+  checkHighLow(h);
+  checkHighLow(l);
+  checkHighLow(cl);
+}
+
+void PlotLine::prependBar (QColor &c, double o, double h, double l, double cl, bool cf)
+{
+  Val *r = new Val;
+  memset(r, 0, sizeof(Val));
+  r->color = c;
+  r->open = o;
+  r->high = h;
+  r->low = l;
+  r->v = cl;
+  r->candleFill = cf;
+  data.prepend(r);
   checkHighLow(o);
   checkHighLow(h);
   checkHighLow(l);

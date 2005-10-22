@@ -87,7 +87,8 @@ int MA::indicatorPrefDialog (QWidget *w)
   dialog->addColorItem(cl, pl, color);
   dialog->addTextItem(ll, pl, label);
   dialog->addComboItem(ltl, pl, lineTypes, lineType);
-  dialog->addComboItem(stl, pl, maTypeList, maType);
+  QStringList mal = getMATypes();
+  dialog->addComboItem(stl, pl, mal, maType);
   dialog->addIntItem(mapl, pl, period, 1, 999999);
   dialog->addComboItem(il, pl, inputTypeList, input);
 

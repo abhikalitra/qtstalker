@@ -86,7 +86,9 @@ class PlotLine : public QObject
     void setColorBar (int, QColor &);
     QColor getColorBar (int);
     void appendBar (QColor &, double, double, double, double);
+    void prependBar (QColor &, double, double, double, double);
     void appendBar (QColor &, double, double, double, double, bool);
+    void prependBar (QColor &, double, double, double, double, bool);
     void getBar (int, QColor &, double &, double &, double &, double &);
     void getBar (int, QColor &, double &, double &, double &, double &, bool &);
     void getHighLowRange (int, int, double &, double &);

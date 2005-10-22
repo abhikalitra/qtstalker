@@ -25,6 +25,7 @@ SUBDIRS += plugins/quote/Yahoo
 SUBDIRS += plugins/indicator/AD
 SUBDIRS += plugins/indicator/AROON
 SUBDIRS += plugins/indicator/ATR
+SUBDIRS += plugins/indicator/BARS
 SUBDIRS += plugins/indicator/BB
 SUBDIRS += plugins/indicator/CCI
 SUBDIRS += plugins/indicator/CMO
@@ -55,9 +56,6 @@ SUBDIRS += plugins/indicator/VIDYA
 SUBDIRS += plugins/indicator/VOL
 SUBDIRS += plugins/indicator/VOLA
 SUBDIRS += plugins/indicator/WILLR
-
-SUBDIRS += plugins/indicator/BARS
-
 
 #compile db plugins
 SUBDIRS += plugins/db/Stocks

@@ -121,13 +121,8 @@ void Scanner::scan ()
     return;
   }
 
-  int loop;
   QStringList l = QStringList::split("\n", list->getText(), FALSE);
-  for (loop = 0; loop < (int) l.count(); loop++)
-  {
-    QString s(l[loop]);
-    plug->setCustomFunction(s);
-  }
+  plug->setCustomFunction(l);
   
   this->setEnabled(FALSE);
   
@@ -172,6 +167,7 @@ void Scanner::scan ()
   
   emit message(QString("Scanning..."));
   
+  int loop;
   for (loop = 0; loop < (int) fileList.count(); loop++)
   {
     prog.setProgress(loop);

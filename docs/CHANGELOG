@@ -98,6 +98,9 @@
 20051014: Moved the LOWPASS code out of the MA plugin back into it's own LOWPASS plugin. MA code was getting
           messy to wrap easily.
 
+20051022: New indicator plugin BARS. Use this to plot bars/candles in any plot area.
+
+
 
 0.32
 ====

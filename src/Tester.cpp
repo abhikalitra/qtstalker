@@ -1252,11 +1252,7 @@ bool Tester::loadAlerts (int type)
     return TRUE;
   }
 
-  for (loop = 0; loop < (int) l.count(); loop++)
-  {
-    QString t(l[loop]);
-    plug->setCustomFunction(t);
-  }
+  plug->setCustomFunction(l);
   
   // load the CUS plugin and calculate
   plug->setIndicatorInput(recordList);
@@ -1948,12 +1944,7 @@ bool Tester::loadCustomShortStop ()
     return TRUE;
   }
 
-  int loop;
-  for (loop = 0; loop < (int) l.count(); loop++)
-  {
-    QString t(l[loop]);
-    plug->setCustomFunction(t);
-  }
+  plug->setCustomFunction(l);
   
   // load the CUS plugin and calculate
   plug->setIndicatorInput(recordList);
@@ -2023,12 +2014,7 @@ bool Tester::loadCustomLongStop ()
     return TRUE;
   }
 
-  int loop;
-  for (loop = 0; loop < (int) l.count(); loop++)
-  {
-    QString t(l[loop]);
-    plug->setCustomFunction(t);
-  }
+  plug->setCustomFunction(l);
   
   // load the CUS plugin and calculate
   plug->setIndicatorInput(recordList);

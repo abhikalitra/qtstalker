@@ -20,22 +20,39 @@
  */
 
 #include "IndicatorPlugin.h"
-#include <qdict.h>
 
-class CUS : public IndicatorPlugin
+class BARS : public IndicatorPlugin
 {
   public:
-    CUS ();
-    virtual ~CUS ();
+    BARS ();
+    virtual ~BARS ();
     void calculate ();
+    void calculateBar ();
+    void calculatePaintBar ();
+    void calculateCandle ();
+    void calculatePaintCandle ();
+    int indicatorPrefDialog (QWidget *);
+    void setDefaults();
+    PlotLine * calculateCustom (QString &, QPtrList<PlotLine> &);
     void getIndicatorSettings (Setting &);
     void setIndicatorSettings (Setting &);
-    int indicatorPrefDialog (QWidget *);
-    void setCustomFunction (QStringList &);
     int getMinBars ();
     
-  protected:
-    QStringList formulaList;
+  private:
+    QColor barUpColor;
+    QColor barDownColor;
+    QColor barNeutralColor;
+    QColor candleColor;
+    PlotLine::LineType lineType;
+    QString label;
+    QString method;
+    QStringList methodList;
+    QColor barPaintUpColor;
+    QColor barPaintDownColor;
+    QStringList barFormula;
+    QColor candlePaintUpColor;
+    QColor candlePaintDownColor;
+    QStringList candleFormula;
 };
 
 extern "C"

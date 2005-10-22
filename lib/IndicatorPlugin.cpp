@@ -268,7 +268,7 @@ void IndicatorPlugin::setIndicatorSettings (Setting &)
 {
 }
 
-void IndicatorPlugin::setCustomFunction (QString &)
+void IndicatorPlugin::setCustomFunction (QStringList &)
 {
 }
 

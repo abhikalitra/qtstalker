@@ -201,10 +201,7 @@ void Line::getBoolLine ()
   }
 
   // load the CUS plugin and calculate
-  int loop;
-  for(loop = 0; loop < (int) formulaList.count(); loop++)
-    plug->setCustomFunction(formulaList[loop]);
-    
+  plug->setCustomFunction(formulaList);
   plug->setIndicatorInput(data);
   plug->calculate();
   Indicator *i = plug->getIndicator();

@@ -19,28 +19,27 @@
  *  USA.
  */
 
-#include "IndicatorPlugin.h"
-#include <qdict.h>
+#include <qtabdialog.h>
+#include <qcolor.h>
+#include "FormulaEdit.h"
 
-class CUS : public IndicatorPlugin
+class BarDialog : public QTabDialog
 {
+  Q_OBJECT
+  
   public:
-    CUS ();
-    virtual ~CUS ();
-    void calculate ();
-    void getIndicatorSettings (Setting &);
-    void setIndicatorSettings (Setting &);
-    int indicatorPrefDialog (QWidget *);
-    void setCustomFunction (QStringList &);
-    int getMinBars ();
+    BarDialog (QString);
+    ~BarDialog ();
+    void getList (QStringList &);
+    void setList (QStringList &);
     
-  protected:
-    QStringList formulaList;
+  public slots:
+    void help ();
+    
+  private:
+    FormulaEdit *list;
+    QString helpFile;
 };
 
-extern "C"
-{
-  IndicatorPlugin * createIndicatorPlugin ();
-}
-
+    
 

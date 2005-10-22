@@ -360,7 +360,7 @@ PlotLine * UTIL::calculateCOMP (QString &p, QPtrList<PlotLine> &d)
 
   if (opList.findIndex(l[3]) == -1)
   {
-    qDebug("UTIL::COMP: invalid METHOD parm");
+    qDebug("UTIL::COMP: invalid METHOD parm:%s", l[3].latin1());
     return 0;
   }
 

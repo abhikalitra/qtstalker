@@ -39,6 +39,8 @@ CUS::~CUS ()
 
 void CUS::calculate ()
 {
+  clearOutput();
+
   Config config;
   QStringList varList;
   QDict<PlotLine> lines;
@@ -59,7 +61,7 @@ void CUS::calculate ()
       QString var = l[0].stripWhiteSpace();
       if (varList.findIndex(var) != -1)
       {
-        qDebug("CUS::calculate: line %i duplicate variable", loop);
+        qDebug("CUS::calculate: line %i duplicate variable: %s", loop, var.latin1());
         continue;
       }
       varList.append(var);
@@ -195,9 +197,10 @@ int CUS::indicatorPrefDialog (QWidget *)
   return rc;
 }
 
-void CUS::setCustomFunction (QString &d)
+void CUS::setCustomFunction (QStringList &d)
 {
-  formulaList.append(d);
+  formulaList.clear();
+  formulaList = d;
 }
 
 int CUS::getMinBars ()
