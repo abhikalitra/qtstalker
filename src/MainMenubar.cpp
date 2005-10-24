@@ -30,7 +30,6 @@
 #include "../pics/scaletoscreen.xpm"
 #include "../pics/nav.xpm"
 #include "../pics/loggrid.xpm"
-#include "../pics/hidechart.xpm"
 #include "../pics/date.xpm"
 #include "../pics/co.xpm"
 #include "../pics/help.xpm"
@@ -146,16 +145,6 @@ MainMenubar::MainMenubar (QMainWindow *mw) : QMenuBar (mw, "mainMenubar")
   connect(action, SIGNAL(toggled(bool)), this, SIGNAL(signalLog(bool)));
   actions.replace(Log, action);
 
-  icon = hidechart;
-  action = new QAction(this, "actionHideMain");
-  action->setMenuText(tr("Hide &Main Plot"));
-  action->setIconSet(icon);
-  action->setStatusTip(tr("Hide the main plot (Ctrl+8)"));
-  action->setToolTip(tr("Hide the main plot (Ctrl+8)"));
-  action->setToggleAction(TRUE);
-  connect(action, SIGNAL(toggled(bool)), this, SIGNAL(signalHideMain(bool)));
-  actions.replace(HideMain, action);
-
   icon = date;
   action = new QAction(this, "actionDate");
   action->setMenuText(tr("Toggle Indicator Date"));
@@ -196,7 +185,6 @@ MainMenubar::MainMenubar (QMainWindow *mw) : QMenuBar (mw, "mainMenubar")
   a->insertItem(CTRL+Key_5, ScaleToScreen);
   a->insertItem(CTRL+Key_6, Log);
   a->insertItem(CTRL+Key_7, SidePanel);
-  a->insertItem(CTRL+Key_8, HideMain);
   a->insertItem(CTRL+Key_9, IndicatorDate);
   a->insertItem(CTRL+Key_0, DrawMode);
   a->insertItem(CTRL+Key_Q, Quotes);
@@ -243,7 +231,6 @@ void MainMenubar::createMenus ()
   actions[ScaleToScreen]->addTo(viewMenu);
   actions[Log]->addTo(viewMenu);
   actions[SidePanel]->addTo(viewMenu);
-  actions[HideMain]->addTo(viewMenu);
   actions[IndicatorDate]->addTo(viewMenu);
   actions[DrawMode]->addTo(viewMenu);
 
@@ -336,11 +323,6 @@ void MainMenubar::slotAccel (int id)
       getAction(Log)->toggle();
       if (keyFlag)
         emit signalKeyPressed (Macro::Menubar, ControlButton, Key_6, 0, QString());
-      break;
-    case HideMain:
-      getAction(HideMain)->toggle();
-      if (keyFlag)
-        emit signalKeyPressed (Macro::Menubar, ControlButton, Key_8, 0, QString());
       break;
     case IndicatorDate:
       getAction(IndicatorDate)->toggle();
@@ -442,9 +424,6 @@ void MainMenubar::doKeyPress (QKeyEvent *key)
         break;
       case Qt::Key_7:
 	slotAccel(SidePanel);
-        break;
-      case Qt::Key_8:
-	slotAccel(HideMain);
         break;
       case Qt::Key_9:
 	slotAccel(IndicatorDate);

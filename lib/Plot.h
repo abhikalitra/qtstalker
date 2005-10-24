@@ -44,16 +44,10 @@ class Plot : public QWidget
     ~Plot ();
     void clear ();
     void setData (BarData *);
-    void setMainFlag (bool);
     void setLogScale (bool);
-    int setChartType (QString &);
-    void setChartInput ();
-    void setHideMainPlot (bool);
-    bool getHideMainPlot ();
     void updateStatusBar (int, int);
     void setTabFlag (bool);
     bool getTabFlag ();
-    bool getMainFlag ();
     bool getCrosshairsStatus ();
     void setInfoFlag (bool);
     void drawCrossHair ();
@@ -63,8 +57,6 @@ class Plot : public QWidget
     bool deleteIndicator (QString &);
     void addChartObject (Setting &);
     int getWidth ();
-    int getPixelspace ();
-    int getMinPixelspace ();
     void setGridFlag (bool);
     void setScaleToScreen (bool);
     void setDrawMode (bool);
@@ -92,7 +84,6 @@ class Plot : public QWidget
     void slotDrawModeChanged (bool);
     void slotDateFlagChanged (bool);
     void slotLogScaleChanged (bool);
-    void slotHideMainChanged (bool);
     void slotUpdateScalePlot ();
 
   private:

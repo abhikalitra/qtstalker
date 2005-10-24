@@ -21,7 +21,6 @@
 
 #include "BARS.h"
 #include "PrefDialog.h"
-#include "BarDialog.h"
 #include <qdict.h>
 #include <qobject.h>
 #include <qinputdialog.h>
@@ -33,9 +32,7 @@ BARS::BARS ()
   helpFile = "bars.html";
 
   methodList.append("Bar");
-  methodList.append("Paint Bar");
   methodList.append("Candle");
-  methodList.append("Paint Candle");
   
   setDefaults();
 }
@@ -50,11 +47,7 @@ void BARS::setDefaults ()
   barDownColor.setNamedColor("red");
   barNeutralColor.setNamedColor("blue");
   candleColor.setNamedColor("green");
-  barPaintUpColor.setNamedColor("green");
-  barPaintDownColor.setNamedColor("red");
   label = pluginName;
-  barFormula.clear();
-  candleFormula.clear();
 }
 
 void BARS::calculate ()
@@ -65,23 +58,12 @@ void BARS::calculate ()
     return;
   }
 
-  if (! method.compare("Paint Bar"))
-  {
-    calculatePaintBar();
-    return;
-  }
-
   if (! method.compare("Candle"))
   {
     calculateCandle();
     return;
   }
 
-  if (! method.compare("Paint Candle"))
-  {
-    calculatePaintCandle();
-    return;
-  }
 }
 
 void BARS::calculateBar ()
@@ -110,141 +92,9 @@ void BARS::calculateBar ()
     line->appendBar(color, data->getOpen(loop), data->getHigh(loop), data->getLow(loop), data->getClose(loop));
   }
 
-  line->setType(lineType);
+  line->setType(PlotLine::Bar);
   line->setLabel(label);
   output->addLine(line);
-}
-
-void BARS::calculatePaintBar ()
-{
-  if (! barFormula.count())
-    return;
-    
-  Config config;
-  
-  // open the CUS plugin
-  QString plugin("CUS");
-  IndicatorPlugin *plug = config.getIndicatorPlugin(plugin);
-  if (! plug)
-  {
-    config.closePlugin(plugin);
-    return;
-  }
-
-  // load the CUS plugin and calculate
-  plug->setCustomFunction(barFormula);
-  plug->setIndicatorInput(data);
-  plug->calculate();
-  Indicator *i = plug->getIndicator();
-
-  // create the pb and fill it with bardata
-  PlotLine *pb = new PlotLine;
-  pb->setType(PlotLine::Bar);
-  pb->setLabel(label);
-  int loop;
-  for (loop = 0; loop < data->count(); loop++)
-    pb->appendBar(barNeutralColor, data->getOpen(loop), data->getHigh(loop), data->getLow(loop), data->getClose(loop));
-
-  for (loop = 0; loop < (int) i->getLines(); loop++)
-  {
-    PlotLine *tline = i->getLine(loop);
-
-    if (tline->getHigh() == 1 && tline->getLow() == 0)
-    {
-      int tloop = tline->getSize() - 1;
-      int dloop = data->count() - 1;
-      QColor color = tline->getColor();
-      while (tloop > -1 && dloop > -1)
-      {
-        if (tline->getData(tloop))
-          pb->setColorBar(dloop, color);
-
-        tloop--;
-        dloop--;
-      }
-    }
-    else
-    {
-      PlotLine *line = new PlotLine;
-      line->copy(tline);
-      output->addLine(line);
-    }
-  }
-
-  config.closePlugin(plugin);
-  output->addLine(pb);
-}
-
-void BARS::calculatePaintCandle ()
-{
-  if (! candleFormula.count())
-    return;
-    
-  Config config;
-  
-  // open the CUS plugin
-  QString plugin("CUS");
-  IndicatorPlugin *plug = config.getIndicatorPlugin(plugin);
-  if (! plug)
-  {
-    config.closePlugin(plugin);
-    return;
-  }
-
-  // load the CUS plugin and calculate
-  plug->setCustomFunction(candleFormula);
-  plug->setIndicatorInput(data);
-  plug->calculate();
-  Indicator *i = plug->getIndicator();
-
-  // create the pb and fill it with bardata
-  PlotLine *pb = new PlotLine;
-  pb->setType(PlotLine::Candle);
-  pb->setLabel(label);
-  int loop;
-  for (loop = 0; loop < data->count(); loop++)
-  {
-    double c = data->getClose(loop);
-    double o = data->getOpen(loop);
-    bool fillFlag = FALSE;
-
-    if (o != 0)
-    {
-      if (c < o)
-        fillFlag = TRUE;
-    }
-
-    pb->appendBar(barNeutralColor, o, data->getHigh(loop), data->getLow(loop), c, fillFlag);
-  }
-
-  for (loop = 0; loop < (int) i->getLines(); loop++)
-  {
-    PlotLine *tline = i->getLine(loop);
-
-    if (tline->getHigh() == 1 && tline->getLow() == 0)
-    {
-      int tloop = tline->getSize() - 1;
-      int dloop = data->count() - 1;
-      QColor color = tline->getColor();
-      while (tloop > -1 && dloop > -1)
-      {
-        if (tline->getData(tloop))
-          pb->setColorBar(dloop, color);
-
-        tloop--;
-        dloop--;
-      }
-    }
-    else
-    {
-      PlotLine *line = new PlotLine;
-      line->copy(tline);
-      output->addLine(line);
-    }
-  }
-
-  config.closePlugin(plugin);
-  output->addLine(pb);
 }
 
 void BARS::calculateCandle ()
@@ -266,7 +116,7 @@ void BARS::calculateCandle ()
     line->appendBar(candleColor, o, data->getHigh(loop), data->getLow(loop), c, fillFlag);
   }
 
-  line->setType(lineType);
+  line->setType(PlotLine::Candle);
   line->setLabel(label);
   output->addLine(line);
 }
@@ -294,32 +144,6 @@ int BARS::indicatorPrefDialog (QWidget *w)
     }
     else
       return FALSE;
-  }
-
-  if (! method.compare("Paint Bar") || ! method.compare("Paint Candle"))
-  {
-    BarDialog *dialog = new BarDialog(QString::null);
-    if (! method.compare("Paint Bar"))
-      dialog->setList(barFormula);
-    else
-      dialog->setList(candleFormula);
-
-    int rc = dialog->exec();
-  
-    if (rc == QDialog::Accepted)
-    {
-      if (! method.compare("Paint Bar"))
-        dialog->getList(barFormula);
-      else
-        dialog->getList(candleFormula);
-
-      rc = TRUE;
-    }
-    else
-      rc = FALSE;
-  
-    delete dialog;
-    return rc;
   }
 
   QString pl = QObject::tr("Parms");
@@ -425,30 +249,10 @@ void BARS::setIndicatorSettings (Setting &dict)
   s = dict.getData("candleColor");
   if (s.length())
     candleColor.setNamedColor(s);
-
-  s = dict.getData("barScript");
-  if (s.length())
-  {
-    QStringList l = QStringList::split("|", s, FALSE);
-    int loop;
-    for (loop = 0; loop < (int) l.count(); loop++)
-      barFormula.append(l[loop]);
-  }
-
-  s = dict.getData("candleScript");
-  if (s.length())
-  {
-    QStringList l = QStringList::split("|", s, FALSE);
-    int loop;
-    for (loop = 0; loop < (int) l.count(); loop++)
-      candleFormula.append(l[loop]);
-  }
 }
 
 void BARS::getIndicatorSettings (Setting &dict)
 {
-  dict.setData("barScript", barFormula.join("|"));
-  dict.setData("candleScript", candleFormula.join("|"));
   dict.setData("barUpColor", barUpColor.name());
   dict.setData("barDownColor", barDownColor.name());
   dict.setData("barNeutralColor", barNeutralColor.name());
@@ -479,7 +283,7 @@ PlotLine * BARS::calculateCustom (QString &p, QPtrList<PlotLine> &)
     return 0;
   }
   else
-    method = methodList.findIndex(l[0]);
+    method = l[0];
 
   clearOutput();
   calculate();

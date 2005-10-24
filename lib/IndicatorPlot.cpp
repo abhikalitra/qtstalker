@@ -44,7 +44,6 @@
 
 IndicatorPlot::IndicatorPlot (QWidget *w) : QWidget(w)
 {
-  chartPlugin = 0;
   coPlugin = 0;
   setBackgroundMode(NoBackground);
   startX = 2;
@@ -52,22 +51,19 @@ IndicatorPlot::IndicatorPlot (QWidget *w) : QWidget(w)
   borderColor.setNamedColor("white");
   gridColor.setNamedColor("#626262");
   pixelspace = 0;
-  minPixelspace = 0;
   gridFlag = TRUE;
   interval = BarData::DailyBar;
-  mainFlag = FALSE;
   scaleToScreen = FALSE;
   logScale = FALSE;
   startIndex = 0;
-  chartType = "None";
   mouseFlag = None;
-  hideMainPlot = FALSE;
   crossHairFlag = FALSE;
   chartMenu = 0;
   drawMode = FALSE;
   crosshairs = TRUE;
   infoFlag = TRUE;
   coPlugin = 0;
+  mainPlot = FALSE;
 
   plotFont.setFamily("Helvetica");
   plotFont.setPointSize(12);
@@ -106,9 +102,6 @@ void IndicatorPlot::clear ()
     plug->saveObjects(chartPath);
     plug->clear();
   }
-  
-  if (chartPlugin)
-    chartPlugin->savePixelspace();
 }
 
 void IndicatorPlot::setData (BarData *l)
@@ -126,46 +119,6 @@ void IndicatorPlot::setData (BarData *l)
   }
 }
 
-int IndicatorPlot::setChartType (QString &d)
-{
-  if (chartType.length())
-  {
-    if (chartPlugin)
-      chartPlugin->savePixelspace();
-    config.closePlugin(chartType);
-  }
-  
-  chartPlugin = config.getChartPlugin(d);
-  if (! chartPlugin)
-  {
-    qDebug("IndicatorPlot::setChartType:unable to open %s chart plugin", d.latin1());
-    return TRUE;
-  }
-  
-  if (chartType.length())
-    setChartInput();
-      
-  chartType = d;
-  
-  minPixelspace = chartPlugin->getMinPixelspace();
-  pixelspace = chartPlugin->getPixelspace();
-  startX = chartPlugin->getStartX();
-  
-  QObject::connect(chartPlugin, SIGNAL(draw()), this, SLOT(draw()));
-  
-  return FALSE;
-}
-
-void IndicatorPlot::setChartInput ()
-{
-  chartPlugin->setChartInput(data);
-}
-
-void IndicatorPlot::setMainFlag (bool d)
-{
-  mainFlag = d;
-}
-
 void IndicatorPlot::setScaleToScreen (bool d)
 {
   scaleToScreen = d;
@@ -176,19 +129,19 @@ void IndicatorPlot::setLogScale (bool d)
   logScale = d;
 }
 
-void IndicatorPlot::setHideMainPlot (bool d)
-{
-  hideMainPlot = d;
-}
-
-bool IndicatorPlot::getHideMainPlot ()
-{
-  return hideMainPlot;
-}
-
 void IndicatorPlot::setChartPath (QString &d)
 {
   chartPath = d;
+}
+
+void IndicatorPlot::setChartType (QString &d)
+{
+  chartType = d;
+}
+
+void IndicatorPlot::setMainPlot (bool d)
+{
+  mainPlot = d;
 }
 
 void IndicatorPlot::setDrawMode (bool d)
@@ -229,58 +182,18 @@ void IndicatorPlot::draw ()
 
   if (data)
   {
-    if (! mainFlag)
+    if (! indicators.count())
     {
-      if (! indicators.count())
-      {
-        paintEvent(0);
-        return;
-      }
+      paintEvent(0);
+      return;
     }
 
-    if (mainFlag)
-    {
-      if (chartPlugin->getMinPixelspace() != minPixelspace)
-      {
-        minPixelspace = chartPlugin->getMinPixelspace();
-        if (minPixelspace > pixelspace)
-          pixelspace = minPixelspace;
-        emit signalMinPixelspace(minPixelspace);
-      }
-    }
-    
     setScale();
-
     drawXGrid();
-
     drawYGrid();
-
-    if (mainFlag)
-    {
-      if (hideMainPlot == TRUE)
-      {
-        drawLines();
-        drawObjects();
-      }
-      else
-      {
-        chartPlugin->drawChart(buffer, scaler, startX, startIndex, pixelspace);
-	
-        if (! chartPlugin->getIndicatorFlag())
-        {
-          drawLines();
-          drawObjects();
-        }
-      }
-    }
-    else
-    {
-      drawLines();
-      drawObjects();
-    }
-    
+    drawLines();
+    drawObjects();
     drawCrossHair();
-
     drawInfo();
   }
 
@@ -356,16 +269,8 @@ void IndicatorPlot::resizeEvent (QResizeEvent *event)
 
 void IndicatorPlot::mousePressEvent (QMouseEvent *event)
 {
-  if (mainFlag)
-  {
-    if (! data)
-      return;
-  }
-  else
-  {
-    if (! indicators.count() || ! data)
-      return;
-  }
+  if (! indicators.count() || ! data)
+    return;
 
   if (! drawMode)
   {
@@ -375,7 +280,7 @@ void IndicatorPlot::mousePressEvent (QMouseEvent *event)
       {
         crossHair(event->x(), event->y(), TRUE);
         updateStatusBar(event->x(), event->y());
-        emit leftMouseButton(event->x(), event->y(), mainFlag);
+        emit leftMouseButton(event->x(), event->y(), 0);
       }
       else
         updateStatusBar(event->x(), event->y());
@@ -454,16 +359,8 @@ void IndicatorPlot::contextMenuEvent (QContextMenuEvent *)
 
 void IndicatorPlot::mouseMoveEvent (QMouseEvent *event)
 {
-  if (mainFlag)
-  {
-    if (! data)
-      return;
-  }
-  else
-  {
-    if (! indicators.count() || ! data)
-      return;
-  }
+  if (! indicators.count() || ! data)
+    return;
 
   // ignore moves above the top of the chart - we get draw errors if we don't
   if (event->y() <= 0)
@@ -498,18 +395,6 @@ void IndicatorPlot::getInfo (int x)
   data->getDate(i).getTimeString(TRUE, s);
   r->setData("T", s);
   
-  if (mainFlag)
-  {
-    strip(data->getOpen(i), 4, s);
-    r->setData("O", s);
-    strip(data->getHigh(i), 4, s);
-    r->setData("H", s);
-    strip(data->getLow(i), 4, s);
-    r->setData("L", s);
-    strip(data->getClose(i), 4, s);
-    r->setData("C", s);
-  }
-
   QDictIterator<Indicator> it(indicators);
   for (; it.current(); ++it)
   {
@@ -539,16 +424,8 @@ void IndicatorPlot::getInfo (int x)
 
 void IndicatorPlot::mouseDoubleClickEvent (QMouseEvent *)
 {
-  if (mainFlag)
-  {
-    if (! data)
-      return;
-  }
-  else
-  {
-    if (! indicators.count() || ! data)
-      return;
-  }
+  if (! indicators.count() || ! data)
+    return;
 
   if (mouseFlag != COSelected)
     return;
@@ -614,19 +491,11 @@ void IndicatorPlot::setGridFlag (bool d)
 void IndicatorPlot::setPixelspace (int d)
 {
   pixelspace = d;
-
-  if (chartPlugin)
-    chartPlugin->setPixelspace(d);
 }
 
 void IndicatorPlot::setIndex (int d)
 {
   startIndex = d;
-}
-
-bool IndicatorPlot::getMainFlag ()
-{
-  return mainFlag;
 }
 
 void IndicatorPlot::setXGrid (QMemArray<int> &d)
@@ -709,7 +578,8 @@ void IndicatorPlot::drawInfo ()
   painter.drawText(pos, 10, s, -1);
   pos = pos + fm.width(s);
 
-  if (data->count() && mainFlag)
+/*
+  if (data->count())
   {
     double ch = 0;
     double per = 0;
@@ -756,6 +626,7 @@ void IndicatorPlot::drawInfo ()
     painter.drawText(pos, 10, s, -1);
     pos = pos + fm.width(s);
   }
+*/
 
   QDictIterator<Indicator> it(indicators);
   for (; it.current(); ++it)
@@ -852,35 +723,8 @@ void IndicatorPlot::setScale ()
   double scaleHigh = -99999999;
   double scaleLow = 99999999;
 
-  if (mainFlag)
-  {
-    if (! scaleToScreen)
-    {
-      scaleHigh = data->getMax();
-      scaleLow = data->getMin();
-    }
-    else
-    {
-      int loop;
-      int end = (buffer.width() / pixelspace) + startIndex;
-      if (end > data->count())
-        end = data->count();
-      for (loop = startIndex; loop < end; loop++)
-      {
-	double t = data->getHigh(loop);
-        if (t > scaleHigh)
-	  scaleHigh = t;
-
-	t = data->getLow(loop);
-        if (t < scaleLow)
-	  scaleLow = t;
-      }
-    }
-  }
-
   QDictIterator<Indicator> it(indicators);
-  if (! mainFlag)
-    it.toFirst();
+  it.toFirst();
   for (; it.current(); ++it)
   {
     Indicator *i = it.current();
@@ -944,7 +788,7 @@ void IndicatorPlot::setScale ()
 
   double logScaleHigh = 1;
   double logRange = 0;
-  if (mainFlag && logScale)
+  if (logScale)
   {
     logScaleHigh = scaleHigh > 0.0 ? log(scaleHigh) : 1;
     double logScaleLow = scaleLow > 0.0 ? log(scaleLow) : 0;
@@ -952,16 +796,6 @@ void IndicatorPlot::setScale ()
   }
 
   scaler.set(buffer.height(), scaleHigh, scaleLow, logScaleHigh, logRange, logScale);
-}
-
-int IndicatorPlot::getPixelspace ()
-{
-  return pixelspace;
-}
-
-int IndicatorPlot::getMinPixelspace ()
-{
-  return minPixelspace;
 }
 
 int IndicatorPlot::getXFromDate (BarDate &d)
@@ -1044,12 +878,6 @@ void IndicatorPlot::showPopupMenu ()
 {
   chartMenu->clear();
     
-  if (mainFlag && data)
-  {
-    chartMenu->insertItem(tr("&Chart Prefs"), this, SLOT(slotEditChartPrefs()), CTRL+Key_C);
-    chartMenu->insertSeparator ();
-  }
-  
   chartMenu->insertItem(QPixmap(indicator), tr("New &Indicator"), this, SLOT(slotNewIndicator()), CTRL+Key_I);
   chartEditMenu = new QPopupMenu();
   chartMenu->insertItem(QPixmap(edit), tr("Edit Indicator"), chartEditMenu);
@@ -1121,11 +949,6 @@ void IndicatorPlot::slotNewIndicator ()
   emit signalNewIndicator();
 }
 
-void IndicatorPlot::slotEditChartPrefs ()
-{
-  chartPlugin->prefDialog(this);
-}
-
 void IndicatorPlot::slotMessage (QString d)
 {
   emit statusMessage(d);
@@ -1157,12 +980,6 @@ void IndicatorPlot::slotDrawModeChanged (bool d)
 void IndicatorPlot::slotLogScaleChanged (bool d)
 {
   setLogScale(d);
-  draw();
-}
-
-void IndicatorPlot::slotHideMainChanged (bool d)
-{
-  setHideMainPlot(d);
   draw();
 }
 
@@ -1539,12 +1356,9 @@ void IndicatorPlot::slotNewChartObject (int id)
   }
   
   QString pl = "Main Plot";
-  if (! mainFlag)
-  {
-    QDictIterator<Indicator> it(indicators);
-    it.toFirst();
-    pl = it.currentKey();
-  }
+  QDictIterator<Indicator> it2(indicators);
+  it2.toFirst();
+  pl = it2.currentKey();
   
   coPlugin->newObject(pl, name);
   

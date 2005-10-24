@@ -41,6 +41,7 @@ UTIL::UTIL ()
   methodList.append("COUNTER");
   methodList.append("REF");
   methodList.append("PER");
+  methodList.append("COLOR");
   methodList.sort();
 
   helpFile = "math.html";
@@ -235,6 +236,12 @@ PlotLine * UTIL::calculateCustom (QString &p, QPtrList<PlotLine> &d)
     if (! l[0].compare("PER"))
     {
       out = calculatePER(p, d);
+      break;
+    }
+
+    if (! l[0].compare("COLOR"))
+    {
+      out = calculateCOLOR(p, d);
       break;
     }
 
@@ -824,6 +831,64 @@ PlotLine * UTIL::calculatePER (QString &p, QPtrList<PlotLine> &d)
   for (loop = 1; loop < (int) input->getSize(); loop++)
     line->append(((input->getData(loop) - base) / base) * 100);
 
+  output->addLine(line);
+  return output->getLine(0);
+}
+
+PlotLine * UTIL::calculateCOLOR (QString &p, QPtrList<PlotLine> &d)
+{
+  // format1: METHOD, INPUT_ARRAY, COLOR_ARRAY, VALUE, COLOR
+
+  QStringList l = QStringList::split(",", p, FALSE);
+
+  if (l.count() == 5)
+    ;
+  else
+  {
+    qDebug("UTIL::calculateCOLOR: invalid parm count");
+    return 0;
+  }
+
+  if (d.count() != 2)
+  {
+    qDebug("UTIL::calculateCOLOR: 2 input arrays needed");
+    return 0;
+  }
+
+  bool ok;
+  int value;
+  int t = l[3].toInt(&ok);
+  if (ok)
+    value = t;
+  else
+  {
+    qDebug("UTIL::calculateCustom: invalid VALUE parm");
+    return 0;
+  }
+
+  QColor c(l[4]);
+  if (! c.isValid())
+  {
+    qDebug("UTIL::calculateCustom: invalid COLOR parm");
+    return 0;
+  }
+  
+  clearOutput();
+
+  PlotLine *inbool = d.at(0);
+  int inboolLoop = inbool->getSize() - 1;
+  PlotLine *incol = d.at(1);
+  int incolLoop = incol->getSize() - 1;
+  while (inboolLoop > -1 && incolLoop > -1)
+  {
+    if (inbool->getData(inboolLoop) == value)
+      incol->setColorBar(incolLoop, c);
+
+    inboolLoop--;
+    incolLoop--;
+  }
+
+  PlotLine *line = new PlotLine;
   output->addLine(line);
   return output->getLine(0);
 }

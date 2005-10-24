@@ -27,7 +27,6 @@
 #include <qstringlist.h>
 #include <qlibrary.h>
 #include <qdict.h>
-#include "ChartPlugin.h"
 #include "DbPlugin.h"
 #include "IndicatorPlugin.h"
 #include "QuotePlugin.h"
@@ -41,14 +40,14 @@ class Config
     {
       Home,
       DataPath,
-      ChartStyle,
+      ChartStyle, //unused
       Compression,
       Grid,
       Bars,
       BackgroundColor,
       BorderColor,
       GridColor,
-      ChartPluginPath,
+      ChartPluginPath, //unused
       IndicatorPath,
       Crosshairs,
       DrawMode,
@@ -113,20 +112,18 @@ class Config
     void setIndicator (QString &, Setting &);
 
     void getPluginList (Config::Parm, QStringList &);
-    ChartPlugin * getChartPlugin (QString &);
     DbPlugin * getDbPlugin (QString &);
     IndicatorPlugin * getIndicatorPlugin (QString &);
     QuotePlugin * getQuotePlugin (QString &);
     COPlugin * getCOPlugin (QString &);
     void closePlugins ();
     void closePlugin (QString &);
-    
+
     void copyIndicatorFile (QString &, QString &);
     void checkUpgrade ();
 
   protected:
     QDict<QLibrary> libs;
-    QDict<ChartPlugin> chartPlugins;
     QDict<DbPlugin> dbPlugins;
     QDict<IndicatorPlugin> indicatorPlugins;
     QDict<QuotePlugin> quotePlugins;

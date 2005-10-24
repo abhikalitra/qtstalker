@@ -34,7 +34,6 @@
 Config::Config ()
 {
   libs.setAutoDelete(TRUE);
-  chartPlugins.setAutoDelete(TRUE);
   dbPlugins.setAutoDelete(TRUE);
   indicatorPlugins.setAutoDelete(TRUE);
   quotePlugins.setAutoDelete(TRUE);
@@ -44,7 +43,6 @@ Config::Config ()
 
 Config::~Config ()
 {
-  chartPlugins.clear();
   dbPlugins.clear();
   indicatorPlugins.clear();
   quotePlugins.clear();
@@ -209,9 +207,6 @@ QString Config::getData (Parm p)
     case IndicatorPath:
       s = settings.readEntry("/Qtstalker/IndicatorPath");
       break;
-    case ChartStyle:
-      s = settings.readEntry("/Qtstalker/ChartStyle", "Bar");
-      break;
     case Compression:
       s = settings.readEntry("/Qtstalker/Compression", "6");
       break;
@@ -238,9 +233,6 @@ QString Config::getData (Parm p)
       break;
     case QuotePluginPath:
       s = settings.readEntry("/Qtstalker/QuotePluginPath", "/usr/lib/qtstalker/quote");
-      break;
-    case ChartPluginPath:
-      s = settings.readEntry("/Qtstalker/ChartPluginPath", "/usr/lib/qtstalker/chart");
       break;
     case DbPluginPath:
       s = settings.readEntry("/Qtstalker/DbPluginPath", "/usr/lib/qtstalker/db");
@@ -394,9 +386,6 @@ void Config::setData (Parm p, QString &d)
     case IndicatorPath:
       settings.writeEntry("/Qtstalker/IndicatorPath", d);
       break;
-    case ChartStyle:
-      settings.writeEntry("/Qtstalker/ChartStyle", d);
-      break;
     case Compression:
       settings.writeEntry("/Qtstalker/Compression", d);
       break;
@@ -423,9 +412,6 @@ void Config::setData (Parm p, QString &d)
       break;
     case QuotePluginPath:
       settings.writeEntry("/Qtstalker/QuotePluginPath", d);
-      break;
-    case ChartPluginPath:
-      settings.writeEntry("/Qtstalker/ChartPluginPath", d);
       break;
     case DbPluginPath:
       settings.writeEntry("/Qtstalker/DbPluginPath", d);
@@ -658,32 +644,6 @@ void Config::getIndicatorList (QStringList &l)
   getPluginList(IndicatorPluginPath, l);
 }
 
-ChartPlugin * Config::getChartPlugin (QString &p)
-{
-  ChartPlugin *plug = chartPlugins[p];
-  if (plug)
-    return plug;
-
-  QString s = getData(ChartPluginPath) + "/lib" + p + "." + version;
-
-  QLibrary *lib = new QLibrary(s);
-  ChartPlugin *(*so)() = 0;
-  so = (ChartPlugin *(*)()) lib->resolve("createChartPlugin");
-  if (so)
-  {
-    plug = (*so)();
-    libs.replace(p, lib);
-    chartPlugins.replace(p, plug);
-    return plug;
-  }
-  else
-  {
-    qDebug("Config::getChartPlugin:%s Dll error\n", s.latin1());
-    delete lib;
-    return 0;
-  }
-}
-
 DbPlugin * Config::getDbPlugin (QString &p)
 {
   DbPlugin *plug = dbPlugins[p];
@@ -790,11 +750,6 @@ COPlugin * Config::getCOPlugin (QString &p)
 
 void Config::closePlugins ()
 {
-  QDictIterator<ChartPlugin> it(chartPlugins);
-  for (; it.current(); ++it)
-    it.current()->saveSettings();
-  
-  chartPlugins.clear();
   dbPlugins.clear();
   indicatorPlugins.clear();
   quotePlugins.clear();
@@ -804,11 +759,6 @@ void Config::closePlugins ()
 
 void Config::closePlugin (QString &d)
 {
-  ChartPlugin *plug = chartPlugins[d];
-  if (plug)
-    plug->saveSettings();
-   
-  chartPlugins.remove(d);
   dbPlugins.remove(d);
   indicatorPlugins.remove(d);
   quotePlugins.remove(d);

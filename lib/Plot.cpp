@@ -71,22 +71,6 @@ void Plot::setData (BarData *l)
   indicatorPlot->setData(l);
 }
 
-int Plot::setChartType (QString &d)
-{
-  return indicatorPlot->setChartType(d);
-}
-
-void Plot::setChartInput ()
-{
-  indicatorPlot->setChartInput();
-}
-
-void Plot::setMainFlag (bool d)
-{
-  indicatorPlot->setMainFlag(d);
-  scalePlot->setMainFlag(d);
-}
-
 void Plot::setScaleToScreen (bool d)
 {
   indicatorPlot->setScaleToScreen(d);
@@ -97,16 +81,6 @@ void Plot::setLogScale (bool d)
 {
   indicatorPlot->setLogScale(d);
   scalePlot->setLogScale(d);
-}
-
-void Plot::setHideMainPlot (bool d)
-{
-  indicatorPlot->setHideMainPlot(d);
-}
-
-bool Plot::getHideMainPlot ()
-{
-  return indicatorPlot->getHideMainPlot();
 }
 
 void Plot::setChartPath (QString d)
@@ -197,11 +171,6 @@ bool Plot::getTabFlag ()
   return tabFlag;
 }
 
-bool Plot::getMainFlag ()
-{
-  return indicatorPlot->getMainFlag();
-}
-
 void Plot::setInterval (BarData::BarCompression d)
 {
   datePlot->setInterval(d);    
@@ -231,16 +200,6 @@ Indicator * Plot::getIndicator (QString &d)
 bool Plot::deleteIndicator (QString &d)
 {
   return indicatorPlot->deleteIndicator(d);
-}
-
-int Plot::getPixelspace ()
-{
-  return indicatorPlot->getPixelspace();
-}
-
-int Plot::getMinPixelspace ()
-{
-  return indicatorPlot->getMinPixelspace();
 }
 
 void Plot::getIndicators (QStringList &l)
@@ -284,11 +243,6 @@ void Plot::slotLogScaleChanged (bool d)
 {
   setLogScale(d);
   indicatorPlot->draw();
-}
-
-void Plot::slotHideMainChanged (bool d)
-{
-  setHideMainPlot(d);
 }
 
 void Plot::addChartObject (Setting &set)

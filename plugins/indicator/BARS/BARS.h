@@ -28,9 +28,7 @@ class BARS : public IndicatorPlugin
     virtual ~BARS ();
     void calculate ();
     void calculateBar ();
-    void calculatePaintBar ();
     void calculateCandle ();
-    void calculatePaintCandle ();
     int indicatorPrefDialog (QWidget *);
     void setDefaults();
     PlotLine * calculateCustom (QString &, QPtrList<PlotLine> &);
@@ -47,12 +45,6 @@ class BARS : public IndicatorPlugin
     QString label;
     QString method;
     QStringList methodList;
-    QColor barPaintUpColor;
-    QColor barPaintDownColor;
-    QStringList barFormula;
-    QColor candlePaintUpColor;
-    QColor candlePaintDownColor;
-    QStringList candleFormula;
 };
 
 extern "C"

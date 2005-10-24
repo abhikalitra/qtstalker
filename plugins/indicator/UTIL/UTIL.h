@@ -38,6 +38,7 @@ class UTIL : public IndicatorPlugin
     PlotLine * calculateMUL (QString &p, QPtrList<PlotLine> &d);
     PlotLine * calculateSUB (QString &p, QPtrList<PlotLine> &d);
     PlotLine * calculatePER (QString &p, QPtrList<PlotLine> &d);
+    PlotLine * calculateCOLOR (QString &p, QPtrList<PlotLine> &d);
   
   private:
     QStringList methodList;

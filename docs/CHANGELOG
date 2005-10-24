@@ -100,6 +100,13 @@
 
 20051022: New indicator plugin BARS. Use this to plot bars/candles in any plot area.
 
+20051024: Removed the chart plugins. Bar and candle are replaced by the BARS indicator plugin. Users can
+          create more flexible charts now. I am not sure if I will add Swing/P&F/EP styles to the BARS plugin.
+          I will need substantial user complaints to restore them.
+
+          Users will now have to create a BARS indicator and add it to the main plot manually. This way, users
+          can put bars/candles on any plot they want. 
+
 
 
 0.32

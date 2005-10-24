@@ -486,7 +486,6 @@ void Tester::createChartPage ()
   equityPlot->setPixelspace(5);
   equityPlot->setIndex(0);
   equityPlot->setDateFlag(TRUE);
-  equityPlot->setMainFlag(FALSE);
   equityPlot->setInfoFlag(FALSE);
   equityPlot->setCrosshairsFlag (FALSE); // turn off crosshairs
   QObject::connect(this, SIGNAL(signalIndex(int)), equityPlot, SLOT(setIndex(int)));
@@ -501,7 +500,6 @@ void Tester::createChartPage ()
   plot->setPixelspace(5);
   plot->setIndex(0);
   plot->setDateFlag(TRUE);
-  plot->setMainFlag(FALSE);
   plot->setInfoFlag(FALSE);
   plot->setCrosshairsFlag (FALSE); // turn off crosshairs
   QObject::connect(this, SIGNAL(signalIndex(int)), plot, SLOT(setIndex(int)));

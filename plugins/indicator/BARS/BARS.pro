@@ -5,10 +5,8 @@ pluginName = BARS
 } 
 
 HEADERS += BARS.h
-HEADERS += BarDialog.h
 
 SOURCES += BARS.cpp
-SOURCES += BarDialog.cpp
 
 target.path = /usr/lib/qtstalker/indicator
 INSTALLS += target

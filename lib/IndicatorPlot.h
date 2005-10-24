@@ -38,7 +38,6 @@
 #include "Indicator.h"
 #include "Scaler.h"
 #include "Config.h"
-#include "ChartPlugin.h"
 #include "BarData.h"
 #include "COPlugin.h"
 
@@ -70,14 +69,8 @@ class IndicatorPlot : public QWidget
     ~IndicatorPlot ();
     void clear ();
     void setData (BarData *);
-    void setMainFlag (bool);
     void setLogScale (bool);
-    int setChartType (QString &);
-    void setChartInput ();
-    void setHideMainPlot (bool);
-    bool getHideMainPlot ();
     void updateStatusBar (int, int);
-    bool getMainFlag ();
     bool getCrosshairsStatus ();
     void setInfoFlag (bool);
     void drawCrossHair ();
@@ -87,8 +80,6 @@ class IndicatorPlot : public QWidget
     bool deleteIndicator (QString &);
     void addChartObject (Setting &);
     int getWidth ();
-    int getPixelspace ();
-    int getMinPixelspace ();
     void strip (double, int, QString &);
     int convertXToDataIndex (int);
     void setGridFlag (bool);
@@ -100,6 +91,8 @@ class IndicatorPlot : public QWidget
     Scaler & getScaler ();
     void getInfo (int);
     void setXGrid (QMemArray<int> &);
+    void setMainPlot (bool);
+    void setChartType (QString &);
     
     void drawLine ();
     void drawHorizontalLine ();
@@ -128,7 +121,6 @@ class IndicatorPlot : public QWidget
     void slotScaleToScreenChanged (bool);
     void slotDrawModeChanged (bool);
     void slotLogScaleChanged (bool);
-    void slotHideMainChanged (bool);
     void setInterval(BarData::BarCompression);
 
   protected:
@@ -155,17 +147,14 @@ class IndicatorPlot : public QWidget
     void slotNewIndicator ();
     void slotNewChartObject (int);
     void slotDeleteAllChartObjects ();
-    void slotEditChartPrefs ();
     void slotChartObjectDeleted ();
 
   private:
     QFont plotFont;
     PlotLine *currentLine;
     QPixmap buffer;
-    ChartPlugin *chartPlugin;
     Config config;
     int pixelspace;
-    int minPixelspace;
     int startX;
     int startIndex;
     BarData::BarCompression interval;
@@ -173,14 +162,13 @@ class IndicatorPlot : public QWidget
     QColor gridColor;
     QColor borderColor;
     bool gridFlag;
-    bool mainFlag;
     bool scaleToScreen;
     bool logScale;
-    bool hideMainPlot;
     bool crossHairFlag;
     bool drawMode;
     bool crosshairs;
     bool infoFlag;
+    bool mainPlot;
     BarDate crossHairX;
     double crossHairY;
     Scaler scaler;
@@ -190,7 +178,6 @@ class IndicatorPlot : public QWidget
     COPlugin *coPlugin;
     QStringList coList;
     QDict<COPlugin> coPlugins;
-    QString chartType;
     QString chartPath;
     BarData *data;
     QDict<Indicator> indicators;
@@ -198,6 +185,7 @@ class IndicatorPlot : public QWidget
     QPopupMenu *chartMenu;
     QPopupMenu *chartEditMenu;
     QPopupMenu *chartObjectMenu;
+    QString chartType;
 };
 
 #endif

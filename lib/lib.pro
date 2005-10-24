@@ -6,7 +6,6 @@ QMAKE_CXXFLAGS += -ffast-math -Os
 
 HEADERS += QuotePlugin.h
 HEADERS += IndicatorPlugin.h
-HEADERS += ChartPlugin.h
 HEADERS += DbPlugin.h
 HEADERS += Setting.h
 HEADERS += FuturesData.h
@@ -45,7 +44,6 @@ HEADERS += UpgradeMessage.h
    
 SOURCES += QuotePlugin.cpp
 SOURCES += IndicatorPlugin.cpp
-SOURCES += ChartPlugin.cpp
 SOURCES += DbPlugin.cpp
 SOURCES += Setting.cpp
 SOURCES += FuturesData.cpp

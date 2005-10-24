@@ -6,14 +6,6 @@ SUBDIRS += lib
 #compile app
 SUBDIRS += src
 
-#compile chart plugins
-SUBDIRS += plugins/chart/Bar
-SUBDIRS += plugins/chart/Candle
-SUBDIRS += plugins/chart/EP
-SUBDIRS += plugins/chart/Line
-SUBDIRS += plugins/chart/PF
-SUBDIRS += plugins/chart/Swing
-
 #compile quote plugins
 SUBDIRS += plugins/quote/CME
 SUBDIRS += plugins/quote/CSV

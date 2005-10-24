@@ -53,6 +53,10 @@
         <source>Paint Bars</source>
         <translation>Słupki Malowane</translation>
     </message>
+    <message>
+        <source>Paint Bar Script</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>BarEdit</name>
@@ -2456,7 +2460,7 @@ Save changes?</source>
     </message>
     <message>
         <source>Open Interest</source>
-        <translation>LOP</translation>
+        <translation type="obsolete">LOP</translation>
     </message>
     <message>
         <source>5 Minute</source>
@@ -3769,22 +3773,6 @@ Rodzaj Wygładzania %D</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>PERL Parms</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Perl Code</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Parameters</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>PERL Indicator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>BARS type Selection</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3795,6 +3783,10 @@ Rodzaj Wygładzania %D</translation>
     <message>
         <source>Candle Color</source>
         <translation type="unfinished">Kolor Świeczki</translation>
+    </message>
+    <message>
+        <source>OpenInterest</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

@@ -38,7 +38,7 @@ class ChartToolbar : public QToolBar
   
   signals:
     void signalCompressionChanged (int);
-    void signalChartTypeChanged (int);
+    void signalChartTypeChanged ();
     void signalPixelspaceChanged (int);
     void signalSliderChanged (int);
     void signalKeyPressed (int, int, int, int, QString);
@@ -60,7 +60,6 @@ class ChartToolbar : public QToolBar
     ~ChartToolbar();
     int getBars ();
     void enableSlider (bool);
-    void setMinPixelspace (int);
     void setPixelspace (int, int);
     int getPixelspace ();
     int getCompressionInt ();
@@ -82,7 +81,6 @@ class ChartToolbar : public QToolBar
     MyComboBox *compressionCombo;
     MyComboBox *chartTypeCombo;
     MySpinBox *pixelspace;
-//    MySpinBox *barCount;
     MyLineEdit *barCount;
     MySlider *slider;
     bool keyFlag;

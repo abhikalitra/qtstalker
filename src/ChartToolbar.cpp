@@ -46,33 +46,25 @@ ChartToolbar::ChartToolbar (QMainWindow *mw) : QToolBar (mw, "chartToolbar")
           this, SIGNAL(signalKeyPressed(int, int, int, int, QString)));
   delete bd;
 
+/*
   chartTypeCombo = new MyComboBox(this, Macro::ChartToolbar);
   chartTypeCombo->show();
-  config.getPluginList(Config::ChartPluginPath, l);
-  chartTypeCombo->insertStringList(l, -1);
+  chartTypeCombo->insertItem("Bar", -1);
+  chartTypeCombo->insertItem("Candle", -1);
+  chartTypeCombo->insertItem("Line", -1);
   QToolTip::add(chartTypeCombo, tr("Chart Type"));
-  chartTypeCombo->setCurrentText(config.getData(Config::ChartStyle));
-  connect(chartTypeCombo, SIGNAL(activated(int)), this, SIGNAL(signalChartTypeChanged(int)));
+//  chartTypeCombo->setCurrentText(config.getData(Config::ChartStyle));
+  connect(chartTypeCombo, SIGNAL(activated(int)), this, SIGNAL(signalChartTypeChanged()));
   connect(chartTypeCombo, SIGNAL(signalKeyPressed(int, int, int, int, QString)),
           this, SIGNAL(signalKeyPressed(int, int, int, int, QString)));
+*/
 
   pixelspace = new MySpinBox(this, Macro::ChartToolbar);
+  pixelspace->setRange(4, 99);
   connect (pixelspace, SIGNAL(valueChanged(int)), this, SIGNAL(signalPixelspaceChanged(int)));
   QToolTip::add(pixelspace, tr("Bar Spacing"));
   connect(pixelspace, SIGNAL(signalKeyPressed(int, int, int, int, QString)),
           this, SIGNAL(signalKeyPressed(int, int, int, int, QString)));
-
-/*
-  barCount = new MySpinBox(this, Macro::ChartToolbar);
-  barCount->setMinValue(1);
-  barCount->setMaxValue(99999999);
-  barCount->setLineStep(1);
-  barCount->setValue(config.getData(Config::Bars).toInt());  
-  QToolTip::add(barCount, tr("Total bars to load"));
-  connect(barCount, SIGNAL(signalKeyPressed(int, int, int, int, QString)),
-          this, SIGNAL(signalKeyPressed(int, int, int, int, QString)));
-  connect(barCount, SIGNAL(valueChanged(int)), this, SIGNAL(signalBarsChanged(int)));
-*/
 
   QIntValidator *iv = new QIntValidator(1, 99999, this, 0);
 
@@ -103,7 +95,7 @@ ChartToolbar::ChartToolbar (QMainWindow *mw) : QToolBar (mw, "chartToolbar")
   a->insertItem(CTRL+Key_Plus, BarsLoadedFocus);
   a->insertItem(CTRL+Key_Minus, BarSpacingFocus);
   a->insertItem(CTRL+Key_Prior, CompressionFocus);
-  a->insertItem(CTRL+Key_Next, ChartTypeFocus);
+//  a->insertItem(CTRL+Key_Next, ChartTypeFocus);
   a->insertItem(CTRL+Key_B, ToolbarFocus);
   
   focusFlag = CompressionFocus;
@@ -126,13 +118,6 @@ int ChartToolbar::getBars ()
 void ChartToolbar::enableSlider (bool d)
 {
   slider->setEnabled(d);
-}
-
-void ChartToolbar::setMinPixelspace (int d)
-{
-  pixelspace->blockSignals(TRUE);
-  pixelspace->setRange(d, 99);
-  pixelspace->blockSignals(FALSE);
 }
 
 void ChartToolbar::setPixelspace (int min, int d)
@@ -160,7 +145,8 @@ QString ChartToolbar::getCompression ()
 
 QString ChartToolbar::getChartType ()
 {
-  return chartTypeCombo->currentText();
+//  return chartTypeCombo->currentText();
+  return QString();
 }
 
 int ChartToolbar::getSlider ()
@@ -223,8 +209,8 @@ void ChartToolbar::saveSettings ()
   s = QString::number(getCompressionInt());
   config.setData(Config::Compression, s);
   
-  s = chartTypeCombo->currentText();
-  config.setData(Config::ChartStyle, s);  
+//  s = chartTypeCombo->currentText();
+//  config.setData(Config::ChartStyle, s);  
 }
 
 void ChartToolbar::setFocus ()
@@ -237,7 +223,7 @@ void ChartToolbar::setKeyFlag (bool d)
 {
   keyFlag = d;
   compressionCombo->setKeyFlag(d);
-  chartTypeCombo->setKeyFlag(d);
+//  chartTypeCombo->setKeyFlag(d);
   pixelspace->setKeyFlag(d);
   barCount->setKeyFlag(d);
   slider->setKeyFlag(d);
@@ -271,12 +257,12 @@ void ChartToolbar::slotAccel (int id)
       if (keyFlag)
         emit signalKeyPressed (Macro::ChartToolbar, ControlButton, Key_Minus, 0, QString());
       break;  
-    case ChartTypeFocus:
-      chartTypeCombo->setFocus();
-      focusFlag = ChartTypeFocus;
-      if (keyFlag)
-        emit signalKeyPressed (Macro::ChartToolbar, ControlButton, Key_Next, 0, QString());
-      break;  
+//    case ChartTypeFocus:
+//      chartTypeCombo->setFocus();
+//      focusFlag = ChartTypeFocus;
+//      if (keyFlag)
+//        emit signalKeyPressed (Macro::ChartToolbar, ControlButton, Key_Next, 0, QString());
+//      break;  
     case ToolbarFocus:
       if (keyFlag)
         emit signalKeyPressed (Macro::ChartToolbar, ControlButton, Key_B, 0, QString());
@@ -298,9 +284,9 @@ void ChartToolbar::doKeyPress (QKeyEvent *key)
       case CompressionFocus:
         compressionCombo->doKeyPress(key);
 	break;
-      case ChartTypeFocus:
-        chartTypeCombo->doKeyPress(key);
-	break;
+//      case ChartTypeFocus:
+//        chartTypeCombo->doKeyPress(key);
+//	break;
       case BarSpacingFocus:
         pixelspace->doKeyPress(key);
 	break;

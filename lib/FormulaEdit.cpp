@@ -189,7 +189,11 @@ void FormulaEdit::editPlotItem ()
   QColor c(l[1]);
   dialog->addColorItem(cl, pl, c);
   dialog->addTextItem(ll, pl, l[2]);
-  dialog->addComboItem(ltl, pl, lineTypes, l[3]);
+
+  l = lineTypes;
+  l.append("Bar");
+  l.append("Candle");
+  dialog->addComboItem(ltl, pl, l, l[3]);
 
   int rc = dialog->exec();
   if (rc != QDialog::Accepted)

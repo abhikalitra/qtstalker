@@ -55,14 +55,14 @@ void CUS::calculate ()
       if (l.count() != 2)
       {
         qDebug("CUS::calculate: line %i parm missing", loop);
-        continue;
+        return;
       }
       
       QString var = l[0].stripWhiteSpace();
       if (varList.findIndex(var) != -1)
       {
         qDebug("CUS::calculate: line %i duplicate variable: %s", loop, var.latin1());
-        continue;
+        return;
       }
       varList.append(var);
 
@@ -70,7 +70,7 @@ void CUS::calculate ()
       if (l2.count() != 2)
       {
         qDebug("CUS::calculate: line %i bad indicator format", loop);
-        continue;
+        return;
       }
       
       QString plugin = l2[0].stripWhiteSpace();
@@ -85,7 +85,7 @@ void CUS::calculate ()
       {
         qDebug("CUS::calculate: %s plugin not loaded", plugin.latin1());
         config.closePlugin(plugin);
-        continue;
+        return;
       }
       plug->setIndicatorInput(data);
 
@@ -106,7 +106,7 @@ void CUS::calculate ()
             if (! in)
             {
               qDebug("CUS::calculate:line%i parm%i: input not found", loop, loop2);
-              continue;
+              return;
             }
 
             lines.replace(l[loop2], in);
@@ -118,9 +118,9 @@ void CUS::calculate ()
       PlotLine *out = plug->calculateCustom(parms, inList);
       if (! out)
       {
-        qDebug("CUS::calculate: no PlotLine returned");
+        qDebug("CUS::calculate: line %i: no PlotLine returned: %s", loop, parms.latin1());
         config.closePlugin(plugin);
-        continue;
+        return;
       }
 
       PlotLine *pl = new PlotLine;
@@ -134,7 +134,7 @@ void CUS::calculate ()
       if (l.count() != 2)
       {
         qDebug("CUS::calculate: line %i: bad plot format", loop);
-        continue;
+        return;
       }
 
       QString parms = l[1];
@@ -143,7 +143,7 @@ void CUS::calculate ()
       if (l.count() != 4)
       {
         qDebug("CUS::calculate: line %i: missing plot parms", loop);
-        continue;
+        return;
       }
 
       // 1.var name
@@ -152,7 +152,7 @@ void CUS::calculate ()
       if (! pl)
       {
         qDebug("CUS::calculate: line %i: bad plot parm 1", loop);
-        continue;
+        return;
       }
 
       // 2.color

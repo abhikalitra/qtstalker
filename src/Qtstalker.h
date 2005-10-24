@@ -87,7 +87,6 @@ class QtstalkerApp : public QMainWindow
     void initScannerNav ();
 //    void initMacroNav ();
     QString getWindowCaption ();
-    void setChartType (int);
     void loadChart (QString &);
     void compressionChanged ();
     void addIndicatorButton (QString &, Indicator::PlotType);
@@ -108,14 +107,12 @@ class QtstalkerApp : public QMainWindow
     void slotEditIndicator (Indicator *);
     void slotDeleteIndicator (QString);
     void slotCompressionChanged (int);
-    void slotChartTypeChanged (int);
     void slotPixelspaceChanged (int);
     void slotChartUpdated ();
     void slotStatusMessage (QString);
     void slotHideNav (bool);
     void slotUpdateInfo (Setting *);
     void slotPlotLeftMouseButton (int, int, bool);
-    void slotMinPixelspaceChanged (int);
     void slotCrosshairsStatus (bool);
     void slotNavigatorPosition (int);
     void slotHelp ();
@@ -126,6 +123,7 @@ class QtstalkerApp : public QMainWindow
 //    void slotRecordMacro (QString);
 //    void slotStopMacro ();
     void slotProgMessage (int, int);
+//    void slotChartTypeChanged ();
     
   private:
     QToolBar *toolbar;
@@ -145,7 +143,6 @@ class QtstalkerApp : public QMainWindow
     chartStatus status;
     QString chartPath;
     QString chartName;
-    QString chartType;
     QString chartSymbol;
     QString dbPlugin;
     BarData *recordList;
@@ -160,6 +157,7 @@ class QtstalkerApp : public QMainWindow
 //    Macro *currentMacro;
     QProgressBar *progBar;
     QStatusBar *statusbar;
+    QString chartType;
 };
 
 #endif

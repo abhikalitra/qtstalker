@@ -96,10 +96,10 @@ QtstalkerApp::QtstalkerApp()
   // setup the main plot
   mainPlot = new Plot (split);
   mainPlot->setDateFlag(TRUE);
-  mainPlot->setMainFlag(TRUE);
+//  mainPlot->setMainPlot(TRUE);
+//  mainPlot->setChartType(toolbar2->getChartType());
   mainPlot->setLogScale(menubar->getStatus(MainMenubar::Log));
   connect(menubar, SIGNAL(signalLog(bool)), mainPlot, SLOT(slotLogScaleChanged(bool)));
-  connect(menubar, SIGNAL(signalHideMain(bool)), mainPlot->getIndicatorPlot(), SLOT(slotHideMainChanged(bool)));
 
   // setup the indicator tabs
   tabs = new IndicatorTab(split);
@@ -164,9 +164,6 @@ QtstalkerApp::QtstalkerApp()
   // set the nav status
   slotHideNav(TRUE);
 
-  // set the last used chart type
-  slotChartTypeChanged(0);
-
   // restore the size of the app
   resize(config.getData(Config::Width).toInt(), config.getData(Config::Height).toInt());
   
@@ -215,7 +212,6 @@ void QtstalkerApp::initToolBar()
   menubar->getAction(MainMenubar::Grid)->addTo(toolbar);
   menubar->getAction(MainMenubar::ScaleToScreen)->addTo(toolbar);
   menubar->getAction(MainMenubar::Log)->addTo(toolbar);
-  menubar->getAction(MainMenubar::HideMain)->addTo(toolbar);
   menubar->getAction(MainMenubar::IndicatorDate)->addTo(toolbar);
   menubar->getAction(MainMenubar::DrawMode)->addTo(toolbar);
   menubar->getAction(MainMenubar::NewIndicator)->addTo(toolbar);
@@ -226,10 +222,10 @@ void QtstalkerApp::initToolBar()
   // construct the chart toolbar
   toolbar2 = new ChartToolbar(this);
   connect(toolbar2, SIGNAL(signalCompressionChanged(int)), this, SLOT(slotCompressionChanged(int)));
-  connect(toolbar2, SIGNAL(signalChartTypeChanged(int)), this, SLOT(slotChartTypeChanged(int)));
   connect(toolbar2, SIGNAL(signalPixelspaceChanged(int)), this, SLOT(slotPixelspaceChanged(int)));
   connect(this, SIGNAL(signalSetKeyFlag(bool)), toolbar2, SLOT(setKeyFlag(bool)));
   connect(toolbar2, SIGNAL(signalBarsChanged(int)), this, SLOT(slotChartUpdated()));
+//  connect(toolbar2, SIGNAL(signalChartTypeChanged()), this, SLOT(slotChartTypeChanged()));
 }
 
 void QtstalkerApp::slotQuit()
@@ -508,8 +504,6 @@ void QtstalkerApp::loadChart (QString &d)
   mainPlot->setData(recordList);
   for(it.toFirst(); it.current(); ++it)
     it.current()->setData(recordList);
-    
-  mainPlot->setChartInput ();
 
   // setup the local indicators
   if (! reload)
@@ -564,11 +558,8 @@ void QtstalkerApp::loadChart (QString &d)
   
   config.closePlugin(plugin);
 
-  // update the pixelspace
-  toolbar2->setMinPixelspace(mainPlot->getMinPixelspace());
-  
   setSliderStart(toolbar2->getPixelspace(), TRUE);
-  
+
   mainPlot->draw();
 
   for(it.toFirst(); it.current(); ++it)
@@ -615,8 +606,6 @@ void QtstalkerApp::loadIndicator (Indicator *i)
         plot->setData(recordList);
     }
   }
-  
-//  config.closePlugin(plugin);
 }
 
 QString QtstalkerApp::getWindowCaption ()
@@ -683,34 +672,6 @@ void QtstalkerApp::compressionChanged ()
   config.setData(Config::Compression, s);
 
   emit signalInterval((BarData::BarCompression) toolbar2->getCompressionInt());
-}
-
-void QtstalkerApp::slotChartTypeChanged (int)
-{
-  // the chart type has changed
-
-  QString s = toolbar2->getChartType();
-  if (mainPlot->setChartType(s))
-    return;
-
-  emit signalPixelspace(mainPlot->getPixelspace());
-
-  toolbar2->setPixelspace(mainPlot->getMinPixelspace(), mainPlot->getPixelspace());
-  
-  setSliderStart(toolbar2->getPixelspace(), TRUE);
-  
-  emit signalIndex(toolbar2->getSlider());
-  
-  mainPlot->draw();
-
-  QDictIterator<Plot> it(plotList);
-  for(; it.current(); ++it)
-  {
-    if (! it.current()->getTabFlag())
-      it.current()->draw();
-  }
-
-  tabs->drawCurrent();
 }
 
 void QtstalkerApp::slotNewIndicator (Indicator *i)
@@ -858,12 +819,6 @@ void QtstalkerApp::slotPixelspaceChanged (int d)
   tabs->drawCurrent();
 }
 
-void QtstalkerApp::slotMinPixelspaceChanged (int d)
-{
-  toolbar2->setPixelspace(d, d);
-  slotPixelspaceChanged(d);
-}
-
 void QtstalkerApp::addIndicatorButton (QString &d, Indicator::PlotType tabFlag)
 {
   Setting set;
@@ -951,7 +906,6 @@ void QtstalkerApp::initPlot (Plot *plot)
   connect(plot->getIndicatorPlot(), SIGNAL(statusMessage(QString)), this, SLOT(slotStatusMessage(QString)));
   connect(plot->getIndicatorPlot(), SIGNAL(infoMessage(Setting *)), this, SLOT(slotUpdateInfo(Setting *)));
   connect(plot->getIndicatorPlot(), SIGNAL(leftMouseButton(int, int, bool)), this, SLOT(slotPlotLeftMouseButton(int, int, bool)));
-  connect(plot->getIndicatorPlot(), SIGNAL(signalMinPixelspace(int)), this, SLOT(slotMinPixelspaceChanged(int)));
   connect(plot->getIndicatorPlot(), SIGNAL(signalCrosshairsStatus(bool)), this, SLOT(slotCrosshairsStatus(bool)));
   connect(this, SIGNAL(signalCrosshairsStatus(bool)), plot->getIndicatorPlot(), SLOT(setCrosshairsStatus(bool)));
   connect(this, SIGNAL(signalPixelspace(int)), plot, SLOT(setPixelspace(int)));
@@ -1254,6 +1208,14 @@ void QtstalkerApp::slotProgMessage (int p, int t)
   qApp->processEvents();
 }
 
+/*
+void QtstalkerApp::slorChartTypeChanged ()
+{
+  QString type = toolbar2->getChartType();
+  mainPlot->setChartType(type);
+  mainPlot->draw();
+}
+*/
 //**********************************************************************
 //**********************************************************************
 //**********************************************************************
