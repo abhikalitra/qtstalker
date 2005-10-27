@@ -3,7 +3,7 @@
     <name>BarDialog</name>
     <message>
         <source>Bar Chart Parms</source>
-        <translation>Param Wykresu Słupkowego</translation>
+        <translation type="obsolete">Param Wykresu Słupkowego</translation>
     </message>
     <message>
         <source>Bar</source>
@@ -15,47 +15,43 @@
     </message>
     <message>
         <source>Style</source>
-        <translation>Rodzaj</translation>
+        <translation type="obsolete">Rodzaj</translation>
     </message>
     <message>
         <source>Min Bar Spacing</source>
-        <translation>Min odległość słupków</translation>
+        <translation type="obsolete">Min odległość słupków</translation>
     </message>
     <message>
         <source>Parms</source>
-        <translation>Param</translation>
+        <translation type="obsolete">Param</translation>
     </message>
     <message>
         <source>Bar Up Color</source>
-        <translation>Kolor Słupka Zwyżki</translation>
+        <translation type="obsolete">Kolor Słupka Zwyżki</translation>
     </message>
     <message>
         <source>Bar Down Color</source>
-        <translation>Kolor Słupka Zniżki</translation>
+        <translation type="obsolete">Kolor Słupka Zniżki</translation>
     </message>
     <message>
         <source>Bar Neutral Color</source>
-        <translation>Kolor Słupka Neutralnego</translation>
+        <translation type="obsolete">Kolor Słupka Neutralnego</translation>
     </message>
     <message>
         <source>Bars</source>
-        <translation>Słupki</translation>
+        <translation type="obsolete">Słupki</translation>
     </message>
     <message>
         <source>Paint Bar Up Color</source>
-        <translation>Kolor Zwyżki</translation>
+        <translation type="obsolete">Kolor Zwyżki</translation>
     </message>
     <message>
         <source>Paint Bar Down Color</source>
-        <translation>Kolor Zniżki</translation>
+        <translation type="obsolete">Kolor Zniżki</translation>
     </message>
     <message>
         <source>Paint Bars</source>
-        <translation>Słupki Malowane</translation>
-    </message>
-    <message>
-        <source>Paint Bar Script</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Słupki Malowane</translation>
     </message>
 </context>
 <context>
@@ -658,111 +654,111 @@ Directory name must be one word only.</source>
     </message>
     <message>
         <source>Volume Candle</source>
-        <translation>Świeczkowy (Wolumen)</translation>
+        <translation type="obsolete">Świeczkowy (Wolumen)</translation>
     </message>
     <message>
         <source>Candle Chart Prefs</source>
-        <translation>Pref Wykresu Świeczkowego</translation>
+        <translation type="obsolete">Pref Wykresu Świeczkowego</translation>
     </message>
     <message>
         <source>Prefs</source>
-        <translation>Pref</translation>
+        <translation type="obsolete">Pref</translation>
     </message>
     <message>
         <source>Style</source>
-        <translation>Rodzaj</translation>
+        <translation type="obsolete">Rodzaj</translation>
     </message>
     <message>
         <source>Min Bar Spacing</source>
-        <translation>Minimalna odległość słupków</translation>
+        <translation type="obsolete">Minimalna odległość słupków</translation>
     </message>
     <message>
         <source>Expand Candles</source>
-        <translation>Rozszerz Świeczki</translation>
+        <translation type="obsolete">Rozszerz Świeczki</translation>
     </message>
     <message>
         <source>Candle Color</source>
-        <translation>Kolor Świeczki</translation>
+        <translation type="obsolete">Kolor Świeczki</translation>
     </message>
     <message>
         <source>Neutral Color</source>
-        <translation>Kolor Neutralny</translation>
+        <translation type="obsolete">Kolor Neutralny</translation>
     </message>
     <message>
         <source>Up Color</source>
-        <translation>Kolor Zwyżki</translation>
+        <translation type="obsolete">Kolor Zwyżki</translation>
     </message>
     <message>
         <source>Down Color</source>
-        <translation>Kolor Zniżki</translation>
+        <translation type="obsolete">Kolor Zniżki</translation>
     </message>
     <message>
         <source>Volume MA Periods</source>
-        <translation>Okresy ŚK wolumenu</translation>
+        <translation type="obsolete">Okresy ŚK wolumenu</translation>
     </message>
     <message>
         <source>Volume Slow factor</source>
-        <translation>Faktor Niskiego Wolumenu</translation>
+        <translation type="obsolete">Faktor Niskiego Wolumenu</translation>
     </message>
     <message>
         <source>Volume Active factor</source>
-        <translation>Faktor Aktywnego Wolumenu</translation>
+        <translation type="obsolete">Faktor Aktywnego Wolumenu</translation>
     </message>
     <message>
         <source>Volume Hot factor</source>
-        <translation>Faktor Wzmożonego Wolumenu</translation>
+        <translation type="obsolete">Faktor Wzmożonego Wolumenu</translation>
     </message>
     <message>
         <source>Volume Fire factor</source>
-        <translation>Faktor Wysokiego Wolumenu</translation>
+        <translation type="obsolete">Faktor Wysokiego Wolumenu</translation>
     </message>
     <message>
         <source>Volume Crazy factor</source>
-        <translation>Faktor Euforycznego Wolumenu</translation>
+        <translation type="obsolete">Faktor Euforycznego Wolumenu</translation>
     </message>
     <message>
         <source>Volume Slow color</source>
-        <translation>Kolor Niskiego Wolumenu</translation>
+        <translation type="obsolete">Kolor Niskiego Wolumenu</translation>
     </message>
     <message>
         <source>Volume Normal color</source>
-        <translation>Kolor Normalnego Wolumenu</translation>
+        <translation type="obsolete">Kolor Normalnego Wolumenu</translation>
     </message>
     <message>
         <source>Volume Active color</source>
-        <translation>Kolor Aktywnego Wolumenu</translation>
+        <translation type="obsolete">Kolor Aktywnego Wolumenu</translation>
     </message>
     <message>
         <source>Volume Hot color</source>
-        <translation>Kolor Wzmożonego Wolumenu</translation>
+        <translation type="obsolete">Kolor Wzmożonego Wolumenu</translation>
     </message>
     <message>
         <source>Volume Fire color</source>
-        <translation>Kolor Wysokiego Wolumenu</translation>
+        <translation type="obsolete">Kolor Wysokiego Wolumenu</translation>
     </message>
     <message>
         <source>Volume Crazy color</source>
-        <translation>Kolor Euforycznego Wolumenu</translation>
+        <translation type="obsolete">Kolor Euforycznego Wolumenu</translation>
     </message>
     <message>
         <source>Fixed Candle Radius (pixels)</source>
-        <translation>Stały Promień Świeczki (piksele)</translation>
+        <translation type="obsolete">Stały Promień Świeczki (piksele)</translation>
     </message>
     <message>
         <source>Minimum Candle Radius (pixels)</source>
-        <translation>Minimalny Promień Świeczki (piksele)</translation>
+        <translation type="obsolete">Minimalny Promień Świeczki (piksele)</translation>
     </message>
     <message>
         <source>Max Gap between Candles (pixels)</source>
-        <translation>Max Luka Pomiędzy Świeczkami (piksele)</translation>
+        <translation type="obsolete">Max Luka Pomiędzy Świeczkami (piksele)</translation>
     </message>
     <message>
         <source>Volume Colors</source>
-        <translation>Kolory Wolumenu</translation>
+        <translation type="obsolete">Kolory Wolumenu</translation>
     </message>
     <message>
         <source>Color</source>
-        <translation>Kolor</translation>
+        <translation type="obsolete">Kolor</translation>
     </message>
 </context>
 <context>
@@ -832,7 +828,7 @@ Directory name must be one word only.</source>
     </message>
     <message>
         <source>Chart Type</source>
-        <translation>Styl Wykresu</translation>
+        <translation type="obsolete">Styl Wykresu</translation>
     </message>
     <message>
         <source>Bar Spacing</source>
@@ -917,67 +913,67 @@ Directory name must be one word only.</source>
     <name>EP</name>
     <message>
         <source>EP Chart Prefs</source>
-        <translation>Pref Wykresu EP</translation>
+        <translation type="obsolete">Pref Wykresu EP</translation>
     </message>
     <message>
         <source>Parms</source>
-        <translation>Param</translation>
+        <translation type="obsolete">Param</translation>
     </message>
     <message>
         <source>Neutral Color</source>
-        <translation>Kolor Neutralny</translation>
+        <translation type="obsolete">Kolor Neutralny</translation>
     </message>
     <message>
         <source>Min Bar Spacing</source>
-        <translation>Min odległość słupków</translation>
+        <translation type="obsolete">Min odległość słupków</translation>
     </message>
     <message>
         <source>Outside Rank</source>
-        <translation>Ranga Objęcia</translation>
+        <translation type="obsolete">Ranga Objęcia</translation>
     </message>
     <message>
         <source>Outside Rank 1</source>
-        <translation>Ranga Objęcia 1</translation>
+        <translation type="obsolete">Ranga Objęcia 1</translation>
     </message>
     <message>
         <source>Outside Rank 2</source>
-        <translation>Ranga Objęcia 2</translation>
+        <translation type="obsolete">Ranga Objęcia 2</translation>
     </message>
     <message>
         <source>Outside Rank 3</source>
-        <translation>Ranga Objęcia 3</translation>
+        <translation type="obsolete">Ranga Objęcia 3</translation>
     </message>
     <message>
         <source>Outside Rank 4</source>
-        <translation>Ranga Objęcia 4</translation>
+        <translation type="obsolete">Ranga Objęcia 4</translation>
     </message>
     <message>
         <source>Outside Rank 5</source>
-        <translation>Ranga Objęcia 5</translation>
+        <translation type="obsolete">Ranga Objęcia 5</translation>
     </message>
     <message>
         <source>Inside Rank</source>
-        <translation>Ranga Harami</translation>
+        <translation type="obsolete">Ranga Harami</translation>
     </message>
     <message>
         <source>Inside Rank 1</source>
-        <translation>Ranga Harami 1</translation>
+        <translation type="obsolete">Ranga Harami 1</translation>
     </message>
     <message>
         <source>Inside Rank 2</source>
-        <translation>Ranga Harami 2</translation>
+        <translation type="obsolete">Ranga Harami 2</translation>
     </message>
     <message>
         <source>Inside Rank 3</source>
-        <translation>Ranga Harami 3</translation>
+        <translation type="obsolete">Ranga Harami 3</translation>
     </message>
     <message>
         <source>Inside Rank 4</source>
-        <translation>Ranga Harami 4</translation>
+        <translation type="obsolete">Ranga Harami 4</translation>
     </message>
     <message>
         <source>Inside Rank 5</source>
-        <translation>Ranga Harami 5</translation>
+        <translation type="obsolete">Ranga Harami 5</translation>
     </message>
 </context>
 <context>
@@ -1617,7 +1613,7 @@ Save changes?</source>
     </message>
     <message>
         <source>Plot Type</source>
-        <translation>Rodzaj Grafu</translation>
+        <translation type="obsolete">Rodzaj Grafu</translation>
     </message>
     <message>
         <source>Indicator Group</source>
@@ -1659,6 +1655,10 @@ Save changes?</source>
         <source>Cannot delete default group.</source>
         <translation>Nie można usunąć grupy.</translation>
     </message>
+    <message>
+        <source>Tab Row</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>IndicatorPlot</name>
@@ -1676,7 +1676,7 @@ Save changes?</source>
     </message>
     <message>
         <source>&amp;Chart Prefs</source>
-        <translation>Pref &amp;Wykresu</translation>
+        <translation type="obsolete">Pref &amp;Wykresu</translation>
     </message>
     <message>
         <source>New &amp;Indicator</source>
@@ -1749,23 +1749,23 @@ Save changes?</source>
     <name>LineDialog</name>
     <message>
         <source>Line Chart Parms</source>
-        <translation>Param Wykresu Liniowego</translation>
+        <translation type="obsolete">Param Wykresu Liniowego</translation>
     </message>
     <message>
         <source>Color</source>
-        <translation>Kolor</translation>
+        <translation type="obsolete">Kolor</translation>
     </message>
     <message>
         <source>Min Bar Spacing</source>
-        <translation>Min odległość słupków</translation>
+        <translation type="obsolete">Min odległość słupków</translation>
     </message>
     <message>
         <source>Default Plot</source>
-        <translation>Krzywa domyślna</translation>
+        <translation type="obsolete">Krzywa domyślna</translation>
     </message>
     <message>
         <source>Parms</source>
-        <translation>Param</translation>
+        <translation type="obsolete">Param</translation>
     </message>
 </context>
 <context>
@@ -1993,11 +1993,11 @@ Save changes?</source>
     </message>
     <message>
         <source>Hide &amp;Main Plot</source>
-        <translation>Schowaj Głó&amp;wny Cenograf</translation>
+        <translation type="obsolete">Schowaj Głó&amp;wny Cenograf</translation>
     </message>
     <message>
         <source>Hide the main plot (Ctrl+8)</source>
-        <translation>Przełącz widok głównego cenografu (Ctrl+8)</translation>
+        <translation type="obsolete">Przełącz widok głównego cenografu (Ctrl+8)</translation>
     </message>
     <message>
         <source>Toggle Indicator Date</source>
@@ -2193,31 +2193,31 @@ Save changes?</source>
     <name>PF</name>
     <message>
         <source>PF Chart Prefs</source>
-        <translation>Pref Wykresu PF</translation>
+        <translation type="obsolete">Pref Wykresu PF</translation>
     </message>
     <message>
         <source>Details</source>
-        <translation>Szczegóły</translation>
+        <translation type="obsolete">Szczegóły</translation>
     </message>
     <message>
         <source>Up Color</source>
-        <translation>Kolor Zwyżki</translation>
+        <translation type="obsolete">Kolor Zwyżki</translation>
     </message>
     <message>
         <source>Down Color</source>
-        <translation>Kolor Zniżki</translation>
+        <translation type="obsolete">Kolor Zniżki</translation>
     </message>
     <message>
         <source>Box Size</source>
-        <translation>Rozmiar Symbolu</translation>
+        <translation type="obsolete">Rozmiar Symbolu</translation>
     </message>
     <message>
         <source>Reversal</source>
-        <translation>Odwrót</translation>
+        <translation type="obsolete">Odwrót</translation>
     </message>
     <message>
         <source>Min Bar Spacing</source>
-        <translation>Min odległość słupków</translation>
+        <translation type="obsolete">Min odległość słupków</translation>
     </message>
 </context>
 <context>
@@ -2496,15 +2496,15 @@ Save changes?</source>
     </message>
     <message>
         <source>Main</source>
-        <translation>Nałożony</translation>
+        <translation type="obsolete">Nałożony</translation>
     </message>
     <message>
         <source>Tabbed</source>
-        <translation>Zakładkowy</translation>
+        <translation type="obsolete">Zakładkowy</translation>
     </message>
     <message>
         <source>Stacked</source>
-        <translation>Kaskadowy</translation>
+        <translation type="obsolete">Kaskadowy</translation>
     </message>
     <message>
         <source>Dot</source>
@@ -3845,7 +3845,7 @@ Rodzaj Wygładzania %D</translation>
     </message>
     <message>
         <source>Main Plot</source>
-        <translation>Krzywa główna</translation>
+        <translation type="obsolete">Krzywa główna</translation>
     </message>
     <message>
         <source>Qtstalker</source>
@@ -4343,23 +4343,23 @@ eg. 2:1</source>
     <name>Swing</name>
     <message>
         <source>Swing Chart Prefs</source>
-        <translation>Pref wykresy Swingowego</translation>
+        <translation type="obsolete">Pref wykresy Swingowego</translation>
     </message>
     <message>
         <source>Details</source>
-        <translation>Szczegóły</translation>
+        <translation type="obsolete">Szczegóły</translation>
     </message>
     <message>
         <source>Up Color</source>
-        <translation>Kolor Zwyżki</translation>
+        <translation type="obsolete">Kolor Zwyżki</translation>
     </message>
     <message>
         <source>Down Color</source>
-        <translation>Kolor Zniżki</translation>
+        <translation type="obsolete">Kolor Zniżki</translation>
     </message>
     <message>
         <source>Min Bar Spacing</source>
-        <translation>Min odległość słupków</translation>
+        <translation type="obsolete">Min odległość słupków</translation>
     </message>
 </context>
 <context>

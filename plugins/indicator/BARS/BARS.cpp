@@ -48,6 +48,25 @@ void BARS::setDefaults ()
   barNeutralColor.setNamedColor("blue");
   candleColor.setNamedColor("green");
   label = pluginName;
+
+  maColor.setNamedColor("red");
+  maColor2.setNamedColor("red");
+  maColor3.setNamedColor("red");
+  maLineType = PlotLine::Line;
+  maLineType2 = PlotLine::Line;
+  maLineType3 = PlotLine::Line;
+  maLabel = "MA";
+  maLabel2 = "MA2";
+  maLabel3 = "MA3";
+  maPeriod = 1;
+  maPeriod2 = 1;
+  maPeriod3 = 1;
+  maType = 1;
+  maType2 = 1;
+  maType3 = 1;
+  maInput = BarData::Close;
+  maInput2 = BarData::Close;
+  maInput3 = BarData::Close;
 }
 
 void BARS::calculate ()
@@ -95,6 +114,8 @@ void BARS::calculateBar ()
   line->setType(PlotLine::Bar);
   line->setLabel(label);
   output->addLine(line);
+
+  calculateMA();
 }
 
 void BARS::calculateCandle ()
@@ -119,6 +140,53 @@ void BARS::calculateCandle ()
   line->setType(PlotLine::Candle);
   line->setLabel(label);
   output->addLine(line);
+
+  calculateMA();
+}
+
+void BARS::calculateMA ()
+{
+  if (maPeriod > 1)
+  {
+    PlotLine *in = data->getInput(maInput);
+    if (in)
+    {
+      PlotLine *ma = getMA(in, maType, maPeriod);
+      ma->setColor(maColor);
+      ma->setType(maLineType);
+      ma->setLabel(maLabel);
+      output->addLine(ma);
+      delete in;
+    }
+  }
+
+  if (maPeriod2 > 1)
+  {
+    PlotLine *in = data->getInput(maInput2);
+    if (in)
+    {
+      PlotLine *ma = getMA(in, maType2, maPeriod2);
+      ma->setColor(maColor2);
+      ma->setType(maLineType2);
+      ma->setLabel(maLabel2);
+      output->addLine(ma);
+      delete in;
+    }
+  }
+
+  if (maPeriod3 > 1)
+  {
+    PlotLine *in = data->getInput(maInput3);
+    if (in)
+    {
+      PlotLine *ma = getMA(in, maType3, maPeriod3);
+      ma->setColor(maColor3);
+      ma->setType(maLineType3);
+      ma->setLabel(maLabel3);
+      output->addLine(ma);
+      delete in;
+    }
+  }
 }
 
 int BARS::indicatorPrefDialog (QWidget *w)
@@ -153,6 +221,30 @@ int BARS::indicatorPrefDialog (QWidget *w)
   QString ccl = QObject::tr("Candle Color");
   QString ll = QObject::tr("Label");
 
+  QString pl2 = QObject::tr("MA");
+  QString macl = QObject::tr("MA Color");
+  QString mall = QObject::tr("MA Label");
+  QString maltl = QObject::tr("MA Line Type");
+  QString mapl = QObject::tr("MA Period");
+  QString matl = QObject::tr("MA Type");
+  QString mail = QObject::tr("MA Input");
+
+  QString pl3 = QObject::tr("MA2");
+  QString ma2cl = QObject::tr("MA2 Color");
+  QString ma2ll = QObject::tr("MA2 Label");
+  QString ma2ltl = QObject::tr("MA2 Line Type");
+  QString ma2pl = QObject::tr("MA2 Period");
+  QString ma2tl = QObject::tr("MA2 Type");
+  QString ma2il = QObject::tr("MA2 Input");
+
+  QString pl4 = QObject::tr("MA3");
+  QString ma3cl = QObject::tr("MA3 Color");
+  QString ma3ll = QObject::tr("MA3 Label");
+  QString ma3ltl = QObject::tr("MA3 Line Type");
+  QString ma3pl = QObject::tr("MA3 Period");
+  QString ma3tl = QObject::tr("MA3 Type");
+  QString ma3il = QObject::tr("MA3 Input");
+
   PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(QObject::tr("BARS Indicator"));
   dialog->createPage (pl);
@@ -178,7 +270,33 @@ int BARS::indicatorPrefDialog (QWidget *w)
   }
 
   dialog->addTextItem(ll, pl, label);
-  
+
+  QStringList mal = getMATypes();
+
+  dialog->createPage (pl2);
+  dialog->addColorItem(macl, pl2, maColor);
+  dialog->addTextItem(mall, pl2, maLabel);
+  dialog->addComboItem(maltl, pl2, lineTypes, maLineType);
+  dialog->addComboItem(matl, pl2, mal, maType);
+  dialog->addIntItem(mapl, pl2, maPeriod, 1, 999999);
+  dialog->addComboItem(mail, pl2, inputTypeList, maInput);
+
+  dialog->createPage (pl3);
+  dialog->addColorItem(ma2cl, pl3, maColor2);
+  dialog->addTextItem(ma2ll, pl3, maLabel2);
+  dialog->addComboItem(ma2ltl, pl3, lineTypes, maLineType2);
+  dialog->addComboItem(ma2tl, pl3, mal, maType2);
+  dialog->addIntItem(ma2pl, pl3, maPeriod2, 1, 999999);
+  dialog->addComboItem(ma2il, pl3, inputTypeList, maInput2);
+
+  dialog->createPage (pl4);
+  dialog->addColorItem(ma3cl, pl4, maColor3);
+  dialog->addTextItem(ma3ll, pl4, maLabel3);
+  dialog->addComboItem(ma3ltl, pl4, lineTypes, maLineType3);
+  dialog->addComboItem(ma3tl, pl4, mal, maType3);
+  dialog->addIntItem(ma3pl, pl4, maPeriod3, 1, 999999);
+  dialog->addComboItem(ma3il, pl4, inputTypeList, maInput3);
+ 
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
@@ -205,6 +323,27 @@ int BARS::indicatorPrefDialog (QWidget *w)
     }
 
     label = dialog->getText(ll);
+
+    maColor = dialog->getColor(macl);
+    maLineType = (PlotLine::LineType) dialog->getComboIndex(maltl);
+    maPeriod = dialog->getInt(mapl);
+    maLabel = dialog->getText(mall);
+    maType = dialog->getComboIndex(matl);
+    maInput = (BarData::InputType) dialog->getComboIndex(mail);
+
+    maColor2 = dialog->getColor(ma2cl);
+    maLineType2 = (PlotLine::LineType) dialog->getComboIndex(ma2ltl);
+    maPeriod2 = dialog->getInt(ma2pl);
+    maLabel2 = dialog->getText(ma2ll);
+    maType2 = dialog->getComboIndex(ma2tl);
+    maInput2 = (BarData::InputType) dialog->getComboIndex(ma2il);
+
+    maColor3 = dialog->getColor(ma3cl);
+    maLineType3 = (PlotLine::LineType) dialog->getComboIndex(ma3ltl);
+    maPeriod3 = dialog->getInt(ma3pl);
+    maLabel3 = dialog->getText(ma3ll);
+    maType3 = dialog->getComboIndex(ma3tl);
+    maInput3 = (BarData::InputType) dialog->getComboIndex(ma3il);
 
     rc = TRUE;
   }
@@ -249,6 +388,78 @@ void BARS::setIndicatorSettings (Setting &dict)
   s = dict.getData("candleColor");
   if (s.length())
     candleColor.setNamedColor(s);
+
+  s = dict.getData("maColor");
+  if (s.length())
+    maColor.setNamedColor(s);
+    
+  s = dict.getData("maLineType");
+  if (s.length())
+    maLineType = (PlotLine::LineType) s.toInt();
+
+  s = dict.getData("maPeriod");
+  if (s.length())
+    maPeriod = s.toInt();
+
+  s = dict.getData("maLabel");
+  if (s.length())
+    maLabel = s;
+      
+  s = dict.getData("maType");
+  if (s.length())
+    maType = s.toInt();
+    
+  s = dict.getData("maInput");
+  if (s.length())
+    maInput = (BarData::InputType) s.toInt();
+
+  s = dict.getData("maColor2");
+  if (s.length())
+    maColor2.setNamedColor(s);
+    
+  s = dict.getData("maLineType2");
+  if (s.length())
+    maLineType2 = (PlotLine::LineType) s.toInt();
+
+  s = dict.getData("maPeriod2");
+  if (s.length())
+    maPeriod2 = s.toInt();
+
+  s = dict.getData("maLabel2");
+  if (s.length())
+    maLabel2 = s;
+      
+  s = dict.getData("maType2");
+  if (s.length())
+    maType2 = s.toInt();
+    
+  s = dict.getData("maInput2");
+  if (s.length())
+    maInput2 = (BarData::InputType) s.toInt();
+
+  s = dict.getData("maColor3");
+  if (s.length())
+    maColor3.setNamedColor(s);
+    
+  s = dict.getData("maLineType3");
+  if (s.length())
+    maLineType3 = (PlotLine::LineType) s.toInt();
+
+  s = dict.getData("maPeriod3");
+  if (s.length())
+    maPeriod3 = s.toInt();
+
+  s = dict.getData("maLabel3");
+  if (s.length())
+    maLabel3 = s;
+      
+  s = dict.getData("maType3");
+  if (s.length())
+    maType3 = s.toInt();
+    
+  s = dict.getData("maInput3");
+  if (s.length())
+    maInput3 = (BarData::InputType) s.toInt();
 }
 
 void BARS::getIndicatorSettings (Setting &dict)
@@ -261,6 +472,27 @@ void BARS::getIndicatorSettings (Setting &dict)
   dict.setData("method", method);
   dict.setData("lineType", QString::number(lineType));
   dict.setData("plugin", pluginName);
+
+  dict.setData("maColor", maColor.name());
+  dict.setData("maLineType", QString::number(maLineType));
+  dict.setData("maPeriod", QString::number(maPeriod));
+  dict.setData("maLabel", maLabel);
+  dict.setData("maType", QString::number(maType));
+  dict.setData("maInput", QString::number(maInput));
+
+  dict.setData("maColor2", maColor2.name());
+  dict.setData("maLineType2", QString::number(maLineType2));
+  dict.setData("maPeriod2", QString::number(maPeriod2));
+  dict.setData("maLabel2", maLabel2);
+  dict.setData("maType2", QString::number(maType2));
+  dict.setData("maInput2", QString::number(maInput2));
+
+  dict.setData("maColor3", maColor3.name());
+  dict.setData("maLineType3", QString::number(maLineType3));
+  dict.setData("maPeriod3", QString::number(maPeriod3));
+  dict.setData("maLabel3", maLabel3);
+  dict.setData("maType3", QString::number(maType3));
+  dict.setData("maInput3", QString::number(maInput3));
 }
 
 PlotLine * BARS::calculateCustom (QString &p, QPtrList<PlotLine> &)

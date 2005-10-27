@@ -29,8 +29,6 @@
 #include "../pics/configure.xpm"
 #include "../pics/scaletoscreen.xpm"
 #include "../pics/nav.xpm"
-#include "../pics/loggrid.xpm"
-#include "../pics/date.xpm"
 #include "../pics/co.xpm"
 #include "../pics/help.xpm"
 #include "../pics/qtstalker.xpm"
@@ -133,28 +131,6 @@ MainMenubar::MainMenubar (QMainWindow *mw) : QMenuBar (mw, "mainMenubar")
   connect(action, SIGNAL(toggled(bool)), mw, SLOT(slotHideNav(bool)));
   actions.replace(SidePanel, action);
 
-  icon = loggridicon;
-  s = config.getData(Config::LogScale);
-  action = new QAction(this, "actionLog");
-  action->setMenuText(tr("&Log Scaling"));
-  action->setIconSet(icon);
-  action->setStatusTip(tr("Toggle log scaling (Ctrl+6)"));
-  action->setToolTip(tr("Toggle log scaling (Ctrl+6)"));
-  action->setToggleAction(TRUE);
-  action->setOn(s.toInt());
-  connect(action, SIGNAL(toggled(bool)), this, SIGNAL(signalLog(bool)));
-  actions.replace(Log, action);
-
-  icon = date;
-  action = new QAction(this, "actionDate");
-  action->setMenuText(tr("Toggle Indicator Date"));
-  action->setIconSet(icon);
-  action->setStatusTip(tr("Toggle indicator date (Ctrl+9)"));
-  action->setToolTip(tr("Toggle indicator date (Ctrl+9)"));
-  action->setToggleAction(TRUE);
-  connect(action, SIGNAL(toggled(bool)), this, SIGNAL(signalPlotDate(bool)));
-  actions.replace(IndicatorDate, action);
-
   icon = co;
   s = config.getData(Config::DrawMode);
   action = new QAction(this, "actionDraw");
@@ -183,9 +159,7 @@ MainMenubar::MainMenubar (QMainWindow *mw) : QMenuBar (mw, "mainMenubar")
   a->insertItem(CTRL+Key_3, Options);
   a->insertItem(CTRL+Key_4, Grid);
   a->insertItem(CTRL+Key_5, ScaleToScreen);
-  a->insertItem(CTRL+Key_6, Log);
   a->insertItem(CTRL+Key_7, SidePanel);
-  a->insertItem(CTRL+Key_9, IndicatorDate);
   a->insertItem(CTRL+Key_0, DrawMode);
   a->insertItem(CTRL+Key_Q, Quotes);
   
@@ -229,9 +203,7 @@ void MainMenubar::createMenus ()
   viewMenu->setCheckable(true);
   actions[Grid]->addTo(viewMenu);
   actions[ScaleToScreen]->addTo(viewMenu);
-  actions[Log]->addTo(viewMenu);
   actions[SidePanel]->addTo(viewMenu);
-  actions[IndicatorDate]->addTo(viewMenu);
   actions[DrawMode]->addTo(viewMenu);
 
   toolMenu = new QPopupMenu();
@@ -275,9 +247,6 @@ void MainMenubar::saveSettings ()
   
   s = QString::number(getStatus(Grid));
   config.setData(Config::Grid, s);
-  
-  s = QString::number(getStatus(Log));
-  config.setData(Config::LogScale, s);
 }
 
 void MainMenubar::setKeyFlag (bool d)
@@ -318,16 +287,6 @@ void MainMenubar::slotAccel (int id)
       getAction(SidePanel)->toggle();
       if (keyFlag)
         emit signalKeyPressed (Macro::Menubar, ControlButton, Key_7, 0, QString());
-      break;
-    case Log:
-      getAction(Log)->toggle();
-      if (keyFlag)
-        emit signalKeyPressed (Macro::Menubar, ControlButton, Key_6, 0, QString());
-      break;
-    case IndicatorDate:
-      getAction(IndicatorDate)->toggle();
-      if (keyFlag)
-        emit signalKeyPressed (Macro::Menubar, ControlButton, Key_9, 0, QString());
       break;
     case DrawMode:
       getAction(DrawMode)->toggle();
@@ -419,14 +378,8 @@ void MainMenubar::doKeyPress (QKeyEvent *key)
       case Qt::Key_5:
 	slotAccel(ScaleToScreen);
         break;
-      case Qt::Key_6:
-	slotAccel(Log);
-        break;
       case Qt::Key_7:
 	slotAccel(SidePanel);
-        break;
-      case Qt::Key_9:
-	slotAccel(IndicatorDate);
         break;
       case Qt::Key_0:
 	slotAccel(DrawMode);

@@ -1,8 +1,9 @@
 TEMPLATE = lib
  
-CONFIG += thread warn_on
+CONFIG += thread warn_on debug
   
-QMAKE_CXXFLAGS += -ffast-math -Os
+QMAKE_CXXFLAGS += -ffast-math
+#QMAKE CXXFLAGS += -Os
 
 HEADERS += QuotePlugin.h
 HEADERS += IndicatorPlugin.h

@@ -53,7 +53,6 @@ class IndicatorPlugin
     void clearOutput ();
     void loadFile (QString &, Setting &);
     void saveFile (QString &, Setting &);
-    void setPlotType (int);
     QString getPluginName ();
     QString getHelpFile ();
     IndicatorPlugin::Operator getOperator (QString);
@@ -77,11 +76,9 @@ class IndicatorPlugin
     QStringList inputTypeList;
     QStringList opList;
     bool saveFlag;
-    int plotType;
     QString pluginName;
     QString helpFile;
     int minBars;
-    bool enabled;
 };
 
 #endif

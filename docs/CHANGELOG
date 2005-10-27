@@ -105,8 +105,19 @@
           I will need substantial user complaints to restore them.
 
           Users will now have to create a BARS indicator and add it to the main plot manually. This way, users
-          can put bars/candles on any plot they want. 
+          can put bars/candles on any plot they want.
 
+20051024: Added a COLOR option to the UTIL plugin. Adds ability to change the color of individual bars. Use this
+          in CUS scripts to create paint bars/candles etc.
+
+20051026: Merged all the plot types (Main, Stacked, Tabbed) into one tabbed style. Up to 3 rows of tabs can now
+          be created. Just choose the row # in which you want the indicator to appear.
+
+20051026: Moved the Log Scaling and Date plot toolbar functions to each individual indicator. The indicator popup
+          context menu now contains these toggles.
+
+20051026: Fixed bug #1332975 - chart objects available for deletion.
+          
 
 
 0.32

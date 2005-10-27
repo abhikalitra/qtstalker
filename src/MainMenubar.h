@@ -41,8 +41,6 @@ class MainMenubar : public QMenuBar
     void signalGrid (bool);
     void signalScale (bool);
     void signalDraw (bool);
-    void signalPlotDate (bool);
-    void signalLog (bool);
     void signalHideMain (bool);
     void signalSidePanel (bool);
     void signalKeyPressed (int, int, int, int, QString);
@@ -64,9 +62,6 @@ class MainMenubar : public QMenuBar
       About,
       ScaleToScreen,
       SidePanel,
-      Log,
-      HideMain,
-      IndicatorDate,
       DrawMode,
       Help,
       Macro1,

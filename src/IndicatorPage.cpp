@@ -231,11 +231,6 @@ void IndicatorPage::deleteIndicatorGroup ()
 
 void IndicatorPage::newIndicator ()
 {
-  Indicator *i = new Indicator;
-  QStringList l;
-  i->getPlotTypes(l);
-  delete i;
-
   Config config;  
   PrefDialog *idialog = new PrefDialog;
   idialog->setCaption(tr("New Indicator"));
@@ -245,7 +240,7 @@ void IndicatorPage::newIndicator ()
   QString pl = tr("Details");
   QString il = tr("Indicator");
   QString nl = tr("Name");
-  QString ptl = tr("Plot Type");
+  QString ptl = tr("Tab Row");
   QString igl = tr("Indicator Group");
   
   idialog->createPage (pl);
@@ -258,11 +253,12 @@ void IndicatorPage::newIndicator ()
   s = tr("NewIndicator");
   idialog->addTextItem(nl, pl, s);
   
-  idialog->addComboItem(ptl, pl, l, 1);
+  idialog->addIntItem(ptl, pl, 1, 1, 3);
   
+  QStringList l;
   getIndicatorGroups(l);
   idialog->addComboItem(igl, pl, l, 0);
-  
+
   int rc = idialog->exec();
   if (rc == QDialog::Rejected)
   {
@@ -273,7 +269,7 @@ void IndicatorPage::newIndicator ()
   QString name = idialog->getText(nl);
   QString indicator = idialog->getCombo(il);
   config.setData(Config::LastNewIndicator, indicator);
-  Indicator::PlotType plotType = (Indicator::PlotType) idialog->getComboIndex(ptl);
+  int tabRow = idialog->getInt(ptl);
   QString igroup = idialog->getCombo(igl);
   delete idialog;
   
@@ -316,8 +312,15 @@ void IndicatorPage::newIndicator ()
   
   if (rc)
   {
-    plug->setPlotType((int) plotType);
-    
+    // get the indicator settings
+    Setting tset;
+    plug->getIndicatorSettings(tset);
+    tset.setData("Name", name);
+    tset.setData("enable", "1");
+    tset.setData("tabRow", QString::number(tabRow));
+    tset.setData("logScale", "0");
+    tset.setData("dateFlag", "1");
+
     if (! igroup.compare(tr("Local")))
     {
       QString plugin = config.parseDbPlugin(chartPath);
@@ -338,13 +341,6 @@ void IndicatorPage::newIndicator ()
         return;
       }
     
-      // get the indicator settings
-      Setting tset;
-      plug->getIndicatorSettings(tset);
-      tset.setData("Name", name);
-      tset.setData("enable", "1");
-      tset.setData("plotType", QString::number(plotType));
-      
       // save the local indicator to the db
       QString s2;
       tset.getString(s2);
@@ -355,13 +351,13 @@ void IndicatorPage::newIndicator ()
       config.closePlugin(plugin);
     }
     
-    plug->saveIndicatorSettings(s);
+    config.setIndicator(s, tset);
     
     config.closePlugin(indicator);
     
-    i = new Indicator;
+    Indicator *i = new Indicator;
     i->setName(name);
-    i->setPlotType((Indicator::PlotType) plotType);
+    i->setTabRow(tabRow);
     i->setFile(s);
     i->setType(indicator);
     emit signalNewIndicator(i);
@@ -405,12 +401,13 @@ void IndicatorPage::editIndicator (QString d)
     return;
   }
 
-  plug->loadIndicatorSettings(s);
+  plug->setIndicatorSettings(set);
   int rc = plug->indicatorPrefDialog(this);
 
   if (rc)
   {
-    plug->saveIndicatorSettings(s);
+    plug->getIndicatorSettings(set);
+    config.setIndicator(s, set);
     
     Setting tset;
     plug->getIndicatorSettings(tset);
@@ -422,9 +419,11 @@ void IndicatorPage::editIndicator (QString d)
     {
       Indicator *i = new Indicator;
       i->setName(d);
-      i->setPlotType((Indicator::PlotType) set.getInt("plotType"));
+      i->setTabRow(set.getInt("tabRow"));
       i->setFile(s);
       i->setType(type);
+      i->setDateFlag((bool) set.getInt("dateFlag"));
+      i->setLogScale((bool) set.getInt("logScale"));
       emit signalEditIndicator(i);
     }
   }
@@ -497,11 +496,6 @@ void IndicatorPage::deleteIndicator ()
 
 void IndicatorPage::moveIndicator ()
 {
-  Indicator *i = new Indicator;
-  QStringList pl;
-  i->getPlotTypes(pl);
-  delete i;
-
   Config config;
   QDir dir;
   QString s = baseDir + "/" + group->currentText() + "/" + list->currentText();
@@ -526,13 +520,14 @@ void IndicatorPage::moveIndicator ()
   
   t = tr("Details");
   dialog->createPage(t);
-  QString t2(tr("Plot Type"));
-  dialog->addComboItem(t2, t, pl, set.getInt("plotType"));
+  QString t2(tr("Tab Row"));
+  dialog->addIntItem(t2, t, set.getInt("tabRow"), 1, 3);
 
   QString igroup = group->currentText();
   if (localIndicators.findIndex(list->currentText()) != -1)
     igroup = tr("Local");
   t2 = tr("Indicator Group");
+  QStringList pl;
   getIndicatorGroups(pl);
   dialog->addComboItem(t2, t, pl, igroup);
   
@@ -543,8 +538,8 @@ void IndicatorPage::moveIndicator ()
     return;
   }
 
-  t = tr("Plot Type");
-  set.setData("plotType", QString::number(dialog->getComboIndex(t)));
+  t = tr("Tab Row");
+  set.setData("tabRow", QString::number(dialog->getInt(t)));
   
   t = tr("Indicator Group");
   QString s2 = dialog->getCombo(t);

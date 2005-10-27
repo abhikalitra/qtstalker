@@ -46,6 +46,12 @@ To Do:
   	~/.qtstalker/data0/scanner 
 	~/.qtstalker/data0/test
 	~/.qtstalker/data0/indicator (only remove CUS types and leave the rest)
+        add some default indicators to replace the bar/candle/line chart styles
+
+- add ability to not draw sections of plotlines.
+- fix: default color problems with trendline and changing background colors?
+- fix: after deleting all chart objects, they still show up in delete all objects menu
+ 
 
 
 Maybe some day:

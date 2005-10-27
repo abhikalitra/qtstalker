@@ -3,7 +3,7 @@ TEMPLATE = app
 CONFIG += qt thread warn_on debug
 
 QMAKE_CXXFLAGS += -rdynamic -ffast-math
-QMAKE_CXXFLAGS += -Os
+#QMAKE_CXXFLAGS += -Os
 
 HEADERS += Qtstalker.h
 HEADERS += PortfolioDialog.h
@@ -15,7 +15,6 @@ HEADERS += GroupPage.h
 HEADERS += PortfolioPage.h
 HEADERS += TestPage.h
 HEADERS += IndicatorPage.h
-HEADERS += IndicatorTab.h
 HEADERS += NavigatorTab.h
 HEADERS += ScannerPage.h
 HEADERS += Scanner.h
@@ -35,7 +34,6 @@ SOURCES += GroupPage.cpp
 SOURCES += PortfolioPage.cpp
 SOURCES += TestPage.cpp
 SOURCES += IndicatorPage.cpp
-SOURCES += IndicatorTab.cpp
 SOURCES += NavigatorTab.cpp
 SOURCES += ScannerPage.cpp
 SOURCES += Scanner.cpp

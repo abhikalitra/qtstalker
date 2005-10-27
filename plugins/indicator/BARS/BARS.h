@@ -35,6 +35,7 @@ class BARS : public IndicatorPlugin
     void getIndicatorSettings (Setting &);
     void setIndicatorSettings (Setting &);
     int getMinBars ();
+    void calculateMA ();
     
   private:
     QColor barUpColor;
@@ -45,6 +46,25 @@ class BARS : public IndicatorPlugin
     QString label;
     QString method;
     QStringList methodList;
+
+    QColor maColor;
+    QColor maColor2;
+    QColor maColor3;
+    PlotLine::LineType maLineType;
+    PlotLine::LineType maLineType2;
+    PlotLine::LineType maLineType3;
+    QString maLabel;
+    QString maLabel2;
+    QString maLabel3;
+    int maPeriod;
+    int maPeriod2;
+    int maPeriod3;
+    int maType;
+    int maType2;
+    int maType3;
+    BarData::InputType maInput;
+    BarData::InputType maInput2;
+    BarData::InputType maInput3;
 };
 
 extern "C"

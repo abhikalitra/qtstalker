@@ -46,19 +46,6 @@ ChartToolbar::ChartToolbar (QMainWindow *mw) : QToolBar (mw, "chartToolbar")
           this, SIGNAL(signalKeyPressed(int, int, int, int, QString)));
   delete bd;
 
-/*
-  chartTypeCombo = new MyComboBox(this, Macro::ChartToolbar);
-  chartTypeCombo->show();
-  chartTypeCombo->insertItem("Bar", -1);
-  chartTypeCombo->insertItem("Candle", -1);
-  chartTypeCombo->insertItem("Line", -1);
-  QToolTip::add(chartTypeCombo, tr("Chart Type"));
-//  chartTypeCombo->setCurrentText(config.getData(Config::ChartStyle));
-  connect(chartTypeCombo, SIGNAL(activated(int)), this, SIGNAL(signalChartTypeChanged()));
-  connect(chartTypeCombo, SIGNAL(signalKeyPressed(int, int, int, int, QString)),
-          this, SIGNAL(signalKeyPressed(int, int, int, int, QString)));
-*/
-
   pixelspace = new MySpinBox(this, Macro::ChartToolbar);
   pixelspace->setRange(4, 99);
   connect (pixelspace, SIGNAL(valueChanged(int)), this, SIGNAL(signalPixelspaceChanged(int)));
@@ -95,7 +82,6 @@ ChartToolbar::ChartToolbar (QMainWindow *mw) : QToolBar (mw, "chartToolbar")
   a->insertItem(CTRL+Key_Plus, BarsLoadedFocus);
   a->insertItem(CTRL+Key_Minus, BarSpacingFocus);
   a->insertItem(CTRL+Key_Prior, CompressionFocus);
-//  a->insertItem(CTRL+Key_Next, ChartTypeFocus);
   a->insertItem(CTRL+Key_B, ToolbarFocus);
   
   focusFlag = CompressionFocus;
@@ -143,21 +129,13 @@ QString ChartToolbar::getCompression ()
   return compressionCombo->currentText();
 }
 
-QString ChartToolbar::getChartType ()
-{
-//  return chartTypeCombo->currentText();
-  return QString();
-}
-
 int ChartToolbar::getSlider ()
 {
   return slider->value();
 }
 
-int ChartToolbar::setSliderStart (int ov, bool flag, int width, int records)
+int ChartToolbar::setSliderStart (int width, int records)
 {
-  int oldpage = width / ov;
-  int sv = slider->value();
   int page = width / getPixelspace();
   int max = records - page;
   if (max < 0)
@@ -170,29 +148,8 @@ int ChartToolbar::setSliderStart (int ov, bool flag, int width, int records)
     slider->setValue(0);
   else
   {
-    if (flag)
-    {
-      slider->setValue(max + 1);
-      rc = max + 1;
-    }
-    else
-    {
-      if (oldpage < page)
-      {
-        int x = ((page - oldpage) / 2);
-	if ((sv - x) < 0)
-	  x = 0;
-        slider->setValue(sv - x);
-	rc = sv - x;
-      }
-  
-      if (oldpage > page)
-      {
-        int x = ((oldpage - page) / 2);
-        slider->setValue(sv + x);
-	rc = sv + x;
-      }
-    }
+    slider->setValue(max + 1);
+    rc = max + 1;
   }
   
   slider->blockSignals(FALSE);
@@ -208,9 +165,6 @@ void ChartToolbar::saveSettings ()
   
   s = QString::number(getCompressionInt());
   config.setData(Config::Compression, s);
-  
-//  s = chartTypeCombo->currentText();
-//  config.setData(Config::ChartStyle, s);  
 }
 
 void ChartToolbar::setFocus ()
@@ -223,7 +177,6 @@ void ChartToolbar::setKeyFlag (bool d)
 {
   keyFlag = d;
   compressionCombo->setKeyFlag(d);
-//  chartTypeCombo->setKeyFlag(d);
   pixelspace->setKeyFlag(d);
   barCount->setKeyFlag(d);
   slider->setKeyFlag(d);
@@ -257,12 +210,6 @@ void ChartToolbar::slotAccel (int id)
       if (keyFlag)
         emit signalKeyPressed (Macro::ChartToolbar, ControlButton, Key_Minus, 0, QString());
       break;  
-//    case ChartTypeFocus:
-//      chartTypeCombo->setFocus();
-//      focusFlag = ChartTypeFocus;
-//      if (keyFlag)
-//        emit signalKeyPressed (Macro::ChartToolbar, ControlButton, Key_Next, 0, QString());
-//      break;  
     case ToolbarFocus:
       if (keyFlag)
         emit signalKeyPressed (Macro::ChartToolbar, ControlButton, Key_B, 0, QString());
@@ -284,9 +231,6 @@ void ChartToolbar::doKeyPress (QKeyEvent *key)
       case CompressionFocus:
         compressionCombo->doKeyPress(key);
 	break;
-//      case ChartTypeFocus:
-//        chartTypeCombo->doKeyPress(key);
-//	break;
       case BarSpacingFocus:
         pixelspace->doKeyPress(key);
 	break;
@@ -308,9 +252,6 @@ void ChartToolbar::doKeyPress (QKeyEvent *key)
       {
         case Qt::Key_Prior:
 	  slotAccel(CompressionFocus);
-          break;
-        case Qt::Key_Next:
-	  slotAccel(ChartTypeFocus);
           break;
         case Qt::Key_Plus:
 	  slotAccel(BarsLoadedFocus);

@@ -38,7 +38,6 @@ class ChartToolbar : public QToolBar
   
   signals:
     void signalCompressionChanged (int);
-    void signalChartTypeChanged ();
     void signalPixelspaceChanged (int);
     void signalSliderChanged (int);
     void signalKeyPressed (int, int, int, int, QString);
@@ -50,7 +49,6 @@ class ChartToolbar : public QToolBar
     {
       ToolbarFocus,
       CompressionFocus,
-      ChartTypeFocus,
       BarSpacingFocus,
       BarsLoadedFocus,
       ChartPannerFocus
@@ -64,9 +62,8 @@ class ChartToolbar : public QToolBar
     int getPixelspace ();
     int getCompressionInt ();
     QString getCompression ();
-    QString getChartType ();
     int getSlider ();
-    int setSliderStart (int ov, bool flag, int width, int records);
+    int setSliderStart (int width, int records);
     void saveSettings ();
     
   public slots:
@@ -79,7 +76,6 @@ class ChartToolbar : public QToolBar
   
   private:
     MyComboBox *compressionCombo;
-    MyComboBox *chartTypeCombo;
     MySpinBox *pixelspace;
     MyLineEdit *barCount;
     MySlider *slider;

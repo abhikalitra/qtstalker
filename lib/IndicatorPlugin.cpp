@@ -27,11 +27,8 @@
 IndicatorPlugin::IndicatorPlugin()
 {
   minBars = 2;
-  enabled = TRUE;
-  
   output = new Indicator;
   saveFlag = FALSE;
-  plotType = 1;
   
   PlotLine *pl = new PlotLine;
   pl->getLineTypes(lineTypes);
@@ -101,14 +98,6 @@ void IndicatorPlugin::loadFile (QString &file, Setting &dict)
   }
   
   f.close();
-  
-  QString s = dict.getData("plotType");
-  if (s.length())
-    plotType = s.toInt();
-
-  s = dict.getData("enable");
-  if (s.length())
-    enabled = s.toInt();
 }
 
 void IndicatorPlugin::saveFile (QString &file, Setting &dict)
@@ -120,9 +109,6 @@ void IndicatorPlugin::saveFile (QString &file, Setting &dict)
     return;
   }
   QTextStream stream(&f);
-  
-  dict.setData("plotType", QString::number(plotType));
-  dict.setData("enable", QString::number(enabled));
   
   QStringList key;
   dict.getKeyList(key);
@@ -174,11 +160,6 @@ PlotLine * IndicatorPlugin::getMA (PlotLine *in, int type, int period)
   ma = plug->getMA(in, type, period);
   config.closePlugin(s);
   return ma;  
-}
-
-void IndicatorPlugin::setPlotType (int d)
-{
-  plotType = d;
 }
 
 QString IndicatorPlugin::getPluginName ()

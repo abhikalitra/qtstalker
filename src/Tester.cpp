@@ -1805,7 +1805,7 @@ void Tester::updateChart ()
   i->setName(str);
   i->addLine(close);
   str = i->getName();
-  plot->addIndicator(str, i);
+  plot->addIndicator(i);
 
   //set up arrows
   int loop;
@@ -1889,7 +1889,7 @@ void Tester::createEquityCurve ()
   i->setName(str);
   i->addLine(equityCurve);
   str = i->getName();
-  equityPlot->addIndicator(str, i);
+  equityPlot->addIndicator(i);
 
   equityPlot->draw();
 }

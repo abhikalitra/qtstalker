@@ -90,26 +90,20 @@ void DataWindow::setBars (BarData *d)
 
 void DataWindow::setPlot (Plot *d)
 {
-  QStringList l;
-  d->getIndicators(l);
-  int loop;
-  for (loop = 0; loop < (int) l.count(); loop++)
+  Indicator *i = d->getIndicator();
+  int loop2;
+  for (loop2 = 0; loop2 < i->getLines(); loop2++)
   {
-    Indicator *i = d->getIndicator(l[loop]);
-    int loop2;
-    for (loop2 = 0; loop2 < i->getLines(); loop2++)
-    {
-      table->setNumCols(table->numCols() + 1);
+    table->setNumCols(table->numCols() + 1);
       
-      PlotLine *line = i->getLine(loop2);
-      hHeader->setLabel(table->numCols() - 1, line->getLabel());
+    PlotLine *line = i->getLine(loop2);
+    hHeader->setLabel(table->numCols() - 1, line->getLabel());
 
-      int loop3;
-      int offset = table->numRows() - line->getSize();
-      for (loop3 = 0; loop3 < line->getSize(); loop3++)
-        table->setText(loop3 + offset, table->numCols() - 1, strip(line->getData(loop3), 4));
-      table->adjustColumn(table->numCols() - 1);
-    }
+    int loop3;
+    int offset = table->numRows() - line->getSize();
+    for (loop3 = 0; loop3 < line->getSize(); loop3++)
+      table->setText(loop3 + offset, table->numCols() - 1, strip(line->getData(loop3), 4));
+    table->adjustColumn(table->numCols() - 1);
   }
 }
 

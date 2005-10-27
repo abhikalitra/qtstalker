@@ -55,6 +55,8 @@ class IndicatorPlot : public QWidget
     void signalMinPixelspace (int);
     void signalCrosshairsStatus (bool);
     void signalDraw ();
+    void signalDateFlag (bool);
+    void signalLogFlag (bool);
 
   public:
     enum MouseStatus
@@ -74,10 +76,9 @@ class IndicatorPlot : public QWidget
     bool getCrosshairsStatus ();
     void setInfoFlag (bool);
     void drawCrossHair ();
-    void addIndicator (QString &, Indicator *);
-    Indicator * getIndicator (QString &);
-    void getIndicators (QStringList &);
-    bool deleteIndicator (QString &);
+    void addIndicator (Indicator *);
+    Indicator * getIndicator ();
+    bool deleteIndicator ();
     void addChartObject (Setting &);
     int getWidth ();
     void strip (double, int, QString &);
@@ -91,8 +92,6 @@ class IndicatorPlot : public QWidget
     Scaler & getScaler ();
     void getInfo (int);
     void setXGrid (QMemArray<int> &);
-    void setMainPlot (bool);
-    void setChartType (QString &);
     
     void drawLine ();
     void drawHorizontalLine ();
@@ -143,11 +142,13 @@ class IndicatorPlot : public QWidget
     void getXY (int, int);
     void slotMessage (QString);
     void toggleCrosshairs ();
-    void slotEditIndicator (int);
+    void slotEditIndicator ();
     void slotNewIndicator ();
     void slotNewChartObject (int);
     void slotDeleteAllChartObjects ();
     void slotChartObjectDeleted ();
+    void toggleDate ();
+    void toggleLog ();
 
   private:
     QFont plotFont;
@@ -168,7 +169,7 @@ class IndicatorPlot : public QWidget
     bool drawMode;
     bool crosshairs;
     bool infoFlag;
-    bool mainPlot;
+    bool dateFlag;
     BarDate crossHairX;
     double crossHairY;
     Scaler scaler;
@@ -180,12 +181,10 @@ class IndicatorPlot : public QWidget
     QDict<COPlugin> coPlugins;
     QString chartPath;
     BarData *data;
-    QDict<Indicator> indicators;
+    Indicator *indy;
     QMemArray<int> xGrid;
     QPopupMenu *chartMenu;
-    QPopupMenu *chartEditMenu;
     QPopupMenu *chartObjectMenu;
-    QString chartType;
 };
 
 #endif

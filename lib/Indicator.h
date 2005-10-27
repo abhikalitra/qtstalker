@@ -30,41 +30,37 @@
 class Indicator
 {
   public:
-  
-    enum PlotType
-    {
-      MainPlot,
-      TabPlot,
-      StackedPlot
-    };
-    
     Indicator ();
     ~Indicator ();
     int getLines ();
     void addLine (PlotLine *);
     PlotLine * getLine (int);
-    Indicator::PlotType getPlotType ();
-    Indicator::PlotType getPlotType (QString &);
-    void setPlotType (Indicator::PlotType);
+    int getTabRow ();
+    void setTabRow (int);
     void clearLines ();
     void setEnable (bool);
     bool getEnable ();
     void setName (QString &);
     QString getName ();
-    void setType (QString &);
-    QString getType ();
     void setFile (QString &);
     QString getFile ();
-    void getPlotTypes (QStringList &);
     void copy (Indicator *);
+    void setType (QString &);
+    QString getType ();
+    void setDateFlag (bool);
+    bool getDateFlag ();
+    void setLogScale (bool);
+    bool getLogScale ();
 
   private:
     QPtrList<PlotLine> lines;
     bool enable;
     QString name;
-    QString type;
     QString file;
-    Indicator::PlotType plotType;
+    QString type;
+    int tabRow;
+    bool dateFlag;
+    bool logScale;
 };
 
 #endif

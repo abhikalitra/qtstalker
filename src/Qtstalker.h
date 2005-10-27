@@ -28,6 +28,7 @@
 #include <qdict.h>
 #include <qprogressbar.h>
 #include <qstatusbar.h>
+#include <qtabwidget.h>
 
 #include "Indicator.h"
 #include "Plot.h"
@@ -46,7 +47,7 @@
 #include "ChartToolbar.h"
 #include "MainMenubar.h"
 //#include "Macro.h"
-#include "IndicatorTab.h"
+
 
 #define DEFAULT_INDICATOR_HEIGHT 125
 
@@ -89,12 +90,11 @@ class QtstalkerApp : public QMainWindow
     QString getWindowCaption ();
     void loadChart (QString &);
     void compressionChanged ();
-    void addIndicatorButton (QString &, Indicator::PlotType);
+    void addIndicatorButton (QString &);
     void exportChart (QString &);
     void traverse(QString &);
     void loadIndicator (Indicator *);
-    void setSliderStart (int, bool);
-    void initPlot (Plot *);
+    void setSliderStart ();
 
   public slots:
     void slotAbout ();
@@ -123,7 +123,7 @@ class QtstalkerApp : public QMainWindow
 //    void slotRecordMacro (QString);
 //    void slotStopMacro ();
     void slotProgMessage (int, int);
-//    void slotChartTypeChanged ();
+    void slotDrawPlots ();
     
   private:
     QToolBar *toolbar;
@@ -132,12 +132,10 @@ class QtstalkerApp : public QMainWindow
     QSplitter *split;
     QSplitter *navSplitter;
     QSplitter *dpSplitter;
-    IndicatorTab *tabs;
     NavigatorTab *navTab;
     QWidget *baseWidget;
     QWidget *navBase;
     ChartPage *chartNav;
-    Plot *mainPlot;
     QDict<Plot> plotList;
     Config config;
     chartStatus status;
@@ -158,6 +156,8 @@ class QtstalkerApp : public QMainWindow
     QProgressBar *progBar;
     QStatusBar *statusbar;
     QString chartType;
+    QPtrList<QTabWidget> tabList;
+    QDict<QWidget> widgetList;
 };
 
 #endif

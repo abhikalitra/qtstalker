@@ -24,9 +24,6 @@
 
 Plot::Plot (QWidget *w) : QWidget(w)
 {
-  dateFlag = FALSE;
-  tabFlag = TRUE;
-  
   QVBoxLayout *vbox = new QVBoxLayout(this);
   vbox->setMargin(0);
   vbox->setSpacing(0);
@@ -45,6 +42,8 @@ Plot::Plot (QWidget *w) : QWidget(w)
   vbox->addWidget(datePlot);
   
   connect(indicatorPlot, SIGNAL(signalDraw()), this, SLOT(slotUpdateScalePlot()));
+  connect(indicatorPlot, SIGNAL(signalDateFlag(bool)), this, SLOT(slotDateFlagChanged(bool)));
+  connect(indicatorPlot, SIGNAL(signalLogFlag(bool)), this, SLOT(slotLogScaleChanged(bool)));
 }
 
 Plot::~Plot ()
@@ -161,16 +160,6 @@ void Plot::setIndex (int d)
   indicatorPlot->setIndex(d);
 }
 
-void Plot::setTabFlag (bool d)
-{
-  tabFlag = d;
-}
-
-bool Plot::getTabFlag ()
-{
-  return tabFlag;
-}
-
 void Plot::setInterval (BarData::BarCompression d)
 {
   datePlot->setInterval(d);    
@@ -179,32 +168,31 @@ void Plot::setInterval (BarData::BarCompression d)
 
 void Plot::setDateFlag (bool d)
 {
-  dateFlag = d;
-  
-  if (dateFlag)
+  indicatorPlot->setDateFlag(d);
+
+  if (d)
     datePlot->show();
   else
     datePlot->hide();
 }
 
-void Plot::addIndicator (QString &d, Indicator *i)
+void Plot::addIndicator (Indicator *i)
 {
-  indicatorPlot->addIndicator(d, i);
+  setDateFlag(i->getDateFlag());
+
+  indicatorPlot->setLogScale(i->getLogScale());
+
+  indicatorPlot->addIndicator(i);
 }
 
-Indicator * Plot::getIndicator (QString &d)
+Indicator * Plot::getIndicator ()
 {
-  return indicatorPlot->getIndicator(d);
+  return indicatorPlot->getIndicator();
 }
 
-bool Plot::deleteIndicator (QString &d)
+bool Plot::deleteIndicator ()
 {
-  return indicatorPlot->deleteIndicator(d);
-}
-
-void Plot::getIndicators (QStringList &l)
-{
-  indicatorPlot->getIndicators(l);
+  return indicatorPlot->deleteIndicator();
 }
 
 void Plot::setCrosshairsStatus (bool status)
@@ -262,7 +250,7 @@ void Plot::crossHair (int d, int d2, bool d3)
 
 int Plot::getWidth ()
 {
-  return indicatorPlot->width();
+  return indicatorPlot->getWidth();
 }
 
 IndicatorPlot * Plot::getIndicatorPlot ()

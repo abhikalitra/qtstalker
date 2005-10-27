@@ -26,7 +26,9 @@ Indicator::Indicator ()
 {
   lines.setAutoDelete(TRUE);
   enable = TRUE;
-  plotType = TabPlot;
+  tabRow = 0;
+  logScale = FALSE;
+  dateFlag = TRUE;
 }
 
 Indicator::~Indicator ()
@@ -48,14 +50,14 @@ void Indicator::addLine (PlotLine *l)
   lines.append(l);
 }
 
-void Indicator::setPlotType (Indicator::PlotType d)
+void Indicator::setTabRow (int d)
 {
-  plotType = d;
+  tabRow = d;
 }
 
-Indicator::PlotType Indicator::getPlotType ()
+int Indicator::getTabRow ()
 {
-  return plotType;
+  return tabRow;
 }
 
 void Indicator::clearLines ()
@@ -103,38 +105,6 @@ QString Indicator::getFile ()
   return file;
 }
 
-void Indicator::getPlotTypes (QStringList &l)
-{
-  l.clear();
-  l.append(QObject::tr("Main"));
-  l.append(QObject::tr("Tabbed"));
-  l.append(QObject::tr("Stacked"));
-}
-
-Indicator::PlotType Indicator::getPlotType (QString &d)
-{
-  PlotType type = MainPlot;
-  
-  while (1)
-  {
-    if (! d.compare(QObject::tr("Tabbed")))
-    {
-      type = TabPlot;
-      break;
-    }
-  
-    if (! d.compare(QObject::tr("Stacked")))
-    {
-      type = StackedPlot;
-      break;
-    }
-      
-    break;
-  }
-  
-  return type;
-}
-
 void Indicator::copy (Indicator *d)
 {
   int loop;
@@ -146,9 +116,32 @@ void Indicator::copy (Indicator *d)
     addLine(pl);
   }
 
-//  setPlotType(d->getPlotType());
+//  setDateFlag(d->getDateFlag());
+//  setLogScale(d->getLogScale());
+//  setTabRow(d->getTabRow());
 //  setEnable(d->getEnable());
 //  setName(d->getName());
-//  setType(d->getType());
 //  setFile(d->getFile());
+//  setType(d->getType());
 }
+
+void Indicator::setDateFlag (bool d)
+{
+  dateFlag = d;
+}
+
+bool Indicator::getDateFlag ()
+{
+  return dateFlag;
+}
+
+void Indicator::setLogScale (bool d)
+{
+  logScale = d;
+}
+
+bool Indicator::getLogScale ()
+{
+  return logScale;
+}
+
