@@ -400,8 +400,29 @@ void IndicatorPlot::getInfo (int x)
       int li = line->getSize() - data->count() + i;
       if (li > -1 && li <= line->getSize())
       {
-        strip(line->getData(li), 4, s);
-        r->setData(line->getLabel(), s);
+        if (line->getType() == PlotLine::Bar || line->getType() == PlotLine::Candle)
+        {
+          double open, high, low, close;
+          QColor color;
+          line->getBar(li, color, open, high, low, close);
+
+          strip(open, 4, s);
+          r->setData("O", s);
+
+          strip(high, 4, s);
+          r->setData("H", s);
+
+          strip(low, 4, s);
+          r->setData("L", s);
+
+          strip(close, 4, s);
+          r->setData("C", s);
+        }
+        else
+        {
+          strip(line->getData(li), 4, s);
+          r->setData(line->getLabel(), s);
+        }
       }
     }
   }
@@ -574,56 +595,6 @@ void IndicatorPlot::drawInfo ()
   painter.drawText(pos, 10, s, -1);
   pos = pos + fm.width(s);
 
-/*
-  if (data->count())
-  {
-    double ch = 0;
-    double per = 0;
-    if (data->count() > 1)
-    {
-      ch = data->getClose(data->count() - 1) - data->getClose(data->count() - 2);
-      per = (ch / data->getClose(data->count() - 2)) * 100;
-    }
-    s = "CH=";
-    QString str;
-    strip(ch, 4, str);
-    s.append(str);
-    s.append(" (");
-    strip(per, 2, str);
-    s.append(str);
-    s.append("%) ");
-    if (ch < 0)
-      painter.setPen(QColor("red"));
-    else
-    {
-      if (ch > 0)
-        painter.setPen(QColor("green"));
-      else
-        painter.setPen(QColor("blue"));
-    }
-    painter.drawText(pos, 10, s, -1);
-    pos = pos + fm.width(s);
-  
-    painter.setPen(borderColor);
-    
-    s = "O=";
-    strip(data->getOpen(data->count() - 1), 4, str);
-    s.append(str);
-    s.append(" H=");
-    strip(data->getHigh(data->count() - 1), 4, str);
-    s.append(str);
-    s.append(" L=");
-    strip(data->getLow(data->count() - 1), 4, str);
-    s.append(str);
-    s.append(" C=");
-    strip(data->getClose(data->count() - 1), 4, str);
-    s.append(str);
-    s.append(" ");
-    painter.drawText(pos, 10, s, -1);
-    pos = pos + fm.width(s);
-  }
-*/
-
   if (indy && indy->getEnable())
   {
     int loop;
@@ -632,16 +603,69 @@ void IndicatorPlot::drawInfo ()
       PlotLine *line = indy->getLine(loop);
       if (line->getSize() > 1)
       {
-        s = line->getLabel();
-        s.append("=");
-	QString str;
-	strip(line->getData(line->getSize() - 1), 4, str);
-        s.append(str);
-        s.append(" ");
+        if (line->getType() == PlotLine::Bar || line->getType() == PlotLine::Candle)
+        {
+          if (data->count())
+          {
+            double ch = 0;
+            double per = 0;
+            if (data->count() > 1)
+            {
+              ch = data->getClose(data->count() - 1) - data->getClose(data->count() - 2);
+              per = (ch / data->getClose(data->count() - 2)) * 100;
+            }
+            s = "CH=";
+            QString str;
+            strip(ch, 4, str);
+            s.append(str);
+            s.append(" (");
+            strip(per, 2, str);
+            s.append(str);
+            s.append("%) ");
+            if (ch < 0)
+              painter.setPen(QColor("red"));
+            else
+            {
+              if (ch > 0)
+                painter.setPen(QColor("green"));
+              else
+                painter.setPen(QColor("blue"));
+            }
+            painter.drawText(pos, 10, s, -1);
+            pos = pos + fm.width(s);
+  
+            painter.setPen(borderColor);
+    
+            s = "O=";
+            strip(data->getOpen(data->count() - 1), 4, str);
+            s.append(str);
+            s.append(" H=");
+            strip(data->getHigh(data->count() - 1), 4, str);
+            s.append(str);
+            s.append(" L=");
+            strip(data->getLow(data->count() - 1), 4, str);
+            s.append(str);
+            s.append(" C=");
+            strip(data->getClose(data->count() - 1), 4, str);
+            s.append(str);
+            s.append(" ");
+            painter.drawText(pos, 10, s, -1);
+            pos = pos + fm.width(s);
+          }
+        }
+        else
+        {
+          s = line->getLabel();
+          s.append("=");
+	  QString str;
+	  strip(line->getData(line->getSize() - 1), 4, str);
+          s.append(str);
+          s.append(" ");
 
-        painter.setPen(line->getColor());
-        painter.drawText(pos, 10, s, -1);
-        pos = pos + fm.width(s);
+          painter.setPen(line->getColor());
+          painter.drawText(pos, 10, s, -1);
+          pos = pos + fm.width(s);
+        }
       }
     }
   }
