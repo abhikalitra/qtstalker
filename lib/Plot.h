@@ -46,7 +46,6 @@ class Plot : public QWidget
     void setData (BarData *);
     void setLogScale (bool);
     void updateStatusBar (int, int);
-    bool getCrosshairsStatus ();
     void setInfoFlag (bool);
     void drawCrossHair ();
     void addIndicator (Indicator *);

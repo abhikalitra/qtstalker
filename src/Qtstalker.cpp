@@ -197,6 +197,7 @@ void QtstalkerApp::initMenuBar()
   connect(menubar, SIGNAL(signalSidePanel(bool)), this, SLOT(slotHideNav(bool)));
   connect(menubar, SIGNAL(signalOptions()), this, SLOT(slotOptions()));
   connect(menubar, SIGNAL(signalQuotes()), this, SLOT(slotQuotes()));
+  connect(menubar, SIGNAL(signalCrosshairs(bool)), this, SLOT(slotCrosshairsStatus(bool)));
 }
 
 void QtstalkerApp::initToolBar()
@@ -208,6 +209,7 @@ void QtstalkerApp::initToolBar()
   menubar->getAction(MainMenubar::SidePanel)->addTo(toolbar);
   menubar->getAction(MainMenubar::Grid)->addTo(toolbar);
   menubar->getAction(MainMenubar::ScaleToScreen)->addTo(toolbar);
+  menubar->getAction(MainMenubar::Crosshairs)->addTo(toolbar);
   menubar->getAction(MainMenubar::DrawMode)->addTo(toolbar);
   menubar->getAction(MainMenubar::NewIndicator)->addTo(toolbar);
   menubar->getAction(MainMenubar::DataWindow)->addTo(toolbar);
@@ -254,13 +256,6 @@ void QtstalkerApp::slotQuit()
   config.setData(Config::X, s);
   s = QString::number(this->y());
   config.setData(Config::Y, s);
-
-  Plot *plot = it.toFirst();
-  if (plot)
-  {
-    s = QString::number(plot->getCrosshairsStatus());
-    config.setData(Config::Crosshairs, s);
-  }
 
   s = ip->getIndicatorGroup();
   config.setData(Config::IndicatorGroup, s);
@@ -845,7 +840,6 @@ void QtstalkerApp::addIndicatorButton (QString &d)
   connect(plot->getIndicatorPlot(), SIGNAL(statusMessage(QString)), this, SLOT(slotStatusMessage(QString)));
   connect(plot->getIndicatorPlot(), SIGNAL(infoMessage(Setting *)), this, SLOT(slotUpdateInfo(Setting *)));
   connect(plot->getIndicatorPlot(), SIGNAL(leftMouseButton(int, int, bool)), this, SLOT(slotPlotLeftMouseButton(int, int, bool)));
-  connect(plot->getIndicatorPlot(), SIGNAL(signalCrosshairsStatus(bool)), this, SLOT(slotCrosshairsStatus(bool)));
   connect(this, SIGNAL(signalCrosshairsStatus(bool)), plot->getIndicatorPlot(), SLOT(setCrosshairsStatus(bool)));
   connect(this, SIGNAL(signalPixelspace(int)), plot, SLOT(setPixelspace(int)));
   connect(this, SIGNAL(signalIndex(int)), plot, SLOT(setIndex(int)));

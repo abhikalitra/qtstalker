@@ -118,6 +118,10 @@
 
 20051026: Fixed bug #1332975 - chart objects available for deletion.
           
+20051028: Moved the crosshairs toggle from the plot context menu to the main toolbar.
+
+20051028: Added a filter box to the indicator page. Works the same as the one in the chart page.
+
 
 
 0.32

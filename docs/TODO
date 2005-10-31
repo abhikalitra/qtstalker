@@ -50,6 +50,11 @@ To Do:
 
 - add ability to not draw sections of plotlines. (vectors)
 - fix: default color problems with trendline and changing background colors?
+- optimize CSV code. slow imports.
+- put 100 and -100 lines on CCI plugin.
+- fix: overcrowding on the weekly chart with the date months.
+- save last chart viewed between sessions.
+
  
 
 

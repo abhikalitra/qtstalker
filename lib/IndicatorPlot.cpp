@@ -40,7 +40,6 @@
 #include "../pics/delete.xpm"
 #include "../pics/co.xpm"
 #include "../pics/print.xpm"
-#include "../pics/crosshair.xpm"
 #include "../pics/loggrid.xpm"
 #include "../pics/date.xpm"
 
@@ -161,11 +160,6 @@ void IndicatorPlot::setDrawMode (bool d)
     coPlugin->pointerClick(p, x1, y1);
     mouseFlag = None;
   }
-}
-
-bool IndicatorPlot::getCrosshairsStatus ()
-{
-  return crosshairs;
 }
 
 void IndicatorPlot::setInfoFlag (bool d)
@@ -902,10 +896,6 @@ void IndicatorPlot::showPopupMenu ()
   chartMenu->insertSeparator ();
   chartMenu->insertItem(QPixmap(print), tr("&Print Chart"), this, SLOT(printChart()), CTRL+Key_P);
     
-  chartMenu->insertSeparator ();
-  id = chartMenu->insertItem(QPixmap(crosshair), tr("Cross&hairs"), this, SLOT(toggleCrosshairs()), CTRL+Key_H);
-  chartMenu->setItemChecked(id, crosshairs);
-
   id = chartMenu->insertItem(QPixmap(date), tr("Date"), this, SLOT(toggleDate()), CTRL+Key_D);
   chartMenu->setItemChecked(id, dateFlag);
 
@@ -913,15 +903,6 @@ void IndicatorPlot::showPopupMenu ()
   chartMenu->setItemChecked(id, logScale);
   
   chartMenu->exec(QCursor::pos());
-}
-
-void IndicatorPlot::toggleCrosshairs ()
-{
-  if (crosshairs == FALSE)
-    crosshairs = TRUE;
-  else
-    crosshairs = FALSE;
-  emit signalCrosshairsStatus(crosshairs);  
 }
 
 void IndicatorPlot::toggleDate ()

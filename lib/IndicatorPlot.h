@@ -53,7 +53,6 @@ class IndicatorPlot : public QWidget
     void signalEditIndicator (QString);
     void signalNewIndicator ();
     void signalMinPixelspace (int);
-    void signalCrosshairsStatus (bool);
     void signalDraw ();
     void signalDateFlag (bool);
     void signalLogFlag (bool);
@@ -73,7 +72,6 @@ class IndicatorPlot : public QWidget
     void setData (BarData *);
     void setLogScale (bool);
     void updateStatusBar (int, int);
-    bool getCrosshairsStatus ();
     void setInfoFlag (bool);
     void drawCrossHair ();
     void addIndicator (Indicator *);
@@ -141,7 +139,6 @@ class IndicatorPlot : public QWidget
     int getXFromDate (BarDate &);
     void getXY (int, int);
     void slotMessage (QString);
-    void toggleCrosshairs ();
     void slotEditIndicator ();
     void slotNewIndicator ();
     void slotNewChartObject (int);

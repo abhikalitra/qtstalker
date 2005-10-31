@@ -36,7 +36,6 @@
 #include "../pics/move.xpm"
 #include "../pics/dirclosed.xpm"
 #include <qcursor.h>
-#include <qdir.h>
 #include <qaccel.h>
 #include <qfile.h>
 #include <qtextstream.h>
@@ -51,7 +50,8 @@ IndicatorPage::IndicatorPage (QWidget *w) : QWidget (w)
   macroFlag = FALSE;
   macro = 0;
   updateEnableFlag = FALSE;
-  
+  idir.setFilter(QDir::Files);
+
   Config config;  
   baseDir = config.getData(Config::IndicatorPath);
   cusRulePath = config.getData(Config::CUSRulePath);
@@ -68,6 +68,14 @@ IndicatorPage::IndicatorPage (QWidget *w) : QWidget (w)
           this, SIGNAL(signalKeyPressed(int, int, int, int, QString)));
   QToolTip::add(group, tr("Indicator Groups"));
   vbox->addWidget(group);
+
+  search = new MyLineEdit(this, Macro::IndicatorPage);
+  search->setText("*");
+  connect(search, SIGNAL(textChanged(const QString &)), this, SLOT(searchChanged(const QString &)));
+  connect(search, SIGNAL(signalKeyPressed(int, int, int, int, QString)),
+          this, SIGNAL(signalKeyPressed(int, int, int, int, QString)));
+  QToolTip::add(search, tr("List Filter, e.g. s* or sb*"));
+  vbox->addWidget(search);
 
   list = new MyListBox(this, Macro::IndicatorPage);
   connect(list, SIGNAL(doubleClicked(QListBoxItem *)), this, SLOT(doubleClick(QListBoxItem *)));
@@ -622,32 +630,31 @@ void IndicatorPage::updateList ()
   list->clear();
   
   Config config;
-  QStringList l;
-  QString s(getIndicatorGroup());
-  config.getIndicators(s, l);
+  idir.setPath(config.getData(Config::IndicatorPath) + "/" + getIndicatorGroup());
 
-  int loop;  
-  for (loop = 0; loop < (int) l.count(); loop++)
+  int loop;
+  for (loop = 0; loop < (int) idir.count(); loop++)
   {
-    QFileInfo fi(l[loop]);
+    QString path = idir.absPath() + "/" + idir[loop];
+    QString s = idir[loop];
     Setting set;
-    config.getIndicator(l[loop], set);
+    config.getIndicator(path, set);
     if (! set.getInt("enable"))
     {
-      if (localIndicators.findIndex(fi.fileName()) != -1)
-        list->insertItem(disable_gray, fi.fileName(), -1);
+      if (localIndicators.findIndex(s) != -1)
+        list->insertItem(disable_gray, s, -1);
       else
-        list->insertItem(disable, fi.fileName(), -1);
+        list->insertItem(disable, s, -1);
     }
     else
     {
-      if (localIndicators.findIndex(fi.fileName()) != -1)
-        list->insertItem(ok_gray, fi.fileName(), -1);
+      if (localIndicators.findIndex(s) != -1)
+        list->insertItem(ok_gray, s, -1);
       else
-        list->insertItem(ok, fi.fileName(), -1);
+        list->insertItem(ok, s, -1);
 	
       if (updateEnableFlag)
-        emit signalEnableIndicator(l[loop]);
+        emit signalEnableIndicator(s);
     }
   }
 
@@ -976,5 +983,11 @@ void IndicatorPage::saveLocalIndicator (QString &d, Setting &set)
     
     config.closePlugin(plugin);
   }
+}
+
+void IndicatorPage::searchChanged (const QString &d)
+{
+  idir.setNameFilter(d);
+  updateList();
 }
 

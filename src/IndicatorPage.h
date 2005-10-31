@@ -25,12 +25,14 @@
 #include <qstring.h>
 #include <qwidget.h>
 #include <qpopupmenu.h>
+#include <qdir.h>
 #include "Setting.h"
 #include "Macro.h"
 #include "MacroKey.h"
 #include "MyComboBox.h"
 #include "MyListBox.h"
 #include "Indicator.h"
+#include "MyLineEdit.h"
 
 
 class IndicatorPage : public QWidget
@@ -90,6 +92,7 @@ class IndicatorPage : public QWidget
     void slotGroupChanged (int);
     void newIndicatorGroup ();
     void deleteIndicatorGroup ();
+    void searchChanged (const QString &);
 
   protected:
     virtual void keyPressEvent (QKeyEvent *);
@@ -106,6 +109,8 @@ class IndicatorPage : public QWidget
     bool updateEnableFlag;
     QString chartPath;
     QStringList localIndicators;
+    MyLineEdit *search;
+    QDir idir;
 };
 
 #endif

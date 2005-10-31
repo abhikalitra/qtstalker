@@ -92,11 +92,6 @@ void Plot::setDrawMode (bool d)
   indicatorPlot->setDrawMode(d);
 }
 
-bool Plot::getCrosshairsStatus ()
-{
-  return indicatorPlot->getCrosshairsStatus();
-}
-
 void Plot::setInfoFlag (bool d)
 {
   indicatorPlot->setInfoFlag(d);

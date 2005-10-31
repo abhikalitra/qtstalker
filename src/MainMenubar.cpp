@@ -32,6 +32,7 @@
 #include "../pics/co.xpm"
 #include "../pics/help.xpm"
 #include "../pics/qtstalker.xpm"
+#include "../pics/crosshair.xpm"
 
 
 MainMenubar::MainMenubar (QMainWindow *mw) : QMenuBar (mw, "mainMenubar")
@@ -143,6 +144,18 @@ MainMenubar::MainMenubar (QMainWindow *mw) : QMenuBar (mw, "mainMenubar")
   connect(action, SIGNAL(toggled(bool)), this, SIGNAL(signalDraw(bool)));
   actions.replace(DrawMode, action);
   
+  icon = crosshair;
+  s = config.getData(Config::Crosshairs);
+  action = new QAction(this, "actionCrosshairs");
+  action->setMenuText(tr("Toggle Cross&hairs"));
+  action->setIconSet(icon);
+  action->setStatusTip(tr("Toggle crosshairs (Ctrl+6)"));
+  action->setToolTip(tr("Toggle crosshairs (Ctrl+6)"));
+  action->setToggleAction(TRUE);
+  action->setOn(s.toInt());
+  connect(action, SIGNAL(toggled(bool)), this, SIGNAL(signalCrosshairs(bool)));
+  actions.replace(Crosshairs, action);
+
   icon = help;
   action = new QAction(this, "actionHelp");
   action->setMenuText(tr("&Help"));
@@ -159,6 +172,7 @@ MainMenubar::MainMenubar (QMainWindow *mw) : QMenuBar (mw, "mainMenubar")
   a->insertItem(CTRL+Key_3, Options);
   a->insertItem(CTRL+Key_4, Grid);
   a->insertItem(CTRL+Key_5, ScaleToScreen);
+  a->insertItem(CTRL+Key_6, Crosshairs);
   a->insertItem(CTRL+Key_7, SidePanel);
   a->insertItem(CTRL+Key_0, DrawMode);
   a->insertItem(CTRL+Key_Q, Quotes);
@@ -205,6 +219,7 @@ void MainMenubar::createMenus ()
   actions[ScaleToScreen]->addTo(viewMenu);
   actions[SidePanel]->addTo(viewMenu);
   actions[DrawMode]->addTo(viewMenu);
+  actions[Crosshairs]->addTo(viewMenu);
 
   toolMenu = new QPopupMenu();
   actions[DataWindow]->addTo(toolMenu);
@@ -247,6 +262,9 @@ void MainMenubar::saveSettings ()
   
   s = QString::number(getStatus(Grid));
   config.setData(Config::Grid, s);
+
+  s = QString::number(getStatus(Crosshairs));
+  config.setData(Config::Crosshairs, s);
 }
 
 void MainMenubar::setKeyFlag (bool d)
@@ -292,6 +310,11 @@ void MainMenubar::slotAccel (int id)
       getAction(DrawMode)->toggle();
       if (keyFlag)
         emit signalKeyPressed (Macro::Menubar, ControlButton, Key_0, 0, QString());
+      break;
+    case Crosshairs:
+      getAction(Crosshairs)->toggle();
+      if (keyFlag)
+        emit signalKeyPressed (Macro::Menubar, ControlButton, Key_6, 0, QString());
       break;
     case Macro1:
       emit signalRunMacro(config.getData(Config::Macro1));
@@ -383,6 +406,9 @@ void MainMenubar::doKeyPress (QKeyEvent *key)
         break;
       case Qt::Key_0:
 	slotAccel(DrawMode);
+        break;
+      case Qt::Key_6:
+	slotAccel(Crosshairs);
         break;
       case Qt::Key_Q:
         slotAccel(Quotes);
