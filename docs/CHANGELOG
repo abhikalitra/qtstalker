@@ -122,6 +122,12 @@
 
 20051028: Added a filter box to the indicator page. Works the same as the one in the chart page.
 
+20051031: Added zone lines to the CCI plugin as per request.
+
+20051101: Changed weekly chart dates to use month number to avoid overcrowding.
+
+20051101: Fixed chart info writing over chart bars.
+
 
 
 0.32

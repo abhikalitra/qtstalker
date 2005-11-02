@@ -36,11 +36,14 @@ class CCI : public IndicatorPlugin
     
   private:
     QColor color;
+    QColor lineColor;
     PlotLine::LineType lineType;
     QString label;
     int period;
     int smoothing;
     int maType;
+    double upperLine;
+    double lowerLine;
 };
 
 extern "C"

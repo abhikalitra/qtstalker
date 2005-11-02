@@ -187,10 +187,10 @@ void IndicatorPlot::draw ()
     setScale();
     drawXGrid();
     drawYGrid();
+    drawInfo();
     drawLines();
     drawObjects();
     drawCrossHair();
-    drawInfo();
   }
 
   paintEvent(0);

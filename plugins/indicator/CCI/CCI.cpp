@@ -40,11 +40,14 @@ CCI::~CCI ()
 void CCI::setDefaults ()
 {
   color.setNamedColor("red");
+  lineColor.setNamedColor("gray");
   lineType = PlotLine::Line;
   label = pluginName;
   smoothing = 3;
   period = 20;
   maType = 1;
+  upperLine = 100;
+  lowerLine = -100;
 }
 
 void CCI::calculate ()
@@ -94,6 +97,18 @@ void CCI::calculate ()
     cci->setLabel(label);
     output->addLine(cci);
   }
+
+  PlotLine *bline = new PlotLine();
+  bline->setColor(lineColor);
+  bline->setType(PlotLine::Horizontal);
+  bline->append(upperLine);
+  output->addLine(bline);
+
+  PlotLine *sline = new PlotLine();
+  sline->setColor(lineColor);
+  sline->setType(PlotLine::Horizontal);
+  sline->append(lowerLine);
+  output->addLine(sline);
 }
 
 int CCI::indicatorPrefDialog (QWidget *w)
@@ -105,6 +120,9 @@ int CCI::indicatorPrefDialog (QWidget *w)
   QString perl = QObject::tr("Period");
   QString sl = QObject::tr("Smoothing");
   QString stl = QObject::tr("Smoothing Type");
+  QString zc = QObject::tr("Zone Color");
+  QString bzl = QObject::tr("Buy Zone");
+  QString szl = QObject::tr("Sell Zone");
 
   PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(QObject::tr("CCI Indicator"));
@@ -117,6 +135,11 @@ int CCI::indicatorPrefDialog (QWidget *w)
   dialog->addIntItem(sl, pl, smoothing, 0, 99999999);
   QStringList l = getMATypes();
   dialog->addComboItem(stl, pl, l, maType);
+
+  pl = QObject::tr("Zones");
+  dialog->addColorItem(zc, pl, lineColor);
+  dialog->addDoubleItem(bzl, pl, upperLine);
+  dialog->addDoubleItem(szl, pl, lowerLine);
   
   int rc = dialog->exec();
   
@@ -128,6 +151,11 @@ int CCI::indicatorPrefDialog (QWidget *w)
     label = dialog->getText(ll);
     smoothing = dialog->getInt(sl);
     maType = dialog->getComboIndex(stl);
+
+    lineColor = dialog->getColor(zc);
+    upperLine = dialog->getDouble(bzl);
+    lowerLine = dialog->getDouble(szl);
+
     rc = TRUE;
   }
   else
@@ -148,6 +176,10 @@ void CCI::setIndicatorSettings (Setting &dict)
   if (s.length())
     color.setNamedColor(s);
     
+  s = dict.getData("lineColor");
+  if (s.length())
+    lineColor.setNamedColor(s);
+
   s = dict.getData("lineType");
   if (s.length())
     lineType = (PlotLine::LineType) s.toInt();
@@ -167,16 +199,27 @@ void CCI::setIndicatorSettings (Setting &dict)
   s = dict.getData("maType");
   if (s.length())
     maType = s.toInt();
+
+  s = dict.getData("upperLine");
+  if (s.length())
+    upperLine = s.toDouble();
+
+  s = dict.getData("lowerLine");
+  if (s.length())
+    lowerLine = s.toDouble();
 }
 
 void CCI::getIndicatorSettings (Setting &dict)
 {
   dict.setData("color", color.name());
+  dict.setData("lineColor", lineColor.name());
   dict.setData("lineType", QString::number(lineType));
   dict.setData("period", QString::number(period));
   dict.setData("smoothing", QString::number(smoothing));
   dict.setData("label", label);
   dict.setData("maType", QString::number(maType));
+  dict.setData("upperLine", QString::number(upperLine));
+  dict.setData("lowerLine", QString::number(lowerLine));
   dict.setData("plugin", pluginName);
 }
 

@@ -342,12 +342,14 @@ void DatePlot::getWeeklyDate ()
       oldMonth = date;
       item->flag = 1;
       item->tick = 0;
-      item->text = date.toString("MMM");
+//      item->text = date.toString("MMM");
+      item->text = date.toString("M");
       
       if (date.month() == 1)
       {
         item->tick = 1;
-        item->text = date.toString("MMM'yy");
+//        item->text = date.toString("MMM'yy");
+        item->text = date.toString("yy");
       }
     }
     

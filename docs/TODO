@@ -5,23 +5,20 @@ To Do:
 - postgresql quote plugin
 - key bindings
 - key binding scripting
-- fix trendlines and fibo objects to plot on weekly and monthly charts as well
+- trendlines and fibo objects to plot on weekly and monthly charts as well
 - make a freshmeat entry
 - allow negative displacement for line plots
 - add indicator chart to the tester chart so buy/sell points have a reference
 - create a package of CUS indicators, default CSV plugin import rules to the install process
   so users have a bunch of examples and things to play with
 - rename indicator function (possible main plot indicator panel revision)
-- fix: stacked indicator widget insertion resizing is ugly.
 - allow point selection on plots to display values past the ends of the chart. (future dates and values)
 - change Quote behaviour in yahoo plugin to create separate symbols for intraday and daily
   data. also put a timer on yahoo plugin for intraday tick downloads every X minutes. same limitations
   will apply as in the CSV timer
 - create a date range for loading charts, then step through bar by bar to simulate paper trading
-- put a paint bars function for candles (replace volume candles with CUS?)
 - overhaul CSV plugin to allow URL downloads and clean up code...it's a mess  
 - put in left/right chart justify option.
-- update docs to explain why Bars:paintbar is blank if no rule is set.
 - add more crosshairs behaviours to IndicatorPlot
 - user defined bar lengths for intraday charts
 - fix: preferences font changes does not propagate to chart objects
@@ -34,10 +31,8 @@ To Do:
 - change edit formula widgets to auto add the missing COMP step instead of warning user.
 - create CUS tutorial.
 - add more indicator functions to existing plugins ie. Chaikin, Volume osc's etc.
-- fix: chart status data covers candles on the main chart.
 - add stock margins to the tester
 - add intraday trading to the tester
-- fix: scanner does not update directory when first run. app restart needed.
 - fix: tester entry on buy and sell signals does not execute on next bar but on current bar.
 - update CUS docs for new format and rules and specs.
 
@@ -49,10 +44,6 @@ To Do:
         add some default indicators to replace the bar/candle/line chart styles
 
 - add ability to not draw sections of plotlines. (vectors)
-- fix: default color problems with trendline and changing background colors?
-- optimize CSV code. slow imports.
-- put 100 and -100 lines on CCI plugin.
-- fix: overcrowding on the weekly chart with the date months.
 - save last chart viewed between sessions.
 
  
