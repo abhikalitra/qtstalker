@@ -33,6 +33,7 @@
 #include "../pics/help.xpm"
 #include "../pics/qtstalker.xpm"
 #include "../pics/crosshair.xpm"
+#include "../pics/papertrade.xpm"
 
 
 MainMenubar::MainMenubar (QMainWindow *mw) : QMenuBar (mw, "mainMenubar")
@@ -156,6 +157,18 @@ MainMenubar::MainMenubar (QMainWindow *mw) : QMenuBar (mw, "mainMenubar")
   connect(action, SIGNAL(toggled(bool)), this, SIGNAL(signalCrosshairs(bool)));
   actions.replace(Crosshairs, action);
 
+  icon = papertrade;
+  s = config.getData(Config::PaperTradeMode);
+  action = new QAction(this, "actionPaperTrade");
+  action->setMenuText(tr("Paper Trade Mode"));
+  action->setIconSet(icon);
+  action->setStatusTip(tr("Toggle the paper trade mode"));
+  action->setToolTip(tr("Toggle the paper trade mode"));
+  action->setToggleAction(TRUE);
+  action->setOn(s.toInt());
+  connect(action, SIGNAL(toggled(bool)), this, SIGNAL(signalPaperTrade(bool)));
+  actions.replace(PaperTrade, action);
+
   icon = help;
   action = new QAction(this, "actionHelp");
   action->setMenuText(tr("&Help"));
@@ -220,6 +233,7 @@ void MainMenubar::createMenus ()
   actions[SidePanel]->addTo(viewMenu);
   actions[DrawMode]->addTo(viewMenu);
   actions[Crosshairs]->addTo(viewMenu);
+  actions[PaperTrade]->addTo(viewMenu);
 
   toolMenu = new QPopupMenu();
   actions[DataWindow]->addTo(toolMenu);
@@ -265,6 +279,9 @@ void MainMenubar::saveSettings ()
 
   s = QString::number(getStatus(Crosshairs));
   config.setData(Config::Crosshairs, s);
+
+  s = QString::number(getStatus(PaperTrade));
+  config.setData(Config::PaperTradeMode, s);
 }
 
 void MainMenubar::setKeyFlag (bool d)

@@ -22,9 +22,12 @@
 #include "ChartToolbar.h"
 #include "Config.h"
 #include "BarData.h"
+#include "PrefDialog.h"
 #include <qtooltip.h>
 #include <qaccel.h>
 #include <qvalidator.h>
+#include "../pics/date.xpm"
+#include "../pics/next.xpm"
 
 ChartToolbar::ChartToolbar (QMainWindow *mw) : QToolBar (mw, "chartToolbar")
 {
@@ -32,6 +35,7 @@ ChartToolbar::ChartToolbar (QMainWindow *mw) : QToolBar (mw, "chartToolbar")
   macroFlag = FALSE;
   macro = 0;
   Config config;
+  ptDate = QDateTime::currentDateTime();
   
   BarData *bd = new BarData;
   compressionCombo = new MyComboBox(this, Macro::ChartToolbar);
@@ -65,6 +69,16 @@ ChartToolbar::ChartToolbar (QMainWindow *mw) : QToolBar (mw, "chartToolbar")
   connect(barCount, SIGNAL(returnPressed()), this, SLOT(barsChanged()));
 
   addSeparator();
+
+  ptdButton = new QToolButton(this);
+  QToolTip::add(ptdButton, tr("Paper Trade Date"));
+  ptdButton->setPixmap(date);
+  connect(ptdButton, SIGNAL(clicked()), this, SLOT(paperTradeDate()));
+
+  ptnButton = new QToolButton(this);
+  QToolTip::add(ptnButton, tr("Load Next Bar"));
+  ptnButton->setPixmap(next);
+  connect(ptnButton, SIGNAL(clicked()), this, SLOT(paperTradeNextBar()));
 
   slider = new MySlider(this, Macro::ChartToolbar);
   slider->setOrientation(Qt::Horizontal);
@@ -295,5 +309,62 @@ void ChartToolbar::barsChanged ()
   int t = barCount->text().toInt(&ok);
   if (ok)
     emit signalBarsChanged(t);
+}
+
+//*********************************************************************
+//******************** paper trade stuff ******************************
+//*********************************************************************
+
+QDateTime ChartToolbar::getPaperTradeDate ()
+{
+  return ptDate;
+}
+
+void ChartToolbar::paperTradeDate ()
+{
+  QString dl = tr("Last Date");
+  QString pl = "Date";
+
+  PrefDialog *dialog = new PrefDialog(this);
+  dialog->setCaption(tr("Paper trade date select."));
+  dialog->createPage (pl);
+  dialog->addDateItem(dl, pl, ptDate);
+
+  int rc = dialog->exec();
+
+  if (rc == QDialog::Accepted)
+    ptDate = dialog->getDate(dl);
+
+  delete dialog;
+}
+
+void ChartToolbar::paperTradeClicked (bool d)
+{
+  if (d)
+  {
+    ptdButton->show();
+    ptnButton->show();
+    barCount->setEnabled(FALSE);
+  }
+  else
+  {
+    ptdButton->hide();
+    ptnButton->hide();
+    barCount->setEnabled(TRUE);
+  }
+}
+
+void ChartToolbar::paperTradeNextBar ()
+{
+  ptDate = ptDate.addDays(1);
+  if (ptDate.date().dayOfWeek() == 6)
+    ptDate = ptDate.addDays(2);
+  else
+  {
+    if (ptDate.date().dayOfWeek() == 7)
+      ptDate = ptDate.addDays(1);
+  }
+  
+  emit signalPaperTradeNextBar();
 }
 

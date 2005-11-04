@@ -128,6 +128,13 @@
 
 20051101: Fixed chart info writing over chart bars.
 
+20051102: Applied patch #1345509 install.html - use binary release Qt and DB
+
+20051103: Added new paper trading mode. Toggle the paper trade mode toolbar button. 2 new buttons will appear
+          beside the chart slider. The first button allows you to set the date you want to start the paper trade.
+          The second button advances the chart by one bar. This allows the user to simulate paper trading easily.
+          AFAIK Qtstalker is the only TA app that does this. OSS rules!
+
 
 
 0.32

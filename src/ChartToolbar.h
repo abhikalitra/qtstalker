@@ -30,6 +30,8 @@
 #include "MyLineEdit.h"
 #include "MySlider.h"
 #include "Macro.h"
+#include <qtoolbutton.h>
+#include <qdatetime.h>
 
 
 class ChartToolbar : public QToolBar
@@ -42,6 +44,7 @@ class ChartToolbar : public QToolBar
     void signalSliderChanged (int);
     void signalKeyPressed (int, int, int, int, QString);
     void signalBarsChanged (int);
+    void signalPaperTradeNextBar ();
     
   public:
   
@@ -65,6 +68,7 @@ class ChartToolbar : public QToolBar
     int getSlider ();
     int setSliderStart (int width, int records);
     void saveSettings ();
+    QDateTime getPaperTradeDate ();
     
   public slots:
     void setFocus ();
@@ -73,6 +77,9 @@ class ChartToolbar : public QToolBar
     void doKeyPress (QKeyEvent *);
     void runMacro (Macro *);
     void barsChanged ();
+    void paperTradeDate ();
+    void paperTradeNextBar ();
+    void paperTradeClicked (bool);
   
   private:
     MyComboBox *compressionCombo;
@@ -83,6 +90,9 @@ class ChartToolbar : public QToolBar
     MenuAction focusFlag;
     Macro *macro;
     bool macroFlag;
+    QToolButton *ptdButton;
+    QToolButton *ptnButton;
+    QDateTime ptDate;
 };
 
 #endif

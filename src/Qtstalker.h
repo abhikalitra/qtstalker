@@ -95,6 +95,7 @@ class QtstalkerApp : public QMainWindow
     void traverse(QString &);
     void loadIndicator (Indicator *);
     void setSliderStart ();
+    void paperTradeDate ();
 
   public slots:
     void slotAbout ();
@@ -124,6 +125,7 @@ class QtstalkerApp : public QMainWindow
 //    void slotStopMacro ();
     void slotProgMessage (int, int);
     void slotDrawPlots ();
+    void slotPaperTradeChanged (bool);
     
   private:
     QToolBar *toolbar;

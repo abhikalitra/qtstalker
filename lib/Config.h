@@ -47,7 +47,7 @@ class Config
       BackgroundColor,
       BorderColor,
       GridColor,
-      ChartPluginPath, //unused
+      PaperTradeMode,
       IndicatorPath,
       Crosshairs,
       DrawMode,

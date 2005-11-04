@@ -28,6 +28,7 @@
 #include <qcursor.h>
 #include <qcolor.h>
 #include <qstringlist.h>
+#include <qdatetime.h>
 
 #include "Qtstalker.h"
 #include "DataWindow.h"
@@ -198,6 +199,7 @@ void QtstalkerApp::initMenuBar()
   connect(menubar, SIGNAL(signalOptions()), this, SLOT(slotOptions()));
   connect(menubar, SIGNAL(signalQuotes()), this, SLOT(slotQuotes()));
   connect(menubar, SIGNAL(signalCrosshairs(bool)), this, SLOT(slotCrosshairsStatus(bool)));
+  connect(menubar, SIGNAL(signalPaperTrade(bool)), this, SLOT(slotPaperTradeChanged(bool)));
 }
 
 void QtstalkerApp::initToolBar()
@@ -210,6 +212,7 @@ void QtstalkerApp::initToolBar()
   menubar->getAction(MainMenubar::Grid)->addTo(toolbar);
   menubar->getAction(MainMenubar::ScaleToScreen)->addTo(toolbar);
   menubar->getAction(MainMenubar::Crosshairs)->addTo(toolbar);
+  menubar->getAction(MainMenubar::PaperTrade)->addTo(toolbar);
   menubar->getAction(MainMenubar::DrawMode)->addTo(toolbar);
   menubar->getAction(MainMenubar::NewIndicator)->addTo(toolbar);
   menubar->getAction(MainMenubar::DataWindow)->addTo(toolbar);
@@ -222,6 +225,9 @@ void QtstalkerApp::initToolBar()
   connect(toolbar2, SIGNAL(signalPixelspaceChanged(int)), this, SLOT(slotPixelspaceChanged(int)));
   connect(this, SIGNAL(signalSetKeyFlag(bool)), toolbar2, SLOT(setKeyFlag(bool)));
   connect(toolbar2, SIGNAL(signalBarsChanged(int)), this, SLOT(slotChartUpdated()));
+  
+  connect(toolbar2, SIGNAL(signalPaperTradeNextBar()), this, SLOT(slotChartUpdated()));
+  toolbar2->paperTradeClicked(menubar->getStatus(MainMenubar::PaperTrade));
 }
 
 void QtstalkerApp::slotQuit()
@@ -483,6 +489,9 @@ void QtstalkerApp::loadChart (QString &d)
   slotStatusMessage(tr("Loading chart..."));
   
   plug->getHistory(recordList);
+
+  if (menubar->getStatus(MainMenubar::PaperTrade))
+    paperTradeDate();
   
   slotProgMessage(1, 3);
   slotStatusMessage(tr("Loading indicators..."));
@@ -1162,6 +1171,29 @@ void QtstalkerApp::slotDrawPlots ()
     if (p)
       p->draw();
   }
+}
+
+void QtstalkerApp::paperTradeDate ()
+{
+  if (! recordList)
+    return;
+
+  QDateTime ptDate = toolbar2->getPaperTradeDate();
+  int loop;
+  for (loop = (int) recordList->count() - 1; loop > -1; loop--)
+  {
+    QDateTime dt(recordList->getDate(loop).getDate(), recordList->getDate(loop).getTime());
+    if (dt > ptDate)
+      recordList->deleteBar(loop);
+    else
+      break;
+  }
+}
+
+void QtstalkerApp::slotPaperTradeChanged (bool d)
+{
+  toolbar2->paperTradeClicked(d);
+  slotChartUpdated();
 }
 
 //**********************************************************************

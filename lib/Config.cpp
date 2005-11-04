@@ -345,6 +345,9 @@ QString Config::getData (Parm p)
     case LastNewIndicator:
       s = settings.readEntry("/Qtstalker/LastNewIndicator", "MA");
       break;
+    case PaperTradeMode:
+      s = settings.readEntry("/Qtstalker/PaperTradeMode", "0");
+      break;
     default:
       break;
   }
@@ -523,6 +526,9 @@ void Config::setData (Parm p, QString &d)
       break;
     case LastNewIndicator:
       settings.writeEntry("/Qtstalker/LastNewIndicator", d);
+      break;
+    case PaperTradeMode:
+      settings.writeEntry("/Qtstalker/PaperTradeMode", d);
       break;
     default:
       break;

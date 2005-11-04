@@ -48,6 +48,7 @@ class MainMenubar : public QMenuBar
     void signalNewIndicator();
     void signalOptions();
     void signalQuotes();
+    void signalPaperTrade (bool);
     
   public:
   
@@ -76,7 +77,8 @@ class MainMenubar : public QMenuBar
       Macro9,
       Macro10,
       Macro11,
-      Macro12
+      Macro12,
+      PaperTrade
     };
   
     MainMenubar(QMainWindow *);
