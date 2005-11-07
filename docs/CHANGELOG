@@ -135,6 +135,12 @@
           The second button advances the chart by one bar. This allows the user to simulate paper trading easily.
           AFAIK Qtstalker is the only TA app that does this. OSS rules!
 
+20051106: Upgraded FreeBSD compiler directives to use Berkeley DB 4.3.
+
+20051106: Fixed bug in the Tester that did not use trade delay properly. Use the trade delay
+          to enter/exit trades on the next trade delay bars.
+
+20051106: Added bar compression option to the tester.
 
 
 0.32

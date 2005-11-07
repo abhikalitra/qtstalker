@@ -133,15 +133,13 @@ class Tester : public QTabDialog
     QSpinBox *account;
     QSpinBox *volumePercent;
     QSpinBox *margin;
-    QSpinBox *enterLongDelay;
-    QSpinBox *exitLongDelay;
-    QSpinBox *enterShortDelay;
-    QSpinBox *exitShortDelay;
+    QSpinBox *tradeDelay;
     QSpinBox *bars;
     QDoubleValidator *validator;
     QString ruleName;
     QString chartType;
     QComboBox *priceField;
+    QComboBox *compression;
     FormulaEdit *enterLongEdit;
     FormulaEdit *enterShortEdit;
     FormulaEdit *exitLongEdit;
@@ -167,6 +165,7 @@ class Tester : public QTabDialog
     int exitShortCount;
     double volume;
     QStringList fieldList;
+    QStringList compressionList;
     PlotLine *equityCurve;
     PlotLine *customShortStopLine;
     PlotLine *customLongStopLine;

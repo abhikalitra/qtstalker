@@ -11,12 +11,10 @@ To Do:
 - add indicator chart to the tester chart so buy/sell points have a reference
 - create a package of CUS indicators, default CSV plugin import rules to the install process
   so users have a bunch of examples and things to play with
-- rename indicator function (possible main plot indicator panel revision)
 - allow point selection on plots to display values past the ends of the chart. (future dates and values)
 - change Quote behaviour in yahoo plugin to create separate symbols for intraday and daily
   data. also put a timer on yahoo plugin for intraday tick downloads every X minutes. same limitations
   will apply as in the CSV timer
-- create a date range for loading charts, then step through bar by bar to simulate paper trading
 - overhaul CSV plugin to allow URL downloads and clean up code...it's a mess  
 - put in left/right chart justify option.
 - add more crosshairs behaviours to IndicatorPlot
@@ -24,16 +22,10 @@ To Do:
 - fix: preferences font changes does not propagate to chart objects
 - add remember last file used for CSV plugin.
 - add a loop counter function to the COUNTER plugin
-- add multiple positions to the backtester
 - add better icons for add/insert in the edit formula dialog widget, functions not obvious
-- change backtester/scanner edit formula widgets to remove plot/scale option fields from the list
-  they dont apply and confuse users. try to remove unused gui options 
-- change edit formula widgets to auto add the missing COMP step instead of warning user.
 - create CUS tutorial.
 - add more indicator functions to existing plugins ie. Chaikin, Volume osc's etc.
 - add stock margins to the tester
-- add intraday trading to the tester
-- fix: tester entry on buy and sell signals does not execute on next bar but on current bar.
 - update CUS docs for new format and rules and specs.
 
 - *******before 0.33 put in routine in config to remove old CUS format files:*************

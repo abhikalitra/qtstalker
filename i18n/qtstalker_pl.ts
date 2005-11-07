@@ -842,6 +842,22 @@ Directory name must be one word only.</source>
         <source>Pan Chart</source>
         <translation>Kadrowanie Wykresu</translation>
     </message>
+    <message>
+        <source>Paper Trade Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Load Next Bar</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Last Date</source>
+        <translation type="unfinished">Ostatnia Data</translation>
+    </message>
+    <message>
+        <source>Paper trade date select.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>Cycle</name>
@@ -1659,6 +1675,10 @@ Save changes?</source>
         <source>Tab Row</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>List Filter, e.g. s* or sb*</source>
+        <translation type="unfinished">podaj filtr, np. s* lub sb*</translation>
+    </message>
 </context>
 <context>
     <name>IndicatorPlot</name>
@@ -1684,7 +1704,7 @@ Save changes?</source>
     </message>
     <message>
         <source>Edit Indicator</source>
-        <translation>Edycja Wskaźnika</translation>
+        <translation type="obsolete">Edycja Wskaźnika</translation>
     </message>
     <message>
         <source>New Chart Object</source>
@@ -1700,7 +1720,7 @@ Save changes?</source>
     </message>
     <message>
         <source>Cross&amp;hairs</source>
-        <translation>Celown&amp;ik</translation>
+        <translation type="obsolete">Celown&amp;ik</translation>
     </message>
     <message>
         <source>Qtstalker: Delete All Chart Objects</source>
@@ -1717,6 +1737,18 @@ Save changes?</source>
     <message>
         <source>Details</source>
         <translation>Szczegóły</translation>
+    </message>
+    <message>
+        <source>&amp;Edit Indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Date</source>
+        <translation type="unfinished">Data</translation>
+    </message>
+    <message>
+        <source>Log Scaling</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1985,11 +2017,11 @@ Save changes?</source>
     </message>
     <message>
         <source>&amp;Log Scaling</source>
-        <translation>Skala &amp;Logarytmiczna</translation>
+        <translation type="obsolete">Skala &amp;Logarytmiczna</translation>
     </message>
     <message>
         <source>Toggle log scaling (Ctrl+6)</source>
-        <translation>Przełącz skalę logarytmiczną (Ctrl+6)</translation>
+        <translation type="obsolete">Przełącz skalę logarytmiczną (Ctrl+6)</translation>
     </message>
     <message>
         <source>Hide &amp;Main Plot</source>
@@ -2001,11 +2033,11 @@ Save changes?</source>
     </message>
     <message>
         <source>Toggle Indicator Date</source>
-        <translation>Przełącz Datę Wskaźnika</translation>
+        <translation type="obsolete">Przełącz Datę Wskaźnika</translation>
     </message>
     <message>
         <source>Toggle indicator date (Ctrl+9)</source>
-        <translation>Przełącz datę wskaźnika (Ctrl+9)</translation>
+        <translation type="obsolete">Przełącz datę wskaźnika (Ctrl+9)</translation>
     </message>
     <message>
         <source>Toggle Dra&amp;w Mode</source>
@@ -2042,6 +2074,22 @@ Save changes?</source>
     <message>
         <source>Download quotes from internet  (Ctrl+Q)</source>
         <translation>Pobierz notowania z internetu  (Ctrl+Q)</translation>
+    </message>
+    <message>
+        <source>Toggle Cross&amp;hairs</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Toggle crosshairs (Ctrl+6)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Paper Trade Mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Toggle the paper trade mode</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -3786,6 +3834,70 @@ Rodzaj Wygładzania %D</translation>
     </message>
     <message>
         <source>OpenInterest</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MA Input</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MA2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MA2 Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MA2 Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MA2 Line Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MA2 Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MA2 Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MA2 Input</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MA3</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MA3 Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MA3 Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MA3 Line Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MA3 Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MA3 Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MA3 Input</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Zone Color</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

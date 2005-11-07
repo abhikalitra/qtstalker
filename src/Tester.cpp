@@ -274,26 +274,11 @@ void Tester::createTestPage ()
   tradeShort = new QCheckBox(tr("Short"), gbox);
   gbox->addSpace(0);
 
-  QLabel *label = new QLabel(tr("Enter Long Delay"), gbox);
+  QLabel *label = new QLabel(tr("Trade Delay"), gbox);
     
-  enterLongDelay = new QSpinBox(0, 999999, 1, gbox);
-  enterLongDelay->setValue(0);
+  tradeDelay = new QSpinBox(0, 999999, 1, gbox);
+  tradeDelay->setValue(0);
 
-  label = new QLabel(tr("Exit Long Delay"), gbox);
-    
-  exitLongDelay = new QSpinBox(0, 999999, 1, gbox);
-  exitLongDelay->setValue(0);
-  
-  label = new QLabel(tr("Enter Short Delay"), gbox);
-    
-  enterShortDelay = new QSpinBox(0, 999999, 1, gbox);
-  enterShortDelay->setValue(0);
-  
-  label = new QLabel(tr("Exit Short Delay"), gbox);
-    
-  exitShortDelay = new QSpinBox(0, 999999, 1, gbox);
-  exitShortDelay->setValue(0);
-  
   gbox = new QVGroupBox(tr("Account"), w);
   gbox->setInsideSpacing(2);
   gbox->setColumns(2);
@@ -334,6 +319,13 @@ void Tester::createTestPage ()
   symbolButton = new SymbolButton(gbox, s, s2);
   connect(symbolButton, SIGNAL(symbolChanged()), this, SLOT(symbolButtonPressed()));
   
+  label = new QLabel(tr("Compression"), gbox);
+  
+  BarData bd;
+  compression = new QComboBox(gbox);
+  bd.getBarCompressionList(compressionList);
+  compression->insertStringList(compressionList, -1);
+
   label = new QLabel(tr("Bars"), gbox);
   
   bars = new QSpinBox(1, 99999999, 1, gbox);
@@ -585,7 +577,9 @@ void Tester::test ()
 
   tradeList->setNumRows(0);
 
-  db->setBarCompression(BarData::DailyBar);
+//  db->setBarCompression(BarData::DailyBar);
+  db->setBarCompression((BarData::BarCompression) compressionList.findIndex(compression->currentText()));
+
   db->setBarRange(bars->value());
   if (recordList)
     delete recordList;
@@ -822,7 +816,12 @@ void Tester::enterLong ()
   }
 
   status = 1;
-  buyRecord = currentRecord;
+
+  if (currentRecord + tradeDelay->value() < recordList->count())
+    buyRecord = currentRecord + tradeDelay->value();
+  else
+    buyRecord = currentRecord;
+
   trailingHigh = getPrice(buyRecord);
   equity = equity - entryCom->value();
   getVolume();
@@ -847,7 +846,12 @@ void Tester::enterShort ()
   }
 
   status = -1;
-  buyRecord = currentRecord;
+
+  if (currentRecord + tradeDelay->value() < recordList->count())
+    buyRecord = currentRecord + tradeDelay->value();
+  else
+    buyRecord = currentRecord;
+
   trailingLow = getPrice(buyRecord);
   equity = equity - entryCom->value();
   getVolume();
@@ -865,8 +869,14 @@ void Tester::exitShort ()
 
 void Tester::exitPosition (QString &signal)
 {
+  int crecord;
+  if (currentRecord + tradeDelay->value() < recordList->count())
+    crecord = currentRecord + tradeDelay->value();
+  else
+    crecord = currentRecord;
+
   double enterPrice = getPrice(buyRecord);
-  double exitPrice = getPrice(currentRecord);
+  double exitPrice = getPrice(crecord);
   double profit = 0;
   QString type;
 
@@ -894,7 +904,7 @@ void Tester::exitPosition (QString &signal)
   recordList->getDate(buyRecord).getDateString(FALSE, s);
   tradeList->setText(tradeList->numRows() - 1, 1, s);
   tradeList->setText(tradeList->numRows() - 1, 2, QString::number(enterPrice));
-  recordList->getDate(currentRecord).getDateString(FALSE, s);
+  recordList->getDate(crecord).getDateString(FALSE, s);
   tradeList->setText(tradeList->numRows() - 1, 3, s);
   tradeList->setText(tradeList->numRows() - 1, 4, QString::number(exitPrice));
   tradeList->setText(tradeList->numRows() - 1, 5, signal);
@@ -910,9 +920,15 @@ void Tester::updateEquityCurve ()
     equityCurve->append(equity);
     return;
   }
+
+  int crecord;
+  if (currentRecord + tradeDelay->value() < recordList->count())
+    crecord = currentRecord + tradeDelay->value();
+  else
+    crecord = currentRecord;
   
   double enterPrice = getPrice(buyRecord);
-  double exitPrice = getPrice(currentRecord);
+  double exitPrice = getPrice(crecord);
   double profit = 0;
   double bal = equity;
   QString type;
@@ -1172,7 +1188,6 @@ bool Tester::loadAlerts (int type)
 {
   int loop;
   FormulaEdit *edit = 0;
-  int delays = 0;
   QString s;
   Setting *alerts = 0;
   
@@ -1181,28 +1196,24 @@ bool Tester::loadAlerts (int type)
     case 0:
       edit = enterLongEdit;
       enterLongAlerts->clear();
-      delays = enterLongDelay->value();
       s = tr("Enter long ");
       alerts = enterLongAlerts;
       break;
     case 1:
       edit = exitLongEdit;
       exitLongAlerts->clear();
-      delays = exitLongDelay->value();
       s = tr("Exit long ");
       alerts = exitLongAlerts;
       break;
     case 2:
       edit = enterShortEdit;
       enterShortAlerts->clear();
-      delays = enterShortDelay->value();
       s = tr("Enter short ");
       alerts = enterShortAlerts;
       break;
     case 3:
       edit = exitShortEdit;
       exitShortAlerts->clear();
-      delays = exitShortDelay->value();
       s = tr("Exit short ");
       alerts = exitShortAlerts;
       break;
@@ -1214,33 +1225,6 @@ bool Tester::loadAlerts (int type)
   if (! l.count())
     return FALSE;
 
-/*  
-  bool cflag = FALSE;
-  for (loop = 0; loop < (int) l.count(); loop++)
-  {
-    Setting set;
-    QString t = l[loop];
-    set.parse(t);
-    if (! set.getData("plugin").compare("COMP"))
-    {
-      if (set.getData("plot").toInt())
-      {
-        cflag = TRUE;
-	break;
-      }
-    }
-  }
-  
-  if (! cflag)
-  {
-    s.append(" no COMP step or COMP step not checked.");
-    QMessageBox::information(this,
-                             tr("Qtstalker: Error"),
-			     s);
-    return TRUE;
-  }
-*/
-  
   // open the CUS plugin
   QString plugin("CUS");
   IndicatorPlugin *plug = config.getIndicatorPlugin(plugin);
@@ -1266,38 +1250,30 @@ bool Tester::loadAlerts (int type)
     
   loop = recordList->count() - line->getSize();
   int lineLoop = 0;
+  int delays = 2;
   for (; loop < (int) recordList->count(); loop++, lineLoop++)
   {
     if (line->getData(lineLoop) == 1)
     {
-      if (delays)
+      if ((lineLoop - delays) > -1)
       {
-        if ((lineLoop - delays) > -1)
+        int loop2;
+	bool df = FALSE;
+        for (loop2 = delays; loop2 > -1; loop2--)
 	{
-          int loop2;
-	  bool df = FALSE;
-          for (loop2 = delays; loop2 > -1; loop2--)
+          if (line->getData(lineLoop - loop2) != 1)
 	  {
-            if (line->getData(lineLoop - loop2) != 1)
-	    {
-              df = TRUE;
-	      break;
-	    }
-	  }
-	
-	  if (! df)
-	  {
-	    QString t;
-	    recordList->getDate(loop).getDateString(FALSE, t);
-            alerts->setData(t, "1");
+            df = TRUE;
+	    break;
 	  }
 	}
-      }
-      else
-      {
-        QString t;
-	recordList->getDate(loop).getDateString(FALSE, t);
-        alerts->setData(t, "1");
+	
+	if (! df)
+	{
+	  QString t;
+	  recordList->getDate(loop - delays).getDateString(FALSE, t);
+          alerts->setData(t, "1");
+	}
       }
     }
   }
@@ -1392,14 +1368,12 @@ void Tester::saveRule ()
   stream << "Volume Percent=" << volumePercent->text() << "\n";
   stream << "Entry Com=" << entryCom->text() << "\n";
   stream << "Exit Com=" << exitCom->text() << "\n";
-  stream << "EnterLongDelay=" << enterLongDelay->text() << "\n";
-  stream << "ExitLongDelay=" << exitLongDelay->text() << "\n";
-  stream << "EnterShortDelay=" << enterShortDelay->text() << "\n";
-  stream << "ExitShortDelay=" << exitShortDelay->text() << "\n";
+  stream << "TradeDelay=" << tradeDelay->text() << "\n";
   stream << "Price Field=" << priceField->currentText() << "\n";
   stream << "Bars=" << bars->text() << "\n";
   stream << "Symbol=" << symbolButton->getPath() << "\n";
   stream << "Account=" << account->text() << "\n";
+  stream << "Compression=" << compression->currentText() << "\n";
   
   f.close();
 }
@@ -1537,30 +1511,12 @@ void Tester::loadRule ()
       continue;
     }
     
-    if (! l2[0].compare("EnterLongDelay"))
+    if (! l2[0].compare("TradeDelay"))
     {
-      enterLongDelay->setValue(l2[1].toInt());
+      tradeDelay->setValue(l2[1].toInt());
       continue;
     }
   
-    if (! l2[0].compare("ExitLongDelay"))
-    {
-      exitLongDelay->setValue(l2[1].toInt());
-      continue;
-    }
-    
-    if (! l2[0].compare("EnterShortDelay"))
-    {
-      enterShortDelay->setValue(l2[1].toInt());
-      continue;
-    }
-    
-    if (! l2[0].compare("ExitShortDelay"))
-    {
-      exitShortDelay->setValue(l2[1].toInt());
-      continue;
-    }
-    
     if (! l2[0].compare("Bars"))
     {
       bars->setValue(l2[1].toInt());
@@ -1592,6 +1548,12 @@ void Tester::loadRule ()
       tradeList->setNumRows(tradeList->numRows() + 1);
       for (loop = 0; loop < (int) l3.count(); loop++)
         tradeList->setText(tradeList->numRows() - 1, loop, l3[loop]);
+      continue;
+    }
+
+    if (! l2[0].compare("Compression"))
+    {
+      compression->setCurrentText(l2[1]);
       continue;
     }
   }
@@ -1907,33 +1869,6 @@ bool Tester::loadCustomShortStop ()
 
   QStringList l = QStringList::split("\n", customShortStopEdit->getText(), FALSE);
 
-/*    
-  bool cflag = FALSE;
-  int loop;
-  for (loop = 0; loop < (int) l.count(); loop++)
-  {
-    Setting set;
-    QString t = l[loop];
-    set.parse(t);
-    if (! set.getData("plugin").compare("COMP"))
-    {
-      if (set.getData("plot").toInt())
-      {
-        cflag = TRUE;
-	break;
-      }
-    }
-  }
-  
-  if (! cflag)
-  {
-    QMessageBox::information(this,
-                             tr("Qtstalker: Error"),
-			     tr("No COMP step or COMP step not checked in Custom Short Stop."));
-    return TRUE;
-  }
-*/
-
   QString plugin("CUS");  
   IndicatorPlugin *plug = config.getIndicatorPlugin(plugin);
   if (! plug)
@@ -1976,33 +1911,6 @@ bool Tester::loadCustomLongStop ()
     return FALSE;
 
   QStringList l = QStringList::split("\n", customLongStopEdit->getText(), FALSE);
-
-/*    
-  bool cflag = FALSE;
-  int loop;
-  for (loop = 0; loop < (int) l.count(); loop++)
-  {
-    Setting set;
-    QString t = l[loop]; 
-    set.parse(t);
-    if (! set.getData("plugin").compare("COMP"))
-    {
-      if (set.getData("plot").toInt())
-      {
-        cflag = TRUE;
-	break;
-      }
-    }
-  }
-  
-  if (! cflag)
-  {
-    QMessageBox::information(this,
-                             tr("Qtstalker: Error"),
-			     tr("No COMP step or COMP step not checked in Custom Long Stop."));
-    return TRUE;
-  }
-*/
   
   QString plugin("CUS");  
   IndicatorPlugin *plug = config.getIndicatorPlugin(plugin);
@@ -2276,14 +2184,6 @@ bool Tester::checkFormula (int d)
       break;
   }
 
-/*  
-  if (ok)
-  {
-    s.append(tr("Must have one COMP step checked."));
-    QMessageBox::information(this, tr("Qtstalker: Error"), s);
-  }
-*/
-  
   return ok;
 }
 
