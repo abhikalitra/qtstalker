@@ -8,7 +8,6 @@ To Do:
 - trendlines and fibo objects to plot on weekly and monthly charts as well
 - make a freshmeat entry
 - allow negative displacement for line plots
-- add indicator chart to the tester chart so buy/sell points have a reference
 - create a package of CUS indicators, default CSV plugin import rules to the install process
   so users have a bunch of examples and things to play with
 - allow point selection on plots to display values past the ends of the chart. (future dates and values)

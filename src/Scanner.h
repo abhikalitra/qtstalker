@@ -71,6 +71,7 @@ class Scanner : public QTabDialog
     QPushButton *fileButton;
     QStringList fileList;
     QCheckBox *allSymbols;
+    QStringList compressionList;
 };
 
 #endif

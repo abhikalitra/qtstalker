@@ -32,7 +32,8 @@ operators<br>
     <li>COUNTER<br>
     </li>
     <li>REF - return an array of bars offset backwards</li>
-    <li>PER - Performance<br>
+    <li>PER - Performance</li>
+    <li>COLOR - modify color to each value<br>
     </li>
   </ul>
 </ul>
@@ -90,6 +91,10 @@ optional period parm can displace the data back a number of bars.<br>
 <span style="font-weight: bold;">PER</span><br>
 Plots the performance of the array input from the first bar as the zero
 reference.<br>
+<br>
+<span style="font-weight: bold;">COLOR<br>
+</span>An input array of values is used as a guide to test a value for
+a 'true' value and then apply a color to the color array.<br>
 <br>
 <br>
 <span style="font-weight: bold;">Formula Reference:</span><br>
@@ -379,6 +384,35 @@ array of bars or a formula variable array of data.<br>
       <td style="vertical-align: top;">Example<br>
       </td>
       <td style="vertical-align: top;">UTIL(PER, Close)<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 905px; height: 112px;" border="1"
+ cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;">COLOR<br>
+      </td>
+      <td style="vertical-align: top;">UTIL(Method, ARRAY INPUT, COLOR
+ARRAY, VALUE, COLOR)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Function<br>
+      </td>
+      <td style="vertical-align: top;">ARRAY INPUT is an array of
+values. COLOR ARRAY is the array the color will be applied to. VALUE is
+the number used to compare in the ARRAY INPUT. COLOR is the color to
+use.<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Example<br>
+      </td>
+      <td style="vertical-align: top;">UTIL(COLOR, bool_array, bars, 1,
+red)<br>
       </td>
     </tr>
   </tbody>

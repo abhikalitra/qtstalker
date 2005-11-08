@@ -37,7 +37,7 @@ Allows the user to select a list scanners to run in sequence.<br>
 <br>
 <br>
 <h2>Scanner Dialog</h2>
-<img alt="" src="scannerdialog.png" style="width: 370px; height: 401px;"><br>
+<img alt="" src="scannerdialog.png" style="width: 362px; height: 398px;"><br>
 <br>
 The "Scan" button will perform the scan. The "Apply" button will save
 the scan rule.<br>
@@ -48,8 +48,7 @@ button will bring up a file selector dialog that allows you to choose a
 specific group of symbols.<br>
 <br>
 Compression: the bar compression to
-use when scanning symbols. ie. Daily,
-Weekly, Monthly.<br>
+use when scanning symbols.<br>
 <br>
 Scanner Formula: This is where the user must enter a CUS type of
 formula to use for the scanning logic. See the indicator plugin CUS for
@@ -61,12 +60,10 @@ of the scan. The scan can be aborted by pressing the Cancel button from
 the progress dialog.<br>
 <br>
 **CRITICAL**<br>
-In order for this formula to work, you must have a COMP step somewhere
-in the formula to generate the boolean array that will generate the
-scan logic. Note also that the only step that is checked in the plot
-column must be the COMP step. The checked step is the one that tells
-qtstalker which step contains the logic for selecting symbols. If a non
-COMP step or multiple steps are checked, the results will be unreliable.<br>
+In order for any scanner formula to work, you must have a boolean array
+variable plotted in order to generate the scan logic. The plotted
+variable is the one that qtstalker uses for selecting symbols. A FALSE
+value will ignore the symbol and a TRUE value will select the symbol.<br>
 <br>
 <br>
 <a href="workwithbacktest.html" target="_self"><img src="back.png"

@@ -61,11 +61,11 @@ Scanner::Scanner (QString n) : QTabDialog (0, 0, FALSE)
   gbox = new QHGroupBox(tr("Compression"), w);  
   vbox->addWidget(gbox);
   
+  BarData bd;
   period = new QComboBox(gbox);
-  period->insertItem(tr("Daily"), -1);
-  period->insertItem(tr("Weekly"), -1);
-  period->insertItem(tr("Monthly"), -1);
-  
+  bd.getBarCompressionList(compressionList);
+  period->insertStringList(compressionList, -1);
+
   list = new FormulaEdit(w, FormulaEdit::Logic);
   vbox->addWidget(list);
   
@@ -102,16 +102,6 @@ void Scanner::scan ()
     return;
   }
 
-/*
-  if (list->checkError())
-  {
-    QMessageBox::information(this,
-                             tr("Qtstalker: Error"),
-			     tr("No COMP step or COMP step not checked."));
-    return;
-  }
-*/
-  
   // open the CUS plugin
   QString iplugin("CUS");
   IndicatorPlugin *plug = config.getIndicatorPlugin(iplugin);
@@ -205,6 +195,7 @@ void Scanner::scan ()
     }
     
     db->setBarRange(minBars);
+    db->setBarCompression((BarData::BarCompression) compressionList.findIndex(period->currentText()));
 
     BarData *recordList = new BarData;
     db->getHistory(recordList);

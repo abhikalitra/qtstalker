@@ -12,30 +12,27 @@
 <h3>Requirements</h3>
 <ol>
   <li>A Linux or FreeBSD compatible operating system.</li>
-  <li>The <a href="http://www.trolltech.com/">Qt 3.3*</a>
+  <li>At least the <a href="http://www.trolltech.com/">Qt 3.3.*</a>
 development library (Qt 4 not yet supported).</li>
   <li>At least the <a href="http://www.sleepycat.com/">Berkeley DB 4.1</a>
-database. FreeBSD users will have to use the 4.2 version due to compile
-issues and package availability.
-</li>
+database. FreeBSD users are required to use the 4.3 version. </li>
   <li>Better to install the binary packages of the Qt and DB that are
-    relevant to your particular operating system.</li>
+relevant to your particular operating system.</li>
 </ol>
-
 <h3>Installing from source</h3>
 <p>
 Binary package users can ignore this advice as this will be done
 automatically by the package installer.
 </p>
-
 <h4>Ensure that DB is installed properly</h4>
 <p>
 If you installed DB at a non-standard location,
-then edit the "configure" file (e.g. "INCLUDEPATH += /opt/local/include/db4").
-Also make sure that you have installed DB properly, e.g. some installations
+then edit the "configure" file (e.g. "INCLUDEPATH +=
+/opt/local/include/db4").
+Also make sure that you have installed DB properly, e.g. some
+installations
 miss symbolic links in the lib directory.
 </p>
-
 <h4>For Linux users:</h4>
 <ol>
   <li>Check to make sure you have your shell QTDIR environment variable
@@ -90,18 +87,15 @@ directory (toc.html for the table of contents)</li>
   </li>
   <li>Thats it.</li>
 </ol>
-
 <h4>For Macintosh OS X users:</h4>
 <ol>
-  <li>Set your shell QTDIR environment variable to point where you installed Qt.
-<br />e.g. 'export QTDIR=/opt/local' or something similar.
-Failure to set this properly will result in make errors.
-  </li>
+  <li>Set your shell QTDIR environment variable to point where you
+installed Qt. <br>
+e.g. 'export QTDIR=/opt/local' or something similar.
+Failure to set this properly will result in make errors. </li>
   <li>Unpack the Qtstalker source.</li>
-  <li>./configure (this will create the Makefile)
-  </li>
-  <li>make
-  </li>
+  <li>./configure (this will create the Makefile) </li>
+  <li>make </li>
   <li>sudo make install
     <ul>
       <li>the executable 'qtstalker' will be copied to the /usr/bin
@@ -110,13 +104,11 @@ directory</li>
       <li>the docs will be copied to /usr/share/doc/qtstalker/html
 directory (toc.html for the table of contents)</li>
       <li>the translation files will be copied to
-/usr/share/qtstalker/i18n directory
-      </li>
+/usr/share/qtstalker/i18n directory </li>
     </ul>
   </li>
   <li>To start, type 'open /usr/bin/qtstalker'</li>
 </ol>
-
 <h3>Updating a previous version.</h3>
 <p>
 If you are updating from a previous source version already installed on

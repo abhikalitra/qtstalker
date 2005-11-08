@@ -26,48 +26,56 @@ long.</li>
 buy signal.</li>
 </ul>
 <br>
-<img style="width: 574px; height: 538px;" alt=""
- src="backtesterrules1.png">&nbsp;&nbsp; <br>
+<img alt="" src="backtesterrules1.png"
+ style="width: 555px; height: 515px;">&nbsp;&nbsp; <br>
 <br>
 <p>Here the above shot shows a simple moving average crossover formula
 for each trading rule.<br>
 </p>
 <p><br>
 Here is a breakdown of the enter long formula:</p>
-<p>1. We use a REF function to grab an array of close bars.<br>
-2. We create a 20 period SMA with step 1 as the input.<br>
-3. We use a COMP function to generate a TRUE signal if step1(the close)
-is &gt; step2 (the SMA). Note we check this step to plot. qtstalker
-needs to know which step will be used to generate signals.<br>
+<p>1. We create a 20 period SMA of the bar high. We call the variable
+'ma'.<br>
+2. We create a variable called 'comp'. This variable uses the COMP
+function of the UTIL indicator to then&nbsp; generate a boolean array
+with the parms that generate a TRUE signal if the bar close is &gt; the
+'ma' variable. Note: that we have to plot the 'comp' variable on the
+plot page which is not shown in the above picture. qtstalker
+needs to know which variable contains the boolean logic used to
+generate signals.<br>
 </p>
 <p><br>
 The exit long formula breakdown is like this:<br>
 </p>
-<p>1. We use a REF function to grab an array of close bars.<br>
-2. We create a 40 period SMA with step 1 as the input.<br>
-3. We use a COMP function to generate a TRUE signal if step1(the close)
-is &lt; step2 (the SMA). Note we check this step to plot. qtstalker
-needs to know which step will be used to generate signals.<br>
-</p>
-<p><br>
+<p>1. We create a 20 period SMA of the bar low. We call the variable
+'ma'.<br>
+2.
+We create a variable called 'comp'. This variable uses the COMP
+function of the UTIL indicator to then&nbsp; generate a boolean array
+with
+the parms that generate a TRUE signal if the bar close is &lt; the 'ma'
+variable. Note: that we have to plot the 'comp' variable on the plot
+page which is not shown in the above picture. qtstalker
+needs to know which variable contains the boolean logic used to
+generate signals.<br>
+<br>
+<br>
 **CRITICAL**<br>
-In order for any formula to work, you must have a COMP step somewhere
-in the formula to generate the boolean array that will generate the
+In order for any formula to work, you must have a boolean variable that
+is plotted on the plot page of each rule to generate the
 buy/sell signals. A TRUE value will issue the signal that applies to
-the particular rule. Note also that the only step that is checked in
-the plot
-column must be the COMP step. The checked step is the one that tells
+the particular rule. The plotted step is the one that tells
 qtstalker which step contains the logic for the trading rule signals.
 If a non
-COMP step or multiple steps are checked, the results will be unreliable.<br>
+boolean variable or multiple plots are entered, the results will be
+unreliable.<br>
 </p>
 <br>
 <br>
-<br>
-<br>
-<br>
-<a href="backtester.html" target="_self"><img src="back.png" border="0" width="32" height="32" alt="Back"></a>
-<a href="backtesterstops.html" target="_self"><img src="next.png" border="0" width="32" height="32" alt="Next"></a>
-<a href="toc.html"><img src="home.png" border="0" width="32" height="32" alt="Home"></a>
+<a href="backtester.html" target="_self"><img src="back.png" alt="Back"
+ border="0" height="32" width="32"></a>
+<a href="backtesterstops.html" target="_self"><img src="next.png"
+ alt="Next" border="0" height="32" width="32"></a><a href="toc.html"><img
+ src="home.png" alt="Home" border="0" height="32" width="32"></a>
 </body>
 </html>
