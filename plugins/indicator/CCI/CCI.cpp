@@ -137,6 +137,7 @@ int CCI::indicatorPrefDialog (QWidget *w)
   dialog->addComboItem(stl, pl, l, maType);
 
   pl = QObject::tr("Zones");
+  dialog->createPage (pl);
   dialog->addColorItem(zc, pl, lineColor);
   dialog->addDoubleItem(bzl, pl, upperLine);
   dialog->addDoubleItem(szl, pl, lowerLine);

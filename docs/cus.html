@@ -30,7 +30,7 @@ is:<br>
   <li>&lt;variable&gt; - The variable name. It cannot contain a
 reserved word.</li>
   <li>:= - This separates the variable name from the parms and lets the
-parser know we are defining a varible</li>
+parser know we are defining a variable</li>
   <li>&lt;indicator&gt;(indicator parameters) - This defines what
 indicator and its parameters to use. Consult the indicator reference
 for the format of each indicator.<br>
@@ -73,7 +73,9 @@ plot (&lt;var&gt;, &lt;color&gt;, &lt;title&gt;, &lt;plot type&gt;)<br>
 <br>
 From our MACD example it looks like this:<br>
 <br>
-&lt;insert plot page pic here&gt;<br>
+plot(osc, blue, OSC, Histogram)<br>
+plot(macd, red, MACD, Line)<br>
+plot(trig, yellow, TRIG, Dash)<br>
 <br>
 <br>
 <h4>Reserved Words:</h4>

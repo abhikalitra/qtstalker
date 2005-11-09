@@ -144,6 +144,9 @@
 
 20051107: Added bar compression option to the scanner.
 
+20051108: Removed the bar chart from the tester plot page. Not really useful.
+
+
 
 0.32
 ====

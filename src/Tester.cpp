@@ -468,7 +468,7 @@ void Tester::createChartPage ()
   split->setOrientation(Vertical);
   vbox->addWidget(split);
 
-  bool logFlag = config.getData(Config::LogScale).toInt();
+//  bool logFlag = config.getData(Config::LogScale).toInt();
   bool scaleToScreenFlag = config.getData(Config::ScaleToScreen).toInt();
   
   equityPlot = new Plot (split);
@@ -485,6 +485,7 @@ void Tester::createChartPage ()
   QFont font(l[0], l[1].toInt(), l[2].toInt());
   equityPlot->setPlotFont(font);
   
+/*
   plot = new Plot (split);
   plot->setGridFlag(TRUE);
   plot->setScaleToScreen(scaleToScreenFlag);
@@ -496,6 +497,7 @@ void Tester::createChartPage ()
   plot->setCrosshairsFlag (FALSE); // turn off crosshairs
   QObject::connect(this, SIGNAL(signalIndex(int)), plot, SLOT(setIndex(int)));
   plot->setPlotFont(font);
+*/
 
   slider = new QSlider(w);
   slider->setOrientation(Qt::Horizontal);
@@ -508,7 +510,7 @@ void Tester::createChartPage ()
 void Tester::slotSliderChanged (int v)
 {
   emit signalIndex(v);
-  plot->draw();
+//  plot->draw();
   equityPlot->draw();
 }
 
@@ -586,7 +588,7 @@ void Tester::test ()
   recordList = new BarData;
   db->getHistory(recordList);
 
-  plot->clear();
+//  plot->clear();
   equityPlot->clear();
     
   equityCurve = new PlotLine;
@@ -1755,6 +1757,7 @@ double Tester::getPrice (int i)
 
 void Tester::updateChart ()
 {
+/*
   plot->setData(recordList);
   
   //set up indicator
@@ -1839,6 +1842,7 @@ void Tester::updateChart ()
   slider->setMaxValue(recordList->count() - 1);
         
   plot->draw();
+*/
 }
 
 void Tester::createEquityCurve ()
@@ -2117,18 +2121,18 @@ void Tester::slotHelp ()
 
 void Tester::slotScaleToScreen (bool d)
 {
-  plot->setScaleToScreen(d);
+//  plot->setScaleToScreen(d);
   equityPlot->setScaleToScreen(d);
   equityPlot->draw();
-  plot->draw();
+//  plot->draw();
 }
 
-void Tester::slotLogScaling (bool d)
+void Tester::slotLogScaling (bool)
 {
-  plot->setLogScale(d);
+//  plot->setLogScale(d);
 //  equityPlot->setLogScale(d);
 //  equityPlot->draw();
-  plot->draw();
+//  plot->draw();
 }
 
 bool Tester::checkFormula (int d)

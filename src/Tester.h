@@ -146,7 +146,7 @@ class Tester : public QTabDialog
     FormulaEdit *exitShortEdit;
     FormulaEdit *customShortStopEdit;
     FormulaEdit *customLongStopEdit;
-    Plot *plot;
+//    Plot *plot;
     Plot *equityPlot;
     QSlider *slider;
     FuturesData fd;
