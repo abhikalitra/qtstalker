@@ -1252,31 +1252,13 @@ bool Tester::loadAlerts (int type)
     
   loop = recordList->count() - line->getSize();
   int lineLoop = 0;
-  int delays = 2;
   for (; loop < (int) recordList->count(); loop++, lineLoop++)
   {
     if (line->getData(lineLoop) == 1)
     {
-      if ((lineLoop - delays) > -1)
-      {
-        int loop2;
-	bool df = FALSE;
-        for (loop2 = delays; loop2 > -1; loop2--)
-	{
-          if (line->getData(lineLoop - loop2) != 1)
-	  {
-            df = TRUE;
-	    break;
-	  }
-	}
-	
-	if (! df)
-	{
-	  QString t;
-	  recordList->getDate(loop - delays).getDateString(FALSE, t);
-          alerts->setData(t, "1");
-	}
-      }
+      QString t;
+      recordList->getDate(loop).getDateString(FALSE, t);
+      alerts->setData(t, "1");
     }
   }
   

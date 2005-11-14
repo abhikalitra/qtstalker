@@ -24,6 +24,7 @@
 #include <qdict.h>
 #include <qobject.h>
 #include <qinputdialog.h>
+#include <math.h>
 
 
 BARS::BARS ()
@@ -67,6 +68,9 @@ void BARS::setDefaults ()
   maInput = BarData::Close;
   maInput2 = BarData::Close;
   maInput3 = BarData::Close;
+
+  longPercentage = 0.5;
+  dojiPercentage = 0.1;
 }
 
 void BARS::calculate ()
@@ -525,6 +529,1012 @@ PlotLine * BARS::calculateCustom (QString &p, QPtrList<PlotLine> &)
 int BARS::getMinBars ()
 {
   return minBars;
+}
+
+//***************************************************************************
+//********************** CANDLE FUNCTIONS ***********************************
+//***************************************************************************
+
+int BARS::getCandleColor (double open, double close)
+{
+  int rc = 0;
+  if (close < open)
+    rc = 1; // black
+  else
+  {
+    if (close > open)
+      rc = 2; //white
+  }
+  return rc;
+}
+
+bool BARS::getCandleLongBlackBody (double open, double high, double low, double close)
+{
+  bool rc = FALSE;
+  if (open >= close)
+    return rc;
+
+  double shadow = high - low;
+  double body = fabs(open - close);
+  if (body >= shadow * longPercentage)
+    rc = TRUE;
+  return rc;
+}
+    
+bool BARS::getCandleLongWhiteBody (double open, double high, double low, double close)
+{
+  bool rc = FALSE;
+  if (close <= open)
+    return rc;
+
+  double shadow = high - low;
+  double body = fabs(open - close);
+  if (body >= shadow * longPercentage)
+    rc = TRUE;
+  return rc;
+}
+
+bool BARS::getCandleDoji (double open, double high, double low, double close)
+{
+  bool rc = FALSE;
+  double shadow = high - low;
+  double body = fabs(open - close);
+  if (body <= shadow * dojiPercentage)
+    rc = TRUE;
+  return rc;
+}
+
+bool BARS::getBlackMarubozu (double open, double high, double low, double close)
+{
+  bool rc = FALSE;
+  if (open == high && close == low)
+    rc = TRUE;
+  return rc;
+}
+
+bool BARS::getWhiteMarubozu (double open, double high, double low, double close)
+{
+  bool rc = FALSE;
+  if (open == low && close == high)
+    rc = TRUE;
+  return rc;
+}
+
+bool BARS::getCandleEngulf (double fhigh, double flow, double shigh, double slow)
+{
+  bool rc = FALSE;
+  if (shigh < fhigh && slow > flow)
+    rc = TRUE;
+  return rc;
+}
+
+bool BARS::getCBullishAbandonedBaby (int index)
+{
+  bool rc = FALSE;
+  if (index < 2)
+    return rc;
+
+  // 1 check for a longblackbody
+  double open = data->getOpen(index - 2);
+  double high = data->getHigh(index - 2);
+  double low = data->getLow(index - 2);
+  double close = data->getClose(index - 2);
+  if (! getCandleLongBlackBody(open, high, low, close))
+    return rc;
+
+  // 2 check for doji
+  double open2 = data->getOpen(index - 1);
+  double high2 = data->getHigh(index - 1);
+  double low2 = data->getLow(index - 1);
+  double close2 = data->getClose(index - 1);
+  if (! getCandleDoji(open2, high2, low2, close2))
+    return rc;
+
+  // 2 check if doji is gap down  
+  if (high2 >= low)
+    return rc;
+  
+  // 3 check for white
+  double open3 = data->getOpen(index);
+  double close3 = data->getClose(index);
+  if (getCandleColor(open3, close3) != 2)
+    return rc;
+
+  // 3 check if white is gap up  
+  double low3 = data->getLow(index);
+  if (low3 <= high2)
+    return rc;
+
+  rc = TRUE;
+  return rc;
+}
+
+bool BARS::getCBearishAbandonedBaby (int index)
+{
+  bool rc = FALSE;
+  if (index < 2)
+    return rc;
+
+  // 1 check for a long white body
+  double open = data->getOpen(index - 2);
+  double high = data->getHigh(index - 2);
+  double low = data->getLow(index - 2);
+  double close = data->getClose(index - 2);
+  if (! getCandleLongWhiteBody(open, high, low, close))
+    return rc;
+
+  // 2 check for doji
+  double open2 = data->getOpen(index - 1);
+  double high2 = data->getHigh(index - 1);
+  double low2 = data->getLow(index - 1);
+  double close2 = data->getClose(index - 1);
+  if (! getCandleDoji(open2, high2, low2, close2))
+    return rc;
+
+  // 2 check if doji is gap up  
+  if (low2 <= high)
+    return rc;
+  
+  // 3 check for black
+  double open3 = data->getOpen(index);
+  double close3 = data->getClose(index);
+  if (getCandleColor(open3, close3) != 1)
+    return rc;
+
+  // 3 check if gap down  
+  double high3 = data->getHigh(index);
+  if (high3 >= low2)
+    return rc;
+
+  rc = TRUE;
+  return rc;
+}
+
+bool BARS::getCConcealingBabySwallow (int index)
+{
+  bool rc = FALSE;
+  if (index < 3)
+    return rc;
+
+  // 1 check for a blackmarubozu
+  double open = data->getOpen(index - 3);
+  double high = data->getHigh(index - 3);
+  double low = data->getLow(index - 3);
+  double close = data->getClose(index - 3);
+  if (! getBlackMarubozu(open, high, low, close))
+    return rc;
+
+  // 2 check for a blackmarubozu
+  double open2 = data->getOpen(index - 2);
+  double high2 = data->getHigh(index - 2);
+  double low2 = data->getLow(index - 2);
+  double close2 = data->getClose(index - 2);
+  if (! getBlackMarubozu(open2, high2, low2, close2))
+    return rc;
+
+  // 3 check for black
+  double open3 = data->getOpen(index - 1);
+  double close3 = data->getClose(index - 1);
+  if (getCandleColor(open3, close3) != 1)
+    return rc;
+
+  // 3 check for o/c gap down
+  if (open3 >= low2 || close3 >= low2)
+    return rc;
+
+  // 3 check for penetration on 2
+  double high3 = data->getHigh(index - 1);
+  if (high3 < low2)
+    return rc;
+
+  // 4 check for a blackmarubozu
+  double open4 = data->getOpen(index);
+  double high4 = data->getHigh(index);
+  double low4 = data->getLow(index);
+  double close4 = data->getClose(index);
+  if (! getBlackMarubozu(open4, high4, low4, close4))
+    return rc;
+
+  double low3 = data->getLow(index - 1);
+  if (high4 < high3 || low4 > low3)
+    return rc;
+
+  rc = TRUE;
+  return rc;
+}
+
+bool BARS::getCBullishKicking (int index)
+{
+  bool rc = FALSE;
+  if (index < 1)
+    return rc;
+
+  // 1 check for a black marubozu
+  double open = data->getOpen(index - 1);
+  double high = data->getHigh(index - 1);
+  double low = data->getLow(index - 1);
+  double close = data->getClose(index - 1);
+  if (! getBlackMarubozu(open, high, low, close))
+    return rc;
+
+  // 2 check for a white marubozu
+  double open2 = data->getOpen(index);
+  double high2 = data->getHigh(index);
+  double low2 = data->getLow(index);
+  double close2 = data->getClose(index);
+  if (! getWhiteMarubozu(open2, high2, low2, close2))
+    return rc;
+
+  // 2 check if gap up
+  if (low2 <= high)
+    return rc;
+
+  rc = TRUE;
+  return rc;
+}
+
+bool BARS::getCBearishKicking (int index)
+{
+  bool rc = FALSE;
+  if (index < 1)
+    return rc;
+
+  // 1 check for a white marubozu
+  double open = data->getOpen(index - 1);
+  double high = data->getHigh(index - 1);
+  double low = data->getLow(index - 1);
+  double close = data->getClose(index - 1);
+  if (! getWhiteMarubozu(open, high, low, close))
+    return rc;
+
+  // 2 check for a black marubozu
+  double open2 = data->getOpen(index);
+  double high2 = data->getHigh(index);
+  double low2 = data->getLow(index);
+  double close2 = data->getClose(index);
+  if (! getBlackMarubozu(open2, high2, low2, close2))
+    return rc;
+
+  // 2 check if gap down
+  if (high2 >= low)
+    return rc;
+
+  rc = TRUE;
+  return rc;
+}
+
+bool BARS::getCMatHold (int index)
+{
+  bool rc = FALSE;
+  if (index < 4)
+    return rc;
+
+  // 1 check for long white body
+  double open = data->getOpen(index - 4);
+  double high = data->getHigh(index - 4);
+  double low = data->getLow(index - 4);
+  double close = data->getClose(index - 4);
+  if (! getCandleLongWhiteBody(open, high, low, close))
+    return rc;
+
+  // 2 check for black
+  double open2 = data->getOpen(index - 3);
+  double close2 = data->getClose(index - 3);
+  if (getCandleColor(open2, close2) != 1)
+    return rc;
+
+  // 2 check if within 1 range and higher than 1
+  double high2 = data->getHigh(index - 3);
+  double low2 = data->getLow(index - 3);
+  if (high2 < high || low2 < low)
+    return rc;
+
+  // 3 check for black
+  double open3 = data->getOpen(index - 2);
+  double close3 = data->getClose(index - 2);
+  if (getCandleColor(open3, close3) != 1)
+    return rc;
+
+  // 3 check if within 1 range
+  double low3 = data->getLow(index - 2);
+  if (low3 < low)
+    return rc;
+
+  // 4 check for black
+  double open4 = data->getOpen(index - 1);
+  double close4 = data->getClose(index - 1);
+  if (getCandleColor(open4, close4) != 1)
+    return rc;
+
+  // 4 check if within 1 range
+  double low4 = data->getLow(index - 1);
+  if (low4 < low)
+    return rc;
+
+  // 5 check for long white body
+  double open5 = data->getOpen(index);
+  double high5 = data->getHigh(index);
+  double low5 = data->getLow(index);
+  double close5 = data->getClose(index);
+  if (! getCandleLongWhiteBody(open5, high5, low5, close5))
+    return rc;
+
+  // 5 check if close > 1
+  if (close5 <= close)
+    return rc;
+
+  rc = TRUE;
+  return rc;
+}
+
+bool BARS::getCMatchingLow (int index)
+{
+  bool rc = FALSE;
+  if (index < 1)
+    return rc;
+
+  // 1 check for long black body
+  double open = data->getOpen(index - 1);
+  double high = data->getHigh(index - 1);
+  double low = data->getLow(index - 1);
+  double close = data->getClose(index - 1);
+  if (! getCandleLongBlackBody(open, high, low, close))
+    return rc;
+
+  // 2 check for black
+  double open2 = data->getOpen(index);
+  double close2 = data->getClose(index);
+  if (getCandleColor(open2, close2) != 1)
+    return rc;
+
+  // 2 check if 2 close = 1 close
+  if (close2 != close)
+    return rc;
+
+  rc = TRUE;
+  return rc;
+}
+
+bool BARS::getCMorningDojiStar (int index)
+{
+  bool rc = FALSE;
+  if (index < 2)
+    return rc;
+
+  // 1 check for long black body
+  double open = data->getOpen(index - 2);
+  double high = data->getHigh(index - 2);
+  double low = data->getLow(index - 2);
+  double close = data->getClose(index - 2);
+  if (! getCandleLongBlackBody(open, high, low, close))
+    return rc;
+
+  // 2 check for doji
+  double open2 = data->getOpen(index - 1);
+  double high2 = data->getHigh(index - 1);
+  double low2 = data->getLow(index - 1);
+  double close2 = data->getClose(index - 1);
+  if (! getCandleDoji(open2, high2, low2, close2))
+    return rc;
+
+  // 2 check if doji is gap down  
+  if (high2 >= low)
+    return rc;
+
+  // 3 check for white day
+  double open3 = data->getOpen(index);
+  double close3 = data->getClose(index);
+  if (getCandleColor(open3, close3) != 2)
+    return rc;
+
+  // 3 check if 3 close in top half of 1
+  if (close3 < ((high - low) / 2) + low)
+    return rc;
+
+  rc = TRUE;
+  return rc;
+}
+
+bool BARS::getCMorningStar (int index)
+{
+  bool rc = FALSE;
+  if (index < 2)
+    return rc;
+
+  // 1 check for long black body
+  double open = data->getOpen(index - 2);
+  double high = data->getHigh(index - 2);
+  double low = data->getLow(index - 2);
+  double close = data->getClose(index - 2);
+  if (! getCandleLongBlackBody(open, high, low, close))
+    return rc;
+
+  // 2 check if gap down  
+  double high2 = data->getHigh(index - 1);
+  if (high2 >= low)
+    return rc;
+
+  // 2 check for small day (50% of 1)
+  double low2 = data->getLow(index - 1);
+  if (high2 - low2 > (high - low) / 2)
+    return rc;
+
+  // 3 check for white day
+  double open3 = data->getOpen(index);
+  double close3 = data->getClose(index);
+  if (getCandleColor(open3, close3) != 2)
+    return rc;
+
+  // 3 check if 3 close in top half of 1
+  if (close3 < ((high - low) / 2) + low)
+    return rc;
+
+  rc = TRUE;
+  return rc;
+}
+
+bool BARS::getCSideBySideWhiteLines (int index)
+{
+  bool rc = FALSE;
+  if (index < 2)
+    return rc;
+
+  // 1 check for white day
+  double open = data->getOpen(index - 2);
+  double close = data->getClose(index - 2);
+  if (getCandleColor(open, close) != 2)
+    return rc;
+
+  // 2 check for white day
+  double open2 = data->getOpen(index - 1);
+  double close2 = data->getClose(index - 1);
+  if (getCandleColor(open2, close2) != 2)
+    return rc;
+
+  // 2 check if gap up  
+  double low2 = data->getLow(index - 1);
+  double high = data->getHigh(index - 2);
+  if (low2 <= high)
+    return rc;
+
+  // 3 check for white day
+  double open3 = data->getOpen(index);
+  double close3 = data->getClose(index);
+  if (getCandleColor(open3, close3) != 2)
+    return rc;
+
+  // check if 3 high within 10% of 2 high
+  double high3 = data->getHigh(index);
+  double high2 = data->getHigh(index - 1);
+  if (high3 < high2 * 0.9 || high3 > high2 * 1.1)
+    return rc;
+
+  // check if 3 low within 10% of 2 low
+  double low3 = data->getLow(index);
+  if (low3 < low2 * 0.9 || low3 > low2 * 1.1)
+    return rc;
+
+  // check if 3 close within 10% of 2 close
+  if (close3 < close2 * 0.9 || close3 > close2 * 1.1)
+    return rc;
+
+  // check if 3 open within 10% of 2 open
+  if (open3 < open2 * 0.9 || open3 > open2 * 1.1)
+    return rc;
+
+  rc = TRUE;
+  return rc;
+}
+
+bool BARS::getCThreeInsideUp (int index)
+{
+  bool rc = FALSE;
+  if (index < 2)
+    return rc;
+
+  // 1 check for long black body
+  double open = data->getOpen(index - 2);
+  double high = data->getHigh(index - 2);
+  double low = data->getLow(index - 2);
+  double close = data->getClose(index - 2);
+  if (! getCandleLongBlackBody(open, high, low, close))
+    return rc;
+
+  // 2 check for white day
+  double open2 = data->getOpen(index - 1);
+  double close2 = data->getClose(index - 1);
+  if (getCandleColor(open2, close2) != 2)
+    return rc;
+
+  double high2 = data->getHigh(index - 1);
+  double low2 = data->getLow(index - 1);
+  if (! getCandleEngulf(open, close, high2, low2))
+    return rc;
+
+  // 3 check for white day
+  double open3 = data->getOpen(index);
+  double close3 = data->getClose(index);
+  if (getCandleColor(open3, close3) != 2)
+    return rc;
+
+  // 3 check if 3 close > 2 close
+  if (close3 < close2)
+    return rc;
+
+  rc = TRUE;
+  return rc;
+}
+
+bool BARS::getCThreeOutsideUp (int index)
+{
+  bool rc = FALSE;
+  if (index < 2)
+    return rc;
+
+  // 1 check for black day
+  double open = data->getOpen(index - 2);
+  double close = data->getClose(index - 2);
+  if (getCandleColor(open, close) != 1)
+    return rc;
+
+  // 2 check for white day
+  double open2 = data->getOpen(index - 1);
+  double close2 = data->getClose(index - 1);
+  if (getCandleColor(open2, close2) != 2)
+    return rc;
+
+  // 2 check if 2 engulfs 1
+  double high = data->getHigh(index - 2);
+  double low = data->getLow(index - 2);
+  double high2 = data->getHigh(index - 1);
+  double low2 = data->getLow(index - 1);
+  if (high2 <= high || low2 >= low)
+    return rc;
+
+  // 3 check for white day
+  double open3 = data->getOpen(index);
+  double close3 = data->getClose(index);
+  if (getCandleColor(open3, close3) != 2)
+    return rc;
+
+  // 3 check if 3 close > 2 high
+  if (close3 <= high2)
+    return rc;
+
+  rc = TRUE;
+  return rc;
+}
+
+bool BARS::getCThreeWhiteSoldiers (int index)
+{
+  bool rc = FALSE;
+  if (index < 2)
+    return rc;
+
+  // 1 check for long white body
+  double open = data->getOpen(index - 2);
+  double high = data->getHigh(index - 2);
+  double low = data->getLow(index - 2);
+  double close = data->getClose(index - 2);
+  if (! getCandleLongWhiteBody(open, high, low, close))
+    return rc;
+
+  // 2 check for long white body
+  double open2 = data->getOpen(index - 1);
+  double high2 = data->getHigh(index - 1);
+  double low2 = data->getLow(index - 1);
+  double close2 = data->getClose(index - 1);
+  if (! getCandleLongWhiteBody(open2, high2, low2, close2))
+    return rc;
+
+  // 2 check for open with body of 1
+  if (open2 < open || open2 > close)
+    return rc;
+    
+  // 2 check for close >  1 high
+  if (close2 <= high)
+    return rc;
+
+  // 3 check for long white body
+  double open3 = data->getOpen(index);
+  double high3 = data->getHigh(index);
+  double low3 = data->getLow(index);
+  double close3 = data->getClose(index);
+  if (! getCandleLongWhiteBody(open3, high3, low3, close3))
+    return rc;
+
+  // 3 check for open with body of 2
+  if (open3 < open2 || open3 > close2)
+    return rc;
+    
+  // 3 check for close >  2 high
+  if (close3 <= high2)
+    return rc;
+
+  rc = TRUE;
+  return rc;
+}
+
+bool BARS::getCDarkCloudCover (int index)
+{
+  bool rc = FALSE;
+  if (index < 1)
+    return rc;
+
+  // 1 check for long white body
+  double open = data->getOpen(index - 1);
+  double high = data->getHigh(index - 1);
+  double low = data->getLow(index - 1);
+  double close = data->getClose(index - 1);
+  if (! getCandleLongWhiteBody(open, high, low, close))
+    return rc;
+
+  // 2 check for black day
+  double open2 = data->getOpen(index);
+  double close2 = data->getClose(index);
+  if (getCandleColor(open2, close2) != 1)
+    return rc;
+
+  // 2 check for open >  1 high
+  if (open2 <= high)
+    return rc;
+
+  // 2 check for close < midpoint 1 body
+  double midpoint = ((close - open) / 2) + open;
+  if (close2 >= midpoint)
+    return rc;
+
+  rc = TRUE;
+  return rc;
+}
+
+bool BARS::getCEveningDojiStar (int index)
+{
+  bool rc = FALSE;
+  if (index < 2)
+    return rc;
+
+  // 1 check for long white body
+  double open = data->getOpen(index - 2);
+  double high = data->getHigh(index - 2);
+  double low = data->getLow(index - 2);
+  double close = data->getClose(index - 2);
+  if (! getCandleLongWhiteBody(open, high, low, close))
+    return rc;
+
+  // 2 check for doji
+  double open2 = data->getOpen(index - 1);
+  double high2 = data->getHigh(index - 1);
+  double low2 = data->getLow(index - 1);
+  double close2 = data->getClose(index - 1);
+  if (! getCandleDoji(open2, high2, low2, close2))
+    return rc;
+
+  // 2 check if doji is gap up  
+  if (low2 <= high)
+    return rc;
+
+  // 3 check for black day
+  double open3 = data->getOpen(index);
+  double close3 = data->getClose(index);
+  if (getCandleColor(open3, close3) != 1)
+    return rc;
+
+  // 3 check if 3 close in bottom half of 1
+  if (close3 > ((high - low) / 2) + low)
+    return rc;
+
+  rc = TRUE;
+  return rc;
+}
+
+bool BARS::getCEveningStar (int index)
+{
+  bool rc = FALSE;
+  if (index < 2)
+    return rc;
+
+  // 1 check for long white body
+  double open = data->getOpen(index - 2);
+  double high = data->getHigh(index - 2);
+  double low = data->getLow(index - 2);
+  double close = data->getClose(index - 2);
+  if (! getCandleLongWhiteBody(open, high, low, close))
+    return rc;
+
+  // 2 check if gap up  
+  double low2 = data->getLow(index - 1);
+  if (low2 <= high)
+    return rc;
+
+  // 2 check for small day (50% of 1)
+  double high2 = data->getHigh(index - 1);
+  if (high2 - low2 > (high - low) / 2)
+    return rc;
+
+  // 3 check for black day
+  double open3 = data->getOpen(index);
+  double close3 = data->getClose(index);
+  if (getCandleColor(open3, close3) != 1)
+    return rc;
+
+  // 3 check if 3 close in bottom half of 1
+  if (close3 > ((high - low) / 2) + low)
+    return rc;
+
+  rc = TRUE;
+  return rc;
+}
+
+bool BARS::getCFallingThreeMethods (int index)
+{
+  bool rc = FALSE;
+  if (index < 4)
+    return rc;
+
+  // 1 check for long black body
+  double open = data->getOpen(index - 4);
+  double high = data->getHigh(index - 4);
+  double low = data->getLow(index - 4);
+  double close = data->getClose(index - 4);
+  if (! getCandleLongBlackBody(open, high, low, close))
+    return rc;
+
+  // 2 check for white day
+  double open2 = data->getOpen(index - 3);
+  double close2 = data->getClose(index - 3);
+  if (getCandleColor(open2, close2) != 2)
+    return rc;
+
+  // 2 check if open/close within range of 1
+  if (open2 > high || open2 < low || close2 < low || close2 > high)
+    return rc;
+
+  // 3 check for white day
+  double open3 = data->getOpen(index - 2);
+  double close3 = data->getClose(index - 2);
+  if (getCandleColor(open3, close3) != 2)
+    return rc;
+
+  // 3 check if open/close within range of 1
+  if (open3 > high || open3 < low || close3 < low || close3 > high)
+    return rc;
+
+  // 4 check for white day
+  double open4 = data->getOpen(index - 1);
+  double close4 = data->getClose(index - 1);
+  if (getCandleColor(open4, close4) != 2)
+    return rc;
+
+  // 4 check if open/close within range of 1
+  if (open4 > high || open4 < low || close4 < low || close4 > high)
+    return rc;
+
+  // 5 check for long black body
+  double open5 = data->getOpen(index);
+  double high5 = data->getHigh(index);
+  double low5 = data->getLow(index);
+  double close5 = data->getClose(index);
+  if (! getCandleLongBlackBody(open5, high5, low5, close5))
+    return rc;
+
+  // 5 check if close < 1 close
+  if (close5 >= close)
+    return rc;
+
+  rc = TRUE;
+  return rc;
+}
+
+bool BARS::getCIdenticalThreeCrows (int index)
+{
+  bool rc = FALSE;
+  if (index < 2)
+    return rc;
+
+  // 1 check for black day
+  double open = data->getOpen(index - 2);
+  double close = data->getClose(index - 2);
+  if (getCandleColor(open, close) != 1)
+    return rc;
+
+  // 2 check for black day
+  double open2 = data->getOpen(index - 1);
+  double close2 = data->getClose(index - 1);
+  if (getCandleColor(open2, close2) != 1)
+    return rc;
+
+  // check if open is 1 close
+  if (open2 != close)
+    return rc;
+
+  // 3 check for black day
+  double open3 = data->getOpen(index);
+  double close3 = data->getClose(index);
+  if (getCandleColor(open3, close3) != 1)
+    return rc;
+
+  // check if open is 2 close
+  if (open3 != close2)
+    return rc;
+
+  rc = TRUE;
+  return rc;
+}
+
+bool BARS::getCThreeBlackCrows (int index)
+{
+  bool rc = FALSE;
+  if (index < 2)
+    return rc;
+
+  // 1 check for long black body
+  double open = data->getOpen(index - 2);
+  double high = data->getHigh(index - 2);
+  double low = data->getLow(index - 2);
+  double close = data->getClose(index - 2);
+  if (! getCandleLongBlackBody(open, high, low, close))
+    return rc;
+
+  // 2 check for long black body
+  double open2 = data->getOpen(index - 1);
+  double high2 = data->getHigh(index - 1);
+  double low2 = data->getLow(index - 1);
+  double close2 = data->getClose(index - 1);
+  if (! getCandleLongBlackBody(open2, high2, low2, close2))
+    return rc;
+
+  // 2 check if open with 1 body
+  if (open2 > high || open2 < low)
+    return rc;
+
+  // 2 check if close is < 1 close
+  if (close2 >= close)
+    return rc;
+
+  // 3 check for long black body
+  double open3 = data->getOpen(index);
+  double high3 = data->getHigh(index);
+  double low3 = data->getLow(index);
+  double close3 = data->getClose(index);
+  if (! getCandleLongBlackBody(open3, high3, low3, close3))
+    return rc;
+
+  // 3 check if open with 2 body
+  if (open3 > high2 || open3 < low2)
+    return rc;
+
+  // 3 check if close is < 2 close
+  if (close3 >= close2)
+    return rc;
+
+  rc = TRUE;
+  return rc;
+}
+
+bool BARS::getCThreeInsideDown (int index)
+{
+  bool rc = FALSE;
+  if (index < 2)
+    return rc;
+
+  // 1 check for long white body
+  double open = data->getOpen(index - 2);
+  double high = data->getHigh(index - 2);
+  double low = data->getLow(index - 2);
+  double close = data->getClose(index - 2);
+  if (! getCandleLongWhiteBody(open, high, low, close))
+    return rc;
+
+  // 2 check for black day
+  double open2 = data->getOpen(index - 1);
+  double close2 = data->getClose(index - 1);
+  if (getCandleColor(open2, close2) != 1)
+    return rc;
+
+  double high2 = data->getHigh(index - 1);
+  double low2 = data->getLow(index - 1);
+  if (! getCandleEngulf(open, close, high2, low2))
+    return rc;
+
+  // 3 check for black day
+  double open3 = data->getOpen(index);
+  double close3 = data->getClose(index);
+  if (getCandleColor(open3, close3) != 1)
+    return rc;
+
+  // 3 check if 3 close > 2 low
+  if (close3 >= low2)
+    return rc;
+
+  rc = TRUE;
+  return rc;
+}
+
+bool BARS::getCThreeOutsideDown (int index)
+{
+  bool rc = FALSE;
+  if (index < 2)
+    return rc;
+
+  // 1 check for white day
+  double open = data->getOpen(index - 2);
+  double close = data->getClose(index - 2);
+  if (getCandleColor(open, close) != 2)
+    return rc;
+
+  // 2 check for black day
+  double open2 = data->getOpen(index - 1);
+  double close2 = data->getClose(index - 1);
+  if (getCandleColor(open2, close2) != 1)
+    return rc;
+
+  // 2 check if 2 engulfs 1
+  double high = data->getHigh(index - 2);
+  double low = data->getLow(index - 2);
+  double high2 = data->getHigh(index - 1);
+  double low2 = data->getLow(index - 1);
+  if (high2 <= high || low2 >= low)
+    return rc;
+
+  // 3 check for black day
+  double open3 = data->getOpen(index);
+  double close3 = data->getClose(index);
+  if (getCandleColor(open3, close3) != 1)
+    return rc;
+
+  // 3 check if 3 close < 2 low
+  if (close3 >= low2)
+    return rc;
+
+  rc = TRUE;
+  return rc;
+}
+
+bool BARS::getCUpsideGapTwoCrows (int index)
+{
+  bool rc = FALSE;
+  if (index < 2)
+    return rc;
+
+  // 1 check for long white body
+  double open = data->getOpen(index - 2);
+  double high = data->getHigh(index - 2);
+  double low = data->getLow(index - 2);
+  double close = data->getClose(index - 2);
+  if (! getCandleLongWhiteBody(open, high, low, close))
+    return rc;
+
+  // 2 check for black day
+  double open2 = data->getOpen(index - 1);
+  double close2 = data->getClose(index - 1);
+  if (getCandleColor(open2, close2) != 1)
+    return rc;
+
+  // 2 check 2 gaps up
+  double low2 = data->getLow(index - 1);
+  if (low2 <= high)
+    return rc;
+
+  // 3 check for black day
+  double open3 = data->getOpen(index);
+  double close3 = data->getClose(index);
+  if (getCandleColor(open3, close3) != 1)
+    return rc;
+
+  // 3 check if engulfs 2
+  double low3 = data->getLow(index);
+  double high3 = data->getHigh(index);
+  double high2 = data->getHigh(index - 1);
+  if (low3 >= low2 || high3 <= high2)
+    return rc;
+
+  // 3 check if close within gap
+  if (close3 <= close || close3 >= close2)
+    return rc;
+
+  rc = TRUE;
+  return rc;
 }
 
 //*******************************************************

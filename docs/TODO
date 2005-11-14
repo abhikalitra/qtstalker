@@ -10,22 +10,18 @@ To Do:
 - allow negative displacement for line plots
 - create a package of CUS indicators, default CSV plugin import rules to the install process
   so users have a bunch of examples and things to play with
-- allow point selection on plots to display values past the ends of the chart. (future dates and values)
 - change Quote behaviour in yahoo plugin to create separate symbols for intraday and daily
   data. also put a timer on yahoo plugin for intraday tick downloads every X minutes. same limitations
   will apply as in the CSV timer
 - overhaul CSV plugin to allow URL downloads and clean up code...it's a mess  
-- put in left/right chart justify option.
 - add more crosshairs behaviours to IndicatorPlot
 - user defined bar lengths for intraday charts
-- fix: preferences font changes does not propagate to chart objects
 - add remember last file used for CSV plugin.
 - add a loop counter function to the COUNTER plugin
 - add better icons for add/insert in the edit formula dialog widget, functions not obvious
 - create CUS tutorial.
 - add more indicator functions to existing plugins ie. Chaikin, Volume osc's etc.
 - add stock margins to the tester
-- update CUS docs for new format and rules and specs.
 
 - *******before 0.33 put in routine in config to remove old CUS format files:*************
 	~/.qtstalker/data0/cusrules 
@@ -36,8 +32,8 @@ To Do:
 
 - add ability to not draw sections of plotlines. (vectors)
 - save last chart viewed between sessions.
+- fix: bug in tester: does not exit trade and enter new one within the same bar.
 
- 
 
 
 Maybe some day:

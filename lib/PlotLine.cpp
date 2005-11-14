@@ -45,7 +45,7 @@ void PlotLine::copy (PlotLine *d)
   
   setType(d->getType());
   bool flag = FALSE;
-  if (lineType == Bar || lineType == Candle)
+  if (lineType == Bar || lineType == Candle || lineType == HistogramBar)
     flag = TRUE;
   
   QString s = d->getLabel();
@@ -55,17 +55,26 @@ void PlotLine::copy (PlotLine *d)
 
   setColorFlag(d->getColorFlag());
 
-  int loop;
-  QColor color;
-  double o;
-  double h;
-  double l;
-  double cl;
-  bool ff;
-  for (loop = 0; loop < (int) d->getSize(); loop++)
+  if (flag)
   {
-    d->getBar(loop, color, o, h, l, cl, ff);
-    appendBar(color, o, h, l , cl, ff);
+    QColor color;
+    double o;
+    double h;
+    double l;
+    double cl;
+    bool ff;
+    for (int loop = 0; loop < (int) d->getSize(); loop++)
+    {
+      d->getBar(loop, color, o, h, l, cl, ff);
+      appendBar(color, o, h, l , cl, ff);
+    }
+  }
+  else
+  {
+    for (int loop = 0; loop < (int) d->getSize(); loop++)
+    {
+      append(d->getData(loop));
+    }
   }
 }
 

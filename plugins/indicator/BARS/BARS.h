@@ -36,6 +36,37 @@ class BARS : public IndicatorPlugin
     void setIndicatorSettings (Setting &);
     int getMinBars ();
     void calculateMA ();
+
+    int getCandleColor (double open, double close); // 0 = none, 1=black, 2=white
+    bool getCandleLongBlackBody (double open, double high, double low, double close);
+    bool getCandleLongWhiteBody (double open, double high, double low, double close);
+    bool getCandleDoji (double open, double high, double low, double close);
+    bool getBlackMarubozu (double open, double high, double low, double close);
+    bool getWhiteMarubozu (double open, double high, double low, double close);
+    bool getCandleEngulf (double fhigh, double flow, double shigh, double slow);
+
+    bool getCBullishAbandonedBaby (int index);
+    bool getCBearishAbandonedBaby (int index);
+    bool getCConcealingBabySwallow (int index);
+    bool getCBullishKicking (int index);
+    bool getCBearishKicking (int index);
+    bool getCMatHold (int index);
+    bool getCMatchingLow (int index);
+    bool getCMorningDojiStar (int index);
+    bool getCMorningStar (int index);
+    bool getCSideBySideWhiteLines (int index);
+    bool getCThreeInsideUp (int index);
+    bool getCThreeOutsideUp (int index);
+    bool getCThreeWhiteSoldiers (int index);
+    bool getCDarkCloudCover (int index);
+    bool getCEveningDojiStar (int index);
+    bool getCEveningStar (int index);
+    bool getCFallingThreeMethods (int index);
+    bool getCIdenticalThreeCrows (int index);
+    bool getCThreeBlackCrows (int index);
+    bool getCThreeInsideDown (int index);
+    bool getCThreeOutsideDown (int index);
+    bool getCUpsideGapTwoCrows (int index);
     
   private:
     QColor barUpColor;
@@ -65,6 +96,10 @@ class BARS : public IndicatorPlugin
     BarData::InputType maInput;
     BarData::InputType maInput2;
     BarData::InputType maInput3;
+
+    // candle function stuff
+    double longPercentage;
+    double dojiPercentage;
 };
 
 extern "C"

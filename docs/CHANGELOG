@@ -133,7 +133,6 @@
 20051103: Added new paper trading mode. Toggle the paper trade mode toolbar button. 2 new buttons will appear
           beside the chart slider. The first button allows you to set the date you want to start the paper trade.
           The second button advances the chart by one bar. This allows the user to simulate paper trading easily.
-          AFAIK Qtstalker is the only TA app that does this. OSS rules!
 
 20051106: Upgraded FreeBSD compiler directives to use Berkeley DB 4.3.
 
@@ -145,6 +144,8 @@
 20051107: Added bar compression option to the scanner.
 
 20051108: Removed the bar chart from the tester plot page. Not really useful.
+
+20051110: Applied patch #1353064 - PlotLine copying.
 
 
 
