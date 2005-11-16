@@ -32,7 +32,7 @@ To Do:
 
 - add ability to not draw sections of plotlines. (vectors)
 - save last chart viewed between sessions.
-- fix: bug in tester: does not exit trade and enter new one within the same bar.
+- save the current chart path to the tester 
 
 
 

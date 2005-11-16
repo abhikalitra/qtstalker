@@ -77,6 +77,7 @@ class BARS : public IndicatorPlugin
     QString label;
     QString method;
     QStringList methodList;
+    QStringList candleList;
 
     QColor maColor;
     QColor maColor2;

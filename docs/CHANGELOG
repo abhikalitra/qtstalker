@@ -147,6 +147,19 @@
 
 20051110: Applied patch #1353064 - PlotLine copying.
 
+20051115: CME changed the file format. Updated the CME quote plugin.
+
+20051115: Fixed bug in tester that does not exit trade and enter new one within the same bar.
+          This also fixes the 2 consecutive TRUE values to trigger an alert bug.
+
+20051115: CUS scripts can now handle comments. You can either dedicate an entire line to a comment
+          or you can place a comment at the end of a line. All comments must start with a // 
+          the same as C++ comments do. Here is an example:
+
+          // get some candles
+          candles := BARS(Candles)
+          vol := UTIL(REF, Volume, 0) // get some volume bars
+
 
 
 0.32

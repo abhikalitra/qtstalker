@@ -49,6 +49,11 @@ void CUS::calculate ()
   int loop;
   for (loop = 0; loop < (int) formulaList.count(); loop++)
   {
+    // check if whole line is a comment
+    QString s = formulaList[loop].left(2);
+    if ( ! s.compare("//"))
+      continue;
+
     if (formulaList[loop].contains(":="))
     {
       QStringList l = QStringList::split(":=", formulaList[loop], FALSE);
@@ -75,7 +80,7 @@ void CUS::calculate ()
       
       QString plugin = l2[0].stripWhiteSpace();
       QString parms = l2[1];
-      parms.truncate(parms.find(")", -1, TRUE));
+      parms.truncate(parms.find(")", 0, TRUE));
       parms = parms.stripWhiteSpace();
       while(parms.contains(" "))
         parms = parms.remove(parms.find(" ", 0, TRUE), 1);

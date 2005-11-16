@@ -836,6 +836,11 @@ void Tester::exitLong ()
   QString t = tr("Exit Long");
   exitPosition(t);
   status = 0;
+
+  checkAlerts();
+  if (enterShortCount)
+    enterShort();
+
   clearAlertCounts();
 }
 
@@ -866,6 +871,11 @@ void Tester::exitShort ()
   QString t = tr("Exit Short");
   exitPosition(t);
   status = 0;
+
+  checkAlerts();
+  if (enterLongCount)
+    enterLong();
+
   clearAlertCounts();
 }
 

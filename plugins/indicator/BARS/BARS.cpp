@@ -34,6 +34,32 @@ BARS::BARS ()
 
   methodList.append("Bar");
   methodList.append("Candle");
+
+  candleList.append("Bullish Abandoned Baby");
+  candleList.append("Bearish Abandoned Baby");
+  candleList.append("Concealing Baby Swallow");
+  candleList.append("Bullish Kicking");
+  candleList.append("Bearish Kicking");
+  candleList.append("Mat Hold");
+  candleList.append("Matching Low");
+  candleList.append("Morning Doji Star");
+  candleList.append("Morning Star");
+  candleList.append("Side By Side White Lines");
+  candleList.append("Three Inside Up");
+  candleList.append("Three Outside Up");
+  candleList.append("Three White Soldiers");
+  candleList.append("Dark Cloud Cover");
+  candleList.append("Evening Doji Star");
+  candleList.append("Evening Star");
+  candleList.append("Falling Three Methods");
+  candleList.append("Identical Three Crows");
+  candleList.append("Three Black Crows");
+  candleList.append("Three Inside Down");
+  candleList.append("Three Outside Down");
+  candleList.append("Upside Gap Two Crows");
+
+  longPercentage = 0.5;
+  dojiPercentage = 0.1;
   
   setDefaults();
 }

@@ -226,7 +226,7 @@ void CME::parseToday ()
     s = stream.readLine();
     s = s.stripWhiteSpace();
 
-    if (s.contains("FC FEEDER CATTLE"))
+    if (s.contains("FC CME FEEDER CATTLE"))
     {
       while(stream.atEnd() == 0)
       {
@@ -248,7 +248,7 @@ void CME::parseToday ()
       continue;
     }
 
-    if (s.contains("LB LUMBER FUTURES"))
+    if (s.contains("LB CME LUMBER FUTURES"))
     {
       while(stream.atEnd() == 0)
       {
@@ -270,7 +270,7 @@ void CME::parseToday ()
       continue;
     }
 
-    if (s.contains("LC LIVE CATTLE FUTURES"))
+    if (s.contains("LC CME LIVE CATTLE FUTURES"))
     {
       while(stream.atEnd() == 0)
       {
@@ -292,7 +292,7 @@ void CME::parseToday ()
       continue;
     }
 
-    if (s.contains("LH LEAN HOG FUTURES"))
+    if (s.contains("LH CME LEAN HOG FUTURES"))
     {
       while(stream.atEnd() == 0)
       {
@@ -314,7 +314,7 @@ void CME::parseToday ()
       continue;
     }
 
-    if (s.contains("PB FROZEN PORK BELLY FUTURES"))
+    if (s.contains("PB CME FROZEN PORK BELLY FUTURES"))
     {
       while(stream.atEnd() == 0)
       {
@@ -336,7 +336,7 @@ void CME::parseToday ()
       continue;
     }
 
-    if (s.contains("AD AUSTRALIAN DOLLAR FUTURES"))
+    if (s.contains("AD CME AUSTRALIAN DOLLAR FUTURES"))
     {
       while(stream.atEnd() == 0)
       {
@@ -358,7 +358,7 @@ void CME::parseToday ()
       continue;
     }
 
-    if (s.contains("NB BRITISH POUND FUTURES"))
+    if (s.contains("NB CME BRITISH POUND FUTURES"))
     {
       while(stream.atEnd() == 0)
       {
@@ -380,7 +380,7 @@ void CME::parseToday ()
       continue;
     }
 
-    if (s.contains("CD CANADIAN DOLLAR FUTURES"))
+    if (s.contains("CD CME CANADIAN DOLLAR FUTURES"))
     {
       while(stream.atEnd() == 0)
       {
@@ -402,7 +402,7 @@ void CME::parseToday ()
       continue;
     }
 
-    if (s.contains("EC EURO FX FUTURES"))
+    if (s.contains("EC CME EURO FX FUTURES"))
     {
       while(stream.atEnd() == 0)
       {
@@ -424,7 +424,7 @@ void CME::parseToday ()
       continue;
     }
 
-    if (s.contains("JY JAPANESE YEN FUTURES"))
+    if (s.contains("JY CME JAPANESE YEN FUTURES"))
     {
       while(stream.atEnd() == 0)
       {
@@ -446,7 +446,7 @@ void CME::parseToday ()
       continue;
     }
 
-    if (s.contains("SF SWISS FRANC FUTURES"))
+    if (s.contains("SF CME SWISS FRANC FUTURES"))
     {
       while(stream.atEnd() == 0)
       {
@@ -468,7 +468,7 @@ void CME::parseToday ()
       continue;
     }
 
-    if (s.contains("ES E-MINI S&P 500 FUTURES"))
+    if (s.contains("ES CME E-MINI S&P 500 FUTURES"))
     {
       while(stream.atEnd() == 0)
       {
@@ -490,7 +490,7 @@ void CME::parseToday ()
       continue;
     }
 
-    if (s.contains("GI GSCI FUTURES"))
+    if (s.contains("GI CME GSCI FUTURES"))
     {
       while(stream.atEnd() == 0)
       {
@@ -512,7 +512,7 @@ void CME::parseToday ()
       continue;
     }
 
-    if (s.contains("ND NASDAQ-100 FUTURES"))
+    if (s.contains("ND CME NASDAQ-100 FUTURES"))
     {
       while(stream.atEnd() == 0)
       {
@@ -534,7 +534,7 @@ void CME::parseToday ()
       continue;
     }
 
-    if (s.contains("NQ E-MINI NASDAQ-100 FUTURES"))
+    if (s.contains("NQ CME E-MINI NASDAQ-100 FUTURES"))
     {
       while(stream.atEnd() == 0)
       {
@@ -556,7 +556,7 @@ void CME::parseToday ()
       continue;
     }
 
-    if (s.contains("SP S&P 500 FUTURES"))
+    if (s.contains("SP CME S&P 500 FUTURES"))
     {
       while(stream.atEnd() == 0)
       {
@@ -578,7 +578,7 @@ void CME::parseToday ()
       continue;
     }
 
-    if (s.contains("ED EURODOLLAR FUTURES"))
+    if (s.contains("ED CME EURODOLLAR FUTURES"))
     {
       while(stream.atEnd() == 0)
       {
