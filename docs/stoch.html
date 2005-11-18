@@ -39,7 +39,9 @@ method only.</li>
 <br>
 <span style="font-weight: bold;">Singular</span><br>
 This is the stochastic formula applied to a single input array of data.
-The high/low values are found within the input array.<br>
+The high/low values are found within the input array. The 'close' is
+the current value in the array. This allows the user to apply the
+standard formula to any type of data.<br>
 <br>
 <span style="font-weight: bold;">Adaptive<br>
 <br>
@@ -68,18 +70,15 @@ the close (configurable to any number of days --the default is set to
       <td style="vertical-align: top;">Syntax<br>
       </td>
       <td style="vertical-align: top;">STOCH(Method, %K
-Smoothing Type,
-%D Smoothing Type, Period, %K Smoothing, %D Smoothing) *this is the
+Smoothing Type, Period, %K Smoothing) *this is the
 standard format<br>
       <br>
 STOCH(Method, Input, %K
-Smoothing Type,
-%D Smoothing Type, Period, %K Smoothing, %D Smoothing)&nbsp; *this is
+Smoothing Type, Period, %K Smoothing)&nbsp; *this is
 the singular format<br>
       <br>
 STOCH(Method, Input, %K
-Smoothing Type,
-%D Smoothing Type, Period, %K Smoothing, %D Smoothing, Min Lookback,
+Smoothing Type, Period, %K Smoothing, Min Lookback,
 Max Lookback)&nbsp; *this is the adaptive format<br>
       </td>
     </tr>
@@ -88,20 +87,18 @@ Max Lookback)&nbsp; *this is the adaptive format<br>
       </td>
       <td style="vertical-align: top;">Input can be either an
 array of bars or a formula variable array of data. Method is either
-Standard or Adaptive. <br>
+Standard, Singular or Adaptive. <br>
       </td>
     </tr>
     <tr>
       <td style="vertical-align: top;">Example<br>
       </td>
-      <td style="vertical-align: top;">STOCH(Standard, EMA, EMA,
-14,
-3, 3)<br>
-STOCH(Singular, Close, EMA, EMA,
-14,
-3, 3)<br>
-STOCH(Adaptive, Close, EMA, EMA, 14,
-3, 3, 5, 20)<br>
+      <td style="vertical-align: top;">STOCH(Standard, EMA, 14,
+3)<br>
+STOCH(Singular, Close, EMA, 14,
+3)<br>
+STOCH(Adaptive, Close, EMA, 14,
+3, 5, 20)<br>
       </td>
     </tr>
   </tbody>

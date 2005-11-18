@@ -76,7 +76,6 @@ void TestPage::openTest ()
 {
   Tester *dialog = new Tester(currentText());
   connect(menubar, SIGNAL(signalScale(bool)), dialog, SLOT(slotScaleToScreen(bool)));
-  connect(menubar, SIGNAL(signalLog(bool)), dialog, SLOT(slotLogScaling(bool)));
   dialog->show();
 }
 
@@ -93,7 +92,6 @@ void TestPage::newTest()
   
   dialog = new Tester(name);
   connect(menubar, SIGNAL(signalScale(bool)), dialog, SLOT(slotScaleToScreen(bool)));
-  connect(menubar, SIGNAL(signalLog(bool)), dialog, SLOT(slotLogScaling(bool)));
   dialog->show();
 }
 

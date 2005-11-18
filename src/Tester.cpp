@@ -276,8 +276,8 @@ void Tester::createTestPage ()
 
   QLabel *label = new QLabel(tr("Trade Delay"), gbox);
     
-  tradeDelay = new QSpinBox(0, 999999, 1, gbox);
-  tradeDelay->setValue(0);
+  tradeDelay = new QSpinBox(1, 999999, 1, gbox);
+  tradeDelay->setValue(1);
 
   gbox = new QVGroupBox(tr("Account"), w);
   gbox->setInsideSpacing(2);
@@ -325,6 +325,7 @@ void Tester::createTestPage ()
   compression = new QComboBox(gbox);
   bd.getBarCompressionList(compressionList);
   compression->insertStringList(compressionList, -1);
+  compression->setCurrentItem(6);
 
   label = new QLabel(tr("Bars"), gbox);
   
@@ -1718,9 +1719,9 @@ void Tester::getVolume ()
   double balance = equity;
   if (volumePercent->value() == 0)
   {
-//    volume = 1;
-    balance = account->text().toDouble();
-    volume = (int) (balance / getPrice(buyRecord));
+    volume = 1;
+//    balance = account->text().toDouble();
+//    volume = (int) (balance / getPrice(buyRecord));
     return;
   }
 

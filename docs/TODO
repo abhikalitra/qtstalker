@@ -17,7 +17,6 @@ To Do:
 - add more crosshairs behaviours to IndicatorPlot
 - user defined bar lengths for intraday charts
 - add remember last file used for CSV plugin.
-- add a loop counter function to the COUNTER plugin
 - add better icons for add/insert in the edit formula dialog widget, functions not obvious
 - create CUS tutorial.
 - add more indicator functions to existing plugins ie. Chaikin, Volume osc's etc.
@@ -33,7 +32,7 @@ To Do:
 - add ability to not draw sections of plotlines. (vectors)
 - save last chart viewed between sessions.
 - save the current chart path to the tester 
-
+- cannot create Horizontal Lines for CUS scripts.
 
 
 Maybe some day:

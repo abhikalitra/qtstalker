@@ -611,19 +611,11 @@ void STOCH::getIndicatorSettings (Setting &dict)
 
 PlotLine * STOCH::calculateCustom (QString &p, QPtrList<PlotLine> &d)
 {
-  // format standard: METHOD, K_MA_TYPE, D_MA_TYPE, PERIOD, K_PERIOD, D_PERIOD
-  // format singular: METHOD, ARRAY_INPUT, K_MA_TYPE, D_MA_TYPE, PERIOD, K_PERIOD, D_PERIOD
-  // format2 adaptive: METHOD, ARRAY_INPUT, K_MA_TYPE, D_MA_TYPE, PERIOD, K_PERIOD, D_PERIOD, MIN_LOOKBACK, MAX_LOOKBACK
+  // format standard: METHOD, K_MA_TYPE, PERIOD, K_PERIOD
+  // format singular: METHOD, ARRAY_INPUT, K_MA_TYPE, PERIOD, K_PERIOD
+  // format2 adaptive: METHOD, ARRAY_INPUT, K_MA_TYPE, PERIOD, K_PERIOD, MIN_LOOKBACK, MAX_LOOKBACK
 
   QStringList l = QStringList::split(",", p, FALSE);
-
-  if (l.count() == 6 || l.count() == 7 || l.count() == 9)
-    ;
-  else
-  {
-    qDebug("STOCH::calculateCustom: invalid parm count");
-    return 0;
-  }
 
   if (methodList.findIndex(l[0]) == -1)
   {
@@ -637,6 +629,12 @@ PlotLine * STOCH::calculateCustom (QString &p, QPtrList<PlotLine> &d)
 
   if (! method.compare("Standard"))
   {
+    if (l.count() != 4)
+    {
+      qDebug("STOCH::calculateCustom: invalid parm count");
+      return 0;
+    }
+
     if (mal.findIndex(l[1]) == -1)
     {
       qDebug("STOCH::calculateCustom: invalid K_MA_TYPE parm");
@@ -645,13 +643,89 @@ PlotLine * STOCH::calculateCustom (QString &p, QPtrList<PlotLine> &d)
     else
       kMaType = mal.findIndex(l[1]);
 
+    bool ok;
+    int t = l[2].toInt(&ok);
+    if (ok)
+      period = t;
+    else
+    {
+      qDebug("STOCH::calculateCustom: invalid PERIOD parm");
+      return 0;
+    }
+
+    t = l[3].toInt(&ok);
+    if (ok)
+      kperiod = t;
+    else
+    {
+      qDebug("STOCH::calculateCustom: invalid K_PERIOD parm");
+      return 0;
+    }
+  }
+
+  if (! method.compare("Singular"))
+  {
+    if (l.count() != 5)
+    {
+      qDebug("STOCH::calculateCustom: invalid parm count");
+      return 0;
+    }
+
+    if (! d.count())
+    {
+      qDebug("STOCH::calculateCustom: no input");
+      return 0;
+    }
+
     if (mal.findIndex(l[2]) == -1)
     {
-      qDebug("STOCH::calculateCustom: invalid D_MA_TYPE parm");
+      qDebug("STOCH::calculateCustom: invalid K_MA_TYPE parm");
       return 0;
     }
     else
-      dMaType = mal.findIndex(l[2]);
+      kMaType = mal.findIndex(l[2]);
+
+    bool ok;
+    int t = l[3].toInt(&ok);
+    if (ok)
+      period = t;
+    else
+    {
+      qDebug("STOCH::calculateCustom: invalid PERIOD parm");
+      return 0;
+    }
+
+    t = l[4].toInt(&ok);
+    if (ok)
+      kperiod = t;
+    else
+    {
+      qDebug("STOCH::calculateCustom: invalid K_PERIOD parm");
+      return 0;
+    }
+  }
+
+  if (! method.compare("Adaptive"))
+  {
+    if (l.count() != 7)
+    {
+      qDebug("STOCH::calculateCustom: invalid parm count");
+      return 0;
+    }
+
+    if (! d.count())
+    {
+      qDebug("STOCH::calculateCustom: no input");
+      return 0;
+    }
+
+    if (mal.findIndex(l[2]) == -1)
+    {
+      qDebug("STOCH::calculateCustom: invalid K_MA_TYPE parm");
+      return 0;
+    }
+    else
+      kMaType = mal.findIndex(l[2]);
 
     bool ok;
     int t = l[3].toInt(&ok);
@@ -674,121 +748,6 @@ PlotLine * STOCH::calculateCustom (QString &p, QPtrList<PlotLine> &d)
 
     t = l[5].toInt(&ok);
     if (ok)
-      dperiod = t;
-    else
-    {
-      qDebug("STOCH::calculateCustom: invalid D_PERIOD parm");
-      return 0;
-    }
-  }
-
-  if (! method.compare("Singular"))
-  {
-    if (! d.count())
-    {
-      qDebug("STOCH::calculateCustom: no input");
-      return 0;
-    }
-
-    if (mal.findIndex(l[2]) == -1)
-    {
-      qDebug("STOCH::calculateCustom: invalid K_MA_TYPE parm");
-      return 0;
-    }
-    else
-      kMaType = mal.findIndex(l[2]);
-
-    if (mal.findIndex(l[3]) == -1)
-    {
-      qDebug("STOCH::calculateCustom: invalid D_MA_TYPE parm");
-      return 0;
-    }
-    else
-      dMaType = mal.findIndex(l[3]);
-
-    bool ok;
-    int t = l[4].toInt(&ok);
-    if (ok)
-      period = t;
-    else
-    {
-      qDebug("STOCH::calculateCustom: invalid PERIOD parm");
-      return 0;
-    }
-
-    t = l[5].toInt(&ok);
-    if (ok)
-      kperiod = t;
-    else
-    {
-      qDebug("STOCH::calculateCustom: invalid K_PERIOD parm");
-      return 0;
-    }
-
-    t = l[6].toInt(&ok);
-    if (ok)
-      dperiod = t;
-    else
-    {
-      qDebug("STOCH::calculateCustom: invalid D_PERIOD parm");
-      return 0;
-    }
-  }
-
-  if (! method.compare("Adaptive"))
-  {
-    if (! d.count())
-    {
-      qDebug("STOCH::calculateCustom: no input");
-      return 0;
-    }
-
-    if (mal.findIndex(l[2]) == -1)
-    {
-      qDebug("STOCH::calculateCustom: invalid K_MA_TYPE parm");
-      return 0;
-    }
-    else
-      kMaType = mal.findIndex(l[2]);
-
-    if (mal.findIndex(l[3]) == -1)
-    {
-      qDebug("STOCH::calculateCustom: invalid D_MA_TYPE parm");
-      return 0;
-    }
-    else
-      dMaType = mal.findIndex(l[3]);
-
-    bool ok;
-    int t = l[4].toInt(&ok);
-    if (ok)
-      period = t;
-    else
-    {
-      qDebug("STOCH::calculateCustom: invalid PERIOD parm");
-      return 0;
-    }
-
-    t = l[5].toInt(&ok);
-    if (ok)
-      kperiod = t;
-    else
-    {
-      qDebug("STOCH::calculateCustom: invalid K_PERIOD parm");
-      return 0;
-    }
-
-    t = l[6].toInt(&ok);
-    if (ok)
-      dperiod = t;
-    else
-    {
-      qDebug("STOCH::calculateCustom: invalid D_PERIOD parm");
-      return 0;
-    }
-
-    t = l[7].toInt(&ok);
-    if (ok)
       minLookback = t;
     else
     {
@@ -796,7 +755,7 @@ PlotLine * STOCH::calculateCustom (QString &p, QPtrList<PlotLine> &d)
       return 0;
     }
 
-    t = l[8].toInt(&ok);
+    t = l[6].toInt(&ok);
     if (ok)
       maxLookback = t;
     else

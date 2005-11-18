@@ -35,32 +35,29 @@ BARS::BARS ()
   methodList.append("Bar");
   methodList.append("Candle");
 
-  candleList.append("Bullish Abandoned Baby");
-  candleList.append("Bearish Abandoned Baby");
-  candleList.append("Concealing Baby Swallow");
-  candleList.append("Bullish Kicking");
-  candleList.append("Bearish Kicking");
-  candleList.append("Mat Hold");
-  candleList.append("Matching Low");
-  candleList.append("Morning Doji Star");
-  candleList.append("Morning Star");
-  candleList.append("Side By Side White Lines");
-  candleList.append("Three Inside Up");
-  candleList.append("Three Outside Up");
-  candleList.append("Three White Soldiers");
-  candleList.append("Dark Cloud Cover");
-  candleList.append("Evening Doji Star");
-  candleList.append("Evening Star");
-  candleList.append("Falling Three Methods");
-  candleList.append("Identical Three Crows");
-  candleList.append("Three Black Crows");
-  candleList.append("Three Inside Down");
-  candleList.append("Three Outside Down");
-  candleList.append("Upside Gap Two Crows");
+  candleList.append("Bullish_Abandoned_Baby");
+  candleList.append("Bearish_Abandoned_Baby");
+  candleList.append("Concealing_Baby_Swallow");
+  candleList.append("Bullish_Kicking");
+  candleList.append("Bearish_Kicking");
+  candleList.append("Mat_Hold");
+  candleList.append("Matching_Low");
+  candleList.append("Morning_Doji_Star");
+  candleList.append("Morning_Star");
+  candleList.append("Side_By_Side_White_Lines");
+  candleList.append("Three_Inside_Up");
+  candleList.append("Three_Outside_Up");
+  candleList.append("Three_White_Soldiers");
+  candleList.append("Dark_Cloud_Cover");
+  candleList.append("Evening_Doji_Star");
+  candleList.append("Evening_Star");
+  candleList.append("Falling_Three_Methods");
+  candleList.append("Identical_Three_Crows");
+  candleList.append("Three_Black_Crows");
+  candleList.append("Three_Inside_Down");
+  candleList.append("Three_Outside_Down");
+  candleList.append("Upside_Gap_Two_Crows");
 
-  longPercentage = 0.5;
-  dojiPercentage = 0.1;
-  
   setDefaults();
 }
 
@@ -97,6 +94,52 @@ void BARS::setDefaults ()
 
   longPercentage = 0.5;
   dojiPercentage = 0.1;
+
+  bullishAbandonedBabyFlag = FALSE;
+  bearishAbandonedBabyFlag = FALSE;
+  concealingBabySwallowFlag = FALSE;
+  bullishKickingFlag = FALSE;
+  bearishKickingFlag = FALSE;
+  matHoldFlag = FALSE;
+  matchingLowFlag = FALSE;
+  morningDojiStarFlag = FALSE;
+  morningStarFlag = FALSE;
+  sideBySideWhiteLinesFlag = FALSE;
+  threeInsideUpFlag = FALSE;
+  threeOutsideUpFlag = FALSE;
+  threeWhiteSoldiersFlag = FALSE;
+  darkCloudCoverFlag = FALSE;
+  eveningDojiStarFlag = FALSE;
+  eveningStarFlag = FALSE;
+  fallingThreeMethodsFlag = FALSE;
+  identicalThreeCrowsFlag = FALSE;
+  threeBlackCrowsFlag = FALSE;
+  threeInsideDownFlag = FALSE;
+  threeOutsideDownFlag = FALSE;
+  upsideGapTwoCrowsFlag = FALSE;
+
+  bullishAbandonedBabyColor.setNamedColor("green");
+  bearishAbandonedBabyColor.setNamedColor("green");
+  concealingBabySwallowColor.setNamedColor("green");
+  bullishKickingColor.setNamedColor("green");
+  bearishKickingColor.setNamedColor("green");
+  matHoldColor.setNamedColor("green");
+  matchingLowColor.setNamedColor("green");
+  morningDojiStarColor.setNamedColor("green");
+  morningStarColor.setNamedColor("green");
+  sideBySideWhiteLinesColor.setNamedColor("green");
+  threeInsideUpColor.setNamedColor("green");
+  threeOutsideUpColor.setNamedColor("green");
+  threeWhiteSoldiersColor.setNamedColor("green");
+  darkCloudCoverColor.setNamedColor("green");
+  eveningDojiStarColor.setNamedColor("green");
+  eveningStarColor.setNamedColor("green");
+  fallingThreeMethodsColor.setNamedColor("green");
+  identicalThreeCrowsColor.setNamedColor("green");
+  threeBlackCrowsColor.setNamedColor("green");
+  threeInsideDownColor.setNamedColor("green");
+  threeOutsideDownColor.setNamedColor("green");
+  upsideGapTwoCrowsColor.setNamedColor("green");
 }
 
 void BARS::calculate ()
@@ -164,7 +207,8 @@ void BARS::calculateCandle ()
         fillFlag = TRUE;
     }
 
-    line->appendBar(candleColor, o, data->getHigh(loop), data->getLow(loop), c, fillFlag);
+    QColor color = checkCandlePatterns(loop);
+    line->appendBar(color, o, data->getHigh(loop), data->getLow(loop), c, fillFlag);
   }
 
   line->setType(PlotLine::Candle);
@@ -172,6 +216,216 @@ void BARS::calculateCandle ()
   output->addLine(line);
 
   calculateMA();
+}
+
+QColor BARS::checkCandlePatterns (int i)
+{
+  QColor color = candleColor;
+
+  while (1)
+  {
+    if (bullishAbandonedBabyFlag)
+    {
+      if (getCBullishAbandonedBaby(i))
+      {
+        color = bullishAbandonedBabyColor;
+        break;
+      }
+    }
+
+    if (bearishAbandonedBabyFlag)
+    {
+      if (getCBearishAbandonedBaby(i))
+      {
+        color = bearishAbandonedBabyColor;
+        break;
+      }
+    }
+
+    if (concealingBabySwallowFlag)
+    {
+      if (getCConcealingBabySwallow(i))
+      {
+        color = concealingBabySwallowColor;
+        break;
+      }
+    }
+
+    if (bullishKickingFlag)
+    {
+      if (getCBullishKicking(i))
+      {
+        color = bullishKickingColor;
+        break;
+      }
+    }
+
+    if (bearishKickingFlag)
+    {
+      if (getCBearishKicking(i))
+      {
+        color = bearishKickingColor;
+        break;
+      }
+    }
+
+    if (matHoldFlag)
+    {
+      if (getCMatHold(i))
+      {
+        color = matHoldColor;
+        break;
+      }
+    }
+
+    if (matchingLowFlag)
+    {
+      if (getCMatchingLow(i))
+      {
+        color = matchingLowColor;
+        break;
+      }
+    }
+
+    if (morningDojiStarFlag)
+    {
+      if (getCMorningDojiStar(i))
+      {
+        color = morningDojiStarColor;
+        break;
+      }
+    }
+
+    if (morningStarFlag)
+    {
+      if (getCMorningStar(i))
+      {
+        color = morningStarColor;
+        break;
+      }
+    }
+
+    if (sideBySideWhiteLinesFlag)
+    {
+      if (getCSideBySideWhiteLines(i))
+      {
+        color = sideBySideWhiteLinesColor;
+        break;
+      }
+    }
+
+    if (threeInsideUpFlag)
+    {
+      if (getCThreeInsideUp(i))
+      {
+        color = threeInsideUpColor;
+        break;
+      }
+    }
+
+    if (threeOutsideUpFlag)
+    {
+      if (getCThreeOutsideUp(i))
+      {
+        color = threeOutsideUpColor;
+        break;
+      }
+    }
+
+    if (threeWhiteSoldiersFlag)
+    {
+      if (getCThreeWhiteSoldiers(i))
+      {
+        color = threeWhiteSoldiersColor;
+        break;
+      }
+    }
+
+    if (darkCloudCoverFlag)
+    {
+      if (getCDarkCloudCover(i))
+      {
+        color = darkCloudCoverColor;
+        break;
+      }
+    }
+
+    if (eveningDojiStarFlag)
+    {
+      if (getCEveningDojiStar(i))
+      {
+        color = eveningDojiStarColor;
+        break;
+      }
+    }
+
+    if (eveningStarFlag)
+    {
+      if (getCEveningStar(i))
+      {
+        color = eveningStarColor;
+        break;
+      }
+    }
+
+    if (fallingThreeMethodsFlag)
+    {
+      if (getCFallingThreeMethods(i))
+      {
+        color = fallingThreeMethodsColor;
+        break;
+      }
+    }
+
+    if (identicalThreeCrowsFlag)
+    {
+      if (getCIdenticalThreeCrows(i))
+      {
+        color = identicalThreeCrowsColor;
+        break;
+      }
+    }
+
+    if (threeBlackCrowsFlag)
+    {
+      if (getCThreeBlackCrows(i))
+      {
+        color = threeBlackCrowsColor;
+        break;
+      }
+    }
+
+    if (threeInsideDownFlag)
+    {
+      if (getCThreeInsideDown(i))
+      {
+        color = threeInsideDownColor;
+        break;
+      }
+    }
+
+    if (threeOutsideDownFlag)
+    {
+      if (getCThreeOutsideDown(i))
+      {
+        color = threeOutsideDownColor;
+        break;
+      }
+    }
+
+    if (upsideGapTwoCrowsFlag)
+    {
+      if (getCUpsideGapTwoCrows(i))
+      {
+        color = upsideGapTwoCrowsColor;
+        break;
+      }
+    }
+
+    break;
+  }
+
+  return color;
 }
 
 void BARS::calculateMA ()
@@ -293,6 +547,111 @@ int BARS::indicatorPrefDialog (QWidget *w)
     if (! method.compare("Candle"))
     {
       dialog->addColorItem(ccl, pl, candleColor);
+      QString s = QObject::tr("Long Percentage");
+      dialog->addDoubleItem(s, pl, longPercentage);
+      s = QObject::tr("Doji Percentage");
+      dialog->addDoubleItem(s, pl, dojiPercentage);
+
+      QString tp = QObject::tr("Pattern 1");
+      dialog->createPage(tp);
+      s = QObject::tr("Bullish_Abandoned_Baby");
+      dialog->addCheckItem(s, tp, bullishAbandonedBabyFlag);
+      s = QObject::tr("Bearish_Abandoned_Baby");
+      dialog->addCheckItem(s, tp, bearishAbandonedBabyFlag);
+      s = QObject::tr("Concealing_Baby_Swallow");
+      dialog->addCheckItem(s, tp, concealingBabySwallowFlag);
+      s = QObject::tr("Bullish_Kicking");
+      dialog->addCheckItem(s, tp, bullishKickingFlag);
+      s = QObject::tr("Bearish_Kicking");
+      dialog->addCheckItem(s, tp, bearishKickingFlag);
+      s = QObject::tr("Mat_Hold");
+      dialog->addCheckItem(s, tp, matHoldFlag);
+      s = QObject::tr("Matching_Low");
+      dialog->addCheckItem(s, tp, matchingLowFlag);
+      s = QObject::tr("Morning_Doji_Star");
+      dialog->addCheckItem(s, tp, morningDojiStarFlag);
+      s = QObject::tr("Morning_Star");
+      dialog->addCheckItem(s, tp, morningStarFlag);
+      s = QObject::tr("Side_By_Side_White_Lines");
+      dialog->addCheckItem(s, tp, sideBySideWhiteLinesFlag);
+      s = QObject::tr("Three_Inside_Up");
+      dialog->addCheckItem(s, tp, threeInsideUpFlag);
+
+      tp = QObject::tr("Pattern 2");
+      dialog->createPage(tp);
+      s = QObject::tr("Three_Outside_Up");
+      dialog->addCheckItem(s, tp, threeOutsideUpFlag);
+      s = QObject::tr("Three_White_Soldiers");
+      dialog->addCheckItem(s, tp, threeWhiteSoldiersFlag);
+      s = QObject::tr("Dark_Cloud_Cover");
+      dialog->addCheckItem(s, tp, darkCloudCoverFlag);
+      s = QObject::tr("Evening_Doji_Star");
+      dialog->addCheckItem(s, tp, eveningDojiStarFlag);
+      s = QObject::tr("Evening_Star");
+      dialog->addCheckItem(s, tp, eveningStarFlag);
+      s = QObject::tr("Falling_Three_Methods");
+      dialog->addCheckItem(s, tp, fallingThreeMethodsFlag);
+      s = QObject::tr("Identical_Three_Crows");
+      dialog->addCheckItem(s, tp, identicalThreeCrowsFlag);
+      s = QObject::tr("Three_Black_Crows");
+      dialog->addCheckItem(s, tp, threeBlackCrowsFlag);
+      s = QObject::tr("Three_Inside_Down");
+      dialog->addCheckItem(s, tp, threeInsideDownFlag);
+      s = QObject::tr("Three_Outside_Down");
+      dialog->addCheckItem(s, tp, threeOutsideDownFlag);
+      s = QObject::tr("Upside_Gap_Two_Crows");
+      dialog->addCheckItem(s, tp, upsideGapTwoCrowsFlag);
+
+      tp = QObject::tr("Color 1");
+      dialog->createPage(tp);
+      s = QObject::tr("Bullish_Abandoned_Baby");
+      dialog->addColorItem(s, tp, bullishAbandonedBabyColor);
+      s = QObject::tr("Bearish_Abandoned_Baby");
+      dialog->addColorItem(s, tp, bearishAbandonedBabyColor);
+      s = QObject::tr("Concealing_Baby_Swallow");
+      dialog->addColorItem(s, tp, concealingBabySwallowColor);
+      s = QObject::tr("Bullish_Kicking");
+      dialog->addColorItem(s, tp, bullishKickingColor);
+      s = QObject::tr("Bearish_Kicking");
+      dialog->addColorItem(s, tp, bearishKickingColor);
+      s = QObject::tr("Mat_Hold");
+      dialog->addColorItem(s, tp, matHoldColor);
+      s = QObject::tr("Matching_Low");
+      dialog->addColorItem(s, tp, matchingLowColor);
+      s = QObject::tr("Morning_Doji_Star");
+      dialog->addColorItem(s, tp, morningDojiStarColor);
+      s = QObject::tr("Morning_Star");
+      dialog->addColorItem(s, tp, morningStarColor);
+      s = QObject::tr("Side_By_Side_White_Lines");
+      dialog->addColorItem(s, tp, sideBySideWhiteLinesColor);
+      s = QObject::tr("Three_Inside_Up");
+      dialog->addColorItem(s, tp, threeInsideUpColor);
+
+      tp = QObject::tr("Color 2");
+      dialog->createPage(tp);
+      s = QObject::tr("Three_Outside_Up");
+      dialog->addColorItem(s, tp, threeOutsideUpColor);
+      s = QObject::tr("Three_White_Soldiers");
+      dialog->addColorItem(s, tp, threeWhiteSoldiersColor);
+      s = QObject::tr("Dark_Cloud_Cover");
+      dialog->addColorItem(s, tp, darkCloudCoverColor);
+      s = QObject::tr("Evening_Doji_Star");
+      dialog->addColorItem(s, tp, eveningDojiStarColor);
+      s = QObject::tr("Evening_Star");
+      dialog->addColorItem(s, tp, eveningStarColor);
+      s = QObject::tr("Falling_Three_Methods");
+      dialog->addColorItem(s, tp, fallingThreeMethodsColor);
+      s = QObject::tr("Identical_Three_Crows");
+      dialog->addColorItem(s, tp, identicalThreeCrowsColor);
+      s = QObject::tr("Three_Black_Crows");
+      dialog->addColorItem(s, tp, threeBlackCrowsColor);
+      s = QObject::tr("Three_Inside_Down");
+      dialog->addColorItem(s, tp, threeInsideDownColor);
+      s = QObject::tr("Three_Outside_Down");
+      dialog->addColorItem(s, tp, threeOutsideDownColor);
+      s = QObject::tr("Upside_Gap_Two_Crows");
+      dialog->addColorItem(s, tp, upsideGapTwoCrowsColor);
+
       break;
     }
 
@@ -345,7 +704,82 @@ int BARS::indicatorPrefDialog (QWidget *w)
       if (! method.compare("Candle"))
       {
         candleColor = dialog->getColor(ccl);
+
+        QString s = QObject::tr("Long Percentage");
+        longPercentage = dialog->getDouble(s);
+
+        s = QObject::tr("Doji Percentage");
+        dojiPercentage = dialog->getDouble(s);
+
         lineType = PlotLine::Candle;
+
+        s = QObject::tr("Bullish_Abandoned_Baby");
+        bullishAbandonedBabyColor = dialog->getColor(s);
+        bullishAbandonedBabyFlag = dialog->getCheck(s);
+        s = QObject::tr("Bearish_Abandoned_Baby");
+        bearishAbandonedBabyColor = dialog->getColor(s);
+        bearishAbandonedBabyFlag = dialog->getCheck(s);
+        s = QObject::tr("Concealing_Baby_Swallow");
+        concealingBabySwallowColor = dialog->getColor(s);
+        concealingBabySwallowFlag = dialog->getCheck(s);
+        s = QObject::tr("Bullish_Kicking");
+        bullishKickingColor = dialog->getColor(s);
+        bullishKickingFlag = dialog->getCheck(s);
+        s = QObject::tr("Bearish_Kicking");
+        bearishKickingColor = dialog->getColor(s);
+        bearishKickingFlag = dialog->getCheck(s);
+        s = QObject::tr("Mat_Hold");
+        matHoldColor = dialog->getColor(s);
+        matHoldFlag = dialog->getCheck(s);
+        s = QObject::tr("Matching_Low");
+        matchingLowColor = dialog->getColor(s);
+        matchingLowFlag = dialog->getCheck(s);
+        s = QObject::tr("Morning_Doji_Star");
+        morningDojiStarColor = dialog->getColor(s);
+        morningDojiStarFlag = dialog->getCheck(s);
+        s = QObject::tr("Morning_Star");
+        morningStarColor = dialog->getColor(s);
+        morningStarFlag = dialog->getCheck(s);
+        s = QObject::tr("Side_By_Side_White_Lines");
+        sideBySideWhiteLinesColor = dialog->getColor(s);
+        sideBySideWhiteLinesFlag = dialog->getCheck(s);
+        s = QObject::tr("Three_Inside_Up");
+        threeInsideUpColor = dialog->getColor(s);
+        threeInsideUpFlag = dialog->getCheck(s);
+        s = QObject::tr("Three_Outside_Up");
+        threeOutsideUpColor = dialog->getColor(s);
+        threeOutsideUpFlag = dialog->getCheck(s);
+        s = QObject::tr("Three_White_Soldiers");
+        threeWhiteSoldiersColor = dialog->getColor(s);
+        threeWhiteSoldiersFlag = dialog->getCheck(s);
+        s = QObject::tr("Dark_Cloud_Cover");
+        darkCloudCoverColor = dialog->getColor(s);
+        darkCloudCoverFlag = dialog->getCheck(s);
+        s = QObject::tr("Evening_Doji_Star");
+        eveningDojiStarColor = dialog->getColor(s);
+        eveningDojiStarFlag = dialog->getCheck(s);
+        s = QObject::tr("Evening_Star");
+        eveningStarColor = dialog->getColor(s);
+        eveningStarFlag = dialog->getCheck(s);
+        s = QObject::tr("Falling_Three_Methods");
+        fallingThreeMethodsColor = dialog->getColor(s);
+        fallingThreeMethodsFlag = dialog->getCheck(s);
+        s = QObject::tr("Identical_Three_Crows");
+        identicalThreeCrowsColor = dialog->getColor(s);
+        identicalThreeCrowsFlag = dialog->getCheck(s);
+        s = QObject::tr("Three_Black_Crows");
+        threeBlackCrowsColor = dialog->getColor(s);
+        threeBlackCrowsFlag = dialog->getCheck(s);
+        s = QObject::tr("Three_Inside_Down");
+        threeInsideDownColor = dialog->getColor(s);
+        threeInsideDownFlag = dialog->getCheck(s);
+        s = QObject::tr("Three_Outside_Down");
+        threeOutsideDownColor = dialog->getColor(s);
+        threeOutsideDownFlag = dialog->getCheck(s);
+        s = QObject::tr("Upside_Gap_Two_Crows");
+        upsideGapTwoCrowsColor = dialog->getColor(s);
+        upsideGapTwoCrowsFlag = dialog->getCheck(s);
+
         break;
       }
 
@@ -490,6 +924,190 @@ void BARS::setIndicatorSettings (Setting &dict)
   s = dict.getData("maInput3");
   if (s.length())
     maInput3 = (BarData::InputType) s.toInt();
+
+  s = dict.getData("longPercentage");
+  if (s.length())
+    longPercentage = s.toDouble();
+
+  s = dict.getData("dojiPercentage");
+  if (s.length())
+    dojiPercentage = s.toDouble();
+
+  s = dict.getData("bullishAbandonedBabyColor");
+  if (s.length())
+    bullishAbandonedBabyColor.setNamedColor(s);
+    
+  s = dict.getData("bearishAbandonedBabyColor");
+  if (s.length())
+    bearishAbandonedBabyColor.setNamedColor(s);
+
+  s = dict.getData("concealingBabySwallowColor");
+  if (s.length())
+    concealingBabySwallowColor.setNamedColor(s);
+
+  s = dict.getData("bullishKickingColor");
+  if (s.length())
+    bullishKickingColor.setNamedColor(s);
+
+  s = dict.getData("bearishKickingColor");
+  if (s.length())
+    bearishKickingColor.setNamedColor(s);
+
+  s = dict.getData("matHoldColor");
+  if (s.length())
+    matHoldColor.setNamedColor(s);
+
+  s = dict.getData("matchingLowColor");
+  if (s.length())
+    matchingLowColor.setNamedColor(s);
+
+  s = dict.getData("morningDojiStarColor");
+  if (s.length())
+    morningDojiStarColor.setNamedColor(s);
+
+  s = dict.getData("morningStarColor");
+  if (s.length())
+    morningStarColor.setNamedColor(s);
+
+  s = dict.getData("sideBySideWhiteLinesColor");
+  if (s.length())
+    sideBySideWhiteLinesColor.setNamedColor(s);
+
+  s = dict.getData("threeInsideUpColor");
+  if (s.length())
+    threeInsideUpColor.setNamedColor(s);
+
+  s = dict.getData("threeOutsideUpColor");
+  if (s.length())
+    threeOutsideUpColor.setNamedColor(s);
+
+  s = dict.getData("threeWhiteSoldiersColor");
+  if (s.length())
+    threeWhiteSoldiersColor.setNamedColor(s);
+
+  s = dict.getData("darkCloudCoverColor");
+  if (s.length())
+    darkCloudCoverColor.setNamedColor(s);
+
+  s = dict.getData("eveningDojiStarColor");
+  if (s.length())
+    eveningDojiStarColor.setNamedColor(s);
+
+  s = dict.getData("eveningStarColor");
+  if (s.length())
+    eveningStarColor.setNamedColor(s);
+
+  s = dict.getData("fallingThreeMethodsColor");
+  if (s.length())
+    fallingThreeMethodsColor.setNamedColor(s);
+
+  s = dict.getData("identicalThreeCrowsColor");
+  if (s.length())
+    identicalThreeCrowsColor.setNamedColor(s);
+
+  s = dict.getData("threeBlackCrowsColor");
+  if (s.length())
+    threeBlackCrowsColor.setNamedColor(s);
+
+  s = dict.getData("threeInsideDownColor");
+  if (s.length())
+    threeInsideDownColor.setNamedColor(s);
+
+  s = dict.getData("threeOutsideDownColor");
+  if (s.length())
+    threeOutsideDownColor.setNamedColor(s);
+
+  s = dict.getData("upsideGapTwoCrowsColor");
+  if (s.length())
+    upsideGapTwoCrowsColor.setNamedColor(s);
+
+  s = dict.getData("bullishAbandonedBabyFlag");
+  if (s.length())
+    bullishAbandonedBabyFlag = s.toInt();
+
+  s = dict.getData("bearishAbandonedBabyFlag");
+  if (s.length())
+    bearishAbandonedBabyFlag = s.toInt();
+
+  s = dict.getData("concealingBabySwallowFlag");
+  if (s.length())
+    concealingBabySwallowFlag = s.toInt();
+
+  s = dict.getData("bullishKickingFlag");
+  if (s.length())
+    bullishKickingFlag = s.toInt();
+
+  s = dict.getData("bearishKickingFlag");
+  if (s.length())
+    bearishKickingFlag = s.toInt();
+
+  s = dict.getData("matHoldFlag");
+  if (s.length())
+    matHoldFlag = s.toInt();
+
+  s = dict.getData("matchingLowFlag");
+  if (s.length())
+    matchingLowFlag = s.toInt();
+
+  s = dict.getData("morningDojiStarFlag");
+  if (s.length())
+    morningDojiStarFlag = s.toInt();
+
+  s = dict.getData("morningStarFlag");
+  if (s.length())
+    morningStarFlag = s.toInt();
+
+  s = dict.getData("sideBySideWhiteLinesFlag");
+  if (s.length())
+    sideBySideWhiteLinesFlag = s.toInt();
+
+  s = dict.getData("threeInsideUpFlag");
+  if (s.length())
+    threeInsideUpFlag = s.toInt();
+
+  s = dict.getData("threeOutsideUpFlag");
+  if (s.length())
+    threeOutsideUpFlag = s.toInt();
+
+  s = dict.getData("threeWhiteSoldiersFlag");
+  if (s.length())
+    threeWhiteSoldiersFlag = s.toInt();
+
+  s = dict.getData("darkCloudCoverFlag");
+  if (s.length())
+    darkCloudCoverFlag = s.toInt();
+
+  s = dict.getData("eveningDojiStarFlag");
+  if (s.length())
+    eveningDojiStarFlag = s.toInt();
+
+  s = dict.getData("eveningStarFlag");
+  if (s.length())
+    eveningStarFlag = s.toInt();
+
+  s = dict.getData("fallingThreeMethodsFlag");
+  if (s.length())
+    fallingThreeMethodsFlag = s.toInt();
+
+  s = dict.getData("identicalThreeCrowsFlag");
+  if (s.length())
+    identicalThreeCrowsFlag = s.toInt();
+
+  s = dict.getData("threeBlackCrowsFlag");
+  if (s.length())
+    threeBlackCrowsFlag = s.toInt();
+
+  s = dict.getData("threeInsideDownFlag");
+  if (s.length())
+    threeInsideDownFlag = s.toInt();
+
+  s = dict.getData("threeOutsideDownFlag");
+  if (s.length())
+    threeOutsideDownFlag = s.toInt();
+
+  s = dict.getData("upsideGapTwoCrowsFlag");
+  if (s.length())
+    upsideGapTwoCrowsFlag = s.toInt();
 }
 
 void BARS::getIndicatorSettings (Setting &dict)
@@ -523,17 +1141,65 @@ void BARS::getIndicatorSettings (Setting &dict)
   dict.setData("maLabel3", maLabel3);
   dict.setData("maType3", QString::number(maType3));
   dict.setData("maInput3", QString::number(maInput3));
+
+  dict.setData("longPercentage", QString::number(longPercentage));
+  dict.setData("dojiPercentage", QString::number(dojiPercentage));
+
+  dict.setData("bullishAbandonedBabyColor", bullishAbandonedBabyColor.name());
+  dict.setData("bearishAbandonedBabyColor", bearishAbandonedBabyColor.name());
+  dict.setData("concealingBabySwallowColor", concealingBabySwallowColor.name());
+  dict.setData("bullishKickingColor", bullishKickingColor.name());
+  dict.setData("bearishKickingColor", bearishKickingColor.name());
+  dict.setData("matHoldColor", matHoldColor.name());
+  dict.setData("matchingLowColor", matchingLowColor.name());
+  dict.setData("morningDojiStarColor", morningDojiStarColor.name());
+  dict.setData("morningStarColor", morningStarColor.name());
+  dict.setData("sideBySideWhiteLinesColor", sideBySideWhiteLinesColor.name());
+  dict.setData("threeInsideUpColor", threeInsideUpColor.name());
+  dict.setData("threeOutsideUpColor", threeOutsideUpColor.name());
+  dict.setData("threeWhiteSoldiersColor", threeWhiteSoldiersColor.name());
+  dict.setData("darkCloudCoverColor", darkCloudCoverColor.name());
+  dict.setData("eveningDojiStarColor", eveningDojiStarColor.name());
+  dict.setData("eveningStarColor", eveningStarColor.name());
+  dict.setData("fallingThreeMethodsColor", fallingThreeMethodsColor.name());
+  dict.setData("identicalThreeCrowsColor", identicalThreeCrowsColor.name());
+  dict.setData("threeBlackCrowsColor", threeBlackCrowsColor.name());
+  dict.setData("threeInsideDownColor", threeInsideDownColor.name());
+  dict.setData("threeOutsideDownColor", threeOutsideDownColor.name());
+  dict.setData("upsideGapTwoCrowsColor", upsideGapTwoCrowsColor.name());
+
+  dict.setData("bullishAbandonedBabyFlag", QString::number(bullishAbandonedBabyFlag));
+  dict.setData("bearishAbandonedBabyFlag", QString::number(bearishAbandonedBabyFlag));
+  dict.setData("concealingBabySwallowFlag", QString::number(concealingBabySwallowFlag));
+  dict.setData("bullishKickingFlag", QString::number(bullishKickingFlag));
+  dict.setData("bearishKickingFlag", QString::number(bearishKickingFlag));
+  dict.setData("matHoldFlag", QString::number(matHoldFlag));
+  dict.setData("matchingLowFlag", QString::number(matchingLowFlag));
+  dict.setData("morningDojiStarFlag", QString::number(morningDojiStarFlag));
+  dict.setData("morningStarFlag", QString::number(morningStarFlag));
+  dict.setData("sideBySideWhiteLinesFlag", QString::number(sideBySideWhiteLinesFlag));
+  dict.setData("threeInsideUpFlag", QString::number(threeInsideUpFlag));
+  dict.setData("threeOutsideUpFlag", QString::number(threeOutsideUpFlag));
+  dict.setData("threeWhiteSoldiersFlag", QString::number(threeWhiteSoldiersFlag));
+  dict.setData("darkCloudCoverFlag", QString::number(darkCloudCoverFlag));
+  dict.setData("eveningDojiStarFlag", QString::number(eveningDojiStarFlag));
+  dict.setData("eveningStarFlag", QString::number(eveningStarFlag));
+  dict.setData("fallingThreeMethodsFlag", QString::number(fallingThreeMethodsFlag));
+  dict.setData("identicalThreeCrowsFlag", QString::number(identicalThreeCrowsFlag));
+  dict.setData("threeBlackCrowsFlag", QString::number(threeBlackCrowsFlag));
+  dict.setData("threeInsideDownFlag", QString::number(threeInsideDownFlag));
+  dict.setData("threeOutsideDownFlag", QString::number(threeOutsideDownFlag));
+  dict.setData("upsideGapTwoCrowsFlag", QString::number(upsideGapTwoCrowsFlag));
 }
 
 PlotLine * BARS::calculateCustom (QString &p, QPtrList<PlotLine> &)
 {
   // format1 (BARS): TYPE
+  // format2 (Candle, Mat_Hold, 0.5, 0.1): TYPE, CANDLE_PATTERN, LONG_PERCENTAGE, DOJI_PERCENTAGE
 
   QStringList l = QStringList::split(",", p, FALSE);
 
-  if (l.count() == 1)
-    ;
-  else
+  if (l.count() == 0)
   {
     qDebug("BARS::calculateCustom: invalid parm count");
     return 0;
@@ -547,14 +1213,37 @@ PlotLine * BARS::calculateCustom (QString &p, QPtrList<PlotLine> &)
   else
     method = l[0];
 
+  if (! method.compare("Candle") && l.count() == 4)
+  {
+    if (candleList.findIndex(l[1]) == -1)
+    {
+      qDebug("BARS::calculateCustom: invalid CANDLE PATTERN parm");
+      return 0;
+    }
+
+    bool ok;
+    double t = l[2].toDouble(&ok);
+    if (ok)
+      longPercentage = t;
+    else
+    {
+      qDebug("BARS::calculateCustom: invalid LONG_PERCENTAGE parm");
+      return 0;
+    }
+
+    t = l[3].toDouble(&ok);
+    if (ok)
+      dojiPercentage = t;
+    else
+    {
+      qDebug("BARS::calculateCustom: invalid DOJI_PERCENTAGE parm");
+      return 0;
+    }
+  }
+
   clearOutput();
   calculate();
   return output->getLine(0);
-}
-
-int BARS::getMinBars ()
-{
-  return minBars;
 }
 
 //***************************************************************************

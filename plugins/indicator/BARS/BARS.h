@@ -34,8 +34,8 @@ class BARS : public IndicatorPlugin
     PlotLine * calculateCustom (QString &, QPtrList<PlotLine> &);
     void getIndicatorSettings (Setting &);
     void setIndicatorSettings (Setting &);
-    int getMinBars ();
     void calculateMA ();
+    QColor checkCandlePatterns (int);
 
     int getCandleColor (double open, double close); // 0 = none, 1=black, 2=white
     bool getCandleLongBlackBody (double open, double high, double low, double close);
@@ -101,6 +101,52 @@ class BARS : public IndicatorPlugin
     // candle function stuff
     double longPercentage;
     double dojiPercentage;
+
+    bool bullishAbandonedBabyFlag;
+    bool bearishAbandonedBabyFlag;
+    bool concealingBabySwallowFlag;
+    bool bullishKickingFlag;
+    bool bearishKickingFlag;
+    bool matHoldFlag;
+    bool matchingLowFlag;
+    bool morningDojiStarFlag;
+    bool morningStarFlag;
+    bool sideBySideWhiteLinesFlag;
+    bool threeInsideUpFlag;
+    bool threeOutsideUpFlag;
+    bool threeWhiteSoldiersFlag;
+    bool darkCloudCoverFlag;
+    bool eveningDojiStarFlag;
+    bool eveningStarFlag;
+    bool fallingThreeMethodsFlag;
+    bool identicalThreeCrowsFlag;
+    bool threeBlackCrowsFlag;
+    bool threeInsideDownFlag;
+    bool threeOutsideDownFlag;
+    bool upsideGapTwoCrowsFlag;
+
+    QColor bullishAbandonedBabyColor;
+    QColor bearishAbandonedBabyColor;
+    QColor concealingBabySwallowColor;
+    QColor bullishKickingColor;
+    QColor bearishKickingColor;
+    QColor matHoldColor;
+    QColor matchingLowColor;
+    QColor morningDojiStarColor;
+    QColor morningStarColor;
+    QColor sideBySideWhiteLinesColor;
+    QColor threeInsideUpColor;
+    QColor threeOutsideUpColor;
+    QColor threeWhiteSoldiersColor;
+    QColor darkCloudCoverColor;
+    QColor eveningDojiStarColor;
+    QColor eveningStarColor;
+    QColor fallingThreeMethodsColor;
+    QColor identicalThreeCrowsColor;
+    QColor threeBlackCrowsColor;
+    QColor threeInsideDownColor;
+    QColor threeOutsideDownColor;
+    QColor upsideGapTwoCrowsColor;
 };
 
 extern "C"
