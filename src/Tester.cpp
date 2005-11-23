@@ -40,10 +40,11 @@ Tester::Tester (QString n) : QTabDialog (0, 0, FALSE)
   recordList = 0;
   customShortStopLine = 0;
   customLongStopLine = 0;
-  enterLongAlerts = new Setting;
-  exitLongAlerts = new Setting;
-  enterShortAlerts = new Setting;
-  exitShortAlerts = new Setting;
+  enterLongSignal.setAutoDelete(TRUE);
+  exitLongSignal.setAutoDelete(TRUE);
+  enterShortSignal.setAutoDelete(TRUE);
+  exitShortSignal.setAutoDelete(TRUE);
+  trades.setAutoDelete(TRUE);
   
   fieldList.append(tr("Open"));
   fieldList.append(tr("Close"));
@@ -84,10 +85,6 @@ Tester::Tester () : QTabDialog (0, 0, FALSE)
   recordList = 0;
   customLongStopLine = 0;
   customShortStopLine = 0;
-  enterLongAlerts = 0;
-  exitLongAlerts = 0;
-  enterShortAlerts = 0;
-  exitShortAlerts = 0;
 }
 
 Tester::~Tester ()
@@ -100,18 +97,6 @@ Tester::~Tester ()
   
   if (customShortStopLine)
     delete customShortStopLine;
-  
-  if (enterLongAlerts)
-    delete enterLongAlerts;
-    
-  if (exitLongAlerts)
-    delete exitLongAlerts;
-    
-  if (enterShortAlerts)
-    delete enterShortAlerts;
-    
-  if (exitShortAlerts)
-    delete exitShortAlerts;
 }
 
 void Tester::createFormulaPage ()
@@ -515,418 +500,8 @@ void Tester::slotSliderChanged (int v)
   equityPlot->draw();
 }
 
-void Tester::test ()
-{
-  if (! tradeLong->isChecked() && ! tradeShort->isChecked())
-    return;
-
-  equity = account->text().toDouble();
-  if (equity == 0)
-    return;
-
-  QString symbol = symbolButton->getSymbol();
-  if (! symbol.length())
-    return;
-    
-  if (checkFormula(0))
-    return;
-    
-  if (checkFormula(1))
-    return;
-  
-  if (checkFormula(2))
-    return;
-
-  if (checkFormula(3))
-    return;
-
-  if (checkFormula(4))
-    return;
-
-  if (checkFormula(5))
-    return;
-
-  QString s = symbolButton->getPath();
-  QString plugin = config.parseDbPlugin(s);
-  DbPlugin *db = config.getDbPlugin(plugin);
-  if (! db)
-  {
-    config.closePlugin(plugin);
-    return;
-  }
-
-  s = symbolButton->getPath();
-  QDir dir;
-  if (! dir.exists(s))
-  {
-    config.closePlugin(plugin);
-    return;
-  }
-  
-  if (db->openChart(s))
-  {
-    config.closePlugin(plugin);
-    return;
-  }
-  
-  db->getHeaderField(DbPlugin::Type, chartType);
-  if (! chartType.compare(tr("Futures")))
-  {
-    s = "FuturesType";
-    QString s2;
-    db->getData(s, s2);
-    fd.setSymbol(s2);
-  }
-
-  tradeList->setNumRows(0);
-
-//  db->setBarCompression(BarData::DailyBar);
-  db->setBarCompression((BarData::BarCompression) compressionList.findIndex(compression->currentText()));
-
-  db->setBarRange(bars->value());
-  if (recordList)
-    delete recordList;
-  recordList = new BarData;
-  db->getHistory(recordList);
-
-//  plot->clear();
-  equityPlot->clear();
-    
-  equityCurve = new PlotLine;
-  s = "green";
-  equityCurve->setColor(s);
-
-  if (loadAlerts(0))
-  {
-    config.closePlugin(plugin);
-    return;
-  }
-  
-  if (loadAlerts(1))
-  {
-    config.closePlugin(plugin);
-    return;
-  }
-  
-  if (loadAlerts(2))
-  {
-    config.closePlugin(plugin);
-    return;
-  }
-  
-  if (loadAlerts(3))
-  {
-    config.closePlugin(plugin);
-    return;
-  }
-
-  clearAlertCounts();
-  
-  if (loadCustomLongStop())
-  {
-    config.closePlugin(plugin);
-    return;
-  }
-  
-  if (loadCustomShortStop())
-  {
-    config.closePlugin(plugin);
-    return;
-  }
-
-  QProgressDialog prog(tr("Testing..."),
-                       tr("Cancel"),
-		       bars->value(),
-		       this,
-		       "progress",
-		       TRUE);
-  prog.show();
-  
-  this->setEnabled(FALSE);
-  
-  status = 0;
-  testLoop = 0;
-  for (; testLoop < (int) recordList->count(); testLoop++)
-  {
-    prog.setProgress(testLoop);
-    emit message(QString());
-    if (prog.wasCancelled())
-      break;
-  
-    updateEquityCurve();
-    
-    currentRecord = testLoop;
-    BarDate dt = recordList->getDate(currentRecord);
-    
-    checkAlerts();
-
-    if (status == 0)
-    {
-      if (enterLongAlerts->count() && tradeLong->isChecked())
-      {
-        if (enterLongCount)
-        {
-          enterLong();
-          continue;
-        }
-      }
-
-      if (enterShortAlerts->count() && tradeShort->isChecked())
-      {
-        if (enterShortCount)
-        {
-          enterShort();
-          continue;
-        }
-      }
-    }
-
-    if (status == 1)
-    {
-      if (enterShortAlerts->count() && tradeShort->isChecked())
-      {
-        if (enterShortCount)
-        {
-          enterShort();
-          continue;
-        }
-      }
-
-      if (exitLongAlerts->count() && tradeLong->isChecked())
-      {
-        if (exitLongCount)
-        {
-          exitLong();
-          continue;
-        }
-      }
-    }
-    
-    if (status == -1)
-    {
-      if (enterLongAlerts->count() && tradeLong->isChecked())
-      {
-        if (enterLongCount)
-        {
-          enterLong();
-          continue;
-        }
-      }
-
-      if (exitShortAlerts->count() && tradeShort->isChecked())
-      {
-        if (exitShortCount)
-        {
-          exitShort();
-          continue;
-        }
-      }
-    }
-    
-    if (status == 0)
-      continue;
-
-    if (maximumLoss())
-      continue;
-
-    if (profit())
-      continue;
-
-    if (customStop())
-      continue;
-    
-    trailing();
-  }
-
-  if (status != 0)
-  {
-    QString t = tr("End of test");
-    exitPosition(t);
-    status = 0;
-  }
-
-  createSummary();
-  
-  updateChart();
-
-  createEquityCurve();
-  
-  config.closePlugin(plugin);
-  
-  this->setEnabled(TRUE);
-}
-
-void Tester::checkAlerts ()
-{
-  QString s;
-  QString key;
-  recordList->getDate(currentRecord).getDateString(FALSE, key);
-
-  switch (status)
-  {
-    case 0:
-      s = enterLongAlerts->getData(key);
-      if (s.length())
-        enterLongCount++;
-      else
-      {
-        s = enterShortAlerts->getData(key);
-        if (s.length())
-          enterShortCount++;
-      }
-      break;
-    case 1:
-      s = exitLongAlerts->getData(key);
-      if (s.length())
-        exitLongCount++;
-      else
-      {
-        s = enterShortAlerts->getData(key);
-        if (s.length())
-          enterShortCount++;
-      }
-      break;
-    case -1:
-      s = exitShortAlerts->getData(key);
-      if (s.length())
-        exitShortCount++;
-      else
-      {
-        s = enterLongAlerts->getData(key);
-        if (s.length())
-          enterLongCount++;
-      }
-      break;
-    default:
-      break;
-  }
-}
-
-void Tester::clearAlertCounts ()
-{
-  enterLongCount = 0;
-  exitLongCount = 0;
-  enterShortCount = 0;
-  exitShortCount = 0;
-}
-
-void Tester::enterLong ()
-{
-  if (status != 0)
-  {
-    QString t = tr("Enter Long");
-    exitPosition(t);
-  }
-
-  status = 1;
-
-  if (currentRecord + tradeDelay->value() < recordList->count())
-    buyRecord = currentRecord + tradeDelay->value();
-  else
-    buyRecord = currentRecord;
-
-  trailingHigh = getPrice(buyRecord);
-  equity = equity - entryCom->value();
-  getVolume();
-
-  clearAlertCounts();
-}
-
-void Tester::exitLong ()
-{
-  QString t = tr("Exit Long");
-  exitPosition(t);
-  status = 0;
-
-  checkAlerts();
-  if (enterShortCount)
-    enterShort();
-
-  clearAlertCounts();
-}
-
-void Tester::enterShort ()
-{
-  if (status != 0)
-  {
-    QString t = tr("Enter Short");
-    exitPosition(t);
-  }
-
-  status = -1;
-
-  if (currentRecord + tradeDelay->value() < recordList->count())
-    buyRecord = currentRecord + tradeDelay->value();
-  else
-    buyRecord = currentRecord;
-
-  trailingLow = getPrice(buyRecord);
-  equity = equity - entryCom->value();
-  getVolume();
-
-  clearAlertCounts();
-}
-
-void Tester::exitShort ()
-{
-  QString t = tr("Exit Short");
-  exitPosition(t);
-  status = 0;
-
-  checkAlerts();
-  if (enterLongCount)
-    enterLong();
-
-  clearAlertCounts();
-}
-
-void Tester::exitPosition (QString &signal)
-{
-  int crecord;
-  if (currentRecord + tradeDelay->value() < recordList->count())
-    crecord = currentRecord + tradeDelay->value();
-  else
-    crecord = currentRecord;
-
-  double enterPrice = getPrice(buyRecord);
-  double exitPrice = getPrice(crecord);
-  double profit = 0;
-  QString type;
-
-  if (status == -1)
-  {
-    profit = (enterPrice - exitPrice) * volume;
-    type = tr("Short");
-  }
-  else
-  {
-    profit = (exitPrice - enterPrice) * volume;
-    type = tr("Long");
-  }
-
-  if (! chartType.compare(tr("Futures")))
-    profit = fd.getRate() * profit;
-
-  equity = equity + profit;
-
-  equity = equity - exitCom->value();
-
-  QString s;
-  tradeList->setNumRows(tradeList->numRows() + 1);
-  tradeList->setText(tradeList->numRows() - 1, 0, type);
-  recordList->getDate(buyRecord).getDateString(FALSE, s);
-  tradeList->setText(tradeList->numRows() - 1, 1, s);
-  tradeList->setText(tradeList->numRows() - 1, 2, QString::number(enterPrice));
-  recordList->getDate(crecord).getDateString(FALSE, s);
-  tradeList->setText(tradeList->numRows() - 1, 3, s);
-  tradeList->setText(tradeList->numRows() - 1, 4, QString::number(exitPrice));
-  tradeList->setText(tradeList->numRows() - 1, 5, signal);
-  tradeList->setText(tradeList->numRows() - 1, 6, QString::number(profit));
-  tradeList->setText(tradeList->numRows() - 1, 7, QString::number(equity));
-  tradeList->setText(tradeList->numRows() - 1, 8, QString::number(volume));
-}
-
-void Tester::updateEquityCurve ()
+/*
+void Tester::updateEquityCurve (int status, double enterPrice, exitPrice)
 {
   if (status == 0)
   {
@@ -934,28 +509,14 @@ void Tester::updateEquityCurve ()
     return;
   }
 
-  int crecord;
-  if (currentRecord + tradeDelay->value() < recordList->count())
-    crecord = currentRecord + tradeDelay->value();
-  else
-    crecord = currentRecord;
-  
-  double enterPrice = getPrice(buyRecord);
-  double exitPrice = getPrice(crecord);
   double profit = 0;
   double bal = equity;
   QString type;
 
   if (status == -1)
-  {
     profit = (enterPrice - exitPrice) * volume;
-    type = tr("Short");
-  }
   else
-  {
     profit = (exitPrice - enterPrice) * volume;
-    type = tr("Long");
-  }
 
   if (! chartType.compare(tr("Futures")))
     profit = fd.getRate() * profit;
@@ -964,169 +525,7 @@ void Tester::updateEquityCurve ()
 
   equityCurve->append(bal);
 }
-
-bool Tester::maximumLoss ()
-{
-  if (! maximumLossCheck->isChecked())
-    return FALSE;
-
-  double enterPrice = getPrice(buyRecord);
-  double exitPrice = getPrice(currentRecord);
-    
-  if ((status == 1) && (maximumLossLong->isChecked()))
-  {
-    double t = enterPrice * (1 - (maximumLossEdit->text().toDouble() / 100));
-    if (exitPrice <= t)
-    {
-      QString t = tr("Maximum Loss");
-      exitPosition(t);
-      status = 0;
-      clearAlertCounts();
-      return TRUE;
-    }
-  }
-
-  if ((status == -1) && (maximumLossShort->isChecked()))
-  {
-    double t = enterPrice * (1 + (maximumLossEdit->text().toDouble() / 100));
-    if (exitPrice >= t)
-    {
-      QString t = tr("Maximum Loss");
-      exitPosition(t);
-      status = 0;
-      clearAlertCounts();
-      return TRUE;
-    }
-  }
-
-  return FALSE;
-}
-
-bool Tester::profit ()
-{
-  if (! profitCheck->isChecked())
-    return FALSE;
-
-  double enterPrice = getPrice(buyRecord);
-  double exitPrice = getPrice(currentRecord);
-    
-  if ((status == 1) && (profitLong->isChecked()))
-  {
-    double t = enterPrice * (1 + (profitEdit->text().toDouble() / 100));
-    if (exitPrice >= t)
-    {
-      QString t = tr("Profit");
-      exitPosition(t);
-      status = 0;
-      clearAlertCounts();
-      return TRUE;
-    }
-  }
-
-  if ((status == -1) && (profitShort->isChecked()))
-  {
-    double t = enterPrice * (1 - (profitEdit->text().toDouble() / 100));
-    if (exitPrice <= t)
-    {
-      QString t = tr("Profit");
-      exitPosition(t);
-      status = 0;
-      clearAlertCounts();
-      return TRUE;
-    }
-  }
-
-  return FALSE;
-}
-
-bool Tester::trailing ()
-{
-  if (! trailingCheck->isChecked())
-    return FALSE;
-
-  double exitPrice = getPrice(currentRecord);
-    
-  if ((status == 1) && (trailingLong->isChecked()))
-  {
-    if (exitPrice > trailingHigh)
-      trailingHigh = exitPrice;
-
-    double t = ((exitPrice - trailingHigh) / trailingHigh) * 100;
-    if (t < 0)
-    {
-      t = -t;
-      if (t >= trailingEdit->text().toDouble())
-      {
-        QString t = tr("Trailing");
-        exitPosition(t);
-        status = 0;
-        clearAlertCounts();
-        return TRUE;
-      }
-    }
-  }
-
-  if ((status == -1) && (trailingShort->isChecked()))
-  {
-    if (exitPrice < trailingLow)
-      trailingLow = exitPrice;
-
-    double t = ((trailingLow - exitPrice) / trailingLow) * 100;
-    if (t < 0)
-    {
-      t = -t;
-      if (t >= trailingEdit->text().toDouble())
-      {
-        QString t = tr("Trailing");
-        exitPosition(t);
-        status = 0;
-        clearAlertCounts();
-        return TRUE;
-      }
-    }
-  }
-
-  return FALSE;
-}
-
-bool Tester::customStop ()
-{
-  if (status == 1 && customLongStopCheck->isChecked() && customLongStopEdit->getLines() &&
-      customLongStopLine)
-  {
-    int i = customLongStopLine->getSize() - currentRecord;
-    if (i > -1)
-    {
-      if (customLongStopLine->getData(i) == 1)
-      {
-        QString t = tr("Custom Long Stop");
-        exitPosition(t);
-        status = 0;
-        clearAlertCounts();
-        return TRUE;
-      }
-    }
-  }
-
-  if (status == -1 && customShortStopCheck->isChecked() && customShortStopEdit->getLines() &&
-      customShortStopLine)
-  {
-    int i = customShortStopLine->getSize() - currentRecord;
-    if (i > -1)
-    {
-      if (customShortStopLine->getData(i) == 1)
-      {
-        QString t = tr("Custom Short Stop");
-        exitPosition(t);
-        status = 0;
-        clearAlertCounts();
-        return TRUE;
-      }
-    }
-  }
-
-  return FALSE;
-}
+*/
 
 void Tester::maximumLossToggled (bool status)
 {
@@ -1195,87 +594,6 @@ void Tester::customLongStopToggled (bool status)
 void Tester::symbolButtonPressed ()
 {
   QString symbol = symbolButton->getPath();
-}
-
-bool Tester::loadAlerts (int type)
-{
-  int loop;
-  FormulaEdit *edit = 0;
-  QString s;
-  Setting *alerts = 0;
-  
-  switch(type)
-  {
-    case 0:
-      edit = enterLongEdit;
-      enterLongAlerts->clear();
-      s = tr("Enter long ");
-      alerts = enterLongAlerts;
-      break;
-    case 1:
-      edit = exitLongEdit;
-      exitLongAlerts->clear();
-      s = tr("Exit long ");
-      alerts = exitLongAlerts;
-      break;
-    case 2:
-      edit = enterShortEdit;
-      enterShortAlerts->clear();
-      s = tr("Enter short ");
-      alerts = enterShortAlerts;
-      break;
-    case 3:
-      edit = exitShortEdit;
-      exitShortAlerts->clear();
-      s = tr("Exit short ");
-      alerts = exitShortAlerts;
-      break;
-    default:
-      break;
-  }
-  
-  QStringList l = QStringList::split("\n", edit->getText());
-  if (! l.count())
-    return FALSE;
-
-  // open the CUS plugin
-  QString plugin("CUS");
-  IndicatorPlugin *plug = config.getIndicatorPlugin(plugin);
-  if (! plug)
-  {
-    config.closePlugin(plugin);
-    return TRUE;
-  }
-
-  plug->setCustomFunction(l);
-  
-  // load the CUS plugin and calculate
-  plug->setIndicatorInput(recordList);
-  plug->calculate();
-  Indicator *i = plug->getIndicator();
-  PlotLine *line = i->getLine(0);
-  if (! line)
-  {
-    qDebug("Tester::loadAlerts: no PlotLine returned");
-    config.closePlugin(plugin);
-    return TRUE;
-  }
-    
-  loop = recordList->count() - line->getSize();
-  int lineLoop = 0;
-  for (; loop < (int) recordList->count(); loop++, lineLoop++)
-  {
-    if (line->getData(lineLoop) == 1)
-    {
-      QString t;
-      recordList->getDate(loop).getDateString(FALSE, t);
-      alerts->setData(t, "1");
-    }
-  }
-  
-  config.closePlugin(plugin);
-  
-  return FALSE;
 }
 
 void Tester::saveEditRule (int type)
@@ -1714,26 +1032,21 @@ void Tester::createSummary ()
   summaryLoseShortTrades->setNum(loseShortTrades);
 }
 
-void Tester::getVolume ()
+int Tester::getVolume (int i, double d)
 {
-  double balance = equity;
+  double balance = d;
+  int volume = 1;
   if (volumePercent->value() == 0)
-  {
-    volume = 1;
-//    balance = account->text().toDouble();
-//    volume = (int) (balance / getPrice(buyRecord));
-    return;
-  }
+    return volume;
 
   balance = balance * ((double) volumePercent->value() / 100.0);
 
   if (margin->value())
     volume = (int) (double) (balance / margin->value());
   else
-    volume = (int) (double) (balance / getPrice(buyRecord));
+    volume = (int) (double) (balance / getPrice(i));
 
-//  if (volume < 1)
-//    volume = 1;
+  return volume;
 }
 
 double Tester::getPrice (int i)
@@ -1836,21 +1149,6 @@ void Tester::updateChart ()
         
   plot->draw();
 */
-}
-
-void Tester::createEquityCurve ()
-{
-  equityPlot->setData(recordList);
-  
-  //set up indicator
-  Indicator *i = new Indicator;
-  QString str = "equity";
-  i->setName(str);
-  i->addLine(equityCurve);
-  str = i->getName();
-  equityPlot->addIndicator(i);
-
-  equityPlot->draw();
 }
 
 bool Tester::loadCustomShortStop ()
@@ -2128,59 +1426,677 @@ void Tester::slotLogScaling (bool)
 //  plot->draw();
 }
 
-bool Tester::checkFormula (int d)
+//*******************************
+//******************* TEST
+//**************************
+
+void Tester::loadSignals ()
 {
-  bool ok = FALSE;
-  QString s;
-  
-  switch(d)
+  enterLongSignal.clear();
+  exitLongSignal.clear();
+  enterShortSignal.clear();
+  exitShortSignal.clear();
+
+  // open the CUS plugin
+  QString plugin("CUS");
+  IndicatorPlugin *plug = config.getIndicatorPlugin(plugin);
+  if (! plug)
   {
-    case 0:
-      if (enterLongEdit->getLines())
-      {
-//        ok = enterLongEdit->checkError();
-        s.append(tr("Enter Long: "));
-      }
-      break;
-    case 1:
-      if (exitLongEdit->getLines())
-      {
-//        ok = exitLongEdit->checkError();
-        s.append(tr("Exit Long: "));
-      }
-      break;
-    case 2:
-      if (enterShortEdit->getLines())
-      {
-//        ok = enterShortEdit->checkError();
-        s.append(tr("Enter Short: "));
-      }
-      break;
-    case 3:
-      if (exitShortEdit->getLines())
-      {
-//        ok = exitShortEdit->checkError();
-        s.append(tr("Exit Short: "));
-      }
-      break;
-    case 4:
-      if (customLongStopEdit->getLines())
-      {
-//        ok = customLongStopEdit->checkError();
-        s.append(tr("Custom Long Stop: "));
-      }
-      break;
-    case 5:
-      if (customShortStopEdit->getLines())
-      {
-//        ok = customShortStopEdit->checkError();
-        s.append(tr("Custom Short Stop: "));
-      }
-      break;
-    default:
-      break;
+    config.closePlugin(plugin);
+    return;
   }
 
-  return ok;
+  int loop;
+  for (loop = 0; loop < 4; loop++)
+  {
+    QStringList l;
+    switch (loop)
+    {
+      case 0:
+        l = QStringList::split("\n", enterLongEdit->getText());
+        break;
+      case 1:
+        l = QStringList::split("\n", exitLongEdit->getText());
+        break;
+      case 2:
+        l = QStringList::split("\n", enterShortEdit->getText());
+        break;
+      case 3:
+        l = QStringList::split("\n", exitShortEdit->getText());
+        break;
+      default:
+        break;
+    }
+  
+    if (! l.count())
+      continue;
+
+    plug->setCustomFunction(l);
+  
+    // load the CUS plugin and calculate
+    plug->setIndicatorInput(recordList);
+    plug->calculate();
+    Indicator *i = plug->getIndicator();
+    PlotLine *line = i->getLine(0);
+    if (! line)
+    {
+      qDebug("Tester::loadSignals: no PlotLine returned");
+      continue;
+    }
+    
+    int loop2 = recordList->count() - line->getSize();
+    int lineLoop = 0;
+    Setting *trade = 0;
+    for (; loop2 < (int) recordList->count(); loop2++, lineLoop++)
+    {
+      if (line->getData(lineLoop) == 1)
+      {
+        if (! trade)
+        {
+          trade = new Setting;
+          QString key;
+          recordList->getDate(loop2).getDateTimeString(FALSE, key);
+          switch (loop)
+          {
+            case 0:
+              enterLongSignal.replace(key, trade);
+              break;
+            case 1:
+              exitLongSignal.replace(key, trade);
+              break;
+            case 2:
+              enterShortSignal.replace(key, trade);
+              break;
+            case 3:
+              exitShortSignal.replace(key, trade);
+              break;
+            default:
+              break;
+          }
+        }
+      }
+      else
+      {
+        if (trade)
+          trade = 0;
+      }
+    }
+  }
+
+  config.closePlugin(plugin);
 }
 
+void Tester::test ()
+{
+  if (! tradeLong->isChecked() && ! tradeShort->isChecked())
+    return;
+
+  equity = account->text().toDouble();
+  if (equity == 0)
+    return;
+
+  QString symbol = symbolButton->getSymbol();
+  if (! symbol.length())
+    return;
+
+  QString s = symbolButton->getPath();
+  QString plugin = config.parseDbPlugin(s);
+  DbPlugin *db = config.getDbPlugin(plugin);
+  if (! db)
+  {
+    config.closePlugin(plugin);
+    return;
+  }
+
+  s = symbolButton->getPath();
+  QDir dir;
+  if (! dir.exists(s))
+  {
+    config.closePlugin(plugin);
+    return;
+  }
+  
+  if (db->openChart(s))
+  {
+    config.closePlugin(plugin);
+    return;
+  }
+  
+  db->getHeaderField(DbPlugin::Type, chartType);
+  if (! chartType.compare(tr("Futures")))
+  {
+    s = "FuturesType";
+    QString s2;
+    db->getData(s, s2);
+    fd.setSymbol(s2);
+  }
+
+  db->setBarCompression((BarData::BarCompression) compressionList.findIndex(compression->currentText()));
+  db->setBarRange(bars->value());
+  if (recordList)
+    delete recordList;
+  recordList = new BarData;
+  db->getHistory(recordList);
+  config.closePlugin(plugin);
+
+  equityPlot->clear();
+    
+  loadSignals();
+
+  if (loadCustomLongStop())
+    return;
+  
+  if (loadCustomShortStop())
+    return;
+
+  while (tradeList->numRows())
+    tradeList->removeRow(0);
+
+  trades.clear();
+
+  QProgressDialog prog(tr("Testing..."),
+                       tr("Cancel"),
+		       bars->value(),
+		       this,
+		       "progress",
+		       TRUE);
+  prog.show();
+  
+  this->setEnabled(FALSE);
+  
+  currentRecord = 0;
+  for (; currentRecord < (int) recordList->count(); currentRecord++)
+  {
+    prog.setProgress(currentRecord);
+    emit message(QString());
+    if (prog.wasCancelled())
+      break;
+  
+    BarDate dt = recordList->getDate(currentRecord);
+    QString key;
+    dt.getDateTimeString(FALSE, key);
+
+    if (tradeLong->isChecked())
+    {
+      Setting *set = enterLongSignal[key];
+      if (set)
+        enterLong();
+    }
+
+    if (tradeShort->isChecked())
+    {
+      Setting *set = enterShortSignal[key];
+      if (set)
+        enterShort();
+    }
+  }
+
+  updateTradeList();
+
+  createSummary();
+  
+//  updateChart();
+
+  updateEquityCurve();
+
+  config.closePlugin(plugin);
+  
+  this->setEnabled(TRUE);
+}
+
+void Tester::enterLong ()
+{
+  Setting *trade = new Setting;
+  trade->setData("type", "L");
+  trade->setData("enterSignal", tr("Enter Long"));
+
+  int buyRecord = 0;
+  if (currentRecord + tradeDelay->value() < recordList->count())
+    buyRecord = currentRecord + tradeDelay->value();
+  else
+    buyRecord = currentRecord;
+
+  QString s;
+  recordList->getDate(buyRecord).getDateTimeString(FALSE, s);
+  trade->setData("enterDate", s);
+
+  double enterPrice = getPrice(buyRecord);
+  trade->setData("enterPrice", QString::number(enterPrice));
+
+  trailingHigh = getPrice(buyRecord);
+
+  equity = equity - entryCom->value();
+
+  trade->setData("volume", QString::number(getVolume(buyRecord, equity)));
+
+  int loop = buyRecord;
+  for (; loop < (int) recordList->count(); loop++)
+  {
+    BarDate dt = recordList->getDate(loop);
+    QString key;
+    dt.getDateTimeString(FALSE, key);
+
+    Setting *set = exitLongSignal[key];
+    if (set)
+    {
+      int sellRecord = 0;
+      if (loop + tradeDelay->value() < recordList->count())
+        sellRecord = loop + tradeDelay->value();
+      else
+        sellRecord = loop;
+
+      recordList->getDate(sellRecord).getDateTimeString(FALSE, s);
+      trade->setData("exitDate", s);
+      trade->setData("exitPrice", QString::number(getPrice(sellRecord)));
+      trade->setData("exitSignal", tr("Exit Long"));
+      trades.append(trade);
+      currentRecord = loop - 1;
+      break;
+    }
+
+    double exitPrice = getPrice(loop);
+
+    if (maximumLoss(FALSE, enterPrice, exitPrice))
+    {
+      int sellRecord = 0;
+      if (loop + tradeDelay->value() < recordList->count())
+        sellRecord = loop + tradeDelay->value();
+      else
+        sellRecord = loop;
+
+      recordList->getDate(sellRecord).getDateTimeString(FALSE, s);
+      trade->setData("exitDate", s);
+      trade->setData("exitPrice", QString::number(getPrice(sellRecord)));
+      trade->setData("exitSignal", tr("Max Loss"));
+      trades.append(trade);
+      currentRecord = loop - 1;
+      break;
+    }
+
+    if (profit(FALSE, enterPrice, exitPrice))
+    {
+      int sellRecord = 0;
+      if (loop + tradeDelay->value() < recordList->count())
+        sellRecord = loop + tradeDelay->value();
+      else
+        sellRecord = loop;
+
+      recordList->getDate(sellRecord).getDateTimeString(FALSE, s);
+      trade->setData("exitDate", s);
+      trade->setData("exitPrice", QString::number(getPrice(sellRecord)));
+      trade->setData("exitSignal", tr("Profit"));
+      trades.append(trade);
+      currentRecord = loop - 1;
+      break;
+    }
+
+    if (customStop(FALSE, loop))
+    {
+      int sellRecord = 0;
+      if (loop + tradeDelay->value() < recordList->count())
+        sellRecord = loop + tradeDelay->value();
+      else
+        sellRecord = loop;
+
+      recordList->getDate(sellRecord).getDateTimeString(FALSE, s);
+      trade->setData("exitDate", s);
+      trade->setData("exitPrice", QString::number(getPrice(sellRecord)));
+      trade->setData("exitSignal", tr("CUS Stop"));
+      trades.append(trade);
+      currentRecord = loop - 1;
+      break;
+    }
+    
+    if (trailing(FALSE, exitPrice))
+    {
+      int sellRecord = 0;
+      if (loop + tradeDelay->value() < recordList->count())
+        sellRecord = loop + tradeDelay->value();
+      else
+        sellRecord = loop;
+
+      recordList->getDate(sellRecord).getDateTimeString(FALSE, s);
+      trade->setData("exitDate", s);
+      trade->setData("exitPrice", QString::number(getPrice(sellRecord)));
+      trade->setData("exitSignal", tr("Trailing"));
+      trades.append(trade);
+      currentRecord = loop - 1;
+      break;
+    }
+  }
+
+  s = trade->getData("exitDate");
+  if (! s.length())
+  {
+    recordList->getDate(recordList->count() - 1).getDateTimeString(FALSE, s);
+    trade->setData("exitDate", s);
+    trade->setData("exitPrice", QString::number(getPrice(recordList->count() - 1)));
+    trade->setData("exitSignal", tr("End of test"));
+    trades.append(trade);
+    currentRecord = loop;
+  }
+}
+
+void Tester::enterShort ()
+{
+  Setting *trade = new Setting;
+  trade->setData("type", "S");
+  trade->setData("enterSignal", tr("Enter Short"));
+
+  int buyRecord = 0;
+  if (currentRecord + tradeDelay->value() < recordList->count())
+    buyRecord = currentRecord + tradeDelay->value();
+  else
+    buyRecord = currentRecord;
+
+  QString s;
+  recordList->getDate(buyRecord).getDateTimeString(FALSE, s);
+  trade->setData("enterDate", s);
+
+  double enterPrice = getPrice(buyRecord);
+  trade->setData("enterPrice", QString::number(enterPrice));
+
+  trailingHigh = getPrice(buyRecord);
+
+  equity = equity - entryCom->value();
+
+  trade->setData("volume", QString::number(getVolume(buyRecord, equity)));
+
+  int loop = buyRecord;
+  for (; loop < (int) recordList->count(); loop++)
+  {
+    BarDate dt = recordList->getDate(loop);
+    QString key;
+    dt.getDateTimeString(FALSE, key);
+
+    Setting *set = exitShortSignal[key];
+    if (set)
+    {
+      int sellRecord = 0;
+      if (loop + tradeDelay->value() < recordList->count())
+        sellRecord = loop + tradeDelay->value();
+      else
+        sellRecord = loop;
+
+      recordList->getDate(sellRecord).getDateTimeString(FALSE, s);
+      trade->setData("exitDate", s);
+      trade->setData("exitPrice", QString::number(getPrice(sellRecord)));
+      trade->setData("exitSignal", tr("Exit Short"));
+      trades.append(trade);
+      currentRecord = loop - 1;
+      break;
+    }
+
+    double exitPrice = getPrice(loop);
+
+    if (maximumLoss(TRUE, enterPrice, exitPrice))
+    {
+      int sellRecord = 0;
+      if (loop + tradeDelay->value() < recordList->count())
+        sellRecord = loop + tradeDelay->value();
+      else
+        sellRecord = loop;
+
+      recordList->getDate(sellRecord).getDateTimeString(FALSE, s);
+      trade->setData("exitDate", s);
+      trade->setData("exitPrice", QString::number(getPrice(sellRecord)));
+      trade->setData("exitSignal", tr("Max Loss"));
+      trades.append(trade);
+      currentRecord = loop - 1;
+      break;
+    }
+
+    if (profit(TRUE, enterPrice, exitPrice))
+    {
+      int sellRecord = 0;
+      if (loop + tradeDelay->value() < recordList->count())
+        sellRecord = loop + tradeDelay->value();
+      else
+        sellRecord = loop;
+
+      recordList->getDate(sellRecord).getDateTimeString(FALSE, s);
+      trade->setData("exitDate", s);
+      trade->setData("exitPrice", QString::number(getPrice(sellRecord)));
+      trade->setData("exitSignal", tr("Profit"));
+      trades.append(trade);
+      currentRecord = loop - 1;
+      break;
+    }
+
+    if (customStop(TRUE, loop))
+    {
+      int sellRecord = 0;
+      if (loop + tradeDelay->value() < recordList->count())
+        sellRecord = loop + tradeDelay->value();
+      else
+        sellRecord = loop;
+
+      recordList->getDate(sellRecord).getDateTimeString(FALSE, s);
+      trade->setData("exitDate", s);
+      trade->setData("exitPrice", QString::number(getPrice(sellRecord)));
+      trade->setData("exitSignal", tr("CUS Stop"));
+      trades.append(trade);
+      currentRecord = loop - 1;
+      break;
+    }
+    
+    if (trailing(TRUE, exitPrice))
+    {
+      int sellRecord = 0;
+      if (loop + tradeDelay->value() < recordList->count())
+        sellRecord = loop + tradeDelay->value();
+      else
+        sellRecord = loop;
+
+      recordList->getDate(sellRecord).getDateTimeString(FALSE, s);
+      trade->setData("exitDate", s);
+      trade->setData("exitPrice", QString::number(getPrice(sellRecord)));
+      trade->setData("exitSignal", tr("Trailing"));
+      trades.append(trade);
+      currentRecord = loop - 1;
+      break;
+    }
+  }
+
+  s = trade->getData("exitDate");
+  if (! s.length())
+  {
+    recordList->getDate(recordList->count() - 1).getDateTimeString(FALSE, s);
+    trade->setData("exitDate", s);
+    trade->setData("exitPrice", QString::number(getPrice(recordList->count() - 1)));
+    trade->setData("exitSignal", tr("End of test"));
+    trades.append(trade);
+    currentRecord = loop;
+  }
+}
+
+bool Tester::maximumLoss (bool flag, double enterPrice, double exitPrice)
+{
+  if (! maximumLossCheck->isChecked())
+    return FALSE;
+
+  if (! flag)
+  {
+    double t = enterPrice * (1 - (maximumLossEdit->text().toDouble() / 100));
+    if (exitPrice <= t)
+      return TRUE;
+  }
+  else
+  {
+    double t = enterPrice * (1 + (maximumLossEdit->text().toDouble() / 100));
+    if (exitPrice >= t)
+      return TRUE;
+  }
+
+  return FALSE;
+}
+
+bool Tester::profit (bool flag, double enterPrice, double exitPrice)
+{
+  if (! profitCheck->isChecked())
+    return FALSE;
+
+  if (! flag)
+  {
+    double t = enterPrice * (1 + (profitEdit->text().toDouble() / 100));
+    if (exitPrice >= t)
+      return TRUE;
+  }
+  else
+  {
+    double t = enterPrice * (1 - (profitEdit->text().toDouble() / 100));
+    if (exitPrice <= t)
+      return TRUE;
+  }
+
+  return FALSE;
+}
+
+bool Tester::trailing (bool flag, double exitPrice)
+{
+  if (! trailingCheck->isChecked())
+    return FALSE;
+
+  if (! flag)
+  {
+    if (exitPrice < trailingHigh)
+      trailingHigh = exitPrice;
+
+    double t = ((exitPrice - trailingHigh) / trailingHigh) * 100;
+    if (t < 0)
+    {
+      t = -t;
+      if (t >= trailingEdit->text().toDouble())
+        return TRUE;
+    }
+  }
+  else
+  {
+    if (exitPrice < trailingLow)
+      trailingLow = exitPrice;
+
+    double t = ((trailingLow - exitPrice) / trailingLow) * 100;
+    if (t < 0)
+    {
+      t = -t;
+      if (t >= trailingEdit->text().toDouble())
+        return TRUE;
+    }
+  }
+
+  return FALSE;
+}
+
+bool Tester::customStop (bool flag, int index)
+{
+  if (! flag)
+  {
+    if (customLongStopCheck->isChecked() && customLongStopEdit->getLines() && customLongStopLine)
+    {
+      int i = customLongStopLine->getSize() - index;
+      if (i > -1)
+      {
+        if (customLongStopLine->getData(i) == 1)
+          return TRUE;
+      }
+    }
+  }
+  else
+  {
+    if (customShortStopCheck->isChecked() && customShortStopEdit->getLines() && customShortStopLine)
+    {
+      int i = customShortStopLine->getSize() - index;
+      if (i > -1)
+      {
+        if (customShortStopLine->getData(i) == 1)
+          return TRUE;
+      }
+    }
+  }
+
+  return FALSE;
+}
+
+void Tester::updateTradeList ()
+{
+  int loop;
+  for (loop = 0; loop < (int) trades.count(); loop++)
+  {
+    Setting *trade = trades.at(loop);
+
+    double profit = 0;
+    QString type = trade->getData("type");
+    if (! type.compare("S"))
+      profit = (trade->getDouble("enterPrice") - trade->getDouble("exitPrice")) * trade->getInt("volume");
+    else
+      profit = (trade->getDouble("exitPrice") - trade->getDouble("enterPrice")) * trade->getInt("volume");
+
+    if (! chartType.compare(tr("Futures")))
+      profit = fd.getRate() * profit;
+
+    equity = equity + profit;
+
+    equity = equity - exitCom->value();
+
+    trade->setData("equity", QString::number(equity));
+
+    QString s;
+    tradeList->setNumRows(tradeList->numRows() + 1);
+    tradeList->setText(tradeList->numRows() - 1, 0, type);
+    tradeList->setText(tradeList->numRows() - 1, 1, trade->getData("enterDate"));
+    tradeList->setText(tradeList->numRows() - 1, 2, trade->getData("enterPrice"));
+    tradeList->setText(tradeList->numRows() - 1, 3, trade->getData("exitDate"));
+    tradeList->setText(tradeList->numRows() - 1, 4, trade->getData("exitPrice"));
+    tradeList->setText(tradeList->numRows() - 1, 5, trade->getData("exitSignal"));
+    tradeList->setText(tradeList->numRows() - 1, 6, QString::number(profit));
+    tradeList->setText(tradeList->numRows() - 1, 7, QString::number(equity));
+    tradeList->setText(tradeList->numRows() - 1, 8, trade->getData("volume"));
+  }
+}
+
+void Tester::updateEquityCurve ()
+{
+  if (! trades.count())
+    return;
+
+  equityPlot->setData(recordList);
+
+  PlotLine *line = new PlotLine;
+  QString s = "green";
+  line->setColor(s);
+
+  int loop = 0;
+  int loop2 = 0;
+  double equity = account->value();
+
+  for (; loop < (int) recordList->count(); loop++)
+  {
+    BarDate dt = recordList->getDate(loop);
+
+    Setting *trade = trades.at(loop2);
+    BarDate dt2;
+    QString s = trade->getData("exitDate");
+    dt2.setDate(s);
+
+    if (dt.getDateValue() == dt2.getDateValue())
+    {
+      equity = trade->getDouble("equity");
+
+      loop2++;
+      if (loop2 >= (int) trades.count())
+        loop2 = trades.count() - 1;
+    }
+    
+    line->append(equity);
+  }
+    
+  //set up indicator
+  Indicator *i = new Indicator;
+  QString str = "equity";
+  i->setName(str);
+  i->addLine(line);
+  str = i->getName();
+  equityPlot->addIndicator(i);
+
+  equityPlot->draw();
+}

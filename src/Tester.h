@@ -60,33 +60,29 @@ class Tester : public QTabDialog
     void createTestPage();
     void createReportPage();
     void createChartPage ();
-    void exitPosition (QString &);
-    bool maximumLoss ();
-    bool profit ();
-    bool trailing ();
-    bool customStop ();
     PlotLine * loadIndicator (FormulaEdit *);
-    void enterLong ();
-    void exitLong ();
-    void enterShort ();
-    void exitShort ();
-    bool loadAlerts (int);
-    void clearAlertCounts ();
-    void checkAlerts ();
     void createSummary ();
-    void getVolume ();
+    int getVolume (int, double);
     double getPrice (int);
     void saveEditRule (int);
     void loadEditRule (int);
     void updateChart ();
-    void updateEquityCurve ();
-    void createEquityCurve ();
+//    void createEquityCurve ();
     bool loadCustomLongStop ();
     bool loadCustomShortStop ();
     void saveCustomStopRule ();
     void loadCustomStopRule ();
     QString newTest ();
-    bool checkFormula (int);
+
+    void loadSignals ();
+    void enterLong ();
+    void enterShort ();
+    bool maximumLoss (bool flag, double enterPrice, double exitPrice);
+    bool profit (bool flag, double enterPrice, double exitPrice);
+    bool trailing (bool flag, double exitPrice);
+    bool customStop (bool flag, int index);
+    void updateTradeList ();
+    void updateEquityCurve ();
 
   public slots:
     void test ();
@@ -107,10 +103,6 @@ class Tester : public QTabDialog
   protected:
     Config config;
     QTable *tradeList;
-    Setting *enterLongAlerts;
-    Setting *exitLongAlerts;
-    Setting *enterShortAlerts;
-    Setting *exitShortAlerts;
     QCheckBox *maximumLossCheck;
     QCheckBox *maximumLossLong;
     QCheckBox *maximumLossShort;
@@ -151,24 +143,24 @@ class Tester : public QTabDialog
     QSlider *slider;
     FuturesData fd;
 
-    int status;
-    int testLoop;
     BarData *recordList;
     int currentRecord;
-    int buyRecord;
     double trailingHigh;
     double trailingLow;
     double equity;
-    int enterLongCount;
-    int exitLongCount;
-    int enterShortCount;
-    int exitShortCount;
     double volume;
     QStringList fieldList;
     QStringList compressionList;
-    PlotLine *equityCurve;
+//    PlotLine *equityCurve;
     PlotLine *customShortStopLine;
     PlotLine *customLongStopLine;
+
+    // test
+    QDict<Setting> enterLongSignal;
+    QDict<Setting> exitLongSignal;
+    QDict<Setting> enterShortSignal;
+    QDict<Setting> exitShortSignal;
+    QPtrList<Setting> trades;
 
     QLabel *summaryBalance;
     QLabel *summaryNetProfit;
