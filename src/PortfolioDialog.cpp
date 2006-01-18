@@ -83,6 +83,7 @@ PortfolioDialog::PortfolioDialog (QString p) : QTabDialog (0, "PortfolioDialog",
   plist->addColumn(tr("Last Date"), -1);
   plist->addColumn(tr("Value"), -1);
   plist->addColumn(tr("Profit"), -1);
+  plist->addColumn(tr("Profit%"), -1);
   connect(plist, SIGNAL(clicked(QListViewItem *)), this, SLOT(buttonStatus(QListViewItem *)));
   connect(plist, SIGNAL(doubleClicked(QListViewItem *, const QPoint &, int)), this,
           SLOT(itemDoubleClicked(QListViewItem *, const QPoint &, int)));
@@ -205,8 +206,17 @@ void PortfolioDialog::updatePortfolioItems ()
 
     item->setText(6, QString::number(total));
     
-    bal = bal + total;
-    orig = orig + price.toDouble() * volume.toDouble() * (action.compare(tr("Long"))?-1:1);
+    double spent = price.toDouble() * volume.toDouble() * (action.compare(tr("Long"))?-1:1);
+
+    if (total == 0)
+      item->setText(7, "0%");
+    else if (spent == 0)
+      item->setText(7, "");
+    else
+      item->setText(7, QString::number((total / spent) * 100, 'f', 2) + "%");
+
+    bal += total;
+    orig += spent;
     
     delete bar;
     config.closePlugin(plugin);
@@ -216,7 +226,7 @@ void PortfolioDialog::updatePortfolioItems ()
     balance->setText(tr("Balance: ") + QString::number(bal) + " (0%)");
   else  
     balance->setText(tr("Balance: ") + QString::number(bal) + 
-		     " (" + QString::number(((bal / orig) * 100), 'f', 2) + "%)");
+		     " (" + QString::number((bal / orig) * 100, 'f', 2) + "%)");
 }
 
 void PortfolioDialog::savePortfolio ()

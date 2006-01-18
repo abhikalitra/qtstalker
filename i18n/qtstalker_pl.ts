@@ -53,6 +53,10 @@
         <source>Paint Bars</source>
         <translation type="obsolete">Słupki Malowane</translation>
     </message>
+    <message>
+        <source>Paint Bar Script</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>BarEdit</name>
@@ -996,11 +1000,7 @@ Directory name must be one word only.</source>
     <name>FG</name>
     <message>
         <source>Timeout: retry limit</source>
-        <translation type="unfinished">Czas: limit wznowień</translation>
-    </message>
-    <message>
-        <source>Timeout: retry </source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Czas: limit wznowień</translation>
     </message>
 </context>
 <context>
@@ -1843,23 +1843,15 @@ Save changes?</source>
     <name>MacroDialog</name>
     <message>
         <source>Add</source>
-        <translation type="unfinished">Dodaj</translation>
+        <translation type="obsolete">Dodaj</translation>
     </message>
     <message>
         <source>Insert</source>
-        <translation type="unfinished">Wprowadź</translation>
+        <translation type="obsolete">Wprowadź</translation>
     </message>
     <message>
         <source>Delete</source>
-        <translation type="unfinished">Usuń</translation>
-    </message>
-    <message>
-        <source>&amp;Apply</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Usuń</translation>
     </message>
 </context>
 <context>
@@ -3802,7 +3794,7 @@ Rodzaj Wygładzania %D</translation>
     </message>
     <message>
         <source>Updating </source>
-        <translation type="unfinished">Aktualizacja</translation>
+        <translation type="obsolete">Aktualizacja</translation>
     </message>
     <message>
         <source>%K MA Type</source>
@@ -3898,6 +3890,118 @@ Rodzaj Wygładzania %D</translation>
     </message>
     <message>
         <source>Zone Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Long Percentage</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Doji Percentage</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Pattern 1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Bullish_Abandoned_Baby</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Bearish_Abandoned_Baby</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Concealing_Baby_Swallow</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Bullish_Kicking</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Bearish_Kicking</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Mat_Hold</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Matching_Low</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Morning_Doji_Star</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Morning_Star</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Side_By_Side_White_Lines</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Three_Inside_Up</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Pattern 2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Three_Outside_Up</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Three_White_Soldiers</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Dark_Cloud_Cover</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Evening_Doji_Star</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Evening_Star</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Falling_Three_Methods</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Identical_Three_Crows</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Three_Black_Crows</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Three_Inside_Down</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Three_Outside_Down</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Upside_Gap_Two_Crows</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color 1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color 2</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -4142,7 +4246,7 @@ Tłumaczenie polskie: Benedict P. Barszcz</translation>
     </message>
     <message>
         <source>Monthly</source>
-        <translation>Miesięczny</translation>
+        <translation type="obsolete">Miesięczny</translation>
     </message>
     <message>
         <source>&amp;Scan</source>
@@ -4636,19 +4740,19 @@ eg. 2:1</source>
     </message>
     <message>
         <source>Enter Long Delay</source>
-        <translation>Opóźnienie Otwarcia Długiej</translation>
+        <translation type="obsolete">Opóźnienie Otwarcia Długiej</translation>
     </message>
     <message>
         <source>Exit Long Delay</source>
-        <translation>Opóźnienie Zamknięcia Długiej</translation>
+        <translation type="obsolete">Opóźnienie Zamknięcia Długiej</translation>
     </message>
     <message>
         <source>Enter Short Delay</source>
-        <translation>Opóźnienie Otwarcia Krótkiej</translation>
+        <translation type="obsolete">Opóźnienie Otwarcia Krótkiej</translation>
     </message>
     <message>
         <source>Exit Short Delay</source>
-        <translation>Opóźnienie Zamknięcia Krótkiej</translation>
+        <translation type="obsolete">Opóźnienie Zamknięcia Krótkiej</translation>
     </message>
     <message>
         <source>Account</source>
@@ -4800,19 +4904,19 @@ eg. 2:1</source>
     </message>
     <message>
         <source>Enter long </source>
-        <translation>Otwórz długą</translation>
+        <translation type="obsolete">Otwórz długą</translation>
     </message>
     <message>
         <source>Exit long </source>
-        <translation>Zamknij długą</translation>
+        <translation type="obsolete">Zamknij długą</translation>
     </message>
     <message>
         <source>Enter short </source>
-        <translation>Otwórz krótką</translation>
+        <translation type="obsolete">Otwórz krótką</translation>
     </message>
     <message>
         <source>Exit short </source>
-        <translation>Zamknij krótką</translation>
+        <translation type="obsolete">Zamknij krótką</translation>
     </message>
     <message>
         <source>Qtstalker: Error</source>
@@ -4844,27 +4948,27 @@ eg. 2:1</source>
     </message>
     <message>
         <source>Enter Long: </source>
-        <translation>Otwórz Długą:</translation>
+        <translation type="obsolete">Otwórz Długą:</translation>
     </message>
     <message>
         <source>Exit Long: </source>
-        <translation>Zamknij Długą:</translation>
+        <translation type="obsolete">Zamknij Długą:</translation>
     </message>
     <message>
         <source>Enter Short: </source>
-        <translation>Otwórz Krótką:</translation>
+        <translation type="obsolete">Otwórz Krótką:</translation>
     </message>
     <message>
         <source>Exit Short: </source>
-        <translation>Zamknij Krótką:</translation>
+        <translation type="obsolete">Zamknij Krótką:</translation>
     </message>
     <message>
         <source>Custom Long Stop: </source>
-        <translation>Własny Stop Długiej:</translation>
+        <translation type="obsolete">Własny Stop Długiej:</translation>
     </message>
     <message>
         <source>Custom Short Stop: </source>
-        <translation>Własny Stop Krótkiej:</translation>
+        <translation type="obsolete">Własny Stop Krótkiej:</translation>
     </message>
     <message>
         <source>Must have one COMP step checked.</source>
@@ -4877,6 +4981,22 @@ eg. 2:1</source>
     <message>
         <source>End of test</source>
         <translation>Koniec testu</translation>
+    </message>
+    <message>
+        <source>Trade Delay</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Compression</source>
+        <translation type="unfinished">Kompresja</translation>
+    </message>
+    <message>
+        <source>Max Loss</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>CUS Stop</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

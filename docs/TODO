@@ -33,6 +33,10 @@ To Do:
 - save last chart viewed between sessions.
 - save the current chart path to the tester 
 - cannot create Horizontal Lines for CUS scripts.
+- fix: CUS parser needs to find an exact match for reserved words or seg faults. eg Closen instead of Close.
+- add proxy support to quote downloads
+- change absolute path names in the tester rules to relative so files can be moved
+- option in tester to calculate commisions as a % of the total price.
 
 
 Maybe some day:

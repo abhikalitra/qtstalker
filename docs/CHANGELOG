@@ -166,6 +166,9 @@
 
 20051117: Changed the tester volume percentage option to default to a volume of 1 if it is set to 0.
 
+20060117: Applied patch 1366297 - percentage profit for each paper. Thanks to imo for the patch.
+
+
 
 
 0.32
