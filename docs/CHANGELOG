@@ -168,6 +168,7 @@
 
 20060117: Applied patch 1366297 - percentage profit for each paper. Thanks to imo for the patch.
 
+20060120: Fixed CUS parsing error with input array labels ie. Closen, Opened etc.
 
 
 
