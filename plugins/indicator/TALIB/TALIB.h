@@ -21,49 +21,23 @@
 
 #include "IndicatorPlugin.h"
 
-class BARS : public IndicatorPlugin
+class TALIB : public IndicatorPlugin
 {
   public:
-    BARS ();
-    virtual ~BARS ();
+    TALIB ();
+    virtual ~TALIB ();
     void calculate ();
-    void calculateBar ();
-    void calculateCandle ();
     int indicatorPrefDialog (QWidget *);
     void setDefaults();
     PlotLine * calculateCustom (QString &, QPtrList<PlotLine> &);
     void getIndicatorSettings (Setting &);
     void setIndicatorSettings (Setting &);
-    void calculateMA ();
+  
+    void getIndicatorList (QStringList &);
 
   private:
-    QColor barUpColor;
-    QColor barDownColor;
-    QColor barNeutralColor;
-    QColor candleColor;
-    PlotLine::LineType lineType;
-    QString label;
-    QString method;
     QStringList methodList;
-
-    QColor maColor;
-    QColor maColor2;
-    QColor maColor3;
-    PlotLine::LineType maLineType;
-    PlotLine::LineType maLineType2;
-    PlotLine::LineType maLineType3;
-    QString maLabel;
-    QString maLabel2;
-    QString maLabel3;
-    int maPeriod;
-    int maPeriod2;
-    int maPeriod3;
-    int maType;
-    int maType2;
-    int maType3;
-    BarData::InputType maInput;
-    BarData::InputType maInput2;
-    BarData::InputType maInput3;
+    Setting parms;
 };
 
 extern "C"

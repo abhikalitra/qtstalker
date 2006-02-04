@@ -39,6 +39,7 @@ SUBDIRS += plugins/indicator/SINWAV
 SUBDIRS += plugins/indicator/STOCH
 SUBDIRS += plugins/indicator/SYMBOL
 SUBDIRS += plugins/indicator/SZ
+SUBDIRS += plugins/indicator/TALIB
 SUBDIRS += plugins/indicator/THERM
 SUBDIRS += plugins/indicator/TRIX
 SUBDIRS += plugins/indicator/UO

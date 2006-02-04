@@ -1000,7 +1000,11 @@ Directory name must be one word only.</source>
     <name>FG</name>
     <message>
         <source>Timeout: retry limit</source>
-        <translation type="obsolete">Czas: limit wznowień</translation>
+        <translation type="unfinished">Czas: limit wznowień</translation>
+    </message>
+    <message>
+        <source>Timeout: retry </source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2401,6 +2405,10 @@ Save changes?</source>
         <source>Balance: </source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Profit%</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>PortfolioPage</name>
@@ -2744,7 +2752,7 @@ Save changes?</source>
     </message>
     <message>
         <source>Plot</source>
-        <translation type="obsolete">Krzywa</translation>
+        <translation type="unfinished">Krzywa</translation>
     </message>
     <message>
         <source>CCI Indicator</source>
@@ -3794,7 +3802,7 @@ Rodzaj Wygładzania %D</translation>
     </message>
     <message>
         <source>Updating </source>
-        <translation type="obsolete">Aktualizacja</translation>
+        <translation type="unfinished">Aktualizacja</translation>
     </message>
     <message>
         <source>%K MA Type</source>
@@ -3893,115 +3901,15 @@ Rodzaj Wygładzania %D</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Long Percentage</source>
+        <source>input</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Doji Percentage</source>
+        <source>TALIB Indicator Selection</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Pattern 1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Bullish_Abandoned_Baby</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Bearish_Abandoned_Baby</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Concealing_Baby_Swallow</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Bullish_Kicking</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Bearish_Kicking</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Mat_Hold</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Matching_Low</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Morning_Doji_Star</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Morning_Star</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Side_By_Side_White_Lines</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Three_Inside_Up</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Pattern 2</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Three_Outside_Up</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Three_White_Soldiers</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Dark_Cloud_Cover</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Evening_Doji_Star</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Evening_Star</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Falling_Three_Methods</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Identical_Three_Crows</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Three_Black_Crows</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Three_Inside_Down</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Three_Outside_Down</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Upside_Gap_Two_Crows</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Color 1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Color 2</source>
+        <source>TALIB Indicator</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

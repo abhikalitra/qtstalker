@@ -122,9 +122,12 @@ void CUS::calculate ()
    
       if (! inList.count())
       {
-        qDebug("CUS::calculate: no input array");
-        config.closePlugin(plugin);
-        return;
+        if (plugin.compare("TALIB"))
+        {
+          qDebug("CUS::calculate: no input array");
+          config.closePlugin(plugin);
+          return;
+        }
       }
 
       PlotLine *out = plug->calculateCustom(parms, inList);
