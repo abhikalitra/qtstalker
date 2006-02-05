@@ -167,6 +167,8 @@
 
 20060120: Fixed CUS parsing error with input array labels ie. Closen, Opened etc.
 
+20060204: Experimental: Added new indicator TALIB. This uses the TALIB library to create any TALIB
+          indicator. 
 
 
 0.32

@@ -229,9 +229,12 @@ void TALIB::calculate ()
   else
   {
     // create the plotlines
+    clearOutput();
+
     for (loop = 0; loop < (int) theInfo->nbOutput; loop++ )
     {
       PlotLine *line = new PlotLine;
+      output->addLine(line);
 
       QString s = QObject::tr("Color") + QString::number(loop + 1);
       QColor color(parms.getData(s));
@@ -243,8 +246,6 @@ void TALIB::calculate ()
 
       s = QObject::tr("Line Type") + QString::number(loop + 1);
       line->setType((PlotLine::LineType)parms.getInt(s));
-
-      output->addLine(line);
 
       retCode = TA_GetOutputParameterInfo(handle, loop, &outInfo);
       if (retCode != TA_SUCCESS)
@@ -606,7 +607,7 @@ PlotLine * TALIB::calculateCustom (QString &p, QPtrList<PlotLine> &d)
 
       PlotLine *line =  d.at(0);
       int loop2;
-      for (loop2 = 0; loop2 < data->count(); loop2++)
+      for (loop2 = 0; loop2 < line->getSize(); loop2++)
         treal[loop2] = (TA_Real) line->getData(loop2);
 
       retCode = TA_SetInputParamRealPtr(parmHolder, loop, &treal[0]);
@@ -737,44 +738,27 @@ PlotLine * TALIB::calculateCustom (QString &p, QPtrList<PlotLine> &d)
   {
     // create the plotlines
     clearOutput();
-    for (loop = 0; loop < (int) theInfo->nbOutput; loop++ )
+
+    int loop2;
+    PlotLine *line = new PlotLine;
+    output->addLine(line);
+
+    retCode = TA_GetOutputParameterInfo(handle, 0, &outInfo);
+    if (retCode != TA_SUCCESS)
     {
-      PlotLine *line = new PlotLine;
-      output->addLine(line);
-
-      retCode = TA_GetOutputParameterInfo(handle, loop, &outInfo);
-      if (retCode != TA_SUCCESS)
-      {
-        qDebug("TALIB::calculateCustom:cannot get output info");
-        continue;
-      }
-
-      int loop2;
-      switch (loop)
-      {
-        case 0:
-          if (outInfo->type == TA_Output_Integer)
-          {
-            for (loop2 = 0; loop2 < count; loop2++)
-              line->append((double) out4[loop2]);
-          }
-          else
-          {
-            for (loop2 = 0; loop2 < count; loop2++)
-              line->append((double) out1[loop2]);
-          }
-          break;      
-        case 1:
-          for (loop2 = 0; loop2 < count; loop2++)
-            line->append((double) out2[loop2]);
-          break;      
-        case 2:
-          for (loop2 = 0; loop2 < count; loop2++)
-            line->append((double) out3[loop2]);
-          break;
-        default:
-          break;
-      }
+      qDebug("TALIB::calculateCustom:cannot get output info");
+      return 0;
+    }
+    
+    if (outInfo->type == TA_Output_Integer)
+    {
+      for (loop2 = 0; loop2 < count; loop2++)
+        line->append((double) out4[loop2]);
+    }
+    else
+    {
+      for (loop2 = 0; loop2 < count; loop2++)
+        line->append((double) out1[loop2]);
     }
   }
 
@@ -782,7 +766,10 @@ PlotLine * TALIB::calculateCustom (QString &p, QPtrList<PlotLine> &d)
   if (retCode != TA_SUCCESS)
     qDebug("TALIB::calculateCustom:can't delete parm holder");
 
-  return output->getLine(0);
+  if (output->getLines())
+    return output->getLine(0);
+  else
+    return 0;
 }
 
 //*******************************************************
