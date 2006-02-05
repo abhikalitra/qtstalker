@@ -31,7 +31,6 @@ VOL::VOL ()
 
   methodList.append("VOL");
   methodList.append("NVI");
-  methodList.append("OBV");
   methodList.append("PVI");
   methodList.append("PVT");
   methodList.sort();
@@ -67,12 +66,6 @@ void VOL::calculate ()
     if (! method.compare("VOL"))
     {
       calculateVOL();
-      break;
-    }
-
-    if (! method.compare("OBV"))
-    {
-      calculateOBV();
       break;
     }
 
@@ -125,44 +118,6 @@ void VOL::calculateVOL ()
     return;
 
   PlotLine *ma = getMA(pl, maType, period);
-  ma->setColor(maColor);
-  ma->setType(maLineType);
-  ma->setLabel(maLabel);
-  output->addLine(ma);
-}
-
-void VOL::calculateOBV ()
-{
-  PlotLine *obv = new PlotLine();
-  obv->setColor(vtColor);
-  obv->setType(vtLineType);
-  obv->setLabel(label);
-
-  int loop;
-  double t = 0;
-  for (loop = 1; loop < (int) data->count(); loop++)
-  {
-    double close = data->getClose(loop);
-    double volume = data->getVolume(loop);
-    double yclose = data->getClose(loop - 1);
-
-    if (close > yclose)
-      t = t + volume;
-    else
-    {
-      if (close < yclose)
-      	t = t - volume;
-    }
-
-    obv->append(t);
-  }
-
-  output->addLine(obv);
-
-  if (period < 1)
-    return;
-
-  PlotLine *ma = getMA(obv, maType, period);
   ma->setColor(maColor);
   ma->setType(maLineType);
   ma->setLabel(maLabel);

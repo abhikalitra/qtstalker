@@ -28,7 +28,6 @@ class UTIL : public IndicatorPlugin
     virtual ~UTIL ();
     PlotLine * calculateCustom (QString &, QPtrList<PlotLine> &);
     PlotLine * calculateAccum (QString &, QPtrList<PlotLine> &);
-    PlotLine * calculateTypPrice();
     PlotLine * calculateNormal(QString &, QPtrList<PlotLine> &);
     PlotLine * calculateCOMP (QString &p, QPtrList<PlotLine> &d);
     PlotLine * calculateCOUNTER (QString &p, QPtrList<PlotLine> &d);

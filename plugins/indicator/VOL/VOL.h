@@ -33,7 +33,6 @@ class VOL : public IndicatorPlugin
     void setIndicatorSettings (Setting &);
     int getMinBars ();
     void calculateVOL ();
-    void calculateOBV ();
     void calculateNVI ();
     void calculatePVI ();
     void calculatePVT ();

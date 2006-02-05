@@ -168,7 +168,20 @@
 20060120: Fixed CUS parsing error with input array labels ie. Closen, Opened etc.
 
 20060204: Experimental: Added new indicator TALIB. This uses the TALIB library to create any TALIB
-          indicator. 
+          indicator.
+
+20060205: Added TALIB CUS reference docs.
+
+20060205: Removed TypPrice from the UTIL plugin. 
+
+20060205: Removed the OBV function from the VOL plugin. 
+
+20060205: Removed the SD function from the VOLA plugin.
+
+20060205: Removed the AD, AROON, ATR, BB, CCI, CMO, DMI, DPO, MACD, MF, MINMAX, MOM, RSI
+          SAR, STOCH, TRIX, WILLR plugins and docs.
+
+
 
 
 0.32

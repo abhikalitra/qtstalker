@@ -31,7 +31,6 @@ UTIL::UTIL ()
   pluginName = "UTIL";
   
   methodList.append("ACCUM");
-  methodList.append("TypPrice");
   methodList.append("Normal");
   methodList.append("ADD");
   methodList.append("DIV");
@@ -85,18 +84,6 @@ PlotLine * UTIL::calculateAccum (QString &p, QPtrList<PlotLine> &d)
   }
   
   output->addLine(line);
-  return output->getLine(0);
-}
-
-PlotLine * UTIL::calculateTypPrice()
-{
-  PlotLine *typPrice = new PlotLine;
-
-  int loop;
-  for (loop = 0; loop < (int) data->count(); loop++)
-    typPrice->append((data->getHigh(loop) + data->getLow(loop) + data->getClose(loop)) / 3);
-	
-  output->addLine(typPrice);
   return output->getLine(0);
 }
 
@@ -176,12 +163,6 @@ PlotLine * UTIL::calculateCustom (QString &p, QPtrList<PlotLine> &d)
     if (! l[0].compare("ACCUM"))
     {
       out = calculateAccum(p, d);
-      break;
-    }
-
-    if (! l[0].compare("TypPrice"))
-    {
-      out = calculateTypPrice();
       break;
     }
 

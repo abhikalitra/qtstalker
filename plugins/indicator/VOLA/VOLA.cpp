@@ -31,7 +31,6 @@ VOLA::VOLA ()
   pluginName = "VOLA";
 
   methodList.append("CV");
-  methodList.append("SD");
   methodList.append("VOLR");
 
   helpFile = "volr.html";
@@ -51,8 +50,6 @@ void VOLA::setDefaults ()
   volrPeriod = 14;
   cvPeriod = 10;
   method = "";
-  sdPeriod = 21;
-  sdInput = BarData::Close;
 }
 
 void VOLA::calculate ()
@@ -60,21 +57,7 @@ void VOLA::calculate ()
   if (! method.compare("CV"))
     calculateCV();
   else
-  {
-    if (! method.compare("SD"))
-    {
-      PlotLine *in = data->getInput(sdInput);
-      if (! in)
-      {
-        qDebug("VOLA::calculate: no input");
-        return;
-      }
-      calculateSD(in);
-      delete in;
-    }
-    else
-      calculateVOLR();
-  }
+    calculateVOLR();
 }
 
 void VOLA::calculateCV ()
@@ -102,36 +85,6 @@ void VOLA::calculateCV ()
 
   delete hl;
   delete ema;
-}
-
-void VOLA::calculateSD (PlotLine *in)
-{
-  PlotLine *sd = new PlotLine();
-  sd->setColor(color);
-  sd->setType(lineType);
-  sd->setLabel(label);
-
-  int loop;
-  for (loop = sdPeriod; loop < (int) in->getSize(); loop++)
-  {
-    double mean = 0;
-    int loop2;
-    for (loop2 = 0; loop2 < sdPeriod; loop2++)
-      mean = mean + in->getData(loop - loop2);
-    mean = mean / sdPeriod;
-
-    double ds = 0;
-    for (loop2 = 0; loop2 < sdPeriod; loop2++)
-    {
-      double t = in->getData(loop - loop2) - mean;
-      ds = ds + (t * t);
-    }
-    ds = sqrt(ds / sdPeriod);
-
-    sd->append(ds);
-  }
-
-  output->addLine(sd);
 }
 
 void VOLA::calculateVOLR ()
@@ -208,13 +161,6 @@ int VOLA::indicatorPrefDialog (QWidget *w)
       break;
     }
 
-    if (! method.compare("SD"))
-    {
-      dialog->addIntItem(perl, pl, sdPeriod, 1, 99999999);
-      dialog->addComboItem(il, pl, inputTypeList, sdInput);
-      break;
-    }
-
     if (! method.compare("VOLR"))
     {
       dialog->addIntItem(perl, pl, volrPeriod, 1, 99999999);
@@ -237,13 +183,6 @@ int VOLA::indicatorPrefDialog (QWidget *w)
       if (! method.compare("CV"))
       {
         cvPeriod = dialog->getInt(perl);
-        break;
-      }
-
-      if (! method.compare("SD"))
-      {
-        sdPeriod = dialog->getInt(perl);
-        sdInput = (BarData::InputType) dialog->getComboIndex(il);
         break;
       }
 
@@ -284,10 +223,6 @@ void VOLA::setIndicatorSettings (Setting &dict)
   if (s.length())
     cvPeriod = s.toInt();
 
-  s = dict.getData("sdPeriod");
-  if (s.length())
-    sdPeriod = s.toInt();
-
   s = dict.getData("volrPeriod");
   if (s.length())
     volrPeriod = s.toInt();
@@ -295,10 +230,6 @@ void VOLA::setIndicatorSettings (Setting &dict)
   s = dict.getData("label");
   if (s.length())
     label = s;
-
-  s = dict.getData("sdInput");
-  if (s.length())
-    sdInput = (BarData::InputType) s.toInt();
 
   s = dict.getData("method");
   if (s.length())
@@ -310,10 +241,8 @@ void VOLA::getIndicatorSettings (Setting &dict)
   dict.setData("color", color.name());
   dict.setData("lineType", QString::number(lineType));
   dict.setData("cvPeriod", QString::number(cvPeriod));
-  dict.setData("sdPeriod", QString::number(sdPeriod));
   dict.setData("volrPeriod", QString::number(volrPeriod));
   dict.setData("label", label);
-  dict.setData("sdInput", QString::number(sdInput));
   dict.setData("method", method);
   dict.setData("plugin", pluginName);
 }
@@ -348,12 +277,7 @@ PlotLine * VOLA::calculateCustom (QString &p, QPtrList<PlotLine> &d)
     if (! method.compare("CV"))
       cvPeriod = t;
     else
-    {
-      if (! method.compare("SD"))
-        sdPeriod = t;
-      else
-        volrPeriod = t;
-    }
+      volrPeriod = t;
   }
   else
   {
@@ -363,18 +287,7 @@ PlotLine * VOLA::calculateCustom (QString &p, QPtrList<PlotLine> &d)
 
   clearOutput();
 
-  if (! method.compare("SD") && l.count() == 3)
-  {
-    if (d.count())
-      calculateSD(d.at(0));
-    else
-    {
-      qDebug("VOLA::calculateCustom: no input");
-      return 0;
-    }
-  }
-  else
-    calculate();
+  calculate();
 
   return output->getLine(0);
 }
@@ -415,12 +328,7 @@ int VOLA::getMinBars ()
   if (! method.compare("CV"))
     t = t + cvPeriod;
   else
-  {
-    if (! method.compare("SD"))
-      t = t + sdPeriod;
-    else
-      t = t + volrPeriod;
-  }
+    t = t + volrPeriod;
   return t;
 }
 

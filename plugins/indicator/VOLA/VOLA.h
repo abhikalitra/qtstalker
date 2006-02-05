@@ -28,7 +28,6 @@ class VOLA : public IndicatorPlugin
     virtual ~VOLA ();
     void calculate ();
     void calculateCV ();
-    void calculateSD (PlotLine *);
     void calculateVOLR ();
     int indicatorPrefDialog (QWidget *);
     void setDefaults();
@@ -43,11 +42,9 @@ class VOLA : public IndicatorPlugin
     PlotLine::LineType lineType;
     QString label;
     int cvPeriod;
-    int sdPeriod;
     int volrPeriod;
     QString method;
     QStringList methodList;
-    BarData::InputType sdInput;
 };
 
 extern "C"
