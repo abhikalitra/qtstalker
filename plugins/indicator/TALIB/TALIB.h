@@ -32,8 +32,8 @@ class TALIB : public IndicatorPlugin
     PlotLine * calculateCustom (QString &, QPtrList<PlotLine> &);
     void getIndicatorSettings (Setting &);
     void setIndicatorSettings (Setting &);
-  
     void getIndicatorList (QStringList &);
+    PlotLine * getMA (PlotLine *d, int, int);
 
   private:
     QStringList methodList;

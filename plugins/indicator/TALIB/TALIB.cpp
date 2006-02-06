@@ -772,6 +772,67 @@ PlotLine * TALIB::calculateCustom (QString &p, QPtrList<PlotLine> &d)
     return 0;
 }
 
+PlotLine * TALIB::getMA (PlotLine *in, int type, int period)
+{
+  PlotLine *ma = new PlotLine;
+
+  TA_RetCode rc = TA_Initialize(NULL);
+  if (rc != TA_SUCCESS)
+  {
+    qDebug("TALIB::getMA:error on TA_Initialize");
+    return ma;
+  }
+
+  TA_Real input[in->getSize()];
+  TA_Real out[in->getSize()];
+  TA_Integer outBeg;
+  TA_Integer count;
+
+  int loop;
+  for (loop = 0; loop < in->getSize(); loop++)
+    input[loop] = (TA_Real) in->getData(loop);
+
+  switch (type)
+  {
+    case 0:
+      rc = TA_MA(0, in->getSize()- 1, &input[0], period, TA_MAType_SMA, &outBeg, &count, &out[0]);
+      break;
+    case 1:
+      rc = TA_MA(0, in->getSize()- 1, &input[0], period, TA_MAType_EMA, &outBeg, &count, &out[0]);
+      break;
+    case 2:
+      rc = TA_MA(0, in->getSize()- 1, &input[0], period, TA_MAType_WMA, &outBeg, &count, &out[0]);
+      break;
+    case 4:
+      rc = TA_MA(0, in->getSize()- 1, &input[0], period, TA_MAType_DEMA, &outBeg, &count, &out[0]);
+      break;
+    case 5:
+      rc = TA_MA(0, in->getSize()- 1, &input[0], period, TA_MAType_KAMA, &outBeg, &count, &out[0]);
+      break;
+    case 6:
+      rc = TA_MA(0, in->getSize()- 1, &input[0], period, TA_MAType_TEMA, &outBeg, &count, &out[0]);
+      break;
+    case 7:
+      rc = TA_MA(0, in->getSize()- 1, &input[0], period, TA_MAType_TRIMA, &outBeg, &count, &out[0]);
+      break;
+    default:
+      break;    
+  }
+
+  TA_Shutdown();  
+
+  if (rc != TA_SUCCESS)
+  {
+    qDebug("TALIB::getMA:error on TALIB function call");
+    return ma;
+  }
+
+  for (loop = 0; loop < count; loop++)
+    ma->append((double) out[loop]);
+
+  return ma;  
+}
+
 //*******************************************************
 //*******************************************************
 //*******************************************************

@@ -128,24 +128,20 @@ Indicator * IndicatorPlugin::getIndicator ()
 QStringList IndicatorPlugin::getMATypes ()
 {
   QStringList l;
-  Config config;
-  QString s("MA");
-  IndicatorPlugin *plug = config.getIndicatorPlugin(s);
-  if (! plug)
-  {
-    qDebug("IndicatorPlugin::getMATypes: cannot open MA plugin");
-    config.closePlugin(s);
-    return l;
-  }
-  
-  l = plug->getMATypes();
-  config.closePlugin(s);
-  
+  l.append("EMA");
+  l.append("SMA");
+  l.append("WMA");
+  l.append("Wilder");
+  l.append("DEMA");
+  l.append("KAMA");
+  l.append("TEMA");
+  l.append("TRIMA");
   return l;
 }
 
 PlotLine * IndicatorPlugin::getMA (PlotLine *in, int type, int period)
 {
+/*
   PlotLine *ma = 0;
   Config config;
   QString s("MA");
@@ -160,6 +156,88 @@ PlotLine * IndicatorPlugin::getMA (PlotLine *in, int type, int period)
   ma = plug->getMA(in, type, period);
   config.closePlugin(s);
   return ma;  
+*/
+
+  PlotLine *ma = 0;
+  Config config;
+  QString s("TALIB");
+  IndicatorPlugin *plug = config.getIndicatorPlugin(s);
+  if (! plug)
+  {
+    qDebug("IndicatorPlugin::getMA: cannot open TALIB plugin");
+    config.closePlugin(s);
+    return ma;
+  }
+
+  if (type == 3)
+    ma = getWilderMA(in, period);
+  else
+    ma = plug->getMA(in, type, period);
+
+  config.closePlugin(s);
+
+  return ma;  
+}
+
+/*
+int IndicatorPlugin::getMAType (QString d)
+{
+  int type = (int) SMA;
+  
+  while (1)
+  {
+    if (! d.compare("EMA"))
+    {
+      type = (int) EMA;
+      break;
+    }
+    
+    if (! d.compare("WMA"))
+    {
+      type = (int) WMA;
+      break;
+    }
+  
+    if (! d.compare("Wilder"))
+    {
+      type = (int) Wilder;
+      break;
+    }
+    
+    break;
+  }
+  
+  return type;
+}
+*/
+
+PlotLine * IndicatorPlugin::getWilderMA (PlotLine *d, int period)
+{
+  PlotLine *wilderma = new PlotLine;
+
+  if (period >= (int) d->getSize())
+    return wilderma;
+
+  if (period < 1)
+    return wilderma;
+
+  double t = 0;
+  int loop;
+  for (loop = 0; loop < period; loop++)
+    t = t + d->getData(loop);
+
+  double yesterday = t / period;
+
+  wilderma->append(yesterday);
+
+  for (; loop < (int) d->getSize(); loop++)
+  {
+    double t  = (yesterday * (period - 1) + d->getData(loop))/period;
+    yesterday = t;
+    wilderma->append(t);
+  }
+
+  return wilderma;
 }
 
 QString IndicatorPlugin::getPluginName ()

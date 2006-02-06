@@ -178,7 +178,7 @@
 
 20060205: Removed the SD function from the VOLA plugin.
 
-20060205: Removed the AD, AROON, ATR, BB, CCI, CMO, DMI, DPO, MACD, MF, MINMAX, MOM, RSI
+20060205: Removed the AD, AROON, ATR, BB, CCI, CMO, DMI, DPO, MA, MACD, MF, MINMAX, MOM, RSI
           SAR, STOCH, TRIX, WILLR plugins and docs.
 
 

@@ -2704,7 +2704,7 @@ Save changes?</source>
     </message>
     <message>
         <source>AD Indicator</source>
-        <translation>Wskaźnik AD</translation>
+        <translation type="obsolete">Wskaźnik AD</translation>
     </message>
     <message>
         <source>Parms</source>
@@ -2724,7 +2724,7 @@ Save changes?</source>
     </message>
     <message>
         <source>ATR Indicator</source>
-        <translation>Wskaźnik ATR</translation>
+        <translation type="obsolete">Wskaźnik ATR</translation>
     </message>
     <message>
         <source>Smoothing</source>
@@ -2736,7 +2736,7 @@ Save changes?</source>
     </message>
     <message>
         <source>BB Indicator</source>
-        <translation>Wskaźnik BB</translation>
+        <translation type="obsolete">Wskaźnik BB</translation>
     </message>
     <message>
         <source>Period</source>
@@ -2744,7 +2744,7 @@ Save changes?</source>
     </message>
     <message>
         <source>Deviation</source>
-        <translation>Dewiacja</translation>
+        <translation type="obsolete">Dewiacja</translation>
     </message>
     <message>
         <source>MA Type</source>
@@ -2756,7 +2756,7 @@ Save changes?</source>
     </message>
     <message>
         <source>CCI Indicator</source>
-        <translation>Wskaźnik CCI</translation>
+        <translation type="obsolete">Wskaźnik CCI</translation>
     </message>
     <message>
         <source>COMP Indicator</source>
@@ -2796,47 +2796,47 @@ Save changes?</source>
     </message>
     <message>
         <source>DMI Indicator</source>
-        <translation>Wskaźnik DMI</translation>
+        <translation type="obsolete">Wskaźnik DMI</translation>
     </message>
     <message>
         <source>+DM Color</source>
-        <translation>Kolor +DM</translation>
+        <translation type="obsolete">Kolor +DM</translation>
     </message>
     <message>
         <source>+DM Label</source>
-        <translation>Etykieta +DM</translation>
+        <translation type="obsolete">Etykieta +DM</translation>
     </message>
     <message>
         <source>+DM Line Type</source>
-        <translation>Styl Krzywej +DM</translation>
+        <translation type="obsolete">Styl Krzywej +DM</translation>
     </message>
     <message>
         <source>-DM Color</source>
-        <translation>Kolor -DM</translation>
+        <translation type="obsolete">Kolor -DM</translation>
     </message>
     <message>
         <source>-DM Label</source>
-        <translation>Etykieta -DM</translation>
+        <translation type="obsolete">Etykieta -DM</translation>
     </message>
     <message>
         <source>-DM Line Type</source>
-        <translation>Styl Krzywej -DM</translation>
+        <translation type="obsolete">Styl Krzywej -DM</translation>
     </message>
     <message>
         <source>ADX Color</source>
-        <translation>Kolor ADX</translation>
+        <translation type="obsolete">Kolor ADX</translation>
     </message>
     <message>
         <source>ADX Label</source>
-        <translation>Etykieta ADX</translation>
+        <translation type="obsolete">Etykieta ADX</translation>
     </message>
     <message>
         <source>ADX Line Type</source>
-        <translation>Styl Krzywej ADX</translation>
+        <translation type="obsolete">Styl Krzywej ADX</translation>
     </message>
     <message>
         <source>DPO Indicator</source>
-        <translation>Wskaźnik DPO</translation>
+        <translation type="obsolete">Wskaźnik DPO</translation>
     </message>
     <message>
         <source>FI Indicator</source>
@@ -2852,7 +2852,7 @@ Save changes?</source>
     </message>
     <message>
         <source>MACD Indicator</source>
-        <translation>Wskaźnik MACD</translation>
+        <translation type="obsolete">Wskaźnik MACD</translation>
     </message>
     <message>
         <source>MACD</source>
@@ -2860,71 +2860,71 @@ Save changes?</source>
     </message>
     <message>
         <source>MACD Color</source>
-        <translation>Kolor MACD</translation>
+        <translation type="obsolete">Kolor MACD</translation>
     </message>
     <message>
         <source>Fast Period</source>
-        <translation>Szybki Okres</translation>
+        <translation type="obsolete">Szybki Okres</translation>
     </message>
     <message>
         <source>Slow Period</source>
-        <translation>Wolny Okres</translation>
+        <translation type="obsolete">Wolny Okres</translation>
     </message>
     <message>
         <source>MACD Label</source>
-        <translation>Etykieta MACD</translation>
+        <translation type="obsolete">Etykieta MACD</translation>
     </message>
     <message>
         <source>MACD Line Type</source>
-        <translation>Styl Krzywej MACD</translation>
+        <translation type="obsolete">Styl Krzywej MACD</translation>
     </message>
     <message>
         <source>MACD MA Type</source>
-        <translation>rodzaj ŚK MACD</translation>
+        <translation type="obsolete">rodzaj ŚK MACD</translation>
     </message>
     <message>
         <source>MACD Input</source>
-        <translation>Źródło MACD</translation>
+        <translation type="obsolete">Źródło MACD</translation>
     </message>
     <message>
         <source>Trigger</source>
-        <translation>Sygnalna</translation>
+        <translation type="obsolete">Sygnalna</translation>
     </message>
     <message>
         <source>Trigger Color</source>
-        <translation>Kolor Sygnalnej</translation>
+        <translation type="obsolete">Kolor Sygnalnej</translation>
     </message>
     <message>
         <source>Trigger Period</source>
-        <translation>Okres Sygnalnej</translation>
+        <translation type="obsolete">Okres Sygnalnej</translation>
     </message>
     <message>
         <source>Trigger Label</source>
-        <translation>Etykieta Sygnalnej</translation>
+        <translation type="obsolete">Etykieta Sygnalnej</translation>
     </message>
     <message>
         <source>Trigger Line Type</source>
-        <translation>Styl Krzywej Sygnalnej</translation>
+        <translation type="obsolete">Styl Krzywej Sygnalnej</translation>
     </message>
     <message>
         <source>Osc</source>
-        <translation>Oscylator</translation>
+        <translation type="obsolete">Oscylator</translation>
     </message>
     <message>
         <source>Osc Color</source>
-        <translation>Kolor Osc</translation>
+        <translation type="obsolete">Kolor Osc</translation>
     </message>
     <message>
         <source>Osc Label</source>
-        <translation>Etykieta Osc</translation>
+        <translation type="obsolete">Etykieta Osc</translation>
     </message>
     <message>
         <source>Osc Line Type</source>
-        <translation>Styl Krzywej Osc</translation>
+        <translation type="obsolete">Styl Krzywej Osc</translation>
     </message>
     <message>
         <source>Osc Scaling Max</source>
-        <translation>Maks Skalowania Osc</translation>
+        <translation type="obsolete">Maks Skalowania Osc</translation>
     </message>
     <message>
         <source>MAOSC Indicator</source>
@@ -2980,11 +2980,11 @@ Save changes?</source>
     </message>
     <message>
         <source>MF Indicator</source>
-        <translation>Wskaźnik MF</translation>
+        <translation type="obsolete">Wskaźnik MF</translation>
     </message>
     <message>
         <source>MOM Indicator</source>
-        <translation>Wskaźnik MOM</translation>
+        <translation type="obsolete">Wskaźnik MOM</translation>
     </message>
     <message>
         <source>PER Indicator</source>
@@ -3076,7 +3076,7 @@ Save changes?</source>
     </message>
     <message>
         <source>RSI Indicator</source>
-        <translation>Wskaźnik RSI</translation>
+        <translation type="obsolete">Wskaźnik RSI</translation>
     </message>
     <message>
         <source>Buy Line</source>
@@ -3088,19 +3088,19 @@ Save changes?</source>
     </message>
     <message>
         <source>SAR Indicator</source>
-        <translation>Wskaźnik SAR</translation>
+        <translation type="obsolete">Wskaźnik SAR</translation>
     </message>
     <message>
         <source>Initial</source>
-        <translation>Początkowy</translation>
+        <translation type="obsolete">Początkowy</translation>
     </message>
     <message>
         <source>Add</source>
-        <translation>Dodaj</translation>
+        <translation type="obsolete">Dodaj</translation>
     </message>
     <message>
         <source>Limit</source>
-        <translation>Limit</translation>
+        <translation type="obsolete">Limit</translation>
     </message>
     <message>
         <source>SD Indicator</source>
@@ -3108,47 +3108,47 @@ Save changes?</source>
     </message>
     <message>
         <source>STOCH Indicator</source>
-        <translation>Wskaźnik STOCH</translation>
+        <translation type="obsolete">Wskaźnik STOCH</translation>
     </message>
     <message>
         <source>%K Parms</source>
-        <translation>Param %K</translation>
+        <translation type="obsolete">Param %K</translation>
     </message>
     <message>
         <source>%K Color</source>
-        <translation>Kolor %K</translation>
+        <translation type="obsolete">Kolor %K</translation>
     </message>
     <message>
         <source>%K Line Type</source>
-        <translation>Styl Krzywej %K</translation>
+        <translation type="obsolete">Styl Krzywej %K</translation>
     </message>
     <message>
         <source>%K Label</source>
-        <translation>Etykieta %K</translation>
+        <translation type="obsolete">Etykieta %K</translation>
     </message>
     <message>
         <source>%K Smoothing</source>
-        <translation>Wygładzanie %K</translation>
+        <translation type="obsolete">Wygładzanie %K</translation>
     </message>
     <message>
         <source>%D Parms</source>
-        <translation>Param %D</translation>
+        <translation type="obsolete">Param %D</translation>
     </message>
     <message>
         <source>%D Color</source>
-        <translation>Kolor %D</translation>
+        <translation type="obsolete">Kolor %D</translation>
     </message>
     <message>
         <source>%D Line Type</source>
-        <translation>Styl Krzywej %D</translation>
+        <translation type="obsolete">Styl Krzywej %D</translation>
     </message>
     <message>
         <source>%D Label</source>
-        <translation>Etykieta %D</translation>
+        <translation type="obsolete">Etykieta %D</translation>
     </message>
     <message>
         <source>%D Smoothing</source>
-        <translation>Wygładzanie %D</translation>
+        <translation type="obsolete">Wygładzanie %D</translation>
     </message>
     <message>
         <source>SYMBOL Indicator</source>
@@ -3240,19 +3240,19 @@ Save changes?</source>
     </message>
     <message>
         <source>TRIX Trig</source>
-        <translation>Sygnalna TRIX</translation>
+        <translation type="obsolete">Sygnalna TRIX</translation>
     </message>
     <message>
         <source>TRIX Indicator</source>
-        <translation>Wskaźnik TRIX</translation>
+        <translation type="obsolete">Wskaźnik TRIX</translation>
     </message>
     <message>
         <source>Trigger Parms</source>
-        <translation>Param Sygnalnej</translation>
+        <translation type="obsolete">Param Sygnalnej</translation>
     </message>
     <message>
         <source>Trigger Type</source>
-        <translation>Styl Sygnalnej</translation>
+        <translation type="obsolete">Styl Sygnalnej</translation>
     </message>
     <message>
         <source>UO Indicator</source>
@@ -3312,7 +3312,7 @@ Save changes?</source>
     </message>
     <message>
         <source>WILLR Indicator</source>
-        <translation>Wskaźnik WILLR</translation>
+        <translation type="obsolete">Wskaźnik WILLR</translation>
     </message>
     <message>
         <source>Australian Dollar</source>
@@ -3500,19 +3500,19 @@ Save changes?</source>
     </message>
     <message>
         <source>Buy Zone Color</source>
-        <translation>Kolor Strefy Kupna</translation>
+        <translation type="obsolete">Kolor Strefy Kupna</translation>
     </message>
     <message>
         <source>Sell Zone Color</source>
-        <translation>Kolor Strefy Sprzedaży</translation>
+        <translation type="obsolete">Kolor Strefy Sprzedaży</translation>
     </message>
     <message>
         <source>Buy Zone</source>
-        <translation>Strefa Kupna</translation>
+        <translation type="obsolete">Strefa Kupna</translation>
     </message>
     <message>
         <source>Sell Zone</source>
-        <translation>Strefa Sprzedaży</translation>
+        <translation type="obsolete">Strefa Sprzedaży</translation>
     </message>
     <message>
         <source>Name</source>
@@ -3576,11 +3576,11 @@ Save changes?</source>
     </message>
     <message>
         <source>Min Lookback Period</source>
-        <translation>Min Okres Wsteczny</translation>
+        <translation type="obsolete">Min Okres Wsteczny</translation>
     </message>
     <message>
         <source>Max Lookback Period</source>
-        <translation>Max Okres Wsteczny</translation>
+        <translation type="obsolete">Max Okres Wsteczny</translation>
     </message>
     <message>
         <source>%K Smoothing Type</source>
@@ -3605,20 +3605,16 @@ Rodzaj Wygładzania %D</translation>
         <translation type="obsolete">Wskaźnik AtaptSTOCH</translation>
     </message>
     <message>
-        <source>Adaptive CMO</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Min Lookback</source>
-        <translation>Min Okreswsteczny</translation>
+        <translation type="obsolete">Min Okreswsteczny</translation>
     </message>
     <message>
         <source>Max Lookback</source>
-        <translation>Max Okreswsteczny</translation>
+        <translation type="obsolete">Max Okreswsteczny</translation>
     </message>
     <message>
         <source>CMO Indicator</source>
-        <translation>Wskaźnik CMO</translation>
+        <translation type="obsolete">Wskaźnik CMO</translation>
     </message>
     <message>
         <source>Data6</source>
@@ -3710,7 +3706,7 @@ Rodzaj Wygładzania %D</translation>
     </message>
     <message>
         <source>MINMAX Indicator</source>
-        <translation>Wskaźnik MINMAX</translation>
+        <translation type="obsolete">Wskaźnik MINMAX</translation>
     </message>
     <message>
         <source>Sine Color</source>
@@ -3749,46 +3745,6 @@ Rodzaj Wygładzania %D</translation>
         <translation>Wskaźnik VIDYA</translation>
     </message>
     <message>
-        <source>AROON Indicator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>DOWN Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>DOWN Label</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>DOWN Line Type</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>UP Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>UP Label</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>UP Line Type</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>OSC Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>OSC Label</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>OSC Line Type</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>VOLA Indicator Selection</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3803,14 +3759,6 @@ Rodzaj Wygładzania %D</translation>
     <message>
         <source>Updating </source>
         <translation type="unfinished">Aktualizacja</translation>
-    </message>
-    <message>
-        <source>%K MA Type</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>%D MA Type</source>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Neutral Color</source>
@@ -3894,10 +3842,6 @@ Rodzaj Wygładzania %D</translation>
     </message>
     <message>
         <source>MA3 Input</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Zone Color</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

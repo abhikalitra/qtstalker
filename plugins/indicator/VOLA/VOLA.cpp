@@ -247,16 +247,13 @@ void VOLA::getIndicatorSettings (Setting &dict)
   dict.setData("plugin", pluginName);
 }
 
-PlotLine * VOLA::calculateCustom (QString &p, QPtrList<PlotLine> &d)
+PlotLine * VOLA::calculateCustom (QString &p, QPtrList<PlotLine> &)
 {
   // format1: METHOD, PERIOD
-  // format1: METHOD, PERIOD, ARRAY_INPUT
 
   QStringList l = QStringList::split(",", p, FALSE);
 
-  if (l.count() == 2 || l.count() == 3)
-    ;
-  else
+  if (l.count() != 2)
   {
     qDebug("VOLA::calculateCustom: invalid parm count");
     return 0;
@@ -286,9 +283,7 @@ PlotLine * VOLA::calculateCustom (QString &p, QPtrList<PlotLine> &d)
   }
 
   clearOutput();
-
   calculate();
-
   return output->getLine(0);
 }
 

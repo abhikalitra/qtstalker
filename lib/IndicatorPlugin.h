@@ -57,6 +57,10 @@ class IndicatorPlugin
     QString getHelpFile ();
     IndicatorPlugin::Operator getOperator (QString);
 
+    PlotLine * getWilderMA (PlotLine *d, int);
+    QStringList getMATypes ();
+//    int getMAType (QString);
+
     virtual void calculate ();
     virtual int indicatorPrefDialog (QWidget *);
     virtual PlotLine * calculateCustom (QString &, QPtrList<PlotLine> &);
@@ -67,7 +71,6 @@ class IndicatorPlugin
     virtual void loadIndicatorSettings (QString &);
     virtual void saveIndicatorSettings (QString &);
     virtual PlotLine * getMA (PlotLine *d, int, int);
-    virtual QStringList getMATypes ();
     
   protected:
     BarData *data;
