@@ -141,23 +141,6 @@ QStringList IndicatorPlugin::getMATypes ()
 
 PlotLine * IndicatorPlugin::getMA (PlotLine *in, int type, int period)
 {
-/*
-  PlotLine *ma = 0;
-  Config config;
-  QString s("MA");
-  IndicatorPlugin *plug = config.getIndicatorPlugin(s);
-  if (! plug)
-  {
-    qDebug("IndicatorPlugin::getMA: cannot open MA plugin");
-    config.closePlugin(s);
-    return ma;
-  }
-
-  ma = plug->getMA(in, type, period);
-  config.closePlugin(s);
-  return ma;  
-*/
-
   PlotLine *ma = 0;
   Config config;
   QString s("TALIB");
@@ -178,38 +161,6 @@ PlotLine * IndicatorPlugin::getMA (PlotLine *in, int type, int period)
 
   return ma;  
 }
-
-/*
-int IndicatorPlugin::getMAType (QString d)
-{
-  int type = (int) SMA;
-  
-  while (1)
-  {
-    if (! d.compare("EMA"))
-    {
-      type = (int) EMA;
-      break;
-    }
-    
-    if (! d.compare("WMA"))
-    {
-      type = (int) WMA;
-      break;
-    }
-  
-    if (! d.compare("Wilder"))
-    {
-      type = (int) Wilder;
-      break;
-    }
-    
-    break;
-  }
-  
-  return type;
-}
-*/
 
 PlotLine * IndicatorPlugin::getWilderMA (PlotLine *d, int period)
 {

@@ -181,6 +181,8 @@
 20060205: Removed the AD, AROON, ATR, BB, CCI, CMO, DMI, DPO, MA, MACD, MF, MINMAX, MOM, RSI
           SAR, STOCH, TRIX, WILLR plugins and docs.
 
+20060205: Added new MA types from TALIB.
+
 
 
 

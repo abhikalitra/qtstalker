@@ -2848,7 +2848,7 @@ Save changes?</source>
     </message>
     <message>
         <source>MA Indicator</source>
-        <translation>Wskaźnik ŚK</translation>
+        <translation type="obsolete">Wskaźnik ŚK</translation>
     </message>
     <message>
         <source>MACD Indicator</source>

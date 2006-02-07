@@ -795,10 +795,10 @@ PlotLine * TALIB::getMA (PlotLine *in, int type, int period)
   switch (type)
   {
     case 0:
-      rc = TA_MA(0, in->getSize()- 1, &input[0], period, TA_MAType_SMA, &outBeg, &count, &out[0]);
+      rc = TA_MA(0, in->getSize()- 1, &input[0], period, TA_MAType_EMA, &outBeg, &count, &out[0]);
       break;
     case 1:
-      rc = TA_MA(0, in->getSize()- 1, &input[0], period, TA_MAType_EMA, &outBeg, &count, &out[0]);
+      rc = TA_MA(0, in->getSize()- 1, &input[0], period, TA_MAType_SMA, &outBeg, &count, &out[0]);
       break;
     case 2:
       rc = TA_MA(0, in->getSize()- 1, &input[0], period, TA_MAType_WMA, &outBeg, &count, &out[0]);

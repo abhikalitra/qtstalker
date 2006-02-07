@@ -56,10 +56,8 @@ class IndicatorPlugin
     QString getPluginName ();
     QString getHelpFile ();
     IndicatorPlugin::Operator getOperator (QString);
-
     PlotLine * getWilderMA (PlotLine *d, int);
     QStringList getMATypes ();
-//    int getMAType (QString);
 
     virtual void calculate ();
     virtual int indicatorPrefDialog (QWidget *);
