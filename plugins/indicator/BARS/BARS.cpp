@@ -499,7 +499,6 @@ void BARS::getIndicatorSettings (Setting &dict)
 PlotLine * BARS::calculateCustom (QString &p, QPtrList<PlotLine> &)
 {
   // format1 (BARS): TYPE
-  // format2 (Candle, Mat_Hold, 0.5, 0.1): TYPE, CANDLE_PATTERN, LONG_PERCENTAGE, DOJI_PERCENTAGE
 
   QStringList l = QStringList::split(",", p, FALSE);
 

@@ -122,7 +122,7 @@ void CUS::calculate ()
    
       if (! inList.count())
       {
-        if (plugin.compare("TALIB"))
+        if (plugin.compare("TALIB") && plugin.compare("BARS"))
         {
           qDebug("CUS::calculate: no input array");
           config.closePlugin(plugin);
