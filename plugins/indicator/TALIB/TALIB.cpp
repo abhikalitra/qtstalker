@@ -446,8 +446,9 @@ int TALIB::indicatorPrefDialog (QWidget *w)
     int loop;
     for (loop = 0; loop < (int) l.count(); loop++)
     {
-      if (l[loop].compare("method"))
-        parms.setData(l[loop], dialog->getItem(l[loop]));
+      QString s = dialog->getItem(l[loop]);
+      if (s.length())
+        parms.setData(l[loop], s);
     }
 
     rc = TRUE;

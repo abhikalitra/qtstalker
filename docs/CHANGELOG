@@ -183,7 +183,10 @@
 
 20060205: Added new MA types from TALIB.
 
-20060208: Fixed bug in CUS plugin that did not accept a non-input from BARS plugin. 
+20060208: Fixed bug in CUS plugin that did not accept a non-input from BARS plugin.
+
+20060209: Fixed bug in TALIB plugin that did not keep settings when being modified.
+
 
 
 
