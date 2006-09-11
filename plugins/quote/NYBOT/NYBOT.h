@@ -46,7 +46,7 @@ class NYBOT : public QuotePlugin
   private:
     FuturesData fd;
     bool cancelFlag;
-    DbPlugin *plug;
+    DbPlugin plug;
     Config config;
     QDateTime date;
     QString url;

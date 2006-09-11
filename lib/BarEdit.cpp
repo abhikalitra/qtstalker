@@ -221,18 +221,17 @@ void BarEdit::setDate (QString &d, bool f)
   date->setText(d);
 }
 
-QString BarEdit::getField (QString &d)
+void BarEdit::getField (QString &d, QString &r)
 {
-  QString s;
+  r.truncate(0);;
   QLineEdit *edit = editList[d];
   if (edit)
-    s = edit->text();
-  return s;
+    r = edit->text();
 }
 
-QString BarEdit::getDate ()
+void BarEdit::getDate (QString &r)
 {
-  return date->text();
+  r = date->text();
 }
 
 bool BarEdit::getSaveFlag ()

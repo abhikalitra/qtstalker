@@ -29,6 +29,7 @@
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qdict.h>
+#include <qvaluelist.h>
 
 class IndicatorPlugin
 {
@@ -36,7 +37,6 @@ class IndicatorPlugin
   
     enum Operator
     {
-      NoOp,
       Equal,
       LessThan,
       LessThanEqual,
@@ -45,7 +45,18 @@ class IndicatorPlugin
       And,
       Or
     };
-  
+
+    enum FormatType
+    {
+      FormatInputArray,
+      FormatInputArray2,
+      FormatInteger,
+      FormatDouble,
+      FormatString,
+      FormatMAType,
+      FormatBool
+    };
+
     IndicatorPlugin();
     virtual ~IndicatorPlugin();
     void setIndicatorInput (BarData *);
@@ -53,11 +64,12 @@ class IndicatorPlugin
     void clearOutput ();
     void loadFile (QString &, Setting &);
     void saveFile (QString &, Setting &);
-    QString getPluginName ();
-    QString getHelpFile ();
-    IndicatorPlugin::Operator getOperator (QString);
+    void getPluginName (QString &);
+    void getHelpFile (QString &);
+    IndicatorPlugin::Operator getOperator (QString &);
     PlotLine * getWilderMA (PlotLine *d, int);
-    QStringList getMATypes ();
+    void getMATypes (QStringList &);
+    bool checkFormat (QString &, QPtrList<PlotLine> &, int, int);
 
     virtual void calculate ();
     virtual int indicatorPrefDialog (QWidget *);
@@ -65,10 +77,10 @@ class IndicatorPlugin
     virtual void getIndicatorSettings (Setting &);
     virtual void setIndicatorSettings (Setting &);
     virtual void setCustomFunction (QStringList &);
-    virtual int getMinBars ();
     virtual void loadIndicatorSettings (QString &);
     virtual void saveIndicatorSettings (QString &);
     virtual PlotLine * getMA (PlotLine *d, int, int);
+    virtual void formatDialog (QStringList &, QString &, QString &);
     
   protected:
     BarData *data;
@@ -76,10 +88,12 @@ class IndicatorPlugin
     QStringList lineTypes;
     QStringList inputTypeList;
     QStringList opList;
+    QStringList maList;
     bool saveFlag;
     QString pluginName;
     QString helpFile;
-    int minBars;
+    QValueList<FormatType> formatList;
+    QStringList formatStringList;
 };
 
 #endif

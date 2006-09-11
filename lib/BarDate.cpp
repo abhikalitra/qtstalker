@@ -24,6 +24,8 @@
 BarDate::BarDate ()
 {
   tickFlag = FALSE;
+  date = QDateTime::currentDateTime();
+  date.setTime(QTime(0,0,0,0));
 }
 
 BarDate::~BarDate ()
@@ -191,5 +193,4 @@ void BarDate::getDateTime (QDateTime &d)
 {
   d = date;
 }
-
 

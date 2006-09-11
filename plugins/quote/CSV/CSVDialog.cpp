@@ -42,7 +42,8 @@ CSVDialog::CSVDialog (QWidget *p, QString &d, QString &lp) : QTabDialog (p, "CSV
   lastPath = lp;
   
   Config config;
-  ruleDir = config.getData(Config::QuotePluginStorage) + "/CSV";
+  config.getData(Config::QuotePluginStorage, ruleDir);
+  ruleDir.append("/CSV");
   QDir dir;
   if (! dir.exists(ruleDir))
   {
@@ -201,6 +202,7 @@ void CSVDialog::editRule ()
   QString s("*");
   SymbolDialog *dialog = new SymbolDialog(this,
   				          ruleDir,
+                                          ruleDir,
 					  s,
 					  QFileDialog::ExistingFiles);
   dialog->setCaption(tr("Select Rule To Edit"));
@@ -230,6 +232,7 @@ void CSVDialog::deleteRule ()
   QString s("*");
   SymbolDialog *dialog = new SymbolDialog(this,
   				          ruleDir,
+                                          ruleDir,
 					  s,
 					  QFileDialog::ExistingFiles);
   dialog->setCaption(tr("Select Rules To Delete"));

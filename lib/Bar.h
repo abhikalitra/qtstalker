@@ -24,14 +24,7 @@
 
 #include <qstring.h>
 #include <qstringlist.h>
-#include <qdict.h>
-#include "BarDate.h"
-
-typedef struct
-{
-  double v;
-
-} BarItem;
+#include <qdatetime.h>
 
 class Bar
 {
@@ -39,9 +32,9 @@ class Bar
   
     Bar ();
     ~Bar ();
-    int setDate (BarDate &);
     int setDate (QString &);
-    BarDate getDate ();
+    int setDate (QDateTime &);
+    void getDate (QDateTime &);
     void setOpen (double);
     double getOpen ();
     void setHigh (double);
@@ -55,21 +48,32 @@ class Bar
     void setOI (int);
     double getOI ();
     void getString (QString &);
-    void getFields (QStringList &);
-    void setData (QString &, double);
-    double getData (QString &);
-    void copy (Bar *);
-    double getMin ();
-    double getMax ();
     bool getTickFlag ();
     void setTickFlag (bool);
-    int count ();
+    bool getEmptyFlag ();
+    void setEmptyFlag (bool);
+    void getDateString (bool sepFlag, QString &);
+    void getDateTimeString (bool sepFlag, QString &);
+    void getTimeString (bool sepFlag, QString &);
+    void clear ();
+    bool verify ();
     
   protected:
-    BarDate date;
-    QDict<BarItem> data;
-    double min;
-    double max;
+    QDateTime date;
+    double open;
+    double high;
+    double low;
+    double close;
+    double volume;
+    int oi;
+    bool openFlag;
+    bool highFlag;
+    bool lowFlag;
+    bool closeFlag;
+    bool volumeFlag;
+    bool oiFlag;
+    bool emptyFlag;
+    bool tickFlag;
 };
 
 #endif

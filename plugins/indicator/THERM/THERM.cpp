@@ -33,6 +33,27 @@ THERM::THERM ()
   pluginName = "THERM";
   helpFile = "therm.html";
   
+  upColorLabel = "upColor";
+  downColorLabel = "downColor";
+  threshColorLabel = "threshColor";
+  labelLabel = "label";
+  thresholdLabel = "threshold";
+  smoothingLabel = "smoothing";
+  smoothTypeLabel = "smoothType";
+  maColorLabel = "maColor";
+  maLineTypeLabel = "maLineType";
+  maPeriodLabel = "maPeriod";
+  maLabelLabel = "maLabel";
+  maTypeLabel = "maType";
+  pluginLabel = "plugin";
+
+  // format1: MA_TYPE, MA_PERIOD, THRESHOLD, SMOOTHING_TYPE, SMOOTHING_PERIOD
+  formatList.append(FormatMAType);
+  formatList.append(FormatInteger);
+  formatList.append(FormatDouble);
+  formatList.append(FormatMAType);
+  formatList.append(FormatInteger);
+
   setDefaults();
 }
 
@@ -126,70 +147,60 @@ void THERM::calculate ()
 
 int THERM::indicatorPrefDialog (QWidget *w)
 {
+  QString pl = QObject::tr("THERM Parms");
+  QString pl2 = QObject::tr("MA Parms");
+  QString cal = QObject::tr("Color Above MA");
+  QString cbl = QObject::tr("Color Below MA");
+  QString ctl = QObject::tr("Color Threshold");
+  QString ll = QObject::tr("Label");
+  QString tl = QObject::tr("Threshold");
+  QString sl = QObject::tr("Smoothing");
+  QString stl = QObject::tr("Smoothing Type");
+  QString mcl = QObject::tr("MA Color");
+  QString mltl = QObject::tr("MA Line Type");
+  QString mll = QObject::tr("MA Label");
+  QString mpl = QObject::tr("MA Period");
+  QString mtl = QObject::tr("MA Type");
+
   PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(QObject::tr("THERM Indicator"));
   dialog->setHelpFile(helpFile);
 
-  QString pl = QObject::tr("THERM Parms");
   dialog->createPage (pl);
-  QString t = QObject::tr("Color Above MA");
-  dialog->addColorItem(t, pl, upColor);
-  t = QObject::tr("Color Below MA");
-  dialog->addColorItem(t, pl, downColor);
-  t = QObject::tr("Color Threshold");
-  dialog->addColorItem(t, pl, threshColor);
-  t = QObject::tr("Label");
-  dialog->addTextItem(t, pl, label);
-  t = QObject::tr("Threshold");
-  dialog->addDoubleItem(t, pl, threshold, 1, 99999999);
-  t = QObject::tr("Smoothing");
-  dialog->addIntItem(t, pl, smoothing, 0, 99999999);
-  QStringList l = getMATypes();
-  t = QObject::tr("Smoothing Type");
-  dialog->addComboItem(t, pl, l, smoothType);
+  dialog->addColorItem(cal, pl, upColor);
+  dialog->addColorItem(cbl, pl, downColor);
+  dialog->addColorItem(ctl, pl, threshColor);
+  dialog->addTextItem(ll, pl, label);
+  dialog->addDoubleItem(tl, pl, threshold, 1, 99999999);
+  dialog->addIntItem(sl, pl, smoothing, 0, 99999999);
+  QStringList l;
+  getMATypes(l);
+  dialog->addComboItem(stl, pl, l, smoothType);
   
-  pl = QObject::tr("MA Parms");
-  dialog->createPage (pl);
-  t = QObject::tr("MA Color");
-  dialog->addColorItem(t, pl, maColor);
-  t = QObject::tr("MA Line Type");
-  dialog->addComboItem(t, pl, lineTypes, maLineType);
-  t = QObject::tr("MA Label");
-  dialog->addTextItem(t, pl, maLabel);
-  t = QObject::tr("MA Period");
-  dialog->addIntItem(t, pl, maPeriod, 0, 99999999);
-  t = QObject::tr("MA Type");
-  dialog->addComboItem(t, pl, l, maType);
+  dialog->createPage (pl2);
+  dialog->addColorItem(mcl, pl2, maColor);
+  dialog->addComboItem(mltl, pl2, lineTypes, maLineType);
+  dialog->addTextItem(mll, pl2, maLabel);
+  dialog->addIntItem(mpl, pl2, maPeriod, 0, 99999999);
+  dialog->addComboItem(mtl, pl2, l, maType);
   
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
-    t = QObject::tr("Color Above MA");
-    upColor = dialog->getColor(t);
-    t = QObject::tr("Color Below MA");
-    downColor = dialog->getColor(t);
-    t = QObject::tr("Color Threshold");
-    threshColor = dialog->getColor(t);
-    t = QObject::tr("Label");
-    label = dialog->getText(t);
-    t = QObject::tr("Threshold");
-    threshold = dialog->getDouble(t);
-    t = QObject::tr("Smoothing");
-    smoothing = dialog->getInt(t);
-    t = QObject::tr("Smoothing Type");
-    smoothType = dialog->getComboIndex(t);
+    dialog->getColor(cal, upColor);
+    dialog->getColor(cbl, downColor);
+    dialog->getColor(ctl, threshColor);
+    dialog->getText(ll, label);
+    threshold = dialog->getDouble(tl);
+    smoothing = dialog->getInt(sl);
+    smoothType = dialog->getComboIndex(stl);
     
-    t = QObject::tr("MA Color");
-    maColor = dialog->getColor(t);
-    t = QObject::tr("MA Line Type");
-    maLineType = (PlotLine::LineType) dialog->getComboIndex(t);
-    t = QObject::tr("MA Label");
-    maLabel = dialog->getText(t);
-    t = QObject::tr("MA Period");
-    maPeriod = dialog->getInt(t);
-    t = QObject::tr("MA Type");
-    maType = dialog->getComboIndex(t);
+    dialog->getColor(mcl, maColor);
+    maLineType = (PlotLine::LineType) dialog->getComboIndex(mltl);
+    dialog->getText(mll, maLabel);
+    maPeriod = dialog->getInt(mpl);
+    maType = dialog->getComboIndex(mtl);
     rc = TRUE;
   }
   else
@@ -206,141 +217,152 @@ void THERM::setIndicatorSettings (Setting &dict)
   if (! dict.count())
     return;
   
-  QString s = dict.getData("upColor");
+  QString s;
+  dict.getData(upColorLabel, s);
   if (s.length())
     upColor.setNamedColor(s);
     
-  s = dict.getData("downColor");
+  dict.getData(downColorLabel, s);
   if (s.length())
     downColor.setNamedColor(s);
   
-  s = dict.getData("threshColor");
+  dict.getData(threshColorLabel, s);
   if (s.length())
     threshColor.setNamedColor(s);
   
-  s = dict.getData("maColor");
+  dict.getData(maColorLabel, s);
   if (s.length())
     maColor.setNamedColor(s);
     
-  s = dict.getData("label");
+  dict.getData(labelLabel, s);
   if (s.length())
     label = s;
     
-  s = dict.getData("threshold");
+  dict.getData(thresholdLabel, s);
   if (s.length())
     threshold = s.toFloat();
   
-  s = dict.getData("smoothing");
+  dict.getData(smoothingLabel, s);
   if (s.length())
     smoothing = s.toInt();
   
-  s = dict.getData("smoothType");
+  dict.getData(smoothTypeLabel, s);
   if (s.length())
     smoothType = s.toInt();
   
-  s = dict.getData("maLineType");
+  dict.getData(maLineTypeLabel, s);
   if (s.length())
     maLineType = (PlotLine::LineType) s.toInt();
 
-  s = dict.getData("maLabel");
+  dict.getData(maLabelLabel, s);
   if (s.length())
     maLabel = s;
     
-  s = dict.getData("maPeriod");
+  dict.getData(maPeriodLabel, s);
   if (s.length())
     maPeriod = s.toInt();
 
-  s = dict.getData("maType");
+  dict.getData(maTypeLabel, s);
   if (s.length())
     maType = s.toInt();
 }
 
 void THERM::getIndicatorSettings (Setting &dict)
 {
-  dict.setData("upColor", upColor.name());
-  dict.setData("downColor", downColor.name());
-  dict.setData("threshColor", threshColor.name());
-  dict.setData("label", label);
-  dict.setData("threshold", QString::number(threshold));
-  dict.setData("smoothing", QString::number(smoothing));
-  dict.setData("smoothType", QString::number(smoothType));
+  QString ts = upColor.name();
+  dict.setData(upColorLabel, ts);
+  ts = downColor.name();
+  dict.setData(downColorLabel, ts);
+  ts = threshColor.name();
+  dict.setData(threshColorLabel, ts);
+  dict.setData(labelLabel, label);
+  ts = QString::number(threshold);
+  dict.setData(thresholdLabel, ts);
+  ts = QString::number(smoothing);
+  dict.setData(smoothingLabel, ts);
+  ts = QString::number(smoothType);
+  dict.setData(smoothTypeLabel, ts);
   
-  dict.setData("maColor", maColor.name());
-  dict.setData("maLineType", QString::number(maLineType));
-  dict.setData("maPeriod", QString::number(maPeriod));
-  dict.setData("maLabel", maLabel);
-  dict.setData("maType", QString::number(maType));
-  dict.setData("plugin", pluginName);
+  ts = maColor.name();
+  dict.setData(maColorLabel, ts);
+  ts = QString::number(maLineType);
+  dict.setData(maLineTypeLabel, ts);
+  ts = QString::number(maPeriod);
+  dict.setData(maPeriodLabel, ts);
+  dict.setData(maLabelLabel, maLabel);
+  ts = QString::number(maType);
+  dict.setData(maTypeLabel, ts);
+  dict.setData(pluginLabel, pluginName);
 }
 
-PlotLine * THERM::calculateCustom (QString &p, QPtrList<PlotLine> &)
+PlotLine * THERM::calculateCustom (QString &p, QPtrList<PlotLine> &d)
 {
   // format1: MA_TYPE, MA_PERIOD, THRESHOLD, SMOOTHING_TYPE, SMOOTHING_PERIOD
 
-  QStringList l = QStringList::split(",", p, FALSE);
-
-  if (l.count() == 5)
-    ;
-  else
-  {
-    qDebug("THERM::calculateCustom: invalid parm count");
+  if (checkFormat(p, d, 5, 5))
     return 0;
-  }
 
-  QStringList mal = getMATypes();
-  if (mal.findIndex(l[0]) == -1)
-  {
-    qDebug("THERM::calculateCustom: invalid MA_TYPE parm");
-    return 0;
-  }
-  else
-    maType = mal.findIndex(l[0]);
-
-  bool ok;
-  int t = l[1].toInt(&ok);
-  if (ok)
-    maPeriod = t;
-  else
-  {
-    qDebug("THERM::calculateCustom: invalid MA_PERIOD parm");
-    return 0;
-  }
-
-  double t2 = l[2].toDouble(&ok);
-  if (ok)
-    threshold = t2;
-  else
-  {
-    qDebug("THERM::calculateCustom: invalid THRESHOLD parm");
-    return 0;
-  }
-
-  if (mal.findIndex(l[3]) == -1)
-  {
-    qDebug("THERM::calculateCustom: invalid SMOOTHING_TYPE parm");
-    return 0;
-  }
-  else
-    smoothType = mal.findIndex(l[3]);
-
-  t = l[4].toInt(&ok);
-  if (ok)
-    smoothing = t;
-  else
-  {
-    qDebug("THERM::calculateCustom: invalid SMOOTHING_PERIOD parm");
-    return 0;
-  }
+  QStringList mal;
+  getMATypes(mal);
+  maType = mal.findIndex(formatStringList[0]);
+  maPeriod = formatStringList[1].toInt();
+  threshold = formatStringList[2].toDouble();
+  smoothType = mal.findIndex(formatStringList[3]);
+  smoothing = formatStringList[4].toInt();
 
   clearOutput();
   calculate();
   return output->getLine(0);
 }
 
-int THERM::getMinBars ()
+void THERM::formatDialog (QStringList &, QString &rv, QString &rs)
 {
-  int t = minBars + maPeriod + smoothing;
-  return t;
+  rs.truncate(0);
+  rv.truncate(0);
+  QString pl = QObject::tr("Parms");
+  QString vnl = QObject::tr("Variable Name");
+  QString tl = QObject::tr("Threshold");
+  QString sl = QObject::tr("Smoothing");
+  QString stl = QObject::tr("Smoothing Type");
+  QString mpl = QObject::tr("MA Period");
+  QString mtl = QObject::tr("MA Type");
+  PrefDialog *dialog = new PrefDialog(0);
+  dialog->setCaption(QObject::tr("THERM Format"));
+  dialog->createPage (pl);
+  dialog->setHelpFile(helpFile);
+
+  QString s;
+  QStringList l;
+  getMATypes(l);
+  dialog->addTextItem(vnl, pl, s);
+  dialog->addComboItem(mtl, pl, l, maType);
+  dialog->addIntItem(mpl, pl, maPeriod, 0, 99999999);
+  dialog->addDoubleItem(tl, pl, threshold, 1, 99999999);
+  dialog->addComboItem(stl, pl, l, smoothType);
+  dialog->addIntItem(sl, pl, smoothing, 0, 99999999);
+
+  int rc = dialog->exec();
+  
+  if (rc == QDialog::Accepted)
+  {
+    dialog->getText(vnl, rv);
+
+    dialog->getCombo(mtl, rs);
+
+    int t = dialog->getInt(mpl);
+    rs.append("," + QString::number(t));
+
+    double d = dialog->getDouble(tl);
+    rs.append("," + QString::number(d));
+
+    dialog->getCombo(stl, s);
+    rs.append("," + s);
+
+    t = dialog->getInt(sl);
+    rs.append("," + QString::number(t));
+  }
+
+  delete dialog;
 }
 
 //*******************************************************

@@ -32,7 +32,7 @@ class SZ : public IndicatorPlugin
     PlotLine * calculateCustom (QString &, QPtrList<PlotLine> &);
     void getIndicatorSettings (Setting &);
     void setIndicatorSettings (Setting &);
-    int getMinBars ();
+    void formatDialog (QStringList &vl, QString &rv, QString &rs);
     
   private:
     QColor color;
@@ -43,6 +43,15 @@ class SZ : public IndicatorPlugin
     QString method;
     QStringList methodList;
     QString label;
+
+    QString colorLabel;
+    QString lineTypeLabel;
+    QString periodLabel;
+    QString noDeclinePeriodLabel;
+    QString coefficientLabel;
+    QString methodLabel;
+    QString labelLabel;
+    QString pluginLabel;
 };
 
 extern "C"

@@ -18,10 +18,13 @@ HEADERS += IndicatorPage.h
 HEADERS += NavigatorTab.h
 HEADERS += ScannerPage.h
 HEADERS += Scanner.h
-#HEADERS += MacroPage.h
-#HEADERS += MacroDialog.h
 HEADERS += ChartToolbar.h
 HEADERS += MainMenubar.h
+HEADERS += TesterReport.h
+HEADERS += TesterRulePage.h
+HEADERS += TesterTestPage.h
+HEADERS += TesterStopPage.h
+HEADERS += TesterChartPage.h
 
 
 SOURCES += Qtstalker.cpp
@@ -37,10 +40,13 @@ SOURCES += IndicatorPage.cpp
 SOURCES += NavigatorTab.cpp
 SOURCES += ScannerPage.cpp
 SOURCES += Scanner.cpp
-#SOURCES += MacroPage.cpp
-#SOURCES += MacroDialog.cpp
 SOURCES += ChartToolbar.cpp
 SOURCES += MainMenubar.cpp
+SOURCES += TesterReport.cpp
+SOURCES += TesterRulePage.cpp
+SOURCES += TesterTestPage.cpp
+SOURCES += TesterStopPage.cpp
+SOURCES += TesterChartPage.cpp
 
 
 TARGET = qtstalker

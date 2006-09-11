@@ -38,7 +38,7 @@ class QuoteDialog : public QTabDialog
     void message (QString);
 
   public:
-    QuoteDialog ();
+    QuoteDialog (QWidget *);
     ~QuoteDialog ();
     void enableGUI ();
     void disableGUI ();

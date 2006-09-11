@@ -26,17 +26,18 @@
 #include <qwidget.h>
 #include <qpopupmenu.h>
 #include <qlistbox.h>
+#include <qlineedit.h>
+#include <qdir.h>
 #include "Config.h"
-#include "Macro.h"
 
 
-class ScannerPage : public QListBox
+class ScannerPage : public QWidget
 {
   Q_OBJECT
 
   signals:
     void message (QString);
-    void signalKeyPressed (int, int, int, int, QString);
+    void refreshGroup ();
   
   public:
   
@@ -66,18 +67,17 @@ class ScannerPage : public QListBox
     void slotHelp ();
     void doubleClick (QListBoxItem *);
     void doKeyPress (QKeyEvent *);
-    void setKeyFlag (bool);
     void slotAccel (int);
-    void runMacro (Macro *);
+    void searchChanged (const QString &);
 
   private:
     virtual void keyPressEvent (QKeyEvent *);
   
     Config config;
     QPopupMenu *menu;
-    bool keyFlag;
-    Macro *tmacro;
-    bool macroFlag;
+    QListBox *list;
+    QLineEdit *search;
+    QDir idir;
 };
 
 #endif

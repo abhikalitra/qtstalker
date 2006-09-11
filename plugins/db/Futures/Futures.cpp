@@ -39,18 +39,16 @@ void Futures::dbPrefDialog ()
   delete dialog;
 }
 
-Bar * Futures::getBar (QString &k, QString &d)
+void Futures::getBar (QString &k, QString &d, Bar &bar)
 {
-  Bar *bar = new Bar;
   QStringList l = QStringList::split(",", d, FALSE);
-  bar->setDate(k);
-  bar->setOpen(l[0].toDouble());
-  bar->setHigh(l[1].toDouble());
-  bar->setLow(l[2].toDouble());
-  bar->setClose(l[3].toDouble());
-  bar->setVolume(l[4].toDouble());
-  bar->setOI(l[5].toInt());
-  return bar;
+  bar.setDate(k);
+  bar.setOpen(l[0].toDouble());
+  bar.setHigh(l[1].toDouble());
+  bar.setLow(l[2].toDouble());
+  bar.setClose(l[3].toDouble());
+  bar.setVolume(l[4].toDouble());
+  bar.setOI(l[5].toInt());
 }
 
 void Futures::setBar (Bar &bar)
@@ -60,7 +58,7 @@ void Futures::setBar (Bar &bar)
   if (k.toInt() != bar.getTickFlag())
     return;
 
-  bar.getDate().getDateTimeString(FALSE, k);
+  bar.getDateTimeString(FALSE, k);
   
   QString d = QString::number(bar.getOpen()) + "," + QString::number(bar.getHigh()) + "," +
               QString::number(bar.getLow()) + "," + QString::number(bar.getClose()) + "," +

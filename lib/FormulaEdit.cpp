@@ -27,7 +27,7 @@
 #include "../pics/edit.xpm"
 #include "../pics/insert.xpm"
 #include "../pics/openchart.xpm"
-#include "../pics/filesave.xpm"
+//#include "../pics/filesave.xpm"
 #include <qlayout.h>
 #include <qfile.h>
 #include <qtextstream.h>
@@ -71,11 +71,16 @@ FormulaEdit::FormulaEdit (QWidget *w, int t) : QWidget(w)
   ftoolbar->addButton(s, openchart, s2);
   QObject::connect(ftoolbar->getButton(s), SIGNAL(clicked()), this, SLOT(openRule()));
 
-  s = "save";
-  s2 = tr("Save Rule");
-  ftoolbar->addButton(s, filesave, s2);
-  QObject::connect(ftoolbar->getButton(s), SIGNAL(clicked()), this, SLOT(saveRule()));
+//  s = "save";
+//  s2 = tr("Save Rule");
+//  ftoolbar->addButton(s, filesave, s2);
+//  QObject::connect(ftoolbar->getButton(s), SIGNAL(clicked()), this, SLOT(saveRule()));
   
+  s = "add";
+  s2 = tr("Function Dialog");
+  ftoolbar->addButton(s, insert, s2);
+  QObject::connect(ftoolbar->getButton(s), SIGNAL(clicked()), this, SLOT(functionDialog()));
+
   tab->addTab(tw, tr("Formula"));
 
   // create plot page
@@ -107,16 +112,6 @@ FormulaEdit::FormulaEdit (QWidget *w, int t) : QWidget(w)
   ptoolbar->addButton(s, deleteitem, s2);
   QObject::connect(ptoolbar->getButton(s), SIGNAL(clicked()), this, SLOT(deletePlotItem()));
 
-  s = "open";
-  s2 = tr("Open Rule");
-  ptoolbar->addButton(s, openchart, s2);
-  QObject::connect(ptoolbar->getButton(s), SIGNAL(clicked()), this, SLOT(openRule()));
-
-  s = "save";
-  s2 = tr("Save Rule");
-  ptoolbar->addButton(s, filesave, s2);
-  QObject::connect(ptoolbar->getButton(s), SIGNAL(clicked()), this, SLOT(saveRule()));
-
   tab->addTab(tw, tr("Plot"));
 }
 
@@ -135,13 +130,27 @@ void FormulaEdit::insertPlotItem ()
   PrefDialog *dialog = new PrefDialog(this);
   dialog->setCaption(tr("Insert Plot"));
   dialog->createPage (pl);
+
   QString s("Var");
-  dialog->addTextItem(vl, pl, s);
+  QStringList l;
+  QStringList l2 = QStringList::split("\n", formula->text(), FALSE);
+  int loop;
+  for (loop = 0; loop < (int) l2.count(); loop++)
+  {
+    QStringList l3 = QStringList::split(":=", l2[loop], FALSE);
+    l.append(l3[0].stripWhiteSpace());
+  }
+  dialog->addComboItem(vl, pl, l, 0);
+
   QColor c("red");
   dialog->addColorItem(cl, pl, c);
   s = "Label";
   dialog->addTextItem(ll, pl, s);
-  dialog->addComboItem(ltl, pl, lineTypes, 0);
+
+  l2 = lineTypes;
+  l2.append("Bar");
+  l2.append("Candle");
+  dialog->addComboItem(ltl, pl, l2, 4);
 
   int rc = dialog->exec();
   if (rc != QDialog::Accepted)
@@ -150,15 +159,16 @@ void FormulaEdit::insertPlotItem ()
     return;
   }
 
+  QString ts;
   s = "plot (";
-  s.append(dialog->getText(vl));
-  s.append(",");
-  s.append(dialog->getColor(cl).name());
-  s.append(",");
-  s.append(dialog->getText(ll));
-  s.append(",");
-  s.append(dialog->getCombo(ltl));
-  s.append(")");
+  dialog->getCombo(vl, ts);
+  s.append(ts + ",");
+  dialog->getColor(cl, c);
+  s.append(c.name() + ",");
+  dialog->getText(ll, ts);
+  s.append(ts + ",");
+  dialog->getCombo(ltl, ts);
+  s.append(ts + ")");
   plot->insertItem(s, plot->currentItem() + 1);
 
   delete dialog;
@@ -185,12 +195,23 @@ void FormulaEdit::editPlotItem ()
   PrefDialog *dialog = new PrefDialog(this);
   dialog->setCaption(tr("Edit Plot"));
   dialog->createPage (pl);
-  dialog->addTextItem(vl, pl, l[0]);
+
+  s = "Var";
+  QStringList l2;
+  QStringList l3 = QStringList::split("\n", formula->text(), FALSE);
+  for (loop = 0; loop < (int) l3.count(); loop++)
+  {
+    QStringList l4 = QStringList::split(":=", l3[loop], FALSE);
+    l2.append(l4[0].stripWhiteSpace());
+  }
+  dialog->addComboItem(vl, pl, l2, l[0]);
+
   QColor c(l[1]);
   dialog->addColorItem(cl, pl, c);
+
   dialog->addTextItem(ll, pl, l[2]);
 
-  QStringList l2 = lineTypes;
+  l2 = lineTypes;
   l2.append("Bar");
   l2.append("Candle");
   dialog->addComboItem(ltl, pl, l2, l[3]);
@@ -202,15 +223,16 @@ void FormulaEdit::editPlotItem ()
     return;
   }
 
+  QString ts;
   s = "plot (";
-  s.append(dialog->getText(vl));
-  s.append(",");
-  s.append(dialog->getColor(cl).name());
-  s.append(",");
-  s.append(dialog->getText(ll));
-  s.append(",");
-  s.append(dialog->getCombo(ltl));
-  s.append(")");
+  dialog->getCombo(vl, ts);
+  s.append(ts + ",");
+  dialog->getColor(cl, c);
+  s.append(c.name() + ",");
+  dialog->getText(ll, ts);
+  s.append(ts + ",");
+  dialog->getCombo(ltl, ts);
+  s.append(ts + ")");
   plot->changeItem(s, plot->currentItem());
 
   delete dialog;
@@ -223,49 +245,51 @@ void FormulaEdit::deletePlotItem ()
 
 void FormulaEdit::setLine (QString &d)
 {
-  if (d.contains("enable="))
+  if (d.contains("script="))
   {
-    enableLine = d;
+    QStringList l = QStringList::split("=", d, FALSE);
+    QString k = l[0];
+    QString s = d;
+    s.remove(0, k.length() + 1);
+    QStringList l2 = QStringList::split("|", s, FALSE);
+    int loop;
+    for (loop = 0; loop < (int) l2.count(); loop++)
+      setLine(l2[loop]);    
     return;
   }
 
-  if (d.contains("plugin="))
+  if (d.contains(":="))
   {
-    pluginLine = d;
+    formula->append(d);
     return;
   }
 
-  if (d.contains("plotType="))
+  if (d.contains("//"))
   {
-    plotTypeLine = d;
+    formula->append(d);
     return;
   }
 
   if (d.contains("plot"))
     plot->insertItem(d, -1);
-  else
-    formula->append(d);
 }
 
-QString FormulaEdit::getText ()
+void FormulaEdit::getText (QString &s)
 {
-  QString s = (enableLine + "\n");
-  s.append(pluginLine + "\n");
-  s.append(plotTypeLine + "\n");
-  s.append(formula->text()  + "\n");
+  s = formula->text()  + "\n";
 
   int loop;
   for (loop = 0; loop < (int) plot->count(); loop++)
     s.append(plot->text(loop) + "\n");
-
-  return s;
 }
 
 void FormulaEdit::openRule ()
 {
   QString s("*");
-  QString s2(config.getData(Config::CUSRulePath));
-  SymbolDialog *dialog = new SymbolDialog(this, 
+  QString s2;
+  config.getData(Config::IndicatorPath, s2);
+  SymbolDialog *dialog = new SymbolDialog(this,
+                                          s2,
   					  s2,
 					  s,
 					  QFileDialog::ExistingFiles);
@@ -273,35 +297,39 @@ void FormulaEdit::openRule ()
 
   int rc = dialog->exec();
 
-  if (rc == QDialog::Accepted)
+  if (rc != QDialog::Accepted)
   {
-    QFile f(dialog->selectedFile());
-    if (! f.open(IO_ReadOnly))
-    {
-      qDebug("FormulaEdit::openItem:can't read file");
-      delete dialog;
-      return;
-    }
-    QTextStream stream(&f);
-  
-    formula->clear();
-    plot->clear();
-    
-    while(stream.atEnd() == 0)
-    {
-      s = stream.readLine();
-      s = s.stripWhiteSpace();
-      if (! s.length())
-        continue;
-      setLine(s);
-    }
-  
-    f.close();
+    delete dialog;
+    return;
   }
 
+  QString selection = dialog->selectedFile();
   delete dialog;
+
+  formula->clear();
+  plot->clear();
+  formulaList.clear();
+
+  QFile f(selection);
+  if (! f.open(IO_ReadOnly))
+  {
+    qDebug("FormulaEdit::openRule:can't read file %s", selection.latin1());
+    return;
+  }
+  QTextStream stream(&f);
+  
+  while(stream.atEnd() == 0)
+  {
+    s = stream.readLine();
+    s = s.stripWhiteSpace();
+    if (! s.contains("script="))
+      formulaList.append(s);
+    setLine(s);
+  }
+  f.close();
 }
 
+/*
 void FormulaEdit::saveRule ()
 {
   if (! plot->count())
@@ -312,24 +340,18 @@ void FormulaEdit::saveRule ()
     return;
   }
 
-  bool ok;  
-  QString selection = QInputDialog::getText(tr("Save Rule"),
-  					    tr("Enter name for rule."),
-					    QLineEdit::Normal,
-					    tr("NewRule"),
-					    &ok,
-					    this);
-  if ((! ok) || (selection.isNull()))
+  QString s("*");
+  QString s2;
+  config.getData(Config::IndicatorPath, s2);
+  QString selection = QFileDialog::getSaveFileName(s2, s, this, "Save CUS Rule", "Save CUS Rule");
+  if (! selection.length())
     return;
-
+  
   while (selection.contains(" "))
     selection = selection.remove(selection.find(" ", 0, TRUE), 1);
     
-  QString s = config.getData(Config::CUSRulePath);
-  s.append("/");
-  s.append(selection);
-  QDir dir(s);
-  if (dir.exists(s, TRUE))
+  QDir dir;
+  if (dir.exists(selection, TRUE))
   {
     int rc = QMessageBox::warning(this,
   			          tr("Qtstalker: Warning"),
@@ -342,18 +364,23 @@ void FormulaEdit::saveRule ()
       return;
   }
   
-  QFile f(s);
+  QFile f(selection);
   if (! f.open(IO_WriteOnly))
   {
     qDebug("FormulaEdit::saveItem:can't open file");
     return;
   }
   QTextStream stream(&f);
-  
-  stream << getText() << "\n";
+
+  int loop;
+  for (loop = 0; loop < (int) formulaList.count(); loop++)
+    stream << formulaList[loop] << "\n";
+  getText(s);  
+  stream << s << "\n";
 
   f.close(); 
 }
+*/
 
 void FormulaEdit::slotDoubleClicked (QListBoxItem *)
 {
@@ -363,5 +390,56 @@ void FormulaEdit::slotDoubleClicked (QListBoxItem *)
 int FormulaEdit::getLines ()
 {
   return (int) formula->lines();
+}
+
+void FormulaEdit::functionDialog ()
+{
+  Config config;
+  QStringList l;
+  config.getIndicatorList(l);
+
+  bool ok;
+  QString function = QInputDialog::getItem(QObject::tr("Indicator Selection"),
+                                    QObject::tr("Select an indicator:"),
+                                    l,
+                                    0,
+                                    TRUE,
+                                    &ok,
+                                    this);
+  if (! ok)
+    return;
+
+  IndicatorPlugin *plug = config.getIndicatorPlugin(function);
+  if (! plug)
+  {
+    qDebug("FormulaEdit::functionDialog:can't open %s plugin", function.latin1());
+    return;
+  }
+
+  QString vname, format;
+  QStringList vl;
+  BarData bd(format);
+  bd.getInputFields(vl);
+  QStringList l2 = QStringList::split("\n", formula->text(), FALSE);
+  int loop;
+  for (loop = 0; loop < (int) l2.count(); loop++)
+  {
+    QStringList l3 = QStringList::split(":=", l2[loop], FALSE);
+    vl.append(l3[0].stripWhiteSpace());
+  }
+  plug->formatDialog(vl, vname, format);
+
+  if (! vname.length())
+    return;
+
+  if (vl.findIndex(vname) != -1)
+  {
+    QMessageBox::information(this, tr("Qtstalker: Error"), tr("Duplicate variable name."));
+    return;
+  }
+
+  format.prepend(vname + " := " + function + "(");
+  format.append(")");
+  formula->insert(format);
 }
 

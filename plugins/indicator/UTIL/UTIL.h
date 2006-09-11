@@ -32,12 +32,10 @@ class UTIL : public IndicatorPlugin
     PlotLine * calculateCOMP (QString &p, QPtrList<PlotLine> &d);
     PlotLine * calculateCOUNTER (QString &p, QPtrList<PlotLine> &d);
     PlotLine * calculateREF (QString &p, QPtrList<PlotLine> &d);
-    PlotLine * calculateADD (QString &p, QPtrList<PlotLine> &d);
-    PlotLine * calculateDIV (QString &p, QPtrList<PlotLine> &d);
-    PlotLine * calculateMUL (QString &p, QPtrList<PlotLine> &d);
-    PlotLine * calculateSUB (QString &p, QPtrList<PlotLine> &d);
+    PlotLine * calculateADMS (QString &p, QPtrList<PlotLine> &d, int);
     PlotLine * calculatePER (QString &p, QPtrList<PlotLine> &d);
     PlotLine * calculateCOLOR (QString &p, QPtrList<PlotLine> &d);
+    void formatDialog (QStringList &vl, QString &rv, QString &rs);
   
   private:
     QStringList methodList;

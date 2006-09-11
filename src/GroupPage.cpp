@@ -41,10 +41,6 @@
 
 GroupPage::GroupPage (QWidget *w) : QWidget (w)
 {
-  keyFlag = FALSE;
-  macroFlag = FALSE;
-  macro = 0;
-  
   QVBoxLayout *vbox = new QVBoxLayout(this);
   vbox->setMargin(2);
   vbox->setSpacing(5);
@@ -55,16 +51,14 @@ GroupPage::GroupPage (QWidget *w) : QWidget (w)
   group->setFocusPolicy(QWidget::NoFocus);
   vbox->addWidget(group);
 
-  QString s(config.getData(Config::GroupPath));  
+  QString s;
+  config.getData(Config::GroupPath, s);  
   nav = new Navigator(this, s);
   connect(nav, SIGNAL(fileSelected(QString)), this, SLOT(groupSelected(QString)));
   connect(nav, SIGNAL(fileOpened(QString)), this, SLOT(chartOpened(QString)));
   connect(nav, SIGNAL(noSelection()), this, SLOT(groupNoSelection()));
   connect(nav, SIGNAL(contextMenuRequested(QListBoxItem *, const QPoint &)), this, SLOT(rightClick(QListBoxItem *)));
-  connect(nav, SIGNAL(signalKeyPressed(int, int, int, int, QString)),
-          this, SIGNAL(signalKeyPressed(int, int, int, int, QString)));
   nav->updateList();
-  nav->setId(Macro::GroupPage);
   vbox->addWidget(nav);
 
   menu = new QPopupMenu(this);
@@ -112,9 +106,8 @@ void GroupPage::newGroup()
       selection.append(c);
   }
   
-  s = nav->getCurrentPath();
-  s.append("/");
-  s.append(selection);
+  nav->getCurrentPath(s);
+  s.append("/" + selection);
   QDir dir(s);
   if (dir.exists(s, TRUE))
   {
@@ -129,8 +122,10 @@ void GroupPage::newGroup()
 void GroupPage::addGroupItem()
 {
   QString s("*");
-  QString s2(config.getData(Config::DataPath));
+  QString s2;
+  config.getData(Config::DataPath, s2);
   SymbolDialog *dialog = new SymbolDialog(this,
+                                          s2,
   					  s2,
 					  s,
 					  QFileDialog::ExistingFiles);
@@ -145,13 +140,11 @@ void GroupPage::addGroupItem()
     {
       QFileInfo fi(l[loop]);
     
-      s = "ln -s ";
-      s.append(l[loop]);
-      s.append(" ");
-      s.append(nav->getCurrentPath());
-      s.append("/");
-      s.append(fi.fileName());
-      system (s);
+      s = "ln -s " + l[loop] + " ";
+      QString ts;
+      nav->getCurrentPath(ts);
+      s.append(ts + "/" + fi.fileName());
+      system(s);
     }
 
     nav->updateList();
@@ -163,8 +156,10 @@ void GroupPage::addGroupItem()
 void GroupPage::deleteGroupItem()
 {
   QString s("*");
-  QString s2(nav->getCurrentPath());
+  QString s2;
+  nav->getCurrentPath(s2);
   SymbolDialog *dialog = new SymbolDialog(this,
+                                          s2,
   					  s2,
 					  s,
 					  QFileDialog::ExistingFiles);
@@ -206,8 +201,10 @@ void GroupPage::deleteGroupItem()
 
 void GroupPage::deleteGroup()
 {
-  QFileInfo fi(nav->getCurrentPath());
-  QString s = tr("Are you sure you want to delete current group ");
+  QString s;
+  nav->getCurrentPath(s);
+  QFileInfo fi(s);
+  s = tr("Are you sure you want to delete current group ");
   s.append(fi.fileName());
   int rc = QMessageBox::warning(this,
   				tr("Qtstalker: Warning"),
@@ -219,13 +216,16 @@ void GroupPage::deleteGroup()
   if (rc == QMessageBox::No)
     return;
 
-  s = nav->getCurrentPath();
-  if (! s.compare(config.getData(Config::GroupPath)))
+  nav->getCurrentPath(s);
+  QString ts;
+  config.getData(Config::GroupPath, ts);
+  if (! s.compare(ts))
     return;
   
   s =  "rm -r ";
-  s.append(nav->getCurrentPath());
-  system (s);
+  nav->getCurrentPath(ts);
+  s.append(ts);
+  system(s);
   nav->upDirectory();
   nav->updateList();
   groupNoSelection();
@@ -233,14 +233,16 @@ void GroupPage::deleteGroup()
 
 void GroupPage::renameGroup ()
 {
-  QFileInfo fi(nav->getCurrentPath());
+  QString s;
+  nav->getCurrentPath(s);
+  QFileInfo fi(s);
   bool ok;
-  QString s = QInputDialog::getText(tr("Rename Group"),
-  				    tr("Enter new group symbol."),
-				    QLineEdit::Normal,
-				    fi.fileName(),
-				    &ok,
-				    this);
+  s = QInputDialog::getText(tr("Rename Group"),
+  		            tr("Enter new group symbol."),
+			    QLineEdit::Normal,
+			    fi.fileName(),
+			    &ok,
+			    this);
   if ((! ok) || (s.isNull()))
     return;
 
@@ -253,7 +255,7 @@ void GroupPage::renameGroup ()
       selection.append(c);
   }
         
-  s = nav->getCurrentPath();
+  nav->getCurrentPath(s);
     
   QStringList l = QStringList::split("/", s, FALSE);
   l[l.count() - 1] = selection;
@@ -296,8 +298,9 @@ void GroupPage::chartOpened (QString d)
 
 void GroupPage::groupNoSelection ()
 {
-  QString s = config.getData(Config::GroupPath);
-  QString s2 = nav->getCurrentPath();
+  QString s, s2;
+  config.getData(Config::GroupPath, s);
+  nav->getCurrentPath(s2);
   if (s.compare(s2))
   {
     group->setText(s2.right(s2.length() - s.length() - 1));
@@ -333,12 +336,6 @@ void GroupPage::slotHelp ()
 void GroupPage::setFocus ()
 {
   nav->setFocus();
-}
-
-void GroupPage::setKeyFlag (bool d)
-{
-  keyFlag = d;
-  nav->setKeyFlag(d);
 }
 
 void GroupPage::doKeyPress (QKeyEvent *key)
@@ -380,31 +377,21 @@ void GroupPage::slotAccel (int id)
   switch (id)
   {
     case NewGroup:
-      if (keyFlag)
-        emit signalKeyPressed (Macro::GroupPage, ControlButton, Key_N, 0, QString());
       newGroup();
       break;  
     case AddGroupItem:
-      if (keyFlag)
-        emit signalKeyPressed (Macro::GroupPage, ControlButton, Key_A, 0, QString());
       addGroupItem();
       break;  
     case DeleteGroupItem:
-      if (keyFlag)
-        emit signalKeyPressed (Macro::GroupPage, ControlButton, Key_D, 0, QString());
       deleteGroupItem();
       break;  
     case DeleteGroup:
-      if (keyFlag)
-        emit signalKeyPressed (Macro::GroupPage, ControlButton, Key_L, 0, QString());
       deleteGroup();
       break;  
     case Help:
       slotHelp();
       break;  
     case RenameGroup:
-      if (keyFlag)
-        emit signalKeyPressed (Macro::GroupPage, ControlButton, Key_R, 0, QString());
       renameGroup();
       break;
     default:
@@ -412,20 +399,9 @@ void GroupPage::slotAccel (int id)
   }
 }
 
-void GroupPage::runMacro (Macro *d)
+void GroupPage::refreshList ()
 {
-  macro = d;
-  macroFlag = TRUE;
-  
-  while (macro->getZone(macro->getIndex()) == Macro::GroupPage)
-  {
-    doKeyPress(macro->getKey(macro->getIndex()));
-    
-    macro->incIndex();
-    if (macro->getIndex() >= macro->getCount())
-      break;
-  }
-  
-  macroFlag = FALSE;
+  nav->updateList();
 }
+
 

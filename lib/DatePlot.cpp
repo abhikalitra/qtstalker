@@ -23,6 +23,7 @@
 #include <qpainter.h>
 #include <qpaintdevicemetrics.h>
 #include <qstring.h>
+#include <qdatetime.h>
 
 #define SCALE_WIDTH 60
 #define DATE_HEIGHT 30
@@ -69,37 +70,25 @@ void DatePlot::setData (BarData *l)
   data = l;
   dateList.clear();
     
-  if (l->getBarType() == BarData::Tick)
-  { 
-    switch (interval)
-    {
-      case BarData::Minute1:
-      case BarData::Minute5:
-      case BarData::Minute10:
-      case BarData::Minute15:
-      case BarData::Minute30:
-      case BarData::Minute60:
-        getMinuteDate();
-        break;
-      default:
-        getDailyDate();
-        break;
-    }
-  }
-  else
+  switch (interval)
   {
-    switch (interval)
-    {
-      case BarData::WeeklyBar:
-        getWeeklyDate();
-        break;
-      case BarData::MonthlyBar:
-        getMonthlyDate();
-        break;
-      default:
-        getDailyDate();
-        break;
-    }
+    case BarData::Minute1:
+    case BarData::Minute5:
+    case BarData::Minute10:
+    case BarData::Minute15:
+    case BarData::Minute30:
+    case BarData::Minute60:
+      getMinuteDate();
+      break;
+    case BarData::WeeklyBar:
+      getWeeklyDate();
+      break;
+    case BarData::MonthlyBar:
+      getMonthlyDate();
+      break;
+    default:
+      getDailyDate();
+      break;
   }
 }
 
@@ -203,7 +192,7 @@ void DatePlot::setIndex (int d)
   startIndex = d;
 }
 
-void DatePlot::setInterval (BarData::BarCompression d)
+void DatePlot::setInterval (BarData::BarLength d)
 {
   interval = d;
 }
@@ -212,28 +201,30 @@ void DatePlot::getMinuteDate ()
 {
   xGrid.resize(0);
   int loop = 0;
-  BarDate nextHour = data->getDate(loop);
-  BarDate oldDay = data->getDate(loop);
-  nextHour.setTime(nextHour.getHour(), 0, 0);
+  QDateTime nextHour, oldDay;
+  data->getDate(loop, nextHour);
+  data->getDate(loop, oldDay);
+  nextHour.setTime(QTime(nextHour.time().hour(), 0, 0, 0));
   
 //  if ((nextHour.getHour() % 2) == 0)
   if (interval != BarData::Minute1)
-    nextHour.addSecs(7200);
+    nextHour = nextHour.addSecs(7200);
   else
-    nextHour.addSecs(3600);
+    nextHour = nextHour.addSecs(3600);
 
   while(loop < (int) data->count())
   {
-    BarDate date = data->getDate(loop);
+    QDateTime date;
+    data->getDate(loop, date);
     
     TickItem *item = new TickItem;
     item->flag = 0;
     
-    if (date.getDate().day() != oldDay.getDate().day())
+    if (date.date().day() != oldDay.date().day())
     {
       item->flag = 1;
       item->tick = 1;
-      item->text = date.getDate().toString("MMM d");
+      item->text = date.date().toString("MMM d");
       oldDay = date;
       
       xGrid.resize(xGrid.size() + 1);
@@ -241,13 +232,13 @@ void DatePlot::getMinuteDate ()
     }
     else
     {
-      if (date.getDateValue() >= nextHour.getDateValue())
+      if (date >= nextHour)
       {
         if (interval < BarData::Minute30)
 	{
           item->flag = 1;
           item->tick = 0;
-          item->text = QString::number(date.getHour()) + ":00";
+          item->text = QString::number(date.time().hour()) + ":00";
 	  
           xGrid.resize(xGrid.size() + 1);
           xGrid[xGrid.size() - 1] = loop;
@@ -255,15 +246,15 @@ void DatePlot::getMinuteDate ()
       }
     }
     
-    if (date.getDateValue() >= nextHour.getDateValue())
+    if (date >= nextHour)
     {
       nextHour = date;
-      nextHour.setTime(date.getHour(), 0, 0);
+      nextHour.setTime(QTime(date.time().hour(), 0, 0, 0));
 //      if ((date.getHour() % 2) == 0)
       if (interval != BarData::Minute1)
-        nextHour.addSecs(7200);
+        nextHour = nextHour.addSecs(7200);
       else
-        nextHour.addSecs(3600);
+        nextHour = nextHour.addSecs(3600);
     }
 
     dateList.append(item);
@@ -276,7 +267,9 @@ void DatePlot::getDailyDate ()
   int loop = 0;
   xGrid.resize(0);
 
-  QDate oldDate = data->getDate(loop).getDate();
+  QDateTime dt;
+  data->getDate(loop, dt);
+  QDate oldDate = dt.date();
   QDate oldWeek = oldDate;
   oldWeek = oldWeek.addDays(7 - oldWeek.dayOfWeek());
 
@@ -285,7 +278,8 @@ void DatePlot::getDailyDate ()
     TickItem *item = new TickItem;
     item->flag = 0;
   
-    QDate date = data->getDate(loop).getDate();
+    data->getDate(loop, dt);
+    QDate date = dt.date();
 
     if (date.month() != oldDate.month())
     {
@@ -322,14 +316,17 @@ void DatePlot::getWeeklyDate ()
   xGrid.resize(0);
   int loop = 0;
 
-  QDate oldMonth = data->getDate(loop).getDate();
+  QDateTime dt;
+  data->getDate(loop, dt);
+  QDate oldMonth = dt.date();
 
   while(loop < (int) data->count())
   {
     TickItem *item = new TickItem;
     item->flag = 0;
   
-    QDate date = data->getDate(loop).getDate();
+    data->getDate(loop, dt);
+    QDate date = dt.date();
 
     if (date.year() != oldMonth.year())
     {
@@ -362,14 +359,17 @@ void DatePlot::getMonthlyDate ()
 {
   xGrid.resize(0);
   int loop = 0;
-  QDate oldYear = data->getDate(loop).getDate();
+  QDateTime dt;
+  data->getDate(loop, dt);
+  QDate oldYear = dt.date();
 
   while(loop < (int) data->count())
   {
     TickItem *item = new TickItem;
     item->flag = 0;
   
-    QDate date = data->getDate(loop).getDate();
+    data->getDate(loop, dt);
+    QDate date = dt.date();
 
     if (date.year() != oldYear.year())
     {

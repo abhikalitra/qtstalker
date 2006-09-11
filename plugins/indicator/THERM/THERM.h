@@ -32,7 +32,7 @@ class THERM : public IndicatorPlugin
     PlotLine * calculateCustom (QString &, QPtrList<PlotLine> &);
     void getIndicatorSettings (Setting &);
     void setIndicatorSettings (Setting &);
-    int getMinBars ();
+    void formatDialog (QStringList &vl, QString &rv, QString &rs);
     
   private:
     QColor downColor;
@@ -48,6 +48,20 @@ class THERM : public IndicatorPlugin
     int maPeriod;
     int maType;
     int smoothType;
+
+    QString upColorLabel;
+    QString downColorLabel;
+    QString threshColorLabel;
+    QString labelLabel;
+    QString thresholdLabel;
+    QString smoothingLabel;
+    QString smoothTypeLabel;
+    QString maColorLabel;
+    QString maLineTypeLabel;
+    QString maPeriodLabel;
+    QString maLabelLabel;
+    QString maTypeLabel;
+    QString pluginLabel;
 };
 
 extern "C"

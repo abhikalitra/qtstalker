@@ -21,9 +21,13 @@
 
 #include "SymbolButton.h"
 #include "SymbolDialog.h"
+#include "Config.h"
+#include <qfileinfo.h>
 
 SymbolButton::SymbolButton (QWidget *w, QString &d, QString &s) : QPushButton (w)
 {
+  Config config;
+  config.getData(Config::DataPath, baseDir);
   QObject::connect(this, SIGNAL(clicked()), this, SLOT(fileDialog()));
   setMaximumHeight(25);
   setToggleButton(FALSE);
@@ -35,21 +39,28 @@ SymbolButton::~SymbolButton ()
 {
 }
 
-QString SymbolButton::getSymbol ()
+void SymbolButton::getSymbol (QString &d)
 {
-  return symbol;
+  d = symbol;
 }
 
-QString SymbolButton::getPath ()
+void SymbolButton::getPath (QString &d)
 {
-  return path;
+  d = path;
 }
 
 void SymbolButton::fileDialog ()
 {
   QString s("*");
+  QString s2 = baseDir;
+  if (path.length())
+  {
+    QFileInfo fi(path);
+    s2 = fi.dirPath();
+  }
   SymbolDialog *dialog = new SymbolDialog(this,
-  					  dirPath,
+                                          baseDir,
+                                          s2,
 					  s,
 					  QFileDialog::ExistingFiles);
   dialog->setCaption(tr("Select Symbol"));

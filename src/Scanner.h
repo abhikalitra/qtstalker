@@ -27,6 +27,7 @@
 #include <qcombobox.h>
 #include <qpushbutton.h>
 #include <qcheckbox.h>
+#include <qspinbox.h>
 #include "Config.h"
 #include "FormulaEdit.h"
 
@@ -49,6 +50,7 @@ class Scanner : public QTabDialog
   signals:
     void exitScanner ();
     void message (QString);
+    void scanComplete ();
 
   public:
     Scanner (QString);
@@ -71,7 +73,8 @@ class Scanner : public QTabDialog
     QPushButton *fileButton;
     QStringList fileList;
     QCheckBox *allSymbols;
-    QStringList compressionList;
+    QStringList barLengthList;
+    QSpinBox *bars;
 };
 
 #endif

@@ -39,19 +39,10 @@ NYBOT::NYBOT ()
   pluginName = "NYBOT";
   helpFile = "nybot.html";
   cancelFlag = FALSE;
-  plug = 0;
   date = QDateTime::currentDateTime();
 
   connect(this, SIGNAL(signalGetFileDone(bool)), this, SLOT(fileDone(bool)));
   connect(this, SIGNAL(signalTimeout()), this, SLOT(timeoutError()));
-
-  QString plugin("Futures");  
-  plug = config.getDbPlugin(plugin);
-  if (! plug)
-  {
-    config.closePlugin(plugin);
-    qDebug("NYBOT::cannot load Futures plugin");
-  }
 
   loadSettings();
   qInitNetworkProtocols();
@@ -59,22 +50,16 @@ NYBOT::NYBOT ()
 
 NYBOT::~NYBOT ()
 {
-  if (plug)
-  {
-    QString plugin("Futures");  
-    config.closePlugin(plugin);
-  }
+  plug.close();
 }
 
 void NYBOT::update ()
 {
-  if (! plug)
-    return;
-    
-  plug->close();
+  plug.close();
   errorLoop = 0;  
 
-  file = config.getData(Config::Home) + "/nybotDownload";
+  config.getData(Config::Home, file);
+  file.append("/nybotDownload");
 
   // http://www.nybot.com/reports/dmrs/files/2005,05,13_ALL_futures.csv
   url = "http://www.nybot.com/reports/dmrs/files/";
@@ -134,33 +119,33 @@ void NYBOT::parse ()
     return;
   QTextStream stream(&f);
     
-  QString s = stream.readLine();
-  s = stripJunk(s);
+  QString ts = stream.readLine();
+  QString s;
+  stripJunk(ts, s);
   QStringList keys = QStringList::split(",", s, FALSE);
 
   while(stream.atEnd() == 0)
   {
-    s = stream.readLine();
-    s = stripJunk(s);
+    ts = stream.readLine();
+    stripJunk(ts, s);
 
     QStringList l = QStringList::split(",", s, FALSE);
 
     if (l.count() != keys.count())
       continue;
 
-    Setting *data = new Setting;
+    Setting data;
     int loop2;
     for (loop2 = 0; loop2 < (int) keys.count(); loop2++)
-      data->setData(keys[loop2], l[loop2]);
+      data.setData(keys[loop2], l[loop2]);
 
     // symbol
-    QString symbol = data->getData("commoditySymbol");
+    QString symbol;
+    QString ts = "commoditySymbol";
+    data.getData(ts, symbol);
     symbol = symbol.stripWhiteSpace();
     if (symbol.length() == 0)
-    {
-      delete data;
       continue;
-    }
 
     if (! symbol.compare("CC") || ! symbol.compare("CR") || ! symbol.compare("CT") ||
         ! symbol.compare("DX") || ! symbol.compare("KC") || ! symbol.compare("OJ") ||
@@ -168,126 +153,85 @@ void NYBOT::parse ()
     {
     }
     else
+      continue;
+
+    // date
+    QString date;
+    ts = "tradeDate";
+    data.getData(ts, date);
+    date.append("000000");
+
+    Bar bar;
+    if (bar.setDate(date))
     {
-      delete data;
+      emit statusLogMessage("Bad date " + date);
       continue;
     }
 
-    // open
-    double open = 0;
-    s = data->getData("dailyOpenPrice1");
+    ts = "dailyOpenPrice1";
+    data.getData(ts, s);
     if (s.toFloat() == 0)
-      s = data->getData("dailyOpenPrice2");
-    if (setTFloat(s, FALSE))
     {
-      delete data;
-      continue;
+      ts = "dailyOpenPrice2";
+      data.getData(ts, s);
     }
+    if (setTFloat(s, FALSE))
+      continue;
     else
-      open = tfloat;
+      bar.setOpen(tfloat);
 
-    // high
-    double high = 0;
-    s = data->getData("dailyHigh");
+    ts = "dailyHigh";
+    data.getData(ts, s);
     if (setTFloat(s, FALSE))
-    {
-      delete data;
       continue;
-    }
     else
-      high = tfloat;
+      bar.setHigh(tfloat);
 
-    // low
-    double low = 0;
-    s = data->getData("dailyLow");
+    ts = "dailyLow";
+    data.getData(ts, s);
     if (setTFloat(s, FALSE))
-    {
-      delete data;
       continue;
-    }
     else
-      low = tfloat;
+      bar.setLow(tfloat);
 
-    // close
-    double close = 0;
-    s = data->getData("settlementPrice");
+    ts = "settlementPrice";
+    data.getData(ts, s);
     if (setTFloat(s, FALSE))
-    {
-      delete data;
       continue;
-    }
     else
-      close = tfloat;
+      bar.setClose(tfloat);
 
-    // volume
-    double volume = 0;
-    s = data->getData("tradeVolume");
+    ts = "tradeVolume";
+    data.getData(ts, s);
     if (setTFloat(s, FALSE))
-    {
-      delete data;
       continue;
-    }
     else
-      volume = tfloat;
+      bar.setVolume(tfloat);
 
-    // oi
-    double oi = 0;
-    s = data->getData("openInterest");
+    ts = "openInterest";
+    data.getData(ts, s);
     if (setTFloat(s, FALSE))
-    {
-      delete data;
       continue;
-    }
     else
-      oi = tfloat;
+      bar.setOI((int) tfloat);
 
     if (symbol.compare("CC"))
     {
-      open = open / 100;
-      high = high / 100;
-      low = low / 100;
-      close = close / 100;
+      bar.setOpen(bar.getOpen() / 100);
+      bar.setHigh(bar.getHigh() / 100);
+      bar.setLow(bar.getLow() / 100);
+      bar.setClose(bar.getClose() / 100);
     }
 
-    // check for bad values
-    if (close == 0)
-    {
-      delete data;
+    if (bar.verify())
       continue;
-    }
-
-    if (open == 0 || high == 0 || low == 0 || volume == 0)
-    {
-      open = close;
-      high = close;
-      low = close;
-    }
-
-    if (open > high || open < low)
-    {
-      open = close;
-      high = close;
-      low = close;
-    }
-
-    if (close > high || close < low)
-    {
-      open = close;
-      high = close;
-      low = close;
-    }
-
-    // date
-    QString date = data->getData("tradeDate");
-    date.append("000000");
 
     //futures month
-    s = data->getData("contractMonth");
+    ts = "contractMonth";
+    data.getData(ts, s);
     QString year = s.left(4);
     QString month = s.right(2);
     QString fmonth;
-
-    delete data;
 
     switch (month.toInt())
     {
@@ -346,8 +290,14 @@ void NYBOT::parse ()
     else
       continue;
 
-    s = "Futures/" + fd.getExchange() + "/" + fd.getSymbol();
-    QString path = createDirectory(s);
+    s = "Futures/";
+    QString s2;
+    fd.getExchange(s2);
+    s.append(s2 + "/");
+    fd.getSymbol(s2);
+    s.append(s2);
+    QString path;
+    createDirectory(s, path);
     if (! path.length())
     {
       emit statusLogMessage("Unable to create futures directory");
@@ -357,62 +307,36 @@ void NYBOT::parse ()
     s = tr("Updating ") + symbol;
     emit statusLogMessage(s);
 
-    Bar bar;
-    if (bar.setDate(date))
-    {
-      emit statusLogMessage("Bad date " + date);
-      continue;
-    }
-
     s = path + "/" + symbol;
-    if (plug->openChart(s))
+    if (plug.openChart(s))
     {
       emit statusLogMessage("Could not open db.");
       return;
     }
 
     // verify if this chart can be updated by this plugin
-    plug->getHeaderField(DbPlugin::QuotePlugin, s);
+    plug.getHeaderField(DbPlugin::QuotePlugin, s);
     if (! s.length())
-      plug->setHeaderField(DbPlugin::QuotePlugin, pluginName);
+      plug.setHeaderField(DbPlugin::QuotePlugin, pluginName);
     else
     {
       if (s.compare(pluginName))
       {
         s = symbol + " - skipping update. Source does not match destination.";
         emit statusLogMessage(s);
-        plug->close();
+        plug.close();
         return;
       }
     }
 
-    plug->getHeaderField(DbPlugin::Symbol, s);
+    plug.getHeaderField(DbPlugin::Symbol, s);
     if (! s.length())
-    {
-      plug->createNew();
-      plug->setHeaderField(DbPlugin::Symbol, symbol);
+      plug.createNew(DbPlugin::Futures);
 
-      s = fd.getName();
-      plug->setHeaderField(DbPlugin::Title, s);
-	
-      s = "FuturesType";
-      QString s2 = fd.getSymbol();
-      plug->setData(s, s2);
-	
-      s = "FuturesMonth";
-      plug->setData(s, month);
-    }
-
-    bar.setOpen(open);
-    bar.setHigh(high);
-    bar.setLow(low);
-    bar.setClose(close);
-    bar.setVolume(volume);
-    bar.setOI((int) oi);
-    plug->setBar(bar);
+    plug.setBar(bar);
 		 
     //  emit dataLogMessage(symbol);
-    plug->close();
+    plug.close();
   }
 
   f.close();
@@ -446,7 +370,7 @@ void NYBOT::prefDialog (QWidget *w)
   
   if (rc == QDialog::Accepted)
   {
-    date = dialog->getDate(ds);
+    dialog->getDate(ds, date);
     timeout = dialog->getInt(ts);
     retries = dialog->getInt(rs);
     

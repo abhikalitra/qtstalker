@@ -27,10 +27,8 @@
 #include <qstringlist.h>
 #include <qlibrary.h>
 #include <qdict.h>
-#include "DbPlugin.h"
 #include "IndicatorPlugin.h"
 #include "QuotePlugin.h"
-#include "COPlugin.h"
 #include "Setting.h"
 
 class Config
@@ -40,8 +38,8 @@ class Config
     {
       Home,
       DataPath,
-      ChartStyle, //unused
-      Compression,
+      Unused1, // unused
+      BarLength,
       Grid,
       Bars,
       BackgroundColor,
@@ -52,7 +50,7 @@ class Config
       Crosshairs,
       DrawMode,
       DataPanelSize,
-      MacroPath,
+      Unused2, //unused
       ScaleToScreen,
       IndicatorPluginPath,
       QuotePluginPath,
@@ -64,9 +62,9 @@ class Config
       AppFont,
       NavAreaSize,
       LogScale,
-      DbPluginPath,
-      CUSRulePath,
-      COPluginPath,
+      Unused3, // unused
+      Unused5, // unused
+      Unused4, //unused
       HelpFilePath,
       LastQuotePlugin,
       Height,
@@ -77,18 +75,18 @@ class Config
       Version,
       PlotSizes,
       Menubar,
-      Macro1,
-      Macro2,
-      Macro3,
-      Macro4,
-      Macro5,
-      Macro6,
-      Macro7,
-      Macro8,
-      Macro9,
-      Macro10,
-      Macro11,
-      Macro12,
+      Macro1, //unused
+      Macro2, //unused
+      Macro3, //unused
+      Macro4, //unused
+      Macro5, //unused
+      Macro6, //unused
+      Macro7, //unused
+      Macro8, //unused
+      Macro9, //unused
+      Macro10, //unused
+      Macro11, //unused
+      Macro12, //unused
       IndicatorGroup,
       QuotePluginStorage,
       ShowUpgradeMessage,
@@ -99,11 +97,10 @@ class Config
     ~Config ();
     void setData (Parm, QString &);
     void setData (QString &, QString &);
-    QString getData (Parm);
-    QString getData (QString &);
+    void getData (Parm, QString &);
+    void getData (QString &, QString &);
     void getDirList (QString &, bool, QStringList &);
     void setup ();
-    QString parseDbPlugin (QString &);
 
     void getIndicators (QString &, QStringList &);
     void getIndicator (QString &, Setting &);
@@ -112,22 +109,20 @@ class Config
     void setIndicator (QString &, Setting &);
 
     void getPluginList (Config::Parm, QStringList &);
-    DbPlugin * getDbPlugin (QString &);
     IndicatorPlugin * getIndicatorPlugin (QString &);
     QuotePlugin * getQuotePlugin (QString &);
-    COPlugin * getCOPlugin (QString &);
     void closePlugins ();
     void closePlugin (QString &);
 
     void copyIndicatorFile (QString &, QString &);
     void checkUpgrade ();
+    void setDefaultIndicators ();
+    void createDefaultIndicator (Setting &set, QString &plugin, QString &name, int tabRow);
 
   protected:
     QDict<QLibrary> libs;
-    QDict<DbPlugin> dbPlugins;
     QDict<IndicatorPlugin> indicatorPlugins;
     QDict<QuotePlugin> quotePlugins;
-    QDict<COPlugin> coPlugins;
     QString version;
 };
 

@@ -22,34 +22,34 @@
 #ifndef BUYARROW_HPP
 #define BUYARROW_HPP
 
-#include "COPlugin.h"
+#include "COBase.h"
 #include "BuyArrowObject.h"
 #include "BarDate.h"
 #include "Setting.h"
 #include <qpointarray.h>
 #include <qdict.h>
 #include <qpoint.h>
+#include <qregion.h>
+#include <qcolor.h>
+#include <qptrlist.h>
 
-class BuyArrow : public COPlugin
+class BuyArrow : public COBase
 {
   Q_OBJECT
 
   public:
+  
     BuyArrow ();
     ~BuyArrow ();
     void draw (QPixmap &, Scaler &, int, int, int);
     void newObject (QString &, QString &);
     void addObject (Setting &);
     void saveObjects (QString &);
-    void clear ();
     void keyEvent (QKeyEvent *);
-    double getHigh ();
-    double getLow ();
-    void showMenu ();
-    void getNameList (QStringList &);
-    
     void loadDefaults ();
     void saveDefaults ();
+    void getSettings (Setting &);
+    void setSettings (Setting &);
     
   public slots:
     void prefDialog ();
@@ -60,16 +60,6 @@ class BuyArrow : public COPlugin
     
   protected:
     QPointArray arrow;
-    QDict<BuyArrowObject> objects;
-    Status status;
-    BuyArrowObject *selected;
-    QColor defaultColor;
 };
-
-extern "C"
-{
-  COPlugin * createCOPlugin ();
-}
-
 
 #endif

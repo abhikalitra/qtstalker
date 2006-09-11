@@ -34,9 +34,11 @@ class TALIB : public IndicatorPlugin
     void setIndicatorSettings (Setting &);
     void getIndicatorList (QStringList &);
     PlotLine * getMA (PlotLine *d, int, int);
+    void formatDialog (QStringList &vl, QString &rv, QString &rs);
 
   private:
     QStringList methodList;
+    QStringList indicatorList;
     Setting parms;
 };
 

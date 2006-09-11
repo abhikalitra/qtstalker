@@ -31,7 +31,8 @@
 HelpWindow::HelpWindow (QWidget *w, QString &fn) : QDialog (w, "HelpWindow", FALSE, WDestructiveClose)
 {
   Config config;
-  homePath = config.getData(Config::HelpFilePath) + "/";
+  config.getData(Config::HelpFilePath, homePath);
+  homePath.append("/");
   tocPath = homePath + "toc.html";
 
   QVBoxLayout *vbox = new QVBoxLayout (this);

@@ -46,9 +46,9 @@ QuotePlugin::~QuotePlugin ()
   delete timer;
 }
 
-QString QuotePlugin::stripJunk (QString &d)
+void QuotePlugin::stripJunk (QString &d, QString &s)
 {
-  QString s = d.stripWhiteSpace();
+  s = d.stripWhiteSpace();
 
   while (1)
   {
@@ -58,8 +58,6 @@ QString QuotePlugin::stripJunk (QString &d)
     else
       s.remove(p, 1);
   }
-
-  return s;
 }
 
 bool QuotePlugin::setTFloat (QString &d, bool flag)
@@ -97,10 +95,10 @@ bool QuotePlugin::setTFloat (QString &d, bool flag)
     return FALSE;
 }
 
-QString QuotePlugin::createDirectory (QString &d)
+void QuotePlugin::createDirectory (QString &d, QString &path)
 {
   Config config;
-  QString path = config.getData(Config::DataPath);
+  config.getData(Config::DataPath, path);
   
   QStringList l = QStringList::split("/", d, FALSE);
   int loop;
@@ -112,21 +110,22 @@ QString QuotePlugin::createDirectory (QString &d)
     if (! dir.exists(path, TRUE))
     {
       if (! dir.mkdir(path, TRUE))
-        return QString::null;
+      {
+        path.truncate(0);
+        return;
+      }
     }
   }
-
-  return path;
 }
 
-QString QuotePlugin::getPluginName ()
+void QuotePlugin::getPluginName (QString &d)
 {
-  return pluginName;
+  d = pluginName;
 }
 
-QString QuotePlugin::getHelpFile ()
+void QuotePlugin::getHelpFile (QString &d)
 {
-  return helpFile;
+  d = helpFile;
 }
 
 void QuotePlugin::getFile (QString &url)

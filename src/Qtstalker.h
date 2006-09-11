@@ -43,10 +43,8 @@
 #include "PortfolioPage.h"
 #include "TestPage.h"
 #include "GroupPage.h"
-//#include "MacroPage.h"
 #include "ChartToolbar.h"
 #include "MainMenubar.h"
-//#include "Macro.h"
 
 
 #define DEFAULT_INDICATOR_HEIGHT 125
@@ -62,10 +60,9 @@ class QtstalkerApp : public QMainWindow
     void signalGridColor (QColor);
     void signalPlotFont (QFont);
     void signalIndex (int);
-    void signalInterval(BarData::BarCompression);
+    void signalInterval(BarData::BarLength);
     void signalChartPath (QString);
     void signalCrosshairsStatus(bool);
-    void signalSetKeyFlag (bool);
 
   public:
 
@@ -86,16 +83,14 @@ class QtstalkerApp : public QMainWindow
     void initTestNav();
     void initIndicatorNav ();
     void initScannerNav ();
-//    void initMacroNav ();
     QString getWindowCaption ();
     void loadChart (QString &);
-    void compressionChanged ();
+    void barLengthChanged ();
     void addIndicatorButton (QString &);
     void exportChart (QString &);
     void traverse(QString &);
     void loadIndicator (Indicator *);
     void setSliderStart ();
-    void paperTradeDate ();
 
   public slots:
     void slotAbout ();
@@ -107,7 +102,7 @@ class QtstalkerApp : public QMainWindow
     void slotNewIndicator (Indicator *);
     void slotEditIndicator (Indicator *);
     void slotDeleteIndicator (QString);
-    void slotCompressionChanged (int);
+    void slotBarLengthChanged (int);
     void slotPixelspaceChanged (int);
     void slotChartUpdated ();
     void slotStatusMessage (QString);
@@ -120,9 +115,6 @@ class QtstalkerApp : public QMainWindow
     void slotExitQuoteDialog ();
     void slotDisableIndicator (QString);
     void slotEnableIndicator (QString);
-//    void slotRunMacro (QString);
-//    void slotRecordMacro (QString);
-//    void slotStopMacro ();
     void slotProgMessage (int, int);
     void slotDrawPlots ();
     void slotPaperTradeChanged (bool);
@@ -153,8 +145,6 @@ class QtstalkerApp : public QMainWindow
     ScannerPage *sp;
     TestPage *tp;
     GroupPage *gp;
-//    MacroPage *mp;
-//    Macro *currentMacro;
     QProgressBar *progBar;
     QStatusBar *statusbar;
     QString chartType;

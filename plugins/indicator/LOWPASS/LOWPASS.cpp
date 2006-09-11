@@ -35,6 +35,18 @@ LOWPASS::LOWPASS ()
 {
   pluginName = "LOWPASS";
   helpFile = "lowpass.html";
+
+  colorLabel = "color";
+  lineTypeLabel = "lineType";
+  labelLabel = "label";
+  inputLabel = "input";
+  pluginLabel = "plugin";
+  freqLabel = "freq";
+  widthLabel = "width";
+
+  formatList.append(FormatInputArray);
+  formatList.append(FormatDouble);
+  formatList.append(FormatDouble);
     
   setDefaults();
 }
@@ -228,9 +240,9 @@ int LOWPASS::indicatorPrefDialog (QWidget *w)
   
   if (rc == QDialog::Accepted)
   {
-    color = dialog->getColor(cl);
+    dialog->getColor(cl, color);
     lineType = (PlotLine::LineType) dialog->getComboIndex(ltl);
-    label = dialog->getText(ll);
+    dialog->getText(ll, label);
     input = (BarData::InputType) dialog->getComboIndex(il);
 
     freq = dialog->getDouble(fl);
@@ -258,52 +270,22 @@ PlotLine * LOWPASS::calculateCustom (QString &p, QPtrList<PlotLine> &d)
 {
   // format: DATA_ARRAY, FREQ, WIDTH
 
-  QStringList l = QStringList::split(",", p, FALSE);
-
-  if (l.count() == 3)
-    ;
-  else
-  {
-    qDebug("LOWPASS::calculateCustom: invalid parm count");
+  if (checkFormat(p, d, 3, 3))
     return 0;
-  }
 
-  if (! d.count())
-  {
-    qDebug("LOWPASS::calculateCustom: no input");
-    return 0;
-  }
+  double t = formatStringList[1].toDouble();
+  if (t < 0.0)
+    t = 0.0;
+  if (t > 0.5)
+    t = 0.5;
+  freq = t;
 
-  bool ok;
-  double t2 = l[1].toDouble(&ok);
-  if (ok)
-  {
-    if (t2 < 0.0)
-      t2 = 0.0;
-    if (t2 > 0.5)
-      t2 = 0.5;
-    freq = t2;
-  }
-  else
-  {
-    qDebug("LOWPASS::calculateCustom: invalid FREQ parm");
-    return 0;
-  }
-
-  t2 = l[2].toDouble(&ok);
-  if (ok)
-  {
-    if (t2 < 0.0001)
-      t2 = 0.0001;
-    if (t2 > 0.2)
-      t2 = 0.2;
-    width = t2;
-  }
-  else
-  {
-    qDebug("LOWPASS::calculateCustom: invalid WIDTH parm");
-    return 0;
-  }
+  t = formatStringList[2].toDouble();
+  if (t < 0.0001)
+    t = 0.0001;
+  if (t > 0.2)
+    t = 0.2;
+  width = t;
 
   clearOutput();
   calculate2(d.at(0), freq, width);
@@ -312,13 +294,18 @@ PlotLine * LOWPASS::calculateCustom (QString &p, QPtrList<PlotLine> &d)
 
 void LOWPASS::getIndicatorSettings (Setting &dict)
 {
-  dict.setData("color", color.name());
-  dict.setData("lineType", QString::number(lineType));
-  dict.setData("label", label);
-  dict.setData("input", QString::number(input));
-  dict.setData("plugin", pluginName);
-  dict.setData("freq", QString::number(freq));
-  dict.setData("width", QString::number(width));
+  QString ts = color.name();
+  dict.setData(colorLabel, ts);
+  ts = QString::number(lineType);
+  dict.setData(lineTypeLabel, ts);
+  dict.setData(labelLabel, label);
+  ts = QString::number(input);
+  dict.setData(inputLabel, ts);
+  dict.setData(pluginLabel, pluginName);
+  ts = QString::number(freq);
+  dict.setData(freqLabel, ts);
+  ts = QString::number(width);
+  dict.setData(widthLabel, ts);
 }
 
 void LOWPASS::setIndicatorSettings (Setting &dict)
@@ -328,35 +315,69 @@ void LOWPASS::setIndicatorSettings (Setting &dict)
   if (! dict.count())
     return;
   
-  QString s = dict.getData("color");
+  QString s;
+  dict.getData(colorLabel, s);
   if (s.length())
     color.setNamedColor(s);
     
-  s = dict.getData("lineType");
+  dict.getData(lineTypeLabel, s);
   if (s.length())
     lineType = (PlotLine::LineType) s.toInt();
 
-  s = dict.getData("label");
+  dict.getData(labelLabel, s);
   if (s.length())
     label = s;
       
-  s = dict.getData("input");
+  dict.getData(inputLabel, s);
   if (s.length())
     input = (BarData::InputType) s.toInt();
 
-  s = dict.getData("freq");
+  dict.getData(freqLabel, s);
   if (s.length())
     freq = s.toFloat();
     
-  s = dict.getData("width");
+  dict.getData(widthLabel, s);
   if (s.length())
     width = s.toFloat();
 }
 
-int LOWPASS::getMinBars ()
+void LOWPASS::formatDialog (QStringList &vl, QString &rv, QString &rs)
 {
-  int t = minBars;
-  return t;
+  rs.truncate(0);
+  rv.truncate(0);
+  QString pl = QObject::tr("Parms");
+  QString vnl = QObject::tr("Variable Name");
+  QString fl = QObject::tr("Freq");
+  QString wl = QObject::tr("Width");
+  QString il = QObject::tr("Input");
+  PrefDialog *dialog = new PrefDialog(0);
+  dialog->setCaption(QObject::tr("LOWPASS Format"));
+  dialog->createPage (pl);
+  dialog->setHelpFile(helpFile);
+
+  QString s;
+  dialog->addTextItem(vnl, pl, s);
+  dialog->addComboItem(il, pl, vl, input);
+  dialog->addDoubleItem(fl, pl, freq, 0, 0.5);
+  dialog->addDoubleItem(wl, pl, width, 0.0001, 0.2);
+
+  int rc = dialog->exec();
+  
+  if (rc == QDialog::Accepted)
+  {
+    dialog->getText(vnl, rv);
+
+    dialog->getCombo(il, s);
+    rs.append(s + ",");
+
+    double t = dialog->getDouble(fl);
+    rs.append(QString::number(t) + ",");
+
+    t = dialog->getDouble(wl);
+    rs.append(QString::number(t));
+  }
+
+  delete dialog;
 }
 
 //*******************************************************

@@ -30,11 +30,17 @@ TALIB::TALIB ()
 {
   pluginName = "TALIB";
   helpFile = "talib.html";
+
   setDefaults();
+
+  TA_RetCode rc = TA_Initialize(NULL);
+  if (rc != TA_SUCCESS)
+    qDebug("TALIB::TALIB:could not TA_Initialize");
 }
 
 TALIB::~TALIB ()
 {
+  TA_Shutdown();  
 }
 
 void TALIB::setDefaults ()
@@ -46,7 +52,10 @@ void TALIB::calculate ()
 {
   // open a TALIB handle
   const TA_FuncHandle *handle;
-  TA_RetCode retCode = TA_GetFuncHandle(parms.getData("method"), &handle);
+  QString ts = "method";
+  QString ts2;
+  parms.getData(ts, ts2);
+  TA_RetCode retCode = TA_GetFuncHandle(ts2, &handle);
   if (retCode != TA_SUCCESS)
   {
     qDebug("TALIB::calculate:can't open handle");
@@ -99,7 +108,8 @@ void TALIB::calculate ()
     switch (inputParms->type)
     {
       case TA_Input_Price:
-        retCode = TA_SetInputParamPricePtr(parmHolder, loop, 0, &open[0], &high[0], &low[0], &close[0], &volume[0], &oi[0]);
+        retCode = TA_SetInputParamPricePtr(parmHolder, loop, 0, &open[0], &high[0], &low[0],
+                                           &close[0], &volume[0], &oi[0]);
         if (retCode != TA_SUCCESS)
           qDebug("TALIB::calculate:cannot set input prices");
         break;
@@ -167,6 +177,11 @@ void TALIB::calculate ()
         if (retCode != TA_SUCCESS)
           qDebug("TALIB::calculate:cannot set inputopt integer");
         break;
+      case TA_OptInput_IntegerList:
+        retCode = TA_SetOptInputParamInteger(parmHolder, loop, (TA_Integer) parms.getInt(s));
+        if (retCode != TA_SUCCESS)
+          qDebug("TALIB::calculate:cannot set inputopt integerlist");
+        break;
       default:
         break;
     }
@@ -231,26 +246,38 @@ void TALIB::calculate ()
     // create the plotlines
     clearOutput();
 
+    const TA_OutputParameterInfo *outInfo;
     for (loop = 0; loop < (int) theInfo->nbOutput; loop++ )
     {
-      PlotLine *line = new PlotLine;
-      output->addLine(line);
+      TA_GetOutputParameterInfo(theInfo->handle, loop, &outInfo);
+      QString base = outInfo->paramName;
+      base = base.right(base.length() - 3);
+      if (! base.left(4).compare("Real"))
+        base = base.right(base.length() - 4);
+      if (! base.left(7).compare("Integer"))
+        base = base.right(base.length() - 7);
+      if (! base.length())
+        base = QObject::tr("Plot");
 
-      QString s = QObject::tr("Color") + QString::number(loop + 1);
-      QColor color(parms.getData(s));
+      PlotLine *line = new PlotLine;
+
+      QString s = base + " " + QObject::tr("Color");
+      parms.getData(s, ts);
+      QColor color(ts);
       line->setColor(color);
 
-      s = QObject::tr("Label") + QString::number(loop + 1);
-      s = parms.getData(s);
-      line->setLabel(s);
+      s = base + " " + QObject::tr("Label");
+      parms.getData(s, ts);
+      line->setLabel(ts);
 
-      s = QObject::tr("Line Type") + QString::number(loop + 1);
+      s = base + " " + QObject::tr("Line Type");
       line->setType((PlotLine::LineType)parms.getInt(s));
 
       retCode = TA_GetOutputParameterInfo(handle, loop, &outInfo);
       if (retCode != TA_SUCCESS)
       {
         qDebug("TALIB::calculate:cannot get output info");
+        delete line;
         continue;
       }
 
@@ -280,6 +307,11 @@ void TALIB::calculate ()
         default:
           break;
       }
+
+      if (line->getType() == PlotLine::Histogram || line->getType() == PlotLine::HistogramBar)
+        output->prependLine(line);
+      else
+        output->addLine(line);
     }
   }
 
@@ -317,7 +349,10 @@ int TALIB::indicatorPrefDialog (QWidget *w)
   const TA_FuncInfo *theInfo;
  
   // open a TALIB handle
-  TA_RetCode retCode = TA_GetFuncHandle(parms.getData("method"), &handle);
+  QString ts = "method";
+  QString ts2;
+  parms.getData(ts, ts2);
+  TA_RetCode retCode = TA_GetFuncHandle(ts2, &handle);
   if (retCode != TA_SUCCESS)
   {
     qDebug("TALIB::indicatorPrefDialog:can't open handle");
@@ -338,6 +373,10 @@ int TALIB::indicatorPrefDialog (QWidget *w)
   dialog->createPage (pl);
   dialog->setHelpFile(helpFile);
 
+  QStringList mal;
+  getMATypes(mal);
+  mal.remove("Wilder");
+
   // get the input parms
   const TA_OptInputParameterInfo *optInfo;
   int loop;
@@ -348,26 +387,39 @@ int TALIB::indicatorPrefDialog (QWidget *w)
     switch (optInfo->type)
     {
       case TA_OptInput_RealRange:
-        if (! parms.getData(s).length())
+        parms.getData(s, ts);
+        if (! ts.length())
         {
           dialog->addDoubleItem(s, pl, (double) optInfo->defaultValue, 0, 99999999);
-          parms.setData(s, QString::number((double) optInfo->defaultValue));
+          ts = QString::number((double) optInfo->defaultValue);
+          parms.setData(s, ts);
         }
         else
           dialog->addDoubleItem(s, pl, parms.getDouble(s), 0, 99999999);
         break;
-      case TA_OptInput_RealList:
-        break;
       case TA_OptInput_IntegerRange:
-        if (! parms.getData(s).length())
+        parms.getData(s, ts);
+        if (! ts.length())
         {
           dialog->addIntItem(s, pl, (int) optInfo->defaultValue, 1, 999999);
-          parms.setData(s, QString::number((int) optInfo->defaultValue));
+          ts = QString::number((int) optInfo->defaultValue);
+          parms.setData(s, ts);
         }
         else
           dialog->addIntItem(s, pl, parms.getInt(s), 1, 999999);
         break;
       case TA_OptInput_IntegerList:
+        parms.getData(s, ts);
+        if (! ts.length())
+        {
+          dialog->addComboItem(s, pl, mal, (int) optInfo->defaultValue);
+          ts = QString::number((int) optInfo->defaultValue);
+          parms.setData(s, ts);
+        }
+        else
+          dialog->addComboItem(s, pl, mal, parms.getInt(s));
+        break;
+      case TA_OptInput_RealList:
         break;
       default:
         break;
@@ -383,10 +435,12 @@ int TALIB::indicatorPrefDialog (QWidget *w)
     switch (inputParms->type)
     {
       case TA_Input_Real:
-        if (! parms.getData(s).length())
+        parms.getData(s, ts);
+        if (! ts.length())
         {
-          dialog->addComboItem(s, pl, inputTypeList, 3);
-          parms.setData(s, QString::number(3));
+          dialog->addComboItem(s, pl, inputTypeList, (int) BarData::Close);
+          ts = QString::number(BarData::Close);
+          parms.setData(s, ts);
         }
         else
           dialog->addComboItem(s, pl, inputTypeList, parms.getInt(s));
@@ -396,42 +450,82 @@ int TALIB::indicatorPrefDialog (QWidget *w)
     }
   }
 
-  // get the output parms
+  // setup the output plots
+  const TA_OutputParameterInfo *outInfo;
   for (loop = 0; loop < (int) theInfo->nbOutput; loop++ )
   {
-    pl = QObject::tr("Plot") + QString::number(loop + 1);
+    TA_GetOutputParameterInfo(theInfo->handle, loop, &outInfo);
+
+    pl = outInfo->paramName;
+    pl = pl.right(pl.length() - 3);
+    if (! pl.left(4).compare("Real"))
+      pl = pl.right(pl.length() - 4);
+    if (! pl.left(7).compare("Integer"))
+      pl = pl.right(pl.length() - 7);
+    if (! pl.length())
+      pl = QObject::tr("Plot");
     dialog->createPage (pl);
 
-    QString s = QObject::tr("Color") + QString::number(loop + 1);
-    QColor color("red");
-    if (! parms.getData(s).length())
+    QString s = pl + " " + QObject::tr("Color");
+    QColor color;
+    if (loop == 0)
+      color.setNamedColor("red");
+    else
+    {
+      if (loop == 1)
+        color.setNamedColor("yellow");
+      else
+        color.setNamedColor("blue");
+    }
+    parms.getData(s, ts);
+    if (! ts.length())
     {
       dialog->addColorItem(s, pl, color);
-      parms.setData(s, color.name());
+      ts = color.name();
+      parms.setData(s, ts);
     }
     else
     {
-      color.setNamedColor(parms.getData(s));
+      parms.getData(s, ts);
+      color.setNamedColor(ts);
       dialog->addColorItem(s, pl, color);
     }
 
-    s = QObject::tr("Label") + QString::number(loop + 1);
-    if (! parms.getData(s).length())
+    s = pl + " " + QObject::tr("Label");
+    parms.getData(s, ts);
+    if (! ts.length())
     {
-      dialog->addTextItem(s, pl, s);
-      parms.setData(s, s);
+      dialog->addTextItem(s, pl, pl);
+      parms.setData(s, pl);
     }
     else
     {
-      QString s2 = parms.getData(s);
-      dialog->addTextItem(s, pl, s2);
+      parms.getData(s, ts);
+      dialog->addTextItem(s, pl, ts);
     }
 
-    s = QObject::tr("Line Type") + QString::number(loop + 1);
-    if (! parms.getData(s).length())
+    s = pl + " " + QObject::tr("Line Type");
+    parms.getData(s, ts);
+    if (! ts.length()) 
     {
-      dialog->addComboItem(s, pl, lineTypes, 4);
-      parms.setData(s, QString::number(4));
+      switch (outInfo->flags)
+      {
+        case TA_OUT_DOT_LINE:
+          ts = QString::number(PlotLine::Dot);
+          break;
+        case TA_OUT_DASH_LINE:
+          ts = QString::number(PlotLine::Dash);
+          break;
+        case TA_OUT_HISTO:
+          ts = QString::number(PlotLine::Histogram);
+          break;
+        default:
+          ts = QString::number(PlotLine::Line);
+          break;
+      }
+
+      dialog->addComboItem(s, pl, lineTypes, ts.toInt());
+      parms.setData(s, ts);
     }
     else
       dialog->addComboItem(s, pl, lineTypes, parms.getInt(s));
@@ -446,7 +540,8 @@ int TALIB::indicatorPrefDialog (QWidget *w)
     int loop;
     for (loop = 0; loop < (int) l.count(); loop++)
     {
-      QString s = dialog->getItem(l[loop]);
+      QString s;
+      dialog->getItem(l[loop], s);
       if (s.length())
         parms.setData(l[loop], s);
     }
@@ -465,7 +560,8 @@ void TALIB::getIndicatorSettings (Setting &dict)
   QString s;
   parms.getString(s);
   dict.parse(s);
-  dict.setData("plugin", pluginName);
+  s = "plugin";
+  dict.setData(s, pluginName);
 }
 
 void TALIB::setIndicatorSettings (Setting &dict)
@@ -584,7 +680,8 @@ PlotLine * TALIB::calculateCustom (QString &p, QPtrList<PlotLine> &d)
         oi[loop2] = (TA_Integer) data->getOI(loop2);
       }
 
-      retCode = TA_SetInputParamPricePtr(parmHolder, loop, 0, &open[0], &high[0], &low[0], &close[0], &volume[0], &oi[0]);
+      retCode = TA_SetInputParamPricePtr(parmHolder, loop, 0, &open[0], &high[0], &low[0], &close[0],
+                                         &volume[0], &oi[0]);
       if (retCode != TA_SUCCESS)
       {
         qDebug("TALIB::calculateCustom:cannot set input prices");
@@ -758,8 +855,37 @@ PlotLine * TALIB::calculateCustom (QString &p, QPtrList<PlotLine> &d)
     }
     else
     {
-      for (loop2 = 0; loop2 < count; loop2++)
-        line->append((double) out1[loop2]);
+      if (theInfo->nbOutput > 1)
+      {
+        bool ok;
+        l[l.count() - 1].toInt(&ok);
+        if (! ok)
+        {
+          qDebug("TALIB::calculateCustom: parm #%i invalid, not an INTEGER", loop + 1);
+          return 0;
+        }
+
+        switch (l[l.count() - 1].toInt(&ok))
+        {
+          case 2:
+            for (loop2 = 0; loop2 < count; loop2++)
+              line->append((double) out2[loop2]);
+            break;
+          case 3:
+            for (loop2 = 0; loop2 < count; loop2++)
+              line->append((double) out3[loop2]);
+            break;
+          default:
+            for (loop2 = 0; loop2 < count; loop2++)
+              line->append((double) out1[loop2]);
+            break;
+        }
+      }
+      else
+      {
+        for (loop2 = 0; loop2 < count; loop2++)
+          line->append((double) out1[loop2]);
+      }
     }
   }
 
@@ -777,17 +903,11 @@ PlotLine * TALIB::getMA (PlotLine *in, int type, int period)
 {
   PlotLine *ma = new PlotLine;
 
-  TA_RetCode rc = TA_Initialize(NULL);
-  if (rc != TA_SUCCESS)
-  {
-    qDebug("TALIB::getMA:error on TA_Initialize");
-    return ma;
-  }
-
   TA_Real input[in->getSize()];
   TA_Real out[in->getSize()];
   TA_Integer outBeg;
   TA_Integer count;
+  TA_RetCode rc = TA_SUCCESS;
 
   int loop;
   for (loop = 0; loop < in->getSize(); loop++)
@@ -796,31 +916,35 @@ PlotLine * TALIB::getMA (PlotLine *in, int type, int period)
   switch (type)
   {
     case 0:
-      rc = TA_MA(0, in->getSize()- 1, &input[0], period, TA_MAType_EMA, &outBeg, &count, &out[0]);
+      rc = TA_MA(0, in->getSize()- 1, &input[0], period, TA_MAType_SMA, &outBeg, &count, &out[0]);
       break;
     case 1:
-      rc = TA_MA(0, in->getSize()- 1, &input[0], period, TA_MAType_SMA, &outBeg, &count, &out[0]);
+      rc = TA_MA(0, in->getSize()- 1, &input[0], period, TA_MAType_EMA, &outBeg, &count, &out[0]);
       break;
     case 2:
       rc = TA_MA(0, in->getSize()- 1, &input[0], period, TA_MAType_WMA, &outBeg, &count, &out[0]);
       break;
-    case 4:
+    case 3:
       rc = TA_MA(0, in->getSize()- 1, &input[0], period, TA_MAType_DEMA, &outBeg, &count, &out[0]);
       break;
-    case 5:
-      rc = TA_MA(0, in->getSize()- 1, &input[0], period, TA_MAType_KAMA, &outBeg, &count, &out[0]);
-      break;
-    case 6:
+    case 4:
       rc = TA_MA(0, in->getSize()- 1, &input[0], period, TA_MAType_TEMA, &outBeg, &count, &out[0]);
       break;
-    case 7:
+    case 5:
       rc = TA_MA(0, in->getSize()- 1, &input[0], period, TA_MAType_TRIMA, &outBeg, &count, &out[0]);
+      break;
+    case 6:
+      rc = TA_MA(0, in->getSize()- 1, &input[0], period, TA_MAType_KAMA, &outBeg, &count, &out[0]);
+      break;
+    case 7:
+      rc = TA_MA(0, in->getSize()- 1, &input[0], period, TA_MAType_MAMA, &outBeg, &count, &out[0]);
+      break;
+    case 8:
+      rc = TA_MA(0, in->getSize()- 1, &input[0], period, TA_MAType_T3, &outBeg, &count, &out[0]);
       break;
     default:
       break;    
   }
-
-  TA_Shutdown();  
 
   if (rc != TA_SUCCESS)
   {
@@ -832,6 +956,163 @@ PlotLine * TALIB::getMA (PlotLine *in, int type, int period)
     ma->append((double) out[loop]);
 
   return ma;  
+}
+
+void TALIB::formatDialog (QStringList &vl, QString &rv, QString &rs)
+{
+  rs.truncate(0);
+  rv.truncate(0);
+
+  bool ok;
+  QString function = QInputDialog::getItem(QObject::tr("TALIB Indicator Selection"),
+                                    QObject::tr("Select an indicator:"),
+                                    methodList,
+                                    0,
+                                    TRUE,
+                                    &ok,
+                                    0);
+  if (! ok)
+    return;
+
+  const TA_FuncHandle *handle;
+  const TA_FuncInfo *theInfo;
+ 
+  // open a TALIB handle
+  TA_RetCode retCode = TA_GetFuncHandle(function, &handle);
+  if (retCode != TA_SUCCESS)
+  {
+    qDebug("TALIB::getFormatList:can't open handle");
+    return;
+  }
+
+  // get info on the function
+  retCode = TA_GetFuncInfo(handle, &theInfo);
+  if (retCode != TA_SUCCESS)
+  {
+    qDebug("TALIB::getFormatList:can't get function info");
+    return;
+  }
+
+  QString pl = QObject::tr("Parms");
+  QString vnl = QObject::tr("Variable Name");
+  PrefDialog *dialog = new PrefDialog(0);
+  dialog->setCaption(QObject::tr("TALIB Format"));
+  dialog->createPage (pl);
+  dialog->setHelpFile(helpFile);
+
+  QString s;
+  dialog->addTextItem(vnl, pl, s);
+
+  // check for any array inputs
+  const TA_InputParameterInfo *inputParms;
+  int loop;
+  for (loop = 0; loop < (int) theInfo->nbInput; loop++ )
+  {
+    s = QObject::tr("Input") + QString::number(loop + 1);
+    TA_GetInputParameterInfo(theInfo->handle, loop, &inputParms);
+    switch (inputParms->type)
+    {
+      case TA_Input_Real:
+        dialog->addComboItem(s, pl, vl, (int) BarData::Close);
+        break;
+      default:
+        break;
+    }
+  }
+
+  QStringList mal;
+  getMATypes(mal);
+  mal.remove("Wilder");
+
+  // get the input parms
+  const TA_OptInputParameterInfo *optInfo;
+  for (loop = 0; loop < (int) theInfo->nbOptInput; loop++ )
+  {
+    TA_GetOptInputParameterInfo(theInfo->handle, loop, &optInfo);
+    s = optInfo->displayName;
+    switch (optInfo->type)
+    {
+      case TA_OptInput_RealRange:
+        dialog->addDoubleItem(s, pl, (double) optInfo->defaultValue, 0, 99999999);
+        break;
+      case TA_OptInput_IntegerRange:
+        dialog->addIntItem(s, pl, (int) optInfo->defaultValue, 1, 999999);
+        break;
+      case TA_OptInput_IntegerList:
+        dialog->addComboItem(s, pl, mal, (int) optInfo->defaultValue);
+        break;
+      case TA_OptInput_RealList:
+        break;
+      default:
+        break;
+    }
+  }
+
+  if (theInfo->nbOutput > 1)
+  {
+    s = "Plot";
+    dialog->addIntItem(s, pl, 1, 1, theInfo->nbOutput);
+  }
+
+  int rc = dialog->exec();
+  
+  if (rc == QDialog::Accepted)
+  {
+    dialog->getText(vnl, rv);
+    rs = function;
+
+    QString ts;
+    for (loop = 0; loop < (int) theInfo->nbInput; loop++ )
+    {
+      s = QObject::tr("Input") + QString::number(loop + 1);
+      TA_GetInputParameterInfo(theInfo->handle, loop, &inputParms);
+      switch (inputParms->type)
+      {
+        case TA_Input_Real:
+          dialog->getCombo(s, ts);
+          rs.append("," + ts);
+          break;
+        default:
+          break;
+      }
+    }
+
+    double d = 0;
+    int t = 0;
+    for (loop = 0; loop < (int) theInfo->nbOptInput; loop++ )
+    {
+      TA_GetOptInputParameterInfo(theInfo->handle, loop, &optInfo);
+      s = optInfo->displayName;
+      switch (optInfo->type)
+      {
+        case TA_OptInput_RealRange:
+          d = dialog->getDouble(s);
+          rs.append("," + QString::number(d));
+          break;
+        case TA_OptInput_IntegerRange:
+          t = dialog->getInt(s);
+          rs.append("," + QString::number(t));
+          break;
+        case TA_OptInput_IntegerList:
+          dialog->getCombo(s, ts);
+          rs.append("," + ts);
+          break;
+        case TA_OptInput_RealList:
+          break;
+        default:
+          break;
+      }
+    }
+
+    if (theInfo->nbOutput > 1)
+    {
+      s = "Plot";
+      t = dialog->getInt(s);
+      rs.append("," + QString::number(t));
+    }
+  }
+
+  delete dialog;
 }
 
 //*******************************************************

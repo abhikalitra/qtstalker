@@ -56,7 +56,7 @@ class PrefDialog : public QTabDialog
     void deletePage (QString &);
     void setHelpFile (QString &);
     void addColorItem (QString &, QString &, QColor &);
-    QColor getColor (QString &);
+    void getColor (QString &, QColor &);
     void addDoubleItem (QString &, QString &, double, double, double);
     void addDoubleItem (QString &, QString &, double);
     double getDouble (QString &);
@@ -66,24 +66,26 @@ class PrefDialog : public QTabDialog
     void addCheckItem (QString &, QString &, bool);
     void addCheckItem (QString &, QString &, QString &);
     bool getCheck (QString &);
-    QString getCheckString (QString &);
+    void getCheckString (QString &, QString &);
     void addFontItem (QString &, QString &, QFont &);
-    QFont getFont (QString &);
+    void getFont (QString &, QFont &);
     void addTextItem (QString &, QString &, QString &);
-    QString getText (QString &);
+    void getText (QString &, QString &);
     void addComboItem (QString &, QString &, QStringList &, QString &);
     void addComboItem (QString &, QString &, QStringList &, int);
-    QString getCombo (QString &);
+    void getCombo (QString &, QString &);
     int getComboIndex (QString &);
     QComboBox * getComboWidget (QString &);
     void addDateItem (QString &, QString &, QDateTime &);
-    QDateTime getDate (QString &);
+    void getDate (QString &, QDateTime &);
     void addFileItem (QString &, QString &, QStringList &, QString &);
     void getFile (QString &, QStringList &);
     void addSymbolItem (QString &, QString &, QString &, QString &);
-    QString getSymbol (QString &);
+    void getSymbol (QString &, QString &);
     void addLabelItem (QString &, QString &, QString &);
-    QString getItem (QString &);
+    void getItem (QString &, QString &);
+    void addTimeItem (QString &, QString &, QDateTime &);
+    void getTime (QString &, QDateTime &);
     
   public slots:
     void help ();
@@ -103,6 +105,7 @@ class PrefDialog : public QTabDialog
     QDict<SymbolButton> symbolList;
     QDict<QDoubleValidator> dvList;
     QDict<QLabel> labelList;
+    QDict<QTimeEdit> timeList;
     QString helpFile;
 };
 

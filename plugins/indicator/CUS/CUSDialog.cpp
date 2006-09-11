@@ -65,7 +65,9 @@ void CUSDialog::setLine (QString d)
 void CUSDialog::getList (QStringList &l)
 {
   l.clear();
-  l = QStringList::split("\n", list->getText(), FALSE);
+  QString s;
+  list->getText(s);
+  l = QStringList::split("\n", s, FALSE);
 }
 
 void CUSDialog::help ()

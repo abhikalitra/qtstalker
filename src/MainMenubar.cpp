@@ -38,9 +38,6 @@
 
 MainMenubar::MainMenubar (QMainWindow *mw) : QMenuBar (mw, "mainMenubar")
 {
-  macroFlag = FALSE;
-  tmacro = 0;
-  keyFlag = FALSE;
   actions.setAutoDelete(FALSE);
   
   QPixmap icon(finished);
@@ -72,7 +69,8 @@ MainMenubar::MainMenubar (QMainWindow *mw) : QMenuBar (mw, "mainMenubar")
   actions.replace(Options, action);
 
   icon = gridicon;
-  QString s = config.getData(Config::Grid);
+  QString s;
+  config.getData(Config::Grid, s);
   action = new QAction(this, "actionGrid");
   action->setMenuText(tr("Chart &Grid"));
   action->setIconSet(icon);
@@ -112,7 +110,7 @@ MainMenubar::MainMenubar (QMainWindow *mw) : QMenuBar (mw, "mainMenubar")
   actions.replace(About, action);
 
   icon = scaletoscreen;
-  s = config.getData(Config::ScaleToScreen);
+  config.getData(Config::ScaleToScreen, s);
   action = new QAction(this, "actionScale");
   action->setMenuText(tr("&Scale To Screen"));
   action->setIconSet(icon);
@@ -134,7 +132,7 @@ MainMenubar::MainMenubar (QMainWindow *mw) : QMenuBar (mw, "mainMenubar")
   actions.replace(SidePanel, action);
 
   icon = co;
-  s = config.getData(Config::DrawMode);
+  config.getData(Config::DrawMode, s);
   action = new QAction(this, "actionDraw");
   action->setMenuText(tr("Toggle Dra&w Mode"));
   action->setIconSet(icon);
@@ -146,7 +144,7 @@ MainMenubar::MainMenubar (QMainWindow *mw) : QMenuBar (mw, "mainMenubar")
   actions.replace(DrawMode, action);
   
   icon = crosshair;
-  s = config.getData(Config::Crosshairs);
+  config.getData(Config::Crosshairs, s);
   action = new QAction(this, "actionCrosshairs");
   action->setMenuText(tr("Toggle Cross&hairs"));
   action->setIconSet(icon);
@@ -158,7 +156,7 @@ MainMenubar::MainMenubar (QMainWindow *mw) : QMenuBar (mw, "mainMenubar")
   actions.replace(Crosshairs, action);
 
   icon = papertrade;
-  s = config.getData(Config::PaperTradeMode);
+  config.getData(Config::PaperTradeMode, s);
   action = new QAction(this, "actionPaperTrade");
   action->setMenuText(tr("Paper Trade Mode"));
   action->setIconSet(icon);
@@ -178,6 +176,13 @@ MainMenubar::MainMenubar (QMainWindow *mw) : QMenuBar (mw, "mainMenubar")
   action->setToolTip(tr("Display Help Dialog (Alt+3)"));
   connect(action, SIGNAL(activated()), mw, SLOT(slotHelp()));
   actions.replace(Help, action);
+
+
+  action = new QAction(this, "actionAdvancePaperTrade");
+  action->setAccel(CTRL+Key_Right);
+  connect(action, SIGNAL(activated()), this, SIGNAL(signalAdvancePaperTrade()));
+  actions.replace(AdvancePaperTrade, action);
+
   
   QAccel *a = new QAccel(mw);
   connect(a, SIGNAL(activated(int)), this, SLOT(slotAccel(int)));
@@ -189,26 +194,13 @@ MainMenubar::MainMenubar (QMainWindow *mw) : QMenuBar (mw, "mainMenubar")
   a->insertItem(CTRL+Key_7, SidePanel);
   a->insertItem(CTRL+Key_0, DrawMode);
   a->insertItem(CTRL+Key_Q, Quotes);
+  a->insertItem(CTRL+Key_Q, AdvancePaperTrade);
   
   a->insertItem(CTRL+Key_Escape, 8);
-//  a->connectItem(8, mw, SLOT(slotStopMacro()));
- 
-  a->insertItem(Key_F1, Macro1);
-  a->insertItem(Key_F2, Macro2);
-  a->insertItem(Key_F3, Macro3);
-  a->insertItem(Key_F4, Macro4);
-  a->insertItem(Key_F5, Macro5);
-  a->insertItem(Key_F6, Macro6);
-  a->insertItem(Key_F7, Macro7);
-  a->insertItem(Key_F8, Macro8);
-  a->insertItem(Key_F9, Macro9);
-  a->insertItem(Key_F10, Macro10);
-  a->insertItem(Key_F11, Macro11);
-  a->insertItem(Key_F12, Macro12);
   
   createMenus();
   
-  s = config.getData(Config::Menubar);
+  config.getData(Config::Menubar, s);
   if (! s.toInt())
     hide();
 }
@@ -284,114 +276,36 @@ void MainMenubar::saveSettings ()
   config.setData(Config::PaperTradeMode, s);
 }
 
-void MainMenubar::setKeyFlag (bool d)
-{
-  keyFlag = d;
-}
-
 void MainMenubar::slotAccel (int id)
 {
   switch (id)
   {
     case NewIndicator:
       emit signalNewIndicator();
-      if (keyFlag)
-        emit signalKeyPressed (Macro::Menubar, ControlButton, Key_2, 0, QString());
       break;
     case Options:
       emit signalOptions();
-      if (keyFlag)
-        emit signalKeyPressed (Macro::Menubar, ControlButton, Key_3, 0, QString());
       break;
     case Grid:
       getAction(Grid)->toggle();
-      if (keyFlag)
-        emit signalKeyPressed (Macro::Menubar, ControlButton, Key_4, 0, QString());
       break;
     case Quotes:
       emit signalQuotes();
-      if (keyFlag)
-        emit signalKeyPressed (Macro::Menubar, ControlButton, Key_Q, 0, QString());
       break;
     case ScaleToScreen:
       getAction(ScaleToScreen)->toggle();
-      if (keyFlag)
-        emit signalKeyPressed (Macro::Menubar, ControlButton, Key_5, 0, QString());
       break;
     case SidePanel:
       getAction(SidePanel)->toggle();
-      if (keyFlag)
-        emit signalKeyPressed (Macro::Menubar, ControlButton, Key_7, 0, QString());
       break;
     case DrawMode:
       getAction(DrawMode)->toggle();
-      if (keyFlag)
-        emit signalKeyPressed (Macro::Menubar, ControlButton, Key_0, 0, QString());
       break;
     case Crosshairs:
       getAction(Crosshairs)->toggle();
-      if (keyFlag)
-        emit signalKeyPressed (Macro::Menubar, ControlButton, Key_6, 0, QString());
       break;
-    case Macro1:
-      emit signalRunMacro(config.getData(Config::Macro1));
-      if (keyFlag)
-        emit signalKeyPressed (Macro::Menubar, 0, Key_F1, 0, QString());
-      break;
-    case Macro2:
-      emit signalRunMacro(config.getData(Config::Macro2));
-      if (keyFlag)
-        emit signalKeyPressed (Macro::Menubar, 0, Key_F2, 0, QString());
-      break;
-    case Macro3:
-      emit signalRunMacro(config.getData(Config::Macro3));
-      if (keyFlag)
-        emit signalKeyPressed (Macro::Menubar, 0, Key_F3, 0, QString());
-      break;
-    case Macro4:
-      emit signalRunMacro(config.getData(Config::Macro4));
-      if (keyFlag)
-        emit signalKeyPressed (Macro::Menubar, 0, Key_F4, 0, QString());
-      break;
-    case Macro5:
-      emit signalRunMacro(config.getData(Config::Macro5));
-      if (keyFlag)
-        emit signalKeyPressed (Macro::Menubar, 0, Key_F5, 0, QString());
-      break;
-    case Macro6:
-      emit signalRunMacro(config.getData(Config::Macro6));
-      if (keyFlag)
-        emit signalKeyPressed (Macro::Menubar, 0, Key_F6, 0, QString());
-      break;
-    case Macro7:
-      emit signalRunMacro(config.getData(Config::Macro7));
-      if (keyFlag)
-        emit signalKeyPressed (Macro::Menubar, 0, Key_F7, 0, QString());
-      break;
-    case Macro8:
-      emit signalRunMacro(config.getData(Config::Macro8));
-      if (keyFlag)
-        emit signalKeyPressed (Macro::Menubar, 0, Key_F8, 0, QString());
-      break;
-    case Macro9:
-      emit signalRunMacro(config.getData(Config::Macro9));
-      if (keyFlag)
-        emit signalKeyPressed (Macro::Menubar, 0, Key_F9, 0, QString());
-      break;
-    case Macro10:
-      emit signalRunMacro(config.getData(Config::Macro10));
-      if (keyFlag)
-        emit signalKeyPressed (Macro::Menubar, 0, Key_F10, 0, QString());
-      break;
-    case Macro11:
-      emit signalRunMacro(config.getData(Config::Macro11));
-      if (keyFlag)
-        emit signalKeyPressed (Macro::Menubar, 0, Key_F11, 0, QString());
-      break;
-    case Macro12:
-      emit signalRunMacro(config.getData(Config::Macro12));
-      if (keyFlag)
-        emit signalKeyPressed (Macro::Menubar, 0, Key_F12, 0, QString());
+    case AdvancePaperTrade:
+      emit signalAdvancePaperTrade();
       break;
     default:
       break;
@@ -430,70 +344,12 @@ void MainMenubar::doKeyPress (QKeyEvent *key)
       case Qt::Key_Q:
         slotAccel(Quotes);
         break;
-      default:
-        break;
-    }
-  }
-  else
-  {
-    switch (key->key())
-    {
-      case Qt::Key_F1:
-        slotAccel(Macro1);
-        break;
-      case Qt::Key_F2:
-	slotAccel(Macro2);
-        break;
-      case Qt::Key_F3:
-	slotAccel(Macro3);
-        break;
-      case Qt::Key_F4:
-	slotAccel(Macro4);
-        break;
-      case Qt::Key_F5:
-	slotAccel(Macro5);
-        break;
-      case Qt::Key_F6:
-	slotAccel(Macro6);
-        break;
-      case Qt::Key_F7:
-	slotAccel(Macro7);
-        break;
-      case Qt::Key_F8:
-	slotAccel(Macro8);
-        break;
-      case Qt::Key_F9:
-	slotAccel(Macro9);
-        break;
-      case Qt::Key_F10:
-	slotAccel(Macro10);
-        break;
-      case Qt::Key_F11:
-	slotAccel(Macro11);
-        break;
-      case Qt::Key_F12:
-	slotAccel(Macro12);
+      case Qt::Key_Right:
+        slotAccel(AdvancePaperTrade);
         break;
       default:
         break;
     }
   }
-}
-
-void MainMenubar::runMacro (Macro *d)
-{
-  tmacro = d;
-  macroFlag = TRUE;
-  
-  while (tmacro->getZone(tmacro->getIndex()) == Macro::Menubar)
-  {
-    doKeyPress(tmacro->getKey(tmacro->getIndex()));
-    
-    tmacro->incIndex();
-    if (tmacro->getIndex() >= tmacro->getCount())
-      break;
-  }
-  
-  macroFlag = FALSE;
 }
 

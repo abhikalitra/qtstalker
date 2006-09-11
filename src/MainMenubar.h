@@ -29,7 +29,6 @@
 #include <qintdict.h>
 #include <qaction.h>
 #include "Config.h"
-#include "Macro.h"
 
 
 class MainMenubar : public QMenuBar
@@ -43,12 +42,11 @@ class MainMenubar : public QMenuBar
     void signalDraw (bool);
     void signalCrosshairs (bool);
     void signalSidePanel (bool);
-    void signalKeyPressed (int, int, int, int, QString);
-    void signalRunMacro (QString);
     void signalNewIndicator();
     void signalOptions();
     void signalQuotes();
     void signalPaperTrade (bool);
+    void signalAdvancePaperTrade ();
     
   public:
   
@@ -66,19 +64,8 @@ class MainMenubar : public QMenuBar
       DrawMode,
       Crosshairs,
       Help,
-      Macro1,
-      Macro2,
-      Macro3,
-      Macro4,
-      Macro5,
-      Macro6,
-      Macro7,
-      Macro8,
-      Macro9,
-      Macro10,
-      Macro11,
-      Macro12,
-      PaperTrade
+      PaperTrade,
+      AdvancePaperTrade
     };
   
     MainMenubar(QMainWindow *);
@@ -91,9 +78,7 @@ class MainMenubar : public QMenuBar
     
   public slots:
     void slotAccel (int);
-    void setKeyFlag (bool);
     void doKeyPress (QKeyEvent *);
-    void runMacro (Macro *);
     
   private:
     Config config;
@@ -103,9 +88,6 @@ class MainMenubar : public QMenuBar
     QPopupMenu *toolMenu;
     QPopupMenu *helpMenu;
     QIntDict<QAction> actions;
-    bool keyFlag;
-    Macro *tmacro;
-    bool macroFlag;
 };
 
 #endif

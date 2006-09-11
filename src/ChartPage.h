@@ -28,8 +28,6 @@
 #include <qlineedit.h>
 #include "Navigator.h"
 #include "Config.h"
-#include "MyLineEdit.h"
-#include "Macro.h"
 
 class ChartPage : public QWidget
 {
@@ -37,7 +35,6 @@ class ChartPage : public QWidget
 
   signals:
     void fileSelected (QString);
-    void signalKeyPressed (int, int, int, int, QString);
 
   public:
   
@@ -69,10 +66,8 @@ class ChartPage : public QWidget
     void refreshList ();
     void searchChanged (const QString &);
     void slotHelp ();
-    void setKeyFlag (bool);
     void doKeyPress (QKeyEvent *);
     void slotAccel (int);
-    void runMacro (Macro *);
     void chartOpened (QString);
 
   protected:
@@ -80,10 +75,7 @@ class ChartPage : public QWidget
     Config config;
     QPopupMenu *menu;
     QPopupMenu *newMenu;
-    MyLineEdit *search;
-    bool keyFlag;
-    Macro *macro;
-    bool macroFlag;
+    QLineEdit *search;
 };
 
 #endif

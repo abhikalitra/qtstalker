@@ -37,18 +37,11 @@ Yahoo::Yahoo ()
   allSymbols = FALSE;
   url.setAutoDelete(TRUE);
   currentUrl = 0;
-  plug = 0;
   
-  dataPath = config.getData(Config::DataPath) + "/Stocks/Yahoo";
-  file = config.getData(Config::Home) + "/download";
-  
-  QString plugin("Stocks");  
-  plug = config.getDbPlugin(plugin);
-  if (! plug)
-  {
-    config.closePlugin(plugin);
-    qDebug("Yahoo::cannot load Stocks plugin");
-  }
+  config.getData(Config::DataPath, dataPath);
+  dataPath.append("/Stocks/Yahoo");
+  config.getData(Config::Home, file);
+  file.append("/download");
   
   sdate = QDateTime::currentDateTime();
   if (sdate.date().dayOfWeek() == 6)
@@ -82,19 +75,12 @@ Yahoo::Yahoo ()
 
 Yahoo::~Yahoo ()
 {
-  if (plug)
-  {
-    QString plugin("Stocks");  
-    config.closePlugin(plugin);
-  }
+  plug.close();
 }
 
 void Yahoo::update ()
 {
-  if (! plug)
-    return;
-    
-  plug->close();
+  plug.close();
   errorLoop = 0;
   url.clear();
   errorList.clear();
@@ -144,10 +130,14 @@ void Yahoo::update ()
 
 void Yahoo::startDownload ()
 {
-  QString s = tr("Downloading ") + currentUrl->getData("symbol");
+  QString s, ts2;
+  QString ts = "symbol";
+  currentUrl->getData(ts, ts2);
+  s = tr("Downloading ") + ts2;
   emit statusLogMessage(s);
 
-  s = currentUrl->getData("url");
+  ts = "url";
+  currentUrl->getData(ts, s);
   getFile(s);
 }
 
@@ -188,11 +178,14 @@ void Yahoo::fileDone (bool d)
 
 void Yahoo::timeoutError ()
 {
+  QString ts = "symbol";
+  QString ts2;
   errorLoop++;
   if (errorLoop == retries)
   {
-    emit statusLogMessage(tr("Timeout: retry limit skipping") + currentUrl->getData("symbol") + tr(" skipped"));
-    errorList.append(currentUrl->getData("symbol"));
+    currentUrl->getData(ts, ts2);
+    emit statusLogMessage(tr("Timeout: retry limit skipping") + ts2 + tr(" skipped"));
+    errorList.append(ts2);
     
     errorLoop = 0;
     currentUrl = url.next();
@@ -208,8 +201,8 @@ void Yahoo::timeoutError ()
   }
   else
   {
-    QString s = tr("Timeout: retry ") + QString::number(errorLoop + 1) + " " + currentUrl->getData("symbol");
-    emit statusLogMessage(s);
+    currentUrl->getData(ts, ts2);
+    emit statusLogMessage(tr("Timeout: retry ") + QString::number(errorLoop + 1) + " " + ts2);
     startDownload();
   }
 }
@@ -225,9 +218,6 @@ void Yahoo::parseHistory ()
   if (data.contains("No Prices in this date range"))
     return;
     
-  if (! plug)
-    return;
-
   // strip off the header
   QString s = "Date,Open,High,Low,Close";
   int p = data.find(s, 0, TRUE);
@@ -247,15 +237,18 @@ void Yahoo::parseHistory ()
   stream.setDevice(&f);
 
   s = dataPath + "/";
-  QFileInfo fi(currentUrl->getData("symbol"));
+  QString ts = "symbol";
+  QString ts2;
+  currentUrl->getData(ts, ts2);
+  QFileInfo fi(ts2);
   if (fi.extension(FALSE).length())
     s.append(fi.extension(FALSE).upper());
   else
     s.append("US");
   s.append("/");
-  s.append(currentUrl->getData("symbol"));
+  s.append(ts2);
 
-  if (plug->openChart(s))
+  if (plug.openChart(s))
   {
     emit statusLogMessage("Could not open db.");
     f.close();
@@ -263,34 +256,33 @@ void Yahoo::parseHistory ()
   }
 
   // verify if this chart can be updated by this plugin
-  plug->getHeaderField(DbPlugin::QuotePlugin, s);
+  plug.getHeaderField(DbPlugin::QuotePlugin, s);
   if (! s.length())
-    plug->setHeaderField(DbPlugin::QuotePlugin, pluginName);
+    plug.setHeaderField(DbPlugin::QuotePlugin, pluginName);
   else
   {
     if (s.compare(pluginName))
     {
-      s = currentUrl->getData("symbol") + " - skipping update. Source does not match destination.";
+      s = ts2 + " - skipping update. Source does not match destination.";
       emit statusLogMessage(s);
       f.close();
-      plug->close();
+      plug.close();
       return;
     }
   }
   
-  plug->getHeaderField(DbPlugin::Symbol, s);
+  plug.getHeaderField(DbPlugin::Symbol, s);
   if (! s.length())
   {
-    plug->createNew();
-    s = currentUrl->getData("symbol");
-    plug->setHeaderField(DbPlugin::Symbol, s);
-    plug->setHeaderField(DbPlugin::Title, s);
+    plug.createNew(DbPlugin::Stock);
+    plug.setHeaderField(DbPlugin::Symbol, ts2);
+    plug.setHeaderField(DbPlugin::Title, ts2);
   }
 
   while(stream.atEnd() == 0)
   {
-    s = stream.readLine();
-    s = stripJunk(s);
+    ts = stream.readLine();
+    stripJunk(ts, s);
 
     QStringList l = QStringList::split(",", s, FALSE);
     if (l.count() < 5)
@@ -298,44 +290,43 @@ void Yahoo::parseHistory ()
 
     // date
     QString date = parseDate(l[0]);
+    Bar bar;
+    if (bar.setDate(date))
+    {
+      emit statusLogMessage("Bad date " + date);
+      continue;
+    }
 
-    // open
-    double open = 0;
     if (setTFloat(l[1], FALSE))
       continue;
     else
-      open = tfloat;
+      bar.setOpen(tfloat);
 
-    // high
-    double high = 0;
     if (setTFloat(l[2], FALSE))
       continue;
     else
-      high = tfloat;
+      bar.setHigh(tfloat);
 
-    // low
-    double low = 0;
     if (setTFloat(l[3], FALSE))
       continue;
     else
-      low = tfloat;
+      bar.setLow(tfloat);
 
-    // close
-    double close = 0;
     if (setTFloat(l[4], FALSE))
       continue;
     else
-      close = tfloat;
+      bar.setClose(tfloat);
 
-    // volume
-    double volume = 0;
     if (l.count() >= 6)
     {
       if (setTFloat(l[5], FALSE))
         continue;
       else
-        volume = tfloat;
+        bar.setVolume(tfloat);
     }
+
+    if (bar.verify())
+      continue;
 
     // adjusted close
     if (adjustment)
@@ -349,41 +340,27 @@ void Yahoo::parseHistory ()
 	  adjclose = tfloat;
 	// apply yahoo's adjustments through all the data, not just closing price
 	// i.e. adjust for stock splits and dividends
-	float factor = close / adjclose;
+	float factor = bar.getClose() / adjclose;
 	if (factor != 1)
 	{
-	  high = high / factor;
-	  low = low / factor;
-	  open = open / factor;
-	  close = close / factor;
-	  volume = volume * factor;
+	  bar.setHigh(bar.getHigh() / factor);
+	  bar.setLow(bar.getLow() / factor);
+	  bar.setOpen(bar.getOpen() / factor);
+	  bar.setClose(bar.getClose() / factor);
+	  bar.setVolume(bar.getVolume() * factor);
 	}
       }
     }
 
-    Bar bar;
-    if (bar.setDate(date))
-    {
-      emit statusLogMessage("Bad date " + date);
-      continue;
-    }
-    bar.setOpen(open);
-    bar.setHigh(high);
-    bar.setLow(low);
-    bar.setClose(close);
-    bar.setVolume(volume);
-    plug->setBar(bar);
+    plug.setBar(bar);
   }
 
   f.close();
-  plug->close();
+  plug.close();
 }
 
 void Yahoo::parseQuote ()
 {
-  if (! plug)
-    return;
-    
   if (! data.length())
     return;
 
@@ -400,15 +377,18 @@ void Yahoo::parseQuote ()
   stream.setDevice(&f);
 
   QString s = dataPath + "/";
-  QFileInfo fi(currentUrl->getData("symbol"));
+  QString ts = "symbol";
+  QString ts2;
+  currentUrl->getData(ts, ts2);
+  QFileInfo fi(ts2);
   if (fi.extension(FALSE).length())
     s.append(fi.extension(FALSE).upper());
   else
     s.append("US");
   s.append("/");
-  s.append(currentUrl->getData("symbol"));
+  s.append(ts2);
   
-  if (plug->openChart(s))
+  if (plug.openChart(s))
   {
     emit statusLogMessage("Could not open db.");
     f.close();
@@ -416,34 +396,33 @@ void Yahoo::parseQuote ()
   }
 
   // verify if this chart can be updated by this plugin
-  plug->getHeaderField(DbPlugin::QuotePlugin, s);
+  plug.getHeaderField(DbPlugin::QuotePlugin, s);
   if (! s.length())
-    plug->setHeaderField(DbPlugin::QuotePlugin, pluginName);
+    plug.setHeaderField(DbPlugin::QuotePlugin, pluginName);
   else
   {
     if (s.compare(pluginName))
     {
-      s = currentUrl->getData("symbol") + " - skipping update. Source does not match destination.";
+      s = ts2 + " - skipping update. Source does not match destination.";
       emit statusLogMessage(s);
       f.close();
-      plug->close();
+      plug.close();
       return;
     }
   }
     
-  plug->getHeaderField(DbPlugin::Symbol, s);
+  plug.getHeaderField(DbPlugin::Symbol, s);
   if (! s.length())
   {
-    plug->createNew();
-    s = currentUrl->getData("symbol");
-    plug->setHeaderField(DbPlugin::Symbol, s);
-    plug->setHeaderField(DbPlugin::Title, s);
+    plug.createNew(DbPlugin::Stock);
+    plug.setHeaderField(DbPlugin::Symbol, ts2);
+    plug.setHeaderField(DbPlugin::Title, ts2);
   }
-  
+
   while(stream.atEnd() == 0)
   {
-    QString s = stream.readLine();
-    s = stripJunk(s);
+    ts = stream.readLine();
+    stripJunk(ts, s);
 
     QStringList l = QStringList::split(",", s, FALSE);
     if (l.count() < 9 || l.count() > 10)
@@ -462,60 +441,49 @@ void Yahoo::parseQuote ()
     date.append(l2[1]);
     date.append("000000");
 
-    // open
-    double open = 0;
-    if (setTFloat(l[6], FALSE))
-      continue;
-    else
-      open = tfloat;
-
-    // high
-    double high = 0;
-    if (setTFloat(l[7], FALSE))
-      continue;
-    else
-      high = tfloat;
-
-    // low
-    double low = 0;
-    if (setTFloat(l[8], FALSE))
-      continue;
-    else
-      low = tfloat;
-
-    // close
-    double close = 0;
-    if (setTFloat(l[2], FALSE))
-      continue;
-    else
-      close = tfloat;
-
-    // volume
-    double volume = 0;
-    if (l.count() == 10)
-    {
-      if (setTFloat(l[9], FALSE))
-        continue;
-      else
-        volume = tfloat;
-    }
-      
     Bar bar;
     if (bar.setDate(date))
     {
       emit statusLogMessage("Bad date " + date);
       continue;
     }
-    bar.setOpen(open);
-    bar.setHigh(high);
-    bar.setLow(low);
-    bar.setClose(close);
-    bar.setVolume(volume);
-    plug->setBar(bar);
+
+    if (setTFloat(l[6], FALSE))
+      continue;
+    else
+      bar.setOpen(tfloat);
+
+    if (setTFloat(l[7], FALSE))
+      continue;
+    else
+      bar.setHigh(tfloat);
+
+    if (setTFloat(l[8], FALSE))
+      continue;
+    else
+      bar.setLow(tfloat);
+
+    if (setTFloat(l[2], FALSE))
+      continue;
+    else
+      bar.setClose(tfloat);
+
+    if (l.count() == 10)
+    {
+      if (setTFloat(l[9], FALSE))
+        continue;
+      else
+        bar.setVolume(tfloat);
+    }
+
+    if (bar.verify())
+      continue;
+      
+    plug.setBar(bar);
   }
 
   f.close();
-  plug->close();
+  plug.close();
 }
 
 QString Yahoo::parseDate (QString &d)
@@ -725,9 +693,6 @@ void Yahoo::cancelUpdate ()
 
 void Yahoo::parseFundamental ()
 {
-  if (! plug)
-    return;
-    
   if (! data.length())
     return;
 
@@ -779,43 +744,45 @@ void Yahoo::parseFundamental ()
   }
       
   QString s = dataPath + "/";
-  QFileInfo fi(currentUrl->getData("symbol"));
+  QString ts = "symbol";
+  QString ts2;
+  currentUrl->getData(ts, ts2);
+  QFileInfo fi(ts2);
   if (fi.extension(FALSE).length())
     s.append(fi.extension(FALSE).upper());
   else
     s.append("US");
   s.append("/");
-  s.append(currentUrl->getData("symbol"));
+  s.append(ts2);
   
-  if (plug->openChart(s))
+  if (plug.openChart(s))
   {
     emit statusLogMessage("Could not open db.");
     return;
   }
   
   // verify if this chart can be updated by this plugin
-  plug->getHeaderField(DbPlugin::QuotePlugin, s);
+  plug.getHeaderField(DbPlugin::QuotePlugin, s);
   if (! s.length())
-    plug->setHeaderField(DbPlugin::QuotePlugin, pluginName);
+    plug.setHeaderField(DbPlugin::QuotePlugin, pluginName);
   else
   {
     if (s.compare(pluginName))
     {
-      s = currentUrl->getData("symbol") + " - skipping update. Source does not match destination.";
+      s = ts2 + " - skipping update. Source does not match destination.";
       emit statusLogMessage(s);
-      plug->close();
+      plug.close();
       return;
     }
   }
   
-  plug->getHeaderField(DbPlugin::Symbol, s);
+  plug.getHeaderField(DbPlugin::Symbol, s);
   if (! s.length())
   {
-    plug->createNew();
-    s = currentUrl->getData("symbol");
-    plug->setHeaderField(DbPlugin::Symbol, s);
+    plug.createNew(DbPlugin::Stock);
+    plug.setHeaderField(DbPlugin::Symbol, ts2);
     
-    QString title = currentUrl->getData("symbol");
+    QString title = ts2;
     int p = data.find("yfnc_leftnav1", 0, TRUE);
     if (p != -1)
     {
@@ -833,12 +800,12 @@ void Yahoo::parseFundamental ()
       }
     }
     
-    plug->setHeaderField(DbPlugin::Title, title);
+    plug.setHeaderField(DbPlugin::Title, title);
   }
   else
   {
     QString s2;
-    plug->getHeaderField(DbPlugin::Title, s2);
+    plug.getHeaderField(DbPlugin::Title, s2);
     if (! s.compare(s2))
     {
       int p = data.find("yfnc_leftnav1", 0, TRUE);
@@ -853,7 +820,7 @@ void Yahoo::parseFundamental ()
 	  {
             s = data.mid(p, p2 - p);
 	    if (s.length())
-              plug->setHeaderField(DbPlugin::Title, s);
+              plug.setHeaderField(DbPlugin::Title, s);
 	  }
 	}
       }
@@ -862,13 +829,14 @@ void Yahoo::parseFundamental ()
   
   // include date of this update
   QDate dt = QDate::currentDate();
-  fund.setData("updateDate", dt.toString("yyyy-MM-dd"));
-  QString s2;
-  fund.getString(s2);
-  s = "Fundamentals";
-  plug->setData(s, s2);
+  ts = "updateDate";
+  ts2 = dt.toString("yyyy-MM-dd");
+  fund.setData(ts, ts2);
+  fund.getString(ts2);
+  ts = "Fundamentals";
+  plug.setData(ts, ts2);
     
-  plug->close();
+  plug.close();
 }
 
 void Yahoo::loadAllSymbols ()
@@ -932,8 +900,10 @@ void Yahoo::createHistoryUrls (QString &d)
       s.append("&g=d&q=q&y=0&x=.csv");
 	    
       Setting *set = new Setting;
-      set->setData("url", s);
-      set->setData("symbol", d);
+      QString ts = "url";
+      set->setData(ts, s);
+      ts = "symbol";
+      set->setData(ts, d);
       url.append(set);
 	    
       if (tedate == edate)
@@ -959,18 +929,17 @@ void Yahoo::createHistoryUrls (QString &d)
     s.append("&g=d&q=q&y=0&x=.csv");
     
     Setting *set = new Setting;
-    set->setData("url", s);
-    set->setData("symbol", d);
+    QString ts = "url";
+    set->setData(ts, s);
+    ts = "symbol";
+    set->setData(ts, d);
     url.append(set);
   }
 }
 
 void Yahoo::createAutoHistoryUrls (QString &path, QString &d)
 {
-  if (! plug)
-    return;
-    	
-  if (plug->openChart(path))
+  if (plug.openChart(path))
   {
     qDebug("Yahoo::createAutoHistoryUrls:could not open db");
     return;
@@ -978,15 +947,15 @@ void Yahoo::createAutoHistoryUrls (QString &path, QString &d)
 	
   // verify if this chart can be updated by this plugin
   QString s;
-  plug->getHeaderField(DbPlugin::QuotePlugin, s);
+  plug.getHeaderField(DbPlugin::QuotePlugin, s);
   if (! s.length())
-    plug->setHeaderField(DbPlugin::QuotePlugin, pluginName);
+    plug.setHeaderField(DbPlugin::QuotePlugin, pluginName);
   else
   {
     if (s.compare(pluginName))
     {
       qDebug("Yahoo::createAutoHistoryUrls:source not same as destination");
-      plug->close();
+      plug.close();
       return;
     }
   }
@@ -1000,32 +969,33 @@ void Yahoo::createAutoHistoryUrls (QString &path, QString &d)
       edate = edate.addDays(-2);
   }
 	
-  Bar *bar = plug->getLastBar();
-  if (! bar)
+  Bar bar;
+  plug.getLastBar(bar);
+  if (bar.getEmptyFlag())
   {
     QDateTime dt = edate;
     dt = dt.addDays(-365);
-    bar = new Bar;
     s = dt.toString("yyyyMMdd000000");
-    bar->setDate(s);
+    bar.setDate(s);
   }
 
-  if (bar->getDate().getDate() == edate.date())
+  QDateTime dt;
+  bar.getDate(dt);
+  if (dt.date() == edate.date())
   {
-    delete bar;
     qDebug("Yahoo::createAutoHistoryUrls:barDate == endDate");
-    plug->close();
+    plug.close();
     return;
   }
 		
   s = "http://ichart.yahoo.com/table.csv?s=";
   s.append(d);
   s.append("&a=");
-  s.append(QString::number(bar->getDate().getDate().month() - 1));
+  s.append(QString::number(dt.date().month() - 1));
   s.append("&b=");
-  s.append(bar->getDate().getDate().toString("dd"));
+  s.append(dt.toString("dd"));
   s.append("&c=");
-  s.append(bar->getDate().getDate().toString("yy"));
+  s.append(dt.toString("yy"));
   s.append("&d=");
   s.append(QString::number(edate.date().month() - 1));
   s.append("&e=");
@@ -1034,12 +1004,13 @@ void Yahoo::createAutoHistoryUrls (QString &path, QString &d)
   s.append(edate.toString("yy"));
   s.append("&g=d&q=q&y=0&x=.csv");
 	
-  delete bar;
-  plug->close();
+  plug.close();
   
   Setting *set = new Setting;
-  set->setData("url", s);
-  set->setData("symbol", d);
+  QString ts = "url";
+  set->setData(ts, s);
+  ts = "symbol";
+  set->setData(ts, d);
   url.append(set);
 }
 
@@ -1054,8 +1025,10 @@ void Yahoo::createQuoteUrls (QString &d)
   s.append("&f=snl1d1t1c1ohgv&e=.csv");
   
   Setting *set = new Setting;
-  set->setData("url", s);
-  set->setData("symbol", d);
+  QString ts = "url";
+  set->setData(ts, s);
+  ts = "symbol";
+  set->setData(ts, d);
   url.append(set);
 }
 
@@ -1063,8 +1036,10 @@ void Yahoo::createFundamentalUrls (QString &d)
 {
   QString s = "http://finance.yahoo.com/q/ks?s=" + d;
   Setting *set = new Setting;
-  set->setData("url", s);
-  set->setData("symbol", d);
+  QString ts = "url";
+  set->setData(ts, s);
+  ts = "symbol";
+  set->setData(ts, d);
   url.append(set);
 }
 

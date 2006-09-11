@@ -29,6 +29,18 @@ VFI::VFI ()
 {
   pluginName = "VFI";
   helpFile = "vfi.html";
+
+  colorLabel = "color";
+  lineTypeLabel = "lineType";
+  labelLabel = "label";
+  periodLabel = "period";
+  smoothingLabel = "smoothing";
+  maTypeLabel = "maType";
+  pluginLabel = "plugin";
+
+  formatList.append(FormatMAType);
+  formatList.append(FormatInteger);
+  formatList.append(FormatInteger);
   
   setDefaults();
 }
@@ -125,7 +137,6 @@ int VFI::indicatorPrefDialog (QWidget *w)
   QString perl = QObject::tr("Period");
   QString sl = QObject::tr("Smoothing");
   QString stl = QObject::tr("Smoothing Type");
-  QString il = QObject::tr("Input");
 
   PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(QObject::tr("VFI Indicator"));
@@ -136,16 +147,17 @@ int VFI::indicatorPrefDialog (QWidget *w)
   dialog->addTextItem(ll, pl, label);
   dialog->addIntItem(perl, pl, period, 1, 99999999);
   dialog->addIntItem(sl, pl, smoothing, 0, 99999999);
-  QStringList l = getMATypes();
+  QStringList l;
+  getMATypes(l);
   dialog->addComboItem(stl, pl, l, maType);
     
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
-    color = dialog->getColor(cl);
+    dialog->getColor(cl, color);
     lineType = (PlotLine::LineType) dialog->getComboIndex(ltl);
-    label = dialog->getText(ll);
+    dialog->getText(ll, label);
     period = dialog->getInt(perl);
     smoothing = dialog->getInt(sl);
     maType = dialog->getComboIndex(stl);
@@ -165,27 +177,28 @@ void VFI::setIndicatorSettings (Setting &dict)
   if (! dict.count())
     return;
   
-  QString s = dict.getData("color");
+  QString s;
+  dict.getData(colorLabel, s);
   if (s.length())
     color.setNamedColor(s);
     
-  s = dict.getData("lineType");
+  dict.getData(lineTypeLabel, s);
   if (s.length())
     lineType = (PlotLine::LineType) s.toInt();
 
-  s = dict.getData("label");
+  dict.getData(labelLabel, s);
   if (s.length())
     label = s;
 
-  s = dict.getData("period");
+  dict.getData(periodLabel, s);
   if (s.length())
     period = s.toInt();
 
-  s = dict.getData("smoothing");
+  dict.getData(smoothingLabel, s);
   if (s.length())
     smoothing = s.toInt();
 
-  s = dict.getData("maType");
+  dict.getData(maTypeLabel, s);
   if (s.length())
     maType = s.toInt();
 
@@ -193,66 +206,78 @@ void VFI::setIndicatorSettings (Setting &dict)
 
 void VFI::getIndicatorSettings (Setting &dict)
 {
-  dict.setData("color", color.name());
-  dict.setData("lineType", QString::number(lineType));
-  dict.setData("label", label);
-  dict.setData("period", QString::number(period));
-  dict.setData("smoothing", QString::number(smoothing));
-  dict.setData("maType", QString::number(maType));
-  dict.setData("plugin", pluginName);
+  QString ts = color.name();
+  dict.setData(colorLabel, ts);
+  ts = QString::number(lineType);
+  dict.setData(lineTypeLabel, ts);
+  dict.setData(labelLabel, label);
+  ts = QString::number(period);
+  dict.setData(periodLabel, ts);
+  ts = QString::number(smoothing);
+  dict.setData(smoothingLabel, ts);
+  ts = QString::number(maType);
+  dict.setData(maTypeLabel, ts);
+  dict.setData(pluginLabel, pluginName);
 }
 
-PlotLine * VFI::calculateCustom (QString &p, QPtrList<PlotLine> &)
+PlotLine * VFI::calculateCustom (QString &p, QPtrList<PlotLine> &d)
 {
   // format1: MA_TYPE, PERIOD, SMOOTHING
 
-  QStringList l = QStringList::split(",", p, FALSE);
-
-  if (l.count() == 3)
-    ;
-  else
-  {
-    qDebug("VFI::calculateCustom: invalid parm count");
+  if (checkFormat(p, d, 3, 3))
     return 0;
-  }
 
-  QStringList mal = getMATypes();
-  if (mal.findIndex(l[0]) == -1)
-  {
-    qDebug("VFI::calculateCustom: invalid MA_TYPE parm");
-    return 0;
-  }
-  else
-    maType = mal.findIndex(l[0]);
-
-  bool ok;
-  int t = l[1].toInt(&ok);
-  if (ok)
-    period = t;
-  else
-  {
-    qDebug("VFI::calculateCustom: invalid PERIOD parm");
-    return 0;
-  }
-
-  t = l[2].toInt(&ok);
-  if (ok)
-    smoothing = t;
-  else
-  {
-    qDebug("VFI::calculateCustom: invalid SMOOTHING parm");
-    return 0;
-  }
+  QStringList mal;
+  getMATypes(mal);
+  maType = mal.findIndex(formatStringList[0]);
+  period = formatStringList[1].toInt();
+  smoothing = formatStringList[2].toInt();
 
   clearOutput();
   calculate();
   return output->getLine(0);
 }
 
-int VFI::getMinBars ()
+void VFI::formatDialog (QStringList &, QString &rv, QString &rs)
 {
-  int t = minBars + period + smoothing;
-  return t;
+  rs.truncate(0);
+  rv.truncate(0);
+  QString pl = QObject::tr("Parms");
+  QString vnl = QObject::tr("Variable Name");
+  QString perl = QObject::tr("Period");
+  QString sl = QObject::tr("Smoothing");
+  QString stl = QObject::tr("Smoothing Type");
+  PrefDialog *dialog = new PrefDialog(0);
+  dialog->setCaption(QObject::tr("VFI Format"));
+  dialog->createPage (pl);
+  dialog->setHelpFile(helpFile);
+
+  // format1: MA_TYPE, PERIOD, SMOOTHING
+
+  QString s;
+  QStringList l;
+  getMATypes(l);
+  dialog->addTextItem(vnl, pl, s);
+  dialog->addComboItem(stl, pl, l, maType);
+  dialog->addIntItem(perl, pl, period, 1, 99999999);
+  dialog->addIntItem(sl, pl, smoothing, 0, 99999999);
+
+  int rc = dialog->exec();
+  
+  if (rc == QDialog::Accepted)
+  {
+    dialog->getText(vnl, rv);
+
+    dialog->getCombo(stl, rs);
+
+    int t = dialog->getInt(perl);
+    rs.append("," + QString::number(t));
+
+    t = dialog->getInt(sl);
+    rs.append("," + QString::number(t));
+  }
+
+  delete dialog;
 }
 
 //*******************************************************

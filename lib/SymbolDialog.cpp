@@ -21,10 +21,10 @@
 
 #include "SymbolDialog.h"
 
-SymbolDialog::SymbolDialog (QWidget *w, QString &dir, QString &filter, QFileDialog::Mode mode) :
-                            QFileDialog (dir, filter, w, "SymbolDialog", TRUE)
+SymbolDialog::SymbolDialog (QWidget *w,QString &bp,QString &dir,QString &filter,QFileDialog::Mode mode) :
+                           QFileDialog (dir, filter, w, "SymbolDialog", TRUE)
 {
-  basePath = dir;
+  basePath = bp;
   setMode(mode);
   connect(this, SIGNAL(dirEntered(const QString &)), this, SLOT(dirSelected(const QString &)));
   keyFlag = FALSE;
@@ -45,7 +45,11 @@ void SymbolDialog::dirSelected (const QString &d)
   }
   
   if (d.length() < basePath.length())
+  {
+    blockSignals(TRUE);
     setDir(basePath);
+    blockSignals(FALSE);
+  }
 }
 
 void SymbolDialog::setKeyFlag (bool d)

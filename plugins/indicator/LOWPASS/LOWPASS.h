@@ -34,7 +34,7 @@ class LOWPASS : public IndicatorPlugin
     PlotLine * calculateCustom (QString &, QPtrList<PlotLine> &);
     void getIndicatorSettings (Setting &);
     void setIndicatorSettings (Setting &);
-    int getMinBars ();
+    void formatDialog (QStringList &vl, QString &rv, QString &rs);
   
   private:
     QColor color;
@@ -47,6 +47,14 @@ class LOWPASS : public IndicatorPlugin
     void detrend(PlotLine* inLine, double* slope, double* intercept);
     PlotLine * detrend(PlotLine *x, double &slope, double &intercept, bool detrend = true);
     PlotLine * raise2Power(PlotLine *x, double pad = 0.0);
+
+    QString colorLabel;
+    QString lineTypeLabel;
+    QString labelLabel;
+    QString inputLabel;
+    QString pluginLabel;
+    QString freqLabel;
+    QString widthLabel;
 };
 
 extern "C"

@@ -32,11 +32,11 @@
 
 BuyArrow::BuyArrow ()
 {
-  status = None;
-  selected = 0;
   defaultColor.setNamedColor("green");
-  objects.setAutoDelete(TRUE);
   helpFile = "buyarrow.html";
+  color.setNamedColor("green");
+  grabHandles.setAutoDelete(TRUE);
+  selectionArea.setAutoDelete(TRUE);
   
   menu->insertItem(QPixmap(edit), tr("&Edit BuyArrow"), this, SLOT(prefDialog()), CTRL+Key_E);
   menu->insertItem(QPixmap(renam), tr("&Move BuyArrow"), this, SLOT(moveObject()), CTRL+Key_M);
@@ -54,57 +54,47 @@ void BuyArrow::draw (QPixmap &buffer, Scaler &scaler, int startIndex, int pixels
   QPainter painter;
   painter.begin(&buffer);
   
-  QDictIterator<BuyArrowObject> it(objects);
-  for (; it.current(); ++it)
+  if (! date.getDate().isValid())
+    continue;
+    
+  int x2 = data->getX(date);
+  if (x2 == -1)
+    continue;
+
+  int x = startX + (x2 * pixelspace) - (startIndex * pixelspace);
+  if (x == -1)
+      continue;
+    
+  int y = scaler.convertToY(value);
+
+  arrow.putPoints(0, 7, x, y,
+                  x + 5, y + 5,
+                  x + 2, y + 5,
+                  x + 2, y + 11,
+                  x - 2, y + 11,
+	          x - 2, y + 5,
+                  x - 5, y + 5);
+  painter.setBrush(color);
+  painter.drawPolygon(arrow, TRUE, 0, -1);
+
+  clearSelectionArea();
+  setSelectionArea(new QRegion(arrow));
+    
+  if (status == COBase::Selected)
   {
-    BuyArrowObject *co = it.current();
+    clearGrabHandles();
     
-    if (co->getStatus() == BuyArrowObject::Delete)
-      continue;
-    
-    BarDate dt = co->getDate();
-    if (! dt.getDate().isValid())
-      continue;
-    
-    int x2 = data->getX(dt);
-    if (x2 == -1)
-      continue;
-
-    int x = startX + (x2 * pixelspace) - (startIndex * pixelspace);
-    if (x == -1)
-        continue;
-    
-    int y = scaler.convertToY(co->getValue());
-
-    arrow.putPoints(0, 7, x, y,
-                    x + 5, y + 5,
-                    x + 2, y + 5,
-                    x + 2, y + 11,
-	            x - 2, y + 11,
-	            x - 2, y + 5,
-                    x - 5, y + 5);
-    painter.setBrush(co->getColor());
-    painter.drawPolygon(arrow, TRUE, 0, -1);
-
-    co->clearSelectionArea();
-    co->setSelectionArea(new QRegion(arrow));
-    
-    if (co->getStatus() == BuyArrowObject::Selected)
-    {
-      co->clearGrabHandles();
-    
-      co->setGrabHandle(new QRegion(x - (HANDLE_WIDTH / 2),
-             			     y - HANDLE_WIDTH,
-				     HANDLE_WIDTH,
-				     HANDLE_WIDTH,
-				     QRegion::Rectangle));
+    setGrabHandle(new QRegion(x - (HANDLE_WIDTH / 2),
+             			   y - HANDLE_WIDTH,
+				   HANDLE_WIDTH,
+				   HANDLE_WIDTH,
+				   QRegion::Rectangle));
 				   
-      painter.fillRect(x - (HANDLE_WIDTH / 2),
-                       y - HANDLE_WIDTH,
-		       HANDLE_WIDTH,
-		       HANDLE_WIDTH,
-		       co->getColor());
-    }
+    painter.fillRect(x - (HANDLE_WIDTH / 2),
+                     y - HANDLE_WIDTH,
+		     HANDLE_WIDTH,
+		     HANDLE_WIDTH,
+		     color);
   }
 
   painter.end();
@@ -121,9 +111,8 @@ void BuyArrow::prefDialog ()
   dialog->setCaption(tr("Edit BuyArrow"));
   dialog->createPage (pl);
   dialog->setHelpFile (helpFile);
-  QColor color = selected->getColor();
   dialog->addColorItem(cl, pl, color);
-  dialog->addDoubleItem(vl, pl, selected->getValue());
+  dialog->addDoubleItem(vl, pl, value);
   dialog->addCheckItem(sd, pl, FALSE);
   
   int rc = dialog->exec();
@@ -131,10 +120,8 @@ void BuyArrow::prefDialog ()
   if (rc == QDialog::Accepted)
   {
     color = dialog->getColor(cl);
-    selected->setColor(color);
-    selected->setValue(dialog->getDouble(vl));
-    
-    selected->setSaveFlag(TRUE);
+    value = dialog->getDouble(vl);
+    saveFlag = TRUE;
     
     bool f = dialog->getCheck(sd);
     if (f)
@@ -151,9 +138,7 @@ void BuyArrow::prefDialog ()
 
 void BuyArrow::addObject (Setting &set)
 {
-  BuyArrowObject *co = new BuyArrowObject;
-  co->setSettings(set);
-  objects.replace(co->getName(), co);
+  setSettings(set);
 }
 
 void BuyArrow::newObject (QString &ind, QString &n)
@@ -169,39 +154,30 @@ COPlugin::Status BuyArrow::pointerClick (QPoint &point, BarDate &x, double y)
 {
   if (status == None)
   {
-    QDictIterator<BuyArrowObject> it(objects);
-    for (; it.current(); ++it)
+    if (isSelected(point))
     {
-      if (it.current()->getStatus() == BuyArrowObject::Delete)
-        continue;
-    
-      if (it.current()->isSelected(point))
-      {
-        selected = it.current();
-        status = Selected;
-	selected->setStatus(BuyArrowObject::Selected);
-        emit signalDraw();
-	return status;
-      }
+      status = Selected;
+      setStatus(COBase::Selected);
+      emit signalDraw();
+      return status;
     }
-  
-    return status;
+    else
+      return status;
   }
-    
+  
   if (status == Selected)
   {
-    if (selected->isGrabSelected(point))
+    if (isGrabSelected(point))
     {
       status = Moving;
       return status;
     }
     else
     {
-      if (! selected->isSelected(point))
+      if (! isSelected(point))
       {
         status = None;
-	selected->setStatus(BuyArrowObject::Plot);
-	selected = 0;
+	setStatus(COBase::Plot);
         emit signalDraw();
         return status;
       }
@@ -218,14 +194,9 @@ COPlugin::Status BuyArrow::pointerClick (QPoint &point, BarDate &x, double y)
   
   if (status == ClickWait)
   {
-    BuyArrowObject *co = new BuyArrowObject(indicator, name, x, y);
-    co->setSaveFlag(TRUE);
-    co->setColor(defaultColor);
-    
-    objects.replace(name, co);
-    
+    setSaveFlag(TRUE);
+    setColor(defaultColor);
     emit signalDraw();
-
     status = None;
     emit message("");
     return status;
@@ -239,9 +210,9 @@ void BuyArrow::pointerMoving (QPixmap &, QPoint &, BarDate &x, double y)
   if (status != Moving)
     return;
     
-  selected->setDate(x);
-  selected->setValue(y);
-  selected->setSaveFlag(TRUE);
+  setDate(x);
+  setValue(y);
+  setSaveFlag(TRUE);
   
   emit signalDraw();
   
@@ -267,25 +238,12 @@ void BuyArrow::saveObjects (QString &chartPath)
   
   db->openChart(chartPath);
 
-  QDictIterator<BuyArrowObject> it(objects);
-  for (; it.current(); ++it)
+  if (getSaveFlag())
   {
-    BuyArrowObject *co = it.current();
-    
-    if (co->getStatus() == BuyArrowObject::Delete)
-    {
-      QString s = co->getName();
-      db->deleteChartObject(s);
-      continue;
-    }
-    
-    if (co->getSaveFlag())
-    {
-      Setting set;
-      co->getSettings(set);
-      QString s = co->getName();
-      db->setChartObject(s, set);
-    }
+    Setting set;
+    getSettings(set);
+    QString s = getName();
+    db->setChartObject(s, set);
   }
   
   config.closePlugin(plugin);
@@ -338,71 +296,29 @@ void BuyArrow::moveObject ()
 
 void BuyArrow::removeObject ()
 {
-  selected->setStatus(BuyArrowObject::Delete);
-  selected = 0;
-  status = None;
-  emit signalObjectDeleted();
-  emit signalDraw();
+  emit signalObjectDeleted(name);
 }
 
-void BuyArrow::clear ()
+void BuyArrow::getSettings (Setting &set)
 {
-  objects.clear();
-  status = None;
-  selected = 0;
+  QString s;
+  date.getDateTimeString(FALSE, s);
+  set.setData("Date", s);
+  set.setData("Value", QString::number(value));
+  set.setData("Color", color.name());
+  set.setData("Plot", plot);
+  set.setData("Name", name);
+  set.setData("Type", "BuyArrow");
 }
 
-double BuyArrow::getHigh ()
+void BuyArrow::setSettings (Setting &set)
 {
-  double high = -99999999.0;
-  
-  QDictIterator<BuyArrowObject> it(objects);
-  for (; it.current(); ++it)
-  {
-    BuyArrowObject *co = it.current();
-    if (co->getValue() > high)
-      high = co->getValue();
-  }
-  
-  return high;
+  QString s = set.getData("Date");
+  date.setDate(s);
+  value = set.getDouble("Value");
+  color.setNamedColor(set.getData("Color"));
+  plot = set.getData("Plot");
+  name = set.getData("Name");
 }
 
-double BuyArrow::getLow ()
-{
-  double low = 99999999.0;
-  
-  QDictIterator<BuyArrowObject> it(objects);
-  for (; it.current(); ++it)
-  {
-    BuyArrowObject *co = it.current();
-    if (co->getValue() < low)
-      low = co->getValue();
-  }
-
-  return low;
-}
-
-void BuyArrow::showMenu ()
-{
-  if (selected)
-    menu->exec(QCursor::pos());
-}
-
-void BuyArrow::getNameList (QStringList &d)
-{
-  d.clear();
-  QDictIterator<BuyArrowObject> it(objects);
-  for (; it.current(); ++it)
-    d.append(it.current()->getName());
-}
-
-//****************************************************
-//****************************************************
-//****************************************************
-
-COPlugin * createCOPlugin ()
-{
-  BuyArrow *o = new BuyArrow;
-  return ((COPlugin *) o);
-}
 

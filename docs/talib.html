@@ -14,13 +14,19 @@ This is a separate library of TA indicators called <a
  href="http://ta-lib.org">TALIB</a> that is used for most qtstalker
 indicators. Use this plugin to access most of the most popular TA
 indicators. MA's,
-Stochastics, RSI etc are all here.<br>
-<h4>Formula Reference:</h4>
+Stochastics, RSI etc are all here. <br>
+<br>
+For more detailed information
+regarding TALIB, please consult the <a href="http://ta-lib.org/">TALIB</a>
+website.<br>
+<br>
+<h3>Formula Reference:</h3>
 <table style="text-align: left; width: 905px; height: 112px;" border="1"
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">AD<br>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">AD<br>
       </td>
       <td style="vertical-align: top;">TALIB(AD)<br>
       </td>
@@ -44,7 +50,8 @@ Stochastics, RSI etc are all here.<br>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">ADOSC<br>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">ADOSC<br>
       </td>
       <td style="vertical-align: top;">TALIB(ADOSC, FAST_PERIOD,
 SLOW_PERIOD)<br>
@@ -70,7 +77,8 @@ Oscillator<br>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">ADX<br>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">ADX<br>
       </td>
       <td style="vertical-align: top;">TALIB(ADX, PERIOD)<br>
       </td>
@@ -95,7 +103,8 @@ Index<br>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">ADXR<br>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">ADXR<br>
       </td>
       <td style="vertical-align: top;">TALIB(ADXR, PERIOD)<br>
       </td>
@@ -119,7 +128,8 @@ Index Rating </td>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">APO<br>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">APO<br>
       </td>
       <td style="vertical-align: top;">TALIB(APO, INPUT_ARRAY,
 FAST_PERIOD, SLOW_PERIOD)<br>
@@ -144,7 +154,8 @@ FAST_PERIOD, SLOW_PERIOD)<br>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">AROON<br>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">AROON<br>
       </td>
       <td style="vertical-align: top;">TALIB(AROON, PERIOD)<br>
       </td>
@@ -168,7 +179,8 @@ FAST_PERIOD, SLOW_PERIOD)<br>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">AROONOSC<br>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">AROONOSC<br>
       </td>
       <td style="vertical-align: top;">TALIB(AROONOSC, PERIOD)<br>
       </td>
@@ -192,7 +204,8 @@ FAST_PERIOD, SLOW_PERIOD)<br>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">ATR<br>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">ATR<br>
       </td>
       <td style="vertical-align: top;">TALIB(ATR, PERIOD)<br>
       </td>
@@ -216,7 +229,8 @@ FAST_PERIOD, SLOW_PERIOD)<br>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">AVGPRICE<br>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">AVGPRICE<br>
       </td>
       <td style="vertical-align: top;">TALIB(AVGPRICE)<br>
       </td>
@@ -240,22 +254,26 @@ FAST_PERIOD, SLOW_PERIOD)<br>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">BBANDS<br>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">BBANDS<br>
       </td>
       <td style="vertical-align: top;">TALIB(BBANDS, INPUT_ARRAY,
-PERIOD, DEVIATIONS_UP, DEVIATIONS_DOWN)<br>
+PERIOD, DEVIATIONS_UP, DEVIATIONS_DOWN, PLOT#)<br>
       </td>
     </tr>
     <tr>
       <td style="vertical-align: top;">Function<br>
       </td>
-      <td style="vertical-align: top;">Bollinger Bands<br>
+      <td style="vertical-align: top;">Bollinger Bands. <br>
+      <br>
+PLOT# is an integer that specifies 1 of 3 plots available. Plot #1 is
+the upper band. Plot #2 is the middle band. Plot #3 is the lower band.<br>
       </td>
     </tr>
     <tr>
       <td style="vertical-align: top;">Example<br>
       </td>
-      <td style="vertical-align: top;">TALIB(BBANDS, Close, 5, 2, 2)<br>
+      <td style="vertical-align: top;">TALIB(BBANDS, Close, 5, 2, 2, 1)<br>
       </td>
     </tr>
   </tbody>
@@ -265,7 +283,8 @@ PERIOD, DEVIATIONS_UP, DEVIATIONS_DOWN)<br>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">BOP<br>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">BOP<br>
       </td>
       <td style="vertical-align: top;">TALIB(BOP)<br>
       </td>
@@ -289,7 +308,8 @@ PERIOD, DEVIATIONS_UP, DEVIATIONS_DOWN)<br>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">CCI<br>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">CCI<br>
       </td>
       <td style="vertical-align: top;">TALIB(CCI, PERIOD)<br>
       </td>
@@ -313,23 +333,22 @@ PERIOD, DEVIATIONS_UP, DEVIATIONS_DOWN)<br>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">CDL*<br>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">CDL2CROWS<br>
       </td>
-      <td style="vertical-align: top;">TALIB(CDL*)<br>
+      <td style="vertical-align: top;">TALIB(CDL2CROWS)<br>
       </td>
     </tr>
     <tr>
       <td style="vertical-align: top;">Function<br>
       </td>
-      <td style="vertical-align: top;">Candle Code Indicators - They
-all start with the prefix CDL. None have any parms.<br>
+      <td style="vertical-align: top;">Two Crows<br>
       </td>
     </tr>
     <tr>
       <td style="vertical-align: top;">Example<br>
       </td>
-      <td style="vertical-align: top;">TALIB(CDL*)<br>
-      </td>
+      <td style="vertical-align: top;">TALIB(CDL2CROWS) </td>
     </tr>
   </tbody>
 </table>
@@ -338,7 +357,1476 @@ all start with the prefix CDL. None have any parms.<br>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">CMO<br>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">CDL3BLACKCROWS<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDL3BLACKCROWS) </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Function<br>
+      </td>
+      <td style="vertical-align: top;">Three Black Crows<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Example<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDL3BLACKCROWS) </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 905px; height: 112px;" border="1"
+ cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">CDL3INSIDE<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDL3INSIDE)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Function<br>
+      </td>
+      <td style="vertical-align: top;">Three Inside Up/Down </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Example<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDL3INSIDE) </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 905px; height: 112px;" border="1"
+ cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">CDL3LINESTRIKE<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDL3LINESTRIKE)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Function<br>
+      </td>
+      <td style="vertical-align: top;">Three-Line Strike<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Example<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDL3LINESTRIKE) </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 905px; height: 112px;" border="1"
+ cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">CDL3OUTSIDE<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDL3OUTSIDE)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Function<br>
+      </td>
+      <td style="vertical-align: top;">Three Outside Up/Down<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Example<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDL3OUTSIDE) </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<br>
+<table style="text-align: left; width: 905px; height: 112px;" border="1"
+ cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">CDL3STARSINSOUTH<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDL3STARSINSOUTH)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Function<br>
+      </td>
+      <td style="vertical-align: top;">Three Stars In The South<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Example<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDL3STARSINSOUTH) </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 905px; height: 112px;" border="1"
+ cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">CDL3WHITESOLDIERS<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDL3WHITESOLDIERS)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Function<br>
+      </td>
+      <td style="vertical-align: top;">Three Advancing White Soldiers<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Example<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDL3WHITESOLDIERS) </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 905px; height: 112px;" border="1"
+ cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">CDLABANDONEDBABY<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLABANDONEDBABY,
+PENETRATION)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Function<br>
+      </td>
+      <td style="vertical-align: top;">Abandoned Baby<br>
+      <br>
+PENETRATION is the percentage of penetration of a candle within another
+candle<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Example<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLABANDONEDBABY, 0.3) </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 905px; height: 112px;" border="1"
+ cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">CDLADVANCEBLOCK<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLADVANCEBLOCK)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Function<br>
+      </td>
+      <td style="vertical-align: top;">Advance Block<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Example<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLADVANCEBLOCK) </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 905px; height: 112px;" border="1"
+ cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">CDLBELTHOLD<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLBELTHOLD)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Function<br>
+      </td>
+      <td style="vertical-align: top;">Belt Hold<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Example<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLBELTHOLD) </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 905px; height: 112px;" border="1"
+ cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">CDLBREAKAWAY<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLBREAKAWAY)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Function<br>
+      </td>
+      <td style="vertical-align: top;">Breakaway<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Example<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLBREAKAWAY) </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 905px; height: 112px;" border="1"
+ cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">CDLCLOSINGMARUBOZU<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLCLOSINGMARUBOZU)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Function<br>
+      </td>
+      <td style="vertical-align: top;">Closing Marubozu<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Example<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLCLOSINGMARUBOZU) </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 905px; height: 112px;" border="1"
+ cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">CDLCONCEALBABYSWALL<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLCONCEALBABYSWALL)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Function<br>
+      </td>
+      <td style="vertical-align: top;">Concealing Baby Swallow<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Example<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLCONCEALBABYSWALL) </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 905px; height: 112px;" border="1"
+ cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">CDLCOUNTERATTACK<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLCOUNTERATTACK)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Function<br>
+      </td>
+      <td style="vertical-align: top;">Counterattack<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Example<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLCOUNTERATTACK) </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 905px; height: 112px;" border="1"
+ cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">CDLDARKCLOUDCOVER<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLDARKCLOUDCOVER,
+PENETRATION)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Function<br>
+      </td>
+      <td style="vertical-align: top;">Dark Cloud Cover<br>
+      <br>
+PENETRATION is the percentage of penetration of a candle within another
+candle<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Example<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLDARKCLOUDCOVER, 0.5) </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 905px; height: 112px;" border="1"
+ cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">CDLDOJI<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLDOJI)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Function<br>
+      </td>
+      <td style="vertical-align: top;">Doji </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Example<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLDOJI) </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 905px; height: 112px;" border="1"
+ cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">CDLDOJISTAR<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLDOJISTAR)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Function<br>
+      </td>
+      <td style="vertical-align: top;">Doji Star<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Example<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLDOJISTAR) </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 905px; height: 112px;" border="1"
+ cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">CDLDRAGONFLYDOJI<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLDRAGONFLYDOJI)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Function<br>
+      </td>
+      <td style="vertical-align: top;">Dragonfly Doji<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Example<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLDRAGONFLYDOJI) </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 905px; height: 112px;" border="1"
+ cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">CDLENGULFING<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLENGULFING)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Function<br>
+      </td>
+      <td style="vertical-align: top;">Engulfing Pattern<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Example<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLENGULFING) </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 905px; height: 112px;" border="1"
+ cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">CDLEVENINGDOJISTAR<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLEVENINGDOJISTAR,
+PENETRATION)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Function<br>
+      </td>
+      <td style="vertical-align: top;">Evening Doji Star<br>
+      <br>
+PENETRATION is the percentage of penetration of a candle within another
+candle<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Example<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLEVENINGDOJISTAR, 0.3) </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 905px; height: 112px;" border="1"
+ cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">CDLEVENINGSTAR<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLEVENINGSTAR,
+PENETRATION)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Function<br>
+      </td>
+      <td style="vertical-align: top;">Evening Star<br>
+      <br>
+PENETRATION is the percentage of penetration of a candle within another
+candle<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Example<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLEVENINGSTAR, 0.3) </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 905px; height: 112px;" border="1"
+ cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">CDLGAPSIDESIDEWHITE<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLGAPSIDESIDEWHITE)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Function<br>
+      </td>
+      <td style="vertical-align: top;">Up/Down-Gap Side-By-Side White
+Lines<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Example<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLGAPSIDESIDEWHITE) </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 905px; height: 112px;" border="1"
+ cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">CDLGRAVESTONEDOJI<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLGRAVESTONEDOJI)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Function<br>
+      </td>
+      <td style="vertical-align: top;">Gravestone Doji<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Example<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLGRAVESTONEDOJI) </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 905px; height: 112px;" border="1"
+ cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">CDLHAMMER<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLHAMMER)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Function<br>
+      </td>
+      <td style="vertical-align: top;">Hammer<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Example<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLHAMMER) </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 905px; height: 112px;" border="1"
+ cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">CDLHANGINGMAN<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLHANGINGMAN)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Function<br>
+      </td>
+      <td style="vertical-align: top;">Hanging Man<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Example<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLHANGINGMAN) </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 905px; height: 112px;" border="1"
+ cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">CDLHARAMI<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLHARAMI)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Function<br>
+      </td>
+      <td style="vertical-align: top;">Harami Pattern<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Example<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLHARAMI) </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 905px; height: 112px;" border="1"
+ cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">CDLHARAMICROSS
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLHARAMICROSS)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Function<br>
+      </td>
+      <td style="vertical-align: top;">Harami Cross Pattern<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Example<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLHARAMICROSS) </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 905px; height: 112px;" border="1"
+ cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">CDLHIGHWAVE<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLHIGHWAVE)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Function<br>
+      </td>
+      <td style="vertical-align: top;">High Wave Candle<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Example<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLHIGHWAVE) </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 905px; height: 112px;" border="1"
+ cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">CDLHIKKAKE<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLHIKKAKE)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Function<br>
+      </td>
+      <td style="vertical-align: top;">Hikkake Pattern<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Example<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLHIKKAKE) </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 905px; height: 112px;" border="1"
+ cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">CDLHIKKAKEMOD
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLHIKKAKEMOD)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Function<br>
+      </td>
+      <td style="vertical-align: top;">Modified Hikkake Pattern<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Example<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLHIKKAKEMOD) </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 905px; height: 112px;" border="1"
+ cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">CDLHOMINGPIGEON<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLHOMINGPIGEON)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Function<br>
+      </td>
+      <td style="vertical-align: top;">Homing Pigeon<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Example<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLHOMINGPIGEON) </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 905px; height: 112px;" border="1"
+ cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">CDLIDENTICAL3CROWS<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLIDENTICAL3CROWS)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Function<br>
+      </td>
+      <td style="vertical-align: top;">Identical Three Crows<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Example<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLIDENTICAL3CROWS) </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 905px; height: 112px;" border="1"
+ cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">CDLINNECK<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLINNECK)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Function<br>
+      </td>
+      <td style="vertical-align: top;">In-Neck Pattern<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Example<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLINNECK) </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 905px; height: 112px;" border="1"
+ cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">CDLINVERTEDHAMMER<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLINVERTEDHAMMER)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Function<br>
+      </td>
+      <td style="vertical-align: top;">Inverted Hammer<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Example<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLINVERTEDHAMMER) </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 905px; height: 112px;" border="1"
+ cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">CDLKICKING<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLKICKING)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Function<br>
+      </td>
+      <td style="vertical-align: top;">Kicking<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Example<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLKICKING) </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 905px; height: 112px;" border="1"
+ cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">CDLKICKINGBYLENGTH
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLKICKINGBYLENGTH)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Function<br>
+      </td>
+      <td style="vertical-align: top;">Kicking - Bull/Bear Determined
+By The Longer Marubozu<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Example<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLKICKINGBYLENGTH) </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 905px; height: 112px;" border="1"
+ cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">CDLLADDERBOTTOM<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLLADDERBOTTOM)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Function<br>
+      </td>
+      <td style="vertical-align: top;">Ladder Bottom<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Example<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLLADDERBOTTOM) </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 905px; height: 112px;" border="1"
+ cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">CDLLONGLEGGEDDOJI<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLLONGLEGGEDDOJI)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Function<br>
+      </td>
+      <td style="vertical-align: top;">Long Legged Doji<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Example<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLLONGLEGGEDDOJI) </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 905px; height: 112px;" border="1"
+ cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">CDLLONGLINE<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLLONGLINE)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Function<br>
+      </td>
+      <td style="vertical-align: top;">Long Line Candle<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Example<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLLONGLINE) </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 905px; height: 112px;" border="1"
+ cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">CDLMARUBOZU<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLMARUBOZU)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Function<br>
+      </td>
+      <td style="vertical-align: top;">Marubozu<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Example<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLMARUBOZU) </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 905px; height: 112px;" border="1"
+ cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">CDLMATCHINGLOW<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLMATCHINGLOW)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Function<br>
+      </td>
+      <td style="vertical-align: top;">Matching Low<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Example<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLMATCHINGLOW) </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 905px; height: 112px;" border="1"
+ cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">CDLMATHOLD<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLMATHOLD, PENETRATION)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Function<br>
+      </td>
+      <td style="vertical-align: top;">Mat Hold<br>
+      <br>
+PENETRATION is the percentage of penetration of a candle within another
+candle<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Example<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLMATHOLD, 0.5) </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 905px; height: 112px;" border="1"
+ cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">CDLMORNINGDOJISTAR<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLMORNINGDOJISTAR,
+PENETARTION)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Function<br>
+      </td>
+      <td style="vertical-align: top;">Morning Doji Star<br>
+      <br>
+PENETRATION is the percentage of penetration of a candle within another
+candle<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Example<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLMORNINGDOJISTAR, 0.3) </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 905px; height: 112px;" border="1"
+ cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">CDLMORNINGSTAR<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLMORNINGSTAR,
+PENETRATION)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Function<br>
+      </td>
+      <td style="vertical-align: top;">Morning Star<br>
+      <br>
+PENETRATION is the percentage of penetration of a candle within another
+candle<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Example<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLMORNINGSTAR, 0.3) </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 905px; height: 112px;" border="1"
+ cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">CDLONNECK<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLONNECK)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Function<br>
+      </td>
+      <td style="vertical-align: top;">On-Neck Pattern<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Example<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLONNECK) </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 905px; height: 112px;" border="1"
+ cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">CDLPIERCING<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLPIERCING)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Function<br>
+      </td>
+      <td style="vertical-align: top;">Piercing Pattern<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Example<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLPIERCING) </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 905px; height: 112px;" border="1"
+ cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">CDLRICKSHAWMAN<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLRICKSHAWMAN)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Function<br>
+      </td>
+      <td style="vertical-align: top;">Rickshaw Man<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Example<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLRICKSHAWMAN) </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 905px; height: 112px;" border="1"
+ cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">CDLRISEFALL3METHODS<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLRISEFALL3METHODS)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Function<br>
+      </td>
+      <td style="vertical-align: top;">Rising/Falling Three Methods<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Example<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLRISEFALL3METHODS) </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 905px; height: 112px;" border="1"
+ cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">CDLSEPARATINGLINES<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLSEPARATINGLINES)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Function<br>
+      </td>
+      <td style="vertical-align: top;">Separating Lines<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Example<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLSEPARATINGLINES) </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 905px; height: 112px;" border="1"
+ cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">CDLSHOOTINGSTAR<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLSHOOTINGSTAR)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Function<br>
+      </td>
+      <td style="vertical-align: top;">Shooting Star<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Example<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLSHOOTINGSTAR) </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 905px; height: 112px;" border="1"
+ cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">CDLSHORTLINE<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLSHORTLINE)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Function<br>
+      </td>
+      <td style="vertical-align: top;">Short Line Candle<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Example<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLSHORTLINE) </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 905px; height: 112px;" border="1"
+ cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">CDLSPINNINGTOP<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLSPINNINGTOP)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Function<br>
+      </td>
+      <td style="vertical-align: top;">Spinning Top<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Example<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLSPINNINGTOP) </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 905px; height: 112px;" border="1"
+ cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">CDLSTALLEDPATTERN<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLSTALLEDPATTERN)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Function<br>
+      </td>
+      <td style="vertical-align: top;">Stalled Pattern<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Example<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLSTALLEDPATTERN) </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 905px; height: 112px;" border="1"
+ cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">CDLSTICKSANDWICH<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLSTICKSANDWICH)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Function<br>
+      </td>
+      <td style="vertical-align: top;">Stick Sandwich<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Example<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLSTICKSANDWICH) </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 905px; height: 112px;" border="1"
+ cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">CDLTAKURI<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLTAKURI)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Function<br>
+      </td>
+      <td style="vertical-align: top;">Takuri (Dragonfly Doji With Very
+Long Lower Shadow)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Example<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLTAKURI) </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 905px; height: 112px;" border="1"
+ cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">CDLTASUKIGAP<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLTASUKIGAP)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Function<br>
+      </td>
+      <td style="vertical-align: top;">Tasuki Gap<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Example<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLTASUKIGAP) </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 905px; height: 112px;" border="1"
+ cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">CDLTHRUSTING<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLTHRUSTING)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Function<br>
+      </td>
+      <td style="vertical-align: top;">Thrusting Pattern<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Example<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLTHRUSTING) </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 905px; height: 112px;" border="1"
+ cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">CDLTRISTAR<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLTRISTAR)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Function<br>
+      </td>
+      <td style="vertical-align: top;">Tristar Pattern<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Example<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLTRISTAR) </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 905px; height: 112px;" border="1"
+ cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">CDLUNIQUE3RIVER<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLUNIQUE3RIVER)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Function<br>
+      </td>
+      <td style="vertical-align: top;">Unique Three River<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Example<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLUNIQUE3RIVER) </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 905px; height: 112px;" border="1"
+ cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">CDLUPSIDEGAP2CROWS<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLUPSIDEGAP2CROWS)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Function<br>
+      </td>
+      <td style="vertical-align: top;">Upside Gap Two Crows<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Example<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLUPSIDEGAP2CROWS) </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 905px; height: 112px;" border="1"
+ cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">CDLXSIDEGAP3METHODS<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLXSIDEGAP3METHODS)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Function<br>
+      </td>
+      <td style="vertical-align: top;">Upside/Downside Gap Three Methods<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Example<br>
+      </td>
+      <td style="vertical-align: top;">TALIB(CDLXSIDEGAP3METHODS) </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="text-align: left; width: 905px; height: 112px;" border="1"
+ cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">CMO<br>
       </td>
       <td style="vertical-align: top;">TALIB(CMO, INPUT_ARRAY, PERIOD)<br>
       </td>
@@ -362,7 +1850,8 @@ all start with the prefix CDL. None have any parms.<br>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">CORREL<br>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">CORREL<br>
       </td>
       <td style="vertical-align: top;">TALIB(CORREL, INPUT_ARRAY,
 INPUT_ARRAY, PERIOD)<br>
@@ -388,7 +1877,8 @@ Coef.<br>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">DEMA<br>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">DEMA<br>
       </td>
       <td style="vertical-align: top;">TALIB(DEMA, INPUT_ARRAY, PERIOD)<br>
       </td>
@@ -412,7 +1902,8 @@ Coef.<br>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">DX<br>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">DX<br>
       </td>
       <td style="vertical-align: top;">TALIB(DX, PERIOD)<br>
       </td>
@@ -436,7 +1927,8 @@ Coef.<br>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">EMA<br>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">EMA<br>
       </td>
       <td style="vertical-align: top;">TALIB(EMA, INPUT_ARRAY, PERIOD)<br>
       </td>
@@ -460,7 +1952,8 @@ Coef.<br>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">HT_DCPERIOD<br>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">HT_DCPERIOD<br>
       </td>
       <td style="vertical-align: top;">TALIB(HT_DCPERIOD, INPUT_ARRAY)<br>
       </td>
@@ -485,7 +1978,8 @@ Cycle Period<br>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">HT_DCPHASE<br>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">HT_DCPHASE<br>
       </td>
       <td style="vertical-align: top;">TALIB(HT_DCPHASE, INPUT_ARRAY)<br>
       </td>
@@ -508,7 +2002,8 @@ Cycle Phase </td>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">HT_PHASOR<br>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">HT_PHASOR<br>
       </td>
       <td style="vertical-align: top;">TALIB(HT_PHASOR, INPUT_ARRAY) </td>
     </tr>
@@ -530,7 +2025,8 @@ Indicator </td>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">HT_SINE<br>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">HT_SINE<br>
       </td>
       <td style="vertical-align: top;">TALIB(HT_SINE, INPUT_ARRAY) </td>
     </tr>
@@ -553,7 +2049,8 @@ Indicator </td>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">HT_TRENDLINE<br>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">HT_TRENDLINE<br>
       </td>
       <td style="vertical-align: top;">TALIB(HT_TRENDLINE, INPUT_ARRAY)<br>
       </td>
@@ -576,7 +2073,8 @@ Trendline </td>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">HT_TRENDMODE<br>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">HT_TRENDMODE<br>
       </td>
       <td style="vertical-align: top;">TALIB(HT_TRENDMODE, INPUT_ARRAY)<br>
       </td>
@@ -599,7 +2097,8 @@ Trendline </td>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">KAMA<br>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">KAMA<br>
       </td>
       <td style="vertical-align: top;">TALIB(KAMA, INPUT_ARRAY, PERIOD)<br>
       </td>
@@ -623,7 +2122,8 @@ Trendline </td>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">LINEARREG<br>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">LINEARREG<br>
       </td>
       <td style="vertical-align: top;">TALIB(LINEARREG, INPUT_ARRAY,
 PERIOD)<br>
@@ -648,7 +2148,8 @@ PERIOD)<br>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">LINEARREG_ANGLE<br>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">LINEARREG_ANGLE<br>
       </td>
       <td style="vertical-align: top;">TALIB(LINEARREG_ANGLE,
 INPUT_ARRAY, PERIOD)<br>
@@ -673,7 +2174,8 @@ INPUT_ARRAY, PERIOD)<br>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">LINEARREG_INTERCEPT<br>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">LINEARREG_INTERCEPT<br>
       </td>
       <td style="vertical-align: top;">TALIB(LINEARREG_INTERCEPT,
 INPUT_ARRAY, PERIOD)<br>
@@ -699,7 +2201,8 @@ Close, 14)<br>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">LINEARREG_SLOPE<br>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">LINEARREG_SLOPE<br>
       </td>
       <td style="vertical-align: top;">TALIB(LINEARREG_SLOPE,
 INPUT_ARRAY, PERIOD)<br>
@@ -724,10 +2227,11 @@ INPUT_ARRAY, PERIOD)<br>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">MACD<br>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">MACD<br>
       </td>
       <td style="vertical-align: top;">TALIB(MACD, INPUT_ARRAY,
-FAST_PERIOD, SLOW_PERIOD, TRIGGER_PERIOD)<br>
+FAST_PERIOD, SLOW_PERIOD, TRIGGER_PERIOD, PLOT)<br>
       </td>
     </tr>
     <tr>
@@ -735,12 +2239,15 @@ FAST_PERIOD, SLOW_PERIOD, TRIGGER_PERIOD)<br>
       </td>
       <td style="vertical-align: top;">Moving Average Convergence
 Divergence<br>
+      <br>
+PLOT is an integer that specifies 1 of 3 plots available. Plot #1 is
+the MACD. Plot #2 is the trigger. Plot #3 is the oscillator.<br>
       </td>
     </tr>
     <tr>
       <td style="vertical-align: top;">Example<br>
       </td>
-      <td style="vertical-align: top;">TALIB(MACDClose, 12, 26, 9)<br>
+      <td style="vertical-align: top;">TALIB(MACDClose, 12, 26, 9, 1)<br>
       </td>
     </tr>
   </tbody>
@@ -750,23 +2257,28 @@ Divergence<br>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">MACDEXT<br>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">MACDEXT<br>
       </td>
       <td style="vertical-align: top;">TALIB(MACDEXT, INPUT_ARRAY,
-FAST_PERIOD, SLOW_PERIOD, TRIGGER_PERIOD)<br>
+FAST_PERIOD, SLOW_PERIOD, TRIGGER_PERIOD, PLOT)<br>
       </td>
     </tr>
     <tr>
       <td style="vertical-align: top;">Function<br>
       </td>
       <td style="vertical-align: top;">Moving Average Convergence
-Divergence<br>
+Divergence (Extended parameters)<br>
+      <br>
+PLOT is an integer that specifies 1 of 3 plots available. Plot #1 is
+the MACD. Plot #2 is the trigger. Plot #3 is the oscillator.<br>
       </td>
     </tr>
     <tr>
       <td style="vertical-align: top;">Example<br>
       </td>
-      <td style="vertical-align: top;">TALIB(MACDEXT, Close, 12, 26, 9)<br>
+      <td style="vertical-align: top;">TALIB(MACDEXT, Close, 12, 26, 9,
+1)<br>
       </td>
     </tr>
   </tbody>
@@ -776,10 +2288,11 @@ Divergence<br>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">MACDFIX<br>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">MACDFIX<br>
       </td>
       <td style="vertical-align: top;">TALIB(MACDFIX, INPUT_ARRAY,
-TRIGGER_PERIOD)<br>
+TRIGGER_PERIOD, PLOT)<br>
       </td>
     </tr>
     <tr>
@@ -787,12 +2300,15 @@ TRIGGER_PERIOD)<br>
       </td>
       <td style="vertical-align: top;">Moving Average Convergence
 Divergence Fixed<br>
+      <br>
+PLOT is an integer that specifies 1 of 3 plots available. Plot #1 is
+the MACD. Plot #2 is the trigger. Plot #3 is the oscillator.<br>
       </td>
     </tr>
     <tr>
       <td style="vertical-align: top;">Example<br>
       </td>
-      <td style="vertical-align: top;">TALIB(MACDFIX, Close, 9)<br>
+      <td style="vertical-align: top;">TALIB(MACDFIX, Close, 9, 1)<br>
       </td>
     </tr>
   </tbody>
@@ -802,7 +2318,8 @@ Divergence Fixed<br>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">MAMA<br>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">MAMA<br>
       </td>
       <td style="vertical-align: top;">TALIB(MAMA, INPUT_ARRAY,
 FAST_LIMIT, SLOW_LIMIT)<br>
@@ -827,7 +2344,8 @@ FAST_LIMIT, SLOW_LIMIT)<br>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">MAX<br>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">MAX<br>
       </td>
       <td style="vertical-align: top;">TALIB(MAX, INPUT_ARRAY, PERIOD)<br>
       </td>
@@ -851,7 +2369,8 @@ FAST_LIMIT, SLOW_LIMIT)<br>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">MEDPRICE<br>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">MEDPRICE<br>
       </td>
       <td style="vertical-align: top;">TALIB(MEDPRICE)<br>
       </td>
@@ -875,7 +2394,8 @@ FAST_LIMIT, SLOW_LIMIT)<br>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">MFI<br>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">MFI<br>
       </td>
       <td style="vertical-align: top;">TALIB(MFI, PERIOD)<br>
       </td>
@@ -899,7 +2419,8 @@ FAST_LIMIT, SLOW_LIMIT)<br>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">MIDPOINT<br>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">MIDPOINT<br>
       </td>
       <td style="vertical-align: top;">TALIB(MIDPOINT, INPUT_ARRAY,
 PERIOD)<br>
@@ -924,7 +2445,8 @@ PERIOD)<br>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">MIDPRICE<br>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">MIDPRICE<br>
       </td>
       <td style="vertical-align: top;">TALIB(MIDPRICE, PERIOD)<br>
       </td>
@@ -948,7 +2470,8 @@ PERIOD)<br>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">MIN<br>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">MIN<br>
       </td>
       <td style="vertical-align: top;">TALIB(MIN, INPUT_ARRAY, PERIOD)<br>
       </td>
@@ -972,7 +2495,8 @@ PERIOD)<br>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">MINUS_DI<br>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">MINUS_DI<br>
       </td>
       <td style="vertical-align: top;">TALIB(MINUS_DI, 14)<br>
       </td>
@@ -996,7 +2520,8 @@ PERIOD)<br>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">MINUS_DM<br>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">MINUS_DM<br>
       </td>
       <td style="vertical-align: top;">TALIB(MINUS_DM, 14)<br>
       </td>
@@ -1020,7 +2545,8 @@ PERIOD)<br>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">MOM<br>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">MOM<br>
       </td>
       <td style="vertical-align: top;">TALIB(MOM, INPUT_ARRAY, PERIOD)<br>
       </td>
@@ -1044,7 +2570,8 @@ PERIOD)<br>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">OBV<br>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">OBV<br>
       </td>
       <td style="vertical-align: top;">TALIB(OBV, INPUT_ARRAY)<br>
       </td>
@@ -1068,7 +2595,8 @@ PERIOD)<br>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">PLUS_DI<br>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">PLUS_DI<br>
       </td>
       <td style="vertical-align: top;">TALIB(PLUS_DI, PERIOD)<br>
       </td>
@@ -1092,7 +2620,8 @@ PERIOD)<br>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">PLUS_DM<br>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">PLUS_DM<br>
       </td>
       <td style="vertical-align: top;">TALIB(PLUS_DM, PERIOD)<br>
       </td>
@@ -1116,7 +2645,8 @@ PERIOD)<br>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">PPO<br>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">PPO<br>
       </td>
       <td style="vertical-align: top;">TALIB(PPO, INPUT_ARRAY,
 FAST_PERIOD, SLOW_PERIOD)<br>
@@ -1141,7 +2671,8 @@ FAST_PERIOD, SLOW_PERIOD)<br>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">ROC<br>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">ROC<br>
       </td>
       <td style="vertical-align: top;">TALIB(ROC, INPUT_ARRAY, PERIOD)<br>
       </td>
@@ -1165,7 +2696,8 @@ FAST_PERIOD, SLOW_PERIOD)<br>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">ROCP<br>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">ROCP<br>
       </td>
       <td style="vertical-align: top;">TALIB(ROCP, INPUT_ARRAY, PERIOD)<br>
       </td>
@@ -1190,7 +2722,8 @@ FAST_PERIOD, SLOW_PERIOD)<br>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">ROCR<br>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">ROCR<br>
       </td>
       <td style="vertical-align: top;">TALIB(ROCR, INPUT_ARRAY, PERIOD)<br>
       </td>
@@ -1214,7 +2747,8 @@ FAST_PERIOD, SLOW_PERIOD)<br>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">ROCR100<br>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">ROCR100<br>
       </td>
       <td style="vertical-align: top;">TALIB(ROCR100, INPUT_ARRAY,
 PERIOD)<br>
@@ -1240,7 +2774,8 @@ PERIOD)<br>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">RSI<br>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">RSI<br>
       </td>
       <td style="vertical-align: top;">TALIB(RSI, INPUT_ARRAY, PERIOD)<br>
       </td>
@@ -1264,7 +2799,8 @@ PERIOD)<br>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">SAR<br>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">SAR<br>
       </td>
       <td style="vertical-align: top;">TALIB(SAR, ACCELERATION_FACTOR,
 AF_MAXIMUM)<br>
@@ -1289,7 +2825,8 @@ AF_MAXIMUM)<br>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">SAREXT<br>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">SAREXT<br>
       </td>
       <td style="vertical-align: top;">TALIB(SAREXT, START_VALUE,
 OFFSET_ON_REVERSE, AF_INIT_LONG, AF_LONG, AF_MAX_LONG, AF_INIT_SHORT,
@@ -1316,7 +2853,8 @@ AF_SHORT, AF_MAX_SHORT)<br>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">SMA<br>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">SMA<br>
       </td>
       <td style="vertical-align: top;">TALIB(SMA, INPUT_ARRAY, PERIOD)<br>
       </td>
@@ -1340,7 +2878,8 @@ AF_SHORT, AF_MAX_SHORT)<br>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">STDDEV<br>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">STDDEV<br>
       </td>
       <td style="vertical-align: top;">TALIB(STDDEV, INPUT_ARRAY,
 PERIOD, DEVIATIONS)<br>
@@ -1365,7 +2904,8 @@ PERIOD, DEVIATIONS)<br>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">STOCH<br>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">STOCH<br>
       </td>
       <td style="vertical-align: top;">TALIB(STOCH, FASTK_PERIOD,
 SLOWK_PERIOD, SLOWD_PERIOD)<br>
@@ -1390,7 +2930,8 @@ SLOWK_PERIOD, SLOWD_PERIOD)<br>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">STOCHF<br>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">STOCHF<br>
       </td>
       <td style="vertical-align: top;">TALIB(STOCHF, FASTK_PERIOD,
 FASTD_PERIOD)<br>
@@ -1414,7 +2955,8 @@ FASTD_PERIOD)<br>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">STOCHRSI<br>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">STOCHRSI<br>
       </td>
       <td style="vertical-align: top;">TALIB(STOCHRSI, INPUT_ARRAY,
 PERIOD, FASTK_PERIOD, FASTD_PERIOD)<br>
@@ -1438,7 +2980,8 @@ PERIOD, FASTK_PERIOD, FASTD_PERIOD)<br>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">T3<br>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">T3<br>
       </td>
       <td style="vertical-align: top;">TALIB(T3, INPUT_ARRAY, PERIOD,
 VOLUME_FACTOR)<br>
@@ -1463,7 +3006,8 @@ VOLUME_FACTOR)<br>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">TEMA<br>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">TEMA<br>
       </td>
       <td style="vertical-align: top;">TALIB(TEMA, INPUT_ARRAY, PERIOD)<br>
       </td>
@@ -1487,7 +3031,8 @@ VOLUME_FACTOR)<br>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">TRANGE<br>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">TRANGE<br>
       </td>
       <td style="vertical-align: top;">TALIB(TRANGE)<br>
       </td>
@@ -1511,7 +3056,8 @@ VOLUME_FACTOR)<br>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">TRIMA<br>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">TRIMA<br>
       </td>
       <td style="vertical-align: top;">TALIB(TRIMA, INPUT_ARRAY, PERIOD)<br>
       </td>
@@ -1535,7 +3081,8 @@ VOLUME_FACTOR)<br>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">TRIX<br>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">TRIX<br>
       </td>
       <td style="vertical-align: top;">TALIB(TRIX, INPUT_ARRAY, PERIOD)<br>
       </td>
@@ -1559,7 +3106,8 @@ VOLUME_FACTOR)<br>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">TSF<br>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">TSF<br>
       </td>
       <td style="vertical-align: top;">TALIB(TSF, INPUT_ARRAY, PERIOD)<br>
       </td>
@@ -1583,7 +3131,8 @@ VOLUME_FACTOR)<br>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">TYPPRICE<br>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">TYPPRICE<br>
       </td>
       <td style="vertical-align: top;">TALIB(TYPPRICE)<br>
       </td>
@@ -1607,7 +3156,8 @@ VOLUME_FACTOR)<br>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">VAR<br>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">VAR<br>
       </td>
       <td style="vertical-align: top;">TALIB(VAR, INPUT_ARRAY, PERIOD,
 DEVIATIONS)<br>
@@ -1632,7 +3182,8 @@ DEVIATIONS)<br>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">WCLPRICE<br>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">WCLPRICE<br>
       </td>
       <td style="vertical-align: top;">TALIB(WCLPRICE)<br>
       </td>
@@ -1656,7 +3207,8 @@ DEVIATIONS)<br>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">WILLR<br>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">WILLR<br>
       </td>
       <td style="vertical-align: top;">TALIB(WILLR, PERIOD)<br>
       </td>
@@ -1680,7 +3232,8 @@ DEVIATIONS)<br>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">WMA<br>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">WMA<br>
       </td>
       <td style="vertical-align: top;">TALIB(WMA, INPUT_ARRAY, PERIOD)<br>
       </td>
@@ -1699,7 +3252,6 @@ DEVIATIONS)<br>
     </tr>
   </tbody>
 </table>
-<br>
 <br>
 <br>
 <a href="verticalline.html" target="_self"><img src="back.png"

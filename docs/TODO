@@ -19,7 +19,6 @@ To Do:
 - add remember last file used for CSV plugin.
 - add better icons for add/insert in the edit formula dialog widget, functions not obvious
 - create CUS tutorial.
-- add more indicator functions to existing plugins ie. Chaikin, Volume osc's etc.
 - add stock margins to the tester
 
 - *******before 0.33 put in routine in config to remove old CUS format files:*************
@@ -31,10 +30,8 @@ To Do:
 
 - add ability to not draw sections of plotlines. (vectors)
 - save last chart viewed between sessions.
-- save the current chart path to the tester 
-- cannot create Horizontal Lines for CUS scripts.
 - change absolute path names in the tester rules to relative so files can be moved
-- option in tester to calculate commisions as a % of the total price.
+- add paper trade mode to portfolio tracker (use last chart value instead of last db value)
 
 
 Maybe some day:

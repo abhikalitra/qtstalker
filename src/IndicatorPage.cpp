@@ -25,6 +25,7 @@
 #include "PrefDialog.h"
 #include "SymbolDialog.h"
 #include "IndicatorPlugin.h"
+#include "DbPlugin.h"
 #include "../pics/help.xpm"
 #include "../pics/ok.xpm"
 #include "../pics/ok_gray.xpm"
@@ -46,54 +47,52 @@
 
 IndicatorPage::IndicatorPage (QWidget *w) : QWidget (w)
 {
-  keyFlag = FALSE;
-  macroFlag = FALSE;
-  macro = 0;
   updateEnableFlag = FALSE;
   idir.setFilter(QDir::Files);
 
   Config config;  
-  baseDir = config.getData(Config::IndicatorPath);
-  cusRulePath = config.getData(Config::CUSRulePath);
-  currentGroup = config.getData(Config::IndicatorGroup);
+  config.getData(Config::IndicatorPath, baseDir);
+  config.getData(Config::IndicatorGroup, currentGroup);
   
   QVBoxLayout *vbox = new QVBoxLayout(this);
   vbox->setMargin(2);
   vbox->setSpacing(5);
   
-  group = new MyComboBox(this, Macro::IndicatorPage);
+  group = new QComboBox(this);
   updateGroups();
   connect(group, SIGNAL(activated(int)), this, SLOT(slotGroupChanged(int)));
-  connect(group, SIGNAL(signalKeyPressed(int, int, int, int, QString)),
-          this, SIGNAL(signalKeyPressed(int, int, int, int, QString)));
   QToolTip::add(group, tr("Indicator Groups"));
   vbox->addWidget(group);
 
-  search = new MyLineEdit(this, Macro::IndicatorPage);
+  search = new QLineEdit(this);
   search->setText("*");
   connect(search, SIGNAL(textChanged(const QString &)), this, SLOT(searchChanged(const QString &)));
-  connect(search, SIGNAL(signalKeyPressed(int, int, int, int, QString)),
-          this, SIGNAL(signalKeyPressed(int, int, int, int, QString)));
   QToolTip::add(search, tr("List Filter, e.g. s* or sb*"));
   vbox->addWidget(search);
 
-  list = new MyListBox(this, Macro::IndicatorPage);
+  list = new QListBox(this);
   connect(list, SIGNAL(doubleClicked(QListBoxItem *)), this, SLOT(doubleClick(QListBoxItem *)));
   connect(list, SIGNAL(contextMenuRequested(QListBoxItem *, const QPoint &)), this,
           SLOT(rightClick(QListBoxItem *)));
   connect(list, SIGNAL(highlighted(const QString &)), this, SLOT(itemSelected(const QString &)));
-  connect(list, SIGNAL(signalKeyPressed(int, int, int, int, QString)),
-          this, SIGNAL(signalKeyPressed(int, int, int, int, QString)));
   vbox->addWidget(list);
     
   menu = new QPopupMenu(this);
-  menu->insertItem(QPixmap(dirclosed), tr("&New Indicator Group		Ctrl+N"), this, SLOT(newIndicatorGroup()));
-  menu->insertItem(QPixmap(deleteitem), tr("Delete Indicator Group	Ctrl+X"), this, SLOT(deleteIndicatorGroup()));
+  menu->insertItem(QPixmap(dirclosed), tr("&New Indicator Group		Ctrl+N"), this,
+                   SLOT(newIndicatorGroup()));
+  menu->insertItem(QPixmap(deleteitem), tr("Delete Indicator Group	Ctrl+X"), this,
+                   SLOT(deleteIndicatorGroup()));
   menu->insertSeparator(-1);
-  menu->insertItem(QPixmap(newchart), tr("Ne&w Indicator		Ctrl+W"), this, SLOT(newIndicator()));
-  menu->insertItem(QPixmap(edit), tr("&Edit Indicator			Ctrl+E"), this, SLOT(editIndicator()));
-  menu->insertItem(QPixmap(deleteitem), tr("&Delete Indicator		Ctrl+D"), this, SLOT(deleteIndicator()));
-  menu->insertItem(QPixmap(moveitem), tr("Mo&ve Indicator		Ctrl+V"), this, SLOT(moveIndicator()));
+  menu->insertItem(QPixmap(newchart), tr("Ne&w Indicator		Ctrl+W"), this,
+                   SLOT(newIndicator()));
+  menu->insertItem(QPixmap(newchart), tr("&Add Local Indicator              Ctrl+A"), this,
+                   SLOT(addLocalIndicator()));
+  menu->insertItem(QPixmap(edit), tr("&Edit Indicator			Ctrl+E"), this,
+                   SLOT(editIndicator()));
+  menu->insertItem(QPixmap(deleteitem), tr("&Delete Indicator		Ctrl+D"), this,
+                   SLOT(deleteIndicator()));
+  menu->insertItem(QPixmap(moveitem), tr("Mo&ve Indicator		Ctrl+V"), this,
+                   SLOT(moveIndicator()));
   menu->insertSeparator(-1);
   menu->insertItem(QPixmap(help), tr("&Help			Ctrl+H"), this, SLOT(slotHelp()));
 
@@ -102,6 +101,7 @@ IndicatorPage::IndicatorPage (QWidget *w) : QWidget (w)
   a->insertItem(CTRL+Key_N, NewIndicatorGroup);
   a->insertItem(CTRL+Key_X, DeleteIndicatorGroup);
   a->insertItem(CTRL+Key_W, NewIndicator);
+  a->insertItem(CTRL+Key_A, AddLocalIndicator);
   a->insertItem(CTRL+Key_D, DeleteIndicator);
   a->insertItem(CTRL+Key_E, EditIndicator);
   a->insertItem(CTRL+Key_V, MoveIndicator);
@@ -119,15 +119,15 @@ void IndicatorPage::itemSelected (const QString &d)
 {
   if (d.length())
   {
-    menu->setItemEnabled(menu->idAt(4), TRUE);
     menu->setItemEnabled(menu->idAt(5), TRUE);
     menu->setItemEnabled(menu->idAt(6), TRUE);
+    menu->setItemEnabled(menu->idAt(7), TRUE);
   }
   else
   {
-    menu->setItemEnabled(menu->idAt(4), FALSE);
     menu->setItemEnabled(menu->idAt(5), FALSE);
     menu->setItemEnabled(menu->idAt(6), FALSE);
+    menu->setItemEnabled(menu->idAt(7), FALSE);
   }
 }
 
@@ -168,8 +168,10 @@ void IndicatorPage::deleteIndicatorGroup ()
 {
   Config config;
   QString s("*");
-  QString s2(config.getData(Config::IndicatorPath));
+  QString s2;
+  config.getData(Config::IndicatorPath, s2);
   SymbolDialog *dialog = new SymbolDialog(this,
+                                          s2,
   					  s2,
 					  s,
 					  QFileDialog::DirectoryOnly);
@@ -249,13 +251,12 @@ void IndicatorPage::newIndicator ()
   QString il = tr("Indicator");
   QString nl = tr("Name");
   QString ptl = tr("Tab Row");
-  QString igl = tr("Indicator Group");
   
   idialog->createPage (pl);
   
   QStringList l2;
   config.getIndicatorList(l2);
-  s = config.getData(Config::LastNewIndicator);
+  config.getData(Config::LastNewIndicator, s);
   idialog->addComboItem(il, pl, l2, l2.findIndex(s));
   
   s = tr("NewIndicator");
@@ -263,10 +264,6 @@ void IndicatorPage::newIndicator ()
   
   idialog->addIntItem(ptl, pl, 1, 1, 3);
   
-  QStringList l;
-  getIndicatorGroups(l);
-  idialog->addComboItem(igl, pl, l, 0);
-
   int rc = idialog->exec();
   if (rc == QDialog::Rejected)
   {
@@ -274,11 +271,12 @@ void IndicatorPage::newIndicator ()
     return;
   }
   
-  QString name = idialog->getText(nl);
-  QString indicator = idialog->getCombo(il);
+  QString name;
+  idialog->getText(nl, name);
+  QString indicator;
+  idialog->getCombo(il, indicator);
   config.setData(Config::LastNewIndicator, indicator);
   int tabRow = idialog->getInt(ptl);
-  QString igroup = idialog->getCombo(igl);
   delete idialog;
   
   if (! name.length())
@@ -317,61 +315,92 @@ void IndicatorPage::newIndicator ()
   }
 
   rc = plug->indicatorPrefDialog(this);
-  
-  if (rc)
+  if (! rc)
   {
-    // get the indicator settings
-    Setting tset;
-    plug->getIndicatorSettings(tset);
-    tset.setData("Name", name);
-    tset.setData("enable", "1");
-    tset.setData("tabRow", QString::number(tabRow));
-    tset.setData("logScale", "0");
-    tset.setData("dateFlag", "1");
-
-    if (! igroup.compare(tr("Local")))
-    {
-      QString plugin = config.parseDbPlugin(chartPath);
-      DbPlugin *db = config.getDbPlugin(plugin);
-      if (! db)
-      {
-        qDebug("IndicatorPage::newIndicator: can't open db plugin");
-        config.closePlugin(plugin);
-        config.closePlugin(indicator);
-        return;
-      }
-  
-      if (db->openChart(chartPath))
-      {
-        qDebug("IndicatorPage::newIndicator: can't open chart");
-        config.closePlugin(plugin);
-        config.closePlugin(indicator);
-        return;
-      }
-    
-      // save the local indicator to the db
-      QString s2;
-      tset.getString(s2);
-      db->addIndicator(s2);
-      
-      localIndicators.append(name);
-      
-      config.closePlugin(plugin);
-    }
-    
-    config.setIndicator(s, tset);
-    
     config.closePlugin(indicator);
-    
-    Indicator *i = new Indicator;
-    i->setName(name);
-    i->setTabRow(tabRow);
-    i->setFile(s);
-    i->setType(indicator);
-    emit signalNewIndicator(i);
+    return;
   }
-  else
-    config.closePlugin(indicator);
+
+  // get the indicator settings
+  Setting tset;
+  plug->getIndicatorSettings(tset);
+  QString ts = "Name";
+  tset.setData(ts, name);
+  ts = "enable";
+  QString ts2 = "1"; 
+  tset.setData(ts, ts2);
+  ts = "tabRow";
+  ts2 = QString::number(tabRow);
+  tset.setData(ts, ts2);
+  ts = "logScale";
+  ts2 = "0";
+  tset.setData(ts, ts2);
+  ts = "dateFlag";
+  ts2 = "1";
+  tset.setData(ts, ts2);
+
+  config.setIndicator(s, tset);
+  config.closePlugin(indicator);
+  Indicator *i = new Indicator;
+  i->setName(name);
+  i->setTabRow(tabRow);
+  i->setFile(s);
+  i->setType(indicator);
+  emit signalNewIndicator(i);
+}
+
+void IndicatorPage::addLocalIndicator ()
+{
+  Config config;  
+  PrefDialog *idialog = new PrefDialog;
+  idialog->setCaption(tr("Add Local Indicator"));
+  QString s("addlocalindicator.html");
+  idialog->setHelpFile(s);
+  
+  QString pl = tr("Details");
+  QString il = tr("Indicator");
+  
+  idialog->createPage (pl);
+
+  QStringList l;
+  config.getData(Config::IndicatorPath, s);
+  idialog->addFileItem(il, pl, l, s);
+  
+  int rc = idialog->exec();
+  if (rc == QDialog::Rejected)
+  {
+    delete idialog;
+    return;
+  }
+  
+  idialog->getFile(il, l);
+  delete idialog;
+
+  if (! l.count())
+    return;
+  
+  DbPlugin db;
+  if (db.openChart(chartPath))
+  {
+    qDebug("IndicatorPage::addLocalIndicator: can't open chart");
+    db.close();
+    return;
+  }
+    
+  db.addIndicator(l[0]);
+  db.close();
+    
+  Setting set;
+  config.getIndicator(l[0], set);
+  if (! set.count())
+  {
+    qDebug("IndicatorPage::editIndicator:indicator settings empty");
+    return;
+  }
+
+  Indicator *i = new Indicator;
+  i->setIndicator(set, l[0]);
+  emit signalNewIndicator(i);
 }
 
 void IndicatorPage::editIndicator ()
@@ -398,8 +427,10 @@ void IndicatorPage::editIndicator (QString d)
     qDebug("IndicatorPage::editIndicator:indicator settings empty");
     return;
   }
-  
-  QString type = set.getData("plugin");
+
+  QString ts = "plugin";
+  QString type;
+  set.getData(ts, type);
   
   IndicatorPlugin *plug = config.getIndicatorPlugin(type);
   if (! plug)
@@ -410,33 +441,24 @@ void IndicatorPage::editIndicator (QString d)
   }
 
   plug->setIndicatorSettings(set);
-  int rc = plug->indicatorPrefDialog(this);
 
-  if (rc)
+  int rc = plug->indicatorPrefDialog(this);
+  if (! rc)
   {
-    plug->getIndicatorSettings(set);
-    config.setIndicator(s, set);
-    
-    Setting tset;
-    plug->getIndicatorSettings(tset);
-    saveLocalIndicator(d, tset);
-    
     config.closePlugin(type);
-    
-    if (set.getInt("enable"))
-    {
-      Indicator *i = new Indicator;
-      i->setName(d);
-      i->setTabRow(set.getInt("tabRow"));
-      i->setFile(s);
-      i->setType(type);
-      i->setDateFlag((bool) set.getInt("dateFlag"));
-      i->setLogScale((bool) set.getInt("logScale"));
-      emit signalEditIndicator(i);
-    }
+    return;
   }
+
+  plug->getIndicatorSettings(set);
+  config.setIndicator(s, set);
+  config.closePlugin(type);
+
+  Indicator *i = new Indicator;
+  i->setIndicator(set, s);
+  if (i->getEnable())
+    emit signalEditIndicator(i);
   else
-    config.closePlugin(type);
+    delete i;
 }
 
 void IndicatorPage::deleteIndicator ()
@@ -452,53 +474,55 @@ void IndicatorPage::deleteIndicator ()
 
   QDir dir;
   Config config;
-  QString s = config.getData(Config::IndicatorPath) + "/" + group->currentText() + "/" + list->currentText();
+  QString s;
+  config.getData(Config::IndicatorPath, s);
+  s.append("/" + group->currentText() + "/" + list->currentText());
   if (! dir.exists(s, TRUE))
   {
     qDebug("IndicatorPage::deleteIndicator: indicator not found %s", s.latin1());
     return;
   }
+
+  QFileInfo fi(s);
   
   if (chartPath.length())
   {
-    QString plugin = config.parseDbPlugin(chartPath);
-    DbPlugin *db = config.getDbPlugin(plugin);
-    if (! db)
-    {
-      qDebug("IndicatorPage::slotDeleteIndicator:can't get db plugin");
-      config.closePlugin(plugin);
-      return;
-    }
-    
-    if (db->openChart(chartPath))
+    DbPlugin db;
+    if (db.openChart(chartPath))
     {
       qDebug("IndicatorPage::slotDeleteIndicator: can't open chart");
-      config.closePlugin(plugin);
+      db.close();
       return;
     }
     
     QStringList l;
-    db->getChartObjects(l);
+    db.getChartObjects(l);
     int loop;
     Setting set;
     for (loop = 0; loop < (int) l.count(); loop++)
     {
       set.parse(l[loop]);
-      if (! set.getData("Plot").compare(list->currentText()))
+      QString ts = "Plot";
+      QString ts2;
+      set.getData(ts, ts2);
+      if (! ts2.compare(list->currentText()))
       {
-        s = set.getData("Name");
-        db->deleteChartObject(s);
+        ts = "Name";
+        set.getData(ts, s);
+        db.deleteChartObject(s);
       }
     }
-  
-    s = list->currentText();
-    db->deleteIndicator(s);  
+
+    if (fi.isSymLink())
+    {
+      QString ts = fi.readLink();
+      db.deleteIndicator(ts);
+    }
     
-    config.closePlugin(plugin);
+    db.close();
   }
 
   itemSelected(QString());
-  localIndicators.remove(list->currentText());
   emit signalDeleteIndicator(list->currentText());
 }
 
@@ -520,25 +544,20 @@ void IndicatorPage::moveIndicator ()
     qDebug("IndicatorPage::moveIndicator:indicator settings empty");
     return;
   }
+
+  QString pl = tr("Details");
+  QString trl = tr("Tab Row");
+  QString igl = tr("Indicator Group");
   
   PrefDialog *dialog = new PrefDialog;
   dialog->setCaption(tr("Move Indicator"));
   QString t("workwithmainindicators.html");  
   dialog->setHelpFile(t);
-  
-  t = tr("Details");
-  dialog->createPage(t);
-  QString t2(tr("Tab Row"));
-  dialog->addIntItem(t2, t, set.getInt("tabRow"), 1, 3);
+  dialog->createPage(pl);
 
-  QString igroup = group->currentText();
-  if (localIndicators.findIndex(list->currentText()) != -1)
-    igroup = tr("Local");
-  t2 = tr("Indicator Group");
-  QStringList pl;
-  getIndicatorGroups(pl);
-  dialog->addComboItem(t2, t, pl, igroup);
-  
+  QString ts = "tabRow";
+  dialog->addIntItem(trl, pl, set.getInt(ts), 1, 3);
+
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)
   {
@@ -546,77 +565,15 @@ void IndicatorPage::moveIndicator ()
     return;
   }
 
-  t = tr("Tab Row");
-  set.setData("tabRow", QString::number(dialog->getInt(t)));
+  ts = "tabRow";
+  QString ts2 = QString::number(dialog->getInt(trl));
+  set.setData(ts, ts2);
   
-  t = tr("Indicator Group");
-  QString s2 = dialog->getCombo(t);
-  if (! igroup.compare(tr("Local")))
-  {
-    if (s2.compare(tr("Local")))
-    {
-      Config config;
-      QString plugin = config.parseDbPlugin(chartPath);
-      DbPlugin *db = config.getDbPlugin(plugin);
-      if (! db)
-      {
-        qDebug("IndicatorPage::moveIndicator: can't open db plugin");
-        config.closePlugin(plugin);
-        return;
-      }
-  
-      if (db->openChart(chartPath))
-      {
-        qDebug("IndicatorPage::moveIndicator: can't open chart");
-        config.closePlugin(plugin);
-        return;
-      }
-
-      QString t = list->currentText();
-      db->deleteIndicator(t);
-      
-      config.closePlugin(plugin);
-      
-      localIndicators.remove(list->currentText());
-    }
-  }
-  else
-  {
-    if (! s2.compare(tr("Local")))
-    {
-      Config config;
-      QString plugin = config.parseDbPlugin(chartPath);
-      DbPlugin *db = config.getDbPlugin(plugin);
-      if (! db)
-      {
-        qDebug("IndicatorPage::moveIndicator: can't open db plugin");
-        config.closePlugin(plugin);
-        return;
-      }
-  
-      if (db->openChart(chartPath))
-      {
-        qDebug("IndicatorPage::moveIndicator: can't open chart");
-        config.closePlugin(plugin);
-        return;
-      }
-      
-      QString t;
-      set.getString(t);
-      db->addIndicator(t);
-      localIndicators.append(list->currentText());
-      
-      config.closePlugin(plugin);
-    }
-  }
-
-  bool status = set.getInt("enable");
+  ts = "enable";
+  bool status = set.getInt(ts);
   if (status)
     emit signalDisableIndicator(s);
 
-  t = list->currentText();
-  saveLocalIndicator(t, set);
-  
   config.setIndicator(s, set);
   
   if (status)
@@ -630,31 +587,35 @@ void IndicatorPage::updateList ()
   list->clear();
   
   Config config;
-  idir.setPath(config.getData(Config::IndicatorPath) + "/" + getIndicatorGroup());
+  QString ts;
+  config.getData(Config::IndicatorPath, ts);
+  idir.setPath(ts + "/" + group->currentText());
 
   int loop;
   for (loop = 0; loop < (int) idir.count(); loop++)
   {
     QString path = idir.absPath() + "/" + idir[loop];
+    QFileInfo fi(path);
     QString s = idir[loop];
     Setting set;
     config.getIndicator(path, set);
-    if (! set.getInt("enable"))
+    QString ts = "enable";
+    if (! set.getInt(ts))
     {
-      if (localIndicators.findIndex(s) != -1)
+      if (fi.isSymLink())
         list->insertItem(disable_gray, s, -1);
       else
         list->insertItem(disable, s, -1);
     }
     else
     {
-      if (localIndicators.findIndex(s) != -1)
+      if (fi.isSymLink())
         list->insertItem(ok_gray, s, -1);
       else
         list->insertItem(ok, s, -1);
 	
       if (updateEnableFlag)
-        emit signalEnableIndicator(s);
+        emit signalEnableIndicator(path);
     }
   }
 
@@ -682,31 +643,34 @@ void IndicatorPage::changeIndicator (QString &d)
     qDebug("IndicatorPage::changeIndicator: indicator not found %s", s.latin1());
     return;
   }
-  
+
+  QFileInfo fi(s);
   Config config;
   Setting set;
   config.getIndicator(s, set);
-  int t = set.getInt("enable");
+  QString ts = "enable";
+  QString ts2;
+  int t = set.getInt(ts);
   if (t)
   {
-    set.setData("enable", "0");
+    ts2 = "0";
+    set.setData(ts, ts2);
     config.setIndicator(s, set);
-    if (localIndicators.findIndex(list->currentText()) != -1)
+    if (fi.isSymLink())
       list->changeItem(disable_gray, d, list->currentItem());
     else
       list->changeItem(disable, d, list->currentItem());
-    saveLocalIndicator(d, set);
     emit signalDisableIndicator(s);
   }
   else
   {
-    set.setData("enable", "1");
+    ts2 = "1";
+    set.setData(ts, ts2);
     config.setIndicator(s, set);
-    if (localIndicators.findIndex(list->currentText()) != -1)
+    if (fi.isSymLink())
       list->changeItem(ok_gray, d, list->currentItem());
     else
       list->changeItem(ok, d, list->currentItem());
-    saveLocalIndicator(d, set);
     emit signalEnableIndicator(s);
   }
 }
@@ -723,22 +687,8 @@ void IndicatorPage::rightClick (QListBoxItem *)
   menu->exec(QCursor::pos());
 }
 
-void IndicatorPage::setKeyFlag (bool d)
-{
-  keyFlag = d;
-  list->setKeyFlag(d);
-  group->setKeyFlag(d);
-}
-
 void IndicatorPage::keyPressEvent (QKeyEvent *key)
 {
-  if (keyFlag)
-    emit signalKeyPressed (Macro::IndicatorPage,
-    			   key->state(),
-			   key->key(),
-			   key->ascii(),
-			   key->text());
-    
   doKeyPress(key);  
 }
 
@@ -759,6 +709,9 @@ void IndicatorPage::doKeyPress (QKeyEvent *key)
       case Qt::Key_W:
         slotAccel(NewIndicator);
 	break;
+      case Qt::Key_A:
+        slotAccel(AddLocalIndicator);
+        break;
       case Qt::Key_D:
         slotAccel(DeleteIndicator);
 	break;
@@ -775,13 +728,13 @@ void IndicatorPage::doKeyPress (QKeyEvent *key)
         break;
     }
   }
-  else
-  {
-    if (list->hasFocus())
-      list->doKeyPress(key);
-    else
-      group->doKeyPress(key);
-  }
+//  else
+//  {
+//    if (list->hasFocus())
+//      list->keyPressEvent(key);
+//    else
+//      group->keyPressEvent(key);
+//  }
 }
 
 void IndicatorPage::slotAccel (int id)
@@ -789,41 +742,30 @@ void IndicatorPage::slotAccel (int id)
   switch (id)
   {
     case NewIndicatorGroup:
-      if (keyFlag)
-        emit signalKeyPressed (Macro::IndicatorPage, ControlButton, Key_N, 0, QString());
       newIndicatorGroup();
       break;  
     case DeleteIndicatorGroup:
-      if (keyFlag)
-        emit signalKeyPressed (Macro::IndicatorPage, ControlButton, Key_X, 0, QString());
       deleteIndicatorGroup();
       break;  
     case NewIndicator:
-      if (keyFlag)
-        emit signalKeyPressed (Macro::IndicatorPage, ControlButton, Key_W, 0, QString());
       newIndicator();
       break;  
+    case AddLocalIndicator:
+      addLocalIndicator();
+      break;  
     case DeleteIndicator:
-      if (keyFlag)
-        emit signalKeyPressed (Macro::IndicatorPage, ControlButton, Key_D, 0, QString());
       deleteIndicator();
       break;  
     case EditIndicator:
-      if (keyFlag)
-        emit signalKeyPressed (Macro::IndicatorPage, ControlButton, Key_E, 0, QString());
       editIndicator();
       break;  
     case MoveIndicator:
-      if (keyFlag)
-        emit signalKeyPressed (Macro::IndicatorPage, ControlButton, Key_V, 0, QString());
       moveIndicator();
       break;  
     case Help:
       slotHelp();
       break;  
     case Tab:
-      if (keyFlag)
-        emit signalKeyPressed (Macro::IndicatorPage, ControlButton, Key_Tab, 0, QString());
       if (list->hasFocus())
         list->setFocus();
       else
@@ -832,23 +774,6 @@ void IndicatorPage::slotAccel (int id)
     default:
       break;
   }
-}
-
-void IndicatorPage::runMacro (Macro *d)
-{
-  macro = d;
-  macroFlag = TRUE;
-  
-  while (macro->getZone(macro->getIndex()) == Macro::IndicatorPage)
-  {
-    doKeyPress(macro->getKey(macro->getIndex()));
-    
-    macro->incIndex();
-    if (macro->getIndex() >= macro->getCount())
-      break;
-  }
-  
-  macroFlag = FALSE;
 }
 
 void IndicatorPage::slotGroupChanged (int)
@@ -895,15 +820,6 @@ void IndicatorPage::updateGroups ()
   group->blockSignals(FALSE);
 }
 
-void IndicatorPage::getIndicatorGroups (QStringList &l)
-{
-  l.clear();
-  l.append(group->currentText());
-  
-  if (chartPath.length())
-    l.append(tr("Local"));
-}
-
 QString IndicatorPage::getIndicatorGroup ()
 {
   return group->currentText();
@@ -925,63 +841,34 @@ void IndicatorPage::addLocalIndicators (QString &d)
   int loop;
   Setting set;
   Config config;
+  QString s, ts, ts2;
   for (loop = 0; loop < (int) l.count(); loop++)
   {
-    set.parse(l[loop]);
-    QString s = baseDir + "/" + group->currentText() + "/" + set.getData("Name");
-    config.setIndicator(s, set);
-    if (set.getInt("enable"))
-      emit signalEnableIndicator(s);
-    localIndicators.append(set.getData("Name"));
+    QString s2 = baseDir + "/" + group->currentText() + "/Local" + QString::number(loop + 1);
+    QString s = "ln -s " + l[loop] + " " + s2;
+    system(s);
   }
 }
 
 void IndicatorPage::removeLocalIndicators ()
 {
+  QString s = baseDir + "/" + group->currentText();
+  QDir dir(s);
   int loop;
-  QDir dir;
-  for (loop = 0; loop < (int) localIndicators.count(); loop++)
+  for (loop = 2; loop < (int) dir.count(); loop++)
   {
-    QString s = baseDir + "/" + group->currentText() + "/" + localIndicators[loop];
-    emit signalDisableIndicator(s);
+    QString s = baseDir + "/" + group->currentText() + "/" + dir[loop];
+    QFileInfo fi(s);
+    if (fi.isSymLink())
+      emit signalDisableIndicator(s);
   }
 
-  for (loop = 0; loop < (int) localIndicators.count(); loop++)
+  for (loop = 2; loop < (int) dir.count(); loop++)
   {
-    QString s = baseDir + "/" + group->currentText() + "/" + localIndicators[loop];
-    dir.remove(s, TRUE);
-  }
-    
-  localIndicators.clear();
-}
-
-void IndicatorPage::saveLocalIndicator (QString &d, Setting &set)
-{
-  if (localIndicators.findIndex(d) != -1)
-  {
-    Config config;
-    QString plugin = config.parseDbPlugin(chartPath);
-    DbPlugin *db = config.getDbPlugin(plugin);
-    if (! db)
-    {
-      qDebug("IndicatorPage::saveLocalIndicator: can't open db plugin");
-      config.closePlugin(plugin);
-      return;
-    }
-  
-    if (db->openChart(chartPath))
-    {
-      qDebug("IndicatorPage::saveLocalIndicator: can't open chart");
-      config.closePlugin(plugin);
-      return;
-    }
-    
-    // save the local indicator to the db
-    QString t;
-    set.getString(t);
-    db->setIndicator(d, t);
-    
-    config.closePlugin(plugin);
+    QString s = baseDir + "/" + group->currentText() + "/" + dir[loop];
+    QFileInfo fi(s);
+    if (fi.isSymLink())
+      dir.remove(s, TRUE);
   }
 }
 

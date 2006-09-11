@@ -22,11 +22,13 @@
 #ifndef BARDATA_HPP
 #define BARDATA_HPP
 
-#include <qptrlist.h>
+#include <qvaluelist.h>
 #include <qdict.h>
 #include <qstringlist.h>
+#include <qdatetime.h>
 #include "Bar.h"
 #include "PlotLine.h"
+#include "../plugins/indicator/TALIB/ta-lib/c/include/ta_libc.h"
 
 class BarData
 {
@@ -56,7 +58,7 @@ class BarData
       DayOfWeek
     };
 
-    enum BarCompression
+    enum BarLength
     {
       Minute1,
       Minute5,
@@ -69,18 +71,20 @@ class BarData
       MonthlyBar
     };
     
-    BarData ();
+    BarData (QString &);
     ~BarData ();
     int count ();
-    BarDate getDate (int);
+    void getDate (int, QDateTime &);
     double getOpen (int);
     double getHigh (int);
     double getLow (int);
     double getClose (int);
     double getVolume (int);
     double getOI (int);
-    void prepend (Bar *bar);
-    int getX (BarDate &);
+    void prepend (Bar &bar);
+    void prependRaw (Bar &bar);
+    void appendRaw (Bar &bar);
+    int getX (QDateTime &);
     double getMax ();
     double getMin ();
     void createDateList ();
@@ -89,18 +93,27 @@ class BarData
     void getInputFields (QStringList &);
     PlotLine * getInput (BarData::InputType);
     BarData::InputType getInputType (QString &);
-    void getBarCompressionList (QStringList &);
-    Bar * getBar (int);
+    void getBarLengthList (QStringList &);
+    void getBar (int, Bar &);
     void setMinMax ();
-    void deleteBar (int);
     void clear();
+    void setBarLength (BarData::BarLength);
+    BarData::BarLength getBarLength ();
+    void setStartEndDates (QDateTime &);
+    void setBar (int, Bar &);
+    void getSymbol (QString &);
     
   protected:
-    QPtrList<Bar> barList;
+    QValueList<Bar> barList;
     QDict<X> dateList;
     double high;
     double low;
     BarData::BarType barType;
+    BarData::BarLength barLength;
+    QDateTime startDate;
+    QDateTime endDate;
+    Bar currentBar;
+    QString symbol;
 };
 
 #endif

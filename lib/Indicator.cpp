@@ -21,6 +21,7 @@
 
 #include "Indicator.h"
 #include <qobject.h>
+#include <qfileinfo.h>
 
 Indicator::Indicator ()
 {
@@ -48,6 +49,11 @@ PlotLine * Indicator::getLine (int i)
 void Indicator::addLine (PlotLine *l)
 {
   lines.append(l);
+}
+
+void Indicator::prependLine (PlotLine *l)
+{
+  lines.prepend(l);
 }
 
 void Indicator::setTabRow (int d)
@@ -80,9 +86,9 @@ void Indicator::setName (QString &d)
   name = d;
 }
 
-QString Indicator::getName ()
+void Indicator::getName (QString &d)
 {
-  return name;
+  d = name;
 }
 
 void Indicator::setType (QString &d)
@@ -90,9 +96,9 @@ void Indicator::setType (QString &d)
   type = d;
 }
 
-QString Indicator::getType ()
+void Indicator::getType (QString &d)
 {
-  return type;
+  d = type;
 }
 
 void Indicator::setFile (QString &d)
@@ -100,9 +106,9 @@ void Indicator::setFile (QString &d)
   file = d;
 }
 
-QString Indicator::getFile ()
+void Indicator::getFile (QString &d)
 {
-  return file;
+  d = file;
 }
 
 void Indicator::copy (Indicator *d)
@@ -116,13 +122,13 @@ void Indicator::copy (Indicator *d)
     addLine(pl);
   }
 
-//  setDateFlag(d->getDateFlag());
-//  setLogScale(d->getLogScale());
-//  setTabRow(d->getTabRow());
-//  setEnable(d->getEnable());
-//  setName(d->getName());
-//  setFile(d->getFile());
-//  setType(d->getType());
+  setDateFlag(d->getDateFlag());
+  setLogScale(d->getLogScale());
+  setTabRow(d->getTabRow());
+  setEnable(d->getEnable());
+//  d->getName(name);
+//  d->getFile(file);
+//  d->getType(type);
 }
 
 void Indicator::setDateFlag (bool d)
@@ -143,5 +149,35 @@ void Indicator::setLogScale (bool d)
 bool Indicator::getLogScale ()
 {
   return logScale;
+}
+
+void Indicator::setIndicator (Setting &set, QString &f)
+{
+  QString s = "enable";
+  QString s2;
+  set.getData(s, s2);
+  if (s2.length())
+    setEnable((bool) s2.toInt());
+
+  QFileInfo fi(f);
+  s = fi.fileName();
+  setName(s);
+
+  setFile(f);
+
+  s = "plugin";
+  set.getData(s, s2);
+  setType(s2);
+
+  s = "tabRow";
+  set.getData(s, s2);
+  if (s2.length())
+    setTabRow(s2.toInt());
+
+  s = "dateFlag";
+  setDateFlag((bool) set.getInt(s));
+
+  s = "logScale";
+  setLogScale((bool) set.getInt(s));
 }
 

@@ -40,9 +40,9 @@ class Navigator : public QListBox
   public:
     Navigator (QWidget *, QString &);
     ~Navigator ();
-    QString getFileSelection ();
+    void getFileSelection (QString &);
     void setDirectory (QString &);
-    QString getCurrentPath ();
+    void getCurrentPath (QString &);
     void setFilter (QString &);
     void setId (int);
     void setKeyFlag (bool);

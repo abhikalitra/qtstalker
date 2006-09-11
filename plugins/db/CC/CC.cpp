@@ -41,10 +41,10 @@ CC::~CC ()
 {
 }
 
-void CC::getHistory (BarData *bd)
+void CC::getHistory (BarData *bd, QDateTime &dt)
 {
   update();
-  DbPlugin::getHistory(bd);
+  DbPlugin::getHistory(bd, dt);
 }
 
 void CC::dbPrefDialog ()
@@ -71,22 +71,18 @@ void CC::dbPrefDialog ()
   
   t = QObject::tr("First Date");
   t2.truncate(0);
-  Bar *bar = getFirstBar();
-  if (bar)
-  {
-    bar->getDate().getDateTimeString(TRUE, t2);
-    delete bar;
-  }
+  Bar bar;
+  getFirstBar(bar);
+  if (! bar.getEmptyFlag())
+    bar.getDateTimeString(TRUE, t2);
   dialog->addLabelItem(t, pl, t2);
   
   t = QObject::tr("Last Date");
   t2.truncate(0);
-  bar = getLastBar();
-  if (bar)
-  {
-    bar->getDate().getDateTimeString(TRUE, t2);
-    delete bar;
-  }
+  Bar bar2;
+  getLastBar(bar2);
+  if (! bar2.getEmptyFlag())
+    bar2.getDateTimeString(TRUE, t2);
   dialog->addLabelItem(t, pl, t2);
   
   pl = QObject::tr("Parms");
@@ -133,12 +129,13 @@ void CC::update ()
   getData(s, s2);
   if (! s2.toInt())
   {
-    BarDate dt;
+    Bar bar;
+    QDateTime dt;
     s = "Last Rebuild Date";
     getData(s, s2);
-    if (! dt.setDate(s2))
+    if (! bar.setDate(s2))
     {
-      if (dt.getDate() == startDate.date())
+      if (dt == startDate)
         return; // no rebuild since chart was updated this same day
       else
       {
@@ -220,16 +217,18 @@ void CC::update ()
     }
       
     tdb->openChart(s);
-    tdb->setBarCompression(BarData::DailyBar);
+    tdb->setBarLength(BarData::DailyBar);
     tdb->setBarRange(100);
 
     BarData *recordList = new BarData;
-    tdb->getHistory(recordList);
+    QDateTime dt = QDateTime::currentDateTime();
+    tdb->getHistory(recordList, dt);
 
     int loop2;
     for (loop2 = 1; loop2 < (int) recordList->count(); loop2++)
     {
-      recordList->getDate(loop2).getDateTimeString(FALSE, s);
+      recordList->getDate(loop2, dt);
+      s = dt.toString("yyyyMMddhhmmss");
       Dummy *r = data.find(s);
       if (r)
         continue;
@@ -240,7 +239,7 @@ void CC::update ()
       double o = h - (recordList->getHigh(loop2) - recordList->getOpen(loop2));
 	
       Bar bar;
-      BarDate dt = recordList->getDate(loop2);
+      recordList->getDate(loop2, dt);
       bar.setDate(dt);
       bar.setOpen(o);
       bar.setHigh(h);
@@ -250,7 +249,7 @@ void CC::update ()
       bar.setOI((int) recordList->getOI(loop2));
       setBar(bar);
       pr = c;
-      bar.getDate().getDateTimeString(FALSE, s);
+      bar.getDateTimeString(FALSE, s);
       data.insert(s, new Dummy);
     }
 
@@ -325,18 +324,16 @@ void CC::createNew ()
   dbPrefDialog();
 }
 
-Bar * CC::getBar (QString &k, QString &d)
+void CC::getBar (QString &k, QString &d, Bar &bar)
 {
-  Bar *bar = new Bar;
   QStringList l = QStringList::split(",", d, FALSE);
-  bar->setDate(k);
-  bar->setOpen(l[0].toDouble());
-  bar->setHigh(l[1].toDouble());
-  bar->setLow(l[2].toDouble());
-  bar->setClose(l[3].toDouble());
-  bar->setVolume(l[4].toDouble());
-  bar->setOI(l[5].toInt());
-  return bar;
+  bar.setDate(k);
+  bar.setOpen(l[0].toDouble());
+  bar.setHigh(l[1].toDouble());
+  bar.setLow(l[2].toDouble());
+  bar.setClose(l[3].toDouble());
+  bar.setVolume(l[4].toDouble());
+  bar.setOI(l[5].toInt());
 }
 
 void CC::setBar (Bar &bar)
@@ -346,7 +343,7 @@ void CC::setBar (Bar &bar)
   if (k.toInt() != bar.getTickFlag())
     return;
 
-  bar.getDate().getDateTimeString(FALSE, k);
+  bar.getDateTimeString(FALSE, k);
   
   QString d = QString::number(bar.getOpen()) + "," + QString::number(bar.getHigh()) + "," +
               QString::number(bar.getLow()) + "," + QString::number(bar.getClose()) + "," +

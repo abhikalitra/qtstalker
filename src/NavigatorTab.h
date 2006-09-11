@@ -27,7 +27,6 @@
 #include <qwidget.h>
 #include <qbuttongroup.h>
 #include <qmainwindow.h>
-//#include "Macro.h"
 
 class NavigatorTab : public QWidget
 {
@@ -35,7 +34,6 @@ class NavigatorTab : public QWidget
 
   signals:
     void signalPositionChanged (int);
-    void signalKeyPressed (int, int, int, int, QString);
   
   public:
   
@@ -46,8 +44,7 @@ class NavigatorTab : public QWidget
       IndicatorPanelFocus,
       PortfolioPanelFocus,
       TestPanelFocus,
-      ScannerPanelFocus,
-      MacroPanelFocus
+      ScannerPanelFocus
     };
   
     NavigatorTab (QWidget *, QMainWindow *);
@@ -62,9 +59,7 @@ class NavigatorTab : public QWidget
     void buttonPressed (int);
     void pressButton (int);
     void doKeyPress (QKeyEvent *);
-//    void runMacro (Macro *);
     void slotAccel (int);
-    void setKeyFlag (bool);
 
   protected:
     virtual void contextMenuEvent (QContextMenuEvent *);
@@ -75,9 +70,6 @@ class NavigatorTab : public QWidget
     QPopupMenu *positionMenu;
     QWidgetStack *stack;
     QButtonGroup *bg;
-//    Macro *tmacro;
-    bool macroFlag;
-    bool keyFlag;
 };
 
 #endif

@@ -30,6 +30,15 @@
 SYMBOL::SYMBOL ()
 {
   pluginName = "SYMBOL";
+
+  colorLabel = "color";
+  lineTypeLabel = "lineType";
+  labelLabel = "label";
+  symbolLabel = "symbol";
+  pluginLabel = "plugin";
+
+  formatList.append(FormatString);
+
   setDefaults();
   helpFile = "symbol.html";
 }
@@ -48,39 +57,40 @@ void SYMBOL::setDefaults ()
 void SYMBOL::calculate ()
 {
   Config config;
-  QString plugin = config.parseDbPlugin(symbol);
-  DbPlugin *db = config.getDbPlugin(plugin);
-  if (! db)
+  DbPlugin db;
+  if (db.openChart(symbol))
   {
-    config.closePlugin(plugin);
-    return;
-  }
-  
-  if (db->openChart(symbol))
-  {
-    config.closePlugin(plugin);
+    db.close();
     return;
   }
   
   PlotLine *line = new PlotLine();
   
-  BarDate date = data->getDate(0);
-  
-  db->setBarCompression((BarData::BarCompression) config.getData(Config::Compression).toInt());
-  db->setBarRange(config.getData(Config::Bars).toInt());
-  BarData *recordList = new BarData;
-  db->getHistory(recordList);
+  QDateTime date;
+  data->getDate(0, date);
+
+  QString ts;
+  config.getData(Config::BarLength, ts);
+  db.setBarLength((BarData::BarLength) ts.toInt());
+  config.getData(Config::Bars, ts);
+  db.setBarRange(ts.toInt());
+  BarData *recordList = new BarData(symbol);
+  QDateTime dt = QDateTime::currentDateTime();
+  db.getHistory(recordList, dt);
 
   QDict<Setting> dict;
   dict.setAutoDelete(TRUE);
   
   int loop;
+  ts = "Close";
+  QString ts2;
   for (loop = 0; loop < (int) recordList->count(); loop++)
   {
     Setting *r = new Setting;
-    r->setData("Close", QString::number(recordList->getClose(loop)));
-    QString s;
-    recordList->getDate(loop).getDateTimeString(FALSE, s);
+    ts2 = QString::number(recordList->getClose(loop));
+    r->setData(ts, ts2);
+    recordList->getDate(loop, dt);
+    QString s = dt.toString("yyyyMMddhhmmss");
     dict.insert(s, r);
   }
 
@@ -88,18 +98,18 @@ void SYMBOL::calculate ()
 
   for (loop = 0; loop < (int) data->count(); loop++)
   {
-    QString s;
-    data->getDate(loop).getDateTimeString(FALSE, s);
+    data->getDate(loop, dt);
+    QString s = dt.toString("yyyyMMddhhmmss");
     Setting *r2 = dict[s];
     if (r2)
     {
-      val = r2->getDouble("Close");
+      val = r2->getDouble(ts);
       line->append(val);
     }
   }
 
   delete recordList;
-  config.closePlugin(plugin);
+  db.close();
 
   line->setColor(color);
   line->setType(lineType);
@@ -124,17 +134,18 @@ int SYMBOL::indicatorPrefDialog (QWidget *w)
   dialog->addColorItem(cl, pl, color);
   dialog->addComboItem(ltl, pl, lineTypes, lineType);
   dialog->addTextItem(ll, pl, label);
-  QString t = config.getData(Config::DataPath);
+  QString t;
+  config.getData(Config::DataPath, t);
   dialog->addSymbolItem(sl, pl, t, symbol);
   
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
-    color = dialog->getColor(cl);
+    dialog->getColor(cl, color);
     lineType = (PlotLine::LineType) dialog->getComboIndex(ltl);
-    label = dialog->getText(ll);
-    symbol = dialog->getSymbol(sl);
+    dialog->getText(ll, label);
+    dialog->getSymbol(sl, symbol);
     rc = TRUE;
   }
   else
@@ -151,51 +162,76 @@ void SYMBOL::setIndicatorSettings (Setting &dict)
   if (! dict.count())
     return;
   
-  QString s = dict.getData("color");
+  QString s;
+  dict.getData(colorLabel, s);
   if (s.length())
     color.setNamedColor(s);
     
-  s = dict.getData("lineType");
+  dict.getData(lineTypeLabel, s);
   if (s.length())
     lineType = (PlotLine::LineType) s.toInt();
 
-  s = dict.getData("label");
+  dict.getData(labelLabel, s);
   if (s.length())
     label = s;
       
-  s = dict.getData("symbol");
+  dict.getData(symbolLabel, s);
   if (s.length())
     symbol = s;
 }
 
 void SYMBOL::getIndicatorSettings (Setting &dict)
 {
-  dict.setData("color", color.name());
-  dict.setData("lineType", QString::number(lineType));
-  dict.setData("label", label);
-  dict.setData("symbol", symbol);
-  dict.setData("plugin", pluginName);
+  QString ts = color.name();
+  dict.setData(colorLabel, ts);
+  ts = QString::number(lineType);
+  dict.setData(lineTypeLabel, ts);
+  dict.setData(labelLabel, label);
+  dict.setData(symbolLabel, symbol);
+  dict.setData(pluginLabel, pluginName);
 }
 
-PlotLine * SYMBOL::calculateCustom (QString &p, QPtrList<PlotLine> &)
+PlotLine * SYMBOL::calculateCustom (QString &p, QPtrList<PlotLine> &d)
 {
   // format1: SYMBOL
 
-  QStringList l = QStringList::split(",", p, FALSE);
-
-  if (l.count() == 1)
-    ;
-  else
-  {
-    qDebug("SYMBOL::calculateCustom: invalid parm count");
+  if (checkFormat(p, d, 1, 1))
     return 0;
-  }
 
-  symbol = l[0];
+  symbol = formatStringList[0];
 
   clearOutput();
   calculate();
   return output->getLine(0);
+}
+
+void SYMBOL::formatDialog (QStringList &, QString &rv, QString &rs)
+{
+  rs.truncate(0);
+  rv.truncate(0);
+  QString pl = QObject::tr("Parms");
+  QString vnl = QObject::tr("Variable Name");
+  QString sl = QObject::tr("Symbol");
+  PrefDialog *dialog = new PrefDialog(0);
+  dialog->setCaption(QObject::tr("SYMBOL Format"));
+  dialog->createPage (pl);
+  dialog->setHelpFile(helpFile);
+
+  QString s;
+  Config config;
+  dialog->addTextItem(vnl, pl, s);
+  config.getData(Config::DataPath, s);
+  dialog->addSymbolItem(sl, pl, s, symbol);
+
+  int rc = dialog->exec();
+  
+  if (rc == QDialog::Accepted)
+  {
+    dialog->getText(vnl, rv);
+    dialog->getSymbol(sl, rs);
+  }
+
+  delete dialog;
 }
 
 //************************************************************

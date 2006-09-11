@@ -23,200 +23,288 @@
 
 Bar::Bar ()
 {
-  max = -9999999999.0;
-  min = 9999999999.0;
-  data.setAutoDelete(TRUE);
+  clear();
 }
 
 Bar::~Bar ()
 {
 }
 
-int Bar::setDate (BarDate &d)
+int Bar::setDate (QDateTime &d)
 {
+  if (! d.isValid())
+    return TRUE;
+
   date = d;
   return FALSE;
 }
 
 int Bar::setDate (QString &d)
 {
-  if (date.setDate(d))
+  QString s = d;
+  while (s.contains("-"))
+    s = s.remove(s.find("-", 0, TRUE), 1);
+  
+  while (s.contains(":"))
+    s = s.remove(s.find(":", 0, TRUE), 1);
+
+  while (s.contains(" "))
+    s = s.remove(s.find(" ", 0, TRUE), 1);
+  
+  if (s.length() != 14)
+  {
+    qDebug("Bar::setDate:bad string length %i", s.length());
     return TRUE;
-  else
-    return FALSE;
+  }
+  
+  QDate dt = QDate(s.left(4).toInt(), s.mid(4, 2).toInt(), s.mid(6, 2).toInt());
+  if (! dt.isValid())
+  {
+    qDebug("Bar::setDate: invalid date %s", s.latin1());
+    return TRUE;
+  }
+  
+  int hour = s.mid(8, 2).toInt();
+  if (hour < 0 || hour > 23)
+  {
+    qDebug("Bar::setDate: hour out of range %i", hour);
+    return TRUE;
+  }
+    
+  int min = s.mid(10, 2).toInt();
+  if (min < 0 || min > 59)
+  {
+    qDebug("Bar::setDate: minute out of range %i", min);
+    return TRUE;
+  }
+
+  int sec = s.right(2).toInt();
+  if (sec < 0 || sec > 59)
+  {
+    qDebug("Bar::setDate: second out of range %i", min);
+    return TRUE;
+  }
+  
+  QTime t(hour, min, sec, 0);
+  if (! t.isValid())
+  {
+    qDebug("Bar::setDate: invalid time");
+    return TRUE;
+  }
+  
+  date.setDate(dt);
+  date.setTime(t);
+    
+  return FALSE;
 }
 
-BarDate Bar::getDate ()
+void Bar::getDate (QDateTime &d)
 {
-  return date;
+  d = date;
 }
 
 void Bar::setOpen (double d)
 {
-  QString s = "Open";
-  setData(s, d);
+  open = d;
+  openFlag = TRUE;
+  emptyFlag = FALSE;
 }
 
 double Bar::getOpen ()
 {
-  BarItem *r = data["Open"];
-  if (r)
-    return r->v;
-  else
-    return 0;
+  return open;
 }
 
 void Bar::setHigh (double d)
 {
-  QString s = "High";
-  setData(s, d);
+  high = d;
+  highFlag = TRUE;
+  emptyFlag = FALSE;
 }
 
 double Bar::getHigh ()
 {
-  BarItem *r = data["High"];
-  if (r)
-    return r->v;
-  else
-    return 0;
+  return high;
 }
 
 void Bar::setLow (double d)
 {
-  QString s = "Low";
-  setData(s, d);
+  low = d;
+  lowFlag = TRUE;
+  emptyFlag = FALSE;
 }
 
 double Bar::getLow ()
 {
-  BarItem *r = data["Low"];
-  if (r)
-    return r->v;
-  else
-    return 0;
+  return low;
 }
 
 void Bar::setClose (double d)
 {
-  QString s = "Close";
-  setData(s, d);
+  close = d;
+  closeFlag = TRUE;
+  emptyFlag = FALSE;
 }
 
 double Bar::getClose ()
 {
-  BarItem *r = data["Close"];
-  if (r)
-    return r->v;
-  else
-    return 0;
+  return close;
 }
 
 void Bar::setVolume (double d)
 {
-  QString s = "Volume";
-  setData(s, d);
+  volume = d;
+  volumeFlag = TRUE;
+  emptyFlag = FALSE;
 }
 
 double Bar::getVolume ()
 {
-  BarItem *r = data["Volume"];
-  if (r)
-    return r->v;
-  else
-    return 0;
+  return volume;
 }
 
 void Bar::setOI (int d)
 {
-  QString s = "OI";
-  setData(s, d);
+  oi = d;
+  oiFlag = TRUE;
+  emptyFlag = FALSE;
 }
 
 double Bar::getOI ()
 {
-  BarItem *r = data["OI"];
-  if (r)
-    return r->v;
-  else
-    return 0;
+  return oi;
 }
 
 void Bar::getString (QString &s)
 {
-  date.getDateTimeString(TRUE, s);
-  
-  QDictIterator<BarItem> it(data);
-  for(; it.current(); ++it)
+  getDateTimeString(TRUE, s);
+
+  if (openFlag)
   {
     s.append(" ");
-    s.append(QString::number(it.current()->v, 'g'));
+    s.append(QString::number(open, 'g'));
   }
-}
 
-void Bar::getFields (QStringList &l)
-{
-  l.clear();
-  QDictIterator<BarItem> it(data);
-  for(; it.current(); ++it)
-    l.append(it.currentKey());  
-}
-
-double Bar::getData (QString &d)
-{
-  BarItem *r = data[d];
-  if (r)
-    return r->v;
-  else
-    return 0;
-}
-
-void Bar::setData (QString &k, double d)
-{
-  BarItem *r = new BarItem;
-  r->v = d;
-  data.replace(k, r);
-  
-  if (d > max)
-    max = d;
-  if (d < min)
-    min = d;
-}
-
-void Bar::copy (Bar *d)
-{
-  QDictIterator<BarItem> it(data);
-  QString s;
-  for(; it.current(); ++it)
+  if (highFlag)
   {
-    s = it.currentKey();
-    d->setData(s, it.current()->v);
+    s.append(" ");
+    s.append(QString::number(high, 'g'));
   }
-  d->setDate(date);
-  d->setTickFlag(date.getTickFlag());
-}
+  
+  if (lowFlag)
+  {
+    s.append(" ");
+    s.append(QString::number(low, 'g'));
+  }
 
-double Bar::getMin ()
-{
-  return min;
-}
+  if (closeFlag)
+  {
+    s.append(" ");
+    s.append(QString::number(close, 'g'));
+  }
 
-double Bar::getMax ()
-{
-  return max;
+  if (volumeFlag)
+  {
+    s.append(" ");
+    s.append(QString::number(volume, 'g'));
+  }
+
+  if (oiFlag)
+  {
+    s.append(" ");
+    s.append(QString::number(oi));
+  }
 }
 
 bool Bar::getTickFlag ()
 {
-  return date.getTickFlag();
+  return tickFlag;
 }
 
 void Bar::setTickFlag (bool d)
 {
-  date.setTickFlag(d);
+  tickFlag = d;
 }
 
-int Bar::count ()
+bool Bar::getEmptyFlag ()
 {
-  return data.count();
+  return emptyFlag;
+}
+
+void Bar::setEmptyFlag (bool d)
+{
+  emptyFlag = d;
+}
+
+void Bar::getDateString (bool sepFlag, QString &d)
+{
+  if (sepFlag)
+    d = date.toString("yyyy-MM-dd");
+  else
+    d = date.toString("yyyyMMdd");
+}
+
+void Bar::getDateTimeString (bool sepFlag, QString &d)
+{
+  QString s;
+  getDateString(sepFlag, s);
+  
+  if (sepFlag)
+    s.append(" ");
+    
+  QString s2;
+  getTimeString(sepFlag, s2);
+  s.append(s2);
+  d = s;
+}
+
+void Bar::getTimeString (bool sepFlag, QString &d)
+{
+  if (sepFlag)
+    d = date.toString("hh:mm:ss");
+  else
+    d = date.toString("hhmmss");
+}
+
+void Bar::clear ()
+{
+  date = QDateTime::currentDateTime();
+  date.setTime(QTime(0,0,0,0));
+
+  tickFlag = FALSE;
+  open = 0;
+  high = 0;
+  low = 0;
+  close = 0;
+  volume = 0;
+  oi = 0;
+  openFlag = FALSE;
+  highFlag = FALSE;
+  lowFlag = FALSE;
+  closeFlag = FALSE;
+  volumeFlag = FALSE;
+  oiFlag = FALSE;
+  emptyFlag = TRUE;
+}
+
+bool Bar::verify ()
+{
+  bool rc = TRUE;
+
+  if (open == 0 || high == 0 || low == 0 || close == 0)
+    return rc;
+
+  if (open > high)
+    open = high;
+  if (open < low)
+    open = low;
+        
+  if (close > high)
+    close = high;
+  if (close < low)
+    close = low;
+
+  rc = FALSE;
+  return rc;
 }
 

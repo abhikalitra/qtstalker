@@ -28,7 +28,6 @@
 #include <qlineedit.h>
 #include "Navigator.h"
 #include "Config.h"
-#include "Macro.h"
 
 class GroupPage : public QWidget
 {
@@ -36,7 +35,6 @@ class GroupPage : public QWidget
 
   signals:
     void fileSelected (QString);
-    void signalKeyPressed (int, int, int, int, QString);
 
   public:
   
@@ -64,20 +62,16 @@ class GroupPage : public QWidget
     void groupNoSelection ();
     void rightClick (QListBoxItem *);
     void slotHelp ();
-    void setKeyFlag (bool);
     void doKeyPress (QKeyEvent *);
     void slotAccel (int);
-    void runMacro (Macro *);
     void chartOpened (QString);
+    void refreshList ();
 
   protected:
     Navigator *nav;
     Config config;
     QPopupMenu *menu;
     QLineEdit *group;
-    bool keyFlag;
-    Macro *macro;
-    bool macroFlag;
 };
 
 #endif

@@ -42,10 +42,10 @@ class BarEdit : public QWidget
     ~BarEdit ();
     void clearRecordFields ();
     void createField (QString &, QString &, bool);
-    QString getDate ();
+    void getDate (QString &);
     void setDate (QString &, bool);
     void setField (QString &, QString &);
-    QString getField (QString &);
+    void getField (QString &, QString &);
     bool getSaveFlag ();
 
   public slots:

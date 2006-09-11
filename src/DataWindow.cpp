@@ -22,7 +22,7 @@
 #include "DataWindow.h"
 #include <qlayout.h>
 
-DataWindow::DataWindow () : QDialog (0, "DataWindow", FALSE, WDestructiveClose)
+DataWindow::DataWindow (QWidget *w) : QDialog (w, "DataWindow", FALSE, WDestructiveClose)
 {
   resize(500, 350);
 
@@ -72,11 +72,11 @@ void DataWindow::setBars (BarData *d)
   int loop;
   for (loop = 0; loop < (int) d->count(); loop++)
   {
-    BarDate dt = d->getDate(loop);
-    QString s;
-    dt.getDateString(TRUE, s);
+    QDateTime dt;
+    d->getDate(loop, dt);
+    QString s = dt.toString("yyyy-MM-dd");
     table->setText(loop, 0, s);
-    dt.getTimeString(TRUE, s);
+    s = dt.toString("hh:mm:ss");
     table->setText(loop, 1, s);
     table->setText(loop, 2, strip(d->getOpen(loop), 4));
     table->setText(loop, 3, strip(d->getHigh(loop), 4));
@@ -92,12 +92,14 @@ void DataWindow::setPlot (Plot *d)
 {
   Indicator *i = d->getIndicator();
   int loop2;
+  QString s;
   for (loop2 = 0; loop2 < i->getLines(); loop2++)
   {
     table->setNumCols(table->numCols() + 1);
       
     PlotLine *line = i->getLine(loop2);
-    hHeader->setLabel(table->numCols() - 1, line->getLabel());
+    line->getLabel(s);
+    hHeader->setLabel(table->numCols() - 1, s);
 
     int loop3;
     int offset = table->numRows() - line->getSize();

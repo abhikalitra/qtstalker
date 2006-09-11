@@ -32,6 +32,22 @@
 SZ::SZ ()
 {
   pluginName = "SZ";
+
+  colorLabel = "color";
+  lineTypeLabel = "lineType";
+  periodLabel = "period";
+  noDeclinePeriodLabel = "noDeclinePeriod";
+  coefficientLabel = "coefficient";
+  methodLabel = "method";
+  labelLabel = "label";
+  pluginLabel = "plugin";
+
+  // format1: METHOD, PERIOD, NO_DECLINE_PERIOD, COEFFICIENT
+  formatList.append(FormatString);
+  formatList.append(FormatInteger);
+  formatList.append(FormatInteger);
+  formatList.append(FormatDouble);
+
   setDefaults();
   methodList.append("Long");
   methodList.append("Short");
@@ -204,13 +220,13 @@ int SZ::indicatorPrefDialog (QWidget *w)
   
   if (rc == QDialog::Accepted)
   {
-    color = dialog->getColor(cl);
+    dialog->getColor(cl, color);
     lineType = (PlotLine::LineType) dialog->getComboIndex(ltl);
     period = dialog->getInt(lp);
     no_decline_period = dialog->getInt(ndp);
     coefficient = dialog->getDouble(co);
-    method = dialog->getCombo(pos);
-    label = dialog->getText(ll);
+    dialog->getCombo(pos, method);
+    dialog->getText(ll, label);
     rc = TRUE;
   }
   else
@@ -227,106 +243,117 @@ void SZ::setIndicatorSettings (Setting &dict)
   if (! dict.count())
     return;
   
-  QString s = dict.getData("color");
+  QString s;
+  dict.getData(colorLabel, s);
   if (s.length())
     color.setNamedColor(s);
     
-  s = dict.getData("lineType");
+  dict.getData(lineTypeLabel, s);
   if (s.length())
     lineType = (PlotLine::LineType) s.toInt();
 
-  s = dict.getData("period");
+  dict.getData(periodLabel, s);
   if (s.length())
     period = s.toInt();
 
-  s = dict.getData("noDeclinePeriod");
+  dict.getData(noDeclinePeriodLabel, s);
   if (s.length())
     no_decline_period = s.toInt();
 
-  s = dict.getData("coefficient");
+  dict.getData(coefficientLabel, s);
   if (s.length())
     coefficient = s.toFloat();
 
-  s = dict.getData("method");
+  dict.getData(methodLabel, s);
   if (s.length())
     method = s;
 
-  s = dict.getData("label");
+  dict.getData(labelLabel, s);
   if (s.length())
     label = s;
 }
 
 void SZ::getIndicatorSettings (Setting &dict)
 {
-  dict.setData("color", color.name());
-  dict.setData("lineType", QString::number(lineType));
-  dict.setData("period", QString::number(period));
-  dict.setData("noDeclinePeriod", QString::number(no_decline_period));
-  dict.setData("coefficient", QString::number(coefficient));
-  dict.setData("method", method);
-  dict.setData("label", label);
-  dict.setData("plugin", pluginName);
+  QString ts = color.name();
+  dict.setData(colorLabel, ts);
+  ts = QString::number(lineType);
+  dict.setData(lineTypeLabel, ts);
+  ts = QString::number(period);
+  dict.setData(periodLabel, ts);
+  ts = QString::number(no_decline_period);
+  dict.setData(noDeclinePeriodLabel, ts);
+  ts = QString::number(coefficient);
+  dict.setData(coefficientLabel, ts);
+  dict.setData(methodLabel, method);
+  dict.setData(labelLabel, label);
+  dict.setData(pluginLabel, pluginName);
 }
 
-PlotLine * SZ::calculateCustom (QString &p, QPtrList<PlotLine> &)
+PlotLine * SZ::calculateCustom (QString &p, QPtrList<PlotLine> &d)
 {
   // format1: METHOD, PERIOD, NO_DECLINE_PERIOD, COEFFICIENT
 
-  QStringList l = QStringList::split(",", p, FALSE);
-
-  if (l.count() == 4)
-    ;
-  else
-  {
-    qDebug("SZ::calculateCustom: invalid parm count");
+  if (checkFormat(p, d, 4, 4))
     return 0;
-  }
 
-  if (methodList.findIndex(l[0]) == -1)
+  if (methodList.findIndex(formatStringList[0]) == -1)
   {
     qDebug("SZ::calculateCustom: invalid METHOD parm");
     return 0;
   }
-  else
-    method = methodList.findIndex(l[0]);
 
-  bool ok;
-  int t = l[1].toInt(&ok);
-  if (ok)
-    period = t;
-  else
-  {
-    qDebug("SZ::calculateCustom: invalid PERIOD parm");
-    return 0;
-  }
-
-  t = l[2].toInt(&ok);
-  if (ok)
-    no_decline_period = t;
-  else
-  {
-    qDebug("SZ::calculateCustom: invalid NO_DECLINE_PERIOD parm");
-    return 0;
-  }
-
-  double t2 = l[3].toDouble(&ok);
-  if (ok)
-    coefficient = t2;
-  else
-  {
-    qDebug("SZ::calculateCustom: invalid coefficient parm");
-    return 0;
-  }
+  method = formatStringList[0];
+  period = formatStringList[1].toInt();
+  no_decline_period = formatStringList[2].toInt();
+  coefficient = formatStringList[3].toDouble();
 
   clearOutput();
   calculate();
   return output->getLine(0);
 }
 
-int SZ::getMinBars ()
+void SZ::formatDialog (QStringList &, QString &rv, QString &rs)
 {
-  int t = minBars + period + no_decline_period;
-  return t;
+  rs.truncate(0);
+  rv.truncate(0);
+  QString pl = QObject::tr("Parms");
+  QString vnl = QObject::tr("Variable Name");
+  QString pos = QObject::tr("Position");
+  QString lp = QObject::tr("Lookback Period");
+  QString ndp = QObject::tr("No Decline Period");
+  QString co = QObject::tr("Coefficient");
+  PrefDialog *dialog = new PrefDialog(0);
+  dialog->setCaption(QObject::tr("SZ Format"));
+  dialog->createPage (pl);
+  dialog->setHelpFile(helpFile);
+
+  QString s;
+  dialog->addTextItem(vnl, pl, s);
+  dialog->addComboItem(pos, pl, methodList, method);
+  dialog->addIntItem(lp, pl, period, 1, 99999999);
+  dialog->addIntItem(ndp, pl, no_decline_period, 1, 99999999);
+  dialog->addDoubleItem(co, pl, coefficient, 0, 99999999);
+
+  int rc = dialog->exec();
+  
+  if (rc == QDialog::Accepted)
+  {
+    dialog->getText(vnl, rv);
+
+    dialog->getCombo(pos, rs);
+
+    int t = dialog->getInt(lp);
+    rs.append("," + QString::number(t));
+
+    t = dialog->getInt(ndp);
+    rs.append("," + QString::number(t));
+
+    double d = dialog->getDouble(co);
+    rs.append("," + QString::number(d));
+  }
+
+  delete dialog;
 }
 
 //*******************************************************

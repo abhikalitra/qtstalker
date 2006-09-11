@@ -31,8 +31,8 @@ class PP : public IndicatorPlugin
     void setDefaults();
     void getIndicatorSettings (Setting &);
     void setIndicatorSettings (Setting &);
-    int getMinBars ();
     PlotLine * calculateCustom (QString &, QPtrList<PlotLine> &);
+    void formatDialog (QStringList &vl, QString &rv, QString &rs);
     
   private:
     QColor resColor;
@@ -47,6 +47,19 @@ class PP : public IndicatorPlugin
     QString supLabel3;
     QString label;
     QStringList ppList;
+
+    QString resColorLabel;
+    QString supColorLabel;
+    QString resLineTypeLabel;
+    QString supLineTypeLabel;
+    QString resLabelLabel;
+    QString resLabel2Label;
+    QString resLabel3Label;
+    QString supLabelLabel;
+    QString supLabel2Label;
+    QString supLabel3Label;
+    QString labelLabel;
+    QString pluginLabel;
 };
 
 extern "C"

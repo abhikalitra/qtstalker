@@ -38,7 +38,8 @@ YahooDialog::YahooDialog (QWidget *p, QString &d) : QTabDialog (p, "YahooDialog"
   helpFile = d;
 
   Config config;
-  dataPath = config.getData(Config::DataPath) + "/Stocks/Yahoo";
+  config.getData(Config::DataPath, dataPath);
+  dataPath.append("/Stocks/Yahoo");
 
   QWidget *w = new QWidget(this);
   
@@ -150,7 +151,9 @@ void YahooDialog::newStock ()
   QStringList l = QStringList::split(" ", symbols, FALSE);
   
   Config config;
-  QString s = config.getData(Config::DataPath) + "/Stocks";
+  QString s;
+  config.getData(Config::DataPath, s);
+  s.append("/Stocks");
   QDir dir(s);
   if (! dir.exists(s))
   {
@@ -204,24 +207,16 @@ void YahooDialog::newStock ()
     if (dir.exists(s, TRUE))
       continue;
 
-    QString plugin("Stocks");
-    DbPlugin *db = config.getDbPlugin(plugin);
-    if (! db)
-    {
-      config.closePlugin(plugin);
-      continue;
-    }
-    
-    if (db->openChart(s))
+    DbPlugin db;
+    if (db.openChart(s))
     {
       qDebug("YahooDialog::newStock: could not open db %s", s.latin1());
-      config.closePlugin(plugin);
+      db.close();
       continue;
     }
           
-    db->createNew();
-    
-    config.closePlugin(plugin);
+    db.createNew(DbPlugin::Stock);
+    db.close();
   }
 }
 

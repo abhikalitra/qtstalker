@@ -115,9 +115,9 @@ void PortfolioDialog::updatePortfolio ()
   plist->clear();
   files.clear();
 
-  QString s = config.getData(Config::PortfolioPath);
-  s.append("/");
-  s.append(portfolio);
+  QString s;
+  config.getData(Config::PortfolioPath, s);
+  s.append("/" + portfolio);
 
   QFile f(s);
   if (! f.open(IO_ReadOnly))
@@ -132,7 +132,8 @@ void PortfolioDialog::updatePortfolio ()
       QStringList l = QStringList::split(",", s, FALSE);
 
       QFileInfo fi(l[0]);
-      files.setData(fi.fileName(), l[0]);
+      QString ts = fi.fileName();
+      files.setData(ts, l[0]);
 
       item = new QListViewItem(plist, fi.fileName(), l[1], l[2], l[3]);
     }
@@ -153,7 +154,9 @@ void PortfolioDialog::updatePortfolioItems ()
   {
     item = it.current();
 
-    QString symbol = files.getData(item->text(0));
+    QString symbol, ts;
+    ts = item->text(0);
+    files.getData(ts, symbol);
     QString action = item->text(1);
     QString volume = item->text(2);
     QString price = item->text(3);
@@ -163,36 +166,29 @@ void PortfolioDialog::updatePortfolioItems ()
     if (! dir.exists(s, TRUE))
       continue;
 
-    QString plugin = config.parseDbPlugin(s);
-    DbPlugin *plug = config.getDbPlugin(plugin);
-    if (! plug)
-    {
-      config.closePlugin(plugin);
-      continue;
-    }
-      
-    plug->openChart(s);
+    DbPlugin plug;
+    plug.openChart(s);
     
     QString type;
-    plug->getHeaderField(DbPlugin::Type, type);
+    plug.getHeaderField(DbPlugin::Type, type);
     
     QString futuresType;
     s = "FuturesType";
-    plug->getData(s, futuresType);
+    plug.getData(s, futuresType);
     
-    Bar *bar = plug->getLastBar();
+    Bar bar;
+    plug.getLastBar(bar);
     
-    if (! bar)
+    if (bar.getEmptyFlag())
     {
-      delete bar;
-      config.closePlugin(plugin);
+      plug.close();
       continue;
     }
     
-    bar->getDate().getDateString(TRUE, s);
+    bar.getDateTimeString(TRUE, s);
     item->setText(4, s);
 
-    QString last = QString::number(bar->getClose());
+    QString last = QString::number(bar.getClose());
     item->setText(5, last);
 
     double total;
@@ -218,8 +214,7 @@ void PortfolioDialog::updatePortfolioItems ()
     bal += total;
     orig += spent;
     
-    delete bar;
-    config.closePlugin(plugin);
+    plug.close();
   }
 
   if (bal == 0 || orig == 0)
@@ -231,9 +226,9 @@ void PortfolioDialog::updatePortfolioItems ()
 
 void PortfolioDialog::savePortfolio ()
 {
-  QString s = config.getData(Config::PortfolioPath);
-  s.append("/");
-  s.append(portfolio);
+  QString s;
+  config.getData(Config::PortfolioPath, s);
+  s.append("/" + portfolio);
   QFile f(s);
   if (! f.open(IO_WriteOnly))
     return;
@@ -243,7 +238,8 @@ void PortfolioDialog::savePortfolio ()
   for (; it.current(); ++it)
   {
     item = it.current();
-    s = files.getData(item->text(0));
+    QString ts = item->text(0);
+    files.getData(ts, s);
     s.append(",");
     s.append(item->text(1));
     s.append(",");
@@ -271,7 +267,8 @@ void PortfolioDialog::addItem ()
   
   dialog->createPage(pl);
   
-  QString dpath(config.getData(Config::DataPath));
+  QString dpath;
+  config.getData(Config::DataPath, dpath);
   QString s;
   dialog->addSymbolItem(sl, pl, dpath, s);
 
@@ -288,17 +285,20 @@ void PortfolioDialog::addItem ()
   
   if (rc == QDialog::Accepted)
   {
-    QString symbol = dialog->getSymbol(sl);
+    QString symbol;
+    dialog->getSymbol(sl, symbol);
     if (symbol.isNull())
       QMessageBox::information(this, tr("Qtstalker: Error"), tr("No symbol selected."));
     else
     {
-      QString action = dialog->getCombo(al);
+      QString action;
+      dialog->getCombo(al, action);
       double vol = dialog->getDouble(vl);
       double price = dialog->getDouble(prl);
 
       QFileInfo fi(symbol);
-      files.setData(fi.fileName(), symbol);
+      QString ts = fi.fileName();
+      files.setData(ts, symbol);
 
       new QListViewItem(plist, fi.fileName(), action, QString::number(vol), QString::number(price));
 
@@ -322,7 +322,10 @@ void PortfolioDialog::deleteItem ()
         count++;
     }
     if (count == 1)
-      files.remove(item->text(0));
+    {
+      QString ts = item->text(0);
+      files.remove(ts);
+    }
     delete item;
   }
 
@@ -348,10 +351,14 @@ void PortfolioDialog::modifyItem ()
   
   dialog->createPage(pl);
 
-  QString dpath(config.getData(Config::DataPath));
+  QString dpath;
+  config.getData(Config::DataPath, dpath);
 
-  QFileInfo fi(files.getData(item->text(0)));
-  QString s(files.getData(item->text(0)));
+  QString ts = item->text(0);
+  QString ts2, s;
+  files.getData(ts, ts2);
+  QFileInfo fi(ts2);
+  files.getData(ts, s);
 
   dialog->addSymbolItem(sl, pl, dpath, s);
 
@@ -369,19 +376,23 @@ void PortfolioDialog::modifyItem ()
 
   if (rc == QDialog::Accepted)
   {
-    files.remove(fi.fileName());
+    QString ts = fi.fileName();
+    files.remove(ts);
 
-    QString symbol = dialog->getSymbol(sl);
+    QString symbol;
+    dialog->getSymbol(sl, symbol);
     if (symbol.isNull())
       QMessageBox::information(this, tr("Qtstalker: Error"), tr("No symbol selected."));
     else
     {
-      QString action = dialog->getCombo(al);
+      QString action;
+      dialog->getCombo(al, action);
       double vol = dialog->getDouble(vl);
       double price = dialog->getDouble(prl);
 
       QFileInfo fi2(symbol);
-      files.setData(fi2.fileName(), symbol);
+      ts = fi2.fileName();
+      files.setData(ts, symbol);
   
       item->setText(0, fi2.fileName());
       item->setText(1, action);

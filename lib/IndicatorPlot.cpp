@@ -22,6 +22,14 @@
 #include "IndicatorPlot.h"
 #include "DbPlugin.h"
 #include "PrefDialog.h"
+#include "BuyArrow.h"
+#include "Cycle.h"
+#include "FiboLine.h"
+#include "HorizontalLine.h"
+#include "SellArrow.h"
+#include "Text.h"
+#include "TrendLine.h"
+#include "VerticalLine.h"
 #include <qpainter.h>
 #include <qpen.h>
 #include <qpoint.h>
@@ -42,10 +50,17 @@
 #include "../pics/print.xpm"
 #include "../pics/loggrid.xpm"
 #include "../pics/date.xpm"
+#include "../pics/buyarrow.xpm"
+#include "../pics/arc.xpm"
+#include "../pics/fib.xpm"
+#include "../pics/horizontal.xpm"
+#include "../pics/sellarrow.xpm"
+#include "../pics/text.xpm"
+#include "../pics/trend.xpm"
+#include "../pics/vertical.xpm"
 
 IndicatorPlot::IndicatorPlot (QWidget *w) : QWidget(w)
 {
-  coPlugin = 0;
   setBackgroundMode(NoBackground);
   startX = 2;
   backgroundColor.setNamedColor("black");
@@ -63,8 +78,9 @@ IndicatorPlot::IndicatorPlot (QWidget *w) : QWidget(w)
   drawMode = FALSE;
   crosshairs = TRUE;
   infoFlag = TRUE;
-  coPlugin = 0;
+  coSelected = 0;
   dateFlag = TRUE;
+  menuFlag = TRUE;
 
   plotFont.setFamily("Helvetica");
   plotFont.setPointSize(12);
@@ -79,8 +95,7 @@ IndicatorPlot::IndicatorPlot (QWidget *w) : QWidget(w)
 
   setFocusPolicy(QWidget::ClickFocus);
   
-  config.getPluginList(Config::COPluginPath, coList);
-  coPlugins.setAutoDelete(FALSE);
+  coList.setAutoDelete(TRUE);
 }
 
 IndicatorPlot::~IndicatorPlot ()
@@ -91,6 +106,8 @@ IndicatorPlot::~IndicatorPlot ()
 
 void IndicatorPlot::clear ()
 {
+  saveChartObjects();
+
   if (indy)
   {
     delete indy;
@@ -101,13 +118,7 @@ void IndicatorPlot::clear ()
   mouseFlag = None;
   crossHairFlag = FALSE;
 
-  QDictIterator<COPlugin> it(coPlugins);
-  for (; it.current(); ++it)
-  {
-    COPlugin *plug = it.current();
-    plug->saveObjects(chartPath);
-    plug->clear();
-  }
+  coList.clear();
 }
 
 void IndicatorPlot::setData (BarData *l)
@@ -116,13 +127,6 @@ void IndicatorPlot::setData (BarData *l)
     return;
 
   data = l;
-  
-  QDictIterator<COPlugin> it(coPlugins);
-  for (; it.current(); ++it)
-  {
-    COPlugin *plug = it.current();
-    plug->setData(data);
-  }
 }
 
 void IndicatorPlot::setScaleToScreen (bool d)
@@ -153,11 +157,11 @@ void IndicatorPlot::setDrawMode (bool d)
     setCursor(QCursor(ArrowCursor));
   else
     setCursor(QCursor(CrossCursor));
-    
-  if (! drawMode && coPlugin)
+
+  if (! drawMode && coSelected)
   {
     QPoint p(-1, -1);
-    coPlugin->pointerClick(p, x1, y1);
+    coSelected->pointerClick(p, x1, y1);
     mouseFlag = None;
   }
 }
@@ -167,7 +171,7 @@ void IndicatorPlot::setInfoFlag (bool d)
   infoFlag = d;
 }
 
-void IndicatorPlot::setInterval (BarData::BarCompression d)
+void IndicatorPlot::setInterval (BarData::BarLength d)
 {
   interval = d;
 }
@@ -284,13 +288,13 @@ void IndicatorPlot::mousePressEvent (QMouseEvent *event)
     
     if (mouseFlag == None)
     {
-      QDictIterator<COPlugin> it(coPlugins);
+      QDictIterator<COBase> it(coList);
       for (; it.current(); ++it)
       {
-        coPlugin = it.current();
+        coSelected = it.current();
 	QPoint p(event->x(), event->y());
-        COPlugin::Status rc = coPlugin->pointerClick(p, x1, y1);
-        if (rc != COPlugin::None)
+        COBase::Status rc = coSelected->pointerClick(p, x1, y1);
+        if (rc != COBase::None)
         {
           mouseFlag = COSelected;
 	  return;
@@ -301,14 +305,14 @@ void IndicatorPlot::mousePressEvent (QMouseEvent *event)
     if (mouseFlag == COSelected)
     {
       QPoint p(event->x(), event->y());
-      COPlugin::Status rc = coPlugin->pointerClick(p, x1, y1);
-      if (rc == COPlugin::Moving)
+      COBase::Status rc = coSelected->pointerClick(p, x1, y1);
+      if (rc == COBase::Moving)
       {
         mouseFlag = Moving;
 	return;
       }
       
-      if (rc == COPlugin::None)
+      if (rc == COBase::None)
       {
         mouseFlag = None;
 	return;
@@ -318,7 +322,7 @@ void IndicatorPlot::mousePressEvent (QMouseEvent *event)
     if (mouseFlag == Moving)
     {
       QPoint p(event->x(), event->y());
-      coPlugin->pointerClick(p, x1, y1);
+      coSelected->pointerClick(p, x1, y1);
       mouseFlag = COSelected;
       return;
     }
@@ -326,13 +330,12 @@ void IndicatorPlot::mousePressEvent (QMouseEvent *event)
     if (mouseFlag == ClickWait)
     {
       QPoint p(event->x(), event->y());
-      COPlugin::Status rc = coPlugin->pointerClick(p, x1, y1);
-      if (rc == COPlugin::None)
+      COBase::Status rc = coSelected->pointerClick(p, x1, y1);
+      if (rc == COBase::None)
       {
         mouseFlag = None;
         emit statusMessage("");
         setCursor(QCursor(Qt::ArrowCursor));
-	coPlugin->saveObjects(chartPath);
 	return;
       }
     }
@@ -341,10 +344,13 @@ void IndicatorPlot::mousePressEvent (QMouseEvent *event)
 
 void IndicatorPlot::contextMenuEvent (QContextMenuEvent *)
 {
-  if (drawMode && mouseFlag == COSelected && coPlugin)
-    coPlugin->showMenu();
+  if (drawMode && mouseFlag == COSelected && coSelected)
+    coSelected->showMenu();
   else
-    showPopupMenu();
+  {
+    if (menuFlag)
+      showPopupMenu();
+  }
 }
 
 void IndicatorPlot::mouseMoveEvent (QMouseEvent *event)
@@ -363,7 +369,7 @@ void IndicatorPlot::mouseMoveEvent (QMouseEvent *event)
     {
       getXY(event->x(), event->y());
       QPoint p(event->x(), event->y());
-      coPlugin->pointerMoving(buffer, p, x1, y1);
+      coSelected->pointerMoving(buffer, p, x1, y1);
       return;
     }
   }
@@ -378,12 +384,16 @@ void IndicatorPlot::getInfo (int x)
 {
   int i = convertXToDataIndex(x);
 
-  Setting *r = new Setting;
-  QString s;
-  data->getDate(i).getDateString(TRUE, s);
-  r->setData("D", s);
-  data->getDate(i).getTimeString(TRUE, s);
-  r->setData("T", s);
+  Setting tr;
+  QString s, k;
+  Bar bar;
+  data->getBar(i, bar);
+  bar.getDateString(TRUE, s);
+  k = "D";
+  tr.setData(k, s);
+  bar.getTimeString(TRUE, s);
+  k = "T";
+  tr.setData(k, s);
   
   if (indy && indy->getEnable())
   {
@@ -392,39 +402,17 @@ void IndicatorPlot::getInfo (int x)
     {
       PlotLine *line = indy->getLine(loop);
       int li = line->getSize() - data->count() + i;
-      if (li > -1 && li <= line->getSize())
-      {
-        if (line->getType() == PlotLine::Bar || line->getType() == PlotLine::Candle)
-        {
-          double open, high, low, close;
-          QColor color;
-          line->getBar(li, color, open, high, low, close);
-
-          strip(open, 4, s);
-          r->setData("O", s);
-
-          strip(high, 4, s);
-          r->setData("H", s);
-
-          strip(low, 4, s);
-          r->setData("L", s);
-
-          strip(close, 4, s);
-          r->setData("C", s);
-        }
-        else
-        {
-          strip(line->getData(li), 4, s);
-          r->setData(line->getLabel(), s);
-        }
-      }
+      if (li > -1 && li < line->getSize())
+        line->getInfo(li, tr);
     }
   }
 
-  if (r->count())
+  if (tr.count())
+  {
+    Setting *r = new Setting;
+    tr.copy(r);
     emit infoMessage(r);
-  else
-    delete r;
+  }
 }
 
 void IndicatorPlot::mouseDoubleClickEvent (QMouseEvent *)
@@ -435,7 +423,7 @@ void IndicatorPlot::mouseDoubleClickEvent (QMouseEvent *)
   if (mouseFlag != COSelected)
     return;
     
-  coPlugin->prefDialog();
+  coSelected->prefDialog();
 }
 
 void IndicatorPlot::keyPressEvent (QKeyEvent *key)
@@ -443,7 +431,7 @@ void IndicatorPlot::keyPressEvent (QKeyEvent *key)
   // if chart object selected then pass keyevent to it
   if (mouseFlag == COSelected)
   {
-    coPlugin->keyEvent(key);
+    coSelected->keyEvent(key);
     return;
   }
   
@@ -491,6 +479,11 @@ void IndicatorPlot::setPlotFont (QFont &d)
 void IndicatorPlot::setGridFlag (bool d)
 {
   gridFlag = d;
+}
+
+void IndicatorPlot::setMenuFlag (bool d)
+{
+  menuFlag = d;
 }
 
 void IndicatorPlot::setPixelspace (int d)
@@ -584,7 +577,9 @@ void IndicatorPlot::drawInfo ()
   int pos = startX;
 
   QString s;
-  data->getDate(data->count() - 1).getDateString(TRUE, s);
+  Bar bar;
+  data->getBar(data->count() - 1, bar);
+  bar.getDateString(TRUE, s);
   s.append(" ");
   painter.drawText(pos, 10, s, -1);
   pos = pos + fm.width(s);
@@ -649,14 +644,16 @@ void IndicatorPlot::drawInfo ()
         }
         else
         {
-          s = line->getLabel();
+          line->getLabel(s);
           s.append("=");
 	  QString str;
 	  strip(line->getData(line->getSize() - 1), 4, str);
           s.append(str);
           s.append(" ");
 
-          painter.setPen(line->getColor());
+          QColor c;
+          line->getColor(c);
+          painter.setPen(c);
           painter.drawText(pos, 10, s, -1);
           pos = pos + fm.width(s);
         }
@@ -699,7 +696,7 @@ void IndicatorPlot::drawCrossHair ()
 void IndicatorPlot::getXY (int x, int y)
 {
   int i = convertXToDataIndex(x);
-  x1 = data->getDate(i);
+  data->getDate(i, x1);
   y1 = scaler.convertToVal(y);
 }
 
@@ -718,7 +715,9 @@ void IndicatorPlot::updateStatusBar (int x, int y)
 {
   int i = convertXToDataIndex(x);
   QString s;
-  data->getDate(i).getDateTimeString(TRUE, s);
+  Bar bar;
+  data->getBar(i, bar);
+  bar.getDateTimeString(TRUE, s);
   s.append(" ");
   QString str;
   strip(scaler.convertToVal(y), 4, str);
@@ -774,10 +773,10 @@ void IndicatorPlot::setScale ()
 
   if (! scaleToScreen)
   {
-    QDictIterator<COPlugin> it(coPlugins);
+    QDictIterator<COBase> it(coList);
     for (; it.current(); ++it)
     {
-      COPlugin *plug = it.current();
+      COBase *plug = it.current();
       
       if (plug->getHigh() > scaleHigh)
         scaleHigh = plug->getHigh();
@@ -799,7 +798,7 @@ void IndicatorPlot::setScale ()
   scaler.set(buffer.height(), scaleHigh, scaleLow, logScaleHigh, logRange, logScale);
 }
 
-int IndicatorPlot::getXFromDate (BarDate &d)
+int IndicatorPlot::getXFromDate (QDateTime &d)
 {
   int x2 = data->getX(d);
   if (x2 == -1)
@@ -871,19 +870,31 @@ void IndicatorPlot::showPopupMenu ()
 {
   chartMenu->clear();
     
-  chartMenu->insertItem(QPixmap(indicator), tr("New &Indicator"), this, SLOT(slotNewIndicator()), CTRL+Key_I);
+  chartMenu->insertItem(QPixmap(indicator), tr("New &Indicator"), this,
+                        SLOT(slotNewIndicator()), CTRL+Key_I);
   chartMenu->insertItem(QPixmap(edit), tr("&Edit Indicator"), this, SLOT(slotEditIndicator()), CTRL+Key_E);
   chartMenu->insertSeparator ();
 
   chartObjectMenu = new QPopupMenu();
-  int loop;
-  for (loop = 0; loop < (int) coList.count(); loop++)
-  {
-    int id = chartObjectMenu->insertItem(coList[loop], this, SLOT(slotNewChartObject(int)));
-    chartObjectMenu->setItemParameter(id, id);
-  }
+  int id = chartObjectMenu->insertItem(QPixmap(buyarrow), "BuyArrow", this, SLOT(slotNewChartObject(int)));
+  chartObjectMenu->setItemParameter(id, id);
+  id = chartObjectMenu->insertItem(QPixmap(arc), "Cycle", this, SLOT(slotNewChartObject(int)));
+  chartObjectMenu->setItemParameter(id, id);
+  id = chartObjectMenu->insertItem(QPixmap(fib), "FiboLine", this, SLOT(slotNewChartObject(int)));
+  chartObjectMenu->setItemParameter(id, id);
+  id = chartObjectMenu->insertItem(QPixmap(horizontal), "HorizontalLine", this,
+                                   SLOT(slotNewChartObject(int)));
+  chartObjectMenu->setItemParameter(id, id);
+  id = chartObjectMenu->insertItem(QPixmap(sellarrow), "SellArrow", this, SLOT(slotNewChartObject(int)));
+  chartObjectMenu->setItemParameter(id, id);
+  id = chartObjectMenu->insertItem(QPixmap(text), "Text", this, SLOT(slotNewChartObject(int)));
+  chartObjectMenu->setItemParameter(id, id);
+  id = chartObjectMenu->insertItem(QPixmap(trend), "TrendLine", this, SLOT(slotNewChartObject(int)));
+  chartObjectMenu->setItemParameter(id, id);
+  id = chartObjectMenu->insertItem(QPixmap(vertical), "VerticalLine", this, SLOT(slotNewChartObject(int)));
+  chartObjectMenu->setItemParameter(id, id);
 
-  int id = chartMenu->insertItem (QPixmap(co), tr("New Chart Object"), chartObjectMenu);
+  id = chartMenu->insertItem (QPixmap(co), tr("New Chart Object"), chartObjectMenu);
   
   if (! drawMode || ! data)
     chartObjectMenu->setEnabled(FALSE);
@@ -915,9 +926,12 @@ void IndicatorPlot::toggleDate ()
   if (indy)
   {
     Setting set;
-    QString s = indy->getFile();
+    QString s;
+    indy->getFile(s);
     config.getIndicator(s, set);
-    set.setData("dateFlag", QString::number(dateFlag));
+    QString k = "dateFlag";
+    QString d = QString::number(dateFlag);
+    set.setData(k, d);
     config.setIndicator(s, set);
   }
 
@@ -934,9 +948,12 @@ void IndicatorPlot::toggleLog ()
   if (indy)
   {
     Setting set;
-    QString s = indy->getFile();
+    QString s;
+    indy->getFile(s);
     config.getIndicator(s, set);
-    set.setData("logScale", QString::number(logScale));
+    QString k = "logScale";
+    QString d = QString::number(logScale);
+    set.setData(k, d);
     config.setIndicator(s, set);
   }
 
@@ -953,7 +970,11 @@ void IndicatorPlot::setCrosshairsStatus (bool status)
 void IndicatorPlot::slotEditIndicator ()
 {
   if (indy)
-    emit signalEditIndicator(indy->getName());
+  {
+    QString s;
+    indy->getName(s);
+    emit signalEditIndicator(s);
+  }
 }
 
 void IndicatorPlot::slotNewIndicator ()
@@ -1010,7 +1031,9 @@ void IndicatorPlot::drawLine ()
   painter.begin(&buffer);
 
   QPen pen;
-  pen.setColor(currentLine->getColor());
+  QColor c;
+  currentLine->getColor(c);
+  pen.setColor(c);
 
   if (currentLine->getType() == PlotLine::Dash)
     pen.setStyle(Qt::DotLine);
@@ -1026,7 +1049,7 @@ void IndicatorPlot::drawLine ()
   
   Scaler scale;
   if (currentLine->getScaleFlag())
-  {  
+  {
     scale.set(scaler.getHeight(),
   	      currentLine->getHigh(),
 	      currentLine->getLow(),
@@ -1063,7 +1086,9 @@ void IndicatorPlot::drawHorizontalLine ()
   painter.begin(&buffer);
 
   QPen pen;
-  pen.setColor(currentLine->getColor());
+  QColor c;
+  currentLine->getColor(c);
+  pen.setColor(c);
   painter.setPen(pen);
 
   int y = scaler.convertToY(currentLine->getData(currentLine->getSize() - 1));
@@ -1083,7 +1108,9 @@ void IndicatorPlot::drawDot ()
   painter.begin(&buffer);
 
   QPen pen;
-  pen.setColor(currentLine->getColor());
+  QColor c;
+  currentLine->getColor(c);
+  pen.setColor(c);
   painter.setPen(pen);
 
   int x = startX;
@@ -1124,8 +1151,10 @@ void IndicatorPlot::drawHistogram ()
 {
   QPainter painter;
   painter.begin(&buffer);
-  painter.setPen(currentLine->getColor());
-  painter.setBrush(currentLine->getColor());
+  QColor c;
+  currentLine->getColor(c);
+  painter.setPen(c);
+  painter.setBrush(c);
 
   int loop = currentLine->getSize() - data->count() + startIndex;
 
@@ -1183,7 +1212,8 @@ void IndicatorPlot::drawHistogramBar ()
   QPainter painter;
   painter.begin(&buffer);
 
-  QColor color(currentLine->getColor());
+  QColor color;
+  currentLine->getColor(color);
 
   int x = startX;
   int zero = 0;
@@ -1214,7 +1244,7 @@ void IndicatorPlot::drawHistogramBar ()
         y = scaler.convertToY(currentLine->getData(loop));
 
       if (currentLine->getColorFlag() == TRUE)
-	color = currentLine->getColorBar(loop);
+	currentLine->getColorBar(loop, color);
 
       painter.fillRect(x, y, pixelspace - 1, zero - y, color);
     }
@@ -1237,13 +1267,14 @@ void IndicatorPlot::drawBar ()
   double h = 0;
   double l = 0;
   double cl = 0;
+  bool ff = FALSE;
   QColor c;
 
   while ((x < buffer.width()) && (loop < (int) currentLine->getSize()))
   {
     if (loop > -1)
     {
-      currentLine->getBar(loop, c, o, h, l, cl);
+      currentLine->getData(loop, c, o, h, l, cl, ff);
 
       painter.setPen(c);
 
@@ -1283,7 +1314,7 @@ void IndicatorPlot::drawCandle ()
   {
     if (loop > -1)
     {
-      currentLine->getBar(loop, c, o, h, l, cl, ff);
+      currentLine->getData(loop, c, o, h, l, cl, ff);
 
       painter.setPen(c);
 
@@ -1334,32 +1365,74 @@ void IndicatorPlot::slotNewChartObject (int id)
     return;
 
   QString selection = chartObjectMenu->text(id);
-  
-  coPlugin = coPlugins[selection];
-  if (! coPlugin)
+
+  coSelected = 0;
+  while (1)
   {
-    coPlugin = config.getCOPlugin(selection);
-    if (! coPlugin)
-      return;
-      
-    coPlugin->setData(data);
-    QObject::connect(coPlugin, SIGNAL(signalDraw()), this, SLOT(draw()));
-    QObject::connect(coPlugin, SIGNAL(signalRefresh()), this, SLOT(drawRefresh()));
-    QObject::connect(coPlugin, SIGNAL(message(QString)), this, SLOT(slotMessage(QString)));
-    QObject::connect(coPlugin, SIGNAL(signalObjectDeleted()), this, SLOT(slotChartObjectDeleted()));
-    coPlugins.replace(selection, coPlugin);
+    if (! selection.compare("BuyArrow"))
+    {
+      coSelected = new BuyArrow();
+      break;
+    }
+    
+    if (! selection.compare("Cycle"))
+    {
+      coSelected = new Cycle();
+      break;
+    }
+
+    if (! selection.compare("FiboLine"))
+    {
+      coSelected = new FiboLine();
+      break;
+    }
+
+    if (! selection.compare("HorizontalLine"))
+    {
+      coSelected = new HorizontalLine();
+      break;
+    }
+
+    if (! selection.compare("SellArrow"))
+    {
+      coSelected = new SellArrow();
+      break;
+    }
+    
+    if (! selection.compare("Text"))
+    {
+      coSelected = new Text();
+      break;
+    }
+    
+    if (! selection.compare("VerticalLine"))
+    {
+      coSelected = new VerticalLine();
+      break;
+    }
+    
+    if (! selection.compare("TrendLine"))
+    {
+      coSelected = new TrendLine();
+      break;
+    }
+    
+    break;
   }
+
+  if (! coSelected)
+    return;
+  
+  coSelected->setData(data);
+  QObject::connect(coSelected, SIGNAL(signalDraw()), this, SLOT(draw()));
+  QObject::connect(coSelected, SIGNAL(signalRefresh()), this, SLOT(drawRefresh()));
+  QObject::connect(coSelected, SIGNAL(message(QString)), this, SLOT(slotMessage(QString)));
+  QObject::connect(coSelected, SIGNAL(signalObjectDeleted(QString)), this, SLOT(slotChartObjectDeleted(QString)));
   
   QStringList l;
-  QDictIterator<COPlugin> it(coPlugins);
+  QDictIterator<COBase> it(coList);
   for(; it.current(); ++it)
-  {
-    QStringList l2;
-    it.current()->getNameList(l2);
-    int loop;
-    for (loop = 0; loop < (int) l2.count(); loop++)
-      l.append(l2[loop]);
-  }
+    l.append(it.current()->getName());
   
   int loop = 0;
   QString name;
@@ -1372,41 +1445,101 @@ void IndicatorPlot::slotNewChartObject (int id)
       break;
   }
 
-  QString s = indy->getName();
-  coPlugin->newObject(s, name);
+  coList.replace(name, coSelected);
+
+  QString s;
+  indy->getName(s);
   
   setCursor(QCursor(Qt::PointingHandCursor));
+
   mouseFlag = ClickWait;
+
+  coSelected->newObject(s, name);
 }
 
 void IndicatorPlot::addChartObject (Setting &set)
 {
-  QString plugin(set.getData("Plugin"));
-  COPlugin *plug = coPlugins[plugin];
-  if (! plug)
+  QString s;
+  QString k = "Type";
+  set.getData(k, s);
+
+  COBase *co = 0;
+  while (1)
   {
-    plug = config.getCOPlugin(plugin);
-    if (! plug)
-      return;
-      
-    plug->setData(data);
-    QObject::connect(plug, SIGNAL(signalDraw()), this, SLOT(draw()));
-    QObject::connect(plug, SIGNAL(signalRefresh()), this, SLOT(drawRefresh()));
-    QObject::connect(plug, SIGNAL(message(QString)), this, SLOT(slotMessage(QString)));
-    QObject::connect(plug, SIGNAL(signalObjectDeleted()), this, SLOT(slotChartObjectDeleted()));
-    coPlugins.replace(plugin, plug);
+    if (! s.compare("BuyArrow"))
+    {
+      co = new BuyArrow();
+      break;
+    }
+    
+    if (! s.compare("Cycle"))
+    {
+      co = new Cycle();
+      break;
+    }
+    
+    if (! s.compare("FiboLine"))
+    {
+      co = new FiboLine();
+      break;
+    }
+    
+    if (! s.compare("HorizontalLine"))
+    {
+      co = new HorizontalLine();
+      break;
+    }
+    
+    if (! s.compare("SellArrow"))
+    {
+      co = new SellArrow();
+      break;
+    }
+    
+    if (! s.compare("Text"))
+    {
+      co = new Text();
+      break;
+    }
+    
+    if (! s.compare("VerticalLine"))
+    {
+      co = new VerticalLine();
+      break;
+    }
+
+    if (! s.compare("TrendLine"))
+    {
+      co = new TrendLine();
+      break;
+    }
+    
+    break;
   }
   
-  plug->addObject(set);
+  if (! co)
+    return;
+
+  co->setData(data);
+  QObject::connect(co, SIGNAL(signalDraw()), this, SLOT(draw()));
+  QObject::connect(co, SIGNAL(signalRefresh()), this, SLOT(drawRefresh()));
+  QObject::connect(co, SIGNAL(message(QString)), this, SLOT(slotMessage(QString)));
+  QObject::connect(co, SIGNAL(signalObjectDeleted(QString)), this, SLOT(slotChartObjectDeleted(QString)));
+
+  k = "Name";
+  set.getData(k, s);
+  coList.replace(s, co);
+
+  co->addObject(set);
 }
 
 void IndicatorPlot::drawObjects ()
 {
-  QDictIterator<COPlugin> it(coPlugins);
+  QDictIterator<COBase> it(coList);
   for (; it.current(); ++it)
   {
-    COPlugin *plug = it.current();
-    plug->draw(buffer, scaler, startIndex, pixelspace, startX);
+    COBase *co = it.current();
+    co->draw(buffer, scaler, startIndex, pixelspace, startX);
   }
 }
 
@@ -1419,12 +1552,7 @@ void IndicatorPlot::slotDeleteAllChartObjects ()
   if (! dir.exists(chartPath))
     return;
 
-  QDictIterator<COPlugin> it(coPlugins);
-  QStringList l;
-  for(; it.current(); ++it)
-    l.append(it.currentKey());
-    
-  if (! l.count())
+  if (! coList.count())
   {
     QMessageBox::information(this,
                              tr("Qtstalker: Delete All Chart Objects"),
@@ -1432,58 +1560,19 @@ void IndicatorPlot::slotDeleteAllChartObjects ()
     return;
   }
     
+  DbPlugin db;
+  db.openChart(chartPath);
+
+  QStringList l;
+  db.getChartObjectsList(l);
+
   int loop;
-  PrefDialog *dialog = new PrefDialog;
-  dialog->setCaption(tr("Delete All Chart Objects"));
-  QString s(tr("Details")); 
-  dialog->createPage(s);
   for (loop = 0; loop < (int) l.count(); loop++)
-    dialog->addCheckItem(l[loop], s, FALSE);
+    db.deleteChartObject(l[loop]);
   
-  int rc = dialog->exec();
-  if (rc == QDialog::Rejected)
-  {
-    delete dialog;
-    return;
-  }
-  
-  QStringList l2;
-  for (loop = 0; loop < (int) l.count(); loop++)
-  {
-    if (dialog->getCheck(l[loop]))
-      l2.append(l[loop]);
-  }
-  
-  delete dialog;
-  
-  if (! l2.count())
-    return;
+  db.close();
 
-  QString plugin = config.parseDbPlugin(chartPath);
-  DbPlugin *db = config.getDbPlugin(plugin);
-  if (! db)
-  {
-    config.closePlugin(plugin);
-    return;
-  }
-  db->openChart(chartPath);
-
-  for (loop = 0; loop < (int) l2.count(); loop++)
-  {
-    COPlugin *plug = coPlugins[l2[loop]];
-    if (! plug)
-      continue;
-
-    plug->getNameList(l);
-    int loop2;
-    for (loop2 = 0; loop2 < (int) l.count(); loop2++)
-      db->deleteChartObject(l[loop2]);
-
-    plug->clear();
-    coPlugins.remove(l2[loop]);
-  }
-  
-  config.closePlugin(plugin);
+  coList.clear();
 
   mouseFlag = None;
   draw();
@@ -1504,9 +1593,51 @@ Scaler & IndicatorPlot::getScaler ()
   return scaler;
 }
 
-void IndicatorPlot::slotChartObjectDeleted ()
+void IndicatorPlot::slotChartObjectDeleted (QString d)
 {
+  if (! chartPath.length())
+    return;
+    
+  QDir dir;
+  if (! dir.exists(chartPath))
+    return;
+
+  if (! coList.count())
+    return;
+    
+  DbPlugin db;
+  db.openChart(chartPath);
+  db.deleteChartObject(d);
+  db.close();
+
+  coList.remove(d);
+
   mouseFlag = None;
+
+  draw();
 }
 
+void IndicatorPlot::saveChartObjects ()
+{
+  if (! chartPath.length())
+    return;
+
+  DbPlugin db;
+  db.openChart(chartPath);
+
+  QDictIterator<COBase> it(coList);
+  for (; it.current(); ++it)
+  {
+    COBase *co = it.current();
+    if (co->getSaveFlag())
+    {
+      Setting set;
+      co->getSettings(set);
+      QString s = co->getName();
+      db.setChartObject(s, set);
+    }
+  }
+  
+  db.close();
+}
 

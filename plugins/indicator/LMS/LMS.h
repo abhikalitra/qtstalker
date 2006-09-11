@@ -32,6 +32,7 @@ class LMS : public IndicatorPlugin
     PlotLine * calculateCustom (QString &, QPtrList<PlotLine> &);
     void getIndicatorSettings (Setting &);
     void setIndicatorSettings (Setting &);
+    void formatDialog (QStringList &vl, QString &rv, QString &rs);
   
   private:
     QColor colorK;
@@ -53,6 +54,21 @@ class LMS : public IndicatorPlugin
 	
     // ---------------------------------
     bool testFlag; // test only --------
+
+    QString colorKLabel;
+    QString color2DayLabel;
+    QString color5DayLabel;
+    QString labelLabel;
+    QString lineTypeKLabel;
+    QString lineType2DayLabel;
+    QString lineType5DayLabel;
+    QString pluginLabel;
+    QString fkPeriodLabel;
+    QString skPeriodLabel;
+    QString cmbIndexLabel;
+    QString show2DayLabel;
+    QString show5DayLabel;
+    QString plotTestLabel;
 };
 
 extern "C"

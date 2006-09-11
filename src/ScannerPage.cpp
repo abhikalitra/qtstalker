@@ -34,16 +34,29 @@
 #include <qcursor.h>
 #include <qaccel.h>
 #include <qfileinfo.h>
+#include <qlayout.h>
+#include <qtooltip.h>
 
-ScannerPage::ScannerPage (QWidget *w) : QListBox (w)
+ScannerPage::ScannerPage (QWidget *w) : QWidget (w)
 {
-  keyFlag = FALSE;
-  macroFlag = FALSE;
-  tmacro = 0;
+  idir.setFilter(QDir::Files);
 
-  connect(this, SIGNAL(contextMenuRequested(QListBoxItem *, const QPoint &)), this, SLOT(rightClick(QListBoxItem *)));
-  connect(this, SIGNAL(highlighted(const QString &)), this, SLOT(scannerSelected(const QString &)));
-  connect(this, SIGNAL(doubleClicked(QListBoxItem *)), this, SLOT(doubleClick(QListBoxItem *)));
+  QVBoxLayout *vbox = new QVBoxLayout(this);
+  vbox->setMargin(2);
+  vbox->setSpacing(5);
+  
+  search = new QLineEdit(this);
+  search->setText("*");
+  connect(search, SIGNAL(textChanged(const QString &)), this, SLOT(searchChanged(const QString &)));
+  QToolTip::add(search, tr("List Filter, e.g. s* or sb*"));
+  vbox->addWidget(search);
+
+  list = new QListBox(this);
+  connect(list, SIGNAL(contextMenuRequested(QListBoxItem *, const QPoint &)), this,
+          SLOT(rightClick(QListBoxItem *)));
+  connect(list, SIGNAL(highlighted(const QString &)), this, SLOT(scannerSelected(const QString &)));
+  connect(list, SIGNAL(doubleClicked(QListBoxItem *)), this, SLOT(doubleClick(QListBoxItem *)));
+  vbox->addWidget(list);
   
   menu = new QPopupMenu(this);
   menu->insertItem(QPixmap(newchart), tr("&New Scanner		Ctrl+N"), this, SLOT(newScanner()));
@@ -73,9 +86,10 @@ ScannerPage::~ScannerPage ()
 
 void ScannerPage::openScanner ()
 {
-  Scanner *dialog = new Scanner(currentText());
+  Scanner *dialog = new Scanner(list->currentText());
   connect(dialog, SIGNAL(exitScanner()), this, SLOT(refreshList()));
   connect(dialog, SIGNAL(message(QString)), this, SIGNAL(message(QString)));
+  connect(dialog, SIGNAL(scanComplete()), this, SIGNAL(refreshGroup()));
   dialog->show();
 }
 
@@ -84,14 +98,17 @@ void ScannerPage::openScanner (QString d)
   Scanner *dialog = new Scanner(d);
   connect(dialog, SIGNAL(exitScanner()), this, SLOT(refreshList()));
   connect(dialog, SIGNAL(message(QString)), this, SIGNAL(message(QString)));
+  connect(dialog, SIGNAL(scanComplete()), this, SIGNAL(refreshGroup()));
   dialog->show();
 }
 
 void ScannerPage::runScanner ()
 {
-  QString s(config.getData(Config::ScannerPath));
+  QString s;
+  config.getData(Config::ScannerPath, s);
   QString s2("*");
   SymbolDialog *dialog = new SymbolDialog(this, 
+                                          s,
   					  s,
 					  s2,
 					  QFileDialog::ExistingFiles);
@@ -139,9 +156,8 @@ void ScannerPage::newScanner()
         selection.append(c);
     }
   
-    s = config.getData(Config::ScannerPath);
-    s.append("/");
-    s.append(selection);
+    config.getData(Config::ScannerPath, s);
+    s.append("/" + selection);
     QDir dir(s);
     if (dir.exists(s, TRUE))
     {
@@ -155,9 +171,11 @@ void ScannerPage::newScanner()
 
 void ScannerPage::deleteScanner()
 {
-  QString s(config.getData(Config::ScannerPath));
+  QString s;
+  config.getData(Config::ScannerPath, s);
   QString s2("*");
   SymbolDialog *dialog = new SymbolDialog(this,
+                                          s,
   					  s,
 					  s2,
 					  QFileDialog::ExistingFiles);
@@ -199,7 +217,7 @@ void ScannerPage::renameScanner ()
   QString s = QInputDialog::getText(tr("Rename Scanner"),
   				    tr("Enter new scanner name."),
 				    QLineEdit::Normal,
-				    currentText(),
+				    list->currentText(),
 				    &ok,
 				    this);
   if ((ok) && (! s.isNull()))
@@ -213,9 +231,8 @@ void ScannerPage::renameScanner ()
         selection.append(c);
     }
   
-    s = config.getData(Config::ScannerPath);
-    s.append("/");
-    s.append(selection);
+    config.getData(Config::ScannerPath, s);
+    s.append("/" + selection);
     QDir dir(s);
     if (dir.exists(s, TRUE))
     {
@@ -223,9 +240,9 @@ void ScannerPage::renameScanner ()
       return;
     }
 
-    QString s2 = config.getData(Config::ScannerPath);
-    s2.append("/");
-    s2.append(currentText());
+    QString s2;
+    config.getData(Config::ScannerPath, s2);
+    s2.append("/" + list->currentText());
 
     dir.rename(s2, s, TRUE);
 
@@ -257,12 +274,14 @@ void ScannerPage::rightClick (QListBoxItem *)
 
 void ScannerPage::refreshList ()
 {
-  clear();
-  
-  QDir dir(config.getData(Config::ScannerPath));
+  list->clear();
+
+  QString s;
+  config.getData(Config::ScannerPath, s);
+  idir.setPath(s);
   int loop;
-  for (loop = 2; loop < (int) dir.count(); loop++)
-    insertItem(dir[loop], -1);
+  for (loop = 0; loop < (int) idir.count(); loop++)
+    list->insertItem(idir[loop], -1);
 }
 
 void ScannerPage::doubleClick (QListBoxItem *item)
@@ -280,16 +299,8 @@ void ScannerPage::slotHelp ()
   hw->show();
 }
 
-void ScannerPage::setKeyFlag (bool d)
-{
-  keyFlag = d;
-}
-
 void ScannerPage::keyPressEvent (QKeyEvent *key)
 {
-  if (keyFlag)
-    emit signalKeyPressed (Macro::ScannerPage, key->state(), key->key(), key->ascii(), key->text());
-  
   doKeyPress(key);  
 }
 
@@ -332,7 +343,7 @@ void ScannerPage::doKeyPress (QKeyEvent *key)
         openScanner();
         break;
       default:
-        QListBox::keyPressEvent(key);
+//        list->keyPressEvent(key);
         break;
     }
   }
@@ -343,28 +354,18 @@ void ScannerPage::slotAccel (int id)
   switch (id)
   {
     case NewScanner:
-      if (keyFlag)
-        emit signalKeyPressed (Macro::ScannerPage, ControlButton, Key_N, 0, QString());
       newScanner();
       break;  
     case DeleteScanner:
-      if (keyFlag)
-        emit signalKeyPressed (Macro::ScannerPage, ControlButton, Key_D, 0, QString());
       deleteScanner();
       break;  
     case RenameScanner:
-      if (keyFlag)
-        emit signalKeyPressed (Macro::ScannerPage, ControlButton, Key_R, 0, QString());
       renameScanner();
       break;  
     case OpenScanner:
-      if (keyFlag)
-        emit signalKeyPressed (Macro::ScannerPage, ControlButton, Key_O, 0, QString());
       openScanner();
       break;  
     case RunScanner:
-      if (keyFlag)
-        emit signalKeyPressed (Macro::ScannerPage, ControlButton, Key_U, 0, QString());
       runScanner();
       break;  
     case Help:
@@ -375,20 +376,9 @@ void ScannerPage::slotAccel (int id)
   }
 }
 
-void ScannerPage::runMacro (Macro *d)
+void ScannerPage::searchChanged (const QString &d)
 {
-  tmacro = d;
-  macroFlag = TRUE;
-  
-  while (tmacro->getZone(tmacro->getIndex()) == Macro::ScannerPage)
-  {
-    doKeyPress(tmacro->getKey(tmacro->getIndex()));
-    
-    tmacro->incIndex();
-    if (tmacro->getIndex() >= tmacro->getCount())
-      break;
-  }
-  
-  macroFlag = FALSE;
+  idir.setNameFilter(d);
+  refreshList();
 }
 

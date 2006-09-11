@@ -25,47 +25,98 @@
 
 #include <qstring.h>
 #include <qstringlist.h>
-#include <qdict.h>
 #include <qdatetime.h>
-#include "Setting.h"
 
 class FuturesData
 {
   public:
+    enum FuturesSymbol
+    {
+      AD,
+      BO,
+      NB,
+      BP,
+      C,
+      CC,
+      CO,
+      CD,
+      CL,
+      CR,
+      CT,
+      DJ,
+      DX,
+      EC,
+      ED,
+      ES,
+      FC,
+      GC,
+      GI,
+      HG,
+      HO,
+      HU,
+      OJ,
+      JO,
+      JY,
+      KC,
+      LB,
+      LC,
+      LN,
+      LH,
+      ND,
+      NG,
+      NQ,
+      O,
+      PA,
+      PB,
+      PL,
+      S,
+      SB,
+      SF,
+      SI,
+      SM,
+      SP,
+      TY,
+      TYD,
+      US,
+      USD,
+      W,
+      YX,
+      FW20
+    };
+
     FuturesData ();
     ~FuturesData ();
-    void loadData ();
-    QString getName ();
-    QString getSymbol ();
-    QString getExchange ();
-    QString getContract();
+    void getName (QString &);
+    void getSymbol (QString &);
+    void getExchange (QString &);
+    void getContract(QString &);
     double getLimit ();
     double getRate ();
     int setSymbol (QString &);
     void getMonthList (QStringList &);
     void getMonths (QStringList &);
-    void getSymbolList (QString &, QStringList &);
-    QString getCurrentContract (QDateTime &);
+    void getSymbolList (QStringList &);
+    void getCurrentContract (QDateTime &, QString &);
+    int setSymbolPath (QString &);
+    void getCMESymbolList (QStringList &);
 
   protected:
     QString name;
     QString symbol;
     QString exchange;
-    QString contract;
-    double limit;
+    QString month;
+    float rate;
+    float limit;
     QStringList monthList;
-    double rate;
-    QDict<Setting> data;
-    QString nameKey;
-    QString symbolKey;
-    QString rateKey;
-    QString monthKey;
-    QString exchangeKey;
-    QString limitKey;
+    QStringList symbolList;
+    QString contract;
     QString cme;
     QString cbot;
     QString nymex;
     QString nybot;
+    QString hmuz;
+    QString hknuz;
+    QString all;
 };
 
 #endif

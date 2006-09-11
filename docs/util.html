@@ -81,7 +81,7 @@ the counter is reset back to zero and counting resumes.<br>
 <span style="font-weight: bold;">REF</span><br>
 Used for returning a data array of bar
 values. An
-optional period parm can displace the data back a number of bars.<br>
+optional period parm can displace the data back a number of bars. <br>
 <br>
 <span style="font-weight: bold;">PER</span><br>
 Plots the performance of the array input from the first bar as the zero
@@ -92,7 +92,7 @@ reference.<br>
 a 'true' value and then apply a color to the color array.<br>
 <br>
 <br>
-<span style="font-weight: bold;">Formula Reference:</span><br>
+<h3><span style="font-weight: bold;">Formula Reference:</span></h3>
 <br>
 For a description of some types used. See <a href="ctypes.html">here.</a><br>
 <br>
@@ -100,7 +100,8 @@ For a description of some types used. See <a href="ctypes.html">here.</a><br>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">ACCUM<br>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">ACCUM<br>
       </td>
       <td style="vertical-align: top;">UTIL(Method, ARRAY INPUT)<br>
       </td>
@@ -125,7 +126,8 @@ array of bars or a formula variable array of data.<br>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">Normal<br>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">Normal<br>
       </td>
       <td style="vertical-align: top;">UTIL(Method, ARRAY INPUT)<br>
       </td>
@@ -150,7 +152,8 @@ array of bars or a formula variable array of data.<br>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">ADD<br>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">ADD<br>
       </td>
       <td style="vertical-align: top;">UTIL(Method, ARRAY INPUT, DOUBLE)<br>
 UTIL(Method, ARRAY INPUT, ARRAY INPUT2) </td>
@@ -178,7 +181,8 @@ UTIL(ADD, Close, 45.5)<br>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">DIV<br>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">DIV<br>
       </td>
       <td style="vertical-align: top;">UTIL(Method, ARRAY INPUT, DOUBLE)<br>
 UTIL(Method, ARRAY INPUT, ARRAY INPUT2) </td>
@@ -205,7 +209,8 @@ UTIL(DIV, Close, 45.5) </td>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">MUL<br>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">MUL<br>
       </td>
       <td style="vertical-align: top;">UTIL(Method, ARRAY INPUT, DOUBLE)<br>
 UTIL(Method, ARRAY INPUT, ARRAY INPUT2) </td>
@@ -232,7 +237,8 @@ UTIL(MUL, Close, 45.5) </td>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">SUB<br>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">SUB<br>
       </td>
       <td style="vertical-align: top;">UTIL(Method, ARRAY INPUT, DOUBLE)<br>
 UTIL(Method, ARRAY INPUT, ARRAY INPUT2) </td>
@@ -259,7 +265,8 @@ UTIL(SUB, Close, 45.5) </td>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">COMP<br>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">COMP<br>
       </td>
       <td style="vertical-align: top;">UTIL(Method, ARRAY INPUT,
 DOUBLE, OPERATOR)<br>
@@ -286,7 +293,8 @@ UTIL(COMP, Close, 45.5, GTEQ) </td>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">COUNTER<br>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">COUNTER<br>
       </td>
       <td style="vertical-align: top;">UTIL(Method, ARRAY INPUT)<br>
 UTIL(Method, ARRAY INPUT, ARRAY INPUT2)<br>
@@ -312,9 +320,11 @@ UTIL(COUNTER, Close, reset_array) </td>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">REF<br>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">REF<br>
       </td>
       <td style="vertical-align: top;">UTIL(Method, ARRAY INPUT, PERIOD)<br>
+UTIL(Method, DOUBLE)<br>
       </td>
     </tr>
     <tr>
@@ -322,7 +332,8 @@ UTIL(COUNTER, Close, reset_array) </td>
       </td>
       <td style="vertical-align: top;">ARRAY INPUT can be either an
 array of bars or a formula variable array of data. PERIOD is the number
-of bars to offset backwards.<br>
+of bars to offset backwards. DOUBLE is used to create a REF of one
+value.<br>
       </td>
     </tr>
     <tr>
@@ -330,6 +341,7 @@ of bars to offset backwards.<br>
       </td>
       <td style="vertical-align: top;">UTIL(REF, Close, 0) for no
 offset, UTIL(REF, Close, 10) to offset 10 bars backwards<br>
+UTIL(REF, 5.5) to create a plot of a single value.<br>
       </td>
     </tr>
   </tbody>
@@ -339,7 +351,8 @@ offset, UTIL(REF, Close, 10) to offset 10 bars backwards<br>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">PER<br>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">PER<br>
       </td>
       <td style="vertical-align: top;">UTIL(Method, ARRAY INPUT)<br>
       </td>
@@ -364,7 +377,8 @@ array of bars or a formula variable array of data.<br>
  cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;">COLOR<br>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 204);">COLOR<br>
       </td>
       <td style="vertical-align: top;">UTIL(Method, ARRAY INPUT, COLOR
 ARRAY, VALUE, COLOR)<br>

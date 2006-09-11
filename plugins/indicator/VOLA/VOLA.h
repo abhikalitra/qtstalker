@@ -35,7 +35,7 @@ class VOLA : public IndicatorPlugin
     void getIndicatorSettings (Setting &);
     void setIndicatorSettings (Setting &);
     PlotLine * getTR ();
-    int getMinBars ();
+    void formatDialog (QStringList &vl, QString &rv, QString &rs);
     
   private:
     QColor color;
@@ -45,6 +45,14 @@ class VOLA : public IndicatorPlugin
     int volrPeriod;
     QString method;
     QStringList methodList;
+
+    QString colorLabel;
+    QString lineTypeLabel;
+    QString cvPeriodLabel;
+    QString volrPeriodLabel;
+    QString labelLabel;
+    QString methodLabel;
+    QString pluginLabel;
 };
 
 extern "C"

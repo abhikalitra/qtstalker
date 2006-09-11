@@ -22,10 +22,10 @@
 #include "PlotLine.h"
 #include <qpainter.h>
 #include <qpointarray.h>
+#include <qobject.h>
 
 PlotLine::PlotLine ()
 {
-  data.setAutoDelete(TRUE);
   color.setNamedColor("red");
   lineType = PlotLine::Line;
   high = -99999999;
@@ -40,42 +40,22 @@ PlotLine::~PlotLine ()
 
 void PlotLine::copy (PlotLine *d)
 {
-  QColor c(d->getColor());
-  setColor(c);
+  d->getColor(color);
   
   setType(d->getType());
-  bool flag = FALSE;
-  if (lineType == Bar || lineType == Candle || lineType == HistogramBar)
-    flag = TRUE;
   
-  QString s = d->getLabel();
-  setLabel(s);
+  d->getLabel(label);
   
   setScaleFlag(d->getScaleFlag());
 
   setColorFlag(d->getColorFlag());
 
-  if (flag)
-  {
-    QColor color;
-    double o;
-    double h;
-    double l;
-    double cl;
-    bool ff;
-    for (int loop = 0; loop < (int) d->getSize(); loop++)
-    {
-      d->getBar(loop, color, o, h, l, cl, ff);
-      appendBar(color, o, h, l , cl, ff);
-    }
-  }
-  else
-  {
-    for (int loop = 0; loop < (int) d->getSize(); loop++)
-    {
-      append(d->getData(loop));
-    }
-  }
+  d->getData(data);
+
+  d->getDateList(dateList);
+
+  setHigh(d->getHigh());
+  setLow(d->getLow());
 }
 
 void PlotLine::setColor (QString &d)
@@ -88,25 +68,19 @@ void PlotLine::setColor (QColor &d)
   color = d;
 }
 
-QColor PlotLine::getColor ()
+void PlotLine::getColor (QColor &d)
 {
-  return color;
+  d = color;
 }
 
 void PlotLine::setColorBar (int i, QColor &d)
 {
-  Val *r = data.at(i);
-  if (r)
-    r->color = d;
+  data[i].color = d;
 }
 
-QColor PlotLine::getColorBar (int i)
+void PlotLine::getColorBar (int i, QColor &d)
 {
-  QColor color;
-  Val *r = data.at(i);
-  if (r)
-    color = r->color;
-  return color;
+  d = data[i].color;
 }
 
 void PlotLine::setType (PlotLine::LineType d)
@@ -116,61 +90,61 @@ void PlotLine::setType (PlotLine::LineType d)
 
 void PlotLine::setType (QString &d)
 {
-  if (! d.compare(tr("Dot")))
+  if (! d.compare(QObject::tr("Dot")))
   {
     lineType = Dot;
     return;
   }
 
-  if (! d.compare(tr("Dash")))
+  if (! d.compare(QObject::tr("Dash")))
   {
     lineType = Dash;
     return;
   }
   
-  if (! d.compare(tr("Histogram")))
+  if (! d.compare(QObject::tr("Histogram")))
   {
     lineType = Histogram;
     return;
   }
   
-  if (! d.compare(tr("Dash")))
+  if (! d.compare(QObject::tr("Dash")))
   {
     lineType = Dash;
     return;
   }
 
-  if (! d.compare(tr("Histogram Bar")))
+  if (! d.compare(QObject::tr("Histogram Bar")))
   {
     lineType = HistogramBar;
     return;
   }
 
-  if (! d.compare(tr("Line")))
+  if (! d.compare(QObject::tr("Line")))
   {
     lineType = Line;
     return;
   }
 
-  if (! d.compare(tr("Invisible")))
+  if (! d.compare(QObject::tr("Invisible")))
   {
     lineType = Invisible;
     return;
   }
 
-  if (! d.compare(tr("Horizontal")))
+  if (! d.compare(QObject::tr("Horizontal")))
   {
     lineType = Horizontal;
     return;
   }
 
-  if (! d.compare(tr("Bar")))
+  if (! d.compare(QObject::tr("Bar")))
   {
     lineType = Bar;
     return;
   }
 
-  if (! d.compare(tr("Candle")))
+  if (! d.compare(QObject::tr("Candle")))
   {
     lineType = Candle;
     return;
@@ -187,39 +161,49 @@ void PlotLine::setLabel (QString &d)
   label = d;
 }
 
-QString PlotLine::getLabel ()
+void PlotLine::getLabel (QString &d)
 {
-  return label;
+  d = label;
 }
 
 void PlotLine::append (double d)
 {
-  Val *r = new Val;
-  memset(r, 0, sizeof(Val));
-  r->v  = d;
+  Val r;
+  memset(&r, 0, sizeof(Val));
+  r.color = color;
+  r.open = d;
+  r.high = d;
+  r.low = d;
+  r.v = d;
   data.append(r);
   checkHighLow(d);
 }
 
 void PlotLine::prepend (double d)
 {
-  Val *r = new Val;
-  memset(r, 0, sizeof(Val));
-  r->v = d;
+  Val r;
+  memset(&r, 0, sizeof(Val));
+  r.color = color;
+  r.open = d;
+  r.high = d;
+  r.low = d;
+  r.v = d;
   data.prepend(r);
   checkHighLow(d);
 }
 
 double PlotLine::getData (int d)
 {
-  Val *r = data.at(d);
-  return r->v;
+  return data[d].v;
 }
 
 void PlotLine::setData (int i, double d)
 {
-  Val *r = data.at(i);
-  r->v = d;
+  Val r = data[i];
+  r.open = d;
+  r.high = d;
+  r.low = d;
+  r.v = d;
   checkHighLow(d);
 }
 
@@ -288,15 +272,16 @@ void PlotLine::getLineTypes (QStringList &l)
   l.append(QObject::tr("Horizontal"));
 }
 
-void PlotLine::appendBar (QColor &c, double o, double h, double l, double cl)
+void PlotLine::append (QColor &c, double o, double h, double l, double cl, bool cf)
 {
-  Val *r = new Val;
-  memset(r, 0, sizeof(Val));
-  r->color = c;
-  r->open = o;
-  r->high = h;
-  r->low = l;
-  r->v = cl;
+  Val r;
+  memset(&r, 0, sizeof(Val));
+  r.color = c;
+  r.open = o;
+  r.high = h;
+  r.low = l;
+  r.v = cl;
+  r.candleFill = cf;
   data.append(r);
   checkHighLow(o);
   checkHighLow(h);
@@ -304,15 +289,16 @@ void PlotLine::appendBar (QColor &c, double o, double h, double l, double cl)
   checkHighLow(cl);
 }
 
-void PlotLine::prependBar (QColor &c, double o, double h, double l, double cl)
+void PlotLine::prepend (QColor &c, double o, double h, double l, double cl, bool cf)
 {
-  Val *r = new Val;
-  memset(r, 0, sizeof(Val));
-  r->color = c;
-  r->open = o;
-  r->high = h;
-  r->low = l;
-  r->v = cl;
+  Val r;
+  memset(&r, 0, sizeof(Val));
+  r.color = c;
+  r.open = o;
+  r.high = h;
+  r.low = l;
+  r.v = cl;
+  r.candleFill = cf;
   data.prepend(r);
   checkHighLow(o);
   checkHighLow(h);
@@ -320,65 +306,15 @@ void PlotLine::prependBar (QColor &c, double o, double h, double l, double cl)
   checkHighLow(cl);
 }
 
-void PlotLine::appendBar (QColor &c, double o, double h, double l, double cl, bool cf)
+void PlotLine::getData (int i, QColor &c, double &o, double &h, double &l, double &cl, bool &cf)
 {
-  Val *r = new Val;
-  memset(r, 0, sizeof(Val));
-  r->color = c;
-  r->open = o;
-  r->high = h;
-  r->low = l;
-  r->v = cl;
-  r->candleFill = cf;
-  data.append(r);
-  checkHighLow(o);
-  checkHighLow(h);
-  checkHighLow(l);
-  checkHighLow(cl);
-}
-
-void PlotLine::prependBar (QColor &c, double o, double h, double l, double cl, bool cf)
-{
-  Val *r = new Val;
-  memset(r, 0, sizeof(Val));
-  r->color = c;
-  r->open = o;
-  r->high = h;
-  r->low = l;
-  r->v = cl;
-  r->candleFill = cf;
-  data.prepend(r);
-  checkHighLow(o);
-  checkHighLow(h);
-  checkHighLow(l);
-  checkHighLow(cl);
-}
-
-void PlotLine::getBar (int i, QColor &c, double &o, double &h, double &l, double &cl)
-{
-  Val *r = data.at(i);
-  if (r)
-  {
-    c = r->color;
-    o = r->open;
-    h = r->high;
-    l = r->low;
-    cl = r->v;
-  }
-}
-
-void PlotLine::getBar (int i, QColor &c, double &o, double &h, double &l, double &cl, bool &cf)
-{
-  Val *r = data.at(i);
-  if (r)
-  {
-    c = r->color;
-    o = r->open;
-    h = r->high;
-    l = r->low;
-    cl = r->v;
-    cf = r->candleFill;
-  }
+  Val r = data[i];
+  c = r.color;
+  o = r.open;
+  h = r.high;
+  l = r.low;
+  cl = r.v;
+  cf = r.candleFill;
 }
 
 void PlotLine::getHighLowRange (int start, int end, double &h, double &l)
@@ -393,32 +329,117 @@ void PlotLine::getHighLowRange (int start, int end, double &h, double &l)
 
   for (loop = start; loop <= end; loop++)
   {
-    Val *r = data.at(loop);
-    if (r)
+    Val r = data[loop];
+    if (flag)
     {
-      if (flag)
-      {
-        if (r->open > h)
-          h = r->open;
-        if (r->open < l)
-          l = r->open;
+      if (r.open > h)
+        h = r.open;
+      if (r.open < l)
+        l = r.open;
 
-        if (r->high > h)
-          h = r->high;
-        if (r->high < l)
-          l = r->high;
+      if (r.high > h)
+        h = r.high;
+      if (r.high < l)
+        l = r.high;
 
-        if (r->low > h)
-          h = r->low;
-        if (r->low < l)
-          l = r->low;
-      }
+      if (r.low > h)
+        h = r.low;
+      if (r.low < l)
+        l = r.low;
     }
 
-    if (r->v > h)
-      h = r->v;
-    if (r->v < l)
-      l = r->v;
+    if (r.v > h)
+      h = r.v;
+    if (r.v < l)
+      l = r.v;
   }
 }
+
+void PlotLine::getInfo (int i, Setting &r)
+{
+  QString s, k;
+  if (lineType == PlotLine::Bar || lineType == PlotLine::Candle)
+  {
+    double open, high, low, close;
+    QColor color;
+    bool ff;
+    getData(i, color, open, high, low, close, ff);
+
+    strip(open, 4, s);
+    k = "O";
+    r.setData(k, s);
+
+    strip(high, 4, s);
+    k = "H";
+    r.setData(k, s);
+
+    strip(low, 4, s);
+    k = "L";
+    r.setData(k, s);
+
+    strip(close, 4, s);
+    k = "C";
+    r.setData(k, s);
+  }
+  else
+  {
+    strip(getData(i), 4, s);
+    r.setData(label, s);
+  }
+}
+
+void PlotLine::strip (double d, int p, QString &s)
+{
+  s = QString::number(d, 'f', p);
+
+  while (1)
+  {
+    if (s.find('.', -1, TRUE) != -1)
+    {
+      s.truncate(s.length() - 1);
+      break;
+    }
+    else
+    {
+      if (s.find('0', -1, TRUE) != -1)
+        s.truncate(s.length() - 1);
+      else
+        break;
+    }
+  }
+}
+
+void PlotLine::getData (int i, QDateTime &dt)
+{
+  if (i >= (int) dateList.count())
+    return;
+
+  dt = dateList[i];
+}
+
+void PlotLine::append (QDateTime &dt)
+{
+  dateList.append(dt);
+}
+
+void PlotLine::prepend (QDateTime &dt)
+{
+  dateList.prepend(dt);
+}
+
+void PlotLine::getDateList (QValueList<QDateTime> &dl)
+{
+  dl = dateList;
+}
+
+void PlotLine::setDateList (QValueList<QDateTime> &dl)
+{
+  dateList = dl;
+}
+
+void PlotLine::getData (QValueList<Val> &d)
+{
+  d = data;
+}
+
 

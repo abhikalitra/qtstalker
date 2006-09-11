@@ -119,16 +119,6 @@ void CUS::calculate ()
           }
         }
       }
-   
-      if (! inList.count())
-      {
-        if (plugin.compare("TALIB") && plugin.compare("BARS"))
-        {
-          qDebug("CUS::calculate: no input array");
-          config.closePlugin(plugin);
-          return;
-        }
-      }
 
       PlotLine *out = plug->calculateCustom(parms, inList);
       if (! out)
@@ -139,54 +129,59 @@ void CUS::calculate ()
       }
 
       PlotLine *pl = new PlotLine;
-      lines.replace(var, pl);
       pl->copy(out);
+      lines.replace(var, pl);
     }
 
-    if (formulaList[loop].contains("plot"))
-    {
-      QStringList l = QStringList::split("(", formulaList[loop], FALSE);
-      if (l.count() != 2)
-      {
-        qDebug("CUS::calculate: line %i: bad plot format", loop);
-        return;
-      }
-
-      QString parms = l[1];
-      parms.truncate(parms.find(")", -1, TRUE));
-      l = QStringList::split(",", parms, FALSE);
-      if (l.count() != 4)
-      {
-        qDebug("CUS::calculate: line %i: missing plot parms", loop);
-        return;
-      }
-
-      // 1.var name
-      l[0] = l[0].stripWhiteSpace();
-      PlotLine *pl = lines.find(l[0]);
-      if (! pl)
-      {
-        qDebug("CUS::calculate: line %i: bad plot parm 1", loop);
-        return;
-      }
-
-      // 2.color
-      l[1] = l[1].stripWhiteSpace();
-      pl->setColor(l[1]);
-
-      // 3.label
-      l[2] = l[2].stripWhiteSpace();
-      pl->setLabel(l[2]);
-
-      // 4.linetype
-      l[3] = l[3].stripWhiteSpace();
-      pl->setType(l[3]);
-
-      PlotLine *tline = new PlotLine;
-      tline->copy(pl);
-      output->addLine(tline);
-    }
+    createPlot(formulaList[loop], lines);
   }
+}
+
+void CUS::createPlot (QString &d, QDict<PlotLine> &lines)
+{
+  if (! d.contains("plot"))
+    return;
+
+  QStringList l = QStringList::split("(", d, FALSE);
+  if (l.count() != 2)
+  {
+    qDebug("CUS::createPlot: bad plot format");
+    return;
+  }
+
+  QString parms = l[1];
+  parms.truncate(parms.find(")", -1, TRUE));
+  l = QStringList::split(",", parms, FALSE);
+  if (l.count() != 4)
+  {
+    qDebug("CUS::calculate: missing plot parms");
+    return;
+  }
+
+  // 1.var name
+  l[0] = l[0].stripWhiteSpace();
+  PlotLine *pl = lines.find(l[0]);
+  if (! pl)
+  {
+    qDebug("CUS::calculate: bad plot parm 1");
+    return;
+  }
+
+  // 2.color
+  l[1] = l[1].stripWhiteSpace();
+  pl->setColor(l[1]);
+
+  // 3.label
+  l[2] = l[2].stripWhiteSpace();
+  pl->setLabel(l[2]);
+
+  // 4.linetype
+  l[3] = l[3].stripWhiteSpace();
+  pl->setType(l[3]);
+
+  PlotLine *tline = new PlotLine;
+  tline->copy(pl);
+  output->addLine(tline);
 }
 
 int CUS::indicatorPrefDialog (QWidget *)
@@ -218,39 +213,13 @@ void CUS::setCustomFunction (QStringList &d)
   formulaList = d;
 }
 
-int CUS::getMinBars ()
-{
-  int loop;
-  int min = minBars;
-  for (loop = 0; loop < (int) formulaList.count(); loop++)
-  {
-    Setting set;
-    set.parse(formulaList[loop]);
-
-    Config config;
-    QString plugin = set.getData("plugin");
-    IndicatorPlugin *plug = config.getIndicatorPlugin(plugin);
-    if (! plug)
-    {
-      qDebug("CUS::calculate: %s plugin not loaded", plugin.latin1());
-      config.closePlugin(plugin);
-      continue;
-    }
-  
-    plug->setIndicatorSettings(set);
-    
-    min = min + plug->getMinBars();
-    
-    config.closePlugin(plugin);
-  }
-
-  return min;
-}
-
 void CUS::getIndicatorSettings (Setting &dict)
 {
-  dict.setData("script", formulaList.join("|"));
-  dict.setData("plugin", pluginName);
+  QString ts = "script";
+  QString ts2 = formulaList.join("|");
+  dict.setData(ts, ts2);
+  ts = "plugin";
+  dict.setData(ts, pluginName);
 }
 
 void CUS::setIndicatorSettings (Setting &dict)
@@ -259,8 +228,10 @@ void CUS::setIndicatorSettings (Setting &dict)
 
   if (! dict.count())
     return;
-  
-  QString s = dict.getData("script");
+
+  QString ts = "script";
+  QString s;
+  dict.getData(ts, s);
   if (s.length())
     formulaList = QStringList::split("|", s, FALSE);
 }

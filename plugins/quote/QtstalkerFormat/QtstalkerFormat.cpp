@@ -102,19 +102,11 @@ void QtstalkerFormat::parse ()
       dir.remove(path, TRUE);
     }
     
-    Config config;
-    QString plugin = config.parseDbPlugin(path);
-    DbPlugin *db = config.getDbPlugin(plugin);
-    if (! db)
-    {
-      config.closePlugin(plugin);
-      continue;
-    }
-    
-    if (db->openChart(path))
+    DbPlugin db;
+    if (db.openChart(path))
     {
       emit statusLogMessage("Could not open db. Skipping file.");
-      config.closePlugin(plugin);
+      db.close();
       f.close();
       continue;
     }
@@ -151,49 +143,49 @@ void QtstalkerFormat::parse ()
 	  bool ok;
 	  key.toDouble(&ok);
 	  if (ok)
-	    db->setData(key, s);
+	    db.setData(key, s);
 	  break;
 	}
       
         if (! key.compare("BarType"))
 	{
-	  db->setHeaderField(DbPlugin::BarType, s);
+	  db.setHeaderField(DbPlugin::BarType, s);
 	  break;
 	}
         
 	if (! key.compare("Plugin"))
 	{
-	  db->setHeaderField(DbPlugin::Plugin, s);
+	  db.setHeaderField(DbPlugin::Plugin, s);
 	  break;
 	}
 	
         if (! key.compare("Symbol"))
 	{
-	  db->setHeaderField(DbPlugin::Symbol, s);
+	  db.setHeaderField(DbPlugin::Symbol, s);
 	  break;
 	}
 	
         if (! key.compare("Title"))
 	{
-	  db->setHeaderField(DbPlugin::Title, s);
+	  db.setHeaderField(DbPlugin::Title, s);
 	  break;
 	}
 	
         if (! key.compare("Type"))
 	{
-	  db->setHeaderField(DbPlugin::Type, s);
+	  db.setHeaderField(DbPlugin::Type, s);
 	  break;
 	}
 	
         if (! key.compare("FuturesType"))
 	{
-	  db->setData(key, s);
+	  db.setData(key, s);
 	  break;
 	}
         
         if (! key.compare("FuturesMonth"))
 	{
-	  db->setData(key, s);
+	  db.setData(key, s);
 	  break;
 	}
 	
@@ -212,11 +204,11 @@ void QtstalkerFormat::parse ()
     if (co.count())
     {
       QString t = co.join(",");
-      db->setHeaderField(DbPlugin::CO, t);
+      db.setHeaderField(DbPlugin::CO, t);
     }
       
     f.close();
-    config.closePlugin(plugin);
+    db.close();
     
     if (cancelFlag)
     {
@@ -234,7 +226,8 @@ void QtstalkerFormat::parse ()
 bool QtstalkerFormat::createDirectories (QString &d)
 {
   Config config;
-  QString path = config.getData(Config::DataPath);
+  QString path;
+  config.getData(Config::DataPath, path);
   
   QStringList l = QStringList::split("/", d, FALSE);
   int loop = l.findIndex("data");
@@ -296,10 +289,12 @@ void QtstalkerFormat::loadSettings ()
   QSettings settings;
   settings.beginGroup("/Qtstalker/QtstalkerFormat plugin");
 
-  Config config;  
-  lastPath = settings.readEntry("/lastPath", config.getData(Config::Home) + "/export");
+  Config config;
+  QString s;
+  config.getData(Config::Home, s);
+  lastPath = settings.readEntry("/lastPath", s + "/export");
 
-  QString s = settings.readEntry("/deleteFlag", "1");
+  s = settings.readEntry("/deleteFlag", "1");
   deleteFlag = s.toInt();
 
   settings.endGroup();

@@ -31,16 +31,15 @@ Setting::~Setting ()
 {
 }
 
-QString Setting::getData (QString k)
+void Setting::getData (QString &k, QString &d)
 {
+  d.truncate(0);
   QString *s = dict[k];
   if (s)
-    return s->left(s->length());
-  else
-    return 0;
+    d = s->left(s->length());
 }
 
-double Setting::getDouble (QString k)
+double Setting::getDouble (QString &k)
 {
   QString *s = dict[k];
   if (s)
@@ -49,7 +48,7 @@ double Setting::getDouble (QString k)
     return 0;
 }
 
-int Setting::getInt (QString k)
+int Setting::getInt (QString &k)
 {
   QString *s = dict[k];
   if (s)
@@ -58,7 +57,7 @@ int Setting::getInt (QString k)
     return 0;
 }
 
-void Setting::setData (QString k, QString d)
+void Setting::setData (QString &k, QString &d)
 {
   dict.replace(k, new QString(d));
 }
@@ -71,7 +70,7 @@ void Setting::getKeyList (QStringList &l)
     l.append(it.currentKey());
 }
 
-void Setting::remove (QString k)
+void Setting::remove (QString &k)
 {
   dict.remove(k);
 }
@@ -111,5 +110,18 @@ void Setting::clear ()
 int Setting::count ()
 {
   return (int) dict.count();
+}
+
+void Setting::copy (Setting *r)
+{
+  QString k, d;
+  QDictIterator<QString> it(dict);
+  for (; it.current(); ++it)
+  {
+    QString *s = it.current();
+    k = it.currentKey();
+    d = s->left(s->length());
+    r->setData(k, d);
+  }
 }
 

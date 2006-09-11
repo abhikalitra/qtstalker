@@ -65,7 +65,7 @@ class Yahoo : public QuotePlugin
     QString dataPath;
     QStringList fileList;
     QStringList errorList;
-    DbPlugin *plug;
+    DbPlugin plug;
     Config config;
 };
 

@@ -33,7 +33,18 @@ VOLA::VOLA ()
   methodList.append("CV");
   methodList.append("VOLR");
 
+  colorLabel = "color";
+  lineTypeLabel = "lineType";
+  cvPeriodLabel = "cvPeriod";
+  volrPeriodLabel = "volrPeriod";
+  labelLabel = "label";
+  methodLabel = "method";
+  pluginLabel = "plugin";
+
   helpFile = "volr.html";
+
+  formatList.append(FormatString);
+  formatList.append(FormatInteger);
   
   setDefaults();
 }
@@ -143,7 +154,6 @@ int VOLA::indicatorPrefDialog (QWidget *w)
   QString ll = QObject::tr("Label");
   QString ltl = QObject::tr("Line Type");
   QString perl = QObject::tr("Period");
-  QString il = QObject::tr("Input");
 
   PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(QObject::tr("VOLA Indicator"));
@@ -174,9 +184,9 @@ int VOLA::indicatorPrefDialog (QWidget *w)
   
   if (rc == QDialog::Accepted)
   {
-    color = dialog->getColor(cl);
+    dialog->getColor(cl, color);
     lineType = (PlotLine::LineType) dialog->getComboIndex(ltl);
-    label = dialog->getText(ll);
+    dialog->getText(ll, label);
 
     while (1)
     {
@@ -211,76 +221,65 @@ void VOLA::setIndicatorSettings (Setting &dict)
   if (! dict.count())
     return;
   
-  QString s = dict.getData("color");
+  QString s;
+  dict.getData(colorLabel, s);
   if (s.length())
     color.setNamedColor(s);
     
-  s = dict.getData("lineType");
+  dict.getData(lineTypeLabel, s);
   if (s.length())
     lineType = (PlotLine::LineType) s.toInt();
 
-  s = dict.getData("cvPeriod");
+  dict.getData(cvPeriodLabel, s);
   if (s.length())
     cvPeriod = s.toInt();
 
-  s = dict.getData("volrPeriod");
+  dict.getData(volrPeriodLabel, s);
   if (s.length())
     volrPeriod = s.toInt();
 
-  s = dict.getData("label");
+  dict.getData(labelLabel, s);
   if (s.length())
     label = s;
 
-  s = dict.getData("method");
+  dict.getData(methodLabel, s);
   if (s.length())
     method = s;
 }
 
 void VOLA::getIndicatorSettings (Setting &dict)
 {
-  dict.setData("color", color.name());
-  dict.setData("lineType", QString::number(lineType));
-  dict.setData("cvPeriod", QString::number(cvPeriod));
-  dict.setData("volrPeriod", QString::number(volrPeriod));
-  dict.setData("label", label);
-  dict.setData("method", method);
-  dict.setData("plugin", pluginName);
+  QString ts = color.name();
+  dict.setData(colorLabel, ts);
+  ts = QString::number(lineType);
+  dict.setData(lineTypeLabel, ts);
+  ts = QString::number(cvPeriod);
+  dict.setData(cvPeriodLabel, ts);
+  ts = QString::number(volrPeriod);
+  dict.setData(volrPeriodLabel, ts);
+  dict.setData(labelLabel, label);
+  dict.setData(methodLabel, method);
+  dict.setData(pluginLabel, pluginName);
 }
 
-PlotLine * VOLA::calculateCustom (QString &p, QPtrList<PlotLine> &)
+PlotLine * VOLA::calculateCustom (QString &p, QPtrList<PlotLine> &d)
 {
   // format1: METHOD, PERIOD
 
-  QStringList l = QStringList::split(",", p, FALSE);
-
-  if (l.count() != 2)
-  {
-    qDebug("VOLA::calculateCustom: invalid parm count");
+  if (checkFormat(p, d, 2, 2))
     return 0;
-  }
 
-  if (methodList.findIndex(l[0]) == -1)
+  method = formatStringList[0];
+  if (methodList.findIndex(method) == -1)
   {
     qDebug("VOLA::calculateCustom: invalid METHOD parm");
     return 0;
   }
-  else
-    method = methodList.findIndex(l[0]);
 
-  bool ok;
-  int t = l[1].toInt(&ok);
-  if (ok)
-  {
-    if (! method.compare("CV"))
-      cvPeriod = t;
-    else
-      volrPeriod = t;
-  }
+  if (! method.compare("CV"))
+    cvPeriod = formatStringList[1].toInt();
   else
-  {
-    qDebug("VOLA::calculateCustom: invalid PERIOD parm");
-    return 0;
-  }
+    volrPeriod = formatStringList[1].toInt();
 
   clearOutput();
   calculate();
@@ -317,14 +316,39 @@ PlotLine * VOLA::getTR ()
   return tr;
 }
 
-int VOLA::getMinBars ()
+void VOLA::formatDialog (QStringList &, QString &rv, QString &rs)
 {
-  int t = minBars;
-  if (! method.compare("CV"))
-    t = t + cvPeriod;
-  else
-    t = t + volrPeriod;
-  return t;
+  rs.truncate(0);
+  rv.truncate(0);
+  QString pl = QObject::tr("Parms");
+  QString vnl = QObject::tr("Variable Name");
+  QString ml = QObject::tr("Method");
+  QString perl = QObject::tr("Period");
+  PrefDialog *dialog = new PrefDialog(0);
+  dialog->setCaption(QObject::tr("VOL Format"));
+  dialog->createPage (pl);
+  dialog->setHelpFile(helpFile);
+
+  // format1: METHOD, PERIOD
+
+  QString s;
+  dialog->addTextItem(vnl, pl, s);
+  dialog->addComboItem(ml, pl, methodList, method);
+  dialog->addIntItem(perl, pl, cvPeriod, 1, 99999999);
+
+  int rc = dialog->exec();
+  
+  if (rc == QDialog::Accepted)
+  {
+    dialog->getText(vnl, rv);
+
+    dialog->getCombo(ml, rs);
+
+    int t = dialog->getInt(perl);
+    rs.append("," + QString::number(t));
+  }
+
+  delete dialog;
 }
 
 //*******************************************************

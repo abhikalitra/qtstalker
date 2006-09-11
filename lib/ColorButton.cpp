@@ -42,9 +42,9 @@ void ColorButton::setColorButton ()
   setPixmap(pix);
 }
 
-QColor ColorButton::getColor ()
+void ColorButton::getColor (QColor &c)
 {
-  return color;
+  c = color;
 }
 
 void ColorButton::colorDialog ()

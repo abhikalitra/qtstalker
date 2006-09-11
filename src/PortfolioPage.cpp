@@ -36,10 +36,6 @@
 
 PortfolioPage::PortfolioPage (QWidget *w) : QListBox (w)
 {
-  keyFlag = FALSE;
-  macroFlag = FALSE;
-  macro = 0;
-  
   connect(this, SIGNAL(contextMenuRequested(QListBoxItem *, const QPoint &)), this, SLOT(rightClick(QListBoxItem *)));
   connect(this, SIGNAL(highlighted(const QString &)), this, SLOT(portfolioSelected(const QString &)));
   connect(this, SIGNAL(doubleClicked(QListBoxItem *)), this, SLOT(doubleClick(QListBoxItem *)));
@@ -100,9 +96,8 @@ void PortfolioPage::newPortfolio()
         selection.append(c);
     }
   
-    s = config.getData(Config::PortfolioPath);
-    s.append("/");
-    s.append(selection);
+    config.getData(Config::PortfolioPath, s);
+    s.append("/" + selection);
     QDir dir(s);
     if (dir.exists(s, TRUE))
     {
@@ -125,8 +120,10 @@ void PortfolioPage::newPortfolio()
 void PortfolioPage::deletePortfolio()
 {
   QString s("*");
-  QString s2(config.getData(Config::PortfolioPath));
+  QString s2;
+  config.getData(Config::PortfolioPath, s2);
   SymbolDialog *dialog = new SymbolDialog(this,
+                                          s2,
   				          s2,
 					  s,
 					  QFileDialog::ExistingFiles);
@@ -182,9 +179,8 @@ void PortfolioPage::renamePortfolio ()
         selection.append(c);
     }
   
-    s = config.getData(Config::PortfolioPath);
-    s.append("/");
-    s.append(selection);
+    config.getData(Config::PortfolioPath, s);
+    s.append("/" + selection);
     QDir dir(s);
     if (dir.exists(s, TRUE))
     {
@@ -192,9 +188,9 @@ void PortfolioPage::renamePortfolio ()
       return;
     }
 
-    QString s2 = config.getData(Config::PortfolioPath);
-    s2.append("/");
-    s2.append(currentText());
+    QString s2;
+    config.getData(Config::PortfolioPath, s2);
+    s2.append("/" + currentText());
 
     dir.rename(s2, s, TRUE);
 
@@ -227,8 +223,10 @@ void PortfolioPage::rightClick (QListBoxItem *)
 void PortfolioPage::updateList ()
 {
   clear();
-  
-  QDir dir(config.getData(Config::PortfolioPath));
+
+  QString s;
+  config.getData(Config::PortfolioPath, s);
+  QDir dir(s);
   int loop;
   for (loop = 2; loop < (int) dir.count(); loop++)
     insertItem(dir[loop], -1);
@@ -249,16 +247,8 @@ void PortfolioPage::slotHelp ()
   hw->show();
 }
 
-void PortfolioPage::setKeyFlag (bool d)
-{
-  keyFlag = d;
-}
-
 void PortfolioPage::keyPressEvent (QKeyEvent *key)
 {
-  if (keyFlag)
-    emit signalKeyPressed (Macro::PortfolioPage, key->state(), key->key(), key->ascii(), key->text());
-    
   doKeyPress(key);  
 }
 
@@ -312,23 +302,15 @@ void PortfolioPage::slotAccel (int id)
   switch (id)
   {
     case NewPortfolio:
-      if (keyFlag)
-        emit signalKeyPressed (Macro::PortfolioPage, ControlButton, Key_N, 0, QString());
       newPortfolio();
       break;  
     case DeletePortfolio:
-      if (keyFlag)
-        emit signalKeyPressed (Macro::PortfolioPage, ControlButton, Key_D, 0, QString());
       deletePortfolio();
       break;  
     case RenamePortfolio:
-      if (keyFlag)
-        emit signalKeyPressed (Macro::PortfolioPage, ControlButton, Key_R, 0, QString());
       renamePortfolio();
       break;  
     case OpenPortfolio:
-      if (keyFlag)
-        emit signalKeyPressed (Macro::PortfolioPage, ControlButton, Key_O, 0, QString());
       openPortfolio();
       break;  
     case Help:
@@ -337,22 +319,5 @@ void PortfolioPage::slotAccel (int id)
     default:
       break;
   }
-}
-
-void PortfolioPage::runMacro (Macro *d)
-{
-  macro = d;
-  macroFlag = TRUE;
-  
-  while (macro->getZone(macro->getIndex()) == Macro::PortfolioPage)
-  {
-    doKeyPress(macro->getKey(macro->getIndex()));
-    
-    macro->incIndex();
-    if (macro->getIndex() >= macro->getCount())
-      break;
-  }
-  
-  macroFlag = FALSE;
 }
 

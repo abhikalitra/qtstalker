@@ -60,6 +60,7 @@ class Plot : public QWidget
     void setCrosshairsFlag (bool);
     IndicatorPlot * getIndicatorPlot ();
     DatePlot * getDatePlot ();
+    void setMenuFlag (bool);
 
   public slots:
     void draw();
@@ -70,7 +71,7 @@ class Plot : public QWidget
     void setGridColor (QColor);
     void setPlotFont (QFont);
     void setIndex (int);
-    void setInterval(BarData::BarCompression);
+    void setInterval(BarData::BarLength);
     void crossHair (int, int, bool);
     void setChartPath (QString);
     void setCrosshairsStatus (bool);

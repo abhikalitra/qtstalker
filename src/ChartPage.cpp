@@ -38,33 +38,25 @@
 
 ChartPage::ChartPage (QWidget *w) : QWidget (w)
 {
-  keyFlag = FALSE;
-  macroFlag = FALSE;
-  macro = 0;
-  
   QVBoxLayout *vbox = new QVBoxLayout(this);
   vbox->setMargin(2);
   vbox->setSpacing(5);
   
-  search = new MyLineEdit(this, Macro::ChartPage);
+  search = new QLineEdit(this);
   search->setText("*");
   connect(search, SIGNAL(textChanged(const QString &)), this, SLOT(searchChanged(const QString &)));
-  connect(search, SIGNAL(signalKeyPressed(int, int, int, int, QString)),
-          this, SIGNAL(signalKeyPressed(int, int, int, int, QString)));
   QToolTip::add(search, tr("List Filter, e.g. s* or sb*"));
   vbox->addWidget(search);
 
-  QString s(config.getData(Config::DataPath));
+  QString s;
+  config.getData(Config::DataPath, s);
   nav = new Navigator(this, s);
   connect(nav, SIGNAL(fileSelected(QString)), this, SLOT(chartSelected(QString)));
   connect(nav, SIGNAL(fileOpened(QString)), this, SLOT(chartOpened(QString)));
   connect(nav, SIGNAL(noSelection()), this, SLOT(chartNoSelection()));
   connect(nav, SIGNAL(contextMenuRequested(QListBoxItem *, const QPoint &)), this,
           SLOT(rightClick(QListBoxItem *)));
-  connect(nav, SIGNAL(signalKeyPressed(int, int, int, int, QString)),
-          this, SIGNAL(signalKeyPressed(int, int, int, int, QString)));
   nav->updateList();
-  nav->setId(Macro::ChartPage);
   vbox->addWidget(nav);
 
   newMenu = new QPopupMenu(this);
@@ -103,8 +95,11 @@ ChartPage::~ChartPage ()
 void ChartPage::deleteChart ()
 {
   QString s("*");
-  QString s2(nav->getCurrentPath());
+  QString s2, bp;
+  nav->getCurrentPath(s2);
+  config.getData(Config::DataPath, bp);
   SymbolDialog *dialog = new SymbolDialog(this, 
+                                          bp,
   					  s2,
 					  s,
 					  QFileDialog::ExistingFiles);
@@ -141,29 +136,26 @@ void ChartPage::deleteChart ()
 
 void ChartPage::editChart ()
 {
-  QString symbol = nav->getFileSelection();
+  QString symbol;
+  nav->getFileSelection(symbol);
   if (! symbol.length())
     return;
 
-  QString plugin = config.parseDbPlugin(symbol);
-  DbPlugin *db = config.getDbPlugin(plugin);
-  if (! db)
-  {
-    config.closePlugin(plugin);
-    return;
-  }
-
-  db->openChart(symbol);    
-  db->dbPrefDialog();
+  DbPlugin db;
+  db.openChart(symbol);    
+  db.dbPrefDialog();
   
-  config.closePlugin(plugin);
+  db.close();
 }
 
 void ChartPage::exportSymbol ()
 {
   QString s("*");
-  QString s2(nav->getCurrentPath());
+  QString s2, bp;
+  nav->getCurrentPath(s2);
+  config.getData(Config::DataPath, bp);
   SymbolDialog *dialog = new SymbolDialog(this,
+                                          bp,
   					  s2,
 					  s,
 					  QFileDialog::ExistingFiles);
@@ -173,7 +165,8 @@ void ChartPage::exportSymbol ()
 
   if (rc == QDialog::Accepted)
   {
-    QString s = config.getData(Config::Home);
+    QString s;
+    config.getData(Config::Home, s);
     s.append("/export");
     QDir dir(s);
     if (! dir.exists(s, TRUE))
@@ -198,8 +191,11 @@ void ChartPage::exportSymbol ()
 void ChartPage::dumpSymbol ()
 {
   QString s("*");
-  QString s2(nav->getCurrentPath());
+  QString s2, bp;
+  nav->getCurrentPath(s2);
+  config.getData(Config::DataPath, bp);
   SymbolDialog *dialog = new SymbolDialog(this,
+                                          bp,
   					  s2,
 					  s,
 					  QFileDialog::ExistingFiles);
@@ -209,7 +205,7 @@ void ChartPage::dumpSymbol ()
 
   if (rc == QDialog::Accepted)
   {
-    s = config.getData(Config::Home);
+    config.getData(Config::Home, s);
     s.append("/export");
     QDir dir(s);
     if (! dir.exists(s, TRUE))
@@ -233,21 +229,15 @@ void ChartPage::dumpSymbol ()
 
 void ChartPage::exportChart (QString &path, bool f)
 {
-  QString plugin = config.parseDbPlugin(path);
-  DbPlugin *db = config.getDbPlugin(plugin);
-  if (! db)
-  {
-    config.closePlugin(plugin);
-    return;
-  }
+  DbPlugin db;
+  db.openChart(path);
 
-  db->openChart(path);
-
-  QString s = config.getData(Config::Home);
+  QString s;
+  config.getData(Config::Home, s);
   s.append("/export/");
   
   QString s2;
-  db->getHeaderField(DbPlugin::Symbol, s2);
+  db.getHeaderField(DbPlugin::Symbol, s2);
   if (! s2.length())
   {
     QStringList l = QStringList::split("/", path, FALSE);
@@ -256,9 +246,9 @@ void ChartPage::exportChart (QString &path, bool f)
   else
     s.append(s2);
 
-  db->dump(s, f);
+  db.dump(s, f);
 
-  config.closePlugin(plugin);
+  db.close();
 }
 
 void ChartPage::chartSelected (QString)
@@ -294,19 +284,12 @@ void ChartPage::searchChanged (const QString &d)
 
 void ChartPage::newChart (int id)
 {
-  QString dbPlugin = newMenu->text(id);
-  dbPlugin.remove(dbPlugin.find("&", 0, TRUE), 1);
+  QString type = newMenu->text(id);
+  type.remove(type.find("&", 0, TRUE), 1);
 
-  DbPlugin *db = config.getDbPlugin(dbPlugin);
-  if (! db)
-  {
-    config.closePlugin(dbPlugin);
-    return;
-  }
-  
-  db->createNew();
-  
-  config.closePlugin(dbPlugin);
+  DbPlugin db;
+  db.createNew(type);
+  db.close();
   
   refreshList();
 }
@@ -321,13 +304,6 @@ void ChartPage::slotHelp ()
 void ChartPage::setFocus ()
 {
   nav->setFocus();
-}
-
-void ChartPage::setKeyFlag (bool d)
-{
-  keyFlag = d;
-  nav->setKeyFlag(d);
-  search->setKeyFlag(d);
 }
 
 void ChartPage::doKeyPress (QKeyEvent *key)
@@ -359,9 +335,7 @@ void ChartPage::doKeyPress (QKeyEvent *key)
   }
   else
   {
-    if (search->hasFocus())
-      search->doKeyPress(key);
-    else
+    if (! search->hasFocus())
       nav->doKeyPress(key);
   }
 }
@@ -371,31 +345,21 @@ void ChartPage::slotAccel (int id)
   switch (id)
   {
     case DeleteChart:
-      if (keyFlag)
-        emit signalKeyPressed (Macro::ChartPage, ControlButton, Key_D, 0, QString());
       deleteChart();
       break;  
     case EditChart:
-      if (keyFlag)
-        emit signalKeyPressed (Macro::ChartPage, ControlButton, Key_E, 0, QString());
       editChart();
       break;  
     case ExportSymbol:
-      if (keyFlag)
-        emit signalKeyPressed (Macro::ChartPage, ControlButton, Key_X, 0, QString());
       exportSymbol();
       break;  
     case DumpSymbol:
-      if (keyFlag)
-        emit signalKeyPressed (Macro::ChartPage, ControlButton, Key_U, 0, QString());
       dumpSymbol();
       break;  
     case Help:
       slotHelp();
       break;  
     case Tab:
-      if (keyFlag)
-        emit signalKeyPressed (Macro::ChartPage, ControlButton, Key_Tab, 0, QString());
       if (search->hasFocus())
         nav->setFocus();
       else
@@ -404,22 +368,5 @@ void ChartPage::slotAccel (int id)
     default:
       break;
   }
-}
-
-void ChartPage::runMacro (Macro *d)
-{
-  macro = d;
-  macroFlag = TRUE;
-  
-  while (macro->getZone(macro->getIndex()) == Macro::ChartPage)
-  {
-    doKeyPress(macro->getKey(macro->getIndex()));
-    
-    macro->incIndex();
-    if (macro->getIndex() >= macro->getCount())
-      break;
-  }
-  
-  macroFlag = FALSE;
 }
 

@@ -41,9 +41,9 @@ void FontButton::setFontButton ()
   setFont(font);
 }
 
-QFont FontButton::getFont ()
+void FontButton::getFont (QFont &d)
 {
-  return font;
+  d = font;
 }
 
 void FontButton::fontDialog ()

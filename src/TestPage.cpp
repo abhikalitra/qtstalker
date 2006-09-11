@@ -31,20 +31,32 @@
 #include <qinputdialog.h>
 #include <qmessagebox.h>
 #include <qcursor.h>
-#include <qdir.h>
 #include <stdlib.h>
 #include <qaccel.h>
+#include <qlayout.h>
+#include <qtooltip.h>
 
-TestPage::TestPage (QWidget *w, MainMenubar *mb) : QListBox (w)
+TestPage::TestPage (QWidget *w, MainMenubar *mb) : QWidget (w)
 {
-  keyFlag = FALSE;
-  macroFlag = FALSE;
-  macro = 0;
   menubar = mb;
+  idir.setFilter(QDir::Dirs);
 
-  connect(this, SIGNAL(contextMenuRequested(QListBoxItem *, const QPoint &)), this, SLOT(rightClick(QListBoxItem *)));
-  connect(this, SIGNAL(highlighted(const QString &)), this, SLOT(testSelected(const QString &)));
-  connect(this, SIGNAL(doubleClicked(QListBoxItem *)), this, SLOT(doubleClick(QListBoxItem *)));
+  QVBoxLayout *vbox = new QVBoxLayout(this);
+  vbox->setMargin(2);
+  vbox->setSpacing(5);
+  
+  search = new QLineEdit(this);
+  search->setText("*");
+  connect(search, SIGNAL(textChanged(const QString &)), this, SLOT(searchChanged(const QString &)));
+  QToolTip::add(search, tr("List Filter, e.g. s* or sb*"));
+  vbox->addWidget(search);
+
+  list = new QListBox(this);
+  connect(list, SIGNAL(contextMenuRequested(QListBoxItem *, const QPoint &)), this,
+          SLOT(rightClick(QListBoxItem *)));
+  connect(list, SIGNAL(highlighted(const QString &)), this, SLOT(testSelected(const QString &)));
+  connect(list, SIGNAL(doubleClicked(QListBoxItem *)), this, SLOT(doubleClick(QListBoxItem *)));
+  vbox->addWidget(list);
   
   menu = new QPopupMenu(this);
   menu->insertItem(QPixmap(newchart), tr("&New Rule		Ctrl+N"), this, SLOT(newTest()));
@@ -74,8 +86,8 @@ TestPage::~TestPage ()
 
 void TestPage::openTest ()
 {
-  Tester *dialog = new Tester(currentText());
-  connect(menubar, SIGNAL(signalScale(bool)), dialog, SLOT(slotScaleToScreen(bool)));
+  Tester *dialog = new Tester(list->currentText());
+//  connect(menubar, SIGNAL(signalScale(bool)), dialog, SLOT(slotScaleToScreen(bool)));
   dialog->show();
 }
 
@@ -91,15 +103,17 @@ void TestPage::newTest()
   updateList();
   
   dialog = new Tester(name);
-  connect(menubar, SIGNAL(signalScale(bool)), dialog, SLOT(slotScaleToScreen(bool)));
+//  connect(menubar, SIGNAL(signalScale(bool)), dialog, SLOT(slotScaleToScreen(bool)));
   dialog->show();
 }
 
 void TestPage::deleteTest()
 {
   QString s("*");
-  QString s2(config.getData(Config::TestPath));
+  QString s2;
+  config.getData(Config::TestPath, s2);
   SymbolDialog *dialog = new SymbolDialog(this,
+                                          s2,
   					  s2,
 					  s,
 					  QFileDialog::DirectoryOnly);
@@ -137,14 +151,14 @@ void TestPage::deleteTest()
 
 void TestPage::renameTest ()
 {
-  if (currentItem() == -1)
+  if (list->currentItem() == -1)
     return;
 
   bool ok;
   QString s = QInputDialog::getText(tr("Rename Backtest Rule"),
   				    tr("Enter new backtest rule name."),
   				    QLineEdit::Normal,
-				    currentText(),
+				    list->currentText(),
 				    &ok,
 				    this);
 
@@ -160,9 +174,8 @@ void TestPage::renameTest ()
       selection.append(c);
   }
     
-  s = config.getData(Config::TestPath);
-  s.append("/");
-  s.append(selection);
+  config.getData(Config::TestPath, s);
+  s.append("/" + selection);
   QDir dir(s);
   if (dir.exists(s, TRUE))
   {
@@ -170,24 +183,24 @@ void TestPage::renameTest ()
     return;
   }
 
-  QString s2 = config.getData(Config::TestPath);
-  s2.append("/");
-  s2.append(currentText());
+  QString s2;
+  config.getData(Config::TestPath, s2);
+  s2.append("/" + list->currentText());
   dir.rename(s2, s, TRUE);
   
-  changeItem(selection, currentItem());
+  list->changeItem(selection, list->currentItem());
 }
 
 void TestPage::copyTest ()
 {
-  if (currentItem() == -1)
+  if (list->currentItem() == -1)
     return;
 
   bool ok;
   QString s = QInputDialog::getText(tr("Copy Backtest Rule"),
   				    tr("Enter new name of copy."),
   				    QLineEdit::Normal,
-				    currentText(),
+				    list->currentText(),
 				    &ok,
 				    this);
 
@@ -203,7 +216,8 @@ void TestPage::copyTest ()
       selection.append(c);
   }
     
-  s = config.getData(Config::TestPath) + "/" + selection;
+  config.getData(Config::TestPath, s);
+  s.append("/" + selection);
   QDir dir(s);
   if (dir.exists(s, TRUE))
   {
@@ -211,8 +225,9 @@ void TestPage::copyTest ()
     return;
   }
 
-  s = "cp -R " + config.getData(Config::TestPath) + "/" + currentText() + " ";
-  s.append(config.getData(Config::TestPath) + "/" + selection);
+  QString ts;
+  config.getData(Config::TestPath, ts);
+  s = "cp -R " + ts + "/" + list->currentText() + " " + ts + "/" + selection;
 
   if (system(s.latin1()) == -1)
     qDebug("TestPage::copyTest:command failed");
@@ -244,12 +259,19 @@ void TestPage::rightClick (QListBoxItem *)
 
 void TestPage::updateList ()
 {
-  clear();
-  
-  QDir dir(config.getData(Config::TestPath));
+  list->clear();
+
+  QString s;
+  config.getData(Config::TestPath, s);
+  idir.setPath(s);
   int loop;
-  for (loop = 2; loop < (int) dir.count(); loop++)
-    insertItem(dir[loop], -1);
+  for (loop = 0; loop < (int) idir.count(); loop++)
+  {
+    if (! idir[loop].compare(".") || ! idir[loop].compare(".."))
+      ;
+    else
+      list->insertItem(idir[loop], -1);
+  }
 }
 
 void TestPage::slotMessage (QString d)
@@ -273,16 +295,8 @@ void TestPage::slotHelp ()
   hw->show();
 }
 
-void TestPage::setKeyFlag (bool d)
-{
-  keyFlag = d;
-}
-
 void TestPage::keyPressEvent (QKeyEvent *key)
 {
-  if (keyFlag)
-    emit signalKeyPressed (Macro::TestPage, key->state(), key->key(), key->ascii(), key->text());
-  
   doKeyPress(key);
 }
 
@@ -328,7 +342,7 @@ void TestPage::doKeyPress (QKeyEvent *key)
         openTest();
         break;
       default:
-        QListBox::keyPressEvent(key);
+//        QListBox::keyPressEvent(key);
         break;
     }
   }
@@ -339,28 +353,18 @@ void TestPage::slotAccel (int id)
   switch (id)
   {
     case NewTest:
-      if (keyFlag)
-        emit signalKeyPressed (Macro::TestPage, ControlButton, Key_N, 0, QString());
       newTest();
       break;  
     case DeleteTest:
-      if (keyFlag)
-        emit signalKeyPressed (Macro::TestPage, ControlButton, Key_D, 0, QString());
       deleteTest();
       break;  
     case RenameTest:
-      if (keyFlag)
-        emit signalKeyPressed (Macro::TestPage, ControlButton, Key_R, 0, QString());
       renameTest();
       break;  
     case OpenTest:
-      if (keyFlag)
-        emit signalKeyPressed (Macro::TestPage, ControlButton, Key_O, 0, QString());
       openTest();
       break;  
     case CopyTest:
-      if (keyFlag)
-        emit signalKeyPressed (Macro::TestPage, ControlButton, Key_Y, 0, QString());
       copyTest();
       break;  
     case Help:
@@ -371,20 +375,9 @@ void TestPage::slotAccel (int id)
   }
 }
 
-void TestPage::runMacro (Macro *d)
+void TestPage::searchChanged (const QString &d)
 {
-  macro = d;
-  macroFlag = TRUE;
-  
-  while (macro->getZone(macro->getIndex()) == Macro::TestPage)
-  {
-    doKeyPress(macro->getKey(macro->getIndex()));
-    
-    macro->incIndex();
-    if (macro->getIndex() >= macro->getCount())
-      break;
-  }
-  
-  macroFlag = FALSE;
+  idir.setNameFilter(d);
+  updateList();
 }
 

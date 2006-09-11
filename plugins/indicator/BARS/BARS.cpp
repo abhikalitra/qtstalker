@@ -35,6 +35,38 @@ BARS::BARS ()
   methodList.append("Bar");
   methodList.append("Candle");
 
+  barUpColorLabel = "barUpColor";
+  barDownColorLabel = "barDownColor";
+  barNeutralColorLabel = "barNeutralColor";
+  candleColorLabel = "candleColor";
+  labelLabel = "label";
+  methodLabel = "method";
+  lineTypeLabel = "lineType";
+  pluginLabel = "plugin";
+
+  maColorLabel = "maColor";
+  maLineTypeLabel = "maLineType";
+  maPeriodLabel = "maPeriod";
+  maLabelLabel = "maLabel";
+  maTypeLabel = "maType";
+  maInputLabel = "maInput";
+
+  maColor2Label = "maColor2";
+  maLineType2Label = "maLineType2";
+  maPeriod2Label = "maPeriod2";
+  maLabel2Label = "maLabel2";
+  maType2Label = "maType2";
+  maInput2Label = "maInput2";
+
+  maColor3Label = "maColor3";
+  maLineType3Label = "maLineType3";
+  maPeriod3Label = "maPeriod3";
+  maLabel3Label = "maLabel3";
+  maType3Label = "maType3";
+  maInput3Label = "maInput3";
+
+  formatList.append(FormatString);
+
   setDefaults();
 }
 
@@ -49,19 +81,20 @@ void BARS::setDefaults ()
   barNeutralColor.setNamedColor("blue");
   candleColor.setNamedColor("green");
   label = pluginName;
+  method = methodList[0];
 
   maColor.setNamedColor("red");
   maColor2.setNamedColor("red");
-  maColor3.setNamedColor("red");
+  maColor3.setNamedColor("yellow");
   maLineType = PlotLine::Line;
   maLineType2 = PlotLine::Line;
   maLineType3 = PlotLine::Line;
   maLabel = "MA";
   maLabel2 = "MA2";
   maLabel3 = "MA3";
-  maPeriod = 1;
-  maPeriod2 = 1;
-  maPeriod3 = 1;
+  maPeriod = 10;
+  maPeriod2 = 50;
+  maPeriod3 = 200;
   maType = 1;
   maType2 = 1;
   maType3 = 1;
@@ -109,7 +142,12 @@ void BARS::calculateBar ()
     else
       color = barNeutralColor;
 
-    line->appendBar(color, data->getOpen(loop), data->getHigh(loop), data->getLow(loop), data->getClose(loop));
+    line->append(color, data->getOpen(loop), data->getHigh(loop), data->getLow(loop),
+                 data->getClose(loop), FALSE);
+
+    QDateTime dt;
+    data->getDate(loop, dt);
+    line->append(dt);
   }
 
   line->setType(PlotLine::Bar);
@@ -135,7 +173,11 @@ void BARS::calculateCandle ()
         fillFlag = TRUE;
     }
 
-    line->appendBar(candleColor, o, data->getHigh(loop), data->getLow(loop), c, fillFlag);
+    line->append(candleColor, o, data->getHigh(loop), data->getLow(loop), c, fillFlag);
+
+    QDateTime dt;
+    data->getDate(loop, dt);
+    line->append(dt);
   }
 
   line->setType(PlotLine::Candle);
@@ -272,7 +314,8 @@ int BARS::indicatorPrefDialog (QWidget *w)
 
   dialog->addTextItem(ll, pl, label);
 
-  QStringList mal = getMATypes();
+  QStringList mal;
+  getMATypes(mal);
 
   dialog->createPage (pl2);
   dialog->addColorItem(macl, pl2, maColor);
@@ -306,16 +349,16 @@ int BARS::indicatorPrefDialog (QWidget *w)
     {
       if (! method.compare("Bar"))
       {
-        barUpColor = dialog->getColor(ucl);
-        barDownColor = dialog->getColor(dcl);
-        barNeutralColor = dialog->getColor(ncl);
+        dialog->getColor(ucl, barUpColor);
+        dialog->getColor(dcl, barDownColor);
+        dialog->getColor(ncl, barNeutralColor);
         lineType = PlotLine::Bar;
         break;
       }
 
       if (! method.compare("Candle"))
       {
-        candleColor = dialog->getColor(ccl);
+        dialog->getColor(ccl, candleColor);
         lineType = PlotLine::Candle;
         break;
       }
@@ -323,26 +366,26 @@ int BARS::indicatorPrefDialog (QWidget *w)
       break;
     }
 
-    label = dialog->getText(ll);
+    dialog->getText(ll, label);
 
-    maColor = dialog->getColor(macl);
+    dialog->getColor(macl, maColor);
     maLineType = (PlotLine::LineType) dialog->getComboIndex(maltl);
     maPeriod = dialog->getInt(mapl);
-    maLabel = dialog->getText(mall);
+    dialog->getText(mall, maLabel);
     maType = dialog->getComboIndex(matl);
     maInput = (BarData::InputType) dialog->getComboIndex(mail);
 
-    maColor2 = dialog->getColor(ma2cl);
+    dialog->getColor(ma2cl, maColor2);
     maLineType2 = (PlotLine::LineType) dialog->getComboIndex(ma2ltl);
     maPeriod2 = dialog->getInt(ma2pl);
-    maLabel2 = dialog->getText(ma2ll);
+    dialog->getText(ma2ll, maLabel2);
     maType2 = dialog->getComboIndex(ma2tl);
     maInput2 = (BarData::InputType) dialog->getComboIndex(ma2il);
 
-    maColor3 = dialog->getColor(ma3cl);
+    dialog->getColor(ma3cl, maColor3);
     maLineType3 = (PlotLine::LineType) dialog->getComboIndex(ma3ltl);
     maPeriod3 = dialog->getInt(ma3pl);
-    maLabel3 = dialog->getText(ma3ll);
+    dialog->getText(ma3ll, maLabel3);
     maType3 = dialog->getComboIndex(ma3tl);
     maInput3 = (BarData::InputType) dialog->getComboIndex(ma3il);
 
@@ -361,164 +404,207 @@ void BARS::setIndicatorSettings (Setting &dict)
   
   if (! dict.count())
     return;
-  
-  QString s = dict.getData("label");
+
+  QString s;
+  dict.getData(labelLabel, s);
   if (s.length())
     label = s;
-        
-  s = dict.getData("lineType");
+  
+  dict.getData(lineTypeLabel, s);
   if (s.length())
     lineType = (PlotLine::LineType) s.toInt();
 
-  s = dict.getData("method");
+  dict.getData(methodLabel, s);
   if (s.length())
     method = s;
 
-  s = dict.getData("barUpColor");
+  dict.getData(barUpColorLabel, s);
   if (s.length())
     barUpColor.setNamedColor(s);
     
-  s = dict.getData("barDownColor");
+  dict.getData(barDownColorLabel, s);
   if (s.length())
     barDownColor.setNamedColor(s);
     
-  s = dict.getData("barNeutralColor");
+  dict.getData(barNeutralColorLabel, s);
   if (s.length())
     barNeutralColor.setNamedColor(s);
 
-  s = dict.getData("candleColor");
+  dict.getData(candleColorLabel, s);
   if (s.length())
     candleColor.setNamedColor(s);
 
-  s = dict.getData("maColor");
+  dict.getData(maColorLabel, s);
   if (s.length())
     maColor.setNamedColor(s);
     
-  s = dict.getData("maLineType");
+  dict.getData(maLineTypeLabel, s);
   if (s.length())
     maLineType = (PlotLine::LineType) s.toInt();
 
-  s = dict.getData("maPeriod");
+  dict.getData(maPeriodLabel, s);
   if (s.length())
     maPeriod = s.toInt();
 
-  s = dict.getData("maLabel");
+  dict.getData(maLabelLabel, s);
   if (s.length())
     maLabel = s;
       
-  s = dict.getData("maType");
+  dict.getData(maTypeLabel, s);
   if (s.length())
     maType = s.toInt();
     
-  s = dict.getData("maInput");
+  dict.getData(maInputLabel, s);
   if (s.length())
     maInput = (BarData::InputType) s.toInt();
 
-  s = dict.getData("maColor2");
+  dict.getData(maColor2Label, s);
   if (s.length())
     maColor2.setNamedColor(s);
     
-  s = dict.getData("maLineType2");
+  dict.getData(maLineType2Label, s);
   if (s.length())
     maLineType2 = (PlotLine::LineType) s.toInt();
 
-  s = dict.getData("maPeriod2");
+  dict.getData(maPeriod2Label, s);
   if (s.length())
     maPeriod2 = s.toInt();
 
-  s = dict.getData("maLabel2");
+  dict.getData(maLabel2Label, s);
   if (s.length())
     maLabel2 = s;
       
-  s = dict.getData("maType2");
+  dict.getData(maType2Label, s);
   if (s.length())
     maType2 = s.toInt();
     
-  s = dict.getData("maInput2");
+  dict.getData(maInput2Label, s);
   if (s.length())
     maInput2 = (BarData::InputType) s.toInt();
 
-  s = dict.getData("maColor3");
+  dict.getData(maColor3Label, s);
   if (s.length())
     maColor3.setNamedColor(s);
     
-  s = dict.getData("maLineType3");
+  dict.getData(maLineType3Label, s);
   if (s.length())
     maLineType3 = (PlotLine::LineType) s.toInt();
 
-  s = dict.getData("maPeriod3");
+  dict.getData(maPeriod3Label, s);
   if (s.length())
     maPeriod3 = s.toInt();
 
-  s = dict.getData("maLabel3");
+  dict.getData(maLabel3Label, s);
   if (s.length())
     maLabel3 = s;
       
-  s = dict.getData("maType3");
+  dict.getData(maType3Label, s);
   if (s.length())
     maType3 = s.toInt();
     
-  s = dict.getData("maInput3");
+  dict.getData(maInput3Label, s);
   if (s.length())
     maInput3 = (BarData::InputType) s.toInt();
 }
 
 void BARS::getIndicatorSettings (Setting &dict)
 {
-  dict.setData("barUpColor", barUpColor.name());
-  dict.setData("barDownColor", barDownColor.name());
-  dict.setData("barNeutralColor", barNeutralColor.name());
-  dict.setData("candleColor", candleColor.name());
-  dict.setData("label", label);
-  dict.setData("method", method);
-  dict.setData("lineType", QString::number(lineType));
-  dict.setData("plugin", pluginName);
+  QString ts = barUpColor.name();
+  dict.setData(barUpColorLabel, ts);
+  ts = barDownColor.name();
+  dict.setData(barDownColorLabel, ts);
+  ts = barNeutralColor.name();
+  dict.setData(barNeutralColorLabel, ts);
+  ts = candleColor.name();
+  dict.setData(candleColorLabel, ts);
+  dict.setData(labelLabel, label);
+  dict.setData(methodLabel, method);
+  ts = QString::number(lineType);
+  dict.setData(lineTypeLabel, ts);
+  dict.setData(pluginLabel, pluginName);
 
-  dict.setData("maColor", maColor.name());
-  dict.setData("maLineType", QString::number(maLineType));
-  dict.setData("maPeriod", QString::number(maPeriod));
-  dict.setData("maLabel", maLabel);
-  dict.setData("maType", QString::number(maType));
-  dict.setData("maInput", QString::number(maInput));
+  ts = maColor.name();
+  dict.setData(maColorLabel, ts);
+  ts = QString::number(maLineType);
+  dict.setData(maLineTypeLabel, ts);
+  ts = QString::number(maPeriod);
+  dict.setData(maPeriodLabel, ts);
+  dict.setData(maLabelLabel, maLabel);
+  ts = QString::number(maType);
+  dict.setData(maTypeLabel, ts);
+  ts = QString::number(maInput);
+  dict.setData(maInputLabel, ts);
 
-  dict.setData("maColor2", maColor2.name());
-  dict.setData("maLineType2", QString::number(maLineType2));
-  dict.setData("maPeriod2", QString::number(maPeriod2));
-  dict.setData("maLabel2", maLabel2);
-  dict.setData("maType2", QString::number(maType2));
-  dict.setData("maInput2", QString::number(maInput2));
+  ts = maColor2.name();
+  dict.setData(maColor2Label, ts);
+  ts = QString::number(maLineType2);
+  dict.setData(maLineType2Label, ts);
+  ts = QString::number(maPeriod2);
+  dict.setData(maPeriod2Label, ts);
+  dict.setData(maLabel2Label, maLabel2);
+  ts = QString::number(maType2);
+  dict.setData(maType2Label, ts);
+  ts = QString::number(maInput2);
+  dict.setData(maInput2Label, ts);
 
-  dict.setData("maColor3", maColor3.name());
-  dict.setData("maLineType3", QString::number(maLineType3));
-  dict.setData("maPeriod3", QString::number(maPeriod3));
-  dict.setData("maLabel3", maLabel3);
-  dict.setData("maType3", QString::number(maType3));
-  dict.setData("maInput3", QString::number(maInput3));
+  ts = maColor3.name();
+  dict.setData(maColor3Label, ts);
+  ts = QString::number(maLineType3);
+  dict.setData(maLineType3Label, ts);
+  ts = QString::number(maPeriod3);
+  dict.setData(maPeriod3Label, ts);
+  dict.setData(maLabel3Label, maLabel3);
+  ts = QString::number(maType3);
+  dict.setData(maType3Label, ts);
+  ts = QString::number(maInput3);
+  dict.setData(maInput3Label, ts);
 }
 
-PlotLine * BARS::calculateCustom (QString &p, QPtrList<PlotLine> &)
+PlotLine * BARS::calculateCustom (QString &p, QPtrList<PlotLine> &d)
 {
   // format1 (BARS): TYPE
 
-  QStringList l = QStringList::split(",", p, FALSE);
-
-  if (l.count() == 0)
-  {
-    qDebug("BARS::calculateCustom: invalid parm count");
+  if (checkFormat(p, d, 1, 1))
     return 0;
-  }
 
-  if (methodList.findIndex(l[0]) == -1)
+  if (methodList.findIndex(formatStringList[0]) == -1)
   {
     qDebug("BARS::calculateCustom: invalid TYPE parm");
     return 0;
   }
   else
-    method = l[0];
+    method = formatStringList[0];
 
   clearOutput();
   calculate();
   return output->getLine(0);
+}
+
+void BARS::formatDialog (QStringList &, QString &rv, QString &rs)
+{
+  rs.truncate(0);
+  rv.truncate(0);
+  QString pl = QObject::tr("Parms");
+  QString vl = QObject::tr("Variable Name");
+  QString btl = QObject::tr("Bar Type");
+  PrefDialog *dialog = new PrefDialog(0);
+  dialog->setCaption(QObject::tr("BARS Format"));
+  dialog->createPage (pl);
+  dialog->setHelpFile(helpFile);
+
+  QString s;
+  dialog->addTextItem(vl, pl, s);
+  dialog->addComboItem(btl, pl, methodList, 0);
+
+  int rc = dialog->exec();
+  
+  if (rc == QDialog::Accepted)
+  {
+    dialog->getText(vl, rv);
+    dialog->getCombo(btl, rs);
+  }
+
+  delete dialog;
 }
 
 //*******************************************************

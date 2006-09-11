@@ -26,6 +26,7 @@
 #include "Bar.h"
 #include <qstring.h>
 #include <qdict.h>
+#include <qdatetime.h>
 
 class Spread : public DbPlugin
 {
@@ -34,17 +35,17 @@ class Spread : public DbPlugin
   public:
     Spread ();
     ~Spread ();
-    void getHistory (BarData *);
+    void getHistory (BarData *, QDateTime &);
     void updateSpread ();
     void loadData (QString &, QString &);
     void createNew ();
     void dbPrefDialog ();
     void setBar (Bar &);
-    Bar *getBar (QString &, QString &);
+    void getBar (QString &, QString &, Bar &);
     
   private:
     QDict<Bar> data;
-    double fdate;
+    QDateTime fdate;
 };
 
 extern "C"

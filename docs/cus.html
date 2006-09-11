@@ -40,15 +40,17 @@ for the format of each indicator.<br>
 Here is an example of what the MACD indicator would look like if we
 constructed one manually instead of using the builtin version.<br>
 <br>
-macd := MACD(Close, EMA, 12, 26)<br>
-trig := MA(macd, EMA, 9)<br>
+macd := TALIB(MACDFIX, Close, 9)<br>
+trig := TALIB(EMA, macd, 9)<br>
 osc := UTIL(SUB, macd, trig)<br>
 <br>
 Lets review what we did. The first line creates a variable called
-'macd'. We use the MACD indicator to get a MACD. The next line we
+'macd'. We use the TALIB indicator to get a MACD using the MACDFIX
+function. The next line we
 create a variable called 'trig'. This will be the trigger of the MACD,
-which is just an EMA of the MACD. So we use the MA plugin and request
-an 9 period EMA of the 'macd' Notice we use the variable 'macd' as the
+which is just an EMA of the MACD. So we use the TALIB plugin again and
+request
+an 9 period EMA of the 'macd'. Notice we use the variable 'macd' as the
 input for the 'trig'. The last line we create a variable called 'osc'.
 This is an oscillator. An oscillator is simply the difference between 2
 variables. So we need to use the UTIL plugin that contains a
@@ -77,6 +79,9 @@ plot(osc, blue, OSC, Histogram)<br>
 plot(macd, red, MACD, Line)<br>
 plot(trig, yellow, TRIG, Dash)<br>
 <br>
+Fortunately, the user does not need to input the plot format manually.
+We can use the 'insert' dialog to construct the plot paramaters for us
+correctly.<br>
 <br>
 <h4>Reserved Words:</h4>
 These words and symbols are reserved for use in CUS scripts. Do not use

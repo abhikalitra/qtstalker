@@ -41,10 +41,10 @@ Spread::~Spread ()
 {
 }
 
-void Spread::getHistory (BarData *bd)
+void Spread::getHistory (BarData *bd, QDateTime &dt)
 {
   updateSpread();
-  DbPlugin::getHistory(bd);
+  DbPlugin::getHistory(bd, dt);
 }
 
 void Spread::dbPrefDialog ()
@@ -78,22 +78,18 @@ void Spread::dbPrefDialog ()
   
   t = QObject::tr("First Date");
   t2.truncate(0);
-  Bar *bar = getFirstBar();
-  if (bar)
-  {
-    bar->getDate().getDateTimeString(TRUE, t2);
-    delete bar;
-  }
+  Bar bar;
+  getFirstBar(bar);
+  if (! bar.getEmptyFlag())
+    bar.getDateTimeString(TRUE, t2);
   dialog->addLabelItem(t, pl, t2);
   
   t = QObject::tr("Last Date");
   t2.truncate(0);
-  bar = getLastBar();
-  if (bar)
-  {
-    bar->getDate().getDateTimeString(TRUE, t2);
-    delete bar;
-  }
+  Bar bar2;
+  getLastBar(bar2);
+  if (! bar2.getEmptyFlag())
+    bar2.getDateTimeString(TRUE, t2);
   dialog->addLabelItem(t, pl, t2);
   
   pl = QObject::tr("Parms");
@@ -159,7 +155,7 @@ void Spread::dbPrefDialog ()
 void Spread::updateSpread ()
 {
   data.clear();
-  fdate = 99999999999999.0;
+  fdate = QDateTime::currentDateTime();
   
   QString s = "First Symbol";
   QString fs;
@@ -186,16 +182,15 @@ void Spread::updateSpread ()
   loadData(ss, meth);
   emit signalProgMessage(2, 3);
 
-  Bar *r = data.find(QString::number(fdate, 'f', 0));
+  Bar *r = data.find(fdate.toString("yyyyMMddhhmmss"));
   if (r)
   {
     Bar &bar = *r;
     setBar(bar);
 
-    s = "Count";
-    if (r->getData(s) != 2)
+    if (r->getOI() != 2)
     {
-      s = QString::number(fdate, 'f', 0);
+      s = fdate.toString("yyyyMMddhhmmss");
       deleteData(s);
     }
   }
@@ -204,11 +199,11 @@ void Spread::updateSpread ()
   for (; it.current(); ++it)
   {
     r = it.current();
-    s = "Count";
-    if (r->getData(s) == 2)
+    if (r->getOI() == 2)
     {
       Bar bar;
-      BarDate dt = r->getDate();
+      QDateTime dt;
+      r->getDate(dt);
       bar.setDate(dt);
       bar.setOpen(r->getClose());
       bar.setHigh(r->getClose());
@@ -240,7 +235,7 @@ void Spread::loadData (QString &symbol, QString &method)
     return;
   }
   
-  db->setBarCompression(BarData::DailyBar);
+  db->setBarLength(BarData::DailyBar);
   db->setBarRange(99999999);
   
   QString s = "Rebuild";
@@ -249,36 +244,39 @@ void Spread::loadData (QString &symbol, QString &method)
   bool rebuild = s2.toInt();
   if (! rebuild)
   {
-    Bar *bar = getLastBar();
-    if (bar)
+    Bar bar;
+    getLastBar(bar);
+    if (! bar.getEmptyFlag())
     {
       QDate d = QDate::currentDate();
-      db->setBarRange(bar->getDate().getDate().daysTo(d));
-      delete bar;
+      QDateTime dt;
+      bar.getDate(dt);
+      db->setBarRange(dt.date().daysTo(d));
     }
   }
 
   BarData *recordList = new BarData;
-  db->getHistory(recordList);
+  QDateTime dt = QDateTime::currentDateTime();
+  db->getHistory(recordList, dt);
 
   int loop;
   for (loop = 0; loop < (int) recordList->count(); loop++)
   {
-    recordList->getDate(loop).getDateTimeString(FALSE, s);
+    recordList->getDate(loop, dt);
+    s = dt.toString("yyyyMMddhhmmss");
     Bar *r = data.find(s);
     if (! r)
     {
       r = new Bar;
-      BarDate dt = recordList->getDate(loop);
+      recordList->getDate(loop, dt);
       r->setDate(dt);
       r->setClose(recordList->getClose(loop));
-      s = "Count";
-      r->setData(s, 1);
-      r->getDate().getDateTimeString(FALSE, s);
+      r->setOI(1);
+      r->getDateTimeString(FALSE, s);
       data.insert(s, r);
       
-      if (r->getDate().getDateValue() < fdate)
-        fdate = r->getDate().getDateValue();
+      if (dt < fdate)
+        fdate = dt;
     }
     else
     {
@@ -288,8 +286,7 @@ void Spread::loadData (QString &symbol, QString &method)
       if (! method.compare("Divide"))
         r->setClose(r->getClose() / recordList->getClose(loop));
       
-      s = "Count";
-      r->setData(s, 2);
+      r->setOI(2);
     }
   }
 
@@ -346,16 +343,14 @@ void Spread::createNew ()
   dbPrefDialog();
 }
 
-Bar * Spread::getBar (QString &k, QString &d)
+void Spread::getBar (QString &k, QString &d, Bar &bar)
 {
-  Bar *bar = new Bar;
   QStringList l = QStringList::split(",", d, FALSE);
-  bar->setDate(k);
-  bar->setOpen(l[0].toDouble());
-  bar->setHigh(l[1].toDouble());
-  bar->setLow(l[2].toDouble());
-  bar->setClose(l[3].toDouble());
-  return bar;
+  bar.setDate(k);
+  bar.setOpen(l[0].toDouble());
+  bar.setHigh(l[1].toDouble());
+  bar.setLow(l[2].toDouble());
+  bar.setClose(l[3].toDouble());
 }
 
 void Spread::setBar (Bar &bar)
@@ -365,7 +360,7 @@ void Spread::setBar (Bar &bar)
   if (k.toInt() != bar.getTickFlag())
     return;
 
-  bar.getDate().getDateTimeString(FALSE, k);
+  bar.getDateTimeString(FALSE, k);
   
   QString d = QString::number(bar.getOpen()) + "," + QString::number(bar.getHigh()) + "," +
               QString::number(bar.getLow()) + "," + QString::number(bar.getClose());

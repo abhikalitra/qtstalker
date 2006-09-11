@@ -63,7 +63,7 @@ class CME : public QuotePlugin
     bool allSymbols;
     int downloadIndex;
     bool cancelFlag;
-    DbPlugin *plug;
+    DbPlugin plug;
     Config config;
 };
 

@@ -26,6 +26,7 @@
 #include "Bar.h"
 #include <qstring.h>
 #include <qdict.h>
+#include <qdatetime.h>
 
 class Index : public DbPlugin
 {
@@ -34,17 +35,17 @@ class Index : public DbPlugin
   public:
     Index ();
     ~Index ();
-    void getHistory (BarData *);
+    void getHistory (BarData *, QDateTime &);
     void updateIndex ();
     void loadData (QString &, float);
     void createNew ();
     void dbPrefDialog ();
     void setBar (Bar &);
-    Bar *getBar (QString &, QString &);
+    void getBar (QString &, QString &, Bar &);
     
   private:
     QDict<Bar> data;
-    double fdate;
+    QDateTime fdate;
 };
 
 extern "C"

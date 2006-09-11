@@ -32,6 +32,14 @@ SINWAV::SINWAV ()
 {
   pluginName = "SINWAV";
   helpFile = "sinwav.html";
+
+  colorSinLabel = "colorSin";
+  colorLeadLabel = "colorLead";
+  labelSinLabel = "labelSin";
+  labelLeadLabel = "labelLead";
+  lineTypeSinLabel = "lineTypeSin";
+  lineTypeLeadLabel = "lineTypeLead";
+  pluginLabel = "plugin";
     
   setDefaults();
 }
@@ -240,11 +248,11 @@ int SINWAV::indicatorPrefDialog (QWidget *w)
   
   if (rc == QDialog::Accepted)
   {
-    colorSin = dialog->getColor(cl);
-    colorLead = dialog->getColor(c2);
+    dialog->getColor(cl, colorSin);
+    dialog->getColor(c2, colorLead);
     lineTypeSin = (PlotLine::LineType) dialog->getComboIndex(ltl);
     lineTypeLead = (PlotLine::LineType) dialog->getComboIndex(lt2);
-    labelSin = dialog->getText(ll);
+    dialog->getText(ll, labelSin);
    
     rc = TRUE;
   }
@@ -264,13 +272,17 @@ PlotLine * SINWAV::calculateCustom (QString &, QPtrList<PlotLine> &)
 
 void SINWAV::getIndicatorSettings (Setting &dict)
 {
-  dict.setData("colorSin", colorSin.name());
-  dict.setData("colorLead", colorLead.name());
-  dict.setData("labelSin", labelSin);
-  dict.setData("labelLead", labelLead);
-  dict.setData("lineTypeSin", QString::number(lineTypeSin));
-  dict.setData("lineTypeLead", QString::number(lineTypeLead));
-  dict.setData("plugin", pluginName);
+  QString ts = colorSin.name();
+  dict.setData(colorSinLabel, ts);
+  ts = colorLead.name();
+  dict.setData(colorLeadLabel, ts);
+  dict.setData(labelSinLabel, labelSin);
+  dict.setData(labelLeadLabel, labelLead);
+  ts = QString::number(lineTypeSin);
+  dict.setData(lineTypeSinLabel, ts);
+  ts = QString::number(lineTypeLead);
+  dict.setData(lineTypeLeadLabel, ts);
+  dict.setData(pluginLabel, pluginName);
 }
 
 void SINWAV::setIndicatorSettings (Setting &dict)
@@ -280,29 +292,52 @@ void SINWAV::setIndicatorSettings (Setting &dict)
   if (! dict.count())
     return;
   
-  QString s = dict.getData("colorSin");
+  QString s;
+  dict.getData(colorSinLabel, s);
   if (s.length())
     colorSin.setNamedColor(s);
 	
-  s = dict.getData("colorLead");
+  dict.getData(colorLeadLabel, s);
   if (s.length())
     colorLead.setNamedColor(s);
     
-  s = dict.getData("labelSin");
+  dict.getData(labelSinLabel, s);
   if (s.length())
     labelSin = s;
 	
-   s = dict.getData("labelLead");
+  dict.getData(labelLeadLabel, s);
   if (s.length())
     labelLead = s;
         
-  s = dict.getData("lineTypeSin");
+  dict.getData(lineTypeSinLabel, s);
   if (s.length())
     lineTypeSin = (PlotLine::LineType) s.toInt();
 	
-  s = dict.getData("lineTypeLead");
+  dict.getData(lineTypeLeadLabel, s);
   if (s.length())
     lineTypeLead = (PlotLine::LineType) s.toInt();
+}
+
+void SINWAV::formatDialog (QStringList &, QString &rv, QString &rs)
+{
+  rs.truncate(0);
+  rv.truncate(0);
+  QString pl = QObject::tr("Parms");
+  QString vnl = QObject::tr("Variable Name");
+  PrefDialog *dialog = new PrefDialog(0);
+  dialog->setCaption(QObject::tr("SINWAV Format"));
+  dialog->createPage (pl);
+  dialog->setHelpFile(helpFile);
+
+  QString s;
+  dialog->addTextItem(vnl, pl, s);
+
+  int rc = dialog->exec();
+
+  if (rc == QDialog::Accepted)
+    dialog->getText(vnl, rv);
+
+  delete dialog;
 }
 
 //*******************************************************

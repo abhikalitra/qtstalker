@@ -33,7 +33,7 @@
 #include <qpixmap.h>
 #include <qtooltip.h>
 
-QuoteDialog::QuoteDialog () : QTabDialog (0, "QuoteDialog", FALSE, WDestructiveClose)
+QuoteDialog::QuoteDialog (QWidget *pw) : QTabDialog (pw, "QuoteDialog", FALSE, WDestructiveClose)
 {
   setCaption (tr("Qtstalker: Quotes"));
   
@@ -61,7 +61,7 @@ QuoteDialog::QuoteDialog () : QTabDialog (0, "QuoteDialog", FALSE, WDestructiveC
   
   vbox->addSpacing(5);
     
-  QLabel *label = new QLabel(tr("Quote Plugins:"), w);
+  QLabel *label = new QLabel(tr("Quote Source:"), w);
   vbox->addWidget(label);
   
   QGridLayout *grid = new QGridLayout(vbox, 1, 2);
@@ -100,7 +100,8 @@ QuoteDialog::QuoteDialog () : QTabDialog (0, "QuoteDialog", FALSE, WDestructiveC
   setHelpButton();
   QObject::connect(this, SIGNAL(helpButtonPressed()), this, SLOT(help()));
    
-  int i = pl.findIndex(config.getData(Config::LastQuotePlugin));
+  config.getData(Config::LastQuotePlugin, s);
+  int i = pl.findIndex(s);
   if (i != -1)
     ruleCombo->setCurrentItem(i);
   ruleChanged(0);

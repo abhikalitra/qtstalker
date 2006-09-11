@@ -31,41 +31,33 @@
 
 ChartToolbar::ChartToolbar (QMainWindow *mw) : QToolBar (mw, "chartToolbar")
 {
-  keyFlag = FALSE;
-  macroFlag = FALSE;
-  macro = 0;
   Config config;
+  QString ts;
   ptDate = QDateTime::currentDateTime();
   
-  BarData *bd = new BarData;
-  compressionCombo = new MyComboBox(this, Macro::ChartToolbar);
+  BarData bd(ts);
+  compressionCombo = new QComboBox(this);
   compressionCombo->show();
-  QStringList l;
-  bd->getBarCompressionList(l);
-  compressionCombo->insertStringList(l, -1);
-  compressionCombo->setCurrentItem((BarData::BarCompression) config.getData(Config::Compression).toInt());
-  QToolTip::add(compressionCombo, tr("Chart Compression"));
-  connect(compressionCombo, SIGNAL(activated(int)), this, SIGNAL(signalCompressionChanged(int)));
-  connect(compressionCombo, SIGNAL(signalKeyPressed(int, int, int, int, QString)),
-          this, SIGNAL(signalKeyPressed(int, int, int, int, QString)));
-  delete bd;
+  bd.getBarLengthList(compressionList);
+  compressionCombo->insertStringList(compressionList, -1);
+  config.getData(Config::BarLength, ts);
+  compressionCombo->setCurrentItem((BarData::BarLength) ts.toInt());
+  QToolTip::add(compressionCombo, tr("Bar Length"));
+  connect(compressionCombo, SIGNAL(activated(int)), this, SIGNAL(signalBarLengthChanged(int)));
 
-  pixelspace = new MySpinBox(this, Macro::ChartToolbar);
+  pixelspace = new QSpinBox(this);
   pixelspace->setRange(4, 99);
   connect (pixelspace, SIGNAL(valueChanged(int)), this, SIGNAL(signalPixelspaceChanged(int)));
   QToolTip::add(pixelspace, tr("Bar Spacing"));
-  connect(pixelspace, SIGNAL(signalKeyPressed(int, int, int, int, QString)),
-          this, SIGNAL(signalKeyPressed(int, int, int, int, QString)));
 
   QIntValidator *iv = new QIntValidator(1, 99999, this, 0);
 
-  barCount = new MyLineEdit(this, Macro::ChartToolbar);
+  barCount = new QLineEdit(this);
   barCount->setValidator(iv);
-  barCount->setText(config.getData(Config::Bars));
+  config.getData(Config::Bars, ts);
+  barCount->setText(ts);
   barCount->setMaximumWidth(50);
   QToolTip::add(barCount, tr("Total bars to load"));
-  connect(barCount, SIGNAL(signalKeyPressed(int, int, int, int, QString)),
-          this, SIGNAL(signalKeyPressed(int, int, int, int, QString)));
   connect(barCount, SIGNAL(returnPressed()), this, SLOT(barsChanged()));
 
   addSeparator();
@@ -79,14 +71,13 @@ ChartToolbar::ChartToolbar (QMainWindow *mw) : QToolBar (mw, "chartToolbar")
   QToolTip::add(ptnButton, tr("Load Next Bar"));
   ptnButton->setPixmap(next);
   connect(ptnButton, SIGNAL(clicked()), this, SLOT(paperTradeNextBar()));
+//  ptnButton->setFocusPolicy(QWidget::StrongFocus);
 
-  slider = new MySlider(this, Macro::ChartToolbar);
+  slider = new QSlider(this);
   slider->setOrientation(Qt::Horizontal);
   connect (slider, SIGNAL(valueChanged(int)), this, SIGNAL(signalSliderChanged(int)));
   slider->setEnabled(FALSE);
   QToolTip::add(slider, tr("Pan Chart"));
-  connect(slider, SIGNAL(signalKeyPressed(int, int, int, int, QString)),
-          this, SIGNAL(signalKeyPressed(int, int, int, int, QString)));
 
   setStretchableWidget(slider);
   
@@ -95,10 +86,10 @@ ChartToolbar::ChartToolbar (QMainWindow *mw) : QToolBar (mw, "chartToolbar")
   a->insertItem(CTRL+Key_End, ChartPannerFocus);
   a->insertItem(CTRL+Key_Plus, BarsLoadedFocus);
   a->insertItem(CTRL+Key_Minus, BarSpacingFocus);
-  a->insertItem(CTRL+Key_Prior, CompressionFocus);
+  a->insertItem(CTRL+Key_Prior, BarLengthFocus);
   a->insertItem(CTRL+Key_B, ToolbarFocus);
   
-  focusFlag = CompressionFocus;
+  focusFlag = BarLengthFocus;
 }
 
 ChartToolbar::~ChartToolbar ()
@@ -133,12 +124,12 @@ int ChartToolbar::getPixelspace ()
   return pixelspace->value();
 }
 
-int ChartToolbar::getCompressionInt ()
+int ChartToolbar::getBarLengthInt ()
 {
   return compressionCombo->currentItem();
 }
 
-QString ChartToolbar::getCompression ()
+QString ChartToolbar::getBarLength ()
 {
   return compressionCombo->currentText();
 }
@@ -177,56 +168,37 @@ void ChartToolbar::saveSettings ()
   QString s = QString::number(getBars());
   config.setData(Config::Bars, s);
   
-  s = QString::number(getCompressionInt());
-  config.setData(Config::Compression, s);
+  s = QString::number(getBarLengthInt());
+  config.setData(Config::BarLength, s);
 }
 
 void ChartToolbar::setFocus ()
 {
   compressionCombo->setFocus();
-  focusFlag = CompressionFocus;
-}
-
-void ChartToolbar::setKeyFlag (bool d)
-{
-  keyFlag = d;
-  compressionCombo->setKeyFlag(d);
-  pixelspace->setKeyFlag(d);
-  barCount->setKeyFlag(d);
-  slider->setKeyFlag(d);
+  focusFlag = BarLengthFocus;
 }
 
 void ChartToolbar::slotAccel (int id)
 {
   switch (id)
   {
-    case CompressionFocus:
+    case BarLengthFocus:
       compressionCombo->setFocus();
-      focusFlag = CompressionFocus;
-      if (keyFlag)
-        emit signalKeyPressed (Macro::ChartToolbar, ControlButton, Key_Prior, 0, QString());
+      focusFlag = BarLengthFocus;
       break;  
     case ChartPannerFocus:
       slider->setFocus();
       focusFlag = ChartPannerFocus;
-      if (keyFlag)
-        emit signalKeyPressed (Macro::ChartToolbar, ControlButton, Key_End, 0, QString());
       break;  
     case BarsLoadedFocus:
       barCount->setFocus();
       focusFlag = BarsLoadedFocus;
-      if (keyFlag)
-        emit signalKeyPressed (Macro::ChartToolbar, ControlButton, Key_Plus, 0, QString());
       break;  
     case BarSpacingFocus:
       pixelspace->setFocus();
       focusFlag = BarSpacingFocus;
-      if (keyFlag)
-        emit signalKeyPressed (Macro::ChartToolbar, ControlButton, Key_Minus, 0, QString());
       break;  
     case ToolbarFocus:
-      if (keyFlag)
-        emit signalKeyPressed (Macro::ChartToolbar, ControlButton, Key_B, 0, QString());
       setFocus();
       break;
     default:
@@ -242,17 +214,17 @@ void ChartToolbar::doKeyPress (QKeyEvent *key)
   {
     switch(focusFlag)
     {
-      case CompressionFocus:
-        compressionCombo->doKeyPress(key);
+      case BarLengthFocus:
+//        compressionCombo->doKeyPress(key);
 	break;
       case BarSpacingFocus:
-        pixelspace->doKeyPress(key);
+//        pixelspace->doKeyPress(key);
 	break;
       case BarsLoadedFocus:
-        barCount->doKeyPress(key);
+//        barCount->doKeyPress(key);
 	break;
       case ChartPannerFocus:
-        slider->doKeyPress(key);
+//        slider->doKeyPress(key);
 	break;
       default:
         break;
@@ -265,7 +237,7 @@ void ChartToolbar::doKeyPress (QKeyEvent *key)
       switch (key->key())
       {
         case Qt::Key_Prior:
-	  slotAccel(CompressionFocus);
+	  slotAccel(BarLengthFocus);
           break;
         case Qt::Key_Plus:
 	  slotAccel(BarsLoadedFocus);
@@ -286,23 +258,6 @@ void ChartToolbar::doKeyPress (QKeyEvent *key)
   }
 }
 
-void ChartToolbar::runMacro (Macro *d)
-{
-  macro = d;
-  macroFlag = TRUE;
-  
-  while (macro->getZone(macro->getIndex()) == Macro::ChartToolbar)
-  {
-    doKeyPress(macro->getKey(macro->getIndex()));
-    
-    macro->incIndex();
-    if (macro->getIndex() >= macro->getCount())
-      break;
-  }
-  
-  macroFlag = FALSE;
-}
-
 void ChartToolbar::barsChanged ()
 {
   bool ok;
@@ -315,25 +270,36 @@ void ChartToolbar::barsChanged ()
 //******************** paper trade stuff ******************************
 //*********************************************************************
 
-QDateTime ChartToolbar::getPaperTradeDate ()
+void ChartToolbar::getPaperTradeDate (QDateTime &d)
 {
-  return ptDate;
+  d = ptDate;
 }
 
 void ChartToolbar::paperTradeDate ()
 {
   QString dl = tr("Last Date");
+  QString tl = tr("Last Time");
   QString pl = "Date";
 
   PrefDialog *dialog = new PrefDialog(this);
   dialog->setCaption(tr("Paper trade date select."));
   dialog->createPage (pl);
   dialog->addDateItem(dl, pl, ptDate);
+  dialog->addTimeItem(tl, pl, ptDate);
 
   int rc = dialog->exec();
 
   if (rc == QDialog::Accepted)
-    ptDate = dialog->getDate(dl);
+  {
+    QDateTime dt;
+    dialog->getDate(dl, dt);
+    ptDate.setDate(dt.date());
+
+    dialog->getDate(tl, dt);
+    ptDate.setTime(dt.time());
+
+    emit signalPaperTradeNextBar();
+  }
 
   delete dialog;
 }
@@ -356,13 +322,47 @@ void ChartToolbar::paperTradeClicked (bool d)
 
 void ChartToolbar::paperTradeNextBar ()
 {
-  ptDate = ptDate.addDays(1);
-  if (ptDate.date().dayOfWeek() == 6)
-    ptDate = ptDate.addDays(2);
-  else
+  if (ptdButton->isHidden())
+    return;
+
+  switch (compressionCombo->currentItem())
   {
-    if (ptDate.date().dayOfWeek() == 7)
+    case 0:
+      ptDate = ptDate.addSecs(60);
+      break;
+    case 1:
+      ptDate = ptDate.addSecs(300);
+      break;
+    case 2:
+      ptDate = ptDate.addSecs(600);
+      break;
+    case 3:
+      ptDate = ptDate.addSecs(900);
+      break;
+    case 4:
+      ptDate = ptDate.addSecs(1800);
+      break;
+    case 5:
+      ptDate = ptDate.addSecs(3600);
+      break;
+    case 6: // daily
       ptDate = ptDate.addDays(1);
+      if (ptDate.date().dayOfWeek() == 6)
+        ptDate = ptDate.addDays(2);
+      else
+      {
+        if (ptDate.date().dayOfWeek() == 7)
+          ptDate = ptDate.addDays(1);
+      }
+      break;
+    case 7: // weekly
+      ptDate = ptDate.addDays(7);
+      break;
+    case 8: // monthly
+      ptDate = ptDate.addMonths(1);
+      break;
+    default:
+      break;
   }
   
   emit signalPaperTradeNextBar();

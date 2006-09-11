@@ -23,9 +23,11 @@
 #define PLOTLINE_HPP
 
 #include <qstring.h>
-#include <qptrlist.h>
-#include <qobject.h>
+#include <qvaluelist.h>
 #include <qcolor.h>
+#include <qdatetime.h>
+#include "Setting.h"
+
 
 typedef struct
 {
@@ -38,10 +40,9 @@ typedef struct
 
 } Val;
 
-class PlotLine : public QObject
-{
-  Q_OBJECT
 
+class PlotLine
+{
   public:
   
     enum LineType
@@ -62,15 +63,21 @@ class PlotLine : public QObject
     void copy (PlotLine *);
     void setColor (QString &);
     void setColor (QColor &);
-    QColor getColor ();
+    void getColor (QColor &);
     void setType (PlotLine::LineType);
     void setType (QString &);
     PlotLine::LineType getType ();
     void setLabel (QString &);
-    QString getLabel ();
+    void getLabel (QString &);
     void append (double);
+    void append (QColor &, double, double, double, double, bool);
+    void append (QDateTime &);
+    void prepend (QDateTime &);
     void prepend (double);
+    void prepend (QColor &, double, double, double, double, bool);
     double getData (int);
+    void getData (int, QColor &, double &, double &, double &, double &, bool &);
+    void getData (int, QDateTime &);
     void setData (int, double);
     int getSize ();
     double getHigh ();
@@ -84,17 +91,17 @@ class PlotLine : public QObject
     bool getColorFlag ();
     void getLineTypes (QStringList &);
     void setColorBar (int, QColor &);
-    QColor getColorBar (int);
-    void appendBar (QColor &, double, double, double, double);
-    void prependBar (QColor &, double, double, double, double);
-    void appendBar (QColor &, double, double, double, double, bool);
-    void prependBar (QColor &, double, double, double, double, bool);
-    void getBar (int, QColor &, double &, double &, double &, double &);
-    void getBar (int, QColor &, double &, double &, double &, double &, bool &);
+    void getColorBar (int, QColor &);
     void getHighLowRange (int, int, double &, double &);
+    void getInfo (int, Setting &);
+    void strip (double, int, QString &);
+    void getDateList (QValueList<QDateTime> &);
+    void setDateList (QValueList<QDateTime> &);
+    void getData (QValueList<Val> &);
     
   private:
-    QPtrList<Val> data;
+    QValueList<Val> data;
+    QValueList<QDateTime> dateList;
     QColor color;
     PlotLine::LineType lineType;
     QString label;

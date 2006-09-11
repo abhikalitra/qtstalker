@@ -35,7 +35,7 @@ class DataWindow : public QDialog
   Q_OBJECT
 
   public:
-    DataWindow();
+    DataWindow(QWidget *);
     ~DataWindow();
     void setData (int, int, QString &);
     void setHeader (int, QString &);

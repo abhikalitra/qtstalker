@@ -33,7 +33,7 @@ class VIDYA : public IndicatorPlugin
     PlotLine * calculateCustom (QString &, QPtrList<PlotLine> &);
     void getIndicatorSettings (Setting &);
     void setIndicatorSettings (Setting &);
-    int getMinBars ();
+    void formatDialog (QStringList &vl, QString &rv, QString &rs);
 	
     //! Programatic interface
     void calcVidya ( PlotLine *outSignal, PlotLine *inSignal, int iCmoPeriod, int iVidyaPeriod );
@@ -43,10 +43,10 @@ class VIDYA : public IndicatorPlugin
     QColor color;
     PlotLine::LineType lineType;
     QString label;
-    QString customInput;
     int period;
     int volPeriod;
     IndicatorPlugin *plug;
+    BarData::InputType input;
 	
     //! utilities -- should be called math :-)
 	
@@ -54,6 +54,14 @@ class VIDYA : public IndicatorPlugin
     void getNorm( PlotLine *inSig, double iMin, double iMax );
     void calcCMO ( PlotLine *outSignal, PlotLine *inSignal, int iPeriod);
     void calcAdaptCMO ( PlotLine *outSignal, PlotLine *inSignal, int iStdPeriod, int iMinLook, int iMaxLook);
+
+    QString colorLabel;
+    QString labelLabel;
+    QString lineTypeLabel;
+    QString pluginLabel;
+    QString periodLabel;
+    QString volPeriodLabel;
+    QString inputLabel;
 };
 
 extern "C"

@@ -40,10 +40,10 @@ Index::~Index ()
 {
 }
 
-void Index::getHistory (BarData *bd)
+void Index::getHistory (BarData *bd, QDateTime &dt)
 {
   updateIndex();
-  DbPlugin::getHistory(bd);
+  DbPlugin::getHistory(bd, dt);
 }
 
 void Index::dbPrefDialog ()
@@ -69,21 +69,17 @@ void Index::dbPrefDialog ()
   dialog->setType(s);
   
   s.truncate(0);
-  Bar *bar = getFirstBar();
-  if (bar)
-  {
-    bar->getDate().getDateTimeString(TRUE, s);
-    delete bar;
-  }
+  Bar bar;
+  getFirstBar(bar);
+  if (! bar.getEmptyFlag())
+    bar.getDateTimeString(TRUE, s);
   dialog->setFirstDate(s);
   
   s.truncate(0);
-  bar = getLastBar();
-  if (bar)
-  {
-    bar->getDate().getDateTimeString(TRUE, s);
-    delete bar;
-  }
+  Bar bar2;
+  getLastBar(bar2);
+  if (! bar2.getEmptyFlag())
+    bar2.getDateTimeString(TRUE, s);
   dialog->setLastDate(s);
   
   int rc = dialog->exec();
@@ -112,7 +108,7 @@ void Index::dbPrefDialog ()
 void Index::updateIndex ()
 {
   data.clear();
-  fdate = 99999999999999.0;
+  fdate = QDateTime::currentDateTime();
   
   QString s = "Index";
   QString s2;
@@ -138,16 +134,15 @@ void Index::updateIndex ()
     count++;
   }
 
-  Bar *r = data.find(QString::number(fdate, 'f', 0));
+  Bar *r = data.find(fdate.toString("yyyyMMddhhmmss"));
   if (r)
   {
     Bar &bar = *r;
     setBar(bar);
 
-    s = "Count";
-    if (r->getData(s) != count)
+    if (r->getOI() != count)
     {
-      s = QString::number(fdate, 'f', 0);
+      s = fdate.toString("yyyyMMddhhmmss");
       deleteData(s);
     }
   }
@@ -156,8 +151,7 @@ void Index::updateIndex ()
   for (; it.current(); ++it)
   {
     r = it.current();
-    s = "Count";
-    if (r->getData(s) == count)
+    if (r->getOI() == count)
     {
       r->setOpen(r->getOpen() / count);
       r->setHigh(r->getHigh() / count);
@@ -201,7 +195,7 @@ void Index::loadData (QString &symbol, float weight)
     return;
   }
   
-  db->setBarCompression(BarData::DailyBar);
+  db->setBarLength(BarData::DailyBar);
   db->setBarRange(99999999);
   
   QString s = "Rebuild";
@@ -210,39 +204,42 @@ void Index::loadData (QString &symbol, float weight)
   bool rebuild = s2.toInt();
   if (! rebuild)
   {
-    Bar *bar = getLastBar();
-    if (bar)
+    Bar bar;
+    getLastBar(bar);
+    if (! bar.getEmptyFlag())
     {
       QDate d = QDate::currentDate();
-      db->setBarRange(bar->getDate().getDate().daysTo(d));
-      delete bar;
+      QDateTime dt;
+      bar.getDate(dt);
+      db->setBarRange(dt.date().daysTo(d));
     }
   }
 
   BarData *recordList = new BarData;  
-  db->getHistory(recordList);
+  QDateTime dt = QDateTime::currentDateTime();
+  db->getHistory(recordList, dt);
   
   int loop;
   for (loop = 0; loop < (int) recordList->count(); loop++)
   {
-    recordList->getDate(loop).getDateTimeString(FALSE, s);
+    recordList->getDate(loop, dt);
+    s = dt.toString("yyyyMMddhhmmss");
     Bar *r = data.find(s);
     if (! r)
     {
       r = new Bar;
-      BarDate dt = recordList->getDate(loop);
+      recordList->getDate(loop, dt);
       r->setDate(dt);
       r->setOpen(recordList->getOpen(loop) * weight);
       r->setHigh(recordList->getHigh(loop) * weight);
       r->setLow(recordList->getLow(loop) * weight);
       r->setClose(recordList->getClose(loop) * weight);
-      s = "Count";
-      r->setData(s, 1);
-      r->getDate().getDateTimeString(FALSE, s);
+      r->setOI(1);
+      r->getDateTimeString(FALSE, s);
       data.insert(s, r);
       
-      if (r->getDate().getDateValue() < fdate)
-        fdate = r->getDate().getDateValue();
+      if (dt < fdate)
+        fdate = dt;
     }
     else
     {
@@ -250,8 +247,7 @@ void Index::loadData (QString &symbol, float weight)
       r->setHigh(r->getHigh() + (recordList->getHigh(loop) * weight));
       r->setLow(r->getLow() + (recordList->getLow(loop) * weight));
       r->setClose(r->getClose() + (recordList->getClose(loop) * weight));
-      s = "Count";
-      r->setData(s, r->getData(s) + 1);
+      r->setOI((int) r->getOI() + 1);
     }
   }
 
@@ -308,16 +304,14 @@ void Index::createNew ()
   dbPrefDialog();
 }
 
-Bar * Index::getBar (QString &k, QString &d)
+void Index::getBar (QString &k, QString &d, Bar &bar)
 {
-  Bar *bar = new Bar;
   QStringList l = QStringList::split(",", d, FALSE);
-  bar->setDate(k);
-  bar->setOpen(l[0].toDouble());
-  bar->setHigh(l[1].toDouble());
-  bar->setLow(l[2].toDouble());
-  bar->setClose(l[3].toDouble());
-  return bar;
+  bar.setDate(k);
+  bar.setOpen(l[0].toDouble());
+  bar.setHigh(l[1].toDouble());
+  bar.setLow(l[2].toDouble());
+  bar.setClose(l[3].toDouble());
 }
 
 void Index::setBar (Bar &bar)
@@ -327,7 +321,7 @@ void Index::setBar (Bar &bar)
   if (k.toInt() != bar.getTickFlag())
     return;
 
-  bar.getDate().getDateTimeString(FALSE, k);
+  bar.getDateTimeString(FALSE, k);
   
   QString d = QString::number(bar.getOpen()) + "," + QString::number(bar.getHigh()) + "," +
               QString::number(bar.getLow()) + "," + QString::number(bar.getClose());

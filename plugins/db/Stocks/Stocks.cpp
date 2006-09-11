@@ -41,17 +41,15 @@ void Stocks::dbPrefDialog ()
   delete dialog;
 }
 
-Bar * Stocks::getBar (QString &k, QString &d)
+void Stocks::getBar (QString &k, QString &d, Bar &bar)
 {
-  Bar *bar = new Bar;
   QStringList l = QStringList::split(",", d, FALSE);
-  bar->setDate(k);
-  bar->setOpen(l[0].toDouble());
-  bar->setHigh(l[1].toDouble());
-  bar->setLow(l[2].toDouble());
-  bar->setClose(l[3].toDouble());
-  bar->setVolume(l[4].toDouble());
-  return bar;
+  bar.setDate(k);
+  bar.setOpen(l[0].toDouble());
+  bar.setHigh(l[1].toDouble());
+  bar.setLow(l[2].toDouble());
+  bar.setClose(l[3].toDouble());
+  bar.setVolume(l[4].toDouble());
 }
 
 void Stocks::setBar (Bar &bar)
@@ -61,7 +59,7 @@ void Stocks::setBar (Bar &bar)
   if (k.toInt() != bar.getTickFlag())
     return;
 
-  bar.getDate().getDateTimeString(FALSE, k);
+  bar.getDateTimeString(FALSE, k);
   
   QString d = QString::number(bar.getOpen()) + "," + QString::number(bar.getHigh()) + "," +
               QString::number(bar.getLow()) + "," + QString::number(bar.getClose()) + "," +

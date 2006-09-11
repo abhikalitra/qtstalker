@@ -34,6 +34,23 @@ VOL::VOL ()
   methodList.append("PVI");
   methodList.append("PVT");
   methodList.sort();
+
+  upColorLabel = "upColor";
+  downColorLabel = "downColor";
+  vtColorLabel = "vtColor";
+  volLabelLabel = "volLabel";
+  volLineTypeLabel = "volLineType";
+  vtLineTypeLabel = "vtLineType";
+  maColorLabel = "maColor";
+  maPeriodLabel = "maPeriod";
+  maLabelLabel = "maLabel";
+  maLineTypeLabel = "maLineType";
+  maTypeLabel = "maType";
+  labelLabel = "label";
+  methodLabel = "method";
+  pluginLabel = "plugin";
+
+  formatList.append(FormatString);
   
   setDefaults();
 }
@@ -225,71 +242,61 @@ void VOL::calculatePVT ()
 
 int VOL::indicatorPrefDialog (QWidget *w)
 {
+  QString pl = QObject::tr("VOL");
+  QString ml = QObject::tr("Method");
+  QString ucl = QObject::tr("Up Color");
+  QString dcl = QObject::tr("Down Color");
+  QString cl = QObject::tr("Color");
+  QString vll = QObject::tr("VOL Label");
+  QString vltl = QObject::tr("VOL Line Type");
+  QString ltl = QObject::tr("Line Type");
+  QString pl2 = QObject::tr("MA");
+  QString mcl = QObject::tr("MA Color");
+  QString mpl = QObject::tr("MA Period");
+  QString mll = QObject::tr("MA Label");
+  QString mltl = QObject::tr("MA Line Type");
+  QString mtl = QObject::tr("MA Type");
+
   PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(QObject::tr("VOL Indicator"));
   dialog->setHelpFile(helpFile);
-  QString pl = QObject::tr("VOL");
-  dialog->createPage (pl);
 
-  QString t = QObject::tr("Method");
-  dialog->addComboItem(t, pl, methodList, method);
-  t = QObject::tr("Up Color");
-  dialog->addColorItem(t, pl, upColor);
-  t = QObject::tr("Down Color");
-  dialog->addColorItem(t, pl, downColor);
-  t = QObject::tr("Color");
-  dialog->addColorItem(t, pl, vtColor);
-  t = QObject::tr("VOL Label");
-  dialog->addTextItem(t, pl, volLabel);
-  t = QObject::tr("VOL Line Type");
-  dialog->addComboItem(t, pl, lineTypes, volLineType);
-  t = QObject::tr("Line Type");
-  dialog->addComboItem(t, pl, lineTypes, vtLineType);
-  
-  pl = QObject::tr("MA");
   dialog->createPage (pl);
-  t = QObject::tr("MA Color");
-  dialog->addColorItem(t, pl, maColor);
-  t = QObject::tr("MA Period");
-  dialog->addIntItem(t, pl, period, 0, 99999999);
-  t = QObject::tr("MA Label");
-  dialog->addTextItem(t, pl, maLabel);
-  t = QObject::tr("MA Line Type");
-  dialog->addComboItem(t, pl, lineTypes, maLineType);
-  QStringList l = getMATypes();
-  t = QObject::tr("MA Type");
-  dialog->addComboItem(t, pl, l, maType);
+  dialog->addComboItem(ml, pl, methodList, method);
+  dialog->addColorItem(ucl, pl, upColor);
+  dialog->addColorItem(dcl, pl, downColor);
+  dialog->addColorItem(cl, pl, vtColor);
+  dialog->addTextItem(vll, pl, volLabel);
+  dialog->addComboItem(vltl, pl, lineTypes, volLineType);
+  dialog->addComboItem(ltl, pl, lineTypes, vtLineType);
+  
+  dialog->createPage (pl2);
+  dialog->addColorItem(mcl, pl2, maColor);
+  dialog->addIntItem(mpl, pl2, period, 0, 99999999);
+  dialog->addTextItem(mll, pl2, maLabel);
+  dialog->addComboItem(mltl, pl2, lineTypes, maLineType);
+  QStringList l;
+  getMATypes(l);
+  dialog->addComboItem(mtl, pl2, l, maType);
   
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
-    t = QObject::tr("Method");
-    method = dialog->getCombo(t);
-    t = QObject::tr("Up Color");
-    upColor = dialog->getColor(t);
-    t = QObject::tr("Down Color");
-    downColor = dialog->getColor(t);
-    t = QObject::tr("Color");
-    vtColor = dialog->getColor(t);
-    t = QObject::tr("VOL Label");
-    volLabel = dialog->getText(t);
+    dialog->getCombo(ml, method);
+    dialog->getColor(ucl, upColor);
+    dialog->getColor(dcl, downColor);
+    dialog->getColor(cl, vtColor);
+    dialog->getText(vll, volLabel);
     label = volLabel;
-    t = QObject::tr("VOL Line Type");
-    volLineType = (PlotLine::LineType) dialog->getComboIndex(t);
-    t = QObject::tr("Line Type");
-    vtLineType = (PlotLine::LineType) dialog->getComboIndex(t);
+    volLineType = (PlotLine::LineType) dialog->getComboIndex(vltl);
+    vtLineType = (PlotLine::LineType) dialog->getComboIndex(ltl);
 
-    t = QObject::tr("MA Color");
-    maColor = dialog->getColor(t);
-    t = QObject::tr("MA Period");
-    period = dialog->getInt(t);
-    t = QObject::tr("MA Label");
-    maLabel = dialog->getText(t);
-    t = QObject::tr("MA Line Type");
-    maLineType = (PlotLine::LineType) dialog->getComboIndex(t);
-    t = QObject::tr("MA Type");
-    maType = dialog->getComboIndex(t);
+    dialog->getColor(mcl, maColor);
+    period = dialog->getInt(mpl);
+    dialog->getText(mll, maLabel);
+    maLineType = (PlotLine::LineType) dialog->getComboIndex(mltl);
+    maType = dialog->getComboIndex(mtl);
     
     rc = TRUE;
   }
@@ -307,108 +314,133 @@ void VOL::setIndicatorSettings (Setting &dict)
   if (! dict.count())
     return;
   
-  QString s = dict.getData("upColor");
+  QString s;
+  dict.getData(upColorLabel, s);
   if (s.length())
     upColor.setNamedColor(s);
     
-  s = dict.getData("downColor");
+  dict.getData(downColorLabel, s);
   if (s.length())
     downColor.setNamedColor(s);
     
-  s = dict.getData("vtColor");
+  dict.getData(vtColorLabel, s);
   if (s.length())
     vtColor.setNamedColor(s);
 
-  s = dict.getData("volLabel");
+  dict.getData(volLabelLabel, s);
   if (s.length())
     volLabel = s;
         
-  s = dict.getData("volLineType");
+  dict.getData(volLineTypeLabel, s);
   if (s.length())
     volLineType = (PlotLine::LineType) s.toInt();
         
-  s = dict.getData("vtLineType");
+  dict.getData(vtLineTypeLabel, s);
   if (s.length())
     vtLineType = (PlotLine::LineType) s.toInt();
 
-  s = dict.getData("maColor");
+  dict.getData(maColorLabel, s);
   if (s.length())
     maColor.setNamedColor(s);
         
-  s = dict.getData("maPeriod");
+  dict.getData(maPeriodLabel, s);
   if (s.length())
     period = s.toInt();
 	
-  s = dict.getData("maLabel");
+  dict.getData(maLabelLabel, s);
   if (s.length())
     maLabel = s;
         
-  s = dict.getData("maLineType");
+  dict.getData(maLineTypeLabel, s);
   if (s.length())
     maLineType = (PlotLine::LineType) s.toInt();
         
-  s = dict.getData("maType");
+  dict.getData(maTypeLabel, s);
   if (s.length())
     maType = s.toInt();
 
-  s = dict.getData("label");
+  dict.getData(labelLabel, s);
   if (s.length())
     label = s;
 
-  s = dict.getData("method");
+  dict.getData(methodLabel, s);
   if (s.length())
     method = s;
 }
 
 void VOL::getIndicatorSettings (Setting &dict)
 {
-  dict.setData("upColor", upColor.name());
-  dict.setData("downColor", downColor.name());
-  dict.setData("vtColor", vtColor.name());
-  dict.setData("volLabel", volLabel);
-  dict.setData("volLineType", QString::number(volLineType));
-  dict.setData("vtLineType", QString::number(vtLineType));
-  dict.setData("maColor", maColor.name());
-  dict.setData("maPeriod", QString::number(period));
-  dict.setData("maLabel", maLabel);
-  dict.setData("maLineType", QString::number(maLineType));
-  dict.setData("maType", QString::number(maType));
-  dict.setData("label", label);
-  dict.setData("method", method);
-  dict.setData("plugin", pluginName);
+  QString ts = upColor.name();
+  dict.setData(upColorLabel, ts);
+  ts = downColor.name();
+  dict.setData(downColorLabel, ts);
+  ts = vtColor.name();
+  dict.setData(vtColorLabel, ts);
+  dict.setData(volLabelLabel, volLabel);
+  ts = QString::number(volLineType);
+  dict.setData(volLineTypeLabel, ts);
+  ts = QString::number(vtLineType);
+  dict.setData(vtLineTypeLabel, ts);
+  ts = maColor.name();
+  dict.setData(maColorLabel, ts);
+  ts = QString::number(period);
+  dict.setData(maPeriodLabel, ts);
+  dict.setData(maLabelLabel, maLabel);
+  ts = QString::number(maLineType);
+  dict.setData(maLineTypeLabel, ts);
+  ts = QString::number(maType);
+  dict.setData(maTypeLabel, ts);
+  dict.setData(labelLabel, label);
+  dict.setData(methodLabel, method);
+  dict.setData(pluginLabel, pluginName);
 }
 
-PlotLine * VOL::calculateCustom (QString &p, QPtrList<PlotLine> &)
+PlotLine * VOL::calculateCustom (QString &p, QPtrList<PlotLine> &d)
 {
   // format1: METHOD
 
-  QStringList l = QStringList::split(",", p, FALSE);
-
-  if (l.count() == 1)
-    ;
-  else
-  {
-    qDebug("VOL::calculateCustom: invalid parm count");
+  if (checkFormat(p, d, 1, 1))
     return 0;
-  }
 
-  if (methodList.findIndex(l[0]) == -1)
+  method = formatStringList[0];
+  if (methodList.findIndex(method) == -1)
   {
     qDebug("VOL::calculateCustom: invalid METHOD parm");
     return 0;
   }
-  else
-    method = methodList.findIndex(l[0]);
 
   clearOutput();
   calculate();
   return output->getLine(0);
 }
 
-int VOL::getMinBars ()
+void VOL::formatDialog (QStringList &, QString &rv, QString &rs)
 {
-  int t = minBars + period;
-  return t;
+  rs.truncate(0);
+  rv.truncate(0);
+  QString pl = QObject::tr("Parms");
+  QString vnl = QObject::tr("Variable Name");
+  QString ml = QObject::tr("Method");
+  PrefDialog *dialog = new PrefDialog(0);
+  dialog->setCaption(QObject::tr("VOL Format"));
+  dialog->createPage (pl);
+  dialog->setHelpFile(helpFile);
+
+  // format1: METHOD
+
+  QString s;
+  dialog->addTextItem(vnl, pl, s);
+  dialog->addComboItem(ml, pl, methodList, method);
+
+  int rc = dialog->exec();
+  
+  if (rc == QDialog::Accepted)
+  {
+    dialog->getText(vnl, rv);
+    dialog->getCombo(ml, rs);
+  }
+
+  delete dialog;
 }
 
 //*******************************************************

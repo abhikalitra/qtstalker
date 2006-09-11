@@ -22,7 +22,6 @@
 #ifndef SYMBOLBUTTON_HPP
 #define SYMBOLBUTTON_HPP
 
-#include "SymbolButton.h"
 #include <qwidget.h>
 #include <qpushbutton.h>
 #include <qstring.h>
@@ -37,8 +36,8 @@ class SymbolButton : public QPushButton
   public:
     SymbolButton (QWidget *, QString &, QString &);
     ~SymbolButton ();
-    QString getSymbol ();
-    QString getPath ();
+    void getSymbol (QString &);
+    void getPath (QString &);
     void setSymbol (QString &);
 
   public slots:
@@ -48,6 +47,7 @@ class SymbolButton : public QPushButton
     QString symbol;
     QString path;
     QString dirPath;
+    QString baseDir;
 };
 
 #endif

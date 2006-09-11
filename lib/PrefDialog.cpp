@@ -48,6 +48,7 @@ PrefDialog::~PrefDialog ()
   symbolList.clear();
   dvList.clear();
   labelList.clear();
+  timeList.clear();
 }
 
 void PrefDialog::init ()
@@ -66,6 +67,7 @@ void PrefDialog::init ()
   symbolList.setAutoDelete(FALSE);
   dvList.setAutoDelete(FALSE);
   labelList.setAutoDelete(FALSE);
+  timeList.setAutoDelete(FALSE);
   
   setOkButton(tr("&OK"));
   setCancelButton(tr("&Cancel"));
@@ -124,13 +126,11 @@ void PrefDialog::addColorItem (QString &name, QString &page, QColor &color)
   colorButtonList.replace(name, button);
 }
 
-QColor PrefDialog::getColor (QString &name)
+void PrefDialog::getColor (QString &name, QColor &color)
 {
-  QColor color;
   ColorButton *button = colorButtonList[name];
   if (button)
-    color = button->getColor();
-  return color;
+    button->getColor(color);
 }
 
 void PrefDialog::addDoubleItem (QString &name, QString &page, double num)
@@ -229,9 +229,9 @@ bool PrefDialog::getCheck (QString &name)
   return flag;
 }
 
-QString PrefDialog::getCheckString (QString &name)
+void PrefDialog::getCheckString (QString &name, QString &flag)
 {
-  QString flag;
+  flag.truncate(0);
   QCheckBox *check = checkList[name];
   if (check)
   {
@@ -240,7 +240,6 @@ QString PrefDialog::getCheckString (QString &name)
     else
       flag = "False";
   }    
-  return flag;
 }
 
 void PrefDialog::addFontItem (QString &name, QString &page, QFont &font)
@@ -258,13 +257,11 @@ void PrefDialog::addFontItem (QString &name, QString &page, QFont &font)
   fontButtonList.replace(name, button);
 }
 
-QFont PrefDialog::getFont (QString &name)
+void PrefDialog::getFont (QString &name, QFont &font)
 {
-  QFont font;
   FontButton *button = fontButtonList[name];
   if (button)
-    font = button->getFont();
-  return font;
+    button->getFont(font);
 }
 
 void PrefDialog::addTextItem (QString &name, QString &page, QString &t)
@@ -282,13 +279,12 @@ void PrefDialog::addTextItem (QString &name, QString &page, QString &t)
   textList.replace(name, edit);
 }
 
-QString PrefDialog::getText (QString &name)
+void PrefDialog::getText (QString &name, QString &s)
 {
-  QString s;
+  s.truncate(0);
   QLineEdit *edit = textList[name];
   if (edit)
     s = edit->text();
-  return s;
 }
 
 void PrefDialog::addComboItem (QString &name, QString &page, QStringList &l, QString &s)
@@ -326,13 +322,12 @@ void PrefDialog::addComboItem (QString &name, QString &page, QStringList &l, int
   comboList.replace(name, combo);
 }
 
-QString PrefDialog::getCombo (QString &name)
+void PrefDialog::getCombo (QString &name, QString &s)
 {
-  QString s;
+  s.truncate(0);
   QComboBox *combo = comboList[name];
   if (combo)
     s = combo->currentText();
-  return s;
 }
 
 int PrefDialog::getComboIndex (QString &name)
@@ -366,13 +361,34 @@ void PrefDialog::addDateItem (QString &name, QString &page, QDateTime &dt)
   dateList.replace(name, date);
 }
 
-QDateTime PrefDialog::getDate (QString &name)
+void PrefDialog::getDate (QString &name, QDateTime &dt)
 {
-  QDateTime dt;
   QDateEdit *date = dateList[name];
   if (date)
     dt.setDate(date->date());
-  return dt;
+}
+
+void PrefDialog::addTimeItem (QString &name, QString &page, QDateTime &dt)
+{
+  QWidget *w = widgetList[page];
+  
+  QGridLayout *grid = gridList[page];
+  grid->expand(grid->numRows() + 1, grid->numCols());
+  
+  QLabel *label = new QLabel(name, w);
+  grid->addWidget(label, grid->numRows() - 2, 0);
+
+  QTimeEdit *time = new QTimeEdit(dt.time(), w);
+  time->setAutoAdvance(TRUE);
+  grid->addWidget(time, grid->numRows() - 2, 1);
+  timeList.replace(name, time);
+}
+
+void PrefDialog::getTime (QString &name, QDateTime &dt)
+{
+  QTimeEdit *time = timeList[name];
+  if (time)
+    dt.setTime(time->time());
 }
 
 void PrefDialog::addFileItem (QString &name, QString &page, QStringList &l, QString &p)
@@ -413,13 +429,12 @@ void PrefDialog::addSymbolItem (QString &name, QString &page, QString &path, QSt
   symbolList.replace(name, button);
 }
 
-QString PrefDialog::getSymbol (QString &name)
+void PrefDialog::getSymbol (QString &name, QString &s)
 {
-  QString s;
+  s.truncate(0);
   SymbolButton *button = symbolList[name];
   if (button)
-    s = button->getPath();
-  return s;
+    button->getPath(s);
 }
 
 void PrefDialog::addLabelItem (QString &name, QString &page, QString &l)
@@ -438,21 +453,25 @@ void PrefDialog::addLabelItem (QString &name, QString &page, QString &l)
   labelList.replace(name, label);
 }
 
-QString PrefDialog::getItem (QString &name)
+void PrefDialog::getItem (QString &name, QString &s)
 {
-  QString s;
+  s.truncate(0);
 
   // check color
-  QColor color = getColor(name);
+  QColor color;
+  getColor(name, color);
   if (color.isValid())
-    return color.name();
+  {
+    s = color.name();
+    return;
+  }
 
   // check for double
   QLineEdit *edit = doubleList[name];
   if (edit)
   {
     s = edit->text();
-    return s;
+    return;
   }
 
   // check for int
@@ -460,21 +479,19 @@ QString PrefDialog::getItem (QString &name)
   if (spin)
   {
     s = spin->text();
-    return s;
+    return;
   }
 
-  s = getText(name);
+  getText(name, s);
   if (s.length())
-    return s;
+    return;
 
   QComboBox *combo = comboList[name];
   if (combo)
   {
     s = QString::number(combo->currentItem());
-    return s;
+    return;
   }
-
-  return s;
 }
 
 

@@ -32,6 +32,7 @@ class SINWAV : public IndicatorPlugin
     PlotLine * calculateCustom (QString &, QPtrList<PlotLine> &);
     void getIndicatorSettings (Setting &);
     void setIndicatorSettings (Setting &);
+    void formatDialog (QStringList &vl, QString &rv, QString &rs);
   
   private:
     QColor colorSin;
@@ -44,6 +45,14 @@ class SINWAV : public IndicatorPlugin
     PlotLine *getOffset( PlotLine *inSig, int offset );
     PlotLine *getDetrend( PlotLine *inSig );
     PlotLine *getSmooth( PlotLine *inSig );
+
+    QString colorSinLabel;
+    QString colorLeadLabel;
+    QString labelSinLabel;
+    QString labelLeadLabel;
+    QString lineTypeSinLabel;
+    QString lineTypeLeadLabel;
+    QString pluginLabel;
 };
 
 extern "C"

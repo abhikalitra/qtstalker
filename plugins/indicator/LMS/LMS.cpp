@@ -31,6 +31,29 @@ LMS::LMS()
   pluginName = "LMS";
   helpFile = "lms.html";
 
+  colorKLabel = "colorK";
+  color2DayLabel = "color2Day";
+  color5DayLabel = "color5Day";
+  labelLabel = "label";
+  lineTypeKLabel = "lineTypeK";
+  lineType2DayLabel = "lineType2Day";
+  lineType5DayLabel = "lineType5Day";
+  pluginLabel = "plugin";
+  fkPeriodLabel = "fkPeriod";
+  skPeriodLabel = "skPeriod";
+  cmbIndexLabel = "cmbIndex";
+  show2DayLabel = "show2Day";
+  show5DayLabel = "show5Day";
+  plotTestLabel = "plotTest";
+
+  // format1: FK_PERIOD, SK_PERIOD, CMB_INDEX, SHOW_2DAY, SHOW_5DAY
+
+  formatList.append(FormatInteger);
+  formatList.append(FormatInteger);
+  formatList.append(FormatString);
+  formatList.append(FormatBool);
+  formatList.append(FormatBool);
+
   setDefaults();
 }
 
@@ -365,13 +388,13 @@ int LMS::indicatorPrefDialog(QWidget * w)
 
   if (rc == QDialog::Accepted)
   {
-    colorK = dialog->getColor(cl);
-    color2Day = dialog->getColor(cl2);
-    color5Day = dialog->getColor(cl3);
+    dialog->getColor(cl, colorK);
+    dialog->getColor(cl2, color2Day);
+    dialog->getColor(cl3, color5Day);
     lineTypeK = (PlotLine::LineType) dialog->getComboIndex(ltl);
     lineType2Day = (PlotLine::LineType) dialog->getComboIndex(lt2);
     lineType5Day = (PlotLine::LineType) dialog->getComboIndex(lt3);
-    label = dialog->getText(ll);
+    dialog->getText(ll, label);
     show2Day = dialog->getCheck(ck1);
     show5Day = dialog->getCheck(ck2);
     cmbIndex = dialog->getComboIndex(cmb);
@@ -398,47 +421,24 @@ int LMS::indicatorPrefDialog(QWidget * w)
   return rc;
 }
 
-PlotLine *LMS::calculateCustom (QString &p, QPtrList<PlotLine> &)
+PlotLine *LMS::calculateCustom (QString &p, QPtrList<PlotLine> &d)
 {
   // format1: FK_PERIOD, SK_PERIOD, CMB_INDEX, SHOW_2DAY, SHOW_5DAY
 
-  QStringList l = QStringList::split(",", p, FALSE);
-
-  if (l.count() == 5)
-    ;
-  else
-  {
-    qDebug("LMS::calculateCustom: invalid parm count");
+  if (checkFormat(p, d, 5, 5))
     return 0;
-  }
 
-  bool ok;
-  int t = l[0].toInt(&ok);
-  if (ok)
-    fkPeriod = t;
-  else
-  {
-    qDebug("LMS::calculateCustom: invalid FK_PERIOD parm");
-    return 0;
-  }
+  fkPeriod = formatStringList[0].toInt();
+  skPeriod = formatStringList[1].toInt();
 
-  t = l[1].toInt(&ok);
-  if (ok)
-    skPeriod = t;
-  else
-  {
-    qDebug("LMS::calculateCustom: invalid SK_PERIOD parm");
-    return 0;
-  }
-
-  if (! l[2].compare("Cycle"))
+  if (! formatStringList[2].compare("Cycle"))
   {
     cmbIndex = 1;
     cycleFlag = TRUE;
   }
   else
   {
-    if (! l[2].compare("Counter Trend"))
+    if (! formatStringList[2].compare("Counter Trend"))
     {
       cmbIndex = 0;
       cycleFlag = FALSE;
@@ -450,31 +450,15 @@ PlotLine *LMS::calculateCustom (QString &p, QPtrList<PlotLine> &)
     }
   }
 
-  if (! l[3].compare("TRUE"))
+  if (! formatStringList[3].compare("TRUE"))
     show2Day = TRUE;
   else
-  {
-    if (! l[3].compare("FALSE"))
-      show2Day = FALSE;
-    else
-    {
-      qDebug("LMS::calculateCustom: invalid SHOW_2DAY parm");
-      return 0;
-    }
-  }
+    show2Day = FALSE;
 
-  if (! l[4].compare("TRUE"))
+  if (! formatStringList[4].compare("TRUE"))
     show5Day = TRUE;
   else
-  {
-    if (! l[4].compare("FALSE"))
-      show5Day = FALSE;
-    else
-    {
-      qDebug("LMS::calculateCustom: invalid SHOW_5DAY parm");
-      return 0;
-    }
-  }
+    show5Day = FALSE;
 
   clearOutput();
   calculate();
@@ -483,20 +467,32 @@ PlotLine *LMS::calculateCustom (QString &p, QPtrList<PlotLine> &)
 
 void LMS::getIndicatorSettings(Setting & dict)
 {
-  dict.setData("colorK", colorK.name());
-  dict.setData("color2Day", color2Day.name());
-  dict.setData("color5Day", color5Day.name());
-  dict.setData("label", label);
-  dict.setData("lineTypeK", QString::number(lineTypeK));
-  dict.setData("lineType2Day", QString::number(lineType2Day));
-  dict.setData("lineType5Day", QString::number(lineType5Day));
-  dict.setData("plugin", pluginName);
-  dict.setData("fkPeriod", QString::number(fkPeriod));
-  dict.setData("skPeriod", QString::number(skPeriod));
-  dict.setData("cmbIndex", QString::number(cmbIndex));
-  dict.setData("show2Day", QString::number(show2Day));
-  dict.setData("show5Day", QString::number(show5Day));
-  dict.setData("plotTest", QString::number(testFlag));
+  QString ts = colorK.name();
+  dict.setData(colorKLabel, ts);
+  ts = color2Day.name();
+  dict.setData(color2DayLabel, ts);
+  ts = color5Day.name();
+  dict.setData(color5DayLabel, ts);
+  dict.setData(labelLabel, label);
+  ts = QString::number(lineTypeK);
+  dict.setData(lineTypeKLabel, ts);
+  ts = QString::number(lineType2Day);
+  dict.setData(lineType2DayLabel, ts);
+  ts = QString::number(lineType5Day);
+  dict.setData(lineType5DayLabel, ts);
+  dict.setData(pluginLabel, pluginName);
+  ts = QString::number(fkPeriod);
+  dict.setData(fkPeriodLabel, ts);
+  ts = QString::number(skPeriod);
+  dict.setData(skPeriodLabel, ts);
+  ts = QString::number(cmbIndex);
+  dict.setData(cmbIndexLabel, ts);
+  ts = QString::number(show2Day);
+  dict.setData(show2DayLabel, ts);
+  ts = QString::number(show5Day);
+  dict.setData(show5DayLabel, ts);
+  ts = QString::number(testFlag);
+  dict.setData(plotTestLabel, ts);
 }
 
 void LMS::setIndicatorSettings(Setting & dict)
@@ -506,43 +502,44 @@ void LMS::setIndicatorSettings(Setting & dict)
   if (!dict.count())
     return;
 
-  QString s = dict.getData("colorK");
+  QString s;
+  dict.getData(colorKLabel, s);
   if (s.length())
     colorK.setNamedColor(s);
 
-  s = dict.getData("color2Day");
+  dict.getData(color2DayLabel, s);
   if (s.length())
     color2Day.setNamedColor(s);
 
-  s = dict.getData("color5Day");
+  dict.getData(color5DayLabel, s);
   if (s.length())
     color5Day.setNamedColor(s);
 
-  s = dict.getData("label");
+  dict.getData(labelLabel, s);
   if (s.length())
     label = s;
 
-  s = dict.getData("lineTypeK");
+  dict.getData(lineTypeKLabel, s);
   if (s.length())
     lineTypeK = (PlotLine::LineType) s.toInt();
 
-  s = dict.getData("lineType2Day");
+  dict.getData(lineType2DayLabel, s);
   if (s.length())
     lineType2Day = (PlotLine::LineType) s.toInt();
 
-  s = dict.getData("lineType5Day");
+  dict.getData(lineType5DayLabel, s);
   if (s.length())
     lineType5Day = (PlotLine::LineType) s.toInt();
 
-  s = dict.getData("fkPeriod");
+  dict.getData(fkPeriodLabel, s);
   if (s.length())
     fkPeriod = s.toInt();
 
-  s = dict.getData("skPeriod");
+  dict.getData(skPeriodLabel, s);
   if (s.length())
     skPeriod = s.toInt();
 
-  s = dict.getData("cmbIndex");
+  dict.getData(cmbIndexLabel, s);
   if (s.length())
     cmbIndex = s.toInt();
 
@@ -550,17 +547,75 @@ void LMS::setIndicatorSettings(Setting & dict)
     cycleFlag = TRUE;
   else
     cycleFlag = FALSE;
-  s = dict.getData("show2Day");
+  dict.getData(show2DayLabel, s);
   if (s.length())
     show2Day = s.toInt();
 
-  s = dict.getData("show5Day");
+  dict.getData(show5DayLabel, s);
   if (s.length())
     show5Day = s.toInt();
 
-  s = dict.getData("plotTest");
+  dict.getData(plotTestLabel, s);
   if (s.length())
     testFlag = s.toInt();
+}
+
+void LMS::formatDialog (QStringList &, QString &rv, QString &rs)
+{
+  rs.truncate(0);
+  rv.truncate(0);
+  QString pl = QObject::tr("Parms");
+  QString vl = QObject::tr("Variable Name");
+  QString ck1 = QObject::tr("Show 2 Day Prediction");
+  QString ck2 = QObject::tr("Show 5 Day Prediction");
+  QString fk = QObject::tr("Fast K Period");
+  QString sk = QObject::tr("Slow K Period");
+  QString cmb = QObject::tr("Select Mode");
+  PrefDialog *dialog = new PrefDialog(0);
+  dialog->setCaption(QObject::tr("LMS Format"));
+  dialog->createPage (pl);
+  dialog->setHelpFile(helpFile);
+
+  QString s;
+  dialog->addTextItem(vl, pl, s);
+  dialog->addIntItem(fk, pl, fkPeriod, 1, 999999);
+  dialog->addIntItem(sk, pl, skPeriod, 1, 999999);
+  QStringList l;
+  l.append("Cycle");
+  l.append("Counter Trend");
+  dialog->addComboItem(cmb, pl, l, 0);
+  dialog->addCheckItem(ck1, pl, show2Day);
+  dialog->addCheckItem(ck2, pl, show5Day);
+
+  int rc = dialog->exec();
+  
+  if (rc == QDialog::Accepted)
+  {
+    dialog->getText(vl, rv);
+
+    int t = dialog->getInt(fk);
+    rs.append(QString::number(t) + ",");
+
+    t = dialog->getInt(sk);
+    rs.append(QString::number(t) + ",");
+
+    dialog->getCombo(cmb, s);
+    rs.append(s + ",");
+
+    t = dialog->getCheck(ck1);
+    if (t)
+      rs.append("TRUE,");
+    else
+      rs.append("FALSE,");
+
+    t = dialog->getCheck(ck2);
+    if (t)
+      rs.append("TRUE");
+    else
+      rs.append("FALSE");
+  }
+
+  delete dialog;
 }
 
 //*******************************************************

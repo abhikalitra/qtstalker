@@ -25,6 +25,7 @@
 #include "DbPlugin.h"
 #include "Bar.h"
 #include <qstring.h>
+#include <qdatetime.h>
 
 typedef struct
 {
@@ -40,10 +41,10 @@ class CC : public DbPlugin
     CC ();
     ~CC ();
     void update ();
-    void getHistory (BarData *);
+    void getHistory (BarData *, QDateTime &);
     void dbPrefDialog ();
     void setBar (Bar &);
-    Bar *getBar (QString &, QString &);
+    void getBar (QString &, QString &, Bar &);
     void createNew ();
         
   private:

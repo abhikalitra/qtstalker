@@ -32,7 +32,7 @@ class VFI : public IndicatorPlugin
     PlotLine * calculateCustom (QString &, QPtrList<PlotLine> &);
     void getIndicatorSettings (Setting &);
     void setIndicatorSettings (Setting &);
-    int getMinBars ();
+    void formatDialog (QStringList &vl, QString &rv, QString &rs);
     
   private:
     QColor color;
@@ -41,6 +41,14 @@ class VFI : public IndicatorPlugin
     int period;
     int smoothing;
     int maType;
+
+    QString colorLabel;
+    QString lineTypeLabel;
+    QString labelLabel;
+    QString periodLabel;
+    QString smoothingLabel;
+    QString maTypeLabel;
+    QString pluginLabel;
 };
 
 extern "C"

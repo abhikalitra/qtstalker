@@ -21,48 +21,105 @@
 
 #include "FuturesData.h"
 #include <qobject.h>
+#include <qfileinfo.h>
 
 FuturesData::FuturesData ()
 {
-  limit = 0;
-  data.setAutoDelete(TRUE);
-  
-  nameKey = "Name";
-  symbolKey = "Symbol";
-  rateKey = "Rate";
-  monthKey = "Month";
-  exchangeKey = "Exchange";
-  limitKey = "Limit";
+  monthList.append("F");
+  monthList.append("G");
+  monthList.append("H");
+  monthList.append("J");
+  monthList.append("K");
+  monthList.append("M");
+  monthList.append("N");
+  monthList.append("Q");
+  monthList.append("U");
+  monthList.append("V");
+  monthList.append("X");
+  monthList.append("Z");
+
+  symbolList.append("AD");
+  symbolList.append("BO");
+  symbolList.append("NB");
+  symbolList.append("BP");
+  symbolList.append("C");
+  symbolList.append("CC");
+  symbolList.append("CO");
+  symbolList.append("CD");
+  symbolList.append("CL");
+  symbolList.append("CR");
+  symbolList.append("CT");
+  symbolList.append("DJ");
+  symbolList.append("DX");
+  symbolList.append("EC");
+  symbolList.append("ED");
+  symbolList.append("ES");
+  symbolList.append("FC");
+  symbolList.append("GC");
+  symbolList.append("GI");
+  symbolList.append("HG");
+  symbolList.append("HO");
+  symbolList.append("HU");
+  symbolList.append("OJ");
+  symbolList.append("JO");
+  symbolList.append("JY");
+  symbolList.append("KC");
+  symbolList.append("LB");
+  symbolList.append("LC");
+  symbolList.append("LN");
+  symbolList.append("LH");
+  symbolList.append("ND");
+  symbolList.append("NG");
+  symbolList.append("NQ");
+  symbolList.append("O");
+  symbolList.append("PA");
+  symbolList.append("PB");
+  symbolList.append("PL");
+  symbolList.append("S");
+  symbolList.append("SB");
+  symbolList.append("SF");
+  symbolList.append("SI");
+  symbolList.append("SM");
+  symbolList.append("SP");
+  symbolList.append("TY");
+  symbolList.append("TYD");
+  symbolList.append("US");
+  symbolList.append("USD");
+  symbolList.append("W");
+  symbolList.append("YX");
+  symbolList.append("FW20");
+
   cme = "CME";
   cbot = "CBOT";
   nymex = "NYMEX";
   nybot = "NYBOT";
-  
-  loadData();
+  hmuz = "H,M,U,Z";
+  hknuz = "H,K,N,U,Z";
+  all = "F,G,H,J,K,M,N,Q,U,V,X,Z";
 }
 
 FuturesData::~FuturesData ()
 {
 }
 
-QString FuturesData::getName ()
+void FuturesData::getName (QString &d)
 {
-  return name;
+  d = name;
 }
 
-QString FuturesData::getSymbol ()
+void FuturesData::getSymbol (QString &d)
 {
-  return symbol;
+  d = symbol;
 }
 
-QString FuturesData::getExchange ()
+void FuturesData::getExchange (QString &d)
 {
-  return exchange;
+  d = exchange;
 }
 
-QString FuturesData::getContract ()
+void FuturesData::getContract (QString &d)
 {
-  return contract;
+  d = contract;
 }
 
 double FuturesData::getLimit ()
@@ -75,501 +132,447 @@ double FuturesData::getRate ()
   return rate;
 }
 
-void FuturesData::getSymbolList (QString &d, QStringList &l)
+void FuturesData::getSymbolList (QStringList &l)
+{
+  l = symbolList;
+}
+
+void FuturesData::getCMESymbolList (QStringList &l)
 {
   l.clear();
-  QDictIterator<Setting> it(data);
-  for (; it.current(); ++it)
-  {
-    if (! d.compare("All"))
-    {
-      QString s = it.current()->getData(symbolKey);
-      if (l.findIndex(s) == -1)
-        l.append(s);
-    }
-    else
-    {
-      if (! it.current()->getData(exchangeKey).compare(d))
-      {
-        QString s = it.current()->getData(symbolKey);
-        if (l.findIndex(s) == -1)
-          l.append(s);
-      }
-    }
-  }
-  l.sort();
+  l.append("AD");
+  l.append("NB");
+  l.append("CD");
+  l.append("EC");
+  l.append("ED");
+  l.append("ES");
+  l.append("FC");
+  l.append("GI");
+  l.append("JY");
+  l.append("LB");
+  l.append("LC");
+  l.append("LN");
+  l.append("ND");
+  l.append("NQ");
+  l.append("PB");
+  l.append("SF");
+  l.append("SP");
 }
 
 void FuturesData::getMonthList (QStringList &l)
 {
   l.clear();
-  l = monthList;
+  l = QStringList::split(",", month, FALSE);
 }
 
 void FuturesData::getMonths (QStringList &l)
 {
-  l.clear();
-  l.append("F");
-  l.append("G");
-  l.append("H");
-  l.append("J");
-  l.append("K");
-  l.append("M");
-  l.append("N");
-  l.append("Q");
-  l.append("U");
-  l.append("V");
-  l.append("X");
-  l.append("Z");
+  l = monthList;
 }
 
 int FuturesData::setSymbol (QString &d)
 {
-  monthList.clear();
-  
-  Setting *set = data[d];
-  if (! set)
-    return TRUE;
+  name.truncate(0);
+  month.truncate(0);
+  exchange.truncate(0);
+  symbol.truncate(0);
+  rate = 0;
+  limit = 0;
+
+  bool rc = TRUE;
+  int i = symbolList.findIndex(d);
+  switch (i)
+  {
+    case AD:  
+      name = QObject::tr("Australian Dollar");
+      rate = 1000;
+      month = hmuz;
+      exchange = cme;
+      symbol = "AD";
+      rc = FALSE;
+      break;
+    case BO:
+      name = QObject::tr("Soybean Oil");
+      rate = 600;
+      month = "F,H,K,N,Q,U,V,Z";
+      limit = 2;
+      exchange = cbot;
+      symbol = "BO";
+      rc = FALSE;
+      break;
+    case BP:
+    case NB:  
+      name = QObject::tr("British Pound");
+      rate = 625;
+      month = hmuz;
+      exchange = cme;
+      symbol = "NB";
+      rc = FALSE;
+      break;
+    case C:
+      name = QObject::tr("Corn");
+      rate = 50;
+      month = hknuz;
+      limit = 20;
+      exchange = cbot;
+      symbol = "C";
+      rc = FALSE;
+      break;
+    case CC:
+    case CO:
+      name = QObject::tr("Cocoa");
+      rate = 10;
+      month = hknuz;
+      exchange = nybot;
+      symbol = "CC";
+      rc = FALSE;
+      break;
+    case CD:
+      name = QObject::tr("Canadian Dollar");
+      rate = 1000;
+      month = hmuz;
+      exchange = cme;
+      symbol = "CD";
+      rc = FALSE;
+      break;
+    case CL:
+      name = QObject::tr("Crude Oil");
+      rate = 1000;
+      month = all;
+      limit = 3;
+      exchange = nymex;
+      symbol = "CL";
+      rc = FALSE;
+      break;
+    case CR:
+      name = QObject::tr("CRB Index");
+      month = "F,G,J,M,Q,X";
+      exchange = nybot;
+      symbol = "CR";
+      rc = FALSE;
+      break;
+    case CT:
+      name = QObject::tr("Cotton");
+      rate = 500;
+      month = "H,K,N,V,Z";
+      limit = 3;
+      exchange = nybot;
+      symbol = "CT";
+      rc = FALSE;
+      break;
+    case DJ:
+      name = QObject::tr("Dow Jones Industrial Average");
+      month = hmuz;
+      exchange = cbot;
+      symbol = "DJ";
+      rc = FALSE;
+      break;
+    case DX:
+      name = QObject::tr("US Dollar Index");
+      rate = 1000;
+      month = hmuz;
+      exchange = nybot;
+      symbol = "DX";
+      rc = FALSE;
+      break;
+    case EC:
+      name = QObject::tr("Euro");
+      month = hmuz;
+      exchange = cme;
+      symbol = "EC";
+      rc = FALSE;
+      break;
+    case ED:
+      name = QObject::tr("Eurodollar");
+      rate = 2500;
+      month = hmuz;
+      exchange = cme;
+      symbol = "ED";
+      rc = FALSE;
+      break;
+    case ES:
+      name = QObject::tr("E-MINI S&P 500");
+      month = hmuz;
+      exchange = cme;
+      rate = 50;
+      symbol = "ES";
+      rc = FALSE;
+      break;
+    case FC:
+      name = QObject::tr("Feeder Cattle");
+      rate = 500;
+      month = "F,H,J,K,Q,U,V,X";
+      limit = 1.5;
+      exchange = cme;
+      symbol = "FC";
+      rc = FALSE;
+      break;
+    case GC:
+      name = QObject::tr("Gold");
+      rate = 100;
+      month = "G,J,M,Q,V,Z";
+      limit = 75;
+      symbol = "GC";
+      exchange = nymex;
+      rc = FALSE;
+      break;
+    case GI:
+      name = QObject::tr("Goldman Sachs Commodity Index");
+      month = all;
+      symbol = "GI";
+      exchange = cme;
+      rc = FALSE;
+      break;
+    case HG:
+      name = QObject::tr("Copper");
+      rate = 250;
+      month = hknuz;
+      limit = 20;
+      symbol = "HG";
+      exchange = nymex;
+      rc = FALSE;
+      break;
+    case HO:
+      name = QObject::tr("Heating Oil");
+      rate = 40000;
+      month = all;
+      limit = 6;
+      symbol = "HO";
+      exchange = nymex;
+      rc = FALSE;
+      break;
+    case HU:
+      name = QObject::tr("Unleaded Gasoline");
+      rate = 40000;
+      month = all;
+      limit = 6;
+      symbol = "HU";
+      exchange = nymex;
+      rc = FALSE;
+      break;
+    case OJ:
+    case JO:
+      name = QObject::tr("Frozen Concentrated Orange Juice");
+      rate = 150;
+      month = "F,H,K,N,U,X";
+      limit = 5;
+      symbol = "OJ";
+      exchange = nybot;
+      rc = FALSE;
+      break;
+    case JY:
+      symbol = QObject::tr("Japanese Yen");
+      rate = 1250;
+      month = hmuz;
+      symbol = "JY";
+      exchange = cme;
+      rc = FALSE;
+      break;
+    case KC:
+      name = QObject::tr("Coffee");
+      rate = 375;
+      month = hknuz;
+      symbol = "KC";
+      exchange = nybot;
+      rc = FALSE;
+      break;
+    case LB:
+      name = QObject::tr("Lumber");
+      rate = 80;
+      month = "F,H,K,N,U,X";
+      limit = 10;
+      exchange = cme;
+      symbol = "LB";
+      rc = FALSE;
+      break;
+    case LC:
+      name = QObject::tr("Live Cattle");
+      rate = 400;
+      month = "G,J,M,Q,V,Z";
+      limit = 1.5;
+      exchange = cme;
+      symbol = "LC";
+      rc = FALSE;
+      break;
+    case LH:
+    case LN:
+      name = QObject::tr("Lean Hogs");
+      rate = 400;
+      month = "G,J,M,N,Q,V,Z";
+      limit = 2;
+      symbol = "LN";
+      exchange = cme;
+      rc = FALSE;
+      break;
+    case ND:
+      name = QObject::tr("NASDAQ 100");
+      month = hmuz;
+      symbol = "ND";
+      exchange = cme;
+      rc = FALSE;
+      break;
+    case NG:
+      name = QObject::tr("Natural Gas");
+      rate = 10000;
+      month = all;
+      limit = 1;
+      symbol = "NG";
+      exchange = nymex;
+      rc = FALSE;
+      break;
+    case NQ:
+      name = QObject::tr("E-MINI NASDAQ 100");
+      month = hmuz;
+      symbol = "NQ";
+      exchange = cme;
+      rc = FALSE;
+      break;
+    case O:
+      name = QObject::tr("Oats");
+      rate = 50;
+      month = hknuz;
+      limit = 20;
+      symbol = "O";
+      exchange = cbot;
+      rc = FALSE;
+      break;
+    case PA:
+      name = QObject::tr("Palladium");
+      rate = 100;
+      month = hmuz;
+      symbol = "PA";
+      exchange = nymex;
+      rc = FALSE;
+      break;
+    case PB:
+      name = QObject::tr("Frozen Pork Bellies");
+      rate = 400;
+      month = "G,H,K,N,Q";
+      limit = 3;
+      symbol = "PB";
+      exchange = cme;
+      rc = FALSE;
+      break;
+    case PL:
+      name = QObject::tr("Platinum");
+      rate = 50;
+      month = "F,J,N,V";
+      limit = 50;
+      symbol = "PL";
+      exchange = nymex;
+      rc = FALSE;
+      break;
+    case S:
+      name = QObject::tr("Soybeans");
+      rate = 50;
+      limit = 50;
+      month = "F,H,K,N,Q,U,X";
+      symbol = "S";
+      exchange = cbot;
+      rc = FALSE;
+      break;
+    case SB:
+      name = QObject::tr("Sugar #11 World");
+      rate = 1120;
+      month = "H,K,N,V";
+      symbol = "SB";
+      exchange = nybot;
+      rc = FALSE;
+      break;
+    case SF:
+      name = QObject::tr("Swiss Franc");
+      rate = 1250;
+      month = hmuz;
+      symbol = "SF";
+      exchange = cme;
+      rc = FALSE;
+      break;
+    case SI:
+      name = QObject::tr("Silver");
+      rate = 100;
+      month = "F,H,K,N,U,Z";
+      rate = 150;
+      symbol = "SI";
+      exchange = nymex;
+      rc = FALSE;
+      break;
+    case SM:
+      name = QObject::tr("Soy Meal");
+      rate = 100;
+      month = "F,H,K,N,Q,U,V,Z";
+      limit = 20;
+      symbol = "SM";
+      exchange = cbot;
+      rc = FALSE;
+      break;
+    case SP:
+      name = QObject::tr("S&P 500");
+      month = hmuz;
+      exchange = cme;
+      rate = 250;
+      symbol = "SP";
+      rc = FALSE;
+      break;
+    case TY:
+    case TYD:
+      name = QObject::tr("Treasury Note 10 yr.");
+      rate = 1000;
+      month = hmuz;
+      symbol = "TY";
+      exchange = cbot;
+      rc = FALSE;
+      break;
+    case US:
+    case USD:
+      name = QObject::tr("US Treasury Bond");
+      rate = 1000;
+      month = hmuz;
+      symbol = "US";
+      exchange = cbot;
+      rc = FALSE;
+      break;
+    case W:
+      name = QObject::tr("Wheat");
+      rate = 50;
+      month = hknuz;
+      limit = 30;
+      symbol = "W";
+      exchange = cbot;
+      rc = FALSE;
+      break;
+    case YX:
+      name = QObject::tr("NYSE");
+      month = hmuz;
+      symbol = "YX";
+      exchange = nybot;
+      rc = FALSE;
+      break;
+    case FW20:
+      // Warsaw Stock Exchange futures
+      name = QObject::tr("WIG20 Index");
+      month = hmuz;
+      exchange = "WSE";
+      rate = 10;
+      symbol = "FW20";
+      rc = FALSE;
+      break;
+    default:
+      break;
+  }
+
+  if (rc)
+    return rc;
     
-  name = set->getData(nameKey);
-  symbol = set->getData(symbolKey);
-  rate = set->getDouble(rateKey);
-  monthList = QStringList::split(",", set->getData(monthKey), FALSE);
-  limit = set->getDouble(limitKey);
-  exchange = set->getData(exchangeKey);
   QDateTime dt = QDateTime::currentDateTime();
-  contract = getCurrentContract(dt);
+  getCurrentContract(dt, contract);
   
-  return FALSE;
+  return rc;
 }
 
-void FuturesData::loadData ()
+void FuturesData::getCurrentContract (QDateTime &dt, QString &cont)
 {
-  data.clear();
-  
-  Setting *set = new Setting;
-  set->setData(nameKey, QObject::tr("Australian Dollar"));
-  set->setData(symbolKey, "AD");
-  set->setData(rateKey, "1000");
-  set->setData(monthKey, "H,M,U,Z");
-  set->setData(exchangeKey, cme);
-  data.replace("AD", set);
-  
-  set = new Setting;
-  set->setData(nameKey, QObject::tr("Soybean Oil"));
-  set->setData(symbolKey, "BO");
-  set->setData(rateKey, "600");
-  set->setData(monthKey, "F,H,K,N,Q,U,V,Z");
-  set->setData(limitKey, "2");
-  set->setData(exchangeKey, cbot);
-  data.replace("BO", set);
-  
-  set = new Setting;
-  set->setData(nameKey, QObject::tr("British Pound"));
-  set->setData(symbolKey, "NB");
-  set->setData(rateKey, "625");
-  set->setData(monthKey, "H,M,U,Z");
-  set->setData(exchangeKey, cme);
-  data.replace("NB", set);
-
-  set = new Setting;
-  set->setData(nameKey, QObject::tr("British Pound"));
-  set->setData(symbolKey, "NB");
-  set->setData(rateKey, "625");
-  set->setData(monthKey, "H,M,U,Z");
-  set->setData(exchangeKey, cme);
-  data.replace("BP", set);
-
-  set = new Setting;
-  set->setData(nameKey, QObject::tr("Corn"));
-  set->setData(symbolKey, "C");
-  set->setData(rateKey, "50");
-  set->setData(monthKey, "H,K,N,U,Z");
-  set->setData(limitKey, "20");
-  set->setData(exchangeKey, cbot);
-  data.replace("C", set);
-
-  set = new Setting;
-  set->setData(nameKey, QObject::tr("Cocoa"));
-  set->setData(symbolKey, "CC");
-  set->setData(rateKey, "10");
-  set->setData(monthKey, "H,K,N,U,Z");
-  set->setData(exchangeKey, nybot);
-  data.replace("CO", set);
-  
-  set = new Setting;
-  set->setData(nameKey, QObject::tr("Cocoa"));
-  set->setData(symbolKey, "CC");
-  set->setData(rateKey, "10");
-  set->setData(monthKey, "H,K,N,U,Z");
-  set->setData(exchangeKey, nybot);
-  data.replace("CC", set);
-
-  set = new Setting;
-  set->setData(nameKey, QObject::tr("Canadian Dollar"));
-  set->setData(symbolKey, "CD");
-  set->setData(rateKey, "1000");
-  set->setData(monthKey, "H,M,U,Z");
-  set->setData(exchangeKey, cme);
-  data.replace("CD", set);
-
-  set = new Setting;
-  set->setData(nameKey, QObject::tr("Crude Oil"));
-  set->setData(symbolKey, "CL");
-  set->setData(rateKey, "1000");
-  set->setData(monthKey, "F,G,H,J,K,M,N,Q,U,V,X,Z");
-  set->setData(limitKey, "3");
-  set->setData(exchangeKey, nymex);
-  data.replace("CL", set);
-
-  set = new Setting;
-  set->setData(nameKey, QObject::tr("CRB Index"));
-  set->setData(symbolKey, "CR");
-  set->setData(monthKey, "F,G,J,M,Q,X");
-  set->setData(exchangeKey, nybot);
-  data.replace("CR", set);
-
-  set = new Setting;
-  set->setData(nameKey, QObject::tr("Cotton"));
-  set->setData(symbolKey, "CT");
-  set->setData(rateKey, "500");
-  set->setData(monthKey, "H,K,N,V,Z");
-  set->setData(limitKey, "3");
-  set->setData(exchangeKey, nybot);
-  data.replace("CT", set);
-
-  set = new Setting;
-  set->setData(nameKey, QObject::tr("Dow Jones Industrial Average"));
-  set->setData(symbolKey, "DJ");
-  set->setData(monthKey, "H,M,U,Z");
-  set->setData(exchangeKey, cbot);
-  data.replace("DJ", set);
-  
-  set = new Setting;
-  set->setData(nameKey, QObject::tr("US Dollar Index"));
-  set->setData(symbolKey, "DX");
-  set->setData(rateKey, "1000");
-  set->setData(monthKey, "H,M,U,Z");
-  set->setData(exchangeKey, nybot);
-  data.replace("DX", set);
-  
-  set = new Setting;
-  set->setData(nameKey, QObject::tr("Euro"));
-  set->setData(symbolKey, "EC");
-  set->setData(monthKey, "H,M,U,Z");
-  set->setData(exchangeKey, cme);
-  data.replace("EC", set);
-
-  set = new Setting;
-  set->setData(nameKey, QObject::tr("Eurodollar"));
-  set->setData(symbolKey, "ED");
-  set->setData(rateKey, "2500");
-  set->setData(monthKey, "H,M,U,Z");
-  set->setData(exchangeKey, cme);
-  data.replace("ED", set);
-
-  set = new Setting;
-  set->setData(nameKey, QObject::tr("E-MINI S&P 500"));
-  set->setData(symbolKey, "ES");
-  set->setData(monthKey, "H,M,U,Z");
-  set->setData(exchangeKey, cme);
-  set->setData(rateKey, "50");
-  data.replace("ES", set);
-
-  set = new Setting;
-  set->setData(nameKey, QObject::tr("Feeder Cattle"));
-  set->setData(symbolKey, "FC");
-  set->setData(rateKey, "500");
-  set->setData(monthKey, "F,H,J,K,Q,U,V,X");
-  set->setData(limitKey, "1.5");
-  set->setData(exchangeKey, cme);
-  data.replace("FC", set);
-
-  set = new Setting;
-  set->setData(nameKey, QObject::tr("Gold"));
-  set->setData(symbolKey, "GC");
-  set->setData(rateKey, "100");
-  set->setData(monthKey, "G,J,M,Q,V,Z");
-  set->setData(limitKey, "75");
-  set->setData(exchangeKey, nymex);
-  data.replace("GC", set);
-
-  set = new Setting;
-  set->setData(nameKey, QObject::tr("Goldman Sachs Commodity Index"));
-  set->setData(symbolKey, "GI");
-  set->setData(monthKey, "F,G,H,J,K,M,N,Q,U,V,X,Z");
-  set->setData(exchangeKey, cme);
-  data.replace("GI", set);
-
-  set = new Setting;
-  set->setData(nameKey, QObject::tr("Copper"));
-  set->setData(symbolKey, "HG");
-  set->setData(rateKey, "250");
-  set->setData(monthKey, "H,K,N,U,Z");
-  set->setData(limitKey, "20");
-  set->setData(exchangeKey, nymex);
-  data.replace("HG", set);
-
-  set = new Setting;
-  set->setData(nameKey, QObject::tr("Heating Oil"));
-  set->setData(symbolKey, "HO");
-  set->setData(rateKey, "40000");
-  set->setData(monthKey, "F,G,H,J,K,M,N,Q,U,V,X,Z");
-  set->setData(limitKey, "6");
-  set->setData(exchangeKey, nymex);
-  data.replace("HO", set);
-
-  set = new Setting;
-  set->setData(nameKey, QObject::tr("Unleaded Gasoline"));
-  set->setData(symbolKey, "HU");
-  set->setData(rateKey, "40000");
-  set->setData(monthKey, "F,G,H,J,K,M,N,Q,U,V,X,Z");
-  set->setData(limitKey, "6");
-  set->setData(exchangeKey, nymex);
-  data.replace("HU", set);
-
-  set = new Setting;
-  set->setData(nameKey, QObject::tr("Frozen Concentrated Orange Juice"));
-  set->setData(symbolKey, "OJ");
-  set->setData(rateKey, "150");
-  set->setData(monthKey, "F,H,K,N,U,X");
-  set->setData(limitKey, "5");
-  set->setData(exchangeKey, nybot);
-  data.replace("OJ", set);
-
-  set = new Setting;
-  set->setData(nameKey, QObject::tr("Frozen Concentrated Orange Juice"));
-  set->setData(symbolKey, "OJ");
-  set->setData(rateKey, "150");
-  set->setData(monthKey, "F,H,K,N,U,X");
-  set->setData(limitKey, "5");
-  set->setData(exchangeKey, nybot);
-  data.replace("JO", set);
-
-  set = new Setting;
-  set->setData(nameKey, QObject::tr("Japanese Yen"));
-  set->setData(symbolKey, "JY");
-  set->setData(rateKey, "1250");
-  set->setData(monthKey, "H,M,U,Z");
-  set->setData(exchangeKey, cme);
-  data.replace("JY", set);
-
-  set = new Setting;
-  set->setData(nameKey, QObject::tr("Coffee"));
-  set->setData(symbolKey, "KC");
-  set->setData(rateKey, "375");
-  set->setData(monthKey, "H,K,N,U,Z");
-  set->setData(exchangeKey, nybot);
-  data.replace("KC", set);
-
-  set = new Setting;
-  set->setData(nameKey, QObject::tr("Lumber"));
-  set->setData(symbolKey, "LB");
-  set->setData(rateKey, "80");
-  set->setData(monthKey, "F,H,K,N,U,X");
-  set->setData(limitKey, "10");
-  set->setData(exchangeKey, cme);
-  data.replace("LB", set);
-
-  set = new Setting;
-  set->setData(nameKey, QObject::tr("Live Cattle"));
-  set->setData(symbolKey, "LC");
-  set->setData(rateKey, "400");
-  set->setData(monthKey, "G,J,M,Q,V,Z");
-  set->setData(limitKey, "1.5");
-  set->setData(exchangeKey, cme);
-  data.replace("LC", set);
-
-  set = new Setting;
-  set->setData(nameKey, QObject::tr("Lean Hogs"));
-  set->setData(symbolKey, "LN");
-  set->setData(rateKey, "400");
-  set->setData(monthKey, "G,J,M,N,Q,V,Z");
-  set->setData(limitKey, "2");
-  set->setData(exchangeKey, cme);
-  data.replace("LN", set);
-
-  set = new Setting;
-  set->setData(nameKey, QObject::tr("Lean Hogs"));
-  set->setData(symbolKey, "LN");
-  set->setData(rateKey, "400");
-  set->setData(monthKey, "G,J,M,N,Q,V,Z");
-  set->setData(limitKey, "2");
-  set->setData(exchangeKey, cme);
-  data.replace("LH", set);
-    
-  set = new Setting;
-  set->setData(nameKey, QObject::tr("NASDAQ 100"));
-  set->setData(symbolKey, "ND");
-  set->setData(monthKey, "H,M,U,Z");
-  set->setData(exchangeKey, cme);
-  data.replace("ND", set);
-
-  set = new Setting;
-  set->setData(nameKey, QObject::tr("Natural Gas"));
-  set->setData(symbolKey, "NG");
-  set->setData(rateKey, "10000");
-  set->setData(monthKey, "F,G,H,J,K,M,N,Q,U,V,X,Z");
-  set->setData(limitKey, "1");
-  set->setData(exchangeKey, nymex);
-  data.replace("NG", set);
-
-  set = new Setting;
-  set->setData(nameKey, QObject::tr("E-MINI NASDAQ 100"));
-  set->setData(symbolKey, "NQ");
-  set->setData(monthKey, "H,M,U,Z");
-  set->setData(exchangeKey, cme);
-  data.replace("NQ", set);
-
-  set = new Setting;
-  set->setData(nameKey, QObject::tr("Oats"));
-  set->setData(symbolKey, "O");
-  set->setData(rateKey, "50");
-  set->setData(monthKey, "H,K,N,U,Z");
-  set->setData(limitKey, "20");
-  set->setData(exchangeKey, cbot);
-  data.replace("O", set);
-
-  set = new Setting;
-  set->setData(nameKey, QObject::tr("Palladium"));
-  set->setData(symbolKey, "PA");
-  set->setData(rateKey, "100");
-  set->setData(monthKey, "H,M,U,Z");
-  set->setData(exchangeKey, nymex);
-  data.replace("PA", set);
-
-  set = new Setting;
-  set->setData(nameKey, QObject::tr("Frozen Pork Bellies"));
-  set->setData(symbolKey, "PB");
-  set->setData(rateKey, "400");
-  set->setData(monthKey, "G,H,K,N,Q");
-  set->setData(limitKey, "3");
-  set->setData(exchangeKey, cme);
-  data.replace("PB", set);
-
-  set = new Setting;
-  set->setData(nameKey, QObject::tr("Platinum"));
-  set->setData(symbolKey, "PL");
-  set->setData(rateKey, "50");
-  set->setData(monthKey, "F,J,N,V");
-  set->setData(limitKey, "50");
-  set->setData(exchangeKey, nymex);
-  data.replace("PL", set);
-
-  set = new Setting;
-  set->setData(nameKey, QObject::tr("Soybeans"));
-  set->setData(symbolKey, "S");
-  set->setData(rateKey, "50");
-  set->setData(monthKey, "F,H,K,N,Q,U,X");
-  set->setData(limitKey, "50");
-  set->setData(exchangeKey, cbot);
-  data.replace("S", set);
-
-  set = new Setting;
-  set->setData(nameKey, QObject::tr("Sugar #11 World"));
-  set->setData(symbolKey, "SB");
-  set->setData(rateKey, "1120");
-  set->setData(monthKey, "H,K,N,V");
-  set->setData(exchangeKey, nybot);
-  data.replace("SB", set);
-
-  set = new Setting;
-  set->setData(nameKey, QObject::tr("Swiss Franc"));
-  set->setData(symbolKey, "SF");
-  set->setData(rateKey, "1250");
-  set->setData(monthKey, "H,M,U,Z");
-  set->setData(exchangeKey, cme);
-  data.replace("SF", set);
-
-  set = new Setting;
-  set->setData(nameKey, QObject::tr("Silver"));
-  set->setData(symbolKey, "SI");
-  set->setData(rateKey, "100");
-  set->setData(monthKey, "F,H,K,N,U,Z");
-  set->setData(limitKey, "150");
-  set->setData(exchangeKey, nymex);
-  data.replace("SI", set);
-
-  set = new Setting;
-  set->setData(nameKey, QObject::tr("Soy Meal"));
-  set->setData(symbolKey, "SM");
-  set->setData(rateKey, "100");
-  set->setData(monthKey, "F,H,K,N,Q,U,V,Z");
-  set->setData(limitKey, "20");
-  set->setData(exchangeKey, cbot);
-  data.replace("SM", set);
-
-  set = new Setting;
-  set->setData(nameKey, QObject::tr("S&P 500"));
-  set->setData(symbolKey, "SP");
-  set->setData(monthKey, "H,M,U,Z");
-  set->setData(exchangeKey, cme);
-  set->setData(rateKey, "250");
-  data.replace("SP", set);
-
-  set = new Setting;
-  set->setData(nameKey, QObject::tr("Treasury Note 10 yr."));
-  set->setData(symbolKey, "TY");
-  set->setData(rateKey, "1000");
-  set->setData(monthKey, "H,M,U,Z");
-  set->setData(exchangeKey, cbot);
-  data.replace("TY", set);
-
-  set = new Setting;
-  set->setData(nameKey, QObject::tr("Treasury Note 10 yr."));
-  set->setData(symbolKey, "TY");
-  set->setData(rateKey, "1000");
-  set->setData(monthKey, "H,M,U,Z");
-  set->setData(exchangeKey, cbot);
-  data.replace("TYD", set);
-    
-  set = new Setting;
-  set->setData(nameKey, QObject::tr("US Treasury Bond"));
-  set->setData(symbolKey, "US");
-  set->setData(rateKey, "1000");
-  set->setData(monthKey, "H,M,U,Z");
-  set->setData(exchangeKey, cbot);
-  data.replace("US", set);
-
-  set = new Setting;
-  set->setData(nameKey, QObject::tr("US Treasury Bond"));
-  set->setData(symbolKey, "US");
-  set->setData(rateKey, "1000");
-  set->setData(monthKey, "H,M,U,Z");
-  set->setData(exchangeKey, cbot);
-  data.replace("USD", set);
-    
-  set = new Setting;
-  set->setData(nameKey, QObject::tr("Wheat"));
-  set->setData(symbolKey, "W");
-  set->setData(rateKey, "50");
-  set->setData(monthKey, "H,K,N,U,Z");
-  set->setData(limitKey, "30");
-  set->setData(exchangeKey, cbot);
-  data.replace("W", set);
-
-  set = new Setting;
-  set->setData(nameKey, QObject::tr("NYSE"));
-  set->setData(symbolKey, "YX");
-  set->setData(monthKey, "H,M,U,Z");
-  set->setData(exchangeKey, nybot);
-  data.replace("YX", set);
-  
-  // Warsaw Stock Exchange futures
-  set = new Setting;
-  set->setData(nameKey, QObject::tr("WIG20 Index"));
-  set->setData(symbolKey, "FW20");
-  set->setData(monthKey, "H,M,U,Z");
-  set->setData(exchangeKey, "WSE");
-  set->setData(rateKey, "10");
-  data.replace("FW20", set);
-}
-
-QString FuturesData::getCurrentContract (QDateTime &dt)
-{
-  QString contract = symbol;
+  cont = symbol;
   bool yearFlag = FALSE;
-
   QStringList ml;
   getMonthList(ml);
   QStringList fml;
@@ -581,7 +584,6 @@ QString FuturesData::getCurrentContract (QDateTime &dt)
   if (i != -1)
   {
     currentMonth++;
-
     if (currentMonth == 12)
     {
       yearFlag = TRUE;
@@ -595,7 +597,6 @@ QString FuturesData::getCurrentContract (QDateTime &dt)
       ! symbol.compare("NG"))
   {
     currentMonth++;
-
     if (currentMonth == 12)
     {
       yearFlag = TRUE;
@@ -610,18 +611,16 @@ QString FuturesData::getCurrentContract (QDateTime &dt)
     if (i != -1)
     {
       if (yearFlag)
-        contract.append(QString::number(dt.date().year() + 1));
+        cont.append(QString::number(dt.date().year() + 1));
       else
-        contract.append(QString::number(dt.date().year()));
+        cont.append(QString::number(dt.date().year()));
 
-      contract.append(fml[currentMonth]);
-
+      cont.append(fml[currentMonth]);
       break;
     }
     else
     {
       currentMonth++;
-      
       if (currentMonth == 12)
       {
         yearFlag = TRUE;
@@ -629,7 +628,16 @@ QString FuturesData::getCurrentContract (QDateTime &dt)
       }
     }
   }
+}
 
-  return contract;
+int FuturesData::setSymbolPath (QString &d)
+{
+  QFileInfo fi(d);
+  QString s = fi.fileName();
+  if (s.length() == 7)
+    s = s.left(2);
+  else
+    s = s.left(1);
+  return setSymbol(s);
 }
 

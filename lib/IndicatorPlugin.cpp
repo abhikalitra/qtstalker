@@ -26,18 +26,15 @@
 
 IndicatorPlugin::IndicatorPlugin()
 {
-  minBars = 2;
   output = new Indicator;
   saveFlag = FALSE;
   
-  PlotLine *pl = new PlotLine;
-  pl->getLineTypes(lineTypes);
-  delete pl;
+  PlotLine pl;
+  pl.getLineTypes(lineTypes);
 
-  BarData *it = new BarData;
-  it->getInputFields(inputTypeList);
-  delete it;
-  
+  BarData it(pluginName);
+  it.getInputFields(inputTypeList);
+
   opList.append("EQ");
   opList.append("LT");
   opList.append("LTEQ");
@@ -45,6 +42,17 @@ IndicatorPlugin::IndicatorPlugin()
   opList.append("GTEQ");
   opList.append("AND");
   opList.append("OR");
+
+  maList.append("SMA"); //    TA_MAType_SMA       =0,
+  maList.append("EMA"); //    TA_MAType_EMA       =1,
+  maList.append("WMA"); //    TA_MAType_WMA       =2,
+  maList.append("DEMA"); //    TA_MAType_DEMA      =3,
+  maList.append("TEMA"); //    TA_MAType_TEMA      =4,
+  maList.append("TRIMA"); //    TA_MAType_TRIMA     =5,
+  maList.append("KAMA"); //    TA_MAType_KAMA      =6,
+  maList.append("MAMA"); //    TA_MAType_MAMA      =7,
+  maList.append("T3"); //    TA_MAType_T3        =8
+  maList.append("Wilder");
 }
 
 IndicatorPlugin::~IndicatorPlugin()
@@ -114,8 +122,12 @@ void IndicatorPlugin::saveFile (QString &file, Setting &dict)
   dict.getKeyList(key);
   
   int loop;
+  QString s;
   for(loop = 0; loop < (int) key.count(); loop++)
-    stream << key[loop] << "=" << dict.getData(key[loop]) << "\n";
+  {
+    dict.getData(key[loop], s);
+    stream << key[loop] << "=" << s << "\n";
+  }
   
   f.close();
 }
@@ -125,18 +137,9 @@ Indicator * IndicatorPlugin::getIndicator ()
   return output;
 }
 
-QStringList IndicatorPlugin::getMATypes ()
+void IndicatorPlugin::getMATypes (QStringList &l)
 {
-  QStringList l;
-  l.append("EMA");
-  l.append("SMA");
-  l.append("WMA");
-  l.append("Wilder");
-  l.append("DEMA");
-  l.append("KAMA");
-  l.append("TEMA");
-  l.append("TRIMA");
-  return l;
+  l = maList;
 }
 
 PlotLine * IndicatorPlugin::getMA (PlotLine *in, int type, int period)
@@ -152,7 +155,7 @@ PlotLine * IndicatorPlugin::getMA (PlotLine *in, int type, int period)
     return ma;
   }
 
-  if (type == 3)
+  if (type == 9)
     ma = getWilderMA(in, period);
   else
     ma = plug->getMA(in, type, period);
@@ -191,65 +194,109 @@ PlotLine * IndicatorPlugin::getWilderMA (PlotLine *d, int period)
   return wilderma;
 }
 
-QString IndicatorPlugin::getPluginName ()
+void IndicatorPlugin::getPluginName (QString &d)
 {
-  return pluginName;
+  d = pluginName;
 }
 
-QString IndicatorPlugin::getHelpFile ()
+void IndicatorPlugin::getHelpFile (QString &d)
 {
-  return helpFile;
+  d = helpFile;
 }
 
-IndicatorPlugin::Operator IndicatorPlugin::getOperator (QString d)
+IndicatorPlugin::Operator IndicatorPlugin::getOperator (QString &d)
 {
-  Operator op = NoOp;
-  
-  while (1)
+  int i = opList.findIndex(d);
+  return (Operator) i;
+}
+
+bool IndicatorPlugin::checkFormat (QString &p, QPtrList<PlotLine> &d, int hrange, int lrange)
+{
+  formatStringList = QStringList::split(",", p, FALSE);
+
+  if ((int) formatStringList.count() < lrange || (int) formatStringList.count() > hrange)
   {
-    if (! d.compare("EQ"))
-    {
-      op = Equal;
-      break;
-    }
-    
-    if (! d.compare("LT"))
-    {
-      op = LessThan;
-      break;
-    }
-  
-    if (! d.compare("LTEQ"))
-    {
-      op = LessThanEqual;
-      break;
-    }
-      
-    if (! d.compare("GT"))
-    {
-      op = GreaterThan;
-      break;
-    }
-    
-    if (! d.compare("AND"))
-    {
-      op = And;
-      break;
-    }
-    
-    if (! d.compare("OR"))
-    {
-      op = Or;
-      break;
-    }
-    
-    if (! d.compare("GTEQ"))
-      op = GreaterThanEqual;
-    
-    break;
+    qDebug("%s::checkFormat: invalid parm count", pluginName.latin1());
+    return TRUE;
   }
-  
-  return op;
+
+  int loop;
+  for (loop = 0; loop < (int) formatList.count(); loop++)
+  {
+    if (formatList[loop] == FormatInputArray)
+    {
+      if (! d.count())
+      {
+        qDebug("%s::checkFormat: parm #%i invalid, no INPUT_ARRAY found", pluginName.latin1(), loop+1);
+        return TRUE;
+      }
+      continue;
+    }
+
+    if (formatList[loop] == FormatInputArray2)
+    {
+      if (d.count() != 2)
+      {
+        qDebug("%s::checkFormat: parm #%i invalid, no INPUT_ARRAY2 found", pluginName.latin1(), loop+1);
+        return TRUE;
+      }
+      continue;
+    }
+
+    if (formatList[loop] == FormatInteger)
+    {
+      bool ok;
+      formatStringList[loop].toInt(&ok);
+      if (! ok)
+      {
+        qDebug("%s::checkFormat: parm #%i invalid, not an INTEGER", pluginName.latin1(), loop + 1);
+        return TRUE;
+      }
+      continue;
+    }
+
+    if (formatList[loop] == FormatDouble)
+    {
+      bool ok;
+      formatStringList[loop].toDouble(&ok);
+      if (! ok)
+      {
+        qDebug("%s::checkFormat: parm #%i invalid, not a DOUBLE", pluginName.latin1(), loop + 1);
+        return TRUE;
+      }
+      continue;
+    }
+
+    if (formatList[loop] == FormatMAType)
+    {
+      QStringList mal;
+      getMATypes(mal);
+      if (mal.findIndex(formatStringList[loop]) == -1)
+      {
+        qDebug("%s::checkFormat: parm #%i invalid, not an MA_TYPE", pluginName.latin1(), loop + 1);
+        return TRUE;
+      }
+      continue;
+    }
+
+    if (formatList[loop] == FormatBool)
+    {
+      if (! formatStringList[loop].compare("TRUE"))
+        continue;
+      else
+      {
+        if (! formatStringList[loop].compare("FALSE"))
+          continue;
+        else
+        {
+          qDebug("%s::checkFormat: parm #%i invalid, not a BOOL", pluginName.latin1(), loop + 1);
+          return TRUE;
+        }
+      }
+    }
+  }
+
+  return FALSE;
 }
 
 //***************************************************************
@@ -282,11 +329,6 @@ void IndicatorPlugin::setCustomFunction (QStringList &)
 {
 }
 
-int IndicatorPlugin::getMinBars ()
-{
-  return minBars;
-}
-
 void IndicatorPlugin::saveIndicatorSettings (QString &d)
 {
   Setting set;
@@ -300,4 +342,9 @@ void IndicatorPlugin::loadIndicatorSettings (QString &d)
   loadFile(d, set);
   setIndicatorSettings(set);
 }
+
+void IndicatorPlugin::formatDialog (QStringList &, QString &, QString &)
+{
+}
+
 

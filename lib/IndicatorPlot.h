@@ -39,7 +39,7 @@
 #include "Scaler.h"
 #include "Config.h"
 #include "BarData.h"
-#include "COPlugin.h"
+#include "COBase.h"
 
 class IndicatorPlot : public QWidget
 {
@@ -90,6 +90,7 @@ class IndicatorPlot : public QWidget
     Scaler & getScaler ();
     void getInfo (int);
     void setXGrid (QMemArray<int> &);
+    void setMenuFlag (bool);
     
     void drawLine ();
     void drawHorizontalLine ();
@@ -118,7 +119,7 @@ class IndicatorPlot : public QWidget
     void slotScaleToScreenChanged (bool);
     void slotDrawModeChanged (bool);
     void slotLogScaleChanged (bool);
-    void setInterval(BarData::BarCompression);
+    void setInterval(BarData::BarLength);
 
   protected:
     virtual void paintEvent (QPaintEvent *);
@@ -136,16 +137,17 @@ class IndicatorPlot : public QWidget
     void drawYGrid ();
     void drawInfo ();
     void setScale ();
-    int getXFromDate (BarDate &);
+    int getXFromDate (QDateTime &);
     void getXY (int, int);
     void slotMessage (QString);
     void slotEditIndicator ();
     void slotNewIndicator ();
     void slotNewChartObject (int);
     void slotDeleteAllChartObjects ();
-    void slotChartObjectDeleted ();
+    void slotChartObjectDeleted (QString);
     void toggleDate ();
     void toggleLog ();
+    void saveChartObjects ();
 
   private:
     QFont plotFont;
@@ -155,7 +157,7 @@ class IndicatorPlot : public QWidget
     int pixelspace;
     int startX;
     int startIndex;
-    BarData::BarCompression interval;
+    BarData::BarLength interval;
     QColor backgroundColor;
     QColor gridColor;
     QColor borderColor;
@@ -167,15 +169,15 @@ class IndicatorPlot : public QWidget
     bool crosshairs;
     bool infoFlag;
     bool dateFlag;
-    BarDate crossHairX;
+    bool menuFlag;
+    QDateTime crossHairX;
     double crossHairY;
     Scaler scaler;
     double y1;
-    BarDate x1;
+    QDateTime x1;
     MouseStatus mouseFlag;
-    COPlugin *coPlugin;
-    QStringList coList;
-    QDict<COPlugin> coPlugins;
+    QDict<COBase> coList;
+    COBase *coSelected;
     QString chartPath;
     BarData *data;
     Indicator *indy;

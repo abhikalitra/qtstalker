@@ -33,7 +33,7 @@ class UO : public IndicatorPlugin
     void getIndicatorSettings (Setting &);
     void setIndicatorSettings (Setting &);
     PlotLine * getTR ();
-    int getMinBars ();
+    void formatDialog (QStringList &vl, QString &rv, QString &rs);
     
   private:
     QColor color;
@@ -42,6 +42,14 @@ class UO : public IndicatorPlugin
     int shortPeriod;
     int medPeriod;
     int longPeriod;
+
+    QString colorLabel;
+    QString lineTypeLabel;
+    QString labelLabel;
+    QString shortPeriodLabel;
+    QString medPeriodLabel;
+    QString longPeriodLabel;
+    QString pluginLabel;
 };
 
 extern "C"

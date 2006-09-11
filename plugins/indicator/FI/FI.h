@@ -32,7 +32,7 @@ class FI : public IndicatorPlugin
     PlotLine * calculateCustom (QString &, QPtrList<PlotLine> &);
     void getIndicatorSettings (Setting &);
     void setIndicatorSettings (Setting &);
-    int getMinBars ();
+    void formatDialog (QStringList &vl, QString &rv, QString &rs);
     
   private:
     QColor color;
@@ -40,6 +40,13 @@ class FI : public IndicatorPlugin
     QString label;
     int smoothing;
     int maType;
+
+    QString colorLabel;
+    QString lineTypeLabel;
+    QString smoothingLabel;
+    QString labelLabel;
+    QString maTypeLabel;
+    QString pluginLabel;
 };
 
 extern "C"

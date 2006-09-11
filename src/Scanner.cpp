@@ -27,6 +27,7 @@
 #include <qhgroupbox.h>
 #include <qprogressdialog.h>
 #include <stdlib.h>
+#include <qlabel.h>
 #include "Scanner.h"
 #include "BarData.h"
 #include "SymbolDialog.h"
@@ -58,14 +59,26 @@ Scanner::Scanner (QString n) : QTabDialog (0, 0, FALSE)
   fileButton = new QPushButton(tr("0 Symbols"), gbox);
   connect(fileButton, SIGNAL(clicked()), this, SLOT(getSymbols()));
 
-  gbox = new QHGroupBox(tr("Compression"), w);  
-  vbox->addWidget(gbox);
-  
-  BarData bd;
-  period = new QComboBox(gbox);
-  bd.getBarCompressionList(compressionList);
-  period->insertStringList(compressionList, -1);
+  QGridLayout *grid = new QGridLayout(vbox, 1, 2);
+  grid->setColStretch(1, 1);
 
+  QLabel *label = new QLabel(tr("Bar Length"), w);
+  grid->addWidget(label, 0, 0);
+
+  BarData bd(scannerName);
+  period = new QComboBox(w);
+  bd.getBarLengthList(barLengthList);
+  period->insertStringList(barLengthList, -1);
+  period->setCurrentText("Daily");
+  grid->addWidget(period, 0, 1);
+
+  label = new QLabel(tr("Bars"), w);
+  grid->addWidget(label, 1, 0);
+
+  bars = new QSpinBox(1, 99999999, 1, w);
+  bars->setValue(100);
+  grid->addWidget(bars, 1, 1);
+  
   list = new FormulaEdit(w, FormulaEdit::Logic);
   vbox->addWidget(list);
   
@@ -111,35 +124,40 @@ void Scanner::scan ()
     return;
   }
 
-  QStringList l = QStringList::split("\n", list->getText(), FALSE);
+  QString s;
+  list->getText(s);
+  QStringList l = QStringList::split("\n", s, FALSE);
   plug->setCustomFunction(l);
   
   this->setEnabled(FALSE);
   
   // clear dir for scan symbols
   QDir dir;
-  QString s = config.getData(Config::GroupPath);
+  config.getData(Config::GroupPath, s);
   s.append("/Scanner");
   if (! dir.exists(s, TRUE))
     dir.mkdir(s, TRUE);
-  s.append("/");
-  s.append(scannerName);
+  s.append("/" + scannerName);
   if (! dir.exists(s, TRUE))
     dir.mkdir(s, TRUE);
   else
   {
     int loop;
+    dir.setPath(s);
     for (loop = 2; loop < (int) dir.count(); loop++)
     {
-      QString s2 = dir.absPath(); + "/" + dir[loop];
-      dir.remove(s2, TRUE);
+      QString s2 = dir.absPath() + "/" + dir[loop];
+      if (! dir.remove(s2, TRUE))
+        qDebug("%s not removed", s2.latin1());
     }
   }
   
   if (allSymbols->isChecked())
   {
+    QString ts;
+    config.getData(Config::DataPath, ts);
     Traverse *trav = new Traverse();
-    trav->traverse(config.getData(Config::DataPath) + "/Stocks");
+    trav->traverse(ts + "/Stocks");
     fileList = trav->getList();
     delete trav;
   }
@@ -152,8 +170,7 @@ void Scanner::scan ()
 		       TRUE);
   prog.show();
   
-//  int minBars = plug->getMinBars();
-  int minBars = 100; // FIXME gotta find a new way to get minbars before we calculate
+  int minBars = bars->value();
   
   emit message(QString("Scanning..."));
   
@@ -168,37 +185,19 @@ void Scanner::scan ()
       break;
     }
 
-    QString plugin = config.parseDbPlugin(fileList[loop]);
-    DbPlugin *db = config.getDbPlugin(plugin);
-    if (! db)
-    {
-      config.closePlugin(plugin);
-      continue;
-    }
-
+    DbPlugin db;
     QDir dir;
     if (! dir.exists(fileList[loop]))
-    {
-      config.closePlugin(plugin);
       continue;
-    }
-    db->openChart(fileList[loop]);
+    db.openChart(fileList[loop]);
 
-    if (! period->currentText().compare(tr("Daily")))
-      db->setBarCompression(BarData::DailyBar);
-    else
-    {
-      if (! period->currentText().compare(tr("Weekly")))
-        db->setBarCompression(BarData::WeeklyBar);
-      else
-        db->setBarCompression(BarData::MonthlyBar);
-    }
-    
-    db->setBarRange(minBars);
-    db->setBarCompression((BarData::BarCompression) compressionList.findIndex(period->currentText()));
+    db.setBarRange(minBars);
+    db.setBarLength((BarData::BarLength) barLengthList.findIndex(period->currentText()));
 
-    BarData *recordList = new BarData;
-    db->getHistory(recordList);
+    BarData *recordList = new BarData(fileList[loop]);
+    QDateTime dt = QDateTime::currentDateTime();
+    db.getHistory(recordList, dt);
+    db.close();
     
     // load the CUS plugin and calculate
     plug->clearOutput();
@@ -208,7 +207,6 @@ void Scanner::scan ()
     if (! i->getLines())
     {
       delete recordList;
-      config.closePlugin(plugin);
       continue;
     }
     
@@ -217,18 +215,14 @@ void Scanner::scan ()
     {
       if (line->getData(line->getSize() - 1) > 0)
       {
-        QString s = "ln -s ";
-        s.append(fileList[loop]);
-        s.append(" ");
-        s.append(config.getData(Config::GroupPath));
-        s.append("/Scanner/");
-        s.append(scannerName);
-        system (s);
+        QString ts;
+        config.getData(Config::GroupPath, ts);
+        QString s = "ln -s " + fileList[loop] + " " + ts + "/Scanner/" + scannerName;
+        system(s);
       }
     }
     
     delete recordList;
-    config.closePlugin(plugin);
     
     emit message(QString());
   }
@@ -239,13 +233,15 @@ void Scanner::scan ()
   config.closePlugin(iplugin);
   
   this->setEnabled(TRUE);
+
+  emit scanComplete();
 }
 
 void Scanner::saveRule ()
 {
-  QString s = config.getData(Config::ScannerPath);
-  s.append("/");
-  s.append(scannerName);
+  QString s;
+  config.getData(Config::ScannerPath, s);
+  s.append("/" + scannerName);
 
   QFile f(s);
   if (! f.open(IO_WriteOnly))
@@ -254,12 +250,14 @@ void Scanner::saveRule ()
   
   stream << "allSymbols=" << QString::number(allSymbols->isChecked()) << "\n";
   stream << "compression=" << period->currentText() << "\n";
+  stream << "bars=" << bars->text() << "\n";
   
   int loop;
   for (loop = 0; loop < (int) fileList.count(); loop++)
     stream << "symbol=" << fileList[loop] << "\n";
   
-  QStringList l = QStringList::split("\n", list->getText(), FALSE);
+  list->getText(s);
+  QStringList l = QStringList::split("\n", s, FALSE);
   stream << "script=" << l.join("|") << "\n";
   
   f.close();
@@ -267,9 +265,9 @@ void Scanner::saveRule ()
 
 void Scanner::loadRule ()
 {
-  QString s = config.getData(Config::ScannerPath);
-  s.append("/");
-  s.append(scannerName);
+  QString s;
+  config.getData(Config::ScannerPath, s);
+  s.append("/" + scannerName);
 
   QFile f(s);
   if (! f.open(IO_ReadOnly))
@@ -315,6 +313,12 @@ void Scanner::loadRule ()
       continue;
     }
 
+    if (! key.compare("bars"))
+    {
+      bars->setValue(dat.toInt());
+      continue;
+    }
+    
     if (! key.compare("script"))
     {
       QStringList l2 = QStringList::split("|", dat, FALSE);
@@ -337,9 +341,11 @@ void Scanner::exitDialog ()
 
 void Scanner::getSymbols ()
 {
-  QString s(config.getData(Config::DataPath));
+  QString s;
+  config.getData(Config::DataPath, s);
   QString s2("*");
   SymbolDialog *dialog = new SymbolDialog(this,
+                                          s,
   					  s,
 					  s2,
 					  QFileDialog::ExistingFiles);

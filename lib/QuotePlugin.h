@@ -45,10 +45,10 @@ class QuotePlugin : public QObject
     QuotePlugin ();
     virtual ~QuotePlugin ();
     bool setTFloat (QString &, bool);
-    QString stripJunk (QString &);
-    QString createDirectory (QString &);
-    QString getPluginName ();
-    QString getHelpFile ();
+    void stripJunk (QString &, QString &);
+    void createDirectory (QString &, QString &);
+    void getPluginName (QString &);
+    void getHelpFile (QString &);
     
     virtual void update ();
     virtual void cancelUpdate ();

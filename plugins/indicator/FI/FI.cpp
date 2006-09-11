@@ -28,6 +28,16 @@ FI::FI ()
 {
   pluginName = "FI";
   helpFile = "fi.html";
+
+  colorLabel = "color";
+  lineTypeLabel = "lineType";
+  smoothingLabel = "smoothing";
+  labelLabel = "label";
+  maTypeLabel = "maType";
+  pluginLabel = "plugin";
+
+  formatList.append(FormatMAType);
+  formatList.append(FormatInteger);
   
   setDefaults();
 }
@@ -93,17 +103,18 @@ int FI::indicatorPrefDialog (QWidget *w)
   dialog->addComboItem(ltl, pl, lineTypes, lineType);
   dialog->addTextItem(ll, pl, label);
   dialog->addIntItem(sl, pl, smoothing, 0, 99999999);
-  QStringList l = getMATypes();
+  QStringList l;
+  getMATypes(l);
   dialog->addComboItem(stl, pl, l, maType);
   
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
-    color = dialog->getColor(cl);
+    dialog->getColor(cl, color);
     lineType = (PlotLine::LineType) dialog->getComboIndex(ltl);
     smoothing = dialog->getInt(sl);
-    label = dialog->getText(ll);
+    dialog->getText(ll, label);
     maType = dialog->getComboIndex(stl);
     rc = TRUE;
   }
@@ -121,79 +132,90 @@ void FI::setIndicatorSettings (Setting &dict)
   if (! dict.count())
     return;
   
-  QString s = dict.getData("color");
+  QString s;
+  dict.getData(colorLabel, s);
   if (s.length())
     color.setNamedColor(s);
     
-  s = dict.getData("lineType");
+  dict.getData(lineTypeLabel, s);
   if (s.length())
     lineType = (PlotLine::LineType) s.toInt();
 
-  s = dict.getData("smoothing");
+  dict.getData(smoothingLabel, s);
   if (s.length())
     smoothing = s.toInt();
 
-  s = dict.getData("label");
+  dict.getData(labelLabel, s);
   if (s.length())
     label = s;
       
-  s = dict.getData("maType");
+  dict.getData(maTypeLabel, s);
   if (s.length())
     maType = s.toInt();
 }
 
 void FI::getIndicatorSettings (Setting &dict)
 {
-  dict.setData("color", color.name());
-  dict.setData("lineType", QString::number(lineType));
-  dict.setData("smoothing", QString::number(smoothing));
-  dict.setData("label", label);
-  dict.setData("maType", QString::number(maType));
-  dict.setData("plugin", pluginName);
+  QString ts = color.name();
+  dict.setData(colorLabel, ts);
+  ts = QString::number(lineType);
+  dict.setData(lineTypeLabel, ts);
+  ts = QString::number(smoothing);
+  dict.setData(smoothingLabel, ts);
+  dict.setData(labelLabel, label);
+  ts = QString::number(maType);
+  dict.setData(maTypeLabel, ts);
+  dict.setData(pluginLabel, pluginName);
 }
 
-PlotLine * FI::calculateCustom (QString &p, QPtrList<PlotLine> &)
+PlotLine * FI::calculateCustom (QString &p, QPtrList<PlotLine> &d)
 {
   // format1: MA_TYPE, SMOOTHING
 
-  QStringList l = QStringList::split(",", p, FALSE);
-
-  if (l.count() == 2)
-    ;
-  else
-  {
-    qDebug("FI::calculateCustom: invalid parm count");
+  if (checkFormat(p, d, 2, 2))
     return 0;
-  }
 
-  QStringList mal = getMATypes();
-  if (mal.findIndex(l[0]) == -1)
-  {
-    qDebug("FI::calculateCustom: invalid MA_TYPE parm");
-    return 0;
-  }
-  else
-    maType = mal.findIndex(l[0]);
-
-  bool ok;
-  int t = l[1].toInt(&ok);
-  if (ok)
-    smoothing = t;
-  else
-  {
-    qDebug("FI::calculateCustom: invalid SMOOTHING parm");
-    return 0;
-  }
+  QStringList mal;
+  getMATypes(mal);
+  maType = mal.findIndex(formatStringList[0]);
+  smoothing = formatStringList[1].toInt();
 
   clearOutput();
   calculate();
   return output->getLine(0);
 }
 
-int FI::getMinBars ()
+void FI::formatDialog (QStringList &, QString &rv, QString &rs)
 {
-  int t = minBars + 1 + smoothing;
-  return t;
+  rs.truncate(0);
+  rv.truncate(0);
+  QString pl = QObject::tr("Parms");
+  QString vl = QObject::tr("Variable Name");
+  QString mtl = QObject::tr("MA Type");
+  QString ppl = QObject::tr("Period");
+  PrefDialog *dialog = new PrefDialog(0);
+  dialog->setCaption(QObject::tr("FI Format"));
+  dialog->createPage (pl);
+  dialog->setHelpFile(helpFile);
+
+  QString s;
+  QStringList mal;
+  getMATypes(mal);
+  dialog->addTextItem(vl, pl, s);
+  dialog->addComboItem(mtl, pl, mal, maType);
+  dialog->addIntItem(ppl, pl, smoothing, 1, 999999);
+
+  int rc = dialog->exec();
+  
+  if (rc == QDialog::Accepted)
+  {
+    dialog->getText(vl, rv);
+    dialog->getCombo(mtl, rs);
+    int t = dialog->getInt(ppl);
+    rs.append("," + QString::number(t));
+  }
+
+  delete dialog;
 }
 
 //*******************************************************

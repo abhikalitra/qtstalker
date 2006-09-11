@@ -32,12 +32,19 @@ class SYMBOL : public IndicatorPlugin
     void getIndicatorSettings (Setting &);
     void setIndicatorSettings (Setting &);
     PlotLine * calculateCustom (QString &, QPtrList<PlotLine> &);
+    void formatDialog (QStringList &vl, QString &rv, QString &rs);
     
   private:
     QColor color;
     PlotLine::LineType lineType;
     QString label;
     QString symbol;
+
+    QString colorLabel;
+    QString lineTypeLabel;
+    QString labelLabel;
+    QString symbolLabel;
+    QString pluginLabel;
 };
 
 extern "C"

@@ -26,13 +26,12 @@
 #include <qwidget.h>
 #include <qpopupmenu.h>
 #include <qdir.h>
+#include <qcombobox.h>
+#include <qlistbox.h>
+#include <qlineedit.h>
+
 #include "Setting.h"
-#include "Macro.h"
-#include "MacroKey.h"
-#include "MyComboBox.h"
-#include "MyListBox.h"
 #include "Indicator.h"
-#include "MyLineEdit.h"
 
 
 class IndicatorPage : public QWidget
@@ -45,7 +44,6 @@ class IndicatorPage : public QWidget
     void signalEditIndicator (Indicator *);
     void signalDeleteIndicator (QString);
     void signalNewIndicator (Indicator *);
-    void signalKeyPressed (int, int, int, int, QString);
     void signalReloadChart ();
   
   public:
@@ -55,6 +53,7 @@ class IndicatorPage : public QWidget
       NewIndicatorGroup,
       DeleteIndicatorGroup,
       NewIndicator,
+      AddLocalIndicator,
       DeleteIndicator,
       EditIndicator,
       MoveIndicator,
@@ -65,13 +64,11 @@ class IndicatorPage : public QWidget
     IndicatorPage (QWidget *);
     ~IndicatorPage ();
     void updateGroups ();
-    void getIndicatorGroups (QStringList &);
     QString getIndicatorGroup ();
     void setFocus ();
     void setChartPath (QString &);
     void removeLocalIndicators ();
     void addLocalIndicators (QString &);
-    void saveLocalIndicator (QString &d, Setting &);
 
   public slots:
     void doubleClick (QListBoxItem *);
@@ -84,32 +81,27 @@ class IndicatorPage : public QWidget
     void deleteIndicator ();
     void itemSelected (const QString &);
     void changeIndicator (QString &);
-    void setKeyFlag (bool);
     void slotAccel (int);
     void doKeyPress (QKeyEvent *key);
-    void runMacro (Macro *);
     void moveIndicator ();
     void slotGroupChanged (int);
     void newIndicatorGroup ();
     void deleteIndicatorGroup ();
     void searchChanged (const QString &);
+    void addLocalIndicator ();
 
   protected:
     virtual void keyPressEvent (QKeyEvent *);
     
-    MyListBox *list;
-    MyComboBox *group;
+    QListBox *list;
+    QComboBox *group;
     QPopupMenu *menu;
-    bool keyFlag;
-    Macro *macro;
-    bool macroFlag;
     QString baseDir;
-    QString cusRulePath;
     QString currentGroup;
     bool updateEnableFlag;
     QString chartPath;
     QStringList localIndicators;
-    MyLineEdit *search;
+    QLineEdit *search;
     QDir idir;
 };
 

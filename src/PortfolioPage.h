@@ -27,15 +27,11 @@
 #include <qpopupmenu.h>
 #include <qlistbox.h>
 #include "Config.h"
-#include "Macro.h"
 
 class PortfolioPage : public QListBox
 {
   Q_OBJECT
   
-  signals:
-    void signalKeyPressed (int, int, int, int, QString);
-
   public:
   
     enum HotKey
@@ -62,18 +58,13 @@ class PortfolioPage : public QListBox
     void doubleClick (QListBoxItem *);
     void updateList ();
     void doKeyPress (QKeyEvent *);
-    void setKeyFlag (bool);
     void slotAccel (int);
-    void runMacro (Macro *);
 
   private:
     virtual void keyPressEvent (QKeyEvent *);
   
     Config config;
     QPopupMenu *menu;
-    bool keyFlag;
-    Macro *macro;
-    bool macroFlag;
 };
 
 #endif

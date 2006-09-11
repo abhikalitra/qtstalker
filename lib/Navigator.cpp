@@ -114,15 +114,16 @@ void Navigator::fileSelection (QListBoxItem *item)
     return;
   }
 
-  emit fileSelected(getFileSelection());
+  QString s;
+  getFileSelection(s);
+  emit fileSelected(s);
 }
 
-QString Navigator::getFileSelection ()
+void Navigator::getFileSelection (QString &s)
 {
-  QString s = currentDir.absPath();
+  s = currentDir.absPath();
   s.append("/");
   s.append(currentText());
-  return s;
 }
 
 void Navigator::setDirectory (QString &d)
@@ -134,9 +135,9 @@ void Navigator::setDirectory (QString &d)
   }
 }
 
-QString Navigator::getCurrentPath ()
+void Navigator::getCurrentPath (QString &d)
 {
-  return currentDir.absPath();
+  d = currentDir.absPath();
 }
 
 void Navigator::checkDirectory (QListBoxItem *item)
@@ -153,18 +154,18 @@ void Navigator::checkDirectory (QListBoxItem *item)
     return;
   }
 
+  QString s;
   if (item->pixmap())
   {
-    QString s = currentDir.absPath();
-    s.append("/");
-    s.append(item->text());
+    s = currentDir.absPath() + "/" + item->text();
     currentDir.setPath(s);
     updateList();
     emit noSelection();
     return;
   }
   
-  emit fileOpened(getFileSelection());
+  getFileSelection(s);
+  emit fileOpened(s);
 }
 
 void Navigator::setFilter (QString &d)

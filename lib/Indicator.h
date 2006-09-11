@@ -34,6 +34,7 @@ class Indicator
     ~Indicator ();
     int getLines ();
     void addLine (PlotLine *);
+    void prependLine (PlotLine *);
     PlotLine * getLine (int);
     int getTabRow ();
     void setTabRow (int);
@@ -41,16 +42,17 @@ class Indicator
     void setEnable (bool);
     bool getEnable ();
     void setName (QString &);
-    QString getName ();
+    void getName (QString &);
     void setFile (QString &);
-    QString getFile ();
+    void getFile (QString &);
     void copy (Indicator *);
     void setType (QString &);
-    QString getType ();
+    void getType (QString &);
     void setDateFlag (bool);
     bool getDateFlag ();
     void setLogScale (bool);
     bool getLogScale ();
+    void setIndicator (Setting &, QString &);
 
   private:
     QPtrList<PlotLine> lines;

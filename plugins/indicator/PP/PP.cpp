@@ -36,6 +36,21 @@ PP::PP ()
   ppList.append("SS");
   ppList.append("TS");
   
+  resColorLabel = "resColor";
+  supColorLabel = "supColor";
+  resLineTypeLabel = "resLineType";
+  supLineTypeLabel = "supLineType";
+  resLabelLabel = "resLabel";
+  resLabel2Label = "resLabel2";
+  resLabel3Label = "resLabel3";
+  supLabelLabel = "supLabel";
+  supLabel2Label = "supLabel2";
+  supLabel3Label = "supLabel3";
+  labelLabel = "label";
+  pluginLabel = "plugin";
+
+  formatList.append(FormatString);
+
   setDefaults();
 }
 
@@ -45,8 +60,8 @@ PP::~PP ()
 
 void PP::setDefaults ()
 {
-  resColor.setNamedColor("red");
-  supColor.setNamedColor("yellow");
+  resColor.setNamedColor("yellow");
+  supColor.setNamedColor("red");
   resLineType = PlotLine::Horizontal;
   supLineType = PlotLine::Horizontal;
   supLabel = QObject::tr("PP FS");
@@ -112,70 +127,55 @@ void PP::calculate ()
   t = (2 * pp) - ((2 * high) - low);
   ts->append(t);
 
-  output->addLine(ts);
-  output->addLine(ss);
-  output->addLine(fs);
   output->addLine(fr);
   output->addLine(sr);
   output->addLine(thr);
+  output->addLine(fs);
+  output->addLine(ss);
+  output->addLine(ts);
 }
 
 int PP::indicatorPrefDialog (QWidget *w)
 {
+  QString pl = QObject::tr("Support");
+  QString scl = QObject::tr("Support Color");
+  QString lfsl = QObject::tr("Label First Support");
+  QString lssl = QObject::tr("Label Second Support");
+  QString ltsl = QObject::tr("Label Third Support");
+  QString pl2 = QObject::tr("Resistance");
+  QString rcl = QObject::tr("Resistance Color");
+  QString lfrl = QObject::tr("Label First Resistance");
+  QString lsrl = QObject::tr("Label Second Resistance");
+  QString ltrl = QObject::tr("Label Third Resistance");
+
   PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(QObject::tr("PP Indicator"));
-  
-  QString pl = QObject::tr("Support");
-  dialog->createPage (pl);
   dialog->setHelpFile(helpFile);
-  QString t = QObject::tr("Support Color");
-  dialog->addColorItem(t, pl, supColor);
-  t = QObject::tr("Support Line Type");
-  dialog->addComboItem(t, pl, lineTypes, supLineType);
-  t = QObject::tr("Label First Support");
-  dialog->addTextItem(t, pl, supLabel);
-  t = QObject::tr("Label Second Support");
-  dialog->addTextItem(t, pl, supLabel2);
-  t = QObject::tr("Label Third Support");
-  dialog->addTextItem(t, pl, supLabel3);
-  
-  pl = QObject::tr("Resistance");
+
   dialog->createPage (pl);
-  t = QObject::tr("Resistance Color");
-  dialog->addColorItem(t, pl, resColor);
-  t = QObject::tr("Resistance Line Type");
-  dialog->addComboItem(t, pl, lineTypes, resLineType);
-  t = QObject::tr("Label First Resistance");
-  dialog->addTextItem(t, pl, resLabel);
-  t = QObject::tr("Label Second Resistance");
-  dialog->addTextItem(t, pl, resLabel2);
-  t = QObject::tr("Label Third Resistance");
-  dialog->addTextItem(t, pl, resLabel3);
+  dialog->addColorItem(scl, pl, supColor);
+  dialog->addTextItem(lfsl, pl, supLabel);
+  dialog->addTextItem(lssl, pl, supLabel2);
+  dialog->addTextItem(ltsl, pl, supLabel3);
+  
+  dialog->createPage (pl2);
+  dialog->addColorItem(rcl, pl2, resColor);
+  dialog->addTextItem(lfrl, pl2, resLabel);
+  dialog->addTextItem(lsrl, pl2, resLabel2);
+  dialog->addTextItem(ltrl, pl2, resLabel3);
   
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
-    t = QObject::tr("Support Color");
-    supColor = dialog->getColor(t);
-    t = QObject::tr("Resistance Color");
-    resColor = dialog->getColor(t);
-    t = QObject::tr("Support Line Type");
-    supLineType = (PlotLine::LineType) dialog->getComboIndex(t);
-    t = QObject::tr("Resistance Line Type");
-    resLineType = (PlotLine::LineType) dialog->getComboIndex(t);
-    t = QObject::tr("Label First Support");
-    supLabel = dialog->getText(t);
-    t = QObject::tr("Label Second Support");
-    supLabel2 = dialog->getText(t);
-    t = QObject::tr("Label Third Support");
-    supLabel3 = dialog->getText(t);
-    t = QObject::tr("Label First Resistance");
-    resLabel = dialog->getText(t);
-    t = QObject::tr("Label Second Resistance");
-    resLabel2 = dialog->getText(t);
-    t = QObject::tr("Label Third Resistance");
-    resLabel3 = dialog->getText(t);
+    dialog->getColor(scl, supColor);
+    dialog->getColor(rcl, resColor);
+    dialog->getText(lfsl, supLabel);
+    dialog->getText(lssl, supLabel2);
+    dialog->getText(ltsl, supLabel3);
+    dialog->getText(lfrl, resLabel);
+    dialog->getText(lsrl, resLabel2);
+    dialog->getText(ltrl, resLabel3);
     rc = TRUE;
   }
   else
@@ -192,89 +192,80 @@ void PP::setIndicatorSettings (Setting &dict)
   if (! dict.count())
     return;
   
-  QString s = dict.getData("resColor");
+  QString s;
+  dict.getData(resColorLabel, s);
   if (s.length())
     resColor.setNamedColor(s);
     
-  s = dict.getData("supColor");
+  dict.getData(supColorLabel, s);
   if (s.length())
     supColor.setNamedColor(s);
   
-  s = dict.getData("resLineType");
+  dict.getData(resLineTypeLabel, s);
   if (s.length())
     resLineType = (PlotLine::LineType) s.toInt();
 
-  s = dict.getData("supLineType");
+  dict.getData(supLineTypeLabel, s);
   if (s.length())
     supLineType = (PlotLine::LineType) s.toInt();
   
-  s = dict.getData("resLabel");
+  dict.getData(resLabelLabel, s);
   if (s.length())
     resLabel = s;
       
-  s = dict.getData("resLabel2");
+  dict.getData(resLabel2Label, s);
   if (s.length())
     resLabel2 = s;
   
-  s = dict.getData("resLabel3");
+  dict.getData(resLabel3Label, s);
   if (s.length())
     resLabel3 = s;
 
-  s = dict.getData("supLabel");
+  dict.getData(supLabelLabel, s);
   if (s.length())
     supLabel = s;
 
-  s = dict.getData("supLabel2");
+  dict.getData(supLabel2Label, s);
   if (s.length())
     supLabel2 = s;
 
-  s = dict.getData("supLabel3");
+  dict.getData(supLabel3Label, s);
   if (s.length())
     supLabel3 = s;
 
-  s = dict.getData("label");
+  dict.getData(labelLabel, s);
   if (s.length())
     label = s;
 }
 
 void PP::getIndicatorSettings (Setting &dict)
 {
-  dict.setData("resColor", resColor.name());
-  dict.setData("supColor", supColor.name());
-  dict.setData("resLineType", QString::number(resLineType));
-  dict.setData("supLineType", QString::number(supLineType));
-  dict.setData("resLabel", resLabel);
-  dict.setData("resLabel2", resLabel2);
-  dict.setData("resLabel3", resLabel3);
-  dict.setData("supLabel", supLabel);
-  dict.setData("supLabel2", supLabel2);
-  dict.setData("supLabel3", supLabel3);
-  dict.setData("label", label);
-  dict.setData("plugin", pluginName);
+  QString ts = resColor.name();
+  dict.setData(resColorLabel, ts);
+  ts = supColor.name();
+  dict.setData(supColorLabel, ts);
+  ts = QString::number(resLineType);
+  dict.setData(resLineTypeLabel, ts);
+  ts = QString::number(supLineType);
+  dict.setData(supLineTypeLabel, ts);
+  dict.setData(resLabelLabel, resLabel);
+  dict.setData(resLabel2Label, resLabel2);
+  dict.setData(resLabel3Label, resLabel3);
+  dict.setData(supLabelLabel, supLabel);
+  dict.setData(supLabel2Label, supLabel2);
+  dict.setData(supLabel3Label, supLabel3);
+  dict.setData(labelLabel, label);
+  dict.setData(pluginLabel, pluginName);
 }
 
-int PP::getMinBars ()
-{
-  int t = minBars + 2;
-  return t;
-}
-
-PlotLine * PP::calculateCustom (QString &p, QPtrList<PlotLine> &)
+PlotLine * PP::calculateCustom (QString &p, QPtrList<PlotLine> &d)
 {
   // format1: PP_TYPE
 
-  QStringList l = QStringList::split(",", p, FALSE);
-
-  if (l.count() == 1)
-    ;
-  else
-  {
-    qDebug("PP::calculateCustom: invalid parm count");
+  if (checkFormat(p, d, 1, 1))
     return 0;
-  }
 
-  QString ppType;
-  int t = ppList.findIndex(l[0]);
+  int t = ppList.findIndex(formatStringList[0]);
   if (t == -1)
   {
     qDebug("PP::calculateCustom: invalid PP_TYPE parm");
@@ -284,6 +275,33 @@ PlotLine * PP::calculateCustom (QString &p, QPtrList<PlotLine> &)
   clearOutput();
   calculate();
   return output->getLine(t);
+}
+
+void PP::formatDialog (QStringList &, QString &rv, QString &rs)
+{
+  rs.truncate(0);
+  rv.truncate(0);
+  QString pl = QObject::tr("Parms");
+  QString vnl = QObject::tr("Variable Name");
+  QString ppl = QObject::tr("PP Level");
+  PrefDialog *dialog = new PrefDialog(0);
+  dialog->setCaption(QObject::tr("PP Format"));
+  dialog->createPage (pl);
+  dialog->setHelpFile(helpFile);
+
+  QString s;
+  dialog->addTextItem(vnl, pl, s);
+  dialog->addComboItem(ppl, pl, ppList, 0);
+
+  int rc = dialog->exec();
+  
+  if (rc == QDialog::Accepted)
+  {
+    dialog->getText(vnl, rv);
+    dialog->getCombo(ppl, rs);
+  }
+
+  delete dialog;
 }
 
 //*******************************************************

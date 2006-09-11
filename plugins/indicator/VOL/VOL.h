@@ -31,12 +31,12 @@ class VOL : public IndicatorPlugin
     void setDefaults();
     void getIndicatorSettings (Setting &);
     void setIndicatorSettings (Setting &);
-    int getMinBars ();
     void calculateVOL ();
     void calculateNVI ();
     void calculatePVI ();
     void calculatePVT ();
     PlotLine * calculateCustom (QString &, QPtrList<PlotLine> &);
+    void formatDialog (QStringList &vl, QString &rv, QString &rs);
 
   private:
     QColor upColor;
@@ -53,6 +53,21 @@ class VOL : public IndicatorPlugin
     int maType;
     QStringList methodList;
     QString method;
+
+    QString upColorLabel;
+    QString downColorLabel;
+    QString vtColorLabel;
+    QString volLabelLabel;
+    QString volLineTypeLabel;
+    QString vtLineTypeLabel;
+    QString maColorLabel;
+    QString maPeriodLabel;
+    QString maLabelLabel;
+    QString maLineTypeLabel;
+    QString maTypeLabel;
+    QString labelLabel;
+    QString methodLabel;
+    QString pluginLabel;
 };
 
 extern "C"

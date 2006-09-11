@@ -34,19 +34,15 @@
 Config::Config ()
 {
   libs.setAutoDelete(TRUE);
-  dbPlugins.setAutoDelete(TRUE);
   indicatorPlugins.setAutoDelete(TRUE);
   quotePlugins.setAutoDelete(TRUE);
-  coPlugins.setAutoDelete(TRUE);
   version = "0.33";  // only this version of plugin is allowed to be loaded
 }
 
 Config::~Config ()
 {
-  dbPlugins.clear();
   indicatorPlugins.clear();
   quotePlugins.clear();
-  coPlugins.clear();
   libs.clear();
 }
 
@@ -128,24 +124,9 @@ void Config::setup ()
     {
       QString str("Indicators");
       setData(IndicatorGroup, str); // set the new default template
+      setDefaultIndicators();
     }
   }
-  
-  s = home + "/cusrules";
-  if (! dir.exists(s, TRUE))
-  {
-    if (! dir.mkdir(s, TRUE))
-      qDebug("Unable to create ~/.qtstalker/data0/cusrules directory.");
-  }
-  setData(CUSRulePath, s);
-
-  s = home + "/macro";
-  if (! dir.exists(s, TRUE))
-  {
-    if (! dir.mkdir(s, TRUE))
-      qDebug("Unable to create ~/.qtstalker/data0/macro directory.");
-  }
-  setData(MacroPath, s);
   
   s = home + "/plugin";
   if (! dir.exists(s, TRUE))
@@ -162,7 +143,7 @@ void Config::setup ()
   }
   setData(QuotePluginStorage, s);
   
-  s = getData(AppFont);
+  getData(AppFont, s);
   if (! s.length())
   {
     QFont font = QApplication::font(0);  
@@ -179,11 +160,11 @@ void Config::setup ()
   setData(Version, version);
 }
 
-QString Config::getData (Parm p)
+void Config::getData (Parm p, QString &s)
 {
   QSettings settings;
-  QString s;
 
+  s.truncate(0);
   switch (p)
   {
     case Home:
@@ -207,7 +188,7 @@ QString Config::getData (Parm p)
     case IndicatorPath:
       s = settings.readEntry("/Qtstalker/IndicatorPath");
       break;
-    case Compression:
+    case BarLength:
       s = settings.readEntry("/Qtstalker/Compression", "6");
       break;
     case Grid:
@@ -233,12 +214,6 @@ QString Config::getData (Parm p)
       break;
     case QuotePluginPath:
       s = settings.readEntry("/Qtstalker/QuotePluginPath", "/usr/lib/qtstalker/quote");
-      break;
-    case DbPluginPath:
-      s = settings.readEntry("/Qtstalker/DbPluginPath", "/usr/lib/qtstalker/db");
-      break;
-    case COPluginPath:
-      s = settings.readEntry("/Qtstalker/COPluginPath", "/usr/lib/qtstalker/co");
       break;
     case Group:
       s = settings.readEntry("/Qtstalker/Group");
@@ -273,9 +248,6 @@ QString Config::getData (Parm p)
     case DrawMode:
       s = settings.readEntry("/Qtstalker/DrawMode", "0");
       break;
-    case CUSRulePath:
-      s = settings.readEntry("/Qtstalker/CUSRulePath");
-      break;
     case HelpFilePath:
       s = settings.readEntry("/Qtstalker/HelpFilePath", "/usr/share/doc/qtstalker/html");
       break;
@@ -288,47 +260,8 @@ QString Config::getData (Parm p)
     case DataPanelSize:
       s = settings.readEntry("/Qtstalker/DataPanelSize");
       break;
-    case MacroPath:
-      s = settings.readEntry("/Qtstalker/MacroPath");
-      break;
     case Menubar:
       s = settings.readEntry("/Qtstalker/Menubar", "1");
-      break;
-    case Macro1:
-      s = settings.readEntry("/Qtstalker/Macro1");
-      break;
-    case Macro2:
-      s = settings.readEntry("/Qtstalker/Macro2");
-      break;
-    case Macro3:
-      s = settings.readEntry("/Qtstalker/Macro3");
-      break;
-    case Macro4:
-      s = settings.readEntry("/Qtstalker/Macro4");
-      break;
-    case Macro5:
-      s = settings.readEntry("/Qtstalker/Macro5");
-      break;
-    case Macro6:
-      s = settings.readEntry("/Qtstalker/Macro6");
-      break;
-    case Macro7:
-      s = settings.readEntry("/Qtstalker/Macro7");
-      break;
-    case Macro8:
-      s = settings.readEntry("/Qtstalker/Macro8");
-      break;
-    case Macro9:
-      s = settings.readEntry("/Qtstalker/Macro9");
-      break;
-    case Macro10:
-      s = settings.readEntry("/Qtstalker/Macro10");
-      break;
-    case Macro11:
-      s = settings.readEntry("/Qtstalker/Macro11");
-      break;
-    case Macro12:
-      s = settings.readEntry("/Qtstalker/Macro12");
       break;
     case IndicatorGroup:
       s = settings.readEntry("/Qtstalker/IndicatorGroup", "Indicators");
@@ -351,15 +284,12 @@ QString Config::getData (Parm p)
     default:
       break;
   }
-
-  return s;
 }
 
-QString Config::getData (QString &p)
+void Config::getData (QString &p, QString &s)
 {
   QSettings settings;
-  QString s = settings.readEntry("/Qtstalker/" + p);
-  return s;
+  s = settings.readEntry("/Qtstalker/" + p);
 }
 
 void Config::setData (Parm p, QString &d)
@@ -389,7 +319,7 @@ void Config::setData (Parm p, QString &d)
     case IndicatorPath:
       settings.writeEntry("/Qtstalker/IndicatorPath", d);
       break;
-    case Compression:
+    case BarLength:
       settings.writeEntry("/Qtstalker/Compression", d);
       break;
     case Grid:
@@ -415,12 +345,6 @@ void Config::setData (Parm p, QString &d)
       break;
     case QuotePluginPath:
       settings.writeEntry("/Qtstalker/QuotePluginPath", d);
-      break;
-    case DbPluginPath:
-      settings.writeEntry("/Qtstalker/DbPluginPath", d);
-      break;
-    case COPluginPath:
-      settings.writeEntry("/Qtstalker/COPluginPath", d);
       break;
     case Group:
       settings.writeEntry("/Qtstalker/Group", d);
@@ -455,9 +379,6 @@ void Config::setData (Parm p, QString &d)
     case DrawMode:
       settings.writeEntry("/Qtstalker/DrawMode", d);
       break;
-    case CUSRulePath:
-      settings.writeEntry("/Qtstalker/CUSRulePath", d);
-      break;
     case HelpFilePath:
       settings.writeEntry("/Qtstalker/HelpFilePath", d);
       break;
@@ -470,47 +391,8 @@ void Config::setData (Parm p, QString &d)
     case DataPanelSize:
       settings.writeEntry("/Qtstalker/DataPanelSize", d);
       break;
-    case MacroPath:
-      settings.writeEntry("/Qtstalker/MacroPath", d);
-      break;
     case Menubar:
       settings.writeEntry("/Qtstalker/Menubar", d);
-      break;
-    case Macro1:
-      settings.writeEntry("/Qtstalker/Macro1", d);
-      break;
-    case Macro2:
-      settings.writeEntry("/Qtstalker/Macro2", d);
-      break;
-    case Macro3:
-      settings.writeEntry("/Qtstalker/Macro3", d);
-      break;
-    case Macro4:
-      settings.writeEntry("/Qtstalker/Macro4", d);
-      break;
-    case Macro5:
-      settings.writeEntry("/Qtstalker/Macro5", d);
-      break;
-    case Macro6:
-      settings.writeEntry("/Qtstalker/Macro6", d);
-      break;
-    case Macro7:
-      settings.writeEntry("/Qtstalker/Macro7", d);
-      break;
-    case Macro8:
-      settings.writeEntry("/Qtstalker/Macro8", d);
-      break;
-    case Macro9:
-      settings.writeEntry("/Qtstalker/Macro9", d);
-      break;
-    case Macro10:
-      settings.writeEntry("/Qtstalker/Macro10", d);
-      break;
-    case Macro11:
-      settings.writeEntry("/Qtstalker/Macro11", d);
-      break;
-    case Macro12:
-      settings.writeEntry("/Qtstalker/Macro12", d);
       break;
     case IndicatorGroup:
       settings.writeEntry("/Qtstalker/IndicatorGroup", d);
@@ -543,7 +425,9 @@ void Config::setData (QString &p, QString &d)
 
 void Config::getIndicators (QString &d, QStringList &l)
 {
-  QString s = getData(IndicatorPath) + "/" + d;
+  QString s;
+  getData(IndicatorPath, s);
+  s.append("/" + d);
   l.clear();
   getDirList(s, TRUE, l);
 }
@@ -581,7 +465,7 @@ void Config::setIndicator (QString &d, Setting &set)
   QFile f(d);
   if (! f.open(IO_WriteOnly))
   {
-    qDebug("Config::getIndicator:can't open indicator file %s", d.latin1());
+    qDebug("Config::setIndicator:can't write to indicator file %s", d.latin1());
     return;
   }
   QTextStream stream(&f);
@@ -589,8 +473,12 @@ void Config::setIndicator (QString &d, Setting &set)
   int loop;
   QStringList l;
   set.getKeyList(l);
+  QString k;
   for (loop = 0; loop < (int) l.count(); loop++)
-    stream << l[loop] << "=" << set.getData(l[loop]) << "\n";
+  {
+    set.getData(l[loop], k);
+    stream << l[loop] << "=" << k << "\n";
+  }
   
   f.close();
 }
@@ -625,7 +513,8 @@ void Config::getPluginList (Config::Parm d, QStringList &l2)
 {
   l2.clear();
   QStringList l;
-  QString s(getData(d));
+  QString s;
+  getData(d, s);
   getDirList(s, TRUE, l);
   
   if (! l.count())
@@ -650,39 +539,15 @@ void Config::getIndicatorList (QStringList &l)
   getPluginList(IndicatorPluginPath, l);
 }
 
-DbPlugin * Config::getDbPlugin (QString &p)
-{
-  DbPlugin *plug = dbPlugins[p];
-  if (plug)
-    return plug;
-
-  QString s = getData(DbPluginPath) + "/lib" + p + "." + version;
-
-  QLibrary *lib = new QLibrary(s);
-  DbPlugin *(*so)() = 0;
-  so = (DbPlugin *(*)()) lib->resolve("createDbPlugin");
-  if (so)
-  {
-    plug = (*so)();
-    libs.replace(p, lib);
-    dbPlugins.replace(p, plug);
-    return plug;
-  }
-  else
-  {
-    qDebug("Config::getDbPlugin:%s Dll error\n", s.latin1());
-    delete lib;
-    return 0;
-  }
-}
-
 IndicatorPlugin * Config::getIndicatorPlugin (QString &p)
 {
   IndicatorPlugin *plug = indicatorPlugins[p];
   if (plug)
     return plug;
 
-  QString s = getData(IndicatorPluginPath) + "/lib" + p + "." + version;
+  QString s;
+  getData(IndicatorPluginPath, s);
+  s.append("/lib" + p + "." + version);
 
   QLibrary *lib = new QLibrary(s);
   IndicatorPlugin *(*so)() = 0;
@@ -708,7 +573,9 @@ QuotePlugin * Config::getQuotePlugin (QString &p)
   if (plug)
     return plug;
 
-  QString s = getData(QuotePluginPath) + "/lib" + p + "." + version;
+  QString s;
+  getData(QuotePluginPath, s);
+  s.append("/lib" + p + "." + version);
 
   QLibrary *lib = new QLibrary(s);
   QuotePlugin *(*so)() = 0;
@@ -728,56 +595,18 @@ QuotePlugin * Config::getQuotePlugin (QString &p)
   }
 }
 
-COPlugin * Config::getCOPlugin (QString &p)
-{
-  COPlugin *plug = coPlugins[p];
-  if (plug)
-    return plug;
-
-  QString s = getData(COPluginPath) + "/lib" + p + "." + version;
-
-  QLibrary *lib = new QLibrary(s);
-  COPlugin *(*so)() = 0;
-  so = (COPlugin *(*)()) lib->resolve("createCOPlugin");
-  if (so)
-  {
-    plug = (*so)();
-    libs.replace(p, lib);
-    coPlugins.replace(p, plug);
-    return plug;
-  }
-  else
-  {
-    qDebug("Config::getCOPlugin:%s Dll error\n", s.latin1());
-    delete lib;
-    return 0;
-  }
-}
-
 void Config::closePlugins ()
 {
-  dbPlugins.clear();
   indicatorPlugins.clear();
   quotePlugins.clear();
-  
   libs.clear();
 }
 
 void Config::closePlugin (QString &d)
 {
-  dbPlugins.remove(d);
   indicatorPlugins.remove(d);
   quotePlugins.remove(d);
-  
   libs.remove(d);
-}
-
-QString Config::parseDbPlugin (QString &d)
-{
-  QStringList l = QStringList::split("/", d, FALSE);
-  int i = l.findIndex(".qtstalker");
-  i = i + 3;
-  return l[i];
 }
 
 void Config::copyIndicatorFile (QString &d, QString &d2)
@@ -826,7 +655,7 @@ void Config::checkUpgrade ()
     dir.remove(s, TRUE);
   }
 
-  s = getData(ShowUpgradeMessage);
+  getData(ShowUpgradeMessage, s);
   if (! s.toInt())
     return;
 
@@ -845,5 +674,68 @@ void Config::checkUpgrade ()
   }
 
   delete dialog;
+}
+
+void Config::setDefaultIndicators ()
+{
+  QString plugin = "BARS";
+  QString name = "Bars";
+  int tabRow = 1;
+  Setting set;
+  QString basePath;
+  getData(IndicatorPath, basePath);
+  basePath.append("/Indicators/");
+  createDefaultIndicator(set, plugin, name, tabRow);
+  QString s = basePath + name;
+  setIndicator(s, set);
+
+  name = "Candles";
+  set.clear();
+  createDefaultIndicator(set, plugin, name, tabRow);
+  s = "method";
+  QString s2 = "Candle";
+  set.setData(s,s2);
+  s = basePath + name;
+  setIndicator(s, set);
+
+  plugin = "VOL";
+  name = "Vol";
+  tabRow = 2;
+  set.clear();
+  createDefaultIndicator(set, plugin, name, tabRow);
+  s = basePath + name;
+  setIndicator(s, set);
+}
+
+void Config::createDefaultIndicator (Setting &set, QString &plugin, QString &name, int tabRow)
+{
+  IndicatorPlugin *plug = getIndicatorPlugin(plugin);
+  if (! plug)
+  {
+    qDebug("Config::createDefaultIndicator - could not open plugin");
+    closePlugin(plugin);
+    return;
+  }
+
+  plug->getIndicatorSettings(set);
+
+  QString s = "Name";
+  set.setData(s, name);
+
+  s = "enable";
+  QString s2 = "1"; 
+  set.setData(s, s2);
+
+  s = "tabRow";
+  s2 = QString::number(tabRow);
+  set.setData(s, s2);
+
+  s = "logScale";
+  s2 = "0";
+  set.setData(s, s2);
+
+  s = "dateFlag";
+  s2 = "1";
+  set.setData(s, s2);
 }
 

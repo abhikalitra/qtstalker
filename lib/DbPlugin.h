@@ -23,14 +23,13 @@
 #define DBPLUGIN_HPP
 
 #include <qstring.h>
-#include <qptrlist.h>
 #include <qstringlist.h>
 #include <db.h>
+#include <qdatetime.h>
 #include <qobject.h>
 #include "Setting.h"
 #include "BarData.h"
 #include "Bar.h"
-#include "BarDate.h"
 
 class DbPlugin : public QObject
 {
@@ -42,6 +41,15 @@ class DbPlugin : public QObject
 
   public:
   
+    enum DbType
+    {
+      Stock,
+      Futures,
+      Spread1,
+      Index1,
+      CC1
+    };
+
     enum HeaderField
     {
       BarType,
@@ -52,13 +60,19 @@ class DbPlugin : public QObject
       Path,
       CO,
       LocalIndicators,
-      QuotePlugin
+      QuotePlugin,
+      SpreadFirstSymbol,
+      SpreadSecondSymbol,
+      IndexList,
+      CCAdjustment,
+      FuturesType,
+      FuturesMonth
     };
   
     DbPlugin ();
     virtual ~DbPlugin ();
     int openChart (QString &);
-    void setBarCompression (BarData::BarCompression);
+    void setBarLength (BarData::BarLength);
     void setBarRange (int);
     void getHelpFile (QString &);
     void getChartObjectsList (QStringList &);    
@@ -66,37 +80,36 @@ class DbPlugin : public QObject
     void setChartObject (QString &, Setting &);
     void deleteChartObject (QString &);
     void dump (QString &, bool);
-    Bar * getLastBar ();
-    Bar * getFirstBar ();
+    void getLastBar (Bar &);
+    void getFirstBar (Bar &);
     void getData (QString &, QString &);
     void setData (QString &, QString &);
     void deleteData (QString &);
-    Bar * getBar (QString &);
-    void getDailyHistory ();
-    void getWeeklyHistory ();
-    void getMonthlyHistory ();
-    void getTickHistory (int);
-    void getDailyTickHistory ();
+    void getBar (QString &, Bar &);
     void setHeaderField (int, QString &);
     void getHeaderField (int, QString &);
     void close ();
-    void deleteIndicator (QString &);
-    void addIndicator (QString &);
-    void setIndicator (QString &, QString &);
+    void deleteIndicator (QString &); // local indicators
+    void addIndicator (QString &); // local indicators
     void getAllBars (BarData *);
-    
-    virtual void dbPrefDialog ();
-    virtual void createNew ();
-    virtual void getHistory (BarData *);
-    virtual void setBar (Bar &);
-    virtual Bar * getBar (QString &, QString &);
+    void loadType ();
+    void setBar (Bar &);
+    void getBar (QString &, QString &, Bar &);
+    void getHistory (BarData *, QDateTime &);
+    void createNew (DbPlugin::DbType);
+    void createNew (QString &);
+    void dbPrefDialog ();
+    void getHeaderKey (int, QString &);
+    DbPlugin::DbType getType (QString &);
+    void getSymbol (QString &);
     
   protected:
     DB *db;
     int barRange;
-    BarData::BarCompression barCompression;
+    BarData::BarLength barLength;
     QString helpFile;
-    BarData *barData;
+    DbPlugin::DbType type;
+    QString symbol;
 };
 
 #endif

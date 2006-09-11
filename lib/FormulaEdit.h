@@ -44,7 +44,7 @@ class FormulaEdit : public QWidget
     FormulaEdit (QWidget *, int);
     ~FormulaEdit ();
     void setLine (QString &);
-    QString getText ();
+    void getText (QString &);
     int getLines ();
 
   public slots:
@@ -52,8 +52,9 @@ class FormulaEdit : public QWidget
     void deletePlotItem ();
     void insertPlotItem ();
     void openRule ();
-    void saveRule ();
+//    void saveRule ();
     void slotDoubleClicked (QListBoxItem *);
+    void functionDialog ();
 
   protected:
     QTextEdit *formula;
@@ -64,9 +65,7 @@ class FormulaEdit : public QWidget
     QStringList lineTypes;
     Config config;
     FormulaEditType type;
-    QString enableLine;
-    QString plotTypeLine;
-    QString pluginLine;
+    QStringList formulaList;
 };
 
 #endif

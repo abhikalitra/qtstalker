@@ -32,7 +32,7 @@ class CUS : public IndicatorPlugin
     void setIndicatorSettings (Setting &);
     int indicatorPrefDialog (QWidget *);
     void setCustomFunction (QStringList &);
-    int getMinBars ();
+    void createPlot (QString &, QDict<PlotLine> &);
     
   protected:
     QStringList formulaList;

@@ -36,8 +36,8 @@ class CSV : public QuotePlugin
     virtual ~CSV ();
     void update ();
     void setDelimiter (QString &);
-    QDate getDate (QString &, QString &, Setting &);
-    QString getTime (QString &);
+    void getDate (QString &, QString &, Setting &, QDate &);
+    void getTime (QString &, QString &);
     bool openDb (QString &, QString &, QString &, bool);
     void loadSettings ();
     void saveSettings ();
@@ -55,7 +55,7 @@ class CSV : public QuotePlugin
     bool dateFlag;
     QDateTime sdate;
     QDateTime edate;
-    DbPlugin *db;
+    DbPlugin db;
     QStringList list;
     QString symbolOveride;
     QString ruleName;

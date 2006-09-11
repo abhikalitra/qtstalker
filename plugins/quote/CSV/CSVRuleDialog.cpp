@@ -132,6 +132,7 @@ void CSVRuleDialog::createRulePage ()
   fieldList->insertItem("Date:MMDDYYYY", -1);
   fieldList->insertItem("Date:DDMMYYYY", -1);
   fieldList->insertItem("Date:MMDDYYYYHHMMSS", -1);
+  fieldList->insertItem("Date:YYYYMMDDHHMMSS", -1);
   fieldList->insertItem("Time", -1);
   fieldList->insertItem("Open", -1);
   fieldList->insertItem("High", -1);

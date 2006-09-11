@@ -31,16 +31,17 @@ class Setting
   public:
     Setting ();
     ~Setting ();
-    QString getData (QString);
-    double getDouble (QString);
-    int getInt (QString);
-    void setData (QString, QString);
+    void getData (QString &, QString &);
+    double getDouble (QString &);
+    int getInt (QString &);
+    void setData (QString &, QString &);
     void getKeyList (QStringList &);
-    void remove (QString);
+    void remove (QString &);
     void getString (QString &);
     void parse (QString &);
     void clear ();
     int count ();
+    void copy (Setting *);
     
   protected:
     QDict<QString> dict;

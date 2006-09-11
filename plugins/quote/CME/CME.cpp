@@ -40,23 +40,14 @@ CME::CME ()
   helpFile = "cme.html";
   downloadIndex = 0;
   cancelFlag = FALSE;
-  plug = 0;
   
-  fd.getSymbolList(pluginName, symbolList);
-  symbolList.sort();
+  fd.getCMESymbolList(symbolList);
   
   connect(this, SIGNAL(signalCopyFileDone(QString)), this, SLOT(fileDone(QString)));
   connect(this, SIGNAL(signalTimeout()), this, SLOT(timeoutError()));
   
-  file = config.getData(Config::Home) + "/download";
-  
-  QString plugin("Futures");  
-  plug = config.getDbPlugin(plugin);
-  if (! plug)
-  {
-    config.closePlugin(plugin);
-    qDebug("CME::cannot load Futures plugin");
-  }
+  config.getData(Config::Home, file);
+  file.append("/download");
   
   loadSettings();
   qInitNetworkProtocols();
@@ -64,19 +55,12 @@ CME::CME ()
 
 CME::~CME ()
 {
-  if (plug)
-  {
-    QString plugin("Futures");  
-    config.closePlugin(plugin);
-  }
+  plug.close();
 }
 
 void CME::update ()
 {
-  if (! plug)
-    return;
-    
-  plug->close();
+  plug.close();
   urlList.clear();
   symbolLoop = 0;
   errorLoop = 0;
@@ -91,7 +75,8 @@ void CME::update ()
   else
   {
     downloadIndex = 0;
-    QString s = config.getData(Config::Home);
+    QString s;
+    config.getData(Config::Home, s);
   
     // remove any old files
     QDir dir(s);
@@ -201,9 +186,6 @@ void CME::timeoutError ()
 
 void CME::parseToday ()
 {
-  if (! plug)
-    return;
-    
   QFile f(file);
   if (! f.open(IO_ReadOnly))
     return;
@@ -604,9 +586,6 @@ void CME::parseToday ()
 
 void CME::parseHistory ()
 {
-  if (! plug)
-    return;
-    
   QString s2 = file2;
   s2.append("/");
   s2.append(downloadSymbolList[downloadIndex].lower());
@@ -642,11 +621,13 @@ void CME::parseHistory ()
     s2 = s.mid(31, 6);
     s2.prepend("20");
     s2.append("000000");
-    set.setData("Date", s2);
+    QString ts = "Date";
+    set.setData(ts, s2);
 
     // csymbol
     s2 = s.mid(37, 2);
-    set.setData("CSymbol", s2);
+    ts = "CSymbol";
+    set.setData(ts, s2);
 
     // symbol
     s2 = s.mid(37, 2);
@@ -694,44 +675,53 @@ void CME::parseHistory ()
         break;
     }
     s2.append(month);
-    set.setData("Symbol", s2);
+    ts = "Symbol";
+    set.setData(ts, s2);
 
-    set.setData("Month", month);
+    ts = "Month";
+    set.setData(ts, month);
 
     QString dec = s.mid(30, 1);
     
     // fix decimal for JY
-    s2 = set.getData("CSymbol");
+    ts = "CSymbol";
+    set.getData(ts, s2);
     if (! s2.compare("JY"))
       dec = QString::number(dec.toInt() - 2);
 
     // open
     s2 = s.mid(53, 9);
     s2 = s2.insert(s2.length() - dec.toInt(), ".");
-    set.setData("Open", s2);
+    ts = "Open";
+    set.setData(ts, s2);
 
     // high
     s2 = s.mid(73, 9);
     s2 = s2.insert(s2.length() - dec.toInt(), ".");
-    set.setData("High", s2);
+    ts = "High";
+    set.setData(ts, s2);
 
     // low
     s2 = s.mid(83, 9);
     s2 = s2.insert(s2.length() - dec.toInt(), ".");
-    set.setData("Low", s2);
+    ts = "Low";
+    set.setData(ts, s2);
 
     // close
     s2 = s.mid(113, 9);
     s2 = s2.insert(s2.length() - dec.toInt(), ".");
-    set.setData("Close", s2);
+    ts = "Close";
+    set.setData(ts, s2);
 
     // volume
     s2 = s.mid(122, 7);
-    set.setData("Volume", s2);
+    ts = "Volume";
+    set.setData(ts, s2);
 
     // oi
     s2 = s.mid(136, 7);
-    set.setData("OI", s2);
+    ts = "OI";
+    set.setData(ts, s2);
 
     parse(set);
   }
@@ -826,14 +816,18 @@ void CME::saveTodayData (QStringList &l)
   }
   symbol.append(month);
 
-  set.setData("CSymbol", l[0]);
-  set.setData("Symbol", symbol);
+  QString ts = "CSymbol";
+  set.setData(ts, l[0]);
+  ts = "Symbol";
+  set.setData(ts, symbol);
 
   s = l[1];
   s.append("000000");
-  set.setData("Date", s);
+  ts = "Date";
+  set.setData(ts, s);
 
-  set.setData("Month", month);
+  ts = "Month";
+  set.setData(ts, month);
   
   QString open = l[3];
   QString high = l[4];
@@ -874,153 +868,139 @@ void CME::saveTodayData (QStringList &l)
       close.prepend(".");
   }
 
-  set.setData("Open", open);
-  set.setData("High", high);
-  set.setData("Low", low);
-  set.setData("Close", close);
-  set.setData("Volume", volume);
-  set.setData("OI", oi);
+  ts = "Open";
+  set.setData(ts, open);
+  ts = "High";
+  set.setData(ts, high);
+  ts = "Low";
+  set.setData(ts, low);
+  ts = "Close";
+  set.setData(ts, close);
+  ts = "Volume";
+  set.setData(ts, volume);
+  ts = "OI";
+  set.setData(ts, oi);
 
   parse(set);
 }
 
 void CME::parse (Setting &data)
 {
-  if (! plug)
-    return;
-    
-  QString s = data.getData("CSymbol");
+  QString s;
+  QString ts = "CSymbol";
+  data.getData(ts, s);
   if (fd.setSymbol(s))
     return;
 
+  Bar bar;
+  ts = "Date";
+  data.getData(ts, s);
+  if (bar.setDate(s))
+  {
+    emit statusLogMessage("Bad date " + s);
+    return;
+  }
+
   // open
-  double open = 0;
-  s = data.getData("Open");
+  ts = "Open";
+  data.getData(ts, s);
   if (setTFloat(s, FALSE))
     return;
   else
-    open = tfloat;
+    bar.setOpen(tfloat);
 
   // high
-  double high = 0;
-  s = data.getData("High");
+  ts = "High";
+  data.getData(ts, s);
   if (setTFloat(s, FALSE))
     return;
   else
-    high = tfloat;
+    bar.setHigh(tfloat);
 
   // low
-  double low = 0;
-  s = data.getData("Low");
+  ts = "Low";
+  data.getData(ts, s);
   if (setTFloat(s, FALSE))
     return;
   else
-    low = tfloat;
+    bar.setLow(tfloat);
 
   // close
-  double close = 0;
-  s = data.getData("Close");
+  ts = "Close";
+  data.getData(ts, s);
   if (setTFloat(s, FALSE))
     return;
   else
-    close = tfloat;
+    bar.setClose(tfloat);
 
   // volume
-  double volume = 0;
-  s = data.getData("Volume");
+  ts = "Volume";
+  data.getData(ts, s);
   if (setTFloat(s, FALSE))
     return;
   else
-    volume = tfloat;
+    bar.setVolume(tfloat);
 
   // oi
-  double oi = 0;
-  s = data.getData("OI");
+  ts = "OI";
+  data.getData(ts, s);
   if (setTFloat(s, FALSE))
     return;
   else
-    oi = tfloat;
+    bar.setOI((int) tfloat);
 
-  // check for bad values
-  if (close == 0)
+  if (bar.verify())
     return;
-  if (open == 0)
-    open = close;
-  if (high == 0)
-    high = close;
-  if (low == 0)
-    low = close;
 
-  s = "Futures/CME/" + fd.getSymbol();
-  QString path = createDirectory(s);
+  QString s2;
+  fd.getSymbol(s2);
+  s = "Futures/CME/" + s2;
+  QString path;
+  createDirectory(s, path);
   if (! path.length())
   {
     emit statusLogMessage(tr("Unable to create futures directory"));
     return;
   }
 
-  s = tr("Updating ") + data.getData("Symbol");
+  ts = "Symbol";
+  QString ts2;
+  data.getData(ts, ts2);
+  s = tr("Updating ") + ts2;
   emit statusLogMessage(s);
 
-  s = path + "/" + data.getData("Symbol");
-  if (plug->openChart(s))
+  data.getData(ts, ts2);
+  s = path + "/" + ts2;
+  if (plug.openChart(s))
   {
     emit statusLogMessage(tr("Could not open db."));
     return;
   }
 
   // verify if this chart can be updated by this plugin
-  plug->getHeaderField(DbPlugin::QuotePlugin, s);
+  plug.getHeaderField(DbPlugin::QuotePlugin, s);
   if (! s.length())
-    plug->setHeaderField(DbPlugin::QuotePlugin, pluginName);
+    plug.setHeaderField(DbPlugin::QuotePlugin, pluginName);
   else
   {
     if (s.compare(pluginName))
     {
-      s = data.getData("Symbol") + tr(" - skipping update. Source does not match destination.");
+      ts = "Symbol";
+      data.getData(ts, ts2);
+      s = ts2 + tr(" - skipping update. Source does not match destination.");
       emit statusLogMessage(s);
-      plug->close();
+      plug.close();
       return;
     }
   }
       
-  plug->getHeaderField(DbPlugin::Symbol, s);
+  plug.getHeaderField(DbPlugin::Symbol, s);
   if (! s.length())
-  {
-    plug->createNew();
-    
-    s = data.getData("Symbol");
-    plug->setHeaderField(DbPlugin::Symbol, s);
-    
-    s = fd.getName();
-    plug->setHeaderField(DbPlugin::Title, s);
-    
-    QString s2 = fd.getSymbol();
-    s = "FuturesType";
-    plug->setData(s, s2);
-    
-    s2 = data.getData("Month");
-    s = "FuturesMonth";
-    plug->setData(s, s2);
-  }
+    plug.createNew(DbPlugin::Futures);
   
-  Bar bar;
-  s = data.getData("Date");
-  if (bar.setDate(s))
-  {
-    emit statusLogMessage("Bad date " + data.getData("Date"));
-    plug->close();
-    return;
-  }
-  bar.setOpen(open);
-  bar.setHigh(high);
-  bar.setLow(low);
-  bar.setClose(close);
-  bar.setVolume(volume);
-  bar.setOI((int) oi);
-  plug->setBar(bar);
+  plug.setBar(bar);
 	     
-  plug->close();
+  plug.close();
 }
 
 void CME::cancelUpdate ()
@@ -1069,9 +1049,9 @@ void CME::prefDialog (QWidget *w)
   if (rc == QDialog::Accepted)
   {
     s = tr("Symbol");
-    downloadSymbolList = dialog->getCombo(s);
+    dialog->getCombo(s, downloadSymbolList[0]);
     s = tr("Symbol");
-    currentSymbol = dialog->getCombo(s);
+    dialog->getCombo(s, currentSymbol);
     s = tr("Timeout");
     timeout = dialog->getInt(s);
     s = tr("Retry");

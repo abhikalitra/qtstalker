@@ -35,7 +35,6 @@ CSV::CSV ()
 {
   pluginName = "CSV";
   delim = ",";
-  db = 0;
   dateFlag = FALSE;
   helpFile = "csv.html";
   cancelFlag = FALSE;
@@ -63,7 +62,8 @@ CSV::CSV ()
   reloadTimer = new QTimer(this);
   connect(reloadTimer, SIGNAL(timeout()), SLOT(parse()));
   
-  ruleDir = config.getData(Config::QuotePluginStorage) + "/CSV";
+  config.getData(Config::QuotePluginStorage, ruleDir);
+  ruleDir.append("/CSV");
   
   loadSettings();
 }
@@ -89,14 +89,18 @@ void CSV::parse ()
     return;
   }
 
-  if (! rule.getData("Rule").contains("Date:"))
+  QString ts = "Rule";
+  QString ts2, s;
+  rule.getData(ts, ts2);
+  if (! ts2.contains("Date:"))
   {
     emit statusLogMessage("Rule missing Date field");
     emit done();
     return;
   }
 
-  QString s = rule.getData("Delimiter");
+  ts = "Delimiter";
+  rule.getData(ts, s);
   if (! s.length())
   {
     emit statusLogMessage(tr("Delimiter not found"));
@@ -115,7 +119,9 @@ void CSV::parse ()
     }
   }
 
-  QString type = rule.getData("Type");
+  QString type;
+  ts = "Type";
+  rule.getData(ts, type);
   if (! type.length())
   {
     emit statusLogMessage(tr("Type not found"));
@@ -123,7 +129,9 @@ void CSV::parse ()
     return;
   }
   
-  QStringList fieldList = QStringList::split(",", rule.getData("Rule"), FALSE);
+  ts = "Rule";
+  rule.getData(ts, ts2);
+  QStringList fieldList = QStringList::split(",", ts2, FALSE);
   if (! fieldList.count())
   {
     emit statusLogMessage(tr("No rule found"));
@@ -132,7 +140,9 @@ void CSV::parse ()
   }
 
   // get the directory path offset
-  QString directory = rule.getData("Directory");
+  ts = "Directory";
+  QString directory;
+  rule.getData(ts, directory);
   if (! directory.length())
   {
     emit statusLogMessage(tr("Directory not found"));
@@ -141,15 +151,19 @@ void CSV::parse ()
   }
   
   // get the symbol filter
-  QStringList symbolFilter = QStringList::split(",", rule.getData("SymbolFilter"), FALSE);
+  ts = "SymbolFilter";
+  rule.getData(ts, ts2);
+  QStringList symbolFilter = QStringList::split(",", ts2, FALSE);
   
   // check for time field and set the tickflag  
   bool tickFlag = FALSE;
-  if (rule.getData("Rule").contains("Time"))
+  ts = "Rule";
+  rule.getData(ts, ts2);
+  if (ts2.contains("Time"))
     tickFlag = TRUE;
   else
   {
-    if (rule.getData("Rule").contains("HHMMSS"))
+    if (ts2.contains("HHMMSS"))
       tickFlag = TRUE;
   }
 
@@ -184,7 +198,7 @@ void CSV::parse ()
     if (! type.compare("Stocks"))
     {
       QString tmp = "Stocks/" + directory;
-      path = createDirectory(tmp);
+      createDirectory(tmp, path);
       if (! path.length())
       {
         emit statusLogMessage("Unable to create directory");
@@ -198,7 +212,7 @@ void CSV::parse ()
       if (! type.compare("Futures"))
       {
         QString tmp = "Futures/" + directory;
-        path = createDirectory(tmp);
+        createDirectory(tmp, path);
         if (! path.length())
         {
           emit statusLogMessage("Unable to create directory");
@@ -206,22 +220,6 @@ void CSV::parse ()
           f.close();
           return;
         }
-
-/*		
-	if (symbol.length() == 7)
-	  futuresSymbol = symbol.left(2);
-	else
-	  futuresSymbol = symbol.left(1);
-	futuresMonth = symbol.right(1);
-
-	if (fd.setSymbol(futuresSymbol))
-	{
-          emit statusLogMessage("Bad futures symbol");
-          emit done();
-          f.close();
-          return;
-	}
-*/	
       }
     }
 
@@ -238,8 +236,9 @@ void CSV::parse ()
 
     while(stream.atEnd() == 0)
     {
-      QString s = stream.readLine();
-      s = stripJunk(s);
+      QString ts = stream.readLine();
+      QString s;
+      stripJunk(ts, s);
 
       QStringList l = QStringList::split(delim, s, FALSE);
       if (l.count() != fieldList.count())
@@ -256,7 +255,8 @@ void CSV::parse ()
       {
         if (fieldList[fieldLoop].contains("Date:"))
 	{
-          QDate dt = getDate(fieldList[fieldLoop], l[fieldLoop], r);
+          QDate dt;
+          getDate(fieldList[fieldLoop], l[fieldLoop], r, dt);
           if (! dt.isValid())
 	  {
 	    qDebug("CSV::parse:Bad date %s", l[fieldLoop].latin1());
@@ -273,13 +273,15 @@ void CSV::parse ()
 	      break;
 	    }
           }
-	  r.setData("Date", dt.toString("yyyyMMdd"));
+          ts = "Date";
+          ts2 = dt.toString("yyyyMMdd");
+	  r.setData(ts, ts2);
 	  continue;
 	}
 
         if (! fieldList[fieldLoop].compare("Time"))
 	{
-          s = getTime(l[fieldLoop]);
+          getTime(l[fieldLoop], s);
           if (! s.length())
 	  {
 	    qDebug("CSV::parse:Bad time %s", l[fieldLoop].latin1());
@@ -287,7 +289,8 @@ void CSV::parse ()
 	    flag = TRUE;
 	    break;
 	  }
-	  r.setData("Time", s);
+          ts = "Time";
+	  r.setData(ts, s);
 	  continue;
 	}
 	
@@ -302,13 +305,15 @@ void CSV::parse ()
 	    }
 	  }
 	  
-	  r.setData("Symbol", l[fieldLoop]);
+          ts = "Symbol";
+	  r.setData(ts, l[fieldLoop]);
 	  continue;
 	}
 	
         if (! fieldList[fieldLoop].compare("Name"))
 	{
-	  r.setData("Name", l[fieldLoop]);
+          ts = "Name";
+	  r.setData(ts, l[fieldLoop]);
 	  continue;
 	}
         
@@ -324,7 +329,8 @@ void CSV::parse ()
 	    flag = TRUE;
 	    break;
 	  }
-	  r.setData(fieldList[fieldLoop], QString::number(tfloat));
+          ts = QString::number(tfloat);
+	  r.setData(fieldList[fieldLoop], ts);
 	  continue;
 	}
 	
@@ -338,7 +344,8 @@ void CSV::parse ()
 	    flag = TRUE;
 	    break;
 	  }
-	  r.setData(fieldList[fieldLoop], QString::number(tfloat));
+          ts = QString::number(tfloat);
+	  r.setData(fieldList[fieldLoop], ts);
 	  continue;
 	}
       }
@@ -346,61 +353,73 @@ void CSV::parse ()
       if (flag)
 	continue;
 
-      s = r.getData("Date");
+      ts = "Date";
+      r.getData(ts, s);
       if (! s.length())
 	continue;
       
-      if (r.getData("Time"))
-        s.append(r.getData("Time"));
+      ts = "Time";
+      r.getData(ts, ts2);
+      if (ts2.length())
+        s.append(ts2);
       else
         s.append("000000");
 	
       Bar bar;
       if (bar.setDate(s))
       {
-        emit statusLogMessage("Bad date " + r.getData("Date"));
+        ts = "Date";
+        r.getData(ts, ts2);
+        emit statusLogMessage("Bad date " + ts2);
         continue;
       }
       bar.setTickFlag(tickFlag);
-      bar.setOpen(r.getData("Open").toDouble());
-      bar.setHigh(r.getData("High").toDouble());
-      bar.setLow(r.getData("Low").toDouble());
-      bar.setClose(r.getData("Close").toDouble());
-      bar.setVolume(r.getData("Volume").toDouble());
-      bar.setOI(r.getData("OI").toInt());
+      ts = "Open";
+      bar.setOpen(r.getDouble(ts));
+      ts = "High";
+      bar.setHigh(r.getDouble(ts));
+      ts = "Low";
+      bar.setLow(r.getDouble(ts));
+      ts = "Close";
+      bar.setClose(r.getDouble(ts));
+      ts = "Volume";
+      bar.setVolume(r.getDouble(ts));
+      ts = "OI";
+      bar.setOI(r.getInt(ts));
       
       if (! symbol.length())
       {
-        QString t = r.getData("Symbol");
+        ts = "Symbol";
+        QString t;
+        r.getData(ts, t);
 	s = path;
 	s.append(t);
 	if (openDb(s, t, type, tickFlag))
 	  continue;
 	
-	s = r.getData("Name");
+        ts = "Name";
+	r.getData(ts, s);
 	if (s.length())
-	  db->setHeaderField(DbPlugin::Title, s);
+	  db.setHeaderField(DbPlugin::Title, s);
 
-        db->setBar(bar);
+        db.setBar(bar);
 	
-        emit statusLogMessage("Updating " + r.getData("Symbol"));
+        ts = "Symbol";
+        r.getData(ts, ts2);
+        emit statusLogMessage("Updating " + ts2);
 	config.closePlugin(type);
-	db = 0;
       }
       else
       {
-	s = r.getData("Name");
+        ts = "Name";
+	r.getData(ts, s);
 	if (s.length())
-	  db->setHeaderField(DbPlugin::Title, s);
-        db->setBar(bar);
+	  db.setHeaderField(DbPlugin::Title, s);
+        db.setBar(bar);
       }
     }
 
-    if (db)
-    {
-      config.closePlugin(type);
-      db = 0;
-    }
+    db.close();
     f.close();
   }
 
@@ -441,9 +460,9 @@ void CSV::setDelimiter (QString &d)
   }
 }
 
-QString CSV::getTime (QString &d)
+void CSV::getTime (QString &d, QString &time)
 {
-  QString time;
+  time.truncate(0);
   
   if (! d.contains(":"))
   {
@@ -452,28 +471,25 @@ QString CSV::getTime (QString &d)
       time = d;
       time.insert(4, ":");
       time.insert(2, ":");
-      return time;
+      return;
     }
     else
-      return time;
+      return;
   }
     
   QStringList l = QStringList::split(":", d, FALSE);
   if (l.count() != 3)
-    return time;
+    return;
     
   time = l[0] + l[1];
    
   if (l[2].toInt() < 10)
     time.append("0");
   time.append(QString::number(l[2].toInt()));
-    
-  return time;    
 }
 
-QDate CSV::getDate (QString &k, QString &d, Setting &r)
+void CSV::getDate (QString &k, QString &d, Setting &r, QDate &date)
 {
-  QDate date;
   QStringList l;
   QString dateString = d;
   QString timeString;
@@ -491,7 +507,7 @@ QDate CSV::getDate (QString &k, QString &d, Setting &r)
     {
       l = QStringList::split("/", dateString, FALSE);
       if (l.count() != 3)
-        return date;
+        return;
       else
         dateString = l.join(QString::null);
       break;
@@ -501,7 +517,7 @@ QDate CSV::getDate (QString &k, QString &d, Setting &r)
     {
       l = QStringList::split("-", dateString, FALSE);
       if (l.count() != 3)
-        return date;
+        return;
       else
         dateString = l.join(QString::null);
       break;
@@ -511,7 +527,7 @@ QDate CSV::getDate (QString &k, QString &d, Setting &r)
     {
       l = QStringList::split(".", dateString, FALSE);
       if (l.count() != 3)
-        return date;
+        return;
       else
         dateString = l.join(QString::null);
       break;
@@ -529,7 +545,8 @@ QDate CSV::getDate (QString &k, QString &d, Setting &r)
       else
       {
         if (dateString.length() == 8)
-          date.setYMD(dateString.left(4).toInt(), dateString.mid(4, 2).toInt(), dateString.right(2).toInt());
+          date.setYMD(dateString.left(4).toInt(), dateString.mid(4, 2).toInt(),
+          dateString.right(2).toInt());
       }
       break;
     }
@@ -541,7 +558,8 @@ QDate CSV::getDate (QString &k, QString &d, Setting &r)
       else
       {
         if (dateString.length() == 6)
-          date.setYMD(dateString.left(2).toInt(), dateString.mid(2, 2).toInt(), dateString.right(2).toInt());
+          date.setYMD(dateString.left(2).toInt(), dateString.mid(2, 2).toInt(),
+          dateString.right(2).toInt());
       }
       break;
     }
@@ -553,7 +571,8 @@ QDate CSV::getDate (QString &k, QString &d, Setting &r)
       else
       {
         if (dateString.length() == 8)
-          date.setYMD(dateString.right(4).toInt(), dateString.left(2).toInt(), dateString.mid(2, 2).toInt());
+          date.setYMD(dateString.right(4).toInt(), dateString.left(2).toInt(),
+          dateString.mid(2, 2).toInt());
       }
       break;
     }
@@ -565,7 +584,8 @@ QDate CSV::getDate (QString &k, QString &d, Setting &r)
       else
       {
         if (dateString.length() == 6)
-          date.setYMD(dateString.right(2).toInt(), dateString.left(2).toInt(), dateString.mid(2, 2).toInt());
+          date.setYMD(dateString.right(2).toInt(), dateString.left(2).toInt(),
+          dateString.mid(2, 2).toInt());
       }
       break;
     }
@@ -577,16 +597,21 @@ QDate CSV::getDate (QString &k, QString &d, Setting &r)
       else
       {
         if (dateString.length() == 8)
-          date.setYMD(dateString.right(4).toInt(), dateString.mid(2, 2).toInt(), dateString.left(2).toInt());
+          date.setYMD(dateString.right(4).toInt(), dateString.mid(2, 2).toInt(),
+          dateString.left(2).toInt());
       }
       break;
     }
 
     if (! k.compare("Date:MMDDYYYYHHMMSS"))
     {
-      QString s = getTime(timeString);
+      QString s;
+      getTime(timeString, s);
       if (s.length())
-        r.setData("Time", s);
+      {
+        QString ts = "Time";
+        r.setData(ts, s);
+      }
       else
         break;
       
@@ -595,7 +620,34 @@ QDate CSV::getDate (QString &k, QString &d, Setting &r)
       else
       {
         if (dateString.length() == 8)
-          date.setYMD(dateString.right(4).toInt(), dateString.left(2).toInt(), dateString.mid(2, 2).toInt());
+          date.setYMD(dateString.right(4).toInt(), dateString.left(2).toInt(),
+          dateString.mid(2, 2).toInt());
+      }
+      
+      break;
+    }
+    
+    if (! k.compare("Date:YYYYMMDDHHMMSS"))
+    {
+      timeString = d.right(6);
+      dateString = d.left(8);
+      QString s;
+      getTime(timeString, s);
+      if (s.length())
+      {
+        QString ts = "Time";
+        r.setData(ts, s);
+      }
+      else
+        break;
+      
+      if (l.count())
+        date.setYMD(l[0].toInt(), l[1].toInt(), l[2].toInt());
+      else
+      {
+        if (dateString.length() == 8)
+          date.setYMD(dateString.left(4).toInt(), dateString.mid(4, 2).toInt(),
+          dateString.right(2).toInt());
       }
       
       break;
@@ -603,69 +655,46 @@ QDate CSV::getDate (QString &k, QString &d, Setting &r)
     
     break;
   }
-
-  return date;
 }
 
 bool CSV::openDb (QString &path, QString &symbol, QString &type, bool tickFlag)
 {
-  db = config.getDbPlugin(type);
-  if (! db)
-  {
-    qDebug("CSV::openDb:can't open plugin");
-    config.closePlugin(type);
-    return TRUE;
-  }
-
-  if (db->openChart(path))
+  if (db.openChart(path))
   {
     qDebug("CSV::openDb:can't open chart");
     emit statusLogMessage("CSV::OpenDb:Could not open db.");
-    config.closePlugin(type);
-    db = 0;
+    db.close();
     return TRUE;
   }
   
   // verify if this chart can be updated by this plugin
   QString s;
-  db->getHeaderField(DbPlugin::QuotePlugin, s);
+  db.getHeaderField(DbPlugin::QuotePlugin, s);
   if (! s.length())
-    db->setHeaderField(DbPlugin::QuotePlugin, pluginName);
+    db.setHeaderField(DbPlugin::QuotePlugin, pluginName);
   else
   {
     if (s.compare(pluginName))
     {
       s = symbol + " - skipping update. Source does not match destination.";
       emit statusLogMessage(s);
-      config.closePlugin(type);
-      db = 0;
+      db.close();
       return TRUE;
     }
   }
 
-  db->getHeaderField(DbPlugin::Symbol, s);
+  db.getHeaderField(DbPlugin::Symbol, s);
   if (! s.length())
   {
-    db->createNew();
+    if (! type.compare("Futures"))
+      db.createNew(DbPlugin::Futures);
+    else
+      db.createNew(DbPlugin::Stock);
     
-    db->setHeaderField(DbPlugin::Symbol, symbol);
-    db->setHeaderField(DbPlugin::Title, symbol);
+    db.setHeaderField(DbPlugin::Symbol, symbol);
     
     s = QString::number(tickFlag);
-    db->setHeaderField(DbPlugin::BarType, s);
-    
-    if (! type.compare("Futures"))
-    {
-//      s = fd.getName();
-//      db->setHeaderField(DbPlugin::Title, s);
-      
-//      QString s2 = fd.getSymbol();
-//      s = "FuturesType";
-//      db->setData(s, s2);
-      
-//      s = "FuturesMonth";
-//      db->setData(s, futuresMonth);
-    }
+    db.setHeaderField(DbPlugin::BarType, s);
   }
   
   return FALSE;
@@ -732,7 +761,9 @@ void CSV::loadSettings ()
   {
     Config config;
     QDir dir;
-    QString ruleDir = config.getData(Config::QuotePluginStorage) + "/CSV";
+    QString ruleDir;
+    config.getData(Config::QuotePluginStorage, ruleDir);
+    ruleDir.append("/CSV");
     if (! dir.exists(ruleDir))
     {
       if (! dir.mkdir(ruleDir, TRUE))
@@ -766,8 +797,12 @@ void CSV::loadSettings ()
       QStringList l2;
       set.getKeyList(l2);
       int loop2;
+      QString ts;
       for (loop2 = 0; loop2 < (int) l2.count(); loop2++)
-        stream << l2[loop2] << "=" << set.getData(l2[loop2]) << "\n";
+      {
+        set.getData(l2[loop2], ts);
+        stream << l2[loop2] << "=" << ts << "\n";
+      }
 	
       f.close();  
       

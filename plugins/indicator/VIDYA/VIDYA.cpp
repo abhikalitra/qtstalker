@@ -32,7 +32,19 @@ VIDYA::VIDYA ()
 {
   pluginName = "VIDYA";
   helpFile = "vidya.html";
+
+  colorLabel = "color";
+  labelLabel = "label";
+  lineTypeLabel = "lineType";
+  pluginLabel = "plugin";
+  periodLabel = "period";
+  volPeriodLabel = "volPeriod";
+  inputLabel = "input";
     
+  formatList.append(FormatInputArray);
+  formatList.append(FormatInteger);
+  formatList.append(FormatInteger);
+
   setDefaults();
 }
 
@@ -47,11 +59,17 @@ void VIDYA::setDefaults ()
   label = pluginName;
   period = 14;
   volPeriod = 10;
+  input = BarData::Close;
 }
 
 void VIDYA::calculate ()
 {
-  PlotLine *in = data->getInput (BarData::Close);
+  PlotLine *in = data->getInput(input);
+  if (! in)
+  {
+    qDebug("VIDYA::calculate: no input");
+    return;
+  }
 	
   if ( in->getSize() < period )
   {
@@ -61,7 +79,7 @@ void VIDYA::calculate ()
 	
   PlotLine *out = new PlotLine;
 
-  calcVidya ( out, in, volPeriod, period );
+  calcVidya (out, in, volPeriod, period);
 
   out->setColor(color);
   out->setType(lineType);
@@ -69,7 +87,7 @@ void VIDYA::calculate ()
   output->addLine(out);
 }
 
-void VIDYA::calcVidya ( PlotLine *outSignal, PlotLine *inSignal, int iCmoPeriod, int iVidyaPeriod )
+void VIDYA::calcVidya (PlotLine *outSignal, PlotLine *inSignal, int iCmoPeriod, int iVidyaPeriod)
 {
   PlotLine *cmo = new PlotLine;
 	
@@ -375,6 +393,7 @@ int VIDYA::indicatorPrefDialog (QWidget *w)
   dialog->addColorItem(cl, pl, color);
   dialog->addTextItem(ll, pl, label);
   dialog->addComboItem(ltl, pl, lineTypes, lineType);
+  dialog->addComboItem(il, pl, inputTypeList, input);
   
   pl = QObject::tr("Zones");
   dialog->createPage (pl);
@@ -383,11 +402,12 @@ int VIDYA::indicatorPrefDialog (QWidget *w)
   
   if (rc == QDialog::Accepted)
   {
-    color = dialog->getColor(cl);
+    dialog->getColor(cl, color);
     lineType = (PlotLine::LineType) dialog->getComboIndex(ltl);
-    label = dialog->getText(ll);
+    dialog->getText(ll, label);
     period = dialog->getInt(perl);	
     volPeriod = dialog->getInt(per2);	
+    input = (BarData::InputType) dialog->getComboIndex(il);
 	
     rc = TRUE;
   }
@@ -403,42 +423,13 @@ PlotLine * VIDYA::calculateCustom (QString &p, QPtrList<PlotLine> &d)
 {
   // format1: ARRAY_INPUT, PERIOD, VOL_PERIOD
 
-  QStringList l = QStringList::split(",", p, FALSE);
-
-  if (l.count() == 3)
-    ;
-  else
-  {
-    qDebug("VIDYA::calculateCustom: invalid parm count");
+  if (checkFormat(p, d, 3, 3))
     return 0;
-  }
 
-  bool ok;
-  int t = l[1].toInt(&ok);
-  if (ok)
-    period = t;
-  else
-  {
-    qDebug("VIDYA::calculateCustom: invalid PERIOD parm");
-    return 0;
-  }
-
-  t = l[2].toInt(&ok);
-  if (ok)
-    volPeriod = t;
-  else
-  {
-    qDebug("VIDYA::calculateCustom: invalid VOL_PERIOD parm");
-    return 0;
-  }
+  period = formatStringList[1].toInt();
+  volPeriod = formatStringList[2].toInt();
 
   clearOutput();
-
-  if (! d.count())
-  {
-    qDebug("VIDYA::calculateCustom: no input");
-    return 0;
-  }
 
   PlotLine *out = new PlotLine;
   calcVidya (out, d.at(0), volPeriod, period);
@@ -449,12 +440,18 @@ PlotLine * VIDYA::calculateCustom (QString &p, QPtrList<PlotLine> &d)
 
 void VIDYA::getIndicatorSettings (Setting &dict)
 {
-  dict.setData("color", color.name());
-  dict.setData("label", label);
-  dict.setData("lineType", QString::number(lineType));
-  dict.setData("plugin", pluginName);
-  dict.setData("period", QString::number(period));
-  dict.setData("volPeriod", QString::number(volPeriod));
+  QString ts = color.name();
+  dict.setData(colorLabel, ts);
+  dict.setData(labelLabel, label);
+  ts = QString::number(lineType);
+  dict.setData(lineTypeLabel, ts);
+  dict.setData(pluginLabel, pluginName);
+  ts = QString::number(period);
+  dict.setData(periodLabel, ts);
+  ts = QString::number(volPeriod);
+  dict.setData(volPeriodLabel, ts);
+  ts = QString::number(input);
+  dict.setData(inputLabel, ts);
 }
 
 void VIDYA::setIndicatorSettings (Setting &dict)
@@ -464,31 +461,70 @@ void VIDYA::setIndicatorSettings (Setting &dict)
   if (! dict.count())
     return;
   
-  QString s = dict.getData("color");
+  QString s;
+  dict.getData(colorLabel, s);
   if (s.length())
     color.setNamedColor(s);
     
-  s = dict.getData("label");
+  dict.getData(labelLabel, s);
   if (s.length())
     label = s;
         
-  s = dict.getData("lineType");
+  dict.getData(lineTypeLabel, s);
   if (s.length())
     lineType = (PlotLine::LineType) s.toInt();
 	
-  s = dict.getData("period");
+  dict.getData(periodLabel, s);
   if (s.length())
     period = s.toInt();
 	
-  s = dict.getData("volPeriod");
+  dict.getData(volPeriodLabel, s);
   if (s.length())
     volPeriod = s.toInt();
+
+  dict.getData(inputLabel, s);
+  if (s.length())
+    input = (BarData::InputType) s.toInt();
 }
 
-int VIDYA::getMinBars ()
+void VIDYA::formatDialog (QStringList &vl, QString &rv, QString &rs)
 {
-  int t = minBars + period;
-  return t;
+  rs.truncate(0);
+  rv.truncate(0);
+  QString pl = QObject::tr("Parms");
+  QString vnl = QObject::tr("Variable Name");
+  QString perl = QObject::tr("Vidya period");
+  QString per2 = QObject::tr("Volatility Period");
+  QString il = QObject::tr("Input");
+  PrefDialog *dialog = new PrefDialog(0);
+  dialog->setCaption(QObject::tr("VIDYA Format"));
+  dialog->createPage (pl);
+  dialog->setHelpFile(helpFile);
+
+  // format1: ARRAY_INPUT, PERIOD, VOL_PERIOD
+
+  QString s;
+  dialog->addTextItem(vnl, pl, s);
+  dialog->addComboItem(il, pl, vl, input);
+  dialog->addIntItem(perl, pl, period, 2, 50);
+  dialog->addIntItem(per2, pl, volPeriod, 2, 50);
+
+  int rc = dialog->exec();
+  
+  if (rc == QDialog::Accepted)
+  {
+    dialog->getText(vnl, rv);
+
+    dialog->getCombo(il, rs);
+
+    int t = dialog->getInt(perl);
+    rs.append("," + QString::number(t));
+
+    t = dialog->getInt(per2);   
+    rs.append("," + QString::number(t));
+  }
+
+  delete dialog;
 }
 
 //****************************************************

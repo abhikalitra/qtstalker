@@ -25,11 +25,10 @@
 #include <qstring.h>
 #include <qtoolbar.h>
 #include <qmainwindow.h>
-#include "MyComboBox.h"
-#include "MySpinBox.h"
-#include "MyLineEdit.h"
-#include "MySlider.h"
-#include "Macro.h"
+#include <qcombobox.h>
+#include <qspinbox.h>
+#include <qlineedit.h>
+#include <qslider.h>
 #include <qtoolbutton.h>
 #include <qdatetime.h>
 
@@ -39,10 +38,9 @@ class ChartToolbar : public QToolBar
   Q_OBJECT
   
   signals:
-    void signalCompressionChanged (int);
+    void signalBarLengthChanged (int);
     void signalPixelspaceChanged (int);
     void signalSliderChanged (int);
-    void signalKeyPressed (int, int, int, int, QString);
     void signalBarsChanged (int);
     void signalPaperTradeNextBar ();
     
@@ -51,7 +49,7 @@ class ChartToolbar : public QToolBar
     enum MenuAction
     {
       ToolbarFocus,
-      CompressionFocus,
+      BarLengthFocus,
       BarSpacingFocus,
       BarsLoadedFocus,
       ChartPannerFocus
@@ -63,36 +61,32 @@ class ChartToolbar : public QToolBar
     void enableSlider (bool);
     void setPixelspace (int, int);
     int getPixelspace ();
-    int getCompressionInt ();
-    QString getCompression ();
+    int getBarLengthInt ();
+    QString getBarLength ();
     int getSlider ();
     int setSliderStart (int width, int records);
     void saveSettings ();
-    QDateTime getPaperTradeDate ();
+    void getPaperTradeDate (QDateTime &);
     
   public slots:
     void setFocus ();
-    void setKeyFlag (bool);
     void slotAccel (int);
     void doKeyPress (QKeyEvent *);
-    void runMacro (Macro *);
     void barsChanged ();
     void paperTradeDate ();
     void paperTradeNextBar ();
     void paperTradeClicked (bool);
   
   private:
-    MyComboBox *compressionCombo;
-    MySpinBox *pixelspace;
-    MyLineEdit *barCount;
-    MySlider *slider;
-    bool keyFlag;
+    QComboBox *compressionCombo;
+    QSpinBox *pixelspace;
+    QLineEdit *barCount;
+    QSlider *slider;
     MenuAction focusFlag;
-    Macro *macro;
-    bool macroFlag;
     QToolButton *ptdButton;
     QToolButton *ptnButton;
     QDateTime ptDate;
+    QStringList compressionList;
 };
 
 #endif

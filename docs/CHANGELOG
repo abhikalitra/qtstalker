@@ -187,6 +187,81 @@
 
 20060209: Fixed bug in TALIB plugin that did not keep settings when being modified.
 
+20060601: Removed all the macro code. Would like to wait until the main code has stabilised
+          before we continue with the macro module. Would also like to put all macro code
+          into a single separate module.
+
+20060617: Removed the chart object plugins and merged the code into qtstalkerlib. The amount
+          of overhead and code complexity of plugins is not required. I believe it is more effecient
+          to use qtstalkerlib instead. 
+
+20060617: Added icons to the chart object popup menu items.
+
+20060620: Fixed bug in Tester that did not calculate account balances properly as trades
+          are made. We always ended up with a few 100 more unexplained dollars.
+
+20060621: Cleaned up the Tester code by splitting off code into sub classes.
+
+20060623: Added a toolbar to the chart page on the Tester gui.
+
+20060628: Added a bars parm to the scanner gui. Users will have to set the value manually.
+
+20060628: Added a midpoint option to the entry/exit price in the tester.
+
+20060629: Restored the bar chart to the tester. Instead of buy and sell arrows to indicate
+          entry and exit points, we are coloring the bars green for long and red for short.
+          I like this better than the arrows.
+
+20060630: Fixed bug in tester that caused stops to delay by an extra bar.
+
+20060630: Added option in the tester that calculates commissions as a percentage of the total
+          amount bought. Check the 'Use Commission %' option and input the percentage ie.
+          0.02 for 2% or 0.1 for 10% etc.
+
+20060703: Added option in UTIL(REF) indicator function that allows user to create Horizontal lines
+          in CUS scripts. ie.  hline := UTIL(REF, 5.5) would create a plot with one value of 5.5.
+          Then apply the 'Horizontal' line style option to the hline variable to plot it.
+
+20060704: When creating/editing CUS indicators, the user no longer has to input the variable name
+          manually. User can now choose from a list all the available variables.
+
+20060708: Fixed bug in tester that continued to enter trades even when account lacked the
+          required amount of funds.
+
+20060713: Added key shortcut (CTRL+Key_Right) to advance chart one bar in paper trade mode.
+
+20060716: Simplified and improved the bar creation functions in DbPlugin for speed and memory.
+
+20060716: Removed the IndicatorPlugin::minBars function. Not practical anymore as we move toward
+          TALIB integration.
+
+20060716: Papertrade mode now works with all bar length charts. Previously only worked with daily
+          charts.
+
+20060717: Added search filter boxes to the Tester and Scanner panels. They work the same as the
+          Indicator and Chart panels do.
+
+20060717: Fixed bug in Scanner that did not clean group directory properly before starting new
+          scan with same scanner rule. Was generating link errors.
+
+20060804: Removed the chart type plugins and merged them into DbPlugin class. I do not see these
+          to change much over time so we don't need the extra overhead.
+
+20060804: Added option to CC type charts to create gapless/non-gapless charts.
+       
+20060829: I got tired of looking up the correct format for each indicator when constructing CUS
+          indicators. So, I added a format builder dialog to the CUS dialog. This allows the user to
+          quickly use the dialog to construct the CUS format for each variable and insert it into the
+          editor.
+
+20060829: VIDYA indicator dialog missing input array parm. Fixed.
+
+20060903: Added proper TA_Initialze and TA_Shutdown function calls to the TALIB indicator.
+
+20060905: Added default indicators to new installs and upgrades. Bars, Candles, Volume.
+          Add more?
+
+20060908: Fixed: Group panel now refreshes after a scanner is completed.
 
 
 

@@ -29,6 +29,18 @@ UO::UO ()
 {
   pluginName = "UO";
   helpFile = "uo.html";
+
+  colorLabel = "color";
+  lineTypeLabel = "lineType";
+  labelLabel = "label";
+  shortPeriodLabel = "shortPeriod";
+  medPeriodLabel = "medPeriod";
+  longPeriodLabel = "longPeriod";
+  pluginLabel = "plugin";
+
+  formatList.append(FormatInteger);
+  formatList.append(FormatInteger);
+  formatList.append(FormatInteger);
   
   setDefaults();
 }
@@ -134,9 +146,9 @@ int UO::indicatorPrefDialog (QWidget *w)
   
   if (rc == QDialog::Accepted)
   {
-    color = dialog->getColor(cl);
+    dialog->getColor(cl, color);
     lineType = (PlotLine::LineType) dialog->getComboIndex(ltl);
-    label = dialog->getText(ll);
+    dialog->getText(ll, label);
     shortPeriod = dialog->getInt(sper);
     medPeriod = dialog->getInt(mper);
     longPeriod = dialog->getInt(lper);
@@ -156,83 +168,58 @@ void UO::setIndicatorSettings (Setting &dict)
   if (! dict.count())
     return;
   
-  QString s = dict.getData("color");
+  QString s;
+  dict.getData(colorLabel, s);
   if (s.length())
     color.setNamedColor(s);
     
-  s = dict.getData("lineType");
+  dict.getData(lineTypeLabel, s);
   if (s.length())
     lineType = (PlotLine::LineType) s.toInt();
 
-  s = dict.getData("label");
+  dict.getData(labelLabel, s);
   if (s.length())
     label = s;
 
-  s = dict.getData("shortPeriod");
+  dict.getData(shortPeriodLabel, s);
   if (s.length())
     shortPeriod = s.toInt();
 
-  s = dict.getData("medPeriod");
+  dict.getData(medPeriodLabel, s);
   if (s.length())
     medPeriod = s.toInt();
 
-  s = dict.getData("longPeriod");
+  dict.getData(longPeriodLabel, s);
   if (s.length())
     longPeriod = s.toInt();
 }
 
 void UO::getIndicatorSettings (Setting &dict)
 {
-  dict.setData("color", color.name());
-  dict.setData("lineType", QString::number(lineType));
-  dict.setData("label", label);
-  dict.setData("shortPeriod", QString::number(shortPeriod));
-  dict.setData("medPeriod", QString::number(medPeriod));
-  dict.setData("longPeriod", QString::number(longPeriod));
-  dict.setData("plugin", pluginName);
+  QString ts = color.name();
+  dict.setData(colorLabel, ts);
+  ts = QString::number(lineType);
+  dict.setData(lineTypeLabel, ts);
+  dict.setData(labelLabel, label);
+  ts = QString::number(shortPeriod);
+  dict.setData(shortPeriodLabel, ts);
+  ts = QString::number(medPeriod);
+  dict.setData(medPeriodLabel, ts);
+  ts = QString::number(longPeriod);
+  dict.setData(longPeriodLabel, ts);
+  dict.setData(pluginLabel, pluginName);
 }
 
-PlotLine * UO::calculateCustom (QString &p, QPtrList<PlotLine> &)
+PlotLine * UO::calculateCustom (QString &p, QPtrList<PlotLine> &d)
 {
   // format1: SHORT_PERIOD, MED_PERIOD, LONG_PERIOD
 
-  QStringList l = QStringList::split(",", p, FALSE);
-
-  if (l.count() == 3)
-    ;
-  else
-  {
-    qDebug("UO::calculateCustom: invalid parm count");
+  if (checkFormat(p, d, 3, 3))
     return 0;
-  }
 
-  bool ok;
-  int t = l[0].toInt(&ok);
-  if (ok)
-    shortPeriod = t;
-  else
-  {
-    qDebug("UO::calculateCustom: invalid SHORT_PERIOD parm");
-    return 0;
-  }
-
-  t = l[1].toInt(&ok);
-  if (ok)
-    medPeriod = t;
-  else
-  {
-    qDebug("UO::calculateCustom: invalid MED_PERIOD parm");
-    return 0;
-  }
-
-  t = l[2].toInt(&ok);
-  if (ok)
-    longPeriod = t;
-  else
-  {
-    qDebug("UO::calculateCustom: invalid LONG_PERIOD parm");
-    return 0;
-  }
+  shortPeriod = formatStringList[0].toInt();
+  medPeriod = formatStringList[1].toInt();
+  longPeriod = formatStringList[2].toInt();
 
   clearOutput();
   calculate();
@@ -269,15 +256,43 @@ PlotLine * UO::getTR ()
   return tr;
 }
 
-int UO::getMinBars ()
+void UO::formatDialog (QStringList &, QString &rv, QString &rs)
 {
-  int t = shortPeriod;
-  if (medPeriod > t)
-    t = medPeriod;
-  if (longPeriod > t)
-    t = longPeriod;
-  t = t + minBars;
-  return t;
+  rs.truncate(0);
+  rv.truncate(0);
+  QString pl = QObject::tr("Parms");
+  QString vnl = QObject::tr("Variable Name");
+  QString sper = QObject::tr("Short Period");
+  QString mper = QObject::tr("Medium Period");
+  QString lper = QObject::tr("Long Period");
+  PrefDialog *dialog = new PrefDialog(0);
+  dialog->setCaption(QObject::tr("UO Format"));
+  dialog->createPage (pl);
+  dialog->setHelpFile(helpFile);
+
+  QString s;
+  dialog->addTextItem(vnl, pl, s);
+  dialog->addIntItem(sper, pl, shortPeriod, 1, 99999999);
+  dialog->addIntItem(mper, pl, medPeriod, 1, 99999999);
+  dialog->addIntItem(lper, pl, longPeriod, 1, 99999999);
+
+  int rc = dialog->exec();
+  
+  if (rc == QDialog::Accepted)
+  {
+    dialog->getText(vnl, rv);
+
+    int t = dialog->getInt(sper);
+    rs = QString::number(t);
+
+    t = dialog->getInt(mper);
+    rs.append("," + QString::number(t));
+
+    t = dialog->getInt(lper);
+    rs.append("," + QString::number(t));
+  }
+
+  delete dialog;
 }
 
 //*******************************************************

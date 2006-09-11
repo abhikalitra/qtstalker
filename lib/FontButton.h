@@ -34,7 +34,7 @@ class FontButton : public QPushButton
   public:
     FontButton (QWidget *, QFont &);
     ~FontButton ();
-    QFont getFont ();
+    void getFont (QFont &);
     void setFontButton ();
 
   public slots:

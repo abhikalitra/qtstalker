@@ -155,7 +155,7 @@ void Plot::setIndex (int d)
   indicatorPlot->setIndex(d);
 }
 
-void Plot::setInterval (BarData::BarCompression d)
+void Plot::setInterval (BarData::BarLength d)
 {
   datePlot->setInterval(d);    
   indicatorPlot->setInterval(d);    
@@ -262,6 +262,11 @@ void Plot::slotUpdateScalePlot ()
 {
   scalePlot->setScaler(indicatorPlot->getScaler());
   scalePlot->draw();
+}
+
+void Plot::setMenuFlag (bool d)
+{
+  indicatorPlot->setMenuFlag(d);
 }
 
 
