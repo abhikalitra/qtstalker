@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  *
- *  Copyright (C) 2001-2005 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2006 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -81,7 +81,7 @@ void BARS::setDefaults ()
   barNeutralColor.setNamedColor("blue");
   candleColor.setNamedColor("green");
   label = pluginName;
-  method = methodList[0];
+//  method = methodList[0];
 
   maColor.setNamedColor("red");
   maColor2.setNamedColor("red");
@@ -89,15 +89,15 @@ void BARS::setDefaults ()
   maLineType = PlotLine::Line;
   maLineType2 = PlotLine::Line;
   maLineType3 = PlotLine::Line;
-  maLabel = "MA";
-  maLabel2 = "MA2";
-  maLabel3 = "MA3";
+  maLabel = "10MA";
+  maLabel2 = "50MA";
+  maLabel3 = "200MA";
   maPeriod = 10;
   maPeriod2 = 50;
   maPeriod3 = 200;
-  maType = 1;
-  maType2 = 1;
-  maType3 = 1;
+  maType = 0;
+  maType2 = 0;
+  maType3 = 0;
   maInput = BarData::Close;
   maInput2 = BarData::Close;
   maInput3 = BarData::Close;

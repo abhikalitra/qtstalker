@@ -19,6 +19,8 @@ to creating a plugin instead of long series of functions for speed and
 memory considerations.<br>
 <br>
 <h4>Formula Page:</h4>
+<img alt="" src="cus1.png" style="width: 408px; height: 335px;"><br>
+<br>
 This is where we enter our script. We break our script down into steps.
 Each step basically defines a&nbsp; variable. Each variable represents
 the results of an indicator command. The format of the variable command
@@ -40,7 +42,7 @@ for the format of each indicator.<br>
 Here is an example of what the MACD indicator would look like if we
 constructed one manually instead of using the builtin version.<br>
 <br>
-macd := TALIB(MACDFIX, Close, 9)<br>
+macd := TALIB(MACDFIX, Close, 9, 1)<br>
 trig := TALIB(EMA, macd, 9)<br>
 osc := UTIL(SUB, macd, trig)<br>
 <br>
@@ -57,8 +59,13 @@ variables. So we need to use the UTIL plugin that contains a
 subtraction (SUB) function. We input the parms to get an oscillator of
 (macd - trig). That's it.<br>
 <br>
+Fortunately, we do not have to input all the parms manually. We can use
+the function dialog gui to construct the script for us.<br>
+<br>
 For a description of some types used. See <a href="ctypes.html">here.</a><br>
 <h4>Plot Page:</h4>
+<img alt="" src="cus2.png" style="width: 408px; height: 335px;"><br>
+<br>
 On this page we decide which variables from the formula page we choose
 to plot on our chart. Each plot command has 4 parameters. The format of
 the plot command is:<br>
@@ -79,6 +86,8 @@ plot(osc, blue, OSC, Histogram)<br>
 plot(macd, red, MACD, Line)<br>
 plot(trig, yellow, TRIG, Dash)<br>
 <br>
+Notice we plot the osc variable first. We do this so the histogram does
+not obscure the macd and trig plots. <br>
 Fortunately, the user does not need to input the plot format manually.
 We can use the 'insert' dialog to construct the plot paramaters for us
 correctly.<br>

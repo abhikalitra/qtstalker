@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  *
- *  Copyright (C) 2001-2005 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2006 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -32,10 +32,6 @@ TALIB::TALIB ()
   helpFile = "talib.html";
 
   setDefaults();
-
-  TA_RetCode rc = TA_Initialize(NULL);
-  if (rc != TA_SUCCESS)
-    qDebug("TALIB::TALIB:could not TA_Initialize");
 }
 
 TALIB::~TALIB ()
@@ -46,6 +42,10 @@ TALIB::~TALIB ()
 void TALIB::setDefaults ()
 {
   getIndicatorList(methodList);
+
+  TA_RetCode rc = TA_Initialize(NULL);
+  if (rc != TA_SUCCESS)
+    qDebug("TALIB::setDefaults:error on TA_Initialize");
 }
 
 void TALIB::calculate ()

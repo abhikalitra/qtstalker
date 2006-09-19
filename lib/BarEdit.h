@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  * 
- *  Copyright (C) 2001-2005 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2006 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -22,10 +22,11 @@
 #ifndef BAREDIT_HPP
 #define BAREDIT_HPP
 
-#include <qdatetimeedit.h>
+//#include <qdatetimeedit.h>
 #include <qlineedit.h>
 #include <qwidget.h>
 #include <qlayout.h>
+#include <qdatetime.h>
 #include "Toolbar.h"
 
 class BarEdit : public QWidget
@@ -33,9 +34,13 @@ class BarEdit : public QWidget
   Q_OBJECT
   
   signals:
-    void signalDeleteRecord (QString);
+    void signalDeleteRecord ();
     void signalSaveRecord ();
-    void signalSearch (QString);
+    void signalFirstRecord ();
+    void signalLastRecord ();
+    void signalPrevRecord ();
+    void signalNextRecord ();
+    void signalSearch (QDateTime);
 
   public:
     BarEdit (QWidget *);
@@ -47,16 +52,22 @@ class BarEdit : public QWidget
     void setField (QString &, QString &);
     void getField (QString &, QString &);
     bool getSaveFlag ();
+    void saveRecordDialog ();
+    void clearButtons ();
 
   public slots:
     void deleteRecord ();
     void saveRecord ();
     void slotDateSearch ();
     void textChanged (const QString &);
+    void slotFirstRecord ();
+    void slotLastRecord ();
+    void slotPrevRecord ();
+    void slotNextRecord ();
 
   private:
     QGridLayout *grid;
-    QDateTimeEdit *dateSearch;
+//    QDateTimeEdit *dateSearch;
     QLineEdit *date;
     QDict<QLineEdit> editList;
     Toolbar *toolbar;

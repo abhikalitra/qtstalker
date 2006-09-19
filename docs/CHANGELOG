@@ -263,6 +263,16 @@
 
 20060908: Fixed: Group panel now refreshes after a scanner is completed.
 
+20060912: Applied patches:
+
+20060912: Changed local indicators function to use directory symlinks instead.
+
+20060912: Expanded and polished the TALIB docs and plugin operations. Missing parms and lists
+          now available in the gui dialogs.
+
+20060914: Changed the gui to improve record navigation for editing chart records on disk in the
+          Edit Chart dialogs.
+
 
 
 0.32

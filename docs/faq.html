@@ -18,11 +18,14 @@ from source makes you a better person, brings world peace and makes you
 more attractive to women.<br>
 <p>Qtstalker is now included in the Debian distribution thanks to the
 efforts of Marco van Zwetselaar. Marco is the maintainer for the binary
-package.<br>
+package.</p>
+<p>There are also RPM's available from Redhat and other RPM based
+distributions. Use rpmfind to locate them.<br>
 <br>
 </p>
 <h4>What platforms are supported ?</h4>
-Currently, Linux compatible and FreeBSD systems are supported. Some
+Currently, Linux compatible, FreeBSD and Mac OS X systems are
+supported. Some
 people have tried
 with some success on Solaris, IRIX and most unices. I'm afraid I cannot
 support any other platforms other than Linux compatible systems simply
@@ -58,11 +61,11 @@ provide quotes from a data
 service on an individual basis. You may use the CSV quote plugin to
 import ascii files with tick data.
 <h4>Does Qtstalker handle stock splits ?</h4>
-No. To keep things simple, there is an easy way to handle splits.
-Just delete the chart that had a split, create the chart with the yahoo
+Yes, but they have to be handled manually using the edit chart dialog.
+Another method is to delete the chart that had a split, create the
+chart with the yahoo
 plugin and then update the data. This will pull in all the new
-corrected data. Nice and simple. Yes, a little more work for the user
-but reduces overhead and keeps things nice and snappy. NOTE: the yahoo
+corrected data. NOTE: the yahoo
 quote plugin allows the user to use the 'adjusted' price, however this
 is not the actual trading price but an adjusted one for chart sanity.<br>
 <br>
@@ -71,6 +74,11 @@ Well if you really must know...The Qt part comes from the GNU/Linux
 tradition of prefixing an X app with the GUI toolkit used. The stalker
 part is just cheesy word play stemming from the idea of "stock search"
 or "stalking stocks". I also just like the word "stalker".<br>
+<br>
+In english, Qt sounds like 'cutie' which is slang for 'a cute woman'.
+So now we have 'cutie stalker' which in all honesty was completely
+unintentional. Now if someone were to write a 'cutie stalker' indicator
+plugin we just might really be on to something ;-)<br>
 <br>
 <h4>Why don't you make this into a KDE app ?</h4>
 I want to keep things as simple, efficient and portable as possible. Qt
@@ -90,9 +98,10 @@ Two reasons, speed and simplicty. Once again I cite the KISS (keep it
 simple, stupid!) philosophy. You can't beat Berkeley DB btree functions
 for ease
 of use and speed. Using SQL would just add another layer of
-requirements and major speed penalties. It also means more
+requirements and speed penalties. It also means more
 administration hassles for the user to set up accounts, tables, logs
-etc. Why complicate things? Each chart is it's own compact, flexible,
+etc. Why complicate things? With DB, each chart is it's own compact,
+flexible,
 dynamic, self-contained db. Blows SQL away in this respect.<br>
 <span style="font-weight: bold;"><br>
 </span>

@@ -33,6 +33,14 @@ To Do:
 - change absolute path names in the tester rules to relative so files can be moved
 - add paper trade mode to portfolio tracker (use last chart value instead of last db value)
 
+- upgrade TALIB
+- update CHANGELOG with ticket #'s
+- fix the TALIB parm 3 issue with David's patch
+- remove all the dead files
+- add new misc directory
+- add mising osx doc file from david's patch
+- add/remove all new/old files in cvs
+
 
 Maybe some day:
 ===============

@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  *
- *  Copyright (C) 2001-2005 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2006 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -85,7 +85,7 @@ IndicatorPage::IndicatorPage (QWidget *w) : QWidget (w)
   menu->insertSeparator(-1);
   menu->insertItem(QPixmap(newchart), tr("Ne&w Indicator		Ctrl+W"), this,
                    SLOT(newIndicator()));
-  menu->insertItem(QPixmap(newchart), tr("&Add Local Indicator              Ctrl+A"), this,
+  menu->insertItem(QPixmap(newchart), tr("&Add Local Indicator		Ctrl+A"), this,
                    SLOT(addLocalIndicator()));
   menu->insertItem(QPixmap(edit), tr("&Edit Indicator			Ctrl+E"), this,
                    SLOT(editIndicator()));
@@ -251,6 +251,7 @@ void IndicatorPage::newIndicator ()
   QString il = tr("Indicator");
   QString nl = tr("Name");
   QString ptl = tr("Tab Row");
+  QString gl = tr("Group");
   
   idialog->createPage (pl);
   
@@ -263,6 +264,12 @@ void IndicatorPage::newIndicator ()
   idialog->addTextItem(nl, pl, s);
   
   idialog->addIntItem(ptl, pl, 1, 1, 3);
+
+  QStringList l3;
+  int loop;
+  for (loop = 0; loop < group->count(); loop++)
+    l3.append(group->text(loop));
+  idialog->addComboItem(gl, pl, l3, group->currentItem());
   
   int rc = idialog->exec();
   if (rc == QDialog::Rejected)
@@ -277,6 +284,8 @@ void IndicatorPage::newIndicator ()
   idialog->getCombo(il, indicator);
   config.setData(Config::LastNewIndicator, indicator);
   int tabRow = idialog->getInt(ptl);
+  QString tgroup;
+  idialog->getCombo(gl, tgroup);
   delete idialog;
   
   if (! name.length())
@@ -286,7 +295,6 @@ void IndicatorPage::newIndicator ()
   }
   
   // correct any forbidden chars in name
-  int loop;
   s.truncate(0);
   for (loop = 0; loop < (int) name.length(); loop++)
   {
@@ -296,9 +304,9 @@ void IndicatorPage::newIndicator ()
   }
   name = s;
 
-  // check if we can save this indicator in current group  
+  // check if we can save this indicator in the selected group  
   QDir dir;  
-  s = baseDir + "/" + group->currentText() + "/" + name;
+  s = baseDir + "/" + tgroup + "/" + name;
   if (dir.exists(s))
   {
     QMessageBox::information(this, tr("Qtstalker: Error"), tr("Duplicate indicator name."));
@@ -341,6 +349,11 @@ void IndicatorPage::newIndicator ()
 
   config.setIndicator(s, tset);
   config.closePlugin(indicator);
+
+  // check if we need to load this indicator now
+  if (tgroup.compare(group->currentText()))
+    return;
+
   Indicator *i = new Indicator;
   i->setName(name);
   i->setTabRow(tabRow);
@@ -365,7 +378,7 @@ void IndicatorPage::addLocalIndicator ()
   QStringList l;
   config.getData(Config::IndicatorPath, s);
   idialog->addFileItem(il, pl, l, s);
-  
+
   int rc = idialog->exec();
   if (rc == QDialog::Rejected)
   {
@@ -401,6 +414,7 @@ void IndicatorPage::addLocalIndicator ()
   Indicator *i = new Indicator;
   i->setIndicator(set, l[0]);
   emit signalNewIndicator(i);
+  updateList();
 }
 
 void IndicatorPage::editIndicator ()
@@ -847,6 +861,7 @@ void IndicatorPage::addLocalIndicators (QString &d)
     QString s2 = baseDir + "/" + group->currentText() + "/Local" + QString::number(loop + 1);
     QString s = "ln -s " + l[loop] + " " + s2;
     system(s);
+    emit signalLocalIndicator(s2);
   }
 }
 

@@ -10,55 +10,6 @@
 NOTE: This tutorial is no longer valid due to the interface changes
 since this was written. Please update.<br>
 <br>
-Here is a brief idea of how to write an indicator plugin for Qtstalker.
-I will take an actual plugin and walk you through it. We will use the
-MA plugin
-as the example.<br>
-<br>
-<h3><u>Using Settings</u></h3>
-Settings are used to store values that can be changed by the user. Each
-setting has 3 elements. Here is an example setting:<br>
-<pre>set(tr("Color"), "red", Setting::Color);<br></pre>
-The first field tr("Color"), is the key, or how the setting will be
-refered
-to as. The user will see this as the setting name.<br>
-The second field "red", is the actual value of the setting. The user
-will
-see this as the setting value and will be able to modify it.<br>
-The third field Setting::Color, is the type of setting to create. This
-defines
-how the setting will be edited. Look at Setting.h for more info on what
-setting
-types are available.<br>
-<br>
-Each indicator will have different settings depending on the needs of
-the
-indicator. <br>
-<br>
-<h3><u>About Alerts</u></h3>
-The alert function returns an array of ints. Each element of the alert
-array
-can have only 3 values. The 3 values are -1,0,1. A value of -1 means we
-are
-short. A value of 0 means we are out. A value 1 means we are long. The
-alert
-array will always be the same size as the original data the indicator
-used
-to calculate. So to create the alert array you simply begin where the
-indicator
-data starts relative to the input data, decide if you are short, long
-or
-out and put the appropriate value into the array. You then repeat this
-for
-every element advancing forward until you reach the end of data. Then
-the
-array of ints is returned to Qtstalker.<br>
-<br>
-<h3><u>Plugin Header</u></h3>
-<pre>#include "IndicatorPlugin.h"<br><br>class MA : public IndicatorPlugin<br>{<br>  public:<br>    MA ();<br><br>    // This must be a virtual destructor<br>    virtual ~MA ();<br><br>    // This function is called by Qtstalker to create the data that plots to the screen. Re-implement this function<br>    void calculate ();<br><br>    // This optional function is called by Qtstalker to issue alerts for backtesting. Re-implement this function<br>    QMemArray&lt;int&gt; getAlerts ();<br>};<br><br>// Every plugin must have this function placed here at the end of the header file.<br>extern "C"<br>{<br>  Plugin * create ();<br>}<br></pre>
-<br>
-<h3><u>Plugin Implementation</u></h3>
-<pre>#include "MA.h"<br><br>MA::MA ()<br>{<br>  // This is what you will call your plugin.<br>  pluginName = "MA";<br><br>  // All plugins are version 0.2 right now.<br>  version = 0.2;<br><br>  // This is where you define the user and internal settings. Basically all the defaults.<br><br>  // Every plugin must have this setting. Dont change this.<br>  set(tr("Type"), pluginName, Setting::None);<br><br>  // This sets to the color of the MA<br>  set(tr("Color"), "red", Setting::Color);<br><br>  // This sets the type of line the for MA<br>  set(tr("Line Type"), tr("Line"), Setting::LineType);<br><br>  // This sets the text that will label the MA<br>  set(tr("Label"), pluginName, Setting::Text);<br><br>  // This sets the period of the MA<br>  set(tr("Period"), "10", Setting::Integer);<br><br>  // This sets what input data will be used to base the MA on.<br>  set(tr("Input"), tr("Close"), Setting::InputField);<br><br>  // This sets the type of MA to use<br>  set(tr("MA Type"), "SMA", Setting::MAType);<br><br>  // All plugins must have this setting. This setting defines which of the 2 plot areas the indicator will be assigned.<br>  //&nbsp;A true value means that the indicator will use the main plot.<br>  //&nbsp;A false value means indicator will plot on the tabbed area.<br>  set(tr("Plot"), tr("True"), Setting::None);<br><br>  //  All plugins must have this setting. This setting defines if there is an alert function available to use.<br>  // True means there is an alert function available<br>  // False means there is no alert function available<br>  set(tr("Alert"), tr("True"), Setting::None);<br><br>  // This is for a brief description of the plugin function.<br>  about = "Moving Average\n";<br>}<br><br>MA::~MA ()<br>{<br>}<br><br>// All plugins must re-implement this function. This is where we perform the indicator calculations and produce the data to be plotted.<br>void MA::calculate ()<br>{<br>  // Here I am getting the current period setting for the MA<br>  int period = getInt(tr("Period"));<br><br>  // Here we are getting the input data to base our MA on<br>  PlotLine *in = getInput(getData(tr("Input")));<br><br>  // Here we use the IndicatorPlugin::getMA function to get an MA<br>  PlotLine *data = getMA(in, getData(tr("MA Type")), period);<br><br>  // Just cleaning up here<br>  delete in;<br><br>  // Here we are setting the color of the MA<br>  data-&gt;setColor(getData(tr("Color")));<br><br>  // Here we are setting the line type of the MA<br>  data-&gt;setType(getData(tr("Line Type")));<br><br>  // Here we are setting the label of the MA<br>  data-&gt;setLabel(getData(tr("Label")));<br><br>  // Here is where we assign the MA to be plotted.<br>  output.append(data);<br>}<br><br>// If you want your plugin to issue alerts for backtesting, then re-implement this function<br>QMemArray&lt;int&gt; MA::getAlerts ()<br>{<br>  // First we clear any old data<br>  alerts.fill(0, data.count());<br><br>  // Check to see if there is any plots to scan<br>  if (! output.count())<br>    return alerts;<br><br>  // get the MA plot data<br>  PlotLine *line = output.at(0);<br><br>  // get the input data the MA is based on<br>  PlotLine *in = getInput(getData(tr("Input")));<br><br>  // here we are aligning the MA and input data up for our data pointer <br>  int listLoop = data.count() - line-&gt;getSize() + 1;<br><br>  // this is our MA data index pointer<br>  int lineLoop;<br><br>  // this is var is where we keep track of the current status of the alerts, -1,0,1 values. We always start off as out = 0.<br>  int status = 0;<br><br>  for (lineLoop = 1; listLoop &lt; (int) data.count(); lineLoop++, listLoop++)<br>  {<br>    switch (status)<br>    {<br>      // we are currently short, check to see if we need to go long<br>      case -1:<br>        if ((in-&gt;getData(listLoop) &gt; line-&gt;getData(lineLoop)) &amp;&amp; (in-&gt;getData(listLoop - 1) &gt;= line-&gt;getData(lineLoop - 1)))<br>          // we are switching to long<br>	  status = 1;<br>	break;<br><br>      // we are currently long, check to see if need to go short<br>      case 1:<br>        if ((in-&gt;getData(listLoop) &lt; line-&gt;getData(lineLoop)) &amp;&amp; (in-&gt;getData(listLoop - 1) &lt;= line-&gt;getData(lineLoop - 1)))<br>          // we are switching to short<br>	  status = -1;<br>	break;<br><br>      // we are currently out, check to see if we go long or short<br>      default:<br>        if ((in-&gt;getData(listLoop) &gt; line-&gt;getData(lineLoop)) &amp;&amp; (in-&gt;getData(listLoop - 1) &gt;= line-&gt;getData(lineLoop - 1)))<br>	  status = 1;<br>	else<br>	{<br>          if ((in-&gt;getData(listLoop) &lt; line-&gt;getData(lineLoop)) &amp;&amp; (in-&gt;getData(listLoop - 1) &lt;= line-&gt;getData(lineLoop - 1)))<br>	    status = -1;<br>	}<br>	break;<br>    }<br>    <br>    // save the current status to the alert array<br>    alerts[listLoop] = status;<br>  }<br><br>  // clean up<br>  delete in;<br><br>  // we are done<br>  return alerts;<br>}<br><br>// All plugins must have this function placed here at the end.<br>Plugin * create ()<br>{<br>  // Substitute the "MA" with the name of your plugin class<br>  MA *o = new MA;<br>  return ((Plugin *) o);<br>}<br><br></pre>
 <br>
 <a href="willr.html" target="_self"><img src="back.png" alt="Back"
  border="0" height="32" width="32"></a><a href="faq.html" target="_self"><img

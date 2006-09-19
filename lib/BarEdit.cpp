@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  *
- *  Copyright (C) 2001-2005 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2006 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,9 +20,14 @@
  */
 
 #include "BarEdit.h"
+#include "PrefDialog.h"
 #include "../pics/delete.xpm"
 #include "../pics/export.xpm"
 #include "../pics/search.xpm"
+#include "../pics/start.xpm"
+#include "../pics/next.xpm"
+#include "../pics/previous.xpm"
+#include "../pics/end.xpm"
 #include <qlabel.h>
 #include <qvalidator.h>
 #include <qmessagebox.h>
@@ -37,6 +42,7 @@ BarEdit::BarEdit (QWidget *w) : QWidget (w)
   editList.setAutoDelete(TRUE);
   saveLabel = "save";
   deleteLabel = "delete";
+  QString searchLabel = "search";
 
   QVBoxLayout *vbox = new QVBoxLayout(this);
   vbox->setMargin(5);
@@ -46,11 +52,10 @@ BarEdit::BarEdit (QWidget *w) : QWidget (w)
   vbox->addWidget(toolbar);
   vbox->addSpacing(10);
   
-  QString s = tr("Delete Record");
-  toolbar->addButton(deleteLabel, QPixmap(deleteitem), s);
-  connect(toolbar->getButton(deleteLabel), SIGNAL(clicked()), this, SLOT(deleteRecord()));
-  toolbar->setButtonStatus(deleteLabel, FALSE);
-  toolbar->getButton(deleteLabel)->setAccel(CTRL+Key_D);
+  QString s = tr("Search");
+  toolbar->addButton(searchLabel, QPixmap(search), s);
+  connect(toolbar->getButton(searchLabel), SIGNAL(clicked()), this, SLOT(slotDateSearch()));
+  toolbar->getButton(searchLabel)->setAccel(CTRL+Key_R);
 
   s = tr("Save Record");
   toolbar->addButton(saveLabel, QPixmap(exportfile), s);
@@ -58,34 +63,52 @@ BarEdit::BarEdit (QWidget *w) : QWidget (w)
   toolbar->setButtonStatus(saveLabel, FALSE);
   toolbar->getButton(saveLabel)->setAccel(CTRL+Key_S);
 
+  s = tr("Delete Record");
+  toolbar->addButton(deleteLabel, QPixmap(deleteitem), s);
+  connect(toolbar->getButton(deleteLabel), SIGNAL(clicked()), this, SLOT(deleteRecord()));
+  toolbar->setButtonStatus(deleteLabel, FALSE);
+  toolbar->getButton(deleteLabel)->setAccel(CTRL+Key_D);
+
+  // setup the navigator area
+
+//  toolbar->addSeparator();
+
+  QString frLabel = "fr";
+  s = tr("First Record");
+  toolbar->addButton(frLabel, QPixmap(start), s);
+  connect(toolbar->getButton(frLabel), SIGNAL(clicked()), this, SLOT(slotFirstRecord()));
+//  toolbar->getButton(frLabel)->setAccel(CTRL+Key_D);
+
+  QString prLabel = "pr";
+  s = tr("Previous Record");
+  toolbar->addButton(prLabel, QPixmap(previous), s);
+  connect(toolbar->getButton(prLabel), SIGNAL(clicked()), this, SLOT(slotPrevRecord()));
+//  toolbar->getButton(prLabel)->setAccel(CTRL+Key_D);
+
+  QString nrLabel = "nr";
+  s = tr("Next Record");
+  toolbar->addButton(nrLabel, QPixmap(next), s);
+  connect(toolbar->getButton(nrLabel), SIGNAL(clicked()), this, SLOT(slotNextRecord()));
+//  toolbar->getButton(nrLabel)->setAccel(CTRL+Key_D);
+
+  QString lrLabel = "lr";
+  s = tr("Last Record");
+  toolbar->addButton(lrLabel, QPixmap(end), s);
+  connect(toolbar->getButton(lrLabel), SIGNAL(clicked()), this, SLOT(slotLastRecord()));
+//  toolbar->getButton(lrLabel)->setAccel(CTRL+Key_D);
+
   grid = new QGridLayout(vbox);
   grid->setSpacing(2);
-    
-  QLabel *label = new QLabel(tr("Search"), this);
+
+  QLabel *label = new QLabel(tr("Date"), this);
   grid->addWidget(label, 0, 0);
-  
-  QDateTime dt = QDateTime::currentDateTime();
-  dt.setTime(QTime(0, 0, 0));
-  dateSearch = new QDateTimeEdit(dt, this);
-  dateSearch->setAutoAdvance(TRUE);
-  dateSearch->dateEdit()->setOrder(QDateEdit::YMD);
-  grid->addWidget(dateSearch, 0, 1);
-  
-  QPushButton *button = new QPushButton(tr("Search"), this);
-  QObject::connect(button, SIGNAL(clicked()), this, SLOT(slotDateSearch()));
-  QToolTip::add(button, tr("Search"));
-  button->setPixmap(search);
-  grid->addWidget(button, 0, 2);
-  button->setAccel(CTRL+Key_R);
-  
-  label = new QLabel(tr("Date"), this);
-  grid->addWidget(label, 1, 0);
   
   date = new QLineEdit(this);
   date->setReadOnly(TRUE);
-  grid->addWidget(date, 1, 1);
+  grid->addWidget(date, 0, 1);
 
   grid->setColStretch(1, 1);
+  grid->expand(grid->numRows() + 1, grid->numCols());
 }
 
 BarEdit::~BarEdit ()
@@ -130,9 +153,7 @@ void BarEdit::deleteRecord ()
   if (rc == QMessageBox::No)
     return;
 
-  QString s = dateSearch->dateTime().toString("yyyyMMddmmhhss");
-  
-  emit signalDeleteRecord(s);
+  emit signalDeleteRecord();
   
   clearRecordFields();
   
@@ -151,28 +172,34 @@ void BarEdit::saveRecord ()
 
 void BarEdit::slotDateSearch ()
 {
-  if (saveRecordFlag)
-  {  
-    int rc = QMessageBox::warning(this,
-    			          tr("Warning"),
-			          tr("Record has been modified.\nSave changes?"),
-			          QMessageBox::Yes,
-			          QMessageBox::No,
-			          QMessageBox::NoButton);
+  saveRecordDialog();
 
-    if (rc == QMessageBox::Yes)
-      saveRecord();
-    else
-      saveRecordFlag = FALSE;
+  QString pl = QObject::tr("Parms");
+  QString dl = QObject::tr("Date");
+  QString tl = QObject::tr("Time");
+  QDateTime dt = QDateTime::currentDateTime();
+
+  PrefDialog *dialog = new PrefDialog(this);
+  dialog->setCaption(QObject::tr("Date Search"));
+  dialog->createPage (pl);
+  dialog->addDateItem(dl, pl, dt);
+  dialog->addTimeItem(tl, pl, dt);
+  int rc = dialog->exec();
+  if (rc != QDialog::Accepted)
+  {
+    delete dialog;
+    return;
   }
 
-  QString key = dateSearch->dateTime().toString("yyyyMMddmmhhss");
+  dialog->getDate(dl, dt);
+  dialog->getTime(tl, dt);
+  delete dialog;
 
   clearRecordFields();
   
-  emit signalSearch(key);
+  emit signalSearch(dt);
   
-  toolbar->setButtonStatus(deleteLabel, TRUE);
+  toolbar->setButtonStatus(deleteLabel, FALSE);
   toolbar->setButtonStatus(saveLabel, FALSE);
 }
 
@@ -211,13 +238,8 @@ void BarEdit::setField (QString &k, QString &d)
   ignoreSaveRecordFlag = FALSE;
 }
 
-void BarEdit::setDate (QString &d, bool f)
+void BarEdit::setDate (QString &d, bool)
 {
-  if (! f)
-    dateSearch->timeEdit()->setEnabled(FALSE);
-  else
-    dateSearch->timeEdit()->setEnabled(TRUE);
-    
   date->setText(d);
 }
 
@@ -237,6 +259,57 @@ void BarEdit::getDate (QString &r)
 bool BarEdit::getSaveFlag ()
 {
   return saveRecordFlag;
+}
+
+void BarEdit::slotFirstRecord ()
+{
+  saveRecordDialog();
+  emit signalFirstRecord();
+}
+
+void BarEdit::slotLastRecord ()
+{
+  saveRecordDialog();
+  emit signalLastRecord();
+}
+
+void BarEdit::slotNextRecord ()
+{
+  saveRecordDialog();
+  emit signalNextRecord();
+}
+
+void BarEdit::slotPrevRecord ()
+{
+  saveRecordDialog();
+  emit signalPrevRecord();
+}
+
+void BarEdit::saveRecordDialog ()
+{
+  if (! saveRecordFlag)
+    return;
+
+  int rc = QMessageBox::warning(this,
+		                tr("Warning"),
+		                tr("Record has been modified.\nSave changes?"),
+		                QMessageBox::Yes,
+		                QMessageBox::No,
+		                QMessageBox::NoButton);
+
+  if (rc == QMessageBox::Yes)
+    saveRecord();
+  else
+  {
+    saveRecordFlag = FALSE;
+    toolbar->setButtonStatus(saveLabel, FALSE);
+  }
+}
+
+void BarEdit::clearButtons ()
+{
+  toolbar->setButtonStatus(saveLabel, FALSE);
+  toolbar->setButtonStatus(deleteLabel, TRUE);
 }
 
 

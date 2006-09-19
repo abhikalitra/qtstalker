@@ -3,7 +3,7 @@
                           qtstalker.cpp  -  description
                              -------------------
     begin                : Thu Mar  7 22:43:41 EST 2002
-    copyright            : (C) 2001-2005 by Stefan Stratigakos
+    copyright            : (C) 2001-2006 by Stefan Stratigakos
     email                :
  ***************************************************************************/
 
@@ -315,7 +315,7 @@ void QtstalkerApp::slotQuotes ()
     quoteDialog->raise();
   else
   {
-    quoteDialog = new QuoteDialog(0);
+    quoteDialog = new QuoteDialog(this);
     connect(quoteDialog, SIGNAL(chartUpdated()), this, SLOT(slotChartUpdated()));
     connect(quoteDialog, SIGNAL(message(QString)), this, SLOT(slotStatusMessage(QString)));
     connect(quoteDialog, SIGNAL(destroyed()), this, SLOT(slotExitQuoteDialog()));
@@ -585,6 +585,11 @@ void QtstalkerApp::loadIndicator (Indicator *i)
 
     QFileInfo fi(s);
     Plot *plot = plotList[fi.fileName()];
+    if (! plot)
+    {
+      qDebug("QtstalkerApp::loadIndicator:plot %s not found", fi.fileName().latin1());
+      return;
+    }
     plot->addIndicator(i);
     if (recordList)
       plot->setData(recordList);
@@ -766,7 +771,7 @@ void QtstalkerApp::slotPixelspaceChanged (int d)
   slotDrawPlots();
 }
 
-void QtstalkerApp::addIndicatorButton (QString &d)
+void QtstalkerApp::addIndicatorButton (QString d)
 {
   Setting set;
   config.getIndicator(d, set);
@@ -917,6 +922,7 @@ void QtstalkerApp::initIndicatorNav ()
   connect(ip, SIGNAL(signalDeleteIndicator(QString)), this, SLOT(slotDeleteIndicator(QString)));
   connect(menubar, SIGNAL(signalNewIndicator()), ip, SLOT(newIndicator()));
   connect(ip, SIGNAL(signalReloadChart()), this, SLOT(slotChartUpdated()));
+  connect(ip, SIGNAL(signalLocalIndicator(QString)), this, SLOT(addIndicatorButton(QString)));
   navTab->addWidget(ip, 2);
 }
 

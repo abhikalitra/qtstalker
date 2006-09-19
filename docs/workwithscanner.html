@@ -37,7 +37,7 @@ Allows the user to select a list scanners to run in sequence.<br>
 <br>
 <br>
 <h2>Scanner Dialog</h2>
-<img alt="" src="scannerdialog.png" style="width: 362px; height: 398px;"><br>
+<img alt="" src="scannerdialog.png" style="width: 362px; height: 330px;"><br>
 <br>
 The "Scan" button will perform the scan. The "Apply" button will save
 the scan rule.<br>
@@ -47,11 +47,15 @@ symbols in the qtstalker database for scanning. Pressing the symbols
 button will bring up a file selector dialog that allows you to choose a
 specific group of symbols.<br>
 <br>
-Compression: the bar compression to
+Bar Length: the bar length to
 use when scanning symbols.<br>
 <br>
+Bars: The amount of bars to load for each symbol. Make sure you choose
+a number that will accomodate the bars required for the scanner
+formula. ie. a 200 MA will need at least 200 bars.<br>
+<br>
 Scanner Formula: This is where the user must enter a CUS type of
-formula to use for the scanning logic. See the indicator plugin CUS for
+formula to use for the scanning logic. See the CUS indicator plugin for
 details on how to construct a formula.<br>
 <br>
 Once all the parameters are entered, the user presses the Scan button

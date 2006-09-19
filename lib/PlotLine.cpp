@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  *
- *  Copyright (C) 2001-2005 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2006 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -270,6 +270,8 @@ void PlotLine::getLineTypes (QStringList &l)
   l.append(QObject::tr("Line"));
   l.append(QObject::tr("Invisible"));
   l.append(QObject::tr("Horizontal"));
+  l.append(QObject::tr("Candle"));
+  l.append(QObject::tr("Bar"));
 }
 
 void PlotLine::append (QColor &c, double o, double h, double l, double cl, bool cf)

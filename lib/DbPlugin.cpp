@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  *
- *  Copyright (C) 2001-2005 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2006 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -295,6 +295,121 @@ void DbPlugin::getLastBar (Bar &bar)
     
     break;
   }
+  cur->c_close(cur);
+}
+
+void DbPlugin::getPrevBar (QDateTime &startDate, Bar &bar)
+{
+  DBT key;
+  DBT data;
+  DBC *cur;
+  memset(&key, 0, sizeof(DBT));
+  memset(&data, 0, sizeof(DBT));
+
+  db->cursor(db, NULL, &cur, 0);
+
+  QString s = startDate.toString("yyyyMMddhhmmss");
+  key.data = (char *) s.latin1();
+  key.size = s.length() + 1;
+  int ret = cur->c_get(cur, &key, &data, DB_SET_RANGE);
+  if (ret)
+  {
+    char *err = db_strerror(ret);
+    qDebug("%s %s", s.latin1(), err);
+  }
+
+  ret = cur->c_get(cur, &key, &data, DB_PREV);
+  if (ret)
+  {
+    char *err = db_strerror(ret);
+    qDebug("%s %s", s.latin1(), err);
+    return;
+  }
+  
+  if (key.size != 15)
+    return;
+    
+  QString k = (char *) key.data;
+  if (bar.setDate(k))
+    return;
+
+  QString d = (char *) data.data;
+  getBar(k, d, bar);
+  
+  cur->c_close(cur);
+}
+
+void DbPlugin::getNextBar (QDateTime &startDate, Bar &bar)
+{
+  DBT key;
+  DBT data;
+  DBC *cur;
+  memset(&key, 0, sizeof(DBT));
+  memset(&data, 0, sizeof(DBT));
+
+  db->cursor(db, NULL, &cur, 0);
+
+  QString s = startDate.toString("yyyyMMddhhmmss");
+  key.data = (char *) s.latin1();
+  key.size = s.length() + 1;
+  int ret = cur->c_get(cur, &key, &data, DB_SET_RANGE);
+  if (ret)
+  {
+    char *err = db_strerror(ret);
+    qDebug("%s %s", s.latin1(), err);
+  }
+
+  ret = cur->c_get(cur, &key, &data, DB_NEXT);
+  if (ret)
+  {
+    char *err = db_strerror(ret);
+    qDebug("%s %s", s.latin1(), err);
+    return;
+  }
+  
+  if (key.size != 15)
+    return;
+    
+  QString k = (char *) key.data;
+  if (bar.setDate(k))
+    return;
+
+  QString d = (char *) data.data;
+  getBar(k, d, bar);
+  
+  cur->c_close(cur);
+}
+
+void DbPlugin::getSearchBar (QDateTime &startDate, Bar &bar)
+{
+  DBT key;
+  DBT data;
+  DBC *cur;
+  memset(&key, 0, sizeof(DBT));
+  memset(&data, 0, sizeof(DBT));
+
+  db->cursor(db, NULL, &cur, 0);
+
+  QString s = startDate.toString("yyyyMMddhhmmss");
+  key.data = (char *) s.latin1();
+  key.size = s.length() + 1;
+  int ret = cur->c_get(cur, &key, &data, DB_SET_RANGE);
+  if (ret)
+  {
+    char *err = db_strerror(ret);
+    qDebug("%s %s", s.latin1(), err);
+  }
+
+  if (key.size != 15)
+    return;
+    
+  QString k = (char *) key.data;
+  if (bar.setDate(k))
+    return;
+
+  QString d = (char *) data.data;
+  getBar(k, d, bar);
+  
   cur->c_close(cur);
 }
 
@@ -699,14 +814,19 @@ void DbPlugin::createNew (DbPlugin::DbType d)
       setHeaderField(DbPlugin::Type, s);  
       setHeaderField(DbPlugin::Plugin, s);  
       setHeaderField(DbPlugin::Title, sym);
+
+      type = Spread1;
+      dbPrefDialog();
       return;
     }
+
+    return;
   }
 
   if (type == Index1)
   {
     QString pat, sym;
-    Spread dialog;
+    IndexDialog dialog;
     bool rc = dialog.createNew(pat, sym);
     if (rc)
     {
@@ -719,13 +839,18 @@ void DbPlugin::createNew (DbPlugin::DbType d)
         return;
       }
 
-      setHeaderField(DbPlugin::Symbol, symbol);
+      setHeaderField(DbPlugin::Symbol, sym);
       QString s = "Index";
       setHeaderField(DbPlugin::Type, s);  
       setHeaderField(DbPlugin::Plugin, s);  
-      setHeaderField(DbPlugin::Title, symbol);
+      setHeaderField(DbPlugin::Title, sym);
+
+      type = Index1;
+      dbPrefDialog();
       return;
     }
+
+    return;
   }
 
   if (type == CC1)
@@ -750,7 +875,7 @@ void DbPlugin::createNew (DbPlugin::DbType d)
       setHeaderField(DbPlugin::Plugin, s);  
       s = sym + " - Continuous Adjusted";
       setHeaderField(DbPlugin::Title, s);
-      setHeaderField(CCAdjustment, adj);  
+      setHeaderField(CCAdjustment, adj);
     }
   }
 }
