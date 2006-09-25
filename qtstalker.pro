@@ -25,7 +25,6 @@ SUBDIRS += plugins/indicator/SYMBOL
 SUBDIRS += plugins/indicator/SZ
 SUBDIRS += plugins/indicator/TALIB
 SUBDIRS += plugins/indicator/THERM
-SUBDIRS += plugins/indicator/UO
 SUBDIRS += plugins/indicator/UTIL
 SUBDIRS += plugins/indicator/VFI
 SUBDIRS += plugins/indicator/VIDYA

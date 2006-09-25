@@ -43,7 +43,7 @@ void TALIB::setDefaults ()
 {
   getIndicatorList(methodList);
 
-  TA_RetCode rc = TA_Initialize(NULL);
+  TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
     qDebug("TALIB::setDefaults:error on TA_Initialize");
 }
@@ -108,7 +108,7 @@ void TALIB::calculate ()
     switch (inputParms->type)
     {
       case TA_Input_Price:
-        retCode = TA_SetInputParamPricePtr(parmHolder, loop, 0, &open[0], &high[0], &low[0],
+        retCode = TA_SetInputParamPricePtr(parmHolder, loop, &open[0], &high[0], &low[0],
                                            &close[0], &volume[0], &oi[0]);
         if (retCode != TA_SUCCESS)
           qDebug("TALIB::calculate:cannot set input prices");
@@ -680,7 +680,7 @@ PlotLine * TALIB::calculateCustom (QString &p, QPtrList<PlotLine> &d)
         oi[loop2] = (TA_Integer) data->getOI(loop2);
       }
 
-      retCode = TA_SetInputParamPricePtr(parmHolder, loop, 0, &open[0], &high[0], &low[0], &close[0],
+      retCode = TA_SetInputParamPricePtr(parmHolder, loop, &open[0], &high[0], &low[0], &close[0],
                                          &volume[0], &oi[0]);
       if (retCode != TA_SUCCESS)
       {

@@ -1,12 +1,5 @@
 <!DOCTYPE TS><TS>
 <context>
-    <name>BarDialog</name>
-    <message>
-        <source>Paint Bar Script</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>BarEdit</name>
     <message>
         <source>Delete Record</source>
@@ -41,6 +34,22 @@
 Save changes?</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>First Record</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Previous Record</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Next Record</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Last Record</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>BuyArrow</name>
@@ -66,25 +75,6 @@ Save changes?</source>
     </message>
     <message>
         <source>Select point to place BuyArrow...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Edit BuyArrow</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Move BuyArrow</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Delete BuyArrow</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>CC</name>
-    <message>
-        <source>Updating chart...</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -490,18 +480,6 @@ Save changes?</source>
         <source>Select starting point of Cycle...</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <source>&amp;Edit Cycle</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Move Cycle</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Delete Cycle</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>DataWindow</name>
@@ -607,18 +585,6 @@ Save changes?</source>
         <source>Select FiboLine low point...</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <source>&amp;Edit FiboLine</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Move FiboLine</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Delete FiboLine</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>FileButton</name>
@@ -638,10 +604,6 @@ Save changes?</source>
     <name>FormulaEdit</name>
     <message>
         <source>Open Rule</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Save Rule</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -694,26 +656,6 @@ Save changes?</source>
     </message>
     <message>
         <source>Qtstalker: Error</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot missing.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enter name for rule.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>NewRule</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Qtstalker: Warning</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Rule already exists. Do you want to replace it?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -937,25 +879,6 @@ Save changes?</source>
         <source>Select point to place HorizontalLine...</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <source>&amp;Edit HorizontalLine</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Move HorizontalLine</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Delete HorizontalLine</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>Index</name>
-    <message>
-        <source>Updating index...</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>IndexDialog</name>
@@ -1001,26 +924,6 @@ Save changes?</source>
     </message>
     <message>
         <source>Edit Index Item</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Type</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>First Date</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Last Date</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Full Rebuild</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Index</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1139,15 +1042,23 @@ Save changes?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Local</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Are you sure you want to permanently delete this indicator?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Move Indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Add Local Indicator<byte value="x9"/><byte value="x9"/>Ctrl+A</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Group</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add Local Indicator</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1987,47 +1898,7 @@ Save changes?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>CC Prefs</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Details</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Symbol</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Name</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Type</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>First Date</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Last Date</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Maximum Years</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Rebuild</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select futures symbol to create.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Spread Prefs</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2040,10 +1911,6 @@ Save changes?</source>
     </message>
     <message>
         <source>Method</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Could not create ~/.qtstalker/data/Spread directory.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2287,10 +2154,6 @@ Save changes?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Support Line Type</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Label First Support</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2308,10 +2171,6 @@ Save changes?</source>
     </message>
     <message>
         <source>Resistance Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Resistance Line Type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2468,22 +2327,6 @@ Save changes?</source>
     </message>
     <message>
         <source>THERM Indicator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Short Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Medium Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Long Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>UO Indicator</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2647,10 +2490,6 @@ Save changes?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>UO Format</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>UTIL Indicator Selection</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2692,6 +2531,18 @@ Save changes?</source>
     </message>
     <message>
         <source>VOL Format</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Time</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Date Search</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3002,25 +2853,6 @@ Ver CVS 0.33 (working title)
         <source>Select point to place SellArrow...</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <source>&amp;Edit SellArrow</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Move SellArrow</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Delete SellArrow</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>Spread</name>
-    <message>
-        <source>Updating spread...</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>SpreadDialog</name>
@@ -3171,6 +3003,10 @@ eg. 2:1</source>
     </message>
     <message>
         <source>Split complete. Reload chart to view results</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Fundamentals</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3592,18 +3428,6 @@ eg. 2:1</source>
         <source>Select point to place Text...</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <source>&amp;Edit Text</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Move Text</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Delete Text</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>TrendLine</name>
@@ -3665,18 +3489,6 @@ eg. 2:1</source>
     </message>
     <message>
         <source>Select TrendLine ending point...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Edit TrendLine</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Move TrendLine</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Delete TrendLine</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3747,18 +3559,6 @@ eg. 2:1</source>
     </message>
     <message>
         <source>Select point to place VerticalLine...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Edit VerticalLine</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Move VerticalLine</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Delete VerticalLine</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

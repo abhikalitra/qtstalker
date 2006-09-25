@@ -273,6 +273,11 @@
 20060914: Changed the gui to improve record navigation for editing chart records on disk in the
           Edit Chart dialogs.
 
+20060920: Upgraded TALib source to 0.2.
+
+20060920: Removed indicator UO. TALib now handles this.
+
+
 
 
 0.32
