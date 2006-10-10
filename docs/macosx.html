@@ -1,0 +1,45 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML Basic 1.0//EN" "http://www.w3.org/TR/xhtml-basic/xhtml-basic10.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type"
+ content="text/html; charset=iso-8859-1">
+  <title>Qtstalker: Notes for using Mac OS X</title>
+  <meta name="generator"
+ content="amaya 6.1, see http://www.w3.org/Amaya/">
+</head>
+<body xml:lang="en" lang="en">
+<h2><u>Installation</u></h2>
+<p>See instructions for <a href="dev.html">using CVS</a> and 
+general installation <a href="install.html">notes</a>.</p>
+<p>Mac OS X 10.4 Tiger.</p>
+<p>Get Berkeley DB using <a href="http://darwinports.org/">Darwinports.org</a>
+('sudo port install db4')
+or <a href="http://fink.sf.net/">Fink.sf.net</a></p>
+<p>Get Qt for Aqua. Trolltech says must be qt-3.3.5
+so use 'fink --tree=unstable qt3mac'.</p>
+<p>Need to use the latest source for <a href="http://ta-lib.org/">TA-Lib</a> from their Subversion trunk. Create a 
+gzipped tar archive to replace </p>
+<pre>
+cd /svn/ta-lib-trunk; tar cf talib.tar ta-lib/*.* ta-lib/c; gzip talib.tar
+mv -f talib.tar.gz /cvs/qtstalker/plugins/indicator/TALIB/
+</pre>
+<p>Apply Qtstalker patch "[ 1467159 ] TALIB.cpp changes for TA-Lib trunk code"
+to plugins/indicator/TALIB/TALIB.cpp</p>
+<ol>
+  <li>export QTDIR=/sw/lib/qt3mac</li>
+  <li>cd /cvs/qtstalker; cvs -q update -dP</li>
+  <li>edit ./configure to be: <br />
+qmake "DEFINES += QT_NO_COMPAT" "CONFIG += qt" "macx:INCLUDEPATH += /opt/local/include/db4" "macx:LIBS += -L/opt/local/lib" -o Makefile qtstalker.pro</a>
+  <li>run configure and make as normal</li>
+  <li>it will fail, so 'cd plugins/indicator/TALIB/ta-lib/c/make/cmr/freebsd/g++' and do 'make'</li>
+  <li>make again from the top-level, 'cd -; make'</li>
+  <li>sudo make install</li>
+  <li>To start, type 'open /usr/bin/qtstalker'</li>
+</ol>
+<a href="install.html" target="_self"><img src="back.png" alt="Back"
+ border="0" height="32" width="32"></a>
+<a href="quick.html" target="_self"><img src="next.png" alt="Next"
+ border="0" height="32" width="32"></a><a href="toc.html"><img
+ src="home.png" alt="Home" border="0" height="32" width="32"></a>
+</body>
+</html>

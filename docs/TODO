@@ -32,9 +32,9 @@ To Do:
 - save last chart viewed between sessions.
 - change absolute path names in the tester rules to relative so files can be moved
 - add paper trade mode to portfolio tracker (use last chart value instead of last db value)
+- add optimization range testing for the backtester.
 
-- update CHANGELOG with ticket #'s
-- add mising osx doc file from david's patch
+
 - add/remove all new/old files in cvs
 
 
