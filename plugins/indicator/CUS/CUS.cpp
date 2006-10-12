@@ -179,16 +179,6 @@ void CUS::createPlot (QString &d, QDict<PlotLine> &lines)
   l[3] = l[3].stripWhiteSpace();
   pl->setType(l[3]);
 
-  // fix for candle plots to use default color for all candles
-  if (pl->getType() == PlotLine::Candle)
-  {
-    int loop;
-    QColor c;
-    pl->getColor(c);
-    for (loop = 0; loop < pl->getSize(); loop++)
-      pl->setColorBar(loop, c);
-  }
-
   PlotLine *tline = new PlotLine;
   tline->copy(pl);
   output->addLine(tline);

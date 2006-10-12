@@ -563,17 +563,33 @@ void BARS::getIndicatorSettings (Setting &dict)
 PlotLine * BARS::calculateCustom (QString &p, QPtrList<PlotLine> &d)
 {
   // format1 (BARS): TYPE
+  // format2 (BARS): TYPE, COLOR
 
-  if (checkFormat(p, d, 1, 1))
-    return 0;
-
-  if (methodList.findIndex(formatStringList[0]) == -1)
-  {
-    qDebug("BARS::calculateCustom: invalid TYPE parm");
-    return 0;
-  }
+  formatList.clear();
+  QStringList l = QStringList::split(",", p, FALSE);
+  if (l.count() == 1)
+    formatList.append(FormatString);
   else
-    method = formatStringList[0];
+  {
+    if (l.count() == 2)
+    {
+      formatList.append(FormatString);
+      formatList.append(FormatString);
+    }
+    else
+    {
+      qDebug("BARS::calculateCustom: invalid parm count");
+      return 0;
+    }
+  }
+
+  if (checkFormat(p, d, 2, 1))
+    return 0;
+
+  method = formatStringList[0];
+
+  if (formatList.count() == 2)
+    candleColor.setNamedColor(formatStringList[1]);
 
   clearOutput();
   calculate();
@@ -584,24 +600,44 @@ void BARS::formatDialog (QStringList &, QString &rv, QString &rs)
 {
   rs.truncate(0);
   rv.truncate(0);
+
+  bool ok;
+  method = QInputDialog::getItem(QObject::tr("BARS Method Selection"),
+                                 QObject::tr("Select a method:"),
+                                 methodList,
+                                 0,
+                                 TRUE,
+                                 &ok,
+                                 0);
+  if (! ok)
+    return;
+
   QString pl = QObject::tr("Parms");
-  QString vl = QObject::tr("Variable Name");
-  QString btl = QObject::tr("Bar Type");
+  QString vnl = QObject::tr("Variable Name");
+  QString cl = QObject::tr("Color");
   PrefDialog *dialog = new PrefDialog(0);
   dialog->setCaption(QObject::tr("BARS Format"));
   dialog->createPage (pl);
   dialog->setHelpFile(helpFile);
 
   QString s;
-  dialog->addTextItem(vl, pl, s);
-  dialog->addComboItem(btl, pl, methodList, 0);
+  dialog->addTextItem(vnl, pl, s);
+
+  if (! method.compare("Candle"))
+    dialog->addColorItem(cl, pl, candleColor);
 
   int rc = dialog->exec();
-  
+
   if (rc == QDialog::Accepted)
   {
-    dialog->getText(vl, rv);
-    dialog->getCombo(btl, rs);
+    dialog->getText(vnl, rv);
+    rs = method;
+
+    if (! method.compare("Candle"))
+    {
+      dialog->getColor(cl, candleColor);
+      rs.append("," + candleColor.name());
+    }
   }
 
   delete dialog;

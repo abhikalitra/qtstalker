@@ -281,6 +281,10 @@
 
 20061011: Applied patch 1569805 - TALib url changes for docs.
 
+20061012: Added macx directive to TALIB.pro to fix TALib build problem on OSX.
+
+20061012: Added default color parm option to the BARS candle script interface.
+
 
 
 0.32
