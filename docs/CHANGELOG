@@ -277,6 +277,9 @@
 
 20060920: Removed indicator UO. TALib now handles this.
 
+20061011: Fixed bug #1468042 - default color not used in plot.
+
+20061011: Applied patch 1569805 - TALib url changes for docs.
 
 
 

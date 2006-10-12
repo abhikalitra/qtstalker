@@ -33,7 +33,7 @@ To Do:
 - change absolute path names in the tester rules to relative so files can be moved
 - add paper trade mode to portfolio tracker (use last chart value instead of last db value)
 - add optimization range testing for the backtester.
-
+- integrate TALIB into the indicator base class and remove the TALIB plugin.
 
 - add/remove all new/old files in cvs
 
