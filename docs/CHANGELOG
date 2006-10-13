@@ -285,6 +285,10 @@
 
 20061012: Added default color parm option to the BARS candle script interface.
 
+20061012: Applied patches #1576265 - updated candle cus examples and #1575686 - update macosx instructions.
+
+
+
 
 
 0.32
