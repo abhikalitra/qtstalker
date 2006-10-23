@@ -166,7 +166,10 @@ void Plot::setDateFlag (bool d)
   indicatorPlot->setDateFlag(d);
 
   if (d)
+  {
     datePlot->show();
+    datePlot->draw();
+  }
   else
     datePlot->hide();
 }

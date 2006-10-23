@@ -36,6 +36,7 @@ To Do:
 - integrate TALIB into the indicator base class and remove the TALIB plugin.
 
 - add/remove all new/old files in cvs
+- fix negative account volume trades in the tester.
 
 
 Maybe some day:

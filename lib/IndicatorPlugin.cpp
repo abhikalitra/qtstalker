@@ -340,6 +340,10 @@ void IndicatorPlugin::loadIndicatorSettings (QString &d)
 {
   Setting set;
   loadFile(d, set);
+  QString k = "dateFlag";
+  output->setDateFlag(set.getInt(k));
+  k = "logScale";
+  output->setLogScale(set.getInt(k));
   setIndicatorSettings(set);
 }
 
