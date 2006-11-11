@@ -665,7 +665,7 @@ void Yahoo::saveSettings ()
   settings.writeEntry("/Retries", QString::number(retries));
   settings.writeEntry("/Timeout", QString::number(timeout));
   settings.writeEntry("/AllSymbols", QString::number(allSymbols));
-  
+
   settings.endGroup();
 }
 

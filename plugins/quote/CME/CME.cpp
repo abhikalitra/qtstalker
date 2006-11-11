@@ -981,18 +981,18 @@ void CME::parse (Setting &data)
   plug.getHeaderField(DbPlugin::QuotePlugin, s);
   if (! s.length())
     plug.setHeaderField(DbPlugin::QuotePlugin, pluginName);
-  else
-  {
-    if (s.compare(pluginName))
-    {
-      ts = "Symbol";
-      data.getData(ts, ts2);
-      s = ts2 + tr(" - skipping update. Source does not match destination.");
-      emit statusLogMessage(s);
-      plug.close();
-      return;
-    }
-  }
+//  else
+//  {
+//    if (s.compare(pluginName))
+//    {
+//      ts = "Symbol";
+//      data.getData(ts, ts2);
+//      s = ts2 + tr(" - skipping update. Source does not match destination.");
+//      emit statusLogMessage(s);
+//      plug.close();
+//      return;
+//    }
+//  }
       
   plug.getHeaderField(DbPlugin::Symbol, s);
   if (! s.length())

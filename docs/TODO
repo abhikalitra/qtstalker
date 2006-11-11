@@ -34,6 +34,10 @@ To Do:
 - add paper trade mode to portfolio tracker (use last chart value instead of last db value)
 - add optimization range testing for the backtester.
 - integrate TALIB into the indicator base class and remove the TALIB plugin.
+- change quotes plugin gui so that we have to open and close less windows. getting tired of opening dialog,
+  changing settings, closing dialog and pressing download button from main quote dialog. download buttons and status
+  list should be on same dialog. we should be able to do everything from the quote plugin dialog. construct common 
+  quote gui base class in qtstalkerlib.
 
 - add/remove all new/old files in cvs
 - fix negative account volume trades in the tester.
