@@ -289,7 +289,13 @@
 
 20061022: Fixed bug that did not update the date area being toggled on indicators.
 
+20061117: Fixed compilation bug that included ta-lib.h in BarData.h
 
+20061117: Fixed install bug that did not create default Bar indicator properly.
+
+20061117: Fixed Futures chart creation bug that did not include a symbol field in the header.
+
+20061117: Fixed Yahoo bug that truncated the last letter of the fundamentals heading list.
 
 
 0.32

@@ -783,6 +783,10 @@ void DbPlugin::createNew (DbPlugin::DbType d)
 
     fd.getName(s);
     setHeaderField(DbPlugin::Title, s);
+
+    QFileInfo fi(symbol);
+    s = fi.fileName();
+    setHeaderField(DbPlugin::Symbol, s);
       
     fd.getSymbol(s);
     setHeaderField(DbPlugin::FuturesType, s);
