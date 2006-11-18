@@ -713,7 +713,7 @@ void Yahoo::parseFundamental ()
     p = k.find("<", 0, TRUE);
     if (p == -1)
       continue;
-    k.truncate(p - 1);
+    k.truncate(p);
     
     if (k.contains("&sup"))
       k.truncate(k.length() - 6);

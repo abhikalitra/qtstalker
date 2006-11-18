@@ -28,7 +28,6 @@
 #include <qdatetime.h>
 #include "Bar.h"
 #include "PlotLine.h"
-#include "../plugins/indicator/TALIB/ta-lib/c/include/ta_libc.h"
 
 class BarData
 {

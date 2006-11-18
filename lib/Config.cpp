@@ -686,14 +686,17 @@ void Config::setDefaultIndicators ()
   getData(IndicatorPath, basePath);
   basePath.append("/Indicators/");
   createDefaultIndicator(set, plugin, name, tabRow);
-  QString s = basePath + name;
+  QString s = "method";
+  QString s2 = "Bar";
+  set.setData(s,s2);
+  s = basePath + name;
   setIndicator(s, set);
 
   name = "Candles";
   set.clear();
   createDefaultIndicator(set, plugin, name, tabRow);
   s = "method";
-  QString s2 = "Candle";
+  s2 = "Candle";
   set.setData(s,s2);
   s = basePath + name;
   setIndicator(s, set);
