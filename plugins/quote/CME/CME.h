@@ -42,7 +42,7 @@ class CME : public QuotePlugin
     void cancelUpdate ();
     void loadSettings ();
     void saveSettings ();
-    void prefDialog (QWidget *);
+    void buildGui ();
 
   public slots:
     void methodChanged (const QString &);
@@ -55,16 +55,15 @@ class CME : public QuotePlugin
     QStringList urlList;
     int symbolLoop;
     QString file2;
-    QString method;
-    QString currentSymbol;
     QComboBox *symbolCombo;
+    QComboBox *methodCombo;
     QStringList symbolList;
-    QStringList downloadSymbolList;
     bool allSymbols;
     int downloadIndex;
     bool cancelFlag;
     DbPlugin plug;
     Config config;
+    QStringList methodList;
 };
 
 extern "C"

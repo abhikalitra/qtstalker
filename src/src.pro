@@ -7,7 +7,7 @@ QMAKE_CXXFLAGS += -rdynamic -ffast-math
 
 HEADERS += Qtstalker.h
 HEADERS += PortfolioDialog.h
-HEADERS += Quote.h
+#HEADERS += Quote.h
 HEADERS += DataWindow.h
 HEADERS += Tester.h
 HEADERS += ChartPage.h
@@ -29,7 +29,7 @@ HEADERS += TesterChartPage.h
 
 SOURCES += Qtstalker.cpp
 SOURCES += PortfolioDialog.cpp
-SOURCES += Quote.cpp
+#SOURCES += Quote.cpp
 SOURCES += DataWindow.cpp
 SOURCES += Tester.cpp
 SOURCES += ChartPage.cpp

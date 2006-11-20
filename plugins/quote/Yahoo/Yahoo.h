@@ -24,6 +24,13 @@
 #include "Setting.h"
 #include "DbPlugin.h"
 #include "Config.h"
+#include <qlistbox.h>
+#include <qdatetimeedit.h>
+#include <qcheckbox.h>
+#include <qdatetime.h>
+#include <qcombobox.h>
+#include <qspinbox.h>
+#include "FileButton.h"
 
 class Yahoo : public QuotePlugin
 {
@@ -38,7 +45,6 @@ class Yahoo : public QuotePlugin
     void parseQuote ();
     void loadSettings ();
     void saveSettings ();
-    void prefDialog (QWidget *);
     void printErrorList ();
     void cancelUpdate ();
     void parseFundamental ();
@@ -47,26 +53,32 @@ class Yahoo : public QuotePlugin
     void createAutoHistoryUrls (QString &, QString &);
     void createQuoteUrls (QString &);
     void createFundamentalUrls (QString &);
+    void buildGui ();
+    void setMethod (QString);
       
   public slots:
     void startDownload ();
     void fileDone (bool);
     void timeoutError ();
+    void newStock ();
+    void methodChanged (int);
+    void allSymbolsChecked (bool);
 
   private:
     QStringList symbolList;
-    bool adjustment;
-    QDateTime sdate;
-    QDateTime edate;
-    QString method;
     QPtrList<Setting> url;
     Setting *currentUrl;
-    bool allSymbols;
     QString dataPath;
     QStringList fileList;
     QStringList errorList;
     DbPlugin plug;
     Config config;
+    FileButton *list;
+    QCheckBox *adjustment;
+    QDateEdit *sdate;
+    QDateEdit *edate;
+    QComboBox *method;
+    QCheckBox *allSymbols;
 };
 
 extern "C"

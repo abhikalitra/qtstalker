@@ -20,24 +20,12 @@ To Do:
 - add better icons for add/insert in the edit formula dialog widget, functions not obvious
 - create CUS tutorial.
 - add stock margins to the tester
-
-- *******before 0.33 put in routine in config to remove old CUS format files:*************
-	~/.qtstalker/data0/cusrules 
-  	~/.qtstalker/data0/scanner 
-	~/.qtstalker/data0/test
-	~/.qtstalker/data0/indicator (only remove CUS types and leave the rest)
-        add some default indicators to replace the bar/candle/line chart styles
-
 - add ability to not draw sections of plotlines. (vectors)
 - save last chart viewed between sessions.
 - change absolute path names in the tester rules to relative so files can be moved
 - add paper trade mode to portfolio tracker (use last chart value instead of last db value)
 - add optimization range testing for the backtester.
 - integrate TALIB into the indicator base class and remove the TALIB plugin.
-- change quotes plugin gui so that we have to open and close less windows. getting tired of opening dialog,
-  changing settings, closing dialog and pressing download button from main quote dialog. download buttons and status
-  list should be on same dialog. we should be able to do everything from the quote plugin dialog. construct common 
-  quote gui base class in qtstalkerlib.
 - fix negative account volume trades in the tester.
 
 

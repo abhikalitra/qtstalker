@@ -21,7 +21,6 @@
 
 #include "QtstalkerFormat.h"
 #include "DbPlugin.h"
-#include "PrefDialog.h"
 #include "Config.h"
 #include <qfile.h>
 #include <qtextstream.h>
@@ -29,29 +28,52 @@
 #include <qstring.h>
 #include <qdir.h>
 #include <qsettings.h>
-
+#include <qlabel.h>
 
 QtstalkerFormat::QtstalkerFormat ()
 {
   pluginName = "QtstalkerFormat";
   helpFile = "qtstalker.html";
-  deleteFlag = FALSE;
   cancelFlag = FALSE;
-  
+
+  buildGui();  
   loadSettings();
+  resize(400, 400);
 }
 
 QtstalkerFormat::~QtstalkerFormat ()
 {
+  saveSettings();
 }
 
 void QtstalkerFormat::update ()
 {
-  QTimer::singleShot(250, this, SLOT(parse()));
+  parse();
+}
+
+void QtstalkerFormat::buildGui ()
+{
+  setCaption(tr("QtstalkerFormat Prefs"));
+
+  QLabel *label = new QLabel(tr("File Input"), baseWidget);
+  grid->addWidget(label, 0, 0);
+
+  QStringList l;
+  button = new FileButton(baseWidget, l, lastPath);
+  grid->addWidget(button, 0, 1);
+  
+  label = new QLabel(tr("Delete Chart"), baseWidget);
+  grid->addWidget(label, 1, 0);
+
+  check = new QCheckBox(baseWidget);
+  grid->addWidget(check, 1, 1);
 }
 
 void QtstalkerFormat::parse ()
 {
+  QStringList list;
+  button->getFile(list);
+
   int loop;
   for (loop = 0; loop < (int) list.count(); loop++)
   {
@@ -84,19 +106,21 @@ void QtstalkerFormat::parse ()
     if (! path.length())
     {
       f.close();
-      emit statusLogMessage("ChartPath field not found. Skipping file.");
+      QString ss(tr("ChartPath field not found. Skipping file"));
+      printStatusLogMessage(ss);
       continue;
     }
       
     if (createDirectories(path))
     {
       f.close();
-      emit statusLogMessage("CreateDirectories failed. Skipping file.");
+      QString ss(tr("CreateDirectories failed. Skipping file"));
+      printStatusLogMessage(ss);
       continue;
     }
     
     // delete the db if it exists
-    if (deleteFlag)
+    if (check->isChecked())
     {
       QDir dir;
       dir.remove(path, TRUE);
@@ -105,7 +129,8 @@ void QtstalkerFormat::parse ()
     DbPlugin db;
     if (db.openChart(path))
     {
-      emit statusLogMessage("Could not open db. Skipping file.");
+      QString ss(tr("Could not open db. Skipping file"));
+      printStatusLogMessage(ss);
       db.close();
       f.close();
       continue;
@@ -116,7 +141,7 @@ void QtstalkerFormat::parse ()
     
     QString s = tr("Updating ");
     s.append(symbol);
-    emit statusLogMessage(s);
+    printStatusLogMessage(s);
     
     QStringList co;
     
@@ -213,14 +238,14 @@ void QtstalkerFormat::parse ()
     if (cancelFlag)
     {
       cancelFlag = FALSE;
-      emit done();
-      emit statusLogMessage("Canceled");
+      downloadComplete();
+      printStatusLogMessage(stringCanceled);
       return;
     }
   }
 
-  emit done();
-  emit statusLogMessage(tr("Done"));
+  downloadComplete();
+  printStatusLogMessage(stringDone);
 }
 
 bool QtstalkerFormat::createDirectories (QString &d)
@@ -250,40 +275,6 @@ bool QtstalkerFormat::createDirectories (QString &d)
   return FALSE;
 }
 
-void QtstalkerFormat::prefDialog (QWidget *w)
-{
-  PrefDialog *dialog = new PrefDialog(w);
-  dialog->setCaption(tr("QtstalkerFormat Prefs"));
-  QString s = tr("Details");
-  dialog->createPage (s);
-  dialog->setHelpFile(helpFile);
-  
-  QString s2 = tr("File Input");
-  dialog->addFileItem(s2, s, list, lastPath);
-  
-  QString s3 = tr("Delete Chart");
-  dialog->addCheckItem(s3, s, deleteFlag);
-
-  int rc = dialog->exec();
-  
-  if (rc == QDialog::Accepted)
-  {
-    dialog->getFile(s2, list);
-    deleteFlag = dialog->getCheck(s3);
-
-    saveFlag = TRUE;
-
-    if (list.count())
-    {
-      QFileInfo fi(list[0]);
-      lastPath = fi.dirPath(TRUE);
-      saveSettings();
-    }
-  }
-  
-  delete dialog;
-}
-
 void QtstalkerFormat::loadSettings ()
 {
   QSettings settings;
@@ -295,21 +286,29 @@ void QtstalkerFormat::loadSettings ()
   lastPath = settings.readEntry("/lastPath", s + "/export");
 
   s = settings.readEntry("/deleteFlag", "1");
-  deleteFlag = s.toInt();
+  if (s.toInt())
+    check->setChecked(TRUE);
+  else
+    check->setChecked(FALSE);
 
   settings.endGroup();
 }
 
 void QtstalkerFormat::saveSettings ()
 {
-  if (! saveFlag)
-    return;
-
   QSettings settings;
   settings.beginGroup("/Qtstalker/QtstalkerFormat plugin");
 
+  QStringList list;
+  button->getFile(list);
+  if (list.count())
+  {
+    QFileInfo fi(list[0]);
+    lastPath = fi.dirPath(TRUE);
+  }
   settings.writeEntry("/lastPath", lastPath);
-  settings.writeEntry("/deleteFlag", QString::number(deleteFlag));
+
+  settings.writeEntry("/deleteFlag", QString::number(check->isChecked()));
 
   settings.endGroup();
 }

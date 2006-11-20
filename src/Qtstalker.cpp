@@ -43,7 +43,6 @@
 QtstalkerApp::QtstalkerApp()
 {
   recordList = 0;
-  quoteDialog = 0;
   status = None;
   plotList.setAutoDelete(FALSE);
   tabList.setAutoDelete(TRUE);
@@ -278,16 +277,13 @@ void QtstalkerApp::slotQuit()
   // delete any BarData
   if (recordList)
     delete recordList;
-    
-  if (quoteDialog)
-    delete quoteDialog;
 }
 
 void QtstalkerApp::slotAbout()
 {
   // display the about dialog
   QMessageBox *dialog = new QMessageBox(tr("About Qtstalker"),
-  					tr("Qtstalker\nVer CVS 0.33 (working title)\n(C) 2001-2006 by Stefan Stratigakos"),
+  					tr("Qtstalker\nVer CVS 0.34 (working title)\n(C) 2001-2006 by Stefan Stratigakos"),
 					QMessageBox::NoIcon,
 					QMessageBox::Ok,
 					QMessageBox::NoButton,
@@ -310,17 +306,21 @@ void QtstalkerApp::slotOpenChart (QString selection)
 
 void QtstalkerApp::slotQuotes ()
 {
-  // display the quotes dialog
-  if (quoteDialog)
-    quoteDialog->raise();
-  else
-  {
-    quoteDialog = new QuoteDialog(this);
-    connect(quoteDialog, SIGNAL(chartUpdated()), this, SLOT(slotChartUpdated()));
-    connect(quoteDialog, SIGNAL(message(QString)), this, SLOT(slotStatusMessage(QString)));
-    connect(quoteDialog, SIGNAL(destroyed()), this, SLOT(slotExitQuoteDialog()));
-    quoteDialog->show();
-  }
+  QStringList l;
+  config.getPluginList(Config::QuotePluginPath, l);
+
+  bool ok;
+  QString s = QInputDialog::getItem (tr("Quote Dialog"), tr("Select Quote Type"), l, 0, FALSE, &ok, this, 0);
+  if (! ok)
+    return;
+
+  QuotePlugin *plug = config.getQuotePlugin(s);
+  if (! plug)
+    return;
+
+  connect(plug, SIGNAL(chartUpdated()), this, SLOT(slotChartUpdated()));
+
+  plug->show();
 }
 
 void QtstalkerApp::slotOptions ()
@@ -1019,11 +1019,6 @@ void QtstalkerApp::slotHelp ()
   QString s = "toc.html";
   HelpWindow *hw = new HelpWindow(this, s);
   hw->show();
-}
-
-void QtstalkerApp::slotExitQuoteDialog ()
-{
-  quoteDialog = 0;
 }
 
 void QtstalkerApp::slotProgMessage (int p, int t)

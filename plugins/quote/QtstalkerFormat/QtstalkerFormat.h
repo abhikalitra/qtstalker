@@ -22,6 +22,8 @@
 #include "QuotePlugin.h"
 #include <qstringlist.h>
 #include <qwidget.h>
+#include "FileButton.h"
+#include <qcheckbox.h>
 
 class QtstalkerFormat : public QuotePlugin
 {
@@ -36,15 +38,16 @@ class QtstalkerFormat : public QuotePlugin
     void loadSettings ();
     void saveSettings ();
     bool createDirectories (QString &);
+    void buildGui ();
 
   public slots:
     void parse ();
     
   private:
-    QStringList list;
     QString lastPath;
     bool cancelFlag;
-    bool deleteFlag;
+    FileButton *button;
+    QCheckBox *check;
 };
 
 extern "C"

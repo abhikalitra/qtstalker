@@ -37,7 +37,6 @@
 #include "Setting.h"
 #include "ChartPage.h"
 #include "NavigatorTab.h"
-#include "Quote.h"
 #include "IndicatorPage.h"
 #include "ScannerPage.h"
 #include "PortfolioPage.h"
@@ -111,7 +110,6 @@ class QtstalkerApp : public QMainWindow
     void slotCrosshairsStatus (bool);
     void slotNavigatorPosition (int);
     void slotHelp ();
-    void slotExitQuoteDialog ();
     void slotDisableIndicator (QString);
     void slotEnableIndicator (QString);
     void slotProgMessage (int, int);
@@ -139,7 +137,6 @@ class QtstalkerApp : public QMainWindow
     QString dbPlugin;
     BarData *recordList;
     QMultiLineEdit *infoLabel;
-    QuoteDialog *quoteDialog;
     IndicatorPage *ip;
     PortfolioPage *pp;
     ScannerPage *sp;

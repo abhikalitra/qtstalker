@@ -20,7 +20,6 @@
  */
 
 #include "CME.h"
-#include "PrefDialog.h"
 #include "Bar.h"
 #include <qfile.h>
 #include <qtextstream.h>
@@ -30,7 +29,7 @@
 #include <stdlib.h>
 #include <qsettings.h>
 #include <qfileinfo.h>
-
+#include <qlabel.h>
 
 
 CME::CME ()
@@ -49,13 +48,17 @@ CME::CME ()
   config.getData(Config::Home, file);
   file.append("/download");
   
-  loadSettings();
   qInitNetworkProtocols();
+  buildGui();
+  loadSettings();
+
+  resize(400, 400);
 }
 
 CME::~CME ()
 {
   plug.close();
+  saveSettings();
 }
 
 void CME::update ()
@@ -65,7 +68,7 @@ void CME::update ()
   symbolLoop = 0;
   errorLoop = 0;
 
-  if (! method.compare("Today"))
+  if (! methodCombo->currentText().compare("Today"))
   {
     urlList.append("ftp://ftp.cme.com//pub/settle/stlags");
     urlList.append("ftp://ftp.cme.com//pub/settle/stlcur");
@@ -103,7 +106,7 @@ void CME::update ()
     file = s;
 
     s = "ftp://ftp.cme.com//pub/hist_eod/";
-    s.append(downloadSymbolList[downloadIndex].lower());
+    s.append(symbolCombo->currentText().lower());
     s.append("ytd.zip");
     urlList.append(s);
   }
@@ -115,7 +118,7 @@ void CME::startDownload ()
 {
   QString s = tr("Downloading ");
   s.append(urlList[symbolLoop]);
-  emit statusLogMessage(s);
+  printStatusLogMessage(s);
 
   copyFile(urlList[symbolLoop], file);
 }
@@ -125,13 +128,13 @@ void CME::fileDone (QString d)
   if (d.length())
   {
     qDebug(d.latin1());
-    emit statusLogMessage(d);
-    emit statusLogMessage(tr("Done"));
-    emit done();
+    printStatusLogMessage(d);
+    printStatusLogMessage(stringDone);
+    downloadComplete();
     return;
   }
 
-  if (! method.compare("Today"))
+  if (! methodCombo->currentText().compare("Today"))
   {
     parseToday();
     
@@ -139,8 +142,8 @@ void CME::fileDone (QString d)
     
     if (symbolLoop >= (int) urlList.count())
     {
-      emit statusLogMessage(tr("Done"));
-      emit done();
+      printStatusLogMessage(stringDone);
+      downloadComplete();
       return;
     }
 
@@ -149,27 +152,28 @@ void CME::fileDone (QString d)
   else
   {
     parseHistory();
-    emit statusLogMessage(tr("Done"));
-    emit done();
+    printStatusLogMessage(stringDone);
+    downloadComplete();
   }
 }
 
 void CME::timeoutError ()
 {
   errorLoop++;
-  if (errorLoop == retries)
+  if (errorLoop == retrySpin->value())
   {
-    emit statusLogMessage(tr("Timeout: retry limit skipping file"));
+    QString s(tr("Timeout: retry limit skipping file"));
+    printStatusLogMessage(s);
   
     errorLoop = 0;
     
-    if (! method.compare("Today"))
+    if (! methodCombo->currentText().compare("Today"))
     {
       symbolLoop++;
       if (symbolLoop >= (int) urlList.count())
       {
-        emit statusLogMessage(tr("Done"));
-        emit done();
+        printStatusLogMessage(stringDone);
+        downloadComplete();
         return;
       }
 
@@ -179,7 +183,7 @@ void CME::timeoutError ()
   else
   {
     QString s = tr("Timeout: retry ") + QString::number(errorLoop + 1);
-    emit statusLogMessage(s);
+    printStatusLogMessage(s);
     startDownload();
   }
 }
@@ -588,7 +592,7 @@ void CME::parseHistory ()
 {
   QString s2 = file2;
   s2.append("/");
-  s2.append(downloadSymbolList[downloadIndex].lower());
+  s2.append(symbolCombo->currentText().lower());
   s2.append("ytd.eod");
   QDir dir(s2);
   dir.remove(s2);
@@ -603,7 +607,8 @@ void CME::parseHistory ()
   QFile f(s2);
   if (! f.open(IO_ReadOnly))
   {
-    emit statusLogMessage(tr("could not open parse history file"));
+    QString s(tr("could not open parse history file"));
+    printStatusLogMessage(s);
     return;
   }
   QTextStream stream(&f);
@@ -897,7 +902,8 @@ void CME::parse (Setting &data)
   data.getData(ts, s);
   if (bar.setDate(s))
   {
-    emit statusLogMessage("Bad date " + s);
+    QString ss = "Bad date " + s;
+    printStatusLogMessage(ss);
     return;
   }
 
@@ -959,7 +965,8 @@ void CME::parse (Setting &data)
   createDirectory(s, path);
   if (! path.length())
   {
-    emit statusLogMessage(tr("Unable to create futures directory"));
+    QString ss(tr("Unable to create futures directory"));
+    printStatusLogMessage(ss);
     return;
   }
 
@@ -967,13 +974,14 @@ void CME::parse (Setting &data)
   QString ts2;
   data.getData(ts, ts2);
   s = tr("Updating ") + ts2;
-  emit statusLogMessage(s);
+  printStatusLogMessage(s);
 
   data.getData(ts, ts2);
   s = path + "/" + ts2;
   if (plug.openChart(s))
   {
-    emit statusLogMessage(tr("Could not open db."));
+    QString ss(tr("Could not open db."));
+    printStatusLogMessage(ss);
     return;
   }
 
@@ -1011,57 +1019,33 @@ void CME::cancelUpdate ()
     op->stop();
   }
   
-  emit done();
-  emit statusLogMessage(tr("Canceled"));
+  downloadComplete();
+  printStatusLogMessage(stringCanceled);
 }
 
-void CME::prefDialog (QWidget *w)
+void CME::buildGui ()
 {
-  PrefDialog *dialog = new PrefDialog(w);
-  dialog->setCaption(tr("CME Prefs"));
+  setCaption(tr("CME Prefs"));
   
-  QString s = tr("Details");
-  dialog->createPage (s);
-  dialog->setHelpFile(helpFile);
+  methodList.append("Today");
+  methodList.append("History");
 
-  QStringList l2;
-  l2.append("Today");
-  l2.append("History");
-  QString s2 = tr("Method");
-  dialog->addComboItem(s2, s, l2, method);
-  connect(dialog->getComboWidget(s2),
-          SIGNAL(activated(const QString &)),
-	  this,
-	  SLOT(methodChanged(const QString &)));
+  QLabel *label = new QLabel(tr("Method"), baseWidget);
+  grid->addWidget(label, 0, 0);
   
-  s2 = tr("Symbol");
-  dialog->addComboItem(s2, s, symbolList, currentSymbol);
-  symbolCombo = dialog->getComboWidget(s2);
-  methodChanged(method);
+  methodCombo = new QComboBox(baseWidget);
+  methodCombo->insertStringList(methodList, -1);
+  QObject::connect(methodCombo, SIGNAL(activated(const QString &)), this, SLOT(methodChanged(const QString &)));
+  grid->addWidget(methodCombo, 0, 1);
 
-  s2 = tr("Retry");
-  dialog->addIntItem(s2, s, retries, 0, 99);  
-  s2 = tr("Timeout");
-  dialog->addIntItem(s2, s, timeout, 0, 99);  
-  
-  int rc = dialog->exec();
-  
-  if (rc == QDialog::Accepted)
-  {
-    s = tr("Symbol");
-    dialog->getCombo(s, downloadSymbolList[0]);
-    s = tr("Symbol");
-    dialog->getCombo(s, currentSymbol);
-    s = tr("Timeout");
-    timeout = dialog->getInt(s);
-    s = tr("Retry");
-    retries = dialog->getInt(s);
-    
-    saveFlag = TRUE;
-    saveSettings();
-  }
-  
-  delete dialog;
+  label = new QLabel(tr("Symbol"), baseWidget);
+  grid->addWidget(label, 1, 0);
+
+  symbolCombo = new QComboBox(baseWidget);
+  symbolCombo->insertStringList(symbolList, -1);
+  grid->addWidget(symbolCombo, 1, 1);
+
+  methodChanged(methodCombo->currentText());
 }
 
 void CME::loadSettings ()
@@ -1069,39 +1053,37 @@ void CME::loadSettings ()
   QSettings settings;
   settings.beginGroup("/Qtstalker/CME plugin");
 
-  method = settings.readEntry("/Method", "Today");
-  currentSymbol = settings.readEntry("/Symbol", "AD");
+  QString s = settings.readEntry("/Method", "Today");
+  methodCombo->setCurrentItem(methodList.findIndex(s));
+
+  s = settings.readEntry("/Symbol", "AD");
+  symbolCombo->setCurrentItem(symbolList.findIndex(s));
   
-  QString s = settings.readEntry("/Retry", "3");
-  retries = s.toInt();
+  s = settings.readEntry("/Retry", "3");
+  retrySpin->setValue(s.toInt());
   
   s = settings.readEntry("/Timeout", "15");
-  timeout = s.toInt();
+  timeoutSpin->setValue(s.toInt());
   
   settings.endGroup();
 }
 
 void CME::saveSettings ()
 {
-  if (! saveFlag)
-    return;
-
   QSettings settings;
   settings.beginGroup("/Qtstalker/CME plugin");
   
-  settings.writeEntry("/Method", method);
-  settings.writeEntry("/Symbol", currentSymbol);
-  settings.writeEntry("/Retry", QString::number(retries));
-  settings.writeEntry("/Timeout", QString::number(timeout));
+  settings.writeEntry("/Method", methodCombo->currentText());
+  settings.writeEntry("/Symbol", symbolCombo->currentText());
+  settings.writeEntry("/Retry", retrySpin->text());
+  settings.writeEntry("/Timeout", timeoutSpin->text());
   
   settings.endGroup();
 }
 
 void CME::methodChanged (const QString & d)
 {
-  method = d;
-  
-  if (! method.compare("Today"))
+  if (! d.compare("Today"))
     symbolCombo->setEnabled(FALSE);
   else
     symbolCombo->setEnabled(TRUE);

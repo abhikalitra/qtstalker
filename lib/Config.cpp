@@ -36,7 +36,7 @@ Config::Config ()
   libs.setAutoDelete(TRUE);
   indicatorPlugins.setAutoDelete(TRUE);
   quotePlugins.setAutoDelete(TRUE);
-  version = "0.33";  // only this version of plugin is allowed to be loaded
+  version = "0.34";  // only this version of plugin is allowed to be loaded
 }
 
 Config::~Config ()

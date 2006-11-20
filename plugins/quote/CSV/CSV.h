@@ -27,6 +27,16 @@
 #include <qdatetime.h>
 #include <qtimer.h>
 
+#include <qtabdialog.h>
+#include <qlineedit.h>
+#include <qcombobox.h>
+#include <qcheckbox.h>
+#include <qdatetimeedit.h>
+#include <qstringlist.h>
+#include <qspinbox.h>
+#include "FileButton.h"
+#include "Toolbar.h"
+
 class CSV : public QuotePlugin
 {
   Q_OBJECT
@@ -41,20 +51,24 @@ class CSV : public QuotePlugin
     bool openDb (QString &, QString &, QString &, bool);
     void loadSettings ();
     void saveSettings ();
-    void prefDialog (QWidget *);
     void getRule (Setting &);
     void cancelUpdate ();
+    void createMainPage ();
+    void updateRules ();
 
   public slots:
     void parse ();
+    void dateRangeChanged (bool);
+    void newRule ();
+    void editRule ();
+    void deleteRule ();
+    void help ();
 
   private:
     Config config;
     QString delim;
     FuturesData fd;
     bool dateFlag;
-    QDateTime sdate;
-    QDateTime edate;
     DbPlugin db;
     QStringList list;
     QString symbolOveride;
@@ -66,6 +80,14 @@ class CSV : public QuotePlugin
     int reloadInterval;
     QTimer *reloadTimer;
     QString ruleDir;
+
+    FileButton *file;
+    QLineEdit *symbol;
+    QComboBox *ruleCombo;
+    QDateEdit *sdate;
+    QDateEdit *edate;
+    QCheckBox *dateRange;
+    QSpinBox *minutes;
 };
 
 extern "C"

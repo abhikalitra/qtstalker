@@ -5,10 +5,8 @@ pluginName = Yahoo
 } 
 
 HEADERS += Yahoo.h
-HEADERS += YahooDialog.h
 
 SOURCES += Yahoo.cpp
-SOURCES += YahooDialog.cpp
 
 target.path = /usr/lib/qtstalker/quote
 INSTALLS += target

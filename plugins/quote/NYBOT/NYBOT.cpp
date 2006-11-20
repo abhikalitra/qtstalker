@@ -20,7 +20,6 @@
  */
 
 #include "NYBOT.h"
-#include "PrefDialog.h"
 #include "Setting.h"
 #include "Bar.h"
 #include <qfile.h>
@@ -32,6 +31,7 @@
 #include <qsettings.h>
 #include <qfileinfo.h>
 #include <qnetwork.h>
+#include <qlabel.h>
 
 
 NYBOT::NYBOT ()
@@ -39,18 +39,43 @@ NYBOT::NYBOT ()
   pluginName = "NYBOT";
   helpFile = "nybot.html";
   cancelFlag = FALSE;
-  date = QDateTime::currentDateTime();
 
   connect(this, SIGNAL(signalGetFileDone(bool)), this, SLOT(fileDone(bool)));
   connect(this, SIGNAL(signalTimeout()), this, SLOT(timeoutError()));
 
+  buildGui();
   loadSettings();
   qInitNetworkProtocols();
+  resize(400, 400);
 }
 
 NYBOT::~NYBOT ()
 {
   plug.close();
+  saveSettings();
+}
+
+void NYBOT::buildGui ()
+{
+  setCaption(tr("NYBOT Quotes"));
+  
+  QLabel *label = new QLabel(tr("Date"), baseWidget);
+  grid->addWidget(label, 0, 0);
+
+  date = new QDateEdit(QDate::currentDate(), baseWidget);
+  date->setAutoAdvance(TRUE);
+  date->setOrder(QDateEdit::YMD);
+  grid->addWidget(date, 0, 1);
+  
+  QDate dt = QDate::currentDate();
+  if (dt.dayOfWeek() == 6)
+    dt = dt.addDays(-1);
+  else
+  {
+    if (dt.dayOfWeek() == 7)
+      dt = dt.addDays(-2);
+  }
+  date->setDate(dt);
 }
 
 void NYBOT::update ()
@@ -61,9 +86,11 @@ void NYBOT::update ()
   config.getData(Config::Home, file);
   file.append("/nybotDownload");
 
+  // http://www.nybot.com/reports/dmrs/download/downloadAllSelection.asp?commodityType=future
   // http://www.nybot.com/reports/dmrs/files/2005,05,13_ALL_futures.csv
   url = "http://www.nybot.com/reports/dmrs/files/";
-  url.append(date.date().toString("yyyy,MM,dd"));
+  QDate dt = date->date();
+  url.append(dt.toString("yyyy,MM,dd"));
   url.append("_ALL_futures.csv");
   getFile(url);
 }
@@ -72,16 +99,18 @@ void NYBOT::fileDone (bool d)
 {
   if (d)
   {
-    emit statusLogMessage("Network error.");
-    emit done();
+    QString ss(tr("Network error"));
+    printStatusLogMessage(ss);
+    downloadComplete();
     return;
   }
 
   QFile f(file);
   if (! f.open(IO_WriteOnly))
   {
-    emit statusLogMessage("Cant write to file.");
-    emit done();
+    QString ss(tr("Cant write to file"));
+    printStatusLogMessage(ss);
+    downloadComplete();
     return;
   }
   QTextStream stream(&f);
@@ -95,16 +124,17 @@ void NYBOT::fileDone (bool d)
 void NYBOT::timeoutError ()
 {
   errorLoop++;
-  if (errorLoop == retries)
+  if (errorLoop == retrySpin->value())
   {
-    emit statusLogMessage(tr("Timeout: retry limit"));
-    emit done();
+    QString ss(tr("Timeout: retry limit"));
+    printStatusLogMessage(ss);
+    downloadComplete();
     return;
   }
   else
   {
     QString s = tr("Timeout: retry ") + QString::number(errorLoop + 1);
-    emit statusLogMessage(s);
+    printStatusLogMessage(s);
     getFile(url);
   }
 }
@@ -164,7 +194,8 @@ void NYBOT::parse ()
     Bar bar;
     if (bar.setDate(date))
     {
-      emit statusLogMessage("Bad date " + date);
+      QString ss = tr("Bad date") + " " + date;
+      printStatusLogMessage(ss);
       continue;
     }
 
@@ -300,17 +331,19 @@ void NYBOT::parse ()
     createDirectory(s, path);
     if (! path.length())
     {
-      emit statusLogMessage("Unable to create futures directory");
+      QString ss(tr("Unable to create futures directory"));
+      printStatusLogMessage(ss);
       return;
     }
 	
     s = tr("Updating ") + symbol;
-    emit statusLogMessage(s);
+    printStatusLogMessage(s);
 
     s = path + "/" + symbol;
     if (plug.openChart(s))
     {
-      emit statusLogMessage("Could not open db.");
+      QString ss(tr("Could not open db"));
+      printStatusLogMessage(ss);
       return;
     }
 
@@ -318,16 +351,16 @@ void NYBOT::parse ()
     plug.getHeaderField(DbPlugin::QuotePlugin, s);
     if (! s.length())
       plug.setHeaderField(DbPlugin::QuotePlugin, pluginName);
-    else
-    {
-      if (s.compare(pluginName))
-      {
-        s = symbol + " - skipping update. Source does not match destination.";
-        emit statusLogMessage(s);
-        plug.close();
-        return;
-      }
-    }
+//    else
+//    {
+//      if (s.compare(pluginName))
+//      {
+//        s = symbol + " - skipping update. Source does not match destination.";
+//        printStatusLogMessage(s);
+//        plug.close();
+//        return;
+//      }
+//    }
 
     plug.getHeaderField(DbPlugin::Symbol, s);
     if (! s.length())
@@ -341,44 +374,18 @@ void NYBOT::parse ()
 
   f.close();
 
-  emit done();
+  downloadComplete();
   if (cancelFlag)
   {
     cancelFlag = FALSE;
-    emit statusLogMessage(tr("Update cancelled."));
+    QString ss(tr("Update cancelled"));
+    printStatusLogMessage(ss);
   }
   else
-    emit statusLogMessage(tr("Done"));
-}
-
-void NYBOT::prefDialog (QWidget *w)
-{
-  QString ds = tr("Date");
-  QString ts = tr("Timeout");
-  QString rs = tr("Retries");
-
-  PrefDialog *dialog = new PrefDialog(w);
-  dialog->setCaption(tr("NYBOT Prefs"));
-  QString pl = "Details";
-  dialog->createPage (pl);
-
-  dialog->addDateItem(ds, pl, date);
-  dialog->addIntItem(rs, pl, retries, 0, 99);  
-  dialog->addIntItem(ts, pl, timeout, 0, 99);  
-  
-  int rc = dialog->exec();
-  
-  if (rc == QDialog::Accepted)
   {
-    dialog->getDate(ds, date);
-    timeout = dialog->getInt(ts);
-    retries = dialog->getInt(rs);
-    
-    saveFlag = TRUE;
-    saveSettings();
+    QString ss(tr("Done"));
+    printStatusLogMessage(ss);
   }
-  
-  delete dialog;
 }
 
 void NYBOT::cancelUpdate ()
@@ -392,23 +399,20 @@ void NYBOT::loadSettings ()
   settings.beginGroup("/Qtstalker/NYBOT plugin");
   
   QString s = settings.readEntry("/Retry", "3");
-  retries = s.toInt();
+  retrySpin->setValue(s.toInt());
   
   s = settings.readEntry("/Timeout", "15");
-  timeout = s.toInt();
+  timeoutSpin->setValue(s.toInt());
   
   settings.endGroup();
 }
 
 void NYBOT::saveSettings ()
 {
-  if (! saveFlag)
-    return;
-
   QSettings settings;
   settings.beginGroup("/Qtstalker/NYBOT plugin");
-  settings.writeEntry("/Retry", QString::number(retries));
-  settings.writeEntry("/Timeout", QString::number(timeout));
+  settings.writeEntry("/Retry", retrySpin->text());
+  settings.writeEntry("/Timeout", timeoutSpin->text());
   settings.endGroup();
 }
 

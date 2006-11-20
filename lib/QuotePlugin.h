@@ -23,23 +23,25 @@
 #define QUOTEPLUGIN_HPP
 
 #include <qstring.h>
-#include <qobject.h>
 #include <qnetworkprotocol.h>
 #include <qurloperator.h>
 #include <qtimer.h>
+#include <qtabdialog.h>
+#include <qtextedit.h>
+#include <qlayout.h>
+#include <qspinbox.h>
+#include "Toolbar.h"
 
-class QuotePlugin : public QObject
+class QuotePlugin : public QTabDialog
 {
   Q_OBJECT
 
   signals:
-    void done ();
-    void message (QString);
-    void statusLogMessage (QString);
     void signalGetFileDone (bool);
     void signalCopyFileDone (QString);
     void signalTimeout ();
     void signalProgMessage (int, int);
+    void chartUpdated ();
 
   public:
     QuotePlugin ();
@@ -49,10 +51,10 @@ class QuotePlugin : public QObject
     void createDirectory (QString &, QString &);
     void getPluginName (QString &);
     void getHelpFile (QString &);
-    
+    void buildGui ();
+    void enableGUI ();
+    void disableGUI ();
     virtual void update ();
-    virtual void cancelUpdate ();
-    virtual void prefDialog (QWidget *);
     
   public slots:
     void getFile (QString &);
@@ -61,6 +63,11 @@ class QuotePlugin : public QObject
     void copyFileDone (QNetworkOperation *);
     void dataReady (const QByteArray &, QNetworkOperation *);
     void slotTimeout ();
+    void getQuotes ();
+    void downloadComplete ();
+    void cancelDownload ();
+    void printStatusLogMessage (QString &);
+    void help ();
     
   protected:
     QString file;
@@ -72,8 +79,15 @@ class QuotePlugin : public QObject
     QString data;
     QTimer *timer;
     int errorLoop;
-    int retries;
-    int timeout;
+    QString stringDone;
+    QString stringCanceled;
+    QTextEdit *statusLog;
+    Toolbar *toolbar;
+    QVBoxLayout *vbox;
+    QWidget *baseWidget;
+    QGridLayout *grid;
+    QSpinBox *retrySpin;
+    QSpinBox *timeoutSpin;
 };
 
 #endif

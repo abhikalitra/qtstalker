@@ -5,11 +5,9 @@ pluginName = CSV
 } 
 
 HEADERS += CSV.h
-HEADERS += CSVDialog.h
 HEADERS += CSVRuleDialog.h
 
 SOURCES += CSV.cpp
-SOURCES += CSVDialog.cpp
 SOURCES += CSVRuleDialog.cpp
 
 target.path = /usr/lib/qtstalker/quote
