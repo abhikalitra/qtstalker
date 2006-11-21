@@ -3,6 +3,11 @@
 
 20061119: Changed quote plugin dialogs to all appear in one dialog.
 
+20061120: Applied patch #1600028 - update install notes for Mac - symlink db4.
+
+20061120: Added new UTIL functions Higher and Lower. These functions return either the higher or lower value of 2
+          arrays or an array and constant.
+
 
 
 0.33

@@ -20,16 +20,7 @@
  */
 
 #include "CSV.h"
-#include "CSVDialog.h"
 #include "Bar.h"
-#include <qfile.h>
-#include <qtextstream.h>
-#include <qtimer.h>
-#include <qstringlist.h>
-#include <qstring.h>
-#include <qdir.h>
-#include <qsettings.h>
-
 #include "../../../pics/newchart.xpm"
 #include "../../../pics/edit.xpm"
 #include "../../../pics/delete.xpm"
@@ -38,6 +29,13 @@
 #include "SymbolDialog.h"
 #include "CSVRuleDialog.h"
 #include "Config.h"
+#include <qfile.h>
+#include <qtextstream.h>
+#include <qtimer.h>
+#include <qstringlist.h>
+#include <qstring.h>
+#include <qdir.h>
+#include <qsettings.h>
 #include <qmessagebox.h>
 #include <qlayout.h>
 #include <qlabel.h>
@@ -816,7 +814,7 @@ void CSV::cancelUpdate ()
 
 void CSV::createMainPage ()
 {
-  setCaption(tr("CSV Prefs"));
+  setCaption(tr("CSV Quotes"));
 
   QString s = "new";
   QString s2 = tr("New Rule");

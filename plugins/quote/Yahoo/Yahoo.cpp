@@ -20,7 +20,6 @@
  */
 
 #include "Yahoo.h"
-#include "YahooDialog.h"
 #include "Bar.h"
 #include <qfile.h>
 #include <qtextstream.h>
@@ -61,7 +60,7 @@ Yahoo::Yahoo ()
   // preload all symbols to download for default
 //  loadAllSymbols();
 
-  resize(400, 500);
+  resize(400, 450);
 }
 
 Yahoo::~Yahoo ()
@@ -72,6 +71,8 @@ Yahoo::~Yahoo ()
 
 void Yahoo::buildGui ()
 {
+  setCaption(tr("Yahoo Quotes"));
+
   config.getData(Config::DataPath, dataPath);
   dataPath.append("/Stocks/Yahoo");
 
@@ -199,9 +200,10 @@ void Yahoo::fileDone (bool d)
 {
   if (d)
   {
-//    emit statusLogMessage(tr("Network error aborting"));
-//    emit statusLogMessage(tr("Done"));
-//    emit done();
+//    QString ss(tr("Network error aborting"));
+//    printStatusLogMessage(ss);
+//    printStatusLogMessage(stringDone);
+//    downloadComplete();
 //    return;
   }
   else
@@ -320,7 +322,7 @@ void Yahoo::parseHistory ()
   {
     if (s.compare(pluginName))
     {
-      s = ts2 + " - skipping update. Source does not match destination.";
+      s = ts2 + " - " + tr("skipping update. Source does not match destination");
       printStatusLogMessage(s);
       f.close();
       plug.close();
@@ -462,7 +464,7 @@ void Yahoo::parseQuote ()
   {
     if (s.compare(pluginName))
     {
-      s = ts2 + " - skipping update. Source does not match destination.";
+      s = ts2 + " - " + tr("skipping update. Source does not match destination");
       printStatusLogMessage(s);
       f.close();
       plug.close();
@@ -645,53 +647,6 @@ QString Yahoo::parseDate (QString &d)
   return s;
 }
 
-/*
-void Yahoo::prefDialog (QWidget *w)
-{
-  YahooDialog *dialog = new YahooDialog(w, helpFile);
-  dialog->setCaption(tr("Yahoo Prefs"));
-  dialog->setAdjustment(adjustment);
-  dialog->setStartDate(sdate);
-  dialog->setEndDate(edate);
-  dialog->setMethod(method);
-  dialog->setRetries(retries);
-  dialog->setTimeout(timeout);
-  dialog->setAllSymbols(allSymbols);
-  dialog->setList(fileList);
-  
-  int rc = dialog->exec();
-  if (rc == QDialog::Accepted)
-  {
-    adjustment = dialog->getAdjustment();
-    sdate = dialog->getStartDate();
-    edate = dialog->getEndDate();
-    method = dialog->getMethod();
-    retries = dialog->getRetries();
-    timeout = dialog->getTimeout();
-    allSymbols = dialog->getAllSymbols();
-    
-    if (! allSymbols)
-    {
-      dialog->getList(fileList);
-      int loop;
-      symbolList.clear();
-      for (loop = 0; loop < (int) fileList.count(); loop++)
-      {
-        QFileInfo fi(fileList[loop]);
-        symbolList.append(fi.fileName());
-      }
-    }
-    else
-      loadAllSymbols();
-    
-    saveFlag = TRUE;
-    saveSettings();
-  }
-  
-  delete dialog;
-}
-*/
-
 void Yahoo::loadSettings ()
 {
   QSettings settings;
@@ -735,7 +690,7 @@ void Yahoo::printErrorList ()
   int loop;
   for (loop = 0; loop < (int) errorList.count(); loop++)
   {
-    QString s = tr("Unable to download ") + errorList[loop];
+    QString s = tr("Unable to download") + " " + errorList[loop];
     printStatusLogMessage(s);
   }
 }	
@@ -831,7 +786,7 @@ void Yahoo::parseFundamental ()
   {
     if (s.compare(pluginName))
     {
-      s = ts2 + " - skipping update. Source does not match destination.";
+      s = ts2 + " - " + tr("skipping update. Source does not match destination");
       printStatusLogMessage(s);
       plug.close();
       return;

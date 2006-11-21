@@ -41,6 +41,8 @@ UTIL::UTIL ()
   methodList.append("REF");
   methodList.append("PER");
   methodList.append("COLOR");
+  methodList.append("Higher");
+  methodList.append("Lower");
   methodList.sort();
 
   helpFile = "math.html";
@@ -205,6 +207,18 @@ PlotLine * UTIL::calculateCustom (QString &p, QPtrList<PlotLine> &d)
     if (! l[0].compare("COLOR"))
     {
       out = calculateCOLOR(p, d);
+      break;
+    }
+
+    if (! l[0].compare("Higher"))
+    {
+      out = calculateHL(p, d, 1);
+      break;
+    }
+
+    if (! l[0].compare("Lower"))
+    {
+      out = calculateHL(p, d, 2);
       break;
     }
 
@@ -656,6 +670,94 @@ PlotLine * UTIL::calculateCOLOR (QString &p, QPtrList<PlotLine> &d)
   return output->getLine(0);
 }
 
+PlotLine * UTIL::calculateHL (QString &p, QPtrList<PlotLine> &d, int type)
+{
+  // format1: METHOD, ARRAY_INPUT, DOUBLE
+  // format: METHOD, ARRAY_INPUT, ARRAY_INPUT2
+
+  formatList.clear();
+  formatList.append(FormatString);
+  formatList.append(FormatInputArray);
+  formatList.append(FormatString); // dummy cause we dont know what this parm is beforehand
+
+  if (checkFormat(p, d, 3, 3))
+    return 0;
+
+  PlotLine *input = d.at(0);
+  PlotLine *input2 = 0;
+  if (d.count() == 2)
+    input2 = d.at(1);
+
+  double inputNum = 0;
+  if (! input2)
+  {
+    bool ok;
+    double t = formatStringList[2].toDouble(&ok);
+    if (ok)
+      inputNum = t;
+    else
+      return 0;
+  }
+
+  clearOutput();
+
+  int loop = input->getSize() - 1;
+  int loop2 = 0;
+  if (input2)
+    loop2 = input2->getSize() - 1;
+    
+  PlotLine *line = new PlotLine;
+  
+  while (loop > -1)
+  {
+    double v = input->getData(loop);
+    
+    if (input2)
+    {
+      if (loop2 < 0)
+        break;
+
+      switch (type)
+      {
+        case 1: // higher
+          if (v < input2->getData(loop2))
+            v = input2->getData(loop2);
+          break;
+        case 2: // lower
+          if (v > input2->getData(loop2))
+            v = input2->getData(loop2);
+          break;
+        default:
+          break;
+      }
+
+      loop2--;
+    }
+    else
+    {
+      switch(type)
+      {
+        case 1:
+          if (v < inputNum)
+            v = inputNum;
+          break;
+        case 2:
+          if (v > inputNum)
+            v = inputNum;
+          break;
+        default:
+          break;
+      }
+    }
+    
+    line->prepend(v);
+    loop--;
+  }
+  
+  output->addLine(line);
+  return output->getLine(0);
+}
+
 void UTIL::formatDialog (QStringList &vl, QString &rv, QString &rs)
 {
   rs.truncate(0);
@@ -699,7 +801,7 @@ void UTIL::formatDialog (QStringList &vl, QString &rv, QString &rs)
     }
 
     if (! method.compare("ADD") || ! method.compare("DIV") || ! method.compare("MUL") ||
-        ! method.compare("SUB"))
+        ! method.compare("SUB") || ! method.compare("Higher") || ! method.compare("Lower"))
     {
       // format1: METHOD, ARRAY_INPUT, DOUBLE
       // format2: METHOD, ARRAY_INPUT, ARRAY_INPUT2
@@ -779,7 +881,7 @@ void UTIL::formatDialog (QStringList &vl, QString &rv, QString &rs)
       }
 
       if (! method.compare("ADD") || ! method.compare("DIV") || ! method.compare("MUL") ||
-          ! method.compare("SUB"))
+          ! method.compare("SUB") || ! method.compare("Higher") || ! method.compare("Lower"))
       {
         // format1: METHOD, ARRAY_INPUT, DOUBLE
         // format2: METHOD, ARRAY_INPUT, ARRAY_INPUT2

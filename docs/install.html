@@ -89,10 +89,10 @@ directory (toc.html for the table of contents)</li>
 </ol>
 <h4>For Macintosh OS X users (Tiger 10.4+):</h4>
 <ol>
-  <li>Get Berkeley DB using <a href="http://darwinports.org/">Darwinports.org</a>
-  ('sudo port install db4') or <a href="http://fink.sf.net/">Fink.sf.net</a></li>
-  <li>Get Qt for Aqua. Trolltech says must be qt-3.3.5
-so use 'fink --tree=unstable qt3mac'.</li>
+  <li>Get Berkeley DB using <a href="http://macports.org/">MacPorts.org</a>
+   or <a href="http://fink.sf.net/">Fink.sf.net</a></li>
+  <li>(we have reports of needing e.g. 'cd /opt/local/lib; ln -s libdb-4.2.dylib libdb.dylib')</li>
+  <li>Get Qt for Aqua: qt3mac. Trolltech says must be at least qt-3.3.5</li>
   <li>Set your shell QTDIR environment variable to point where you
 installed Qt. <br>
 e.g. 'export QTDIR=/sw/lib/qt3mac' or something similar.
