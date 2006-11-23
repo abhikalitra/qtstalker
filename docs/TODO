@@ -26,7 +26,8 @@ To Do:
 - add paper trade mode to portfolio tracker (use last chart value instead of last db value)
 - add optimization range testing for the backtester.
 - integrate TALIB into the indicator base class and remove the TALIB plugin.
-- fix negative account volume trades in the tester.
+- fix: negative account volume trades in the tester.
+- fix: there is no way to use buy/sell prices in stop formulas in the tester. 
 
 
 Maybe some day:

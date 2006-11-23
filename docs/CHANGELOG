@@ -1,9 +1,11 @@
 0.34
 ====
 
-20061119: Changed quote plugin dialogs to all appear in one dialog.
+20061119: Changed quote plugin dialogs to all appear in one dialog. You can have a separate dialog window for each quote
+          plugin if you like and leave them open, minimized whatever. This helps with eventually having real-time quotes
+          running in the background with no blocking to the main app.
 
-20061120: Applied patch #1600028 - update install notes for Mac - symlink db4.
+20061120: Applied patch #1600028 - update install notes for Mac symlink db4.
 
 20061120: Added new UTIL functions Higher and Lower. These functions return either the higher or lower value of 2
           arrays or an array and constant.

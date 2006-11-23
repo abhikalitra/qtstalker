@@ -26,7 +26,6 @@
 #include "Config.h"
 #include <qdatetime.h>
 #include <qtimer.h>
-
 #include <qtabdialog.h>
 #include <qlineedit.h>
 #include <qcombobox.h>
@@ -35,7 +34,6 @@
 #include <qstringlist.h>
 #include <qspinbox.h>
 #include "FileButton.h"
-#include "Toolbar.h"
 
 class CSV : public QuotePlugin
 {
@@ -68,19 +66,14 @@ class CSV : public QuotePlugin
     Config config;
     QString delim;
     FuturesData fd;
-    bool dateFlag;
     DbPlugin db;
-    QStringList list;
     QString symbolOveride;
-    QString ruleName;
     QString futuresSymbol;
     QString futuresMonth;
     bool cancelFlag;
     QString lastPath;
-    int reloadInterval;
     QTimer *reloadTimer;
     QString ruleDir;
-
     FileButton *file;
     QLineEdit *symbol;
     QComboBox *ruleCombo;

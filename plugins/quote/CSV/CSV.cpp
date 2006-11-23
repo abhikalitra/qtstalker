@@ -24,16 +24,11 @@
 #include "../../../pics/newchart.xpm"
 #include "../../../pics/edit.xpm"
 #include "../../../pics/delete.xpm"
-#include "Setting.h"
 #include "HelpWindow.h"
 #include "SymbolDialog.h"
 #include "CSVRuleDialog.h"
-#include "Config.h"
 #include <qfile.h>
 #include <qtextstream.h>
-#include <qtimer.h>
-#include <qstringlist.h>
-#include <qstring.h>
 #include <qdir.h>
 #include <qsettings.h>
 #include <qmessagebox.h>
@@ -46,10 +41,8 @@ CSV::CSV ()
 {
   pluginName = "CSV";
   delim = ",";
-  dateFlag = FALSE;
   helpFile = "csv.html";
   cancelFlag = FALSE;
-  reloadInterval = 0;
 
   reloadTimer = new QTimer(this);
   connect(reloadTimer, SIGNAL(timeout()), SLOT(parse()));
@@ -121,9 +114,9 @@ void CSV::parse ()
   }
   setDelimiter(s);
 
-  if (dateFlag)
+  if (dateRange->isChecked())
   {
-    if (sdate >= edate || edate <= sdate)
+    if (sdate->date() >= edate->date() || edate->date() <= sdate->date())
     {
       QString ss(tr("Done"));
       printStatusLogMessage(ss);
@@ -165,7 +158,7 @@ void CSV::parse ()
     downloadComplete();
     return;
   }
-  
+
   // get the symbol filter
   ts = "SymbolFilter";
   rule.getData(ts, ts2);
@@ -182,6 +175,9 @@ void CSV::parse ()
     if (ts2.contains("HHMMSS"))
       tickFlag = TRUE;
   }
+
+  QStringList list;
+  file->getFile(list);
 
   int loop;
   for (loop = 0; loop < (int) list.count(); loop++)
@@ -263,7 +259,7 @@ void CSV::parse ()
       if (l.count() != fieldList.count())
       {
         qDebug("CSV::parse:File fields (%i) != rule format (%i)", l.count(), fieldList.count());
-        QString ss(("File fields != rule format"));
+        QString ss(tr("File fields != rule format"));
         printStatusLogMessage(ss);
 	continue;
       }
@@ -286,7 +282,7 @@ void CSV::parse ()
 	    break;
 	  }
 	  
-          if (dateFlag)
+          if (dateRange->isChecked())
           {
             if (dt < sdate->date() || dt > edate->date())
 	    {
@@ -453,14 +449,10 @@ void CSV::parse ()
   if (cancelFlag)
   {
     cancelFlag = FALSE;
-    QString ss(tr("Update cancelled"));
-    printStatusLogMessage(ss);
+    printStatusLogMessage(stringCanceled);
   }
   else
-  {
-    QString ss(tr("Done"));
-    printStatusLogMessage(ss);
-  }
+    printStatusLogMessage(stringDone);
 }
 
 void CSV::setDelimiter (QString &d)
@@ -731,37 +723,25 @@ bool CSV::openDb (QString &path, QString &symbol, QString &type, bool tickFlag)
   return FALSE;
 }
 
-/*
-void CSV::prefDialog (QWidget *w)
-{
-    reloadTimer->stop();
-    if (reloadInterval)
-      reloadTimer->start(60000 * reloadInterval, FALSE);
-    
-    if (list.count())
-    {
-      QFileInfo fi(list[0]);
-      lastPath = fi.dirPath(TRUE);
-      saveSettings();
-    }
-  }
-}
-*/
-
 void CSV::loadSettings ()
 {
   QSettings settings;
   settings.beginGroup("/Qtstalker/CSV plugin");
 
-  ruleName = settings.readEntry("/RuleName");
+  QString s = settings.readEntry("/RuleName");
+  ruleCombo->setCurrentText(s);
 
-  QString s = settings.readEntry("/DateRange", "0");
-  dateFlag = s.toInt();
+  s = settings.readEntry("/DateRange", "0");
+  dateRange->setChecked(s.toInt());
+  dateRangeChanged(s.toInt());
   
   lastPath = settings.readEntry("/lastPath", QDir::homeDirPath());
+  QStringList l;
+  l.append(lastPath);
+  file->setFile(l);
 
   s = settings.readEntry("/ReloadInterval", "0");
-  reloadInterval = s.toInt();
+  minutes->setValue(s.toInt());
     
   settings.endGroup();
 }
@@ -771,17 +751,22 @@ void CSV::saveSettings ()
   QSettings settings;
   settings.beginGroup("/Qtstalker/CSV plugin");
 
-  settings.writeEntry("/RuleName", ruleName);
-  settings.writeEntry("/DateRange", QString::number(dateFlag));
+  settings.writeEntry("/RuleName", ruleCombo->currentText());
+  settings.writeEntry("/DateRange", QString::number(dateRange->isChecked()));
+  settings.writeEntry("/ReloadInterval", minutes->text());
+
+  QStringList l;
+  file->getFile(l);
+  if (l.count())
+    lastPath = l[0];
   settings.writeEntry("/lastPath", lastPath);
-  settings.writeEntry("/ReloadInterval", QString::number(reloadInterval));
   
   settings.endGroup();
 }
 
 void CSV::getRule (Setting &set)
 {
-  QString s = ruleDir +"/" + ruleName;
+  QString s = ruleDir +"/" + ruleCombo->currentText();
   QFile f(s);
   if (! f.open(IO_ReadOnly))
   {
@@ -792,7 +777,7 @@ void CSV::getRule (Setting &set)
 
   while(stream.atEnd() == 0)
   {
-    QString s = stream.readLine();
+    s = stream.readLine();
     s = s.stripWhiteSpace();
     if (! s.length())
       continue;
@@ -835,6 +820,7 @@ void CSV::createMainPage ()
   grid->addWidget(label, 0, 0);
 
   ruleCombo = new QComboBox(baseWidget);
+  updateRules();
   grid->addWidget(ruleCombo, 0, 1);
   
   label = new QLabel(tr("Input"), baseWidget);
@@ -890,6 +876,10 @@ void CSV::createMainPage ()
   }
   edate->setDate(dt);
   sdate->setDate(dt);
+
+//  reloadTimer->stop();
+//  if (reloadInterval)
+//    reloadTimer->start(60000 * reloadInterval, FALSE);
 }
 
 void CSV::newRule ()
@@ -1031,7 +1021,8 @@ void CSV::updateRules ()
   }
   ruleCombo->insertStringList(l, -1);
 
-  ruleCombo->setCurrentItem(l.findIndex(current));
+  if (current.length())
+    ruleCombo->setCurrentItem(l.findIndex(current));
 }
 
 void CSV::help ()
