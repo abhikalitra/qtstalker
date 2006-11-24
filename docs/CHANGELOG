@@ -10,6 +10,10 @@
 20061120: Added new UTIL functions Higher and Lower. These functions return either the higher or lower value of 2
           arrays or an array and constant.
 
+20061123: Removed QtstalkerFormat quote plugin. It's redundant now. The chart panel can dump files,
+          CSV can import them and the berkeley db suite has utilities for dumping and rebuilding 
+          files.
+
 
 
 0.33

@@ -118,8 +118,7 @@ void CSV::parse ()
   {
     if (sdate->date() >= edate->date() || edate->date() <= sdate->date())
     {
-      QString ss(tr("Done"));
-      printStatusLogMessage(ss);
+      printStatusLogMessage(stringDone);
       downloadComplete();
       return;
     }

@@ -1,19 +1,18 @@
 TEMPLATE = subdirs
 
-#compile qtstalker lib
+# compile qtstalker lib
 SUBDIRS += lib
 
-#compile app
+# compile app
 SUBDIRS += src
 
-#compile quote plugins
+# compile quote plugins
 SUBDIRS += plugins/quote/CME
 SUBDIRS += plugins/quote/CSV
 SUBDIRS += plugins/quote/NYBOT
-SUBDIRS += plugins/quote/QtstalkerFormat
 SUBDIRS += plugins/quote/Yahoo
 
-#compile indicator plugins
+# compile indicator plugins
 SUBDIRS += plugins/indicator/BARS
 SUBDIRS += plugins/indicator/CUS
 SUBDIRS += plugins/indicator/FI
@@ -31,4 +30,5 @@ SUBDIRS += plugins/indicator/VIDYA
 SUBDIRS += plugins/indicator/VOL
 SUBDIRS += plugins/indicator/VOLA
 
+# install docs and i18n
 SUBDIRS += docs

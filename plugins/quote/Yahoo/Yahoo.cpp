@@ -57,9 +57,6 @@ Yahoo::Yahoo ()
   connect(this, SIGNAL(signalGetFileDone(bool)), this, SLOT(fileDone(bool)));
   connect(this, SIGNAL(signalTimeout()), this, SLOT(timeoutError()));
   
-  // preload all symbols to download for default
-//  loadAllSymbols();
-
   resize(400, 450);
 }
 
@@ -188,7 +185,7 @@ void Yahoo::startDownload ()
   QString s, ts2;
   QString ts = "symbol";
   currentUrl->getData(ts, ts2);
-  s = tr("Downloading ") + ts2;
+  s = tr("Downloading") + " " + ts2;
   printStatusLogMessage(s);
 
   ts = "url";
@@ -240,7 +237,7 @@ void Yahoo::timeoutError ()
   if (errorLoop == retrySpin->value())
   {
     currentUrl->getData(ts, ts2);
-    QString ss = tr("Timeout: retry limit skipping") + ts2 + tr(" skipped");
+    QString ss = tr("Timeout: retry limit skipping") + " " + ts2 + " " + tr("skipped");
     printStatusLogMessage(ss);
     errorList.append(ts2);
     
@@ -259,7 +256,7 @@ void Yahoo::timeoutError ()
   else
   {
     currentUrl->getData(ts, ts2);
-    QString ss = tr("Timeout: retry ") + QString::number(errorLoop + 1) + " " + ts2;
+    QString ss = tr("Timeout: retry") + " " + QString::number(errorLoop + 1) + " " + ts2;
     printStatusLogMessage(ss);
     startDownload();
   }

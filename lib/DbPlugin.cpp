@@ -73,6 +73,14 @@ int DbPlugin::openChart (QString &d)
     return TRUE;
   }
 
+  // play with the pagesize
+//  u_int32_t ps;
+//  rc = db->get_pagesize(db, &ps);
+//  if (rc)
+//    qDebug("DbPlugin::openChart: %s", db_strerror(rc));
+//  else
+//    qDebug("%i", ps);
+
   if (flag)
     setHeaderField(Path, d);
 
