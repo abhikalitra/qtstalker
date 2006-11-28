@@ -74,16 +74,20 @@ void LOWPASS::calculate ()
     return;
   }
 
-  calculate2(in, freq, width);
+  PlotLine *line = getLowpass(in, freq, width);
+  line->setColor(color);
+  line->setType(lineType);
+  line->setLabel(label);
+  output->addLine(line);
   delete in;
 }
 
-void LOWPASS::calculate2 (PlotLine *in, double fre, double wid)
+PlotLine * LOWPASS::getLowpass (PlotLine *in, double fre, double wid)
 {
-  if (in->getSize() == 0)
-    return;
-
   PlotLine *out = new PlotLine;
+  
+  if (in->getSize() == 0)
+    return out;
     
 // ----------------------------------------------------------------------
   double slope = 0;       // will be modified on call to detrend
@@ -152,10 +156,7 @@ void LOWPASS::calculate2 (PlotLine *in, double fre, double wid)
   delete fftFreq;
   delete fft;
   
-  out->setColor(color);
-  out->setType(lineType);
-  out->setLabel(label);
-  output->addLine(out);
+  return out;
 }
 
 PlotLine * LOWPASS::detrend(PlotLine *x, double &slope, double &intercept, bool detrend)
@@ -212,7 +213,6 @@ PlotLine * LOWPASS::raise2Power(PlotLine *x, double pad)
 
   return result;
 }
-
 
 int LOWPASS::indicatorPrefDialog (QWidget *w)
 {
@@ -288,7 +288,8 @@ PlotLine * LOWPASS::calculateCustom (QString &p, QPtrList<PlotLine> &d)
   width = t;
 
   clearOutput();
-  calculate2(d.at(0), freq, width);
+  PlotLine *pl = getLowpass(d.at(0), freq, width);
+  output->addLine(pl);
   return output->getLine(0);
 }
 

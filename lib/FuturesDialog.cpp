@@ -86,9 +86,8 @@ void FuturesDialog::createDetailsPage ()
   label = new QLabel(tr("Futures Type"), w);
   grid->addWidget(label, 3, 0);
   
-  s = "FuturesType";
   QString s2;
-  db->getData(s, s2);
+  db->getHeaderField(DbPlugin::FuturesType, s2);
   label = new QLabel(s2, w);
   label->setFrameStyle(QFrame::WinPanel | QFrame::Sunken);
   grid->addWidget(label, 3, 1);
@@ -96,8 +95,7 @@ void FuturesDialog::createDetailsPage ()
   label = new QLabel(tr("Futures Month"), w);
   grid->addWidget(label, 4, 0);
   
-  s = "FuturesMonth";
-  db->getData(s, s2);
+  db->getHeaderField(DbPlugin::FuturesMonth, s2);
   label = new QLabel(s2, w);
   label->setFrameStyle(QFrame::WinPanel | QFrame::Sunken);
   grid->addWidget(label, 4, 1);
@@ -182,7 +180,7 @@ void FuturesDialog::deleteRecord ()
   if (bar.setDate(s))
     return;
   bar.getDateTimeString(FALSE, s);
-  db->deleteData(s);
+  db->deleteBar(s);
 }
 
 void FuturesDialog::saveRecord ()

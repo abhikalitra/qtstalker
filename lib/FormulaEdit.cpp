@@ -147,10 +147,7 @@ void FormulaEdit::insertPlotItem ()
   s = "Label";
   dialog->addTextItem(ll, pl, s);
 
-  l2 = lineTypes;
-  l2.append("Bar");
-  l2.append("Candle");
-  dialog->addComboItem(ltl, pl, l2, 4);
+  dialog->addComboItem(ltl, pl, lineTypes, 4);
 
   int rc = dialog->exec();
   if (rc != QDialog::Accepted)

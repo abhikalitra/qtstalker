@@ -173,8 +173,7 @@ void PortfolioDialog::updatePortfolioItems ()
     plug.getHeaderField(DbPlugin::Type, type);
     
     QString futuresType;
-    s = "FuturesType";
-    plug.getData(s, futuresType);
+    plug.getHeaderField(DbPlugin::FuturesType, futuresType);
     
     Bar bar;
     plug.getLastBar(bar);

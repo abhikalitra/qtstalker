@@ -1562,14 +1562,7 @@ void IndicatorPlot::slotDeleteAllChartObjects ()
     
   DbPlugin db;
   db.openChart(chartPath);
-
-  QStringList l;
-  db.getChartObjectsList(l);
-
-  int loop;
-  for (loop = 0; loop < (int) l.count(); loop++)
-    db.deleteChartObject(l[loop]);
-  
+  db.deleteAllChartObjects();
   db.close();
 
   coList.clear();

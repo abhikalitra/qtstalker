@@ -59,11 +59,11 @@ void Config::setup ()
     if (! dir.mkdir(home, TRUE))
       qDebug("Unable to create ~/.qtstalker directory.");
   }
-  home.append("/data0");
+  home.append("/data1");
   if (! dir.exists(home, TRUE))
   {
     if (! dir.mkdir(home, TRUE))
-      qDebug("Unable to create ~/.qtstalker/data0 directory.");
+      qDebug("Unable to create ~/.qtstalker/data1 directory.");
   }
   setData(Home, home);
 
@@ -71,7 +71,7 @@ void Config::setup ()
   if (! dir.exists(s, TRUE))
   {
     if (! dir.mkdir(s, TRUE))
-      qDebug("Unable to create ~/.qtstalker/data0/data directory.");
+      qDebug("Unable to create ~/.qtstalker/data1/data directory.");
   }
   setData(DataPath, s);
 
@@ -79,7 +79,7 @@ void Config::setup ()
   if (! dir.exists(s, TRUE))
   {
     if (! dir.mkdir(s, TRUE))
-      qDebug("Unable to create ~/.qtstalker/data0/group directory.");
+      qDebug("Unable to create ~/.qtstalker/data1/group directory.");
   }
   setData(GroupPath, s);
 
@@ -87,7 +87,7 @@ void Config::setup ()
   if (! dir.exists(s, TRUE))
   {
     if (! dir.mkdir(s, TRUE))
-      qDebug("Unable to create ~/.qtstalker/data0/portfolio directory.");
+      qDebug("Unable to create ~/.qtstalker/data1/portfolio directory.");
   }
   setData(PortfolioPath, s);
 
@@ -95,7 +95,7 @@ void Config::setup ()
   if (! dir.exists(s, TRUE))
   {
     if (! dir.mkdir(s, TRUE))
-      qDebug("Unable to create ~/.qtstalker/data0/test directory.");
+      qDebug("Unable to create ~/.qtstalker/data1/test directory.");
   }
   setData(TestPath, s);
 
@@ -103,7 +103,7 @@ void Config::setup ()
   if (! dir.exists(s, TRUE))
   {
     if (! dir.mkdir(s, TRUE))
-      qDebug("Unable to create ~/.qtstalker/data0/scanner directory.");
+      qDebug("Unable to create ~/.qtstalker/data1/scanner directory.");
   }
   setData(ScannerPath, s);
 
@@ -111,7 +111,7 @@ void Config::setup ()
   if (! dir.exists(s, TRUE))
   {
     if (! dir.mkdir(s, TRUE))
-      qDebug("Unable to create ~/.qtstalker/data0/indicator directory.");
+      qDebug("Unable to create ~/.qtstalker/data1/indicator directory.");
   }
   setData(IndicatorPath, s);
   
@@ -119,7 +119,7 @@ void Config::setup ()
   if (! dir.exists(s, TRUE))
   {
     if (! dir.mkdir(s, TRUE))
-      qDebug("Unable to create ~/.qtstalker/data0/indicator/Indicators directory.");
+      qDebug("Unable to create ~/.qtstalker/data1/indicator/Indicators directory.");
     else
     {
       QString str("Indicators");
@@ -132,14 +132,14 @@ void Config::setup ()
   if (! dir.exists(s, TRUE))
   {
     if (! dir.mkdir(s, TRUE))
-      qDebug("Unable to create ~/.qtstalker/data0/plugin directory.");
+      qDebug("Unable to create ~/.qtstalker/data1/plugin directory.");
   }
   
   s.append("/quote");
   if (! dir.exists(s, TRUE))
   {
     if (! dir.mkdir(s, TRUE))
-      qDebug("Unable to create ~/.qtstalker/data0/plugin/quote directory.");
+      qDebug("Unable to create ~/.qtstalker/data1/plugin/quote directory.");
   }
   setData(QuotePluginStorage, s);
   
@@ -155,6 +155,8 @@ void Config::setup ()
     setData(AppFont, s);
     setData(PlotFont, s);
   }
+
+  checkBerkeleyConversion();
 
   // set the version #
   setData(Version, version);
@@ -740,5 +742,17 @@ void Config::createDefaultIndicator (Setting &set, QString &plugin, QString &nam
   s = "dateFlag";
   s2 = "1";
   set.setData(s, s2);
+}
+
+void Config::checkBerkeleyConversion ()
+{
+  QString s;
+  getData(Version, s);
+  if (s.toDouble() >= 0.34)
+    return;
+
+  UpgradeMessage *dialog = new UpgradeMessage(UpgradeMessage::V034);
+  dialog->exec();
+  delete dialog;
 }
 

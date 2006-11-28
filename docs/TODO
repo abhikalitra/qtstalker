@@ -8,15 +8,13 @@ To Do:
 - trendlines and fibo objects to plot on weekly and monthly charts as well
 - make a freshmeat entry
 - allow negative displacement for line plots
-- create a package of CUS indicators, default CSV plugin import rules to the install process
-  so users have a bunch of examples and things to play with
+- default CSV plugin import rules to the install process
 - change Quote behaviour in yahoo plugin to create separate symbols for intraday and daily
   data. also put a timer on yahoo plugin for intraday tick downloads every X minutes. same limitations
   will apply as in the CSV timer
 - overhaul CSV plugin to allow URL downloads and clean up code...it's a mess  
 - add more crosshairs behaviours to IndicatorPlot
 - user defined bar lengths for intraday charts
-- add remember last file used for CSV plugin.
 - add better icons for add/insert in the edit formula dialog widget, functions not obvious
 - create CUS tutorial.
 - add stock margins to the tester
@@ -28,6 +26,10 @@ To Do:
 - integrate TALIB into the indicator base class and remove the TALIB plugin.
 - fix: negative account volume trades in the tester.
 - fix: there is no way to use buy/sell prices in stop formulas in the tester. 
+- median lines chart objects
+- fibo time chart objects
+- fix: lowpass not working
+
 
 
 Maybe some day:

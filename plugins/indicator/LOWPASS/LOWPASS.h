@@ -28,7 +28,7 @@ class LOWPASS : public IndicatorPlugin
     LOWPASS ();
     virtual ~LOWPASS ();
     void calculate ();
-    void calculate2 (PlotLine *in, double fre, double wid);
+    PlotLine * getLowpass (PlotLine *in, double fre, double wid);
     int indicatorPrefDialog (QWidget *);
     void setDefaults();
     PlotLine * calculateCustom (QString &, QPtrList<PlotLine> &);

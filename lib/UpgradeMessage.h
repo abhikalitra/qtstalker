@@ -24,6 +24,9 @@
 
 #include <qtabdialog.h>
 #include <qcheckbox.h>
+#include <qprogressbar.h>
+#include "FileButton.h"
+#include "Setting.h"
 
 class UpgradeMessage : public QTabDialog
 {
@@ -33,16 +36,29 @@ class UpgradeMessage : public QTabDialog
 
     enum UpgradeMessageVersion
     {
-      V031
+      V031,
+      V034
     };
 
     UpgradeMessage (int);
     ~UpgradeMessage ();
     bool getStatus ();
     void createPage031 ();
+    void createPage034 ();
+    bool createChart (QString &);
+    bool createDir (QString &);
+    void traverse (QString, QStringList &);
+    void copyFiles ();
+    void correctPathFiles (QStringList &);
+    void getChartPathType (QString &);
+
+  public slots:
+    void convert034 ();
 
   private:
     QCheckBox *check;
+    FileButton *fileButton;
+    QProgressBar *progBar;
 };
 
 #endif

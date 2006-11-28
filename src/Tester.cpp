@@ -338,10 +338,7 @@ void Tester::loadRule ()
 
   db.getHeaderField(DbPlugin::Type, chartType);
   if (! chartType.compare(tr("Futures")))
-  {
-    s = "FuturesType";
-    db.getData(s, futuresType);
-  }
+    db.getHeaderField(DbPlugin::FuturesType, futuresType);
 
   db.close();
 
@@ -653,10 +650,7 @@ void Tester::test ()
 
   db.getHeaderField(DbPlugin::Type, chartType);
   if (! chartType.compare(tr("Futures")))
-  {
-    QString s = "FuturesType";
-    db.getData(s, futuresType);
-  }
+    db.getHeaderField(DbPlugin::FuturesType, futuresType);
   
   db.setBarLength((BarData::BarLength) testPage->getBarLengthIndex());
   db.setBarRange(testPage->getBars());

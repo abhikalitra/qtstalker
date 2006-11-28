@@ -52,14 +52,11 @@ TARGET = qtstalker
 INCLUDEPATH += ../lib
 
 LIBS += -L../lib -lqtstalker
-LIBS += -ldb
 
 unix:linux-g++:LIBS += -ldl
 
 # FreeBSD options
 unix:freebsd-g++:INCLUDEPATH += /usr/X11R6/include
-unix:freebsd-g++:INCLUDEPATH += /usr/local/include/db43
-unix:freebsd-g++:LIBS += -L/usr/local/lib/db43
 
 target.path = /usr/bin
 INSTALLS += target

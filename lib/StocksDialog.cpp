@@ -166,9 +166,8 @@ void StocksDialog::createFundamentalsPage ()
   vbox->setSpacing(5);
     
   Setting fund;
-  QString s = "Fundamentals";
-  QString s2;
-  db->getData(s, s2); 
+  QString s, s2;
+  db->getHeaderField(DbPlugin::Fundamentals, s2); 
   fund.parse(s2);
   
   s = tr("Fundamentals: last updated ");
@@ -252,7 +251,7 @@ void StocksDialog::deleteRecord ()
   if (bar.setDate(s))
     return;
   bar.getDateTimeString(FALSE, s);
-  db->deleteData(s);
+  db->deleteBar(s);
 }
 
 void StocksDialog::saveRecord ()

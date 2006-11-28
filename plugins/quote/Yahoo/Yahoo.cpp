@@ -136,6 +136,9 @@ void Yahoo::update ()
   url.clear();
   errorList.clear();
 
+  if (allSymbols->isChecked())
+    allSymbolsChecked(TRUE);
+
   QDir dir;
   int loop;
   for (loop = 0; loop < (int) symbolList.count(); loop++)
@@ -848,7 +851,7 @@ void Yahoo::parseFundamental ()
   fund.setData(ts, ts2);
   fund.getString(ts2);
   ts = "Fundamentals";
-  plug.setData(ts, ts2);
+  plug.setHeaderField(DbPlugin::Fundamentals, ts2);
     
   plug.close();
 }

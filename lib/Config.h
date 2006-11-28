@@ -118,6 +118,7 @@ class Config
     void checkUpgrade ();
     void setDefaultIndicators ();
     void createDefaultIndicator (Setting &set, QString &plugin, QString &name, int tabRow);
+    void checkBerkeleyConversion ();
 
   protected:
     QDict<QLibrary> libs;
