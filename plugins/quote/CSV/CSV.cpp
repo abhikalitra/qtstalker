@@ -426,9 +426,11 @@ void CSV::parse ()
 	
         ts = "Symbol";
         r.getData(ts, ts2);
-        QString ss = tr("Updating") + " " + ts2;
-        printStatusLogMessage(ss);
+//        QString ss = tr("Updating") + " " + ts2;
+//        printStatusLogMessage(ss);
 	config.closePlugin(type);
+
+        emit signalWakeup();
       }
       else
       {
@@ -437,6 +439,8 @@ void CSV::parse ()
 	if (s.length())
 	  db.setHeaderField(DbPlugin::Title, s);
         db.setBar(bar);
+
+        emit signalWakeup();
       }
     }
 

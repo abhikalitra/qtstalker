@@ -42,6 +42,7 @@ class QuotePlugin : public QTabDialog
     void signalTimeout ();
     void signalProgMessage (int, int);
     void chartUpdated ();
+    void signalWakeup ();
 
   public:
     QuotePlugin ();
@@ -68,6 +69,9 @@ class QuotePlugin : public QTabDialog
     void cancelDownload ();
     void printStatusLogMessage (QString &);
     void help ();
+    void slotWakeup ();
+    void startWakeup (int);
+    void stopWakeup ();
     
   protected:
     QString file;
@@ -88,6 +92,8 @@ class QuotePlugin : public QTabDialog
     QGridLayout *grid;
     QSpinBox *retrySpin;
     QSpinBox *timeoutSpin;
+    QTimer *wakeupTimer;
+    int wakeupInterval;
 };
 
 #endif

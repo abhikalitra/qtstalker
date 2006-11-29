@@ -182,7 +182,7 @@ void Yahoo::update ()
   
   currentUrl = url.first();
 
-  QTimer::singleShot(250, this, SLOT(startDownload()));
+  startDownload();
 }
 
 void Yahoo::startDownload ()
@@ -191,7 +191,7 @@ void Yahoo::startDownload ()
   QString ts = "symbol";
   currentUrl->getData(ts, ts2);
   s = tr("Downloading") + " " + ts2;
-  printStatusLogMessage(s);
+//  printStatusLogMessage(s);
 
   ts = "url";
   currentUrl->getData(ts, s);
@@ -415,6 +415,8 @@ void Yahoo::parseHistory ()
     }
 
     plug.setBar(bar);
+
+    emit signalWakeup();
   }
 
   f.close();
@@ -544,6 +546,8 @@ void Yahoo::parseQuote ()
       continue;
       
     plug.setBar(bar);
+
+    emit signalWakeup();
   }
 
   f.close();
@@ -856,6 +860,8 @@ void Yahoo::parseFundamental ()
   plug.setHeaderField(DbPlugin::Fundamentals, ts2);
     
   plug.close();
+
+  emit signalWakeup();
 }
 
 void Yahoo::loadAllSymbols ()

@@ -336,8 +336,8 @@ void NYBOT::parse ()
       return;
     }
 	
-    s = tr("Updating ") + symbol;
-    printStatusLogMessage(s);
+//    s = tr("Updating ") + symbol;
+//    printStatusLogMessage(s);
 
     s = path + "/" + symbol;
     if (plug.openChart(s))
@@ -370,6 +370,8 @@ void NYBOT::parse ()
 		 
     //  emit dataLogMessage(symbol);
     plug.close();
+
+    emit signalWakeup();
   }
 
   f.close();

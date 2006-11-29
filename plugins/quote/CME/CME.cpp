@@ -110,8 +110,8 @@ void CME::update ()
     s.append("ytd.zip");
     urlList.append(s);
   }
-  
-  QTimer::singleShot(250, this, SLOT(startDownload()));
+
+  startDownload();
 }
 
 void CME::startDownload ()
@@ -973,8 +973,8 @@ void CME::parse (Setting &data)
   ts = "Symbol";
   QString ts2;
   data.getData(ts, ts2);
-  s = tr("Updating ") + ts2;
-  printStatusLogMessage(s);
+//  s = tr("Updating ") + ts2;
+//  printStatusLogMessage(s);
 
   data.getData(ts, ts2);
   s = path + "/" + ts2;
@@ -1009,6 +1009,8 @@ void CME::parse (Setting &data)
   plug.setBar(bar);
 	     
   plug.close();
+
+  emit signalWakeup();
 }
 
 void CME::cancelUpdate ()
