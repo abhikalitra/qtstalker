@@ -251,7 +251,7 @@ void StocksDialog::deleteRecord ()
   if (bar.setDate(s))
     return;
   bar.getDateTimeString(FALSE, s);
-  db->deleteBar(s);
+  db->deleteData(s);
 }
 
 void StocksDialog::saveRecord ()
@@ -468,4 +468,5 @@ void StocksDialog::updateFields (Bar &record)
   barEdit->clearButtons();
 }
 
+// remove this 
 

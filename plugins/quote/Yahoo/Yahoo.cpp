@@ -138,6 +138,8 @@ void Yahoo::update ()
 
   if (allSymbols->isChecked())
     allSymbolsChecked(TRUE);
+  else
+    allSymbolsChecked(FALSE);
 
   QDir dir;
   int loop;
@@ -1235,3 +1237,4 @@ QuotePlugin * createQuotePlugin ()
 }
 
 
+// remove this 

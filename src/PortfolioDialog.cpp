@@ -448,3 +448,4 @@ void PortfolioDialog::slotHelp ()
   hw->show();
 }
 
+// remove this 

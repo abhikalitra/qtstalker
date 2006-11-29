@@ -24,12 +24,12 @@
 
 #include <qstring.h>
 #include <qstringlist.h>
+#include <db.h>
 #include <qdatetime.h>
 #include <qobject.h>
 #include "Setting.h"
 #include "BarData.h"
 #include "Bar.h"
-#include <qsqldatabase.h>
 
 class DbPlugin : public QObject
 {
@@ -58,7 +58,7 @@ class DbPlugin : public QObject
       Type,
       Title,
       Path,
-      CO, // unused
+      CO,
       LocalIndicators,
       QuotePlugin,
       SpreadFirstSymbol,
@@ -75,15 +75,17 @@ class DbPlugin : public QObject
     void setBarLength (BarData::BarLength);
     void setBarRange (int);
     void getHelpFile (QString &);
+    void getChartObjectsList (QStringList &);    
     void getChartObjects (QStringList &);
     void setChartObject (QString &, Setting &);
     void deleteChartObject (QString &);
-    void deleteAllChartObjects ();
     void dump (QString &, bool);
     void getLastBar (Bar &);
     void getFirstBar (Bar &);
-    void getBar (QString &k, Bar &bar);
-    void getBar (QSqlQuery &, Bar &);
+    void getData (QString &, QString &);
+    void setData (QString &, QString &);
+    void deleteData (QString &);
+    void getBar (QString &, Bar &);
     void setHeaderField (int, QString &);
     void getHeaderField (int, QString &);
     void close ();
@@ -92,6 +94,7 @@ class DbPlugin : public QObject
     void getAllBars (BarData *);
     void loadType ();
     void setBar (Bar &);
+    void getBar (QString &, QString &, Bar &);
     void getHistory (BarData *, QDateTime &);
     void createNew (DbPlugin::DbType);
     void createNew (QString &);
@@ -102,13 +105,11 @@ class DbPlugin : public QObject
     void getPrevBar (QDateTime &, Bar &);
     void getNextBar (QDateTime &, Bar &);
     void getSearchBar (QDateTime &, Bar &);
-    void deleteBar (QString &);
-    void setData (QString &);
-    void createTables ();
-    bool open (QString &d);
+
+// remove this later
     
   protected:
-    QSqlDatabase *db;
+    DB *db;
     int barRange;
     BarData::BarLength barLength;
     QString helpFile;

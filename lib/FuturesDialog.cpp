@@ -180,7 +180,7 @@ void FuturesDialog::deleteRecord ()
   if (bar.setDate(s))
     return;
   bar.getDateTimeString(FALSE, s);
-  db->deleteBar(s);
+  db->deleteData(s);
 }
 
 void FuturesDialog::saveRecord ()
@@ -323,3 +323,5 @@ void FuturesDialog::updateFields (Bar &record)
 
   barEdit->clearButtons();
 }
+
+// remove this 

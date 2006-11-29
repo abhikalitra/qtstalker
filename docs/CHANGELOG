@@ -16,12 +16,6 @@
 
 20061127: Fixed LOWPASS bug that returned the input instead of the ouput.
 
-20061128: Conversion of charts and files from Berkeley DB to sqlite disk formats. The conversion will run the first time
-          you run 0.34. The user needs to select the location of the Berkeley DB utility db_dump executable. Press the
-          'Perform Conversion' to start the conversion. This may take hours depending on how many files to convert. Once
-          completed press ok or cancel to start qtstalker. This will only run once. If you want it to run again, you must
-          change the Version parameter to 0.33 in the qtstalkerrc file.
-
 
 0.33
 ====

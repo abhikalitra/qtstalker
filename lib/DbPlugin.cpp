@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  *
- *  Copyright (C) 2001-2006 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2006  Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -33,7 +33,6 @@
 #include <qdir.h>
 #include <qfile.h>
 #include <qfileinfo.h>
-#include <qsqlquery.h>
 
 
 DbPlugin::DbPlugin ()
@@ -46,26 +45,49 @@ DbPlugin::DbPlugin ()
 
 DbPlugin::~DbPlugin ()
 {
-  close();
+  if (db)
+    db->close(db, 0);
 }
 
 int DbPlugin::openChart (QString &d)
 {
-  close();
+  if (db)
+    close();
 
-  bool flag = FALSE;
-  QDir dir;
-  if (! dir.exists(d, TRUE))
+  bool flag = FALSE;  
+  QDir dir(d);
+  if (! dir.exists())
     flag = TRUE;
-
-  if (open(d))
+  
+  int rc = db_create(&db, NULL, 0);
+  if (rc)
+  {
+    qDebug("DbPlugin::openChart: %s", db_strerror(rc));
     return TRUE;
+  }
+  
+  rc = db->open(db, NULL, (char *) d.latin1(), NULL, DB_BTREE, DB_CREATE, 0664);
+  if (rc)
+  {
+    qDebug("DbPlugin::openChart: %s", db_strerror(rc));
+    return TRUE;
+  }
+
+  // play with the pagesize
+//  u_int32_t ps;
+//  rc = db->get_pagesize(db, &ps);
+//  if (rc)
+//    qDebug("DbPlugin::openChart: %s", db_strerror(rc));
+//  else
+//    qDebug("%i", ps);
 
   if (flag)
-    createTables();
+    setHeaderField(Path, d);
 
   loadType();
+
   symbol = d;
+  
   return FALSE;
 }
 
@@ -73,10 +95,52 @@ void DbPlugin::close ()
 {
   if (db)
   {
-    db->close();
-    QSqlDatabase::removeDatabase(db);
+    db->close(db, 0);
     db = 0;
   }
+}
+
+void DbPlugin::getData (QString &k, QString &d)
+{
+  DBT key;
+  DBT data;
+  memset(&key, 0, sizeof(DBT));
+  memset(&data, 0, sizeof(DBT));
+
+  key.data = (char *) k.latin1();
+  key.size = k.length() + 1;
+
+  if (db->get(db, NULL, &key, &data, 0) == 0)
+    d = (char *) data.data;
+  else
+    d.truncate(0);
+}
+
+void DbPlugin::setData (QString &k, QString &d)
+{
+  DBT key;
+  DBT data;
+  memset(&key, 0, sizeof(DBT));
+  memset(&data, 0, sizeof(DBT));
+
+  key.data = (char *) k.latin1();
+  key.size = k.length() + 1;
+
+  data.data = (char *) d.latin1();
+  data.size = d.length() + 1;
+
+  db->put(db, NULL, &key, &data, 0);
+}
+
+void DbPlugin::deleteData (QString &k)
+{
+  DBT key;
+  memset(&key, 0, sizeof(DBT));
+
+  key.data = (char *) k.latin1();
+  key.size = k.length() + 1;
+
+  db->del(db, NULL, &key, 0);
 }
 
 void DbPlugin::setBarLength (BarData::BarLength d)
@@ -94,43 +158,57 @@ void DbPlugin::getHelpFile (QString &d)
   d = helpFile;
 }
 
+void DbPlugin::getChartObjectsList (QStringList &d)
+{
+  d.clear();
+  QString s;
+  getHeaderField(CO, s);
+  d = QStringList::split(",", s, FALSE);
+}
+
 void DbPlugin::getChartObjects (QStringList &d)
 {
   d.clear();
-  QString s = "SELECT data FROM co";
-  QSqlQuery q(db);
-  q.exec(s);
-  if (! q.isActive())
-    return;
-    
-  while (q.next())
-    d.append(q.value(0).toString());
+  QStringList l;
+  getChartObjectsList(l);
+  int loop;
+  QString s;
+  for (loop = 0; loop < (int) l.count(); loop++)
+  {
+    getData(l[loop], s);
+    d.append(s);
+  }
 }
 
 void DbPlugin::setChartObject (QString &d, Setting &set)
 {
   QString s;
+  QStringList l;
+  getChartObjectsList(l);
+  if (l.findIndex(d) == -1)
+  {
+    l.append(d);
+    s = l.join(",");
+    setHeaderField(CO, s);
+  }
+  
   set.getString(s);
-  QString k = "REPLACE INTO co (id, data) VALUES (" + d + ",'" + s + "')";
-  QSqlQuery q(db);
-  if (! q.exec(k))
-    qDebug("DbPlugin::setChartObject: %s", db->lastError().text().latin1());
+  setData(d, s);
 }
 
 void DbPlugin::deleteChartObject (QString &d)
 {
-  QString s = "DELETE FROM co WHERE id=" + d;
-  QSqlQuery q(db);
-  if (! q.exec(s))
-    qDebug("DbPlugin::deleteChartObject: %s", db->lastError().text().latin1());
-}
+  QString s;
+  QStringList l;
+  getChartObjectsList(l);
+  l.remove(d);
+  if (! l.count())
+    s = "";
+  else
+    s = l.join(",");
+  setHeaderField(CO, s);
 
-void DbPlugin::deleteAllChartObjects ()
-{
-  QString s = "DELETE FROM co";
-  QSqlQuery q(db);
-  if (! q.exec(s))
-    qDebug("DbPlugin::deleteAllChartObjects: %s", db->lastError().text().latin1());
+  deleteData(d);
 }
 
 void DbPlugin::dump (QString &d, bool f)
@@ -140,135 +218,215 @@ void DbPlugin::dump (QString &d, bool f)
     return;
   QTextStream outStream(&outFile);
   
+  DBT key;
+  DBT data;
+  DBC *cur;
+  memset(&key, 0, sizeof(DBT));
+  memset(&data, 0, sizeof(DBT));
+
+  db->cursor(db, NULL, &cur, 0);
+
   QString sym;
   getHeaderField(Symbol, sym);
 
-  // dump quotes
-  QSqlQuery q(db);
-  q.exec("SELECT date, open, high, low, close, volume, oi FROM data ORDER BY date ASC");
-  if (q.isActive())
+  while (! cur->c_get(cur, &key, &data, DB_NEXT))
   {
-    while (q.next())
+    if (f)
     {
-      outStream << sym << "," << q.value(0).toString() << "," << q.value(1).toString() << ",";
-      outStream << q.value(1).toString() << "," << q.value(2).toString() << "," << q.value(3).toString() << ",";
-      outStream << q.value(4).toString() << "," << q.value(5).toString() << "\n";
+      if (key.size != 15)
+        continue;
+    
+      QString s = (char *) key.data;
+      Bar bar;
+      if (bar.setDate(s))
+        continue;
+  
+      outStream << sym << "," << (char *) key.data << "," << (char *) data.data << "\n";
     }
+    else
+      outStream << (char *) key.data << "=" << (char *) data.data << "\n";
   }
 
-  if (f)
-  {
-    // we just want quotes
-    outFile.close();
-    return;
-  }
+  cur->c_close(cur);
 
-  // dump everything
-
-  // dump header
-  QSqlQuery q2(db);
-  q2.exec("SELECT type,symbol,title,path,localindicators,quoteplugin,spreadfirstsymbol,"
-          "spreadsecondsymbol,indexlist,ccadjustment,futurestype,futuresmonth, bartype, fundamentals FROM header");
-  if (q2.isActive())
-  {
-    q2.first();
-    outStream << "HEADER=" << q2.value(0).toString() << "," << q2.value(1).toString() << "," << q2.value(2).toString() << ",";
-    outStream << q2.value(3).toString() << "," << q2.value(4).toString() << "," << q2.value(5).toString() << ",";
-    outStream << q2.value(6).toString() << "," << q2.value(7).toString() << "," << q2.value(8).toString() << ",";
-    outStream << q2.value(9).toString() << "," << q2.value(10).toString() << "," << q2.value(11).toString() << "\n";
-  }
-  
-  // dump co
-  QSqlQuery q3(db);
-  q3.exec("SELECT id, data FROM co ORDER BY id ASC");
-  if (q3.isActive())
-  {
-    while (q3.next())
-      outStream << "CO=ID=" << q3.value(0).toString() << "," << q3.value(1).toString() << "\n";
-  }
-  
   outFile.close();
 }
 
 void DbPlugin::getFirstBar (Bar &bar)
 {
-  QSqlQuery q(db);
-  q.exec("SELECT date, open, high, low, close, volume, oi FROM data ORDER BY date ASC LIMIT 1");
-  if (! q.isActive())
-    return;
+  DBT key;
+  DBT data;
+  DBC *cur;
+  memset(&key, 0, sizeof(DBT));
+  memset(&data, 0, sizeof(DBT));
 
-  q.next();
-  if (! q.isValid())
-    return;
-  getBar(q, bar);
+  db->cursor(db, NULL, &cur, 0);
+  while (! cur->c_get(cur, &key, &data, DB_NEXT))
+  {
+    if (key.size != 15)
+      continue;
+    
+    QString k = (char *) key.data;
+    Bar tbar;
+    if (tbar.setDate(k))
+      continue;
+
+    QString d = (char *) data.data;
+    getBar(k, d, bar);
+   
+    break;
+  }
+  cur->c_close(cur);
 }
 
 void DbPlugin::getLastBar (Bar &bar)
 {
-  QSqlQuery q(db);
-  q.exec("SELECT date, open, high, low, close, volume, oi FROM data ORDER BY date DESC LIMIT 1");
-  if (! q.isActive())
-    return;
+  DBT key;
+  DBT data;
+  DBC *cur;
+  memset(&key, 0, sizeof(DBT));
+  memset(&data, 0, sizeof(DBT));
 
-  q.next();
-  if (! q.isValid())
-    return;
-  getBar(q, bar);
+  db->cursor(db, NULL, &cur, 0);
+  while (! cur->c_get(cur, &key, &data, DB_PREV))
+  {
+    if (key.size != 15)
+      continue;
+    
+    QString k = (char *) key.data;
+    Bar tbar;
+    if (tbar.setDate(k))
+      continue;
+
+    QString d = (char *) data.data;
+    getBar(k, d, bar);
+    
+    break;
+  }
+  cur->c_close(cur);
 }
 
 void DbPlugin::getPrevBar (QDateTime &startDate, Bar &bar)
 {
+  DBT key;
+  DBT data;
+  DBC *cur;
+  memset(&key, 0, sizeof(DBT));
+  memset(&data, 0, sizeof(DBT));
+
+  db->cursor(db, NULL, &cur, 0);
+
   QString s = startDate.toString("yyyyMMddhhmmss");
-  QSqlQuery q(db);
-  q.exec("SELECT date, open, high, low, close, volume, oi FROM data WHERE date < " + s + " ORDER BY date DESC LIMIT 1");
-  if (! q.isActive())
+  key.data = (char *) s.latin1();
+  key.size = s.length() + 1;
+  int ret = cur->c_get(cur, &key, &data, DB_SET_RANGE);
+  if (ret)
+  {
+    char *err = db_strerror(ret);
+    qDebug("%s %s", s.latin1(), err);
+  }
+
+  ret = cur->c_get(cur, &key, &data, DB_PREV);
+  if (ret)
+  {
+    char *err = db_strerror(ret);
+    qDebug("%s %s", s.latin1(), err);
+    return;
+  }
+  
+  if (key.size != 15)
+    return;
+    
+  QString k = (char *) key.data;
+  if (bar.setDate(k))
     return;
 
-  q.next();
-  if (! q.isValid())
-    return;
-  getBar(q, bar);
+  QString d = (char *) data.data;
+  getBar(k, d, bar);
+  
+  cur->c_close(cur);
 }
 
 void DbPlugin::getNextBar (QDateTime &startDate, Bar &bar)
 {
+  DBT key;
+  DBT data;
+  DBC *cur;
+  memset(&key, 0, sizeof(DBT));
+  memset(&data, 0, sizeof(DBT));
+
+  db->cursor(db, NULL, &cur, 0);
+
   QString s = startDate.toString("yyyyMMddhhmmss");
-  QSqlQuery q(db);
-  q.exec("SELECT date, open, high, low, close, volume, oi FROM data WHERE date > " + s + " ORDER BY date ASC LIMIT 1");
-  if (! q.isActive())
+  key.data = (char *) s.latin1();
+  key.size = s.length() + 1;
+  int ret = cur->c_get(cur, &key, &data, DB_SET_RANGE);
+  if (ret)
+  {
+    char *err = db_strerror(ret);
+    qDebug("%s %s", s.latin1(), err);
+  }
+
+  ret = cur->c_get(cur, &key, &data, DB_NEXT);
+  if (ret)
+  {
+    char *err = db_strerror(ret);
+    qDebug("%s %s", s.latin1(), err);
+    return;
+  }
+  
+  if (key.size != 15)
+    return;
+    
+  QString k = (char *) key.data;
+  if (bar.setDate(k))
     return;
 
-  q.next();
-  if (! q.isValid())
-    return;
-  getBar(q, bar);
+  QString d = (char *) data.data;
+  getBar(k, d, bar);
+  
+  cur->c_close(cur);
 }
 
 void DbPlugin::getSearchBar (QDateTime &startDate, Bar &bar)
 {
+  DBT key;
+  DBT data;
+  DBC *cur;
+  memset(&key, 0, sizeof(DBT));
+  memset(&data, 0, sizeof(DBT));
+
+  db->cursor(db, NULL, &cur, 0);
+
   QString s = startDate.toString("yyyyMMddhhmmss");
-  QSqlQuery q(db);
-  q.exec("SELECT date, open, high, low, close, volume, oi FROM data WHERE date = " + s + " LIMIT 1");
-  if (! q.isActive())
+  key.data = (char *) s.latin1();
+  key.size = s.length() + 1;
+  int ret = cur->c_get(cur, &key, &data, DB_SET_RANGE);
+  if (ret)
+  {
+    char *err = db_strerror(ret);
+    qDebug("%s %s", s.latin1(), err);
+  }
+
+  if (key.size != 15)
+    return;
+    
+  QString k = (char *) key.data;
+  if (bar.setDate(k))
     return;
 
-  q.next();
-  if (! q.isValid())
-    return;
-  getBar(q, bar);
+  QString d = (char *) data.data;
+  getBar(k, d, bar);
+  
+  cur->c_close(cur);
 }
 
 void DbPlugin::getBar (QString &k, Bar &bar)
 {
-  QSqlQuery q(db);
-  q.exec("SELECT date, open, high, low, close, volume, oi FROM data WHERE date = " + k + " LIMIT 1");
-  if (! q.isActive())
-    return;
-
-  q.next();
-  if (! q.isValid())
-    return;
-  getBar(q, bar);
+  QString d;
+  getData(k, d);
+  if (d.length())
+    getBar(k, d, bar);
 }
 
 void DbPlugin::getHistory (BarData *barData, QDateTime &startDate)
@@ -284,10 +442,8 @@ void DbPlugin::getHistory (BarData *barData, QDateTime &startDate)
     QString fs, ss;
     getHeaderField(SpreadFirstSymbol, fs);
     getHeaderField(SpreadSecondSymbol, ss);
-    close(); // we have to close the current chart because sqlite can only open one at a time or we'll segfault
     Spread spread;
     spread.getHistory(barData, startDate, fs, ss, barRange, barLength);
-    open(symbol); // open her back up
     barData->createDateList();
     return;
   }
@@ -297,10 +453,8 @@ void DbPlugin::getHistory (BarData *barData, QDateTime &startDate)
     {
       QString s;
       getHeaderField(IndexList, s);
-      close();
       Index index;
       index.getHistory(barData, startDate, s, barRange, barLength);
-      open(symbol);
       barData->createDateList();
       return;
     }
@@ -311,48 +465,52 @@ void DbPlugin::getHistory (BarData *barData, QDateTime &startDate)
         QString fs, af;
         getHeaderField(Symbol, fs);
         getHeaderField(CCAdjustment, af);
-        close();
         CC cc;
         cc.getHistory(barData, startDate, fs, (bool) af.toInt(), barRange, barLength);
-        open(symbol);
         barData->createDateList();
         return;
       }
     }
   }
   
-  QDateTime dt = startDate;
-  while (1)
+  DBT key;
+  DBT data;
+  DBC *cur;
+  memset(&key, 0, sizeof(DBT));
+  memset(&data, 0, sizeof(DBT));
+
+  db->cursor(db, NULL, &cur, 0);
+
+  s = startDate.toString("yyyyMMddhhmmss");
+  key.data = (char *) s.latin1();
+  key.size = s.length() + 1;
+  int ret = cur->c_get(cur, &key, &data, DB_SET_RANGE);
+  if (ret)
   {
-    s = dt.toString("yyyyMMddhhmmss");
-    QSqlQuery q(db);
-    QString qs = "SELECT date,open,high,low,close,volume,oi FROM data WHERE date < " + s + " ORDER BY date DESC LIMIT " + 
-                 QString::number(barRange);
-    q.exec(qs);
-    if (! q.isActive())
-      break;
+    char *err = db_strerror(ret);
+    qDebug("%s %s", s.latin1(), err);
+  }
 
-    while (q.next())
-    {
-      Bar bar;
-      getBar(q, bar);
-      bar.setTickFlag(barType);
-      barData->prepend(bar);
-      if (barData->count() >= barRange)
-        break;
-    }
-
+  while (! cur->c_get(cur, &key, &data, DB_PREV))
+  {
     if (barData->count() >= barRange)
       break;
+      
+    if (key.size != 15)
+      continue;
+    
+    QString k = (char *) key.data;
+    Bar bar;
+    if (bar.setDate(k))
+      continue;
 
-    q.last();
-    if (! q.isValid())
-      break;
-    Bar tbar;
-    s = q.value(0).toString();
-    tbar.setDate(s);
-    tbar.getDate(dt);
+    QString d = (char *) data.data;
+    getBar(k, d, bar);
+    bar.setTickFlag(barType);
+    barData->prepend(bar);
   }
+  
+  cur->c_close(cur);
 
   barData->createDateList();
 }
@@ -363,17 +521,8 @@ void DbPlugin::setHeaderField (int i, QString &d)
   if (! d.length())
     d = "";
   getHeaderKey(i, k);
-  if (! k.length())
-    return;
-
-  QString s = "UPDATE header SET " + k + "='" + d + "' WHERE id=1";
-  QSqlQuery q(db);
-  if (! q.exec(s))
-  {
-    s = db->lastError().text();
-    if (s.length())
-      qDebug("DbPlugin::setHeaderField: %s", s.latin1());
-  } 
+  if (k.length())  
+    setData(k, d);
 }
 
 void DbPlugin::getHeaderField (int i, QString &d)
@@ -381,25 +530,8 @@ void DbPlugin::getHeaderField (int i, QString &d)
   d.truncate(0);
   QString k;
   getHeaderKey(i, k);
-  if (! k.length())
-    return;
-
-  QString s = "SELECT " + k + " FROM header";
-  QSqlQuery q(db);
-  if (! q.exec(s))
-  {
-    s = db->lastError().text();
-    if (s.length())
-    {
-      qDebug("DbPlugin::getHeaderField: %s", s.latin1());
-      return;
-    }
-  }
-
-  q.next();
-  if (! q.isValid())
-    return;
-  d = q.value(0).toString();
+  if (k.length())
+    getData(k, d);
 }
 
 void DbPlugin::getHeaderKey (int i, QString &k)
@@ -407,46 +539,49 @@ void DbPlugin::getHeaderKey (int i, QString &k)
   switch (i)
   {
     case BarType:
-      k = "bartype";
+      k = "BarType";
       break;
     case Fundamentals:
-      k = "fundamentals";
+      k = "Fundamentals";
       break;
     case Symbol:
-      k = "symbol";
+      k = "Symbol";
       break;
     case Type:
-      k = "type";
+      k = "Type";
       break;
     case Title:
-      k = "title";
+      k = "Title";
       break;
     case Path:
-      k = "path";
+      k = "Path";
+      break;
+    case CO:
+      k = "COList";
       break;
     case LocalIndicators:
-      k = "localindicators";
+      k = "LocalIndicators";
       break;
     case QuotePlugin:
-      k = "quoteplugin";
+      k = "QuotePlugin";
       break;
     case SpreadFirstSymbol:
-      k = "spreadfirstsymbol";
+      k = "SpreadFirstSymbol";
       break;
     case SpreadSecondSymbol:
-      k = "spreadsecondsymbol";
+      k = "SpreadSecondSymbol";
       break;
     case IndexList:
-      k = "indexlist";
+      k = "IndexList";
       break;
     case CCAdjustment:
-      k = "ccadjustment";
+      k = "CCAdjustment";
       break;
     case FuturesType:
-      k = "futurestype";
+      k = "FuturesType";
       break;
     case FuturesMonth:
-      k = "futuresmonth";
+      k = "FuturesMonth";
       break;
     default:
       k.truncate(0);
@@ -492,17 +627,35 @@ void DbPlugin::addIndicator (QString &d)
 
 void DbPlugin::getAllBars (BarData *bars)
 {
-  QSqlQuery q(db);
-  q.exec("SELECT date, open, high, low, close, volume, oi FROM data ORDER BY date ASC");
-  if (! q.isActive())
-    return;
-    
-  while (q.next())
+  DBT key;
+  DBT data;
+  DBC *cur;
+  memset(&key, 0, sizeof(DBT));
+  memset(&data, 0, sizeof(DBT));
+
+  QString s;
+  getHeaderField(BarType, s);
+  int barType = s.toInt();
+
+  db->cursor(db, NULL, &cur, 0);
+
+  while (! cur->c_get(cur, &key, &data, DB_PREV))
   {
+    if (key.size != 15)
+      continue;
+    
+    QString k = (char *) key.data;
     Bar bar;
-    getBar(q, bar);
-    bars->appendRaw(bar);
+    if (bar.setDate(k))
+      continue;
+
+    QString d = (char *) data.data;
+    getBar(k, d, bar);
+    bar.setTickFlag(barType);
+    bars->prependRaw(bar);
   }
+
+  cur->c_close(cur);
 }
 
 void DbPlugin::loadType ()
@@ -554,16 +707,29 @@ DbPlugin::DbType DbPlugin::getType (QString &d)
   return t;
 }
 
-void DbPlugin::getBar (QSqlQuery &q, Bar &bar)
+void DbPlugin::getBar (QString &k, QString &d, Bar &bar)
 {
-  QString s = q.value(0).toString();
-  bar.setDate(s);
-  bar.setOpen(q.value(1).toDouble());
-  bar.setHigh(q.value(2).toDouble());
-  bar.setLow(q.value(3).toDouble());
-  bar.setClose(q.value(4).toDouble());
-  bar.setVolume(q.value(5).toDouble());
-  bar.setOI(q.value(6).toInt());
+  QStringList l = QStringList::split(",", d, FALSE);
+
+  bar.setDate(k);
+  bar.setOpen(l[0].toDouble());
+  bar.setHigh(l[1].toDouble());
+  bar.setLow(l[2].toDouble());
+  bar.setClose(l[3].toDouble());
+
+  switch (type)
+  {
+    case Stock:
+      bar.setVolume(l[4].toDouble());
+      break;
+    case Futures:
+    case CC1:
+      bar.setVolume(l[4].toDouble());
+      bar.setOI(l[5].toInt());
+      break;
+    default:
+      break;
+  }
 }
 
 void DbPlugin::setBar (Bar &bar)
@@ -572,14 +738,23 @@ void DbPlugin::setBar (Bar &bar)
 
   bar.getDateTimeString(FALSE, k);
 
-  d = "REPLACE INTO data (date, open, high, low, close, volume, oi) VALUES (";
-  d.append(k + "," + QString::number(bar.getOpen()) + "," + QString::number(bar.getHigh()) + ",");
-  d.append(QString::number(bar.getLow()) + "," + QString::number(bar.getClose()) + ",");
-  d.append(QString::number(bar.getVolume(), 'f', 0) + "," + QString::number(bar.getOI()) + ")");
+  switch (type)
+  {
+    case Stock:
+      d = QString::number(bar.getOpen()) + "," + QString::number(bar.getHigh()) + "," +
+          QString::number(bar.getLow()) + "," + QString::number(bar.getClose()) + "," +
+          QString::number(bar.getVolume(), 'f', 0);
+      break;
+    case Futures:
+      d = QString::number(bar.getOpen()) + "," + QString::number(bar.getHigh()) + "," +
+          QString::number(bar.getLow()) + "," + QString::number(bar.getClose()) + "," +
+          QString::number(bar.getVolume(), 'f', 0) + "," + QString::number(bar.getOI());
+      break;
+    default:
+      break;
+  }
 
-  QSqlQuery q(db);
-  if (! q.exec(d))
-    qDebug("DbPlugin::setBar: %s", db->lastError().text().latin1());
+  setData(k, d);
 }
 
 void DbPlugin::createNew (QString &d)
@@ -781,70 +956,4 @@ void DbPlugin::getSymbol (QString &d)
   d = symbol;
 }
 
-void DbPlugin::deleteBar (QString &d)
-{
-  QString s = "DELETE FROM data WHERE date=" + d;
-  QSqlQuery q(db);
-  if (! q.exec(s))
-    qDebug("DbPlugin::deleteBar: %s", db->lastError().text().latin1());
-}
-
-void DbPlugin::setData (QString &d)
-{
-  QSqlQuery q(db);
-  if (! q.exec(d))
-    qDebug("DbPlugin::setData: %s", db->lastError().text().latin1());
-}
-
-void DbPlugin::createTables ()
-{
-  QSqlQuery q(db);
-
-  // ceate the data table for quote storage
-  if (! q.exec("create table data (date numeric(14,0) primary key, open numeric(15,4), high numeric(15,4), "
-               "low numeric(15,4), close numeric(15,4), volume numeric(15,0), oi numeric(15,0))"))
-  {
-    qDebug("DbPlugin::openChart:create data table: %s", db->lastError().text().latin1());
-    return;
-  }
-
-  // create header info table
-  if (! q.exec("create table header (id integer primary key, type varchar, symbol varchar, title varchar, "
-               "path varchar, localindicators varchar, quoteplugin varchar, spreadfirstsymbol varchar, "
-               "spreadsecondsymbol varchar, indexlist varchar, ccadjustment varchar, futurestype varchar, "
-               "futuresmonth varchar, bartype varchar, fundamentals varchar)"))
-  {
-    qDebug("DbPlugin::openChart:create header table: %s", db->lastError().text().latin1());
-    return;
-  }
-
-  // create the header record
-  if (! q.exec("INSERT INTO header (title) VALUES (' ')"))
-  {
-    qDebug("DbPlugin::openChart:insert blank record %s", db->lastError().text().latin1());
-    return;
-  }
-
-  // create co table
-  if (! q.exec("create table co (id integer, data varchar)"))
-  {
-    qDebug("DbPlugin::openChart:create co table: %s", db->lastError().text().latin1());
-    return;
-  }
-}
-
-bool DbPlugin::open (QString &d)
-{
-  db = QSqlDatabase::addDatabase("QSQLITE");
-  db->setDatabaseName(d);
-  db->setUserName("qtstalker");
-  db->setPassword("qtstalker");
-  db->setHostName("localhost");
-  if (! db->open())
-  {
-    qDebug("DbPlugin::open: %s", db->lastError().text().latin1());
-    return TRUE;
-  }
-  else
-    return FALSE;
-}
+// remove this 

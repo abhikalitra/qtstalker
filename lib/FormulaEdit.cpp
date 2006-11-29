@@ -440,3 +440,4 @@ void FormulaEdit::functionDialog ()
   formula->insert(format);
 }
 
+// remove this 

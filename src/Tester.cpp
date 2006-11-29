@@ -909,3 +909,4 @@ void Tester::enterTrade (TradeItem::TradePosition flag)
   }
 }
 
+// remove this

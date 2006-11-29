@@ -98,12 +98,17 @@ SOURCES += Index.cpp
 TARGET = qtstalker
 VERSION = 0.34.0
 
+LIBS += -ldb
+     
 # linux options
 unix:linux-g++:LIBS += -ldl
 
 # FreeBSD options
 unix:freebsd-g++:INCLUDEPATH += /usr/X11R6/include
+unix:freebsd-g++:INCLUDEPATH += /usr/local/include/db43
+unix:freebsd-g++:LIBS += -L/usr/local/lib/db43
 
 target.path = /usr/lib
 INSTALLS += target
 
+# remove this
