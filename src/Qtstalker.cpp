@@ -319,6 +319,7 @@ void QtstalkerApp::slotQuotes ()
     return;
 
   connect(plug, SIGNAL(chartUpdated()), this, SLOT(slotChartUpdated()));
+  connect(plug, SIGNAL(signalWakeup()), this, SLOT(slotWakeup()));
 
   plug->show();
 }
@@ -1052,6 +1053,11 @@ void QtstalkerApp::slotPaperTradeChanged (bool d)
   slotChartUpdated();
 }
 
+void QtstalkerApp::slotWakeup ()
+{
+  qApp->processEvents();
+}
+
 //**********************************************************************
 //**********************************************************************
 //**********************************************************************
@@ -1076,6 +1082,7 @@ int main(int argc, char *argv[])
   return a.exec();
 }
 
+// remove
 
 
 

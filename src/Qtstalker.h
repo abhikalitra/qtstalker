@@ -116,6 +116,7 @@ class QtstalkerApp : public QMainWindow
     void slotDrawPlots ();
     void slotPaperTradeChanged (bool);
     void addIndicatorButton (QString);
+    void slotWakeup ();
     
   private:
     QToolBar *toolbar;
@@ -151,3 +152,4 @@ class QtstalkerApp : public QMainWindow
 
 #endif
 
+// remove

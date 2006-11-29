@@ -143,7 +143,10 @@ void GroupPage::addGroupItem()
       s = "ln -s " + l[loop] + " ";
       QString ts;
       nav->getCurrentPath(ts);
-      s.append(ts + "/" + fi.fileName());
+      QString s2 = ts + "/" + fi.fileName();
+      QDir dir;
+      dir.remove(s2, TRUE);
+      s.append(s2);
       system(s);
     }
 
@@ -405,3 +408,4 @@ void GroupPage::refreshList ()
 }
 
 
+// remove this

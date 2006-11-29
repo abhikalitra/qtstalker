@@ -143,10 +143,6 @@ Save changes?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Done</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Type not found</source>
         <translation type="unfinished"></translation>
     </message>
@@ -156,14 +152,6 @@ Save changes?</source>
     </message>
     <message>
         <source>Directory not found</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Update cancelled</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>CSV Prefs</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -266,85 +254,17 @@ Save changes?</source>
         <source>Are you sure you want to delete this rule?</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>File fields != rule format</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>CSV Quotes</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>CSVDialog</name>
-    <message>
-        <source>New Rule</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Edit Rule</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Delete Rule</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Rule:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Input:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Symbol:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Auto Reload:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select Date Range</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Date Start:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Date End:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>General</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enter new rule name.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>NewRule</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Warning</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>This rule already exists.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select Rule To Edit</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select Rules To Delete</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Qtstalker: Warning</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Are you sure you want to delete this rule?</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>CSVRuleDialog</name>
@@ -2757,81 +2677,9 @@ Ver CVS 0.34 (working title)
 </context>
 <context>
     <name>QtstalkerFormat</name>
-    <message>
-        <source>Updating </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>QtstalkerFormat Prefs</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>File Input</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Delete Chart</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>ChartPath field not found. Skipping file</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>CreateDirectories failed. Skipping file</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Could not open db. Skipping file</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>QuoteDialog</name>
-    <message>
-        <source>Qtstalker: Quotes</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Update</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Cancel Update</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Quote Source:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Settings...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Settings</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Download Status:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Quotes</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Done</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Starting update...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Update cancelled.</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>QuotePlugin</name>
@@ -3725,6 +3573,30 @@ eg. 2:1</source>
         <source>&amp;Cancel</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Berkeley db_dump location</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Progress</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Chart Conversion</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Perform Conversion</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Chart Conversion Error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Berkeley db_dump executable not selected</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>VerticalLine</name>
@@ -3752,23 +3624,7 @@ eg. 2:1</source>
 <context>
     <name>Yahoo</name>
     <message>
-        <source>Downloading </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Timeout: retry limit skipping</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source> skipped</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Timeout: retry </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Unable to download </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3815,52 +3671,32 @@ eg. 2:1</source>
         <source>Enter symbols to add. Note: separate symbols with a space</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Yahoo Quotes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Downloading</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>skipped</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Timeout: retry</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>skipping update. Source does not match destination</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unable to download</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>YahooDialog</name>
-    <message>
-        <source>New Symbol</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Method:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Start Date:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>End Date:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Error Retry</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Timeout</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Adjustment</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>All Symbols</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Yahoo</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>New Yahoo Symbols</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enter symbols to add. Note: separate symbols with a space</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 </TS>
