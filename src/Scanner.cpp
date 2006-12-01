@@ -34,6 +34,8 @@
 #include "DbPlugin.h"
 #include "IndicatorPlugin.h"
 #include "HelpWindow.h"
+#include "Traverse.h"
+
 
 Scanner::Scanner (QString n) : QTabDialog (0, 0, FALSE)
 {
@@ -58,6 +60,10 @@ Scanner::Scanner (QString n) : QTabDialog (0, 0, FALSE)
 
   fileButton = new QPushButton(tr("0 Symbols"), gbox);
   connect(fileButton, SIGNAL(clicked()), this, SLOT(getSymbols()));
+
+  basePath = new QComboBox(gbox);
+  basePath->insertItem(tr("Chart"), -1);
+  basePath->insertItem(tr("Group"), -1);
 
   QGridLayout *grid = new QGridLayout(vbox, 1, 2);
   grid->setColStretch(1, 1);
@@ -155,11 +161,13 @@ void Scanner::scan ()
   if (allSymbols->isChecked())
   {
     QString ts;
-    config.getData(Config::DataPath, ts);
-    Traverse *trav = new Traverse();
-    trav->traverse(ts + "/Stocks");
-    fileList = trav->getList();
-    delete trav;
+    if (! basePath->currentText().compare(tr("Chart")))
+      config.getData(Config::DataPath, ts);
+    else
+      config.getData(Config::GroupPath, ts);
+    Traverse trav;
+    trav.traverse(ts + "/Stocks");
+    fileList = trav.getList();
   }
   
   QProgressDialog prog(tr("Scanning..."),
@@ -251,6 +259,7 @@ void Scanner::saveRule ()
   stream << "allSymbols=" << QString::number(allSymbols->isChecked()) << "\n";
   stream << "compression=" << period->currentText() << "\n";
   stream << "bars=" << bars->text() << "\n";
+  stream << "basepath=" << basePath->currentText() << "\n";
   
   int loop;
   for (loop = 0; loop < (int) fileList.count(); loop++)
@@ -318,6 +327,15 @@ void Scanner::loadRule ()
       bars->setValue(dat.toInt());
       continue;
     }
+
+    if (! key.compare("basepath"))
+    {
+      if (! dat.compare(tr("Chart")))
+        basePath->setCurrentItem(0);
+      else
+        basePath->setCurrentItem(1);
+      continue;
+    }
     
     if (! key.compare("script"))
     {
@@ -342,7 +360,10 @@ void Scanner::exitDialog ()
 void Scanner::getSymbols ()
 {
   QString s;
-  config.getData(Config::DataPath, s);
+  if (! basePath->currentText().compare(tr("Chart")))
+    config.getData(Config::DataPath, s);
+  else
+    config.getData(Config::GroupPath, s);
   QString s2("*");
   SymbolDialog *dialog = new SymbolDialog(this,
                                           s,
@@ -375,49 +396,4 @@ void Scanner::slotHelp ()
   HelpWindow *hw = new HelpWindow(this, s);
   hw->show();
 }
-
-//******************************************************
-//**************** TRAVERSE ****************************
-//******************************************************
-
-Traverse::Traverse()
-{
-}
-
-Traverse::~Traverse()
-{
-}
-
-void Traverse::traverse(QString dirname)
-{
-  list.clear();
-  
-  QDir dir(dirname);
-  dir.setFilter(QDir::Dirs|QDir::Files);
-
-  const QFileInfoList *fileinfolist = dir.entryInfoList();
-  QFileInfoListIterator it(*fileinfolist);
-  QFileInfo *fi;
-  while((fi = it.current()))
-  {
-    if(fi->fileName() == "." || fi->fileName() == "..")
-    {
-      ++it;
-      continue;
-    }
-
-    if(fi->isDir() && fi->isReadable())
-      traverse(fi->absFilePath());
-    else
-      list.append(fi->absFilePath());
-
-    ++it;
-  }
-}
-
-QStringList Traverse::getList()
-{
-  return list;
-}
-
 

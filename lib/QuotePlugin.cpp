@@ -44,9 +44,6 @@ QuotePlugin::QuotePlugin () : QTabDialog (0, "QuoteDialog", FALSE, 0)
   timer = new QTimer(this);
   connect(timer, SIGNAL(timeout()), this, SLOT(slotTimeout()));
 
-  wakeupTimer = new QTimer(this);
-  connect(wakeupTimer, SIGNAL(timeout()), this, SLOT(slotWakeup()));
-
   buildGui();
 }
 
@@ -376,25 +373,13 @@ void QuotePlugin::help ()
   hw->show();
 }
 
+// virtual function
 void QuotePlugin::update ()
 {
 }
 
 void QuotePlugin::slotWakeup ()
 {
-//  wakeupTimer->start(wakeupInterval, FALSE);
   emit signalWakeup();
 }
-
-void QuotePlugin::startWakeup (int d)
-{
-  wakeupInterval = d;
-  wakeupTimer->start(wakeupInterval, FALSE);
-}
-
-void QuotePlugin::stopWakeup ()
-{
-  wakeupTimer->stop();
-}
-
 

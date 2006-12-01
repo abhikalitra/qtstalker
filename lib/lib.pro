@@ -48,6 +48,7 @@ HEADERS += IndexDialog.h
 HEADERS += CC.h
 HEADERS += Spread.h
 HEADERS += Index.h
+HEADERS += Traverse.h
 
    
 SOURCES += QuotePlugin.cpp
@@ -93,6 +94,7 @@ SOURCES += IndexDialog.cpp
 SOURCES += CC.cpp
 SOURCES += Spread.cpp
 SOURCES += Index.cpp
+SOURCES += Traverse.cpp
 
     
 TARGET = qtstalker
@@ -111,4 +113,3 @@ unix:freebsd-g++:LIBS += -L/usr/local/lib/db43
 target.path = /usr/lib
 INSTALLS += target
 
-# remove this

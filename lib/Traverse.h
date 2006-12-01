@@ -19,51 +19,22 @@
  *  USA.
  */
 
-#ifndef SCANNER_HPP
-#define SCANNER_HPP
+#ifndef TRAVERSE_HPP
+#define TRAVERSE_HPP
 
 #include <qstring.h>
-#include <qtabdialog.h>
-#include <qcombobox.h>
-#include <qpushbutton.h>
-#include <qcheckbox.h>
-#include <qspinbox.h>
-#include "Config.h"
-#include "FormulaEdit.h"
+#include <qstringlist.h>
 
-class Scanner : public QTabDialog
+class Traverse
 {
-  Q_OBJECT
-
-  signals:
-    void exitScanner ();
-    void message (QString);
-    void scanComplete ();
-
   public:
-    Scanner (QString);
-    ~Scanner ();
+    Traverse();
+    ~Traverse();
+    void traverse(QString dirname);
+    QStringList getList();
 
-  public slots:
-    void scan ();
-    void saveRule ();
-    void exitDialog ();
-    void loadRule ();
-    void getSymbols ();
-    void allSymbolsToggled (bool);
-    void slotHelp ();
-
-  protected:
-    FormulaEdit *list;
-    QComboBox *period;
-    QString scannerName;
-    Config config;
-    QPushButton *fileButton;
-    QStringList fileList;
-    QCheckBox *allSymbols;
-    QStringList barLengthList;
-    QSpinBox *bars;
-    QComboBox *basePath;
+  private:
+    QStringList list;
 };
 
 #endif

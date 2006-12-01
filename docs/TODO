@@ -29,8 +29,6 @@ To Do:
 - median lines chart objects
 - fibo time chart objects
 - fix: backtester crashes when using old 0.32 syntax. should be able to handle this error.
-- fix: latency for quote import when importing lots of quotes. remove all non-error messages to the status list.
-       use a larger latency update timer. perhaps 0.25 to 1 second intervals for better balance.
 
 
 

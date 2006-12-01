@@ -16,6 +16,10 @@
 
 20061127: Fixed LOWPASS bug that returned the input instead of the ouput.
 
+20061130: Added Charts or Groups option to the scanner dialog. If charts is chosen, the file selector will
+          allow only chart directories to be navigated. If Groups is chosen, then only group directories
+          can be navigated.
+
 
 0.33
 ====
