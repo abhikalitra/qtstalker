@@ -579,7 +579,7 @@ void Tester::loadSignals ()
       qDebug("Tester::loadSignals: no PlotLine returned");
       continue;
     }
-    
+
     int loop2 = recordList->count() - line->getSize();
     int lineLoop = 0;
     Setting *trade = 0;
@@ -712,7 +712,7 @@ void Tester::test ()
   }
 
   reportPage->createSummary(trades, testPage->getAccount());
-  
+
   chartPage->updateChart(recordList, trades, testPage->getAccount());
 
   db.close();
@@ -909,4 +909,3 @@ void Tester::enterTrade (TradeItem::TradePosition flag)
   }
 }
 
-// remove this

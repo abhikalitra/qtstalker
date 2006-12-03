@@ -167,6 +167,8 @@ void TesterChartPage::updateChart (BarData *recordList, QPtrList<TradeItem> &tra
     QDateTime rdate, edate, xdate;
     recordList->getDate(loop, rdate);
     TradeItem *trade = trades.at(tloop);
+    if (! trade)
+      continue;
     trade->getEnterDate(edate);
     trade->getExitDate(xdate);
 

@@ -20,6 +20,9 @@
           allow only chart directories to be navigated. If Groups is chosen, then only group directories
           can be navigated.
 
+20061201: Fixed bug in backtster that sefaults using < 0.33 CUS syntax.
+
+
 
 0.33
 ====

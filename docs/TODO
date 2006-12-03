@@ -28,7 +28,6 @@ To Do:
 - fix: there is no way to use buy/sell prices in stop formulas in the tester. 
 - median lines chart objects
 - fibo time chart objects
-- fix: backtester crashes when using old 0.32 syntax. should be able to handle this error.
 
 
 
