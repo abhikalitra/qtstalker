@@ -30,9 +30,12 @@
 #include <qstringlist.h>
 #include <qdict.h>
 #include <qvaluelist.h>
+#include <qobject.h>
 
-class IndicatorPlugin
+class IndicatorPlugin : public QObject
 {
+  Q_OBJECT
+  
   public:
   
     enum Operator

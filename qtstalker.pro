@@ -15,6 +15,7 @@ SUBDIRS += plugins/quote/Yahoo
 # compile indicator plugins
 SUBDIRS += plugins/indicator/BARS
 SUBDIRS += plugins/indicator/CUS
+SUBDIRS += plugins/indicator/ExScript
 SUBDIRS += plugins/indicator/FI
 SUBDIRS += plugins/indicator/LMS
 SUBDIRS += plugins/indicator/LOWPASS

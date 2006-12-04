@@ -101,10 +101,6 @@ Save changes?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Updating </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Could not open db.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -262,9 +258,6 @@ Save changes?</source>
         <source>CSV Quotes</source>
         <translation type="unfinished"></translation>
     </message>
-</context>
-<context>
-    <name>CSVDialog</name>
 </context>
 <context>
     <name>CSVRuleDialog</name>
@@ -1272,10 +1265,6 @@ Save changes?</source>
     </message>
     <message>
         <source>Timeout: retry </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Updating </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2414,10 +2403,6 @@ Save changes?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Updating </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Indicator Selection</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2589,6 +2574,22 @@ Save changes?</source>
         <source>Select a method:</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Script Path</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Switches</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ExScript Indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ExScript Format</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>QtstalkerApp</name>
@@ -2674,12 +2675,6 @@ Ver CVS 0.34 (working title)
 (C) 2001-2006 by Stefan Stratigakos</source>
         <translation type="unfinished"></translation>
     </message>
-</context>
-<context>
-    <name>QtstalkerFormat</name>
-</context>
-<context>
-    <name>QuoteDialog</name>
 </context>
 <context>
     <name>QuotePlugin</name>
@@ -2788,6 +2783,14 @@ Ver CVS 0.34 (working title)
     </message>
     <message>
         <source>Select symbols to scan</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Chart</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Group</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3573,30 +3576,6 @@ eg. 2:1</source>
         <source>&amp;Cancel</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <source>Berkeley db_dump location</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Progress</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Chart Conversion</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Perform Conversion</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Chart Conversion Error</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Berkeley db_dump executable not selected</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>VerticalLine</name>
@@ -3695,8 +3674,5 @@ eg. 2:1</source>
         <source>Unable to download</source>
         <translation type="unfinished"></translation>
     </message>
-</context>
-<context>
-    <name>YahooDialog</name>
 </context>
 </TS>

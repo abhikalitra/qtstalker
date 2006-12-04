@@ -22,6 +22,8 @@
 
 20061201: Fixed bug in backtster that sefaults using < 0.33 CUS syntax.
 
+20061203: Added new indicator plugin ExScript. User can run external scripts that can pass data back to ExScript
+          to plot.
 
 
 0.33
