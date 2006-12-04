@@ -36,10 +36,10 @@ class ExScript : public IndicatorPlugin
     void setIndicatorSettings (Setting &);
     PlotLine * calculateCustom (QString &, QPtrList<PlotLine> &);
     void formatDialog (QStringList &vl, QString &rv, QString &rs);
+    void createOutput ();
 
   public slots:
     void readFromStdout ();
-    void createOutput ();
     
   private:
     QColor color;

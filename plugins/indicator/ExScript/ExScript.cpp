@@ -21,6 +21,7 @@
 
 #include "ExScript.h"
 #include "PrefDialog.h"
+#include "ExScriptThread.h"
 #include <qdict.h>
 #include <qcstring.h>
 
@@ -72,7 +73,6 @@ void ExScript::calculate ()
 
   proc = new QProcess(this);
   connect(proc, SIGNAL(readyReadStdout()), this, SLOT(readFromStdout()));
-  connect(proc, SIGNAL(processExited()), this, SLOT(createOutput()));
 
   proc->addArgument(scriptPath);
 
@@ -81,15 +81,24 @@ void ExScript::calculate ()
   for (loop = 0; loop < (int) l.count(); loop++)
     proc->addArgument(l[loop]);
 
+  buffer.truncate(0);
+
   if (! proc->start())
   {
-    qDebug("ExScript::calculate: error starting script");
+    qDebug("ExScriptThread::calculate: error starting script");
     delete proc;
     proc = 0;
     return;
   }
 
-  buffer.truncate(0);
+  ExScriptThread t;
+  while (proc->isRunning())
+  {
+    t.run();
+    t.wait();
+  }
+
+  createOutput();
 }
 
 void ExScript::createOutput ()
