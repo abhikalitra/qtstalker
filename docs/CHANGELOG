@@ -31,7 +31,7 @@
 
 20061205: Applied patch #1609188 - modified util.html. Thanks to Lothar for the patch.
 
-20061205: Added XOR operator to the UTIL(COMP) function.
+20061205: Added new UTIL function INRANGE. Returns TRUE if value is => min and <= max. Otherwise returns FALSE.
 
 
 

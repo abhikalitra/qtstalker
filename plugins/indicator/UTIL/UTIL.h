@@ -36,6 +36,7 @@ class UTIL : public IndicatorPlugin
     PlotLine * calculatePER (QString &p, QPtrList<PlotLine> &d);
     PlotLine * calculateCOLOR (QString &p, QPtrList<PlotLine> &d);
     PlotLine * calculateHL (QString &p, QPtrList<PlotLine> &d, int);
+    PlotLine * calculateINRANGE (QString &p, QPtrList<PlotLine> &d);
     void formatDialog (QStringList &vl, QString &rv, QString &rs);
   
   private:

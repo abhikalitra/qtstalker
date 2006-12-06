@@ -43,6 +43,7 @@ UTIL::UTIL ()
   methodList.append("COLOR");
   methodList.append("Higher");
   methodList.append("Lower");
+  methodList.append("INRANGE");
   methodList.sort();
 
   helpFile = "math.html";
@@ -219,6 +220,12 @@ PlotLine * UTIL::calculateCustom (QString &p, QPtrList<PlotLine> &d)
     if (! l[0].compare("Lower"))
     {
       out = calculateHL(p, d, 2);
+      break;
+    }
+
+    if (! l[0].compare("INRANGE"))
+    {
+      out = calculateINRANGE(p, d);
       break;
     }
 
@@ -421,12 +428,6 @@ PlotLine * UTIL::calculateCOMP (QString &p, QPtrList<PlotLine> &d)
         break;
       case Or:
         if (input->getData(loop) || t)
-          line->prepend(1);
-	else
-          line->prepend(0);
-        break;
-      case Xor:
-        if (input->getData(loop) ^ t)
           line->prepend(1);
 	else
           line->prepend(0);
@@ -764,6 +765,40 @@ PlotLine * UTIL::calculateHL (QString &p, QPtrList<PlotLine> &d, int type)
   return output->getLine(0);
 }
 
+PlotLine * UTIL::calculateINRANGE (QString &p, QPtrList<PlotLine> &d)
+{
+  // format: METHOD, INPUT_ARRAY, DOUBLE, DOUBLE
+
+  formatList.clear();
+  formatList.append(FormatString);
+  formatList.append(FormatInputArray);
+  formatList.append(FormatDouble);
+  formatList.append(FormatDouble);
+
+  if (checkFormat(p, d, 4, 4))
+    return 0;
+ 
+  clearOutput();
+
+  PlotLine *line = new PlotLine();
+  PlotLine *input = d.at(0);
+
+  double min = formatStringList[2].toDouble();
+  double max = formatStringList[3].toDouble();
+  
+  int loop;
+  for (loop = 0; loop < (int) input->getSize(); loop++)
+  {
+    if (input->getData(loop) >= min && input->getData(loop) <= max)
+      line->append(1);
+    else
+      line->append(0);
+  }
+
+  output->addLine(line);
+  return output->getLine(0);
+}
+
 void UTIL::formatDialog (QStringList &vl, QString &rv, QString &rs)
 {
   rs.truncate(0);
@@ -789,6 +824,9 @@ void UTIL::formatDialog (QStringList &vl, QString &rv, QString &rs)
   QString ol = QObject::tr("Operator");
   QString perl = QObject::tr("Period");
   QString cl = QObject::tr("Color");
+  QString minl = QObject::tr("Minimum");
+  QString maxl = QObject::tr("Maximum");
+
   PrefDialog *dialog = new PrefDialog(0);
   dialog->setCaption(QObject::tr("UTIL Format"));
   dialog->createPage (pl);
@@ -863,6 +901,15 @@ void UTIL::formatDialog (QStringList &vl, QString &rv, QString &rs)
       dialog->addDoubleItem(cil, pl, 0, -99999999.0, 99999999.0);
       QColor color("red");
       dialog->addColorItem(cl, pl, color);
+      break;
+    }
+
+    if (! method.compare("INRANGE"))
+    {
+      // format1: METHOD, ARRAY_INPUT, DOUBLE, DOUBLE
+      dialog->addComboItem(ai1l, pl, vl, 0);
+      dialog->addDoubleItem(minl, pl, 0, -99999999.0, 99999999.0);
+      dialog->addDoubleItem(maxl, pl, 0, -99999999.0, 99999999.0);
       break;
     }
 
@@ -974,6 +1021,17 @@ void UTIL::formatDialog (QStringList &vl, QString &rv, QString &rs)
         QColor color;
         dialog->getColor(cl, color);
         rs.append("," + color.name());
+        break;
+      }
+
+      if (! method.compare("INRANGE"))
+      {
+        // format1: METHOD, ARRAY_INPUT, DOUBLE, DOUBLE
+        dialog->getCombo(ai1l, s);
+        double d = dialog->getDouble(minl);
+        rs.append("," + QString::number(d));
+        d = dialog->getDouble(maxl);
+        rs.append("," + QString::number(d));
         break;
       }
 
