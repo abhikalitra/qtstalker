@@ -25,6 +25,15 @@
 20061203: Added new indicator plugin ExScript. User can run external scripts that can pass data back to ExScript
           to plot.
 
+20061204: Fixed bug that did not save/restore chart pixelspaces.
+
+20061205: Added options to send bar data through stdin to the ExScript plugin.
+
+20061205: Applied patch #1609188 - modified util.html. Thanks to Lothar for the patch.
+
+20061205: Added XOR operator to the UTIL(COMP) function.
+
+
 
 0.33
 ====

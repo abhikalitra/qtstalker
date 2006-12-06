@@ -47,6 +47,8 @@ ChartToolbar::ChartToolbar (QMainWindow *mw) : QToolBar (mw, "chartToolbar")
 
   pixelspace = new QSpinBox(this);
   pixelspace->setRange(4, 99);
+  config.getData(Config::Pixelspace, ts);
+  pixelspace->setValue(ts.toInt());
   connect (pixelspace, SIGNAL(valueChanged(int)), this, SIGNAL(signalPixelspaceChanged(int)));
   QToolTip::add(pixelspace, tr("Bar Spacing"));
 
@@ -170,6 +172,9 @@ void ChartToolbar::saveSettings ()
   
   s = QString::number(getBarLengthInt());
   config.setData(Config::BarLength, s);
+
+  s = QString::number(getPixelspace());
+  config.setData(Config::Pixelspace, s);
 }
 
 void ChartToolbar::setFocus ()

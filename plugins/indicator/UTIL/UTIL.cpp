@@ -425,6 +425,12 @@ PlotLine * UTIL::calculateCOMP (QString &p, QPtrList<PlotLine> &d)
 	else
           line->prepend(0);
         break;
+      case Xor:
+        if (input->getData(loop) ^ t)
+          line->prepend(1);
+	else
+          line->prepend(0);
+        break;
       default:
         break;
     }

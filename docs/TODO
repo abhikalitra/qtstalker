@@ -25,9 +25,14 @@ To Do:
 - add optimization range testing for the backtester.
 - integrate TALIB into the indicator base class and remove the TALIB plugin.
 - fix: negative account volume trades in the tester.
-- fix: there is no way to use buy/sell prices in stop formulas in the tester. 
+- add: there is no way to use buy/sell prices in stop formulas in the tester. 
 - median lines chart objects
 - fibo time chart objects
+- add new UTIL function BTW (between range) inrange := UTIL(BTW,value,max,min) 
+- add: an include option for CUS rules to include other CUS rules. ie. INCLUDECUS("sma50x200up")
+- add: a data window function for charts/groups that table indicator values.
+- add: option to draw zone lines to indicators globally
+- add: add a timeout function to ExScript so it doesn't wait in loop forever with no input.
 
 
 

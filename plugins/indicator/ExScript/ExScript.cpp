@@ -35,9 +35,23 @@ ExScript::ExScript ()
   scriptPathLabel = "scriptPath";	
   comlineParmsLabel = "comlineParms";	
   pluginLabel = "plugin";
+  dateLabel = "dateCheck";
+  openLabel = "openCheck";
+  highLabel = "highCheck";
+  lowLabel = "lowCheck";
+  closeLabel = "closeCheck";
+  volumeLabel = "volumeCheck";
+  oiLabel = "oiCheck";
 
   formatList.append(FormatString);
   formatList.append(FormatString);
+  formatList.append(FormatBool);
+  formatList.append(FormatBool);
+  formatList.append(FormatBool);
+  formatList.append(FormatBool);
+  formatList.append(FormatBool);
+  formatList.append(FormatBool);
+  formatList.append(FormatBool);
 
   proc = 0;
 
@@ -55,6 +69,13 @@ void ExScript::setDefaults ()
   color.setNamedColor("red");
   lineType = PlotLine::Line;
   label = pluginName;
+  dateFlag = FALSE;
+  openFlag = FALSE;
+  highFlag = FALSE;
+  lowFlag = FALSE;
+  closeFlag = FALSE;
+  volumeFlag = FALSE;
+  oiFlag = FALSE;
 }
 
 void ExScript::calculate ()
@@ -91,6 +112,9 @@ void ExScript::calculate ()
     return;
   }
 
+  if (dateFlag || openFlag || highFlag || lowFlag || closeFlag || volumeFlag || oiFlag)
+    sendInput();
+
   ExScriptThread t;
   while (proc->isRunning())
   {
@@ -110,7 +134,10 @@ void ExScript::createOutput ()
   }
 
   if (! buffer.length())
+  {
+    qDebug("ExScript::createOutput: output buffer empty");
     return;
+  }
 
   QStringList l = QStringList::split(",", buffer, FALSE);
   PlotLine *line = new PlotLine();
@@ -124,6 +151,45 @@ void ExScript::createOutput ()
   output->addLine(line);
 }
 
+void ExScript::sendInput ()
+{
+  int loop;
+  QString ss, s;
+  for (loop = 0; loop < data->count(); loop++)
+  {
+    Bar bar;
+    data->getBar(loop, bar);
+
+    if (dateFlag)
+    {
+      bar.getDateTimeString(FALSE, s);
+      ss.append(s + ",");
+    }
+
+    if (openFlag)
+      ss.append(QString::number(bar.getOpen()) + ",");
+
+    if (highFlag)
+      ss.append(QString::number(bar.getHigh()) + ",");
+
+    if (lowFlag)
+      ss.append(QString::number(bar.getLow()) + ",");
+
+    if (closeFlag)
+      ss.append(QString::number(bar.getClose()) + ",");
+
+    if (volumeFlag)
+      ss.append(QString::number(bar.getVolume(), 'f', 0) + ",");
+
+    if (oiFlag)
+      ss.append(QString::number(bar.getOI()) + ",");
+  }
+
+  ss.truncate(ss.length() - 1);
+
+  proc->writeToStdin(ss);
+}
+
 void ExScript::readFromStdout ()
 {
   QByteArray ba = proc->readStdout();
@@ -134,12 +200,20 @@ void ExScript::readFromStdout ()
 
 int ExScript::indicatorPrefDialog (QWidget *w)
 {
-  QString pl = QObject::tr("Parms");
+  QString pl2 = QObject::tr("Output");
   QString cl = QObject::tr("Color");
   QString ll = QObject::tr("Label");
   QString ltl = QObject::tr("Line Type");
   QString spl = QObject::tr("Script Path");
   QString clsl = QObject::tr("Switches");
+  QString pl = QObject::tr("Input");
+  QString dl = QObject::tr("Date");
+  QString ol = QObject::tr("Open");
+  QString hl = QObject::tr("High");
+  QString lol = QObject::tr("Low");
+  QString cll = QObject::tr("Close");
+  QString vl = QObject::tr("Volume");
+  QString oil = QObject::tr("Open Interest");
 
   PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(QObject::tr("ExScript Indicator"));
@@ -149,9 +223,18 @@ int ExScript::indicatorPrefDialog (QWidget *w)
   QStringList l;
   dialog->addFileItem(spl, pl, l, scriptPath);
   dialog->addTextItem(clsl, pl, comlineParms);
-  dialog->addColorItem(cl, pl, color);
-  dialog->addTextItem(ll, pl, label);
-  dialog->addComboItem(ltl, pl, lineTypes, lineType);
+  dialog->addCheckItem(dl, pl, dateFlag);
+  dialog->addCheckItem(ol, pl, openFlag);
+  dialog->addCheckItem(hl, pl, highFlag);
+  dialog->addCheckItem(lol, pl, lowFlag);
+  dialog->addCheckItem(cll, pl, closeFlag);
+  dialog->addCheckItem(vl, pl, volumeFlag);
+  dialog->addCheckItem(oil, pl, oiFlag);
+
+  dialog->createPage(pl2);
+  dialog->addColorItem(cl, pl2, color);
+  dialog->addTextItem(ll, pl2, label);
+  dialog->addComboItem(ltl, pl2, lineTypes, lineType);
   
   int rc = dialog->exec();
   
@@ -161,6 +244,14 @@ int ExScript::indicatorPrefDialog (QWidget *w)
     if (l.count())
       scriptPath = l[0];
     dialog->getText(clsl, comlineParms);
+    dateFlag = dialog->getCheck(dl);
+    openFlag = dialog->getCheck(ol);
+    highFlag = dialog->getCheck(hl);
+    lowFlag = dialog->getCheck(lol);
+    closeFlag = dialog->getCheck(cll);
+    volumeFlag = dialog->getCheck(vl);
+    oiFlag = dialog->getCheck(oil);
+
     dialog->getColor(cl, color);
     dialog->getText(ll, label);
     lineType = (PlotLine::LineType) dialog->getComboIndex(ltl);
@@ -200,6 +291,34 @@ void ExScript::setIndicatorSettings (Setting &dict)
   dict.getData(comlineParmsLabel, s);
   if (s.length())
     comlineParms = s;
+
+  dict.getData(dateLabel, s);
+  if (s.length())
+    dateFlag = s.toInt();
+
+  dict.getData(openLabel, s);
+  if (s.length())
+    openFlag = s.toInt();
+
+  dict.getData(highLabel, s);
+  if (s.length())
+    highFlag = s.toInt();
+
+  dict.getData(lowLabel, s);
+  if (s.length())
+    lowFlag = s.toInt();
+
+  dict.getData(closeLabel, s);
+  if (s.length())
+    closeFlag = s.toInt();
+
+  dict.getData(volumeLabel, s);
+  if (s.length())
+    volumeFlag = s.toInt();
+
+  dict.getData(oiLabel, s);
+  if (s.length())
+    oiFlag = s.toInt();
 }
 
 void ExScript::getIndicatorSettings (Setting &dict)
@@ -211,18 +330,67 @@ void ExScript::getIndicatorSettings (Setting &dict)
   dict.setData(lineTypeLabel, ts);
   dict.setData(scriptPathLabel, scriptPath);
   dict.setData(comlineParmsLabel, comlineParms);
+  ts = QString::number(dateFlag);
+  dict.setData(dateLabel, ts);
+  ts = QString::number(openFlag);
+  dict.setData(openLabel, ts);
+  ts = QString::number(highFlag);
+  dict.setData(highLabel, ts);
+  ts = QString::number(lowFlag);
+  dict.setData(lowLabel, ts);
+  ts = QString::number(closeFlag);
+  dict.setData(closeLabel, ts);
+  ts = QString::number(volumeFlag);
+  dict.setData(volumeLabel, ts);
+  ts = QString::number(oiFlag);
+  dict.setData(oiLabel, ts);
   dict.setData(pluginLabel, pluginName);
 }
 
 PlotLine * ExScript::calculateCustom (QString &p, QPtrList<PlotLine> &d)
 {
-  // format1: SCRIPT_PATH, COMMAND_LINE_SWITCHES
+  // format1: SCRIPT_PATH, COMMAND_LINE_SWITCHES, DATE, OPEN, HIGH, LOW, CLOSE, VOLUME, OI
 
-  if (checkFormat(p, d, 2, 2))
+  if (checkFormat(p, d, 9, 9))
     return 0;
 
   scriptPath = formatStringList[0];
   comlineParms = formatStringList[1];
+
+  if (! formatStringList[2].compare("TRUE"))
+    dateFlag = TRUE;
+  else
+    dateFlag = FALSE;
+
+  if (! formatStringList[3].compare("TRUE"))
+    openFlag = TRUE;
+  else
+    openFlag = FALSE;
+
+  if (! formatStringList[4].compare("TRUE"))
+    highFlag = TRUE;
+  else
+    highFlag = FALSE;
+
+  if (! formatStringList[5].compare("TRUE"))
+    lowFlag = TRUE;
+  else
+    lowFlag = FALSE;
+
+  if (! formatStringList[6].compare("TRUE"))
+    closeFlag = TRUE;
+  else
+    closeFlag = FALSE;
+
+  if (! formatStringList[7].compare("TRUE"))
+    volumeFlag = TRUE;
+  else
+    volumeFlag = FALSE;
+
+  if (! formatStringList[8].compare("TRUE"))
+    oiFlag = TRUE;
+  else
+    oiFlag = FALSE;
 
   clearOutput();
   calculate();
@@ -237,6 +405,14 @@ void ExScript::formatDialog (QStringList &, QString &rv, QString &rs)
   QString vnl = QObject::tr("Variable Name");
   QString spl = QObject::tr("Script Path");
   QString clsl = QObject::tr("Switches");
+  QString dl = QObject::tr("Date");
+  QString ol = QObject::tr("Open");
+  QString hl = QObject::tr("High");
+  QString lol = QObject::tr("Low");
+  QString cll = QObject::tr("Close");
+  QString vl = QObject::tr("Volume");
+  QString oil = QObject::tr("Open Interest");
+
   PrefDialog *dialog = new PrefDialog(0);
   dialog->setCaption(QObject::tr("ExScript Format"));
   dialog->createPage (pl);
@@ -247,6 +423,13 @@ void ExScript::formatDialog (QStringList &, QString &rv, QString &rs)
   QStringList l;
   dialog->addFileItem(spl, pl, l, scriptPath);
   dialog->addTextItem(clsl, pl, comlineParms);
+  dialog->addCheckItem(dl, pl, dateFlag);
+  dialog->addCheckItem(ol, pl, openFlag);
+  dialog->addCheckItem(hl, pl, highFlag);
+  dialog->addCheckItem(lol, pl, lowFlag);
+  dialog->addCheckItem(cll, pl, closeFlag);
+  dialog->addCheckItem(vl, pl, volumeFlag);
+  dialog->addCheckItem(oil, pl, oiFlag);
 
   int rc = dialog->exec();
   
@@ -258,6 +441,48 @@ void ExScript::formatDialog (QStringList &, QString &rv, QString &rs)
       rs = l[0];
     dialog->getText(clsl, comlineParms);
     rs.append("," + comlineParms);
+
+    bool t = dialog->getCheck(dl);
+    if (t)
+      rs.append(",TRUE");
+    else
+      rs.append(",FALSE");
+    
+    t = dialog->getCheck(ol);
+    if (t)
+      rs.append(",TRUE");
+    else
+      rs.append(",FALSE");
+
+    t = dialog->getCheck(hl);
+    if (t)
+      rs.append(",TRUE");
+    else
+      rs.append(",FALSE");
+
+    t = dialog->getCheck(lol);
+    if (t)
+      rs.append(",TRUE");
+    else
+      rs.append(",FALSE");
+
+    t = dialog->getCheck(cll);
+    if (t)
+      rs.append(",TRUE");
+    else
+      rs.append(",FALSE");
+
+    t = dialog->getCheck(vl);
+    if (t)
+      rs.append(",TRUE");
+    else
+      rs.append(",FALSE");
+
+    t = dialog->getCheck(oil);
+    if (t)
+      rs.append(",TRUE");
+    else
+      rs.append(",FALSE");
   }
 
   delete dialog;

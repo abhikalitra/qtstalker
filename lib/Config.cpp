@@ -281,6 +281,9 @@ void Config::getData (Parm p, QString &s)
     case PaperTradeMode:
       s = settings.readEntry("/Qtstalker/PaperTradeMode", "0");
       break;
+    case Pixelspace:
+      s = settings.readEntry("/Qtstalker/Pixelspace", "4");
+      break;
     default:
       break;
   }
@@ -411,6 +414,9 @@ void Config::setData (Parm p, QString &d)
       break;
     case PaperTradeMode:
       settings.writeEntry("/Qtstalker/PaperTradeMode", d);
+      break;
+    case Pixelspace:
+      settings.writeEntry("/Qtstalker/Pixelspace", d);
       break;
     default:
       break;

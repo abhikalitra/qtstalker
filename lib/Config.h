@@ -38,7 +38,7 @@ class Config
     {
       Home,
       DataPath,
-      Unused1, // unused
+      Pixelspace,
       BarLength,
       Grid,
       Bars,

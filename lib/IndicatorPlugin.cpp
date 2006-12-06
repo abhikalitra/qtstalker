@@ -42,6 +42,7 @@ IndicatorPlugin::IndicatorPlugin()
   opList.append("GTEQ");
   opList.append("AND");
   opList.append("OR");
+  opList.append("XOR");
 
   maList.append("SMA"); //    TA_MAType_SMA       =0,
   maList.append("EMA"); //    TA_MAType_EMA       =1,

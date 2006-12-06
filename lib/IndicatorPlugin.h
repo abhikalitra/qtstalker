@@ -46,7 +46,8 @@ class IndicatorPlugin : public QObject
       GreaterThan,
       GreaterThanEqual,
       And,
-      Or
+      Or,
+      Xor
     };
 
     enum FormatType

@@ -37,6 +37,7 @@ class ExScript : public IndicatorPlugin
     PlotLine * calculateCustom (QString &, QPtrList<PlotLine> &);
     void formatDialog (QStringList &vl, QString &rv, QString &rs);
     void createOutput ();
+    void sendInput ();
 
   public slots:
     void readFromStdout ();
@@ -56,6 +57,21 @@ class ExScript : public IndicatorPlugin
     QString scriptPathLabel;
     QString comlineParmsLabel;
     QString pluginLabel;
+    QString dateLabel;
+    QString openLabel;
+    QString highLabel;
+    QString lowLabel;
+    QString closeLabel;
+    QString volumeLabel;
+    QString oiLabel;
+
+    bool dateFlag;
+    bool openFlag;
+    bool highFlag;
+    bool lowFlag;
+    bool closeFlag;
+    bool volumeFlag;
+    bool oiFlag;
 };
 
 extern "C"
