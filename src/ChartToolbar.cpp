@@ -46,7 +46,7 @@ ChartToolbar::ChartToolbar (QMainWindow *mw) : QToolBar (mw, "chartToolbar")
   connect(compressionCombo, SIGNAL(activated(int)), this, SIGNAL(signalBarLengthChanged(int)));
 
   pixelspace = new QSpinBox(this);
-  pixelspace->setRange(4, 99);
+  pixelspace->setRange(2, 99);
   config.getData(Config::Pixelspace, ts);
   pixelspace->setValue(ts.toInt());
   connect (pixelspace, SIGNAL(valueChanged(int)), this, SIGNAL(signalPixelspaceChanged(int)));

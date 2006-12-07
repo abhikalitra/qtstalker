@@ -33,6 +33,8 @@
 
 20061205: Added new UTIL function INRANGE. Returns TRUE if value is => min and <= max. Otherwise returns FALSE.
 
+20061206: Changed the minimum bar spacing to 2.
+
 
 
 0.33

@@ -300,6 +300,11 @@ bool IndicatorPlugin::checkFormat (QString &p, QPtrList<PlotLine> &d, int hrange
   return FALSE;
 }
 
+void IndicatorPlugin::wakeup ()
+{
+  emit signalWakeup();
+}
+
 //***************************************************************
 //****************** VIRTUAL OVERIDES ***************************
 //***************************************************************

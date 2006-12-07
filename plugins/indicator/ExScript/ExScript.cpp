@@ -21,7 +21,6 @@
 
 #include "ExScript.h"
 #include "PrefDialog.h"
-#include "ExScriptThread.h"
 #include <qdict.h>
 #include <qcstring.h>
 
@@ -94,7 +93,7 @@ void ExScript::calculate ()
 
   proc = new QProcess(this);
   connect(proc, SIGNAL(readyReadStdout()), this, SLOT(readFromStdout()));
-
+  proc->setCommunication(QProcess::Stdin|QProcess::Stdout|QProcess::Stderr);
   proc->addArgument(scriptPath);
 
   QStringList l = QStringList::split(" ", comlineParms, FALSE);
@@ -104,22 +103,31 @@ void ExScript::calculate ()
 
   buffer.truncate(0);
 
-  if (! proc->start())
+  QString s;
+  if (dateFlag || openFlag || highFlag || lowFlag || closeFlag || volumeFlag || oiFlag)
+    getInput(s);
+
+  QByteArray ba(s.length());
+  if (s.length())
   {
-    qDebug("ExScriptThread::calculate: error starting script");
+    for (loop = 0; loop < (int) s.length(); loop++)
+      ba[loop] = s.at(loop).latin1();
+  }
+
+  if (! proc->launch(ba, NULL))
+  {
+    qDebug("ExScript::calculate: error starting script");
     delete proc;
     proc = 0;
     return;
   }
 
-  if (dateFlag || openFlag || highFlag || lowFlag || closeFlag || volumeFlag || oiFlag)
-    sendInput();
+  wakeup();
 
-  ExScriptThread t;
   while (proc->isRunning())
   {
-    t.run();
-    t.wait();
+    usleep(100);
+    wakeup();
   }
 
   createOutput();
@@ -151,10 +159,10 @@ void ExScript::createOutput ()
   output->addLine(line);
 }
 
-void ExScript::sendInput ()
+void ExScript::getInput (QString &ss)
 {
   int loop;
-  QString ss, s;
+  QString s;
   for (loop = 0; loop < data->count(); loop++)
   {
     Bar bar;
@@ -186,8 +194,7 @@ void ExScript::sendInput ()
   }
 
   ss.truncate(ss.length() - 1);
-
-  proc->writeToStdin(ss);
+  ss.append("\n");
 }
 
 void ExScript::readFromStdout ()
@@ -221,6 +228,7 @@ int ExScript::indicatorPrefDialog (QWidget *w)
 
   dialog->createPage (pl);
   QStringList l;
+  l.append(scriptPath);
   dialog->addFileItem(spl, pl, l, scriptPath);
   dialog->addTextItem(clsl, pl, comlineParms);
   dialog->addCheckItem(dl, pl, dateFlag);

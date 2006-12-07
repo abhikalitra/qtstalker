@@ -35,6 +35,9 @@
 class IndicatorPlugin : public QObject
 {
   Q_OBJECT
+
+  signals:
+    void signalWakeup ();
   
   public:
   
@@ -84,6 +87,9 @@ class IndicatorPlugin : public QObject
     virtual void saveIndicatorSettings (QString &);
     virtual PlotLine * getMA (PlotLine *d, int, int);
     virtual void formatDialog (QStringList &, QString &, QString &);
+
+  public slots:
+    void wakeup ();
     
   protected:
     BarData *data;

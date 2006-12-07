@@ -574,6 +574,7 @@ void QtstalkerApp::loadIndicator (Indicator *i)
   IndicatorPlugin *plug = config.getIndicatorPlugin(plugin);
   if (plug)
   {
+    connect(plug, SIGNAL(signalWakeup()), this, SLOT(slotWakeup()));
     plug->clearOutput();
     if (recordList)
       plug->setIndicatorInput(recordList);

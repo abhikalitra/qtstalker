@@ -37,7 +37,7 @@ class ExScript : public IndicatorPlugin
     PlotLine * calculateCustom (QString &, QPtrList<PlotLine> &);
     void formatDialog (QStringList &vl, QString &rv, QString &rs);
     void createOutput ();
-    void sendInput ();
+    void getInput (QString &);
 
   public slots:
     void readFromStdout ();

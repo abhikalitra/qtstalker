@@ -5,10 +5,8 @@ pluginName = ExScript
 } 
 
 HEADERS += ExScript.h
-HEADERS += ExScriptThread.h
 
 SOURCES += ExScript.cpp
-SOURCES += ExScriptThread.cpp
 
 target.path = /usr/lib/qtstalker/indicator
 INSTALLS += target
