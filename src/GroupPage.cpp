@@ -22,6 +22,7 @@
 #include "GroupPage.h"
 #include "SymbolDialog.h"
 #include "HelpWindow.h"
+#include "Traverse.h"
 #include "../pics/help.xpm"
 #include "../pics/delete.xpm"
 #include "../pics/newchart.xpm"
@@ -71,12 +72,14 @@ GroupPage::GroupPage (QWidget *w) : QWidget (w)
   menu->insertItem(QPixmap(help), tr("&Help		Ctrl+H"), this, SLOT(slotHelp()));
 
   QAccel *a = new QAccel(this);
+  connect(a, SIGNAL(activated(int)), this, SLOT(slotAccel(int)));
   a->insertItem(CTRL+Key_N, NewGroup);
   a->insertItem(CTRL+Key_A, AddGroupItem);
   a->insertItem(CTRL+Key_D, DeleteGroupItem);
   a->insertItem(CTRL+Key_L, DeleteGroup);
   a->insertItem(CTRL+Key_R, RenameGroup);
   a->insertItem(CTRL+Key_H, Help);
+  a->insertItem(Key_Delete, DeleteChart);
   
   groupNoSelection();
 }
@@ -200,6 +203,32 @@ void GroupPage::deleteGroupItem()
   }
   
   delete dialog;
+}
+
+void GroupPage::deleteChart()
+{
+  if (! nav->isSelected())
+    return;
+
+  QString s;
+  nav->getFileSelection(s);
+  if (! s.length())
+    return;
+
+  int rc = QMessageBox::warning(this,
+		            tr("Qtstalker: Warning"),
+			    tr("Are you sure you want to delete selected chart?"),
+			    QMessageBox::Yes,
+			    QMessageBox::No,
+			    QMessageBox::NoButton);
+
+  if (rc == QMessageBox::No)
+    return;
+
+  QDir dir;
+  dir.remove(s, TRUE);
+  nav->updateList();
+  groupNoSelection();
 }
 
 void GroupPage::deleteGroup()
@@ -341,6 +370,37 @@ void GroupPage::setFocus ()
   nav->setFocus();
 }
 
+void GroupPage::addChartToGroup (QString symbol)
+{
+  QString s;
+  config.getData(Config::GroupPath, s);
+  Traverse t(Traverse::Dir);
+  t.traverse(s);
+  QStringList l;
+  t.getList(l);
+
+  bool ok;
+  s = QInputDialog::getItem(QObject::tr("Add To Group Selection"),
+                            QObject::tr("Select a group"),
+                            l,
+                            0,
+                            TRUE,
+                            &ok,
+                            this);
+  if (! ok)
+    return;
+
+  QFileInfo fi(symbol);
+  QString str = "ln -s " + symbol + " ";
+  QString s2 = s + "/" + fi.fileName();
+  QDir dir;
+  dir.remove(s2, TRUE);
+  str.append(s2);
+  system(str);
+
+  nav->updateList();
+}
+
 void GroupPage::doKeyPress (QKeyEvent *key)
 {
   key->accept();
@@ -372,13 +432,26 @@ void GroupPage::doKeyPress (QKeyEvent *key)
     }
   }
   else
-    nav->doKeyPress(key);
+  {
+    switch(key->key())
+    {
+      case Qt::Key_Delete:
+        slotAccel(DeleteChart);
+	break;
+      default:
+        nav->doKeyPress(key);
+        break;
+    }
+  }
 }
 
 void GroupPage::slotAccel (int id)
 {
   switch (id)
   {
+    case DeleteChart:
+      deleteChart();
+      break;  
     case NewGroup:
       newGroup();
       break;  
@@ -407,5 +480,3 @@ void GroupPage::refreshList ()
   nav->updateList();
 }
 
-
-// remove this

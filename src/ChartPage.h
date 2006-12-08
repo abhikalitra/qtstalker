@@ -35,6 +35,7 @@ class ChartPage : public QWidget
 
   signals:
     void fileSelected (QString);
+    void signalAddToGroup (QString);
 
   public:
   
@@ -45,7 +46,9 @@ class ChartPage : public QWidget
       ExportSymbol,
       DumpSymbol,
       Help,
-      Tab
+      Tab,
+      DeleteChartQuick,
+      AddToGroup
     };
   
     ChartPage (QWidget *);
@@ -56,6 +59,7 @@ class ChartPage : public QWidget
   public slots:
     void deleteChart ();
     void editChart ();
+    void editChart (QString);
     void newChart (int);
     void exportSymbol ();
     void dumpSymbol ();
@@ -69,6 +73,8 @@ class ChartPage : public QWidget
     void doKeyPress (QKeyEvent *);
     void slotAccel (int);
     void chartOpened (QString);
+    void deleteChartQuick ();
+    void addToGroup ();
 
   protected:
     Navigator *nav;

@@ -47,6 +47,7 @@ class Navigator : public QListBox
     void setId (int);
     void setKeyFlag (bool);
     void setHome ();
+    bool isSelected ();
 
   public slots:
     void upDirectory ();
@@ -62,6 +63,7 @@ class Navigator : public QListBox
     QDir currentDir;
     int id;
     bool keyFlag;
+    bool selectedFlag;
 };
 
 #endif

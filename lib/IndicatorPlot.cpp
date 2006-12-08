@@ -874,6 +874,8 @@ void IndicatorPlot::showPopupMenu ()
                         SLOT(slotNewIndicator()), CTRL+Key_I);
   chartMenu->insertItem(QPixmap(edit), tr("&Edit Indicator"), this, SLOT(slotEditIndicator()), CTRL+Key_E);
   chartMenu->insertSeparator ();
+  chartMenu->insertItem(QPixmap(edit), tr("Edit &Chart"), this, SLOT(slotEditChart()), CTRL+Key_C);
+  chartMenu->insertSeparator ();
 
   chartObjectMenu = new QPopupMenu();
   int id = chartObjectMenu->insertItem(QPixmap(buyarrow), "BuyArrow", this, SLOT(slotNewChartObject(int)));
@@ -1019,6 +1021,11 @@ void IndicatorPlot::slotLogScaleChanged (bool d)
 int IndicatorPlot::getWidth ()
 {
   return buffer.width();
+}
+
+void IndicatorPlot::slotEditChart ()
+{
+  emit signalEditChart(chartPath);
 }
 
 //*************************************************************************
@@ -1641,4 +1648,3 @@ void IndicatorPlot::saveChartObjects ()
   db.close();
 }
 
-// remove this 

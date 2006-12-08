@@ -23,8 +23,9 @@
 #include <qdir.h>
 #include <qfileinfo.h>
 
-Traverse::Traverse()
+Traverse::Traverse(Traverse::Type t)
 {
+  type = t;
 }
 
 Traverse::~Traverse()
@@ -33,8 +34,6 @@ Traverse::~Traverse()
 
 void Traverse::traverse(QString dirname)
 {
-  list.clear();
-  
   QDir dir(dirname);
   dir.setFilter(QDir::Dirs|QDir::Files);
 
@@ -50,17 +49,24 @@ void Traverse::traverse(QString dirname)
     }
 
     if(fi->isDir() && fi->isReadable())
+    {
+      if (type == Dir)
+        list.append(fi->absFilePath());
       traverse(fi->absFilePath());
+    }
     else
-      list.append(fi->absFilePath());
+    {
+      if (type == File)
+        list.append(fi->absFilePath());
+    }
 
     ++it;
   }
 }
 
-QStringList Traverse::getList()
+void Traverse::getList(QStringList &l)
 {
-  return list;
+  l = list;
 }
 
 

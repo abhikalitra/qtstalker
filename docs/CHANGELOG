@@ -35,6 +35,15 @@
 
 20061206: Changed the minimum bar spacing to 2.
 
+20061207: Changed the info panel window to list date,time,open,high,low,close,volume,oi first.
+
+20061207: Added edit chart option to the chart context menu.
+
+20061207: Keyboard delete key now deletes charts from the chart/group panels.
+
+20061207: Added function 'Add To Group' to the chart panel context menu. Allows the user to add the selected
+          chart to the group chosen. Saves a few steps by not going through the group panel menus.
+
 
 
 0.33

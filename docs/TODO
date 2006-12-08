@@ -30,14 +30,9 @@ To Do:
 - fibo time chart objects
 - add: an include option for CUS rules to include other CUS rules. ie. INCLUDECUS("sma50x200up")
 - add: a data window function for charts/groups that table indicator values.
-- add: option to draw zone lines to indicators globally
 - add: add a timeout function to ExScript so it doesn't wait in loop forever with no input.
 - add: a drop down button list to bar spacing so that users can flip back and forth to their fav bar spacing settings.
 - add: restore the last price arrow on the scale charts
-- add: change the status window to list date open high low etc. first
-- add: add edit chart option to the context menu
-- add: set the delete key to delete charts from groups
-- add: add chart to group from the chart panel
 
 
 

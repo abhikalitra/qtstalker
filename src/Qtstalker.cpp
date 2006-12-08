@@ -856,6 +856,7 @@ void QtstalkerApp::addIndicatorButton (QString d)
   connect(plot->getIndicatorPlot(), SIGNAL(statusMessage(QString)), this, SLOT(slotStatusMessage(QString)));
   connect(plot->getIndicatorPlot(), SIGNAL(infoMessage(Setting *)), this, SLOT(slotUpdateInfo(Setting *)));
   connect(plot->getIndicatorPlot(), SIGNAL(leftMouseButton(int, int, bool)), this, SLOT(slotPlotLeftMouseButton(int, int, bool)));
+  connect(plot->getIndicatorPlot(), SIGNAL(signalEditChart(QString)), chartNav, SLOT(editChart(QString)));
   connect(this, SIGNAL(signalCrosshairsStatus(bool)), plot->getIndicatorPlot(), SLOT(setCrosshairsStatus(bool)));
   connect(this, SIGNAL(signalPixelspace(int)), plot, SLOT(setPixelspace(int)));
   connect(this, SIGNAL(signalIndex(int)), plot, SLOT(setIndex(int)));
@@ -891,6 +892,7 @@ void QtstalkerApp::initGroupNav ()
 {
   gp = new GroupPage(baseWidget);
   connect(gp, SIGNAL(fileSelected(QString)), this, SLOT(slotOpenChart(QString)));
+  connect(chartNav, SIGNAL(signalAddToGroup(QString)), gp, SLOT(addChartToGroup(QString)));
   navTab->addWidget(gp, 1);
 }
 
@@ -948,23 +950,39 @@ void QtstalkerApp::slotHideNav (bool d)
 
 void QtstalkerApp::slotUpdateInfo (Setting *r)
 {
+  // list bar values first
   QStringList l;
-  r->getKeyList(l);
-  l.sort();
+  l.append("D");
+  l.append("T");
+  l.append("O");
+  l.append("H");
+  l.append("L");
+  l.append("C");
+  l.append("VOL");
+  l.append("OI");
+  QString s, s2, str;
   int loop;
-  QString s, s2;
   for (loop = 0; loop < (int) l.count(); loop++)
   {
-    s.append(l[loop]);
-    s.append(" ");
-    r->getData(l[loop], s2);
-    s.append(s2);
-    s.append("\n");
+    r->getData(l[loop], s);
+    if (s.length())
+    {
+      str.append(l[loop] + " " + s + "\n");
+      r->remove(l[loop]);
+    }
+  }
+
+  r->getKeyList(l);
+  l.sort();
+  for (loop = 0; loop < (int) l.count(); loop++)
+  {
+    r->getData(l[loop], s);
+    str.append(l[loop] + " " + s + "\n");
   }
 
   delete r;
 
-  infoLabel->setText(s);
+  infoLabel->setText(str);
 }
 
 void QtstalkerApp::slotPlotLeftMouseButton (int x, int y, bool)

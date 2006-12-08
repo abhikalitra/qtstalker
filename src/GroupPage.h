@@ -45,7 +45,8 @@ class GroupPage : public QWidget
       DeleteGroupItem,
       DeleteGroup,
       RenameGroup,
-      Help
+      Help,
+      DeleteChart
     };
   
     GroupPage (QWidget *);
@@ -66,6 +67,8 @@ class GroupPage : public QWidget
     void slotAccel (int);
     void chartOpened (QString);
     void refreshList ();
+    void deleteChart ();
+    void addChartToGroup (QString);
 
   protected:
     Navigator *nav;

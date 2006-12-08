@@ -30,6 +30,7 @@ Navigator::Navigator (QWidget *w, QString &bp) : QListBox(w)
   basePath = bp;
   id = 0;
   keyFlag = FALSE;
+  selectedFlag = FALSE;
 
   currentDir.setPath(bp);
   currentDir.setMatchAllDirs(TRUE);
@@ -103,6 +104,7 @@ void Navigator::upDirectory ()
   setCurrentItem(findItem(s, Qt::ExactMatch));
   ensureCurrentVisible();
   emit noSelection();
+  selectedFlag = FALSE;
 }
 
 void Navigator::fileSelection (QListBoxItem *item)
@@ -110,18 +112,21 @@ void Navigator::fileSelection (QListBoxItem *item)
   if (! item)
   {
     emit noSelection();
+    selectedFlag = FALSE;
     return;
   }
 
   if (item->pixmap())
   {
     emit noSelection();
+    selectedFlag = FALSE;
     return;
   }
 
   QString s;
   getFileSelection(s);
   emit fileSelected(s);
+  selectedFlag = TRUE;
 }
 
 void Navigator::getFileSelection (QString &s)
@@ -150,6 +155,7 @@ void Navigator::checkDirectory (QListBoxItem *item)
   if (! item)
   {
     emit noSelection();
+    selectedFlag = FALSE;
     return;
   }
 
@@ -166,6 +172,7 @@ void Navigator::checkDirectory (QListBoxItem *item)
     currentDir.setPath(s);
     updateList();
     emit noSelection();
+    selectedFlag = FALSE;
     return;
   }
   
@@ -178,6 +185,7 @@ void Navigator::setFilter (QString &d)
   currentDir.setNameFilter(d);
   updateList();
   emit noSelection();
+  selectedFlag = FALSE;
 }
 
 void Navigator::setId (int d)
@@ -196,6 +204,12 @@ void Navigator::setHome ()
   currentDir.setPath(s);
   updateList();
   emit noSelection();
+  selectedFlag = FALSE;
+}
+
+bool Navigator::isSelected ()
+{
+  return selectedFlag;
 }
 
 void Navigator::keyPressEvent (QKeyEvent *key)

@@ -28,13 +28,21 @@
 class Traverse
 {
   public:
-    Traverse();
+
+    enum Type
+    {
+      File,
+      Dir
+    };
+
+    Traverse(Traverse::Type);
     ~Traverse();
     void traverse(QString dirname);
-    QStringList getList();
+    void getList(QStringList &);
 
   private:
     QStringList list;
+    Traverse::Type type;
 };
 
 #endif

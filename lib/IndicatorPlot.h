@@ -56,6 +56,7 @@ class IndicatorPlot : public QWidget
     void signalDraw ();
     void signalDateFlag (bool);
     void signalLogFlag (bool);
+    void signalEditChart (QString);
 
   public:
     enum MouseStatus
@@ -120,6 +121,7 @@ class IndicatorPlot : public QWidget
     void slotDrawModeChanged (bool);
     void slotLogScaleChanged (bool);
     void setInterval(BarData::BarLength);
+    void slotEditChart();
 
   protected:
     virtual void paintEvent (QPaintEvent *);

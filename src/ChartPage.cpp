@@ -73,6 +73,7 @@ ChartPage::ChartPage (QWidget *w) : QWidget (w)
   menu->insertItem(QPixmap(deleteitem), tr("&Delete Chart	Ctrl+D"), this, SLOT(deleteChart()));
   menu->insertItem(QPixmap(exportfile), tr("E&xport Chart CSV	Ctrl+X"), this, SLOT(exportSymbol()));
   menu->insertItem(QPixmap(exportfile), tr("D&ump Chart		Ctrl+U"), this, SLOT(dumpSymbol()));
+  menu->insertItem(QPixmap(exportfile), tr("Add To &Group	Ctrl+G"), this, SLOT(addToGroup()));
   menu->insertSeparator(-1);
   menu->insertItem(QPixmap(help), tr("&Help	Ctrl+H"), this, SLOT(slotHelp()));
 
@@ -84,6 +85,8 @@ ChartPage::ChartPage (QWidget *w) : QWidget (w)
   a->insertItem(CTRL+Key_U, DumpSymbol);
   a->insertItem(CTRL+Key_H, Help);
   a->insertItem(CTRL+Key_Tab, Tab);
+  a->insertItem(Key_Delete, DeleteChartQuick);
+  a->insertItem(CTRL+Key_G, AddToGroup);
   
   chartNoSelection();
 }
@@ -144,7 +147,16 @@ void ChartPage::editChart ()
   DbPlugin db;
   db.openChart(symbol);    
   db.dbPrefDialog();
-  
+  db.close();
+}
+
+void ChartPage::editChart (QString symbol)
+{
+  if (! symbol.length())
+    return;
+  DbPlugin db;
+  db.openChart(symbol);    
+  db.dbPrefDialog();
   db.close();
 }
 
@@ -306,6 +318,41 @@ void ChartPage::setFocus ()
   nav->setFocus();
 }
 
+void ChartPage::deleteChartQuick ()
+{
+  if (! nav->isSelected())
+    return;
+
+  QString s;
+  nav->getFileSelection(s);
+  if (! s.length())
+    return;
+
+  int rc = QMessageBox::warning(this,
+		            tr("Qtstalker: Warning"),
+			    tr("Are you sure you want to delete selected chart?"),
+			    QMessageBox::Yes,
+			    QMessageBox::No,
+			    QMessageBox::NoButton);
+
+  if (rc == QMessageBox::No)
+    return;
+
+  QDir dir;
+  dir.remove(s, TRUE);
+  nav->updateList();
+}
+
+void ChartPage::addToGroup ()
+{
+  QString symbol;
+  nav->getFileSelection(symbol);
+  if (! symbol.length())
+    return;
+
+  emit signalAddToGroup(symbol);
+}
+
 void ChartPage::doKeyPress (QKeyEvent *key)
 {
   key->accept();
@@ -329,14 +376,25 @@ void ChartPage::doKeyPress (QKeyEvent *key)
       case Qt::Key_Tab:
         slotAccel(Tab);
 	break;
+      case Qt::Key_G:
+        slotAccel(AddToGroup);
+	break;
       default:
         break;
     }
   }
   else
   {
-    if (! search->hasFocus())
-      nav->doKeyPress(key);
+    switch(key->key())
+    {
+      case Qt::Key_Delete:
+        deleteChartQuick();
+	break;
+      default:
+        if (! search->hasFocus())
+          nav->doKeyPress(key);
+        break;
+    }
   }
 }
 
@@ -344,6 +402,9 @@ void ChartPage::slotAccel (int id)
 {
   switch (id)
   {
+    case DeleteChartQuick:
+      deleteChartQuick();
+      break;  
     case DeleteChart:
       deleteChart();
       break;  
@@ -364,6 +425,9 @@ void ChartPage::slotAccel (int id)
         nav->setFocus();
       else
         search->setFocus();
+      break;  
+    case AddToGroup:
+      addToGroup();
       break;  
     default:
       break;

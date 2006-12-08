@@ -165,9 +165,9 @@ void Scanner::scan ()
       config.getData(Config::DataPath, ts);
     else
       config.getData(Config::GroupPath, ts);
-    Traverse trav;
+    Traverse trav(Traverse::File);
     trav.traverse(ts + "/Stocks");
-    fileList = trav.getList();
+    trav.getList(fileList);
   }
   
   QProgressDialog prog(tr("Scanning..."),
