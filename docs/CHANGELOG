@@ -44,6 +44,19 @@
 20061207: Added function 'Add To Group' to the chart panel context menu. Allows the user to add the selected
           chart to the group chosen. Saves a few steps by not going through the group panel menus.
 
+20061208: Added 3 new buttons on the chart toolbar that act as default bar spacing settings. The user can set the defaults
+          in the preferences dialog.
+
+20061208: Restored the last close arrow on the scale charts.
+
+20061208: Added a timeout function to ExScript so it doesn't wait in loop forever with no input.
+
+20061208: Fixed bug in CUS formulas if Label field in plot settings left blank, line would not plot.
+
+20061208: Fixed bug in TALIB plugin that did not set the correct MA for CUS scripts that used the STOCH function.
+
+20061208: Added RSI and STOCH to the misc/CUS_examples section. Examples on how to code zone lines in indicators.
+
 
 
 0.33

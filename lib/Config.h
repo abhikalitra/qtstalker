@@ -50,7 +50,7 @@ class Config
       Crosshairs,
       DrawMode,
       DataPanelSize,
-      Unused2, //unused
+      PS1Button,
       ScaleToScreen,
       IndicatorPluginPath,
       QuotePluginPath,
@@ -62,8 +62,8 @@ class Config
       AppFont,
       NavAreaSize,
       LogScale,
-      Unused3, // unused
-      Unused5, // unused
+      PS2Button,
+      PS3Button,
       Unused4, //unused
       HelpFilePath,
       LastQuotePlugin,

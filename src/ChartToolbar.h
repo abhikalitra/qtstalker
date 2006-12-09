@@ -76,6 +76,9 @@ class ChartToolbar : public QToolBar
     void paperTradeDate ();
     void paperTradeNextBar ();
     void paperTradeClicked (bool);
+    void ps1ButtonClicked ();
+    void ps2ButtonClicked ();
+    void ps3ButtonClicked ();
   
   private:
     QComboBox *compressionCombo;
@@ -87,6 +90,9 @@ class ChartToolbar : public QToolBar
     QToolButton *ptnButton;
     QDateTime ptDate;
     QStringList compressionList;
+    QToolButton *ps1Button;
+    QToolButton *ps2Button;
+    QToolButton *ps3Button;
 };
 
 #endif

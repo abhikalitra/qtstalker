@@ -206,17 +206,14 @@ void ScalePlot::drawScale ()
   painter.drawLine (x, 0, x, buffer.height());
   
   // draw the last value pointer on the scale of main plot
-  if (mainFlag)
-  {
-    int y = scaler.convertToY(close);
+  int y = scaler.convertToY(close);
     
-    QPointArray array;
-    array.setPoints(3, x + 2, y,
-                    x + 8, y - 4,
-	            x + 8, y + 4);
-    painter.setBrush(borderColor);
-    painter.drawPolygon(array, TRUE, 0, -1);
-  }
+  QPointArray array;
+  array.setPoints(3, x + 2, y,
+                  x + 8, y - 4,
+                  x + 8, y + 4);
+  painter.setBrush(borderColor);
+  painter.drawPolygon(array, TRUE, 0, -1);
 
   painter.end();
 }

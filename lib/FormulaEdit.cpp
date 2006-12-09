@@ -163,6 +163,8 @@ void FormulaEdit::insertPlotItem ()
   dialog->getColor(cl, c);
   s.append(c.name() + ",");
   dialog->getText(ll, ts);
+  if (! ts.length())
+    ts = " ";
   s.append(ts + ",");
   dialog->getCombo(ltl, ts);
   s.append(ts + ")");
@@ -209,8 +211,6 @@ void FormulaEdit::editPlotItem ()
   dialog->addTextItem(ll, pl, l[2]);
 
   l2 = lineTypes;
-  l2.append("Bar");
-  l2.append("Candle");
   dialog->addComboItem(ltl, pl, l2, l[3]);
 
   int rc = dialog->exec();
@@ -227,6 +227,8 @@ void FormulaEdit::editPlotItem ()
   dialog->getColor(cl, c);
   s.append(c.name() + ",");
   dialog->getText(ll, ts);
+  if (! ts.length())
+    ts = " ";
   s.append(ts + ",");
   dialog->getCombo(ltl, ts);
   s.append(ts + ")");

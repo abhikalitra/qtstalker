@@ -23,6 +23,7 @@
 #include "PrefDialog.h"
 #include <qdict.h>
 #include <qcstring.h>
+#include <qmessagebox.h>
 
 ExScript::ExScript ()
 {
@@ -41,6 +42,7 @@ ExScript::ExScript ()
   closeLabel = "closeCheck";
   volumeLabel = "volumeCheck";
   oiLabel = "oiCheck";
+  timeoutLabel = "timeout";
 
   formatList.append(FormatString);
   formatList.append(FormatString);
@@ -54,6 +56,9 @@ ExScript::ExScript ()
 
   proc = 0;
 
+  timer = new QTimer(this);
+  connect(timer, SIGNAL(timeout()), this, SLOT(timerDone()));
+
   setDefaults();
 }
 
@@ -61,6 +66,8 @@ ExScript::~ExScript ()
 {
   if (proc)
     delete proc;
+
+  delete timer;
 }
 
 void ExScript::setDefaults ()
@@ -75,6 +82,7 @@ void ExScript::setDefaults ()
   closeFlag = FALSE;
   volumeFlag = FALSE;
   oiFlag = FALSE;
+  seconds = 10;
 }
 
 void ExScript::calculate ()
@@ -122,6 +130,8 @@ void ExScript::calculate ()
     return;
   }
 
+  timer->start(seconds * 1000, FALSE);
+
   wakeup();
 
   while (proc->isRunning())
@@ -129,6 +139,8 @@ void ExScript::calculate ()
     usleep(100);
     wakeup();
   }
+
+  timer->stop();
 
   createOutput();
 }
@@ -221,6 +233,7 @@ int ExScript::indicatorPrefDialog (QWidget *w)
   QString cll = QObject::tr("Close");
   QString vl = QObject::tr("Volume");
   QString oil = QObject::tr("Open Interest");
+  QString tol = QObject::tr("Timeout Seconds");
 
   PrefDialog *dialog = new PrefDialog(w);
   dialog->setCaption(QObject::tr("ExScript Indicator"));
@@ -231,6 +244,7 @@ int ExScript::indicatorPrefDialog (QWidget *w)
   l.append(scriptPath);
   dialog->addFileItem(spl, pl, l, scriptPath);
   dialog->addTextItem(clsl, pl, comlineParms);
+  dialog->addIntItem(tol, pl, seconds, 1, 999);
   dialog->addCheckItem(dl, pl, dateFlag);
   dialog->addCheckItem(ol, pl, openFlag);
   dialog->addCheckItem(hl, pl, highFlag);
@@ -252,6 +266,7 @@ int ExScript::indicatorPrefDialog (QWidget *w)
     if (l.count())
       scriptPath = l[0];
     dialog->getText(clsl, comlineParms);
+    seconds = dialog->getInt(tol);
     dateFlag = dialog->getCheck(dl);
     openFlag = dialog->getCheck(ol);
     highFlag = dialog->getCheck(hl);
@@ -327,6 +342,10 @@ void ExScript::setIndicatorSettings (Setting &dict)
   dict.getData(oiLabel, s);
   if (s.length())
     oiFlag = s.toInt();
+
+  dict.getData(timeoutLabel, s);
+  if (s.length())
+    seconds = s.toInt();
 }
 
 void ExScript::getIndicatorSettings (Setting &dict)
@@ -352,6 +371,8 @@ void ExScript::getIndicatorSettings (Setting &dict)
   dict.setData(volumeLabel, ts);
   ts = QString::number(oiFlag);
   dict.setData(oiLabel, ts);
+  ts = QString::number(seconds);
+  dict.setData(timeoutLabel, ts);
   dict.setData(pluginLabel, pluginName);
 }
 
@@ -494,6 +515,29 @@ void ExScript::formatDialog (QStringList &, QString &rv, QString &rs)
   }
 
   delete dialog;
+}
+
+void ExScript::timerDone ()
+{
+  if (! proc->isRunning())
+    return;
+
+  int rc = QMessageBox::warning(0,
+    			        tr("ExScript Warning"),
+			        tr("Script timeout. Canel process?"),
+			        QMessageBox::Yes,
+			        QMessageBox::No,
+                                QMessageBox::NoButton);
+
+  if (rc == QMessageBox::No)
+  {
+    timer->start(seconds * 1000, FALSE);
+    return;
+  }
+
+  proc->kill();
+  delete proc;
+  proc = 0;
 }
 
 //*******************************************************

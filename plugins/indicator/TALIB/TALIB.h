@@ -20,6 +20,7 @@
  */
 
 #include "IndicatorPlugin.h"
+#include "ta_libc.h"
 
 class TALIB : public IndicatorPlugin
 {
@@ -35,6 +36,7 @@ class TALIB : public IndicatorPlugin
     void getIndicatorList (QStringList &);
     PlotLine * getMA (PlotLine *d, int, int);
     void formatDialog (QStringList &vl, QString &rv, QString &rs);
+    void printError (QString, TA_RetCode);
 
   private:
     QStringList methodList;

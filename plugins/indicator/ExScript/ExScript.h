@@ -21,6 +21,7 @@
 
 #include "IndicatorPlugin.h"
 #include <qprocess.h>
+#include <qtimer.h>
 
 class ExScript : public IndicatorPlugin
 {
@@ -41,6 +42,7 @@ class ExScript : public IndicatorPlugin
 
   public slots:
     void readFromStdout ();
+    void timerDone ();
     
   private:
     QColor color;
@@ -50,6 +52,8 @@ class ExScript : public IndicatorPlugin
     QString comlineParms;
     QProcess *proc;
     QString buffer;
+    QTimer *timer;
+    int seconds;
 
     QString colorLabel;
     QString labelLabel;
@@ -64,6 +68,7 @@ class ExScript : public IndicatorPlugin
     QString closeLabel;
     QString volumeLabel;
     QString oiLabel;
+    QString timeoutLabel;
 
     bool dateFlag;
     bool openFlag;

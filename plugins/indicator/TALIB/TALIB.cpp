@@ -24,7 +24,6 @@
 #include <qdict.h>
 #include <qobject.h>
 #include <qinputdialog.h>
-#include "ta_libc.h"
 
 TALIB::TALIB ()
 {
@@ -721,6 +720,10 @@ PlotLine * TALIB::calculateCustom (QString &p, QPtrList<PlotLine> &d)
 
   if (sparmIndex < (int) l.count())
   {
+    QStringList mal;
+    getMATypes(mal);
+    mal.remove("Wilder");
+
     // setup the optinput parms
     const TA_OptInputParameterInfo *optInfo;
     for (loop = 0; loop < (int) theInfo->nbOptInput; loop++ )
@@ -751,6 +754,25 @@ PlotLine * TALIB::calculateCustom (QString &p, QPtrList<PlotLine> &d)
           }
 
           retCode = TA_SetOptInputParamInteger(parmHolder, loop, (TA_Integer) l[sparmIndex].toInt());
+          if (retCode != TA_SUCCESS)
+          {
+            qDebug("TALIB::calculateCustom:cannot set inputopt integer");
+            return 0;
+          }
+          sparmIndex++;
+          break;
+
+        case TA_OptInput_IntegerList:
+          if (sparmIndex >= (int) l.count())
+          {
+            qDebug("TALIB::calculateCustom: optinput integerList invalid number of parms");
+            return 0;
+          }
+    
+          int t = mal.findIndex(l[sparmIndex]);
+          if (t == -1)
+            t = 0;
+          retCode = TA_SetOptInputParamInteger(parmHolder, loop, (TA_Integer) t);
           if (retCode != TA_SUCCESS)
           {
             qDebug("TALIB::calculateCustom:cannot set inputopt integer");
@@ -831,7 +853,7 @@ PlotLine * TALIB::calculateCustom (QString &p, QPtrList<PlotLine> &d)
   TA_Integer count;
   retCode = TA_CallFunc(parmHolder, start, end, &outstart, &count);
   if (retCode != TA_SUCCESS)
-    qDebug("TALIB::calculateCustom:call function failed");
+    printError(QString("TALIB::calculateCustom:TA_CallFunc"), retCode);
   else
   {
     // create the plotlines
@@ -1113,6 +1135,13 @@ void TALIB::formatDialog (QStringList &vl, QString &rv, QString &rs)
   }
 
   delete dialog;
+}
+
+void TALIB::printError (QString es, TA_RetCode rc)
+{
+  TA_RetCodeInfo info;
+  TA_SetRetCodeInfo(rc, &info);
+  qDebug("%s:%d(%s): %s", es.latin1(), rc, info.enumStr, info.infoStr);
 }
 
 //*******************************************************

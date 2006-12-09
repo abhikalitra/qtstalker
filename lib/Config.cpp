@@ -284,6 +284,15 @@ void Config::getData (Parm p, QString &s)
     case Pixelspace:
       s = settings.readEntry("/Qtstalker/Pixelspace", "4");
       break;
+    case PS1Button:
+      s = settings.readEntry("/Qtstalker/PS1Button", "4");
+      break;
+    case PS2Button:
+      s = settings.readEntry("/Qtstalker/PS2Button", "4");
+      break;
+    case PS3Button:
+      s = settings.readEntry("/Qtstalker/PS3Button", "4");
+      break;
     default:
       break;
   }
@@ -417,6 +426,15 @@ void Config::setData (Parm p, QString &d)
       break;
     case Pixelspace:
       settings.writeEntry("/Qtstalker/Pixelspace", d);
+      break;
+    case PS1Button:
+      settings.writeEntry("/Qtstalker/PS1Button", d);
+      break;
+    case PS2Button:
+      settings.writeEntry("/Qtstalker/PS2Button", d);
+      break;
+    case PS3Button:
+      settings.writeEntry("/Qtstalker/PS3Button", d);
       break;
     default:
       break;
@@ -748,4 +766,3 @@ void Config::createDefaultIndicator (Setting &set, QString &plugin, QString &nam
   set.setData(s, s2);
 }
 
-// remove

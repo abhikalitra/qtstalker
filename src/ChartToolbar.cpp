@@ -45,6 +45,8 @@ ChartToolbar::ChartToolbar (QMainWindow *mw) : QToolBar (mw, "chartToolbar")
   QToolTip::add(compressionCombo, tr("Bar Length"));
   connect(compressionCombo, SIGNAL(activated(int)), this, SIGNAL(signalBarLengthChanged(int)));
 
+  addSeparator();
+
   pixelspace = new QSpinBox(this);
   pixelspace->setRange(2, 99);
   config.getData(Config::Pixelspace, ts);
@@ -53,6 +55,23 @@ ChartToolbar::ChartToolbar (QMainWindow *mw) : QToolBar (mw, "chartToolbar")
   QToolTip::add(pixelspace, tr("Bar Spacing"));
 
   QIntValidator *iv = new QIntValidator(1, 99999, this, 0);
+
+  ps1Button = new QToolButton(this);
+  QToolTip::add(ps1Button, tr("Bar Spacing 1"));
+  ps1Button->setText("1");
+  connect(ps1Button, SIGNAL(clicked()), this, SLOT(ps1ButtonClicked()));
+
+  ps2Button = new QToolButton(this);
+  QToolTip::add(ps2Button, tr("Bar Spacing 2"));
+  ps2Button->setText("2");
+  connect(ps2Button, SIGNAL(clicked()), this, SLOT(ps2ButtonClicked()));
+
+  ps3Button = new QToolButton(this);
+  QToolTip::add(ps3Button, tr("Bar Spacing 3"));
+  ps3Button->setText("3");
+  connect(ps3Button, SIGNAL(clicked()), this, SLOT(ps3ButtonClicked()));
+
+  addSeparator();
 
   barCount = new QLineEdit(this);
   barCount->setValidator(iv);
@@ -269,6 +288,30 @@ void ChartToolbar::barsChanged ()
   int t = barCount->text().toInt(&ok);
   if (ok)
     emit signalBarsChanged(t);
+}
+
+void ChartToolbar::ps1ButtonClicked ()
+{
+  Config config;
+  QString s;
+  config.getData(Config::PS1Button, s);
+  pixelspace->setValue(s.toInt());
+}
+
+void ChartToolbar::ps2ButtonClicked ()
+{
+  Config config;
+  QString s;
+  config.getData(Config::PS2Button, s);
+  pixelspace->setValue(s.toInt());
+}
+
+void ChartToolbar::ps3ButtonClicked ()
+{
+  Config config;
+  QString s;
+  config.getData(Config::PS3Button, s);
+  pixelspace->setValue(s.toInt());
 }
 
 //*********************************************************************

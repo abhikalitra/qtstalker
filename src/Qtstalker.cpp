@@ -338,6 +338,19 @@ void QtstalkerApp::slotOptions ()
   QString ts;
   config.getData(Config::Menubar, ts);
   dialog->addCheckItem(s2, s, ts.toInt());
+
+  // ChartToolbar pixelspace buttons
+  s2 = tr("Bar Spacing 1");
+  config.getData(Config::PS1Button, ts);
+  dialog->addIntItem(s2, s, ts.toInt(), 2, 99);
+  
+  s2 = tr("Bar Spacing 2");
+  config.getData(Config::PS2Button, ts);
+  dialog->addIntItem(s2, s, ts.toInt(), 2, 99);
+
+  s2 = tr("Bar Spacing 3");
+  config.getData(Config::PS3Button, ts);
+  dialog->addIntItem(s2, s, ts.toInt(), 2, 99);
   
   s = tr("Colors");
   dialog->createPage(s);
@@ -386,6 +399,21 @@ void QtstalkerApp::slotOptions ()
       menubar->show();
     else
       menubar->hide();
+
+    s = tr("Bar Spacing 1");
+    int i = dialog->getInt(s);
+    s = QString::number(i);
+    config.setData(Config::PS1Button, s);
+  
+    s = tr("Bar Spacing 2");
+    i = dialog->getInt(s);
+    s = QString::number(i);
+    config.setData(Config::PS2Button, s);
+  
+    s = tr("Bar Spacing 3");
+    i = dialog->getInt(s);
+    s = QString::number(i);
+    config.setData(Config::PS3Button, s);
   
     s = tr("Chart Background");
     dialog->getColor(s, c);
