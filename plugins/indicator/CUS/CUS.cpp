@@ -45,6 +45,8 @@ void CUS::calculate ()
   QStringList varList;
   QDict<PlotLine> lines;
   lines.setAutoDelete(TRUE);
+
+  checkIncludes();
   
   int loop;
   for (loop = 0; loop < (int) formulaList.count(); loop++)
@@ -234,6 +236,54 @@ void CUS::setIndicatorSettings (Setting &dict)
   dict.getData(ts, s);
   if (s.length())
     formulaList = QStringList::split("|", s, FALSE);
+}
+
+void CUS::includeCUS (QString &d, QStringList &rl)
+{
+  QStringList l = QStringList::split(")", d, FALSE);
+  QStringList l2 = QStringList::split("(", l[0], FALSE);
+  QString i = l2[1];
+  i = i.stripWhiteSpace();
+
+  Config config;
+  QString s, s2;
+  config.getData(Config::IndicatorPath, s);
+  config.getData(Config::IndicatorGroup, s2);
+  s.append("/" + s2 + "/" + i);
+
+  Setting dict;
+  config.getIndicator(s, dict);
+
+  if (! dict.count())
+    return;
+
+  QString ts = "script";
+  dict.getData(ts, s);
+  if (s.length())
+    rl = QStringList::split("|", s, FALSE);
+}
+
+void CUS::checkIncludes ()
+{
+  int loop;
+  QStringList nfl;
+  for (loop = 0; loop < (int) formulaList.count(); loop++)
+  {
+    if (! formulaList[loop].contains("INCLUDECUS("))
+    {
+      nfl.append(formulaList[loop]);
+      continue;
+    }
+
+    QStringList l;
+    includeCUS(formulaList[loop], l);
+
+    int loop2;
+    for (loop2 = 0; loop2 < (int) l.count(); loop2++)
+      nfl.append(l[loop2]);
+  }
+
+  formulaList = nfl;
 }
 
 //*********************************************************************************

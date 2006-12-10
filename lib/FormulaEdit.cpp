@@ -27,7 +27,7 @@
 #include "../pics/edit.xpm"
 #include "../pics/insert.xpm"
 #include "../pics/openchart.xpm"
-//#include "../pics/filesave.xpm"
+#include "../pics/include.xpm"
 #include <qlayout.h>
 #include <qfile.h>
 #include <qtextstream.h>
@@ -71,10 +71,10 @@ FormulaEdit::FormulaEdit (QWidget *w, int t) : QWidget(w)
   ftoolbar->addButton(s, openchart, s2);
   QObject::connect(ftoolbar->getButton(s), SIGNAL(clicked()), this, SLOT(openRule()));
 
-//  s = "save";
-//  s2 = tr("Save Rule");
-//  ftoolbar->addButton(s, filesave, s2);
-//  QObject::connect(ftoolbar->getButton(s), SIGNAL(clicked()), this, SLOT(saveRule()));
+  s = "include";
+  s2 = tr("Include Rule");
+  ftoolbar->addButton(s, include, s2);
+  QObject::connect(ftoolbar->getButton(s), SIGNAL(clicked()), this, SLOT(includeRule()));
   
   s = "add";
   s2 = tr("Function Dialog");
@@ -269,6 +269,12 @@ void FormulaEdit::setLine (QString &d)
     return;
   }
 
+  if (d.contains("INCLUDECUS("))
+  {
+    formula->append(d);
+    return;
+  }
+
   if (d.contains("plot"))
     plot->insertItem(d, -1);
 }
@@ -442,4 +448,34 @@ void FormulaEdit::functionDialog ()
   formula->insert(format);
 }
 
-// remove this 
+void FormulaEdit::includeRule ()
+{
+  QString s("*");
+  QString s2, s3;
+  config.getData(Config::IndicatorPath, s2);
+  config.getData(Config::IndicatorGroup, s3);
+  s2.append("/" + s3);
+  SymbolDialog *dialog = new SymbolDialog(this,
+                                          s2,
+  					  s2,
+					  s,
+					  QFileDialog::ExistingFiles);
+  dialog->setCaption(tr("Select rule to include"));
+
+  int rc = dialog->exec();
+
+  if (rc != QDialog::Accepted)
+  {
+    delete dialog;
+    return;
+  }
+
+  QString selection = dialog->selectedFile();
+  delete dialog;
+
+  QFileInfo fi(selection);
+  s = "INCLUDECUS(" + fi.fileName() + ")\n";
+  formula->insert(s);
+}
+
+

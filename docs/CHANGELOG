@@ -2,7 +2,7 @@
 ====
 
 20061119: Changed quote plugin dialogs to all appear in one dialog. You can have a separate dialog window for each quote
-          plugin if you like and leave them open, minimized whatever. This helps with eventually having real-time quotes
+          plugin if you like and leave them open, minimized, whatever. This helps with eventually having real-time quotes
           running in the background with no blocking to the main app.
 
 20061120: Applied patch #1600028 - update install notes for Mac symlink db4.
@@ -57,6 +57,10 @@
 
 20061208: Added RSI and STOCH to the misc/CUS_examples section. Examples on how to code zone lines in indicators.
 
+20061209: Added new CUS feature. INCLUDECUS(xxx). This allows the user to include other CUS rules. This is helpful when
+          making changes to one indicator, changes will be propagated to all scripts that use the included indicator.
+          Not thoroughly tested yet. Careful how you combine different indicators. Any duplicate variable names will
+          abort the calculation. Mixing indicators that have different scaling properties will result in awful looking charts.
 
 
 0.33

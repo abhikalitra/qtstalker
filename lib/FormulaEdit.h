@@ -52,6 +52,7 @@ class FormulaEdit : public QWidget
     void deletePlotItem ();
     void insertPlotItem ();
     void openRule ();
+    void includeRule ();
 //    void saveRule ();
     void slotDoubleClicked (QListBoxItem *);
     void functionDialog ();

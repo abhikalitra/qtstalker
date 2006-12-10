@@ -33,6 +33,8 @@ class CUS : public IndicatorPlugin
     int indicatorPrefDialog (QWidget *);
     void setCustomFunction (QStringList &);
     void createPlot (QString &, QDict<PlotLine> &);
+    void includeCUS (QString &, QStringList &);
+    void checkIncludes ();
     
   protected:
     QStringList formulaList;

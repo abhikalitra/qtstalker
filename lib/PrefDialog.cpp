@@ -300,7 +300,11 @@ void PrefDialog::addComboItem (QString &name, QString &page, QStringList &l, QSt
   QComboBox *combo = new QComboBox(w);
   combo->insertStringList(l, -1);
   if (s.length())
-    combo->setCurrentText(s);
+  {
+    int t = l.findIndex(s);
+    if (t != -1)
+      combo->setCurrentItem(t);
+  }
   grid->addWidget(combo, grid->numRows() - 2, 1);
   comboList.replace(name, combo);
 }
