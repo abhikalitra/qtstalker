@@ -723,6 +723,7 @@ PlotLine * TALIB::calculateCustom (QString &p, QPtrList<PlotLine> &d)
     QStringList mal;
     getMATypes(mal);
     mal.remove("Wilder");
+    int t = 0;
 
     // setup the optinput parms
     const TA_OptInputParameterInfo *optInfo;
@@ -769,7 +770,7 @@ PlotLine * TALIB::calculateCustom (QString &p, QPtrList<PlotLine> &d)
             return 0;
           }
     
-          int t = mal.findIndex(l[sparmIndex]);
+          t = mal.findIndex(l[sparmIndex]);
           if (t == -1)
             t = 0;
           retCode = TA_SetOptInputParamInteger(parmHolder, loop, (TA_Integer) t);
