@@ -37,6 +37,7 @@
 #include "PrefDialog.h"
 #include "HelpWindow.h"
 #include "DbPlugin.h"
+#include "IndicatorSummary.h"
 
 #include "../pics/qtstalker.xpm"
 
@@ -1105,6 +1106,30 @@ void QtstalkerApp::slotWakeup ()
   qApp->processEvents();
 }
 
+void QtstalkerApp::slotIndicatorSummary ()
+{
+  if (status == None)
+    return;
+
+  QString basePath, s;
+  config.getData(Config::IndicatorPath, basePath);
+  config.getData(Config::IndicatorGroup, s);
+  basePath.append("/" + s);
+
+  QStringList l;
+  QDictIterator<Plot> it(plotList);
+  for(; it.current(); ++it)
+  {
+    Indicator *i = it.current()->getIndicator();
+    i->getName(s);
+    l.append(basePath + "/" + s);
+  }
+
+  IndicatorSummary is(l, toolbar2->getBars(), (BarData::BarLength) toolbar2->getBarLengthInt());
+  connect(&is, SIGNAL(signalWakeup()), this, SLOT(slotWakeup()));
+  is.run();
+}
+
 //**********************************************************************
 //**********************************************************************
 //**********************************************************************
@@ -1128,8 +1153,4 @@ int main(int argc, char *argv[])
 
   return a.exec();
 }
-
-// remove
-
-
 

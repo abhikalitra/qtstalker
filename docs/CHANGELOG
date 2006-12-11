@@ -62,6 +62,11 @@
           Not thoroughly tested yet. Careful how you combine different indicators. Any duplicate variable names will
           abort the calculation. Mixing indicators that have different scaling properties will result in awful looking charts.
 
+20061210: Added new function Indicator Summary groups that display the latest indicator values for a selected group. The function
+          assumes to use the currently loaded indicators to use. Function found on the tools menu. Function will (hopefully) be
+          refined with more options in the future.
+
+
 
 0.33
 ====

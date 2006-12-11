@@ -43,6 +43,8 @@ DataWindow::~DataWindow ()
 
 void DataWindow::setData (int row, int col, QString &data)
 {
+  if (row > table->numRows() -1)
+    table->setNumRows(row + 1);
   table->setText(row, col, data);
 }
 

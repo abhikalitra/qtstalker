@@ -65,7 +65,8 @@ class MainMenubar : public QMenuBar
       Crosshairs,
       Help,
       PaperTrade,
-      AdvancePaperTrade
+      AdvancePaperTrade,
+      IndicatorSummary
     };
   
     MainMenubar(QMainWindow *);

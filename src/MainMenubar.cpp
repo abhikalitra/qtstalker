@@ -177,12 +177,17 @@ MainMenubar::MainMenubar (QMainWindow *mw) : QMenuBar (mw, "mainMenubar")
   connect(action, SIGNAL(activated()), mw, SLOT(slotHelp()));
   actions.replace(Help, action);
 
-
   action = new QAction(this, "actionAdvancePaperTrade");
   action->setAccel(CTRL+Key_Right);
   connect(action, SIGNAL(activated()), this, SIGNAL(signalAdvancePaperTrade()));
   actions.replace(AdvancePaperTrade, action);
 
+  action = new QAction(this, "actionIndicatorSummary");
+  action->setMenuText(tr("Indicator Summary"));
+  action->setStatusTip(tr("Indicator Summary"));
+  action->setToolTip(tr("Indicator Summary"));
+  connect(action, SIGNAL(activated()), mw, SLOT(slotIndicatorSummary()));
+  actions.replace(IndicatorSummary, action);
   
   QAccel *a = new QAccel(mw);
   connect(a, SIGNAL(activated(int)), this, SLOT(slotAccel(int)));
@@ -230,6 +235,7 @@ void MainMenubar::createMenus ()
   toolMenu = new QPopupMenu();
   actions[DataWindow]->addTo(toolMenu);
   actions[Quotes]->addTo(toolMenu);
+  actions[IndicatorSummary]->addTo(toolMenu);
 
   helpMenu = new QPopupMenu();
   actions[About]->addTo(helpMenu);
