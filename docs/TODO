@@ -28,6 +28,8 @@ To Do:
 - add: there is no way to use buy/sell prices in stop formulas in the tester. 
 - median lines chart objects
 - fibo time chart objects
+- fix: data panel bug with duplicate label names overwrite each other
+
 
 
 

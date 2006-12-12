@@ -311,10 +311,6 @@ void FormulaEdit::openRule ()
   QString selection = dialog->selectedFile();
   delete dialog;
 
-  formula->clear();
-  plot->clear();
-  formulaList.clear();
-
   QFile f(selection);
   if (! f.open(IO_ReadOnly))
   {
@@ -323,15 +319,17 @@ void FormulaEdit::openRule ()
   }
   QTextStream stream(&f);
   
+  QString script;
   while(stream.atEnd() == 0)
   {
     s = stream.readLine();
     s = s.stripWhiteSpace();
-    if (! s.contains("script="))
-      formulaList.append(s);
-    setLine(s);
+    if (s.contains("script="))
+      script = s;
   }
   f.close();
+
+  setLine(script);
 }
 
 /*

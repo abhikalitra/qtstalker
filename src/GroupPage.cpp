@@ -217,7 +217,7 @@ void GroupPage::deleteChart()
 
   int rc = QMessageBox::warning(this,
 		            tr("Qtstalker: Warning"),
-			    tr("Are you sure you want to delete selected chart?"),
+			    tr("Are you sure you want to delete group item?"),
 			    QMessageBox::Yes,
 			    QMessageBox::No,
 			    QMessageBox::NoButton);

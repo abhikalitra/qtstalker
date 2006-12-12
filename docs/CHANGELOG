@@ -66,6 +66,10 @@
           assumes to use the currently loaded indicators to use. Function found on the tools menu. Function will (hopefully) be
           refined with more options in the future.
 
+20061211: Added DonchianChannels to the misc/CUS_examples section.
+
+20061212: When editing CUS rules, the 'Open Rule' function inserts text instead of relacing text.
+
 
 
 0.33
