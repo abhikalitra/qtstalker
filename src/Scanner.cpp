@@ -166,7 +166,7 @@ void Scanner::scan ()
     else
       config.getData(Config::GroupPath, ts);
     Traverse trav(Traverse::File);
-    trav.traverse(ts + "/Stocks");
+    trav.traverse(ts);
     trav.getList(fileList);
   }
   
@@ -192,6 +192,10 @@ void Scanner::scan ()
       emit message(QString("Scan cancelled"));
       break;
     }
+
+    QFileInfo fi(fileList[loop]);
+    if (fi.isDir())
+      continue;
 
     DbPlugin db;
     QDir dir;

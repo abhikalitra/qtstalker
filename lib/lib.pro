@@ -51,6 +51,7 @@ HEADERS += Index.h
 HEADERS += Traverse.h
 HEADERS += DataWindow.h
 HEADERS += IndicatorSummary.h
+HEADERS += XmlWriter.h
 
    
 SOURCES += QuotePlugin.cpp
@@ -99,6 +100,7 @@ SOURCES += Index.cpp
 SOURCES += Traverse.cpp
 SOURCES += DataWindow.cpp
 SOURCES += IndicatorSummary.cpp
+SOURCES += XmlWriter.cpp
 
     
 TARGET = qtstalker

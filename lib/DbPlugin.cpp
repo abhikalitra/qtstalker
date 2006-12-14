@@ -473,6 +473,7 @@ void DbPlugin::getHistory (BarData *barData, QDateTime &startDate)
     }
   }
   
+
   DBT key;
   DBT data;
   DBC *cur;

@@ -70,6 +70,11 @@
 
 20061212: When editing CUS rules, the 'Open Rule' function inserts text instead of relacing text.
 
+20061213: Applied patch #1615024 - workwithscanner.html update. Thanks to loh_tar for the patch
+
+20061213: Applied patch #1614530 - IndicatorSummary xml export. Thanks to David for the patch.
+
+
 
 
 0.33

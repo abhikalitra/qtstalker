@@ -30,6 +30,8 @@
 #include <qdatetime.h>
 #include <qfileinfo.h>
 #include <qmessagebox.h>
+#include <qfile.h>
+#include "XmlWriter.h"
 
 IndicatorSummary::IndicatorSummary (QStringList &l, int mb, BarData::BarLength bl)
 {
@@ -197,7 +199,38 @@ void IndicatorSummary::createDataWindow (QPtrList<Setting> &list, QString &group
 {
   DataWindow *dw = new DataWindow(0);
   QFileInfo fi(group);
-  QString s = QObject::tr("Indicator Summary ") + fi.fileName();
+
+  QString bls;
+  BarData bd(bls);
+  QStringList bll;
+  bd.getBarLengthList(bll);
+  bls = bll[(int) barLength];
+
+  QDir dir;
+  QString exportPath;
+  config.getData(Config::Home, exportPath);
+  exportPath.append("/export");
+  if (! dir.exists(exportPath, TRUE))
+    dir.mkdir(exportPath, TRUE);
+  QString xmlFileName = exportPath + "/summary-" + fi.fileName() + "-" + bls + ".xml";
+  QFile xmlFile(xmlFileName);
+  xmlFile.open(IO_WriteOnly);
+  XmlWriter xw(&xmlFile);
+  xw.setAutoNewLine(true);
+  xw.setIndentSize(2);
+  xw.writeRaw( "<?xml version=\"1.0\"?>" );
+  xw.newLine();
+  xw.writeOpenTag("indicator-summary", AttrMap("xmlns", "http://qtstalker.sourceforge.net/ns/indicator-summary-1.0"));
+  xw.writeOpenTag("metadata");
+  xw.writeTaggedString("date-exported", QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss"));
+  xw.writeTaggedString("group", fi.fileName());
+  xw.writeTaggedString("bar-length", bls);
+// FIXME: How to determine datetime of last bar
+  xw.writeTaggedString("bar-current", "FIXME: yyyy-MM-dd hh:mm");
+  xw.writeCloseTag("metadata");
+  xw.writeOpenTag("data");
+
+  QString s = QObject::tr("Indicator Summary - ") + fi.fileName() + " - " + bls;
   dw->setCaption(s);
 
   int loop;
@@ -230,17 +263,28 @@ void IndicatorSummary::createDataWindow (QPtrList<Setting> &list, QString &group
   for (loop = 0; loop < (int) list.count(); loop++)
   {
     Setting *set = list.at(loop);
+    QString x = klist[0];
+    QString x2;
+    set->getData(x, x2);
+    xw.writeOpenTag("symbol", AttrMap("name", x2));
     int loop2;
     for (loop2 = 0; loop2 < (int) klist.count(); loop2++)
     {
       s = klist[loop2];
       QString s2;
       set->getData(s, s2);
+      if (loop2 > 0)
+        xw.writeTaggedString("indicator", s2, AttrMap("variable", s));
       if (! s2.length())
         continue;
       dw->setData(loop, loop2, s2);
     }
+    xw.writeCloseTag("symbol");
   }
+
+  xw.writeCloseTag("data");
+  xw.writeCloseTag("indicator-summary");
+  xmlFile.close();
 
   dw->show();
 }
