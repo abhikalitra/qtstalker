@@ -41,17 +41,6 @@ class IndicatorPlugin : public QObject
   
   public:
   
-    enum Operator
-    {
-      Equal,
-      LessThan,
-      LessThanEqual,
-      GreaterThan,
-      GreaterThanEqual,
-      And,
-      Or
-    };
-
     enum FormatType
     {
       FormatInputArray,
@@ -61,6 +50,17 @@ class IndicatorPlugin : public QObject
       FormatString,
       FormatMAType,
       FormatBool
+    };
+
+    enum Operator
+    {
+      Equal,
+      LessThan,
+      LessThanEqual,
+      GreaterThan,
+      GreaterThanEqual,
+      And,
+      Or
     };
 
     IndicatorPlugin();

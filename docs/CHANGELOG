@@ -74,6 +74,14 @@
 
 20061213: Applied patch #1614530 - IndicatorSummary xml export. Thanks to David for the patch.
 
+20061214: Changed UTIL(INRANGE) function to accept either arrays or constants for min and max fields
+
+20061214: Fixed bug in CUS options Include Rule and Open Rule that did not accept selections when the
+          open button was used to close the dialog instead of double clicking on the selection.
+
+20061214: Fixed splits to adjust volume.
+
+20061214: Fixed default chart object font changes that do not propagate.
 
 
 

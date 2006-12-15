@@ -768,31 +768,84 @@ PlotLine * UTIL::calculateHL (QString &p, QPtrList<PlotLine> &d, int type)
 PlotLine * UTIL::calculateINRANGE (QString &p, QPtrList<PlotLine> &d)
 {
   // format: METHOD, INPUT_ARRAY, DOUBLE, DOUBLE
+  // format: METHOD, INPUT_ARRAY, INPUT_ARRAY2, INPUT_ARRAY3
 
-  formatList.clear();
-  formatList.append(FormatString);
-  formatList.append(FormatInputArray);
-  formatList.append(FormatDouble);
-  formatList.append(FormatDouble);
+  QStringList l = QStringList::split(",", p, FALSE);
 
-  if (checkFormat(p, d, 4, 4))
+  if (l.count() != 4)
+  {
+    qDebug("UTIL::INRANGE: invalid parm count");
     return 0;
- 
+  }
+
+  PlotLine *input = 0;
+  if (! d.count())
+  {
+    qDebug("UTIL::INRANGE: invalid ARRAY_INPUT parm");
+    return 0;
+  }
+  input = d.at(0);
+  int loop = input->getSize() - 1;
+
+  PlotLine *input2 = 0;
+  int loop2 = 0;
+  bool ok;
+  double min = l[2].toDouble(&ok);
+  if (! ok)
+  {
+    if (d.count() >= 2)
+    {
+      input2 = d.at(1);
+      loop2 = input2->getSize() - 1;
+    }
+    else
+    {
+      qDebug("UTIL::INRANGE: invalid MIN parm");
+      return 0;
+    }
+  }
+
+  PlotLine *input3 = 0;
+  int loop3 = 0;
+  double max = l[3].toDouble(&ok);
+  if (! ok)
+  {
+    if (d.count() == 3)
+    {
+      input3 = d.at(2);
+      loop3 = input3->getSize() - 1;
+    }
+    else
+    {
+      qDebug("UTIL::INRANGE: invalid MAX parm");
+      return 0;
+    }
+  }
+
   clearOutput();
 
   PlotLine *line = new PlotLine();
-  PlotLine *input = d.at(0);
-
-  double min = formatStringList[2].toDouble();
-  double max = formatStringList[3].toDouble();
-  
-  int loop;
-  for (loop = 0; loop < (int) input->getSize(); loop++)
+  while (loop > -1)
   {
+    if (input2)
+    {
+      min = input2->getData(loop2);
+      loop2--;
+    }
+
+    if (input3)
+    {
+      max = input3->getData(loop3);
+      loop3--;
+    }
+
     if (input->getData(loop) >= min && input->getData(loop) <= max)
-      line->append(1);
+      line->prepend(1);
     else
-      line->append(0);
+      line->prepend(0);
+
+    if (loop2 < 0 || loop3 < 0)
+      break;
   }
 
   output->addLine(line);
@@ -907,8 +960,15 @@ void UTIL::formatDialog (QStringList &vl, QString &rv, QString &rs)
     if (! method.compare("INRANGE"))
     {
       // format1: METHOD, ARRAY_INPUT, DOUBLE, DOUBLE
+      // format2: METHOD, ARRAY_INPUT, ARRAY_INPUT2, ARRAY_INPUT3
       dialog->addComboItem(ai1l, pl, vl, 0);
+      QStringList l = vl;
+      l.append(QObject::tr("None"));
+      QString s = QObject::tr("Min Array");
+      dialog->addComboItem(s, pl, l, l.count() - 1);
       dialog->addDoubleItem(minl, pl, 0, -99999999.0, 99999999.0);
+      s = QObject::tr("Max Array");
+      dialog->addComboItem(s, pl, l, l.count() - 1);
       dialog->addDoubleItem(maxl, pl, 0, -99999999.0, 99999999.0);
       break;
     }
@@ -1028,10 +1088,28 @@ void UTIL::formatDialog (QStringList &vl, QString &rv, QString &rs)
       {
         // format1: METHOD, ARRAY_INPUT, DOUBLE, DOUBLE
         dialog->getCombo(ai1l, s);
-        double d = dialog->getDouble(minl);
-        rs.append("," + QString::number(d));
-        d = dialog->getDouble(maxl);
-        rs.append("," + QString::number(d));
+
+        QString s = QObject::tr("Min Array");
+        QString s2;
+        dialog->getCombo(s, s2);
+        if (! s2.compare(QObject::tr("None")))
+        {
+          double d = dialog->getDouble(minl);
+          rs.append("," + QString::number(d));
+        }
+        else
+          rs.append("," + s2);
+
+        s = QObject::tr("Max Array");
+        dialog->getCombo(s, s2);
+        if (! s2.compare(QObject::tr("None")))
+        {
+          double d = dialog->getDouble(maxl);
+          rs.append("," + QString::number(d));
+        }
+        else
+          rs.append("," + s2);
+
         break;
       }
 

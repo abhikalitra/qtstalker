@@ -130,7 +130,7 @@ void Text::prefDialog ()
     if (f)
     {
       dialog->getColor(cl, defaultColor);
-      dialog->getFont(fl, font);
+      dialog->getFont(fl, dfont);
       saveDefaults();
     }
     
@@ -230,9 +230,9 @@ void Text::saveDefaults ()
   settings.writeEntry(s, defaultColor.name());
   
   s = "/Qtstalker/DefaultTextFont";
-  settings.writeEntry(s, font.family() + "," +
-                      QString::number(font.pointSize()) + "," +
-		      QString::number(font.weight()));
+  settings.writeEntry(s, dfont.family() + "," +
+                      QString::number(dfont.pointSize()) + "," +
+		      QString::number(dfont.weight()));
 }
 
 void Text::getSettings (Setting &set)

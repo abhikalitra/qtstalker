@@ -308,13 +308,16 @@ void FormulaEdit::openRule ()
     return;
   }
 
-  QString selection = dialog->selectedFile();
+  QStringList selection = dialog->selectedFile();
   delete dialog;
 
-  QFile f(selection);
+  if (! selection.count())
+    return;
+
+  QFile f(selection[0]);
   if (! f.open(IO_ReadOnly))
   {
-    qDebug("FormulaEdit::openRule:can't read file %s", selection.latin1());
+    qDebug("FormulaEdit::openRule:can't read file %s", selection[0].latin1());
     return;
   }
   QTextStream stream(&f);
@@ -468,10 +471,13 @@ void FormulaEdit::includeRule ()
     return;
   }
 
-  QString selection = dialog->selectedFile();
+  QStringList selection = dialog->selectedFiles();
   delete dialog;
 
-  QFileInfo fi(selection);
+  if (! selection.count())
+    return;
+
+  QFileInfo fi(selection[0]);
   s = "INCLUDECUS(" + fi.fileName() + ")\n";
   formula->insert(s);
 }

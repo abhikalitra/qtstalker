@@ -54,6 +54,7 @@ class Text : public COBase
     QPointArray arrow;
     QString label;
     QFont font;
+    QFont dfont;
     QString fontLabel;
     QString labelLabel;
 };

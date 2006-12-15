@@ -390,6 +390,7 @@ void StocksDialog::split ()
       bar.setHigh(bar.getHigh() * plyer);
       bar.setLow(bar.getLow() * plyer);
       bar.setClose(bar.getClose() * plyer);
+      bar.setVolume(bar.getVolume() * plyer);
       db->setBar(bar);
     }
   }
@@ -467,6 +468,4 @@ void StocksDialog::updateFields (Bar &record)
 
   barEdit->clearButtons();
 }
-
-// remove this 
 

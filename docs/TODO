@@ -28,12 +28,7 @@ To Do:
 - add: there is no way to use buy/sell prices in stop formulas in the tester. 
 - median lines chart objects
 - fibo time chart objects
-- add INRANGEARRAY function to UTILS
-- fix: chart object font changes do not propagate
 - fix: chart objects dont adjust along with a stock split
-- fix: splits should adjust volume as well
-
-
 
 
 Maybe some day:
