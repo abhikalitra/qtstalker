@@ -29,6 +29,7 @@
 #include "DbPlugin.h"
 #include "Config.h"
 #include "BarEdit.h"
+#include "DBIndex.h"
 
 class StocksDialog : public QTabDialog
 {
@@ -65,6 +66,8 @@ class StocksDialog : public QTabDialog
     BarEdit *barEdit;
     QDateEdit *splitDate;
     QDateTime currentDate;
+    DBIndex index;
+    QString symbol;
 };
 
 #endif

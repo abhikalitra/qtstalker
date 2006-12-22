@@ -34,8 +34,10 @@
 #include <qfile.h>
 #include <qaccel.h>
 
-PortfolioPage::PortfolioPage (QWidget *w) : QListBox (w)
+PortfolioPage::PortfolioPage (QWidget *w, DBIndex *i) : QListBox (w)
 {
+  chartIndex = i;
+
   connect(this, SIGNAL(contextMenuRequested(QListBoxItem *, const QPoint &)), this, SLOT(rightClick(QListBoxItem *)));
   connect(this, SIGNAL(highlighted(const QString &)), this, SLOT(portfolioSelected(const QString &)));
   connect(this, SIGNAL(doubleClicked(QListBoxItem *)), this, SLOT(doubleClick(QListBoxItem *)));
@@ -66,13 +68,13 @@ PortfolioPage::~PortfolioPage ()
 
 void PortfolioPage::openPortfolio ()
 {
-  PortfolioDialog *dialog = new PortfolioDialog(currentText());
+  PortfolioDialog *dialog = new PortfolioDialog(currentText(), chartIndex);
   dialog->show();
 }
 
 void PortfolioPage::openPortfolio (QString d)
 {
-  PortfolioDialog *dialog = new PortfolioDialog(d);
+  PortfolioDialog *dialog = new PortfolioDialog(d, chartIndex);
   dialog->show();
 }
 

@@ -25,6 +25,7 @@
 #include "PrefDialog.h"
 #include "DbPlugin.h"
 #include "HelpWindow.h"
+#include "DBIndexItem.h"
 #include "../pics/newchart.xpm"
 #include "../pics/edit.xpm"
 #include "../pics/delete.xpm"
@@ -35,10 +36,11 @@
 #include <qtextstream.h>
 #include <qlayout.h>
 
-PortfolioDialog::PortfolioDialog (QString p) : QTabDialog (0, "PortfolioDialog", TRUE)
+PortfolioDialog::PortfolioDialog (QString p, DBIndex *i) : QTabDialog (0, "PortfolioDialog", TRUE)
 {
   portfolio = p;
-  
+  index = i;
+
   QString s = tr("Qtstalker: Portfolio") + " " + portfolio;
   setCaption(s);
 
@@ -167,13 +169,18 @@ void PortfolioDialog::updatePortfolioItems ()
       continue;
 
     DbPlugin plug;
-    plug.openChart(s);
+    plug.open(s, index);
+
+    QFileInfo fi(s);
+    QString fn = fi.fileName();
     
     QString type;
-    plug.getHeaderField(DbPlugin::Type, type);
+    DBIndexItem hitem;
+    index->getIndexItem(fn, hitem);
+    hitem.getType(type);
     
     QString futuresType;
-    plug.getHeaderField(DbPlugin::FuturesType, futuresType);
+    hitem.getFuturesType(futuresType);
     
     Bar bar;
     plug.getLastBar(bar);
@@ -448,4 +455,3 @@ void PortfolioDialog::slotHelp ()
   hw->show();
 }
 
-// remove this 

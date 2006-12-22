@@ -27,6 +27,7 @@
 #include <qpopupmenu.h>
 #include <qlistbox.h>
 #include "Config.h"
+#include "DBIndex.h"
 
 class PortfolioPage : public QListBox
 {
@@ -43,7 +44,7 @@ class PortfolioPage : public QListBox
       Help
     };
   
-    PortfolioPage (QWidget *);
+    PortfolioPage (QWidget *, DBIndex *);
     ~PortfolioPage ();
 
   public slots:
@@ -65,6 +66,7 @@ class PortfolioPage : public QListBox
   
     Config config;
     QPopupMenu *menu;
+    DBIndex *chartIndex;
 };
 
 #endif

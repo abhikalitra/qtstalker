@@ -28,6 +28,7 @@
 #include <qlineedit.h>
 #include "Navigator.h"
 #include "Config.h"
+#include "DBIndex.h"
 
 class ChartPage : public QWidget
 {
@@ -51,7 +52,7 @@ class ChartPage : public QWidget
       AddToGroup
     };
   
-    ChartPage (QWidget *);
+    ChartPage (QWidget *, DBIndex *);
     ~ChartPage ();
     void exportChart (QString &);
     void setFocus ();
@@ -64,8 +65,6 @@ class ChartPage : public QWidget
     void exportSymbol ();
     void dumpSymbol ();
     void exportChart (QString &, bool);
-    void chartSelected (QString);
-    void chartNoSelection ();
     void rightClick (QListBoxItem *);
     void refreshList ();
     void searchChanged (const QString &);
@@ -82,6 +81,7 @@ class ChartPage : public QWidget
     QPopupMenu *menu;
     QPopupMenu *newMenu;
     QLineEdit *search;
+    DBIndex *chartIndex;
 };
 
 #endif

@@ -29,7 +29,7 @@
 #include <qcombobox.h>
 #include <qlistbox.h>
 #include <qlineedit.h>
-
+#include "DBIndex.h"
 #include "Setting.h"
 #include "Indicator.h"
 
@@ -62,7 +62,7 @@ class IndicatorPage : public QWidget
       Tab
     };
   
-    IndicatorPage (QWidget *);
+    IndicatorPage (QWidget *, DBIndex *);
     ~IndicatorPage ();
     void updateGroups ();
     QString getIndicatorGroup ();
@@ -104,6 +104,7 @@ class IndicatorPage : public QWidget
     QStringList localIndicators;
     QLineEdit *search;
     QDir idir;
+    DBIndex *chartIndex;
 };
 
 #endif

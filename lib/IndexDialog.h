@@ -35,7 +35,6 @@ class IndexDialog : public QTabDialog
     IndexDialog ();
     ~IndexDialog ();
     void getName (QString &);
-    bool createNew (QString &path, QString &symbol);
     void setList (QString &);
     
   public slots:

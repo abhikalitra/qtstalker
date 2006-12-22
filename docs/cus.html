@@ -12,7 +12,9 @@ Allows the user to create custom indicators to plot. The user builds an
 indicator in a step by step manner.<br>
 By using all the indicator plugins available, we are able to build
 most any
-kind of indicator quickly and simply. Complicated, intensive indicators
+kind of indicator quickly and simply.
+These CUS rules can also include other CUS rules.
+Complicated, intensive indicators
 would best be
 left
 to creating a plugin instead of long series of functions for speed and
@@ -91,7 +93,13 @@ not obscure the macd and trig plots. <br>
 Fortunately, the user does not need to input the plot format manually.
 We can use the 'insert' dialog to construct the plot paramaters for us
 correctly.<br>
-<br>
+<h4>Include other rules:</h4>
+<p>INCLUDECUS(ruleName) ... See example cdl-rel-ma
+</p>
+<h4>CUS Examples Repository:</h4>
+<p>
+See the directory "misc/CUS_Examples" and copy some into your "~/.qtstalker/.../Indicators" directory.
+</p>
 <h4>Reserved Words:</h4>
 These words and symbols are reserved for use in CUS scripts. Do not use
 these words and symbols in or part of variable names or the script will

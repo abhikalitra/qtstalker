@@ -83,6 +83,16 @@
 
 20061214: Fixed default chart object font changes that do not propagate.
 
+20061214: Applied patch #1616118 - Add to Group Icon - thanks to loh_tar for the patch.
+
+20061214: Applied patch #1615526 - update FAQ: Mac OS X works fine. Thanks to David for the patch.
+
+20061214: Applied patch #1615490 - add INCLUDECUS to examples and docs. Thanks to David for the patch.
+
+20061221: Converted the DB functions to a new format that centralizes the chart metadata into a main index.
+          Also changed the chart format to a fixed record size to achieve a 60% speed increase for loading
+          and inserting data. Added a conversion dialog that will appear when the new code is started.
+          Conversion will take under 10 minutes for 7000 charts.
 
 
 0.33

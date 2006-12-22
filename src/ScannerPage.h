@@ -29,6 +29,7 @@
 #include <qlineedit.h>
 #include <qdir.h>
 #include "Config.h"
+#include "DBIndex.h"
 
 
 class ScannerPage : public QWidget
@@ -51,7 +52,7 @@ class ScannerPage : public QWidget
       Help
     };
   
-    ScannerPage (QWidget *);
+    ScannerPage (QWidget *, DBIndex *);
     ~ScannerPage ();
 
   public slots:
@@ -78,6 +79,7 @@ class ScannerPage : public QWidget
     QListBox *list;
     QLineEdit *search;
     QDir idir;
+    DBIndex *chartIndex;
 };
 
 #endif

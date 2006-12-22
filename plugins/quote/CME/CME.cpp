@@ -21,6 +21,7 @@
 
 #include "CME.h"
 #include "Bar.h"
+#include "DBIndexItem.h"
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qnetwork.h>
@@ -978,17 +979,26 @@ void CME::parse (Setting &data)
 
   data.getData(ts, ts2);
   s = path + "/" + ts2;
-  if (plug.openChart(s))
+  if (plug.open(s, chartIndex))
   {
     QString ss(tr("Could not open db."));
     printStatusLogMessage(ss);
     return;
   }
 
+  QFileInfo fi(s);
+  QString fn = fi.fileName();
+
+  DBIndexItem item;
+  chartIndex->getIndexItem(fn, item);
+
   // verify if this chart can be updated by this plugin
-  plug.getHeaderField(DbPlugin::QuotePlugin, s);
+  item.getQuotePlugin(s);
   if (! s.length())
-    plug.setHeaderField(DbPlugin::QuotePlugin, pluginName);
+  {
+    item.setQuotePlugin(pluginName);
+    chartIndex->setIndexItem(fn, item);
+  }
 //  else
 //  {
 //    if (s.compare(pluginName))
@@ -1001,10 +1011,10 @@ void CME::parse (Setting &data)
 //      return;
 //    }
 //  }
-      
-  plug.getHeaderField(DbPlugin::Symbol, s);
+
+  item.getSymbol(s);      
   if (! s.length())
-    plug.createNew(DbPlugin::Futures);
+    plug.createNewFutures();
   
   plug.setBar(bar);
 	     
@@ -1068,6 +1078,8 @@ void CME::loadSettings ()
   timeoutSpin->setValue(s.toInt());
   
   settings.endGroup();
+
+  methodChanged(methodCombo->currentText());
 }
 
 void CME::saveSettings ()

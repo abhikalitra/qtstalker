@@ -19,31 +19,34 @@
  *  USA.
  */
 
-#ifndef TRAVERSE_HPP
-#define TRAVERSE_HPP
+#ifndef DBINDEX_HPP
+#define DBINDEX_HPP
 
 #include <qstring.h>
 #include <qstringlist.h>
+#include "DBBase.h"
+#include "DBIndexItem.h"
+#include "Setting.h"
 
-class Traverse
+class DBIndex : public DBBase
 {
   public:
-
-    enum Type
-    {
-      File,
-      Dir
-    };
-
-    Traverse(Traverse::Type);
-    ~Traverse();
-    void traverse(QString dirname);
-    void getList(QStringList &);
-    void clear();
-
-  private:
-    QStringList list;
-    Traverse::Type type;
+    DBIndex ();
+    ~DBIndex ();
+    void setIndexItem (QString &, DBIndexItem &);
+    void getIndexItem (QString &, DBIndexItem &);
+    void deleteIndicator (QString &, QString &); // local indicators
+    void addIndicator (QString &, QString &); // local indicators
+    void getIndicators (QString &, QString &); // local indicators
+    void deleteChart (QString &);
+    void getChartObjects (QString &, QStringList &);
+    void setChartObject (QString &, QString &, Setting &);
+    void deleteChartObject (QString &, QString &);
+    void deleteAllChartObjects (QString &k);
+    void setFundamentals (QString &, QString &);
+    void getFundamentals (QString &, QString &);
 };
 
 #endif
+
+

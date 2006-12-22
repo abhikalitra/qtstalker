@@ -57,6 +57,9 @@ class IndicatorPlot : public QWidget
     void signalDateFlag (bool);
     void signalLogFlag (bool);
     void signalEditChart (QString);
+    void signalDeleteAllCO ();
+    void signalDeleteCO (QString);
+    void signalSaveCO (Setting);
 
   public:
     enum MouseStatus

@@ -29,8 +29,6 @@
 #include <qlayout.h>
 #include <qdir.h>
 #include <qlabel.h>
-#include <qmessagebox.h>
-#include <qinputdialog.h>
 #include "../pics/insert.xpm"
 #include "../pics/edit.xpm"
 #include "../pics/delete.xpm"
@@ -275,46 +273,5 @@ void IndexDialog::help ()
 {
   HelpWindow *hw = new HelpWindow(this, helpFile);
   hw->show();
-}
-
-bool IndexDialog::createNew (QString &path, QString &symbol)
-{
-  bool ok = FALSE;
-  symbol = QInputDialog::getText(QObject::tr("New Index"),
-                                 QObject::tr("Enter symbol name for the new Index"),
-                                 QLineEdit::Normal,
-                                 QString::null,
-                                 &ok,
-                                 0);
-  if (! symbol.length() || ok == FALSE)
-    return FALSE;
-
-  QDir dir;
-  Config config;
-  QString s;
-  config.getData(Config::DataPath, s);
-  s.append("/Index");
-  if (! dir.exists(s))
-  {
-    if (! dir.mkdir(s, TRUE))
-    {
-      QMessageBox::information(0,
-                               QObject::tr("Qtstalker: Error"),
-                               QObject::tr("Could not create ~/.qtstalker/data/Index directory."));
-      return FALSE;
-    }
-  }
-  
-  s.append("/" + symbol);
-  if (dir.exists(s))
-  {
-    QMessageBox::information(0,
-                             QObject::tr("Qtstalker: Error"),
-                             QObject::tr("This Index already exists."));
-    return FALSE;
-  }
-
-  path = s;
-  return TRUE;  
 }
 

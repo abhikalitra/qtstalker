@@ -31,6 +31,7 @@
 #include <qlayout.h>
 #include <qspinbox.h>
 #include "Toolbar.h"
+#include "DBIndex.h"
 
 class QuotePlugin : public QTabDialog
 {
@@ -56,6 +57,7 @@ class QuotePlugin : public QTabDialog
     void enableGUI ();
     void disableGUI ();
     virtual void update ();
+    void setChartIndex (DBIndex *);
     
   public slots:
     void getFile (QString &);
@@ -90,6 +92,7 @@ class QuotePlugin : public QTabDialog
     QGridLayout *grid;
     QSpinBox *retrySpin;
     QSpinBox *timeoutSpin;
+    DBIndex *chartIndex;
 };
 
 #endif

@@ -79,6 +79,9 @@ Save changes?</source>
     </message>
 </context>
 <context>
+    <name>CC</name>
+</context>
+<context>
     <name>CME</name>
     <message>
         <source>Downloading </source>
@@ -403,6 +406,14 @@ Save changes?</source>
         <source>Select Charts</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Add To &amp;Group<byte value="x9"/>Ctrl+G</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Are you sure you want to delete selected chart?</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ChartToolbar</name>
@@ -440,6 +451,18 @@ Save changes?</source>
     </message>
     <message>
         <source>Paper trade date select.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Bar Spacing 1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Bar Spacing 2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Bar Spacing 3</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -494,6 +517,17 @@ Save changes?</source>
     </message>
     <message>
         <source>Close</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ExScript</name>
+    <message>
+        <source>ExScript Warning</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Script timeout. Canel process?</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -687,6 +721,14 @@ Save changes?</source>
         <source>Duplicate variable name.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Include Rule</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select rule to include</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>FuturesDialog</name>
@@ -848,6 +890,10 @@ Save changes?</source>
     </message>
     <message>
         <source>Group rename failed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Are you sure you want to delete group item?</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1133,6 +1179,25 @@ Save changes?</source>
         <source>No chart objects to delete.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Edit &amp;Chart</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>IndicatorSummary</name>
+    <message>
+        <source>Qtstalker: Warning</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No files in group.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Symbol</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>MainMenubar</name>
@@ -1254,6 +1319,10 @@ Save changes?</source>
     </message>
     <message>
         <source>&amp;Tools</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Indicator Summary</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2590,6 +2659,62 @@ Save changes?</source>
         <source>ExScript Format</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Indicator Summary Parms</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Details</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Group</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Indicator Summary - </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add To Group Selection</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select a group</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Output</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open Interest</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Timeout Seconds</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Minimum</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Maximum</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Min Array</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Max Array</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Continuous Adjusted</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>QtstalkerApp</name>
@@ -2673,6 +2798,18 @@ Save changes?</source>
         <source>Qtstalker
 Ver CVS 0.34 (working title)
 (C) 2001-2006 by Stefan Stratigakos</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Bar Spacing 1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Bar Spacing 2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Bar Spacing 3</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3574,6 +3711,18 @@ eg. 2:1</source>
     </message>
     <message>
         <source>&amp;Cancel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Progress</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Chart Conversion</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Perform Conversion</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

@@ -45,13 +45,13 @@ HEADERS += TradeItem.h
 HEADERS += StocksDialog.h
 HEADERS += FuturesDialog.h
 HEADERS += IndexDialog.h
-HEADERS += CC.h
-HEADERS += Spread.h
-HEADERS += Index.h
 HEADERS += Traverse.h
 HEADERS += DataWindow.h
 HEADERS += IndicatorSummary.h
 HEADERS += XmlWriter.h
+HEADERS += DBBase.h
+HEADERS += DBIndex.h
+HEADERS += DBIndexItem.h
 
    
 SOURCES += QuotePlugin.cpp
@@ -94,15 +94,15 @@ SOURCES += TradeItem.cpp
 SOURCES += StocksDialog.cpp
 SOURCES += FuturesDialog.cpp
 SOURCES += IndexDialog.cpp
-SOURCES += CC.cpp
-SOURCES += Spread.cpp
-SOURCES += Index.cpp
 SOURCES += Traverse.cpp
 SOURCES += DataWindow.cpp
 SOURCES += IndicatorSummary.cpp
 SOURCES += XmlWriter.cpp
+SOURCES += DBBase.cpp
+SOURCES += DBIndex.cpp
+SOURCES += DBIndexItem.cpp
 
-    
+   
 TARGET = qtstalker
 VERSION = 0.34.0
 

@@ -36,8 +36,9 @@
 #include <qlayout.h>
 #include <qtooltip.h>
 
-TestPage::TestPage (QWidget *w, MainMenubar *mb) : QWidget (w)
+TestPage::TestPage (QWidget *w, MainMenubar *mb, DBIndex *i) : QWidget (w)
 {
+  chartIndex = i;
   menubar = mb;
   idir.setFilter(QDir::Dirs);
 
@@ -86,7 +87,7 @@ TestPage::~TestPage ()
 
 void TestPage::openTest ()
 {
-  Tester *dialog = new Tester(list->currentText());
+  Tester *dialog = new Tester(list->currentText(), chartIndex);
 //  connect(menubar, SIGNAL(signalScale(bool)), dialog, SLOT(slotScaleToScreen(bool)));
   dialog->show();
 }
@@ -102,7 +103,7 @@ void TestPage::newTest()
   
   updateList();
   
-  dialog = new Tester(name);
+  dialog = new Tester(name, chartIndex);
 //  connect(menubar, SIGNAL(signalScale(bool)), dialog, SLOT(slotScaleToScreen(bool)));
   dialog->show();
 }
@@ -284,7 +285,7 @@ void TestPage::doubleClick (QListBoxItem *item)
   if (! item)
     return;
     
-  Tester *dialog = new Tester(item->text());
+  Tester *dialog = new Tester(item->text(), chartIndex);
   dialog->show();
 }
 

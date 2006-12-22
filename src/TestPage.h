@@ -31,6 +31,7 @@
 #include "Config.h"
 #include "Tester.h"
 #include "MainMenubar.h"
+#include "DBIndex.h"
 
 
 class TestPage : public QWidget
@@ -52,7 +53,7 @@ class TestPage : public QWidget
       Help
     };
   
-    TestPage (QWidget *, MainMenubar *);
+    TestPage (QWidget *, MainMenubar *, DBIndex *);
     ~TestPage ();
 
   public slots:
@@ -81,6 +82,7 @@ class TestPage : public QWidget
     QListBox *list;
     QLineEdit *search;
     QDir idir;
+    DBIndex *chartIndex;
 };
 
 #endif

@@ -21,10 +21,11 @@
 
 #include "SYMBOL.h"
 #include "DbPlugin.h"
+#include "Config.h"
+#include "DBIndex.h"
+#include "PrefDialog.h"
 #include <qdatetime.h>
 #include <qdict.h>
-#include "PrefDialog.h"
-#include "Config.h"
 #include <qobject.h>
 
 SYMBOL::SYMBOL ()
@@ -56,11 +57,17 @@ void SYMBOL::setDefaults ()
 
 void SYMBOL::calculate ()
 {
+  QString s;
   Config config;
+  config.getData(Config::IndexPath, s);
+  DBIndex index;
+  index.open(s);
+
   DbPlugin db;
-  if (db.openChart(symbol))
+  if (db.open(symbol, &index))
   {
     db.close();
+    index.close();
     return;
   }
   
@@ -110,6 +117,7 @@ void SYMBOL::calculate ()
 
   delete recordList;
   db.close();
+  index.close();
 
   line->setColor(color);
   line->setType(lineType);

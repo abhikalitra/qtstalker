@@ -21,6 +21,7 @@
 
 #include "Yahoo.h"
 #include "Bar.h"
+#include "DBIndexItem.h"
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qdir.h>
@@ -308,7 +309,7 @@ void Yahoo::parseHistory ()
   s.append("/");
   s.append(ts2);
 
-  if (plug.openChart(s))
+  if (plug.open(s, chartIndex))
   {
     QString ss(tr("Could not open db"));
     printStatusLogMessage(ss);
@@ -316,10 +317,17 @@ void Yahoo::parseHistory ()
     return;
   }
 
+  QString fn = ts2;
+
   // verify if this chart can be updated by this plugin
-  plug.getHeaderField(DbPlugin::QuotePlugin, s);
+  DBIndexItem item;
+  chartIndex->getIndexItem(fn, item);
+  item.getQuotePlugin(s);
   if (! s.length())
-    plug.setHeaderField(DbPlugin::QuotePlugin, pluginName);
+  {
+    item.setQuotePlugin(pluginName);
+    chartIndex->setIndexItem(fn, item);
+  }
   else
   {
     if (s.compare(pluginName))
@@ -331,13 +339,14 @@ void Yahoo::parseHistory ()
       return;
     }
   }
-  
-  plug.getHeaderField(DbPlugin::Symbol, s);
+
+  item.getSymbol(s);  
   if (! s.length())
   {
-    plug.createNew(DbPlugin::Stock);
-    plug.setHeaderField(DbPlugin::Symbol, ts2);
-    plug.setHeaderField(DbPlugin::Title, ts2);
+    plug.createNewStock();
+    item.setSymbol(ts2);
+    item.setTitle(ts2);
+    chartIndex->setIndexItem(fn, item);
   }
 
   while(stream.atEnd() == 0)
@@ -452,7 +461,7 @@ void Yahoo::parseQuote ()
   s.append("/");
   s.append(ts2);
   
-  if (plug.openChart(s))
+  if (plug.open(s, chartIndex))
   {
     QString ss(tr("Could not open db"));
     printStatusLogMessage(ss);
@@ -460,10 +469,17 @@ void Yahoo::parseQuote ()
     return;
   }
 
+  QString fn = ts2;
+
   // verify if this chart can be updated by this plugin
-  plug.getHeaderField(DbPlugin::QuotePlugin, s);
+  DBIndexItem item;
+  chartIndex->getIndexItem(fn, item);
+  item.getQuotePlugin(s);
   if (! s.length())
-    plug.setHeaderField(DbPlugin::QuotePlugin, pluginName);
+  {
+    item.setQuotePlugin(pluginName);
+    chartIndex->setIndexItem(fn, item);
+  }
   else
   {
     if (s.compare(pluginName))
@@ -475,13 +491,14 @@ void Yahoo::parseQuote ()
       return;
     }
   }
-    
-  plug.getHeaderField(DbPlugin::Symbol, s);
+
+  item.getSymbol(s);    
   if (! s.length())
   {
-    plug.createNew(DbPlugin::Stock);
-    plug.setHeaderField(DbPlugin::Symbol, ts2);
-    plug.setHeaderField(DbPlugin::Title, ts2);
+    plug.createNewStock();
+    item.setSymbol(ts2);
+    item.setTitle(ts2);
+    chartIndex->setIndexItem(fn, item);
   }
 
   while(stream.atEnd() == 0)
@@ -777,17 +794,24 @@ void Yahoo::parseFundamental ()
   s.append("/");
   s.append(ts2);
   
-  if (plug.openChart(s))
+  if (plug.open(s, chartIndex))
   {
     QString ss(tr("Could not open db"));
     printStatusLogMessage(ss);
     return;
   }
+
+  QString fn = ts2;
   
   // verify if this chart can be updated by this plugin
-  plug.getHeaderField(DbPlugin::QuotePlugin, s);
+  DBIndexItem item;
+  chartIndex->getIndexItem(fn, item);
+  item.getQuotePlugin(s);
   if (! s.length())
-    plug.setHeaderField(DbPlugin::QuotePlugin, pluginName);
+  {
+    item.setQuotePlugin(pluginName);
+    chartIndex->setIndexItem(fn, item);
+  }
   else
   {
     if (s.compare(pluginName))
@@ -798,12 +822,12 @@ void Yahoo::parseFundamental ()
       return;
     }
   }
-  
-  plug.getHeaderField(DbPlugin::Symbol, s);
+
+  item.getSymbol(s);  
   if (! s.length())
   {
-    plug.createNew(DbPlugin::Stock);
-    plug.setHeaderField(DbPlugin::Symbol, ts2);
+    plug.createNewStock();
+    item.setSymbol(ts2);
     
     QString title = ts2;
     int p = data.find("yfnc_leftnav1", 0, TRUE);
@@ -822,13 +846,14 @@ void Yahoo::parseFundamental ()
 	}
       }
     }
-    
-    plug.setHeaderField(DbPlugin::Title, title);
+
+    item.setTitle(title);
+    chartIndex->setIndexItem(fn, item);
   }
   else
   {
     QString s2;
-    plug.getHeaderField(DbPlugin::Title, s2);
+    item.getTitle(s2);
     if (! s.compare(s2))
     {
       int p = data.find("yfnc_leftnav1", 0, TRUE);
@@ -843,7 +868,10 @@ void Yahoo::parseFundamental ()
 	  {
             s = data.mid(p, p2 - p);
 	    if (s.length())
-              plug.setHeaderField(DbPlugin::Title, s);
+            {
+              item.setTitle(s);
+              chartIndex->setIndexItem(fn, item);
+            }
 	  }
 	}
       }
@@ -857,7 +885,7 @@ void Yahoo::parseFundamental ()
   fund.setData(ts, ts2);
   fund.getString(ts2);
   ts = "Fundamentals";
-  plug.setHeaderField(DbPlugin::Fundamentals, ts2);
+  chartIndex->setFundamentals(fn, ts2);
     
   plug.close();
 
@@ -964,17 +992,25 @@ void Yahoo::createHistoryUrls (QString &d)
 
 void Yahoo::createAutoHistoryUrls (QString &path, QString &d)
 {
-  if (plug.openChart(path))
+  if (plug.open(path, chartIndex))
   {
     qDebug("Yahoo::createAutoHistoryUrls:could not open db");
     return;
   }
-	
+
+  QFileInfo fi(path);
+  QString fn = fi.fileName();
+
   // verify if this chart can be updated by this plugin
   QString s;
-  plug.getHeaderField(DbPlugin::QuotePlugin, s);
+  DBIndexItem item;
+  chartIndex->getIndexItem(fn, item);
+  item.getQuotePlugin(s);
   if (! s.length())
-    plug.setHeaderField(DbPlugin::QuotePlugin, pluginName);
+  {
+    item.setQuotePlugin(pluginName);
+    chartIndex->setIndexItem(fn, item);
+  }
   else
   {
     if (s.compare(pluginName))
@@ -1082,7 +1118,6 @@ void Yahoo::newStock ()
 
   QStringList l = QStringList::split(" ", symbols, FALSE);
   
-  Config config;
   QString s;
   config.getData(Config::DataPath, s);
   s.append("/Stocks");
@@ -1139,16 +1174,15 @@ void Yahoo::newStock ()
     if (dir.exists(s, TRUE))
       continue;
 
-    DbPlugin db;
-    if (db.openChart(s))
+    if (plug.open(s, chartIndex))
     {
       qDebug("YahooDialog::newStock: could not open db %s", s.latin1());
-      db.close();
+      plug.close();
       continue;
     }
           
-    db.createNew(DbPlugin::Stock);
-    db.close();
+    plug.createNewStock();
+    plug.close();
   }
 }
 
@@ -1242,5 +1276,3 @@ QuotePlugin * createQuotePlugin ()
   return ((QuotePlugin *) o);
 }
 
-
-// remove this 

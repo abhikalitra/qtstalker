@@ -29,6 +29,7 @@
 #include "BarData.h"
 #include "Config.h"
 #include "Indicator.h"
+#include "DBIndex.h"
 
 class IndicatorSummary : public QObject
 {
@@ -38,7 +39,7 @@ class IndicatorSummary : public QObject
     void signalWakeup();
 
   public:
-    IndicatorSummary (QStringList &, int, BarData::BarLength);
+    IndicatorSummary (QStringList &, int, BarData::BarLength, DBIndex *);
     ~IndicatorSummary ();
     void run ();
     void loadIndicators ();
@@ -50,6 +51,7 @@ class IndicatorSummary : public QObject
     int minBars;
     BarData::BarLength barLength;
     QPtrList<Indicator> indicators;
+    DBIndex *chartIndex;
 };
 
 #endif

@@ -37,8 +37,9 @@
 #include <qlayout.h>
 #include <qtooltip.h>
 
-ScannerPage::ScannerPage (QWidget *w) : QWidget (w)
+ScannerPage::ScannerPage (QWidget *w, DBIndex *i) : QWidget (w)
 {
+  chartIndex = i;
   idir.setFilter(QDir::Files);
 
   QVBoxLayout *vbox = new QVBoxLayout(this);
@@ -86,7 +87,7 @@ ScannerPage::~ScannerPage ()
 
 void ScannerPage::openScanner ()
 {
-  Scanner *dialog = new Scanner(list->currentText());
+  Scanner *dialog = new Scanner(list->currentText(), chartIndex);
   connect(dialog, SIGNAL(exitScanner()), this, SLOT(refreshList()));
   connect(dialog, SIGNAL(message(QString)), this, SIGNAL(message(QString)));
   connect(dialog, SIGNAL(scanComplete()), this, SIGNAL(refreshGroup()));
@@ -95,7 +96,7 @@ void ScannerPage::openScanner ()
 
 void ScannerPage::openScanner (QString d)
 {
-  Scanner *dialog = new Scanner(d);
+  Scanner *dialog = new Scanner(d, chartIndex);
   connect(dialog, SIGNAL(exitScanner()), this, SLOT(refreshList()));
   connect(dialog, SIGNAL(message(QString)), this, SIGNAL(message(QString)));
   connect(dialog, SIGNAL(scanComplete()), this, SIGNAL(refreshGroup()));
@@ -124,7 +125,7 @@ void ScannerPage::runScanner ()
     for (loop = 0; loop < (int) l.count(); loop++)
     {
       QFileInfo fi(l[loop]);
-      Scanner *sdialog = new Scanner(fi.fileName());
+      Scanner *sdialog = new Scanner(fi.fileName(), chartIndex);
       connect(sdialog, SIGNAL(exitScanner()), this, SLOT(refreshList()));
       connect(sdialog, SIGNAL(message(QString)), this, SIGNAL(message(QString)));
       sdialog->show();

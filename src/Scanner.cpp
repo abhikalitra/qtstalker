@@ -37,8 +37,9 @@
 #include "Traverse.h"
 
 
-Scanner::Scanner (QString n) : QTabDialog (0, 0, FALSE)
+Scanner::Scanner (QString n, DBIndex *i) : QTabDialog (0, 0, FALSE)
 {
+  chartIndex = i;
   scannerName = n;
   
   QString s = "Qtstalker Scanner";
@@ -201,7 +202,7 @@ void Scanner::scan ()
     QDir dir;
     if (! dir.exists(fileList[loop]))
       continue;
-    db.openChart(fileList[loop]);
+    db.open(fileList[loop], chartIndex);
 
     db.setBarRange(minBars);
     db.setBarLength((BarData::BarLength) barLengthList.findIndex(period->currentText()));

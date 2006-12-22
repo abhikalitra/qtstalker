@@ -35,6 +35,7 @@
 #include "TesterTestPage.h"
 #include "TesterStopPage.h"
 #include "TesterChartPage.h"
+#include "DBIndex.h"
 
 
 class Tester : public QTabDialog
@@ -45,7 +46,7 @@ class Tester : public QTabDialog
     void message (QString);
 
   public:
-    Tester (QString);
+    Tester (QString, DBIndex *);
     Tester ();
     ~Tester ();
     int getVolume (int, double);
@@ -80,6 +81,7 @@ class Tester : public QTabDialog
     QDict<Setting> enterShortSignal;
     QDict<Setting> exitShortSignal;
     QPtrList<TradeItem> trades;
+    DBIndex *index;
 };
 
 #endif

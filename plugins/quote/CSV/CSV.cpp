@@ -27,6 +27,7 @@
 #include "HelpWindow.h"
 #include "SymbolDialog.h"
 #include "CSVRuleDialog.h"
+#include "DBIndexItem.h"
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qdir.h>
@@ -406,7 +407,9 @@ void CSV::parse ()
       bar.setVolume(r.getDouble(ts));
       ts = "OI";
       bar.setOI(r.getInt(ts));
-      
+
+      DBIndexItem item;
+
       if (! symbol.length())
       {
         ts = "Symbol";
@@ -420,7 +423,11 @@ void CSV::parse ()
         ts = "Name";
 	r.getData(ts, s);
 	if (s.length())
-	  db.setHeaderField(DbPlugin::Title, s);
+        {
+          chartIndex->getIndexItem(t, item);
+          item.setTitle(s);
+	  chartIndex->setIndexItem(t, item);
+        }
 
         db.setBar(bar);
 	
@@ -437,7 +444,11 @@ void CSV::parse ()
         ts = "Name";
 	r.getData(ts, s);
 	if (s.length())
-	  db.setHeaderField(DbPlugin::Title, s);
+        {
+          chartIndex->getIndexItem(symbol, item);
+          item.setTitle(s);
+	  chartIndex->setIndexItem(symbol, item);
+        }
         db.setBar(bar);
 
         emit signalWakeup();
@@ -684,7 +695,7 @@ void CSV::getDate (QString &k, QString &d, Setting &r, QDate &date)
 
 bool CSV::openDb (QString &path, QString &symbol, QString &type, bool tickFlag)
 {
-  if (db.openChart(path))
+  if (db.open(path, chartIndex))
   {
     qDebug("CSV::openDb:can't open chart");
     QString ss("CSV::OpenDb:Could not open db.");
@@ -695,9 +706,14 @@ bool CSV::openDb (QString &path, QString &symbol, QString &type, bool tickFlag)
   
   // verify if this chart can be updated by this plugin
   QString s;
-  db.getHeaderField(DbPlugin::QuotePlugin, s);
+  DBIndexItem item;
+  chartIndex->getIndexItem(symbol, item);
+  item.getQuotePlugin(s);
   if (! s.length())
-    db.setHeaderField(DbPlugin::QuotePlugin, pluginName);
+  {
+    item.setQuotePlugin(pluginName);
+    chartIndex->setIndexItem(symbol, item);
+  }
   else
   {
     if (s.compare(pluginName))
@@ -709,18 +725,20 @@ bool CSV::openDb (QString &path, QString &symbol, QString &type, bool tickFlag)
     }
   }
 
-  db.getHeaderField(DbPlugin::Symbol, s);
+  item.getSymbol(s);
   if (! s.length())
   {
     if (! type.compare("Futures"))
-      db.createNew(DbPlugin::Futures);
+    {
+      db.setType(DbPlugin::Futures1);
+      db.createNewFutures();
+    }
     else
-      db.createNew(DbPlugin::Stock);
-    
-    db.setHeaderField(DbPlugin::Symbol, symbol);
-    
-    s = QString::number(tickFlag);
-    db.setHeaderField(DbPlugin::BarType, s);
+      db.createNewStock();
+
+    item.setSymbol(symbol);    
+    item.setBarType(tickFlag);
+    chartIndex->setIndexItem(symbol, item);
   }
   
   return FALSE;

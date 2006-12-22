@@ -22,9 +22,11 @@
 #include "StocksDialog.h"
 #include "Bar.h"
 #include "HelpWindow.h"
+#include "DBIndexItem.h"
 #include <qlabel.h>
 #include <qlayout.h>
 #include <qmessagebox.h>
+#include <qfileinfo.h>
 
 StocksDialog::StocksDialog (QString p, DbPlugin *d) : QTabDialog (0, "StocksDialog", TRUE)
 {
@@ -33,6 +35,14 @@ StocksDialog::StocksDialog (QString p, DbPlugin *d) : QTabDialog (0, "StocksDial
   currentDate = QDateTime::currentDateTime();
 
   setCaption(tr("Qtstalker: Edit Stock"));
+
+  QString s;
+  config.getData(Config::IndexPath, s);
+  index.open(s);
+
+  d->getSymbol(s);
+  QFileInfo fi(s);
+  symbol = fi.fileName();
   
   createDetailsPage();
   createDataPage();
@@ -49,6 +59,7 @@ StocksDialog::StocksDialog (QString p, DbPlugin *d) : QTabDialog (0, "StocksDial
 
 StocksDialog::~StocksDialog ()
 {
+  index.close();
 }
 
 void StocksDialog::createDetailsPage ()
@@ -67,22 +78,24 @@ void StocksDialog::createDetailsPage ()
   grid->addWidget(label, 0, 0);
 
   QString s;
-  db->getHeaderField(DbPlugin::Symbol, s);
+  DBIndexItem item;
+  index.getIndexItem(symbol, item);
+  item.getSymbol(s);
   label = new QLabel(s, w);
   label->setFrameStyle(QFrame::WinPanel | QFrame::Sunken);
   grid->addWidget(label, 0, 1);
 
   label = new QLabel(tr("Name"), w);
   grid->addWidget(label, 1, 0);
-  
-  db->getHeaderField(DbPlugin::Title, s);
+
+  item.getTitle(s);  
   title = new QLineEdit(s, w);
   grid->addWidget(title, 1, 1);
   
   label = new QLabel(tr("Type"), w);
   grid->addWidget(label, 2, 0);
-  
-  db->getHeaderField(DbPlugin::Type, s);
+
+  item.getType(s);  
   label = new QLabel(s, w);
   label->setFrameStyle(QFrame::WinPanel | QFrame::Sunken);
   grid->addWidget(label, 2, 1);
@@ -167,7 +180,7 @@ void StocksDialog::createFundamentalsPage ()
     
   Setting fund;
   QString s, s2;
-  db->getHeaderField(DbPlugin::Fundamentals, s2); 
+  index.getFundamentals(symbol, s2); 
   fund.parse(s2);
   
   s = tr("Fundamentals: last updated ");
@@ -295,7 +308,10 @@ void StocksDialog::slotDateSearch (QDateTime dt)
 void StocksDialog::saveChart ()
 {
   QString s = title->text();
-  db->setHeaderField(DbPlugin::Title, s);
+  DBIndexItem item;
+  index.getIndexItem(symbol, item);
+  item.setTitle(s);
+  index.setIndexItem(symbol, item);
 
   if (barEdit->getSaveFlag())
   {  

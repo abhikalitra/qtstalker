@@ -52,6 +52,12 @@ QtstalkerApp::QtstalkerApp()
 
   // setup the disk environment
   config.setup();
+
+  // open and init the chart index
+  QString s;
+  chartIndex = new DBIndex;
+  config.getData(Config::IndexPath, s);
+  chartIndex->open(s);
   
   initMenuBar();
   
@@ -104,7 +110,7 @@ QtstalkerApp::QtstalkerApp()
   }
 
   // set the nav splitter size
-  QString s, s2;
+  QString s2;
   config.getData(Config::NavAreaSize, s);
   QValueList<int> sizeList;
   sizeList.append(s.toInt());
@@ -278,6 +284,8 @@ void QtstalkerApp::slotQuit()
   // delete any BarData
   if (recordList)
     delete recordList;
+
+  chartIndex->close();
 }
 
 void QtstalkerApp::slotAbout()
@@ -321,6 +329,8 @@ void QtstalkerApp::slotQuotes ()
 
   connect(plug, SIGNAL(chartUpdated()), this, SLOT(slotChartUpdated()));
   connect(plug, SIGNAL(signalWakeup()), this, SLOT(slotWakeup()));
+
+  plug->setChartIndex(chartIndex);
 
   plug->show();
 }
@@ -498,37 +508,43 @@ void QtstalkerApp::loadChart (QString &d)
   // make sure we change db's after Plot saves previous db edits
   emit signalChartPath(chartPath);
 
-  DbPlugin plug;
-  if (plug.openChart(chartPath))
+  // open the chart
+  QFileInfo fi(chartPath);
+  QString fn = fi.fileName();
+  DbPlugin db;
+  if (db.open(chartPath, chartIndex))
   {
-    qDebug("QtstalkerApp::loadChart: can't open db");
-    plug.close();
+    qDebug("QtstalkerApp::loadChart: can't open %s", chartPath.latin1());
     return;
   }
-  
-  connect(&plug, SIGNAL(signalProgMessage(int, int)), this, SLOT(slotProgMessage(int, int)));
-  connect(&plug, SIGNAL(signalStatusMessage(QString)), this, SLOT(slotStatusMessage(QString)));
-  
-  plug.setBarLength((BarData::BarLength) toolbar2->getBarLengthInt());
-  plug.setBarRange(toolbar2->getBars());
+
+  DBIndexItem item;
+  chartIndex->getIndexItem(fn, item);
+  item.getTitle(chartName);
+  item.getType(chartType);
+  item.getSymbol(chartSymbol);
+
+//  connect(db, SIGNAL(signalMessage(int, int)), this, SLOT(slotProgMessage(int, int)));
+//  connect(db, SIGNAL(signalMessage(QString)), this, SLOT(slotStatusMessage(QString)));
+  db.setBarLength((BarData::BarLength) toolbar2->getBarLengthInt());
+  db.setBarRange(toolbar2->getBars());
   
   if (recordList)
     delete recordList;
   recordList = new BarData(chartPath);
+  QString s;
+  recordList->setBarType((BarData::BarType) item.getBarType());
+  recordList->setBarLength((BarData::BarLength) toolbar2->getBarLengthInt());
   
   slotStatusMessage(tr("Loading chart..."));
   
   QDateTime dt = QDateTime::currentDateTime();
   if (menubar->getStatus(MainMenubar::PaperTrade))
     toolbar2->getPaperTradeDate(dt);
-  plug.getHistory(recordList, dt);
+  db.getHistory(recordList, dt);
 
   slotProgMessage(1, 3);
   slotStatusMessage(tr("Loading indicators..."));
-  
-  plug.getHeaderField(DbPlugin::Title, chartName);
-  plug.getHeaderField(DbPlugin::Type, chartType);
-  plug.getHeaderField(DbPlugin::Symbol, chartSymbol);
   
   for(it.toFirst(); it.current(); ++it)
     it.current()->setData(recordList);
@@ -537,12 +553,11 @@ void QtstalkerApp::loadChart (QString &d)
   if (! reload)
   {
     ip->removeLocalIndicators();
-    QString s;
-    plug.getHeaderField(DbPlugin::LocalIndicators, s);
+    chartIndex->getIndicators(chartSymbol, s);
     ip->addLocalIndicators(s);
   }
   QStringList l;
-  QString s(ip->getIndicatorGroup());
+  s = ip->getIndicatorGroup();
   config.getIndicators(s, l);
 
   int loop;  
@@ -567,7 +582,7 @@ void QtstalkerApp::loadChart (QString &d)
   slotProgMessage(2, 3);
   slotStatusMessage(tr("Loading chart objects..."));
 
-  plug.getChartObjects(l);
+  chartIndex->getChartObjects(fn, l);
   Setting co;
   for (loop = 0; loop < (int) l.count(); loop++)
   {
@@ -580,7 +595,7 @@ void QtstalkerApp::loadChart (QString &d)
       plot->addChartObject(co);
   }
   
-  plug.close();
+  db.close();
 
   setSliderStart();
 
@@ -886,6 +901,9 @@ void QtstalkerApp::addIndicatorButton (QString d)
   connect(plot->getIndicatorPlot(), SIGNAL(infoMessage(Setting *)), this, SLOT(slotUpdateInfo(Setting *)));
   connect(plot->getIndicatorPlot(), SIGNAL(leftMouseButton(int, int, bool)), this, SLOT(slotPlotLeftMouseButton(int, int, bool)));
   connect(plot->getIndicatorPlot(), SIGNAL(signalEditChart(QString)), chartNav, SLOT(editChart(QString)));
+  connect(plot->getIndicatorPlot(), SIGNAL(signalDeleteAllCO()), this, SLOT(slotDeleteAllCO()));
+  connect(plot->getIndicatorPlot(), SIGNAL(signalDeleteCO(QString)), this, SLOT(slotDeleteCO(QString)));
+  connect(plot->getIndicatorPlot(), SIGNAL(signalSaveCO(Setting)), this, SLOT(slotSaveCO(Setting)));
   connect(this, SIGNAL(signalCrosshairsStatus(bool)), plot->getIndicatorPlot(), SLOT(setCrosshairsStatus(bool)));
   connect(this, SIGNAL(signalPixelspace(int)), plot, SLOT(setPixelspace(int)));
   connect(this, SIGNAL(signalIndex(int)), plot, SLOT(setIndex(int)));
@@ -927,27 +945,27 @@ void QtstalkerApp::initGroupNav ()
 
 void QtstalkerApp::initChartNav ()
 {
-  chartNav = new ChartPage(baseWidget);
+  chartNav = new ChartPage(baseWidget, chartIndex);
   connect(chartNav, SIGNAL(fileSelected(QString)), this, SLOT(slotOpenChart(QString)));
   navTab->addWidget(chartNav, 0);
 }
 
 void QtstalkerApp::initPortfolioNav ()
 {
-  pp = new PortfolioPage(baseWidget);
+  pp = new PortfolioPage(baseWidget, chartIndex);
   navTab->addWidget(pp, 3);
 }
 
 void QtstalkerApp::initTestNav ()
 {
-  tp = new TestPage(baseWidget, menubar);
+  tp = new TestPage(baseWidget, menubar, chartIndex);
   connect(tp, SIGNAL(message(QString)), this, SLOT(slotStatusMessage(QString)));
   navTab->addWidget(tp, 4);
 }
 
 void QtstalkerApp::initIndicatorNav ()
 {
-  ip = new IndicatorPage(baseWidget);
+  ip = new IndicatorPage(baseWidget, chartIndex);
   connect(ip, SIGNAL(signalDisableIndicator(QString)), this, SLOT(slotDisableIndicator(QString)));
   connect(ip, SIGNAL(signalEnableIndicator(QString)), this, SLOT(slotEnableIndicator(QString)));
   connect(ip, SIGNAL(signalNewIndicator(Indicator *)), this, SLOT(slotNewIndicator(Indicator *)));
@@ -961,7 +979,7 @@ void QtstalkerApp::initIndicatorNav ()
 
 void QtstalkerApp::initScannerNav ()
 {
-  sp = new ScannerPage(baseWidget);
+  sp = new ScannerPage(baseWidget, chartIndex);
   connect(sp, SIGNAL(message(QString)), this, SLOT(slotStatusMessage(QString)));
   connect(sp, SIGNAL(refreshGroup()), gp, SLOT(refreshList()));
   navTab->addWidget(sp, 5);
@@ -1125,9 +1143,27 @@ void QtstalkerApp::slotIndicatorSummary ()
     l.append(basePath + "/" + s);
   }
 
-  IndicatorSummary is(l, toolbar2->getBars(), (BarData::BarLength) toolbar2->getBarLengthInt());
+  IndicatorSummary is(l, toolbar2->getBars(), (BarData::BarLength) toolbar2->getBarLengthInt(), chartIndex);
   connect(&is, SIGNAL(signalWakeup()), this, SLOT(slotWakeup()));
   is.run();
+}
+
+void QtstalkerApp::slotDeleteAllCO ()
+{
+  chartIndex->deleteAllChartObjects(chartSymbol);
+}
+
+void QtstalkerApp::slotDeleteCO (QString d)
+{
+  chartIndex->deleteChartObject(chartSymbol, d);
+}
+
+void QtstalkerApp::slotSaveCO (Setting d)
+{
+  QString s = "Name";
+  QString s2;
+  d.getData(s, s2);
+  chartIndex->setChartObject(chartSymbol, s2, d);
 }
 
 //**********************************************************************

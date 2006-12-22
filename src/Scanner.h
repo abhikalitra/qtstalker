@@ -30,6 +30,7 @@
 #include <qspinbox.h>
 #include "Config.h"
 #include "FormulaEdit.h"
+#include "DBIndex.h"
 
 class Scanner : public QTabDialog
 {
@@ -41,7 +42,7 @@ class Scanner : public QTabDialog
     void scanComplete ();
 
   public:
-    Scanner (QString);
+    Scanner (QString, DBIndex *);
     ~Scanner ();
 
   public slots:
@@ -64,6 +65,7 @@ class Scanner : public QTabDialog
     QStringList barLengthList;
     QSpinBox *bars;
     QComboBox *basePath;
+    DBIndex *chartIndex;
 };
 
 #endif

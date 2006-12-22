@@ -1566,19 +1566,9 @@ void IndicatorPlot::slotDeleteAllChartObjects ()
 			     tr("No chart objects to delete."));
     return;
   }
+
+  emit signalDeleteAllCO();
     
-  DbPlugin db;
-  db.openChart(chartPath);
-
-  QStringList l;
-  db.getChartObjectsList(l);
-
-  int loop;
-  for (loop = 0; loop < (int) l.count(); loop++)
-    db.deleteChartObject(l[loop]);
-  
-  db.close();
-
   coList.clear();
 
   mouseFlag = None;
@@ -1611,11 +1601,8 @@ void IndicatorPlot::slotChartObjectDeleted (QString d)
 
   if (! coList.count())
     return;
-    
-  DbPlugin db;
-  db.openChart(chartPath);
-  db.deleteChartObject(d);
-  db.close();
+
+  emit signalDeleteCO(d);    
 
   coList.remove(d);
 
@@ -1629,9 +1616,6 @@ void IndicatorPlot::saveChartObjects ()
   if (! chartPath.length())
     return;
 
-  DbPlugin db;
-  db.openChart(chartPath);
-
   QDictIterator<COBase> it(coList);
   for (; it.current(); ++it)
   {
@@ -1640,11 +1624,8 @@ void IndicatorPlot::saveChartObjects ()
     {
       Setting set;
       co->getSettings(set);
-      QString s = co->getName();
-      db.setChartObject(s, set);
+      emit signalSaveCO(set);
     }
   }
-  
-  db.close();
 }
 

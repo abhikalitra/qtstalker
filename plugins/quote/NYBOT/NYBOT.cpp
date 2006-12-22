@@ -22,6 +22,7 @@
 #include "NYBOT.h"
 #include "Setting.h"
 #include "Bar.h"
+#include "DBIndexItem.h"
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qtimer.h>
@@ -340,7 +341,7 @@ void NYBOT::parse ()
 //    printStatusLogMessage(s);
 
     s = path + "/" + symbol;
-    if (plug.openChart(s))
+    if (plug.open(s, chartIndex))
     {
       QString ss(tr("Could not open db"));
       printStatusLogMessage(ss);
@@ -348,9 +349,14 @@ void NYBOT::parse ()
     }
 
     // verify if this chart can be updated by this plugin
-    plug.getHeaderField(DbPlugin::QuotePlugin, s);
+    DBIndexItem item;
+    chartIndex->getIndexItem(symbol, item);
+    item.getQuotePlugin(s);
     if (! s.length())
-      plug.setHeaderField(DbPlugin::QuotePlugin, pluginName);
+    {
+      item.setQuotePlugin(pluginName);
+      chartIndex->setIndexItem(symbol, item);
+    }
 //    else
 //    {
 //      if (s.compare(pluginName))
@@ -362,9 +368,9 @@ void NYBOT::parse ()
 //      }
 //    }
 
-    plug.getHeaderField(DbPlugin::Symbol, s);
+    item.getSymbol(s);
     if (! s.length())
-      plug.createNew(DbPlugin::Futures);
+      plug.createNewFutures();
 
     plug.setBar(bar);
 		 

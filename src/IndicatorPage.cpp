@@ -45,8 +45,9 @@
 #include <qtooltip.h>
 
 
-IndicatorPage::IndicatorPage (QWidget *w) : QWidget (w)
+IndicatorPage::IndicatorPage (QWidget *w, DBIndex *i) : QWidget (w)
 {
+  chartIndex = i;
   updateEnableFlag = FALSE;
   idir.setFilter(QDir::Files);
 
@@ -391,17 +392,13 @@ void IndicatorPage::addLocalIndicator ()
 
   if (! l.count())
     return;
-  
-  DbPlugin db;
-  if (db.openChart(chartPath))
-  {
-    qDebug("IndicatorPage::addLocalIndicator: can't open chart");
-    db.close();
-    return;
-  }
-    
-  db.addIndicator(l[0]);
-  db.close();
+
+  DBIndex index;
+  config.getData(Config::IndexPath, s);
+  index.open(s);
+  QFileInfo fi(chartPath);
+  s = fi.fileName();  
+  index.addIndicator(s, l[0]);
     
   Setting set;
   config.getIndicator(l[0], set);
@@ -501,16 +498,11 @@ void IndicatorPage::deleteIndicator ()
   
   if (chartPath.length())
   {
-    DbPlugin db;
-    if (db.openChart(chartPath))
-    {
-      qDebug("IndicatorPage::slotDeleteIndicator: can't open chart");
-      db.close();
-      return;
-    }
-    
+    QString fn;
     QStringList l;
-    db.getChartObjects(l);
+    QFileInfo fi2(chartPath);
+    fn = fi2.fileName();
+    chartIndex->getChartObjects(fn, l);
     int loop;
     Setting set;
     for (loop = 0; loop < (int) l.count(); loop++)
@@ -523,17 +515,15 @@ void IndicatorPage::deleteIndicator ()
       {
         ts = "Name";
         set.getData(ts, s);
-        db.deleteChartObject(s);
+        chartIndex->deleteChartObject(fn, s);
       }
     }
 
     if (fi.isSymLink())
     {
       QString ts = fi.readLink();
-      db.deleteIndicator(ts);
+      chartIndex->deleteIndicator(fn, ts);
     }
-    
-    db.close();
   }
 
   itemSelected(QString());

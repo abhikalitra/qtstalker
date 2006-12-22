@@ -27,14 +27,17 @@
 #include <qinputdialog.h>
 #include <qdir.h>
 #include <qprogressdialog.h>
+#include <qfileinfo.h>
 #include "Tester.h"
 #include "DbPlugin.h"
 #include "IndicatorPlugin.h"
 #include "HelpWindow.h"
+#include "DBIndexItem.h"
 
 
-Tester::Tester (QString n) : QTabDialog (0, 0, FALSE)
+Tester::Tester (QString n, DBIndex *i) : QTabDialog (0, 0, FALSE)
 {
+  index = i;
   ruleName = n;
   recordList = 0;
   enterLongSignal.setAutoDelete(TRUE);
@@ -330,15 +333,20 @@ void Tester::loadRule ()
 
   s = testPage->getSymbolPath();
   DbPlugin db;
-  if (db.openChart(s))
+  if (db.open(s, index))
   {
     db.close();
     return;
   }
 
-  db.getHeaderField(DbPlugin::Type, chartType);
+  QFileInfo fi(s);
+  QString fn = fi.fileName();
+
+  DBIndexItem item;
+  index->getIndexItem(fn, item);
+  item.getType(chartType);
   if (! chartType.compare(tr("Futures")))
-    db.getHeaderField(DbPlugin::FuturesType, futuresType);
+    item.getFuturesType(futuresType);
 
   db.close();
 
@@ -642,15 +650,20 @@ void Tester::test ()
   if (! dir.exists(path))
     return;
   
-  if (db.openChart(path))
+  if (db.open(path, index))
   {
     db.close();
     return;
   }
 
-  db.getHeaderField(DbPlugin::Type, chartType);
+  QFileInfo fi(path);
+  QString fn = fi.fileName();
+
+  DBIndexItem item;
+  index->getIndexItem(fn, item);
+  item.getType(chartType);
   if (! chartType.compare(tr("Futures")))
-    db.getHeaderField(DbPlugin::FuturesType, futuresType);
+    item.getFuturesType(futuresType);
   
   db.setBarLength((BarData::BarLength) testPage->getBarLengthIndex());
   db.setBarRange(testPage->getBars());

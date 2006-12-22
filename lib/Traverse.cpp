@@ -23,16 +23,16 @@
 #include <qdir.h>
 #include <qfileinfo.h>
 
-Traverse::Traverse(Traverse::Type t)
+Traverse::Traverse (Traverse::Type t)
 {
   type = t;
 }
 
-Traverse::~Traverse()
+Traverse::~Traverse ()
 {
 }
 
-void Traverse::traverse(QString dirname)
+void Traverse::traverse (QString dirname)
 {
   QDir dir(dirname);
   dir.setFilter(QDir::Dirs|QDir::Files);
@@ -64,9 +64,14 @@ void Traverse::traverse(QString dirname)
   }
 }
 
-void Traverse::getList(QStringList &l)
+void Traverse::getList (QStringList &l)
 {
   l = list;
+}
+
+void Traverse::clear ()
+{
+  list.clear();
 }
 
 

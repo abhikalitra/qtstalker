@@ -24,11 +24,13 @@
 #include "SymbolDialog.h"
 #include "DbPlugin.h"
 #include "HelpWindow.h"
+#include "DBIndex.h"
 #include "../pics/edit.xpm"
 #include "../pics/delete.xpm"
 #include "../pics/export.xpm"
 #include "../pics/newchart.xpm"
 #include "../pics/help.xpm"
+#include "../pics/addgroup.xpm"
 #include <qmessagebox.h>
 #include <qcursor.h>
 #include <qtooltip.h>
@@ -36,8 +38,10 @@
 #include <qaccel.h>
 
 
-ChartPage::ChartPage (QWidget *w) : QWidget (w)
+ChartPage::ChartPage (QWidget *w, DBIndex *i) : QWidget (w)
 {
+  chartIndex = i;
+
   QVBoxLayout *vbox = new QVBoxLayout(this);
   vbox->setMargin(2);
   vbox->setSpacing(5);
@@ -51,9 +55,7 @@ ChartPage::ChartPage (QWidget *w) : QWidget (w)
   QString s;
   config.getData(Config::DataPath, s);
   nav = new Navigator(this, s);
-  connect(nav, SIGNAL(fileSelected(QString)), this, SLOT(chartSelected(QString)));
   connect(nav, SIGNAL(fileOpened(QString)), this, SLOT(chartOpened(QString)));
-  connect(nav, SIGNAL(noSelection()), this, SLOT(chartNoSelection()));
   connect(nav, SIGNAL(contextMenuRequested(QListBoxItem *, const QPoint &)), this,
           SLOT(rightClick(QListBoxItem *)));
   nav->updateList();
@@ -73,7 +75,7 @@ ChartPage::ChartPage (QWidget *w) : QWidget (w)
   menu->insertItem(QPixmap(deleteitem), tr("&Delete Chart	Ctrl+D"), this, SLOT(deleteChart()));
   menu->insertItem(QPixmap(exportfile), tr("E&xport Chart CSV	Ctrl+X"), this, SLOT(exportSymbol()));
   menu->insertItem(QPixmap(exportfile), tr("D&ump Chart		Ctrl+U"), this, SLOT(dumpSymbol()));
-  menu->insertItem(QPixmap(exportfile), tr("Add To &Group	Ctrl+G"), this, SLOT(addToGroup()));
+  menu->insertItem(QPixmap(addgroup), tr("Add To &Group	Ctrl+G"), this, SLOT(addToGroup()));
   menu->insertSeparator(-1);
   menu->insertItem(QPixmap(help), tr("&Help	Ctrl+H"), this, SLOT(slotHelp()));
 
@@ -87,8 +89,6 @@ ChartPage::ChartPage (QWidget *w) : QWidget (w)
   a->insertItem(CTRL+Key_Tab, Tab);
   a->insertItem(Key_Delete, DeleteChartQuick);
   a->insertItem(CTRL+Key_G, AddToGroup);
-  
-  chartNoSelection();
 }
 
 ChartPage::~ChartPage ()
@@ -129,7 +129,10 @@ void ChartPage::deleteChart ()
     int loop;
     QDir dir;
     for (loop = 0; loop < (int) l.count(); loop++)
+    {
       dir.remove(l[loop], TRUE);
+      chartIndex->deleteChart(l[loop]);
+    }
       
     nav->updateList();
   }
@@ -144,18 +147,25 @@ void ChartPage::editChart ()
   if (! symbol.length())
     return;
 
-  DbPlugin db;
-  db.openChart(symbol);    
-  db.dbPrefDialog();
-  db.close();
+  QFileInfo fi(symbol);
+  if (! fi.isFile())
+    return;
+
+  editChart(symbol);
 }
 
 void ChartPage::editChart (QString symbol)
 {
   if (! symbol.length())
     return;
+
+  QFileInfo fi(symbol);
+  if (! fi.isFile())
+    return;
+  QString fn = fi.fileName();
+
   DbPlugin db;
-  db.openChart(symbol);    
+  db.open(symbol, chartIndex);    
   db.dbPrefDialog();
   db.close();
 }
@@ -242,14 +252,15 @@ void ChartPage::dumpSymbol ()
 void ChartPage::exportChart (QString &path, bool f)
 {
   DbPlugin db;
-  db.openChart(path);
+  db.open(path, chartIndex);
 
   QString s;
   config.getData(Config::Home, s);
   s.append("/export/");
   
   QString s2;
-  db.getHeaderField(DbPlugin::Symbol, s2);
+  QFileInfo fi(path);
+  s2 = fi.fileName();
   if (! s2.length())
   {
     QStringList l = QStringList::split("/", path, FALSE);
@@ -263,19 +274,9 @@ void ChartPage::exportChart (QString &path, bool f)
   db.close();
 }
 
-void ChartPage::chartSelected (QString)
-{
-  menu->setItemEnabled(menu->idAt(1), TRUE);
-}
-
 void ChartPage::chartOpened (QString d)
 {
   emit fileSelected(d);
-}
-
-void ChartPage::chartNoSelection ()
-{
-  menu->setItemEnabled(menu->idAt(1), FALSE);
 }
 
 void ChartPage::rightClick (QListBoxItem *)
@@ -300,7 +301,16 @@ void ChartPage::newChart (int id)
   type.remove(type.find("&", 0, TRUE), 1);
 
   DbPlugin db;
-  db.createNew(type);
+  QString s;
+  if (! type.compare("CC"))
+    db.createNewCC(chartIndex);
+  else
+  {
+    if (! type.compare("Index"))
+      db.createNewIndex(chartIndex);
+    else
+      db.createNewSpread(chartIndex);
+  }
   db.close();
   
   refreshList();
@@ -340,6 +350,7 @@ void ChartPage::deleteChartQuick ()
 
   QDir dir;
   dir.remove(s, TRUE);
+  chartIndex->deleteChart(s);
   nav->updateList();
 }
 
@@ -348,6 +359,10 @@ void ChartPage::addToGroup ()
   QString symbol;
   nav->getFileSelection(symbol);
   if (! symbol.length())
+    return;
+
+  QFileInfo fi(symbol);
+  if (! fi.isFile())
     return;
 
   emit signalAddToGroup(symbol);

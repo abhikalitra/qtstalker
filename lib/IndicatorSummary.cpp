@@ -33,11 +33,12 @@
 #include <qfile.h>
 #include "XmlWriter.h"
 
-IndicatorSummary::IndicatorSummary (QStringList &l, int mb, BarData::BarLength bl)
+IndicatorSummary::IndicatorSummary (QStringList &l, int mb, BarData::BarLength bl, DBIndex *i)
 {
   indicatorList = l;
   minBars = mb;
   barLength = bl;
+  chartIndex = i;
 
   indicators.setAutoDelete(TRUE);
 }
@@ -93,7 +94,7 @@ void IndicatorSummary::run ()
       continue;
 
     DbPlugin db;
-    if (db.openChart(s))
+    if (db.open(s, chartIndex))
       continue;
 
     db.setBarRange(minBars);

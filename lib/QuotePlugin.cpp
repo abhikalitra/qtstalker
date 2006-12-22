@@ -20,9 +20,9 @@
  */
 
 #include "QuotePlugin.h"
-#include "Config.h"
 #include <qdir.h>
 #include "HelpWindow.h"
+#include "Config.h"
 #include "../pics/download.xpm"
 #include "../pics/canceldownload.xpm"
 #include <qstringlist.h>
@@ -37,6 +37,7 @@ QuotePlugin::QuotePlugin () : QTabDialog (0, "QuoteDialog", FALSE, 0)
 {
   saveFlag = FALSE;
   op = 0;
+  chartIndex = 0;
   errorLoop = 0;
   stringDone = tr("Done");
   stringCanceled = tr("Canceled");
@@ -56,6 +57,11 @@ QuotePlugin::~QuotePlugin ()
   }
 
   delete timer;
+}
+
+void QuotePlugin::setChartIndex (DBIndex *d)
+{
+  chartIndex = d;
 }
 
 void QuotePlugin::buildGui ()

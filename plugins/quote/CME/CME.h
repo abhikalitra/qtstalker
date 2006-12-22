@@ -62,8 +62,8 @@ class CME : public QuotePlugin
     int downloadIndex;
     bool cancelFlag;
     DbPlugin plug;
-    Config config;
     QStringList methodList;
+    Config config;
 };
 
 extern "C"

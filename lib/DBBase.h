@@ -19,31 +19,32 @@
  *  USA.
  */
 
-#ifndef TRAVERSE_HPP
-#define TRAVERSE_HPP
+#ifndef DBBASE_HPP
+#define DBBASE_HPP
 
 #include <qstring.h>
-#include <qstringlist.h>
+#include <db.h>
 
-class Traverse
+class DBBase
 {
   public:
+    DBBase ();
+    ~DBBase ();
+    int open (QString &d);
+    void getData (QString &k, QString &d);
+    void setData (QString &k, QString &d);
+    void deleteData (QString &k);
+    void dump (QString &);
+    void close ();
+    void getSymbol (QString &);
+    void flush ();
 
-    enum Type
-    {
-      File,
-      Dir
-    };
-
-    Traverse(Traverse::Type);
-    ~Traverse();
-    void traverse(QString dirname);
-    void getList(QStringList &);
-    void clear();
-
-  private:
-    QStringList list;
-    Traverse::Type type;
+  protected:
+    DB *db;
+    QString symbol;
+    QString indexKey;
 };
 
 #endif
+
+

@@ -30,13 +30,14 @@
 #include "Config.h"
 #include "Toolbar.h"
 #include "Setting.h"
+#include "DBIndex.h"
 
 class PortfolioDialog : public QTabDialog
 {
   Q_OBJECT
 
   public:
-    PortfolioDialog (QString);
+    PortfolioDialog (QString, DBIndex *);
     ~PortfolioDialog ();
     void updatePortfolio ();
     double futuresProfit (QString &, double);
@@ -59,6 +60,7 @@ class PortfolioDialog : public QTabDialog
     Config config;
     QLabel *balance;
     Setting files;
+    DBIndex *index;
 };
 
 #endif

@@ -44,6 +44,7 @@
 #include "GroupPage.h"
 #include "ChartToolbar.h"
 #include "MainMenubar.h"
+#include "DBIndex.h"
 
 
 #define DEFAULT_INDICATOR_HEIGHT 125
@@ -118,6 +119,9 @@ class QtstalkerApp : public QMainWindow
     void addIndicatorButton (QString);
     void slotWakeup ();
     void slotIndicatorSummary ();
+    void slotDeleteAllCO ();
+    void slotDeleteCO (QString);
+    void slotSaveCO (Setting);
     
   private:
     QToolBar *toolbar;
@@ -149,6 +153,7 @@ class QtstalkerApp : public QMainWindow
     QString chartType;
     QPtrList<QTabWidget> tabList;
     QDict<QWidget> widgetList;
+    DBIndex *chartIndex;
 };
 
 #endif

@@ -64,7 +64,7 @@ class Config
       LogScale,
       PS2Button,
       PS3Button,
-      Unused4, //unused
+      IndexPath,
       HelpFilePath,
       LastQuotePlugin,
       Height,
@@ -75,9 +75,9 @@ class Config
       Version,
       PlotSizes,
       Menubar,
-      Macro1, //unused
-      Macro2, //unused
-      Macro3, //unused
+      COPath,
+      LocalIndicatorsPath,
+      FundamentalsPath,
       Macro4, //unused
       Macro5, //unused
       Macro6, //unused
@@ -118,6 +118,8 @@ class Config
     void checkUpgrade ();
     void setDefaultIndicators ();
     void createDefaultIndicator (Setting &set, QString &plugin, QString &name, int tabRow);
+    
+    void check034Conversion ();
 
   protected:
     QDict<QLibrary> libs;
@@ -128,4 +130,3 @@ class Config
 
 #endif
 
-// remove

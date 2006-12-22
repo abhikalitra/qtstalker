@@ -28,6 +28,7 @@
 #include "DbPlugin.h"
 #include "Config.h"
 #include "BarEdit.h"
+#include "DBIndex.h"
 
 class FuturesDialog : public QTabDialog
 {
@@ -58,6 +59,8 @@ class FuturesDialog : public QTabDialog
     QString helpFile;
     BarEdit *barEdit;
     QDateTime currentDate;
+    DBIndex index;
+    QString symbol;
 };
 
 #endif

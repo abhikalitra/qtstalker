@@ -24,6 +24,12 @@
 
 #include <qtabdialog.h>
 #include <qcheckbox.h>
+#include <qprogressbar.h>
+#include "Setting.h"
+#include "DbPlugin.h"
+#include "DBIndex.h"
+#include "DBIndexItem.h"
+
 
 class UpgradeMessage : public QTabDialog
 {
@@ -33,16 +39,28 @@ class UpgradeMessage : public QTabDialog
 
     enum UpgradeMessageVersion
     {
-      V031
+      V031,
+      V034
     };
 
     UpgradeMessage (int);
     ~UpgradeMessage ();
     bool getStatus ();
     void createPage031 ();
+    void createPage034 ();
+    bool createChart (QString &);
+    bool createDir (QString &);
+    void copyFiles ();
+    void correctPathFiles (QStringList &);
+    void saveHeaderData (DbPlugin &db, QString &k, QString &d, QString &, DBIndexItem &);
+
+  public slots:
+    void convert034 ();
 
   private:
     QCheckBox *check;
+    QProgressBar *progBar;
+    DBIndex index;
 };
 
 #endif
