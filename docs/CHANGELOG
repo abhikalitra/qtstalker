@@ -94,6 +94,25 @@
           and inserting data. Added a conversion dialog that will appear when the new code is started.
           Conversion will take under 10 minutes for 7000 charts.
 
+20061221: Applied patch #1620276 - modified docs, pref,tool,main,wrkcharts/groups - thanks to loh_tar for the patch.
+
+20061221: Applied patch #1619809 - modified talib.html - thanks to loh_tar for the patch.
+
+20061221: Applied patch #1619250 - VOL: typo for PVT method - thanks to David for the patch.
+
+20061221: Applied patch #1619222 - ExScript: add newline after each bar in STDIN - thanks to David for the patch.
+
+20061221: Applied patch #1616417 - again modified util.html - thanks to loh_tar for the patch.
+
+20061226: Added Point and Figure charts to the BARS indicator. The 'Default' method box sizing is a simple formula:
+          2% of the mid point of bars displayed. Set method to 'Custom' to set the box size and reversal parms for
+          each individual chart.
+
+20061226: CUS_examples indicators are now installed by default on fresh installs.
+
+20061226: Removed the 0.31 conversion functions. Everyone should have upgraded by now. If not...too bad.
+
+
 
 0.33
 ====

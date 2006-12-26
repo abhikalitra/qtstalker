@@ -15,3 +15,9 @@ i18n.path = /usr/share/qtstalker/i18n
 i18n.files = ../i18n/*.qm
 INSTALLS += i18n
 
+# install the indicator files
+indicator.path = /usr/share/qtstalker/indicator
+indicator.files = ../misc/CUS_examples/*
+INSTALLS += indicator
+
+

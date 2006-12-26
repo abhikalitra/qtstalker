@@ -244,6 +244,9 @@ void IndicatorPlot::drawLines ()
       case PlotLine::Candle:
         drawCandle();
         break;
+      case PlotLine::PF:
+        drawPF();
+        break;
       default:
         break;
     }
@@ -785,6 +788,9 @@ void IndicatorPlot::setScale ()
         scaleLow = plug->getLow();
     }
   }
+
+  scaleHigh = scaleHigh * 1.02;
+  scaleLow = scaleLow * 0.98;
 
   double logScaleHigh = 1;
   double logRange = 0;
@@ -1348,6 +1354,59 @@ void IndicatorPlot::drawCandle ()
           painter.drawLine (x - 2, xo, x + 2, xo);
         else
           painter.fillRect(x - 2, xo, 5, xc - xo, c);
+      }
+    }
+
+    x = x + pixelspace;
+    loop++;
+  }
+
+  painter.end();
+}
+
+void IndicatorPlot::drawPF ()
+{
+  QPainter painter;
+  painter.begin(&buffer);
+
+  painter.setFont(plotFont);
+  QFontMetrics fm(plotFont);
+
+  double box = 0;
+  double h = 0;
+  double l = 0;
+  double cl = 0;
+  QColor c;
+  bool ff = FALSE;
+  int x = startX;
+  int loop = currentLine->getSize() - data->count() + startIndex;
+
+  while ((x < buffer.width()) && (loop < (int) currentLine->getSize()))
+  {
+    if (loop > -1)
+    {
+      currentLine->getData(loop, c, box, h, l, cl, ff);
+
+      painter.setPen(c);
+
+      QString s = "O";
+      if (ff)
+        s = "X";
+
+//      int xh = scaler.convertToY(h);
+//      int xl = scaler.convertToY(l);
+
+//      painter.fillRect(x, xh, pixelspace - 1, xl - xh, c);
+
+      // draw some separartor lines to simulate boxes
+      double d = l;
+//      painter.setPen(backgroundColor);
+      while (d <= h)
+      {
+        int y = scaler.convertToY(d);
+        painter.drawText (x, y, s, -1);
+        d = d + box;
+//        painter.drawLine (x, y, x + pixelspace - 1, y);
       }
     }
 

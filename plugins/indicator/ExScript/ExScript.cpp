@@ -203,10 +203,10 @@ void ExScript::getInput (QString &ss)
 
     if (oiFlag)
       ss.append(QString::number(bar.getOI()) + ",");
-  }
 
-  ss.truncate(ss.length() - 1);
-  ss.append("\n");
+    ss.truncate(ss.length() - 1);
+    ss.append("\n");
+  }
 }
 
 void ExScript::readFromStdout ()

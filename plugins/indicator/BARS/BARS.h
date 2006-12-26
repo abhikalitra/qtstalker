@@ -29,6 +29,7 @@ class BARS : public IndicatorPlugin
     void calculate ();
     void calculateBar ();
     void calculateCandle ();
+    void calculatePF ();
     int indicatorPrefDialog (QWidget *);
     void setDefaults();
     PlotLine * calculateCustom (QString &, QPtrList<PlotLine> &);
@@ -36,6 +37,7 @@ class BARS : public IndicatorPlugin
     void setIndicatorSettings (Setting &);
     void calculateMA ();
     void formatDialog (QStringList &vl, QString &rv, QString &rs);
+    void getPFSettings ();
 
   private:
     QColor barUpColor;
@@ -46,6 +48,7 @@ class BARS : public IndicatorPlugin
     QString label;
     QString method;
     QStringList methodList;
+    QString dbPath;
 
     QColor maColor;
     QColor maColor2;
@@ -66,6 +69,12 @@ class BARS : public IndicatorPlugin
     BarData::InputType maInput2;
     BarData::InputType maInput3;
 
+    int pfReversal;
+    double pfBoxSize;
+    QColor pfXColor;
+    QColor pfOColor;
+    QString pfMethod;
+
     QString barUpColorLabel;
     QString barDownColorLabel;
     QString barNeutralColorLabel;
@@ -74,6 +83,11 @@ class BARS : public IndicatorPlugin
     QString methodLabel;
     QString lineTypeLabel;
     QString pluginLabel;
+
+    QString pfXColorLabel;
+    QString pfOColorLabel;
+    QString pfReversalLabel;
+    QString pfMethodLabel;
 
     QString maColorLabel;
     QString maLineTypeLabel;

@@ -317,9 +317,14 @@ void QtstalkerApp::slotQuotes ()
 {
   QStringList l;
   config.getPluginList(Config::QuotePluginPath, l);
+  QString s;
+  config.getData(Config::LastQuotePlugin, s);
+  int i = l.findIndex(s);
+  if (i == -1)
+    i = 0;
 
   bool ok;
-  QString s = QInputDialog::getItem (tr("Quote Dialog"), tr("Select Quote Type"), l, 0, FALSE, &ok, this, 0);
+  s = QInputDialog::getItem (tr("Quote Dialog"), tr("Select Quote Type"), l, i, FALSE, &ok, this, 0);
   if (! ok)
     return;
 
@@ -331,6 +336,8 @@ void QtstalkerApp::slotQuotes ()
   connect(plug, SIGNAL(signalWakeup()), this, SLOT(slotWakeup()));
 
   plug->setChartIndex(chartIndex);
+
+  config.setData(Config::LastQuotePlugin, s);
 
   plug->show();
 }
@@ -517,6 +524,8 @@ void QtstalkerApp::loadChart (QString &d)
     qDebug("QtstalkerApp::loadChart: can't open %s", chartPath.latin1());
     return;
   }
+
+  config.setData(Config::CurrentChart, chartPath);
 
   DBIndexItem item;
   chartIndex->getIndexItem(fn, item);

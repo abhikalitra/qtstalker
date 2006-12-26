@@ -30,6 +30,7 @@
 #include <qtextstream.h>
 #include <qapplication.h>
 #include <qfileinfo.h>
+#include <stdlib.h>
 
 Config::Config ()
 {
@@ -48,7 +49,7 @@ Config::~Config ()
 
 void Config::setup ()
 {
-  checkUpgrade();
+//  checkUpgrade(); // deprecated
 
   QDir dir(QDir::homeDirPath());
   dir.convertToAbs();
@@ -139,7 +140,12 @@ void Config::setup ()
     {
       QString str("Indicators");
       setData(IndicatorGroup, str); // set the new default template
-      setDefaultIndicators();
+      QString basePath;
+      getData(IndicatorPath, basePath);
+      basePath.append("/Indicators");
+      QString ts = "cp /usr/share/qtstalker/indicator " + basePath;
+      if (system(ts.latin1()))
+        qDebug("setDefaultIndicators::copyFiles: error copying indicator files");
     }
   }
   
@@ -322,6 +328,9 @@ void Config::getData (Parm p, QString &s)
     case FundamentalsPath:
       s = settings.readEntry("/Qtstalker/FundamentalsPath");
       break;
+    case CurrentChart:
+      s = settings.readEntry("/Qtstalker/CurrentChart");
+      break;
     default:
       break;
   }
@@ -476,6 +485,9 @@ void Config::setData (Parm p, QString &d)
       break;
     case FundamentalsPath:
       settings.writeEntry("/Qtstalker/FundamentalsPath", d);
+      break;
+    case CurrentChart:
+      settings.writeEntry("/Qtstalker/CurrentChart", d);
       break;
     default:
       break;
@@ -704,6 +716,8 @@ void Config::copyIndicatorFile (QString &d, QString &d2)
   f2.close();
 }
 
+// Everyone should have upgraded by now, this is over 2 years old.
+/*
 void Config::checkUpgrade ()
 {
   QDir dir(QDir::homeDirPath());
@@ -740,72 +754,7 @@ void Config::checkUpgrade ()
 
   delete dialog;
 }
-
-void Config::setDefaultIndicators ()
-{
-  QString plugin = "BARS";
-  QString name = "Bars";
-  int tabRow = 1;
-  Setting set;
-  QString basePath;
-  getData(IndicatorPath, basePath);
-  basePath.append("/Indicators/");
-  createDefaultIndicator(set, plugin, name, tabRow);
-  QString s = "method";
-  QString s2 = "Bar";
-  set.setData(s,s2);
-  s = basePath + name;
-  setIndicator(s, set);
-
-  name = "Candles";
-  set.clear();
-  createDefaultIndicator(set, plugin, name, tabRow);
-  s = "method";
-  s2 = "Candle";
-  set.setData(s,s2);
-  s = basePath + name;
-  setIndicator(s, set);
-
-  plugin = "VOL";
-  name = "VOL";
-  tabRow = 2;
-  set.clear();
-  createDefaultIndicator(set, plugin, name, tabRow);
-  s = basePath + name;
-  setIndicator(s, set);
-}
-
-void Config::createDefaultIndicator (Setting &set, QString &plugin, QString &name, int tabRow)
-{
-  IndicatorPlugin *plug = getIndicatorPlugin(plugin);
-  if (! plug)
-  {
-    qDebug("Config::createDefaultIndicator - could not open plugin");
-    closePlugin(plugin);
-    return;
-  }
-
-  plug->getIndicatorSettings(set);
-
-  QString s = "Name";
-  set.setData(s, name);
-
-  s = "enable";
-  QString s2 = "1"; 
-  set.setData(s, s2);
-
-  s = "tabRow";
-  s2 = QString::number(tabRow);
-  set.setData(s, s2);
-
-  s = "logScale";
-  s2 = "0";
-  set.setData(s, s2);
-
-  s = "dateFlag";
-  s2 = "1";
-  set.setData(s, s2);
-}
+*/
 
 void Config::check034Conversion ()
 {

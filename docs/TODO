@@ -29,6 +29,9 @@ To Do:
 - median lines chart objects
 - fibo time chart objects
 - fix: chart objects dont adjust along with a stock split
+- add more stats to edit chart dialog ie. high date low date 
+- add default scanners for biggest % gainers, new 52 week highs etc.
+
 
 
 Maybe some day:

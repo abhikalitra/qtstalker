@@ -98,7 +98,7 @@ void VOL::calculate ()
       break;
     }
 
-    if (! method.compare("PVI"))
+    if (! method.compare("PVT"))
     {
       calculatePVT();
       break;

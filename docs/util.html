@@ -14,67 +14,417 @@
 <h2><u>Utilities - UTIL</u></h2>
 
 <h4>Description</h4>
-
-The Utilities&nbsp;are&nbsp; a collection of functions
-(methods) for use in
-creating custom indicators with
-the CUS indicator. Whith use of these it is possiple to manipulate or
-test values.<br>
-
-<br>
+<p>
+     The Utilities are a collection of functions (methods) for use in creating custom indicators with the CUS indicator. With use of these, it is possible to manipulate or test values.
+   <br><br></p>
 
 <h4>Syntax</h4>
-
-x := UTIL(Method,
-Method Parameter 1, ..., Method Parameter n)<br>
-
-<br>
+     <p>
+      DataArray := UTIL(Method, Parameter 1, ..., Parameter n)
+      <br><br></p>
+    
 
 <h4>Example</h4>
 
-DayChange
-:= UTIL(SUB, Close, PrvClose)<br>
+    <p>
+      DayChange:= UTIL(SUB, Close, PrvClose)<br><br>
+   </p>
+      <p>
+      Below follows a complete list of all supported utilities methods with syntax and a simple (often useless, sorry) example.
+    </p>
+      <p>In this list used definitions are:</p>
+   <table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="2">
+    <tbody>
+    <tr><td style="width: 100px;">
+      <strong>DataArray</strong></td><td>can be either an array of bars or a formula variable array of data </td>
+      </tr>
+      <TR><TD><strong>Double</strong></TD><TD>is a number</TR>
+      <TR><TD><strong> DataValue</strong></td><td>can be a DataArray <em>or</em> a Double </td></TR>
+      <TR><TD><strong>BoolArray</strong></TD><TD>is an formula variable array of TRUE/FALSE values</TD></TR>
+      </tbody>
+   </table>
+   
+<p>See also the list of <a href="cus.html" >reseverd words</a><br><br></p>
 
-<br>
+<h3>UTIL-Method Reference</h3>
 
-<br>
 
-Below follows a complete list of all supported utilities with syntax and
-a simple example.<br>
-
-In this list used&nbsp;difinitions are:<br>
-
-<span style="font-weight: bold;">DataArray</span>&nbsp;can
-be either an
-array of bars or a formula variable array of data.<br>
-
-<span style="font-weight: bold;">VALUE</span> is
-the number used to compare in the DataArray.&nbsp;<br>
-
-<span style="font-weight: bold;">DOUBLE</span> is a
-number<br>
-
-<br>
-
-<br>
-
-<br>
-
-<h3 style="text-decoration: underline;">UTIL-Method
-Reference</h3>
-
-<table style="text-align: left; width: 905px; height: 112px;" border="1" cellpadding="2" cellspacing="2">
+<table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="2">
 
   <tbody>
 
     <tr>
 
-      <td style="vertical-align: top; background-color: rgb(204, 204, 204); width: 150px;">ACCUM<br>
+      <td style="width: 100px;"><strong>ACCUM</strong></TD>
+
+      <td style="width: 575px;">DataArray := UTIL(ACCUM, DataArray)</td>
+
+    </tr>
+
+    <tr>
+
+      <td >Function</td>
+
+      <td style="width: 575px;">Accumulation method</td>
+
+    </tr>
+
+    <tr>
+
+      <td style="vertical-align: top; width: 100px;">Example</td>
+
+      <td >UTIL(ACCUM, Close)</td>
+
+    </tr>
+
+    <tr>
+
+      <td ></td>
+
+      <td >&nbsp;<br>
+&nbsp;</td>
+
+    </tr>
+
+    <tr>
+
+      <td style="vertical-align: top; ">
+            <strong>ADD</strong>
+          </td>
+
+      <td >DataArray := UTIL(ADD, DataArray, DataValue)</td>
+
+   </tr>
+
+    <tr>
+
+      <td style="vertical-align: top; ">Function</td>
+
+      <td >Adds the values of the DataArray and DataValue. </td>
+
+   </tr>
+
+    <tr>
+
+      <td style="vertical-align: top; ">Example</td>
+
+      <td >UTIL(ADD,Close, Open)<br>
+
+UTIL(ADD, Close, 45.5</td>
+
+    </tr>
+
+    <tr>
+
+      <td ></td>
+
+      <td >&nbsp;<br>
+&nbsp;</td>
+
+    </tr>
+
+    <tr>
+
+      <td style="vertical-align: top; ">
+            <strong>COLOR</strong>
+          </td>
+
+      <td >UTIL(COLOR,DataArray, COLOR ARRAY, VALUE, COLOR)</td>
+
+   </tr>
+
+    <tr>
+
+      <td style="vertical-align: top; text-align: left; ">Function</td>
+
+      <td >An input array of values is used as a guide to test a value for a TRUE
+value and then apply a color to the color array. COLOR ARRAY is the array the color will be applied to. VALUE
+is the number used to compare in the DataArray. COLOR is the color to
+use</td>
+
+    </tr>
+
+    <tr>
+
+      <td style="vertical-align: top; text-align: left; ">Example</td>
+
+      <td >UTIL(COLOR,bool_array, bars, 1, red)</td>
+
+   </tr>
+
+    <tr>
+
+      <td ></td>
+
+      <td >&nbsp;<br>
+&nbsp;</td>
+
+    </tr>
+
+    <tr>
+
+      <td style=" text-align: left; vertical-align: top;">
+            <strong>COMP</strong>
+          </td>
+
+      <td >BoolArray := UTIL(COMP, DataArray, DataValue, Operator)<br>
+      BoolArray := UTIL(COMP, BoolArray, BoolArray, Operator)</td>
+
+   </tr>
+
+    <tr>
+
+      <td style="vertical-align: top; text-align: left; ">Function</td>
+
+      <td >Used for comparing two sets of data arrays by a relational operator. The comparison
+is made by comparing the first array with the second array. If the
+comparison between the 2 data arrays is true, a TRUE value is returned.
+If false, FALSE is returned. <br>
+Operator is a relational operator from one of the following:<br>
+
+&nbsp;EQ - Equals<br>
+
+&nbsp;LT - Less than<br>
+
+&nbsp;LTEQ - Less than or equal to<br>
+
+&nbsp;GT - Greater than<br>
+
+&nbsp;GTEQ - Greater than or equal to<br>
+
+&nbsp;AND - And comparison, to compare BoolArrays<br>
+
+&nbsp;OR - Or comparison, to compare BoolArrays</td>
+
+    </tr>
+
+    <tr>
+
+      <td style="vertical-align: top; text-align: left; ">Example</td>
+
+      <td >lostday := UTIL(COMP,Close, Open, LTEQ)</td>
+
+    </tr>
+
+    <tr>
+
+      <td ></td>
+
+      <td >&nbsp;<br>
+&nbsp;</td>
+
+    </tr>
+
+    <tr>
+
+      <td style=" text-align: left; vertical-align: top;">
+            <strong>COUNTER</strong>
+          </td>
+
+      <td >ArrayData := UTIL(COUNTER, BoolArray, BoolArray2)</td>
+
+    </tr>
+
+    <tr>
+
+      <td style=" text-align: left; vertical-align: top;">Function</td>
+
+      <td >Counts the number of TRUE signals that
+appear in the first array input. The count will continue until a TRUE
+signal is received in the reset array (BoolArray2). Once a reset is
+received, the counter value is plotted and the counter is reset back to
+zero and counting resumes</td>
+
+    </tr>
+
+    <tr>
+
+      <td style=" text-align: left; vertical-align: top;">Example</td>
+
+      <td >UTIL(COUNTER, Close, reset_array)</td>
+
+    </tr>
+
+    <tr>
+
+      <td ></td>
+
+      <td >&nbsp;<br>&nbsp;</td>
+
+    </tr>
+
+    <tr>
+
+      <td ><strong>DIV</strong></td>
+
+      <td >DataArray := UTIL(DIV, DataArray, DataValue)</td>
+
+    </tr>
+
+    <tr>
+
+      <td >Function</td>
+
+      <td >Divides the value of DataArray by the value of DataValue</td>
+
+    </tr>
+
+    <tr>
+
+      <td >Example</td>
+
+      <td >UTIL(DIV, Close, Open)<br>
+UTIL(DIV, Close, 4.5)</td>
+
+    </tr>
+
+    <tr>
+
+      <td ></td>
+
+      <td >&nbsp;<br>&nbsp;</td>
+
+    </tr>
+
+    <tr>
+
+      <td ><strong>Higher</strong></td>
+
+      <td >DataArray := UTIL(Higher, DataArray, DataValue)</td>
+
+    </tr>
+
+    <tr>
+
+      <td >Function</td>
+
+      <td >Returns the higher value of two compared sets of data arrays</td>
+
+    </tr>
+
+    <tr>
+
+      <td >Example</td>
+
+      <td >DayMax := UTIL(Higher, Close, Open)</td>
+
+    </tr>
+
+    <tr>
+
+      <td ></td>
+
+      <td >&nbsp;<p>&nbsp;</p></td>
+
+    </tr>
+
+    <tr>
+
+      <td ><strong>INRANGE</strong></td>
+
+      <td >BooleanArray := UTIL(INRANGE,DataArray,DataValue1,DataValue2)</td>
+
+    </tr>
+
+    <tr>
+
+      <td >Function</td>
+
+      <td >Returns TRUE if the DataArray is GTEQ DataValue1 and LTEQ  DataArray2 </td>
+
+    </tr>
+
+    <tr>
+
+      <td >Example</td>
+
+      <td >yes := UTIL(INRANGE,Close,WeekHigh,WeekLow)</td>
+
+    </tr>
+
+    <tr>
+
+      <td ></td>
+
+      <td >&nbsp;<br>&nbsp;</td>
+
+    </tr>
+
+    <tr>
+
+      <td ><strong>Lower</strong></td>
+
+      <td >BoolArray := UTIL(Lower, DataArray, DataValue)</td>
+
+    </tr>
+
+    <tr>
+
+      <td >Function</td>
+
+      <td >Returns the lower value of two compared sets of data arrays</td>
+
+    </tr>
+
+    <tr>
+
+      <td >Example</td>
+
+      <td >DayLow := UTIL(Lower, Close, Open)</td>
+
+    </tr>
+
+    <tr>
+
+      <td ></td>
+
+      <td >&nbsp;<br>&nbsp;</td>
+
+    </tr>
+
+    <tr>
+
+      <td ><strong>MUL</strong></td>
+
+      <td >DataArray := UTIL(MUL, DataArray, DataValue)</td>
+
+    </tr>
+
+    <tr>
+
+      <td >Function</td>
+
+      <td >Multiplies the value of DataArray by the value of DataValue</td>
+
+    </tr>
+
+    <tr>
+
+      <td >Example</td>
+
+      <td >UTIL(MUL, Close, Open)<br>
+ UTIL(MUL, Close, 5.5)</td>
+
+    </tr>
+
+    <tr>
+
+      <td ></td>
+
+      <td >&nbsp;<br>&nbsp;</td>
+
+    </tr>
+
+
+    <tr>
+
+      <td >
+            <strong>Normal</strong>
+           
 
       </td>
 
-      <td style="vertical-align: top; width: 735px;">UTIL(ACCUM,
-DataArray)<br>
+      <td >DataArray := UTIL(Normal, DataArray)
 
       </td>
 
@@ -84,89 +434,7 @@ DataArray)<br>
 
       <td>Function</td>
 
-      <td>Accumulation method</td>
-
-    </tr>
-
-    <tr>
-
-      <td style="vertical-align: top; width: 150px;">Example<br>
-
-      </td>
-
-      <td style="vertical-align: top; width: 735px;">UTIL(ACCUM,
-Close)<br>
-
-      </td>
-
-    </tr>
-
-  </tbody>
-</table>
-
-<br>
-
-<table style="text-align: left; width: 905px; height: 112px;" border="1" cellpadding="2" cellspacing="2">
-
-  <tbody>
-
-    <tr>
-
-      <td style="vertical-align: top; background-color: rgb(204, 204, 204); width: 150px;">ADD<br>
-
-      </td>
-
-      <td style="vertical-align: top; width: 735px;">UTIL(ADD,
-DataArray, DOUBLE)<br>
-
-UTIL(ADD, DataArray, DataArray2) </td>
-
-    </tr>
-
-    <tr>
-
-      <td style="vertical-align: top; width: 150px;">Function<br>
-
-      </td>
-
-      <td style="vertical-align: top; width: 735px;">Adds
-the values of the DataArray and DataArray2/DOUBLE value.&nbsp; </td>
-
-    </tr>
-
-    <tr>
-
-      <td style="vertical-align: top; width: 150px;">Example<br>
-
-      </td>
-
-      <td style="vertical-align: top; width: 735px;">UTIL(ADD,
-Close, Open)<br>
-
-UTIL(ADD, Close, 45.5)<br>
-
-      </td>
-
-    </tr>
-
-  </tbody>
-</table>
-
-<br>
-
-<table style="text-align: left; width: 905px; height: 112px;" border="1" cellpadding="2" cellspacing="2">
-
-  <tbody>
-
-    <tr>
-
-      <td style="vertical-align: top; background-color: rgb(204, 204, 204); width: 150px;">COLOR<br>
-
-      </td>
-
-      <td style="vertical-align: top; width: 735px;">UTIL(COLOR,
-DataArray, COLOR
-ARRAY, VALUE, COLOR)<br>
+      <td>Used to normalize an array input
 
       </td>
 
@@ -174,387 +442,36 @@ ARRAY, VALUE, COLOR)<br>
 
     <tr>
 
-      <td>Function</td>
-
-      <td>An input array of values is used as a guide to test a
-value for
-a 'true' value and then apply a color to the color
-array. DataArray&nbsp;is
-an array of
-values. COLOR ARRAY is the array the color will be applied to. VALUE is
-the number used to compare in the DataArray. COLOR is the color to
-use.</td>
-
-    </tr>
-
-    <tr>
-
-      <td style="vertical-align: top; width: 150px;">Example<br>
-
+      <td >Example
       </td>
 
-      <td style="vertical-align: top; width: 735px;">UTIL(COLOR,
-bool_array, bars, 1,
-red)<br>
+      <td >UTIL(Normal,Close)
 
       </td>
 
     </tr>
 
-  </tbody>
-</table>
+  
+ <tr>
 
-<br>
+      <td ></td>
 
-<table style="text-align: left; width: 905px; height: 112px;" border="1" cellpadding="2" cellspacing="2">
+      <td >&nbsp;<br>&nbsp;</td>
 
-  <tbody>
+    </tr>
+
 
     <tr>
 
-      <td style="vertical-align: top; background-color: rgb(204, 204, 204); width: 150px;">COMP<br>
+      <td >
+            <strong>REF</strong>
+            
 
       </td>
 
-      <td style="vertical-align: top; width: 735px;">UTIL(COMP,
-DataArray,
-DOUBLE, OPERATOR)<br>
+      <td >DataArray := UTIL(REF,DataArray, PERIOD)<br>
 
-UTIL(COMP, DataArray, DataArray2, OPERATOR) </td>
-
-    </tr>
-
-    <tr>
-
-      <td>Function</td>
-
-      <td>Used for comparing two sets of data
-arrays by a relational operator. The
-result is a
-boolean (TRUE/FALSE) data array of values. The comparison is made by
-comparing the first array with the second array. If the comparison
-between the 2 data arrays is true, a TRUE value is returned. If false,
-FALSE is returned. <br>
-
-OPERATOR is a relational operator from  one of the following:<br>
-
-EQ - Equals<br>
-
-LT - Less than<br>
-
-LTEQ - Less than or equal to<br>
-
-GT - Greater than<br>
-
-GTEQ - Greater than or equal to<br>
-
-AND - And comparison<br>
-
-OR - Or comparison</td>
-
-    </tr>
-
-    <tr>
-
-      <td style="vertical-align: top; width: 150px;">Example<br>
-
-      </td>
-
-      <td style="vertical-align: top; width: 735px;">UTIL(COMP,
-Close, Open, LTEQ)<br>
-
-UTIL(COMP, Close, 9.5, GTEQ) </td>
-
-    </tr>
-
-  </tbody>
-</table>
-
-<br>
-
-<table style="text-align: left; width: 905px; height: 112px;" border="1" cellpadding="2" cellspacing="2">
-
-  <tbody>
-
-    <tr>
-
-      <td style="vertical-align: top; background-color: rgb(204, 204, 204); width: 150px;">COUNTER<br>
-
-      </td>
-
-      <td style="vertical-align: top; width: 735px;">UTIL(COUNTER,
-DataArray)<br>
-
-UTIL(COUNTER, DataArray, DataArray2)<br>
-
-      </td>
-
-    </tr>
-
-    <tr>
-
-      <td>Function</td>
-
-      <td>Counts the number of TRUE signals that appear in the
-first array input.
-The count will continue until a TRUE signal is received in the
-reset array (array input 2). Once a reset is received, the counter
-value is plotted and
-the counter is reset back to zero and counting resumes</td>
-
-    </tr>
-
-    <tr>
-
-      <td style="vertical-align: top; width: 150px;">Example<br>
-
-      </td>
-
-      <td style="vertical-align: top; width: 735px;">UTIL(COUNTER,
-Close)<br>
-
-UTIL(COUNTER, Close, reset_array) </td>
-
-    </tr>
-
-  </tbody>
-</table>
-
-<br>
-
-<table style="text-align: left; width: 905px; height: 112px;" border="1" cellpadding="2" cellspacing="2">
-
-  <tbody>
-
-    <tr>
-
-      <td style="vertical-align: top; background-color: rgb(204, 204, 204); width: 150px;">DIV<br>
-
-      </td>
-
-      <td style="vertical-align: top; width: 735px;">UTIL(DIV,
-DataArray, DOUBLE)<br>
-
-UTIL(DIV, DataArray, DataArray2) </td>
-
-    </tr>
-
-    <tr>
-
-      <td>Function</td>
-
-      <td>Divides
-the DataArray value by
-the DataArray2/DOUBLE value</td>
-
-    </tr>
-
-    <tr>
-
-      <td style="vertical-align: top; width: 150px;">Example<br>
-
-      </td>
-
-      <td style="vertical-align: top; width: 735px;">UTIL(DIV,
-Close, Open) <br>
-
-UTIL(DIV, Close, 4.5) </td>
-
-    </tr>
-
-  </tbody>
-</table>
-
-<br>
-
-<table style="text-align: left; width: 905px; height: 112px;" border="1" cellpadding="2" cellspacing="2">
-
-  <tbody>
-
-    <tr>
-
-      <td style="vertical-align: top; background-color: rgb(204, 204, 204); width: 150px;">Higher<br>
-
-      </td>
-
-      <td style="vertical-align: top; width: 735px;">UTIL(Higher,
-DataArray, DOUBLE)<br>
-
-UTIL(Higher, DataArray, DataArray2) </td>
-
-    </tr>
-
-    <tr>
-
-      <td>Function</td>
-
-      <td>Returns the higher value of two compared sets of data
-arrays</td>
-
-    </tr>
-
-    <tr>
-
-      <td style="vertical-align: top; width: 150px;">Example<br>
-
-      </td>
-
-      <td style="vertical-align: top; width: 735px;">UTIL(Higher,
-Close, Open)</td>
-
-    </tr>
-
-  </tbody>
-</table>
-
-<br>
-
-<table style="text-align: left; width: 905px; height: 112px;" border="1" cellpadding="2" cellspacing="2">
-
-  <tbody>
-
-    <tr>
-
-      <td style="vertical-align: top; background-color: rgb(204, 204, 204); width: 150px;">Lower<br>
-
-      </td>
-
-      <td style="vertical-align: top; width: 735px;">UTIL(Lower,
-DataArray, DOUBLE)<br>
-
-UTIL(Lower, DataArray, DataArray2) </td>
-
-    </tr>
-
-    <tr>
-
-      <td>Function</td>
-
-      <td>Returns the lower value of two compared sets of data
-arrays</td>
-
-    </tr>
-
-    <tr>
-
-      <td style="vertical-align: top; width: 150px;">Example<br>
-
-      </td>
-
-      <td style="vertical-align: top; width: 735px;">UTIL(Lower,
-Close, Open)</td>
-
-    </tr>
-
-  </tbody>
-</table>
-
-<br>
-
-<table style="text-align: left; width: 905px; height: 112px;" border="1" cellpadding="2" cellspacing="2">
-
-  <tbody>
-
-    <tr>
-
-      <td style="vertical-align: top; background-color: rgb(204, 204, 204); width: 150px;">MUL<br>
-
-      </td>
-
-      <td style="vertical-align: top; width: 735px;">UTIL(MUL,
-DataArray, DOUBLE)<br>
-
-UTIL(MUL, DataArray, DataArray2) </td>
-
-    </tr>
-
-    <tr>
-
-      <td>Function</td>
-
-      <td>Multiplies
-the DataArray value
-by the DataArray2/DOUBLE value</td>
-
-    </tr>
-
-    <tr>
-
-      <td style="vertical-align: top; width: 150px;">Example<br>
-
-      </td>
-
-      <td style="vertical-align: top; width: 735px;">UTIL(MUL,
-Close, Open) <br>
-
-UTIL(MUL, Close,&nbsp;5.5) </td>
-
-    </tr>
-
-  </tbody>
-</table>
-
-<br>
-
-<table style="text-align: left; width: 905px;" border="1" cellpadding="2" cellspacing="2">
-
-  <tbody>
-
-    <tr>
-
-      <td style="vertical-align: top; background-color: rgb(204, 204, 204); width: 150px;">Normal<br>
-
-      </td>
-
-      <td style="vertical-align: top; width: 735px;">UTIL(Normal,
-DataArray)<br>
-
-      </td>
-
-    </tr>
-
-    <tr>
-
-      <td>Function</td>
-
-      <td>Used to normalize an array input<br>
-
-      </td>
-
-    </tr>
-
-    <tr>
-
-      <td style="vertical-align: top; width: 150px;">Example<br>
-
-      </td>
-
-      <td style="vertical-align: top; width: 735px;">UTIL(Normal,
-Close)<br>
-
-      </td>
-
-    </tr>
-
-  </tbody>
-</table>
-
-<br>
-
-<table style="text-align: left; width: 905px;" border="1" cellpadding="2" cellspacing="2">
-
-  <tbody>
-
-    <tr>
-
-      <td style="vertical-align: top; background-color: rgb(204, 204, 204); width: 150px;">REF<br>
-
-      </td>
-
-      <td style="vertical-align: top; width: 735px;">UTIL(REF,
-DataArray, PERIOD)<br>
-
-UTIL(REF, DOUBLE)<br>
+UTIL(REF, Double)
 
       </td>
 
@@ -572,39 +489,39 @@ optional period parm can displace the data back a number of bars </td>
 
     <tr>
 
-      <td style="vertical-align: top; width: 150px;">Example<br>
+      <td >Example<br>
 
       </td>
 
-      <td style="vertical-align: top; width: 735px;">UTIL(REF,
-Close, 0) for no
-offset<br>
+     
+
+      <td >UTIL(REF,Close, 0) for no offset<br>
 
 UTIL(REF, Close, 10) to offset 10 bars backwards<br>
 
-UTIL(REF, 5.5) to create a plot of a single value.<br>
+UTIL(REF, 5.5) to create a plot of a single value.
 
       </td>
 
     </tr>
 
-  </tbody>
-</table>
+<tr>
 
-<br>
+      <td ></td>
 
-<table style="text-align: left; width: 905px;" border="1" cellpadding="2" cellspacing="2">
+      <td >&nbsp;<br>&nbsp;</td>
 
-  <tbody>
+    </tr>
+ 
+   <tr>
 
-    <tr>
-
-      <td style="vertical-align: top; background-color: rgb(204, 204, 204); width: 150px;">PER<br>
+      <td >
+            <strong>PER</strong>
+            
 
       </td>
 
-      <td style="vertical-align: top; width: 735px;">UTIL(PER,
-DataArray)<br>
+      <td >DataArray := UTIL(PER, DataArray)
 
       </td>
 
@@ -612,85 +529,78 @@ DataArray)<br>
 
     <tr>
 
-      <td>Function</td>
+      
+     <td>Function</td>
 
-      <td>Plots the performance of the array input from the first
-bar as the zero
+      <td>Plots the performance of the array input from the first bar as the zero
 reference</td>
 
     </tr>
 
     <tr>
 
-      <td style="vertical-align: top; width: 150px;">Example<br>
+      <td >Example
 
       </td>
 
-      <td style="vertical-align: top; width: 735px;">UTIL(PER,
-Close)<br>
+      <td >Change := UTIL(PER, Close)
 
       </td>
 
     </tr>
+<tr>
+
+      <td ></td>
+
+      <td >&nbsp;<br>&nbsp;</td>
+
+    </tr>
+
+    <tr>
+
+      <td >
+            <strong>SUB</strong>
+            
+
+      </td>
+
+      <td >DataArray := UTIL(SUB, DataArray, DataValue)</td>
+
+    </tr>
+
+    <tr>
+
+      <td >Function
+
+      </td>
+
+      <td >Subtracts the value of DataValue from the value of DataArray</td>
+
+    </tr>
+
+    <tr>
+
+      <td >Example
+
+      </td>
+
+      <td >UTIL(SUB, Close, Open)<br>UTIL(SUB, Close, 45.5) </td>
+
+    </tr>
+
+  
+
+
+
 
   </tbody>
 </table>
 
-<br>
-
-<table style="text-align: left; width: 905px; height: 169px;" border="1" cellpadding="2" cellspacing="2">
-
-  <tbody>
-
-    <tr>
-
-      <td style="vertical-align: top; background-color: rgb(204, 204, 204); width: 150px;">SUB<br>
-
-      </td>
-
-      <td style="vertical-align: top; width: 735px;">UTIL(SUB,
-DataArray, DOUBLE)<br>
-
-UTIL(SUB, DataArray, DataArray2) </td>
-
-    </tr>
-
-    <tr>
-
-      <td style="vertical-align: top; width: 150px;">Function<br>
-
-      </td>
-
-      <td style="vertical-align: top; width: 735px;">Subtracts
-the DataArray2 value
-from the DataArray/DOUBLE value.&nbsp;</td>
-
-    </tr>
-
-    <tr>
-
-      <td style="vertical-align: top; width: 150px;">Example<br>
-
-      </td>
-
-      <td style="vertical-align: top; width: 735px;">UTIL(SUB,
-Close, Open) or
-UTIL(SUB, Close, 45.5) </td>
-
-    </tr>
-
-  </tbody>
-</table>
-
-<br>
-
-<br>
-
-<br>
+<p><br><br></p>
 
 <a href="trix.html" target="_self"><img src="back.png" alt="Back" border="0" height="32" width="32"></a>
-<a href="vol.html" target="_self"><img src="next.png" alt="Next" border="0" height="32" width="32"></a><a href="toc.html"><img src="home.png" alt="Home" border="0" height="32" width="32"></a>
-</body>
+<a href="vol.html" target="_self"><img src="next.png" alt="Next" border="0" height="32" width="32"></a>
+<a href="toc.html"><img src="home.png" alt="Home" border="0" height="32" width="32"></a>
 </html>
 
  	  	 

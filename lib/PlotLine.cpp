@@ -149,6 +149,12 @@ void PlotLine::setType (QString &d)
     lineType = Candle;
     return;
   }
+
+  if (! d.compare(QObject::tr("PF")))
+  {
+    lineType = PF;
+    return;
+  }
 }
 
 PlotLine::LineType PlotLine::getType ()
@@ -272,6 +278,7 @@ void PlotLine::getLineTypes (QStringList &l)
   l.append(QObject::tr("Horizontal"));
   l.append(QObject::tr("Candle"));
   l.append(QObject::tr("Bar"));
+  l.append(QObject::tr("PF"));
 }
 
 void PlotLine::append (QColor &c, double o, double h, double l, double cl, bool cf)
@@ -289,6 +296,21 @@ void PlotLine::append (QColor &c, double o, double h, double l, double cl, bool 
   checkHighLow(h);
   checkHighLow(l);
   checkHighLow(cl);
+}
+
+void PlotLine::append2 (QColor &c, double o, double h, double l, double cl, bool cf)
+{
+  Val r;
+  memset(&r, 0, sizeof(Val));
+  r.color = c;
+  r.open = o;
+  r.high = h;
+  r.low = l;
+  r.v = cl;
+  r.candleFill = cf;
+  data.append(r);
+  checkHighLow(h);
+  checkHighLow(l);
 }
 
 void PlotLine::prepend (QColor &c, double o, double h, double l, double cl, bool cf)
@@ -326,67 +348,102 @@ void PlotLine::getHighLowRange (int start, int end, double &h, double &l)
   l = 99999999;
 
   bool flag = FALSE;
-  if (lineType == Bar || lineType == Candle)
+  if (lineType == Bar || lineType == Candle || lineType == PF)
     flag = TRUE;
 
   for (loop = start; loop <= end; loop++)
   {
     Val r = data[loop];
-    if (flag)
+
+    switch (lineType)
     {
-      if (r.open > h)
-        h = r.open;
-      if (r.open < l)
-        l = r.open;
+      case Bar:
+      case Candle:
+        if (r.open > h)
+          h = r.open;
+        if (r.open < l)
+          l = r.open;
 
-      if (r.high > h)
-        h = r.high;
-      if (r.high < l)
-        l = r.high;
+        if (r.high > h)
+          h = r.high;
+        if (r.high < l)
+          l = r.high;
 
-      if (r.low > h)
-        h = r.low;
-      if (r.low < l)
-        l = r.low;
+        if (r.low > h)
+          h = r.low;
+        if (r.low < l)
+          l = r.low;
+
+        if (r.v > h)
+          h = r.v;
+        if (r.v < l)
+          l = r.v;
+        break;
+      case PF:
+        if (r.high > h)
+          h = r.high;
+        if (r.high < l)
+          l = r.high;
+
+        if (r.low > h)
+          h = r.low;
+        if (r.low < l)
+          l = r.low;
+        break;
+      default:
+        if (r.v > h)
+          h = r.v;
+        if (r.v < l)
+          l = r.v;
+      break;
     }
-
-    if (r.v > h)
-      h = r.v;
-    if (r.v < l)
-      l = r.v;
   }
 }
 
 void PlotLine::getInfo (int i, Setting &r)
 {
   QString s, k;
-  if (lineType == PlotLine::Bar || lineType == PlotLine::Candle)
+  double open, high, low, close;
+  QColor color;
+  bool ff;
+
+  switch (lineType)
   {
-    double open, high, low, close;
-    QColor color;
-    bool ff;
-    getData(i, color, open, high, low, close, ff);
+    case Bar:
+    case Candle:
+      getData(i, color, open, high, low, close, ff);
 
-    strip(open, 4, s);
-    k = "O";
-    r.setData(k, s);
+      strip(open, 4, s);
+      k = "O";
+      r.setData(k, s);
 
-    strip(high, 4, s);
-    k = "H";
-    r.setData(k, s);
+      strip(high, 4, s);
+      k = "H";
+      r.setData(k, s);
 
-    strip(low, 4, s);
-    k = "L";
-    r.setData(k, s);
+      strip(low, 4, s);
+      k = "L";
+      r.setData(k, s);
 
-    strip(close, 4, s);
-    k = "C";
-    r.setData(k, s);
-  }
-  else
-  {
-    strip(getData(i), 4, s);
-    r.setData(label, s);
+      strip(close, 4, s);
+      k = "C";
+      r.setData(k, s);
+      break;
+    case PF:
+      getData(i, color, open, high, low, close, ff);
+
+      strip(high, 4, s);
+      k = "H";
+      r.setData(k, s);
+
+      strip(low, 4, s);
+      k = "L";
+      r.setData(k, s);
+      break;
+    default:
+      strip(getData(i), 4, s);
+      r.setData(label, s);
+      break;
   }
 }
 

@@ -103,6 +103,7 @@ class IndicatorPlot : public QWidget
     void drawDot ();
     void drawBar ();
     void drawCandle ();
+    void drawPF ();
    
   public slots:
     void draw();

@@ -78,7 +78,7 @@ class Config
       COPath,
       LocalIndicatorsPath,
       FundamentalsPath,
-      Macro4, //unused
+      CurrentChart,
       Macro5, //unused
       Macro6, //unused
       Macro7, //unused
@@ -89,7 +89,7 @@ class Config
       Macro12, //unused
       IndicatorGroup,
       QuotePluginStorage,
-      ShowUpgradeMessage,
+      ShowUpgradeMessage, // unused
       LastNewIndicator
     };
 
@@ -115,10 +115,7 @@ class Config
     void closePlugin (QString &);
 
     void copyIndicatorFile (QString &, QString &);
-    void checkUpgrade ();
-    void setDefaultIndicators ();
-    void createDefaultIndicator (Setting &set, QString &plugin, QString &name, int tabRow);
-    
+//    void checkUpgrade (); deprecated
     void check034Conversion ();
 
   protected:

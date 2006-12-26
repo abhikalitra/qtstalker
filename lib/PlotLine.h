@@ -55,7 +55,8 @@ class PlotLine
       Invisible,
       Horizontal,
       Bar,
-      Candle
+      Candle,
+      PF
     };
   
     PlotLine ();
@@ -71,6 +72,7 @@ class PlotLine
     void getLabel (QString &);
     void append (double);
     void append (QColor &, double, double, double, double, bool);
+    void append2 (QColor &, double, double, double, double, bool);
     void append (QDateTime &);
     void prepend (QDateTime &);
     void prepend (double);

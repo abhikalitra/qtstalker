@@ -21,10 +21,13 @@
 
 #include "BARS.h"
 #include "PrefDialog.h"
+#include "DBBase.h"
+#include "Config.h"
 #include <qdict.h>
 #include <qobject.h>
 #include <qinputdialog.h>
 #include <math.h>
+#include <qfileinfo.h>
 
 
 BARS::BARS ()
@@ -34,6 +37,11 @@ BARS::BARS ()
 
   methodList.append("Bar");
   methodList.append("Candle");
+  methodList.append("PF");
+
+  Config config;
+  config.getData(Config::Home, dbPath);
+  dbPath.append("/index/pf.db");
 
   barUpColorLabel = "barUpColor";
   barDownColorLabel = "barDownColor";
@@ -43,6 +51,11 @@ BARS::BARS ()
   methodLabel = "method";
   lineTypeLabel = "lineType";
   pluginLabel = "plugin";
+
+  pfXColorLabel = "pfXColor";
+  pfOColorLabel = "pfOColor";
+  pfReversalLabel = "pfReversal";
+  pfMethodLabel = "pfMethod";
 
   maColorLabel = "maColor";
   maLineTypeLabel = "maLineType";
@@ -81,7 +94,12 @@ void BARS::setDefaults ()
   barNeutralColor.setNamedColor("blue");
   candleColor.setNamedColor("green");
   label = pluginName;
-//  method = methodList[0];
+
+  pfXColor.setNamedColor("green");
+  pfOColor.setNamedColor("red");
+  pfReversal = 3;
+  pfBoxSize = 1;
+  pfMethod = QObject::tr("Default");
 
   maColor.setNamedColor("red");
   maColor2.setNamedColor("red");
@@ -117,6 +135,11 @@ void BARS::calculate ()
     return;
   }
 
+  if (! method.compare("PF"))
+  {
+    calculatePF();
+    return;
+  }
 }
 
 void BARS::calculateBar ()
@@ -185,6 +208,127 @@ void BARS::calculateCandle ()
   output->addLine(line);
 
   calculateMA();
+}
+
+void BARS::calculatePF ()
+{
+  // determine start either x or o
+  if (data->count() < 2)
+    return;
+
+  getPFSettings();
+
+  bool XOFlag = FALSE;
+  if (data->getHigh(1) > data->getHigh(0))
+    XOFlag = TRUE; // prices rising, we start with x's
+
+  double high = 0;
+  double d = data->getHigh(0) /  pfBoxSize;
+  int t = (int) d;
+  if (t * pfBoxSize <= data->getHigh(0))
+    high = (t + 1) * pfBoxSize;
+  else
+    high = t * pfBoxSize;
+
+  double low = 0;
+  t = (int) (data->getLow(0) / pfBoxSize);
+  low = t * pfBoxSize;
+
+  PlotLine *line = new PlotLine;
+  int loop;
+  for (loop = 1; loop < (int) data->count(); loop++)
+  {
+    if (XOFlag)
+    {
+      if (data->getHigh(loop) > high)
+      {
+        // new high
+        d = data->getHigh(loop) /  pfBoxSize;
+        t = (int) d;
+        if (t * pfBoxSize <= data->getHigh(loop))
+          high = (t + 1) * pfBoxSize;
+        else
+          high = t * pfBoxSize;
+      }
+
+      double reversal = high - (pfBoxSize * pfReversal);
+      if (data->getLow(loop) < reversal)
+      {
+        // reversal to O's
+        line->append(pfXColor, pfBoxSize, high, low, low, XOFlag);
+
+        high = high - pfBoxSize; // lower high 1 box
+
+        t = (int) (data->getLow(loop) / pfBoxSize);
+        low = t * pfBoxSize;
+
+        XOFlag = FALSE;
+      }
+    }
+    else
+    {
+      if (data->getLow(loop) < low)
+      {
+        // new low
+        t = (int) (data->getLow(loop) / pfBoxSize);
+        low = t * pfBoxSize;
+      }
+
+      double reversal = low + (pfBoxSize * pfReversal);
+      if (data->getHigh(loop) > reversal)
+      {
+        // reversal to X's
+        line->append(pfOColor, pfBoxSize, high, low, low, XOFlag);
+
+        low = low + pfBoxSize; // raise low 1 box
+
+        d = data->getHigh(loop) /  pfBoxSize;
+        t = (int) d;
+        if (t * pfBoxSize <= data->getHigh(loop))
+          high = (t + 1) * pfBoxSize;
+        else
+          high = t * pfBoxSize;
+
+        XOFlag = TRUE;
+      }
+    }
+  }
+
+  line->setType(PlotLine::PF);
+  line->setLabel(label);
+  output->addLine(line);
+}
+
+void BARS::getPFSettings ()
+{
+  // set default traditional
+  pfBoxSize = (((data->getMax() - data->getMin()) / 2) + data->getMin()) * 0.02;
+
+  if (! pfMethod.compare(QObject::tr("Default")))
+    return;
+
+  QString s;
+  Config config;
+  config.getData(Config::CurrentChart, s);
+  QFileInfo fi(s);
+  s = fi.fileName();
+
+  DBBase db;
+  if (db.open(dbPath))
+  {
+    qDebug("BARS::getPFBoxSize: error opening %s", dbPath.latin1());
+    return;
+  }
+
+  QString s2;
+  db.getData(s, s2);
+  if (! s2.length())
+    return;
+
+  QStringList l = QStringList::split(",", s2, FALSE);
+  pfBoxSize = l[0].toDouble();
+  pfReversal = l[1].toInt();
+  db.close();
 }
 
 void BARS::calculateMA ()
@@ -264,6 +408,12 @@ int BARS::indicatorPrefDialog (QWidget *w)
   QString ccl = QObject::tr("Candle Color");
   QString ll = QObject::tr("Label");
 
+  QString pfxcl = QObject::tr("X Color");
+  QString pfocl = QObject::tr("O Color");
+  QString pfrl = QObject::tr("Reversal");
+  QString pfbsl = QObject::tr("Box Size");
+  QString pfml = QObject::tr("Method");
+
   QString pl2 = QObject::tr("MA");
   QString macl = QObject::tr("MA Color");
   QString mall = QObject::tr("MA Label");
@@ -293,23 +443,60 @@ int BARS::indicatorPrefDialog (QWidget *w)
   dialog->createPage (pl);
   dialog->setHelpFile(helpFile);
 
-  while (1)
+  if (! method.compare("Bar"))
   {
-    if (! method.compare("Bar"))
+    dialog->setCaption(QObject::tr("Bar Indicator"));
+    dialog->addColorItem(ucl, pl, barUpColor);
+    dialog->addColorItem(dcl, pl, barDownColor);
+    dialog->addColorItem(ncl, pl, barNeutralColor);
+  }
+
+  if (! method.compare("Candle"))
+  {
+    dialog->setCaption(QObject::tr("Candle Indicator"));
+    dialog->addColorItem(ccl, pl, candleColor);
+  }
+
+  if (! method.compare("PF"))
+  {
+    dialog->setCaption(QObject::tr("P&F Indicator"));
+
+    QStringList l;
+    l.append(QObject::tr("Default"));
+    l.append(QObject::tr("Custom"));
+    dialog->addComboItem(pfml, pl, l, pfMethod);
+
+    dialog->addColorItem(pfxcl, pl, pfXColor);
+    dialog->addColorItem(pfocl, pl, pfOColor);
+
+    double bs = pfBoxSize;
+    int rv = pfReversal;
+
+    if (! pfMethod.compare(QObject::tr("Custom")))
     {
-      dialog->addColorItem(ucl, pl, barUpColor);
-      dialog->addColorItem(dcl, pl, barDownColor);
-      dialog->addColorItem(ncl, pl, barNeutralColor);
-      break;
+      QString s;
+      Config config;
+      config.getData(Config::CurrentChart, s);
+      QFileInfo fi(s);
+      s = fi.fileName();
+
+      DBBase db;
+      if (! db.open(dbPath))
+      {
+        QString s2;
+        db.getData(s, s2);
+        if (s2.length())
+        {
+          QStringList l = QStringList::split(",", s2, FALSE);
+          bs = l[0].toDouble();
+          rv = l[1].toInt();
+        }
+        db.close();
+      }
     }
 
-    if (! method.compare("Candle"))
-    {
-      dialog->addColorItem(ccl, pl, candleColor);
-      break;
-    }
-
-    break;
+    dialog->addDoubleItem(pfbsl, pl, bs, 0.0001, 999999.0);
+    dialog->addIntItem(pfrl, pl, rv, 1, 99);
   }
 
   dialog->addTextItem(ll, pl, label);
@@ -317,77 +504,103 @@ int BARS::indicatorPrefDialog (QWidget *w)
   QStringList mal;
   getMATypes(mal);
 
-  dialog->createPage (pl2);
-  dialog->addColorItem(macl, pl2, maColor);
-  dialog->addTextItem(mall, pl2, maLabel);
-  dialog->addComboItem(maltl, pl2, lineTypes, maLineType);
-  dialog->addComboItem(matl, pl2, mal, maType);
-  dialog->addIntItem(mapl, pl2, maPeriod, 1, 999999);
-  dialog->addComboItem(mail, pl2, inputTypeList, maInput);
+  if (! method.compare("Bar") || ! method.compare("Candle"))
+  { 
+    dialog->createPage (pl2);
+    dialog->addColorItem(macl, pl2, maColor);
+    dialog->addTextItem(mall, pl2, maLabel);
+    dialog->addComboItem(maltl, pl2, lineTypes, maLineType);
+    dialog->addComboItem(matl, pl2, mal, maType);
+    dialog->addIntItem(mapl, pl2, maPeriod, 1, 999999);
+    dialog->addComboItem(mail, pl2, inputTypeList, maInput);
 
-  dialog->createPage (pl3);
-  dialog->addColorItem(ma2cl, pl3, maColor2);
-  dialog->addTextItem(ma2ll, pl3, maLabel2);
-  dialog->addComboItem(ma2ltl, pl3, lineTypes, maLineType2);
-  dialog->addComboItem(ma2tl, pl3, mal, maType2);
-  dialog->addIntItem(ma2pl, pl3, maPeriod2, 1, 999999);
-  dialog->addComboItem(ma2il, pl3, inputTypeList, maInput2);
+    dialog->createPage (pl3);
+    dialog->addColorItem(ma2cl, pl3, maColor2);
+    dialog->addTextItem(ma2ll, pl3, maLabel2);
+    dialog->addComboItem(ma2ltl, pl3, lineTypes, maLineType2);
+    dialog->addComboItem(ma2tl, pl3, mal, maType2);
+    dialog->addIntItem(ma2pl, pl3, maPeriod2, 1, 999999);
+    dialog->addComboItem(ma2il, pl3, inputTypeList, maInput2);
 
-  dialog->createPage (pl4);
-  dialog->addColorItem(ma3cl, pl4, maColor3);
-  dialog->addTextItem(ma3ll, pl4, maLabel3);
-  dialog->addComboItem(ma3ltl, pl4, lineTypes, maLineType3);
-  dialog->addComboItem(ma3tl, pl4, mal, maType3);
-  dialog->addIntItem(ma3pl, pl4, maPeriod3, 1, 999999);
-  dialog->addComboItem(ma3il, pl4, inputTypeList, maInput3);
+    dialog->createPage (pl4);
+    dialog->addColorItem(ma3cl, pl4, maColor3);
+    dialog->addTextItem(ma3ll, pl4, maLabel3);
+    dialog->addComboItem(ma3ltl, pl4, lineTypes, maLineType3);
+    dialog->addComboItem(ma3tl, pl4, mal, maType3);
+    dialog->addIntItem(ma3pl, pl4, maPeriod3, 1, 999999);
+    dialog->addComboItem(ma3il, pl4, inputTypeList, maInput3);
+  }
  
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
-    while (1)
+    if (! method.compare("Bar"))
     {
-      if (! method.compare("Bar"))
+      dialog->getColor(ucl, barUpColor);
+      dialog->getColor(dcl, barDownColor);
+      dialog->getColor(ncl, barNeutralColor);
+      lineType = PlotLine::Bar;
+    }
+
+    if (! method.compare("Candle"))
+    {
+      dialog->getColor(ccl, candleColor);
+      lineType = PlotLine::Candle;
+    }
+
+    if (! method.compare("PF"))
+    {
+      dialog->getCombo(pfml, pfMethod);
+      dialog->getColor(pfxcl, pfXColor);
+      dialog->getColor(pfocl, pfOColor);
+      pfReversal = dialog->getInt(pfrl);
+
+      if (! pfMethod.compare(QObject::tr("Custom")) && data)
       {
-        dialog->getColor(ucl, barUpColor);
-        dialog->getColor(dcl, barDownColor);
-        dialog->getColor(ncl, barNeutralColor);
-        lineType = PlotLine::Bar;
-        break;
+        double d = dialog->getDouble(pfbsl);
+        QString s;
+        Config config;
+        config.getData(Config::CurrentChart, s);
+        QFileInfo fi(s);
+        s = fi.fileName();
+        DBBase db;
+        if (! db.open(dbPath))
+        {
+          QString s2 = QString::number(d) + "," + QString::number(pfReversal);
+          db.setData(s, s2);
+          db.close();
+        }
       }
 
-      if (! method.compare("Candle"))
-      {
-        dialog->getColor(ccl, candleColor);
-        lineType = PlotLine::Candle;
-        break;
-      }
-
-      break;
+      lineType = PlotLine::PF;
     }
 
     dialog->getText(ll, label);
 
-    dialog->getColor(macl, maColor);
-    maLineType = (PlotLine::LineType) dialog->getComboIndex(maltl);
-    maPeriod = dialog->getInt(mapl);
-    dialog->getText(mall, maLabel);
-    maType = dialog->getComboIndex(matl);
-    maInput = (BarData::InputType) dialog->getComboIndex(mail);
+    if (! method.compare("Bar") || ! method.compare("Candle"))
+    { 
+      dialog->getColor(macl, maColor);
+      maLineType = (PlotLine::LineType) dialog->getComboIndex(maltl);
+      maPeriod = dialog->getInt(mapl);
+      dialog->getText(mall, maLabel);
+      maType = dialog->getComboIndex(matl);
+      maInput = (BarData::InputType) dialog->getComboIndex(mail);
 
-    dialog->getColor(ma2cl, maColor2);
-    maLineType2 = (PlotLine::LineType) dialog->getComboIndex(ma2ltl);
-    maPeriod2 = dialog->getInt(ma2pl);
-    dialog->getText(ma2ll, maLabel2);
-    maType2 = dialog->getComboIndex(ma2tl);
-    maInput2 = (BarData::InputType) dialog->getComboIndex(ma2il);
+      dialog->getColor(ma2cl, maColor2);
+      maLineType2 = (PlotLine::LineType) dialog->getComboIndex(ma2ltl);
+      maPeriod2 = dialog->getInt(ma2pl);
+      dialog->getText(ma2ll, maLabel2);
+      maType2 = dialog->getComboIndex(ma2tl);
+      maInput2 = (BarData::InputType) dialog->getComboIndex(ma2il);
 
-    dialog->getColor(ma3cl, maColor3);
-    maLineType3 = (PlotLine::LineType) dialog->getComboIndex(ma3ltl);
-    maPeriod3 = dialog->getInt(ma3pl);
-    dialog->getText(ma3ll, maLabel3);
-    maType3 = dialog->getComboIndex(ma3tl);
-    maInput3 = (BarData::InputType) dialog->getComboIndex(ma3il);
+      dialog->getColor(ma3cl, maColor3);
+      maLineType3 = (PlotLine::LineType) dialog->getComboIndex(ma3ltl);
+      maPeriod3 = dialog->getInt(ma3pl);
+      dialog->getText(ma3ll, maLabel3);
+      maType3 = dialog->getComboIndex(ma3tl);
+      maInput3 = (BarData::InputType) dialog->getComboIndex(ma3il);
+    }
 
     rc = TRUE;
   }
@@ -505,6 +718,22 @@ void BARS::setIndicatorSettings (Setting &dict)
   dict.getData(maInput3Label, s);
   if (s.length())
     maInput3 = (BarData::InputType) s.toInt();
+
+  dict.getData(pfXColorLabel, s);
+  if (s.length())
+    pfXColor.setNamedColor(s);
+    
+  dict.getData(pfOColorLabel, s);
+  if (s.length())
+    pfOColor.setNamedColor(s);
+    
+  dict.getData(pfReversalLabel, s);
+  if (s.length())
+    pfReversal = s.toInt();
+
+  dict.getData(pfMethodLabel, s);
+  if (s.length())
+    pfMethod = s;
 }
 
 void BARS::getIndicatorSettings (Setting &dict)
@@ -522,6 +751,14 @@ void BARS::getIndicatorSettings (Setting &dict)
   ts = QString::number(lineType);
   dict.setData(lineTypeLabel, ts);
   dict.setData(pluginLabel, pluginName);
+
+  ts = pfXColor.name();
+  dict.setData(pfXColorLabel, ts);
+  ts = pfOColor.name();
+  dict.setData(pfOColorLabel, ts);
+  ts = QString::number(pfReversal);
+  dict.setData(pfReversalLabel, ts);
+  dict.setData(pfMethodLabel, pfMethod);
 
   ts = maColor.name();
   dict.setData(maColorLabel, ts);
@@ -564,17 +801,34 @@ PlotLine * BARS::calculateCustom (QString &p, QPtrList<PlotLine> &d)
 {
   // format1 (BARS): TYPE
   // format2 (BARS): TYPE, COLOR
+  // format3 (BARS): TYPE, REVERSAL
+  // TODO: format4 (BARS): TYPE, REVERSAL, BOXSIZE
 
+  int type = 0; // 0 == bars, 1 == candle, 2 == pf
   formatList.clear();
   QStringList l = QStringList::split(",", p, FALSE);
   if (l.count() == 1)
-    formatList.append(FormatString);
+    formatList.append(FormatString); // OHLC bars
   else
   {
     if (l.count() == 2)
     {
-      formatList.append(FormatString);
-      formatList.append(FormatString);
+      bool ok;
+      formatStringList[1].toInt(&ok);
+      if (! ok)
+      {
+        // candle bars
+        formatList.append(FormatString);
+        formatList.append(FormatString);
+        type = 1;
+      }
+      else
+      {
+        // PF bars
+        formatList.append(FormatString);
+        formatList.append(FormatInteger);
+        type = 2;
+      }
     }
     else
     {
@@ -588,8 +842,11 @@ PlotLine * BARS::calculateCustom (QString &p, QPtrList<PlotLine> &d)
 
   method = formatStringList[0];
 
-  if (formatList.count() == 2)
+  if (type == 1)
     candleColor.setNamedColor(formatStringList[1]);
+
+  if (type == 2)
+    pfReversal = formatStringList[1].toInt();
 
   clearOutput();
   calculate();
@@ -615,6 +872,7 @@ void BARS::formatDialog (QStringList &, QString &rv, QString &rs)
   QString pl = QObject::tr("Parms");
   QString vnl = QObject::tr("Variable Name");
   QString cl = QObject::tr("Color");
+  QString rl = QObject::tr("Reversal");
   PrefDialog *dialog = new PrefDialog(0);
   dialog->setCaption(QObject::tr("BARS Format"));
   dialog->createPage (pl);
@@ -625,6 +883,9 @@ void BARS::formatDialog (QStringList &, QString &rv, QString &rs)
 
   if (! method.compare("Candle"))
     dialog->addColorItem(cl, pl, candleColor);
+
+  if (! method.compare("PF"))
+    dialog->addIntItem(rl, pl, pfReversal);
 
   int rc = dialog->exec();
 
@@ -637,6 +898,12 @@ void BARS::formatDialog (QStringList &, QString &rv, QString &rs)
     {
       dialog->getColor(cl, candleColor);
       rs.append("," + candleColor.name());
+    }
+
+    if (! method.compare("PF"))
+    {
+      pfReversal = dialog->getInt(rl);
+      rs.append("," + QString::number(pfReversal));
     }
   }
 
