@@ -186,14 +186,14 @@ void ScalePlot::drawScale ()
           strip(s.toDouble() / 1000000, 4, s);
 	  s.append("m");
         }
-        else
-        {
-          if (s.toDouble() >= 1000)
-          {
-            strip(s.toDouble() / 1000, 4, s);
-	    s.append("k");
-	  }
-	}
+//        else
+//        {
+//          if (s.toDouble() >= 1000)
+//          {
+//            strip(s.toDouble() / 1000, 4, s);
+//            s.append("k");
+//          }
+//        }
       }
       
       if (flag)

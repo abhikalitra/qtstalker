@@ -72,11 +72,11 @@ class DbPlugin : public DBBase
     bool open (QString &, DBIndex *);
     void getHistory (BarData *, QDateTime &);
     void dbPrefDialog ();
-    void createNewStock ();
-    void createNewFutures ();
-    void createNewIndex (DBIndex *);
-    void createNewSpread (DBIndex *);
-    void createNewCC (DBIndex *);
+    bool createNewStock ();
+    bool createNewFutures ();
+    bool createNewIndex (DBIndex *);
+    bool createNewSpread (DBIndex *);
+    bool createNewCC (DBIndex *);
     void stockPref ();
     void futuresPref ();
     void indexPref ();

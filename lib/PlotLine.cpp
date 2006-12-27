@@ -346,11 +346,6 @@ void PlotLine::getHighLowRange (int start, int end, double &h, double &l)
   int loop;
   h = -99999999;
   l = 99999999;
-
-  bool flag = FALSE;
-  if (lineType == Bar || lineType == Candle || lineType == PF)
-    flag = TRUE;
-
   for (loop = start; loop <= end; loop++)
   {
     Val r = data[loop];

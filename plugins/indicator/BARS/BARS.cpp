@@ -294,6 +294,11 @@ void BARS::calculatePF ()
     }
   }
 
+  if (XOFlag)
+    line->append(pfXColor, pfBoxSize, high, low, low, XOFlag);
+  else
+    line->append(pfOColor, pfBoxSize, high, low, low, XOFlag);
+
   line->setType(PlotLine::PF);
   line->setLabel(label);
   output->addLine(line);

@@ -991,6 +991,12 @@ void CME::parse (Setting &data)
 
   DBIndexItem item;
   chartIndex->getIndexItem(fn, item);
+  item.getSymbol(s);      
+  if (! s.length())
+  {
+    if (plug.createNewFutures())
+      return;
+  }
 
   // verify if this chart can be updated by this plugin
   item.getQuotePlugin(s);
@@ -1012,10 +1018,6 @@ void CME::parse (Setting &data)
 //    }
 //  }
 
-  item.getSymbol(s);      
-  if (! s.length())
-    plug.createNewFutures();
-  
   plug.setBar(bar);
 	     
   plug.close();

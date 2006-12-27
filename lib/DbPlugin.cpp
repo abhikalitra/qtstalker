@@ -420,26 +420,45 @@ void DbPlugin::setBar (Bar &bar)
   db->put(db, NULL, &key, &data, 0);
 }
 
-void DbPlugin::createNewStock ()
+bool DbPlugin::createNewStock ()
 {
-  type = Stock1;
-  QString s = "Stock";
+  QString s;
   DBIndexItem item;
+  chartIndex->getIndexItem(indexKey, item);
+  item.getSymbol(s);
+  if (s.length())
+  {
+    qDebug("DbPlugin::createNewStock: duplicate symbol %s", s.latin1());
+    return TRUE;
+  }
+
+  type = Stock1;
+  s = "Stock";
   item.setType(s);
   item.setTitle(indexKey);
   item.setSymbol(indexKey);
   chartIndex->setIndexItem(indexKey, item);
+  return FALSE;
 }
 
-void DbPlugin::createNewFutures ()
+bool DbPlugin::createNewFutures ()
 {
+  QString s;
+  DBIndexItem item;
+  chartIndex->getIndexItem(indexKey, item);
+  item.getSymbol(s);
+  if (s.length())
+  {
+    qDebug("DbPlugin::createNewStock: duplicate symbol %s", s.latin1());
+    return TRUE;
+  }
+
   type = Futures1;
   FuturesData fd;
   if (fd.setSymbolPath(symbol))
-    return;
+    return TRUE;
 
-  DBIndexItem item;
-  QString s = "Futures";
+  s = "Futures";
   item.setType(s);
 
   fd.getName(s);
@@ -454,9 +473,11 @@ void DbPlugin::createNewFutures ()
   item.setFuturesMonth(s);
 
   chartIndex->setIndexItem(indexKey, item);
+
+  return FALSE;
 }
 
-void DbPlugin::createNewIndex (DBIndex *i)
+bool DbPlugin::createNewIndex (DBIndex *i)
 {
   bool ok = FALSE;
   QString sym = QInputDialog::getText(QObject::tr("New Index"),
@@ -466,7 +487,7 @@ void DbPlugin::createNewIndex (DBIndex *i)
                                       &ok,
                                       0);
   if (! sym.length() || ok == FALSE)
-    return;
+    return TRUE;
 
   QDir dir;
   Config config;
@@ -480,7 +501,7 @@ void DbPlugin::createNewIndex (DBIndex *i)
       QMessageBox::information(0,
                                QObject::tr("Qtstalker: Error"),
                                QObject::tr("Could not create ~/.qtstalker/data/Index directory."));
-      return;
+      return TRUE;
     }
   }
   
@@ -490,7 +511,17 @@ void DbPlugin::createNewIndex (DBIndex *i)
     QMessageBox::information(0,
                              QObject::tr("Qtstalker: Error"),
                              QObject::tr("This Index already exists."));
-    return;
+    return TRUE;
+  }
+
+  DBIndexItem item;
+  QString ts;
+  chartIndex->getIndexItem(sym, item);
+  item.getSymbol(ts);
+  if (ts.length())
+  {
+    qDebug("DbPlugin::createNewStock: duplicate symbol %s", ts.latin1());
+    return TRUE;
   }
 
   if (open(s, i))
@@ -498,10 +529,9 @@ void DbPlugin::createNewIndex (DBIndex *i)
     QMessageBox::information(0,
                              QObject::tr("Qtstalker: Error"),
                              QObject::tr("Disk error, cannot create chart"));
-    return;
+    return TRUE;
   }
 
-  DBIndexItem item;
   type = Index1;
   item.setSymbol(sym);
   s = "Index";
@@ -510,9 +540,10 @@ void DbPlugin::createNewIndex (DBIndex *i)
   chartIndex->setIndexItem(indexKey, item);
 
   indexPref();
+  return FALSE;
 }
 
-void DbPlugin::createNewSpread (DBIndex *i)
+bool DbPlugin::createNewSpread (DBIndex *i)
 {
   bool ok = FALSE;
   QString sn = QInputDialog::getText(QObject::tr("New Spread"),
@@ -522,7 +553,7 @@ void DbPlugin::createNewSpread (DBIndex *i)
                                      &ok,
                                      0);
   if (! sn.length() || ok == FALSE)
-    return;
+    return TRUE;
 
   QDir dir;
   Config config;
@@ -534,7 +565,7 @@ void DbPlugin::createNewSpread (DBIndex *i)
     if (! dir.mkdir(s, TRUE))
     {
       QMessageBox::information(0, QObject::tr("Qtstalker: Error"), QObject::tr("Could not create Spread directory."));
-      return;
+      return TRUE;
     }
   }
  
@@ -542,18 +573,28 @@ void DbPlugin::createNewSpread (DBIndex *i)
   if (dir.exists(s))
   {
     QMessageBox::information(0, QObject::tr("Qtstalker: Error"), QObject::tr("This Spread already exists."));
-    return;
+    return TRUE;
   }
+
+  DBIndexItem item;
+  QString ts;
+  chartIndex->getIndexItem(sn, item);
+  item.getSymbol(ts);
+  if (ts.length())
+  {
+    qDebug("DbPlugin::createNewStock: duplicate symbol %s", sn.latin1());
+    return TRUE;
+  }
+
 
   if (open(s, i))
   {
     QMessageBox::information(0,
                              QObject::tr("Qtstalker: Error"),
                              QObject::tr("Disk error, cannot create chart"));
-    return;
+    return TRUE;
   }
 
-  DBIndexItem item;
   type = Spread1;
   item.setSymbol(indexKey);
   s = "Spread";
@@ -562,9 +603,10 @@ void DbPlugin::createNewSpread (DBIndex *i)
   chartIndex->setIndexItem(indexKey, item);
 
   spreadPref();
+  return FALSE;
 }
 
-void DbPlugin::createNewCC (DBIndex *i)
+bool DbPlugin::createNewCC (DBIndex *i)
 {
   FuturesData fd;
   QStringList l;
@@ -583,54 +625,67 @@ void DbPlugin::createNewCC (DBIndex *i)
   dialog->addCheckItem(gl, pl, TRUE);
 
   int rc = dialog->exec();
-  if (rc == QDialog::Accepted)
+  if (rc != QDialog::Accepted)
   {
-    QString sym;
-    dialog->getCombo(fsl, sym);
-    bool f = dialog->getCheck(gl);
+    delete dialog;
+    return TRUE;
+  }
 
-    QDir dir;
-    Config config;
-    QString s;
-    config.getData(Config::DataPath, s);
-    s.append("/CC");
-    if (! dir.exists(s))
-    {
-      if (! dir.mkdir(s, TRUE))
-      {
-        QMessageBox::information(0,
-                                 QObject::tr("Qtstalker: Error"),
-                                 QObject::tr("Could not create ~/.qtstalker/data/CC directory."));
-        delete dialog;
-        return;
-      }
-    }
-  
-    s.append("/" + sym);
-    if (open(s, i))
+  QString sym;
+  dialog->getCombo(fsl, sym);
+  bool f = dialog->getCheck(gl);
+
+  delete dialog;
+
+  QDir dir;
+  Config config;
+  QString s;
+  config.getData(Config::DataPath, s);
+  s.append("/CC");
+  if (! dir.exists(s))
+  {
+    if (! dir.mkdir(s, TRUE))
     {
       QMessageBox::information(0,
                                QObject::tr("Qtstalker: Error"),
-                               QObject::tr("Disk error, cannot create chart"));
-      delete dialog;
-      return;
+                               QObject::tr("Could not create ~/.qtstalker/data/CC directory."));
+      return TRUE;
     }
-
-    DBIndexItem item;
-    type = CC1;
-    item.setSymbol(sym);
-    s = "CC";
-    item.setType(s);
-    s = sym + " - " + QObject::tr("Continuous Adjusted");
-    item.setTitle(s);
-    chartIndex->setIndexItem(indexKey, item);
-
-    s = QString::number(f);
-    sym = "Adjustment";
-    setData(sym, s);
   }
 
-  delete dialog;
+  DBIndexItem item;
+  QString ts;
+  chartIndex->getIndexItem(sym, item);
+  item.getSymbol(ts);
+  if (ts.length())
+  {
+    qDebug("DbPlugin::createNewStock: duplicate symbol %s", ts.latin1());
+    return TRUE;
+  }
+
+  
+  s.append("/" + sym);
+  if (open(s, i))
+  {
+    QMessageBox::information(0,
+                             QObject::tr("Qtstalker: Error"),
+                             QObject::tr("Disk error, cannot create chart"));
+    return TRUE;
+  }
+
+  type = CC1;
+  item.setSymbol(sym);
+  s = "CC";
+  item.setType(s);
+  s = sym + " - " + QObject::tr("Continuous Adjusted");
+  item.setTitle(s);
+  chartIndex->setIndexItem(indexKey, item);
+
+  s = QString::number(f);
+  sym = "Adjustment";
+  setData(sym, s);
+
+  return FALSE;
 }
 
 void DbPlugin::dbPrefDialog ()

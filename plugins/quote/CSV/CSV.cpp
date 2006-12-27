@@ -704,10 +704,36 @@ bool CSV::openDb (QString &path, QString &symbol, QString &type, bool tickFlag)
     return TRUE;
   }
   
-  // verify if this chart can be updated by this plugin
   QString s;
   DBIndexItem item;
   chartIndex->getIndexItem(symbol, item);
+  item.getSymbol(s);
+  if (! s.length())
+  {
+    if (! type.compare("Futures"))
+    {
+      db.setType(DbPlugin::Futures1);
+      if (db.createNewFutures())
+      {
+        db.close();
+        return TRUE;
+      }
+    }
+    else
+    {
+      if(db.createNewStock())
+      {
+        db.close();
+        return TRUE;
+      }
+    }
+
+    item.setSymbol(symbol);    
+    item.setBarType(tickFlag);
+    chartIndex->setIndexItem(symbol, item);
+  }
+
+  // verify if this chart can be updated by this plugin
   item.getQuotePlugin(s);
   if (! s.length())
   {
@@ -725,22 +751,6 @@ bool CSV::openDb (QString &path, QString &symbol, QString &type, bool tickFlag)
     }
   }
 
-  item.getSymbol(s);
-  if (! s.length())
-  {
-    if (! type.compare("Futures"))
-    {
-      db.setType(DbPlugin::Futures1);
-      db.createNewFutures();
-    }
-    else
-      db.createNewStock();
-
-    item.setSymbol(symbol);    
-    item.setBarType(tickFlag);
-    chartIndex->setIndexItem(symbol, item);
-  }
-  
   return FALSE;
 }
 

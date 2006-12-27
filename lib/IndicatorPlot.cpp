@@ -732,6 +732,7 @@ void IndicatorPlot::setScale ()
 {
   double scaleHigh = -99999999;
   double scaleLow = 99999999;
+  bool pfFlag = FALSE;
 
   if (indy && indy->getEnable())
   {
@@ -745,6 +746,9 @@ void IndicatorPlot::setScale ()
       if (line->getScaleFlag())
         continue;
 
+      if (line->getType() == PlotLine::PF)
+        pfFlag = TRUE;
+
       if (! scaleToScreen)
       {
 	if (line->getHigh() > scaleHigh)
@@ -756,15 +760,13 @@ void IndicatorPlot::setScale ()
       else
       {        
         int loop2 = line->getSize() - data->count() + startIndex;
+        int end = (buffer.width() / pixelspace) + loop2;
         if (loop2 < 0)
           loop2 = 0;
-	
-        int end = (buffer.width() / pixelspace) + loop2;
         if (end > line->getSize())
           end = line->getSize();
 
-        double h;
-        double l;
+        double h, l;
         line->getHighLowRange(loop2, end - 1, h, l);
         if (h > scaleHigh)
           scaleHigh = h;
@@ -789,8 +791,12 @@ void IndicatorPlot::setScale ()
     }
   }
 
-  scaleHigh = scaleHigh * 1.02;
-  scaleLow = scaleLow * 0.98;
+  // we need to make a little extra room at the top of the chart for P&F plots
+  // if we don't, then the top X or O is lost
+  if (pfFlag)
+    scaleHigh = scaleHigh * 1.02;
+
+//  scaleLow = scaleLow * 0.999;
 
   double logScaleHigh = 1;
   double logRange = 0;

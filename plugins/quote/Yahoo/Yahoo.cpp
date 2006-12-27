@@ -47,7 +47,7 @@ Yahoo::Yahoo ()
   dataPath.append("/Stocks/Yahoo");
 
   config.getData(Config::Home, file);
-  file.append("/download");
+  file.append("/yahooDownload");
   
   qInitNetworkProtocols();
 
@@ -188,12 +188,7 @@ void Yahoo::update ()
 
 void Yahoo::startDownload ()
 {
-  QString s, ts2;
-  QString ts = "symbol";
-  currentUrl->getData(ts, ts2);
-  s = tr("Downloading") + " " + ts2;
-//  printStatusLogMessage(s);
-
+  QString s, ts;
   ts = "url";
   currentUrl->getData(ts, s);
   getFile(s);
@@ -343,7 +338,12 @@ void Yahoo::parseHistory ()
   item.getSymbol(s);  
   if (! s.length())
   {
-    plug.createNewStock();
+    if (plug.createNewStock())
+    {
+      f.close();
+      plug.close();
+      return;
+    }
     item.setSymbol(ts2);
     item.setTitle(ts2);
     chartIndex->setIndexItem(fn, item);
@@ -495,7 +495,12 @@ void Yahoo::parseQuote ()
   item.getSymbol(s);    
   if (! s.length())
   {
-    plug.createNewStock();
+    if (plug.createNewStock())
+    {
+      f.close();
+      plug.close();
+      return;
+    }
     item.setSymbol(ts2);
     item.setTitle(ts2);
     chartIndex->setIndexItem(fn, item);
@@ -826,7 +831,11 @@ void Yahoo::parseFundamental ()
   item.getSymbol(s);  
   if (! s.length())
   {
-    plug.createNewStock();
+    if(plug.createNewStock())
+    {
+      plug.close();
+      return;
+    }
     item.setSymbol(ts2);
     
     QString title = ts2;

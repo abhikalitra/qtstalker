@@ -112,6 +112,10 @@
 
 20061226: Removed the 0.31 conversion functions. Everyone should have upgraded by now. If not...too bad.
 
+20061226: Removed the 12.5k shorthand from chart scaling. I would rather see 12500.
+
+20061226: Just a note that with the new metadata indexing, you will not be able to create multiple charts with the same
+          symbol name. Even when located in a differnent directory. We have one symbol universe now.
 
 
 0.33

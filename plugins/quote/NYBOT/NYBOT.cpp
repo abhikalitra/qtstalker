@@ -370,7 +370,10 @@ void NYBOT::parse ()
 
     item.getSymbol(s);
     if (! s.length())
-      plug.createNewFutures();
+    {
+      if (plug.createNewFutures())
+        return;
+    }
 
     plug.setBar(bar);
 		 
