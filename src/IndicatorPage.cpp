@@ -323,6 +323,15 @@ void IndicatorPage::newIndicator ()
     return;
   }
 
+  QString ts;
+  plug->getPluginName(ts);
+  if (! ts.compare("TALIB"))
+  {
+    Setting a;
+    ts = "method";
+    a.setData(ts, indicator);
+    plug->setIndicatorSettings(a);
+  }
   rc = plug->indicatorPrefDialog(this);
   if (! rc)
   {
@@ -333,7 +342,7 @@ void IndicatorPage::newIndicator ()
   // get the indicator settings
   Setting tset;
   plug->getIndicatorSettings(tset);
-  QString ts = "Name";
+  ts = "Name";
   tset.setData(ts, name);
   ts = "enable";
   QString ts2 = "1"; 

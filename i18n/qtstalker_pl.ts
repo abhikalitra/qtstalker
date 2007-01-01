@@ -79,9 +79,6 @@ Save changes?</source>
     </message>
 </context>
 <context>
-    <name>CC</name>
-</context>
-<context>
     <name>CME</name>
     <message>
         <source>Downloading </source>
@@ -1688,19 +1685,11 @@ Save changes?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>This CC already exists.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Edit CC</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Qtstalker: Disk Error</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Cannot create CC chart.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1893,10 +1882,6 @@ Save changes?</source>
     </message>
     <message>
         <source>This Index already exists.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Cannot create Index chart.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2713,6 +2698,174 @@ Save changes?</source>
     </message>
     <message>
         <source>Continuous Adjusted</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Default</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>X Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>O Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reversal</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Box Size</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Bar Indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Candle Indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>P&amp;F Indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Custom</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Disk error, cannot create chart</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>PF</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Upper Deviation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Lower Deviation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MA_Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Fast Limit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Slow Limit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Acceleration</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Start Value</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Offset On Reversal</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Long Start</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Acceleration Long</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Acceleration Long Max</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Short Start</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Acceleration Short</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Acceleration Short Max</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Volume Factor</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Fast Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Slow Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Signal Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Fast MA</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Slow MA</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Signal MA</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>FastK Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>SlowK Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>SlowK MA</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>SlowD Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>SlowD MA</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>FastD Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>FastD MA</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Medium Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Deviations</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Input2</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3801,10 +3954,6 @@ eg. 2:1</source>
     </message>
     <message>
         <source>Yahoo Quotes</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Downloading</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

@@ -52,7 +52,7 @@ class Config
       DataPanelSize,
       PS1Button,
       ScaleToScreen,
-      IndicatorPluginPath,
+      IndicatorPluginPath, // unused
       QuotePluginPath,
       GroupPath,
       PortfolioPath,
@@ -93,6 +93,24 @@ class Config
       LastNewIndicator
     };
 
+    enum Indicator
+    {
+      Config_BARS,
+      Config_CUS,
+      Config_ExScript,
+      Config_FI,
+      Config_LMS,
+      Config_LOWPASS,
+      Config_PP,
+      Config_SINWAV,
+      Config_SZ,
+      Config_THERM,
+      Config_VFI,
+      Config_VIDYA,
+      Config_VOL,
+      Config_VOLA
+    };
+
     Config ();
     ~Config ();
     void setData (Parm, QString &);
@@ -123,6 +141,8 @@ class Config
     QDict<IndicatorPlugin> indicatorPlugins;
     QDict<QuotePlugin> quotePlugins;
     QString version;
+    QStringList indicatorList;
+    QStringList indicatorList2;
 };
 
 #endif

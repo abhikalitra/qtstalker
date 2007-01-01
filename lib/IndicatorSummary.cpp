@@ -124,13 +124,11 @@ void IndicatorSummary::run ()
 
       i->getFile(s);
       plug->loadIndicatorSettings(s);
-      plug->clearOutput();
       plug->setIndicatorInput(recordList);
-      plug->calculate();
+      Indicator *ri = plug->calculate();
 
       emit signalWakeup();
   
-      Indicator *ri = plug->getIndicator();
       int loop3;
       for (loop3 = 0; loop3 < ri->getLines(); loop3++)
       {
@@ -150,6 +148,7 @@ void IndicatorSummary::run ()
         fd->setData(ts, s);
       }
 
+      delete ri;
       emit signalWakeup();
     }
 

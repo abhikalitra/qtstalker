@@ -66,8 +66,6 @@ class IndicatorPlugin : public QObject
     IndicatorPlugin();
     virtual ~IndicatorPlugin();
     void setIndicatorInput (BarData *);
-    Indicator * getIndicator ();
-    void clearOutput ();
     void loadFile (QString &, Setting &);
     void saveFile (QString &, Setting &);
     void getPluginName (QString &);
@@ -77,7 +75,7 @@ class IndicatorPlugin : public QObject
     void getMATypes (QStringList &);
     bool checkFormat (QString &, QPtrList<PlotLine> &, int, int);
 
-    virtual void calculate ();
+    virtual Indicator * calculate ();
     virtual int indicatorPrefDialog (QWidget *);
     virtual PlotLine * calculateCustom (QString &, QPtrList<PlotLine> &);
     virtual void getIndicatorSettings (Setting &);
@@ -93,7 +91,6 @@ class IndicatorPlugin : public QObject
     
   protected:
     BarData *data;
-    Indicator *output;
     QStringList lineTypes;
     QStringList inputTypeList;
     QStringList opList;
@@ -103,6 +100,8 @@ class IndicatorPlugin : public QObject
     QString helpFile;
     QValueList<FormatType> formatList;
     QStringList formatStringList;
+    bool dateFlag;
+    bool logScale;
 };
 
 #endif

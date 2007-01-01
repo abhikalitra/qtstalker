@@ -21,6 +21,22 @@
 
 #include "Config.h"
 #include "UpgradeMessage.h"
+#include "TALIB.h"
+#include "BARS.h"
+#include "CUS.h"
+#include "ExScript.h"
+#include "FI.h"
+#include "LMS.h"
+#include "LOWPASS.h"
+#include "PP.h"
+#include "SINWAV.h"
+#include "SZ.h"
+#include "THERM.h"
+#include "VFI.h"
+#include "VIDYA.h"
+#include "VOL.h"
+#include "VOLA.h"
+#include "UTIL.h"
 #include <qobject.h>
 #include <qdir.h>
 #include <qlibrary.h>
@@ -38,6 +54,30 @@ Config::Config ()
   indicatorPlugins.setAutoDelete(TRUE);
   quotePlugins.setAutoDelete(TRUE);
   version = "0.34";  // only this version of plugin is allowed to be loaded
+
+  TALIB t;
+  t.getIndicatorList(indicatorList);
+
+  indicatorList2.append("BARS");
+  indicatorList2.append("CUS");
+  indicatorList2.append("ExScript");
+  indicatorList2.append("FI");
+  indicatorList2.append("LMS");
+  indicatorList2.append("LOWPASS");
+  indicatorList2.append("PP");
+  indicatorList2.append("SINWAV");
+  indicatorList2.append("SZ");
+  indicatorList2.append("THERM");
+  indicatorList2.append("VFI");
+  indicatorList2.append("VIDYA");
+  indicatorList2.append("VOL");
+  indicatorList2.append("VOLA");
+
+  int loop;
+  for (loop = 0; loop < (int) indicatorList2.count(); loop++)
+    indicatorList.append(indicatorList2[loop]);
+
+  indicatorList.sort();
 }
 
 Config::~Config ()
@@ -232,9 +272,6 @@ void Config::getData (Parm p, QString &s)
     case ScaleToScreen:
       s = settings.readEntry("/Qtstalker/ScaleToScreen", "1");
       break;
-    case IndicatorPluginPath:
-      s = settings.readEntry("/Qtstalker/IndicatorPluginPath", "/usr/lib/qtstalker/indicator");
-      break;
     case QuotePluginPath:
       s = settings.readEntry("/Qtstalker/QuotePluginPath", "/usr/lib/qtstalker/quote");
       break;
@@ -389,9 +426,6 @@ void Config::setData (Parm p, QString &d)
       break;
     case ScaleToScreen:
       settings.writeEntry("/Qtstalker/ScaleToScreen", d);
-      break;
-    case IndicatorPluginPath:
-      settings.writeEntry("/Qtstalker/IndicatorPluginPath", d);
       break;
     case QuotePluginPath:
       settings.writeEntry("/Qtstalker/QuotePluginPath", d);
@@ -612,8 +646,7 @@ void Config::getPluginList (Config::Parm d, QStringList &l2)
 
 void Config::getIndicatorList (QStringList &l) 
 {
-  l.clear();
-  getPluginList(IndicatorPluginPath, l);
+  l = indicatorList;  
 }
 
 IndicatorPlugin * Config::getIndicatorPlugin (QString &p)
@@ -622,26 +655,64 @@ IndicatorPlugin * Config::getIndicatorPlugin (QString &p)
   if (plug)
     return plug;
 
-  QString s;
-  getData(IndicatorPluginPath, s);
-  s.append("/lib" + p + "." + version);
+  int i = indicatorList2.findIndex(p);
+  switch (i)
+  {
+    case Config_BARS:
+      plug = new BARS;
+      break;
+    case Config_CUS:
+      plug = new CUS;
+      break;
+    case Config_ExScript:
+      plug = new ExScript;
+      break;
+    case Config_FI:
+      plug = new FI;
+      break;
+    case Config_LMS:
+      plug = new LMS;
+      break;
+    case Config_LOWPASS:
+      plug = new LOWPASS;
+      break;
+    case Config_PP:
+      plug = new PP;
+      break;
+    case Config_SINWAV:
+      plug = new SINWAV;
+      break;
+    case Config_SZ:
+      plug = new SZ;
+      break;
+    case Config_THERM:
+      plug = new THERM;
+      break;
+    case Config_VFI:
+      plug = new VFI;
+      break;
+    case Config_VIDYA:
+      plug = new VIDYA;
+      break;
+    case Config_VOL:
+      plug = new VOL;
+      break;
+    case Config_VOLA:
+      plug = new VOLA;
+      break;
+    default:
+      if (! p.compare("UTIL"))
+        plug = new UTIL;
+      else
+        plug = new TALIB;
+      break;
+  }
 
-  QLibrary *lib = new QLibrary(s);
-  IndicatorPlugin *(*so)() = 0;
-  so = (IndicatorPlugin *(*)()) lib->resolve("createIndicatorPlugin");
-  if (so)
-  {
-    plug = (*so)();
-    libs.replace(p, lib);
-    indicatorPlugins.replace(p, plug);
-    return plug;
-  }
+  if (! plug)
+    qDebug("%s", p.latin1());
   else
-  {
-    qDebug("Config::getIndicatorPlugin:%s Dll error\n", s.latin1());
-    delete lib;
-    return 0;
-  }
+    indicatorPlugins.replace(p, plug);
+  return plug;
 }
 
 QuotePlugin * Config::getQuotePlugin (QString &p)

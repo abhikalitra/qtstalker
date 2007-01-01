@@ -213,13 +213,12 @@ void Scanner::scan ()
     db.close();
     
     // load the CUS plugin and calculate
-    plug->clearOutput();
     plug->setIndicatorInput(recordList);
-    plug->calculate();
-    Indicator *i = plug->getIndicator();
+    Indicator *i = plug->calculate();
     if (! i->getLines())
     {
       delete recordList;
+      delete i;
       continue;
     }
     
@@ -236,6 +235,7 @@ void Scanner::scan ()
     }
     
     delete recordList;
+    delete i;
     
     emit message(QString());
   }

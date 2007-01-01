@@ -235,18 +235,19 @@ bool TesterStopPage::loadCustomShortStop (BarData *recordList)
   
   // load the CUS plugin and calculate
   plug->setIndicatorInput(recordList);
-  plug->calculate();
-  Indicator *i = plug->getIndicator();
+  Indicator *i = plug->calculate();
   PlotLine *line = i->getLine(0);
   if (! line)
   {
     qDebug("TesterStopPage::loadCustomShortStop: no PlotLine returned");
     config.closePlugin(plugin);
+    delete i;
     return TRUE;
   }
     
   customShortStopLine = new PlotLine;
   customLongStopLine->copy(line);
+  delete i;
     
   config.closePlugin(plugin);
   
@@ -281,18 +282,19 @@ bool TesterStopPage::loadCustomLongStop (BarData *recordList)
   
   // load the CUS plugin and calculate
   plug->setIndicatorInput(recordList);
-  plug->calculate();
-  Indicator *i = plug->getIndicator();
+  Indicator *i = plug->calculate();
   PlotLine *line = i->getLine(0);
   if (! line)
   {
     qDebug("Tester::loadCustomShortStop: no PlotLine returned");
     config.closePlugin(plugin);
+    delete i;
     return TRUE;
   }
     
   customLongStopLine = new PlotLine;
   customLongStopLine->copy(line);
+  delete i;
     
   config.closePlugin(plugin);
   

@@ -20,14 +20,15 @@
  */
 
 #include "IndicatorPlugin.h"
-#include "Config.h"
+#include "TALIB.h"
 #include <qfile.h>
 #include <qtextstream.h>
 
 IndicatorPlugin::IndicatorPlugin()
 {
-  output = new Indicator;
   saveFlag = FALSE;
+  dateFlag = FALSE;
+  logScale = FALSE;
   
   PlotLine pl;
   pl.getLineTypes(lineTypes);
@@ -58,24 +59,15 @@ IndicatorPlugin::IndicatorPlugin()
 
 IndicatorPlugin::~IndicatorPlugin()
 {
-  delete output;
 }
 
 void IndicatorPlugin::setIndicatorInput (BarData *d)
 {
   data = d;
-  output->clearLines();
-}
-
-void IndicatorPlugin::clearOutput ()
-{
-  output->clearLines();
 }
 
 void IndicatorPlugin::loadFile (QString &file, Setting &dict)
 {
-  output->clearLines();
-
   QFile f(file);
   if (! f.open(IO_ReadOnly))
   {
@@ -133,11 +125,6 @@ void IndicatorPlugin::saveFile (QString &file, Setting &dict)
   f.close();
 }
 
-Indicator * IndicatorPlugin::getIndicator ()
-{
-  return output;
-}
-
 void IndicatorPlugin::getMATypes (QStringList &l)
 {
   l = maList;
@@ -146,23 +133,11 @@ void IndicatorPlugin::getMATypes (QStringList &l)
 PlotLine * IndicatorPlugin::getMA (PlotLine *in, int type, int period)
 {
   PlotLine *ma = 0;
-  Config config;
-  QString s("TALIB");
-  IndicatorPlugin *plug = config.getIndicatorPlugin(s);
-  if (! plug)
-  {
-    qDebug("IndicatorPlugin::getMA: cannot open TALIB plugin");
-    config.closePlugin(s);
-    return ma;
-  }
-
+  TALIB plug;
   if (type == 9)
     ma = getWilderMA(in, period);
   else
-    ma = plug->getMA(in, type, period);
-
-  config.closePlugin(s);
-
+    ma = plug.getMA(in, type, period);
   return ma;  
 }
 
@@ -309,8 +284,9 @@ void IndicatorPlugin::wakeup ()
 //****************** VIRTUAL OVERIDES ***************************
 //***************************************************************
 
-void IndicatorPlugin::calculate ()
+Indicator * IndicatorPlugin::calculate ()
 {
+  return 0;
 }
 
 int IndicatorPlugin::indicatorPrefDialog (QWidget *)
@@ -347,9 +323,9 @@ void IndicatorPlugin::loadIndicatorSettings (QString &d)
   Setting set;
   loadFile(d, set);
   QString k = "dateFlag";
-  output->setDateFlag(set.getInt(k));
+  dateFlag = set.getInt(k);
   k = "logScale";
-  output->setLogScale(set.getInt(k));
+  logScale = set.getInt(k);
   setIndicatorSettings(set);
 }
 

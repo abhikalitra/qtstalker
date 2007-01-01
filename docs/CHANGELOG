@@ -117,6 +117,13 @@
 20061226: Just a note that with the new metadata indexing, you will not be able to create multiple charts with the same
           symbol name. Even when located in a differnent directory. We have one symbol universe now.
 
+20070101: Merged all indicator plugins into qtstalkerlib. Indicator plugins are now deprecated.
+
+20070101: Merged TALIB into qtstalkerlib. The only change the user will notice is all indicators are available when creating
+          a new indicator.
+
+
+
 
 0.33
 ====

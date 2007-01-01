@@ -52,6 +52,25 @@ HEADERS += XmlWriter.h
 HEADERS += DBBase.h
 HEADERS += DBIndex.h
 HEADERS += DBIndexItem.h
+HEADERS += BARS.h
+HEADERS += CUS.h
+HEADERS += ExScript.h
+HEADERS += FI.h
+HEADERS += LMS.h
+HEADERS += LOWPASS.h
+HEADERS += PP.h
+HEADERS += SINWAV.h
+HEADERS += SYMBOL.h
+HEADERS += SZ.h
+HEADERS += TALIB.h
+HEADERS += THERM.h
+HEADERS += UTIL.h
+HEADERS += VFI.h
+HEADERS += VIDYA.h
+HEADERS += VOL.h
+HEADERS += VOLA.h
+HEADERS += qtsFFT.h
+HEADERS += CUSDialog.h
 
    
 SOURCES += QuotePlugin.cpp
@@ -101,12 +120,35 @@ SOURCES += XmlWriter.cpp
 SOURCES += DBBase.cpp
 SOURCES += DBIndex.cpp
 SOURCES += DBIndexItem.cpp
+SOURCES += BARS.cpp
+SOURCES += CUS.cpp
+SOURCES += ExScript.cpp
+SOURCES += FI.cpp
+SOURCES += LMS.cpp
+SOURCES += LOWPASS.cpp
+SOURCES += PP.cpp
+SOURCES += SINWAV.cpp
+SOURCES += SYMBOL.cpp
+SOURCES += SZ.cpp
+SOURCES += TALIB.cpp
+SOURCES += THERM.cpp
+SOURCES += UTIL.cpp
+SOURCES += VFI.cpp
+SOURCES += VIDYA.cpp
+SOURCES += VOL.cpp
+SOURCES += VOLA.cpp
+SOURCES += qtsFFT.cpp
+SOURCES += CUSDialog.cpp
 
    
 TARGET = qtstalker
 VERSION = 0.34.0
 
 LIBS += -ldb
+LIBS += -lta_libc_cmr
+
+unix:INCLUDEPATH += ../TALIB/ta-lib/c/include
+unix:LIBS += -L../TALIB/ta-lib/c/lib
      
 # linux options
 unix:linux-g++:LIBS += -ldl

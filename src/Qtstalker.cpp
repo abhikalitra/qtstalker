@@ -628,15 +628,16 @@ void QtstalkerApp::loadIndicator (Indicator *i)
   if (plug)
   {
     connect(plug, SIGNAL(signalWakeup()), this, SLOT(slotWakeup()));
-    plug->clearOutput();
     if (recordList)
       plug->setIndicatorInput(recordList);
     QString s;
     i->getFile(s);
     plug->loadIndicatorSettings(s);
+    Indicator *ti = 0;
     if (recordList)
-      plug->calculate();
-    i->copy(plug->getIndicator());
+      ti = plug->calculate();
+    i->copy(ti);
+    delete ti;
 
     QFileInfo fi(s);
     Plot *plot = plotList[fi.fileName()];

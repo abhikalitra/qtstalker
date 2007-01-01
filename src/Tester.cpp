@@ -579,12 +579,12 @@ void Tester::loadSignals ()
   
     // load the CUS plugin and calculate
     plug->setIndicatorInput(recordList);
-    plug->calculate();
-    Indicator *i = plug->getIndicator();
+    Indicator *i = plug->calculate();
     PlotLine *line = i->getLine(0);
     if (! line)
     {
       qDebug("Tester::loadSignals: no PlotLine returned");
+      delete i;
       continue;
     }
 
@@ -626,6 +626,8 @@ void Tester::loadSignals ()
           trade = 0;
       }
     }
+
+    delete i;
   }
 
   config.closePlugin(plugin);
