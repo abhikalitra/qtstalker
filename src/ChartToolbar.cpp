@@ -31,6 +31,7 @@
 
 ChartToolbar::ChartToolbar (QMainWindow *mw) : QToolBar (mw, "chartToolbar")
 {
+  minPixelspace = 2;
   Config config;
   QString ts;
   ptDate = QDateTime::currentDateTime();
@@ -48,7 +49,7 @@ ChartToolbar::ChartToolbar (QMainWindow *mw) : QToolBar (mw, "chartToolbar")
   addSeparator();
 
   pixelspace = new QSpinBox(this);
-  pixelspace->setRange(2, 99);
+  pixelspace->setRange(minPixelspace, 99);
   config.getData(Config::Pixelspace, ts);
   pixelspace->setValue(ts.toInt());
   connect (pixelspace, SIGNAL(valueChanged(int)), this, SIGNAL(signalPixelspaceChanged(int)));
@@ -295,7 +296,11 @@ void ChartToolbar::ps1ButtonClicked ()
   Config config;
   QString s;
   config.getData(Config::PS1Button, s);
+//  setPixelspace(minPixelspace, s.toInt());
+//  emit signalBarLengthChanged(compressionCombo->currentItem());
   pixelspace->setValue(s.toInt());
+  emit signalBarsChanged(0);
+//  emit signalPaperTradeNextBar();
 }
 
 void ChartToolbar::ps2ButtonClicked ()
@@ -303,7 +308,11 @@ void ChartToolbar::ps2ButtonClicked ()
   Config config;
   QString s;
   config.getData(Config::PS2Button, s);
+//  setPixelspace(minPixelspace, s.toInt());
+//  emit signalBarLengthChanged(compressionCombo->currentItem());
   pixelspace->setValue(s.toInt());
+  emit signalBarsChanged(0);
+//  emit signalPaperTradeNextBar();
 }
 
 void ChartToolbar::ps3ButtonClicked ()
@@ -311,7 +320,11 @@ void ChartToolbar::ps3ButtonClicked ()
   Config config;
   QString s;
   config.getData(Config::PS3Button, s);
+//  setPixelspace(minPixelspace, s.toInt());
+//  emit signalBarLengthChanged(compressionCombo->currentItem());
   pixelspace->setValue(s.toInt());
+  emit signalBarsChanged(0);
+//  emit signalPaperTradeNextBar();
 }
 
 //*********************************************************************

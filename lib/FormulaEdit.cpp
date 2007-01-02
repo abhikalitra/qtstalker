@@ -403,6 +403,9 @@ void FormulaEdit::functionDialog ()
   Config config;
   QStringList l;
   config.getIndicatorList(l);
+  l.append("UTIL");
+  l.append("SYMBOL");
+  l.sort();
 
   bool ok;
   QString function = QInputDialog::getItem(QObject::tr("Indicator Selection"),

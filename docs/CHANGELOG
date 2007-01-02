@@ -122,6 +122,12 @@
 20070101: Merged TALIB into qtstalkerlib. The only change the user will notice is all indicators are available when creating
           a new indicator.
 
+20070101: Applied patch #1625373 - install.html - thanks to loh_tar for the patch.
+
+20070101: Applied patch #1625321 - cus.html - thanks to loh_tar for the patch.
+
+20070101: Chart now refreshes to last bar after a bar spacing default button is pressed.
+
 
 
 

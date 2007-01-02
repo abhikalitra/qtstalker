@@ -93,6 +93,7 @@ class ChartToolbar : public QToolBar
     QToolButton *ps1Button;
     QToolButton *ps2Button;
     QToolButton *ps3Button;
+    int minPixelspace;
 };
 
 #endif

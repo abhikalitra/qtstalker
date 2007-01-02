@@ -1018,14 +1018,14 @@ void DbPlugin::getSpreadHistory (BarData *barData, QDateTime &startDate)
 void DbPlugin::getCCHistory (BarData *barData, QDateTime &startDate)
 {
   FuturesData fd;
-  QString s;
-  if (fd.setSymbol(symbol))
+  if (fd.setSymbol(indexKey))
   {
     qDebug("CC::getCCHistory: invalid futures symbol");
     return;
   }
     
   Config config;
+  QString s;
   QString baseDir;
   config.getData(Config::DataPath, baseDir);
   baseDir.append("/Futures/");

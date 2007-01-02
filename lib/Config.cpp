@@ -37,6 +37,7 @@
 #include "VOL.h"
 #include "VOLA.h"
 #include "UTIL.h"
+#include "SYMBOL.h"
 #include <qobject.h>
 #include <qdir.h>
 #include <qlibrary.h>
@@ -704,7 +705,12 @@ IndicatorPlugin * Config::getIndicatorPlugin (QString &p)
       if (! p.compare("UTIL"))
         plug = new UTIL;
       else
-        plug = new TALIB;
+      {
+        if (! p.compare("SYMBOL"))
+          plug = new SYMBOL;
+        else
+          plug = new TALIB;
+      }
       break;
   }
 
