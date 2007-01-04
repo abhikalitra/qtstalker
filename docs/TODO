@@ -31,9 +31,9 @@ To Do:
 - add more stats to edit chart dialog ie. high date low date 
 - add default scanners for biggest % gainers, new 52 week highs etc.
 - add some descriptive text to the upgrade window
-- add a version parm to CUS indicators so that we can upgrade more easily in future.
 - add more flexible symbol and directory selector for the yahoo plugin.
 - fix: need to add an exchange field to the index.
+- add ExScript CUS interface for indicators and plots.
 
 
 

@@ -31,6 +31,7 @@ CUS::CUS ()
 {
   pluginName = "CUS";
   helpFile = "cus.html";
+  version = 0.33;
 }
 
 CUS::~CUS ()
@@ -224,6 +225,9 @@ void CUS::getIndicatorSettings (Setting &dict)
   dict.setData(ts, ts2);
   ts = "plugin";
   dict.setData(ts, pluginName);
+  ts = "version";
+  ts2 = QString::number(version);
+  dict.setData(ts, ts2);
 }
 
 void CUS::setIndicatorSettings (Setting &dict)
@@ -238,6 +242,11 @@ void CUS::setIndicatorSettings (Setting &dict)
   dict.getData(ts, s);
   if (s.length())
     formulaList = QStringList::split("|", s, FALSE);
+
+  ts = "version";
+  dict.getData(ts, s);
+  if (s.length())
+    version = s.toDouble();
 }
 
 void CUS::includeCUS (QString &d, QStringList &rl)

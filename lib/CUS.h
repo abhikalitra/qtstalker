@@ -38,5 +38,6 @@ class CUS : public IndicatorPlugin
 
   protected:
     QStringList formulaList;
+    double version;
 };
 

@@ -24,6 +24,7 @@
 #include "HelpWindow.h"
 #include "Config.h"
 #include "../pics/download.xpm"
+//#include "../pics/icons.h"
 #include "../pics/canceldownload.xpm"
 #include <qstringlist.h>
 #include <qmessagebox.h>
@@ -75,9 +76,12 @@ void QuotePlugin::buildGui ()
   toolbar = new Toolbar(baseWidget, 30, 30, FALSE);
   vbox->addWidget(toolbar);
 
+//  QPixmap pic(qembed_findImage("download"));
+
   QString s("update");
   QString s2(tr("Update"));
   toolbar->addButton(s, download, s2);
+//  toolbar->addButton(s, pic, s2);
   QObject::connect(toolbar->getButton(s), SIGNAL(clicked()), this, SLOT(getQuotes()));
   toolbar->getButton(s)->setAccel(CTRL+Key_U);
   

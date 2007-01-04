@@ -128,6 +128,14 @@
 
 20070101: Chart now refreshes to last bar after a bar spacing default button is pressed.
 
+20070103: Added version parm to the CUS indicator.
+
+20070104: Applied patch #1626699 - yahoo.html - thanks to loh_tar for the patch.
+
+20070104: Applied patch #1626685 - toc.html - thanks to loh_tar for the patch.
+
+20070104: Applied patch #1626678 - Pics needed by cus.html - thanks to loh_tar for the patch.
+
 
 
 
