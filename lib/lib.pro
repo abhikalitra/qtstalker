@@ -68,7 +68,6 @@ HEADERS += UTIL.h
 HEADERS += VFI.h
 HEADERS += VIDYA.h
 HEADERS += VOL.h
-HEADERS += VOLA.h
 HEADERS += qtsFFT.h
 HEADERS += CUSDialog.h
 
@@ -136,7 +135,6 @@ SOURCES += UTIL.cpp
 SOURCES += VFI.cpp
 SOURCES += VIDYA.cpp
 SOURCES += VOL.cpp
-SOURCES += VOLA.cpp
 SOURCES += qtsFFT.cpp
 SOURCES += CUSDialog.cpp
 

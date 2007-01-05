@@ -46,6 +46,7 @@ class FormulaEdit : public QWidget
     void setLine (QString &);
     void getText (QString &);
     int getLines ();
+    void getVariableList (QStringList &, bool);
 
   public slots:
     void editPlotItem ();

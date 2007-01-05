@@ -136,6 +136,16 @@
 
 20070104: Applied patch #1626678 - Pics needed by cus.html - thanks to loh_tar for the patch.
 
+20070104: Applied patch #1628252 - preferences.html - thanks to loh_tar for the patch.
+
+20070104: Applied patch #1628245 - toolbars.html - thanks to loh_tar for the patch.
+
+20070104: Applied patch #1628231 - indicatorreference.html - thanks to loh_tar for the patch.
+
+20070104: Removed the VOLA module and replaced the CV and VOLR functions with new CUS versions in the
+          CUS_examples section.
+
+20070105: Fixed bug in CUS that included comment lines as variables for input parms.
 
 
 

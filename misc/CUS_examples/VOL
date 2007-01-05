@@ -1,6 +1,6 @@
 maLabel=MAVol
+enable=0
 method=VOL
-enable=1
 plugin=VOL
 volLabel=VOL
 maLineType=4

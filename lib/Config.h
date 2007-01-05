@@ -107,8 +107,7 @@ class Config
       Config_THERM,
       Config_VFI,
       Config_VIDYA,
-      Config_VOL,
-      Config_VOLA
+      Config_VOL
     };
 
     Config ();

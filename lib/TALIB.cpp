@@ -960,22 +960,11 @@ void TALIB::formatDialog (QStringList &vl, QString &rv, QString &rs)
   rs.truncate(0);
   rv.truncate(0);
 
-  bool ok;
-  QString function = QInputDialog::getItem(QObject::tr("TALIB Indicator Selection"),
-                                    QObject::tr("Select an indicator:"),
-                                    methodList,
-                                    0,
-                                    TRUE,
-                                    &ok,
-                                    0);
-  if (! ok)
-    return;
-
   const TA_FuncHandle *handle;
   const TA_FuncInfo *theInfo;
  
   // open a TALIB handle
-  TA_RetCode retCode = TA_GetFuncHandle(function, &handle);
+  TA_RetCode retCode = TA_GetFuncHandle(formatMethod, &handle);
   if (retCode != TA_SUCCESS)
   {
     qDebug("TALIB::getFormatList:can't open handle");
@@ -1056,7 +1045,7 @@ void TALIB::formatDialog (QStringList &vl, QString &rv, QString &rs)
   if (rc == QDialog::Accepted)
   {
     dialog->getText(vnl, rv);
-    rs = function;
+    rs = formatMethod;
 
     QString ts;
     for (loop = 0; loop < (int) theInfo->nbInput; loop++ )

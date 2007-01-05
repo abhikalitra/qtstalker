@@ -280,6 +280,11 @@ void IndicatorPlugin::wakeup ()
   emit signalWakeup();
 }
 
+void IndicatorPlugin::setFormatMethod (QString &d)
+{
+  formatMethod = d;
+}
+
 //***************************************************************
 //****************** VIRTUAL OVERIDES ***************************
 //***************************************************************

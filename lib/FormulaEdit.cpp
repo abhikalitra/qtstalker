@@ -133,13 +133,7 @@ void FormulaEdit::insertPlotItem ()
 
   QString s("Var");
   QStringList l;
-  QStringList l2 = QStringList::split("\n", formula->text(), FALSE);
-  int loop;
-  for (loop = 0; loop < (int) l2.count(); loop++)
-  {
-    QStringList l3 = QStringList::split(":=", l2[loop], FALSE);
-    l.append(l3[0].stripWhiteSpace());
-  }
+  getVariableList(l, FALSE);
   dialog->addComboItem(vl, pl, l, 0);
 
   QColor c("red");
@@ -197,12 +191,7 @@ void FormulaEdit::editPlotItem ()
 
   s = "Var";
   QStringList l2;
-  QStringList l3 = QStringList::split("\n", formula->text(), FALSE);
-  for (loop = 0; loop < (int) l3.count(); loop++)
-  {
-    QStringList l4 = QStringList::split(":=", l3[loop], FALSE);
-    l2.append(l4[0].stripWhiteSpace());
-  }
+  getVariableList(l2, FALSE);
   dialog->addComboItem(vl, pl, l2, l[0]);
 
   QColor c(l[1]);
@@ -425,17 +414,14 @@ void FormulaEdit::functionDialog ()
     return;
   }
 
+  QString s;
+  plug->getPluginName(s);
+  if (! s.compare("TALIB"))
+    plug->setFormatMethod(function);
+
   QString vname, format;
   QStringList vl;
-  BarData bd(format);
-  bd.getInputFields(vl);
-  QStringList l2 = QStringList::split("\n", formula->text(), FALSE);
-  int loop;
-  for (loop = 0; loop < (int) l2.count(); loop++)
-  {
-    QStringList l3 = QStringList::split(":=", l2[loop], FALSE);
-    vl.append(l3[0].stripWhiteSpace());
-  }
+  getVariableList(vl, TRUE);
   plug->formatDialog(vl, vname, format);
 
   if (! vname.length())
@@ -485,4 +471,26 @@ void FormulaEdit::includeRule ()
   formula->insert(s);
 }
 
+void FormulaEdit::getVariableList (QStringList &l, bool flag)
+{
+  l.clear();
+
+  if (flag)
+  {
+    QString s;
+    BarData bd(s);
+    bd.getInputFields(l);
+  }
+
+  QStringList l2 = QStringList::split("\n", formula->text(), FALSE);
+  int loop;
+  for (loop = 0; loop < (int) l2.count(); loop++)
+  {
+    if (l2[loop].contains(":="))
+    {
+      QStringList l3 = QStringList::split(":=", l2[loop], FALSE);
+      l.append(l3[0].stripWhiteSpace());
+    }
+  }
+}
 

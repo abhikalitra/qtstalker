@@ -633,6 +633,7 @@ PlotLine * UTIL::calculateCOLOR (QString &p, QPtrList<PlotLine> &d)
   PlotLine *inbool = d.at(0);
   int inboolLoop = inbool->getSize() - 1;
   PlotLine *incol = d.at(1);
+  incol->setColorFlag(TRUE);
   int incolLoop = incol->getSize() - 1;
   while (inboolLoop > -1 && incolLoop > -1)
   {
@@ -906,7 +907,7 @@ void UTIL::formatDialog (QStringList &vl, QString &rv, QString &rs)
       l.append(QObject::tr("None"));
       dialog->addComboItem(ai1l, pl, l, l.count() - 1);
       dialog->addDoubleItem(cil, pl, 0, -99999999.0, 99999999.0);
-      dialog->addIntItem(perl, pl, 1, 1, 999999);
+      dialog->addIntItem(perl, pl, 1, 0, 999999);
       break;
     }
 

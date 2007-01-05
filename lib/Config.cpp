@@ -35,7 +35,6 @@
 #include "VFI.h"
 #include "VIDYA.h"
 #include "VOL.h"
-#include "VOLA.h"
 #include "UTIL.h"
 #include "SYMBOL.h"
 #include <qobject.h>
@@ -72,7 +71,6 @@ Config::Config ()
   indicatorList2.append("VFI");
   indicatorList2.append("VIDYA");
   indicatorList2.append("VOL");
-  indicatorList2.append("VOLA");
 
   int loop;
   for (loop = 0; loop < (int) indicatorList2.count(); loop++)
@@ -697,9 +695,6 @@ IndicatorPlugin * Config::getIndicatorPlugin (QString &p)
       break;
     case Config_VOL:
       plug = new VOL;
-      break;
-    case Config_VOLA:
-      plug = new VOLA;
       break;
     default:
       if (! p.compare("UTIL"))

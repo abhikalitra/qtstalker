@@ -74,6 +74,7 @@ class IndicatorPlugin : public QObject
     PlotLine * getWilderMA (PlotLine *d, int);
     void getMATypes (QStringList &);
     bool checkFormat (QString &, QPtrList<PlotLine> &, int, int);
+    void setFormatMethod (QString &);
 
     virtual Indicator * calculate ();
     virtual int indicatorPrefDialog (QWidget *);
@@ -102,6 +103,7 @@ class IndicatorPlugin : public QObject
     QStringList formatStringList;
     bool dateFlag;
     bool logScale;
+    QString formatMethod;
 };
 
 #endif
