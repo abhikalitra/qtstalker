@@ -20,7 +20,6 @@ To Do:
 - add stock margins to the tester
 - add ability to not draw sections of plotlines. (vectors)
 - save last chart viewed between sessions.
-- change absolute path names in the tester rules to relative so files can be moved
 - add paper trade mode to portfolio tracker (use last chart value instead of last db value)
 - add optimization range testing for the backtester.
 - fix: negative account volume trades in the tester.
@@ -34,7 +33,7 @@ To Do:
 - add more flexible symbol and directory selector for the yahoo plugin.
 - fix: need to add an exchange field to the index.
 - add ExScript CUS interface for indicators and plots.
-
+- remove full paths from all files, only symbol is needed for index lookup
 
 
 Maybe some day:

@@ -2,60 +2,60 @@
 <html>
 <head>
   <title>Qtstalker: Using CVS to keep on the bleeding edge</title>
-  <meta http-equiv="content-type"
- content="text/html; charset=ISO-8859-1">
+  <meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
 </head>
+
 <body>
 <h2><u>Using CVS to keep on the bleeding edge</u></h2>
-<p>
-The source code is maintained in Concurrent Version System (CVS) at
-SourceForge. To get your local working copy of the current codebase,
-go to the 
-<a href="http://sourceforge.net/projects/qtstalker/">sourceforge page</a>
+
+<p>The source code is maintained in Concurrent Version System (CVS) at
+SourceForge. To get your local working copy of the current codebase, go to
+the <a href="http://sourceforge.net/projects/qtstalker/">sourceforge page</a>
 and select the link in the Navigation bar to "CVS". Follow the instructions
 to get your local working copy installed. To build this version just do
 exactly the same as you would to <a href="install.html">build</a> a release
 tarball. Now edit some source code, build, install, see your changes, and
-send the project a Patch to incorporate your wonderful new features.
-</p>
-<p>
-You could keep two versions on your system - a "stable" version and a "test"
-version. Both versions can be from CVS if you like, as long as you deem one
-of them stable. Flipping back and forth between versions is just a matter
-of installing one over the other. A <tt>'make install'</tt> will overwrite
-everything except your data and preferences. If you find that the test
-version has problems, then just install the stable version.
-As a precaution, backup your
-~/Qtstalker directory and your ~/.qt/qtstalkerrc file before installing
-a test version, so that you have a clean data tree to revert to in case of
-data corruption. You should never get data corruption anyway, but as always
-it is better to be safe.
-</p>
+send the project a Patch to incorporate your wonderful new features. </p>
+
+<p>You could keep two versions on your system - a "stable" version and a
+"test" version. Both versions can be from CVS if you like, as long as you
+deem one of them stable. Flipping back and forth between versions is just a
+matter of installing one over the other. A <tt>'make install'</tt> will
+overwrite everything except your data and preferences. If you find that the
+test version has problems, then just install the stable version. As a
+precaution, backup your ~/Qtstalker directory and your ~/.qt/qtstalkerrc file
+before installing a test version, so that you have a clean data tree to
+revert to in case of data corruption. You should never get data corruption
+anyway, but as always it is better to be safe. </p>
+
 <h2><u>Contributing patches to the project</u></h2>
-<p>
-Contributions are the life-blood of a community project. You can contribute
-in many ways, such as: discussion on the mailing list; helping other users;
-describing any problems that you might perceive; suggesting enhancements;
-and sending patches for code or documentation.
-<p>
-<p>
-A "patch" is a text file showing just the differences between your version
-and the version in the central repository. To create a patch, use
-<tt>'cvs diff -u > mypatch.diff'</tt> and add it via the 
-<a href="http://sourceforge.net/projects/qtstalker/">sourceforge page</a>.
-If you have a lot of files, then tar and gzip them.
-</p>
-<p>
-Of course you do not need CVS just to send a patch. If you are using a
-release version then make a backup copy of the original file and do
-<tt>'diff -u file.html.orig file.html > mypatch.diff'</tt>
-</p>
+
+<p>Contributions are the life-blood of a community project. You can
+contribute in many ways, such as: discussion on the mailing list; helping
+other users; describing any problems that you might perceive; suggesting
+enhancements; and sending patches for code or documentation. </p>
+
+<p>A "patch" is a text file showing just the differences between your version
+and the version in the central repository. To create a patch, use... </p>
+
+<p><code>cvs -q update -dP<br>
+cvs diff -u &gt; mypatch.diff</code> </p>
+
+<p>...and add it via the tracker option at the <a
+href="http://sourceforge.net/projects/qtstalker/">sourceforge page</a>. If
+you have a lot of files, then tar and gzip them. </p>
+
+<p>Of course you do not need CVS just to send a patch. If you are using a
+release version then make a backup copy of the original file and do...</p>
+
+<p><code>diff -u file.html.orig file.html &gt; mypatch.diff</code> </p>
+
 <h2><u>More information about CVS</u></h2>
-<p>
-<a href="http://cvsbook.red-bean.com/">CVS Book</a>
-</p>
-<a href="printing.html" target="_self"><img src="back.png" border="0" width="32" height="32" alt="Back"></a>
-<a href="cc.html" target="_self"><img src="next.png" border="0" width="32" height="32" alt="Next"></a>
-<a href="toc.html"><img src="home.png" border="0" width="32" height="32" alt="Home"></a>
+
+<p><a href="http://cvsbook.red-bean.com/">CVS Book</a> </p>
+<p><a href="vola.html" target="_self"><img src="back.png" border="0" width="32" height="32" alt="Back"></a>
+<a href="toc.html"><img src="home.png" border="0" width="32" height="32" alt="Home"></a></p>
 </body>
 </html>
+
+ 	  	 

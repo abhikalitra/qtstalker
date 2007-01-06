@@ -528,7 +528,7 @@ void ExScript::timerDone ()
 
   int rc = QMessageBox::warning(0,
     			        tr("ExScript Warning"),
-			        tr("Script timeout. Canel process?"),
+			        tr("Script timeout. Cancel process?"),
 			        QMessageBox::Yes,
 			        QMessageBox::No,
                                 QMessageBox::NoButton);
