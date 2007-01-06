@@ -1,0 +1,156 @@
+20061119: Changed quote plugin dialogs to all appear in one dialog. You can have a separate dialog window for each quote
+          plugin if you like and leave them open, minimized, whatever. This helps with eventually having real-time quotes
+          running in the background with no blocking to the main app.
+
+20061120: Applied patch #1600028 - update install notes for Mac symlink db4.
+
+20061120: Added new UTIL functions Higher and Lower. These functions return either the higher or lower value of 2
+          arrays or an array and constant.
+
+20061123: Removed QtstalkerFormat quote plugin. It's redundant now. The chart panel can dump files,
+          CSV can import them and the berkeley db suite has utilities for dumping and rebuilding 
+          files.
+
+20061127: Fixed LOWPASS bug that returned the input instead of the ouput.
+
+20061130: Added Charts or Groups option to the scanner dialog. If charts is chosen, the file selector will
+          allow only chart directories to be navigated. If Groups is chosen, then only group directories
+          can be navigated.
+
+20061201: Fixed bug in backtster that sefaults using < 0.33 CUS syntax.
+
+20061203: Added new indicator plugin ExScript. User can run external scripts that can pass data back to ExScript
+          to plot.
+
+20061204: Fixed bug that did not save/restore chart pixelspaces.
+
+20061205: Added options to send bar data through stdin to the ExScript plugin.
+
+20061205: Applied patch #1609188 - modified util.html. Thanks to Lothar for the patch.
+
+20061205: Added new UTIL function INRANGE. Returns TRUE if value is => min and <= max. Otherwise returns FALSE.
+
+20061206: Changed the minimum bar spacing to 2.
+
+20061207: Changed the info panel window to list date,time,open,high,low,close,volume,oi first.
+
+20061207: Added edit chart option to the chart context menu.
+
+20061207: Keyboard delete key now deletes charts from the chart/group panels.
+
+20061207: Added function 'Add To Group' to the chart panel context menu. Allows the user to add the selected
+          chart to the group chosen. Saves a few steps by not going through the group panel menus.
+
+20061208: Added 3 new buttons on the chart toolbar that act as default bar spacing settings. The user can set the defaults
+          in the preferences dialog.
+
+20061208: Restored the last close arrow on the scale charts.
+
+20061208: Added a timeout function to ExScript so it doesn't wait in loop forever with no input.
+
+20061208: Fixed bug in CUS formulas if Label field in plot settings left blank, line would not plot.
+
+20061208: Fixed bug in TALIB plugin that did not set the correct MA for CUS scripts that used the STOCH function.
+
+20061208: Added RSI and STOCH to the misc/CUS_examples section. Examples on how to code zone lines in indicators.
+
+20061209: Added new CUS feature. INCLUDECUS(xxx). This allows the user to include other CUS rules. This is helpful when
+          making changes to one indicator, changes will be propagated to all scripts that use the included indicator.
+          Not thoroughly tested yet. Careful how you combine different indicators. Any duplicate variable names will
+          abort the calculation. Mixing indicators that have different scaling properties will result in awful looking charts.
+
+20061210: Added new function Indicator Summary groups that display the latest indicator values for a selected group. The function
+          assumes to use the currently loaded indicators to use. Function found on the tools menu. Function will (hopefully) be
+          refined with more options in the future.
+
+20061211: Added DonchianChannels to the misc/CUS_examples section.
+
+20061212: When editing CUS rules, the 'Open Rule' function inserts text instead of relacing text.
+
+20061213: Applied patch #1615024 - workwithscanner.html update. Thanks to loh_tar for the patch
+
+20061213: Applied patch #1614530 - IndicatorSummary xml export. Thanks to David for the patch.
+
+20061214: Changed UTIL(INRANGE) function to accept either arrays or constants for min and max fields
+
+20061214: Fixed bug in CUS options Include Rule and Open Rule that did not accept selections when the
+          open button was used to close the dialog instead of double clicking on the selection.
+
+20061214: Fixed splits to adjust volume.
+
+20061214: Fixed default chart object font changes that do not propagate.
+
+20061214: Applied patch #1616118 - Add to Group Icon - thanks to loh_tar for the patch.
+
+20061214: Applied patch #1615526 - update FAQ: Mac OS X works fine. Thanks to David for the patch.
+
+20061214: Applied patch #1615490 - add INCLUDECUS to examples and docs. Thanks to David for the patch.
+
+20061221: Converted the DB functions to a new format that centralizes the chart metadata into a main index.
+          Also changed the chart format to a fixed record size to achieve a 60% speed increase for loading
+          and inserting data. Added a conversion dialog that will appear when the new code is started.
+          Conversion will take under 10 minutes for 7000 charts.
+
+20061221: Applied patch #1620276 - modified docs, pref,tool,main,wrkcharts/groups - thanks to loh_tar for the patch.
+
+20061221: Applied patch #1619809 - modified talib.html - thanks to loh_tar for the patch.
+
+20061221: Applied patch #1619250 - VOL: typo for PVT method - thanks to David for the patch.
+
+20061221: Applied patch #1619222 - ExScript: add newline after each bar in STDIN - thanks to David for the patch.
+
+20061221: Applied patch #1616417 - again modified util.html - thanks to loh_tar for the patch.
+
+20061226: Added Point and Figure charts to the BARS indicator. The 'Default' method box sizing is a simple formula:
+          2% of the mid point of bars displayed. Set method to 'Custom' to set the box size and reversal parms for
+          each individual chart.
+
+20061226: CUS_examples indicators are now installed by default on fresh installs.
+
+20061226: Removed the 0.31 conversion functions. Everyone should have upgraded by now. If not...too bad.
+
+20061226: Removed the 12.5k shorthand from chart scaling. I would rather see 12500.
+
+20061226: Just a note that with the new metadata indexing, you will not be able to create multiple charts with the same
+          symbol name. Even when located in a differnent directory. We have one symbol universe now.
+
+20070101: Merged all indicator plugins into qtstalkerlib. Indicator plugins are now deprecated.
+
+20070101: Merged TALIB into qtstalkerlib. The only change the user will notice is all indicators are available when creating
+          a new indicator.
+
+20070101: Applied patch #1625373 - install.html - thanks to loh_tar for the patch.
+
+20070101: Applied patch #1625321 - cus.html - thanks to loh_tar for the patch.
+
+20070101: Chart now refreshes to last bar after a bar spacing default button is pressed.
+
+20070103: Added version parm to the CUS indicator.
+
+20070104: Applied patch #1626699 - yahoo.html - thanks to loh_tar for the patch.
+
+20070104: Applied patch #1626685 - toc.html - thanks to loh_tar for the patch.
+
+20070104: Applied patch #1626678 - Pics needed by cus.html - thanks to loh_tar for the patch.
+
+20070104: Applied patch #1628252 - preferences.html - thanks to loh_tar for the patch.
+
+20070104: Applied patch #1628245 - toolbars.html - thanks to loh_tar for the patch.
+
+20070104: Applied patch #1628231 - indicatorreference.html - thanks to loh_tar for the patch.
+
+20070104: Removed the VOLA module and replaced the CV and VOLR functions with new CUS versions in the
+          CUS_examples section.
+
+20070105: Fixed bug in CUS that included comment lines as variables for input parms.
+
+20070105: Applied patch #1629088 - dev.html - thanks to loh_tar for the patch.
+
+20070105: Applied patch #1629083 - add-nav script - thanks to loh_tar for the patch.
+
+20070105: Applied patch #1629075 - mainchart.html - thanks to loh_tar for the patch.
+
+20070105: Applied patch #1629066 - workwithscanner.html - thanks to loh_tar for the patch.
+
+20070105: Applied patch #1629449 - quotes.html - thanks to loh_tar for the patch.
+
