@@ -179,10 +179,7 @@ void Config::setup ()
     {
       QString str("Indicators");
       setData(IndicatorGroup, str); // set the new default template
-      QString basePath;
-      getData(IndicatorPath, basePath);
-      basePath.append("/Indicators");
-      QString ts = "cp /usr/share/qtstalker/indicator " + basePath;
+      QString ts = "cp -n /usr/share/qtstalker/indicator/* " + s;
       if (system(ts.latin1()))
         qDebug("setDefaultIndicators::copyFiles: error copying indicator files");
     }
@@ -832,6 +829,9 @@ void Config::check034Conversion ()
 {
   QString s;
   getData(Version, s);
+  if (! s.length())
+    return;
+
   if (s.toDouble() >= 0.34)
     return;
 

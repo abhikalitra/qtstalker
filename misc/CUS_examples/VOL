@@ -1,5 +1,5 @@
 maLabel=MAVol
-enable=0
+enable=1
 method=VOL
 plugin=VOL
 volLabel=VOL

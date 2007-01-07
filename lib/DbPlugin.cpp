@@ -688,46 +688,57 @@ bool DbPlugin::createNewCC (DBIndex *i)
   return FALSE;
 }
 
-void DbPlugin::dbPrefDialog ()
+int DbPlugin::dbPrefDialog ()
 {
+  int rc = 0;
+
   switch (type)
   {
     case Futures1:
-      futuresPref();
+      rc = futuresPref();
       break;
     case Index1:
-      indexPref();
+      rc = indexPref();
       break;
     case Spread1:
-      spreadPref();
+      rc = spreadPref();
       break;
     case CC1:
-      ccPref();
+      rc = ccPref();
       break;
     default:
-      stockPref();
+      rc = stockPref();
       break;
   }
+
+  return rc;
 }
 
-void DbPlugin::stockPref ()
+int DbPlugin::stockPref ()
 {
-  StocksDialog *dialog = new StocksDialog(helpFile, this);
+  int rc = 0;
+  StocksDialog *dialog = new StocksDialog(helpFile, this, chartIndex);
   dialog->exec();
+  rc = dialog->getReloadFlag();
   delete dialog;
   chartIndex->flush();
+  return rc;
 }
 
-void DbPlugin::futuresPref ()
+int DbPlugin::futuresPref ()
 {
-  FuturesDialog *dialog = new FuturesDialog(helpFile, this);
+  int rc = 0;
+  FuturesDialog *dialog = new FuturesDialog(helpFile, this, chartIndex);
   dialog->exec();
+  rc = dialog->getReloadFlag();
   delete dialog;
   chartIndex->flush();
+  return rc;
 }
 
-void DbPlugin::indexPref ()
+int DbPlugin::indexPref ()
 {
+  int rc = 0;
   QString nam, il;
   DBIndexItem item;
   chartIndex->getIndexItem(indexKey, item);
@@ -737,20 +748,23 @@ void DbPlugin::indexPref ()
   getData(s, il);
 
   IndexDialog *dialog = new IndexDialog(nam, il);
-  int rc = dialog->exec();
-  if (rc == QDialog::Accepted)
+  int trc = dialog->exec();
+  if (trc == QDialog::Accepted)
   {
     dialog->getName(nam);
     item.setTitle(nam);
     dialog->getList(il);
     setData(s, il);
     chartIndex->setIndexItem(indexKey, item);
+    rc = TRUE;
   }
   delete dialog;
+  return rc;
 }
 
-void DbPlugin::spreadPref ()
+int DbPlugin::spreadPref ()
 {
+  int rc = 0;
   QString pl = QObject::tr("Parms");
   QString fsl = QObject::tr("First Symbol");
   QString ssl = QObject::tr("Second Symbol");
@@ -771,8 +785,8 @@ void DbPlugin::spreadPref ()
   getData(s2, s3);
   dialog->addSymbolItem(ssl, pl, s, s3);
 
-  int rc = dialog->exec();
-  if (rc == QDialog::Accepted)
+  int trc = dialog->exec();
+  if (trc == QDialog::Accepted)
   {
     dialog->getSymbol(fsl, s);
     s2 = "FirstSymbol";
@@ -781,13 +795,16 @@ void DbPlugin::spreadPref ()
     dialog->getSymbol(ssl, s);
     s2 = "SecondSymbol";
     setData(s2, s);
+    rc = TRUE;
   }
 
   delete dialog;
+  return rc;
 }
 
-void DbPlugin::ccPref ()
+int DbPlugin::ccPref ()
 {
+  int rc = 0;
   QString pl = QObject::tr("Parms");
   QString gl = QObject::tr("Gapless");
   PrefDialog *dialog = new PrefDialog(0);
@@ -800,14 +817,16 @@ void DbPlugin::ccPref ()
   getData(s, s2);
   dialog->addCheckItem(gl, pl, s2.toInt());
 
-  int rc = dialog->exec();
-  if (rc == QDialog::Accepted)
+  int trc = dialog->exec();
+  if (trc == QDialog::Accepted)
   {
     s2 = QString::number(dialog->getCheck(gl));
     setData(s, s2);
+    rc = TRUE;
   }
 
   delete dialog;
+  return rc;
 }
 
 void DbPlugin::getIndexHistory (BarData *barData, QDateTime &startDate)

@@ -70,6 +70,7 @@ HEADERS += VIDYA.h
 HEADERS += VOL.h
 HEADERS += qtsFFT.h
 HEADERS += CUSDialog.h
+HEADERS += Preferences.h
 
    
 SOURCES += QuotePlugin.cpp
@@ -137,6 +138,7 @@ SOURCES += VIDYA.cpp
 SOURCES += VOL.cpp
 SOURCES += qtsFFT.cpp
 SOURCES += CUSDialog.cpp
+SOURCES += Preferences.cpp
 
    
 TARGET = qtstalker

@@ -26,7 +26,6 @@
 #include <qlineedit.h>
 #include <qdatetime.h>
 #include "DbPlugin.h"
-#include "Config.h"
 #include "BarEdit.h"
 #include "DBIndex.h"
 
@@ -35,11 +34,12 @@ class FuturesDialog : public QTabDialog
   Q_OBJECT
 
   public:
-    FuturesDialog (QString, DbPlugin *);
+    FuturesDialog (QString, DbPlugin *, DBIndex *);
     ~FuturesDialog ();
     void createDetailsPage ();
     void createDataPage ();
     void updateFields (Bar &);
+    bool getReloadFlag ();
 
   public slots:
     void deleteRecord ();
@@ -54,13 +54,13 @@ class FuturesDialog : public QTabDialog
 
   private:
     DbPlugin *db;
-    Config config;
     QLineEdit *title;
     QString helpFile;
     BarEdit *barEdit;
     QDateTime currentDate;
-    DBIndex index;
+    DBIndex *index;
     QString symbol;
+    bool reloadFlag;
 };
 
 #endif

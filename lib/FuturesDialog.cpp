@@ -28,18 +28,17 @@
 #include <qmessagebox.h>
 #include <qfileinfo.h>
 
-FuturesDialog::FuturesDialog (QString p, DbPlugin *d) : QTabDialog (0, "FuturesDialog", TRUE)
+FuturesDialog::FuturesDialog (QString p, DbPlugin *d, DBIndex *i) : QTabDialog (0, "FuturesDialog", TRUE)
 {
   helpFile = p;
   db = d;
+  index = i;
+  reloadFlag = FALSE;
   currentDate = QDateTime::currentDateTime();
 
   setCaption(tr("Qtstalker: Edit Futures"));
 
   QString s;
-  config.getData(Config::IndexPath, s);
-  index.open(s);
-
   d->getSymbol(s);
   QFileInfo fi(s);
   symbol = fi.fileName();
@@ -56,7 +55,6 @@ FuturesDialog::FuturesDialog (QString p, DbPlugin *d) : QTabDialog (0, "FuturesD
 
 FuturesDialog::~FuturesDialog ()
 {
-  index.close();
 }
 
 void FuturesDialog::createDetailsPage ()
@@ -75,7 +73,7 @@ void FuturesDialog::createDetailsPage ()
 
   QString s;
   DBIndexItem item;
-  index.getIndexItem(symbol, item);
+  index->getIndexItem(symbol, item);
   item.getSymbol(s);
   label = new QLabel(s, w);
   label->setFrameStyle(QFrame::WinPanel | QFrame::Sunken);
@@ -194,6 +192,8 @@ void FuturesDialog::deleteRecord ()
     return;
   bar.getDateTimeString(FALSE, s);
   db->deleteData(s);
+
+  reloadFlag = TRUE;
 }
 
 void FuturesDialog::saveRecord ()
@@ -228,6 +228,8 @@ void FuturesDialog::saveRecord ()
   bar.setOI(s2.toInt());
 
   db->setBar(bar);
+
+  reloadFlag = TRUE;
 }
 
 void FuturesDialog::slotDateSearch (QDateTime dt)
@@ -243,9 +245,9 @@ void FuturesDialog::saveChart ()
 {
   QString s = title->text();
   DBIndexItem item;
-  index.getIndexItem(symbol, item);
+  index->getIndexItem(symbol, item);
   item.setTitle(s);
-  index.setIndexItem(symbol, item);
+  index->setIndexItem(symbol, item);
 
   if (barEdit->getSaveFlag())
   {  
@@ -259,6 +261,8 @@ void FuturesDialog::saveChart ()
     if (rc == QMessageBox::Yes)
       saveRecord();
   }
+
+  reloadFlag = TRUE;
   
   accept();
 }
@@ -338,5 +342,10 @@ void FuturesDialog::updateFields (Bar &record)
   barEdit->setField(s, s2);
 
   barEdit->clearButtons();
+}
+
+bool FuturesDialog::getReloadFlag ()
+{
+  return reloadFlag;
 }
 

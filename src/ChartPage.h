@@ -37,6 +37,7 @@ class ChartPage : public QWidget
   signals:
     void fileSelected (QString);
     void signalAddToGroup (QString);
+    void signalReloadChart ();
 
   public:
   

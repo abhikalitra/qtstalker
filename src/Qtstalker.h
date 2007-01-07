@@ -122,6 +122,8 @@ class QtstalkerApp : public QMainWindow
     void slotDeleteAllCO ();
     void slotDeleteCO (QString);
     void slotSaveCO (Setting);
+    void slotMenubarStatus (bool);
+    void slotAppFont (QFont);
     
   private:
     QToolBar *toolbar;

@@ -1,4 +1,3 @@
-
 /***************************************************************************
                           qtstalker.cpp  -  description
                              -------------------
@@ -38,6 +37,7 @@
 #include "HelpWindow.h"
 #include "DbPlugin.h"
 #include "IndicatorSummary.h"
+#include "Preferences.h"
 
 #include "../pics/qtstalker.xpm"
 
@@ -344,150 +344,15 @@ void QtstalkerApp::slotQuotes ()
 
 void QtstalkerApp::slotOptions ()
 {
-  // display the prefs dialog
-  PrefDialog *dialog = new PrefDialog;
-  dialog->setCaption(tr("Edit Prefs"));
-  QString s("preferences.html");
-  dialog->setHelpFile(s);
-
-  s = tr("General");
-  QString s2(tr("Main Menubar"));
-  dialog->createPage(s);
-  QString ts;
-  config.getData(Config::Menubar, ts);
-  dialog->addCheckItem(s2, s, ts.toInt());
-
-  // ChartToolbar pixelspace buttons
-  s2 = tr("Bar Spacing 1");
-  config.getData(Config::PS1Button, ts);
-  dialog->addIntItem(s2, s, ts.toInt(), 2, 99);
-  
-  s2 = tr("Bar Spacing 2");
-  config.getData(Config::PS2Button, ts);
-  dialog->addIntItem(s2, s, ts.toInt(), 2, 99);
-
-  s2 = tr("Bar Spacing 3");
-  config.getData(Config::PS3Button, ts);
-  dialog->addIntItem(s2, s, ts.toInt(), 2, 99);
-  
-  s = tr("Colors");
-  dialog->createPage(s);
-  s2 = tr("Chart Background");
-  config.getData(Config::BackgroundColor, ts);
-  QColor c(ts);
-  dialog->addColorItem(s2, s, c);
-  s2 = tr("Chart Border");
-  config.getData(Config::BorderColor, ts);
-  c.setNamedColor(ts);
-  dialog->addColorItem(s2, s, c);
-  s2 = tr("Chart Grid");
-  config.getData(Config::GridColor, ts);
-  c.setNamedColor(ts);
-  dialog->addColorItem(s2, s, c);
-
-  s = tr("Fonts");
-  dialog->createPage(s);
-  config.getData(Config::PlotFont, ts);
-  QStringList l = QStringList::split(",", ts, FALSE);
-  if (l.count() == 3)
-  {
-    s2 = tr("Plot Font");
-    QFont f(l[0], l[1].toInt(), l[2].toInt());
-    dialog->addFontItem(s2, s, f);
-  }
-  config.getData(Config::AppFont, ts);
-  l = QStringList::split(",", ts, FALSE);
-  if (l.count() == 3)
-  {
-    s2 = tr("App Font");
-    QFont f(l[0], l[1].toInt(), l[2].toInt());
-    dialog->addFontItem(s2, s, f);
-  }
-  
-  int rc = dialog->exec();
-
-  if (rc == QDialog::Accepted)
-  {
-    // save the main menubar setting
-    s = tr("Main Menubar");
-    bool flag = dialog->getCheck(s);
-    s = QString::number(flag);
-    config.setData(Config::Menubar, s);
-    if (flag)
-      menubar->show();
-    else
-      menubar->hide();
-
-    s = tr("Bar Spacing 1");
-    int i = dialog->getInt(s);
-    s = QString::number(i);
-    config.setData(Config::PS1Button, s);
-  
-    s = tr("Bar Spacing 2");
-    i = dialog->getInt(s);
-    s = QString::number(i);
-    config.setData(Config::PS2Button, s);
-  
-    s = tr("Bar Spacing 3");
-    i = dialog->getInt(s);
-    s = QString::number(i);
-    config.setData(Config::PS3Button, s);
-  
-    s = tr("Chart Background");
-    dialog->getColor(s, c);
-    s = c.name();
-    config.setData(Config::BackgroundColor, s);
-    emit signalBackgroundColor(c);
-
-    s = tr("Chart Border");
-    dialog->getColor(s, c);
-    s = c.name();
-    config.setData(Config::BorderColor, s);
-    emit signalBorderColor(c);
-
-    s = tr("Chart Grid");
-    dialog->getColor(s, c);
-    s = c.name();
-    config.setData(Config::GridColor, s);
-    emit signalGridColor(c);
-
-    // save plot font option
-    s = tr("Plot Font");
-    QFont f;
-    dialog->getFont(s, f);
-    s = f.family();
-    s.append(",");
-    s.append(QString::number(f.pointSize()));
-    s.append(",");
-    s.append(QString::number(f.weight()));
-    config.getData(Config::PlotFont, s2);
-    if (s.compare(s2))
-    {
-      config.setData(Config::PlotFont, s);
-      emit signalPlotFont(f);
-    }
-
-    // save app font option
-    s = tr("App Font");
-    dialog->getFont(s, f);
-    s = f.family();
-    s.append(",");
-    s.append(QString::number(f.pointSize()));
-    s.append(",");
-    s.append(QString::number(f.weight()));
-    config.getData(Config::AppFont, s2);
-    if (s.compare(s2))
-    {
-      config.setData(Config::AppFont, s);
-      qApp->setFont(f, TRUE, 0);
-    }
-    
-    loadChart(chartPath);
-
-    statusbar->message (tr("Preferences saved."));
-  }
-
-  delete dialog;
+  Preferences *dialog = new Preferences(this);
+  connect(dialog, SIGNAL(signalMenubar(bool)), this, SLOT(slotMenubarStatus(bool)));
+  connect(dialog, SIGNAL(signalBackgroundColor(QColor)), this, SIGNAL(signalBackgroundColor(QColor)));
+  connect(dialog, SIGNAL(signalBorderColor(QColor)), this, SIGNAL(signalBorderColor(QColor)));
+  connect(dialog, SIGNAL(signalGridColor(QColor)), this, SIGNAL(signalGridColor(QColor)));
+  connect(dialog, SIGNAL(signalPlotFont(QFont)), this, SIGNAL(signalPlotFont(QFont)));
+  connect(dialog, SIGNAL(signalAppFont(QFont)), this, SLOT(slotAppFont(QFont)));
+  connect(dialog, SIGNAL(signalLoadChart()), this, SLOT(slotChartUpdated()));
+  dialog->show();
 }
 
 void QtstalkerApp::loadChart (QString &d)
@@ -625,31 +490,33 @@ void QtstalkerApp::loadIndicator (Indicator *i)
   QString plugin;
   i->getType(plugin);  
   IndicatorPlugin *plug = config.getIndicatorPlugin(plugin);
-  if (plug)
-  {
-    connect(plug, SIGNAL(signalWakeup()), this, SLOT(slotWakeup()));
-    if (recordList)
-      plug->setIndicatorInput(recordList);
-    QString s;
-    i->getFile(s);
-    plug->loadIndicatorSettings(s);
-    Indicator *ti = 0;
-    if (recordList)
-      ti = plug->calculate();
+  if (! plug)
+    return;
+
+  connect(plug, SIGNAL(signalWakeup()), this, SLOT(slotWakeup()));
+  if (recordList)
+    plug->setIndicatorInput(recordList);
+  QString s;
+  i->getFile(s);
+  plug->loadIndicatorSettings(s);
+  Indicator *ti = 0;
+  if (recordList)
+    ti = plug->calculate();
+  if (ti)
     i->copy(ti);
+  if (ti)
     delete ti;
 
-    QFileInfo fi(s);
-    Plot *plot = plotList[fi.fileName()];
-    if (! plot)
-    {
-      qDebug("QtstalkerApp::loadIndicator:plot %s not found", fi.fileName().latin1());
-      return;
-    }
-    plot->addIndicator(i);
-    if (recordList)
-      plot->setData(recordList);
+  QFileInfo fi(s);
+  Plot *plot = plotList[fi.fileName()];
+  if (! plot)
+  {
+    qDebug("QtstalkerApp::loadIndicator:plot %s not found", fi.fileName().latin1());
+    return;
   }
+  plot->addIndicator(i);
+  if (recordList)
+    plot->setData(recordList);
 }
 
 QString QtstalkerApp::getWindowCaption ()
@@ -957,6 +824,7 @@ void QtstalkerApp::initChartNav ()
 {
   chartNav = new ChartPage(baseWidget, chartIndex);
   connect(chartNav, SIGNAL(fileSelected(QString)), this, SLOT(slotOpenChart(QString)));
+  connect(chartNav, SIGNAL(signalReloadChart()), this, SLOT(slotChartUpdated()));
   navTab->addWidget(chartNav, 0);
 }
 
@@ -1175,6 +1043,20 @@ void QtstalkerApp::slotSaveCO (Setting d)
   d.getData(s, s2);
   chartIndex->setChartObject(chartSymbol, s2, d);
 }
+
+void QtstalkerApp::slotMenubarStatus (bool d)
+{
+  if (d)
+    menubar->show();
+  else
+    menubar->hide();
+}
+
+void QtstalkerApp::slotAppFont (QFont d)
+{
+  qApp->setFont(d, TRUE, 0);
+}
+
 
 //**********************************************************************
 //**********************************************************************

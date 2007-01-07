@@ -27,7 +27,6 @@
 #include <qlistview.h>
 #include <qdatetimeedit.h>
 #include "DbPlugin.h"
-#include "Config.h"
 #include "BarEdit.h"
 #include "DBIndex.h"
 
@@ -36,13 +35,14 @@ class StocksDialog : public QTabDialog
   Q_OBJECT
 
   public:
-    StocksDialog (QString, DbPlugin *);
+    StocksDialog (QString, DbPlugin *, DBIndex *);
     ~StocksDialog ();
     void createDetailsPage ();
     void createDataPage ();
     void createFundamentalsPage ();
     void createSplitPage ();
     void updateFields (Bar &);
+    bool getReloadFlag ();
 
   public slots:
     void deleteRecord ();
@@ -58,7 +58,6 @@ class StocksDialog : public QTabDialog
 
   private:
     DbPlugin *db;
-    Config config;
     QLineEdit *title;
     QLineEdit *splitRatio;
     QString helpFile;
@@ -66,8 +65,9 @@ class StocksDialog : public QTabDialog
     BarEdit *barEdit;
     QDateEdit *splitDate;
     QDateTime currentDate;
-    DBIndex index;
+    DBIndex *index;
     QString symbol;
+    bool reloadFlag;
 };
 
 #endif

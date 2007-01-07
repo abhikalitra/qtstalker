@@ -154,3 +154,18 @@
 
 20070105: Applied patch #1629449 - quotes.html - thanks to loh_tar for the patch.
 
+20070106: Moved preferences dialog into qtstalkerlib. Preferences now update whenever the apply button is
+          pressed. Dialog is now non-modal.
+
+20070107: Fixed copy CUS examples for new installs.
+
+20070107: Fixed 0.33/0.34 dialog reappearing.
+
+20070107: Fixed bug that segfaults if indicator is enabled with no chart loaded.
+
+20070107: Fixed edit chart to update changes when dialog exited.
+
+20070107: Fixed volume adjusted when stock is split.
+
+
+

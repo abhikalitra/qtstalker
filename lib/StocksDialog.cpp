@@ -28,18 +28,17 @@
 #include <qmessagebox.h>
 #include <qfileinfo.h>
 
-StocksDialog::StocksDialog (QString p, DbPlugin *d) : QTabDialog (0, "StocksDialog", TRUE)
+StocksDialog::StocksDialog (QString p, DbPlugin *d, DBIndex *i) : QTabDialog (0, "StocksDialog", TRUE)
 {
   helpFile = p;
   db = d;
+  index = i;
+  reloadFlag = FALSE;
   currentDate = QDateTime::currentDateTime();
 
   setCaption(tr("Qtstalker: Edit Stock"));
 
   QString s;
-  config.getData(Config::IndexPath, s);
-  index.open(s);
-
   d->getSymbol(s);
   QFileInfo fi(s);
   symbol = fi.fileName();
@@ -59,7 +58,6 @@ StocksDialog::StocksDialog (QString p, DbPlugin *d) : QTabDialog (0, "StocksDial
 
 StocksDialog::~StocksDialog ()
 {
-  index.close();
 }
 
 void StocksDialog::createDetailsPage ()
@@ -79,7 +77,7 @@ void StocksDialog::createDetailsPage ()
 
   QString s;
   DBIndexItem item;
-  index.getIndexItem(symbol, item);
+  index->getIndexItem(symbol, item);
   item.getSymbol(s);
   label = new QLabel(s, w);
   label->setFrameStyle(QFrame::WinPanel | QFrame::Sunken);
@@ -180,7 +178,7 @@ void StocksDialog::createFundamentalsPage ()
     
   Setting fund;
   QString s, s2;
-  index.getFundamentals(symbol, s2); 
+  index->getFundamentals(symbol, s2); 
   fund.parse(s2);
   
   s = tr("Fundamentals: last updated ");
@@ -265,6 +263,8 @@ void StocksDialog::deleteRecord ()
     return;
   bar.getDateTimeString(FALSE, s);
   db->deleteData(s);
+
+  reloadFlag = TRUE;
 }
 
 void StocksDialog::saveRecord ()
@@ -294,6 +294,8 @@ void StocksDialog::saveRecord ()
   barEdit->getField(s, s2);
   bar.setVolume(s2.toDouble());
   db->setBar(bar);
+
+  reloadFlag = TRUE;
 }
 
 void StocksDialog::slotDateSearch (QDateTime dt)
@@ -309,9 +311,9 @@ void StocksDialog::saveChart ()
 {
   QString s = title->text();
   DBIndexItem item;
-  index.getIndexItem(symbol, item);
+  index->getIndexItem(symbol, item);
   item.setTitle(s);
-  index.setIndexItem(symbol, item);
+  index->setIndexItem(symbol, item);
 
   if (barEdit->getSaveFlag())
   {  
@@ -325,7 +327,8 @@ void StocksDialog::saveChart ()
     if (rc == QMessageBox::Yes)
       saveRecord();
   }
-  
+
+  reloadFlag = TRUE;
   accept();
 }
 
@@ -386,6 +389,7 @@ void StocksDialog::split ()
   }
 
   double plyer = l[1].toDouble() / l[0].toDouble();
+  double volplyer = l[0].toDouble() / l[1].toDouble();
 
   QString s;
   db->getSymbol(s);
@@ -406,16 +410,16 @@ void StocksDialog::split ()
       bar.setHigh(bar.getHigh() * plyer);
       bar.setLow(bar.getLow() * plyer);
       bar.setClose(bar.getClose() * plyer);
-      bar.setVolume(bar.getVolume() * plyer);
+      bar.setVolume(bar.getVolume() * volplyer);
       db->setBar(bar);
     }
   }
 
   delete bars;
 
-  QMessageBox::information(this,
-                           tr("Qtstalker: Split Complete"),
-                           tr("Split complete. Reload chart to view results"));
+  QMessageBox::information(this, tr("Qtstalker: Split Complete"), tr("Split complete."));
+
+  reloadFlag = TRUE;
 }
 
 void StocksDialog::slotFirstRecord ()
@@ -483,5 +487,10 @@ void StocksDialog::updateFields (Bar &record)
   barEdit->setField(s, s2);
 
   barEdit->clearButtons();
+}
+
+bool StocksDialog::getReloadFlag ()
+{
+  return reloadFlag;
 }
 

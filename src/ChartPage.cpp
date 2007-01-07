@@ -166,8 +166,10 @@ void ChartPage::editChart (QString symbol)
 
   DbPlugin db;
   db.open(symbol, chartIndex);    
-  db.dbPrefDialog();
+  int rc = db.dbPrefDialog();
   db.close();
+  if (rc)
+    emit signalReloadChart();
 }
 
 void ChartPage::exportSymbol ()
