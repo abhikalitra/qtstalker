@@ -63,6 +63,13 @@ bool DbPlugin::open (QString &d, DBIndex *i)
   item.getType(s);
   type = getType(s);
 
+  item.getPath(s);
+  if (! s.length())
+  {
+    item.setPath(d);
+    chartIndex->setIndexItem(indexKey, item);
+  }
+
   return FALSE;
 }
 

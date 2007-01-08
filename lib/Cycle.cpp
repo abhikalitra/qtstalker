@@ -319,3 +319,4 @@ bool Cycle::isGrabSelected (QPoint point)
   
   return FALSE;
 }
+

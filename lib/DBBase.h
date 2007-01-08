@@ -38,6 +38,7 @@ class DBBase
     void close ();
     void getSymbol (QString &);
     void flush ();
+    void getIndexKey (QString &);
 
   protected:
     DB *db;

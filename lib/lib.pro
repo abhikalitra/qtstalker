@@ -71,6 +71,7 @@ HEADERS += VOL.h
 HEADERS += qtsFFT.h
 HEADERS += CUSDialog.h
 HEADERS += Preferences.h
+HEADERS += Exchange.h
 
    
 SOURCES += QuotePlugin.cpp
@@ -139,6 +140,7 @@ SOURCES += VOL.cpp
 SOURCES += qtsFFT.cpp
 SOURCES += CUSDialog.cpp
 SOURCES += Preferences.cpp
+SOURCES += Exchange.cpp
 
    
 TARGET = qtstalker

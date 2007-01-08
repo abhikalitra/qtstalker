@@ -44,6 +44,7 @@ class Text : public COBase
     void setSettings (Setting &);
     void getFont (QFont &);
     void getLabel (QString &);
+    void adjustForSplit (QDateTime &, double);
     
   public slots:
     void prefDialog ();

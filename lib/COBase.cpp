@@ -22,7 +22,15 @@
 #include "COBase.h"
 #include "../pics/delete.xpm"
 #include "../pics/edit.xpm"
-#include "../pics/rename.xpm"
+//#include "../pics/rename.xpm"
+#include "BuyArrow.h"
+#include "Cycle.h"
+#include "FiboLine.h"
+#include "HorizontalLine.h"
+#include "SellArrow.h"
+#include "Text.h"
+#include "TrendLine.h"
+#include "VerticalLine.h"
 #include <qcursor.h>
 
 COBase::COBase ()
@@ -44,7 +52,7 @@ COBase::COBase ()
   typeLabel = "Type";
 
   menu->insertItem(QPixmap(edit), tr("&Edit Object"), this, SLOT(prefDialog()), CTRL+Key_E);
-  menu->insertItem(QPixmap(renam), tr("&Move Object"), this, SLOT(moveObject()), CTRL+Key_M);
+//  menu->insertItem(QPixmap(renam), tr("&Move Object"), this, SLOT(moveObject()), CTRL+Key_M);
   menu->insertItem(QPixmap(deleteitem), tr("&Delete Object"), this, SLOT(removeObject()), CTRL+Key_D);
 }
 
@@ -243,5 +251,61 @@ void COBase::moveObject ()
 void COBase::addObject (Setting &set)
 {
   setSettings(set);
+}
+
+void COBase::adjustForSplit (QDateTime &, double)
+{
+}
+
+COBase * COBase::getCO (Setting &set)
+{
+  QString s;
+  set.getData(typeLabel, s);
+  return getCO(s);
+}
+
+COBase * COBase::getCO (QString &s)
+{
+  COBase *t = 0;
+
+  if (! s.compare("BuyArrow"))
+    t = new BuyArrow();
+  else
+  {
+    if (! s.compare("Cycle"))
+      t = new Cycle();
+    else
+    {
+      if (! s.compare("FiboLine"))
+        t = new FiboLine();
+      else
+      {
+        if (! s.compare("HorizontalLine"))
+          t = new HorizontalLine();
+        else
+        {
+          if (! s.compare("SellArrow"))
+            t = new SellArrow();
+          else
+          {
+            if (! s.compare("Text"))
+              t = new Text();
+            else
+            {
+              if (! s.compare("TrendLine"))
+                t = new TrendLine();
+              else
+              {
+                if (! s.compare("VerticalLine"))
+                  t = new VerticalLine();
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  return t;
 }
 

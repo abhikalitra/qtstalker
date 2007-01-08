@@ -517,4 +517,12 @@ bool TrendLine::getExtend ()
   return extend;
 }
 
+void TrendLine::adjustForSplit (QDateTime &dt, double d)
+{
+  if (date < dt)
+    value = value * d;
+  if (date2 < dt)
+    value2 = value2 * d;
+}
+
 

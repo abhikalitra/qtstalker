@@ -578,3 +578,12 @@ double FiboLine::getLine (int i)
   return v;
 }
 
+void FiboLine::adjustForSplit (QDateTime &dt, double d)
+{
+  if (startDate < dt && endDate < dt)
+  {
+    high = high * d;
+    low = low * d;
+  }
+}
+

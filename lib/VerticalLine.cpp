@@ -255,4 +255,3 @@ void VerticalLine::setSettings (Setting &set)
   set.getData(nameLabel, name);
 }
 
-

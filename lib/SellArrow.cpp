@@ -227,3 +227,9 @@ void SellArrow::setSettings (Setting &set)
   set.getData(nameLabel, name);
 }
 
+void SellArrow::adjustForSplit (QDateTime &dt, double d)
+{
+  if (date < dt)
+    value = value * d;
+}
+

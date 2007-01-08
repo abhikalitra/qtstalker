@@ -22,14 +22,6 @@
 #include "IndicatorPlot.h"
 #include "DbPlugin.h"
 #include "PrefDialog.h"
-#include "BuyArrow.h"
-#include "Cycle.h"
-#include "FiboLine.h"
-#include "HorizontalLine.h"
-#include "SellArrow.h"
-#include "Text.h"
-#include "TrendLine.h"
-#include "VerticalLine.h"
 #include <qpainter.h>
 #include <qpen.h>
 #include <qpoint.h>
@@ -1438,60 +1430,8 @@ void IndicatorPlot::slotNewChartObject (int id)
 
   QString selection = chartObjectMenu->text(id);
 
-  coSelected = 0;
-  while (1)
-  {
-    if (! selection.compare("BuyArrow"))
-    {
-      coSelected = new BuyArrow();
-      break;
-    }
-    
-    if (! selection.compare("Cycle"))
-    {
-      coSelected = new Cycle();
-      break;
-    }
-
-    if (! selection.compare("FiboLine"))
-    {
-      coSelected = new FiboLine();
-      break;
-    }
-
-    if (! selection.compare("HorizontalLine"))
-    {
-      coSelected = new HorizontalLine();
-      break;
-    }
-
-    if (! selection.compare("SellArrow"))
-    {
-      coSelected = new SellArrow();
-      break;
-    }
-    
-    if (! selection.compare("Text"))
-    {
-      coSelected = new Text();
-      break;
-    }
-    
-    if (! selection.compare("VerticalLine"))
-    {
-      coSelected = new VerticalLine();
-      break;
-    }
-    
-    if (! selection.compare("TrendLine"))
-    {
-      coSelected = new TrendLine();
-      break;
-    }
-    
-    break;
-  }
-
+  COBase tco;
+  coSelected = tco.getCO(selection);
   if (! coSelected)
     return;
   
@@ -1531,64 +1471,8 @@ void IndicatorPlot::slotNewChartObject (int id)
 
 void IndicatorPlot::addChartObject (Setting &set)
 {
-  QString s;
-  QString k = "Type";
-  set.getData(k, s);
-
-  COBase *co = 0;
-  while (1)
-  {
-    if (! s.compare("BuyArrow"))
-    {
-      co = new BuyArrow();
-      break;
-    }
-    
-    if (! s.compare("Cycle"))
-    {
-      co = new Cycle();
-      break;
-    }
-    
-    if (! s.compare("FiboLine"))
-    {
-      co = new FiboLine();
-      break;
-    }
-    
-    if (! s.compare("HorizontalLine"))
-    {
-      co = new HorizontalLine();
-      break;
-    }
-    
-    if (! s.compare("SellArrow"))
-    {
-      co = new SellArrow();
-      break;
-    }
-    
-    if (! s.compare("Text"))
-    {
-      co = new Text();
-      break;
-    }
-    
-    if (! s.compare("VerticalLine"))
-    {
-      co = new VerticalLine();
-      break;
-    }
-
-    if (! s.compare("TrendLine"))
-    {
-      co = new TrendLine();
-      break;
-    }
-    
-    break;
-  }
-  
+  COBase tco;
+  COBase *co = tco.getCO(set);
   if (! co)
     return;
 
@@ -1598,7 +1482,8 @@ void IndicatorPlot::addChartObject (Setting &set)
   QObject::connect(co, SIGNAL(message(QString)), this, SLOT(slotMessage(QString)));
   QObject::connect(co, SIGNAL(signalObjectDeleted(QString)), this, SLOT(slotChartObjectDeleted(QString)));
 
-  k = "Name";
+  QString s;
+  QString k = "Name";
   set.getData(k, s);
   coList.replace(s, co);
 

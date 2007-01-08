@@ -29,7 +29,8 @@ typedef struct
   bool barType;
   char symbol[15];
   char type[10];
-  char title[100];
+  char title[90];
+  char exchange[10];
   char path[100];
   char quotePlugin[15];
   char futuresType[5];
@@ -60,6 +61,8 @@ class DBIndexItem
     void getFuturesType (QString &);
     void setFuturesMonth (QString &);
     void getFuturesMonth (QString &);
+    void setExchange (QString &);
+    void getExchange (QString &);
     
   protected:
     DBIndexItemItem item;

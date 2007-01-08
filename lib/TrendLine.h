@@ -52,6 +52,7 @@ class TrendLine : public COBase
     bool getUseBar ();
     void getBar (QString &);
     bool getExtend ();
+    void adjustForSplit (QDateTime &, double);
     
   public slots:
     void prefDialog ();

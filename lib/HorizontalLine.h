@@ -42,6 +42,7 @@ class HorizontalLine : public COBase
     void getSettings (Setting &);
     void setSettings (Setting &);
     void getText (QString &);
+    void adjustForSplit (QDateTime &, double);
     
   public slots:
     void prefDialog ();

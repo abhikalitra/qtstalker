@@ -167,5 +167,12 @@
 
 20070107: Fixed volume adjusted when stock is split.
 
+20070107: Applied patch #1630082 - horizontalline.html - thanks to loh_tar for the patch.
+
+20070107: Fixed chart objects dont adjust along with a stock split. However FiboLine can only be adjusted if both
+          the start and end points fall within the adjusted range.
+          
+20070108: Applied patch #1630165 - chartobjects.html - thanks to loh_tar for the patch.
+
 
 

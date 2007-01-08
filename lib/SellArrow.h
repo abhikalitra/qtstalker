@@ -41,6 +41,7 @@ class SellArrow : public COBase
     void saveDefaults ();
     void getSettings (Setting &);
     void setSettings (Setting &);
+    void adjustForSplit (QDateTime &, double);
     
   public slots:
     void prefDialog ();

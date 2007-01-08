@@ -120,8 +120,8 @@ void DBBase::deleteData (QString &k)
   int ret = db->del(db, NULL, &key, 0);
   if (ret != 0)
   {
-    char *err = db_strerror(ret);
-    qDebug("DBBase::deleteData: %s", err);
+//    char *err = db_strerror(ret);
+//    qDebug("DBBase::deleteData: %s", err);
   }
 }
 
@@ -154,5 +154,10 @@ void DBBase::flush ()
 {
   if (db)
     db->sync(db, 0);
+}
+
+void DBBase::getIndexKey (QString &d)
+{
+  d = indexKey;
 }
 

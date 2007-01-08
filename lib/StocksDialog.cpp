@@ -23,6 +23,7 @@
 #include "Bar.h"
 #include "HelpWindow.h"
 #include "DBIndexItem.h"
+#include "COBase.h"
 #include <qlabel.h>
 #include <qlayout.h>
 #include <qmessagebox.h>
@@ -90,16 +91,24 @@ void StocksDialog::createDetailsPage ()
   title = new QLineEdit(s, w);
   grid->addWidget(title, 1, 1);
   
-  label = new QLabel(tr("Type"), w);
+  label = new QLabel(tr("Exchange"), w);
   grid->addWidget(label, 2, 0);
+
+  item.getExchange(s);  
+  label = new QLabel(s, w);
+  label->setFrameStyle(QFrame::WinPanel | QFrame::Sunken);
+  grid->addWidget(label, 2, 1);
+
+  label = new QLabel(tr("Type"), w);
+  grid->addWidget(label, 3, 0);
 
   item.getType(s);  
   label = new QLabel(s, w);
   label->setFrameStyle(QFrame::WinPanel | QFrame::Sunken);
-  grid->addWidget(label, 2, 1);
+  grid->addWidget(label, 3, 1);
   
   label = new QLabel(tr("First Date"), w);
-  grid->addWidget(label, 3, 0);
+  grid->addWidget(label, 4, 0);
   
   Bar bar;
   db->getFirstBar(bar);
@@ -108,11 +117,11 @@ void StocksDialog::createDetailsPage ()
     bar.getDateTimeString(TRUE, s);
     label = new QLabel(s, w);
     label->setFrameStyle(QFrame::WinPanel | QFrame::Sunken);
-    grid->addWidget(label, 3, 1);
+    grid->addWidget(label, 4, 1);
   }
   
   label = new QLabel(tr("Last Date"), w);
-  grid->addWidget(label, 4, 0);
+  grid->addWidget(label, 5, 0);
   
   Bar bar2;
   db->getLastBar(bar2);
@@ -121,7 +130,7 @@ void StocksDialog::createDetailsPage ()
     bar2.getDateTimeString(TRUE, s);
     label = new QLabel(s, w);
     label->setFrameStyle(QFrame::WinPanel | QFrame::Sunken);
-    grid->addWidget(label, 4, 1);
+    grid->addWidget(label, 5, 1);
   }
   
   grid->expand(grid->numRows() + 1, grid->numCols());
@@ -417,6 +426,30 @@ void StocksDialog::split ()
 
   delete bars;
 
+  // adjust any chart objects
+  QDateTime adt(dt, QTime(0,0,0,0));
+  QString fn;
+  db->getIndexKey(fn);
+  index->getChartObjects(fn, l);
+  for (loop = 0; loop < (int) l.count(); loop++)
+  {
+    Setting set;
+    set.parse(l[loop]);
+    COBase tco;
+    COBase *co = tco.getCO(set);
+    if (! co)
+      continue;
+
+    co->adjustForSplit(adt, plyer);
+
+    set.clear();
+    co->getSettings(set);
+    s = "Name";
+    QString s2;
+    set.getData(s, s2);
+    index->setChartObject(fn, s2, set);
+  }
+  
   QMessageBox::information(this, tr("Qtstalker: Split Complete"), tr("Split complete."));
 
   reloadFlag = TRUE;

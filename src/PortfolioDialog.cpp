@@ -115,7 +115,6 @@ PortfolioDialog::~PortfolioDialog ()
 void PortfolioDialog::updatePortfolio ()
 {
   plist->clear();
-  files.clear();
 
   QString s;
   config.getData(Config::PortfolioPath, s);
@@ -133,11 +132,13 @@ void PortfolioDialog::updatePortfolio ()
     {
       QStringList l = QStringList::split(",", s, FALSE);
 
-      QFileInfo fi(l[0]);
-      QString ts = fi.fileName();
-      files.setData(ts, l[0]);
-
-      item = new QListViewItem(plist, fi.fileName(), l[1], l[2], l[3]);
+      s = l[0];
+      if (s.contains("/"))
+      {
+        QFileInfo fi(s);
+        s = fi.fileName();
+      }
+      item = new QListViewItem(plist, s, l[1], l[2], l[3]);
     }
   }
 
@@ -156,27 +157,24 @@ void PortfolioDialog::updatePortfolioItems ()
   {
     item = it.current();
 
-    QString symbol, ts;
-    ts = item->text(0);
-    files.getData(ts, symbol);
+    QString symbol = item->text(0);
     QString action = item->text(1);
     QString volume = item->text(2);
     QString price = item->text(3);
 
-    QString s = symbol;
+    DBIndexItem hitem;
+    index->getIndexItem(symbol, hitem);
+    QString s;
+    hitem.getPath(s);
     QDir dir(s);
     if (! dir.exists(s, TRUE))
       continue;
 
     DbPlugin plug;
-    plug.open(s, index);
+    if (plug.open(s, index))
+      continue;
 
-    QFileInfo fi(s);
-    QString fn = fi.fileName();
-    
     QString type;
-    DBIndexItem hitem;
-    index->getIndexItem(fn, hitem);
     hitem.getType(type);
     
     QString futuresType;
@@ -244,14 +242,7 @@ void PortfolioDialog::savePortfolio ()
   for (; it.current(); ++it)
   {
     item = it.current();
-    QString ts = item->text(0);
-    files.getData(ts, s);
-    s.append(",");
-    s.append(item->text(1));
-    s.append(",");
-    s.append(item->text(2));
-    s.append(",");
-    s.append(item->text(3));
+    s = item->text(0) + "," + item->text(1) + "," + item->text(2) + "," + item->text(3);
     stream << s << "\n";
   }
 
@@ -301,11 +292,7 @@ void PortfolioDialog::addItem ()
       dialog->getCombo(al, action);
       double vol = dialog->getDouble(vl);
       double price = dialog->getDouble(prl);
-
       QFileInfo fi(symbol);
-      QString ts = fi.fileName();
-      files.setData(ts, symbol);
-
       new QListViewItem(plist, fi.fileName(), action, QString::number(vol), QString::number(price));
 
       updatePortfolioItems();
@@ -326,11 +313,6 @@ void PortfolioDialog::deleteItem ()
     {
       if (it.current()->text(0) == item->text(0))
         count++;
-    }
-    if (count == 1)
-    {
-      QString ts = item->text(0);
-      files.remove(ts);
     }
     delete item;
   }
@@ -361,12 +343,12 @@ void PortfolioDialog::modifyItem ()
   config.getData(Config::DataPath, dpath);
 
   QString ts = item->text(0);
+  DBIndexItem iitem;
+  index->getIndexItem(ts, iitem);
   QString ts2, s;
-  files.getData(ts, ts2);
-  QFileInfo fi(ts2);
-  files.getData(ts, s);
+  iitem.getPath(ts2);
 
-  dialog->addSymbolItem(sl, pl, dpath, s);
+  dialog->addSymbolItem(sl, pl, dpath, ts2);
 
   QStringList l;
   l.append(tr("Long"));
@@ -382,9 +364,6 @@ void PortfolioDialog::modifyItem ()
 
   if (rc == QDialog::Accepted)
   {
-    QString ts = fi.fileName();
-    files.remove(ts);
-
     QString symbol;
     dialog->getSymbol(sl, symbol);
     if (symbol.isNull())
@@ -396,11 +375,8 @@ void PortfolioDialog::modifyItem ()
       double vol = dialog->getDouble(vl);
       double price = dialog->getDouble(prl);
 
-      QFileInfo fi2(symbol);
-      ts = fi2.fileName();
-      files.setData(ts, symbol);
-  
-      item->setText(0, fi2.fileName());
+      QFileInfo fi(symbol);
+      item->setText(0, fi.fileName());
       item->setText(1, action);
       item->setText(2, QString::number(vol));
       item->setText(3, QString::number(price));

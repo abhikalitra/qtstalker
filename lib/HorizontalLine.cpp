@@ -266,3 +266,8 @@ void HorizontalLine::getText (QString &d)
   d = text;
 }
 
+void HorizontalLine::adjustForSplit (QDateTime &, double d)
+{
+  value = value * d;
+}
+

@@ -49,6 +49,7 @@ class FiboLine : public COBase
     void setSettings (Setting &);
     int isGrabSelected (QPoint point);
     double getLine (int);
+    void adjustForSplit (QDateTime &, double);
     
   public slots:
     void prefDialog ();

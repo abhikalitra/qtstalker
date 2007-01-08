@@ -86,33 +86,41 @@ void FuturesDialog::createDetailsPage ()
   title = new QLineEdit(s, w);
   grid->addWidget(title, 1, 1);
   
-  label = new QLabel(tr("Type"), w);
+  label = new QLabel(tr("Exchange"), w);
   grid->addWidget(label, 2, 0);
 
-  item.getType(s);  
+  item.getExchange(s);  
   label = new QLabel(s, w);
   label->setFrameStyle(QFrame::WinPanel | QFrame::Sunken);
   grid->addWidget(label, 2, 1);
   
-  label = new QLabel(tr("Futures Type"), w);
+  label = new QLabel(tr("Type"), w);
   grid->addWidget(label, 3, 0);
+
+  item.getType(s);  
+  label = new QLabel(s, w);
+  label->setFrameStyle(QFrame::WinPanel | QFrame::Sunken);
+  grid->addWidget(label, 3, 1);
+  
+  label = new QLabel(tr("Futures Type"), w);
+  grid->addWidget(label, 4, 0);
   
   QString s2;
   item.getFuturesType(s2);
   label = new QLabel(s2, w);
   label->setFrameStyle(QFrame::WinPanel | QFrame::Sunken);
-  grid->addWidget(label, 3, 1);
+  grid->addWidget(label, 4, 1);
 
   label = new QLabel(tr("Futures Month"), w);
-  grid->addWidget(label, 4, 0);
+  grid->addWidget(label, 5, 0);
 
   item.getFuturesMonth(s2);  
   label = new QLabel(s2, w);
   label->setFrameStyle(QFrame::WinPanel | QFrame::Sunken);
-  grid->addWidget(label, 4, 1);
+  grid->addWidget(label, 5, 1);
   
   label = new QLabel(tr("First Date"), w);
-  grid->addWidget(label, 5, 0);
+  grid->addWidget(label, 6, 0);
   
   Bar bar;
   db->getFirstBar(bar);
@@ -121,11 +129,11 @@ void FuturesDialog::createDetailsPage ()
     bar.getDateTimeString(TRUE, s);
     label = new QLabel(s, w);
     label->setFrameStyle(QFrame::WinPanel | QFrame::Sunken);
-    grid->addWidget(label, 5, 1);
+    grid->addWidget(label, 6, 1);
   }
   
   label = new QLabel(tr("Last Date"), w);
-  grid->addWidget(label, 6, 0);
+  grid->addWidget(label, 7, 0);
   
 
   Bar bar2;
@@ -135,7 +143,7 @@ void FuturesDialog::createDetailsPage ()
     bar2.getDateTimeString(TRUE, s);
     label = new QLabel(s, w);
     label->setFrameStyle(QFrame::WinPanel | QFrame::Sunken);
-    grid->addWidget(label, 6, 1);
+    grid->addWidget(label, 7, 1);
   }
   
   grid->setColStretch(1, 1);

@@ -56,7 +56,7 @@ class COBase : public QObject
       Selected,
       Moving
     };
-  
+
     COBase ();
     virtual ~COBase ();
     virtual void draw (QPixmap &, Scaler &, int, int, int);
@@ -66,6 +66,7 @@ class COBase : public QObject
     virtual double getLow ();
     virtual void getSettings (Setting &);
     virtual void setSettings (Setting &);
+    virtual void adjustForSplit (QDateTime &, double);
     
     void setData (BarData *);
     QString getHelpFile ();
@@ -86,6 +87,8 @@ class COBase : public QObject
     COBase::Status getStatus ();
     bool isSelected (QPoint point);
     bool isGrabSelected (QPoint point);
+    COBase * getCO (Setting &);
+    COBase * getCO (QString &);
 
   public slots:    
     virtual void prefDialog ();

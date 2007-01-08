@@ -286,3 +286,9 @@ void Text::getLabel (QString &d)
   d = label;
 }
 
+void Text::adjustForSplit (QDateTime &dt, double d)
+{
+  if (date < dt)
+    value = value * d;
+}
+

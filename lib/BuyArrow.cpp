@@ -233,4 +233,10 @@ void BuyArrow::setSettings (Setting &set)
   set.getData(nameLabel, name);
 }
 
+void BuyArrow::adjustForSplit (QDateTime &dt, double d)
+{
+  if (date < dt)  
+    value = value * d;
+}
+
 

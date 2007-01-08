@@ -24,11 +24,12 @@
 
 #define SYMBOL_LENGTH 15
 #define TYPE_LENGTH 10
-#define TITLE_LENGTH 100
+#define TITLE_LENGTH 90
 #define PATH_LENGTH 100
 #define QUOTEPLUGIN_LENGTH 15
 #define FUTURESTYPE_LENGTH 5
 #define FUTURESMONTH_LENGTH 2
+#define EXCHANGE_LENGTH 10
 
 
 DBIndexItem::DBIndexItem ()
@@ -128,5 +129,15 @@ void DBIndexItem::setFuturesMonth (QString &d)
 void DBIndexItem::getFuturesMonth (QString &d)
 {
   d = item.futuresMonth;
+}
+
+void DBIndexItem::setExchange (QString &d)
+{
+  strncpy(item.exchange, d, EXCHANGE_LENGTH);
+}
+
+void DBIndexItem::getExchange (QString &d)
+{
+  d = item.exchange;
 }
 
