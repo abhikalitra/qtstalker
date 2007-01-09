@@ -23,6 +23,7 @@
 #include "Setting.h"
 #include "Bar.h"
 #include "DBIndexItem.h"
+#include "Exchange.h"
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qtimer.h>
@@ -337,9 +338,6 @@ void NYBOT::parse ()
       return;
     }
 	
-//    s = tr("Updating ") + symbol;
-//    printStatusLogMessage(s);
-
     s = path + "/" + symbol;
     if (plug.open(s, chartIndex))
     {
@@ -348,36 +346,26 @@ void NYBOT::parse ()
       return;
     }
 
-    // verify if this chart can be updated by this plugin
     DBIndexItem item;
     chartIndex->getIndexItem(symbol, item);
-    item.getQuotePlugin(s);
-    if (! s.length())
-    {
-      item.setQuotePlugin(pluginName);
-      chartIndex->setIndexItem(symbol, item);
-    }
-//    else
-//    {
-//      if (s.compare(pluginName))
-//      {
-//        s = symbol + " - skipping update. Source does not match destination.";
-//        printStatusLogMessage(s);
-//        plug.close();
-//        return;
-//      }
-//    }
-
     item.getSymbol(s);
     if (! s.length())
     {
       if (plug.createNewFutures())
         return;
+
+      chartIndex->getIndexItem(symbol, item);
+
+      s = QString::number(Exchange::NYBOT);
+      item.setExchange(s);
+
+      item.setQuotePlugin(pluginName);
+
+      chartIndex->setIndexItem(symbol, item);
     }
 
     plug.setBar(bar);
 		 
-    //  emit dataLogMessage(symbol);
     plug.close();
 
     emit signalWakeup();

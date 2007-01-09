@@ -22,6 +22,7 @@
 #include "Yahoo.h"
 #include "Bar.h"
 #include "DBIndexItem.h"
+#include "Exchange.h"
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qdir.h>
@@ -317,24 +318,6 @@ void Yahoo::parseHistory ()
   // verify if this chart can be updated by this plugin
   DBIndexItem item;
   chartIndex->getIndexItem(fn, item);
-  item.getQuotePlugin(s);
-  if (! s.length())
-  {
-    item.setQuotePlugin(pluginName);
-    chartIndex->setIndexItem(fn, item);
-  }
-  else
-  {
-    if (s.compare(pluginName))
-    {
-      s = ts2 + " - " + tr("skipping update. Source does not match destination");
-      printStatusLogMessage(s);
-      f.close();
-      plug.close();
-      return;
-    }
-  }
-
   item.getSymbol(s);  
   if (! s.length())
   {
@@ -344,9 +327,24 @@ void Yahoo::parseHistory ()
       plug.close();
       return;
     }
+
+    chartIndex->getIndexItem(fn, item);
+
     item.setSymbol(ts2);
     item.setTitle(ts2);
+    item.setQuotePlugin(pluginName);
+
     chartIndex->setIndexItem(fn, item);
+  }
+
+  item.getQuotePlugin(s);
+  if (s.compare(pluginName))
+  {
+    s = ts2 + " - " + tr("skipping update. Source does not match destination");
+    printStatusLogMessage(s);
+    f.close();
+    plug.close();
+    return;
   }
 
   while(stream.atEnd() == 0)
@@ -474,24 +472,6 @@ void Yahoo::parseQuote ()
   // verify if this chart can be updated by this plugin
   DBIndexItem item;
   chartIndex->getIndexItem(fn, item);
-  item.getQuotePlugin(s);
-  if (! s.length())
-  {
-    item.setQuotePlugin(pluginName);
-    chartIndex->setIndexItem(fn, item);
-  }
-  else
-  {
-    if (s.compare(pluginName))
-    {
-      s = ts2 + " - " + tr("skipping update. Source does not match destination");
-      printStatusLogMessage(s);
-      f.close();
-      plug.close();
-      return;
-    }
-  }
-
   item.getSymbol(s);    
   if (! s.length())
   {
@@ -501,9 +481,24 @@ void Yahoo::parseQuote ()
       plug.close();
       return;
     }
+
+    chartIndex->getIndexItem(fn, item);
+
     item.setSymbol(ts2);
     item.setTitle(ts2);
+    item.setQuotePlugin(pluginName);
+
     chartIndex->setIndexItem(fn, item);
+  }
+
+  item.getQuotePlugin(s);
+  if (s.compare(pluginName))
+  {
+    s = ts2 + " - " + tr("skipping update. Source does not match destination");
+    printStatusLogMessage(s);
+    f.close();
+    plug.close();
+    return;
   }
 
   while(stream.atEnd() == 0)
@@ -811,23 +806,6 @@ void Yahoo::parseFundamental ()
   // verify if this chart can be updated by this plugin
   DBIndexItem item;
   chartIndex->getIndexItem(fn, item);
-  item.getQuotePlugin(s);
-  if (! s.length())
-  {
-    item.setQuotePlugin(pluginName);
-    chartIndex->setIndexItem(fn, item);
-  }
-  else
-  {
-    if (s.compare(pluginName))
-    {
-      s = ts2 + " - " + tr("skipping update. Source does not match destination");
-      printStatusLogMessage(s);
-      plug.close();
-      return;
-    }
-  }
-
   item.getSymbol(s);  
   if (! s.length())
   {
@@ -836,8 +814,11 @@ void Yahoo::parseFundamental ()
       plug.close();
       return;
     }
+
+    chartIndex->getIndexItem(fn, item);
+
+    item.setQuotePlugin(pluginName);
     item.setSymbol(ts2);
-    
     QString title = ts2;
     int p = data.find("yfnc_leftnav1", 0, TRUE);
     if (p != -1)
@@ -855,8 +836,8 @@ void Yahoo::parseFundamental ()
 	}
       }
     }
-
     item.setTitle(title);
+
     chartIndex->setIndexItem(fn, item);
   }
   else
@@ -887,6 +868,15 @@ void Yahoo::parseFundamental ()
     }
   }
   
+  item.getQuotePlugin(s);
+  if (s.compare(pluginName))
+  {
+    s = ts2 + " - " + tr("skipping update. Source does not match destination");
+    printStatusLogMessage(s);
+    plug.close();
+    return;
+  }
+
   // include date of this update
   QDate dt = QDate::currentDate();
   ts = "updateDate";
@@ -1152,10 +1142,12 @@ void Yahoo::newStock ()
   int loop;
   for (loop = 0; loop < (int) l.count(); loop++)
   {
+    QString exchange;
     QString s = dataPath + "/";
     QFileInfo fi(l[loop]);
     if (fi.extension(FALSE).length())
     {
+      exchange = fi.extension(FALSE).upper();
       s.append(fi.extension(FALSE).upper());
       if (! dir.exists(s, TRUE))
       {
@@ -1191,6 +1183,15 @@ void Yahoo::newStock ()
     }
           
     plug.createNewStock();
+
+    QFileInfo fi2(s);
+    QString fn = fi2.fileName();
+    DBIndexItem item;
+    chartIndex->getIndexItem(fn, item);
+    getExchange(exchange, s);
+    item.setExchange(s);
+    chartIndex->setIndexItem(fn, item);
+
     plug.close();
   }
 }
@@ -1272,6 +1273,266 @@ void Yahoo::allSymbolsChecked (bool d)
       QFileInfo fi(fileList[loop]);
       symbolList.append(fi.fileName());
     }
+  }
+}
+
+void Yahoo::getExchange (QString &ext, QString &exchange)
+{
+  while (1)
+  {
+    if (! ext.compare("BA"))
+    {
+      exchange = QString::number(Exchange::BASE);
+      break;
+    }
+
+    if (! ext.compare("VA"))
+    {
+      exchange = QString::number(Exchange::VASE);
+      break;
+    }
+
+    if (! ext.compare("AX"))
+    {
+      exchange = QString::number(Exchange::AXSE);
+      break;
+    }
+
+    if (! ext.compare("SA"))
+    {
+      exchange = QString::number(Exchange::SASE);
+      break;
+    }
+
+    if (! ext.compare("TO"))
+    {
+      exchange = QString::number(Exchange::TOSE);
+      break;
+    }
+
+    if (! ext.compare("V"))
+    {
+      exchange = QString::number(Exchange::TSXVE);
+      break;
+    }
+
+    if (! ext.compare("SS"))
+    {
+      exchange = QString::number(Exchange::SSSE);
+      break;
+    }
+
+    if (! ext.compare("SZ"))
+    {
+      exchange = QString::number(Exchange::SZSE);
+      break;
+    }
+
+    if (! ext.compare("CO"))
+    {
+      exchange = QString::number(Exchange::COSE);
+      break;
+    }
+
+    if (! ext.compare("PA"))
+    {
+      exchange = QString::number(Exchange::PASE);
+      break;
+    }
+
+    if (! ext.compare("BE"))
+    {
+      exchange = QString::number(Exchange::BESE);
+      break;
+    }
+
+    if (! ext.compare("BM"))
+    {
+      exchange = QString::number(Exchange::BMSE);
+      break;
+    }
+
+    if (! ext.compare("DU"))
+    {
+      exchange = QString::number(Exchange::DUSE);
+      break;
+    }
+
+    if (! ext.compare("F"))
+    {
+      exchange = QString::number(Exchange::FSE);
+      break;
+    }
+
+    if (! ext.compare("HM"))
+    {
+      exchange = QString::number(Exchange::HMSE);
+      break;
+    }
+
+    if (! ext.compare("HA"))
+    {
+      exchange = QString::number(Exchange::HASE);
+      break;
+    }
+
+    if (! ext.compare("MU"))
+    {
+      exchange = QString::number(Exchange::MUSE);
+      break;
+    }
+
+    if (! ext.compare("SG"))
+    {
+      exchange = QString::number(Exchange::SGSE);
+      break;
+    }
+
+    if (! ext.compare("DE"))
+    {
+      exchange = QString::number(Exchange::XETRA);
+      break;
+    }
+
+    if (! ext.compare("HK"))
+    {
+      exchange = QString::number(Exchange::HKSE);
+      break;
+    }
+
+    if (! ext.compare("BO"))
+    {
+      exchange = QString::number(Exchange::BOSE);
+      break;
+    }
+
+    if (! ext.compare("NS"))
+    {
+      exchange = QString::number(Exchange::NSEOI);
+      break;
+    }
+
+    if (! ext.compare("JK"))
+    {
+      exchange = QString::number(Exchange::JKSE);
+      break;
+    }
+
+    if (! ext.compare("TA"))
+    {
+      exchange = QString::number(Exchange::TASE);
+      break;
+    }
+
+    if (! ext.compare("MI"))
+    {
+      exchange = QString::number(Exchange::MISE);
+      break;
+    }
+
+    if (! ext.compare("KS"))
+    {
+      exchange = QString::number(Exchange::KSSE);
+      break;
+    }
+
+    if (! ext.compare("KQ"))
+    {
+      exchange = QString::number(Exchange::KOSDAQ);
+      break;
+    }
+
+    if (! ext.compare("MX"))
+    {
+      exchange = QString::number(Exchange::MXSE);
+      break;
+    }
+
+    if (! ext.compare("AS"))
+    {
+      exchange = QString::number(Exchange::ASSE);
+      break;
+    }
+
+    if (! ext.compare("NZ"))
+    {
+      exchange = QString::number(Exchange::NZSE);
+      break;
+    }
+
+    if (! ext.compare("OL"))
+    {
+      exchange = QString::number(Exchange::OLSE);
+      break;
+    }
+
+    if (! ext.compare("SI"))
+    {
+      exchange = QString::number(Exchange::SISE);
+      break;
+    }
+
+    if (! ext.compare("BC"))
+    {
+      exchange = QString::number(Exchange::BCSE);
+      break;
+    }
+
+    if (! ext.compare("BI"))
+    {
+      exchange = QString::number(Exchange::BISE);
+      break;
+    }
+
+    if (! ext.compare("MF"))
+    {
+      exchange = QString::number(Exchange::MFIM);
+      break;
+    }
+
+    if (! ext.compare("MC"))
+    {
+      exchange = QString::number(Exchange::MCCATS);
+      break;
+    }
+
+    if (! ext.compare("MA"))
+    {
+      exchange = QString::number(Exchange::MASE);
+      break;
+    }
+
+    if (! ext.compare("ST"))
+    {
+      exchange = QString::number(Exchange::STSE);
+      break;
+    }
+
+    if (! ext.compare("SW"))
+    {
+      exchange = QString::number(Exchange::SWE);
+      break;
+    }
+
+    if (! ext.compare("TWO"))
+    {
+      exchange = QString::number(Exchange::TWOOTC);
+      break;
+    }
+
+    if (! ext.compare("TW"))
+    {
+      exchange = QString::number(Exchange::TWSE);
+      break;
+    }
+
+    if (! ext.compare("L"))
+    {
+      exchange = QString::number(Exchange::LSE);
+      break;
+    }
+
+    break;
   }
 }
 

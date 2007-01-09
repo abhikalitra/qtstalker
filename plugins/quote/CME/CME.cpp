@@ -22,6 +22,7 @@
 #include "CME.h"
 #include "Bar.h"
 #include "DBIndexItem.h"
+#include "Exchange.h"
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qnetwork.h>
@@ -996,27 +997,16 @@ void CME::parse (Setting &data)
   {
     if (plug.createNewFutures())
       return;
-  }
 
-  // verify if this chart can be updated by this plugin
-  item.getQuotePlugin(s);
-  if (! s.length())
-  {
+    chartIndex->getIndexItem(fn, item);
+
+    s = QString::number(Exchange::CME);
+    item.setExchange(s);
+
     item.setQuotePlugin(pluginName);
+
     chartIndex->setIndexItem(fn, item);
   }
-//  else
-//  {
-//    if (s.compare(pluginName))
-//    {
-//      ts = "Symbol";
-//      data.getData(ts, ts2);
-//      s = ts2 + tr(" - skipping update. Source does not match destination.");
-//      emit statusLogMessage(s);
-//      plug.close();
-//      return;
-//    }
-//  }
 
   plug.setBar(bar);
 	     

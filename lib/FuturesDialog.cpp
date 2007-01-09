@@ -23,6 +23,7 @@
 #include "Bar.h"
 #include "HelpWindow.h"
 #include "DBIndexItem.h"
+#include "Exchange.h"
 #include <qlabel.h>
 #include <qlayout.h>
 #include <qmessagebox.h>
@@ -89,7 +90,9 @@ void FuturesDialog::createDetailsPage ()
   label = new QLabel(tr("Exchange"), w);
   grid->addWidget(label, 2, 0);
 
-  item.getExchange(s);  
+  item.getExchange(s);
+  Exchange ex;
+  ex.getExchange(s.toInt(), s);
   label = new QLabel(s, w);
   label->setFrameStyle(QFrame::WinPanel | QFrame::Sunken);
   grid->addWidget(label, 2, 1);

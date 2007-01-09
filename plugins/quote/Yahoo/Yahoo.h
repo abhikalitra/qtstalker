@@ -55,6 +55,7 @@ class Yahoo : public QuotePlugin
     void createFundamentalUrls (QString &);
     void buildGui ();
     void setMethod (QString);
+    void getExchange (QString &, QString &);
       
   public slots:
     void startDownload ();
