@@ -337,15 +337,15 @@ void Yahoo::parseHistory ()
     chartIndex->setIndexItem(fn, item);
   }
 
-  item.getQuotePlugin(s);
-  if (s.compare(pluginName))
-  {
-    s = ts2 + " - " + tr("skipping update. Source does not match destination");
-    printStatusLogMessage(s);
-    f.close();
-    plug.close();
-    return;
-  }
+//  item.getQuotePlugin(s);
+//  if (s.compare(pluginName))
+//  {
+//    s = ts2 + " - " + tr("skipping update. Source does not match destination");
+//    printStatusLogMessage(s);
+//    f.close();
+//    plug.close();
+//    return;
+//  }
 
   while(stream.atEnd() == 0)
   {
@@ -491,15 +491,15 @@ void Yahoo::parseQuote ()
     chartIndex->setIndexItem(fn, item);
   }
 
-  item.getQuotePlugin(s);
-  if (s.compare(pluginName))
-  {
-    s = ts2 + " - " + tr("skipping update. Source does not match destination");
-    printStatusLogMessage(s);
-    f.close();
-    plug.close();
-    return;
-  }
+//  item.getQuotePlugin(s);
+//  if (s.compare(pluginName))
+//  {
+//    s = ts2 + " - " + tr("skipping update. Source does not match destination");
+//    printStatusLogMessage(s);
+//    f.close();
+//    plug.close();
+//    return;
+//  }
 
   while(stream.atEnd() == 0)
   {
@@ -868,14 +868,14 @@ void Yahoo::parseFundamental ()
     }
   }
   
-  item.getQuotePlugin(s);
-  if (s.compare(pluginName))
-  {
-    s = ts2 + " - " + tr("skipping update. Source does not match destination");
-    printStatusLogMessage(s);
-    plug.close();
-    return;
-  }
+//  item.getQuotePlugin(s);
+//  if (s.compare(pluginName))
+//  {
+//    s = ts2 + " - " + tr("skipping update. Source does not match destination");
+//    printStatusLogMessage(s);
+//    plug.close();
+//    return;
+//  }
 
   // include date of this update
   QDate dt = QDate::currentDate();
@@ -1010,15 +1010,15 @@ void Yahoo::createAutoHistoryUrls (QString &path, QString &d)
     item.setQuotePlugin(pluginName);
     chartIndex->setIndexItem(fn, item);
   }
-  else
-  {
-    if (s.compare(pluginName))
-    {
-      qDebug("Yahoo::createAutoHistoryUrls:source not same as destination");
-      plug.close();
-      return;
-    }
-  }
+//  else
+//  {
+//    if (s.compare(pluginName))
+//    {
+//      qDebug("Yahoo::createAutoHistoryUrls:source not same as destination");
+//      plug.close();
+//      return;
+//    }
+//  }
 
   QDate edt = QDate::currentDate();        
   if (edt.dayOfWeek() == 6)
