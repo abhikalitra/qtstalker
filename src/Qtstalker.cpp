@@ -691,6 +691,7 @@ void QtstalkerApp::slotPixelspaceChanged (int d)
 {
   emit signalPixelspace(d);
   emit signalIndex(toolbar2->getSlider());
+  setSliderStart();
   slotDrawPlots();
 }
 

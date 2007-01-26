@@ -25,9 +25,9 @@
 #include "Traverse.h"
 #include "../pics/help.xpm"
 #include "../pics/delete.xpm"
+#include "../pics/delgroup.xpm"
 #include "../pics/newchart.xpm"
 #include "../pics/insert.xpm"
-#include "../pics/stop.xpm"
 #include "../pics/rename.xpm"
 #include <qmessagebox.h>
 #include <qlineedit.h>
@@ -66,7 +66,7 @@ GroupPage::GroupPage (QWidget *w) : QWidget (w)
   menu->insertItem(QPixmap(newchart), tr("&New Group		Ctrl+N"), this, SLOT(newGroup()));
   menu->insertItem(QPixmap(insert), tr("&Add Group Items	Ctrl+A"), this, SLOT(addGroupItem()));
   menu->insertItem(QPixmap(deleteitem), tr("&Delete Group Items	Ctrl+D"), this, SLOT(deleteGroupItem()));
-  menu->insertItem(QPixmap(stop), tr("De&lete Group	Ctrl+L"), this, SLOT(deleteGroup()));
+  menu->insertItem(QPixmap(delgroup), tr("De&lete Group	Ctrl+L"), this, SLOT(deleteGroup()));
   menu->insertItem(QPixmap(renam), tr("&Rename Group	Ctrl+R"), this, SLOT(renameGroup()));
   menu->insertSeparator(-1);
   menu->insertItem(QPixmap(help), tr("&Help		Ctrl+H"), this, SLOT(slotHelp()));

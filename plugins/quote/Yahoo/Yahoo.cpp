@@ -58,6 +58,19 @@ Yahoo::Yahoo ()
   
   connect(this, SIGNAL(signalGetFileDone(bool)), this, SLOT(fileDone(bool)));
   connect(this, SIGNAL(signalTimeout()), this, SLOT(timeoutError()));
+
+  monthList.append("Jan");
+  monthList.append("Feb");
+  monthList.append("Mar");
+  monthList.append("Apr");
+  monthList.append("May");
+  monthList.append("Jun");
+  monthList.append("Jul");
+  monthList.append("Aug");
+  monthList.append("Sep");
+  monthList.append("Oct");
+  monthList.append("Nov");
+  monthList.append("Dec");
   
   resize(400, 450);
 }
@@ -579,89 +592,35 @@ QString Yahoo::parseDate (QString &d)
   if (l.count() != 3)
     return s;
 
+  bool ok;
+  int t = l[1].toInt(&ok);
+  if (ok)
+  {
+    // new date format YYYY-MM-DD
+    s = l[0] + l[1] + l[2];
+    s.append("000000");
+    return s;
+  }
+
+  // old date format
+
+  // get year
   s = l[2];
   if (s.toInt() > 29)
     s.prepend("19");
   else
     s.prepend("20");
-    
-  while (1)
-  {
-    if (! l[1].compare("Jan"))
-    {
-      s.append("01");
-      break;
-    }
 
-    if (! l[1].compare("Feb"))
-    {
-      s.append("02");
-      break;
-    }
-
-    if (! l[1].compare("Mar"))
-    {
-      s.append("03");
-      break;
-    }
-
-    if (! l[1].compare("Apr"))
-    {
-      s.append("04");
-      break;
-    }
-
-    if (! l[1].compare("May"))
-    {
-      s.append("05");
-      break;
-    }
-
-    if (! l[1].compare("Jun"))
-    {
-      s.append("06");
-      break;
-    }
-
-    if (! l[1].compare("Jul"))
-    {
-      s.append("07");
-      break;
-    }
-
-    if (! l[1].compare("Aug"))
-    {
-      s.append("08");
-      break;
-    }
-
-    if (! l[1].compare("Sep"))
-    {
-      s.append("09");
-      break;
-    }
-
-    if (! l[1].compare("Oct"))
-    {
-      s.append("10");
-      break;
-    }
-
-    if (! l[1].compare("Nov"))
-    {
-      s.append("11");
-      break;
-    }
-
-    if (! l[1].compare("Dec"))
-    {
-      s.append("12");
-      break;
-    }
-
+  // get month
+  t = monthList.findIndex(l[1]);
+  if (t == -1)
     return s;
-  }
+  if (t < 9)
+    s.append("0" + QString::number(t + 1));
+  else
+    s.append(QString::number(t + 1));
 
+  // get day
   if (l[0].toInt() < 10)
     s.append("0");
   s.append(l[0]);

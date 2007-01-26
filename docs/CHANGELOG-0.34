@@ -178,5 +178,12 @@
 
 20070111: Fixed bug #1633007 - Yahoo Quotes, Error after add new Stock.
 
+20070125: Yahoo has changed the historical date format to YYYY-MM-DD and now mixes the old and new randomly it appears.
+          Yahoo plugin now handles both formats.
+
+20070125: Applied patch #1640810 - Chart fixed at the right hand side - thanks to loh_tar for the patch
+
+20070125: Applied patch #1637852 - new icon offer for "delete group" - thanks to loh_tar for the patch
+
 
 

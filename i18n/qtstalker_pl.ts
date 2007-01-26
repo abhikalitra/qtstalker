@@ -124,10 +124,6 @@ Save changes?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&amp;Move Object</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>&amp;Delete Object</source>
         <translation type="unfinished"></translation>
     </message>
@@ -524,7 +520,7 @@ Save changes?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Script timeout. Canel process?</source>
+        <source>Script timeout. Cancel process?</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -808,6 +804,10 @@ Save changes?</source>
     <message>
         <source>Record has been modified.
 Save changes?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Exchange</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1579,6 +1579,69 @@ Save changes?</source>
     </message>
 </context>
 <context>
+    <name>Preferences</name>
+    <message>
+        <source>Edit Prefs</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Apply</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Cancel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Main Menubar</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Bar Spacing 1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Bar Spacing 2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Bar Spacing 3</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>General</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Chart Background</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Chart Border</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Chart Grid</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Colors</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plot Font</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>App Font</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Fonts</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>QObject</name>
     <message>
         <source>Open</source>
@@ -2273,42 +2336,6 @@ Save changes?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Seasonal</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Directional Move</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Avg Move</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Seasonal Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Max Years</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Seasonal Line Type</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Seasonal Label</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Direction</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Seasonal Indicator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Sine Color</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2326,10 +2353,6 @@ Save changes?</source>
     </message>
     <message>
         <source>SINWAV Indicator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>SYMBOL Indicator</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2362,10 +2385,6 @@ Save changes?</source>
     </message>
     <message>
         <source>input</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>TALIB Indicator Selection</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2449,14 +2468,6 @@ Save changes?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>VOLA Indicator Selection</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>VOLA Indicator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Indicator Selection</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2490,58 +2501,6 @@ Save changes?</source>
     </message>
     <message>
         <source>PP Format</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Seasonal Plot</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Direction Up Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Direction Down Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Direction Line Type</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Direction Label</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Direction Plot</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Close Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Close Line Type</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Close Label</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Close Plot</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Zone</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Zone Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Zone Plot</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2745,127 +2704,171 @@ Save changes?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Upper Deviation</source>
+        <source>Buenos Aires Stock Exchange</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Lower Deviation</source>
+        <source>Vienna Stock Exchange</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>MA_Type</source>
+        <source>Australian Stock Exchange</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Fast Limit</source>
+        <source>Sao Paolo Stock Exchange</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Slow Limit</source>
+        <source>Toronto Stock Exchange</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Acceleration</source>
+        <source>TSX Venture Exchange</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Start Value</source>
+        <source>Shanghai Stock Exchange</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Offset On Reversal</source>
+        <source>Shenzhen Stock Exchange</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Long Start</source>
+        <source>Copenhagen Stock Exchange</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Acceleration Long</source>
+        <source>Paris Stock Exchange</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Acceleration Long Max</source>
+        <source>Berlin Stock Exchange</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Short Start</source>
+        <source>Bremen Stock Exchange</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Acceleration Short</source>
+        <source>Dusseldorf Stock Exchange</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Acceleration Short Max</source>
+        <source>Frankfurt Stock Exchange</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Volume Factor</source>
+        <source>Hamburg Stock Exchange</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Fast Period</source>
+        <source>Hanover Stock Exchange</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Slow Period</source>
+        <source>Munich Stock Exchange</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Signal Period</source>
+        <source>Stuttgart Stock Exchange</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Fast MA</source>
+        <source>XETRA Stock Exchange</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Slow MA</source>
+        <source>Hong Kong Stock Exchange</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Signal MA</source>
+        <source>Bombay Stock Exchange</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>FastK Period</source>
+        <source>National Stock Exchange of India</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>SlowK Period</source>
+        <source>Jakarta Stock Exchange</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>SlowK MA</source>
+        <source>Tel Aviv Stock Exchange</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>SlowD Period</source>
+        <source>Milan Stock Exchange</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>SlowD MA</source>
+        <source>Korea Stock Exchange</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>FastD Period</source>
+        <source>KOSDAQ</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>FastD MA</source>
+        <source>Mexico Stock Exchange</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Medium Period</source>
+        <source>Amsterdam Stock Exchange</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Deviations</source>
+        <source>New Zealand Stock Exchange</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Input2</source>
+        <source>Oslo Stock Exchange</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Singapore Stock Exchange</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Barcelona Stock Exchange</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Bilbao Stock Exchange</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Madrid Fixed Income Market</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Madrid SE C.A.T.S.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Madrid Stock Exchange</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Stockholm Stock Exchange</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Swiss Exchange</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Taiwan OTC Exchange</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Taiwan Stock Exchange</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>London Stock Exchange</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2877,50 +2880,6 @@ Save changes?</source>
     </message>
     <message>
         <source>About Qtstalker</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Edit Prefs</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>General</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Main Menubar</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Colors</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Chart Background</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Chart Border</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Chart Grid</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Fonts</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot Font</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>App Font</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Preferences saved.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2951,18 +2910,6 @@ Save changes?</source>
         <source>Qtstalker
 Ver CVS 0.34 (working title)
 (C) 2001-2006 by Stefan Stratigakos</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Bar Spacing 1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Bar Spacing 2</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Bar Spacing 3</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3330,11 +3277,15 @@ eg. 2:1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Split complete. Reload chart to view results</source>
+        <source>Fundamentals</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Fundamentals</source>
+        <source>Exchange</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Split complete.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3962,10 +3913,6 @@ eg. 2:1</source>
     </message>
     <message>
         <source>Timeout: retry</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>skipping update. Source does not match destination</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
