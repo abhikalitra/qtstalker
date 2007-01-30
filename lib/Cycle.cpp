@@ -126,7 +126,7 @@ void Cycle::prefDialog ()
   dialog->setCaption(tr("Edit Cycle"));
   dialog->createPage (pl);
   dialog->setHelpFile (helpFile);
-  dialog->addColorItem(cl, pl, color);
+  dialog->addColorPrefItem(cl, pl, color);
   dialog->addIntItem(il, pl, interval, 1, 9999);
   dialog->addCheckItem(sd, pl, FALSE);
   

@@ -530,6 +530,34 @@ void Config::setData (QString &p, QString &d)
   settings.writeEntry("/Qtstalker/" + p, d);
 }
 
+void Config::loadSplitterSize (Parm p, QSplitter *sp)
+{
+  QString s;
+  getData(p, s);
+  
+  QStringList stringList = QStringList::split(",", s, FALSE);
+  QValueList<int> sizeList = sp->sizes();
+  
+  int loop;
+  for (loop = 0; loop < (int) stringList.count(); loop++)
+    sizeList[loop] = stringList[loop].toInt();
+  
+  sp->setSizes(sizeList);
+}
+
+void Config::saveSplitterSize (Parm p, QSplitter *sp)
+{
+  QStringList stringList;
+  QValueList<int> sizeList = sp->sizes();
+  
+  int loop;
+  for (loop = 0; loop < (int) sizeList.count(); loop++)
+    stringList.append(QString::number(sizeList[loop]));
+  
+  QString s(stringList.join(","));
+  setData(p,s);
+}
+
 void Config::getIndicators (QString &d, QStringList &l)
 {
   QString s;

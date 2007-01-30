@@ -34,7 +34,10 @@
 #include <qmessagebox.h>
 #include <qinputdialog.h>
 #include <qdir.h>
-
+		
+// only for fabs()
+#include <math.h>
+		
 #include "../pics/indicator.xpm"
 #include "../pics/edit.xpm"
 #include "../pics/delete.xpm"
@@ -76,8 +79,9 @@ IndicatorPlot::IndicatorPlot (QWidget *w) : QWidget(w)
 
   plotFont.setFamily("Helvetica");
   plotFont.setPointSize(12);
-  plotFont.setWeight(50);
-
+  plotFont.setWeight(50);  
+  plotFontMetrics = new QFontMetrics(plotFont);
+  
   indy = 0;
   data = 0;
 
@@ -187,6 +191,7 @@ void IndicatorPlot::draw ()
     drawLines();
     drawObjects();
     drawCrossHair();
+//    drawInfo();
   }
 
   paintEvent(0);
@@ -469,6 +474,8 @@ void IndicatorPlot::setGridColor (QColor &d)
 void IndicatorPlot::setPlotFont (QFont &d)
 {
   plotFont = d;
+  delete plotFontMetrics;
+  plotFontMetrics = new QFontMetrics(plotFont);
 }
 
 void IndicatorPlot::setGridFlag (bool d)
@@ -562,13 +569,16 @@ void IndicatorPlot::drawYGrid ()
 }
 
 void IndicatorPlot::drawInfo ()
+// plot the indicator values at the top of the screen
 {
   QPainter painter;
   painter.begin(&buffer);
   painter.setPen(borderColor);
   painter.setFont(plotFont);
-
-  QFontMetrics fm = painter.fontMetrics();
+  painter.setBackgroundMode(OpaqueMode);
+  painter.setBackgroundColor(backgroundColor);
+  
+  //QFontMetrics fm = painter.fontMetrics();
   int pos = startX;
 
   QString s;
@@ -577,7 +587,7 @@ void IndicatorPlot::drawInfo ()
   bar.getDateString(TRUE, s);
   s.append(" ");
   painter.drawText(pos, 10, s, -1);
-  pos = pos + fm.width(s);
+  pos = pos + plotFontMetrics->width(s);
 
   if (indy && indy->getEnable())
   {
@@ -616,7 +626,7 @@ void IndicatorPlot::drawInfo ()
                 painter.setPen(QColor("blue"));
             }
             painter.drawText(pos, 10, s, -1);
-            pos = pos + fm.width(s);
+            pos = pos + plotFontMetrics->width(s);
   
             painter.setPen(borderColor);
     
@@ -634,10 +644,17 @@ void IndicatorPlot::drawInfo ()
             s.append(str);
             s.append(" ");
             painter.drawText(pos, 10, s, -1);
-            pos = pos + fm.width(s);
+            pos = pos + plotFontMetrics->width(s);
           }
         }
-        else
+	
+	else if (line->getType() == PlotLine::Horizontal)
+	{
+	  //dont print value of horizontal at the top 
+	  //because its already displayed in the chart
+	  continue;
+	}
+	else
         {
           line->getLabel(s);
           s.append("=");
@@ -650,7 +667,7 @@ void IndicatorPlot::drawInfo ()
           line->getColor(c);
           painter.setPen(c);
           painter.drawText(pos, 10, s, -1);
-          pos = pos + fm.width(s);
+          pos = pos + plotFontMetrics->width(s);
         }
       }
     }
@@ -815,7 +832,18 @@ int IndicatorPlot::getXFromDate (QDateTime &d)
 
 void IndicatorPlot::strip (double d, int p, QString &s)
 {
-  s = QString::number(d, 'f', p);
+  if (fabs(d) < 1)
+    s = QString::number(d, 'f', p);
+  else
+  {
+    if (fabs(d) > 1000)
+      s = QString::number(d, 'f', 0);
+    else
+      s = QString::number(d, 'f', 2);
+  }
+
+/*
+s = QString::number(d, 'f', p);
 
   while (1)
   {
@@ -832,6 +860,7 @@ void IndicatorPlot::strip (double d, int p, QString &s)
         break;
     }
   }
+*/
 }
 
 void IndicatorPlot::printChart ()
@@ -1106,10 +1135,18 @@ void IndicatorPlot::drawHorizontalLine ()
 
   painter.drawLine (0, y, buffer.width(), y);
 
-  QString s;
+  QString s, s2;
   strip(currentLine->getData(currentLine->getSize() - 1), 4, s);
-  painter.drawText(startX, y - 1, s);
-
+  currentLine->getLabel(s2);
+  s = s2 + "=" + s;
+  
+  painter.setBackgroundMode(OpaqueMode);
+  painter.setBackgroundColor(backgroundColor);
+  painter.setFont(plotFont);
+  
+  QRect rc = painter.boundingRect(startX, y - (plotFontMetrics->height()/2) , 1, 1, AlignAuto, s, -1, 0);
+  painter.drawText(rc, AlignAuto, s);
+  painter.drawRect(rc);
   painter.end();
 }
 
@@ -1368,7 +1405,7 @@ void IndicatorPlot::drawPF ()
   painter.begin(&buffer);
 
   painter.setFont(plotFont);
-  QFontMetrics fm(plotFont);
+  //QFontMetrics fm(plotFont);
 
   double box = 0;
   double h = 0;

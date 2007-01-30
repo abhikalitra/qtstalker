@@ -185,5 +185,15 @@
 
 20070125: Applied patch #1637852 - new icon offer for "delete group" - thanks to loh_tar for the patch
 
+20070130: Applied patch #1647204 - fix back psButton - thanks to loh_tar for the patch
+
+20070130: Applied patch #1645115 - some IndicatorPlot Modifications - thanks to loh_tar for the patch.
+
+20070130: Applied patch #1646038 - restore NavAreaSize - thanks to loh_tar for the patch.
+
+20070130: Applied patch #1646591 - add preference color buttons to COs - thanks to loh_tar for the patch.
+
+20070130: Applied patch #1646862 - rest COs Edit Dialogs - thanks to loh_tar for the patch.
+
 
 

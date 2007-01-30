@@ -157,6 +157,7 @@ class IndicatorPlot : public QWidget
 
   private:
     QFont plotFont;
+    QFontMetrics *plotFontMetrics;
     PlotLine *currentLine;
     QPixmap buffer;
     Config config;

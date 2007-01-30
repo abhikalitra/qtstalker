@@ -110,13 +110,8 @@ QtstalkerApp::QtstalkerApp()
   }
 
   // set the nav splitter size
-  QString s2;
-  config.getData(Config::NavAreaSize, s);
-  QValueList<int> sizeList;
-  sizeList.append(s.toInt());
-  config.getData(Config::Width, s2);
-  sizeList.append(s2.toInt() - s.toInt());
-  navSplitter->setSizes(sizeList);
+  // restore the nav splitter size
+  config.loadSplitterSize(Config::NavAreaSize, navSplitter);
   
   // place navigator on left/right side
   if (navTab->getPosition() == 0)
@@ -149,27 +144,17 @@ QtstalkerApp::QtstalkerApp()
   else
     qApp->setFont(QFont(), TRUE, 0);
   
-  // set the indicator splitter sizes
-  sizeList = split->sizes();
-  config.getData(Config::PlotSizes, s);
-  QStringList l2 = QStringList::split(",", s, FALSE);
-  for (loop = 0; loop < (int) l2.count(); loop++)
-    sizeList[loop] = l2[loop].toInt();
-  split->setSizes(sizeList);
-  
-  // set the data panel splitter size
-  sizeList = dpSplitter->sizes();
-  config.getData(Config::DataPanelSize, s);
-  l = QStringList::split(",", s, FALSE);
-  for (loop = 0; loop < (int) l.count(); loop++)
-    sizeList[loop] = l[loop].toInt();
-  dpSplitter->setSizes(sizeList);
-
+  // restore the indicator splitter sizes
+  config.loadSplitterSize(Config::PlotSizes, split);
+   
+  // restore the data panel splitter size
+  config.loadSplitterSize(Config::DataPanelSize,dpSplitter);
   
   // set the nav status
   slotHideNav(TRUE);
 
   // restore the size of the app
+  QString s2;
   config.getData(Config::Width, s);
   config.getData(Config::Height, s2);
   resize(s.toInt(), s2.toInt());
@@ -245,24 +230,12 @@ void QtstalkerApp::slotQuit()
   for(; it.current(); ++it)
     it.current()->clear();
 
-  // save plot sizes
-  QValueList<int> list = split->sizes();
-  int loop;
-  QStringList l;
-  for (loop = 0; loop < (int) list.count(); loop++)
-    l.append(QString::number(list[loop]));
-  QString s(l.join(","));
-  config.setData(Config::PlotSizes, s);
-  
-  // save data panel size
-  list = dpSplitter->sizes();
-  l.clear();
-  for (loop = 0; loop < (int) list.count(); loop++)
-    l.append(QString::number(list[loop]));
-  s = l.join(",");
-  config.setData(Config::DataPanelSize, s);
-  
-  s = QString::number(this->height());
+  // save window sizes 
+  config.saveSplitterSize(Config::PlotSizes, split);
+  config.saveSplitterSize(Config::DataPanelSize, dpSplitter);
+  config.saveSplitterSize(Config::NavAreaSize, navSplitter);
+   
+  QString s = QString::number(this->height());
   config.setData(Config::Height, s);
   s = QString::number(this->width());
   config.setData(Config::Width, s);

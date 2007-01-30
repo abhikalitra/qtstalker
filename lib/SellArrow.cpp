@@ -92,7 +92,7 @@ void SellArrow::prefDialog ()
   dialog->setCaption(tr("Edit SellArrow"));
   dialog->createPage (pl);
   dialog->setHelpFile (helpFile);
-  dialog->addColorItem(cl, pl, color);
+  dialog->addColorPrefItem(cl, pl, color);
   dialog->addDoubleItem(vl, pl, getValue());
   dialog->addCheckItem(sd, pl, FALSE);
   

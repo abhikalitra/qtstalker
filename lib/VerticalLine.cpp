@@ -119,7 +119,7 @@ void VerticalLine::prefDialog ()
   dialog->setCaption(tr("Edit VerticalLine"));
   dialog->createPage (pl);
   dialog->setHelpFile (helpFile);
-  dialog->addColorItem(cl, pl, color);
+  dialog->addColorPrefItem(cl, pl, color);
   dialog->addCheckItem(sd, pl, FALSE);
   
   int rc = dialog->exec();

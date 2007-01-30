@@ -56,6 +56,7 @@ class PrefDialog : public QTabDialog
     void deletePage (QString &);
     void setHelpFile (QString &);
     void addColorItem (QString &, QString &, QColor &);
+    void addColorPrefItem (QString &, QString &, QColor &);
     void getColor (QString &, QColor &);
     void addDoubleItem (QString &, QString &, double, double, double);
     void addDoubleItem (QString &, QString &, double);

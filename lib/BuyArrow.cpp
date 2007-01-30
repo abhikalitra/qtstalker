@@ -97,7 +97,7 @@ void BuyArrow::prefDialog ()
   dialog->setCaption(tr("Edit BuyArrow"));
   dialog->createPage (pl);
   dialog->setHelpFile (helpFile);
-  dialog->addColorItem(cl, pl, color);
+  dialog->addColorPrefItem(cl, pl, color);
   dialog->addDoubleItem(vl, pl, value);
   dialog->addCheckItem(sd, pl, FALSE);
   

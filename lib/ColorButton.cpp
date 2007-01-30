@@ -30,6 +30,7 @@ ColorButton::ColorButton (QWidget *w, QColor &c) : QPushButton (w)
   setToggleButton(FALSE);
   pix.resize(50, 10);
   setToggleType(SingleShot);
+  readonly = FALSE;
 }
 
 ColorButton::~ColorButton ()
@@ -49,19 +50,29 @@ void ColorButton::getColor (QColor &c)
 
 void ColorButton::colorDialog ()
 {
-  QColor c = QColorDialog::getColor(color, this, 0);
-  if (c.isValid())
+  if (readonly)
   {
-    color = c;
-    setColorButton();
+    emit robPressed(color);
+  }
+  else
+  {
+    QColor c = QColorDialog::getColor(color, this, 0);
+    if (c.isValid())
+    {
+      color = c;
+      setColorButton();
+    }
   }
 }
 
-void ColorButton::setColor (QColor &c)
+void ColorButton::setColor (QColor c)
 {
   color = c;
   pix.fill(color);
   setPixmap(pix);
 }
 
-
+void ColorButton::setDialogOff ()
+{
+  readonly = TRUE;
+}

@@ -299,7 +299,7 @@ void ChartToolbar::ps1ButtonClicked ()
 //  setPixelspace(minPixelspace, s.toInt());
 //  emit signalBarLengthChanged(compressionCombo->currentItem());
   pixelspace->setValue(s.toInt());
-  emit signalBarsChanged(0);
+  //emit signalBarsChanged(0);
 //  emit signalPaperTradeNextBar();
 }
 
@@ -311,7 +311,7 @@ void ChartToolbar::ps2ButtonClicked ()
 //  setPixelspace(minPixelspace, s.toInt());
 //  emit signalBarLengthChanged(compressionCombo->currentItem());
   pixelspace->setValue(s.toInt());
-  emit signalBarsChanged(0);
+  //emit signalBarsChanged(0);
 //  emit signalPaperTradeNextBar();
 }
 
@@ -323,7 +323,7 @@ void ChartToolbar::ps3ButtonClicked ()
 //  setPixelspace(minPixelspace, s.toInt());
 //  emit signalBarLengthChanged(compressionCombo->currentItem());
   pixelspace->setValue(s.toInt());
-  emit signalBarsChanged(0);
+  //emit signalBarsChanged(0);
 //  emit signalPaperTradeNextBar();
 }
 

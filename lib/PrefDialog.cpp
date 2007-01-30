@@ -126,6 +126,55 @@ void PrefDialog::addColorItem (QString &name, QString &page, QColor &color)
   colorButtonList.replace(name, button);
 }
 
+void PrefDialog::addColorPrefItem (QString &name, QString &page, QColor &color)
+{
+  QWidget *w = widgetList[page];
+  ColorButton *mainButton = new ColorButton(w, color);
+  
+  // add the preset preferred buttons
+  // for now a fixed quantity of 5 pieces with fixed colors
+  // may/will later expand with the possibility to make user defineable too
+  QString prefButtonName = "PrefColor";
+  ColorButton *prefButton;
+  QColor prefColor[5]; 
+  prefColor[0].setNamedColor("white");
+  prefColor[1].setNamedColor("red");
+  prefColor[2].setNamedColor("green");
+  prefColor[3].setRgb(85,170,255); // something like blue
+  prefColor[4].setRgb(255,170,0); // orange
+  
+  // create pref-buttons and arange in one row(hbox)
+  QHBoxLayout *hbox = new QHBoxLayout(0,0,0,"hbox");
+  int i;
+  for (i = 0; i < 5; i++)
+  {
+    prefButton = new ColorButton(w, prefColor[i]);
+    prefButton->setDialogOff();
+    prefButton->pix.resize(10, 10);
+    prefButton->setColorButton();
+    connect (prefButton, SIGNAL(robPressed(QColor)), mainButton, SLOT(setColor(QColor)));
+    hbox->addWidget(prefButton);
+    colorButtonList.replace(prefButtonName + QString::number(i, 'f', 0), prefButton);
+  
+  }
+  
+  QVBoxLayout *vbox = new QVBoxLayout(0,0,0,"vbox");
+  vbox->addLayout(hbox);
+  vbox->addWidget(mainButton);
+  
+  QGridLayout *grid = gridList[page];
+  grid->expand(grid->numRows() + 1, grid->numCols());
+  
+  QLabel *label = new QLabel(name, w);
+  grid->addWidget(label, grid->numRows() - 2, 0);
+  
+  grid->addLayout(vbox, grid->numRows() - 2, 1);
+  mainButton->setColorButton();
+  colorButtonList.replace(name, mainButton);
+  
+    
+}
+
 void PrefDialog::getColor (QString &name, QColor &color)
 {
   ColorButton *button = colorButtonList[name];

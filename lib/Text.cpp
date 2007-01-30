@@ -109,7 +109,7 @@ void Text::prefDialog ()
   dialog->setCaption(tr("Edit Text"));
   dialog->createPage (pl);
   dialog->setHelpFile (helpFile);
-  dialog->addColorItem(cl, pl, color);
+  dialog->addColorPrefItem(cl, pl, color);
   dialog->addFontItem(fl, pl, font);
   dialog->addTextItem(ll, pl, label);
   dialog->addDoubleItem(vl, pl, getValue());

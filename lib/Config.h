@@ -27,6 +27,7 @@
 #include <qstringlist.h>
 #include <qlibrary.h>
 #include <qdict.h>
+#include <qsplitter.h>
 #include "IndicatorPlugin.h"
 #include "QuotePlugin.h"
 #include "Setting.h"
@@ -116,6 +117,8 @@ class Config
     void setData (QString &, QString &);
     void getData (Parm, QString &);
     void getData (QString &, QString &);
+    void loadSplitterSize (Parm, QSplitter *);
+    void saveSplitterSize (Parm, QSplitter *);
     void getDirList (QString &, bool, QStringList &);
     void setup ();
 
