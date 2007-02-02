@@ -28,6 +28,8 @@ SellArrow::SellArrow ()
 {
   defaultColor.setNamedColor("red");
   helpFile = "sellarrow.html";
+  identifierLabel = "Identifier";
+  priceLabel = "Price";
   type = "SellArrow";
   
   loadDefaults();
@@ -85,8 +87,10 @@ void SellArrow::prefDialog ()
 {
   QString pl = tr("Details");
   QString cl = tr("Color");
-  QString sd = tr("Set Default");
   QString vl = tr("Value");
+  QString il = tr("Identifier");
+  QString bl = tr("Price");
+  QString sd = tr("Set Default");
 
   PrefDialog *dialog = new PrefDialog();
   dialog->setCaption(tr("Edit SellArrow"));
@@ -94,6 +98,8 @@ void SellArrow::prefDialog ()
   dialog->setHelpFile (helpFile);
   dialog->addColorPrefItem(cl, pl, color);
   dialog->addDoubleItem(vl, pl, getValue());
+  dialog->addTextItem(il, pl, identifier);
+  dialog->addTextItem(bl, pl, price);
   dialog->addCheckItem(sd, pl, FALSE);
   
   int rc = dialog->exec();
@@ -102,6 +108,8 @@ void SellArrow::prefDialog ()
   {
     dialog->getColor(cl, color);
     value = dialog->getDouble(vl);
+    dialog->getText(il, identifier);
+    dialog->getText(bl, price);
     
     setSaveFlag(TRUE);
     
@@ -208,6 +216,8 @@ void SellArrow::getSettings (Setting &set)
   set.setData(valueLabel, s);
   s = color.name();
   set.setData(colorLabel, s);
+  set.setData(identifierLabel, identifier);
+  set.setData(priceLabel, price);
   set.setData(plotLabel, plot);
   set.setData(nameLabel, name);
   set.setData(typeLabel, type);
@@ -224,6 +234,8 @@ void SellArrow::setSettings (Setting &set)
   set.getData(colorLabel, s);
   color.setNamedColor(s);
   set.getData(plotLabel, plot);
+  set.getData(identifierLabel, identifier);
+  set.getData(priceLabel, price);
   set.getData(nameLabel, name);
 }
 

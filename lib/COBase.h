@@ -123,6 +123,10 @@ class COBase : public QObject
     QString plotLabel;
     QString nameLabel;
     QString typeLabel;
+    QString identifier;
+    QString identifierLabel;
+    QString price;
+    QString priceLabel;
 };
 
 #endif

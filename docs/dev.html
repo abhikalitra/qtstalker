@@ -9,13 +9,27 @@
 <h2><u>Using CVS to keep on the bleeding edge</u></h2>
 
 <p>The source code is maintained in Concurrent Version System (CVS) at
-SourceForge. To get your local working copy of the current codebase, go to
-the <a href="http://sourceforge.net/projects/qtstalker/">sourceforge page</a>
-and select the link in the Navigation bar to "CVS". Follow the instructions
-to get your local working copy installed. To build this version just do
-exactly the same as you would to <a href="install.html">build</a> a release
-tarball. Now edit some source code, build, install, see your changes, and
-send the project a Patch to incorporate your wonderful new features. </p>
+SourceForge. To get your local working copy of the current codebase, you can
+go to the <a href="http://sourceforge.net/projects/qtstalker/">sourceforge
+page</a> and select the link in the Navigation bar to "CVS". Follow the
+instructions to get your local working copy installed. </p>
+
+<p>Or simply enter (copy&amp;paste) the following in a terminal that will
+create the folder <em>qtstalker</em> in your actual working directory and
+download the latest version into it.</p>
+
+<p><code>cvs -z3
+-d:pserver:anonymous@qtstalker.cvs.sourceforge.net:/cvsroot/qtstalker
+checkout qtstalker</code></p>
+
+<p>If you get an error like <code>command not found</code> you have to
+install <em>cvs</em>. Ubuntu/Debian users have simply to install the package
+<em>cvs</em></p>
+
+<p>To build this version just do exactly the same as you would to <a
+href="install.html">build</a> a release tarball. Now edit some source code,
+build, install, see your changes, and send the project a Patch to incorporate
+your wonderful new features. </p>
 
 <p>You could keep two versions on your system - a "stable" version and a
 "test" version. Both versions can be from CVS if you like, as long as you
@@ -52,10 +66,29 @@ release version then make a backup copy of the original file and do...</p>
 
 <h2><u>More information about CVS</u></h2>
 
-<p><a href="http://cvsbook.red-bean.com/">CVS Book</a> </p>
-<p><a href="vola.html" target="_self"><img src="back.png" border="0" width="32" height="32" alt="Back"></a>
-<a href="toc.html"><img src="home.png" border="0" width="32" height="32" alt="Home"></a></p>
+<p>...you will find at the <a href="http://cvsbook.red-bean.com/">CVS
+Book</a> and many more links e.g at <a
+href="http://en.wikipedia.org/wiki/Concurrent_Versions_System">wikipedia.org</a></p>
+
+<h2><u>Apply a Patch</u></h2>
+
+<p>If there are new pathes posted in the Tracker section, which are currently not included
+in the cvs tree, you can download them into your source root, normally
+~/qtstalker, and patch you sources by hand. Change into your ~/qtstalker
+source directory and apply the new patch with the command</p>
+
+<p><code>patch -u -p0 -i <em>downloaded-patchfile.diff</em></code></p>
+
+<p>But normally you will update your cvs sources with the already above
+mentioned command</p>
+
+<p><code>cvs -q update -d</code></p>
+
+<p><br>
+</p>
+
+<p><a href="vola.html" target="_self"><img src="back.png" border="0"
+width="32" height="32" alt="Back" /></a> <a href="toc.html"><img
+src="home.png" border="0" width="32" height="32" alt="Home" /></a></p>
 </body>
 </html>
-
- 	  	 

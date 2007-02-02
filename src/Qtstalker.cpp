@@ -108,14 +108,6 @@ QtstalkerApp::QtstalkerApp()
     tabList.append(it);
     it->hide();
   }
-
-  // set the nav splitter size
-  // restore the nav splitter size
-  config.loadSplitterSize(Config::NavAreaSize, navSplitter);
-  
-  // place navigator on left/right side
-  if (navTab->getPosition() == 0)
-    navSplitter->moveToLast(navBase);
     
   // create the side panels
   initChartNav();
@@ -143,11 +135,14 @@ QtstalkerApp::QtstalkerApp()
   }
   else
     qApp->setFont(QFont(), TRUE, 0);
-  
-  // restore the indicator splitter sizes
+
+  // place navigator on the last saved position
+  navTab->loadSettings();
+  navTab->togglePosition(navTab->getPosition());
+ 
+  // restore the splitter sizes
+  config.loadSplitterSize(Config::NavAreaSize, navSplitter);
   config.loadSplitterSize(Config::PlotSizes, split);
-   
-  // restore the data panel splitter size
   config.loadSplitterSize(Config::DataPanelSize,dpSplitter);
   
   // set the nav status
@@ -159,9 +154,6 @@ QtstalkerApp::QtstalkerApp()
   config.getData(Config::Height, s2);
   resize(s.toInt(), s2.toInt());
   
-  // restore the side panel position
-  navTab->togglePosition(navTab->getPosition());
-
   // setup the indicator page  
   ip->updateList();
   
