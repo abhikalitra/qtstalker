@@ -70,7 +70,7 @@ Toolbar::~Toolbar ()
 
 void Toolbar::addButton (QString &name, QPixmap pix, QString &tt)
 {
-  QPushButton *button = new QPushButton(this);
+  QPushButton *button = new QPushButton (this);
   QToolTip::add(button, tt);
   button->setPixmap(pix);
   button->setMaximumWidth(width);

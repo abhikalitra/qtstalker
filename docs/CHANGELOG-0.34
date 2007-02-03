@@ -207,5 +207,6 @@
 
 20070203: Changed all the installation paths from /usr/* to /usr/local/* as it should be. And the distribution maintainers rejoiced...
 
+20070203: Applied patch #1650853 - navi buttons +new class - thanks to loh_tar for the patch
            
 

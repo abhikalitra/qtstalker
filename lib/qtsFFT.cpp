@@ -1,4 +1,3 @@
-
 #include "qtsFFT.h"
 #include	<cassert>
 #include	<math.h>

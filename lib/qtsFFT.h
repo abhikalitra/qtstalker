@@ -1,4 +1,3 @@
-
 #ifndef qtsFFT_H
 #define qtsFFT_H
 

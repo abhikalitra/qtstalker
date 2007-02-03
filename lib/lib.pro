@@ -72,7 +72,7 @@ HEADERS += qtsFFT.h
 HEADERS += CUSDialog.h
 HEADERS += Preferences.h
 HEADERS += Exchange.h
-
+HEADERS += ToolBarBtn.h
    
 SOURCES += QuotePlugin.cpp
 SOURCES += IndicatorPlugin.cpp
@@ -141,7 +141,7 @@ SOURCES += qtsFFT.cpp
 SOURCES += CUSDialog.cpp
 SOURCES += Preferences.cpp
 SOURCES += Exchange.cpp
-
+SOURCES += ToolBarBtn.cpp
    
 TARGET = qtstalker
 VERSION = 0.34.0

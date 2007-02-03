@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  * 
- *  Copyright (C) 2001-2007 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2006 Stefan S. Stratigakos
  * 
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,33 +19,31 @@
  *  USA.
  */
 
-#ifndef TOOLBAR_HPP
-#define TOOLBAR_HPP
 
-#include <qstring.h>
-#include <qlayout.h>
-#include <qpixmap.h>
-#include <qdict.h>
-#include <qframe.h>
-#include <qpushbutton.h>
+// This Class is intended to use at all tool bar buttons
+// So it is more ease to keep a consistent look
+// loh.tar
 
-class Toolbar : public QFrame
+#include "ToolBarBtn.h"
+
+ToolBarBtn::ToolBarBtn (QWidget *parent) : QPushButton (parent)
 {
-  public:
-    Toolbar (QWidget *w, int h, int w, bool);
-    ~Toolbar ();
-    void addButton (QString &name, QPixmap pix, QString &tt);
-    QPushButton * getButton (QString &name);
-    void setButtonStatus (QString &name, bool d);
-    void addSeparator ();
+  // well, only one constant seems to be enough
+  // but how knows what's up in the future
+  const int btnMinWidth = 25;
+  const int btnMaxWidth = 25;
+  const int btnMinHeight = 25;
+  const int btnMaxHeight = 25;
+    
+  setMaximumWidth(btnMaxWidth);
+  setMinimumWidth(btnMinWidth);
+  setMaximumHeight(btnMaxHeight);
+  setMinimumHeight(btnMinHeight);
 
-  private:
-    QPushButton *cancelButton;
-    QDict<QPushButton> list;
-    int height;
-    int width;
-    QGridLayout *grid;
-    bool pflag;
-};
+}
 
-#endif
+ToolBarBtn::~ToolBarBtn ()
+{
+  
+}
+

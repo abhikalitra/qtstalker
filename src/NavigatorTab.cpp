@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  * 
- *  Copyright (C) 2001-2006 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2007 Stefan S. Stratigakos
  * 
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -26,6 +26,7 @@
 #include "PortfolioPage.h"
 #include "TestPage.h"
 #include "GroupPage.h"
+#include "ToolBarBtn.h"
 #include "../pics/indicator.xpm"
 #include "../pics/dirclosed.xpm"
 #include "../pics/plainitem.xpm"
@@ -35,12 +36,13 @@
 #include <qcursor.h>
 #include <qsettings.h>
 #include <qlayout.h>
-#include <qpushbutton.h>
 #include <qtooltip.h>
 #include <qaccel.h>
 
 NavigatorTab::NavigatorTab (QWidget *w, QMainWindow *mw) : QWidget (w)
 {
+  loadSettings();
+    
   QVBoxLayout *vbox = new QVBoxLayout(this);
   vbox->setSpacing(0);
   vbox->setMargin(0);
@@ -54,39 +56,31 @@ NavigatorTab::NavigatorTab (QWidget *w, QMainWindow *mw) : QWidget (w)
   bg->setExclusive(TRUE);
   bg->hide();
   
-  QPushButton *button = new QPushButton(this);
+  ToolBarBtn *button = new ToolBarBtn(this);
   QToolTip::add(button, tr("Workwith Charts"));
   button->setPixmap(plainitem);
-  button->setMaximumWidth(25);
-  button->setMaximumHeight(25);
   button->setToggleButton(TRUE);
   hbox->addWidget(button);
   bg->insert(button, 0);
   bg->setButton(0);
   
-  button = new QPushButton(this);
+  button = new ToolBarBtn(this);
   QToolTip::add(button, tr("Workwith Groups"));
   button->setPixmap(dirclosed);
-  button->setMaximumWidth(25);
-  button->setMaximumHeight(25);
   button->setToggleButton(TRUE);
   hbox->addWidget(button);
   bg->insert(button, 1);
 
-  button = new QPushButton(this);
+  button = new ToolBarBtn(this);
   QToolTip::add(button, tr("Main Chart Indicators"));
   button->setPixmap(indicator);
-  button->setMaximumWidth(25);
-  button->setMaximumHeight(25);
   button->setToggleButton(TRUE);
   hbox->addWidget(button);
   bg->insert(button, 2);
   
-  button = new QPushButton(this);
+  button = new ToolBarBtn(this);
   QToolTip::add(button, tr("Workwith Portfolios"));
   button->setPixmap(portfolio);
-  button->setMaximumWidth(25);
-  button->setMaximumHeight(25);
   button->setToggleButton(TRUE);
   hbox->addWidget(button);
   bg->insert(button, 3);
@@ -97,20 +91,16 @@ NavigatorTab::NavigatorTab (QWidget *w, QMainWindow *mw) : QWidget (w)
   hbox->setSpacing(1);
   hbox->setMargin(2);
 
-  button = new QPushButton(this);
+  button = new ToolBarBtn(this);
   QToolTip::add(button, tr("Workwith Backtesting"));
   button->setPixmap(test);
-  button->setMaximumWidth(25);
-  button->setMaximumHeight(25);
   button->setToggleButton(TRUE);
   hbox->addWidget(button);
   bg->insert(button, 4);
   
-  button = new QPushButton(this);
+  button = new ToolBarBtn(this);
   QToolTip::add(button, tr("Workwith Scanner"));
   button->setPixmap(scanner);
-  button->setMaximumWidth(25);
-  button->setMaximumHeight(25);
   button->setToggleButton(TRUE);
   hbox->addWidget(button);
   bg->insert(button, 5);
@@ -123,10 +113,11 @@ NavigatorTab::NavigatorTab (QWidget *w, QMainWindow *mw) : QWidget (w)
   menu = new QPopupMenu;
   
   positionMenu = new QPopupMenu();
-  int id = positionMenu->insertItem(tr("Left"), this, SLOT(togglePosition(int)));
-  positionMenu->setItemParameter(id, 0);
-  id = positionMenu->insertItem(tr("Right"), this, SLOT(togglePosition(int)));
-  positionMenu->setItemParameter(id, 1);
+  connect(positionMenu, SIGNAL(aboutToShow ()), this, SLOT(slotTglPosAboutToShow()));
+  idMenuLeft = positionMenu->insertItem(tr("Left"), this, SLOT(togglePosition(int)));
+  positionMenu->setItemParameter(idMenuLeft, 0);
+  idMenuRight = positionMenu->insertItem(tr("Right"), this, SLOT(togglePosition(int)));
+  positionMenu->setItemParameter(idMenuRight, 1);
   menu->insertItem (tr("Navigator Position"), positionMenu);
   
   QAccel *a = new QAccel(mw);
@@ -138,7 +129,7 @@ NavigatorTab::NavigatorTab (QWidget *w, QMainWindow *mw) : QWidget (w)
   a->insertItem(CTRL+Key_T, TestPanelFocus);
   a->insertItem(CTRL+Key_S, ScannerPanelFocus);
 
-  loadSettings();
+  //loadSettings();
 }
 
 NavigatorTab::~NavigatorTab ()
@@ -291,3 +282,17 @@ void NavigatorTab::slotAccel (int id)
   }
 }
 
+void NavigatorTab::slotTglPosAboutToShow()
+{
+  if(position) 
+  {
+    positionMenu->setItemVisible ( idMenuLeft, TRUE );
+    positionMenu->setItemVisible ( idMenuRight, FALSE );
+    
+  }
+  else 
+  {
+    positionMenu->setItemVisible ( idMenuLeft, FALSE );
+    positionMenu->setItemVisible ( idMenuRight, TRUE );
+  }
+}
