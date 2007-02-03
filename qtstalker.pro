@@ -1,7 +1,7 @@
 TEMPLATE = subdirs
 
 # compile TALIB
-SUBDIRS += TALIB
+#SUBDIRS += TALIB
 
 # compile qtstalker lib
 SUBDIRS += lib

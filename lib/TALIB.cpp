@@ -89,16 +89,16 @@ Indicator * TALIB::calculate ()
   TA_Real high[loop];
   TA_Real low[loop];
   TA_Real close[loop];
-  TA_Integer volume[loop];
-  TA_Integer oi[loop];
+  TA_Real volume[loop];
+  TA_Real oi[loop];
   for (loop = 0; loop < data->count(); loop++)
   {
     open[loop] = (TA_Real) data->getOpen(loop);
     high[loop] = (TA_Real) data->getHigh(loop);
     low[loop] = (TA_Real) data->getLow(loop);
     close[loop] = (TA_Real) data->getClose(loop);
-    volume[loop] = (TA_Integer) data->getVolume(loop);
-    oi[loop] = (TA_Integer) data->getOI(loop);
+    volume[loop] = (TA_Real) data->getVolume(loop);
+    oi[loop] = (TA_Real) data->getOI(loop);
   }
 
   // setup the input arrays
@@ -142,12 +142,12 @@ Indicator * TALIB::calculate ()
               qDebug("TALIB::calculate:cannot set real price");
             break;
           case 4:
-            retCode = TA_SetInputParamIntegerPtr(parmHolder, loop, &volume[0]);
+            retCode = TA_SetInputParamRealPtr(parmHolder, loop, &volume[0]);
             if (retCode != TA_SUCCESS)
               qDebug("TALIB::calculate:cannot set integer price");
             break;
           case 5:
-            retCode = TA_SetInputParamIntegerPtr(parmHolder, loop, &oi[0]);
+            retCode = TA_SetInputParamRealPtr(parmHolder, loop, &oi[0]);
             if (retCode != TA_SUCCESS)
               qDebug("TALIB::calculate:cannot set integer price");
             break;
@@ -634,8 +634,8 @@ PlotLine * TALIB::calculateCustom (QString &p, QPtrList<PlotLine> &d)
   TA_Real high[loop];
   TA_Real low[loop];
   TA_Real close[loop];
-  TA_Integer volume[loop];
-  TA_Integer oi[loop];
+  TA_Real volume[loop];
+  TA_Real oi[loop];
   TA_Real treal[loop];
 
   int sparmIndex = 1;
@@ -656,8 +656,8 @@ PlotLine * TALIB::calculateCustom (QString &p, QPtrList<PlotLine> &d)
         high[loop2] = (TA_Real) data->getHigh(loop2);
         low[loop2] = (TA_Real) data->getLow(loop2);
         close[loop2] = (TA_Real) data->getClose(loop2);
-        volume[loop2] = (TA_Integer) data->getVolume(loop2);
-        oi[loop2] = (TA_Integer) data->getOI(loop2);
+        volume[loop2] = (TA_Real) data->getVolume(loop2);
+        oi[loop2] = (TA_Real) data->getOI(loop2);
       }
 
       retCode = TA_SetInputParamPricePtr(parmHolder, loop, &open[0], &high[0], &low[0], &close[0],

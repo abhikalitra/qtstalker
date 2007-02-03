@@ -147,10 +147,14 @@ TARGET = qtstalker
 VERSION = 0.34.0
 
 LIBS += -ldb
-LIBS += -lta_libc_cmr
+LIBS += -lta_abstract
+LIBS += -lta_abstract_gc
+LIBS += -lta_common
+LIBS += -lta_func
 
-unix:INCLUDEPATH += ../TALIB/ta-lib/c/include
-unix:LIBS += -L../TALIB/ta-lib/c/lib
+
+unix:INCLUDEPATH += /usr/local/include/ta-lib
+unix:LIBS += -L/usr/local/lib
      
 # linux options
 unix:linux-g++:LIBS += -ldl
@@ -160,6 +164,6 @@ unix:freebsd-g++:INCLUDEPATH += /usr/X11R6/include
 unix:freebsd-g++:INCLUDEPATH += /usr/local/include/db43
 unix:freebsd-g++:LIBS += -L/usr/local/lib/db43
 
-target.path = /usr/lib
+target.path = /usr/local/lib
 INSTALLS += target
 

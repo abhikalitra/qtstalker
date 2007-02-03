@@ -48,9 +48,15 @@ SOURCES += TesterChartPage.cpp
 TARGET = qtstalker
 
 INCLUDEPATH += ../lib
+INCLUDEPATH += /usr/local/include/ta-lib
 
 LIBS += -L../lib -lqtstalker
 LIBS += -ldb
+LIBS += -lta_abstract
+LIBS += -lta_abstract_gc
+LIBS += -lta_common
+LIBS += -lta_func
+LIBS += -L/usr/local/lib
 
 unix:linux-g++:LIBS += -ldl
 
@@ -59,8 +65,7 @@ unix:freebsd-g++:INCLUDEPATH += /usr/X11R6/include
 unix:freebsd-g++:INCLUDEPATH += /usr/local/include/db43
 unix:freebsd-g++:LIBS += -L/usr/local/lib/db43
 
-target.path = /usr/bin
+target.path = /usr/local/bin
 INSTALLS += target
 
 
-# remove this

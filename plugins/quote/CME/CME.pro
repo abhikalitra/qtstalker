@@ -8,5 +8,5 @@ HEADERS += CME.h
 
 SOURCES += CME.cpp
 
-target.path = /usr/lib/qtstalker/quote
+target.path = /usr/local/lib/qtstalker/quote
 INSTALLS += target

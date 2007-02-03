@@ -179,7 +179,7 @@ void Config::setup ()
     {
       QString str("Indicators");
       setData(IndicatorGroup, str); // set the new default template
-      QString ts = "cp -n /usr/share/qtstalker/indicator/* " + s;
+      QString ts = "cp -n /usr/local/share/qtstalker/indicator/* " + s;
       if (system(ts.latin1()))
         qDebug("setDefaultIndicators::copyFiles: error copying indicator files");
     }
@@ -269,7 +269,7 @@ void Config::getData (Parm p, QString &s)
       s = settings.readEntry("/Qtstalker/ScaleToScreen", "1");
       break;
     case QuotePluginPath:
-      s = settings.readEntry("/Qtstalker/QuotePluginPath", "/usr/lib/qtstalker/quote");
+      s = settings.readEntry("/Qtstalker/QuotePluginPath", "/usr/local/lib/qtstalker/quote");
       break;
     case Group:
       s = settings.readEntry("/Qtstalker/Group");
@@ -305,7 +305,7 @@ void Config::getData (Parm p, QString &s)
       s = settings.readEntry("/Qtstalker/DrawMode", "0");
       break;
     case HelpFilePath:
-      s = settings.readEntry("/Qtstalker/HelpFilePath", "/usr/share/doc/qtstalker/html");
+      s = settings.readEntry("/Qtstalker/HelpFilePath", "/usr/local/share/doc/qtstalker/html");
       break;
     case LastQuotePlugin:
       s = settings.readEntry("/Qtstalker/LastQuotePlugin");

@@ -10,5 +10,5 @@ HEADERS += CSVRuleDialog.h
 SOURCES += CSV.cpp
 SOURCES += CSVRuleDialog.cpp
 
-target.path = /usr/lib/qtstalker/quote
+target.path = /usr/local/lib/qtstalker/quote
 INSTALLS += target

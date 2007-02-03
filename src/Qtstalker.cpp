@@ -1037,7 +1037,7 @@ int main(int argc, char *argv[])
   // for development, use "/" to use the english original as
   // .qm files are stored in the base project directory.
 //  tor.load(QString("qtstalker_") + QTextCodec::locale(), "." );
-  tor.load(QString("qtstalker_") + QTextCodec::locale(), "/usr/share/qtstalker/i18n" );
+  tor.load(QString("qtstalker_") + QTextCodec::locale(), "/usr/local/share/qtstalker/i18n" );
   a.installTranslator( &tor );
 
   QtstalkerApp *qtstalker = new QtstalkerApp();

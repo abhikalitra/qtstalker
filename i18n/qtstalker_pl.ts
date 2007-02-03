@@ -77,6 +77,14 @@ Save changes?</source>
         <source>Select point to place BuyArrow...</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Identifier</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Price</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>CME</name>
@@ -3126,6 +3134,14 @@ Ver CVS 0.34 (working title)
     </message>
     <message>
         <source>Select point to place SellArrow...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Identifier</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Price</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

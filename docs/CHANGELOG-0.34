@@ -201,5 +201,11 @@
 
 20070202: Applied patch #1649368 - added identifier info to buy/sellarrow chart objects - thanks to xley for the patch.
 
+20070203: Upgraded ta-lib to version 0.3. ta-lib is using configure and has changed to a shared library, so we have to remove
+          ta-lib from the qtstalker source and compile and install it as a separate package. This will be better for 
+          the distribution maintainers as well.
 
+20070203: Changed all the installation paths from /usr/* to /usr/local/* as it should be. And the distribution maintainers rejoiced...
+
+           
 
