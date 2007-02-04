@@ -40,6 +40,7 @@
 #include "Config.h"
 #include "BarData.h"
 #include "COBase.h"
+#include "DBIndex.h"
 
 class IndicatorPlot : public QWidget
 {
@@ -70,7 +71,7 @@ class IndicatorPlot : public QWidget
       Moving
     };
 
-    IndicatorPlot (QWidget *);
+    IndicatorPlot (QWidget *, DBIndex *);
     ~IndicatorPlot ();
     void clear ();
     void setData (BarData *);
@@ -191,6 +192,7 @@ class IndicatorPlot : public QWidget
     QMemArray<int> xGrid;
     QPopupMenu *chartMenu;
     QPopupMenu *chartObjectMenu;
+    DBIndex *chartIndex;
 };
 
 #endif

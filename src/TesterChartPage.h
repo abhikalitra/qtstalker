@@ -32,6 +32,7 @@
 #include "BarData.h"
 #include "TradeItem.h"
 #include "Toolbar.h"
+#include "DBIndex.h"
 
 
 class TesterChartPage : public QWidget
@@ -42,7 +43,7 @@ class TesterChartPage : public QWidget
     void signalIndex (int);
 
   public:
-    TesterChartPage (QWidget *);
+    TesterChartPage (QWidget *, DBIndex *);
     ~TesterChartPage ();
     void updateChart (BarData *, QPtrList<TradeItem> &, double);
     void clear();

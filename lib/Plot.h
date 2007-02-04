@@ -33,6 +33,7 @@
 #include "DatePlot.h"
 #include "ScalePlot.h"
 #include "IndicatorPlot.h"
+#include "DBIndex.h"
 
 
 class Plot : public QWidget
@@ -40,7 +41,7 @@ class Plot : public QWidget
   Q_OBJECT
 
   public:
-    Plot (QWidget *);
+    Plot (QWidget *, DBIndex *);
     ~Plot ();
     void clear ();
     void setData (BarData *);

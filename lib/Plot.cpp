@@ -22,7 +22,7 @@
 #include "Plot.h"
 #include <qlayout.h>
 
-Plot::Plot (QWidget *w) : QWidget(w)
+Plot::Plot (QWidget *w, DBIndex *i) : QWidget(w)
 {
   QVBoxLayout *vbox = new QVBoxLayout(this);
   vbox->setMargin(0);
@@ -32,7 +32,7 @@ Plot::Plot (QWidget *w) : QWidget(w)
   hbox->setMargin(0);
   hbox->setSpacing(0);
 
-  indicatorPlot = new IndicatorPlot(this);
+  indicatorPlot = new IndicatorPlot(this, i);
   hbox->addWidget(indicatorPlot, 1, 0);
   
   scalePlot = new ScalePlot(this);

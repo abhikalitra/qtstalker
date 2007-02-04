@@ -43,6 +43,7 @@ class DBIndex : public DBBase
     void setChartObject (QString &, QString &, Setting &);
     void deleteChartObject (QString &, QString &);
     void deleteAllChartObjects (QString &k);
+    void getNewChartObjectName (QString &k, QString &name);
     void setFundamentals (QString &, QString &);
     void getFundamentals (QString &, QString &);
 };

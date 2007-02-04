@@ -432,6 +432,8 @@ void QtstalkerApp::loadChart (QString &d)
     Plot *plot = plotList[s2];
     if (plot)
       plot->addChartObject(co);
+    else
+      qDebug("QtstalkerApp::loadChart: plot %s not found for loading chart object", s2.latin1());
   }
   
   db.close();
@@ -686,7 +688,7 @@ void QtstalkerApp::addIndicatorButton (QString d)
   QVBoxLayout *vbox = new QVBoxLayout(w);
   vbox->setMargin(0);
   vbox->setSpacing(0);
-  Plot *plot = new Plot(w);
+  Plot *plot = new Plot(w, chartIndex);
   vbox->addWidget(plot);
   widgetList.replace(fi.fileName(), w);
   

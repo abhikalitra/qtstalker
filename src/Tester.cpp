@@ -76,7 +76,7 @@ Tester::Tester (QString n, DBIndex *i) : QTabDialog (0, 0, FALSE)
   reportPage = new TesterReport(this);
   addTab(reportPage, tr("Reports"));
 
-  chartPage = new TesterChartPage(this);
+  chartPage = new TesterChartPage(this, index);
   addTab(chartPage, tr("Chart"));
 
   loadRule();

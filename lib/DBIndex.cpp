@@ -173,6 +173,10 @@ void DBIndex::deleteChart (QString &d)
   tdb.close();
 }
 
+// ****************************************************************************
+// ************************* CHART OBJECTS ************************************
+// ****************************************************************************
+
 void DBIndex::getChartObjects (QString &k, QStringList &d)
 {
   d.clear();
@@ -273,18 +277,62 @@ void DBIndex::deleteAllChartObjects (QString &k)
     return;
   }
 
+  // get the key list
   s = k + "_LIST";
   QString s2;
   codb.getData(s, s2);
   QStringList l = QStringList::split(",", s2, FALSE);
+
+  // loop through the list and delete each co
   int loop;
   for (loop = 0; loop < (int) l.count(); loop++)
   {
     s = k + l[loop];
     codb.deleteData(s);
   }
+
+  // remove keys from the list
+  s = k + "_LIST";
+  s2 = "";
+  codb.setData(s, s2);
+
   codb.close();
 }
+
+void DBIndex::getNewChartObjectName (QString &k, QString &name)
+{
+  QString s;
+  Config config;
+  config.getData(Config::COPath, s);
+  DBBase codb;
+  if (codb.open(s))
+  {
+    qDebug("DBIndex::getNewChartObjectName: could not open co.db");
+    return;
+  }
+
+  // get the key list for the symbol
+  s = k + "_LIST";
+  QString s2;
+  codb.getData(s, s2);
+  QStringList l = QStringList::split(",", s2, FALSE);
+
+  int loop = 0;
+  while (1)
+  {
+    name = QString::number(loop);
+    if (l.findIndex(name) != -1)
+      loop++;
+    else
+      break;
+  }
+
+  codb.close();
+}
+
+// ****************************************************************************
+// ************************* FUNDAMENTALS *************************************
+// ****************************************************************************
 
 void DBIndex::getFundamentals (QString &k, QString &d)
 {

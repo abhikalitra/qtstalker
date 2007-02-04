@@ -54,8 +54,9 @@
 #include "../pics/trend.xpm"
 #include "../pics/vertical.xpm"
 
-IndicatorPlot::IndicatorPlot (QWidget *w) : QWidget(w)
+IndicatorPlot::IndicatorPlot (QWidget *w, DBIndex *i) : QWidget(w)
 {
+  chartIndex = i;
   setBackgroundMode(NoBackground);
   startX = 2;
   backgroundColor.setNamedColor("black");
@@ -1477,26 +1478,17 @@ void IndicatorPlot::slotNewChartObject (int id)
   QObject::connect(coSelected, SIGNAL(signalRefresh()), this, SLOT(drawRefresh()));
   QObject::connect(coSelected, SIGNAL(message(QString)), this, SLOT(slotMessage(QString)));
   QObject::connect(coSelected, SIGNAL(signalObjectDeleted(QString)), this, SLOT(slotChartObjectDeleted(QString)));
-  
-  QStringList l;
-  QDictIterator<COBase> it(coList);
-  for(; it.current(); ++it)
-    l.append(it.current()->getName());
-  
-  int loop = 0;
-  QString name;
-  while (1)
-  {
-    name = QString::number(loop);
-    if (l.findIndex(name) != -1)
-      loop++;
-    else
-      break;
-  }
+
+  QFileInfo fi(chartPath);
+  QString symbol = fi.fileName();
+  DBIndexItem item;
+  chartIndex->getIndexItem(symbol, item);
+  QString s, name;
+  item.getSymbol(s);
+  chartIndex->getNewChartObjectName(s, name);
 
   coList.replace(name, coSelected);
 
-  QString s;
   indy->getName(s);
   
   setCursor(QCursor(Qt::PointingHandCursor));

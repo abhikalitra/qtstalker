@@ -29,7 +29,7 @@
 #include "../pics/scaletoscreen.xpm"
 
 
-TesterChartPage::TesterChartPage (QWidget *p) : QWidget (p)
+TesterChartPage::TesterChartPage (QWidget *p, DBIndex *index) : QWidget (p)
 {
   Config config;
   QString s;
@@ -60,7 +60,7 @@ TesterChartPage::TesterChartPage (QWidget *p) : QWidget (p)
   split->setOrientation(Vertical);
   vbox->addWidget(split);
 
-  equityPlot = new Plot (split);
+  equityPlot = new Plot (split, index);
   equityPlot->setGridFlag(TRUE);
   equityPlot->setScaleToScreen(scaleToScreenFlag);
 //  equityPlot->setLogScale(logFlag);
@@ -76,7 +76,7 @@ TesterChartPage::TesterChartPage (QWidget *p) : QWidget (p)
   QFont font(l[0], l[1].toInt(), l[2].toInt());
   equityPlot->setPlotFont(font);
   
-  plot = new Plot (split);
+  plot = new Plot (split, index);
   plot->setGridFlag(TRUE);
   plot->setScaleToScreen(scaleToScreenFlag);
 //  plot->setLogScale(logFlag);
