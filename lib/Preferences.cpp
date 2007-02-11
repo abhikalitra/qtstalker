@@ -20,8 +20,9 @@
  */
 
 #include "Preferences.h"
-#include "Config.h"
 #include "HelpWindow.h"
+#include "RcFile.h"
+
 #include <qlabel.h>
 #include <qlayout.h>
 
@@ -36,7 +37,7 @@ Preferences::Preferences (QWidget *w) : QTabDialog (w, "Preferences", FALSE, WDe
   createGeneralPage();
   createColorPage();
   createFontPage();
-
+  
   setApplyButton(tr("&Apply"));  
   connect(this, SIGNAL(applyButtonPressed()), this, SLOT(slotSave()));
   
@@ -47,6 +48,7 @@ Preferences::Preferences (QWidget *w) : QTabDialog (w, "Preferences", FALSE, WDe
   
   setHelpButton();
   QObject::connect(this, SIGNAL(helpButtonPressed()), this, SLOT(slotHelp()));
+  
 }
 
 Preferences::~Preferences ()
@@ -55,45 +57,18 @@ Preferences::~Preferences ()
 
 void Preferences::loadSettings ()
 {
-  Config config;
-  QString s;
+  RcFile rcfile;
 
-  config.getData(Config::Menubar, s);
-  menubar = s.toInt();
+  rcfile.loadData(RcFile::Menubar, menubar);
 
-  config.getData(Config::PS1Button, s);
-  ps1Button = s.toInt();
-  
-  config.getData(Config::PS2Button, s);
-  ps2Button = s.toInt();
-  
-  config.getData(Config::PS3Button, s);
-  ps3Button = s.toInt();
-  
-  config.getData(Config::BackgroundColor, s);
-  backgroundColor.setNamedColor(s);
-
-  config.getData(Config::BorderColor, s);
-  borderColor.setNamedColor(s);
-
-  config.getData(Config::GridColor, s);
-  gridColor.setNamedColor(s);
-
-  config.getData(Config::PlotFont, s);
-  QStringList l = QStringList::split(",", s, FALSE);
-  if (l.count() == 3)
-  {
-    QFont f(l[0], l[1].toInt(), l[2].toInt());
-    plotFont = f;
-  }
-
-  config.getData(Config::AppFont, s);
-  l = QStringList::split(",", s, FALSE);
-  if (l.count() == 3)
-  {
-    QFont f(l[0], l[1].toInt(), l[2].toInt());
-    appFont = f;
-  }
+  rcfile.loadData(RcFile::PSButton, ps1Button, 1);
+  rcfile.loadData(RcFile::PSButton, ps2Button, 2);
+  rcfile.loadData(RcFile::PSButton, ps3Button, 3);
+  rcfile.loadColor(RcFile::BackgroundColor, backgroundColor);
+  rcfile.loadColor(RcFile::BorderColor, borderColor);
+  rcfile.loadColor(RcFile::GridColor, gridColor);
+  rcfile.loadFont(RcFile::PlotFont, plotFont);
+  rcfile.loadFont(RcFile::AppFont, appFont);
 }
 
 void Preferences::createGeneralPage ()
@@ -215,17 +190,17 @@ void Preferences::createFontPage ()
   grid->addWidget(appFontButton, 1, 1);
 
   addTab(w, tr("Fonts"));
+  
 }
 
 void Preferences::slotSave ()
 {
-  Config config;
-
+  RcFile rcfile;
+  
   bool tbool = menubarCheck->isChecked();
   if (tbool != menubar)
   {
-    QString s = QString::number(tbool);
-    config.setData(Config::Menubar, s);
+    rcfile.saveData(RcFile::Menubar,tbool);
     emit signalMenubar(tbool);
     menubar = tbool;
   }
@@ -233,24 +208,21 @@ void Preferences::slotSave ()
   int tint = bs1Spinner->value();
   if (tint != ps1Button)
   {
-    QString s = QString::number(tint);
-    config.setData(Config::PS1Button, s);
+    rcfile.saveData(RcFile::PSButton, tint, 1);
     ps1Button = tint;
   }
   
   tint = bs2Spinner->value();
   if (tint != ps2Button)
   {
-    QString s = QString::number(tint);
-    config.setData(Config::PS2Button, s);
+    rcfile.saveData(RcFile::PSButton, tint, 2);
     ps2Button = tint;
   }
   
   tint = bs3Spinner->value();
   if (tint != ps3Button)
   {
-    QString s = QString::number(tint);
-    config.setData(Config::PS3Button, s);
+    rcfile.saveData(RcFile::PSButton, tint, 3);
     ps3Button = tint;
   }
 
@@ -259,8 +231,7 @@ void Preferences::slotSave ()
   backgroundColorButton->getColor(c);
   if (c != backgroundColor)
   {
-    QString s = c.name();
-    config.setData(Config::BackgroundColor, s);
+    rcfile.saveColor(RcFile::BackgroundColor,c);
     emit signalBackgroundColor(c);
     flag = TRUE;
     backgroundColor = c;
@@ -269,8 +240,7 @@ void Preferences::slotSave ()
   borderColorButton->getColor(c);
   if (c != borderColor)
   {
-    QString s = c.name();
-    config.setData(Config::BorderColor, s);
+    rcfile.saveColor(RcFile::BorderColor,c);
     emit signalBorderColor(c);
     flag = TRUE;
     borderColor = c;
@@ -279,8 +249,7 @@ void Preferences::slotSave ()
   gridColorButton->getColor(c);
   if (c != gridColor)
   {
-    QString s = c.name();
-    config.setData(Config::GridColor, s);
+    rcfile.saveColor(RcFile::GridColor,c);
     emit signalGridColor(c);
     flag = TRUE;
     gridColor = c;
@@ -290,8 +259,7 @@ void Preferences::slotSave ()
   plotFontButton->getFont(f);
   if (f != plotFont)
   {
-    QString s = f.family() + "," + QString::number(f.pointSize()) + "," + QString::number(f.weight());
-    config.setData(Config::PlotFont, s);
+    rcfile.saveFont(RcFile::PlotFont,f);
     emit signalPlotFont(f);
     flag = TRUE;
     plotFont = f;
@@ -300,14 +268,13 @@ void Preferences::slotSave ()
   appFontButton->getFont(f);
   if (f != appFont)
   {
-    QString s = f.family() + "," + QString::number(f.pointSize()) + "," + QString::number(f.weight());
-    config.setData(Config::AppFont, s);
+    rcfile.saveFont(RcFile::AppFont,f);
     emit signalAppFont(f);
     flag = TRUE;
     appFont = f;
   }
-
-  if (flag)    
+  
+  if (flag)
     emit signalLoadChart();
 }
 
@@ -318,3 +285,10 @@ void Preferences::slotHelp ()
 }
 
 
+void Preferences::slotModified()
+{
+  // FIXME: The goal is to change the caption of the
+  // Cancel-button "Cancel/OK" 	depending on a change
+  // of any data by the user
+  qDebug("changed");
+}

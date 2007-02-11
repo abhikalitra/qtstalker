@@ -42,7 +42,7 @@ class HelpWindow : public QDialog
     void previousStatus (bool);
     void nextStatus (bool);
     void exit ();
-
+    void slotLoadFile(const QString &name);
   private:
     QTextBrowser *text;
     Toolbar *toolbar;

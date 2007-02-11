@@ -22,43 +22,48 @@
 #include "Toolbar.h"
 #include <qtooltip.h>
 
-Toolbar::Toolbar (QWidget *w, int h, int wi, bool f) : QFrame (w)
+//Toolbar::Toolbar (QWidget *w, int h, int wi, bool f) : QFrame (w)
+Toolbar::Toolbar (QWidget *w, Bias b) : QFrame (w)
 {
-  height = h;
-  width = wi;
-  pflag = f;
+//  height = h;
+//  width = wi;
+//  pflag = f;
+  bias = b;
   list.setAutoDelete(TRUE);
-  
+/*  because it looks bad, cut out
   setFrameShape(Box);
   setFrameShadow(Sunken);
+// don't work, why ever ->  setFrameStyle(ToolBarPanel);
   setLineWidth(1);
+*/
 
   QHBoxLayout *hbox = 0;
   QVBoxLayout *vbox = 0;
   
-  if (pflag)
+  if (bias == Vertical)
   {
-    setMinimumWidth(width + 3);
-    setMaximumWidth(width + 3);
+// seems to be obsolete
+//    setMinimumWidth(ToolBarBtn::btnMinWidth + 3);
+//    setMaximumWidth(ToolBarBtn::btnMaxWidth + 3);
     vbox = new QVBoxLayout(this);  
     vbox->setSpacing(0);
-    vbox->setMargin(1);
+    vbox->setMargin(0);
     grid = new QGridLayout(vbox, 1, 1);  
   }
   else
   {
-    setMinimumHeight(height + 3);
-    setMaximumHeight(height + 3);
+//    setMinimumHeight(ToolBarBtn::btnMinHeight + 3);
+//    setMaximumHeight(ToolBarBtn::btnMaxHeight + 3);
     hbox = new QHBoxLayout(this);  
     hbox->setSpacing(0);
-    hbox->setMargin(1);
+    hbox->setMargin(0);
     grid = new QGridLayout(hbox, 1, 1);  
   }
   
-  grid->setSpacing(0);
-  grid->setMargin(0);
+  grid->setSpacing(2); // space between each button
+  grid->setMargin(4);  // ...the button row to its environment
   
-  if (pflag)
+  if (bias == Vertical)
     vbox->addStretch(1);
   else
     hbox->addStretch(1);
@@ -70,26 +75,27 @@ Toolbar::~Toolbar ()
 
 void Toolbar::addButton (QString &name, QPixmap pix, QString &tt)
 {
-  QPushButton *button = new QPushButton (this);
+  ToolBarBtn *button = new ToolBarBtn (this);
   QToolTip::add(button, tt);
   button->setPixmap(pix);
-  button->setMaximumWidth(width);
-  button->setMaximumHeight(height);
-  if (pflag)
+
+  //button->setMaximumWidth(width);
+  //button->setMaximumHeight(height);
+  if (bias == Vertical)
     grid->addWidget(button, list.count(), 0);
   else
     grid->addWidget(button, 0, list.count());
   list.replace(name, button);
 }
 
-QPushButton * Toolbar::getButton (QString &name)
+ToolBarBtn * Toolbar::getButton (QString &name)
 {
   return list[name];
 }
 
 void Toolbar::setButtonStatus (QString &name, bool d)
 {
-  QPushButton *button = list[name];
+  ToolBarBtn *button = list[name];
   if (button)
     button->setEnabled(d);
 }
@@ -98,7 +104,7 @@ void Toolbar::addSeparator ()
 {
   QFrame *vline = new QFrame(this);
   vline->setFrameStyle(QFrame::VLine | QFrame::Sunken);
-  if (pflag)
+  if (bias == Vertical)
     grid->addWidget(vline, -1, 0);
   else
     grid->addWidget(vline, 0, -1);

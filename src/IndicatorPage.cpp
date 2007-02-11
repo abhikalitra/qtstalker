@@ -56,7 +56,7 @@ IndicatorPage::IndicatorPage (QWidget *w, DBIndex *i) : QWidget (w)
   config.getData(Config::IndicatorGroup, currentGroup);
   
   QVBoxLayout *vbox = new QVBoxLayout(this);
-  vbox->setMargin(2);
+  vbox->setMargin(0);
   vbox->setSpacing(5);
   
   group = new QComboBox(this);

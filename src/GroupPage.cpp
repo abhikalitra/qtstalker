@@ -43,7 +43,7 @@
 GroupPage::GroupPage (QWidget *w) : QWidget (w)
 {
   QVBoxLayout *vbox = new QVBoxLayout(this);
-  vbox->setMargin(2);
+  vbox->setMargin(0);
   vbox->setSpacing(5);
 
   group = new QLineEdit(this);

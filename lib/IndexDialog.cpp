@@ -63,7 +63,7 @@ IndexDialog::IndexDialog (QString &nam, QString &l) : QTabDialog (0, "IndexDialo
   QObject::connect(list, SIGNAL(selectionChanged()), this, SLOT(buttonStatus()));
   hbox->addWidget(list);
   
-  toolbar = new Toolbar(w, 30, 30, TRUE);
+  toolbar = new Toolbar(w, Toolbar::Vertical);
   hbox->addWidget(toolbar);
 
   QString s = "add";

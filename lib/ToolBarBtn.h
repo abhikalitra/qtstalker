@@ -37,6 +37,14 @@ class ToolBarBtn : public QPushButton
   public:
     ToolBarBtn (QWidget *parent);
    ~ToolBarBtn ();
+   
+   enum Dimensions
+   {
+      btnMinWidth = 25,
+      btnMaxWidth = 25,
+      btnMinHeight = 25,
+      btnMaxHeight = 25
+   };
 };
 
 #endif

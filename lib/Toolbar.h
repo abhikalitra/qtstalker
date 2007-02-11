@@ -27,25 +27,37 @@
 #include <qpixmap.h>
 #include <qdict.h>
 #include <qframe.h>
-#include <qpushbutton.h>
+//#include <qpushbutton.h>
+
+#include "ToolBarBtn.h"
 
 class Toolbar : public QFrame
 {
-  public:
-    Toolbar (QWidget *w, int h, int w, bool);
+  public: 
+    enum Bias
+    {
+      Horizontal,
+      Vertical
+    };
+    
+    //Toolbar (QWidget *w, int h, int w, bool);
+    Toolbar (QWidget *w, Bias);
     ~Toolbar ();
     void addButton (QString &name, QPixmap pix, QString &tt);
-    QPushButton * getButton (QString &name);
+    ToolBarBtn * getButton (QString &name);
     void setButtonStatus (QString &name, bool d);
     void addSeparator ();
-
+  
+ 
+  
   private:
-    QPushButton *cancelButton;
-    QDict<QPushButton> list;
-    int height;
-    int width;
+    ToolBarBtn *cancelButton;
+    QDict<ToolBarBtn> list;
+//    int height;
+//    int width;
     QGridLayout *grid;
-    bool pflag;
+    //bool pflag;
+    Bias bias;
 };
 
 #endif

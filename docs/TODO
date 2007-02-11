@@ -36,6 +36,7 @@ To Do:
 - display chart object info when cursor hovers over them in the data panel or make tooltip.
 - update docs for ta-lib as a separate package dependancy.
 - update docs to new /usr/local/* installation paths
+- update classes with a description of purpose, usage etc.
  
 
 Maybe some day:

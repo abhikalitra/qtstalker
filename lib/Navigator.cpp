@@ -36,8 +36,17 @@ Navigator::Navigator (QWidget *w, QString &bp) : QListBox(w)
   currentDir.setMatchAllDirs(TRUE);
 
   setSelectionMode(QListBox::Single);
+  /*
   connect(this, SIGNAL(currentChanged(QListBoxItem *)), this, SLOT(fileSelection(QListBoxItem *)));
   connect(this, SIGNAL(selected(QListBoxItem *)), this, SLOT(checkDirectory(QListBoxItem *)));
+  */
+  connect(this, SIGNAL(currentChanged(QListBoxItem *)), this, SLOT(fileSelection(QListBoxItem *)));
+  
+  connect(this, SIGNAL(returnPressed (QListBoxItem *)), this, SLOT(checkDirectory(QListBoxItem *)));
+  
+  connect(this, SIGNAL(mouseButtonClicked(int, QListBoxItem *, const QPoint &)), this, SLOT(slotMouseClicked(int, QListBoxItem *, const QPoint &)));
+  
+  //connect(this, SIGNAL(highlighted(QListBoxItem *)), this, SLOT(highL(QListBoxItem *)));
 }
 
 Navigator::~Navigator ()
@@ -109,6 +118,7 @@ void Navigator::upDirectory ()
 
 void Navigator::fileSelection (QListBoxItem *item)
 {
+  //qDebug("fileSelection(currentChanged)");
   if (! item)
   {
     emit noSelection();
@@ -152,6 +162,7 @@ void Navigator::getCurrentPath (QString &d)
 
 void Navigator::checkDirectory (QListBoxItem *item)
 {
+  //qDebug("checkDirectory(selected)");
   if (! item)
   {
     emit noSelection();
@@ -249,3 +260,18 @@ void Navigator::doKeyPress (QKeyEvent *key)
   }
 }
 
+/*
+void Navigator::highL (QListBoxItem *item)
+{
+qDebug("highlighted");
+}
+*/
+
+void Navigator::slotMouseClicked(int btn, QListBoxItem *item, const QPoint &)
+{
+//qDebug("mouse btn %d clicked", btn);
+  if(btn == 1) // left button
+  {
+    checkDirectory(item);
+  }
+}

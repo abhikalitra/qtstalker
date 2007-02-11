@@ -43,7 +43,7 @@ TestPage::TestPage (QWidget *w, MainMenubar *mb, DBIndex *i) : QWidget (w)
   idir.setFilter(QDir::Dirs);
 
   QVBoxLayout *vbox = new QVBoxLayout(this);
-  vbox->setMargin(2);
+  vbox->setMargin(0);
   vbox->setSpacing(5);
   
   search = new QLineEdit(this);

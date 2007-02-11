@@ -43,7 +43,7 @@ ScannerPage::ScannerPage (QWidget *w, DBIndex *i) : QWidget (w)
   idir.setFilter(QDir::Files);
 
   QVBoxLayout *vbox = new QVBoxLayout(this);
-  vbox->setMargin(2);
+  vbox->setMargin(0);
   vbox->setSpacing(5);
   
   search = new QLineEdit(this);

@@ -43,7 +43,7 @@ TesterChartPage::TesterChartPage (QWidget *p, DBIndex *index) : QWidget (p)
 
   QHBoxLayout *hbox = new QHBoxLayout(vbox);
 
-  toolbar = new Toolbar(this, 22, 22, FALSE);
+  toolbar = new Toolbar(this, Toolbar::Horizontal);
   hbox->addWidget(toolbar);
 
   slider = new QSlider(this);

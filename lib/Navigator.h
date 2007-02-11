@@ -55,6 +55,8 @@ class Navigator : public QListBox
     void checkDirectory (QListBoxItem *);
     void updateList ();
     void doKeyPress (QKeyEvent *);
+    //void highL (QListBoxItem *);
+    void slotMouseClicked(int , QListBoxItem *, const QPoint &);
 
   protected:
     virtual void keyPressEvent (QKeyEvent *);

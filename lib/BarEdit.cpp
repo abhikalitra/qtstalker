@@ -44,13 +44,14 @@ BarEdit::BarEdit (QWidget *w) : QWidget (w)
   deleteLabel = "delete";
   QString searchLabel = "search";
 
-  QVBoxLayout *vbox = new QVBoxLayout(this);
-  vbox->setMargin(5);
-  vbox->setSpacing(0);
+  //QVBoxLayout *vbox = new QVBoxLayout(this);
+  //vbox->setMargin(0);
+  //vbox->setSpacing(0);
 
-  toolbar = new Toolbar(this, 30, 30, FALSE);
-  vbox->addWidget(toolbar);
-  vbox->addSpacing(10);
+  //toolbar = new Toolbar(this, 30, 30, FALSE);
+  toolbar = new Toolbar(this, Toolbar::Horizontal);
+  //vbox->addWidget(toolbar);
+  //vbox->addSpacing(10);
   
   QString s = tr("Search");
   toolbar->addButton(searchLabel, QPixmap(search), s);
@@ -97,18 +98,26 @@ BarEdit::BarEdit (QWidget *w) : QWidget (w)
   connect(toolbar->getButton(lrLabel), SIGNAL(clicked()), this, SLOT(slotLastRecord()));
 //  toolbar->getButton(lrLabel)->setAccel(CTRL+Key_D);
 
-  grid = new QGridLayout(vbox);
-  grid->setSpacing(2);
-
-  QLabel *label = new QLabel(tr("Date"), this);
-  grid->addWidget(label, 0, 0);
+  QVBoxLayout *vbox = new QVBoxLayout(this);
+  grid = new QGridLayout(vbox, 1, 3); // one row, three cols
+  grid->setColStretch(1, 1);  // only stretch the last cols
+  grid->setColStretch(2, 1);
   
+  grid->setSpacing(2);  
+  grid->addMultiCellWidget(toolbar, 0, 0, 0, 1); // span over tow cols
+  grid->expand(grid->numRows() + 1, grid->numCols()); // new row
+  
+  QLabel *label = new QLabel(tr("Date"), this);
   date = new QLineEdit(this);
   date->setReadOnly(TRUE);
-  grid->addWidget(date, 0, 1);
+  
+  grid->addWidget(label, grid->numRows() -1, 0); // add to last row
+  grid->addMultiCellWidget(date, grid->numRows() -1, grid->numRows() -1, 1, 2); // span over last two cols
 
-  grid->setColStretch(1, 1);
+  
   grid->expand(grid->numRows() + 1, grid->numCols());
+  
+  
 }
 
 BarEdit::~BarEdit ()
@@ -128,14 +137,16 @@ void BarEdit::createField (QString &l, QString &d, bool f)
     QIntValidator *iv = new QIntValidator(0, 999999999, this);
     edit->setValidator(iv);
     connect(edit, SIGNAL(textChanged(const QString &)), this, SLOT(textChanged(const QString &)));
-    grid->addWidget(edit, grid->numRows() - 1, 1);
+    //grid->addWidget(edit, grid->numRows() - 1, 1);
+    grid->addMultiCellWidget(edit, grid->numRows() -1, grid->numRows() -1, 1, 2);
   }
   else
   {
     QDoubleValidator *dv = new QDoubleValidator(0, 99999999999.0, 4, this, 0);
     edit->setValidator(dv);
     connect(edit, SIGNAL(textChanged(const QString &)), this, SLOT(textChanged(const QString &)));
-    grid->addWidget(edit, grid->numRows() - 1, 1);
+    //grid->addWidget(edit, grid->numRows() - 1, 1);
+    grid->addMultiCellWidget(edit, grid->numRows() -1, grid->numRows() -1, 1, 2);
   }
   
   grid->expand(grid->numRows() + 1, grid->numCols());

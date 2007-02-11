@@ -72,7 +72,7 @@ void QuotePlugin::buildGui ()
   vbox->setSpacing(2);
   vbox->setMargin(5);
   
-  toolbar = new Toolbar(baseWidget, 30, 30, FALSE);
+  toolbar = new Toolbar(baseWidget, Toolbar::Horizontal);
   vbox->addWidget(toolbar);
 
   QString s("update");

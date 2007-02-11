@@ -211,5 +211,17 @@
 
 20070204: Fixed bug #1637749 - chart objects are lost when placed on diff. indi. screens.
 
+20070211: Applied patch #1653959 - HelpWindow displays CHANGELOG - thanks to loh_tar for the patch.
+          Added CHANGELOG files to the docs.pro install procedure so loh_tar's patch would have
+          something to display.
+
+20070211: Applied patch #1653187 - single click action - thanks to loh_tar for the patch.
+
+20070211: Applied patch #1652823 - in dev.html fix old data location path and typos - thanks to xley for the patch.
+
+20070211: Applied patch #1652684 - usage of new ToolBarBtn - thanks to loh_tar for the patch.
+
+20070211: Applied patch #1651805 - RcFile +Preferences.diff - thanks to loh_tar for the patch
+
            
 

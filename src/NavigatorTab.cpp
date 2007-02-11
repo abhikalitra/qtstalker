@@ -45,11 +45,11 @@ NavigatorTab::NavigatorTab (QWidget *w, QMainWindow *mw) : QWidget (w)
     
   QVBoxLayout *vbox = new QVBoxLayout(this);
   vbox->setSpacing(0);
-  vbox->setMargin(0);
+  vbox->setMargin(2);
 
   QHBoxLayout *hbox = new QHBoxLayout(vbox);
   hbox->setSpacing(1);
-  hbox->setMargin(2);
+  hbox->setMargin(1);
   
   bg = new QButtonGroup(this);
   QObject::connect(bg, SIGNAL(clicked(int)), this, SLOT(buttonPressed(int)));
@@ -89,7 +89,7 @@ NavigatorTab::NavigatorTab (QWidget *w, QMainWindow *mw) : QWidget (w)
     
   hbox = new QHBoxLayout(vbox);
   hbox->setSpacing(1);
-  hbox->setMargin(2);
+  hbox->setMargin(1);  // space around 2nd button row
 
   button = new ToolBarBtn(this);
   QToolTip::add(button, tr("Workwith Backtesting"));

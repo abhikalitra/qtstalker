@@ -43,7 +43,7 @@ ChartPage::ChartPage (QWidget *w, DBIndex *i) : QWidget (w)
   chartIndex = i;
 
   QVBoxLayout *vbox = new QVBoxLayout(this);
-  vbox->setMargin(2);
+  vbox->setMargin(0);
   vbox->setSpacing(5);
   
   search = new QLineEdit(this);

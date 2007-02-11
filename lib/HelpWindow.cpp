@@ -27,6 +27,7 @@
 #include "../pics/disable.xpm"
 #include <qlayout.h>
 #include <qdir.h>
+#include <qfile.h>
 
 HelpWindow::HelpWindow (QWidget *w, QString &fn) : QDialog (w, "HelpWindow", FALSE, WDestructiveClose)
 {
@@ -39,7 +40,7 @@ HelpWindow::HelpWindow (QWidget *w, QString &fn) : QDialog (w, "HelpWindow", FAL
   vbox->setSpacing(5);
   vbox->setMargin(5);
   
-  toolbar = new Toolbar(this, 30, 30, FALSE);
+  toolbar = new Toolbar(this, Toolbar::Horizontal);
   vbox->addWidget(toolbar);
 
   QString s("home");
@@ -63,8 +64,11 @@ HelpWindow::HelpWindow (QWidget *w, QString &fn) : QDialog (w, "HelpWindow", FAL
   QObject::connect(toolbar->getButton(s), SIGNAL(clicked()), this, SLOT(exit()));
   
   text = new QTextBrowser(this);
+  
   QObject::connect(text, SIGNAL(backwardAvailable(bool)), this, SLOT(previousStatus(bool)));
   QObject::connect(text, SIGNAL(forwardAvailable(bool)), this, SLOT(nextStatus(bool)));
+  QObject::connect(text, SIGNAL(linkClicked(const QString &)), this, SLOT(slotLoadFile(const QString &)));
+  
   vbox->addWidget (text);
   
   s = homePath + fn;
@@ -75,7 +79,8 @@ HelpWindow::HelpWindow (QWidget *w, QString &fn) : QDialog (w, "HelpWindow", FAL
     text->setSource(tocPath);
   
   setCaption(text->documentTitle());
-
+  
+  // FIXME: make it configurable/remember last size
   resize(350, 350);
 }
 
@@ -115,4 +120,37 @@ void HelpWindow::exit ()
   done(0);
 }
 
-
+void HelpWindow::slotLoadFile(const QString &fileName)
+{  
+  if (fileName.contains(".html"))
+  {
+      text->setSource(fileName);
+      //setCaption(text->documentTitle());
+  }
+  else
+  {
+      // In case to view a file without known mime source extension, e.g. CHANGELOG.0.3X
+      QFile file(QFile::encodeName(fileName));
+      QString s(file.name());
+      
+      if ( file.open( IO_ReadOnly ) ) 
+      {
+        s = (QString)file.readAll();
+        file.close();
+        s.replace( QChar('<'), "&lt;" );
+        s.replace( QChar('>'), "&gt;" );
+        s.prepend("<html><title>CHANGELOG</title<body><pre>");
+        // FIXME: generate <title> out of fileName
+        // FIXME: add a "back" link or a complete list of all available CHANGLOG files
+        //        possible in form of a left hand placed table
+        s.append("</pre></body></html>");
+      }
+      else
+      {
+        s = file.errorString ();
+      }
+      text->setText(s);
+      //setCaption(text->documentTitle());
+  }
+  setCaption(text->documentTitle());
+}

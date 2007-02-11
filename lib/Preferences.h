@@ -57,6 +57,7 @@ class Preferences : public QTabDialog
   public slots:
     void slotHelp ();
     void slotSave ();
+    void slotModified(); // FIXME: not used, look at .cpp file
 
   private:
     QString helpFile;

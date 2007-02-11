@@ -36,7 +36,7 @@
 #include <qtabwidget.h>
 #include <qinputdialog.h>
 
-#define BUTTON_SIZE 24
+// not used #define BUTTON_SIZE 24
 
 FormulaEdit::FormulaEdit (QWidget *w, int t) : QWidget(w)
 {
@@ -63,7 +63,7 @@ FormulaEdit::FormulaEdit (QWidget *w, int t) : QWidget(w)
   formula = new QTextEdit(tw);
   thbox->addWidget(formula);
 
-  ftoolbar = new Toolbar(tw, 30, 30, TRUE);
+  ftoolbar = new Toolbar(tw, Toolbar::Vertical);
   thbox->addWidget(ftoolbar);
 
   QString s = "open";
@@ -94,7 +94,7 @@ FormulaEdit::FormulaEdit (QWidget *w, int t) : QWidget(w)
   connect(plot, SIGNAL(doubleClicked(QListBoxItem *)), this, SLOT(slotDoubleClicked(QListBoxItem *)));
   thbox->addWidget(plot);
 
-  ptoolbar = new Toolbar(tw, 30, 30, TRUE);
+  ptoolbar = new Toolbar(tw, Toolbar::Vertical);
   thbox->addWidget(ptoolbar);
 
   s = "insert";

@@ -2,13 +2,20 @@ TEMPLATE = lib
 
 CONFIG += thread
 
+# install the html files
 docs.path = /usr/local/share/doc/qtstalker/html
 docs.files = *.html
 INSTALLS += docs
 
+# install the html pic files
 pics.path = /usr/local/share/doc/qtstalker/html
 pics.files = *.png
 INSTALLS += pics
+
+# install the CHANGELOG files
+cl.path = /usr/local/share/doc/qtstalker/html
+cl.files = CHANGELOG*
+INSTALLS += cl
 
 # install the translation files
 i18n.path = /usr/local/share/qtstalker/i18n

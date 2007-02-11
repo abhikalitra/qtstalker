@@ -145,7 +145,7 @@ void CSVRuleDialog::createRulePage ()
   QObject::connect(fieldList, SIGNAL(highlighted(int)), this, SLOT(fieldListSelected(int)));
   hbox->addWidget(fieldList);
   
-  ruleToolbar = new Toolbar(w, 30, 30, TRUE);
+  ruleToolbar = new Toolbar(w, Toolbar::Horizontal);
   hbox->addWidget(ruleToolbar);
 
   QString s = "insert";

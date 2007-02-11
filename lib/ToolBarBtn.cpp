@@ -29,12 +29,12 @@
 ToolBarBtn::ToolBarBtn (QWidget *parent) : QPushButton (parent)
 {
   // well, only one constant seems to be enough
-  // but how knows what's up in the future
-  const int btnMinWidth = 25;
-  const int btnMaxWidth = 25;
-  const int btnMinHeight = 25;
-  const int btnMaxHeight = 25;
-    
+  // but who knows what's up in the future
+ /* btnMinWidth = 25;
+  btnMaxWidth = 25;
+  btnMinHeight = 25;
+  btnMaxHeight = 25;
+   */ 
   setMaximumWidth(btnMaxWidth);
   setMinimumWidth(btnMinWidth);
   setMaximumHeight(btnMaxHeight);
