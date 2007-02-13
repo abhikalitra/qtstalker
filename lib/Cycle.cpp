@@ -196,6 +196,7 @@ COBase::Status Cycle::pointerClick (QPoint &point, QDateTime &x, double)
       emit signalDraw();
       status = None;
       emit message("");
+      emit signalSave(name);
       break;
     default:
       break;

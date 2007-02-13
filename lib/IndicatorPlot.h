@@ -155,6 +155,7 @@ class IndicatorPlot : public QWidget
     void toggleDate ();
     void toggleLog ();
     void saveChartObjects ();
+    void saveChartObject (QString);
 
   private:
     QFont plotFont;

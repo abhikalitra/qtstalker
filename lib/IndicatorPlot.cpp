@@ -1478,6 +1478,7 @@ void IndicatorPlot::slotNewChartObject (int id)
   QObject::connect(coSelected, SIGNAL(signalRefresh()), this, SLOT(drawRefresh()));
   QObject::connect(coSelected, SIGNAL(message(QString)), this, SLOT(slotMessage(QString)));
   QObject::connect(coSelected, SIGNAL(signalObjectDeleted(QString)), this, SLOT(slotChartObjectDeleted(QString)));
+  QObject::connect(coSelected, SIGNAL(signalSave(QString)), this, SLOT(saveChartObject(QString)));
 
   QFileInfo fi(chartPath);
   QString symbol = fi.fileName();
@@ -1606,5 +1607,16 @@ void IndicatorPlot::saveChartObjects ()
       emit signalSaveCO(set);
     }
   }
+}
+
+void IndicatorPlot::saveChartObject (QString name)
+{
+  COBase *co = coList[name];
+  if (! co)
+    return;
+
+  Setting set;
+  co->getSettings(set);
+  emit signalSaveCO(set);
 }
 

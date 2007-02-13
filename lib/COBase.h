@@ -46,6 +46,7 @@ class COBase : public QObject
     void signalRefresh ();
     void message (QString);
     void signalObjectDeleted (QString);
+    void signalSave (QString);
 
   public:
     enum Status

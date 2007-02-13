@@ -200,6 +200,7 @@ COBase::Status HorizontalLine::pointerClick (QPoint &point, QDateTime &, double 
       emit signalDraw();
       status = None;
       emit message("");
+      emit signalSave(name);
       break;
     default:
       break;

@@ -286,6 +286,7 @@ COBase::Status TrendLine::pointerClick (QPoint &point, QDateTime &x, double y)
       emit signalDraw();
       status = None;
       emit message("");
+      emit signalSave(name);
       break;
     default:
       break;
