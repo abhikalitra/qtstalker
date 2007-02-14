@@ -33,6 +33,7 @@
 #include <qdatetimeedit.h>
 #include <qstringlist.h>
 #include <qspinbox.h>
+#include <qprogressbar.h>
 #include "FileButton.h"
 
 class CSV : public QuotePlugin
@@ -81,6 +82,7 @@ class CSV : public QuotePlugin
     QDateEdit *edate;
     QCheckBox *dateRange;
     QSpinBox *minutes;
+    QProgressBar *progBar;
 };
 
 extern "C"

@@ -333,7 +333,7 @@ void QuotePlugin::slotTimeout ()
 void QuotePlugin::getQuotes ()
 {
   statusLog->clear();
-  QString s(tr("Starting update..."));
+  QString s(tr("Updating ..."));
   printStatusLogMessage(s);
   disableGUI();
   update();

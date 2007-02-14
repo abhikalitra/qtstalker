@@ -245,8 +245,9 @@ void CSV::parse ()
       s.append(symbol);
       if (openDb(s, symbol, type, tickFlag))
         continue;
-      QString ss = tr("Updating") + " " + symbol;
-      printStatusLogMessage(ss);
+//      QString ss = tr("Updating") + " " + symbol;
+//      printStatusLogMessage(ss);
+        progBar->setProgress(loop, (int) list.count());
     }
 
     while(stream.atEnd() == 0)
@@ -259,7 +260,7 @@ void CSV::parse ()
       if (l.count() != fieldList.count())
       {
         qDebug("CSV::parse:File fields (%i) != rule format (%i)", l.count(), fieldList.count());
-        QString ss(tr("File fields != rule format"));
+        QString ss = symbol + " - " + tr("File fields != rule format");
         printStatusLogMessage(ss);
 	continue;
       }
@@ -275,8 +276,8 @@ void CSV::parse ()
           getDate(fieldList[fieldLoop], l[fieldLoop], r, dt);
           if (! dt.isValid())
 	  {
-	    qDebug("CSV::parse:Bad date %s", l[fieldLoop].latin1());
-            QString ss(tr("Bad date"));
+	    qDebug("CSV::parse: %s - Bad date %s", symbol.latin1(), l[fieldLoop].latin1());
+            QString ss = symbol + " - " + tr("Bad date");
             printStatusLogMessage(ss);
 	    flag = TRUE;
 	    break;
@@ -301,8 +302,8 @@ void CSV::parse ()
           getTime(l[fieldLoop], s);
           if (! s.length())
 	  {
-	    qDebug("CSV::parse:Bad time %s", l[fieldLoop].latin1());
-            QString ss(tr("Bad time"));
+	    qDebug("CSV::parse: %s - Bad time %s", symbol.latin1(), l[fieldLoop].latin1());
+            QString ss = symbol + " - " + tr("Bad time");
             printStatusLogMessage(ss);
 	    flag = TRUE;
 	    break;
@@ -342,8 +343,8 @@ void CSV::parse ()
 	{
           if (setTFloat(l[fieldLoop], TRUE))
 	  {
-	    qDebug("CSV::parse:Bad %s value", fieldList[fieldLoop].latin1());
-            QString ss(tr("Bad value"));
+	    qDebug("CSV::parse: %s - Bad %s value", symbol.latin1(), fieldList[fieldLoop].latin1());
+            QString ss = symbol + " - " + tr("Bad value");
             printStatusLogMessage(ss);
 	    flag = TRUE;
 	    break;
@@ -358,8 +359,8 @@ void CSV::parse ()
 	{
           if (setTFloat(l[fieldLoop], FALSE))
 	  {
-	    qDebug("CSV::parse:Bad %s value", fieldList[fieldLoop].latin1());
-            QString ss(tr("Bad value"));
+	    qDebug("CSV::parse: %s - Bad %s value", symbol.latin1(), fieldList[fieldLoop].latin1());
+            QString ss = symbol + " - " + tr("Bad value");
             printStatusLogMessage(ss);
 	    flag = TRUE;
 	    break;
@@ -459,6 +460,7 @@ void CSV::parse ()
     f.close();
   }
 
+  progBar->setProgress((int) list.count(), (int) list.count());
   downloadComplete();
   if (cancelFlag)
   {
@@ -895,6 +897,12 @@ void CSV::createMainPage ()
   edate->setAutoAdvance(TRUE);
   edate->setOrder(QDateEdit::YMD);
   grid->addWidget(edate, 7, 1);
+
+  label = new QLabel(tr("Progress"), baseWidget);
+  grid->addWidget(label, 8, 0);
+
+  progBar = new QProgressBar(baseWidget);
+  grid->addWidget(progBar, 8, 1);
 
   // set the default end date
   QDate dt = QDate::currentDate();

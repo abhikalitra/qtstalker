@@ -223,5 +223,9 @@
 
 20070211: Applied patch #1651805 - RcFile +Preferences.diff - thanks to loh_tar for the patch
 
+20070214: Applied patch #1659728 - progressBar for CSV quote dialog - thanks to xley for the patch.
+
+20070214: Applied patch #1659771 - Toolbar.cpp, add new buttons +possibl to place vertical - thanks to loh_tar for the patch.
+
            
 

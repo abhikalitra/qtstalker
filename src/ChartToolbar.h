@@ -79,6 +79,9 @@ class ChartToolbar : public QToolBar
     void ps1ButtonClicked ();
     void ps2ButtonClicked ();
     void ps3ButtonClicked ();
+    void cmpsBtnWClicked();
+    void cmpsBtnDClicked();
+    void cmpsBtn15Clicked();
   
   private:
     QComboBox *compressionCombo;
@@ -90,10 +93,17 @@ class ChartToolbar : public QToolBar
     QToolButton *ptnButton;
     QDateTime ptDate;
     QStringList compressionList;
+    QToolButton *cmpsBtnW;
+    QToolButton *cmpsBtnD;
+    QToolButton *cmpsBtn15;
     QToolButton *ps1Button;
     QToolButton *ps2Button;
     QToolButton *ps3Button;
+    
     int minPixelspace;
+    
+  private slots:
+  void slotOrientationChanged(Orientation);
 };
 
 #endif

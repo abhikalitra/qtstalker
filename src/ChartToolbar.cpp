@@ -39,13 +39,29 @@ ChartToolbar::ChartToolbar (QMainWindow *mw) : QToolBar (mw, "chartToolbar")
   BarData bd(ts);
   compressionCombo = new QComboBox(this);
   compressionCombo->show();
+//  compressionCombo->hide();
   bd.getBarLengthList(compressionList);
   compressionCombo->insertStringList(compressionList, -1);
   config.getData(Config::BarLength, ts);
   compressionCombo->setCurrentItem((BarData::BarLength) ts.toInt());
   QToolTip::add(compressionCombo, tr("Bar Length"));
   connect(compressionCombo, SIGNAL(activated(int)), this, SIGNAL(signalBarLengthChanged(int)));
-
+    
+  cmpsBtnW = new QToolButton(this); // compression button weekly
+  QToolTip::add(cmpsBtnW, tr("Weekly Compression"));
+  cmpsBtnW->setText("Wky");
+  connect(cmpsBtnW, SIGNAL(clicked()), this, SLOT(cmpsBtnWClicked()));
+  
+  cmpsBtnD = new QToolButton(this); // compression button daily
+  QToolTip::add(cmpsBtnW, tr("Daily Compression"));
+  cmpsBtnD->setText("Day");
+  connect(cmpsBtnD, SIGNAL(clicked()), this, SLOT(cmpsBtnDClicked()));
+  
+  cmpsBtn15 = new QToolButton(this); // compression button 15min
+  QToolTip::add(cmpsBtnW, tr("15min Compression"));
+  cmpsBtn15->setText("15m");
+  connect(cmpsBtn15, SIGNAL(clicked()), this, SLOT(cmpsBtn15Clicked()));
+  
   addSeparator();
 
   pixelspace = new QSpinBox(this);
@@ -54,9 +70,8 @@ ChartToolbar::ChartToolbar (QMainWindow *mw) : QToolBar (mw, "chartToolbar")
   pixelspace->setValue(ts.toInt());
   connect (pixelspace, SIGNAL(valueChanged(int)), this, SIGNAL(signalPixelspaceChanged(int)));
   QToolTip::add(pixelspace, tr("Bar Spacing"));
-
-  QIntValidator *iv = new QIntValidator(1, 99999, this, 0);
-
+  pixelspace->setMaximumWidth(40); // FIXME:calc as a function of app font metrics
+ 
   ps1Button = new QToolButton(this);
   QToolTip::add(ps1Button, tr("Bar Spacing 1"));
   ps1Button->setText("1");
@@ -73,12 +88,14 @@ ChartToolbar::ChartToolbar (QMainWindow *mw) : QToolBar (mw, "chartToolbar")
   connect(ps3Button, SIGNAL(clicked()), this, SLOT(ps3ButtonClicked()));
 
   addSeparator();
-
+  
+  QIntValidator *iv = new QIntValidator(1, 99999, this, 0);
+  
   barCount = new QLineEdit(this);
   barCount->setValidator(iv);
   config.getData(Config::Bars, ts);
   barCount->setText(ts);
-  barCount->setMaximumWidth(50);
+  barCount->setMaximumWidth(40);// FIXME:calc as a function of app font metrics
   QToolTip::add(barCount, tr("Total bars to load"));
   connect(barCount, SIGNAL(returnPressed()), this, SLOT(barsChanged()));
 
@@ -112,6 +129,10 @@ ChartToolbar::ChartToolbar (QMainWindow *mw) : QToolBar (mw, "chartToolbar")
   a->insertItem(CTRL+Key_B, ToolbarFocus);
   
   focusFlag = BarLengthFocus;
+  
+  connect(this, SIGNAL(orientationChanged( Orientation)), this, SLOT(slotOrientationChanged(Orientation)));
+  
+  setVerticallyStretchable(TRUE);
 }
 
 ChartToolbar::~ChartToolbar ()
@@ -327,6 +348,35 @@ void ChartToolbar::ps3ButtonClicked ()
 //  emit signalPaperTradeNextBar();
 }
 
+void ChartToolbar::cmpsBtnWClicked()
+{
+  compressionCombo->setCurrentItem((BarData::BarLength)7);
+  emit signalBarLengthChanged((int)7);
+}
+
+void ChartToolbar::cmpsBtnDClicked()
+{
+  compressionCombo->setCurrentItem((BarData::BarLength)6);
+  emit signalBarLengthChanged((int)6);
+}
+
+void ChartToolbar::cmpsBtn15Clicked()
+{
+  compressionCombo->setCurrentItem((BarData::BarLength)3);
+  emit signalBarLengthChanged((int)3);
+}
+
+void ChartToolbar::slotOrientationChanged(Orientation o)
+{
+    slider->setOrientation(o);
+   // updateGeometry();
+
+ // if(o)
+ // {
+    
+ // }
+}
+
 //*********************************************************************
 //******************** paper trade stuff ******************************
 //*********************************************************************
@@ -428,4 +478,3 @@ void ChartToolbar::paperTradeNextBar ()
   
   emit signalPaperTradeNextBar();
 }
-
