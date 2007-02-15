@@ -227,5 +227,9 @@
 
 20070214: Applied patch #1659771 - Toolbar.cpp, add new buttons +possibl to place vertical - thanks to loh_tar for the patch.
 
-           
+20070215: Applied patch #1659638 - Qtstalker.cpp use modified RcFile.cpp - thanks to loh_tar for the patch.            
+
+20070215: Applied patch #1659999 - MainMenubar use RcFile - thanks to loh_tar for the patch.
+
+20070215: Applied patch #1660435 - ChartToolbar use RcFile - thanks to loh_tar for the patch.
 

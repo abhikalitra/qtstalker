@@ -34,11 +34,14 @@
 #include "../pics/qtstalker.xpm"
 #include "../pics/crosshair.xpm"
 #include "../pics/papertrade.xpm"
+#include "RcFile.h"
 
 
 MainMenubar::MainMenubar (QMainWindow *mw) : QMenuBar (mw, "mainMenubar")
 {
   actions.setAutoDelete(FALSE);
+  
+  RcFile rcfile;
   
   QPixmap icon(finished);
   QAction *action  = new QAction(this, "actionExit");
@@ -69,15 +72,15 @@ MainMenubar::MainMenubar (QMainWindow *mw) : QMenuBar (mw, "mainMenubar")
   actions.replace(Options, action);
 
   icon = gridicon;
-  QString s;
-  config.getData(Config::Grid, s);
+  bool b;
+  rcfile.loadData(RcFile::Grid, b);
   action = new QAction(this, "actionGrid");
   action->setMenuText(tr("Chart &Grid"));
   action->setIconSet(icon);
   action->setStatusTip(tr("Toggle the chart grid  (Ctrl+4)"));
   action->setToolTip(tr("Toggle the chart grid  (Ctrl+4)"));
   action->setToggleAction(TRUE);
-  action->setOn(s.toInt());
+  action->setOn(b);
   connect(action, SIGNAL(toggled(bool)), this, SIGNAL(signalGrid(bool)));
   actions.replace(Grid, action);
 
@@ -110,60 +113,62 @@ MainMenubar::MainMenubar (QMainWindow *mw) : QMenuBar (mw, "mainMenubar")
   actions.replace(About, action);
 
   icon = scaletoscreen;
-  config.getData(Config::ScaleToScreen, s);
+  rcfile.loadData(RcFile::ScaleToScreen, b);
   action = new QAction(this, "actionScale");
   action->setMenuText(tr("&Scale To Screen"));
   action->setIconSet(icon);
   action->setStatusTip(tr("Scale chart to current screen data (Ctrl+5)"));
   action->setToolTip(tr("Scale chart to current screen data (Ctrl+5)"));
   action->setToggleAction(TRUE);
-  action->setOn(s.toInt());
+  action->setOn(b);
   connect(action, SIGNAL(toggled(bool)), this, SIGNAL(signalScale(bool)));
   actions.replace(ScaleToScreen, action);
 
   icon = nav;
+  rcfile.loadData(RcFile::ShowSidePanel, b);
   action = new QAction(this, "actionPanel");
   action->setMenuText(tr("Side Pa&nel"));
   action->setIconSet(icon);
   action->setStatusTip(tr("Toggle the side panel area from view (Ctrl+7)"));
   action->setToolTip(tr("Toggle the side panel area from view (Ctrl+7)"));
   action->setToggleAction(TRUE);
+  action->setOn(b);
   connect(action, SIGNAL(toggled(bool)), mw, SLOT(slotHideNav(bool)));
   actions.replace(SidePanel, action);
 
   icon = co;
-  config.getData(Config::DrawMode, s);
+  rcfile.loadData(RcFile::DrawMode, b);
   action = new QAction(this, "actionDraw");
   action->setMenuText(tr("Toggle Dra&w Mode"));
   action->setIconSet(icon);
   action->setStatusTip(tr("Toggle drawing mode (Ctrl+0)"));
   action->setToolTip(tr("Toggle drawing mode (Ctrl+0)"));
   action->setToggleAction(TRUE);
-  action->setOn(s.toInt());
+  action->setOn(b);
   connect(action, SIGNAL(toggled(bool)), this, SIGNAL(signalDraw(bool)));
   actions.replace(DrawMode, action);
   
   icon = crosshair;
-  config.getData(Config::Crosshairs, s);
+  rcfile.loadData(RcFile::Crosshairs, b);
   action = new QAction(this, "actionCrosshairs");
   action->setMenuText(tr("Toggle Cross&hairs"));
   action->setIconSet(icon);
   action->setStatusTip(tr("Toggle crosshairs (Ctrl+6)"));
   action->setToolTip(tr("Toggle crosshairs (Ctrl+6)"));
   action->setToggleAction(TRUE);
-  action->setOn(s.toInt());
+  action->setOn(b);
   connect(action, SIGNAL(toggled(bool)), this, SIGNAL(signalCrosshairs(bool)));
   actions.replace(Crosshairs, action);
 
   icon = papertrade;
-  config.getData(Config::PaperTradeMode, s);
+  rcfile.loadData(RcFile::PaperTradeMode, b);
   action = new QAction(this, "actionPaperTrade");
   action->setMenuText(tr("Paper Trade Mode"));
   action->setIconSet(icon);
   action->setStatusTip(tr("Toggle the paper trade mode"));
   action->setToolTip(tr("Toggle the paper trade mode"));
   action->setToggleAction(TRUE);
-  action->setOn(s.toInt());
+  action->setOn(b);
   connect(action, SIGNAL(toggled(bool)), this, SIGNAL(signalPaperTrade(bool)));
   actions.replace(PaperTrade, action);
 
@@ -205,8 +210,8 @@ MainMenubar::MainMenubar (QMainWindow *mw) : QMenuBar (mw, "mainMenubar")
   
   createMenus();
   
-  config.getData(Config::Menubar, s);
-  if (! s.toInt())
+  rcfile.loadData(RcFile::Menubar, b);
+  if (!b)
     hide();
 }
 
@@ -266,20 +271,13 @@ void MainMenubar::setStatus (int d, bool f)
 
 void MainMenubar::saveSettings ()
 {
-  QString s = QString::number(getStatus(DrawMode));
-  config.setData(Config::DrawMode, s);
-  
-  s = QString::number(getStatus(ScaleToScreen));
-  config.setData(Config::ScaleToScreen, s);
-  
-  s = QString::number(getStatus(Grid));
-  config.setData(Config::Grid, s);
-
-  s = QString::number(getStatus(Crosshairs));
-  config.setData(Config::Crosshairs, s);
-
-  s = QString::number(getStatus(PaperTrade));
-  config.setData(Config::PaperTradeMode, s);
+  RcFile rcfile;
+  rcfile.saveData(RcFile::DrawMode, getStatus(DrawMode));
+  rcfile.saveData(RcFile::ScaleToScreen, getStatus(ScaleToScreen));
+  rcfile.saveData(RcFile::Grid, getStatus(Grid));
+  rcfile.saveData(RcFile::Crosshairs, getStatus(Crosshairs));
+  rcfile.saveData(RcFile::PaperTradeMode, getStatus(PaperTrade));
+  rcfile.saveData(RcFile::ShowSidePanel, getStatus(SidePanel));
 }
 
 void MainMenubar::slotAccel (int id)

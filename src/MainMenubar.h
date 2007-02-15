@@ -28,8 +28,6 @@
 #include <qpopupmenu.h>
 #include <qintdict.h>
 #include <qaction.h>
-#include "Config.h"
-
 
 class MainMenubar : public QMenuBar
 {
@@ -82,7 +80,6 @@ class MainMenubar : public QMenuBar
     void doKeyPress (QKeyEvent *);
     
   private:
-    Config config;
     QPopupMenu *fileMenu;
     QPopupMenu *editMenu;
     QPopupMenu *viewMenu;

@@ -20,7 +20,8 @@
  */
 
 #include "ChartToolbar.h"
-#include "Config.h"
+//#include "Config.h"
+#include "RcFile.h"
 #include "BarData.h"
 #include "PrefDialog.h"
 #include <qtooltip.h>
@@ -32,8 +33,10 @@
 ChartToolbar::ChartToolbar (QMainWindow *mw) : QToolBar (mw, "chartToolbar")
 {
   minPixelspace = 2;
-  Config config;
-  QString ts;
+  RcFile rcfile;
+  QString ts; // temporary string
+  int ti;  // temporary integer
+  
   ptDate = QDateTime::currentDateTime();
   
   BarData bd(ts);
@@ -42,49 +45,53 @@ ChartToolbar::ChartToolbar (QMainWindow *mw) : QToolBar (mw, "chartToolbar")
 //  compressionCombo->hide();
   bd.getBarLengthList(compressionList);
   compressionCombo->insertStringList(compressionList, -1);
-  config.getData(Config::BarLength, ts);
-  compressionCombo->setCurrentItem((BarData::BarLength) ts.toInt());
+  
+  rcfile.loadData(RcFile::BarLength, ti);
+  compressionCombo->setCurrentItem((BarData::BarLength) ti);
   QToolTip::add(compressionCombo, tr("Bar Length"));
   connect(compressionCombo, SIGNAL(activated(int)), this, SIGNAL(signalBarLengthChanged(int)));
     
   cmpsBtnW = new QToolButton(this); // compression button weekly
   QToolTip::add(cmpsBtnW, tr("Weekly Compression"));
-  cmpsBtnW->setText("Wky");
+  cmpsBtnW->setText("W");
   connect(cmpsBtnW, SIGNAL(clicked()), this, SLOT(cmpsBtnWClicked()));
   
   cmpsBtnD = new QToolButton(this); // compression button daily
   QToolTip::add(cmpsBtnW, tr("Daily Compression"));
-  cmpsBtnD->setText("Day");
+  cmpsBtnD->setText("D");
   connect(cmpsBtnD, SIGNAL(clicked()), this, SLOT(cmpsBtnDClicked()));
   
   cmpsBtn15 = new QToolButton(this); // compression button 15min
   QToolTip::add(cmpsBtnW, tr("15min Compression"));
-  cmpsBtn15->setText("15m");
+  cmpsBtn15->setText("15");
   connect(cmpsBtn15, SIGNAL(clicked()), this, SLOT(cmpsBtn15Clicked()));
   
   addSeparator();
 
   pixelspace = new QSpinBox(this);
   pixelspace->setRange(minPixelspace, 99);
-  config.getData(Config::Pixelspace, ts);
-  pixelspace->setValue(ts.toInt());
+  rcfile.loadData(RcFile::Pixelspace, ti);
+  pixelspace->setValue(ti);
   connect (pixelspace, SIGNAL(valueChanged(int)), this, SIGNAL(signalPixelspaceChanged(int)));
   QToolTip::add(pixelspace, tr("Bar Spacing"));
   pixelspace->setMaximumWidth(40); // FIXME:calc as a function of app font metrics
  
   ps1Button = new QToolButton(this);
-  QToolTip::add(ps1Button, tr("Bar Spacing 1"));
-  ps1Button->setText("1");
+  rcfile.loadData(RcFile::PSButton, ts, 1);
+  QToolTip::add(ps1Button, tr("Set Bar Spacing to " + ts));
+  ps1Button->setText(ts);
   connect(ps1Button, SIGNAL(clicked()), this, SLOT(ps1ButtonClicked()));
 
   ps2Button = new QToolButton(this);
-  QToolTip::add(ps2Button, tr("Bar Spacing 2"));
-  ps2Button->setText("2");
+  rcfile.loadData(RcFile::PSButton, ts, 2);
+  QToolTip::add(ps2Button, tr("Set Bar Spacing to " + ts));
+  ps2Button->setText(ts);
   connect(ps2Button, SIGNAL(clicked()), this, SLOT(ps2ButtonClicked()));
 
   ps3Button = new QToolButton(this);
-  QToolTip::add(ps3Button, tr("Bar Spacing 3"));
-  ps3Button->setText("3");
+  rcfile.loadData(RcFile::PSButton, ts, 3);
+  QToolTip::add(ps3Button, tr("Set Bar Spacing to " + ts));
+  ps3Button->setText(ts);
   connect(ps3Button, SIGNAL(clicked()), this, SLOT(ps3ButtonClicked()));
 
   addSeparator();
@@ -93,7 +100,7 @@ ChartToolbar::ChartToolbar (QMainWindow *mw) : QToolBar (mw, "chartToolbar")
   
   barCount = new QLineEdit(this);
   barCount->setValidator(iv);
-  config.getData(Config::Bars, ts);
+  rcfile.loadData(RcFile::Bars, ts);
   barCount->setText(ts);
   barCount->setMaximumWidth(40);// FIXME:calc as a function of app font metrics
   QToolTip::add(barCount, tr("Total bars to load"));
@@ -207,15 +214,11 @@ int ChartToolbar::setSliderStart (int width, int records)
 
 void ChartToolbar::saveSettings ()
 {
-  Config config;
-  QString s = QString::number(getBars());
-  config.setData(Config::Bars, s);
+  RcFile rcfile;
   
-  s = QString::number(getBarLengthInt());
-  config.setData(Config::BarLength, s);
-
-  s = QString::number(getPixelspace());
-  config.setData(Config::Pixelspace, s);
+  rcfile.saveData(RcFile::Bars, getBars());
+  rcfile.saveData(RcFile::BarLength, getBarLengthInt());
+  rcfile.saveData(RcFile::Pixelspace, getPixelspace());
 }
 
 void ChartToolbar::setFocus ()
@@ -314,36 +317,36 @@ void ChartToolbar::barsChanged ()
 
 void ChartToolbar::ps1ButtonClicked ()
 {
-  Config config;
-  QString s;
-  config.getData(Config::PS1Button, s);
+  RcFile rcfile;
+  int ti;
+  rcfile.loadData(RcFile::PSButton, ti, 1);
 //  setPixelspace(minPixelspace, s.toInt());
 //  emit signalBarLengthChanged(compressionCombo->currentItem());
-  pixelspace->setValue(s.toInt());
+  pixelspace->setValue(ti);
   //emit signalBarsChanged(0);
 //  emit signalPaperTradeNextBar();
 }
 
 void ChartToolbar::ps2ButtonClicked ()
 {
-  Config config;
-  QString s;
-  config.getData(Config::PS2Button, s);
+  RcFile rcfile;
+  int ti;
+  rcfile.loadData(RcFile::PSButton, ti, 2);
 //  setPixelspace(minPixelspace, s.toInt());
 //  emit signalBarLengthChanged(compressionCombo->currentItem());
-  pixelspace->setValue(s.toInt());
+  pixelspace->setValue(ti);
   //emit signalBarsChanged(0);
 //  emit signalPaperTradeNextBar();
 }
 
 void ChartToolbar::ps3ButtonClicked ()
 {
-  Config config;
-  QString s;
-  config.getData(Config::PS3Button, s);
+  RcFile rcfile;
+  int ti;
+  rcfile.loadData(RcFile::PSButton, ti, 3);
 //  setPixelspace(minPixelspace, s.toInt());
 //  emit signalBarLengthChanged(compressionCombo->currentItem());
-  pixelspace->setValue(s.toInt());
+  pixelspace->setValue(ti);
   //emit signalBarsChanged(0);
 //  emit signalPaperTradeNextBar();
 }

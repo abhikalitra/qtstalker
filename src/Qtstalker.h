@@ -46,8 +46,7 @@
 #include "MainMenubar.h"
 #include "DBIndex.h"
 
-
-#define DEFAULT_INDICATOR_HEIGHT 125
+// not used #define DEFAULT_INDICATOR_HEIGHT 125
 
 class QtstalkerApp : public QMainWindow
 {

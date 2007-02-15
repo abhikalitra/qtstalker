@@ -27,7 +27,6 @@
 #include <qcolor.h>
 #include <qfont.h>
 #include <qsplitter.h>
-#include <qsettings.h>
 
 //
 // This class do ALL but NOTHING ELSE with the qtstalkerrc file
@@ -98,19 +97,39 @@ class RcFile
       LastNewIndicator,
       PSButtonCount,  // not yet used
       PSButton,
-/* TODO
+      ShowSidePanel,
+      ShowQuitBtn,
+      ShowSidePanelBtn,
+      ShowGridBtn,
+      ShowScaleToScreenBtn,
+      ShowCrosshairBtn,
+      ShowPaperTradeBtn,
+      ShowDrawModeBtn,
+      ShowNewIndicatorBtn,
+      ShowDataWindowBtn,
+      ShowMainQuoteBtn,
+      ShowHelpButton,
+      ShowSlider,
+      ShowBarsToLoadField,
+      ShowBarSpSpinbox,
+      ShowCmps15Btn,
+      ShowCmpsDayBtn,
+      ShowCmpsWkyBtn,
+      ShowCmpsComboBox,
       PrefColorCount,
       PrefColor,
       LastAktiveNav,
       LastGroupUsed,
       LastDateTimeCOAdded,
       IndiGroupSplitterSize,
-*/
+      MainToolBarPos,
+      ChartToolBarPos,
       MAX_PARM  // keep this at the end
     };
   
   private:
     char *Key[MAX_PARM];
+    char *Def[MAX_PARM]; // default values
     
   public:
    
@@ -118,19 +137,15 @@ class RcFile
     // to prevent mismatch in the rc-file
     
     // for any kind of data
-    void loadData (Parm, QString &);
-    void loadData (Parm, QString &, const QString &);
+    void loadData (Parm, QString &, const QString & = 0);
     void loadData (Parm, QString &, const int);
-    void loadData (Parm, int &);
-    void loadData (Parm, int &, const int);
+    void loadData (Parm, int &, const int = -1);
     void loadData (Parm, bool &);
     
-    void saveData (Parm, QString &);
-    void saveData (Parm, QString &, const QString &);
+    void saveData (Parm, QString &, const QString & = 0);
     void saveData (Parm, QString &, const int);
-    void saveData (Parm, int &);
-    void saveData (Parm, int &, const int);
-    void saveData (Parm, bool &);
+    void saveData (Parm, int, const int = -1);
+    void saveData (Parm, const bool);
     
     // for special purposes
     void loadColor (Parm, QColor &);
@@ -142,14 +157,14 @@ class RcFile
     void loadFont (Parm, QFont &);
     void saveFont (Parm, QFont &);
     
-    void loadSplitterSize (Parm, QSplitter *);
-    void loadSplitterSize (Parm, QSplitter *, const QString &);
+    void loadSplitterSize (Parm, QSplitter *, const QString & = 0);
     
-    void saveSplitterSize (Parm, QSplitter *);
-    void saveSplitterSize (Parm, QSplitter *, const QString &);
+    void saveSplitterSize (Parm, QSplitter *, const QString & = 0);
     
   private:
-    QSettings settings;
+    // DON'T WORK! runs in strange trouble
+    // in case of interlaced use
+    // QSettings settings;
 };
 
 #endif

@@ -38,6 +38,7 @@
 #include "DbPlugin.h"
 #include "IndicatorSummary.h"
 #include "Preferences.h"
+#include "RcFile.h"
 
 #include "../pics/qtstalker.xpm"
 
@@ -56,7 +57,9 @@ QtstalkerApp::QtstalkerApp()
   // open and init the chart index
   QString s;
   chartIndex = new DBIndex;
-  config.getData(Config::IndexPath, s);
+  
+  RcFile rcfile;
+  rcfile.loadData(RcFile::IndexPath, s);
   chartIndex->open(s);
   
   initMenuBar();
@@ -119,40 +122,43 @@ QtstalkerApp::QtstalkerApp()
 
   // setup the initial indicators
   QString igroup;
-  config.getData(Config::IndicatorGroup, igroup);
+  rcfile.loadData(RcFile::IndicatorGroup, igroup);
   QStringList l;
   config.getIndicators(igroup, l);
   for (loop = 0; loop < (int) l.count(); loop++)
     addIndicatorButton(l[loop]);
 
   // set the app font
-  config.getData(Config::AppFont, s);
-  l = QStringList::split(",", s, FALSE);
-  if (l.count() == 3)
-  {
-    QFont font2(l[0], l[1].toInt(), l[2].toInt());
-    qApp->setFont(font2, TRUE, 0);
-  }
-  else
-    qApp->setFont(QFont(), TRUE, 0);
+  QFont font;
+  rcfile.loadFont(RcFile::AppFont, font);
+  slotAppFont(font);
 
   // place navigator on the last saved position
   navTab->loadSettings();
   navTab->togglePosition(navTab->getPosition());
  
   // restore the splitter sizes
-  config.loadSplitterSize(Config::NavAreaSize, navSplitter);
-  config.loadSplitterSize(Config::PlotSizes, split);
-  config.loadSplitterSize(Config::DataPanelSize,dpSplitter);
+  rcfile.loadSplitterSize(RcFile::NavAreaSize, navSplitter);
+  rcfile.loadSplitterSize(RcFile::PlotSizes, split);
+  rcfile.loadSplitterSize(RcFile::DataPanelSize,dpSplitter);
   
   // set the nav status
-  slotHideNav(TRUE);
+  // FIXME: seems to me ugly, better it would be work inside
+  // of MainMenubar.cpp
+  bool b;
+  rcfile.loadData(RcFile::ShowSidePanel, b);
+  slotHideNav(b);
 
   // restore the size of the app
-  QString s2;
-  config.getData(Config::Width, s);
-  config.getData(Config::Height, s2);
-  resize(s.toInt(), s2.toInt());
+  int i1, i2;
+  rcfile.loadData(RcFile::Width, i1);
+  rcfile.loadData(RcFile::Height, i2);
+  resize(i1, i2);
+  
+  // restore the position of the app
+  rcfile.loadData(RcFile::X, i1);
+  rcfile.loadData(RcFile::Y, i2);
+  move(i1, i2);
   
   // setup the indicator page  
   ip->updateList();
@@ -223,21 +229,19 @@ void QtstalkerApp::slotQuit()
     it.current()->clear();
 
   // save window sizes 
-  config.saveSplitterSize(Config::PlotSizes, split);
-  config.saveSplitterSize(Config::DataPanelSize, dpSplitter);
-  config.saveSplitterSize(Config::NavAreaSize, navSplitter);
+  RcFile rcfile;
+  rcfile.saveSplitterSize(RcFile::PlotSizes, split);
+  rcfile.saveSplitterSize(RcFile::DataPanelSize, dpSplitter);
+  rcfile.saveSplitterSize(RcFile::NavAreaSize, navSplitter);
    
-  QString s = QString::number(this->height());
-  config.setData(Config::Height, s);
-  s = QString::number(this->width());
-  config.setData(Config::Width, s);
-  s = QString::number(this->x());
-  config.setData(Config::X, s);
-  s = QString::number(this->y());
-  config.setData(Config::Y, s);
+  rcfile.saveData(RcFile::Height, this->height());
+  rcfile.saveData(RcFile::Width, this->width());
+  rcfile.saveData(RcFile::X, this->x());
+  rcfile.saveData(RcFile::Y, this->y());
 
+  QString s;
   s = ip->getIndicatorGroup();
-  config.setData(Config::IndicatorGroup, s);
+  rcfile.saveData(RcFile::IndicatorGroup, s);
   config.closePlugins();
   
   // make sure we clean up the local indicators before we quit
@@ -245,7 +249,9 @@ void QtstalkerApp::slotQuit()
   
   menubar->saveSettings();
   toolbar2->saveSettings();
-
+  delete menubar;
+  delete toolbar2;
+  
   // delete any BarData
   if (recordList)
     delete recordList;
@@ -280,10 +286,11 @@ void QtstalkerApp::slotOpenChart (QString selection)
 
 void QtstalkerApp::slotQuotes ()
 {
+  RcFile rcfile;
   QStringList l;
   config.getPluginList(Config::QuotePluginPath, l);
   QString s;
-  config.getData(Config::LastQuotePlugin, s);
+  rcfile.loadData(RcFile::LastQuotePlugin, s);
   int i = l.findIndex(s);
   if (i == -1)
     i = 0;
@@ -302,7 +309,7 @@ void QtstalkerApp::slotQuotes ()
 
   plug->setChartIndex(chartIndex);
 
-  config.setData(Config::LastQuotePlugin, s);
+  rcfile.saveData(RcFile::LastQuotePlugin, s);
 
   plug->show();
 }
@@ -580,7 +587,8 @@ void QtstalkerApp::slotDeleteIndicator (QString text)
   // delete indicator slot
 
   QString s;
-  config.getData(Config::IndicatorPath, s);
+  RcFile rcfile;
+  rcfile.loadData(RcFile::IndicatorPath, s);
   s.append("/" + ip->getIndicatorGroup() + "/" + text);
   Setting set;
   config.getIndicator(s, set);
@@ -701,43 +709,33 @@ void QtstalkerApp::addIndicatorButton (QString d)
     it->show();
 
   QColor color;
-  QString ts;
-  config.getData(Config::BackgroundColor, ts);
-  color.setNamedColor(ts);
+  RcFile rcfile;
+  rcfile.loadColor(RcFile::BackgroundColor, color);
+  
   connect(this, SIGNAL(signalBackgroundColor(QColor)), plot, SLOT(setBackgroundColor(QColor)));
   plot->setBackgroundColor(color);
 
-  config.getData(Config::BorderColor, ts);
-  color.setNamedColor(ts);
+  rcfile.loadColor(RcFile::BorderColor, color);
   connect(this, SIGNAL(signalBorderColor(QColor)), plot, SLOT(setBorderColor(QColor)));
   plot->setBorderColor(color);
 
-  config.getData(Config::GridColor, ts);
-  color.setNamedColor(ts);
+  rcfile.loadColor(RcFile::GridColor, color);
   connect(this, SIGNAL(signalGridColor(QColor)), plot, SLOT(setGridColor(QColor)));
   plot->setGridColor(color);
 
   connect(this, SIGNAL(signalPlotFont(QFont)), plot, SLOT(setPlotFont(QFont)));
-  config.getData(Config::PlotFont, ts);
-  QStringList l = QStringList::split(",", ts, FALSE);
-  if (l.count() == 3)
-  {
-    QFont font(l[0], l[1].toInt(), l[2].toInt());
-    plot->setPlotFont(font);
-  }
-  else
-  {
-    QFont f;
-    plot->setPlotFont(f);
-  }
+  QFont font;
+  rcfile.loadFont(RcFile::PlotFont, font);
+  plot->setPlotFont(font);
 
   plot->setGridFlag(menubar->getStatus(MainMenubar::Grid));
   plot->setScaleToScreen(menubar->getStatus(MainMenubar::ScaleToScreen));
   plot->setPixelspace(toolbar2->getPixelspace());
   plot->setIndex(toolbar2->getSlider());
   plot->setInterval((BarData::BarLength) toolbar2->getBarLengthInt());
-  config.getData(Config::Crosshairs, ts);
-  plot->setCrosshairsStatus(ts.toInt());  
+  bool b;
+  rcfile.loadData(RcFile::Crosshairs, b);
+  plot->setCrosshairsStatus(b);  
   plot->setDrawMode(menubar->getStatus(MainMenubar::DrawMode));
     
   connect(plot->getIndicatorPlot(), SIGNAL(signalNewIndicator()), ip, SLOT(newIndicator()));
@@ -976,8 +974,9 @@ void QtstalkerApp::slotIndicatorSummary ()
     return;
 
   QString basePath, s;
-  config.getData(Config::IndicatorPath, basePath);
-  config.getData(Config::IndicatorGroup, s);
+  RcFile rcfile;
+  rcfile.loadData(RcFile::IndicatorPath, basePath);
+  rcfile.loadData(RcFile::IndicatorGroup, s);
   basePath.append("/" + s);
 
   QStringList l;
