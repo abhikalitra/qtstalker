@@ -38,19 +38,24 @@ class ColorButton : public QPushButton
     void setColorButton ();
     void setDialogOff();
     QPixmap pix;
+    bool isChanged();
     
-  public slots:
-    void colorDialog ();
-    void setColor (QColor);
+  public 
+    slots:
+      void colorDialog ();
+      void setColor (QColor);
     
+    signals:
+      void valueChanged();
         
   private:
     QColor color;
     //QPixmap pix;
     bool readonly;
+    bool changed;
   
-  signals:
-        void robPressed(QColor); // read only button pressed
+    signals:
+      void robPressed(QColor); // read only button pressed
 
 };
 

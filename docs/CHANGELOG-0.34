@@ -233,3 +233,4 @@
 
 20070215: Applied patch #1660435 - ChartToolbar use RcFile - thanks to loh_tar for the patch.
 
+20070216: Applied patch #1660854 - Font+ColorButton knows/reports changes - thanks to loh_tar for the patch.

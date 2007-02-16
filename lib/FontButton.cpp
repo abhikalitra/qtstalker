@@ -30,6 +30,7 @@ FontButton::FontButton (QWidget *w, QFont &f) : QPushButton (w)
   setToggleButton(FALSE);
   setFontButton();
   setText(tr("Font"));
+  changed = FALSE;
 }
 
 FontButton::~FontButton ()
@@ -52,8 +53,19 @@ void FontButton::fontDialog ()
   QFont f = QFontDialog::getFont(&ok, font, this);
   if (ok)
   {
-    font = f;
-    setFontButton();
+    if (font != f)
+    {
+      font = f;
+      setFontButton();
+      changed = TRUE;
+      emit valueChanged();
+    }
   }
 }
 
+bool FontButton::isChanged()
+{  
+  bool b = changed;
+  changed = FALSE;
+  return b;
+}

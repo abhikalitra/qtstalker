@@ -365,3 +365,4 @@ void RcFile::saveSplitterSize (Parm name, QSplitter *sp, const QString &n)
   QString s(stringList.join(","));
   saveData(name, s, n);
 }
+

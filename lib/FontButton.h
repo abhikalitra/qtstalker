@@ -36,12 +36,18 @@ class FontButton : public QPushButton
     ~FontButton ();
     void getFont (QFont &);
     void setFontButton ();
-
-  public slots:
-    void fontDialog ();
-        
+    bool isChanged();
+    
+  public 
+    slots:
+      void fontDialog ();
+      
+    signals:
+      void valueChanged();
+      
   private:
     QFont font;
+    bool changed;
 };
 
 #endif
