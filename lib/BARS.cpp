@@ -820,7 +820,8 @@ PlotLine * BARS::calculateCustom (QString &p, QPtrList<PlotLine> &d)
     if (l.count() == 2)
     {
       bool ok;
-      formatStringList[1].toInt(&ok);
+      //formatStringList[1].toInt(&ok);
+      l[1].toInt(&ok);
       if (! ok)
       {
         // candle bars

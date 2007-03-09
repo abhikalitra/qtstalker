@@ -600,7 +600,19 @@ PlotLine * TALIB::calculateCustom (QString &p, QPtrList<PlotLine> &d)
     qDebug("TALIB::calculateCustom: no method parm");
     return 0;
   }
-
+  
+  TA_Integer start = 0;
+  TA_Integer end = data->count() - 1;
+  if (d.count())
+    end = d.at(0)->getSize() - 1;
+  TA_Integer outstart;
+  TA_Integer count;
+  PlotLine *line = new PlotLine;
+  // sometimes are not enough data available
+  // to calc anything
+  if(end < 0) 
+    return line;
+  
   // open a TALIB handle
   const TA_FuncHandle *handle;
   TA_RetCode retCode = TA_GetFuncHandle(l[0], &handle);
@@ -827,6 +839,7 @@ PlotLine * TALIB::calculateCustom (QString &p, QPtrList<PlotLine> &d)
   }
 
   // call the function
+  /*
   TA_Integer start = 0;
   TA_Integer end = data->count() - 1;
   if (d.count())
@@ -834,9 +847,13 @@ PlotLine * TALIB::calculateCustom (QString &p, QPtrList<PlotLine> &d)
   TA_Integer outstart;
   TA_Integer count;
   PlotLine *line = new PlotLine;
+  */
   retCode = TA_CallFunc(parmHolder, start, end, &outstart, &count);
   if (retCode != TA_SUCCESS)
+  {
     printError(QString("TALIB::calculateCustom:TA_CallFunc"), retCode);
+    qDebug("p=%s  start=%d  end=%d",p.ascii(), start, end);
+  }
   else
   {
     // create the plotlines

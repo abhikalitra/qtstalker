@@ -361,20 +361,17 @@ PlotLine * UTIL::calculateCOMP (QString &p, QPtrList<PlotLine> &d)
   
   Operator op = getOperator(l[3]);
   
-  while (loop > -1 && loop < input->getSize())
+  while (loop > -1)
   {
-    if (input2)
-    {
-      if (loop2 < 0 || loop2 >= input2->getSize())
-        break;
-    }
-    
     double t = 0;
     
     if (! input2)
       t = inputNum;
     else
-      t = input2->getData(loop2);
+      if (loop2 > -1) 
+        t = input2->getData(loop2);
+      else 
+        break;
       
     switch (op)
     {
@@ -795,12 +792,18 @@ PlotLine * UTIL::calculateINRANGE (QString &p, QPtrList<PlotLine> &d)
   {
     if (input2)
     {
+      if (loop2 < 0) 
+        break;
+        
       min = input2->getData(loop2);
       loop2--;
     }
 
     if (input3)
     {
+      if (loop3 < 0)
+        break;
+        
       max = input3->getData(loop3);
       loop3--;
     }
@@ -810,8 +813,7 @@ PlotLine * UTIL::calculateINRANGE (QString &p, QPtrList<PlotLine> &d)
     else
       line->prepend(0);
 
-    if (loop2 < 0 || loop3 < 0)
-      break;
+    loop--;
   }
 
   return line;

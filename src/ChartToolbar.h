@@ -32,6 +32,7 @@
 #include <qtoolbutton.h>
 #include <qdatetime.h>
 
+#include "RcFile.h"
 
 class ChartToolbar : public QToolBar
 {
@@ -68,6 +69,7 @@ class ChartToolbar : public QToolBar
     void saveSettings ();
     void getPaperTradeDate (QDateTime &);
     
+    
   public slots:
     void setFocus ();
     void slotAccel (int);
@@ -82,6 +84,7 @@ class ChartToolbar : public QToolBar
     void cmpsBtnWClicked();
     void cmpsBtnDClicked();
     void cmpsBtn15Clicked();
+    void slotSetButtonView ();
   
   private:
     QComboBox *compressionCombo;
@@ -101,6 +104,7 @@ class ChartToolbar : public QToolBar
     QToolButton *ps3Button;
     
     int minPixelspace;
+    RcFile rcfile;
     
   private slots:
   void slotOrientationChanged(Orientation);

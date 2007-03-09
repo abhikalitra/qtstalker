@@ -27,6 +27,8 @@
 #include <qcolor.h>
 #include <qfont.h>
 #include <qsplitter.h>
+#include <qpoint.h>
+#include <qsize.h>
 
 //
 // This class do ALL but NOTHING ELSE with the qtstalkerrc file
@@ -80,10 +82,9 @@ class RcFile
       IndexPath,
       HelpFilePath,
       LastQuotePlugin,
-      Height,
-      Width,
-      X,
-      Y,
+      MainWindowSize,
+      MainWindowPos,
+      PrefDlgWindowSize,
       ScannerPath,
       Version,
       PlotSizes,
@@ -99,6 +100,7 @@ class RcFile
       PSButton,
       ShowSidePanel,
       ShowQuitBtn,
+      ShowPrefBtn,
       ShowSidePanelBtn,
       ShowGridBtn,
       ShowScaleToScreenBtn,
@@ -158,8 +160,13 @@ class RcFile
     void saveFont (Parm, QFont &);
     
     void loadSplitterSize (Parm, QSplitter *, const QString & = 0);
-    
     void saveSplitterSize (Parm, QSplitter *, const QString & = 0);
+    
+    void loadPoint (Parm, QPoint &, const int = -1);
+    void savePoint (Parm, const QPoint &, const int = -1);
+    
+    void loadSize (Parm, QSize &, const int = -1);
+    void saveSize (Parm, const QSize &, const int = -1);
     
   private:
     // DON'T WORK! runs in strange trouble

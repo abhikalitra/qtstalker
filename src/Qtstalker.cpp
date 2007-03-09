@@ -150,15 +150,14 @@ QtstalkerApp::QtstalkerApp()
   slotHideNav(b);
 
   // restore the size of the app
-  int i1, i2;
-  rcfile.loadData(RcFile::Width, i1);
-  rcfile.loadData(RcFile::Height, i2);
-  resize(i1, i2);
+  QSize sz;
+  rcfile.loadSize(RcFile::MainWindowSize, sz);
+  resize(sz);
   
   // restore the position of the app
-  rcfile.loadData(RcFile::X, i1);
-  rcfile.loadData(RcFile::Y, i2);
-  move(i1, i2);
+  QPoint p;
+  rcfile.loadPoint(RcFile::MainWindowPos, p);
+  move(p);
   
   // setup the indicator page  
   ip->updateList();
@@ -196,21 +195,11 @@ void QtstalkerApp::initToolBar()
 {
   // construct the button toolbar
   toolbar = new QToolBar(this, "buttonToolbar");
-  menubar->getAction(MainMenubar::Exit)->addTo(toolbar);
-  menubar->getAction(MainMenubar::Options)->addTo(toolbar);
-  menubar->getAction(MainMenubar::SidePanel)->addTo(toolbar);
-  menubar->getAction(MainMenubar::Grid)->addTo(toolbar);
-  menubar->getAction(MainMenubar::ScaleToScreen)->addTo(toolbar);
-  menubar->getAction(MainMenubar::Crosshairs)->addTo(toolbar);
-  menubar->getAction(MainMenubar::PaperTrade)->addTo(toolbar);
-  menubar->getAction(MainMenubar::DrawMode)->addTo(toolbar);
-  menubar->getAction(MainMenubar::NewIndicator)->addTo(toolbar);
-  menubar->getAction(MainMenubar::DataWindow)->addTo(toolbar);
-  menubar->getAction(MainMenubar::Quotes)->addTo(toolbar);
-  menubar->getAction(MainMenubar::Help)->addTo(toolbar);
+  slotLoadMainToolbarSettings();
 
   // construct the chart toolbar
   toolbar2 = new ChartToolbar(this);
+  toolbar2->slotSetButtonView();
   connect(toolbar2, SIGNAL(signalBarLengthChanged(int)), this, SLOT(slotBarLengthChanged(int)));
   connect(toolbar2, SIGNAL(signalPixelspaceChanged(int)), this, SLOT(slotPixelspaceChanged(int)));
   connect(toolbar2, SIGNAL(signalBarsChanged(int)), this, SLOT(slotChartUpdated()));
@@ -221,6 +210,36 @@ void QtstalkerApp::initToolBar()
   connect(menubar, SIGNAL(signalAdvancePaperTrade()), toolbar2, SLOT(paperTradeNextBar()));
 }
 
+void QtstalkerApp::slotLoadMainToolbarSettings()
+{
+  toolbar->clear();
+  bool tb;
+  
+  rcfile.loadData(RcFile::ShowQuitBtn, tb);
+  if(tb) menubar->getAction(MainMenubar::Exit)->addTo(toolbar);
+  rcfile.loadData(RcFile::ShowPrefBtn, tb);
+  if(tb) menubar->getAction(MainMenubar::Options)->addTo(toolbar);
+  rcfile.loadData(RcFile::ShowSidePanelBtn, tb);
+  if(tb) menubar->getAction(MainMenubar::SidePanel)->addTo(toolbar);
+  rcfile.loadData(RcFile::ShowGridBtn, tb);
+  if(tb) menubar->getAction(MainMenubar::Grid)->addTo(toolbar);
+  rcfile.loadData(RcFile::ShowScaleToScreenBtn, tb);
+  if(tb) menubar->getAction(MainMenubar::ScaleToScreen)->addTo(toolbar);
+  rcfile.loadData(RcFile::ShowCrosshairBtn, tb);
+  if(tb) menubar->getAction(MainMenubar::Crosshairs)->addTo(toolbar);
+  rcfile.loadData(RcFile::ShowPaperTradeBtn, tb);
+  if(tb) menubar->getAction(MainMenubar::PaperTrade)->addTo(toolbar);
+  rcfile.loadData(RcFile::ShowDrawModeBtn, tb);
+  if(tb) menubar->getAction(MainMenubar::DrawMode)->addTo(toolbar);
+  rcfile.loadData(RcFile::ShowNewIndicatorBtn, tb);
+  if(tb) menubar->getAction(MainMenubar::NewIndicator)->addTo(toolbar);
+  rcfile.loadData(RcFile::ShowDataWindowBtn, tb);
+  if(tb) menubar->getAction(MainMenubar::DataWindow)->addTo(toolbar);
+  rcfile.loadData(RcFile::ShowMainQuoteBtn, tb);
+  if(tb) menubar->getAction(MainMenubar::Quotes)->addTo(toolbar);
+  rcfile.loadData(RcFile::ShowHelpButton, tb);
+  if(tb) menubar->getAction(MainMenubar::Help)->addTo(toolbar);
+  }
 void QtstalkerApp::slotQuit()
 {
   // do this to save any pending chart object edits
@@ -234,10 +253,9 @@ void QtstalkerApp::slotQuit()
   rcfile.saveSplitterSize(RcFile::DataPanelSize, dpSplitter);
   rcfile.saveSplitterSize(RcFile::NavAreaSize, navSplitter);
    
-  rcfile.saveData(RcFile::Height, this->height());
-  rcfile.saveData(RcFile::Width, this->width());
-  rcfile.saveData(RcFile::X, this->x());
-  rcfile.saveData(RcFile::Y, this->y());
+  rcfile.saveSize(RcFile::MainWindowSize, size());
+  rcfile.savePoint(RcFile::MainWindowPos, pos());
+
 
   QString s;
   s = ip->getIndicatorGroup();
@@ -324,6 +342,9 @@ void QtstalkerApp::slotOptions ()
   connect(dialog, SIGNAL(signalPlotFont(QFont)), this, SIGNAL(signalPlotFont(QFont)));
   connect(dialog, SIGNAL(signalAppFont(QFont)), this, SLOT(slotAppFont(QFont)));
   connect(dialog, SIGNAL(signalLoadChart()), this, SLOT(slotChartUpdated()));
+  connect(dialog, SIGNAL(signalReloadToolBars()), this, SLOT(slotLoadMainToolbarSettings()));
+  connect(dialog, SIGNAL(signalReloadToolBars()), toolbar2, SLOT(slotSetButtonView()));
+  
   dialog->show();
 }
 

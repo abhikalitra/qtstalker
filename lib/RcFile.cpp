@@ -96,14 +96,12 @@ RcFile::RcFile ()
   Def[HelpFilePath] = "";
   Key[LastQuotePlugin] = "LastQuotePlugin";
   Def[LastQuotePlugin] = "Yahoo";
-  Key[Height] = "Height";
-  Def[Height] = "566";
-  Key[Width] = "Width";
-  Def[Width] = "895";
-  Key[X] = "X";
-  Def[X] = "90";
-  Key[Y] = "Y";
-  Def[Y] = "90";
+  Key[MainWindowSize] = "MainWindowSize";
+  Def[MainWindowSize] = "566,895";
+  Key[MainWindowPos] = "MainWindowPos";
+  Def[MainWindowPos] = "90,90";
+  Key[PrefDlgWindowSize] = "PrefDlgWindowSize";
+  Def[PrefDlgWindowSize] = "400,270";
   Key[ScannerPath] = "ScannerPath";
   Def[ScannerPath] = "";
   Key[Version] = "Version";
@@ -130,10 +128,12 @@ RcFile::RcFile ()
   Def[PSButtonCount] = "3";
   Key[PSButton] = "Preferences/PSButton";
   Def[PSButton] = "6";
-  Key[ShowSidePanel] = "Preferences/ShowSidePanel";
+  Key[ShowSidePanel] = "ShowSidePanel";
   Def[ShowSidePanel] = "TRUE";
   Key[ShowQuitBtn] = "Preferences/ShowQuitBtn";
   Def[ShowQuitBtn] = "TRUE";
+  Key[ShowPrefBtn] = "Preferences/ShowPrefBtn";
+  Def[ShowPrefBtn] = "TRUE";
   Key[ShowSidePanelBtn] = "Preferences/ShowSidePanelBtn";
   Def[ShowSidePanelBtn] = "TRUE";
   Key[ShowGridBtn] = "Preferences/ShowGridBtn";
@@ -212,7 +212,7 @@ void RcFile::loadData (Parm name, QString &value, const QString &s)
 void RcFile::loadData (Parm name, QString &value, const int n)
 {
   QString s;
-  s.append(QString::number(n));
+  if (n > -1) s.append(QString::number(n));
   loadData(name, value, s);
 }
 
@@ -257,7 +257,7 @@ void RcFile::saveData (Parm name, QString &value, const QString &s)
 void RcFile::saveData (Parm name, QString &value, const int n)
 { 
   QString s;
-  s.append(QString::number(n));
+  if (n > -1) s.append(QString::number(n));
   saveData(name, value, s);
 }
 
@@ -366,3 +366,36 @@ void RcFile::saveSplitterSize (Parm name, QSplitter *sp, const QString &n)
   saveData(name, s, n);
 }
 
+void RcFile::loadPoint (Parm name, QPoint &p, const int n)
+{
+  QString s;
+  loadData(name, s, n);
+  
+  QStringList l = QStringList::split(",", s, FALSE);
+  p.setX(l[0].toInt());
+  p.setY(l[1].toInt());
+}
+
+void RcFile::savePoint (Parm name, const QPoint &p, const int n)
+{
+  QString s = QString::number(p.x()) + "," + QString::number(p.y());
+  
+  saveData(name, s, n);
+}
+
+void RcFile::loadSize (Parm name, QSize &sz, const int n)
+{
+  QString s;
+  loadData(name, s, n);
+  
+  QStringList l = QStringList::split(",", s, FALSE);
+  sz.setWidth (l[0].toInt());
+  sz.setHeight(l[1].toInt());
+}
+
+void RcFile::saveSize (Parm name, const QSize &sz, const int n)
+{
+  QString s = QString::number(sz.width()) + "," + QString::number(sz.height());
+  
+  saveData(name, s, n);
+}

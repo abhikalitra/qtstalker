@@ -45,6 +45,7 @@
 #include "ChartToolbar.h"
 #include "MainMenubar.h"
 #include "DBIndex.h"
+#include "RcFile.h"
 
 // not used #define DEFAULT_INDICATOR_HEIGHT 125
 
@@ -123,6 +124,7 @@ class QtstalkerApp : public QMainWindow
     void slotSaveCO (Setting);
     void slotMenubarStatus (bool);
     void slotAppFont (QFont);
+    void slotLoadMainToolbarSettings();
     
   private:
     QToolBar *toolbar;
@@ -155,6 +157,7 @@ class QtstalkerApp : public QMainWindow
     QPtrList<QTabWidget> tabList;
     QDict<QWidget> widgetList;
     DBIndex *chartIndex;
+    RcFile rcfile;
 };
 
 #endif

@@ -105,7 +105,7 @@ void Config::setup ()
     if (! dir.mkdir(home, TRUE))
       qDebug("Unable to create ~/.qtstalker/data1 directory.");
   }
-  setData(Home, home);
+  rcfile.saveData(RcFile::Home, home);
 
   QString s = home + "/index";
   if (! dir.exists(s, TRUE))
@@ -114,13 +114,13 @@ void Config::setup ()
       qDebug("Unable to create ~/.qtstalker/data1/index directory.");
   }
   s = home + "/index/index.db";
-  setData(IndexPath, s);
+  rcfile.saveData(RcFile::IndexPath, s);
   s = home + "/index/co.db";
-  setData(COPath, s);
+  rcfile.saveData(RcFile::COPath, s);
   s = home + "/index/li.db";
-  setData(LocalIndicatorsPath, s);
+  rcfile.saveData(RcFile::LocalIndicatorsPath, s);
   s = home + "/index/fund.db";
-  setData(FundamentalsPath, s);
+  rcfile.saveData(RcFile::FundamentalsPath, s);
 
   s = home + "/data";
   if (! dir.exists(s, TRUE))
@@ -128,7 +128,7 @@ void Config::setup ()
     if (! dir.mkdir(s, TRUE))
       qDebug("Unable to create ~/.qtstalker/data1/data directory.");
   }
-  setData(DataPath, s);
+  rcfile.saveData(RcFile::DataPath, s);
 
   s = home + "/group";
   if (! dir.exists(s, TRUE))
@@ -136,7 +136,7 @@ void Config::setup ()
     if (! dir.mkdir(s, TRUE))
       qDebug("Unable to create ~/.qtstalker/data1/group directory.");
   }
-  setData(GroupPath, s);
+  rcfile.saveData(RcFile::GroupPath, s);
 
   s = home + "/portfolio";
   if (! dir.exists(s, TRUE))
@@ -144,7 +144,7 @@ void Config::setup ()
     if (! dir.mkdir(s, TRUE))
       qDebug("Unable to create ~/.qtstalker/data1/portfolio directory.");
   }
-  setData(PortfolioPath, s);
+  rcfile.saveData(RcFile::PortfolioPath, s);
 
   s = home + "/test";
   if (! dir.exists(s, TRUE))
@@ -152,7 +152,7 @@ void Config::setup ()
     if (! dir.mkdir(s, TRUE))
       qDebug("Unable to create ~/.qtstalker/data1/test directory.");
   }
-  setData(TestPath, s);
+  rcfile.saveData(RcFile::TestPath, s);
 
   s = home + "/scanner";
   if (! dir.exists(s, TRUE))
@@ -160,7 +160,7 @@ void Config::setup ()
     if (! dir.mkdir(s, TRUE))
       qDebug("Unable to create ~/.qtstalker/data1/scanner directory.");
   }
-  setData(ScannerPath, s);
+  rcfile.saveData(RcFile::ScannerPath, s);
 
   s = home + "/indicator";
   if (! dir.exists(s, TRUE))
@@ -168,7 +168,7 @@ void Config::setup ()
     if (! dir.mkdir(s, TRUE))
       qDebug("Unable to create ~/.qtstalker/data1/indicator directory.");
   }
-  setData(IndicatorPath, s);
+  rcfile.saveData(RcFile::IndicatorPath, s);
   
   s = home + "/indicator/Indicators";
   if (! dir.exists(s, TRUE))
@@ -179,7 +179,7 @@ void Config::setup ()
     {
       QString str("Indicators");
       setData(IndicatorGroup, str); // set the new default template
-      QString ts = "cp -n /usr/local/share/qtstalker/indicator/* " + s;
+      QString ts = "cp /usr/local/share/qtstalker/indicator/* " + s;
       if (system(ts.latin1()))
         qDebug("setDefaultIndicators::copyFiles: error copying indicator files");
     }
@@ -198,25 +198,12 @@ void Config::setup ()
     if (! dir.mkdir(s, TRUE))
       qDebug("Unable to create ~/.qtstalker/data1/plugin/quote directory.");
   }
-  setData(QuotePluginStorage, s);
-  
-  getData(AppFont, s);
-  if (! s.length())
-  {
-    QFont font = QApplication::font(0);  
-    s = font.family();
-    s.append(",");
-    s.append(QString::number(font.pointSize()));
-    s.append(",");
-    s.append(QString::number(font.weight()));
-    setData(AppFont, s);
-    setData(PlotFont, s);
-  }
+  rcfile.saveData(RcFile::QuotePluginStorage, s);
 
   check034Conversion();
 
   // set the version #
-  setData(Version, version);
+  rcfile.saveData(RcFile::Version, version);
 }
 
 void Config::getData (Parm p, QString &s)
@@ -856,7 +843,7 @@ void Config::checkUpgrade ()
 void Config::check034Conversion ()
 {
   QString s;
-  getData(Version, s);
+  rcfile.loadData(RcFile::Version, s);
   if (! s.length())
     return;
 

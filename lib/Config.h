@@ -31,6 +31,7 @@
 #include "IndicatorPlugin.h"
 #include "QuotePlugin.h"
 #include "Setting.h"
+#include "RcFile.h"
 
 class Config
 {
@@ -145,6 +146,7 @@ class Config
     QString version;
     QStringList indicatorList;
     QStringList indicatorList2;
+    RcFile rcfile;
 };
 
 #endif

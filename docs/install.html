@@ -20,7 +20,7 @@
     database. FreeBSD users are required to use the 4.3 version. </li>
 </ul>
 
-<p>Best to install the binary packages of the Qt and DB that arerelevant to
+<p>Best to install the binary packages of the Qt and DB that are relevant to
 your particular operating system.</p>
 
 <h3>Installing from source</h3>
@@ -44,9 +44,7 @@ If you installed Berkeley DB at a non-standard location, then edit the
 "configure" file (e.g. "<em>INCLUDEPATH += /opt/local/include/db4</em>"). <br>
 And some installations miss symbolic links in the lib directory. </p>
 
-<h4>For Linux users</h4>
-
-<h5>Ubuntu / Debian </h5>
+<h5>Hint for Ubuntu / Debian users</h5>
 
 <p>You have to install these packages before:</p>
 <ul>
@@ -54,12 +52,41 @@ And some installations miss symbolic links in the lib directory. </p>
   <li><strong>libdb4.4-dev</strong> (for Berkely)</li>
   <li><strong>qt3-dev-tools</strong> (for qmake)</li>
   <li><strong>libqt3-mt-dev</strong> (this will also select much more
-    packages to install, don't be afraid)
+    packages to install, don't be afraid) 
     <p><em>Tested as yet only on Ubuntu Edgy</em></p>
   </li>
 </ul>
 
-<h5>For all Tux friends valid</h5>
+<h4>Install TALib</h4>
+
+<p>Since version 0.34 of Qtstalker you must install TALib separately
+<em>before</em> you install Qtstalker itself. In previous versions was TALib
+included in the Qtstalker source tree. You can download the source of TALib
+e.g. with the command...</p>
+
+<p><code>wget
+http://prdownloads.sourceforge.net/ta-lib/ta-lib-0.3.0-src.tar.gz </code> </p>
+
+<p>...entered in your terminal. Unpack the downloaded file, <em>cd</em> into
+the extracted folder and compile/install TALib with the sequence</p>
+<ol>
+  <li><code>./configure</code></li>
+  <li><code>make</code></li>
+  <li><code>make install</code> (as root)</li>
+  <li>There may also need to modify something in case of an error like this
+    appear... 
+    <p><em>/usr/local/bin/qtstalker: error while loading shared libraries:
+    libqtstalker.so.0: cannot open shared object file: No such file or
+    directory</em></p>
+    <p>...when you start Qtstalker .To fix this add <em>/usr/local/lib</em>
+    to your <em>/etc/ld.so.conf</em> file and run <code>ldconfig -v</code>
+    (as root)</p>
+  </li>
+</ol>
+
+<h4>Install Qtstalker</h4>
+
+<h5>For Linux users</h5>
 <ol>
   <li>Check to make sure you have your shell QTDIR environment variable set
     to point to the location of the root Qt directory. This setting is
@@ -68,19 +95,20 @@ And some installations miss symbolic links in the lib directory. </p>
     make errors.<br>
   </li>
   <li>Unpack the Qtstalker source.</li>
-  <li><em>./configure</em> (this will create the Makefile)<br>
+  <li><code>./configure</code> (this will create the Makefile)<br>
   </li>
-  <li><em>make</em><em></em></li>
-  <li><em>make install</em> (as root) 
+  <li><code>make</code><em></em></li>
+  <li><code>make install</code> (as root) 
     <ul>
-      <li>the executable 'qtstalker' will be copied to the <em>/usr/bin</em>
+      <li>the executable 'qtstalker' will be copied to the
+        <em>/usr/local/bin</em> directory</li>
+      <li>the plugins will be copied to <em>/usr/local/lib/qtstalker</em>
         directory</li>
-      <li>the plugins will be copied to <em>/usr/lib/qtstalker</em>
-      directory</li>
-      <li>the docs will be copied to <em>/usr/share/doc/qtstalker/html</em>
-        directory (toc.html for the table of contents)</li>
+      <li>the docs will be copied to
+        <em>/usr/local/share/doc/qtstalker/html</em> directory (toc.html for
+        the table of contents)</li>
       <li>the translation files will be copied to
-        <em>/usr/share/qtstalker/i18n</em> directory<br>
+        <em>/usr/local/share/qtstalker/i18n</em> directory<br>
       </li>
     </ul>
   </li>
@@ -91,7 +119,7 @@ And some installations miss symbolic links in the lib directory. </p>
 <p><br>
 </p>
 
-<h4>For FreeBSD users</h4>
+<h5>For FreeBSD users</h5>
 <ol>
   <li>We have to set a few environment variables first in your shell. <br>
     Enter this '<em>export QTDIR=/usr/X11R6</em>' <br>
@@ -100,20 +128,20 @@ And some installations miss symbolic links in the lib directory. </p>
     Failure to set these variables properly will result in make errors.<br>
   </li>
   <li>Unpack the Qtstalker source.</li>
-  <li><em>./configure</em> (this will create the Makefile)<br>
+  <li><code>./configure</code> (this will create the Makefile)<br>
   </li>
-  <li><em>make</em><br>
-  </li>
-  <li><em>make install</em> (as root) 
+  <li><code>make</code></li>
+  <li><code>make install</code> (as root) 
     <ul>
-      <li>the executable 'qtstalker' will be copied to the <em>/usr/bin</em>
+      <li>the executable 'qtstalker' will be copied to the
+        <em>/usr/local/bin</em> directory</li>
+      <li>the plugins will be copied to <em>/usr/local/lib/qtstalker</em>
         directory</li>
-      <li>the plugins will be copied to <em>/usr/lib/qtstalker</em>
-      directory</li>
-      <li>the docs will be copied to <em>/usr/share/doc/qtstalker/html</em>
-        directory (toc.html for the table of contents)</li>
+      <li>the docs will be copied to
+        <em>/usr/local/share/doc/qtstalker/html</em> directory (toc.html for
+        the table of contents)</li>
       <li>the translation files will be copied to
-        <em>/usr/share/qtstalker/i18n</em> directory<br>
+        <em>/usr/local/share/qtstalker/i18n</em> directory<br>
       </li>
     </ul>
   </li>
@@ -124,7 +152,7 @@ And some installations miss symbolic links in the lib directory. </p>
 <p><br>
 </p>
 
-<h4>For Macintosh OS X users (Tiger 10.4+)</h4>
+<h5>For Macintosh OS X users (Tiger 10.4+)</h5>
 <ol>
   <li>Get Berkeley DB using <a href="http://macports.org/">MacPorts.org</a>
     or <a href="http://fink.sf.net/">Fink.sf.net</a></li>
@@ -141,21 +169,22 @@ And some installations miss symbolic links in the lib directory. </p>
     <em>qmake "DEFINES += QT_NO_COMPAT" "CONFIG += qt" "macx:INCLUDEPATH +=
     /opt/local/include/db4" "macx:LIBS += -L/opt/local/lib" -o Makefile
     qtstalker.pro</em></li>
-  <li><em>./configure</em> (this will create the Makefile) </li>
-  <li><em>make</em> </li>
-  <li><em>sudo make install</em> 
+  <li><code>./configure</code> (this will create the Makefile) </li>
+  <li><code>make</code> </li>
+  <li><code>sudo make install</code> 
     <ul>
-      <li>the executable 'qtstalker' will be copied to the <em>/usr/bin</em>
+      <li>the executable 'qtstalker' will be copied to the
+        <em>/usr/local/bin</em> directory</li>
+      <li>the plugins will be copied to <em>/usr/local/lib/qtstalker</em>
         directory</li>
-      <li>the plugins will be copied to <em>/usr/lib/qtstalker</em>
-      directory</li>
-      <li>the docs will be copied to <em>/usr/share/doc/qtstalker/html</em>
-        directory (toc.html for the table of contents)</li>
+      <li>the docs will be copied to
+        <em>/usr/local/share/doc/qtstalker/html</em> directory (toc.html for
+        the table of contents)</li>
       <li>the translation files will be copied to
-        <em>/usr/share/qtstalker/i18n</em> directory </li>
+        <em>/usr/local/share/qtstalker/i18n</em> directory </li>
     </ul>
   </li>
-  <li>To start, type '<em>open /usr/bin/qtstalker</em>'</li>
+  <li>To start, type '<em>open /usr/local/bin/qtstalker</em>'</li>
 </ol>
 
 <p>Thats it.</p>
@@ -178,5 +207,3 @@ alt="Next" /></a> <a href="toc.html"><img src="home.png" border="0"
 width="32" height="32" alt="Home" /></a></p>
 </body>
 </html>
-
- 	  	 

@@ -29,6 +29,7 @@
 #include <qtabdialog.h>
 #include <qcheckbox.h>
 #include <qspinbox.h>
+#include <qsize.h>
 #include "ColorButton.h"
 #include "FontButton.h"
 
@@ -45,6 +46,7 @@ class Preferences : public QTabDialog
     void signalPlotFont (QFont);
     void signalAppFont (QFont);
     void signalLoadChart ();
+    void signalReloadToolBars ();
 
   public:
     Preferences (QWidget *);
@@ -52,14 +54,17 @@ class Preferences : public QTabDialog
     void createGeneralPage ();
     void createColorPage ();
     void createFontPage ();
+    void createMTPage(); // main tool bar
+    void createCTPage(); // chart tool bar
     void loadSettings ();
 
   public slots:
     void slotHelp ();
     void slotSave ();
-    void slotModified(); // FIXME: not used, look at .cpp file
+    void slotModified();
 
   private:
+    QSize sz;
     QString helpFile;
     bool menubar;
     int ps1Button;
@@ -79,6 +84,27 @@ class Preferences : public QTabDialog
     ColorButton *gridColorButton;
     FontButton *plotFontButton;
     FontButton *appFontButton;
+    // on MainToolbar    
+    QCheckBox *quitBtnCheck;
+    QCheckBox *prefBtnCheck;
+    QCheckBox *sidePanelBtnCheck;
+    QCheckBox *gridBtnCheck;
+    QCheckBox *scaleToScreenBtnCheck;
+    QCheckBox *crosshairBtnCheck;
+    QCheckBox *paperTradeBtnCheck;
+    QCheckBox *drawModeBtnCheck;
+    QCheckBox *newIndicatorBtnCheck;
+    QCheckBox *dataWindowBtnCheck;
+    QCheckBox *mainQuoteBtnCheck;
+    QCheckBox *helpButtonCheck;
+    // on ChartToolbar
+    QCheckBox *sliderCheck;
+    QCheckBox *barsToLoadFieldCheck;
+    QCheckBox *barSpSpinboxCheck;
+    QCheckBox *cmps15BtnCheck;
+    QCheckBox *cmpsDayBtnCheck;
+    QCheckBox *cmpsWkyBtnCheck;
+    QCheckBox *cmpsComboBoxCheck;
 };
 
 #endif

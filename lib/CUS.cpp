@@ -150,7 +150,7 @@ void CUS::createPlot (QString &d, QDict<PlotLine> &lines, Indicator *output)
   QStringList l = QStringList::split("(", d, FALSE);
   if (l.count() != 2)
   {
-    qDebug("CUS::createPlot: bad plot format");
+    qDebug("CUS::createPlot: bad plot format: %s", d.ascii());
     return;
   }
 
@@ -159,7 +159,7 @@ void CUS::createPlot (QString &d, QDict<PlotLine> &lines, Indicator *output)
   l = QStringList::split(",", parms, FALSE);
   if (l.count() != 4)
   {
-    qDebug("CUS::calculate: missing plot parms");
+    qDebug("CUS::createPlot: missing plot parms: %s",d.ascii());
     return;
   }
 
@@ -168,7 +168,7 @@ void CUS::createPlot (QString &d, QDict<PlotLine> &lines, Indicator *output)
   PlotLine *pl = lines.find(l[0]);
   if (! pl)
   {
-    qDebug("CUS::calculate: bad plot parm 1");
+    qDebug("CUS::createPlot: bad plot parm 1: %s",d.ascii());
     return;
   }
 
