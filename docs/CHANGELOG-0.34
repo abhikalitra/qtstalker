@@ -243,4 +243,7 @@
 
 20070309: Applied patch #1676151 - fix a BUG at UTIL(INRANGE... - thanks to loh_tar for the patch.
 
+20070310: Applied patch #1677621 - fix at last cvs commit - thanks to loh_tar for the patch.
+
+
 

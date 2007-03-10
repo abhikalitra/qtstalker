@@ -178,7 +178,7 @@ void Config::setup ()
     else
     {
       QString str("Indicators");
-      setData(IndicatorGroup, str); // set the new default template
+      rcfile.saveData(RcFile::IndicatorGroup, str); // set the new default template
       QString ts = "cp /usr/local/share/qtstalker/indicator/* " + s;
       if (system(ts.latin1()))
         qDebug("setDefaultIndicators::copyFiles: error copying indicator files");
