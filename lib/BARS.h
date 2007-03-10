@@ -21,6 +21,11 @@
 
 #include "IndicatorPlugin.h"
 
+#define cdlFillOpenGTClose 0
+#define cdlFillOpenLTClose 1
+#define cdlFillBoth        2
+#define cdlFillNever       3
+
 class BARS : public IndicatorPlugin
 {
   public:
@@ -49,6 +54,14 @@ class BARS : public IndicatorPlugin
     QString method;
     QStringList methodList;
     QString dbPath;
+
+    QColor candleUpColor; /****************************/
+    QColor candleDownColor; /****************************/
+    QStringList candleFillList; /**********************/
+    int candleFillOption; /**********************/
+    QString candleUpColorLabel;   /************************/
+    QString candleDownColorLabel; /************************/
+    QString candleFillLabel;      /************************/
 
     QColor maColor;
     QColor maColor2;
