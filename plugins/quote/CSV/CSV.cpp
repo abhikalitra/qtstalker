@@ -438,6 +438,8 @@ void CSV::parse ()
 //        printStatusLogMessage(ss);
 	config.closePlugin(type);
 
+        db.close();
+
         emit signalWakeup();
       }
       else
