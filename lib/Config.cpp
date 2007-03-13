@@ -181,7 +181,7 @@ void Config::setup ()
       rcfile.saveData(RcFile::IndicatorGroup, str); // set the new default template
       QString ts = "cp /usr/local/share/qtstalker/indicator/* " + s;
       if (system(ts.latin1()))
-        qDebug("setDefaultIndicators::copyFiles: error copying indicator files");
+        qDebug("setDefaultIndicators::copyFiles: error copying examples indicator files");
     }
   }
   
@@ -647,7 +647,10 @@ void Config::getPluginList (Config::Parm d, QStringList &l2)
   {
     QFileInfo fi(l[loop]);
     if (! fi.fileName().contains(version))
+    {
+      qDebug("Config::getPluginList:wrong plugin version: %s , I need version %s",fi.fileName().ascii(), version.ascii());
       continue;
+    }
 
     s = fi.baseName(FALSE);
     s.remove(0, 3);

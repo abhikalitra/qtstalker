@@ -27,7 +27,7 @@
 #include <qpopupmenu.h>
 #include <qlineedit.h>
 #include "Navigator.h"
-#include "Config.h"
+#include "RcFile.h"
 
 class GroupPage : public QWidget
 {
@@ -72,7 +72,7 @@ class GroupPage : public QWidget
 
   protected:
     Navigator *nav;
-    Config config;
+    RcFile rcfile;
     QPopupMenu *menu;
     QLineEdit *group;
 };

@@ -43,11 +43,11 @@ RcFile::RcFile ()
   Key[Pixelspace] = "Pixelspace";
   Def[Pixelspace] = "6";
   Key[BarLength] = "BarLength";
-  Def[BarLength] = ""; // ? didn't find in my rcfile
+  Def[BarLength] = "6"; // daily
   Key[Grid] = "Grid";
   Def[Grid] = "TRUE";
-  Key[Bars] = "Bars"; // better to rename in BarsToLoad or BarsCount
-  Def[Bars] = "275";
+  Key[BarsToLoad] = "BarsToLoad"; 
+  Def[BarsToLoad] = "475";
   Key[BackgroundColor] = "BackgroundColor";
   Def[BackgroundColor] = "#000000"; // black
   Key[BorderColor] = "BorderColor";
@@ -67,13 +67,11 @@ RcFile::RcFile ()
   Key[ScaleToScreen] = "ScaleToScreen";
   Def[ScaleToScreen] = "TRUE";
   Key[QuotePluginPath] = "QuotePluginPath";
-  Def[QuotePluginPath] = "";
+  Def[QuotePluginPath] = "/usr/local/lib/qtstalker/quote";
   Key[GroupPath] = "GroupPath";
   Def[GroupPath] = "";
   Key[PortfolioPath] = "PortfolioPath";
   Def[PortfolioPath] = "";
-  Key[Group] = "Group";
-  Def[Group] = ""; // ? didn't find in my rcfile
   Key[TestPath] = "TestPath";
   Def[TestPath] = "";
   Key[PlotFont] = "PlotFont";
@@ -84,32 +82,34 @@ RcFile::RcFile ()
   Def[NavAreaSize] = "780,109";
   Key[LogScale] = "LogScalex";
   Def[LogScale] = "FALSE";
-  Key[PS1Button] = "PS1Button";
-  Def[PS1Button] = "2";
-  Key[PS2Button] = "PS2Button";
-  Def[PS2Button] = "4";
-  Key[PS3Button] = "PS3Button";
-  Def[PS3Button] = "6";
   Key[IndexPath] = "IndexPath";
   Def[IndexPath] = "";
   Key[HelpFilePath] = "HelpFilePath";
-  Def[HelpFilePath] = "";
+  Def[HelpFilePath] = "/usr/local/share/doc/qtstalker/html";
   Key[LastQuotePlugin] = "LastQuotePlugin";
   Def[LastQuotePlugin] = "Yahoo";
-  Key[MainWindowSize] = "MainWindowSize";
-  Def[MainWindowSize] = "566,895";
-  Key[MainWindowPos] = "MainWindowPos";
-  Def[MainWindowPos] = "90,90";
-  Key[PrefDlgWindowSize] = "PrefDlgWindowSize";
+  Key[MainWindowSize] = "/WindowSizes/Main";
+  Def[MainWindowSize] = "950,600";
+  Key[MainWindowPos] = "/WindowSizes/MainPos";
+  Def[MainWindowPos] = "30,30";
+  Key[PrefDlgWindowSize] = "/WindowSizes/PrefDialog";
   Def[PrefDlgWindowSize] = "400,270";
+  Key[EditStockWindowSize] = "/WindowSizes/EditStock";
+  Def[EditStockWindowSize] = "350,250";
+  Key[HelpWindowSize] = "/WindowSizes/HelpWindow";
+  Def[HelpWindowSize] = "350,350";
+  Key[BackTesterWindowSize] = "/WindowSizes/BackTester";
+  Def[BackTesterWindowSize] = "";
+  Key[ScannerWindowSize] = "/WindowSizes/Scanner";
+  Def[ScannerWindowSize] = "";
   Key[ScannerPath] = "ScannerPath";
   Def[ScannerPath] = "";
   Key[Version] = "Version";
-  Def[Version] = "0.34";
-  Key[PlotSizes] = "PlotSizes";
-  Def[PlotSizes] = "319,94,88";
-  Key[Menubar] = "Preferences/Menubar"; // better to rename in ShowMenuBar
-  Def[Menubar] = "TRUE";
+  Def[Version] = "";  // I guess better to be empty
+  Key[PlotSizes] = "/PlotSizes/";
+  Def[PlotSizes] = "339,85,85";
+  Key[ShowMenuBar] = "Preferences/ShowMenuBar"; 
+  Def[ShowMenuBar] = "TRUE";
   Key[COPath] = "COPath";
   Def[COPath] = "";
   Key[LocalIndicatorsPath] = "LocalIndicatorsPath";
@@ -176,14 +176,23 @@ RcFile::RcFile ()
   Def[LastAktiveNav] = "";
   Key[LastGroupUsed] = "LastGroupUsed";
   Def[LastGroupUsed] = "";
+  Key[LastChartDir] = "LastChartDir";
+  Def[LastChartDir] = "";
   Key[LastDateTimeCOAdded] = "LastDateTimeCOAdded";
   Def[LastDateTimeCOAdded] = "";
-  Key[IndiGroupSplitterSize] = "IndiGroupSplitterSize";
-  Def[IndiGroupSplitterSize] = "";
   Key[MainToolBarPos] = "MainToolBarPos";
   Def[MainToolBarPos] = "";
   Key[ChartToolBarPos] = "ChartToolBarPos";
   Def[ChartToolBarPos] = "";
+  Key[NavigatorPosition] = "NavigatorPosition";
+  Def[NavigatorPosition] = "1"; // right hand side
+  Key[NavigatorActiveButton] = "NavigatorActiveButton";
+  Def[NavigatorActiveButton] = "0"; // chart panel
+  
+  /* keep this as blueprint for easy add new ones
+  Key[] = "";
+  Def[] = "";
+  */
   
 }
 

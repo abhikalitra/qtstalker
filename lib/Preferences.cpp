@@ -64,7 +64,7 @@ void Preferences::loadSettings ()
 {
   RcFile rcfile;
 
-  rcfile.loadData(RcFile::Menubar, menubar);
+  rcfile.loadData(RcFile::ShowMenuBar, menubar);
 
   rcfile.loadData(RcFile::PSButton, ps1Button, 1);
   rcfile.loadData(RcFile::PSButton, ps2Button, 2);
@@ -422,7 +422,7 @@ void Preferences::slotSave ()
   bool tbool = menubarCheck->isChecked();
   if (tbool != menubar)
   {
-    rcfile.saveData(RcFile::Menubar,tbool);
+    rcfile.saveData(RcFile::ShowMenuBar,tbool);
     emit signalMenubar(tbool);
     menubar = tbool;
   }

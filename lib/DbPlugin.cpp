@@ -724,6 +724,9 @@ int DbPlugin::dbPrefDialog ()
 int DbPlugin::stockPref ()
 {
   int rc = 0;
+  // FIXME: "helpFile" should not be set here, 
+  // I don't know right now where better placed
+  helpFile = "stocksplugin.html";
   StocksDialog *dialog = new StocksDialog(helpFile, this, chartIndex);
   dialog->exec();
   rc = dialog->getReloadFlag();

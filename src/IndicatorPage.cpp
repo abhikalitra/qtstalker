@@ -51,9 +51,9 @@ IndicatorPage::IndicatorPage (QWidget *w, DBIndex *i) : QWidget (w)
   updateEnableFlag = FALSE;
   idir.setFilter(QDir::Files);
 
-  Config config;  
-  config.getData(Config::IndicatorPath, baseDir);
-  config.getData(Config::IndicatorGroup, currentGroup);
+  //Config config;  
+  rcfile.loadData(RcFile::IndicatorPath, baseDir);
+  rcfile.loadData(RcFile::IndicatorGroup, currentGroup);
   
   QVBoxLayout *vbox = new QVBoxLayout(this);
   vbox->setMargin(0);
@@ -170,7 +170,7 @@ void IndicatorPage::deleteIndicatorGroup ()
   Config config;
   QString s("*");
   QString s2;
-  config.getData(Config::IndicatorPath, s2);
+  rcfile.loadData(RcFile::IndicatorPath, s2);
   SymbolDialog *dialog = new SymbolDialog(this,
                                           s2,
   					  s2,
@@ -258,7 +258,7 @@ void IndicatorPage::newIndicator ()
   
   QStringList l2;
   config.getIndicatorList(l2);
-  config.getData(Config::LastNewIndicator, s);
+  rcfile.loadData(RcFile::LastNewIndicator, s);
   idialog->addComboItem(il, pl, l2, l2.findIndex(s));
   
   s = tr("NewIndicator");
@@ -283,7 +283,7 @@ void IndicatorPage::newIndicator ()
   idialog->getText(nl, name);
   QString indicator;
   idialog->getCombo(il, indicator);
-  config.setData(Config::LastNewIndicator, indicator);
+  rcfile.saveData(RcFile::LastNewIndicator, indicator);
   int tabRow = idialog->getInt(ptl);
   QString tgroup;
   idialog->getCombo(gl, tgroup);
@@ -361,7 +361,7 @@ void IndicatorPage::newIndicator ()
   config.closePlugin(indicator);
 
   // check if we need to load this indicator now
-  if (tgroup.compare(group->currentText()))
+  if (tgroup.compare(currentGroup))
     return;
 
   Indicator *i = new Indicator;
@@ -386,7 +386,7 @@ void IndicatorPage::addLocalIndicator ()
   idialog->createPage (pl);
 
   QStringList l;
-  config.getData(Config::IndicatorPath, s);
+  rcfile.loadData(RcFile::IndicatorPath, s);
   idialog->addFileItem(il, pl, l, s);
 
   int rc = idialog->exec();
@@ -403,7 +403,7 @@ void IndicatorPage::addLocalIndicator ()
     return;
 
   DBIndex index;
-  config.getData(Config::IndexPath, s);
+  rcfile.loadData(RcFile::IndexPath, s);
   index.open(s);
   QFileInfo fi(chartPath);
   s = fi.fileName();  
@@ -433,7 +433,7 @@ void IndicatorPage::editIndicator (QString d)
 {
   Config config;
   QDir dir;
-  QString s = baseDir + "/" + group->currentText() + "/" + d;
+  QString s = baseDir + "/" + currentGroup + "/" + d;
   if (! dir.exists(s, TRUE))
   {
     qDebug("IndicatorPage::editIndicator: indicator not found %s", s.latin1());
@@ -495,8 +495,8 @@ void IndicatorPage::deleteIndicator ()
   QDir dir;
   Config config;
   QString s;
-  config.getData(Config::IndicatorPath, s);
-  s.append("/" + group->currentText() + "/" + list->currentText());
+  rcfile.loadData(RcFile::IndicatorPath, s);
+  s.append("/" + currentGroup + "/" + list->currentText());
   if (! dir.exists(s, TRUE))
   {
     qDebug("IndicatorPage::deleteIndicator: indicator not found %s", s.latin1());
@@ -543,7 +543,7 @@ void IndicatorPage::moveIndicator ()
 {
   Config config;
   QDir dir;
-  QString s = baseDir + "/" + group->currentText() + "/" + list->currentText();
+  QString s = baseDir + "/" + currentGroup + "/" + list->currentText();
   if (! dir.exists(s, TRUE))
   {
     qDebug("IndicatorPage::moveIndicator: indicator not found %s", s.latin1());
@@ -601,8 +601,8 @@ void IndicatorPage::updateList ()
   
   Config config;
   QString ts;
-  config.getData(Config::IndicatorPath, ts);
-  idir.setPath(ts + "/" + group->currentText());
+  rcfile.loadData(RcFile::IndicatorPath, ts);
+  idir.setPath(ts + "/" + currentGroup);
 
   int loop;
   for (loop = 0; loop < (int) idir.count(); loop++)
@@ -650,7 +650,7 @@ void IndicatorPage::changeIndicator (QString &d)
     return;
     
   QDir dir;
-  QString s = baseDir + "/" + group->currentText() + "/" + d;
+  QString s = baseDir + "/" + currentGroup + "/" + d;
   if (! dir.exists(s, TRUE))
   {
     qDebug("IndicatorPage::changeIndicator: indicator not found %s", s.latin1());
@@ -794,6 +794,8 @@ void IndicatorPage::slotGroupChanged (int)
   if (group->count() == 1 && ! group->currentText().compare(currentGroup))
     return;
   
+  emit signalGroupIsChanging();
+  
   int loop;
   for (loop = 0; loop < (int) list->count(); loop++)
   {
@@ -802,12 +804,12 @@ void IndicatorPage::slotGroupChanged (int)
   }
    
   currentGroup = group->currentText();
+  rcfile.saveData(RcFile::IndicatorGroup, currentGroup);
   
   updateEnableFlag = TRUE;
   updateList();
   updateEnableFlag = FALSE;
-  
-  emit signalReloadChart();
+  emit signalGroupChanged();
 }
 
 void IndicatorPage::updateGroups ()
@@ -835,7 +837,7 @@ void IndicatorPage::updateGroups ()
 
 QString IndicatorPage::getIndicatorGroup ()
 {
-  return group->currentText();
+  return currentGroup;
 }
 
 void IndicatorPage::setFocus ()
@@ -857,7 +859,7 @@ void IndicatorPage::addLocalIndicators (QString &d)
   QString s, ts, ts2;
   for (loop = 0; loop < (int) l.count(); loop++)
   {
-    QString s2 = baseDir + "/" + group->currentText() + "/Local" + QString::number(loop + 1);
+    QString s2 = baseDir + "/" + currentGroup + "/Local" + QString::number(loop + 1);
     QString s = "ln -s " + l[loop] + " " + s2;
     system(s);
     emit signalLocalIndicator(s2);
@@ -866,12 +868,12 @@ void IndicatorPage::addLocalIndicators (QString &d)
 
 void IndicatorPage::removeLocalIndicators ()
 {
-  QString s = baseDir + "/" + group->currentText();
+  QString s = baseDir + "/" + currentGroup;
   QDir dir(s);
   int loop;
   for (loop = 2; loop < (int) dir.count(); loop++)
   {
-    QString s = baseDir + "/" + group->currentText() + "/" + dir[loop];
+    QString s = baseDir + "/" + currentGroup + "/" + dir[loop];
     QFileInfo fi(s);
     if (fi.isSymLink())
       emit signalDisableIndicator(s);
@@ -879,7 +881,7 @@ void IndicatorPage::removeLocalIndicators ()
 
   for (loop = 2; loop < (int) dir.count(); loop++)
   {
-    QString s = baseDir + "/" + group->currentText() + "/" + dir[loop];
+    QString s = baseDir + "/" + currentGroup + "/" + dir[loop];
     QFileInfo fi(s);
     if (fi.isSymLink())
       dir.remove(s, TRUE);

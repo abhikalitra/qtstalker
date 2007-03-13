@@ -210,7 +210,7 @@ MainMenubar::MainMenubar (QMainWindow *mw) : QMenuBar (mw, "mainMenubar")
   
   createMenus();
   
-  rcfile.loadData(RcFile::Menubar, b);
+  rcfile.loadData(RcFile::ShowMenuBar, b);
   if (!b)
     hide();
 }

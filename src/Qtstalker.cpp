@@ -58,7 +58,7 @@ QtstalkerApp::QtstalkerApp()
   QString s;
   chartIndex = new DBIndex;
   
-  RcFile rcfile;
+  //RcFile rcfile;
   rcfile.loadData(RcFile::IndexPath, s);
   chartIndex->open(s);
   
@@ -88,6 +88,7 @@ QtstalkerApp::QtstalkerApp()
   // setup the side panels
   navTab = new NavigatorTab(dpSplitter, this);
   connect(navTab, SIGNAL(signalPositionChanged(int)), this, SLOT(slotNavigatorPosition(int)));
+  connect(navTab, SIGNAL(signaVisibilityChanged(bool)), this, SLOT(slotHideNav(bool)));
   
   // setup the data panel area
   infoLabel = new QMultiLineEdit(dpSplitter);
@@ -118,7 +119,9 @@ QtstalkerApp::QtstalkerApp()
   initIndicatorNav();
   initPortfolioNav();
   initTestNav();
-  initScannerNav();
+  initScannerNav();  
+  // aktivate last settings
+  navTab->init();
 
   // setup the initial indicators
   QString igroup;
@@ -139,16 +142,9 @@ QtstalkerApp::QtstalkerApp()
  
   // restore the splitter sizes
   rcfile.loadSplitterSize(RcFile::NavAreaSize, navSplitter);
-  rcfile.loadSplitterSize(RcFile::PlotSizes, split);
+  slotLoadPlotSizes();
   rcfile.loadSplitterSize(RcFile::DataPanelSize,dpSplitter);
   
-  // set the nav status
-  // FIXME: seems to me ugly, better it would be work inside
-  // of MainMenubar.cpp
-  bool b;
-  rcfile.loadData(RcFile::ShowSidePanel, b);
-  slotHideNav(b);
-
   // restore the size of the app
   QSize sz;
   rcfile.loadSize(RcFile::MainWindowSize, sz);
@@ -161,9 +157,6 @@ QtstalkerApp::QtstalkerApp()
   
   // setup the indicator page  
   ip->updateList();
-  
-  // make sure the focus is set to the chart panel
-  navTab->buttonPressed(0);
   
   // catch any kill signals and try to save config
   connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(slotQuit()));
@@ -239,7 +232,7 @@ void QtstalkerApp::slotLoadMainToolbarSettings()
   if(tb) menubar->getAction(MainMenubar::Quotes)->addTo(toolbar);
   rcfile.loadData(RcFile::ShowHelpButton, tb);
   if(tb) menubar->getAction(MainMenubar::Help)->addTo(toolbar);
-  }
+}
 void QtstalkerApp::slotQuit()
 {
   // do this to save any pending chart object edits
@@ -248,18 +241,14 @@ void QtstalkerApp::slotQuit()
     it.current()->clear();
 
   // save window sizes 
-  RcFile rcfile;
-  rcfile.saveSplitterSize(RcFile::PlotSizes, split);
+  //RcFile rcfile;
+  slotSavePlotSizes();
   rcfile.saveSplitterSize(RcFile::DataPanelSize, dpSplitter);
   rcfile.saveSplitterSize(RcFile::NavAreaSize, navSplitter);
    
   rcfile.saveSize(RcFile::MainWindowSize, size());
   rcfile.savePoint(RcFile::MainWindowPos, pos());
 
-
-  QString s;
-  s = ip->getIndicatorGroup();
-  rcfile.saveData(RcFile::IndicatorGroup, s);
   config.closePlugins();
   
   // make sure we clean up the local indicators before we quit
@@ -275,6 +264,11 @@ void QtstalkerApp::slotQuit()
     delete recordList;
 
   chartIndex->close();
+  
+  // call the destructors which save some settings
+  delete gp;
+  delete chartNav;
+  delete navTab;
 }
 
 void QtstalkerApp::slotAbout()
@@ -304,7 +298,7 @@ void QtstalkerApp::slotOpenChart (QString selection)
 
 void QtstalkerApp::slotQuotes ()
 {
-  RcFile rcfile;
+  //RcFile rcfile;
   QStringList l;
   config.getPluginList(Config::QuotePluginPath, l);
   QString s;
@@ -383,7 +377,7 @@ void QtstalkerApp::loadChart (QString &d)
     return;
   }
 
-  config.setData(Config::CurrentChart, chartPath);
+  rcfile.saveData(RcFile::CurrentChart, chartPath);
 
   DBIndexItem item;
   chartIndex->getIndexItem(fn, item);
@@ -573,7 +567,7 @@ void QtstalkerApp::barLengthChanged ()
   // bar length has changed
 
   QString s = QString::number(toolbar2->getBarLengthInt());
-  config.setData(Config::BarLength, s);
+  rcfile.saveData(RcFile::BarLength, s);
 
   emit signalInterval((BarData::BarLength) toolbar2->getBarLengthInt());
 }
@@ -608,7 +602,7 @@ void QtstalkerApp::slotDeleteIndicator (QString text)
   // delete indicator slot
 
   QString s;
-  RcFile rcfile;
+  //RcFile rcfile;
   rcfile.loadData(RcFile::IndicatorPath, s);
   s.append("/" + ip->getIndicatorGroup() + "/" + text);
   Setting set;
@@ -730,7 +724,7 @@ void QtstalkerApp::addIndicatorButton (QString d)
     it->show();
 
   QColor color;
-  RcFile rcfile;
+  //RcFile rcfile;
   rcfile.loadColor(RcFile::BackgroundColor, color);
   
   connect(this, SIGNAL(signalBackgroundColor(QColor)), plot, SLOT(setBackgroundColor(QColor)));
@@ -788,7 +782,7 @@ void QtstalkerApp::slotChartUpdated ()
     return;
   
   QString s = QString::number(toolbar2->getBars());
-  config.setData(Config::Bars, s);
+  rcfile.saveData(RcFile::BarsToLoad, s);
 
   loadChart(chartPath);
 }
@@ -837,7 +831,9 @@ void QtstalkerApp::initIndicatorNav ()
   connect(ip, SIGNAL(signalEditIndicator(Indicator *)), this, SLOT(slotEditIndicator(Indicator *)));
   connect(ip, SIGNAL(signalDeleteIndicator(QString)), this, SLOT(slotDeleteIndicator(QString)));
   connect(menubar, SIGNAL(signalNewIndicator()), ip, SLOT(newIndicator()));
-  connect(ip, SIGNAL(signalReloadChart()), this, SLOT(slotChartUpdated()));
+  connect(ip, SIGNAL(signalGroupIsChanging()), this, SLOT(slotSavePlotSizes()));
+  connect(ip, SIGNAL(signalGroupChanged()), this, SLOT(slotLoadPlotSizes()));
+  connect(ip, SIGNAL(signalGroupChanged()), this, SLOT(slotChartUpdated()));
   connect(ip, SIGNAL(signalLocalIndicator(QString)), this, SLOT(addIndicatorButton(QString)));
   navTab->addWidget(ip, 2);
 }
@@ -995,7 +991,7 @@ void QtstalkerApp::slotIndicatorSummary ()
     return;
 
   QString basePath, s;
-  RcFile rcfile;
+  //RcFile rcfile;
   rcfile.loadData(RcFile::IndicatorPath, basePath);
   rcfile.loadData(RcFile::IndicatorGroup, s);
   basePath.append("/" + s);
@@ -1045,6 +1041,19 @@ void QtstalkerApp::slotAppFont (QFont d)
   qApp->setFont(d, TRUE, 0);
 }
 
+void QtstalkerApp::slotSavePlotSizes ()
+{
+  QString s;
+  s = ip->getIndicatorGroup();
+  rcfile.saveSplitterSize(RcFile::PlotSizes, split, s);
+}
+
+void QtstalkerApp::slotLoadPlotSizes ()
+{  
+  QString s;
+  s = ip->getIndicatorGroup();
+  rcfile.loadSplitterSize(RcFile::PlotSizes, split, s);
+}
 
 //**********************************************************************
 //**********************************************************************

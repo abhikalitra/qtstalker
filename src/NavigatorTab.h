@@ -34,6 +34,7 @@ class NavigatorTab : public QWidget
 
   signals:
     void signalPositionChanged (int);
+    void signaVisibilityChanged (bool);
   
   public:
   
@@ -53,6 +54,7 @@ class NavigatorTab : public QWidget
     void saveSettings();
     int getPosition ();
     void addWidget (QWidget *w, int);
+    void init ();
 
   public slots:
     void togglePosition (int);
@@ -75,6 +77,8 @@ class NavigatorTab : public QWidget
     int idMenuRight;
     QWidgetStack *stack;
     QButtonGroup *bg;
+    int activeButton;
+    bool isVisible;
 };
 
 #endif

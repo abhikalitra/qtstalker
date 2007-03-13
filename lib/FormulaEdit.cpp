@@ -41,7 +41,9 @@
 FormulaEdit::FormulaEdit (QWidget *w, int t) : QWidget(w)
 {
   type = (FormulaEditType) t;
+  /*  FIXME: take no effect, outdated or not yet implemented?
   config.getPluginList(Config::IndicatorPluginPath, functionList);
+  */
 
   PlotLine pl;
   pl.getLineTypes(lineTypes);

@@ -125,6 +125,8 @@ class QtstalkerApp : public QMainWindow
     void slotMenubarStatus (bool);
     void slotAppFont (QFont);
     void slotLoadMainToolbarSettings();
+    void slotSavePlotSizes();
+    void slotLoadPlotSizes();
     
   private:
     QToolBar *toolbar;

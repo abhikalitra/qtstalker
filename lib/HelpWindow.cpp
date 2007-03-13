@@ -20,7 +20,7 @@
  */
 
 #include "HelpWindow.h"
-#include "Config.h"
+#include "RcFile.h"
 #include "../pics/next.xpm"
 #include "../pics/home.xpm"
 #include "../pics/previous.xpm"
@@ -31,8 +31,8 @@
 
 HelpWindow::HelpWindow (QWidget *w, QString &fn) : QDialog (w, "HelpWindow", FALSE, WDestructiveClose)
 {
-  Config config;
-  config.getData(Config::HelpFilePath, homePath);
+  RcFile rcfile;
+  rcfile.loadData(RcFile::HelpFilePath, homePath);
   homePath.append("/");
   tocPath = homePath + "toc.html";
 
@@ -80,8 +80,9 @@ HelpWindow::HelpWindow (QWidget *w, QString &fn) : QDialog (w, "HelpWindow", FAL
   
   setCaption(text->documentTitle());
   
-  // FIXME: make it configurable/remember last size
-  resize(350, 350);
+  QSize sz;
+  rcfile.loadSize(RcFile::HelpWindowSize, sz);
+  resize(sz);
 }
 
 HelpWindow::~HelpWindow ()
@@ -116,7 +117,9 @@ void HelpWindow::nextStatus (bool d)
 }
 
 void HelpWindow::exit ()
-{
+{  
+  RcFile rcfile;
+  rcfile.saveSize(RcFile::HelpWindowSize, size());
   done(0);
 }
 

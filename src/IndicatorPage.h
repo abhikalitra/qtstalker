@@ -32,6 +32,7 @@
 #include "DBIndex.h"
 #include "Setting.h"
 #include "Indicator.h"
+#include "RcFile.h"
 
 
 class IndicatorPage : public QWidget
@@ -44,7 +45,8 @@ class IndicatorPage : public QWidget
     void signalEditIndicator (Indicator *);
     void signalDeleteIndicator (QString);
     void signalNewIndicator (Indicator *);
-    void signalReloadChart ();
+    void signalGroupChanged ();
+    void signalGroupIsChanging ();
     void signalLocalIndicator (QString);
   
   public:
@@ -105,6 +107,7 @@ class IndicatorPage : public QWidget
     QLineEdit *search;
     QDir idir;
     DBIndex *chartIndex;
+    RcFile rcfile;
 };
 
 #endif

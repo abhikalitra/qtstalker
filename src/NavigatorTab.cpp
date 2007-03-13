@@ -27,6 +27,7 @@
 #include "TestPage.h"
 #include "GroupPage.h"
 #include "ToolBarBtn.h"
+#include "RcFile.h"
 #include "../pics/indicator.xpm"
 #include "../pics/dirclosed.xpm"
 #include "../pics/plainitem.xpm"
@@ -34,7 +35,6 @@
 #include "../pics/test.xpm"
 #include "../pics/scanner.xpm"
 #include <qcursor.h>
-#include <qsettings.h>
 #include <qlayout.h>
 #include <qtooltip.h>
 #include <qaccel.h>
@@ -128,12 +128,11 @@ NavigatorTab::NavigatorTab (QWidget *w, QMainWindow *mw) : QWidget (w)
   a->insertItem(CTRL+Key_P, PortfolioPanelFocus);
   a->insertItem(CTRL+Key_T, TestPanelFocus);
   a->insertItem(CTRL+Key_S, ScannerPanelFocus);
-
-  //loadSettings();
 }
 
 NavigatorTab::~NavigatorTab ()
 {
+  saveSettings();
   delete menu;
 }
 
@@ -141,19 +140,21 @@ void NavigatorTab::togglePosition (int pos)
 {
   position = pos;
   emit signalPositionChanged(pos);
-  saveSettings();
 }
 
 void NavigatorTab::saveSettings()
 {
-  QSettings settings;
-  settings.writeEntry("/Qtstalker/NavigatorPosition", position);
+  RcFile rcfile;
+  rcfile.saveData(RcFile::NavigatorPosition, position);
+  rcfile.saveData(RcFile::NavigatorActiveButton, activeButton);
 }
 
 void NavigatorTab::loadSettings() 
 {
-  QSettings settings;
-  position = settings.readNumEntry("/Qtstalker/NavigatorPosition", 0);
+  RcFile rcfile;
+  rcfile.loadData(RcFile::NavigatorPosition, position);
+  rcfile.loadData(RcFile::NavigatorActiveButton, activeButton);
+  rcfile.loadData(RcFile::ShowSidePanel,isVisible);
 }
 
 int NavigatorTab::getPosition () 
@@ -174,6 +175,7 @@ void NavigatorTab::addWidget (QWidget *w, int id)
 
 void NavigatorTab::buttonPressed (int id) 
 {
+  activeButton = id;
   stack->raiseWidget(id);
   QWidget *w = 0;
   
@@ -295,4 +297,11 @@ void NavigatorTab::slotTglPosAboutToShow()
     positionMenu->setItemVisible ( idMenuLeft, FALSE );
     positionMenu->setItemVisible ( idMenuRight, TRUE );
   }
+}
+
+void NavigatorTab::init()
+{
+  pressButton(activeButton);
+  emit signaVisibilityChanged(isVisible);
+
 }

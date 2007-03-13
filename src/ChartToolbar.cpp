@@ -85,7 +85,7 @@ ChartToolbar::ChartToolbar (QMainWindow *mw) : QToolBar (mw, "chartToolbar")
   
   barCount = new QLineEdit(this);
   barCount->setValidator(iv);
-  rcfile.loadData(RcFile::Bars, ts);
+  rcfile.loadData(RcFile::BarsToLoad, ts);
   barCount->setText(ts);
   QToolTip::add(barCount, tr("Total bars to load"));
   connect(barCount, SIGNAL(returnPressed()), this, SLOT(barsChanged()));
@@ -198,7 +198,7 @@ int ChartToolbar::setSliderStart (int width, int records)
 
 void ChartToolbar::saveSettings ()
 { 
-  rcfile.saveData(RcFile::Bars, getBars());
+  rcfile.saveData(RcFile::BarsToLoad, getBars());
   rcfile.saveData(RcFile::BarLength, getBarLengthInt());
   rcfile.saveData(RcFile::Pixelspace, getPixelspace());
   //rcfile.savePoint(RcFile::ChartToolBarPos, pos());

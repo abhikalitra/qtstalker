@@ -27,7 +27,7 @@
 #include <qpopupmenu.h>
 #include <qlineedit.h>
 #include "Navigator.h"
-#include "Config.h"
+#include "RcFile.h"
 #include "DBIndex.h"
 
 class ChartPage : public QWidget
@@ -78,7 +78,7 @@ class ChartPage : public QWidget
 
   protected:
     Navigator *nav;
-    Config config;
+    RcFile rcfile;
     QPopupMenu *menu;
     QPopupMenu *newMenu;
     QLineEdit *search;

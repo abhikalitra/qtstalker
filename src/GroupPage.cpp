@@ -53,13 +53,13 @@ GroupPage::GroupPage (QWidget *w) : QWidget (w)
   vbox->addWidget(group);
 
   QString s;
-  config.getData(Config::GroupPath, s);  
+  rcfile.loadData(RcFile::GroupPath, s);
   nav = new Navigator(this, s);
   connect(nav, SIGNAL(fileSelected(QString)), this, SLOT(groupSelected(QString)));
   connect(nav, SIGNAL(fileOpened(QString)), this, SLOT(chartOpened(QString)));
   connect(nav, SIGNAL(noSelection()), this, SLOT(groupNoSelection()));
   connect(nav, SIGNAL(contextMenuRequested(QListBoxItem *, const QPoint &)), this, SLOT(rightClick(QListBoxItem *)));
-  nav->updateList();
+    
   vbox->addWidget(nav);
 
   menu = new QPopupMenu(this);
@@ -81,11 +81,18 @@ GroupPage::GroupPage (QWidget *w) : QWidget (w)
   a->insertItem(CTRL+Key_H, Help);
   a->insertItem(Key_Delete, DeleteChart);
   
-  groupNoSelection();
+  rcfile.loadData(RcFile::LastGroupUsed, s);
+  if (!s.isEmpty()) 
+    nav->setDirectory(s);
+  else 
+    nav->updateList();
 }
 
 GroupPage::~GroupPage ()
 {
+  QString s;
+  nav->getCurrentPath(s);
+  rcfile.saveData(RcFile::LastGroupUsed,s);
 }
 
 void GroupPage::newGroup()
@@ -126,7 +133,7 @@ void GroupPage::addGroupItem()
 {
   QString s("*");
   QString s2;
-  config.getData(Config::DataPath, s2);
+  rcfile.loadData(RcFile::DataPath, s2);
   SymbolDialog *dialog = new SymbolDialog(this,
                                           s2,
   					  s2,
@@ -250,7 +257,7 @@ void GroupPage::deleteGroup()
 
   nav->getCurrentPath(s);
   QString ts;
-  config.getData(Config::GroupPath, ts);
+  rcfile.loadData(RcFile::GroupPath, ts);
   if (! s.compare(ts))
     return;
   
@@ -307,8 +314,7 @@ void GroupPage::renameGroup ()
     return;
   }
 
-  s = s2 + "/x";
-  nav->setDirectory(s);
+  nav->setDirectory(s2);
   nav->updateList();
   
   groupNoSelection();
@@ -331,7 +337,7 @@ void GroupPage::chartOpened (QString d)
 void GroupPage::groupNoSelection ()
 {
   QString s, s2;
-  config.getData(Config::GroupPath, s);
+  rcfile.loadData(RcFile::GroupPath, s);
   nav->getCurrentPath(s2);
   if (s.compare(s2))
   {
@@ -373,7 +379,7 @@ void GroupPage::setFocus ()
 void GroupPage::addChartToGroup (QString symbol)
 {
   QString s;
-  config.getData(Config::GroupPath, s);
+  rcfile.loadData(RcFile::GroupPath, s);
   Traverse t(Traverse::Dir);
   t.traverse(s);
   QStringList l;

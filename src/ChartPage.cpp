@@ -53,7 +53,7 @@ ChartPage::ChartPage (QWidget *w, DBIndex *i) : QWidget (w)
   vbox->addWidget(search);
 
   QString s;
-  config.getData(Config::DataPath, s);
+  rcfile.loadData(RcFile::DataPath, s);
   nav = new Navigator(this, s);
   connect(nav, SIGNAL(fileOpened(QString)), this, SLOT(chartOpened(QString)));
   connect(nav, SIGNAL(contextMenuRequested(QListBoxItem *, const QPoint &)), this,
@@ -89,10 +89,19 @@ ChartPage::ChartPage (QWidget *w, DBIndex *i) : QWidget (w)
   a->insertItem(CTRL+Key_Tab, Tab);
   a->insertItem(Key_Delete, DeleteChartQuick);
   a->insertItem(CTRL+Key_G, AddToGroup);
+  
+  rcfile.loadData(RcFile::LastChartDir, s);
+  if (!s.isEmpty()) 
+    nav->setDirectory(s);
+  else 
+    nav->updateList();
 }
 
 ChartPage::~ChartPage ()
 {
+  QString s;
+  nav->getCurrentPath(s);
+  rcfile.saveData(RcFile::LastChartDir,s);
 }
 
 void ChartPage::deleteChart ()
@@ -100,7 +109,7 @@ void ChartPage::deleteChart ()
   QString s("*");
   QString s2, bp;
   nav->getCurrentPath(s2);
-  config.getData(Config::DataPath, bp);
+  rcfile.loadData(RcFile::DataPath, bp);
   SymbolDialog *dialog = new SymbolDialog(this, 
                                           bp,
   					  s2,
@@ -177,7 +186,7 @@ void ChartPage::exportSymbol ()
   QString s("*");
   QString s2, bp;
   nav->getCurrentPath(s2);
-  config.getData(Config::DataPath, bp);
+  rcfile.loadData(RcFile::DataPath, bp);
   SymbolDialog *dialog = new SymbolDialog(this,
                                           bp,
   					  s2,
@@ -190,7 +199,7 @@ void ChartPage::exportSymbol ()
   if (rc == QDialog::Accepted)
   {
     QString s;
-    config.getData(Config::Home, s);
+    rcfile.loadData(RcFile::Home, s);
     s.append("/export");
     QDir dir(s);
     if (! dir.exists(s, TRUE))
@@ -217,7 +226,7 @@ void ChartPage::dumpSymbol ()
   QString s("*");
   QString s2, bp;
   nav->getCurrentPath(s2);
-  config.getData(Config::DataPath, bp);
+  rcfile.loadData(RcFile::DataPath, bp);
   SymbolDialog *dialog = new SymbolDialog(this,
                                           bp,
   					  s2,
@@ -229,7 +238,7 @@ void ChartPage::dumpSymbol ()
 
   if (rc == QDialog::Accepted)
   {
-    config.getData(Config::Home, s);
+    rcfile.loadData(RcFile::Home, s);
     s.append("/export");
     QDir dir(s);
     if (! dir.exists(s, TRUE))
@@ -257,7 +266,7 @@ void ChartPage::exportChart (QString &path, bool f)
   db.open(path, chartIndex);
 
   QString s;
-  config.getData(Config::Home, s);
+  rcfile.loadData(RcFile::Home, s);
   s.append("/export/");
   
   QString s2;

@@ -25,6 +25,8 @@
 #include "DBIndexItem.h"
 #include "COBase.h"
 #include "Exchange.h"
+#include "RcFile.h"
+#include <qsize.h>
 #include <qlabel.h>
 #include <qlayout.h>
 #include <qmessagebox.h>
@@ -56,10 +58,17 @@ StocksDialog::StocksDialog (QString p, DbPlugin *d, DBIndex *i) : QTabDialog (0,
   
   setHelpButton();
   QObject::connect(this, SIGNAL(helpButtonPressed()), this, SLOT(help()));
+  
+  RcFile rcfile;
+  QSize sz;
+  rcfile.loadSize(RcFile::EditStockWindowSize, sz);
+  resize(sz);
 }
 
 StocksDialog::~StocksDialog ()
 {
+  RcFile rcfile;
+  rcfile.saveSize(RcFile::EditStockWindowSize, size());
 }
 
 void StocksDialog::createDetailsPage ()

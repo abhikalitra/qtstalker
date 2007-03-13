@@ -23,8 +23,6 @@
 #include "../pics/dirclosed.xpm"
 #include <qpixmap.h>
 
-#define BUTTON_SIZE 24
-
 Navigator::Navigator (QWidget *w, QString &bp) : QListBox(w)
 {
   basePath = bp;
@@ -150,8 +148,12 @@ void Navigator::setDirectory (QString &d)
 {
   if (d.length())
   {
-    QFileInfo fi(d);
-    currentDir.setPath(fi.dirPath(TRUE));
+  //  QFileInfo fi(d);
+  //  currentDir.setPath(fi.dirPath(TRUE));
+    currentDir.setPath(d);
+    updateList();
+    emit noSelection();
+    selectedFlag = FALSE;
   }
 }
 
@@ -178,12 +180,10 @@ void Navigator::checkDirectory (QListBoxItem *item)
 
   QString s;
   if (item->pixmap())
-  {
+  { 
+    // step directory tree down
     s = currentDir.absPath() + "/" + item->text();
-    currentDir.setPath(s);
-    updateList();
-    emit noSelection();
-    selectedFlag = FALSE;
+    setDirectory(s);
     return;
   }
   
@@ -211,11 +211,13 @@ void Navigator::setKeyFlag (bool d)
 
 void Navigator::setHome ()
 {
-  QString s = basePath;
+  /*QString s = basePath;
   currentDir.setPath(s);
   updateList();
   emit noSelection();
   selectedFlag = FALSE;
+  */
+  setDirectory(basePath);
 }
 
 bool Navigator::isSelected ()
