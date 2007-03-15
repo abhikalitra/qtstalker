@@ -167,10 +167,6 @@ Save changes?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Updating</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Bad date</source>
         <translation type="unfinished"></translation>
     </message>
@@ -260,6 +256,10 @@ Save changes?</source>
     </message>
     <message>
         <source>CSV Quotes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Progress</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -455,15 +455,15 @@ Save changes?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Bar Spacing 1</source>
+        <source>Weekly Compression</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Bar Spacing 2</source>
+        <source>Daily Compression</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Bar Spacing 3</source>
+        <source>15min Compression</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1646,6 +1646,98 @@ Save changes?</source>
     </message>
     <message>
         <source>Fonts</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Ok</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Quit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Preferences</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Side Panel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Grid</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Scale to Screen</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>CrossHair</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>PaperTrade</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>DrawMode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>NewIndicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>DataWindow</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MainQuote</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Help</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MainToolbar</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Slider</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>BarsToLoad Field</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>BarSpacing Spinner</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cmps.15Minute</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cmps.Daily</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cmps.Weekly</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cmps.ComboBox</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ChartToolbar</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;OK</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2879,6 +2971,14 @@ Save changes?</source>
         <source>London Stock Exchange</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Down Candle Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Candle Fill When</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>QtstalkerApp</name>
@@ -2944,10 +3044,6 @@ Ver CVS 0.34 (working title)
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Starting update...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Update cancelled.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2969,6 +3065,10 @@ Ver CVS 0.34 (working title)
     </message>
     <message>
         <source>Timeout</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Updating ...</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
