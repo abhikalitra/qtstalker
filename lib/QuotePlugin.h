@@ -30,6 +30,7 @@
 #include <qtextedit.h>
 #include <qlayout.h>
 #include <qspinbox.h>
+#include <qprogressbar.h>
 #include "Toolbar.h"
 #include "DBIndex.h"
 
@@ -58,6 +59,7 @@ class QuotePlugin : public QTabDialog
     void disableGUI ();
     virtual void update ();
     void setChartIndex (DBIndex *);
+    QProgressBar *progressBar;
     
   public slots:
     void getFile (QString &);

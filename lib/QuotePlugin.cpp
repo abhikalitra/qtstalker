@@ -96,6 +96,13 @@ void QuotePlugin::buildGui ()
   grid->setSpacing(5);
   grid->setColStretch(1, 1);
 
+  vbox->addSpacing(5);
+
+  QLabel *label = new QLabel(tr("Progress:"), baseWidget);
+  vbox->addWidget(label);
+  progressBar = new QProgressBar(baseWidget);
+  vbox->addWidget(progressBar);
+
   vbox->addSpacing(10);
 
   QTabWidget *tabs = new QTabWidget(baseWidget);
@@ -117,7 +124,7 @@ void QuotePlugin::buildGui ()
   tvbox->setSpacing(2);
   tvbox->setMargin(5);
 
-  QLabel *label = new QLabel(tr("Download Status:"), w);
+  label = new QLabel(tr("Download Status:"), w);
   tvbox->addWidget(label);
   
   statusLog = new QTextEdit(w);
@@ -333,7 +340,7 @@ void QuotePlugin::slotTimeout ()
 void QuotePlugin::getQuotes ()
 {
   statusLog->clear();
-  QString s(tr("Updating ..."));
+  QString s(tr("Any errors will be listed, otherwise silent.\nUpdating ..."));
   printStatusLogMessage(s);
   disableGUI();
   update();

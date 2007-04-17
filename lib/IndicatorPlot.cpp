@@ -1372,7 +1372,6 @@ void IndicatorPlot::drawCandle ()
       int xc = scaler.convertToY(cl);
       int xo = scaler.convertToY(o);
 
-/*    old code
       if (! ff)
       {
         painter.drawLine (x, xh, x, xc);
@@ -1392,39 +1391,6 @@ void IndicatorPlot::drawCandle ()
         else
           painter.fillRect(x - 2, xo, 5, xc - xo, c);
       }
-*/
-
-      // new code start 
-      if (! ff)
-      {
-        if (cl > o)
-        {
-          painter.drawLine (x, xh, x, xc);
-          painter.drawLine (x, xo, x, xl);
-        }
-        else
-        {
-          painter.drawLine (x, xh, x, xo);
-          painter.drawLine (x, xc, x, xl);
-        }
-
-        if (xc == xo)
-          painter.drawLine (x - 2, xo, x + 2, xo);
-        else
-          painter.drawRect(x - 2, xc, 5, xo - xc); 
-      }
-      else
-      {
-        /* Solved the line apearing in candle down */
-        painter.drawLine (x, xh, x, xc);
-        painter.drawLine (x, xo, x, xl);
-      
-        if (xc == xo)
-          painter.drawLine (x - 2, xo, x + 2, xo);
-        else
-          painter.fillRect(x - 2, xo, 5, xc - xo, c);
-      }
-      // end new code  
     }
 
     x = x + pixelspace;

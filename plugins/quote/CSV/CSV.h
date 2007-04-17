@@ -82,7 +82,6 @@ class CSV : public QuotePlugin
     QDateEdit *edate;
     QCheckBox *dateRange;
     QSpinBox *minutes;
-    QProgressBar *progBar;
 };
 
 extern "C"

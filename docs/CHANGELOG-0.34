@@ -249,6 +249,10 @@
 
 20070313: Applied patch #1678913 - Restore most of the prog settings/status - thanks to loh_tar for the patch.
 
+20070417: Applied patch #1701281 - revert changes to BARS which broke candles - thanks to xley for the patch.
+
+20070417: Applied patch #1701267 - progressBar for quote plugins - thanks to xley for the patch.
+
 
 
 

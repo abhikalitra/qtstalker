@@ -80,15 +80,6 @@ BARS::BARS ()
 
   formatList.append(FormatString);
 
-  candleFillList.append("Close>Open"); /*******************/
-  candleFillList.append("Close<Open"); /*******************/
-  candleFillList.append("Both"); /*******************/
-  candleFillList.append("Never"); /*******************/
-  candleUpColorLabel = "candleUpColor"; /*******************/
-  candleDownColorLabel = "CandleDownColor"; /********************/
-  candleFillLabel = "candleFill";           /********************/
-  candleFillOption = cdlFillOpenGTClose;    /********************/
-
   setDefaults();
 }
 
@@ -128,10 +119,6 @@ void BARS::setDefaults ()
   maInput = BarData::Close;
   maInput2 = BarData::Close;
   maInput3 = BarData::Close;
-
-  candleUpColor.setNamedColor("green"); /**********************/
-  candleDownColor.setNamedColor("red"); /**********************/
-  candleFillOption = cdlFillOpenGTClose; /******************/ 
 }
 
 Indicator * BARS::calculate ()
@@ -197,7 +184,6 @@ PlotLine * BARS::calculateBar ()
 
 PlotLine * BARS::calculateCandle ()
 {
-/*
   PlotLine *line = new PlotLine;
   int loop;
   for (loop = 0; loop < (int) data->count(); loop++)
@@ -222,71 +208,6 @@ PlotLine * BARS::calculateCandle ()
   line->setType(PlotLine::Candle);
   line->setLabel(label);
   return line;
-*/
-
-  // start new code
-
-  PlotLine *line = new PlotLine;
-  int loop;
-  for (loop = 0; loop < (int) data->count(); loop++)
-  {
-    double c = data->getClose(loop);
-    double o = data->getOpen(loop);
-    double lc = 0;
-
-    if((loop - 1) < 0)
-       lc = o;                        /*****************/
-    else
-       lc = data->getClose(loop - 1); /*****************/
-      
-    bool fillFlag = FALSE;
-
-    if( o != 0 ) {
-       switch(candleFillOption){
-          case cdlFillOpenGTClose: 
-                                   if(c < o) fillFlag = TRUE; 
-                                   else      fillFlag = FALSE;
-                                   break;
-          case cdlFillOpenLTClose: 
-                                   if(c > o) fillFlag = TRUE; 
-                                   else      fillFlag = FALSE;
-                                   break;
-          case cdlFillBoth: fillFlag = TRUE;
-                            break;
-          default:          fillFlag = FALSE;
-                            break;
-       }
-    }
-
-/*    if (o != 0)   // Old Code;
-    {
-      if (c < o)
-        fillFlag = TRUE;
-    }*/
-
-    /******************* Multiplas cores de candle ***********/
-    if (c > lc)
-       line->append(candleUpColor, o, data->getHigh(loop), data->getLow(loop), c, fillFlag);
-    else
-       line->append(candleDownColor, o, data->getHigh(loop), data->getLow(loop), c, fillFlag);
-
-    /****************** end multiplas cores de candle ***********/
-
-
-    QDateTime dt;
-    data->getDate(loop, dt);
-    line->append(dt);
-  }
-
-  line->setType(PlotLine::Candle);
-  line->setLabel(label);
-  return line;
-
-//  output->addLine(line);
-
-//  calculateMA();
-
-  // end new code
 }
 
 PlotLine * BARS::calculatePF ()
@@ -492,8 +413,6 @@ int BARS::indicatorPrefDialog (QWidget *w)
   QString ncl = QObject::tr("Neutral Color");
   QString ccl = QObject::tr("Candle Color");
   QString ll = QObject::tr("Label");
-  QString ccld = QObject::tr("Down Candle Color"); /************/
-  QString cf   = QObject::tr("Candle Fill When"); /************/
 
   QString pfxcl = QObject::tr("X Color");
   QString pfocl = QObject::tr("O Color");
@@ -541,10 +460,7 @@ int BARS::indicatorPrefDialog (QWidget *w)
   if (! method.compare("Candle"))
   {
     dialog->setCaption(QObject::tr("Candle Indicator"));
-//    dialog->addColorItem(ccl, pl, candleColor);
-    dialog->addColorItem(ccl, pl, candleUpColor); //****************
-    dialog->addColorItem(ccld, pl, candleDownColor); //**************
-    dialog->addComboItem(cf, pl, candleFillList, candleFillOption); //********************
+    dialog->addColorItem(ccl, pl, candleColor);
   }
 
   if (! method.compare("PF"))
@@ -635,13 +551,8 @@ int BARS::indicatorPrefDialog (QWidget *w)
 
     if (! method.compare("Candle"))
     {
-//      dialog->getColor(ccl, candleColor);
+      dialog->getColor(ccl, candleColor);
       lineType = PlotLine::Candle;
-
-      dialog->getColor(ccl, candleUpColor); /**********************/
-      dialog->getColor(ccld, candleDownColor); /******************/
-      candleFillOption = dialog->getComboIndex(cf); /*************/
-
     }
 
     if (! method.compare("PF"))
@@ -829,25 +740,6 @@ void BARS::setIndicatorSettings (Setting &dict)
   dict.getData(pfMethodLabel, s);
   if (s.length())
     pfMethod = s;
-
-
-// new code
-  dict.getData(candleUpColorLabel, s);
-  if (s.length()){
-    candleUpColor.setNamedColor(s); /**********************/
-  }
-
-  /**************  new ************************/
-  dict.getData(candleDownColorLabel, s);
-  if (s.length())
-    candleDownColor.setNamedColor(s);
-
-  dict.getData(candleFillLabel,s);
-  if (s.length())
-    candleFillOption = s.toInt();
-  /*********************************************/
-
-
 }
 
 void BARS::getIndicatorSettings (Setting &dict)
@@ -909,15 +801,6 @@ void BARS::getIndicatorSettings (Setting &dict)
   dict.setData(maType3Label, ts);
   ts = QString::number(maInput3);
   dict.setData(maInput3Label, ts);
-
-// new code
-  ts = candleUpColor.name(); //***************
-  dict.setData(candleUpColorLabel, ts);   /**************/
-  ts = candleDownColor.name();            /**************/
-  dict.setData(candleDownColorLabel, ts); /**************/
-  ts = QString::number(candleFillOption); /**************/
-  dict.setData(candleFillLabel,ts);       /**************/
-
 }
 
 PlotLine * BARS::calculateCustom (QString &p, QPtrList<PlotLine> &d)

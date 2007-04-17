@@ -81,6 +81,8 @@ class Yahoo : public QuotePlugin
     QDateEdit *edate;
     QComboBox *method;
     QCheckBox *allSymbols;
+    int fileCount;
+    int fileCounter;
 };
 
 extern "C"

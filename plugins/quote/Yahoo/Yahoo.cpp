@@ -43,6 +43,8 @@ Yahoo::Yahoo ()
   helpFile = "yahoo.html";
   url.setAutoDelete(TRUE);
   currentUrl = 0;
+  fileCount = 0;
+  fileCounter = 0;
   
   config.getData(Config::DataPath, dataPath);
   dataPath.append("/Stocks/Yahoo");
@@ -160,6 +162,7 @@ void Yahoo::update ()
   int loop;
   for (loop = 0; loop < (int) symbolList.count(); loop++)
   {
+    fileCount++;
     QString path = dataPath + "/";
     QFileInfo fi(symbolList[loop]);
     if (fi.extension(FALSE).length())
@@ -206,6 +209,8 @@ void Yahoo::startDownload ()
   ts = "url";
   currentUrl->getData(ts, s);
   getFile(s);
+  fileCounter++;
+  progressBar->setProgress(fileCounter, fileCount);
 }
 
 void Yahoo::fileDone (bool d)
@@ -237,6 +242,7 @@ void Yahoo::fileDone (bool d)
     downloadComplete();
     printStatusLogMessage(stringDone);
     printErrorList();
+    progressBar->reset();
     return;
   }
 
@@ -374,7 +380,8 @@ void Yahoo::parseHistory ()
     Bar bar;
     if (bar.setDate(date))
     {
-      QString ss = tr("Bad date") + " " + date;
+      QString ss = ts2 + " - " + tr("Bad date") + " " + date;
+      qDebug("Yahoo::parseHistory: %s - Bad date %s", ts2.latin1(), date.latin1());
       printStatusLogMessage(ss);
       continue;
     }
@@ -539,7 +546,8 @@ void Yahoo::parseQuote ()
     Bar bar;
     if (bar.setDate(date))
     {
-      QString ss = tr("Bad date") + " " + date;
+      QString ss = ts2 + " - " + tr("Bad date") + " " + date;
+      qDebug("Yahoo::parseQuote: %s - Bad date %s", ts2.latin1(), date.latin1());
       printStatusLogMessage(ss);
       continue;
     }
@@ -687,6 +695,7 @@ void Yahoo::cancelUpdate ()
   
   downloadComplete();
   printStatusLogMessage(stringCanceled);
+  progressBar->reset();
 }
 
 void Yahoo::parseFundamental ()

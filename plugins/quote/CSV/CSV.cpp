@@ -247,7 +247,7 @@ void CSV::parse ()
         continue;
 //      QString ss = tr("Updating") + " " + symbol;
 //      printStatusLogMessage(ss);
-        progBar->setProgress(loop, (int) list.count());
+        progressBar->setProgress(loop, (int) list.count());
     }
 
     while(stream.atEnd() == 0)
@@ -462,7 +462,7 @@ void CSV::parse ()
     f.close();
   }
 
-  progBar->setProgress((int) list.count(), (int) list.count());
+  progressBar->setProgress((int) list.count(), (int) list.count());
   downloadComplete();
   if (cancelFlag)
   {
@@ -471,6 +471,7 @@ void CSV::parse ()
   }
   else
     printStatusLogMessage(stringDone);
+  progressBar->reset();
 }
 
 void CSV::setDelimiter (QString &d)
@@ -899,12 +900,6 @@ void CSV::createMainPage ()
   edate->setAutoAdvance(TRUE);
   edate->setOrder(QDateEdit::YMD);
   grid->addWidget(edate, 7, 1);
-
-  label = new QLabel(tr("Progress"), baseWidget);
-  grid->addWidget(label, 8, 0);
-
-  progBar = new QProgressBar(baseWidget);
-  grid->addWidget(progBar, 8, 1);
 
   // set the default end date
   QDate dt = QDate::currentDate();
