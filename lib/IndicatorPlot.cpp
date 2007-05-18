@@ -395,6 +395,41 @@ void IndicatorPlot::getInfo (int x)
   bar.getTimeString(TRUE, s);
   k = "T";
   tr.setData(k, s);
+
+  // If there are Buy/Sell objects, then show them in the data panel
+  if (coList.count() > 0)
+  {
+    QDateTime d;
+    bar.getDate(d);
+    QDateTime coDate;
+    int c = 0;
+    Setting set;
+    QDictIterator<COBase> it(coList);
+    for (; it.current(); ++it)
+    {
+      it.current()->getDate(coDate);
+      if (coDate == d)
+      {
+        it.current()->getSettings(set);
+        k = "Type";
+        set.getData(k, s);
+        if (s == "BuyArrow" || s == "SellArrow")
+        {
+          c++;
+          QString label = "Trade";
+          label += "-" + QString::number(c);
+          QString text = s.replace("Arrow", "");
+          k = "Identifier";
+          set.getData(k, s);
+          if (s != "") text += " " + s;
+          k = "Price";
+          set.getData(k, s);
+          if (s != "") text += " " + s;
+          tr.setData(label, text);
+        }
+      }
+    }
+  }
   
   if (indy && indy->getEnable())
   {
