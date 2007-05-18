@@ -254,6 +254,7 @@ void IndicatorSummary::createDataWindow (QPtrList<Setting> &list, QString &group
   klist.remove(s);
   klist.sort();
   klist.prepend(s);
+  klist.append(s);
   for (loop = 0; loop < (int) klist.count(); loop++)
   {
     s = klist[loop];
@@ -273,7 +274,9 @@ void IndicatorSummary::createDataWindow (QPtrList<Setting> &list, QString &group
       s = klist[loop2];
       QString s2;
       set->getData(s, s2);
-      if (loop2 > 0)
+      // Write the indicator columns,
+      // but skip the symbol column which is the first and final columns
+      if ( (loop2 > 0) && (loop2 < (int) klist.count()-1) )
         xw.writeTaggedString("indicator", s2, AttrMap("variable", s));
       if (! s2.length())
         continue;
