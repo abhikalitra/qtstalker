@@ -92,7 +92,8 @@ class Config
       IndicatorGroup,
       QuotePluginStorage,
       ShowUpgradeMessage, // unused
-      LastNewIndicator
+      LastNewIndicator,
+      UserDocsPath
     };
 
     enum Indicator

@@ -80,6 +80,7 @@ class RcFile
       PS3Button, //  "
    */   IndexPath,
       HelpFilePath,
+      UserDocsPath,
       LastQuotePlugin,
       MainWindowSize,
       MainWindowPos,

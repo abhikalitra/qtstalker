@@ -22,6 +22,8 @@
 #include "IndicatorPlot.h"
 #include "DbPlugin.h"
 #include "PrefDialog.h"
+#include "HelpWindow.h"
+#include "RcFile.h"
 #include <qpainter.h>
 #include <qpen.h>
 #include <qpoint.h>
@@ -53,6 +55,7 @@
 #include "../pics/text.xpm"
 #include "../pics/trend.xpm"
 #include "../pics/vertical.xpm"
+#include "../pics/help.xpm"
 
 IndicatorPlot::IndicatorPlot (QWidget *w, DBIndex *i) : QWidget(w)
 {
@@ -942,6 +945,7 @@ void IndicatorPlot::showPopupMenu ()
   chartMenu->insertItem(QPixmap(indicator), tr("New &Indicator"), this,
                         SLOT(slotNewIndicator()), CTRL+Key_I);
   chartMenu->insertItem(QPixmap(edit), tr("&Edit Indicator"), this, SLOT(slotEditIndicator()), CTRL+Key_E);
+  chartMenu->insertItem(QPixmap(help), tr("Indicator &Help"), this, SLOT(slotIndicatorHelp()), CTRL+Key_H);
   chartMenu->insertSeparator ();
   chartMenu->insertItem(QPixmap(edit), tr("Edit &Chart"), this, SLOT(slotEditChart()), CTRL+Key_C);
   chartMenu->insertSeparator ();
@@ -1095,6 +1099,44 @@ int IndicatorPlot::getWidth ()
 void IndicatorPlot::slotEditChart ()
 {
   emit signalEditChart(chartPath);
+}
+
+void IndicatorPlot::slotIndicatorHelp ()
+{
+  QString s, f;
+  QString h = "indicator/intro.html";
+  indy->getName(s);
+  s.append(".html");
+  // Convert to lowercase. The indicator names are case insensitive.
+  // FIXME: Better to do case insensitive match for the file.
+  s.lower();
+  RcFile rcfile;
+  rcfile.loadData(RcFile::UserDocsPath, userDocsPath);
+  userDocsPath.append("/");
+  rcfile.loadData(RcFile::HelpFilePath, helpFilePath);
+  helpFilePath.append("/");
+  QDir dir;
+  // look for indicator doc first in the user docs,
+  // then in main docs,
+  // otherwise use the default "intro" page.
+  f = userDocsPath + "indicator/" + s;
+  if (dir.exists(f))
+    h = f;
+  else
+  { 
+    f = helpFilePath + "indicator/" + s;
+    if (dir.exists(f))
+      h = s;
+    else
+    {
+      // try old indicator docs location at top-level
+      f = helpFilePath + s;
+      if (dir.exists(f))
+        h = s;
+    }
+  }
+  HelpWindow *hw = new HelpWindow(this, h);
+  hw->show();
 }
 
 //*************************************************************************

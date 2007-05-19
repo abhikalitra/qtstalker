@@ -86,6 +86,8 @@ RcFile::RcFile ()
   Def[IndexPath] = "";
   Key[HelpFilePath] = "HelpFilePath";
   Def[HelpFilePath] = "/usr/local/share/doc/qtstalker/html";
+  Key[UserDocsPath] = "UserDocsPath";
+  Def[UserDocsPath] = "";
   Key[LastQuotePlugin] = "LastQuotePlugin";
   Def[LastQuotePlugin] = "Yahoo";
   Key[MainWindowSize] = "/WindowSizes/Main";

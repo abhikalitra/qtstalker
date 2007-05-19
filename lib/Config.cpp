@@ -199,6 +199,20 @@ void Config::setup ()
       qDebug("Unable to create ~/.qtstalker/data1/plugin/quote directory.");
   }
   rcfile.saveData(RcFile::QuotePluginStorage, s);
+  
+  s = home + "/docs";
+  if (! dir.exists(s, TRUE))
+  {
+    if (! dir.mkdir(s, TRUE))
+      qDebug("Unable to create ~/.qtstalker/data1/docs directory.");
+  }
+  rcfile.saveData(RcFile::UserDocsPath, s);
+  s.append("/indicator");
+  if (! dir.exists(s, TRUE))
+  {
+    if (! dir.mkdir(s, TRUE))
+      qDebug("Unable to create ~/.qtstalker/data1/docs/indicator directory.");
+  }
 
   check034Conversion();
 
@@ -293,6 +307,9 @@ void Config::getData (Parm p, QString &s)
       break;
     case HelpFilePath:
       s = settings.readEntry("/Qtstalker/HelpFilePath", "/usr/local/share/doc/qtstalker/html");
+      break;
+    case UserDocsPath:
+      s = settings.readEntry("/Qtstalker/UserDocsPath");
       break;
     case LastQuotePlugin:
       s = settings.readEntry("/Qtstalker/LastQuotePlugin");
@@ -448,6 +465,9 @@ void Config::setData (Parm p, QString &d)
       break;
     case HelpFilePath:
       settings.writeEntry("/Qtstalker/HelpFilePath", d);
+      break;
+    case UserDocsPath:
+      settings.writeEntry("/Qtstalker/UserDocsPath", d);
       break;
     case LastQuotePlugin:
       settings.writeEntry("/Qtstalker/LastQuotePlugin", d);

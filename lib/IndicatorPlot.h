@@ -127,6 +127,7 @@ class IndicatorPlot : public QWidget
     void slotLogScaleChanged (bool);
     void setInterval(BarData::BarLength);
     void slotEditChart();
+    void slotIndicatorHelp();
 
   protected:
     virtual void paintEvent (QPaintEvent *);
@@ -194,6 +195,8 @@ class IndicatorPlot : public QWidget
     QPopupMenu *chartMenu;
     QPopupMenu *chartObjectMenu;
     DBIndex *chartIndex;
+    QString helpFilePath;
+    QString userDocsPath;
 };
 
 #endif

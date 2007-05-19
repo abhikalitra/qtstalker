@@ -73,10 +73,17 @@ HelpWindow::HelpWindow (QWidget *w, QString &fn) : QDialog (w, "HelpWindow", FAL
   
   s = homePath + fn;
   QDir dir;
-  if (dir.exists(s) && s.contains(".html"))
+  // If the doc exists at fn (perhaps full pathname) then use it
+  // otherwise try relative to HelpFilePath, otherwise use the default
+  if (dir.exists(fn) && s.contains(".html"))
+    text->setSource(fn);
+  else if (dir.exists(s) && s.contains(".html"))
     text->setSource(s);
   else
+  {
+    qDebug("Document not found: " + fn);
     text->setSource(tocPath);
+  }
   
   setCaption(text->documentTitle());
   
