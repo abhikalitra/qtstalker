@@ -1,0 +1,7 @@
+enable=0
+plugin=CUS
+tabRow=1
+dateFlag=1
+Name=Elder Safezone Stops
+script=bars := BARS(Bar)|SZ-Short := SZ(Short,10,2,2.5)|SZ-Long := SZ(Long,10,2,2.5)|plot (bars,#ff0000,Bars,Bar)|plot (SZ-Short,#ffa500,SZ-Short,Line)|plot (SZ-Long,#ffff00,SZ-Long,Line)
+logScale=0
