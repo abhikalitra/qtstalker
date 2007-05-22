@@ -380,8 +380,8 @@ void Yahoo::parseHistory ()
     Bar bar;
     if (bar.setDate(date))
     {
-      QString ss = ts2 + " - " + tr("Bad date") + " " + date;
-      qDebug("Yahoo::parseHistory: %s - Bad date %s", ts2.latin1(), date.latin1());
+      QString ss = ts2 + " - " + tr("Bad date") + " " + l[0];
+      qDebug("Yahoo::parseHistory: %s - Bad date %s", ts2.latin1(), l[0].latin1());
       printStatusLogMessage(ss);
       continue;
     }
@@ -546,8 +546,8 @@ void Yahoo::parseQuote ()
     Bar bar;
     if (bar.setDate(date))
     {
-      QString ss = ts2 + " - " + tr("Bad date") + " " + date;
-      qDebug("Yahoo::parseQuote: %s - Bad date %s", ts2.latin1(), date.latin1());
+      QString ss = ts2 + " - " + tr("Bad date") + " " + l[3];
+      qDebug("Yahoo::parseQuote: %s - Bad date %s", ts2.latin1(), l[3].latin1());
       printStatusLogMessage(ss);
       continue;
     }
