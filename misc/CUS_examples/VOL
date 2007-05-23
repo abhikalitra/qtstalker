@@ -1,8 +1,8 @@
-maLabel=MAVol
+maLabel=vol-sma-10
 enable=1
 method=VOL
 plugin=VOL
-volLabel=VOL
+volLabel=vol
 maLineType=4
 maColor=#ffff00
 tabRow=2
