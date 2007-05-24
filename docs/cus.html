@@ -15,9 +15,9 @@ wishes and is the basis for <a href="workwithscanner.html">scanner</a> and <a
 href="backtester.html">backtester</a>. The user builds an indicator in a step
 by step manner, by using all the indicator plugins available. We are able to
 build most any kind of indicator quickly and simply. These CUS rules are
-similar as a script and can also include other CUS rules. Complicated,
+similar to a script and can also include other CUS rules. Complicated,
 intensive indicators would best be left to creating a plugin instead of long
-series of functions for speed and memory considerations. </p>
+series of functions, for speed and memory and versatility considerations. </p>
 
 <p>
 See the contributed "<a href="#examples">CUS Examples Repository</a>".
@@ -57,7 +57,9 @@ See the contributed "<a href="#examples">CUS Examples Repository</a>".
 Each step basically defines a variable. Each variable represents the results
 of an indicator command. </p>
 
-<p><br>
+<p>
+This will create a text file at <tt>~/.qtstalker/dataN/indicator/Indicators/</tt>
+which can be further edited, either via the interface or by hand. For manual changes, reload the chart to see the effect. New indicators created manually require progam re-start.
 </p>
 
 <h3><a name="rulesyntax" id="rulesyntax">Rule Syntax</a> </h3>
@@ -222,11 +224,11 @@ how you combine different indicators. Any duplicate variable names will abort
 the calculation. Mixing indicators that have different scaling properties
 will result in awful looking charts. </p>
 
-<p>See also example <em>cdl-rel-ma </em> in the "Example" indicator group.</p>
+<p>See the <em>cdl-rel-ma</em> example.</p>
 
 <h4><a name="examples" id="examples">CUS Examples Repository</a></h4>
 
-<p>See the directory "misc/CUS_Examples" and copy some into your
+<p>See the directories "misc/CUS_Examples/" and "misc/CUS_Examples/Contributions/" and copy some into your
 "~/.qtstalker/dataN/indicator/Indicators" directory.
 See the <a href="indicator/intro.html">documentation</a> and how to
 <a href="cus-contrib.html">contribute</a>.
