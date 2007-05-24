@@ -1126,7 +1126,7 @@ void IndicatorPlot::slotIndicatorHelp ()
   { 
     f = helpFilePath + "indicator/" + s;
     if (dir.exists(f))
-      h = s;
+      h = "indicator/" + s;
     else
     {
       // try old indicator docs location at top-level
