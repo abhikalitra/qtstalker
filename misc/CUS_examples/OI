@@ -1,7 +1,7 @@
-enable=0
+enable=1
 plugin=CUS
 tabRow=2
-dateFlag=1
+dateFlag=0
 Name=OI
 script=oi := UTIL(REF,OpenInterest, 0)|plot (oi,#ffff00,OI,Line)
 logScale=0
