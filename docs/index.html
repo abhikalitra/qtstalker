@@ -36,7 +36,7 @@
 <!-- end rightPanel -->
 <a name="contentstart"></a>
 <p>
-Qtstalker is a user friendly Technical Analysis package for GNU/Linux.
+Qtstalker is a user friendly Technical Analysis package for GNU/Linux (and hence other Unix-like systems).
 Similar to commercial wares such as Metastock, Supercharts and
 Tradestation.
 Keeps to a lean, simple design for speed, portability, and low resource
@@ -58,7 +58,16 @@ package.
   <li>Customizable colors. Logarithmic and linear arithmetic scaling.
 Scale to screen.</li>
   <li>Indicators plugins include MACD, MAs, Bollinger Bands, RSI, and
-dozens more.</li>
+dozens more. Provides access to the <a href="talib.html">TA-Lib</a> library
+of common functions.</li>
+  <li>A simple scripting facility to create custom indicators. This powerfully
+enables combination of different plots in one indicator and combining of other
+indicators and calculations.
+  </li>
+  <li>A special indicator "ExScript" enables external scripts to pass data in.
+  </li>
+  <li>An "Indicator Summary" tool shows a table of all indicator parameters from all active indicators. It also writes the data to XML output for use by external programs.
+  </li>
   <li>Chart drawing objects: trendlines, buy/sell arrows, horizontal
 and vertical lines, fibonacci retracement lines, text and cycles.<br>
   </li>
@@ -78,7 +87,6 @@ using actual trading data.</li>
 (Suggestions welcome.)</li>
   <li>A Scanner that can scan the qtstalker database for charts that
 meet a user defined criteria.</li>
-  <li>A simple scripting facility to create custom indicators.</li>
   <li>A paper trading mode enabling users to practice trading without
 risking capital.</li>
 </ul>
