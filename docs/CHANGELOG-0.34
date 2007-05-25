@@ -63,7 +63,7 @@
           assumes to use the currently loaded indicators to use. Function found on the tools menu. Function will (hopefully) be
           refined with more options in the future.
 
-20061211: Added DonchianChannels to the misc/CUS_examples section.
+20061211: Added DonchianChannels to the misc/CUS_examples/Contributions/sstratos section.
 
 20061212: When editing CUS rules, the 'Open Rule' function inserts text instead of relacing text.
 
@@ -259,12 +259,16 @@
 
 20070519: Applied patch #1716890 - automated help docs for indicators - thanks to xley for the patch.
 
-20070523: Applied part patch #1716538 - CUS_examples/Contributions/lvgandhi/Ray* for Elder Ray Bull Power and Ray Bear Power - thanks to lvgandhi for the patch.
+20070523: Applied part patch #1716538 - misc/CUS_examples/Contributions/lvgandhi/Ray* for Elder Ray Bull Power and Ray Bear Power - thanks to lvgandhi for the patch.
 
-20070523: Applied part patch #1716538 - CUS_examples/Contributions/lvgandhi/FIMAs for Force Index with MAs - thanks to lvgandhi for the patch.
+20070523: Applied part patch #1716538 - misc/CUS_examples/Contributions/lvgandhi/FIMAs for Force Index with MAs - thanks to lvgandhi for the patch.
 
-20070524: Applied part patch #1716538 - CUS_examples/Contributions/ravisghosh/Envelope - thanks to ravisghosh for the patch.
+20070524: Applied part patch #1716538 - misc/CUS_examples/Contributions/ravisghosh/Envelope - thanks to ravisghosh for the patch.
 
-20070524: CUS_examples/Contributions/xley/star - Demonstrate detection of various different star candle patterns. Remember with three-day patterns, that the highlight refers to the previous day. - thanks to xley for the patch.
+20070524: misc/CUS_examples/Contributions/xley/star - Demonstrate detection of various different star candle patterns. Remember with three-day patterns, that the highlight refers to the previous day. - thanks to xley for the patch.
 
 20070525: Improved docs/index.html (and hence qtstalker.sf.net) with deliberately basic CSS. - thanks to xley for the patch.
+
+20070525: misc/CUS_examples/Contributions/xley/kk - Indicator (kk) and Scanner
+(s-kk) example for detecting Piercing Line (Kirikomi) and Dark Cloud Cover
+(Kabuse) candles. Also has documentation. - thanks to xley for the patch.
