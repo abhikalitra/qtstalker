@@ -266,3 +266,5 @@
 20070524: Applied part patch #1716538 - CUS_examples/Contributions/ravisghosh/Envelope - thanks to ravisghosh for the patch.
 
 20070524: CUS_examples/Contributions/xley/star - Demonstrate detection of various different star candle patterns. Remember with three-day patterns, that the highlight refers to the previous day. - thanks to xley for the patch.
+
+20070525: Improved docs/index.html (and hence qtstalker.sf.net) with deliberately basic CSS. - thanks to xley for the patch.
