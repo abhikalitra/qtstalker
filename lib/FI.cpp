@@ -190,7 +190,11 @@ PlotLine * FI::calculateCustom (QString &p, QPtrList<PlotLine> &d)
   maType = mal.findIndex(formatStringList[0]);
   smoothing = formatStringList[1].toInt();
 
-  return getFI();
+  PlotLine *fi = getFI();
+  PlotLine *ma = getMA(fi, maType, smoothing);
+  delete fi;
+
+  return ma;
 }
 
 void FI::formatDialog (QStringList &, QString &rv, QString &rs)
