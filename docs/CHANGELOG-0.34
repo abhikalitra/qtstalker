@@ -272,3 +272,6 @@
 20070525: misc/CUS_examples/Contributions/xley/kk - Indicator (kk) and Scanner
 (s-kk) example for detecting Piercing Line (Kirikomi) and Dark Cloud Cover
 (Kabuse) candles. Also has documentation. - thanks to xley for the patch.
+
+20070529: FI indicator now properly handles "maType" and "smoothing" when used via CUS. Fixes bug #1716543. - thanks to xley for the patch.
+
