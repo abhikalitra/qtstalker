@@ -18,6 +18,7 @@
     development library (Qt 4 not yet supported).</li>
   <li>At least the <a href="http://www.sleepycat.com/">Berkeley DB 4.1</a>
     database. FreeBSD users are required to use the 4.3 version. </li>
+  <li>Version 0.3.0 of <a href="http://ta-lib.org/">TA-Lib</a> Technical Analysis Library (see below).</li>
 </ul>
 
 <p>Best to install the binary packages of the Qt and DB that are relevant to
@@ -57,30 +58,31 @@ And some installations miss symbolic links in the lib directory. </p>
   </li>
 </ul>
 
-<h4>Install TALib</h4>
+<h4>Install TA-Lib</h4>
 
-<p>Since version 0.34 of Qtstalker you must install TALib separately
-<em>before</em> you install Qtstalker itself. In previous versions was TALib
-included in the Qtstalker source tree. You can download the source of TALib
+<p>Since version 0.34 of Qtstalker you must install TA-Lib separately
+<em>before</em> you install Qtstalker itself. In previous versions, TA-Lib was
+included in the Qtstalker source tree, but not now. You can download the source of
+<a href="http://ta-lib.org/">TA-Lib</a>
 e.g. with the command...</p>
 
 <p><code>wget
 http://prdownloads.sourceforge.net/ta-lib/ta-lib-0.3.0-src.tar.gz </code> </p>
 
 <p>...entered in your terminal. Unpack the downloaded file, <em>cd</em> into
-the extracted folder and compile/install TALib with the sequence</p>
+the extracted folder and compile/install TA-Lib with the sequence</p>
 <ol>
   <li><code>./configure</code></li>
   <li><code>make</code></li>
   <li><code>make install</code> (as root)</li>
-  <li>There may also need to modify something in case of an error like this
-    appear... 
+  <li>There may also need to modify something if an error like this
+    appears when you start Qtstalker ... 
     <p><em>/usr/local/bin/qtstalker: error while loading shared libraries:
     libqtstalker.so.0: cannot open shared object file: No such file or
     directory</em></p>
-    <p>...when you start Qtstalker .To fix this add <em>/usr/local/lib</em>
+    <p>To fix this add <em>/usr/local/lib</em>
     to your <em>/etc/ld.so.conf</em> file and run <code>ldconfig -v</code>
-    (as root)</p>
+    (as root).</p>
   </li>
 </ol>
 
