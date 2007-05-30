@@ -229,7 +229,7 @@ void Scanner::scan ()
       {
         QString ts;
         config.getData(Config::GroupPath, ts);
-        QString s = "ln -s " + fileList[loop] + " " + ts + "/Scanner/" + scannerName;
+        QString s = "ln -s \"" + fileList[loop] + "\" " + ts + "/Scanner/" + scannerName;
         system(s);
       }
     }

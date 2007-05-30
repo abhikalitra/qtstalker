@@ -150,10 +150,10 @@ void GroupPage::addGroupItem()
     {
       QFileInfo fi(l[loop]);
     
-      s = "ln -s " + l[loop] + " ";
+      s = "ln -s \"" + l[loop] + "\" ";
       QString ts;
       nav->getCurrentPath(ts);
-      QString s2 = ts + "/" + fi.fileName();
+      QString s2 = ts + "/\"" + fi.fileName() + "\"";
       QDir dir;
       dir.remove(s2, TRUE);
       s.append(s2);
@@ -397,8 +397,8 @@ void GroupPage::addChartToGroup (QString symbol)
     return;
 
   QFileInfo fi(symbol);
-  QString str = "ln -s " + symbol + " ";
-  QString s2 = s + "/" + fi.fileName();
+  QString str = "ln -s \"" + symbol + "\" ";
+  QString s2 = s + "/\"" + fi.fileName() + "\"";
   QDir dir;
   dir.remove(s2, TRUE);
   str.append(s2);
