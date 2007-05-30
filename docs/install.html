@@ -36,13 +36,22 @@ your system, it is best that you first uninstall the previous version first
 before you install the upgraded version. Doing this will better ensure a
 problem-free upgrade. Many upgrade errors can be caused by old plugins and
 libraries hanging around complicating things. You can uninstall the old
-version by doing a <em>make uninstall</em> from the root directory of the old
+version by doing <code>'sudo make uninstall'</code> from the top directory of the
+<b>old</b>
 source install.</p>
+
+<p>
+Updating from 0.33 to 0.34: When the newly installed 0.34 program starts, it
+will automatically upgrade the internal database to a new format. The new user
+workspace will be
+<code>~/.qtstalker/data1/</code> and the old <code>~/.qtstalker/data0/</code>
+will remain in case you need it. Version 0.32 and older are not supported, so you would need to import your raw data with the Quote plugins and add new indicators.
+</p>
 
 <p><strong>Important:</strong> Ensure that Berkeley DB is installed in the
 following properly.<br>
 If you installed Berkeley DB at a non-standard location, then edit the
-"configure" file (e.g. "<em>INCLUDEPATH += /opt/local/include/db4</em>"). <br>
+"configure" file (e.g. "<code>INCLUDEPATH += /opt/local/include/db4</code>"). <br>
 And some installations miss symbolic links in the lib directory. </p>
 
 <h5>Hint for Ubuntu / Debian users</h5>
@@ -61,7 +70,7 @@ And some installations miss symbolic links in the lib directory. </p>
 <h4>Install TA-Lib</h4>
 
 <p>Since version 0.34 of Qtstalker you must install TA-Lib separately
-<em>before</em> you install Qtstalker itself. In previous versions, TA-Lib was
+<b>before</b> you install Qtstalker itself. In previous versions, TA-Lib was
 included in the Qtstalker source tree, but not now. You can download the source of
 <a href="http://ta-lib.org/">TA-Lib</a>
 e.g. with the command...</p>
@@ -77,11 +86,11 @@ the extracted folder and compile/install TA-Lib with the sequence</p>
   <li><code>make install</code> (as root)</li>
   <li>There may also need to modify something if an error like this
     appears when you start Qtstalker ... 
-    <p><em>/usr/local/bin/qtstalker: error while loading shared libraries:
+    <p><code>/usr/local/bin/qtstalker: error while loading shared libraries:
     libqtstalker.so.0: cannot open shared object file: No such file or
-    directory</em></p>
-    <p>To fix this add <em>/usr/local/lib</em>
-    to your <em>/etc/ld.so.conf</em> file and run <code>ldconfig -v</code>
+    directory</code></p>
+    <p>To fix this add <code>/usr/local/lib</code>
+    to your <code>/etc/ld.so.conf</code> file and run <code>ldconfig -v</code>
     (as root).</p>
   </li>
 </ol>
@@ -92,25 +101,25 @@ the extracted folder and compile/install TA-Lib with the sequence</p>
 <ol>
   <li>Check to make sure you have your shell QTDIR environment variable set
     to point to the location of the root Qt directory. This setting is
-    usually something like this: '<em>export QTDIR=/usr/lib/qt</em>' or
+    usually something like this: '<code>export QTDIR=/usr/lib/qt</code>' or
     something similar to this. Failure to set this properly will result in
     make errors.<br>
   </li>
   <li>Unpack the Qtstalker source.</li>
   <li><code>./configure</code> (this will create the Makefile)<br>
   </li>
-  <li><code>make</code><em></em></li>
+  <li><code>make</code></li>
   <li><code>make install</code> (as root) 
     <ul>
       <li>the executable 'qtstalker' will be copied to the
-        <em>/usr/local/bin</em> directory</li>
-      <li>the plugins will be copied to <em>/usr/local/lib/qtstalker</em>
+        <code>/usr/local/bin</code> directory</li>
+      <li>the plugins will be copied to <code>/usr/local/lib/qtstalker</code>
         directory</li>
       <li>the docs will be copied to
-        <em>/usr/local/share/doc/qtstalker/html</em> directory (toc.html for
+        <code>/usr/local/share/doc/qtstalker/html</code> directory (toc.html for
         the table of contents)</li>
       <li>the translation files will be copied to
-        <em>/usr/local/share/qtstalker/i18n</em> directory<br>
+        <code>/usr/local/share/qtstalker/i18n</code> directory<br>
       </li>
     </ul>
   </li>
@@ -124,9 +133,9 @@ the extracted folder and compile/install TA-Lib with the sequence</p>
 <h5>For FreeBSD users</h5>
 <ol>
   <li>We have to set a few environment variables first in your shell. <br>
-    Enter this '<em>export QTDIR=/usr/X11R6</em>' <br>
-    Then enter this '<em>export
-    QMAKESPEC=/usr/local/share/qt/mkspecs/freebsd-g++</em>'.<br>
+    Enter this '<code>export QTDIR=/usr/X11R6</code>' <br>
+    Then enter this '<code>export
+    QMAKESPEC=/usr/local/share/qt/mkspecs/freebsd-g++</code>'.<br>
     Failure to set these variables properly will result in make errors.<br>
   </li>
   <li>Unpack the Qtstalker source.</li>
@@ -136,14 +145,14 @@ the extracted folder and compile/install TA-Lib with the sequence</p>
   <li><code>make install</code> (as root) 
     <ul>
       <li>the executable 'qtstalker' will be copied to the
-        <em>/usr/local/bin</em> directory</li>
-      <li>the plugins will be copied to <em>/usr/local/lib/qtstalker</em>
+        <code>/usr/local/bin</code> directory</li>
+      <li>the plugins will be copied to <code>/usr/local/lib/qtstalker</code>
         directory</li>
       <li>the docs will be copied to
-        <em>/usr/local/share/doc/qtstalker/html</em> directory (toc.html for
+        <code>/usr/local/share/doc/qtstalker/html</code> directory (toc.html for
         the table of contents)</li>
       <li>the translation files will be copied to
-        <em>/usr/local/share/qtstalker/i18n</em> directory<br>
+        <code>/usr/local/share/qtstalker/i18n</code> directory<br>
       </li>
     </ul>
   </li>
@@ -158,35 +167,35 @@ the extracted folder and compile/install TA-Lib with the sequence</p>
 <ol>
   <li>Get Berkeley DB using <a href="http://macports.org/">MacPorts.org</a>
     or <a href="http://fink.sf.net/">Fink.sf.net</a></li>
-  <li>(we have reports of needing e.g. '<em>cd /opt/local/lib; ln -s
-    libdb-4.2.dylib libdb.dylib</em>')</li>
+  <li>(we have reports of needing e.g. '<code>cd /opt/local/lib; ln -s
+    libdb-4.2.dylib libdb.dylib</code>')</li>
   <li>Get <a href="http://pdb.finkproject.org/pdb/package.php/qt3mac">Qt for
     Aqua: qt3mac</a>. Trolltech says must be at least qt-3.3.5</li>
   <li>Set your shell QTDIR environment variable to point where you installed
     Qt. <br>
-    e.g. '<em>export QTDIR=/sw/lib/qt3mac</em>' or something similar. <br>
+    e.g. '<code>export QTDIR=/sw/lib/qt3mac</code>' or something similar. <br>
     Failure to set this properly will result in make errors. </li>
   <li>Unpack the Qtstalker source.</li>
   <li>edit the "configure" file to be: <br>
-    <em>qmake "DEFINES += QT_NO_COMPAT" "CONFIG += qt" "macx:INCLUDEPATH +=
+    <code>qmake "DEFINES += QT_NO_COMPAT" "CONFIG += qt" "macx:INCLUDEPATH +=
     /opt/local/include/db4" "macx:LIBS += -L/opt/local/lib" -o Makefile
-    qtstalker.pro</em></li>
+    qtstalker.pro</code></li>
   <li><code>./configure</code> (this will create the Makefile) </li>
   <li><code>make</code> </li>
   <li><code>sudo make install</code> 
     <ul>
       <li>the executable 'qtstalker' will be copied to the
-        <em>/usr/local/bin</em> directory</li>
-      <li>the plugins will be copied to <em>/usr/local/lib/qtstalker</em>
+        <code>/usr/local/bin</code> directory</li>
+      <li>the plugins will be copied to <code>/usr/local/lib/qtstalker</code>
         directory</li>
       <li>the docs will be copied to
-        <em>/usr/local/share/doc/qtstalker/html</em> directory (toc.html for
+        <code>/usr/local/share/doc/qtstalker/html</code> directory (toc.html for
         the table of contents)</li>
       <li>the translation files will be copied to
-        <em>/usr/local/share/qtstalker/i18n</em> directory </li>
+        <code>/usr/local/share/qtstalker/i18n</code> directory </li>
     </ul>
   </li>
-  <li>To start, type '<em>open /usr/local/bin/qtstalker</em>'</li>
+  <li>To start, type '<code>open /usr/local/bin/qtstalker</code>'</li>
 </ol>
 
 <p>Thats it.</p>
