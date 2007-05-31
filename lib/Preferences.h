@@ -104,6 +104,7 @@ class Preferences : public QTabDialog
     QCheckBox *cmps15BtnCheck;
     QCheckBox *cmpsDayBtnCheck;
     QCheckBox *cmpsWkyBtnCheck;
+    QCheckBox *cmpsMtyBtnCheck;
     QCheckBox *cmpsComboBoxCheck;
 };
 

@@ -81,6 +81,7 @@ class ChartToolbar : public QToolBar
     void ps1ButtonClicked ();
     void ps2ButtonClicked ();
     void ps3ButtonClicked ();
+    void cmpsBtnMClicked();
     void cmpsBtnWClicked();
     void cmpsBtnDClicked();
     void cmpsBtn15Clicked();
@@ -96,6 +97,7 @@ class ChartToolbar : public QToolBar
     QToolButton *ptnButton;
     QDateTime ptDate;
     QStringList compressionList;
+    QToolButton *cmpsBtnM;
     QToolButton *cmpsBtnW;
     QToolButton *cmpsBtnD;
     QToolButton *cmpsBtn15;

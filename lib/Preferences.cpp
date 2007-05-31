@@ -403,6 +403,14 @@ void  Preferences::createCTPage()
   cmpsWkyBtnCheck->setChecked(tb);
   connect(cmpsWkyBtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
   grid->addWidget(cmpsWkyBtnCheck, i++, j + 1);
+
+  label = new QLabel(tr("Cmps.Monthly"), w);
+  grid->addWidget(label, i, j);
+  cmpsMtyBtnCheck = new QCheckBox(w);
+  rcfile.loadData(RcFile::ShowCmpsMtyBtn, tb);
+  cmpsMtyBtnCheck->setChecked(tb);
+  connect(cmpsMtyBtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
+  grid->addWidget(cmpsMtyBtnCheck, i++, j + 1);
   
   label = new QLabel(tr("Cmps.ComboBox"), w);
   grid->addWidget(label, i, j);
@@ -523,6 +531,7 @@ void Preferences::slotSave ()
   rcfile.saveData(RcFile::ShowCmps15Btn, cmps15BtnCheck->isChecked());
   rcfile.saveData(RcFile::ShowCmpsDayBtn, cmpsDayBtnCheck->isChecked());
   rcfile.saveData(RcFile::ShowCmpsWkyBtn, cmpsWkyBtnCheck->isChecked());
+  rcfile.saveData(RcFile::ShowCmpsMtyBtn, cmpsMtyBtnCheck->isChecked());
   rcfile.saveData(RcFile::ShowCmpsComboBox, cmpsComboBoxCheck->isChecked());
   
   emit signalReloadToolBars();

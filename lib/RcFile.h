@@ -121,6 +121,7 @@ class RcFile
       ShowCmps15Btn,
       ShowCmpsDayBtn,
       ShowCmpsWkyBtn,
+      ShowCmpsMtyBtn,
       ShowCmpsComboBox,
       PrefColorCount,
       PrefColor,

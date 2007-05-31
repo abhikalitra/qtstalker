@@ -47,7 +47,11 @@ ChartToolbar::ChartToolbar (QMainWindow *mw) : QToolBar (mw, "chartToolbar")
   compressionCombo->setCurrentItem((BarData::BarLength) ti);
   QToolTip::add(compressionCombo, tr("Bar Length"));
   connect(compressionCombo, SIGNAL(activated(int)), this, SIGNAL(signalBarLengthChanged(int)));
-    
+
+  cmpsBtnM = new QToolButton(this); // compression button monthly
+  QToolTip::add(cmpsBtnM, tr("Monthly Compression"));
+  connect(cmpsBtnM, SIGNAL(clicked()), this, SLOT(cmpsBtnMClicked()));
+
   cmpsBtnW = new QToolButton(this); // compression button weekly
   QToolTip::add(cmpsBtnW, tr("Weekly Compression"));
   connect(cmpsBtnW, SIGNAL(clicked()), this, SLOT(cmpsBtnWClicked()));
@@ -232,7 +236,12 @@ void ChartToolbar::slotSetButtonView ()
   if (tb) cmpsBtnW->show();
   else cmpsBtnW->hide();
   cmpsBtnW->setText("W");
-  
+
+  rcfile.loadData(RcFile::ShowCmpsMtyBtn, tb);
+  if (tb) cmpsBtnM->show();
+  else cmpsBtnM->hide();
+  cmpsBtnM->setText("M");
+
   rcfile.loadData(RcFile::ShowBarSpSpinbox, tb);
   if (tb) pixelspace->show();
   else pixelspace->hide();
@@ -388,6 +397,12 @@ void ChartToolbar::ps3ButtonClicked ()
   pixelspace->setValue(ti);
   //emit signalBarsChanged(0);
 //  emit signalPaperTradeNextBar();
+}
+
+void ChartToolbar::cmpsBtnMClicked()
+{
+  compressionCombo->setCurrentItem((BarData::BarLength)8);
+  emit signalBarLengthChanged((int)8);
 }
 
 void ChartToolbar::cmpsBtnWClicked()
