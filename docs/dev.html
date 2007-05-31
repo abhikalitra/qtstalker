@@ -15,7 +15,7 @@ page</a> and select the link in the Navigation bar to "CVS". Follow the
 instructions to get your local working copy installed. </p>
 
 <p>Or simply enter (copy&amp;paste) the following in a terminal that will
-create the folder <em>qtstalker</em> in your actual working directory and
+create the folder <code>qtstalker</code> in your actual working directory and
 download the latest version into it.</p>
 
 <p><code>cvs -z3
@@ -52,12 +52,16 @@ enhancements; and sending patches for code or documentation. </p>
 <p>A "patch" is a text file showing just the differences between your version
 and the version in the central repository. To create a patch, use... </p>
 
-<p><code>cvs -q update -dP<br>
-cvs diff -u &gt; mypatch.diff</code> </p>
+<pre>
+cd /local/cvs/qtstalker
+cvs -q update -dP
+cvs diff -u &gt; mypatch.diff
+</pre>
 
 <p>...and add it via the tracker option at the <a
 href="http://sourceforge.net/projects/qtstalker/">sourceforge page</a>. If
-you have a lot of files, then tar and gzip them. </p>
+you have other files to be added, then tar and gzip them. Please describe the
+purpose of your patch.</p>
 
 <p>Of course you do not need CVS just to send a patch. If you are using a
 release version then make a backup copy of the original file and do...</p>
@@ -66,26 +70,21 @@ release version then make a backup copy of the original file and do...</p>
 
 <h2><u>More information about CVS</u></h2>
 
-<p>...you will find at the <a href="http://cvsbook.red-bean.com/">CVS
+<p>See the <a href="http://cvsbook.red-bean.com/">CVS
 Book</a> and many more links e.g at <a
 href="http://en.wikipedia.org/wiki/Concurrent_Versions_System">wikipedia.org</a></p>
 
 <h2><u>Apply a Patch</u></h2>
 
 <p>If there are new patches posted in the Tracker section, which are currently not included
-in the cvs tree, you can download them into your source root, e.g.
-~/qtstalker, and patch you sources by hand. Change into your ~/qtstalker
-source directory and apply the new patch with the command</p>
+in the cvs tree, you can download them and apply them to your sources (i.e. patch) by hand. Change into your /local/cvs/qtstalker
+source directory and apply the new patch with the command:</p>
 
-<p><code>patch -u -p0 -i <em>downloaded-patchfile.diff</em></code></p>
+<p><code>patch -u -p0 -i path/to/<em>downloaded-patchfile-diff.txt</em></code></p>
 
-<p>But normally you will update your cvs sources with the already above
-mentioned command</p>
+<p>But normally you would wait until they are committed to CVS and then update your cvs sources with the abovementioned command:</p>
 
 <p><code>cvs -q update -d</code></p>
-
-<p><br>
-</p>
 
 <p><a href="vola.html" target="_self"><img src="back.png" border="0"
 width="32" height="32" alt="Back" /></a> <a href="toc.html"><img
