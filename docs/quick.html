@@ -9,42 +9,60 @@
 </head>
 <body xml:lang="en" lang="en">
 <h2><u>Getting Started: A Quick Howto</u></h2>
-<ol>
+<p>
+This document assumes that you do not have your own end-of-day data available and so shows how to obtain some quick data from the Yahoo service.
+</p>
+<ul>
   <li>Connect to the internet.</li>
-  <li>Open the quotes dialog from the toolbar.</li>
-  <li>Select the Yahoo plugin. Press the configure 'Settings' button.
-This will bring up the Yahoo Prefs dialog.<br>
+  <li>Open the Quotes dialog from the toolbar.</li>
+  <li>Select the Yahoo plugin.
+This will bring up the Yahoo Quotes dialog.
   </li>
-  <li>From the Yahoo Prefs dialog press the 'New Symbol' button from
-the toolbar. This brings up the 'New Yahoo Symbols' dialog.<br>
+  <li>From the Yahoo Quotes dialog, press the "New Symbol" button from
+its toolbar. This brings up the "New Yahoo Symbols" dialog.
   </li>
-  <li>From the 'New Yahoo Symbols' dialog enter as many yahoo ticker
+  <li>From the "New Yahoo Symbols" dialog, enter as many yahoo ticker
 symbols
-as you want separated by a space ie
-'RHAT IBM MSFT'. When done, press the OK button.</li>
-  <li>From the Yahoo Prefs dialog select 'Auto History' from the method
-box. Press the 'Select All Symbols' from the toolbar. Press OK when
-done.<br>
+as you want separated by a space, e.g.
+"RHAT IBM MSFT BHP BHP.AX". The <a href="yahoo.html">Yahoo Quote</a> documentation
+explains how to get quotes from different exchanges.
+When done, press the OK button.</li>
+  <li>From the Yahoo Quotes dialog, select "History" from the method
+list. Press the "Select All Symbols" checkbox. Specify a "Start Date".
+Press OK when done.
   </li>
-  <li>From the Quotes dialog press the update button, and the download
+  <li>From the Quotes dialog, press the Update button, and the downloads
 will start. Depending
-on how fast your connection is this could take anywhere from 10
+on how fast your connection is and how many stocks and how much history, this
+could take anywhere from 10
 seconds to a few minutes. The data will be imported into Qtstalker
 when completed.</li>
-  <li>Close the quotes dialog when download has completed. To load some
-charts, select the chart panel button. You should see a directory
-called
-'Stocks'. This directory structure will contain the various stocks
-downloaded. Navigate the Stocks directory and select a symbol to load
-by double clicking on it.</li>
-  <li>To add indicators, open the new indicator dialog from the toolbar
+  <li>Close the quotes dialog when download has completed.</li>
+  <li>To load a
+chart, select the "Work with Charts" button in the Navigation panel. There will be a directory called
+"Stocks". This directory structure will contain the various stocks
+downloaded, organised in sub-directories per stock exchange. Navigate the Stocks directory and select a symbol to load
+by clicking on it.</li>
+  <li>Some default indicators were created when you installed Qtstalker.</li>
+  <li>To add more indicators, open the "New Indicator" dialog from the toolbar
 and choose an indicator from the list. The indicator dialog will open,
-just press OK for the default settings. Depending on the indicator, it
-will show up either in the main chart or as a tab in the lower section
-of the window. This should be enough to get you started for now,
-consult the documentation and play with the functions to become
-familiar with how Qtstalker works.</li>
-</ol>
+just press OK for the default settings.
+Note that using "<a href="cus.html">CUS</a>" enables better access to the
+indicator functions and can plot multiple indicators as one.
+  </li>
+  <li>After the close of the market on each day, you will update your end-of-day data.
+    Again open the Quotes dialog from the toolbar and select the Yahoo plugin.
+    This time use the "Auto History" method, which will automatically determine
+    the last day that you updated and then retrieve the new data.
+  </li>
+  <li>This should be enough to get you started for now.
+Consult the <a href="toc.html">documentation</a> and play with the functions to become
+familiar with how Qtstalker works.
+    If you do have your own end-of-day data, perhaps purchased from a provider
+    as plain text files, then see the "<a href="csv.html">CSV Quote</a>" plugin,
+    or create your own quote plugin for a specialised purpose.
+  </li>
+</ul>
 <a href="install.html" target="_self"><img src="back.png" alt="Back"
  border="0" height="32" width="32"></a><a href="main.html"
  target="_self"><img src="next.png" alt="Next" border="0" height="32"

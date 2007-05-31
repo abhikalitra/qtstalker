@@ -275,3 +275,4 @@
 
 20070529: FI indicator now properly handles "maType" and "smoothing" when used via CUS. Fixes bug #1716543. - thanks to xley for the patch.
 
+20070531: Improved docs/quick.html to better explain the quickstart steps and to use current terminology.
