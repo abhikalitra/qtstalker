@@ -355,48 +355,24 @@ void  Preferences::createCTPage()
   int j = 0; // "count" cols
   bool tb; // temporary
   RcFile rcfile;
-  
-  QLabel *label = new QLabel(tr("Slider"), w);
-  grid->addWidget(label, i, j);
-  sliderCheck = new QCheckBox(w);
-  rcfile.loadData(RcFile::ShowSlider, tb);
-  sliderCheck->setChecked(tb);
-  connect(sliderCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
-  grid->addWidget(sliderCheck, i++, j + 1);
 
-  label = new QLabel(tr("BarsToLoad Field"), w);
+  QLabel *label = new QLabel(tr("Compression list"), w);
   grid->addWidget(label, i, j);
-  barsToLoadFieldCheck = new QCheckBox(w);
-  rcfile.loadData(RcFile::ShowBarsToLoadField, tb);
-  barsToLoadFieldCheck->setChecked(tb);
-  connect(barsToLoadFieldCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
-  grid->addWidget(barsToLoadFieldCheck, i++, j + 1);
+  cmpsComboBoxCheck = new QCheckBox(w);
+  rcfile.loadData(RcFile::ShowCmpsComboBox, tb);
+  cmpsComboBoxCheck->setChecked(tb);
+  connect(cmpsComboBoxCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
+  grid->addWidget(cmpsComboBoxCheck, i++, j + 1);  
 
-  label = new QLabel(tr("BarSpacing Spinner"), w);
+  label = new QLabel(tr("Compression Monthly"), w);
   grid->addWidget(label, i, j);
-  barSpSpinboxCheck = new QCheckBox(w);
-  rcfile.loadData(RcFile::ShowBarSpSpinbox, tb);
-  barSpSpinboxCheck->setChecked(tb);
-  connect(barSpSpinboxCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
-  grid->addWidget(barSpSpinboxCheck, i++, j + 1);
-  
-  label = new QLabel(tr("Cmps.15Minute"), w);
-  grid->addWidget(label, i, j);
-  cmps15BtnCheck = new QCheckBox(w);
-  rcfile.loadData(RcFile::ShowCmps15Btn, tb);
-  cmps15BtnCheck->setChecked(tb);
-  connect(cmps15BtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
-  grid->addWidget(cmps15BtnCheck, i++, j + 1);
+  cmpsMtyBtnCheck = new QCheckBox(w);
+  rcfile.loadData(RcFile::ShowCmpsMtyBtn, tb);
+  cmpsMtyBtnCheck->setChecked(tb);
+  connect(cmpsMtyBtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
+  grid->addWidget(cmpsMtyBtnCheck, i++, j + 1);
 
-  label = new QLabel(tr("Cmps.Daily"), w);
-  grid->addWidget(label, i, j);
-  cmpsDayBtnCheck = new QCheckBox(w);
-  rcfile.loadData(RcFile::ShowCmpsDayBtn, tb);
-  cmpsDayBtnCheck->setChecked(tb);
-  connect(cmpsDayBtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
-  grid->addWidget(cmpsDayBtnCheck, i++, j + 1);
-
-  label = new QLabel(tr("Cmps.Weekly"), w);
+  label = new QLabel(tr("Compression Weekly"), w);
   grid->addWidget(label, i, j);
   cmpsWkyBtnCheck = new QCheckBox(w);
   rcfile.loadData(RcFile::ShowCmpsWkyBtn, tb);
@@ -404,22 +380,46 @@ void  Preferences::createCTPage()
   connect(cmpsWkyBtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
   grid->addWidget(cmpsWkyBtnCheck, i++, j + 1);
 
-  label = new QLabel(tr("Cmps.Monthly"), w);
+  label = new QLabel(tr("Compression Daily"), w);
   grid->addWidget(label, i, j);
-  cmpsMtyBtnCheck = new QCheckBox(w);
-  rcfile.loadData(RcFile::ShowCmpsMtyBtn, tb);
-  cmpsMtyBtnCheck->setChecked(tb);
-  connect(cmpsMtyBtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
-  grid->addWidget(cmpsMtyBtnCheck, i++, j + 1);
-  
-  label = new QLabel(tr("Cmps.ComboBox"), w);
+  cmpsDayBtnCheck = new QCheckBox(w);
+  rcfile.loadData(RcFile::ShowCmpsDayBtn, tb);
+  cmpsDayBtnCheck->setChecked(tb);
+  connect(cmpsDayBtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
+  grid->addWidget(cmpsDayBtnCheck, i++, j + 1);
+
+  label = new QLabel(tr("Compression 15 Minute"), w);
   grid->addWidget(label, i, j);
-  cmpsComboBoxCheck = new QCheckBox(w);
-  rcfile.loadData(RcFile::ShowCmpsComboBox, tb);
-  cmpsComboBoxCheck->setChecked(tb);
-  connect(cmpsComboBoxCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
-  grid->addWidget(cmpsComboBoxCheck, i++, j + 1);  
-  
+  cmps15BtnCheck = new QCheckBox(w);
+  rcfile.loadData(RcFile::ShowCmps15Btn, tb);
+  cmps15BtnCheck->setChecked(tb);
+  connect(cmps15BtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
+  grid->addWidget(cmps15BtnCheck, i++, j + 1);
+
+  label = new QLabel(tr("BarSpacing spinner"), w);
+  grid->addWidget(label, i, j);
+  barSpSpinboxCheck = new QCheckBox(w);
+  rcfile.loadData(RcFile::ShowBarSpSpinbox, tb);
+  barSpSpinboxCheck->setChecked(tb);
+  connect(barSpSpinboxCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
+  grid->addWidget(barSpSpinboxCheck, i++, j + 1);
+
+  label = new QLabel(tr("BarsToLoad field"), w);
+  grid->addWidget(label, i, j);
+  barsToLoadFieldCheck = new QCheckBox(w);
+  rcfile.loadData(RcFile::ShowBarsToLoadField, tb);
+  barsToLoadFieldCheck->setChecked(tb);
+  connect(barsToLoadFieldCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
+  grid->addWidget(barsToLoadFieldCheck, i++, j + 1);
+
+  label = new QLabel(tr("Pan Chart slider"), w);
+  grid->addWidget(label, i, j);
+  sliderCheck = new QCheckBox(w);
+  rcfile.loadData(RcFile::ShowSlider, tb);
+  sliderCheck->setChecked(tb);
+  connect(sliderCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
+  grid->addWidget(sliderCheck, i++, j + 1);
+
   addTab(w, tr("ChartToolbar"));
 }
 
