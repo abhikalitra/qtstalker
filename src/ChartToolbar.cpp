@@ -45,7 +45,7 @@ ChartToolbar::ChartToolbar (QMainWindow *mw) : QToolBar (mw, "chartToolbar")
   compressionCombo->insertStringList(compressionList, -1);
   rcfile.loadData(RcFile::BarLength, ti);
   compressionCombo->setCurrentItem((BarData::BarLength) ti);
-  QToolTip::add(compressionCombo, tr("Bar Length"));
+  QToolTip::add(compressionCombo, tr("Bar Length (Compression)"));
   connect(compressionCombo, SIGNAL(activated(int)), this, SIGNAL(signalBarLengthChanged(int)));
 
   cmpsBtnM = new QToolButton(this); // compression button monthly
