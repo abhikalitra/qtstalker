@@ -105,7 +105,7 @@
           2% of the mid point of bars displayed. Set method to 'Custom' to set the box size and reversal parms for
           each individual chart.
 
-20061226: CUS_examples indicators are now installed by default on fresh installs.
+20061226: Some CUS_examples indicators are now installed by default on fresh installs.
 
 20061226: Removed the 0.31 conversion functions. Everyone should have upgraded by now. If not...too bad.
 
@@ -276,3 +276,5 @@
 20070529: FI indicator now properly handles "maType" and "smoothing" when used via CUS. Fixes bug #1716543. - thanks to xley for the patch.
 
 20070531: Improved docs/quick.html to better explain the quickstart steps and to use current terminology.
+
+20070601: Fixed saving of some user preferences, e.g. "Bar Spacing" and "Navigator panel" position. Users of CVS trunk need to visit "Edit=>Edit Preferences" and set each of the three "Bar spacing" to a different value. This causes the configuration file to be re-written as integers. Fixes bug #1729273 #1729276. - thanks to xley for the patch.
