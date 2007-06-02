@@ -89,8 +89,8 @@ ChartToolbar::ChartToolbar (QMainWindow *mw) : QToolBar (mw, "chartToolbar")
   
   barCount = new QLineEdit(this);
   barCount->setValidator(iv);
-  rcfile.loadData(RcFile::BarsToLoad, ts);
-  barCount->setText(ts);
+  rcfile.loadData(RcFile::BarsToLoad, ti);
+  barCount->setText(QString::number(ti));
   QToolTip::add(barCount, tr("Total bars to load"));
   connect(barCount, SIGNAL(returnPressed()), this, SLOT(barsChanged()));
 
@@ -215,7 +215,7 @@ void ChartToolbar::slotSetButtonView ()
   // do all relating to visual aspekts
   
   QString ts;    // temporary variables
-  //int ti;
+  int ti;
   bool tb;
   
   rcfile.loadData(RcFile::ShowCmpsComboBox, tb);
@@ -247,15 +247,18 @@ void ChartToolbar::slotSetButtonView ()
   else pixelspace->hide();
   pixelspace->setMaximumWidth(40); // FIXME:calc as a function of app font metrics
   
-  rcfile.loadData(RcFile::PSButton, ts, 1);
+  rcfile.loadData(RcFile::PSButton, ti, 1);
+  ts = QString::number(ti);
   QToolTip::add(ps1Button, tr("Set Bar Spacing to " + ts));
   ps1Button->setText(ts);
   
-  rcfile.loadData(RcFile::PSButton, ts, 2);
+  rcfile.loadData(RcFile::PSButton, ti, 2);
+  ts = QString::number(ti);
   QToolTip::add(ps2Button, tr("Set Bar Spacing to " + ts));
   ps2Button->setText(ts);
   
-  rcfile.loadData(RcFile::PSButton, ts, 3);
+  rcfile.loadData(RcFile::PSButton, ti, 3);
+  ts = QString::number(ti);
   QToolTip::add(ps3Button, tr("Set Bar Spacing to " + ts));
   ps3Button->setText(ts);
   

@@ -781,8 +781,8 @@ void QtstalkerApp::slotChartUpdated ()
   if (status == None)
     return;
   
-  QString s = QString::number(toolbar2->getBars());
-  rcfile.saveData(RcFile::BarsToLoad, s);
+  int ti = toolbar2->getBars();
+  rcfile.saveData(RcFile::BarsToLoad, ti);
 
   loadChart(chartPath);
 }

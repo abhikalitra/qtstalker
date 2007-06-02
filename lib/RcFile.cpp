@@ -280,10 +280,9 @@ void RcFile::saveData (Parm name, int value, const int n)
   k.append("/Qtstalker/");
   k.append(Key[name]);
   if (n > -1) k.append(QString::number(n));
-  QString v = QString::number(value);
   
   QSettings settings;
-  settings.writeEntry(k, v);
+  settings.writeEntry(k, value);
 }
 
 void RcFile::saveData (Parm name, const bool value)
