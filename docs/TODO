@@ -34,6 +34,7 @@ To Do:
 - change yahoo plugin to get fundamentals on new charts automatically 
 - display chart object info when cursor hovers over them in the data panel or make tooltip.
 - update classes with a description of purpose, usage etc.
+- the compressionCombo does not keep the compression buttons toggled.
  
 
 Maybe some day:
