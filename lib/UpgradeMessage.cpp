@@ -97,6 +97,14 @@ void UpgradeMessage::createPage034 ()
   vbox->setMargin(5);
   vbox->setSpacing(5);
 
+  QString s = tr("Your workspace will be converted to ~/.qtstalker/data1/ directory.");
+  s.append(tr(" It could take a long time if there are many data items."));
+  s.append(tr(" When satisfied, the old workspace can be manually removed from ~/.qtstalker/data0/"));
+  QTextEdit *message = new QTextEdit(w);
+  message->setReadOnly(TRUE);
+  message->setText(s);
+  vbox->addWidget(message);
+
   QHBoxLayout *hbox = new QHBoxLayout(vbox);
   hbox->setSpacing(2);
 
@@ -118,7 +126,7 @@ void UpgradeMessage::createPage034 ()
 
   setCancelButton(tr("&Cancel"));
 
-  resize(300, 250);
+  resize(400, 250);
 }
 
 void UpgradeMessage::convert034 ()
