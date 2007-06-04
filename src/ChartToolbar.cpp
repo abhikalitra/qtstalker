@@ -50,18 +50,22 @@ ChartToolbar::ChartToolbar (QMainWindow *mw) : QToolBar (mw, "chartToolbar")
 
   cmpsBtnM = new QToolButton(this); // compression button monthly
   QToolTip::add(cmpsBtnM, tr("Monthly Compression"));
+  cmpsBtnM->setToggleButton(TRUE);
   connect(cmpsBtnM, SIGNAL(clicked()), this, SLOT(cmpsBtnMClicked()));
 
   cmpsBtnW = new QToolButton(this); // compression button weekly
   QToolTip::add(cmpsBtnW, tr("Weekly Compression"));
+  cmpsBtnW->setToggleButton(TRUE);
   connect(cmpsBtnW, SIGNAL(clicked()), this, SLOT(cmpsBtnWClicked()));
   
   cmpsBtnD = new QToolButton(this); // compression button daily
   QToolTip::add(cmpsBtnD, tr("Daily Compression"));
+  cmpsBtnD->setToggleButton(TRUE);
   connect(cmpsBtnD, SIGNAL(clicked()), this, SLOT(cmpsBtnDClicked()));
   
   cmpsBtn15 = new QToolButton(this); // compression button 15min
   QToolTip::add(cmpsBtn15, tr("15min Compression"));
+  cmpsBtn15->setToggleButton(TRUE);
   connect(cmpsBtn15, SIGNAL(clicked()), this, SLOT(cmpsBtn15Clicked()));
   
   addSeparator();
@@ -405,24 +409,40 @@ void ChartToolbar::ps3ButtonClicked ()
 void ChartToolbar::cmpsBtnMClicked()
 {
   compressionCombo->setCurrentItem((BarData::BarLength)8);
+  // FIXME: Sorry about the repetitive code.
+  cmpsBtnW->setOn(FALSE);
+  cmpsBtnD->setOn(FALSE);
+  cmpsBtn15->setOn(FALSE);
   emit signalBarLengthChanged((int)8);
 }
 
 void ChartToolbar::cmpsBtnWClicked()
 {
   compressionCombo->setCurrentItem((BarData::BarLength)7);
+  // FIXME: Sorry about the repetitive code.
+  cmpsBtnM->setOn(FALSE);
+  cmpsBtnD->setOn(FALSE);
+  cmpsBtn15->setOn(FALSE);
   emit signalBarLengthChanged((int)7);
 }
 
 void ChartToolbar::cmpsBtnDClicked()
 {
   compressionCombo->setCurrentItem((BarData::BarLength)6);
+  // FIXME: Sorry about the repetitive code.
+  cmpsBtnM->setOn(FALSE);
+  cmpsBtnW->setOn(FALSE);
+  cmpsBtn15->setOn(FALSE);
   emit signalBarLengthChanged((int)6);
 }
 
 void ChartToolbar::cmpsBtn15Clicked()
 {
   compressionCombo->setCurrentItem((BarData::BarLength)3);
+  // FIXME: Sorry about the repetitive code.
+  cmpsBtnM->setOn(FALSE);
+  cmpsBtnW->setOn(FALSE);
+  cmpsBtnD->setOn(FALSE);
   emit signalBarLengthChanged((int)3);
 }
 
