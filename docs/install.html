@@ -45,7 +45,16 @@ Updating from 0.33 to 0.34: When the newly installed 0.34 program starts, it
 will automatically upgrade the internal database to a new format. The new user
 workspace will be
 <code>~/.qtstalker/data1/</code> and the old <code>~/.qtstalker/data0/</code>
-will remain in case you need it. Version 0.32 and older are not supported, so you would need to import your raw data with the Quote plugins and add new indicators.
+will remain in case you need it.
+</p>
+<p>
+If you cancel the upgrade process, then you will need to clean up. Remove the
+<code>~/.qtstalker/data1/</code> directory and <a href="dev.html#editSettings">edit</a>
+Qtstalker setting to set the "Version" back to 0.33 and each "data1" path
+back to "data0".
+</p>
+<p>
+Version 0.32 and older are not supported, so you would need to import your raw data with the Quote plugins and add new indicators.
 </p>
 
 <p><strong>Important:</strong> Ensure that Berkeley DB is installed in the

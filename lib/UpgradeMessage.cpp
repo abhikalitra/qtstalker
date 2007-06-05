@@ -97,9 +97,11 @@ void UpgradeMessage::createPage034 ()
   vbox->setMargin(5);
   vbox->setSpacing(5);
 
-  QString s = tr("Your workspace will be converted to ~/.qtstalker/data1/ directory.");
+  QString s = tr("Your workspace will be converted into the ~/.qtstalker/data1/ directory.");
   s.append(tr(" It could take a long time if there are many data items."));
-  s.append(tr(" When satisfied, the old workspace can be manually removed from ~/.qtstalker/data0/"));
+  s.append(tr(" When satisfied, the old workspace can be manually removed from ~/.qtstalker/data0/\n"));
+  s.append(tr("\n"));
+  s.append(tr(" If you choose Cancel, then Quit immediately and see the cleanup notes in docs/install.html"));
   QTextEdit *message = new QTextEdit(w);
   message->setReadOnly(TRUE);
   message->setText(s);
@@ -122,11 +124,11 @@ void UpgradeMessage::createPage034 ()
 
   vbox->addStretch(1);
   
-//  setOkButton(tr("&OK"));
+  setOkButton(QString::null);  
 
   setCancelButton(tr("&Cancel"));
 
-  resize(400, 250);
+  resize(500, 300);
 }
 
 void UpgradeMessage::convert034 ()
@@ -545,4 +547,3 @@ void UpgradeMessage::correctPathFiles (QStringList &list)
     outFile.close();
   }
 }
-
