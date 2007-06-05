@@ -255,7 +255,7 @@
 
 20070518: Applied patch #1711711 - repeat "Symbol" column at end of IndicatorSummary - thanks to xley for the patch.
 
-20070518: Applied patch #1711714 - show Buy/Sell objects in the data panel - thanks to xley for the patch.
+20070518: Applied patch #1711714 - show Buy/Sell objects in the data panel when cursor hovers over the object. - thanks to xley for the patch.
 
 20070519: Applied patch #1716890 - automated help docs for indicators - thanks to xley for the patch.
 
@@ -278,3 +278,5 @@
 20070531: Improved docs/quick.html to better explain the quickstart steps and to use current terminology.
 
 20070601: Fixed saving of some user preferences, e.g. "Bar Spacing" and "Navigator panel" position. Users of CVS trunk need to visit "Edit=>Edit Preferences" and set each of the three "Bar spacing" to a different value. This causes the configuration file to be re-written as integers. Fixes bug #1729273 #1729276. - thanks to xley for the patch.
+
+20070605: Explained how to search/edit settings when developing. See docs/dev.html - thanks to xley for the patch.
