@@ -108,6 +108,26 @@ plutil -convert binary1 -o $WORK/qtstalker/qtstalker.plist.bin $WORK/qtstalker/q
 mv $WORK/qtstalker/qtstalker.plist.bin /Library/Preferences/com.Qtstalker.plist
 </pre>
 
+<a name="docs"></a>
+<h2><u>Enhancing documentation</u></h2>
+<p>Edit docs in docs/*.html and view them immediately in your web browser using
+the <code>file://</code> protocol.</p>
+<p>To install the updated docs, do this:
+</p>
+
+<pre>
+touch docs/docs.pro
+make && sudo make install
+</pre>
+
+<p>Now view docs via Qtstalker context help. No need to re-start Qtstalker.
+</p>
+
+<p>
+See other info about the "<a href="indicator/intro.html">indicator docs</a>"
+help system.
+</p>
+
 <p><a href="vola.html" target="_self"><img src="back.png" border="0"
 width="32" height="32" alt="Back" /></a> <a href="toc.html"><img
 src="home.png" border="0" width="32" height="32" alt="Home" /></a></p>
