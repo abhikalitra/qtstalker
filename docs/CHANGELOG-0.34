@@ -280,3 +280,5 @@
 20070601: Fixed saving of some user preferences, e.g. "Bar Spacing" and "Navigator panel" position. Users of CVS trunk need to visit "Edit=>Edit Preferences" and set each of the three "Bar spacing" to a different value. This causes the configuration file to be re-written as integers. Fixes bug #1729273 #1729276. - thanks to xley for the patch.
 
 20070605: Explained how to search/edit settings when developing. See docs/dev.html - thanks to xley for the patch.
+
+20070606: Enhanced misc/CUS_examples/cdl-vol Volume Candles to have better colour scheme. Added docs/indicator/cdl-vol.html for legend. - thanks to xley for the patch.
