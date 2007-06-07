@@ -282,4 +282,6 @@
 
 20070606: Enhanced misc/CUS_examples/cdl-vol Volume Candles to have better colour scheme. Added docs/indicator/cdl-vol.html for legend. - thanks to xley for the patch.
 
-20070607: Added misc/CUS_examples/Contributions/xley/ExScript and docs/indicator/exscript.html - thanks to xley for the patch.
+20070607: Added misc/CUS_examples/Contributions/xley/ExScript as an example of passing data and parameter to an external propgram. Added docs/indicator/exscript.html - thanks to xley for the patch.
+
+20070607: Added misc/CUS_examples/Contributions/xley/FIs as a "Force Index" example. - thanks to xley for the patch.
