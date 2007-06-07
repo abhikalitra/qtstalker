@@ -19,8 +19,7 @@
 
 20061201: Fixed bug in backtster that sefaults using < 0.33 CUS syntax.
 
-20061203: Added new indicator plugin ExScript. User can run external scripts that can pass data back to ExScript
-          to plot.
+20061203: Added new indicator plugin ExScript. User can run external scripts that can pass data back to ExScript to plot.
 
 20061204: Fixed bug that did not save/restore chart pixelspaces.
 
@@ -69,7 +68,7 @@
 
 20061213: Applied patch #1615024 - workwithscanner.html update. Thanks to loh_tar for the patch
 
-20061213: Applied patch #1614530 - IndicatorSummary xml export. Thanks to David for the patch.
+20061213: Applied patch #1614530 - IndicatorSummary xml export. Thanks to xley for the patch.
 
 20061214: Changed UTIL(INRANGE) function to accept either arrays or constants for min and max fields
 
@@ -82,9 +81,9 @@
 
 20061214: Applied patch #1616118 - Add to Group Icon - thanks to loh_tar for the patch.
 
-20061214: Applied patch #1615526 - update FAQ: Mac OS X works fine. Thanks to David for the patch.
+20061214: Applied patch #1615526 - update FAQ: Mac OS X works fine. Thanks to xley for the patch.
 
-20061214: Applied patch #1615490 - add INCLUDECUS to examples and docs. Thanks to David for the patch.
+20061214: Applied patch #1615490 - add INCLUDECUS to examples and docs. Thanks to xley for the patch.
 
 20061221: Converted the DB functions to a new format that centralizes the chart metadata into a main index.
           Also changed the chart format to a fixed record size to achieve a 60% speed increase for loading
@@ -95,9 +94,9 @@
 
 20061221: Applied patch #1619809 - modified talib.html - thanks to loh_tar for the patch.
 
-20061221: Applied patch #1619250 - VOL: typo for PVT method - thanks to David for the patch.
+20061221: Applied patch #1619250 - VOL: typo for PVT method - thanks to xley for the patch.
 
-20061221: Applied patch #1619222 - ExScript: add newline after each bar in STDIN - thanks to David for the patch.
+20061221: Applied patch #1619222 - ExScript: add newline after each bar in STDIN - thanks to xley for the patch.
 
 20061221: Applied patch #1616417 - again modified util.html - thanks to loh_tar for the patch.
 
@@ -282,3 +281,5 @@
 20070605: Explained how to search/edit settings when developing. See docs/dev.html - thanks to xley for the patch.
 
 20070606: Enhanced misc/CUS_examples/cdl-vol Volume Candles to have better colour scheme. Added docs/indicator/cdl-vol.html for legend. - thanks to xley for the patch.
+
+20070607: Added misc/CUS_examples/Contributions/xley/ExScript and docs/indicator/exscript.html - thanks to xley for the patch.
