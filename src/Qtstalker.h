@@ -160,6 +160,9 @@ class QtstalkerApp : public QMainWindow
     QDict<QWidget> widgetList;
     DBIndex *chartIndex;
     RcFile rcfile;
+    QString lastIndicatorUsed1;
+    QString lastIndicatorUsed2;
+    QString lastIndicatorUsed3;
 };
 
 #endif

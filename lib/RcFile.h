@@ -128,6 +128,7 @@ class RcFile
       LastAktiveNav,
       LastGroupUsed,
       LastChartDir,
+      LastIndicatorUsed,
       LastDateTimeCOAdded,
       IndiGroupSplitterSize,
       MainToolBarPos,

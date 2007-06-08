@@ -182,6 +182,8 @@ RcFile::RcFile ()
   Def[LastGroupUsed] = "";
   Key[LastChartDir] = "LastChartDir";
   Def[LastChartDir] = "";
+  Key[LastIndicatorUsed] = "LastIndicatorUsed";
+  Def[LastIndicatorUsed] = "";
   Key[LastDateTimeCOAdded] = "LastDateTimeCOAdded";
   Def[LastDateTimeCOAdded] = "";
   Key[MainToolBarPos] = "MainToolBarPos";

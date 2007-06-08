@@ -126,6 +126,11 @@ QtstalkerApp::QtstalkerApp()
   // aktivate last settings
   navTab->init();
 
+  // restore the last used indicators
+  rcfile.loadData(RcFile::LastIndicatorUsed, lastIndicatorUsed1, 1);
+  rcfile.loadData(RcFile::LastIndicatorUsed, lastIndicatorUsed2, 2);
+  rcfile.loadData(RcFile::LastIndicatorUsed, lastIndicatorUsed3, 3);
+
   // setup the initial indicators
   QString igroup;
   rcfile.loadData(RcFile::IndicatorGroup, igroup);
@@ -236,12 +241,22 @@ void QtstalkerApp::slotLoadMainToolbarSettings()
   rcfile.loadData(RcFile::ShowHelpButton, tb);
   if(tb) menubar->getAction(MainMenubar::Help)->addTo(toolbar);
 }
+
 void QtstalkerApp::slotQuit()
 {
   // do this to save any pending chart object edits
   QDictIterator<Plot> it(plotList);
   for(; it.current(); ++it)
     it.current()->clear();
+
+  // save last indicators used
+  int loop;
+  for (loop = 0; loop < (int) tabList.count(); loop++)
+  {
+    QTabWidget *tw = tabList.at(loop);
+    QString s = tw->label(tw->currentPageIndex());
+    rcfile.saveData(RcFile::LastIndicatorUsed, s, loop+1);
+  }
 
   // save window sizes 
   //RcFile rcfile;
@@ -725,6 +740,25 @@ void QtstalkerApp::addIndicatorButton (QString d)
 
   if (it->isHidden())
     it->show();
+
+  // Set the current indicator in this row to the last used one.
+  switch (row)
+  {
+    case 1:
+      if (fn == lastIndicatorUsed1)
+        it->setCurrentPage(it->indexOf(w));
+      break;
+    case 2:
+      if (fn == lastIndicatorUsed2)
+        it->setCurrentPage(it->indexOf(w));
+      break;
+    case 3:
+      if (fn == lastIndicatorUsed3)
+        it->setCurrentPage(it->indexOf(w));
+      break;
+    default:
+      break;
+  }
 
   QColor color;
   //RcFile rcfile;
