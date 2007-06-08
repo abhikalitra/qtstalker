@@ -110,7 +110,7 @@ QtstalkerApp::QtstalkerApp()
     QTabWidget *it = new QTabWidget(split);
  //FIXME: Use setMargin(), otherwise uses default value 10 on some systems
  // use setContentsMargins() with Qt4
-    it->setMargin(0);
+ //   it->setMargin(2);
     connect(it, SIGNAL(currentChanged(QWidget *)), this, SLOT(slotDrawPlots()));
     tabList.append(it);
     it->hide();
