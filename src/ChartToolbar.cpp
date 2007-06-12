@@ -235,6 +235,7 @@ void ChartToolbar::slotSetButtonView ()
   if (tb) cmpsBtnD->show();
   else cmpsBtnD->hide();
   cmpsBtnD->setText("D");
+  cmpsBtnD->setOn(TRUE); // FIXME: Need to save state on quit() and re-load
   
   rcfile.loadData(RcFile::ShowCmpsWkyBtn, tb);
   if (tb) cmpsBtnW->show();
