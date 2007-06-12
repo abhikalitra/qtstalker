@@ -17,7 +17,7 @@
           allow only chart directories to be navigated. If Groups is chosen, then only group directories
           can be navigated.
 
-20061201: Fixed bug in backtster that sefaults using < 0.33 CUS syntax.
+20061201: Fixed bug in backtester that segfaults using < 0.33 CUS syntax.
 
 20061203: Added new indicator plugin ExScript. User can run external scripts that can pass data back to ExScript to plot.
 
@@ -111,7 +111,7 @@
 20061226: Removed the 12.5k shorthand from chart scaling. I would rather see 12500.
 
 20061226: Just a note that with the new metadata indexing, you will not be able to create multiple charts with the same
-          symbol name. Even when located in a differnent directory. We have one symbol universe now.
+          symbol name. Even when located in a different directory. We have a one symbol universe now.
 
 20070101: Merged all indicator plugins into qtstalkerlib. Indicator plugins are now deprecated.
 
@@ -200,9 +200,9 @@
 
 20070202: Applied patch #1649368 - added identifier info to buy/sellarrow chart objects - thanks to xley for the patch.
 
-20070203: Upgraded ta-lib to version 0.3. ta-lib is using configure and has changed to a shared library, so we have to remove
-          ta-lib from the qtstalker source and compile and install it as a separate package. This will be better for 
-          the distribution maintainers as well.
+20070203: Upgraded to version 0.3 of TA-Lib. They are using configure and have changed to a shared library, so we need to remove our packaged
+          TA-Lib from the Qtstalker source and compile and install it as a separate package. This will be better for 
+          the distribution maintainers as well. See Requirements section of qtstalker/docs/install.html
 
 20070203: Changed all the installation paths from /usr/* to /usr/local/* as it should be. And the distribution maintainers rejoiced...
 
@@ -214,7 +214,7 @@
           Added CHANGELOG files to the docs.pro install procedure so loh_tar's patch would have
           something to display.
 
-20070211: Applied patch #1653187 - single click action - thanks to loh_tar for the patch.
+20070211: Applied patch #1653187 - Selecting charts is now a single-click action - thanks to loh_tar for the patch.
 
 20070211: Applied patch #1652823 - in dev.html fix old data location path and typos - thanks to xley for the patch.
 
@@ -224,7 +224,7 @@
 
 20070214: Applied patch #1659728 - progressBar for CSV quote dialog - thanks to xley for the patch.
 
-20070214: Applied patch #1659771 - Toolbar.cpp, add new buttons +possibl to place vertical - thanks to loh_tar for the patch.
+20070214: Applied patch #1659771 - Toolbar.cpp, add new buttons +possible to place vertical - thanks to loh_tar for the patch.
 
 20070215: Applied patch #1659638 - Qtstalker.cpp use modified RcFile.cpp - thanks to loh_tar for the patch.            
 
@@ -236,7 +236,7 @@
 
 20070309: Applied patch #1662034 - Makes both ToolBars full configurable - thanks to loh_tar for the patch.
 
-20070309: Applied patch #1668328 - install.html, add TALib directions - thanks to loh_tar for the patch.
+20070309: Applied patch #1668328 - install.html, add TA-Lib directions - thanks to loh_tar for the patch.
 
 20070309: Applied patch #1670387 - Config::Setup() use RcFile.cpp - thanks to loh_tar for the patch.
 
