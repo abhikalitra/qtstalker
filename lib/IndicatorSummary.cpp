@@ -35,6 +35,7 @@
 
 IndicatorSummary::IndicatorSummary (QStringList &l, int mb, BarData::BarLength bl, DBIndex *i)
 {
+  helpFile = "indicatorsummary.html";
   indicatorList = l;
   minBars = mb;
   barLength = bl;
@@ -51,6 +52,7 @@ void IndicatorSummary::run ()
 {
   PrefDialog *dialog = new PrefDialog;
   dialog->setCaption(QObject::tr("Indicator Summary Parms"));
+  dialog->setHelpFile(helpFile);
   
   QString pl = QObject::tr("Details");
   QString sl = QObject::tr("Group");

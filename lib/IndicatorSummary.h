@@ -45,6 +45,9 @@ class IndicatorSummary : public QObject
     void loadIndicators ();
     void createDataWindow (QPtrList<Setting> &, QString &group);
 
+  private:
+    QString helpFile;
+
   protected:
     Config config;
     QStringList indicatorList;
