@@ -288,4 +288,6 @@
 
 20070608: Save and restore last indicators used in each tab row on program re-starts. - thanks to xley for the patch.
 
-20070612: Added docs/indicatorsummary.html to explain the "Indicator Summary" feature - thanks to xley for the patch.
+20070612: Added docs/indicatorsummary.html to explain the "Indicator Summary" feature. - thanks to xley for the patch.
+
+20071613: Fixed bug #1736224 - Crash when switch off "Drawing Mode". - thanks to xley for the patch.

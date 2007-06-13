@@ -158,7 +158,7 @@ void IndicatorPlot::setDrawMode (bool d)
   else
     setCursor(QCursor(CrossCursor));
 
-  if (! drawMode && coSelected)
+  if (! drawMode && mouseFlag == COSelected && coSelected)
   {
     QPoint p(-1, -1);
     coSelected->pointerClick(p, x1, y1);
