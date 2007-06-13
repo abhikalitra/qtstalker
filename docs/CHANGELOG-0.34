@@ -19,7 +19,7 @@
 
 20061201: Fixed bug in backtester that segfaults using < 0.33 CUS syntax.
 
-20061203: Added new indicator plugin ExScript. User can run external scripts that can pass data back to ExScript to plot.
+20061203: Added new indicator plugin ExScript. User can run external scripts that can pass data back to ExScript to be plotted.
 
 20061204: Fixed bug that did not save/restore chart pixelspaces.
 
@@ -256,7 +256,7 @@
 
 20070518: Applied patch #1711714 - show Buy/Sell objects in the data panel when cursor hovers over the object. - thanks to xley for the patch.
 
-20070519: Applied patch #1716890 - automated help docs for indicators - thanks to xley for the patch.
+20070519: Applied patch #1716890 - Automated help docs for indicators. You can also add your own local documentation. See docs/indicator/intro.html - thanks to xley for the patch.
 
 20070523: Applied part patch #1716538 - misc/CUS_examples/Contributions/lvgandhi/Ray* for Elder Ray Bull Power and Ray Bear Power - thanks to lvgandhi for the patch.
 
@@ -288,4 +288,4 @@
 
 20070608: Save and restore last indicators used in each tab row on program re-starts. - thanks to xley for the patch.
 
-20070612: Added docs/indicatorsummary.html - thanks to xley for the patch.
+20070612: Added docs/indicatorsummary.html to explain the "Indicator Summary" feature - thanks to xley for the patch.
