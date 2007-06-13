@@ -9,18 +9,18 @@
 <h2><u>Using CVS to keep on the bleeding edge</u></h2>
 
 <p>The source code is maintained in Concurrent Version System (CVS) at
-SourceForge. To get your local working copy of the current codebase, you can
+SourceForge. To get your local working copy of the current codebase,
 go to the <a href="http://sourceforge.net/projects/qtstalker/">sourceforge
 page</a> and select the link in the Navigation bar to "CVS". Follow the
 instructions to get your local working copy installed. </p>
 
 <p>Or simply enter (copy&amp;paste) the following in a terminal that will
-create the folder <code>qtstalker</code> in your actual working directory and
+create the folder <code>qtstalker</code> in your current working directory and
 download the latest version into it.</p>
 
 <p><code>cvs -z3
 -d:pserver:anonymous@qtstalker.cvs.sourceforge.net:/cvsroot/qtstalker
-checkout qtstalker</code></p>
+checkout -P qtstalker</code></p>
 
 <p>If you get an error like <code>command not found</code> you have to
 install <em>cvs</em>. Ubuntu/Debian users have simply to install the package
