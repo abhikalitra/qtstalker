@@ -3,8 +3,12 @@ and docs/install.html for pre-requisites and installation instructions.
 
 To compile and install:
 
-./configure
-make
-make install (as root)
+Using the source from your currently installed version:
 
+1) make uninstall (as root) 
 
+Using the new source version continue:
+
+2) ./configure
+3) make
+4) make install ( as root )

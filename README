@@ -1,16 +1,5 @@
 All the documentation can be found by firing up your browser with docs/toc.html
 
-To compile and install:
+See installation instructions in docs/INSTALL and docs/install.html
 
-Using the source from your currently installed version:
-
-1) make uninstall (as root) 
-
-
-Using the new source version continue:
-
-2) ./configure
-3) make
-4) make install ( as root )
-
-
+See license terms in docs/COPYING
