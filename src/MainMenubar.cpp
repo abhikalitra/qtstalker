@@ -239,8 +239,8 @@ void MainMenubar::createMenus ()
 
   toolMenu = new QPopupMenu();
   actions[DataWindow]->addTo(toolMenu);
-  actions[Quotes]->addTo(toolMenu);
   actions[IndicatorSummary]->addTo(toolMenu);
+  actions[Quotes]->addTo(toolMenu);
 
   helpMenu = new QPopupMenu();
   actions[About]->addTo(helpMenu);
