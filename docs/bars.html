@@ -6,15 +6,19 @@
  content="text/html; charset=ISO-8859-1">
 </head>
 <body>
-<h2><u>Bars - BARS<br>
-</u></h2>
-<h3><br>
-</h3>
+<h2><u>Bars - BARS</u></h2>
 <h3>Description:</h3>
-Plots standard OHLC bars or Candles. There is also an optional 3 MA's
+<p>
+Plots standard OHLC bars, or Candles, or Point and Figure.
+</p>
+<p>There is also an optional 3 MA's
 that can be plotted over the Bars or Candles. To plot the MA's, set the
-period to 2 or greater or 1 to hide.<br>
-<br>
+period to 2 or greater or 1 to hide.
+</p>
+<p>
+Note: For Candles, see the CUS example <a href="indicator/cdl-rel.html">cdl-rel</a>
+which might be a better way to work with candles.
+</p>
 <h3>Bar Parameters:</h3>
 <ul>
   <li>Up Color - color used for 'up' bars</li>
@@ -28,7 +32,20 @@ period to 2 or greater or 1 to hide.<br>
   <li>Candle Color - color used for candles</li>
   <li>Label - text to identify the plot</li>
 </ul>
-<br>
+<h3>Point and Figure Parameters:</h3>
+<ul>
+  <li>Method - Default or Custom (see below)</li>
+  <li>X Color - color used for rising prices</li>
+  <li>O Color - color used for falling prices</li>
+  <li>Box Size - the minimum price change that must occur before a mark is plotted.</li>
+  <li>Reversal - amount of price change required to commence the new right-hand column.</li>
+  <li>Label - text to identify the plot</li>
+</ul>
+<p>
+The 'Default' method box sizing is a simple formula:
+2% of the mid point of bars displayed. Set method to 'Custom' to set the box
+size and reversal parms for each individual chart.
+</p>
 <h3>Formula Reference:</h3>
 <table style="text-align: left; width: 905px; height: 112px;" border="1"
  cellpadding="2" cellspacing="2">
@@ -43,7 +60,7 @@ BARS(TYPE, COLOR)<br>
     <tr>
       <td style="vertical-align: top;">Function<br>
       </td>
-      <td style="vertical-align: top;">Type is either Bar or Candle.
+      <td style="vertical-align: top;">Type is either Bar, or Candle, or PF.
 The Color parm is only used for the Candle TYPE.<br>
       </td>
     </tr>
