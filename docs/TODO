@@ -37,6 +37,7 @@ To Do:
 - the compressionCombo does not keep the compression buttons toggled.
 - Improve the use of window margins and borders. On some systems there is wasted
   screen space. See some notes in src/Qtstalker.cpp setContentsMargins()
+- Create default docs/indicator/*.html for all the existing misc/CUS_examples, e.g. "CV - Chaikin Volatility".
 
 - Experiment with SVN trunk version of TA-Lib. Provide feedback to them if we have issues. Their 0.4 release is scheduled for August 2007.
  
