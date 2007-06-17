@@ -42,6 +42,13 @@ To Do:
 
 - Experiment with SVN trunk version of TA-Lib. Provide feedback to them if we have issues. Their 0.4 release is scheduled for August 2007.
  
+Move to Qt4:
+============
+* Review the code and prepare for move by not using certain Qt3 features:
+http://doc.trolltech.com/4.3/porting4-overview.html
+* Run the qt3to4 porting tool and use Qt3Support library:
+http://doc.trolltech.com/4.3/porting4.html
+* Refine code to remove Qt3 dependencies.
 
 Maybe some day:
 ===============
