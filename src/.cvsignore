@@ -1,3 +1,4 @@
 Makefile
 moc_*
 qtstalker
+qtstalker.app
