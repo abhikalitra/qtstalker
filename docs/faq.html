@@ -137,12 +137,17 @@ errors in implementing it for each user. We are talking hours of work
 for some.<br>
 <br>
 <h4>What happened to most of the indicators? They seem to be missing.</h4>
+<p>
 Many of the indicators that were once individual plugins in previous
-versions of qtstalker have been replaced by the TA-Lib plugin. This
+versions of Qtstalker have been replaced by the TA-Lib plugin. This
 plugin now contains most of the indicators you will use. Have a look at
-the docs for the <a href="talib.html">TALIB</a> indicator for a more detailed description. <br>
-<br>
-<br>
+the docs for the <a href="talib.html">TALIB</a> indicator for a more detailed description.
+</p>
+<p>
+For example, there is no longer an MA indicator, so<br>
+Instead of the old: sma20 := MA(MA,Close,20,SMA)<br>
+Now use: sma20 := TALIB(SMA,Close,20)
+</p>
 <a href="plugintut.html" target="_self"><img src="back.png" alt="Back"
  border="0" height="32" width="32"></a><a href="ctypes.html"
  target="_self"><img src="next.png" alt="Next" border="0" height="32"
