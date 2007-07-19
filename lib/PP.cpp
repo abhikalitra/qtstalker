@@ -278,7 +278,6 @@ void PP::getIndicatorSettings (Setting &dict)
 PlotLine * PP::calculateCustom (QString &p, QPtrList<PlotLine> &d)
 {
   // format1: PP_TYPE
-
   if (checkFormat(p, d, 1, 1))
     return 0;
 
@@ -295,7 +294,7 @@ PlotLine * PP::calculateCustom (QString &p, QPtrList<PlotLine> &d)
 
   PlotLine *line = new PlotLine;
   PlotLine *tline = pll.at(t);
-  tline->copy(line);
+  line->copy(tline);
 
   return line;
 }

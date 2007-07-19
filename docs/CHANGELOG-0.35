@@ -1,1 +1,3 @@
 20070618: Added note to docs/faq.html that old indicators such as MA are now gone, so instead use, e.g. sma20 := TALIB(SMA,Close,20)
+
+20070719: Fixed "Pivot Point (PP)" which was not returning the PlotLine when used via CUS. Thanks to xley.
