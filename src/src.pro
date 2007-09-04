@@ -48,15 +48,8 @@ SOURCES += TesterChartPage.cpp
 TARGET = qtstalker
 
 INCLUDEPATH += ../lib
-INCLUDEPATH += /usr/local/include/ta-lib
 
 LIBS += -L../lib -lqtstalker
-LIBS += -ldb
-LIBS += -lta_abstract
-LIBS += -lta_abstract_gc
-LIBS += -lta_common
-LIBS += -lta_func
-LIBS += -L/usr/local/lib
 
 unix:linux-g++:LIBS += -ldl
 

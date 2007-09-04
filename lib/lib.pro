@@ -150,7 +150,6 @@ VERSION = 0.35.0
 
 LIBS += -ldb
 LIBS += -lta_abstract
-LIBS += -lta_abstract_gc
 LIBS += -lta_common
 LIBS += -lta_func
 
