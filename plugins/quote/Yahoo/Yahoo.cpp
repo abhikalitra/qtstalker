@@ -1044,11 +1044,11 @@ void Yahoo::createAutoHistoryUrls (QString &path, QString &d)
 
 void Yahoo::createQuoteUrls (QString &d)
 {
-  // multiple quotes: quote.yahoo.com/d/quotes.csv?s=IBM+RHAT+SCOX+MSFT+GOLD&f=sl1d1t1c1ohgv 
-  // multiple close only: quote.yahoo.com/d/quotes.csv?s=IBM+RHAT+SCOX+MSFT+GOLD&f=sl1
-  // URLPrefix = "http://quote.yahoo.com/d/quotes.csv?s=";
+  // multiple quotes: download.finance.yahoo.com/d/quotes.csv?s=IBM+RHAT+SCOX+MSFT+GOLD&f=sl1d1t1c1ohgv 
+  // multiple close only: download.finance.yahoo.com/d/quotes.csv?s=IBM+RHAT+SCOX+MSFT+GOLD&f=sl1
+  // URLPrefix = "http://download.finance.yahoo.com/d/quotes.csv?s=";
   // URLPostfix = "&f=snl1d1t1c1ohgv&e=.csv";	
-  QString s = "http://finance.yahoo.com/d/quotes.csv?s=";
+  QString s = "http://download.finance.yahoo.com/d/quotes.csv?s=";
   s.append(d);
   s.append("&f=snl1d1t1c1ohgv&e=.csv");
   
