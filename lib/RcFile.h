@@ -30,26 +30,31 @@
 #include <qpoint.h>
 #include <qsize.h>
 
-//
-// This class do ALL but NOTHING ELSE with the qtstalkerrc file
-// locatet in /home/yourhome/.qt/ or similar, depending on your system
-// 
-// It is intended to replace the according functions 
-// located in the Config class. Because Config do more than
-// only read/write stettings to and from the rc-file.
-// But Config is often used/included to do only this.
-// loh.tar
-    
+/**
+* @brief Handle the storage and retrieval of configuration information and
+* application settings.
+*
+* <p>On most platforms they are stored in the ~/.qt/qtstalkerrc plain-text file.
+* On "Mac OS X" they are stored in a binary plist.</p>
+*
+* <p>See the Trolltech QSettings documentation and Qtstalker <a href="../dev.html">developer</a> documentation.</p>
+*
+* \todo
+* It is intended to replace the according functions 
+* located in the Config class. Because Config do more than
+* only read/write stettings to and from the rc-file.
+* But Config is often used/included to do only this.
+*/
 class RcFile
 {
   public:
     
+     /** Constructor. */
      RcFile ();
+     /** Destructor. */
     ~RcFile ();
  
-    // here are all available parameters, 
-    // in case of some modifications
-    // don't forget to edit also RcFile.cpp
+    /** Available parameters. */
     enum Parm
     {
       Home,
