@@ -6,6 +6,7 @@ To Do:
 - key bindings
 - key binding scripting
 - trendlines and fibo objects to plot on weekly and monthly charts as well
+  https://sourceforge.net/forum/message.php?msg_id=4527886
 - allow negative displacement for line plots
 - default CSV plugin import rules to the install process
 - change Quote behaviour in yahoo plugin to create separate symbols for intraday and daily
