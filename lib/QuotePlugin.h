@@ -34,6 +34,11 @@
 #include "Toolbar.h"
 #include "DBIndex.h"
 
+/**
+* \todo
+* Needs to be re-written to not use the QUrlOperator.
+* See http://doc.trolltech.com/4.3/porting4-overview.html#url-operations-qurloperator
+*/
 class QuotePlugin : public QTabDialog
 {
   Q_OBJECT
