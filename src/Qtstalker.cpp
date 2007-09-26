@@ -29,6 +29,8 @@
 #include <qstringlist.h>
 #include <qdatetime.h>
 
+#include <math.h> // only for fabs()
+
 #include "Qtstalker.h"
 #include "DataWindow.h"
 #include "ChartPage.h"
@@ -922,6 +924,13 @@ void QtstalkerApp::slotUpdateInfo (Setting *r)
   for (loop = 0; loop < (int) l.count(); loop++)
   {
     r->getData(l[loop], s);
+    // If it is a big number, then use zero precision.
+    bool ok;
+    double sn = s.toDouble(&ok);
+    if (ok) {
+      if (fabs(sn) > 1000)
+        s = QString::number(sn, 'f', 0);
+    }
     str.append(l[loop] + " " + s + "\n");
   }
 
