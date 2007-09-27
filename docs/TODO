@@ -40,7 +40,7 @@ To Do:
 - Create default docs/indicator/*.html for all the existing misc/CUS_examples, e.g. "CV - Chaikin Volatility".
 - Round off values to lesser precision when displaying in data panel.
 
-- Experiment with SVN trunk version of TA-Lib. Provide feedback to them if we have issues. Their 0.4 release is scheduled for August 2007.
+- Experiment with SVN trunk version of TA-Lib. Provide feedback to them if we have issues. Their 0.5 release is scheduled for January 2008.
  
 Move to Qt4:
 ============
