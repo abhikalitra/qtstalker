@@ -52,6 +52,7 @@ moving on
 to the next symbol in the list. </p>
 <p><br>
 </p>
+<a name="add"></a>
 <h3>Add new stocks to the Qtstalker database </h3>
 <p>Pressing the "New Symbol" button&nbsp;<img alt=""
  src="../pics/newchart.xpm"><img alt="" src="newchart.png"
@@ -72,22 +73,60 @@ left corner in the displayed chart. US stocks do not have a suffix at
 the end
 like .DE for stocks traded at Xetra or .L for London Stock Exchange. </p>
 <p><img src="yahoosymbolfindout.png"> </p>
-<p><br>
+<p>Symbols can be lowercase (e.g bhp.ax) or uppercase (e.g. BHP.AX) - it doesn't matter, but be consistent.
 </p>
 <h3>Perform quote download </h3>
 <p>After you have made all adjustments in the GUI press the download
 button
-<img src="download.png"> and the process starts. If an error occur will
-it
-display in the status window. </p>
+<img src="download.png"> and the process starts. If an error occurs, it will
+be
+displayed in the status window. </p>
 <p>If you want to abort the download for any reason, press the cancel
 button
 <img src="canceldownload.png"> which is only available while a download
 is
 in progress. </p>
-<p><br>
+<a name="download"></a>
+<h3>Detailed explanation of downloading</h3>
+<p>
+See the <a href="quick.html">Quickstart</a> documentation for an overview.
 </p>
-<h3><a name="adjustmentdetail">More detailed explanation about the
+<p>
+Add a <a href="#add">new symbol</a> as described above (e.g. BHP). Download
+some historical end-of-day data using the "History" method. This only needs to
+be done once. However if you have subsequent trouble with downloading, you
+might need to delete a symbol and download its history again.
+</p>
+<p>
+After the close of the market each day, use the "Auto History" method.
+This will automatically retrieve end-of-day data for each day to bring you
+up-to-date. Be aware of market closing times and <a href="#avail">data
+availability</a>.
+</p>
+<p>
+While the market is open, the "Quote" method can be used to obtain a snapshot
+of today's current trading (20-minute delayed). However, again be aware of 
+<a href="#avail">data availability</a> for your particular exchange.
+</p>
+<a name="avail"></a>
+<h3>Market closing times and data availability</h3>
+<p>
+Yahoo publishes the end-of-day data some time after each exchange closes.
+</p>
+<p>
+North American exchanges seem to be available around 01:00 UTC which is about
+5 hours after NYSE close.
+</p>
+<p>
+All other exchanges seem to be available around 13:00 UTC. For example, for
+Australia and London, yesterday's data will not be available before the
+exchange opens. Note that this causes difficulty using the Quote method
+because you will be missing yesterday's data.
+</p>
+<p>
+See a <a href="http://en.wikipedia.org/wiki/List_of_market_opening_times">list</a> of market opening times and closing times.
+</p>
+<h3><a name="adjustmentdetail">Detailed explanation about the
 adjustment
 option</a> </h3>
 <p>Yahoo provides an Adjusted Close column in its data, scaling prior
