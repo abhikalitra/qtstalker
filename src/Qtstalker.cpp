@@ -295,7 +295,7 @@ void QtstalkerApp::slotAbout()
 {
   // display the about dialog
   QMessageBox *dialog = new QMessageBox(tr("About Qtstalker"),
-  					tr("Qtstalker\nVersion 0.35\n(C) 2001-2007 by Stefan Stratigakos"),
+  					tr("Qtstalker\nVersion CVS 0.36-dev (working title)\n(C) 2001-2007 by Stefan Stratigakos"),
 					QMessageBox::NoIcon,
 					QMessageBox::Ok,
 					QMessageBox::NoButton,

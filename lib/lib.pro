@@ -146,7 +146,7 @@ SOURCES += ToolBarBtn.cpp
 SOURCES += RcFile.cpp
    
 TARGET = qtstalker
-VERSION = 0.35.0
+VERSION = 0.36.0
 
 LIBS += -ldb
 
