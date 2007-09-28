@@ -40,6 +40,7 @@ To Do:
 - Create default docs/indicator/*.html for all the existing misc/CUS_examples, e.g. "CV - Chaikin Volatility".
 - Round off values to lesser precision when displaying in data panel.
 - Some old files have not been removed from CVS (CC.cpp Index.cpp Spread*.cpp). See discussion in mail archives about this functionality which has moved but seems to have trouble. The lingering files caused compile troubles for someone.
+- Improve source code documentation. Javadoc comments are utilised by Doxygen.
 
 - Experiment with SVN trunk version of TA-Lib. Provide feedback to them if we have issues. Their 0.5 release is scheduled for January 2008.
  
