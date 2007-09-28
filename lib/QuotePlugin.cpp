@@ -257,6 +257,7 @@ void QuotePlugin::getFile (QString &url)
   op = new QUrlOperator(url);
   connect(op, SIGNAL(finished(QNetworkOperation *)), this, SLOT(getFileDone(QNetworkOperation *)));
   connect(op, SIGNAL(data(const QByteArray &, QNetworkOperation *)), this, SLOT(dataReady(const QByteArray &, QNetworkOperation *)));
+// qDebug("url=%s", url.latin1());
   op->get();
 }
 
