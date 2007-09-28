@@ -149,10 +149,15 @@ TARGET = qtstalker
 VERSION = 0.35.0
 
 LIBS += -ldb
-LIBS += -lta_abstract
-LIBS += -lta_common
-LIBS += -lta_func
 
+TA_LIB_VERSION = $$system(ta-lib-config --version)
+contains(TA_LIB_VERSION, 0.3.0) {
+  LIBS += -lta_abstract
+  LIBS += -lta_common
+  LIBS += -lta_func
+} else {
+  LIBS += -lta_lib
+}
 
 unix:INCLUDEPATH += /usr/local/include/ta-lib
 unix:LIBS += -L/usr/local/lib

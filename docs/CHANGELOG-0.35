@@ -6,7 +6,9 @@
 
 20070917: Applied patch #1789605 - Yahoo hostname change affected our "Quote" option only (the "History" and "Auto History" were still okay). Thanks to sjakka.
 
-20070919: Added generated source code documentation (produced with doxygen.org) to the website. Thanks to xley.
+20070919: Added generated source code documentation (produced with doxygen.org) to the Qtstalker website. Thanks to xley.
 
 20070927: Enhanced Yahoo documentation to explain difficulties with "Quote"
 method and exchanges outside North America. Thanks to xley.
+
+20070928: Enabled detection of either TA-Lib v0.3.0 or more recent versions. Thanks to zwets.
