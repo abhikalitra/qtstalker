@@ -23,6 +23,12 @@ cl.path = /usr/local/share/doc/qtstalker/html
 cl.files = CHANGELOG*
 INSTALLS += cl
 
+# install the past CHANGELOG files
+pcl.path = /usr/local/share/doc/qtstalker/html/pastchanges
+pcl.files = pastchanges/*.html
+pcl.files += pastchanges/CHANGELOG*
+INSTALLS += pcl
+
 # install the translation files
 i18n.path = /usr/local/share/qtstalker/i18n
 i18n.files = ../i18n/*.qm
