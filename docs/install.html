@@ -13,66 +13,45 @@
 
 <h3>Requirements</h3>
 <ul>
-  <li>A Linux or FreeBSD compatible operating system.</li>
-  <li>At least the <a href="http://www.trolltech.com/">Qt 3.3.*</a>
-    development library (Qt 4 not yet supported).</li>
-  <li>At least the <a href="http://www.sleepycat.com/">Berkeley DB 4.1</a>
-    database. FreeBSD users are required to use the 4.3 version. </li>
-  <li>Version 0.3.0 of <a href="http://ta-lib.org/">TA-Lib</a> Technical Analysis Library (see below).</li>
+  <li>A Linux or FreeBSD compatible or Mac OS X operating system.</li>
+  <li><a href="http://www.trolltech.com/">Qt</a> development library.
+    At least Qt 3.3.* version. Qt 4 not yet supported.</li>
+  <li><a href="http://www.sleepycat.com/">Berkeley DB</a> database.
+    At least db-4.1 version. FreeBSD users are required to use the 4.3 version.</li>
+  <li><a href="http://ta-lib.org/">TA-Lib</a> Technical Analysis Library.
+    At least ta-lib-0.3.0 version. See below.</li>
 </ul>
 
-<p>Best to install the binary packages of the Qt and DB that are relevant to
-your particular operating system.</p>
+<p>
+When upgrading Qtstalker from a previous source version, see the
+<a href="#upgrade">notes</a> below.
+</p>
+
+<h3>Installing via packages</h3>
+<p>Packages are available for some operating systems:</p>
+<ul>
+ <li><a href="http://www.zwets.com/qtstalker/">Debian packages</a></li>
+</ul>
 
 <h3>Installing from source</h3>
 
-<p><strong>Note:</strong> Binary package users can ignore this advice as this
+<p><strong>Note:</strong> Package users can ignore the following advice as this
 will be done automatically by the package installer. </p>
 
-<h4>Updating a previous version</h4>
-
-<p>If you are updating from a previous source version already installed on
-your system, it is best that you first uninstall the previous version first
-before you install the upgraded version. Doing this will better ensure a
-problem-free upgrade. Many upgrade errors can be caused by old plugins and
-libraries hanging around complicating things. You can uninstall the old
-version by doing <code>'sudo make uninstall'</code> from the top directory of the
-<b>old</b>
-source install.</p>
-
-<p>
-Updating from 0.33 to 0.34: When the newly installed 0.34 program starts, it
-will automatically upgrade the internal database to a new format. The new user
-workspace will be
-<code>~/.qtstalker/data1/</code> and the old <code>~/.qtstalker/data0/</code>
-will remain in case you need it.
-</p>
-<p>
-If you cancel the upgrade process, then you will need to clean up. Remove the
-<code>~/.qtstalker/data1/</code> directory and <a href="dev.html#editSettings">edit</a>
-Qtstalker setting to set the "Version" back to 0.33 and each "data1" path
-back to "data0".
-</p>
-<p>
-Version 0.32 and older are not supported, so you would need to import your raw data with the Quote plugins and add new indicators.
-</p>
-
-<p><strong>Important:</strong> Ensure that Berkeley DB is installed in the
-following properly.<br>
+<p><strong>Important:</strong> Ensure that Berkeley DB is installed properly.
 If you installed Berkeley DB at a non-standard location, then edit the
-"configure" file (e.g. "<code>INCLUDEPATH += /opt/local/include/db4</code>"). <br>
+Qtstalker "configure" file (e.g. "<code>INCLUDEPATH += /opt/local/include/db4</code>"). <br>
 And some installations miss symbolic links in the lib directory. </p>
 
-<h5>Hint for Ubuntu / Debian users</h5>
+<h4>Hint for Ubuntu / Debian users</h4>
 
-<p>You have to install these packages before:</p>
+<p>You need to install these packages before:</p>
 <ul>
   <li><strong>build-essential</strong> (meta package for compiler etc.)</li>
   <li><strong>libdb4.4-dev</strong> (for Berkely)</li>
   <li><strong>qt3-dev-tools</strong> (for qmake)</li>
   <li><strong>libqt3-mt-dev</strong> (this will also select much more
     packages to install, don't be afraid) 
-    <p><em>Tested as yet only on Ubuntu Edgy</em></p>
   </li>
 </ul>
 
@@ -85,7 +64,7 @@ included in the Qtstalker source tree, but not now. You can download the source 
 e.g. with the command...</p>
 
 <p><code>wget
-http://prdownloads.sourceforge.net/ta-lib/ta-lib-0.3.0-src.tar.gz </code> </p>
+http://prdownloads.sourceforge.net/ta-lib/ta-lib-0.4.0-src.tar.gz </code> </p>
 
 <p>...entered in your terminal. Unpack the downloaded file, <em>cd</em> into
 the extracted folder and compile/install TA-Lib with the sequence</p>
@@ -108,7 +87,7 @@ the extracted folder and compile/install TA-Lib with the sequence</p>
 
 <h5>For Linux users</h5>
 <ol>
-  <li>Check to make sure you have your shell QTDIR environment variable set
+  <li>Ensure that your shell QTDIR environment variable is set
     to point to the location of the root Qt directory. This setting is
     usually something like this: '<code>export QTDIR=/usr/lib/qt</code>' or
     something similar to this. Failure to set this properly will result in
@@ -134,15 +113,10 @@ the extracted folder and compile/install TA-Lib with the sequence</p>
   </li>
 </ol>
 
-<p>Thats it.</p>
-
-<p><br>
-</p>
-
 <h5>For FreeBSD users</h5>
 <ol>
-  <li>We have to set a few environment variables first in your shell. <br>
-    Enter this '<code>export QTDIR=/usr/X11R6</code>' <br>
+  <li>Set a few environment variables in your shell. <br>
+    Enter this: '<code>export QTDIR=/usr/X11R6</code>' <br>
     Then enter this '<code>export
     QMAKESPEC=/usr/local/share/qt/mkspecs/freebsd-g++</code>'.<br>
     Failure to set these variables properly will result in make errors.<br>
@@ -167,17 +141,13 @@ the extracted folder and compile/install TA-Lib with the sequence</p>
   </li>
 </ol>
 
-<p>Thats it.</p>
-
-<p><br>
-</p>
-
 <h5>For Macintosh OS X users (Tiger 10.4+)</h5>
 <ol>
   <li>Get Berkeley DB using <a href="http://macports.org/">MacPorts.org</a>
-    or <a href="http://fink.sf.net/">Fink.sf.net</a></li>
-  <li>(we have reports of needing e.g. '<code>cd /opt/local/lib; ln -s
+    or <a href="http://fink.sf.net/">Fink.sf.net</a><br>
+    We have reports of needing e.g. '<code>cd /opt/local/lib; ln -s
     libdb-4.2.dylib libdb.dylib</code>')</li>
+  <li>Get <a href="http://ta-lib.org/">TA-Lib</a> source and install as described above.</li>
   <li>Get <a href="http://pdb.finkproject.org/pdb/package.php/qt3mac">Qt for
     Aqua: qt3mac</a>. Trolltech says must be at least qt-3.3.5</li>
   <li>Set your shell QTDIR environment variable to point where you installed
@@ -185,7 +155,7 @@ the extracted folder and compile/install TA-Lib with the sequence</p>
     e.g. '<code>export QTDIR=/sw/lib/qt3mac</code>' or something similar. <br>
     Failure to set this properly will result in make errors. </li>
   <li>Unpack the Qtstalker source.</li>
-  <li>edit the "configure" file to be: <br>
+  <li>Edit the "configure" file to be: <br>
     <code>qmake "DEFINES += QT_NO_COMPAT" "CONFIG += qt" "macx:INCLUDEPATH +=
     /opt/local/include/db4" "macx:LIBS += -L/opt/local/lib" -o Makefile
     qtstalker.pro</code></li>
@@ -207,9 +177,34 @@ the extracted folder and compile/install TA-Lib with the sequence</p>
   <li>To start, type '<code>open /usr/local/bin/qtstalker</code>'</li>
 </ol>
 
-<p>Thats it.</p>
+<a name="upgrade"></a>
+<h3>Updating from a previous version</h3>
 
-<p><br>
+<p>If you are updating from a previous source version already installed on
+your system, it is best that you first uninstall the previous version first
+before you install the upgraded version. Doing this will better ensure a
+problem-free upgrade. Many upgrade errors can be caused by old plugins and
+libraries hanging around complicating things. You can uninstall the old
+version by doing <code>'sudo make uninstall'</code> from the top directory of the
+<b>old</b>
+source install.</p>
+
+<h4>Updating from 0.33 to 0.35</h4>
+<p>
+When the newly installed 0.35 program starts, it
+will automatically upgrade the internal database used with 0.33 to a new format. The new user
+workspace will be
+<code>~/.qtstalker/data1/</code> and the old <code>~/.qtstalker/data0/</code>
+will remain in case you need it.
+</p>
+<p>
+If you cancel the upgrade process, then you will need to clean up. Remove the
+<code>~/.qtstalker/data1/</code> directory and <a href="dev.html#editSettings">edit</a>
+Qtstalker settings to set the "Version" back to 0.33 and each "data1" path
+back to "data0".
+</p>
+<p>
+Version 0.32 and older are not supported, so you would need to import your raw data with the Quote plugins and add new indicators.
 </p>
 
 <h3>Using the current development source</h3>
