@@ -60,6 +60,15 @@ Using <a href="cus.html">CUS</a> enables script-based access to functions of oth
 Another option is to contribute to the <a href="talib.html">TA-Lib</a> Technical Analysis Library project.
 Qtstalker provides access to the library.
 </p>
+<a name="versions"></a>
+<h4>What versions of documentation are available?</h4>
+<p>
+The <a href=dev.html">CVS</a> (i.e. next version in development) has the most up-date-date documentation.
+The <a href=http://qtstalker.sourceforge.net/>website</a> reflects CVS.
+</p>
+<p>
+Each released version has its own copy of the documentation in the "docs" directory. This is usually installed at <code>/usr/local/share/doc/qtstalker/html/</code> so use your web browser to view its index.html file.
+</p>
 <h4>I'm a day trader, how come there is no intraday charting functions ?</h4>
 There is currently basic support for tick data limited to a HH:MM:SS
 resolution. However, there are currently no quote plugins that download
@@ -148,6 +157,7 @@ For example, there is no longer an MA indicator, so<br>
 Instead of the old: sma20 := MA(MA,Close,20,SMA)<br>
 Now use: sma20 := TALIB(SMA,Close,20)
 </p>
+
 <a href="plugintut.html" target="_self"><img src="back.png" alt="Back"
  border="0" height="32" width="32"></a><a href="ctypes.html"
  target="_self"><img src="next.png" alt="Next" border="0" height="32"
