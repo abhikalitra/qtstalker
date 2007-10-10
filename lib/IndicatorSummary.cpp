@@ -31,6 +31,7 @@
 #include <qfileinfo.h>
 #include <qmessagebox.h>
 #include <qfile.h>
+#include <math.h> // only for fabs()
 #include "XmlWriter.h"
 
 IndicatorSummary::IndicatorSummary (QStringList &l, int mb, BarData::BarLength bl, DBIndex *i)
@@ -276,6 +277,13 @@ void IndicatorSummary::createDataWindow (QPtrList<Setting> &list, QString &group
       s = klist[loop2];
       QString s2;
       set->getData(s, s2);
+      // If it is a big number, then use zero precision.
+      bool ok;
+      double sn = s2.toDouble(&ok);
+      if (ok) {
+        if (fabs(sn) > 1000)
+          s2 = QString::number(sn, 'f', 0);
+      }
       // Write the indicator columns,
       // but skip the symbol column which is the first and final columns
       if ( (loop2 > 0) && (loop2 < (int) klist.count()-1) )
