@@ -31,6 +31,11 @@ When upgrading Qtstalker from a previous source version, see the
 <a href="#upgrade">notes</a> below.
 </p>
 
+<p>
+See notes below about <a href="#where">where</a>
+stuff gets installed.
+</p>
+
 <h3>Installing via packages</h3>
 <p>Packages are available for some operating systems:</p>
 <ul>
@@ -101,20 +106,7 @@ the extracted folder and compile/install TA-Lib with the sequence</p>
   <li><code>./configure</code> (this will create the Makefile)<br>
   </li>
   <li><code>make</code></li>
-  <li><code>make install</code> (as root) 
-    <ul>
-      <li>the executable 'qtstalker' will be copied to the
-        <code>/usr/local/bin</code> directory</li>
-      <li>the plugins will be copied to <code>/usr/local/lib/qtstalker</code>
-        directory</li>
-      <li>the docs will be copied to
-        <code>/usr/local/share/doc/qtstalker/html</code> directory (toc.html for
-        the table of contents)</li>
-      <li>the translation files will be copied to
-        <code>/usr/local/share/qtstalker/i18n</code> directory<br>
-      </li>
-    </ul>
-  </li>
+  <li><code>make install</code> (as root)</li>
 </ol>
 
 <h5>For FreeBSD users</h5>
@@ -129,20 +121,7 @@ the extracted folder and compile/install TA-Lib with the sequence</p>
   <li><code>./configure</code> (this will create the Makefile)<br>
   </li>
   <li><code>make</code></li>
-  <li><code>make install</code> (as root) 
-    <ul>
-      <li>the executable 'qtstalker' will be copied to the
-        <code>/usr/local/bin</code> directory</li>
-      <li>the plugins will be copied to <code>/usr/local/lib/qtstalker</code>
-        directory</li>
-      <li>the docs will be copied to
-        <code>/usr/local/share/doc/qtstalker/html</code> directory (toc.html for
-        the table of contents)</li>
-      <li>the translation files will be copied to
-        <code>/usr/local/share/qtstalker/i18n</code> directory<br>
-      </li>
-    </ul>
-  </li>
+  <li><code>make install</code> (as root)</li>
 </ol>
 
 <h5>For Macintosh OS X users (Tiger 10.4+)</h5>
@@ -165,21 +144,31 @@ the extracted folder and compile/install TA-Lib with the sequence</p>
     qtstalker.pro</code></li>
   <li><code>./configure</code> (this will create the Makefile) </li>
   <li><code>make</code> </li>
-  <li><code>sudo make install</code> 
-    <ul>
-      <li>the executable 'qtstalker' will be copied to the
-        <code>/usr/local/bin</code> directory</li>
-      <li>the plugins will be copied to <code>/usr/local/lib/qtstalker</code>
-        directory</li>
-      <li>the docs will be copied to
-        <code>/usr/local/share/doc/qtstalker/html</code> directory (toc.html for
-        the table of contents)</li>
-      <li>the translation files will be copied to
-        <code>/usr/local/share/qtstalker/i18n</code> directory </li>
-    </ul>
-  </li>
-  <li>To start, type '<code>open /usr/local/bin/qtstalker</code>'</li>
+  <li><code>sudo make install</code></li>
+  <li>To start, type '<code>open /usr/local/bin/qtstalker.app</code>'</li>
 </ol>
+
+<a name="where"></a>
+<h3>Where does stuff get installed</h3>
+<ul>
+ <li>The executable 'qtstalker' will be copied to the
+  <code>/usr/local/bin</code> directory</li>
+ <li>The plugins will be copied to <code>/usr/local/lib/qtstalker</code>
+  directory</li>
+ <li>The translation files will be copied to
+   <code>/usr/local/share/qtstalker/i18n</code> directory</li>
+ <li>The docs will be copied to
+  <code>/usr/local/share/doc/qtstalker/html</code> directory (see toc.html for
+  the table of contents)</li>
+</ul>
+<p>The user workspace is in your home at <code>~/.qtstalker/data1/</code> directory.
+</p>
+<p>
+The user settings are persistent.
+On most platforms they are stored in the <code>~/.qt/qtstalkerrc</code> plain-text file.
+On "Mac OS X" they are stored in a binary plist.
+See <a href="dev.html#editSettings">notes</a>.
+</p>
 
 <a name="upgrade"></a>
 <h3>Updating from a previous version</h3>
