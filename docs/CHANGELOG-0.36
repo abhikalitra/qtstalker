@@ -3,3 +3,5 @@
 20071010: Improved installation doc to show where stuff is installed and where user preferences are kept. Thanks to xley.
 
 20071010: Improved the docs with deliberately basic CSS. Thanks to xley.
+
+20071018: The "Auto Reload" of the CSV Quote plugin was not working. Thanks to xley.

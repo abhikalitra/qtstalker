@@ -77,6 +77,8 @@ CSV::~CSV ()
 
 void CSV::update ()
 {
+  if (minutes->value() > 0)
+    reloadTimer->start(60000 * minutes->value(), FALSE);
   parse();
 }
 
@@ -119,7 +121,8 @@ void CSV::parse ()
   {
     if (sdate->date() >= edate->date() || edate->date() <= sdate->date())
     {
-      printStatusLogMessage(stringDone);
+      QString ss = stringDone + " " + QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
+      printStatusLogMessage(ss);
       downloadComplete();
       return;
     }
@@ -469,8 +472,10 @@ void CSV::parse ()
     cancelFlag = FALSE;
     printStatusLogMessage(stringCanceled);
   }
-  else
-    printStatusLogMessage(stringDone);
+  else {
+    QString ss = stringDone + " " + QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
+    printStatusLogMessage(ss);
+  }
   progressBar->reset();
 }
 
@@ -778,7 +783,7 @@ void CSV::loadSettings ()
 
   s = settings.readEntry("/ReloadInterval", "0");
   minutes->setValue(s.toInt());
-    
+
   settings.endGroup();
 }
 
@@ -878,7 +883,8 @@ void CSV::createMainPage ()
   minutes = new QSpinBox(baseWidget);
   minutes->setMinValue(0);
   minutes->setMaxValue(99);
-  minutes->setLineStep(0);
+  minutes->setLineStep(1);
+  QObject::connect(minutes, SIGNAL(valueChanged(int)), this, SLOT(reloadTimerChanged(int)));
   grid->addWidget(minutes, 3, 1);
   
   dateRange = new QCheckBox(tr("Select Date Range"), baseWidget);
@@ -912,10 +918,6 @@ void CSV::createMainPage ()
   }
   edate->setDate(dt);
   sdate->setDate(dt);
-
-//  reloadTimer->stop();
-//  if (reloadInterval)
-//    reloadTimer->start(60000 * reloadInterval, FALSE);
 }
 
 void CSV::newRule ()
@@ -1031,6 +1033,23 @@ void CSV::deleteRule ()
   }
   else
     delete dialog;
+}
+
+void CSV::reloadTimerChanged (int t)
+{
+  if (t == 0)
+  {
+    QString ss = "Reload timer is off";
+    printStatusLogMessage(ss);
+    reloadTimer->stop();
+  }
+  else
+  {
+    QString sm = t>1 ? " minutes" : " minute";
+    QString ss = "Reload timer is restarted (interval=" + QString::number(t) + sm + ")";
+    printStatusLogMessage(ss);
+    reloadTimer->start(60000 * t, FALSE);
+  }
 }
 
 void CSV::dateRangeChanged (bool d)
