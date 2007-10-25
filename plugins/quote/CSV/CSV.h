@@ -57,6 +57,7 @@ class CSV : public QuotePlugin
 
   public slots:
     void parse ();
+    void reloadTimerChanged (int);
     void dateRangeChanged (bool);
     void newRule ();
     void editRule ();
