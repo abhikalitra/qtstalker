@@ -101,6 +101,20 @@ void Navigator::updateList ()
 
   if (ci != -1)
     setCurrentItem(ci);
+
+  // If there is only one item, then select it automatically.
+  if (currentDir.count() == 3)
+  {
+    setCurrentItem(1);
+    QString s1;
+    getFileSelection(s1);
+    QFileInfo info(s1);
+    if (info.isFile())
+    {
+      emit fileOpened(s1);
+      selectedFlag = TRUE;
+    }
+  }
 }
 
 void Navigator::upDirectory ()

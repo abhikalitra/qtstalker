@@ -7,3 +7,5 @@
 20071018: The "Auto Reload" of the CSV Quote plugin was not working. Thanks to xley.
 
 20071023: Improved installation doc to warn about non-standard installation of TA-Lib. Thanks to xley.
+
+20071025: If there is only one chart in a list, then select it automatically. Thanks to xley.
