@@ -198,10 +198,12 @@ void QtstalkerApp::initToolBar()
 {
   // construct the button toolbar
   toolbar = new QToolBar(this, "buttonToolbar");
+  toolbar->setLabel("Main Toolbar");
   slotLoadMainToolbarSettings();
 
   // construct the chart toolbar
   toolbar2 = new ChartToolbar(this);
+  toolbar2->setLabel("Chart Toolbar");
   toolbar2->slotSetButtonView();
   connect(toolbar2, SIGNAL(signalBarLengthChanged(int)), this, SLOT(slotBarLengthChanged(int)));
   connect(toolbar2, SIGNAL(signalPixelspaceChanged(int)), this, SLOT(slotPixelspaceChanged(int)));
