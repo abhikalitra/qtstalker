@@ -9,3 +9,5 @@
 20071023: Improved installation doc to warn about non-standard installation of TA-Lib. Thanks to xley.
 
 20071025: If there is only one chart in a list, then select it automatically. Thanks to xley.
+
+20071101: Prevent accidental zero bars to load. Thanks to xley.

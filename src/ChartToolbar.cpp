@@ -89,13 +89,15 @@ ChartToolbar::ChartToolbar (QMainWindow *mw) : QToolBar (mw, "chartToolbar")
 
   addSeparator();
   
-  QIntValidator *iv = new QIntValidator(1, 99999, this, 0);
-  
   barCount = new QLineEdit(this);
-  barCount->setValidator(iv);
+  // regexp: a non-zero digit followed by 0 to 4 other digits
+  QRegExp rx("[1-9]\\d{0,4}");
+  QValidator *rv = new QRegExpValidator(rx, this);
+  barCount->setValidator(rv);
   rcfile.loadData(RcFile::BarsToLoad, ti);
   barCount->setText(QString::number(ti));
   QToolTip::add(barCount, tr("Total bars to load"));
+  connect(barCount, SIGNAL(lostFocus()), this, SLOT(barsChangedValidate()));
   connect(barCount, SIGNAL(returnPressed()), this, SLOT(barsChanged()));
 
   addSeparator();
@@ -369,6 +371,17 @@ void ChartToolbar::barsChanged ()
   int t = barCount->text().toInt(&ok);
   if (ok)
     emit signalBarsChanged(t);
+}
+
+void ChartToolbar::barsChangedValidate ()
+{
+  // The barCount validator ensures non-zero integer value, but if users moves
+  // focus without completing the text entry, then app can try to load zero bars
+  // which would cause grief.
+  bool ok;
+  int t = barCount->text().toInt(&ok);
+  if (!ok || t == 0)
+    barCount->setText("250");
 }
 
 void ChartToolbar::ps1ButtonClicked ()

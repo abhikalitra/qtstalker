@@ -109,7 +109,8 @@ class ChartToolbar : public QToolBar
     RcFile rcfile;
     
   private slots:
-  void slotOrientationChanged(Orientation);
+    void slotOrientationChanged(Orientation);
+    void barsChangedValidate ();
 };
 
 #endif
