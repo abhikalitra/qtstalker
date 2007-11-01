@@ -1087,6 +1087,7 @@ void QtstalkerApp::slotMenubarStatus (bool d)
 void QtstalkerApp::slotAppFont (QFont d)
 {
   qApp->setFont(d, TRUE, 0);
+  qApp->setFont(d, TRUE, "QComboBox");
 }
 
 void QtstalkerApp::slotSavePlotSizes ()
