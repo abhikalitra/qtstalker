@@ -418,7 +418,7 @@ void Yahoo::parseHistory ()
       continue;
 
     // adjusted close
-    if (adjustment)
+    if (adjustment->isChecked())
     {
       double adjclose = 0;
       if (l.count() >= 7)

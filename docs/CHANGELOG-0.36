@@ -11,3 +11,5 @@
 20071025: If there is only one chart in a list, then select it automatically. Thanks to xley.
 
 20071101: Prevent accidental zero bars to load. Thanks to xley.
+
+20071102: Fixed the Yahoo Quote "adjustment" option which was not being applied. Thanks to dormilon and friend.
