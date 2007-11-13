@@ -48,6 +48,7 @@ class Navigator : public QListBox
     void setKeyFlag (bool);
     void setHome ();
     bool isSelected ();
+    void setNavItem (QString);
 
   public slots:
     void upDirectory ();

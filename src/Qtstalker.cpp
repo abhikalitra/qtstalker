@@ -91,6 +91,7 @@ QtstalkerApp::QtstalkerApp()
   navTab = new NavigatorTab(dpSplitter, this);
   connect(navTab, SIGNAL(signalPositionChanged(int)), this, SLOT(slotNavigatorPosition(int)));
   connect(navTab, SIGNAL(signaVisibilityChanged(bool)), this, SLOT(slotHideNav(bool)));
+  connect(extraToolbar, SIGNAL(recentTab(QString)), navTab, SLOT(recentTab(QString)));
   
   // setup the data panel area
   infoLabel = new QMultiLineEdit(dpSplitter);
@@ -213,6 +214,12 @@ void QtstalkerApp::initToolBar()
   toolbar2->paperTradeClicked(menubar->getStatus(MainMenubar::PaperTrade));
 
   connect(menubar, SIGNAL(signalAdvancePaperTrade()), toolbar2, SLOT(paperTradeNextBar()));
+
+  // construct the extra toolbar
+  extraToolbar = new ExtraToolbar(this);
+  extraToolbar->setLabel("Extra Toolbar");
+  extraToolbar->slotSetButtonView();
+  connect(extraToolbar, SIGNAL(fileSelected(QString)), this, SLOT(slotOpenChart(QString)));
 }
 
 void QtstalkerApp::slotLoadMainToolbarSettings()
@@ -278,8 +285,10 @@ void QtstalkerApp::slotQuit()
   
   menubar->saveSettings();
   toolbar2->saveSettings();
+  extraToolbar->saveSettings();
   delete menubar;
   delete toolbar2;
+  delete extraToolbar;
   
   // delete any BarData
   if (recordList)
@@ -352,6 +361,7 @@ void QtstalkerApp::slotOptions ()
 {
   Preferences *dialog = new Preferences(this);
   connect(dialog, SIGNAL(signalMenubar(bool)), this, SLOT(slotMenubarStatus(bool)));
+  connect(dialog, SIGNAL(signalExtraToolbar(bool)), this, SLOT(slotExtraToolbarStatus(bool)));
   connect(dialog, SIGNAL(signalBackgroundColor(QColor)), this, SIGNAL(signalBackgroundColor(QColor)));
   connect(dialog, SIGNAL(signalBorderColor(QColor)), this, SIGNAL(signalBorderColor(QColor)));
   connect(dialog, SIGNAL(signalGridColor(QColor)), this, SIGNAL(signalGridColor(QColor)));
@@ -360,6 +370,7 @@ void QtstalkerApp::slotOptions ()
   connect(dialog, SIGNAL(signalLoadChart()), this, SLOT(slotChartUpdated()));
   connect(dialog, SIGNAL(signalReloadToolBars()), this, SLOT(slotLoadMainToolbarSettings()));
   connect(dialog, SIGNAL(signalReloadToolBars()), toolbar2, SLOT(slotSetButtonView()));
+  connect(dialog, SIGNAL(signalReloadToolBars()), extraToolbar, SLOT(slotSetButtonView()));
   
   dialog->show();
 }
@@ -839,6 +850,9 @@ void QtstalkerApp::initGroupNav ()
   gp = new GroupPage(baseWidget);
   connect(gp, SIGNAL(fileSelected(QString)), this, SLOT(slotOpenChart(QString)));
   connect(chartNav, SIGNAL(signalAddToGroup(QString)), gp, SLOT(addChartToGroup(QString)));
+  connect(gp, SIGNAL(addRecentChart(QString)), extraToolbar, SLOT(slotAddRecentChart(QString)));
+  connect(gp, SIGNAL(removeRecentCharts(QStringList)), extraToolbar, SLOT(slotRemoveRecentCharts(QStringList)));
+  connect(extraToolbar, SIGNAL(signalSetGroupNavItem(QString, QString)), gp, SLOT(setGroupNavItem(QString, QString)));
   navTab->addWidget(gp, 1);
 }
 
@@ -846,7 +860,10 @@ void QtstalkerApp::initChartNav ()
 {
   chartNav = new ChartPage(baseWidget, chartIndex);
   connect(chartNav, SIGNAL(fileSelected(QString)), this, SLOT(slotOpenChart(QString)));
+  connect(chartNav, SIGNAL(addRecentChart(QString)), extraToolbar, SLOT(slotAddRecentChart(QString)));
+  connect(chartNav, SIGNAL(removeRecentCharts(QStringList)), extraToolbar, SLOT(slotRemoveRecentCharts(QStringList)));
   connect(chartNav, SIGNAL(signalReloadChart()), this, SLOT(slotChartUpdated()));
+  connect(extraToolbar, SIGNAL(signalSetChartNavItem(QString, QString)), chartNav, SLOT(setChartNavItem(QString, QString)));
   navTab->addWidget(chartNav, 0);
 }
 
@@ -1082,6 +1099,14 @@ void QtstalkerApp::slotMenubarStatus (bool d)
     menubar->show();
   else
     menubar->hide();
+}
+
+void QtstalkerApp::slotExtraToolbarStatus (bool d)
+{
+  if (d)
+    extraToolbar->show();
+  else
+    extraToolbar->hide();
 }
 
 void QtstalkerApp::slotAppFont (QFont d)

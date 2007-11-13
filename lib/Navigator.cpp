@@ -43,7 +43,7 @@ Navigator::Navigator (QWidget *w, QString &bp) : QListBox(w)
   connect(this, SIGNAL(returnPressed (QListBoxItem *)), this, SLOT(checkDirectory(QListBoxItem *)));
   
   connect(this, SIGNAL(mouseButtonClicked(int, QListBoxItem *, const QPoint &)), this, SLOT(slotMouseClicked(int, QListBoxItem *, const QPoint &)));
-  
+
   //connect(this, SIGNAL(highlighted(QListBoxItem *)), this, SLOT(highL(QListBoxItem *)));
 }
 
@@ -101,6 +101,19 @@ void Navigator::updateList ()
 
   if (ci != -1)
     setCurrentItem(ci);
+}
+
+void Navigator::setNavItem (QString s)
+{
+  int loop;
+  for (loop = 0; loop < (int) currentDir.count(); loop++)
+  {
+    if ( !s.compare(currentDir[loop]) )
+    {
+      setCurrentItem(loop-1); // allow for . and .. dirs
+      return;
+    }
+  }
 }
 
 void Navigator::upDirectory ()

@@ -98,6 +98,7 @@ class RcFile
       Version,
       PlotSizes,
       ShowMenuBar,
+      ShowExtraToolbar,
       COPath,
       LocalIndicatorsPath,
       FundamentalsPath,
@@ -130,6 +131,7 @@ class RcFile
       ShowCmpsComboBox,
       PrefColorCount,
       PrefColor,
+      ShowRecentCharts,
       LastAktiveNav,
       LastGroupUsed,
       LastChartDir,
@@ -140,6 +142,7 @@ class RcFile
       ChartToolBarPos,
       NavigatorPosition,
       NavigatorActiveButton,
+      RecentChartsList,
       MAX_PARM  // keep this at the end
     };
   

@@ -284,6 +284,14 @@ void NavigatorTab::slotAccel (int id)
   }
 }
 
+void NavigatorTab::recentTab(QString chartPath)
+{
+  if (chartPath.startsWith("group/"))
+    slotAccel(GroupPanelFocus);
+  else
+    slotAccel(ChartPanelFocus);
+}
+
 void NavigatorTab::slotTglPosAboutToShow()
 {
   if(position) 

@@ -40,6 +40,7 @@ class Preferences : public QTabDialog
 
   signals:
     void signalMenubar (bool);
+    void signalExtraToolbar (bool);
     void signalBackgroundColor (QColor);
     void signalBorderColor (QColor);
     void signalGridColor (QColor);
@@ -56,6 +57,7 @@ class Preferences : public QTabDialog
     void createFontPage ();
     void createMTPage(); // main tool bar
     void createCTPage(); // chart tool bar
+    void createETPage(); // extra tool bar
     void loadSettings ();
 
   public slots:
@@ -67,6 +69,7 @@ class Preferences : public QTabDialog
     QSize sz;
     QString helpFile;
     bool menubar;
+    bool extraToolbar;
     int ps1Button;
     int ps2Button;
     int ps3Button;
@@ -76,6 +79,7 @@ class Preferences : public QTabDialog
     QFont plotFont;
     QFont appFont;
     QCheckBox *menubarCheck;
+    QCheckBox *extraToolbarCheck;
     QSpinBox *bs1Spinner;
     QSpinBox *bs2Spinner;
     QSpinBox *bs3Spinner;
@@ -106,6 +110,7 @@ class Preferences : public QTabDialog
     QCheckBox *cmpsWkyBtnCheck;
     QCheckBox *cmpsMtyBtnCheck;
     QCheckBox *cmpsComboBoxCheck;
+    QCheckBox *recentComboBoxCheck;
 };
 
 #endif

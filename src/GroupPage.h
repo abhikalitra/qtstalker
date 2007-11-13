@@ -35,6 +35,8 @@ class GroupPage : public QWidget
 
   signals:
     void fileSelected (QString);
+    void addRecentChart (QString);
+    void removeRecentCharts (QStringList);
 
   public:
   
@@ -61,6 +63,7 @@ class GroupPage : public QWidget
     void renameGroup ();
     void groupSelected (QString);
     void groupNoSelection ();
+    void setGroupNavItem (QString, QString);
     void rightClick (QListBoxItem *);
     void slotHelp ();
     void doKeyPress (QKeyEvent *);

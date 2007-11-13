@@ -62,6 +62,7 @@ class NavigatorTab : public QWidget
     void pressButton (int);
     void doKeyPress (QKeyEvent *);
     void slotAccel (int);
+    void recentTab (QString);
 
   protected:
     virtual void contextMenuEvent (QContextMenuEvent *);

@@ -39,6 +39,7 @@ Preferences::Preferences (QWidget *w) : QTabDialog (w, "Preferences", FALSE, WDe
   createFontPage();
   createMTPage(); // main tool bar
   createCTPage(); // chart tool bar
+  createETPage(); // extra tool bar
   
   setApplyButton(tr("&Apply"));  
   connect(this, SIGNAL(applyButtonPressed()), this, SLOT(slotSave()));
@@ -65,6 +66,7 @@ void Preferences::loadSettings ()
   RcFile rcfile;
 
   rcfile.loadData(RcFile::ShowMenuBar, menubar);
+  rcfile.loadData(RcFile::ShowExtraToolbar, extraToolbar);
 
   rcfile.loadData(RcFile::PSButton, ps1Button, 1);
   rcfile.loadData(RcFile::PSButton, ps2Button, 2);
@@ -101,32 +103,41 @@ void Preferences::createGeneralPage ()
   connect(menubarCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
   grid->addWidget(menubarCheck, 0, 1);
 
+  // extraToolbar checkbox
+  label = new QLabel(tr("Extra Toolbar"), w);
+  grid->addWidget(label, 1, 0);
+  
+  extraToolbarCheck = new QCheckBox(w);
+  extraToolbarCheck->setChecked(extraToolbar);
+  connect(extraToolbarCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
+  grid->addWidget(extraToolbarCheck, 1, 1);
+
   // bar spacing 1
   label = new QLabel(tr("Bar Spacing 1"), w);
-  grid->addWidget(label, 1, 0);
+  grid->addWidget(label, 2, 0);
   
   bs1Spinner = new QSpinBox(2, 99, 1, w);
   bs1Spinner->setValue(ps1Button);
   connect(bs1Spinner, SIGNAL(valueChanged(int)), this, SLOT(slotModified()));
-  grid->addWidget(bs1Spinner, 1, 1);
+  grid->addWidget(bs1Spinner, 2, 1);
 
   // bar spacing 2
   label = new QLabel(tr("Bar Spacing 2"), w);
-  grid->addWidget(label, 2, 0);
+  grid->addWidget(label, 3, 0);
   
   bs2Spinner = new QSpinBox(2, 99, 1, w);
   bs2Spinner->setValue(ps2Button);
   connect(bs2Spinner, SIGNAL(valueChanged(int)), this, SLOT(slotModified()));
-  grid->addWidget(bs2Spinner, 2, 1);
+  grid->addWidget(bs2Spinner, 3, 1);
 
   // bar spacing 3
   label = new QLabel(tr("Bar Spacing 3"), w);
-  grid->addWidget(label, 3, 0);
+  grid->addWidget(label, 4, 0);
   
   bs3Spinner = new QSpinBox(2, 99, 1, w);
   bs3Spinner->setValue(ps3Button);
   connect(bs3Spinner, SIGNAL(valueChanged(int)), this, SLOT(slotModified()));
-  grid->addWidget(bs3Spinner, 3, 1);
+  grid->addWidget(bs3Spinner, 4, 1);
 
   addTab(w, tr("General"));
 }
@@ -423,10 +434,40 @@ void  Preferences::createCTPage()
   addTab(w, tr("ChartToolbar"));
 }
 
+void  Preferences::createETPage() 
+{
+  // extra tool bar page
+
+  QWidget *w = new QWidget(this);
+  QVBoxLayout *vbox = new QVBoxLayout(w);
+  
+  QGridLayout *grid = new QGridLayout(vbox, 1, 2);
+  grid->setMargin(5);
+  grid->setSpacing(5);
+  grid->setColStretch(1, 1);
+  
+  vbox->insertStretch(-1, 1);
+
+  int i = 0; // count rows
+  int j = 0; // "count" cols
+  bool tb; // temporary
+  RcFile rcfile;
+
+  QLabel *label = new QLabel(tr("Recent charts"), w);
+  grid->addWidget(label, i, j);
+  recentComboBoxCheck = new QCheckBox(w);
+  rcfile.loadData(RcFile::ShowRecentCharts, tb);
+  recentComboBoxCheck->setChecked(tb);
+  connect(recentComboBoxCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
+  grid->addWidget(recentComboBoxCheck, i++, j + 1);  
+
+  addTab(w, tr("ExtraToolbar"));
+}
+
 void Preferences::slotSave ()
 {
   RcFile rcfile;
-  
+
   bool tbool = menubarCheck->isChecked();
   if (tbool != menubar)
   {
@@ -434,6 +475,14 @@ void Preferences::slotSave ()
     emit signalMenubar(tbool);
     menubar = tbool;
   }
+
+  tbool = extraToolbarCheck->isChecked();
+  if (tbool != extraToolbar)
+  {
+    rcfile.saveData(RcFile::ShowExtraToolbar,tbool);
+    emit signalExtraToolbar(tbool);
+    extraToolbar = tbool;
+   }
 
   int tint = bs1Spinner->value();
   if (tint != ps1Button)
@@ -533,6 +582,8 @@ void Preferences::slotSave ()
   rcfile.saveData(RcFile::ShowCmpsWkyBtn, cmpsWkyBtnCheck->isChecked());
   rcfile.saveData(RcFile::ShowCmpsMtyBtn, cmpsMtyBtnCheck->isChecked());
   rcfile.saveData(RcFile::ShowCmpsComboBox, cmpsComboBoxCheck->isChecked());
+
+  rcfile.saveData(RcFile::ShowRecentCharts, recentComboBoxCheck->isChecked());
   
   emit signalReloadToolBars();
   

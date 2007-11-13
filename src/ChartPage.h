@@ -38,6 +38,8 @@ class ChartPage : public QWidget
     void fileSelected (QString);
     void signalAddToGroup (QString);
     void signalReloadChart ();
+    void addRecentChart (QString);
+    void removeRecentCharts (QStringList);
 
   public:
   
@@ -75,6 +77,7 @@ class ChartPage : public QWidget
     void chartOpened (QString);
     void deleteChartQuick ();
     void addToGroup ();
+    void setChartNavItem (QString, QString);
 
   protected:
     Navigator *nav;

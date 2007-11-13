@@ -45,7 +45,7 @@ ChartPage::ChartPage (QWidget *w, DBIndex *i) : QWidget (w)
   QVBoxLayout *vbox = new QVBoxLayout(this);
   vbox->setMargin(0);
   vbox->setSpacing(5);
-  
+ 
   search = new QLineEdit(this);
   search->setText("*");
   connect(search, SIGNAL(textChanged(const QString &)), this, SLOT(searchChanged(const QString &)));
@@ -144,6 +144,9 @@ void ChartPage::deleteChart ()
     }
       
     nav->updateList();
+
+    if (l.count())
+      emit removeRecentCharts(l);
   }
 
   delete dialog;
@@ -288,6 +291,7 @@ void ChartPage::exportChart (QString &path, bool f)
 void ChartPage::chartOpened (QString d)
 {
   emit fileSelected(d);
+  emit addRecentChart(d);
 }
 
 void ChartPage::rightClick (QListBoxItem *)
@@ -460,3 +464,9 @@ void ChartPage::slotAccel (int id)
   }
 }
 
+void ChartPage::setChartNavItem (QString chartDir, QString chartName)
+{
+  nav->setDirectory(chartDir);
+  search->setText("*"); // perhaps they have recently used the filter, so show all
+  nav->setNavItem(chartName);
+}

@@ -207,6 +207,9 @@ void GroupPage::deleteGroupItem()
     nav->updateList();
 
     groupNoSelection();
+
+    if (l.count())
+      emit removeRecentCharts(l);
   }
   
   delete dialog;
@@ -332,6 +335,7 @@ void GroupPage::chartOpened (QString d)
 {
   QFileInfo fi(d);
   emit fileSelected(fi.readLink());
+  emit addRecentChart(d);
 }
 
 void GroupPage::groupNoSelection ()
@@ -479,6 +483,12 @@ void GroupPage::slotAccel (int id)
     default:
       break;
   }
+}
+
+void GroupPage::setGroupNavItem (QString chartDir, QString chartName)
+{
+  nav->setDirectory(chartDir);
+  nav->setNavItem(chartName);
 }
 
 void GroupPage::refreshList ()

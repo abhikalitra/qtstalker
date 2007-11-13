@@ -44,6 +44,7 @@
 #include "GroupPage.h"
 #include "ChartToolbar.h"
 #include "MainMenubar.h"
+#include "ExtraToolbar.h"
 #include "DBIndex.h"
 #include "RcFile.h"
 
@@ -123,6 +124,7 @@ class QtstalkerApp : public QMainWindow
     void slotDeleteCO (QString);
     void slotSaveCO (Setting);
     void slotMenubarStatus (bool);
+    void slotExtraToolbarStatus (bool);
     void slotAppFont (QFont);
     void slotLoadMainToolbarSettings();
     void slotSavePlotSizes();
@@ -131,6 +133,7 @@ class QtstalkerApp : public QMainWindow
   private:
     QToolBar *toolbar;
     ChartToolbar *toolbar2;
+    ExtraToolbar *extraToolbar;
     MainMenubar *menubar;
     QSplitter *split;
     QSplitter *navSplitter;

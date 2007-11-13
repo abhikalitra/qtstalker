@@ -112,6 +112,8 @@ RcFile::RcFile ()
   Def[PlotSizes] = "339,85,85";
   Key[ShowMenuBar] = "Preferences/ShowMenuBar"; 
   Def[ShowMenuBar] = "TRUE";
+  Key[ShowExtraToolbar] = "Preferences/ShowExtraToolbar"; 
+  Def[ShowExtraToolbar] = "TRUE";
   Key[COPath] = "COPath";
   Def[COPath] = "";
   Key[LocalIndicatorsPath] = "LocalIndicatorsPath";
@@ -176,6 +178,8 @@ RcFile::RcFile ()
   Def[PrefColorCount] = "5";
   Key[PrefColor] = "Preferences/PrefColor";
   Def[PrefColor] = "#ffffff"; // white
+  Key[ShowRecentCharts] = "Preferences/ShowRecentCharts";
+  Def[ShowRecentCharts] = "TRUE";
   Key[LastAktiveNav] = "LastAktiveNav";
   Def[LastAktiveNav] = "";
   Key[LastGroupUsed] = "LastGroupUsed";
@@ -194,6 +198,8 @@ RcFile::RcFile ()
   Def[NavigatorPosition] = "1"; // right hand side
   Key[NavigatorActiveButton] = "NavigatorActiveButton";
   Def[NavigatorActiveButton] = "0"; // chart panel
+  Key[RecentChartsList] = "RecentChartsList";
+  Def[RecentChartsList] = "";
   
   /* keep this as blueprint for easy add new ones
   Key[] = "";

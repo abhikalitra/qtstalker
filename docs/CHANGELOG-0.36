@@ -13,3 +13,7 @@
 20071101: Prevent accidental zero bars to load. Thanks to xley.
 
 20071102: Fixed the Yahoo Quote "adjustment" option which was not being applied. Thanks to dormilon and friend.
+
+20071113: Enable quick access to "Recent Charts". Thanks to xley.
+
+20071113: Optional "Extra Toolbar" which currently only has "Recent Charts". Thanks to xley.
