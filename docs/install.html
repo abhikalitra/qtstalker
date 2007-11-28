@@ -37,21 +37,32 @@ See notes below about <a href="#where">where</a>
 stuff gets installed.
 </p>
 
+<a name="packages"></a>
 <h3>Installing via packages</h3>
 <p>Packages are available for some operating systems:</p>
 <ul>
  <li><a href="http://www.zwets.com/qtstalker/">Debian packages</a></li>
 </ul>
 
+<a name="source"></a>
 <h3>Installing from source</h3>
 
 <p><strong>Note:</strong> Package users can ignore the following advice as this
 will be done automatically by the package installer. </p>
 
-<p><strong>Important:</strong> Ensure that Berkeley DB is installed properly.
+<p><strong>Important (Qt):</strong> Ensure that Qt is installed properly.
+Also ensure that the $QTDIR environment variable is set (see below).
+Also ensure that '<code>qmake</code>' and friends are available (e.g. add $QTDIR/bin to your $PATH).
+</p>
+
+<p><strong>Important (DB):</strong> Ensure that Berkeley DB is installed properly.
 If you installed Berkeley DB at a non-standard location, then edit the
 Qtstalker "configure" file (e.g. "<code>INCLUDEPATH += /opt/local/include/db4</code>"). <br>
 And some installations miss symbolic links in the lib directory. </p>
+
+<p><strong>Important (TA-Lib):</strong> Ensure that TA-Lib is installed properly.
+Also ensure that the '<code>ta-lib-config</code>' program is available on your $PATH
+</p>
 
 <h4>Hint for Ubuntu / Debian users</h4>
 
@@ -103,7 +114,8 @@ Also ensure that the '<code>ta-lib-config</code>' program is available on your $
 <h4>Install Qtstalker</h4>
 
 <h5>For Linux users</h5>
-<ol>
+<p>See important pre-requisite notes <a href="#source">above</a>.</p>
+<ul>
   <li>Ensure that your shell QTDIR environment variable is set
     to point to the location of the root Qt directory. This setting is
     usually something like this: '<code>export QTDIR=/usr/lib/qt</code>' or
@@ -115,10 +127,11 @@ Also ensure that the '<code>ta-lib-config</code>' program is available on your $
   </li>
   <li><code>make</code></li>
   <li><code>make install</code> (as root)</li>
-</ol>
+</ul>
 
 <h5>For FreeBSD users</h5>
-<ol>
+<p>See important pre-requisite notes <a href="#source">above</a>.</p>
+<ul>
   <li>Set a few environment variables in your shell. <br>
     Enter this: '<code>export QTDIR=/usr/X11R6</code>' <br>
     Then enter this '<code>export
@@ -130,23 +143,26 @@ Also ensure that the '<code>ta-lib-config</code>' program is available on your $
   </li>
   <li><code>make</code></li>
   <li><code>make install</code> (as root)</li>
-</ol>
+</ul>
 
 <h5>For Macintosh OS X users (Tiger 10.4+)</h5>
-<ol>
+<p>See important pre-requisite notes <a href="#source">above</a>.</p>
+<p><strong>Note:</strong> By default Qtstalker will only look for supporting
+libraries etc. under <code>/usr/local/</code> so Mac users will need to tell Qtstalker via the "<code>configure</code>" file where to look for these. We cannot give explicit instructions because you might install some bits via Fink and other bits via MacPorts, etc. so the following notes are just a guide.
+</p>
+<ul>
   <li>Get Berkeley DB using <a href="http://macports.org/">MacPorts.org</a>
     or <a href="http://fink.sf.net/">Fink.sf.net</a><br>
     We have reports of needing e.g. '<code>cd /opt/local/lib; ln -s
     libdb-4.2.dylib libdb.dylib</code>')</li>
   <li>Get <a href="http://ta-lib.org/">TA-Lib</a> source and install as described above.</li>
-  <li>Get <a href="http://pdb.finkproject.org/pdb/package.php/qt3mac">Qt for
-    Aqua: qt3mac</a>. Trolltech says must be at least qt-3.3.5</li>
+  <li>Get "Qt for Aqua" (i.e. not for X11). Trolltech says must be at least qt-3.3.5 version. You can get this via Fink, or MacPorts, or direct from Trolltech.</li>
   <li>Set your shell QTDIR environment variable to point where you installed
     Qt. <br>
     e.g. '<code>export QTDIR=/sw/lib/qt3mac</code>' or something similar. <br>
     Failure to set this properly will result in make errors. </li>
   <li>Unpack the Qtstalker source.</li>
-  <li>Edit the "configure" file to be: <br>
+  <li>Edit the "configure" file to be something like: <br>
     <code>qmake "DEFINES += QT_NO_COMPAT" "CONFIG += qt" "macx:INCLUDEPATH +=
     /opt/local/include/db4" "macx:LIBS += -L/opt/local/lib" -o Makefile
     qtstalker.pro</code></li>
@@ -154,7 +170,7 @@ Also ensure that the '<code>ta-lib-config</code>' program is available on your $
   <li><code>make</code> </li>
   <li><code>sudo make install</code></li>
   <li>To start, type '<code>open /usr/local/bin/qtstalker.app</code>'</li>
-</ol>
+</ul>
 
 <a name="where"></a>
 <h3>Where does stuff get installed</h3>
