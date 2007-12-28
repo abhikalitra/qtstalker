@@ -81,11 +81,9 @@ void ExtraToolbar::slotSetButtonView ()
 {
   bool tb;
   
-// e.g.
-//  rcfile.loadData(RcFile::ShowRecentChartsComboBox, tb);
-//  if (tb) recentCombo->show();
-//  else recentCombo->hide();
-
+  rcfile.loadData(RcFile::ShowRecentCharts, tb);
+  if (tb) recentCombo->show();
+  else recentCombo->hide();
 }
 
 void ExtraToolbar::slotRecentChartSelected (int)
