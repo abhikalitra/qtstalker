@@ -129,6 +129,11 @@ Also ensure that the '<code>ta-lib-config</code>' program is available on your $
   <li><code>make install</code> (as root)</li>
 </ul>
 
+<p>If you get errors about undefined symbols when you start qtstalker, then add
+ <code>/usr/local/lib</code>
+ to your <code>/etc/ld.so.conf</code> file and run <code>ldconfig -v</code>
+ (as root).</p>
+
 <h5>For FreeBSD users</h5>
 <p>See important pre-requisite notes <a href="#source">above</a>.</p>
 <ul>
