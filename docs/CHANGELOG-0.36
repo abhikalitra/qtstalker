@@ -21,3 +21,5 @@
 20071128: Improved installation docs. Added important notes about ensuring that 'qmake' and friends, and 'ta-lib-config', are available on your $PATH. Improved notes about Apple Mac installation. Thanks to xley.
 
 20080206: Added note to installation docs to warn about linker issues with undefined symbols on some systems. Thanks to degraaf.
+
+20080207: Changed some shortcuts: AdvancePaperTrade (Ctrl+Right), Open Quote Dialog (Ctrl+Y), Quit (Ctrl+Q). Thanks to xley and suggestion by alexlong.

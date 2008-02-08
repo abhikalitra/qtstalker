@@ -47,9 +47,9 @@ MainMenubar::MainMenubar (QMainWindow *mw) : QMenuBar (mw, "mainMenubar")
   QAction *action  = new QAction(this, "actionExit");
   action->setMenuText(tr("E&xit"));
   action->setIconSet(icon);
-  action->setAccel(CTRL+Key_1);
-  action->setStatusTip(tr("Quit Qtstalker (Ctrl+1)"));
-  action->setToolTip(tr("Quit Qtstalker (Ctrl+1)"));
+  action->setAccel(CTRL+Key_Q);
+  action->setStatusTip(tr("Quit Qtstalker (Ctrl+Q)"));
+  action->setToolTip(tr("Quit Qtstalker (Ctrl+Q)"));
   connect(action, SIGNAL(activated()), this, SIGNAL(signalExit()));
   actions.replace(Exit, action);
   
@@ -86,10 +86,10 @@ MainMenubar::MainMenubar (QMainWindow *mw) : QMenuBar (mw, "mainMenubar")
 
   icon = quotes;
   action = new QAction(this, "actionQuote");
-  action->setMenuText(tr("&Quotes"));
+  action->setMenuText(tr("Load Quotes"));
   action->setIconSet(icon);
-  action->setStatusTip(tr("Download quotes from internet  (Ctrl+Q)"));
-  action->setToolTip(tr("Download quotes from internet  (Ctrl+Q)"));
+  action->setStatusTip(tr("Load Quotes (Ctrl+Y)"));
+  action->setToolTip(tr("Load Quotes (Ctrl+Y)"));
   connect(action, SIGNAL(activated()), mw, SLOT(slotQuotes()));
   actions.replace(Quotes, action);
 
@@ -203,8 +203,8 @@ MainMenubar::MainMenubar (QMainWindow *mw) : QMenuBar (mw, "mainMenubar")
   a->insertItem(CTRL+Key_6, Crosshairs);
   a->insertItem(CTRL+Key_7, SidePanel);
   a->insertItem(CTRL+Key_0, DrawMode);
-  a->insertItem(CTRL+Key_Q, Quotes);
-  a->insertItem(CTRL+Key_Q, AdvancePaperTrade);
+  a->insertItem(CTRL+Key_Y, Quotes);
+  a->insertItem(CTRL+Key_Right, AdvancePaperTrade);
   
   a->insertItem(CTRL+Key_Escape, 8);
   
@@ -345,7 +345,7 @@ void MainMenubar::doKeyPress (QKeyEvent *key)
       case Qt::Key_6:
 	slotAccel(Crosshairs);
         break;
-      case Qt::Key_Q:
+      case Qt::Key_Y:
         slotAccel(Quotes);
         break;
       case Qt::Key_Right:
