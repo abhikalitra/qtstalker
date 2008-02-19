@@ -253,6 +253,9 @@ void CSV::parse ()
         progressBar->setProgress(loop, (int) list.count());
     }
 
+    int lineCount = 0;
+    QFileInfo fi(f);
+    QString fName = fi.fileName();
     while(stream.atEnd() == 0)
     {
       QString ts = stream.readLine();
@@ -260,10 +263,14 @@ void CSV::parse ()
       stripJunk(ts, s);
 
       QStringList l = QStringList::split(delim, s, FALSE);
+      lineCount++;
       if (l.count() != fieldList.count())
       {
-        qDebug("CSV::parse:File fields (%i) != rule format (%i)", l.count(), fieldList.count());
-        QString ss = symbol + " - " + tr("File fields != rule format");
+        QString ss = QString().sprintf(
+          "%s - %s - %s: %s Number of fields in file (%i) != rule format (%i)",
+          fName.latin1(), symbol.latin1(), tr("Line").latin1(),
+          QString::number(lineCount).latin1(),  l.count(), fieldList.count()
+          );
         printStatusLogMessage(ss);
 	continue;
       }
@@ -279,8 +286,10 @@ void CSV::parse ()
           getDate(fieldList[fieldLoop], l[fieldLoop], r, dt);
           if (! dt.isValid())
 	  {
-	    qDebug("CSV::parse: %s - Bad date %s", symbol.latin1(), l[fieldLoop].latin1());
-            QString ss = symbol + " - " + tr("Bad date");
+            QString ss = QString().sprintf("%s - %s - %s: %s %s: %s",
+              fName.latin1(), symbol.latin1(), tr("Line").latin1(), QString::number(lineCount).latin1(),
+              tr("Bad date").latin1(), l[fieldLoop].latin1()
+              );
             printStatusLogMessage(ss);
 	    flag = TRUE;
 	    break;
@@ -305,8 +314,10 @@ void CSV::parse ()
           getTime(l[fieldLoop], s);
           if (! s.length())
 	  {
-	    qDebug("CSV::parse: %s - Bad time %s", symbol.latin1(), l[fieldLoop].latin1());
-            QString ss = symbol + " - " + tr("Bad time");
+            QString ss = QString().sprintf("%s - %s - %s: %s %s: %s",
+              fName.latin1(), symbol.latin1(), tr("Line").latin1(), QString::number(lineCount).latin1(),
+              tr("Bad time").latin1(), l[fieldLoop].latin1()
+              );
             printStatusLogMessage(ss);
 	    flag = TRUE;
 	    break;
@@ -346,8 +357,10 @@ void CSV::parse ()
 	{
           if (setTFloat(l[fieldLoop], TRUE))
 	  {
-	    qDebug("CSV::parse: %s - Bad %s value", symbol.latin1(), fieldList[fieldLoop].latin1());
-            QString ss = symbol + " - " + tr("Bad value");
+            QString ss = QString().sprintf("%s - %s - %s: %i %s: %s",
+              fName.latin1(), symbol.latin1(), tr("Line").latin1(), lineCount,
+              tr("Bad value").latin1(), tr(fieldList[fieldLoop]).latin1()
+              );
             printStatusLogMessage(ss);
 	    flag = TRUE;
 	    break;
@@ -362,8 +375,10 @@ void CSV::parse ()
 	{
           if (setTFloat(l[fieldLoop], FALSE))
 	  {
-	    qDebug("CSV::parse: %s - Bad %s value", symbol.latin1(), fieldList[fieldLoop].latin1());
-            QString ss = symbol + " - " + tr("Bad value");
+            QString ss = QString().sprintf("%s - %s - %s: %s %s: %s",
+              fName.latin1(), symbol.latin1(), tr("Line").latin1(), QString::number(lineCount).latin1(),
+              tr("Bad value").latin1(), tr(fieldList[fieldLoop]).latin1()
+              );
             printStatusLogMessage(ss);
 	    flag = TRUE;
 	    break;
