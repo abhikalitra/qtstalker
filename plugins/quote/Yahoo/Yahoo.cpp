@@ -131,8 +131,7 @@ void Yahoo::buildGui ()
       dt = dt.addDays(-2);
   }
   edate->setDate(dt);
-  dt = dt.addDays(-1);
-  sdate->setDate(dt);
+  sdate->setDate(QDate(dt.year() - 10, 1, 1));
   
   adjustment = new QCheckBox(tr("Adjustment"), baseWidget);
   grid->addWidget(adjustment, 3, 0);

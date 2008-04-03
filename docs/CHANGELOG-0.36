@@ -27,3 +27,5 @@
 20080219: Improved error reporting for CSV Quote plugin. Thanks to xley.
 
 20080403: Increased dimensions of data window. Thanks to bdheeman.
+
+20080403: Applied part of patch #1913032. Set start date 10-year for Yahoo quote History option. Thanks to bdheeman.
