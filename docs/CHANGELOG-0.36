@@ -25,3 +25,5 @@
 20080207: Changed some shortcuts: AdvancePaperTrade (Ctrl+Right), Open Quote Dialog (Ctrl+Y), Quit (Ctrl+Q). Thanks to xley and suggestion by alexlong.
 
 20080219: Improved error reporting for CSV Quote plugin. Thanks to xley.
+
+20080403: Increased dimensions of data window. Thanks to bdheeman.

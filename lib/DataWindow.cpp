@@ -24,7 +24,7 @@
 
 DataWindow::DataWindow (QWidget *w) : QDialog (w, "DataWindow", FALSE, WDestructiveClose)
 {
-  resize(500, 350);
+  resize(750, 550);
 
   QVBoxLayout *vbox = new QVBoxLayout (this);
   vbox->setSpacing(5);
