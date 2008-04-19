@@ -113,7 +113,7 @@ RcFile::RcFile ()
   Key[ShowMenuBar] = "Preferences/ShowMenuBar"; 
   Def[ShowMenuBar] = "TRUE";
   Key[ShowExtraToolbar] = "Preferences/ShowExtraToolbar"; 
-  Def[ShowExtraToolbar] = "TRUE";
+  Def[ShowExtraToolbar] = "FALSE";
   Key[COPath] = "COPath";
   Def[COPath] = "";
   Key[LocalIndicatorsPath] = "LocalIndicatorsPath";
