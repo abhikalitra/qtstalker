@@ -5,7 +5,7 @@
 #---------------------------------------------------------------------------
 DOXYFILE_ENCODING      = UTF-8
 PROJECT_NAME           = Qtstalker
-PROJECT_NUMBER         = 0.36-dev
+PROJECT_NUMBER         = 0.37-dev
 OUTPUT_DIRECTORY       = /Users/crossley/Documents/work/qtstalker/doxygen
 CREATE_SUBDIRS         = NO
 OUTPUT_LANGUAGE        = English

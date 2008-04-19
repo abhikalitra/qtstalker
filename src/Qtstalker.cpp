@@ -2,7 +2,7 @@
                           qtstalker.cpp  -  description
                              -------------------
     begin                : Thu Mar  7 22:43:41 EST 2002
-    copyright            : (C) 2001-2007 by Stefan Stratigakos
+    copyright            : (C) 2001-2008 by Stefan Stratigakos
     email                :
  ***************************************************************************/
 
@@ -306,7 +306,7 @@ void QtstalkerApp::slotAbout()
 {
   // display the about dialog
   QMessageBox *dialog = new QMessageBox(tr("About Qtstalker"),
-  					tr("Qtstalker\nVersion CVS 0.36-dev (working title)\n(C) 2001-2007 by Stefan Stratigakos"),
+  					tr("Qtstalker\nVersion 0.36\n(C) 2001-2008 by Stefan Stratigakos"),
 					QMessageBox::NoIcon,
 					QMessageBox::Ok,
 					QMessageBox::NoButton,
