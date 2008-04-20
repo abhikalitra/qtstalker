@@ -42,6 +42,7 @@ To Do:
 - Create default docs/indicator/*.html for all the existing misc/CUS_examples, e.g. "CV - Chaikin Volatility".
 - Round off values to lesser precision when displaying in data panel.
 - Some old files have not been removed from CVS (CC.cpp Index.cpp Spread*.cpp). See discussion in mail archives about this functionality which has moved but seems to have trouble. The lingering files caused compile troubles for someone, but not for others.
+- There are many empty CVS directories. Remove them.
 - Improve source code documentation. Javadoc comments are utilised by Doxygen.
 Need more comments, starting with top-level classes.
 
