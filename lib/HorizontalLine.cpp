@@ -23,8 +23,10 @@
 #include "PrefDialog.h"
 #include "Config.h"
 #include <qpainter.h>
-#include <qpointarray.h>
+#include <q3pointarray.h>
 #include <qsettings.h>
+//Added by qt3to4:
+#include <QPixmap>
 
 HorizontalLine::HorizontalLine ()
 {
@@ -71,7 +73,7 @@ void HorizontalLine::draw (QPixmap &buffer, Scaler &scaler, int, int, int)
   painter.drawText(0 + pixelsWide + 1, y - 1, QString::number(getValue()), -1);
   
   clearSelectionArea();
-  QPointArray array;
+  Q3PointArray array;
   array.putPoints(0, 4, 0, y - 4, 0, y + 4, buffer.width(), y + 4, buffer.width(), y - 4);
   setSelectionArea(new QRegion(array));
     

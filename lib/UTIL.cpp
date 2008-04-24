@@ -21,9 +21,11 @@
 
 #include "UTIL.h"
 #include "PrefDialog.h"
-#include <qdict.h>
+#include <q3dict.h>
 #include <qinputdialog.h>
 #include <qobject.h>
+//Added by qt3to4:
+#include <Q3PtrList>
 #include <math.h>
 
 UTIL::UTIL ()
@@ -53,7 +55,7 @@ UTIL::~UTIL ()
 {
 }
 
-PlotLine * UTIL::calculateAccum (QString &p, QPtrList<PlotLine> &d)
+PlotLine * UTIL::calculateAccum (QString &p, Q3PtrList<PlotLine> &d)
 {
   // format: METHOD, INPUT_ARRAY
 
@@ -78,7 +80,7 @@ PlotLine * UTIL::calculateAccum (QString &p, QPtrList<PlotLine> &d)
   return line;
 }
 
-PlotLine * UTIL::calculateNormal(QString &p, QPtrList<PlotLine> &d)
+PlotLine * UTIL::calculateNormal(QString &p, Q3PtrList<PlotLine> &d)
 {
   // format: METHOD, INPUT_ARRAY
 
@@ -117,7 +119,7 @@ PlotLine * UTIL::calculateNormal(QString &p, QPtrList<PlotLine> &d)
   return normal;
 }
 
-PlotLine * UTIL::calculateCustom (QString &p, QPtrList<PlotLine> &d)
+PlotLine * UTIL::calculateCustom (QString &p, Q3PtrList<PlotLine> &d)
 {
   QStringList l = QStringList::split(",", p, FALSE);
 
@@ -229,7 +231,7 @@ PlotLine * UTIL::calculateCustom (QString &p, QPtrList<PlotLine> &d)
   return out;
 }
 
-PlotLine * UTIL::calculateCOUNTER (QString &p, QPtrList<PlotLine> &d)
+PlotLine * UTIL::calculateCOUNTER (QString &p, Q3PtrList<PlotLine> &d)
 {
   // format1: METHOD, ARRAY_INPUT
   // format2: METHOD, ARRAY_INPUT, ARRAY_INPUT2
@@ -305,7 +307,7 @@ PlotLine * UTIL::calculateCOUNTER (QString &p, QPtrList<PlotLine> &d)
   return counter;
 }
 
-PlotLine * UTIL::calculateCOMP (QString &p, QPtrList<PlotLine> &d)
+PlotLine * UTIL::calculateCOMP (QString &p, Q3PtrList<PlotLine> &d)
 {
   // format1: METHOD, ARRAY_INPUT, DOUBLE, OPERATOR
   // format2: METHOD, ARRAY_INPUT, ARRAY_INPUT2, OPERATOR
@@ -430,7 +432,7 @@ PlotLine * UTIL::calculateCOMP (QString &p, QPtrList<PlotLine> &d)
   return line;
 }
 
-PlotLine * UTIL::calculateADMS (QString &p, QPtrList<PlotLine> &d, int type)
+PlotLine * UTIL::calculateADMS (QString &p, Q3PtrList<PlotLine> &d, int type)
 {
   // format1: METHOD, ARRAY_INPUT, DOUBLE
   // format2: METHOD, ARRAY_INPUT, ARRAY_INPUT2
@@ -521,7 +523,7 @@ PlotLine * UTIL::calculateADMS (QString &p, QPtrList<PlotLine> &d, int type)
   return line;
 }
 
-PlotLine * UTIL::calculateREF (QString &p, QPtrList<PlotLine> &d)
+PlotLine * UTIL::calculateREF (QString &p, Q3PtrList<PlotLine> &d)
 {
   // format1: METHOD, ARRAY_INPUT, PERIOD
   // format2: METHOD, DOUBLE
@@ -582,7 +584,7 @@ PlotLine * UTIL::calculateREF (QString &p, QPtrList<PlotLine> &d)
   return line;
 }
 
-PlotLine * UTIL::calculatePER (QString &p, QPtrList<PlotLine> &d)
+PlotLine * UTIL::calculatePER (QString &p, Q3PtrList<PlotLine> &d)
 {
   // format: METHOD, INPUT_ARRAY
 
@@ -604,7 +606,7 @@ PlotLine * UTIL::calculatePER (QString &p, QPtrList<PlotLine> &d)
   return line;
 }
 
-PlotLine * UTIL::calculateCOLOR (QString &p, QPtrList<PlotLine> &d)
+PlotLine * UTIL::calculateCOLOR (QString &p, Q3PtrList<PlotLine> &d)
 {
   // format1: METHOD, INPUT_ARRAY, COLOR_ARRAY, VALUE, COLOR
 
@@ -645,7 +647,7 @@ PlotLine * UTIL::calculateCOLOR (QString &p, QPtrList<PlotLine> &d)
   return line;
 }
 
-PlotLine * UTIL::calculateHL (QString &p, QPtrList<PlotLine> &d, int type)
+PlotLine * UTIL::calculateHL (QString &p, Q3PtrList<PlotLine> &d, int type)
 {
   // format1: METHOD, ARRAY_INPUT, DOUBLE
   // format: METHOD, ARRAY_INPUT, ARRAY_INPUT2
@@ -730,7 +732,7 @@ PlotLine * UTIL::calculateHL (QString &p, QPtrList<PlotLine> &d, int type)
   return line;
 }
 
-PlotLine * UTIL::calculateINRANGE (QString &p, QPtrList<PlotLine> &d)
+PlotLine * UTIL::calculateINRANGE (QString &p, Q3PtrList<PlotLine> &d)
 {
   // format: METHOD, INPUT_ARRAY, DOUBLE, DOUBLE
   // format: METHOD, INPUT_ARRAY, INPUT_ARRAY2, INPUT_ARRAY3

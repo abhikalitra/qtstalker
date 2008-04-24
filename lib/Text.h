@@ -24,10 +24,12 @@
 
 #include "COBase.h"
 #include "Setting.h"
-#include <qpointarray.h>
+#include <q3pointarray.h>
 #include <qpoint.h>
 #include <qfont.h>
 #include <qdatetime.h>
+//Added by qt3to4:
+#include <QPixmap>
 
 class Text : public COBase
 {
@@ -52,7 +54,7 @@ class Text : public COBase
     void pointerMoving (QPixmap &, QPoint &, QDateTime &, double y);
     
   protected:
-    QPointArray arrow;
+    Q3PointArray arrow;
     QString label;
     QFont font;
     QFont dfont;

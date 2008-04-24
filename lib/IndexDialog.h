@@ -20,13 +20,13 @@
  */
 
 #include "Toolbar.h"
-#include <qtabdialog.h>
+#include <q3tabdialog.h>
 #include <qstring.h>
 #include <qlineedit.h>
-#include <qlistview.h>
-#include <qdict.h>
+#include <q3listview.h>
+#include <q3dict.h>
 
-class IndexDialog : public QTabDialog
+class IndexDialog : public Q3TabDialog
 {
   Q_OBJECT
   
@@ -48,8 +48,8 @@ class IndexDialog : public QTabDialog
   private:
     QLineEdit *name;
     Toolbar *toolbar;
-    QListView *list;
-    QDict<QString> symbolDict;
+    Q3ListView *list;
+    Q3Dict<QString> symbolDict;
     QString helpFile;
 };
 

@@ -22,8 +22,8 @@
 #ifndef BARDATA_HPP
 #define BARDATA_HPP
 
-#include <qvaluelist.h>
-#include <qdict.h>
+#include <q3valuelist.h>
+#include <q3dict.h>
 #include <qstringlist.h>
 #include <qdatetime.h>
 #include "Bar.h"
@@ -103,8 +103,8 @@ class BarData
     void getSymbol (QString &);
     
   protected:
-    QValueList<Bar> barList;
-    QDict<X> dateList;
+    Q3ValueList<Bar> barList;
+    Q3Dict<X> dateList;
     double high;
     double low;
     BarData::BarType barType;

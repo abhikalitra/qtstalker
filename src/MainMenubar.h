@@ -24,10 +24,12 @@
 
 #include <qstring.h>
 #include <qmenubar.h>
-#include <qmainwindow.h>
-#include <qpopupmenu.h>
-#include <qintdict.h>
+#include <q3mainwindow.h>
+#include <q3popupmenu.h>
+#include <q3intdict.h>
 #include <qaction.h>
+//Added by qt3to4:
+#include <QKeyEvent>
 
 class MainMenubar : public QMenuBar
 {
@@ -67,7 +69,7 @@ class MainMenubar : public QMenuBar
       IndicatorSummary
     };
   
-    MainMenubar(QMainWindow *);
+    MainMenubar(Q3MainWindow *);
     ~MainMenubar();
     void createMenus ();
     QAction * getAction (int);
@@ -80,12 +82,12 @@ class MainMenubar : public QMenuBar
     void doKeyPress (QKeyEvent *);
     
   private:
-    QPopupMenu *fileMenu;
-    QPopupMenu *editMenu;
-    QPopupMenu *viewMenu;
-    QPopupMenu *toolMenu;
-    QPopupMenu *helpMenu;
-    QIntDict<QAction> actions;
+    Q3PopupMenu *fileMenu;
+    Q3PopupMenu *editMenu;
+    Q3PopupMenu *viewMenu;
+    Q3PopupMenu *toolMenu;
+    Q3PopupMenu *helpMenu;
+    Q3IntDict<QAction> actions;
 };
 
 #endif

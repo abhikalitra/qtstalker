@@ -28,8 +28,12 @@
 #include <qlayout.h>
 #include <qmessagebox.h>
 #include <qfileinfo.h>
+//Added by qt3to4:
+#include <Q3GridLayout>
+#include <Q3Frame>
+#include <Q3VBoxLayout>
 
-FuturesDialog::FuturesDialog (QString p, DbPlugin *d, DBIndex *i) : QTabDialog (0, "FuturesDialog", TRUE)
+FuturesDialog::FuturesDialog (QString p, DbPlugin *d, DBIndex *i) : Q3TabDialog (0, "FuturesDialog", TRUE)
 {
   helpFile = p;
   db = d;
@@ -62,11 +66,11 @@ void FuturesDialog::createDetailsPage ()
 {
   QWidget *w = new QWidget(this);
   
-  QVBoxLayout *vbox = new QVBoxLayout(w);
+  Q3VBoxLayout *vbox = new Q3VBoxLayout(w);
   vbox->setMargin(5);
   vbox->setSpacing(0);
     
-  QGridLayout *grid = new QGridLayout(vbox);
+  Q3GridLayout *grid = new Q3GridLayout(vbox);
   grid->setSpacing(5);
   
   QLabel *label = new QLabel(tr("Symbol"), w);
@@ -77,7 +81,7 @@ void FuturesDialog::createDetailsPage ()
   index->getIndexItem(symbol, item);
   item.getSymbol(s);
   label = new QLabel(s, w);
-  label->setFrameStyle(QFrame::WinPanel | QFrame::Sunken);
+  label->setFrameStyle(Q3Frame::WinPanel | Q3Frame::Sunken);
   grid->addWidget(label, 0, 1);
   
   label = new QLabel(tr("Name"), w);
@@ -94,7 +98,7 @@ void FuturesDialog::createDetailsPage ()
   Exchange ex;
   ex.getExchange(s.toInt(), s);
   label = new QLabel(s, w);
-  label->setFrameStyle(QFrame::WinPanel | QFrame::Sunken);
+  label->setFrameStyle(Q3Frame::WinPanel | Q3Frame::Sunken);
   grid->addWidget(label, 2, 1);
   
   label = new QLabel(tr("Type"), w);
@@ -102,7 +106,7 @@ void FuturesDialog::createDetailsPage ()
 
   item.getType(s);  
   label = new QLabel(s, w);
-  label->setFrameStyle(QFrame::WinPanel | QFrame::Sunken);
+  label->setFrameStyle(Q3Frame::WinPanel | Q3Frame::Sunken);
   grid->addWidget(label, 3, 1);
   
   label = new QLabel(tr("Futures Type"), w);
@@ -111,7 +115,7 @@ void FuturesDialog::createDetailsPage ()
   QString s2;
   item.getFuturesType(s2);
   label = new QLabel(s2, w);
-  label->setFrameStyle(QFrame::WinPanel | QFrame::Sunken);
+  label->setFrameStyle(Q3Frame::WinPanel | Q3Frame::Sunken);
   grid->addWidget(label, 4, 1);
 
   label = new QLabel(tr("Futures Month"), w);
@@ -119,7 +123,7 @@ void FuturesDialog::createDetailsPage ()
 
   item.getFuturesMonth(s2);  
   label = new QLabel(s2, w);
-  label->setFrameStyle(QFrame::WinPanel | QFrame::Sunken);
+  label->setFrameStyle(Q3Frame::WinPanel | Q3Frame::Sunken);
   grid->addWidget(label, 5, 1);
   
   label = new QLabel(tr("First Date"), w);
@@ -131,7 +135,7 @@ void FuturesDialog::createDetailsPage ()
   {
     bar.getDateTimeString(TRUE, s);
     label = new QLabel(s, w);
-    label->setFrameStyle(QFrame::WinPanel | QFrame::Sunken);
+    label->setFrameStyle(Q3Frame::WinPanel | Q3Frame::Sunken);
     grid->addWidget(label, 6, 1);
   }
   
@@ -145,7 +149,7 @@ void FuturesDialog::createDetailsPage ()
   {
     bar2.getDateTimeString(TRUE, s);
     label = new QLabel(s, w);
-    label->setFrameStyle(QFrame::WinPanel | QFrame::Sunken);
+    label->setFrameStyle(Q3Frame::WinPanel | Q3Frame::Sunken);
     grid->addWidget(label, 7, 1);
   }
   
@@ -159,7 +163,7 @@ void FuturesDialog::createDataPage ()
 {
   QWidget *w = new QWidget(this);
     
-  QVBoxLayout *vbox = new QVBoxLayout(w);
+  Q3VBoxLayout *vbox = new Q3VBoxLayout(w);
   vbox->setMargin(5);
   vbox->setSpacing(0);
   

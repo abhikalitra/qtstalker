@@ -24,10 +24,10 @@
 #include "DBIndexItem.h"
 #include "Exchange.h"
 #include <qfile.h>
-#include <qtextstream.h>
+#include <q3textstream.h>
 #include <qdir.h>
 #include <qdatetime.h>
-#include <qnetwork.h>
+#include <q3network.h>
 #include <qsettings.h>
 #include "DbPlugin.h"
 #include "../../../pics/newchart.xpm"
@@ -35,7 +35,7 @@
 #include <qmessagebox.h>
 #include <qlayout.h>
 #include <qlabel.h>
-#include <qframe.h>
+#include <q3frame.h>
 
 Yahoo::Yahoo ()
 {
@@ -52,7 +52,7 @@ Yahoo::Yahoo ()
   config.getData(Config::Home, file);
   file.append("/yahooDownload");
   
-  qInitNetworkProtocols();
+  q3InitNetworkProtocols();
 
   buildGui();
   
@@ -109,17 +109,17 @@ void Yahoo::buildGui ()
   label = new QLabel(tr("Start Date"), baseWidget);
   grid->addWidget(label, 1, 0);
 
-  sdate = new QDateEdit(QDate::currentDate(), baseWidget);
+  sdate = new Q3DateEdit(QDate::currentDate(), baseWidget);
   sdate->setAutoAdvance(TRUE);
-  sdate->setOrder(QDateEdit::YMD);
+  sdate->setOrder(Q3DateEdit::YMD);
   grid->addWidget(sdate, 1, 1);
 
   label = new QLabel(tr("End Date"), baseWidget);
   grid->addWidget(label, 2, 0);
   
-  edate = new QDateEdit(QDate::currentDate(), baseWidget);
+  edate = new Q3DateEdit(QDate::currentDate(), baseWidget);
   edate->setAutoAdvance(TRUE);
-  edate->setOrder(QDateEdit::YMD);
+  edate->setOrder(Q3DateEdit::YMD);
   grid->addWidget(edate, 2, 1);
 
   QDate dt = QDate::currentDate();
@@ -170,7 +170,7 @@ void Yahoo::update ()
       path.append("US");
     path.append("/");
     path.append(symbolList[loop]);
-    if (! dir.exists(path, TRUE))
+    if (! dir.exists(path))
       continue;
       
     if (! method->currentText().compare("History"))
@@ -300,14 +300,14 @@ void Yahoo::parseHistory ()
     data.remove(0, p + s.length());
 
   QFile f(file);
-  if (! f.open(IO_WriteOnly))
+  if (! f.open(QIODevice::WriteOnly))
     return;
-  QTextStream stream(&f);
+  Q3TextStream stream(&f);
   stream << data;
   f.close();
 
   f.setName(file);
-  if (! f.open(IO_ReadOnly))
+  if (! f.open(QIODevice::ReadOnly))
     return;
   stream.setDevice(&f);
 
@@ -455,14 +455,14 @@ void Yahoo::parseQuote ()
     return;
 
   QFile f(file);
-  if (! f.open(IO_WriteOnly))
+  if (! f.open(QIODevice::WriteOnly))
     return;
-  QTextStream stream(&f);
+  Q3TextStream stream(&f);
   stream << data;
   f.close();
 
   f.setName(file);
-  if (! f.open(IO_ReadOnly))
+  if (! f.open(QIODevice::ReadOnly))
     return;
   stream.setDevice(&f);
 
@@ -1116,7 +1116,7 @@ void Yahoo::newStock ()
     {
       exchange = fi.extension(FALSE).upper();
       s.append(fi.extension(FALSE).upper());
-      if (! dir.exists(s, TRUE))
+      if (! dir.exists(s))
       {
         if (! dir.mkdir(s))
 	{
@@ -1128,7 +1128,7 @@ void Yahoo::newStock ()
     else
     {
       s.append("US");
-      if (! dir.exists(s, TRUE))
+      if (! dir.exists(s))
       {
         if (! dir.mkdir(s))
 	{
@@ -1139,7 +1139,7 @@ void Yahoo::newStock ()
     }
     s.append("/");
     s.append(l[loop]);
-    if (dir.exists(s, TRUE))
+    if (dir.exists(s))
       continue;
 
     if (plug.open(s, chartIndex))

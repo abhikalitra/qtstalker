@@ -28,7 +28,8 @@
 
 // FIXME: Make maxItems configurable.
 
-ExtraToolbar::ExtraToolbar (QMainWindow *mw) : QToolBar ("", mw, mw, TRUE, "extraToolbar")
+ExtraToolbar::ExtraToolbar (Q3MainWindow *mw, QWidget *parent) : Q3ToolBar (QString::null, mw, parent, TRUE, "extraToolbar")
+//ExtraToolbar::ExtraToolbar (Q3MainWindow *mw) : Q3ToolBar (QString::null, mw, mw, TRUE, "extraToolbar")
 {
   // Recent viewed charts.
   recentCombo = new QComboBox(this);

@@ -21,8 +21,10 @@
 
 #include "PlotLine.h"
 #include <qpainter.h>
-#include <qpointarray.h>
+#include <q3pointarray.h>
 #include <qobject.h>
+//Added by qt3to4:
+#include <Q3ValueList>
 
 PlotLine::PlotLine ()
 {
@@ -481,17 +483,17 @@ void PlotLine::prepend (QDateTime &dt)
   dateList.prepend(dt);
 }
 
-void PlotLine::getDateList (QValueList<QDateTime> &dl)
+void PlotLine::getDateList (Q3ValueList<QDateTime> &dl)
 {
   dl = dateList;
 }
 
-void PlotLine::setDateList (QValueList<QDateTime> &dl)
+void PlotLine::setDateList (Q3ValueList<QDateTime> &dl)
 {
   dateList = dl;
 }
 
-void PlotLine::getData (QValueList<Val> &d)
+void PlotLine::getData (Q3ValueList<Val> &d)
 {
   d = data;
 }

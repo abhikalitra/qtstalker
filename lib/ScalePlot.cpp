@@ -23,17 +23,20 @@
 #include <qpainter.h>
 #include <qpen.h>
 #include <qpoint.h>
-#include <qpointarray.h>
+#include <q3pointarray.h>
+//Added by qt3to4:
+#include <QResizeEvent>
+#include <QPaintEvent>
 #include <math.h>
-#include <qpaintdevicemetrics.h>
+#include <q3paintdevicemetrics.h>
 #include <qstring.h>
-#include <qmemarray.h>
+#include <q3memarray.h>
 
 #define SCALE_WIDTH 60
 
 ScalePlot::ScalePlot (QWidget *w) : QWidget(w)
 {
-  setBackgroundMode(NoBackground);
+  // setBackgroundMode(NoBackground);
   scaleWidth = SCALE_WIDTH;
   backgroundColor.setNamedColor("black");
   borderColor.setNamedColor("white");
@@ -104,9 +107,15 @@ void ScalePlot::drawRefresh ()
   paintEvent(0);
 }
 
-void ScalePlot::paintEvent (QPaintEvent *)
+//void ScalePlot::paintEvent (QPaintEvent *)
+void ScalePlot::paintEvent (QPaintEvent * e)
 {
-  bitBlt(this, 0, 0, &buffer);
+  //bitBlt(this, 0, 0, &buffer);
+
+  setAttribute(Qt::WA_PaintOutsidePaintEvent, true);
+  QWidget::paintEvent(e);
+  QPainter painter(this);
+  painter.drawPixmap(0, 0, buffer);
 }
 
 void ScalePlot::resizeEvent (QResizeEvent *event)
@@ -143,11 +152,11 @@ void ScalePlot::drawScale ()
   QPainter painter;
   painter.begin(&buffer);
   painter.setFont(plotFont);
-  painter.setPen(QPen(borderColor, 1, QPen::SolidLine));
+  painter.setPen(QPen(borderColor, 1, Qt::SolidLine));
 
   painter.fillRect(0, 0, buffer.width(), buffer.height(), backgroundColor);
   
-  QMemArray<double> scaleArray;
+  Q3MemArray<double> scaleArray;
   scaler.getScaleArray(scaleArray);
   
   QFontMetrics fm(plotFont);
@@ -208,7 +217,7 @@ void ScalePlot::drawScale ()
   // draw the last value pointer on the scale of main plot
   int y = scaler.convertToY(close);
     
-  QPointArray array;
+  Q3PointArray array;
   array.setPoints(3, x + 2, y,
                   x + 8, y - 4,
                   x + 8, y + 4);

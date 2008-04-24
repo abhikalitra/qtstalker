@@ -25,9 +25,12 @@
 
 #include <qlabel.h>
 #include <qlayout.h>
+//Added by qt3to4:
+#include <Q3GridLayout>
+#include <Q3VBoxLayout>
 
 
-Preferences::Preferences (QWidget *w) : QTabDialog (w, "Preferences", FALSE, WDestructiveClose)
+Preferences::Preferences (QWidget *w) : Q3TabDialog (w, "Preferences", FALSE, Qt::WDestructiveClose)
 {
   helpFile = "preferences.html";
 
@@ -84,9 +87,9 @@ void Preferences::createGeneralPage ()
   // general parms page
 
   QWidget *w = new QWidget(this);
-  QVBoxLayout *vbox = new QVBoxLayout(w);
+  Q3VBoxLayout *vbox = new Q3VBoxLayout(w);
   
-  QGridLayout *grid = new QGridLayout(vbox, 1, 3);
+  Q3GridLayout *grid = new Q3GridLayout(vbox, 1, 3);
   grid->setMargin(5);
   grid->setSpacing(5);
   grid->setColStretch(1, 1); // stretch 2nd col a little
@@ -147,9 +150,9 @@ void Preferences::createColorPage ()
   // colors parms page
 
   QWidget *w = new QWidget(this);
-  QVBoxLayout *vbox = new QVBoxLayout(w);
+  Q3VBoxLayout *vbox = new Q3VBoxLayout(w);
   
-  QGridLayout *grid = new QGridLayout(vbox, 1, 3);
+  Q3GridLayout *grid = new Q3GridLayout(vbox, 1, 3);
   grid->setMargin(5);
   grid->setSpacing(5);
   grid->setColStretch(1, 1);
@@ -195,9 +198,9 @@ void Preferences::createFontPage ()
   // font parms page
 
   QWidget *w = new QWidget(this);
-  QVBoxLayout *vbox = new QVBoxLayout(w);
+  Q3VBoxLayout *vbox = new Q3VBoxLayout(w);
   
-  QGridLayout *grid = new QGridLayout(vbox, 1, 3);
+  Q3GridLayout *grid = new Q3GridLayout(vbox, 1, 3);
   grid->setMargin(5);
   grid->setSpacing(5);
   grid->setColStretch(1, 1);
@@ -230,9 +233,9 @@ void  Preferences::createMTPage()
   // main tool bar page
 
   QWidget *w = new QWidget(this);
-  QVBoxLayout *vbox = new QVBoxLayout(w);
+  Q3VBoxLayout *vbox = new Q3VBoxLayout(w);
   
-  QGridLayout *grid = new QGridLayout(vbox, 1, 6); // two more cols as needed
+  Q3GridLayout *grid = new Q3GridLayout(vbox, 1, 6); // two more cols as needed
   grid->setMargin(5);
   grid->setSpacing(5);
   grid->setColStretch(2, 1); // middle spacing col
@@ -353,9 +356,9 @@ void  Preferences::createCTPage()
   // chart tool bar page
 
   QWidget *w = new QWidget(this);
-  QVBoxLayout *vbox = new QVBoxLayout(w);
+  Q3VBoxLayout *vbox = new Q3VBoxLayout(w);
   
-  QGridLayout *grid = new QGridLayout(vbox, 1, 2);
+  Q3GridLayout *grid = new Q3GridLayout(vbox, 1, 2);
   grid->setMargin(5);
   grid->setSpacing(5);
   grid->setColStretch(1, 1);
@@ -439,9 +442,9 @@ void  Preferences::createETPage()
   // extra tool bar page
 
   QWidget *w = new QWidget(this);
-  QVBoxLayout *vbox = new QVBoxLayout(w);
+  Q3VBoxLayout *vbox = new Q3VBoxLayout(w);
   
-  QGridLayout *grid = new QGridLayout(vbox, 1, 2);
+  Q3GridLayout *grid = new Q3GridLayout(vbox, 1, 2);
   grid->setMargin(5);
   grid->setSpacing(5);
   grid->setColStretch(1, 1);

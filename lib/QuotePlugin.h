@@ -23,14 +23,17 @@
 #define QUOTEPLUGIN_HPP
 
 #include <qstring.h>
-#include <qnetworkprotocol.h>
-#include <qurloperator.h>
+#include <q3networkprotocol.h>
+#include <q3urloperator.h>
 #include <qtimer.h>
-#include <qtabdialog.h>
-#include <qtextedit.h>
+#include <q3tabdialog.h>
+#include <q3textedit.h>
 #include <qlayout.h>
 #include <qspinbox.h>
-#include <qprogressbar.h>
+#include <q3progressbar.h>
+//Added by qt3to4:
+#include <Q3GridLayout>
+#include <Q3VBoxLayout>
 #include "Toolbar.h"
 #include "DBIndex.h"
 
@@ -39,7 +42,7 @@
 * Needs to be re-written to not use the QUrlOperator.
 * See http://doc.trolltech.com/4.3/porting4-overview.html#url-operations-qurloperator
 */
-class QuotePlugin : public QTabDialog
+class QuotePlugin : public Q3TabDialog
 {
   Q_OBJECT
 
@@ -64,14 +67,14 @@ class QuotePlugin : public QTabDialog
     void disableGUI ();
     virtual void update ();
     void setChartIndex (DBIndex *);
-    QProgressBar *progressBar;
+    Q3ProgressBar *progressBar;
     
   public slots:
     void getFile (QString &);
     void copyFile (QString &, QString &);
-    void getFileDone (QNetworkOperation *);
-    void copyFileDone (QNetworkOperation *);
-    void dataReady (const QByteArray &, QNetworkOperation *);
+    void getFileDone (Q3NetworkOperation *);
+    void copyFileDone (Q3NetworkOperation *);
+    void dataReady (const QByteArray &, Q3NetworkOperation *);
     void slotTimeout ();
     void getQuotes ();
     void downloadComplete ();
@@ -86,17 +89,17 @@ class QuotePlugin : public QTabDialog
     bool saveFlag;
     QString pluginName;
     QString helpFile;
-    QUrlOperator *op;
+    Q3UrlOperator *op;
     QString data;
     QTimer *timer;
     int errorLoop;
     QString stringDone;
     QString stringCanceled;
-    QTextEdit *statusLog;
+    Q3TextEdit *statusLog;
     Toolbar *toolbar;
-    QVBoxLayout *vbox;
+    Q3VBoxLayout *vbox;
     QWidget *baseWidget;
-    QGridLayout *grid;
+    Q3GridLayout *grid;
     QSpinBox *retrySpin;
     QSpinBox *timeoutSpin;
     DBIndex *chartIndex;

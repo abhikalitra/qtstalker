@@ -24,12 +24,14 @@
 
 #include <qstring.h>
 #include <qwidget.h>
-#include <qpopupmenu.h>
-#include <qlistbox.h>
+#include <q3popupmenu.h>
+#include <q3listbox.h>
+//Added by qt3to4:
+#include <QKeyEvent>
 #include "Config.h"
 #include "DBIndex.h"
 
-class PortfolioPage : public QListBox
+class PortfolioPage : public Q3ListBox
 {
   Q_OBJECT
   
@@ -54,9 +56,9 @@ class PortfolioPage : public QListBox
     void newPortfolio ();
     void deletePortfolio ();
     void portfolioSelected (const QString &);
-    void rightClick (QListBoxItem *);
+    void rightClick (Q3ListBoxItem *);
     void slotHelp ();
-    void doubleClick (QListBoxItem *);
+    void doubleClick (Q3ListBoxItem *);
     void updateList ();
     void doKeyPress (QKeyEvent *);
     void slotAccel (int);
@@ -65,7 +67,7 @@ class PortfolioPage : public QListBox
     virtual void keyPressEvent (QKeyEvent *);
   
     Config config;
-    QPopupMenu *menu;
+    Q3PopupMenu *menu;
     DBIndex *chartIndex;
 };
 

@@ -19,10 +19,10 @@
  *  USA.
  */
 
-#include <qtabdialog.h>
+#include <q3tabdialog.h>
 #include "FormulaEdit.h"
 
-class CUSDialog : public QTabDialog
+class CUSDialog : public Q3TabDialog
 {
   Q_OBJECT
   

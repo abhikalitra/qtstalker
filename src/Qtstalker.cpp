@@ -2,7 +2,7 @@
                           qtstalker.cpp  -  description
                              -------------------
     begin                : Thu Mar  7 22:43:41 EST 2002
-    copyright            : (C) 2001-2008 by Stefan Stratigakos
+    copyright            : (C) 2001-2007 by Stefan Stratigakos
     email                :
  ***************************************************************************/
 
@@ -18,7 +18,7 @@
 #include <qlayout.h>
 #include <qmessagebox.h>
 #include <qdir.h>
-#include <qfiledialog.h>
+#include <q3filedialog.h>
 #include <qinputdialog.h>
 #include <qapplication.h>
 #include <qfont.h>
@@ -28,6 +28,9 @@
 #include <qcolor.h>
 #include <qstringlist.h>
 #include <qdatetime.h>
+//Added by qt3to4:
+#include <Q3HBoxLayout>
+#include <Q3VBoxLayout>
 
 #include <math.h> // only for fabs()
 
@@ -73,37 +76,37 @@ QtstalkerApp::QtstalkerApp()
   baseWidget = new QWidget(this);
   setCentralWidget (baseWidget);
 
-  QHBoxLayout *hbox = new QHBoxLayout(baseWidget);
+  Q3HBoxLayout *hbox = new Q3HBoxLayout(baseWidget);
 
   navSplitter = new QSplitter(baseWidget);
-  navSplitter->setOrientation(Horizontal);
+  navSplitter->setOrientation(Qt::Horizontal);
   hbox->addWidget(navSplitter);
   
   navBase = new QWidget(navSplitter);
-  QVBoxLayout *vbox = new QVBoxLayout(navBase);
+  Q3VBoxLayout *vbox = new Q3VBoxLayout(navBase);
   
   // setup the data panel splitter
   dpSplitter = new QSplitter(navBase);
-  dpSplitter->setOrientation(Vertical);
+  dpSplitter->setOrientation(Qt::Vertical);
   vbox->addWidget(dpSplitter);
   
   // setup the side panels
   navTab = new NavigatorTab(dpSplitter, this);
   connect(navTab, SIGNAL(signalPositionChanged(int)), this, SLOT(slotNavigatorPosition(int)));
   connect(navTab, SIGNAL(signaVisibilityChanged(bool)), this, SLOT(slotHideNav(bool)));
-  connect(extraToolbar, SIGNAL(recentTab(QString)), navTab, SLOT(recentTab(QString)));
+  //connect(extraToolbar, SIGNAL(recentTab(QString)), navTab, SLOT(recentTab(QString)));
   
   // setup the data panel area
-  infoLabel = new QMultiLineEdit(dpSplitter);
+  infoLabel = new Q3MultiLineEdit(dpSplitter);
   infoLabel->setReadOnly(TRUE);
 
   // construct the chart areas
   QWidget *chartBase = new QWidget(navSplitter);
 
-  vbox = new QVBoxLayout(chartBase);
+  vbox = new Q3VBoxLayout(chartBase);
 
   split = new QSplitter(chartBase);
-  split->setOrientation(Vertical);
+  split->setOrientation(Qt::Vertical);
   vbox->addWidget(split);
 
   // build the tab rows
@@ -172,7 +175,7 @@ QtstalkerApp::QtstalkerApp()
   // catch any kill signals and try to save config
   connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(slotQuit()));
   
-  progBar = new QProgressBar(this);
+  progBar = new Q3ProgressBar(this);
   statusbar->addWidget(progBar, 0, TRUE);
   progBar->setMaximumHeight(progBar->height() - 10);
 
@@ -198,7 +201,7 @@ void QtstalkerApp::initMenuBar()
 void QtstalkerApp::initToolBar()
 {
   // construct the button toolbar
-  toolbar = new QToolBar(this, "buttonToolbar");
+  toolbar = new Q3ToolBar(this, "buttonToolbar");
   toolbar->setLabel("Main Toolbar");
   slotLoadMainToolbarSettings();
 
@@ -216,7 +219,7 @@ void QtstalkerApp::initToolBar()
   connect(menubar, SIGNAL(signalAdvancePaperTrade()), toolbar2, SLOT(paperTradeNextBar()));
 
   // construct the extra toolbar
-  extraToolbar = new ExtraToolbar(this);
+  extraToolbar = new ExtraToolbar(this,toolbar);
   extraToolbar->setLabel("Extra Toolbar");
   extraToolbar->slotSetButtonView();
   connect(extraToolbar, SIGNAL(fileSelected(QString)), this, SLOT(slotOpenChart(QString)));
@@ -256,7 +259,7 @@ void QtstalkerApp::slotLoadMainToolbarSettings()
 void QtstalkerApp::slotQuit()
 {
   // do this to save any pending chart object edits
-  QDictIterator<Plot> it(plotList);
+  Q3DictIterator<Plot> it(plotList);
   for(; it.current(); ++it)
     it.current()->clear();
 
@@ -306,7 +309,7 @@ void QtstalkerApp::slotAbout()
 {
   // display the about dialog
   QMessageBox *dialog = new QMessageBox(tr("About Qtstalker"),
-  					tr("Qtstalker\nVersion 0.37-dev (working title)\n(C) 2001-2008 by Stefan Stratigakos"),
+  					tr("Qtstalker\nVersion CVS 0.36-dev (working title)\n(C) 2001-2007 by Stefan Stratigakos"),
 					QMessageBox::NoIcon,
 					QMessageBox::Ok,
 					QMessageBox::NoButton,
@@ -382,7 +385,7 @@ void QtstalkerApp::loadChart (QString &d)
     return;
 
   QDir dir(d);
-  if (! dir.exists(d, TRUE))
+  if (! dir.exists(d))
     return;
 
   // check if we need to save the slider position because chart is reloaded
@@ -393,7 +396,7 @@ void QtstalkerApp::loadChart (QString &d)
   chartPath = d;
   ip->setChartPath(chartPath); // let ip know what chart we are viewing currently
   
-  QDictIterator<Plot> it(plotList);
+  Q3DictIterator<Plot> it(plotList);
   for(; it.current(); ++it)
     it.current()->clear();
     
@@ -580,7 +583,7 @@ void QtstalkerApp::slotDataWindow ()
 
   dw->setBars(recordList);
   
-  QDictIterator<Plot> it(plotList);
+  Q3DictIterator<Plot> it(plotList);
   for (; it.current(); ++it)
     dw->setPlot(it.current());
   
@@ -741,7 +744,7 @@ void QtstalkerApp::addIndicatorButton (QString d)
   QString fn = fi.fileName();
 
   QWidget *w = new QWidget(baseWidget);
-  QVBoxLayout *vbox = new QVBoxLayout(w);
+  Q3VBoxLayout *vbox = new Q3VBoxLayout(w);
   vbox->setMargin(0);
   vbox->setSpacing(0);
   Plot *plot = new Plot(w, chartIndex);
@@ -960,7 +963,7 @@ void QtstalkerApp::slotUpdateInfo (Setting *r)
 
 void QtstalkerApp::slotPlotLeftMouseButton (int x, int y, bool)
 {
-  QDictIterator<Plot> it(plotList);
+  Q3DictIterator<Plot> it(plotList);
   for(; it.current(); ++it)
     it.current()->crossHair(x, y, FALSE);
   slotDrawPlots();  
@@ -1062,7 +1065,7 @@ void QtstalkerApp::slotIndicatorSummary ()
   basePath.append("/" + s);
 
   QStringList l;
-  QDictIterator<Plot> it(plotList);
+  Q3DictIterator<Plot> it(plotList);
   for(; it.current(); ++it)
   {
     Indicator *i = it.current()->getIndicator();

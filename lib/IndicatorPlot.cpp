@@ -27,15 +27,25 @@
 #include <qpainter.h>
 #include <qpen.h>
 #include <qpoint.h>
-#include <qpointarray.h>
+#include <q3pointarray.h>
 #include <qcursor.h>
+//Added by qt3to4:
+#include <QContextMenuEvent>
+#include <QKeyEvent>
+#include <QPixmap>
+#include <QResizeEvent>
+#include <Q3PopupMenu>
+#include <QMouseEvent>
+#include <QPaintEvent>
+#include <Q3MemArray>
 #include <math.h>
 #include <qprinter.h>
-#include <qpaintdevicemetrics.h>
+#include <q3paintdevicemetrics.h>
 #include <qimage.h>
 #include <qmessagebox.h>
 #include <qinputdialog.h>
 #include <qdir.h>
+#include <Q3Accel>
 		
 // only for fabs()
 #include <math.h>
@@ -60,7 +70,7 @@
 IndicatorPlot::IndicatorPlot (QWidget *w, DBIndex *i) : QWidget(w)
 {
   chartIndex = i;
-  setBackgroundMode(NoBackground);
+  setBackgroundMode(Qt::NoBackground);
   startX = 2;
   backgroundColor.setNamedColor("black");
   borderColor.setNamedColor("white");
@@ -89,11 +99,11 @@ IndicatorPlot::IndicatorPlot (QWidget *w, DBIndex *i) : QWidget(w)
   indy = 0;
   data = 0;
 
-  chartMenu = new QPopupMenu();
+  chartMenu = new Q3PopupMenu();
   
   setMouseTracking(TRUE);
 
-  setFocusPolicy(QWidget::ClickFocus);
+  setFocusPolicy(Qt::ClickFocus);
   
   coList.setAutoDelete(TRUE);
 }
@@ -154,9 +164,9 @@ void IndicatorPlot::setDrawMode (bool d)
   drawMode = d;
   
   if (drawMode)
-    setCursor(QCursor(ArrowCursor));
+    setCursor(QCursor(Qt::ArrowCursor));
   else
-    setCursor(QCursor(CrossCursor));
+    setCursor(QCursor(Qt::CrossCursor));
 
   if (! drawMode && mouseFlag == COSelected && coSelected)
   {
@@ -254,9 +264,15 @@ void IndicatorPlot::drawLines ()
   }
 }
 
-void IndicatorPlot::paintEvent (QPaintEvent *)
+//void IndicatorPlot::paintEvent (QPaintEvent *)
+void IndicatorPlot::paintEvent (QPaintEvent * e)
 {
-  bitBlt(this, 0, 0, &buffer);
+  //bitBlt(this, 0, 0, &buffer);
+
+  setAttribute(Qt::WA_PaintOutsidePaintEvent, true);
+  QWidget::paintEvent(e);
+  QPainter painter(this);
+  painter.drawPixmap(0, 0, buffer);
 }
 
 void IndicatorPlot::resizeEvent (QResizeEvent *event)
@@ -272,7 +288,7 @@ void IndicatorPlot::mousePressEvent (QMouseEvent *event)
 
   if (! drawMode)
   {
-    if (event->button() == LeftButton)
+    if (event->button() == Qt::LeftButton)
     {
       if (crosshairs)
       {
@@ -286,13 +302,13 @@ void IndicatorPlot::mousePressEvent (QMouseEvent *event)
     }
   }
     
-  if (event->button() == LeftButton)
+  if (event->button() == Qt::LeftButton)
   {
     getXY(event->x(), event->y());
     
     if (mouseFlag == None)
     {
-      QDictIterator<COBase> it(coList);
+      Q3DictIterator<COBase> it(coList);
       for (; it.current(); ++it)
       {
         coSelected = it.current();
@@ -407,7 +423,7 @@ void IndicatorPlot::getInfo (int x)
     QDateTime coDate;
     int c = 0;
     Setting set;
-    QDictIterator<COBase> it(coList);
+    Q3DictIterator<COBase> it(coList);
     for (; it.current(); ++it)
     {
       it.current()->getDate(coDate);
@@ -483,8 +499,8 @@ void IndicatorPlot::keyPressEvent (QKeyEvent *key)
     case Qt::Key_End:
     case Qt::Key_Plus:
     case Qt::Key_Minus:
-    case Qt::Key_Prior:
-    case Qt::Key_Next:
+    case Qt::Key_PageUp:
+    case Qt::Key_PageDown:
     case Qt::Key_Up:
     case Qt::Key_Down:
       emit keyPressed(key);
@@ -537,7 +553,7 @@ void IndicatorPlot::setIndex (int d)
   startIndex = d;
 }
 
-void IndicatorPlot::setXGrid (QMemArray<int> &d)
+void IndicatorPlot::setXGrid (Q3MemArray<int> &d)
 {
   xGrid = d;
 }
@@ -549,7 +565,7 @@ void IndicatorPlot::drawXGrid ()
 
   QPainter painter;
   painter.begin(&buffer);
-  painter.setPen(QPen(gridColor, 1, QPen::DotLine));
+  painter.setPen(QPen(gridColor, 1, Qt::DotLine));
 
   int loop;
   for (loop = 0; loop < (int) xGrid.size(); loop++)
@@ -592,9 +608,9 @@ void IndicatorPlot::drawYGrid ()
 
   QPainter painter;
   painter.begin(&buffer);
-  painter.setPen(QPen(gridColor, 1, QPen::DotLine));
+  painter.setPen(QPen(gridColor, 1, Qt::DotLine));
   
-  QMemArray<double> scaleArray;
+  Q3MemArray<double> scaleArray;
   scaler.getScaleArray(scaleArray);
 
   int loop;
@@ -614,7 +630,7 @@ void IndicatorPlot::drawInfo ()
   painter.begin(&buffer);
   painter.setPen(borderColor);
   painter.setFont(plotFont);
-  painter.setBackgroundMode(OpaqueMode);
+  // painter.setBackgroundMode(OpaqueMode);
   painter.setBackgroundColor(backgroundColor);
   
   //QFontMetrics fm = painter.fontMetrics();
@@ -738,7 +754,7 @@ void IndicatorPlot::drawCrossHair ()
   
   QPainter painter;
   painter.begin(&buffer);
-  painter.setPen(QPen(borderColor, 1, QPen::DotLine));
+  painter.setPen(QPen(borderColor, 1, Qt::DotLine));
   painter.drawLine (0, y, buffer.width(), y);
   painter.drawLine (x, 0, x, buffer.height());
   painter.end();
@@ -826,7 +842,7 @@ void IndicatorPlot::setScale ()
 
   if (! scaleToScreen)
   {
-    QDictIterator<COBase> it(coList);
+    Q3DictIterator<COBase> it(coList);
     for (; it.current(); ++it)
     {
       COBase *plug = it.current();
@@ -916,7 +932,7 @@ void IndicatorPlot::printChart ()
     int leftMargin = margins.width();
     int topMargin  = margins.height();
 
-    QPaintDeviceMetrics prm(&printer);
+    Q3PaintDeviceMetrics prm(&printer);
     
     int prmw = prm.width() - leftMargin;
     int prmh = prm.height() - topMargin;
@@ -924,7 +940,7 @@ void IndicatorPlot::printChart ()
     if ((buffer.width() > prmw) || (buffer.height() > prmh))
     {
       QImage image = buffer.convertToImage();
-      image = image.smoothScale(prmw, prmh, QImage::ScaleMin);
+      image = image.smoothScale(prmw, prmh, Qt::KeepAspectRatio);
       buffer.convertFromImage(image);
     }
 
@@ -943,14 +959,14 @@ void IndicatorPlot::showPopupMenu ()
   chartMenu->clear();
     
   chartMenu->insertItem(QPixmap(indicator), tr("New &Indicator"), this,
-                        SLOT(slotNewIndicator()), CTRL+Key_I);
-  chartMenu->insertItem(QPixmap(edit), tr("&Edit Indicator"), this, SLOT(slotEditIndicator()), CTRL+Key_E);
-  chartMenu->insertItem(QPixmap(help), tr("Indicator &Help"), this, SLOT(slotIndicatorHelp()), CTRL+Key_H);
+                        SLOT(slotNewIndicator()), Qt::CTRL+Qt::Key_I);
+  chartMenu->insertItem(QPixmap(edit), tr("&Edit Indicator"), this, SLOT(slotEditIndicator()), Qt::CTRL+Qt::Key_E);
+  chartMenu->insertItem(QPixmap(help), tr("Indicator &Help"), this, SLOT(slotIndicatorHelp()), Qt::CTRL+Qt::Key_H);
   chartMenu->insertSeparator ();
-  chartMenu->insertItem(QPixmap(edit), tr("Edit &Chart"), this, SLOT(slotEditChart()), CTRL+Key_C);
+  chartMenu->insertItem(QPixmap(edit), tr("Edit &Chart"), this, SLOT(slotEditChart()), Qt::CTRL+Qt::Key_C);
   chartMenu->insertSeparator ();
 
-  chartObjectMenu = new QPopupMenu();
+  chartObjectMenu = new Q3PopupMenu();
   int id = chartObjectMenu->insertItem(QPixmap(buyarrow), "BuyArrow", this, SLOT(slotNewChartObject(int)));
   chartObjectMenu->setItemParameter(id, id);
   id = chartObjectMenu->insertItem(QPixmap(arc), "Cycle", this, SLOT(slotNewChartObject(int)));
@@ -977,15 +993,15 @@ void IndicatorPlot::showPopupMenu ()
     chartObjectMenu->setEnabled(TRUE);
   
   chartMenu->insertItem(QPixmap(deleteitem), tr("Delete &All Chart Objects"), this,
-                        SLOT(slotDeleteAllChartObjects()), CTRL+Key_A);
+                        SLOT(slotDeleteAllChartObjects()), Qt::CTRL+Qt::Key_A);
 
   chartMenu->insertSeparator ();
-  chartMenu->insertItem(QPixmap(print), tr("&Print Chart"), this, SLOT(printChart()), CTRL+Key_P);
+  chartMenu->insertItem(QPixmap(print), tr("&Print Chart"), this, SLOT(printChart()), Qt::CTRL+Qt::Key_P);
     
-  id = chartMenu->insertItem(QPixmap(date), tr("Date"), this, SLOT(toggleDate()), CTRL+Key_D);
+  id = chartMenu->insertItem(QPixmap(date), tr("Date"), this, SLOT(toggleDate()), Qt::CTRL+Qt::Key_D);
   chartMenu->setItemChecked(id, dateFlag);
 
-  id = chartMenu->insertItem(QPixmap(loggridicon), tr("Log Scaling"), this, SLOT(toggleLog()), CTRL+Key_L);
+  id = chartMenu->insertItem(QPixmap(loggridicon), tr("Log Scaling"), this, SLOT(toggleLog()), Qt::CTRL+Qt::Key_L);
   chartMenu->setItemChecked(id, logScale);
   
   chartMenu->exec(QCursor::pos());
@@ -1218,12 +1234,13 @@ void IndicatorPlot::drawHorizontalLine ()
   currentLine->getLabel(s2);
   s = s2 + "=" + s;
   
-  painter.setBackgroundMode(OpaqueMode);
+  // painter.setBackgroundMode(OpaqueMode);
   painter.setBackgroundColor(backgroundColor);
   painter.setFont(plotFont);
   
-  QRect rc = painter.boundingRect(startX, y - (plotFontMetrics->height()/2) , 1, 1, AlignAuto, s, -1, 0);
-  painter.drawText(rc, AlignAuto, s);
+  // QRect rc = painter.boundingRect(startX, y - (plotFontMetrics->height()/2) , 1, 1, Qt::AlignLeft, s, -1, 0);
+  QRect rc = painter.boundingRect(startX, y - (plotFontMetrics->height()/2) , 1, 1, Qt::AlignLeft, s, -1);
+  painter.drawText(rc, Qt::AlignLeft, s);
   painter.drawRect(rc);
   painter.end();
 }
@@ -1284,7 +1301,7 @@ void IndicatorPlot::drawHistogram ()
 
   int loop = currentLine->getSize() - data->count() + startIndex;
 
-  QPointArray pa(4);
+  Q3PointArray pa(4);
 
   int zero = 0;
   Scaler scale;
@@ -1599,7 +1616,7 @@ void IndicatorPlot::addChartObject (Setting &set)
 
 void IndicatorPlot::drawObjects ()
 {
-  QDictIterator<COBase> it(coList);
+  Q3DictIterator<COBase> it(coList);
   for (; it.current(); ++it)
   {
     COBase *co = it.current();
@@ -1673,7 +1690,7 @@ void IndicatorPlot::saveChartObjects ()
   if (! chartPath.length())
     return;
 
-  QDictIterator<COBase> it(coList);
+  Q3DictIterator<COBase> it(coList);
   for (; it.current(); ++it)
   {
     COBase *co = it.current();

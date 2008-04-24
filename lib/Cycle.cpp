@@ -23,6 +23,9 @@
 #include "PrefDialog.h"
 #include <qpainter.h>
 #include <qsettings.h>
+//Added by qt3to4:
+#include <Q3PointArray>
+#include <QPixmap>
 
 Cycle::Cycle ()
 {
@@ -72,7 +75,7 @@ void Cycle::draw (QPixmap &buffer, Scaler &, int startIndex, int pixelspace, int
 		      16 * 180,
 		      16 * -180);
       
-      QPointArray array;
+      Q3PointArray array;
       array.putPoints(0,
   		      4,
 		      x - (HANDLE_WIDTH / 2), buffer.height(),

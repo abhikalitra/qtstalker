@@ -37,12 +37,17 @@
 #include "../pics/move.xpm"
 #include "../pics/dirclosed.xpm"
 #include <qcursor.h>
-#include <qaccel.h>
+#include <q3accel.h>
 #include <qfile.h>
-#include <qtextstream.h>
+#include <q3textstream.h>
 #include <qinputdialog.h>
 #include <qmessagebox.h>
 #include <qtooltip.h>
+//Added by qt3to4:
+#include <QKeyEvent>
+#include <QPixmap>
+#include <Q3PopupMenu>
+#include <Q3VBoxLayout>
 
 
 IndicatorPage::IndicatorPage (QWidget *w, DBIndex *i) : QWidget (w)
@@ -55,7 +60,7 @@ IndicatorPage::IndicatorPage (QWidget *w, DBIndex *i) : QWidget (w)
   rcfile.loadData(RcFile::IndicatorPath, baseDir);
   rcfile.loadData(RcFile::IndicatorGroup, currentGroup);
   
-  QVBoxLayout *vbox = new QVBoxLayout(this);
+  Q3VBoxLayout *vbox = new Q3VBoxLayout(this);
   vbox->setMargin(0);
   vbox->setSpacing(5);
   
@@ -71,14 +76,14 @@ IndicatorPage::IndicatorPage (QWidget *w, DBIndex *i) : QWidget (w)
   QToolTip::add(search, tr("List Filter, e.g. s* or sb*"));
   vbox->addWidget(search);
 
-  list = new QListBox(this);
-  connect(list, SIGNAL(doubleClicked(QListBoxItem *)), this, SLOT(doubleClick(QListBoxItem *)));
-  connect(list, SIGNAL(contextMenuRequested(QListBoxItem *, const QPoint &)), this,
-          SLOT(rightClick(QListBoxItem *)));
+  list = new Q3ListBox(this);
+  connect(list, SIGNAL(doubleClicked(Q3ListBoxItem *)), this, SLOT(doubleClick(Q3ListBoxItem *)));
+  connect(list, SIGNAL(contextMenuRequested(Q3ListBoxItem *, const QPoint &)), this,
+          SLOT(rightClick(Q3ListBoxItem *)));
   connect(list, SIGNAL(highlighted(const QString &)), this, SLOT(itemSelected(const QString &)));
   vbox->addWidget(list);
     
-  menu = new QPopupMenu(this);
+  menu = new Q3PopupMenu(this);
   menu->insertItem(QPixmap(dirclosed), tr("&New Indicator Group		Ctrl+N"), this,
                    SLOT(newIndicatorGroup()));
   menu->insertItem(QPixmap(deleteitem), tr("Delete Indicator Group	Ctrl+X"), this,
@@ -97,17 +102,17 @@ IndicatorPage::IndicatorPage (QWidget *w, DBIndex *i) : QWidget (w)
   menu->insertSeparator(-1);
   menu->insertItem(QPixmap(help), tr("&Help			Ctrl+H"), this, SLOT(slotHelp()));
 
-  QAccel *a = new QAccel(this);
+  Q3Accel *a = new Q3Accel(this);
   connect(a, SIGNAL(activated(int)), this, SLOT(slotAccel(int)));
-  a->insertItem(CTRL+Key_N, NewIndicatorGroup);
-  a->insertItem(CTRL+Key_X, DeleteIndicatorGroup);
-  a->insertItem(CTRL+Key_W, NewIndicator);
-  a->insertItem(CTRL+Key_A, AddLocalIndicator);
-  a->insertItem(CTRL+Key_D, DeleteIndicator);
-  a->insertItem(CTRL+Key_E, EditIndicator);
-  a->insertItem(CTRL+Key_V, MoveIndicator);
-  a->insertItem(CTRL+Key_H, Help);
-  a->insertItem(CTRL+Key_Tab, Tab);
+  a->insertItem(Qt::CTRL+Qt::Key_N, NewIndicatorGroup);
+  a->insertItem(Qt::CTRL+Qt::Key_X, DeleteIndicatorGroup);
+  a->insertItem(Qt::CTRL+Qt::Key_W, NewIndicator);
+  a->insertItem(Qt::CTRL+Qt::Key_A, AddLocalIndicator);
+  a->insertItem(Qt::CTRL+Qt::Key_D, DeleteIndicator);
+  a->insertItem(Qt::CTRL+Qt::Key_E, EditIndicator);
+  a->insertItem(Qt::CTRL+Qt::Key_V, MoveIndicator);
+  a->insertItem(Qt::CTRL+Qt::Key_H, Help);
+  a->insertItem(Qt::CTRL+Qt::Key_Tab, Tab);
   
   itemSelected(QString());
 }
@@ -155,7 +160,7 @@ void IndicatorPage::newIndicatorGroup ()
   
   s = baseDir + "/" + selection;
   QDir dir(s);
-  if (dir.exists(s, TRUE))
+  if (dir.exists(s))
   {
     QMessageBox::information(this, tr("Qtstalker: Error"), tr("This group already exists."));
     return;
@@ -175,7 +180,7 @@ void IndicatorPage::deleteIndicatorGroup ()
                                           s2,
   					  s2,
 					  s,
-					  QFileDialog::DirectoryOnly);
+					  Q3FileDialog::DirectoryOnly);
   dialog->setCaption(tr("Select Indicator Group(s) To Delete"));
 
   int rc = dialog->exec();
@@ -195,7 +200,7 @@ void IndicatorPage::deleteIndicatorGroup ()
       return;
     }
 
-    QStringList l = dialog->selectedFile();
+    QStringList l = dialog->selectedFiles();
     if (! l.count())
     {
       delete dialog;
@@ -221,7 +226,7 @@ void IndicatorPage::deleteIndicatorGroup ()
       for (loop = 2; loop < (int) dir.count(); loop++)
       {
         QString s = dir.absPath() + "/" + dir[loop];
-        if (! dir.remove(s, TRUE))
+        if (! dir.remove(s))
           qDebug("IndicatorPage::deleteGroupItem:failed to delete file");
       }
       
@@ -434,7 +439,7 @@ void IndicatorPage::editIndicator (QString d)
   Config config;
   QDir dir;
   QString s = baseDir + "/" + currentGroup + "/" + d;
-  if (! dir.exists(s, TRUE))
+  if (! dir.exists(s))
   {
     qDebug("IndicatorPage::editIndicator: indicator not found %s", s.latin1());
     return;
@@ -497,7 +502,7 @@ void IndicatorPage::deleteIndicator ()
   QString s;
   rcfile.loadData(RcFile::IndicatorPath, s);
   s.append("/" + currentGroup + "/" + list->currentText());
-  if (! dir.exists(s, TRUE))
+  if (! dir.exists(s))
   {
     qDebug("IndicatorPage::deleteIndicator: indicator not found %s", s.latin1());
     return;
@@ -544,7 +549,7 @@ void IndicatorPage::moveIndicator ()
   Config config;
   QDir dir;
   QString s = baseDir + "/" + currentGroup + "/" + list->currentText();
-  if (! dir.exists(s, TRUE))
+  if (! dir.exists(s))
   {
     qDebug("IndicatorPage::moveIndicator: indicator not found %s", s.latin1());
     return;
@@ -635,7 +640,7 @@ void IndicatorPage::updateList ()
   itemSelected(QString());
 }
 
-void IndicatorPage::doubleClick (QListBoxItem *item)
+void IndicatorPage::doubleClick (Q3ListBoxItem *item)
 {
   if (! item)
     return;
@@ -651,7 +656,7 @@ void IndicatorPage::changeIndicator (QString &d)
     
   QDir dir;
   QString s = baseDir + "/" + currentGroup + "/" + d;
-  if (! dir.exists(s, TRUE))
+  if (! dir.exists(s))
   {
     qDebug("IndicatorPage::changeIndicator: indicator not found %s", s.latin1());
     return;
@@ -695,7 +700,7 @@ void IndicatorPage::slotHelp ()
   hw->show();
 }
 
-void IndicatorPage::rightClick (QListBoxItem *)
+void IndicatorPage::rightClick (Q3ListBoxItem *)
 {
   menu->exec(QCursor::pos());
 }
@@ -884,7 +889,7 @@ void IndicatorPage::removeLocalIndicators ()
     QString s = baseDir + "/" + currentGroup + "/" + dir[loop];
     QFileInfo fi(s);
     if (fi.isSymLink())
-      dir.remove(s, TRUE);
+      dir.remove(s);
   }
 }
 

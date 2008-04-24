@@ -32,9 +32,13 @@
 #include <qinputdialog.h>
 #include <qdir.h>
 #include <qfile.h>
-#include <qtextstream.h>
+#include <q3textstream.h>
+//Added by qt3to4:
+#include <Q3GridLayout>
+#include <Q3HBoxLayout>
+#include <Q3VBoxLayout>
 
-CSVRuleDialog::CSVRuleDialog (QWidget *p, QString &d) : QTabDialog (p, "CSVRuleDialog", TRUE)
+CSVRuleDialog::CSVRuleDialog (QWidget *p, QString &d) : Q3TabDialog (p, "CSVRuleDialog", TRUE)
 {
   helpFile = "csv.html";
   saveFlag = FALSE;
@@ -69,11 +73,11 @@ void CSVRuleDialog::createRulePage ()
 {
   QWidget *w = new QWidget(this);
   
-  QVBoxLayout *vbox = new QVBoxLayout(w);
+  Q3VBoxLayout *vbox = new Q3VBoxLayout(w);
   vbox->setMargin(5);
   vbox->setSpacing(0);
   
-  QGridLayout *grid = new QGridLayout(vbox, 5, 2);
+  Q3GridLayout *grid = new Q3GridLayout(vbox, 5, 2);
   grid->setSpacing(5);
   grid->setColStretch(1, 1);
   
@@ -120,11 +124,11 @@ void CSVRuleDialog::createRulePage ()
   
   vbox->addSpacing(10);
   
-  QHBoxLayout *hbox = new QHBoxLayout(vbox);
+  Q3HBoxLayout *hbox = new Q3HBoxLayout(vbox);
   hbox->setSpacing(5);
   
-  fieldList = new QListBox(w);
-  fieldList->setSelectionMode(QListBox::Extended);
+  fieldList = new Q3ListBox(w);
+  fieldList->setSelectionMode(Q3ListBox::Extended);
   fieldList->insertItem("Symbol", -1);
   fieldList->insertItem("Date:YYYYMMDD", -1);
   fieldList->insertItem("Date:YYMMDD", -1);
@@ -160,7 +164,7 @@ void CSVRuleDialog::createRulePage ()
   QObject::connect(ruleToolbar->getButton(s), SIGNAL(clicked()), this, SLOT(deleteField()));
   ruleToolbar->setButtonStatus(s, FALSE);
   
-  ruleList = new QListBox(w);
+  ruleList = new Q3ListBox(w);
   QObject::connect(ruleList, SIGNAL(highlighted(int)), this, SLOT(ruleFieldSelected(int)));
   hbox->addWidget(ruleList);
   
@@ -192,12 +196,12 @@ void CSVRuleDialog::saveRule ()
   }
   
   QFile f(rulePath);
-  if (! f.open(IO_WriteOnly))
+  if (! f.open(QIODevice::WriteOnly))
   {
     QMessageBox::information(this, tr("Disk Error"), tr("Cannot save file."));
     return;
   }
-  QTextStream stream(&f);
+  Q3TextStream stream(&f);
   
   stream << "Delimiter=" << delimiter->currentText() << "\n";
   stream << "Type=" << type->currentText() << "\n";
@@ -218,12 +222,12 @@ void CSVRuleDialog::saveRule ()
 void CSVRuleDialog::loadRule ()
 {
   QFile f(rulePath);
-  if (! f.open(IO_ReadOnly))
+  if (! f.open(QIODevice::ReadOnly))
   {
     QMessageBox::information(this, tr("Disk Error"), tr("Cannot read file."));
     return;
   }
-  QTextStream stream(&f);
+  Q3TextStream stream(&f);
 
   while(stream.atEnd() == 0)
   {

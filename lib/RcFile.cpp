@@ -21,6 +21,8 @@
 
 #include <qstringlist.h>
 #include <qsettings.h>
+//Added by qt3to4:
+#include <Q3ValueList>
 
 #include "RcFile.h"
 
@@ -113,7 +115,7 @@ RcFile::RcFile ()
   Key[ShowMenuBar] = "Preferences/ShowMenuBar"; 
   Def[ShowMenuBar] = "TRUE";
   Key[ShowExtraToolbar] = "Preferences/ShowExtraToolbar"; 
-  Def[ShowExtraToolbar] = "FALSE";
+  Def[ShowExtraToolbar] = "TRUE";
   Key[COPath] = "COPath";
   Def[COPath] = "";
   Key[LocalIndicatorsPath] = "LocalIndicatorsPath";
@@ -364,7 +366,7 @@ void RcFile::loadSplitterSize (Parm name, QSplitter *sp,  const QString &n)
   loadData(name, s, n);
   
   QStringList stringList = QStringList::split(",", s, FALSE);
-  QValueList<int> sizeList = sp->sizes();
+  Q3ValueList<int> sizeList = sp->sizes();
   
   int loop;
   for (loop = 0; loop < (int) stringList.count(); loop++)
@@ -376,7 +378,7 @@ void RcFile::loadSplitterSize (Parm name, QSplitter *sp,  const QString &n)
 void RcFile::saveSplitterSize (Parm name, QSplitter *sp, const QString &n)
 {
   QStringList stringList;
-  QValueList<int> sizeList = sp->sizes();
+  Q3ValueList<int> sizeList = sp->sizes();
   
   int loop;
   for (loop = 0; loop < (int) sizeList.count(); loop++)

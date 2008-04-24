@@ -21,6 +21,8 @@
 
 #include "IndicatorPlugin.h"
 #include "qtsFFT.h"
+//Added by qt3to4:
+#include <Q3PtrList>
 
 class LOWPASS : public IndicatorPlugin
 {
@@ -31,7 +33,7 @@ class LOWPASS : public IndicatorPlugin
     PlotLine * getLowpass (PlotLine *in, double fre, double wid);
     int indicatorPrefDialog (QWidget *);
     void setDefaults();
-    PlotLine * calculateCustom (QString &, QPtrList<PlotLine> &);
+    PlotLine * calculateCustom (QString &, Q3PtrList<PlotLine> &);
     void getIndicatorSettings (Setting &);
     void setIndicatorSettings (Setting &);
     void formatDialog (QStringList &vl, QString &rv, QString &rs);

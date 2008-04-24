@@ -20,9 +20,13 @@
  */
 
 #include <qlayout.h>
-#include <qvgroupbox.h>
+#include <q3vgroupbox.h>
 #include <qlabel.h>
 #include <qvalidator.h>
+//Added by qt3to4:
+#include <Q3GridLayout>
+#include <Q3HBoxLayout>
+#include <Q3Frame>
 #include "TesterTestPage.h"
 #include "BarData.h"
 #include "Config.h"
@@ -34,13 +38,13 @@ TesterTestPage::TesterTestPage (QWidget *p) : QWidget (p)
   fieldList.append(tr("Close"));
   fieldList.append(tr("Mid Point"));
 
-  QHBoxLayout *hbox = new QHBoxLayout(this);
+  Q3HBoxLayout *hbox = new Q3HBoxLayout(this);
   hbox->setMargin(5);
   hbox->setSpacing(10);
 
   // left side grid
 
-  QGridLayout *grid = new QGridLayout(hbox);
+  Q3GridLayout *grid = new Q3GridLayout(hbox);
   grid->setColStretch(1, 1);
   grid->setSpacing(5);
 
@@ -109,13 +113,13 @@ TesterTestPage::TesterTestPage (QWidget *p) : QWidget (p)
 
   // vline sperarator
   
-  QFrame *line = new QFrame(this);
-  line->setFrameStyle(QFrame::VLine | QFrame::Plain);
+  Q3Frame *line = new Q3Frame(this);
+  line->setFrameStyle(Q3Frame::VLine | Q3Frame::Plain);
   hbox->addWidget(line);
 
   // right side grid
 
-  grid = new QGridLayout(hbox);
+  grid = new Q3GridLayout(hbox);
   grid->setColStretch(1, 1);
   grid->setSpacing(5);
 

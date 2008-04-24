@@ -24,10 +24,12 @@
 
 #include <qstring.h>
 #include <qwidget.h>
-#include <qpopupmenu.h>
-#include <qlistbox.h>
+#include <q3popupmenu.h>
+#include <q3listbox.h>
 #include <qlineedit.h>
 #include <qdir.h>
+//Added by qt3to4:
+#include <QKeyEvent>
 #include "Config.h"
 #include "Tester.h"
 #include "MainMenubar.h"
@@ -63,12 +65,12 @@ class TestPage : public QWidget
     void deleteTest ();
     void testSelected (const QString &);
     void testNoSelection ();
-    void rightClick (QListBoxItem *);
+    void rightClick (Q3ListBoxItem *);
     void updateList ();
     void copyTest ();
     void slotMessage (QString);
     void slotHelp ();
-    void doubleClick (QListBoxItem *);
+    void doubleClick (Q3ListBoxItem *);
     void doKeyPress (QKeyEvent *);
     void slotAccel (int);
     void searchChanged (const QString &);
@@ -77,9 +79,9 @@ class TestPage : public QWidget
     virtual void keyPressEvent (QKeyEvent *);
   
     Config config;
-    QPopupMenu *menu;
+    Q3PopupMenu *menu;
     MainMenubar *menubar;
-    QListBox *list;
+    Q3ListBox *list;
     QLineEdit *search;
     QDir idir;
     DBIndex *chartIndex;

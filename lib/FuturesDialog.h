@@ -22,14 +22,14 @@
 #ifndef FUTURESDIALOG_HPP
 #define FUTURESDIALOG_HPP
 
-#include <qtabdialog.h>
+#include <q3tabdialog.h>
 #include <qlineedit.h>
 #include <qdatetime.h>
 #include "DbPlugin.h"
 #include "BarEdit.h"
 #include "DBIndex.h"
 
-class FuturesDialog : public QTabDialog
+class FuturesDialog : public Q3TabDialog
 {
   Q_OBJECT
 

@@ -23,10 +23,12 @@
 #define NAVIGATOR_HPP
 
 #include <qstring.h>
-#include <qlistbox.h>
+#include <q3listbox.h>
 #include <qdir.h>
+//Added by qt3to4:
+#include <QKeyEvent>
 
-class Navigator : public QListBox
+class Navigator : public Q3ListBox
 {
   Q_OBJECT
 
@@ -52,12 +54,12 @@ class Navigator : public QListBox
 
   public slots:
     void upDirectory ();
-    void fileSelection (QListBoxItem *);
-    void checkDirectory (QListBoxItem *);
+    void fileSelection (Q3ListBoxItem *);
+    void checkDirectory (Q3ListBoxItem *);
     void updateList ();
     void doKeyPress (QKeyEvent *);
     //void highL (QListBoxItem *);
-    void slotMouseClicked(int , QListBoxItem *, const QPoint &);
+    void slotMouseClicked(int , Q3ListBoxItem *, const QPoint &);
 
   protected:
     virtual void keyPressEvent (QKeyEvent *);

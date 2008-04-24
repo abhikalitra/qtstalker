@@ -24,10 +24,12 @@
 
 #include <qstring.h>
 #include <qwidget.h>
-#include <qpopupmenu.h>
-#include <qlistbox.h>
+#include <q3popupmenu.h>
+#include <q3listbox.h>
 #include <qlineedit.h>
 #include <qdir.h>
+//Added by qt3to4:
+#include <QKeyEvent>
 #include "Config.h"
 #include "DBIndex.h"
 
@@ -63,10 +65,10 @@ class ScannerPage : public QWidget
     void deleteScanner ();
     void runScanner ();
     void scannerSelected (const QString &);
-    void rightClick (QListBoxItem *);
+    void rightClick (Q3ListBoxItem *);
     void refreshList ();
     void slotHelp ();
-    void doubleClick (QListBoxItem *);
+    void doubleClick (Q3ListBoxItem *);
     void doKeyPress (QKeyEvent *);
     void slotAccel (int);
     void searchChanged (const QString &);
@@ -75,8 +77,8 @@ class ScannerPage : public QWidget
     virtual void keyPressEvent (QKeyEvent *);
   
     Config config;
-    QPopupMenu *menu;
-    QListBox *list;
+    Q3PopupMenu *menu;
+    Q3ListBox *list;
     QLineEdit *search;
     QDir idir;
     DBIndex *chartIndex;

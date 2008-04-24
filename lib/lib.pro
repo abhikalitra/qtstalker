@@ -173,3 +173,5 @@ unix:freebsd-g++:LIBS += -L/usr/local/lib/db43
 target.path = /usr/local/lib
 INSTALLS += target
 
+#The following line was inserted by qt3to4
+QT +=  qt3support 

@@ -20,23 +20,25 @@
  */
 
 #include "IndicatorPlugin.h"
+//Added by qt3to4:
+#include <Q3PtrList>
 
 class UTIL : public IndicatorPlugin
 {
   public:
     UTIL ();
     virtual ~UTIL ();
-    PlotLine * calculateCustom (QString &, QPtrList<PlotLine> &);
-    PlotLine * calculateAccum (QString &, QPtrList<PlotLine> &);
-    PlotLine * calculateNormal(QString &, QPtrList<PlotLine> &);
-    PlotLine * calculateCOMP (QString &p, QPtrList<PlotLine> &d);
-    PlotLine * calculateCOUNTER (QString &p, QPtrList<PlotLine> &d);
-    PlotLine * calculateREF (QString &p, QPtrList<PlotLine> &d);
-    PlotLine * calculateADMS (QString &p, QPtrList<PlotLine> &d, int);
-    PlotLine * calculatePER (QString &p, QPtrList<PlotLine> &d);
-    PlotLine * calculateCOLOR (QString &p, QPtrList<PlotLine> &d);
-    PlotLine * calculateHL (QString &p, QPtrList<PlotLine> &d, int);
-    PlotLine * calculateINRANGE (QString &p, QPtrList<PlotLine> &d);
+    PlotLine * calculateCustom (QString &, Q3PtrList<PlotLine> &);
+    PlotLine * calculateAccum (QString &, Q3PtrList<PlotLine> &);
+    PlotLine * calculateNormal(QString &, Q3PtrList<PlotLine> &);
+    PlotLine * calculateCOMP (QString &p, Q3PtrList<PlotLine> &d);
+    PlotLine * calculateCOUNTER (QString &p, Q3PtrList<PlotLine> &d);
+    PlotLine * calculateREF (QString &p, Q3PtrList<PlotLine> &d);
+    PlotLine * calculateADMS (QString &p, Q3PtrList<PlotLine> &d, int);
+    PlotLine * calculatePER (QString &p, Q3PtrList<PlotLine> &d);
+    PlotLine * calculateCOLOR (QString &p, Q3PtrList<PlotLine> &d);
+    PlotLine * calculateHL (QString &p, Q3PtrList<PlotLine> &d, int);
+    PlotLine * calculateINRANGE (QString &p, Q3PtrList<PlotLine> &d);
     void formatDialog (QStringList &vl, QString &rv, QString &rs);
   
   private:

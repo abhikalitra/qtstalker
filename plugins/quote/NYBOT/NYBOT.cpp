@@ -25,14 +25,14 @@
 #include "DBIndexItem.h"
 #include "Exchange.h"
 #include <qfile.h>
-#include <qtextstream.h>
+#include <q3textstream.h>
 #include <qtimer.h>
 #include <qstringlist.h>
 #include <qstring.h>
 #include <qdir.h>
 #include <qsettings.h>
 #include <qfileinfo.h>
-#include <qnetwork.h>
+#include <q3network.h>
 #include <qlabel.h>
 
 
@@ -47,7 +47,7 @@ NYBOT::NYBOT ()
 
   buildGui();
   loadSettings();
-  qInitNetworkProtocols();
+  q3InitNetworkProtocols();
   resize(400, 400);
 }
 
@@ -64,9 +64,9 @@ void NYBOT::buildGui ()
   QLabel *label = new QLabel(tr("Date"), baseWidget);
   grid->addWidget(label, 0, 0);
 
-  date = new QDateEdit(QDate::currentDate(), baseWidget);
+  date = new Q3DateEdit(QDate::currentDate(), baseWidget);
   date->setAutoAdvance(TRUE);
-  date->setOrder(QDateEdit::YMD);
+  date->setOrder(Q3DateEdit::YMD);
   grid->addWidget(date, 0, 1);
   
   QDate dt = QDate::currentDate();
@@ -108,14 +108,14 @@ void NYBOT::fileDone (bool d)
   }
 
   QFile f(file);
-  if (! f.open(IO_WriteOnly))
+  if (! f.open(QIODevice::WriteOnly))
   {
     QString ss(tr("Cant write to file"));
     printStatusLogMessage(ss);
     downloadComplete();
     return;
   }
-  QTextStream stream(&f);
+  Q3TextStream stream(&f);
   
   stream << data;
   f.close();
@@ -147,9 +147,9 @@ void NYBOT::parse ()
     return;
   
   QFile f(file);
-  if (! f.open(IO_ReadOnly))
+  if (! f.open(QIODevice::ReadOnly))
     return;
-  QTextStream stream(&f);
+  Q3TextStream stream(&f);
     
   QString ts = stream.readLine();
   QString s;

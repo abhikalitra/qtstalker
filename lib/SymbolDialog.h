@@ -22,11 +22,13 @@
 #ifndef SYMBOLDIALOG_HPP
 #define SYMBOLDIALOG_HPP
 
-#include <qfiledialog.h>
+#include <q3filedialog.h>
 #include <qstring.h>
 #include <qwidget.h>
+//Added by qt3to4:
+#include <QKeyEvent>
 
-class SymbolDialog : public QFileDialog
+class SymbolDialog : public Q3FileDialog
 {
   Q_OBJECT
 
@@ -34,7 +36,7 @@ class SymbolDialog : public QFileDialog
     void signalKeyPressed (int, int, int, int, QString);
   
   public:
-    SymbolDialog (QWidget *, QString &, QString &, QString &, QFileDialog::Mode);
+    SymbolDialog (QWidget *, QString &, QString &, QString &, Q3FileDialog::Mode);
     ~SymbolDialog ();
     void setType (int);
 

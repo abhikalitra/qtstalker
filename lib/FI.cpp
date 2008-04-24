@@ -21,8 +21,10 @@
 
 #include "FI.h"
 #include "PrefDialog.h"
-#include <qdict.h>
+#include <q3dict.h>
 #include <qobject.h>
+//Added by qt3to4:
+#include <Q3PtrList>
 
 FI::FI ()
 {
@@ -178,7 +180,7 @@ void FI::getIndicatorSettings (Setting &dict)
   dict.setData(pluginLabel, pluginName);
 }
 
-PlotLine * FI::calculateCustom (QString &p, QPtrList<PlotLine> &d)
+PlotLine * FI::calculateCustom (QString &p, Q3PtrList<PlotLine> &d)
 {
   // format1: MA_TYPE, SMOOTHING
 

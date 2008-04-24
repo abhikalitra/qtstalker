@@ -21,9 +21,11 @@
 
 #include "TALIB.h"
 #include "PrefDialog.h"
-#include <qdict.h>
+#include <q3dict.h>
 #include <qobject.h>
 #include <qinputdialog.h>
+//Added by qt3to4:
+#include <Q3PtrList>
 
 TALIB::TALIB ()
 {
@@ -589,7 +591,7 @@ void TALIB::getIndicatorList (QStringList &l)
   l.sort();
 }
 
-PlotLine * TALIB::calculateCustom (QString &p, QPtrList<PlotLine> &d)
+PlotLine * TALIB::calculateCustom (QString &p, Q3PtrList<PlotLine> &d)
 {
   // format: METHOD, ..., ...., ..... etc (first parm must be the method)
 

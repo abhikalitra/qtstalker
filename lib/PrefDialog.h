@@ -26,24 +26,26 @@
 #include "FontButton.h"
 #include "FileButton.h"
 #include "SymbolButton.h"
-#include <qtabdialog.h>
+#include <q3tabdialog.h>
 #include <qlayout.h>
 #include <qwidget.h>
 #include <qpushbutton.h>
-#include <qdict.h>
+#include <q3dict.h>
 #include <qspinbox.h>
 #include <qlineedit.h>
 #include <qvalidator.h>
 #include <qcheckbox.h>
 #include <qcombobox.h>
 #include <qfont.h>
-#include <qdatetimeedit.h>
+#include <q3datetimeedit.h>
 #include <qdatetime.h>
 #include <qstringlist.h>
 #include <qstring.h>
 #include <qlabel.h>
+//Added by qt3to4:
+#include <Q3GridLayout>
 
-class PrefDialog : public QTabDialog
+class PrefDialog : public Q3TabDialog
 {
   Q_OBJECT
 
@@ -92,21 +94,21 @@ class PrefDialog : public QTabDialog
     void help ();
 
   private:
-    QDict<QWidget> widgetList;
-    QDict<QGridLayout> gridList;
-    QDict<ColorButton> colorButtonList;
-    QDict<QSpinBox> intList;
-    QDict<QLineEdit> doubleList;
-    QDict<QCheckBox> checkList;
-    QDict<FontButton> fontButtonList;
-    QDict<QLineEdit> textList;
-    QDict<QComboBox> comboList;
-    QDict<QDateEdit> dateList;
-    QDict<FileButton> fileList;
-    QDict<SymbolButton> symbolList;
-    QDict<QDoubleValidator> dvList;
-    QDict<QLabel> labelList;
-    QDict<QTimeEdit> timeList;
+    Q3Dict<QWidget> widgetList;
+    Q3Dict<Q3GridLayout> gridList;
+    Q3Dict<ColorButton> colorButtonList;
+    Q3Dict<QSpinBox> intList;
+    Q3Dict<QLineEdit> doubleList;
+    Q3Dict<QCheckBox> checkList;
+    Q3Dict<FontButton> fontButtonList;
+    Q3Dict<QLineEdit> textList;
+    Q3Dict<QComboBox> comboList;
+    Q3Dict<Q3DateEdit> dateList;
+    Q3Dict<FileButton> fileList;
+    Q3Dict<SymbolButton> symbolList;
+    Q3Dict<QDoubleValidator> dvList;
+    Q3Dict<QLabel> labelList;
+    Q3Dict<Q3TimeEdit> timeList;
     QString helpFile;
 };
 

@@ -20,6 +20,8 @@
  */
 
 #include "IndicatorPlugin.h"
+//Added by qt3to4:
+#include <Q3PtrList>
 
 
 class VIDYA : public IndicatorPlugin
@@ -30,7 +32,7 @@ class VIDYA : public IndicatorPlugin
     Indicator * calculate ();
     int indicatorPrefDialog (QWidget *);
     void setDefaults();
-    PlotLine * calculateCustom (QString &, QPtrList<PlotLine> &);
+    PlotLine * calculateCustom (QString &, Q3PtrList<PlotLine> &);
     void getIndicatorSettings (Setting &);
     void setIndicatorSettings (Setting &);
     void formatDialog (QStringList &vl, QString &rv, QString &rs);

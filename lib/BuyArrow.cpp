@@ -23,6 +23,8 @@
 #include "PrefDialog.h"
 #include <qpainter.h>
 #include <qsettings.h>
+//Added by qt3to4:
+#include <QPixmap>
 
 BuyArrow::BuyArrow ()
 {

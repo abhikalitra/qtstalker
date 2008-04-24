@@ -32,17 +32,22 @@
 #include <qinputdialog.h>
 #include <qmessagebox.h>
 #include <qcursor.h>
-#include <qaccel.h>
+#include <q3accel.h>
 #include <qfileinfo.h>
 #include <qlayout.h>
 #include <qtooltip.h>
+//Added by qt3to4:
+#include <QPixmap>
+#include <Q3PopupMenu>
+#include <QKeyEvent>
+#include <Q3VBoxLayout>
 
 ScannerPage::ScannerPage (QWidget *w, DBIndex *i) : QWidget (w)
 {
   chartIndex = i;
   idir.setFilter(QDir::Files);
 
-  QVBoxLayout *vbox = new QVBoxLayout(this);
+  Q3VBoxLayout *vbox = new Q3VBoxLayout(this);
   vbox->setMargin(0);
   vbox->setSpacing(5);
   
@@ -52,14 +57,14 @@ ScannerPage::ScannerPage (QWidget *w, DBIndex *i) : QWidget (w)
   QToolTip::add(search, tr("List Filter, e.g. s* or sb*"));
   vbox->addWidget(search);
 
-  list = new QListBox(this);
-  connect(list, SIGNAL(contextMenuRequested(QListBoxItem *, const QPoint &)), this,
-          SLOT(rightClick(QListBoxItem *)));
+  list = new Q3ListBox(this);
+  connect(list, SIGNAL(contextMenuRequested(Q3ListBoxItem *, const QPoint &)), this,
+          SLOT(rightClick(Q3ListBoxItem *)));
   connect(list, SIGNAL(highlighted(const QString &)), this, SLOT(scannerSelected(const QString &)));
-  connect(list, SIGNAL(doubleClicked(QListBoxItem *)), this, SLOT(doubleClick(QListBoxItem *)));
+  connect(list, SIGNAL(doubleClicked(Q3ListBoxItem *)), this, SLOT(doubleClick(Q3ListBoxItem *)));
   vbox->addWidget(list);
   
-  menu = new QPopupMenu(this);
+  menu = new Q3PopupMenu(this);
   menu->insertItem(QPixmap(newchart), tr("&New Scanner		Ctrl+N"), this, SLOT(newScanner()));
   menu->insertItem(QPixmap(open), tr("&Open Scanner		Ctrl+O"), this, SLOT(openScanner()));
   menu->insertItem(QPixmap(deleteitem), tr("&Delete Scanner	Ctrl+D"), this, SLOT(deleteScanner()));
@@ -68,14 +73,14 @@ ScannerPage::ScannerPage (QWidget *w, DBIndex *i) : QWidget (w)
   menu->insertSeparator(-1);
   menu->insertItem(QPixmap(help), tr("&Help		Ctrl+H"), this, SLOT(slotHelp()));
 
-  QAccel *a = new QAccel(this);
+  Q3Accel *a = new Q3Accel(this);
   connect(a, SIGNAL(activated(int)), this, SLOT(slotAccel(int)));
-  a->insertItem(CTRL+Key_N, NewScanner);
-  a->insertItem(CTRL+Key_O, OpenScanner);
-  a->insertItem(CTRL+Key_D, DeleteScanner);
-  a->insertItem(CTRL+Key_R, RenameScanner);
-  a->insertItem(CTRL+Key_U, RunScanner);
-  a->insertItem(CTRL+Key_H, Help);
+  a->insertItem(Qt::CTRL+Qt::Key_N, NewScanner);
+  a->insertItem(Qt::CTRL+Qt::Key_O, OpenScanner);
+  a->insertItem(Qt::CTRL+Qt::Key_D, DeleteScanner);
+  a->insertItem(Qt::CTRL+Qt::Key_R, RenameScanner);
+  a->insertItem(Qt::CTRL+Qt::Key_U, RunScanner);
+  a->insertItem(Qt::CTRL+Qt::Key_H, Help);
   
   refreshList();
   scannerSelected(QString());
@@ -112,7 +117,7 @@ void ScannerPage::runScanner ()
                                           s,
   					  s,
 					  s2,
-					  QFileDialog::ExistingFiles);
+					  Q3FileDialog::ExistingFiles);
   dialog->setCaption(tr("Select scanners to run"));
 
   int rc = dialog->exec();
@@ -160,7 +165,7 @@ void ScannerPage::newScanner()
     config.getData(Config::ScannerPath, s);
     s.append("/" + selection);
     QDir dir(s);
-    if (dir.exists(s, TRUE))
+    if (dir.exists(s))
     {
       QMessageBox::information(this, tr("Qtstalker: Error"), tr("This scanner already exists."));
       return;
@@ -179,7 +184,7 @@ void ScannerPage::deleteScanner()
                                           s,
   					  s,
 					  s2,
-					  QFileDialog::ExistingFiles);
+					  Q3FileDialog::ExistingFiles);
   dialog->setCaption(tr("Select Scanners To Delete"));
 
   int rc = dialog->exec();
@@ -203,7 +208,7 @@ void ScannerPage::deleteScanner()
     int loop;
     QDir dir;
     for (loop = 0; loop < (int) l.count(); loop++)
-      dir.remove(l[loop], TRUE);
+      dir.remove(l[loop]);
 
     refreshList();
     scannerSelected(QString());
@@ -235,7 +240,7 @@ void ScannerPage::renameScanner ()
     config.getData(Config::ScannerPath, s);
     s.append("/" + selection);
     QDir dir(s);
-    if (dir.exists(s, TRUE))
+    if (dir.exists(s))
     {
       QMessageBox::information(this, tr("Qtstalker: Error"), tr("This scanner already exists."));
       return;
@@ -245,7 +250,7 @@ void ScannerPage::renameScanner ()
     config.getData(Config::ScannerPath, s2);
     s2.append("/" + list->currentText());
 
-    dir.rename(s2, s, TRUE);
+    dir.rename(s2, s);
 
     refreshList();
     scannerSelected(QString());
@@ -268,7 +273,7 @@ void ScannerPage::scannerSelected (const QString &d)
   }
 }
 
-void ScannerPage::rightClick (QListBoxItem *)
+void ScannerPage::rightClick (Q3ListBoxItem *)
 {
   menu->exec(QCursor::pos());
 }
@@ -285,7 +290,7 @@ void ScannerPage::refreshList ()
     list->insertItem(idir[loop], -1);
 }
 
-void ScannerPage::doubleClick (QListBoxItem *item)
+void ScannerPage::doubleClick (Q3ListBoxItem *item)
 {
   if (! item)
     return;

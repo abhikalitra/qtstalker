@@ -1,3 +1,5 @@
+QT += qt3support
+
 TEMPLATE = subdirs
 
 # compile TALIB

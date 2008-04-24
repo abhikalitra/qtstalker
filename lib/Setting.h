@@ -24,7 +24,7 @@
 
 #include <qstring.h>
 #include <qstringlist.h>
-#include <qdict.h>
+#include <q3dict.h>
 
 class Setting
 {
@@ -44,7 +44,7 @@ class Setting
     void copy (Setting *);
     
   protected:
-    QDict<QString> dict;
+    Q3Dict<QString> dict;
 };
 
 #endif

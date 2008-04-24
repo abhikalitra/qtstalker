@@ -21,8 +21,10 @@
 
 #include "PP.h"
 #include "PrefDialog.h"
-#include <qdict.h>
+#include <q3dict.h>
 #include <qobject.h>
+//Added by qt3to4:
+#include <Q3PtrList>
 
 PP::PP ()
 {
@@ -79,7 +81,7 @@ Indicator * PP::calculate ()
   output->setDateFlag(dateFlag);
   output->setLogScale(logScale);
 
-  QPtrList<PlotLine> pll;
+  Q3PtrList<PlotLine> pll;
   pll.setAutoDelete(FALSE);
   getPP(pll);
 
@@ -90,7 +92,7 @@ Indicator * PP::calculate ()
   return output;
 }
 
-void PP::getPP (QPtrList<PlotLine> &pll)
+void PP::getPP (Q3PtrList<PlotLine> &pll)
 {
   double high = data->getHigh(data->count() - 1);
   double low = data->getLow(data->count() - 1);
@@ -275,7 +277,7 @@ void PP::getIndicatorSettings (Setting &dict)
   dict.setData(pluginLabel, pluginName);
 }
 
-PlotLine * PP::calculateCustom (QString &p, QPtrList<PlotLine> &d)
+PlotLine * PP::calculateCustom (QString &p, Q3PtrList<PlotLine> &d)
 {
   // format1: PP_TYPE
   if (checkFormat(p, d, 1, 1))
@@ -288,7 +290,7 @@ PlotLine * PP::calculateCustom (QString &p, QPtrList<PlotLine> &d)
     return 0;
   }
 
-  QPtrList<PlotLine> pll;
+  Q3PtrList<PlotLine> pll;
   pll.setAutoDelete(TRUE);
   getPP(pll);
 

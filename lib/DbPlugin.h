@@ -24,7 +24,7 @@
 
 #include <qstring.h>
 #include <qdatetime.h>
-#include <qdict.h>
+#include <q3dict.h>
 #include "BarData.h"
 #include "Bar.h"
 #include "DBBase.h"
@@ -83,7 +83,7 @@ class DbPlugin : public DBBase
     int spreadPref ();
     int ccPref ();
     void getIndexHistory (BarData *, QDateTime &);
-    void loadIndexData (QString &, QDict<Bar> &, QDateTime &, float, int, BarData::BarLength);
+    void loadIndexData (QString &, Q3Dict<Bar> &, QDateTime &, float, int, BarData::BarLength);
     void getSpreadHistory (BarData *, QDateTime &);
     void getCCHistory (BarData *, QDateTime &);
 

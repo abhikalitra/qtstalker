@@ -35,14 +35,19 @@
 #include <qcursor.h>
 #include <qtooltip.h>
 #include <qlayout.h>
-#include <qaccel.h>
+#include <q3accel.h>
+//Added by qt3to4:
+#include <QPixmap>
+#include <Q3PopupMenu>
+#include <QKeyEvent>
+#include <Q3VBoxLayout>
 
 
 ChartPage::ChartPage (QWidget *w, DBIndex *i) : QWidget (w)
 {
   chartIndex = i;
 
-  QVBoxLayout *vbox = new QVBoxLayout(this);
+  Q3VBoxLayout *vbox = new Q3VBoxLayout(this);
   vbox->setMargin(0);
   vbox->setSpacing(5);
  
@@ -56,12 +61,12 @@ ChartPage::ChartPage (QWidget *w, DBIndex *i) : QWidget (w)
   rcfile.loadData(RcFile::DataPath, s);
   nav = new Navigator(this, s);
   connect(nav, SIGNAL(fileOpened(QString)), this, SLOT(chartOpened(QString)));
-  connect(nav, SIGNAL(contextMenuRequested(QListBoxItem *, const QPoint &)), this,
-          SLOT(rightClick(QListBoxItem *)));
+  connect(nav, SIGNAL(contextMenuRequested(Q3ListBoxItem *, const QPoint &)), this,
+          SLOT(rightClick(Q3ListBoxItem *)));
   nav->updateList();
   vbox->addWidget(nav);
 
-  newMenu = new QPopupMenu(this);
+  newMenu = new Q3PopupMenu(this);
   int id = newMenu->insertItem(QPixmap(newchart), "&CC", this, SLOT(newChart(int)));
   newMenu->setItemParameter(id, id);
   id = newMenu->insertItem(QPixmap(newchart), "&Index", this, SLOT(newChart(int)));
@@ -69,7 +74,7 @@ ChartPage::ChartPage (QWidget *w, DBIndex *i) : QWidget (w)
   id = newMenu->insertItem(QPixmap(newchart), "&Spread", this, SLOT(newChart(int)));
   newMenu->setItemParameter(id, id);
   
-  menu = new QPopupMenu(this);
+  menu = new Q3PopupMenu(this);
   menu->insertItem(QPixmap(newchart), tr("&New..."), newMenu);
   menu->insertItem(QPixmap(edit), tr("&Edit Chart	Ctrl+E"), this, SLOT(editChart()));
   menu->insertItem(QPixmap(deleteitem), tr("&Delete Chart	Ctrl+D"), this, SLOT(deleteChart()));
@@ -79,16 +84,16 @@ ChartPage::ChartPage (QWidget *w, DBIndex *i) : QWidget (w)
   menu->insertSeparator(-1);
   menu->insertItem(QPixmap(help), tr("&Help	Ctrl+H"), this, SLOT(slotHelp()));
 
-  QAccel *a = new QAccel(this);
+  Q3Accel *a = new Q3Accel(this);
   connect(a, SIGNAL(activated(int)), this, SLOT(slotAccel(int)));
-  a->insertItem(CTRL+Key_D, DeleteChart);
-  a->insertItem(CTRL+Key_E, EditChart);
-  a->insertItem(CTRL+Key_X, ExportSymbol);
-  a->insertItem(CTRL+Key_U, DumpSymbol);
-  a->insertItem(CTRL+Key_H, Help);
-  a->insertItem(CTRL+Key_Tab, Tab);
-  a->insertItem(Key_Delete, DeleteChartQuick);
-  a->insertItem(CTRL+Key_G, AddToGroup);
+  a->insertItem(Qt::CTRL+Qt::Key_D, DeleteChart);
+  a->insertItem(Qt::CTRL+Qt::Key_E, EditChart);
+  a->insertItem(Qt::CTRL+Qt::Key_X, ExportSymbol);
+  a->insertItem(Qt::CTRL+Qt::Key_U, DumpSymbol);
+  a->insertItem(Qt::CTRL+Qt::Key_H, Help);
+  a->insertItem(Qt::CTRL+Qt::Key_Tab, Tab);
+  a->insertItem(Qt::Key_Delete, DeleteChartQuick);
+  a->insertItem(Qt::CTRL+Qt::Key_G, AddToGroup);
   
   rcfile.loadData(RcFile::LastChartDir, s);
   if (!s.isEmpty()) 
@@ -114,7 +119,7 @@ void ChartPage::deleteChart ()
                                           bp,
   					  s2,
 					  s,
-					  QFileDialog::ExistingFiles);
+					  Q3FileDialog::ExistingFiles);
   dialog->setCaption(tr("Select Charts To Delete"));
 
   int rc = dialog->exec();
@@ -139,7 +144,7 @@ void ChartPage::deleteChart ()
     QDir dir;
     for (loop = 0; loop < (int) l.count(); loop++)
     {
-      dir.remove(l[loop], TRUE);
+      dir.remove(l[loop]);
       chartIndex->deleteChart(l[loop]);
     }
       
@@ -194,7 +199,7 @@ void ChartPage::exportSymbol ()
                                           bp,
   					  s2,
 					  s,
-					  QFileDialog::ExistingFiles);
+					  Q3FileDialog::ExistingFiles);
   dialog->setCaption(tr("Select Charts"));
 
   int rc = dialog->exec();
@@ -205,7 +210,7 @@ void ChartPage::exportSymbol ()
     rcfile.loadData(RcFile::Home, s);
     s.append("/export");
     QDir dir(s);
-    if (! dir.exists(s, TRUE))
+    if (! dir.exists(s))
     {
       if (! dir.mkdir(s, TRUE))
       {
@@ -234,7 +239,7 @@ void ChartPage::dumpSymbol ()
                                           bp,
   					  s2,
 					  s,
-					  QFileDialog::ExistingFiles);
+					  Q3FileDialog::ExistingFiles);
   dialog->setCaption(tr("Select Charts"));
 
   int rc = dialog->exec();
@@ -244,7 +249,7 @@ void ChartPage::dumpSymbol ()
     rcfile.loadData(RcFile::Home, s);
     s.append("/export");
     QDir dir(s);
-    if (! dir.exists(s, TRUE))
+    if (! dir.exists(s))
     {
       if (! dir.mkdir(s, TRUE))
       {
@@ -294,7 +299,7 @@ void ChartPage::chartOpened (QString d)
   emit addRecentChart(d);
 }
 
-void ChartPage::rightClick (QListBoxItem *)
+void ChartPage::rightClick (Q3ListBoxItem *)
 {
   menu->exec(QCursor::pos());
 }
@@ -364,7 +369,7 @@ void ChartPage::deleteChartQuick ()
     return;
 
   QDir dir;
-  dir.remove(s, TRUE);
+  dir.remove(s);
   chartIndex->deleteChart(s);
   nav->updateList();
 }

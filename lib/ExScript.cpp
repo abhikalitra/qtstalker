@@ -21,9 +21,11 @@
 
 #include "ExScript.h"
 #include "PrefDialog.h"
-#include <qdict.h>
-#include <qcstring.h>
+#include <q3dict.h>
+#include <q3cstring.h>
 #include <qmessagebox.h>
+//Added by qt3to4:
+#include <Q3PtrList>
 
 ExScript::ExScript ()
 {
@@ -112,9 +114,9 @@ PlotLine * ExScript::doScript ()
     return line;
   }
 
-  proc = new QProcess(this);
+  proc = new Q3Process(this);
   connect(proc, SIGNAL(readyReadStdout()), this, SLOT(readFromStdout()));
-  proc->setCommunication(QProcess::Stdin|QProcess::Stdout|QProcess::Stderr);
+  proc->setCommunication(Q3Process::Stdin|Q3Process::Stdout|Q3Process::Stderr);
   proc->addArgument(scriptPath);
 
   QStringList l = QStringList::split(" ", comlineParms, FALSE);
@@ -382,7 +384,7 @@ void ExScript::getIndicatorSettings (Setting &dict)
   dict.setData(pluginLabel, pluginName);
 }
 
-PlotLine * ExScript::calculateCustom (QString &p, QPtrList<PlotLine> &d)
+PlotLine * ExScript::calculateCustom (QString &p, Q3PtrList<PlotLine> &d)
 {
   // format1: SCRIPT_PATH, COMMAND_LINE_SWITCHES, DATE, OPEN, HIGH, LOW, CLOSE, VOLUME, OI
 

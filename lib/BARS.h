@@ -20,6 +20,8 @@
  */
 
 #include "IndicatorPlugin.h"
+//Added by qt3to4:
+#include <Q3PtrList>
 
 class BARS : public IndicatorPlugin
 {
@@ -32,7 +34,7 @@ class BARS : public IndicatorPlugin
     PlotLine * calculatePF ();
     int indicatorPrefDialog (QWidget *);
     void setDefaults();
-    PlotLine * calculateCustom (QString &, QPtrList<PlotLine> &);
+    PlotLine * calculateCustom (QString &, Q3PtrList<PlotLine> &);
     void getIndicatorSettings (Setting &);
     void setIndicatorSettings (Setting &);
     void calculateMA (Indicator *);

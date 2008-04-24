@@ -28,12 +28,14 @@
 #include <qpixmap.h>
 #include <qobject.h>
 #include <qstring.h>
-#include <qpopupmenu.h>
+#include <q3popupmenu.h>
 #include <qpoint.h>
 #include <qregion.h>
 #include <qcolor.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include <qdatetime.h>
+//Added by qt3to4:
+#include <QKeyEvent>
 
 #define HANDLE_WIDTH 6
 
@@ -103,7 +105,7 @@ class COBase : public QObject
     
   protected:
     BarData *data;
-    QPopupMenu *menu;
+    Q3PopupMenu *menu;
     QString indicator;
     QString name;
     QString helpFile;
@@ -111,8 +113,8 @@ class COBase : public QObject
     Status status;
     QColor defaultColor;
     bool saveFlag;
-    QPtrList<QRegion> grabHandles;
-    QPtrList<QRegion> selectionArea;
+    Q3PtrList<QRegion> grabHandles;
+    Q3PtrList<QRegion> selectionArea;
     QColor color;
     QDateTime date;
     double value;

@@ -27,11 +27,17 @@
 #include <qpixmap.h>
 #include <qdatetime.h>
 #include <qcolor.h>
-#include <qmemarray.h>
+#include <q3memarray.h>
 #include <qfont.h>
-#include <qdict.h>
+#include <q3dict.h>
 #include <qstringlist.h>
-#include <qpopupmenu.h>
+#include <q3popupmenu.h>
+//Added by qt3to4:
+#include <QContextMenuEvent>
+#include <QPaintEvent>
+#include <QResizeEvent>
+#include <QMouseEvent>
+#include <QKeyEvent>
 
 #include "PlotLine.h"
 #include "Setting.h"
@@ -94,7 +100,7 @@ class IndicatorPlot : public QWidget
     void setScaler (Scaler &);
     Scaler & getScaler ();
     void getInfo (int);
-    void setXGrid (QMemArray<int> &);
+    void setXGrid (Q3MemArray<int> &);
     void setMenuFlag (bool);
     
     void drawLine ();
@@ -186,14 +192,14 @@ class IndicatorPlot : public QWidget
     double y1;
     QDateTime x1;
     MouseStatus mouseFlag;
-    QDict<COBase> coList;
+    Q3Dict<COBase> coList;
     COBase *coSelected;
     QString chartPath;
     BarData *data;
     Indicator *indy;
-    QMemArray<int> xGrid;
-    QPopupMenu *chartMenu;
-    QPopupMenu *chartObjectMenu;
+    Q3MemArray<int> xGrid;
+    Q3PopupMenu *chartMenu;
+    Q3PopupMenu *chartObjectMenu;
     DBIndex *chartIndex;
     QString helpFilePath;
     QString userDocsPath;

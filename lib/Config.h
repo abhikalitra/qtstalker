@@ -26,7 +26,7 @@
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qlibrary.h>
-#include <qdict.h>
+#include <q3dict.h>
 #include <qsplitter.h>
 #include "IndicatorPlugin.h"
 #include "QuotePlugin.h"
@@ -141,9 +141,9 @@ class Config
     void check034Conversion ();
 
   protected:
-    QDict<QLibrary> libs;
-    QDict<IndicatorPlugin> indicatorPlugins;
-    QDict<QuotePlugin> quotePlugins;
+    Q3Dict<QLibrary> libs;
+    Q3Dict<IndicatorPlugin> indicatorPlugins;
+    Q3Dict<QuotePlugin> quotePlugins;
     QString version;
     QStringList indicatorList;
     QStringList indicatorList2;

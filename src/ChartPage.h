@@ -24,8 +24,10 @@
 
 #include <qstring.h>
 #include <qwidget.h>
-#include <qpopupmenu.h>
+#include <q3popupmenu.h>
 #include <qlineedit.h>
+//Added by qt3to4:
+#include <QKeyEvent>
 #include "Navigator.h"
 #include "RcFile.h"
 #include "DBIndex.h"
@@ -68,7 +70,7 @@ class ChartPage : public QWidget
     void exportSymbol ();
     void dumpSymbol ();
     void exportChart (QString &, bool);
-    void rightClick (QListBoxItem *);
+    void rightClick (Q3ListBoxItem *);
     void refreshList ();
     void searchChanged (const QString &);
     void slotHelp ();
@@ -82,8 +84,8 @@ class ChartPage : public QWidget
   protected:
     Navigator *nav;
     RcFile rcfile;
-    QPopupMenu *menu;
-    QPopupMenu *newMenu;
+    Q3PopupMenu *menu;
+    Q3PopupMenu *newMenu;
     QLineEdit *search;
     DBIndex *chartIndex;
 };

@@ -21,13 +21,19 @@
 
 #include "PrefDialog.h"
 #include "HelpWindow.h"
+//Added by qt3to4:
+#include <Q3HBoxLayout>
+#include <Q3GridLayout>
+#include <Q3Frame>
+#include <QLabel>
+#include <Q3VBoxLayout>
 
-PrefDialog::PrefDialog (QWidget *w) : QTabDialog (w, "PrefDialog", TRUE)
+PrefDialog::PrefDialog (QWidget *w) : Q3TabDialog (w, "PrefDialog", TRUE)
 {
   init();
 }
 
-PrefDialog::PrefDialog () : QTabDialog (0, "PrefDialog", TRUE)
+PrefDialog::PrefDialog () : Q3TabDialog (0, "PrefDialog", TRUE)
 {
   init();
 }
@@ -81,9 +87,9 @@ void PrefDialog::createPage (QString &name)
   QWidget *w = new QWidget(this);
   widgetList.replace(name, w);
   
-  QVBoxLayout *vbox = new QVBoxLayout(w);
+  Q3VBoxLayout *vbox = new Q3VBoxLayout(w);
   
-  QGridLayout *grid = new QGridLayout(vbox, 1, 2);
+  Q3GridLayout *grid = new Q3GridLayout(vbox, 1, 2);
   grid->setMargin(5);
   grid->setSpacing(5);
   gridList.replace(name, grid);
@@ -114,7 +120,7 @@ void PrefDialog::addColorItem (QString &name, QString &page, QColor &color)
 {
   QWidget *w = widgetList[page];
   
-  QGridLayout *grid = gridList[page];
+  Q3GridLayout *grid = gridList[page];
   grid->expand(grid->numRows() + 1, grid->numCols());
   
   QLabel *label = new QLabel(name, w);
@@ -144,7 +150,7 @@ void PrefDialog::addColorPrefItem (QString &name, QString &page, QColor &color)
   prefColor[4].setRgb(255,170,0); // orange
   
   // create pref-buttons and arange in one row(hbox)
-  QHBoxLayout *hbox = new QHBoxLayout(0,0,0,"hbox");
+  Q3HBoxLayout *hbox = new Q3HBoxLayout(0,0,0,"hbox");
   int i;
   for (i = 0; i < 5; i++)
   {
@@ -158,11 +164,11 @@ void PrefDialog::addColorPrefItem (QString &name, QString &page, QColor &color)
   
   }
   
-  QVBoxLayout *vbox = new QVBoxLayout(0,0,0,"vbox");
+  Q3VBoxLayout *vbox = new Q3VBoxLayout(0,0,0,"vbox");
   vbox->addLayout(hbox);
   vbox->addWidget(mainButton);
   
-  QGridLayout *grid = gridList[page];
+  Q3GridLayout *grid = gridList[page];
   grid->expand(grid->numRows() + 1, grid->numCols());
   
   QLabel *label = new QLabel(name, w);
@@ -191,7 +197,7 @@ void PrefDialog::addDoubleItem (QString &name, QString &page, double num, double
 {
   QWidget *w = widgetList[page];
   
-  QGridLayout *grid = gridList[page];
+  Q3GridLayout *grid = gridList[page];
   grid->expand(grid->numRows() + 1, grid->numCols());
   
   QLabel *label = new QLabel(name, w);
@@ -224,7 +230,7 @@ void PrefDialog::addIntItem (QString &name, QString &page, int num, int min, int
 {
   QWidget *w = widgetList[page];
   
-  QGridLayout *grid = gridList[page];
+  Q3GridLayout *grid = gridList[page];
   grid->expand(grid->numRows() + 1, grid->numCols());
   
   QLabel *label = new QLabel(name, w);
@@ -257,7 +263,7 @@ void PrefDialog::addCheckItem (QString &name, QString &page, bool flag)
 {
   QWidget *w = widgetList[page];
   
-  QGridLayout *grid = gridList[page];
+  Q3GridLayout *grid = gridList[page];
   grid->expand(grid->numRows() + 1, grid->numCols());
   
   QLabel *label = new QLabel(name, w);
@@ -295,7 +301,7 @@ void PrefDialog::addFontItem (QString &name, QString &page, QFont &font)
 {
   QWidget *w = widgetList[page];
   
-  QGridLayout *grid = gridList[page];
+  Q3GridLayout *grid = gridList[page];
   grid->expand(grid->numRows() + 1, grid->numCols());
   
   QLabel *label = new QLabel(name, w);
@@ -317,7 +323,7 @@ void PrefDialog::addTextItem (QString &name, QString &page, QString &t)
 {
   QWidget *w = widgetList[page];
   
-  QGridLayout *grid = gridList[page];
+  Q3GridLayout *grid = gridList[page];
   grid->expand(grid->numRows() + 1, grid->numCols());
   
   QLabel *label = new QLabel(name, w);
@@ -340,7 +346,7 @@ void PrefDialog::addComboItem (QString &name, QString &page, QStringList &l, QSt
 {
   QWidget *w = widgetList[page];
   
-  QGridLayout *grid = gridList[page];
+  Q3GridLayout *grid = gridList[page];
   grid->expand(grid->numRows() + 1, grid->numCols());
   
   QLabel *label = new QLabel(name, w);
@@ -362,7 +368,7 @@ void PrefDialog::addComboItem (QString &name, QString &page, QStringList &l, int
 {
   QWidget *w = widgetList[page];
   
-  QGridLayout *grid = gridList[page];
+  Q3GridLayout *grid = gridList[page];
   grid->expand(grid->numRows() + 1, grid->numCols());
   
   QLabel *label = new QLabel(name, w);
@@ -401,22 +407,22 @@ void PrefDialog::addDateItem (QString &name, QString &page, QDateTime &dt)
 {
   QWidget *w = widgetList[page];
   
-  QGridLayout *grid = gridList[page];
+  Q3GridLayout *grid = gridList[page];
   grid->expand(grid->numRows() + 1, grid->numCols());
   
   QLabel *label = new QLabel(name, w);
   grid->addWidget(label, grid->numRows() - 2, 0);
 
-  QDateEdit *date = new QDateEdit(dt.date(), w);
+  Q3DateEdit *date = new Q3DateEdit(dt.date(), w);
   date->setAutoAdvance(TRUE);
-  date->setOrder(QDateEdit::YMD);
+  date->setOrder(Q3DateEdit::YMD);
   grid->addWidget(date, grid->numRows() - 2, 1);
   dateList.replace(name, date);
 }
 
 void PrefDialog::getDate (QString &name, QDateTime &dt)
 {
-  QDateEdit *date = dateList[name];
+  Q3DateEdit *date = dateList[name];
   if (date)
     dt.setDate(date->date());
 }
@@ -425,13 +431,13 @@ void PrefDialog::addTimeItem (QString &name, QString &page, QDateTime &dt)
 {
   QWidget *w = widgetList[page];
   
-  QGridLayout *grid = gridList[page];
+  Q3GridLayout *grid = gridList[page];
   grid->expand(grid->numRows() + 1, grid->numCols());
   
   QLabel *label = new QLabel(name, w);
   grid->addWidget(label, grid->numRows() - 2, 0);
 
-  QTimeEdit *time = new QTimeEdit(dt.time(), w);
+  Q3TimeEdit *time = new Q3TimeEdit(dt.time(), w);
   time->setAutoAdvance(TRUE);
   grid->addWidget(time, grid->numRows() - 2, 1);
   timeList.replace(name, time);
@@ -439,7 +445,7 @@ void PrefDialog::addTimeItem (QString &name, QString &page, QDateTime &dt)
 
 void PrefDialog::getTime (QString &name, QDateTime &dt)
 {
-  QTimeEdit *time = timeList[name];
+  Q3TimeEdit *time = timeList[name];
   if (time)
     dt.setTime(time->time());
 }
@@ -448,7 +454,7 @@ void PrefDialog::addFileItem (QString &name, QString &page, QStringList &l, QStr
 {
   QWidget *w = widgetList[page];
   
-  QGridLayout *grid = gridList[page];
+  Q3GridLayout *grid = gridList[page];
   grid->expand(grid->numRows() + 1, grid->numCols());
   
   QLabel *label = new QLabel(name, w);
@@ -471,7 +477,7 @@ void PrefDialog::addSymbolItem (QString &name, QString &page, QString &path, QSt
 {
   QWidget *w = widgetList[page];
   
-  QGridLayout *grid = gridList[page];
+  Q3GridLayout *grid = gridList[page];
   grid->expand(grid->numRows() + 1, grid->numCols());
   
   QLabel *label = new QLabel(name, w);
@@ -494,14 +500,14 @@ void PrefDialog::addLabelItem (QString &name, QString &page, QString &l)
 {
   QWidget *w = widgetList[page];
   
-  QGridLayout *grid = gridList[page];
+  Q3GridLayout *grid = gridList[page];
   grid->expand(grid->numRows() + 1, grid->numCols());
   
   QLabel *label = new QLabel(name, w);
   grid->addWidget(label, grid->numRows() - 2, 0);
   
   label = new QLabel(l, w);
-  label->setFrameStyle(QFrame::WinPanel | QFrame::Sunken);
+  label->setFrameStyle(Q3Frame::WinPanel | Q3Frame::Sunken);
   grid->addWidget(label, grid->numRows() - 2, 1);
   labelList.replace(name, label);
 }

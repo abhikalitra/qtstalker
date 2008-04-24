@@ -21,8 +21,10 @@
 
 #include "LOWPASS.h"
 #include "PrefDialog.h"
-#include <qdict.h>
+#include <q3dict.h>
 #include <qobject.h>
+//Added by qt3to4:
+#include <Q3PtrList>
 #include <math.h>
 
 #define MAXNUM 2147483647
@@ -271,7 +273,7 @@ int LOWPASS::indicatorPrefDialog (QWidget *w)
   return rc;
 }
 
-PlotLine * LOWPASS::calculateCustom (QString &p, QPtrList<PlotLine> &d)
+PlotLine * LOWPASS::calculateCustom (QString &p, Q3PtrList<PlotLine> &d)
 {
   // format: DATA_ARRAY, FREQ, WIDTH
 

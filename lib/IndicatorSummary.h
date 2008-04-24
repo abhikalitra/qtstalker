@@ -24,7 +24,7 @@
 
 #include <qstring.h>
 #include <qstringlist.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include <qobject.h>
 #include "BarData.h"
 #include "Config.h"
@@ -43,7 +43,7 @@ class IndicatorSummary : public QObject
     ~IndicatorSummary ();
     void run ();
     void loadIndicators ();
-    void createDataWindow (QPtrList<Setting> &, QString &group);
+    void createDataWindow (Q3PtrList<Setting> &, QString &group);
 
   private:
     QString helpFile;
@@ -53,7 +53,7 @@ class IndicatorSummary : public QObject
     QStringList indicatorList;
     int minBars;
     BarData::BarLength barLength;
-    QPtrList<Indicator> indicators;
+    Q3PtrList<Indicator> indicators;
     DBIndex *chartIndex;
 };
 

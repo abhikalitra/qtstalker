@@ -23,14 +23,14 @@
 #define EXTRATOOLBAR_HPP
 
 #include <qstring.h>
-#include <qtoolbar.h>
-#include <qmainwindow.h>
+#include <q3toolbar.h>
+#include <q3mainwindow.h>
 #include <qcombobox.h>
 #include <qtoolbutton.h>
 
 #include "RcFile.h"
 
-class ExtraToolbar : public QToolBar
+class ExtraToolbar : public Q3ToolBar
 {
   Q_OBJECT
   
@@ -42,7 +42,8 @@ class ExtraToolbar : public QToolBar
     
   public:
   
-    ExtraToolbar(QMainWindow *);
+    ExtraToolbar(Q3MainWindow *, QWidget *parent);
+    //ExtraToolbar(Q3MainWindow *);
     ~ExtraToolbar();
     void saveSettings ();
 

@@ -25,7 +25,9 @@
 #include <qwidget.h>
 #include <qstring.h>
 #include <qlabel.h>
-#include <qtable.h>
+#include <q3table.h>
+//Added by qt3to4:
+#include <Q3PtrList>
 #include "TradeItem.h"
 
 
@@ -37,12 +39,12 @@ class TesterReport : public QWidget
     TesterReport (QWidget *);
     ~TesterReport ();
     void getSummary (QStringList &);
-    void createSummary (QPtrList<TradeItem> &, double account);
+    void createSummary (Q3PtrList<TradeItem> &, double account);
     void addTrade (QString &, TradeItem *);
     void clear ();
 
   protected:
-    QTable *tradeList;
+    Q3Table *tradeList;
     QLabel *summaryBalance;
     QLabel *summaryNetProfit;
     QLabel *summaryNetPercentage;

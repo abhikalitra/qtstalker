@@ -26,7 +26,7 @@
 #include <qstring.h>
 #include <qslider.h>
 #include <qsplitter.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include "Plot.h"
 #include "PlotLine.h"
 #include "BarData.h"
@@ -45,7 +45,7 @@ class TesterChartPage : public QWidget
   public:
     TesterChartPage (QWidget *, DBIndex *);
     ~TesterChartPage ();
-    void updateChart (BarData *, QPtrList<TradeItem> &, double);
+    void updateChart (BarData *, Q3PtrList<TradeItem> &, double);
     void clear();
 
   public slots:

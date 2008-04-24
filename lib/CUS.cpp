@@ -26,6 +26,8 @@
 #include <qmessagebox.h>
 #include <qobject.h>
 #include <qfile.h>
+//Added by qt3to4:
+#include <Q3PtrList>
 
 CUS::CUS ()
 {
@@ -42,7 +44,7 @@ Indicator * CUS::calculate ()
 {
   Config config;
   QStringList varList;
-  QDict<PlotLine> lines;
+  Q3Dict<PlotLine> lines;
   lines.setAutoDelete(TRUE);
 
   checkIncludes();
@@ -101,7 +103,7 @@ Indicator * CUS::calculate ()
 
       l = QStringList::split(",", parms, FALSE);
       int loop2;
-      QPtrList<PlotLine> inList;
+      Q3PtrList<PlotLine> inList;
       inList.setAutoDelete(FALSE);
       for (loop2 = 0; loop2 < (int) l.count(); loop2++)
       {
@@ -142,7 +144,7 @@ Indicator * CUS::calculate ()
   return output;
 }
 
-void CUS::createPlot (QString &d, QDict<PlotLine> &lines, Indicator *output)
+void CUS::createPlot (QString &d, Q3Dict<PlotLine> &lines, Indicator *output)
 {
   if (! d.contains("plot"))
     return;

@@ -65,7 +65,7 @@ void Setting::setData (QString &k, QString &d)
 void Setting::getKeyList (QStringList &l)
 {
   l.clear();
-  QDictIterator<QString> it(dict);
+  Q3DictIterator<QString> it(dict);
   for (; it.current(); ++it)
     l.append(it.currentKey());
 }
@@ -79,7 +79,7 @@ void Setting::getString (QString &s)
 {
   s.truncate(0);
   QStringList l;
-  QDictIterator<QString> it(dict);
+  Q3DictIterator<QString> it(dict);
   for (; it.current(); ++it)
   {
     QString *s = it.current();
@@ -115,7 +115,7 @@ int Setting::count ()
 void Setting::copy (Setting *r)
 {
   QString k, d;
-  QDictIterator<QString> it(dict);
+  Q3DictIterator<QString> it(dict);
   for (; it.current(); ++it)
   {
     QString *s = it.current();

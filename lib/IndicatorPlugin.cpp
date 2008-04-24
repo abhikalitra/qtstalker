@@ -22,7 +22,9 @@
 #include "IndicatorPlugin.h"
 #include "TALIB.h"
 #include <qfile.h>
-#include <qtextstream.h>
+#include <q3textstream.h>
+//Added by qt3to4:
+#include <Q3PtrList>
 
 IndicatorPlugin::IndicatorPlugin()
 {
@@ -69,12 +71,12 @@ void IndicatorPlugin::setIndicatorInput (BarData *d)
 void IndicatorPlugin::loadFile (QString &file, Setting &dict)
 {
   QFile f(file);
-  if (! f.open(IO_ReadOnly))
+  if (! f.open(QIODevice::ReadOnly))
   {
     qDebug("IndicatorPlugin:can't read file %s", file.latin1());
     return;
   }
-  QTextStream stream(&f);
+  Q3TextStream stream(&f);
   
   while(stream.atEnd() == 0)
   {
@@ -104,12 +106,12 @@ void IndicatorPlugin::loadFile (QString &file, Setting &dict)
 void IndicatorPlugin::saveFile (QString &file, Setting &dict)
 {
   QFile f(file);
-  if (! f.open(IO_WriteOnly))
+  if (! f.open(QIODevice::WriteOnly))
   {
     qDebug("IndicatorPlugin:can't save file %s", file.latin1());
     return;
   }
-  QTextStream stream(&f);
+  Q3TextStream stream(&f);
   
   QStringList key;
   dict.getKeyList(key);
@@ -186,7 +188,7 @@ IndicatorPlugin::Operator IndicatorPlugin::getOperator (QString &d)
   return (Operator) i;
 }
 
-bool IndicatorPlugin::checkFormat (QString &p, QPtrList<PlotLine> &d, int hrange, int lrange)
+bool IndicatorPlugin::checkFormat (QString &p, Q3PtrList<PlotLine> &d, int hrange, int lrange)
 {
   formatStringList = QStringList::split(",", p, FALSE);
 
@@ -299,7 +301,7 @@ int IndicatorPlugin::indicatorPrefDialog (QWidget *)
   return 0;
 }
 
-PlotLine * IndicatorPlugin::calculateCustom (QString &, QPtrList<PlotLine> &)
+PlotLine * IndicatorPlugin::calculateCustom (QString &, Q3PtrList<PlotLine> &)
 {
   return 0;
 }

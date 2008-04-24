@@ -147,8 +147,8 @@ class RcFile
     };
   
   private:
-    const char *Key[MAX_PARM];
-    const char *Def[MAX_PARM]; // default values
+    char *Key[MAX_PARM];
+    char *Def[MAX_PARM]; // default values
     
   public:
    

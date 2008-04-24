@@ -23,7 +23,7 @@
 #define SCALER_HPP
 
 #include <qstringlist.h>
-#include <qmemarray.h>
+#include <q3memarray.h>
 
 class Scaler
 {
@@ -33,7 +33,7 @@ class Scaler
     void set (int ht, double h, double l, double lh, double lr, bool lf);
     int convertToY (double);
     double convertToVal (int);
-    void getScaleArray (QMemArray<double> &);
+    void getScaleArray (Q3MemArray<double> &);
     double getLogScaleHigh ();
     double getLogRange();
     int getHeight ();

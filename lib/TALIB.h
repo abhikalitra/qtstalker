@@ -21,6 +21,8 @@
 
 #include "IndicatorPlugin.h"
 #include "ta_libc.h"
+//Added by qt3to4:
+#include <Q3PtrList>
 
 class TALIB : public IndicatorPlugin
 {
@@ -30,7 +32,7 @@ class TALIB : public IndicatorPlugin
     Indicator * calculate ();
     int indicatorPrefDialog (QWidget *);
     void setDefaults();
-    PlotLine * calculateCustom (QString &, QPtrList<PlotLine> &);
+    PlotLine * calculateCustom (QString &, Q3PtrList<PlotLine> &);
     void getIndicatorSettings (Setting &);
     void setIndicatorSettings (Setting &);
     void getIndicatorList (QStringList &);

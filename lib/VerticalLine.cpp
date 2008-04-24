@@ -23,6 +23,9 @@
 #include "PrefDialog.h"
 #include <qpainter.h>
 #include <qsettings.h>
+//Added by qt3to4:
+#include <QPixmap>
+#include <Q3PointArray>
 
 VerticalLine::VerticalLine ()
 {
@@ -55,7 +58,7 @@ void VerticalLine::draw (QPixmap &buffer, Scaler &, int startIndex, int pixelspa
   painter.drawLine (x, 0, x, buffer.height());
   
   clearSelectionArea();
-  QPointArray array;
+  Q3PointArray array;
   array.putPoints(0,
   	          4,
 		  x - (HANDLE_WIDTH / 2), 0,

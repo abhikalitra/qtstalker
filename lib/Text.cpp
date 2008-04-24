@@ -24,6 +24,8 @@
 #include "Config.h"
 #include <qpainter.h>
 #include <qsettings.h>
+//Added by qt3to4:
+#include <QPixmap>
 
 Text::Text ()
 {

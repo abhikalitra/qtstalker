@@ -35,7 +35,7 @@ XmlWriter::XmlWriter( QIODevice *device, QTextCodec *codec )
 {
     out.setDevice( device );
     if ( codec == 0 ) {
-	out.setEncoding( QTextStream::UnicodeUTF8 );
+	out.setEncoding( Q3TextStream::UnicodeUTF8 );
     } else {
 	out.setCodec( codec );
 	out << "<?xml version=\"1.0\" encoding=\""

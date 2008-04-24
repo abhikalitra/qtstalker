@@ -20,9 +20,13 @@
  */
 
 #include <qlayout.h>
-#include <qvgroupbox.h>
+#include <q3vgroupbox.h>
 #include <qfont.h>
-#include <qvaluelist.h>
+#include <q3valuelist.h>
+//Added by qt3to4:
+#include <Q3HBoxLayout>
+#include <Q3PtrList>
+#include <Q3VBoxLayout>
 #include "TesterChartPage.h"
 #include "Config.h"
 #include "Indicator.h"
@@ -37,11 +41,11 @@ TesterChartPage::TesterChartPage (QWidget *p, DBIndex *index) : QWidget (p)
 //  bool logFlag = config.getData(Config::LogScale).toInt();
   scaleToScreenFlag = s.toInt();
 
-  QVBoxLayout *vbox = new QVBoxLayout(this);
+  Q3VBoxLayout *vbox = new Q3VBoxLayout(this);
   vbox->setMargin(5);
   vbox->setSpacing(5);
 
-  QHBoxLayout *hbox = new QHBoxLayout(vbox);
+  Q3HBoxLayout *hbox = new Q3HBoxLayout(vbox);
 
   toolbar = new Toolbar(this, Toolbar::Horizontal);
   hbox->addWidget(toolbar);
@@ -57,7 +61,7 @@ TesterChartPage::TesterChartPage (QWidget *p, DBIndex *index) : QWidget (p)
   QObject::connect(toolbar->getButton(s), SIGNAL(clicked()), this, SLOT(slotScaleToScreen()));
   
   split = new QSplitter(this);
-  split->setOrientation(Vertical);
+  split->setOrientation(Qt::Vertical);
   vbox->addWidget(split);
 
   equityPlot = new Plot (split, index);
@@ -89,7 +93,7 @@ TesterChartPage::TesterChartPage (QWidget *p, DBIndex *index) : QWidget (p)
   QObject::connect(this, SIGNAL(signalIndex(int)), plot, SLOT(setIndex(int)));
   plot->setPlotFont(font);
 
-  QValueList<int> sizeList = split->sizes();
+  Q3ValueList<int> sizeList = split->sizes();
   sizeList[1] = 100;
   split->setSizes(sizeList);
 }
@@ -105,7 +109,7 @@ void TesterChartPage::slotSliderChanged (int v)
   equityPlot->draw();
 }
 
-void TesterChartPage::updateChart (BarData *recordList, QPtrList<TradeItem> &trades, double eq)
+void TesterChartPage::updateChart (BarData *recordList, Q3PtrList<TradeItem> &trades, double eq)
 {
   plot->setData(recordList);
   equityPlot->setData(recordList);

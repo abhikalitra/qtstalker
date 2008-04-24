@@ -23,7 +23,7 @@
 #define SCANNER_HPP
 
 #include <qstring.h>
-#include <qtabdialog.h>
+#include <q3tabdialog.h>
 #include <qcombobox.h>
 #include <qpushbutton.h>
 #include <qcheckbox.h>
@@ -32,7 +32,7 @@
 #include "FormulaEdit.h"
 #include "DBIndex.h"
 
-class Scanner : public QTabDialog
+class Scanner : public Q3TabDialog
 {
   Q_OBJECT
 

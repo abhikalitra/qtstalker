@@ -26,6 +26,9 @@
 #include <qpixmap.h>
 #include <qcolor.h>
 #include <qfont.h>
+//Added by qt3to4:
+#include <QPaintEvent>
+#include <QResizeEvent>
 #include "Scaler.h"
 
 class ScalePlot : public QWidget

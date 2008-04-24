@@ -23,7 +23,7 @@
 #define PLOTLINE_HPP
 
 #include <qstring.h>
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 #include <qcolor.h>
 #include <qdatetime.h>
 #include "Setting.h"
@@ -97,13 +97,13 @@ class PlotLine
     void getHighLowRange (int, int, double &, double &);
     void getInfo (int, Setting &);
     void strip (double, int, QString &);
-    void getDateList (QValueList<QDateTime> &);
-    void setDateList (QValueList<QDateTime> &);
-    void getData (QValueList<Val> &);
+    void getDateList (Q3ValueList<QDateTime> &);
+    void setDateList (Q3ValueList<QDateTime> &);
+    void getData (Q3ValueList<Val> &);
     
   private:
-    QValueList<Val> data;
-    QValueList<QDateTime> dateList;
+    Q3ValueList<Val> data;
+    Q3ValueList<QDateTime> dateList;
     QColor color;
     PlotLine::LineType lineType;
     QString label;

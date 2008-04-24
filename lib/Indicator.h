@@ -24,7 +24,7 @@
 
 #include <qstring.h>
 #include <qstringlist.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include "PlotLine.h"
 
 class Indicator
@@ -55,7 +55,7 @@ class Indicator
     void setIndicator (Setting &, QString &);
 
   private:
-    QPtrList<PlotLine> lines;
+    Q3PtrList<PlotLine> lines;
     bool enable;
     QString name;
     QString file;

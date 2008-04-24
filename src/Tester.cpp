@@ -20,13 +20,13 @@
  */
 
 #include <qlayout.h>
-#include <qvgroupbox.h>
+#include <q3vgroupbox.h>
 #include <qfile.h>
-#include <qtextstream.h>
+#include <q3textstream.h>
 #include <qmessagebox.h>
 #include <qinputdialog.h>
 #include <qdir.h>
-#include <qprogressdialog.h>
+#include <q3progressdialog.h>
 #include <qfileinfo.h>
 #include "Tester.h"
 #include "DbPlugin.h"
@@ -35,7 +35,7 @@
 #include "DBIndexItem.h"
 
 
-Tester::Tester (QString n, DBIndex *i) : QTabDialog (0, 0, FALSE)
+Tester::Tester (QString n, DBIndex *i) : Q3TabDialog (0, 0, FALSE)
 {
   index = i;
   ruleName = n;
@@ -82,7 +82,7 @@ Tester::Tester (QString n, DBIndex *i) : QTabDialog (0, 0, FALSE)
   loadRule();
 }
 
-Tester::Tester () : QTabDialog (0, 0, FALSE)
+Tester::Tester () : Q3TabDialog (0, 0, FALSE)
 {
   recordList = 0;
 }
@@ -106,9 +106,9 @@ void Tester::saveRule ()
   config.getData(Config::TestPath, s);
   s.append("/" + ruleName + "/rule");
   QFile f(s);
-  if (! f.open(IO_WriteOnly))
+  if (! f.open(QIODevice::WriteOnly))
     return;
-  QTextStream stream(&f);
+  Q3TextStream stream(&f);
 
   QStringList l;
   reportPage->getSummary(l);
@@ -160,9 +160,9 @@ void Tester::loadRule ()
   config.getData(Config::TestPath, s);
   s.append("/" + ruleName + "/rule");
   QFile f(s);
-  if (! f.open(IO_ReadOnly))
+  if (! f.open(QIODevice::ReadOnly))
     return;
-  QTextStream stream(&f);
+  Q3TextStream stream(&f);
 
   while(stream.atEnd() == 0)
   {
@@ -445,7 +445,7 @@ QString Tester::newTest ()
   config.getData(Config::TestPath, s);
   s.append("/" + selection);
   QDir dir(s);
-  if (dir.exists(s, TRUE))
+  if (dir.exists(s))
   {
     QMessageBox::information(this, tr("Qtstalker: Error"), tr("This backtest rule already exists."));
     return selection;
@@ -689,7 +689,7 @@ void Tester::test ()
   reportPage->clear();
   trades.clear();
 
-  QProgressDialog prog(tr("Testing..."),
+  Q3ProgressDialog prog(tr("Testing..."),
                        tr("Cancel"),
 		       testPage->getBars(),
 		       this,

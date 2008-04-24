@@ -26,16 +26,20 @@
 #include <qlayout.h>
 #include <qwidget.h>
 #include <qstring.h>
-#include <qtextedit.h>
+#include <q3textedit.h>
 #include <qlabel.h>
 #include <qmessagebox.h>
 #include <qfileinfo.h>
 #include <qdir.h>
 #include <qfile.h>
 #include <qpushbutton.h>
+//Added by qt3to4:
+#include <Q3HBoxLayout>
+#include <Q3VBoxLayout>
+#include <Q3TextStream>
 #include <db.h>
 
-UpgradeMessage::UpgradeMessage (int type) : QTabDialog (0, "UpgradeMessage", TRUE)
+UpgradeMessage::UpgradeMessage (int type) : Q3TabDialog (0, "UpgradeMessage", TRUE)
 {
   switch (type)
   {
@@ -58,7 +62,7 @@ void UpgradeMessage::createPage031 ()
 {
   QWidget *w = new QWidget(this);
   
-  QVBoxLayout *vbox = new QVBoxLayout(w);
+  Q3VBoxLayout *vbox = new Q3VBoxLayout(w);
   vbox->setMargin(5);
   vbox->setSpacing(5);
 
@@ -70,7 +74,7 @@ void UpgradeMessage::createPage031 ()
   s.append(tr(" If you don't intend to downgrade to a previous Qtstalker"));
   s.append(tr(" version, then you can remove that directory."));
 
-  QTextEdit *message = new QTextEdit(w);
+  Q3TextEdit *message = new Q3TextEdit(w);
   message->setReadOnly(TRUE);
   message->setText(s);
   vbox->addWidget(message);
@@ -93,7 +97,7 @@ void UpgradeMessage::createPage034 ()
 {
   QWidget *w = new QWidget(this);
   
-  QVBoxLayout *vbox = new QVBoxLayout(w);
+  Q3VBoxLayout *vbox = new Q3VBoxLayout(w);
   vbox->setMargin(5);
   vbox->setSpacing(5);
 
@@ -102,18 +106,18 @@ void UpgradeMessage::createPage034 ()
   s.append(tr(" When satisfied, the old workspace can be manually removed from ~/.qtstalker/data0/\n"));
   s.append(tr("\n"));
   s.append(tr(" If you choose Cancel, then Quit immediately and see the cleanup notes in docs/install.html"));
-  QTextEdit *message = new QTextEdit(w);
+  Q3TextEdit *message = new Q3TextEdit(w);
   message->setReadOnly(TRUE);
   message->setText(s);
   vbox->addWidget(message);
 
-  QHBoxLayout *hbox = new QHBoxLayout(vbox);
+  Q3HBoxLayout *hbox = new Q3HBoxLayout(vbox);
   hbox->setSpacing(2);
 
   QLabel *label = new QLabel(tr("Progress"), w);
   hbox->addWidget(label);
 
-  progBar = new QProgressBar(w);
+  progBar = new Q3ProgressBar(w);
   hbox->addWidget(progBar);
 
   addTab(w, tr("Chart Conversion"));
@@ -296,11 +300,13 @@ void UpgradeMessage::saveHeaderData (DbPlugin &db, QString &k, QString &d, QStri
     return;
   }
 
+/*
   if (! k.compare("BarType"))
   {
     item.setBarType(d);
     return;
   }
+*/
 
   if (! k.compare("Fundamentals"))
   {
@@ -396,7 +402,7 @@ bool UpgradeMessage::createDir (QString &p)
       s.append("/" + l[loop2]);
 
     QDir dir(s);
-    if (! dir.exists(s, TRUE))
+    if (! dir.exists(s))
     {
       if (! dir.mkdir(s, TRUE))
       {
@@ -509,12 +515,12 @@ void UpgradeMessage::correctPathFiles (QStringList &list)
   for (loop = 0; loop < (int) list.count(); loop++)
   {
     QFile inFile(list[loop]);
-    if (! inFile.open(IO_ReadOnly))
+    if (! inFile.open(QIODevice::ReadOnly))
     {
       qDebug("UpgradeMessage::correctPathFiles: error opening input file");
       continue;
     }
-    QTextStream inStream(&inFile);
+    Q3TextStream inStream(&inFile);
   
     QStringList l;
     while(inStream.atEnd() == 0)
@@ -528,12 +534,12 @@ void UpgradeMessage::correctPathFiles (QStringList &list)
     inFile.close();
 
     QFile outFile(list[loop]);
-    if (! outFile.open(IO_WriteOnly))
+    if (! outFile.open(QIODevice::WriteOnly))
     {
       qDebug("UpgradeMessage::correctPathFiles: error opening output file");
       continue;
     }
-    QTextStream outStream(&outFile);
+    Q3TextStream outStream(&outFile);
 
     int loop2;
     for (loop2 = 0; loop2 < (int) l.count(); loop2++)

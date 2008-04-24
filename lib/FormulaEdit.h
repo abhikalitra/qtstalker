@@ -24,8 +24,8 @@
 
 #include <qstring.h>
 #include <qwidget.h>
-#include <qtextedit.h>
-#include <qlistbox.h>
+#include <q3textedit.h>
+#include <q3listbox.h>
 #include "Toolbar.h"
 #include "Config.h"
 
@@ -55,12 +55,12 @@ class FormulaEdit : public QWidget
     void openRule ();
     void includeRule ();
 //    void saveRule ();
-    void slotDoubleClicked (QListBoxItem *);
+    void slotDoubleClicked (Q3ListBoxItem *);
     void functionDialog ();
 
   protected:
-    QTextEdit *formula;
-    QListBox *plot;
+    Q3TextEdit *formula;
+    Q3ListBox *plot;
     Toolbar *ftoolbar;
     Toolbar *ptoolbar;
     QStringList functionList;

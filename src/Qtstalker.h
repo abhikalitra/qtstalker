@@ -18,17 +18,19 @@
 #ifndef QTSTALKER_H
 #define QTSTALKER_H
 
-#include <qmainwindow.h>
+#include <q3mainwindow.h>
 #include <qmenubar.h>
-#include <qtoolbar.h>
+#include <q3toolbar.h>
 #include <qstring.h>
 #include <qtabwidget.h>
 #include <qsplitter.h>
-#include <qmultilineedit.h>
-#include <qdict.h>
-#include <qprogressbar.h>
+#include <q3multilineedit.h>
+#include <q3dict.h>
+#include <q3progressbar.h>
 #include <qstatusbar.h>
 #include <qtabwidget.h>
+//Added by qt3to4:
+#include <Q3PtrList>
 
 #include "Indicator.h"
 #include "Plot.h"
@@ -50,7 +52,7 @@
 
 // not used #define DEFAULT_INDICATOR_HEIGHT 125
 
-class QtstalkerApp : public QMainWindow
+class QtstalkerApp : public Q3MainWindow
 {
   Q_OBJECT
   
@@ -131,7 +133,7 @@ class QtstalkerApp : public QMainWindow
     void slotLoadPlotSizes();
     
   private:
-    QToolBar *toolbar;
+    Q3ToolBar *toolbar;
     ChartToolbar *toolbar2;
     ExtraToolbar *extraToolbar;
     MainMenubar *menubar;
@@ -142,7 +144,7 @@ class QtstalkerApp : public QMainWindow
     QWidget *baseWidget;
     QWidget *navBase;
     ChartPage *chartNav;
-    QDict<Plot> plotList;
+    Q3Dict<Plot> plotList;
     Config config;
     chartStatus status;
     QString chartPath;
@@ -150,17 +152,17 @@ class QtstalkerApp : public QMainWindow
     QString chartSymbol;
     QString dbPlugin;
     BarData *recordList;
-    QMultiLineEdit *infoLabel;
+    Q3MultiLineEdit *infoLabel;
     IndicatorPage *ip;
     PortfolioPage *pp;
     ScannerPage *sp;
     TestPage *tp;
     GroupPage *gp;
-    QProgressBar *progBar;
+    Q3ProgressBar *progBar;
     QStatusBar *statusbar;
     QString chartType;
-    QPtrList<QTabWidget> tabList;
-    QDict<QWidget> widgetList;
+    Q3PtrList<QTabWidget> tabList;
+    Q3Dict<QWidget> widgetList;
     DBIndex *chartIndex;
     RcFile rcfile;
     QString lastIndicatorUsed1;

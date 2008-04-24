@@ -32,17 +32,21 @@
 #include <qmessagebox.h>
 #include <qcursor.h>
 #include <qfile.h>
-#include <qaccel.h>
+#include <q3accel.h>
+//Added by qt3to4:
+#include <QPixmap>
+#include <Q3PopupMenu>
+#include <QKeyEvent>
 
-PortfolioPage::PortfolioPage (QWidget *w, DBIndex *i) : QListBox (w)
+PortfolioPage::PortfolioPage (QWidget *w, DBIndex *i) : Q3ListBox (w)
 {
   chartIndex = i;
 
-  connect(this, SIGNAL(contextMenuRequested(QListBoxItem *, const QPoint &)), this, SLOT(rightClick(QListBoxItem *)));
+  connect(this, SIGNAL(contextMenuRequested(Q3ListBoxItem *, const QPoint &)), this, SLOT(rightClick(Q3ListBoxItem *)));
   connect(this, SIGNAL(highlighted(const QString &)), this, SLOT(portfolioSelected(const QString &)));
-  connect(this, SIGNAL(doubleClicked(QListBoxItem *)), this, SLOT(doubleClick(QListBoxItem *)));
+  connect(this, SIGNAL(doubleClicked(Q3ListBoxItem *)), this, SLOT(doubleClick(Q3ListBoxItem *)));
   
-  menu = new QPopupMenu(this);
+  menu = new Q3PopupMenu(this);
   menu->insertItem(QPixmap(newchart), tr("&New Portfolio	Ctrl+N"), this, SLOT(newPortfolio()));
   menu->insertItem(QPixmap(open), tr("&Open Portfolio		Ctrl+O"), this, SLOT(openPortfolio()));
   menu->insertItem(QPixmap(deleteitem), tr("&Delete Portfolio	Ctrl+D"), this, SLOT(deletePortfolio()));
@@ -50,13 +54,13 @@ PortfolioPage::PortfolioPage (QWidget *w, DBIndex *i) : QListBox (w)
   menu->insertSeparator(-1);
   menu->insertItem(QPixmap(help), tr("&Help		Ctrl+H"), this, SLOT(slotHelp()));
 
-  QAccel *a = new QAccel(this);
+  Q3Accel *a = new Q3Accel(this);
   connect(a, SIGNAL(activated(int)), this, SLOT(slotAccel(int)));
-  a->insertItem(CTRL+Key_N, NewPortfolio);
-  a->insertItem(CTRL+Key_O, OpenPortfolio);
-  a->insertItem(CTRL+Key_D, DeletePortfolio);
-  a->insertItem(CTRL+Key_R, RenamePortfolio);
-  a->insertItem(CTRL+Key_H, Help);
+  a->insertItem(Qt::CTRL+Qt::Key_N, NewPortfolio);
+  a->insertItem(Qt::CTRL+Qt::Key_O, OpenPortfolio);
+  a->insertItem(Qt::CTRL+Qt::Key_D, DeletePortfolio);
+  a->insertItem(Qt::CTRL+Qt::Key_R, RenamePortfolio);
+  a->insertItem(Qt::CTRL+Qt::Key_H, Help);
   
   updateList();
   portfolioSelected(QString());
@@ -101,7 +105,7 @@ void PortfolioPage::newPortfolio()
     config.getData(Config::PortfolioPath, s);
     s.append("/" + selection);
     QDir dir(s);
-    if (dir.exists(s, TRUE))
+    if (dir.exists(s))
     {
       QMessageBox::information(this, tr("Qtstalker: Error"), tr("This portfolio already exists."));
       return;
@@ -109,7 +113,7 @@ void PortfolioPage::newPortfolio()
 
     // create the empty file    
     QFile f(s);
-    if (! f.open(IO_WriteOnly))
+    if (! f.open(QIODevice::WriteOnly))
       return;
     f.close();
     
@@ -128,7 +132,7 @@ void PortfolioPage::deletePortfolio()
                                           s2,
   				          s2,
 					  s,
-					  QFileDialog::ExistingFiles);
+					  Q3FileDialog::ExistingFiles);
   dialog->setCaption(tr("Select Portfolios To Delete"));
 
   int rc = dialog->exec();
@@ -152,7 +156,7 @@ void PortfolioPage::deletePortfolio()
     int loop;
     QDir dir;
     for (loop = 0; loop < (int) l.count(); loop++)
-      dir.remove(l[loop], TRUE);
+      dir.remove(l[loop]);
 
     updateList();
     portfolioSelected(QString());
@@ -184,7 +188,7 @@ void PortfolioPage::renamePortfolio ()
     config.getData(Config::PortfolioPath, s);
     s.append("/" + selection);
     QDir dir(s);
-    if (dir.exists(s, TRUE))
+    if (dir.exists(s))
     {
       QMessageBox::information(this, tr("Qtstalker: Error"), tr("This portfolio already exists."));
       return;
@@ -194,7 +198,7 @@ void PortfolioPage::renamePortfolio ()
     config.getData(Config::PortfolioPath, s2);
     s2.append("/" + currentText());
 
-    dir.rename(s2, s, TRUE);
+    dir.rename(s2, s);
 
     updateList();
     portfolioSelected(QString());
@@ -217,7 +221,7 @@ void PortfolioPage::portfolioSelected (const QString &d)
   }
 }
 
-void PortfolioPage::rightClick (QListBoxItem *)
+void PortfolioPage::rightClick (Q3ListBoxItem *)
 {
   menu->exec(QCursor::pos());
 }
@@ -234,7 +238,7 @@ void PortfolioPage::updateList ()
     insertItem(dir[loop], -1);
 }
 
-void PortfolioPage::doubleClick (QListBoxItem *item)
+void PortfolioPage::doubleClick (Q3ListBoxItem *item)
 {
   if (! item)
     return;
@@ -293,7 +297,7 @@ void PortfolioPage::doKeyPress (QKeyEvent *key)
         openPortfolio();
         break;
       default:
-        QListBox::keyPressEvent(key);
+        Q3ListBox::keyPressEvent(key);
         break;
     }
   }

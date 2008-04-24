@@ -21,6 +21,9 @@
 
 #include "QuotePlugin.h"
 #include <qdir.h>
+//Added by qt3to4:
+#include <Q3GridLayout>
+#include <Q3VBoxLayout>
 #include "HelpWindow.h"
 #include "Config.h"
 #include "../pics/download.xpm"
@@ -32,8 +35,9 @@
 #include <qpixmap.h>
 #include <qtooltip.h>
 #include <qtabwidget.h>
+#include <Q3Accel>
 
-QuotePlugin::QuotePlugin () : QTabDialog (0, "QuoteDialog", FALSE, 0)
+QuotePlugin::QuotePlugin () : Q3TabDialog (0, "QuoteDialog", FALSE, 0)
 {
   saveFlag = FALSE;
   op = 0;
@@ -68,7 +72,7 @@ void QuotePlugin::buildGui ()
 {
   baseWidget = new QWidget(this);
   
-  vbox = new QVBoxLayout(baseWidget);
+  vbox = new Q3VBoxLayout(baseWidget);
   vbox->setSpacing(2);
   vbox->setMargin(5);
   
@@ -79,20 +83,20 @@ void QuotePlugin::buildGui ()
   QString s2(tr("Update"));
   toolbar->addButton(s, download, s2);
   QObject::connect(toolbar->getButton(s), SIGNAL(clicked()), this, SLOT(getQuotes()));
-  toolbar->getButton(s)->setAccel(CTRL+Key_U);
+  toolbar->getButton(s)->setAccel(Qt::CTRL+Qt::Key_U);
   
   s = "cancelDownload";
   s2 = tr("Cancel Update");
   toolbar->addButton(s, canceldownload, s2);
   QObject::connect(toolbar->getButton(s), SIGNAL(clicked()), this, SLOT(cancelDownload()));
   toolbar->setButtonStatus(s, FALSE);
-  toolbar->getButton(s)->setAccel(CTRL+Key_C);
+  toolbar->getButton(s)->setAccel(Qt::CTRL+Qt::Key_C);
   
   vbox->addSpacing(5);
 
   // quote plugins insert their gui widget here
 
-  grid = new QGridLayout(vbox, 1, 2);
+  grid = new Q3GridLayout(vbox, 1, 2);
   grid->setSpacing(5);
   grid->setColStretch(1, 1);
 
@@ -100,7 +104,7 @@ void QuotePlugin::buildGui ()
 
   QLabel *label = new QLabel(tr("Progress:"), baseWidget);
   vbox->addWidget(label);
-  progressBar = new QProgressBar(baseWidget);
+  progressBar = new Q3ProgressBar(baseWidget);
   vbox->addWidget(progressBar);
 
   vbox->addSpacing(10);
@@ -120,14 +124,14 @@ void QuotePlugin::buildGui ()
 
   QWidget *w = new QWidget(baseWidget);
   
-  QVBoxLayout *tvbox = new QVBoxLayout(w);
+  Q3VBoxLayout *tvbox = new Q3VBoxLayout(w);
   tvbox->setSpacing(2);
   tvbox->setMargin(5);
 
   label = new QLabel(tr("Download Status:"), w);
   tvbox->addWidget(label);
   
-  statusLog = new QTextEdit(w);
+  statusLog = new Q3TextEdit(w);
   statusLog->setTextFormat(Qt::LogText);
   statusLog->setReadOnly(TRUE);
   tvbox->addWidget(statusLog);
@@ -138,7 +142,7 @@ void QuotePlugin::buildGui ()
 
   w = new QWidget(baseWidget);
   
-  QGridLayout *tgrid = new QGridLayout(w, 3, 2);
+  Q3GridLayout *tgrid = new Q3GridLayout(w, 3, 2);
   tgrid->setSpacing(2);
   tgrid->setMargin(5);
   tgrid->setColStretch(1, 1);
@@ -221,9 +225,9 @@ void QuotePlugin::createDirectory (QString &d, QString &path)
     path.append("/");
     path.append(l[loop]);
     QDir dir(path);
-    if (! dir.exists(path, TRUE))
+    if (! dir.exists(path) )
     {
-      if (! dir.mkdir(path, TRUE))
+      if (! dir.mkdir(path) )
       {
         path.truncate(0);
         return;
@@ -254,9 +258,9 @@ void QuotePlugin::getFile (QString &url)
   
   timer->start(timeoutSpin->value() * 1000, TRUE);
   
-  op = new QUrlOperator(url);
-  connect(op, SIGNAL(finished(QNetworkOperation *)), this, SLOT(getFileDone(QNetworkOperation *)));
-  connect(op, SIGNAL(data(const QByteArray &, QNetworkOperation *)), this, SLOT(dataReady(const QByteArray &, QNetworkOperation *)));
+  op = new Q3UrlOperator(url);
+  connect(op, SIGNAL(finished(Q3NetworkOperation *)), this, SLOT(getFileDone(Q3NetworkOperation *)));
+  connect(op, SIGNAL(data(const QByteArray &, Q3NetworkOperation *)), this, SLOT(dataReady(const QByteArray &, Q3NetworkOperation *)));
 // qDebug("url=%s", url.latin1());
   op->get();
 }
@@ -274,39 +278,39 @@ void QuotePlugin::copyFile (QString &url, QString &file)
   QDir dir(file);
   dir.remove(file);
 
-  op = new QUrlOperator();
-  connect(op, SIGNAL(finished(QNetworkOperation *)), this, SLOT(copyFileDone(QNetworkOperation *)));
+  op = new Q3UrlOperator();
+  connect(op, SIGNAL(finished(Q3NetworkOperation *)), this, SLOT(copyFileDone(Q3NetworkOperation *)));
   op->copy(url, file, FALSE, FALSE);
 }
 
-void QuotePlugin::getFileDone (QNetworkOperation *o)
+void QuotePlugin::getFileDone (Q3NetworkOperation *o)
 {
   if (! o)
     return;
 
-  if (o->state() == QNetworkProtocol::StDone && o->operation() == QNetworkProtocol::OpGet)
+  if (o->state() == Q3NetworkProtocol::StDone && o->operation() == Q3NetworkProtocol::OpGet)
   {
     timer->stop();
     emit signalGetFileDone(FALSE);
     return;
   }
 
-  if (o->state() == QNetworkProtocol::StFailed)
+  if (o->state() == Q3NetworkProtocol::StFailed)
   {
     timer->stop();
     emit signalGetFileDone(TRUE);
   }
 }
 
-void QuotePlugin::copyFileDone (QNetworkOperation *o)
+void QuotePlugin::copyFileDone (Q3NetworkOperation *o)
 {
   if (! o)
     return;
 
-  if (o->state() != QNetworkProtocol::StDone)
+  if (o->state() != Q3NetworkProtocol::StDone)
     return;
 
-  if (o->errorCode() != QNetworkProtocol::NoError)
+  if (o->errorCode() != Q3NetworkProtocol::NoError)
   {
     timer->stop();
     QString s = QObject::tr("Download error: ") + o->protocolDetail();
@@ -315,7 +319,7 @@ void QuotePlugin::copyFileDone (QNetworkOperation *o)
   }
   
   QDir dir(file);
-  if (! dir.exists(file, TRUE))
+  if (! dir.exists(file))
     return;
   
   timer->stop();
@@ -323,7 +327,7 @@ void QuotePlugin::copyFileDone (QNetworkOperation *o)
   emit signalCopyFileDone(QString());
 }
 
-void QuotePlugin::dataReady (const QByteArray &d, QNetworkOperation *)
+void QuotePlugin::dataReady (const QByteArray &d, Q3NetworkOperation *)
 {
   int loop;
   for (loop = 0; loop < (int) d.size(); loop++)

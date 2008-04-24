@@ -23,9 +23,9 @@
 #define TESTER_HPP
 
 #include <qstring.h>
-#include <qtabdialog.h>
-#include <qptrlist.h>
-#include <qdict.h>
+#include <q3tabdialog.h>
+#include <q3ptrlist.h>
+#include <q3dict.h>
 #include "Config.h"
 #include "Setting.h"
 #include "BarData.h"
@@ -38,7 +38,7 @@
 #include "DBIndex.h"
 
 
-class Tester : public QTabDialog
+class Tester : public Q3TabDialog
 {
   Q_OBJECT
   
@@ -76,11 +76,11 @@ class Tester : public QTabDialog
     int currentRecord;
     double equity;
     double volume;
-    QDict<Setting> enterLongSignal;
-    QDict<Setting> exitLongSignal;
-    QDict<Setting> enterShortSignal;
-    QDict<Setting> exitShortSignal;
-    QPtrList<TradeItem> trades;
+    Q3Dict<Setting> enterLongSignal;
+    Q3Dict<Setting> exitLongSignal;
+    Q3Dict<Setting> enterShortSignal;
+    Q3Dict<Setting> exitShortSignal;
+    Q3PtrList<TradeItem> trades;
     DBIndex *index;
 };
 

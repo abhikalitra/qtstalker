@@ -25,13 +25,15 @@
 #include <qstring.h>
 #include <qlayout.h>
 #include <qpixmap.h>
-#include <qdict.h>
-#include <qframe.h>
+#include <q3dict.h>
+#include <q3frame.h>
+//Added by qt3to4:
+#include <Q3GridLayout>
 //#include <qpushbutton.h>
 
 #include "ToolBarBtn.h"
 
-class Toolbar : public QFrame
+class Toolbar : public Q3Frame
 {
   public: 
     enum Bias
@@ -52,10 +54,10 @@ class Toolbar : public QFrame
   
   private:
     ToolBarBtn *cancelButton;
-    QDict<ToolBarBtn> list;
+    Q3Dict<ToolBarBtn> list;
 //    int height;
 //    int width;
-    QGridLayout *grid;
+    Q3GridLayout *grid;
     //bool pflag;
     Bias bias;
 };

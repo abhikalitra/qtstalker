@@ -25,10 +25,12 @@
 #include <qmessagebox.h>
 #include <qlayout.h>
 #include <qlabel.h>
-#include <qframe.h>
+#include <q3frame.h>
 #include <qdir.h>
+//Added by qt3to4:
+#include <Q3VBoxLayout>
 
-CUSDialog::CUSDialog (QString d) : QTabDialog (0, "CUSDialog", TRUE)
+CUSDialog::CUSDialog (QString d) : Q3TabDialog (0, "CUSDialog", TRUE)
 {
   setCaption(tr("CUS Indicator"));
   
@@ -36,7 +38,7 @@ CUSDialog::CUSDialog (QString d) : QTabDialog (0, "CUSDialog", TRUE)
 
   QWidget *w = new QWidget(this);
   
-  QVBoxLayout *vbox = new QVBoxLayout(w);
+  Q3VBoxLayout *vbox = new Q3VBoxLayout(w);
   vbox->setMargin(5);
   vbox->setSpacing(0);
   

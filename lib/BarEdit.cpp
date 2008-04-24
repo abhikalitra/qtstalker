@@ -34,6 +34,10 @@
 #include <qpushbutton.h>
 #include <qtooltip.h>
 #include <qpixmap.h>
+//Added by qt3to4:
+#include <Q3GridLayout>
+#include <Q3VBoxLayout>
+#include <Q3Accel>
 
 BarEdit::BarEdit (QWidget *w) : QWidget (w)
 {
@@ -56,19 +60,19 @@ BarEdit::BarEdit (QWidget *w) : QWidget (w)
   QString s = tr("Search");
   toolbar->addButton(searchLabel, QPixmap(search), s);
   connect(toolbar->getButton(searchLabel), SIGNAL(clicked()), this, SLOT(slotDateSearch()));
-  toolbar->getButton(searchLabel)->setAccel(CTRL+Key_R);
+  toolbar->getButton(searchLabel)->setAccel(Qt::CTRL+Qt::Key_R);
 
   s = tr("Save Record");
   toolbar->addButton(saveLabel, QPixmap(exportfile), s);
   connect(toolbar->getButton(saveLabel), SIGNAL(clicked()), this, SLOT(saveRecord()));
   toolbar->setButtonStatus(saveLabel, FALSE);
-  toolbar->getButton(saveLabel)->setAccel(CTRL+Key_S);
+  toolbar->getButton(saveLabel)->setAccel(Qt::CTRL+Qt::Key_S);
 
   s = tr("Delete Record");
   toolbar->addButton(deleteLabel, QPixmap(deleteitem), s);
   connect(toolbar->getButton(deleteLabel), SIGNAL(clicked()), this, SLOT(deleteRecord()));
   toolbar->setButtonStatus(deleteLabel, FALSE);
-  toolbar->getButton(deleteLabel)->setAccel(CTRL+Key_D);
+  toolbar->getButton(deleteLabel)->setAccel(Qt::CTRL+Qt::Key_D);
 
   // setup the navigator area
 
@@ -78,28 +82,28 @@ BarEdit::BarEdit (QWidget *w) : QWidget (w)
   s = tr("First Record");
   toolbar->addButton(frLabel, QPixmap(start), s);
   connect(toolbar->getButton(frLabel), SIGNAL(clicked()), this, SLOT(slotFirstRecord()));
-//  toolbar->getButton(frLabel)->setAccel(CTRL+Key_D);
+//  toolbar->getButton(frLabel)->setAccel(Qt::CTRL+Qt::Key_D);
 
   QString prLabel = "pr";
   s = tr("Previous Record");
   toolbar->addButton(prLabel, QPixmap(previous), s);
   connect(toolbar->getButton(prLabel), SIGNAL(clicked()), this, SLOT(slotPrevRecord()));
-//  toolbar->getButton(prLabel)->setAccel(CTRL+Key_D);
+//  toolbar->getButton(prLabel)->setAccel(Qt::CTRL+Qt::Key_D);
 
   QString nrLabel = "nr";
   s = tr("Next Record");
   toolbar->addButton(nrLabel, QPixmap(next), s);
   connect(toolbar->getButton(nrLabel), SIGNAL(clicked()), this, SLOT(slotNextRecord()));
-//  toolbar->getButton(nrLabel)->setAccel(CTRL+Key_D);
+//  toolbar->getButton(nrLabel)->setAccel(Qt::CTRL+Qt::Key_D);
 
   QString lrLabel = "lr";
   s = tr("Last Record");
   toolbar->addButton(lrLabel, QPixmap(end), s);
   connect(toolbar->getButton(lrLabel), SIGNAL(clicked()), this, SLOT(slotLastRecord()));
-//  toolbar->getButton(lrLabel)->setAccel(CTRL+Key_D);
+//  toolbar->getButton(lrLabel)->setAccel(Qt::CTRL+Qt::Key_D);
 
-  QVBoxLayout *vbox = new QVBoxLayout(this);
-  grid = new QGridLayout(vbox, 1, 3); // one row, three cols
+  Q3VBoxLayout *vbox = new Q3VBoxLayout(this);
+  grid = new Q3GridLayout(vbox, 1, 3); // one row, three cols
   grid->setColStretch(1, 1);  // only stretch the last cols
   grid->setColStretch(2, 1);
   
@@ -220,7 +224,7 @@ void BarEdit::clearRecordFields ()
   
   date->clear();
   
-  QDictIterator<QLineEdit> it(editList);
+  Q3DictIterator<QLineEdit> it(editList);
   for(; it.current(); ++it)
     it.current()->clear();
   

@@ -21,16 +21,20 @@
 
 #include "DatePlot.h"
 #include <qpainter.h>
-#include <qpaintdevicemetrics.h>
+#include <q3paintdevicemetrics.h>
 #include <qstring.h>
 #include <qdatetime.h>
+//Added by qt3to4:
+#include <QResizeEvent>
+#include <Q3MemArray>
+#include <QPaintEvent>
 
 #define SCALE_WIDTH 60
 #define DATE_HEIGHT 30
 
 DatePlot::DatePlot (QWidget *w) : QWidget(w)
 {
-  setBackgroundMode(NoBackground);
+  //setBackgroundMode(NoBackground);
   scaleWidth = SCALE_WIDTH;
   startX = 2;
   backgroundColor.setNamedColor("black");
@@ -40,7 +44,7 @@ DatePlot::DatePlot (QWidget *w) : QWidget(w)
   startIndex = 0;
   data = 0;
 //  setMouseTracking(TRUE);
-  setFocusPolicy(QWidget::ClickFocus);
+//  setFocusPolicy(QWidget::ClickFocus);
 
   plotFont.setFamily("Helvetica");
   plotFont.setPointSize(12);
@@ -156,9 +160,15 @@ void DatePlot::drawRefresh ()
   paintEvent(0);
 }
 
-void DatePlot::paintEvent (QPaintEvent *)
+//void DatePlot::paintEvent (QPaintEvent *)
+void DatePlot::paintEvent (QPaintEvent * e)
 {
-  bitBlt(this, 0, 0, &buffer);
+  //bitBlt(this, 0, 0, &buffer);
+
+  setAttribute(Qt::WA_PaintOutsidePaintEvent, true);
+  QWidget::paintEvent(e);
+  QPainter painter(this);
+  painter.drawPixmap(0, 0, buffer);
 }
 
 void DatePlot::resizeEvent (QResizeEvent *event)
@@ -387,7 +397,7 @@ void DatePlot::getMonthlyDate ()
   }
 }
 
-QMemArray<int> & DatePlot::getXGrid ()
+Q3MemArray<int> & DatePlot::getXGrid ()
 {
   return xGrid;
 }

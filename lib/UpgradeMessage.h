@@ -22,16 +22,16 @@
 #ifndef UPGRADEMESSAGE_HPP
 #define UPGRADEMESSAGE_HPP
 
-#include <qtabdialog.h>
+#include <q3tabdialog.h>
 #include <qcheckbox.h>
-#include <qprogressbar.h>
+#include <q3progressbar.h>
 #include "Setting.h"
 #include "DbPlugin.h"
 #include "DBIndex.h"
 #include "DBIndexItem.h"
 
 
-class UpgradeMessage : public QTabDialog
+class UpgradeMessage : public Q3TabDialog
 {
   Q_OBJECT
 
@@ -59,7 +59,7 @@ class UpgradeMessage : public QTabDialog
 
   private:
     QCheckBox *check;
-    QProgressBar *progBar;
+    Q3ProgressBar *progBar;
     DBIndex index;
 };
 

@@ -22,8 +22,10 @@
 #include "Navigator.h"
 #include "../pics/dirclosed.xpm"
 #include <qpixmap.h>
+//Added by qt3to4:
+#include <QKeyEvent>
 
-Navigator::Navigator (QWidget *w, QString &bp) : QListBox(w)
+Navigator::Navigator (QWidget *w, QString &bp) : Q3ListBox(w)
 {
   basePath = bp;
   id = 0;
@@ -33,16 +35,16 @@ Navigator::Navigator (QWidget *w, QString &bp) : QListBox(w)
   currentDir.setPath(bp);
   currentDir.setMatchAllDirs(TRUE);
 
-  setSelectionMode(QListBox::Single);
+  setSelectionMode(Q3ListBox::Single);
   /*
   connect(this, SIGNAL(currentChanged(QListBoxItem *)), this, SLOT(fileSelection(QListBoxItem *)));
   connect(this, SIGNAL(selected(QListBoxItem *)), this, SLOT(checkDirectory(QListBoxItem *)));
   */
-  connect(this, SIGNAL(currentChanged(QListBoxItem *)), this, SLOT(fileSelection(QListBoxItem *)));
+  connect(this, SIGNAL(currentChanged(Q3ListBoxItem *)), this, SLOT(fileSelection(Q3ListBoxItem *)));
   
-  connect(this, SIGNAL(returnPressed (QListBoxItem *)), this, SLOT(checkDirectory(QListBoxItem *)));
+  connect(this, SIGNAL(returnPressed (Q3ListBoxItem *)), this, SLOT(checkDirectory(Q3ListBoxItem *)));
   
-  connect(this, SIGNAL(mouseButtonClicked(int, QListBoxItem *, const QPoint &)), this, SLOT(slotMouseClicked(int, QListBoxItem *, const QPoint &)));
+  connect(this, SIGNAL(mouseButtonClicked(int, Q3ListBoxItem *, const QPoint &)), this, SLOT(slotMouseClicked(int, Q3ListBoxItem *, const QPoint &)));
 
   //connect(this, SIGNAL(highlighted(QListBoxItem *)), this, SLOT(highL(QListBoxItem *)));
 }
@@ -121,13 +123,13 @@ void Navigator::upDirectory ()
   QString s = currentDir.dirName();
   currentDir.cdUp();
   updateList();
-  setCurrentItem(findItem(s, Qt::ExactMatch));
+  setCurrentItem(findItem(s, Q3ListBox::ExactMatch));
   ensureCurrentVisible();
   emit noSelection();
   selectedFlag = FALSE;
 }
 
-void Navigator::fileSelection (QListBoxItem *item)
+void Navigator::fileSelection (Q3ListBoxItem *item)
 {
   //qDebug("fileSelection(currentChanged)");
   if (! item)
@@ -175,7 +177,7 @@ void Navigator::getCurrentPath (QString &d)
   d = currentDir.absPath();
 }
 
-void Navigator::checkDirectory (QListBoxItem *item)
+void Navigator::checkDirectory (Q3ListBoxItem *item)
 {
   //qDebug("checkDirectory(selected)");
   if (! item)
@@ -282,11 +284,11 @@ void Navigator::doKeyPress (QKeyEvent *key)
     case Qt::Key_Home:
       key->accept();
       setHome();
-      QListBox::keyPressEvent(key);
+      Q3ListBox::keyPressEvent(key);
       break;
     default:
       key->accept();
-      QListBox::keyPressEvent(key);
+      Q3ListBox::keyPressEvent(key);
       break;
   }
 }
@@ -298,7 +300,7 @@ qDebug("highlighted");
 }
 */
 
-void Navigator::slotMouseClicked(int btn, QListBoxItem *item, const QPoint &)
+void Navigator::slotMouseClicked(int btn, Q3ListBoxItem *item, const QPoint &)
 {
 //qDebug("mouse btn %d clicked", btn);
   if(btn == 1) // left button

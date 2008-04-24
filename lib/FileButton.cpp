@@ -20,7 +20,7 @@
  */
 
 #include "FileButton.h"
-#include <qfiledialog.h>
+#include <q3filedialog.h>
 #include <qfileinfo.h>
 
 FileButton::FileButton (QWidget *w, QStringList &l, QString &p) : QPushButton (w)
@@ -61,7 +61,7 @@ void FileButton::fileDialog ()
     path = fi.dirPath(TRUE);
   }
   
-  QStringList l = QFileDialog::getOpenFileNames("*", path, this, "file dialog");
+  QStringList l = Q3FileDialog::getOpenFileNames("*", path, this, "file dialog");
   if (l.count())
     fileList = l;
   
