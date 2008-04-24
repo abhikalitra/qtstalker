@@ -21,12 +21,10 @@
 
 #include "SINWAV.h"
 #include "PrefDialog.h"
-#include <q3dict.h>
+#include <qdict.h>
 #include <qobject.h>
-//Added by qt3to4:
-#include <Q3PtrList>
 #include <math.h>
-#include <q3memarray.h>
+#include <qmemarray.h>
 
 #define PI 3.14159265
 
@@ -66,7 +64,7 @@ Indicator * SINWAV::calculate ()
   output->setDateFlag(dateFlag);
   output->setLogScale(logScale);
 
-  Q3PtrList<PlotLine> pll;
+  QPtrList<PlotLine> pll;
   pll.setAutoDelete(FALSE);
   getSINWAV(pll);
 
@@ -77,7 +75,7 @@ Indicator * SINWAV::calculate ()
   return output;
 }
 
-void SINWAV::getSINWAV (Q3PtrList<PlotLine> &pll)
+void SINWAV::getSINWAV (QPtrList<PlotLine> &pll)
 {
   // Ehler's sine wave 
   
@@ -91,31 +89,31 @@ void SINWAV::getSINWAV (Q3PtrList<PlotLine> &pll)
 		
   //! VERSION 2
 		
-  Q3MemArray<double> *smooth = new Q3MemArray<double>(Price->getSize());
+  QMemArray<double> *smooth = new QMemArray<double>(Price->getSize());
   smooth->fill(0.0);
-  Q3MemArray<double> *detrender = new Q3MemArray<double>(Price->getSize());
+  QMemArray<double> *detrender = new QMemArray<double>(Price->getSize());
   detrender->fill(0.0);
-  Q3MemArray<double> *period = new Q3MemArray<double>(Price->getSize());
+  QMemArray<double> *period = new QMemArray<double>(Price->getSize());
   period->fill(0.0);
-  Q3MemArray<double> *Q1 = new Q3MemArray<double>(Price->getSize());
+  QMemArray<double> *Q1 = new QMemArray<double>(Price->getSize());
   Q1->fill(0.0);
-  Q3MemArray<double> *I1 = new Q3MemArray<double>(Price->getSize());
+  QMemArray<double> *I1 = new QMemArray<double>(Price->getSize());
   I1->fill(0.0);
-  Q3MemArray<double> *jI = new Q3MemArray<double>(Price->getSize());
+  QMemArray<double> *jI = new QMemArray<double>(Price->getSize());
   jI->fill(0.0);
-  Q3MemArray<double> *jQ = new Q3MemArray<double>(Price->getSize());
+  QMemArray<double> *jQ = new QMemArray<double>(Price->getSize());
   jQ->fill(0.0);
-  Q3MemArray<double> *I2 = new Q3MemArray<double>(Price->getSize());
+  QMemArray<double> *I2 = new QMemArray<double>(Price->getSize());
   I2->fill(0.0);
-  Q3MemArray<double> *Q2 = new Q3MemArray<double>(Price->getSize());
+  QMemArray<double> *Q2 = new QMemArray<double>(Price->getSize());
   Q2->fill(0.0);
-  Q3MemArray<double> *Re = new Q3MemArray<double>(Price->getSize());
+  QMemArray<double> *Re = new QMemArray<double>(Price->getSize());
   Re->fill(0.0);
-  Q3MemArray<double> *Im = new Q3MemArray<double>(Price->getSize());
+  QMemArray<double> *Im = new QMemArray<double>(Price->getSize());
   Im->fill(0.0);
-  Q3MemArray<double> *SmoothPrice = new Q3MemArray<double>(Price->getSize());
+  QMemArray<double> *SmoothPrice = new QMemArray<double>(Price->getSize());
   SmoothPrice->fill(0.0);
-  Q3MemArray<double> *DCPhase = new Q3MemArray<double>(Price->getSize());
+  QMemArray<double> *DCPhase = new QMemArray<double>(Price->getSize());
   DCPhase->fill(0.0);
 	
   PlotLine *out1 = new PlotLine;
@@ -282,9 +280,9 @@ int SINWAV::indicatorPrefDialog (QWidget *w)
   return rc;
 }
 
-PlotLine * SINWAV::calculateCustom (QString &, Q3PtrList<PlotLine> &)
+PlotLine * SINWAV::calculateCustom (QString &, QPtrList<PlotLine> &)
 {
-  Q3PtrList<PlotLine> pll;
+  QPtrList<PlotLine> pll;
   pll.setAutoDelete(FALSE);
   getSINWAV(pll);
   pll.remove(1);

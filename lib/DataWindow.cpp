@@ -21,19 +21,17 @@
 
 #include "DataWindow.h"
 #include <qlayout.h>
-//Added by qt3to4:
-#include <Q3VBoxLayout>
 
-DataWindow::DataWindow (QWidget *w) : QDialog (w, "DataWindow", FALSE, Qt::WDestructiveClose)
+DataWindow::DataWindow (QWidget *w) : QDialog (w, "DataWindow", FALSE, WDestructiveClose)
 {
   resize(750, 550);
 
-  Q3VBoxLayout *vbox = new Q3VBoxLayout (this);
+  QVBoxLayout *vbox = new QVBoxLayout (this);
   vbox->setSpacing(5);
   vbox->setMargin(5);
 
-  table = new Q3Table(this);
-  table->setSelectionMode(Q3Table::Single);
+  table = new QTable(this);
+  table->setSelectionMode(QTable::Single);
   table->setReadOnly(TRUE);
   hHeader = table->horizontalHeader();
   vbox->addWidget (table);

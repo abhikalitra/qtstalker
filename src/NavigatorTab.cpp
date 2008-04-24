@@ -37,27 +37,21 @@
 #include <qcursor.h>
 #include <qlayout.h>
 #include <qtooltip.h>
-#include <q3accel.h>
-//Added by qt3to4:
-#include <Q3HBoxLayout>
-#include <QContextMenuEvent>
-#include <Q3PopupMenu>
-#include <QKeyEvent>
-#include <Q3VBoxLayout>
+#include <qaccel.h>
 
-NavigatorTab::NavigatorTab (QWidget *w, Q3MainWindow *mw) : QWidget (w)
+NavigatorTab::NavigatorTab (QWidget *w, QMainWindow *mw) : QWidget (w)
 {
   loadSettings();
     
-  Q3VBoxLayout *vbox = new Q3VBoxLayout(this);
+  QVBoxLayout *vbox = new QVBoxLayout(this);
   vbox->setSpacing(0);
   vbox->setMargin(2);
 
-  Q3HBoxLayout *hbox = new Q3HBoxLayout(vbox);
+  QHBoxLayout *hbox = new QHBoxLayout(vbox);
   hbox->setSpacing(1);
   hbox->setMargin(1);
   
-  bg = new Q3ButtonGroup(this);
+  bg = new QButtonGroup(this);
   QObject::connect(bg, SIGNAL(clicked(int)), this, SLOT(buttonPressed(int)));
   bg->setExclusive(TRUE);
   bg->hide();
@@ -93,7 +87,7 @@ NavigatorTab::NavigatorTab (QWidget *w, Q3MainWindow *mw) : QWidget (w)
 
   hbox->addStretch(1);
     
-  hbox = new Q3HBoxLayout(vbox);
+  hbox = new QHBoxLayout(vbox);
   hbox->setSpacing(1);
   hbox->setMargin(1);  // space around 2nd button row
 
@@ -113,12 +107,12 @@ NavigatorTab::NavigatorTab (QWidget *w, Q3MainWindow *mw) : QWidget (w)
 
   hbox->addStretch(1);
   
-  stack = new Q3WidgetStack(this);
+  stack = new QWidgetStack(this);
   vbox->addWidget(stack);
 
-  menu = new Q3PopupMenu;
+  menu = new QPopupMenu;
   
-  positionMenu = new Q3PopupMenu();
+  positionMenu = new QPopupMenu();
   connect(positionMenu, SIGNAL(aboutToShow ()), this, SLOT(slotTglPosAboutToShow()));
   idMenuLeft = positionMenu->insertItem(tr("Left"), this, SLOT(togglePosition(int)));
   positionMenu->setItemParameter(idMenuLeft, 0);
@@ -126,14 +120,14 @@ NavigatorTab::NavigatorTab (QWidget *w, Q3MainWindow *mw) : QWidget (w)
   positionMenu->setItemParameter(idMenuRight, 1);
   menu->insertItem (tr("Navigator Position"), positionMenu);
   
-  Q3Accel *a = new Q3Accel(mw);
+  QAccel *a = new QAccel(mw);
   connect(a, SIGNAL(activated(int)), this, SLOT(slotAccel(int)));
-  a->insertItem(Qt::CTRL+Qt::Key_C, ChartPanelFocus);
-  a->insertItem(Qt::CTRL+Qt::Key_G, GroupPanelFocus);
-  a->insertItem(Qt::CTRL+Qt::Key_I, IndicatorPanelFocus);
-  a->insertItem(Qt::CTRL+Qt::Key_P, PortfolioPanelFocus);
-  a->insertItem(Qt::CTRL+Qt::Key_T, TestPanelFocus);
-  a->insertItem(Qt::CTRL+Qt::Key_S, ScannerPanelFocus);
+  a->insertItem(CTRL+Key_C, ChartPanelFocus);
+  a->insertItem(CTRL+Key_G, GroupPanelFocus);
+  a->insertItem(CTRL+Key_I, IndicatorPanelFocus);
+  a->insertItem(CTRL+Key_P, PortfolioPanelFocus);
+  a->insertItem(CTRL+Key_T, TestPanelFocus);
+  a->insertItem(CTRL+Key_S, ScannerPanelFocus);
 }
 
 NavigatorTab::~NavigatorTab ()

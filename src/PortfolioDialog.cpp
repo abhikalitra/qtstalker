@@ -33,16 +33,10 @@
 #include <qmessagebox.h>
 #include <qdir.h>
 #include <qfile.h>
-#include <q3textstream.h>
+#include <qtextstream.h>
 #include <qlayout.h>
-//Added by qt3to4:
-#include <Q3HBoxLayout>
-#include <QPixmap>
-#include <QLabel>
-#include <Q3VBoxLayout>
-#include <Q3Accel>
 
-PortfolioDialog::PortfolioDialog (QString p, DBIndex *i) : Q3TabDialog (0, "PortfolioDialog", TRUE)
+PortfolioDialog::PortfolioDialog (QString p, DBIndex *i) : QTabDialog (0, "PortfolioDialog", TRUE)
 {
   portfolio = p;
   index = i;
@@ -52,7 +46,7 @@ PortfolioDialog::PortfolioDialog (QString p, DBIndex *i) : Q3TabDialog (0, "Port
 
   QWidget *w = new QWidget(this);
     
-  Q3VBoxLayout *vbox = new Q3VBoxLayout(w);
+  QVBoxLayout *vbox = new QVBoxLayout(w);
   vbox->setMargin(5);
   vbox->setSpacing(0);
 
@@ -66,24 +60,24 @@ PortfolioDialog::PortfolioDialog (QString p, DBIndex *i) : Q3TabDialog (0, "Port
   QString s2(tr("Add"));
   toolbar->addButton(s, QPixmap(newchart), s2);
   connect(toolbar->getButton(s), SIGNAL(clicked()), this, SLOT(addItem()));
-  toolbar->getButton(s)->setAccel(Qt::CTRL+Qt::Key_A);
+  toolbar->getButton(s)->setAccel(CTRL+Key_A);
 
   s = "edit";
   s2 = tr("Edit");
   toolbar->addButton(s, QPixmap(edit), s2);
   connect(toolbar->getButton(s), SIGNAL(clicked()), this, SLOT(modifyItem()));
   toolbar->setButtonStatus(s, FALSE);
-  toolbar->getButton(s)->setAccel(Qt::CTRL+Qt::Key_E);
+  toolbar->getButton(s)->setAccel(CTRL+Key_E);
 
   s = "delete";
   s2 = tr("Delete");
   toolbar->addButton(s, QPixmap(deleteitem), s2);
   connect(toolbar->getButton(s), SIGNAL(clicked()), this, SLOT(deleteItem()));
   toolbar->setButtonStatus(s, FALSE);
-  toolbar->getButton(s)->setAccel(Qt::CTRL+Qt::Key_D);
+  toolbar->getButton(s)->setAccel(CTRL+Key_D);
 
-  plist = new Q3ListView(w);
-  plist->setSelectionMode(Q3ListView::Single);
+  plist = new QListView(w);
+  plist->setSelectionMode(QListView::Single);
   plist->addColumn(tr("Symbol"), -1);
   plist->addColumn(tr("L/S"), -1);
   plist->addColumn(tr("Vol"), -1);
@@ -92,12 +86,12 @@ PortfolioDialog::PortfolioDialog (QString p, DBIndex *i) : Q3TabDialog (0, "Port
   plist->addColumn(tr("Value"), -1);
   plist->addColumn(tr("Profit"), -1);
   plist->addColumn(tr("Profit%"), -1);
-  connect(plist, SIGNAL(clicked(Q3ListViewItem *)), this, SLOT(buttonStatus(Q3ListViewItem *)));
-  connect(plist, SIGNAL(doubleClicked(Q3ListViewItem *, const QPoint &, int)), this,
-          SLOT(itemDoubleClicked(Q3ListViewItem *, const QPoint &, int)));
+  connect(plist, SIGNAL(clicked(QListViewItem *)), this, SLOT(buttonStatus(QListViewItem *)));
+  connect(plist, SIGNAL(doubleClicked(QListViewItem *, const QPoint &, int)), this,
+          SLOT(itemDoubleClicked(QListViewItem *, const QPoint &, int)));
   vbox->insertWidget(2, plist);
   
-  Q3HBoxLayout *hbox = new Q3HBoxLayout(vbox);
+  QHBoxLayout *hbox = new QHBoxLayout(vbox);
   
   balance = new QLabel(w);
   hbox->addWidget(balance);
@@ -127,9 +121,9 @@ void PortfolioDialog::updatePortfolio ()
   s.append("/" + portfolio);
 
   QFile f(s);
-  if (! f.open(QIODevice::ReadOnly))
+  if (! f.open(IO_ReadOnly))
     return;
-  Q3TextStream stream(&f);
+  QTextStream stream(&f);
   while(stream.atEnd() == 0)
   {
     s = stream.readLine();
@@ -144,7 +138,7 @@ void PortfolioDialog::updatePortfolio ()
         QFileInfo fi(s);
         s = fi.fileName();
       }
-      item = new Q3ListViewItem(plist, s, l[1], l[2], l[3]);
+      item = new QListViewItem(plist, s, l[1], l[2], l[3]);
     }
   }
 
@@ -158,7 +152,7 @@ void PortfolioDialog::updatePortfolioItems ()
   double bal = 0;
   double orig = 0;
   
-  Q3ListViewItemIterator it(plist);
+  QListViewItemIterator it(plist);
   for (; it.current(); ++it)
   {
     item = it.current();
@@ -173,7 +167,7 @@ void PortfolioDialog::updatePortfolioItems ()
     QString s;
     hitem.getPath(s);
     QDir dir(s);
-    if (! dir.exists(s))
+    if (! dir.exists(s, TRUE))
       continue;
 
     DbPlugin plug;
@@ -240,11 +234,11 @@ void PortfolioDialog::savePortfolio ()
   config.getData(Config::PortfolioPath, s);
   s.append("/" + portfolio);
   QFile f(s);
-  if (! f.open(QIODevice::WriteOnly))
+  if (! f.open(IO_WriteOnly))
     return;
-  Q3TextStream stream(&f);
+  QTextStream stream(&f);
 
-  Q3ListViewItemIterator it(plist);
+  QListViewItemIterator it(plist);
   for (; it.current(); ++it)
   {
     item = it.current();
@@ -299,7 +293,7 @@ void PortfolioDialog::addItem ()
       double vol = dialog->getDouble(vl);
       double price = dialog->getDouble(prl);
       QFileInfo fi(symbol);
-      new Q3ListViewItem(plist, fi.fileName(), action, QString::number(vol), QString::number(price));
+      new QListViewItem(plist, fi.fileName(), action, QString::number(vol), QString::number(price));
 
       updatePortfolioItems();
     }
@@ -313,7 +307,7 @@ void PortfolioDialog::deleteItem ()
   item = plist->selectedItem();
   if (item)
   {
-    Q3ListViewItemIterator it(plist);
+    QListViewItemIterator it(plist);
     int count = 0;
     for (; it.current(); ++it)
     {
@@ -394,7 +388,7 @@ void PortfolioDialog::modifyItem ()
   delete dialog;
 }
 
-void PortfolioDialog::buttonStatus (Q3ListViewItem *i)
+void PortfolioDialog::buttonStatus (QListViewItem *i)
 {
   QString s("edit");
   QString s2("delete");
@@ -422,7 +416,7 @@ double PortfolioDialog::futuresProfit (QString &sym, double diff)
   return t;
 }
 
-void PortfolioDialog::itemDoubleClicked (Q3ListViewItem *item, const QPoint &, int)
+void PortfolioDialog::itemDoubleClicked (QListViewItem *item, const QPoint &, int)
 {
   if (! item)
     return;

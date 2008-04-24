@@ -23,11 +23,9 @@
 #include "PrefDialog.h"
 #include "DBBase.h"
 #include "Config.h"
-#include <q3dict.h>
+#include <qdict.h>
 #include <qobject.h>
 #include <qinputdialog.h>
-//Added by qt3to4:
-#include <Q3PtrList>
 #include <math.h>
 #include <qfileinfo.h>
 
@@ -805,7 +803,7 @@ void BARS::getIndicatorSettings (Setting &dict)
   dict.setData(maInput3Label, ts);
 }
 
-PlotLine * BARS::calculateCustom (QString &p, Q3PtrList<PlotLine> &d)
+PlotLine * BARS::calculateCustom (QString &p, QPtrList<PlotLine> &d)
 {
   // format1 (BARS): TYPE
   // format2 (BARS): TYPE, COLOR

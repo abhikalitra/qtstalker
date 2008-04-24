@@ -20,39 +20,36 @@
  */
 
 #include <qlayout.h>
-#include <q3vgroupbox.h>
+#include <qvgroupbox.h>
 #include <qfile.h>
-#include <q3textstream.h>
-//Added by qt3to4:
-#include <Q3VBoxLayout>
-#include <Q3GridLayout>
+#include <qtextstream.h>
 #include "TesterRulePage.h"
 
 
 TesterRulePage::TesterRulePage (QWidget *p) : QWidget (p)
 {
-  Q3VBoxLayout *vbox = new Q3VBoxLayout(this);
+  QVBoxLayout *vbox = new QVBoxLayout(this);
   vbox->setMargin(5);
   vbox->setSpacing(5);
   
-  Q3GridLayout *grid = new Q3GridLayout(vbox, 2, 2);
+  QGridLayout *grid = new QGridLayout(vbox, 2, 2);
   
-  Q3VGroupBox *gbox = new Q3VGroupBox(tr("Enter Long"), this);
+  QVGroupBox *gbox = new QVGroupBox(tr("Enter Long"), this);
   grid->addWidget(gbox, 0, 0);
 
   enterLongEdit = new FormulaEdit(gbox, FormulaEdit::Logic);  
   
-  gbox = new Q3VGroupBox(tr("Exit Long"), this);
+  gbox = new QVGroupBox(tr("Exit Long"), this);
   grid->addWidget(gbox, 0, 1);
 
   exitLongEdit = new FormulaEdit(gbox, FormulaEdit::Logic);  
 
-  gbox = new Q3VGroupBox(tr("Enter Short"), this);
+  gbox = new QVGroupBox(tr("Enter Short"), this);
   grid->addWidget(gbox, 1, 0);
 
   enterShortEdit = new FormulaEdit(gbox, FormulaEdit::Logic);  
   
-  gbox = new Q3VGroupBox(tr("Exit Short"), this);
+  gbox = new QVGroupBox(tr("Exit Short"), this);
   grid->addWidget(gbox, 1, 1);
 
   exitShortEdit = new FormulaEdit(gbox, FormulaEdit::Logic);  
@@ -93,9 +90,9 @@ void TesterRulePage::saveEditRule (EditRule type, QString &ruleName)
   }
 
   QFile f(s);
-  if (! f.open(QIODevice::WriteOnly))
+  if (! f.open(IO_WriteOnly))
     return;
-  Q3TextStream stream(&f);
+  QTextStream stream(&f);
 
   edit->getText(s);
   stream << s << "\n";
@@ -134,9 +131,9 @@ void TesterRulePage::loadEditRule (EditRule type, QString &ruleName)
   }
 
   QFile f(s);
-  if (! f.open(QIODevice::ReadOnly))
+  if (! f.open(IO_ReadOnly))
     return;
-  Q3TextStream stream(&f);
+  QTextStream stream(&f);
 
   while(stream.atEnd() == 0)
   {

@@ -19,7 +19,7 @@
  *  USA.
  */
 
-#include <q3datetimeedit.h>
+#include <qdatetimeedit.h>
 #include "QuotePlugin.h"
 #include "FuturesData.h"
 #include "DbPlugin.h"
@@ -48,7 +48,7 @@ class NYBOT : public QuotePlugin
     bool cancelFlag;
     DbPlugin plug;
     Config config;
-    Q3DateEdit *date;
+    QDateEdit *date;
     QString url;
     QString file;
 };

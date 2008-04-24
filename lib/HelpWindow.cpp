@@ -28,17 +28,15 @@
 #include <qlayout.h>
 #include <qdir.h>
 #include <qfile.h>
-//Added by qt3to4:
-#include <Q3VBoxLayout>
 
-HelpWindow::HelpWindow (QWidget *w, QString &fn) : QDialog (w, "HelpWindow", FALSE, Qt::WDestructiveClose)
+HelpWindow::HelpWindow (QWidget *w, QString &fn) : QDialog (w, "HelpWindow", FALSE, WDestructiveClose)
 {
   RcFile rcfile;
   rcfile.loadData(RcFile::HelpFilePath, homePath);
   homePath.append("/");
   tocPath = homePath + "toc.html";
 
-  Q3VBoxLayout *vbox = new Q3VBoxLayout (this);
+  QVBoxLayout *vbox = new QVBoxLayout (this);
   vbox->setSpacing(5);
   vbox->setMargin(5);
   
@@ -65,7 +63,7 @@ HelpWindow::HelpWindow (QWidget *w, QString &fn) : QDialog (w, "HelpWindow", FAL
   toolbar->addButton(s, disable, s2);
   QObject::connect(toolbar->getButton(s), SIGNAL(clicked()), this, SLOT(exit()));
   
-  text = new Q3TextBrowser(this);
+  text = new QTextBrowser(this);
   
   QObject::connect(text, SIGNAL(backwardAvailable(bool)), this, SLOT(previousStatus(bool)));
   QObject::connect(text, SIGNAL(forwardAvailable(bool)), this, SLOT(nextStatus(bool)));
@@ -145,7 +143,7 @@ void HelpWindow::slotLoadFile(const QString &fileName)
       QFile file(QFile::encodeName(fileName));
       QString s(file.name());
       
-      if ( file.open( QIODevice::ReadOnly ) ) 
+      if ( file.open( IO_ReadOnly ) ) 
       {
         s = (QString)file.readAll();
         file.close();

@@ -20,14 +20,10 @@
  */
 
 #include <qlayout.h>
-#include <q3vgroupbox.h>
+#include <qvgroupbox.h>
 #include <qfile.h>
-#include <q3textstream.h>
+#include <qtextstream.h>
 #include <qlabel.h>
-//Added by qt3to4:
-#include <Q3HBoxLayout>
-#include <Q3GridLayout>
-#include <Q3VBoxLayout>
 #include "TesterStopPage.h"
 #include "Config.h"
 #include "IndicatorPlugin.h"
@@ -39,14 +35,14 @@ TesterStopPage::TesterStopPage (QWidget *p) : QWidget (p)
   customShortStopLine = 0;
   customLongStopLine = 0;
 
-  Q3VBoxLayout *vbox = new Q3VBoxLayout(this);
+  QVBoxLayout *vbox = new QVBoxLayout(this);
   vbox->setMargin(5);
   vbox->setSpacing(10);
   
-  Q3HBoxLayout *hbox = new Q3HBoxLayout(vbox);
+  QHBoxLayout *hbox = new QHBoxLayout(vbox);
   hbox->setSpacing(5);
 
-  Q3VGroupBox *gbox = new Q3VGroupBox(tr("Maximum Loss"), this);
+  QVGroupBox *gbox = new QVGroupBox(tr("Maximum Loss"), this);
   gbox->setInsideSpacing(2);
   gbox->setColumns(2);
   hbox->addWidget(gbox);
@@ -68,7 +64,7 @@ TesterStopPage::TesterStopPage (QWidget *p) : QWidget (p)
   maximumLossEdit = new QLineEdit("0", gbox);
   maximumLossEdit->setValidator(validator);
 
-  gbox = new Q3VGroupBox(tr("Profit"), this);
+  gbox = new QVGroupBox(tr("Profit"), this);
   gbox->setInsideSpacing(2);
   gbox->setColumns(2);
   hbox->addWidget(gbox);
@@ -88,7 +84,7 @@ TesterStopPage::TesterStopPage (QWidget *p) : QWidget (p)
   profitEdit = new QLineEdit("0", gbox);
   profitEdit->setValidator(validator);
 
-  gbox = new Q3VGroupBox(tr("Trailing"), this);
+  gbox = new QVGroupBox(tr("Trailing"), this);
   gbox->setInsideSpacing(2);
   gbox->setColumns(2);
   hbox->addWidget(gbox);
@@ -108,10 +104,10 @@ TesterStopPage::TesterStopPage (QWidget *p) : QWidget (p)
   trailingEdit = new QLineEdit("0", gbox);
   trailingEdit->setValidator(validator);
   
-  Q3GridLayout *grid = new Q3GridLayout(vbox, 1, 2);
+  QGridLayout *grid = new QGridLayout(vbox, 1, 2);
   grid->setSpacing(5);
   
-  gbox = new Q3VGroupBox(tr("Custom Long Stop"), this);
+  gbox = new QVGroupBox(tr("Custom Long Stop"), this);
   gbox->setInsideSpacing(2);
   gbox->setColumns(1);
   grid->addWidget(gbox, 0, 0);
@@ -121,7 +117,7 @@ TesterStopPage::TesterStopPage (QWidget *p) : QWidget (p)
 
   customLongStopEdit = new FormulaEdit(gbox, FormulaEdit::Logic);  
 
-  gbox = new Q3VGroupBox(tr("Custom Short Stop"), this);
+  gbox = new QVGroupBox(tr("Custom Short Stop"), this);
   gbox->setInsideSpacing(2);
   gbox->setColumns(1);
   grid->addWidget(gbox, 0, 1);
@@ -312,9 +308,9 @@ void TesterStopPage::loadCustomStopRule (QString &ruleName)
   config.getData(Config::TestPath, s);
   s.append("/" + ruleName + "/customLongStop");
   QFile f(s);
-  if (! f.open(QIODevice::ReadOnly))
+  if (! f.open(IO_ReadOnly))
     return;
-  Q3TextStream stream(&f);
+  QTextStream stream(&f);
 
   while(stream.atEnd() == 0)
   {
@@ -331,7 +327,7 @@ void TesterStopPage::loadCustomStopRule (QString &ruleName)
   config.getData(Config::TestPath, s);
   s.append("/" + ruleName + "/customShortStop");
   f.setName(s);
-  if (! f.open(QIODevice::ReadOnly))
+  if (! f.open(IO_ReadOnly))
     return;
 
   while(stream.atEnd() == 0)
@@ -354,9 +350,9 @@ void TesterStopPage::saveCustomStopRule (QString &ruleName)
   config.getData(Config::TestPath, s);
   s.append("/" + ruleName + "/customShortStop");
   QFile f(s);
-  if (! f.open(QIODevice::WriteOnly))
+  if (! f.open(IO_WriteOnly))
     return;
-  Q3TextStream stream(&f);
+  QTextStream stream(&f);
 
   customShortStopEdit->getText(s);
   stream << s << "\n";
@@ -366,7 +362,7 @@ void TesterStopPage::saveCustomStopRule (QString &ruleName)
   config.getData(Config::TestPath, s);
   s.append("/" + ruleName + "/customLongStop");
   f.setName(s);
-  if (! f.open(QIODevice::WriteOnly))
+  if (! f.open(IO_WriteOnly))
     return;
 
   customLongStopEdit->getText(s);

@@ -20,11 +20,9 @@
  */
 
 #include "SymbolDialog.h"
-//Added by qt3to4:
-#include <QKeyEvent>
 
-SymbolDialog::SymbolDialog (QWidget *w,QString &bp,QString &dir,QString &filter,Q3FileDialog::Mode mode) :
-                           Q3FileDialog (dir, filter, w, "SymbolDialog", TRUE)
+SymbolDialog::SymbolDialog (QWidget *w,QString &bp,QString &dir,QString &filter,QFileDialog::Mode mode) :
+                           QFileDialog (dir, filter, w, "SymbolDialog", TRUE)
 {
   basePath = bp;
   setMode(mode);
@@ -38,7 +36,7 @@ SymbolDialog::~SymbolDialog ()
 
 void SymbolDialog::dirSelected (const QString &d)
 {
-  if (mode() == Q3FileDialog::DirectoryOnly)
+  if (mode() == QFileDialog::DirectoryOnly)
   {
     blockSignals(TRUE);
     setDir(basePath);
@@ -70,7 +68,7 @@ void SymbolDialog::keyPressEvent (QKeyEvent *key)
 void SymbolDialog::doKeyPress (QKeyEvent *key)
 {
   key->accept();
-  Q3FileDialog::keyPressEvent(key);
+  QFileDialog::keyPressEvent(key);
 }
 
 void SymbolDialog::setType (int d)

@@ -24,11 +24,8 @@
 #include <qmessagebox.h>
 #include <qdatetime.h>
 #include <qdir.h>
-#include <q3hgroupbox.h>
-#include <q3progressdialog.h>
-//Added by qt3to4:
-#include <Q3GridLayout>
-#include <Q3VBoxLayout>
+#include <qhgroupbox.h>
+#include <qprogressdialog.h>
 #include <stdlib.h>
 #include <qlabel.h>
 #include "Scanner.h"
@@ -38,10 +35,9 @@
 #include "IndicatorPlugin.h"
 #include "HelpWindow.h"
 #include "Traverse.h"
-#include <Q3TextStream>
 
 
-Scanner::Scanner (QString n, DBIndex *i) : Q3TabDialog (0, 0, FALSE)
+Scanner::Scanner (QString n, DBIndex *i) : QTabDialog (0, 0, FALSE)
 {
   chartIndex = i;
   scannerName = n;
@@ -53,11 +49,11 @@ Scanner::Scanner (QString n, DBIndex *i) : Q3TabDialog (0, 0, FALSE)
 
   QWidget *w = new QWidget(this);
   
-  Q3VBoxLayout *vbox = new Q3VBoxLayout(w);
+  QVBoxLayout *vbox = new QVBoxLayout(w);
   vbox->setMargin(5);
   vbox->setSpacing(5);
   
-  Q3HGroupBox *gbox = new Q3HGroupBox(tr("Symbol Selection"), w);  
+  QHGroupBox *gbox = new QHGroupBox(tr("Symbol Selection"), w);  
   vbox->addWidget(gbox);
 
   allSymbols = new QCheckBox(tr("All symbols"), gbox);
@@ -70,7 +66,7 @@ Scanner::Scanner (QString n, DBIndex *i) : Q3TabDialog (0, 0, FALSE)
   basePath->insertItem(tr("Chart"), -1);
   basePath->insertItem(tr("Group"), -1);
 
-  Q3GridLayout *grid = new Q3GridLayout(vbox, 1, 2);
+  QGridLayout *grid = new QGridLayout(vbox, 1, 2);
   grid->setColStretch(1, 1);
 
   QLabel *label = new QLabel(tr("Bar Length"), w);
@@ -146,10 +142,10 @@ void Scanner::scan ()
   QDir dir;
   config.getData(Config::GroupPath, s);
   s.append("/Scanner");
-  if (! dir.exists(s))
+  if (! dir.exists(s, TRUE))
     dir.mkdir(s, TRUE);
   s.append("/" + scannerName);
-  if (! dir.exists(s))
+  if (! dir.exists(s, TRUE))
     dir.mkdir(s, TRUE);
   else
   {
@@ -158,7 +154,7 @@ void Scanner::scan ()
     for (loop = 2; loop < (int) dir.count(); loop++)
     {
       QString s2 = dir.absPath() + "/" + dir[loop];
-      if (! dir.remove(s2))
+      if (! dir.remove(s2, TRUE))
         qDebug("%s not removed", s2.latin1());
     }
   }
@@ -175,7 +171,7 @@ void Scanner::scan ()
     trav.getList(fileList);
   }
   
-  Q3ProgressDialog prog(tr("Scanning..."),
+  QProgressDialog prog(tr("Scanning..."),
                        tr("Cancel"),
 		       fileList.count(),
 		       this,
@@ -261,9 +257,9 @@ void Scanner::saveRule ()
   s.append("/" + scannerName);
 
   QFile f(s);
-  if (! f.open(QIODevice::WriteOnly))
+  if (! f.open(IO_WriteOnly))
     return;
-  Q3TextStream stream(&f);
+  QTextStream stream(&f);
   
   stream << "allSymbols=" << QString::number(allSymbols->isChecked()) << "\n";
   stream << "compression=" << period->currentText() << "\n";
@@ -288,9 +284,9 @@ void Scanner::loadRule ()
   s.append("/" + scannerName);
 
   QFile f(s);
-  if (! f.open(QIODevice::ReadOnly))
+  if (! f.open(IO_ReadOnly))
     return;
-  Q3TextStream stream(&f);
+  QTextStream stream(&f);
 
   fileList.clear();
   
@@ -378,7 +374,7 @@ void Scanner::getSymbols ()
                                           s,
   					  s,
 					  s2,
-					  Q3FileDialog::ExistingFiles);
+					  QFileDialog::ExistingFiles);
   dialog->setCaption(tr("Select symbols to scan"));
   
   int rc = dialog->exec();

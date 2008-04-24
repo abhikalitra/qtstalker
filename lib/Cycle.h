@@ -26,8 +26,6 @@
 #include "Setting.h"
 #include <qpoint.h>
 #include <qdatetime.h>
-//Added by qt3to4:
-#include <QPixmap>
 
 class Cycle : public COBase
 {

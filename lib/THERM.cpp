@@ -24,10 +24,8 @@
 
 #include "THERM.h"
 #include "PrefDialog.h"
-#include <q3dict.h>
+#include <qdict.h>
 #include <qobject.h>
-//Added by qt3to4:
-#include <Q3PtrList>
 #include <math.h>
 
 THERM::THERM ()
@@ -86,7 +84,7 @@ Indicator * THERM::calculate ()
   output->setDateFlag(dateFlag);
   output->setLogScale(logScale);
 
-  Q3PtrList<PlotLine> pll;
+  QPtrList<PlotLine> pll;
   pll.setAutoDelete(FALSE);
   getTHERM(pll);
 
@@ -97,7 +95,7 @@ Indicator * THERM::calculate ()
   return output;
 }
 
-void THERM::getTHERM (Q3PtrList<PlotLine> &pll)
+void THERM::getTHERM (QPtrList<PlotLine> &pll)
 {
   PlotLine *therm = new PlotLine();
   int loop;
@@ -314,7 +312,7 @@ void THERM::getIndicatorSettings (Setting &dict)
   dict.setData(pluginLabel, pluginName);
 }
 
-PlotLine * THERM::calculateCustom (QString &p, Q3PtrList<PlotLine> &d)
+PlotLine * THERM::calculateCustom (QString &p, QPtrList<PlotLine> &d)
 {
   // format1: MA_TYPE, MA_PERIOD, THRESHOLD, SMOOTHING_TYPE, SMOOTHING_PERIOD
 
@@ -329,7 +327,7 @@ PlotLine * THERM::calculateCustom (QString &p, Q3PtrList<PlotLine> &d)
   smoothType = mal.findIndex(formatStringList[3]);
   smoothing = formatStringList[4].toInt();
 
-  Q3PtrList<PlotLine> pll;
+  QPtrList<PlotLine> pll;
   pll.setAutoDelete(FALSE);
   getTHERM(pll);
 

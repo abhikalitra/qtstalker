@@ -21,10 +21,8 @@
 
 #include "VOL.h"
 #include "PrefDialog.h"
-#include <q3dict.h>
+#include <qdict.h>
 #include <qobject.h>
-//Added by qt3to4:
-#include <Q3PtrList>
 
 VOL::VOL ()
 {
@@ -365,7 +363,7 @@ void VOL::getIndicatorSettings (Setting &dict)
   dict.setData(pluginLabel, pluginName);
 }
 
-PlotLine * VOL::calculateCustom (QString &p, Q3PtrList<PlotLine> &d)
+PlotLine * VOL::calculateCustom (QString &p, QPtrList<PlotLine> &d)
 {
   // format1: METHOD
 

@@ -32,16 +32,11 @@
 #include "TrendLine.h"
 #include "VerticalLine.h"
 #include <qcursor.h>
-//Added by qt3to4:
-#include <QPixmap>
-#include <QKeyEvent>
-#include <Q3PopupMenu>
-#include <Q3Accel>
 
 COBase::COBase ()
 {
   data = 0;
-  menu = new Q3PopupMenu();
+  menu = new QPopupMenu();
   status = None;
   saveFlag = FALSE;
   grabHandles.setAutoDelete(TRUE);
@@ -56,9 +51,9 @@ COBase::COBase ()
   nameLabel = "Name";
   typeLabel = "Type";
 
-  menu->insertItem(QPixmap(edit), tr("&Edit Object"), this, SLOT(prefDialog()), (Qt::CTRL+Qt::Key_E));
-//  menu->insertItem(QPixmap(renam), tr("&Move Object"), this, SLOT(moveObject()), (Qt::CTRL+Qt::Key_M);
-  menu->insertItem(QPixmap(deleteitem), tr("&Delete Object"), this, SLOT(removeObject()), (Qt::CTRL+Qt::Key_D));
+  menu->insertItem(QPixmap(edit), tr("&Edit Object"), this, SLOT(prefDialog()), CTRL+Key_E);
+//  menu->insertItem(QPixmap(renam), tr("&Move Object"), this, SLOT(moveObject()), CTRL+Key_M);
+  menu->insertItem(QPixmap(deleteitem), tr("&Delete Object"), this, SLOT(removeObject()), CTRL+Key_D);
 }
 
 COBase::~COBase ()

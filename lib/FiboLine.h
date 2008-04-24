@@ -24,13 +24,11 @@
 
 #include "COBase.h"
 #include "Setting.h"
-#include <q3pointarray.h>
-#include <q3dict.h>
+#include <qpointarray.h>
+#include <qdict.h>
 #include <qpoint.h>
 #include <qfont.h>
 #include <qdatetime.h>
-//Added by qt3to4:
-#include <QPixmap>
 
 class FiboLine : public COBase
 {

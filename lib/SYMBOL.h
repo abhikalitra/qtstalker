@@ -20,8 +20,6 @@
  */
 
 #include "IndicatorPlugin.h"
-//Added by qt3to4:
-#include <Q3PtrList>
 
 class SYMBOL : public IndicatorPlugin
 {
@@ -29,7 +27,7 @@ class SYMBOL : public IndicatorPlugin
     SYMBOL ();
     virtual ~SYMBOL ();
     PlotLine * getSYMBOL ();
-    PlotLine * calculateCustom (QString &, Q3PtrList<PlotLine> &);
+    PlotLine * calculateCustom (QString &, QPtrList<PlotLine> &);
     void formatDialog (QStringList &vl, QString &rv, QString &rs);
     
   private:

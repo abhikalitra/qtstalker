@@ -31,12 +31,8 @@
 #include <qlayout.h>
 #include <qmessagebox.h>
 #include <qfileinfo.h>
-//Added by qt3to4:
-#include <Q3GridLayout>
-#include <Q3Frame>
-#include <Q3VBoxLayout>
 
-StocksDialog::StocksDialog (QString p, DbPlugin *d, DBIndex *i) : Q3TabDialog (0, "StocksDialog", TRUE)
+StocksDialog::StocksDialog (QString p, DbPlugin *d, DBIndex *i) : QTabDialog (0, "StocksDialog", TRUE)
 {
   helpFile = p;
   db = d;
@@ -79,11 +75,11 @@ void StocksDialog::createDetailsPage ()
 {
   QWidget *w = new QWidget(this);
   
-  Q3VBoxLayout *vbox = new Q3VBoxLayout(w);
+  QVBoxLayout *vbox = new QVBoxLayout(w);
   vbox->setMargin(5);
   vbox->setSpacing(5);
     
-  Q3GridLayout *grid = new Q3GridLayout(vbox);
+  QGridLayout *grid = new QGridLayout(vbox);
   grid->setMargin(0);
   grid->setSpacing(5);
   
@@ -95,7 +91,7 @@ void StocksDialog::createDetailsPage ()
   index->getIndexItem(symbol, item);
   item.getSymbol(s);
   label = new QLabel(s, w);
-  label->setFrameStyle(Q3Frame::WinPanel | Q3Frame::Sunken);
+  label->setFrameStyle(QFrame::WinPanel | QFrame::Sunken);
   grid->addWidget(label, 0, 1);
 
   label = new QLabel(tr("Name"), w);
@@ -112,7 +108,7 @@ void StocksDialog::createDetailsPage ()
   Exchange ex;
   ex.getExchange(s.toInt(), s);
   label = new QLabel(s, w);
-  label->setFrameStyle(Q3Frame::WinPanel | Q3Frame::Sunken);
+  label->setFrameStyle(QFrame::WinPanel | QFrame::Sunken);
   grid->addWidget(label, 2, 1);
 
   label = new QLabel(tr("Type"), w);
@@ -120,7 +116,7 @@ void StocksDialog::createDetailsPage ()
 
   item.getType(s);  
   label = new QLabel(s, w);
-  label->setFrameStyle(Q3Frame::WinPanel | Q3Frame::Sunken);
+  label->setFrameStyle(QFrame::WinPanel | QFrame::Sunken);
   grid->addWidget(label, 3, 1);
   
   label = new QLabel(tr("First Date"), w);
@@ -132,7 +128,7 @@ void StocksDialog::createDetailsPage ()
   {
     bar.getDateTimeString(TRUE, s);
     label = new QLabel(s, w);
-    label->setFrameStyle(Q3Frame::WinPanel | Q3Frame::Sunken);
+    label->setFrameStyle(QFrame::WinPanel | QFrame::Sunken);
     grid->addWidget(label, 4, 1);
   }
   
@@ -145,7 +141,7 @@ void StocksDialog::createDetailsPage ()
   {
     bar2.getDateTimeString(TRUE, s);
     label = new QLabel(s, w);
-    label->setFrameStyle(Q3Frame::WinPanel | Q3Frame::Sunken);
+    label->setFrameStyle(QFrame::WinPanel | QFrame::Sunken);
     grid->addWidget(label, 5, 1);
   }
   
@@ -161,7 +157,7 @@ void StocksDialog::createDataPage ()
 {
   QWidget *w = new QWidget(this);
     
-  Q3VBoxLayout *vbox = new Q3VBoxLayout(w);
+  QVBoxLayout *vbox = new QVBoxLayout(w);
   vbox->setMargin(5);
   vbox->setSpacing(0);
 
@@ -197,7 +193,7 @@ void StocksDialog::createFundamentalsPage ()
 {
   QWidget *w = new QWidget(this);
   
-  Q3VBoxLayout *vbox = new Q3VBoxLayout(w);
+  QVBoxLayout *vbox = new QVBoxLayout(w);
   vbox->setMargin(5);
   vbox->setSpacing(5);
     
@@ -220,7 +216,7 @@ void StocksDialog::createFundamentalsPage ()
   QLabel *label = new QLabel(s, w);
   vbox->addWidget(label);
   
-  fundView = new Q3ListView(w);
+  fundView = new QListView(w);
   fundView->addColumn(tr("Description"));
   fundView->addColumn(tr("Value"));
   vbox->addWidget(fundView);
@@ -229,11 +225,11 @@ void StocksDialog::createFundamentalsPage ()
   for (loop = 0; loop < (int) key.count(); loop++)
   {
     fund.getData(key[loop], s);
-    new Q3ListViewItem(fundView, key[loop], s);
+    new QListViewItem(fundView, key[loop], s);
   }
   
   if (! key.count())
-    new Q3ListViewItem(fundView, tr("No data available."));
+    new QListViewItem(fundView, tr("No data available."));
     
   addTab(w, tr("Fundamentals"));  
 }
@@ -242,11 +238,11 @@ void StocksDialog::createSplitPage ()
 {
   QWidget *w = new QWidget(this);
     
-  Q3VBoxLayout *vbox = new Q3VBoxLayout(w);
+  QVBoxLayout *vbox = new QVBoxLayout(w);
   vbox->setMargin(5);
   vbox->setSpacing(5);
 
-  Q3GridLayout *grid = new Q3GridLayout(vbox);
+  QGridLayout *grid = new QGridLayout(vbox);
   grid->setMargin(0);
   grid->setSpacing(5);
   
@@ -258,10 +254,10 @@ void StocksDialog::createSplitPage ()
   QDateTime dt;
   bar.getDate(dt);
   if (! bar.getEmptyFlag())
-    splitDate = new Q3DateEdit(dt.date(), w);
+    splitDate = new QDateEdit(dt.date(), w);
   else
-    splitDate = new Q3DateEdit(QDate::currentDate(), w);
-  splitDate->setOrder(Q3DateEdit::YMD);
+    splitDate = new QDateEdit(QDate::currentDate(), w);
+  splitDate->setOrder(QDateEdit::YMD);
   grid->addWidget(splitDate, 0, 1);
 
   label = new QLabel(tr("Split Ratio"), w);

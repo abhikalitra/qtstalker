@@ -27,8 +27,6 @@
 #include <qpoint.h>
 #include <qfont.h>
 #include <qdatetime.h>
-//Added by qt3to4:
-#include <QPixmap>
 
 class HorizontalLine : public COBase
 {

@@ -21,11 +21,9 @@
 
 #include "LMS.h"
 #include "PrefDialog.h"
-#include <q3dict.h>
+#include <qdict.h>
 #include <qobject.h>
-#include <q3memarray.h>
-//Added by qt3to4:
-#include <Q3PtrList>
+#include <qmemarray.h>
 #include <math.h>
 
 LMS::LMS()
@@ -90,7 +88,7 @@ Indicator * LMS::calculate()
   output->setDateFlag(dateFlag);
   output->setLogScale(logScale);
 
-  Q3PtrList<PlotLine> pll;
+  QPtrList<PlotLine> pll;
   pll.setAutoDelete(FALSE);
   getLMS(pll);
 
@@ -101,7 +99,7 @@ Indicator * LMS::calculate()
   return output;
 }
 
-void LMS::getLMS (Q3PtrList<PlotLine> &pll)
+void LMS::getLMS (QPtrList<PlotLine> &pll)
 {
   int i = 0;
   double sigPower = 0;
@@ -151,8 +149,8 @@ void LMS::getLMS (Q3PtrList<PlotLine> &pll)
   PlotLine *value2 = new PlotLine;
   PlotLine *value3 = new PlotLine;
 
-  Q3MemArray< double > g(30);
-  Q3MemArray< double > sigPredict(30);
+  QMemArray< double > g(30);
+  QMemArray< double > sigPredict(30);
 
   g.fill(0.0);
   sigPredict.fill(0.0);
@@ -440,7 +438,7 @@ int LMS::indicatorPrefDialog(QWidget * w)
   return rc;
 }
 
-PlotLine *LMS::calculateCustom (QString &p, Q3PtrList<PlotLine> &d)
+PlotLine *LMS::calculateCustom (QString &p, QPtrList<PlotLine> &d)
 {
   // format1: FK_PERIOD, SK_PERIOD, CMB_INDEX, SHOW_2DAY, SHOW_5DAY
 
@@ -479,7 +477,7 @@ PlotLine *LMS::calculateCustom (QString &p, Q3PtrList<PlotLine> &d)
   else
     show5Day = FALSE;
 
-  Q3PtrList<PlotLine> pll;
+  QPtrList<PlotLine> pll;
   pll.setAutoDelete(FALSE);
   getLMS(pll);
 

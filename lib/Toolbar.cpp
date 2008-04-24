@@ -21,15 +21,9 @@
 
 #include "Toolbar.h"
 #include <qtooltip.h>
-//Added by qt3to4:
-#include <Q3VBoxLayout>
-#include <Q3Frame>
-#include <Q3GridLayout>
-#include <QPixmap>
-#include <Q3HBoxLayout>
 
 //Toolbar::Toolbar (QWidget *w, int h, int wi, bool f) : QFrame (w)
-Toolbar::Toolbar (QWidget *w, Bias b) : Q3Frame (w)
+Toolbar::Toolbar (QWidget *w, Bias b) : QFrame (w)
 {
 //  height = h;
 //  width = wi;
@@ -43,27 +37,27 @@ Toolbar::Toolbar (QWidget *w, Bias b) : Q3Frame (w)
   setLineWidth(1);
 */
 
-  Q3HBoxLayout *hbox = 0;
-  Q3VBoxLayout *vbox = 0;
+  QHBoxLayout *hbox = 0;
+  QVBoxLayout *vbox = 0;
   
   if (bias == Vertical)
   {
 // seems to be obsolete
 //    setMinimumWidth(ToolBarBtn::btnMinWidth + 3);
 //    setMaximumWidth(ToolBarBtn::btnMaxWidth + 3);
-    vbox = new Q3VBoxLayout(this);  
+    vbox = new QVBoxLayout(this);  
     vbox->setSpacing(0);
     vbox->setMargin(0);
-    grid = new Q3GridLayout(vbox, 1, 1);  
+    grid = new QGridLayout(vbox, 1, 1);  
   }
   else
   {
 //    setMinimumHeight(ToolBarBtn::btnMinHeight + 3);
 //    setMaximumHeight(ToolBarBtn::btnMaxHeight + 3);
-    hbox = new Q3HBoxLayout(this);  
+    hbox = new QHBoxLayout(this);  
     hbox->setSpacing(0);
     hbox->setMargin(0);
-    grid = new Q3GridLayout(hbox, 1, 1);  
+    grid = new QGridLayout(hbox, 1, 1);  
   }
   
   grid->setSpacing(2); // space between each button
@@ -108,8 +102,8 @@ void Toolbar::setButtonStatus (QString &name, bool d)
 
 void Toolbar::addSeparator ()
 {
-  Q3Frame *vline = new Q3Frame(this);
-  vline->setFrameStyle(Q3Frame::VLine | Q3Frame::Sunken);
+  QFrame *vline = new QFrame(this);
+  vline->setFrameStyle(QFrame::VLine | QFrame::Sunken);
   if (bias == Vertical)
     grid->addWidget(vline, -1, 0);
   else

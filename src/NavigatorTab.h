@@ -22,14 +22,11 @@
 #ifndef NAVIGATORTAB_HPP
 #define NAVIGATORTAB_HPP
 
-#include <q3popupmenu.h>
-#include <q3widgetstack.h>
+#include <qpopupmenu.h>
+#include <qwidgetstack.h>
 #include <qwidget.h>
-#include <q3buttongroup.h>
-#include <q3mainwindow.h>
-//Added by qt3to4:
-#include <QKeyEvent>
-#include <QContextMenuEvent>
+#include <qbuttongroup.h>
+#include <qmainwindow.h>
 
 class NavigatorTab : public QWidget
 {
@@ -51,7 +48,7 @@ class NavigatorTab : public QWidget
       ScannerPanelFocus
     };
   
-    NavigatorTab (QWidget *, Q3MainWindow *);
+    NavigatorTab (QWidget *, QMainWindow *);
     ~NavigatorTab ();
     void loadSettings();
     void saveSettings();
@@ -75,12 +72,12 @@ class NavigatorTab : public QWidget
   
   private:
     int position;
-    Q3PopupMenu *menu;
-    Q3PopupMenu *positionMenu;
+    QPopupMenu *menu;
+    QPopupMenu *positionMenu;
     int idMenuLeft;
     int idMenuRight;
-    Q3WidgetStack *stack;
-    Q3ButtonGroup *bg;
+    QWidgetStack *stack;
+    QButtonGroup *bg;
     int activeButton;
     bool isVisible;
 };

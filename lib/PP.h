@@ -20,8 +20,6 @@
  */
 
 #include "IndicatorPlugin.h"
-//Added by qt3to4:
-#include <Q3PtrList>
 
 class PP : public IndicatorPlugin
 {
@@ -33,9 +31,9 @@ class PP : public IndicatorPlugin
     void setDefaults();
     void getIndicatorSettings (Setting &);
     void setIndicatorSettings (Setting &);
-    PlotLine * calculateCustom (QString &, Q3PtrList<PlotLine> &);
+    PlotLine * calculateCustom (QString &, QPtrList<PlotLine> &);
     void formatDialog (QStringList &vl, QString &rv, QString &rs);
-    void getPP (Q3PtrList<PlotLine> &);
+    void getPP (QPtrList<PlotLine> &);
     
   private:
     QColor resColor;

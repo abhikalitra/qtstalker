@@ -19,18 +19,18 @@
  *  USA.
  */
 
-#include <q3tabdialog.h>
+#include <qtabdialog.h>
 #include <qlineedit.h>
 #include <qcombobox.h>
 #include <qcheckbox.h>
-#include <q3datetimeedit.h>
+#include <qdatetimeedit.h>
 #include <qstringlist.h>
-#include <q3listbox.h>
+#include <qlistbox.h>
 #include <qspinbox.h>
 #include "FileButton.h"
 #include "Toolbar.h"
 
-class CSVRuleDialog : public Q3TabDialog
+class CSVRuleDialog : public QTabDialog
 {
   Q_OBJECT
   
@@ -52,8 +52,8 @@ class CSVRuleDialog : public Q3TabDialog
           
   private:
     Toolbar *ruleToolbar;
-    Q3ListBox *ruleList;
-    Q3ListBox *fieldList;
+    QListBox *ruleList;
+    QListBox *fieldList;
     QLineEdit *ruleName;
     QString helpFile;
     QLineEdit *directory;

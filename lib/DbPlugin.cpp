@@ -34,9 +34,8 @@
 #include <qinputdialog.h>
 #include <qmessagebox.h>
 #include <qobject.h>
-#include <q3valuelist.h>
+#include <qvaluelist.h>
 #include <qstringlist.h>
-#include <QTextStream>
 
 
 DbPlugin::DbPlugin ()
@@ -97,7 +96,7 @@ void DbPlugin::setType (DbPlugin::DbType d)
 void DbPlugin::dump (QString &d, bool f)
 {
   QFile outFile(d);
-  if (! outFile.open(QIODevice::WriteOnly))
+  if (! outFile.open(IO_WriteOnly))
     return;
   QTextStream outStream(&outFile);
   
@@ -849,7 +848,7 @@ void DbPlugin::getIndexHistory (BarData *barData, QDateTime &startDate)
   if (! l.count())
     return;
     
-  Q3Dict<Bar> lookup;
+  QDict<Bar> lookup;
   lookup.setAutoDelete(TRUE);
   int loop;
   int count = 0;
@@ -864,7 +863,7 @@ void DbPlugin::getIndexHistory (BarData *barData, QDateTime &startDate)
   }
 
   l.clear();
-  Q3DictIterator<Bar> it(lookup);
+  QDictIterator<Bar> it(lookup);
   for (; it.current(); ++it)
   {
     Bar *r = it.current();
@@ -911,7 +910,7 @@ void DbPlugin::getIndexHistory (BarData *barData, QDateTime &startDate)
   }
 }
 
-void DbPlugin::loadIndexData (QString &symbol, Q3Dict<Bar> &lookup, QDateTime &startDate, float weight,
+void DbPlugin::loadIndexData (QString &symbol, QDict<Bar> &lookup, QDateTime &startDate, float weight,
                            int barRange, BarData::BarLength barLength)
 {
   QFileInfo fi(symbol);
@@ -1007,7 +1006,7 @@ void DbPlugin::getSpreadHistory (BarData *barData, QDateTime &startDate)
   db.close();
 
   // create lookup dict for first symbol bars
-  Q3Dict<Bar> lookup;
+  QDict<Bar> lookup;
   lookup.setAutoDelete(TRUE);
   int loop;
   for (loop = 0; loop < bar->count(); loop++)
@@ -1064,7 +1063,7 @@ void DbPlugin::getCCHistory (BarData *barData, QDateTime &startDate)
   fd.getSymbol(s);
   baseDir.append(s);
   QDir dir(baseDir);
-  if (! dir.exists(baseDir))
+  if (! dir.exists(baseDir, TRUE))
     return;
   QStringList dirList = dir.entryList();
 
@@ -1073,7 +1072,7 @@ void DbPlugin::getCCHistory (BarData *barData, QDateTime &startDate)
   QString ey = lastChart.right(5);
   ey.truncate(4);
 
-  Q3ValueList<Bar> indexList;
+  QValueList<Bar> indexList;
   int indexCount = -1;
 
   int dirLoop = dirList.findIndex(lastChart);

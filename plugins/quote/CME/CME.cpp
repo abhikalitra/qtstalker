@@ -24,8 +24,8 @@
 #include "DBIndexItem.h"
 #include "Exchange.h"
 #include <qfile.h>
-#include <q3textstream.h>
-#include <q3network.h>
+#include <qtextstream.h>
+#include <qnetwork.h>
 #include <qdir.h>
 #include <qstringlist.h>
 #include <stdlib.h>
@@ -50,7 +50,7 @@ CME::CME ()
   config.getData(Config::Home, file);
   file.append("/download");
   
-  q3InitNetworkProtocols();
+  qInitNetworkProtocols();
   buildGui();
   loadSettings();
 
@@ -193,9 +193,9 @@ void CME::timeoutError ()
 void CME::parseToday ()
 {
   QFile f(file);
-  if (! f.open(QIODevice::ReadOnly))
+  if (! f.open(IO_ReadOnly))
     return;
-  Q3TextStream stream(&f);
+  QTextStream stream(&f);
 
   QString s = stream.readLine();
   s = s.stripWhiteSpace();
@@ -607,13 +607,13 @@ void CME::parseHistory ()
     return;
 
   QFile f(s2);
-  if (! f.open(QIODevice::ReadOnly))
+  if (! f.open(IO_ReadOnly))
   {
     QString s(tr("could not open parse history file"));
     printStatusLogMessage(s);
     return;
   }
-  Q3TextStream stream(&f);
+  QTextStream stream(&f);
   
   while(stream.atEnd() == 0)
   {

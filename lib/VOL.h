@@ -20,8 +20,6 @@
  */
 
 #include "IndicatorPlugin.h"
-//Added by qt3to4:
-#include <Q3PtrList>
 
 class VOL : public IndicatorPlugin
 {
@@ -37,7 +35,7 @@ class VOL : public IndicatorPlugin
     PlotLine * calculateNVI ();
     PlotLine * calculatePVI ();
     PlotLine * calculatePVT ();
-    PlotLine * calculateCustom (QString &, Q3PtrList<PlotLine> &);
+    PlotLine * calculateCustom (QString &, QPtrList<PlotLine> &);
     void formatDialog (QStringList &vl, QString &rv, QString &rs);
 
   private:

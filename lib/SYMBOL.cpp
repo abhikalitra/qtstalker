@@ -25,10 +25,8 @@
 #include "DBIndex.h"
 #include "PrefDialog.h"
 #include <qdatetime.h>
-#include <q3dict.h>
+#include <qdict.h>
 #include <qobject.h>
-//Added by qt3to4:
-#include <Q3PtrList>
 
 SYMBOL::SYMBOL ()
 {
@@ -71,7 +69,7 @@ PlotLine * SYMBOL::getSYMBOL ()
   QDateTime dt = QDateTime::currentDateTime();
   db.getHistory(recordList, dt);
 
-  Q3Dict<Setting> dict;
+  QDict<Setting> dict;
   dict.setAutoDelete(TRUE);
   
   int loop;
@@ -109,7 +107,7 @@ PlotLine * SYMBOL::getSYMBOL ()
   return line;
 }
 
-PlotLine * SYMBOL::calculateCustom (QString &p, Q3PtrList<PlotLine> &d)
+PlotLine * SYMBOL::calculateCustom (QString &p, QPtrList<PlotLine> &d)
 {
   // format1: SYMBOL
 

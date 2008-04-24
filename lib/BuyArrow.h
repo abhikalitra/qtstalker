@@ -23,10 +23,8 @@
 #define BUYARROW_HPP
 
 #include "COBase.h"
-#include <q3pointarray.h>
+#include <qpointarray.h>
 #include <qdatetime.h>
-//Added by qt3to4:
-#include <QPixmap>
 
 class BuyArrow : public COBase
 {
@@ -50,7 +48,7 @@ class BuyArrow : public COBase
     void pointerMoving (QPixmap &, QPoint &, QDateTime &, double y);
     
   protected:
-    Q3PointArray arrow;
+    QPointArray arrow;
 };
 
 #endif

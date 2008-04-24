@@ -28,11 +28,9 @@
 #include "Indicator.h"
 #include <qstring.h>
 #include <qstringlist.h>
-#include <q3dict.h>
-#include <q3valuelist.h>
+#include <qdict.h>
+#include <qvaluelist.h>
 #include <qobject.h>
-//Added by qt3to4:
-#include <Q3PtrList>
 
 class IndicatorPlugin : public QObject
 {
@@ -75,12 +73,12 @@ class IndicatorPlugin : public QObject
     IndicatorPlugin::Operator getOperator (QString &);
     PlotLine * getWilderMA (PlotLine *d, int);
     void getMATypes (QStringList &);
-    bool checkFormat (QString &, Q3PtrList<PlotLine> &, int, int);
+    bool checkFormat (QString &, QPtrList<PlotLine> &, int, int);
     void setFormatMethod (QString &);
 
     virtual Indicator * calculate ();
     virtual int indicatorPrefDialog (QWidget *);
-    virtual PlotLine * calculateCustom (QString &, Q3PtrList<PlotLine> &);
+    virtual PlotLine * calculateCustom (QString &, QPtrList<PlotLine> &);
     virtual void getIndicatorSettings (Setting &);
     virtual void setIndicatorSettings (Setting &);
     virtual void setCustomFunction (QStringList &);
@@ -101,7 +99,7 @@ class IndicatorPlugin : public QObject
     bool saveFlag;
     QString pluginName;
     QString helpFile;
-    Q3ValueList<FormatType> formatList;
+    QValueList<FormatType> formatList;
     QStringList formatStringList;
     bool dateFlag;
     bool logScale;

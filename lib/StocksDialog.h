@@ -22,15 +22,15 @@
 #ifndef STOCKSDIALOG_HPP
 #define STOCKSDIALOG_HPP
 
-#include <q3tabdialog.h>
+#include <qtabdialog.h>
 #include <qlineedit.h>
-#include <q3listview.h>
-#include <q3datetimeedit.h>
+#include <qlistview.h>
+#include <qdatetimeedit.h>
 #include "DbPlugin.h"
 #include "BarEdit.h"
 #include "DBIndex.h"
 
-class StocksDialog : public Q3TabDialog
+class StocksDialog : public QTabDialog
 {
   Q_OBJECT
 
@@ -61,9 +61,9 @@ class StocksDialog : public Q3TabDialog
     QLineEdit *title;
     QLineEdit *splitRatio;
     QString helpFile;
-    Q3ListView *fundView;
+    QListView *fundView;
     BarEdit *barEdit;
-    Q3DateEdit *splitDate;
+    QDateEdit *splitDate;
     QDateTime currentDate;
     DBIndex *index;
     QString symbol;

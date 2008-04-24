@@ -26,7 +26,7 @@
 #include <qfont.h>
 #include <qstringlist.h>
 #include <qstring.h>
-#include <q3tabdialog.h>
+#include <qtabdialog.h>
 #include <qcheckbox.h>
 #include <qspinbox.h>
 #include <qsize.h>
@@ -34,7 +34,7 @@
 #include "FontButton.h"
 
 
-class Preferences : public Q3TabDialog
+class Preferences : public QTabDialog
 {
   Q_OBJECT
 

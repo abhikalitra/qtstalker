@@ -29,7 +29,7 @@
 #include "CSVRuleDialog.h"
 #include "DBIndexItem.h"
 #include <qfile.h>
-#include <q3textstream.h>
+#include <qtextstream.h>
 #include <qdir.h>
 #include <qsettings.h>
 #include <qmessagebox.h>
@@ -189,9 +189,9 @@ void CSV::parse ()
       break;
       
     QFile f(list[loop]);
-    if (! f.open(QIODevice::ReadOnly))
+    if (! f.open(IO_ReadOnly))
       continue;
-    Q3TextStream stream(&f);
+    QTextStream stream(&f);
 
     QString symbol = symbolOveride;
     if (! symbol.length() && fieldList.findIndex("Symbol") == -1)
@@ -824,12 +824,12 @@ void CSV::getRule (Setting &set)
 {
   QString s = ruleDir +"/" + ruleCombo->currentText();
   QFile f(s);
-  if (! f.open(QIODevice::ReadOnly))
+  if (! f.open(IO_ReadOnly))
   {
     qDebug("CSV::getRule:cannot read file.");
     return;
   }
-  Q3TextStream stream(&f);
+  QTextStream stream(&f);
 
   while(stream.atEnd() == 0)
   {
@@ -909,17 +909,17 @@ void CSV::createMainPage ()
   label = new QLabel(tr("Date Start"), baseWidget);
   grid->addWidget(label, 6, 0);
   
-  sdate = new Q3DateEdit(QDate::currentDate(), baseWidget);
+  sdate = new QDateEdit(QDate::currentDate(), baseWidget);
   sdate->setAutoAdvance(TRUE);
-  sdate->setOrder(Q3DateEdit::YMD);
+  sdate->setOrder(QDateEdit::YMD);
   grid->addWidget(sdate, 6, 1);
   
   label = new QLabel(tr("Date End"), baseWidget);
   grid->addWidget(label, 7, 0);
   
-  edate = new Q3DateEdit(QDate::currentDate(), baseWidget);
+  edate = new QDateEdit(QDate::currentDate(), baseWidget);
   edate->setAutoAdvance(TRUE);
-  edate->setOrder(Q3DateEdit::YMD);
+  edate->setOrder(QDateEdit::YMD);
   grid->addWidget(edate, 7, 1);
 
   // set the default end date
@@ -984,7 +984,7 @@ void CSV::editRule ()
   				          ruleDir,
                                           ruleDir,
 					  s,
-					  Q3FileDialog::ExistingFiles);
+					  QFileDialog::ExistingFiles);
   dialog->setCaption(tr("Select Rule To Edit"));
 
   int rc = dialog->exec();
@@ -1014,7 +1014,7 @@ void CSV::deleteRule ()
   				          ruleDir,
                                           ruleDir,
 					  s,
-					  Q3FileDialog::ExistingFiles);
+					  QFileDialog::ExistingFiles);
   dialog->setCaption(tr("Select Rules To Delete"));
 
   int rc = dialog->exec();

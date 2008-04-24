@@ -21,8 +21,6 @@
 
 #include "Scaler.h"
 #include <math.h>
-//Added by qt3to4:
-#include <Q3MemArray>
 
 Scaler::Scaler ()
 {
@@ -153,7 +151,7 @@ double Scaler::convertToVal (int y)
   return val;
 }
 
-void Scaler::getScaleArray (Q3MemArray<double> &scaleArray)
+void Scaler::getScaleArray (QMemArray<double> &scaleArray)
 {
   int ticks;
   for (ticks = 2; (ticks * 15) < height; ticks++)

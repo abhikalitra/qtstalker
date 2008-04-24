@@ -26,11 +26,7 @@
 #include <qpixmap.h>
 #include <qcolor.h>
 #include <qfont.h>
-#include <q3memarray.h>
-//Added by qt3to4:
-#include <QPaintEvent>
-#include <QResizeEvent>
-#include <Q3PtrList>
+#include <qmemarray.h>
 #include "BarData.h"
 
 
@@ -52,7 +48,7 @@ class DatePlot : public QWidget
     ~DatePlot ();
     void clear ();
     void setData (BarData *);
-    Q3MemArray<int> & getXGrid ();
+    QMemArray<int> & getXGrid ();
 
   public slots:
     void draw();
@@ -85,8 +81,8 @@ class DatePlot : public QWidget
     QColor backgroundColor;
     QColor borderColor;
     BarData *data;
-    Q3PtrList<TickItem> dateList;
-    Q3MemArray<int> xGrid;
+    QPtrList<TickItem> dateList;
+    QMemArray<int> xGrid;
 };
 
 #endif

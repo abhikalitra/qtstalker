@@ -24,11 +24,9 @@
 
 #include "COBase.h"
 #include "Setting.h"
-#include <q3pointarray.h>
+#include <qpointarray.h>
 #include <qpoint.h>
 #include <qdatetime.h>
-//Added by qt3to4:
-#include <QPixmap>
 
 class SellArrow : public COBase
 {
@@ -51,7 +49,7 @@ class SellArrow : public COBase
     void pointerMoving (QPixmap &, QPoint &, QDateTime &, double y);
     
   protected:
-    Q3PointArray arrow;
+    QPointArray arrow;
 };
 
 #endif

@@ -24,13 +24,11 @@
 
 #include <qstring.h>
 #include <qwidget.h>
-#include <q3popupmenu.h>
+#include <qpopupmenu.h>
 #include <qdir.h>
 #include <qcombobox.h>
-#include <q3listbox.h>
+#include <qlistbox.h>
 #include <qlineedit.h>
-//Added by qt3to4:
-#include <QKeyEvent>
 #include "DBIndex.h"
 #include "Setting.h"
 #include "Indicator.h"
@@ -76,10 +74,10 @@ class IndicatorPage : public QWidget
     void addLocalIndicators (QString &);
 
   public slots:
-    void doubleClick (Q3ListBoxItem *);
+    void doubleClick (QListBoxItem *);
     void updateList ();
     void slotHelp ();
-    void rightClick (Q3ListBoxItem *);
+    void rightClick (QListBoxItem *);
     void newIndicator ();
     void editIndicator (QString);
     void editIndicator ();
@@ -98,9 +96,9 @@ class IndicatorPage : public QWidget
   protected:
     virtual void keyPressEvent (QKeyEvent *);
     
-    Q3ListBox *list;
+    QListBox *list;
     QComboBox *group;
-    Q3PopupMenu *menu;
+    QPopupMenu *menu;
     QString baseDir;
     QString currentGroup;
     bool updateEnableFlag;

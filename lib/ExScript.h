@@ -20,10 +20,8 @@
  */
 
 #include "IndicatorPlugin.h"
-#include <q3process.h>
+#include <qprocess.h>
 #include <qtimer.h>
-//Added by qt3to4:
-#include <Q3PtrList>
 
 class ExScript : public IndicatorPlugin
 {
@@ -37,7 +35,7 @@ class ExScript : public IndicatorPlugin
     void setDefaults();
     void getIndicatorSettings (Setting &);
     void setIndicatorSettings (Setting &);
-    PlotLine * calculateCustom (QString &, Q3PtrList<PlotLine> &);
+    PlotLine * calculateCustom (QString &, QPtrList<PlotLine> &);
     void formatDialog (QStringList &vl, QString &rv, QString &rs);
     void getInput (QString &);
     PlotLine * doScript ();
@@ -52,7 +50,7 @@ class ExScript : public IndicatorPlugin
     QString label;
     QString scriptPath;
     QString comlineParms;
-    Q3Process *proc;
+    QProcess *proc;
     QString buffer;
     QTimer *timer;
     int seconds;

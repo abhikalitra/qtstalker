@@ -20,11 +20,7 @@
  */
 
 #include "MainMenubar.h"
-#include <Q3Accel>
-//Added by qt3to4:
-#include <QPixmap>
-#include <Q3PopupMenu>
-#include <QKeyEvent>
+#include <qaccel.h>
 #include "../pics/done.xpm"
 #include "../pics/grid.xpm"
 #include "../pics/datawindow.xpm"
@@ -41,7 +37,7 @@
 #include "RcFile.h"
 
 
-MainMenubar::MainMenubar (Q3MainWindow *mw) : QMenuBar (mw, "mainMenubar")
+MainMenubar::MainMenubar (QMainWindow *mw) : QMenuBar (mw, "mainMenubar")
 {
   actions.setAutoDelete(FALSE);
   
@@ -51,7 +47,7 @@ MainMenubar::MainMenubar (Q3MainWindow *mw) : QMenuBar (mw, "mainMenubar")
   QAction *action  = new QAction(this, "actionExit");
   action->setMenuText(tr("E&xit"));
   action->setIconSet(icon);
-  action->setAccel(Qt::CTRL+Qt::Key_Q);
+  action->setAccel(CTRL+Key_Q);
   action->setStatusTip(tr("Quit Qtstalker (Ctrl+Q)"));
   action->setToolTip(tr("Quit Qtstalker (Ctrl+Q)"));
   connect(action, SIGNAL(activated()), this, SIGNAL(signalExit()));
@@ -101,7 +97,7 @@ MainMenubar::MainMenubar (Q3MainWindow *mw) : QMenuBar (mw, "mainMenubar")
   action = new QAction(this, "actionDataWindow");
   action->setMenuText(tr("&Data Window"));
   action->setIconSet(icon);
-  action->setAccel(Qt::ALT+Qt::Key_1);
+  action->setAccel(ALT+Key_1);
   action->setStatusTip(tr("Show the data window (Alt+1)"));
   action->setToolTip(tr("Show the data window (Alt+1)"));
   connect(action, SIGNAL(activated()), mw, SLOT(slotDataWindow()));
@@ -180,14 +176,14 @@ MainMenubar::MainMenubar (Q3MainWindow *mw) : QMenuBar (mw, "mainMenubar")
   action = new QAction(this, "actionHelp");
   action->setMenuText(tr("&Help"));
   action->setIconSet(icon);
-  action->setAccel(Qt::ALT+Qt::Key_3);
+  action->setAccel(ALT+Key_3);
   action->setStatusTip(tr("Display Help Dialog (Alt+3)"));
   action->setToolTip(tr("Display Help Dialog (Alt+3)"));
   connect(action, SIGNAL(activated()), mw, SLOT(slotHelp()));
   actions.replace(Help, action);
 
   action = new QAction(this, "actionAdvancePaperTrade");
-  action->setAccel(Qt::CTRL+Qt::Key_Right);
+  action->setAccel(CTRL+Key_Right);
   connect(action, SIGNAL(activated()), this, SIGNAL(signalAdvancePaperTrade()));
   actions.replace(AdvancePaperTrade, action);
 
@@ -198,19 +194,19 @@ MainMenubar::MainMenubar (Q3MainWindow *mw) : QMenuBar (mw, "mainMenubar")
   connect(action, SIGNAL(activated()), mw, SLOT(slotIndicatorSummary()));
   actions.replace(IndicatorSummary, action);
   
-  Q3Accel *a = new Q3Accel(mw);
+  QAccel *a = new QAccel(mw);
   connect(a, SIGNAL(activated(int)), this, SLOT(slotAccel(int)));
-  a->insertItem(Qt::CTRL+Qt::Key_2, NewIndicator);
-  a->insertItem(Qt::CTRL+Qt::Key_3, Options);
-  a->insertItem(Qt::CTRL+Qt::Key_4, Grid);
-  a->insertItem(Qt::CTRL+Qt::Key_5, ScaleToScreen);
-  a->insertItem(Qt::CTRL+Qt::Key_6, Crosshairs);
-  a->insertItem(Qt::CTRL+Qt::Key_7, SidePanel);
-  a->insertItem(Qt::CTRL+Qt::Key_0, DrawMode);
-  a->insertItem(Qt::CTRL+Qt::Key_Y, Quotes);
-  a->insertItem(Qt::CTRL+Qt::Key_Right, AdvancePaperTrade);
+  a->insertItem(CTRL+Key_2, NewIndicator);
+  a->insertItem(CTRL+Key_3, Options);
+  a->insertItem(CTRL+Key_4, Grid);
+  a->insertItem(CTRL+Key_5, ScaleToScreen);
+  a->insertItem(CTRL+Key_6, Crosshairs);
+  a->insertItem(CTRL+Key_7, SidePanel);
+  a->insertItem(CTRL+Key_0, DrawMode);
+  a->insertItem(CTRL+Key_Y, Quotes);
+  a->insertItem(CTRL+Key_Right, AdvancePaperTrade);
   
-  a->insertItem(Qt::CTRL+Qt::Key_Escape, 8);
+  a->insertItem(CTRL+Key_Escape, 8);
   
   createMenus();
   
@@ -225,14 +221,14 @@ MainMenubar::~MainMenubar ()
 
 void MainMenubar::createMenus ()
 {
-  fileMenu = new Q3PopupMenu();
+  fileMenu = new QPopupMenu();
   actions[Exit]->addTo(fileMenu);
 
-  editMenu = new Q3PopupMenu();
+  editMenu = new QPopupMenu();
   actions[NewIndicator]->addTo(editMenu);
   actions[Options]->addTo(editMenu);
 
-  viewMenu = new Q3PopupMenu();
+  viewMenu = new QPopupMenu();
   viewMenu->setCheckable(true);
   actions[Grid]->addTo(viewMenu);
   actions[ScaleToScreen]->addTo(viewMenu);
@@ -241,12 +237,12 @@ void MainMenubar::createMenus ()
   actions[Crosshairs]->addTo(viewMenu);
   actions[PaperTrade]->addTo(viewMenu);
 
-  toolMenu = new Q3PopupMenu();
+  toolMenu = new QPopupMenu();
   actions[DataWindow]->addTo(toolMenu);
   actions[IndicatorSummary]->addTo(toolMenu);
   actions[Quotes]->addTo(toolMenu);
 
-  helpMenu = new Q3PopupMenu();
+  helpMenu = new QPopupMenu();
   actions[About]->addTo(helpMenu);
   actions[Help]->addTo(helpMenu);
   

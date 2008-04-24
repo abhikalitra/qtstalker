@@ -62,7 +62,7 @@ void SymbolButton::fileDialog ()
                                           baseDir,
                                           s2,
 					  s,
-					  Q3FileDialog::ExistingFiles);
+					  QFileDialog::ExistingFiles);
   dialog->setCaption(tr("Select Symbol"));
 
   int rc = dialog->exec();

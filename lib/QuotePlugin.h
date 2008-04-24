@@ -23,17 +23,14 @@
 #define QUOTEPLUGIN_HPP
 
 #include <qstring.h>
-#include <q3networkprotocol.h>
-#include <q3urloperator.h>
+#include <qnetworkprotocol.h>
+#include <qurloperator.h>
 #include <qtimer.h>
-#include <q3tabdialog.h>
-#include <q3textedit.h>
+#include <qtabdialog.h>
+#include <qtextedit.h>
 #include <qlayout.h>
 #include <qspinbox.h>
-#include <q3progressbar.h>
-//Added by qt3to4:
-#include <Q3GridLayout>
-#include <Q3VBoxLayout>
+#include <qprogressbar.h>
 #include "Toolbar.h"
 #include "DBIndex.h"
 
@@ -42,7 +39,7 @@
 * Needs to be re-written to not use the QUrlOperator.
 * See http://doc.trolltech.com/4.3/porting4-overview.html#url-operations-qurloperator
 */
-class QuotePlugin : public Q3TabDialog
+class QuotePlugin : public QTabDialog
 {
   Q_OBJECT
 
@@ -67,14 +64,14 @@ class QuotePlugin : public Q3TabDialog
     void disableGUI ();
     virtual void update ();
     void setChartIndex (DBIndex *);
-    Q3ProgressBar *progressBar;
+    QProgressBar *progressBar;
     
   public slots:
     void getFile (QString &);
     void copyFile (QString &, QString &);
-    void getFileDone (Q3NetworkOperation *);
-    void copyFileDone (Q3NetworkOperation *);
-    void dataReady (const QByteArray &, Q3NetworkOperation *);
+    void getFileDone (QNetworkOperation *);
+    void copyFileDone (QNetworkOperation *);
+    void dataReady (const QByteArray &, QNetworkOperation *);
     void slotTimeout ();
     void getQuotes ();
     void downloadComplete ();
@@ -89,17 +86,17 @@ class QuotePlugin : public Q3TabDialog
     bool saveFlag;
     QString pluginName;
     QString helpFile;
-    Q3UrlOperator *op;
+    QUrlOperator *op;
     QString data;
     QTimer *timer;
     int errorLoop;
     QString stringDone;
     QString stringCanceled;
-    Q3TextEdit *statusLog;
+    QTextEdit *statusLog;
     Toolbar *toolbar;
-    Q3VBoxLayout *vbox;
+    QVBoxLayout *vbox;
     QWidget *baseWidget;
-    Q3GridLayout *grid;
+    QGridLayout *grid;
     QSpinBox *retrySpin;
     QSpinBox *timeoutSpin;
     DBIndex *chartIndex;

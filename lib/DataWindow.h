@@ -24,8 +24,8 @@
 
 #include <qstring.h>
 #include <qdialog.h>
-#include <q3table.h>
-#include <q3header.h>
+#include <qtable.h>
+#include <qheader.h>
 #include "BarData.h"
 #include "Plot.h"
 
@@ -44,8 +44,8 @@ class DataWindow : public QDialog
     QString strip (double, int);
 
   private:
-    Q3Table *table;
-    Q3Header *hHeader;
+    QTable *table;
+    QHeader *hHeader;
 };
 
 #endif

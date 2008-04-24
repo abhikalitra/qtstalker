@@ -31,8 +31,6 @@
 #include <qfileinfo.h>
 #include <qmessagebox.h>
 #include <qfile.h>
-//Added by qt3to4:
-#include <Q3PtrList>
 #include <math.h> // only for fabs()
 #include "XmlWriter.h"
 
@@ -86,7 +84,7 @@ void IndicatorSummary::run ()
   dialog->getCombo(sl, group);
   delete dialog;
 
-  Q3PtrList<Setting> setList;
+  QPtrList<Setting> setList;
   setList.setAutoDelete(TRUE);
 
   int loop;
@@ -200,7 +198,7 @@ void IndicatorSummary::loadIndicators ()
   }
 }
 
-void IndicatorSummary::createDataWindow (Q3PtrList<Setting> &list, QString &group)
+void IndicatorSummary::createDataWindow (QPtrList<Setting> &list, QString &group)
 {
   DataWindow *dw = new DataWindow(0);
   QFileInfo fi(group);
@@ -215,11 +213,11 @@ void IndicatorSummary::createDataWindow (Q3PtrList<Setting> &list, QString &grou
   QString exportPath;
   config.getData(Config::Home, exportPath);
   exportPath.append("/export");
-  if (! dir.exists(exportPath))
+  if (! dir.exists(exportPath, TRUE))
     dir.mkdir(exportPath, TRUE);
   QString xmlFileName = exportPath + "/summary-" + fi.fileName() + "-" + bls + ".xml";
   QFile xmlFile(xmlFileName);
-  xmlFile.open(QIODevice::WriteOnly);
+  xmlFile.open(IO_WriteOnly);
   XmlWriter xw(&xmlFile);
   xw.setAutoNewLine(true);
   xw.setIndentSize(2);

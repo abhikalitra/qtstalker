@@ -24,9 +24,6 @@
 #include "Config.h"
 #include <qpainter.h>
 #include <qsettings.h>
-//Added by qt3to4:
-#include <Q3PointArray>
-#include <QPixmap>
 
 FiboLine::FiboLine ()
 {
@@ -97,7 +94,7 @@ void FiboLine::draw (QPixmap &buffer, Scaler &scaler, int startIndex, int pixels
     
   painter.setPen(getColor());
   
-  Q3PointArray array;
+  QPointArray array;
   clearSelectionArea();
     
   int loop;
@@ -384,7 +381,7 @@ void FiboLine::drawMovingPointer (QPixmap &buffer, QPoint &point)
   
   QPainter painter;
   painter.begin(&buffer);
-  // painter.setRasterOp(Qt::XorROP);
+  painter.setRasterOp(Qt::XorROP);
   painter.setPen(defaultColor);
       
   // erase the previous line drawn

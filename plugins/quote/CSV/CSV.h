@@ -26,14 +26,14 @@
 #include "Config.h"
 #include <qdatetime.h>
 #include <qtimer.h>
-#include <q3tabdialog.h>
+#include <qtabdialog.h>
 #include <qlineedit.h>
 #include <qcombobox.h>
 #include <qcheckbox.h>
-#include <q3datetimeedit.h>
+#include <qdatetimeedit.h>
 #include <qstringlist.h>
 #include <qspinbox.h>
-#include <q3progressbar.h>
+#include <qprogressbar.h>
 #include "FileButton.h"
 
 class CSV : public QuotePlugin
@@ -79,8 +79,8 @@ class CSV : public QuotePlugin
     FileButton *file;
     QLineEdit *symbol;
     QComboBox *ruleCombo;
-    Q3DateEdit *sdate;
-    Q3DateEdit *edate;
+    QDateEdit *sdate;
+    QDateEdit *edate;
     QCheckBox *dateRange;
     QSpinBox *minutes;
 };

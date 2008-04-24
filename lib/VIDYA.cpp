@@ -21,12 +21,10 @@
 
 #include "VIDYA.h"
 #include "PrefDialog.h"
-#include <q3dict.h>
+#include <qdict.h>
 #include <qobject.h>
-//Added by qt3to4:
-#include <Q3PtrList>
 #include <math.h>
-#include <q3memarray.h>
+#include <qmemarray.h>
 
 #define PI 3.14159265
 
@@ -103,13 +101,13 @@ void VIDYA::calcVidya (PlotLine *outSignal, PlotLine *inSignal, int iCmoPeriod, 
   int i = 0;
   int loop = (int)inSignal->getSize();
 		
-  Q3MemArray<double> *inSeries = new Q3MemArray<double>(loop);
+  QMemArray<double> *inSeries = new QMemArray<double>(loop);
   inSeries->fill(0.0);
-  Q3MemArray<double> *offset = new Q3MemArray<double>(loop);
+  QMemArray<double> *offset = new QMemArray<double>(loop);
   offset->fill(0.0);
-  Q3MemArray<double> *absCmo = new Q3MemArray<double>(loop);
+  QMemArray<double> *absCmo = new QMemArray<double>(loop);
   absCmo->fill(0.0);
-  Q3MemArray<double> *vidya = new Q3MemArray<double>(loop);
+  QMemArray<double> *vidya = new QMemArray<double>(loop);
   vidya->fill(0.0);
 		
   double c = 2 / (double)iVidyaPeriod +1;
@@ -145,25 +143,25 @@ void VIDYA::calcCMO ( PlotLine *outSignal, PlotLine *inSignal, int iPeriod)
 	
   int loop = (int)inSignal->getSize();
 	
-  Q3MemArray<double> *inSeries = new Q3MemArray<double>(loop);
+  QMemArray<double> *inSeries = new QMemArray<double>(loop);
   inSeries->fill(0.0);
-  Q3MemArray<double> *offset = new Q3MemArray<double>(loop);
+  QMemArray<double> *offset = new QMemArray<double>(loop);
   offset->fill(0.0);
-  Q3MemArray<double> *mom = new Q3MemArray<double>(loop);
+  QMemArray<double> *mom = new QMemArray<double>(loop);
   mom->fill(0.0);
-  Q3MemArray<double> *posSeries = new Q3MemArray<double>(loop);
+  QMemArray<double> *posSeries = new QMemArray<double>(loop);
   posSeries->fill(0.0);
-  Q3MemArray<double> *negSeries = new Q3MemArray<double>(loop);
+  QMemArray<double> *negSeries = new QMemArray<double>(loop);
   negSeries->fill(0.0);
-  Q3MemArray<double> *sumPos = new Q3MemArray<double>(loop);
+  QMemArray<double> *sumPos = new QMemArray<double>(loop);
   sumPos->fill(0.0);
-  Q3MemArray<double> *sumNeg = new Q3MemArray<double>(loop);
+  QMemArray<double> *sumNeg = new QMemArray<double>(loop);
   sumNeg->fill(0.0);
-  Q3MemArray<double> *cmoUp = new Q3MemArray<double>(loop);
+  QMemArray<double> *cmoUp = new QMemArray<double>(loop);
   cmoUp->fill(0.0);
-  Q3MemArray<double> *cmoDown = new Q3MemArray<double>(loop);
+  QMemArray<double> *cmoDown = new QMemArray<double>(loop);
   cmoDown->fill(0.0);
-  Q3MemArray<double> *rawCmo = new Q3MemArray<double>(loop);
+  QMemArray<double> *rawCmo = new QMemArray<double>(loop);
   rawCmo->fill(0.0);
 	
   int i = 0;
@@ -242,27 +240,27 @@ void VIDYA::calcAdaptCMO ( PlotLine *outSignal, PlotLine *inSignal, int iStdPeri
 	
   int loop = (int)inSignal->getSize();
 	
-  Q3MemArray<double> *inSeries = new Q3MemArray<double>(loop);
+  QMemArray<double> *inSeries = new QMemArray<double>(loop);
   inSeries->fill(0.0);
-  Q3MemArray<double> *offset = new Q3MemArray<double>(loop);
+  QMemArray<double> *offset = new QMemArray<double>(loop);
   offset->fill(0.0);
-  Q3MemArray<double> *mom = new Q3MemArray<double>(loop);
+  QMemArray<double> *mom = new QMemArray<double>(loop);
   mom->fill(0.0);
-  Q3MemArray<double> *posSeries = new Q3MemArray<double>(loop);
+  QMemArray<double> *posSeries = new QMemArray<double>(loop);
   posSeries->fill(0.0);
-  Q3MemArray<double> *negSeries = new Q3MemArray<double>(loop);
+  QMemArray<double> *negSeries = new QMemArray<double>(loop);
   negSeries->fill(0.0);
-  Q3MemArray<double> *sumPos = new Q3MemArray<double>(loop);
+  QMemArray<double> *sumPos = new QMemArray<double>(loop);
   sumPos->fill(0.0);
-  Q3MemArray<double> *sumNeg = new Q3MemArray<double>(loop);
+  QMemArray<double> *sumNeg = new QMemArray<double>(loop);
   sumNeg->fill(0.0);
-  Q3MemArray<double> *cmoUp = new Q3MemArray<double>(loop);
+  QMemArray<double> *cmoUp = new QMemArray<double>(loop);
   cmoUp->fill(0.0);
-  Q3MemArray<double> *cmoDown = new Q3MemArray<double>(loop);
+  QMemArray<double> *cmoDown = new QMemArray<double>(loop);
   cmoDown->fill(0.0);
-  Q3MemArray<double> *currentLook = new Q3MemArray<double>(loop);
+  QMemArray<double> *currentLook = new QMemArray<double>(loop);
   currentLook->fill(0.0);
-  Q3MemArray<double> *adaptCmo = new Q3MemArray<double>(loop);
+  QMemArray<double> *adaptCmo = new QMemArray<double>(loop);
   adaptCmo->fill(0.0);
 	
   // line up data
@@ -426,7 +424,7 @@ int VIDYA::indicatorPrefDialog (QWidget *w)
   return rc;
 }
 
-PlotLine * VIDYA::calculateCustom (QString &p, Q3PtrList<PlotLine> &d)
+PlotLine * VIDYA::calculateCustom (QString &p, QPtrList<PlotLine> &d)
 {
   // format1: ARRAY_INPUT, PERIOD, VOL_PERIOD
 

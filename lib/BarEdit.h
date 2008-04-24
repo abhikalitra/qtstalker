@@ -27,8 +27,6 @@
 #include <qwidget.h>
 #include <qlayout.h>
 #include <qdatetime.h>
-//Added by qt3to4:
-#include <Q3GridLayout>
 #include "Toolbar.h"
 
 class BarEdit : public QWidget
@@ -68,10 +66,10 @@ class BarEdit : public QWidget
     void slotNextRecord ();
 
   private:
-    Q3GridLayout *grid;
+    QGridLayout *grid;
 //    QDateTimeEdit *dateSearch;
     QLineEdit *date;
-    Q3Dict<QLineEdit> editList;
+    QDict<QLineEdit> editList;
     Toolbar *toolbar;
     bool saveRecordFlag;
     bool ignoreSaveRecordFlag;

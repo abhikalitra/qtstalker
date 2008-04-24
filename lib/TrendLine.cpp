@@ -23,9 +23,6 @@
 #include "PrefDialog.h"
 #include "Config.h"
 #include <qpainter.h>
-//Added by qt3to4:
-#include <Q3PointArray>
-#include <QPixmap>
 
 TrendLine::TrendLine ()
 {
@@ -144,7 +141,7 @@ void TrendLine::draw (QPixmap &buffer, Scaler &scaler, int startIndex, int pixel
 
   // store the selectable area the line occupies
   clearSelectionArea();
-  Q3PointArray array;
+  QPointArray array;
   array.putPoints(0, 4, tx, ty - 4, tx, ty + 4, x2, y2 + 4, x2, y2 - 4);
   setSelectionArea(new QRegion(array));
     
@@ -343,7 +340,7 @@ void TrendLine::drawMovingPointer (QPixmap &buffer, QPoint &point)
 
   QPainter painter;
   painter.begin(&buffer);
-  //painter.setRasterOp(Qt::XorROP);
+  painter.setRasterOp(Qt::XorROP);
   painter.setPen(defaultColor);
       
   // erase the previous line drawn

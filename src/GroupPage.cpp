@@ -34,27 +34,22 @@
 #include <qinputdialog.h>
 #include <qstringlist.h>
 #include <qcursor.h>
-//Added by qt3to4:
-#include <QPixmap>
-#include <Q3PopupMenu>
-#include <QKeyEvent>
-#include <Q3VBoxLayout>
 #include <stdlib.h>
 #include <qtooltip.h>
 #include <qlayout.h>
 #include <qfileinfo.h>
-#include <q3accel.h>
+#include <qaccel.h>
 
 GroupPage::GroupPage (QWidget *w) : QWidget (w)
 {
-  Q3VBoxLayout *vbox = new Q3VBoxLayout(this);
+  QVBoxLayout *vbox = new QVBoxLayout(this);
   vbox->setMargin(0);
   vbox->setSpacing(5);
 
   group = new QLineEdit(this);
   group->setReadOnly(TRUE);
   QToolTip::add(group, tr("Current Group"));
-  group->setFocusPolicy(Qt::NoFocus);
+  group->setFocusPolicy(QWidget::NoFocus);
   vbox->addWidget(group);
 
   QString s;
@@ -63,11 +58,11 @@ GroupPage::GroupPage (QWidget *w) : QWidget (w)
   connect(nav, SIGNAL(fileSelected(QString)), this, SLOT(groupSelected(QString)));
   connect(nav, SIGNAL(fileOpened(QString)), this, SLOT(chartOpened(QString)));
   connect(nav, SIGNAL(noSelection()), this, SLOT(groupNoSelection()));
-  connect(nav, SIGNAL(contextMenuRequested(Q3ListBoxItem *, const QPoint &)), this, SLOT(rightClick(Q3ListBoxItem *)));
+  connect(nav, SIGNAL(contextMenuRequested(QListBoxItem *, const QPoint &)), this, SLOT(rightClick(QListBoxItem *)));
     
   vbox->addWidget(nav);
 
-  menu = new Q3PopupMenu(this);
+  menu = new QPopupMenu(this);
   menu->insertItem(QPixmap(newchart), tr("&New Group		Ctrl+N"), this, SLOT(newGroup()));
   menu->insertItem(QPixmap(insert), tr("&Add Group Items	Ctrl+A"), this, SLOT(addGroupItem()));
   menu->insertItem(QPixmap(deleteitem), tr("&Delete Group Items	Ctrl+D"), this, SLOT(deleteGroupItem()));
@@ -76,15 +71,15 @@ GroupPage::GroupPage (QWidget *w) : QWidget (w)
   menu->insertSeparator(-1);
   menu->insertItem(QPixmap(help), tr("&Help		Ctrl+H"), this, SLOT(slotHelp()));
 
-  Q3Accel *a = new Q3Accel(this);
+  QAccel *a = new QAccel(this);
   connect(a, SIGNAL(activated(int)), this, SLOT(slotAccel(int)));
-  a->insertItem(Qt::CTRL+Qt::Key_N, NewGroup);
-  a->insertItem(Qt::CTRL+Qt::Key_A, AddGroupItem);
-  a->insertItem(Qt::CTRL+Qt::Key_D, DeleteGroupItem);
-  a->insertItem(Qt::CTRL+Qt::Key_L, DeleteGroup);
-  a->insertItem(Qt::CTRL+Qt::Key_R, RenameGroup);
-  a->insertItem(Qt::CTRL+Qt::Key_H, Help);
-  a->insertItem(Qt::Key_Delete, DeleteChart);
+  a->insertItem(CTRL+Key_N, NewGroup);
+  a->insertItem(CTRL+Key_A, AddGroupItem);
+  a->insertItem(CTRL+Key_D, DeleteGroupItem);
+  a->insertItem(CTRL+Key_L, DeleteGroup);
+  a->insertItem(CTRL+Key_R, RenameGroup);
+  a->insertItem(CTRL+Key_H, Help);
+  a->insertItem(Key_Delete, DeleteChart);
   
   rcfile.loadData(RcFile::LastGroupUsed, s);
   if (!s.isEmpty()) 
@@ -124,7 +119,7 @@ void GroupPage::newGroup()
   nav->getCurrentPath(s);
   s.append("/" + selection);
   QDir dir(s);
-  if (dir.exists(s))
+  if (dir.exists(s, TRUE))
   {
     QMessageBox::information(this, tr("Qtstalker: Error"), tr("This group already exists."));
     return;
@@ -143,7 +138,7 @@ void GroupPage::addGroupItem()
                                           s2,
   					  s2,
 					  s,
-					  Q3FileDialog::ExistingFiles);
+					  QFileDialog::ExistingFiles);
 
   int rc = dialog->exec();
 
@@ -160,7 +155,7 @@ void GroupPage::addGroupItem()
       nav->getCurrentPath(ts);
       QString s2 = ts + "/\"" + fi.fileName() + "\"";
       QDir dir;
-      dir.remove(s2);
+      dir.remove(s2, TRUE);
       s.append(s2);
       system(s);
     }
@@ -180,7 +175,7 @@ void GroupPage::deleteGroupItem()
                                           s2,
   					  s2,
 					  s,
-					  Q3FileDialog::ExistingFiles);
+					  QFileDialog::ExistingFiles);
   dialog->setCaption(tr("Select Group Items To Delete"));
 
   int rc = dialog->exec();
@@ -205,7 +200,7 @@ void GroupPage::deleteGroupItem()
     QDir dir;
     for (loop = 0; loop < (int) l.count(); loop++)
     {
-      if (! dir.remove(l[loop]))
+      if (! dir.remove(l[loop], TRUE))
         qDebug("GroupPage::deleteGroupItem:failed to delete symlink");
     }
 
@@ -241,7 +236,7 @@ void GroupPage::deleteChart()
     return;
 
   QDir dir;
-  dir.remove(s);
+  dir.remove(s, TRUE);
   nav->updateList();
   groupNoSelection();
 }
@@ -310,13 +305,13 @@ void GroupPage::renameGroup ()
   s2.prepend("/");
   
   QDir dir(s2);
-  if (dir.exists(s2))
+  if (dir.exists(s2, TRUE))
   {
     QMessageBox::information(this, tr("Qtstalker: Error"), tr("This chart group exists."));
     return;
   }
 
-  if (! dir.rename(s, s2))
+  if (! dir.rename(s, s2, TRUE))
   {
     QMessageBox::information(this, tr("Qtstalker: Error"), tr("Group rename failed."));
     return;
@@ -368,7 +363,7 @@ void GroupPage::groupNoSelection ()
   }
 }
 
-void GroupPage::rightClick (Q3ListBoxItem *)
+void GroupPage::rightClick (QListBoxItem *)
 {
   menu->exec(QCursor::pos());
 }
@@ -409,7 +404,7 @@ void GroupPage::addChartToGroup (QString symbol)
   QString str = "ln -s \"" + symbol + "\" ";
   QString s2 = s + "/\"" + fi.fileName() + "\"";
   QDir dir;
-  dir.remove(s2);
+  dir.remove(s2, TRUE);
   str.append(s2);
   system(str);
 

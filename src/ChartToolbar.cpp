@@ -25,14 +25,12 @@
 #include "BarData.h"
 #include "PrefDialog.h"
 #include <qtooltip.h>
-#include <q3accel.h>
+#include <qaccel.h>
 #include <qvalidator.h>
-//Added by qt3to4:
-#include <QKeyEvent>
 #include "../pics/date.xpm"
 #include "../pics/next.xpm"
 
-ChartToolbar::ChartToolbar (Q3MainWindow *mw) : Q3ToolBar (mw, "chartToolbar")
+ChartToolbar::ChartToolbar (QMainWindow *mw) : QToolBar (mw, "chartToolbar")
 {
   minPixelspace = 2;
   
@@ -123,17 +121,17 @@ ChartToolbar::ChartToolbar (Q3MainWindow *mw) : Q3ToolBar (mw, "chartToolbar")
 
   setStretchableWidget(slider);
   
-  Q3Accel *a = new Q3Accel(mw);
+  QAccel *a = new QAccel(mw);
   connect(a, SIGNAL(activated(int)), this, SLOT(slotAccel(int)));
-  a->insertItem(Qt::CTRL+Qt::Key_End, ChartPannerFocus);
-  a->insertItem(Qt::CTRL+Qt::Key_Plus, BarsLoadedFocus);
-  a->insertItem(Qt::CTRL+Qt::Key_Minus, BarSpacingFocus);
-  a->insertItem(Qt::CTRL+Qt::Key_Prior, BarLengthFocus);
-  a->insertItem(Qt::CTRL+Qt::Key_B, ToolbarFocus);
+  a->insertItem(CTRL+Key_End, ChartPannerFocus);
+  a->insertItem(CTRL+Key_Plus, BarsLoadedFocus);
+  a->insertItem(CTRL+Key_Minus, BarSpacingFocus);
+  a->insertItem(CTRL+Key_Prior, BarLengthFocus);
+  a->insertItem(CTRL+Key_B, ToolbarFocus);
   
   focusFlag = BarLengthFocus;
   
-  connect(this, SIGNAL(orientationChanged( Qt::Orientation)), this, SLOT(slotOrientationChanged(Qt::Orientation)));
+  connect(this, SIGNAL(orientationChanged( Orientation)), this, SLOT(slotOrientationChanged(Orientation)));
   
   setVerticallyStretchable(TRUE);
 }
@@ -462,7 +460,7 @@ void ChartToolbar::cmpsBtn15Clicked()
   emit signalBarLengthChanged((int)3);
 }
 
-void ChartToolbar::slotOrientationChanged(Qt::Orientation o)
+void ChartToolbar::slotOrientationChanged(Orientation o)
 {
     slider->setOrientation(o);
    // updateGeometry();

@@ -24,7 +24,7 @@
 
 #include <qstring.h>
 #include <qdialog.h>
-#include <q3textbrowser.h>
+#include <qtextbrowser.h>
 #include "Toolbar.h"
 
 class HelpWindow : public QDialog
@@ -44,7 +44,7 @@ class HelpWindow : public QDialog
     void exit ();
     void slotLoadFile(const QString &name);
   private:
-    Q3TextBrowser *text;
+    QTextBrowser *text;
     Toolbar *toolbar;
     QString homePath;
     QString tocPath;

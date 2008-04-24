@@ -32,7 +32,7 @@
 
 #include <qmap.h>
 #include <qstring.h>
-#include <q3textstream.h>
+#include <qtextstream.h>
 
 class AttrMap : public QMap<QString, QString>
 {
@@ -65,7 +65,7 @@ private:
     QString opening( const QString& tag, const AttrMap& attrs = AttrMap() );
     void writePendingIndent();
 
-    Q3TextStream out;
+    QTextStream out;
     QString indentStr;
     int indentSize;
     bool autoNewLine;

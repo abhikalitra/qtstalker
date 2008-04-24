@@ -22,7 +22,7 @@
 #include "DBBase.h"
 #include <qfile.h>
 #include <qfileinfo.h>
-#include <q3textstream.h>
+#include <qtextstream.h>
 
 
 DBBase::DBBase ()
@@ -128,9 +128,9 @@ void DBBase::deleteData (QString &k)
 void DBBase::dump (QString &d)
 {
   QFile outFile(d);
-  if (! outFile.open(QIODevice::WriteOnly))
+  if (! outFile.open(IO_WriteOnly))
     return;
-  Q3TextStream outStream(&outFile);
+  QTextStream outStream(&outFile);
   
   DBT key, data;
   DBC *cur;

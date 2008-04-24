@@ -31,13 +31,8 @@
 #include <qinputdialog.h>
 #include <qmessagebox.h>
 #include <qcursor.h>
-//Added by qt3to4:
-#include <QPixmap>
-#include <Q3PopupMenu>
-#include <QKeyEvent>
-#include <Q3VBoxLayout>
 #include <stdlib.h>
-#include <q3accel.h>
+#include <qaccel.h>
 #include <qlayout.h>
 #include <qtooltip.h>
 
@@ -47,7 +42,7 @@ TestPage::TestPage (QWidget *w, MainMenubar *mb, DBIndex *i) : QWidget (w)
   menubar = mb;
   idir.setFilter(QDir::Dirs);
 
-  Q3VBoxLayout *vbox = new Q3VBoxLayout(this);
+  QVBoxLayout *vbox = new QVBoxLayout(this);
   vbox->setMargin(0);
   vbox->setSpacing(5);
   
@@ -57,14 +52,14 @@ TestPage::TestPage (QWidget *w, MainMenubar *mb, DBIndex *i) : QWidget (w)
   QToolTip::add(search, tr("List Filter, e.g. s* or sb*"));
   vbox->addWidget(search);
 
-  list = new Q3ListBox(this);
-  connect(list, SIGNAL(contextMenuRequested(Q3ListBoxItem *, const QPoint &)), this,
-          SLOT(rightClick(Q3ListBoxItem *)));
+  list = new QListBox(this);
+  connect(list, SIGNAL(contextMenuRequested(QListBoxItem *, const QPoint &)), this,
+          SLOT(rightClick(QListBoxItem *)));
   connect(list, SIGNAL(highlighted(const QString &)), this, SLOT(testSelected(const QString &)));
-  connect(list, SIGNAL(doubleClicked(Q3ListBoxItem *)), this, SLOT(doubleClick(Q3ListBoxItem *)));
+  connect(list, SIGNAL(doubleClicked(QListBoxItem *)), this, SLOT(doubleClick(QListBoxItem *)));
   vbox->addWidget(list);
   
-  menu = new Q3PopupMenu(this);
+  menu = new QPopupMenu(this);
   menu->insertItem(QPixmap(newchart), tr("&New Rule		Ctrl+N"), this, SLOT(newTest()));
   menu->insertItem(QPixmap(open), tr("&Open Rule		Ctrl+O"), this, SLOT(openTest()));
   menu->insertItem(QPixmap(deleteitem), tr("&Delete Rule	Ctrl+D"), this, SLOT(deleteTest()));
@@ -73,14 +68,14 @@ TestPage::TestPage (QWidget *w, MainMenubar *mb, DBIndex *i) : QWidget (w)
   menu->insertSeparator(-1);
   menu->insertItem(QPixmap(help), tr("&Help		Ctrl+H"), this, SLOT(slotHelp()));
 
-  Q3Accel *a = new Q3Accel(this);
+  QAccel *a = new QAccel(this);
   connect(a, SIGNAL(activated(int)), this, SLOT(slotAccel(int)));
-  a->insertItem(Qt::CTRL+Qt::Key_N, NewTest);
-  a->insertItem(Qt::CTRL+Qt::Key_O, OpenTest);
-  a->insertItem(Qt::CTRL+Qt::Key_D, DeleteTest);
-  a->insertItem(Qt::CTRL+Qt::Key_R, RenameTest);
-  a->insertItem(Qt::CTRL+Qt::Key_Y, CopyTest);
-  a->insertItem(Qt::CTRL+Qt::Key_H, Help);
+  a->insertItem(CTRL+Key_N, NewTest);
+  a->insertItem(CTRL+Key_O, OpenTest);
+  a->insertItem(CTRL+Key_D, DeleteTest);
+  a->insertItem(CTRL+Key_R, RenameTest);
+  a->insertItem(CTRL+Key_Y, CopyTest);
+  a->insertItem(CTRL+Key_H, Help);
   
   updateList();
   testNoSelection();
@@ -122,7 +117,7 @@ void TestPage::deleteTest()
                                           s2,
   					  s2,
 					  s,
-					  Q3FileDialog::DirectoryOnly);
+					  QFileDialog::DirectoryOnly);
   dialog->setCaption(tr("Select Backtest rule To Delete"));
 
   int rc = dialog->exec();
@@ -183,7 +178,7 @@ void TestPage::renameTest ()
   config.getData(Config::TestPath, s);
   s.append("/" + selection);
   QDir dir(s);
-  if (dir.exists(s))
+  if (dir.exists(s, TRUE))
   {
     QMessageBox::information(this, tr("Qtstalker: Error"), tr("This backtest rule already exists."));
     return;
@@ -192,7 +187,7 @@ void TestPage::renameTest ()
   QString s2;
   config.getData(Config::TestPath, s2);
   s2.append("/" + list->currentText());
-  dir.rename(s2, s);
+  dir.rename(s2, s, TRUE);
   
   list->changeItem(selection, list->currentItem());
 }
@@ -225,7 +220,7 @@ void TestPage::copyTest ()
   config.getData(Config::TestPath, s);
   s.append("/" + selection);
   QDir dir(s);
-  if (dir.exists(s))
+  if (dir.exists(s, TRUE))
   {
     QMessageBox::information(this, tr("Qtstalker: Error"), tr("This backtest rule already exists."));
     return;
@@ -258,7 +253,7 @@ void TestPage::testNoSelection ()
   menu->setItemEnabled(menu->idAt(4), FALSE);
 }
 
-void TestPage::rightClick (Q3ListBoxItem *)
+void TestPage::rightClick (QListBoxItem *)
 {
   menu->exec(QCursor::pos());
 }
@@ -285,7 +280,7 @@ void TestPage::slotMessage (QString d)
   emit message(d);
 }
 
-void TestPage::doubleClick (Q3ListBoxItem *item)
+void TestPage::doubleClick (QListBoxItem *item)
 {
   if (! item)
     return;

@@ -24,11 +24,9 @@
 
 #include "COBase.h"
 #include "Setting.h"
-#include <q3pointarray.h>
+#include <qpointarray.h>
 #include <qpoint.h>
 #include <qdatetime.h>
-//Added by qt3to4:
-#include <QPixmap>
 
 class VerticalLine : public COBase
 {

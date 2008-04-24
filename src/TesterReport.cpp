@@ -21,26 +21,21 @@
 
 #include "TesterReport.h"
 #include <qlayout.h>
-#include <q3vgroupbox.h>
-#include <q3header.h>
+#include <qvgroupbox.h>
+#include <qheader.h>
 #include <qfont.h>
-//Added by qt3to4:
-#include <Q3HBoxLayout>
-#include <QLabel>
-#include <Q3PtrList>
-#include <Q3VBoxLayout>
 
 
 TesterReport::TesterReport (QWidget *p) : QWidget (p)
 {
-  Q3VBoxLayout *vbox = new Q3VBoxLayout(this);
+  QVBoxLayout *vbox = new QVBoxLayout(this);
   vbox->setMargin(5);
   vbox->setSpacing(5);
 
-  tradeList = new Q3Table(0, 9, this);
-  tradeList->setSelectionMode(Q3Table::Single);
+  tradeList = new QTable(0, 9, this);
+  tradeList->setSelectionMode(QTable::Single);
   tradeList->setSorting(FALSE);
-  Q3Header *header = tradeList->horizontalHeader();
+  QHeader *header = tradeList->horizontalHeader();
   header->setLabel(0, tr("Type"), 40);
   header->setLabel(1, tr("Entry"), 90);
   header->setLabel(2, tr("Entry Price"), 60);
@@ -58,10 +53,10 @@ TesterReport::TesterReport (QWidget *p) : QWidget (p)
     
   // test summary
   
-  Q3HBoxLayout *hbox = new Q3HBoxLayout(vbox);
+  QHBoxLayout *hbox = new QHBoxLayout(vbox);
   hbox->setSpacing(5);
 
-  Q3VGroupBox *gbox = new Q3VGroupBox(tr("Test Summary"), this);
+  QVGroupBox *gbox = new QVGroupBox(tr("Test Summary"), this);
   gbox->setInsideSpacing(2);
   gbox->setColumns(2);
   hbox->addWidget(gbox);
@@ -95,7 +90,7 @@ TesterReport::TesterReport (QWidget *p) : QWidget (p)
   
   // win summary
 
-  gbox = new Q3VGroupBox(tr("Win Summary"), this);
+  gbox = new QVGroupBox(tr("Win Summary"), this);
   gbox->setInsideSpacing(2);
   gbox->setColumns(2);
   hbox->addWidget(gbox);
@@ -120,7 +115,7 @@ TesterReport::TesterReport (QWidget *p) : QWidget (p)
 
   // lose summary
 
-  gbox = new Q3VGroupBox(tr("Loss Summary"), this);
+  gbox = new QVGroupBox(tr("Loss Summary"), this);
   gbox->setInsideSpacing(2);
   gbox->setColumns(2);
   hbox->addWidget(gbox);
@@ -198,7 +193,7 @@ void TesterReport::addTrade (QString &s, TradeItem *trade)
   trade->setVolume(l[8].toInt());
 }
 
-void TesterReport::createSummary (Q3PtrList<TradeItem> &trades, double account)
+void TesterReport::createSummary (QPtrList<TradeItem> &trades, double account)
 {
   int shortTrades = 0;
   int longTrades = 0;

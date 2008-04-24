@@ -22,16 +22,16 @@
 #ifndef PORTFOLIODIALOG_HPP
 #define PORTFOLIODIALOG_HPP
 
-#include <q3listview.h>
+#include <qlistview.h>
 #include <qstring.h>
-#include <q3tabdialog.h>
+#include <qtabdialog.h>
 #include <qlabel.h>
 #include <qpoint.h>
 #include "Config.h"
 #include "Toolbar.h"
 #include "DBIndex.h"
 
-class PortfolioDialog : public Q3TabDialog
+class PortfolioDialog : public QTabDialog
 {
   Q_OBJECT
 
@@ -47,13 +47,13 @@ class PortfolioDialog : public Q3TabDialog
     void addItem ();
     void deleteItem ();
     void savePortfolio ();
-    void buttonStatus (Q3ListViewItem *);
+    void buttonStatus (QListViewItem *);
     void slotHelp ();
-    void itemDoubleClicked (Q3ListViewItem *, const QPoint &, int);
+    void itemDoubleClicked (QListViewItem *, const QPoint &, int);
 
   private:
-    Q3ListView *plist;
-    Q3ListViewItem *item;
+    QListView *plist;
+    QListViewItem *item;
     QString portfolio;
     Toolbar *toolbar;
     Config config;

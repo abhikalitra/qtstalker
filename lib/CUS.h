@@ -20,7 +20,7 @@
  */
 
 #include "IndicatorPlugin.h"
-#include <q3dict.h>
+#include <qdict.h>
 
 class CUS : public IndicatorPlugin
 {
@@ -32,7 +32,7 @@ class CUS : public IndicatorPlugin
     void setIndicatorSettings (Setting &);
     int indicatorPrefDialog (QWidget *);
     void setCustomFunction (QStringList &);
-    void createPlot (QString &, Q3Dict<PlotLine> &, Indicator *);
+    void createPlot (QString &, QDict<PlotLine> &, Indicator *);
     void includeCUS (QString &, QStringList &);
     void checkIncludes ();
 

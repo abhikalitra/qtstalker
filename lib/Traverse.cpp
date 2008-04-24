@@ -37,27 +37,30 @@ void Traverse::traverse (QString dirname)
   QDir dir(dirname);
   dir.setFilter(QDir::Dirs|QDir::Files);
 
-  QFileInfoList fileinfolist = dir.entryInfoList();
-  int ret = -1;
-  for(QFileInfoListIterator it=fileinfolist.begin();ret && it!=fileinfolist.end();++it)
+  const QFileInfoList *fileinfolist = dir.entryInfoList();
+  QFileInfoListIterator it(*fileinfolist);
+  QFileInfo *fi;
+  while((fi = it.current()))
   {
-    if(it->fileName() == "." || it->fileName() == "..")
+    if(fi->fileName() == "." || fi->fileName() == "..")
     {
+      ++it;
       continue;
     }
 
-    if(it->isDir() && it->isReadable())
+    if(fi->isDir() && fi->isReadable())
     {
       if (type == Dir)
-        list.append(it->absFilePath());
-      traverse(it->absFilePath());
+        list.append(fi->absFilePath());
+      traverse(fi->absFilePath());
     }
     else
     {
       if (type == File)
-        list.append(it->absFilePath());
+        list.append(fi->absFilePath());
     }
 
+    ++it;
   }
 }
 

@@ -43,11 +43,9 @@
 #include <qsettings.h>
 #include <qobject.h>
 #include <qfile.h>
-#include <q3textstream.h>
+#include <qtextstream.h>
 #include <qapplication.h>
 #include <qfileinfo.h>
-//Added by qt3to4:
-#include <Q3ValueList>
 #include <stdlib.h>
 
 Config::Config ()
@@ -55,7 +53,7 @@ Config::Config ()
   libs.setAutoDelete(TRUE);
   indicatorPlugins.setAutoDelete(TRUE);
   quotePlugins.setAutoDelete(TRUE);
-  version = "0.36";  // only this version of plugin is allowed to be loaded
+  version = "0.37";  // only this version of plugin is allowed to be loaded
 
   TALIB t;
   t.getIndicatorList(indicatorList);
@@ -96,13 +94,13 @@ void Config::setup ()
   dir.convertToAbs();
   QString home = dir.absPath();
   home.append("/.qtstalker");
-  if (! dir.exists(home))
+  if (! dir.exists(home, TRUE))
   {
     if (! dir.mkdir(home, TRUE))
       qDebug("Unable to create ~/.qtstalker directory.");
   }
   home.append("/data1");
-  if (! dir.exists(home))
+  if (! dir.exists(home, TRUE))
   {
     if (! dir.mkdir(home, TRUE))
       qDebug("Unable to create ~/.qtstalker/data1 directory.");
@@ -110,7 +108,7 @@ void Config::setup ()
   rcfile.saveData(RcFile::Home, home);
 
   QString s = home + "/index";
-  if (! dir.exists(s))
+  if (! dir.exists(s, TRUE))
   {
     if (! dir.mkdir(s, TRUE))
       qDebug("Unable to create ~/.qtstalker/data1/index directory.");
@@ -125,7 +123,7 @@ void Config::setup ()
   rcfile.saveData(RcFile::FundamentalsPath, s);
 
   s = home + "/data";
-  if (! dir.exists(s))
+  if (! dir.exists(s, TRUE))
   {
     if (! dir.mkdir(s, TRUE))
       qDebug("Unable to create ~/.qtstalker/data1/data directory.");
@@ -133,7 +131,7 @@ void Config::setup ()
   rcfile.saveData(RcFile::DataPath, s);
 
   s = home + "/group";
-  if (! dir.exists(s))
+  if (! dir.exists(s, TRUE))
   {
     if (! dir.mkdir(s, TRUE))
       qDebug("Unable to create ~/.qtstalker/data1/group directory.");
@@ -141,7 +139,7 @@ void Config::setup ()
   rcfile.saveData(RcFile::GroupPath, s);
 
   s = home + "/portfolio";
-  if (! dir.exists(s))
+  if (! dir.exists(s, TRUE))
   {
     if (! dir.mkdir(s, TRUE))
       qDebug("Unable to create ~/.qtstalker/data1/portfolio directory.");
@@ -149,7 +147,7 @@ void Config::setup ()
   rcfile.saveData(RcFile::PortfolioPath, s);
 
   s = home + "/test";
-  if (! dir.exists(s))
+  if (! dir.exists(s, TRUE))
   {
     if (! dir.mkdir(s, TRUE))
       qDebug("Unable to create ~/.qtstalker/data1/test directory.");
@@ -157,7 +155,7 @@ void Config::setup ()
   rcfile.saveData(RcFile::TestPath, s);
 
   s = home + "/scanner";
-  if (! dir.exists(s))
+  if (! dir.exists(s, TRUE))
   {
     if (! dir.mkdir(s, TRUE))
       qDebug("Unable to create ~/.qtstalker/data1/scanner directory.");
@@ -165,7 +163,7 @@ void Config::setup ()
   rcfile.saveData(RcFile::ScannerPath, s);
 
   s = home + "/indicator";
-  if (! dir.exists(s))
+  if (! dir.exists(s, TRUE))
   {
     if (! dir.mkdir(s, TRUE))
       qDebug("Unable to create ~/.qtstalker/data1/indicator directory.");
@@ -173,7 +171,7 @@ void Config::setup ()
   rcfile.saveData(RcFile::IndicatorPath, s);
   
   s = home + "/indicator/Indicators";
-  if (! dir.exists(s))
+  if (! dir.exists(s, TRUE))
   {
     if (! dir.mkdir(s, TRUE))
       qDebug("Unable to create ~/.qtstalker/data1/indicator/Indicators directory.");
@@ -188,14 +186,14 @@ void Config::setup ()
   }
   
   s = home + "/plugin";
-  if (! dir.exists(s))
+  if (! dir.exists(s, TRUE))
   {
     if (! dir.mkdir(s, TRUE))
       qDebug("Unable to create ~/.qtstalker/data1/plugin directory.");
   }
   
   s.append("/quote");
-  if (! dir.exists(s))
+  if (! dir.exists(s, TRUE))
   {
     if (! dir.mkdir(s, TRUE))
       qDebug("Unable to create ~/.qtstalker/data1/plugin/quote directory.");
@@ -203,14 +201,14 @@ void Config::setup ()
   rcfile.saveData(RcFile::QuotePluginStorage, s);
   
   s = home + "/docs";
-  if (! dir.exists(s))
+  if (! dir.exists(s, TRUE))
   {
     if (! dir.mkdir(s, TRUE))
       qDebug("Unable to create ~/.qtstalker/data1/docs directory.");
   }
   rcfile.saveData(RcFile::UserDocsPath, s);
   s.append("/indicator");
-  if (! dir.exists(s))
+  if (! dir.exists(s, TRUE))
   {
     if (! dir.mkdir(s, TRUE))
       qDebug("Unable to create ~/.qtstalker/data1/docs/indicator directory.");
@@ -545,7 +543,7 @@ void Config::loadSplitterSize (Parm p, QSplitter *sp)
   getData(p, s);
   
   QStringList stringList = QStringList::split(",", s, FALSE);
-  Q3ValueList<int> sizeList = sp->sizes();
+  QValueList<int> sizeList = sp->sizes();
   
   int loop;
   for (loop = 0; loop < (int) stringList.count(); loop++)
@@ -557,7 +555,7 @@ void Config::loadSplitterSize (Parm p, QSplitter *sp)
 void Config::saveSplitterSize (Parm p, QSplitter *sp)
 {
   QStringList stringList;
-  Q3ValueList<int> sizeList = sp->sizes();
+  QValueList<int> sizeList = sp->sizes();
   
   int loop;
   for (loop = 0; loop < (int) sizeList.count(); loop++)
@@ -579,12 +577,12 @@ void Config::getIndicators (QString &d, QStringList &l)
 void Config::getIndicator (QString &d, Setting &set)
 {
   QFile f(d);
-  if (! f.open(QIODevice::ReadOnly))
+  if (! f.open(IO_ReadOnly))
   {
     qDebug("Config::getIndicator:can't open indicator file %s", d.latin1());
     return;
   }
-  Q3TextStream stream(&f);
+  QTextStream stream(&f);
   
   while(stream.atEnd() == 0)
   {
@@ -607,12 +605,12 @@ void Config::getIndicator (QString &d, Setting &set)
 void Config::setIndicator (QString &d, Setting &set)
 {
   QFile f(d);
-  if (! f.open(QIODevice::WriteOnly))
+  if (! f.open(IO_WriteOnly))
   {
     qDebug("Config::setIndicator:can't write to indicator file %s", d.latin1());
     return;
   }
-  Q3TextStream stream(&f);
+  QTextStream stream(&f);
   
   int loop;
   QStringList l;
@@ -798,21 +796,21 @@ void Config::closePlugin (QString &d)
 void Config::copyIndicatorFile (QString &d, QString &d2)
 {
   QFile f(d);
-  if (! f.open(QIODevice::ReadOnly))
+  if (! f.open(IO_ReadOnly))
   {
     qDebug("Config::copyFile:can't open input file %s", d.latin1());
     return;
   }
-  Q3TextStream stream(&f);
+  QTextStream stream(&f);
   
   QFile f2(d2);
-  if (! f2.open(QIODevice::WriteOnly))
+  if (! f2.open(IO_WriteOnly))
   {
     qDebug("Config::copyFile:can't open output file %s", d2.latin1());
     f.close();
     return;
   }
-  Q3TextStream stream2(&f2);
+  QTextStream stream2(&f2);
   
   while(stream.atEnd() == 0)
   {
@@ -832,12 +830,12 @@ void Config::checkUpgrade ()
   QDir dir(QDir::homeDirPath());
   dir.convertToAbs();
   QString s = dir.absPath() + "/Qtstalker";
-  if (! dir.exists(s))
+  if (! dir.exists(s, TRUE))
     return;
 
   // check if we need to delete the old qtstalkerrc file before we upgrade
   s = dir.absPath() + "/.qtstalker";
-  if (! dir.exists(s))
+  if (! dir.exists(s, TRUE))
   {
     s = dir.absPath() + "/.qt/qtstalkerrc";
     dir.remove(s, TRUE);

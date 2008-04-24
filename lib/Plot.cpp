@@ -21,17 +21,14 @@
 
 #include "Plot.h"
 #include <qlayout.h>
-//Added by qt3to4:
-#include <Q3HBoxLayout>
-#include <Q3VBoxLayout>
 
 Plot::Plot (QWidget *w, DBIndex *i) : QWidget(w)
 {
-  Q3VBoxLayout *vbox = new Q3VBoxLayout(this);
+  QVBoxLayout *vbox = new QVBoxLayout(this);
   vbox->setMargin(0);
   vbox->setSpacing(0);
   
-  Q3HBoxLayout *hbox = new Q3HBoxLayout(vbox);
+  QHBoxLayout *hbox = new QHBoxLayout(vbox);
   hbox->setMargin(0);
   hbox->setSpacing(0);
 

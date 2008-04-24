@@ -24,10 +24,8 @@
 
 #include <qstring.h>
 #include <qwidget.h>
-#include <q3popupmenu.h>
+#include <qpopupmenu.h>
 #include <qlineedit.h>
-//Added by qt3to4:
-#include <QKeyEvent>
 #include "Navigator.h"
 #include "RcFile.h"
 
@@ -66,7 +64,7 @@ class GroupPage : public QWidget
     void groupSelected (QString);
     void groupNoSelection ();
     void setGroupNavItem (QString, QString);
-    void rightClick (Q3ListBoxItem *);
+    void rightClick (QListBoxItem *);
     void slotHelp ();
     void doKeyPress (QKeyEvent *);
     void slotAccel (int);
@@ -78,7 +76,7 @@ class GroupPage : public QWidget
   protected:
     Navigator *nav;
     RcFile rcfile;
-    Q3PopupMenu *menu;
+    QPopupMenu *menu;
     QLineEdit *group;
 };
 

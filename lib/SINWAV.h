@@ -20,7 +20,7 @@
  */
 
 #include "IndicatorPlugin.h"
-#include <q3ptrlist.h>
+#include <qptrlist.h>
 
 class SINWAV : public IndicatorPlugin
 {
@@ -30,11 +30,11 @@ class SINWAV : public IndicatorPlugin
     Indicator * calculate ();
     int indicatorPrefDialog (QWidget *);
     void setDefaults();
-    PlotLine * calculateCustom (QString &, Q3PtrList<PlotLine> &);
+    PlotLine * calculateCustom (QString &, QPtrList<PlotLine> &);
     void getIndicatorSettings (Setting &);
     void setIndicatorSettings (Setting &);
     void formatDialog (QStringList &vl, QString &rv, QString &rs);
-    void getSINWAV(Q3PtrList<PlotLine> &);
+    void getSINWAV(QPtrList<PlotLine> &);
   
   private:
     QColor colorSin;

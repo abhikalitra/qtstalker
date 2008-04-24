@@ -21,10 +21,8 @@
 
 #include "VFI.h"
 #include "PrefDialog.h"
-#include <q3dict.h>
+#include <qdict.h>
 #include <qobject.h>
-//Added by qt3to4:
-#include <Q3PtrList>
 #include <math.h>
 
 VFI::VFI ()
@@ -234,7 +232,7 @@ void VFI::getIndicatorSettings (Setting &dict)
   dict.setData(pluginLabel, pluginName);
 }
 
-PlotLine * VFI::calculateCustom (QString &p, Q3PtrList<PlotLine> &d)
+PlotLine * VFI::calculateCustom (QString &p, QPtrList<PlotLine> &d)
 {
   // format1: MA_TYPE, PERIOD, SMOOTHING
 

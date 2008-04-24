@@ -20,7 +20,7 @@
  */
 
 #include "IndicatorPlugin.h"
-#include <q3ptrlist.h>
+#include <qptrlist.h>
 
 class LMS : public IndicatorPlugin
 {
@@ -30,11 +30,11 @@ class LMS : public IndicatorPlugin
     Indicator * calculate ();
     int indicatorPrefDialog (QWidget *);
     void setDefaults();
-    PlotLine * calculateCustom (QString &, Q3PtrList<PlotLine> &);
+    PlotLine * calculateCustom (QString &, QPtrList<PlotLine> &);
     void getIndicatorSettings (Setting &);
     void setIndicatorSettings (Setting &);
     void formatDialog (QStringList &vl, QString &rv, QString &rs);
-    void getLMS (Q3PtrList<PlotLine> &);
+    void getLMS (QPtrList<PlotLine> &);
   
   private:
     QColor colorK;

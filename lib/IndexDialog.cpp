@@ -29,26 +29,22 @@
 #include <qlayout.h>
 #include <qdir.h>
 #include <qlabel.h>
-//Added by qt3to4:
-#include <Q3GridLayout>
-#include <Q3HBoxLayout>
-#include <Q3VBoxLayout>
 #include "../pics/insert.xpm"
 #include "../pics/edit.xpm"
 #include "../pics/delete.xpm"
 
 
-IndexDialog::IndexDialog (QString &nam, QString &l) : Q3TabDialog (0, "IndexDialog", TRUE)
+IndexDialog::IndexDialog (QString &nam, QString &l) : QTabDialog (0, "IndexDialog", TRUE)
 {
   helpFile = "indexes.html";
 
   QWidget *w = new QWidget(this);
   
-  Q3VBoxLayout *vbox = new Q3VBoxLayout(w);
+  QVBoxLayout *vbox = new QVBoxLayout(w);
   vbox->setMargin(5);
   vbox->setSpacing(5);
     
-  Q3GridLayout *grid = new Q3GridLayout(vbox);
+  QGridLayout *grid = new QGridLayout(vbox);
   grid->setColStretch(1, 1);
   grid->setSpacing(5);
   
@@ -58,10 +54,10 @@ IndexDialog::IndexDialog (QString &nam, QString &l) : Q3TabDialog (0, "IndexDial
   name = new QLineEdit(nam, w);
   grid->addWidget(name, 0, 1);
   
-  Q3HBoxLayout *hbox = new Q3HBoxLayout(vbox);
+  QHBoxLayout *hbox = new QHBoxLayout(vbox);
   hbox->setSpacing(2);
   
-  list = new Q3ListView(w);
+  list = new QListView(w);
   list->addColumn(tr("Symbol"), 200);
   list->addColumn(tr("Weight"), -1);
   QObject::connect(list, SIGNAL(selectionChanged()), this, SLOT(buttonStatus()));
@@ -101,7 +97,7 @@ IndexDialog::IndexDialog (QString &nam, QString &l) : Q3TabDialog (0, "IndexDial
   resize(325, 250);
 }
 
-IndexDialog::IndexDialog () : Q3TabDialog (0, "IndexDialog", TRUE)
+IndexDialog::IndexDialog () : QTabDialog (0, "IndexDialog", TRUE)
 {
 }
 
@@ -114,7 +110,7 @@ void IndexDialog::buttonStatus ()
   QString s = "edit";
   QString s2 = "delete";
   
-  Q3ListViewItem *item = list->selectedItem();
+  QListViewItem *item = list->selectedItem();
   if (! item)
   {
     toolbar->setButtonStatus(s, FALSE);
@@ -161,7 +157,7 @@ void IndexDialog::addItem ()
     QStringList l = QStringList::split("/", s, FALSE);
     symbolDict.insert(l[l.count() - 1], new QString(s));
     
-    new Q3ListViewItem(list, l[l.count() - 1], QString::number(weight));
+    new QListViewItem(list, l[l.count() - 1], QString::number(weight));
     
     buttonStatus();
   }
@@ -171,7 +167,7 @@ void IndexDialog::addItem ()
 
 void IndexDialog::editItem ()
 {
-  Q3ListViewItem *item = list->selectedItem();
+  QListViewItem *item = list->selectedItem();
   if (! item)
     return;
 
@@ -219,7 +215,7 @@ void IndexDialog::editItem ()
 
 void IndexDialog::deleteItem ()
 {
-  Q3ListViewItem *item = list->selectedItem();
+  QListViewItem *item = list->selectedItem();
   if (! item)
     return;
 
@@ -241,7 +237,7 @@ void IndexDialog::setList (QString &d)
   {
     QStringList l2 = QStringList::split("/", l[loop], FALSE);
     symbolDict.insert(l2[l2.count() - 1], new QString(l[loop]));
-    new Q3ListViewItem(list, l2[l2.count() - 1], l[loop + 1]);
+    new QListViewItem(list, l2[l2.count() - 1], l[loop + 1]);
   }
     
   buttonStatus();
@@ -254,7 +250,7 @@ void IndexDialog::getList (QString &d)
   if (! list->childCount())
     return;
   
-  Q3ListViewItem *item = list->firstChild();
+  QListViewItem *item = list->firstChild();
   
   while (item)
   {

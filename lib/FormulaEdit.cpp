@@ -30,13 +30,11 @@
 #include "../pics/include.xpm"
 #include <qlayout.h>
 #include <qfile.h>
-#include <q3textstream.h>
+#include <qtextstream.h>
 #include <qdir.h>
 #include <qmessagebox.h>
 #include <qtabwidget.h>
 #include <qinputdialog.h>
-//Added by qt3to4:
-#include <Q3HBoxLayout>
 
 // not used #define BUTTON_SIZE 24
 
@@ -50,7 +48,7 @@ FormulaEdit::FormulaEdit (QWidget *w, int t) : QWidget(w)
   PlotLine pl;
   pl.getLineTypes(lineTypes);
   
-  Q3HBoxLayout *hbox = new Q3HBoxLayout(this);
+  QHBoxLayout *hbox = new QHBoxLayout(this);
   hbox->setMargin(0);
   hbox->setSpacing(1);
 
@@ -60,11 +58,11 @@ FormulaEdit::FormulaEdit (QWidget *w, int t) : QWidget(w)
   // create formula page
   QWidget *tw = new QWidget(this);
 
-  Q3HBoxLayout *thbox = new Q3HBoxLayout(tw);
+  QHBoxLayout *thbox = new QHBoxLayout(tw);
   thbox->setMargin(5);
   thbox->setSpacing(0);
 
-  formula = new Q3TextEdit(tw);
+  formula = new QTextEdit(tw);
   thbox->addWidget(formula);
 
   ftoolbar = new Toolbar(tw, Toolbar::Vertical);
@@ -90,12 +88,12 @@ FormulaEdit::FormulaEdit (QWidget *w, int t) : QWidget(w)
   // create plot page
   tw = new QWidget(this);
 
-  thbox = new Q3HBoxLayout(tw);
+  thbox = new QHBoxLayout(tw);
   thbox->setMargin(5);
   thbox->setSpacing(0);
 
-  plot = new Q3ListBox(tw);
-  connect(plot, SIGNAL(doubleClicked(Q3ListBoxItem *)), this, SLOT(slotDoubleClicked(Q3ListBoxItem *)));
+  plot = new QListBox(tw);
+  connect(plot, SIGNAL(doubleClicked(QListBoxItem *)), this, SLOT(slotDoubleClicked(QListBoxItem *)));
   thbox->addWidget(plot);
 
   ptoolbar = new Toolbar(tw, Toolbar::Vertical);
@@ -290,7 +288,7 @@ void FormulaEdit::openRule ()
                                           s2,
   					  s2,
 					  s,
-					  Q3FileDialog::ExistingFiles);
+					  QFileDialog::ExistingFiles);
   dialog->setCaption(tr("Select rule to open."));
 
   int rc = dialog->exec();
@@ -301,19 +299,19 @@ void FormulaEdit::openRule ()
     return;
   }
 
-  QStringList selection = dialog->selectedFiles();
+  QStringList selection = dialog->selectedFile();
   delete dialog;
 
   if (! selection.count())
     return;
 
   QFile f(selection[0]);
-  if (! f.open(QIODevice::ReadOnly))
+  if (! f.open(IO_ReadOnly))
   {
     qDebug("FormulaEdit::openRule:can't read file %s", selection[0].latin1());
     return;
   }
-  Q3TextStream stream(&f);
+  QTextStream stream(&f);
   
   QString script;
   while(stream.atEnd() == 0)
@@ -381,7 +379,7 @@ void FormulaEdit::saveRule ()
 }
 */
 
-void FormulaEdit::slotDoubleClicked (Q3ListBoxItem *)
+void FormulaEdit::slotDoubleClicked (QListBoxItem *)
 {
   editPlotItem();
 }
@@ -453,7 +451,7 @@ void FormulaEdit::includeRule ()
                                           s2,
   					  s2,
 					  s,
-					  Q3FileDialog::ExistingFiles);
+					  QFileDialog::ExistingFiles);
   dialog->setCaption(tr("Select rule to include"));
 
   int rc = dialog->exec();

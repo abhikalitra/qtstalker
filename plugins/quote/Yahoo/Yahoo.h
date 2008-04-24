@@ -21,13 +21,11 @@
 
 #include "QuotePlugin.h"
 #include <qstring.h>
-//Added by qt3to4:
-#include <Q3PtrList>
 #include "Setting.h"
 #include "DbPlugin.h"
 #include "Config.h"
-#include <q3listbox.h>
-#include <q3datetimeedit.h>
+#include <qlistbox.h>
+#include <qdatetimeedit.h>
 #include <qcheckbox.h>
 #include <qdatetime.h>
 #include <qcombobox.h>
@@ -69,7 +67,7 @@ class Yahoo : public QuotePlugin
 
   private:
     QStringList symbolList;
-    Q3PtrList<Setting> url;
+    QPtrList<Setting> url;
     Setting *currentUrl;
     QString dataPath;
     QStringList fileList;
@@ -79,8 +77,8 @@ class Yahoo : public QuotePlugin
     Config config;
     FileButton *list;
     QCheckBox *adjustment;
-    Q3DateEdit *sdate;
-    Q3DateEdit *edate;
+    QDateEdit *sdate;
+    QDateEdit *edate;
     QComboBox *method;
     QCheckBox *allSymbols;
     int fileCount;

@@ -23,20 +23,18 @@
 #define CHARTTOOLBAR_HPP
 
 #include <qstring.h>
-#include <q3toolbar.h>
-#include <q3mainwindow.h>
+#include <qtoolbar.h>
+#include <qmainwindow.h>
 #include <qcombobox.h>
 #include <qspinbox.h>
 #include <qlineedit.h>
 #include <qslider.h>
 #include <qtoolbutton.h>
 #include <qdatetime.h>
-//Added by qt3to4:
-#include <QKeyEvent>
 
 #include "RcFile.h"
 
-class ChartToolbar : public Q3ToolBar
+class ChartToolbar : public QToolBar
 {
   Q_OBJECT
   
@@ -58,7 +56,7 @@ class ChartToolbar : public Q3ToolBar
       ChartPannerFocus
     };
   
-    ChartToolbar(Q3MainWindow *);
+    ChartToolbar(QMainWindow *);
     ~ChartToolbar();
     int getBars ();
     void enableSlider (bool);
@@ -111,7 +109,7 @@ class ChartToolbar : public Q3ToolBar
     RcFile rcfile;
     
   private slots:
-    void slotOrientationChanged(Qt::Orientation);
+    void slotOrientationChanged(Orientation);
     void barsChangedValidate ();
 };
 
