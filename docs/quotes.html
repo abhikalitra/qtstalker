@@ -30,10 +30,10 @@
 
 <p>Currently Qtstalker provides the following plugins: </p>
 <ul>
-  <li><a href="cme.html">CME</a> </li>
-  <li><a href="csv.html">CSV</a> </li>
-  <li><a href="nybot.html">NYBOT</a> </li>
-  <li><a href="yahoo.html">Yahoo</a> </li>
+  <li><a href="cme.html">CME</a> : Historical and EOD futures quotes from the Chicago Mercantile Exchange. (Currently broken.)</li>
+  <li><a href="csv.html">CSV</a> : Import local comma-separated values text data files</li>
+  <li><a href="nybot.html">NYBOT</a> : EOD futures quotes from the New York Board of Trade. (Currently broken.)</li>
+  <li><a href="yahoo.html">Yahoo</a> : Historical and delayed quotes from Yahoo Finance.</li>
 </ul>
 
 <p>You use the various quote plugins to create and update the data you want
@@ -48,8 +48,13 @@ button. </p>
 is started. Any information and errors will display here. <br>
 </p>
 
-<a name="mysql"></a>
+<h3>Alternative data loading methods</h3>
+
 <p>
+See <a href="db.html">notes</a> about behind-the-scenes external access to the underlying Berkeley DB databases.
+</p>
+
+<p id=mysql">
 There is also a <a href="http://www.zwets.com/qtstalker-plugin-mysql/">MySQL Plugin</a>
 maintained as a separate project.
 </p>
