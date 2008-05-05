@@ -587,10 +587,14 @@ void QtstalkerApp::slotDataWindow ()
   dw->show();
 }
 
-void QtstalkerApp::slotBarLengthChanged (int)
+void QtstalkerApp::slotBarLengthChanged(int barLength)
 {
-  // the compression has changed slot
-  
+  QString s;
+  rcfile.loadData(RcFile::BarLength, s);
+  int n = s.toInt();
+  if( n == barLength ) return;
+
+  // the compression has changed
   barLengthChanged();
   loadChart(chartPath);
 }

@@ -46,6 +46,7 @@ ChartToolbar::ChartToolbar (QMainWindow *mw) : QToolBar (mw, "chartToolbar")
   rcfile.loadData(RcFile::BarLength, ti);
   compressionCombo->setCurrentItem((BarData::BarLength) ti);
   QToolTip::add(compressionCombo, tr("Bar Length (Compression)"));
+  connect(compressionCombo, SIGNAL(activated(int)), this, SLOT(compressionChanged(int)));
   connect(compressionCombo, SIGNAL(activated(int)), this, SIGNAL(signalBarLengthChanged(int)));
 
   cmpsBtnM = new QToolButton(this); // compression button monthly
@@ -67,7 +68,9 @@ ChartToolbar::ChartToolbar (QMainWindow *mw) : QToolBar (mw, "chartToolbar")
   QToolTip::add(cmpsBtn15, tr("15min Compression"));
   cmpsBtn15->setToggleButton(TRUE);
   connect(cmpsBtn15, SIGNAL(clicked()), this, SLOT(cmpsBtn15Clicked()));
-  
+ 
+  compressionChanged((BarData::BarLength) ti);
+ 
   addSeparator();
 
   pixelspace = new QSpinBox(this);
@@ -237,7 +240,6 @@ void ChartToolbar::slotSetButtonView ()
   if (tb) cmpsBtnD->show();
   else cmpsBtnD->hide();
   cmpsBtnD->setText("D");
-  cmpsBtnD->setOn(TRUE); // FIXME: Need to save state on quit() and re-load
   
   rcfile.loadData(RcFile::ShowCmpsWkyBtn, tb);
   if (tb) cmpsBtnW->show();
@@ -423,41 +425,37 @@ void ChartToolbar::ps3ButtonClicked ()
 void ChartToolbar::cmpsBtnMClicked()
 {
   compressionCombo->setCurrentItem((BarData::BarLength)8);
-  // FIXME: Sorry about the repetitive code.
-  cmpsBtnW->setOn(FALSE);
-  cmpsBtnD->setOn(FALSE);
-  cmpsBtn15->setOn(FALSE);
+  compressionChanged(8);
   emit signalBarLengthChanged((int)8);
 }
 
 void ChartToolbar::cmpsBtnWClicked()
 {
   compressionCombo->setCurrentItem((BarData::BarLength)7);
-  // FIXME: Sorry about the repetitive code.
-  cmpsBtnM->setOn(FALSE);
-  cmpsBtnD->setOn(FALSE);
-  cmpsBtn15->setOn(FALSE);
+  compressionChanged(7);
   emit signalBarLengthChanged((int)7);
 }
 
 void ChartToolbar::cmpsBtnDClicked()
 {
   compressionCombo->setCurrentItem((BarData::BarLength)6);
-  // FIXME: Sorry about the repetitive code.
-  cmpsBtnM->setOn(FALSE);
-  cmpsBtnW->setOn(FALSE);
-  cmpsBtn15->setOn(FALSE);
+  compressionChanged(6);
   emit signalBarLengthChanged((int)6);
 }
 
 void ChartToolbar::cmpsBtn15Clicked()
 {
   compressionCombo->setCurrentItem((BarData::BarLength)3);
-  // FIXME: Sorry about the repetitive code.
-  cmpsBtnM->setOn(FALSE);
-  cmpsBtnW->setOn(FALSE);
-  cmpsBtnD->setOn(FALSE);
+  compressionChanged(3);
   emit signalBarLengthChanged((int)3);
+}
+
+void ChartToolbar::compressionChanged (int compression)
+{
+  compression == 8 ? cmpsBtnM->setOn(TRUE) : cmpsBtnM->setOn(FALSE);
+  compression == 7 ? cmpsBtnW->setOn(TRUE) : cmpsBtnW->setOn(FALSE);
+  compression == 6 ? cmpsBtnD->setOn(TRUE) : cmpsBtnD->setOn(FALSE);
+  compression == 3 ? cmpsBtn15->setOn(TRUE) : cmpsBtn15->setOn(FALSE);
 }
 
 void ChartToolbar::slotOrientationChanged(Orientation o)

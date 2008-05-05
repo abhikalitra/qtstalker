@@ -86,6 +86,7 @@ class ChartToolbar : public QToolBar
     void cmpsBtnDClicked();
     void cmpsBtn15Clicked();
     void slotSetButtonView ();
+    void compressionChanged (int);
   
   private:
     QComboBox *compressionCombo;
