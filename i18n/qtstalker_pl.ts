@@ -251,15 +251,11 @@ Save changes?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>File fields != rule format</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>CSV Quotes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Progress</source>
+        <source>Line</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -419,10 +415,6 @@ Save changes?</source>
 <context>
     <name>ChartToolbar</name>
     <message>
-        <source>Bar Length</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Bar Spacing</source>
         <translation type="unfinished"></translation>
     </message>
@@ -463,7 +455,23 @@ Save changes?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>60min Compression</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>15min Compression</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>5min Compression</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Bar Length (Compression)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Monthly Compression</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -533,47 +541,14 @@ Save changes?</source>
     </message>
 </context>
 <context>
+    <name>ExtraToolbar</name>
+    <message>
+        <source>Recent charts</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>FG</name>
-    <message>
-        <source>Timeout: retry limit</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Timeout: retry </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>FG Quotes</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>File Input</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Date</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Network error</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Cant write to file</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Bad date</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Unable to create futures directory</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Could not open db</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>FiboLine</name>
@@ -1188,6 +1163,10 @@ Save changes?</source>
         <source>Edit &amp;Chart</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Indicator &amp;Help</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>IndicatorSummary</name>
@@ -1208,10 +1187,6 @@ Save changes?</source>
     <name>MainMenubar</name>
     <message>
         <source>E&amp;xit</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Quit Qtstalker (Ctrl+1)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1236,14 +1211,6 @@ Save changes?</source>
     </message>
     <message>
         <source>Toggle the chart grid  (Ctrl+4)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Quotes</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Download quotes from internet  (Ctrl+Q)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1328,6 +1295,18 @@ Save changes?</source>
     </message>
     <message>
         <source>Indicator Summary</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Quit Qtstalker (Ctrl+Q)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Load Quotes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Load Quotes (Ctrl+Y)</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1705,39 +1684,63 @@ Save changes?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Slider</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>BarsToLoad Field</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>BarSpacing Spinner</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Cmps.15Minute</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Cmps.Daily</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Cmps.Weekly</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Cmps.ComboBox</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>ChartToolbar</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>&amp;OK</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Extra Toolbar</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Compression list</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Compression Monthly</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Compression Weekly</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Compression Daily</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Compression 60 Minute</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Compression 15 Minute</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Compression 5 Minute</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>BarSpacing spinner</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>BarsToLoad field</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Pan Chart slider</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Recent charts</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ExtraToolbar</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2972,11 +2975,7 @@ Save changes?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Down Candle Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Candle Fill When</source>
+        <source>This CC already exists.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3016,8 +3015,8 @@ Save changes?</source>
     </message>
     <message>
         <source>Qtstalker
-Ver CVS 0.34 (working title)
-(C) 2001-2006 by Stefan Stratigakos</source>
+Version 0.37-dev (working title)
+(C) 2001-2008 by Stefan Stratigakos</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3068,7 +3067,12 @@ Ver CVS 0.34 (working title)
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Updating ...</source>
+        <source>Progress:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Any errors will be listed, otherwise silent.
+Updating ...</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3943,6 +3947,28 @@ eg. 2:1</source>
     </message>
     <message>
         <source>Perform Conversion</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Your workspace will be converted into the ~/.qtstalker/data1/ directory.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source> It could take a long time if there are many data items.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source> When satisfied, the old workspace can be manually removed from ~/.qtstalker/data0/
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source> If you choose Cancel, then Quit immediately and see the cleanup notes in docs/install.html</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

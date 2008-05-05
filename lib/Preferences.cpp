@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  *
- *  Copyright (C) 2001-2007 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2008 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -399,6 +399,14 @@ void  Preferences::createCTPage()
   connect(cmpsDayBtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
   grid->addWidget(cmpsDayBtnCheck, i++, j + 1);
 
+  label = new QLabel(tr("Compression 60 Minute"), w);
+  grid->addWidget(label, i, j);
+  cmps60BtnCheck = new QCheckBox(w);
+  rcfile.loadData(RcFile::ShowCmps60Btn, tb);
+  cmps60BtnCheck->setChecked(tb);
+  connect(cmps60BtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
+  grid->addWidget(cmps60BtnCheck, i++, j + 1);
+
   label = new QLabel(tr("Compression 15 Minute"), w);
   grid->addWidget(label, i, j);
   cmps15BtnCheck = new QCheckBox(w);
@@ -406,6 +414,14 @@ void  Preferences::createCTPage()
   cmps15BtnCheck->setChecked(tb);
   connect(cmps15BtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
   grid->addWidget(cmps15BtnCheck, i++, j + 1);
+
+  label = new QLabel(tr("Compression 5 Minute"), w);
+  grid->addWidget(label, i, j);
+  cmps5BtnCheck = new QCheckBox(w);
+  rcfile.loadData(RcFile::ShowCmps5Btn, tb);
+  cmps5BtnCheck->setChecked(tb);
+  connect(cmps5BtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
+  grid->addWidget(cmps5BtnCheck, i++, j + 1);
 
   label = new QLabel(tr("BarSpacing spinner"), w);
   grid->addWidget(label, i, j);
@@ -577,7 +593,9 @@ void Preferences::slotSave ()
   rcfile.saveData(RcFile::ShowSlider, sliderCheck->isChecked());
   rcfile.saveData(RcFile::ShowBarsToLoadField, barsToLoadFieldCheck->isChecked());
   rcfile.saveData(RcFile::ShowBarSpSpinbox, barSpSpinboxCheck->isChecked());
+  rcfile.saveData(RcFile::ShowCmps60Btn, cmps60BtnCheck->isChecked());
   rcfile.saveData(RcFile::ShowCmps15Btn, cmps15BtnCheck->isChecked());
+  rcfile.saveData(RcFile::ShowCmps5Btn, cmps5BtnCheck->isChecked());
   rcfile.saveData(RcFile::ShowCmpsDayBtn, cmpsDayBtnCheck->isChecked());
   rcfile.saveData(RcFile::ShowCmpsWkyBtn, cmpsWkyBtnCheck->isChecked());
   rcfile.saveData(RcFile::ShowCmpsMtyBtn, cmpsMtyBtnCheck->isChecked());

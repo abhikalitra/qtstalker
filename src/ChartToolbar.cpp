@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  * 
- *  Copyright (C) 2001-2007 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2008 Stefan S. Stratigakos
  * 
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -64,10 +64,20 @@ ChartToolbar::ChartToolbar (QMainWindow *mw) : QToolBar (mw, "chartToolbar")
   cmpsBtnD->setToggleButton(TRUE);
   connect(cmpsBtnD, SIGNAL(clicked()), this, SLOT(cmpsBtnDClicked()));
   
+  cmpsBtn60 = new QToolButton(this); // compression button 60min
+  QToolTip::add(cmpsBtn60, tr("60min Compression"));
+  cmpsBtn60->setToggleButton(TRUE);
+  connect(cmpsBtn60, SIGNAL(clicked()), this, SLOT(cmpsBtn60Clicked()));
+  
   cmpsBtn15 = new QToolButton(this); // compression button 15min
   QToolTip::add(cmpsBtn15, tr("15min Compression"));
   cmpsBtn15->setToggleButton(TRUE);
   connect(cmpsBtn15, SIGNAL(clicked()), this, SLOT(cmpsBtn15Clicked()));
+ 
+  cmpsBtn5 = new QToolButton(this); // compression button 5min
+  QToolTip::add(cmpsBtn5, tr("5min Compression"));
+  cmpsBtn5->setToggleButton(TRUE);
+  connect(cmpsBtn5, SIGNAL(clicked()), this, SLOT(cmpsBtn5Clicked()));
  
   compressionChanged((BarData::BarLength) ti);
  
@@ -231,10 +241,20 @@ void ChartToolbar::slotSetButtonView ()
   if (tb) compressionCombo->show();
   else compressionCombo->hide();
   
+  rcfile.loadData(RcFile::ShowCmps5Btn, tb);
+  if (tb) cmpsBtn5->show();
+  else cmpsBtn5->hide();
+  cmpsBtn5->setText("5");
+  
   rcfile.loadData(RcFile::ShowCmps15Btn, tb);
   if (tb) cmpsBtn15->show();
   else cmpsBtn15->hide();
   cmpsBtn15->setText("15");
+  
+  rcfile.loadData(RcFile::ShowCmps60Btn, tb);
+  if (tb) cmpsBtn60->show();
+  else cmpsBtn60->hide();
+  cmpsBtn60->setText("60");
   
   rcfile.loadData(RcFile::ShowCmpsDayBtn, tb);
   if (tb) cmpsBtnD->show();
@@ -443,6 +463,13 @@ void ChartToolbar::cmpsBtnDClicked()
   emit signalBarLengthChanged((int)6);
 }
 
+void ChartToolbar::cmpsBtn60Clicked()
+{
+  compressionCombo->setCurrentItem((BarData::BarLength)5);
+  compressionChanged(5);
+  emit signalBarLengthChanged((int)5);
+}
+
 void ChartToolbar::cmpsBtn15Clicked()
 {
   compressionCombo->setCurrentItem((BarData::BarLength)3);
@@ -450,12 +477,21 @@ void ChartToolbar::cmpsBtn15Clicked()
   emit signalBarLengthChanged((int)3);
 }
 
+void ChartToolbar::cmpsBtn5Clicked()
+{
+  compressionCombo->setCurrentItem((BarData::BarLength)1);
+  compressionChanged(1);
+  emit signalBarLengthChanged((int)1);
+}
+
 void ChartToolbar::compressionChanged (int compression)
 {
   compression == 8 ? cmpsBtnM->setOn(TRUE) : cmpsBtnM->setOn(FALSE);
   compression == 7 ? cmpsBtnW->setOn(TRUE) : cmpsBtnW->setOn(FALSE);
   compression == 6 ? cmpsBtnD->setOn(TRUE) : cmpsBtnD->setOn(FALSE);
+  compression == 5 ? cmpsBtn60->setOn(TRUE) : cmpsBtn60->setOn(FALSE);
   compression == 3 ? cmpsBtn15->setOn(TRUE) : cmpsBtn15->setOn(FALSE);
+  compression == 1 ? cmpsBtn5->setOn(TRUE) : cmpsBtn5->setOn(FALSE);
 }
 
 void ChartToolbar::slotOrientationChanged(Orientation o)

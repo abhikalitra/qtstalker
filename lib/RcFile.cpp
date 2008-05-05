@@ -164,8 +164,12 @@ RcFile::RcFile ()
   Def[ShowBarsToLoadField] = "TRUE";
   Key[ShowBarSpSpinbox] = "Preferences/ShowBarSpSpinbox";
   Def[ShowBarSpSpinbox] = "TRUE";
+  Key[ShowCmps60Btn] = "Preferences/ShowCmps60Btn";
+  Def[ShowCmps60Btn] = "FALSE";
   Key[ShowCmps15Btn] = "Preferences/ShowCmps15Btn";
   Def[ShowCmps15Btn] = "FALSE";
+  Key[ShowCmps5Btn] = "Preferences/ShowCmps5Btn";
+  Def[ShowCmps5Btn] = "FALSE";
   Key[ShowCmpsDayBtn] = "Preferences/ShowCmpsDayBtn";
   Def[ShowCmpsDayBtn] = "TRUE";
   Key[ShowCmpsWkyBtn] = "Preferences/ShowCmpsWkyBtn";

@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  * 
- *  Copyright (C) 2001-2007 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2008 Stefan S. Stratigakos
  * 
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -84,7 +84,9 @@ class ChartToolbar : public QToolBar
     void cmpsBtnMClicked();
     void cmpsBtnWClicked();
     void cmpsBtnDClicked();
+    void cmpsBtn60Clicked();
     void cmpsBtn15Clicked();
+    void cmpsBtn5Clicked();
     void slotSetButtonView ();
     void compressionChanged (int);
   
@@ -101,7 +103,9 @@ class ChartToolbar : public QToolBar
     QToolButton *cmpsBtnM;
     QToolButton *cmpsBtnW;
     QToolButton *cmpsBtnD;
+    QToolButton *cmpsBtn60;
     QToolButton *cmpsBtn15;
+    QToolButton *cmpsBtn5;
     QToolButton *ps1Button;
     QToolButton *ps2Button;
     QToolButton *ps3Button;

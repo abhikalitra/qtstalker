@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  * 
- *  Copyright (C) 2001-2007 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2008 Stefan S. Stratigakos
  * 
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -124,7 +124,9 @@ class RcFile
       ShowSlider,
       ShowBarsToLoadField,
       ShowBarSpSpinbox,
+      ShowCmps5Btn,
       ShowCmps15Btn,
+      ShowCmps60Btn,
       ShowCmpsDayBtn,
       ShowCmpsWkyBtn,
       ShowCmpsMtyBtn,
