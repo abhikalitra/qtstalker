@@ -173,3 +173,27 @@ unix:freebsd-g++:LIBS += -L/usr/local/lib/db43
 target.path = /usr/local/lib
 INSTALLS += target
 
+# ensure proper configuration
+message("Searching INCLUDEPATH: $$INCLUDEPATH")
+message("Looking for BerkeleyDB header file 'db.h' ...")
+FIND_RESULT = $$system(find $$INCLUDEPATH -name "db.h" -print 2>/dev/null)
+isEmpty( FIND_RESULT ) {
+  DB_OK = false
+}
+message("Looking for TA-Lib header file 'ta_common.h' ...")
+FIND_RESULT = $$system(find $$INCLUDEPATH -name "ta_common.h" -print 2>/dev/null)
+isEmpty( FIND_RESULT ) {
+  TA_LIB_OK = false
+}
+equals( DB_OK, false ) {
+  error("Could not find BerkeleyDB header files. See notes about INCLUDEPATH in docs/install.html")
+}
+else {
+  message("Found BerkeleyDB header files.")
+}
+equals( TA_LIB_OK, false ) {
+  error("Could not find TA-Lib header files. See notes about INCLUDEPATH in docs/install.html")
+}
+else {
+  message("Found TA-Lib header files.")
+}

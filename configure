@@ -1,3 +1,43 @@
+echo "Determining Qt version... "
+qtVersionMajorRequired="3"
+qtVersionMinorRequired="3"
+qtMessage="This version of Qtstalker requires Qt$qtVersionMajorRequired.$qtVersionMinorRequired or better, but not Qt4"
+qmakeCmd=`command -v qmake`
+qtVersionOk="false"
+if [ -z "$qmakeCmd" ] ; then
+  qmakeOk="false"
+  echo "ERROR: Qt is not properly installed - cannot find 'qmake'"
+else
+  qmakeOk="true"
+  qtVersionOk="true"
+  qtVersion=`"$qmakeCmd" --version 2>&1 | sed -n '/[0-9]\.[0-9]\.[0-9]/s/^.*\([0-9]\.[0-9]\.[0-9]\).*$/\1/p'`
+  echo "Using Qt $qtVersion"
+  qtVersionMajor=`echo $qtVersion | sed 's/^\([0-9]\)\..*$/\1/'`
+  qtVersionMinor=`echo $qtVersion | sed 's/^[0-9]\.\([0-9]\)\..*$/\1/'`
+  if [ $qtVersionMajor -ne $qtVersionMajorRequired ]; then
+    qtVersionOk="false"
+    echo "ERROR: $qtMessage"
+  elif [ $qtVersionMinor -lt $qtVersionMinorRequired ]; then
+    qtVersionOk="false"
+    echo "ERROR: $qtMessage"
+  fi
+fi
+
+echo "Determining TA-Lib version ... "
+talibCmd=`command -v ta-lib-config`
+if [ -z "$talibCmd" ] ; then
+  talibOk="false"
+  echo "ERROR: TA-Lib is not properly installed - cannot find 'ta-lib-config'"
+else
+  talibOk="true"
+  talibVersion=`"$talibCmd" --version`
+  echo "Using TA-Lib $talibVersion"
+fi
+if [ "$qmakeOk" != "true" ] || [ "$qtVersionOk" != "true" ] || [ "$talibOk" != "true" ]; then
+  echo "ERROR: There were configuration issues. See docs/install.html"
+  exit 1
+fi
+
 echo "Building Makefile..."
 qmake "DEFINES += QT_NO_COMPAT" "CONFIG += qt" -o Makefile qtstalker.pro
 echo "Done"
