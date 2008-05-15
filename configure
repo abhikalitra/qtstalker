@@ -2,7 +2,7 @@ echo "Building Makefile..."
 qmake "DEFINES += QT_NO_COMPAT" "CONFIG += qt" -o Makefile qtstalker.pro
 echo "Done"
 echo "Creating national language files in i18n..."
-qmake -project -r -o qtstalker_single.pro ../qtstalker
+qmake -project -r -o qtstalker_single.pro .
 lupdate qtstalker_single.pro
 echo "Done"
 echo "Compiling existing translations..."
