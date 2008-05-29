@@ -302,18 +302,8 @@ COBase::Status FiboLine::pointerClick (QPoint &point, QDateTime &x, double y)
         break;
       if (y >= ty)
         break;
-    
-      startDate = tx;
-      endDate = x;
-      high = ty;
-      low = y;
-
-      setSaveFlag(TRUE);
-      setColor(defaultColor);
-      emit signalDraw();
       status = None;
       emit message("");
-      emit signalSave(name);
       break;
     default:
       break;
@@ -322,11 +312,20 @@ COBase::Status FiboLine::pointerClick (QPoint &point, QDateTime &x, double y)
   return status;    
 }
 
-void FiboLine::pointerMoving (QPixmap &buffer, QPoint &point, QDateTime &x, double y)
+void FiboLine::pointerMoving (QPixmap &, QPoint &, QDateTime &x, double y)
 {
   if (status == ClickWait2)
   {
-    drawMovingPointer(buffer, point);
+    startDate = tx;
+    endDate = x;
+    high = ty;
+    low = y;
+    setSaveFlag(TRUE);
+    setColor(defaultColor);
+    emit signalDraw();
+    QString s = x.toString("yyyy-MM-dd hh:mm:ss") + " " + QString::number(y);
+    emit message(s);
+    emit signalSave(name);
     return;
   }
   
@@ -369,38 +368,6 @@ void FiboLine::pointerMoving (QPixmap &buffer, QPoint &point, QDateTime &x, doub
     QString s = x.toString("yyyy-MM-dd hh:mm:ss") + " " + QString::number(y);
     emit message(s);
   }
-}
-
-void FiboLine::drawMovingPointer (QPixmap &buffer, QPoint &point)
-{
-  if (point.x() < mpx)
-    return;
-
-  if (point.y() < mpy)
-    return;
-  
-  QPainter painter;
-  painter.begin(&buffer);
-  painter.setRasterOp(Qt::XorROP);
-  painter.setPen(defaultColor);
-      
-  // erase the previous line drawn
-  if (mpx2 != -1 && mpy2 != -1)
-  {
-    painter.drawLine (mpx, mpy, mpx2, mpy);
-    painter.drawLine (mpx, mpy2, mpx2, mpy2);
-  }
-      
-  // draw the new line
-  painter.drawLine (mpx, mpy, point.x(), mpy);
-  painter.drawLine (mpx, point.y(), point.x(), point.y());
-        
-  mpx2 = point.x();
-  mpy2 = point.y();
-  
-  painter.end();
-  
-  emit signalRefresh();
 }
 
 void FiboLine::loadDefaults ()

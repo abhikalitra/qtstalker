@@ -41,7 +41,6 @@ class FiboLine : public COBase
     void newObject (QString &, QString &);
     double getHigh ();
     double getLow ();
-    void drawMovingPointer (QPixmap &, QPoint &);
     void loadDefaults ();
     void saveDefaults ();
     double getY (double v, double high, double low);
