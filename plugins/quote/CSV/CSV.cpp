@@ -278,15 +278,16 @@ void CSV::parse ()
       Setting r;
       for (fieldLoop = 0; fieldLoop < (int) fieldList.count(); fieldLoop++)
       {
+        QString listItem = l[fieldLoop].stripWhiteSpace();
         if (fieldList[fieldLoop].contains("Date:"))
 	{
           QDate dt;
-          getDate(fieldList[fieldLoop], l[fieldLoop], r, dt);
+          getDate(fieldList[fieldLoop], listItem, r, dt);
           if (! dt.isValid())
 	  {
             QString ss = QString().sprintf("%s - %s - %s: %s %s: %s",
               fName.latin1(), symbol.latin1(), tr("Line").latin1(), QString::number(lineCount).latin1(),
-              tr("Bad date").latin1(), l[fieldLoop].latin1()
+              tr("Bad date").latin1(), listItem.latin1()
               );
             printStatusLogMessage(ss);
 	    flag = TRUE;
@@ -309,12 +310,12 @@ void CSV::parse ()
 
         if (! fieldList[fieldLoop].compare("Time"))
 	{
-          getTime(l[fieldLoop], s);
+          getTime(listItem, s);
           if (! s.length())
 	  {
             QString ss = QString().sprintf("%s - %s - %s: %s %s: %s",
               fName.latin1(), symbol.latin1(), tr("Line").latin1(), QString::number(lineCount).latin1(),
-              tr("Bad time").latin1(), l[fieldLoop].latin1()
+              tr("Bad time").latin1(), listItem.latin1()
               );
             printStatusLogMessage(ss);
 	    flag = TRUE;
@@ -329,7 +330,7 @@ void CSV::parse ()
 	{
 	  if (symbolFilter.count())
 	  {
-	    if (symbolFilter.findIndex(l[fieldLoop]) == -1)
+	    if (symbolFilter.findIndex(listItem) == -1)
 	    {
 	      flag = TRUE;
 	      break;
@@ -337,14 +338,14 @@ void CSV::parse ()
 	  }
 	  
           ts = "Symbol";
-	  r.setData(ts, l[fieldLoop]);
+	  r.setData(ts, listItem);
 	  continue;
 	}
 	
         if (! fieldList[fieldLoop].compare("Name"))
 	{
           ts = "Name";
-	  r.setData(ts, l[fieldLoop]);
+	  r.setData(ts, listItem);
 	  continue;
 	}
         
@@ -353,7 +354,7 @@ void CSV::parse ()
 	    ! fieldList[fieldLoop].compare("Low") ||
 	    ! fieldList[fieldLoop].compare("Close"))
 	{
-          if (setTFloat(l[fieldLoop], TRUE))
+          if (setTFloat(listItem, TRUE))
 	  {
             QString ss = QString().sprintf("%s - %s - %s: %i %s: %s",
               fName.latin1(), symbol.latin1(), tr("Line").latin1(), lineCount,
@@ -371,7 +372,7 @@ void CSV::parse ()
 	if (! fieldList[fieldLoop].compare("Volume") ||
 	    ! fieldList[fieldLoop].compare("OI"))
 	{
-          if (setTFloat(l[fieldLoop], FALSE))
+          if (setTFloat(listItem, FALSE))
 	  {
             QString ss = QString().sprintf("%s - %s - %s: %s %s: %s",
               fName.latin1(), symbol.latin1(), tr("Line").latin1(), QString::number(lineCount).latin1(),
