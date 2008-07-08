@@ -294,7 +294,7 @@ void Yahoo::parseHistory ()
     return;
     
   // strip off the header
-  QString s = "Date,Open,High,Low,Close";
+  QString s = "Date,Open,High,Low,Close,Volume,Adj Close\n";
   int p = data.find(s, 0, TRUE);
   if (p != -1)
     data.remove(0, p + s.length());
@@ -368,12 +368,15 @@ void Yahoo::parseHistory ()
   while(stream.atEnd() == 0)
   {
     ts = stream.readLine();
-    stripJunk(ts, s);
+    QStringList l = QStringList::split( '\n', substituteSeparator( ts, ',', '\n' ), FALSE);
 
-    QStringList l = QStringList::split(",", s, FALSE);
     if (l.count() < 5)
+    {
+      QString ss = tr("Parse: invalid number of parameters") + " '" + ts2 + "' " + tr("skipped");
+      printStatusLogMessage(ss);
+      errorList.append(ts2);
       continue;
-
+    }
     // date
     QString date = parseDate(l[0]);
     Bar bar;
@@ -523,11 +526,15 @@ void Yahoo::parseQuote ()
   while(stream.atEnd() == 0)
   {
     ts = stream.readLine();
-    stripJunk(ts, s);
+    QStringList l = QStringList::split( '\n', substituteSeparator( ts, ',', '\n' ), FALSE);
 
-    QStringList l = QStringList::split(",", s, FALSE);
     if (l.count() < 9 || l.count() > 10)
+    {
+      QString ss = tr("Parse: invalid number of parameters") + " '" + ts2 + "' " + tr("skipped");
+      printStatusLogMessage(ss);
+      errorList.append(ts2);
       continue;
+    }
 
     // get date
     QStringList l2 = QStringList::split("/", l[3], FALSE);
@@ -560,6 +567,10 @@ void Yahoo::parseQuote ()
       continue;
     else
       bar.setHigh(tfloat);
+
+    // make Low price equal to Open if Low is not available
+    if (! l[8].compare("N/A"))
+      l[8] = l[6];
 
     if (setTFloat(l[8], FALSE))
       continue;

@@ -41,7 +41,7 @@
 CSV::CSV ()
 {
   pluginName = "CSV";
-  delim = ",";
+  delim = ',';
   helpFile = "csv.html";
   cancelFlag = FALSE;
 
@@ -259,10 +259,8 @@ void CSV::parse ()
     while(stream.atEnd() == 0)
     {
       QString ts = stream.readLine();
-      QString s;
-      stripJunk(ts, s);
+      QStringList l = QStringList::split( '\n', substituteSeparator(ts, delim, '\n'), FALSE);
 
-      QStringList l = QStringList::split(delim, s, FALSE);
       lineCount++;
       if (l.count() != fieldList.count())
       {
@@ -272,7 +270,7 @@ void CSV::parse ()
           QString::number(lineCount).latin1(),  l.count(), fieldList.count()
           );
         printStatusLogMessage(ss);
-	continue;
+        continue;
       }
       
       int fieldLoop;
@@ -498,25 +496,25 @@ void CSV::setDelimiter (QString &d)
 {
   if (! d.compare("Comma"))
   {
-    delim = ",";
+    delim = ',';
     return;
   }
 
   if (! d.compare("Tab"))
   {
-    delim = "	";
+    delim = '\t';
     return;
   }
 
   if (! d.compare("Space"))
   {
-    delim = " ";
+    delim = ' ';
     return;
   }
 
   if (! d.compare("Semicolon"))
   {
-    delim = ";";
+    delim = ';';
     return;
   }
 }

@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  *
- *  Copyright (C) 2001-2007 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2008 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -160,18 +160,26 @@ void QuotePlugin::buildGui ()
   tabs->addTab(w, tr("Timeout"));
 }
 
-void QuotePlugin::stripJunk (QString &d, QString &s)
+QString QuotePlugin::substituteSeparator (const QString &str, const QChar &search_sep, const QChar &new_sep)
 {
-  s = d.stripWhiteSpace();
+  QString string_copy = str;
 
-  while (1)
+  bool isInBlock = false;
+
+  for (uint i = 0; i < string_copy.length(); i++)
   {
-    int p = s.find('"', 0, TRUE);
-    if (p == -1)
-      break;
-    else
-      s.remove(p, 1);
-  }
+      if (string_copy[i] == '\"')
+      {
+        isInBlock = !isInBlock;
+        string_copy.remove(i, 1);
+      }
+
+      if ( (!isInBlock) && (string_copy[i] == search_sep) )
+      {
+        string_copy = string_copy.replace(i, 1, new_sep);
+      }
+    }
+  return string_copy;
 }
 
 bool QuotePlugin::setTFloat (QString &d, bool flag)

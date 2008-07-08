@@ -152,16 +152,12 @@ void NYBOT::parse ()
   QTextStream stream(&f);
     
   QString ts = stream.readLine();
-  QString s;
-  stripJunk(ts, s);
-  QStringList keys = QStringList::split(",", s, FALSE);
+  QStringList keys = QStringList::split( '\n', substituteSeparator( ts, ',', '\n' ), FALSE);
 
   while(stream.atEnd() == 0)
   {
     ts = stream.readLine();
-    stripJunk(ts, s);
-
-    QStringList l = QStringList::split(",", s, FALSE);
+    QStringList l = QStringList::split( '\n', substituteSeparator( ts, ',', '\n' ), FALSE);
 
     if (l.count() != keys.count())
       continue;
@@ -202,6 +198,7 @@ void NYBOT::parse ()
     }
 
     ts = "dailyOpenPrice1";
+    QString s;
     data.getData(ts, s);
     if (s.toFloat() == 0)
     {

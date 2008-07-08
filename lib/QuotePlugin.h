@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  *
- *  Copyright (C) 2001-2007 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2008 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -55,7 +55,7 @@ class QuotePlugin : public QTabDialog
     QuotePlugin ();
     virtual ~QuotePlugin ();
     bool setTFloat (QString &, bool);
-    void stripJunk (QString &, QString &);
+    QString substituteSeparator (const QString &, const QChar &, const QChar &);
     void createDirectory (QString &, QString &);
     void getPluginName (QString &);
     void getHelpFile (QString &);

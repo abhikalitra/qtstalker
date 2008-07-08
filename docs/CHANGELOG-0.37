@@ -1,7 +1,9 @@
-20080503: Added docs/db.html "Database explanation and alternative data loading methods", i.e. direct access to the Berkeley DB files.
+20080503: Added docs/db.html "Database explanation and alternative data loading methods", i.e. direct access to the Berkeley DB files. Thanks to xley.
 
 20080505: Bar length buttons and combobox were not synchronized. Applied patch #1957299. Thanks to rgf.
 
 20080505: Add Preferences options to show buttons for 60-minute and 5-minute bar length. Applied patch #1908413. Thanks to rgf.
 
 20080529: Chart object "FiboLine" now shows all line values as they are being added. Applied patch #1965845. Thanks to blshkv.
+
+20080708: Improved parsing of comma-separated values for CSV and Yahoo plugins. If there is a "Name" field, then it can now contain commas. Applied patch #2010375. Thanks to blshkv.

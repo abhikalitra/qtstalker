@@ -66,7 +66,7 @@ class CSV : public QuotePlugin
 
   private:
     Config config;
-    QString delim;
+    QChar delim;
     FuturesData fd;
     DbPlugin db;
     QString symbolOveride;
