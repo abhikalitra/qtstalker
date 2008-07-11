@@ -166,7 +166,7 @@ QString QuotePlugin::substituteSeparator (const QString &str, const QChar &searc
 
   bool isInBlock = false;
 
-  for (uint i = 0; i < string_copy.length(); i++)
+  for (int i = 0; i < (int) string_copy.length(); i++)
   {
       if (string_copy[i] == '\"')
       {
