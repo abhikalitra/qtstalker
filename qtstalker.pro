@@ -102,7 +102,7 @@ SUBDIRS += lib
 SUBDIRS += src
 
 # compile CSV app
-SUBDIRS += CSV
+SUBDIRS += misc
 
 !win32 {
   # install docs and i18n

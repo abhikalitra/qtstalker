@@ -1,5 +1,5 @@
 /* XPM */
-static const char *open[]={
+static const char *openp[]={
 "24 24 204 2",
 "Qt c None",
 ".# c #000000",
