@@ -18,37 +18,26 @@
 #ifndef QTSTALKER_H
 #define QTSTALKER_H
 
-#include <qmainwindow.h>
-#include <qmenubar.h>
-#include <qtoolbar.h>
-#include <qstring.h>
-#include <qtabwidget.h>
-#include <qsplitter.h>
-#include <qmultilineedit.h>
-#include <qdict.h>
-#include <qprogressbar.h>
-#include <qstatusbar.h>
-#include <qtabwidget.h>
-
-#include "Indicator.h"
+#include <QMainWindow>
+#include <QMenuBar>
+#include <QToolBar>
+#include <QString>
+#include <QTabWidget>
+#include <QSplitter>
+#include <QTextEdit>
+#include <QHash>
+#include <QStatusBar>
+#include <QList>
+#include "IndicatorPlugin.h"
 #include "Plot.h"
-#include "Config.h"
-#include "Navigator.h"
 #include "Setting.h"
 #include "ChartPage.h"
-#include "NavigatorTab.h"
 #include "IndicatorPage.h"
 #include "ScannerPage.h"
-#include "PortfolioPage.h"
 #include "TestPage.h"
 #include "GroupPage.h"
-#include "ChartToolbar.h"
-#include "MainMenubar.h"
-#include "ExtraToolbar.h"
-#include "DBIndex.h"
-#include "RcFile.h"
 
-// not used #define DEFAULT_INDICATOR_HEIGHT 125
+
 
 class QtstalkerApp : public QMainWindow
 {
@@ -64,6 +53,12 @@ class QtstalkerApp : public QMainWindow
     void signalInterval(BarData::BarLength);
     void signalChartPath (QString);
     void signalCrosshairsStatus(bool);
+    void signalClearIndicator ();
+    void signalGrid (bool);
+    void signalScale (bool);
+    void signalDraw (bool);
+    void signalNewIndicator ();
+    void signalCrossHair (int, int, bool);
 
   public:
 
@@ -73,99 +68,119 @@ class QtstalkerApp : public QMainWindow
       Chart
     };
 
+    enum MenuAction
+    {
+      Exit,
+      NewIndicator,
+      Options,
+      Grid,
+      DataWindow1,
+      About,
+      ScaleToScreen,
+      SidePanel,
+      DrawMode,
+      Crosshairs,
+      Help,
+      IndicatorSummary,
+      Compression,
+      CompressionM,
+      CompressionW,
+      CompressionD,
+      Compression60,
+      Compression15,
+      Compression5,
+      PixelSpace,
+      PS1,
+      PS2,
+      PS3,
+      BarCount,
+      Slider
+    };
+
     QtstalkerApp ();
     ~QtstalkerApp ();
     void initConfig ();
-    void initMenuBar ();
-    void initToolBar ();
+    void createActions ();
+    void createMenuBar ();
+    void createToolBars ();
     void initGroupNav ();
     void initChartNav ();
-    void initPortfolioNav();
     void initTestNav();
     void initIndicatorNav ();
     void initScannerNav ();
     QString getWindowCaption ();
-    void loadChart (QString &);
-    void barLengthChanged ();
-    void exportChart (QString &);
-    void traverse(QString &);
-    void loadIndicator (Indicator *);
+    void loadChart (QString);
     void setSliderStart ();
 
   public slots:
     void slotAbout ();
     void slotQuit();
     void slotOpenChart (QString);
-    void slotQuotes ();
     void slotOptions ();
     void slotDataWindow ();
-    void slotNewIndicator (Indicator *);
-    void slotEditIndicator (Indicator *);
+    void slotNewIndicator (QString);
     void slotDeleteIndicator (QString);
     void slotBarLengthChanged (int);
     void slotPixelspaceChanged (int);
     void slotChartUpdated ();
     void slotStatusMessage (QString);
-    void slotHideNav (bool);
     void slotUpdateInfo (Setting *);
     void slotPlotLeftMouseButton (int, int, bool);
     void slotCrosshairsStatus (bool);
-    void slotNavigatorPosition (int);
-    void slotHelp ();
     void slotDisableIndicator (QString);
     void slotEnableIndicator (QString);
-    void slotProgMessage (int, int);
     void slotDrawPlots ();
-    void slotPaperTradeChanged (bool);
     void addIndicatorButton (QString);
     void slotWakeup ();
     void slotIndicatorSummary ();
-    void slotDeleteAllCO ();
-    void slotDeleteCO (QString);
-    void slotSaveCO (Setting);
     void slotMenubarStatus (bool);
-    void slotExtraToolbarStatus (bool);
+//    void slotExtraToolbarStatus (bool);
     void slotAppFont (QFont);
-    void slotLoadMainToolbarSettings();
-    void slotSavePlotSizes();
-    void slotLoadPlotSizes();
+    void slotHideNav (bool d);
+    void ps1ButtonClicked ();
+    void ps2ButtonClicked ();
+    void ps3ButtonClicked ();
+    void cmpsBtnMClicked();
+    void cmpsBtnWClicked();
+    void cmpsBtnDClicked();
+    void cmpsBtn60Clicked();
+    void cmpsBtn15Clicked();
+    void cmpsBtn5Clicked();
+    int setSliderStart (int width, int records);
+    void setPixelspace (int min, int d);
+    void slotOrientationChanged(Qt::Orientation o);
+    void slotEditIndicator (QString);
     
   private:
-    QToolBar *toolbar;
-    ChartToolbar *toolbar2;
-    ExtraToolbar *extraToolbar;
-    MainMenubar *menubar;
     QSplitter *split;
     QSplitter *navSplitter;
     QSplitter *dpSplitter;
-    NavigatorTab *navTab;
+    QTabWidget *navTab;
     QWidget *baseWidget;
     QWidget *navBase;
     ChartPage *chartNav;
-    QDict<Plot> plotList;
-    Config config;
+    QHash<QString, Plot *> plotList;
     chartStatus status;
     QString chartPath;
     QString chartName;
     QString chartSymbol;
-    QString dbPlugin;
     BarData *recordList;
-    QMultiLineEdit *infoLabel;
+    QTextEdit *infoLabel;
     IndicatorPage *ip;
-    PortfolioPage *pp;
     ScannerPage *sp;
     TestPage *tp;
     GroupPage *gp;
-    QProgressBar *progBar;
     QStatusBar *statusbar;
     QString chartType;
-    QPtrList<QTabWidget> tabList;
-    QDict<QWidget> widgetList;
-    DBIndex *chartIndex;
-    RcFile rcfile;
+    QList<QTabWidget*> tabList;
     QString lastIndicatorUsed1;
     QString lastIndicatorUsed2;
     QString lastIndicatorUsed3;
+    QHash<MenuAction, QAction*> actionList;
+    QComboBox *compressionCombo;
+    QSpinBox *pixelspace;
+    QSpinBox *barCount;
+    QSlider *slider;
 };
 
 #endif

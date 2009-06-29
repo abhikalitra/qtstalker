@@ -15,374 +15,660 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <qlayout.h>
-#include <qmessagebox.h>
-#include <qdir.h>
-#include <qfiledialog.h>
-#include <qinputdialog.h>
-#include <qapplication.h>
-#include <qfont.h>
-#include <qtextcodec.h>
-#include <qtranslator.h>
-#include <qcursor.h>
-#include <qcolor.h>
-#include <qstringlist.h>
-#include <qdatetime.h>
-
+#include <QLayout>
+#include <QMessageBox>
+#include <QDir>
+#include <QFileDialog>
+#include <QInputDialog>
+#include <QFont>
+#include <QCursor>
+#include <QColor>
+#include <QStringList>
+#include <QDateTime>
+#include <QHBoxLayout>
+#include <QVBoxLayout>
 #include <math.h> // only for fabs()
+#include <QtDebug>
+#include <QToolButton>
+#include <QApplication>
 
 #include "Qtstalker.h"
 #include "DataWindow.h"
 #include "ChartPage.h"
 #include "PlotLine.h"
 #include "PrefDialog.h"
-#include "HelpWindow.h"
-#include "DbPlugin.h"
-#include "IndicatorSummary.h"
+//#include "IndicatorSummary.h"
 #include "Preferences.h"
-#include "RcFile.h"
+#include "DataBase.h"
+#include "IndicatorIndex.h"
+#include "Setup.h"
+#include "Config.h"
 
+//#include "../lib/qtstalker_defines.h"
+
+#include "../pics/dirclosed.xpm"
+#include "../pics/plainitem.xpm"
+#include "../pics/test.xpm"
+#include "../pics/scanner.xpm"
+#include "../pics/done.xpm"
+#include "../pics/grid.xpm"
+#include "../pics/datawindow.xpm"
+#include "../pics/indicator.xpm"
+#include "../pics/configure.xpm"
+#include "../pics/scaletoscreen.xpm"
+#include "../pics/nav.xpm"
+#include "../pics/co.xpm"
 #include "../pics/qtstalker.xpm"
+#include "../pics/crosshair.xpm"
+#include "../pics/include.xpm"
+
+
 
 QtstalkerApp::QtstalkerApp()
 {
   recordList = 0;
   status = None;
-  plotList.setAutoDelete(FALSE);
-  tabList.setAutoDelete(TRUE);
-  widgetList.setAutoDelete(TRUE);
-  setIcon(qtstalker);
+  setWindowIcon(QIcon(qtstalker));
 
   // setup the disk environment
-  config.setup();
+  Setup setup;
+  setup.setup();
 
-  // open and init the chart index
-  QString s;
-  chartIndex = new DBIndex;
-  
-  //RcFile rcfile;
-  rcfile.loadData(RcFile::IndexPath, s);
-  chartIndex->open(s);
-  
-  initMenuBar();
-  
-  initToolBar();
+  createActions();
+  createMenuBar();
+  createToolBars();
   
   statusbar = statusBar();
   
-  baseWidget = new QWidget(this);
+  baseWidget = new QWidget;
   setCentralWidget (baseWidget);
 
-  QHBoxLayout *hbox = new QHBoxLayout(baseWidget);
+  QHBoxLayout *hbox = new QHBoxLayout;
+  hbox->setMargin(0);
+  hbox->setSpacing(0);
+  baseWidget->setLayout(hbox);
 
-  navSplitter = new QSplitter(baseWidget);
-  navSplitter->setOrientation(Horizontal);
+  navSplitter = new QSplitter;
+  navSplitter->setOrientation(Qt::Horizontal);
   hbox->addWidget(navSplitter);
-  
-  navBase = new QWidget(navSplitter);
-  QVBoxLayout *vbox = new QVBoxLayout(navBase);
-  
-  // setup the data panel splitter
-  dpSplitter = new QSplitter(navBase);
-  dpSplitter->setOrientation(Vertical);
-  vbox->addWidget(dpSplitter);
-  
-  // setup the side panels
-  navTab = new NavigatorTab(dpSplitter, this);
-  connect(navTab, SIGNAL(signalPositionChanged(int)), this, SLOT(slotNavigatorPosition(int)));
-  connect(navTab, SIGNAL(signaVisibilityChanged(bool)), this, SLOT(slotHideNav(bool)));
-  connect(extraToolbar, SIGNAL(recentTab(QString)), navTab, SLOT(recentTab(QString)));
-  
-  // setup the data panel area
-  infoLabel = new QMultiLineEdit(dpSplitter);
-  infoLabel->setReadOnly(TRUE);
 
   // construct the chart areas
-  QWidget *chartBase = new QWidget(navSplitter);
+  QWidget *chartBase = new QWidget;
+  navSplitter->addWidget(chartBase);
+  QVBoxLayout *vbox = new QVBoxLayout;
+  vbox->setMargin(0);
+  vbox->setSpacing(0);
+  chartBase->setLayout(vbox);
 
-  vbox = new QVBoxLayout(chartBase);
-
-  split = new QSplitter(chartBase);
-  split->setOrientation(Vertical);
+  split = new QSplitter;
+  split->setOrientation(Qt::Vertical);
   vbox->addWidget(split);
 
   // build the tab rows
   int loop;
   for (loop = 0; loop < 3; loop++)
   {
-    QTabWidget *it = new QTabWidget(split);
- //FIXME: Use setMargin(), otherwise uses default value 10 on some systems
- // use setContentsMargins() with Qt4
- //   it->setMargin(2);
+    QTabWidget *it = new QTabWidget;
+    split->addWidget(it);
+    it->setContentsMargins(0, 0, 0, 0);
     connect(it, SIGNAL(currentChanged(QWidget *)), this, SLOT(slotDrawPlots()));
     tabList.append(it);
-    it->hide();
   }
-    
+
+  navBase = new QWidget;
+  navSplitter->addWidget(navBase);
+  vbox = new QVBoxLayout;
+  vbox->setMargin(0);
+  vbox->setSpacing(0);
+  navBase->setLayout(vbox);
+  
+  // setup the data panel splitter
+  dpSplitter = new QSplitter;
+  dpSplitter->setOrientation(Qt::Vertical);
+  vbox->addWidget(dpSplitter);
+ 
+  // setup the side panels
+  navTab = new QTabWidget;
+  dpSplitter->addWidget(navTab);
+//  connect(extraToolbar, SIGNAL(recentTab(QString)), navTab, SLOT(recentTab(QString)));
+  
+  // setup the data panel area
+  infoLabel = new QTextEdit;
+  dpSplitter->addWidget(infoLabel);
+  infoLabel->setReadOnly(TRUE);
+
   // create the side panels
   initChartNav();
   initGroupNav();
   initIndicatorNav();
-  initPortfolioNav();
-  initTestNav();
-  initScannerNav();  
-  // aktivate last settings
-  navTab->init();
+//  initTestNav();
+//  initScannerNav();  
 
   // restore the last used indicators
-  rcfile.loadData(RcFile::LastIndicatorUsed, lastIndicatorUsed1, 1);
-  rcfile.loadData(RcFile::LastIndicatorUsed, lastIndicatorUsed2, 2);
-  rcfile.loadData(RcFile::LastIndicatorUsed, lastIndicatorUsed3, 3);
+  QString s;
+  Config config;
+  config.getData(Config::LastIndicatorUsed, s);
+  QStringList l = s.split(",");
+  if (l.count() == 1)
+    lastIndicatorUsed1 = l[0];
+  if (l.count() == 2)
+  {
+    lastIndicatorUsed1 = l[0];
+    lastIndicatorUsed2 = l[1];
+  }
+  if (l.count() == 3)
+  {
+    lastIndicatorUsed1 = l[0];
+    lastIndicatorUsed2 = l[1];
+    lastIndicatorUsed3 = l[2];
+  }
 
   // setup the initial indicators
-  QString igroup;
-  rcfile.loadData(RcFile::IndicatorGroup, igroup);
-  QStringList l;
-  config.getIndicators(igroup, l);
-  for (loop = 0; loop < (int) l.count(); loop++)
-    addIndicatorButton(l[loop]);
+  DataBase db;
+  db.getIndicatorList(l);
+  for (loop = 0; loop < l.count(); loop++)
+  {
+    IndicatorIndex index;
+    db.getIndicatorIndex(l[loop], index);
+    if (index.getEnable())
+      addIndicatorButton(l[loop]);
+  }
 
   // set the app font
   QFont font;
-  rcfile.loadFont(RcFile::AppFont, font);
+  config.getData(Config::AppFont, font);
   slotAppFont(font);
 
-  // place navigator on the last saved position
-  navTab->loadSettings();
-  navTab->togglePosition(navTab->getPosition());
- 
   // restore the splitter sizes
-  rcfile.loadSplitterSize(RcFile::NavAreaSize, navSplitter);
-  slotLoadPlotSizes();
-  rcfile.loadSplitterSize(RcFile::DataPanelSize,dpSplitter);
+  config.getData(Config::PlotSizes, split);
+  config.getData(Config::NavAreaSize, navSplitter);
+  config.getData(Config::DataPanelSize, dpSplitter);
   
   // restore the size of the app
   QSize sz;
-  rcfile.loadSize(RcFile::MainWindowSize, sz);
+  config.getData(Config::MainWindowSize, sz);
   resize(sz);
   
   // restore the position of the app
   QPoint p;
-  rcfile.loadPoint(RcFile::MainWindowPos, p);
+  config.getData(Config::MainWindowPos, p);
   move(p);
-  
-  // setup the indicator page  
-  ip->updateList();
   
   // catch any kill signals and try to save config
   connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(slotQuit()));
   
-  progBar = new QProgressBar(this);
-  statusbar->addWidget(progBar, 0, TRUE);
-  progBar->setMaximumHeight(progBar->height() - 10);
+  statusbar->showMessage(tr("Ready"), 2000);
 
-  statusbar->message(tr("Ready"), 2000);
+  setUnifiedTitleAndToolBarOnMac(TRUE);
 }
 
 QtstalkerApp::~QtstalkerApp()
 {
 }
 
-void QtstalkerApp::initMenuBar()
+void QtstalkerApp::createActions ()
+{
+  // create the actions needed for menu and toolbar
+
+  QAction *action  = new QAction(QIcon(finished), tr("E&xit"), this);
+  action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_Q));
+  action->setStatusTip(tr("Quit Qtstalker (Ctrl+Q)"));
+  action->setToolTip(tr("Quit Qtstalker (Ctrl+Q)"));
+  connect(action, SIGNAL(activated()), qApp, SLOT(quit()));
+  actionList.insert(Exit, action);
+  
+  action = new QAction(QIcon(indicator), tr("New &Indicator"), this);
+  action->setStatusTip(tr("Add a new indicator to chart (Ctrl+2)"));
+  action->setToolTip(tr("Add a new indicator to chart (Ctrl+2)"));
+  connect(action, SIGNAL(activated()), this, SIGNAL(signalNewIndicator()));
+  actionList.insert(NewIndicator, action);
+
+  action = new QAction(QIcon(configure), tr("Edit &Preferences"), this);
+  action->setStatusTip(tr("Modify user preferences  (Ctrl+3)"));
+  action->setToolTip(tr("Modify user preferences  (Ctrl+3)"));
+  connect(action, SIGNAL(activated()), this, SLOT(slotOptions()));
+  actionList.insert(Options, action);
+
+  QString s;
+  Config config;
+  config.getData(Config::Grid, s);
+  action = new QAction(QIcon(gridicon), tr("Chart &Grid"), this);
+  action->setStatusTip(tr("Toggle the chart grid  (Ctrl+4)"));
+  action->setToolTip(tr("Toggle the chart grid  (Ctrl+4)"));
+  action->setCheckable(TRUE);
+  action->setChecked(s.toInt());
+  connect(action, SIGNAL(toggled(bool)), this, SIGNAL(signalGrid(bool)));
+  actionList.insert(Grid, action);
+
+  action = new QAction(QIcon(datawindow), tr("&Data Window"), this);
+  action->setShortcut(QKeySequence(Qt::ALT+Qt::Key_1));
+  action->setStatusTip(tr("Show the data window (Alt+1)"));
+  action->setToolTip(tr("Show the data window (Alt+1)"));
+  connect(action, SIGNAL(activated()), this, SLOT(slotDataWindow()));
+  actionList.insert(DataWindow1, action);
+
+  action = new QAction(QIcon(qtstalker), tr("&About"), this);
+  action->setStatusTip(tr("About Qtstalker."));
+  action->setToolTip(tr("About Qtstalker."));
+  connect(action, SIGNAL(activated()), this, SLOT(slotAbout()));
+  actionList.insert(About, action);
+
+  config.getData(Config::ScaleToScreen, s);
+  action = new QAction(QIcon(scaletoscreen), tr("&Scale To Screen"), this);
+  action->setStatusTip(tr("Scale chart to current screen data (Ctrl+5)"));
+  action->setToolTip(tr("Scale chart to current screen data (Ctrl+5)"));
+  action->setCheckable(TRUE);
+  action->setChecked(s.toInt());
+  connect(action, SIGNAL(toggled(bool)), this, SIGNAL(signalScale(bool)));
+  actionList.insert(ScaleToScreen, action);
+
+  config.getData(Config::ShowSidePanel, s);
+  action = new QAction(QIcon(nav), tr("Side Pa&nel"), this);
+  action->setStatusTip(tr("Toggle the side panel area from view (Ctrl+7)"));
+  action->setToolTip(tr("Toggle the side panel area from view (Ctrl+7)"));
+  action->setCheckable(TRUE);
+  action->setChecked(s.toInt());
+  connect(action, SIGNAL(toggled(bool)), this, SLOT(slotHideNav(bool)));
+  actionList.insert(SidePanel, action);
+
+  config.getData(Config::DrawMode, s);
+  action = new QAction(QIcon(co), tr("Toggle Dra&w Mode"), this);
+  action->setStatusTip(tr("Toggle drawing mode (Ctrl+0)"));
+  action->setToolTip(tr("Toggle drawing mode (Ctrl+0)"));
+  action->setCheckable(TRUE);
+  action->setChecked(s.toInt());
+  connect(action, SIGNAL(toggled(bool)), this, SIGNAL(signalDraw(bool)));
+  actionList.insert(DrawMode, action);
+  
+  config.getData(Config::Crosshairs, s);
+  action = new QAction(QIcon(crosshair), tr("Toggle Cross&hairs"), this);
+  action->setStatusTip(tr("Toggle crosshairs (Ctrl+6)"));
+  action->setToolTip(tr("Toggle crosshairs (Ctrl+6)"));
+  action->setCheckable(TRUE);
+  action->setChecked(s.toInt());
+  connect(action, SIGNAL(toggled(bool)), this, SIGNAL(signalCrosshairsStatus(bool)));
+  actionList.insert(Crosshairs, action);
+
+//  action = new QAction(QIcon("../pics/help.xpm"), tr("&Help"), this);
+//  action->setShortcut(QKeySequence(Qt::ALT+Qt::Key_3));
+//  action->setStatusTip(tr("Display Help Dialog (Alt+3)"));
+//  action->setToolTip(tr("Display Help Dialog (Alt+3)"));
+//  connect(action, SIGNAL(activated()), mw, SLOT(slotHelp()));
+//  actionList.insert(Help, action);
+
+//  action = new QAction(this);
+//  action->setText(tr("Indicator Summary"));
+//  action->setStatusTip(tr("Indicator Summary"));
+//  action->setToolTip(tr("Indicator Summary"));
+//  connect(action, SIGNAL(activated()), this, SLOT(slotIndicatorSummary()));
+//  actionList.insert(IndicatorSummary, action);
+}
+
+void QtstalkerApp::createMenuBar()
 {
   // create the main menubar
-  menubar = new MainMenubar(this);
-  connect(menubar, SIGNAL(signalExit()), qApp, SLOT(quit()));
-  connect(menubar, SIGNAL(signalSidePanel(bool)), this, SLOT(slotHideNav(bool)));
-  connect(menubar, SIGNAL(signalOptions()), this, SLOT(slotOptions()));
-  connect(menubar, SIGNAL(signalQuotes()), this, SLOT(slotQuotes()));
-  connect(menubar, SIGNAL(signalCrosshairs(bool)), this, SLOT(slotCrosshairsStatus(bool)));
-  connect(menubar, SIGNAL(signalPaperTrade(bool)), this, SLOT(slotPaperTradeChanged(bool)));
+  QMenuBar *menubar = menuBar();
+
+  //attach it...mainwindow takes ownership
+
+  QMenu *menu = new QMenu();
+  menu->setTitle(tr("&File"));
+  menu->addAction(actionList.value(Exit));
+  menubar->addMenu(menu);
+
+  menu = new QMenu();
+  menu->setTitle(tr("&Edit"));
+  menu->addAction(actionList.value(NewIndicator));
+  menu->addAction(actionList.value(Options));
+  menubar->addMenu(menu);
+
+  menu = new QMenu();
+  menu->setTitle(tr("&View"));
+  menu->addAction(actionList.value(Grid));
+  menu->addAction(actionList.value(ScaleToScreen));
+  menu->addAction(actionList.value(SidePanel));
+  menu->addAction(actionList.value(DrawMode));
+  menu->addAction(actionList.value(Crosshairs));
+  menubar->addMenu(menu);
+
+  menu = new QMenu();
+  menu->setTitle(tr("&Tools"));
+  menu->addAction(actionList.value(DataWindow1));
+//  menu->addAction(actionList.value(IndicatorSummary));
+  menubar->addMenu(menu);
+
+  menubar->addSeparator();
+
+  menu = new QMenu();
+  menu->setTitle(tr("&Help"));
+  menu->addAction(actionList.value(About));
+  menu->addAction(actionList.value(Help));
+  menubar->addMenu(menu);
 }
 
-void QtstalkerApp::initToolBar()
+void QtstalkerApp::createToolBars ()
 {
   // construct the button toolbar
-  toolbar = new QToolBar(this, "buttonToolbar");
-  toolbar->setLabel("Main Toolbar");
-  slotLoadMainToolbarSettings();
+  QToolBar *toolbar = addToolBar("buttonToolbar");
+
+  //construct main toolbar
+  QString tb;
+  Config config;
+  config.getData(Config::ShowQuitBtn, tb);
+  if (tb.toInt())
+    toolbar->addAction(actionList.value(Exit));
+
+  config.getData(Config::ShowPrefBtn, tb);
+  if (tb.toInt())
+    toolbar->addAction(actionList.value(Options));
+
+  config.getData(Config::ShowSidePanelBtn, tb);
+  if (tb.toInt())
+    toolbar->addAction(actionList.value(SidePanel));
+
+  config.getData(Config::ShowGridBtn, tb);
+  if (tb.toInt())
+    toolbar->addAction(actionList.value(Grid));
+
+  config.getData(Config::ShowScaleToScreenBtn, tb);
+  if (tb.toInt())
+    toolbar->addAction(actionList.value(ScaleToScreen));
+
+  config.getData(Config::ShowCrosshairBtn, tb);
+  if (tb.toInt())
+    toolbar->addAction(actionList.value(Crosshairs));
+
+  config.getData(Config::ShowDrawModeBtn, tb);
+  if (tb.toInt())
+    toolbar->addAction(actionList.value(DrawMode));
+
+  config.getData(Config::ShowNewIndicatorBtn, tb);
+  if (tb.toInt())
+    toolbar->addAction(actionList.value(NewIndicator));
+
+  config.getData(Config::ShowDataWindowBtn, tb);
+  if (tb.toInt())
+    toolbar->addAction(actionList.value(DataWindow1));
 
   // construct the chart toolbar
-  toolbar2 = new ChartToolbar(this);
-  toolbar2->setLabel("Chart Toolbar");
-  toolbar2->slotSetButtonView();
-  connect(toolbar2, SIGNAL(signalBarLengthChanged(int)), this, SLOT(slotBarLengthChanged(int)));
-  connect(toolbar2, SIGNAL(signalPixelspaceChanged(int)), this, SLOT(slotPixelspaceChanged(int)));
-  connect(toolbar2, SIGNAL(signalBarsChanged(int)), this, SLOT(slotChartUpdated()));
+  QToolBar *toolbar2 = addToolBar("chartToolBar");
+  connect(toolbar2, SIGNAL(orientationChanged(Qt::Orientation)), this, SLOT(slotOrientationChanged(Qt::Orientation)));
+  //setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding));
+  //setVerticallyStretchable(TRUE);
+
+  int minPixelspace = 2;
+  QString ts; // temporary string
+  BarData bd(ts);
+  QStringList l;
+  bd.getBarLengthList(l);
+
+  // compression
+  compressionCombo = new QComboBox;
+  compressionCombo->addItems(l);
+  config.getData(Config::BarLength, ts);
+  compressionCombo->setCurrentIndex(ts.toInt());
+  compressionCombo->setToolTip(tr("Bar Length (Compression)"));
+  connect(compressionCombo, SIGNAL(activated(int)), this, SLOT(slotBarLengthChanged(int)));
+  QAction *action = toolbar2->addWidget(compressionCombo);
+  actionList.insert(Compression, action);
+  config.getData(Config::ShowCmpsComboBox, ts);
+  action->setVisible(ts.toInt());
+
+  // monthly compression button  
+  QToolButton *b = new QToolButton; // compression button monthly
+  b->setToolTip(tr("Monthly Compression"));
+//  b->setCheckable(TRUE);
+  connect(b, SIGNAL(clicked()), this, SLOT(cmpsBtnMClicked()));
+  action = toolbar2->addWidget(b);
+  actionList.insert(CompressionM, action);
+  config.getData(Config::ShowCmpsMtyBtn, ts);
+  action->setVisible(ts.toInt());
+  b->setText("M");
+
+  // weekly compression button  
+  b = new QToolButton; // compression button weekly
+  b->setToolTip(tr("Weekly Compression"));
+//  b->setCheckable(TRUE);
+  connect(b, SIGNAL(clicked()), this, SLOT(cmpsBtnWClicked()));
+  action = toolbar2->addWidget(b);
+  actionList.insert(CompressionW, action);
+  config.getData(Config::ShowCmpsWkyBtn, ts);
+  action->setVisible(ts.toInt());
+  b->setText("W");
+
+  // daily compression button  
+  b = new QToolButton; //   button daily
+  b->setToolTip(tr("Daily Compression"));
+//  b->setCheckable(TRUE);
+  connect(b, SIGNAL(clicked()), this, SLOT(cmpsBtnDClicked()));
+  action = toolbar2->addWidget(b);
+  actionList.insert(CompressionD, action);
+  config.getData(Config::ShowCmpsDayBtn, ts);
+  action->setVisible(ts.toInt());
+  b->setText("D");
   
-  connect(toolbar2, SIGNAL(signalPaperTradeNextBar()), this, SLOT(slotChartUpdated()));
-  toolbar2->paperTradeClicked(menubar->getStatus(MainMenubar::PaperTrade));
+  // 60 minute compression button  
+  b = new QToolButton; // compression button 60min
+  b->setToolTip(tr("60min Compression"));
+//  b->setCheckable(TRUE);
+  connect(b, SIGNAL(clicked()), this, SLOT(cmpsBtn60Clicked()));
+  action = toolbar2->addWidget(b);
+  actionList.insert(Compression60, action);
+  config.getData(Config::ShowCmps60Btn, ts);
+  action->setVisible(ts.toInt());
+  b->setText("60");
 
-  connect(menubar, SIGNAL(signalAdvancePaperTrade()), toolbar2, SLOT(paperTradeNextBar()));
+  // 15 minute compression button  
+  b = new QToolButton; // compression button 15min
+  b->setToolTip(tr("15min Compression"));
+//  b->setCheckable(TRUE);
+  connect(b, SIGNAL(clicked()), this, SLOT(cmpsBtn15Clicked()));
+  action = toolbar2->addWidget(b);
+  actionList.insert(Compression15, action);
+  config.getData(Config::ShowCmps15Btn, ts);
+  action->setVisible(ts.toInt());
+  b->setText("15");
 
+  // 5 minute compression button  
+  b = new QToolButton; // compression button 5min
+  b->setToolTip(tr("5min Compression"));
+//  b->setCheckable(TRUE);
+  connect(b, SIGNAL(clicked()), this, SLOT(cmpsBtn5Clicked()));
+  action = toolbar2->addWidget(b);
+  actionList.insert(Compression5, action);
+  config.getData(Config::ShowCmps5Btn, ts);
+  action->setVisible(ts.toInt());
+  b->setText("5");
+
+  toolbar2->addSeparator();
+
+  // pixelspace 
+  pixelspace = new QSpinBox;
+  pixelspace->setRange(minPixelspace, 99);
+  config.getData(Config::Pixelspace, ts);
+  pixelspace->setValue(ts.toInt());
+  connect (pixelspace, SIGNAL(valueChanged(int)), this, SLOT(slotPixelspaceChanged(int)));
+  pixelspace->setToolTip(tr("Bar Spacing"));
+  action = toolbar2->addWidget(pixelspace);
+  actionList.insert(PixelSpace, action);
+  config.getData(Config::ShowBarSpSpinbox, ts);
+  action->setVisible(ts.toInt());
+  pixelspace->setMaximumWidth(40); // FIXME:calc as a function of app font metrics
+  
+  // PS1 button  
+  b = new QToolButton;
+  connect(b, SIGNAL(clicked()), this, SLOT(ps1ButtonClicked()));
+  action = toolbar2->addWidget(b);
+  actionList.insert(PS1, action);
+  config.getData(Config::PSButton1, ts);
+  b->setToolTip(tr("Set Bar Spacing to ") + ts);
+  b->setText(ts);
+  
+  // PS2 button  
+  b = new QToolButton;
+  connect(b, SIGNAL(clicked()), this, SLOT(ps2ButtonClicked()));
+  action = toolbar2->addWidget(b);
+  actionList.insert(PS2, action);
+  config.getData(Config::PSButton2, ts);
+  b->setToolTip(tr("Set Bar Spacing to ") + ts);
+  b->setText(ts);
+  
+  // PS3 button  
+  b = new QToolButton;
+  connect(b, SIGNAL(clicked()), this, SLOT(ps3ButtonClicked()));
+  action = toolbar2->addWidget(b);
+  actionList.insert(PS3, action);
+  config.getData(Config::PSButton3, ts);
+  b->setToolTip(tr("Set Bar Spacing to ") + ts);
+  b->setText(ts);
+  
+  toolbar2->addSeparator();
+
+  //bars to load  
+  barCount = new QSpinBox;
+  barCount->setRange(1, 9999);
+  config.getData(Config::BarsToLoad, ts);
+  barCount->setValue(ts.toInt());
+  barCount->setToolTip(tr("Total bars to load"));
+  connect(barCount, SIGNAL(valueChanged(int)), this, SLOT(slotChartUpdated()));
+  action = toolbar2->addWidget(barCount);
+  actionList.insert(BarCount, action);
+  config.getData(Config::ShowBarsToLoadField, ts);
+  action->setVisible(ts.toInt());
+//  barCount->setMaximumWidth(40);// FIXME:calc as a function of app font metrics
+  
+  toolbar2->addSeparator();
+
+  // slider
+  slider = new QSlider;
+  slider->setOrientation(Qt::Horizontal);
+  slider->setEnabled(FALSE);
+  slider->setToolTip(tr("Pan Chart"));
+  slider->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding));
+  action = toolbar2->addWidget(slider);
+  actionList.insert(Slider, action);
+  config.getData(Config::ShowSlider, ts);
+  action->setVisible(ts.toInt());
+  
   // construct the extra toolbar
-  extraToolbar = new ExtraToolbar(this);
-  extraToolbar->setLabel("Extra Toolbar");
-  extraToolbar->slotSetButtonView();
-  connect(extraToolbar, SIGNAL(fileSelected(QString)), this, SLOT(slotOpenChart(QString)));
-}
-
-void QtstalkerApp::slotLoadMainToolbarSettings()
-{
-  toolbar->clear();
-  bool tb;
-  
-  rcfile.loadData(RcFile::ShowQuitBtn, tb);
-  if(tb) menubar->getAction(MainMenubar::Exit)->addTo(toolbar);
-  rcfile.loadData(RcFile::ShowPrefBtn, tb);
-  if(tb) menubar->getAction(MainMenubar::Options)->addTo(toolbar);
-  rcfile.loadData(RcFile::ShowSidePanelBtn, tb);
-  if(tb) menubar->getAction(MainMenubar::SidePanel)->addTo(toolbar);
-  rcfile.loadData(RcFile::ShowGridBtn, tb);
-  if(tb) menubar->getAction(MainMenubar::Grid)->addTo(toolbar);
-  rcfile.loadData(RcFile::ShowScaleToScreenBtn, tb);
-  if(tb) menubar->getAction(MainMenubar::ScaleToScreen)->addTo(toolbar);
-  rcfile.loadData(RcFile::ShowCrosshairBtn, tb);
-  if(tb) menubar->getAction(MainMenubar::Crosshairs)->addTo(toolbar);
-  rcfile.loadData(RcFile::ShowPaperTradeBtn, tb);
-  if(tb) menubar->getAction(MainMenubar::PaperTrade)->addTo(toolbar);
-  rcfile.loadData(RcFile::ShowDrawModeBtn, tb);
-  if(tb) menubar->getAction(MainMenubar::DrawMode)->addTo(toolbar);
-  rcfile.loadData(RcFile::ShowNewIndicatorBtn, tb);
-  if(tb) menubar->getAction(MainMenubar::NewIndicator)->addTo(toolbar);
-  rcfile.loadData(RcFile::ShowDataWindowBtn, tb);
-  if(tb) menubar->getAction(MainMenubar::DataWindow)->addTo(toolbar);
-  rcfile.loadData(RcFile::ShowMainQuoteBtn, tb);
-  if(tb) menubar->getAction(MainMenubar::Quotes)->addTo(toolbar);
-  rcfile.loadData(RcFile::ShowHelpButton, tb);
-  if(tb) menubar->getAction(MainMenubar::Help)->addTo(toolbar);
+//  QToolBar *extraToolbar = addToolBar("extraToolBar");
+  //attach to qmainwindwo...
+  //remove for testing!
+//  addToolBar(extraToolbar);
+//  extraToolbar->slotSetButtonView();
+//  connect(extraToolbar, SIGNAL(fileSelected(QString)), this, SLOT(slotOpenChart(QString)));
 }
 
 void QtstalkerApp::slotQuit()
 {
+  Config config;
+
   // do this to save any pending chart object edits
-  QDictIterator<Plot> it(plotList);
-  for(; it.current(); ++it)
-    it.current()->clear();
+  emit signalClearIndicator();
 
   // save last indicators used
   int loop;
+  QStringList l;
   for (loop = 0; loop < (int) tabList.count(); loop++)
   {
     QTabWidget *tw = tabList.at(loop);
-    QString s = tw->label(tw->currentPageIndex());
-    rcfile.saveData(RcFile::LastIndicatorUsed, s, loop+1);
+    QString s = tw->tabText(tw->currentIndex());
+    l.append(s);
   }
+  QString s = l.join(",");
+  config.setData(Config::LastIndicatorUsed, s);
 
   // save window sizes 
-  //RcFile rcfile;
-  slotSavePlotSizes();
-  rcfile.saveSplitterSize(RcFile::DataPanelSize, dpSplitter);
-  rcfile.saveSplitterSize(RcFile::NavAreaSize, navSplitter);
+  config.setData(Config::PlotSizes, split);
+  config.setData(Config::DataPanelSize, dpSplitter);
+  config.setData(Config::NavAreaSize, navSplitter);
    
-  rcfile.saveSize(RcFile::MainWindowSize, size());
-  rcfile.savePoint(RcFile::MainWindowPos, pos());
+  // save app size and position
+  QSize sz = size();
+  config.setData(Config::MainWindowSize, sz);
+  QPoint pt = pos();
+  config.setData(Config::MainWindowPos, pt);
 
-  config.closePlugins();
-  
-  // make sure we clean up the local indicators before we quit
-  ip->removeLocalIndicators();
-  
-  menubar->saveSettings();
-  toolbar2->saveSettings();
-  extraToolbar->saveSettings();
-  delete menubar;
-  delete toolbar2;
-  delete extraToolbar;
-  
+  // save menubar settings
+  s = QString::number(actionList.value(DrawMode)->isChecked());
+  config.setData(Config::DrawMode, s);
+
+  s = QString::number(actionList.value(ScaleToScreen)->isChecked());
+  config.setData(Config::ScaleToScreen, s);
+
+  s = QString::number(actionList.value(Grid)->isChecked());
+  config.setData(Config::Grid, s);
+
+  s = QString::number(actionList.value(Crosshairs)->isChecked());
+  config.setData(Config::Crosshairs, s);
+
+  s = QString::number(actionList.value(SidePanel)->isChecked());
+  config.setData(Config::ShowSidePanel, s);
+
+  // save toolbar settings
+  QString ts(barCount->text()); 
+  config.setData(Config::BarsToLoad, ts);
+
+  ts = QString::number(compressionCombo->currentIndex());
+  config.setData(Config::BarLength, ts);
+
+  ts = pixelspace->text();
+  config.setData(Config::Pixelspace, ts);
+  //rcfile.savePoint(RcFile::ChartToolBarPos, pos());
+  //FIXME: IMPORTANT- save all belonged to restore the position of the toolbar. maybe not here but in Qtstalker.cpp. Possible is this the way
+  //http://doc.trolltech.com/3.3/qdockarea.html#operator-lt-lt
+
   // delete any BarData
   if (recordList)
     delete recordList;
 
-  chartIndex->close();
-  
   // call the destructors which save some settings
   delete gp;
   delete chartNav;
-  delete navTab;
+
+  qDeleteAll(plotList);
+  qDeleteAll(tabList);
+  qDeleteAll(actionList);
 }
 
 void QtstalkerApp::slotAbout()
 {
   // display the about dialog
-  QMessageBox *dialog = new QMessageBox(tr("About Qtstalker"),
-  					tr("Qtstalker\nVersion 0.37-dev (working title)\n(C) 2001-2008 by Stefan Stratigakos\nqtstalker.sourceforge.net"),
-					QMessageBox::NoIcon,
-					QMessageBox::Ok,
-					QMessageBox::NoButton,
-					QMessageBox::NoButton,
-					this,
-					"AboutDialog",
-					FALSE);
-  dialog->setIconPixmap(qtstalker);
-  dialog->show();
+  QString versionString = "Qtstalker\nVersion 0.37-dev (working title)\nBuilt using Qt ";
+  versionString += QT_VERSION_STR;
+  versionString += "\n(C) 2001-2008 by Stefan Stratigakos\nqtstalker.sourceforge.net";
+  QMessageBox::about(this, tr("About Qtstalker"), versionString);
 }
 
 void QtstalkerApp::slotOpenChart (QString selection)
 {
   // load a chart slot
-  toolbar2->enableSlider(TRUE);
+  slider->setEnabled(TRUE);
   status = Chart;
   qApp->processEvents();
   loadChart(selection);
-}
-
-void QtstalkerApp::slotQuotes ()
-{
-  //RcFile rcfile;
-  QStringList l;
-  config.getPluginList(Config::QuotePluginPath, l);
-  QString s;
-  rcfile.loadData(RcFile::LastQuotePlugin, s);
-  int i = l.findIndex(s);
-  if (i == -1)
-    i = 0;
-
-  bool ok;
-  s = QInputDialog::getItem (tr("Quote Dialog"), tr("Select Quote Type"), l, i, FALSE, &ok, this, 0);
-  if (! ok)
-    return;
-
-  QuotePlugin *plug = config.getQuotePlugin(s);
-  if (! plug)
-    return;
-
-  connect(plug, SIGNAL(chartUpdated()), this, SLOT(slotChartUpdated()));
-  connect(plug, SIGNAL(signalWakeup()), this, SLOT(slotWakeup()));
-
-  plug->setChartIndex(chartIndex);
-
-  rcfile.saveData(RcFile::LastQuotePlugin, s);
-
-  plug->show();
 }
 
 void QtstalkerApp::slotOptions ()
 {
   Preferences *dialog = new Preferences(this);
   connect(dialog, SIGNAL(signalMenubar(bool)), this, SLOT(slotMenubarStatus(bool)));
-  connect(dialog, SIGNAL(signalExtraToolbar(bool)), this, SLOT(slotExtraToolbarStatus(bool)));
+//  connect(dialog, SIGNAL(signalExtraToolbar(bool)), this, SLOT(slotExtraToolbarStatus(bool)));
   connect(dialog, SIGNAL(signalBackgroundColor(QColor)), this, SIGNAL(signalBackgroundColor(QColor)));
   connect(dialog, SIGNAL(signalBorderColor(QColor)), this, SIGNAL(signalBorderColor(QColor)));
   connect(dialog, SIGNAL(signalGridColor(QColor)), this, SIGNAL(signalGridColor(QColor)));
   connect(dialog, SIGNAL(signalPlotFont(QFont)), this, SIGNAL(signalPlotFont(QFont)));
   connect(dialog, SIGNAL(signalAppFont(QFont)), this, SLOT(slotAppFont(QFont)));
   connect(dialog, SIGNAL(signalLoadChart()), this, SLOT(slotChartUpdated()));
-  connect(dialog, SIGNAL(signalReloadToolBars()), this, SLOT(slotLoadMainToolbarSettings()));
-  connect(dialog, SIGNAL(signalReloadToolBars()), toolbar2, SLOT(slotSetButtonView()));
-  connect(dialog, SIGNAL(signalReloadToolBars()), extraToolbar, SLOT(slotSetButtonView()));
+//  connect(dialog, SIGNAL(signalReloadToolBars()), this, SLOT(slotLoadMainToolbarSettings()));
   
   dialog->show();
 }
 
-void QtstalkerApp::loadChart (QString &d)
+void QtstalkerApp::loadChart (QString d)
 {
   // do all the stuff we need to do to load a chart
   if (d.length() == 0)
-    return;
-
-  QDir dir(d);
-  if (! dir.exists(d, TRUE))
     return;
 
   // check if we need to save the slider position because chart is reloaded
@@ -391,154 +677,54 @@ void QtstalkerApp::loadChart (QString &d)
     reload = TRUE;
 
   chartPath = d;
-  ip->setChartPath(chartPath); // let ip know what chart we are viewing currently
-  
-  QDictIterator<Plot> it(plotList);
-  for(; it.current(); ++it)
-    it.current()->clear();
-    
+
+  // set plots to empty
+  emit signalClearIndicator();
+
   // make sure we change db's after Plot saves previous db edits
   emit signalChartPath(chartPath);
 
-  // open the chart
-  QFileInfo fi(chartPath);
-  QString fn = fi.fileName();
-  DbPlugin db;
-  if (db.open(chartPath, chartIndex))
-  {
-    qDebug("QtstalkerApp::loadChart: can't open %s", chartPath.latin1());
-    return;
-  }
+  // save the new chart
+  Config config;
+  config.setData(Config::CurrentChart, chartPath);
 
-  rcfile.saveData(RcFile::CurrentChart, chartPath);
-
-  DBIndexItem item;
-  chartIndex->getIndexItem(fn, item);
-  item.getTitle(chartName);
-  item.getType(chartType);
-  item.getSymbol(chartSymbol);
-
-//  connect(db, SIGNAL(signalMessage(int, int)), this, SLOT(slotProgMessage(int, int)));
-//  connect(db, SIGNAL(signalMessage(QString)), this, SLOT(slotStatusMessage(QString)));
-  db.setBarLength((BarData::BarLength) toolbar2->getBarLengthInt());
-  db.setBarRange(toolbar2->getBars());
-  
   if (recordList)
     delete recordList;
   recordList = new BarData(chartPath);
-  QString s;
-  recordList->setBarType((BarData::BarType) item.getBarType());
-  recordList->setBarLength((BarData::BarLength) toolbar2->getBarLengthInt());
-  
-  slotStatusMessage(tr("Loading chart..."));
-  
+//  recordList->setBarType((BarData::BarType) item.getBarType());
+  recordList->setBarLength((BarData::BarLength) compressionCombo->currentIndex());
+  recordList->setBarsRequested(barCount->value());
   QDateTime dt = QDateTime::currentDateTime();
-  if (menubar->getStatus(MainMenubar::PaperTrade))
-    toolbar2->getPaperTradeDate(dt);
-  db.getHistory(recordList, dt);
 
-  slotProgMessage(1, 3);
-  slotStatusMessage(tr("Loading indicators..."));
-  
-  for(it.toFirst(); it.current(); ++it)
-    it.current()->setData(recordList);
+  slotStatusMessage(tr("Loading chart..."));
 
-  // setup the local indicators
-  if (! reload)
-  {
-    ip->removeLocalIndicators();
-    chartIndex->getIndicators(chartSymbol, s);
-    ip->addLocalIndicators(s);
-  }
+  DataBase db;
+  db.getChart(recordList);
+  recordList->createDateList();
+
+  chartSymbol = chartPath;
+  recordList->getType(chartType);
+
   QStringList l;
-  s = ip->getIndicatorGroup();
-  config.getIndicators(s, l);
-
+  db.getIndicatorList(l);
   int loop;  
   for (loop = 0; loop < (int) l.count(); loop++)
   {
-    Setting set;
-    config.getIndicator(l[loop], set);
-    if (! set.count())
+    Plot *plot = plotList[l[loop]];
+    if (! plot)
       continue;
-    
-    Indicator *i = new Indicator;
-    i->setIndicator(set, l[loop]);
-    if (! i->getEnable())
-    {
-      delete i;
-      continue;
-    }
-
-    loadIndicator(i);
+    plot->setData(recordList);
+    plot->calculate();
+    plot->loadChartObjects();
   }
   
-  slotProgMessage(2, 3);
-  slotStatusMessage(tr("Loading chart objects..."));
-
-  chartIndex->getChartObjects(fn, l);
-  Setting co;
-  for (loop = 0; loop < (int) l.count(); loop++)
-  {
-    co.parse(l[loop]);
-    s = "Plot";
-    QString s2;
-    co.getData(s, s2);
-    Plot *plot = plotList[s2];
-    if (plot)
-      plot->addChartObject(co);
-    else
-      qDebug("QtstalkerApp::loadChart: plot %s not found for loading chart object", s2.latin1());
-  }
-  
-  db.close();
-
   setSliderStart();
 
   slotDrawPlots();
 
-  ip->updateList();
-
-  setCaption(getWindowCaption());
+  setWindowTitle(getWindowCaption());
   
-  slotProgMessage(-1, 3);
   slotStatusMessage(QString());
-}
-
-void QtstalkerApp::loadIndicator (Indicator *i)
-{
-  // create and prep an indicator for display
-
-  QString plugin;
-  i->getType(plugin);  
-  IndicatorPlugin *plug = config.getIndicatorPlugin(plugin);
-  if (! plug)
-    return;
-
-  connect(plug, SIGNAL(signalWakeup()), this, SLOT(slotWakeup()));
-  if (recordList)
-    plug->setIndicatorInput(recordList);
-  QString s;
-  i->getFile(s);
-  plug->loadIndicatorSettings(s);
-  Indicator *ti = 0;
-  if (recordList)
-    ti = plug->calculate();
-  if (ti)
-    i->copy(ti);
-  if (ti)
-    delete ti;
-
-  QFileInfo fi(s);
-  Plot *plot = plotList[fi.fileName()];
-  if (! plot)
-  {
-    qDebug("QtstalkerApp::loadIndicator:plot %s not found", fi.fileName().latin1());
-    return;
-  }
-  plot->addIndicator(i);
-  if (recordList)
-    plot->setData(recordList);
 }
 
 QString QtstalkerApp::getWindowCaption ()
@@ -563,7 +749,7 @@ QString QtstalkerApp::getWindowCaption ()
       break;
   }
 
-  caption.append(toolbar2->getBarLength());
+  caption.append(compressionCombo->currentText());
 
   return caption;
 }
@@ -574,15 +760,23 @@ void QtstalkerApp::slotDataWindow ()
   
   if (! recordList)
     return;
-  
-  DataWindow *dw = new DataWindow(0);
-  dw->setCaption(getWindowCaption());
 
+  DataWindow *dw = new DataWindow(this);
+  dw->setWindowTitle(getWindowCaption());
   dw->setBars(recordList);
   
-  QDictIterator<Plot> it(plotList);
-  for (; it.current(); ++it)
-    dw->setPlot(it.current());
+  DataBase db;
+  QStringList l;
+  db.getIndicatorList(l);
+  int loop;
+  for (loop = 0; loop < l.count(); loop++)
+  {
+    Plot *plot = plotList.value(l[loop]);
+    if (! plot)
+      continue;
+
+    dw->setPlot(plot);
+  }
   
   dw->show();
 }
@@ -590,244 +784,181 @@ void QtstalkerApp::slotDataWindow ()
 void QtstalkerApp::slotBarLengthChanged(int barLength)
 {
   QString s;
-  rcfile.loadData(RcFile::BarLength, s);
+  Config config;
+  config.getData(Config::BarLength, s);
   int n = s.toInt();
-  if( n == barLength ) return;
-
+  if (n == barLength)
+    return;
+ 
   // the compression has changed
-  barLengthChanged();
+  s = QString::number(compressionCombo->currentIndex());
+  config.setData(Config::BarLength, s);
+
+  barLength == 8 ? actionList.value(CompressionM)->setChecked(TRUE) : actionList.value(CompressionM)->setChecked(FALSE);
+  barLength == 7 ? actionList.value(CompressionW)->setChecked(TRUE) : actionList.value(CompressionW)->setChecked(FALSE);
+  barLength == 6 ? actionList.value(CompressionD)->setChecked(TRUE) : actionList.value(CompressionD)->setChecked(FALSE);
+  barLength == 5 ? actionList.value(Compression60)->setChecked(TRUE) : actionList.value(Compression60)->setChecked(FALSE);
+  barLength == 3 ? actionList.value(Compression15)->setChecked(TRUE) : actionList.value(Compression15)->setChecked(FALSE);
+  barLength == 1 ? actionList.value(Compression5)->setChecked(TRUE) : actionList.value(Compression5)->setChecked(FALSE);
+
+  emit signalInterval((BarData::BarLength) compressionCombo->currentIndex());
+
   loadChart(chartPath);
 }
 
-void QtstalkerApp::barLengthChanged ()
-{
-  // bar length has changed
-
-  QString s = QString::number(toolbar2->getBarLengthInt());
-  rcfile.saveData(RcFile::BarLength, s);
-
-  emit signalInterval((BarData::BarLength) toolbar2->getBarLengthInt());
-}
-
-void QtstalkerApp::slotNewIndicator (Indicator *i)
+void QtstalkerApp::slotNewIndicator (QString n)
 {
   // add a new indicator slot
-  
-  QString str;
-  i->getFile(str);
-  addIndicatorButton(str);
-  loadIndicator(i);
-  ip->updateList();
-}
-
-void QtstalkerApp::slotEditIndicator (Indicator *i)
-{
-  // edit indicator slot
-
-  loadIndicator(i);
-
-  QString s;
-  i->getFile(s);
-  QFileInfo fi(s);
-  Plot *p = plotList[fi.fileName()];
-  if (p)
-    p->draw();
+  addIndicatorButton(n);
+  Plot *p = plotList.value(n);
+  if (! p)
+    return;
+  p->setData(recordList);
+  p->calculate();
+  p->draw();
 }
 
 void QtstalkerApp::slotDeleteIndicator (QString text)
 {
   // delete indicator slot
-
-  QString s;
-  //RcFile rcfile;
-  rcfile.loadData(RcFile::IndicatorPath, s);
-  s.append("/" + ip->getIndicatorGroup() + "/" + text);
-  Setting set;
-  config.getIndicator(s, set);
-  if (! set.count())
+  int loop;
+  for (loop = 0; loop < tabList.count(); loop++)
   {
-    qDebug("QtstalkerApp::slotDeleteIndicator:indicator settings empty");
-    return;
+    QTabWidget *it = tabList.at(loop);
+    int loop2;
+    for (loop2 = 0; loop2 < it->count(); loop2++)
+    {
+      if (QString::compare(it->tabText(loop2), text) == 0)
+      {
+        it->removeTab(loop2);
+        break;
+      }
+    }
   }
 
-  // delete any chart objects that belong to the indicator
-  Indicator i;
-  i.setIndicator(set, s);
-  QTabWidget *it = tabList.at(i.getTabRow() - 1);
-  it->removePage(widgetList[text]);
-  widgetList.remove(text);
-
-  if (! it->count())
-    it->hide();
-
+  Plot *plot = plotList.value(text);
+  if (plot)
+    delete plot;
   plotList.remove(text);
-
-  config.deleteIndicator(s);
-
-  ip->updateList();
 }
 
 void QtstalkerApp::slotDisableIndicator (QString name)
 {
-  // remove indicator
-
-  Setting set;
-  config.getIndicator(name, set);
-  if (! set.count())
-  {
-    qDebug("QtstalkerApp::slotDisableIndicator:indicator settings empty");
-    return;
-  }
-
-  Indicator i;
-  i.setIndicator(set, name);
-  QTabWidget *it = tabList.at(i.getTabRow() - 1);
-  QString s;
-  i.getName(s);
-  it->removePage(widgetList[s]);
-  widgetList.remove(s);
-
-  if (! it->count())
-    it->hide();
-
-  plotList.remove(s);
+  slotDeleteIndicator(name);
 }
 
 void QtstalkerApp::slotEnableIndicator (QString name)
 {
-  // add indicator
-
-  Setting set;
-  config.getIndicator(name, set);
-  if (! set.count())
-    return;
-
-  Indicator *i = new Indicator;
-  i->setIndicator(set, name);
-  if (i->getEnable() == 0)
-  {
-    delete i;
-    return;
-  }
-  
+  // enable indicator
   addIndicatorButton(name);
-  loadIndicator(i);
+  Plot *p = plotList.value(name);
+  if (! p)
+    return;
+  p->setData(recordList);
+  p->calculate();
+  p->draw();
+}
+
+void QtstalkerApp::slotEditIndicator (QString name)
+{
+  Plot *p = plotList.value(name);
+  if (! p)
+    return;
+  p->calculate();
+  p->draw();
 }
 
 void QtstalkerApp::slotPixelspaceChanged (int d)
 {
   emit signalPixelspace(d);
-  emit signalIndex(toolbar2->getSlider());
+  emit signalIndex(slider->value());
   setSliderStart();
   slotDrawPlots();
 }
 
 void QtstalkerApp::addIndicatorButton (QString d)
 {
-  Setting set;
-  config.getIndicator(d, set);
-  if (! set.count())
-  {
-    qDebug("QtstalkerApp::addIndicatorButton:indicator settings empty");
+  DataBase db;
+  QString s;
+  IndicatorIndex index;
+  db.getIndicatorIndex(d, index);
+  if (! index.getEnable())
     return;
-  }
 
-  Indicator i;
-  i.setIndicator(set, d);
-  if (i.getEnable() == 0)
-    return;
-  
-  QString type;
-  i.getType(type);
-  int row = i.getTabRow();
+  Plot *plot = new Plot(baseWidget);
+  plotList.insert(d, plot);
+  plot->setDateFlag(index.getDate());
+  plot->setLogScale(index.getLog());
 
-  QFileInfo fi(d);
-  QString fn = fi.fileName();
-
-  QWidget *w = new QWidget(baseWidget);
-  QVBoxLayout *vbox = new QVBoxLayout(w);
-  vbox->setMargin(0);
-  vbox->setSpacing(0);
-  Plot *plot = new Plot(w, chartIndex);
-  vbox->addWidget(plot);
-  widgetList.replace(fi.fileName(), w);
-  
-  plotList.replace(fi.fileName(), plot);
-
-  QTabWidget *it = tabList.at(row - 1);
-  it->addTab(w, fi.fileName());
-
-  if (it->isHidden())
-    it->show();
+  QTabWidget *it = tabList.at(index.getTabRow() - 1);
+  it->addTab(plot, d);
 
   // Set the current indicator in this row to the last used one.
-  switch (row)
+  switch (index.getTabRow())
   {
     case 1:
-      if (fn == lastIndicatorUsed1)
-        it->setCurrentPage(it->indexOf(w));
+      if (d == lastIndicatorUsed1)
+        it->setCurrentWidget(plot);
       break;
     case 2:
-      if (fn == lastIndicatorUsed2)
-        it->setCurrentPage(it->indexOf(w));
+      if (d == lastIndicatorUsed2)
+        it->setCurrentWidget(plot);
       break;
     case 3:
-      if (fn == lastIndicatorUsed3)
-        it->setCurrentPage(it->indexOf(w));
+      if (d == lastIndicatorUsed3)
+        it->setCurrentWidget(plot);
       break;
     default:
       break;
   }
 
   QColor color;
-  //RcFile rcfile;
-  rcfile.loadColor(RcFile::BackgroundColor, color);
+  Config config;
+  config.getData(Config::BackgroundColor, color);
   
   connect(this, SIGNAL(signalBackgroundColor(QColor)), plot, SLOT(setBackgroundColor(QColor)));
   plot->setBackgroundColor(color);
 
-  rcfile.loadColor(RcFile::BorderColor, color);
+  config.getData(Config::BorderColor, color);
   connect(this, SIGNAL(signalBorderColor(QColor)), plot, SLOT(setBorderColor(QColor)));
   plot->setBorderColor(color);
 
-  rcfile.loadColor(RcFile::GridColor, color);
+  config.getData(Config::GridColor, color);
   connect(this, SIGNAL(signalGridColor(QColor)), plot, SLOT(setGridColor(QColor)));
   plot->setGridColor(color);
 
   connect(this, SIGNAL(signalPlotFont(QFont)), plot, SLOT(setPlotFont(QFont)));
   QFont font;
-  rcfile.loadFont(RcFile::PlotFont, font);
+  config.getData(Config::PlotFont, font);
   plot->setPlotFont(font);
 
-  plot->setGridFlag(menubar->getStatus(MainMenubar::Grid));
-  plot->setScaleToScreen(menubar->getStatus(MainMenubar::ScaleToScreen));
-  plot->setPixelspace(toolbar2->getPixelspace());
-  plot->setIndex(toolbar2->getSlider());
-  plot->setInterval((BarData::BarLength) toolbar2->getBarLengthInt());
-  bool b;
-  rcfile.loadData(RcFile::Crosshairs, b);
-  plot->setCrosshairsStatus(b);  
-  plot->setDrawMode(menubar->getStatus(MainMenubar::DrawMode));
+  plot->setGridFlag(actionList.value(Grid)->isChecked());
+  plot->setScaleToScreen(actionList.value(ScaleToScreen)->isChecked());
+  plot->setPixelspace(pixelspace->value());
+  plot->setIndex(slider->value());
+  plot->setInterval((BarData::BarLength) compressionCombo->currentIndex());
+  QString b;
+  config.getData(Config::Crosshairs, b);
+  plot->setCrosshairsStatus(b.toInt());  
+  plot->setDrawMode(actionList.value(DrawMode)->isChecked());
+
+  IndicatorPlot *indy = plot->getIndicatorPlot();
+  indy->setName(d);
     
-  connect(plot->getIndicatorPlot(), SIGNAL(signalNewIndicator()), ip, SLOT(newIndicator()));
-  connect(plot->getIndicatorPlot(), SIGNAL(signalEditIndicator(QString)), ip, SLOT(editIndicator(QString)));
-  connect(plot->getIndicatorPlot(), SIGNAL(statusMessage(QString)), this, SLOT(slotStatusMessage(QString)));
-  connect(plot->getIndicatorPlot(), SIGNAL(infoMessage(Setting *)), this, SLOT(slotUpdateInfo(Setting *)));
-  connect(plot->getIndicatorPlot(), SIGNAL(leftMouseButton(int, int, bool)), this, SLOT(slotPlotLeftMouseButton(int, int, bool)));
-  connect(plot->getIndicatorPlot(), SIGNAL(signalEditChart(QString)), chartNav, SLOT(editChart(QString)));
-  connect(plot->getIndicatorPlot(), SIGNAL(signalDeleteAllCO()), this, SLOT(slotDeleteAllCO()));
-  connect(plot->getIndicatorPlot(), SIGNAL(signalDeleteCO(QString)), this, SLOT(slotDeleteCO(QString)));
-  connect(plot->getIndicatorPlot(), SIGNAL(signalSaveCO(Setting)), this, SLOT(slotSaveCO(Setting)));
-  connect(this, SIGNAL(signalCrosshairsStatus(bool)), plot->getIndicatorPlot(), SLOT(setCrosshairsStatus(bool)));
+  connect(indy, SIGNAL(statusMessage(QString)), this, SLOT(slotStatusMessage(QString)));
+  connect(indy, SIGNAL(infoMessage(Setting *)), this, SLOT(slotUpdateInfo(Setting *)));
+  connect(indy, SIGNAL(leftMouseButton(int, int, bool)), this, SLOT(slotPlotLeftMouseButton(int, int, bool)));
+  connect(this, SIGNAL(signalCrossHair(int, int, bool)), indy, SLOT(crossHair(int, int, bool)));
+  connect(this, SIGNAL(signalCrosshairsStatus(bool)), indy, SLOT(setCrosshairsStatus(bool)));
   connect(this, SIGNAL(signalPixelspace(int)), plot, SLOT(setPixelspace(int)));
   connect(this, SIGNAL(signalIndex(int)), plot, SLOT(setIndex(int)));
   connect(this, SIGNAL(signalInterval(BarData::BarLength)), plot, SLOT(setInterval(BarData::BarLength)));
   connect(this, SIGNAL(signalChartPath(QString)), plot, SLOT(setChartPath(QString)));
-  
-  connect(toolbar2, SIGNAL(signalSliderChanged(int)), plot, SLOT(slotSliderChanged(int)));
-  connect(menubar, SIGNAL(signalGrid(bool)), plot->getIndicatorPlot(), SLOT(slotGridChanged(bool)));
-  connect(menubar, SIGNAL(signalScale(bool)), plot, SLOT(slotScaleToScreenChanged(bool)));
-  connect(menubar, SIGNAL(signalDraw(bool)), plot->getIndicatorPlot(), SLOT(slotDrawModeChanged(bool)));
+  connect(this, SIGNAL(signalClearIndicator()), plot, SLOT(clear()));
+  connect (slider, SIGNAL(valueChanged(int)), plot, SLOT(slotSliderChanged(int)));
+  connect(this, SIGNAL(signalGrid(bool)), indy, SLOT(slotGridChanged(bool)));
+  connect(this, SIGNAL(signalScale(bool)), plot, SLOT(slotScaleToScreenChanged(bool)));
+  connect(this, SIGNAL(signalDraw(bool)), indy, SLOT(slotDrawModeChanged(bool)));
 }
 
 void QtstalkerApp::slotChartUpdated ()
@@ -837,81 +968,74 @@ void QtstalkerApp::slotChartUpdated ()
   if (status == None)
     return;
   
-  int ti = toolbar2->getBars();
-  rcfile.saveData(RcFile::BarsToLoad, ti);
+  Config config;
+  QString s(barCount->value());
+  config.setData(Config::BarsToLoad, s);
 
   loadChart(chartPath);
 }
 
 void QtstalkerApp::slotStatusMessage (QString d)
 {
-  statusbar->message(d);
+  statusbar->showMessage(d);
   qApp->processEvents();
+}
+
+void QtstalkerApp::initChartNav ()
+{
+  chartNav = new ChartPage(baseWidget);
+  connect(chartNav, SIGNAL(fileSelected(QString)), this, SLOT(slotOpenChart(QString)));
+//  connect(chartNav, SIGNAL(addRecentChart(QString)), extraToolbar, SLOT(slotAddRecentChart(QString)));
+//  connect(chartNav, SIGNAL(removeRecentCharts(QStringList)), extraToolbar, SLOT(slotRemoveRecentCharts(QStringList)));
+  connect(chartNav, SIGNAL(signalReloadChart()), this, SLOT(slotChartUpdated()));
+  navTab->addTab(chartNav, QIcon(plainitem), QString());
+  navTab->setTabToolTip(0, tr("Work With Charts"));
 }
 
 void QtstalkerApp::initGroupNav ()
 {
   gp = new GroupPage(baseWidget);
   connect(gp, SIGNAL(fileSelected(QString)), this, SLOT(slotOpenChart(QString)));
-  connect(chartNav, SIGNAL(signalAddToGroup(QString)), gp, SLOT(addChartToGroup(QString)));
-  connect(gp, SIGNAL(addRecentChart(QString)), extraToolbar, SLOT(slotAddRecentChart(QString)));
-  connect(gp, SIGNAL(removeRecentCharts(QStringList)), extraToolbar, SLOT(slotRemoveRecentCharts(QStringList)));
-  connect(extraToolbar, SIGNAL(signalSetGroupNavItem(QString, QString)), gp, SLOT(setGroupNavItem(QString, QString)));
-  navTab->addWidget(gp, 1);
-}
-
-void QtstalkerApp::initChartNav ()
-{
-  chartNav = new ChartPage(baseWidget, chartIndex);
-  connect(chartNav, SIGNAL(fileSelected(QString)), this, SLOT(slotOpenChart(QString)));
-  connect(chartNav, SIGNAL(addRecentChart(QString)), extraToolbar, SLOT(slotAddRecentChart(QString)));
-  connect(chartNav, SIGNAL(removeRecentCharts(QStringList)), extraToolbar, SLOT(slotRemoveRecentCharts(QStringList)));
-  connect(chartNav, SIGNAL(signalReloadChart()), this, SLOT(slotChartUpdated()));
-  connect(extraToolbar, SIGNAL(signalSetChartNavItem(QString, QString)), chartNav, SLOT(setChartNavItem(QString, QString)));
-  navTab->addWidget(chartNav, 0);
-}
-
-void QtstalkerApp::initPortfolioNav ()
-{
-  pp = new PortfolioPage(baseWidget, chartIndex);
-  navTab->addWidget(pp, 3);
+//  connect(chartNav, SIGNAL(signalAddToGroup(QString)), gp, SLOT(addChartToGroup(QString)));
+//  connect(gp, SIGNAL(addRecentChart(QString)), extraToolbar, SLOT(slotAddRecentChart(QString)));
+//  connect(gp, SIGNAL(removeRecentCharts(QStringList)), extraToolbar, SLOT(slotRemoveRecentCharts(QStringList)));
+//  connect(extraToolbar, SIGNAL(signalSetGroupNavItem(QString, QString)), gp, SLOT(setGroupNavItem(QString, QString)));
+  navTab->addTab(gp, QIcon(dirclosed), QString());
+  navTab->setTabToolTip(1, tr("Work With Groups"));
 }
 
 void QtstalkerApp::initTestNav ()
 {
-  tp = new TestPage(baseWidget, menubar, chartIndex);
+  tp = new TestPage(baseWidget);
   connect(tp, SIGNAL(message(QString)), this, SLOT(slotStatusMessage(QString)));
-  navTab->addWidget(tp, 4);
+  navTab->addTab(tp, QIcon(test), QString());
+  navTab->setTabToolTip(4, tr("Work With Backtesting"));
 }
 
 void QtstalkerApp::initIndicatorNav ()
 {
-  ip = new IndicatorPage(baseWidget, chartIndex);
+  ip = new IndicatorPage(baseWidget);
   connect(ip, SIGNAL(signalDisableIndicator(QString)), this, SLOT(slotDisableIndicator(QString)));
   connect(ip, SIGNAL(signalEnableIndicator(QString)), this, SLOT(slotEnableIndicator(QString)));
-  connect(ip, SIGNAL(signalNewIndicator(Indicator *)), this, SLOT(slotNewIndicator(Indicator *)));
-  connect(ip, SIGNAL(signalEditIndicator(Indicator *)), this, SLOT(slotEditIndicator(Indicator *)));
+  connect(ip, SIGNAL(signalNewIndicator(QString)), this, SLOT(slotNewIndicator(QString)));
   connect(ip, SIGNAL(signalDeleteIndicator(QString)), this, SLOT(slotDeleteIndicator(QString)));
-  connect(menubar, SIGNAL(signalNewIndicator()), ip, SLOT(newIndicator()));
-  connect(ip, SIGNAL(signalGroupIsChanging()), this, SLOT(slotSavePlotSizes()));
-  connect(ip, SIGNAL(signalGroupChanged()), this, SLOT(slotLoadPlotSizes()));
-  connect(ip, SIGNAL(signalGroupChanged()), this, SLOT(slotChartUpdated()));
-  connect(ip, SIGNAL(signalLocalIndicator(QString)), this, SLOT(addIndicatorButton(QString)));
-  navTab->addWidget(ip, 2);
+  connect(this, SIGNAL(signalNewIndicator()), ip, SLOT(newIndicator()));
+  connect(ip, SIGNAL(signalEditIndicator(QString)), this, SLOT(slotEditIndicator(QString)));
+  navTab->addTab(ip, QIcon(indicator), QString());
+  navTab->setTabToolTip(2, tr("Work With Indicators"));
 }
 
 void QtstalkerApp::initScannerNav ()
 {
-  sp = new ScannerPage(baseWidget, chartIndex);
+  sp = new ScannerPage(baseWidget);
   connect(sp, SIGNAL(message(QString)), this, SLOT(slotStatusMessage(QString)));
-  connect(sp, SIGNAL(refreshGroup()), gp, SLOT(refreshList()));
-  navTab->addWidget(sp, 5);
+//  connect(sp, SIGNAL(refreshGroup()), gp, SLOT(refreshList()));
+  navTab->addTab(sp, QIcon(scanner), QString());
+  navTab->setTabToolTip(5, tr("Work With Scanners"));
 }
 
 void QtstalkerApp::slotHideNav (bool d)
 {
-  menubar->setStatus(MainMenubar::SidePanel, d);
-
   if (d)
     navBase->show();
   else
@@ -964,9 +1088,15 @@ void QtstalkerApp::slotUpdateInfo (Setting *r)
 
 void QtstalkerApp::slotPlotLeftMouseButton (int x, int y, bool)
 {
-  QDictIterator<Plot> it(plotList);
-  for(; it.current(); ++it)
-    it.current()->crossHair(x, y, FALSE);
+  emit signalCrossHair(x, y, FALSE);
+/*
+  QHashIterator<QString, Plot *> it(plotList);
+  while (it.hasNext())
+  {
+    it.next();
+    it.value()->crossHair(x, y, FALSE);
+  }
+*/
   slotDrawPlots();  
 }
 
@@ -987,45 +1117,18 @@ void QtstalkerApp::setSliderStart ()
     QTabWidget *tw = tabList.at(loop);
     if (! tw->isHidden())
     {
-      Plot *plot = plotList[tw->label(tw->currentPageIndex())];
+      Plot *plot = plotList[tw->tabText(tw->currentIndex())];
       if (! plot)
         return;
       else
       {
-        rc = toolbar2->setSliderStart(plot->getWidth(), recordList->count());
+        rc = setSliderStart(plot->getWidth(), recordList->count());
         break;
       }
     }
   }
 
   emit signalIndex(rc);
-}
-
-void QtstalkerApp::slotNavigatorPosition (int d)
-{
-  if (! d)
-    navSplitter->moveToFirst(navBase);
-  else
-    navSplitter->moveToLast(navBase);
-    
-  navSplitter->refresh();
-}
-
-void QtstalkerApp::slotHelp ()
-{
-  QString s = "toc.html";
-  HelpWindow *hw = new HelpWindow(this, s);
-  hw->show();
-}
-
-void QtstalkerApp::slotProgMessage (int p, int t)
-{
-  if (p == -1)
-    progBar->reset();
-  else
-    progBar->setProgress(p, t);
-    
-  qApp->processEvents();
 }
 
 void QtstalkerApp::slotDrawPlots ()
@@ -1036,17 +1139,11 @@ void QtstalkerApp::slotDrawPlots ()
     QTabWidget *it = tabList.at(loop);
     if (it->isHidden())
       continue;
-    QString s = it->label(it->currentPageIndex());
+    QString s = it->tabText(it->currentIndex());
     Plot *p = plotList[s];
     if (p)
       p->draw();
   }
-}
-
-void QtstalkerApp::slotPaperTradeChanged (bool d)
-{
-  toolbar2->paperTradeClicked(d);
-  slotChartUpdated();
 }
 
 void QtstalkerApp::slotWakeup ()
@@ -1060,51 +1157,35 @@ void QtstalkerApp::slotIndicatorSummary ()
     return;
 
   QString basePath, s;
-  //RcFile rcfile;
-  rcfile.loadData(RcFile::IndicatorPath, basePath);
-  rcfile.loadData(RcFile::IndicatorGroup, s);
+  Config config;
+//  config.getData(Config::IndicatorPath, basePath);
+//  config.getData(Config::IndicatorGroup, s);
   basePath.append("/" + s);
 
   QStringList l;
-  QDictIterator<Plot> it(plotList);
-  for(; it.current(); ++it)
+  QHashIterator<QString, Plot *> it(plotList);
+  while (it.hasNext())
   {
-    Indicator *i = it.current()->getIndicator();
-    i->getName(s);
+    it.next();
+//    IndicatorPlot *i = it.value()->getIndicatorPlot();
+//    i->getName(s);
     l.append(basePath + "/" + s);
   }
 
-  IndicatorSummary is(l, toolbar2->getBars(), (BarData::BarLength) toolbar2->getBarLengthInt(), chartIndex);
-  connect(&is, SIGNAL(signalWakeup()), this, SLOT(slotWakeup()));
-  is.run();
-}
-
-void QtstalkerApp::slotDeleteAllCO ()
-{
-  chartIndex->deleteAllChartObjects(chartSymbol);
-}
-
-void QtstalkerApp::slotDeleteCO (QString d)
-{
-  chartIndex->deleteChartObject(chartSymbol, d);
-}
-
-void QtstalkerApp::slotSaveCO (Setting d)
-{
-  QString s = "Name";
-  QString s2;
-  d.getData(s, s2);
-  chartIndex->setChartObject(chartSymbol, s2, d);
+//  IndicatorSummary is(l, toolbar2->getBars(), (BarData::BarLength) toolbar2->getBarLengthInt(), chartIndex);
+//  connect(&is, SIGNAL(signalWakeup()), this, SLOT(slotWakeup()));
+//  is.run();
 }
 
 void QtstalkerApp::slotMenubarStatus (bool d)
 {
   if (d)
-    menubar->show();
+    menuBar()->show();
   else
-    menubar->hide();
+    menuBar()->hide();
 }
 
+/*
 void QtstalkerApp::slotExtraToolbarStatus (bool d)
 {
   if (d)
@@ -1112,48 +1193,111 @@ void QtstalkerApp::slotExtraToolbarStatus (bool d)
   else
     extraToolbar->hide();
 }
+*/
 
 void QtstalkerApp::slotAppFont (QFont d)
 {
-  qApp->setFont(d, TRUE, 0);
-  qApp->setFont(d, TRUE, "QComboBox");
+  qApp->setFont(d, 0);
+  qApp->setFont(d, "QComboBox");
 }
 
-void QtstalkerApp::slotSavePlotSizes ()
+/**********************************************************************/
+/************************ TOOLBAR FUNCTIONS ***************************/
+/**********************************************************************/
+
+void QtstalkerApp::setPixelspace (int min, int d)
 {
-  QString s;
-  s = ip->getIndicatorGroup();
-  rcfile.saveSplitterSize(RcFile::PlotSizes, split, s);
+  pixelspace->blockSignals(TRUE);
+  pixelspace->setRange(min, 99);
+  pixelspace->setValue(d);
+  pixelspace->blockSignals(FALSE);
 }
 
-void QtstalkerApp::slotLoadPlotSizes ()
-{  
-  QString s;
-  s = ip->getIndicatorGroup();
-  rcfile.loadSplitterSize(RcFile::PlotSizes, split, s);
-}
-
-//**********************************************************************
-//**********************************************************************
-//**********************************************************************
-
-int main(int argc, char *argv[])
+int QtstalkerApp::setSliderStart (int width, int records)
 {
-  QApplication a(argc, argv);
-  QTranslator tor( 0 );
+  int page = width / pixelspace->value();
+  int max = records - page;
+  if (max < 0)
+    max = 0;
+  slider->blockSignals(TRUE);
+  slider->setRange(0, records - 1);
+  int rc = 0;
+  
+  if ((int) records < page)
+    slider->setValue(0);
+  else
+  {
+    slider->setValue(max + 1);
+    rc = max + 1;
+  }
+  slider->blockSignals(FALSE);
+  
+  return rc;
+}
 
-  // set the location where your .qm files are in load() below as the last parameter instead of "."
-  // for development, use "/" to use the english original as
-  // .qm files are stored in the base project directory.
-//  tor.load(QString("qtstalker_") + QTextCodec::locale(), "." );
-  tor.load(QString("qtstalker_") + QTextCodec::locale(), "/usr/local/share/qtstalker/i18n" );
-  a.installTranslator( &tor );
+void QtstalkerApp::ps1ButtonClicked ()
+{
+  QString ts;
+  Config config;
+  config.getData(Config::PSButton1, ts);
+  pixelspace->setValue(ts.toInt());
+}
 
-  QtstalkerApp *qtstalker = new QtstalkerApp();
-  a.setMainWidget(qtstalker);
+void QtstalkerApp::ps2ButtonClicked ()
+{
+  QString ts;
+  Config config;
+  config.getData(Config::PSButton2, ts);
+  pixelspace->setValue(ts.toInt());
+}
 
-  qtstalker->show();
+void QtstalkerApp::ps3ButtonClicked ()
+{
+  QString ts;
+  Config config;
+  config.getData(Config::PSButton3, ts);
+  pixelspace->setValue(ts.toInt());
+}
 
-  return a.exec();
+void QtstalkerApp::cmpsBtnMClicked()
+{
+  compressionCombo->setCurrentIndex((int) BarData::MonthlyBar);
+  slotBarLengthChanged((int) BarData::MonthlyBar);
+}
+
+void QtstalkerApp::cmpsBtnWClicked()
+{
+  compressionCombo->setCurrentIndex((int) BarData::WeeklyBar);
+  slotBarLengthChanged((int) BarData::WeeklyBar);
+}
+
+void QtstalkerApp::cmpsBtnDClicked()
+{
+  compressionCombo->setCurrentIndex((int) BarData::DailyBar);
+  slotBarLengthChanged((int) BarData::DailyBar);
+}
+
+void QtstalkerApp::cmpsBtn60Clicked()
+{
+  compressionCombo->setCurrentIndex((int) BarData::Minute60);
+  slotBarLengthChanged((int) BarData::Minute60);
+}
+
+void QtstalkerApp::cmpsBtn15Clicked()
+{
+  compressionCombo->setCurrentIndex((int) BarData::Minute15);
+  slotBarLengthChanged((int) BarData::Minute15);
+}
+
+void QtstalkerApp::cmpsBtn5Clicked()
+{
+  compressionCombo->setCurrentIndex((int) BarData::Minute5);
+  slotBarLengthChanged((int) BarData::Minute5);
+}
+
+void QtstalkerApp::slotOrientationChanged(Qt::Orientation o)
+{
+  slider->setOrientation(o);
+// updateGeometry();
 }
 
