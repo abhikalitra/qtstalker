@@ -26,24 +26,27 @@
 #include "FontButton.h"
 #include "FileButton.h"
 #include "SymbolButton.h"
-#include <qtabdialog.h>
-#include <qlayout.h>
-#include <qwidget.h>
-#include <qpushbutton.h>
-#include <qdict.h>
-#include <qspinbox.h>
-#include <qlineedit.h>
-#include <qvalidator.h>
-#include <qcheckbox.h>
-#include <qcombobox.h>
-#include <qfont.h>
-#include <qdatetimeedit.h>
-#include <qdatetime.h>
-#include <qstringlist.h>
-#include <qstring.h>
-#include <qlabel.h>
+#include <QDialog>
+#include <QDialogButtonBox>
+#include <QTabWidget>
+#include <QLayout>
+#include <QWidget>
+#include <QPushButton>
+#include <QHash>
+#include <QSpinBox>
+#include <QLineEdit>
+#include <QDoubleSpinBox>
+#include <QCheckBox>
+#include <QComboBox>
+#include <QFont>
+#include <QDateTimeEdit>
+#include <QDateTime>
+#include <QStringList>
+#include <QString>
+#include <QLabel>
+#include <QGridLayout>
 
-class PrefDialog : public QTabDialog
+class PrefDialog : public QDialog
 {
   Q_OBJECT
 
@@ -52,62 +55,56 @@ class PrefDialog : public QTabDialog
     PrefDialog ();
     ~PrefDialog ();
     void init ();
-    void createPage (QString &);
-    void deletePage (QString &);
-    void setHelpFile (QString &);
-    void addColorItem (QString &, QString &, QColor &);
-    void addColorPrefItem (QString &, QString &, QColor &);
+    void addColorItem (QString &, QColor &);
+    void addColorPrefItem (QString &, QColor &);
     void getColor (QString &, QColor &);
-    void addDoubleItem (QString &, QString &, double, double, double);
-    void addDoubleItem (QString &, QString &, double);
+    void addDoubleItem (QString &, double, double, double);
+    void addDoubleItem (QString &, double);
     double getDouble (QString &);
-    void addIntItem (QString &, QString &, int);
-    void addIntItem (QString &, QString &, int, int, int);
+    void addIntItem (QString &, int);
+    void addIntItem (QString &, int, int, int);
     int getInt (QString &);
-    void addCheckItem (QString &, QString &, bool);
-    void addCheckItem (QString &, QString &, QString &);
+    void addCheckItem (QString &, bool);
+    void addCheckItem (QString &, QString &);
     bool getCheck (QString &);
     void getCheckString (QString &, QString &);
-    void addFontItem (QString &, QString &, QFont &);
+    void addFontItem (QString &, QFont &);
     void getFont (QString &, QFont &);
-    void addTextItem (QString &, QString &, QString &);
+    void addTextItem (QString &, QString &);
     void getText (QString &, QString &);
-    void addComboItem (QString &, QString &, QStringList &, QString &);
-    void addComboItem (QString &, QString &, QStringList &, int);
+    void addComboItem (QString &, QStringList &, QString &);
+    void addComboItem (QString &, QStringList &, int);
     void getCombo (QString &, QString &);
     int getComboIndex (QString &);
     QComboBox * getComboWidget (QString &);
-    void addDateItem (QString &, QString &, QDateTime &);
+    void addDateItem (QString &, QDateTime &);
     void getDate (QString &, QDateTime &);
-    void addFileItem (QString &, QString &, QStringList &, QString &);
+    void addFileItem (QString &, QStringList &, QString &);
     void getFile (QString &, QStringList &);
-    void addSymbolItem (QString &, QString &, QString &, QString &);
-    void getSymbol (QString &, QString &);
-    void addLabelItem (QString &, QString &, QString &);
+//    void addSymbolItem (QString &, QString &, QString &);
+//    void getSymbol (QString &, QString &);
+//    void addLabelItem (QString &, QString &);
     void getItem (QString &, QString &);
-    void addTimeItem (QString &, QString &, QDateTime &);
+    void addTimeItem (QString &, QDateTime &);
     void getTime (QString &, QDateTime &);
     
   public slots:
-    void help ();
 
   private:
-    QDict<QWidget> widgetList;
-    QDict<QGridLayout> gridList;
-    QDict<ColorButton> colorButtonList;
-    QDict<QSpinBox> intList;
-    QDict<QLineEdit> doubleList;
-    QDict<QCheckBox> checkList;
-    QDict<FontButton> fontButtonList;
-    QDict<QLineEdit> textList;
-    QDict<QComboBox> comboList;
-    QDict<QDateEdit> dateList;
-    QDict<FileButton> fileList;
-    QDict<SymbolButton> symbolList;
-    QDict<QDoubleValidator> dvList;
-    QDict<QLabel> labelList;
-    QDict<QTimeEdit> timeList;
-    QString helpFile;
+    QHash<QString, ColorButton *> colorButtonList;
+    QHash<QString, QSpinBox *> intList;
+    QHash<QString, QDoubleSpinBox *> doubleList;
+    QHash<QString, QCheckBox *> checkList;
+    QHash<QString, FontButton *> fontButtonList;
+    QHash<QString, QLineEdit *> textList;
+    QHash<QString, QComboBox *> comboList;
+    QHash<QString, QDateEdit *> dateList;
+    QHash<QString, FileButton *> fileList;
+    QHash<QString, SymbolButton *> symbolList;
+    QHash<QString, QLabel *> labelList;
+    QHash<QString, QTimeEdit *> timeList;
+    QDialogButtonBox *buttonBox;
+    QGridLayout *grid;
 };
 
 #endif

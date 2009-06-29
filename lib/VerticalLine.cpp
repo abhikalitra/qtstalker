@@ -21,14 +21,18 @@
 
 #include "VerticalLine.h"
 #include "PrefDialog.h"
-#include <qpainter.h>
-#include <qsettings.h>
+#include "DataBase.h"
+#include "Config.h"
+#include <QPainter>
+#include <QPolygon>
+
+
 
 VerticalLine::VerticalLine ()
 {
-  defaultColor.setNamedColor("red");
+  color.setNamedColor("red");
   helpFile = "verticalline.html";
-  type = "VerticalLine";
+  type = (int) COVerticalLine;
   
   loadDefaults();
 }
@@ -50,12 +54,12 @@ void VerticalLine::draw (QPixmap &buffer, Scaler &, int startIndex, int pixelspa
   if (x == -1)
     return;
       
-  painter.setPen(getColor());
+  painter.setPen(color);
 
   painter.drawLine (x, 0, x, buffer.height());
   
   clearSelectionArea();
-  QPointArray array;
+  QPolygon array;
   array.putPoints(0,
   	          4,
 		  x - (HANDLE_WIDTH / 2), 0,
@@ -75,35 +79,35 @@ void VerticalLine::draw (QPixmap &buffer, Scaler &, int startIndex, int pixelspa
 		  HANDLE_WIDTH,
 		  HANDLE_WIDTH,
 		  QRegion::Rectangle));
-    painter.fillRect(x - (HANDLE_WIDTH / 2), 0, HANDLE_WIDTH, HANDLE_WIDTH, getColor());
+    painter.fillRect(x - (HANDLE_WIDTH / 2), 0, HANDLE_WIDTH, HANDLE_WIDTH, color);
     
     setGrabHandle(new QRegion(x - (HANDLE_WIDTH / 2),
             	  t,
 		  HANDLE_WIDTH,
 		  HANDLE_WIDTH,
 		  QRegion::Rectangle));
-    painter.fillRect(x - (HANDLE_WIDTH / 2), t, HANDLE_WIDTH, HANDLE_WIDTH, getColor());
+    painter.fillRect(x - (HANDLE_WIDTH / 2), t, HANDLE_WIDTH, HANDLE_WIDTH, color);
     
     setGrabHandle(new QRegion(x - (HANDLE_WIDTH / 2),
             	  t * 2,
 		  HANDLE_WIDTH,
 		  HANDLE_WIDTH,
 		  QRegion::Rectangle));
-    painter.fillRect(x - (HANDLE_WIDTH / 2), t * 2, HANDLE_WIDTH, HANDLE_WIDTH, getColor());
+    painter.fillRect(x - (HANDLE_WIDTH / 2), t * 2, HANDLE_WIDTH, HANDLE_WIDTH, color);
     
     setGrabHandle(new QRegion(x - (HANDLE_WIDTH / 2),
              	  t * 3,
 		  HANDLE_WIDTH,
 		  HANDLE_WIDTH,
 		  QRegion::Rectangle));
-    painter.fillRect(x - (HANDLE_WIDTH / 2), t * 3, HANDLE_WIDTH, HANDLE_WIDTH, getColor());
+    painter.fillRect(x - (HANDLE_WIDTH / 2), t * 3, HANDLE_WIDTH, HANDLE_WIDTH, color);
     
     setGrabHandle(new QRegion(x - (HANDLE_WIDTH / 2),
              	  t * 4,
 		  HANDLE_WIDTH,
 		  HANDLE_WIDTH,
 		  QRegion::Rectangle));
-    painter.fillRect(x - (HANDLE_WIDTH / 2), t * 4, HANDLE_WIDTH, HANDLE_WIDTH, getColor());
+    painter.fillRect(x - (HANDLE_WIDTH / 2), t * 4, HANDLE_WIDTH, HANDLE_WIDTH, color);
   }
 
   painter.end();
@@ -111,29 +115,24 @@ void VerticalLine::draw (QPixmap &buffer, Scaler &, int startIndex, int pixelspa
 
 void VerticalLine::prefDialog ()
 {
-  QString pl = tr("Details");
   QString cl = tr("Color");
   QString sd = tr("Set Default");
 
-  PrefDialog *dialog = new PrefDialog();
-  dialog->setCaption(tr("Edit VerticalLine"));
-  dialog->createPage (pl);
-  dialog->setHelpFile (helpFile);
-  dialog->addColorPrefItem(cl, pl, color);
-  dialog->addCheckItem(sd, pl, FALSE);
+  PrefDialog *dialog = new PrefDialog;
+  dialog->setWindowTitle(tr("Edit VerticalLine"));
+  dialog->addColorPrefItem(cl, color);
+  dialog->addCheckItem(sd, FALSE);
   
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
   {
     dialog->getColor(cl, color);
+    saveFlag = TRUE;
     
     bool f = dialog->getCheck(sd);
     if (f)
-    {
-      defaultColor = color;
       saveDefaults();
-    }
     
     emit signalDraw();
   }
@@ -144,8 +143,7 @@ void VerticalLine::prefDialog ()
 void VerticalLine::newObject (QString &ind, QString &n)
 {
   indicator = ind;
-  plot = ind;
-  name = n;
+  id = n;
   status = ClickWait;
   emit message(tr("Select point to place VerticalLine..."));
 }
@@ -177,13 +175,11 @@ COBase::Status VerticalLine::pointerClick (QPoint &point, QDateTime &x, double)
       status = Selected;
       break;
     case ClickWait:
-      setDate(x);
+      date = x;
       setSaveFlag(TRUE);
-      setColor(defaultColor);
       emit signalDraw();
       status = None;
       emit message("");
-      emit signalSave(name);
       break;
     default:
       break;
@@ -197,29 +193,23 @@ void VerticalLine::pointerMoving (QPixmap &, QPoint &, QDateTime &x, double)
   if (status != Moving)
     return;
     
-  setDate(x);
+  date = x;
   setSaveFlag(TRUE);
   emit signalDraw();
-  QString s = x.toString("yyyy-MM-dd hh:mm:ss");
+  QString s = x.toString(dateFormat);
   emit message(s);
 }
 
 void VerticalLine::loadDefaults ()
 {
-  QSettings settings;
-  
-  QString s = "/Qtstalker/DefaultVerticalLineColor";
-  s = settings.readEntry(s);
-  if (s.length())
-    defaultColor.setNamedColor(s);
+  Config config;
+  config.getData(Config::DefaultVerticalLineColor, color);
 }
 
 void VerticalLine::saveDefaults ()
 {
-  QSettings settings;
-  
-  QString s = "/Qtstalker/DefaultVerticalLineColor";
-  settings.writeEntry(s, defaultColor.name());
+  Config config;
+  config.setData(Config::DefaultVerticalLineColor, color);
 }
 
 double VerticalLine::getHigh ()
@@ -232,27 +222,22 @@ double VerticalLine::getLow ()
   return data->getMin();
 }
 
-void VerticalLine::getSettings (Setting &set)
+void VerticalLine::saveSettings ()
 {
-  QString s = date.toString(dateFormat);
-  set.setData(dateLabel, s);
-  s = color.name();
-  set.setData(colorLabel, s);
-  set.setData(plotLabel, plot);
-  set.setData(nameLabel, name);
-  set.setData(typeLabel, type);
+  COSettings co(id, symbol, indicator, QString::number(type));
+  co.setDate(date);
+  co.setColor(color);
+
+  DataBase db;
+  db.setChartObject(co);
 }
 
-void VerticalLine::setSettings (Setting &set)
+void VerticalLine::loadSettings (COSettings &co)
 {
-  QString s;
-  set.getData(dateLabel, s);
-  Bar bar;
-  bar.setDate(s);
-  bar.getDate(date);
-  set.getData(colorLabel, s);
-  color.setNamedColor(s);
-  set.getData(plotLabel, plot);
-  set.getData(nameLabel, name);
+  co.getSymbol(symbol);
+  co.getID(id);
+  co.getIndicator(indicator);
+  co.getDate(date);
+  co.getColor(color);
 }
 

@@ -21,26 +21,19 @@
 
 #include "HorizontalLine.h"
 #include "PrefDialog.h"
+#include "DataBase.h"
 #include "Config.h"
-#include <qpainter.h>
-#include <qpointarray.h>
-#include <qsettings.h>
+#include <QPainter>
+#include <QPolygon>
+
+
 
 HorizontalLine::HorizontalLine ()
 {
-  defaultColor.setNamedColor("red");
+  color.setNamedColor("red");
   helpFile = "horizontalline.html";
-  text="";
-  textLabel = "Text";
-  type = "HorizontalLine";
+  type = (int) COHorizontalLine;
 
-  Config config;  
-  QString s;
-  config.getData(Config::PlotFont, s);
-  QStringList l = QStringList::split(",", s, FALSE);
-  QFont f(l[0], l[1].toInt(), l[2].toInt());
-  font = f;
-  
   loadDefaults();
 }
 
@@ -54,24 +47,22 @@ void HorizontalLine::draw (QPixmap &buffer, Scaler &scaler, int, int, int)
   painter.begin(&buffer);
   painter.setFont(font);
   
-  int y = scaler.convertToY(getValue());
+  int y = scaler.convertToY(value);
   
   // if value is off chart then don't draw it
-  if (getValue() < scaler.getLow())
+  if (value < scaler.getLow())
     return;
       
-  painter.setPen(getColor());
+  painter.setPen(color);
     
   QFontMetrics fm(font);
-  QString s;
-  getText(s);
-  int pixelsWide = fm.width(s);
+  int pixelsWide = fm.width(text);
   painter.drawLine (0, y, buffer.width(), y);
-  painter.drawText(0, y - 1, s, -1);
-  painter.drawText(0 + pixelsWide + 1, y - 1, QString::number(getValue()), -1);
+  painter.drawText(0, y - 1, text);
+  painter.drawText(0 + pixelsWide + 1, y - 1, QString::number(value));
   
   clearSelectionArea();
-  QPointArray array;
+  QPolygon array;
   array.putPoints(0, 4, 0, y - 4, 0, y + 4, buffer.width(), y + 4, buffer.width(), y - 4);
   setSelectionArea(new QRegion(array));
     
@@ -85,35 +76,35 @@ void HorizontalLine::draw (QPixmap &buffer, Scaler &scaler, int, int, int)
 			      HANDLE_WIDTH,
 			      HANDLE_WIDTH,
 			      QRegion::Rectangle));
-    painter.fillRect(0, y - (HANDLE_WIDTH / 2), HANDLE_WIDTH, HANDLE_WIDTH, getColor());
+    painter.fillRect(0, y - (HANDLE_WIDTH / 2), HANDLE_WIDTH, HANDLE_WIDTH, color);
   
     setGrabHandle(new QRegion(t,
              		      y - (HANDLE_WIDTH / 2),
 			      HANDLE_WIDTH,
 			      HANDLE_WIDTH,
 			      QRegion::Rectangle));
-    painter.fillRect(t, y - (HANDLE_WIDTH / 2), HANDLE_WIDTH, HANDLE_WIDTH, getColor());
+    painter.fillRect(t, y - (HANDLE_WIDTH / 2), HANDLE_WIDTH, HANDLE_WIDTH, color);
     
     setGrabHandle(new QRegion(t * 2,
              		      y - (HANDLE_WIDTH / 2),
 			      HANDLE_WIDTH,
 		              HANDLE_WIDTH,
 			      QRegion::Rectangle));
-    painter.fillRect(t * 2, y - (HANDLE_WIDTH / 2), HANDLE_WIDTH, HANDLE_WIDTH, getColor());
+    painter.fillRect(t * 2, y - (HANDLE_WIDTH / 2), HANDLE_WIDTH, HANDLE_WIDTH, color);
     
     setGrabHandle(new QRegion(t * 3,
              		      y - (HANDLE_WIDTH / 2),
 			      HANDLE_WIDTH,
 		  	      HANDLE_WIDTH,
 			      QRegion::Rectangle));
-    painter.fillRect(t * 3, y - (HANDLE_WIDTH / 2), HANDLE_WIDTH, HANDLE_WIDTH, getColor());
+    painter.fillRect(t * 3, y - (HANDLE_WIDTH / 2), HANDLE_WIDTH, HANDLE_WIDTH, color);
     
     setGrabHandle(new QRegion(t * 4,
              	              y - (HANDLE_WIDTH / 2),
 			      HANDLE_WIDTH,
 		    	      HANDLE_WIDTH,
 			      QRegion::Rectangle));
-    painter.fillRect(t * 4, y - (HANDLE_WIDTH / 2), HANDLE_WIDTH, HANDLE_WIDTH, getColor());
+    painter.fillRect(t * 4, y - (HANDLE_WIDTH / 2), HANDLE_WIDTH, HANDLE_WIDTH, color);
   }
 
   painter.end();
@@ -121,20 +112,17 @@ void HorizontalLine::draw (QPixmap &buffer, Scaler &scaler, int, int, int)
 
 void HorizontalLine::prefDialog ()
 {
-  QString pl = tr("Details");
   QString cl = tr("Color");
   QString sd = tr("Set Default");
   QString vl = tr("Value");
   QString tx = tr("Text");
 
-  PrefDialog *dialog = new PrefDialog();
-  dialog->setCaption(tr("Edit HorizontalLine"));
-  dialog->createPage (pl);
-  dialog->setHelpFile (helpFile);
-  dialog->addColorPrefItem(cl, pl, color);
-  dialog->addDoubleItem(vl, pl, getValue());
-  dialog->addTextItem(tx, pl, text);  //cz odkazy na objekty definovane nahore
-  dialog->addCheckItem(sd, pl, FALSE);
+  PrefDialog *dialog = new PrefDialog;
+  dialog->setWindowTitle(tr("Edit HorizontalLine"));
+  dialog->addColorPrefItem(cl, color);
+  dialog->addDoubleItem(vl, value);
+  dialog->addTextItem(tx, text);  //cz odkazy na objekty definovane nahore
+  dialog->addCheckItem(sd, FALSE);
   
   int rc = dialog->exec();
   
@@ -147,10 +135,7 @@ void HorizontalLine::prefDialog ()
     
     bool f = dialog->getCheck(sd);
     if (f)
-    {
-      defaultColor = color;
       saveDefaults();
-    }
     
     emit signalDraw();
   }
@@ -161,8 +146,7 @@ void HorizontalLine::prefDialog ()
 void HorizontalLine::newObject (QString &ind, QString &n)
 {
   indicator = ind;
-  plot = ind;
-  name = n;
+  id = n;
   status = ClickWait;
   emit message(tr("Select point to place HorizontalLine..."));
 }
@@ -194,13 +178,11 @@ COBase::Status HorizontalLine::pointerClick (QPoint &point, QDateTime &, double 
       status = Selected;
       break;
     case ClickWait:
-      setValue(y);
+      value = y;
       setSaveFlag(TRUE);
-      setColor(defaultColor);
       emit signalDraw();
       status = None;
       emit message("");
-      emit signalSave(name);
       break;
     default:
       break;
@@ -214,7 +196,7 @@ void HorizontalLine::pointerMoving (QPixmap &, QPoint &, QDateTime &, double y)
   if (status != Moving)
     return;
     
-  setValue(y);
+  value = y;
   setSaveFlag(TRUE);
   emit signalDraw();
   QString s = QString::number(y);
@@ -223,48 +205,35 @@ void HorizontalLine::pointerMoving (QPixmap &, QPoint &, QDateTime &, double y)
 
 void HorizontalLine::loadDefaults ()
 {
-  QSettings settings;
-  
-  QString s = "/Qtstalker/DefaultHorizontalLineColor";
-  s = settings.readEntry(s);
-  if (s.length())
-    defaultColor.setNamedColor(s);
+  Config config;
+  config.getData(Config::DefaultHorizontalLineColor, color);
 }
 
 void HorizontalLine::saveDefaults ()
 {
-  QSettings settings;
-  
-  QString s = "/Qtstalker/DefaultHorizontalLineColor";
-  settings.writeEntry(s, defaultColor.name());
+  Config config;
+  config.setData(Config::DefaultHorizontalLineColor, color);
 }
 
-void HorizontalLine::getSettings (Setting &set)
+void HorizontalLine::saveSettings ()
 {
-  QString s = QString::number(value);
-  set.setData(valueLabel, s);
-  s = color.name();
-  set.setData(colorLabel, s);
-  set.setData(plotLabel, plot);
-  set.setData(nameLabel, name);
-  set.setData(textLabel, text);
-  set.setData(typeLabel, type);
+  COSettings co(id, symbol, indicator, QString::number(type));
+  co.setValue(value);
+  co.setColor(color);
+  co.setText(text);
+
+  DataBase db;
+  db.setChartObject(co);
 }
 
-void HorizontalLine::setSettings (Setting &set)
+void HorizontalLine::loadSettings (COSettings &co)
 {
-  QString s;
-  value = set.getDouble(valueLabel);
-  set.getData(colorLabel, s);
-  color.setNamedColor(s);
-  set.getData(plotLabel, plot);
-  set.getData(nameLabel, name);
-  set.getData(textLabel, text);
-}
-
-void HorizontalLine::getText (QString &d)
-{
-  d = text;
+  co.getSymbol(symbol);
+  co.getID(id);
+  co.getIndicator(indicator);
+  co.getText(text);
+  value = co.getValue();
+  co.getColor(color);
 }
 
 void HorizontalLine::adjustForSplit (QDateTime &, double d)

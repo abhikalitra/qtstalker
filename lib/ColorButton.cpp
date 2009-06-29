@@ -20,16 +20,15 @@
  */
 
 #include "ColorButton.h"
-#include <qcolordialog.h>
+#include <QColorDialog>
 
 ColorButton::ColorButton (QWidget *w, QColor &c) : QPushButton (w)
 {
   color = c;
   QObject::connect(this, SIGNAL(clicked()), this, SLOT(colorDialog()));
   setMaximumHeight(25);
-  setToggleButton(FALSE);
-  pix.resize(50, 10);
-  setToggleType(SingleShot);
+//  setToggleButton(FALSE);
+  pix = QPixmap(50, 10);
   readonly = FALSE;
   changed = FALSE;
 }
@@ -41,7 +40,7 @@ ColorButton::~ColorButton ()
 void ColorButton::setColorButton ()
 {
   pix.fill(color);
-  setPixmap(pix);
+  setIcon(QIcon(pix));
 }
 
 void ColorButton::getColor (QColor &c)
@@ -75,7 +74,7 @@ void ColorButton::setColor (QColor c)
 {
   color = c;
   pix.fill(color);
-  setPixmap(pix);
+  setIcon(QIcon(pix));
 }
 
 void ColorButton::setDialogOff ()

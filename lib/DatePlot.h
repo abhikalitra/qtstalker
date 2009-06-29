@@ -22,11 +22,14 @@
 #ifndef DATEPLOT_HPP
 #define DATEPLOT_HPP
 
-#include <qwidget.h>
-#include <qpixmap.h>
-#include <qcolor.h>
-#include <qfont.h>
-#include <qmemarray.h>
+#include <QWidget>
+#include <QPixmap>
+#include <QColor>
+#include <QFont>
+#include <QVector>
+#include <QPaintEvent>
+#include <QResizeEvent>
+#include <QList>
 #include "BarData.h"
 
 
@@ -48,7 +51,7 @@ class DatePlot : public QWidget
     ~DatePlot ();
     void clear ();
     void setData (BarData *);
-    QMemArray<int> & getXGrid ();
+    QVector<int> & getXGrid ();
 
   public slots:
     void draw();
@@ -81,8 +84,8 @@ class DatePlot : public QWidget
     QColor backgroundColor;
     QColor borderColor;
     BarData *data;
-    QPtrList<TickItem> dateList;
-    QMemArray<int> xGrid;
+    QList<TickItem*> dateList;
+    QVector<int> xGrid;
 };
 
 #endif

@@ -23,12 +23,10 @@
 #define FIBOLINE_HPP
 
 #include "COBase.h"
-#include "Setting.h"
-#include <qpointarray.h>
-#include <qdict.h>
-#include <qpoint.h>
-#include <qfont.h>
-#include <qdatetime.h>
+#include <QPoint>
+#include <QFont>
+
+
 
 class FiboLine : public COBase
 {
@@ -44,8 +42,8 @@ class FiboLine : public COBase
     void loadDefaults ();
     void saveDefaults ();
     double getY (double v, double high, double low);
-    void getSettings (Setting &);
-    void setSettings (Setting &);
+    void loadSettings (COSettings &);
+    void saveSettings ();
     int isGrabSelected (QPoint point);
     double getLine (int);
     void adjustForSplit (QDateTime &, double);
@@ -72,17 +70,6 @@ class FiboLine : public COBase
     double high;
     double low;
     bool extend;
-    QString highLabel;
-    QString lowLabel;
-    QString sdateLabel;
-    QString edateLabel;
-    QString extendLabel;
-    QString l1Label;
-    QString l2Label;
-    QString l3Label;
-    QString l4Label;
-    QString l5Label;
-    QString l6Label;
 };
 
 #endif

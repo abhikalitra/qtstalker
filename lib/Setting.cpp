@@ -20,11 +20,10 @@
  */
 
 #include "Setting.h"
-#include <qobject.h>
+#include <QObject>
 
 Setting::Setting ()
 {
-  dict.setAutoDelete(TRUE);
 }
 
 Setting::~Setting ()
@@ -33,41 +32,41 @@ Setting::~Setting ()
 
 void Setting::getData (QString &k, QString &d)
 {
-  d.truncate(0);
-  QString *s = dict[k];
-  if (s)
-    d = s->left(s->length());
+  d.clear();
+  if (dict.contains(k))
+    d = dict.value(k);
 }
 
 double Setting::getDouble (QString &k)
 {
-  QString *s = dict[k];
-  if (s)
-    return s->toDouble();
+  if (dict.contains(k))
+    return dict.value(k).toDouble();
   else
     return 0;
 }
 
 int Setting::getInt (QString &k)
 {
-  QString *s = dict[k];
-  if (s)
-    return s->toInt();
+  if (dict.contains(k))
+    return dict.value(k).toInt();
   else
     return 0;
 }
 
 void Setting::setData (QString &k, QString &d)
 {
-  dict.replace(k, new QString(d));
+  dict.insert(k, d);
 }
 
 void Setting::getKeyList (QStringList &l)
 {
   l.clear();
-  QDictIterator<QString> it(dict);
-  for (; it.current(); ++it)
-    l.append(it.currentKey());
+  QHashIterator<QString, QString> it(dict);
+  while (it.hasNext())
+  {
+    it.next();
+    l.append(it.key());
+  }
 }
 
 void Setting::remove (QString &k)
@@ -77,13 +76,13 @@ void Setting::remove (QString &k)
 
 void Setting::getString (QString &s)
 {
-  s.truncate(0);
+  s.clear();
   QStringList l;
-  QDictIterator<QString> it(dict);
-  for (; it.current(); ++it)
+  QHashIterator<QString, QString> it(dict);
+  while (it.hasNext())
   {
-    QString *s = it.current();
-    l.append(it.currentKey() + "=" + s->left(s->length()));
+    it.next();
+    l.append(it.key() + "=" + it.value());
   }
   s = l.join("|");
 }
@@ -92,13 +91,14 @@ void Setting::parse (QString &d)
 {
   dict.clear();
 
-  QStringList l = QStringList::split("|", d, FALSE);
+  QStringList l = d.split("|");
 
   int loop;
   for (loop = 0; loop < (int) l.count(); loop++)
   {
-    QStringList l2 = QStringList::split("=", l[loop], FALSE);
-    dict.replace(l2[0], new QString(l2[1]));
+    QStringList l2 = l[loop].split("=");
+    if (l2.count() > 1)
+      dict.insert(l2[0], l2[1]);
   }
 }
 
@@ -115,12 +115,12 @@ int Setting::count ()
 void Setting::copy (Setting *r)
 {
   QString k, d;
-  QDictIterator<QString> it(dict);
-  for (; it.current(); ++it)
+  QHashIterator<QString, QString> it(dict);
+  while (it.hasNext())
   {
-    QString *s = it.current();
-    k = it.currentKey();
-    d = s->left(s->length());
+    it.next();
+    k = it.key();
+    d = it.value();
     r->setData(k, d);
   }
 }

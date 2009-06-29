@@ -22,19 +22,22 @@
 #ifndef PREFERENCES_HPP
 #define PREFERENCES_HPP
 
-#include <qcolor.h>
-#include <qfont.h>
-#include <qstringlist.h>
-#include <qstring.h>
-#include <qtabdialog.h>
-#include <qcheckbox.h>
-#include <qspinbox.h>
-#include <qsize.h>
+#include <QColor>
+#include <QFont>
+#include <QStringList>
+#include <QString>
+#include <QTabWidget>
+#include <QCheckBox>
+#include <QSpinBox>
+#include <QSize>
+#include <QDialog>
+#include <QDialogButtonBox>
 #include "ColorButton.h"
 #include "FontButton.h"
+#include "FileButton.h"
 
 
-class Preferences : public QTabDialog
+class Preferences : public QDialog
 {
   Q_OBJECT
 
@@ -53,6 +56,7 @@ class Preferences : public QTabDialog
     Preferences (QWidget *);
     ~Preferences ();
     void createGeneralPage ();
+    void createDatabasePage ();
     void createColorPage ();
     void createFontPage ();
     void createMTPage(); // main tool bar
@@ -61,13 +65,13 @@ class Preferences : public QTabDialog
     void loadSettings ();
 
   public slots:
-    void slotHelp ();
     void slotSave ();
     void slotModified();
 
   private:
+    QTabWidget *tabs;
+    QDialogButtonBox *buttonBox;    
     QSize sz;
-    QString helpFile;
     bool menubar;
     bool extraToolbar;
     int ps1Button;
@@ -83,11 +87,13 @@ class Preferences : public QTabDialog
     QSpinBox *bs1Spinner;
     QSpinBox *bs2Spinner;
     QSpinBox *bs3Spinner;
+    QSpinBox *tabRows;
     ColorButton *backgroundColorButton;
     ColorButton *borderColorButton;
     ColorButton *gridColorButton;
     FontButton *plotFontButton;
     FontButton *appFontButton;
+    FileButton *dbFile;
     // on MainToolbar    
     QCheckBox *quitBtnCheck;
     QCheckBox *prefBtnCheck;

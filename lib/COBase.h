@@ -24,16 +24,18 @@
 
 #include "Scaler.h"
 #include "BarData.h"
-#include "Setting.h"
-#include <qpixmap.h>
-#include <qobject.h>
-#include <qstring.h>
-#include <qpopupmenu.h>
-#include <qpoint.h>
-#include <qregion.h>
-#include <qcolor.h>
-#include <qptrlist.h>
-#include <qdatetime.h>
+#include "COSettings.h"
+#include <QPixmap>
+#include <QObject>
+#include <QString>
+#include <QMenu>
+#include <QPoint>
+#include <QRegion>
+#include <QColor>
+#include <QList>
+#include <QDateTime>
+#include <QKeyEvent>
+
 
 #define HANDLE_WIDTH 6
 
@@ -46,7 +48,6 @@ class COBase : public QObject
     void signalRefresh ();
     void message (QString);
     void signalObjectDeleted (QString);
-    void signalSave (QString);
 
   public:
     enum Status
@@ -58,6 +59,18 @@ class COBase : public QObject
       Moving
     };
 
+    enum COType
+    {
+      COBuyArrow,
+      COCycle,
+      COFiboLine,
+      COHorizontalLine,
+      COSellArrow,
+      COText,
+      COTrendLine,
+      COVerticalLine
+    };
+
     COBase ();
     virtual ~COBase ();
     virtual void draw (QPixmap &, Scaler &, int, int, int);
@@ -65,8 +78,8 @@ class COBase : public QObject
     virtual void keyEvent (QKeyEvent *);
     virtual double getHigh ();
     virtual double getLow ();
-    virtual void getSettings (Setting &);
-    virtual void setSettings (Setting &);
+    virtual void loadSettings (COSettings &);
+    virtual void saveSettings ();
     virtual void adjustForSplit (QDateTime &, double);
     
     void setData (BarData *);
@@ -77,19 +90,13 @@ class COBase : public QObject
     void setGrabHandle (QRegion *);
     void clearSelectionArea ();
     void setSelectionArea (QRegion *);
-    QString getName ();
-    void setDate (QDateTime &);
-    void getDate (QDateTime &);
-    void setColor (QColor);
-    QColor getColor ();
-    void setValue (double);
-    double getValue ();
+    QString getID ();
     void setStatus (Status);
     COBase::Status getStatus ();
     bool isSelected (QPoint point);
     bool isGrabSelected (QPoint point);
-    COBase * getCO (Setting &);
-    COBase * getCO (QString &);
+    COBase * getCO (int);
+    void setSymbol (QString &);
 
   public slots:    
     virtual void prefDialog ();
@@ -98,36 +105,24 @@ class COBase : public QObject
 
     void removeObject ();
     void moveObject ();
-    void addObject (Setting &);
     void showMenu ();
     
   protected:
     BarData *data;
-    QPopupMenu *menu;
+    QMenu *menu;
     QString indicator;
-    QString name;
+    QString symbol;
+    QString id;
     QString helpFile;
-    QString plot;
+    int type;
+    QString dateFormat;
     Status status;
-    QColor defaultColor;
     bool saveFlag;
-    QPtrList<QRegion> grabHandles;
-    QPtrList<QRegion> selectionArea;
+    QList<QRegion *> grabHandles;
+    QList<QRegion *> selectionArea;
     QColor color;
     QDateTime date;
     double value;
-    QString type;
-    QString dateFormat;
-    QString dateLabel;
-    QString valueLabel;
-    QString colorLabel;
-    QString plotLabel;
-    QString nameLabel;
-    QString typeLabel;
-    QString identifier;
-    QString identifierLabel;
-    QString price;
-    QString priceLabel;
 };
 
 #endif

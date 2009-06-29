@@ -20,19 +20,23 @@
  */
 
 #include "Plot.h"
-#include <qlayout.h>
+#include <QLayout>
+#include <QHBoxLayout>
+#include <QVBoxLayout>
 
-Plot::Plot (QWidget *w, DBIndex *i) : QWidget(w)
+Plot::Plot (QWidget *w) : QWidget(w)
 {
-  QVBoxLayout *vbox = new QVBoxLayout(this);
+  QVBoxLayout *vbox = new QVBoxLayout;
   vbox->setMargin(0);
   vbox->setSpacing(0);
+  setLayout(vbox);
   
-  QHBoxLayout *hbox = new QHBoxLayout(vbox);
+  QHBoxLayout *hbox = new QHBoxLayout;
   hbox->setMargin(0);
   hbox->setSpacing(0);
+  vbox->addLayout(hbox);
 
-  indicatorPlot = new IndicatorPlot(this, i);
+  indicatorPlot = new IndicatorPlot(this);
   hbox->addWidget(indicatorPlot, 1, 0);
   
   scalePlot = new ScalePlot(this);
@@ -174,25 +178,6 @@ void Plot::setDateFlag (bool d)
     datePlot->hide();
 }
 
-void Plot::addIndicator (Indicator *i)
-{
-  setDateFlag(i->getDateFlag());
-
-  indicatorPlot->setLogScale(i->getLogScale());
-
-  indicatorPlot->addIndicator(i);
-}
-
-Indicator * Plot::getIndicator ()
-{
-  return indicatorPlot->getIndicator();
-}
-
-bool Plot::deleteIndicator ()
-{
-  return indicatorPlot->deleteIndicator();
-}
-
 void Plot::setCrosshairsStatus (bool status)
 {
   indicatorPlot->setCrosshairsStatus(status);
@@ -231,11 +216,6 @@ void Plot::slotLogScaleChanged (bool d)
   indicatorPlot->draw();
 }
 
-void Plot::addChartObject (Setting &set)
-{
-  indicatorPlot->addChartObject(set);
-}
-
 void Plot::setCrosshairsFlag (bool d)
 {
   indicatorPlot->setCrosshairsFlag(d);
@@ -270,6 +250,16 @@ void Plot::slotUpdateScalePlot ()
 void Plot::setMenuFlag (bool d)
 {
   indicatorPlot->setMenuFlag(d);
+}
+
+void Plot::calculate ()
+{
+  indicatorPlot->calculate();
+}
+
+void Plot::loadChartObjects ()
+{
+  indicatorPlot->loadChartObjects();
 }
 
 

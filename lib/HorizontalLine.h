@@ -23,10 +23,10 @@
 #define HORIZONTALLINE_HPP
 
 #include "COBase.h"
-#include "Setting.h"
-#include <qpoint.h>
-#include <qfont.h>
-#include <qdatetime.h>
+#include <QPoint>
+#include <QFont>
+
+
 
 class HorizontalLine : public COBase
 {
@@ -39,9 +39,8 @@ class HorizontalLine : public COBase
     void newObject (QString &, QString &);
     void loadDefaults ();
     void saveDefaults ();
-    void getSettings (Setting &);
-    void setSettings (Setting &);
-    void getText (QString &);
+    void loadSettings (COSettings &);
+    void saveSettings ();
     void adjustForSplit (QDateTime &, double);
     
   public slots:
@@ -52,7 +51,6 @@ class HorizontalLine : public COBase
   protected:
     QFont font;
     QString text;
-    QString textLabel;
 };
 
 #endif

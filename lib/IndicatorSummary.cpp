@@ -20,29 +20,28 @@
  */
 
 #include "IndicatorSummary.h"
-#include "DbPlugin.h"
-#include "IndicatorPlugin.h"
 #include "Setting.h"
 #include "DataWindow.h"
 #include "PrefDialog.h"
 #include "Traverse.h"
-#include <qdir.h>
-#include <qdatetime.h>
-#include <qfileinfo.h>
-#include <qmessagebox.h>
-#include <qfile.h>
+#include <QDir>
+#include <QDateTime>
+#include <QFileInfo>
+#include <QMessageBox>
+#include <QFile>
+#include <QList>
 #include <math.h> // only for fabs()
 #include "XmlWriter.h"
 
-IndicatorSummary::IndicatorSummary (QStringList &l, int mb, BarData::BarLength bl, DBIndex *i)
+IndicatorSummary::IndicatorSummary (QStringList &l, int mb, BarData::BarLength bl, Config *con)
 {
   helpFile = "indicatorsummary.html";
   indicatorList = l;
   minBars = mb;
   barLength = bl;
-  chartIndex = i;
+  config = con;
 
-  indicators.setAutoDelete(TRUE);
+  //indicators.setAutoDelete(TRUE);
 }
 
 IndicatorSummary::~IndicatorSummary ()
@@ -52,7 +51,7 @@ IndicatorSummary::~IndicatorSummary ()
 void IndicatorSummary::run ()
 {
   PrefDialog *dialog = new PrefDialog;
-  dialog->setCaption(QObject::tr("Indicator Summary Parms"));
+  dialog->setWindowTitle(QObject::tr("Indicator Summary Parms"));
   dialog->setHelpFile(helpFile);
   
   QString pl = QObject::tr("Details");
@@ -68,7 +67,14 @@ void IndicatorSummary::run ()
   emit signalWakeup();
   QStringList l;
   trav.getList(l);
-  dialog->addComboItem(sl, pl, l, l[0]);
+  if ( l.count() > 0 )
+    dialog->addComboItem(sl, pl, l, l[0]);
+  else
+  {
+    QMessageBox::information(0, tr("Qtstalker: Warning"), tr("No files in group."));
+    delete dialog;
+    return;
+  }
   
   int rc = dialog->exec();
   
@@ -84,14 +90,14 @@ void IndicatorSummary::run ()
   dialog->getCombo(sl, group);
   delete dialog;
 
-  QPtrList<Setting> setList;
-  setList.setAutoDelete(TRUE);
+  QList<Setting*> setList;
+  //setList.setAutoDelete(TRUE);
 
   int loop;
   QDir dir(group);
   for (loop = 2; loop < (int) dir.count(); loop++)
   {
-    s = dir.absPath() + "/" + dir[loop];
+    s = dir.absolutePath() + "/" + dir[loop];
     QFileInfo fi(s);
     if (fi.isDir())
       continue;
@@ -198,7 +204,7 @@ void IndicatorSummary::loadIndicators ()
   }
 }
 
-void IndicatorSummary::createDataWindow (QPtrList<Setting> &list, QString &group)
+void IndicatorSummary::createDataWindow (QList<Setting*> &list, QString &group)
 {
   DataWindow *dw = new DataWindow(0);
   QFileInfo fi(group);
@@ -213,11 +219,11 @@ void IndicatorSummary::createDataWindow (QPtrList<Setting> &list, QString &group
   QString exportPath;
   config.getData(Config::Home, exportPath);
   exportPath.append("/export");
-  if (! dir.exists(exportPath, TRUE))
-    dir.mkdir(exportPath, TRUE);
+  if (! dir.exists(exportPath))
+    dir.mkdir(exportPath);
   QString xmlFileName = exportPath + "/summary-" + fi.fileName() + "-" + bls + ".xml";
   QFile xmlFile(xmlFileName);
-  xmlFile.open(IO_WriteOnly);
+  xmlFile.open(QIODevice::WriteOnly);
   XmlWriter xw(&xmlFile);
   xw.setAutoNewLine(true);
   xw.setIndentSize(2);
@@ -234,7 +240,7 @@ void IndicatorSummary::createDataWindow (QPtrList<Setting> &list, QString &group
   xw.writeOpenTag("data");
 
   QString s = QObject::tr("Indicator Summary - ") + fi.fileName() + " - " + bls;
-  dw->setCaption(s);
+  dw->setWindowTitle(s);
 
   int loop;
   QStringList klist;
@@ -247,14 +253,14 @@ void IndicatorSummary::createDataWindow (QPtrList<Setting> &list, QString &group
     int loop2;
     for (loop2 = 0; loop2 < (int) l.count(); loop2++)
     {
-      if (klist.findIndex(l[loop2]) == -1)
+      if (klist.indexOf(l[loop2]) == -1)
         klist.append(l[loop2]);
     }
   }
 
   s = tr("Symbol");
   dw->setHeader(0, s);
-  klist.remove(s);
+  klist.removeAll(s);
   klist.sort();
   klist.prepend(s);
   klist.append(s);

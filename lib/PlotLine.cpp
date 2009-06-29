@@ -20,9 +20,10 @@
  */
 
 #include "PlotLine.h"
-#include <qpainter.h>
-#include <qpointarray.h>
-#include <qobject.h>
+#include <QPainter>
+#include <QPolygon>
+#include <QObject>
+#include <QList>
 
 PlotLine::PlotLine ()
 {
@@ -149,12 +150,6 @@ void PlotLine::setType (QString &d)
     lineType = Candle;
     return;
   }
-
-  if (! d.compare(QObject::tr("PF")))
-  {
-    lineType = PF;
-    return;
-  }
 }
 
 PlotLine::LineType PlotLine::getType ()
@@ -278,7 +273,6 @@ void PlotLine::getLineTypes (QStringList &l)
   l.append(QObject::tr("Horizontal"));
   l.append(QObject::tr("Candle"));
   l.append(QObject::tr("Bar"));
-  l.append(QObject::tr("PF"));
 }
 
 void PlotLine::append (QColor &c, double o, double h, double l, double cl, bool cf)
@@ -374,17 +368,6 @@ void PlotLine::getHighLowRange (int start, int end, double &h, double &l)
         if (r.v < l)
           l = r.v;
         break;
-      case PF:
-        if (r.high > h)
-          h = r.high;
-        if (r.high < l)
-          l = r.high;
-
-        if (r.low > h)
-          h = r.low;
-        if (r.low < l)
-          l = r.low;
-        break;
       default:
         if (r.v > h)
           h = r.v;
@@ -424,17 +407,6 @@ void PlotLine::getInfo (int i, Setting &r)
       k = "C";
       r.setData(k, s);
       break;
-    case PF:
-      getData(i, color, open, high, low, close, ff);
-
-      strip(high, 4, s);
-      k = "H";
-      r.setData(k, s);
-
-      strip(low, 4, s);
-      k = "L";
-      r.setData(k, s);
-      break;
     default:
       strip(getData(i), 4, s);
       r.setData(label, s);
@@ -448,14 +420,14 @@ void PlotLine::strip (double d, int p, QString &s)
 
   while (1)
   {
-    if (s.find('.', -1, TRUE) != -1)
+    if (s.indexOf('.', -1, Qt::CaseSensitive) != -1)
     {
       s.truncate(s.length() - 1);
       break;
     }
     else
     {
-      if (s.find('0', -1, TRUE) != -1)
+      if (s.indexOf('0', -1, Qt::CaseSensitive) != -1)
         s.truncate(s.length() - 1);
       else
         break;
@@ -481,17 +453,17 @@ void PlotLine::prepend (QDateTime &dt)
   dateList.prepend(dt);
 }
 
-void PlotLine::getDateList (QValueList<QDateTime> &dl)
+void PlotLine::getDateList (QList<QDateTime> &dl)
 {
   dl = dateList;
 }
 
-void PlotLine::setDateList (QValueList<QDateTime> &dl)
+void PlotLine::setDateList (QList<QDateTime> &dl)
 {
   dateList = dl;
 }
 
-void PlotLine::getData (QValueList<Val> &d)
+void PlotLine::getData (QList<Val> &d)
 {
   d = data;
 }

@@ -23,11 +23,10 @@
 #define TEXT_HPP
 
 #include "COBase.h"
-#include "Setting.h"
-#include <qpointarray.h>
-#include <qpoint.h>
-#include <qfont.h>
-#include <qdatetime.h>
+#include <QPoint>
+#include <QFont>
+
+
 
 class Text : public COBase
 {
@@ -40,10 +39,8 @@ class Text : public COBase
     void newObject (QString &, QString &);
     void loadDefaults ();
     void saveDefaults ();
-    void getSettings (Setting &);
-    void setSettings (Setting &);
-    void getFont (QFont &);
-    void getLabel (QString &);
+    void loadSettings (COSettings &);
+    void saveSettings ();
     void adjustForSplit (QDateTime &, double);
     
   public slots:
@@ -52,12 +49,8 @@ class Text : public COBase
     void pointerMoving (QPixmap &, QPoint &, QDateTime &, double y);
     
   protected:
-    QPointArray arrow;
     QString label;
     QFont font;
-    QFont dfont;
-    QString fontLabel;
-    QString labelLabel;
 };
 
 #endif

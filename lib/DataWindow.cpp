@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  * 
- *  Copyright (C) 2001-2007 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2008 Stefan S. Stratigakos
  * 
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,21 +20,29 @@
  */
 
 #include "DataWindow.h"
-#include <qlayout.h>
+#include "IndicatorPlot.h"
+#include <QLayout>
+#include <QVBoxLayout>
+#include <QStringList>
+#include <QTableWidgetItem>
+#include <QList>
+#include <QtDebug>
 
-DataWindow::DataWindow (QWidget *w) : QDialog (w, "DataWindow", FALSE, WDestructiveClose)
+
+DataWindow::DataWindow (QWidget *w) : QDialog (w, 0)
 {
-  resize(750, 550);
-
-  QVBoxLayout *vbox = new QVBoxLayout (this);
+  QVBoxLayout *vbox = new QVBoxLayout;
   vbox->setSpacing(5);
   vbox->setMargin(5);
+  setLayout(vbox);
 
-  table = new QTable(this);
-  table->setSelectionMode(QTable::Single);
-  table->setReadOnly(TRUE);
-  hHeader = table->horizontalHeader();
+  table = new QTableWidget;
+//  table->setSelectionMode(QTableWidget::Single);
+//  table->setReadOnly(TRUE);
+//  table->setColumnWidth(col, 80);
   vbox->addWidget (table);
+
+  resize(750, 550);
 }
 
 DataWindow::~DataWindow ()
@@ -43,17 +51,17 @@ DataWindow::~DataWindow ()
 
 void DataWindow::setData (int row, int col, QString &data)
 {
-  if (row > table->numRows() -1)
-    table->setNumRows(row + 1);
-  table->setText(row, col, data);
+  if (row > table->rowCount() -1)
+    table->setRowCount(row + 1);
+
+  QTableWidgetItem *ti = new QTableWidgetItem(data, 0);
+  table->setItem(row, col, ti);
 }
 
 void DataWindow::setHeader (int col, QString &d)
 {
-  if (col >= table->numCols())
-    table->setNumCols(table->numCols() + 1);
-  table->setColumnWidth(col, 80);
-  hHeader->setLabel(col, d);
+  QTableWidgetItem *ti = new QTableWidgetItem(d, 0);
+  table->setHorizontalHeaderItem(col, ti);
 }
 
 void DataWindow::setBars (BarData *d)
@@ -61,15 +69,13 @@ void DataWindow::setBars (BarData *d)
   if (! d->count())
     return;
     
-  table->setNumCols(6);
-  table->setNumRows(d->count());
-  
-  hHeader->setLabel(0, tr("Date"));
-  hHeader->setLabel(1, tr("Time"));
-  hHeader->setLabel(2, tr("Open"));
-  hHeader->setLabel(3, tr("High"));
-  hHeader->setLabel(4, tr("Low"));
-  hHeader->setLabel(5, tr("Close"));
+  table->setColumnCount(2);
+  table->setRowCount(d->count());
+
+  QStringList sl;
+  sl.append(tr("Date"));
+  sl.append(tr("Time"));
+  table->setHorizontalHeaderLabels(sl);
   
   int loop;
   for (loop = 0; loop < (int) d->count(); loop++)
@@ -77,37 +83,40 @@ void DataWindow::setBars (BarData *d)
     QDateTime dt;
     d->getDate(loop, dt);
     QString s = dt.toString("yyyy-MM-dd");
-    table->setText(loop, 0, s);
-    s = dt.toString("hh:mm:ss");
-    table->setText(loop, 1, s);
-    table->setText(loop, 2, strip(d->getOpen(loop), 4));
-    table->setText(loop, 3, strip(d->getHigh(loop), 4));
-    table->setText(loop, 4, strip(d->getLow(loop), 4));
-    table->setText(loop, 5, strip(d->getClose(loop), 4));
+    QTableWidgetItem *ti = new QTableWidgetItem(s, 0);
+    table->setItem(loop, 0, ti);
+
+    s = dt.toString("HH:mm:ss.zzz");
+    ti = new QTableWidgetItem(s, 0);
+    table->setItem(loop, 1, ti);
   }
-  
-  for (loop = 0; loop < table->numCols(); loop++)
-    table->adjustColumn(loop);
 }
 
 void DataWindow::setPlot (Plot *d)
 {
-  Indicator *i = d->getIndicator();
+  IndicatorPlot *i = d->getIndicatorPlot();
+  QList<PlotLine *> lines;
+  i->getPlotList(lines);
+
   int loop2;
   QString s;
-  for (loop2 = 0; loop2 < i->getLines(); loop2++)
+  for (loop2 = 0; loop2 < lines.count(); loop2++)
   {
-    table->setNumCols(table->numCols() + 1);
+    table->setColumnCount(table->columnCount() + 1);
       
-    PlotLine *line = i->getLine(loop2);
+    PlotLine *line = lines.at(loop2);
     line->getLabel(s);
-    hHeader->setLabel(table->numCols() - 1, s);
+    QTableWidgetItem *ti = new QTableWidgetItem(s, 0);
+    table->setHorizontalHeaderItem(table->columnCount() - 1, ti);
 
     int loop3;
-    int offset = table->numRows() - line->getSize();
+    int offset = table->rowCount() - line->getSize();
     for (loop3 = 0; loop3 < line->getSize(); loop3++)
-      table->setText(loop3 + offset, table->numCols() - 1, strip(line->getData(loop3), 4));
-    table->adjustColumn(table->numCols() - 1);
+    {
+      ti = new QTableWidgetItem(strip(line->getData(loop3), 4), 0);
+      table->setItem(loop3 + offset, table->columnCount() - 1, ti);
+    }
+//    table->adjustColumn(table->columnCount() - 1);
   }
 }
 
@@ -117,14 +126,14 @@ QString DataWindow::strip (double d, int p)
 
   while (1)
   {
-    if (s.find('.', -1, TRUE) != -1)
+    if (s.indexOf('.', -1, Qt::CaseSensitive) != -1)
     {
       s.truncate(s.length() - 1);
       break;
     }
     else
     {
-      if (s.find('0', -1, TRUE) != -1)
+      if (s.indexOf('0', -1, Qt::CaseSensitive) != -1)
         s.truncate(s.length() - 1);
       else
         break;

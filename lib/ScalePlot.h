@@ -22,10 +22,12 @@
 #ifndef SCALEPLOT_HPP
 #define SCALEPLOT_HPP
 
-#include <qwidget.h>
-#include <qpixmap.h>
-#include <qcolor.h>
-#include <qfont.h>
+#include <QWidget>
+#include <QPixmap>
+#include <QColor>
+#include <QFont>
+#include <QPaintEvent>
+#include <QResizeEvent>
 #include "Scaler.h"
 
 class ScalePlot : public QWidget

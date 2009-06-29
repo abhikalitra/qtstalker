@@ -22,14 +22,13 @@
 #ifndef INDICATORSUMMARY_HPP
 #define INDICATORSUMMARY_HPP
 
-#include <qstring.h>
-#include <qstringlist.h>
-#include <qptrlist.h>
-#include <qobject.h>
+#include <QString>
+#include <QStringList>
+#include <QList>
+#include <QObject>
 #include "BarData.h"
-#include "Config.h"
-#include "Indicator.h"
-#include "DBIndex.h"
+#include "IndicatorPlugin.h"
+
 
 class IndicatorSummary : public QObject
 {
@@ -39,22 +38,20 @@ class IndicatorSummary : public QObject
     void signalWakeup();
 
   public:
-    IndicatorSummary (QStringList &, int, BarData::BarLength, DBIndex *);
+    IndicatorSummary (QStringList &, int, BarData::BarLength);
     ~IndicatorSummary ();
     void run ();
     void loadIndicators ();
-    void createDataWindow (QPtrList<Setting> &, QString &group);
+    void createDataWindow (QList<Setting *> &, QString &group);
 
   private:
     QString helpFile;
 
   protected:
-    Config config;
     QStringList indicatorList;
     int minBars;
     BarData::BarLength barLength;
-    QPtrList<Indicator> indicators;
-    DBIndex *chartIndex;
+    QList<IndicatorPlugin *> indicators;
 };
 
 #endif

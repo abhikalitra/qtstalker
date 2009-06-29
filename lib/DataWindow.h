@@ -22,10 +22,9 @@
 #ifndef DATAWINDOW_HPP
 #define DATAWINDOW_HPP
 
-#include <qstring.h>
-#include <qdialog.h>
-#include <qtable.h>
-#include <qheader.h>
+#include <QString>
+#include <QDialog>
+#include <QTableWidget>
 #include "BarData.h"
 #include "Plot.h"
 
@@ -44,8 +43,7 @@ class DataWindow : public QDialog
     QString strip (double, int);
 
   private:
-    QTable *table;
-    QHeader *hHeader;
+    QTableWidget *table;
 };
 
 #endif

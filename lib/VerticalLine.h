@@ -23,10 +23,9 @@
 #define VERTICALLINE_HPP
 
 #include "COBase.h"
-#include "Setting.h"
-#include <qpointarray.h>
-#include <qpoint.h>
-#include <qdatetime.h>
+#include <QPoint>
+
+
 
 class VerticalLine : public COBase
 {
@@ -41,8 +40,8 @@ class VerticalLine : public COBase
     double getLow ();
     void loadDefaults ();
     void saveDefaults ();
-    void getSettings (Setting &);
-    void setSettings (Setting &);
+    void loadSettings (COSettings &);
+    void saveSettings ();
     
   public slots:
     void prefDialog ();

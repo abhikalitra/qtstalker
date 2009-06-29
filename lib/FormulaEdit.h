@@ -22,52 +22,58 @@
 #ifndef FORMULAEDIT_HPP
 #define FORMULAEDIT_HPP
 
-#include <qstring.h>
-#include <qwidget.h>
-#include <qtextedit.h>
-#include <qlistbox.h>
-#include "Toolbar.h"
-#include "Config.h"
+#include <QString>
+#include <QWidget>
+#include <QListWidget>
+#include <QListWidgetItem>
+#include <QDialog>
+#include <QDialogButtonBox>
+#include <QGroupBox>
+#include <QAction>
+#include <QList>
+#include <QLineEdit>
+#include <QComboBox>
+#include "ColorButton.h"
+#include "IndicatorParms.h"
 
-class FormulaEdit : public QWidget
+
+class FormulaEdit : public QDialog
 {
   Q_OBJECT
 
   public:
-  
-    enum FormulaEditType
-    {
-      Indicator,
-      Logic
-    };
-  
-    FormulaEdit (QWidget *, int);
+    FormulaEdit (QWidget *, QString &);
     ~FormulaEdit ();
-    void setLine (QString &);
-    void getText (QString &);
-    int getLines ();
     void getVariableList (QStringList &, bool);
+    void loadIndicator ();
+    void BARSDialog (IndicatorParms &, QStringList &);
+    void UTILDialog (IndicatorParms &, QStringList &);
 
   public slots:
-    void editPlotItem ();
-    void deletePlotItem ();
-    void insertPlotItem ();
     void openRule ();
-    void includeRule ();
-//    void saveRule ();
-    void slotDoubleClicked (QListBoxItem *);
-    void functionDialog ();
+    void doubleClicked (QListWidgetItem *);
+    void addFunction ();
+    void editFunction ();
+    void deleteFunction ();
+    void itemSelected ();
+    void save ();
+    void plotBoxChecked (bool);
+    void plotLabelChanged (const QString &);
+    void lineTypeChanged (int);
+    void colorChanged ();
 
   protected:
-    QTextEdit *formula;
-    QListBox *plot;
-    Toolbar *ftoolbar;
-    Toolbar *ptoolbar;
+    QListWidget *formula;
     QStringList functionList;
-    QStringList lineTypes;
-    Config config;
-    FormulaEditType type;
     QStringList formulaList;
+    QDialogButtonBox *buttonBox;    
+    QString name;
+    QList<IndicatorParms> parmList;
+    QList<QAction *> actionList;
+    ColorButton *colorButton;
+    QLineEdit *plotLabel;
+    QGroupBox *plotBox;
+    QComboBox *lineType;
 };
 
 #endif

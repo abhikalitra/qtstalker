@@ -22,9 +22,9 @@
 #ifndef SYMBOLBUTTON_HPP
 #define SYMBOLBUTTON_HPP
 
-#include <qwidget.h>
-#include <qpushbutton.h>
-#include <qstring.h>
+#include <QWidget>
+#include <QPushButton>
+#include <QString>
 
 class SymbolButton : public QPushButton
 {

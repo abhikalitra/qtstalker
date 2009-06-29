@@ -20,20 +20,21 @@
  */
 
 #include "ScalePlot.h"
-#include <qpainter.h>
-#include <qpen.h>
-#include <qpoint.h>
-#include <qpointarray.h>
+#include <QPainter>
+#include <QPen>
+#include <QPoint>
+#include <QPolygon>
+#include <QResizeEvent>
+#include <QPaintEvent>
 #include <math.h>
-#include <qpaintdevicemetrics.h>
-#include <qstring.h>
-#include <qmemarray.h>
+#include <QString>
+#include <QVector>
 
 #define SCALE_WIDTH 60
 
 ScalePlot::ScalePlot (QWidget *w) : QWidget(w)
 {
-  setBackgroundMode(NoBackground);
+//  setBackgroundMode(Qt::NoBackground);
   scaleWidth = SCALE_WIDTH;
   backgroundColor.setNamedColor("black");
   borderColor.setNamedColor("white");
@@ -89,29 +90,32 @@ void ScalePlot::draw ()
   {
     if (buffer.isNull())
     {
-      buffer.resize(this->width(), this->height());
+//      buffer.resize(this->width(), this->height());
+      buffer = QPixmap(this->width(), this->height());
       buffer.fill(backgroundColor);
     }
   
     drawScale();
   }
 
-  paintEvent(0);
+  update();
 }
 
 void ScalePlot::drawRefresh ()
 {
-  paintEvent(0);
+  update();
 }
 
 void ScalePlot::paintEvent (QPaintEvent *)
 {
-  bitBlt(this, 0, 0, &buffer);
+  QPainter p(this);
+  p.drawPixmap(0, 0, buffer);
 }
 
 void ScalePlot::resizeEvent (QResizeEvent *event)
 {
-  buffer.resize(event->size());
+  buffer = QPixmap(event->size());
+//  buffer.resize(event->size());
   draw();
 }
 
@@ -143,11 +147,11 @@ void ScalePlot::drawScale ()
   QPainter painter;
   painter.begin(&buffer);
   painter.setFont(plotFont);
-  painter.setPen(QPen(borderColor, 1, QPen::SolidLine));
+  painter.setPen(QPen(borderColor, 1, Qt::SolidLine));
 
   painter.fillRect(0, 0, buffer.width(), buffer.height(), backgroundColor);
   
-  QMemArray<double> scaleArray;
+  QVector<double> scaleArray;
   scaler.getScaleArray(scaleArray);
   
   QFontMetrics fm(plotFont);
@@ -208,12 +212,12 @@ void ScalePlot::drawScale ()
   // draw the last value pointer on the scale of main plot
   int y = scaler.convertToY(close);
     
-  QPointArray array;
+  QPolygon array;
   array.setPoints(3, x + 2, y,
                   x + 8, y - 4,
                   x + 8, y + 4);
   painter.setBrush(borderColor);
-  painter.drawPolygon(array, TRUE, 0, -1);
+  painter.drawPolygon(array, Qt::OddEvenFill);
 
   painter.end();
 }
@@ -224,14 +228,14 @@ void ScalePlot::strip (double d, int p, QString &s)
 
   while (1)
   {
-    if (s.find('.', -1, TRUE) != -1)
+    if (s.indexOf('.', -1, Qt::CaseSensitive) != -1)
     {
       s.truncate(s.length() - 1);
       break;
     }
     else
     {
-      if (s.find('0', -1, TRUE) != -1)
+      if (s.indexOf('0', -1, Qt::CaseSensitive) != -1)
         s.truncate(s.length() - 1);
       else
         break;

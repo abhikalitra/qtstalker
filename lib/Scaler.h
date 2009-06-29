@@ -22,8 +22,8 @@
 #ifndef SCALER_HPP
 #define SCALER_HPP
 
-#include <qstringlist.h>
-#include <qmemarray.h>
+#include <QStringList>
+#include <QVector>
 
 class Scaler
 {
@@ -33,7 +33,7 @@ class Scaler
     void set (int ht, double h, double l, double lh, double lr, bool lf);
     int convertToY (double);
     double convertToVal (int);
-    void getScaleArray (QMemArray<double> &);
+    void getScaleArray (QVector<double> &);
     double getLogScaleHigh ();
     double getLogRange();
     int getHeight ();

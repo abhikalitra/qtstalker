@@ -20,10 +20,12 @@
  */
 
 #include "Bar.h"
+#include <QtDebug>
+
+
 
 Bar::Bar ()
 {
-  clear();
 }
 
 Bar::~Bar ()
@@ -39,65 +41,6 @@ int Bar::setDate (QDateTime &d)
   return FALSE;
 }
 
-int Bar::setDate (QString &d)
-{
-  QString s = d;
-  while (s.contains("-"))
-    s = s.remove(s.find("-", 0, TRUE), 1);
-  
-  while (s.contains(":"))
-    s = s.remove(s.find(":", 0, TRUE), 1);
-
-  while (s.contains(" "))
-    s = s.remove(s.find(" ", 0, TRUE), 1);
-  
-  if (s.length() != 14)
-  {
-    qDebug("Bar::setDate:bad string length %i", s.length());
-    return TRUE;
-  }
-  
-  QDate dt = QDate(s.left(4).toInt(), s.mid(4, 2).toInt(), s.mid(6, 2).toInt());
-  if (! dt.isValid())
-  {
-    qDebug("Bar::setDate: invalid date %s", s.latin1());
-    return TRUE;
-  }
-  
-  int hour = s.mid(8, 2).toInt();
-  if (hour < 0 || hour > 23)
-  {
-    qDebug("Bar::setDate: hour out of range %i", hour);
-    return TRUE;
-  }
-    
-  int min = s.mid(10, 2).toInt();
-  if (min < 0 || min > 59)
-  {
-    qDebug("Bar::setDate: minute out of range %i", min);
-    return TRUE;
-  }
-
-  int sec = s.right(2).toInt();
-  if (sec < 0 || sec > 59)
-  {
-    qDebug("Bar::setDate: second out of range %i", min);
-    return TRUE;
-  }
-  
-  QTime t(hour, min, sec, 0);
-  if (! t.isValid())
-  {
-    qDebug("Bar::setDate: invalid time");
-    return TRUE;
-  }
-  
-  date.setDate(dt);
-  date.setTime(t);
-    
-  return FALSE;
-}
-
 void Bar::getDate (QDateTime &d)
 {
   d = date;
@@ -105,125 +48,86 @@ void Bar::getDate (QDateTime &d)
 
 void Bar::setOpen (double d)
 {
-  open = d;
-  openFlag = TRUE;
+  QString k("Open");
+  QString s = QString::number(d);
+  data.insert(k, s);
   emptyFlag = FALSE;
 }
 
 double Bar::getOpen ()
 {
-  return open;
+  QString k("Open");
+  return data.value(k).toDouble();
 }
 
 void Bar::setHigh (double d)
 {
-  high = d;
-  highFlag = TRUE;
+  QString k("High");
+  QString s = QString::number(d);
+  data.insert(k, s);
   emptyFlag = FALSE;
 }
 
 double Bar::getHigh ()
 {
-  return high;
+  QString k("High");
+  return data.value(k).toDouble();
 }
 
 void Bar::setLow (double d)
 {
-  low = d;
-  lowFlag = TRUE;
+  QString k("Low");
+  QString s = QString::number(d);
+  data.insert(k, s);
   emptyFlag = FALSE;
 }
 
 double Bar::getLow ()
 {
-  return low;
+  QString k("Low");
+  return data.value(k).toDouble();
 }
 
 void Bar::setClose (double d)
 {
-  close = d;
-  closeFlag = TRUE;
+  QString k("Close");
+  QString s = QString::number(d);
+  data.insert(k, s);
   emptyFlag = FALSE;
 }
 
 double Bar::getClose ()
 {
-  return close;
+  QString k("Close");
+  return data.value(k).toDouble();
 }
 
 void Bar::setVolume (double d)
 {
-  volume = d;
-  volumeFlag = TRUE;
+  QString k("Volume");
+  QString s = QString::number(d);
+  data.insert(k, s);
   emptyFlag = FALSE;
 }
 
 double Bar::getVolume ()
 {
-  return volume;
+  QString k("Volume");
+  return data.value(k).toDouble();
 }
 
 void Bar::setOI (int d)
 {
-  oi = d;
-  oiFlag = TRUE;
+  QString k("OI");
+  QString s = QString::number(d);
+  data.insert(k, s);
   emptyFlag = FALSE;
 }
 
-double Bar::getOI ()
+int Bar::getOI ()
 {
-  return oi;
-}
-
-void Bar::getString (QString &s)
-{
-  getDateTimeString(TRUE, s);
-
-  if (openFlag)
-  {
-    s.append(" ");
-    s.append(QString::number(open, 'g'));
-  }
-
-  if (highFlag)
-  {
-    s.append(" ");
-    s.append(QString::number(high, 'g'));
-  }
-  
-  if (lowFlag)
-  {
-    s.append(" ");
-    s.append(QString::number(low, 'g'));
-  }
-
-  if (closeFlag)
-  {
-    s.append(" ");
-    s.append(QString::number(close, 'g'));
-  }
-
-  if (volumeFlag)
-  {
-    s.append(" ");
-    s.append(QString::number(volume, 'g'));
-  }
-
-  if (oiFlag)
-  {
-    s.append(" ");
-    s.append(QString::number(oi));
-  }
-}
-
-bool Bar::getTickFlag ()
-{
-  return tickFlag;
-}
-
-void Bar::setTickFlag (bool d)
-{
-  tickFlag = d;
+  QString k("OI");
+  return data.value(k).toInt();
 }
 
 bool Bar::getEmptyFlag ()
@@ -231,80 +135,78 @@ bool Bar::getEmptyFlag ()
   return emptyFlag;
 }
 
-void Bar::setEmptyFlag (bool d)
+void Bar::getDateString (QString &d)
 {
-  emptyFlag = d;
+  d = date.toString("yyyy-MM-dd");
 }
 
-void Bar::getDateString (bool sepFlag, QString &d)
-{
-  if (sepFlag)
-    d = date.toString("yyyy-MM-dd");
-  else
-    d = date.toString("yyyyMMdd");
-}
-
-void Bar::getDateTimeString (bool sepFlag, QString &d)
+void Bar::getDateTimeString (QString &d)
 {
   QString s;
-  getDateString(sepFlag, s);
+  getDateString(s);
   
-  if (sepFlag)
-    s.append(" ");
+  s.append(" ");
     
   QString s2;
-  getTimeString(sepFlag, s2);
+  getTimeString(s2);
   s.append(s2);
   d = s;
 }
 
-void Bar::getTimeString (bool sepFlag, QString &d)
+void Bar::getTimeString (QString &d)
 {
-  if (sepFlag)
-    d = date.toString("hh:mm:ss");
-  else
-    d = date.toString("hhmmss");
+  d = date.toString("HH:mm:ss.zzz");
 }
 
 void Bar::clear ()
 {
   date = QDateTime::currentDateTime();
   date.setTime(QTime(0,0,0,0));
-
-  tickFlag = FALSE;
-  open = 0;
-  high = 0;
-  low = 0;
-  close = 0;
-  volume = 0;
-  oi = 0;
-  openFlag = FALSE;
-  highFlag = FALSE;
-  lowFlag = FALSE;
-  closeFlag = FALSE;
-  volumeFlag = FALSE;
-  oiFlag = FALSE;
+  data.clear();
   emptyFlag = TRUE;
 }
 
-bool Bar::verify ()
+void Bar::setSymbol (QString &d)
 {
-  bool rc = TRUE;
-
-  if (open == 0 || high == 0 || low == 0 || close == 0)
-    return rc;
-
-  if (open > high)
-    open = high;
-  if (open < low)
-    open = low;
-        
-  if (close > high)
-    close = high;
-  if (close < low)
-    close = low;
-
-  rc = FALSE;
-  return rc;
+  QString k("Symbol");
+  data.insert(k, d);
 }
+
+void Bar::getSymbol (QString &d)
+{
+  d.clear();
+  QString k("Symbol");
+  d = data.value(k);
+}
+
+void Bar::setTime (QTime &d)
+{
+  if (! d.isValid())
+    return;
+
+  date.setTime(d);
+  return;
+}
+
+void Bar::setData (QString &k, QString &d)
+{
+  data.insert(k, d);
+}
+
+void Bar::getData (QString &k, QString &d)
+{
+  d.clear();
+  d = data.value(k);
+}
+
+bool Bar::getValidDate ()
+{
+  return date.isValid();
+}
+
+void Bar::getDateNumber (QString &d)
+{
+  d = date.toString("yyyyMMddHHmmsszzz");
+}
+
 

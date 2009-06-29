@@ -20,7 +20,7 @@
  */
 
 #include "TradeItem.h"
-#include <qobject.h>
+#include <QObject>
 
 
 TradeItem::TradeItem ()
@@ -207,10 +207,10 @@ bool TradeItem::getStockFlag ()
   return stockFlag;
 }
 
-void TradeItem::setFuturesType (QString &d)
+void TradeItem::setFuturesType (QString &)
 {
-  futuresType = d;
-  fd.setSymbol(futuresType);
+//  futuresType = d;
+//  fd.setSymbol(futuresType);
 }
 
 void TradeItem::calculateProfit ()
@@ -226,7 +226,7 @@ void TradeItem::calculateProfit ()
     if (! futuresType.length())
       return;
 
-    profit = fd.getRate() * profit;
+//    profit = fd.getRate() * profit;
   }
 
   profit = profit * volume;
@@ -354,7 +354,7 @@ double TradeItem::getCurrentProfit (double xp)
     if (! futuresType.length())
       return 0;
 
-    prof = fd.getRate() * prof;
+//    prof = fd.getRate() * prof;
   }
 
   prof = prof * volume;

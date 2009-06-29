@@ -21,51 +21,100 @@
 
 #include "UTIL.h"
 #include "PrefDialog.h"
-#include <qdict.h>
-#include <qinputdialog.h>
-#include <qobject.h>
+#include <QInputDialog>
+#include <QObject>
+#include <QtDebug>
 #include <math.h>
+
+
 
 UTIL::UTIL ()
 {
-  pluginName = "UTIL";
-  
   methodList.append("ACCUM");
-  methodList.append("Normal");
-  methodList.append("ADD");
-  methodList.append("DIV");
-  methodList.append("MUL");
-  methodList.append("SUB");
+  methodList.append("NORMAL");
   methodList.append("COMP");
-  methodList.append("COUNTER");
   methodList.append("REF");
   methodList.append("PER");
   methodList.append("COLOR");
-  methodList.append("Higher");
-  methodList.append("Lower");
   methodList.append("INRANGE");
   methodList.sort();
 
-  helpFile = "math.html";
+  opList.append("EQ");
+  opList.append("LT");
+  opList.append("LTEQ");
+  opList.append("GT");
+  opList.append("GTEQ");
+  opList.append("AND");
+  opList.append("OR");
+  opList.append("XOR");
 }
 
 UTIL::~UTIL ()
 {
 }
 
-PlotLine * UTIL::calculateAccum (QString &p, QPtrList<PlotLine> &d)
+void UTIL::calculate (BarData *bd, IndicatorParms &parms, QHash<QString, PlotLine *> &tlines)
 {
-  // format: METHOD, INPUT_ARRAY
+  data = bd;
+  QString s, s2;
 
-  formatList.clear();
-  formatList.append(FormatString);
-  formatList.append(FormatInputArray);
+  s = "Method";
+  parms.getData(s, s2);
 
-  if (checkFormat(p, d, 2, 2))
-    return 0;
+  if (! s2.compare("ACCUM"))
+  {
+    calculateAccum(parms, tlines);
+    return;
+  }
 
+  if (! s2.compare("Normal"))
+  {
+    calculateNormal(parms, tlines);
+    return;
+  }
+
+  if (! s2.compare("COMP"))
+  {
+    calculateCOMP(parms, tlines);
+    return;
+  }
+
+  if (! s2.compare("REF"))
+  {
+    calculateREF(parms, tlines);
+    return;
+  }
+
+  if (! s2.compare("PER"))
+  {
+    calculatePER(parms, tlines);
+    return;
+  }
+
+  if (! s2.compare("COLOR"))
+  {
+    calculateCOLOR(parms, tlines);
+    return;
+  }
+
+  if (! s2.compare("INRANGE"))
+  {
+    calculateINRANGE(parms, tlines);
+  }
+}
+
+void UTIL::calculateAccum (IndicatorParms &parms, QHash<QString, PlotLine *> &tlines)
+{
   PlotLine *line = new PlotLine;
-  PlotLine *input = d.at(0);
+  QString s, s2;
+  parms.getVariable(s);
+  tlines.insert(s, line);
+
+  s = "Input";
+  parms.getData(s, s2);
+  PlotLine *input = tlines.value(s2);
+  if (! input)
+    return;
   
   int loop;
   double accum = 0;
@@ -74,24 +123,21 @@ PlotLine * UTIL::calculateAccum (QString &p, QPtrList<PlotLine> &d)
     accum = accum + input->getData(loop);
     line->append(accum);
   }
-  
-  return line;
 }
 
-PlotLine * UTIL::calculateNormal(QString &p, QPtrList<PlotLine> &d)
+void UTIL::calculateNormal(IndicatorParms &parms, QHash<QString, PlotLine *> &tlines)
 {
-  // format: METHOD, INPUT_ARRAY
-
-  formatList.clear();
-  formatList.append(FormatString);
-  formatList.append(FormatInputArray);
-
-  if (checkFormat(p, d, 2, 2))
-    return 0;
-
-  PlotLine *input = d.at(0);
-
   PlotLine *normal = new PlotLine;
+  QString s, s2;
+  parms.getVariable(s);
+  tlines.insert(s, normal);
+
+  s = "Input";
+  parms.getData(s, s2);
+  PlotLine *input = tlines.value(s2);
+  if (! input)
+    return;
+
   int loop = 0;
   double range = 0;
   double max = -99999999.0;
@@ -113,265 +159,38 @@ PlotLine * UTIL::calculateNormal(QString &p, QPtrList<PlotLine> &d)
     norm = ((input->getData(loop) - min) / range) * 100;
     input->append(norm);
   }
-	
-  return normal;
 }
 
-PlotLine * UTIL::calculateCustom (QString &p, QPtrList<PlotLine> &d)
+void UTIL::calculateCOMP (IndicatorParms &parms, QHash<QString, PlotLine *> &tlines)
 {
-  QStringList l = QStringList::split(",", p, FALSE);
-
-  if (l.count() > 0)
-    ;
-  else
-  {
-    qDebug("UTIL::Custom: invalid parm count");
-    return 0;
-  }
-
-  if (methodList.findIndex(l[0]) == -1)
-  {
-    qDebug("UTIL::Custom: invalid METHOD parm");
-    return 0;
-  }
-
-  PlotLine *out = 0;
-
-  while (1)
-  {
-    if (! l[0].compare("ACCUM"))
-    {
-      out = calculateAccum(p, d);
-      break;
-    }
-
-    if (! l[0].compare("Normal"))
-    {
-      out = calculateNormal(p, d);
-      break;
-    }
-
-    if (! l[0].compare("ADD"))
-    {
-      out = calculateADMS(p, d, 0);
-      break;
-    }
-
-    if (! l[0].compare("DIV"))
-    {
-      out = calculateADMS(p, d, 1);
-      break;
-    }
-
-    if (! l[0].compare("MUL"))
-    {
-      out = calculateADMS(p, d, 2);
-      break;
-    }
-
-    if (! l[0].compare("SUB"))
-    {
-      out = calculateADMS(p, d, 3);
-      break;
-    }
-
-    if (! l[0].compare("COMP"))
-    {
-      out = calculateCOMP(p, d);
-      break;
-    }
-
-    if (! l[0].compare("COUNTER"))
-    {
-      out = calculateCOUNTER(p, d);
-      break;
-    }
-
-    if (! l[0].compare("REF"))
-    {
-      out = calculateREF(p, d);
-      break;
-    }
-
-    if (! l[0].compare("PER"))
-    {
-      out = calculatePER(p, d);
-      break;
-    }
-
-    if (! l[0].compare("COLOR"))
-    {
-      out = calculateCOLOR(p, d);
-      break;
-    }
-
-    if (! l[0].compare("Higher"))
-    {
-      out = calculateHL(p, d, 1);
-      break;
-    }
-
-    if (! l[0].compare("Lower"))
-    {
-      out = calculateHL(p, d, 2);
-      break;
-    }
-
-    if (! l[0].compare("INRANGE"))
-    {
-      out = calculateINRANGE(p, d);
-      break;
-    }
-
-    break;
-  }
-
-  return out;
-}
-
-PlotLine * UTIL::calculateCOUNTER (QString &p, QPtrList<PlotLine> &d)
-{
-  // format1: METHOD, ARRAY_INPUT
-  // format2: METHOD, ARRAY_INPUT, ARRAY_INPUT2
-
-  formatList.clear();
-  QStringList l = QStringList::split(",", p, FALSE);
-  if (l.count() == 2)
-  {
-    formatList.append(FormatString);
-    formatList.append(FormatInputArray);
-  }
-  else
-  {
-    if (l.count() == 2)
-    {
-      formatList.append(FormatString);
-      formatList.append(FormatInputArray);
-      formatList.append(FormatInputArray2);
-    }
-    else
-    {
-      qDebug("UTIL::COUNTER: invalid parm count");
-      return 0;
-    }
-  }
-
-  if (checkFormat(p, d, 3, 2))
-    return 0;
-
-  PlotLine *in = d.at(0);
-  PlotLine *in2 = 0;
-  if (d.count() == 2)
-    in2 = d.at(1);
-
-  int inLoop = 0;
-  int in2Loop = 0;
-  
-  if (in2)
-  {
-    in2Loop = in2->getSize() - in->getSize();
-    if (in2Loop < 0)
-    {
-      inLoop=-in2Loop;
-      in2Loop = 0;
-    }
-  }
-
-  int t = 0;
-  PlotLine *counter = new PlotLine;
-
-  while (inLoop < in->getSize())
-  {
-    if (in2)
-    {
-      if (in2->getData(in2Loop))
-        t = 0;
-      if (in->getData(inLoop))
-        t++;
-      in2Loop++;
-    }
-    else
-    {
-      if (in->getData(inLoop))
-        t = 1;
-      else
-        t++;
-    }
-    
-    counter->append(t);
-    inLoop++;
-  }
-
-  return counter;
-}
-
-PlotLine * UTIL::calculateCOMP (QString &p, QPtrList<PlotLine> &d)
-{
-  // format1: METHOD, ARRAY_INPUT, DOUBLE, OPERATOR
   // format2: METHOD, ARRAY_INPUT, ARRAY_INPUT2, OPERATOR
+  PlotLine *line = new PlotLine;
+  QString s, s2;
+  parms.getVariable(s);
+  tlines.insert(s, line);
 
-  QStringList l = QStringList::split(",", p, FALSE);
+  s = "Input";
+  parms.getData(s, s2);
+  PlotLine *input = tlines.value(s2);
+  if (! input)
+    return;
 
-  if (l.count() == 4)
-    ;
-  else
-  {
-    qDebug("UTIL::COMP: invalid parm count");
-    return 0;
-  }
-
-  PlotLine *input = 0;
-  PlotLine *input2 = 0;
-  if (! d.count())
-  {
-    qDebug("UTIL::COMP: invalid ARRAY_INPUT parm");
-    return 0;
-  }
-  else
-    input = d.at(0);
-
-  double inputNum = 0;
-  if (d.count() == 1)
-  {
-    bool ok;
-    double t = l[2].toDouble(&ok);
-    if (ok)
-      inputNum = t;
-    else
-    {
-      qDebug("UTIL::COMP: invalid DOUBLE parm");
-      return 0;
-    }
-  }
-  else
-    input2 = d.at(1);
-
-  if (opList.findIndex(l[3]) == -1)
-  {
-    qDebug("UTIL::COMP: invalid METHOD parm:%s", l[3].latin1());
-    return 0;
-  }
+  s = "Input2";
+  parms.getData(s, s2);
+  PlotLine *input2 = tlines.value(s2);
+  if (! input2)
+    return;
 
   int loop = input->getSize() - 1;
-  int loop2 = 0;
-  if (input2)
-    loop2 = input2->getSize() - 1;
+  int loop2 = input2->getSize() - 1;
 
-  PlotLine *line = new PlotLine;
+  s = "Operator";
+  parms.getData(s, s2);
+  Operator op = getOperator(s2);
   
-  Operator op = getOperator(l[3]);
-  
-  while (loop > -1)
+  while (loop > -1 && loop2 > -1)
   {
-    double t = 0;
-    
-    if (! input2)
-      t = inputNum;
-    else
-      if (loop2 > -1) 
-        t = input2->getData(loop2);
-      else 
-        break;
+    double t = input2->getData(loop2);
       
     switch (op)
     {
@@ -422,216 +241,91 @@ PlotLine * UTIL::calculateCOMP (QString &p, QPtrList<PlotLine> &d)
     }
       
     loop--;
-    
-    if (input2)
-      loop2--;
+    loop2--;
   }
-  
-  return line;
 }
 
-PlotLine * UTIL::calculateADMS (QString &p, QPtrList<PlotLine> &d, int type)
+void UTIL::calculateREF (IndicatorParms &parms, QHash<QString, PlotLine *> &tlines)
 {
-  // format1: METHOD, ARRAY_INPUT, DOUBLE
-  // format2: METHOD, ARRAY_INPUT, ARRAY_INPUT2
-
-  formatList.clear();
-  formatList.append(FormatString);
-  formatList.append(FormatInputArray);
-  formatList.append(FormatString); // dummy cause we dont know what this parm is beforehand
-
-  if (checkFormat(p, d, 3, 3))
-    return 0;
-
-  PlotLine *input = d.at(0);
-  PlotLine *input2 = 0;
-  if (d.count() == 2)
-    input2 = d.at(1);
-
-  double inputNum = 0;
-  if (! input2)
-  {
-    bool ok;
-    double t = formatStringList[2].toDouble(&ok);
-    if (ok)
-      inputNum = t;
-    else
-      return 0;
-  }
-
-  int loop = input->getSize() - 1;
-  int loop2 = 0;
-  if (input2)
-    loop2 = input2->getSize() - 1;
-    
+  QString s, s2;
   PlotLine *line = new PlotLine;
-  
-  while (loop > -1)
+  parms.getVariable(s);
+  tlines.insert(s, line);
+
+  s = "Period";
+  parms.getData(s, s2);
+  int period = s2.toInt();
+
+  s = "Input";
+  parms.getData(s, s2);
+  PlotLine *in = tlines.value(s2);
+  if (! in)
   {
-    double v = input->getData(loop);
-    
-    if (input2)
-    {
-      if (loop2 < 0)
-        break;
-      switch(type)
-      {
-        case 0:
-          v = v + input2->getData(loop2);
-          break;
-        case 1:
-          v = v / input2->getData(loop2);
-          break;
-        case 2:
-          v = v * input2->getData(loop2);
-          break;
-        case 3:
-          v = v - input2->getData(loop2);
-          break;
-        default:
-          break;
-      }
-      loop2--;
-    }
+    in = data->getInput(data->getInputType(s2));
+    if (in)
+      tlines.insert(s2, in);
     else
-    {
-      switch(type)
-      {
-        case 0:
-          v = v + inputNum;
-          break;
-        case 1:
-          v = v / inputNum;
-          break;
-        case 2:
-          v = v * inputNum;
-          break;
-        case 3:
-          v = v - inputNum;
-          break;
-        default:
-          break;
-      }
-    }
-    
-    line->prepend(v);
-    loop--;
+      return;
   }
   
-  return line;
-}
-
-PlotLine * UTIL::calculateREF (QString &p, QPtrList<PlotLine> &d)
-{
-  // format1: METHOD, ARRAY_INPUT, PERIOD
-  // format2: METHOD, DOUBLE
-
-  PlotLine *line = new PlotLine;
-
-  QStringList l = QStringList::split(",", p, FALSE);
-
-  if (l.count() < 2 || l.count() > 3)
+  int loop = 0;
+  for (loop = 0; loop < in->getSize(); loop++)
   {
-    qDebug("UTIL::REF: invalid parm count");
-    return line;
-  }
-
-  if (l.count() == 2)
-  {
-    bool ok;
-    double t = l[1].toDouble(&ok);
-    if (! ok)
-    {
-      qDebug("UTIL::REF: invalid DOUBLE parm");
-      return line;
-    }
-
-    line->append(t);
-  }
-  else
-  {
-    if (! d.count() && l.count() == 3)
-    {
-      qDebug("UTIL::REF: no input");
-      return line;
-    }
-
-    bool ok;
-    int period;
-    int t = l[2].toInt(&ok);
-    if (ok)
-      period = t;
-    else
-    {
-      qDebug("UTIL::REF: invalid PERIOD parm");
-      return line;
-    }
-
-    PlotLine *in = d.at(0);
-  
-    int loop = 0;
-    for (loop = 0; loop < in->getSize(); loop++)
-    {
-      if (loop - period < 0)
-        continue;
+    if (loop - period < 0)
+      continue;
       
-      line->append(in->getData(loop - period));
-    }
+    line->append(in->getData(loop - period));
   }
-  
-  return line;
 }
 
-PlotLine * UTIL::calculatePER (QString &p, QPtrList<PlotLine> &d)
+void UTIL::calculatePER (IndicatorParms &parms, QHash<QString, PlotLine *> &tlines)
 {
   // format: METHOD, INPUT_ARRAY
 
-  formatList.clear();
-  formatList.append(FormatString);
-  formatList.append(FormatInputArray);
-
-  if (checkFormat(p, d, 2, 2))
-    return 0;
- 
+  QString s, s2;
   PlotLine *line = new PlotLine();
-  PlotLine *input = d.at(0);
+  parms.getVariable(s);
+  tlines.insert(s, line);
+
+  s = "Input";
+  parms.getData(s, s2);
+  PlotLine *input = tlines.value(s2);
+  if (! input)
+    return;
   
   double base = input->getData(0);
   int loop;
   for (loop = 1; loop < (int) input->getSize(); loop++)
     line->append(((input->getData(loop) - base) / base) * 100);
-
-  return line;
 }
 
-PlotLine * UTIL::calculateCOLOR (QString &p, QPtrList<PlotLine> &d)
+void UTIL::calculateCOLOR (IndicatorParms &parms, QHash<QString, PlotLine *> &tlines)
 {
   // format1: METHOD, INPUT_ARRAY, COLOR_ARRAY, VALUE, COLOR
+  QString s, s2;
+  s = "Value";
+  parms.getData(s, s2);
+  int value = s2.toInt();
 
-  formatList.clear();
-  formatList.append(FormatString);
-  formatList.append(FormatInputArray);
-  formatList.append(FormatInputArray2);
-  formatList.append(FormatInteger);
-  formatList.append(FormatString);
+  s = "Color";
+  parms.getData(s, s2);
+  QColor c(s);
 
-  if (checkFormat(p, d, 5, 5))
-    return 0;
-
-  int value = formatStringList[3].toInt();
-
-  QColor c(formatStringList[4]);
-  if (! c.isValid())
-  {
-    qDebug("UTIL::COLOR: invalid COLOR parm");
-    return 0;
-  }
-  
-  PlotLine *inbool = d.at(0);
+  s = "Input";
+  parms.getData(s, s2);
+  PlotLine *inbool = tlines.value(s2);
+  if (! inbool)
+    return;
   int inboolLoop = inbool->getSize() - 1;
-  PlotLine *incol = d.at(1);
+
+  s = "Color Array";
+  parms.getData(s, s2);
+  PlotLine *incol = tlines.value(s2);
+  if (! incol)
+    return;
   incol->setColorFlag(TRUE);
   int incolLoop = incol->getSize() - 1;
+
   while (inboolLoop > -1 && incolLoop > -1)
   {
     if (inbool->getData(inboolLoop) == value)
@@ -640,173 +334,47 @@ PlotLine * UTIL::calculateCOLOR (QString &p, QPtrList<PlotLine> &d)
     inboolLoop--;
     incolLoop--;
   }
-
-  PlotLine *line = new PlotLine;
-  return line;
 }
 
-PlotLine * UTIL::calculateHL (QString &p, QPtrList<PlotLine> &d, int type)
+void UTIL::calculateINRANGE (IndicatorParms &parms, QHash<QString, PlotLine *> &tlines)
 {
-  // format1: METHOD, ARRAY_INPUT, DOUBLE
-  // format: METHOD, ARRAY_INPUT, ARRAY_INPUT2
-
-  formatList.clear();
-  formatList.append(FormatString);
-  formatList.append(FormatInputArray);
-  formatList.append(FormatString); // dummy cause we dont know what this parm is beforehand
-
-  if (checkFormat(p, d, 3, 3))
-    return 0;
-
-  PlotLine *input = d.at(0);
-  PlotLine *input2 = 0;
-  if (d.count() == 2)
-    input2 = d.at(1);
-
-  double inputNum = 0;
-  if (! input2)
-  {
-    bool ok;
-    double t = formatStringList[2].toDouble(&ok);
-    if (ok)
-      inputNum = t;
-    else
-      return 0;
-  }
-
-  int loop = input->getSize() - 1;
-  int loop2 = 0;
-  if (input2)
-    loop2 = input2->getSize() - 1;
-    
-  PlotLine *line = new PlotLine;
-  
-  while (loop > -1)
-  {
-    double v = input->getData(loop);
-    
-    if (input2)
-    {
-      if (loop2 < 0)
-        break;
-
-      switch (type)
-      {
-        case 1: // higher
-          if (v < input2->getData(loop2))
-            v = input2->getData(loop2);
-          break;
-        case 2: // lower
-          if (v > input2->getData(loop2))
-            v = input2->getData(loop2);
-          break;
-        default:
-          break;
-      }
-
-      loop2--;
-    }
-    else
-    {
-      switch(type)
-      {
-        case 1:
-          if (v < inputNum)
-            v = inputNum;
-          break;
-        case 2:
-          if (v > inputNum)
-            v = inputNum;
-          break;
-        default:
-          break;
-      }
-    }
-    
-    line->prepend(v);
-    loop--;
-  }
-  
-  return line;
-}
-
-PlotLine * UTIL::calculateINRANGE (QString &p, QPtrList<PlotLine> &d)
-{
-  // format: METHOD, INPUT_ARRAY, DOUBLE, DOUBLE
   // format: METHOD, INPUT_ARRAY, INPUT_ARRAY2, INPUT_ARRAY3
 
-  QStringList l = QStringList::split(",", p, FALSE);
+  PlotLine *line = new PlotLine();
+  QString s, s2;
+  parms.getVariable(s);
+  tlines.insert(s, line);
 
-  if (l.count() != 4)
-  {
-    qDebug("UTIL::INRANGE: invalid parm count");
-    return 0;
-  }
-
-  PlotLine *input = 0;
-  if (! d.count())
-  {
-    qDebug("UTIL::INRANGE: invalid ARRAY_INPUT parm");
-    return 0;
-  }
-  input = d.at(0);
+  s = "Input";
+  parms.getData(s, s2);
+  PlotLine *input = tlines.value(s2);
+  if (! input)
+    return;
   int loop = input->getSize() - 1;
 
-  PlotLine *input2 = 0;
-  int loop2 = 0;
-  bool ok;
-  double min = l[2].toDouble(&ok);
-  if (! ok)
-  {
-    if (d.count() >= 2)
-    {
-      input2 = d.at(1);
-      loop2 = input2->getSize() - 1;
-    }
-    else
-    {
-      qDebug("UTIL::INRANGE: invalid MIN parm");
-      return 0;
-    }
-  }
+  s = "Min Array";
+  parms.getData(s, s2);
+  PlotLine *input2 = tlines.value(s2);
+  if (! input2)
+    return;
+  int loop2 = input2->getSize() - 1;
 
-  PlotLine *input3 = 0;
-  int loop3 = 0;
-  double max = l[3].toDouble(&ok);
-  if (! ok)
-  {
-    if (d.count() == 3)
-    {
-      input3 = d.at(2);
-      loop3 = input3->getSize() - 1;
-    }
-    else
-    {
-      qDebug("UTIL::INRANGE: invalid MAX parm");
-      return 0;
-    }
-  }
+  s = "Max Array";
+  parms.getData(s, s2);
+  PlotLine *input3 = tlines.value(s2);
+  if (! input3)
+    return;
+  int loop3 = input3->getSize() - 1;
 
-  PlotLine *line = new PlotLine();
-  while (loop > -1)
+  double min = 0;
+  double max = 0;
+  while (loop > -1 && loop2 > -1 && loop3 > -1)
   {
-    if (input2)
-    {
-      if (loop2 < 0) 
-        break;
-        
-      min = input2->getData(loop2);
-      loop2--;
-    }
+    min = input2->getData(loop2);
+    loop2--;
 
-    if (input3)
-    {
-      if (loop3 < 0)
-        break;
-        
-      max = input3->getData(loop3);
-      loop3--;
-    }
+    max = input3->getData(loop3);
+    loop3--;
 
     if (input->getData(loop) >= min && input->getData(loop) <= max)
       line->prepend(1);
@@ -815,275 +383,193 @@ PlotLine * UTIL::calculateINRANGE (QString &p, QPtrList<PlotLine> &d)
 
     loop--;
   }
-
-  return line;
 }
 
-void UTIL::formatDialog (QStringList &vl, QString &rv, QString &rs)
+void UTIL::prefDialog (IndicatorParms &parms, QStringList &vl)
 {
-  rs.truncate(0);
-  rv.truncate(0);
+  QString s("Method");
+  QString method;
+  parms.getData(s, method);
+  if (! method.length())
+  {
+    bool ok;
+    method = QInputDialog::getItem(0,
+				   QObject::tr("UTIL Indicator Selection"),
+                                   QObject::tr("Select an indicator:"),
+                                   methodList,
+                                   0,
+                                   TRUE,
+                                   &ok);
+    if (! ok)
+      return;
+  
+    parms.setData(s, method);
+  }
 
-  bool ok;
-  QString method = QInputDialog::getItem(QObject::tr("UTIL Indicator Selection"),
-                                         QObject::tr("Select an indicator:"),
-                                         methodList,
-                                         0,
-                                         TRUE,
-                                         &ok,
-                                         0);
-  if (! ok)
-    return;
-
-  QString pl = QObject::tr("Parms");
   QString vnl = QObject::tr("Variable Name");
-  QString ai1l = QObject::tr("Array Input");
-  QString ai2l = QObject::tr("Array Input2");
+  QString ai1l = QObject::tr("Input");
+  QString ai2l = QObject::tr("Input2");
   QString cal = QObject::tr("Color Array");
-  QString cil = QObject::tr("Constant Input");
   QString ol = QObject::tr("Operator");
   QString perl = QObject::tr("Period");
   QString cl = QObject::tr("Color");
   QString minl = QObject::tr("Minimum");
   QString maxl = QObject::tr("Maximum");
+  QString cil = QObject::tr("Value");
 
   PrefDialog *dialog = new PrefDialog(0);
-  dialog->setCaption(QObject::tr("UTIL Format"));
-  dialog->createPage (pl);
-  dialog->setHelpFile(helpFile);
+  dialog->setWindowTitle(QObject::tr("UTIL Format"));
 
-  QString s;
-  dialog->addTextItem(vnl, pl, s);
+  QString s2;
+  parms.getVariable(s);
+  dialog->addTextItem(vnl, s);
 
-  while (1)
+  if (method == "ACCUM" || method == "Normal" || method == "PER")
   {
-    if (! method.compare("ACCUM") || ! method.compare("Normal") || ! method.compare("PER"))
-    {
-      // format: METHOD, INPUT_ARRAY
-      dialog->addComboItem(ai1l, pl, vl, 0);
-      break;
-    }
+    // format: METHOD, INPUT_ARRAY
+    parms.getData(ai1l, s);
+    dialog->addComboItem(ai1l, vl, s);
+  }
 
-    if (! method.compare("ADD") || ! method.compare("DIV") || ! method.compare("MUL") ||
-        ! method.compare("SUB") || ! method.compare("Higher") || ! method.compare("Lower"))
-    {
-      // format1: METHOD, ARRAY_INPUT, DOUBLE
-      // format2: METHOD, ARRAY_INPUT, ARRAY_INPUT2
-      dialog->addComboItem(ai1l, pl, vl, 0);
-      QStringList l = vl;
-      l.append(QObject::tr("None"));
-      dialog->addComboItem(ai2l, pl, l, l.count() - 1);
-      dialog->addDoubleItem(cil, pl, 0, -99999999.0, 99999999.0);
-      break;
-    }
+  if (method == "COMP")
+  {
+    // format2: METHOD, ARRAY_INPUT, ARRAY_INPUT2, OPERATOR
+    parms.getData(ai1l, s);
+    dialog->addComboItem(ai1l, vl, s);
 
-    if (! method.compare("COMP"))
-    {
-      // format1: METHOD, ARRAY_INPUT, DOUBLE, OPERATOR
-      // format2: METHOD, ARRAY_INPUT, ARRAY_INPUT2, OPERATOR
-      dialog->addComboItem(ai1l, pl, vl, 0);
-      QStringList l = vl;
-      l.append(QObject::tr("None"));
-      dialog->addComboItem(ai2l, pl, l, l.count() - 1);
-      dialog->addDoubleItem(cil, pl, 0, -99999999.0, 99999999.0);
-      dialog->addComboItem(ol, pl, opList, 0);
-      break;
-    }
+    parms.getData(ai2l, s);
+    dialog->addComboItem(ai2l, vl, s);
 
-    if (! method.compare("COUNTER"))
-    {
-      // format1: METHOD, ARRAY_INPUT
-      // format2: METHOD, ARRAY_INPUT, ARRAY_INPUT2
-      dialog->addComboItem(ai1l, pl, vl, 0);
-      QStringList l = vl;
-      l.append(QObject::tr("None"));
-      dialog->addComboItem(ai2l, pl, l, l.count() - 1);
-      break;
-    }
+    parms.getData(ol, s);
+    dialog->addComboItem(ol, opList, s);
+  }
 
-    if (! method.compare("REF"))
-    {
-      // format1: METHOD, ARRAY_INPUT, PERIOD
-      // format2: METHOD, DOUBLE
-      QStringList l = vl;
-      l.append(QObject::tr("None"));
-      dialog->addComboItem(ai1l, pl, l, l.count() - 1);
-      dialog->addDoubleItem(cil, pl, 0, -99999999.0, 99999999.0);
-      dialog->addIntItem(perl, pl, 1, 0, 999999);
-      break;
-    }
+  if (method == "REF")
+  {
+    // format1: METHOD, ARRAY_INPUT, PERIOD
+    parms.getData(ai1l, s);
+    dialog->addComboItem(ai1l, vl, s);
 
-    if (! method.compare("COLOR"))
-    {
-      // format1: METHOD, INPUT_ARRAY, COLOR_ARRAY, VALUE, COLOR
-      dialog->addComboItem(ai1l, pl, vl, 0);
-      dialog->addComboItem(cal, pl, vl, 0);
-      dialog->addDoubleItem(cil, pl, 0, -99999999.0, 99999999.0);
-      QColor color("red");
-      dialog->addColorItem(cl, pl, color);
-      break;
-    }
+    parms.getData(perl, s);
+    dialog->addIntItem(perl, s.toInt(), 0, 999999);
+  }
 
-    if (! method.compare("INRANGE"))
-    {
-      // format1: METHOD, ARRAY_INPUT, DOUBLE, DOUBLE
-      // format2: METHOD, ARRAY_INPUT, ARRAY_INPUT2, ARRAY_INPUT3
-      dialog->addComboItem(ai1l, pl, vl, 0);
-      QStringList l = vl;
-      l.append(QObject::tr("None"));
-      QString s = QObject::tr("Min Array");
-      dialog->addComboItem(s, pl, l, l.count() - 1);
-      dialog->addDoubleItem(minl, pl, 0, -99999999.0, 99999999.0);
-      s = QObject::tr("Max Array");
-      dialog->addComboItem(s, pl, l, l.count() - 1);
-      dialog->addDoubleItem(maxl, pl, 0, -99999999.0, 99999999.0);
-      break;
-    }
+  if (method == "COLOR")
+  {
+    // format1: METHOD, INPUT_ARRAY, COLOR_ARRAY, VALUE, COLOR
+    parms.getData(ai1l, s);
+    dialog->addComboItem(ai1l, vl, s);
 
-    break;
+    parms.getData(cal, s);
+    dialog->addComboItem(cal, vl, s);
+
+    parms.getData(cil, s);
+    dialog->addDoubleItem(cil, s.toDouble(), -99999999.0, 99999999.0);
+
+    parms.getData(cl, s);
+    QColor color(s);
+    dialog->addColorItem(cl, color);
+  }
+
+  if (method == "INRANGE")
+  {
+    // format2: METHOD, ARRAY_INPUT, ARRAY_INPUT2, ARRAY_INPUT3
+    parms.getData(ai1l, s);
+    dialog->addComboItem(ai1l, vl, s);
+
+    QString s = QObject::tr("Min Array");
+    parms.getData(s, s2);
+    dialog->addComboItem(s, vl, s2);
+
+    s = QObject::tr("Max Array");
+    parms.getData(s, s2);
+    dialog->addComboItem(s, vl, s2);
   }
 
   int rc = dialog->exec();
-  
-  if (rc == QDialog::Accepted)
+ 
+  if (rc != QDialog::Accepted)
   {
-    dialog->getText(vnl, rv);
-    rs = method;
+    delete dialog;
+    return;
+  }
 
-    while (1)
-    {
-      if (! method.compare("ACCUM") || ! method.compare("Normal") || ! method.compare("PER"))
-      {
-        // format: METHOD, INPUT_ARRAY
-        dialog->getCombo(ai1l, s);
-        rs.append("," + s);
-        break;
-      }
+  s = "Method";
+  parms.setData(s, method);
 
-      if (! method.compare("ADD") || ! method.compare("DIV") || ! method.compare("MUL") ||
-          ! method.compare("SUB") || ! method.compare("Higher") || ! method.compare("Lower"))
-      {
-        // format1: METHOD, ARRAY_INPUT, DOUBLE
-        // format2: METHOD, ARRAY_INPUT, ARRAY_INPUT2
-        dialog->getCombo(ai1l, s);
-        rs.append("," + s);
+  dialog->getText(vnl, s);
+  parms.setVariable(s);
 
-        dialog->getCombo(ai2l, s);
-        if (! s.compare(QObject::tr("None")))
-        {
-          double d = dialog->getDouble(cil);
-          rs.append("," + QString::number(d));
-        }
-        else
-          rs.append("," + s);
-        break;
-      }
+  if (method == "ACCUM" || method == "Normal" || method == "PER")
+  {
+    // format: METHOD, INPUT_ARRAY
+    dialog->getCombo(ai1l, s);
+    parms.setData(ai1l, s);
+  }
 
-      if (! method.compare("COMP"))
-      {
-        // format1: METHOD, ARRAY_INPUT, DOUBLE, OPERATOR
-        // format2: METHOD, ARRAY_INPUT, ARRAY_INPUT2, OPERATOR
-        dialog->getCombo(ai1l, s);
-        rs.append("," + s);
+  if (method == "COMP")
+  {
+    // format2: METHOD, ARRAY_INPUT, ARRAY_INPUT2, OPERATOR
+    dialog->getCombo(ai1l, s);
+    parms.setData(ai1l, s);
 
-        dialog->getCombo(ai2l, s);
-        if (! s.compare(QObject::tr("None")))
-        {
-          double d = dialog->getDouble(cil);
-          rs.append("," + QString::number(d));
-        }
-        else
-          rs.append("," + s);
+    dialog->getCombo(ai2l, s);
+    parms.setData(ai2l, s);
 
-        dialog->getCombo(ol, s);
-        rs.append("," + s);
-        break;
-      }
+    dialog->getCombo(ol, s);
+    parms.setData(ol, s);
+  }
 
-      if (! method.compare("COUNTER"))
-      {
-        // format1: METHOD, ARRAY_INPUT
-        // format2: METHOD, ARRAY_INPUT, ARRAY_INPUT2
-        dialog->getCombo(ai1l, s);
-        rs.append("," + s);
+  if (method == "REF")
+  {
+    // format1: METHOD, ARRAY_INPUT, PERIOD
+    dialog->getCombo(ai1l, s);
+    parms.setData(ai1l, s);
 
-        dialog->getCombo(ai2l, s);
-        if (s.compare(QObject::tr("None")))
-          rs.append("," + s);
-        break;
-      }
+    s = QString::number(dialog->getInt(perl));
+    parms.setData(perl, s);
+  }
 
-      if (! method.compare("REF"))
-      {
-        // format1: METHOD, ARRAY_INPUT, PERIOD
-        // format2: METHOD, DOUBLE
-        dialog->getCombo(ai1l, s);
-        if (! s.compare(QObject::tr("None")))
-        {
-          double d = dialog->getDouble(cil);
-          rs.append("," + QString::number(d));
-        }
-        else
-        {
-          rs.append("," + s);
+  if (method == "COLOR")
+  {
+    // format1: METHOD, INPUT_ARRAY, COLOR_ARRAY, VALUE, COLOR
+    dialog->getCombo(ai1l, s);
+    parms.setData(ai1l, s);
 
-          int t = dialog->getInt(perl);
-          rs.append("," + QString::number(t));
-        }
-        break;
-      }
+    dialog->getCombo(cal, s);
+    parms.setData(cal, s);
 
-      if (! method.compare("COLOR"))
-      {
-        // format1: METHOD, INPUT_ARRAY, COLOR_ARRAY, VALUE, COLOR
-        dialog->getCombo(ai1l, s);
-        rs.append("," + s);
+    s = QString::number(dialog->getDouble(cil));
+    parms.setData(cil, s);
 
-        dialog->getCombo(cal, s);
-        rs.append("," + s);
+    QColor color;
+    dialog->getColor(cl, color);
+    s = color.name();
+    parms.setData(cl, s);
+  }
 
-        double d = dialog->getDouble(cil);
-        rs.append("," + QString::number(d));
+  if (method == "INRANGE")
+  {
+    // format1: METHOD, ARRAY_INPUT, DOUBLE, DOUBLE
+    dialog->getCombo(ai1l, s);
+    parms.setData(ai1l, s);
 
-        QColor color;
-        dialog->getColor(cl, color);
-        rs.append("," + color.name());
-        break;
-      }
+    QString s = QObject::tr("Min Array");
+    dialog->getCombo(s, s2);
+    parms.setData(s, s2);
 
-      if (! method.compare("INRANGE"))
-      {
-        // format1: METHOD, ARRAY_INPUT, DOUBLE, DOUBLE
-        dialog->getCombo(ai1l, s);
-
-        QString s = QObject::tr("Min Array");
-        QString s2;
-        dialog->getCombo(s, s2);
-        if (! s2.compare(QObject::tr("None")))
-        {
-          double d = dialog->getDouble(minl);
-          rs.append("," + QString::number(d));
-        }
-        else
-          rs.append("," + s2);
-
-        s = QObject::tr("Max Array");
-        dialog->getCombo(s, s2);
-        if (! s2.compare(QObject::tr("None")))
-        {
-          double d = dialog->getDouble(maxl);
-          rs.append("," + QString::number(d));
-        }
-        else
-          rs.append("," + s2);
-
-        break;
-      }
-
-      break;
-    }
+    s = QObject::tr("Max Array");
+    dialog->getCombo(s, s2);
+    parms.setData(s, s2);
   }
 
   delete dialog;
 }
+
+UTIL::Operator UTIL::getOperator (QString &d)
+{
+  int i = opList.indexOf(d);
+  return (Operator) i;
+}
+
 

@@ -22,10 +22,10 @@
 #ifndef COLORBUTTON_HPP
 #define COLORBUTTON_HPP
 
-#include <qpushbutton.h>
-#include <qpixmap.h>
-#include <qcolor.h>
-#include <qwidget.h>
+#include <QPushButton>
+#include <QPixmap>
+#include <QColor>
+#include <QWidget>
 
 class ColorButton : public QPushButton
 {

@@ -22,27 +22,16 @@
 #ifndef BARDATA_HPP
 #define BARDATA_HPP
 
-#include <qvaluelist.h>
-#include <qdict.h>
-#include <qstringlist.h>
-#include <qdatetime.h>
+#include <QList>
+#include <QHash>
+#include <QStringList>
+#include <QDateTime>
 #include "Bar.h"
 #include "PlotLine.h"
 
 class BarData
 {
   public:
-    typedef struct
-    {
-      int x;
-    } X;
-
-    enum BarType
-    {
-      Daily,
-      Tick
-    };
-
     enum InputType
     {
       Open,
@@ -87,8 +76,6 @@ class BarData
     double getMax ();
     double getMin ();
     void createDateList ();
-    void setBarType (BarData::BarType);
-    BarData::BarType getBarType ();
     void getInputFields (QStringList &);
     PlotLine * getInput (BarData::InputType);
     BarData::InputType getInputType (QString &);
@@ -101,18 +88,29 @@ class BarData
     void setStartEndDates (QDateTime &);
     void setBar (int, Bar &);
     void getSymbol (QString &);
+    void setSymbol (QString &);
+    void getName (QString &);
+    void setName (QString &);
+    void getType (QString &);
+    void setType (QString &);
+    int getBarsRequested ();
+    void setBarsRequested (int);
+    void getDateOffset (QDateTime &);
+
     
   protected:
-    QValueList<Bar> barList;
-    QDict<X> dateList;
+    QList<Bar> barList;
+    QHash<QString, int> dateList;
     double high;
     double low;
-    BarData::BarType barType;
     BarData::BarLength barLength;
     QDateTime startDate;
     QDateTime endDate;
     Bar currentBar;
     QString symbol;
+    QString name;
+    QString type;
+    int barsRequested;
 };
 
 #endif

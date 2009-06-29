@@ -22,26 +22,22 @@
 #include "TrendLine.h"
 #include "PrefDialog.h"
 #include "Config.h"
-#include <qpainter.h>
+#include "DataBase.h"
+#include <QPainter>
+#include <QPolygon>
+
+
 
 TrendLine::TrendLine ()
 {
-  defaultColor.setNamedColor("red");
+  color.setNamedColor("red");
   usebar = FALSE;
   extend = TRUE;
   bar = "Close";
   helpFile = "trendline.html";
   date2 = date;
-  type = "TrendLine";
+  type = (int) COTrendLine;
 
-  sdateLabel = "Start Date";
-  edateLabel = "End Date";
-  svalueLabel = "Start Value";
-  evalueLabel = "End Value";
-  fieldLabel = "Bar Field";
-  usebarLabel = "Use Bar";
-  extendLabel = "Extend Line";
-  
   loadDefaults();
 }
 
@@ -72,7 +68,7 @@ void TrendLine::draw (QPixmap &buffer, Scaler &scaler, int startIndex, int pixel
     
   int y;
   int y2;
-  if (getUseBar())
+  if (usebar)
   {
     int i = data->getX(date);
     int i2 = data->getX(date2);
@@ -112,11 +108,11 @@ void TrendLine::draw (QPixmap &buffer, Scaler &scaler, int startIndex, int pixel
   }
   else
   {
-    y = scaler.convertToY(getValue());
-    y2 = scaler.convertToY(getValue2());
+    y = scaler.convertToY(value);
+    y2 = scaler.convertToY(value2);
   }
 
-  painter.setPen(getColor());
+  painter.setPen(color);
   painter.drawLine (x, y, x2, y2);
 
   // save old values;
@@ -125,7 +121,7 @@ void TrendLine::draw (QPixmap &buffer, Scaler &scaler, int startIndex, int pixel
   int tx = x;
   int ty = y;
 
-  if (getExtend())
+  if (extend)
   {  
     int ydiff = y - y2;
     int xdiff = x2 - x;
@@ -141,7 +137,7 @@ void TrendLine::draw (QPixmap &buffer, Scaler &scaler, int startIndex, int pixel
 
   // store the selectable area the line occupies
   clearSelectionArea();
-  QPointArray array;
+  QPolygon array;
   array.putPoints(0, 4, tx, ty - 4, tx, ty + 4, x2, y2 + 4, x2, y2 - 4);
   setSelectionArea(new QRegion(array));
     
@@ -154,14 +150,14 @@ void TrendLine::draw (QPixmap &buffer, Scaler &scaler, int startIndex, int pixel
 		  HANDLE_WIDTH,
 		  HANDLE_WIDTH,
 		  QRegion::Rectangle));
-    painter.fillRect(tx, ty - (HANDLE_WIDTH / 2), HANDLE_WIDTH, HANDLE_WIDTH, getColor());
+    painter.fillRect(tx, ty - (HANDLE_WIDTH / 2), HANDLE_WIDTH, HANDLE_WIDTH, color);
       
     setGrabHandle(new QRegion(tx2,
              	  ty2 - (HANDLE_WIDTH / 2),
 		  HANDLE_WIDTH,
 		  HANDLE_WIDTH,
 		  QRegion::Rectangle));
-    painter.fillRect(tx2, ty2 - (HANDLE_WIDTH / 2), HANDLE_WIDTH, HANDLE_WIDTH, getColor());
+    painter.fillRect(tx2, ty2 - (HANDLE_WIDTH / 2), HANDLE_WIDTH, HANDLE_WIDTH, color);
   }
 
   painter.end();
@@ -175,7 +171,6 @@ void TrendLine::prefDialog ()
   l.append(tr("Low"));
   l.append(tr("Close"));
 
-  QString pl = tr("Details");
   QString cl = tr("Color");
   QString sd = tr("Set Default");
   QString ub = tr("Use Bar");
@@ -184,17 +179,15 @@ void TrendLine::prefDialog ()
   QString sl = tr("Start Value");
   QString dl = tr("End Value");
   
-  PrefDialog *dialog = new PrefDialog();
-  dialog->setCaption(tr("Edit TrendLine"));
-  dialog->createPage (pl);
-  dialog->setHelpFile (helpFile);
-  dialog->addColorPrefItem(cl, pl, color);
-  dialog->addComboItem(bf, pl, l, bar);
-  dialog->addCheckItem(ub, pl, usebar);
-  dialog->addCheckItem(el, pl, extend);
-  dialog->addDoubleItem(sl, pl, getValue());
-  dialog->addDoubleItem(dl, pl, getValue2());
-  dialog->addCheckItem(sd, pl, FALSE);
+  PrefDialog *dialog = new PrefDialog;
+  dialog->setWindowTitle(tr("Edit TrendLine"));
+  dialog->addColorPrefItem(cl, color);
+  dialog->addComboItem(bf, l, bar);
+  dialog->addCheckItem(ub, usebar);
+  dialog->addCheckItem(el, extend);
+  dialog->addDoubleItem(sl, value);
+  dialog->addDoubleItem(dl, value2);
+  dialog->addCheckItem(sd, FALSE);
   
   int rc = dialog->exec();
   
@@ -204,21 +197,14 @@ void TrendLine::prefDialog ()
     dialog->getCombo(bf, bar);
     usebar = dialog->getCheck(ub);
     extend = dialog->getCheck(el);
-    setValue(dialog->getDouble(sl));
-    setValue2(dialog->getDouble(dl));
+    value = dialog->getDouble(sl);
+    value2 = dialog->getDouble(dl);
     
     setSaveFlag(TRUE);
     
     bool f = dialog->getCheck(sd);
     if (f)
-    {
-      dialog->getColor(cl, defaultColor);
-      dialog->getCombo(bf, bar);
-      usebar = dialog->getCheck(ub);
-      extend = dialog->getCheck(el);
-      
       saveDefaults();
-    }
     
     emit signalDraw();
   }
@@ -229,8 +215,7 @@ void TrendLine::prefDialog ()
 void TrendLine::newObject (QString &ind, QString &n)
 {
   indicator = ind;
-  plot = ind;
-  name = n;
+  id = n;
   mpx2 = -1;
   mpy2 = -1;
   status = ClickWait;
@@ -276,17 +261,15 @@ COBase::Status TrendLine::pointerClick (QPoint &point, QDateTime &x, double y)
       if (x <= tx)
         break;
   
-      setDate(tx);
-      setDate2(x);
-      setValue(ty);
-      setValue2(y);
+      date = tx;
+      date2 = x;
+      value = ty;
+      value2 = y;
 
       setSaveFlag(TRUE);
-      setColor(defaultColor);
       emit signalDraw();
       status = None;
       emit message("");
-      emit signalSave(name);
       break;
     default:
       break;
@@ -295,14 +278,21 @@ COBase::Status TrendLine::pointerClick (QPoint &point, QDateTime &x, double y)
   return status;    
 }
 
-void TrendLine::pointerMoving (QPixmap &buffer, QPoint &point, QDateTime &x, double y)
+void TrendLine::pointerMoving (QPixmap &, QPoint &, QDateTime &x, double y)
 {
   if (status == ClickWait2)
   {
-    drawMovingPointer(buffer, point);
+    date = tx;
+    value = ty;
+    date2 = x;
+    value2 = y;
+    setSaveFlag(TRUE);
+    emit signalDraw();
+    QString s = x.toString(dateFormat) + " " + QString::number(y);
+    emit message(s);
     return;
   }
-  
+
   if (! moveFlag || status != Moving)
     return;
     
@@ -311,11 +301,11 @@ void TrendLine::pointerMoving (QPixmap &buffer, QPoint &point, QDateTime &x, dou
     if (x >= date2)
       return;
     
-    setDate(x);
-    setValue(y);
+    date = x;
+    value = y;
     setSaveFlag(TRUE);
     emit signalDraw();
-    QString s = x.toString("yyyy-MM-dd hh:mm:ss") + " " + QString::number(y);
+    QString s = x.toString(dateFormat) + " " + QString::number(y);
     emit message(s);
   }
   else
@@ -323,94 +313,42 @@ void TrendLine::pointerMoving (QPixmap &buffer, QPoint &point, QDateTime &x, dou
     if (x <= date)
       return;
     
-    setDate2(x);
-    setValue2(y);
+    date2 = x;
+    value2 = y;
     setSaveFlag(TRUE);
     emit signalDraw();
     
-    QString s = x.toString("yyyy-MM-dd hh:mm:ss") + " " + QString::number(y);
+    QString s = x.toString(dateFormat) + " " + QString::number(y);
     emit message(s);
   }
 }
 
-void TrendLine::drawMovingPointer (QPixmap &buffer, QPoint &point)
-{
-  if (point.x() < mpx)
-    return;
-
-  QPainter painter;
-  painter.begin(&buffer);
-  painter.setRasterOp(Qt::XorROP);
-  painter.setPen(defaultColor);
-      
-  // erase the previous line drawn
-  if (mpx2 != -1 && mpy2 != -1)
-    painter.drawLine (mpx, mpy, mpx2, mpy2);
-      
-  // draw the new line
-  painter.drawLine (mpx, mpy, point.x(), point.y());
-      
-  mpx2 = point.x();
-  mpy2 = point.y();
-  
-  painter.end();
-  
-  emit signalRefresh();
-}
-
 void TrendLine::loadDefaults ()
 {
-  Config settings;
-  QString s2 = "DefaultTrendLineColor";
-  QString s;
-  settings.getData(s2, s);
-  if (s.length())
-    defaultColor.setNamedColor(s);
-
-  s2 = "DefaultTrendLineBar";
-  settings.getData(s2, s);
-  if (s.length())
-    bar = s;
-
-  s2 = "DefaultTrendLineExtend";
-  settings.getData(s2, s);
-  if (s.length())
-    extend = s.toInt();
-
-  s2 = "DefaultTrendLineUseBar";
-  settings.getData(s2, s);
-  if (s.length())
-    usebar = s.toInt();
+  Config config;
+  config.getData(Config::DefaultTrendLineColor, color);
+  config.getData(Config::DefaultTrendLineBar, bar);
+  config.getData(Config::DefaultTrendLineExtend, extend);
+  config.getData(Config::DefaultTrendLineUseBar, usebar);
 }
 
 void TrendLine::saveDefaults ()
 {
   Config config;
-  
-  QString s = "DefaultTrendLineColor";
-  QString s2 = defaultColor.name();
-  config.setData(s, s2);
-
-  s = "DefaultTrendLineBar";
-  config.setData(s, bar);
-
-  s = "DefaultTrendLineExtend";
-  s2 = QString::number(extend);
-  config.setData(s, s2);
-
-  s = "DefaultTrendLineUseBar";
-  s2 = QString::number(usebar);
-  config.setData(s, s2);
+  config.setData(Config::DefaultTrendLineColor, color);
+  config.setData(Config::DefaultTrendLineBar, bar);
+  config.setData(Config::DefaultTrendLineExtend, extend);
+  config.setData(Config::DefaultTrendLineUseBar, usebar);
 }
 
 double TrendLine::getHigh ()
 {
   double high = -99999999.0;
 
-  if (getValue() > high)
-      high = getValue();
-  if (getValue2() > high)
-      high = getValue2();
+  if (value > high)
+      high = value;
+  if (value2 > high)
+      high = value2;
   
   return high;
 }
@@ -419,32 +357,12 @@ double TrendLine::getLow ()
 {
   double low = 99999999.0;
   
-  if (getValue() < low)
-    low = getValue();
-  if (getValue2() < low)
-    low = getValue2();
+  if (value < low)
+    low = value;
+  if (value2 < low)
+    low = value2;
 
   return low;
-}
-
-void TrendLine::setDate2 (QDateTime &d)
-{
-  date2 = d;
-}
-
-void TrendLine::getDate2 (QDateTime &d)
-{
-  d = date2;
-}
-
-void TrendLine::setValue2 (double d)
-{
-  value2 = d;
-}
-
-double TrendLine::getValue2 ()
-{
-  return value2;
 }
 
 int TrendLine::isGrabSelected (QPoint point)
@@ -460,62 +378,52 @@ int TrendLine::isGrabSelected (QPoint point)
   return 0;
 }
 
-void TrendLine::getSettings (Setting &set)
+void TrendLine::saveSettings ()
 {
-  QString s = date.toString(dateFormat);
-  set.setData(sdateLabel, s);
-  s = date2.toString(dateFormat);
-  set.setData(edateLabel, s);
-  s = QString::number(value);
-  set.setData(svalueLabel, s);
-  s = QString::number(value2);
-  set.setData(evalueLabel, s);
-  set.setData(fieldLabel, bar);
-  s = QString::number(usebar);
-  set.setData(usebarLabel, s);
-  s = QString::number(extend);
-  set.setData(extendLabel, s);
-  s = color.name();
-  set.setData(colorLabel, s);
-  set.setData(plotLabel, plot);
-  set.setData(nameLabel, name);
-  set.setData(typeLabel, type);
+  COSettings co(id, symbol, indicator, QString::number(type));
+  co.setDate(date);
+  co.setDate2(date2);
+  co.setValue(value);
+  co.setValue2(value2);
+  co.setColor(color);
+
+  QString k("Field");
+  co.setString(k, bar);
+
+  k = "UseBar";
+  QString d = QString::number(usebar);
+  co.setString(k, d);
+
+  k = "Extend";
+  d = QString::number(extend);
+  co.setString(k, d);
+
+  DataBase db;
+  db.setChartObject(co);
 }
 
-void TrendLine::setSettings (Setting &set)
+void TrendLine::loadSettings (COSettings &co)
 {
-  QString s;
-  set.getData(colorLabel, s);
-  color.setNamedColor(s);
-  set.getData(sdateLabel, s);
-  Bar b;
-  b.setDate(s);
-  b.getDate(date);
-  set.getData(edateLabel, s);
-  b.setDate(s);
-  b.getDate(date2);
-  value = set.getDouble(svalueLabel);
-  value2 = set.getDouble(evalueLabel);
-  set.getData(fieldLabel, bar);
-  usebar = set.getInt(usebarLabel);
-  extend = set.getInt(extendLabel);
-  set.getData(plotLabel, plot);
-  set.getData(nameLabel, name);
-}
+  co.getSymbol(symbol);
+  co.getID(id);
+  co.getIndicator(indicator);
+  co.getDate(date);
+  co.getDate2(date2);
+  value = co.getValue();
+  value2 = co.getValue2();
+  co.getColor(color);
+  
+  QString k("Field");
+  co.getString(k, bar);
 
-bool TrendLine::getUseBar ()
-{
-  return usebar;
-}
+  k = "UseBar";
+  QString d;
+  co.getString(k, d);
+  usebar = d.toInt();
 
-void TrendLine::getBar (QString &d)
-{
-  d = bar;
-}
-
-bool TrendLine::getExtend ()
-{
-  return extend;
+  k = "Extend";
+  co.getString(k, d);
+  extend = d.toInt();
 }
 
 void TrendLine::adjustForSplit (QDateTime &dt, double d)

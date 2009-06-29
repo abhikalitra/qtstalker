@@ -23,9 +23,9 @@
 #define TRADEITEM_HPP
 
 #include "BarData.h"
-#include "FuturesData.h"
-#include <qstring.h>
-#include <qdatetime.h>
+//#include "FuturesData.h"
+#include <QString>
+#include <QDateTime>
 
 
 class TradeItem
@@ -108,7 +108,7 @@ class TradeItem
     double entryCom;
     double exitCom;
     int margin;
-    FuturesData fd;
+//    FuturesData fd;
 };
 
 #endif

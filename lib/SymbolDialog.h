@@ -22,9 +22,10 @@
 #ifndef SYMBOLDIALOG_HPP
 #define SYMBOLDIALOG_HPP
 
-#include <qfiledialog.h>
-#include <qstring.h>
-#include <qwidget.h>
+#include <QFileDialog>
+#include <QString>
+#include <QWidget>
+#include <QKeyEvent>
 
 class SymbolDialog : public QFileDialog
 {
@@ -34,7 +35,7 @@ class SymbolDialog : public QFileDialog
     void signalKeyPressed (int, int, int, int, QString);
   
   public:
-    SymbolDialog (QWidget *, QString &, QString &, QString &, QFileDialog::Mode);
+    SymbolDialog (QWidget *, QString &, QString &, QString &, QFileDialog::FileMode);
     ~SymbolDialog ();
     void setType (int);
 

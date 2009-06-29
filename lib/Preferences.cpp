@@ -20,145 +20,197 @@
  */
 
 #include "Preferences.h"
-#include "HelpWindow.h"
-#include "RcFile.h"
+#include "Config.h"
+#include <QLabel>
+#include <QLayout>
+#include <QGridLayout>
+#include <QVBoxLayout>
 
-#include <qlabel.h>
-#include <qlayout.h>
 
-
-Preferences::Preferences (QWidget *w) : QTabDialog (w, "Preferences", FALSE, WDestructiveClose)
+Preferences::Preferences (QWidget *w) : QDialog (w, 0)
 {
-  helpFile = "preferences.html";
+  setWindowTitle(tr("Edit Prefs"));
 
-  setCaption(tr("Edit Prefs"));
+  QVBoxLayout *vbox = new QVBoxLayout;
+  setLayout(vbox);
 
+  tabs = new QTabWidget;
+  vbox->addWidget(tabs);
+
+  buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel | QDialogButtonBox::Help);
+  connect(buttonBox, SIGNAL(accepted()), this, SLOT(slotSave()));
+  connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
+//  connect(buttonBox, SIGNAL(helpRequested()), this, SLOT(slotHelp()));
+  vbox->addWidget(buttonBox);
+  
   loadSettings();
   createGeneralPage();
+  createDatabasePage();
   createColorPage();
   createFontPage();
   createMTPage(); // main tool bar
   createCTPage(); // chart tool bar
   createETPage(); // extra tool bar
   
-  setApplyButton(tr("&Apply"));  
-  connect(this, SIGNAL(applyButtonPressed()), this, SLOT(slotSave()));
-  
-  setCancelButton(tr("&Ok"));  
-//  connect(this, SIGNAL(cancelButtonPressed()), this, SLOT(exitDialog()));
-  
-  setOkButton(QString::null);  
-  
-  setHelpButton();
-  QObject::connect(this, SIGNAL(helpButtonPressed()), this, SLOT(slotHelp()));
   resize(sz);
-  
 }
 
 Preferences::~Preferences ()
 {
-  RcFile rcfile;
-  rcfile.saveSize(RcFile::PrefDlgWindowSize, size());
+  Config config;
+  config.setData(Config::PrefDlgWindowSize, sz);
 }
 
 void Preferences::loadSettings ()
 {
-  RcFile rcfile;
+  QString s;
+  Config config;
 
-  rcfile.loadData(RcFile::ShowMenuBar, menubar);
-  rcfile.loadData(RcFile::ShowExtraToolbar, extraToolbar);
+  config.getData(Config::ShowMenuBar, s);
+  menubar = s.toInt();
 
-  rcfile.loadData(RcFile::PSButton, ps1Button, 1);
-  rcfile.loadData(RcFile::PSButton, ps2Button, 2);
-  rcfile.loadData(RcFile::PSButton, ps3Button, 3);
-  rcfile.loadColor(RcFile::BackgroundColor, backgroundColor);
-  rcfile.loadColor(RcFile::BorderColor, borderColor);
-  rcfile.loadColor(RcFile::GridColor, gridColor);
-  rcfile.loadFont(RcFile::PlotFont, plotFont);
-  rcfile.loadFont(RcFile::AppFont, appFont);
-  rcfile.loadSize(RcFile::PrefDlgWindowSize, sz);
+  config.getData(Config::ShowExtraToolbar, s);
+  extraToolbar = s.toInt();
+
+  config.getData(Config::PSButton1, s);
+  ps1Button = s.toInt();
+
+  config.getData(Config::PSButton2, s);
+  ps2Button = s.toInt();
+
+  config.getData(Config::PSButton3, s);
+  ps3Button = s.toInt();
+
+  config.getData(Config::BackgroundColor, backgroundColor);
+  config.getData(Config::BorderColor, borderColor);
+  config.getData(Config::GridColor, gridColor);
+  config.getData(Config::PlotFont, plotFont);
+  config.getData(Config::AppFont, appFont);
+  config.getData(Config::PrefDlgWindowSize, sz);
 }
 
 void Preferences::createGeneralPage ()
 {
   // general parms page
 
-  QWidget *w = new QWidget(this);
-  QVBoxLayout *vbox = new QVBoxLayout(w);
+  QWidget *w = new QWidget;
+
+  QVBoxLayout *vbox = new QVBoxLayout;
+  w->setLayout(vbox);
   
-  QGridLayout *grid = new QGridLayout(vbox, 1, 3);
+  QGridLayout *grid = new QGridLayout;
   grid->setMargin(5);
   grid->setSpacing(5);
-  grid->setColStretch(1, 1); // stretch 2nd col a little
-  grid->setColStretch(2, 2); // stretch outer right col more
+  grid->setColumnStretch(1, 1); // stretch 2nd col a little
+  grid->setColumnStretch(2, 2); // stretch outer right col more
+  vbox->addLayout(grid);
   
   vbox->insertStretch(-1, 1);
 
   // menubar checkbox
-  QLabel *label = new QLabel(tr("Main Menubar"), w);
+  QLabel *label = new QLabel(tr("Main Menubar"));
   grid->addWidget(label, 0, 0);
   
-  menubarCheck = new QCheckBox(w);
+  menubarCheck = new QCheckBox;
   menubarCheck->setChecked(menubar);
   connect(menubarCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
   grid->addWidget(menubarCheck, 0, 1);
 
   // extraToolbar checkbox
-  label = new QLabel(tr("Extra Toolbar"), w);
+  label = new QLabel(tr("Extra Toolbar"));
   grid->addWidget(label, 1, 0);
   
-  extraToolbarCheck = new QCheckBox(w);
+  extraToolbarCheck = new QCheckBox;
   extraToolbarCheck->setChecked(extraToolbar);
   connect(extraToolbarCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
   grid->addWidget(extraToolbarCheck, 1, 1);
 
   // bar spacing 1
-  label = new QLabel(tr("Bar Spacing 1"), w);
+  label = new QLabel(tr("Bar Spacing 1"));
   grid->addWidget(label, 2, 0);
   
-  bs1Spinner = new QSpinBox(2, 99, 1, w);
+  bs1Spinner = new QSpinBox;
+  bs1Spinner->setRange(2, 99);
   bs1Spinner->setValue(ps1Button);
   connect(bs1Spinner, SIGNAL(valueChanged(int)), this, SLOT(slotModified()));
   grid->addWidget(bs1Spinner, 2, 1);
 
   // bar spacing 2
-  label = new QLabel(tr("Bar Spacing 2"), w);
+  label = new QLabel(tr("Bar Spacing 2"));
   grid->addWidget(label, 3, 0);
   
-  bs2Spinner = new QSpinBox(2, 99, 1, w);
+  bs2Spinner = new QSpinBox;
+  bs2Spinner->setRange(2, 99);
   bs2Spinner->setValue(ps2Button);
   connect(bs2Spinner, SIGNAL(valueChanged(int)), this, SLOT(slotModified()));
   grid->addWidget(bs2Spinner, 3, 1);
 
   // bar spacing 3
-  label = new QLabel(tr("Bar Spacing 3"), w);
+  label = new QLabel(tr("Bar Spacing 3"));
   grid->addWidget(label, 4, 0);
   
-  bs3Spinner = new QSpinBox(2, 99, 1, w);
+  bs3Spinner = new QSpinBox;
+  bs3Spinner->setRange(2, 99);
   bs3Spinner->setValue(ps3Button);
   connect(bs3Spinner, SIGNAL(valueChanged(int)), this, SLOT(slotModified()));
   grid->addWidget(bs3Spinner, 4, 1);
 
-  addTab(w, tr("General"));
+  tabs->addTab(w, tr("General"));
+}
+
+void Preferences::createDatabasePage ()
+{
+  // database parms page
+
+  QWidget *w = new QWidget;
+
+  QVBoxLayout *vbox = new QVBoxLayout;
+  w->setLayout(vbox);
+  
+  QGridLayout *grid = new QGridLayout;
+  grid->setMargin(5);
+  grid->setSpacing(5);
+  grid->setColumnStretch(1, 1); // stretch 2nd col a little
+  grid->setColumnStretch(2, 2); // stretch outer right col more
+  vbox->addLayout(grid);
+  
+  vbox->insertStretch(-1, 1);
+
+  QLabel *label = new QLabel(tr("Quotes Database"));
+  grid->addWidget(label, 0, 0);
+  
+  QString s;
+  QStringList l;
+  Config config;
+  config.getData(Config::QuotePath, s);
+  if (s.length())
+    l.append(s);
+  dbFile = new FileButton(w, l, s);
+  grid->addWidget(dbFile, 0, 1);
+
+  tabs->addTab(w, tr("Quotes"));
 }
 
 void Preferences::createColorPage ()
 {
   // colors parms page
 
-  QWidget *w = new QWidget(this);
-  QVBoxLayout *vbox = new QVBoxLayout(w);
+  QWidget *w = new QWidget;
+
+  QVBoxLayout *vbox = new QVBoxLayout;
+  w->setLayout(vbox);
   
-  QGridLayout *grid = new QGridLayout(vbox, 1, 3);
+  QGridLayout *grid = new QGridLayout;
   grid->setMargin(5);
   grid->setSpacing(5);
-  grid->setColStretch(1, 1);
-  grid->setColStretch(2, 2);
+  grid->setColumnStretch(1, 1);
+  grid->setColumnStretch(2, 2);
+  vbox->addLayout(grid);
   
   vbox->insertStretch(-1, 1);
 
   // background color
-  QLabel *label = new QLabel(tr("Chart Background"), w);
+  QLabel *label = new QLabel(tr("Chart Background"));
   grid->addWidget(label, 0, 0);
   
   backgroundColorButton = new ColorButton(w, backgroundColor);
@@ -167,7 +219,7 @@ void Preferences::createColorPage ()
   connect(backgroundColorButton, SIGNAL(valueChanged()), this, SLOT(slotModified()));
 
   // border color
-  label = new QLabel(tr("Chart Border"), w);
+  label = new QLabel(tr("Chart Border"));
   grid->addWidget(label, 1, 0);
   
   borderColorButton = new ColorButton(w, borderColor);
@@ -176,7 +228,7 @@ void Preferences::createColorPage ()
   connect(borderColorButton, SIGNAL(valueChanged()), this, SLOT(slotModified()));
 
   // grid color
-  label = new QLabel(tr("Chart Grid"), w);
+  label = new QLabel(tr("Chart Grid"));
   grid->addWidget(label, 2, 0);
   
   gridColorButton = new ColorButton(w, gridColor);
@@ -187,26 +239,29 @@ void Preferences::createColorPage ()
   //FIXME: add adjustment possibility for prefered CO-colors.
   // in this way to add a spinbox to set the amount of colors too
   
-  addTab(w, tr("Colors"));
+  tabs->addTab(w, tr("Colors"));
 }
 
 void Preferences::createFontPage ()
 {
   // font parms page
 
-  QWidget *w = new QWidget(this);
-  QVBoxLayout *vbox = new QVBoxLayout(w);
+  QWidget *w = new QWidget;
+
+  QVBoxLayout *vbox = new QVBoxLayout;
+  w->setLayout(vbox);
   
-  QGridLayout *grid = new QGridLayout(vbox, 1, 3);
+  QGridLayout *grid = new QGridLayout;
   grid->setMargin(5);
   grid->setSpacing(5);
-  grid->setColStretch(1, 1);
-  grid->setColStretch(2, 2);
+  grid->setColumnStretch(1, 1);
+  grid->setColumnStretch(2, 2);
+  vbox->addLayout(grid);
   
   vbox->insertStretch(-1, 1);
 
   // plot font
-  QLabel *label = new QLabel(tr("Plot Font"), w);
+  QLabel *label = new QLabel(tr("Plot Font"));
   grid->addWidget(label, 0, 0);
   
   plotFontButton = new FontButton(w, plotFont);
@@ -214,82 +269,90 @@ void Preferences::createFontPage ()
   connect(plotFontButton, SIGNAL(valueChanged()), this, SLOT(slotModified()));
 
   // app font
-  label = new QLabel(tr("App Font"), w);
+  label = new QLabel(tr("App Font"));
   grid->addWidget(label, 1, 0);
   
   appFontButton = new FontButton(w, appFont);
   grid->addWidget(appFontButton, 1, 1);
   connect(appFontButton, SIGNAL(valueChanged()), this, SLOT(slotModified()));
 
-  addTab(w, tr("Fonts"));
-  
+  tabs->addTab(w, tr("Fonts"));
 }
 
 void  Preferences::createMTPage()
 {
   // main tool bar page
 
-  QWidget *w = new QWidget(this);
-  QVBoxLayout *vbox = new QVBoxLayout(w);
+  QWidget *w = new QWidget;
+
+  QVBoxLayout *vbox = new QVBoxLayout;
+  w->setLayout(vbox);
   
-  QGridLayout *grid = new QGridLayout(vbox, 1, 6); // two more cols as needed
+  QGridLayout *grid = new QGridLayout; // two more cols as needed
   grid->setMargin(5);
   grid->setSpacing(5);
-  grid->setColStretch(2, 1); // middle spacing col
-  grid->setColStretch(5, 2); // outer right col
+  grid->setColumnStretch(2, 1); // middle spacing col
+  grid->setColumnStretch(5, 2); // outer right col
+  vbox->addLayout(grid);
   
   vbox->insertStretch(-1, 1);
   
   int i = 0; // count rows
   int j = 0; // "count" cols
-  bool tb; // temporary
-  RcFile rcfile;
+  QString s;
   
-  QLabel *label = new QLabel(tr("Quit"), w);
+  QLabel *label = new QLabel(tr("Quit"));
   grid->addWidget(label, i, j);
-  quitBtnCheck = new QCheckBox(w);
-  rcfile.loadData(RcFile::ShowQuitBtn, tb);
-  quitBtnCheck->setChecked(tb);
+
+  Config config;
+  quitBtnCheck = new QCheckBox;
+  config.getData(Config::ShowQuitBtn, s);
+  quitBtnCheck->setChecked(s.toInt());
   connect(quitBtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
   grid->addWidget(quitBtnCheck, i++, j + 1);
 
-  label = new QLabel(tr("Preferences"), w);
+  label = new QLabel(tr("Preferences"));
   grid->addWidget(label, i, j);
-  prefBtnCheck = new QCheckBox(w);
-  rcfile.loadData(RcFile::ShowPrefBtn, tb);
-  prefBtnCheck->setChecked(tb);
+
+  prefBtnCheck = new QCheckBox;
+  config.getData(Config::ShowPrefBtn, s);
+  prefBtnCheck->setChecked(s.toInt());
   connect(prefBtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
   grid->addWidget(prefBtnCheck, i++, j + 1);
 
-  label = new QLabel(tr("Side Panel"), w);
+  label = new QLabel(tr("Side Panel"));
   grid->addWidget(label, i, j);
-  sidePanelBtnCheck = new QCheckBox(w);
-  rcfile.loadData(RcFile::ShowSidePanelBtn, tb);
-  sidePanelBtnCheck->setChecked(tb);
+
+  sidePanelBtnCheck = new QCheckBox;
+  config.getData(Config::ShowSidePanelBtn, s);
+  sidePanelBtnCheck->setChecked(s.toInt());
   connect(sidePanelBtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
   grid->addWidget(sidePanelBtnCheck, i++, j + 1);
 
-  label = new QLabel(tr("Grid"), w);
+  label = new QLabel(tr("Grid"));
   grid->addWidget(label, i, j);
-  gridBtnCheck = new QCheckBox(w);
-  rcfile.loadData(RcFile::ShowGridBtn, tb);
-  gridBtnCheck->setChecked(tb);
+
+  gridBtnCheck = new QCheckBox;
+  config.getData(Config::ShowGridBtn, s);
+  gridBtnCheck->setChecked(s.toInt());
   connect(gridBtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
   grid->addWidget(gridBtnCheck, i++, j + 1);
 
-  label = new QLabel(tr("Scale to Screen"), w);
+  label = new QLabel(tr("Scale to Screen"));
   grid->addWidget(label, i, j);
-  scaleToScreenBtnCheck = new QCheckBox(w);
-  rcfile.loadData(RcFile::ShowScaleToScreenBtn, tb);
-  scaleToScreenBtnCheck->setChecked(tb);
+
+  scaleToScreenBtnCheck = new QCheckBox;
+  config.getData(Config::ShowScaleToScreenBtn, s);
+  scaleToScreenBtnCheck->setChecked(s.toInt());
   connect(scaleToScreenBtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
   grid->addWidget(scaleToScreenBtnCheck, i++, j + 1);
 
-  label = new QLabel(tr("CrossHair"), w);
+  label = new QLabel(tr("CrossHair"));
   grid->addWidget(label, i, j);
-  crosshairBtnCheck = new QCheckBox(w);
-  rcfile.loadData(RcFile::ShowCrosshairBtn, tb);
-  crosshairBtnCheck->setChecked(tb);
+
+  crosshairBtnCheck = new QCheckBox;
+  config.getData(Config::ShowCrosshairBtn, s);
+  crosshairBtnCheck->setChecked(s.toInt());
   connect(crosshairBtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
   grid->addWidget(crosshairBtnCheck, i++, j + 1);
 
@@ -297,197 +360,211 @@ void  Preferences::createMTPage()
   i = 0;
   j = 3;
   
-  label = new QLabel(tr("PaperTrade"), w);
+  label = new QLabel(tr("PaperTrade"));
   grid->addWidget(label, i, j);
-  paperTradeBtnCheck = new QCheckBox(w);
-  rcfile.loadData(RcFile::ShowPaperTradeBtn, tb);  
-  paperTradeBtnCheck->setChecked(tb);
+
+  paperTradeBtnCheck = new QCheckBox;
+  config.getData(Config::ShowPaperTradeBtn, s);  
+  paperTradeBtnCheck->setChecked(s.toInt());
   connect(paperTradeBtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
   grid->addWidget(paperTradeBtnCheck, i++, j + 1);
 
-  label = new QLabel(tr("DrawMode"), w);
+  label = new QLabel(tr("DrawMode"));
   grid->addWidget(label, i, j);
-  drawModeBtnCheck= new QCheckBox(w);
-  rcfile.loadData(RcFile::ShowDrawModeBtn, tb);
-  drawModeBtnCheck->setChecked(tb);
+
+  drawModeBtnCheck= new QCheckBox;
+  config.getData(Config::ShowDrawModeBtn, s);
+  drawModeBtnCheck->setChecked(s.toInt());
   connect(drawModeBtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
   grid->addWidget(drawModeBtnCheck, i++, j + 1);
 
-  label = new QLabel(tr("NewIndicator"), w);
+  label = new QLabel(tr("NewIndicator"));
   grid->addWidget(label, i, j);
-  newIndicatorBtnCheck = new QCheckBox(w);
-  rcfile.loadData(RcFile::ShowNewIndicatorBtn, tb);
-  newIndicatorBtnCheck->setChecked(tb);
+
+  newIndicatorBtnCheck = new QCheckBox;
+  config.getData(Config::ShowNewIndicatorBtn, s);
+  newIndicatorBtnCheck->setChecked(s.toInt());
   connect(newIndicatorBtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
   grid->addWidget(newIndicatorBtnCheck, i++, j + 1);
 
-  label = new QLabel(tr("DataWindow"), w);
+  label = new QLabel(tr("DataWindow"));
   grid->addWidget(label, i, j);
-  dataWindowBtnCheck = new QCheckBox(w);
-  rcfile.loadData(RcFile::ShowDataWindowBtn, tb);
-  dataWindowBtnCheck->setChecked(tb);
+
+  dataWindowBtnCheck = new QCheckBox;
+  config.getData(Config::ShowDataWindowBtn, s);
+  dataWindowBtnCheck->setChecked(s.toInt());
   connect(dataWindowBtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
   grid->addWidget(dataWindowBtnCheck, i++, j + 1);
 
-  label = new QLabel(tr("MainQuote"), w);
+  label = new QLabel(tr("Help"));
   grid->addWidget(label, i, j);
-  mainQuoteBtnCheck = new QCheckBox(w);
-  rcfile.loadData(RcFile::ShowMainQuoteBtn, tb);
-  mainQuoteBtnCheck->setChecked(tb);
-  connect(mainQuoteBtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
-  grid->addWidget(mainQuoteBtnCheck, i++, j + 1);
 
-  label = new QLabel(tr("Help"), w);
-  grid->addWidget(label, i, j);
-  helpButtonCheck = new QCheckBox(w);
-  rcfile.loadData(RcFile::ShowHelpButton, tb);
-  helpButtonCheck->setChecked(tb);
+  helpButtonCheck = new QCheckBox;
+  config.getData(Config::ShowHelpButton, s);
+  helpButtonCheck->setChecked(s.toInt());
   connect(helpButtonCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
   grid->addWidget(helpButtonCheck, i++, j + 1);
 
-  addTab(w, tr("MainToolbar"));
+  tabs->addTab(w, tr("MainToolbar"));
 }
 
 void  Preferences::createCTPage() 
 {
   // chart tool bar page
 
-  QWidget *w = new QWidget(this);
-  QVBoxLayout *vbox = new QVBoxLayout(w);
+  QWidget *w = new QWidget;
+
+  QVBoxLayout *vbox = new QVBoxLayout;
+  w->setLayout(vbox);
   
-  QGridLayout *grid = new QGridLayout(vbox, 1, 2);
+  QGridLayout *grid = new QGridLayout;
   grid->setMargin(5);
   grid->setSpacing(5);
-  grid->setColStretch(1, 1);
+  grid->setColumnStretch(1, 1);
+  vbox->addLayout(grid);
   
   vbox->insertStretch(-1, 1);
 
   int i = 0; // count rows
   int j = 0; // "count" cols
-  bool tb; // temporary
-  RcFile rcfile;
+  QString s;
 
-  QLabel *label = new QLabel(tr("Compression list"), w);
+  QLabel *label = new QLabel(tr("Compression list"));
   grid->addWidget(label, i, j);
-  cmpsComboBoxCheck = new QCheckBox(w);
-  rcfile.loadData(RcFile::ShowCmpsComboBox, tb);
-  cmpsComboBoxCheck->setChecked(tb);
+
+  Config config;
+  cmpsComboBoxCheck = new QCheckBox;
+  config.getData(Config::ShowCmpsComboBox, s);
+  cmpsComboBoxCheck->setChecked(s.toInt());
   connect(cmpsComboBoxCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
   grid->addWidget(cmpsComboBoxCheck, i++, j + 1);  
 
-  label = new QLabel(tr("Compression Monthly"), w);
+  label = new QLabel(tr("Compression Monthly"));
   grid->addWidget(label, i, j);
-  cmpsMtyBtnCheck = new QCheckBox(w);
-  rcfile.loadData(RcFile::ShowCmpsMtyBtn, tb);
-  cmpsMtyBtnCheck->setChecked(tb);
+
+  cmpsMtyBtnCheck = new QCheckBox;
+  config.getData(Config::ShowCmpsMtyBtn, s);
+  cmpsMtyBtnCheck->setChecked(s.toInt());
   connect(cmpsMtyBtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
   grid->addWidget(cmpsMtyBtnCheck, i++, j + 1);
 
-  label = new QLabel(tr("Compression Weekly"), w);
+  label = new QLabel(tr("Compression Weekly"));
   grid->addWidget(label, i, j);
-  cmpsWkyBtnCheck = new QCheckBox(w);
-  rcfile.loadData(RcFile::ShowCmpsWkyBtn, tb);
-  cmpsWkyBtnCheck->setChecked(tb);
+
+  cmpsWkyBtnCheck = new QCheckBox;
+  config.getData(Config::ShowCmpsWkyBtn, s);
+  cmpsWkyBtnCheck->setChecked(s.toInt());
   connect(cmpsWkyBtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
   grid->addWidget(cmpsWkyBtnCheck, i++, j + 1);
 
-  label = new QLabel(tr("Compression Daily"), w);
+  label = new QLabel(tr("Compression Daily"));
   grid->addWidget(label, i, j);
-  cmpsDayBtnCheck = new QCheckBox(w);
-  rcfile.loadData(RcFile::ShowCmpsDayBtn, tb);
-  cmpsDayBtnCheck->setChecked(tb);
+
+  cmpsDayBtnCheck = new QCheckBox;
+  config.getData(Config::ShowCmpsDayBtn, s);
+  cmpsDayBtnCheck->setChecked(s.toInt());
   connect(cmpsDayBtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
   grid->addWidget(cmpsDayBtnCheck, i++, j + 1);
 
-  label = new QLabel(tr("Compression 60 Minute"), w);
+  label = new QLabel(tr("Compression 60 Minute"));
   grid->addWidget(label, i, j);
-  cmps60BtnCheck = new QCheckBox(w);
-  rcfile.loadData(RcFile::ShowCmps60Btn, tb);
-  cmps60BtnCheck->setChecked(tb);
+
+  cmps60BtnCheck = new QCheckBox;
+  config.getData(Config::ShowCmps60Btn, s);
+  cmps60BtnCheck->setChecked(s.toInt());
   connect(cmps60BtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
   grid->addWidget(cmps60BtnCheck, i++, j + 1);
 
-  label = new QLabel(tr("Compression 15 Minute"), w);
+  label = new QLabel(tr("Compression 15 Minute"));
   grid->addWidget(label, i, j);
-  cmps15BtnCheck = new QCheckBox(w);
-  rcfile.loadData(RcFile::ShowCmps15Btn, tb);
-  cmps15BtnCheck->setChecked(tb);
+
+  cmps15BtnCheck = new QCheckBox;
+  config.getData(Config::ShowCmps15Btn, s);
+  cmps15BtnCheck->setChecked(s.toInt());
   connect(cmps15BtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
   grid->addWidget(cmps15BtnCheck, i++, j + 1);
 
-  label = new QLabel(tr("Compression 5 Minute"), w);
+  label = new QLabel(tr("Compression 5 Minute"));
   grid->addWidget(label, i, j);
-  cmps5BtnCheck = new QCheckBox(w);
-  rcfile.loadData(RcFile::ShowCmps5Btn, tb);
-  cmps5BtnCheck->setChecked(tb);
+
+  cmps5BtnCheck = new QCheckBox;
+  config.getData(Config::ShowCmps5Btn, s);
+  cmps5BtnCheck->setChecked(s.toInt());
   connect(cmps5BtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
   grid->addWidget(cmps5BtnCheck, i++, j + 1);
 
-  label = new QLabel(tr("BarSpacing spinner"), w);
+  label = new QLabel(tr("BarSpacing spinner"));
   grid->addWidget(label, i, j);
-  barSpSpinboxCheck = new QCheckBox(w);
-  rcfile.loadData(RcFile::ShowBarSpSpinbox, tb);
-  barSpSpinboxCheck->setChecked(tb);
+
+  barSpSpinboxCheck = new QCheckBox;
+  config.getData(Config::ShowBarSpSpinbox, s);
+  barSpSpinboxCheck->setChecked(s.toInt());
   connect(barSpSpinboxCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
   grid->addWidget(barSpSpinboxCheck, i++, j + 1);
 
-  label = new QLabel(tr("BarsToLoad field"), w);
+  label = new QLabel(tr("BarsToLoad field"));
   grid->addWidget(label, i, j);
-  barsToLoadFieldCheck = new QCheckBox(w);
-  rcfile.loadData(RcFile::ShowBarsToLoadField, tb);
-  barsToLoadFieldCheck->setChecked(tb);
+
+  barsToLoadFieldCheck = new QCheckBox;
+  config.getData(Config::ShowBarsToLoadField, s);
+  barsToLoadFieldCheck->setChecked(s.toInt());
   connect(barsToLoadFieldCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
   grid->addWidget(barsToLoadFieldCheck, i++, j + 1);
 
-  label = new QLabel(tr("Pan Chart slider"), w);
+  label = new QLabel(tr("Pan Chart slider"));
   grid->addWidget(label, i, j);
-  sliderCheck = new QCheckBox(w);
-  rcfile.loadData(RcFile::ShowSlider, tb);
-  sliderCheck->setChecked(tb);
+
+  sliderCheck = new QCheckBox;
+  config.getData(Config::ShowSlider, s);
+  sliderCheck->setChecked(s.toInt());
   connect(sliderCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
   grid->addWidget(sliderCheck, i++, j + 1);
 
-  addTab(w, tr("ChartToolbar"));
+  tabs->addTab(w, tr("ChartToolbar"));
 }
 
 void  Preferences::createETPage() 
 {
   // extra tool bar page
 
-  QWidget *w = new QWidget(this);
-  QVBoxLayout *vbox = new QVBoxLayout(w);
+  QWidget *w = new QWidget;
+
+  QVBoxLayout *vbox = new QVBoxLayout;
+  w->setLayout(vbox);
   
-  QGridLayout *grid = new QGridLayout(vbox, 1, 2);
+  QGridLayout *grid = new QGridLayout;
   grid->setMargin(5);
   grid->setSpacing(5);
-  grid->setColStretch(1, 1);
+  grid->setColumnStretch(1, 1);
+  vbox->addLayout(grid);
   
   vbox->insertStretch(-1, 1);
 
   int i = 0; // count rows
   int j = 0; // "count" cols
-  bool tb; // temporary
-  RcFile rcfile;
+  QString s; // temporary
 
-  QLabel *label = new QLabel(tr("Recent charts"), w);
+  QLabel *label = new QLabel(tr("Recent charts"));
   grid->addWidget(label, i, j);
-  recentComboBoxCheck = new QCheckBox(w);
-  rcfile.loadData(RcFile::ShowRecentCharts, tb);
-  recentComboBoxCheck->setChecked(tb);
+
+  Config config;
+  recentComboBoxCheck = new QCheckBox;
+  config.getData(Config::ShowRecentCharts, s);
+  recentComboBoxCheck->setChecked(s.toInt());
   connect(recentComboBoxCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
   grid->addWidget(recentComboBoxCheck, i++, j + 1);  
 
-  addTab(w, tr("ExtraToolbar"));
+  tabs->addTab(w, tr("ExtraToolbar"));
 }
 
 void Preferences::slotSave ()
 {
-  RcFile rcfile;
+  Config config;
 
   bool tbool = menubarCheck->isChecked();
   if (tbool != menubar)
   {
-    rcfile.saveData(RcFile::ShowMenuBar,tbool);
+    config.setData(Config::ShowMenuBar, tbool);
     emit signalMenubar(tbool);
     menubar = tbool;
   }
@@ -495,7 +572,7 @@ void Preferences::slotSave ()
   tbool = extraToolbarCheck->isChecked();
   if (tbool != extraToolbar)
   {
-    rcfile.saveData(RcFile::ShowExtraToolbar,tbool);
+    config.setData(Config::ShowExtraToolbar,tbool);
     emit signalExtraToolbar(tbool);
     extraToolbar = tbool;
    }
@@ -503,21 +580,21 @@ void Preferences::slotSave ()
   int tint = bs1Spinner->value();
   if (tint != ps1Button)
   {
-    rcfile.saveData(RcFile::PSButton, tint, 1);
+    config.setData(Config::PSButton1, tint);
     ps1Button = tint;
   }
   
   tint = bs2Spinner->value();
   if (tint != ps2Button)
   {
-    rcfile.saveData(RcFile::PSButton, tint, 2);
+    config.setData(Config::PSButton2, tint);
     ps2Button = tint;
   }
   
   tint = bs3Spinner->value();
   if (tint != ps3Button)
   {
-    rcfile.saveData(RcFile::PSButton, tint, 3);
+    config.setData(Config::PSButton3, tint);
     ps3Button = tint;
   }
 
@@ -526,7 +603,7 @@ void Preferences::slotSave ()
   backgroundColorButton->getColor(c);
   if (c != backgroundColor)
   {
-    rcfile.saveColor(RcFile::BackgroundColor,c);
+    config.setData(Config::BackgroundColor,c);
     emit signalBackgroundColor(c);
     flag = TRUE;
     backgroundColor = c;
@@ -535,7 +612,7 @@ void Preferences::slotSave ()
   borderColorButton->getColor(c);
   if (c != borderColor)
   {
-    rcfile.saveColor(RcFile::BorderColor,c);
+    config.setData(Config::BorderColor,c);
     emit signalBorderColor(c);
     flag = TRUE;
     borderColor = c;
@@ -544,7 +621,7 @@ void Preferences::slotSave ()
   gridColorButton->getColor(c);
   if (c != gridColor)
   {
-    rcfile.saveColor(RcFile::GridColor,c);
+    config.setData(Config::GridColor,c);
     emit signalGridColor(c);
     flag = TRUE;
     gridColor = c;
@@ -554,7 +631,7 @@ void Preferences::slotSave ()
   plotFontButton->getFont(f);
   if (f != plotFont)
   {
-    rcfile.saveFont(RcFile::PlotFont,f);
+    config.setData(Config::PlotFont,f);
     emit signalPlotFont(f);
     flag = TRUE;
     plotFont = f;
@@ -563,7 +640,7 @@ void Preferences::slotSave ()
   appFontButton->getFont(f);
   if (f != appFont)
   {
-    rcfile.saveFont(RcFile::AppFont,f);
+    config.setData(Config::AppFont,f);
     emit signalAppFont(f);
     flag = TRUE;
     appFont = f;
@@ -571,52 +648,50 @@ void Preferences::slotSave ()
   
   // main tool bar settings
   // save all, anyway if changed or not, who cares?
-  rcfile.saveData(RcFile::ShowQuitBtn, quitBtnCheck->isChecked());
+  config.setData(Config::ShowQuitBtn, quitBtnCheck->isChecked());
   
   // prevent the user does things he will regret...
   if(menubarCheck->isChecked())
-      rcfile.saveData(RcFile::ShowPrefBtn, prefBtnCheck->isChecked());
+      config.setData(Config::ShowPrefBtn, prefBtnCheck->isChecked());
   else 
-      rcfile.saveData(RcFile::ShowPrefBtn, TRUE);
+      config.setData(Config::ShowPrefBtn, TRUE);
       
-  rcfile.saveData(RcFile::ShowSidePanelBtn, sidePanelBtnCheck->isChecked());
-  rcfile.saveData(RcFile::ShowGridBtn, gridBtnCheck->isChecked());
-  rcfile.saveData(RcFile::ShowScaleToScreenBtn, scaleToScreenBtnCheck->isChecked());
-  rcfile.saveData(RcFile::ShowCrosshairBtn, crosshairBtnCheck->isChecked());
-  rcfile.saveData(RcFile::ShowPaperTradeBtn, paperTradeBtnCheck->isChecked());
-  rcfile.saveData(RcFile::ShowDrawModeBtn, drawModeBtnCheck->isChecked());
-  rcfile.saveData(RcFile::ShowNewIndicatorBtn, newIndicatorBtnCheck->isChecked());
-  rcfile.saveData(RcFile::ShowDataWindowBtn, dataWindowBtnCheck->isChecked());
-  rcfile.saveData(RcFile::ShowMainQuoteBtn, mainQuoteBtnCheck->isChecked());
-  rcfile.saveData(RcFile::ShowHelpButton, helpButtonCheck->isChecked());
+  config.setData(Config::ShowSidePanelBtn, sidePanelBtnCheck->isChecked());
+  config.setData(Config::ShowGridBtn, gridBtnCheck->isChecked());
+  config.setData(Config::ShowScaleToScreenBtn, scaleToScreenBtnCheck->isChecked());
+  config.setData(Config::ShowCrosshairBtn, crosshairBtnCheck->isChecked());
+  config.setData(Config::ShowPaperTradeBtn, paperTradeBtnCheck->isChecked());
+  config.setData(Config::ShowDrawModeBtn, drawModeBtnCheck->isChecked());
+  config.setData(Config::ShowNewIndicatorBtn, newIndicatorBtnCheck->isChecked());
+  config.setData(Config::ShowDataWindowBtn, dataWindowBtnCheck->isChecked());
+  config.setData(Config::ShowHelpButton, helpButtonCheck->isChecked());
   // chart tool bar settings
-  rcfile.saveData(RcFile::ShowSlider, sliderCheck->isChecked());
-  rcfile.saveData(RcFile::ShowBarsToLoadField, barsToLoadFieldCheck->isChecked());
-  rcfile.saveData(RcFile::ShowBarSpSpinbox, barSpSpinboxCheck->isChecked());
-  rcfile.saveData(RcFile::ShowCmps60Btn, cmps60BtnCheck->isChecked());
-  rcfile.saveData(RcFile::ShowCmps15Btn, cmps15BtnCheck->isChecked());
-  rcfile.saveData(RcFile::ShowCmps5Btn, cmps5BtnCheck->isChecked());
-  rcfile.saveData(RcFile::ShowCmpsDayBtn, cmpsDayBtnCheck->isChecked());
-  rcfile.saveData(RcFile::ShowCmpsWkyBtn, cmpsWkyBtnCheck->isChecked());
-  rcfile.saveData(RcFile::ShowCmpsMtyBtn, cmpsMtyBtnCheck->isChecked());
-  rcfile.saveData(RcFile::ShowCmpsComboBox, cmpsComboBoxCheck->isChecked());
+  config.setData(Config::ShowSlider, sliderCheck->isChecked());
+  config.setData(Config::ShowBarsToLoadField, barsToLoadFieldCheck->isChecked());
+  config.setData(Config::ShowBarSpSpinbox, barSpSpinboxCheck->isChecked());
+  config.setData(Config::ShowCmps60Btn, cmps60BtnCheck->isChecked());
+  config.setData(Config::ShowCmps15Btn, cmps15BtnCheck->isChecked());
+  config.setData(Config::ShowCmps5Btn, cmps5BtnCheck->isChecked());
+  config.setData(Config::ShowCmpsDayBtn, cmpsDayBtnCheck->isChecked());
+  config.setData(Config::ShowCmpsWkyBtn, cmpsWkyBtnCheck->isChecked());
+  config.setData(Config::ShowCmpsMtyBtn, cmpsMtyBtnCheck->isChecked());
+  config.setData(Config::ShowCmpsComboBox, cmpsComboBoxCheck->isChecked());
 
-  rcfile.saveData(RcFile::ShowRecentCharts, recentComboBoxCheck->isChecked());
+  config.setData(Config::ShowRecentCharts, recentComboBoxCheck->isChecked());
+
+  // save database parms
+  QStringList l;
+  dbFile->getFile(l);
+  if (l.count())
+    config.setData(Config::QuotePath, l[0]);
   
   emit signalReloadToolBars();
   
   if (flag)
     emit signalLoadChart();
-    
-  setCancelButton(tr("&OK"));
-}
 
-void Preferences::slotHelp ()
-{
-  HelpWindow *hw = new HelpWindow(this, helpFile);
-  hw->show();
+  reject();    
 }
-
 
 void Preferences::slotModified()
 {
@@ -624,5 +699,7 @@ void Preferences::slotModified()
   // Cancel-button "Cancel/OK" 	depending on a change
   // of any data by the user
   //qDebug("changed");
-  setCancelButton(tr("&Cancel"));
+//  setCancelButton(tr("&Cancel"));
 }
+
+

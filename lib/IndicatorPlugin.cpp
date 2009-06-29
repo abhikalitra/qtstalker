@@ -20,30 +20,34 @@
  */
 
 #include "IndicatorPlugin.h"
-#include "TALIB.h"
-#include <qfile.h>
-#include <qtextstream.h>
+#include "DataBase.h"
+#include "BARS.h"
+#include "UTIL.h"
+#include <QtDebug>
+
+
+IndicatorPlugin::IndicatorPlugin(QString &n, BarData *d)
+{
+  name = n;
+  data = d;
+
+  setDefaults();
+}
 
 IndicatorPlugin::IndicatorPlugin()
 {
-  saveFlag = FALSE;
-  dateFlag = FALSE;
-  logScale = FALSE;
-  
+  setDefaults();
+}
+
+IndicatorPlugin::~IndicatorPlugin()
+{
+  TA_Shutdown();  
+}
+
+void IndicatorPlugin::setDefaults ()
+{
   PlotLine pl;
   pl.getLineTypes(lineTypes);
-
-  BarData it(pluginName);
-  it.getInputFields(inputTypeList);
-
-  opList.append("EQ");
-  opList.append("LT");
-  opList.append("LTEQ");
-  opList.append("GT");
-  opList.append("GTEQ");
-  opList.append("AND");
-  opList.append("OR");
-  opList.append("XOR");
 
   maList.append("SMA"); //    TA_MAType_SMA       =0,
   maList.append("EMA"); //    TA_MAType_EMA       =1,
@@ -54,11 +58,11 @@ IndicatorPlugin::IndicatorPlugin()
   maList.append("KAMA"); //    TA_MAType_KAMA      =6,
   maList.append("MAMA"); //    TA_MAType_MAMA      =7,
   maList.append("T3"); //    TA_MAType_T3        =8
-  maList.append("Wilder");
-}
+//  maList.append("Wilder");
 
-IndicatorPlugin::~IndicatorPlugin()
-{
+  TA_RetCode rc = TA_Initialize();
+  if (rc != TA_SUCCESS)
+    qDebug("TALIB::setDefaults:error on TA_Initialize");
 }
 
 void IndicatorPlugin::setIndicatorInput (BarData *d)
@@ -66,213 +70,9 @@ void IndicatorPlugin::setIndicatorInput (BarData *d)
   data = d;
 }
 
-void IndicatorPlugin::loadFile (QString &file, Setting &dict)
-{
-  QFile f(file);
-  if (! f.open(IO_ReadOnly))
-  {
-    qDebug("IndicatorPlugin:can't read file %s", file.latin1());
-    return;
-  }
-  QTextStream stream(&f);
-  
-  while(stream.atEnd() == 0)
-  {
-    QString s = stream.readLine();
-    s = s.stripWhiteSpace();
-    if (! s.length())
-      continue;
-      
-    QStringList l = QStringList::split("=", s, FALSE);
-    
-    if (l.count() < 2)
-      continue;
-      
-    if (l.count() > 2)
-    {
-      QString k = l[0];
-      s = s.remove(0, k.length() + 1);
-      dict.setData(k, s);  
-    }
-    else
-      dict.setData(l[0], l[1]);  
-  }
-  
-  f.close();
-}
-
-void IndicatorPlugin::saveFile (QString &file, Setting &dict)
-{
-  QFile f(file);
-  if (! f.open(IO_WriteOnly))
-  {
-    qDebug("IndicatorPlugin:can't save file %s", file.latin1());
-    return;
-  }
-  QTextStream stream(&f);
-  
-  QStringList key;
-  dict.getKeyList(key);
-  
-  int loop;
-  QString s;
-  for(loop = 0; loop < (int) key.count(); loop++)
-  {
-    dict.getData(key[loop], s);
-    stream << key[loop] << "=" << s << "\n";
-  }
-  
-  f.close();
-}
-
 void IndicatorPlugin::getMATypes (QStringList &l)
 {
   l = maList;
-}
-
-PlotLine * IndicatorPlugin::getMA (PlotLine *in, int type, int period)
-{
-  PlotLine *ma = 0;
-  TALIB plug;
-  if (type == 9)
-    ma = getWilderMA(in, period);
-  else
-    ma = plug.getMA(in, type, period);
-  return ma;  
-}
-
-PlotLine * IndicatorPlugin::getWilderMA (PlotLine *d, int period)
-{
-  PlotLine *wilderma = new PlotLine;
-
-  if (period >= (int) d->getSize())
-    return wilderma;
-
-  if (period < 1)
-    return wilderma;
-
-  double t = 0;
-  int loop;
-  for (loop = 0; loop < period; loop++)
-    t = t + d->getData(loop);
-
-  double yesterday = t / period;
-
-  wilderma->append(yesterday);
-
-  for (; loop < (int) d->getSize(); loop++)
-  {
-    double t  = (yesterday * (period - 1) + d->getData(loop))/period;
-    yesterday = t;
-    wilderma->append(t);
-  }
-
-  return wilderma;
-}
-
-void IndicatorPlugin::getPluginName (QString &d)
-{
-  d = pluginName;
-}
-
-void IndicatorPlugin::getHelpFile (QString &d)
-{
-  d = helpFile;
-}
-
-IndicatorPlugin::Operator IndicatorPlugin::getOperator (QString &d)
-{
-  int i = opList.findIndex(d);
-  return (Operator) i;
-}
-
-bool IndicatorPlugin::checkFormat (QString &p, QPtrList<PlotLine> &d, int hrange, int lrange)
-{
-  formatStringList = QStringList::split(",", p, FALSE);
-
-  if ((int) formatStringList.count() < lrange || (int) formatStringList.count() > hrange)
-  {
-    qDebug("%s::checkFormat: invalid parm count", pluginName.latin1());
-    return TRUE;
-  }
-
-  int loop;
-  for (loop = 0; loop < (int) formatList.count(); loop++)
-  {
-    if (formatList[loop] == FormatInputArray)
-    {
-      if (! d.count())
-      {
-        qDebug("%s::checkFormat: parm #%i invalid, no INPUT_ARRAY found", pluginName.latin1(), loop+1);
-        return TRUE;
-      }
-      continue;
-    }
-
-    if (formatList[loop] == FormatInputArray2)
-    {
-      if (d.count() != 2)
-      {
-        qDebug("%s::checkFormat: parm #%i invalid, no INPUT_ARRAY2 found", pluginName.latin1(), loop+1);
-        return TRUE;
-      }
-      continue;
-    }
-
-    if (formatList[loop] == FormatInteger)
-    {
-      bool ok;
-      formatStringList[loop].toInt(&ok);
-      if (! ok)
-      {
-        qDebug("%s::checkFormat: parm #%i invalid, not an INTEGER", pluginName.latin1(), loop + 1);
-        return TRUE;
-      }
-      continue;
-    }
-
-    if (formatList[loop] == FormatDouble)
-    {
-      bool ok;
-      formatStringList[loop].toDouble(&ok);
-      if (! ok)
-      {
-        qDebug("%s::checkFormat: parm #%i invalid, not a DOUBLE", pluginName.latin1(), loop + 1);
-        return TRUE;
-      }
-      continue;
-    }
-
-    if (formatList[loop] == FormatMAType)
-    {
-      QStringList mal;
-      getMATypes(mal);
-      if (mal.findIndex(formatStringList[loop]) == -1)
-      {
-        qDebug("%s::checkFormat: parm #%i invalid, not an MA_TYPE", pluginName.latin1(), loop + 1);
-        return TRUE;
-      }
-      continue;
-    }
-
-    if (formatList[loop] == FormatBool)
-    {
-      if (! formatStringList[loop].compare("TRUE"))
-        continue;
-      else
-      {
-        if (! formatStringList[loop].compare("FALSE"))
-          continue;
-        else
-        {
-          qDebug("%s::checkFormat: parm #%i invalid, not a BOOL", pluginName.latin1(), loop + 1);
-          return TRUE;
-        }
-      }
-    }
-  }
-
-  return FALSE;
 }
 
 void IndicatorPlugin::wakeup ()
@@ -280,62 +80,449 @@ void IndicatorPlugin::wakeup ()
   emit signalWakeup();
 }
 
-void IndicatorPlugin::setFormatMethod (QString &d)
+void IndicatorPlugin::calculate (QList<PlotLine *> &lines)
 {
-  formatMethod = d;
+  qDeleteAll(lines);
+  lines.clear();
+
+  TA_Integer start = 0;
+  TA_Integer end = data->count() - 1;
+  TA_Integer outstart;
+  TA_Integer count;
+  // sometimes are not enough data available
+  // to calc anything
+  if (end < 0) 
+    return;
+
+  QStringList varList;
+  QHash<QString, PlotLine *> tlines;
+
+  // create and input arrays
+  int size = data->count();
+  TA_Real open[size];
+  TA_Real high[size];
+  TA_Real low[size];
+  TA_Real close[size];
+  TA_Real volume[size];
+  TA_Real oi[size];
+  TA_Real in[size];
+  TA_Real in2[size];
+  TA_Real out[size];
+  TA_Real out2[size];
+  TA_Real out3[size];
+  TA_Integer out4[size];
+  int loop;
+  for (loop = 0; loop < size; loop++)
+  {
+    open[loop] = (TA_Real) data->getOpen(loop);
+    high[loop] = (TA_Real) data->getHigh(loop);
+    low[loop] = (TA_Real) data->getLow(loop);
+    close[loop] = (TA_Real) data->getClose(loop);
+    volume[loop] = (TA_Real) data->getVolume(loop);
+    oi[loop] = (TA_Real) data->getOI(loop);
+  }
+
+  DataBase db;
+  QList<IndicatorParms> parmList;
+  db.getIndicator(name, parmList);
+
+  int mainLoop;
+  for (mainLoop = 0; mainLoop < (int) parmList.count(); mainLoop++)
+  {
+    IndicatorParms parms;
+    parms = parmList.at(mainLoop);
+
+    // open a TALIB handle
+    QString s;
+    parms.getIndicator(s);
+    if (! s.length())
+      continue;
+
+    // intercept any local functions not found in TALIB here
+    if (! s.compare("BARS"))
+    {
+      getBARS(parms, tlines);
+      continue;
+    }
+
+    if (! s.compare("UTIL"))
+    {
+      getUTIL(parms, tlines);
+      continue;
+    }
+
+    const TA_FuncHandle *handle;
+    TA_RetCode retCode = TA_GetFuncHandle((char *) s.toStdString().c_str(), &handle);
+    if (retCode != TA_SUCCESS)
+    {
+      qDebug("IndicatorPlugin::calculateCustom:can't open handle");
+      continue;
+    }
+
+    // get info on the function
+    const TA_FuncInfo *theInfo;
+    retCode = TA_GetFuncInfo(handle, &theInfo);
+    if (retCode != TA_SUCCESS)
+    {
+      qDebug("IndicatorPlugin::calculateCustom:can't get function info");
+      continue;
+    }
+
+    // create parm holder
+    TA_ParamHolder *parmHolder;
+    retCode = TA_ParamHolderAlloc(handle, &parmHolder);
+    if (retCode != TA_SUCCESS)
+    {
+      qDebug("IndicatorPlugin::calculateCustom:can't create parm holder");
+      continue;
+    }
+
+    // setup the input arrays
+    s = "Input1";
+    QString ts;
+    parms.getData(s, ts);
+    if (! ts.length())
+    {
+      retCode = TA_SetInputParamPricePtr(parmHolder, 0, &open[0], &high[0], &low[0], &close[0], &volume[0], &oi[0]);
+      if (retCode != TA_SUCCESS)
+      {
+        qDebug("IndicatorPlugin::calculateCustom:cannot set input prices");
+        continue;
+      }
+    }
+    else
+    {
+      addInputLine(ts, tlines);
+      PlotLine *line = tlines.value(ts);
+      if (! line)
+      {
+        qDebug() << "IndicatorPlugin::calculateCustom: " << s << " input1 not found";
+        continue;
+      }
+      int loop2;
+      for (loop2 = 0; loop2 < line->getSize(); loop2++)
+        in[loop2] = (TA_Real) line->getData(loop2);
+      retCode = TA_SetInputParamRealPtr(parmHolder, 0, &in[0]);
+      if (retCode != TA_SUCCESS)
+      {
+        qDebug() << "IndicatorPlugin::calculateCustom: cannot set input1";
+        continue;
+      }
+
+      s = "Input2";
+      parms.getData(s, ts);
+      if (ts.length())
+      {
+        addInputLine(ts, tlines);
+        PlotLine *line = tlines.value(ts);
+        if (! line)
+        {
+          qDebug() << "IndicatorPlugin::calculateCustom: " << s << " input 2 not found";
+          continue;
+        }
+        for (loop2 = 0; loop2 < line->getSize(); loop2++)
+          in2[loop2] = (TA_Real) line->getData(loop2);
+        retCode = TA_SetInputParamRealPtr(parmHolder, 1, &in2[0]);
+        if (retCode != TA_SUCCESS)
+        {
+          qDebug("IndicatorPlugin::calculateCustom: cannot set in2 price");
+          continue;
+        }
+      }
+    }
+
+    // setup the optinput parms
+    int tint = 0;
+    const TA_OptInputParameterInfo *optInfo;
+    for (loop = 0; loop < (int) theInfo->nbOptInput; loop++ )
+    {
+      TA_GetOptInputParameterInfo(theInfo->handle, loop, &optInfo);
+      s = optInfo->displayName;
+      switch (optInfo->type)
+      {
+        case TA_OptInput_RealRange:
+          parms.getData(s, ts);
+          retCode = TA_SetOptInputParamReal(parmHolder, loop, (TA_Real) ts.toDouble());
+          if (retCode != TA_SUCCESS) 
+            qDebug() << "IndicatorPlugin::calculateCustom: cannot set " << s;
+          break;
+        case TA_OptInput_IntegerRange:
+          parms.getData(s, ts);
+          retCode = TA_SetOptInputParamInteger(parmHolder, loop, (TA_Integer) ts.toInt());
+          if (retCode != TA_SUCCESS)
+            qDebug() << "IndicatorPlugin::calculateCustom: cannot set " << s;
+          break;
+        case TA_OptInput_IntegerList:
+          parms.getData(s, ts);
+          tint = maList.indexOf(ts);
+          retCode = TA_SetOptInputParamInteger(parmHolder, loop, (TA_Integer) tint);
+          if (retCode != TA_SUCCESS)
+            qDebug() << "IndicatorPlugin::calculateCustom: cannot set " << s;
+          break;
+        default:
+          break;
+      }
+    }
+
+    // setup the output arrays
+    const TA_OutputParameterInfo *outInfo;
+    for (loop = 0; loop < (int) theInfo->nbOutput; loop++)
+    {
+      retCode = TA_GetOutputParameterInfo(handle, loop, &outInfo);
+      if (retCode != TA_SUCCESS)
+      {
+        qDebug("IndicatorPlugin::calculateCustom: cannot get output info");
+        break;
+      }
+
+      switch (loop)
+      {
+        case 0:
+          if (outInfo->type == TA_Output_Integer)
+          {
+            retCode = TA_SetOutputParamIntegerPtr(parmHolder, loop, &out4[0]);
+            if (retCode != TA_SUCCESS)
+            {
+              qDebug("IndicatorPlugin::calculateCustom: cannot set output4");
+              break;;
+            }
+          }
+          else
+          {
+            retCode = TA_SetOutputParamRealPtr(parmHolder, loop, &out[0]);
+            if (retCode != TA_SUCCESS)
+            {
+              qDebug("IndicatorPlugin::calculateCustom: cannot set output1");
+              break;
+            }
+          }
+          break;      
+        case 1:
+          retCode = TA_SetOutputParamRealPtr(parmHolder, loop, &out2[0]);
+          if (retCode != TA_SUCCESS)
+          {
+            qDebug("IndicatorPlugin::calculateCustom: cannot set output2");
+            break;
+          }
+          break;      
+        case 2:
+          retCode = TA_SetOutputParamRealPtr(parmHolder, loop, &out3[0]);
+          if (retCode != TA_SUCCESS)
+          {
+            qDebug("IndicatorPlugin::calculateCustom: cannot set output3");
+            break;
+          }
+          break;
+        default:
+          break;
+      }
+    }
+
+    // call the function
+    retCode = TA_CallFunc(parmHolder, start, end, &outstart, &count);
+    if (retCode != TA_SUCCESS)
+    {
+      printError(QString("IndicatorPlugin::calculateCustom: TA_CallFunc"), retCode);
+      qDebug() << " start=" << start << " end=" << end;
+      break;
+    }
+
+    // create the plotlines
+    int loop2;
+    retCode = TA_GetOutputParameterInfo(handle, 0, &outInfo);
+    if (retCode != TA_SUCCESS)
+    {
+      qDebug("IndicatorPlugin::calculateCustom: cannot get output info");
+      break;
+    }
+    
+    if (outInfo->type == TA_Output_Integer)
+    {
+      PlotLine *line = new PlotLine;
+      for (loop2 = 0; loop2 < count; loop2++)
+        line->append((double) out4[loop2]);
+      parms.getVariable(ts);
+      tlines.insert(ts, line);
+      continue;
+    }
+
+    s = "Output";
+    parms.getData(s, ts);
+    PlotLine *line = new PlotLine;
+    switch (ts.toInt())
+    {
+      case 1:
+        for (loop2 = 0; loop2 < count; loop2++)
+          line->append((double) out2[loop2]);
+        break;
+      case 2:
+        for (loop2 = 0; loop2 < count; loop2++)
+          line->append((double) out3[loop2]);
+        break;
+      default:
+        for (loop2 = 0; loop2 < count; loop2++)
+          line->append((double) out[loop2]);
+        break;
+    }
+
+    parms.getVariable(ts);
+    tlines.insert(ts, line);
+
+    retCode = TA_ParamHolderFree(parmHolder);
+    if (retCode != TA_SUCCESS)
+      qDebug("TALIB::calculateCustom:can't delete parm holder");
+  }
+
+  createPlot(parmList, tlines, lines);
+
+  qDeleteAll(tlines);
 }
 
-//***************************************************************
-//****************** VIRTUAL OVERIDES ***************************
-//***************************************************************
-
-Indicator * IndicatorPlugin::calculate ()
+void IndicatorPlugin::createPlot (QList<IndicatorParms> &parmList, QHash<QString, PlotLine *> &tlines, QList<PlotLine *> &lines)
 {
-  return 0;
+  int loop;
+  for (loop = 0; loop < parmList.count(); loop++)
+  {
+    IndicatorParms parms = parmList.at(loop);
+    if (! parms.getPlot())
+      continue;
+
+    //var name
+    QString s;
+    parms.getVariable(s);
+    PlotLine *pl = tlines.value(s);
+    if (! pl)
+    {
+      qDebug() << "IndicatorPlugin::createPlot: variable missing";
+      continue;
+    }
+
+    //color
+    QColor col;
+    parms.getColor(col);
+    pl->setColor(col);
+
+    //label
+    parms.getLabel(s);
+    pl->setLabel(s);
+
+    //linetype
+    parms.getLineType(s);
+    pl->setType(s);
+
+    PlotLine *tline = new PlotLine;
+    tline->copy(pl);
+    lines.append(tline);
+  }
 }
 
-int IndicatorPlugin::indicatorPrefDialog (QWidget *)
+void IndicatorPlugin::setName (QString &d)
 {
-  return 0;
+  name = d;
 }
 
-PlotLine * IndicatorPlugin::calculateCustom (QString &, QPtrList<PlotLine> &)
+void IndicatorPlugin::getName (QString &d)
 {
-  return 0;
+  d = name;
 }
 
-void IndicatorPlugin::getIndicatorSettings (Setting &)
+void IndicatorPlugin::getIndicatorList (QStringList &l)
 {
+  l.clear();
+
+  TA_StringTable *table;
+  int loop;
+  QStringList cl;
+
+  TA_RetCode retCode = TA_GroupTableAlloc(&table);
+  if (retCode == TA_SUCCESS)
+  {
+    for (loop = 0; loop < (int) table->size; loop++)
+      cl.append(table->string[loop]);
+
+    TA_GroupTableFree(table);
+  }
+  else
+    printError(QString("IndicatorPlugin::getIndicatorList: "), retCode);
+
+  for (loop = 0; loop < (int) cl.count(); loop++)
+  {
+    retCode = TA_FuncTableAlloc((char *) cl[loop].toStdString().c_str(), &table);
+    if (retCode == TA_SUCCESS)
+    {
+      int loop2;
+      for (loop2 = 0; loop2 < (int) table->size; loop2++ )
+        l.append(table->string[loop2]);
+
+      TA_FuncTableFree(table);
+    }
+    else
+      printError(QString("IndicatorPlugin::getIndicatorList: "), retCode);
+  }
+
+  l.append("BARS");
+  l.append("UTIL");
+
+  l.sort();
 }
 
-void IndicatorPlugin::setIndicatorSettings (Setting &)
+/*
+PlotLine * IndicatorPlugin::getMA (PlotLine *in, int type, int period)
 {
+  Wilder's MA:
+
+  if (period >= (int) in->getSize())
+    return ma;
+
+  if (period < 1)
+    return ma;
+
+  double t = 0;
+  int loop;
+  for (loop = 0; loop < period; loop++)
+    t = t + in->getData(loop);
+
+  double yesterday = t / period;
+
+  ma->append(yesterday);
+
+  for (; loop < (int) in->getSize(); loop++)
+  {
+    double t  = (yesterday * (period - 1) + in->getData(loop))/period;
+    yesterday = t;
+    ma->append(t);
+  }
+}
+*/
+
+void IndicatorPlugin::printError (QString es, TA_RetCode rc)
+{
+  TA_RetCodeInfo info;
+  TA_SetRetCodeInfo(rc, &info);
+  qDebug() << es << ":" << rc << "(" << info.enumStr << "): " << info.infoStr;
 }
 
-void IndicatorPlugin::setCustomFunction (QStringList &)
+void IndicatorPlugin::addInputLine (QString &key, QHash<QString, PlotLine *> &tlines)
 {
+  PlotLine *tline = tlines.value(key);
+  if (tline)
+    return;
+
+  tline = data->getInput(data->getInputType(key));
+  if (tline)
+    tlines.insert(key, tline);
 }
 
-void IndicatorPlugin::saveIndicatorSettings (QString &d)
+void IndicatorPlugin::getBARS (IndicatorParms &parms, QHash<QString, PlotLine *> &tlines)
 {
-  Setting set;
-  getIndicatorSettings(set);
-  saveFile(d, set);
+  BARS i;
+  i.calculate(data, parms, tlines);
 }
 
-void IndicatorPlugin::loadIndicatorSettings (QString &d)
+void IndicatorPlugin::getUTIL (IndicatorParms &parms, QHash<QString, PlotLine *> &tlines)
 {
-  Setting set;
-  loadFile(d, set);
-  QString k = "dateFlag";
-  dateFlag = set.getInt(k);
-  k = "logScale";
-  logScale = set.getInt(k);
-  setIndicatorSettings(set);
-}
-
-void IndicatorPlugin::formatDialog (QStringList &, QString &, QString &)
-{
+  UTIL i;
+  i.calculate(data, parms, tlines);
 }
 
 

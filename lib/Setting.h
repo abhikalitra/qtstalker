@@ -22,9 +22,9 @@
 #ifndef SETTING_HPP
 #define SETTING_HPP
 
-#include <qstring.h>
-#include <qstringlist.h>
-#include <qdict.h>
+#include <QString>
+#include <QStringList>
+#include <QHash>
 
 class Setting
 {
@@ -44,7 +44,7 @@ class Setting
     void copy (Setting *);
     
   protected:
-    QDict<QString> dict;
+    QHash<QString, QString> dict;
 };
 
 #endif

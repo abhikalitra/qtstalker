@@ -28,18 +28,18 @@
 
 
 #include "XmlWriter.h"
-#include <qtextcodec.h>
+#include <QTextCodec>
 
 XmlWriter::XmlWriter( QIODevice *device, QTextCodec *codec )
     : indentSize( 4 ), autoNewLine( false ), atBeginningOfLine( true )
 {
     out.setDevice( device );
     if ( codec == 0 ) {
-	out.setEncoding( QTextStream::UnicodeUTF8 );
+	out.setCodec("UTF-8");
     } else {
 	out.setCodec( codec );
 	out << "<?xml version=\"1.0\" encoding=\""
-	    << protect( codec->mimeName() ) << "\"?>\n";
+	    << protect( codec->name() ) << "\"?>\n";
     }
 }
 

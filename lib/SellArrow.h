@@ -23,10 +23,10 @@
 #define SELLARROW_HPP
 
 #include "COBase.h"
-#include "Setting.h"
-#include <qpointarray.h>
-#include <qpoint.h>
-#include <qdatetime.h>
+#include <QPolygon>
+#include <QPoint>
+
+
 
 class SellArrow : public COBase
 {
@@ -39,8 +39,8 @@ class SellArrow : public COBase
     void newObject (QString &, QString &);
     void loadDefaults ();
     void saveDefaults ();
-    void getSettings (Setting &);
-    void setSettings (Setting &);
+    void loadSettings (COSettings &);
+    void saveSettings ();
     void adjustForSplit (QDateTime &, double);
     
   public slots:
@@ -49,7 +49,7 @@ class SellArrow : public COBase
     void pointerMoving (QPixmap &, QPoint &, QDateTime &, double y);
     
   protected:
-    QPointArray arrow;
+    QPolygon arrow;
 };
 
 #endif

@@ -21,16 +21,17 @@
 
 #include "SellArrow.h"
 #include "PrefDialog.h"
-#include <qpainter.h>
-#include <qsettings.h>
+#include "DataBase.h"
+#include "Config.h"
+#include <QPainter>
+
+
 
 SellArrow::SellArrow ()
 {
-  defaultColor.setNamedColor("red");
+  color.setNamedColor("red");
   helpFile = "sellarrow.html";
-  identifierLabel = "Identifier";
-  priceLabel = "Price";
-  type = "SellArrow";
+  type = (int) COSellArrow;
   
   loadDefaults();
 }
@@ -52,7 +53,7 @@ void SellArrow::draw (QPixmap &buffer, Scaler &scaler, int startIndex, int pixel
   if (x == -1)
     return;
     
-  int y = scaler.convertToY(getValue());
+  int y = scaler.convertToY(value);
 
   arrow.putPoints(0, 7, x, y,
                   x + 5, y - 5,
@@ -61,8 +62,8 @@ void SellArrow::draw (QPixmap &buffer, Scaler &scaler, int startIndex, int pixel
 	          x - 2, y - 11,
 	          x - 2, y - 5,
                   x - 5, y - 5);
-  painter.setBrush(getColor());
-  painter.drawPolygon(arrow, TRUE, 0, -1);
+  painter.setBrush(color);
+  painter.drawPolygon(arrow, Qt::OddEvenFill);
 
   clearSelectionArea();
   setSelectionArea(new QRegion(arrow));
@@ -77,7 +78,7 @@ void SellArrow::draw (QPixmap &buffer, Scaler &scaler, int startIndex, int pixel
 		  HANDLE_WIDTH,
 		  QRegion::Rectangle));
 				   
-    painter.fillRect(x - (HANDLE_WIDTH / 2), y + 1, HANDLE_WIDTH, HANDLE_WIDTH, getColor());
+    painter.fillRect(x - (HANDLE_WIDTH / 2), y + 1, HANDLE_WIDTH, HANDLE_WIDTH, color);
   }
 
   painter.end();
@@ -85,22 +86,19 @@ void SellArrow::draw (QPixmap &buffer, Scaler &scaler, int startIndex, int pixel
 
 void SellArrow::prefDialog ()
 {
-  QString pl = tr("Details");
   QString cl = tr("Color");
   QString vl = tr("Value");
   QString il = tr("Identifier");
   QString bl = tr("Price");
   QString sd = tr("Set Default");
 
-  PrefDialog *dialog = new PrefDialog();
-  dialog->setCaption(tr("Edit SellArrow"));
-  dialog->createPage (pl);
-  dialog->setHelpFile (helpFile);
-  dialog->addColorPrefItem(cl, pl, color);
-  dialog->addDoubleItem(vl, pl, getValue());
-  dialog->addTextItem(il, pl, identifier);
-  dialog->addTextItem(bl, pl, price);
-  dialog->addCheckItem(sd, pl, FALSE);
+  PrefDialog *dialog = new PrefDialog;
+  dialog->setWindowTitle(tr("Edit SellArrow"));
+  dialog->addColorPrefItem(cl, color);
+  dialog->addDoubleItem(vl, value);
+//  dialog->addTextItem(il, identifier);
+//  dialog->addTextItem(bl, price);
+  dialog->addCheckItem(sd, FALSE);
   
   int rc = dialog->exec();
   
@@ -108,17 +106,14 @@ void SellArrow::prefDialog ()
   {
     dialog->getColor(cl, color);
     value = dialog->getDouble(vl);
-    dialog->getText(il, identifier);
-    dialog->getText(bl, price);
+//    dialog->getText(il, identifier);
+//    dialog->getText(bl, price);
     
     setSaveFlag(TRUE);
     
     bool f = dialog->getCheck(sd);
     if (f)
-    {
-      defaultColor = color;
       saveDefaults();
-    }
     
     emit signalDraw();
   }
@@ -129,8 +124,7 @@ void SellArrow::prefDialog ()
 void SellArrow::newObject (QString &ind, QString &n)
 {
   indicator = ind;
-  plot = ind;
-  name = n;
+  id = n;
   status = ClickWait;
   emit message(tr("Select point to place SellArrow..."));
 }
@@ -162,14 +156,12 @@ COBase::Status SellArrow::pointerClick (QPoint &point, QDateTime &x, double y)
       status = Selected;
       break;
     case ClickWait:
-      setDate(x);
-      setValue(y);
+      date = x;
+      value = y;
       setSaveFlag(TRUE);
-      setColor(defaultColor);
       emit signalDraw();
       status = None;
       emit message("");
-      emit signalSave(name);
       break;
     default:
       break;
@@ -183,61 +175,45 @@ void SellArrow::pointerMoving (QPixmap &, QPoint &, QDateTime &x, double y)
   if (status != Moving)
     return;
     
-  setDate(x);
-  setValue(y);
+  date = x;
+  value = y;
   setSaveFlag(TRUE);
   emit signalDraw();
-  QString s = x.toString("yyyy-MM-dd hh:mm:ss") + " " + QString::number(y);
+  QString s = x.toString(dateFormat) + " " + QString::number(y);
   emit message(s);
 }
 
 void SellArrow::loadDefaults ()
 {
-  QSettings settings;
-  
-  QString s = "/Qtstalker/DefaultSellArrowColor";
-  s = settings.readEntry(s);
-  if (s.length())
-    defaultColor.setNamedColor(s);
+  Config config;
+  config.getData(Config::DefaultSellArrowColor, color);
 }
 
 void SellArrow::saveDefaults ()
 {
-  QSettings settings;
-  
-  QString s = "/Qtstalker/DefaultSellArrowColor";
-  settings.writeEntry(s, defaultColor.name());
+  Config config;
+  config.setData(Config::DefaultSellArrowColor, color);
 }
 
-void SellArrow::getSettings (Setting &set)
+void SellArrow::saveSettings ()
 {
-  QString s = date.toString(dateFormat);
-  set.setData(dateLabel, s);
-  s = QString::number(value);
-  set.setData(valueLabel, s);
-  s = color.name();
-  set.setData(colorLabel, s);
-  set.setData(identifierLabel, identifier);
-  set.setData(priceLabel, price);
-  set.setData(plotLabel, plot);
-  set.setData(nameLabel, name);
-  set.setData(typeLabel, type);
+  COSettings co(id, symbol, indicator, QString::number(type));
+  co.setDate(date);
+  co.setValue(value);
+  co.setColor(color);
+
+  DataBase db;
+  db.setChartObject(co);
 }
 
-void SellArrow::setSettings (Setting &set)
+void SellArrow::loadSettings (COSettings &co)
 {
-  QString s;
-  set.getData(dateLabel, s);
-  Bar bar;
-  bar.setDate(s);
-  bar.getDate(date);
-  value = set.getDouble(valueLabel);
-  set.getData(colorLabel, s);
-  color.setNamedColor(s);
-  set.getData(plotLabel, plot);
-  set.getData(identifierLabel, identifier);
-  set.getData(priceLabel, price);
-  set.getData(nameLabel, name);
+  co.getSymbol(symbol);
+  co.getID(id);
+  co.getIndicator(indicator);
+  co.getDate(date);
+  value = co.getValue();
+  co.getColor(color);
 }
 
 void SellArrow::adjustForSplit (QDateTime &dt, double d)

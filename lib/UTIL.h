@@ -19,27 +19,52 @@
  *  USA.
  */
 
-#include "IndicatorPlugin.h"
+#ifndef UTIL_HPP
+#define UTIL_HPP
 
-class UTIL : public IndicatorPlugin
+
+
+#include "IndicatorParms.h"
+#include "PlotLine.h"
+#include "BarData.h"
+#include <QList>
+#include <QHash>
+#include <QString>
+#include <QStringList>
+
+class UTIL
 {
   public:
+
+    enum Operator
+    {
+      Equal,
+      LessThan,
+      LessThanEqual,
+      GreaterThan,
+      GreaterThanEqual,
+      And,
+      Or
+    };
+
     UTIL ();
-    virtual ~UTIL ();
-    PlotLine * calculateCustom (QString &, QPtrList<PlotLine> &);
-    PlotLine * calculateAccum (QString &, QPtrList<PlotLine> &);
-    PlotLine * calculateNormal(QString &, QPtrList<PlotLine> &);
-    PlotLine * calculateCOMP (QString &p, QPtrList<PlotLine> &d);
-    PlotLine * calculateCOUNTER (QString &p, QPtrList<PlotLine> &d);
-    PlotLine * calculateREF (QString &p, QPtrList<PlotLine> &d);
-    PlotLine * calculateADMS (QString &p, QPtrList<PlotLine> &d, int);
-    PlotLine * calculatePER (QString &p, QPtrList<PlotLine> &d);
-    PlotLine * calculateCOLOR (QString &p, QPtrList<PlotLine> &d);
-    PlotLine * calculateHL (QString &p, QPtrList<PlotLine> &d, int);
-    PlotLine * calculateINRANGE (QString &p, QPtrList<PlotLine> &d);
-    void formatDialog (QStringList &vl, QString &rv, QString &rs);
+    ~UTIL ();
+    void calculate (BarData *, IndicatorParms &, QHash<QString, PlotLine *> &);
+    void calculateAccum (IndicatorParms &, QHash<QString, PlotLine *> &);
+    void calculateNormal(IndicatorParms &, QHash<QString, PlotLine *> &);
+    void calculateCOMP (IndicatorParms &, QHash<QString, PlotLine *> &);
+    void calculateREF (IndicatorParms &, QHash<QString, PlotLine *> &);
+    void calculatePER (IndicatorParms &, QHash<QString, PlotLine *> &);
+    void calculateCOLOR (IndicatorParms &, QHash<QString, PlotLine *> &);
+    void calculateHL (IndicatorParms &, QHash<QString, PlotLine *> &);
+    void calculateINRANGE (IndicatorParms &, QHash<QString, PlotLine *> &);
+    void prefDialog (IndicatorParms &, QStringList &);
+    UTIL::Operator getOperator (QString &);
   
   private:
     QStringList methodList;
+    QStringList opList;
+    BarData *data;
 };
 
+#endif

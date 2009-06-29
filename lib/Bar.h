@@ -22,9 +22,12 @@
 #ifndef BAR_HPP
 #define BAR_HPP
 
-#include <qstring.h>
-#include <qstringlist.h>
-#include <qdatetime.h>
+#include <QString>
+#include <QStringList>
+#include <QDateTime>
+#include <QHash>
+
+
 
 class Bar
 {
@@ -32,7 +35,6 @@ class Bar
   
     Bar ();
     ~Bar ();
-    int setDate (QString &);
     int setDate (QDateTime &);
     void getDate (QDateTime &);
     void setOpen (double);
@@ -46,34 +48,24 @@ class Bar
     void setVolume (double);
     double getVolume ();
     void setOI (int);
-    double getOI ();
-    void getString (QString &);
-    bool getTickFlag ();
-    void setTickFlag (bool);
+    int getOI ();
     bool getEmptyFlag ();
-    void setEmptyFlag (bool);
-    void getDateString (bool sepFlag, QString &);
-    void getDateTimeString (bool sepFlag, QString &);
-    void getTimeString (bool sepFlag, QString &);
+    void getDateString (QString &);
+    void getDateTimeString (QString &);
+    void getTimeString (QString &);
     void clear ();
-    bool verify ();
+    void setSymbol (QString &);
+    void getSymbol (QString &);
+    void setTime (QTime &);
+    void setData (QString &, QString &);
+    void getData (QString &, QString &);
+    bool getValidDate ();
+    void getDateNumber (QString &);
     
   protected:
+    QHash<QString, QString> data;
     QDateTime date;
-    double open;
-    double high;
-    double low;
-    double close;
-    double volume;
-    int oi;
-    bool openFlag;
-    bool highFlag;
-    bool lowFlag;
-    bool closeFlag;
-    bool volumeFlag;
-    bool oiFlag;
     bool emptyFlag;
-    bool tickFlag;
 };
 
 #endif

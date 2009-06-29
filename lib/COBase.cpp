@@ -31,34 +31,30 @@
 #include "Text.h"
 #include "TrendLine.h"
 #include "VerticalLine.h"
-#include <qcursor.h>
+#include <QCursor>
+#include <QPixmap>
+#include <QKeyEvent>
+#include <QMenu>
 
 COBase::COBase ()
 {
   data = 0;
-  menu = new QPopupMenu();
+  menu = new QMenu();
   status = None;
   saveFlag = FALSE;
-  grabHandles.setAutoDelete(TRUE);
-  selectionArea.setAutoDelete(TRUE);
   date = QDateTime::currentDateTime();
+  dateFormat = "yyyy-MM-dd HH:mm:ss.zzz";
 
-  dateFormat = "yyyyMMddhhmmss";
-  dateLabel = "Date";
-  valueLabel = "Value";
-  colorLabel = "Color";
-  plotLabel = "Plot";
-  nameLabel = "Name";
-  typeLabel = "Type";
-
-  menu->insertItem(QPixmap(edit), tr("&Edit Object"), this, SLOT(prefDialog()), CTRL+Key_E);
-//  menu->insertItem(QPixmap(renam), tr("&Move Object"), this, SLOT(moveObject()), CTRL+Key_M);
-  menu->insertItem(QPixmap(deleteitem), tr("&Delete Object"), this, SLOT(removeObject()), CTRL+Key_D);
+  menu->addAction(QPixmap(edit), tr("&Edit Object"), this, SLOT(prefDialog()), Qt::CTRL+Qt::Key_E);
+//  menu->insertItem(QPixmap(renam), tr("&Move Object"), this, SLOT(moveObject()), Qt::CTRL+Qt::Key_M);
+  menu->addAction(QPixmap(deleteitem), tr("&Delete Object"), this, SLOT(removeObject()), Qt::CTRL+Qt::Key_D);
 }
 
 COBase::~COBase ()
 {
   delete menu;
+  qDeleteAll(grabHandles);
+  qDeleteAll(selectionArea);
 }
 
 void COBase::draw (QPixmap &, Scaler &, int, int, int)
@@ -97,15 +93,15 @@ void COBase::keyEvent (QKeyEvent *key)
   switch (key->key())
   {
     case Qt::Key_M:
-      if (key->state() == Qt::ControlButton)
+//      if (key->state() == Qt::ControlButton)
         moveObject();
       break;
     case Qt::Key_E:
-      if (key->state() == Qt::ControlButton)
+//      if (key->state() == Qt::ControlButton)
         prefDialog();
       break;
     case Qt::Key_D:
-      if (key->state() == Qt::ControlButton)
+//      if (key->state() == Qt::ControlButton)
         removeObject();
       break;
     default:
@@ -114,11 +110,11 @@ void COBase::keyEvent (QKeyEvent *key)
   }
 }
 
-void COBase::getSettings (Setting &)
+void COBase::loadSettings (COSettings &)
 {
 }
 
-void COBase::setSettings (Setting &)
+void COBase::saveSettings ()
 {
 }
 
@@ -149,6 +145,7 @@ bool COBase::getSaveFlag ()
 
 void COBase::clearGrabHandles ()
 {
+  qDeleteAll(grabHandles);
   grabHandles.clear();
 }
 
@@ -159,6 +156,7 @@ void COBase::setGrabHandle (QRegion *d)
 
 void COBase::clearSelectionArea ()
 {
+  qDeleteAll(selectionArea);
   selectionArea.clear();
 }
 
@@ -167,39 +165,9 @@ void COBase::setSelectionArea (QRegion *d)
   selectionArea.append(d);
 }
 
-QString COBase::getName ()
+QString COBase::getID ()
 {
-  return name;
-}
-
-void COBase::setDate (QDateTime &d)
-{
-  date = d;
-}
-
-void COBase::getDate (QDateTime &d)
-{
-  d = date;
-}
-
-void COBase::setColor (QColor d)
-{
-  color =d;
-}
-
-QColor COBase::getColor ()
-{
-  return color;
-}
-
-void COBase::setValue (double d)
-{
-  value = d;
-}
-
-double COBase::getValue ()
-{
-  return value;
+  return id;
 }
 
 void COBase::setStatus (Status d)
@@ -240,7 +208,7 @@ bool COBase::isGrabSelected (QPoint point)
 
 void COBase::removeObject ()
 {
-  emit signalObjectDeleted(name);
+  emit signalObjectDeleted(id);
 }
 
 void COBase::moveObject ()
@@ -248,64 +216,50 @@ void COBase::moveObject ()
   status = Moving;
 }
 
-void COBase::addObject (Setting &set)
-{
-  setSettings(set);
-}
-
 void COBase::adjustForSplit (QDateTime &, double)
 {
 }
 
-COBase * COBase::getCO (Setting &set)
-{
-  QString s;
-  set.getData(typeLabel, s);
-  return getCO(s);
-}
-
-COBase * COBase::getCO (QString &s)
+COBase * COBase::getCO (int s)
 {
   COBase *t = 0;
 
-  if (! s.compare("BuyArrow"))
-    t = new BuyArrow();
-  else
+  switch (s)
   {
-    if (! s.compare("Cycle"))
+    case COBuyArrow:
+      t = new BuyArrow();
+      break;
+    case COCycle:
       t = new Cycle();
-    else
-    {
-      if (! s.compare("FiboLine"))
-        t = new FiboLine();
-      else
-      {
-        if (! s.compare("HorizontalLine"))
-          t = new HorizontalLine();
-        else
-        {
-          if (! s.compare("SellArrow"))
-            t = new SellArrow();
-          else
-          {
-            if (! s.compare("Text"))
-              t = new Text();
-            else
-            {
-              if (! s.compare("TrendLine"))
-                t = new TrendLine();
-              else
-              {
-                if (! s.compare("VerticalLine"))
-                  t = new VerticalLine();
-              }
-            }
-          }
-        }
-      }
-    }
+      break;
+    case COFiboLine:
+      t = new FiboLine();
+      break;
+    case COHorizontalLine:
+      t = new HorizontalLine();
+      break;
+    case COSellArrow:
+      t = new SellArrow();
+      break;
+    case COText:
+      t = new Text();
+      break;
+    case COTrendLine:
+      t = new TrendLine();
+      break;
+    case COVerticalLine:
+      t = new VerticalLine();
+      break;
+    default:
+      break;
   }
 
   return t;
 }
+
+void COBase::setSymbol (QString &d)
+{
+  symbol = d;
+}
+
 

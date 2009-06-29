@@ -21,6 +21,7 @@
 
 #include "Scaler.h"
 #include <math.h>
+#include <QVector>
 
 Scaler::Scaler ()
 {
@@ -151,7 +152,7 @@ double Scaler::convertToVal (int y)
   return val;
 }
 
-void Scaler::getScaleArray (QMemArray<double> &scaleArray)
+void Scaler::getScaleArray (QVector<double> &scaleArray)
 {
   int ticks;
   for (ticks = 2; (ticks * 15) < height; ticks++)

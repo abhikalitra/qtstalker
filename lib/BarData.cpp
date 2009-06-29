@@ -20,16 +20,18 @@
  */
 
 #include "BarData.h"
-#include <qobject.h>
+#include <QObject>
+#include <QtDebug>
+
+
 
 BarData::BarData (QString &sym)
 {
   symbol = sym;
   high = -99999999;
   low = 99999999;
-  dateList.setAutoDelete(TRUE);
-  barType = Daily;
   barLength = DailyBar;
+  barsRequested = 0;
 }
 
 BarData::~BarData ()
@@ -119,8 +121,7 @@ void BarData::prepend (Bar &bar)
         currentBar.setHigh(bar.getHigh());
       if (bar.getLow() < currentBar.getLow())
         currentBar.setLow(bar.getLow());
-//    if (barType == Tick)
-        currentBar.setVolume(currentBar.getVolume() + bar.getVolume());
+      currentBar.setVolume(currentBar.getVolume() + bar.getVolume());
       if (bar.getOI() > currentBar.getOI())
         currentBar.setOI((int) bar.getOI());
     }
@@ -131,7 +132,8 @@ void BarData::prepend (Bar &bar)
       if (currentBar.getLow() < low)
         low = currentBar.getLow();
 
-      barList.prepend(currentBar);
+      if (currentBar.getValidDate())
+        barList.prepend(currentBar);
       currentBar.clear();
 
       setStartEndDates(dt);
@@ -184,13 +186,9 @@ void BarData::createDateList ()
   for (loop = 0; loop < (int) barList.count(); loop++)
   {
     Bar bar = barList[loop];
-    
-    X *x = new X;
-    x->x = loop;
-
     QString s;
-    bar.getDateTimeString(FALSE, s);
-    dateList.replace(s, x);
+    bar.getDateTimeString(s);
+    dateList.insert(s, loop);
   }
 }
 
@@ -201,54 +199,11 @@ void BarData::getDate (int i, QDateTime &dt)
 
 int BarData::getX (QDateTime &date)
 {
-  X *x = 0;
-  QString s = date.toString("yyyyMMddhhmmss");
-  x = dateList[s];
-  
-  if (x)
-    return x->x;
-  else
-    return -1;
-
-/*    
-  if (barCompression == Weekly)
-  {
-    QDateTime dt = date;
-    dt = dt.addDays(- (dt.date().dayOfWeek() - 1));
-  
-    int loop = 0;
-    for (loop = 0; loop < 6; loop++)
-    {
-      X *x = dateList[dt.toString("yyyyMMdd")];
-      if (x)
-       return x->x;
-      else
-        dt = dt.addDays(1);
-    }
-    
-    return -1;
-  }
-
-  if (barCompression == Monthly)
-  {
-    QDateTime dt = date;
-    dt.date().setYMD(date.date().year(), 1, 1);
-  
-    int loop = 0;
-    for (loop = 0; loop < dt.date().daysInMonth(); loop++)
-    {
-      X *x = dateList[dt.toString("yyyyMMdd")];
-      if (x)
-       return x->x;
-      else
-        dt = dt.addDays(1);
-    }
-    
-    return -1;
-  }
-  
-  return -1;
-*/  
+  int x = -1;
+  QString s = date.toString("yyyy-MM-dd HH:mm:ss.zzz");
+  if (dateList.contains(s))
+    x = dateList.value(s);
+  return x;
 }
 
 double BarData::getOpen (int i)
@@ -289,16 +244,6 @@ double BarData::getMax ()
 double BarData::getMin ()
 {
   return low;
-}
-
-void BarData::setBarType (BarData::BarType d)
-{
-  barType = d;
-}
-
-BarData::BarType BarData::getBarType ()
-{
-  return barType;
 }
 
 BarData::InputType BarData::getInputType (QString &d)
@@ -510,4 +455,77 @@ void BarData::getSymbol (QString &d)
 {
   d = symbol;
 }
+
+void BarData::setSymbol (QString &d)
+{
+  symbol = d;
+}
+
+void BarData::getName (QString &d)
+{
+  d = name;
+}
+
+void BarData::setName (QString &d)
+{
+  name = d;
+}
+
+void BarData::getType (QString &d)
+{
+  d = type;
+}
+
+void BarData::setType (QString &d)
+{
+  type = d;
+}
+
+int BarData::getBarsRequested ()
+{
+  return barsRequested;
+}
+
+void BarData::setBarsRequested (int d)
+{
+  barsRequested = d;
+}
+
+void BarData::getDateOffset (QDateTime &dt)
+{
+  switch (barLength)
+  {
+    case Minute1:
+      dt = dt.addSecs(-(barsRequested * 60));
+      break;
+    case Minute5:
+      dt = dt.addSecs(-(barsRequested * 300));
+      break;
+    case Minute10:
+      dt = dt.addSecs(-(barsRequested * 600));
+      break;
+    case Minute15:
+      dt = dt.addSecs(-(barsRequested * 900));
+      break;
+    case Minute30:
+      dt = dt.addSecs(-(barsRequested * 1800));
+      break;
+    case Minute60:
+      dt = dt.addSecs(-(barsRequested * 3600));
+      break;
+    case DailyBar:
+      dt = dt.addDays(-(barsRequested));
+      break;
+    case WeeklyBar:
+      dt = dt.addDays(-(barsRequested * 5));
+      break;
+    case MonthlyBar:
+      dt = dt.addMonths(-(barsRequested));
+      break;
+    default:
+      break;
+  }
+}
+
+
 

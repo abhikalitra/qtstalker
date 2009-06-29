@@ -22,25 +22,32 @@
 #ifndef INDICATORPLOT_HPP
 #define INDICATORPLOT_HPP
 
-#include <qwidget.h>
-#include <qstring.h>
-#include <qpixmap.h>
-#include <qdatetime.h>
-#include <qcolor.h>
-#include <qmemarray.h>
-#include <qfont.h>
-#include <qdict.h>
-#include <qstringlist.h>
-#include <qpopupmenu.h>
+#include <QWidget>
+#include <QString>
+#include <QPixmap>
+#include <QDateTime>
+#include <QColor>
+#include <QVector>
+#include <QFont>
+#include <QHash>
+#include <QStringList>
+#include <QMenu>
+#include <QContextMenuEvent>
+#include <QPaintEvent>
+#include <QResizeEvent>
+#include <QMouseEvent>
+#include <QKeyEvent>
+#include <QList>
+#include <QRubberBand>
+#include <QPoint>
 
 #include "PlotLine.h"
-#include "Setting.h"
-#include "Indicator.h"
+#include "COSettings.h"
+#include "IndicatorPlugin.h"
 #include "Scaler.h"
-#include "Config.h"
 #include "BarData.h"
 #include "COBase.h"
-#include "DBIndex.h"
+
 
 class IndicatorPlot : public QWidget
 {
@@ -51,16 +58,10 @@ class IndicatorPlot : public QWidget
     void infoMessage (Setting *);
     void leftMouseButton (int, int, bool);
     void keyPressed (QKeyEvent *);
-    void signalEditIndicator (QString);
-    void signalNewIndicator ();
     void signalMinPixelspace (int);
     void signalDraw ();
     void signalDateFlag (bool);
     void signalLogFlag (bool);
-    void signalEditChart (QString);
-    void signalDeleteAllCO ();
-    void signalDeleteCO (QString);
-    void signalSaveCO (Setting);
 
   public:
     enum MouseStatus
@@ -68,10 +69,11 @@ class IndicatorPlot : public QWidget
       None,
       ClickWait,
       COSelected,
-      Moving
+      Moving,
+      RubberBand
     };
 
-    IndicatorPlot (QWidget *, DBIndex *);
+    IndicatorPlot (QWidget *);
     ~IndicatorPlot ();
     void clear ();
     void setData (BarData *);
@@ -79,10 +81,7 @@ class IndicatorPlot : public QWidget
     void updateStatusBar (int, int);
     void setInfoFlag (bool);
     void drawCrossHair ();
-    void addIndicator (Indicator *);
-    Indicator * getIndicator ();
-    bool deleteIndicator ();
-    void addChartObject (Setting &);
+    void addChartObject (COSettings &);
     int getWidth ();
     void strip (double, int, QString &);
     int convertXToDataIndex (int);
@@ -94,9 +93,8 @@ class IndicatorPlot : public QWidget
     void setScaler (Scaler &);
     Scaler & getScaler ();
     void getInfo (int);
-    void setXGrid (QMemArray<int> &);
+    void setXGrid (QVector<int> &);
     void setMenuFlag (bool);
-    
     void drawLine ();
     void drawHorizontalLine ();
     void drawHistogram ();
@@ -104,7 +102,10 @@ class IndicatorPlot : public QWidget
     void drawDot ();
     void drawBar ();
     void drawCandle ();
-    void drawPF ();
+    int indicatorPrefDialog (QWidget *);
+    void getPlotList (QList<PlotLine *> &);
+    void setName (QString &);
+    void loadChartObjects ();
    
   public slots:
     void draw();
@@ -116,7 +117,6 @@ class IndicatorPlot : public QWidget
     void setPlotFont (QFont &);
     void setIndex (int);
     void crossHair (int, int, bool);
-    void printChart ();
     void showPopupMenu ();
     void setChartPath (QString &);
     void setCrosshairsStatus (bool);
@@ -126,8 +126,15 @@ class IndicatorPlot : public QWidget
     void slotDrawModeChanged (bool);
     void slotLogScaleChanged (bool);
     void setInterval(BarData::BarLength);
-    void slotEditChart();
-    void slotIndicatorHelp();
+    void slotNewBuyArrow ();
+    void slotNewCycle ();
+    void slotNewFiboline ();
+    void slotNewHorizontalLine ();
+    void slotNewSellArrow ();
+    void slotNewText ();
+    void slotNewTrendLine ();
+    void slotNewVerticalLine ();
+    void calculate ();
 
   protected:
     virtual void paintEvent (QPaintEvent *);
@@ -137,6 +144,7 @@ class IndicatorPlot : public QWidget
     virtual void keyPressEvent (QKeyEvent *);
     virtual void mouseDoubleClickEvent (QMouseEvent *);
     virtual void contextMenuEvent (QContextMenuEvent *);
+    virtual void mouseReleaseEvent(QMouseEvent *);
 
   private slots:
     void drawObjects ();
@@ -149,21 +157,19 @@ class IndicatorPlot : public QWidget
     void getXY (int, int);
     void slotMessage (QString);
     void slotEditIndicator ();
-    void slotNewIndicator ();
     void slotNewChartObject (int);
     void slotDeleteAllChartObjects ();
     void slotChartObjectDeleted (QString);
     void toggleDate ();
     void toggleLog ();
     void saveChartObjects ();
-    void saveChartObject (QString);
+
 
   private:
     QFont plotFont;
     QFontMetrics *plotFontMetrics;
     PlotLine *currentLine;
     QPixmap buffer;
-    Config config;
     int pixelspace;
     int startX;
     int startIndex;
@@ -186,17 +192,20 @@ class IndicatorPlot : public QWidget
     double y1;
     QDateTime x1;
     MouseStatus mouseFlag;
-    QDict<COBase> coList;
+    QHash<QString, COBase *> coList;
     COBase *coSelected;
-    QString chartPath;
+    QString name;
     BarData *data;
-    Indicator *indy;
-    QMemArray<int> xGrid;
-    QPopupMenu *chartMenu;
-    QPopupMenu *chartObjectMenu;
-    DBIndex *chartIndex;
-    QString helpFilePath;
+    QVector<int> xGrid;
+    QMenu *chartMenu;
+    QMenu *chartObjectMenu;
+    QString docsPath;
     QString userDocsPath;
+    QList<PlotLine *> plotList;
+    QString chartSymbol;
+
+    QRubberBand *rubberBand;
+    QPoint mouseOrigin;
 };
 
 #endif

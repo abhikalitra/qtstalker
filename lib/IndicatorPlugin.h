@@ -23,14 +23,14 @@
 #define INDICATORPLUGIN_HPP
 
 #include "PlotLine.h"
-#include "Setting.h"
 #include "BarData.h"
-#include "Indicator.h"
-#include <qstring.h>
-#include <qstringlist.h>
-#include <qdict.h>
-#include <qvaluelist.h>
-#include <qobject.h>
+#include "ta_libc.h"
+#include "IndicatorParms.h"
+#include <QString>
+#include <QStringList>
+#include <QHash>
+#include <QObject>
+#include <QList>
 
 class IndicatorPlugin : public QObject
 {
@@ -40,52 +40,22 @@ class IndicatorPlugin : public QObject
     void signalWakeup ();
   
   public:
-  
-    enum FormatType
-    {
-      FormatInputArray,
-      FormatInputArray2,
-      FormatInteger,
-      FormatDouble,
-      FormatString,
-      FormatMAType,
-      FormatBool
-    };
-
-    enum Operator
-    {
-      Equal,
-      LessThan,
-      LessThanEqual,
-      GreaterThan,
-      GreaterThanEqual,
-      And,
-      Or
-    };
-
+    IndicatorPlugin(QString &, BarData *);
     IndicatorPlugin();
-    virtual ~IndicatorPlugin();
+    ~IndicatorPlugin();
+    void setDefaults ();
     void setIndicatorInput (BarData *);
-    void loadFile (QString &, Setting &);
-    void saveFile (QString &, Setting &);
-    void getPluginName (QString &);
-    void getHelpFile (QString &);
-    IndicatorPlugin::Operator getOperator (QString &);
-    PlotLine * getWilderMA (PlotLine *d, int);
     void getMATypes (QStringList &);
-    bool checkFormat (QString &, QPtrList<PlotLine> &, int, int);
-    void setFormatMethod (QString &);
-
-    virtual Indicator * calculate ();
-    virtual int indicatorPrefDialog (QWidget *);
-    virtual PlotLine * calculateCustom (QString &, QPtrList<PlotLine> &);
-    virtual void getIndicatorSettings (Setting &);
-    virtual void setIndicatorSettings (Setting &);
-    virtual void setCustomFunction (QStringList &);
-    virtual void loadIndicatorSettings (QString &);
-    virtual void saveIndicatorSettings (QString &);
-    virtual PlotLine * getMA (PlotLine *d, int, int);
-    virtual void formatDialog (QStringList &, QString &, QString &);
+    void calculate (QList<PlotLine *> &);
+    void createPlot (QList<IndicatorParms> &, QHash<QString, PlotLine *> &, QList<PlotLine *> &);
+    void setName (QString &);
+    void getName (QString &);
+    void getIndicatorList (QStringList &);
+//    PlotLine * getMA (PlotLine *d, int, int);
+    void printError (QString, TA_RetCode);
+    void addInputLine (QString &, QHash<QString, PlotLine *> &);
+    void getBARS (IndicatorParms &, QHash<QString, PlotLine *> &);
+    void getUTIL (IndicatorParms &, QHash<QString, PlotLine *> &);
 
   public slots:
     void wakeup ();
@@ -93,17 +63,8 @@ class IndicatorPlugin : public QObject
   protected:
     BarData *data;
     QStringList lineTypes;
-    QStringList inputTypeList;
-    QStringList opList;
     QStringList maList;
-    bool saveFlag;
-    QString pluginName;
-    QString helpFile;
-    QValueList<FormatType> formatList;
-    QStringList formatStringList;
-    bool dateFlag;
-    bool logScale;
-    QString formatMethod;
+    QString name;
 };
 
 #endif

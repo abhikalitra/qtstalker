@@ -21,18 +21,20 @@
 
 #include "Cycle.h"
 #include "PrefDialog.h"
-#include <qpainter.h>
-#include <qsettings.h>
+#include "DataBase.h"
+#include "Config.h"
+#include <QPainter>
+#include <QPolygon>
+
+
 
 Cycle::Cycle ()
 {
-  defaultColor.setNamedColor("red");
-  defaultInterval = 10;
+  color.setNamedColor("red");
   helpFile = "cycle.html";
   interval = 10;
   grabPosition = -1;
-  intervalLabel = "Interval";
-  type = "Cycle";
+  type = (int) COCycle;
   
   loadDefaults();
 }
@@ -58,7 +60,7 @@ void Cycle::draw (QPixmap &buffer, Scaler &, int startIndex, int pixelspace, int
     
   int origx = x;
       
-  painter.setPen(getColor());
+  painter.setPen(color);
   clearSelectionArea();
     
   while (x <= buffer.width())
@@ -72,7 +74,7 @@ void Cycle::draw (QPixmap &buffer, Scaler &, int startIndex, int pixelspace, int
 		      16 * 180,
 		      16 * -180);
       
-      QPointArray array;
+      QPolygon array;
       array.putPoints(0,
   		      4,
 		      x - (HANDLE_WIDTH / 2), buffer.height(),
@@ -105,7 +107,7 @@ void Cycle::draw (QPixmap &buffer, Scaler &, int startIndex, int pixelspace, int
 	                 buffer.height() - HANDLE_WIDTH,
 			 HANDLE_WIDTH,
 			 HANDLE_WIDTH,
-			 getColor());
+			 color);
       }
 	
       x = x + (interval * pixelspace);
@@ -117,18 +119,15 @@ void Cycle::draw (QPixmap &buffer, Scaler &, int startIndex, int pixelspace, int
 
 void Cycle::prefDialog ()
 {
-  QString pl = tr("Details");
   QString cl = tr("Color");
   QString il = tr("Interval");
   QString sd = tr("Set Default");
 
-  PrefDialog *dialog = new PrefDialog();
-  dialog->setCaption(tr("Edit Cycle"));
-  dialog->createPage (pl);
-  dialog->setHelpFile (helpFile);
-  dialog->addColorPrefItem(cl, pl, color);
-  dialog->addIntItem(il, pl, interval, 1, 9999);
-  dialog->addCheckItem(sd, pl, FALSE);
+  PrefDialog *dialog = new PrefDialog;
+  dialog->setWindowTitle(tr("Edit Cycle"));
+  dialog->addColorPrefItem(cl, color);
+  dialog->addIntItem(il, interval, 1, 9999);
+  dialog->addCheckItem(sd, FALSE);
   
   int rc = dialog->exec();
   
@@ -136,13 +135,11 @@ void Cycle::prefDialog ()
   {
     dialog->getColor(cl, color);
     interval = dialog->getInt(il);
+    saveFlag = TRUE;
     
     bool f = dialog->getCheck(sd);
     if (f)
-    {
-      defaultColor = color;
       saveDefaults();
-    }
     
     emit signalDraw();
   }
@@ -153,8 +150,7 @@ void Cycle::prefDialog ()
 void Cycle::newObject (QString &ind, QString &n)
 {
   indicator = ind;
-  plot = ind;
-  name = n;
+  id = n;
   status = ClickWait;
   emit message(tr("Select starting point of Cycle..."));
 }
@@ -191,12 +187,10 @@ COBase::Status Cycle::pointerClick (QPoint &point, QDateTime &x, double)
       break;
     case ClickWait:
       setSaveFlag(TRUE);
-      setColor(defaultColor);
-      setDate(x);
+      date = x;
       emit signalDraw();
       status = None;
       emit message("");
-      emit signalSave(name);
       break;
     default:
       break;
@@ -216,10 +210,10 @@ void Cycle::pointerMoving (QPixmap &, QPoint &p, QDateTime &x, double)
   
   if (gp == 0)
   {
-    setDate(x);
+    date = x;
     setSaveFlag(TRUE);
   
-    QString s = x.toString("yyyy-MM-dd hh:mm:ss");
+    QString s = x.toString(dateFormat);
     emit message(s);
     emit signalDraw();
   }
@@ -243,28 +237,16 @@ void Cycle::pointerMoving (QPixmap &, QPoint &p, QDateTime &x, double)
 
 void Cycle::loadDefaults ()
 {
-  QSettings settings;
-  
-  QString s = "/Qtstalker/DefaultCycleColor";
-  s = settings.readEntry(s);
-  if (s.length())
-    defaultColor.setNamedColor(s);
-
-  s = "/Qtstalker/DefaultCycleInterval";
-  s = settings.readEntry(s);
-  if (s.length())
-    defaultInterval = s.toInt();
+  Config config;
+  config.getData(Config::DefaultCycleColor, color);
+  config.getData(Config::DefaultCycleInterval, interval);
 }
 
 void Cycle::saveDefaults ()
 {
-  QSettings settings;
-  
-  QString s = "/Qtstalker/DefaultCycleColor";
-  settings.writeEntry(s, defaultColor.name());
-
-  s = "/Qtstalker/DefaultCycleInterval";
-  settings.writeEntry(s, QString::number(defaultInterval));
+  Config config;
+  config.setData(Config::DefaultCycleColor, color);
+  config.setData(Config::DefaultCycleInterval, interval);
 }
 
 double Cycle::getHigh ()
@@ -277,31 +259,33 @@ double Cycle::getLow ()
   return data->getMin();
 }
 
-void Cycle::getSettings (Setting &set)
+void Cycle::saveSettings ()
 {
-  QString s = date.toString(dateFormat);
-  set.setData(dateLabel, s);
-  s = color.name();
-  set.setData(colorLabel, s);
-  set.setData(plotLabel, plot);
-  set.setData(nameLabel, name);
-  s = QString::number(interval);
-  set.setData(intervalLabel, s);
-  set.setData(typeLabel, type);
+  COSettings co(id, symbol, indicator, QString::number(type));
+  co.setDate(date);
+  co.setValue(value);
+  co.setColor(color);
+  QString k("Interval");
+  QString d = QString::number(interval);
+  co.setString(k, d);
+
+  DataBase db;
+  db.setChartObject(co);
 }
 
-void Cycle::setSettings (Setting &set)
+void Cycle::loadSettings (COSettings &co)
 {
-  QString s;
-  set.getData(dateLabel, s);
-  Bar bar;
-  bar.setDate(s);
-  bar.getDate(date);
-  set.getData(colorLabel, s);
-  color.setNamedColor(s);
-  set.getData(plotLabel, plot);
-  set.getData(nameLabel, name);
-  interval = set.getInt(intervalLabel);
+  co.getSymbol(symbol);
+  co.getID(id);
+  co.getIndicator(indicator);
+  co.getDate(date);
+  value = co.getValue();
+  co.getColor(color);
+  
+  QString k("Interval");
+  QString d;
+  co.getString(k, d);
+  interval = d.toInt();
 }
 
 bool Cycle::isGrabSelected (QPoint point)

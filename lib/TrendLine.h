@@ -23,10 +23,9 @@
 #define TRENDLINE_HPP
 
 #include "COBase.h"
-#include "Setting.h"
-#include <qpointarray.h>
-#include <qpoint.h>
-#include <qdatetime.h>
+#include <QPoint>
+
+
 
 class TrendLine : public COBase
 {
@@ -39,19 +38,11 @@ class TrendLine : public COBase
     void newObject (QString &, QString &);
     double getHigh ();
     double getLow ();
-    void drawMovingPointer (QPixmap &, QPoint &);
     void loadDefaults ();
     void saveDefaults ();
-    void getSettings (Setting &);
-    void setSettings (Setting &);
-    void setDate2 (QDateTime &);
-    void getDate2 (QDateTime &);
-    void setValue2 (double);
-    double getValue2 ();
+    void loadSettings (COSettings &);
+    void saveSettings ();
     int isGrabSelected (QPoint point);
-    bool getUseBar ();
-    void getBar (QString &);
-    bool getExtend ();
     void adjustForSplit (QDateTime &, double);
     
   public slots:
@@ -69,14 +60,6 @@ class TrendLine : public COBase
     int mpx, mpx2, mpy, mpy2;
     QDateTime date2;
     double value2;
-    QString sdateLabel;
-    QString edateLabel;
-    QString svalueLabel;
-    QString evalueLabel;
-    QString fieldLabel;
-    QString usebarLabel;
-    QString extendLabel;
-
 };
 
 #endif

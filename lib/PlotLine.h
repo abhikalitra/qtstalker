@@ -22,10 +22,10 @@
 #ifndef PLOTLINE_HPP
 #define PLOTLINE_HPP
 
-#include <qstring.h>
-#include <qvaluelist.h>
-#include <qcolor.h>
-#include <qdatetime.h>
+#include <QString>
+#include <QList>
+#include <QColor>
+#include <QDateTime>
 #include "Setting.h"
 
 
@@ -55,8 +55,7 @@ class PlotLine
       Invisible,
       Horizontal,
       Bar,
-      Candle,
-      PF
+      Candle
     };
   
     PlotLine ();
@@ -97,13 +96,13 @@ class PlotLine
     void getHighLowRange (int, int, double &, double &);
     void getInfo (int, Setting &);
     void strip (double, int, QString &);
-    void getDateList (QValueList<QDateTime> &);
-    void setDateList (QValueList<QDateTime> &);
-    void getData (QValueList<Val> &);
+    void getDateList (QList<QDateTime> &);
+    void setDateList (QList<QDateTime> &);
+    void getData (QList<Val> &);
     
   private:
-    QValueList<Val> data;
-    QValueList<QDateTime> dateList;
+    QList<Val> data;
+    QList<QDateTime> dateList;
     QColor color;
     PlotLine::LineType lineType;
     QString label;

@@ -19,63 +19,36 @@
  *  USA.
  */
 
-#include "IndicatorPlugin.h"
-#include <qprocess.h>
-#include <qtimer.h>
+#include "IndicatorParms.h"
+#include "PlotLine.h"
+#include "BarData.h"
+#include <QProcess>
+#include <QList>
+#include <QString>
+#include <QStringList>
+#include <QObject>
 
-class ExScript : public IndicatorPlugin
+
+
+
+class ExScript : public QObject
 {
   Q_OBJECT
   
   public:
     ExScript ();
-    virtual ~ExScript ();
-    Indicator * calculate ();
-    int indicatorPrefDialog (QWidget *);
-    void setDefaults();
-    void getIndicatorSettings (Setting &);
-    void setIndicatorSettings (Setting &);
-    PlotLine * calculateCustom (QString &, QPtrList<PlotLine> &);
-    void formatDialog (QStringList &vl, QString &rv, QString &rs);
-    void getInput (QString &);
-    PlotLine * doScript ();
+    ~ExScript ();
+    void calculate (BarData *bd, IndicatorParms &parms);
+    void prefDialog (IndicatorParms &parms, QStringList &);
+    void sendBarData (QString &);
+    void plot (QString &);
 
   public slots:
     void readFromStdout ();
-    void timerDone ();
     
   private:
-    QColor color;
-    PlotLine::LineType lineType;
-    QString label;
-    QString scriptPath;
-    QString comlineParms;
     QProcess *proc;
-    QString buffer;
-    QTimer *timer;
-    int seconds;
-
-    QString colorLabel;
-    QString labelLabel;
-    QString lineTypeLabel;
-    QString scriptPathLabel;
-    QString comlineParmsLabel;
-    QString pluginLabel;
-    QString dateLabel;
-    QString openLabel;
-    QString highLabel;
-    QString lowLabel;
-    QString closeLabel;
-    QString volumeLabel;
-    QString oiLabel;
-    QString timeoutLabel;
-
-    bool dateFlag;
-    bool openFlag;
-    bool highFlag;
-    bool lowFlag;
-    bool closeFlag;
-    bool volumeFlag;
-    bool oiFlag;
+    BarData *data;
+    QList<PlotLine *> lines;
 };
 

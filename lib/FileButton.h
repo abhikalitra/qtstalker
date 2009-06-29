@@ -22,9 +22,9 @@
 #ifndef FILEBUTTON_HPP
 #define FILEBUTTON_HPP
 
-#include <qwidget.h>
-#include <qpushbutton.h>
-#include <qstringlist.h>
+#include <QWidget>
+#include <QPushButton>
+#include <QStringList>
 
 class FileButton : public QPushButton
 {

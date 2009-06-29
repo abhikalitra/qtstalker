@@ -19,95 +19,33 @@
  *  USA.
  */
 
-#include "IndicatorPlugin.h"
+#ifndef BARS1_HPP
+#define BARS1_HPP
 
-class BARS : public IndicatorPlugin
+
+#include "IndicatorParms.h"
+#include "PlotLine.h"
+#include "BarData.h"
+#include <QList>
+#include <QHash>
+#include <QString>
+#include <QStringList>
+
+
+
+class BARS
 {
   public:
     BARS ();
-    virtual ~BARS ();
-    Indicator * calculate ();
-    PlotLine * calculateBar ();
-    PlotLine * calculateCandle ();
-    PlotLine * calculatePF ();
-    int indicatorPrefDialog (QWidget *);
-    void setDefaults();
-    PlotLine * calculateCustom (QString &, QPtrList<PlotLine> &);
-    void getIndicatorSettings (Setting &);
-    void setIndicatorSettings (Setting &);
-    void calculateMA (Indicator *);
-    void formatDialog (QStringList &vl, QString &rv, QString &rs);
-    void getPFSettings ();
+    ~BARS ();
+    void calculate (BarData *, IndicatorParms &, QHash<QString, PlotLine *> &);
+    void calculateBar (IndicatorParms &, QHash<QString, PlotLine *> &);
+    void calculateCandle (IndicatorParms &, QHash<QString, PlotLine *> &);
+    void prefDialog (IndicatorParms &, QStringList &);
 
   private:
-    QColor barUpColor;
-    QColor barDownColor;
-    QColor barNeutralColor;
-    QColor candleColor;
-    PlotLine::LineType lineType;
-    QString label;
-    QString method;
     QStringList methodList;
-    QString dbPath;
-
-    QColor maColor;
-    QColor maColor2;
-    QColor maColor3;
-    PlotLine::LineType maLineType;
-    PlotLine::LineType maLineType2;
-    PlotLine::LineType maLineType3;
-    QString maLabel;
-    QString maLabel2;
-    QString maLabel3;
-    int maPeriod;
-    int maPeriod2;
-    int maPeriod3;
-    int maType;
-    int maType2;
-    int maType3;
-    BarData::InputType maInput;
-    BarData::InputType maInput2;
-    BarData::InputType maInput3;
-
-    int pfReversal;
-    double pfBoxSize;
-    QColor pfXColor;
-    QColor pfOColor;
-    QString pfMethod;
-
-    QString barUpColorLabel;
-    QString barDownColorLabel;
-    QString barNeutralColorLabel;
-    QString candleColorLabel;
-    QString labelLabel;
-    QString methodLabel;
-    QString lineTypeLabel;
-    QString pluginLabel;
-
-    QString pfXColorLabel;
-    QString pfOColorLabel;
-    QString pfReversalLabel;
-    QString pfMethodLabel;
-
-    QString maColorLabel;
-    QString maLineTypeLabel;
-    QString maPeriodLabel;
-    QString maLabelLabel;
-    QString maTypeLabel;
-    QString maInputLabel;
-
-    QString maColor2Label;
-    QString maLineType2Label;
-    QString maPeriod2Label;
-    QString maLabel2Label;
-    QString maType2Label;
-    QString maInput2Label;
-
-    QString maColor3Label;
-    QString maLineType3Label;
-    QString maPeriod3Label;
-    QString maLabel3Label;
-    QString maType3Label;
-    QString maInput3Label;
+    BarData *data;
 };
 
+#endif

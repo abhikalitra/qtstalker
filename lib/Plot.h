@@ -22,18 +22,17 @@
 #ifndef PLOT_HPP
 #define PLOT_HPP
 
-#include <qwidget.h>
-#include <qstring.h>
-#include <qcolor.h>
-#include <qfont.h>
-#include <qstringlist.h>
-#include "Indicator.h"
+#include <QWidget>
+#include <QString>
+#include <QColor>
+#include <QFont>
+#include <QStringList>
+#include "IndicatorPlugin.h"
 #include "Scaler.h"
 #include "BarData.h"
 #include "DatePlot.h"
 #include "ScalePlot.h"
 #include "IndicatorPlot.h"
-#include "DBIndex.h"
 
 
 class Plot : public QWidget
@@ -41,18 +40,13 @@ class Plot : public QWidget
   Q_OBJECT
 
   public:
-    Plot (QWidget *, DBIndex *);
+    Plot (QWidget *);
     ~Plot ();
-    void clear ();
     void setData (BarData *);
     void setLogScale (bool);
     void updateStatusBar (int, int);
     void setInfoFlag (bool);
     void drawCrossHair ();
-    void addIndicator (Indicator *);
-    Indicator * getIndicator ();
-    bool deleteIndicator ();
-    void addChartObject (Setting &);
     int getWidth ();
     void setGridFlag (bool);
     void setScaleToScreen (bool);
@@ -62,6 +56,7 @@ class Plot : public QWidget
     IndicatorPlot * getIndicatorPlot ();
     DatePlot * getDatePlot ();
     void setMenuFlag (bool);
+    void calculate ();
 
   public slots:
     void draw();
@@ -83,6 +78,8 @@ class Plot : public QWidget
     void slotDateFlagChanged (bool);
     void slotLogScaleChanged (bool);
     void slotUpdateScalePlot ();
+    void clear ();
+    void loadChartObjects ();
 
   private:
     DatePlot *datePlot;

@@ -20,457 +20,517 @@
  */
 
 #include "FormulaEdit.h"
+#include "DataBase.h"
 #include "PrefDialog.h"
+#include "ta_libc.h"
 #include "IndicatorPlugin.h"
-#include "SymbolDialog.h"
-#include "../pics/delete.xpm"
-#include "../pics/edit.xpm"
+#include "PlotLine.h"
+#include "BARS.h"
+#include "UTIL.h"
 #include "../pics/insert.xpm"
 #include "../pics/openchart.xpm"
-#include "../pics/include.xpm"
-#include <qlayout.h>
-#include <qfile.h>
-#include <qtextstream.h>
-#include <qdir.h>
-#include <qmessagebox.h>
-#include <qtabwidget.h>
-#include <qinputdialog.h>
+#include "../pics/ok.xpm"
+#include "../pics/edit.xpm"
+#include "../pics/delete.xpm"
+#include <QLayout>
+#include <QDir>
+#include <QMessageBox>
+#include <QInputDialog>
+#include <QHBoxLayout>
+#include <QtDebug>
+#include <QLabel>
+#include <QFrame>
+#include <QVBoxLayout>
+#include <QToolBar>
+#include <QIcon>
 
-// not used #define BUTTON_SIZE 24
 
-FormulaEdit::FormulaEdit (QWidget *w, int t) : QWidget(w)
+FormulaEdit::FormulaEdit (QWidget *w, QString &n) : QDialog (w, 0)
 {
-  type = (FormulaEditType) t;
-  /*  FIXME: take no effect, outdated or not yet implemented?
-  config.getPluginList(Config::IndicatorPluginPath, functionList);
-  */
+  name = n;
 
-  PlotLine pl;
-  pl.getLineTypes(lineTypes);
-  
-  QHBoxLayout *hbox = new QHBoxLayout(this);
+  QVBoxLayout *vbox = new QVBoxLayout;
+  vbox->setMargin(10);
+  vbox->setSpacing(5);
+  setLayout(vbox);
+
+  QHBoxLayout *hbox = new QHBoxLayout;
   hbox->setMargin(0);
-  hbox->setSpacing(1);
+  hbox->setSpacing(5);
+  vbox->addLayout(hbox);
 
-  QTabWidget *tab = new QTabWidget(this);
-  hbox->addWidget(tab);
+  QToolBar *tb = new QToolBar;
+  tb->setOrientation(Qt::Vertical);
+  hbox->addWidget(tb);
+  QAction *a = tb->addAction(QIcon(openchart), tr("Open Rule"), this, SLOT(openRule()));
+  actionList.append(a);
+  a = tb->addAction(QIcon(insert), tr("Add Function"), this, SLOT(addFunction()));
+  actionList.append(a);
+  a = tb->addAction(QIcon(edit), tr("Edit Function"), this, SLOT(editFunction()));
+  actionList.append(a);
+  a = tb->addAction(QIcon(deleteitem), tr("Delete Function"), this, SLOT(deleteFunction()));
+  actionList.append(a);
 
-  // create formula page
-  QWidget *tw = new QWidget(this);
+  // create the formula widget area
+  formula = new QListWidget;
+  connect(formula, SIGNAL(itemSelectionChanged()), this, SLOT(itemSelected()));
+  connect(formula, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(doubleClicked(QListWidgetItem *)));
+  hbox->addWidget(formula, 1);
 
-  QHBoxLayout *thbox = new QHBoxLayout(tw);
-  thbox->setMargin(5);
-  thbox->setSpacing(0);
+  // plot settings area
+  plotBox = new QGroupBox;
+  plotBox->setTitle(tr("Plot Parameters"));
+  plotBox->setFlat(FALSE);
+  plotBox->setCheckable(TRUE);
+  plotBox->setChecked(FALSE);
+  connect(plotBox, SIGNAL(clicked(bool)), this, SLOT(plotBoxChecked(bool)));
+  hbox->addWidget(plotBox);
 
-  formula = new QTextEdit(tw);
-  thbox->addWidget(formula);
+  QVBoxLayout *tvbox = new QVBoxLayout;
+  tvbox->setMargin(5);
+  tvbox->setSpacing(5);
+  plotBox->setLayout(tvbox);
 
-  ftoolbar = new Toolbar(tw, Toolbar::Vertical);
-  thbox->addWidget(ftoolbar);
+  QColor color("red");  
+  colorButton = new ColorButton(this, color);
+  connect(colorButton, SIGNAL(valueChanged()), this, SLOT(colorChanged()));
+  tvbox->addWidget(colorButton);
 
-  QString s = "open";
-  QString s2 = tr("Open Rule");
-  ftoolbar->addButton(s, openchart, s2);
-  QObject::connect(ftoolbar->getButton(s), SIGNAL(clicked()), this, SLOT(openRule()));
+  plotLabel = new QLineEdit;
+  tvbox->addWidget(plotLabel);
+  connect(plotLabel, SIGNAL(textEdited(const QString &)), this, SLOT(plotLabelChanged(const QString &)));
 
-  s = "include";
-  s2 = tr("Include Rule");
-  ftoolbar->addButton(s, include, s2);
-  QObject::connect(ftoolbar->getButton(s), SIGNAL(clicked()), this, SLOT(includeRule()));
-  
-  s = "add";
-  s2 = tr("Function Dialog");
-  ftoolbar->addButton(s, insert, s2);
-  QObject::connect(ftoolbar->getButton(s), SIGNAL(clicked()), this, SLOT(functionDialog()));
+  lineType = new QComboBox;
+  PlotLine pl;
+  QStringList l;
+  pl.getLineTypes(l);
+  lineType->addItems(l);
+  connect(lineType, SIGNAL(currentIndexChanged(int)), this, SLOT(lineTypeChanged(int)));
+  tvbox->addWidget(lineType);
 
-  tab->addTab(tw, tr("Formula"));
+  tvbox->addStretch(1);
 
-  // create plot page
-  tw = new QWidget(this);
+  buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel | QDialogButtonBox::Help);
+  connect(buttonBox, SIGNAL(accepted()), this, SLOT(save()));
+  connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
+//  connect(buttonBox, SIGNAL(helpRequested()), this, SLOT(help()));
+  vbox->addWidget(buttonBox);
 
-  thbox = new QHBoxLayout(tw);
-  thbox->setMargin(5);
-  thbox->setSpacing(0);
+  if (name.length())
+    loadIndicator();
 
-  plot = new QListBox(tw);
-  connect(plot, SIGNAL(doubleClicked(QListBoxItem *)), this, SLOT(slotDoubleClicked(QListBoxItem *)));
-  thbox->addWidget(plot);
-
-  ptoolbar = new Toolbar(tw, Toolbar::Vertical);
-  thbox->addWidget(ptoolbar);
-
-  s = "insert";
-  s2 = tr("Insert");
-  ptoolbar->addButton(s, insert, s2);
-  QObject::connect(ptoolbar->getButton(s), SIGNAL(clicked()), this, SLOT(insertPlotItem()));
-  
-  s = "edit";
-  s2 = tr("Edit");
-  ptoolbar->addButton(s, edit, s2);
-  QObject::connect(ptoolbar->getButton(s), SIGNAL(clicked()), this, SLOT(editPlotItem()));
-  
-  s = "delete";
-  s2 = tr("Delete");
-  ptoolbar->addButton(s, deleteitem, s2);
-  QObject::connect(ptoolbar->getButton(s), SIGNAL(clicked()), this, SLOT(deletePlotItem()));
-
-  tab->addTab(tw, tr("Plot"));
+  itemSelected();
 }
 
 FormulaEdit::~FormulaEdit ()
 {
 }
 
-void FormulaEdit::insertPlotItem ()
-{
-  QString pl = tr("Plot");
-  QString cl = tr("Color");
-  QString ll = tr("Label");
-  QString ltl = tr("Line Type");
-  QString vl = tr("Variable");
-
-  PrefDialog *dialog = new PrefDialog(this);
-  dialog->setCaption(tr("Insert Plot"));
-  dialog->createPage (pl);
-
-  QString s("Var");
-  QStringList l;
-  getVariableList(l, FALSE);
-  dialog->addComboItem(vl, pl, l, 0);
-
-  QColor c("red");
-  dialog->addColorItem(cl, pl, c);
-  s = "Label";
-  dialog->addTextItem(ll, pl, s);
-
-  dialog->addComboItem(ltl, pl, lineTypes, 4);
-
-  int rc = dialog->exec();
-  if (rc != QDialog::Accepted)
-  {
-    delete dialog;
-    return;
-  }
-
-  QString ts;
-  s = "plot (";
-  dialog->getCombo(vl, ts);
-  s.append(ts + ",");
-  dialog->getColor(cl, c);
-  s.append(c.name() + ",");
-  dialog->getText(ll, ts);
-  if (! ts.length())
-    ts = " ";
-  s.append(ts + ",");
-  dialog->getCombo(ltl, ts);
-  s.append(ts + ")");
-  plot->insertItem(s, plot->currentItem() + 1);
-
-  delete dialog;
-}
-
-void FormulaEdit::editPlotItem ()
-{
-  QString s = plot->currentText();
-  if (! s.length())
-    return;
-  s.remove(0, s.find("(", 0, TRUE) + 1);
-  s.truncate(s.find(")", -1, TRUE));
-  QStringList l = QStringList::split(",", s, FALSE);
-  int loop;
-  for (loop = 0; loop < (int) l.count(); loop++)
-    l[loop] = l[loop].stripWhiteSpace();
-
-  QString pl = tr("Plot");
-  QString cl = tr("Color");
-  QString ll = tr("Label");
-  QString ltl = tr("Line Type");
-  QString vl = tr("Variable");
-
-  PrefDialog *dialog = new PrefDialog(this);
-  dialog->setCaption(tr("Edit Plot"));
-  dialog->createPage (pl);
-
-  s = "Var";
-  QStringList l2;
-  getVariableList(l2, FALSE);
-  dialog->addComboItem(vl, pl, l2, l[0]);
-
-  QColor c(l[1]);
-  dialog->addColorItem(cl, pl, c);
-
-  dialog->addTextItem(ll, pl, l[2]);
-
-  l2 = lineTypes;
-  dialog->addComboItem(ltl, pl, l2, l[3]);
-
-  int rc = dialog->exec();
-  if (rc != QDialog::Accepted)
-  {
-    delete dialog;
-    return;
-  }
-
-  QString ts;
-  s = "plot (";
-  dialog->getCombo(vl, ts);
-  s.append(ts + ",");
-  dialog->getColor(cl, c);
-  s.append(c.name() + ",");
-  dialog->getText(ll, ts);
-  if (! ts.length())
-    ts = " ";
-  s.append(ts + ",");
-  dialog->getCombo(ltl, ts);
-  s.append(ts + ")");
-  plot->changeItem(s, plot->currentItem());
-
-  delete dialog;
-}
-
-void FormulaEdit::deletePlotItem ()
-{
-  plot->removeItem(plot->currentItem());
-}
-
-void FormulaEdit::setLine (QString &d)
-{
-  if (d.contains("script="))
-  {
-    QStringList l = QStringList::split("=", d, FALSE);
-    QString k = l[0];
-    QString s = d;
-    s.remove(0, k.length() + 1);
-    QStringList l2 = QStringList::split("|", s, FALSE);
-    int loop;
-    for (loop = 0; loop < (int) l2.count(); loop++)
-      setLine(l2[loop]);    
-    return;
-  }
-
-  if (d.contains(":="))
-  {
-    formula->append(d);
-    return;
-  }
-
-  if (d.contains("//"))
-  {
-    formula->append(d);
-    return;
-  }
-
-  if (d.contains("INCLUDECUS("))
-  {
-    formula->append(d);
-    return;
-  }
-
-  if (d.contains("plot"))
-    plot->insertItem(d, -1);
-}
-
-void FormulaEdit::getText (QString &s)
-{
-  s = formula->text()  + "\n";
-
-  int loop;
-  for (loop = 0; loop < (int) plot->count(); loop++)
-    s.append(plot->text(loop) + "\n");
-}
-
 void FormulaEdit::openRule ()
 {
-  QString s("*");
-  QString s2;
-  config.getData(Config::IndicatorPath, s2);
-  SymbolDialog *dialog = new SymbolDialog(this,
-                                          s2,
-  					  s2,
-					  s,
-					  QFileDialog::ExistingFiles);
-  dialog->setCaption(tr("Select rule to open."));
-
-  int rc = dialog->exec();
-
-  if (rc != QDialog::Accepted)
-  {
-    delete dialog;
-    return;
-  }
-
-  QStringList selection = dialog->selectedFile();
-  delete dialog;
-
-  if (! selection.count())
-    return;
-
-  QFile f(selection[0]);
-  if (! f.open(IO_ReadOnly))
-  {
-    qDebug("FormulaEdit::openRule:can't read file %s", selection[0].latin1());
-    return;
-  }
-  QTextStream stream(&f);
-  
-  QString script;
-  while(stream.atEnd() == 0)
-  {
-    s = stream.readLine();
-    s = s.stripWhiteSpace();
-    if (s.contains("script="))
-      script = s;
-  }
-  f.close();
-
-  setLine(script);
-}
-
-/*
-void FormulaEdit::saveRule ()
-{
-  if (! plot->count())
-  {
-    QMessageBox::information(this,
-                             tr("Qtstalker: Error"),
-			     tr("Plot missing."));
-    return;
-  }
-
-  QString s("*");
-  QString s2;
-  config.getData(Config::IndicatorPath, s2);
-  QString selection = QFileDialog::getSaveFileName(s2, s, this, "Save CUS Rule", "Save CUS Rule");
-  if (! selection.length())
-    return;
-  
-  while (selection.contains(" "))
-    selection = selection.remove(selection.find(" ", 0, TRUE), 1);
-    
-  QDir dir;
-  if (dir.exists(selection, TRUE))
-  {
-    int rc = QMessageBox::warning(this,
-  			          tr("Qtstalker: Warning"),
-			          tr("Rule already exists. Do you want to replace it?"),
-			          QMessageBox::Yes,
-			          QMessageBox::No,
-			          QMessageBox::NoButton);
-
-    if (rc == QMessageBox::No)
-      return;
-  }
-  
-  QFile f(selection);
-  if (! f.open(IO_WriteOnly))
-  {
-    qDebug("FormulaEdit::saveItem:can't open file");
-    return;
-  }
-  QTextStream stream(&f);
-
-  int loop;
-  for (loop = 0; loop < (int) formulaList.count(); loop++)
-    stream << formulaList[loop] << "\n";
-  getText(s);  
-  stream << s << "\n";
-
-  f.close(); 
-}
-*/
-
-void FormulaEdit::slotDoubleClicked (QListBoxItem *)
-{
-  editPlotItem();
-}
-
-int FormulaEdit::getLines ()
-{
-  return (int) formula->lines();
-}
-
-void FormulaEdit::functionDialog ()
-{
-  Config config;
+  DataBase db;
   QStringList l;
-  config.getIndicatorList(l);
-  l.append("UTIL");
-  l.append("SYMBOL");
-  l.sort();
-
+  db.getIndicatorList(l);
   bool ok;
-  QString function = QInputDialog::getItem(QObject::tr("Indicator Selection"),
-                                    QObject::tr("Select an indicator:"),
-                                    l,
-                                    0,
-                                    TRUE,
-                                    &ok,
-                                    this);
+  QString selection = QInputDialog::getItem(this, tr("Select Indicator"), tr("Select indicator to open."), l, 0, FALSE, &ok, 0);
   if (! ok)
     return;
 
-  IndicatorPlugin *plug = config.getIndicatorPlugin(function);
-  if (! plug)
-  {
-    qDebug("FormulaEdit::functionDialog:can't open %s plugin", function.latin1());
-    return;
-  }
-
-  QString s;
-  plug->getPluginName(s);
-  if (! s.compare("TALIB"))
-    plug->setFormatMethod(function);
-
-  QString vname, format;
-  QStringList vl;
-  getVariableList(vl, TRUE);
-  plug->formatDialog(vl, vname, format);
-
-  if (! vname.length())
-    return;
-
-  if (vl.findIndex(vname) != -1)
-  {
-    QMessageBox::information(this, tr("Qtstalker: Error"), tr("Duplicate variable name."));
-    return;
-  }
-
-  format.prepend(vname + " := " + function + "(");
-  format.append(")");
-  formula->insert(format);
+  QString s = name;
+  name = selection;
+  loadIndicator();
+  name = s;
 }
 
-void FormulaEdit::includeRule ()
+void FormulaEdit::doubleClicked (QListWidgetItem *)
 {
-  QString s("*");
-  QString s2, s3;
-  config.getData(Config::IndicatorPath, s2);
-  config.getData(Config::IndicatorGroup, s3);
-  s2.append("/" + s3);
-  SymbolDialog *dialog = new SymbolDialog(this,
-                                          s2,
-  					  s2,
-					  s,
-					  QFileDialog::ExistingFiles);
-  dialog->setCaption(tr("Select rule to include"));
+}
+
+void FormulaEdit::addFunction ()
+{
+  IndicatorPlugin ip;
+  QStringList l;
+  ip.getIndicatorList(l);
+
+  bool ok;
+  QString function = QInputDialog::getItem(this,
+					   QObject::tr("Indicator Selection"),
+                                           QObject::tr("Select an indicator:"),
+                                           l,
+                                           0,
+                                           TRUE,
+                                           &ok,
+                                           0);
+  if (! ok)
+    return;
+
+  IndicatorParms parms;
+  parms.setIndicator(function);
+
+  QStringList vl;
+  getVariableList(vl, TRUE);
+
+  if (function == "BARS")
+  {
+    BARSDialog(parms, vl);
+    return;
+  }
+
+  if (function == "UTIL")
+  {
+    UTILDialog(parms, vl);
+    return;
+  }
+
+  PrefDialog *dialog = new PrefDialog(0);
+  dialog->setWindowTitle(QObject::tr("Function Parms"));
+
+  QString vnl = QObject::tr("Variable Name");
+  dialog->addTextItem(vnl, function);
+
+  const TA_FuncHandle *handle;
+  const TA_FuncInfo *theInfo;
+ 
+  // open a TALIB handle
+  TA_RetCode retCode = TA_GetFuncHandle((char *) function.toStdString().c_str(), &handle);
+  if (retCode != TA_SUCCESS)
+  {
+    qDebug("FormulaEdit::functionDialog:can't open handle");
+    return;
+  }
+
+  // get info on the function
+  retCode = TA_GetFuncInfo(handle, &theInfo);
+  if (retCode != TA_SUCCESS)
+  {
+    qDebug("TALIB::getFormatList:can't get function info");
+    return;
+  }
+
+  // check for any array inputs
+  QString s;
+  const TA_InputParameterInfo *inputParms;
+  int loop;
+  for (loop = 0; loop < (int) theInfo->nbInput; loop++ )
+  {
+    s = QObject::tr("Input") + QString::number(loop + 1);
+    TA_GetInputParameterInfo(theInfo->handle, loop, &inputParms);
+    switch (inputParms->type)
+    {
+      case TA_Input_Real:
+        dialog->addComboItem(s, vl, (int) BarData::Close);
+        break;
+      default:
+        break;
+    }
+  }
+
+  QStringList mal;
+  ip.getMATypes(mal);
+
+  // get the input parms
+  const TA_OptInputParameterInfo *optInfo;
+  for (loop = 0; loop < (int) theInfo->nbOptInput; loop++ )
+  {
+    TA_GetOptInputParameterInfo(theInfo->handle, loop, &optInfo);
+    s = optInfo->displayName;
+    switch (optInfo->type)
+    {
+      case TA_OptInput_RealRange:
+        dialog->addDoubleItem(s, (double) optInfo->defaultValue, 0, 99999999);
+        break;
+      case TA_OptInput_IntegerRange:
+        dialog->addIntItem(s, (int) optInfo->defaultValue, 1, 999999);
+        break;
+      case TA_OptInput_IntegerList:
+        dialog->addComboItem(s, mal, (int) optInfo->defaultValue);
+        break;
+      case TA_OptInput_RealList:
+        break;
+      default:
+        break;
+    }
+  }
+
+  // get the number of outputs
+  if (theInfo->nbOutput > 1)
+  {
+    s = "Output";
+    dialog->addIntItem(s, 1, 1, theInfo->nbOutput);
+  }
 
   int rc = dialog->exec();
-
+  
   if (rc != QDialog::Accepted)
   {
     delete dialog;
     return;
   }
 
-  QStringList selection = dialog->selectedFiles();
-  delete dialog;
+  dialog->getText(vnl, s);
+  if (! s.length())
+  {
+    delete dialog;
+    return;
+  }
+  if (vl.indexOf(s) != -1)
+  {
+    QMessageBox::information(this, tr("Qtstalker: Error"), tr("Duplicate variable name."));
+    delete dialog;
+    return;
+  }
+  parms.setVariable(s);
 
-  if (! selection.count())
+  QString ts;
+  for (loop = 0; loop < (int) theInfo->nbInput; loop++ )
+  {
+    s = QObject::tr("Input") + QString::number(loop + 1);
+    TA_GetInputParameterInfo(theInfo->handle, loop, &inputParms);
+    switch (inputParms->type)
+    {
+      case TA_Input_Real:
+        dialog->getCombo(s, ts);
+        parms.setData(s, ts);
+        break;
+      default:
+        break;
+    }
+  }
+
+  for (loop = 0; loop < (int) theInfo->nbOptInput; loop++ )
+  {
+    TA_GetOptInputParameterInfo(theInfo->handle, loop, &optInfo);
+    s = optInfo->displayName;
+    switch (optInfo->type)
+    {
+      case TA_OptInput_RealRange:
+        ts = QString::number(dialog->getDouble(s));
+        parms.setData(s, ts);
+        break;
+      case TA_OptInput_IntegerRange:
+        ts = QString::number(dialog->getInt(s));
+        parms.setData(s, ts);
+        break;
+      case TA_OptInput_IntegerList:
+        dialog->getCombo(s, ts);
+        parms.setData(s, ts);
+        break;
+      default:
+        break;
+    }
+  }
+
+  if (theInfo->nbOutput > 1)
+  {
+    s = "Output";
+    ts = QString::number(dialog->getInt(s));
+    parms.setData(s, ts);
+  }
+
+  parms.getVariable(ts);
+  formula->addItem(ts);
+
+  parmList.append(parms);
+
+  delete dialog;
+}
+
+void FormulaEdit::editFunction ()
+{
+  IndicatorPlugin ip;
+  IndicatorParms parms = parmList.at(formula->currentRow());
+
+  QStringList vl;
+  getVariableList(vl, TRUE);
+
+  QString function;
+  parms.getIndicator(function);
+  if (function == "BARS")
+  {
+    BARS i;
+    i.prefDialog(parms, vl);
+    parmList.replace(formula->currentRow(), parms);
+    return;
+  }
+
+  if (function == "UTIL")
+  {
+    UTIL i;
+    i.prefDialog(parms, vl);
+    parmList.replace(formula->currentRow(), parms);
+    return;
+  }
+
+  PrefDialog *dialog = new PrefDialog(0);
+  dialog->setWindowTitle(QObject::tr("Function Parms"));
+
+  QString vnl = QObject::tr("Variable Name");
+  dialog->addTextItem(vnl, function);
+
+  const TA_FuncHandle *handle;
+  const TA_FuncInfo *theInfo;
+ 
+  // open a TALIB handle
+  TA_RetCode retCode = TA_GetFuncHandle((char *) function.toStdString().c_str(), &handle);
+  if (retCode != TA_SUCCESS)
+  {
+    qDebug("FormulaEdit::functionDialog:can't open handle");
+    return;
+  }
+
+  // get info on the function
+  retCode = TA_GetFuncInfo(handle, &theInfo);
+  if (retCode != TA_SUCCESS)
+  {
+    qDebug("TALIB::getFormatList:can't get function info");
+    return;
+  }
+
+  // check for any array inputs
+  QString s, s2;
+  const TA_InputParameterInfo *inputParms;
+  int loop;
+  for (loop = 0; loop < (int) theInfo->nbInput; loop++ )
+  {
+    s = QObject::tr("Input") + QString::number(loop + 1);
+    TA_GetInputParameterInfo(theInfo->handle, loop, &inputParms);
+    switch (inputParms->type)
+    {
+      case TA_Input_Real:
+        parms.getData(s, s2);
+        dialog->addComboItem(s, vl, s2);
+        break;
+      default:
+        break;
+    }
+  }
+
+  QStringList mal;
+  ip.getMATypes(mal);
+
+  // get the input parms
+  const TA_OptInputParameterInfo *optInfo;
+  for (loop = 0; loop < (int) theInfo->nbOptInput; loop++ )
+  {
+    TA_GetOptInputParameterInfo(theInfo->handle, loop, &optInfo);
+    s = optInfo->displayName;
+    switch (optInfo->type)
+    {
+      case TA_OptInput_RealRange:
+        parms.getData(s, s2);
+        dialog->addDoubleItem(s, s2.toDouble(), 0, 99999999);
+        break;
+      case TA_OptInput_IntegerRange:
+        parms.getData(s, s2);
+        dialog->addIntItem(s, s2.toInt(), 1, 999999);
+        break;
+      case TA_OptInput_IntegerList:
+        parms.getData(s, s2);
+        dialog->addComboItem(s, mal, s2);
+        break;
+      case TA_OptInput_RealList:
+        break;
+      default:
+        break;
+    }
+  }
+
+  // get the number of outputs
+  if (theInfo->nbOutput > 1)
+  {
+    s = "Output";
+    parms.getData(s, s2);
+    dialog->addIntItem(s, s2.toInt(), 1, theInfo->nbOutput);
+  }
+
+  int rc = dialog->exec();
+  
+  if (rc != QDialog::Accepted)
+  {
+    delete dialog;
+    return;
+  }
+
+  dialog->getText(vnl, s);
+  if (! s.length())
+  {
+    delete dialog;
+    return;
+  }
+  if (vl.indexOf(s) != -1)
+  {
+    QMessageBox::information(this, tr("Qtstalker: Error"), tr("Duplicate variable name."));
+    delete dialog;
+    return;
+  }
+  parms.setVariable(s);
+
+  QString ts;
+  for (loop = 0; loop < (int) theInfo->nbInput; loop++ )
+  {
+    s = QObject::tr("Input") + QString::number(loop + 1);
+    TA_GetInputParameterInfo(theInfo->handle, loop, &inputParms);
+    switch (inputParms->type)
+    {
+      case TA_Input_Real:
+        dialog->getCombo(s, ts);
+        parms.setData(s, ts);
+        break;
+      default:
+        break;
+    }
+  }
+
+  for (loop = 0; loop < (int) theInfo->nbOptInput; loop++ )
+  {
+    TA_GetOptInputParameterInfo(theInfo->handle, loop, &optInfo);
+    s = optInfo->displayName;
+    switch (optInfo->type)
+    {
+      case TA_OptInput_RealRange:
+        ts = QString::number(dialog->getDouble(s));
+        parms.setData(s, ts);
+        break;
+      case TA_OptInput_IntegerRange:
+        ts = QString::number(dialog->getInt(s));
+        parms.setData(s, ts);
+        break;
+      case TA_OptInput_IntegerList:
+        dialog->getCombo(s, ts);
+        parms.setData(s, ts);
+        break;
+      default:
+        break;
+    }
+  }
+
+  if (theInfo->nbOutput > 1)
+  {
+    s = "Output";
+    ts = QString::number(dialog->getInt(s));
+    parms.setData(s, ts);
+  }
+
+  parms.getVariable(ts);
+  formula->addItem(ts);
+
+  parmList.append(parms);
+
+  delete dialog;
+}
+
+void FormulaEdit::deleteFunction ()
+{
+  QListWidgetItem *item = formula->currentItem();
+  if (! item)
     return;
 
-  QFileInfo fi(selection[0]);
-  s = "INCLUDECUS(" + fi.fileName() + ")\n";
-  formula->insert(s);
+  int row = formula->currentRow();
+  parmList.removeAt(row);
+  
+  delete item;
+
+  itemSelected();
 }
 
 void FormulaEdit::getVariableList (QStringList &l, bool flag)
@@ -484,15 +544,183 @@ void FormulaEdit::getVariableList (QStringList &l, bool flag)
     bd.getInputFields(l);
   }
 
-  QStringList l2 = QStringList::split("\n", formula->text(), FALSE);
   int loop;
-  for (loop = 0; loop < (int) l2.count(); loop++)
+  for (loop = 0; loop < formula->count(); loop++)
   {
-    if (l2[loop].contains(":="))
-    {
-      QStringList l3 = QStringList::split(":=", l2[loop], FALSE);
-      l.append(l3[0].stripWhiteSpace());
-    }
+    QListWidgetItem *item = formula->item(loop);
+    l.append(item->text());
   }
+}
+
+void FormulaEdit::itemSelected ()
+{
+  // actions 3,4
+  bool flag = FALSE;
+  QListWidgetItem *item = formula->currentItem();
+  if (item)
+    flag = TRUE;
+
+  int loop;
+  for (loop = 2; loop < 4; loop++)
+    actionList.at(loop)->setEnabled(flag);
+
+  if (! flag)
+  {
+    plotBox->setChecked(FALSE);
+    return;
+  }
+
+  IndicatorParms parms = parmList.at(formula->currentRow());
+
+  if (! parms.getPlot())
+  {
+    plotBox->setChecked(FALSE);
+    return;
+  }
+
+  plotBox->setChecked(TRUE);
+
+  QColor color("red");
+  parms.getColor(color);
+  colorButton->setColor(color);
+
+  QString s;
+  parms.getLabel(s);
+  plotLabel->setText(s);
+
+  parms.getLineType(s);
+  lineType->setCurrentIndex(lineType->findText(s, Qt::MatchExactly));
+}
+
+void FormulaEdit::loadIndicator ()
+{
+  formula->clear();
+  parmList.clear();
+
+  DataBase db;
+  QString s, var;
+  db.getIndicator(name, parmList);
+
+  int loop;
+  for (loop = 0; loop < parmList.count(); loop++)
+  {
+    IndicatorParms parms = parmList.at(loop);
+    
+    parms.getVariable(var);
+    QListWidgetItem *item = new QListWidgetItem(var, formula);
+
+    if (parms.getPlot())
+      item->setIcon(QIcon(ok));
+  }
+}
+
+void FormulaEdit::save ()
+{
+  DataBase db;
+  QStringList il;
+  db.getIndicatorList(il);
+  if (! il.contains(name))
+    db.createIndicator(name);
+
+  db.setIndicator(name, parmList);
+
+  accept();
+}
+
+void FormulaEdit::plotBoxChecked (bool status)
+{
+  QListWidgetItem *item = formula->currentItem();
+  if (! item)
+    return;
+
+  IndicatorParms parms = parmList.at(formula->currentRow());
+
+  if (status)
+  {
+    item->setIcon(QIcon(ok));
+
+    QColor c;
+    parms.getColor(c);
+    if (! c.isValid())
+    {
+      c.setNamedColor("red");
+      parms.setColor(c);
+    }
+    colorButton->setColor(c);
+
+    QString s;
+    parms.getLabel(s);
+    if (! s.length())
+    {
+      s = "Label";
+      parms.setLabel(s);
+    }
+    plotLabel->setText(s);
+
+    parms.getLineType(s);
+    if (! s.length())
+    {
+      s = "Line";
+      parms.setLineType(s);
+    }
+    lineType->setCurrentIndex(lineType->findText(s, Qt::MatchExactly));
+  }
+  else
+    item->setIcon(QIcon());
+
+  parms.setPlot((int) status);
+
+  parmList.replace(formula->currentRow(), parms);
+}
+
+void FormulaEdit::plotLabelChanged (const QString &t)
+{
+  IndicatorParms parms = parmList.at(formula->currentRow());
+  QString s = t;
+  parms.setLabel(s);
+  parmList.replace(formula->currentRow(), parms);
+}
+
+void FormulaEdit::lineTypeChanged (int)
+{
+  IndicatorParms parms = parmList.at(formula->currentRow());
+  QString s = lineType->currentText();
+  parms.setLineType(s);
+  parmList.replace(formula->currentRow(), parms);
+}
+
+void FormulaEdit::colorChanged ()
+{
+  IndicatorParms parms = parmList.at(formula->currentRow());
+  QColor c;
+  colorButton->getColor(c);
+  parms.setColor(c);
+  parmList.replace(formula->currentRow(), parms);
+}
+
+//**********************************************************************
+//**********************************************************************
+//**********************************************************************
+
+void FormulaEdit::BARSDialog (IndicatorParms &parms, QStringList &vl)
+{
+  BARS i;
+  i.prefDialog(parms, vl);
+
+  QString s;
+  parms.getVariable(s);
+  formula->addItem(s);
+  parmList.append(parms);
+}
+
+void FormulaEdit::UTILDialog (IndicatorParms &parms, QStringList &vl)
+{
+  UTIL i;
+  i.prefDialog(parms, vl);
+
+  QString s;
+  parms.getVariable(s);
+  formula->addItem(s);
+  parmList.append(parms);
 }
 

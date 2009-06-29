@@ -20,17 +20,19 @@
  */
 
 #include "DatePlot.h"
-#include <qpainter.h>
-#include <qpaintdevicemetrics.h>
-#include <qstring.h>
-#include <qdatetime.h>
+#include <QPainter>
+#include <QString>
+#include <QDateTime>
+#include <QResizeEvent>
+#include <QVector>
+#include <QPaintEvent>
 
 #define SCALE_WIDTH 60
 #define DATE_HEIGHT 30
 
 DatePlot::DatePlot (QWidget *w) : QWidget(w)
 {
-  setBackgroundMode(NoBackground);
+//  setBackgroundMode(Qt::NoBackground);
   scaleWidth = SCALE_WIDTH;
   startX = 2;
   backgroundColor.setNamedColor("black");
@@ -40,7 +42,7 @@ DatePlot::DatePlot (QWidget *w) : QWidget(w)
   startIndex = 0;
   data = 0;
 //  setMouseTracking(TRUE);
-  setFocusPolicy(QWidget::ClickFocus);
+  setFocusPolicy(Qt::ClickFocus);
 
   plotFont.setFamily("Helvetica");
   plotFont.setPointSize(12);
@@ -49,7 +51,7 @@ DatePlot::DatePlot (QWidget *w) : QWidget(w)
   setMinimumHeight(DATE_HEIGHT);
   setMaximumHeight(DATE_HEIGHT);
   
-  dateList.setAutoDelete(TRUE);
+  //dateList.setAutoDelete(TRUE);
 }
 
 DatePlot::~DatePlot ()
@@ -94,9 +96,11 @@ void DatePlot::setData (BarData *l)
 
 void DatePlot::draw ()
 {
+  if (buffer.isNull())
+    return;
   buffer.fill(backgroundColor);
 
-  if (dateList.count() && isShown())
+  if (dateList.count() && isVisible())
   {
     QPainter painter;
     painter.begin(&buffer);
@@ -126,8 +130,7 @@ void DatePlot::draw ()
 	  
           painter.drawText (x - (fm.width(item->text, -1) / 2),
 	                    fm.height() + 2,
-			    item->text,
-			    -1);
+			    item->text);
 	}
 	else
 	{
@@ -136,8 +139,7 @@ void DatePlot::draw ()
 	  
           painter.drawText (x - (fm.width(item->text, -1) / 2),
 	                    buffer.height() - 2,
-			    item->text,
-			    -1);
+			    item->text);
 	}
       }
               
@@ -148,22 +150,24 @@ void DatePlot::draw ()
     painter.end();
   }
 
-  paintEvent(0);
+  update();
 }
 
 void DatePlot::drawRefresh ()
 {
-  paintEvent(0);
+  update();
 }
 
 void DatePlot::paintEvent (QPaintEvent *)
 {
-  bitBlt(this, 0, 0, &buffer);
+  QPainter p(this);
+  p.drawPixmap(0, 0, buffer);
 }
 
 void DatePlot::resizeEvent (QResizeEvent *event)
 {
-  buffer.resize(event->size());
+  buffer = QPixmap(event->size());
+//  buffer.resize(event->size());
   draw();
 }
 
@@ -285,7 +289,7 @@ void DatePlot::getDailyDate ()
     {
       item->flag = 1;
       item->tick = 1;
-      item->text = date.toString("MMM'yy");
+      item->text = date.toString("MMM-yy");
       oldDate = date;
       oldWeek = date;
       oldWeek = oldWeek.addDays(7 - oldWeek.dayOfWeek());
@@ -387,7 +391,7 @@ void DatePlot::getMonthlyDate ()
   }
 }
 
-QMemArray<int> & DatePlot::getXGrid ()
+QVector<int> & DatePlot::getXGrid ()
 {
   return xGrid;
 }

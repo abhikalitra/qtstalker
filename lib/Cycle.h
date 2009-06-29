@@ -23,9 +23,9 @@
 #define CYCLE_HPP
 
 #include "COBase.h"
-#include "Setting.h"
-#include <qpoint.h>
-#include <qdatetime.h>
+#include <QPoint>
+
+
 
 class Cycle : public COBase
 {
@@ -40,8 +40,8 @@ class Cycle : public COBase
     double getLow ();
     void loadDefaults ();
     void saveDefaults ();
-    void getSettings (Setting &);
-    void setSettings (Setting &);
+    void loadSettings (COSettings &);
+    void saveSettings ();
     bool isGrabSelected (QPoint point);
     
   public slots:
@@ -50,12 +50,10 @@ class Cycle : public COBase
     void pointerMoving (QPixmap &, QPoint &, QDateTime &, double y);
     
   protected:
-    int defaultInterval;
     QPoint tpoint;
     int tpixelspace;
     int interval;
     int grabPosition;
-    QString intervalLabel;
 };
 
 #endif

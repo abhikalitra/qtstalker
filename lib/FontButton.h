@@ -22,10 +22,10 @@
 #ifndef FONTBUTTON_HPP
 #define FONTBUTTON_HPP
 
-#include <qwidget.h>
-#include <qpushbutton.h>
-#include <qpixmap.h>
-#include <qfont.h>
+#include <QWidget>
+#include <QPushButton>
+#include <QPixmap>
+#include <QFont>
 
 class FontButton : public QPushButton
 {

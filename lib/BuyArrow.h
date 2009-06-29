@@ -23,8 +23,9 @@
 #define BUYARROW_HPP
 
 #include "COBase.h"
-#include <qpointarray.h>
-#include <qdatetime.h>
+#include <QPolygon>
+
+
 
 class BuyArrow : public COBase
 {
@@ -38,8 +39,8 @@ class BuyArrow : public COBase
     void newObject (QString &, QString &);
     void loadDefaults ();
     void saveDefaults ();
-    void getSettings (Setting &);
-    void setSettings (Setting &);
+    void saveSettings ();
+    void loadSettings (COSettings &);
     void adjustForSplit (QDateTime &, double);
     
   public slots:
@@ -48,7 +49,7 @@ class BuyArrow : public COBase
     void pointerMoving (QPixmap &, QPoint &, QDateTime &, double y);
     
   protected:
-    QPointArray arrow;
+    QPolygon arrow;
 };
 
 #endif
