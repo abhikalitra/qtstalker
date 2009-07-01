@@ -32,7 +32,6 @@
 class Bar
 {
   public:
-  
     Bar ();
     ~Bar ();
     int setDate (QDateTime &);

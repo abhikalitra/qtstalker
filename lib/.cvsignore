@@ -2,3 +2,4 @@ Makefile
 moc_*
 libqtstalker.so.*
 libqtstalker.*.dylib
+qtstalker_defines.h
