@@ -105,15 +105,7 @@ void IndicatorPage::newIndicator ()
     return;
   }
 
-  int tabRow = QInputDialog::getInt (this,
-				     tr("Indicator Tab"),
-				     tr("Row"),
-				     1,
-				     1,
-				     3,
-				     1,
-				     &ok,
-				     0);
+  int tabRow = QInputDialog::getInt (this, tr("Indicator Tab"), tr("Row"), 1, 1, 3, 1, &ok, 0);
   if (! ok)
     return;
 

@@ -35,6 +35,7 @@ void Setup::setup ()
 {
   setupDirectories();
   setupDataBase();
+  setupQuoteBase();
 }
 
 void Setup::setupDirectories ()
@@ -112,6 +113,20 @@ void Setup::setupDataBase ()
   q.exec(s);
   if (q.lastError().isValid())
     qDebug() << "DataBase::createChartObjectsTable: " << q.lastError().text();
+}
+
+void Setup::setupQuoteBase ()
+{
+  QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", "quotes");
+  db.setHostName("me");
+  db.setDatabaseName(quotePath);
+  db.setUserName("QtStalker");
+  db.setPassword("qtstalker");
+  if (! db.open())
+  {
+    qDebug() << "Setup::setup: quote db open failed";
+    return;
+  }
 }
 
 void Setup::setupConfigDefaults ()

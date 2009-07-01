@@ -28,10 +28,6 @@ DataBase::DataBase ()
 {
 }
 
-DataBase::~DataBase ()
-{
-}
-
 /********************************************************************************/
 /********************* chart functions *******************************************/
 /********************************************************************************/
@@ -58,12 +54,12 @@ void DataBase::getChart (BarData *data)
 {
   QSqlQuery q(QSqlDatabase::database("quotes"));
 
-  QString symbol, ts, ts2;
+  QString symbol, ts, ts2, format;
   QDateTime firstDate, lastDate;
   data->getSymbol(symbol);
 
   // get the index details
-  QString s = "SELECT name,type,firstDate,lastDate FROM symbolIndex WHERE symbol='" + symbol + "'";
+  QString s = "SELECT name,firstDate,lastDate,format FROM symbolIndex WHERE symbol='" + symbol + "'";
   q.exec(s);
   if (q.lastError().isValid())
   {
@@ -77,13 +73,12 @@ void DataBase::getChart (BarData *data)
     data->setName(ts);
 
     ts = q.value(1).toString();
-    data->setType(ts);
-
-    ts = q.value(2).toString();
     firstDate = QDateTime::fromString(ts, "yyyyMMddHHmmsszzz");
 
-    ts = q.value(3).toString();
+    ts = q.value(2).toString();
     lastDate = QDateTime::fromString(ts, "yyyyMMddHHmmsszzz");
+
+    format = q.value(3).toString();
   }
 
   QDateTime sdate = lastDate;
@@ -100,7 +95,7 @@ void DataBase::getChart (BarData *data)
     ts2 = edate.toString("yyyyMMddHHmmsszzz");
 
     // get some quotes
-    s = "SELECT date,open,high,low,close,volume,oi FROM " + symbol + " WHERE date >= " + ts + " AND date <= " + ts2;
+    s = "SELECT date,data FROM " + symbol + " WHERE date >= " + ts + " AND date <= " + ts2;
     q.exec(s);
     if (q.lastError().isValid())
     {
@@ -120,135 +115,13 @@ void DataBase::getChart (BarData *data)
       s = q.value(0).toString();
       QDateTime dt = QDateTime::fromString(s, "yyyyMMddHHmmsszzz");
       bar.setDate(dt);
-      bar.setOpen(q.value(1).toDouble());
-      bar.setHigh(q.value(2).toDouble());
-      bar.setLow(q.value(3).toDouble());
-      bar.setClose(q.value(4).toDouble());
-      bar.setVolume(q.value(5).toDouble());
-      bar.setOI(q.value(6).toInt());
+
+      s = q.value(1).toString();
+      bar.parse(format, s);
+
       data->prepend(bar);
     } while (q.previous() && data->count() < data->getBarsRequested());
   } while (data->count() < data->getBarsRequested());
-}
-
-void DataBase::setChart (QList<Bar> *bars)
-{
-  if (! bars->count())
-    return;
-
-  QSqlQuery q(QSqlDatabase::database("quotes"));
-
-  Bar bar = bars->at(0);
-  QString symbol;
-  bar.getSymbol(symbol);
-
-  // check to see if symbol exists
-  QString ts = "SELECT firstDate,lastDate,type FROM symbolIndex WHERE symbol='" + symbol + "'";
-  q.exec(ts);
-  if (q.lastError().isValid())
-  {
-    qDebug() << q.lastError().text();
-    return;
-  }
-
-  QDateTime firstDate, lastDate;
-
-  if (! q.next())
-  {
-    // new symbol, create new table for it
-    ts = "CREATE TABLE " + symbol + " (date INT PRIMARY KEY, open REAL, high REAL, low REAL, close REAL, volume INT, oi INT)";
-    q.exec(ts);
-    if (q.lastError().isValid())
-    {
-      qDebug() << "DataBase::setChart:create new symbol table: " << q.lastError().text();
-      return;
-    }
-
-    // add new symbol entry into the symbol index table
-    bar.getDate(firstDate);
-    bar.getDate(lastDate);
-
-    QString s;
-    bar.getDateNumber(s);
-    ts = "INSERT OR REPLACE INTO symbolIndex (symbol,firstDate,lastDate) VALUES('" + symbol + "'," + s + "," + s + ")";
-    q.exec(ts);
-    if (q.lastError().isValid())
-    {
-      qDebug() << "DataBase::setChart:create new symbol index record: " << q.lastError().text();
-      return;
-    }
-  }
-  else
-  {
-    // get the start date
-    ts = q.value(0).toString();
-    firstDate = QDateTime::fromString(ts, "yyyyMMddHHmmsszzz");
-
-    // get the end date
-    ts = q.value(1).toString();
-    lastDate = QDateTime::fromString(ts, "yyyyMMddHHmmsszzz");
-  }
-
-  ts = "BEGIN TRANSACTION";
-  q.exec(ts);
-  if (q.lastError().isValid())
-  {
-    qDebug() << "DataBase::setChart:begin transaction: " << q.lastError().text();
-    return;
-  }
-
-  QDateTime dt;
-  int loop;
-  QString date;
-  int flag = FALSE;
-  for (loop = 0; loop < bars->count(); loop++)
-  {
-    Bar bar = bars->at(loop);
-    bar.getDateNumber(date);
-    bar.getDate(dt);
-
-    ts = "INSERT OR REPLACE INTO " + symbol + " VALUES(" + date + "," + QString::number(bar.getOpen()) + ","
-         + QString::number(bar.getHigh()) + "," + QString::number(bar.getLow()) + "," + QString::number(bar.getClose()) + ","
-         + QString::number(bar.getVolume()) + "," + QString::number(bar.getOI()) + ")";
-    q.exec(ts);
-    if (q.lastError().isValid())
-      qDebug() << "DataBase::setChart:save quote in symbol table: " << q.lastError().text();
-
-    if (dt < firstDate)
-    {
-      firstDate = dt;    
-      flag = TRUE;
-    }
-
-    if (dt > lastDate)
-    {
-      lastDate = dt;    
-      flag = TRUE;
-    }
-  }
-
-  ts = "COMMIT";
-  q.exec(ts);
-  if (q.lastError().isValid())
-  {
-    qDebug() << "DataBase::setChart:commit: " << q.lastError().text();
-    return;
-  }
-
-  // update the start and end dates
-  if (flag)
-  {
-    // update the new start and end dates in symbolIndex
-    QString sd,ed;
-    sd = firstDate.toString("yyyyMMddHHmmsszzz");
-    ed = lastDate.toString("yyyyMMddHHmmsszzz");
-
-    // update the start and end dates in the symbolIndex
-    ts = "INSERT OR REPLACE INTO symbolIndex (symbol,firstDate,lastDate) VALUES('" + symbol + "'," + sd + "," + ed + ")";
-    q.exec(ts);
-    if (q.lastError().isValid())
-      qDebug() << "DataBase::setChart:update first and last dates in symbol index table: " << q.lastError().text();
-  }
 }
 
 /********************************************************************************/
@@ -421,7 +294,17 @@ void DataBase::getIndicator (QString &name, QList<IndicatorParms> &parms)
   parms.clear();
 
   QSqlQuery q(QSqlDatabase::database("data"));
-  QString s = "SELECT parms FROM indicator_" + name;
+  QString s = "SELECT * FROM indicatorIndex WHERE name='" + name + "'";
+  q.exec(s);
+  if (q.lastError().isValid())
+  {
+    qDebug() << "DataBase::getIndicator: " << q.lastError().text();
+    return;
+  }
+  if (! q.next())
+    return;
+
+  s = "SELECT parms FROM indicator_" + name;
   q.exec(s);
   if (q.lastError().isValid())
   {

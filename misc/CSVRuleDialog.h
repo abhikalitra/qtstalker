@@ -59,7 +59,6 @@ class CSVRuleDialog : public QDialog
     QDialogButtonBox *buttonBox;
     QListWidget *ruleList;
     QListWidget *fieldList;
-    QComboBox *type;
     QLineEdit *delimiter;
     QString rule;
     QPushButton *insertButton;

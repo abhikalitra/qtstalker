@@ -22,8 +22,8 @@
 #include "ChartPage.h"
 #include "DataBase.h"
 #include "../pics/addgroup.xpm"
-#include "../pics/scanner.xpm"
-#include "../pics/edit.xpm"
+//#include "../pics/scanner.xpm"
+//#include "../pics/edit.xpm"
 //#include "../pics/sql.xpm"
 #include "../pics/search.xpm"
 #include <QMessageBox>

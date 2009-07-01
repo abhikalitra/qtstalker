@@ -41,7 +41,6 @@ class MainWindow : public QMainWindow
   Q_OBJECT
 
   public:
-
     enum MenuAction
     {
       NewRule,
@@ -49,13 +48,13 @@ class MainWindow : public QMainWindow
       EditRule,
       DeleteRule,
       Exit,
-      About
+      About,
+      DumpIndex,
+      DumpSymbol
     };
 
     MainWindow();
     ~MainWindow();
-
-  public:
     void createActions ();
     void createMenus ();
     void createToolBars ();
@@ -79,6 +78,8 @@ class MainWindow : public QMainWindow
     void message (QString);
     void CSVActive (QString);
     void CSVInactive (QString);
+    void dumpIndex ();
+    void dumpSymbol ();
 
   protected:
     void closeEvent(QCloseEvent *event);

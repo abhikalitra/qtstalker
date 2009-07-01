@@ -38,15 +38,10 @@ class DataBase
 {
   public:
     DataBase ();
-    ~DataBase ();
-
-    void setup (QString &, QString &);
 
     // chart functions
     void getAllChartsList (QStringList &);
     void getChart (BarData *);
-    void setChart (QList<Bar> *bars);
-
 
     // group functions
     int createGroup (QString &);

@@ -36,6 +36,7 @@ class Setup
     void setupConfigDefaults ();
     void setupDataBase ();
     void setupDirectories ();
+    void setupQuoteBase ();
 
   protected:
     QString home;

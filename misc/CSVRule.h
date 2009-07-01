@@ -37,8 +37,6 @@ class CSVRule
     void getFormat (QString &);
     void setDelimiter (QString &);
     void getDelimiter (QString &);
-    void setType (QString &);
-    void getType (QString &);
     void setFileNameSymbol (bool);
     bool getFileNameSymbol ();
     void setDateFormat (QString &);
@@ -47,12 +45,13 @@ class CSVRule
     void setInterval (QString &);
     void getFileList (QStringList &);
     void setFileList (QStringList &);
+    void getFieldList (QStringList &);
+    void getBarFormat (QString &d);
     
   protected:
     QString name;
     QString format;
     QString delimiter;
-    QString type;
     QString dateFormat;
     bool useFileName;
     QStringList fileList;

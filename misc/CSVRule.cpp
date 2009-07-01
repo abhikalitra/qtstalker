@@ -61,16 +61,6 @@ void CSVRule::getDelimiter (QString &d)
   d = delimiter;
 }
 
-void CSVRule::setType (QString &d)
-{
-  type = d;
-}
-
-void CSVRule::getType (QString &d)
-{
-  d = type;
-}
-
 void CSVRule::setFileNameSymbol (bool d)
 {
   useFileName = d;
@@ -109,6 +99,34 @@ void CSVRule::setFileList (QStringList &d)
 void CSVRule::getFileList (QStringList &d)
 {
   d = fileList;
+}
+
+void CSVRule::getFieldList (QStringList &tl)
+{
+  tl.clear();
+  tl.append("Symbol");
+  tl.append("Date");
+  tl.append("Time");
+  tl.append("Open");
+  tl.append("High");
+  tl.append("Low");
+  tl.append("Close");
+  tl.append("Volume");
+  tl.append("OI");
+  tl.append("Variable1");
+  tl.append("Variable2");
+  tl.append("Variable3");
+  tl.append("Ignore");
+}
+
+void CSVRule::getBarFormat (QString &d)
+{
+  QStringList l = format.split(",");
+  l.removeAll("Symbol");
+  l.removeAll("Date");
+  l.removeAll("Time");
+  l.removeAll("Ignore");
+  d = l.join(",");
 }
 
 

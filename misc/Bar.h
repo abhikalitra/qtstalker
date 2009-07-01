@@ -32,23 +32,10 @@
 class Bar
 {
   public:
-  
     Bar ();
     ~Bar ();
     int setDate (QDateTime &);
     void getDate (QDateTime &);
-    void setOpen (double);
-    double getOpen ();
-    void setHigh (double);
-    double getHigh ();
-    void setLow (double);
-    double getLow ();
-    void setClose (double);
-    double getClose ();
-    void setVolume (double);
-    double getVolume ();
-    void setOI (int);
-    int getOI ();
     bool getEmptyFlag ();
     void getDateString (QString &);
     void getDateTimeString (QString &);
@@ -61,7 +48,7 @@ class Bar
     void getData (QString &, QString &);
     bool getValidDate ();
     void getDateNumber (QString &);
-    void parse (QString &format, QString &s);
+    void getDataString (QString &format, QString &s);
     
   protected:
     QHash<QString, QString> data;

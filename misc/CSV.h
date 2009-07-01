@@ -24,6 +24,7 @@
 
 
 #include "CSVRule.h"
+#include "Bar.h"
 #include <QStringList>
 #include <QString>
 #include <QObject>
@@ -42,18 +43,6 @@ class CSV : public QObject
     void signalInactive (QString);
 
   public:
-    struct Bar
-    {
-      QString symbol;
-      QDateTime date;
-      double open;
-      double high;
-      double low;
-      double close;
-      double volume;
-      int oi;
-    };
-
     CSV (CSVRule &rule);
     void setChart (QList<Bar> *bars);
     void importSingleShot ();

@@ -118,12 +118,24 @@ void MainWindow::createActions ()
   action->setStatusTip(tr("About CSV"));
   connect(action, SIGNAL(triggered()), this, SLOT(about()));
   actionList.insert(About, action);
+
+  action = new QAction(tr("Dump Index"), this);
+  action->setStatusTip(tr("Dump Index"));
+  connect(action, SIGNAL(triggered()), this, SLOT(dumpIndex()));
+  actionList.insert(DumpIndex, action);
+
+  action = new QAction(tr("Dump Symbol"), this);
+  action->setStatusTip(tr("Dump Symbol"));
+  connect(action, SIGNAL(triggered()), this, SLOT(dumpSymbol()));
+  actionList.insert(DumpSymbol, action);
 }
 
 void MainWindow::createMenus ()
 {
   QMenu *menu = menuBar()->addMenu(tr("&File"));
   menu->addAction(actionList.value(NewRule));
+  menu->addAction(actionList.value(DumpIndex));
+  menu->addAction(actionList.value(DumpSymbol));
   menu->addSeparator();
   menu->addAction(actionList.value(Exit));
 
@@ -185,7 +197,15 @@ void MainWindow::loadSettings ()
     qDebug() << "CSV::loadSettings:createConfigTable: " << q.lastError().text();
 
   // create the import rules table
-  s = "CREATE TABLE IF NOT EXISTS importRules (name VARCHAR(25) PRIMARY KEY, format VARCHAR(100), delimeter VARCHAR(5), type VARCHAR(10), fileNameSymbol BOOL, dateFormat VARCHAR(50), interval INT, fileList VARCHAR(1000))";
+  s = "CREATE TABLE IF NOT EXISTS importRules (";
+  s.append(" name VARCHAR(25) PRIMARY KEY");
+  s.append(", format VARCHAR(10)");
+  s.append(", delimeter VARCHAR(1)");
+  s.append(", fileNameSymbol BOOL");
+  s.append(", dateFormat VARCHAR(10)");
+  s.append(", interval INT");
+  s.append(", fileList VARCHAR(10)");
+  s.append(")");
   q.exec(s);
   if (q.lastError().isValid())
     qDebug() << "CSV::loadSettings:createImportRulesTable: " << q.lastError().text();
@@ -200,8 +220,14 @@ void MainWindow::loadSettings ()
     qDebug() << "CSV::loadSettings:setupQuoteBase: quotes db open failed";
 
   QSqlQuery q2(db2);
-  s = "CREATE TABLE IF NOT EXISTS symbolIndex (symbol VARCHAR(25) PRIMARY KEY,name VARCHAR(100),type VARCHAR(10),firstDate INT,lastDate INT";
-  s.append(",exchange VARCHAR(15), futuresCode VARCHAR(10), futuresMonth CHAR(1), futuresYear INT)");
+  s = "CREATE TABLE IF NOT EXISTS symbolIndex (";
+  s.append(" symbol VARCHAR(25) PRIMARY KEY");
+  s.append(", name VARCHAR(10)");
+  s.append(", format VARCHAR(10)");
+  s.append(", firstDate INT");
+  s.append(", lastDate INT");
+  s.append(", data VARCHAR(10)");
+  s.append(")");
   q2.exec(s);
   if (q2.lastError().isValid())
     qDebug() << "CSV::loadSettings:createSymbolIndexTable: " << q2.lastError().text();
@@ -434,18 +460,15 @@ void MainWindow::loadRule (CSVRule &rule)
     s = q.value(2).toString();
     rule.setDelimiter(s);
 
-    s = q.value(3).toString();
-    rule.setType(s);
+    rule.setFileNameSymbol(q.value(3).toBool());
 
-    rule.setFileNameSymbol(q.value(4).toBool());
-
-    s = q.value(5).toString();
+    s = q.value(4).toString();
     rule.setDateFormat(s);
 
-    s = q.value(6).toString();
+    s = q.value(5).toString();
     rule.setInterval(s);
 
-    s = q.value(7).toString();
+    s = q.value(6).toString();
     QStringList l = s.split("|");
     rule.setFileList(l);
   }
@@ -485,3 +508,54 @@ void MainWindow::addRule (QString &name)
 
   csv->status();    
 }
+
+void MainWindow::dumpIndex ()
+{
+  QSqlQuery q(QSqlDatabase::database("quotes"));
+  QString s = "SELECT * FROM symbolIndex";
+  q.exec(s);
+  if (q.lastError().isValid())
+  {
+    qDebug() << "MainWindow::dumpIndex: " << q.lastError().text();
+    return;
+  }
+
+  while (q.next())
+  {
+    QStringList l;
+    l.append(q.value(0).toString());
+    l.append(q.value(1).toString());
+    l.append(q.value(2).toString());
+    l.append(q.value(3).toString());
+    l.append(q.value(4).toString());
+    l.append(q.value(5).toString());
+    qDebug() << l;
+  }
+}
+
+void MainWindow::dumpSymbol ()
+{
+  bool ok;
+  QString symbol = QInputDialog::getText(this, tr("Dump Symbol"), tr("Enter symbol"), QLineEdit::Normal, QString(), &ok, 0);
+  if (symbol.isEmpty())
+    return;
+
+  QSqlQuery q(QSqlDatabase::database("quotes"));
+  QString s = "SELECT * FROM " + symbol;
+  q.exec(s);
+  if (q.lastError().isValid())
+  {
+    qDebug() << "MainWindow::dumpSymbol: " << q.lastError().text();
+    return;
+  }
+
+  while (q.next())
+  {
+    QStringList l;
+    l.append(q.value(0).toString());
+    l.append(q.value(1).toString());
+    qDebug() << l;
+  }
+}
+
+

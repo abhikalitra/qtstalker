@@ -60,7 +60,7 @@
 #include "../pics/co.xpm"
 #include "../pics/qtstalker.xpm"
 #include "../pics/crosshair.xpm"
-#include "../pics/include.xpm"
+//#include "../pics/include.xpm"
 
 
 
@@ -813,6 +813,8 @@ void QtstalkerApp::slotNewIndicator (QString n)
   Plot *p = plotList.value(n);
   if (! p)
     return;
+  if (! recordList)
+    return;
   p->setData(recordList);
   p->calculate();
   p->draw();
@@ -854,6 +856,8 @@ void QtstalkerApp::slotEnableIndicator (QString name)
   Plot *p = plotList.value(name);
   if (! p)
     return;
+  if (! recordList)
+    return;
   p->setData(recordList);
   p->calculate();
   p->draw();
@@ -863,6 +867,8 @@ void QtstalkerApp::slotEditIndicator (QString name)
 {
   Plot *p = plotList.value(name);
   if (! p)
+    return;
+  if (! recordList)
     return;
   p->calculate();
   p->draw();

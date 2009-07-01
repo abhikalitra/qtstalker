@@ -20,6 +20,7 @@
  */
 
 #include "CSVRuleDialog.h"
+#include "CSVRule.h"
 #include <QDir>
 #include <QMessageBox>
 #include <QLayout>
@@ -62,46 +63,36 @@ void CSVRuleDialog::createRulePage ()
   grid->setColumnStretch(3, 1);
   vbox->addLayout(grid);
   
-  QLabel *label = new QLabel(tr("Chart Type"));
+  QLabel *label = new QLabel(tr("Delimiter"));
   grid->addWidget(label, 0, 0);
-  
-  type = new QComboBox;
-  type->addItem("Stocks");
-  type->addItem("Futures");
-  type->setCurrentIndex(0);
-  grid->addWidget(type, 0, 1);
-  
-  label = new QLabel(tr("Delimiter"));
-  grid->addWidget(label, 1, 0);
   
   delimiter = new QLineEdit;
   delimiter->setText(",");
-  grid->addWidget(delimiter, 1, 1);
+  grid->addWidget(delimiter, 0, 1);
 
   label = new QLabel(tr("Date Format"));
-  grid->addWidget(label, 2, 0);
+  grid->addWidget(label, 1, 0);
   
   dateFormat = new QLineEdit;
-  grid->addWidget(dateFormat, 2, 1);
+  grid->addWidget(dateFormat, 1, 1);
 
   label = new QLabel(tr("Time Interval"));
-  grid->addWidget(label, 3, 0);
+  grid->addWidget(label, 2, 0);
 
   seconds = new QSpinBox;
   seconds->setRange(0, 9999);
-  grid->addWidget(seconds, 3, 1);
+  grid->addWidget(seconds, 2, 1);
 
   label = new QLabel(tr("Import Files"));
-  grid->addWidget(label, 4, 0);
+  grid->addWidget(label, 3, 0);
 
   fileButton = new QPushButton;
   fileButton->setText("0 " + tr("Files"));
   QObject::connect(fileButton, SIGNAL(clicked()), this, SLOT(importFileDialog()));
-  grid->addWidget(fileButton, 4, 1);
+  grid->addWidget(fileButton, 3, 1);
 
   useFileName = new QCheckBox;
   useFileName->setText(tr("Use File Name For Symbol"));
-//  grid->addWidget(useFileName, 1, 0);
   vbox->addWidget(useFileName);
 
   QHBoxLayout *hbox = new QHBoxLayout;
@@ -111,16 +102,8 @@ void CSVRuleDialog::createRulePage ()
   fieldList = new QListWidget;
   fieldList->setSelectionMode(QAbstractItemView::ExtendedSelection);
   QStringList tl;
-  tl.append("Symbol");
-  tl.append("Date");
-  tl.append("Time");
-  tl.append("Open");
-  tl.append("High");
-  tl.append("Low");
-  tl.append("Close");
-  tl.append("Volume");
-  tl.append("OI");
-  tl.append("Ignore");
+  CSVRule r;
+  r.getFieldList(tl);
   fieldList->addItems(tl);
   QObject::connect(fieldList, SIGNAL(itemSelectionChanged()), this, SLOT(fieldListSelected()));
   hbox->addWidget(fieldList);
@@ -160,12 +143,23 @@ void CSVRuleDialog::saveRule ()
     l.append(ruleList->item(loop)->text());
   QString format = l.join(",");
 
+  if (! format.contains("Date"))
+  {
+    QMessageBox::information(this, tr("Error"), tr("Rule missing a date field."));
+    return;
+  }
+
+  if (dateFormat->text().isEmpty())
+  {
+    QMessageBox::information(this, tr("Error"), tr("Date format missing."));
+    return;
+  }
+
   QSqlQuery q(QSqlDatabase::database("data"));
   QString s = "INSERT OR REPLACE INTO importRules VALUES (";
   s.append("'" + rule + "'");
   s.append(",'" + format + "'");
   s.append(",'" + delimiter->text() + "'");
-  s.append(",'" + type->currentText() + "'");
   s.append("," + QString::number(useFileName->isChecked()));
   s.append(",'" + dateFormat->text() + "'");
   s.append("," + seconds->text());
@@ -205,17 +199,14 @@ void CSVRuleDialog::loadRule ()
     s = q.value(2).toString();
     delimiter->setText(s);
 
-    s = q.value(3).toString();
-    type->setCurrentIndex(type->findText(s));
+    useFileName->setChecked(q.value(3).toBool());
 
-    useFileName->setChecked(q.value(4).toBool());
-
-    s = q.value(5).toString();
+    s = q.value(4).toString();
     dateFormat->setText(s);
 
-    seconds->setValue(q.value(6).toInt());
+    seconds->setValue(q.value(5).toInt());
 
-    fileList = q.value(7).toString().split("|");
+    fileList = q.value(6).toString().split("|");
   }
 }
 

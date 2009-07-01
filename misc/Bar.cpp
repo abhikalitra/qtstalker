@@ -46,90 +46,6 @@ void Bar::getDate (QDateTime &d)
   d = date;
 }
 
-void Bar::setOpen (double d)
-{
-  QString k("Open");
-  QString s = QString::number(d);
-  data.insert(k, s);
-  emptyFlag = FALSE;
-}
-
-double Bar::getOpen ()
-{
-  QString k("Open");
-  return data.value(k).toDouble();
-}
-
-void Bar::setHigh (double d)
-{
-  QString k("High");
-  QString s = QString::number(d);
-  data.insert(k, s);
-  emptyFlag = FALSE;
-}
-
-double Bar::getHigh ()
-{
-  QString k("High");
-  return data.value(k).toDouble();
-}
-
-void Bar::setLow (double d)
-{
-  QString k("Low");
-  QString s = QString::number(d);
-  data.insert(k, s);
-  emptyFlag = FALSE;
-}
-
-double Bar::getLow ()
-{
-  QString k("Low");
-  return data.value(k).toDouble();
-}
-
-void Bar::setClose (double d)
-{
-  QString k("Close");
-  QString s = QString::number(d);
-  data.insert(k, s);
-  emptyFlag = FALSE;
-}
-
-double Bar::getClose ()
-{
-  QString k("Close");
-  return data.value(k).toDouble();
-}
-
-void Bar::setVolume (double d)
-{
-  QString k("Volume");
-  QString s = QString::number(d);
-  data.insert(k, s);
-  emptyFlag = FALSE;
-}
-
-double Bar::getVolume ()
-{
-  QString k("Volume");
-  return data.value(k).toDouble();
-}
-
-void Bar::setOI (int d)
-{
-  QString k("OI");
-  QString s = QString::number(d);
-  data.insert(k, s);
-  emptyFlag = FALSE;
-}
-
-int Bar::getOI ()
-{
-  QString k("OI");
-  return data.value(k).toInt();
-}
-
 bool Bar::getEmptyFlag ()
 {
   return emptyFlag;
@@ -209,16 +125,20 @@ void Bar::getDateNumber (QString &d)
   d = date.toString("yyyyMMddHHmmsszzz");
 }
 
-void Bar::parse (QString &format, QString &s)
+void Bar::getDataString (QString &format, QString &s)
 {
-  data.clear();
-
-  QStringList formatList = format.split(",");
-  QStringList dataList = s.split(",");
+  QStringList l, l2;
+  l = format.split(",");
 
   int loop;
-  for (loop = 0; loop < formatList.count(); loop++)
-    setData(formatList[loop], dataList[loop]);
+  for (loop = 0; loop < l.count(); loop++)
+  {
+    QString d;
+    getData(l[loop], d);
+    l2.append(d);
+  }
+
+  s = l2.join(",");
 }
 
 

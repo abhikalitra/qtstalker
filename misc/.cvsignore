@@ -2,3 +2,5 @@ Makefile
 moc_*
 libqtstalker.so.*
 libqtstalker.*.dylib
+CSV
+
