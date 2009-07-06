@@ -198,13 +198,13 @@ void MainWindow::loadSettings ()
 
   // create the import rules table
   s = "CREATE TABLE IF NOT EXISTS importRules (";
-  s.append(" name VARCHAR(25) PRIMARY KEY");
-  s.append(", format VARCHAR(10)");
-  s.append(", delimeter VARCHAR(1)");
+  s.append(" name TEXT PRIMARY KEY");
+  s.append(", format TEXT");
+  s.append(", delimeter TEXT");
   s.append(", fileNameSymbol BOOL");
-  s.append(", dateFormat VARCHAR(10)");
+  s.append(", dateFormat TEXT");
   s.append(", interval INT");
-  s.append(", fileList VARCHAR(10)");
+  s.append(", fileList TEXT");
   s.append(")");
   q.exec(s);
   if (q.lastError().isValid())
@@ -221,12 +221,10 @@ void MainWindow::loadSettings ()
 
   QSqlQuery q2(db2);
   s = "CREATE TABLE IF NOT EXISTS symbolIndex (";
-  s.append(" symbol VARCHAR(25) PRIMARY KEY");
-  s.append(", name VARCHAR(10)");
-  s.append(", format VARCHAR(10)");
-  s.append(", firstDate INT");
-  s.append(", lastDate INT");
-  s.append(", data VARCHAR(10)");
+  s.append(" symbol TEXT PRIMARY KEY");
+  s.append(", name TEXT");
+  s.append(", format TEXT");
+  s.append(", data TEXT");
   s.append(")");
   q2.exec(s);
   if (q2.lastError().isValid())
@@ -527,8 +525,6 @@ void MainWindow::dumpIndex ()
     l.append(q.value(1).toString());
     l.append(q.value(2).toString());
     l.append(q.value(3).toString());
-    l.append(q.value(4).toString());
-    l.append(q.value(5).toString());
     qDebug() << l;
   }
 }

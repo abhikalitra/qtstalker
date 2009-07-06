@@ -97,7 +97,7 @@ class QtstalkerApp : public QMainWindow
       Slider
     };
 
-    QtstalkerApp ();
+    QtstalkerApp (QString);
     ~QtstalkerApp ();
     void initConfig ();
     void createActions ();

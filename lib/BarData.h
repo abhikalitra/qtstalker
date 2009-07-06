@@ -69,9 +69,7 @@ class BarData
     double getClose (int);
     double getVolume (int);
     double getOI (int);
-    void prepend (Bar &bar);
-    void prependRaw (Bar &bar);
-    void appendRaw (Bar &bar);
+    void prepend (Bar *bar);
     int getX (QDateTime &);
     double getMax ();
     double getMin ();
@@ -80,13 +78,10 @@ class BarData
     PlotLine * getInput (BarData::InputType);
     BarData::InputType getInputType (QString &);
     void getBarLengthList (QStringList &);
-    void getBar (int, Bar &);
+    void getBar (int, Bar *);
     void setMinMax ();
-    void clear();
     void setBarLength (BarData::BarLength);
     BarData::BarLength getBarLength ();
-    void setStartEndDates (QDateTime &);
-    void setBar (int, Bar &);
     void getSymbol (QString &);
     void setSymbol (QString &);
     void getName (QString &);
@@ -95,18 +90,17 @@ class BarData
     void setType (QString &);
     int getBarsRequested ();
     void setBarsRequested (int);
-    void getDateOffset (QDateTime &);
+    void getDateString (int, QString &);
+    void getTimeString (int, QString &);
+    void getDateTimeString (int, QString &);
 
     
   protected:
-    QList<Bar> barList;
+    QList<Bar *> barList;
     QHash<QString, int> dateList;
     double high;
     double low;
     BarData::BarLength barLength;
-    QDateTime startDate;
-    QDateTime endDate;
-    Bar currentBar;
     QString symbol;
     QString name;
     QString type;

@@ -19,6 +19,7 @@
 #include <QTranslator>
 #include <QString>
 #include <QLocale>
+#include <QtDebug>
 
 #include "Qtstalker.h"
 #include "../lib/qtstalker_defines.h"
@@ -26,6 +27,29 @@
 
 int main(int argc, char *argv[])
 {
+  QString session("0");
+  int loop;
+  for (loop = 0; loop <= argc; loop++)
+  {
+    QString s = argv[loop];
+    if (s == "-session")
+    {
+      loop++;
+      if (loop > argc)
+        break;
+      else
+      {
+        bool ok;
+        s = argv[loop];
+        s.toInt(&ok);
+        if (! ok)
+          break;
+        session = argv[loop];
+        break;
+      }
+    }
+  }
+
   QApplication a(argc, argv);
 #ifdef MINGW
   QCoreApplication::setOrganizationName("QtStalker Team");
@@ -38,7 +62,7 @@ int main(int argc, char *argv[])
   tor.load(i18nFilename, i18nDir);
   a.installTranslator( &tor );
 
-  QtstalkerApp *qtstalker = new QtstalkerApp();
+  QtstalkerApp *qtstalker = new QtstalkerApp(session);
 
   qtstalker->show();
 

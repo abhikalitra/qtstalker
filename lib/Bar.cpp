@@ -26,6 +26,7 @@
 
 Bar::Bar ()
 {
+  emptyFlag = TRUE;
 }
 
 Bar::~Bar ()
@@ -158,14 +159,6 @@ void Bar::getTimeString (QString &d)
   d = date.toString("HH:mm:ss.zzz");
 }
 
-void Bar::clear ()
-{
-  date = QDateTime::currentDateTime();
-  date.setTime(QTime(0,0,0,0));
-  data.clear();
-  emptyFlag = TRUE;
-}
-
 void Bar::setSymbol (QString &d)
 {
   QString k("Symbol");
@@ -191,6 +184,7 @@ void Bar::setTime (QTime &d)
 void Bar::setData (QString &k, QString &d)
 {
   data.insert(k, d);
+  emptyFlag = FALSE;
 }
 
 void Bar::getData (QString &k, QString &d)
@@ -209,16 +203,37 @@ void Bar::getDateNumber (QString &d)
   d = date.toString("yyyyMMddHHmmsszzz");
 }
 
-void Bar::parse (QString &format, QString &s)
+void Bar::copy (Bar *bar)
 {
-  data.clear();
+  bar->getDate(date);
 
-  QStringList formatList = format.split(",");
-  QStringList dataList = s.split(",");
+  QStringList keys;
+  bar->getKeys(keys);
 
   int loop;
-  for (loop = 0; loop < formatList.count(); loop++)
-    setData(formatList[loop], dataList[loop]);
+  for (loop = 0; loop < keys.count(); loop++)
+  {
+    QString s;
+    bar->getData(keys[loop], s);
+    setData(keys[loop], s);
+  }
+
+  emptyFlag = FALSE;
 }
 
+void Bar::getKeys (QStringList &l)
+{
+  l.clear();
+  QHashIterator<QString, QString> i(data);
+  while (i.hasNext())
+  {
+    i.next();
+    l.append(i.key());
+  }  
+}
 
+void Bar::clear ()
+{
+  data.clear();
+  emptyFlag = TRUE;
+}

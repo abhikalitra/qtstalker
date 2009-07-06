@@ -47,7 +47,6 @@ HEADERS += XmlWriter.h
 HEADERS += Preferences.h
 HEADERS += DataBase.h
 HEADERS += IndicatorParms.h
-HEADERS += IndicatorIndex.h
 HEADERS += BARS.h
 HEADERS += UTIL.h
 HEADERS += Setup.h
@@ -65,6 +64,9 @@ HEADERS += TesterStopPage.h
 HEADERS += TesterChartPage.h
 HEADERS += COSettings.h
 HEADERS += ExScript.h
+HEADERS += ScannerRule.h
+HEADERS += IndicatorDialog.h
+HEADERS += Indicator.h
 
    
 SOURCES += IndicatorPlugin.cpp
@@ -101,7 +103,6 @@ SOURCES += XmlWriter.cpp
 SOURCES += Preferences.cpp
 SOURCES += DataBase.cpp
 SOURCES += IndicatorParms.cpp
-SOURCES += IndicatorIndex.cpp
 SOURCES += BARS.cpp
 SOURCES += UTIL.cpp
 SOURCES += Setup.cpp
@@ -119,6 +120,9 @@ SOURCES += TesterStopPage.cpp
 SOURCES += TesterChartPage.cpp
 SOURCES += COSettings.cpp
 SOURCES += ExScript.cpp
+SOURCES += ScannerRule.cpp
+SOURCES += IndicatorDialog.cpp
+SOURCES += Indicator.cpp
 
 
    

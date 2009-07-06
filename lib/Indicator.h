@@ -19,33 +19,49 @@
  *  USA.
  */
 
-#ifndef BARS1_HPP
-#define BARS1_HPP
+#ifndef INDICATOR_HPP
+#define INDICATOR_HPP
 
-
-#include "Indicator.h"
-#include "PlotLine.h"
-#include "BarData.h"
-#include <QList>
-#include <QHash>
 #include <QString>
-#include <QStringList>
+#include <QList>
+
+#include "IndicatorParms.h"
 
 
 
-class BARS
+
+class Indicator
 {
   public:
-    BARS ();
-    ~BARS ();
-    void calculate (BarData *, IndicatorParms &, QHash<QString, PlotLine *> &);
-    void calculateBar (IndicatorParms &, QHash<QString, PlotLine *> &);
-    void calculateCandle (IndicatorParms &, QHash<QString, PlotLine *> &);
-    void prefDialog (IndicatorParms &, QStringList &);
-
-  private:
-    QStringList methodList;
-    BarData *data;
+    Indicator ();
+    void setName (QString &);
+    void getName (QString &);
+    void setType (QString &);
+    void getType (QString &);
+    void setEnable (int);
+    int getEnable ();
+    void setTabRow (int);
+    int getTabRow ();
+    void setDate (int);
+    int getDate ();
+    void setLog (int);
+    int getLog ();
+    void setParms (QString);
+    void getParms (QString &);
+    int count ();
+    void getParm (int, IndicatorParms &);
+    void appendParm (IndicatorParms &);
+    void removeParm (int);
+    void setParm (int, IndicatorParms &);
+    
+  protected:
+    QList<IndicatorParms> parms;
+    QString name;
+    QString type;
+    int enable;
+    int tabRow;
+    int date;
+    int log;
 };
 
 #endif

@@ -36,6 +36,7 @@ BarData::BarData (QString &sym)
 
 BarData::~BarData ()
 {
+  qDeleteAll(barList);
 }
 
 void BarData::getInputFields (QStringList &l)
@@ -107,94 +108,28 @@ int BarData::count ()
   return (int) barList.count();
 }
 
-void BarData::prepend (Bar &bar)
-{
-  QDateTime dt;
-  bar.getDate(dt);
-
-  if (! currentBar.getEmptyFlag())
-  {
-    if (dt >= startDate && dt < endDate)
-    {
-      currentBar.setOpen(bar.getOpen());
-      if (bar.getHigh() > currentBar.getHigh())
-        currentBar.setHigh(bar.getHigh());
-      if (bar.getLow() < currentBar.getLow())
-        currentBar.setLow(bar.getLow());
-      currentBar.setVolume(currentBar.getVolume() + bar.getVolume());
-      if (bar.getOI() > currentBar.getOI())
-        currentBar.setOI((int) bar.getOI());
-    }
-    else
-    {
-      if (currentBar.getHigh() > high)
-        high = currentBar.getHigh();
-      if (currentBar.getLow() < low)
-        low = currentBar.getLow();
-
-      if (currentBar.getValidDate())
-        barList.prepend(currentBar);
-      currentBar.clear();
-
-      setStartEndDates(dt);
-
-      currentBar = bar;
-
-      if (barLength > Minute60)
-        currentBar.setDate(dt); // test
-      else
-        currentBar.setDate(endDate); // test
-    }
-  }
-  else
-  {
-    currentBar.clear();
-    setStartEndDates(dt);
-    currentBar = bar;
-    if (barLength > Minute60)
-      currentBar.setDate(dt); // test
-    else
-      currentBar.setDate(endDate); // test
-  }
-}
-
-void BarData::prependRaw (Bar &bar)
+void BarData::prepend (Bar *bar)
 {
   barList.prepend(bar);
 }
 
-void BarData::appendRaw (Bar &bar)
-{
-  barList.append(bar);
-}
-
 void BarData::createDateList ()
 {
-  if (! currentBar.getEmptyFlag())
-  {
-    if (currentBar.getHigh() > high)
-      high = currentBar.getHigh();
-    if (currentBar.getLow() < low)
-      low = currentBar.getLow();
-    barList.prepend(currentBar);
-    currentBar.clear();
-  }
-
   dateList.clear();
   
   int loop;
   for (loop = 0; loop < (int) barList.count(); loop++)
   {
-    Bar bar = barList[loop];
+    Bar *bar = barList.at(loop);
     QString s;
-    bar.getDateTimeString(s);
+    bar->getDateTimeString(s);
     dateList.insert(s, loop);
   }
 }
 
 void BarData::getDate (int i, QDateTime &dt)
 {
-  barList[i].getDate(dt);
+  barList.at(i)->getDate(dt);
 }
 
 int BarData::getX (QDateTime &date)
@@ -208,32 +143,32 @@ int BarData::getX (QDateTime &date)
 
 double BarData::getOpen (int i)
 {
-  return barList[i].getOpen();
+  return barList.at(i)->getOpen();
 }
 
 double BarData::getHigh (int i)
 {
-  return barList[i].getHigh();
+  return barList.at(i)->getHigh();
 }
 
 double BarData::getLow (int i)
 {
-  return barList[i].getLow();
+  return barList.at(i)->getLow();
 }
 
 double BarData::getClose (int i)
 {
-  return barList[i].getClose();
+  return barList.at(i)->getClose();
 }
 
 double BarData::getVolume (int i)
 {
-  return barList[i].getVolume();
+  return barList.at(i)->getVolume();
 }
 
 double BarData::getOI (int i)
 {
-  return barList[i].getOI();
+  return barList.at(i)->getOI();
 }
 
 double BarData::getMax ()
@@ -252,61 +187,61 @@ BarData::InputType BarData::getInputType (QString &d)
   
   while (1)
   {
-    if (! d.compare(QObject::tr("Open")))
+    if (d == QObject::tr("Open"))
     {
       t = Open;
       break;
     }
     
-    if (! d.compare(QObject::tr("High")))
+    if (d == QObject::tr("High"))
     {
       t = High;
       break;
     }
 
-    if (! d.compare(QObject::tr("Low")))
+    if (d == QObject::tr("Low"))
     {
       t = Low;
       break;
     }
 
-    if (! d.compare(QObject::tr("Close")))
+    if (d == QObject::tr("Close"))
     {
       t = Close;
       break;
     }
 
-    if (! d.compare(QObject::tr("Volume")))
+    if (d == QObject::tr("Volume"))
     {
       t = Volume;
       break;
     }
 
-    if (! d.compare(QObject::tr("OpenInterest")))
+    if (d == QObject::tr("OpenInterest"))
     {
       t = OpenInterest;
       break;
     }
     
-    if (! d.compare(QObject::tr("Day")))
+    if (d == QObject::tr("Day"))
     {
       t = Day;
       break;
     }
     
-    if (! d.compare(QObject::tr("Week")))
+    if (d == QObject::tr("Week"))
     {
       t = Week;
       break;
     }
     
-    if (! d.compare(QObject::tr("Month")))
+    if (d == QObject::tr("Month"))
     {
       t = Month;
       break;
     }
     
-    if (! d.compare(QObject::tr("DayofWeek")))
+    if (d == QObject::tr("DayofWeek"))
     {
       t = DayOfWeek;
       break;
@@ -332,14 +267,9 @@ void BarData::getBarLengthList (QStringList &l)
   l.append(QObject::tr("Monthly"));
 }
 
-void BarData::getBar (int d, Bar &bar)
+void BarData::getBar (int d, Bar *bar)
 {
-  bar = barList[d];
-}
-
-void BarData::setBar (int d, Bar &bar)
-{
-  barList[d] = bar;
+  bar = barList.at(d);
 }
 
 void BarData::setMinMax ()
@@ -347,23 +277,14 @@ void BarData::setMinMax ()
   int loop;
   for (loop = 0; loop < (int) barList.count(); loop++)
   {
-    Bar bar = barList[loop];
+    Bar *bar = barList.at(loop);
 
-    if (bar.getHigh() > high)
-      high = bar.getHigh();
+    if (bar->getHigh() > high)
+      high = bar->getHigh();
 
-    if (bar.getLow() < low)
-      low = bar.getLow();
+    if (bar->getLow() < low)
+      low = bar->getLow();
   }
-}
-
-void BarData::clear ()
-{
-  high = -99999999;
-  low = 99999999;
-  dateList.clear();
-  barList.clear();
-  currentBar.clear();
 }
 
 void BarData::setBarLength (BarData::BarLength d)
@@ -374,81 +295,6 @@ void BarData::setBarLength (BarData::BarLength d)
 BarData::BarLength BarData::getBarLength ()
 {
   return barLength;
-}
-
-void BarData::setStartEndDates (QDateTime &d)
-{
-  QString s, s2;
-  int tint = 0;
-  QDateTime dt = d;
-
-  switch (barLength)
-  {
-    case Minute1:
-      dt.setTime(QTime(dt.time().hour(), dt.time().minute(), 0, 0));
-      startDate = dt;
-      dt = dt.addSecs(60);
-      endDate = dt;
-      break;
-    case Minute5:
-      tint = dt.time().minute() / 5;
-      dt.setTime(QTime(dt.time().hour(), tint * 5, 0, 0));
-      startDate = dt;
-      dt = dt.addSecs(300);
-      endDate = dt;
-      break;
-    case Minute10:
-      tint = dt.time().minute() / 10;
-      dt.setTime(QTime(dt.time().hour(), tint * 10, 0, 0));
-      startDate = dt;
-      dt = dt.addSecs(600);
-      endDate = dt;
-      break;
-    case Minute15:
-      tint = dt.time().minute() / 15;
-      dt.setTime(QTime(dt.time().hour(), tint * 15, 0, 0));
-      startDate = dt;
-      dt = dt.addSecs(900);
-      endDate = dt;
-      break;
-    case Minute30:
-      tint = dt.time().minute() / 30;
-      dt.setTime(QTime(dt.time().hour(), tint * 30, 0, 0));
-      startDate = dt;
-      dt = dt.addSecs(1800);
-      endDate = dt;
-      break;
-    case Minute60:
-      dt.setTime(QTime(dt.time().hour(), 0, 0, 0));
-      startDate = dt;
-      dt = dt.addSecs(3600);
-      endDate = dt;
-      break;
-    case DailyBar:
-      dt.setTime(QTime(0, 0, 0, 0));
-      startDate = dt;
-      dt.setTime(QTime(23, 59, 59, 0));
-      endDate = dt;
-      break;
-    case WeeklyBar:
-      dt.setTime(QTime(0, 0, 0, 0));
-      dt = dt.addDays(- dt.date().dayOfWeek());
-      startDate = dt;
-      dt.setTime(QTime(23, 59, 59, 0));
-      dt = dt.addDays(6);
-      endDate = dt;
-      break;
-    case MonthlyBar:
-      dt.setTime(QTime(0, 0, 0, 0));
-      dt = dt.addDays(- (dt.date().day() - 1));
-      startDate = dt;
-      dt.setTime(QTime(23, 59, 59, 0));
-      dt = dt.addDays(dt.date().daysInMonth() - 1);
-      endDate = dt;
-      break;
-    default:
-      break;
-  }
 }
 
 void BarData::getSymbol (QString &d)
@@ -491,41 +337,19 @@ void BarData::setBarsRequested (int d)
   barsRequested = d;
 }
 
-void BarData::getDateOffset (QDateTime &dt)
+void BarData::getDateString (int d, QString &s)
 {
-  switch (barLength)
-  {
-    case Minute1:
-      dt = dt.addSecs(-(barsRequested * 60));
-      break;
-    case Minute5:
-      dt = dt.addSecs(-(barsRequested * 300));
-      break;
-    case Minute10:
-      dt = dt.addSecs(-(barsRequested * 600));
-      break;
-    case Minute15:
-      dt = dt.addSecs(-(barsRequested * 900));
-      break;
-    case Minute30:
-      dt = dt.addSecs(-(barsRequested * 1800));
-      break;
-    case Minute60:
-      dt = dt.addSecs(-(barsRequested * 3600));
-      break;
-    case DailyBar:
-      dt = dt.addDays(-(barsRequested));
-      break;
-    case WeeklyBar:
-      dt = dt.addDays(-(barsRequested * 5));
-      break;
-    case MonthlyBar:
-      dt = dt.addMonths(-(barsRequested));
-      break;
-    default:
-      break;
-  }
+  barList.at(d)->getDateString(s);
 }
 
+void BarData::getTimeString (int d, QString &s)
+{
+  barList.at(d)->getTimeString(s);
+}
+
+void BarData::getDateTimeString (int d, QString &s)
+{
+  barList.at(d)->getDateTimeString(s);
+}
 
 

@@ -185,14 +185,14 @@ void TesterStopPage::createCustomPage ()
   grid->addWidget(customLongStopCheck, 0, 0);
 
   QString s;
-  customLongStopEdit = new FormulaEdit(w, s);  
+  customLongStopEdit = new FormulaEdit;  
   grid->addWidget(customLongStopEdit, 1, 0);
 
   customShortStopCheck = new QCheckBox(tr("Custom Short"), w);
   connect(customShortStopCheck, SIGNAL(toggled(bool)), this, SLOT(customShortStopToggled(bool)));
   grid->addWidget(customShortStopCheck, 2, 0);
 
-  customShortStopEdit = new FormulaEdit(w, s);  
+  customShortStopEdit = new FormulaEdit;  
   grid->addWidget(customShortStopEdit, 3, 0);
 
   vbox->insertStretch(-1, 0);

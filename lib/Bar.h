@@ -52,7 +52,6 @@ class Bar
     void getDateString (QString &);
     void getDateTimeString (QString &);
     void getTimeString (QString &);
-    void clear ();
     void setSymbol (QString &);
     void getSymbol (QString &);
     void setTime (QTime &);
@@ -60,7 +59,9 @@ class Bar
     void getData (QString &, QString &);
     bool getValidDate ();
     void getDateNumber (QString &);
-    void parse (QString &format, QString &s);
+    void getKeys (QStringList &);
+    void copy (Bar *);
+    void clear ();
     
   protected:
     QHash<QString, QString> data;

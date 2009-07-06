@@ -44,6 +44,7 @@ ScannerPage::ScannerPage (QWidget *w) : QWidget (w)
   list->setSortingEnabled(TRUE);
   connect(list, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(rightClick(const QPoint &)));
   connect(list, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(doubleClick(QListWidgetItem *)));
+  connect(list, SIGNAL(itemSelectionChanged()), this, SLOT(scannerSelected()));
   vbox->addWidget(list);
   
   menu = new QMenu(this);
@@ -68,18 +69,18 @@ ScannerPage::~ScannerPage ()
 void ScannerPage::openScanner ()
 {
   Scanner *dialog = new Scanner(list->currentItem()->text());
-  connect(dialog, SIGNAL(exitScanner()), this, SLOT(refreshList()));
-  connect(dialog, SIGNAL(message(QString)), this, SIGNAL(message(QString)));
-  connect(dialog, SIGNAL(scanComplete()), this, SIGNAL(refreshGroup()));
+  connect(dialog, SIGNAL(signalMessage(QString)), this, SIGNAL(message(QString)));
+  connect(dialog, SIGNAL(signalScanComplete()), this, SIGNAL(refreshGroup()));
+  connect(dialog, SIGNAL(signalUpdate()), this, SLOT(refreshList()));
   dialog->show();
 }
 
 void ScannerPage::openScanner (QString d)
 {
   Scanner *dialog = new Scanner(d);
-  connect(dialog, SIGNAL(exitScanner()), this, SLOT(refreshList()));
-  connect(dialog, SIGNAL(message(QString)), this, SIGNAL(message(QString)));
-  connect(dialog, SIGNAL(scanComplete()), this, SIGNAL(refreshGroup()));
+  connect(dialog, SIGNAL(signalMessage(QString)), this, SIGNAL(message(QString)));
+  connect(dialog, SIGNAL(signalScanComplete()), this, SIGNAL(refreshGroup()));
+  connect(dialog, SIGNAL(signalUpdate()), this, SLOT(refreshList()));
   dialog->show();
 }
 
@@ -94,7 +95,7 @@ void ScannerPage::runScanner ()
     return;
 
   Scanner *sdialog = new Scanner(item);
-  connect(sdialog, SIGNAL(exitScanner()), this, SLOT(refreshList()));
+  connect(sdialog, SIGNAL(signalUpdate()), this, SLOT(refreshList()));
   connect(sdialog, SIGNAL(message(QString)), this, SIGNAL(message(QString)));
   sdialog->show();
   sdialog->scan();

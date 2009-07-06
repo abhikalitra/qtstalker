@@ -20,7 +20,6 @@
  */
 
 #include "FormulaEdit.h"
-#include "DataBase.h"
 #include "PrefDialog.h"
 #include "ta_libc.h"
 #include "IndicatorPlugin.h"
@@ -45,12 +44,10 @@
 #include <QIcon>
 
 
-FormulaEdit::FormulaEdit (QWidget *w, QString &n) : QDialog (w, 0)
+FormulaEdit::FormulaEdit ()
 {
-  name = n;
-
   QVBoxLayout *vbox = new QVBoxLayout;
-  vbox->setMargin(10);
+  vbox->setMargin(0);
   vbox->setSpacing(5);
   setLayout(vbox);
 
@@ -110,24 +107,12 @@ FormulaEdit::FormulaEdit (QWidget *w, QString &n) : QDialog (w, 0)
 
   tvbox->addStretch(1);
 
-  buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel | QDialogButtonBox::Help);
-  connect(buttonBox, SIGNAL(accepted()), this, SLOT(save()));
-  connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
-//  connect(buttonBox, SIGNAL(helpRequested()), this, SLOT(help()));
-  vbox->addWidget(buttonBox);
-
-  if (name.length())
-    loadIndicator();
-
   itemSelected();
-}
-
-FormulaEdit::~FormulaEdit ()
-{
 }
 
 void FormulaEdit::openRule ()
 {
+/*
   DataBase db;
   QStringList l;
   db.getIndicatorList(l);
@@ -140,6 +125,7 @@ void FormulaEdit::openRule ()
   name = selection;
   loadIndicator();
   name = s;
+*/
 }
 
 void FormulaEdit::doubleClicked (QListWidgetItem *)
@@ -268,11 +254,13 @@ void FormulaEdit::addFunction ()
   }
 
   dialog->getText(vnl, s);
-  if (! s.length())
+  if (s.isEmpty())
   {
+    QMessageBox::information(this, tr("Qtstalker: Error"), tr("Variable name missing."));
     delete dialog;
     return;
   }
+
   if (vl.indexOf(s) != -1)
   {
     QMessageBox::information(this, tr("Qtstalker: Error"), tr("Duplicate variable name."));
@@ -330,7 +318,7 @@ void FormulaEdit::addFunction ()
   parms.getVariable(ts);
   formula->addItem(ts);
 
-  parmList.append(parms);
+  indicator.appendParm(parms);
 
   delete dialog;
 }
@@ -338,7 +326,8 @@ void FormulaEdit::addFunction ()
 void FormulaEdit::editFunction ()
 {
   IndicatorPlugin ip;
-  IndicatorParms parms = parmList.at(formula->currentRow());
+  IndicatorParms parms;
+  indicator.getParm(formula->currentRow(), parms);
 
   QStringList vl;
   getVariableList(vl, TRUE);
@@ -349,7 +338,7 @@ void FormulaEdit::editFunction ()
   {
     BARS i;
     i.prefDialog(parms, vl);
-    parmList.replace(formula->currentRow(), parms);
+    indicator.setParm(formula->currentRow(), parms);
     return;
   }
 
@@ -357,7 +346,7 @@ void FormulaEdit::editFunction ()
   {
     UTIL i;
     i.prefDialog(parms, vl);
-    parmList.replace(formula->currentRow(), parms);
+    indicator.setParm(formula->currentRow(), parms);
     return;
   }
 
@@ -452,11 +441,13 @@ void FormulaEdit::editFunction ()
   }
 
   dialog->getText(vnl, s);
-  if (! s.length())
+  if (s.isEmpty())
   {
+    QMessageBox::information(this, tr("Qtstalker: Error"), tr("Variable name missing."));
     delete dialog;
     return;
   }
+
   if (vl.indexOf(s) != -1)
   {
     QMessageBox::information(this, tr("Qtstalker: Error"), tr("Duplicate variable name."));
@@ -514,7 +505,7 @@ void FormulaEdit::editFunction ()
   parms.getVariable(ts);
   formula->addItem(ts);
 
-  parmList.append(parms);
+  indicator.appendParm(parms);
 
   delete dialog;
 }
@@ -526,7 +517,7 @@ void FormulaEdit::deleteFunction ()
     return;
 
   int row = formula->currentRow();
-  parmList.removeAt(row);
+  indicator.removeParm(row);
   
   delete item;
 
@@ -570,7 +561,8 @@ void FormulaEdit::itemSelected ()
     return;
   }
 
-  IndicatorParms parms = parmList.at(formula->currentRow());
+  IndicatorParms parms;
+  indicator.getParm(formula->currentRow(), parms);
 
   if (! parms.getPlot())
   {
@@ -592,48 +584,14 @@ void FormulaEdit::itemSelected ()
   lineType->setCurrentIndex(lineType->findText(s, Qt::MatchExactly));
 }
 
-void FormulaEdit::loadIndicator ()
-{
-  formula->clear();
-  parmList.clear();
-
-  DataBase db;
-  QString s, var;
-  db.getIndicator(name, parmList);
-
-  int loop;
-  for (loop = 0; loop < parmList.count(); loop++)
-  {
-    IndicatorParms parms = parmList.at(loop);
-    
-    parms.getVariable(var);
-    QListWidgetItem *item = new QListWidgetItem(var, formula);
-
-    if (parms.getPlot())
-      item->setIcon(QIcon(ok));
-  }
-}
-
-void FormulaEdit::save ()
-{
-  DataBase db;
-  QStringList il;
-  db.getIndicatorList(il);
-  if (! il.contains(name))
-    db.createIndicator(name);
-
-  db.setIndicator(name, parmList);
-
-  accept();
-}
-
 void FormulaEdit::plotBoxChecked (bool status)
 {
   QListWidgetItem *item = formula->currentItem();
   if (! item)
     return;
 
-  IndicatorParms parms = parmList.at(formula->currentRow());
+  IndicatorParms parms;
+  indicator.getParm(formula->currentRow(), parms);
 
   if (status)
   {
@@ -670,32 +628,61 @@ void FormulaEdit::plotBoxChecked (bool status)
 
   parms.setPlot((int) status);
 
-  parmList.replace(formula->currentRow(), parms);
+  indicator.setParm(formula->currentRow(), parms);
 }
 
 void FormulaEdit::plotLabelChanged (const QString &t)
 {
-  IndicatorParms parms = parmList.at(formula->currentRow());
+  IndicatorParms parms;
+  indicator.getParm(formula->currentRow(), parms);
   QString s = t;
   parms.setLabel(s);
-  parmList.replace(formula->currentRow(), parms);
+  indicator.setParm(formula->currentRow(), parms);
 }
 
 void FormulaEdit::lineTypeChanged (int)
 {
-  IndicatorParms parms = parmList.at(formula->currentRow());
+  IndicatorParms parms;
+  indicator.getParm(formula->currentRow(), parms);
   QString s = lineType->currentText();
   parms.setLineType(s);
-  parmList.replace(formula->currentRow(), parms);
+  indicator.setParm(formula->currentRow(), parms);
 }
 
 void FormulaEdit::colorChanged ()
 {
-  IndicatorParms parms = parmList.at(formula->currentRow());
+  IndicatorParms parms;
+  indicator.getParm(formula->currentRow(), parms);
   QColor c;
   colorButton->getColor(c);
   parms.setColor(c);
-  parmList.replace(formula->currentRow(), parms);
+  indicator.setParm(formula->currentRow(), parms);
+}
+
+void FormulaEdit::setIndicator (Indicator  &i)
+{
+  indicator = i;
+
+  formula->clear();
+
+  int loop;
+  for (loop = 0; loop < indicator.count(); loop++)
+  {
+    IndicatorParms parms;
+    indicator.getParm(loop, parms);
+    
+    QString s;
+    parms.getVariable(s);
+    QListWidgetItem *item = new QListWidgetItem(s, formula);
+
+    if (parms.getPlot())
+      item->setIcon(QIcon(ok));
+  }
+}
+
+void FormulaEdit::getIndicator (Indicator &i)
+{
+  i = indicator;
 }
 
 //**********************************************************************
@@ -710,7 +697,7 @@ void FormulaEdit::BARSDialog (IndicatorParms &parms, QStringList &vl)
   QString s;
   parms.getVariable(s);
   formula->addItem(s);
-  parmList.append(parms);
+  indicator.appendParm(parms);
 }
 
 void FormulaEdit::UTILDialog (IndicatorParms &parms, QStringList &vl)
@@ -721,6 +708,6 @@ void FormulaEdit::UTILDialog (IndicatorParms &parms, QStringList &vl)
   QString s;
   parms.getVariable(s);
   formula->addItem(s);
-  parmList.append(parms);
+  indicator.appendParm(parms);
 }
 

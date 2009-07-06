@@ -61,43 +61,43 @@ void UTIL::calculate (BarData *bd, IndicatorParms &parms, QHash<QString, PlotLin
   s = "Method";
   parms.getData(s, s2);
 
-  if (! s2.compare("ACCUM"))
+  if (s2 == "ACCUM")
   {
     calculateAccum(parms, tlines);
     return;
   }
 
-  if (! s2.compare("Normal"))
+  if (s2 == "Normal")
   {
     calculateNormal(parms, tlines);
     return;
   }
 
-  if (! s2.compare("COMP"))
+  if (s2 == "COMP")
   {
     calculateCOMP(parms, tlines);
     return;
   }
 
-  if (! s2.compare("REF"))
+  if (s2 == "REF")
   {
     calculateREF(parms, tlines);
     return;
   }
 
-  if (! s2.compare("PER"))
+  if (s2 == "PER")
   {
     calculatePER(parms, tlines);
     return;
   }
 
-  if (! s2.compare("COLOR"))
+  if (s2 == "COLOR")
   {
     calculateCOLOR(parms, tlines);
     return;
   }
 
-  if (! s2.compare("INRANGE"))
+  if (s2 == "INRANGE")
   {
     calculateINRANGE(parms, tlines);
   }
@@ -114,8 +114,17 @@ void UTIL::calculateAccum (IndicatorParms &parms, QHash<QString, PlotLine *> &tl
   parms.getData(s, s2);
   PlotLine *input = tlines.value(s2);
   if (! input)
-    return;
-  
+  {
+    input = data->getInput(data->getInputType(s2));
+    if (input)
+      tlines.insert(s2, input);
+    else
+    {
+      qDebug() << "UTIL::calculateAccum: cannot create input " << s2;
+      return;
+    }
+  }
+
   int loop;
   double accum = 0;
   for (loop = 0; loop < (int) input->getSize(); loop++)
@@ -136,7 +145,16 @@ void UTIL::calculateNormal(IndicatorParms &parms, QHash<QString, PlotLine *> &tl
   parms.getData(s, s2);
   PlotLine *input = tlines.value(s2);
   if (! input)
-    return;
+  {
+    input = data->getInput(data->getInputType(s2));
+    if (input)
+      tlines.insert(s2, input);
+    else
+    {
+      qDebug() << "UTIL::calculateNormal: cannot create input " << s2;
+      return;
+    }
+  }
 
   int loop = 0;
   double range = 0;
@@ -173,13 +191,31 @@ void UTIL::calculateCOMP (IndicatorParms &parms, QHash<QString, PlotLine *> &tli
   parms.getData(s, s2);
   PlotLine *input = tlines.value(s2);
   if (! input)
-    return;
+  {
+    input = data->getInput(data->getInputType(s2));
+    if (input)
+      tlines.insert(s2, input);
+    else
+    {
+      qDebug() << "UTIL::calculateCOMP: cannot create input " << s2;
+      return;
+    }
+  }
 
   s = "Input2";
   parms.getData(s, s2);
   PlotLine *input2 = tlines.value(s2);
   if (! input2)
-    return;
+  {
+    input2 = data->getInput(data->getInputType(s2));
+    if (input2)
+      tlines.insert(s2, input2);
+    else
+    {
+      qDebug() << "UTIL::calculateAccum: cannot create input2 " << s2;
+      return;
+    }
+  }
 
   int loop = input->getSize() - 1;
   int loop2 = input2->getSize() - 1;
@@ -190,48 +226,49 @@ void UTIL::calculateCOMP (IndicatorParms &parms, QHash<QString, PlotLine *> &tli
   
   while (loop > -1 && loop2 > -1)
   {
-    double t = input2->getData(loop2);
+    double t = input->getData(loop);
+    double t2 = input2->getData(loop2);
       
     switch (op)
     {
       case Equal:
-        if (input->getData(loop) == t)
+        if (t == t2)
           line->prepend(1);
 	else
           line->prepend(0);
         break;
       case LessThan:
-        if (input->getData(loop) < t)
+        if (t < t2)
           line->prepend(1);
 	else
           line->prepend(0);
         break;
       case LessThanEqual:
-        if (input->getData(loop) <= t)
+        if (t <= t2)
           line->prepend(1);
 	else
           line->prepend(0);
         break;
       case GreaterThan:
-        if (input->getData(loop) > t)
+        if (t > t2)
           line->prepend(1);
 	else
           line->prepend(0);
         break;
       case GreaterThanEqual:
-        if (input->getData(loop) >= t)
+        if (t >= t2)
           line->prepend(1);
 	else
           line->prepend(0);
         break;
       case And:
-        if (input->getData(loop) && t)
+        if (t && t2)
           line->prepend(1);
 	else
           line->prepend(0);
         break;
       case Or:
-        if (input->getData(loop) || t)
+        if (t || t2)
           line->prepend(1);
 	else
           line->prepend(0);
@@ -243,6 +280,7 @@ void UTIL::calculateCOMP (IndicatorParms &parms, QHash<QString, PlotLine *> &tli
     loop--;
     loop2--;
   }
+qDebug() << "done comp" << line->getSize();
 }
 
 void UTIL::calculateREF (IndicatorParms &parms, QHash<QString, PlotLine *> &tlines)
@@ -265,7 +303,10 @@ void UTIL::calculateREF (IndicatorParms &parms, QHash<QString, PlotLine *> &tlin
     if (in)
       tlines.insert(s2, in);
     else
+    {
+      qDebug() << "UTIL::calculateREF: cannot create input " << s2;
       return;
+    }
   }
   
   int loop = 0;
@@ -291,8 +332,17 @@ void UTIL::calculatePER (IndicatorParms &parms, QHash<QString, PlotLine *> &tlin
   parms.getData(s, s2);
   PlotLine *input = tlines.value(s2);
   if (! input)
-    return;
-  
+  {
+    input = data->getInput(data->getInputType(s2));
+    if (input)
+      tlines.insert(s2, input);
+    else
+    {
+      qDebug() << "UTIL::calculatePER: cannot create input " << s2;
+      return;
+    }
+  }
+
   double base = input->getData(0);
   int loop;
   for (loop = 1; loop < (int) input->getSize(); loop++)
@@ -315,14 +365,20 @@ void UTIL::calculateCOLOR (IndicatorParms &parms, QHash<QString, PlotLine *> &tl
   parms.getData(s, s2);
   PlotLine *inbool = tlines.value(s2);
   if (! inbool)
+  {
+    qDebug() << "UTIL::calculateCOLOR: cannot get boolean array " << s2;
     return;
+  }
   int inboolLoop = inbool->getSize() - 1;
 
   s = "Color Array";
   parms.getData(s, s2);
   PlotLine *incol = tlines.value(s2);
   if (! incol)
+  {
+    qDebug() << "UTIL::calculateCOLOR: cannot get color array " << s2;
     return;
+  }
   incol->setColorFlag(TRUE);
   int incolLoop = incol->getSize() - 1;
 
@@ -349,21 +405,48 @@ void UTIL::calculateINRANGE (IndicatorParms &parms, QHash<QString, PlotLine *> &
   parms.getData(s, s2);
   PlotLine *input = tlines.value(s2);
   if (! input)
-    return;
+  {
+    input = data->getInput(data->getInputType(s2));
+    if (input)
+      tlines.insert(s2, input);
+    else
+    {
+      qDebug() << "UTIL::calculateINRANGE: cannot create input " << s2;
+      return;
+    }
+  }
   int loop = input->getSize() - 1;
 
   s = "Min Array";
   parms.getData(s, s2);
   PlotLine *input2 = tlines.value(s2);
   if (! input2)
-    return;
+  {
+    input2 = data->getInput(data->getInputType(s2));
+    if (input2)
+      tlines.insert(s2, input2);
+    else
+    {
+      qDebug() << "UTIL::calculateINRANGE: cannot create input2 " << s2;
+      return;
+    }
+  }
   int loop2 = input2->getSize() - 1;
 
   s = "Max Array";
   parms.getData(s, s2);
   PlotLine *input3 = tlines.value(s2);
   if (! input3)
-    return;
+  {
+    input3 = data->getInput(data->getInputType(s2));
+    if (input3)
+      tlines.insert(s2, input3);
+    else
+    {
+      qDebug() << "UTIL::calculateINRANGE: cannot create input3 " << s2;
+      return;
+    }
+  }
   int loop3 = input3->getSize() - 1;
 
   double min = 0;

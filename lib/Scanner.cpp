@@ -23,366 +23,316 @@
 #include <QInputDialog>
 #include <QMessageBox>
 #include <QDateTime>
-#include <QDir>
 #include <QProgressDialog>
 #include <QGridLayout>
 #include <QVBoxLayout>
-#include <QTextStream>
-#include <stdlib.h>
 #include <QLabel>
 #include <QGroupBox>
 #include <QPushButton>
 #include <QtDebug>
+
 #include "Scanner.h"
 #include "BarData.h"
-#include "SymbolDialog.h"
+#include "DataBase.h"
 #include "IndicatorPlugin.h"
+
+
 
 
 Scanner::Scanner (QString n) : QDialog (0, 0)
 {
-  scannerName = n;
+  rule.setName(n);
   
   QString s = "Qtstalker Scanner";
   s.append(": ");
-  s.append(scannerName);
+  s.append(n);
   setWindowTitle(s);
 
-  QWidget *w = new QWidget(this);
-  
-  QVBoxLayout *vbox = new QVBoxLayout(w);
+  QVBoxLayout *vbox = new QVBoxLayout;
   vbox->setMargin(10);
   vbox->setSpacing(5);
+  setLayout(vbox);
 
-  QGridLayout *grid = new QGridLayout(w);
+  fileBox = new QGroupBox;
+  fileBox->setCheckable(TRUE);
+  fileBox->setFlat(FALSE);
+  fileBox->setTitle(tr("All Symbols"));
+  connect(fileBox, SIGNAL(toggled(bool)), this, SLOT(allSymbolsToggled(bool)));
+  vbox->addWidget(fileBox);
+
+  QHBoxLayout *hbox = new QHBoxLayout;
+  hbox->setMargin(10);
+  hbox->setSpacing(2);
+  fileBox->setLayout(hbox);
+
+  fileList = new QListWidget;
+  hbox->addWidget(fileList);
+
+  QVBoxLayout *tvbox = new QVBoxLayout;
+  tvbox->setMargin(0);
+  tvbox->setSpacing(2);
+  hbox->addLayout(tvbox);
+
+  addFileButton = new QToolButton;
+  addFileButton->setText("A");
+  connect(addFileButton, SIGNAL(clicked()), this, SLOT(getSymbols()));
+  tvbox->addWidget(addFileButton);
+
+  deleteFileButton = new QToolButton;
+  deleteFileButton->setText("D");
+  connect(deleteFileButton, SIGNAL(clicked()), this, SLOT(deleteSymbols()));
+  tvbox->addWidget(deleteFileButton);
+
+  tvbox->addStretch(1);
+
+  QGridLayout *grid = new QGridLayout;
   grid->setColumnStretch(1, 1);
+  grid->setMargin(0);
   grid->setSpacing(5);
   vbox->addLayout(grid);
   
-  allSymbols = new QCheckBox(tr("All symbols"), w);
-  connect(allSymbols, SIGNAL(toggled(bool)), this, SLOT(allSymbolsToggled(bool)));
-  grid->addWidget(allSymbols, 0, 0);
+  QLabel *label = new QLabel(tr("Bar Length"));
+  grid->addWidget(label, 0, 0);
 
-  fileButton = new QPushButton(tr("0 Symbols"), w);
-  connect(fileButton, SIGNAL(clicked()), this, SLOT(getSymbols()));
-  grid->addWidget(fileButton, 0, 1);
+  BarData bd(n);
+  period = new QComboBox;
+  QStringList l;
+  bd.getBarLengthList(l);
+  period->addItems(l);
+  period->setCurrentIndex(period->findText("Daily"));
+  grid->addWidget(period, 0, 1);
 
-  QLabel *label = new QLabel(tr("Charts or Groups"), w);
+  label = new QLabel(tr("Bars"));
   grid->addWidget(label, 1, 0);
 
-  basePath = new QComboBox(w);
-  basePath->addItem(tr("Chart"));
-  basePath->addItem(tr("Group"));
-  grid->addWidget(basePath, 1, 1);
-
-  label = new QLabel(tr("Bar Length"), w);
-  grid->addWidget(label, 2, 0);
-
-  BarData bd(scannerName);
-  period = new QComboBox(w);
-  bd.getBarLengthList(barLengthList);
-  period->addItems(barLengthList);
-  period->setCurrentIndex(period->findText("Daily"));
-  grid->addWidget(period, 2, 1);
-
-  label = new QLabel(tr("Bars"), w);
-  grid->addWidget(label, 3, 0);
-
-  bars = new QSpinBox(w);
+  bars = new QSpinBox;
   bars->setRange(1, 99999999);
   bars->setValue(100);
-  grid->addWidget(bars, 3, 1);
-  
-  list = new FormulaEdit(w, s);
-  vbox->addWidget(list);
+  grid->addWidget(bars, 1, 1);
 
-  buttonBox = new QDialogButtonBox(w);
-  QPushButton *button = buttonBox->addButton(QDialogButtonBox::Ok);
-  connect(button, SIGNAL(clicked()), this, SLOT(scan()));
-  button = buttonBox->addButton(QDialogButtonBox::Save);
-  connect(button, SIGNAL(clicked()), this, SLOT(saveRule()));
-  button = buttonBox->addButton(QDialogButtonBox::Cancel);
-  connect(button, SIGNAL(clicked()), this, SLOT(reject()));
-  button = buttonBox->addButton(QDialogButtonBox::Help);
-  connect(button, SIGNAL(clicked()), this, SLOT(slotHelp()));
+  formula = new FormulaEdit();
+  vbox->addWidget(formula);
+
+  buttonBox = new QDialogButtonBox;
   vbox->addWidget(buttonBox);
 
-  setLayout(vbox);
-  
-  loadRule();
-}
+  QPushButton *button = buttonBox->addButton(QDialogButtonBox::Ok);
+  connect(button, SIGNAL(clicked()), this, SLOT(scan()));
 
-Scanner::~Scanner ()
-{
+  button = buttonBox->addButton(QDialogButtonBox::Save);
+  connect(button, SIGNAL(clicked()), this, SLOT(saveRule()));
+
+  button = buttonBox->addButton(QDialogButtonBox::Cancel);
+  connect(button, SIGNAL(clicked()), this, SLOT(reject()));
+
+  vbox->addStretch(1);
+
+  loadRule();
 }
 
 void Scanner::scan ()
 {
-  if (! fileList.count() && ! allSymbols->isChecked())
-  {
-    QMessageBox::information(this,
-                             tr("Qtstalker: Error"),
-			     tr("No symbols selected."));
-    return;
-  }
+  DataBase db;
+  QStringList symbolList, resultList;
 
-  // open the CUS plugin
-  QString iplugin("CUS");
-  IndicatorPlugin *plug = new IndicatorPlugin;
-  QString s;
-//  list->getText(s);
-  QStringList l = s.split("\n");
-//  plug->setCustomFunction(l);
-  
-  this->setEnabled(FALSE);
-  
-  // clear dir for scan symbols
-  QDir dir;
-//  config->getData(Config::GroupPath, s);
-  s.append("/Scanner");
-  if (! dir.exists(s))
-    dir.mkdir(s);
-  s.append("/" + scannerName);
-  if (! dir.exists(s))
-    dir.mkdir(s);
-  else
+  if (! fileBox->isChecked())
   {
     int loop;
-    dir.setPath(s);
-    for (loop = 2; loop < (int) dir.count(); loop++)
+    for (loop = 0; loop < fileList->count(); loop++)
     {
-      QString s2 = dir.absolutePath() + "/" + dir[loop];
-      if (! dir.remove(s2))
-        qDebug() << s2 << " not removed";
+      QListWidgetItem *item = fileList->item(loop);
+      symbolList.append(item->text());
     }
   }
-  
-  if (allSymbols->isChecked())
-  {
-    QString ts;
-//    if (! basePath->currentText().compare(tr("Chart")))
-//      config->getData(Config::DataPath, ts);
-//    else
-//      config->getData(Config::GroupPath, ts);
-//    Traverse trav(Traverse::File);
-//    trav.traverse(ts);
-//    trav.getList(fileList);
-  }
-  
-  QProgressDialog prog(tr("Scanning..."),
-                       tr("Cancel"),
-                       1,
-		       fileList.count(),
-		       this);
+  else
+    db.getAllChartsList(symbolList);
+
+  Indicator i;
+  rule.getIndicator(i);
+  QString indicatorName;
+  i.getName(indicatorName);
+  IndicatorPlugin ip;
+  ip.setName(indicatorName);
+
+  this->setEnabled(FALSE);
+
+  QProgressDialog prog(tr("Scanning..."), tr("Cancel"), 1, symbolList.count(), this);
   prog.show();
   
-  int minBars = bars->value();
-  
-  emit message(QString("Scanning..."));
+  emit signalMessage(QString("Scanning..."));
   
   int loop;
-  for (loop = 0; loop < (int) fileList.count(); loop++)
+  for (loop = 0; loop < symbolList.count(); loop++)
   {
     prog.setValue(loop);
-    emit message(QString());
+    emit signalMessage(QString());
     if (prog.wasCanceled())
     {
-      emit message(QString("Scan cancelled"));
+      emit signalMessage(QString("Scan cancelled"));
       break;
     }
 
-    QFileInfo fi(fileList[loop]);
-    if (fi.isDir())
+    BarData *data = new BarData(symbolList[loop]);
+    data->setBarsRequested(bars->value());
+    data->setBarLength((BarData::BarLength) period->currentIndex());
+    db.getChart(data);
+
+    ip.setIndicatorInput(data);
+
+    QList<PlotLine *> plotList;
+    ip.calculate(plotList);
+    if (! plotList.count())
+    {
+      qDebug() << "Scanner::scan: empty plotlist";
+      delete data;
       continue;
-
-    QDir dir;
-    if (! dir.exists(fileList[loop]))
-      continue;
-//    db.open(fileList[loop], chartIndex);
-
-//    db.setBarRange(minBars);
-//    db.setBarLength((BarData::BarLength) barLengthList.indexOf(period->currentText()));
-
-    BarData *recordList = new BarData(fileList[loop]);
-    QDateTime dt = QDateTime::currentDateTime();
-//    db.getHistory(recordList, dt);
+    }
     
-    // load the CUS plugin and calculate
-    plug->setIndicatorInput(recordList);
-//    plug->calculate();
-//    if (! plug->getLines())
-//    {
-//      delete recordList;
-//      continue;
-//    }
-    
-//    PlotLine *line = plug->getLine(0);
-    PlotLine *line = 0;
+    PlotLine *line = plotList.at(0);
     if (line && line->getSize() > 0)
     {
       if (line->getData(line->getSize() - 1) > 0)
       {
-        QString ts;
-        QString s = "ln -s \"" + fileList[loop] + "\" " + ts + "/Scanner/" + scannerName;
-        system((char *) s.data());
+        resultList.append(symbolList[loop]);
+qDebug() << symbolList[loop];
       }
     }
     
-    delete recordList;
+    delete data;
     
-    emit message(QString());
+    emit signalMessage(QString());
   }
+ 
+  QString s;
+  rule.getName(s);
+  QString s2 = tr("Scanner_") + s;
+  db.setGroupList(s2, resultList);
   
   if (! prog.wasCanceled())
-    emit message(QString("Scan complete"));
+    emit signalMessage(QString("Scan complete"));
   
   this->setEnabled(TRUE);
 
-  emit scanComplete();
+  emit signalScanComplete();
 }
 
 void Scanner::saveRule ()
 {
-  QString s;
-//  config->getData(Config::ScannerPath, s);
-  s.append("/" + scannerName);
+  if (! fileBox->isChecked())
+  {
+    int loop;
+    QStringList l;
+    for (loop = 0; loop < fileList->count(); loop++)
+    {
+      QListWidgetItem *item = fileList->item(loop);
+      l.append(item->text());
+    }
 
-  QFile f(s);
-  if (! f.open(QIODevice::WriteOnly))
-    return;
-  QTextStream stream(&f);
-  
-  stream << "allSymbols=" << QString::number(allSymbols->isChecked()) << "\n";
-  stream << "compression=" << period->currentText() << "\n";
-  stream << "bars=" << bars->text() << "\n";
-  stream << "basepath=" << basePath->currentText() << "\n";
-  
-  int loop;
-  for (loop = 0; loop < (int) fileList.count(); loop++)
-    stream << "symbol=" << fileList[loop] << "\n";
-  
-//  list->getText(s);
-  QStringList l = s.split("\n");
-  stream << "script=" << l.join("|") << "\n";
-  
-  f.close();
+    rule.setFileList(l);
+
+    QString s("0");
+    rule.setAllSymbols(s);
+  }
+  else
+  {
+    QString s("1");
+    rule.setAllSymbols(s);
+  }
+
+  QString s = period->currentText();
+  rule.setBarLength(s);
+
+  s = bars->text();
+  rule.setBars(s);  
+
+  Indicator i;
+  formula->getIndicator(i);
+  s = "Scanner";
+  i.setType(s);
+  rule.getName(s);
+  s.prepend("Scanner_");
+  i.setName(s);
+  rule.setIndicator(i);    
+
+  DataBase db;
+  db.setScanner(rule);
+
+  emit signalUpdate();
 }
 
 void Scanner::loadRule ()
 {
+  DataBase db;
+  QStringList l;
+  db.getScannerList(l);
+
   QString s;
-//  config->getData(Config::ScannerPath, s);
-  s.append("/" + scannerName);
-
-  QFile f(s);
-  if (! f.open(QIODevice::ReadOnly))
+  rule.getName(s);
+  if (! l.contains(s))
     return;
-  QTextStream stream(&f);
 
-  fileList.clear();
+  db.getScanner(rule);
+
+  fileList->clear();
+  rule.getFileList(l);
+  fileList->addItems(l);
+
+  rule.getAllSymbols(s);
+  fileBox->setChecked(s.toInt());
   
-  while(stream.atEnd() == 0)
-  {
-    s = stream.readLine();
-    QByteArray ba;
-    ba.append(s);
-    ba = ba.trimmed();
-    s = ba;
+  rule.getBarLength(s);
+  period->setCurrentIndex(period->findText(s));
 
-    if (! s.length())
-      continue;
-      
-    QString key;
-    QString dat;
-    if (s.contains("="))
-    {
-      int t = s.indexOf("=", 0, Qt::CaseSensitive);
-      key = s.left(t);
-      dat = s.right(s.length() - t - 1);
-    }
-    else
-      continue;
+  rule.getBars(s);
+  bars->setValue(s.toInt());
 
-    if (! key.compare("allSymbols"))
-    {
-      allSymbols->setChecked(dat.toInt());
-      continue;
-    }
-    
-    if (! key.compare("compression"))
-    {
-      period->setCurrentIndex(period->findText(dat));
-      continue;
-    }
-    
-    if (! key.compare("symbol"))
-    {
-      fileList.append(dat);
-      continue;
-    }
-
-    if (! key.compare("bars"))
-    {
-      bars->setValue(dat.toInt());
-      continue;
-    }
-
-    if (! key.compare("basepath"))
-    {
-      if (! dat.compare(tr("Chart")))
-        basePath->setCurrentIndex(0);
-      else
-        basePath->setCurrentIndex(1);
-      continue;
-    }
-    
-    if (! key.compare("script"))
-    {
-//      QStringList l2 = dat.split("|");
-//      int loop;
-//      for (loop = 0; loop < (int) l2.count(); loop++)
-//        list->setLine(l2[loop]);
-    }
-  }
-
-  fileButton->setText(QString::number(fileList.count()) + " Symbols");
-  
-  f.close();
+  Indicator i;
+  rule.getIndicator(i);
+  formula->setIndicator(i);
 }
 
 void Scanner::exitDialog ()
 {
-  emit exitScanner();
   reject();
 }
 
 void Scanner::getSymbols ()
 {
-  QString s;
-  QString s2("*");
-  SymbolDialog *dialog = new SymbolDialog(this,
-                                          s,
-  					  s,
-					  s2,
-					  QFileDialog::ExistingFiles);
-  dialog->setWindowTitle(tr("Select symbols to scan"));
-  
-  int rc = dialog->exec();
+  bool ok;
+  QString s = QInputDialog::getText(this, tr("Select symbols"), tr("Symbol contains"), QLineEdit::Normal, QString(), &ok, 0);
+  if (s.isEmpty())
+    return;
 
-  if (rc == QDialog::Accepted)
-    fileList = dialog->selectedFiles();
-    
-  fileButton->setText(QString::number(fileList.count()) + " Symbols");
-    
-  delete dialog;
+  QStringList l;
+  DataBase db;
+  db.getAllChartsList(l);
+
+  int loop;
+  for (loop = 0; loop < l.count(); loop++)
+  {
+    if (l[loop].contains(s))
+      fileList->addItem(l[loop]);
+  }
 }
 
 void Scanner::allSymbolsToggled (bool d)
 {
   if (d)
-    fileButton->setEnabled(FALSE);
+  {
+    fileList->setEnabled(FALSE);
+    addFileButton->setEnabled(FALSE);
+    deleteFileButton->setEnabled(FALSE);
+  }
   else
-    fileButton->setEnabled(TRUE);
+  {
+    fileList->setEnabled(TRUE);
+    addFileButton->setEnabled(TRUE);
+    deleteFileButton->setEnabled(TRUE);
+  }
+}
+
+void Scanner::deleteSymbols ()
+{
 }
 
 

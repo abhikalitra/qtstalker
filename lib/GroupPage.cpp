@@ -97,15 +97,20 @@ void GroupPage::newGroup()
 				    QLineEdit::Normal,
 				    tr("NewGroup"),
 				    &ok);
-  if (! selection.length())
+  if (selection.isEmpty())
     return;
 
+  QStringList l;
   DataBase db;
-  if (db.createGroup(selection))
+  db.getAllGroupsList(l);
+  if (l.contains(selection))
   {
     QMessageBox::information(this, tr("Qtstalker: Error"), tr("This group already exists."));
     return;
   }
+
+  l.clear();
+  db.setGroupList(selection, l);
 
   updateGroups();
 }
@@ -133,7 +138,7 @@ void GroupPage::deleteGroupItem ()
 
   l.removeOne(item->text());
 
-  db.setGroupList(s, l, TRUE);
+  db.setGroupList(s, l);
 
   delete item;
 }

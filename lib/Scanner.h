@@ -29,7 +29,12 @@
 #include <QPushButton>
 #include <QCheckBox>
 #include <QSpinBox>
+#include <QGroupBox>
+#include <QToolButton>
+#include <QListWidget>
+
 #include "FormulaEdit.h"
+#include "ScannerRule.h"
 
 
 
@@ -38,13 +43,12 @@ class Scanner : public QDialog
   Q_OBJECT
 
   signals:
-    void exitScanner ();
-    void message (QString);
-    void scanComplete ();
+    void signalMessage (QString);
+    void signalScanComplete ();
+    void signalUpdate ();
 
   public:
     Scanner (QString);
-    ~Scanner ();
 
   public slots:
     void scan ();
@@ -53,18 +57,18 @@ class Scanner : public QDialog
     void loadRule ();
     void getSymbols ();
     void allSymbolsToggled (bool);
+    void deleteSymbols ();
 
   protected:
-    FormulaEdit *list;
+    QListWidget *fileList;
+    FormulaEdit *formula;
     QComboBox *period;
-    QString scannerName;
-    QPushButton *fileButton;
-    QStringList fileList;
-    QCheckBox *allSymbols;
-    QStringList barLengthList;
     QSpinBox *bars;
-    QComboBox *basePath;
     QDialogButtonBox *buttonBox;    
+    QGroupBox *fileBox;
+    QToolButton *addFileButton;
+    QToolButton *deleteFileButton;
+    ScannerRule rule;
 };
 
 #endif

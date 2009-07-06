@@ -89,6 +89,7 @@ void CSV::import ()
   rule.getDelimiter(delim);
 
   int loop;
+  int records = 0;
   for (loop = 0; loop < (int) fileList.count(); loop++)
   {
     QFile f(fileList[loop]);
@@ -152,29 +153,18 @@ void CSV::import ()
 	  continue;
 	}
 
-	if (fieldList[fieldLoop] == "Open"
-            || fieldList[fieldLoop] == "High" 
-            || fieldList[fieldLoop] == "Low" 
-            || fieldList[fieldLoop] == "Close" 
-            || fieldList[fieldLoop] == "Volume" 
-            || fieldList[fieldLoop] == "OI" 
-            || fieldList[fieldLoop] == "Variable1" 
-            || fieldList[fieldLoop] == "Variable2"
-            || fieldList[fieldLoop] == "Variable3")
-	{
-          bool ok;
-          listItem.toDouble(&ok);
-          if (! ok)
-	  {
-            ts = QString(fName + " - " + tr("Line") + ": " + QString::number(lineCount) + " " + tr("Bad value") + ": " + fieldList[fieldLoop]);
-            emit signalMessage(ts);
-	    flag = TRUE;
-	    break;
-	  }
-
-          r.setData(fieldList[fieldLoop], listItem);
-	  continue;
+        // if we are here we have a number field to process
+        bool ok;
+        listItem.toDouble(&ok);
+        if (! ok)
+        {
+          ts = QString(fName + " - " + tr("Line") + ": " + QString::number(lineCount) + " " + tr("Bad value") + ": " + fieldList[fieldLoop]);
+          emit signalMessage(ts);
+	  flag = TRUE;
+	  break;
 	}
+
+        r.setData(fieldList[fieldLoop], listItem);
       }
       
       if (flag)
@@ -213,6 +203,7 @@ void CSV::import ()
     {
       it.next();
       setChart(it.value());
+      records = records + it.value()->count();
     }    
 
     qDeleteAll(symbolHash);
@@ -227,6 +218,7 @@ void CSV::import ()
   }
 
   emit signalMessage(QString(tr("Done ") + QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss.zzz")));
+  emit signalMessage(QString(QString::number(records) + tr(" Records Imported")));
 }
 
 void CSV::setChart (QList<Bar> *bars)
@@ -241,9 +233,10 @@ void CSV::setChart (QList<Bar> *bars)
   bar.getSymbol(symbol);
 
   rule.getBarFormat(format);
+  QStringList formatList = format.split(",");
 
   // check to see if symbol exists
-  QString ts = "SELECT firstDate,lastDate FROM symbolIndex WHERE symbol='" + symbol + "'";
+  QString ts = "SELECT * FROM symbolIndex WHERE symbol='" + symbol + "'";
   q.exec(ts);
   if (q.lastError().isValid())
   {
@@ -251,12 +244,14 @@ void CSV::setChart (QList<Bar> *bars)
     return;
   }
 
-  QDateTime firstDate, lastDate;
-
   if (! q.next())
   {
     // new symbol, create new table for it
-    ts = "CREATE TABLE " + symbol + " (date INT PRIMARY KEY, data VARCHAR (25))";
+    ts = "CREATE TABLE " + symbol + " (date INT PRIMARY KEY";
+    int loop;
+    for (loop = 0; loop < formatList.count(); loop++)
+      ts.append("," + formatList[loop] + " REAL");
+    ts.append(")");
     q.exec(ts);
     if (q.lastError().isValid())
     {
@@ -265,29 +260,13 @@ void CSV::setChart (QList<Bar> *bars)
     }
 
     // add new symbol entry into the symbol index table
-    bar.getDate(firstDate);
-    bar.getDate(lastDate);
-
-    QString s;
-    bar.getDateNumber(s);
-
-    ts = "INSERT OR REPLACE INTO symbolIndex (symbol,firstDate,lastDate,format) VALUES('" + symbol + "'," + s + "," + s + ",'" + format + "')";
+    ts = "INSERT OR REPLACE INTO symbolIndex (symbol,format) VALUES('" + symbol + "','" + format + "')";
     q.exec(ts);
     if (q.lastError().isValid())
     {
       qDebug() << "CSV::setChart:create new symbol index record: " << q.lastError().text();
       return;
     }
-  }
-  else
-  {
-    // get the start date
-    ts = q.value(0).toString();
-    firstDate = QDateTime::fromString(ts, "yyyyMMddHHmmsszzz");
-
-    // get the end date
-    ts = q.value(1).toString();
-    lastDate = QDateTime::fromString(ts, "yyyyMMddHHmmsszzz");
   }
 
   ts = "BEGIN TRANSACTION";
@@ -298,35 +277,26 @@ void CSV::setChart (QList<Bar> *bars)
     return;
   }
 
-  QDateTime dt;
   int loop;
   QString date;
-  int flag = FALSE;
   for (loop = 0; loop < bars->count(); loop++)
   {
     Bar bar = bars->at(loop);
     bar.getDateNumber(date);
-    bar.getDate(dt);
 
-    QString data;
-    bar.getDataString(format, data);
+    ts = "INSERT OR REPLACE INTO " + symbol + " VALUES(" + date;
 
-    ts = "INSERT OR REPLACE INTO " + symbol + " VALUES(" + date + ",'" + data + "')";
+    int loop2;
+    for (loop2 = 0; loop2 < formatList.count(); loop2++)
+    {
+      QString d;
+      bar.getData(formatList[loop2], d);
+      ts.append("," + d);
+    }
+    ts.append(")");
     q.exec(ts);
     if (q.lastError().isValid())
       qDebug() << "CSV::setChart:save quote in symbol table: " << q.lastError().text();
-
-    if (dt < firstDate)
-    {
-      firstDate = dt;    
-      flag = TRUE;
-    }
-
-    if (dt > lastDate)
-    {
-      lastDate = dt;    
-      flag = TRUE;
-    }
   }
 
   ts = "COMMIT";
@@ -335,21 +305,6 @@ void CSV::setChart (QList<Bar> *bars)
   {
     qDebug() << "CSV::setChart:commit: " << q.lastError().text();
     return;
-  }
-
-  // update the start and end dates
-  if (flag)
-  {
-    // update the new start and end dates in symbolIndex
-    QString sd,ed;
-    sd = firstDate.toString("yyyyMMddHHmmsszzz");
-    ed = lastDate.toString("yyyyMMddHHmmsszzz");
-
-    // update the start and end dates in the symbolIndex
-    ts = "INSERT OR REPLACE INTO symbolIndex (symbol,firstDate,lastDate,format) VALUES('" + symbol + "'," + sd + "," + ed + ",'" + format + "')";
-    q.exec(ts);
-    if (q.lastError().isValid())
-      qDebug() << "CSV::setChart:update first and last dates in symbol index table: " << q.lastError().text();
   }
 }
 

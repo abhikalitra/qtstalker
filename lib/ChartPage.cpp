@@ -180,7 +180,7 @@ void ChartPage::addToGroup ()
 
   tl.removeDuplicates();
 
-  db.setGroupList(group, tl, FALSE);
+  db.setGroupList(group, tl);
 }
 
 void ChartPage::doKeyPress (QKeyEvent *key)

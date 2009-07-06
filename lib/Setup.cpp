@@ -31,10 +31,10 @@ Setup::Setup ()
 {
 }
 
-void Setup::setup ()
+void Setup::setup (QString session)
 {
   setupDirectories();
-  setupDataBase();
+  setupDataBase(session);
   setupQuoteBase();
 }
 
@@ -62,9 +62,9 @@ void Setup::setupDirectories ()
   version = "0.37";
 }
 
-void Setup::setupDataBase ()
+void Setup::setupDataBase (QString session)
 {
-  QString s = home + "/data.sqlite";
+  QString s = home + "/data.sqlite" + session;
   QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", "data");
   db.setHostName("me");
   db.setDatabaseName(s);
@@ -78,38 +78,38 @@ void Setup::setupDataBase ()
 
   // create the config table
   QSqlQuery q(db);
-  s = "CREATE TABLE IF NOT EXISTS config (key INT PRIMARY KEY, setting VARCHAR(50))";
+  s = "CREATE TABLE IF NOT EXISTS config (key INT PRIMARY KEY, setting TEXT)";
   q.exec(s);
   if (q.lastError().isValid())
     qDebug() << "DataBase::createConfigTable: " << q.lastError().text();
   setupConfigDefaults();
 
   // create the group index table
-  s = "CREATE TABLE IF NOT EXISTS groupIndex (name VARCHAR(25) PRIMARY KEY)";
+  s = "CREATE TABLE IF NOT EXISTS groupIndex (name TEXT PRIMARY KEY, parms TEXT)";
   q.exec(s);
   if (q.lastError().isValid())
     qDebug() << "DataBase::createGroupIndexTable: " << q.lastError().text();
 
   // create the indicator index table
-  s = "CREATE TABLE IF NOT EXISTS indicatorIndex (name VARCHAR(25) PRIMARY KEY, enable INT, tabRow INT, date INT, log INT)";
+  s = "CREATE TABLE IF NOT EXISTS indicatorIndex (name TEXT PRIMARY KEY, type TEXT, enable INT, tabRow INT, date INT, log INT, parms TEXT)";
   q.exec(s);
   if (q.lastError().isValid())
     qDebug() << "DataBase::createIndicatorIndexTable: " << q.lastError().text();
 
   // create the scanners table
-  s = "CREATE TABLE IF NOT EXISTS scanners (name VARCHAR(25) PRIMARY KEY, script VARCHAR(1000))";
+  s = "CREATE TABLE IF NOT EXISTS scanners (name TEXT PRIMARY KEY, parms TEXT, allSymbols INT, fileList TEXT, barLength TEXT, bars INT)";
   q.exec(s);
   if (q.lastError().isValid())
     qDebug() << "DataBase::createScannersTable: " << q.lastError().text();
 
   // create the testers table
-  s = "CREATE TABLE IF NOT EXISTS testers (name VARCHAR(25) PRIMARY KEY)";
+  s = "CREATE TABLE IF NOT EXISTS testers (name TEXT PRIMARY KEY, parms TEXT)";
   q.exec(s);
   if (q.lastError().isValid())
     qDebug() << "DataBase::createTestersTable: " << q.lastError().text();
 
   // create the chart object table
-  s = "CREATE TABLE IF NOT EXISTS chartObjects (id INT PRIMARY KEY, symbol VARCHAR(25), indicator VARCHAR(25), type VARCHAR(25), settings VARCHAR(250))";
+  s = "CREATE TABLE IF NOT EXISTS chartObjects (id INT PRIMARY KEY, symbol TEXT, indicator TEXT, type TEXT, settings TEXT)";
   q.exec(s);
   if (q.lastError().isValid())
     qDebug() << "DataBase::createChartObjectsTable: " << q.lastError().text();

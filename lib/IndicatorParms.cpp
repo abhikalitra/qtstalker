@@ -27,10 +27,6 @@ IndicatorParms::IndicatorParms ()
   setPlot(0);
 }
 
-IndicatorParms::~IndicatorParms ()
-{
-}
-
 void IndicatorParms::getString (QString &s)
 {
   s.clear();
@@ -148,5 +144,4 @@ void IndicatorParms::getLineType (QString &d)
   QString s("LineType");
   getData(s, d);
 }
-
 

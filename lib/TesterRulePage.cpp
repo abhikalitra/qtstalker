@@ -41,22 +41,22 @@ TesterRulePage::TesterRulePage (QWidget *p) : QWidget (p)
   grid->addWidget(gbox, 0, 0);
 
   QString s;
-  enterLongEdit = new FormulaEdit(gbox, s);  
+  enterLongEdit = new FormulaEdit;  
   
   gbox = new QGroupBox(tr("Exit Long"), this);
   grid->addWidget(gbox, 0, 1);
 
-  exitLongEdit = new FormulaEdit(gbox, s);  
+  exitLongEdit = new FormulaEdit;  
 
   gbox = new QGroupBox(tr("Enter Short"), this);
   grid->addWidget(gbox, 1, 0);
 
-  enterShortEdit = new FormulaEdit(gbox, s);  
+  enterShortEdit = new FormulaEdit;  
   
   gbox = new QGroupBox(tr("Exit Short"), this);
   grid->addWidget(gbox, 1, 1);
 
-  exitShortEdit = new FormulaEdit(gbox, s);  
+  exitShortEdit = new FormulaEdit;  
 }
 
 TesterRulePage::~TesterRulePage ()

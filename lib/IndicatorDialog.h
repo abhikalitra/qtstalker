@@ -19,33 +19,32 @@
  *  USA.
  */
 
-#ifndef BARS1_HPP
-#define BARS1_HPP
+#ifndef INDICATORDIALOG_HPP
+#define INDICATORDIALOG_HPP
 
-
-#include "Indicator.h"
-#include "PlotLine.h"
-#include "BarData.h"
-#include <QList>
-#include <QHash>
 #include <QString>
-#include <QStringList>
+#include <QDialog>
+#include <QDialogButtonBox>
+
+#include "FormulaEdit.h"
 
 
-
-class BARS
+class IndicatorDialog : public QDialog
 {
-  public:
-    BARS ();
-    ~BARS ();
-    void calculate (BarData *, IndicatorParms &, QHash<QString, PlotLine *> &);
-    void calculateBar (IndicatorParms &, QHash<QString, PlotLine *> &);
-    void calculateCandle (IndicatorParms &, QHash<QString, PlotLine *> &);
-    void prefDialog (IndicatorParms &, QStringList &);
+  Q_OBJECT
 
-  private:
-    QStringList methodList;
-    BarData *data;
+  public:
+    IndicatorDialog (QWidget *, QString &);
+    void loadIndicator ();
+
+  public slots:
+    void save ();
+    void openRule ();
+
+  protected:
+    QString name;
+    FormulaEdit *formula;
+    QDialogButtonBox *buttonBox;    
 };
 
 #endif

@@ -59,6 +59,7 @@ class IndicatorPage : public QWidget
     void itemSelected ();
     void changeIndicator (QString &);
     void doKeyPress (QKeyEvent *key);
+    void dumpIndicators ();
 
   protected:
     virtual void keyPressEvent (QKeyEvent *);

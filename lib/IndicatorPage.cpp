@@ -21,8 +21,8 @@
 
 #include "IndicatorPage.h"
 #include "DataBase.h"
-#include "FormulaEdit.h"
-#include "IndicatorIndex.h"
+#include "IndicatorDialog.h"
+#include "Indicator.h"
 #include "../pics/ok.xpm"
 #include "../pics/disable.xpm"
 #include "../pics/edit.xpm"
@@ -61,6 +61,10 @@ IndicatorPage::IndicatorPage (QWidget *w) : QWidget (w)
   action = menu->addAction(QIcon(edit), tr("&Edit Indicator			Ctrl+E"), this, SLOT(editIndicator()), QKeySequence(Qt::CTRL+Qt::Key_E));
   actionList.append(action);
   action = menu->addAction(QIcon(deleteitem), tr("&Delete Indicator		Ctrl+D"), this, SLOT(deleteIndicator()), QKeySequence(Qt::CTRL+Qt::Key_D));
+  actionList.append(action);
+  action = menu->addAction(QIcon(), tr("Dump Indicator Table"), this, SLOT(dumpIndicators()), QKeySequence(Qt::CTRL+Qt::Key_D));
+  actionList.append(action);
+  action->setEnabled(TRUE);
   actionList.append(action);
 
   updateList();
@@ -109,7 +113,7 @@ void IndicatorPage::newIndicator ()
   if (! ok)
     return;
 
-  FormulaEdit *dialog = new FormulaEdit(this, selection);
+  IndicatorDialog *dialog = new IndicatorDialog(this, selection);
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)
   {
@@ -117,10 +121,14 @@ void IndicatorPage::newIndicator ()
     return;
   }
 
-  IndicatorIndex index;
-  index.setEnable(1);
-  index.setTabRow(tabRow);
-  db.setIndicatorIndex(selection, index);
+  Indicator i;
+  i.setName(selection);
+  db.getIndicator(i);
+
+  i.setEnable(1);
+  i.setTabRow(tabRow);
+
+  db.setIndicator(i);
 
   delete dialog;
 
@@ -141,9 +149,9 @@ void IndicatorPage::editIndicator ()
 
 void IndicatorPage::editIndicator (QString d)
 {
-  FormulaEdit *dialog = new FormulaEdit(this, d);
+  IndicatorDialog *dialog = new IndicatorDialog(this, d);
   int rc = dialog->exec();
-  if (! rc)
+  if (rc == QDialog::Rejected)
   {
     delete dialog;
     return;
@@ -193,10 +201,11 @@ void IndicatorPage::updateList ()
   int loop;
   for (loop = 0; loop < l.count(); loop++)
   {
-    IndicatorIndex index;
-    db.getIndicatorIndex(l[loop], index);
+    Indicator i;
+    i.setName(l[loop]);
+    db.getIndicator(i);
 
-    if (! index.getEnable())
+    if (! i.getEnable())
     {
       QListWidgetItem *item = new QListWidgetItem(QIcon(disable), l[loop]);
       list->addItem(item);
@@ -231,21 +240,22 @@ void IndicatorPage::changeIndicator (QString &d)
 
   QString s = item->text();
   DataBase db;
-  IndicatorIndex index;
-  db.getIndicatorIndex(s, index);
+  Indicator i;
+  i.setName(s);
+  db.getIndicator(i);
 
-  if (index.getEnable())
+  if (i.getEnable())
   {
     item->setIcon(QIcon(disable));
-    index.setEnable(0);
-    db.setIndicatorIndex(s, index);
+    i.setEnable(0);
+    db.setIndicator(i);
     emit signalDisableIndicator(s);
   }
   else
   {
     item->setIcon(QIcon(ok));
-    index.setEnable(1);
-    db.setIndicatorIndex(s, index);
+    i.setEnable(1);
+    db.setIndicator(i);
     emit signalEnableIndicator(s);
   }
 }
@@ -283,4 +293,9 @@ void IndicatorPage::doKeyPress (QKeyEvent *key)
   }
 }
 
+void IndicatorPage::dumpIndicators ()
+{
+  DataBase db;
+  db.dumpIndicators();
+}
 

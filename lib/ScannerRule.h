@@ -19,56 +19,42 @@
  *  USA.
  */
 
-#ifndef FORMULAEDIT_HPP
-#define FORMULAEDIT_HPP
+#ifndef SCANNERRULE_HPP
+#define SCANNERRULE_HPP
 
 #include <QString>
-#include <QWidget>
-#include <QListWidget>
-#include <QListWidgetItem>
-#include <QGroupBox>
-#include <QAction>
+#include <QStringList>
 #include <QList>
-#include <QLineEdit>
-#include <QComboBox>
-#include "ColorButton.h"
+
 #include "Indicator.h"
 
 
-class FormulaEdit : public QWidget
-{
-  Q_OBJECT
 
+
+class ScannerRule
+{
   public:
-    FormulaEdit ();
-    void getVariableList (QStringList &, bool);
-    void BARSDialog (IndicatorParms &, QStringList &);
-    void UTILDialog (IndicatorParms &, QStringList &);
+    ScannerRule ();
+    void setName (QString &);
+    void getName (QString &);
+    void setAllSymbols (QString &);
+    void getAllSymbols (QString &);
+    void getFileList (QStringList &);
+    void setFileList (QStringList &);
+    void setBarLength (QString &);
+    void getBarLength (QString &);
+    void setBars (QString &);
+    void getBars (QString &);
     void setIndicator (Indicator &);
     void getIndicator (Indicator &);
 
-  public slots:
-    void openRule ();
-    void doubleClicked (QListWidgetItem *);
-    void addFunction ();
-    void editFunction ();
-    void deleteFunction ();
-    void itemSelected ();
-    void plotBoxChecked (bool);
-    void plotLabelChanged (const QString &);
-    void lineTypeChanged (int);
-    void colorChanged ();
-
   protected:
-    QListWidget *formula;
-    QStringList functionList;
-    QStringList formulaList;
+    QString name;
+    QString allSymbols;
+    QStringList fileList;
+    QString barLength;
+    QString bars;
     Indicator indicator;
-    QList<QAction *> actionList;
-    ColorButton *colorButton;
-    QLineEdit *plotLabel;
-    QGroupBox *plotBox;
-    QComboBox *lineType;
 };
 
 #endif

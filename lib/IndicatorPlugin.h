@@ -25,7 +25,7 @@
 #include "PlotLine.h"
 #include "BarData.h"
 #include "ta_libc.h"
-#include "IndicatorParms.h"
+#include "Indicator.h"
 #include <QString>
 #include <QStringList>
 #include <QHash>
@@ -47,7 +47,7 @@ class IndicatorPlugin : public QObject
     void setIndicatorInput (BarData *);
     void getMATypes (QStringList &);
     void calculate (QList<PlotLine *> &);
-    void createPlot (QList<IndicatorParms> &, QHash<QString, PlotLine *> &, QList<PlotLine *> &);
+    void createPlot (Indicator &, QHash<QString, PlotLine *> &, QList<PlotLine *> &);
     void setName (QString &);
     void getName (QString &);
     void getIndicatorList (QStringList &);

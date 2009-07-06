@@ -32,7 +32,6 @@ class IndicatorParms
 {
   public:
     IndicatorParms ();
-    ~IndicatorParms ();
     void getString (QString &);
     void parse (QString &);
     void getData (QString &, QString &);
@@ -49,7 +48,6 @@ class IndicatorParms
     void setLabel (QString &);
     void getLineType (QString &);
     void setLineType (QString &);
-
     
   protected:
     QHash<QString, QString> dict;

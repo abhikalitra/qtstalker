@@ -20,6 +20,8 @@
  */
 
 #include "DataBase.h"
+#include "Bar.h"
+
 #include <QtDebug>
 #include <QtSql>
 
@@ -55,11 +57,10 @@ void DataBase::getChart (BarData *data)
   QSqlQuery q(QSqlDatabase::database("quotes"));
 
   QString symbol, ts, ts2, format;
-  QDateTime firstDate, lastDate;
   data->getSymbol(symbol);
 
   // get the index details
-  QString s = "SELECT name,firstDate,lastDate,format FROM symbolIndex WHERE symbol='" + symbol + "'";
+  QString s = "SELECT name,format FROM symbolIndex WHERE symbol='" + symbol + "'";
   q.exec(s);
   if (q.lastError().isValid())
   {
@@ -69,100 +70,263 @@ void DataBase::getChart (BarData *data)
 
   if (q.next())
   {
-    ts = q.value(0).toString();
-    data->setName(ts);
+    s = q.value(0).toString();
+    data->setName(s);
 
-    ts = q.value(1).toString();
-    firstDate = QDateTime::fromString(ts, "yyyyMMddHHmmsszzz");
-
-    ts = q.value(2).toString();
-    lastDate = QDateTime::fromString(ts, "yyyyMMddHHmmsszzz");
-
-    format = q.value(3).toString();
+    format = q.value(1).toString();
+  }
+  else
+  {
+    qDebug() << "DataBase::getChart: no symbolIndex record found";
+    return;
   }
 
+  QStringList formatList = format.split(",");
+
+  QDateTime firstDate;
+  getFirstDate(firstDate, symbol);
+
+  QDateTime lastDate;
+  getLastDate(lastDate, symbol);
+
   QDateTime sdate = lastDate;
-  QDateTime edate = sdate;
+  QDateTime edate = lastDate;
 
-  do
+  setStartEndDates(sdate, edate, data->getBarLength());
+  if (sdate < firstDate)
+    return;
+
+  while (1)
   {
-    edate = sdate;
-    data->getDateOffset(sdate);
-    if (edate <= firstDate)
-      break;
+    QString sd = sdate.toString("yyyyMMddHHmmsszzz");
+    QString ed = edate.toString("yyyyMMddHHmmsszzz");
 
-    ts = sdate.toString("yyyyMMddHHmmsszzz");
-    ts2 = edate.toString("yyyyMMddHHmmsszzz");
-
-    // get some quotes
-    s = "SELECT date,data FROM " + symbol + " WHERE date >= " + ts + " AND date <= " + ts2;
+    QString s = "SELECT * FROM " + symbol + " WHERE date >=" + sd + " AND date <" + ed;
     q.exec(s);
     if (q.lastError().isValid())
     {
-      qDebug() << "DataBase::getChart: " << q.lastError().text();
+      qDebug() << "DataBase::getChart:" << q.lastError().text();
       break;
     }
 
-    if (! q.last())
+    int openFlag = FALSE;
+    Bar *bar = new Bar;
+    while (q.next())
     {
-      qDebug() << "DataBase::getChart: no records found" << q.lastError().text();
-      break;
+      QDateTime dt = QDateTime::fromString(q.value(0).toString(), "yyyyMMddHHmmsszzz");
+      bar->setDate(dt);
+
+      // check if this is first data for bar construction, we need to set the open
+      if (! openFlag)
+      {
+        int loop;
+        for (loop = 0; loop < formatList.count(); loop++)
+        {
+          s = q.value(loop + 1).toString();
+          bar->setData(formatList[loop], s);
+        }
+        openFlag = TRUE;
+        continue;
+      }
+
+      int i = formatList.indexOf("High");
+      if (i)
+      {
+        double h = q.value(i + 1).toDouble();
+        if (h > bar->getHigh())
+          bar->setHigh(h);
+      }
+
+      i = formatList.indexOf("Low");
+      if (i)
+      {
+        double l = q.value(i + 1).toDouble();
+        if (l < bar->getLow())
+          bar->setLow(l);
+      }
+
+      i = formatList.indexOf("Close");
+      if (i)
+      {
+        double c = q.value(i + 1).toDouble();
+        bar->setClose(c);
+      }
+
+      i = formatList.indexOf("Volume");
+      if (i)
+      {
+        double v = q.value(i + 1).toDouble();
+        double v2 = bar->getVolume();
+        bar->setVolume(v + v2);
+      }
+
+      i = formatList.indexOf("OI");
+      if (i)
+      {
+        double c = q.value(i + 1).toDouble();
+        bar->setOI(c);
+      }
     }
 
-    do
-    {
-      Bar bar;
-      s = q.value(0).toString();
-      QDateTime dt = QDateTime::fromString(s, "yyyyMMddHHmmsszzz");
-      bar.setDate(dt);
-
-      s = q.value(1).toString();
-      bar.parse(format, s);
-
+    if (bar->getEmptyFlag())
+      delete bar;
+    else
       data->prepend(bar);
-    } while (q.previous() && data->count() < data->getBarsRequested());
-  } while (data->count() < data->getBarsRequested());
+
+    if (data->count() == data->getBarsRequested())
+      break;
+
+    edate = sdate;
+    getDateOffset(sdate, data->getBarLength());
+    if (sdate < firstDate)
+      break;
+  }
+
+  data->createDateList();
+}
+
+void DataBase::getFirstDate (QDateTime &date, QString &symbol)
+{
+  QSqlQuery q(QSqlDatabase::database("quotes"));
+  QString s = "SELECT date FROM " + symbol + " ORDER BY date ASC LIMIT 1";
+  q.exec(s);
+  if (q.lastError().isValid())
+  {
+    qDebug() << "DataBase::getFirstDate:" << q.lastError().text();
+    return;
+  }
+
+  if (q.next())
+    date = QDateTime::fromString(q.value(0).toString(), "yyyyMMddHHmmsszzz");
+}
+
+void DataBase::getLastDate (QDateTime &date, QString &symbol)
+{
+  QSqlQuery q(QSqlDatabase::database("quotes"));
+  QString s = "SELECT date FROM " + symbol + " ORDER BY date DESC LIMIT 1";
+  q.exec(s);
+  if (q.lastError().isValid())
+  {
+    qDebug() << "DataBase::getLastDate:" << q.lastError().text();
+    return;
+  }
+
+  if (q.next())
+    date = QDateTime::fromString(q.value(0).toString(), "yyyyMMddHHmmsszzz");
+}
+
+void DataBase::setStartEndDates (QDateTime &startDate, QDateTime &endDate, BarData::BarLength barLength)
+{
+  QString s, s2;
+  int tint = 0;
+  QDateTime dt = endDate;
+
+  switch (barLength)
+  {
+    case BarData::Minute1:
+      dt.setTime(QTime(dt.time().hour(), dt.time().minute(), 0, 0));
+      startDate = dt;
+      dt = dt.addSecs(60);
+      endDate = dt;
+      break;
+    case BarData::Minute5:
+      tint = dt.time().minute() / 5;
+      dt.setTime(QTime(dt.time().hour(), tint * 5, 0, 0));
+      startDate = dt;
+      dt = dt.addSecs(300);
+      endDate = dt;
+      break;
+    case BarData::Minute10:
+      tint = dt.time().minute() / 10;
+      dt.setTime(QTime(dt.time().hour(), tint * 10, 0, 0));
+      startDate = dt;
+      dt = dt.addSecs(600);
+      endDate = dt;
+      break;
+    case BarData::Minute15:
+      tint = dt.time().minute() / 15;
+      dt.setTime(QTime(dt.time().hour(), tint * 15, 0, 0));
+      startDate = dt;
+      dt = dt.addSecs(900);
+      endDate = dt;
+      break;
+    case BarData::Minute30:
+      tint = dt.time().minute() / 30;
+      dt.setTime(QTime(dt.time().hour(), tint * 30, 0, 0));
+      startDate = dt;
+      dt = dt.addSecs(1800);
+      endDate = dt;
+      break;
+    case BarData::Minute60:
+      dt.setTime(QTime(dt.time().hour(), 0, 0, 0));
+      startDate = dt;
+      dt = dt.addSecs(3600);
+      endDate = dt;
+      break;
+    case BarData::DailyBar:
+      dt.setTime(QTime(0, 0, 0, 0));
+      startDate = dt;
+      dt = dt.addDays(1);
+      endDate = dt;
+      break;
+    case BarData::WeeklyBar:
+      dt.setTime(QTime(0, 0, 0, 0));
+      dt = dt.addDays(- dt.date().dayOfWeek());
+      startDate = dt;
+      dt = dt.addDays(7);
+      endDate = dt;
+      break;
+    case BarData::MonthlyBar:
+      dt.setTime(QTime(0, 0, 0, 0));
+      dt = dt.addDays(- (dt.date().day() - 1));
+      startDate = dt;
+      dt = dt.addDays(dt.date().daysInMonth());
+      endDate = dt;
+      break;
+    default:
+      break;
+  }
+}
+
+void DataBase::getDateOffset (QDateTime &dt, BarData::BarLength barLength)
+{
+  switch (barLength)
+  {
+    case BarData::Minute1:
+      dt = dt.addSecs(-(60));
+      break;
+    case BarData::Minute5:
+      dt = dt.addSecs(-(300));
+      break;
+    case BarData::Minute10:
+      dt = dt.addSecs(-(600));
+      break;
+    case BarData::Minute15:
+      dt = dt.addSecs(-(900));
+      break;
+    case BarData::Minute30:
+      dt = dt.addSecs(-(1800));
+      break;
+    case BarData::Minute60:
+      dt = dt.addSecs(-(3600));
+      break;
+    case BarData::DailyBar:
+      dt = dt.addDays(-(1));
+      break;
+    case BarData::WeeklyBar:
+      dt = dt.addDays(-(7));
+      break;
+    case BarData::MonthlyBar:
+      dt = dt.addMonths(-(1));
+      break;
+    default:
+      break;
+  }
 }
 
 /********************************************************************************/
 /********************* group functions *******************************************/
 /********************************************************************************/
-
-int DataBase::createGroup (QString &n)
-{
-  int rc = TRUE;
-  QSqlQuery q(QSqlDatabase::database("data"));
-  QString s = "SELECT name FROM groupIndex WHERE name='" + n + "'";
-  q.exec(s);
-  if (q.lastError().isValid())
-  {
-    qDebug() << "DataBase::createGroup: " << q.lastError().text();
-    return rc;
-  }
-
-  if (! q.next())
-  {
-    s = "INSERT OR REPLACE INTO groupIndex (name) VALUES('" + n + "')";
-    q.exec(s);
-    if (q.lastError().isValid())
-    {
-      qDebug() << "DataBase::createGroup: " << q.lastError().text();
-      return rc;
-    }
-
-    s = "CREATE TABLE group_" + n + " (chart VARCHAR(25) PRIMARY KEY)";
-    q.exec(s);
-    if (q.lastError().isValid())
-    {
-      qDebug() << "DataBase::createGroup: " << q.lastError().text();
-      return rc;
-    }
-
-    rc = FALSE;
-  }
-
-  return rc;
-}
 
 void DataBase::getAllGroupsList (QStringList &l)
 {
@@ -186,7 +350,7 @@ void DataBase::getGroupList (QString &n, QStringList &l)
 {
   l.clear();
   QSqlQuery q(QSqlDatabase::database("data"));
-  QString s = "SELECT chart FROM group_" + n;
+  QString s = "SELECT parms FROM groupIndex WHERE name='" + n + "'";
   q.exec(s);
   if (q.lastError().isValid())
   {
@@ -194,51 +358,17 @@ void DataBase::getGroupList (QString &n, QStringList &l)
     return;
   }
 
-  while (q.next())
-    l.append(q.value(0).toString());
-
-  l.sort();
+  if (q.next())
+    l = q.value(0).toString().split(",");
 }
 
-void DataBase::setGroupList (QString &n, QStringList &l, bool flag)
+void DataBase::setGroupList (QString &n, QStringList &l)
 {
   QSqlQuery q(QSqlDatabase::database("data"));
-
-  if (flag)
-  {
-    QString s = "DELETE FROM group_" + n;
-    q.exec(s);
-    if (q.lastError().isValid())
-    {
-      qDebug() << "DataBase::setGroupList: " << q.lastError().text();
-      return;
-    }
-  }
-
-  QString s = "BEGIN TRANSACTION";
+  QString s = "INSERT OR REPLACE INTO groupIndex VALUES ('" + n + "','" + l.join(",") + "')";
   q.exec(s);
   if (q.lastError().isValid())
-  {
-    qDebug() << "DataBase::setGroupList:begin transaction: " << q.lastError().text();
-    return;
-  }
-
-  int loop;
-  for (loop = 0; loop < l.count(); loop++)
-  {
-    s = "INSERT OR REPLACE INTO group_" + n + " (chart) VALUES ('" + l[loop] + "')";
-    q.exec(s);
-    if (q.lastError().isValid())
-    {
-      qDebug() << "DataBase::setGroupList: " << q.lastError().text();
-      continue;
-    }
-  }
-
-  s = "COMMIT";
-  q.exec(s);
-  if (q.lastError().isValid())
-    qDebug() << "DataBase::setGroupList:commit: " << q.lastError().text();
+    qDebug() << "DataBase::setGroupList: " << q.lastError().text();
 }
 
 void DataBase::deleteGroup (QString &n)
@@ -247,51 +377,17 @@ void DataBase::deleteGroup (QString &n)
   QString s = "DELETE FROM groupIndex WHERE name='" + n + "'";
   q.exec(s);
   if (q.lastError().isValid())
-  {
     qDebug() << "DataBase::deleteGroup: " << q.lastError().text();
-    return;
-  }
-
-  s = "DROP TABLE group_" + n;
-  q.exec(s);
-  if (q.lastError().isValid())
-  {
-    qDebug() << "DataBase::deleteGroup: " << q.lastError().text();
-    return;
-  }
 }
 
 /********************************************************************************/
 /********************* indicator functions *******************************************/
 /********************************************************************************/
 
-int DataBase::createIndicator (QString &n)
+void DataBase::getIndicator (Indicator &parms)
 {
-  int rc = TRUE;
-  QSqlQuery q(QSqlDatabase::database("data"));
-  QString s = "INSERT INTO indicatorIndex (name) VALUES('" + n + "')";
-  q.exec(s);
-  if (q.lastError().isValid())
-  {
-    qDebug() << "DataBase::createIndicator: " << q.lastError().text();
-    return rc;
-  }
-
-  s = "CREATE TABLE indicator_" + n + " (id INT AUTO INCREMENT PRIMARY KEY, parms VARCHAR(500))";
-  q.exec(s);
-  if (q.lastError().isValid())
-  {
-    qDebug() << "DataBase::createIndicator: " << q.lastError().text();
-    return rc;
-  }
-
-  rc = FALSE;
-  return rc;
-}
-
-void DataBase::getIndicator (QString &name, QList<IndicatorParms> &parms)
-{
-  parms.clear();
+  QString name;
+  parms.getName(name);
 
   QSqlQuery q(QSqlDatabase::database("data"));
   QString s = "SELECT * FROM indicatorIndex WHERE name='" + name + "'";
@@ -301,64 +397,35 @@ void DataBase::getIndicator (QString &name, QList<IndicatorParms> &parms)
     qDebug() << "DataBase::getIndicator: " << q.lastError().text();
     return;
   }
+
   if (! q.next())
     return;
 
-  s = "SELECT parms FROM indicator_" + name;
-  q.exec(s);
-  if (q.lastError().isValid())
-  {
-    qDebug() << "DataBase::getIndicator: " << q.lastError().text();
-    return;
-  }
-
-  while (q.next())
-  {
-    IndicatorParms p;
-    QString s2 = q.value(0).toString();
-    p.parse(s2);
-    parms.append(p);
-  }
+  s = q.value(1).toString();
+  parms.setType(s);
+  parms.setEnable(q.value(2).toInt());
+  parms.setTabRow(q.value(3).toInt());
+  parms.setDate(q.value(4).toInt());
+  parms.setLog(q.value(5).toInt());
+  parms.setParms(q.value(6).toString());
 }
 
-void DataBase::setIndicator (QString &name, QList<IndicatorParms> &parms)
+void DataBase::setIndicator (Indicator &i)
 {
+  QString name, enable, tabRow, date, log, parms, type;
+  i.getName(name);
+  enable = QString::number(i.getEnable());
+  tabRow = QString::number(i.getTabRow());
+  date = QString::number(i.getDate());
+  log = QString::number(i.getLog());
+  i.getParms(parms);
+  i.getType(type);
+
   QSqlQuery q(QSqlDatabase::database("data"));
-  QString s = "DELETE FROM indicator_" + name;
+  QString s = "INSERT OR REPLACE INTO indicatorIndex VALUES ('" + name + "','" + type + "'," + enable + "," + tabRow + "," + date + "," + log + ",'" + parms + "')";
   q.exec(s);
   if (q.lastError().isValid())
-  {
-    qDebug() << "DataBase::setIndicator:delete records: " << q.lastError().text();
-    return;
-  }
-
-  s = "BEGIN TRANSACTION";
-  q.exec(s);
-  if (q.lastError().isValid())
-  {
-    qDebug() << "DataBase::setIndicator:begin transaction: " << q.lastError().text();
-    return;
-  }
-
-  int loop;
-  for (loop = 0; loop < parms.count(); loop++)
-  {
-    IndicatorParms p = parms.at(loop);
-    QString s2;
-    p.getString(s2);
-    s = "INSERT INTO indicator_" + name + " (parms) VALUES ('" + s2 + "')";
-    q.exec(s);
-    if (q.lastError().isValid())
-    {
-      qDebug() << "DataBase::setIndicator: " << q.lastError().text();
-      return;
-    }
-  }
-
-  s = "COMMIT";
-  q.exec(s);
-  if (q.lastError().isValid())
-    qDebug() << "DataBase::setIndicator:commit: " << q.lastError().text();
+    qDebug() << "DataBase::setIndicator: " << q.lastError().text();
 }
 
 void DataBase::deleteIndicator (QString &name)
@@ -367,25 +434,14 @@ void DataBase::deleteIndicator (QString &name)
   QString s = "DELETE FROM indicatorIndex WHERE name='" + name + "'";
   q.exec(s);
   if (q.lastError().isValid())
-  {
     qDebug() << "DataBase::deleteIndicatorIndex: " << q.lastError().text();
-    return;
-  }
-
-  s = "DROP TABLE indicator_" + name;
-  q.exec(s);
-  if (q.lastError().isValid())
-  {
-    qDebug() << "DataBase::deleteIndicatorTable: " << q.lastError().text();
-    return;
-  }
 }
 
 void DataBase::getIndicatorList (QStringList &l)
 {
   l.clear();
   QSqlQuery q(QSqlDatabase::database("data"));
-  QString s = "SELECT name FROM indicatorIndex";
+  QString s = "SELECT name FROM indicatorIndex WHERE type='Plot'";
   q.exec(s);
   if (q.lastError().isValid())
   {
@@ -399,38 +455,21 @@ void DataBase::getIndicatorList (QStringList &l)
   l.sort();
 }
 
-void DataBase::getIndicatorIndex (QString &name, IndicatorIndex &parm)
+void DataBase::dumpIndicators ()
 {
   QSqlQuery q(QSqlDatabase::database("data"));
-  QString s = "SELECT * FROM indicatorIndex WHERE name='" + name + "'";
+  QString s = "SELECT * FROM indicatorIndex";
   q.exec(s);
   if (q.lastError().isValid())
   {
-    qDebug() << "DataBase::getIndicatorIndex: " << q.lastError().text();
+    qDebug() << "DataBase::dumpIndicators: " << q.lastError().text();
     return;
   }
 
-  if (q.next())
+  while (q.next())
   {
-    QString s = q.value(0).toString();
-    parm.setName(s);
-    parm.setEnable(q.value(1).toInt());
-    parm.setTabRow(q.value(2).toInt());
-    parm.setDate(q.value(3).toInt());
-    parm.setLog(q.value(4).toInt());
-  }
-}
-
-void DataBase::setIndicatorIndex (QString &name, IndicatorIndex &parm)
-{
-  QSqlQuery q(QSqlDatabase::database("data"));
-  QString s = "UPDATE indicatorIndex SET enable=" + QString::number(parm.getEnable()) + ", tabRow=" + QString::number(parm.getTabRow());
-  s.append(", date="  + QString::number(parm.getDate()) + ", log=" + QString::number(parm.getLog()) + " WHERE name='" + name + "'");
-  q.exec(s);
-  if (q.lastError().isValid())
-  {
-    qDebug() << "DataBase::setIndicatorIndex: " << q.lastError().text();
-    return;
+    qDebug() << q.value(0).toString() << q.value(1).toString() << q.value(2).toString() << q.value(3).toString()
+             << q.value(4).toString() << q.value(5).toString() << q.value(6).toString();
   }
 }
 
@@ -440,8 +479,24 @@ void DataBase::setIndicatorIndex (QString &name, IndicatorIndex &parm)
 
 void DataBase::deleteScanner (QString &name)
 {
+  // delete indicator linked to the scanner
   QSqlQuery q(QSqlDatabase::database("data"));
-  QString s = "DELETE FROM scanners WHERE name='" + name + "'";
+  QString s = "SELECT parms FROM scanners WHERE name='" + name + "'";
+  q.exec(s);
+  if (q.lastError().isValid())
+  {
+    qDebug() << "DataBase::deleteScanner: " << q.lastError().text();
+    return;
+  }
+
+  if (q.next())
+  {
+    s = q.value(0).toString();
+    deleteIndicator(s);
+  }
+
+  // now delete the scannner
+  s = "DELETE FROM scanners WHERE name='" + name + "'";
   q.exec(s);
   if (q.lastError().isValid())
   {
@@ -466,6 +521,73 @@ void DataBase::getScannerList (QStringList &l)
     l.append(q.value(0).toString());
 
   l.sort();
+}
+
+void DataBase::getScanner (ScannerRule &rule)
+{
+  QString ts;
+  rule.getName(ts);
+
+  QSqlQuery q(QSqlDatabase::database("data"));
+  QString s = "SELECT * FROM scanners WHERE name='" + ts + "'";
+  q.exec(s);
+  if (q.lastError().isValid())
+  {
+    qDebug() << "DataBase::getScanner: " << q.lastError().text();
+    return;
+  }
+
+  if (q.next())
+  {
+    QString s = q.value(1).toString();
+    Indicator i;
+    i.setName(s);
+    getIndicator(i);
+    rule.setIndicator(i);
+
+    s = q.value(2).toString();
+    rule.setAllSymbols(s);
+
+    QStringList l = q.value(3).toString().split(",");
+    rule.setFileList(l);
+
+    s = q.value(4).toString();
+    rule.setBarLength(s);
+
+    s = q.value(5).toString();
+    rule.setBars(s);
+  }
+}
+
+void DataBase::setScanner (ScannerRule &rule)
+{
+  QString name;
+  rule.getName(name);
+
+  Indicator i;
+  rule.getIndicator(i);
+  setIndicator(i);
+  QString parms;
+  i.getName(parms);
+
+  QString allSymbols;
+  rule.getAllSymbols(allSymbols);
+
+  QStringList l;
+  rule.getFileList(l);
+  QString fileList = l.join(",");
+
+  QString barLength;
+  rule.getBarLength(barLength);
+
+  QString bars;
+  rule.getBars(bars);
+
+  QSqlQuery q(QSqlDatabase::database("data"));
+  QString s = "INSERT OR REPLACE INTO scanners VALUES ('" + name + "','" + parms + "'," + allSymbols + ",'" + fileList + "','" + barLength + "'," + bars + ")";
+  q.exec(s);
+  if (q.lastError().isValid())
+    qDebug() << "DataBase::setSacnner: " << q.lastError().text();
 }
 
 /********************************************************************************/

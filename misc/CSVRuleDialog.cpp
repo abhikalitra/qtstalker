@@ -118,6 +118,11 @@ void CSVRuleDialog::createRulePage ()
   QObject::connect(insertButton, SIGNAL(clicked()), this, SLOT(insertField()));
   tvbox->addWidget(insertButton);
   
+  customButton = new QPushButton;
+  customButton->setText(tr("Custom Field->>"));
+  QObject::connect(customButton, SIGNAL(clicked()), this, SLOT(customDialog()));
+  tvbox->addWidget(customButton);
+  
   deleteButton = new QPushButton;
   deleteButton->setText(tr("<<-Delete Field"));
   QObject::connect(deleteButton, SIGNAL(clicked()), this, SLOT(deleteField()));
@@ -254,3 +259,20 @@ void CSVRuleDialog::importFileDialog ()
 
   fileButton->setText(QString::number(fileList.count()) + tr(" Files"));
 }
+
+void CSVRuleDialog::customDialog ()
+{
+  bool ok;
+  QString s = QInputDialog::getText(this, tr("Custom Field"), tr("Enter field name"), QLineEdit::Normal, QString(), &ok, 0);
+  if (s.isEmpty())
+    return;
+
+  if (s.contains(","))
+  {
+    QMessageBox::information(this, tr("Error"), tr("No commas allowed."));
+    return;
+  }
+
+  ruleList->addItem(s);
+}
+

@@ -54,6 +54,7 @@ class CSVRuleDialog : public QDialog
     void ruleFieldSelected ();
     void fieldListSelected ();
     void importFileDialog ();
+    void customDialog ();
           
   private:
     QDialogButtonBox *buttonBox;
@@ -63,6 +64,7 @@ class CSVRuleDialog : public QDialog
     QString rule;
     QPushButton *insertButton;
     QPushButton *deleteButton;
+    QPushButton *customButton;
     QCheckBox *useFileName;
     QLineEdit *dateFormat;
     QPushButton *fileButton;

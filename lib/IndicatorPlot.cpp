@@ -21,7 +21,7 @@
 
 #include "IndicatorPlot.h"
 #include "PrefDialog.h"
-#include "FormulaEdit.h"
+#include "IndicatorDialog.h"
 #include "Config.h"
 #include "DataBase.h"
 #include <QPainter>
@@ -89,7 +89,7 @@ IndicatorPlot::IndicatorPlot (QWidget *w) : QWidget(w)
   
   data = 0;
 
-  chartMenu = new QMenu();
+  chartMenu = new QMenu(this);
   
   setMouseTracking(TRUE);
 
@@ -100,7 +100,6 @@ IndicatorPlot::IndicatorPlot (QWidget *w) : QWidget(w)
 
 IndicatorPlot::~IndicatorPlot ()
 {
-  delete chartMenu;
   qDeleteAll(coList);
 }
 
@@ -409,7 +408,7 @@ void IndicatorPlot::mouseDoubleClickEvent (QMouseEvent *event)
   coSelected->prefDialog();
 }
 
-void IndicatorPlot::mouseReleaseEvent(QMouseEvent *event)
+void IndicatorPlot::mouseReleaseEvent(QMouseEvent *)
 {
   if (mouseFlag == RubberBand)
   {
@@ -426,12 +425,10 @@ void IndicatorPlot::getInfo (int x)
 
   Setting tr;
   QString s, k;
-  Bar bar;
-  data->getBar(i, bar);
-  bar.getDateString(s);
+  data->getDateString(i, s);
   k = "D";
   tr.setData(k, s);
-  bar.getTimeString(s);
+  data->getTimeString(i, s);
   k = "T";
   tr.setData(k, s);
 
@@ -627,9 +624,7 @@ void IndicatorPlot::drawInfo ()
   int pos = startX;
 
   QString s;
-  Bar bar;
-  data->getBar(data->count() - 1, bar);
-  bar.getDateString(s);
+  data->getDateString(data->count() - 1, s);
   s.append(" ");
   painter.drawText(pos, 10, s);
   pos = pos + plotFontMetrics->width(s);
@@ -788,10 +783,9 @@ int IndicatorPlot::convertXToDataIndex (int x)
 void IndicatorPlot::updateStatusBar (int x, int y)
 {
   int i = convertXToDataIndex(x);
+
   QString s;
-  Bar bar;
-  data->getBar(i, bar);
-  bar.getDateTimeString(s);
+  data->getDateTimeString(i, s);
   s.append(" ");
   QString str;
   strip(scaler.convertToVal(y), 4, str);
@@ -999,13 +993,11 @@ void IndicatorPlot::getPlotList (QList<PlotLine *> &list)
 
 int IndicatorPlot::indicatorPrefDialog (QWidget *)
 {
-  FormulaEdit *dialog = new FormulaEdit(0, name);
+  IndicatorDialog *dialog = new IndicatorDialog(this, name);
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
-  {
     rc = TRUE;
-  }
   else
     rc = FALSE;
   

@@ -26,11 +26,11 @@
 #include <QStringList>
 #include <QDateTime>
 #include <QList>
+
 #include "BarData.h"
-#include "IndicatorParms.h"
-#include "IndicatorIndex.h"
-#include "Bar.h"
+#include "Indicator.h"
 #include "COSettings.h"
+#include "ScannerRule.h"
 
 
 
@@ -42,26 +42,29 @@ class DataBase
     // chart functions
     void getAllChartsList (QStringList &);
     void getChart (BarData *);
+    void getFirstDate (QDateTime &date, QString &symbol);
+    void getLastDate (QDateTime &date, QString &symbol);
+    void setStartEndDates (QDateTime &startDate, QDateTime &endDate, BarData::BarLength barLength);
+    void getDateOffset (QDateTime &dt, BarData::BarLength barLength);
 
     // group functions
-    int createGroup (QString &);
     void getAllGroupsList (QStringList &);
     void getGroupList (QString &, QStringList &);
     void deleteGroup (QString &);
-    void setGroupList (QString &, QStringList &, bool flag);
+    void setGroupList (QString &, QStringList &);
 
     // indicator functions
-    int createIndicator (QString &);
-    void getIndicator (QString &, QList<IndicatorParms> &);
-    void setIndicator (QString &, QList<IndicatorParms> &);
+    void getIndicator (Indicator &);
+    void setIndicator (Indicator &);
     void deleteIndicator (QString &);
     void getIndicatorList (QStringList &);
-    void setIndicatorIndex (QString &, IndicatorIndex &);
-    void getIndicatorIndex (QString &, IndicatorIndex &);
+    void dumpIndicators ();
 
     // scanner functions
     void getScannerList (QStringList &);
     void deleteScanner (QString &);
+    void getScanner (ScannerRule &);
+    void setScanner (ScannerRule &);
 
     // tester functions
     void getTestList (QStringList &);

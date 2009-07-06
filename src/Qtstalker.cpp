@@ -40,7 +40,7 @@
 //#include "IndicatorSummary.h"
 #include "Preferences.h"
 #include "DataBase.h"
-#include "IndicatorIndex.h"
+#include "Indicator.h"
 #include "Setup.h"
 #include "Config.h"
 
@@ -64,7 +64,7 @@
 
 
 
-QtstalkerApp::QtstalkerApp()
+QtstalkerApp::QtstalkerApp(QString session)
 {
   recordList = 0;
   status = None;
@@ -72,7 +72,7 @@ QtstalkerApp::QtstalkerApp()
 
   // setup the disk environment
   Setup setup;
-  setup.setup();
+  setup.setup(session);
 
   createActions();
   createMenuBar();
@@ -142,7 +142,7 @@ QtstalkerApp::QtstalkerApp()
   initGroupNav();
   initIndicatorNav();
 //  initTestNav();
-//  initScannerNav();  
+  initScannerNav();  
 
   // restore the last used indicators
   QString s;
@@ -168,9 +168,10 @@ QtstalkerApp::QtstalkerApp()
   db.getIndicatorList(l);
   for (loop = 0; loop < l.count(); loop++)
   {
-    IndicatorIndex index;
-    db.getIndicatorIndex(l[loop], index);
-    if (index.getEnable())
+    Indicator i;
+    i.setName(l[loop]);
+    db.getIndicator(i);
+    if (i.getEnable())
       addIndicatorButton(l[loop]);
   }
 
@@ -681,7 +682,7 @@ void QtstalkerApp::loadChart (QString d)
   // set plots to empty
   emit signalClearIndicator();
 
-  // make sure we change db's after Plot saves previous db edits
+  // update each plot with new symbol
   emit signalChartPath(chartPath);
 
   // save the new chart
@@ -691,16 +692,13 @@ void QtstalkerApp::loadChart (QString d)
   if (recordList)
     delete recordList;
   recordList = new BarData(chartPath);
-//  recordList->setBarType((BarData::BarType) item.getBarType());
   recordList->setBarLength((BarData::BarLength) compressionCombo->currentIndex());
   recordList->setBarsRequested(barCount->value());
-  QDateTime dt = QDateTime::currentDateTime();
 
   slotStatusMessage(tr("Loading chart..."));
 
   DataBase db;
   db.getChart(recordList);
-  recordList->createDateList();
 
   chartSymbol = chartPath;
   recordList->getType(chartType);
@@ -886,21 +884,22 @@ void QtstalkerApp::addIndicatorButton (QString d)
 {
   DataBase db;
   QString s;
-  IndicatorIndex index;
-  db.getIndicatorIndex(d, index);
-  if (! index.getEnable())
+  Indicator i;
+  i.setName(d);
+  db.getIndicator(i);
+  if (! i.getEnable())
     return;
 
   Plot *plot = new Plot(baseWidget);
   plotList.insert(d, plot);
-  plot->setDateFlag(index.getDate());
-  plot->setLogScale(index.getLog());
+  plot->setDateFlag(i.getDate());
+  plot->setLogScale(i.getLog());
 
-  QTabWidget *it = tabList.at(index.getTabRow() - 1);
+  QTabWidget *it = tabList.at(i.getTabRow() - 1);
   it->addTab(plot, d);
 
   // Set the current indicator in this row to the last used one.
-  switch (index.getTabRow())
+  switch (i.getTabRow())
   {
     case 1:
       if (d == lastIndicatorUsed1)
@@ -1035,7 +1034,7 @@ void QtstalkerApp::initScannerNav ()
 {
   sp = new ScannerPage(baseWidget);
   connect(sp, SIGNAL(message(QString)), this, SLOT(slotStatusMessage(QString)));
-//  connect(sp, SIGNAL(refreshGroup()), gp, SLOT(refreshList()));
+  connect(sp, SIGNAL(refreshGroup()), gp, SLOT(updateGroups()));
   navTab->addTab(sp, QIcon(scanner), QString());
   navTab->setTabToolTip(5, tr("Work With Scanners"));
 }

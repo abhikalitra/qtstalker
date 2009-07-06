@@ -81,10 +81,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Chart Type</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Delimiter</source>
         <translation type="unfinished"></translation>
     </message>
@@ -122,6 +118,18 @@
     </message>
     <message>
         <source> Files</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Rule missing a date field.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Date format missing.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -304,14 +312,6 @@
         <source>Plot Parameters</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <source>Select Indicator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select indicator to open.</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>GroupPage</name>
@@ -435,6 +435,10 @@
     </message>
     <message>
         <source>Row</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Dump Indicator Table</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -636,6 +640,18 @@
     </message>
     <message>
         <source>Inactive</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Dump Index</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Dump Symbol</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter symbol</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1279,14 +1295,6 @@
 <context>
     <name>Scanner</name>
     <message>
-        <source>All symbols</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>0 Symbols</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Bar Length</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1295,35 +1303,27 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Qtstalker: Error</source>
+        <source>All Symbols</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>No symbols selected.</source>
+        <source>Signal Line</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Scanning...</source>
+        <source>Select symbols</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Cancel</source>
+        <source>Symbol contains</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Select symbols to scan</source>
+        <source>Set Signal Line</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Chart</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Group</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Charts or Groups</source>
+        <source>Select signal line</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

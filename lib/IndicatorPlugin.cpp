@@ -91,7 +91,7 @@ void IndicatorPlugin::calculate (QList<PlotLine *> &lines)
   TA_Integer count;
   // sometimes are not enough data available
   // to calc anything
-  if (end < 0) 
+  if (end < 0)
     return;
 
   QStringList varList;
@@ -122,30 +122,34 @@ void IndicatorPlugin::calculate (QList<PlotLine *> &lines)
     oi[loop] = (TA_Real) data->getOI(loop);
   }
 
+  Indicator i;
+  i.setName(name);
   DataBase db;
-  QList<IndicatorParms> parmList;
-  db.getIndicator(name, parmList);
+  db.getIndicator(i);
 
   int mainLoop;
-  for (mainLoop = 0; mainLoop < (int) parmList.count(); mainLoop++)
+  for (mainLoop = 0; mainLoop < (int) i.count(); mainLoop++)
   {
     IndicatorParms parms;
-    parms = parmList.at(mainLoop);
+    i.getParm(mainLoop, parms);
 
     // open a TALIB handle
     QString s;
     parms.getIndicator(s);
-    if (! s.length())
+    if (s.isEmpty())
+    {
+      qDebug() << "IndicatorPlugin::calculate: no indicator";
       continue;
+    }
 
     // intercept any local functions not found in TALIB here
-    if (! s.compare("BARS"))
+    if (s == "BARS")
     {
       getBARS(parms, tlines);
       continue;
     }
 
-    if (! s.compare("UTIL"))
+    if (s == "UTIL")
     {
       getUTIL(parms, tlines);
       continue;
@@ -373,17 +377,18 @@ void IndicatorPlugin::calculate (QList<PlotLine *> &lines)
       qDebug("TALIB::calculateCustom:can't delete parm holder");
   }
 
-  createPlot(parmList, tlines, lines);
+  createPlot(i, tlines, lines);
 
   qDeleteAll(tlines);
 }
 
-void IndicatorPlugin::createPlot (QList<IndicatorParms> &parmList, QHash<QString, PlotLine *> &tlines, QList<PlotLine *> &lines)
+void IndicatorPlugin::createPlot (Indicator &i, QHash<QString, PlotLine *> &tlines, QList<PlotLine *> &lines)
 {
   int loop;
-  for (loop = 0; loop < parmList.count(); loop++)
+  for (loop = 0; loop < i.count(); loop++)
   {
-    IndicatorParms parms = parmList.at(loop);
+    IndicatorParms parms;
+    i.getParm(loop, parms);
     if (! parms.getPlot())
       continue;
 
@@ -513,16 +518,16 @@ void IndicatorPlugin::addInputLine (QString &key, QHash<QString, PlotLine *> &tl
     tlines.insert(key, tline);
 }
 
-void IndicatorPlugin::getBARS (IndicatorParms &parms, QHash<QString, PlotLine *> &tlines)
+void IndicatorPlugin::getBARS (IndicatorParms &p, QHash<QString, PlotLine *> &tlines)
 {
   BARS i;
-  i.calculate(data, parms, tlines);
+  i.calculate(data, p, tlines);
 }
 
-void IndicatorPlugin::getUTIL (IndicatorParms &parms, QHash<QString, PlotLine *> &tlines)
+void IndicatorPlugin::getUTIL (IndicatorParms &p, QHash<QString, PlotLine *> &tlines)
 {
   UTIL i;
-  i.calculate(data, parms, tlines);
+  i.calculate(data, p, tlines);
 }
 
 
