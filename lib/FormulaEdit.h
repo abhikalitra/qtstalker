@@ -27,10 +27,11 @@
 #include <QListWidget>
 #include <QListWidgetItem>
 #include <QGroupBox>
-#include <QAction>
 #include <QList>
 #include <QLineEdit>
 #include <QComboBox>
+#include <QToolButton>
+
 #include "ColorButton.h"
 #include "Indicator.h"
 
@@ -64,11 +65,14 @@ class FormulaEdit : public QWidget
     QStringList functionList;
     QStringList formulaList;
     Indicator indicator;
-    QList<QAction *> actionList;
     ColorButton *colorButton;
     QLineEdit *plotLabel;
     QGroupBox *plotBox;
     QComboBox *lineType;
+    QToolButton *openButton;
+    QToolButton *addButton;
+    QToolButton *editButton;
+    QToolButton *deleteButton;
 };
 
 #endif

@@ -20,15 +20,10 @@
  */
 
 #include <QLayout>
-#include <QInputDialog>
-#include <QMessageBox>
-#include <QDateTime>
 #include <QProgressDialog>
 #include <QGridLayout>
 #include <QVBoxLayout>
 #include <QLabel>
-#include <QGroupBox>
-#include <QPushButton>
 #include <QtDebug>
 
 #include "Scanner.h"
@@ -50,40 +45,8 @@ Scanner::Scanner (QString n) : QDialog (0, 0)
 
   QVBoxLayout *vbox = new QVBoxLayout;
   vbox->setMargin(10);
-  vbox->setSpacing(5);
+  vbox->setSpacing(10);
   setLayout(vbox);
-
-  fileBox = new QGroupBox;
-  fileBox->setCheckable(TRUE);
-  fileBox->setFlat(FALSE);
-  fileBox->setTitle(tr("All Symbols"));
-  connect(fileBox, SIGNAL(toggled(bool)), this, SLOT(allSymbolsToggled(bool)));
-  vbox->addWidget(fileBox);
-
-  QHBoxLayout *hbox = new QHBoxLayout;
-  hbox->setMargin(10);
-  hbox->setSpacing(2);
-  fileBox->setLayout(hbox);
-
-  fileList = new QListWidget;
-  hbox->addWidget(fileList);
-
-  QVBoxLayout *tvbox = new QVBoxLayout;
-  tvbox->setMargin(0);
-  tvbox->setSpacing(2);
-  hbox->addLayout(tvbox);
-
-  addFileButton = new QToolButton;
-  addFileButton->setText("A");
-  connect(addFileButton, SIGNAL(clicked()), this, SLOT(getSymbols()));
-  tvbox->addWidget(addFileButton);
-
-  deleteFileButton = new QToolButton;
-  deleteFileButton->setText("D");
-  connect(deleteFileButton, SIGNAL(clicked()), this, SLOT(deleteSymbols()));
-  tvbox->addWidget(deleteFileButton);
-
-  tvbox->addStretch(1);
 
   QGridLayout *grid = new QGridLayout;
   grid->setColumnStretch(1, 1);
@@ -91,24 +54,41 @@ Scanner::Scanner (QString n) : QDialog (0, 0)
   grid->setSpacing(5);
   vbox->addLayout(grid);
   
+  allSymbols = new QCheckBox;
+  allSymbols->setText(tr("Use All Symbols"));
+  connect(allSymbols, SIGNAL(toggled(bool)), this, SLOT(allSymbolsToggled(bool)));
+  grid->addWidget(allSymbols, 0, 0);
+
+  QStringList l;
+  symbolButton = new SymbolButton(this, l);
+  grid->addWidget(symbolButton, 0, 1);
+
   QLabel *label = new QLabel(tr("Bar Length"));
-  grid->addWidget(label, 0, 0);
+  grid->addWidget(label, 1, 0);
 
   BarData bd(n);
   period = new QComboBox;
-  QStringList l;
   bd.getBarLengthList(l);
   period->addItems(l);
   period->setCurrentIndex(period->findText("Daily"));
-  grid->addWidget(period, 0, 1);
+  grid->addWidget(period, 1, 1);
 
   label = new QLabel(tr("Bars"));
-  grid->addWidget(label, 1, 0);
+  grid->addWidget(label, 2, 0);
 
   bars = new QSpinBox;
   bars->setRange(1, 99999999);
   bars->setValue(100);
-  grid->addWidget(bars, 1, 1);
+  grid->addWidget(bars, 2, 1);
+
+  grid->setRowStretch(grid->rowCount(), 1);
+
+  QFrame *hline = new QFrame;
+  hline->setFrameStyle(QFrame::HLine | QFrame::Sunken);
+  vbox->addWidget(hline);
+
+  label = new QLabel(tr("Scanner Rule"));
+  vbox->addWidget(label);
 
   formula = new FormulaEdit();
   vbox->addWidget(formula);
@@ -135,15 +115,8 @@ void Scanner::scan ()
   DataBase db;
   QStringList symbolList, resultList;
 
-  if (! fileBox->isChecked())
-  {
-    int loop;
-    for (loop = 0; loop < fileList->count(); loop++)
-    {
-      QListWidgetItem *item = fileList->item(loop);
-      symbolList.append(item->text());
-    }
-  }
+  if (! allSymbols->isChecked())
+    symbolButton->getSymbols(symbolList);
   else
     db.getAllChartsList(symbolList);
 
@@ -192,13 +165,11 @@ void Scanner::scan ()
     if (line && line->getSize() > 0)
     {
       if (line->getData(line->getSize() - 1) > 0)
-      {
         resultList.append(symbolList[loop]);
-qDebug() << symbolList[loop];
-      }
     }
     
     delete data;
+    qDeleteAll(plotList);
     
     emit signalMessage(QString());
   }
@@ -218,16 +189,10 @@ qDebug() << symbolList[loop];
 
 void Scanner::saveRule ()
 {
-  if (! fileBox->isChecked())
+  if (! allSymbols->isChecked())
   {
-    int loop;
     QStringList l;
-    for (loop = 0; loop < fileList->count(); loop++)
-    {
-      QListWidgetItem *item = fileList->item(loop);
-      l.append(item->text());
-    }
-
+    symbolButton->getSymbols(l);
     rule.setFileList(l);
 
     QString s("0");
@@ -273,12 +238,13 @@ void Scanner::loadRule ()
 
   db.getScanner(rule);
 
-  fileList->clear();
   rule.getFileList(l);
-  fileList->addItems(l);
+  if (l.count())
+    symbolButton->setSymbols(l);
 
   rule.getAllSymbols(s);
-  fileBox->setChecked(s.toInt());
+  allSymbols->setChecked(s.toInt());
+  allSymbolsToggled(s.toInt());
   
   rule.getBarLength(s);
   period->setCurrentIndex(period->findText(s));
@@ -296,43 +262,11 @@ void Scanner::exitDialog ()
   reject();
 }
 
-void Scanner::getSymbols ()
-{
-  bool ok;
-  QString s = QInputDialog::getText(this, tr("Select symbols"), tr("Symbol contains"), QLineEdit::Normal, QString(), &ok, 0);
-  if (s.isEmpty())
-    return;
-
-  QStringList l;
-  DataBase db;
-  db.getAllChartsList(l);
-
-  int loop;
-  for (loop = 0; loop < l.count(); loop++)
-  {
-    if (l[loop].contains(s))
-      fileList->addItem(l[loop]);
-  }
-}
-
 void Scanner::allSymbolsToggled (bool d)
 {
   if (d)
-  {
-    fileList->setEnabled(FALSE);
-    addFileButton->setEnabled(FALSE);
-    deleteFileButton->setEnabled(FALSE);
-  }
+    symbolButton->setEnabled(FALSE);
   else
-  {
-    fileList->setEnabled(TRUE);
-    addFileButton->setEnabled(TRUE);
-    deleteFileButton->setEnabled(TRUE);
-  }
+    symbolButton->setEnabled(TRUE);
 }
-
-void Scanner::deleteSymbols ()
-{
-}
-
 

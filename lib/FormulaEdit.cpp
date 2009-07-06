@@ -31,6 +31,7 @@
 #include "../pics/ok.xpm"
 #include "../pics/edit.xpm"
 #include "../pics/delete.xpm"
+
 #include <QLayout>
 #include <QDir>
 #include <QMessageBox>
@@ -40,7 +41,6 @@
 #include <QLabel>
 #include <QFrame>
 #include <QVBoxLayout>
-#include <QToolBar>
 #include <QIcon>
 
 
@@ -56,17 +56,36 @@ FormulaEdit::FormulaEdit ()
   hbox->setSpacing(5);
   vbox->addLayout(hbox);
 
-  QToolBar *tb = new QToolBar;
-  tb->setOrientation(Qt::Vertical);
-  hbox->addWidget(tb);
-  QAction *a = tb->addAction(QIcon(openchart), tr("Open Rule"), this, SLOT(openRule()));
-  actionList.append(a);
-  a = tb->addAction(QIcon(insert), tr("Add Function"), this, SLOT(addFunction()));
-  actionList.append(a);
-  a = tb->addAction(QIcon(edit), tr("Edit Function"), this, SLOT(editFunction()));
-  actionList.append(a);
-  a = tb->addAction(QIcon(deleteitem), tr("Delete Function"), this, SLOT(deleteFunction()));
-  actionList.append(a);
+  QVBoxLayout *tvbox = new QVBoxLayout;
+  tvbox->setMargin(0);
+  tvbox->setSpacing(2);
+  hbox->addLayout(tvbox);
+
+  openButton = new QToolButton;
+  openButton->setIcon(QIcon(openchart));
+  openButton->setToolTip(tr("Open Rule"));
+  connect(openButton, SIGNAL(clicked()), this, SLOT(openRule()));
+  tvbox->addWidget(openButton);
+
+  addButton = new QToolButton;
+  addButton->setIcon(QIcon(insert));
+  addButton->setToolTip(tr("Add Function"));
+  connect(addButton, SIGNAL(clicked()), this, SLOT(addFunction()));
+  tvbox->addWidget(addButton);
+
+  editButton = new QToolButton;
+  editButton->setIcon(QIcon(edit));
+  editButton->setToolTip(tr("Edit Function"));
+  connect(editButton, SIGNAL(clicked()), this, SLOT(editFunction()));
+  tvbox->addWidget(editButton);
+
+  deleteButton = new QToolButton;
+  deleteButton->setIcon(QIcon(deleteitem));
+  deleteButton->setToolTip(tr("Delete Function"));
+  connect(deleteButton, SIGNAL(clicked()), this, SLOT(deleteFunction()));
+  tvbox->addWidget(deleteButton);
+
+  tvbox->addStretch(1);
 
   // create the formula widget area
   formula = new QListWidget;
@@ -83,7 +102,7 @@ FormulaEdit::FormulaEdit ()
   connect(plotBox, SIGNAL(clicked(bool)), this, SLOT(plotBoxChecked(bool)));
   hbox->addWidget(plotBox);
 
-  QVBoxLayout *tvbox = new QVBoxLayout;
+  tvbox = new QVBoxLayout;
   tvbox->setMargin(5);
   tvbox->setSpacing(5);
   plotBox->setLayout(tvbox);
@@ -551,9 +570,8 @@ void FormulaEdit::itemSelected ()
   if (item)
     flag = TRUE;
 
-  int loop;
-  for (loop = 2; loop < 4; loop++)
-    actionList.at(loop)->setEnabled(flag);
+  editButton->setEnabled(flag);
+  deleteButton->setEnabled(flag);
 
   if (! flag)
   {

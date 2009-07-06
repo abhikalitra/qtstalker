@@ -81,8 +81,8 @@ class PrefDialog : public QDialog
     void getDate (QString &, QDateTime &);
     void addFileItem (QString &, QStringList &, QString &);
     void getFile (QString &, QStringList &);
-//    void addSymbolItem (QString &, QString &, QString &);
-//    void getSymbol (QString &, QString &);
+    void addSymbolItem (QString &, QStringList &);
+    void getSymbol (QString &, QStringList &);
 //    void addLabelItem (QString &, QString &);
     void getItem (QString &, QString &);
     void addTimeItem (QString &, QDateTime &);

@@ -21,6 +21,8 @@
 
 #include "UTIL.h"
 #include "PrefDialog.h"
+#include "DataBase.h"
+
 #include <QInputDialog>
 #include <QObject>
 #include <QtDebug>
@@ -37,6 +39,7 @@ UTIL::UTIL ()
   methodList.append("PER");
   methodList.append("COLOR");
   methodList.append("INRANGE");
+  methodList.append("SYMBOL");
   methodList.sort();
 
   opList.append("EQ");
@@ -97,11 +100,27 @@ void UTIL::calculate (BarData *bd, IndicatorParms &parms, QHash<QString, PlotLin
     return;
   }
 
+  if (s2 == "SYMBOL")
+  {
+    calculateSYMBOL(parms, tlines);
+    return;
+  }
+
   if (s2 == "INRANGE")
   {
     calculateINRANGE(parms, tlines);
   }
 }
+
+UTIL::Operator UTIL::getOperator (QString &d)
+{
+  int i = opList.indexOf(d);
+  return (Operator) i;
+}
+
+//************************************************************************************
+//************************* INDICATOR FUNCTIONS **************************************
+//************************************************************************************
 
 void UTIL::calculateAccum (IndicatorParms &parms, QHash<QString, PlotLine *> &tlines)
 {
@@ -280,7 +299,6 @@ void UTIL::calculateCOMP (IndicatorParms &parms, QHash<QString, PlotLine *> &tli
     loop--;
     loop2--;
   }
-qDebug() << "done comp" << line->getSize();
 }
 
 void UTIL::calculateREF (IndicatorParms &parms, QHash<QString, PlotLine *> &tlines)
@@ -468,6 +486,34 @@ void UTIL::calculateINRANGE (IndicatorParms &parms, QHash<QString, PlotLine *> &
   }
 }
 
+void UTIL::calculateSYMBOL (IndicatorParms &parms, QHash<QString, PlotLine *> &tlines)
+{
+  QString s, symbol;
+  PlotLine *line = new PlotLine;
+  parms.getVariable(s);
+  tlines.insert(s, line);
+
+  s = "Symbol";
+  parms.getData(s, symbol);
+
+  BarData *bars = new BarData(symbol);
+  bars->setBarsRequested(data->getBarsRequested());
+  bars->setBarLength(data->getBarLength());
+
+  DataBase db;
+  db.getChart(bars);
+
+  int loop = 0;
+  for (loop = 0; loop < bars->count(); loop++)
+    line->append(bars->getClose(loop));
+
+  delete bars;
+}
+
+//*********************************************************************
+//**************** DIALOG FUNCTIONS ***********************************
+//*********************************************************************
+
 void UTIL::prefDialog (IndicatorParms &parms, QStringList &vl)
 {
   QString s("Method");
@@ -569,6 +615,15 @@ void UTIL::prefDialog (IndicatorParms &parms, QStringList &vl)
     dialog->addComboItem(s, vl, s2);
   }
 
+  if (method == "SYMBOL")
+  {
+    QString s = QObject::tr("Symbol");
+    parms.getData(s, s2);
+    QStringList l;
+    l.append(s2);
+    dialog->addSymbolItem(s, l);
+  }
+
   int rc = dialog->exec();
  
   if (rc != QDialog::Accepted)
@@ -646,13 +701,16 @@ void UTIL::prefDialog (IndicatorParms &parms, QStringList &vl)
     parms.setData(s, s2);
   }
 
-  delete dialog;
-}
+  if (method == "SYMBOL")
+  {
+    QString s = QObject::tr("Symbol");
+    QStringList l;
+    dialog->getSymbol(s, l);
+    s2 = l.join(",");
+    parms.setData(s, s2);
+  }
 
-UTIL::Operator UTIL::getOperator (QString &d)
-{
-  int i = opList.indexOf(d);
-  return (Operator) i;
+  delete dialog;
 }
 
 

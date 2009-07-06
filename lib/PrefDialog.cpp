@@ -368,25 +368,25 @@ void PrefDialog::getFile (QString &name, QStringList &l)
     button->getFile(l);
 }
 
-/*
-void PrefDialog::addSymbolItem (QString &name, QString &path, QString &symbol)
+void PrefDialog::addSymbolItem (QString &name, QStringList &symbols)
 {
   QLabel *label = new QLabel(name);
   grid->addWidget(label, grid->rowCount(), 0);
 
-  SymbolButton *button = new SymbolButton(this, path, symbol);
+  SymbolButton *button = new SymbolButton(this, symbols);
   grid->addWidget(button, grid->rowCount() - 1, 1);
   symbolList.insert(name, button);
 }
 
-void PrefDialog::getSymbol (QString &name, QString &s)
+void PrefDialog::getSymbol (QString &name, QStringList &l)
 {
-  s.clear();
+  l.clear();
   SymbolButton *button = symbolList.value(name);
   if (button)
-    button->getPath(s);
+    button->getSymbols(l);
 }
 
+/*
 void PrefDialog::addLabelItem (QString &name, QString &l)
 {
   QLabel *label = new QLabel(name);

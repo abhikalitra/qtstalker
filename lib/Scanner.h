@@ -26,15 +26,13 @@
 #include <QDialog>
 #include <QDialogButtonBox>
 #include <QComboBox>
-#include <QPushButton>
 #include <QCheckBox>
 #include <QSpinBox>
-#include <QGroupBox>
-#include <QToolButton>
-#include <QListWidget>
+#include <QCheckBox>
 
 #include "FormulaEdit.h"
 #include "ScannerRule.h"
+#include "SymbolButton.h"
 
 
 
@@ -55,19 +53,18 @@ class Scanner : public QDialog
     void saveRule ();
     void exitDialog ();
     void loadRule ();
-    void getSymbols ();
     void allSymbolsToggled (bool);
-    void deleteSymbols ();
 
   protected:
-    QListWidget *fileList;
+    QCheckBox *allSymbols;
     FormulaEdit *formula;
     QComboBox *period;
     QSpinBox *bars;
     QDialogButtonBox *buttonBox;    
-    QGroupBox *fileBox;
+    SymbolButton *symbolButton;
     QToolButton *addFileButton;
     QToolButton *deleteFileButton;
+    QToolButton *addGroupButton;
     ScannerRule rule;
 };
 

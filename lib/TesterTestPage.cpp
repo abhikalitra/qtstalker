@@ -134,7 +134,8 @@ TesterTestPage::TesterTestPage (QWidget *p) : QWidget (p)
   grid->addWidget(label, 0, 0);
 
   QString s, s2;
-  symbolButton = new SymbolButton(this, s, s2);
+  QStringList l;
+  symbolButton = new SymbolButton(this, l);
   connect(symbolButton, SIGNAL(symbolChanged()), this, SLOT(symbolButtonPressed()));
   grid->addWidget(symbolButton, 0, 1);
   
@@ -172,8 +173,6 @@ TesterTestPage::~TesterTestPage ()
 
 void TesterTestPage::symbolButtonPressed ()
 {
-  QString symbol;
-  symbolButton->getPath(symbol);
 }
 
 bool TesterTestPage::getTradeLong ()
@@ -259,19 +258,18 @@ void TesterTestPage::setBars (int d)
 QString TesterTestPage::getSymbolPath ()
 {
   QString s;
-  symbolButton->getPath(s);  
   return s;
 }
 
 void TesterTestPage::setSymbol (QString d)
 {
-  symbolButton->setSymbol(d);
+//  symbolButton->setSymbol(d);
 }
 
 QString TesterTestPage::getSymbol ()
 {
   QString s;
-  symbolButton->getSymbol(s);
+//  symbolButton->getSymbol(s);
   return s;
 }
 

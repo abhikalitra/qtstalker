@@ -58,6 +58,7 @@ class UTIL
     void calculateCOLOR (IndicatorParms &, QHash<QString, PlotLine *> &);
     void calculateHL (IndicatorParms &, QHash<QString, PlotLine *> &);
     void calculateINRANGE (IndicatorParms &, QHash<QString, PlotLine *> &);
+    void calculateSYMBOL (IndicatorParms &, QHash<QString, PlotLine *> &);
     void prefDialog (IndicatorParms &, QStringList &);
     UTIL::Operator getOperator (QString &);
   

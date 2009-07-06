@@ -22,35 +22,36 @@
 #ifndef SYMBOLDIALOG_HPP
 #define SYMBOLDIALOG_HPP
 
-#include <QFileDialog>
+#include <QDialog>
 #include <QString>
+#include <QStringList>
 #include <QWidget>
-#include <QKeyEvent>
+#include <QToolButton>
+#include <QListWidget>
 
-class SymbolDialog : public QFileDialog
+
+
+
+class SymbolDialog : public QDialog
 {
   Q_OBJECT
 
   signals:
-    void signalKeyPressed (int, int, int, int, QString);
   
   public:
-    SymbolDialog (QWidget *, QString &, QString &, QString &, QFileDialog::FileMode);
-    ~SymbolDialog ();
-    void setType (int);
+    SymbolDialog (QWidget *, QStringList &);
+    void getSymbols (QStringList &);
 
   public slots:
-    void dirSelected (const QString &);
-    void setKeyFlag (bool);
-    void doKeyPress (QKeyEvent *);
-    
-  protected:
-    virtual void keyPressEvent (QKeyEvent *);
+    void addSymbols ();
+    void addGroups ();
+    void deleteSymbols ();
     
   private:
-    QString basePath;
-    bool keyFlag;
-    int type;
+    QListWidget *fileList;
+    QToolButton *addFileButton;
+    QToolButton *deleteFileButton;
+    QToolButton *addGroupButton;
 };
 
 #endif

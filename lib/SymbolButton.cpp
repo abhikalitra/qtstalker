@@ -21,78 +21,46 @@
 
 #include "SymbolButton.h"
 #include "SymbolDialog.h"
-#include "Config.h"
-#include <QFileInfo>
 
-SymbolButton::SymbolButton (QWidget *w, QString &d, QString &s) : QPushButton (w)
+
+
+
+SymbolButton::SymbolButton (QWidget *w, QStringList &l) : QPushButton (w)
 {
-  Config config;
-  config.getData(Config::DataPath, baseDir);
   QObject::connect(this, SIGNAL(clicked()), this, SLOT(fileDialog()));
   setMaximumHeight(25);
-//  setToggleButton(FALSE);
-  setSymbol(s);
-  dirPath = d;
+  setSymbols(l);
 }
 
-SymbolButton::~SymbolButton ()
+void SymbolButton::getSymbols (QStringList &l)
 {
-}
-
-void SymbolButton::getSymbol (QString &d)
-{
-  d = symbol;
-}
-
-void SymbolButton::getPath (QString &d)
-{
-  d = path;
+  l = symbols;
 }
 
 void SymbolButton::fileDialog ()
 {
-  QString s("*");
-  QString s2 = baseDir;
-  if (path.length())
-  {
-    QFileInfo fi(path);
-    s2 = fi.absolutePath();
-  }
-  SymbolDialog *dialog = new SymbolDialog(this,
-                                          baseDir,
-                                          s2,
-					  s,
-					  QFileDialog::ExistingFiles);
-  dialog->setWindowTitle(tr("Select Symbol"));
+  SymbolDialog *dialog = new SymbolDialog(this, symbols);
 
   int rc = dialog->exec();
 
-  if (rc == QDialog::Accepted)
+  if (rc != QDialog::Accepted)
   {
-    QStringList l = dialog->selectedFiles();
-    if (l.count())
-    {
-      setSymbol(l[0]);
-      emit symbolChanged();
-    }
+    delete dialog;
+    return;
   }
+
+  QStringList l;
+  dialog->getSymbols(l);
+  setSymbols(l);
+  emit symbolChanged();
 
   delete dialog;
 }
 
-void SymbolButton::setSymbol (QString &d)
+void SymbolButton::setSymbols (QStringList &l)
 {
-  if (! d.length())
-  {
-    setText(d);
-    path = d;
-    return;
-  }
-  
-  QStringList l = d.split("/");
-  symbol = l[l.count() - 1];
-  setText(symbol);
-  path = d;
+  symbols = l;
+  setText(QString::number(symbols.count()) + tr(" Symbols"));
 }
 
 
