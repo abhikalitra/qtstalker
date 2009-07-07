@@ -20,626 +20,181 @@
  */
 
 #include <QLayout>
-#include <QGroupBox>
-#include <QFile>
-#include <QTextStream>
-#include <QLabel>
 #include <QHBoxLayout>
-#include <QGridLayout>
 #include <QVBoxLayout>
+
 #include "TesterStopPage.h"
-#include "IndicatorPlugin.h"
+
+
 
 
 TesterStopPage::TesterStopPage (QWidget *p) : QWidget (p)
 {
-  customShortStopLine = 0;
-  customLongStopLine = 0;
-
-  QVBoxLayout *vbox = new QVBoxLayout(this);
-  vbox->setMargin(5);
-  vbox->setSpacing(10);
-
-  tabs = new QTabWidget(this);
-  vbox->addWidget(tabs);
-
-  createMaxLossPage();
-  createProfitPage();
-  createTrailingPage();
-  createCustomPage();
+  createStopsPage();
 }
 
-TesterStopPage::~TesterStopPage ()
+void TesterStopPage::createStopsPage ()
 {
-  if (customLongStopLine)
-    delete customLongStopLine;
+  QVBoxLayout *vbox = new QVBoxLayout;
+  vbox->setMargin(10);
+  vbox->setSpacing(5);
+  setLayout(vbox);
+
+  QHBoxLayout *hbox = new QHBoxLayout;
+  hbox->setMargin(0);
+  hbox->setSpacing(5);
+  vbox->addLayout(hbox);
+
+  maxLossBox = new QGroupBox;
+  maxLossBox->setCheckable(TRUE);
+  maxLossBox->setTitle(tr("Maximum Loss"));
+  maxLossBox->setChecked(FALSE);
+  hbox->addWidget(maxLossBox);
+    
+  QVBoxLayout *tvbox = new QVBoxLayout;
+  tvbox->setMargin(5);
+  tvbox->setSpacing(5);
+  maxLossBox->setLayout(tvbox);
   
-  if (customShortStopLine)
-    delete customShortStopLine;
-}
+  maximumLossLong = new QCheckBox(tr("Long"));
+  tvbox->addWidget(maximumLossLong);
 
-void TesterStopPage::createMaxLossPage ()
-{
-  QWidget *w = new QWidget(this);
+  maximumLossShort = new QCheckBox(tr("Short"));
+  tvbox->addWidget(maximumLossShort);
 
-  QVBoxLayout *vbox = new QVBoxLayout(w);
-  vbox->setMargin(5);
-  vbox->setSpacing(0);
+  maxLoss = new QDoubleSpinBox;
+//  maxLoss->setTitle(tr("Loss %"));
+  tvbox->addWidget(maxLoss);
+
+  profitBox = new QGroupBox;
+  profitBox->setCheckable(TRUE);
+  profitBox->setTitle(tr("Profit"));
+  profitBox->setChecked(FALSE);
+  hbox->addWidget(profitBox);
     
-  QGridLayout *grid = new QGridLayout(w);
-  grid->setSpacing(5);
-  vbox->addLayout(grid);
+  tvbox = new QVBoxLayout;
+  tvbox->setMargin(5);
+  tvbox->setSpacing(5);
+  profitBox->setLayout(tvbox);
   
-  maximumLossCheck = new QCheckBox(tr("Enabled"), w);
-  connect(maximumLossCheck, SIGNAL(toggled(bool)), this, SLOT(maximumLossToggled(bool)));
-  grid->addWidget(maximumLossCheck, 0, 0);
+  profitLong = new QCheckBox(tr("Long"));
+  tvbox->addWidget(profitLong);
 
-  maximumLossLong = new QCheckBox(tr("Long"), w);
-  grid->addWidget(maximumLossLong, 1, 0);
+  profitShort = new QCheckBox(tr("Short"));
+  tvbox->addWidget(profitShort);
 
-  maximumLossShort = new QCheckBox(tr("Short"), w);
-  grid->addWidget(maximumLossShort, 2, 0);
+  profit = new QDoubleSpinBox;
+//  profit->setTitle(tr("Loss %"));
+  tvbox->addWidget(profit);
 
-  validator = new QDoubleValidator(0, 999999, 2, w);
-
-  QLabel *label = new QLabel(tr("Loss %"), w);
-  grid->addWidget(label, 3, 0);
-
-  maximumLossEdit = new QLineEdit("0", w);
-  maximumLossEdit->setValidator(validator);
-  grid->addWidget(maximumLossEdit, 3, 1);
-
-  vbox->insertStretch(-1, 0);
-
-  tabs->addTab(w, tr("Maximum Loss"));
-
-  maximumLossToggled(FALSE);
-}
-
-void TesterStopPage::createProfitPage ()
-{
-  QWidget *w = new QWidget(this);
-
-  QVBoxLayout *vbox = new QVBoxLayout(w);
-  vbox->setMargin(5);
-  vbox->setSpacing(0);
+  trailingBox = new QGroupBox;
+  trailingBox->setCheckable(TRUE);
+  trailingBox->setTitle(tr("Trailing"));
+  trailingBox->setChecked(FALSE);
+  hbox->addWidget(trailingBox);
     
-  QGridLayout *grid = new QGridLayout(w);
-  grid->setSpacing(5);
-  vbox->addLayout(grid);
+  tvbox = new QVBoxLayout;
+  tvbox->setMargin(5);
+  tvbox->setSpacing(5);
+  trailingBox->setLayout(tvbox);
+  
+  trailingLong = new QCheckBox(tr("Long"));
+  tvbox->addWidget(trailingLong);
 
-  profitCheck = new QCheckBox(tr("Enabled"), w);
-  connect(profitCheck, SIGNAL(toggled(bool)), this, SLOT(profitToggled(bool)));
-  grid->addWidget(profitCheck, 0, 0);
+  trailingShort = new QCheckBox(tr("Short"));
+  tvbox->addWidget(trailingShort);
 
-  profitLong = new QCheckBox(tr("Long"), w);
-  grid->addWidget(profitLong, 1, 0);
+  trailing = new QDoubleSpinBox;
+//  trailing->setTitle(tr("Trailing %"));
+  tvbox->addWidget(trailing);
 
-  profitShort = new QCheckBox(tr("Short"), w);
-  grid->addWidget(profitShort, 2, 0);
-
-  QLabel *label = new QLabel(tr("Profit %"), w);
-  grid->addWidget(label, 3, 0);
-
-  profitEdit = new QLineEdit("0", w);
-  profitEdit->setValidator(validator);
-  grid->addWidget(profitEdit, 3, 1);
-
-  vbox->insertStretch(-1, 0);
-
-  tabs->addTab(w, tr("Profit"));
-
-  profitToggled(FALSE);
-}
-
-void TesterStopPage::createTrailingPage ()
-{
-  QWidget *w = new QWidget(this);
-
-  QVBoxLayout *vbox = new QVBoxLayout(w);
-  vbox->setMargin(5);
-  vbox->setSpacing(0);
+  hbox = new QHBoxLayout;
+  hbox->setMargin(0);
+  hbox->setSpacing(5);
+  vbox->addLayout(hbox);
     
-  QGridLayout *grid = new QGridLayout(w);
-  grid->setSpacing(5);
-  vbox->addLayout(grid);
-
-  trailingCheck = new QCheckBox(tr("Enabled"), w);
-  connect(trailingCheck, SIGNAL(toggled(bool)), this, SLOT(trailingToggled(bool)));
-  grid->addWidget(trailingCheck, 0, 0);
-
-  trailingLong = new QCheckBox(tr("Long"), w);
-  grid->addWidget(trailingLong, 1, 0);
-
-  trailingShort = new QCheckBox(tr("Short"), w);
-  grid->addWidget(trailingShort, 2, 0);
-
-  QLabel *label = new QLabel(tr("Loss %"), w);
-  grid->addWidget(label, 3, 0);
-
-  trailingEdit = new QLineEdit("0", w);
-  trailingEdit->setValidator(validator);
-  grid->addWidget(trailingEdit, 3, 1);
-
-  vbox->insertStretch(-1, 0);
-
-  tabs->addTab(w, tr("Trailing"));
-
-  trailingToggled(FALSE);
-}
-
-void TesterStopPage::createCustomPage ()
-{
-  QWidget *w = new QWidget(this);
-
-  QVBoxLayout *vbox = new QVBoxLayout(w);
-  vbox->setMargin(5);
-  vbox->setSpacing(0);
+  customLongBox = new QGroupBox;
+  customLongBox->setCheckable(TRUE);
+  customLongBox->setTitle(tr("Custom Long"));
+  customLongBox->setChecked(FALSE);
+  hbox->addWidget(customLongBox);
     
-  QGridLayout *grid = new QGridLayout(w);
-  grid->setSpacing(5);
-  vbox->addLayout(grid);
+  tvbox = new QVBoxLayout;
+  tvbox->setMargin(5);
+  tvbox->setSpacing(5);
+  customLongBox->setLayout(tvbox);
 
-  customLongStopCheck = new QCheckBox(tr("Custom Long"), w);
-  connect(customLongStopCheck, SIGNAL(toggled(bool)), this, SLOT(customLongStopToggled(bool)));
-  grid->addWidget(customLongStopCheck, 0, 0);
-
-  QString s;
   customLongStopEdit = new FormulaEdit;  
-  grid->addWidget(customLongStopEdit, 1, 0);
+  tvbox->addWidget(customLongStopEdit);
 
-  customShortStopCheck = new QCheckBox(tr("Custom Short"), w);
-  connect(customShortStopCheck, SIGNAL(toggled(bool)), this, SLOT(customShortStopToggled(bool)));
-  grid->addWidget(customShortStopCheck, 2, 0);
+  customShortBox = new QGroupBox;
+  customShortBox->setCheckable(TRUE);
+  customShortBox->setTitle(tr("Custom Short"));
+  customShortBox->setChecked(FALSE);
+  hbox->addWidget(customShortBox);
+    
+  tvbox = new QVBoxLayout;
+  tvbox->setMargin(5);
+  tvbox->setSpacing(5);
+  customShortBox->setLayout(tvbox);
 
   customShortStopEdit = new FormulaEdit;  
-  grid->addWidget(customShortStopEdit, 3, 0);
+  tvbox->addWidget(customShortStopEdit);
 
-  vbox->insertStretch(-1, 0);
-
-  tabs->addTab(w, tr("Custom"));
-
-  customLongStopToggled(FALSE);
-  customShortStopToggled(FALSE);
+  vbox->addStretch(1);
 }
 
-void TesterStopPage::maximumLossToggled (bool status)
+void TesterStopPage::getStops (TesterRule &rule)
 {
-  if (status)
-  {
-    maximumLossLong->setEnabled(TRUE);
-    maximumLossShort->setEnabled(TRUE);
-    maximumLossEdit->setEnabled(TRUE);
-  }
-  else
-  {
-    maximumLossLong->setEnabled(FALSE);
-    maximumLossShort->setEnabled(FALSE);
-    maximumLossEdit->setEnabled(FALSE);
-  }
+  Indicator i;
+  customLongStopEdit->getIndicator(i);
+  rule.setCustomLongStop(i);
+  rule.setCustomLongCheck(customLongBox->isChecked());
+
+  customShortStopEdit->getIndicator(i);
+  rule.setCustomShortStop(i);
+  rule.setCustomShortCheck(customShortBox->isChecked());
+
+  rule.setMaxLossCheck(maxLossBox->isChecked());
+  rule.setMaxLossLong(maximumLossLong->isChecked());
+  rule.setMaxLossShort(maximumLossShort->isChecked());
+  rule.setMaxLoss(maxLoss->value());
+
+  rule.setProfitCheck(profitBox->isChecked());
+  rule.setProfitLong(profitLong->isChecked());
+  rule.setProfitShort(profitShort->isChecked());
+  rule.setProfit(profit->value());
+
+  rule.setTrailingCheck(trailingBox->isChecked());
+  rule.setTrailingLong(trailingLong->isChecked());
+  rule.setTrailingShort(trailingShort->isChecked());
+  rule.setTrailing(trailing->value());
 }
 
-void TesterStopPage::profitToggled (bool status)
+void TesterStopPage::setStops (TesterRule &rule)
 {
-  if (status)
-  {
-    profitLong->setEnabled(TRUE);
-    profitShort->setEnabled(TRUE);
-    profitEdit->setEnabled(TRUE);
-  }
-  else
-  {
-    profitLong->setEnabled(FALSE);
-    profitShort->setEnabled(FALSE);
-    profitEdit->setEnabled(FALSE);
-  }
-}
-
-void TesterStopPage::trailingToggled (bool status)
-{
-  if (status)
-  {
-    trailingLong->setEnabled(TRUE);
-    trailingShort->setEnabled(TRUE);
-    trailingEdit->setEnabled(TRUE);
-  }
-  else
-  {
-    trailingLong->setEnabled(FALSE);
-    trailingShort->setEnabled(FALSE);
-    trailingEdit->setEnabled(FALSE);
-  }
-}
-
-void TesterStopPage::customShortStopToggled (bool status)
-{
-  if (status)
-    customShortStopEdit->setEnabled(TRUE);
-  else
-    customShortStopEdit->setEnabled(FALSE);
-}
-
-void TesterStopPage::customLongStopToggled (bool status)
-{
-  if (status)
-    customLongStopEdit->setEnabled(TRUE);
-  else
-    customLongStopEdit->setEnabled(FALSE);
-}
-
-bool TesterStopPage::loadCustomShortStop (BarData *recordList)
-{
-  if (customShortStopLine)
-  {
-    delete customShortStopLine;
-    customShortStopLine = 0;
-  }
+  Indicator i;
+  rule.getCustomLongStop(i);
+  customLongStopEdit->setIndicator(i);
+  customLongBox->setChecked(rule.getCustomLongCheck());
   
-//  if (! customShortStopEdit->getLines() || ! customShortStopCheck->isChecked())
-//    return FALSE;
+  rule.getCustomShortStop(i);
+  customShortStopEdit->setIndicator(i);
+  customShortBox->setChecked(rule.getCustomShortCheck());
 
-  QString s;
-//  customShortStopEdit->getText(s);
-  QStringList l = s.split("\n");
+  maxLossBox->setChecked(rule.getMaxLossCheck());
+  maximumLossLong->setChecked(rule.getMaxLossLong());
+  maximumLossShort->setChecked(rule.getMaxLossShort());
+  maxLoss->setValue(rule.getMaxLoss());
 
-  QString plugin("CUS");
-  IndicatorPlugin plug;
-//  plug->setCustomFunction(l);
-  
-  // load the CUS plugin and calculate
-  plug.setIndicatorInput(recordList);
-  QList<PlotLine *> lines;
-  plug.calculate(lines);
-  PlotLine *line = lines.at(0);
-  if (! line)
-  {
-    qDebug("TesterStopPage::loadCustomShortStop: no PlotLine returned");
-    return TRUE;
-  }
-    
-  customShortStopLine = new PlotLine;
-  customLongStopLine->copy(line);
-    
-  return FALSE;
+  profitBox->setChecked(rule.getProfitCheck());
+  profitLong->setChecked(rule.getProfitLong());
+  profitShort->setChecked(rule.getProfitShort());
+  profit->setValue(rule.getProfit());
+
+  trailingBox->setChecked(rule.getTrailingCheck());
+  trailingLong->setChecked(rule.getTrailingLong());
+  trailingShort->setChecked(rule.getTrailingShort());
+  trailing->setValue(rule.getTrailing());
 }
-
-bool TesterStopPage::loadCustomLongStop (BarData *recordList)
-{
-  if (customLongStopLine)
-  {
-    delete customLongStopLine;
-    customLongStopLine = 0;
-  }
-  
-//  if (! customLongStopEdit->getLines() || ! customLongStopCheck->isChecked())
-//    return FALSE;
-
-  QString s;
-//  customLongStopEdit->getText(s);
-  QStringList l = s.split("\n");
-  
-  QString plugin("CUS");
-  IndicatorPlugin plug;
-//  plug->setCustomFunction(l);
-  
-  // load the CUS plugin and calculate
-  plug.setIndicatorInput(recordList);
-  QList<PlotLine *> lines;
-  plug.calculate(lines);
-  PlotLine *line = lines.at(0);
-  if (! line)
-  {
-    qDebug("Tester::loadCustomShortStop: no PlotLine returned");
-    return TRUE;
-  }
-    
-  customLongStopLine = new PlotLine;
-  customLongStopLine->copy(line);
-    
-  return FALSE;
-}
-
-void TesterStopPage::loadCustomStopRule (QString &ruleName)
-{
-  QString s;
-//  config->getData(Config::TestPath, s);
-  s.append("/" + ruleName + "/customLongStop");
-  QFile f(s);
-  if (! f.open(QIODevice::ReadOnly))
-    return;
-  QTextStream stream(&f);
-
-  while(stream.atEnd() == 0)
-  {
-    s = stream.readLine();
-    s = s.trimmed();
-    if (! s.length())
-      continue;
-  
-//    customLongStopEdit->setLine(s);
-  }  
-  
-  f.close();
-  
-//  config->getData(Config::TestPath, s);
-  s.append("/" + ruleName + "/customShortStop");
-  f.setFileName(s);
-  if (! f.open(QIODevice::ReadOnly))
-    return;
-
-  while(stream.atEnd() == 0)
-  {
-    s = stream.readLine();
-    s = s.trimmed();
-    if (! s.length())
-      continue;
-  
-//    customShortStopEdit->setLine(s);
-  }  
-  
-  f.close();
-}
-
-void TesterStopPage::saveCustomStopRule (QString &ruleName)
-{
-  QString s;
-//  config->getData(Config::TestPath, s);
-  s.append("/" + ruleName + "/customShortStop");
-  QFile f(s);
-  if (! f.open(QIODevice::WriteOnly))
-    return;
-  QTextStream stream(&f);
-
-//  customShortStopEdit->getText(s);
-  stream << s << "\n";
-  
-  f.close();
-  
-//  config->getData(Config::TestPath, s);
-  s.append("/" + ruleName + "/customLongStop");
-  f.setFileName(s);
-  if (! f.open(QIODevice::WriteOnly))
-    return;
-
-//  customLongStopEdit->getText(s);
-  stream << s << "\n";
-  
-  f.close();
-}
-
-bool TesterStopPage::maximumLoss (bool flag, double enterPrice, double exitPrice)
-{
-  if (! maximumLossCheck->isChecked())
-    return FALSE;
-
-  if (! flag)
-  {
-    double t = enterPrice * (1 - (maximumLossEdit->text().toDouble() / 100));
-    if (exitPrice <= t)
-      return TRUE;
-  }
-  else
-  {
-    double t = enterPrice * (1 + (maximumLossEdit->text().toDouble() / 100));
-    if (exitPrice >= t)
-      return TRUE;
-  }
-
-  return FALSE;
-}
-
-bool TesterStopPage::profit (bool flag, double enterPrice, double exitPrice)
-{
-  if (! profitCheck->isChecked())
-    return FALSE;
-
-  if (! flag)
-  {
-    double t = enterPrice * (1 + (profitEdit->text().toDouble() / 100));
-    if (exitPrice >= t)
-      return TRUE;
-  }
-  else
-  {
-    double t = enterPrice * (1 - (profitEdit->text().toDouble() / 100));
-    if (exitPrice <= t)
-      return TRUE;
-  }
-
-  return FALSE;
-}
-
-bool TesterStopPage::trailing (bool flag, double exitPrice)
-{
-  if (! trailingCheck->isChecked())
-    return FALSE;
-
-  if (! flag)
-  {
-    if (exitPrice < trailingHigh)
-      trailingHigh = exitPrice;
-
-    double t = ((exitPrice - trailingHigh) / trailingHigh) * 100;
-    if (t < 0)
-    {
-      t = -t;
-      if (t >= trailingEdit->text().toDouble())
-        return TRUE;
-    }
-  }
-  else
-  {
-    if (exitPrice < trailingLow)
-      trailingLow = exitPrice;
-
-    double t = ((trailingLow - exitPrice) / trailingLow) * 100;
-    if (t < 0)
-    {
-      t = -t;
-      if (t >= trailingEdit->text().toDouble())
-        return TRUE;
-    }
-  }
-
-  return FALSE;
-}
-
-bool TesterStopPage::customStop (bool flag, int index)
-{
-/*
-  if (! flag)
-  {
-    if (customLongStopCheck->isChecked() && customLongStopEdit->getLines() && customLongStopLine)
-    {
-      int i = customLongStopLine->getSize() - index;
-      if (i > -1)
-      {
-        if (customLongStopLine->getData(i) == 1)
-          return TRUE;
-      }
-    }
-  }
-  else
-  {
-    if (customShortStopCheck->isChecked() && customShortStopEdit->getLines() && customShortStopLine)
-    {
-      int i = customShortStopLine->getSize() - index;
-      if (i > -1)
-      {
-        if (customShortStopLine->getData(i) == 1)
-          return TRUE;
-      }
-    }
-  }
-*/
-  return FALSE;
-}
-
-bool TesterStopPage::getMaximumLossCheck ()
-{
-  return maximumLossCheck->isChecked();
-}
-
-void TesterStopPage::setMaximumLossCheck (bool d)
-{
-  maximumLossCheck->setChecked(d);
-}
-
-bool TesterStopPage::getMaximumLossLong ()
-{
-  return maximumLossLong->isChecked();
-}
-
-void TesterStopPage::setMaximumLossLong (bool d)
-{
-  maximumLossLong->setChecked(d);
-}
-
-bool TesterStopPage::getMaximumLossShort ()
-{
-  return maximumLossShort->isChecked();
-}
-
-void TesterStopPage::setMaximumLossShort (bool d)
-{
-  maximumLossShort->setChecked(d);
-}
-
-QString TesterStopPage::getMaximumLossEdit ()
-{
-  return maximumLossEdit->text();
-}
-
-void TesterStopPage::setMaximumLossEdit (QString d)
-{
-  maximumLossEdit->setText(d);
-}
-
-bool TesterStopPage::getProfitCheck ()
-{
-  return profitCheck->isChecked();
-}
-
-void TesterStopPage::setProfitCheck (bool d)
-{
-  profitCheck->setChecked(d);
-}
-
-bool TesterStopPage::getProfitLong ()
-{
-  return profitLong->isChecked();
-}
-
-void TesterStopPage::setProfitLong (bool d)
-{
-  profitLong->setChecked(d);
-}
-
-bool TesterStopPage::getProfitShort ()
-{
-  return profitShort->isChecked();
-}
-
-void TesterStopPage::setProfitShort (bool d)
-{
-  profitShort->setChecked(d);
-}
-
-QString TesterStopPage::getProfitEdit ()
-{
-  return profitEdit->text();
-}
-
-void TesterStopPage::setProfitEdit (QString d)
-{
-  profitEdit->setText(d);
-}
-
-//
-
-bool TesterStopPage::getTrailingCheck ()
-{
-  return trailingCheck->isChecked();
-}
-
-void TesterStopPage::setTrailingCheck (bool d)
-{
-  trailingCheck->setChecked(d);
-}
-
-bool TesterStopPage::getTrailingLong ()
-{
-  return trailingLong->isChecked();
-}
-
-void TesterStopPage::setTrailingLong (bool d)
-{
-  trailingLong->setChecked(d);
-}
-
-bool TesterStopPage::getTrailingShort ()
-{
-  return trailingShort->isChecked();
-}
-
-void TesterStopPage::setTrailingShort (bool d)
-{
-  trailingShort->setChecked(d);
-}
-
-QString TesterStopPage::getTrailingEdit ()
-{
-  return trailingEdit->text();
-}
-
-void TesterStopPage::setTrailingEdit (QString d)
-{
-  trailingEdit->setText(d);
-}
-
-void TesterStopPage::setTrailingHigh (double d)
-{
-  trailingHigh = d;
-}
-
 

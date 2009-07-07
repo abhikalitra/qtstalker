@@ -23,8 +23,9 @@
 #define TESTERRULEPAGE_HPP
 
 #include <QWidget>
-#include <QString>
+
 #include "FormulaEdit.h"
+#include "TesterRule.h"
 
 
 class TesterRulePage : public QWidget
@@ -32,20 +33,9 @@ class TesterRulePage : public QWidget
   Q_OBJECT
   
   public:
-
-    enum EditRule
-    {
-      EnterLong,
-      ExitLong,
-      EnterShort,
-      ExitShort
-    };
-
     TesterRulePage (QWidget *);
-    ~TesterRulePage ();
-    void saveEditRule (EditRule type, QString &ruleName);
-    void loadEditRule (EditRule type, QString &ruleName);
-    QString getEditRule (EditRule type);
+    void setRules (TesterRule &);
+    void getRules (TesterRule &);
 
   protected:
     FormulaEdit *enterLongEdit;

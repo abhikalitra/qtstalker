@@ -35,102 +35,99 @@ TesterTestPage::TesterTestPage (QWidget *p) : QWidget (p)
   fieldList.append(tr("Close"));
   fieldList.append(tr("Mid Point"));
 
-  QHBoxLayout *hbox = new QHBoxLayout(this);
+  QHBoxLayout *hbox = new QHBoxLayout;
   hbox->setMargin(5);
   hbox->setSpacing(10);
+  setLayout(hbox);
 
   // left side grid
 
-  QGridLayout *grid = new QGridLayout(this);
+  QGridLayout *grid = new QGridLayout;
   grid->setColumnStretch(1, 1);
   grid->setSpacing(5);
   hbox->addLayout(grid);
 
   // trades area  
 
-  tradeLong = new QCheckBox(tr("Long"), this);
+  tradeLong = new QCheckBox(tr("Long"));
   grid->addWidget(tradeLong, 0, 0);
 
-  tradeShort = new QCheckBox(tr("Short"), this);
+  tradeShort = new QCheckBox(tr("Short"));
   grid->addWidget(tradeShort, 1, 0);
 
-  QLabel *label = new QLabel(tr("Trade Delay"), this);
+  QLabel *label = new QLabel(tr("Trade Delay"));
   grid->addWidget(label, 2, 0);
     
-  tradeDelay = new QSpinBox(this);
+  tradeDelay = new QSpinBox;
   tradeDelay->setRange(1, 999999);
   tradeDelay->setValue(1);
   grid->addWidget(tradeDelay, 2, 1);
 
-//  grid->setRowSpacing(grid->numRows(), 25);
-
   // account area
 
-  label = new QLabel(tr("Account Balance"), this);
+  label = new QLabel(tr("Account Balance"));
   grid->addWidget(label, 4, 0);
 
-  account = new QSpinBox(this);
+  account = new QSpinBox;
   account->setRange(0, 999999);
   account->setValue(10000);
   grid->addWidget(account, 4, 1);
   
-  label = new QLabel(tr("Futures Margin"), this);
+  label = new QLabel(tr("Futures Margin"));
   grid->addWidget(label, 5, 0);
 
-  margin = new QSpinBox(this);
+  margin = new QSpinBox;
   margin->setRange(0, 999999);
   grid->addWidget(margin, 5, 1);
   
-  label = new QLabel(tr("Volume %"), this);
+  label = new QLabel(tr("Volume %"));
   grid->addWidget(label, 6, 0);
 
-  volumePercent = new QSpinBox(this);
+  volumePercent = new QSpinBox;
   volumePercent->setRange(0, 100);
   grid->addWidget(volumePercent, 6, 1);
 
-//  grid->setRowSpacing(grid->numRows(), 25);
-
   // commission area
 
-  commissionType = new QCheckBox(tr("Use Commission %"), this);
+  commissionType = new QCheckBox(tr("Use Commission %"));
   grid->addWidget(commissionType, 8, 0);
 
-  label = new QLabel(tr("Entry"), this);
+  label = new QLabel(tr("Entry"));
   grid->addWidget(label, 9, 0);
 
-  entryCom = new QDoubleSpinBox(this);
+  entryCom = new QDoubleSpinBox;
   entryCom->setRange(0, 99999999.0);
   entryCom->setDecimals(4);
   entryCom->setValue(10);
   grid->addWidget(entryCom, 9, 1);
 
-  label = new QLabel(tr("Exit"), this);
+  label = new QLabel(tr("Exit"));
   grid->addWidget(label, 10, 0);
 
-  exitCom = new QDoubleSpinBox(this);
+  exitCom = new QDoubleSpinBox;
   exitCom->setRange(0, 99999999.0);
   exitCom->setDecimals(4);
   exitCom->setValue(10);
   grid->addWidget(exitCom, 10, 1);
 
-//  grid->setRowStretch(grid->numRows() + 1, 1);
+  grid->setRowStretch(grid->rowCount(), 1);
 
   // vline sperarator
   
-  QFrame *line = new QFrame(this);
-  line->setFrameStyle(QFrame::VLine | QFrame::Plain);
+  QFrame *line = new QFrame;
+  line->setFrameStyle(QFrame::VLine | QFrame::Sunken);
   hbox->addWidget(line);
 
   // right side grid
 
-  grid = new QGridLayout(this);
+  grid = new QGridLayout;
   grid->setColumnStretch(1, 1);
   grid->setSpacing(5);
   hbox->addLayout(grid);
 
   // test area
 
-  label = new QLabel(tr("Symbol"), this);
+  label = new QLabel(tr("Symbol"));
   grid->addWidget(label, 0, 0);
 
   QString s, s2;
@@ -139,32 +136,32 @@ TesterTestPage::TesterTestPage (QWidget *p) : QWidget (p)
   connect(symbolButton, SIGNAL(symbolChanged()), this, SLOT(symbolButtonPressed()));
   grid->addWidget(symbolButton, 0, 1);
   
-  label = new QLabel(tr("Bar Length"), this);
+  label = new QLabel(tr("Bar Length"));
   grid->addWidget(label, 1, 0);
   
   BarData bd(s);
-  barLength = new QComboBox(this);
+  barLength = new QComboBox;
   bd.getBarLengthList(barLengthList);
   barLength->addItems(barLengthList);
   barLength->setCurrentIndex(6);
   grid->addWidget(barLength, 1, 1);
 
-  label = new QLabel(tr("Bars"), this);
+  label = new QLabel(tr("Bars"));
   grid->addWidget(label, 2, 0);
   
-  bars = new QSpinBox(this);
+  bars = new QSpinBox;
   bars->setRange(1, 99999999);
   bars->setValue(275);
   grid->addWidget(bars, 2, 1);
 
-  label = new QLabel(tr("Entry/Exit Price"), this);
+  label = new QLabel(tr("Entry/Exit Price"));
   grid->addWidget(label, 3, 0);
   
-  priceField = new QComboBox(this);
+  priceField = new QComboBox;
   priceField->addItems(fieldList);
   grid->addWidget(priceField, 3, 1);
 
-//  grid->setRowStretch(grid->numRows() + 1, 1);
+  grid->setRowStretch(grid->rowCount(), 1);
 }
 
 TesterTestPage::~TesterTestPage ()
@@ -255,22 +252,14 @@ void TesterTestPage::setBars (int d)
   bars->setValue(d);
 }
 
-QString TesterTestPage::getSymbolPath ()
+void TesterTestPage::setSymbols (QStringList &l)
 {
-  QString s;
-  return s;
+  symbolButton->setSymbols(l);
 }
 
-void TesterTestPage::setSymbol (QString d)
+void TesterTestPage::getSymbols (QStringList &l)
 {
-//  symbolButton->setSymbol(d);
-}
-
-QString TesterTestPage::getSymbol ()
-{
-  QString s;
-//  symbolButton->getSymbol(s);
-  return s;
+  symbolButton->getSymbols(l);
 }
 
 int TesterTestPage::getAccount ()

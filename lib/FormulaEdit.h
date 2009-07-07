@@ -47,6 +47,7 @@ class FormulaEdit : public QWidget
     void UTILDialog (IndicatorParms &, QStringList &);
     void setIndicator (Indicator &);
     void getIndicator (Indicator &);
+    int getLines ();
 
   public slots:
     void openRule ();

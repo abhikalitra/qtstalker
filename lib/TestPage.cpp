@@ -29,7 +29,6 @@
 #include <QCursor>
 #include <QMenu>
 #include <QVBoxLayout>
-#include <stdlib.h>
 #include <QLayout>
 
 
@@ -45,6 +44,7 @@ TestPage::TestPage (QWidget *w) : QWidget (w)
   list->setSortingEnabled(TRUE);
   connect(list, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(rightClick(const QPoint &)));
   connect(list, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(doubleClick(QListWidgetItem *)));
+  connect(list, SIGNAL(itemSelectionChanged()), this, SLOT(openTest()));
   vbox->addWidget(list);
   
   menu = new QMenu(this);
@@ -66,24 +66,28 @@ TestPage::~TestPage ()
 
 void TestPage::openTest ()
 {
-  Tester *dialog = new Tester(list->currentItem()->text());
-//  connect(menubar, SIGNAL(signalScale(bool)), dialog, SLOT(slotScaleToScreen(bool)));
+  QString s = list->currentItem()->text();
+  Tester *dialog = new Tester(s);
   dialog->show();
 }
 
 void TestPage::newTest()
 {
-  Tester *dialog = new Tester;
-  QString name = dialog->newTest();
-  delete dialog;
-  
-  if (! name.length())
+  bool ok;
+  QString s = QInputDialog::getText(this, tr("New Backtest Rule"), tr("Enter new backtest rule name."), QLineEdit::Normal, tr("NewRule"), &ok);
+  if ((! ok) || (s.isEmpty()))
     return;
+
+  DataBase db;
+  QStringList l;
+  db.getTestList(l);
+  if (l.contains(s))
+  {
+    QMessageBox::information(this, tr("Qtstalker: Error"), tr("This backtest rule already exists."));
+    return;
+  }
   
-  updateList();
-  
-  dialog = new Tester(name);
-//  connect(menubar, SIGNAL(signalScale(bool)), dialog, SLOT(slotScaleToScreen(bool)));
+  Tester *dialog = new Tester(s);
   dialog->show();
 }
 
@@ -93,7 +97,7 @@ void TestPage::deleteTest()
   QStringList l;
   bool ok;
   db.getTestList(l);
-  QString item = QInputDialog::getItem(this, QString(tr("Delete Tester")), QString(tr("Select tester to delete")), l, 0, FALSE, &ok, 0);
+  QString item = QInputDialog::getItem(this, tr("Delete Tester"), tr("Select tester to delete"), l, 0, FALSE, &ok, 0);
   if (! item.length())
     return;
 
@@ -158,8 +162,9 @@ void TestPage::doubleClick (QListWidgetItem *item)
 {
   if (! item)
     return;
-    
-  Tester *dialog = new Tester(item->text());
+
+  QString s = item->text();     
+  Tester *dialog = new Tester(s);
   dialog->show();
 }
 

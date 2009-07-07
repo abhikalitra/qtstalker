@@ -20,6 +20,7 @@
  */
 
 #include "TesterReport.h"
+
 #include <QLayout>
 #include <QGroupBox>
 #include <QFont>
@@ -28,13 +29,16 @@
 #include <QVBoxLayout>
 
 
+
+
 TesterReport::TesterReport (QWidget *p) : QWidget (p)
 {
-  QVBoxLayout *vbox = new QVBoxLayout(this);
+  QVBoxLayout *vbox = new QVBoxLayout;
   vbox->setMargin(5);
   vbox->setSpacing(5);
+  setLayout(vbox);
 
-  tradeList = new QTableWidget(0, 9, this);
+  tradeList = new QTableWidget(0, 9);
 //  tradeList->setSelectionMode(QTableWidget::Single);
 //  tradeList->setSorting(FALSE);
   QStringList tl;
@@ -46,152 +50,14 @@ TesterReport::TesterReport (QWidget *p) : QWidget (p)
 //  int loop;
 //  for (loop = 0; loop < 9; loop++)
 //    tradeList->setColumnReadOnly(loop, TRUE);
+
     
   // test summary
   
-  QHBoxLayout *hbox = new QHBoxLayout(this);
-  hbox->setSpacing(5);
-  vbox->addLayout(hbox);
+  results = new QTextEdit;
+  results->setReadOnly(TRUE);
+  vbox->addWidget(results);
 
-  QGridLayout *grid = new QGridLayout(this);
-  grid->setSpacing(5);
-  hbox->addLayout(grid);
-
-  QLabel *label = new QLabel(tr("Test Summary"), this);
-  grid->addWidget(label, 0, 0);
-  
-  label = new QLabel(tr("Account Balance "), this);
-  grid->addWidget(label, 1, 0);
-  summaryBalance = new QLabel(" ", this);
-  grid->addWidget(summaryBalance, 1, 1);
-  
-  label = new QLabel(tr("Net Profit "), this);
-  grid->addWidget(label, 2, 0);
-  summaryNetProfit = new QLabel(" ", this);
-  grid->addWidget(summaryNetProfit, 2, 1);
-
-  label = new QLabel(tr("Net Profit % "), this);
-  grid->addWidget(label, 3, 0);
-  summaryNetPercentage = new QLabel(" ", this);
-  grid->addWidget(summaryNetPercentage, 3, 1);
-
-  label = new QLabel(tr("Initial Investment "), this);
-  grid->addWidget(label, 4, 0);
-  summaryInvestment = new QLabel(" ", this);
-  grid->addWidget(summaryInvestment, 4, 1);
-
-  label = new QLabel(tr("Commissions "), this);
-  grid->addWidget(label, 5, 0);
-  summaryCommission = new QLabel(" ", this);
-  grid->addWidget(summaryCommission, 5, 1);
-
-  label = new QLabel(tr("Largest Drawdown "), this);
-  grid->addWidget(label, 6, 0);
-  summaryDrawdown = new QLabel(" ", this);
-  grid->addWidget(summaryDrawdown, 6, 1);
-
-  label = new QLabel(tr("Trades "), this);
-  grid->addWidget(label, 7, 0);
-  summaryTrades = new QLabel(" ", this);
-  grid->addWidget(summaryTrades, 7, 1);
-
-  label = new QLabel(tr("Long Trades "), this);
-  grid->addWidget(label, 8, 0);
-  summaryLongTrades = new QLabel(" ", this);
-  grid->addWidget(summaryLongTrades, 8, 1);
-
-  label = new QLabel(tr("Short Trades "), this);
-  grid->addWidget(label, 9, 0);
-  summaryShortTrades = new QLabel(" ", this);
-  grid->addWidget(summaryShortTrades, 9, 1);
-
-  grid->setRowStretch(grid->rowCount(), 1);
-  
-  // win summary
-
-  grid = new QGridLayout(this);
-  grid->setSpacing(5);
-  hbox->addLayout(grid);
-  
-  label = new QLabel(tr("Win Summary"), this);
-  grid->addWidget(label, 0, 0);
-
-  label = new QLabel(tr("Trades "), this);
-  grid->addWidget(label, 1, 0);
-  summaryWinTrades = new QLabel(" ", this);
-  grid->addWidget(summaryWinTrades, 1, 1);
-
-  label = new QLabel(tr("Profit "), this);
-  grid->addWidget(label, 2, 0);
-  summaryTotalWinTrades = new QLabel(" ", this);
-  grid->addWidget(summaryTotalWinTrades, 2, 1);
-
-  label = new QLabel(tr("Average "), this);
-  grid->addWidget(label, 3, 0);
-  summaryAverageWin = new QLabel(" ", this);
-  grid->addWidget(summaryAverageWin, 3, 1);
-
-  label = new QLabel(tr("Largest "), this);
-  grid->addWidget(label, 4, 0);
-  summaryLargestWin = new QLabel(" ", this);
-  grid->addWidget(summaryLargestWin, 4, 1);
-
-  label = new QLabel(tr("Long Trades "), this);
-  grid->addWidget(label, 5, 0);
-  summaryWinLongTrades = new QLabel(" ", this);
-  grid->addWidget(summaryWinLongTrades, 5, 1);
-
-  label = new QLabel(tr("Short Trades "), this);
-  grid->addWidget(label, 6, 0);
-  summaryWinShortTrades = new QLabel(" ", this);
-  grid->addWidget(summaryWinShortTrades, 6, 1);
-
-  grid->setRowStretch(grid->rowCount(), 1);
-
-  // lose summary
-
-  grid = new QGridLayout(this);
-  grid->setSpacing(5);
-  hbox->addLayout(grid);
-
-  label = new QLabel(tr("Loss Summary"), this);
-  grid->addWidget(label, 0, 0);
-
-  label = new QLabel(tr("Trades "), this);
-  grid->addWidget(label, 1, 0);
-  summaryLoseTrades = new QLabel(" ", this);
-  grid->addWidget(summaryLoseTrades, 1, 1);
-
-  label = new QLabel(tr("Profit "), this);
-  grid->addWidget(label, 2, 0);
-  summaryTotalLoseTrades = new QLabel(" ", this);
-  grid->addWidget(summaryTotalLoseTrades, 2, 1);
-
-  label = new QLabel(tr("Average "), this);
-  grid->addWidget(label, 3, 0);
-  summaryAverageLose = new QLabel(" ", this);
-  grid->addWidget(summaryAverageLose, 3, 1);
-
-  label = new QLabel(tr("Largest "), this);
-  grid->addWidget(label, 4, 0);
-  summaryLargestLose = new QLabel(" ", this);
-  grid->addWidget(summaryLargestLose, 4, 1);
-
-  label = new QLabel(tr("Long Trades "), this);
-  grid->addWidget(label, 5, 0);
-  summaryLoseLongTrades = new QLabel(" ", this);
-  grid->addWidget(summaryLoseLongTrades, 5, 1);
-
-  label = new QLabel(tr("Short Trades "), this);
-  grid->addWidget(label, 6, 0);
-  summaryLoseShortTrades = new QLabel(" ", this);
-  grid->addWidget(summaryLoseShortTrades, 6, 1);
-
-  grid->setRowStretch(grid->rowCount(), 1);
-}
-
-TesterReport::~TesterReport ()
-{
 }
 
 void TesterReport::getSummary (QStringList &rl)
@@ -217,24 +83,22 @@ void TesterReport::addTrade (QString &s, TradeItem *trade)
   if (! l[0].compare("S"))
     trade->setTradePosition(TradeItem::Short);
 
-  Bar bar;
-//  if (bar.setDate(l[1]))
-//  {
-//    qDebug("TesterReport::addTrade:bad entry date");
-//    return;
-//  }
-  QDateTime dt;
-  bar.getDate(dt);
+  QDateTime dt = QDateTime::fromString(l[1]);
+  if (! dt.isValid())
+  {
+    qDebug("TesterReport::addTrade:bad entry date");
+    return;
+  }
   trade->setEnterDate(dt);
 
   trade->setEnterPrice(l[2].toDouble());
 
-//  if (bar.setDate(l[3]))
-//  {
-//    qDebug("TesterReport::addTrade:bad exit date");
-//    return;
-//  }
-  bar.getDate(dt);
+  dt = QDateTime::fromString(l[3]);
+  if (! dt.isValid())
+  {
+    qDebug("TesterReport::addTrade:bad exit date");
+    return;
+  }
   trade->setExitDate(dt);
 
   trade->setExitPrice(l[4].toDouble());
@@ -353,36 +217,38 @@ void TesterReport::createSummary (QList<TradeItem*> &trades, double account)
   }
 
   // main summary
-  summaryBalance->setNum(balance);
-  summaryNetProfit->setNum(balance - account);
-  summaryNetPercentage->setNum(((balance - account) / account) * 100);
-  summaryInvestment->setNum(account);
-  summaryCommission->setNum(commission);
-  summaryDrawdown->setNum(accountDrawdown - account);
-  summaryTrades->setNum(longTrades + shortTrades);
-  summaryLongTrades->setNum(longTrades);
-  summaryShortTrades->setNum(shortTrades);
+  results->append(tr("Balance") + " = " + QString::number(balance));
+  results->append(tr("Net Profit") + " = " + QString::number(balance - account));
+  results->append(tr("Net Percentage") + " = " + QString::number(((balance - account) / account) * 100));
+  results->append(tr("Investment") + " = " + QString::number(account));
+  results->append(tr("Commission") + " = " + QString::number(commission));
+  results->append(tr("Drawdown") + " = " + QString::number(accountDrawdown - account));
+  results->append(tr("Trades") + " = " + QString::number(longTrades + shortTrades));
+  results->append(tr("Long Trades") + " = " + QString::number(longTrades));
+  results->append(tr("Short Trades") + " = " + QString::number(shortTrades));
 
   // win summary
-  summaryWinTrades->setNum(winLongTrades + winShortTrades);
-  summaryTotalWinTrades->setNum(totalWinLongTrades + totalWinShortTrades);
-  summaryAverageWin->setNum((totalWinLongTrades + totalWinShortTrades) / (winLongTrades + winShortTrades));
-  summaryLargestWin->setNum(largestWin);
-  summaryWinLongTrades->setNum(winLongTrades);
-  summaryWinShortTrades->setNum(winShortTrades);
+  results->append(tr("Winning Trades") + " = " + QString::number(winLongTrades + winShortTrades));
+  results->append(tr("Total Winning Trades") + " = " + QString::number(totalWinLongTrades + totalWinShortTrades));
+  results->append(tr("Average Win") + " = " + QString::number((totalWinLongTrades + totalWinShortTrades) / (winLongTrades + winShortTrades)));
+  results->append(tr("Largest Win") + " = " + QString::number(largestWin));
+  results->append(tr("Winning Long Trades") + " = " + QString::number(winLongTrades));
+  results->append(tr("Winning Short Trades") + " = " + QString::number(winShortTrades));
 
   // lose summary
-  summaryLoseTrades->setNum(loseLongTrades + loseShortTrades);
-  summaryTotalLoseTrades->setNum(totalLoseLongTrades + totalLoseShortTrades);
-  summaryAverageLose->setNum((totalLoseLongTrades + totalLoseShortTrades) / (loseLongTrades + loseShortTrades));
-  summaryLargestLose->setNum(largestLose);
-  summaryLoseLongTrades->setNum(loseLongTrades);
-  summaryLoseShortTrades->setNum(loseShortTrades);
+  results->append(tr("Losing Trades") + " = " + QString::number(loseLongTrades + loseShortTrades));
+  results->append(tr("Total Losing Trades") + " = " + QString::number(totalLoseLongTrades + totalLoseShortTrades));
+  results->append(tr("Average Loss") + " = " + QString::number((totalLoseLongTrades + totalLoseShortTrades) / (loseLongTrades + loseShortTrades)));
+  results->append(tr("Largest Loss") + " = " + QString::number(largestLose));
+  results->append(tr("Losing Long Trades") + " = " + QString::number(loseLongTrades));
+  results->append(tr("Losing Short Trades") + " = " + QString::number(loseShortTrades));
 }
 
 void TesterReport::clear ()
 {
   while (tradeList->rowCount())
     tradeList->removeRow(0);
+
+  results->clear();
 }
 

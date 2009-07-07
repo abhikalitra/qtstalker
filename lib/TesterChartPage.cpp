@@ -25,43 +25,26 @@
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QToolBar>
+
 #include "TesterChartPage.h"
 #include "IndicatorPlugin.h"
-#include "../pics/scaletoscreen.xpm"
+
+
 
 
 TesterChartPage::TesterChartPage (QWidget *p) : QWidget (p)
 {
-  QString s;
-//  bool logFlag = config.getData(Config::LogScale).toInt();
-  scaleToScreenFlag = 1;
-
-  QVBoxLayout *vbox = new QVBoxLayout(this);
+  QVBoxLayout *vbox = new QVBoxLayout;
   vbox->setMargin(5);
   vbox->setSpacing(5);
+  setLayout(vbox);
 
-  QHBoxLayout *hbox = new QHBoxLayout(this);
-  vbox->addLayout(hbox);
-
-  QToolBar *tb = new QToolBar(this);
-  tb->setOrientation(Qt::Horizontal);
-  hbox->addWidget(tb);
-
-  tb->addAction(QIcon(scaletoscreen), tr("Scale To Screen"), this, SLOT(slotScaleToScreen()));
-
-  slider = new QSlider(this);
-  slider->setOrientation(Qt::Horizontal);
-  connect (slider, SIGNAL(valueChanged(int)), this, SLOT(slotSliderChanged(int)));
-  hbox->addWidget(slider);
-
-  split = new QSplitter(this);
+  split = new QSplitter;
   split->setOrientation(Qt::Vertical);
   vbox->addWidget(split);
 
   equityPlot = new Plot (split);
   equityPlot->setGridFlag(TRUE);
-  equityPlot->setScaleToScreen(scaleToScreenFlag);
-//  equityPlot->setLogScale(logFlag);
   equityPlot->setPixelspace(5);
   equityPlot->setIndex(0);
   equityPlot->setDateFlag(TRUE);
@@ -72,8 +55,6 @@ TesterChartPage::TesterChartPage (QWidget *p) : QWidget (p)
   
   plot = new Plot (split);
   plot->setGridFlag(TRUE);
-  plot->setScaleToScreen(scaleToScreenFlag);
-//  plot->setLogScale(logFlag);
   plot->setPixelspace(5);
   plot->setIndex(0);
   plot->setDateFlag(TRUE);
@@ -85,10 +66,14 @@ TesterChartPage::TesterChartPage (QWidget *p) : QWidget (p)
   QList<int> sizeList = split->sizes();
   sizeList[1] = 100;
   split->setSizes(sizeList);
-}
 
-TesterChartPage::~TesterChartPage ()
-{
+  QHBoxLayout *hbox = new QHBoxLayout;
+  vbox->addLayout(hbox);
+
+  slider = new QSlider;
+  slider->setOrientation(Qt::Horizontal);
+  connect (slider, SIGNAL(valueChanged(int)), this, SLOT(slotSliderChanged(int)));
+  hbox->addWidget(slider);
 }
 
 void TesterChartPage::slotSliderChanged (int v)
@@ -194,30 +179,6 @@ void TesterChartPage::updateChart (BarData *recordList, QList<TradeItem*> &trade
   i2->getName(str);
 //  equityPlot->addIndicator(i2);
   equityPlot->draw();
-}
-
-void TesterChartPage::slotScaleToScreen ()
-{
-  if (scaleToScreenFlag)
-    scaleToScreenFlag = FALSE;
-  else
-    scaleToScreenFlag = TRUE;
-
-  plot->setScaleToScreen(scaleToScreenFlag);
-  equityPlot->setScaleToScreen(scaleToScreenFlag);
-
-  equityPlot->draw();
-  plot->draw();
-}
-
-void TesterChartPage::slotLogScaling (bool)
-{
-/*
-  plot->setLogScale(d);
-  equityPlot->setLogScale(d);
-  equityPlot->draw();
-  plot->draw();
-*/
 }
 
 void TesterChartPage::clear ()

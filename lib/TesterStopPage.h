@@ -23,15 +23,13 @@
 #define TESTERSTOPPAGE_HPP
 
 #include <QWidget>
-#include <QString>
 #include <QCheckBox>
 #include <QSpinBox>
-#include <QLineEdit>
-#include <QValidator>
-#include <QTabWidget>
-#include "PlotLine.h"
+#include <QDoubleSpinBox>
+#include <QGroupBox>
+
 #include "FormulaEdit.h"
-#include "BarData.h"
+#include "TesterRule.h"
 
 
 
@@ -41,79 +39,30 @@ class TesterStopPage : public QWidget
   
   public:
     TesterStopPage (QWidget *);
-    ~TesterStopPage ();
-    bool loadCustomLongStop (BarData *recordList);
-    bool loadCustomShortStop (BarData *recordList);
-    void saveCustomStopRule (QString &);
-    void loadCustomStopRule (QString &);
-    bool maximumLoss (bool flag, double enterPrice, double exitPrice);
-    bool profit (bool flag, double enterPrice, double exitPrice);
-    bool trailing (bool flag, double exitPrice);
-    bool customStop (bool flag, int index);
-    void setTrailingHigh (double);
-
-    bool getMaximumLossCheck ();
-    void setMaximumLossCheck (bool);
-    bool getMaximumLossLong ();
-    void setMaximumLossLong (bool);
-    bool getMaximumLossShort ();
-    void setMaximumLossShort (bool);
-    QString getMaximumLossEdit ();
-    void setMaximumLossEdit (QString);
-
-    bool getProfitCheck ();
-    void setProfitCheck (bool);
-    bool getProfitLong ();
-    void setProfitLong (bool);
-    bool getProfitShort ();
-    void setProfitShort (bool);
-    QString getProfitEdit ();
-    void setProfitEdit (QString);
-
-    bool getTrailingCheck ();
-    void setTrailingCheck (bool);
-    bool getTrailingLong ();
-    void setTrailingLong (bool);
-    bool getTrailingShort ();
-    void setTrailingShort (bool);
-    QString getTrailingEdit ();
-    void setTrailingEdit (QString);
-
-    void createMaxLossPage ();
-    void createProfitPage ();
-    void createTrailingPage ();
-    void createCustomPage ();
-
-  public slots:
-    void maximumLossToggled (bool);
-    void profitToggled (bool);
-    void trailingToggled (bool);
-    void customLongStopToggled (bool);
-    void customShortStopToggled (bool);
+    void getStops (TesterRule &);
+    void setStops (TesterRule &);
+    void createStopsPage ();
 
   protected:
-    QCheckBox *maximumLossCheck;
+    QGroupBox *maxLossBox;
     QCheckBox *maximumLossLong;
     QCheckBox *maximumLossShort;
-    QCheckBox *profitCheck;
+    QDoubleSpinBox *maxLoss;
+
+    QGroupBox *profitBox;
     QCheckBox *profitLong;
     QCheckBox *profitShort;
-    QCheckBox *trailingCheck;
+    QDoubleSpinBox *profit;
+
+    QGroupBox *trailingBox;
     QCheckBox *trailingLong;
     QCheckBox *trailingShort;
-    QCheckBox *customLongStopCheck;
-    QCheckBox *customShortStopCheck;
-    QLineEdit *maximumLossEdit;
-    QLineEdit *profitEdit;
-    QLineEdit *trailingEdit;
-    QDoubleValidator *validator;
+    QDoubleSpinBox *trailing;
+
+    QGroupBox *customLongBox;
+    QGroupBox *customShortBox;
     FormulaEdit *customShortStopEdit;
     FormulaEdit *customLongStopEdit;
-    double trailingHigh;
-    double trailingLow;
-    PlotLine *customShortStopLine;
-    PlotLine *customLongStopLine;
-    QTabWidget *tabs;
 };
 
 #endif

@@ -27,6 +27,7 @@
 #include <QSlider>
 #include <QSplitter>
 #include <QList>
+
 #include "Plot.h"
 #include "PlotLine.h"
 #include "BarData.h"
@@ -42,13 +43,11 @@ class TesterChartPage : public QWidget
 
   public:
     TesterChartPage (QWidget *);
-    ~TesterChartPage ();
     void updateChart (BarData *, QList<TradeItem*> &, double);
     void clear();
 
   public slots:
     void slotSliderChanged (int);
-    void slotScaleToScreen ();
     void slotLogScaling (bool);
 
   protected:
@@ -56,7 +55,6 @@ class TesterChartPage : public QWidget
     Plot *equityPlot;
     QSlider *slider;
     QSplitter *split;
-    bool scaleToScreenFlag;
 };
 
 #endif

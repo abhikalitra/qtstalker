@@ -141,7 +141,7 @@ QtstalkerApp::QtstalkerApp(QString session)
   initChartNav();
   initGroupNav();
   initIndicatorNav();
-//  initTestNav();
+  initTestNav();
   initScannerNav();  
 
   // restore the last used indicators
@@ -994,7 +994,7 @@ void QtstalkerApp::initChartNav ()
 //  connect(chartNav, SIGNAL(removeRecentCharts(QStringList)), extraToolbar, SLOT(slotRemoveRecentCharts(QStringList)));
   connect(chartNav, SIGNAL(signalReloadChart()), this, SLOT(slotChartUpdated()));
   navTab->addTab(chartNav, QIcon(plainitem), QString());
-  navTab->setTabToolTip(0, tr("Work With Charts"));
+  navTab->setTabToolTip(0, tr("Charts"));
 }
 
 void QtstalkerApp::initGroupNav ()
@@ -1006,7 +1006,7 @@ void QtstalkerApp::initGroupNav ()
 //  connect(gp, SIGNAL(removeRecentCharts(QStringList)), extraToolbar, SLOT(slotRemoveRecentCharts(QStringList)));
 //  connect(extraToolbar, SIGNAL(signalSetGroupNavItem(QString, QString)), gp, SLOT(setGroupNavItem(QString, QString)));
   navTab->addTab(gp, QIcon(dirclosed), QString());
-  navTab->setTabToolTip(1, tr("Work With Groups"));
+  navTab->setTabToolTip(1, tr("Groups"));
 }
 
 void QtstalkerApp::initTestNav ()
@@ -1014,7 +1014,7 @@ void QtstalkerApp::initTestNav ()
   tp = new TestPage(baseWidget);
   connect(tp, SIGNAL(message(QString)), this, SLOT(slotStatusMessage(QString)));
   navTab->addTab(tp, QIcon(test), QString());
-  navTab->setTabToolTip(4, tr("Work With Backtesting"));
+  navTab->setTabToolTip(4, tr("Backtesting"));
 }
 
 void QtstalkerApp::initIndicatorNav ()
@@ -1027,7 +1027,7 @@ void QtstalkerApp::initIndicatorNav ()
   connect(this, SIGNAL(signalNewIndicator()), ip, SLOT(newIndicator()));
   connect(ip, SIGNAL(signalEditIndicator(QString)), this, SLOT(slotEditIndicator(QString)));
   navTab->addTab(ip, QIcon(indicator), QString());
-  navTab->setTabToolTip(2, tr("Work With Indicators"));
+  navTab->setTabToolTip(2, tr("Indicators"));
 }
 
 void QtstalkerApp::initScannerNav ()
@@ -1036,7 +1036,7 @@ void QtstalkerApp::initScannerNav ()
   connect(sp, SIGNAL(message(QString)), this, SLOT(slotStatusMessage(QString)));
   connect(sp, SIGNAL(refreshGroup()), gp, SLOT(updateGroups()));
   navTab->addTab(sp, QIcon(scanner), QString());
-  navTab->setTabToolTip(5, tr("Work With Scanners"));
+  navTab->setTabToolTip(5, tr("Scanners"));
 }
 
 void QtstalkerApp::slotHideNav (bool d)

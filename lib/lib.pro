@@ -67,6 +67,8 @@ HEADERS += ExScript.h
 HEADERS += ScannerRule.h
 HEADERS += IndicatorDialog.h
 HEADERS += Indicator.h
+HEADERS += TesterRule.h
+
 
    
 SOURCES += IndicatorPlugin.cpp
@@ -123,6 +125,7 @@ SOURCES += ExScript.cpp
 SOURCES += ScannerRule.cpp
 SOURCES += IndicatorDialog.cpp
 SOURCES += Indicator.cpp
+SOURCES += TesterRule.cpp
 
 
    

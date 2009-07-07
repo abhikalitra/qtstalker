@@ -24,10 +24,13 @@
 
 #include <QWidget>
 #include <QString>
-#include <QLabel>
 #include <QTableWidget>
 #include <QList>
+#include <QTextEdit>
+
 #include "TradeItem.h"
+
+
 
 
 class TesterReport : public QWidget
@@ -36,7 +39,6 @@ class TesterReport : public QWidget
   
   public:
     TesterReport (QWidget *);
-    ~TesterReport ();
     void getSummary (QStringList &);
     void createSummary (QList<TradeItem*> &, double account);
     void addTrade (QString &, TradeItem *);
@@ -44,27 +46,7 @@ class TesterReport : public QWidget
 
   protected:
     QTableWidget *tradeList;
-    QLabel *summaryBalance;
-    QLabel *summaryNetProfit;
-    QLabel *summaryNetPercentage;
-    QLabel *summaryInvestment;
-    QLabel *summaryCommission;
-    QLabel *summaryDrawdown;
-    QLabel *summaryLongTrades;
-    QLabel *summaryShortTrades;
-    QLabel *summaryTrades;
-    QLabel *summaryWinTrades;
-    QLabel *summaryTotalWinTrades;
-    QLabel *summaryAverageWin;
-    QLabel *summaryLargestWin;
-    QLabel *summaryWinLongTrades;
-    QLabel *summaryWinShortTrades;
-    QLabel *summaryLoseTrades;
-    QLabel *summaryTotalLoseTrades;
-    QLabel *summaryAverageLose;
-    QLabel *summaryLargestLose;
-    QLabel *summaryLoseLongTrades;
-    QLabel *summaryLoseShortTrades;
+    QTextEdit *results;
 };
 
 #endif

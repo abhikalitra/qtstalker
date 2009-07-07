@@ -21,156 +21,98 @@
 
 #include <QLayout>
 #include <QGroupBox>
-#include <QFile>
-#include <QTextStream>
 #include <QVBoxLayout>
 #include <QGridLayout>
+
 #include "TesterRulePage.h"
+
+
 
 
 TesterRulePage::TesterRulePage (QWidget *p) : QWidget (p)
 {
-  QVBoxLayout *vbox = new QVBoxLayout(this);
+  QVBoxLayout *vbox = new QVBoxLayout;
   vbox->setMargin(5);
   vbox->setSpacing(5);
+  setLayout(vbox);
   
-  QGridLayout *grid = new QGridLayout(this);
+  QGridLayout *grid = new QGridLayout;
   vbox->addLayout(grid);
   
-  QGroupBox *gbox = new QGroupBox(tr("Enter Long"), this);
+  QGroupBox *gbox = new QGroupBox(tr("Enter Long"));
   grid->addWidget(gbox, 0, 0);
 
-  QString s;
+  QVBoxLayout *tvbox = new QVBoxLayout;
+  tvbox->setMargin(5);
+  tvbox->setSpacing(0);
+  gbox->setLayout(tvbox);
+
   enterLongEdit = new FormulaEdit;  
+  tvbox->addWidget(enterLongEdit);
   
-  gbox = new QGroupBox(tr("Exit Long"), this);
+  gbox = new QGroupBox(tr("Exit Long"));
   grid->addWidget(gbox, 0, 1);
 
-  exitLongEdit = new FormulaEdit;  
+  tvbox = new QVBoxLayout;
+  tvbox->setMargin(5);
+  tvbox->setSpacing(0);
+  gbox->setLayout(tvbox);
 
-  gbox = new QGroupBox(tr("Enter Short"), this);
+  exitLongEdit = new FormulaEdit;  
+  tvbox->addWidget(exitLongEdit);
+
+  gbox = new QGroupBox(tr("Enter Short"));
   grid->addWidget(gbox, 1, 0);
 
+  tvbox = new QVBoxLayout;
+  tvbox->setMargin(5);
+  tvbox->setSpacing(0);
+  gbox->setLayout(tvbox);
+
   enterShortEdit = new FormulaEdit;  
+  tvbox->addWidget(enterShortEdit);
   
-  gbox = new QGroupBox(tr("Exit Short"), this);
+  gbox = new QGroupBox(tr("Exit Short"));
   grid->addWidget(gbox, 1, 1);
 
+  tvbox = new QVBoxLayout;
+  tvbox->setMargin(5);
+  tvbox->setSpacing(0);
+  gbox->setLayout(tvbox);
+
   exitShortEdit = new FormulaEdit;  
+  tvbox->addWidget(exitShortEdit);
 }
 
-TesterRulePage::~TesterRulePage ()
+void TesterRulePage::getRules (TesterRule &rule)
 {
+  Indicator i;
+  enterLongEdit->getIndicator(i);
+  rule.setEnterLong(i);
+
+  exitLongEdit->getIndicator(i);
+  rule.setExitLong(i);
+
+  enterShortEdit->getIndicator(i);
+  rule.setEnterShort(i);
+
+  exitShortEdit->getIndicator(i);
+  rule.setExitShort(i);
 }
 
-void TesterRulePage::saveEditRule (EditRule type, QString &ruleName)
+void TesterRulePage::setRules (TesterRule &rule)
 {
-  FormulaEdit *edit = 0;
-  QString s;
-//  config.getData(Config::TestPath, s);
-  s.append("/" + ruleName);
-  
-  switch(type)
-  {
-    case 0:
-      edit = enterLongEdit;
-      s.append("/el/rule");
-      break;
-    case 1:
-      edit = exitLongEdit;
-      s.append("/xl/rule");
-      break;
-    case 2:
-      edit = enterShortEdit;
-      s.append("/es/rule");
-      break;
-    case 3:
-      edit = exitShortEdit;
-      s.append("/xs/rule");
-      break;
-    default:
-      break;
-  }
+  Indicator i;
+  rule.getEnterLong(i);
+  enterLongEdit->setIndicator(i);
 
-  QFile f(s);
-  if (! f.open(QIODevice::WriteOnly))
-    return;
-  QTextStream stream(&f);
+  rule.getExitLong(i);
+  exitLongEdit->setIndicator(i);
 
-//  edit->getText(s);
-  stream << s << "\n";
-  
-  f.close();
-}
+  rule.getEnterShort(i);
+  enterShortEdit->setIndicator(i);
 
-void TesterRulePage::loadEditRule (EditRule type, QString &ruleName)
-{
-  FormulaEdit *edit = 0;
-  QString s;
-//  config.getData(Config::TestPath, s);
-  s.append("/" + ruleName);
-  
-  switch(type)
-  {
-    case 0:
-      edit = enterLongEdit;
-      s.append("/el/rule");
-      break;
-    case 1:
-      edit = exitLongEdit;
-      s.append("/xl/rule");
-      break;
-    case 2:
-      edit = enterShortEdit;
-      s.append("/es/rule");
-      break;
-    case 3:
-      edit = exitShortEdit;
-      s.append("/xs/rule");
-      break;
-    default:
-      break;
-  }
-
-  QFile f(s);
-  if (! f.open(QIODevice::ReadOnly))
-    return;
-  QTextStream stream(&f);
-
-  while(stream.atEnd() == 0)
-  {
-    s = stream.readLine();
-    s = s.trimmed();
-    if (! s.length())
-      continue;
-  
-//    edit->setLine(s);
-  }  
-  
-  f.close();
-}
-
-QString TesterRulePage::getEditRule (EditRule type)
-{
-  QString s;
-  switch (type)
-  {
-    case EnterLong:
-//      enterLongEdit->getText(s);
-      break;
-    case ExitLong:
-//      exitLongEdit->getText(s);
-      break;
-    case EnterShort:
-//      enterShortEdit->getText(s);
-      break;
-    case ExitShort:
-//      exitShortEdit->getText(s);
-      break;
-    default:
-      break;
-  }
-
-  return s;
+  rule.getExitShort(i);
+  exitShortEdit->setIndicator(i);
 }
 

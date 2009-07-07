@@ -28,6 +28,7 @@
 #include <QList>
 #include <QHash>
 #include <QDialog>
+
 #include "Setting.h"
 #include "BarData.h"
 #include "TesterReport.h"
@@ -36,6 +37,9 @@
 #include "TesterTestPage.h"
 #include "TesterStopPage.h"
 #include "TesterChartPage.h"
+#include "TesterRule.h"
+
+
 
 
 class Tester : public QDialog
@@ -46,14 +50,22 @@ class Tester : public QDialog
     void message (QString);
 
   public:
-    Tester (QString);
+    Tester (QString &);
     Tester ();
     ~Tester ();
     int getVolume (int, double);
     double getPrice (int);
-    QString newTest ();
     void loadSignals ();
     void enterTrade (TradeItem::TradePosition);
+
+    // stops
+    bool loadCustomLongStop ();
+    bool loadCustomShortStop ();
+    bool maximumLoss (bool flag, double enterPrice, double exitPrice);
+    bool calculateProfit (bool flag, double enterPrice, double exitPrice);
+    bool calculateTrailing (bool flag, double exitPrice);
+    bool customStop (bool flag, int index);
+    void setTrailingHigh (double);
 
   public slots:
     void test ();
@@ -63,18 +75,20 @@ class Tester : public QDialog
     void buttonPressed (QAbstractButton *);
 
   protected:
+    TesterRule rule;
     TesterReport *reportPage;
     TesterRulePage *rulePage;
     TesterTestPage *testPage;
     TesterStopPage *stopPage;
     TesterChartPage *chartPage;
-    QString ruleName;
     QString chartType;
     QString futuresType;
     BarData *recordList;
     int currentRecord;
     double equity;
     double volume;
+    double trailingHigh;
+    double trailingLow;
     QHash<QString, Setting *> enterLongSignal;
     QHash<QString, Setting *> exitLongSignal;
     QHash<QString, Setting *> enterShortSignal;
@@ -82,6 +96,8 @@ class Tester : public QDialog
     QList<TradeItem*> trades;
     QTabWidget *tabs;
     QDialogButtonBox *buttonBox;    
+    PlotLine *customShortStopLine;
+    PlotLine *customLongStopLine;
 };
 
 #endif

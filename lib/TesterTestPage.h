@@ -56,9 +56,8 @@ class TesterTestPage : public QWidget
     void setPriceField (QString);
     int getBars ();
     void setBars (int);
-    QString getSymbol ();
-    QString getSymbolPath ();
-    void setSymbol (QString);
+    void getSymbols (QStringList &);
+    void setSymbols (QStringList &);
     int getAccount ();
     void setAccount (int);
     QString getBarLength ();

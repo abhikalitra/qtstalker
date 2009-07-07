@@ -21,22 +21,25 @@
 
 #include <QLayout>
 #include <QGroupBox>
-#include <QFile>
-#include <QTextStream>
 #include <QMessageBox>
 #include <QInputDialog>
-#include <QDir>
 #include <QProgressDialog>
-#include <QFileInfo>
 #include <QtDebug>
+
 #include "Tester.h"
 #include "IndicatorPlugin.h"
+#include "DataBase.h"
 
 
-Tester::Tester (QString n) : QDialog (0, 0)
+
+
+Tester::Tester (QString &n) : QDialog (0, 0)
 {
-  ruleName = n;
+  rule.setName(n);
   recordList = 0;
+  customShortStopLine = 0;
+  customLongStopLine = 0;
+
 //  enterLongSignal.setAutoDelete(TRUE);
 //  exitLongSignal.setAutoDelete(TRUE);
 //  enterShortSignal.setAutoDelete(TRUE);
@@ -45,7 +48,7 @@ Tester::Tester (QString n) : QDialog (0, 0)
   
   QString s = "Qtstalker Back Tester";
   s.append(": ");
-  s.append(ruleName);
+  s.append(n);
   setWindowTitle(s);
 
   tabs = new QTabWidget;
@@ -85,6 +88,18 @@ Tester::~Tester ()
 {
   if (recordList)
     delete recordList;
+
+  qDeleteAll(enterLongSignal);
+  qDeleteAll(exitLongSignal);
+  qDeleteAll(enterShortSignal);
+  qDeleteAll(exitShortSignal);
+  qDeleteAll(trades);
+
+  if (customLongStopLine)
+    delete customLongStopLine;
+  
+  if (customShortStopLine)
+    delete customShortStopLine;
 }
 
 void Tester::buttonPressed (QAbstractButton *button)
@@ -107,6 +122,7 @@ void Tester::buttonPressed (QAbstractButton *button)
 
 void Tester::saveRule ()
 {
+/*
   rulePage->saveEditRule(TesterRulePage::EnterLong, ruleName);
   rulePage->saveEditRule(TesterRulePage::ExitLong, ruleName);
   rulePage->saveEditRule(TesterRulePage::EnterShort, ruleName);
@@ -154,37 +170,25 @@ void Tester::saveRule ()
   stream << "FuturesMargin=" << QString::number(testPage->getMargin()) << "\n";
   
   f.close();
+*/
 }
 
 void Tester::loadRule ()
 {
+  DataBase db;
+//  getTester(rule);
+
   reportPage->clear();
 
-  rulePage->loadEditRule(TesterRulePage::EnterLong, ruleName);
-  rulePage->loadEditRule(TesterRulePage::ExitLong, ruleName);
-  rulePage->loadEditRule(TesterRulePage::EnterShort, ruleName);
-  rulePage->loadEditRule(TesterRulePage::ExitShort, ruleName);
+  rulePage->setRules(rule);
 
-  stopPage->loadCustomStopRule(ruleName);
+  stopPage->setStops(rule);
 
-  QString s;
-  s.append("/" + ruleName + "/rule");
-  QFile f(s);
-  if (! f.open(QIODevice::ReadOnly))
-    return;
-  QTextStream stream(&f);
 
-  while(stream.atEnd() == 0)
-  {
-    s = stream.readLine();
-    QByteArray ba;
-    ba.append(s);
-    ba = ba.trimmed();
-    s = ba;
-    if (! s.length())
-      continue;
 
-    QStringList l2 = s.split("=");
+
+
+/*
     
     if (! l2[0].compare("Maximum Loss Check"))
     {
@@ -386,6 +390,7 @@ void Tester::loadRule ()
   chartPage->clear();
 
   reportPage->createSummary(trades, testPage->getAccount());
+*/
 }
 
 void Tester::exitDialog ()
@@ -428,69 +433,6 @@ double Tester::getPrice (int i)
   return price;
 }
 
-QString Tester::newTest ()
-{
-  bool ok;
-  QString s = QInputDialog::getText(this,
-				    tr("New Backtest Rule"),
-  				    tr("Enter new backtest rule name."),
-  				    QLineEdit::Normal,
-				    tr("NewRule"),
-				    &ok);
-
-  if ((! ok) || (s.isNull()))
-    return s;
-
-  int loop;
-  QString selection;
-  for (loop = 0; loop < (int) s.length(); loop++)
-  {
-    QChar c = s.at(loop);
-    if (c.isLetterOrNumber())
-      selection.append(c);
-  }
-
-  s.append("/" + selection);
-  QDir dir(s);
-  if (dir.exists(s))
-  {
-    QMessageBox::information(this, tr("Qtstalker: Error"), tr("This backtest rule already exists."));
-    return selection;
-  }
-
-  if (! dir.mkdir(s))
-  {
-    qDebug() << "TestPage::newTest:can't create dir " << s;
-    return selection;
-  }
-  
-  if (! dir.mkdir(s + "/el"))
-  {
-    qDebug("TestPage::newTest:can't create el dir");
-    return selection;
-  }
-  
-  if (! dir.mkdir(s + "/xl"))
-  {
-    qDebug("TestPage::newTest:can't create xl dir");
-    return selection;
-  }
-  
-  if (! dir.mkdir(s + "/es"))
-  {
-    qDebug("TestPage::newTest:can't create es dir");
-    return selection;
-  }
-  
-  if (! dir.mkdir(s + "/xs"))
-  {
-    qDebug("TestPage::newTest:can't create xs dir");
-    return selection;
-  }
-  
-  return selection;
-}
-
 void Tester::loadSignals ()
 {
   enterLongSignal.clear();
@@ -510,16 +452,16 @@ void Tester::loadSignals ()
     switch (loop)
     {
       case 0:
-        s = rulePage->getEditRule(TesterRulePage::EnterLong);
+//        s = rulePage->getEditRule(TesterRulePage::EnterLong);
         break;
       case 1:
-        s = rulePage->getEditRule(TesterRulePage::ExitLong);
+//        s = rulePage->getEditRule(TesterRulePage::ExitLong);
         break;
       case 2:
-        s = rulePage->getEditRule(TesterRulePage::EnterShort);
+//        s = rulePage->getEditRule(TesterRulePage::EnterShort);
         break;
       case 3:
-        s = rulePage->getEditRule(TesterRulePage::ExitShort);
+//        s = rulePage->getEditRule(TesterRulePage::ExitShort);
         break;
       default:
         break;
@@ -591,23 +533,14 @@ void Tester::test ()
   if (equity == 0)
     return;
 
-  QString symbol = testPage->getSymbol();
-  if (! symbol.length())
-    return;
+  QStringList l;
+  QString symbol;
+  testPage->getSymbols(l);
+  if (l.count())
+    symbol = l[0];
 
-  QString path = testPage->getSymbolPath();
-  QDir dir;
-  if (! dir.exists(path))
+  if (symbol.isEmpty())
     return;
-  
-//  if (db.open(path, index))
-//  {
-//    db.close();
-//    return;
-//  }
-
-  QFileInfo fi(path);
-  QString fn = fi.fileName();
 
 //  item.getType(chartType);
 //  if (! chartType.compare(tr("Futures")))
@@ -617,7 +550,7 @@ void Tester::test ()
 //  db.setBarRange(testPage->getBars());
   if (recordList)
     delete recordList;
-  recordList = new BarData(path);
+  recordList = new BarData(symbol);
   QDateTime dt = QDateTime::currentDateTime();
 //  db.getHistory(recordList, dt);
 
@@ -625,10 +558,10 @@ void Tester::test ()
 
   loadSignals();
 
-  if (stopPage->loadCustomLongStop(recordList))
+  if (loadCustomLongStop())
     return;
   
-  if (stopPage->loadCustomShortStop(recordList))
+  if (loadCustomShortStop())
     return;
 
   reportPage->clear();
@@ -703,7 +636,7 @@ void Tester::enterTrade (TradeItem::TradePosition flag)
   double enterPrice = getPrice(buyRecord);
   trade->setEnterPrice(enterPrice);
 
-  stopPage->setTrailingHigh(getPrice(buyRecord));
+  setTrailingHigh(getPrice(buyRecord));
 
   if (! trades.count())
   {
@@ -770,9 +703,9 @@ void Tester::enterTrade (TradeItem::TradePosition flag)
 
     bool tflag = FALSE;
     if (flag == TradeItem::Long)
-      tflag = stopPage->maximumLoss(FALSE, enterPrice, recordList->getLow(loop));
+      tflag = maximumLoss(FALSE, enterPrice, recordList->getLow(loop));
     else
-      tflag = stopPage->maximumLoss(TRUE, enterPrice, recordList->getHigh(loop));
+      tflag = maximumLoss(TRUE, enterPrice, recordList->getHigh(loop));
     if (tflag)
     {
       int sellRecord = 0;
@@ -792,9 +725,9 @@ void Tester::enterTrade (TradeItem::TradePosition flag)
     }
 
     if (flag == TradeItem::Long)
-      tflag = stopPage->profit(FALSE, enterPrice, recordList->getHigh(loop));
+      tflag = calculateProfit(FALSE, enterPrice, recordList->getHigh(loop));
     else
-      tflag = stopPage->profit(TRUE, enterPrice, recordList->getLow(loop));
+      tflag = calculateProfit(TRUE, enterPrice, recordList->getLow(loop));
     if (tflag)
     {
       int sellRecord = 0;
@@ -814,9 +747,9 @@ void Tester::enterTrade (TradeItem::TradePosition flag)
     }
 
     if (flag == TradeItem::Long)
-      tflag = stopPage->customStop(FALSE, loop);
+      tflag = customStop(FALSE, loop);
     else
-      tflag = stopPage->customStop(TRUE, loop);
+      tflag = customStop(TRUE, loop);
     if (tflag)
     {
       int sellRecord = 0;
@@ -836,9 +769,9 @@ void Tester::enterTrade (TradeItem::TradePosition flag)
     }
     
     if (flag == TradeItem::Long)
-      tflag = stopPage->trailing(FALSE, recordList->getLow(loop));
+      tflag = calculateTrailing(FALSE, recordList->getLow(loop));
     else
-      tflag = stopPage->trailing(TRUE, recordList->getHigh(loop));
+      tflag = calculateTrailing(TRUE, recordList->getHigh(loop));
     if (tflag)
     {
       int sellRecord = 0;
@@ -868,5 +801,197 @@ void Tester::enterTrade (TradeItem::TradePosition flag)
     currentRecord = loop;
     trade->calculateProfit();
   }
+}
+
+bool Tester::loadCustomShortStop ()
+{
+  if (customShortStopLine)
+  {
+    delete customShortStopLine;
+    customShortStopLine = 0;
+  }
+  
+  if (! rule.getCustomShortCheck())
+    return FALSE;
+
+  Indicator i;
+  rule.getCustomShortStop(i);
+  QString iname;
+  i.getName(iname);
+  IndicatorPlugin ip;
+  ip.setName(iname);
+
+  DataBase db;
+  db.getChart(recordList);
+
+  ip.setIndicatorInput(recordList);
+
+  QList<PlotLine *> plotList;
+  ip.calculate(plotList);
+  if (! plotList.count())
+  {
+    qDebug("TesterStopPage::loadCustomShortStop: no PlotLine returned");
+    return TRUE;
+  }
+
+  PlotLine *line = plotList.at(0);
+  customShortStopLine = new PlotLine;
+  customLongStopLine->copy(line);
+
+  qDeleteAll(plotList);
+
+  return FALSE;
+}
+
+bool Tester::loadCustomLongStop ()
+{
+  if (customLongStopLine)
+  {
+    delete customLongStopLine;
+    customLongStopLine = 0;
+  }
+  
+  if (! rule.getCustomLongCheck())
+    return FALSE;
+
+  Indicator i;
+  rule.getCustomLongStop(i);
+  QString iname;
+  i.getName(iname);
+  IndicatorPlugin ip;
+  ip.setName(iname);
+
+  DataBase db;
+  db.getChart(recordList);
+
+  ip.setIndicatorInput(recordList);
+
+  QList<PlotLine *> plotList;
+  ip.calculate(plotList);
+  if (! plotList.count())
+  {
+    qDebug("Tester::loadCustomShortStop: no PlotLine returned");
+    return TRUE;
+  }
+
+  PlotLine *line = plotList.at(0);
+  customLongStopLine = new PlotLine;
+  customLongStopLine->copy(line);
+    
+  qDeleteAll(plotList);
+
+  return FALSE;
+}
+
+bool Tester::maximumLoss (bool flag, double enterPrice, double exitPrice)
+{
+  if (! rule.getMaxLossCheck())
+    return FALSE;
+
+  if (! flag)
+  {
+    double t = enterPrice * (1 - (rule.getMaxLoss() / 100));
+    if (exitPrice <= t)
+      return TRUE;
+  }
+  else
+  {
+    double t = enterPrice * (1 + (rule.getMaxLoss() / 100));
+    if (exitPrice >= t)
+      return TRUE;
+  }
+
+  return FALSE;
+}
+
+bool Tester::calculateProfit (bool flag, double enterPrice, double exitPrice)
+{
+  if (! rule.getProfitCheck())
+    return FALSE;
+
+  if (! flag)
+  {
+    double t = enterPrice * (1 + (rule.getProfit() / 100));
+    if (exitPrice >= t)
+      return TRUE;
+  }
+  else
+  {
+    double t = enterPrice * (1 - (rule.getProfit() / 100));
+    if (exitPrice <= t)
+      return TRUE;
+  }
+
+  return FALSE;
+}
+
+bool Tester::calculateTrailing (bool flag, double exitPrice)
+{
+  if (! rule.getTrailingCheck())
+    return FALSE;
+
+  if (! flag)
+  {
+    if (exitPrice < trailingHigh)
+      trailingHigh = exitPrice;
+
+    double t = ((exitPrice - trailingHigh) / trailingHigh) * 100;
+    if (t < 0)
+    {
+      t = -t;
+      if (t >= rule.getTrailing())
+        return TRUE;
+    }
+  }
+  else
+  {
+    if (exitPrice < trailingLow)
+      trailingLow = exitPrice;
+
+    double t = ((trailingLow - exitPrice) / trailingLow) * 100;
+    if (t < 0)
+    {
+      t = -t;
+      if (t >= rule.getTrailing())
+        return TRUE;
+    }
+  }
+
+  return FALSE;
+}
+
+bool Tester::customStop (bool flag, int index)
+{
+  if (! flag)
+  {
+    if (rule.getCustomLongCheck() && customLongStopLine)
+    {
+      int i = customLongStopLine->getSize() - index;
+      if (i > -1)
+      {
+        if (customLongStopLine->getData(i) == 1)
+          return TRUE;
+      }
+    }
+  }
+  else
+  {
+    if (rule.getCustomShortCheck() && customShortStopLine)
+    {
+      int i = customShortStopLine->getSize() - index;
+      if (i > -1)
+      {
+        if (customShortStopLine->getData(i) == 1)
+          return TRUE;
+      }
+    }
+  }
+
+  return FALSE;
+}
+
+void Tester::setTrailingHigh (double d)
+{
+  trailingHigh = d;
 }
 
