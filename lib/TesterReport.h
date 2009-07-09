@@ -29,6 +29,7 @@
 #include <QTextEdit>
 
 #include "TradeItem.h"
+#include "TesterRule.h"
 
 
 
@@ -39,7 +40,8 @@ class TesterReport : public QWidget
   
   public:
     TesterReport (QWidget *);
-    void getSummary (QStringList &);
+    void getParms (TesterRule &);
+    void setParms (TesterRule &);
     void createSummary (QList<TradeItem*> &, double account);
     void addTrade (QString &, TradeItem *);
     void clear ();

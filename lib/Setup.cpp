@@ -103,7 +103,7 @@ void Setup::setupDataBase (QString session)
     qDebug() << "DataBase::createScannersTable: " << q.lastError().text();
 
   // create the testers table
-  s = "CREATE TABLE IF NOT EXISTS testers (name TEXT PRIMARY KEY, parms TEXT)";
+  s = "CREATE TABLE IF NOT EXISTS testers (name TEXT PRIMARY KEY, parms TEXT, trades TEXT, summary TEXT)";
   q.exec(s);
   if (q.lastError().isValid())
     qDebug() << "DataBase::createTestersTable: " << q.lastError().text();

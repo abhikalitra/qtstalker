@@ -81,6 +81,7 @@ class BarData
     void getBar (int, Bar *);
     void setMinMax ();
     void setBarLength (BarData::BarLength);
+    void setBarLength (QString &);
     BarData::BarLength getBarLength ();
     void getSymbol (QString &);
     void setSymbol (QString &);

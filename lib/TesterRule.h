@@ -23,6 +23,9 @@
 #define TESTERRULE_HPP
 
 
+#include <QHash>
+#include <QString>
+
 #include "Indicator.h"
 
 
@@ -31,9 +34,51 @@
 class TesterRule
 {
   public:
+    enum TesterParm
+    {
+      EnterLong,
+      ExitLong,
+      EnterShort,
+      ExitShort,
+      CustomLongStop,
+      CustomShortStop,
+      CustomLongCheck,
+      CustomShortCheck,
+      MaxLossCheck,
+      MaxLossLong,
+      MaxLossShort,
+      MaxLoss,
+      ProfitCheck,
+      ProfitLong,
+      ProfitShort,
+      Profit,
+      TrailingCheck,
+      TrailingLong,
+      TrailingShort,
+      Trailing,
+      TradeLong,
+      TradeShort,
+      CommissionType,
+      EntryCom,
+      ExitCom,
+      Account,
+      VolumePercent,
+      Bars,
+      PriceField,
+      BarLength,
+      Symbols,
+      Summary
+    };
+
     TesterRule ();
-    void getName (QString &);
     void setName (QString &);
+    void getName (QString &);
+    void setParms (QString &);
+    void getParms (QString &);
+    void setTrades (QString &);
+    void getTrades (QString &);
+    void setSummary (QString &);
+    void getSummary (QString &);
 
     void setEnterLong (Indicator &);
     void getEnterLong (Indicator &);
@@ -43,70 +88,32 @@ class TesterRule
     void getEnterShort (Indicator &);
     void setExitShort (Indicator &);
     void getExitShort (Indicator &);
-
     void setCustomLongStop (Indicator &);
     void getCustomLongStop (Indicator &);
     void setCustomShortStop (Indicator &);
     void getCustomShortStop (Indicator &);
-    void setCustomLongCheck (bool);
-    bool getCustomLongCheck ();
-    void setCustomShortCheck (bool);
-    bool getCustomShortCheck ();
 
-    void setMaxLossCheck (bool);
-    void setMaxLossLong (bool);
-    void setMaxLossShort (bool);
-    void setMaxLoss (double);
-    bool getMaxLossCheck ();
-    bool getMaxLossLong ();
-    bool getMaxLossShort ();
-    double getMaxLoss ();
-
-    void setProfitCheck (bool);
-    void setProfitLong (bool);
-    void setProfitShort (bool);
-    void setProfit (double);
-    bool getProfitCheck ();
-    bool getProfitLong ();
-    bool getProfitShort ();
-    double getProfit ();
-
-    void setTrailingCheck (bool);
-    void setTrailingLong (bool);
-    void setTrailingShort (bool);
-    void setTrailing (double);
-    bool getTrailingCheck ();
-    bool getTrailingLong ();
-    bool getTrailingShort ();
-    double getTrailing ();
+    void getSymbols (QStringList &);
+    void setSymbols (QStringList &);
     
-  protected:
-    QString name;
+    void setData (TesterParm, QString &);
+    void getData (TesterParm, QString &);
+    double getDouble (TesterParm);
+    void setDouble (TesterParm, double);
+    int getInt (TesterParm);
+    void setInt (TesterParm, int);
 
+  protected:
+    QHash<TesterParm, QString> data;
     Indicator enterLong;
     Indicator exitLong;
     Indicator enterShort;
     Indicator exitShort;
-
     Indicator customLongStop;
     Indicator customShortStop;
-    bool customLongCheck;
-    bool customShortCheck;
-
-    bool maxLossCheck;
-    bool maxLossLong;
-    bool maxLossShort;
-    double maxLoss;
-
-    bool profitCheck;
-    bool profitLong;
-    bool profitShort;
-    double profit;
-
-    bool trailingCheck;
-    bool trailingLong;
-    bool trailingShort;
-    double trailing;
+    QString name;
+    QString summary;
+    QString trades;
 };
 
 #endif

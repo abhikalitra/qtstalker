@@ -596,8 +596,49 @@ void DataBase::setScanner (ScannerRule &rule)
 
 void DataBase::deleteTest (QString &name)
 {
+  // delete indicators linked to the tester
   QSqlQuery q(QSqlDatabase::database("data"));
-  QString s = "DELETE FROM testers WHERE name='" + name + "'";
+  QString s = "SELECT parms FROM testers WHERE name='" + name + "'";
+  q.exec(s);
+  if (q.lastError().isValid())
+  {
+    qDebug() << "DataBase::deleteTest: " << q.lastError().text();
+    return;
+  }
+
+  if (q.next())
+  {
+    TesterRule rule;
+    s = q.value(0).toString();
+    rule.setParms(s);
+
+    Indicator i;
+    rule.getEnterLong(i);
+    i.getName(s);
+    deleteIndicator(s);
+
+    rule.getExitLong(i);
+    i.getName(s);
+    deleteIndicator(s);
+
+    rule.getEnterShort(i);
+    i.getName(s);
+    deleteIndicator(s);
+
+    rule.getExitShort(i);
+    i.getName(s);
+    deleteIndicator(s);
+
+    rule.getCustomLongStop(i);
+    i.getName(s);
+    deleteIndicator(s);
+
+    rule.getCustomShortStop(i);
+    i.getName(s);
+    deleteIndicator(s);
+  }
+
+  s = "DELETE FROM testers WHERE name='" + name + "'";
   q.exec(s);
   if (q.lastError().isValid())
   {
@@ -622,6 +663,95 @@ void DataBase::getTestList (QStringList &l)
     l.append(q.value(0).toString());
 
   l.sort();
+}
+
+void DataBase::getTest (TesterRule &rule)
+{
+  QString name;
+  rule.getName(name);
+
+  QSqlQuery q(QSqlDatabase::database("data"));
+  QString s = "SELECT * FROM testers WHERE name='" + name + "'";
+  q.exec(s);
+  if (q.lastError().isValid())
+  {
+    qDebug() << "DataBase::getTestList: " << q.lastError().text();
+    return;
+  }
+
+  if (q.next())
+  {
+    s = q.value(0).toString();
+    rule.setName(s);
+
+    s = q.value(1).toString();
+    rule.setParms(s);
+
+    s = q.value(2).toString();
+    rule.setTrades(s);
+
+    s = q.value(3).toString();
+    rule.setSummary(s);
+
+    Indicator i;
+    rule.getEnterLong(i);
+    getIndicator(i);
+    rule.setEnterLong(i);
+
+    rule.getExitLong(i);
+    getIndicator(i);
+    rule.setExitLong(i);
+
+    rule.getEnterShort(i);
+    getIndicator(i);
+    rule.setEnterShort(i);
+
+    rule.getExitShort(i);
+    getIndicator(i);
+    rule.setExitShort(i);
+
+    rule.getCustomLongStop(i);
+    getIndicator(i);
+    rule.setCustomLongStop(i);
+
+    rule.getCustomShortStop(i);
+    getIndicator(i);
+    rule.setCustomShortStop(i);
+  }
+}
+
+void DataBase::setTest (TesterRule &rule)
+{
+  Indicator i;
+  rule.getEnterLong(i);
+  setIndicator(i);
+
+  rule.getExitLong(i);
+  setIndicator(i);
+
+  rule.getEnterShort(i);
+  setIndicator(i);
+
+  rule.getExitShort(i);
+  setIndicator(i);
+
+  rule.getCustomLongStop(i);
+  setIndicator(i);
+
+  rule.getCustomShortStop(i);
+  setIndicator(i);
+
+  QString name, parms, trades, summary;
+  rule.getName(name);
+  rule.getParms(parms);
+  rule.getTrades(trades);
+  rule.getSummary(summary);
+
+  QSqlQuery q(QSqlDatabase::database("data"));
+  QString s = "INSERT OR REPLACE INTO testers VALUES ('" + name + "','" + parms + "','" + trades + "','" + summary + "')";
+  q.exec(s);
+  if (q.lastError().isValid())
+    qDebug() << "DataBase::setTest: " << q.lastError().text();
 }
 
 /********************************************************************************/

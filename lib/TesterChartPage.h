@@ -48,7 +48,6 @@ class TesterChartPage : public QWidget
 
   public slots:
     void slotSliderChanged (int);
-    void slotLogScaling (bool);
 
   protected:
     Plot *plot;

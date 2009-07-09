@@ -48,10 +48,10 @@ class Tester : public QDialog
   
   signals:
     void message (QString);
+    void signalSaved ();
 
   public:
     Tester (QString &);
-    Tester ();
     ~Tester ();
     int getVolume (int, double);
     double getPrice (int);
@@ -70,7 +70,6 @@ class Tester : public QDialog
   public slots:
     void test ();
     void saveRule ();
-    void exitDialog ();
     void loadRule ();
     void buttonPressed (QAbstractButton *);
 
@@ -81,8 +80,6 @@ class Tester : public QDialog
     TesterTestPage *testPage;
     TesterStopPage *stopPage;
     TesterChartPage *chartPage;
-    QString chartType;
-    QString futuresType;
     BarData *recordList;
     int currentRecord;
     double equity;

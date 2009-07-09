@@ -44,7 +44,7 @@ TestPage::TestPage (QWidget *w) : QWidget (w)
   list->setSortingEnabled(TRUE);
   connect(list, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(rightClick(const QPoint &)));
   connect(list, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(doubleClick(QListWidgetItem *)));
-  connect(list, SIGNAL(itemSelectionChanged()), this, SLOT(openTest()));
+  connect(list, SIGNAL(itemSelectionChanged()), this, SLOT(selectionChanged()));
   vbox->addWidget(list);
   
   menu = new QMenu(this);
@@ -57,7 +57,7 @@ TestPage::TestPage (QWidget *w) : QWidget (w)
 
   updateList();
 
-  testNoSelection();
+  selectionChanged();
 }
 
 TestPage::~TestPage ()
@@ -68,6 +68,7 @@ void TestPage::openTest ()
 {
   QString s = list->currentItem()->text();
   Tester *dialog = new Tester(s);
+  connect(dialog, SIGNAL(signalSaved()), this, SLOT(updateList()));
   dialog->show();
 }
 
@@ -88,6 +89,7 @@ void TestPage::newTest()
   }
   
   Tester *dialog = new Tester(s);
+  connect(dialog, SIGNAL(signalSaved()), this, SLOT(updateList()));
   dialog->show();
 }
 
@@ -115,24 +117,19 @@ void TestPage::deleteTest()
 
   updateList();
 
-  testNoSelection();
+  selectionChanged();
 }
 
-void TestPage::testSelected () 
+void TestPage::selectionChanged () 
 {
-  if (! list->currentItem())
-    return;
+  bool flag = FALSE;
+  QListWidgetItem *item = list->currentItem();
+  if (item)
+    flag = TRUE;
 
   int loop;
   for (loop = 1; loop < 3; loop++)
-    actionList.at(loop)->setEnabled(TRUE);
-}
-
-void TestPage::testNoSelection ()
-{
-  int loop;
-  for (loop = 1; loop < 3; loop++)
-    actionList.at(loop)->setEnabled(FALSE);
+    actionList.at(loop)->setEnabled(flag);
 }
 
 void TestPage::rightClick (const QPoint &)
@@ -165,6 +162,7 @@ void TestPage::doubleClick (QListWidgetItem *item)
 
   QString s = item->text();     
   Tester *dialog = new Tester(s);
+  connect(dialog, SIGNAL(signalSaved()), this, SLOT(updateList()));
   dialog->show();
 }
 

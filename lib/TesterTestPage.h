@@ -27,9 +27,11 @@
 #include <QSpinBox>
 #include <QCheckBox>
 #include <QComboBox>
-#include <QLineEdit>
 #include <QDoubleSpinBox>
+
 #include "SymbolButton.h"
+#include "TesterRule.h"
+
 
 
 
@@ -39,37 +41,8 @@ class TesterTestPage : public QWidget
   
   public:
     TesterTestPage (QWidget *);
-    ~TesterTestPage ();
-    bool getTradeLong ();
-    void setTradeLong (bool);
-    bool getTradeShort ();
-    void setTradeShort (bool);
-    int getVolumePercent ();
-    void setVolumePercent (int);
-    double getEntryCom ();
-    void setEntryCom (double);
-    double getExitCom ();
-    void setExitCom (double);
-    int getTradeDelay ();
-    void setTradeDelay (int);
-    QString getPriceField ();
-    void setPriceField (QString);
-    int getBars ();
-    void setBars (int);
-    void getSymbols (QStringList &);
-    void setSymbols (QStringList &);
-    int getAccount ();
-    void setAccount (int);
-    QString getBarLength ();
-    int getBarLengthIndex ();
-    void setBarLength (QString);
-    int getMargin ();
-    void setMargin (int);
-    bool getCommissionType ();
-    void setCommissionType (bool);
-
-  public slots:
-    void symbolButtonPressed ();
+    void setParms (TesterRule &);
+    void getParms (TesterRule &);
 
   protected:
     QCheckBox *tradeLong;
@@ -78,10 +51,8 @@ class TesterTestPage : public QWidget
     SymbolButton *symbolButton;
     QDoubleSpinBox *entryCom;
     QDoubleSpinBox *exitCom;
-    QSpinBox *account;
-    QSpinBox *volumePercent;
-    QSpinBox *margin;
-    QSpinBox *tradeDelay;
+    QDoubleSpinBox *account;
+    QDoubleSpinBox *volumePercent;
     QSpinBox *bars;
     QComboBox *priceField;
     QComboBox *barLength;

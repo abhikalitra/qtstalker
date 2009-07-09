@@ -31,6 +31,7 @@
 #include "Indicator.h"
 #include "COSettings.h"
 #include "ScannerRule.h"
+#include "TesterRule.h"
 
 
 
@@ -69,6 +70,8 @@ class DataBase
     // tester functions
     void getTestList (QStringList &);
     void deleteTest (QString &);
+    void getTest (TesterRule &);
+    void setTest (TesterRule &);
 
     // chart object functions
     void deleteChartObjects (QString &symbol);

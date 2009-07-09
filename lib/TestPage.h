@@ -48,8 +48,7 @@ class TestPage : public QWidget
     void openTest ();
     void newTest ();
     void deleteTest ();
-    void testSelected ();
-    void testNoSelection ();
+    void selectionChanged ();
     void rightClick (const QPoint &);
     void updateList ();
     void slotMessage (QString);

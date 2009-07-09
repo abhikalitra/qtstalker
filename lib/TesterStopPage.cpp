@@ -149,26 +149,26 @@ void TesterStopPage::getStops (TesterRule &rule)
   Indicator i;
   customLongStopEdit->getIndicator(i);
   rule.setCustomLongStop(i);
-  rule.setCustomLongCheck(customLongBox->isChecked());
+  rule.setInt(TesterRule::CustomLongCheck, customLongBox->isChecked());
 
   customShortStopEdit->getIndicator(i);
   rule.setCustomShortStop(i);
-  rule.setCustomShortCheck(customShortBox->isChecked());
+  rule.setInt(TesterRule::CustomShortCheck, customShortBox->isChecked());
 
-  rule.setMaxLossCheck(maxLossBox->isChecked());
-  rule.setMaxLossLong(maximumLossLong->isChecked());
-  rule.setMaxLossShort(maximumLossShort->isChecked());
-  rule.setMaxLoss(maxLoss->value());
+  rule.setInt(TesterRule::MaxLossCheck, maxLossBox->isChecked());
+  rule.setInt(TesterRule::MaxLossLong, maximumLossLong->isChecked());
+  rule.setInt(TesterRule::MaxLossShort, maximumLossShort->isChecked());
+  rule.setDouble(TesterRule::MaxLoss, maxLoss->value());
 
-  rule.setProfitCheck(profitBox->isChecked());
-  rule.setProfitLong(profitLong->isChecked());
-  rule.setProfitShort(profitShort->isChecked());
-  rule.setProfit(profit->value());
+  rule.setInt(TesterRule::ProfitCheck, profitBox->isChecked());
+  rule.setInt(TesterRule::ProfitLong, profitLong->isChecked());
+  rule.setInt(TesterRule::ProfitShort, profitShort->isChecked());
+  rule.setDouble(TesterRule::Profit, profit->value());
 
-  rule.setTrailingCheck(trailingBox->isChecked());
-  rule.setTrailingLong(trailingLong->isChecked());
-  rule.setTrailingShort(trailingShort->isChecked());
-  rule.setTrailing(trailing->value());
+  rule.setInt(TesterRule::TrailingCheck, trailingBox->isChecked());
+  rule.setInt(TesterRule::TrailingLong, trailingLong->isChecked());
+  rule.setInt(TesterRule::TrailingShort, trailingShort->isChecked());
+  rule.setDouble(TesterRule::Trailing, trailing->value());
 }
 
 void TesterStopPage::setStops (TesterRule &rule)
@@ -176,25 +176,25 @@ void TesterStopPage::setStops (TesterRule &rule)
   Indicator i;
   rule.getCustomLongStop(i);
   customLongStopEdit->setIndicator(i);
-  customLongBox->setChecked(rule.getCustomLongCheck());
+  customLongBox->setChecked(rule.getInt(TesterRule::CustomLongCheck));
   
   rule.getCustomShortStop(i);
   customShortStopEdit->setIndicator(i);
-  customShortBox->setChecked(rule.getCustomShortCheck());
+  customShortBox->setChecked(rule.getInt(TesterRule::CustomShortCheck));
 
-  maxLossBox->setChecked(rule.getMaxLossCheck());
-  maximumLossLong->setChecked(rule.getMaxLossLong());
-  maximumLossShort->setChecked(rule.getMaxLossShort());
-  maxLoss->setValue(rule.getMaxLoss());
+  maxLossBox->setChecked(rule.getInt(TesterRule::MaxLossCheck));
+  maximumLossLong->setChecked(rule.getInt(TesterRule::MaxLossLong));
+  maximumLossShort->setChecked(rule.getInt(TesterRule::MaxLossShort));
+  maxLoss->setValue(rule.getDouble(TesterRule::MaxLoss));
 
-  profitBox->setChecked(rule.getProfitCheck());
-  profitLong->setChecked(rule.getProfitLong());
-  profitShort->setChecked(rule.getProfitShort());
-  profit->setValue(rule.getProfit());
+  profitBox->setChecked(rule.getInt(TesterRule::ProfitCheck));
+  profitLong->setChecked(rule.getInt(TesterRule::ProfitLong));
+  profitShort->setChecked(rule.getInt(TesterRule::ProfitShort));
+  profit->setValue(rule.getDouble(TesterRule::Profit));
 
-  trailingBox->setChecked(rule.getTrailingCheck());
-  trailingLong->setChecked(rule.getTrailingLong());
-  trailingShort->setChecked(rule.getTrailingShort());
-  trailing->setValue(rule.getTrailing());
+  trailingBox->setChecked(rule.getInt(TesterRule::TrailingCheck));
+  trailingLong->setChecked(rule.getInt(TesterRule::TrailingLong));
+  trailingShort->setChecked(rule.getInt(TesterRule::TrailingShort));
+  trailing->setValue(rule.getDouble(TesterRule::Trailing));
 }
 

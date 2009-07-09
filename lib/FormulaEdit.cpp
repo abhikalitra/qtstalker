@@ -264,6 +264,7 @@ void FormulaEdit::addFunction ()
     dialog->addIntItem(s, 1, 1, theInfo->nbOutput);
   }
 
+  // show dialog
   int rc = dialog->exec();
   
   if (rc != QDialog::Accepted)
@@ -451,6 +452,7 @@ void FormulaEdit::editFunction ()
     dialog->addIntItem(s, s2.toInt(), 1, theInfo->nbOutput);
   }
 
+  // show the dialog
   int rc = dialog->exec();
   
   if (rc != QDialog::Accepted)
@@ -558,6 +560,8 @@ void FormulaEdit::getVariableList (QStringList &l, bool flag)
   for (loop = 0; loop < formula->count(); loop++)
   {
     QListWidgetItem *item = formula->item(loop);
+    if (! item->text().length())
+      continue;
     l.append(item->text());
   }
 }

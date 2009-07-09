@@ -21,31 +21,34 @@
 
 #include <QLayout>
 #include <QLabel>
-#include <QValidator>
 #include <QGridLayout>
 #include <QHBoxLayout>
 #include <QFrame>
+
 #include "TesterTestPage.h"
 #include "BarData.h"
 
 
+
+
 TesterTestPage::TesterTestPage (QWidget *p) : QWidget (p)
 {
-  fieldList.append(tr("Open"));
-  fieldList.append(tr("Close"));
-  fieldList.append(tr("Mid Point"));
-
   QHBoxLayout *hbox = new QHBoxLayout;
   hbox->setMargin(5);
   hbox->setSpacing(10);
   setLayout(hbox);
+
+  QVBoxLayout *vbox = new QVBoxLayout;
+  vbox->setMargin(0);
+  vbox->setSpacing(10);
+  hbox->addLayout(vbox);
 
   // left side grid
 
   QGridLayout *grid = new QGridLayout;
   grid->setColumnStretch(1, 1);
   grid->setSpacing(5);
-  hbox->addLayout(grid);
+  vbox->addLayout(grid);
 
   // trades area  
 
@@ -55,66 +58,71 @@ TesterTestPage::TesterTestPage (QWidget *p) : QWidget (p)
   tradeShort = new QCheckBox(tr("Short"));
   grid->addWidget(tradeShort, 1, 0);
 
-  QLabel *label = new QLabel(tr("Trade Delay"));
-  grid->addWidget(label, 2, 0);
-    
-  tradeDelay = new QSpinBox;
-  tradeDelay->setRange(1, 999999);
-  tradeDelay->setValue(1);
-  grid->addWidget(tradeDelay, 2, 1);
+  QFrame *line = new QFrame;
+  line->setFrameStyle(QFrame::HLine | QFrame::Sunken);
+  vbox->addWidget(line);
 
   // account area
 
-  label = new QLabel(tr("Account Balance"));
-  grid->addWidget(label, 4, 0);
+  grid = new QGridLayout;
+  grid->setColumnStretch(1, 1);
+  grid->setSpacing(5);
+  vbox->addLayout(grid);
 
-  account = new QSpinBox;
-  account->setRange(0, 999999);
-  account->setValue(10000);
-  grid->addWidget(account, 4, 1);
-  
-  label = new QLabel(tr("Futures Margin"));
-  grid->addWidget(label, 5, 0);
+  QLabel *label = new QLabel(tr("Account Balance"));
+  grid->addWidget(label, 0, 0);
 
-  margin = new QSpinBox;
-  margin->setRange(0, 999999);
-  grid->addWidget(margin, 5, 1);
+  account = new QDoubleSpinBox;
+  account->setRange(0.0, 999999999.0);
+  account->setValue(10000.0);
+  account->setDecimals(2);
+  grid->addWidget(account, 0, 1);
   
   label = new QLabel(tr("Volume %"));
-  grid->addWidget(label, 6, 0);
+  grid->addWidget(label, 1, 0);
 
-  volumePercent = new QSpinBox;
+  volumePercent = new QDoubleSpinBox;
   volumePercent->setRange(0, 100);
-  grid->addWidget(volumePercent, 6, 1);
+  volumePercent->setDecimals(2);
+  grid->addWidget(volumePercent, 1, 1);
+
+  line = new QFrame;
+  line->setFrameStyle(QFrame::HLine | QFrame::Sunken);
+  vbox->addWidget(line);
 
   // commission area
 
+  grid = new QGridLayout;
+  grid->setColumnStretch(1, 1);
+  grid->setSpacing(5);
+  vbox->addLayout(grid);
+
   commissionType = new QCheckBox(tr("Use Commission %"));
-  grid->addWidget(commissionType, 8, 0);
+  grid->addWidget(commissionType, 0, 0);
 
   label = new QLabel(tr("Entry"));
-  grid->addWidget(label, 9, 0);
+  grid->addWidget(label, 1, 0);
 
   entryCom = new QDoubleSpinBox;
-  entryCom->setRange(0, 99999999.0);
-  entryCom->setDecimals(4);
-  entryCom->setValue(10);
-  grid->addWidget(entryCom, 9, 1);
+  entryCom->setRange(0.0, 99999999.0);
+  entryCom->setDecimals(2);
+  entryCom->setValue(10.0);
+  grid->addWidget(entryCom, 1, 1);
 
   label = new QLabel(tr("Exit"));
-  grid->addWidget(label, 10, 0);
+  grid->addWidget(label, 2, 0);
 
   exitCom = new QDoubleSpinBox;
-  exitCom->setRange(0, 99999999.0);
-  exitCom->setDecimals(4);
-  exitCom->setValue(10);
-  grid->addWidget(exitCom, 10, 1);
+  exitCom->setRange(0.0, 99999999.0);
+  exitCom->setDecimals(2);
+  exitCom->setValue(10.0);
+  grid->addWidget(exitCom, 2, 1);
 
-  grid->setRowStretch(grid->rowCount(), 1);
+  vbox->addStretch(1);
 
   // vline sperarator
   
-  QFrame *line = new QFrame;
+  line = new QFrame;
   line->setFrameStyle(QFrame::VLine | QFrame::Sunken);
   hbox->addWidget(line);
 
@@ -133,7 +141,6 @@ TesterTestPage::TesterTestPage (QWidget *p) : QWidget (p)
   QString s, s2;
   QStringList l;
   symbolButton = new SymbolButton(this, l);
-  connect(symbolButton, SIGNAL(symbolChanged()), this, SLOT(symbolButtonPressed()));
   grid->addWidget(symbolButton, 0, 1);
   
   label = new QLabel(tr("Bar Length"));
@@ -143,7 +150,6 @@ TesterTestPage::TesterTestPage (QWidget *p) : QWidget (p)
   barLength = new QComboBox;
   bd.getBarLengthList(barLengthList);
   barLength->addItems(barLengthList);
-  barLength->setCurrentIndex(6);
   grid->addWidget(barLength, 1, 1);
 
   label = new QLabel(tr("Bars"));
@@ -158,153 +164,57 @@ TesterTestPage::TesterTestPage (QWidget *p) : QWidget (p)
   grid->addWidget(label, 3, 0);
   
   priceField = new QComboBox;
+  fieldList.append(tr("Open"));
+  fieldList.append(tr("Close"));
+  fieldList.append(tr("Mid Point"));
   priceField->addItems(fieldList);
   grid->addWidget(priceField, 3, 1);
 
   grid->setRowStretch(grid->rowCount(), 1);
 }
 
-TesterTestPage::~TesterTestPage ()
+void TesterTestPage::setParms (TesterRule &rule)
 {
-}
+  QString s;
+  rule.getData(TesterRule::PriceField, s);
+  priceField->setCurrentIndex(priceField->findText(s));
 
-void TesterTestPage::symbolButtonPressed ()
-{
-}
+  rule.getData(TesterRule::BarLength, s);
+  barLength->setCurrentIndex(barLength->findText(s));
 
-bool TesterTestPage::getTradeLong ()
-{
-  return tradeLong->isChecked();
-}
-
-void TesterTestPage::setTradeLong (bool d)
-{
-  tradeLong->setChecked(d);
-}
-
-bool TesterTestPage::getTradeShort ()
-{
-  return tradeShort->isChecked();
-}
-
-void TesterTestPage::setTradeShort (bool d)
-{
-  tradeShort->setChecked(d);
-}
-
-int TesterTestPage::getVolumePercent ()
-{
-  return volumePercent->value();
-}
-
-void TesterTestPage::setVolumePercent (int d)
-{
-  volumePercent->setValue(d);
-}
-
-double TesterTestPage::getEntryCom ()
-{
-  return entryCom->text().toDouble();
-}
-
-void TesterTestPage::setEntryCom (double d)
-{
-  entryCom->setValue(d);
-}
-
-double TesterTestPage::getExitCom ()
-{
-  return exitCom->text().toDouble();
-}
-
-void TesterTestPage::setExitCom (double d)
-{
-  exitCom->setValue(d);
-}
-
-int TesterTestPage::getTradeDelay ()
-{
-  return tradeDelay->value();
-}
-
-void TesterTestPage::setTradeDelay (int d)
-{
-  tradeDelay->setValue(d);
-}
-
-QString TesterTestPage::getPriceField ()
-{
-  return priceField->currentText();
-}
-
-void TesterTestPage::setPriceField (QString d)
-{
-  priceField->setCurrentIndex(priceField->findText(d));
-}
-
-int TesterTestPage::getBars ()
-{
-  return bars->value();
-}
-
-void TesterTestPage::setBars (int d)
-{
-  bars->setValue(d);
-}
-
-void TesterTestPage::setSymbols (QStringList &l)
-{
+  QStringList l;
+  rule.getSymbols(l);
   symbolButton->setSymbols(l);
+
+  tradeLong->setChecked(rule.getInt(TesterRule::TradeLong));
+  tradeShort->setChecked(rule.getInt(TesterRule::TradeShort));
+  volumePercent->setValue(rule.getDouble(TesterRule::VolumePercent));
+  entryCom->setValue(rule.getDouble(TesterRule::EntryCom));
+  exitCom->setValue(rule.getDouble(TesterRule::EntryCom));
+  bars->setValue(rule.getInt(TesterRule::Bars));
+  account->setValue(rule.getDouble(TesterRule::Account));
+  commissionType->setChecked(rule.getInt(TesterRule::CommissionType));
 }
 
-void TesterTestPage::getSymbols (QStringList &l)
+void TesterTestPage::getParms (TesterRule &rule)
 {
+  QString s = priceField->currentText();
+  rule.setData(TesterRule::PriceField, s);
+
+  s = barLength->currentText();
+  rule.setData(TesterRule::BarLength, s);
+
+  QStringList l;
   symbolButton->getSymbols(l);
-}
+  rule.setSymbols(l);
 
-int TesterTestPage::getAccount ()
-{
-  return account->value();
+  rule.setInt(TesterRule::TradeLong, tradeLong->isChecked());
+  rule.setInt(TesterRule::TradeShort, tradeShort->isChecked());
+  rule.setDouble(TesterRule::VolumePercent, volumePercent->value());
+  rule.setDouble(TesterRule::EntryCom, entryCom->value());
+  rule.setDouble(TesterRule::EntryCom, exitCom->value());
+  rule.setInt(TesterRule::Bars, bars->value());
+  rule.setDouble(TesterRule::Account, account->value());
+  rule.setInt(TesterRule::CommissionType, commissionType->isChecked());
 }
-
-void TesterTestPage::setAccount (int d)
-{
-  account->setValue(d);
-}
-
-QString TesterTestPage::getBarLength ()
-{
-  return barLength->currentText();
-}
-
-void TesterTestPage::setBarLength (QString d)
-{
-  barLength->setCurrentIndex(barLength->findText(d));
-}
-
-int TesterTestPage::getBarLengthIndex ()
-{
-  return barLengthList.indexOf(barLength->currentText());
-}
-
-int TesterTestPage::getMargin ()
-{
-  return margin->value();
-}
-
-void TesterTestPage::setMargin (int d)
-{
-  margin->setValue(d);
-}
-
-bool TesterTestPage::getCommissionType ()
-{
-  return commissionType->isChecked();
-}
-
-void TesterTestPage::setCommissionType (bool d)
-{
-  commissionType->setChecked(d);
-}
-
 

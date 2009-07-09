@@ -27,16 +27,97 @@
 
 TesterRule::TesterRule ()
 {
+  setDouble(Account, 10000);
+  setDouble(EntryCom, 10);
+  setDouble(ExitCom, 10);
+  setInt(Bars, 275);
+  QString s = QObject::tr("Daily");
+  setData(BarLength, s);
+  s = QObject::tr("Mid Point");
+  setData(PriceField, s);
 }
 
 void TesterRule::setName (QString &d)
 {
   name = d;
+  QString type = "Tester";
+
+  QString s = "Tester_" + d + "_EnterLong";
+  enterLong.setName(s);
+  enterLong.setType(type);
+
+  s = "Tester_" + d + "_ExitLong";
+  exitLong.setName(s);
+  exitLong.setType(type);
+
+  s = "Tester_" + d + "_EnterShort";
+  enterShort.setName(s);
+  enterShort.setType(type);
+
+  s = "Tester_" + d + "_ExitShort";
+  exitShort.setName(s);
+  exitShort.setType(type);
+
+  s = "Tester_" + d + "_CustomLongStop";
+  customLongStop.setName(s);
+  customLongStop.setType(type);
+
+  s = "Tester_" + d + "_CustomShortStop";
+  customShortStop.setName(s);
+  customShortStop.setType(type);
 }
 
 void TesterRule::getName (QString &d)
 {
   d = name;
+}
+
+void TesterRule::setParms (QString &d)
+{
+  QStringList l;
+  l = d.split("|");
+
+  int loop;
+  for (loop = 0; loop < l.count(); loop++)
+  {
+    QStringList l2;
+    l2 = l[loop].split("=");
+    if (l2.count() != 2)
+      continue;
+    setData((TesterParm) l2[0].toInt(), l2[1]);
+  }
+}
+
+void TesterRule::getParms (QString &d)
+{
+  QStringList l;
+  QHashIterator<TesterParm, QString> it(data);
+  while (it.hasNext())
+  {
+    it.next();
+    l.append(QString::number(it.key()) + "=" + it.value());
+  }
+  d = l.join("|");
+}
+
+void TesterRule::setTrades (QString &d)
+{
+  trades = d;
+}
+
+void TesterRule::getTrades (QString &d)
+{
+  d = trades;
+}
+
+void TesterRule::setSummary (QString &d)
+{
+  summary = d;
+}
+
+void TesterRule::getSummary (QString &d)
+{
+  d = summary;
 }
 
 void TesterRule::setEnterLong (Indicator &d)
@@ -99,147 +180,53 @@ void TesterRule::getCustomShortStop (Indicator &d)
   d = customShortStop;
 }
 
-
-
-
-bool TesterRule::getMaxLossCheck ()
+void TesterRule::setData (TesterParm p, QString &d)
 {
-  return maxLossCheck;
+  data.insert(p, d);
 }
 
-void TesterRule::setMaxLossCheck (bool d)
+void TesterRule::getData (TesterParm p, QString &d)
 {
-  maxLossCheck = d;
+  d.clear();
+  d = data.value(p);
 }
 
-bool TesterRule::getMaxLossLong ()
+void TesterRule::setSymbols (QStringList &l)
 {
-  return maxLossLong;
+  QString s = l.join(",");
+  setData(Symbols, s);
 }
 
-void TesterRule::setMaxLossLong (bool d)
+void TesterRule::getSymbols (QStringList &l)
 {
-  maxLossLong = d;
+  QString s;
+  getData(Symbols, s);
+  l = s.split(",");
 }
 
-bool TesterRule::getMaxLossShort ()
+double TesterRule::getDouble (TesterParm p)
 {
-  return maxLossShort;
+  QString d;
+  d = data.value(p);
+  return d.toDouble();
 }
 
-void TesterRule::setMaxLossShort (bool d)
+void TesterRule::setDouble (TesterParm p, double d)
 {
-  maxLossShort = d;
+  QString s = QString::number(d);
+  data.insert(p, s);
 }
 
-double TesterRule::getMaxLoss ()
+int TesterRule::getInt (TesterParm p)
 {
-  return maxLoss;
+  QString d;
+  d = data.value(p);
+  return d.toInt();
 }
 
-void TesterRule::setMaxLoss (double d)
+void TesterRule::setInt (TesterParm p, int d)
 {
-  maxLoss = d;
+  QString s = QString::number(d);
+  data.insert(p, s);
 }
-
-bool TesterRule::getProfitCheck ()
-{
-  return profitCheck;
-}
-
-void TesterRule::setProfitCheck (bool d)
-{
-  profitCheck = d;
-}
-
-bool TesterRule::getProfitLong ()
-{
-  return profitLong;
-}
-
-void TesterRule::setProfitLong (bool d)
-{
-  profitLong = d;
-}
-
-bool TesterRule::getProfitShort ()
-{
-  return profitShort;
-}
-
-void TesterRule::setProfitShort (bool d)
-{
-  profitShort = d;
-}
-
-double TesterRule::getProfit ()
-{
-  return profit;
-}
-
-void TesterRule::setProfit (double d)
-{
-  profit = d;
-}
-
-bool TesterRule::getTrailingCheck ()
-{
-  return trailingCheck;
-}
-
-void TesterRule::setTrailingCheck (bool d)
-{
-  trailingCheck = d;
-}
-
-bool TesterRule::getTrailingLong ()
-{
-  return trailingLong;
-}
-
-void TesterRule::setTrailingLong (bool d)
-{
-  trailingLong = d;
-}
-
-bool TesterRule::getTrailingShort ()
-{
-  return trailingShort;
-}
-
-void TesterRule::setTrailingShort (bool d)
-{
-  trailingShort = d;
-}
-
-double TesterRule::getTrailing ()
-{
-  return trailing;
-}
-
-void TesterRule::setTrailing (double d)
-{
-  trailing = d;
-}
-
-void TesterRule::setCustomLongCheck (bool d)
-{
-  customLongCheck = d;
-}
-
-bool TesterRule::getCustomLongCheck ()
-{
-  return customLongCheck;
-}
-
-void TesterRule::setCustomShortCheck (bool d)
-{
-  customShortCheck = d;
-}
-
-bool TesterRule::getCustomShortCheck ()
-{
-  return customShortCheck;
-}
-
 

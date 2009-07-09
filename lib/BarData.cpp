@@ -292,6 +292,13 @@ void BarData::setBarLength (BarData::BarLength d)
   barLength = d;
 }
 
+void BarData::setBarLength (QString &d)
+{
+  QStringList l;
+  getBarLengthList(l);
+  barLength = (BarLength) l.indexOf(d);
+}
+
 BarData::BarLength BarData::getBarLength ()
 {
   return barLength;

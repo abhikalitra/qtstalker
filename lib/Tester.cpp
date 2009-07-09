@@ -39,28 +39,20 @@ Tester::Tester (QString &n) : QDialog (0, 0)
   recordList = 0;
   customShortStopLine = 0;
   customLongStopLine = 0;
-
-//  enterLongSignal.setAutoDelete(TRUE);
-//  exitLongSignal.setAutoDelete(TRUE);
-//  enterShortSignal.setAutoDelete(TRUE);
-//  exitShortSignal.setAutoDelete(TRUE);
-//  trades.setAutoDelete(TRUE);
   
   QString s = "Qtstalker Back Tester";
   s.append(": ");
   s.append(n);
   setWindowTitle(s);
 
-  tabs = new QTabWidget;
-  
-  buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Save | QDialogButtonBox::Cancel | QDialogButtonBox::Help);
-  connect(buttonBox, SIGNAL(clicked(QAbstractButton *)), this, SLOT(buttonPressed(QAbstractButton *)));
-  
   QVBoxLayout *vbox = new QVBoxLayout;
-  vbox->addWidget(tabs);
-  vbox->addWidget(buttonBox);
+  vbox->setMargin(10);
+  vbox->setSpacing(10);
   setLayout(vbox);
 
+  tabs = new QTabWidget;
+  vbox->addWidget(tabs);
+  
   rulePage = new TesterRulePage(this);
   tabs->addTab(rulePage, tr("Rules"));
 
@@ -76,12 +68,19 @@ Tester::Tester (QString &n) : QDialog (0, 0)
   chartPage = new TesterChartPage(this);
   tabs->addTab(chartPage, tr("Chart"));
 
-  loadRule();
-}
+  buttonBox = new QDialogButtonBox;
+  vbox->addWidget(buttonBox);
 
-Tester::Tester () : QDialog (0, 0)
-{
-  recordList = 0;
+  QPushButton *button = buttonBox->addButton(QDialogButtonBox::Ok);
+  connect(button, SIGNAL(clicked()), this, SLOT(test()));
+
+  button = buttonBox->addButton(QDialogButtonBox::Save);
+  connect(button, SIGNAL(clicked()), this, SLOT(saveRule()));
+
+  button = buttonBox->addButton(QDialogButtonBox::Cancel);
+  connect(button, SIGNAL(clicked()), this, SLOT(reject()));
+
+  loadRule();
 }
 
 Tester::~Tester ()
@@ -102,316 +101,44 @@ Tester::~Tester ()
     delete customShortStopLine;
 }
 
-void Tester::buttonPressed (QAbstractButton *button)
-{
-  switch (buttonBox->buttonRole(button))
-  {
-    case QDialogButtonBox::AcceptRole:
-      test();
-      break;
-    case QDialogButtonBox::ApplyRole:
-      saveRule();
-      break;
-    case QDialogButtonBox::RejectRole:
-      reject();
-      break;
-    default:
-      break;
-  }
-}
-
 void Tester::saveRule ()
 {
-/*
-  rulePage->saveEditRule(TesterRulePage::EnterLong, ruleName);
-  rulePage->saveEditRule(TesterRulePage::ExitLong, ruleName);
-  rulePage->saveEditRule(TesterRulePage::EnterShort, ruleName);
-  rulePage->saveEditRule(TesterRulePage::ExitShort, ruleName);
+  rulePage->getRules(rule);
+  stopPage->getStops(rule);
+  testPage->getParms(rule);
+  reportPage->getParms(rule);
 
-  stopPage->saveCustomStopRule(ruleName);
+  DataBase db;
+  db.setTest(rule);
 
-  QString s;
-  s.append("/" + ruleName + "/rule");
-  QFile f(s);
-  if (! f.open(QIODevice::WriteOnly))
-    return;
-  QTextStream stream(&f);
-
-  QStringList l;
-  reportPage->getSummary(l);
-  int loop;
-  for (loop = 0; loop < (int) l.count(); loop++)
-    stream << "Trade=" << l[loop] << "\n";
-  
-  stream << "Maximum Loss Check=" << QString::number(stopPage->getMaximumLossCheck()) << "\n";
-  stream << "Maximum Loss Long=" << QString::number(stopPage->getMaximumLossLong()) << "\n";
-  stream << "Maximum Loss Short=" << QString::number(stopPage->getMaximumLossShort()) << "\n";
-  stream << "Maximum Loss Edit=" << stopPage->getMaximumLossEdit() << "\n";
-  stream << "Profit Check=" << QString::number(stopPage->getProfitCheck()) << "\n";
-  stream << "Profit Long=" << QString::number(stopPage->getProfitLong()) << "\n";
-  stream << "Profit Short=" << QString::number(stopPage->getProfitShort()) << "\n";
-  stream << "Profit Edit=" << stopPage->getProfitEdit() << "\n";
-  stream << "Trailing Check=" << QString::number(stopPage->getTrailingCheck()) << "\n";
-  stream << "Trailing Long=" << QString::number(stopPage->getTrailingLong()) << "\n";
-  stream << "Trailing Short=" << QString::number(stopPage->getTrailingShort()) << "\n";
-  stream << "Trailing Edit=" << stopPage->getTrailingEdit() << "\n";
-  stream << "TradeLong=" << QString::number(testPage->getTradeLong()) << "\n";
-  stream << "TradeShort=" << QString::number(testPage->getTradeShort()) << "\n";
-  stream << "Volume Percent=" << QString::number(testPage->getVolumePercent()) << "\n";
-  stream << "Entry Com=" << QString::number(testPage->getEntryCom()) << "\n";
-  stream << "Exit Com=" << QString::number(testPage->getExitCom()) << "\n";
-  stream << "TradeDelay=" << QString::number(testPage->getTradeDelay()) << "\n";
-  stream << "Price Field=" << testPage->getPriceField() << "\n";
-  stream << "Bars=" << QString::number(testPage->getBars()) << "\n";
-  stream << "Symbol=" << testPage->getSymbolPath() << "\n";
-  stream << "Account=" << QString::number(testPage->getAccount()) << "\n";
-  stream << "Compression=" << testPage->getBarLength() << "\n";
-  stream << "CommissionType=" << QString::number(testPage->getCommissionType()) << "\n";
-  stream << "FuturesMargin=" << QString::number(testPage->getMargin()) << "\n";
-  
-  f.close();
-*/
+  emit signalSaved();
 }
 
 void Tester::loadRule ()
 {
   DataBase db;
-//  getTester(rule);
-
-  reportPage->clear();
+  db.getTest(rule);
 
   rulePage->setRules(rule);
-
   stopPage->setStops(rule);
-
-
-
-
-
-/*
-    
-    if (! l2[0].compare("Maximum Loss Check"))
-    {
-      stopPage->setMaximumLossCheck(l2[1].toInt());
-      continue;
-    }
-
-    if (! l2[0].compare("Maximum Loss Long"))
-    {
-      stopPage->setMaximumLossLong(l2[1].toInt());
-      continue;
-    }
-
-    if (! l2[0].compare("Maximum Loss Short"))
-    {
-      stopPage->setMaximumLossShort(l2[1].toInt());
-      continue;
-    }
-
-    if (! l2[0].compare("Maximum Loss Edit"))
-    {
-      stopPage->setMaximumLossEdit(l2[1]);
-      continue;
-    }
-
-    if (! l2[0].compare("Profit Check"))
-    {
-      stopPage->setProfitCheck(l2[1].toInt());
-      continue;
-    }
-
-    if (! l2[0].compare("Profit Long"))
-    {
-      stopPage->setProfitLong(l2[1].toInt());
-      continue;
-    }
-
-    if (! l2[0].compare("Profit Short"))
-    {
-      stopPage->setProfitShort(l2[1].toInt());
-      continue;
-    }
-
-    if (! l2[0].compare("Profit Edit"))
-    {
-      stopPage->setProfitEdit(l2[1]);
-      continue;
-    }
-
-    if (! l2[0].compare("Trailing Check"))
-    {
-      stopPage->setTrailingCheck(l2[1].toInt());
-      continue;
-    }
-
-    if (! l2[0].compare("Trailing Long"))
-    {
-      stopPage->setTrailingLong(l2[1].toInt());
-      continue;
-    }
-
-    if (! l2[0].compare("Trailing Short"))
-    {
-      stopPage->setTrailingShort(l2[1].toInt());
-      continue;
-    }
-
-    if (! l2[0].compare("Trailing Edit"))
-    {
-      stopPage->setTrailingEdit(l2[1]);
-      continue;
-    }
-    
-    if (! l2[0].compare("TradeLong"))
-    {
-      testPage->setTradeLong(l2[1].toInt());
-      continue;
-    }
-    
-    if (! l2[0].compare("TradeShort"))
-    {
-      testPage->setTradeShort(l2[1].toInt());
-      continue;
-    }
-    
-    if (! l2[0].compare("Volume Percent"))
-    {
-      testPage->setVolumePercent(l2[1].toInt());
-      continue;
-    }
-  
-    if (! l2[0].compare("Entry Com"))
-    {
-      testPage->setEntryCom(l2[1].toInt());
-      continue;
-    }
-  
-    if (! l2[0].compare("Exit Com"))
-    {
-      testPage->setExitCom(l2[1].toInt());
-      continue;
-    }
-    
-    if (! l2[0].compare("TradeDelay"))
-    {
-      testPage->setTradeDelay(l2[1].toInt());
-      continue;
-    }
-  
-    if (! l2[0].compare("Bars"))
-    {
-      testPage->setBars(l2[1].toInt());
-      continue;
-    }
-    
-    if (! l2[0].compare("Price Field"))
-    {
-      testPage->setPriceField(l2[1]);
-      continue;
-    }
-  
-    if (! l2[0].compare("Symbol"))
-    {
-      testPage->setSymbol(l2[1]);
-      continue;
-    }
-    
-    if (! l2[0].compare("Account"))
-    {
-      testPage->setAccount(l2[1].toInt());
-      continue;
-    }
-
-    if (! l2[0].compare("Trade"))
-    {
-      TradeItem *trade = new TradeItem;
-      reportPage->addTrade(l2[1], trade);
-      trades.append(trade);
-      continue;
-    }
-
-    if (! l2[0].compare("Compression"))
-    {
-      testPage->setBarLength(l2[1]);
-      continue;
-    }
-
-    if (! l2[0].compare("CommissionType"))
-    {
-      testPage->setCommissionType(l2[1].toInt());
-      continue;
-    }
-
-    if (! l2[0].compare("FuturesMargin"))
-      testPage->setMargin(l2[1].toInt());
-  }
-  f.close();
-
-  s = testPage->getSymbolPath();
-//  if (db.open(s, index))
-//  {
-//    db.close();
-//    return;
-//  }
-
-  QFileInfo fi(s);
-  QString fn = fi.fileName();
-
-//  index->getIndexItem(fn, item);
-//  item.getType(chartType);
-//  if (! chartType.compare(tr("Futures")))
-//    item.getFuturesType(futuresType);
-
-  int loop;
-  for (loop = 0; loop < (int) trades.count(); loop++)
-  {
-    TradeItem *trade = trades.at(loop);
-    trade->setCommissionType(testPage->getCommissionType());
-    trade->setEntryCom(testPage->getEntryCom());
-    trade->setExitCom(testPage->getExitCom());
-
-    if (! chartType.compare(tr("Futures")))
-    {
-      trade->setStockFlag(FALSE);
-      trade->setFuturesType(futuresType);
-    }
-
-    if (! loop)
-      trade->setBalance(testPage->getAccount());
-    else
-    {
-      TradeItem *ttrade = trades.at(loop - 1);
-      trade->setBalance(ttrade->getBalance());
-    }
-
-    trade->calculateProfit();
-  }
-
+  testPage->setParms(rule);
+  reportPage->clear();
+  reportPage->setParms(rule);
   chartPage->clear();
-
-  reportPage->createSummary(trades, testPage->getAccount());
-*/
-}
-
-void Tester::exitDialog ()
-{
-  saveRule();
-  accept();
 }
 
 int Tester::getVolume (int i, double d)
 {
   double balance = d;
   int volume = 1;
-  if (testPage->getVolumePercent() == 0)
+  double volumePercent = rule.getDouble(TesterRule::VolumePercent);
+
+  if (volumePercent == 0)
     return volume;
 
-  balance = balance * ((double) testPage->getVolumePercent() / 100.0);
+  balance = balance * ((double) volumePercent / 100.0);
 
-  if (testPage->getMargin())
-    volume = (int) (double) (balance / testPage->getMargin());
-  else
-    volume = (int) (double) (balance / getPrice(i));
+  volume = (int) (double) (balance / getPrice(i));
 
   return volume;
 }
@@ -419,12 +146,15 @@ int Tester::getVolume (int i, double d)
 double Tester::getPrice (int i)
 {
   double price = 0;
+
+  QString field;
+  rule.getData(TesterRule::PriceField, field);
   
-  if (! testPage->getPriceField().compare(tr("Open")))
+  if (field == tr("Open"))
     price = recordList->getOpen(i);
   else
   {
-    if (! testPage->getPriceField().compare(tr("Close")))
+    if (field == tr("Close"))
       price = recordList->getClose(i);
     else
       price = recordList->getLow(i) + ((recordList->getHigh(i) - recordList->getLow(i)) / 2);
@@ -435,53 +165,53 @@ double Tester::getPrice (int i)
 
 void Tester::loadSignals ()
 {
+  qDeleteAll(enterLongSignal);
   enterLongSignal.clear();
+
+  qDeleteAll(exitLongSignal);
   exitLongSignal.clear();
+
+  qDeleteAll(enterShortSignal);
   enterShortSignal.clear();
+
+  qDeleteAll(exitShortSignal);
   exitShortSignal.clear();
 
-  // open the CUS plugin
-  QString plugin("CUS");
-  IndicatorPlugin *plug = new IndicatorPlugin;
+  IndicatorPlugin *ip = new IndicatorPlugin;
+  ip->setIndicatorInput(recordList);
 
   int loop;
   for (loop = 0; loop < 4; loop++)
   {
-    QStringList l;
-    QString s;
+    Indicator i;
     switch (loop)
     {
       case 0:
-//        s = rulePage->getEditRule(TesterRulePage::EnterLong);
+        rule.getEnterLong(i);
         break;
       case 1:
-//        s = rulePage->getEditRule(TesterRulePage::ExitLong);
+        rule.getExitLong(i);
         break;
       case 2:
-//        s = rulePage->getEditRule(TesterRulePage::EnterShort);
+        rule.getEnterShort(i);
         break;
       case 3:
-//        s = rulePage->getEditRule(TesterRulePage::ExitShort);
+        rule.getExitShort(i);
         break;
       default:
         break;
     }
-    l = s.split("\n");
-    if (! l.count())
-      continue;
 
-//    plug->setCustomFunction(l);
-  
-    // load the CUS plugin and calculate
-    plug->setIndicatorInput(recordList);
-//    plug->calculate();
-//    PlotLine *line = plug->getLine(0);
-    PlotLine *line = 0;
-//    if (! line)
-//    {
-//      qDebug("Tester::loadSignals: no PlotLine returned");
-//      continue;
-//    }
+    QString s;
+    i.getName(s);
+    ip->setName(s);
+
+    QList<PlotLine *> plotList;
+    ip->calculate(plotList);
+    if (! plotList.count())
+      continue;
+    
+    PlotLine *line = plotList.at(0);
 
     int loop2 = recordList->count() - line->getSize();
     int lineLoop = 0;
@@ -521,38 +251,39 @@ void Tester::loadSignals ()
           trade = 0;
       }
     }
+
+    qDeleteAll(plotList);
   }
 }
 
 void Tester::test ()
 {
-  if (! testPage->getTradeLong() && ! testPage->getTradeShort())
+  if (! rule.getInt(TesterRule::TradeLong) && ! rule.getInt(TesterRule::TradeShort))
     return;
 
-  equity = (double) testPage->getAccount();
+  equity = rule.getDouble(TesterRule::Account);
   if (equity == 0)
     return;
 
   QStringList l;
   QString symbol;
-  testPage->getSymbols(l);
+  rule.getSymbols(l);
   if (l.count())
     symbol = l[0];
 
   if (symbol.isEmpty())
     return;
 
-//  item.getType(chartType);
-//  if (! chartType.compare(tr("Futures")))
-//    item.getFuturesType(futuresType);
-  
-//  db.setBarLength((BarData::BarLength) testPage->getBarLengthIndex());
-//  db.setBarRange(testPage->getBars());
+
   if (recordList)
     delete recordList;
   recordList = new BarData(symbol);
-  QDateTime dt = QDateTime::currentDateTime();
-//  db.getHistory(recordList, dt);
+  recordList->setBarsRequested(rule.getInt(TesterRule::Bars));
+  QString s;
+  rule.getData(TesterRule::BarLength, s);
+  recordList->setBarLength(s);
+  DataBase db;
+  db.getChart(recordList);
 
   chartPage->clear();
 
@@ -565,13 +296,11 @@ void Tester::test ()
     return;
 
   reportPage->clear();
+  
+  qDeleteAll(trades);
   trades.clear();
 
-  QProgressDialog prog(tr("Testing..."),
-                       tr("Cancel"),
-                       1,
-		       testPage->getBars(),
-		       this);
+  QProgressDialog prog(tr("Testing..."), tr("Cancel"), 1, rule.getInt(TesterRule::Bars), this);
   prog.show();
   
 #ifndef MINGW //gje: on windows, disabling/enabling blocks dialog completely
@@ -590,14 +319,14 @@ void Tester::test ()
     recordList->getDate(currentRecord, dt);
     QString key = dt.toString("yyyyMMddhhmmss");
 
-    if (testPage->getTradeLong())
+    if (rule.getInt(TesterRule::TradeLong))
     {
       Setting *set = enterLongSignal[key];
       if (set)
         enterTrade(TradeItem::Long);
     }
 
-    if (testPage->getTradeShort())
+    if (rule.getInt(TesterRule::TradeShort))
     {
       Setting *set = enterShortSignal[key];
       if (set)
@@ -605,9 +334,9 @@ void Tester::test ()
     }
   }
 
-  reportPage->createSummary(trades, testPage->getAccount());
+  reportPage->createSummary(trades, rule.getDouble(TesterRule::Account));
 
-  chartPage->updateChart(recordList, trades, testPage->getAccount());
+//  chartPage->updateChart(recordList, trades, rule.getDouble(TesterRule::Account));
 
 #ifndef MINGW //gje: on windows, disabling/enabling blocks dialog completely
   this->setEnabled(TRUE);
@@ -624,8 +353,8 @@ void Tester::enterTrade (TradeItem::TradePosition flag)
     trade->setEnterSignal(TradeItem::EnterShort);
 
   int buyRecord = 0;
-  if (currentRecord + testPage->getTradeDelay() < recordList->count())
-    buyRecord = currentRecord + testPage->getTradeDelay();
+  if (currentRecord < recordList->count())
+    buyRecord = currentRecord;
   else
     buyRecord = currentRecord;
 
@@ -640,8 +369,8 @@ void Tester::enterTrade (TradeItem::TradePosition flag)
 
   if (! trades.count())
   {
-    trade->setVolume(getVolume(buyRecord, testPage->getAccount()));
-    trade->setBalance(testPage->getAccount());
+    trade->setVolume(getVolume(buyRecord, rule.getDouble(TesterRule::Account)));
+    trade->setBalance(rule.getDouble(TesterRule::Account));
   }
   else
   {
@@ -655,18 +384,11 @@ void Tester::enterTrade (TradeItem::TradePosition flag)
     return;
   }
 
-  trade->setCommissionType(testPage->getCommissionType());
+  trade->setCommissionType(rule.getInt(TesterRule::CommissionType));
 
-  trade->setEntryCom(testPage->getEntryCom());
+  trade->setEntryCom(rule.getDouble(TesterRule::EntryCom));
 
-  trade->setExitCom(testPage->getExitCom());
-
-  if (! chartType.compare(tr("Futures")))
-  {
-    trade->setStockFlag(FALSE);
-    trade->setFuturesType(futuresType);
-    trade->setMargin(testPage->getMargin());
-  }
+  trade->setExitCom(rule.getDouble(TesterRule::ExitCom));
 
   int loop = buyRecord;
   for (; loop < (int) recordList->count(); loop++)
@@ -683,8 +405,8 @@ void Tester::enterTrade (TradeItem::TradePosition flag)
     if (set)
     {
       int sellRecord = 0;
-      if (loop + testPage->getTradeDelay() < recordList->count())
-        sellRecord = loop + testPage->getTradeDelay();
+      if (loop < recordList->count())
+        sellRecord = loop;
       else
         sellRecord = loop;
 
@@ -709,8 +431,8 @@ void Tester::enterTrade (TradeItem::TradePosition flag)
     if (tflag)
     {
       int sellRecord = 0;
-      if (loop + testPage->getTradeDelay() < recordList->count())
-        sellRecord = loop + testPage->getTradeDelay();
+      if (loop < recordList->count())
+        sellRecord = loop;
       else
         sellRecord = loop;
 
@@ -731,8 +453,8 @@ void Tester::enterTrade (TradeItem::TradePosition flag)
     if (tflag)
     {
       int sellRecord = 0;
-      if (loop + testPage->getTradeDelay() < recordList->count())
-        sellRecord = loop + testPage->getTradeDelay();
+      if (loop < recordList->count())
+        sellRecord = loop;
       else
         sellRecord = loop;
 
@@ -753,8 +475,8 @@ void Tester::enterTrade (TradeItem::TradePosition flag)
     if (tflag)
     {
       int sellRecord = 0;
-      if (loop + testPage->getTradeDelay() < recordList->count())
-        sellRecord = loop + testPage->getTradeDelay();
+      if (loop < recordList->count())
+        sellRecord = loop;
       else
         sellRecord = loop;
 
@@ -775,8 +497,8 @@ void Tester::enterTrade (TradeItem::TradePosition flag)
     if (tflag)
     {
       int sellRecord = 0;
-      if (loop + testPage->getTradeDelay() < recordList->count())
-        sellRecord = loop + testPage->getTradeDelay();
+      if (loop < recordList->count())
+        sellRecord = loop;
       else
         sellRecord = loop;
 
@@ -811,7 +533,7 @@ bool Tester::loadCustomShortStop ()
     customShortStopLine = 0;
   }
   
-  if (! rule.getCustomShortCheck())
+  if (! rule.getInt(TesterRule::CustomShortCheck))
     return FALSE;
 
   Indicator i;
@@ -851,7 +573,7 @@ bool Tester::loadCustomLongStop ()
     customLongStopLine = 0;
   }
   
-  if (! rule.getCustomLongCheck())
+  if (! rule.getInt(TesterRule::CustomLongCheck))
     return FALSE;
 
   Indicator i;
@@ -885,18 +607,18 @@ bool Tester::loadCustomLongStop ()
 
 bool Tester::maximumLoss (bool flag, double enterPrice, double exitPrice)
 {
-  if (! rule.getMaxLossCheck())
+  if (! rule.getInt(TesterRule::MaxLossCheck))
     return FALSE;
 
   if (! flag)
   {
-    double t = enterPrice * (1 - (rule.getMaxLoss() / 100));
+    double t = enterPrice * (1 - (rule.getDouble(TesterRule::MaxLoss) / 100));
     if (exitPrice <= t)
       return TRUE;
   }
   else
   {
-    double t = enterPrice * (1 + (rule.getMaxLoss() / 100));
+    double t = enterPrice * (1 + (rule.getDouble(TesterRule::MaxLoss) / 100));
     if (exitPrice >= t)
       return TRUE;
   }
@@ -906,18 +628,18 @@ bool Tester::maximumLoss (bool flag, double enterPrice, double exitPrice)
 
 bool Tester::calculateProfit (bool flag, double enterPrice, double exitPrice)
 {
-  if (! rule.getProfitCheck())
+  if (! rule.getInt(TesterRule::ProfitCheck))
     return FALSE;
 
   if (! flag)
   {
-    double t = enterPrice * (1 + (rule.getProfit() / 100));
+    double t = enterPrice * (1 + (rule.getDouble(TesterRule::Profit) / 100));
     if (exitPrice >= t)
       return TRUE;
   }
   else
   {
-    double t = enterPrice * (1 - (rule.getProfit() / 100));
+    double t = enterPrice * (1 - (rule.getDouble(TesterRule::Profit) / 100));
     if (exitPrice <= t)
       return TRUE;
   }
@@ -927,7 +649,7 @@ bool Tester::calculateProfit (bool flag, double enterPrice, double exitPrice)
 
 bool Tester::calculateTrailing (bool flag, double exitPrice)
 {
-  if (! rule.getTrailingCheck())
+  if (! rule.getInt(TesterRule::TrailingCheck))
     return FALSE;
 
   if (! flag)
@@ -939,7 +661,7 @@ bool Tester::calculateTrailing (bool flag, double exitPrice)
     if (t < 0)
     {
       t = -t;
-      if (t >= rule.getTrailing())
+      if (t >= rule.getDouble(TesterRule::Trailing))
         return TRUE;
     }
   }
@@ -952,7 +674,7 @@ bool Tester::calculateTrailing (bool flag, double exitPrice)
     if (t < 0)
     {
       t = -t;
-      if (t >= rule.getTrailing())
+      if (t >= rule.getDouble(TesterRule::Trailing))
         return TRUE;
     }
   }
@@ -964,7 +686,7 @@ bool Tester::customStop (bool flag, int index)
 {
   if (! flag)
   {
-    if (rule.getCustomLongCheck() && customLongStopLine)
+    if (rule.getInt(TesterRule::CustomLongCheck) && customLongStopLine)
     {
       int i = customLongStopLine->getSize() - index;
       if (i > -1)
@@ -976,7 +698,7 @@ bool Tester::customStop (bool flag, int index)
   }
   else
   {
-    if (rule.getCustomShortCheck() && customShortStopLine)
+    if (rule.getInt(TesterRule::CustomShortCheck) && customShortStopLine)
     {
       int i = customShortStopLine->getSize() - index;
       if (i > -1)

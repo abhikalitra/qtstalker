@@ -53,27 +53,55 @@ TesterReport::TesterReport (QWidget *p) : QWidget (p)
 
     
   // test summary
-  
   results = new QTextEdit;
   results->setReadOnly(TRUE);
   vbox->addWidget(results);
-
 }
 
-void TesterReport::getSummary (QStringList &rl)
+void TesterReport::getParms (TesterRule &rule)
 {
-  rl.clear();
-
   int loop;
+  QStringList l;
   for (loop = 0; loop < (int) tradeList->rowCount(); loop++)
   {
-    QStringList l;
     int loop2;
+    QStringList l2;
     for (loop2 = 0; loop2 < 9; loop2++)
-      l.append(tradeList->item(loop, loop2)->text());
+      l2.append(tradeList->item(loop, loop2)->text());
 
-    rl.append(l.join(","));
+    l.append(l2.join(","));
   }
+
+  QString s = l.join("|");
+  rule.setTrades(s);
+
+  s = results->toPlainText();
+  rule.setSummary(s);
+}
+
+void TesterReport::setParms (TesterRule &rule)
+{
+  clear();
+
+  QString s;
+  rule.getTrades(s);
+
+  QStringList l = s.split("|");
+  int loop;
+  for (loop = 0; loop < l.count(); loop++)
+  {
+    QStringList l2 = l[loop].split(",");
+    int loop2;
+    for (loop2 = 0; loop2 < l2.count(); loop2++)
+    {
+      QTableWidgetItem *item = new QTableWidgetItem;
+      tradeList->setItem(tradeList->rowCount() - 1, loop2, item);
+      tradeList->resizeColumnToContents(loop2);
+    }
+  }
+
+  rule.getSummary(s);
+  results->append(s);
 }
 
 void TesterReport::addTrade (QString &s, TradeItem *trade)
@@ -182,38 +210,47 @@ void TesterReport::createSummary (QList<TradeItem*> &trades, double account)
       accountDrawdown = trade->getBalance();
 
     tradeList->setRowCount(tradeList->rowCount() + 1);
+
     QString ts;
     trade->getTradePositionString(ts);
     QTableWidgetItem *twi = new QTableWidgetItem(ts);
     tradeList->setItem(tradeList->rowCount() - 1, 0, twi);
+    tradeList->resizeColumnToContents(0);
+
     trade->getEnterDateString(ts);
     twi = new QTableWidgetItem(ts);
     tradeList->setItem(tradeList->rowCount() - 1, 1, twi);
+    tradeList->resizeColumnToContents(1);
 
     twi = new QTableWidgetItem(QString::number(trade->getEnterPrice()));
     tradeList->setItem(tradeList->rowCount() - 1, 2, twi);
+    tradeList->resizeColumnToContents(2);
 
     trade->getExitDateString(ts);
-
     twi = new QTableWidgetItem(ts);
     tradeList->setItem(tradeList->rowCount() - 1, 3, twi);
+    tradeList->resizeColumnToContents(3);
 
     twi = new QTableWidgetItem(QString::number(trade->getExitPrice()));
     tradeList->setItem(tradeList->rowCount() - 1, 4, twi);
+    tradeList->resizeColumnToContents(4);
 
     trade->getExitSignalString(ts);
-
     twi = new QTableWidgetItem(ts);
     tradeList->setItem(tradeList->rowCount() - 1, 5, twi);
+    tradeList->resizeColumnToContents(5);
 
     twi = new QTableWidgetItem(QString::number(trade->getProfit()));
     tradeList->setItem(tradeList->rowCount() - 1, 6, twi);
+    tradeList->resizeColumnToContents(6);
 
     twi = new QTableWidgetItem(QString::number(trade->getBalance()));
     tradeList->setItem(tradeList->rowCount() - 1, 7, twi);
+    tradeList->resizeColumnToContents(7);
 
     twi = new QTableWidgetItem(QString::number(trade->getVolume()));
     tradeList->setItem(tradeList->rowCount() - 1, 8, twi);
+    tradeList->resizeColumnToContents(8);
   }
 
   // main summary
