@@ -125,7 +125,8 @@ void IndicatorPlot::setData (BarData *l)
 
 void IndicatorPlot::calculate ()
 {
-  IndicatorPlugin ip(name, data);
+  IndicatorPlugin ip(data);
+  ip.setIndicator(indicator);
 
   qDeleteAll(plotList);
   plotList.clear();
@@ -267,6 +268,11 @@ void IndicatorPlot::contextMenuEvent (QContextMenuEvent *)
     if (menuFlag)
       showPopupMenu();
   }
+}
+
+void IndicatorPlot::addLine (PlotLine *d)
+{
+  plotList.append(d);
 }
 
 //*********************************************************************
@@ -993,7 +999,10 @@ void IndicatorPlot::getPlotList (QList<PlotLine *> &list)
 
 int IndicatorPlot::indicatorPrefDialog (QWidget *)
 {
-  IndicatorDialog *dialog = new IndicatorDialog(this, name);
+  QString s;
+  indicator.getName(s);
+
+  IndicatorDialog *dialog = new IndicatorDialog(this, s);
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
@@ -1005,9 +1014,9 @@ int IndicatorPlot::indicatorPrefDialog (QWidget *)
   return rc;
 }
 
-void IndicatorPlot::setName (QString &d)
+void IndicatorPlot::setIndicator (Indicator &d)
 {
-  name = d;
+  indicator = d;
 }
 
 void IndicatorPlot::setScaler (Scaler &d)
@@ -1430,6 +1439,8 @@ void IndicatorPlot::slotNewChartObject (int selection)
 
   mouseFlag = ClickWait;
 
+  QString name;
+  indicator.getName(name);
   coSelected->newObject(name, s);
 }
 
@@ -1535,6 +1546,8 @@ void IndicatorPlot::loadChartObjects ()
 
   QList<COSettings> l;
   DataBase db;
+  QString name;
+  indicator.getName(name);
   db.getChartObjects(chartSymbol, name, l);
 
   int loop;

@@ -79,6 +79,18 @@ QtstalkerApp::QtstalkerApp(QString session)
   createToolBars();
   
   statusbar = statusBar();
+
+  // slider
+  slider = new QSlider;
+  slider->setOrientation(Qt::Horizontal);
+  slider->setEnabled(FALSE);
+  slider->setToolTip(tr("Pan Chart"));
+  slider->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding));
+//  action = toolbar2->addWidget(slider);
+//  actionList.insert(Slider, action);
+//  config.getData(Config::ShowSlider, ts);
+//  action->setVisible(ts.toInt());
+  statusbar->addPermanentWidget(slider, 0);
   
   baseWidget = new QWidget;
   setCentralWidget (baseWidget);
@@ -540,17 +552,6 @@ void QtstalkerApp::createToolBars ()
   
   toolbar2->addSeparator();
 
-  // slider
-  slider = new QSlider;
-  slider->setOrientation(Qt::Horizontal);
-  slider->setEnabled(FALSE);
-  slider->setToolTip(tr("Pan Chart"));
-  slider->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding));
-  action = toolbar2->addWidget(slider);
-  actionList.insert(Slider, action);
-  config.getData(Config::ShowSlider, ts);
-  action->setVisible(ts.toInt());
-  
   // construct the extra toolbar
 //  QToolBar *extraToolbar = addToolBar("extraToolBar");
   //attach to qmainwindwo...
@@ -866,8 +867,16 @@ void QtstalkerApp::slotEditIndicator (QString name)
   Plot *p = plotList.value(name);
   if (! p)
     return;
+
   if (! recordList)
     return;
+
+  DataBase db;
+  Indicator i;
+  i.setName(name);
+  db.getIndicator(i);
+  p->getIndicatorPlot()->setIndicator(i);
+
   p->calculate();
   p->draw();
 }
@@ -948,7 +957,7 @@ void QtstalkerApp::addIndicatorButton (QString d)
   plot->setDrawMode(actionList.value(DrawMode)->isChecked());
 
   IndicatorPlot *indy = plot->getIndicatorPlot();
-  indy->setName(d);
+  indy->setIndicator(i);
     
   connect(indy, SIGNAL(statusMessage(QString)), this, SLOT(slotStatusMessage(QString)));
   connect(indy, SIGNAL(infoMessage(Setting *)), this, SLOT(slotUpdateInfo(Setting *)));

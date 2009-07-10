@@ -262,4 +262,3 @@ void COBase::setSymbol (QString &d)
   symbol = d;
 }
 
-

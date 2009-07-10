@@ -91,7 +91,7 @@ void Setup::setupDataBase (QString session)
     qDebug() << "DataBase::createGroupIndexTable: " << q.lastError().text();
 
   // create the indicator index table
-  s = "CREATE TABLE IF NOT EXISTS indicatorIndex (name TEXT PRIMARY KEY, type TEXT, enable INT, tabRow INT, date INT, log INT, parms TEXT)";
+  s = "CREATE TABLE IF NOT EXISTS indicatorIndex (name TEXT PRIMARY KEY, enable INT, tabRow INT, date INT, log INT, parms TEXT)";
   q.exec(s);
   if (q.lastError().isValid())
     qDebug() << "DataBase::createIndicatorIndexTable: " << q.lastError().text();
@@ -103,7 +103,7 @@ void Setup::setupDataBase (QString session)
     qDebug() << "DataBase::createScannersTable: " << q.lastError().text();
 
   // create the testers table
-  s = "CREATE TABLE IF NOT EXISTS testers (name TEXT PRIMARY KEY, parms TEXT, trades TEXT, summary TEXT)";
+  s = "CREATE TABLE IF NOT EXISTS testers (name TEXT PRIMARY KEY, parms TEXT, trades TEXT, summary TEXT, el TEXT, xl TEXT, es TEXT, xs TEXT, ls TEXT, ss TEXT)";
   q.exec(s);
   if (q.lastError().isValid())
     qDebug() << "DataBase::createTestersTable: " << q.lastError().text();

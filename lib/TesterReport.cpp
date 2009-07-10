@@ -254,31 +254,31 @@ void TesterReport::createSummary (QList<TradeItem*> &trades, double account)
   }
 
   // main summary
-  results->append(tr("Balance") + " = " + QString::number(balance));
-  results->append(tr("Net Profit") + " = " + QString::number(balance - account));
-  results->append(tr("Net Percentage") + " = " + QString::number(((balance - account) / account) * 100));
-  results->append(tr("Investment") + " = " + QString::number(account));
-  results->append(tr("Commission") + " = " + QString::number(commission));
-  results->append(tr("Drawdown") + " = " + QString::number(accountDrawdown - account));
-  results->append(tr("Trades") + " = " + QString::number(longTrades + shortTrades));
-  results->append(tr("Long Trades") + " = " + QString::number(longTrades));
-  results->append(tr("Short Trades") + " = " + QString::number(shortTrades));
+  results->append(tr("Balance") + " " + QString::number(balance));
+  results->append(tr("Net Profit") + " " + QString::number(balance - account));
+  results->append(tr("Net Percentage") + " " + QString::number(((balance - account) / account) * 100));
+  results->append(tr("Investment") + " " + QString::number(account));
+  results->append(tr("Commission") + " " + QString::number(commission));
+  results->append(tr("Drawdown") + " " + QString::number(accountDrawdown - account));
+  results->append(tr("Trades") + " " + QString::number(longTrades + shortTrades));
+  results->append(tr("Long Trades") + " " + QString::number(longTrades));
+  results->append(tr("Short Trades") + " " + QString::number(shortTrades));
 
   // win summary
-  results->append(tr("Winning Trades") + " = " + QString::number(winLongTrades + winShortTrades));
-  results->append(tr("Total Winning Trades") + " = " + QString::number(totalWinLongTrades + totalWinShortTrades));
-  results->append(tr("Average Win") + " = " + QString::number((totalWinLongTrades + totalWinShortTrades) / (winLongTrades + winShortTrades)));
-  results->append(tr("Largest Win") + " = " + QString::number(largestWin));
-  results->append(tr("Winning Long Trades") + " = " + QString::number(winLongTrades));
-  results->append(tr("Winning Short Trades") + " = " + QString::number(winShortTrades));
+  results->append(tr("Winning Trades") + " " + QString::number(winLongTrades + winShortTrades));
+  results->append(tr("Total Winning Trades") + " " + QString::number(totalWinLongTrades + totalWinShortTrades));
+  results->append(tr("Average Win") + " " + QString::number((totalWinLongTrades + totalWinShortTrades) / (winLongTrades + winShortTrades)));
+  results->append(tr("Largest Win") + " " + QString::number(largestWin));
+  results->append(tr("Winning Long Trades") + " " + QString::number(winLongTrades));
+  results->append(tr("Winning Short Trades") + " " + QString::number(winShortTrades));
 
   // lose summary
-  results->append(tr("Losing Trades") + " = " + QString::number(loseLongTrades + loseShortTrades));
-  results->append(tr("Total Losing Trades") + " = " + QString::number(totalLoseLongTrades + totalLoseShortTrades));
-  results->append(tr("Average Loss") + " = " + QString::number((totalLoseLongTrades + totalLoseShortTrades) / (loseLongTrades + loseShortTrades)));
-  results->append(tr("Largest Loss") + " = " + QString::number(largestLose));
-  results->append(tr("Losing Long Trades") + " = " + QString::number(loseLongTrades));
-  results->append(tr("Losing Short Trades") + " = " + QString::number(loseShortTrades));
+  results->append(tr("Losing Trades") + " " + QString::number(loseLongTrades + loseShortTrades));
+  results->append(tr("Total Losing Trades") + " " + QString::number(totalLoseLongTrades + totalLoseShortTrades));
+  results->append(tr("Average Loss") + " " + QString::number((totalLoseLongTrades + totalLoseShortTrades) / (loseLongTrades + loseShortTrades)));
+  results->append(tr("Largest Loss") + " " + QString::number(largestLose));
+  results->append(tr("Losing Long Trades") + " " + QString::number(loseLongTrades));
+  results->append(tr("Losing Short Trades") + " " + QString::number(loseShortTrades));
 }
 
 void TesterReport::clear ()

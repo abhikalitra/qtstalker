@@ -32,7 +32,6 @@ Indicator::Indicator ()
   tabRow = 1;
   date = 1;
   log = 0;
-  type = "Plot";
 }
 
 void Indicator::setName (QString &d)
@@ -43,16 +42,6 @@ void Indicator::setName (QString &d)
 void Indicator::getName (QString &d)
 {
   d = name;
-}
-
-void Indicator::setType (QString &d)
-{
-  type = d;
-}
-
-void Indicator::getType (QString &d)
-{
-  d = type;
 }
 
 void Indicator::setEnable (int d)
@@ -95,9 +84,12 @@ int Indicator::getLog ()
   return log;
 }
 
-void Indicator::setParms (QString d)
+void Indicator::setParms (QString &d)
 {
   parms.clear();
+
+  if (d.isEmpty())
+    return;
 
   QStringList l = d.split("\n");
   int loop;

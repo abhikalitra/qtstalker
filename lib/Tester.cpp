@@ -202,9 +202,7 @@ void Tester::loadSignals ()
         break;
     }
 
-    QString s;
-    i.getName(s);
-    ip->setName(s);
+    ip->setIndicator(i);
 
     QList<PlotLine *> plotList;
     ip->calculate(plotList);
@@ -336,7 +334,7 @@ void Tester::test ()
 
   reportPage->createSummary(trades, rule.getDouble(TesterRule::Account));
 
-//  chartPage->updateChart(recordList, trades, rule.getDouble(TesterRule::Account));
+  chartPage->updateChart(recordList, trades, rule.getDouble(TesterRule::Account));
 
 #ifndef MINGW //gje: on windows, disabling/enabling blocks dialog completely
   this->setEnabled(TRUE);
@@ -538,10 +536,8 @@ bool Tester::loadCustomShortStop ()
 
   Indicator i;
   rule.getCustomShortStop(i);
-  QString iname;
-  i.getName(iname);
   IndicatorPlugin ip;
-  ip.setName(iname);
+  ip.setIndicator(i);
 
   DataBase db;
   db.getChart(recordList);
@@ -578,10 +574,8 @@ bool Tester::loadCustomLongStop ()
 
   Indicator i;
   rule.getCustomLongStop(i);
-  QString iname;
-  i.getName(iname);
   IndicatorPlugin ip;
-  ip.setName(iname);
+  ip.setIndicator(i);
 
   DataBase db;
   db.getChart(recordList);

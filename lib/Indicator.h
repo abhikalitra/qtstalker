@@ -36,8 +36,6 @@ class Indicator
     Indicator ();
     void setName (QString &);
     void getName (QString &);
-    void setType (QString &);
-    void getType (QString &);
     void setEnable (int);
     int getEnable ();
     void setTabRow (int);
@@ -46,7 +44,7 @@ class Indicator
     int getDate ();
     void setLog (int);
     int getLog ();
-    void setParms (QString);
+    void setParms (QString &);
     void getParms (QString &);
     int count ();
     void getParm (int, IndicatorParms &);
@@ -57,7 +55,6 @@ class Indicator
   protected:
     QList<IndicatorParms> parms;
     QString name;
-    QString type;
     int enable;
     int tabRow;
     int date;

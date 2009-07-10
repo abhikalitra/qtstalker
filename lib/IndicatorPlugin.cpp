@@ -20,17 +20,14 @@
  */
 
 #include "IndicatorPlugin.h"
-#include "DataBase.h"
 #include "BARS.h"
 #include "UTIL.h"
 #include <QtDebug>
 
 
-IndicatorPlugin::IndicatorPlugin(QString &n, BarData *d)
+IndicatorPlugin::IndicatorPlugin (BarData *d)
 {
-  name = n;
   data = d;
-
   setDefaults();
 }
 
@@ -122,16 +119,11 @@ void IndicatorPlugin::calculate (QList<PlotLine *> &lines)
     oi[loop] = (TA_Real) data->getOI(loop);
   }
 
-  Indicator i;
-  i.setName(name);
-  DataBase db;
-  db.getIndicator(i);
-
   int mainLoop;
-  for (mainLoop = 0; mainLoop < (int) i.count(); mainLoop++)
+  for (mainLoop = 0; mainLoop < (int) indicator.count(); mainLoop++)
   {
     IndicatorParms parms;
-    i.getParm(mainLoop, parms);
+    indicator.getParm(mainLoop, parms);
 
     // open a TALIB handle
     QString s;
@@ -377,18 +369,18 @@ void IndicatorPlugin::calculate (QList<PlotLine *> &lines)
       qDebug("TALIB::calculateCustom:can't delete parm holder");
   }
 
-  createPlot(i, tlines, lines);
+  createPlot(tlines, lines);
 
   qDeleteAll(tlines);
 }
 
-void IndicatorPlugin::createPlot (Indicator &i, QHash<QString, PlotLine *> &tlines, QList<PlotLine *> &lines)
+void IndicatorPlugin::createPlot (QHash<QString, PlotLine *> &tlines, QList<PlotLine *> &lines)
 {
   int loop;
-  for (loop = 0; loop < i.count(); loop++)
+  for (loop = 0; loop < indicator.count(); loop++)
   {
     IndicatorParms parms;
-    i.getParm(loop, parms);
+    indicator.getParm(loop, parms);
     if (! parms.getPlot())
       continue;
 
@@ -421,14 +413,9 @@ void IndicatorPlugin::createPlot (Indicator &i, QHash<QString, PlotLine *> &tlin
   }
 }
 
-void IndicatorPlugin::setName (QString &d)
+void IndicatorPlugin::setIndicator (Indicator &d)
 {
-  name = d;
-}
-
-void IndicatorPlugin::getName (QString &d)
-{
-  d = name;
+  indicator = d;
 }
 
 void IndicatorPlugin::getIndicatorList (QStringList &l)

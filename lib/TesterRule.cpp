@@ -40,31 +40,6 @@ TesterRule::TesterRule ()
 void TesterRule::setName (QString &d)
 {
   name = d;
-  QString type = "Tester";
-
-  QString s = "Tester_" + d + "_EnterLong";
-  enterLong.setName(s);
-  enterLong.setType(type);
-
-  s = "Tester_" + d + "_ExitLong";
-  exitLong.setName(s);
-  exitLong.setType(type);
-
-  s = "Tester_" + d + "_EnterShort";
-  enterShort.setName(s);
-  enterShort.setType(type);
-
-  s = "Tester_" + d + "_ExitShort";
-  exitShort.setName(s);
-  exitShort.setType(type);
-
-  s = "Tester_" + d + "_CustomLongStop";
-  customLongStop.setName(s);
-  customLongStop.setType(type);
-
-  s = "Tester_" + d + "_CustomShortStop";
-  customShortStop.setName(s);
-  customShortStop.setType(type);
 }
 
 void TesterRule::getName (QString &d)

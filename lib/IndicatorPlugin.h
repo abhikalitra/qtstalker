@@ -40,16 +40,15 @@ class IndicatorPlugin : public QObject
     void signalWakeup ();
   
   public:
-    IndicatorPlugin(QString &, BarData *);
-    IndicatorPlugin();
-    ~IndicatorPlugin();
+    IndicatorPlugin (BarData *);
+    IndicatorPlugin ();
+    ~IndicatorPlugin ();
     void setDefaults ();
     void setIndicatorInput (BarData *);
     void getMATypes (QStringList &);
     void calculate (QList<PlotLine *> &);
-    void createPlot (Indicator &, QHash<QString, PlotLine *> &, QList<PlotLine *> &);
-    void setName (QString &);
-    void getName (QString &);
+    void createPlot (QHash<QString, PlotLine *> &, QList<PlotLine *> &);
+    void setIndicator (Indicator &);
     void getIndicatorList (QStringList &);
 //    PlotLine * getMA (PlotLine *d, int, int);
     void printError (QString, TA_RetCode);
@@ -64,7 +63,7 @@ class IndicatorPlugin : public QObject
     BarData *data;
     QStringList lineTypes;
     QStringList maList;
-    QString name;
+    Indicator indicator;
 };
 
 #endif

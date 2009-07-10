@@ -122,10 +122,8 @@ void Scanner::scan ()
 
   Indicator i;
   rule.getIndicator(i);
-  QString indicatorName;
-  i.getName(indicatorName);
   IndicatorPlugin ip;
-  ip.setName(indicatorName);
+  ip.setIndicator(i);
 
   this->setEnabled(FALSE);
 
@@ -212,8 +210,6 @@ void Scanner::saveRule ()
 
   Indicator i;
   formula->getIndicator(i);
-  s = "Scanner";
-  i.setType(s);
   rule.getName(s);
   s.prepend("Scanner_");
   i.setName(s);

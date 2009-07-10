@@ -28,6 +28,7 @@
 
 #include "TesterChartPage.h"
 #include "IndicatorPlugin.h"
+#include "COSettings.h"
 
 
 
@@ -63,17 +64,14 @@ TesterChartPage::TesterChartPage (QWidget *p) : QWidget (p)
   plot->setMenuFlag(FALSE);
   QObject::connect(this, SIGNAL(signalIndex(int)), plot, SLOT(setIndex(int)));
 
-  QList<int> sizeList = split->sizes();
-  sizeList[1] = 100;
-  split->setSizes(sizeList);
-
-  QHBoxLayout *hbox = new QHBoxLayout;
-  vbox->addLayout(hbox);
+//  QList<int> sizeList = split->sizes();
+//  sizeList[1] = 100;
+//  split->setSizes(sizeList);
 
   slider = new QSlider;
   slider->setOrientation(Qt::Horizontal);
   connect (slider, SIGNAL(valueChanged(int)), this, SLOT(slotSliderChanged(int)));
-  hbox->addWidget(slider);
+  vbox->addWidget(slider);
 }
 
 void TesterChartPage::slotSliderChanged (int v)
@@ -85,31 +83,19 @@ void TesterChartPage::slotSliderChanged (int v)
 
 void TesterChartPage::updateChart (BarData *recordList, QList<TradeItem*> &trades, double eq)
 {
+  slider->setMaximum(recordList->count() - 1);
+        
   plot->setData(recordList);
   equityPlot->setData(recordList);
   
   //set up indicator
-  PlotLine *bars = new PlotLine;
-  QColor green("green");
-  QColor red("red");
-  QColor blue("blue");
-  QColor color;
-  bars->setType(PlotLine::Bar);
+  PlotLine *line = recordList->getInput(BarData::Close);
+  QColor color("green");
+  line->setColor(color);
+  plot->getIndicatorPlot()->addLine(line);
 
-  IndicatorPlugin *i = new IndicatorPlugin;
-  QString s = "bars";
-  i->setName(s);
-//  i->addLine(bars);
-  i->getName(s);
-//  plot->addIndicator(i);
-
+  int id = 0;
   int loop;
-  for (loop = 0; loop < (int) recordList->count(); loop++)
-  {
-    bars->append(blue, recordList->getOpen(loop), recordList->getHigh(loop),
-                 recordList->getLow(loop), recordList->getClose(loop), FALSE);
-  }
-
   for (loop = 0; loop < (int) trades.count(); loop++)
   {
     TradeItem *trade = trades.at(loop);
@@ -118,25 +104,35 @@ void TesterChartPage::updateChart (BarData *recordList, QList<TradeItem*> &trade
     trade->getExitDate(xdate);
 
     if (trade->getTradePosition() == TradeItem::Long)
-      color = green;
+    {
+      COSettings co(QString::number(++id), QString("blah"), QString("blah"), QString::number(COBase::COBuyArrow));
+      co.setDate(edate);
+      co.setValue(trade->getEnterPrice());
+      plot->getIndicatorPlot()->addChartObject(co);
+
+      COSettings co2(QString::number(++id), QString("blah"), QString("blah"), QString::number(COBase::COSellArrow));
+      co2.setDate(xdate);
+      co2.setValue(trade->getExitPrice());
+      plot->getIndicatorPlot()->addChartObject(co2);
+    }
     else
-      color = red;
+    {
+      COSettings co(QString::number(++id), QString("blah"), QString("blah"), QString::number(COBase::COSellArrow));
+      co.setDate(edate);
+      co.setValue(trade->getEnterPrice());
+      plot->getIndicatorPlot()->addChartObject(co);
 
-    int i = recordList->getX(edate);
-    int j = recordList->getX(xdate);
-
-    int loop2;
-    for (loop2 = i; loop2 <= j; loop2++)
-      bars->setColorBar(loop2, color);
+      COSettings co2(QString::number(++id), QString("blah"), QString("blah"), QString::number(COBase::COBuyArrow));
+      co2.setDate(xdate);
+      co2.setValue(trade->getExitPrice());
+      plot->getIndicatorPlot()->addChartObject(co2);
+    }
   }
-
-  slider->setMaximum(recordList->count() - 1);
-        
-  plot->draw();
 
   //setup the equity line
   PlotLine *el = new PlotLine;
-  el->setColor(green);
+  el->setColor(color);
+  equityPlot->getIndicatorPlot()->addLine(el);
   
   int tloop = 0;
   double equity = eq;
@@ -172,12 +168,7 @@ void TesterChartPage::updateChart (BarData *recordList, QList<TradeItem*> &trade
     }
   }
 
-  IndicatorPlugin *i2 = new IndicatorPlugin;
-  QString str = "equity";
-  i2->setName(str);
-//  i2->addLine(el);
-  i2->getName(str);
-//  equityPlot->addIndicator(i2);
+  plot->draw();
   equityPlot->draw();
 }
 

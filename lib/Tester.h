@@ -71,7 +71,6 @@ class Tester : public QDialog
     void test ();
     void saveRule ();
     void loadRule ();
-    void buttonPressed (QAbstractButton *);
 
   protected:
     TesterRule rule;
