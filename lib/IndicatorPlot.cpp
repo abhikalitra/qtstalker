@@ -859,8 +859,8 @@ void IndicatorPlot::setScale ()
     }
   }
 
-//  scaleHigh = scaleHigh * 1.02;
-//  scaleLow = scaleLow * 0.999;
+  scaleHigh = scaleHigh * 1.001;
+  scaleLow = scaleLow * 0.999;
 
   double logScaleHigh = 1;
   double logRange = 0;

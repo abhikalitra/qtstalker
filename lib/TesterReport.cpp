@@ -27,6 +27,7 @@
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QVBoxLayout>
+#include <QtDebug>
 
 
 
@@ -87,6 +88,9 @@ void TesterReport::setParms (TesterRule &rule)
   rule.getTrades(s);
 
   QStringList l = s.split("|");
+
+  tradeList->setRowCount(l.count());
+
   int loop;
   for (loop = 0; loop < l.count(); loop++)
   {
@@ -94,8 +98,8 @@ void TesterReport::setParms (TesterRule &rule)
     int loop2;
     for (loop2 = 0; loop2 < l2.count(); loop2++)
     {
-      QTableWidgetItem *item = new QTableWidgetItem;
-      tradeList->setItem(tradeList->rowCount() - 1, loop2, item);
+      QTableWidgetItem *item = new QTableWidgetItem(l2[loop2]);
+      tradeList->setItem(loop, loop2, item);
       tradeList->resizeColumnToContents(loop2);
     }
   }

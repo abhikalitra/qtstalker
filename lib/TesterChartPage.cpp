@@ -107,26 +107,42 @@ void TesterChartPage::updateChart (BarData *recordList, QList<TradeItem*> &trade
     {
       COSettings co(QString::number(++id), QString("blah"), QString("blah"), QString::number(COBase::COBuyArrow));
       co.setDate(edate);
-      co.setValue(trade->getEnterPrice());
+      co.setValue(trade->getEnterPrice() * 0.99); // move arrow slightly lower for line
       plot->getIndicatorPlot()->addChartObject(co);
 
       COSettings co2(QString::number(++id), QString("blah"), QString("blah"), QString::number(COBase::COSellArrow));
       co2.setDate(xdate);
-      co2.setValue(trade->getExitPrice());
+      co2.setValue(trade->getExitPrice() * 1.02); // move arrow slightly higher for line
       plot->getIndicatorPlot()->addChartObject(co2);
     }
     else
     {
       COSettings co(QString::number(++id), QString("blah"), QString("blah"), QString::number(COBase::COSellArrow));
       co.setDate(edate);
-      co.setValue(trade->getEnterPrice());
+      co.setValue(trade->getEnterPrice() * 1.02);
       plot->getIndicatorPlot()->addChartObject(co);
 
       COSettings co2(QString::number(++id), QString("blah"), QString("blah"), QString::number(COBase::COBuyArrow));
       co2.setDate(xdate);
-      co2.setValue(trade->getExitPrice());
+      co2.setValue(trade->getExitPrice() * 0.99);
       plot->getIndicatorPlot()->addChartObject(co2);
     }
+  }
+
+  QHash<QString, int> entryList;
+  QHash<QString, int> exitList;
+  for (loop = 0; loop < trades.count(); loop++)
+  {
+    TradeItem *trade = trades.at(loop);
+    QDateTime dt;
+
+    trade->getEnterDate(dt);
+    QString s = dt.toString("yyyyMMddHHmmsszzz");
+    entryList.insert(s, loop);
+
+    trade->getExitDate(dt);
+    s = dt.toString("yyyyMMddHHmmsszzz");
+    exitList.insert(s, loop);
   }
 
   //setup the equity line
@@ -134,39 +150,33 @@ void TesterChartPage::updateChart (BarData *recordList, QList<TradeItem*> &trade
   el->setColor(color);
   equityPlot->getIndicatorPlot()->addLine(el);
   
-  int tloop = 0;
   double equity = eq;
   for (loop = 0; loop < (int) recordList->count(); loop++)
   {
-    QDateTime rdate, edate, xdate;
-    recordList->getDate(loop, rdate);
-    TradeItem *trade = trades.at(tloop);
-    if (! trade)
-      continue;
-    trade->getEnterDate(edate);
-    trade->getExitDate(xdate);
+    QDateTime dt;
+    recordList->getDate(loop, dt);
+    QString s = dt.toString("yyyyMMddHHmmsszzz");
 
-    // check if we are in a trade
-    if (rdate >= edate && rdate < xdate)
+    if (entryList.contains(s))
     {
-      double t = equity + trade->getCurrentProfit(recordList->getClose(loop));
-      el->append(t);
+      int i = entryList.value(s);
+      TradeItem *trade = trades.at(i);
+      equity = equity - trade->getEntryCom();
     }
-    else
+
+    if (exitList.contains(s))
     {
-      // check if we are ready to close trade out 
-      if (rdate == xdate)
-      {
-        equity = trade->getBalance();
-        tloop++;
-        if (tloop >= (int) trades.count())
-          tloop = trades.count() - 1;
-        el->append(equity);
-      }
-      else
-        el->append(equity);
+      int i = exitList.value(s);
+      TradeItem *trade = trades.at(i);
+      trade->calculateProfit();
+      equity = equity + trade->getProfit() - trade->getExitCom();
     }
+
+    el->append(equity);
   }
+
+
+  emit signalIndex(slider->value());
 
   plot->draw();
   equityPlot->draw();
