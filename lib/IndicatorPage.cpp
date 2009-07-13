@@ -28,6 +28,8 @@
 #include "../pics/edit.xpm"
 #include "../pics/delete.xpm"
 #include "../pics/newchart.xpm"
+#include "../pics/search.xpm"
+
 #include <QCursor>
 #include <QInputDialog>
 #include <QMessageBox>
@@ -36,56 +38,60 @@
 #include <QVBoxLayout>
 #include <QIcon>
 #include <QtDebug>
+#include <QLabel>
+
+
 
 
 IndicatorPage::IndicatorPage (QWidget *w) : QWidget (w)
 {
-  updateEnableFlag = FALSE;
-
   QVBoxLayout *vbox = new QVBoxLayout;
   vbox->setMargin(0);
   vbox->setSpacing(5);
   setLayout(vbox);
-  
+
+  QHBoxLayout *hbox = new QHBoxLayout;
+  hbox->setMargin(0);
+  hbox->setSpacing(2);
+  vbox->addLayout(hbox);
+
+  activeButton = new QToolButton;
+  activeButton->setToolTip(tr("Show active indicators"));
+//  searchButton->setIcon(QIcon(search));
+  connect(activeButton, SIGNAL(clicked()), this, SLOT(showActive()));
+  hbox->addWidget(activeButton);
+
+  allButton = new QToolButton;
+  allButton->setToolTip(tr("Show all indicators"));
+//  searchButton->setIcon(QIcon(search));
+  connect(allButton, SIGNAL(clicked()), this, SLOT(showAll()));
+  hbox->addWidget(allButton);
+
+  searchButton = new QToolButton;
+  searchButton->setToolTip(tr("Search"));
+  searchButton->setIcon(QIcon(search));
+  connect(searchButton, SIGNAL(clicked()), this, SLOT(indicatorSearch()));
+  hbox->addWidget(searchButton);
+
+  hbox->addStretch(1);
+
   list = new QListWidget;
   list->setContextMenuPolicy(Qt::CustomContextMenu);
   list->setSortingEnabled(TRUE);
   connect(list, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(doubleClick(QListWidgetItem *)));
   connect(list, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(rightClick(const QPoint &)));
-  connect(list, SIGNAL(itemSelectionChanged()), this, SLOT(itemSelected()));
   vbox->addWidget(list);
     
   menu = new QMenu(this);
-  QAction *action = menu->addAction(QIcon(newchart), tr("Ne&w Indicator		Ctrl+W"), this, SLOT(newIndicator()), QKeySequence(Qt::CTRL+Qt::Key_W));
-  actionList.append(action);
-  action = menu->addAction(QIcon(edit), tr("&Edit Indicator			Ctrl+E"), this, SLOT(editIndicator()), QKeySequence(Qt::CTRL+Qt::Key_E));
-  actionList.append(action);
-  action = menu->addAction(QIcon(deleteitem), tr("&Delete Indicator		Ctrl+D"), this, SLOT(deleteIndicator()), QKeySequence(Qt::CTRL+Qt::Key_D));
-  actionList.append(action);
-  action = menu->addAction(QIcon(), tr("Dump Indicator Table"), this, SLOT(dumpIndicators()), QKeySequence(Qt::CTRL+Qt::Key_D));
-  actionList.append(action);
-  action->setEnabled(TRUE);
-  actionList.append(action);
+  QAction *action = menu->addAction(QIcon(newchart), tr("&New Indicator"), this, SLOT(newIndicator()), QKeySequence(Qt::CTRL+Qt::Key_N));
+  actions.append(action);
+  action = menu->addAction(QIcon(edit), tr("&Edit Indicator"), this, SLOT(editIndicator()), QKeySequence(Qt::CTRL+Qt::Key_E));
+  actions.append(action);
+  action = menu->addAction(QIcon(deleteitem), tr("&Delete Indicator"), this, SLOT(deleteIndicator()), QKeySequence(Qt::CTRL+Qt::Key_D));
+  actions.append(action);
 
-  updateList();
-
-  itemSelected();
-}
-
-IndicatorPage::~IndicatorPage ()
-{
-}
-
-void IndicatorPage::itemSelected ()
-{
-  bool b = FALSE;
-  if (list->currentItem())
-    b = TRUE;
-
-  int loop;
-  // menu items 1,2 only
-  for (loop = 1; loop < 3; loop++)
-    actionList.at(loop)->setEnabled(b);
+  listFlag = 0;
+  showActive();
 }
 
 void IndicatorPage::newIndicator ()
@@ -133,8 +139,12 @@ void IndicatorPage::newIndicator ()
   delete dialog;
 
   emit signalNewIndicator(selection);
-  
-  updateList();
+
+  if (listFlag == 0)
+    showActive();
+
+  if (listFlag == 1)
+    showAll();
 }
 
 void IndicatorPage::editIndicator ()
@@ -147,9 +157,9 @@ void IndicatorPage::editIndicator ()
   editIndicator(s);
 }
 
-void IndicatorPage::editIndicator (QString d)
+void IndicatorPage::editIndicator (QString &s)
 {
-  IndicatorDialog *dialog = new IndicatorDialog(this, d);
+  IndicatorDialog *dialog = new IndicatorDialog(this, s);
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)
   {
@@ -159,17 +169,11 @@ void IndicatorPage::editIndicator (QString d)
 
   delete dialog;
 
-  emit signalEditIndicator(d);
-
-  updateList();
+  emit signalEditIndicator(s);
 }
 
 void IndicatorPage::deleteIndicator ()
 {
-  QListWidgetItem *item = list->currentItem();
-  if (! item)
-    return;
-
   int rc = QMessageBox::warning(this,
     			        tr("Qtstalker: Warning"),
 			        tr("Are you sure you want to permanently delete this indicator?"),
@@ -179,45 +183,19 @@ void IndicatorPage::deleteIndicator ()
   if (rc == QMessageBox::No)
     return;
 
+  QListWidgetItem *item = list->currentItem();
+  if (! item)
+    return;
+
   QString s = item->text();
 
   DataBase db;
   db.deleteChartObjectsIndicator(s);
   db.deleteIndicator(s);
 
-  itemSelected();
   emit signalDeleteIndicator(s);
-  updateList();
-}
-
-void IndicatorPage::updateList ()
-{
-  list->clear();
-
-  DataBase db;
-  QStringList l;
-  db.getIndicatorList(l);
   
-  int loop;
-  for (loop = 0; loop < l.count(); loop++)
-  {
-    Indicator i;
-    i.setName(l[loop]);
-    db.getIndicator(i);
-
-    if (! i.getEnable())
-    {
-      QListWidgetItem *item = new QListWidgetItem(QIcon(disable), l[loop]);
-      list->addItem(item);
-    }
-    else
-    {
-      QListWidgetItem *item = new QListWidgetItem(QIcon(ok), l[loop]);
-      list->addItem(item);
-    }
-  }
-
-  itemSelected();
+  delete item;
 }
 
 void IndicatorPage::doubleClick (QListWidgetItem *item)
@@ -226,19 +204,7 @@ void IndicatorPage::doubleClick (QListWidgetItem *item)
     return;
 
   QString s = item->text();
-  changeIndicator(s);
-}
 
-void IndicatorPage::changeIndicator (QString &d)
-{
-  if (! d.length())
-    return;
-
-  QListWidgetItem *item = list->currentItem();
-  if (! item)
-    return;
-
-  QString s = item->text();
   DataBase db;
   Indicator i;
   i.setName(s);
@@ -246,22 +212,31 @@ void IndicatorPage::changeIndicator (QString &d)
 
   if (i.getEnable())
   {
-    item->setIcon(QIcon(disable));
     i.setEnable(0);
     db.setIndicator(i);
+    item->setIcon(QIcon(disable));
     emit signalDisableIndicator(s);
   }
   else
   {
-    item->setIcon(QIcon(ok));
     i.setEnable(1);
     db.setIndicator(i);
+    item->setIcon(QIcon(ok));
     emit signalEnableIndicator(s);
   }
 }
 
 void IndicatorPage::rightClick (const QPoint &)
 {
+  bool b = FALSE;
+  if (list->currentItem())
+    b = TRUE;
+
+  int loop;
+  // menu items 1,2 only
+  for (loop = 1; loop < 3; loop++)
+    actions.at(loop)->setEnabled(b);
+
   menu->exec(QCursor::pos());
 }
 
@@ -282,10 +257,10 @@ void IndicatorPage::doKeyPress (QKeyEvent *key)
         newIndicator();
 	break;
       case Qt::Key_D:
-        deleteIndicator();
+//        deleteIndicator();
 	break;
       case Qt::Key_E:
-        editIndicator();
+//        editIndicator();
 	break;
       default:
         break;
@@ -293,9 +268,65 @@ void IndicatorPage::doKeyPress (QKeyEvent *key)
   }
 }
 
-void IndicatorPage::dumpIndicators ()
+void IndicatorPage::indicatorSearch ()
 {
+  bool aok;
+  QString s = QInputDialog::getText(this, tr("Indicator Search"), tr("Search pattern:"), QLineEdit::Normal, QString(), &aok, 0);
+  if (! aok)
+    return;
+
+  listFlag = 2; // set to search mode
+
   DataBase db;
-  db.dumpIndicators();
+  QStringList l, al;
+  db.getSearchIndicatorList(s, l);
+  db.getActiveIndicatorList(al);
+
+  list->clear();
+
+  int loop;
+  for (loop = 0; loop < l.count(); loop++)
+  {
+    if (al.contains(l[loop]))
+      new QListWidgetItem(QIcon(ok), l[loop], list, 0);
+    else
+      new QListWidgetItem(QIcon(disable), l[loop], list, 0);
+  }
+}
+
+void IndicatorPage::showActive ()
+{
+  listFlag = 0;
+
+  DataBase db;
+  QStringList l;
+  db.getActiveIndicatorList(l);
+
+  list->clear();
+
+  int loop;
+  for (loop = 0; loop < l.count(); loop++)
+    new QListWidgetItem(QIcon(ok), l[loop], list, 0);
+}
+
+void IndicatorPage::showAll ()
+{
+  listFlag = 1;
+
+  list->clear();
+
+  DataBase db;
+  QStringList l, al;
+  db.getIndicatorList(l);
+  db.getActiveIndicatorList(al);
+
+  int loop;
+  for (loop = 0; loop < l.count(); loop++)
+  {
+    if (al.contains(l[loop]))
+      new QListWidgetItem(QIcon(ok), l[loop], list, 0);
+    else
+      new QListWidgetItem(QIcon(disable), l[loop], list, 0);
+  }
 }
 

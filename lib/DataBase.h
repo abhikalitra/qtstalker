@@ -42,6 +42,7 @@ class DataBase
 
     // chart functions
     void getAllChartsList (QStringList &);
+    void getSearchList (QString &pat, QStringList &l);
     void getChart (BarData *);
     void getFirstDate (QDateTime &date, QString &symbol);
     void getLastDate (QDateTime &date, QString &symbol);
@@ -59,6 +60,8 @@ class DataBase
     void setIndicator (Indicator &);
     void deleteIndicator (QString &);
     void getIndicatorList (QStringList &);
+    void getActiveIndicatorList (QStringList &);
+    void getSearchIndicatorList (QString &pattern, QStringList &list);
     void dumpIndicators ();
 
     // scanner functions

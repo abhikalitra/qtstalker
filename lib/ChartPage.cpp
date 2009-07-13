@@ -223,31 +223,18 @@ void ChartPage::updateList ()
 void ChartPage::symbolSearch ()
 {
   bool ok;
-  QString s = QInputDialog::getText(this,
-				    tr("Symbol Search"),
-				    tr("Symbol contains:"),
-				    QLineEdit::Normal,
-				    QString(),
-				    &ok,
-				    0);
-  if (! s.length())
+  QString s = QInputDialog::getText(this, tr("Symbol Search"), tr("Symbol pattern:"), QLineEdit::Normal, QString(), &ok, 0);
+  if (! ok)
     return;
 
   activeSearch = 1;
-  searchString = s;
 
   DataBase db;
   QStringList l;
-  db.getAllChartsList(l);
+  db.getSearchList(s, l);
 
   nav->clear();
-
-  int loop;
-  for (loop = 0; loop < l.count(); loop++)
-  {
-    if (l[loop].contains(searchString))
-      nav->addItem(l[loop]);
-  }
+  nav->addItems(l);
 }
 
 void ChartPage::sqlSearch ()

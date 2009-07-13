@@ -52,6 +52,25 @@ void DataBase::getAllChartsList (QStringList &l)
   l.sort();
 }
 
+void DataBase::getSearchList (QString &pat, QStringList &l)
+{
+  l.clear();
+
+  QSqlQuery q(QSqlDatabase::database("quotes"));
+  QString s = "SELECT symbol FROM symbolIndex WHERE symbol LIKE '" + pat + "'";
+  q.exec(s);
+  if (q.lastError().isValid())
+  {
+    qDebug() << "DataBase::getSearchList: " << q.lastError().text();
+    return;
+  }
+
+  while (q.next())
+    l.append(q.value(0).toString());
+
+  l.sort();
+}
+
 void DataBase::getChart (BarData *data)
 {
   QSqlQuery q(QSqlDatabase::database("quotes"));
@@ -451,6 +470,44 @@ void DataBase::getIndicatorList (QStringList &l)
     l.append(q.value(0).toString());
 
   l.sort();
+}
+
+void DataBase::getActiveIndicatorList (QStringList &l)
+{
+  l.clear();
+
+  QSqlQuery q(QSqlDatabase::database("data"));
+  QString s = "SELECT name FROM indicatorIndex WHERE enable=1";
+  q.exec(s);
+  if (q.lastError().isValid())
+  {
+    qDebug() << "DataBase::getActiveIndicatorList: " << q.lastError().text();
+    return;
+  }
+
+  while (q.next())
+    l.append(q.value(0).toString());
+
+  l.sort();
+}
+
+void DataBase::getSearchIndicatorList (QString &pattern, QStringList &list)
+{
+  list.clear();
+
+  QSqlQuery q(QSqlDatabase::database("data"));
+  QString s = "SELECT name FROM indicatorIndex WHERE name LIKE '" + pattern + "'";
+  q.exec(s);
+  if (q.lastError().isValid())
+  {
+    qDebug() << "DataBase::getSearchIndicatorList: " << q.lastError().text();
+    return;
+  }
+
+  while (q.next())
+    list.append(q.value(0).toString());
+
+  list.sort();
 }
 
 void DataBase::dumpIndicators ()

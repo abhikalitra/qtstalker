@@ -29,8 +29,13 @@
 #include <QKeyEvent>
 #include <QList>
 #include <QAction>
+#include <QToolButton>
+
 #include "Setting.h"
 #include "IndicatorPlugin.h"
+
+
+
 
 
 class IndicatorPage : public QWidget
@@ -46,28 +51,29 @@ class IndicatorPage : public QWidget
   
   public:
     IndicatorPage (QWidget *);
-    ~IndicatorPage ();
 
   public slots:
     void doubleClick (QListWidgetItem *);
-    void updateList ();
     void rightClick (const QPoint &);
     void newIndicator ();
-    void editIndicator (QString);
     void editIndicator ();
+    void editIndicator (QString &);
     void deleteIndicator ();
-    void itemSelected ();
-    void changeIndicator (QString &);
     void doKeyPress (QKeyEvent *key);
-    void dumpIndicators ();
+    void indicatorSearch ();
+    void showAll ();
+    void showActive ();
 
   protected:
     virtual void keyPressEvent (QKeyEvent *);
-    
+
+    int listFlag;    
     QListWidget *list;
     QMenu *menu;
-    bool updateEnableFlag;
-    QList<QAction *> actionList;
+    QList<QAction *> actions;
+    QToolButton *searchButton;
+    QToolButton *allButton;
+    QToolButton *activeButton;
 };
 
 #endif
