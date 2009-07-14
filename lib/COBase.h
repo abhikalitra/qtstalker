@@ -80,7 +80,6 @@ class COBase : public QObject
     virtual double getLow ();
     virtual void loadSettings (COSettings &);
     virtual void saveSettings ();
-    virtual void adjustForSplit (QDateTime &, double);
     
     void setData (BarData *);
     QString getHelpFile ();

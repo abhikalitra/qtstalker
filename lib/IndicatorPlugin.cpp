@@ -151,7 +151,7 @@ void IndicatorPlugin::calculate (QList<PlotLine *> &lines)
     TA_RetCode retCode = TA_GetFuncHandle((char *) s.toStdString().c_str(), &handle);
     if (retCode != TA_SUCCESS)
     {
-      qDebug("IndicatorPlugin::calculateCustom:can't open handle");
+      qDebug("IndicatorPlugin::calculate:can't open handle");
       continue;
     }
 
@@ -160,7 +160,7 @@ void IndicatorPlugin::calculate (QList<PlotLine *> &lines)
     retCode = TA_GetFuncInfo(handle, &theInfo);
     if (retCode != TA_SUCCESS)
     {
-      qDebug("IndicatorPlugin::calculateCustom:can't get function info");
+      qDebug("IndicatorPlugin::calculate:can't get function info");
       continue;
     }
 
@@ -169,7 +169,7 @@ void IndicatorPlugin::calculate (QList<PlotLine *> &lines)
     retCode = TA_ParamHolderAlloc(handle, &parmHolder);
     if (retCode != TA_SUCCESS)
     {
-      qDebug("IndicatorPlugin::calculateCustom:can't create parm holder");
+      qDebug("IndicatorPlugin::calculate:can't create parm holder");
       continue;
     }
 
@@ -182,7 +182,7 @@ void IndicatorPlugin::calculate (QList<PlotLine *> &lines)
       retCode = TA_SetInputParamPricePtr(parmHolder, 0, &open[0], &high[0], &low[0], &close[0], &volume[0], &oi[0]);
       if (retCode != TA_SUCCESS)
       {
-        qDebug("IndicatorPlugin::calculateCustom:cannot set input prices");
+        qDebug("IndicatorPlugin::calculate:cannot set input prices");
         continue;
       }
     }
@@ -192,7 +192,7 @@ void IndicatorPlugin::calculate (QList<PlotLine *> &lines)
       PlotLine *line = tlines.value(ts);
       if (! line)
       {
-        qDebug() << "IndicatorPlugin::calculateCustom: " << s << " input1 not found";
+        qDebug() << "IndicatorPlugin::calculate: " << s << " input1 not found";
         continue;
       }
       int loop2;
@@ -201,7 +201,7 @@ void IndicatorPlugin::calculate (QList<PlotLine *> &lines)
       retCode = TA_SetInputParamRealPtr(parmHolder, 0, &in[0]);
       if (retCode != TA_SUCCESS)
       {
-        qDebug() << "IndicatorPlugin::calculateCustom: cannot set input1";
+        qDebug() << "IndicatorPlugin::calculate: cannot set input1";
         continue;
       }
 
@@ -213,7 +213,7 @@ void IndicatorPlugin::calculate (QList<PlotLine *> &lines)
         PlotLine *line = tlines.value(ts);
         if (! line)
         {
-          qDebug() << "IndicatorPlugin::calculateCustom: " << s << " input 2 not found";
+          qDebug() << "IndicatorPlugin::calculate: " << s << " input 2 not found";
           continue;
         }
         for (loop2 = 0; loop2 < line->getSize(); loop2++)
@@ -221,7 +221,7 @@ void IndicatorPlugin::calculate (QList<PlotLine *> &lines)
         retCode = TA_SetInputParamRealPtr(parmHolder, 1, &in2[0]);
         if (retCode != TA_SUCCESS)
         {
-          qDebug("IndicatorPlugin::calculateCustom: cannot set in2 price");
+          qDebug("IndicatorPlugin::calculate: cannot set in2 price");
           continue;
         }
       }
@@ -240,20 +240,20 @@ void IndicatorPlugin::calculate (QList<PlotLine *> &lines)
           parms.getData(s, ts);
           retCode = TA_SetOptInputParamReal(parmHolder, loop, (TA_Real) ts.toDouble());
           if (retCode != TA_SUCCESS) 
-            qDebug() << "IndicatorPlugin::calculateCustom: cannot set " << s;
+            qDebug() << "IndicatorPlugin::calculate: cannot set " << s;
           break;
         case TA_OptInput_IntegerRange:
           parms.getData(s, ts);
           retCode = TA_SetOptInputParamInteger(parmHolder, loop, (TA_Integer) ts.toInt());
           if (retCode != TA_SUCCESS)
-            qDebug() << "IndicatorPlugin::calculateCustom: cannot set " << s;
+            qDebug() << "IndicatorPlugin::calculate: cannot set " << s;
           break;
         case TA_OptInput_IntegerList:
           parms.getData(s, ts);
           tint = maList.indexOf(ts);
           retCode = TA_SetOptInputParamInteger(parmHolder, loop, (TA_Integer) tint);
           if (retCode != TA_SUCCESS)
-            qDebug() << "IndicatorPlugin::calculateCustom: cannot set " << s;
+            qDebug() << "IndicatorPlugin::calculate: cannot set " << s;
           break;
         default:
           break;
@@ -267,7 +267,7 @@ void IndicatorPlugin::calculate (QList<PlotLine *> &lines)
       retCode = TA_GetOutputParameterInfo(handle, loop, &outInfo);
       if (retCode != TA_SUCCESS)
       {
-        qDebug("IndicatorPlugin::calculateCustom: cannot get output info");
+        qDebug("IndicatorPlugin::calculate: cannot get output info");
         break;
       }
 
@@ -279,7 +279,7 @@ void IndicatorPlugin::calculate (QList<PlotLine *> &lines)
             retCode = TA_SetOutputParamIntegerPtr(parmHolder, loop, &out4[0]);
             if (retCode != TA_SUCCESS)
             {
-              qDebug("IndicatorPlugin::calculateCustom: cannot set output4");
+              qDebug("IndicatorPlugin::calculate: cannot set output4");
               break;;
             }
           }
@@ -288,7 +288,7 @@ void IndicatorPlugin::calculate (QList<PlotLine *> &lines)
             retCode = TA_SetOutputParamRealPtr(parmHolder, loop, &out[0]);
             if (retCode != TA_SUCCESS)
             {
-              qDebug("IndicatorPlugin::calculateCustom: cannot set output1");
+              qDebug("IndicatorPlugin::calculate: cannot set output1");
               break;
             }
           }
@@ -297,7 +297,7 @@ void IndicatorPlugin::calculate (QList<PlotLine *> &lines)
           retCode = TA_SetOutputParamRealPtr(parmHolder, loop, &out2[0]);
           if (retCode != TA_SUCCESS)
           {
-            qDebug("IndicatorPlugin::calculateCustom: cannot set output2");
+            qDebug("IndicatorPlugin::calculate: cannot set output2");
             break;
           }
           break;      
@@ -305,7 +305,7 @@ void IndicatorPlugin::calculate (QList<PlotLine *> &lines)
           retCode = TA_SetOutputParamRealPtr(parmHolder, loop, &out3[0]);
           if (retCode != TA_SUCCESS)
           {
-            qDebug("IndicatorPlugin::calculateCustom: cannot set output3");
+            qDebug("IndicatorPlugin::calculate: cannot set output3");
             break;
           }
           break;
@@ -318,7 +318,7 @@ void IndicatorPlugin::calculate (QList<PlotLine *> &lines)
     retCode = TA_CallFunc(parmHolder, start, end, &outstart, &count);
     if (retCode != TA_SUCCESS)
     {
-      printError(QString("IndicatorPlugin::calculateCustom: TA_CallFunc"), retCode);
+      printError(QString("IndicatorPlugin::calculate: TA_CallFunc"), retCode);
       qDebug() << " start=" << start << " end=" << end;
       break;
     }
@@ -328,7 +328,7 @@ void IndicatorPlugin::calculate (QList<PlotLine *> &lines)
     retCode = TA_GetOutputParameterInfo(handle, 0, &outInfo);
     if (retCode != TA_SUCCESS)
     {
-      qDebug("IndicatorPlugin::calculateCustom: cannot get output info");
+      qDebug("IndicatorPlugin::calculate: cannot get output info");
       break;
     }
     
@@ -366,7 +366,7 @@ void IndicatorPlugin::calculate (QList<PlotLine *> &lines)
 
     retCode = TA_ParamHolderFree(parmHolder);
     if (retCode != TA_SUCCESS)
-      qDebug("TALIB::calculateCustom:can't delete parm holder");
+      qDebug("TALIB::calculate:can't delete parm holder");
   }
 
   createPlot(tlines, lines);
@@ -387,10 +387,16 @@ void IndicatorPlugin::createPlot (QHash<QString, PlotLine *> &tlines, QList<Plot
     //var name
     QString s;
     parms.getVariable(s);
+    if (s.isEmpty())
+    {
+      qDebug() << "IndicatorPlugin::createPlot: variable missing";
+      continue;
+    }
+
     PlotLine *pl = tlines.value(s);
     if (! pl)
     {
-      qDebug() << "IndicatorPlugin::createPlot: variable missing";
+      qDebug() << "IndicatorPlugin::createPlot: input not found";
       continue;
     }
 

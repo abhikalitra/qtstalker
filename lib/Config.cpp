@@ -70,7 +70,12 @@ void Config::getData (Parm p, QSplitter *sp)
   
   int loop;
   for (loop = 0; loop < (int) l.count(); loop++)
+  {
+    if (loop >= sizeList.count())
+      break;
+
     sizeList[loop] = l[loop].toInt();
+  }
   
   sp->setSizes(sizeList);
 }

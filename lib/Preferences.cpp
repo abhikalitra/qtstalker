@@ -20,16 +20,24 @@
  */
 
 #include "Preferences.h"
-#include "Config.h"
+
 #include <QLabel>
 #include <QLayout>
 #include <QGridLayout>
 #include <QVBoxLayout>
+#include <QtDebug>
+#include <QSize>
+#include <QColor>
+#include <QFont>
+#include <QMessageBox>
+
+
+
 
 
 Preferences::Preferences (QWidget *w) : QDialog (w, 0)
 {
-  setWindowTitle(tr("Edit Prefs"));
+  setWindowTitle(tr("Edit Preferences"));
 
   QVBoxLayout *vbox = new QVBoxLayout;
   setLayout(vbox);
@@ -39,54 +47,72 @@ Preferences::Preferences (QWidget *w) : QDialog (w, 0)
 
   buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel | QDialogButtonBox::Help);
   connect(buttonBox, SIGNAL(accepted()), this, SLOT(slotSave()));
-  connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
-//  connect(buttonBox, SIGNAL(helpRequested()), this, SLOT(slotHelp()));
+  connect(buttonBox, SIGNAL(rejected()), this, SLOT(cancelPressed()));
   vbox->addWidget(buttonBox);
   
-  loadSettings();
   createGeneralPage();
   createDatabasePage();
   createColorPage();
   createFontPage();
-  createMTPage(); // main tool bar
-  createCTPage(); // chart tool bar
-  createETPage(); // extra tool bar
+  createMTPage();
+  createCTPage();
+  createETPage();
   
+  loadSettings();
+
+  QSize sz;
+  config.getData(Config::PrefDlgWindowSize, sz);
   resize(sz);
+
+  modified = 0;
 }
 
 Preferences::~Preferences ()
 {
-  Config config;
+  QSize sz = size();
   config.setData(Config::PrefDlgWindowSize, sz);
 }
 
 void Preferences::loadSettings ()
 {
   QString s;
-  Config config;
-
-  config.getData(Config::ShowMenuBar, s);
-  menubar = s.toInt();
 
   config.getData(Config::ShowExtraToolbar, s);
-  extraToolbar = s.toInt();
+  if (! s.isEmpty())
+    extraToolbarCheck->setChecked(s.toInt());
 
   config.getData(Config::PSButton1, s);
-  ps1Button = s.toInt();
+  if (! s.isEmpty())
+    bs1Spinner->setValue(s.toInt());
 
   config.getData(Config::PSButton2, s);
-  ps2Button = s.toInt();
+  if (! s.isEmpty())
+    bs2Spinner->setValue(s.toInt());
 
   config.getData(Config::PSButton3, s);
-  ps3Button = s.toInt();
+  if (! s.isEmpty())
+    bs3Spinner->setValue(s.toInt());
 
-  config.getData(Config::BackgroundColor, backgroundColor);
-  config.getData(Config::BorderColor, borderColor);
-  config.getData(Config::GridColor, gridColor);
-  config.getData(Config::PlotFont, plotFont);
-  config.getData(Config::AppFont, appFont);
-  config.getData(Config::PrefDlgWindowSize, sz);
+  config.getData(Config::IndicatorTabRows, s);
+  if (! s.isEmpty())
+    tabRows->setValue(s.toInt());
+
+  QColor color;
+  config.getData(Config::BackgroundColor, color);
+  backgroundColorButton->setColor(color);
+
+  config.getData(Config::BorderColor, color);
+  borderColorButton->setColor(color);
+
+  config.getData(Config::GridColor, color);
+  gridColorButton->setColor(color);
+
+  QFont font;
+  config.getData(Config::PlotFont, font);
+  plotFontButton->setFont(font);
+
+  config.getData(Config::AppFont, font);
+  appFontButton->setFont(font);
 }
 
 void Preferences::createGeneralPage ()
@@ -107,53 +133,50 @@ void Preferences::createGeneralPage ()
   
   vbox->insertStretch(-1, 1);
 
-  // menubar checkbox
-  QLabel *label = new QLabel(tr("Main Menubar"));
+  // extraToolbar checkbox
+  QLabel *label = new QLabel(tr("Extra Toolbar"));
   grid->addWidget(label, 0, 0);
   
-  menubarCheck = new QCheckBox;
-  menubarCheck->setChecked(menubar);
-  connect(menubarCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
-  grid->addWidget(menubarCheck, 0, 1);
-
-  // extraToolbar checkbox
-  label = new QLabel(tr("Extra Toolbar"));
-  grid->addWidget(label, 1, 0);
-  
   extraToolbarCheck = new QCheckBox;
-  extraToolbarCheck->setChecked(extraToolbar);
   connect(extraToolbarCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
-  grid->addWidget(extraToolbarCheck, 1, 1);
+  grid->addWidget(extraToolbarCheck, 0, 1);
 
   // bar spacing 1
   label = new QLabel(tr("Bar Spacing 1"));
-  grid->addWidget(label, 2, 0);
+  grid->addWidget(label, 1, 0);
   
   bs1Spinner = new QSpinBox;
   bs1Spinner->setRange(2, 99);
-  bs1Spinner->setValue(ps1Button);
   connect(bs1Spinner, SIGNAL(valueChanged(int)), this, SLOT(slotModified()));
-  grid->addWidget(bs1Spinner, 2, 1);
+  grid->addWidget(bs1Spinner, 1, 1);
 
   // bar spacing 2
   label = new QLabel(tr("Bar Spacing 2"));
-  grid->addWidget(label, 3, 0);
+  grid->addWidget(label, 2, 0);
   
   bs2Spinner = new QSpinBox;
   bs2Spinner->setRange(2, 99);
-  bs2Spinner->setValue(ps2Button);
   connect(bs2Spinner, SIGNAL(valueChanged(int)), this, SLOT(slotModified()));
-  grid->addWidget(bs2Spinner, 3, 1);
+  grid->addWidget(bs2Spinner, 2, 1);
 
   // bar spacing 3
   label = new QLabel(tr("Bar Spacing 3"));
-  grid->addWidget(label, 4, 0);
+  grid->addWidget(label, 3, 0);
   
   bs3Spinner = new QSpinBox;
   bs3Spinner->setRange(2, 99);
-  bs3Spinner->setValue(ps3Button);
   connect(bs3Spinner, SIGNAL(valueChanged(int)), this, SLOT(slotModified()));
-  grid->addWidget(bs3Spinner, 4, 1);
+  grid->addWidget(bs3Spinner, 3, 1);
+
+  // indicator tab rows
+  label = new QLabel(tr("Indicator Tab Rows"));
+  grid->addWidget(label, 4, 0);
+  
+  tabRows = new QSpinBox;
+  tabRows->setRange(1, 3);
+  tabRows->setValue(2);
+  connect(tabRows, SIGNAL(valueChanged(int)), this, SLOT(slotModified()));
+  grid->addWidget(tabRows, 4, 1);
 
   tabs->addTab(w, tr("General"));
 }
@@ -181,7 +204,6 @@ void Preferences::createDatabasePage ()
   
   QString s;
   QStringList l;
-  Config config;
   config.getData(Config::QuotePath, s);
   if (s.length())
     l.append(s);
@@ -213,27 +235,28 @@ void Preferences::createColorPage ()
   QLabel *label = new QLabel(tr("Chart Background"));
   grid->addWidget(label, 0, 0);
   
-  backgroundColorButton = new ColorButton(w, backgroundColor);
+  QColor color;
+  backgroundColorButton = new ColorButton(w, color);
   grid->addWidget(backgroundColorButton, 0, 1);
-  backgroundColorButton->setColorButton();
+//  backgroundColorButton->setColorButton();
   connect(backgroundColorButton, SIGNAL(valueChanged()), this, SLOT(slotModified()));
 
   // border color
   label = new QLabel(tr("Chart Border"));
   grid->addWidget(label, 1, 0);
   
-  borderColorButton = new ColorButton(w, borderColor);
+  borderColorButton = new ColorButton(w, color);
   grid->addWidget(borderColorButton, 1, 1);
-  borderColorButton->setColorButton();
+//  borderColorButton->setColorButton();
   connect(borderColorButton, SIGNAL(valueChanged()), this, SLOT(slotModified()));
 
   // grid color
   label = new QLabel(tr("Chart Grid"));
   grid->addWidget(label, 2, 0);
   
-  gridColorButton = new ColorButton(w, gridColor);
+  gridColorButton = new ColorButton(w, color);
   grid->addWidget(gridColorButton, 2, 1);
-  gridColorButton->setColorButton();
+//  gridColorButton->setColorButton();
   connect(gridColorButton, SIGNAL(valueChanged()), this, SLOT(slotModified()));
 
   //FIXME: add adjustment possibility for prefered CO-colors.
@@ -263,8 +286,9 @@ void Preferences::createFontPage ()
   // plot font
   QLabel *label = new QLabel(tr("Plot Font"));
   grid->addWidget(label, 0, 0);
-  
-  plotFontButton = new FontButton(w, plotFont);
+
+  QFont font;  
+  plotFontButton = new FontButton(w, font);
   grid->addWidget(plotFontButton, 0, 1);
   connect(plotFontButton, SIGNAL(valueChanged()), this, SLOT(slotModified()));
 
@@ -272,7 +296,7 @@ void Preferences::createFontPage ()
   label = new QLabel(tr("App Font"));
   grid->addWidget(label, 1, 0);
   
-  appFontButton = new FontButton(w, appFont);
+  appFontButton = new FontButton(w, font);
   grid->addWidget(appFontButton, 1, 1);
   connect(appFontButton, SIGNAL(valueChanged()), this, SLOT(slotModified()));
 
@@ -304,7 +328,6 @@ void  Preferences::createMTPage()
   QLabel *label = new QLabel(tr("Quit"));
   grid->addWidget(label, i, j);
 
-  Config config;
   quitBtnCheck = new QCheckBox;
   config.getData(Config::ShowQuitBtn, s);
   quitBtnCheck->setChecked(s.toInt());
@@ -360,16 +383,7 @@ void  Preferences::createMTPage()
   i = 0;
   j = 3;
   
-  label = new QLabel(tr("PaperTrade"));
-  grid->addWidget(label, i, j);
-
-  paperTradeBtnCheck = new QCheckBox;
-  config.getData(Config::ShowPaperTradeBtn, s);  
-  paperTradeBtnCheck->setChecked(s.toInt());
-  connect(paperTradeBtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
-  grid->addWidget(paperTradeBtnCheck, i++, j + 1);
-
-  label = new QLabel(tr("DrawMode"));
+  label = new QLabel(tr("Draw Mode"));
   grid->addWidget(label, i, j);
 
   drawModeBtnCheck= new QCheckBox;
@@ -378,7 +392,7 @@ void  Preferences::createMTPage()
   connect(drawModeBtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
   grid->addWidget(drawModeBtnCheck, i++, j + 1);
 
-  label = new QLabel(tr("NewIndicator"));
+  label = new QLabel(tr("New Indicator"));
   grid->addWidget(label, i, j);
 
   newIndicatorBtnCheck = new QCheckBox;
@@ -387,7 +401,7 @@ void  Preferences::createMTPage()
   connect(newIndicatorBtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
   grid->addWidget(newIndicatorBtnCheck, i++, j + 1);
 
-  label = new QLabel(tr("DataWindow"));
+  label = new QLabel(tr("Data Window"));
   grid->addWidget(label, i, j);
 
   dataWindowBtnCheck = new QCheckBox;
@@ -429,17 +443,16 @@ void  Preferences::createCTPage()
   int j = 0; // "count" cols
   QString s;
 
-  QLabel *label = new QLabel(tr("Compression list"));
+  QLabel *label = new QLabel(tr("Bar Length List"));
   grid->addWidget(label, i, j);
 
-  Config config;
   cmpsComboBoxCheck = new QCheckBox;
   config.getData(Config::ShowCmpsComboBox, s);
   cmpsComboBoxCheck->setChecked(s.toInt());
   connect(cmpsComboBoxCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
   grid->addWidget(cmpsComboBoxCheck, i++, j + 1);  
 
-  label = new QLabel(tr("Compression Monthly"));
+  label = new QLabel(tr("Monthly Bars"));
   grid->addWidget(label, i, j);
 
   cmpsMtyBtnCheck = new QCheckBox;
@@ -448,7 +461,7 @@ void  Preferences::createCTPage()
   connect(cmpsMtyBtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
   grid->addWidget(cmpsMtyBtnCheck, i++, j + 1);
 
-  label = new QLabel(tr("Compression Weekly"));
+  label = new QLabel(tr("Weekly Bars"));
   grid->addWidget(label, i, j);
 
   cmpsWkyBtnCheck = new QCheckBox;
@@ -457,7 +470,7 @@ void  Preferences::createCTPage()
   connect(cmpsWkyBtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
   grid->addWidget(cmpsWkyBtnCheck, i++, j + 1);
 
-  label = new QLabel(tr("Compression Daily"));
+  label = new QLabel(tr("Daily Bars"));
   grid->addWidget(label, i, j);
 
   cmpsDayBtnCheck = new QCheckBox;
@@ -466,7 +479,7 @@ void  Preferences::createCTPage()
   connect(cmpsDayBtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
   grid->addWidget(cmpsDayBtnCheck, i++, j + 1);
 
-  label = new QLabel(tr("Compression 60 Minute"));
+  label = new QLabel(tr("60 Minute Bars"));
   grid->addWidget(label, i, j);
 
   cmps60BtnCheck = new QCheckBox;
@@ -475,7 +488,7 @@ void  Preferences::createCTPage()
   connect(cmps60BtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
   grid->addWidget(cmps60BtnCheck, i++, j + 1);
 
-  label = new QLabel(tr("Compression 15 Minute"));
+  label = new QLabel(tr("15 Minute Bars"));
   grid->addWidget(label, i, j);
 
   cmps15BtnCheck = new QCheckBox;
@@ -484,7 +497,7 @@ void  Preferences::createCTPage()
   connect(cmps15BtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
   grid->addWidget(cmps15BtnCheck, i++, j + 1);
 
-  label = new QLabel(tr("Compression 5 Minute"));
+  label = new QLabel(tr("5 Minute Bars"));
   grid->addWidget(label, i, j);
 
   cmps5BtnCheck = new QCheckBox;
@@ -493,7 +506,7 @@ void  Preferences::createCTPage()
   connect(cmps5BtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
   grid->addWidget(cmps5BtnCheck, i++, j + 1);
 
-  label = new QLabel(tr("BarSpacing spinner"));
+  label = new QLabel(tr("Bar Spacing"));
   grid->addWidget(label, i, j);
 
   barSpSpinboxCheck = new QCheckBox;
@@ -502,7 +515,7 @@ void  Preferences::createCTPage()
   connect(barSpSpinboxCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
   grid->addWidget(barSpSpinboxCheck, i++, j + 1);
 
-  label = new QLabel(tr("BarsToLoad field"));
+  label = new QLabel(tr("Bars To Load"));
   grid->addWidget(label, i, j);
 
   barsToLoadFieldCheck = new QCheckBox;
@@ -511,7 +524,7 @@ void  Preferences::createCTPage()
   connect(barsToLoadFieldCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
   grid->addWidget(barsToLoadFieldCheck, i++, j + 1);
 
-  label = new QLabel(tr("Pan Chart slider"));
+  label = new QLabel(tr("Chart Slider"));
   grid->addWidget(label, i, j);
 
   sliderCheck = new QCheckBox;
@@ -547,7 +560,6 @@ void  Preferences::createETPage()
   QLabel *label = new QLabel(tr("Recent charts"));
   grid->addWidget(label, i, j);
 
-  Config config;
   recentComboBoxCheck = new QCheckBox;
   config.getData(Config::ShowRecentCharts, s);
   recentComboBoxCheck->setChecked(s.toInt());
@@ -559,112 +571,74 @@ void  Preferences::createETPage()
 
 void Preferences::slotSave ()
 {
-  Config config;
-
-  bool tbool = menubarCheck->isChecked();
-  if (tbool != menubar)
+  bool tbool = FALSE;
+  config.getData(Config::ShowExtraToolbar, tbool);
+  if (tbool != extraToolbarCheck->isChecked())
   {
-    config.setData(Config::ShowMenuBar, tbool);
-    emit signalMenubar(tbool);
-    menubar = tbool;
-  }
-
-  tbool = extraToolbarCheck->isChecked();
-  if (tbool != extraToolbar)
-  {
-    config.setData(Config::ShowExtraToolbar,tbool);
+    config.setData(Config::ShowExtraToolbar, extraToolbarCheck->isChecked());
     emit signalExtraToolbar(tbool);
-    extraToolbar = tbool;
-   }
-
-  int tint = bs1Spinner->value();
-  if (tint != ps1Button)
-  {
-    config.setData(Config::PSButton1, tint);
-    ps1Button = tint;
-  }
-  
-  tint = bs2Spinner->value();
-  if (tint != ps2Button)
-  {
-    config.setData(Config::PSButton2, tint);
-    ps2Button = tint;
-  }
-  
-  tint = bs3Spinner->value();
-  if (tint != ps3Button)
-  {
-    config.setData(Config::PSButton3, tint);
-    ps3Button = tint;
   }
 
-  bool flag = FALSE;  
-  QColor c;
+  config.setData(Config::PSButton1, bs1Spinner->value());
+  config.setData(Config::PSButton2, bs2Spinner->value());
+  config.setData(Config::PSButton3, bs3Spinner->value());
+  config.setData(Config::IndicatorTabRows, tabRows->value());
+
+  QColor c, c2;
   backgroundColorButton->getColor(c);
-  if (c != backgroundColor)
+  config.getData(Config::BackgroundColor,c2);
+  if (c != c2)
   {
     config.setData(Config::BackgroundColor,c);
     emit signalBackgroundColor(c);
-    flag = TRUE;
-    backgroundColor = c;
   }
 
   borderColorButton->getColor(c);
-  if (c != borderColor)
+  config.getData(Config::BorderColor,c2);
+  if (c != c2)
   {
     config.setData(Config::BorderColor,c);
     emit signalBorderColor(c);
-    flag = TRUE;
-    borderColor = c;
   }
 
   gridColorButton->getColor(c);
-  if (c != gridColor)
+  config.getData(Config::GridColor,c2);
+  if (c != c2)
   {
     config.setData(Config::GridColor,c);
     emit signalGridColor(c);
-    flag = TRUE;
-    gridColor = c;
   }
 
-  QFont f;
+  QFont f, f2;
   plotFontButton->getFont(f);
-  if (f != plotFont)
+  config.getData(Config::PlotFont, f2);
+  if (f != f2)
   {
-    config.setData(Config::PlotFont,f);
+    config.setData(Config::PlotFont, f);
     emit signalPlotFont(f);
-    flag = TRUE;
-    plotFont = f;
   }
 
   appFontButton->getFont(f);
-  if (f != appFont)
+  config.getData(Config::AppFont, f2);
+  if (f != f2)
   {
-    config.setData(Config::AppFont,f);
+    config.setData(Config::AppFont, f);
     emit signalAppFont(f);
-    flag = TRUE;
-    appFont = f;
   }
   
   // main tool bar settings
   // save all, anyway if changed or not, who cares?
   config.setData(Config::ShowQuitBtn, quitBtnCheck->isChecked());
-  
-  // prevent the user does things he will regret...
-  if(menubarCheck->isChecked())
-      config.setData(Config::ShowPrefBtn, prefBtnCheck->isChecked());
-  else 
-      config.setData(Config::ShowPrefBtn, TRUE);
-      
+  config.setData(Config::ShowPrefBtn, prefBtnCheck->isChecked());
   config.setData(Config::ShowSidePanelBtn, sidePanelBtnCheck->isChecked());
   config.setData(Config::ShowGridBtn, gridBtnCheck->isChecked());
   config.setData(Config::ShowScaleToScreenBtn, scaleToScreenBtnCheck->isChecked());
   config.setData(Config::ShowCrosshairBtn, crosshairBtnCheck->isChecked());
-  config.setData(Config::ShowPaperTradeBtn, paperTradeBtnCheck->isChecked());
   config.setData(Config::ShowDrawModeBtn, drawModeBtnCheck->isChecked());
   config.setData(Config::ShowNewIndicatorBtn, newIndicatorBtnCheck->isChecked());
   config.setData(Config::ShowDataWindowBtn, dataWindowBtnCheck->isChecked());
   config.setData(Config::ShowHelpButton, helpButtonCheck->isChecked());
+
   // chart tool bar settings
   config.setData(Config::ShowSlider, sliderCheck->isChecked());
   config.setData(Config::ShowBarsToLoadField, barsToLoadFieldCheck->isChecked());
@@ -676,7 +650,6 @@ void Preferences::slotSave ()
   config.setData(Config::ShowCmpsWkyBtn, cmpsWkyBtnCheck->isChecked());
   config.setData(Config::ShowCmpsMtyBtn, cmpsMtyBtnCheck->isChecked());
   config.setData(Config::ShowCmpsComboBox, cmpsComboBoxCheck->isChecked());
-
   config.setData(Config::ShowRecentCharts, recentComboBoxCheck->isChecked());
 
   // save database parms
@@ -687,19 +660,33 @@ void Preferences::slotSave ()
   
   emit signalReloadToolBars();
   
-  if (flag)
-    emit signalLoadChart();
+  emit signalLoadChart();
 
-  reject();    
+  accept();    
 }
 
 void Preferences::slotModified()
 {
-  // FIXME: The goal is to change the caption of the
-  // Cancel-button "Cancel/OK" 	depending on a change
-  // of any data by the user
-  //qDebug("changed");
-//  setCancelButton(tr("&Cancel"));
+  modified = TRUE;
 }
+
+void Preferences::cancelPressed()
+{
+  if (modified)
+  {
+    int rc = QMessageBox::warning(this,
+    			        tr("Qtstalker: Warning"),
+			        tr("Items modified. Are you sure you want to discard changes?"),
+			        QMessageBox::Yes,
+			        QMessageBox::No,
+			        QMessageBox::NoButton);
+    if (rc == QMessageBox::No)
+      return;
+  }
+
+  reject();
+}
+
+
 
 

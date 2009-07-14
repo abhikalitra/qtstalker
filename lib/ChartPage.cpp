@@ -26,6 +26,8 @@
 //#include "../pics/edit.xpm"
 //#include "../pics/sql.xpm"
 #include "../pics/search.xpm"
+#include "../pics/asterisk.xpm"
+
 #include <QMessageBox>
 #include <QCursor>
 #include <QToolTip>
@@ -62,14 +64,16 @@ ChartPage::ChartPage (QWidget *w) : QWidget (w)
 
   allButton = new QToolButton;
   allButton->setToolTip(tr("All Symbols"));
-  allButton->setText("*");
+  allButton->setIcon(QIcon(asterisk_xpm));
   connect(allButton, SIGNAL(clicked()), this, SLOT(updateList()));
+  allButton->setMaximumSize(25, 25);
   hbox->addWidget(allButton);
  
   symbolButton = new QToolButton;
   symbolButton->setToolTip(tr("Symbol Search"));
   symbolButton->setIcon(QIcon(search));
   connect(symbolButton, SIGNAL(clicked()), this, SLOT(symbolSearch()));
+  symbolButton->setMaximumSize(25, 25);
   hbox->addWidget(symbolButton);
 
 /* 

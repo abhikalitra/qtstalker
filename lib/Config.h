@@ -64,7 +64,7 @@ class Config
       ScannerWindowSize,
       Version,
       PlotSizes,
-      ShowMenuBar,
+      ShowMenuBar, // unused
       ShowExtraToolbar,
       CurrentChart,
       LastNewIndicator,
@@ -79,7 +79,7 @@ class Config
       ShowGridBtn,
       ShowScaleToScreenBtn,
       ShowCrosshairBtn,
-      ShowPaperTradeBtn,
+      ShowPaperTradeBtn, // unused
       ShowDrawModeBtn,
       ShowNewIndicatorBtn,
       ShowDataWindowBtn,
@@ -124,7 +124,8 @@ class Config
       DefaultTrendLineBar,
       DefaultTrendLineExtend,
       DefaultTrendLineUseBar,
-      DefaultVerticalLineColor
+      DefaultVerticalLineColor,
+      IndicatorTabRows
     };
 
     Config ();

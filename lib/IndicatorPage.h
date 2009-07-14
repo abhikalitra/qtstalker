@@ -63,6 +63,7 @@ class IndicatorPage : public QWidget
     void indicatorSearch ();
     void showAll ();
     void showActive ();
+    void moveIndicator ();
 
   protected:
     virtual void keyPressEvent (QKeyEvent *);

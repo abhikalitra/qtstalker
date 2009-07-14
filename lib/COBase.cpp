@@ -216,10 +216,6 @@ void COBase::moveObject ()
   status = Moving;
 }
 
-void COBase::adjustForSplit (QDateTime &, double)
-{
-}
-
 COBase * COBase::getCO (int s)
 {
   COBase *t = 0;

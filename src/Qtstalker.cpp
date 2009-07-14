@@ -117,8 +117,15 @@ QtstalkerApp::QtstalkerApp(QString session)
   vbox->addWidget(split);
 
   // build the tab rows
+  QString s;
+  Config config;
+  config.getData(Config::IndicatorTabRows, s);
+  int tabRows = 2;
+  if (! s.isEmpty())
+    tabRows = s.toInt();
+
   int loop;
-  for (loop = 0; loop < 3; loop++)
+  for (loop = 0; loop < tabRows; loop++)
   {
     QTabWidget *it = new QTabWidget;
     split->addWidget(it);
@@ -157,8 +164,6 @@ QtstalkerApp::QtstalkerApp(QString session)
   initScannerNav();  
 
   // restore the last used indicators
-  QString s;
-  Config config;
   config.getData(Config::LastIndicatorUsed, s);
   QStringList l = s.split(",");
   if (l.count() == 1)
@@ -183,6 +188,10 @@ QtstalkerApp::QtstalkerApp(QString session)
     Indicator i;
     i.setName(l[loop]);
     db.getIndicator(i);
+
+    if (i.getTabRow() >= tabList.count())
+      continue;
+
     if (i.getEnable())
       addIndicatorButton(l[loop]);
   }
@@ -654,7 +663,6 @@ void QtstalkerApp::slotOpenChart (QString selection)
 void QtstalkerApp::slotOptions ()
 {
   Preferences *dialog = new Preferences(this);
-  connect(dialog, SIGNAL(signalMenubar(bool)), this, SLOT(slotMenubarStatus(bool)));
 //  connect(dialog, SIGNAL(signalExtraToolbar(bool)), this, SLOT(slotExtraToolbarStatus(bool)));
   connect(dialog, SIGNAL(signalBackgroundColor(QColor)), this, SIGNAL(signalBackgroundColor(QColor)));
   connect(dialog, SIGNAL(signalBorderColor(QColor)), this, SIGNAL(signalBorderColor(QColor)));
@@ -899,12 +907,16 @@ void QtstalkerApp::addIndicatorButton (QString d)
   if (! i.getEnable())
     return;
 
+  if (i.getTabRow() > tabList.count())
+    return;
+
+  QTabWidget *it = tabList.at(i.getTabRow() - 1);
+
   Plot *plot = new Plot(baseWidget);
   plotList.insert(d, plot);
   plot->setDateFlag(i.getDate());
   plot->setLogScale(i.getLog());
 
-  QTabWidget *it = tabList.at(i.getTabRow() - 1);
   it->addTab(plot, d);
 
   // Set the current indicator in this row to the last used one.
@@ -1103,14 +1115,6 @@ void QtstalkerApp::slotUpdateInfo (Setting *r)
 void QtstalkerApp::slotPlotLeftMouseButton (int x, int y, bool)
 {
   emit signalCrossHair(x, y, FALSE);
-/*
-  QHashIterator<QString, Plot *> it(plotList);
-  while (it.hasNext())
-  {
-    it.next();
-    it.value()->crossHair(x, y, FALSE);
-  }
-*/
   slotDrawPlots();  
 }
 
@@ -1189,14 +1193,6 @@ void QtstalkerApp::slotIndicatorSummary ()
 //  IndicatorSummary is(l, toolbar2->getBars(), (BarData::BarLength) toolbar2->getBarLengthInt(), chartIndex);
 //  connect(&is, SIGNAL(signalWakeup()), this, SLOT(slotWakeup()));
 //  is.run();
-}
-
-void QtstalkerApp::slotMenubarStatus (bool d)
-{
-  if (d)
-    menuBar()->show();
-  else
-    menuBar()->hide();
 }
 
 /*

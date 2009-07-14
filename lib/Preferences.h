@@ -22,19 +22,20 @@
 #ifndef PREFERENCES_HPP
 #define PREFERENCES_HPP
 
-#include <QColor>
-#include <QFont>
 #include <QStringList>
 #include <QString>
 #include <QTabWidget>
 #include <QCheckBox>
 #include <QSpinBox>
-#include <QSize>
 #include <QDialog>
 #include <QDialogButtonBox>
+
 #include "ColorButton.h"
 #include "FontButton.h"
 #include "FileButton.h"
+#include "Config.h"
+
+
 
 
 class Preferences : public QDialog
@@ -42,7 +43,6 @@ class Preferences : public QDialog
   Q_OBJECT
 
   signals:
-    void signalMenubar (bool);
     void signalExtraToolbar (bool);
     void signalBackgroundColor (QColor);
     void signalBorderColor (QColor);
@@ -66,22 +66,14 @@ class Preferences : public QDialog
 
   public slots:
     void slotSave ();
-    void slotModified();
+    void slotModified ();
+    void cancelPressed ();
 
   private:
+    int modified;
+    Config config;
     QTabWidget *tabs;
     QDialogButtonBox *buttonBox;    
-    QSize sz;
-    bool menubar;
-    bool extraToolbar;
-    int ps1Button;
-    int ps2Button;
-    int ps3Button;
-    QColor backgroundColor;
-    QColor borderColor;
-    QColor gridColor;
-    QFont plotFont;
-    QFont appFont;
     QCheckBox *menubarCheck;
     QCheckBox *extraToolbarCheck;
     QSpinBox *bs1Spinner;
@@ -94,6 +86,7 @@ class Preferences : public QDialog
     FontButton *plotFontButton;
     FontButton *appFontButton;
     FileButton *dbFile;
+
     // on MainToolbar    
     QCheckBox *quitBtnCheck;
     QCheckBox *prefBtnCheck;
@@ -101,12 +94,12 @@ class Preferences : public QDialog
     QCheckBox *gridBtnCheck;
     QCheckBox *scaleToScreenBtnCheck;
     QCheckBox *crosshairBtnCheck;
-    QCheckBox *paperTradeBtnCheck;
     QCheckBox *drawModeBtnCheck;
     QCheckBox *newIndicatorBtnCheck;
     QCheckBox *dataWindowBtnCheck;
     QCheckBox *mainQuoteBtnCheck;
     QCheckBox *helpButtonCheck;
+
     // on ChartToolbar
     QCheckBox *sliderCheck;
     QCheckBox *barsToLoadFieldCheck;

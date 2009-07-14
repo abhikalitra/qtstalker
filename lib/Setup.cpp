@@ -353,6 +353,9 @@ void Setup::setupConfigDefaults ()
   d = "0";
   setConfig(k, d);
 
+  k = QString::number(Config::IndicatorTabRows);
+  d = "2";
+  setConfig(k, d);
 }
 
 void Setup::setConfig (QString &k, QString &d)

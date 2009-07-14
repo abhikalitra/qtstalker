@@ -133,7 +133,6 @@ class QtstalkerApp : public QMainWindow
     void addIndicatorButton (QString);
     void slotWakeup ();
     void slotIndicatorSummary ();
-    void slotMenubarStatus (bool);
 //    void slotExtraToolbarStatus (bool);
     void slotAppFont (QFont);
     void slotHideNav (bool d);

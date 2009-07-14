@@ -29,6 +29,8 @@
 #include "../pics/delete.xpm"
 #include "../pics/newchart.xpm"
 #include "../pics/search.xpm"
+#include "../pics/asterisk.xpm"
+#include "../pics/move.xpm"
 
 #include <QCursor>
 #include <QInputDialog>
@@ -47,30 +49,33 @@ IndicatorPage::IndicatorPage (QWidget *w) : QWidget (w)
 {
   QVBoxLayout *vbox = new QVBoxLayout;
   vbox->setMargin(0);
-  vbox->setSpacing(5);
+  vbox->setSpacing(0);
   setLayout(vbox);
 
   QHBoxLayout *hbox = new QHBoxLayout;
-  hbox->setMargin(0);
+  hbox->setMargin(5);
   hbox->setSpacing(2);
   vbox->addLayout(hbox);
 
   activeButton = new QToolButton;
   activeButton->setToolTip(tr("Show active indicators"));
-//  searchButton->setIcon(QIcon(search));
+  activeButton->setIcon(QIcon(ok));
   connect(activeButton, SIGNAL(clicked()), this, SLOT(showActive()));
+  activeButton->setMaximumSize(25, 25);
   hbox->addWidget(activeButton);
 
   allButton = new QToolButton;
   allButton->setToolTip(tr("Show all indicators"));
-//  searchButton->setIcon(QIcon(search));
+  allButton->setIcon(QIcon(asterisk_xpm));
   connect(allButton, SIGNAL(clicked()), this, SLOT(showAll()));
+  allButton->setMaximumSize(25, 25);
   hbox->addWidget(allButton);
 
   searchButton = new QToolButton;
   searchButton->setToolTip(tr("Search"));
   searchButton->setIcon(QIcon(search));
   connect(searchButton, SIGNAL(clicked()), this, SLOT(indicatorSearch()));
+  searchButton->setMaximumSize(25, 25);
   hbox->addWidget(searchButton);
 
   hbox->addStretch(1);
@@ -88,6 +93,8 @@ IndicatorPage::IndicatorPage (QWidget *w) : QWidget (w)
   action = menu->addAction(QIcon(edit), tr("&Edit Indicator"), this, SLOT(editIndicator()), QKeySequence(Qt::CTRL+Qt::Key_E));
   actions.append(action);
   action = menu->addAction(QIcon(deleteitem), tr("&Delete Indicator"), this, SLOT(deleteIndicator()), QKeySequence(Qt::CTRL+Qt::Key_D));
+  actions.append(action);
+  action = menu->addAction(QIcon(moveitem), tr("&Move Indicator Tab"), this, SLOT(moveIndicator()), QKeySequence(Qt::CTRL+Qt::Key_M));
   actions.append(action);
 
   listFlag = 0;
@@ -233,8 +240,8 @@ void IndicatorPage::rightClick (const QPoint &)
     b = TRUE;
 
   int loop;
-  // menu items 1,2 only
-  for (loop = 1; loop < 3; loop++)
+  // menu items 1,2 3 only
+  for (loop = 1; loop < 4; loop++)
     actions.at(loop)->setEnabled(b);
 
   menu->exec(QCursor::pos());
@@ -328,5 +335,30 @@ void IndicatorPage::showAll ()
     else
       new QListWidgetItem(QIcon(disable), l[loop], list, 0);
   }
+}
+
+void IndicatorPage::moveIndicator ()
+{
+  QListWidgetItem *item = list->currentItem();
+  if (! item)
+    return;
+
+  DataBase db;
+  Indicator i;
+  QString s = item->text();
+  i.setName(s);
+  db.getIndicator(i);
+  int cr = i.getTabRow();
+
+  bool aok;
+  int row = QInputDialog::getInt(this, tr("Move Indicator"), tr("Tab Row"), cr, 1, 3, 1, &aok, 0);
+  if (! aok)
+    return;
+
+  i.setTabRow(row);
+  db.setIndicator(i);
+
+  emit signalDisableIndicator(s);
+  emit signalEnableIndicator(s);
 }
 
