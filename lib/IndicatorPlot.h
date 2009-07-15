@@ -47,7 +47,6 @@
 #include "Scaler.h"
 #include "BarData.h"
 #include "COBase.h"
-#include "Indicator.h"
 
 
 class IndicatorPlot : public QWidget
@@ -105,7 +104,7 @@ class IndicatorPlot : public QWidget
     void drawCandle ();
     int indicatorPrefDialog (QWidget *);
     void getPlotList (QList<PlotLine *> &);
-    void setIndicator (Indicator &);
+    void setIndicator (QString &);
     void loadChartObjects ();
     void addLine (PlotLine *);
    
@@ -166,7 +165,6 @@ class IndicatorPlot : public QWidget
     void toggleLog ();
     void saveChartObjects ();
 
-
   private:
     QFont plotFont;
     QFontMetrics *plotFontMetrics;
@@ -196,7 +194,7 @@ class IndicatorPlot : public QWidget
     MouseStatus mouseFlag;
     QHash<QString, COBase *> coList;
     COBase *coSelected;
-    Indicator indicator;
+    QString indicator;
     BarData *data;
     QVector<int> xGrid;
     QMenu *chartMenu;

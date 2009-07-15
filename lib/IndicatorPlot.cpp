@@ -24,6 +24,21 @@
 #include "IndicatorDialog.h"
 #include "Config.h"
 #include "DataBase.h"
+#include "Indicator.h"
+
+#include "../pics/delete.xpm"
+#include "../pics/edit.xpm"
+#include "../pics/loggrid.xpm"
+#include "../pics/date.xpm"
+#include "../pics/buyarrow.xpm"
+#include "../pics/arc.xpm"
+#include "../pics/fib.xpm"
+#include "../pics/horizontal.xpm"
+#include "../pics/sellarrow.xpm"
+#include "../pics/text.xpm"
+#include "../pics/trend.xpm"
+#include "../pics/vertical.xpm"
+
 #include <QPainter>
 #include <QPen>
 #include <QPoint>
@@ -42,20 +57,8 @@
 #include <QMessageBox>
 #include <QInputDialog>
 #include <QtDebug>
-// only for fabs()
-#include <math.h>
-#include "../pics/delete.xpm"
-#include "../pics/edit.xpm"
-#include "../pics/loggrid.xpm"
-#include "../pics/date.xpm"
-#include "../pics/buyarrow.xpm"
-#include "../pics/arc.xpm"
-#include "../pics/fib.xpm"
-#include "../pics/horizontal.xpm"
-#include "../pics/sellarrow.xpm"
-#include "../pics/text.xpm"
-#include "../pics/trend.xpm"
-#include "../pics/vertical.xpm"
+#include <math.h> // only for fabs()
+
 
 
 
@@ -125,8 +128,13 @@ void IndicatorPlot::setData (BarData *l)
 
 void IndicatorPlot::calculate ()
 {
+  DataBase db;
+  Indicator i;
+  i.setName(indicator);
+  db.getIndicator(i);
+
   IndicatorPlugin ip(data);
-  ip.setIndicator(indicator);
+  ip.setIndicator(i);
 
   qDeleteAll(plotList);
   plotList.clear();
@@ -999,10 +1007,7 @@ void IndicatorPlot::getPlotList (QList<PlotLine *> &list)
 
 int IndicatorPlot::indicatorPrefDialog (QWidget *)
 {
-  QString s;
-  indicator.getName(s);
-
-  IndicatorDialog *dialog = new IndicatorDialog(this, s);
+  IndicatorDialog *dialog = new IndicatorDialog(this, indicator);
   int rc = dialog->exec();
   
   if (rc == QDialog::Accepted)
@@ -1014,7 +1019,7 @@ int IndicatorPlot::indicatorPrefDialog (QWidget *)
   return rc;
 }
 
-void IndicatorPlot::setIndicator (Indicator &d)
+void IndicatorPlot::setIndicator (QString &d)
 {
   indicator = d;
 }
@@ -1439,9 +1444,7 @@ void IndicatorPlot::slotNewChartObject (int selection)
 
   mouseFlag = ClickWait;
 
-  QString name;
-  indicator.getName(name);
-  coSelected->newObject(name, s);
+  coSelected->newObject(indicator, s);
 }
 
 void IndicatorPlot::addChartObject (COSettings &set)
@@ -1546,9 +1549,7 @@ void IndicatorPlot::loadChartObjects ()
 
   QList<COSettings> l;
   DataBase db;
-  QString name;
-  indicator.getName(name);
-  db.getChartObjects(chartSymbol, name, l);
+  db.getChartObjects(chartSymbol, indicator, l);
 
   int loop;
   for (loop = 0; loop < l.count(); loop++)

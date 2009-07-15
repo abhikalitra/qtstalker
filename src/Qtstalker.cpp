@@ -189,7 +189,7 @@ QtstalkerApp::QtstalkerApp(QString session)
     i.setName(l[loop]);
     db.getIndicator(i);
 
-    if (i.getTabRow() >= tabList.count())
+    if (i.getTabRow() > tabList.count())
       continue;
 
     if (i.getEnable())
@@ -879,11 +879,7 @@ void QtstalkerApp::slotEditIndicator (QString name)
   if (! recordList)
     return;
 
-  DataBase db;
-  Indicator i;
-  i.setName(name);
-  db.getIndicator(i);
-  p->getIndicatorPlot()->setIndicator(i);
+  p->getIndicatorPlot()->setIndicator(name);
 
   p->calculate();
   p->draw();
@@ -969,7 +965,7 @@ void QtstalkerApp::addIndicatorButton (QString d)
   plot->setDrawMode(actionList.value(DrawMode)->isChecked());
 
   IndicatorPlot *indy = plot->getIndicatorPlot();
-  indy->setIndicator(i);
+  indy->setIndicator(d);
     
   connect(indy, SIGNAL(statusMessage(QString)), this, SLOT(slotStatusMessage(QString)));
   connect(indy, SIGNAL(infoMessage(Setting *)), this, SLOT(slotUpdateInfo(Setting *)));
