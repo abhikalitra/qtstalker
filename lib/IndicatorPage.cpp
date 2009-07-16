@@ -23,6 +23,7 @@
 #include "DataBase.h"
 #include "IndicatorDialog.h"
 #include "Indicator.h"
+
 #include "../pics/ok.xpm"
 #include "../pics/disable.xpm"
 #include "../pics/edit.xpm"
@@ -197,7 +198,6 @@ void IndicatorPage::deleteIndicator ()
   QString s = item->text();
 
   DataBase db;
-  db.deleteChartObjectsIndicator(s);
   db.deleteIndicator(s);
 
   emit signalDeleteIndicator(s);

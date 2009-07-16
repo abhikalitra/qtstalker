@@ -65,7 +65,7 @@ class Config
       Version,
       PlotSizes,
       ShowMenuBar, // unused
-      ShowExtraToolbar,
+      ShowRecentCharts,
       CurrentChart,
       LastNewIndicator,
       PSButtonCount,
@@ -96,7 +96,7 @@ class Config
       ShowCmpsComboBox,
       PrefColorCount,
       PrefColor,
-      ShowRecentCharts,
+      Unused0, // unused
       LastAktiveNav,
       LastGroupUsed,
       LastIndicatorUsed,

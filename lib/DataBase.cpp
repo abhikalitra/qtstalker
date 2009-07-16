@@ -182,7 +182,7 @@ void DataBase::getChart (BarData *data)
       i = formatList.indexOf("OI");
       if (i)
       {
-        double c = q.value(i + 1).toDouble();
+        int c = q.value(i + 1).toInt();
         bar->setOI(c);
       }
     }
@@ -447,6 +447,9 @@ void DataBase::setIndicator (Indicator &i)
 
 void DataBase::deleteIndicator (QString &name)
 {
+  // delete any chart objects tied to this indicator before we delete it
+  deleteChartObjectsIndicator(name);
+
   QSqlQuery q(QSqlDatabase::database("data"));
   QString s = "DELETE FROM indicatorIndex WHERE name='" + name + "'";
   q.exec(s);

@@ -43,7 +43,6 @@ class CSVRuleDialog : public QDialog
   
   public:
     CSVRuleDialog (QWidget *, QString &);
-    ~CSVRuleDialog ();
     void createRulePage ();
     void loadRule ();
     

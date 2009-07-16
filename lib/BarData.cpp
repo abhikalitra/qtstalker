@@ -47,7 +47,7 @@ void BarData::getInputFields (QStringList &l)
   l.append(QObject::tr("Low"));
   l.append(QObject::tr("Close"));
   l.append(QObject::tr("Volume"));
-  l.append(QObject::tr("OpenInterest"));
+  l.append(QObject::tr("OI"));
   l.append(QObject::tr("Day"));
   l.append(QObject::tr("Week"));
   l.append(QObject::tr("Month"));
@@ -217,7 +217,7 @@ BarData::InputType BarData::getInputType (QString &d)
       break;
     }
 
-    if (d == QObject::tr("OpenInterest"))
+    if (d == QObject::tr("OI"))
     {
       t = OpenInterest;
       break;

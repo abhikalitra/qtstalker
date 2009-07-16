@@ -43,7 +43,6 @@ class ChartPage : public QWidget
     void signalAddToGroup (QString);
     void signalReloadChart ();
     void addRecentChart (QString);
-    void removeRecentCharts (QStringList);
 
   public:
     ChartPage (QWidget *);

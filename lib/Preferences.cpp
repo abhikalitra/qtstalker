@@ -56,7 +56,6 @@ Preferences::Preferences (QWidget *w) : QDialog (w, 0)
   createFontPage();
   createMTPage();
   createCTPage();
-  createETPage();
   
   loadSettings();
 
@@ -76,10 +75,6 @@ Preferences::~Preferences ()
 void Preferences::loadSettings ()
 {
   QString s;
-
-  config.getData(Config::ShowExtraToolbar, s);
-  if (! s.isEmpty())
-    extraToolbarCheck->setChecked(s.toInt());
 
   config.getData(Config::PSButton1, s);
   if (! s.isEmpty())
@@ -133,16 +128,8 @@ void Preferences::createGeneralPage ()
   
   vbox->insertStretch(-1, 1);
 
-  // extraToolbar checkbox
-  QLabel *label = new QLabel(tr("Extra Toolbar"));
-  grid->addWidget(label, 0, 0);
-  
-  extraToolbarCheck = new QCheckBox;
-  connect(extraToolbarCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
-  grid->addWidget(extraToolbarCheck, 0, 1);
-
   // bar spacing 1
-  label = new QLabel(tr("Bar Spacing 1"));
+  QLabel *label = new QLabel(tr("Bar Spacing 1"));
   grid->addWidget(label, 1, 0);
   
   bs1Spinner = new QSpinBox;
@@ -533,31 +520,7 @@ void  Preferences::createCTPage()
   connect(sliderCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
   grid->addWidget(sliderCheck, i++, j + 1);
 
-  tabs->addTab(w, tr("ChartToolbar"));
-}
-
-void  Preferences::createETPage() 
-{
-  // extra tool bar page
-
-  QWidget *w = new QWidget;
-
-  QVBoxLayout *vbox = new QVBoxLayout;
-  w->setLayout(vbox);
-  
-  QGridLayout *grid = new QGridLayout;
-  grid->setMargin(5);
-  grid->setSpacing(5);
-  grid->setColumnStretch(1, 1);
-  vbox->addLayout(grid);
-  
-  vbox->insertStretch(-1, 1);
-
-  int i = 0; // count rows
-  int j = 0; // "count" cols
-  QString s; // temporary
-
-  QLabel *label = new QLabel(tr("Recent charts"));
+  label = new QLabel(tr("Recent charts"));
   grid->addWidget(label, i, j);
 
   recentComboBoxCheck = new QCheckBox;
@@ -566,19 +529,11 @@ void  Preferences::createETPage()
   connect(recentComboBoxCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
   grid->addWidget(recentComboBoxCheck, i++, j + 1);  
 
-  tabs->addTab(w, tr("ExtraToolbar"));
+  tabs->addTab(w, tr("ChartToolbar"));
 }
 
 void Preferences::slotSave ()
 {
-  bool tbool = FALSE;
-  config.getData(Config::ShowExtraToolbar, tbool);
-  if (tbool != extraToolbarCheck->isChecked())
-  {
-    config.setData(Config::ShowExtraToolbar, extraToolbarCheck->isChecked());
-    emit signalExtraToolbar(tbool);
-  }
-
   config.setData(Config::PSButton1, bs1Spinner->value());
   config.setData(Config::PSButton2, bs2Spinner->value());
   config.setData(Config::PSButton3, bs3Spinner->value());

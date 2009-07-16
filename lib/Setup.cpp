@@ -229,10 +229,6 @@ void Setup::setupConfigDefaults ()
   d = "1";
   setConfig(k, d);
 
-  k = QString::number(Config::ShowExtraToolbar);
-  d = "1";
-  setConfig(k, d);
-
   k = QString::number(Config::PSButtonCount);
   d = "3";
   setConfig(k, d);

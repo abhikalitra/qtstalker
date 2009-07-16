@@ -61,13 +61,6 @@ class QtstalkerApp : public QMainWindow
     void signalCrossHair (int, int, bool);
 
   public:
-
-    enum chartStatus
-    {
-      None,
-      Chart
-    };
-
     enum MenuAction
     {
       Exit,
@@ -94,11 +87,11 @@ class QtstalkerApp : public QMainWindow
       PS2,
       PS3,
       BarCount,
-      Slider
+      Slider,
+      RecentCharts
     };
 
     QtstalkerApp (QString);
-    ~QtstalkerApp ();
     void initConfig ();
     void createActions ();
     void createMenuBar ();
@@ -116,6 +109,7 @@ class QtstalkerApp : public QMainWindow
     void slotAbout ();
     void slotQuit();
     void slotOpenChart (QString);
+    void slotOpenChart (int);
     void slotOptions ();
     void slotDataWindow ();
     void slotNewIndicator (QString);
@@ -133,7 +127,6 @@ class QtstalkerApp : public QMainWindow
     void addIndicatorButton (QString);
     void slotWakeup ();
     void slotIndicatorSummary ();
-//    void slotExtraToolbarStatus (bool);
     void slotAppFont (QFont);
     void slotHideNav (bool d);
     void ps1ButtonClicked ();
@@ -147,8 +140,8 @@ class QtstalkerApp : public QMainWindow
     void cmpsBtn5Clicked();
     int setSliderStart (int width, int records);
     void setPixelspace (int min, int d);
-    void slotOrientationChanged(Qt::Orientation o);
     void slotEditIndicator (QString);
+    void slotAddRecentChart (QString);
     
   private:
     QSplitter *split;
@@ -159,10 +152,7 @@ class QtstalkerApp : public QMainWindow
     QWidget *navBase;
     ChartPage *chartNav;
     QHash<QString, Plot *> plotList;
-    chartStatus status;
     QString chartPath;
-    QString chartName;
-    QString chartSymbol;
     BarData *recordList;
     QTextEdit *infoLabel;
     IndicatorPage *ip;
@@ -170,7 +160,6 @@ class QtstalkerApp : public QMainWindow
     TestPage *tp;
     GroupPage *gp;
     QStatusBar *statusbar;
-    QString chartType;
     QList<QTabWidget*> tabList;
     QString lastIndicatorUsed1;
     QString lastIndicatorUsed2;
@@ -180,6 +169,7 @@ class QtstalkerApp : public QMainWindow
     QSpinBox *pixelspace;
     QSpinBox *barCount;
     QSlider *slider;
+    QComboBox *recentCharts;
 };
 
 #endif

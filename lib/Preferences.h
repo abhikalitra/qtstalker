@@ -43,7 +43,6 @@ class Preferences : public QDialog
   Q_OBJECT
 
   signals:
-    void signalExtraToolbar (bool);
     void signalBackgroundColor (QColor);
     void signalBorderColor (QColor);
     void signalGridColor (QColor);
@@ -61,7 +60,6 @@ class Preferences : public QDialog
     void createFontPage ();
     void createMTPage(); // main tool bar
     void createCTPage(); // chart tool bar
-    void createETPage(); // extra tool bar
     void loadSettings ();
 
   public slots:
@@ -74,8 +72,6 @@ class Preferences : public QDialog
     Config config;
     QTabWidget *tabs;
     QDialogButtonBox *buttonBox;    
-    QCheckBox *menubarCheck;
-    QCheckBox *extraToolbarCheck;
     QSpinBox *bs1Spinner;
     QSpinBox *bs2Spinner;
     QSpinBox *bs3Spinner;

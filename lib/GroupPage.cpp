@@ -22,9 +22,11 @@
 #include "GroupPage.h"
 #include "DataBase.h"
 #include "Config.h"
+
 #include "../pics/delete.xpm"
 #include "../pics/delgroup.xpm"
 #include "../pics/newchart.xpm"
+
 #include <QMessageBox>
 #include <QLineEdit>
 #include <QInputDialog>
@@ -57,8 +59,6 @@ GroupPage::GroupPage (QWidget *w) : QWidget (w)
   nav = new QListWidget;
   nav->setContextMenuPolicy(Qt::CustomContextMenu);
   nav->setSortingEnabled(TRUE);
-//  connect(nav, SIGNAL(fileSelected(QString)), this, SLOT(groupSelected(QString)));
-//  connect(nav, SIGNAL(fileOpened(QString)), this, SLOT(chartOpened(QString)));
   connect(nav, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(rightClick(const QPoint &)));
   connect(nav, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(chartOpened(QListWidgetItem *)));
   vbox->addWidget(nav);

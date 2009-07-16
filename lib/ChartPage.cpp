@@ -108,7 +108,6 @@ ChartPage::ChartPage (QWidget *w) : QWidget (w)
   nav->setContextMenuPolicy(Qt::CustomContextMenu);
   nav->setSelectionMode(QAbstractItemView::ExtendedSelection);
   nav->setSortingEnabled(TRUE);
-//  connect(nav, SIGNAL(fileOpened(QString)), this, SLOT(chartOpened(QString)));
   connect(nav, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(rightClick(const QPoint &)));
   connect(nav, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(chartOpened(QListWidgetItem *)));
   vbox->addWidget(nav);

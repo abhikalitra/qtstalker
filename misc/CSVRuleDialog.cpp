@@ -21,6 +21,7 @@
 
 #include "CSVRuleDialog.h"
 #include "CSVRule.h"
+
 #include <QDir>
 #include <QMessageBox>
 #include <QLayout>
@@ -32,6 +33,7 @@
 #include <QVBoxLayout>
 #include <QFileDialog>
 #include <QtSql>
+#include <QGroupBox>
 
 
 
@@ -44,10 +46,6 @@ CSVRuleDialog::CSVRuleDialog (QWidget *w, QString &d) : QDialog (w, 0)
 
   QString s = tr("Editing CSV Rule: ") + rule;  
   setWindowTitle(s);
-}
-
-CSVRuleDialog::~CSVRuleDialog ()
-{
 }
 
 void CSVRuleDialog::createRulePage ()
@@ -83,12 +81,12 @@ void CSVRuleDialog::createRulePage ()
   seconds->setRange(0, 9999);
   grid->addWidget(seconds, 2, 1);
 
-  label = new QLabel(tr("Import Files"));
+  label = new QLabel(tr("CSV Files"));
   grid->addWidget(label, 3, 0);
 
   fileButton = new QPushButton;
   fileButton->setText("0 " + tr("Files"));
-  QObject::connect(fileButton, SIGNAL(clicked()), this, SLOT(importFileDialog()));
+  connect(fileButton, SIGNAL(clicked()), this, SLOT(importFileDialog()));
   grid->addWidget(fileButton, 3, 1);
 
   useFileName = new QCheckBox;
@@ -97,7 +95,17 @@ void CSVRuleDialog::createRulePage ()
 
   QHBoxLayout *hbox = new QHBoxLayout;
   hbox->setSpacing(5);
+  hbox->setMargin(0);
   vbox->addLayout(hbox);
+
+  QGroupBox *gbox = new QGroupBox;
+  gbox->setTitle(tr("Fields"));
+  hbox->addWidget(gbox);
+
+  QVBoxLayout *tvbox = new QVBoxLayout;
+  tvbox->setMargin(5);
+  tvbox->setSpacing(0);
+  gbox->setLayout(tvbox);
   
   fieldList = new QListWidget;
   fieldList->setSelectionMode(QAbstractItemView::ExtendedSelection);
@@ -105,10 +113,10 @@ void CSVRuleDialog::createRulePage ()
   CSVRule r;
   r.getFieldList(tl);
   fieldList->addItems(tl);
-  QObject::connect(fieldList, SIGNAL(itemSelectionChanged()), this, SLOT(fieldListSelected()));
-  hbox->addWidget(fieldList);
+  connect(fieldList, SIGNAL(itemSelectionChanged()), this, SLOT(fieldListSelected()));
+  tvbox->addWidget(fieldList);
 
-  QVBoxLayout *tvbox = new QVBoxLayout;
+  tvbox = new QVBoxLayout;
   tvbox->setMargin(5);
   tvbox->setSpacing(5);
   hbox->addLayout(tvbox);
@@ -120,19 +128,29 @@ void CSVRuleDialog::createRulePage ()
   
   customButton = new QPushButton;
   customButton->setText(tr("Custom Field->>"));
-  QObject::connect(customButton, SIGNAL(clicked()), this, SLOT(customDialog()));
+//  connect(customButton, SIGNAL(clicked()), this, SLOT(customDialog()));
+  customButton->setEnabled(FALSE);
   tvbox->addWidget(customButton);
   
   deleteButton = new QPushButton;
   deleteButton->setText(tr("<<-Delete Field"));
-  QObject::connect(deleteButton, SIGNAL(clicked()), this, SLOT(deleteField()));
+  connect(deleteButton, SIGNAL(clicked()), this, SLOT(deleteField()));
   tvbox->addWidget(deleteButton);
 
   tvbox->addStretch();
   
+  gbox = new QGroupBox;
+  gbox->setTitle(tr("Rule Format"));
+  hbox->addWidget(gbox);
+
+  tvbox = new QVBoxLayout;
+  tvbox->setMargin(5);
+  tvbox->setSpacing(0);
+  gbox->setLayout(tvbox);
+  
   ruleList = new QListWidget;
-  QObject::connect(ruleList, SIGNAL(itemSelectionChanged()), this, SLOT(ruleFieldSelected()));
-  hbox->addWidget(ruleList);
+  connect(ruleList, SIGNAL(itemSelectionChanged()), this, SLOT(ruleFieldSelected()));
+  tvbox->addWidget(ruleList);
 
   buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel | QDialogButtonBox::Help);
   connect(buttonBox, SIGNAL(accepted()), this, SLOT(saveRule()));
@@ -212,6 +230,7 @@ void CSVRuleDialog::loadRule ()
     seconds->setValue(q.value(5).toInt());
 
     fileList = q.value(6).toString().split("|");
+    fileButton->setText(QString::number(fileList.count()) + " " + tr("Files"));
   }
 }
 

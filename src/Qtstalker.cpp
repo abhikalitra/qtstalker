@@ -44,8 +44,6 @@
 #include "Setup.h"
 #include "Config.h"
 
-//#include "../lib/qtstalker_defines.h"
-
 #include "../pics/dirclosed.xpm"
 #include "../pics/plainitem.xpm"
 #include "../pics/test.xpm"
@@ -67,7 +65,6 @@
 QtstalkerApp::QtstalkerApp(QString session)
 {
   recordList = 0;
-  status = None;
   setWindowIcon(QIcon(qtstalker));
 
   // setup the disk environment
@@ -128,6 +125,14 @@ QtstalkerApp::QtstalkerApp(QString session)
   for (loop = 0; loop < tabRows; loop++)
   {
     QTabWidget *it = new QTabWidget;
+//    it->setTabPosition(QTabWidget::West);
+
+    // make the tab text smaller so we can take up less space for tabs
+    QFont font = it->font();
+    font.setPointSize((int) font.pointSize() * 0.75);
+    font.setBold(TRUE);
+    it->setFont(font);
+
     split->addWidget(it);
     it->setContentsMargins(0, 0, 0, 0);
     connect(it, SIGNAL(currentChanged(QWidget *)), this, SLOT(slotDrawPlots()));
@@ -149,7 +154,6 @@ QtstalkerApp::QtstalkerApp(QString session)
   // setup the side panels
   navTab = new QTabWidget;
   dpSplitter->addWidget(navTab);
-//  connect(extraToolbar, SIGNAL(recentTab(QString)), navTab, SLOT(recentTab(QString)));
   
   // setup the data panel area
   infoLabel = new QTextEdit;
@@ -222,10 +226,6 @@ QtstalkerApp::QtstalkerApp(QString session)
   statusbar->showMessage(tr("Ready"), 2000);
 
   setUnifiedTitleAndToolBarOnMac(TRUE);
-}
-
-QtstalkerApp::~QtstalkerApp()
-{
 }
 
 void QtstalkerApp::createActions ()
@@ -331,20 +331,18 @@ void QtstalkerApp::createMenuBar()
   // create the main menubar
   QMenuBar *menubar = menuBar();
 
-  //attach it...mainwindow takes ownership
-
-  QMenu *menu = new QMenu();
+  QMenu *menu = new QMenu;
   menu->setTitle(tr("&File"));
   menu->addAction(actionList.value(Exit));
   menubar->addMenu(menu);
 
-  menu = new QMenu();
+  menu = new QMenu;
   menu->setTitle(tr("&Edit"));
   menu->addAction(actionList.value(NewIndicator));
   menu->addAction(actionList.value(Options));
   menubar->addMenu(menu);
 
-  menu = new QMenu();
+  menu = new QMenu;
   menu->setTitle(tr("&View"));
   menu->addAction(actionList.value(Grid));
   menu->addAction(actionList.value(ScaleToScreen));
@@ -353,7 +351,7 @@ void QtstalkerApp::createMenuBar()
   menu->addAction(actionList.value(Crosshairs));
   menubar->addMenu(menu);
 
-  menu = new QMenu();
+  menu = new QMenu;
   menu->setTitle(tr("&Tools"));
   menu->addAction(actionList.value(DataWindow1));
 //  menu->addAction(actionList.value(IndicatorSummary));
@@ -361,7 +359,7 @@ void QtstalkerApp::createMenuBar()
 
   menubar->addSeparator();
 
-  menu = new QMenu();
+  menu = new QMenu;
   menu->setTitle(tr("&Help"));
   menu->addAction(actionList.value(About));
   menu->addAction(actionList.value(Help));
@@ -414,7 +412,7 @@ void QtstalkerApp::createToolBars ()
 
   // construct the chart toolbar
   QToolBar *toolbar2 = addToolBar("chartToolBar");
-  connect(toolbar2, SIGNAL(orientationChanged(Qt::Orientation)), this, SLOT(slotOrientationChanged(Qt::Orientation)));
+//  connect(toolbar2, SIGNAL(orientationChanged(Qt::Orientation)), this, SLOT(slotOrientationChanged(Qt::Orientation)));
   //setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding));
   //setVerticallyStretchable(TRUE);
 
@@ -515,7 +513,7 @@ void QtstalkerApp::createToolBars ()
   actionList.insert(PixelSpace, action);
   config.getData(Config::ShowBarSpSpinbox, ts);
   action->setVisible(ts.toInt());
-  pixelspace->setMaximumWidth(40); // FIXME:calc as a function of app font metrics
+//  pixelspace->setMaximumWidth(40); // FIXME:calc as a function of app font metrics
   
   // PS1 button  
   b = new QToolButton;
@@ -557,17 +555,24 @@ void QtstalkerApp::createToolBars ()
   actionList.insert(BarCount, action);
   config.getData(Config::ShowBarsToLoadField, ts);
   action->setVisible(ts.toInt());
-//  barCount->setMaximumWidth(40);// FIXME:calc as a function of app font metrics
   
   toolbar2->addSeparator();
 
-  // construct the extra toolbar
-//  QToolBar *extraToolbar = addToolBar("extraToolBar");
-  //attach to qmainwindwo...
-  //remove for testing!
-//  addToolBar(extraToolbar);
-//  extraToolbar->slotSetButtonView();
-//  connect(extraToolbar, SIGNAL(fileSelected(QString)), this, SLOT(slotOpenChart(QString)));
+  // recent charts combo
+  QString s;
+  config.getData(Config::RecentChartsList, s);
+  l = s.split(",");
+
+  recentCharts = new QComboBox;
+  recentCharts->setSizeAdjustPolicy(QComboBox::AdjustToContents);
+  recentCharts->addItems(l);
+  recentCharts->setCurrentIndex(0);
+  recentCharts->setToolTip(tr("Recent Charts"));
+  connect(recentCharts, SIGNAL(activated(int)), this, SLOT(slotOpenChart(int)));
+  action = toolbar2->addWidget(recentCharts);
+  actionList.insert(RecentCharts, action);
+  config.getData(Config::ShowRecentCharts, ts);
+  action->setVisible(ts.toInt());
 }
 
 void QtstalkerApp::slotQuit()
@@ -625,9 +630,18 @@ void QtstalkerApp::slotQuit()
 
   ts = pixelspace->text();
   config.setData(Config::Pixelspace, ts);
-  //rcfile.savePoint(RcFile::ChartToolBarPos, pos());
-  //FIXME: IMPORTANT- save all belonged to restore the position of the toolbar. maybe not here but in Qtstalker.cpp. Possible is this the way
-  //http://doc.trolltech.com/3.3/qdockarea.html#operator-lt-lt
+
+  // save recent charts combo
+  l.clear();
+  for (loop = 0; loop < recentCharts->count(); loop++)
+  {
+    if (recentCharts->itemText(loop).isEmpty())
+      continue;
+
+    l.append(recentCharts->itemText(loop));
+  }
+  s = l.join(",");
+  config.setData(Config::RecentChartsList, s);
 
   // delete any BarData
   if (recordList)
@@ -655,9 +669,14 @@ void QtstalkerApp::slotOpenChart (QString selection)
 {
   // load a chart slot
   slider->setEnabled(TRUE);
-  status = Chart;
   qApp->processEvents();
   loadChart(selection);
+}
+
+void QtstalkerApp::slotOpenChart (int row)
+{
+  QString s = recentCharts->itemText(row);
+  slotOpenChart(s);
 }
 
 void QtstalkerApp::slotOptions ()
@@ -709,9 +728,6 @@ void QtstalkerApp::loadChart (QString d)
   DataBase db;
   db.getChart(recordList);
 
-  chartSymbol = chartPath;
-  recordList->getType(chartType);
-
   QStringList l;
   db.getIndicatorList(l);
   int loop;  
@@ -740,23 +756,19 @@ QString QtstalkerApp::getWindowCaption ()
   
   QString caption = tr("Qtstalker");
 
-  switch (status)
-  {
-    case Chart:
-      caption.append(": ");
-      caption.append(chartName);
-      caption.append(" (");
-      if (chartSymbol.length() > 0)
-        caption.append(chartSymbol);
-      else
-        caption.append(chartType);
-      caption.append(") ");
-      break;
-    default:
-      break;
-  }
+  if (! recordList)
+    return caption;
 
-  caption.append(compressionCombo->currentText());
+  QString s;
+  recordList->getSymbol(s);
+  caption.append(": " + s);
+
+  QString s2;
+  recordList->getName(s2);
+  if (! s2.isEmpty())
+    caption.append(" (" + s2 + ")");
+
+  caption.append(" " + compressionCombo->currentText());
 
   return caption;
 }
@@ -987,7 +999,7 @@ void QtstalkerApp::slotChartUpdated ()
 {
   chartNav->refreshList();
   
-  if (status == None)
+  if (! recordList)
     return;
   
   Config config;
@@ -1007,8 +1019,7 @@ void QtstalkerApp::initChartNav ()
 {
   chartNav = new ChartPage(baseWidget);
   connect(chartNav, SIGNAL(fileSelected(QString)), this, SLOT(slotOpenChart(QString)));
-//  connect(chartNav, SIGNAL(addRecentChart(QString)), extraToolbar, SLOT(slotAddRecentChart(QString)));
-//  connect(chartNav, SIGNAL(removeRecentCharts(QStringList)), extraToolbar, SLOT(slotRemoveRecentCharts(QStringList)));
+  connect(chartNav, SIGNAL(addRecentChart(QString)), this, SLOT(slotAddRecentChart(QString)));
   connect(chartNav, SIGNAL(signalReloadChart()), this, SLOT(slotChartUpdated()));
   navTab->addTab(chartNav, QIcon(plainitem), QString());
   navTab->setTabToolTip(0, tr("Charts"));
@@ -1019,8 +1030,7 @@ void QtstalkerApp::initGroupNav ()
   gp = new GroupPage(baseWidget);
   connect(gp, SIGNAL(fileSelected(QString)), this, SLOT(slotOpenChart(QString)));
 //  connect(chartNav, SIGNAL(signalAddToGroup(QString)), gp, SLOT(addChartToGroup(QString)));
-//  connect(gp, SIGNAL(addRecentChart(QString)), extraToolbar, SLOT(slotAddRecentChart(QString)));
-//  connect(gp, SIGNAL(removeRecentCharts(QStringList)), extraToolbar, SLOT(slotRemoveRecentCharts(QStringList)));
+  connect(gp, SIGNAL(addRecentChart(QString)), this, SLOT(slotAddRecentChart(QString)));
 //  connect(extraToolbar, SIGNAL(signalSetGroupNavItem(QString, QString)), gp, SLOT(setGroupNavItem(QString, QString)));
   navTab->addTab(gp, QIcon(dirclosed), QString());
   navTab->setTabToolTip(1, tr("Groups"));
@@ -1121,7 +1131,7 @@ void QtstalkerApp::slotCrosshairsStatus (bool status)
 
 void QtstalkerApp::setSliderStart ()
 {
-  if (status == None)
+  if (! recordList)
     return;
 
   int loop;
@@ -1167,7 +1177,7 @@ void QtstalkerApp::slotWakeup ()
 
 void QtstalkerApp::slotIndicatorSummary ()
 {
-  if (status == None)
+  if (! recordList)
     return;
 
   QString basePath, s;
@@ -1190,16 +1200,6 @@ void QtstalkerApp::slotIndicatorSummary ()
 //  connect(&is, SIGNAL(signalWakeup()), this, SLOT(slotWakeup()));
 //  is.run();
 }
-
-/*
-void QtstalkerApp::slotExtraToolbarStatus (bool d)
-{
-  if (d)
-    extraToolbar->show();
-  else
-    extraToolbar->hide();
-}
-*/
 
 void QtstalkerApp::slotAppFont (QFont d)
 {
@@ -1301,9 +1301,12 @@ void QtstalkerApp::cmpsBtn5Clicked()
   slotBarLengthChanged((int) BarData::Minute5);
 }
 
-void QtstalkerApp::slotOrientationChanged(Qt::Orientation o)
+void QtstalkerApp::slotAddRecentChart (QString d)
 {
-  slider->setOrientation(o);
-// updateGeometry();
+  if (recentCharts->findText(d, Qt::MatchExactly) > -1)
+    return;
+
+  recentCharts->addItem(d);
+
 }
 
