@@ -149,7 +149,7 @@ void DataBase::getChart (BarData *data)
       }
 
       int i = formatList.indexOf("High");
-      if (i)
+      if (i > -1)
       {
         double h = q.value(i + 1).toDouble();
         if (h > bar->getHigh())
@@ -157,7 +157,7 @@ void DataBase::getChart (BarData *data)
       }
 
       i = formatList.indexOf("Low");
-      if (i)
+      if (i > -1)
       {
         double l = q.value(i + 1).toDouble();
         if (l < bar->getLow())
@@ -165,14 +165,14 @@ void DataBase::getChart (BarData *data)
       }
 
       i = formatList.indexOf("Close");
-      if (i)
+      if (i > -1)
       {
         double c = q.value(i + 1).toDouble();
         bar->setClose(c);
       }
 
       i = formatList.indexOf("Volume");
-      if (i)
+      if (i > -1)
       {
         double v = q.value(i + 1).toDouble();
         double v2 = bar->getVolume();
@@ -180,9 +180,9 @@ void DataBase::getChart (BarData *data)
       }
 
       i = formatList.indexOf("OI");
-      if (i)
+      if (i > -1)
       {
-        int c = q.value(i + 1).toInt();
+        double c = q.value(i + 1).toDouble();
         bar->setOI(c);
       }
     }

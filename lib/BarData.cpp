@@ -75,7 +75,7 @@ PlotLine * BarData::getInput (BarData::InputType field)
       case Volume:
         in->append(getVolume(loop));
 	break;
-      case OpenInterest:
+      case OI:
         in->append(getOI(loop));
 	break;
       case Day:
@@ -219,7 +219,7 @@ BarData::InputType BarData::getInputType (QString &d)
 
     if (d == QObject::tr("OI"))
     {
-      t = OpenInterest;
+      t = OI;
       break;
     }
     

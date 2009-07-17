@@ -39,7 +39,7 @@ class BarData
       Low,
       Close,
       Volume,
-      OpenInterest,
+      OI,
       Day,
       Week,
       Month,

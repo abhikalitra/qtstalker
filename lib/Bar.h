@@ -46,8 +46,8 @@ class Bar
     double getClose ();
     void setVolume (double);
     double getVolume ();
-    void setOI (int);
-    int getOI ();
+    void setOI (double);
+    double getOI ();
     bool getEmptyFlag ();
     void getDateString (QString &);
     void getDateTimeString (QString &);

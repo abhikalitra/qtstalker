@@ -117,7 +117,7 @@ double Bar::getVolume ()
   return data.value(k).toDouble();
 }
 
-void Bar::setOI (int d)
+void Bar::setOI (double d)
 {
   QString k("OI");
   QString s = QString::number(d);
@@ -125,10 +125,10 @@ void Bar::setOI (int d)
   emptyFlag = FALSE;
 }
 
-int Bar::getOI ()
+double Bar::getOI ()
 {
   QString k("OI");
-  return data.value(k).toInt();
+  return data.value(k).toDouble();
 }
 
 bool Bar::getEmptyFlag ()
