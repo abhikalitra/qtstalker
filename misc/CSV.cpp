@@ -149,6 +149,8 @@ void CSV::import ()
 
         if (! fieldList[fieldLoop].compare("Symbol"))
 	{
+          while (listItem.contains(" "))
+            listItem.replace(listItem.indexOf(" "), 1, "_");
           r.setSymbol(listItem);
 	  continue;
 	}
@@ -181,8 +183,9 @@ void CSV::import ()
         ts = fi.baseName();
         r.setSymbol(ts);
       }
+      else
+        r.setSymbol(ts);
 
-      r.setSymbol(ts);
       if (symbolHash.contains(ts))
       {
         BarList *l = symbolHash.value(ts);
