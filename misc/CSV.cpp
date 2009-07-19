@@ -183,8 +183,6 @@ void CSV::import ()
         ts = fi.baseName();
         r.setSymbol(ts);
       }
-      else
-        r.setSymbol(ts);
 
       if (symbolHash.contains(ts))
       {
