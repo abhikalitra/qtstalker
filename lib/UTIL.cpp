@@ -58,6 +58,7 @@ UTIL::~UTIL ()
 
 void UTIL::calculate (BarData *bd, IndicatorParms &parms, QHash<QString, PlotLine *> &tlines)
 {
+
   data = bd;
   QString s, s2;
 
@@ -369,7 +370,6 @@ void UTIL::calculatePER (IndicatorParms &parms, QHash<QString, PlotLine *> &tlin
 
 void UTIL::calculateCOLOR (IndicatorParms &parms, QHash<QString, PlotLine *> &tlines)
 {
-  // format1: METHOD, INPUT_ARRAY, COLOR_ARRAY, VALUE, COLOR
   QString s, s2;
   s = "Value";
   parms.getData(s, s2);
@@ -377,7 +377,7 @@ void UTIL::calculateCOLOR (IndicatorParms &parms, QHash<QString, PlotLine *> &tl
 
   s = "Color";
   parms.getData(s, s2);
-  QColor c(s);
+  QColor c(s2);
 
   s = "Input";
   parms.getData(s, s2);
