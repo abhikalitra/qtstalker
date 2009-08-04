@@ -114,6 +114,7 @@ void CSV::import ()
       ts = stream.readLine();
       QStringList l = ts.split(delim);
 
+      // check if the # of fieldlist and data fields match
       lineCount++;
       if (l.count() != fieldList.count())
       {
@@ -180,7 +181,7 @@ void CSV::import ()
       
       if (rule.getFileNameSymbol())
       {
-        ts = fi.baseName();
+        ts = fi.fileName();
         r.setSymbol(ts);
       }
 

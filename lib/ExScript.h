@@ -37,11 +37,11 @@ class ExScript : public QObject
   
   public:
     ExScript ();
-    ~ExScript ();
     void calculate (BarData *bd, IndicatorParms &parms);
     void prefDialog (IndicatorParms &parms, QStringList &);
     void sendBarData (QString &);
     void plot (QString &);
+    void parseIndicator (QString &);
 
   public slots:
     void readFromStdout ();

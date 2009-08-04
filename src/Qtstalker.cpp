@@ -1041,7 +1041,7 @@ void QtstalkerApp::initTestNav ()
   tp = new TestPage(baseWidget);
   connect(tp, SIGNAL(message(QString)), this, SLOT(slotStatusMessage(QString)));
   navTab->addTab(tp, QIcon(test), QString());
-  navTab->setTabToolTip(4, tr("Backtesting"));
+  navTab->setTabToolTip(3, tr("Backtesting"));
 }
 
 void QtstalkerApp::initIndicatorNav ()
@@ -1063,7 +1063,7 @@ void QtstalkerApp::initScannerNav ()
   connect(sp, SIGNAL(message(QString)), this, SLOT(slotStatusMessage(QString)));
   connect(sp, SIGNAL(refreshGroup()), gp, SLOT(updateGroups()));
   navTab->addTab(sp, QIcon(scanner), QString());
-  navTab->setTabToolTip(5, tr("Scanners"));
+  navTab->setTabToolTip(4, tr("Scanners"));
 }
 
 void QtstalkerApp::slotHideNav (bool d)

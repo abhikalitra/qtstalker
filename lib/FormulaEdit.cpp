@@ -225,6 +225,9 @@ void FormulaEdit::addFunction ()
       case TA_Input_Real:
         dialog->addComboItem(s, vl, (int) BarData::Close);
         break;
+      case TA_Input_Integer:
+        dialog->addComboItem(s, vl, (int) BarData::Volume);
+        break;
       default:
         break;
     }
@@ -233,7 +236,7 @@ void FormulaEdit::addFunction ()
   QStringList mal;
   ip.getMATypes(mal);
 
-  // get the input parms
+  // get the optinput parms
   const TA_OptInputParameterInfo *optInfo;
   for (loop = 0; loop < (int) theInfo->nbOptInput; loop++ )
   {
@@ -297,6 +300,10 @@ void FormulaEdit::addFunction ()
     switch (inputParms->type)
     {
       case TA_Input_Real:
+        dialog->getCombo(s, ts);
+        parms.setData(s, ts);
+        break;
+      case TA_Input_Integer:
         dialog->getCombo(s, ts);
         parms.setData(s, ts);
         break;
@@ -409,6 +416,10 @@ void FormulaEdit::editFunction ()
         parms.getData(s, s2);
         dialog->addComboItem(s, vl, s2);
         break;
+      case TA_Input_Integer:
+        parms.getData(s, s2);
+        dialog->addComboItem(s, vl, s2);
+        break;
       default:
         break;
     }
@@ -417,7 +428,7 @@ void FormulaEdit::editFunction ()
   QStringList mal;
   ip.getMATypes(mal);
 
-  // get the input parms
+  // get the optinput parms
   const TA_OptInputParameterInfo *optInfo;
   for (loop = 0; loop < (int) theInfo->nbOptInput; loop++ )
   {
@@ -485,6 +496,10 @@ void FormulaEdit::editFunction ()
     switch (inputParms->type)
     {
       case TA_Input_Real:
+        dialog->getCombo(s, ts);
+        parms.setData(s, ts);
+        break;
+      case TA_Input_Integer:
         dialog->getCombo(s, ts);
         parms.setData(s, ts);
         break;

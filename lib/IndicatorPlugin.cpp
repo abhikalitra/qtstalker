@@ -173,20 +173,26 @@ void IndicatorPlugin::calculate (QList<PlotLine *> &lines)
       continue;
     }
 
+    // check for any price bar inputs
+    const TA_InputParameterInfo *inputParms;
+    int loop;
+    for (loop = 0; loop < (int) theInfo->nbInput; loop++ )
+    {
+      TA_GetInputParameterInfo(theInfo->handle, loop, &inputParms);
+      if (inputParms->type == TA_Input_Price)
+      {
+        retCode = TA_SetInputParamPricePtr(parmHolder, 0, &open[0], &high[0], &low[0], &close[0], &volume[0], &oi[0]);
+        if (retCode != TA_SUCCESS)
+          qDebug() << "IndicatorPlugin::calculate:cannot set input prices for" << s;
+        break;
+      }
+    }
+
     // setup the input arrays
     s = "Input1";
     QString ts;
     parms.getData(s, ts);
-    if (! ts.length())
-    {
-      retCode = TA_SetInputParamPricePtr(parmHolder, 0, &open[0], &high[0], &low[0], &close[0], &volume[0], &oi[0]);
-      if (retCode != TA_SUCCESS)
-      {
-        qDebug("IndicatorPlugin::calculate:cannot set input prices");
-        continue;
-      }
-    }
-    else
+    if (! ts.isEmpty())
     {
       addInputLine(ts, tlines);
       PlotLine *line = tlines.value(ts);
