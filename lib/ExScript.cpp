@@ -21,6 +21,8 @@
 
 #include "ExScript.h"
 #include "PrefDialog.h"
+#include "ta_libc.h"
+
 #include <QWaitCondition>
 #include <QMutex>
 #include <QByteArray>
@@ -229,6 +231,7 @@ void ExScript::parseIndicator (QString &s)
     return;
   }
 
+/*
   parms = parms[1].split(")");
   parms = parms[0].split(",");
 
@@ -496,7 +499,6 @@ void ExScript::parseIndicator (QString &s)
     if (retCode != TA_SUCCESS)
       qDebug("TALIB::calculate:can't delete parm holder");
   }
-
-
+*/
 }
 
