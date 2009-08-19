@@ -23,6 +23,8 @@
 #include "DataBase.h"
 #include "IndicatorDialog.h"
 #include "Indicator.h"
+#include "Config.h"
+
 
 #include "../pics/ok.xpm"
 #include "../pics/disable.xpm"
@@ -111,7 +113,7 @@ void IndicatorPage::newIndicator ()
 				    	    QLineEdit::Normal,
 				    	    tr("New Indicator"),
 				    	    &ok);
-  if (! ok)
+  if (! ok || selection.isEmpty())
     return;
 
   DataBase db;
@@ -123,7 +125,10 @@ void IndicatorPage::newIndicator ()
     return;
   }
 
-  int tabRow = QInputDialog::getInt (this, tr("Indicator Tab"), tr("Row"), 1, 1, 3, 1, &ok, 0);
+  Config config;
+  int rows;
+  config.getData(Config::IndicatorTabRows, rows);
+  int tabRow = QInputDialog::getInt (this, tr("Indicator Tab"), tr("Row"), 1, 1, rows, 1, &ok, 0);
   if (! ok)
     return;
 
@@ -351,7 +356,10 @@ void IndicatorPage::moveIndicator ()
   int cr = i.getTabRow();
 
   bool aok;
-  int row = QInputDialog::getInt(this, tr("Move Indicator"), tr("Tab Row"), cr, 1, 3, 1, &aok, 0);
+  Config config;
+  int rows;
+  config.getData(Config::IndicatorTabRows, rows);
+  int row = QInputDialog::getInt(this, tr("Move Indicator"), tr("Tab Row"), cr, 1, rows, 1, &aok, 0);
   if (! aok)
     return;
 

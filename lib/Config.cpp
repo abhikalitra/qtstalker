@@ -74,7 +74,10 @@ void Config::getData (Parm p, QSplitter *sp)
     if (loop >= sizeList.count())
       break;
 
-    sizeList[loop] = l[loop].toInt();
+    if (l[loop].toInt() < 25)
+      sizeList[loop] = 25;
+    else
+      sizeList[loop] = l[loop].toInt();
   }
   
   sp->setSizes(sizeList);

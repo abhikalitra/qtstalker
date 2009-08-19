@@ -147,8 +147,12 @@ void FormulaEdit::openRule ()
 */
 }
 
-void FormulaEdit::doubleClicked (QListWidgetItem *)
+void FormulaEdit::doubleClicked (QListWidgetItem *item)
 {
+  if (! item)
+    return;
+
+  editFunction();
 }
 
 void FormulaEdit::addFunction ()
@@ -166,7 +170,7 @@ void FormulaEdit::addFunction ()
                                            TRUE,
                                            &ok,
                                            0);
-  if (! ok)
+  if (! ok || function.isEmpty())
     return;
 
   IndicatorParms parms;
@@ -615,6 +619,8 @@ void FormulaEdit::itemSelected ()
 
   QString s;
   parms.getLabel(s);
+  if (s.isEmpty())
+    s = tr("Label");
   plotLabel->setText(s);
 
   parms.getLineType(s);
@@ -647,7 +653,7 @@ void FormulaEdit::plotBoxChecked (bool status)
     parms.getLabel(s);
     if (! s.length())
     {
-      s = "Label";
+      s = tr("Label");
       parms.setLabel(s);
     }
     plotLabel->setText(s);
@@ -673,6 +679,8 @@ void FormulaEdit::plotLabelChanged (const QString &t)
   IndicatorParms parms;
   indicator.getParm(formula->currentRow(), parms);
   QString s = t;
+  if (s.isEmpty())
+    s = tr("Label");
   parms.setLabel(s);
   indicator.setParm(formula->currentRow(), parms);
 }

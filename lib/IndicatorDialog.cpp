@@ -26,6 +26,7 @@
 
 #include <QList>
 #include <QVBoxLayout>
+#include <QMessageBox>
 
 
 
@@ -85,6 +86,11 @@ void IndicatorDialog::save ()
   Indicator i;
   i.setName(name);
   formula->getIndicator(i);
+  if (! i.count())
+  {
+    QMessageBox::information(this, tr("Qtstalker: Error"), tr("Indicator has no parms."));
+    return;
+  }
 
   DataBase db;
   db.setIndicator(i);
