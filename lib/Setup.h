@@ -40,9 +40,9 @@ class Setup
 
   protected:
     QString home;
-    QString docPath;
     QString version;
-    QString quotePath;
+//    QString docPath;
+//    QString quotePath;
 };
 
 #endif

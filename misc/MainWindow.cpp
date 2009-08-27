@@ -118,24 +118,12 @@ void MainWindow::createActions ()
   action->setStatusTip(tr("About CSV"));
   connect(action, SIGNAL(triggered()), this, SLOT(about()));
   actionList.insert(About, action);
-
-  action = new QAction(tr("Dump Index"), this);
-  action->setStatusTip(tr("Dump Index"));
-  connect(action, SIGNAL(triggered()), this, SLOT(dumpIndex()));
-  actionList.insert(DumpIndex, action);
-
-  action = new QAction(tr("Dump Symbol"), this);
-  action->setStatusTip(tr("Dump Symbol"));
-  connect(action, SIGNAL(triggered()), this, SLOT(dumpSymbol()));
-  actionList.insert(DumpSymbol, action);
 }
 
 void MainWindow::createMenus ()
 {
   QMenu *menu = menuBar()->addMenu(tr("&File"));
   menu->addAction(actionList.value(NewRule));
-  menu->addAction(actionList.value(DumpIndex));
-  menu->addAction(actionList.value(DumpSymbol));
   menu->addSeparator();
   menu->addAction(actionList.value(Exit));
 
@@ -221,9 +209,9 @@ void MainWindow::loadSettings ()
 
   QSqlQuery q2(db2);
   s = "CREATE TABLE IF NOT EXISTS symbolIndex (";
-  s.append(" symbol TEXT PRIMARY KEY");
+  s.append(" symbol TEXT PRIMARY KEY UNIQUE");
   s.append(", name TEXT");
-  s.append(", format TEXT");
+  s.append(", exchange TEXT");
   s.append(", data TEXT");
   s.append(")");
   q2.exec(s);
@@ -506,52 +494,4 @@ void MainWindow::addRule (QString &name)
 
   csv->status();    
 }
-
-void MainWindow::dumpIndex ()
-{
-  QSqlQuery q(QSqlDatabase::database("quotes"));
-  QString s = "SELECT * FROM symbolIndex";
-  q.exec(s);
-  if (q.lastError().isValid())
-  {
-    qDebug() << "MainWindow::dumpIndex: " << q.lastError().text();
-    return;
-  }
-
-  while (q.next())
-  {
-    QStringList l;
-    l.append(q.value(0).toString());
-    l.append(q.value(1).toString());
-    l.append(q.value(2).toString());
-    l.append(q.value(3).toString());
-    qDebug() << l;
-  }
-}
-
-void MainWindow::dumpSymbol ()
-{
-  bool ok;
-  QString symbol = QInputDialog::getText(this, tr("Dump Symbol"), tr("Enter symbol"), QLineEdit::Normal, QString(), &ok, 0);
-  if (symbol.isEmpty())
-    return;
-
-  QSqlQuery q(QSqlDatabase::database("quotes"));
-  QString s = "SELECT * FROM " + symbol;
-  q.exec(s);
-  if (q.lastError().isValid())
-  {
-    qDebug() << "MainWindow::dumpSymbol: " << q.lastError().text();
-    return;
-  }
-
-  while (q.next())
-  {
-    QStringList l;
-    l.append(q.value(0).toString());
-    l.append(q.value(1).toString());
-    qDebug() << l;
-  }
-}
-
 

@@ -71,7 +71,7 @@ void Bar::getDateTimeString (QString &d)
 
 void Bar::getTimeString (QString &d)
 {
-  d = date.toString("HH:mm:ss.zzz");
+  d = date.toString("HH:mm:ss");
 }
 
 void Bar::clear ()
@@ -122,7 +122,7 @@ bool Bar::getValidDate ()
 
 void Bar::getDateNumber (QString &d)
 {
-  d = date.toString("yyyyMMddHHmmsszzz");
+  d = date.toString("yyyyMMddHHmmss");
 }
 
 void Bar::getDataString (QString &format, QString &s)

@@ -43,7 +43,7 @@ void Setup::setupDirectories ()
   QDir dir(QDir::homePath());
   home = dir.absolutePath();
 
-  quotePath = home + "/.CSV/quotes.sqlite";
+//  quotePath = home + "/.CSV/quotes.sqlite";
 
   home.append("/.qtstalker");
   if (! dir.exists(home))
@@ -52,12 +52,12 @@ void Setup::setupDirectories ()
       qDebug() << "Unable to create ~/.qtstalker directory.";
   }
 
-  docPath = home + "/docs";
-  if (! dir.exists(docPath))
-  {
-    if (! dir.mkdir(docPath))
-      qDebug() << "Unable to create ~/.qtstalker/docs directory.";
-  }
+//  docPath = home + "/docs";
+//  if (! dir.exists(docPath))
+//  {
+//    if (! dir.mkdir(docPath))
+//      qDebug() << "Unable to create ~/.qtstalker/docs directory.";
+//  }
 
   version = "0.37";
 }
@@ -117,16 +117,33 @@ void Setup::setupDataBase (QString session)
 
 void Setup::setupQuoteBase ()
 {
-  QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", "quotes");
-  db.setHostName("me");
-  db.setDatabaseName(quotePath);
-  db.setUserName("QtStalker");
-  db.setPassword("qtstalker");
+  QString k = QString::number(Config::DbPlugin);
+  QString d;
+  getConfig(k, d);
+//  QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", "quotes");
+  QSqlDatabase db = QSqlDatabase::addDatabase(d, "quotes");
+  
+  k = QString::number(Config::DbHostName);
+  getConfig(k, d);
+//  db.setHostName("me");
+  db.setHostName(d);
+
+  k = QString::number(Config::DbName);
+  getConfig(k, d);
+//  db.setDatabaseName(quotePath);
+  db.setDatabaseName(d);
+
+  k = QString::number(Config::DbUserName);
+  getConfig(k, d);
+//  db.setUserName("QtStalker");
+  db.setUserName(d);
+
+  k = QString::number(Config::DbPassword);
+  getConfig(k, d);
+//  db.setPassword("qtstalker");
+  db.setPassword(d);
   if (! db.open())
-  {
     qDebug() << "Setup::setup: quote db open failed";
-    return;
-  }
 }
 
 void Setup::setupConfigDefaults ()
@@ -140,14 +157,8 @@ void Setup::setupConfigDefaults ()
 
   setConfig(k, home);
 
-  k = QString::number(Config::UserDocsPath);
-  setConfig(k, docPath);
-
   k = QString::number(Config::Version);
   setConfig(k, version);
-
-  k = QString::number(Config::QuotePath);
-  setConfig(k, quotePath);
 
   k = QString::number(Config::Pixelspace);
   d = "6";
@@ -214,23 +225,11 @@ void Setup::setupConfigDefaults ()
   setConfig(k, d);
 
   k = QString::number(Config::PrefDlgWindowSize);
-  d = "400,270";
-  setConfig(k, d);
-
-  k = QString::number(Config::HelpWindowSize);
-  d = "350,350";
+  d = "400,400";
   setConfig(k, d);
 
   k = QString::number(Config::PlotSizes);
-  d = "339,85,85";
-  setConfig(k, d);
-
-  k = QString::number(Config::ShowMenuBar);
-  d = "1";
-  setConfig(k, d);
-
-  k = QString::number(Config::PSButtonCount);
-  d = "3";
+  d = "339,85";
   setConfig(k, d);
 
   k = QString::number(Config::PSButton1);
@@ -329,20 +328,8 @@ void Setup::setupConfigDefaults ()
   d = "1";
   setConfig(k, d);
 
-  k = QString::number(Config::PrefColorCount);
-  d = "5";
-  setConfig(k, d);
-
-  k = QString::number(Config::PrefColor);
-  d = "#ffffff";
-  setConfig(k, d); // white
-
   k = QString::number(Config::ShowRecentCharts);
   d = "1";
-  setConfig(k, d);
-
-  k = QString::number(Config::NavigatorActiveButton);
-  d = "0"; // chart panel
   setConfig(k, d);
 
   k = QString::number(Config::LastChartObjectID);
@@ -351,6 +338,74 @@ void Setup::setupConfigDefaults ()
 
   k = QString::number(Config::IndicatorTabRows);
   d = "2";
+  setConfig(k, d);
+  
+  k = QString::number(Config::DbPlugin);
+  d = "QSQLITE";
+  setConfig(k, d);
+  
+  k = QString::number(Config::DbHostName);
+  d = "me";
+  setConfig(k, d);
+  
+  k = QString::number(Config::DbName);
+  d = QDir::homePath() + "/.CSV/quotes.sqlite";
+  setConfig(k, d);
+  
+  k = QString::number(Config::DbUserName);
+  d = "QtStalker";
+  setConfig(k, d);
+  
+  k = QString::number(Config::DbPassword);
+  d = "QtStalker";
+  setConfig(k, d);
+  
+  k = QString::number(Config::DbDateFormat);
+  d = "yyyyMMddHHmmss";
+  setConfig(k, d);
+  
+  k = QString::number(Config::DbDateColumn);
+  d = "date";
+  setConfig(k, d);
+
+  k = QString::number(Config::DbOpenColumn);
+  d = "open";
+  setConfig(k, d);
+
+  k = QString::number(Config::DbHighColumn);
+  d = "high";
+  setConfig(k, d);
+
+  k = QString::number(Config::DbLowColumn);
+  d = "low";
+  setConfig(k, d);
+
+  k = QString::number(Config::DbCloseColumn);
+  d = "close";
+  setConfig(k, d);
+
+  k = QString::number(Config::DbVolumeColumn);
+  d = "volume";
+  setConfig(k, d);
+
+  k = QString::number(Config::DbOIColumn);
+  d = "oi";
+  setConfig(k, d);
+
+  k = QString::number(Config::DbIndexTable);
+  d = "symbolIndex";
+  setConfig(k, d);
+
+  k = QString::number(Config::DbSymbolColumn);
+  d = "symbol";
+  setConfig(k, d);
+
+  k = QString::number(Config::DbNameColumn);
+  d = "name";
+  setConfig(k, d);
+
+  k = QString::number(Config::DbExchangeColumn);
+  d = "exchange";
   setConfig(k, d);
 }
 

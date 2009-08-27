@@ -48,9 +48,7 @@ class MainWindow : public QMainWindow
       EditRule,
       DeleteRule,
       Exit,
-      About,
-      DumpIndex,
-      DumpSymbol
+      About
     };
 
     MainWindow();
@@ -78,8 +76,6 @@ class MainWindow : public QMainWindow
     void message (QString);
     void CSVActive (QString);
     void CSVInactive (QString);
-    void dumpIndex ();
-    void dumpSymbol ();
 
   protected:
     void closeEvent(QCloseEvent *event);

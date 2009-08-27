@@ -30,12 +30,12 @@ COSettings::COSettings (QString i, QString s, QString indi, QString t)
   indicator = indi;
   type = t;
 
-  dateFormat = "yyyy-MM-dd HH:mm:ss.zzz";
+  dateFormat = "yyyy-MM-dd HH:mm:ss";
 }
 
 COSettings::COSettings ()
 {
-  dateFormat = "yyyy-MM-dd HH:mm:ss.zzz";
+  dateFormat = "yyyy-MM-dd HH:mm:ss";
 }
 
 COSettings::~COSettings ()

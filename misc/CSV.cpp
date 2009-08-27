@@ -100,7 +100,7 @@ void CSV::import ()
     }
     QTextStream stream(&f);
 
-    emit signalMessage(QString(tr("Importing file ") + fileList[loop]) + QDateTime::currentDateTime().toString(" yyyy-MM-dd HH:mm:ss.zzz"));
+    emit signalMessage(QString(tr("Importing file ") + fileList[loop]) + QDateTime::currentDateTime().toString(" yyyy-MM-dd HH:mm:ss"));
 
     int lineCount = 0;
     QFileInfo fi(f);
@@ -181,7 +181,10 @@ void CSV::import ()
       
       if (rule.getFileNameSymbol())
       {
-        ts = fi.fileName();
+	if (fi.suffix() == "txt" || fi.suffix() == "TXT")
+	  ts = fi.completeBaseName();
+	else
+          ts = fi.fileName();
         r.setSymbol(ts);
       }
 
@@ -219,7 +222,7 @@ void CSV::import ()
     emit signalInactive(ts);
   }
 
-  emit signalMessage(QString(tr("Done ") + QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss.zzz")));
+  emit signalMessage(QString(tr("Done ") + QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss")));
   emit signalMessage(QString(QString::number(records) + tr(" Records Imported")));
 }
 
@@ -243,30 +246,30 @@ void CSV::setChart (QList<Bar> *bars)
   if (q.lastError().isValid())
   {
     qDebug() << q.lastError().text();
+    qDebug() << ts;
     return;
   }
 
   if (! q.next())
   {
     // new symbol, create new table for it
-    ts = "CREATE TABLE " + symbol + " (date INT PRIMARY KEY";
-    int loop;
-    for (loop = 0; loop < formatList.count(); loop++)
-      ts.append("," + formatList[loop] + " REAL");
-    ts.append(")");
+    ts = "CREATE TABLE IF NOT EXISTS " + symbol + " (date INT PRIMARY KEY UNIQUE";
+    ts.append(", open REAL, high REAL, low REAL, close REAL, volume INT, oi INT)");
     q.exec(ts);
     if (q.lastError().isValid())
     {
       qDebug() << "CSV::setChart:create new symbol table: " << q.lastError().text();
+      qDebug() << ts;
       return;
     }
 
     // add new symbol entry into the symbol index table
-    ts = "INSERT OR REPLACE INTO symbolIndex (symbol,format) VALUES('" + symbol + "','" + format + "')";
+    ts = "INSERT OR REPLACE INTO symbolIndex (symbol) VALUES('" + symbol + "')";
     q.exec(ts);
     if (q.lastError().isValid())
     {
       qDebug() << "CSV::setChart:create new symbol index record: " << q.lastError().text();
+      qDebug() << ts;
       return;
     }
   }
@@ -287,18 +290,56 @@ void CSV::setChart (QList<Bar> *bars)
     bar.getDateNumber(date);
 
     ts = "INSERT OR REPLACE INTO " + symbol + " VALUES(" + date;
-
-    int loop2;
-    for (loop2 = 0; loop2 < formatList.count(); loop2++)
-    {
-      QString d;
-      bar.getData(formatList[loop2], d);
+    
+    QString k = "Open";
+    QString d;
+    bar.getData(k, d);
+    if (d.isEmpty())
+      ts.append(",0");
+    else
       ts.append("," + d);
-    }
-    ts.append(")");
+
+    k = "High";
+    bar.getData(k, d);
+    if (d.isEmpty())
+      ts.append(",0");
+    else
+      ts.append("," + d);
+
+    k = "Low";
+    bar.getData(k, d);
+    if (d.isEmpty())
+      ts.append(",0");
+    else
+      ts.append("," + d);
+
+    k = "Close";
+    bar.getData(k, d);
+    if (d.isEmpty())
+      ts.append(",0");
+    else
+      ts.append("," + d);
+
+    k = "Volume";
+    bar.getData(k, d);
+    if (d.isEmpty())
+      ts.append(",0");
+    else
+      ts.append("," + d);
+
+    k = "OI";
+    bar.getData(k, d);
+    if (d.isEmpty())
+      ts.append(",0)");
+    else
+      ts.append("," + d + ")");
+
     q.exec(ts);
     if (q.lastError().isValid())
+    {
       qDebug() << "CSV::setChart:save quote in symbol table: " << q.lastError().text();
+      qDebug() << ts;
+    }
   }
 
   ts = "COMMIT";

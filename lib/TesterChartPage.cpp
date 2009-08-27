@@ -137,11 +137,11 @@ void TesterChartPage::updateChart (BarData *recordList, QList<TradeItem*> &trade
     QDateTime dt;
 
     trade->getEnterDate(dt);
-    QString s = dt.toString("yyyyMMddHHmmsszzz");
+    QString s = dt.toString("yyyyMMddHHmmss");
     entryList.insert(s, loop);
 
     trade->getExitDate(dt);
-    s = dt.toString("yyyyMMddHHmmsszzz");
+    s = dt.toString("yyyyMMddHHmmss");
     exitList.insert(s, loop);
   }
 
@@ -155,7 +155,7 @@ void TesterChartPage::updateChart (BarData *recordList, QList<TradeItem*> &trade
   {
     QDateTime dt;
     recordList->getDate(loop, dt);
-    QString s = dt.toString("yyyyMMddHHmmsszzz");
+    QString s = dt.toString("yyyyMMddHHmmss");
 
     if (entryList.contains(s))
     {

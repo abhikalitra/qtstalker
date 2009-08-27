@@ -86,7 +86,7 @@ void DataWindow::setBars (BarData *d)
     QTableWidgetItem *ti = new QTableWidgetItem(s, 0);
     table->setItem(loop, 0, ti);
 
-    s = dt.toString("HH:mm:ss.zzz");
+    s = dt.toString("HH:mm:ss");
     ti = new QTableWidgetItem(s, 0);
     table->setItem(loop, 1, ti);
   }

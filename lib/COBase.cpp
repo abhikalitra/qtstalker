@@ -43,7 +43,7 @@ COBase::COBase ()
   status = None;
   saveFlag = FALSE;
   date = QDateTime::currentDateTime();
-  dateFormat = "yyyy-MM-dd HH:mm:ss.zzz";
+  dateFormat = "yyyy-MM-dd HH:mm:ss";
 
   menu->addAction(QPixmap(edit), tr("&Edit Object"), this, SLOT(prefDialog()), Qt::CTRL+Qt::Key_E);
 //  menu->insertItem(QPixmap(renam), tr("&Move Object"), this, SLOT(moveObject()), Qt::CTRL+Qt::Key_M);

@@ -21,9 +21,11 @@
 
 #include "DataBase.h"
 #include "Bar.h"
+#include "Config.h"
 
 #include <QtDebug>
 #include <QtSql>
+#include <QVariant>
 
 
 DataBase::DataBase ()
@@ -36,9 +38,14 @@ DataBase::DataBase ()
 
 void DataBase::getAllChartsList (QStringList &l)
 {
+  QString indexTable, symbolColumn;
+  Config config;
+  config.getData(Config::DbIndexTable, indexTable);
+  config.getData(Config::DbSymbolColumn, symbolColumn);
+
   l.clear();
   QSqlQuery q(QSqlDatabase::database("quotes"));
-  QString s = "SELECT symbol FROM symbolIndex";
+  QString s = "SELECT " + symbolColumn + " FROM " + indexTable;
   q.exec(s);
   if (q.lastError().isValid())
   {
@@ -54,10 +61,15 @@ void DataBase::getAllChartsList (QStringList &l)
 
 void DataBase::getSearchList (QString &pat, QStringList &l)
 {
+  QString indexTable, symbolColumn;
+  Config config;
+  config.getData(Config::DbIndexTable, indexTable);
+  config.getData(Config::DbSymbolColumn, symbolColumn);
+
   l.clear();
 
   QSqlQuery q(QSqlDatabase::database("quotes"));
-  QString s = "SELECT symbol FROM symbolIndex WHERE symbol LIKE '" + pat + "'";
+  QString s = "SELECT " + symbolColumn + " FROM " + indexTable + " WHERE " + symbolColumn + " LIKE '" + pat + "'";
   q.exec(s);
   if (q.lastError().isValid())
   {
@@ -75,11 +87,17 @@ void DataBase::getChart (BarData *data)
 {
   QSqlQuery q(QSqlDatabase::database("quotes"));
 
-  QString symbol, ts, ts2, format;
+  QString symbol, ts, ts2, dateFormat, dateColumn, openColumn, highColumn, lowColumn, closeColumn, volumeColumn, oiColumn;
+  QString nameColumn, indexTable, symbolColumn;
   data->getSymbol(symbol);
+  
+  Config config;
+  config.getData(Config::DbIndexTable, indexTable);
+  config.getData(Config::DbSymbolColumn, symbolColumn);
+  config.getData(Config::DbNameColumn, nameColumn);
 
   // get the index details
-  QString s = "SELECT name,format FROM symbolIndex WHERE symbol='" + symbol + "'";
+  QString s = "SELECT " + nameColumn + " FROM " + indexTable + " WHERE " + symbolColumn + "='" + symbol + "'";
   q.exec(s);
   if (q.lastError().isValid())
   {
@@ -91,16 +109,12 @@ void DataBase::getChart (BarData *data)
   {
     s = q.value(0).toString();
     data->setName(s);
-
-    format = q.value(1).toString();
   }
   else
   {
     qDebug() << "DataBase::getChart: no symbolIndex record found";
     return;
   }
-
-  QStringList formatList = format.split(",");
 
   QDateTime firstDate;
   getFirstDate(firstDate, symbol);
@@ -114,13 +128,29 @@ void DataBase::getChart (BarData *data)
   setStartEndDates(sdate, edate, data->getBarLength());
   if (sdate < firstDate)
     return;
+  
+  config.getData(Config::DbDateFormat, dateFormat);
+  config.getData(Config::DbDateColumn, dateColumn);
+  config.getData(Config::DbOpenColumn, openColumn);
+  config.getData(Config::DbHighColumn, highColumn);
+  config.getData(Config::DbLowColumn, lowColumn);
+  config.getData(Config::DbCloseColumn, closeColumn);
+  config.getData(Config::DbVolumeColumn, volumeColumn);
+  config.getData(Config::DbOIColumn, oiColumn);
 
   while (1)
   {
-    QString sd = sdate.toString("yyyyMMddHHmmsszzz");
-    QString ed = edate.toString("yyyyMMddHHmmsszzz");
+    QString sd = sdate.toString(dateFormat);
+    QString ed = edate.toString(dateFormat);
 
-    QString s = "SELECT * FROM " + symbol + " WHERE date >=" + sd + " AND date <" + ed;
+    QString s = "SELECT " + dateColumn;
+    s.append("," + openColumn);
+    s.append("," + highColumn);
+    s.append("," + lowColumn);
+    s.append("," + closeColumn);
+    s.append("," + volumeColumn);
+    s.append("," + oiColumn);
+    s.append(" FROM " + symbol + " WHERE " + dateColumn + " >=" + sd + " AND " + dateColumn + " <" + ed);
     q.exec(s);
     if (q.lastError().isValid())
     {
@@ -132,59 +162,71 @@ void DataBase::getChart (BarData *data)
     Bar *bar = new Bar;
     while (q.next())
     {
-      QDateTime dt = QDateTime::fromString(q.value(0).toString(), "yyyyMMddHHmmsszzz");
+      QDateTime dt = QDateTime::fromString(q.value(0).toString(), dateFormat);
       bar->setDate(dt);
 
       // check if this is first data for bar construction, we need to set the open
       if (! openFlag)
       {
-        int loop;
-        for (loop = 0; loop < formatList.count(); loop++)
-        {
-          s = q.value(loop + 1).toString();
-          bar->setData(formatList[loop], s);
-        }
+        QVariant v = q.value(1);
+	if (v.isValid())
+	  bar->setOpen(v.toDouble());
+	
+        v = q.value(2);
+	if (v.isValid())
+	  bar->setHigh(v.toDouble());
+	
+        v = q.value(3);
+	if (v.isValid())
+	  bar->setLow(v.toDouble());
+	
+        v = q.value(4);
+	if (v.isValid())
+	  bar->setClose(v.toDouble());
+	
+        v = q.value(5);
+	if (v.isValid())
+	  bar->setVolume(v.toDouble());
+	
+        v = q.value(6);
+	if (v.isValid())
+	  bar->setOI(v.toDouble());
+	
         openFlag = TRUE;
         continue;
       }
 
-      int i = formatList.indexOf("High");
-      if (i > -1)
+      QVariant v = q.value(2);
+      if (v.isValid())
       {
-        double h = q.value(i + 1).toDouble();
+        double h = v.toDouble();
         if (h > bar->getHigh())
           bar->setHigh(h);
       }
 
-      i = formatList.indexOf("Low");
-      if (i > -1)
+      v = q.value(3);
+      if (v.isValid())
       {
-        double l = q.value(i + 1).toDouble();
+        double l = v.toDouble();
         if (l < bar->getLow())
           bar->setLow(l);
       }
 
-      i = formatList.indexOf("Close");
-      if (i > -1)
-      {
-        double c = q.value(i + 1).toDouble();
-        bar->setClose(c);
-      }
+      v = q.value(4);
+      if (v.isValid())
+        bar->setClose(v.toDouble());
 
-      i = formatList.indexOf("Volume");
-      if (i > -1)
+      v = q.value(5);
+      if (v.isValid())
       {
-        double v = q.value(i + 1).toDouble();
+        double v1 = v.toDouble();
         double v2 = bar->getVolume();
-        bar->setVolume(v + v2);
+        bar->setVolume(v1 + v2);
       }
 
-      i = formatList.indexOf("OI");
-      if (i > -1)
-      {
-        double c = q.value(i + 1).toDouble();
-        bar->setOI(c);
-      }
+      v = q.value(6);
+      if (v.isValid())
+        bar->setOI(v.toDouble());
     }
 
     if (bar->getEmptyFlag())
@@ -206,8 +248,13 @@ void DataBase::getChart (BarData *data)
 
 void DataBase::getFirstDate (QDateTime &date, QString &symbol)
 {
+  QString dateFormat, dateColumn;
+  Config config;
+  config.getData(Config::DbDateFormat, dateFormat);
+  config.getData(Config::DbDateColumn, dateColumn);
+
   QSqlQuery q(QSqlDatabase::database("quotes"));
-  QString s = "SELECT date FROM " + symbol + " ORDER BY date ASC LIMIT 1";
+  QString s = "SELECT " + dateColumn + " FROM " + symbol + " ORDER BY " + dateColumn + " ASC LIMIT 1";
   q.exec(s);
   if (q.lastError().isValid())
   {
@@ -216,13 +263,18 @@ void DataBase::getFirstDate (QDateTime &date, QString &symbol)
   }
 
   if (q.next())
-    date = QDateTime::fromString(q.value(0).toString(), "yyyyMMddHHmmsszzz");
+    date = QDateTime::fromString(q.value(0).toString(), dateFormat);
 }
 
 void DataBase::getLastDate (QDateTime &date, QString &symbol)
 {
+  QString dateFormat, dateColumn;
+  Config config;
+  config.getData(Config::DbDateFormat, dateFormat);
+  config.getData(Config::DbDateColumn, dateColumn);
+
   QSqlQuery q(QSqlDatabase::database("quotes"));
-  QString s = "SELECT date FROM " + symbol + " ORDER BY date DESC LIMIT 1";
+  QString s = "SELECT " + dateColumn + " FROM " + symbol + " ORDER BY " + dateColumn + " DESC LIMIT 1";
   q.exec(s);
   if (q.lastError().isValid())
   {
@@ -231,7 +283,7 @@ void DataBase::getLastDate (QDateTime &date, QString &symbol)
   }
 
   if (q.next())
-    date = QDateTime::fromString(q.value(0).toString(), "yyyyMMddHHmmsszzz");
+    date = QDateTime::fromString(q.value(0).toString(), dateFormat);
 }
 
 void DataBase::setStartEndDates (QDateTime &startDate, QDateTime &endDate, BarData::BarLength barLength)

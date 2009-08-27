@@ -29,6 +29,8 @@
 #include <QSpinBox>
 #include <QDialog>
 #include <QDialogButtonBox>
+#include <QComboBox>
+#include <QLineEdit>
 
 #include "ColorButton.h"
 #include "FontButton.h"
@@ -81,6 +83,23 @@ class Preferences : public QDialog
     ColorButton *gridColorButton;
     FontButton *plotFontButton;
     FontButton *appFontButton;
+
+    QComboBox *dbDriver;
+    QLineEdit *dbHostName;
+    QLineEdit *dbUserName;
+    QLineEdit *dbPassword;
+    QLineEdit *dateFormat;
+    QLineEdit *dateColumn;
+    QLineEdit *openColumn;
+    QLineEdit *highColumn;
+    QLineEdit *lowColumn;
+    QLineEdit *closeColumn;
+    QLineEdit *volumeColumn;
+    QLineEdit *oiColumn;
+    QLineEdit *indexTable;
+    QLineEdit *symbolColumn;
+    QLineEdit *nameColumn;
+    QLineEdit *exchangeColumn;
     FileButton *dbFile;
 
     // on MainToolbar    

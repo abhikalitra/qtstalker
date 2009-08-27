@@ -135,7 +135,7 @@ void BarData::getDate (int i, QDateTime &dt)
 int BarData::getX (QDateTime &date)
 {
   int x = -1;
-  QString s = date.toString("yyyy-MM-dd HH:mm:ss.zzz");
+  QString s = date.toString("yyyy-MM-dd HH:mm:ss");
   if (dateList.contains(s))
     x = dateList.value(s);
   return x;

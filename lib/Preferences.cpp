@@ -174,28 +174,219 @@ void Preferences::createDatabasePage ()
 
   QWidget *w = new QWidget;
 
-  QVBoxLayout *vbox = new QVBoxLayout;
-  w->setLayout(vbox);
+  QHBoxLayout *hbox = new QHBoxLayout;
+  w->setLayout(hbox);
   
   QGridLayout *grid = new QGridLayout;
   grid->setMargin(5);
   grid->setSpacing(5);
-  grid->setColumnStretch(1, 1); // stretch 2nd col a little
-  grid->setColumnStretch(2, 2); // stretch outer right col more
-  vbox->addLayout(grid);
+  grid->setColumnStretch(1, 2);
+  hbox->addLayout(grid);
   
-  vbox->insertStretch(-1, 1);
+  int row = 0;
+  int col = 0;
 
-  QLabel *label = new QLabel(tr("Quotes Database"));
-  grid->addWidget(label, 0, 0);
-  
-  QString s;
+  // setup the db sql driver
+  QLabel *label = new QLabel(tr("Qt DB Driver"));
+  grid->addWidget(label, row, col++);
+
   QStringList l;
-  config.getData(Config::QuotePath, s);
+  l << "QSQLITE" << "QSQLITE2" << "QMYSQL" << "QOCI" << "QODBC" << "QPSQL" << "QTDS" << "QDB2" << "QIBASE";
+  dbDriver = new QComboBox;
+  dbDriver->addItems(l);
+  grid->addWidget(dbDriver, row++, col--);
+  QString s;
+  config.getData(Config::DbPlugin, s);
+  if (s.length())
+    dbDriver->setCurrentIndex(dbDriver->findText(s));
+  
+
+  // setup the db sql host name
+  label = new QLabel(tr("Db Host Name"));
+  grid->addWidget(label, row, col++);
+
+  dbHostName = new QLineEdit;
+  grid->addWidget(dbHostName, row++, col--);
+  config.getData(Config::DbHostName, s);
+  if (s.length())
+    dbHostName->setText(s);
+  
+  
+  // setup the db name
+  label = new QLabel(tr("Db Name"));
+  grid->addWidget(label, row, col++);
+
+  l.clear();
+  config.getData(Config::DbName, s);
   if (s.length())
     l.append(s);
   dbFile = new FileButton(w, l, s);
-  grid->addWidget(dbFile, 0, 1);
+  grid->addWidget(dbFile, row++, col--);
+  
+  
+  // setup the db user name
+  label = new QLabel(tr("Db User Name"));
+  grid->addWidget(label, row, col++);
+
+  dbUserName = new QLineEdit;
+  grid->addWidget(dbUserName, row++, col--);
+  config.getData(Config::DbUserName, s);
+  if (s.length())
+    dbUserName->setText(s);
+  
+  
+  // setup the db password
+  label = new QLabel(tr("Db Password"));
+  grid->addWidget(label, row, col++);
+
+  dbPassword = new QLineEdit;
+  dbPassword->setEchoMode(QLineEdit::Password);
+  grid->addWidget(dbPassword, row++, col--);
+  config.getData(Config::DbPassword, s);
+  if (s.length())
+    dbPassword->setText(s);
+  
+  
+  // setup the date field name
+  label = new QLabel(tr("Date Format"));
+  grid->addWidget(label, row, col++);
+
+  dateFormat = new QLineEdit;
+  grid->addWidget(dateFormat, row++, col--);
+  config.getData(Config::DbDateFormat, s);
+  if (s.length())
+    dateFormat->setText(s);
+  
+  
+  // setup the date column
+  label = new QLabel(tr("Date Column Name"));
+  grid->addWidget(label, row, col++);
+
+  dateColumn = new QLineEdit;
+  grid->addWidget(dateColumn, row++, col--);
+  config.getData(Config::DbDateColumn, s);
+  if (s.length())
+    dateColumn->setText(s);
+  
+  // setup the open column
+  label = new QLabel(tr("Open Column Name"));
+  grid->addWidget(label, row, col++);
+
+  openColumn = new QLineEdit;
+  grid->addWidget(openColumn, row++, col--);
+  config.getData(Config::DbOpenColumn, s);
+  if (s.length())
+    openColumn->setText(s);
+  
+  // setup the high column
+  label = new QLabel(tr("High Column Name"));
+  grid->addWidget(label, row, col++);
+
+  highColumn = new QLineEdit;
+  grid->addWidget(highColumn, row++, col--);
+  config.getData(Config::DbHighColumn, s);
+  if (s.length())
+    highColumn->setText(s);
+  
+
+  // start a new col list of items in the page
+  grid->setRowStretch(row, 2);
+  
+  row = 0;
+  col = 0;
+  
+  grid = new QGridLayout;
+  grid->setMargin(5);
+  grid->setSpacing(5);
+  grid->setColumnStretch(1, 2);
+  hbox->addLayout(grid);
+
+  
+  // setup the low column
+  label = new QLabel(tr("Low Column Name"));
+  grid->addWidget(label, row, col++);
+
+  lowColumn = new QLineEdit;
+  grid->addWidget(lowColumn, row++, col--);
+  config.getData(Config::DbLowColumn, s);
+  if (s.length())
+    lowColumn->setText(s);
+  
+  // setup the close column
+  label = new QLabel(tr("Close Column Name"));
+  grid->addWidget(label, row, col++);
+
+  closeColumn = new QLineEdit;
+  grid->addWidget(closeColumn, row++, col--);
+  config.getData(Config::DbCloseColumn, s);
+  if (s.length())
+    closeColumn->setText(s);
+  
+  // setup the date column
+  label = new QLabel(tr("Volume Column Name"));
+  grid->addWidget(label, row, col++);
+
+  volumeColumn = new QLineEdit;
+  grid->addWidget(volumeColumn, row++, col--);
+  config.getData(Config::DbVolumeColumn, s);
+  if (s.length())
+    volumeColumn->setText(s);
+  
+  // setup the oi column
+  label = new QLabel(tr("OI Column Name"));
+  grid->addWidget(label, row, col++);
+
+  oiColumn = new QLineEdit;
+  grid->addWidget(oiColumn, row++, col--);
+  config.getData(Config::DbOIColumn, s);
+  if (s.length())
+    oiColumn->setText(s);
+  
+
+  // setup the symbol search table 
+  label = new QLabel(tr("Symbol Index Table"));
+  grid->addWidget(label, row, col++);
+
+  indexTable = new QLineEdit;
+  grid->addWidget(indexTable, row++, col--);
+  config.getData(Config::DbIndexTable, s);
+  if (s.length())
+    indexTable->setText(s);
+
+  
+  // setup the symbol search column
+  label = new QLabel(tr("Symbol Column"));
+  grid->addWidget(label, row, col++);
+
+  symbolColumn = new QLineEdit;
+  grid->addWidget(symbolColumn, row++, col--);
+  config.getData(Config::DbSymbolColumn, s);
+  if (s.length())
+    symbolColumn->setText(s);
+  
+  
+  // setup the symbol name column
+  label = new QLabel(tr("Symbol Name Column"));
+  grid->addWidget(label, row, col++);
+
+  nameColumn = new QLineEdit;
+  grid->addWidget(nameColumn, row++, col--);
+  config.getData(Config::DbNameColumn, s);
+  if (s.length())
+    nameColumn->setText(s);
+  
+  
+  // setup the symbol exchange column
+  label = new QLabel(tr("Symbol Exchange Column"));
+  grid->addWidget(label, row, col++);
+
+  exchangeColumn = new QLineEdit;
+  grid->addWidget(exchangeColumn, row++, col--);
+  config.getData(Config::DbExchangeColumn, s);
+  if (s.length())
+    exchangeColumn->setText(s);
+  
+  grid->setRowStretch(row, 2);
 
   tabs->addTab(w, tr("Quotes"));
 }
@@ -611,7 +802,56 @@ void Preferences::slotSave ()
   QStringList l;
   dbFile->getFile(l);
   if (l.count())
-    config.setData(Config::QuotePath, l[0]);
+    config.setData(Config::DbName, l[0]);
+
+  QString s = dbDriver->currentText();
+  config.setData(Config::DbPlugin, s);
+  
+  s = dbHostName->text();
+  config.setData(Config::DbHostName, s);
+  
+  s = dbUserName->text();
+  config.setData(Config::DbUserName, s);
+  
+  s = dbPassword->text();
+  config.setData(Config::DbPassword, s);
+  
+  s = dateFormat->text();
+  config.setData(Config::DbDateFormat, s);
+  
+  s = dateColumn->text();
+  config.setData(Config::DbDateColumn, s);
+  
+  s = openColumn->text();
+  config.setData(Config::DbOpenColumn, s);
+  
+  s = highColumn->text();
+  config.setData(Config::DbHighColumn, s);
+  
+  s = lowColumn->text();
+  config.setData(Config::DbLowColumn, s);
+  
+  s = closeColumn->text();
+  config.setData(Config::DbCloseColumn, s);
+  
+  s = volumeColumn->text();
+  config.setData(Config::DbVolumeColumn, s);
+  
+  s = oiColumn->text();
+  config.setData(Config::DbOIColumn, s);
+  
+  s = indexTable->text();
+  config.setData(Config::DbIndexTable, s);
+  
+  s = symbolColumn->text();
+  config.setData(Config::DbSymbolColumn, s);
+  
+  s = nameColumn->text();
+  config.setData(Config::DbNameColumn, s);
+  
+  s = exchangeColumn->text();
+  config.setData(Config::DbExchangeColumn, s);
+  
   
   emit signalReloadToolBars();
   

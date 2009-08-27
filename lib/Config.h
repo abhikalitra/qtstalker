@@ -39,14 +39,14 @@ class Config
       Home, // qtstalker base directory
       DataPath, // file path to database
       Pixelspace, // number of pixels between data points
-      BarLength, 
+      BarLength, // bar length ie. 5 minute, daily, weekly
       Grid, // chart grid on/off
       BarsToLoad, // number of bars to load
       BackgroundColor, // color of chart background
       BorderColor, // color of chart borders
       GridColor, // color of chart grid
       DefaultBuyArrowColor, // default buy arrow color
-      QuotePath, // path to quote db
+      DbName, // sql db name
       Crosshairs, // char crosshairs on/off
       DrawMode, // chart draw mode on/off
       DataPanelSize, // size of the data panel
@@ -54,59 +54,59 @@ class Config
       PlotFont, // chart plot font
       AppFont, // app font
       NavAreaSize, // navigator panel size
-      UserDocsPath, // path to user docs
-      DocsPath, // path to docs
+      DbPlugin, // the qt name for the sql db plugin used for quotes
+      DbHostName, // the hostname used for sql quotes
       MainWindowSize, // app window size
       MainWindowPos, // app position
       PrefDlgWindowSize, // preferences dialog window size
-      HelpWindowSize, // 
-      BackTesterWindowSize,
-      ScannerWindowSize,
-      Version,
-      PlotSizes,
-      ShowMenuBar, // unused
-      ShowRecentCharts,
-      CurrentChart,
-      LastNewIndicator,
-      PSButtonCount,
-      PSButton1,
-      PSButton2,
-      PSButton3,
-      ShowSidePanel,
-      ShowQuitBtn,
-      ShowPrefBtn,
-      ShowSidePanelBtn,
-      ShowGridBtn,
-      ShowScaleToScreenBtn,
-      ShowCrosshairBtn,
-      ShowPaperTradeBtn, // unused
-      ShowDrawModeBtn,
-      ShowNewIndicatorBtn,
-      ShowDataWindowBtn,
-      ShowHelpButton,
-      ShowSlider,
-      ShowBarsToLoadField,
-      ShowBarSpSpinbox,
-      ShowCmps5Btn,
-      ShowCmps15Btn,
-      ShowCmps60Btn,
-      ShowCmpsDayBtn,
-      ShowCmpsWkyBtn,
-      ShowCmpsMtyBtn,
-      ShowCmpsComboBox,
-      PrefColorCount,
-      PrefColor,
-      Unused0, // unused
-      LastAktiveNav,
-      LastGroupUsed,
-      LastIndicatorUsed,
-      LastDateTimeCOAdded,
-      IndiGroupSplitterSize,
-      MainToolBarPos,
-      ChartToolBarPos,
-      NavigatorActiveButton,
-      RecentChartsList,
-      LastChartObjectID,
+      DbUserName, // sql quotes db user name needed for login
+      BackTesterWindowSize, // last backtester window size
+      ScannerWindowSize,  // last scanner window size
+      Version,  // current qtstalker version
+      PlotSizes, // csv list of plot row sizes
+      DbPassword, // sql db user password
+      ShowRecentCharts, // csv list of last used charts
+      CurrentChart, // currently loaded chart
+      DbDateFormat, // date format ie yyyy/MM/dd HH:mm:ss
+      DbDateColumn, // the sql date column text
+      PSButton1, // toolbar bar spacing button 1
+      PSButton2, // toolbar bar spacing button 2
+      PSButton3, // toolbar bar spacing button 3
+      ShowSidePanel, // side panel flag
+      ShowQuitBtn, // toolbar button flag
+      ShowPrefBtn,  // toolbar button flag
+      ShowSidePanelBtn, // toolbar button flag
+      ShowGridBtn, // toolbar button flag
+      ShowScaleToScreenBtn, // toolbar button flag
+      ShowCrosshairBtn, // toolbar button flag
+      DbOpenColumn, // the sql open column text
+      ShowDrawModeBtn, // toolbar button flag
+      ShowNewIndicatorBtn, // toolbar button flag
+      ShowDataWindowBtn, // toolbar button flag
+      ShowHelpButton, // toolbar button flag
+      ShowSlider, // toolbar button flag
+      ShowBarsToLoadField,  // toolbar button flag
+      ShowBarSpSpinbox, // toolbar button flag
+      ShowCmps5Btn, // toolbar button flag
+      ShowCmps15Btn, // toolbar button flag
+      ShowCmps60Btn, // toolbar button flag
+      ShowCmpsDayBtn, // toolbar button flag
+      ShowCmpsWkyBtn, // toolbar button flag
+      ShowCmpsMtyBtn, // toolbar button flag
+      ShowCmpsComboBox, // toolbar button flag
+      DbHighColumn, // the sql high column text
+      DbLowColumn, // the sql low column text
+      DbCloseColumn, // the sql close column text
+      DbVolumeColumn, // the sql volume column text
+      LastGroupUsed, // last group displayed in groups area
+      LastIndicatorUsed, // csv list of the last indicators used
+      DbOIColumn, // the sql oi column text
+      DbIndexTable, // table name for quote symbol index
+      MainToolBarPos, // last position of the main toolbar
+      ChartToolBarPos, // last position of the chart toolbar
+      DbSymbolColumn, // the name of the symbol index symbol column
+      RecentChartsList, // csv list of the contents of the recent charts combobox
+      LastChartObjectID, // used to assign a new co object id number
       DefaultCycleColor,
       DefaultCycleInterval,
       DefaultFiboLineColor,
@@ -124,8 +124,10 @@ class Config
       DefaultTrendLineBar,
       DefaultTrendLineExtend,
       DefaultTrendLineUseBar,
-      DefaultVerticalLineColor,
-      IndicatorTabRows
+      DefaultVerticalLineColor, // default vertical line color
+      IndicatorTabRows, // # of indicator tab rows
+      DbNameColumn, // the name of the symbol index name column
+      DbExchangeColumn // the name of the symbol index exchange column
     };
 
     Config ();
