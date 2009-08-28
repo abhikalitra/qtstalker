@@ -87,7 +87,7 @@ void DataBase::getChart (BarData *data)
 {
   QSqlQuery q(QSqlDatabase::database("quotes"));
 
-  QString symbol, ts, ts2, dateFormat, dateColumn, openColumn, highColumn, lowColumn, closeColumn, volumeColumn, oiColumn;
+  QString symbol, ts, ts2, dateColumn, openColumn, highColumn, lowColumn, closeColumn, volumeColumn, oiColumn;
   QString nameColumn, indexTable, symbolColumn;
   data->getSymbol(symbol);
   
@@ -129,7 +129,6 @@ void DataBase::getChart (BarData *data)
   if (sdate < firstDate)
     return;
   
-  config.getData(Config::DbDateFormat, dateFormat);
   config.getData(Config::DbDateColumn, dateColumn);
   config.getData(Config::DbOpenColumn, openColumn);
   config.getData(Config::DbHighColumn, highColumn);
@@ -140,8 +139,8 @@ void DataBase::getChart (BarData *data)
 
   while (1)
   {
-    QString sd = sdate.toString(dateFormat);
-    QString ed = edate.toString(dateFormat);
+    QString sd = sdate.toString("yyyy-MM-dd HH:mm:ss");
+    QString ed = edate.toString("yyyy-MM-dd HH:mm:ss");
 
     QString s = "SELECT " + dateColumn;
     s.append("," + openColumn);
@@ -150,7 +149,7 @@ void DataBase::getChart (BarData *data)
     s.append("," + closeColumn);
     s.append("," + volumeColumn);
     s.append("," + oiColumn);
-    s.append(" FROM " + symbol + " WHERE " + dateColumn + " >=" + sd + " AND " + dateColumn + " <" + ed);
+    s.append(" FROM " + symbol + " WHERE " + dateColumn + " >='" + sd + "' AND " + dateColumn + " < '" + ed + "'");
     q.exec(s);
     if (q.lastError().isValid())
     {
@@ -162,7 +161,7 @@ void DataBase::getChart (BarData *data)
     Bar *bar = new Bar;
     while (q.next())
     {
-      QDateTime dt = QDateTime::fromString(q.value(0).toString(), dateFormat);
+      QDateTime dt = q.value(0).toDateTime();
       bar->setDate(dt);
 
       // check if this is first data for bar construction, we need to set the open
@@ -248,9 +247,8 @@ void DataBase::getChart (BarData *data)
 
 void DataBase::getFirstDate (QDateTime &date, QString &symbol)
 {
-  QString dateFormat, dateColumn;
+  QString dateColumn;
   Config config;
-  config.getData(Config::DbDateFormat, dateFormat);
   config.getData(Config::DbDateColumn, dateColumn);
 
   QSqlQuery q(QSqlDatabase::database("quotes"));
@@ -263,14 +261,13 @@ void DataBase::getFirstDate (QDateTime &date, QString &symbol)
   }
 
   if (q.next())
-    date = QDateTime::fromString(q.value(0).toString(), dateFormat);
+    date = q.value(0).toDateTime();
 }
 
 void DataBase::getLastDate (QDateTime &date, QString &symbol)
 {
-  QString dateFormat, dateColumn;
+  QString dateColumn;
   Config config;
-  config.getData(Config::DbDateFormat, dateFormat);
   config.getData(Config::DbDateColumn, dateColumn);
 
   QSqlQuery q(QSqlDatabase::database("quotes"));
@@ -283,7 +280,8 @@ void DataBase::getLastDate (QDateTime &date, QString &symbol)
   }
 
   if (q.next())
-    date = QDateTime::fromString(q.value(0).toString(), dateFormat);
+    date = q.value(0).toDateTime();
+
 }
 
 void DataBase::setStartEndDates (QDateTime &startDate, QDateTime &endDate, BarData::BarLength barLength)

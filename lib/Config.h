@@ -67,7 +67,7 @@ class Config
       DbPassword, // sql db user password
       ShowRecentCharts, // csv list of last used charts
       CurrentChart, // currently loaded chart
-      DbDateFormat, // date format ie yyyy/MM/dd HH:mm:ss
+      Unused1, // unused
       DbDateColumn, // the sql date column text
       PSButton1, // toolbar bar spacing button 1
       PSButton2, // toolbar bar spacing button 2

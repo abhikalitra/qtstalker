@@ -198,6 +198,8 @@ void MainWindow::loadSettings ()
   if (q.lastError().isValid())
     qDebug() << "CSV::loadSettings:createImportRulesTable: " << q.lastError().text();
 
+  
+  
   QSqlDatabase db2 = QSqlDatabase::addDatabase("QSQLITE", "quotes");
   db2.setHostName("localhost");
   s = home + "/quotes.sqlite";
@@ -207,12 +209,24 @@ void MainWindow::loadSettings ()
   if (! db2.open())
     qDebug() << "CSV::loadSettings:setupQuoteBase: quotes db open failed";
 
+  // mysql testing
+//  QSqlDatabase db2 = QSqlDatabase::addDatabase("QMYSQL", "quotes");
+//  db2.setHostName("localhost");
+//  db2.setDatabaseName("test");
+//  db2.setUserName("anonymous");
+//  db2.setPassword(QString());
+//  if (! db2.open())
+//    qDebug() << "CSV::loadSettings:setupQuoteBase: quotes db open failed";
+
+
+  
+  
   QSqlQuery q2(db2);
   s = "CREATE TABLE IF NOT EXISTS symbolIndex (";
-  s.append(" symbol TEXT PRIMARY KEY UNIQUE");
-  s.append(", name TEXT");
-  s.append(", exchange TEXT");
-  s.append(", data TEXT");
+  s.append(" symbol VARCHAR(50) PRIMARY KEY UNIQUE");
+  s.append(", name VARCHAR(100)");
+  s.append(", exchange VARCHAR(25)");
+  s.append(", data VARCHAR(250)");
   s.append(")");
   q2.exec(s);
   if (q2.lastError().isValid())

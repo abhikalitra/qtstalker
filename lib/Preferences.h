@@ -34,7 +34,6 @@
 
 #include "ColorButton.h"
 #include "FontButton.h"
-#include "FileButton.h"
 #include "Config.h"
 
 
@@ -86,9 +85,9 @@ class Preferences : public QDialog
 
     QComboBox *dbDriver;
     QLineEdit *dbHostName;
+    QLineEdit *dbName;
     QLineEdit *dbUserName;
     QLineEdit *dbPassword;
-    QLineEdit *dateFormat;
     QLineEdit *dateColumn;
     QLineEdit *openColumn;
     QLineEdit *highColumn;
@@ -100,7 +99,6 @@ class Preferences : public QDialog
     QLineEdit *symbolColumn;
     QLineEdit *nameColumn;
     QLineEdit *exchangeColumn;
-    FileButton *dbFile;
 
     // on MainToolbar    
     QCheckBox *quitBtnCheck;

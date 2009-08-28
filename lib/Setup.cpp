@@ -43,21 +43,12 @@ void Setup::setupDirectories ()
   QDir dir(QDir::homePath());
   home = dir.absolutePath();
 
-//  quotePath = home + "/.CSV/quotes.sqlite";
-
   home.append("/.qtstalker");
   if (! dir.exists(home))
   {
     if (! dir.mkdir(home))
       qDebug() << "Unable to create ~/.qtstalker directory.";
   }
-
-//  docPath = home + "/docs";
-//  if (! dir.exists(docPath))
-//  {
-//    if (! dir.mkdir(docPath))
-//      qDebug() << "Unable to create ~/.qtstalker/docs directory.";
-//  }
 
   version = "0.37";
 }
@@ -120,27 +111,22 @@ void Setup::setupQuoteBase ()
   QString k = QString::number(Config::DbPlugin);
   QString d;
   getConfig(k, d);
-//  QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", "quotes");
   QSqlDatabase db = QSqlDatabase::addDatabase(d, "quotes");
   
   k = QString::number(Config::DbHostName);
   getConfig(k, d);
-//  db.setHostName("me");
   db.setHostName(d);
 
   k = QString::number(Config::DbName);
   getConfig(k, d);
-//  db.setDatabaseName(quotePath);
   db.setDatabaseName(d);
 
   k = QString::number(Config::DbUserName);
   getConfig(k, d);
-//  db.setUserName("QtStalker");
   db.setUserName(d);
 
   k = QString::number(Config::DbPassword);
   getConfig(k, d);
-//  db.setPassword("qtstalker");
   db.setPassword(d);
   if (! db.open())
     qDebug() << "Setup::setup: quote db open failed";
@@ -345,7 +331,7 @@ void Setup::setupConfigDefaults ()
   setConfig(k, d);
   
   k = QString::number(Config::DbHostName);
-  d = "me";
+  d = "localhost";
   setConfig(k, d);
   
   k = QString::number(Config::DbName);
@@ -353,15 +339,11 @@ void Setup::setupConfigDefaults ()
   setConfig(k, d);
   
   k = QString::number(Config::DbUserName);
-  d = "QtStalker";
+  d = "qtstalker";
   setConfig(k, d);
   
   k = QString::number(Config::DbPassword);
-  d = "QtStalker";
-  setConfig(k, d);
-  
-  k = QString::number(Config::DbDateFormat);
-  d = "yyyyMMddHHmmss";
+  d = "qtstalker";
   setConfig(k, d);
   
   k = QString::number(Config::DbDateColumn);

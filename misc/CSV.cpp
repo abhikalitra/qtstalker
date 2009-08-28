@@ -100,7 +100,7 @@ void CSV::import ()
     }
     QTextStream stream(&f);
 
-    emit signalMessage(QString(tr("Importing file ") + fileList[loop]) + QDateTime::currentDateTime().toString(" yyyy-MM-dd HH:mm:ss"));
+    emit signalMessage(QString(tr("Importing file ") + fileList[loop]) + QDateTime::currentDateTime().toString(" yyyy-MM-dd HH:mm:ss.sss"));
 
     int lineCount = 0;
     QFileInfo fi(f);
@@ -222,7 +222,7 @@ void CSV::import ()
     emit signalInactive(ts);
   }
 
-  emit signalMessage(QString(tr("Done ") + QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss")));
+  emit signalMessage(QString(tr("Done ") + QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss.sss")));
   emit signalMessage(QString(QString::number(records) + tr(" Records Imported")));
 }
 
@@ -253,7 +253,7 @@ void CSV::setChart (QList<Bar> *bars)
   if (! q.next())
   {
     // new symbol, create new table for it
-    ts = "CREATE TABLE IF NOT EXISTS " + symbol + " (date INT PRIMARY KEY UNIQUE";
+    ts = "CREATE TABLE IF NOT EXISTS " + symbol + " (date DATETIME PRIMARY KEY UNIQUE";
     ts.append(", open REAL, high REAL, low REAL, close REAL, volume INT, oi INT)");
     q.exec(ts);
     if (q.lastError().isValid())
@@ -264,7 +264,7 @@ void CSV::setChart (QList<Bar> *bars)
     }
 
     // add new symbol entry into the symbol index table
-    ts = "INSERT OR REPLACE INTO symbolIndex (symbol) VALUES('" + symbol + "')";
+    ts = "REPLACE INTO symbolIndex (symbol) VALUES('" + symbol + "')";
     q.exec(ts);
     if (q.lastError().isValid())
     {
@@ -274,22 +274,17 @@ void CSV::setChart (QList<Bar> *bars)
     }
   }
 
-  ts = "BEGIN TRANSACTION";
-  q.exec(ts);
-  if (q.lastError().isValid())
-  {
-    qDebug() << "CSV::setChart:begin transaction: " << q.lastError().text();
-    return;
-  }
+  QSqlDatabase db = QSqlDatabase::database("quotes");
+  db.transaction();
 
   int loop;
   QString date;
   for (loop = 0; loop < bars->count(); loop++)
   {
     Bar bar = bars->at(loop);
-    bar.getDateNumber(date);
+    bar.getDateTimeString(date);
 
-    ts = "INSERT OR REPLACE INTO " + symbol + " VALUES(" + date;
+    ts = "REPLACE INTO " + symbol + " VALUES('" + date + "'";
     
     QString k = "Open";
     QString d;
@@ -342,13 +337,7 @@ void CSV::setChart (QList<Bar> *bars)
     }
   }
 
-  ts = "COMMIT";
-  q.exec(ts);
-  if (q.lastError().isValid())
-  {
-    qDebug() << "CSV::setChart:commit: " << q.lastError().text();
-    return;
-  }
+  db.commit();
 }
 
 

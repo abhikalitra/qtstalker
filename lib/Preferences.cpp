@@ -216,12 +216,11 @@ void Preferences::createDatabasePage ()
   label = new QLabel(tr("Db Name"));
   grid->addWidget(label, row, col++);
 
-  l.clear();
+  dbName = new QLineEdit;
+  grid->addWidget(dbName, row++, col--);
   config.getData(Config::DbName, s);
   if (s.length())
-    l.append(s);
-  dbFile = new FileButton(w, l, s);
-  grid->addWidget(dbFile, row++, col--);
+    dbName->setText(s);
   
   
   // setup the db user name
@@ -245,17 +244,6 @@ void Preferences::createDatabasePage ()
   config.getData(Config::DbPassword, s);
   if (s.length())
     dbPassword->setText(s);
-  
-  
-  // setup the date field name
-  label = new QLabel(tr("Date Format"));
-  grid->addWidget(label, row, col++);
-
-  dateFormat = new QLineEdit;
-  grid->addWidget(dateFormat, row++, col--);
-  config.getData(Config::DbDateFormat, s);
-  if (s.length())
-    dateFormat->setText(s);
   
   
   // setup the date column
@@ -799,25 +787,20 @@ void Preferences::slotSave ()
   config.setData(Config::ShowRecentCharts, recentComboBoxCheck->isChecked());
 
   // save database parms
-  QStringList l;
-  dbFile->getFile(l);
-  if (l.count())
-    config.setData(Config::DbName, l[0]);
-
   QString s = dbDriver->currentText();
   config.setData(Config::DbPlugin, s);
   
   s = dbHostName->text();
   config.setData(Config::DbHostName, s);
   
+  s = dbName->text();
+  config.setData(Config::DbName, s);
+  
   s = dbUserName->text();
   config.setData(Config::DbUserName, s);
   
   s = dbPassword->text();
   config.setData(Config::DbPassword, s);
-  
-  s = dateFormat->text();
-  config.setData(Config::DbDateFormat, s);
   
   s = dateColumn->text();
   config.setData(Config::DbDateColumn, s);

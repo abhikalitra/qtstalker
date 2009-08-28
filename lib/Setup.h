@@ -41,8 +41,6 @@ class Setup
   protected:
     QString home;
     QString version;
-//    QString docPath;
-//    QString quotePath;
 };
 
 #endif
