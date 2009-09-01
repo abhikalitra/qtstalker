@@ -200,7 +200,7 @@ class ExScript : public QObject
     ExScript ();
     ~ExScript ();
     void calculate (QString &command);
-    int sendBarData (QStringList &l);
+    void sendBarData (QStringList &l);
     int plot (QStringList &l);
     int parseIndicator (QStringList &l);
     void getLines (QList<PlotLine *> &);

@@ -1,7 +1,0 @@
-enable=1
-plugin=CUS
-tabRow=1
-dateFlag=1
-Name=bar
-script=bars := BARS(Bar)|plot (bars,#ff0000,Bars,Bar)
-logScale=1

@@ -104,66 +104,61 @@ void ExScript::done (int, QProcess::ExitStatus)
   emit signalDone();
 }
 
-int ExScript::sendBarData (QStringList &l)
+void ExScript::sendBarData (QStringList &l)
 {
-  int loop;
-  QStringList l2;
-  for (loop = 0; loop < data->count(); loop++)
+  // format 'DATA,GET,VARIABLE' returns the requested data in a CSV string
+  // format 'DATA,SET,VARIABLE,CSV,DATA,FROM,NOW,ON' - will create a new line using the provided data
+
+  if (l[1] == "GET")
   {
-    int loop2;
-    QStringList l3;
-    for (loop2 = 0; loop2 < l.count(); loop2++)
+    int flag = FALSE;
+    PlotLine *in = tlines.value(l[1]);
+    if (! in)
     {
-      if (l[loop2] == "D")
+      in = data->getInput(data->getInputType(l[1]));
+      if (! in)
       {
-        QString ts2;
-        data->getDateTimeString(loop, ts2);
-        l3.append(ts2);
-        continue;
+        qDebug() << "ExScript::sendBarData: cannot create input_1 " << l[1];
+        return;
       }
-
-      if (l[loop2] == "O")
-      {
-        l3.append(QString::number(data->getOpen(loop)));
-        continue;
-      }
-
-      if (l[loop2] == "H")
-      {
-        l3.append(QString::number(data->getHigh(loop)));
-        continue;
-      }
-
-      if (l[loop2] == "L")
-      {
-        l3.append(QString::number(data->getLow(loop)));
-        continue;
-      }
-
-      if (l[loop2] == "C")
-      {
-        l3.append(QString::number(data->getClose(loop)));
-        continue;
-      }
-
-      if (l[loop2] == "V")
-      {
-        l3.append(QString::number(data->getVolume(loop)));
-        continue;
-      }
-
-      if (l[loop2] == "I")
-        l3.append(QString::number(data->getOI(loop)));
+    
+      flag = TRUE;
     }
 
-    l2.append(l3.join(","));
-  }
-
-  QByteArray ba;
-  ba.append(l2.join(","));
-  proc->write(ba);
+    int loop;
+    QStringList l2;
+    for (loop = 0; loop < in->getSize(); loop++)
+      l2.append(QString::number(in->getData(loop)));
   
-  return 0;
+    QByteArray ba;
+    ba.append(l2.join(","));
+    ba.append('\n');
+    proc->write(ba);
+    
+    if (flag)
+      delete in;
+  }
+  
+  if (l[1] == "SET")
+  {
+    PlotLine *line = tlines.value(l[2]);
+    if (line)
+    {
+      // variable already used, abort
+      qDebug() << "ExScript::sendBarData: duplicate variable name" << l[2];
+      proc->write("1\n");
+      return;
+    }
+    
+    line = new PlotLine;
+    int loop;
+    for (loop = 3; loop < l.count(); loop++)
+      line->append(l[loop].toDouble());
+    
+    tlines.insert(l[2], line);
+
+    proc->write("0\n");
+  }  
 }
 
 void ExScript::readFromStdout ()
@@ -179,11 +174,7 @@ void ExScript::readFromStdout ()
   
   if (l[0] == "DATA")
   {
-    int rc = sendBarData(l);
-    if (rc)
-      proc->write("1\n");
-    else
-      proc->write("0\n");
+    sendBarData(l);
     return;
   }
 
@@ -298,6 +289,7 @@ int ExScript::parseIndicator (QStringList &l)
     case AVGPRICE:
     case BOP:
       rc = getOHLCInput(l, i);
+      break;
     case APO:
     case PPO:
       rc = getOSC(l, i);
@@ -1770,7 +1762,7 @@ int ExScript::getMINMAXINDEX (QStringList &l)
 //***************************************************
 int ExScript::getOBV (QStringList &l)
 {
-  // format 'FUNCTION,NAME,INPUT'
+  // format 'OBV,NAME,INPUT'
 
   if (l.count() != 3)
   {
