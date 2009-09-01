@@ -21,7 +21,6 @@
 
 #include "IndicatorPlot.h"
 #include "PrefDialog.h"
-#include "IndicatorDialog.h"
 #include "Config.h"
 #include "DataBase.h"
 #include "Indicator.h"
@@ -128,18 +127,8 @@ void IndicatorPlot::setData (BarData *l)
 
 void IndicatorPlot::calculate ()
 {
-  DataBase db;
-  Indicator i;
-  i.setName(indicator);
-  db.getIndicator(i);
-
-  IndicatorPlugin ip(data);
-  ip.setIndicator(i);
-
   qDeleteAll(plotList);
   plotList.clear();
-
-  ip.calculate(plotList);
 }
 
 void IndicatorPlot::setChartPath (QString &d)
@@ -1005,18 +994,9 @@ void IndicatorPlot::getPlotList (QList<PlotLine *> &list)
   list = plotList;
 }
 
-int IndicatorPlot::indicatorPrefDialog (QWidget *)
+void IndicatorPlot::setPlotList (QList<PlotLine *> &list)
 {
-  IndicatorDialog *dialog = new IndicatorDialog(this, indicator);
-  int rc = dialog->exec();
-  
-  if (rc == QDialog::Accepted)
-    rc = TRUE;
-  else
-    rc = FALSE;
-  
-  delete dialog;
-  return rc;
+  plotList = list;
 }
 
 void IndicatorPlot::setIndicator (QString &d)

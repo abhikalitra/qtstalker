@@ -124,8 +124,8 @@ void TesterStopPage::createStopsPage ()
   tvbox->setSpacing(5);
   customLongBox->setLayout(tvbox);
 
-  customLongStopEdit = new FormulaEdit;  
-  tvbox->addWidget(customLongStopEdit);
+//  customLongStopEdit = new FormulaEdit;  
+//  tvbox->addWidget(customLongStopEdit);
 
   customShortBox = new QGroupBox;
   customShortBox->setCheckable(TRUE);
@@ -138,8 +138,8 @@ void TesterStopPage::createStopsPage ()
   tvbox->setSpacing(5);
   customShortBox->setLayout(tvbox);
 
-  customShortStopEdit = new FormulaEdit;  
-  tvbox->addWidget(customShortStopEdit);
+//  customShortStopEdit = new FormulaEdit;  
+//  tvbox->addWidget(customShortStopEdit);
 
   vbox->addStretch(1);
 }
@@ -147,11 +147,11 @@ void TesterStopPage::createStopsPage ()
 void TesterStopPage::getStops (TesterRule &rule)
 {
   Indicator i;
-  customLongStopEdit->getIndicator(i);
+//  customLongStopEdit->getIndicator(i);
   rule.setCustomLongStop(i);
   rule.setInt(TesterRule::CustomLongCheck, customLongBox->isChecked());
 
-  customShortStopEdit->getIndicator(i);
+//  customShortStopEdit->getIndicator(i);
   rule.setCustomShortStop(i);
   rule.setInt(TesterRule::CustomShortCheck, customShortBox->isChecked());
 
@@ -175,11 +175,11 @@ void TesterStopPage::setStops (TesterRule &rule)
 {
   Indicator i;
   rule.getCustomLongStop(i);
-  customLongStopEdit->setIndicator(i);
+//  customLongStopEdit->setIndicator(i);
   customLongBox->setChecked(rule.getInt(TesterRule::CustomLongCheck));
   
   rule.getCustomShortStop(i);
-  customShortStopEdit->setIndicator(i);
+//  customShortStopEdit->setIndicator(i);
   customShortBox->setChecked(rule.getInt(TesterRule::CustomShortCheck));
 
   maxLossBox->setChecked(rule.getInt(TesterRule::MaxLossCheck));

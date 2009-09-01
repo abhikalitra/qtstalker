@@ -27,7 +27,6 @@
 #include <QToolBar>
 
 #include "TesterChartPage.h"
-#include "IndicatorPlugin.h"
 #include "COSettings.h"
 
 

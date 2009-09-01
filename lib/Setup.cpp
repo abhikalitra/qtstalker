@@ -82,10 +82,11 @@ void Setup::setupDataBase (QString session)
     qDebug() << "DataBase::createGroupIndexTable: " << q.lastError().text();
 
   // create the indicator index table
-  s = "CREATE TABLE IF NOT EXISTS indicatorIndex (name TEXT PRIMARY KEY, enable INT, tabRow INT, date INT, log INT, parms TEXT)";
+  s = "CREATE TABLE IF NOT EXISTS indicatorIndex (name TEXT PRIMARY KEY, enable INT, tabRow INT, date INT, log INT, command TEXT)";
   q.exec(s);
   if (q.lastError().isValid())
     qDebug() << "DataBase::createIndicatorIndexTable: " << q.lastError().text();
+  setupDefaultIndicators();
 
   // create the scanners table
   s = "CREATE TABLE IF NOT EXISTS scanners (name TEXT PRIMARY KEY, parms TEXT, allSymbols INT, fileList TEXT, barLength TEXT, bars INT)";
@@ -389,6 +390,10 @@ void Setup::setupConfigDefaults ()
   k = QString::number(Config::DbExchangeColumn);
   d = "exchange";
   setConfig(k, d);
+
+  k = QString::number(Config::DefaultIndicators);
+  d = "0";
+  setConfig(k, d);
 }
 
 void Setup::setConfig (QString &k, QString &d)
@@ -417,5 +422,39 @@ void Setup::getConfig (QString &k, QString &d)
 
   if (q.next())
     d = q.value(0).toString();
+}
+
+void Setup::setupDefaultIndicators ()
+{
+  QString k = QString::number(Config::DefaultIndicators);
+  QString d;
+  getConfig(k, d);
+  if (d.toInt())
+    return;
+
+/*
+  // add default bars indicator
+  QSqlQuery q(QSqlDatabase::database("data"));
+  QString s = "INSERT OR REPLACE INTO indicatorIndex (name,enable,tabRow,date,log,parms) VALUES (";
+  s.append("'Bars',1,1,1,0");
+  s.append(",'Indicator=BARS|Method=Bar|Bar Neutral Color=#0000ff|Variable=bars|Bar Down Color=#ff0000|LineType=Bar|Bar Up Color=#008000|Plot=1|Color=#ff0000|Label=C')");
+  q.exec(s);
+  if (q.lastError().isValid())
+  {
+    qDebug() << "Setup::setupDefaultIndicators: bars " << q.lastError().text();
+    return;
+  }
+
+  // add default volume indicator
+  s = "INSERT OR REPLACE INTO indicatorIndex (name,enable,tabRow,date,log,parms) VALUES (";
+  s.append("'Volume',1,2,1,0");
+  s.append(",'Indicator=UTIL|Method=REF|Period=0|Variable=volume|Input=Volume|LineType=Histogram Bar|Plot=1|Color=#ff0000|Label=V')");
+  q.exec(s);
+  if (q.lastError().isValid())
+  {
+    qDebug() << "Setup::setupDefaultIndicators: volume " << q.lastError().text();
+    return;
+  }
+*/
 }
 

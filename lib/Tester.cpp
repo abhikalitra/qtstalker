@@ -27,7 +27,6 @@
 #include <QtDebug>
 
 #include "Tester.h"
-#include "IndicatorPlugin.h"
 #include "DataBase.h"
 
 
@@ -177,8 +176,8 @@ void Tester::loadSignals ()
   qDeleteAll(exitShortSignal);
   exitShortSignal.clear();
 
-  IndicatorPlugin *ip = new IndicatorPlugin;
-  ip->setIndicatorInput(recordList);
+//  IndicatorPlugin *ip = new IndicatorPlugin;
+//  ip->setIndicatorInput(recordList);
 
   int loop;
   for (loop = 0; loop < 4; loop++)
@@ -202,10 +201,10 @@ void Tester::loadSignals ()
         break;
     }
 
-    ip->setIndicator(i);
+//    ip->setIndicator(i);
 
     QList<PlotLine *> plotList;
-    ip->calculate(plotList);
+//    ip->calculate(plotList);
     if (! plotList.count())
       continue;
     
@@ -536,16 +535,16 @@ bool Tester::loadCustomShortStop ()
 
   Indicator i;
   rule.getCustomShortStop(i);
-  IndicatorPlugin ip;
-  ip.setIndicator(i);
+//  IndicatorPlugin ip;
+//  ip.setIndicator(i);
 
   DataBase db;
   db.getChart(recordList);
 
-  ip.setIndicatorInput(recordList);
+//  ip.setIndicatorInput(recordList);
 
   QList<PlotLine *> plotList;
-  ip.calculate(plotList);
+//  ip.calculate(plotList);
   if (! plotList.count())
   {
     qDebug("TesterStopPage::loadCustomShortStop: no PlotLine returned");
@@ -574,16 +573,16 @@ bool Tester::loadCustomLongStop ()
 
   Indicator i;
   rule.getCustomLongStop(i);
-  IndicatorPlugin ip;
-  ip.setIndicator(i);
+//  IndicatorPlugin ip;
+//  ip.setIndicator(i);
 
   DataBase db;
   db.getChart(recordList);
 
-  ip.setIndicatorInput(recordList);
+//  ip.setIndicatorInput(recordList);
 
   QList<PlotLine *> plotList;
-  ip.calculate(plotList);
+//  ip.calculate(plotList);
   if (! plotList.count())
   {
     qDebug("Tester::loadCustomShortStop: no PlotLine returned");

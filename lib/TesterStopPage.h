@@ -28,7 +28,6 @@
 #include <QDoubleSpinBox>
 #include <QGroupBox>
 
-#include "FormulaEdit.h"
 #include "TesterRule.h"
 
 
@@ -61,8 +60,8 @@ class TesterStopPage : public QWidget
 
     QGroupBox *customLongBox;
     QGroupBox *customShortBox;
-    FormulaEdit *customShortStopEdit;
-    FormulaEdit *customLongStopEdit;
+//    FormulaEdit *customShortStopEdit;
+//    FormulaEdit *customLongStopEdit;
 };
 
 #endif

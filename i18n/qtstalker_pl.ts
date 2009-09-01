@@ -73,6 +73,10 @@
         <source>Done </source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source> Records Imported</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>CSVRuleDialog</name>
@@ -90,10 +94,6 @@
     </message>
     <message>
         <source>Time Interval</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Import Files</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -132,6 +132,34 @@
         <source>Date format missing.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>CSV Files</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Fields</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Custom Field-&gt;&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Rule Format</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Custom Field</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter field name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No commas allowed.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ChartPage</name>
@@ -164,7 +192,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Symbol contains:</source>
+        <source>Symbol pattern:</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -199,13 +227,6 @@
     </message>
     <message>
         <source>Time</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>ExScript</name>
-    <message>
-        <source>Script Path</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -279,37 +300,6 @@
     <name>FontButton</name>
     <message>
         <source>Font</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>FormulaEdit</name>
-    <message>
-        <source>Open Rule</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Qtstalker: Error</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Duplicate variable name.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Add Function</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Edit Function</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Delete Function</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot Parameters</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -394,18 +384,6 @@
 <context>
     <name>IndicatorPage</name>
     <message>
-        <source>Ne&amp;w Indicator		Ctrl+W</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Edit Indicator			Ctrl+E</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Delete Indicator		Ctrl+D</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Qtstalker: Error</source>
         <translation type="unfinished"></translation>
     </message>
@@ -438,7 +416,51 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Dump Indicator Table</source>
+        <source>Show active indicators</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show all indicators</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Search</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;New Indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Delete Indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Move Indicator Tab</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Script Command</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter command to run indicator script</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Indicator Search</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Search pattern:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Move Indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Tab Row</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -642,29 +664,9 @@
         <source>Inactive</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <source>Dump Index</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Dump Symbol</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enter symbol</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>Preferences</name>
-    <message>
-        <source>Edit Prefs</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Main Menubar</source>
-        <translation type="unfinished"></translation>
-    </message>
     <message>
         <source>Bar Spacing 1</source>
         <translation type="unfinished"></translation>
@@ -734,22 +736,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>PaperTrade</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>DrawMode</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>NewIndicator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>DataWindow</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Help</source>
         <translation type="unfinished"></translation>
     </message>
@@ -762,63 +748,143 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Extra Toolbar</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Compression list</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Compression Monthly</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Compression Weekly</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Compression Daily</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Compression 60 Minute</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Compression 15 Minute</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Compression 5 Minute</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>BarSpacing spinner</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>BarsToLoad field</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Pan Chart slider</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Recent charts</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>ExtraToolbar</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Quotes Database</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Quotes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Edit Preferences</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Indicator Tab Rows</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Qt DB Driver</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Db Host Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Db Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Db User Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Db Password</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Date Column Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open Column Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>High Column Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Low Column Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Close Column Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Volume Column Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>OI Column Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Symbol Index Table</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Symbol Column</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Symbol Name Column</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Symbol Exchange Column</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Draw Mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>New Indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Data Window</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Bar Length List</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Monthly Bars</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Weekly Bars</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Daily Bars</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>60 Minute Bars</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>15 Minute Bars</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>5 Minute Bars</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Bar Spacing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Bars To Load</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Chart Slider</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Qtstalker: Warning</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Items modified. Are you sure you want to discard changes?</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -842,10 +908,6 @@
     </message>
     <message>
         <source>Volume</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>OpenInterest</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -902,10 +964,6 @@
     </message>
     <message>
         <source>Monthly</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Qtstalker: Error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -981,62 +1039,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Candle Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Input</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select an indicator:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Indicator Selection</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Variable Name</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>UTIL Indicator Selection</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Color Array</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Operator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>UTIL Format</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>BARS Method Selection</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select a method:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Script Path</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Indicator Summary Parms</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1053,59 +1055,15 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Minimum</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Maximum</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Min Array</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Max Array</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Bar Up Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Bar Neutral Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Bar Down Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>BARS Function</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Duplicate variable name.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>ExScript</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Select Files</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Function Parms</source>
+        <source>OI</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Input2</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Value</source>
+        <source>Mid Point</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1117,10 +1075,6 @@
     </message>
     <message>
         <source>About Qtstalker</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Loading chart...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1268,27 +1222,31 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Pan Chart</source>
+        <source>Scroll Chart</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Work With Charts</source>
+        <source>Recent Charts</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Work With Groups</source>
+        <source>Charts</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Work With Backtesting</source>
+        <source>Groups</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Work With Indicators</source>
+        <source>Backtesting</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Work With Scanners</source>
+        <source>Indicators</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Scanners</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1303,27 +1261,23 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>All Symbols</source>
+        <source>Use All Symbols</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Signal Line</source>
+        <source>Scanner Rule</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Select symbols</source>
+        <source>Scanning...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Symbol contains</source>
+        <source>Cancel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Set Signal Line</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select signal line</source>
+        <source>Scanner_</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1424,7 +1378,38 @@
 <context>
     <name>SymbolButton</name>
     <message>
-        <source>Select Symbol</source>
+        <source> Symbols</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>SymbolDialog</name>
+    <message>
+        <source>Add Symbols</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add Group</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove Symbols</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select symbols</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Symbol contains</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select Group</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Group to add</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1458,6 +1443,26 @@
         <source>Are you sure you want to delete this tester?</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>New Backtest Rule</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter new backtest rule name.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>NewRule</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Qtstalker: Error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This backtest rule already exists.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>Tester</name>
@@ -1482,10 +1487,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Futures</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Open</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1494,38 +1495,11 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>New Backtest Rule</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enter new backtest rule name.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>NewRule</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Qtstalker: Error</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>This backtest rule already exists.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Testing...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>TesterChartPage</name>
-    <message>
-        <source>Scale To Screen</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1568,63 +1542,87 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Test Summary</source>
+        <source>Balance</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Account Balance </source>
+        <source>Net Profit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Net Profit </source>
+        <source>Net Percentage</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Net Profit % </source>
+        <source>Investment</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Initial Investment </source>
+        <source>Commission</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Commissions </source>
+        <source>Drawdown</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Largest Drawdown </source>
+        <source>Trades</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Trades </source>
+        <source>Long Trades</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Long Trades </source>
+        <source>Short Trades</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Short Trades </source>
+        <source>Winning Trades</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Win Summary</source>
+        <source>Total Winning Trades</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Profit </source>
+        <source>Average Win</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Average </source>
+        <source>Largest Win</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Largest </source>
+        <source>Winning Long Trades</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Loss Summary</source>
+        <source>Winning Short Trades</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Losing Trades</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Total Losing Trades</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Average Loss</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Largest Loss</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Losing Long Trades</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Losing Short Trades</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1654,10 +1652,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Enabled</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Long</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1666,15 +1660,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Loss %</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Profit</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Profit %</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1687,10 +1673,6 @@
     </message>
     <message>
         <source>Custom Short</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Custom</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1717,15 +1699,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Trade Delay</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Account Balance</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Futures Margin</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

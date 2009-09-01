@@ -29,8 +29,8 @@
 #include <QCheckBox>
 #include <QSpinBox>
 #include <QCheckBox>
+#include <QToolButton>
 
-#include "FormulaEdit.h"
 #include "ScannerRule.h"
 #include "SymbolButton.h"
 
@@ -57,7 +57,7 @@ class Scanner : public QDialog
 
   protected:
     QCheckBox *allSymbols;
-    FormulaEdit *formula;
+//    FormulaEdit *formula;
     QComboBox *period;
     QSpinBox *bars;
     QDialogButtonBox *buttonBox;    

@@ -475,21 +475,22 @@ void DataBase::getIndicator (Indicator &parms)
   parms.setDate(q.value(3).toInt());
   parms.setLog(q.value(4).toInt());
   s = q.value(5).toString();
-  parms.setParms(s);
+  parms.setCommand(s);
 }
 
 void DataBase::setIndicator (Indicator &i)
 {
-  QString name, enable, tabRow, date, log, parms;
+  QString name, enable, tabRow, date, log, command;
+  
   i.getName(name);
   enable = QString::number(i.getEnable());
   tabRow = QString::number(i.getTabRow());
   date = QString::number(i.getDate());
   log = QString::number(i.getLog());
-  i.getParms(parms);
+  i.getCommand(command);
 
   QSqlQuery q(QSqlDatabase::database("data"));
-  QString s = "INSERT OR REPLACE INTO indicatorIndex VALUES ('" + name + "'," + enable + "," + tabRow + "," + date + "," + log + ",'" + parms + "')";
+  QString s = "INSERT OR REPLACE INTO indicatorIndex VALUES ('" + name + "'," + enable + "," + tabRow + "," + date + "," + log + ",'" + command + "')";
   q.exec(s);
   if (q.lastError().isValid())
     qDebug() << "DataBase::setIndicator: " << q.lastError().text();
@@ -563,24 +564,6 @@ void DataBase::getSearchIndicatorList (QString &pattern, QStringList &list)
   list.sort();
 }
 
-void DataBase::dumpIndicators ()
-{
-  QSqlQuery q(QSqlDatabase::database("data"));
-  QString s = "SELECT * FROM indicatorIndex";
-  q.exec(s);
-  if (q.lastError().isValid())
-  {
-    qDebug() << "DataBase::dumpIndicators: " << q.lastError().text();
-    return;
-  }
-
-  while (q.next())
-  {
-    qDebug() << q.value(0).toString() << q.value(1).toString() << q.value(2).toString()
-             << q.value(3).toString() << q.value(4).toString() << q.value(5).toString();
-  }
-}
-
 /********************************************************************************/
 /****************************** scanner functions *********************************/
 /********************************************************************************/
@@ -631,7 +614,7 @@ void DataBase::getScanner (ScannerRule &rule)
   {
     QString s = q.value(1).toString();
     Indicator i;
-    i.setParms(s);
+    i.setCommand(s);
     rule.setIndicator(i);
 
     s = q.value(2).toString();
@@ -656,7 +639,7 @@ void DataBase::setScanner (ScannerRule &rule)
   Indicator i;
   rule.getIndicator(i);
   QString parms;
-  i.getParms(parms);
+  i.getCommand(parms);
 
   QString allSymbols;
   rule.getAllSymbols(allSymbols);
@@ -741,27 +724,27 @@ void DataBase::getTest (TesterRule &rule)
 
     s = q.value(4).toString();
     Indicator i;
-    i.setParms(s);
+    i.setCommand(s);
     rule.setEnterLong(i);
 
     s = q.value(5).toString();
-    i.setParms(s);
+    i.setCommand(s);
     rule.setExitLong(i);
 
     s = q.value(6).toString();
-    i.setParms(s);
+    i.setCommand(s);
     rule.setEnterShort(i);
 
     s = q.value(7).toString();
-    i.setParms(s);
+    i.setCommand(s);
     rule.setExitShort(i);
 
     s = q.value(8).toString();
-    i.setParms(s);
+    i.setCommand(s);
     rule.setCustomLongStop(i);
 
     s = q.value(9).toString();
-    i.setParms(s);
+    i.setCommand(s);
     rule.setCustomShortStop(i);
   }
 }
@@ -776,22 +759,22 @@ void DataBase::setTest (TesterRule &rule)
 
   Indicator i;
   rule.getEnterLong(i);
-  i.getParms(el);
+  i.getCommand(el);
 
   rule.getExitLong(i);
-  i.getParms(xl);
+  i.getCommand(xl);
 
   rule.getEnterShort(i);
-  i.getParms(es);
+  i.getCommand(es);
 
   rule.getExitShort(i);
-  i.getParms(xs);
+  i.getCommand(xs);
 
   rule.getCustomLongStop(i);
-  i.getParms(ls);
+  i.getCommand(ls);
 
   rule.getCustomShortStop(i);
-  i.getParms(ss);
+  i.getCommand(ss);
 
   QSqlQuery q(QSqlDatabase::database("data"));
   QString s = "INSERT OR REPLACE INTO testers VALUES ('" + name + "','" + parms + "','" + trades + "','" + summary + "','" + el + "','" + xl + "','" + es + "','" + xs + "','" + ls + "','" + ss + "')";

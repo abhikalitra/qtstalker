@@ -62,7 +62,6 @@ class DataBase
     void getIndicatorList (QStringList &);
     void getActiveIndicatorList (QStringList &);
     void getSearchIndicatorList (QString &pattern, QStringList &list);
-    void dumpIndicators ();
 
     // scanner functions
     void getScannerList (QStringList &);

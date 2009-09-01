@@ -25,6 +25,10 @@
 
 #include <QHash>
 #include <QString>
+#include <QStringList>
+
+
+
 
 #include "Indicator.h"
 

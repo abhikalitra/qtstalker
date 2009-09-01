@@ -43,7 +43,6 @@
 
 #include "PlotLine.h"
 #include "COSettings.h"
-#include "IndicatorPlugin.h"
 #include "Scaler.h"
 #include "BarData.h"
 #include "COBase.h"
@@ -102,8 +101,8 @@ class IndicatorPlot : public QWidget
     void drawDot ();
     void drawBar ();
     void drawCandle ();
-    int indicatorPrefDialog (QWidget *);
     void getPlotList (QList<PlotLine *> &);
+    void setPlotList (QList<PlotLine *> &);
     void setIndicator (QString &);
     void loadChartObjects ();
     void addLine (PlotLine *);

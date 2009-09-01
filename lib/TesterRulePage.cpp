@@ -47,8 +47,8 @@ TesterRulePage::TesterRulePage (QWidget *p) : QWidget (p)
   tvbox->setSpacing(0);
   gbox->setLayout(tvbox);
 
-  enterLongEdit = new FormulaEdit;  
-  tvbox->addWidget(enterLongEdit);
+//  enterLongEdit = new FormulaEdit;  
+//  tvbox->addWidget(enterLongEdit);
   
   gbox = new QGroupBox(tr("Exit Long"));
   grid->addWidget(gbox, 0, 1);
@@ -58,8 +58,8 @@ TesterRulePage::TesterRulePage (QWidget *p) : QWidget (p)
   tvbox->setSpacing(0);
   gbox->setLayout(tvbox);
 
-  exitLongEdit = new FormulaEdit;  
-  tvbox->addWidget(exitLongEdit);
+//  exitLongEdit = new FormulaEdit;  
+//  tvbox->addWidget(exitLongEdit);
 
   gbox = new QGroupBox(tr("Enter Short"));
   grid->addWidget(gbox, 1, 0);
@@ -69,8 +69,8 @@ TesterRulePage::TesterRulePage (QWidget *p) : QWidget (p)
   tvbox->setSpacing(0);
   gbox->setLayout(tvbox);
 
-  enterShortEdit = new FormulaEdit;  
-  tvbox->addWidget(enterShortEdit);
+//  enterShortEdit = new FormulaEdit;  
+//  tvbox->addWidget(enterShortEdit);
   
   gbox = new QGroupBox(tr("Exit Short"));
   grid->addWidget(gbox, 1, 1);
@@ -80,23 +80,23 @@ TesterRulePage::TesterRulePage (QWidget *p) : QWidget (p)
   tvbox->setSpacing(0);
   gbox->setLayout(tvbox);
 
-  exitShortEdit = new FormulaEdit;  
-  tvbox->addWidget(exitShortEdit);
+//  exitShortEdit = new FormulaEdit;  
+//  tvbox->addWidget(exitShortEdit);
 }
 
 void TesterRulePage::getRules (TesterRule &rule)
 {
   Indicator i;
-  enterLongEdit->getIndicator(i);
+//  enterLongEdit->getIndicator(i);
   rule.setEnterLong(i);
 
-  exitLongEdit->getIndicator(i);
+//  exitLongEdit->getIndicator(i);
   rule.setExitLong(i);
 
-  enterShortEdit->getIndicator(i);
+//  enterShortEdit->getIndicator(i);
   rule.setEnterShort(i);
 
-  exitShortEdit->getIndicator(i);
+//  exitShortEdit->getIndicator(i);
   rule.setExitShort(i);
 }
 
@@ -104,15 +104,15 @@ void TesterRulePage::setRules (TesterRule &rule)
 {
   Indicator i;
   rule.getEnterLong(i);
-  enterLongEdit->setIndicator(i);
+//  enterLongEdit->setIndicator(i);
 
   rule.getExitLong(i);
-  exitLongEdit->setIndicator(i);
+//  exitLongEdit->setIndicator(i);
 
   rule.getEnterShort(i);
-  enterShortEdit->setIndicator(i);
+//  enterShortEdit->setIndicator(i);
 
   rule.getExitShort(i);
-  exitShortEdit->setIndicator(i);
+//  exitShortEdit->setIndicator(i);
 }
 

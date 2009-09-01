@@ -99,6 +99,8 @@ class PlotLine
     void getDateList (QList<QDateTime> &);
     void setDateList (QList<QDateTime> &);
     void getData (QList<Val> &);
+    void setPlotFlag (bool);
+    bool getPlotFlag ();
     
   private:
     QList<Val> data;
@@ -110,6 +112,7 @@ class PlotLine
     double low;
     bool scaleFlag;
     bool colorFlag;
+    bool plotFlag;
 };
 
 #endif

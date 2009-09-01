@@ -25,8 +25,6 @@
 #include <QString>
 #include <QList>
 
-#include "IndicatorParms.h"
-
 
 
 
@@ -44,17 +42,12 @@ class Indicator
     int getDate ();
     void setLog (int);
     int getLog ();
-    void setParms (QString &);
-    void getParms (QString &);
-    int count ();
-    void getParm (int, IndicatorParms &);
-    void appendParm (IndicatorParms &);
-    void removeParm (int);
-    void setParm (int, IndicatorParms &);
+    void setCommand (QString &);
+    void getCommand (QString &);
     
   protected:
-    QList<IndicatorParms> parms;
     QString name;
+    QString command;
     int enable;
     int tabRow;
     int date;

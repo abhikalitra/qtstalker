@@ -29,7 +29,6 @@
 #include "Scanner.h"
 #include "BarData.h"
 #include "DataBase.h"
-#include "IndicatorPlugin.h"
 
 
 
@@ -90,8 +89,8 @@ Scanner::Scanner (QString n) : QDialog (0, 0)
   label = new QLabel(tr("Scanner Rule"));
   vbox->addWidget(label);
 
-  formula = new FormulaEdit();
-  vbox->addWidget(formula);
+//  formula = new FormulaEdit();
+//  vbox->addWidget(formula);
 
   buttonBox = new QDialogButtonBox;
   vbox->addWidget(buttonBox);
@@ -122,8 +121,8 @@ void Scanner::scan ()
 
   Indicator i;
   rule.getIndicator(i);
-  IndicatorPlugin ip;
-  ip.setIndicator(i);
+//  IndicatorPlugin ip;
+//  ip.setIndicator(i);
 
   this->setEnabled(FALSE);
 
@@ -148,10 +147,10 @@ void Scanner::scan ()
     data->setBarLength((BarData::BarLength) period->currentIndex());
     db.getChart(data);
 
-    ip.setIndicatorInput(data);
+//    ip.setIndicatorInput(data);
 
     QList<PlotLine *> plotList;
-    ip.calculate(plotList);
+//    ip.calculate(plotList);
     if (! plotList.count())
     {
       qDebug() << "Scanner::scan: empty plotlist";
@@ -209,7 +208,7 @@ void Scanner::saveRule ()
   rule.setBars(s);  
 
   Indicator i;
-  formula->getIndicator(i);
+//  formula->getIndicator(i);
   rule.getName(s);
   s.prepend("Scanner_");
   i.setName(s);
@@ -250,7 +249,7 @@ void Scanner::loadRule ()
 
   Indicator i;
   rule.getIndicator(i);
-  formula->setIndicator(i);
+//  formula->setIndicator(i);
 }
 
 void Scanner::exitDialog ()

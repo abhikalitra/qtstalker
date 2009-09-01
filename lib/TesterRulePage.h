@@ -24,7 +24,6 @@
 
 #include <QWidget>
 
-#include "FormulaEdit.h"
 #include "TesterRule.h"
 
 
@@ -38,10 +37,10 @@ class TesterRulePage : public QWidget
     void getRules (TesterRule &);
 
   protected:
-    FormulaEdit *enterLongEdit;
-    FormulaEdit *enterShortEdit;
-    FormulaEdit *exitLongEdit;
-    FormulaEdit *exitShortEdit;
+//    FormulaEdit *enterLongEdit;
+//    FormulaEdit *enterShortEdit;
+//    FormulaEdit *exitLongEdit;
+//    FormulaEdit *exitShortEdit;
 };
 
 #endif

@@ -67,7 +67,7 @@ class Config
       DbPassword, // sql db user password
       ShowRecentCharts, // csv list of last used charts
       CurrentChart, // currently loaded chart
-      Unused1, // unused
+      DefaultIndicators, // install flag for default indicators, == 0 if not installed, == 1 if installed
       DbDateColumn, // the sql date column text
       PSButton1, // toolbar bar spacing button 1
       PSButton2, // toolbar bar spacing button 2

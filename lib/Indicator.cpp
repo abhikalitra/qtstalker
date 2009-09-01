@@ -44,6 +44,16 @@ void Indicator::getName (QString &d)
   d = name;
 }
 
+void Indicator::setCommand (QString &d)
+{
+  command = d;
+}
+
+void Indicator::getCommand (QString &d)
+{
+  d = command;
+}
+
 void Indicator::setEnable (int d)
 {
   enable = d;
@@ -83,63 +93,4 @@ int Indicator::getLog ()
 {
   return log;
 }
-
-void Indicator::setParms (QString &d)
-{
-  parms.clear();
-
-  if (d.isEmpty())
-    return;
-
-  QStringList l = d.split("\n");
-  int loop;
-  for (loop = 0; loop < l.count(); loop++)
-  {
-    IndicatorParms p;
-    p.parse(l[loop]);
-    parms.append(p);
-  }
-}
-
-void Indicator::getParms (QString &d)
-{
-  int loop;
-  QStringList l;
-  for (loop = 0; loop < parms.count(); loop++)
-  {
-    IndicatorParms p = parms.at(loop);
-    QString s;
-    p.getString(s);
-    l.append(s);
-  }
-
-  d = l.join("\n");
-}
-
-int Indicator::count ()
-{
-  return parms.count();
-}
-
-void Indicator::getParm (int i, IndicatorParms &p)
-{
-  p = parms.at(i);
-}
-
-void Indicator::appendParm (IndicatorParms &p)
-{
-  parms.append(p);
-}
-
-void Indicator::removeParm (int row)
-{
-  parms.removeAt(row);
-}
-
-void Indicator::setParm (int i, IndicatorParms &p)
-{
-  parms.replace(i, p);
-}
-
-
 

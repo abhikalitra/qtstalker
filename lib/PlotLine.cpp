@@ -33,6 +33,7 @@ PlotLine::PlotLine ()
   low = 99999999;
   scaleFlag = FALSE;
   colorFlag = FALSE;
+  plotFlag = FALSE;
 }
 
 PlotLine::~PlotLine ()
@@ -466,6 +467,16 @@ void PlotLine::setDateList (QList<QDateTime> &dl)
 void PlotLine::getData (QList<Val> &d)
 {
   d = data;
+}
+
+void PlotLine::setPlotFlag (bool d)
+{
+  plotFlag = d;
+}
+
+bool PlotLine::getPlotFlag ()
+{
+  return plotFlag;
 }
 
 

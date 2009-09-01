@@ -81,7 +81,7 @@ QtstalkerApp::QtstalkerApp(QString session)
   slider = new QSlider;
   slider->setOrientation(Qt::Horizontal);
   slider->setEnabled(FALSE);
-  slider->setToolTip(tr("Pan Chart"));
+  slider->setToolTip(tr("Scroll Chart"));
   slider->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding));
 //  action = toolbar2->addWidget(slider);
 //  actionList.insert(Slider, action);
@@ -184,6 +184,12 @@ QtstalkerApp::QtstalkerApp(QString session)
     lastIndicatorUsed3 = l[2];
   }
 
+
+  // setup the indicator server
+  script = new ExScript;
+  connect(script, SIGNAL(signalDone()), this, SLOT(slotScriptDone()));
+
+  
   // setup the initial indicators
   DataBase db;
   db.getIndicatorList(l);
@@ -650,6 +656,7 @@ void QtstalkerApp::slotQuit()
   // call the destructors which save some settings
   delete gp;
   delete chartNav;
+  delete script;
 
   qDeleteAll(plotList);
   qDeleteAll(tabList);
@@ -723,31 +730,16 @@ void QtstalkerApp::loadChart (QString d)
   recordList->setBarLength((BarData::BarLength) compressionCombo->currentIndex());
   recordList->setBarsRequested(barCount->value());
 
-  slotStatusMessage(tr("Loading chart..."));
+//  slotStatusMessage(tr("Loading chart..."));
 
   DataBase db;
   db.getChart(recordList);
-
-  QStringList l;
-  db.getIndicatorList(l);
-  int loop;  
-  for (loop = 0; loop < (int) l.count(); loop++)
-  {
-    Plot *plot = plotList[l[loop]];
-    if (! plot)
-      continue;
-    plot->setData(recordList);
-    plot->calculate();
-    plot->loadChartObjects();
-  }
   
-  setSliderStart();
-
-  slotDrawPlots();
-
-  setWindowTitle(getWindowCaption());
+  script->setInput(recordList);
   
-  slotStatusMessage(QString());
+  db.getIndicatorList(indicatorList);
+  ilPos = -1;
+  slotScriptDone();
 }
 
 QString QtstalkerApp::getWindowCaption ()
@@ -1052,7 +1044,7 @@ void QtstalkerApp::initIndicatorNav ()
   connect(ip, SIGNAL(signalNewIndicator(QString)), this, SLOT(slotNewIndicator(QString)));
   connect(ip, SIGNAL(signalDeleteIndicator(QString)), this, SLOT(slotDeleteIndicator(QString)));
   connect(this, SIGNAL(signalNewIndicator()), ip, SLOT(newIndicator()));
-  connect(ip, SIGNAL(signalEditIndicator(QString)), this, SLOT(slotEditIndicator(QString)));
+//  connect(ip, SIGNAL(signalEditIndicator(QString)), this, SLOT(slotEditIndicator(QString)));
   navTab->addTab(ip, QIcon(indicator), QString());
   navTab->setTabToolTip(2, tr("Indicators"));
 }
@@ -1206,6 +1198,48 @@ void QtstalkerApp::slotAppFont (QFont d)
   qApp->setFont(d, 0);
   qApp->setFont(d, "QComboBox");
 }
+
+// called each time script is done an indicator
+// we update each plot with the new plotlines
+void QtstalkerApp::slotScriptDone ()
+{
+  if (ilPos > -1)
+  {  
+    Plot *plot = plotList[indicatorList[ilPos]];
+    if (plot)
+    {
+      plot->setData(recordList);
+      plot->calculate();
+    
+      QList<PlotLine *> lines;
+      script->getLines(lines);
+      plot->getIndicatorPlot()->setPlotList(lines);
+    
+      plot->loadChartObjects();
+    }
+  }
+  
+  ilPos++;
+  
+  if (ilPos >= indicatorList.count())
+  {
+    // we are done scripting, finish up now 
+    setSliderStart();
+    slotDrawPlots();
+    setWindowTitle(getWindowCaption());
+    slotStatusMessage(QString());
+    return;
+  }
+
+  DataBase db;
+  Indicator i;
+  i.setName(indicatorList[ilPos]);
+  db.getIndicator(i);
+  QString s;
+  i.getCommand(s);
+  script->calculate(s);
+}
+
 
 /**********************************************************************/
 /************************ TOOLBAR FUNCTIONS ***************************/

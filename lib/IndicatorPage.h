@@ -32,7 +32,6 @@
 #include <QToolButton>
 
 #include "Setting.h"
-#include "IndicatorPlugin.h"
 
 
 
@@ -45,7 +44,7 @@ class IndicatorPage : public QWidget
   signals:
     void signalDisableIndicator (QString);
     void signalEnableIndicator (QString);
-    void signalEditIndicator (QString);
+//    void signalEditIndicator (QString);
     void signalDeleteIndicator (QString);
     void signalNewIndicator (QString);
   
@@ -56,8 +55,8 @@ class IndicatorPage : public QWidget
     void doubleClick (QListWidgetItem *);
     void rightClick (const QPoint &);
     void newIndicator ();
-    void editIndicator ();
-    void editIndicator (QString &);
+//    void editIndicator ();
+//    void editIndicator (QString &);
     void deleteIndicator ();
     void doKeyPress (QKeyEvent *key);
     void indicatorSearch ();

@@ -21,14 +21,13 @@
 
 #include "IndicatorPage.h"
 #include "DataBase.h"
-#include "IndicatorDialog.h"
 #include "Indicator.h"
 #include "Config.h"
 
 
 #include "../pics/ok.xpm"
 #include "../pics/disable.xpm"
-#include "../pics/edit.xpm"
+//#include "../pics/edit.xpm"
 #include "../pics/delete.xpm"
 #include "../pics/newchart.xpm"
 #include "../pics/search.xpm"
@@ -93,8 +92,8 @@ IndicatorPage::IndicatorPage (QWidget *w) : QWidget (w)
   menu = new QMenu(this);
   QAction *action = menu->addAction(QIcon(newchart), tr("&New Indicator"), this, SLOT(newIndicator()), QKeySequence(Qt::CTRL+Qt::Key_N));
   actions.append(action);
-  action = menu->addAction(QIcon(edit), tr("&Edit Indicator"), this, SLOT(editIndicator()), QKeySequence(Qt::CTRL+Qt::Key_E));
-  actions.append(action);
+//  action = menu->addAction(QIcon(edit), tr("&Edit Indicator"), this, SLOT(editIndicator()), QKeySequence(Qt::CTRL+Qt::Key_E));
+//  actions.append(action);
   action = menu->addAction(QIcon(deleteitem), tr("&Delete Indicator"), this, SLOT(deleteIndicator()), QKeySequence(Qt::CTRL+Qt::Key_D));
   actions.append(action);
   action = menu->addAction(QIcon(moveitem), tr("&Move Indicator Tab"), this, SLOT(moveIndicator()), QKeySequence(Qt::CTRL+Qt::Key_M));
@@ -132,24 +131,25 @@ void IndicatorPage::newIndicator ()
   if (! ok)
     return;
 
-  IndicatorDialog *dialog = new IndicatorDialog(this, selection);
-  int rc = dialog->exec();
-  if (rc == QDialog::Rejected)
-  {
-    delete dialog;
+
+  QString command = QInputDialog::getText(this,
+				    	  tr("Script Command"),
+  				    	  tr("Enter command to run indicator script"),
+				    	  QLineEdit::Normal,
+				    	  tr("New Indicator"),
+				    	  &ok);
+  if (! ok || command.isEmpty())
     return;
-  }
 
   Indicator i;
   i.setName(selection);
+  i.setCommand(command);
   db.getIndicator(i);
 
   i.setEnable(1);
   i.setTabRow(tabRow);
 
   db.setIndicator(i);
-
-  delete dialog;
 
   emit signalNewIndicator(selection);
 
@@ -160,6 +160,7 @@ void IndicatorPage::newIndicator ()
     showAll();
 }
 
+/*
 void IndicatorPage::editIndicator ()
 {
   QListWidgetItem *item = list->currentItem();
@@ -170,7 +171,7 @@ void IndicatorPage::editIndicator ()
   editIndicator(s);
 }
 
-void IndicatorPage::editIndicator (QString &s)
+void IndicatorPage::editIndicator (QString &)
 {
   IndicatorDialog *dialog = new IndicatorDialog(this, s);
   int rc = dialog->exec();
@@ -184,6 +185,7 @@ void IndicatorPage::editIndicator (QString &s)
 
   emit signalEditIndicator(s);
 }
+*/
 
 void IndicatorPage::deleteIndicator ()
 {
@@ -245,8 +247,8 @@ void IndicatorPage::rightClick (const QPoint &)
     b = TRUE;
 
   int loop;
-  // menu items 1,2 3 only
-  for (loop = 1; loop < 4; loop++)
+  // menu items 1,2 only
+  for (loop = 1; loop < 3; loop++)
     actions.at(loop)->setEnabled(b);
 
   menu->exec(QCursor::pos());

@@ -19,14 +19,17 @@
  *  USA.
  */
 
-#include "IndicatorParms.h"
 #include "PlotLine.h"
 #include "BarData.h"
+
+
+
 #include <QProcess>
 #include <QList>
 #include <QString>
 #include <QStringList>
 #include <QObject>
+#include <QHash>
 
 
 
@@ -35,20 +38,207 @@ class ExScript : public QObject
 {
   Q_OBJECT
   
+  signals:
+    void signalDone ();
+  
   public:
+    enum IndicatorName
+    {
+      ACOS,
+      AD,
+      ADOSC,
+      ADD,
+      ADX,
+      ADXR,
+      APO,
+      AROON,
+      AROONOSC,
+      ASIN,
+      ATAN,
+      ATR,
+      AVGPRICE,
+      BARS,
+      BBANDS,
+      BETA,
+      BOP,
+      CCI,
+      CDL2CROWS,
+      CDL3BLACKCROWS,
+      CDL3INSIDE,
+      CDL3LINESTRIKE,
+      CDL3OUTSIDE,
+      CDL3STARSINSOUTH,
+      CDL3WHITESOLDIERS,
+      CDLABANDONEDBABY,
+      CDLADVANCEBLOCK,
+      CDLBELTHOLD,
+      CDLBREAKAWAY,
+      CDLCLOSINGMARUBOZU,
+      CDLCONCEALBABYSWALL,
+      CDLCOUNTERATTACK,
+      CDLDARKCLOUDCOVER,
+      CDLDOJI,
+      CDLDOJISTAR,
+      CDLDRAGONFLYDOJI,
+      CDLENGULFING,
+      CDLEVENINGDOJISTAR,
+      CDLEVENINGSTAR,
+      CDLGAPSIDESIDEWHITE,
+      CDLGRAVESTONEDOJI,
+      CDLHAMMER,
+      CDLHANGINGMAN,
+      CDLHARAMI,
+      CDLHARAMICROSS,
+      CDLHIGHWAVE,
+      CDLHIKKAKE,
+      CDLHIKKAKEMOD,
+      CDLHOMINGPIGEON,
+      CDLIDENTICAL3CROWS,
+      CDLINNECK,
+      CDLINVERTEDHAMMER,
+      CDLKICKING,
+      CDLKICKINGBYLENGTH,
+      CDLLADDERBOTTOM,
+      CDLLONGLEGGEDDOJI,
+      CDLLONGLINE,
+      CDLMARUBOZU,
+      CDLMATCHINGLOW,
+      CDLMATHOLD,
+      CDLMORNINGDOJISTAR,
+      CDLMORNINGSTAR,
+      CDLONNECK,
+      CDLPIERCING,
+      CDLRICKSHAWMAN,
+      CDLRISEFALL3METHODS,
+      CDLSEPARATINGLINES,
+      CDLSHOOTINGSTAR,
+      CDLSHORTLINE,
+      CDLSPINNINGTOP,
+      CDLSTALLEDPATTERN,
+      CDLSTICKSANDWICH,
+      CDLTAKURI,
+      CDLTASUKIGAP,
+      CDLTHRUSTING,
+      CDLTRISTAR,
+      CDLUNIQUE3RIVER,
+      CDLUPSIDEGAP2CROWS,
+      CDLXSIDEGAP3METHODS,
+      CEIL,
+      CMO,
+      CORREL,
+      COS,
+      COSH,
+      DIV,
+      DX,
+      EXP,
+      FLOOR,
+      HT_DCPERIOD,
+      HT_DCPHASE,
+      HT_PHASOR,
+      HT_SINE,
+      HT_TRENDLINE,
+      HT_TRENDMODE,
+      LINEARREG,
+      LINEARREG_ANGLE,
+      LINEARREG_INTERCEPT,
+      LINEARREG_SLOPE,
+      LN,
+      LOG10,
+      MA,
+      MACD,
+      MACDEXT,
+      MACDFIX,
+      MAVP,
+      MAX,
+      MAXINDEX,
+      MEDPRICE,
+      MFI,
+      MIDPOINT,
+      MIDPRICE,
+      MIN,
+      MININDEX,
+      MINMAX,
+      MINMAXINDEX,
+      MINUS_DI,
+      MINUS_DM,
+      MOM,
+      MULT,
+      NATR,
+      OBV,
+      PLUS_DI,
+      PLUS_DM,
+      PPO,
+      REF,
+      ROC,
+      ROCP,
+      ROCR,
+      ROCR100,
+      RSI,
+      SAR,
+      SAREXT,
+      SIN,
+      SINH,
+      SQRT,
+      STDDEV,
+      STOCH,
+      STOCHF,
+      STOCHRSI,
+      SUB,
+      SUM,
+      TAN,
+      TANH,
+      TRANGE,
+      TRIX,
+      TSF,
+      TYPPRICE,
+      ULTOSC,
+      VAR,
+      WCLPRICE,
+      WILLR
+    };
+    
     ExScript ();
-    void calculate (BarData *bd, IndicatorParms &parms);
-    void prefDialog (IndicatorParms &parms, QStringList &);
-    void sendBarData (QString &);
-    void plot (QString &);
-    void parseIndicator (QString &);
+    ~ExScript ();
+    void calculate (QString &command);
+    int sendBarData (QStringList &l);
+    int plot (QStringList &l);
+    int parseIndicator (QStringList &l);
+    void getLines (QList<PlotLine *> &);
+    void setInput (BarData *bd);
+    
+    // indicators
+    int getAROON (QStringList &l); // AROON and AROONOSC functions
+    int getBARS (QStringList &l);
+    int getBBANDS (QStringList &l);
+    int getCDL (QStringList &l, int); // candle functions
+    int getMACD (QStringList &l, int i);
+    int getMINMAXINDEX (QStringList &l);
+    int getOBV (QStringList &l);
+    int getREF (QStringList &l);
+    int getSTOCH (QStringList &l, int i);
+    int getSTOCHRSI (QStringList &l);
+    
+    int getSingleInput (QStringList &l, int i);
+    int getHLCVInput (QStringList &l, int i);
+    int getDoubleInput (QStringList &l, int i);
+    int getHLCInput (QStringList &l, int i);
+    int getOHLCInput (QStringList &l, int i);
+    int getSingleInputInt (QStringList &l, int i);
+    int getSingleInputInt2 (QStringList &l, int i);
+    int getHLInput (QStringList &l, int i);
+    int getDoubleOutput (QStringList &l, int i);
+    int getOSC (QStringList &l, int i);
 
   public slots:
     void readFromStdout ();
+    void done (int, QProcess::ExitStatus);
     
   private:
     QProcess *proc;
     BarData *data;
-    QList<PlotLine *> lines;
+    QHash<QString, PlotLine *> tlines;
+    QStringList plotOrder;
+    QStringList maList;
+    QStringList indicatorList;
 };
 

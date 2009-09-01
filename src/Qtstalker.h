@@ -28,7 +28,8 @@
 #include <QHash>
 #include <QStatusBar>
 #include <QList>
-#include "IndicatorPlugin.h"
+
+
 #include "Plot.h"
 #include "Setting.h"
 #include "ChartPage.h"
@@ -36,6 +37,7 @@
 #include "ScannerPage.h"
 #include "TestPage.h"
 #include "GroupPage.h"
+#include "ExScript.h"
 
 
 
@@ -142,6 +144,7 @@ class QtstalkerApp : public QMainWindow
     void setPixelspace (int min, int d);
     void slotEditIndicator (QString);
     void slotAddRecentChart (QString);
+    void slotScriptDone ();
     
   private:
     QSplitter *split;
@@ -170,6 +173,12 @@ class QtstalkerApp : public QMainWindow
     QSpinBox *barCount;
     QSlider *slider;
     QComboBox *recentCharts;
+    
+    // test
+    ExScript *script;
+    QStringList indicatorList;
+    int ilPos;
+    
 };
 
 #endif
