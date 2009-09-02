@@ -21,11 +21,15 @@
 
 #include "PrefDialog.h"
 #include "Config.h"
+
+
 #include <QHBoxLayout>
 #include <QGridLayout>
 #include <QFrame>
 #include <QLabel>
 #include <QVBoxLayout>
+
+
 
 PrefDialog::PrefDialog (QWidget *w) : QDialog (w, 0)
 {
@@ -48,7 +52,7 @@ PrefDialog::~PrefDialog ()
   qDeleteAll(comboList);
   qDeleteAll(dateList);
   qDeleteAll(fileList);
-  qDeleteAll(symbolList);
+//  qDeleteAll(symbolList);
   qDeleteAll(labelList);
   qDeleteAll(timeList);
 }
@@ -368,6 +372,7 @@ void PrefDialog::getFile (QString &name, QStringList &l)
     button->getFile(l);
 }
 
+/*
 void PrefDialog::addSymbolItem (QString &name, QStringList &symbols)
 {
   QLabel *label = new QLabel(name);
@@ -385,6 +390,7 @@ void PrefDialog::getSymbol (QString &name, QStringList &l)
   if (button)
     button->getSymbols(l);
 }
+*/
 
 /*
 void PrefDialog::addLabelItem (QString &name, QString &l)

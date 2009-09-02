@@ -1199,44 +1199,6 @@
     </message>
 </context>
 <context>
-    <name>SymbolButton</name>
-    <message>
-        <source> Symbols</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>SymbolDialog</name>
-    <message>
-        <source>Add Symbols</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Add Group</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Remove Symbols</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select symbols</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Symbol contains</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select Group</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Group to add</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>Text</name>
     <message>
         <source>Color</source>
