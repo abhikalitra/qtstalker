@@ -565,9 +565,108 @@ void DataBase::getSearchIndicatorList (QString &pattern, QStringList &list)
 }
 
 /********************************************************************************/
-/****************************** scanner functions *********************************/
+/********** chart object functions **********************************************/
 /********************************************************************************/
 
+void DataBase::deleteChartObjects (QString &symbol)
+{
+  QSqlQuery q(QSqlDatabase::database("data"));
+  QString s = "DELETE FROM chartObjects WHERE symbol='" + symbol + "'";
+  q.exec(s);
+  if (q.lastError().isValid())
+  {
+    qDebug() << "DataBase::deleteChartObjects: " << q.lastError().text();
+    return;
+  }
+}
+
+void DataBase::deleteChartObjectsIndicator (QString &indicator)
+{
+  QSqlQuery q(QSqlDatabase::database("data"));
+  QString s = "DELETE FROM chartObjects WHERE indicator='" + indicator + "'";
+  q.exec(s);
+  if (q.lastError().isValid())
+  {
+    qDebug() << "DataBase::deleteChartObjectsIndicator: " << q.lastError().text();
+    return;
+  }
+}
+
+void DataBase::deleteChartObject (QString &id)
+{
+  QSqlQuery q(QSqlDatabase::database("data"));
+  QString s = "DELETE FROM chartObjects WHERE id=" + id;
+  q.exec(s);
+  if (q.lastError().isValid())
+  {
+    qDebug() << "DataBase::deleteChartObject: " << q.lastError().text();
+    return;
+  }
+}
+
+void DataBase::getChartObjects (QString &symbol, QString &indicator, QList<COSettings> &list)
+{
+  QSqlQuery q(QSqlDatabase::database("data"));
+  QString s = "SELECT id,symbol,indicator,type,settings FROM chartObjects WHERE symbol='" + symbol + "' AND indicator='" + indicator + "'";
+  q.exec(s);
+  if (q.lastError().isValid())
+  {
+    qDebug() << "DataBase::getChartObjects: " << q.lastError().text();
+    return;
+  }
+
+  while (q.next())
+  {
+    COSettings co(q.value(0).toString(), q.value(1).toString(), q.value(2).toString(), q.value(3).toString());
+    QString ts = q.value(4).toString();
+    co.parse(ts);
+    list.append(co);
+  }
+}
+
+void DataBase::setChartObject (COSettings &co)
+{
+  QString id;
+  co.getID(id);
+
+  QSqlQuery q(QSqlDatabase::database("data"));
+  QString s = "SELECT id FROM chartObjects WHERE id=" + id;
+  q.exec(s);
+  if (q.lastError().isValid())
+  {
+    qDebug() << "DataBase::setChartObject: " << q.lastError().text();
+    return;
+  }
+
+  if (q.next())
+  {
+    QString settings;
+    co.getSettings(settings);
+
+    s = "UPDATE chartObjects SET settings='" + settings + "' WHERE id=" + id;
+    q.exec(s);
+    if (q.lastError().isValid())
+      qDebug() << "DataBase::setChartObject: " << q.lastError().text();
+  }
+  else
+  {
+    QString symbol, indicator, type, settings;
+    co.getSymbol(symbol);
+    co.getIndicator(indicator);
+    co.getType(type);
+    co.getSettings(settings);
+
+    s = "INSERT OR REPLACE INTO chartObjects VALUES (" + id + ",'" + symbol + "','" + indicator + "','" + type + "','" + settings + "')";
+    q.exec(s);
+    if (q.lastError().isValid())
+      qDebug() << "DataBase::setChartObject: " << q.lastError().text();
+  }
+}
+
+/********************************************************************************/
+/****************************** scanner functions *********************************/
+/********************************************************************************/
+/*
 void DataBase::deleteScanner (QString &name)
 {
   QSqlQuery q(QSqlDatabase::database("data"));
@@ -660,11 +759,11 @@ void DataBase::setScanner (ScannerRule &rule)
   if (q.lastError().isValid())
     qDebug() << "DataBase::setSacnner: " << q.lastError().text();
 }
-
+*/
 /********************************************************************************/
 /****************************** tester functions *********************************/
 /********************************************************************************/
-
+/*
 void DataBase::deleteTest (QString &name)
 {
   // delete indicators linked to the tester
@@ -782,104 +881,4 @@ void DataBase::setTest (TesterRule &rule)
   if (q.lastError().isValid())
     qDebug() << "DataBase::setTest: " << q.lastError().text();
 }
-
-/********************************************************************************/
-/********** chart object functions **********************************************/
-/********************************************************************************/
-
-void DataBase::deleteChartObjects (QString &symbol)
-{
-  QSqlQuery q(QSqlDatabase::database("data"));
-  QString s = "DELETE FROM chartObjects WHERE symbol='" + symbol + "'";
-  q.exec(s);
-  if (q.lastError().isValid())
-  {
-    qDebug() << "DataBase::deleteChartObjects: " << q.lastError().text();
-    return;
-  }
-}
-
-void DataBase::deleteChartObjectsIndicator (QString &indicator)
-{
-  QSqlQuery q(QSqlDatabase::database("data"));
-  QString s = "DELETE FROM chartObjects WHERE indicator='" + indicator + "'";
-  q.exec(s);
-  if (q.lastError().isValid())
-  {
-    qDebug() << "DataBase::deleteChartObjectsIndicator: " << q.lastError().text();
-    return;
-  }
-}
-
-void DataBase::deleteChartObject (QString &id)
-{
-  QSqlQuery q(QSqlDatabase::database("data"));
-  QString s = "DELETE FROM chartObjects WHERE id=" + id;
-  q.exec(s);
-  if (q.lastError().isValid())
-  {
-    qDebug() << "DataBase::deleteChartObject: " << q.lastError().text();
-    return;
-  }
-}
-
-void DataBase::getChartObjects (QString &symbol, QString &indicator, QList<COSettings> &list)
-{
-  QSqlQuery q(QSqlDatabase::database("data"));
-  QString s = "SELECT id,symbol,indicator,type,settings FROM chartObjects WHERE symbol='" + symbol + "' AND indicator='" + indicator + "'";
-  q.exec(s);
-  if (q.lastError().isValid())
-  {
-    qDebug() << "DataBase::getChartObjects: " << q.lastError().text();
-    return;
-  }
-
-  while (q.next())
-  {
-    COSettings co(q.value(0).toString(), q.value(1).toString(), q.value(2).toString(), q.value(3).toString());
-    QString ts = q.value(4).toString();
-    co.parse(ts);
-    list.append(co);
-  }
-}
-
-void DataBase::setChartObject (COSettings &co)
-{
-  QString id;
-  co.getID(id);
-
-  QSqlQuery q(QSqlDatabase::database("data"));
-  QString s = "SELECT id FROM chartObjects WHERE id=" + id;
-  q.exec(s);
-  if (q.lastError().isValid())
-  {
-    qDebug() << "DataBase::setChartObject: " << q.lastError().text();
-    return;
-  }
-
-  if (q.next())
-  {
-    QString settings;
-    co.getSettings(settings);
-
-    s = "UPDATE chartObjects SET settings='" + settings + "' WHERE id=" + id;
-    q.exec(s);
-    if (q.lastError().isValid())
-      qDebug() << "DataBase::setChartObject: " << q.lastError().text();
-  }
-  else
-  {
-    QString symbol, indicator, type, settings;
-    co.getSymbol(symbol);
-    co.getIndicator(indicator);
-    co.getType(type);
-    co.getSettings(settings);
-
-    s = "INSERT OR REPLACE INTO chartObjects VALUES (" + id + ",'" + symbol + "','" + indicator + "','" + type + "','" + settings + "')";
-    q.exec(s);
-    if (q.lastError().isValid())
-      qDebug() << "DataBase::setChartObject: " << q.lastError().text();
-  }
-}
-
-
+*/

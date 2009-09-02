@@ -37,7 +37,6 @@
 #include "ChartPage.h"
 #include "PlotLine.h"
 #include "PrefDialog.h"
-//#include "IndicatorSummary.h"
 #include "Preferences.h"
 #include "DataBase.h"
 #include "Indicator.h"
@@ -46,8 +45,6 @@
 
 #include "../pics/dirclosed.xpm"
 #include "../pics/plainitem.xpm"
-#include "../pics/test.xpm"
-#include "../pics/scanner.xpm"
 #include "../pics/done.xpm"
 #include "../pics/grid.xpm"
 #include "../pics/datawindow.xpm"
@@ -58,7 +55,6 @@
 #include "../pics/co.xpm"
 #include "../pics/qtstalker.xpm"
 #include "../pics/crosshair.xpm"
-//#include "../pics/include.xpm"
 
 
 
@@ -125,7 +121,6 @@ QtstalkerApp::QtstalkerApp(QString session)
   for (loop = 0; loop < tabRows; loop++)
   {
     QTabWidget *it = new QTabWidget;
-//    it->setTabPosition(QTabWidget::West);
 
     // make the tab text smaller so we can take up less space for tabs
     QFont font = it->font();
@@ -164,27 +159,14 @@ QtstalkerApp::QtstalkerApp(QString session)
   initChartNav();
   initGroupNav();
   initIndicatorNav();
-  initTestNav();
-  initScannerNav();  
+//  initTestNav();
+//  initScannerNav();  
 
   // restore the last used indicators
   config.getData(Config::LastIndicatorUsed, s);
-  QStringList l = s.split(",");
-  if (l.count() == 1)
-    lastIndicatorUsed1 = l[0];
-  if (l.count() == 2)
-  {
-    lastIndicatorUsed1 = l[0];
-    lastIndicatorUsed2 = l[1];
-  }
-  if (l.count() == 3)
-  {
-    lastIndicatorUsed1 = l[0];
-    lastIndicatorUsed2 = l[1];
-    lastIndicatorUsed3 = l[2];
-  }
+  lastIndicatorUsed = s.split(",");
 
-
+  
   // setup the indicator server
   script = new ExScript;
   connect(script, SIGNAL(signalDone()), this, SLOT(slotScriptDone()));
@@ -192,6 +174,7 @@ QtstalkerApp::QtstalkerApp(QString session)
   
   // setup the initial indicators
   DataBase db;
+  QStringList l;
   db.getIndicatorList(l);
   for (loop = 0; loop < l.count(); loop++)
   {
@@ -920,24 +903,12 @@ void QtstalkerApp::addIndicatorButton (QString d)
   it->addTab(plot, d);
 
   // Set the current indicator in this row to the last used one.
-  switch (i.getTabRow())
+  if (i.getTabRow() < lastIndicatorUsed.count())
   {
-    case 1:
-      if (d == lastIndicatorUsed1)
-        it->setCurrentWidget(plot);
-      break;
-    case 2:
-      if (d == lastIndicatorUsed2)
-        it->setCurrentWidget(plot);
-      break;
-    case 3:
-      if (d == lastIndicatorUsed3)
-        it->setCurrentWidget(plot);
-      break;
-    default:
-      break;
+    if (d == lastIndicatorUsed[i.getTabRow()])
+      it->setCurrentWidget(plot);
   }
-
+    
   QColor color;
   Config config;
   config.getData(Config::BackgroundColor, color);
@@ -1028,6 +999,7 @@ void QtstalkerApp::initGroupNav ()
   navTab->setTabToolTip(1, tr("Groups"));
 }
 
+/*
 void QtstalkerApp::initTestNav ()
 {
   tp = new TestPage(baseWidget);
@@ -1035,6 +1007,7 @@ void QtstalkerApp::initTestNav ()
   navTab->addTab(tp, QIcon(test), QString());
   navTab->setTabToolTip(3, tr("Backtesting"));
 }
+*/
 
 void QtstalkerApp::initIndicatorNav ()
 {
@@ -1049,6 +1022,7 @@ void QtstalkerApp::initIndicatorNav ()
   navTab->setTabToolTip(2, tr("Indicators"));
 }
 
+/*
 void QtstalkerApp::initScannerNav ()
 {
   sp = new ScannerPage(baseWidget);
@@ -1057,6 +1031,7 @@ void QtstalkerApp::initScannerNav ()
   navTab->addTab(sp, QIcon(scanner), QString());
   navTab->setTabToolTip(4, tr("Scanners"));
 }
+*/
 
 void QtstalkerApp::slotHideNav (bool d)
 {
@@ -1167,6 +1142,7 @@ void QtstalkerApp::slotWakeup ()
   qApp->processEvents();
 }
 
+/*
 void QtstalkerApp::slotIndicatorSummary ()
 {
   if (! recordList)
@@ -1192,6 +1168,7 @@ void QtstalkerApp::slotIndicatorSummary ()
 //  connect(&is, SIGNAL(signalWakeup()), this, SLOT(slotWakeup()));
 //  is.run();
 }
+*/
 
 void QtstalkerApp::slotAppFont (QFont d)
 {

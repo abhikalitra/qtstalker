@@ -28,14 +28,13 @@
 #include <QHash>
 #include <QStatusBar>
 #include <QList>
+#include <QSpinBox>
 
 
 #include "Plot.h"
 #include "Setting.h"
 #include "ChartPage.h"
 #include "IndicatorPage.h"
-#include "ScannerPage.h"
-#include "TestPage.h"
 #include "GroupPage.h"
 #include "ExScript.h"
 
@@ -100,9 +99,9 @@ class QtstalkerApp : public QMainWindow
     void createToolBars ();
     void initGroupNav ();
     void initChartNav ();
-    void initTestNav();
     void initIndicatorNav ();
-    void initScannerNav ();
+//    void initTestNav();
+//    void initScannerNav ();
     QString getWindowCaption ();
     void loadChart (QString);
     void setSliderStart ();
@@ -128,7 +127,7 @@ class QtstalkerApp : public QMainWindow
     void slotDrawPlots ();
     void addIndicatorButton (QString);
     void slotWakeup ();
-    void slotIndicatorSummary ();
+//    void slotIndicatorSummary ();
     void slotAppFont (QFont);
     void slotHideNav (bool d);
     void ps1ButtonClicked ();
@@ -159,14 +158,12 @@ class QtstalkerApp : public QMainWindow
     BarData *recordList;
     QTextEdit *infoLabel;
     IndicatorPage *ip;
-    ScannerPage *sp;
-    TestPage *tp;
+//    ScannerPage *sp;
+//    TestPage *tp;
     GroupPage *gp;
     QStatusBar *statusbar;
     QList<QTabWidget*> tabList;
-    QString lastIndicatorUsed1;
-    QString lastIndicatorUsed2;
-    QString lastIndicatorUsed3;
+    QStringList lastIndicatorUsed;
     QHash<MenuAction, QAction*> actionList;
     QComboBox *compressionCombo;
     QSpinBox *pixelspace;
@@ -174,11 +171,9 @@ class QtstalkerApp : public QMainWindow
     QSlider *slider;
     QComboBox *recentCharts;
     
-    // test
     ExScript *script;
     QStringList indicatorList;
     int ilPos;
-    
 };
 
 #endif

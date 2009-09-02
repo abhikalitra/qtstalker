@@ -89,16 +89,16 @@ void Setup::setupDataBase (QString session)
   setupDefaultIndicators();
 
   // create the scanners table
-  s = "CREATE TABLE IF NOT EXISTS scanners (name TEXT PRIMARY KEY, parms TEXT, allSymbols INT, fileList TEXT, barLength TEXT, bars INT)";
-  q.exec(s);
-  if (q.lastError().isValid())
-    qDebug() << "DataBase::createScannersTable: " << q.lastError().text();
+//  s = "CREATE TABLE IF NOT EXISTS scanners (name TEXT PRIMARY KEY, parms TEXT, allSymbols INT, fileList TEXT, barLength TEXT, bars INT)";
+//  q.exec(s);
+//  if (q.lastError().isValid())
+//    qDebug() << "DataBase::createScannersTable: " << q.lastError().text();
 
   // create the testers table
-  s = "CREATE TABLE IF NOT EXISTS testers (name TEXT PRIMARY KEY, parms TEXT, trades TEXT, summary TEXT, el TEXT, xl TEXT, es TEXT, xs TEXT, ls TEXT, ss TEXT)";
-  q.exec(s);
-  if (q.lastError().isValid())
-    qDebug() << "DataBase::createTestersTable: " << q.lastError().text();
+//  s = "CREATE TABLE IF NOT EXISTS testers (name TEXT PRIMARY KEY, parms TEXT, trades TEXT, summary TEXT, el TEXT, xl TEXT, es TEXT, xs TEXT, ls TEXT, ss TEXT)";
+//  q.exec(s);
+//  if (q.lastError().isValid())
+//    qDebug() << "DataBase::createTestersTable: " << q.lastError().text();
 
   // create the chart object table
   s = "CREATE TABLE IF NOT EXISTS chartObjects (id INT PRIMARY KEY, symbol TEXT, indicator TEXT, type TEXT, settings TEXT)";

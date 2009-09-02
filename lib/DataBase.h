@@ -30,8 +30,6 @@
 #include "BarData.h"
 #include "Indicator.h"
 #include "COSettings.h"
-#include "ScannerRule.h"
-#include "TesterRule.h"
 
 
 
@@ -64,16 +62,16 @@ class DataBase
     void getSearchIndicatorList (QString &pattern, QStringList &list);
 
     // scanner functions
-    void getScannerList (QStringList &);
-    void deleteScanner (QString &);
-    void getScanner (ScannerRule &);
-    void setScanner (ScannerRule &);
+//    void getScannerList (QStringList &);
+//    void deleteScanner (QString &);
+//    void getScanner (ScannerRule &);
+//    void setScanner (ScannerRule &);
 
     // tester functions
-    void getTestList (QStringList &);
-    void deleteTest (QString &);
-    void getTest (TesterRule &);
-    void setTest (TesterRule &);
+//    void getTestList (QStringList &);
+//    void deleteTest (QString &);
+//    void getTest (TesterRule &);
+//    void setTest (TesterRule &);
 
     // chart object functions
     void deleteChartObjects (QString &symbol);
@@ -81,9 +79,6 @@ class DataBase
     void deleteChartObject (QString &id);
     void getChartObjects (QString &symbol, QString &indicator, QList<COSettings> &list);
     void setChartObject (COSettings &);
-
-    
-  protected:
 };
 
 #endif
