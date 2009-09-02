@@ -156,7 +156,6 @@ class IndicatorPlot : public QWidget
     int getXFromDate (QDateTime &);
     void getXY (int, int);
     void slotMessage (QString);
-    void slotEditIndicator ();
     void slotNewChartObject (int);
     void slotDeleteAllChartObjects ();
     void slotChartObjectDeleted (QString);
@@ -198,8 +197,6 @@ class IndicatorPlot : public QWidget
     QVector<int> xGrid;
     QMenu *chartMenu;
     QMenu *chartObjectMenu;
-    QString docsPath;
-    QString userDocsPath;
     QList<PlotLine *> plotList;
     QString chartSymbol;
 

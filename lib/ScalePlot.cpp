@@ -20,12 +20,11 @@
  */
 
 #include "ScalePlot.h"
+
 #include <QPainter>
 #include <QPen>
 #include <QPoint>
 #include <QPolygon>
-#include <QResizeEvent>
-#include <QPaintEvent>
 #include <math.h>
 #include <QString>
 #include <QVector>
@@ -34,7 +33,6 @@
 
 ScalePlot::ScalePlot (QWidget *w) : QWidget(w)
 {
-//  setBackgroundMode(Qt::NoBackground);
   scaleWidth = SCALE_WIDTH;
   backgroundColor.setNamedColor("black");
   borderColor.setNamedColor("white");
@@ -84,19 +82,13 @@ void ScalePlot::setLogScale (bool d)
 
 void ScalePlot::draw ()
 {
+  if (buffer.isNull())
+    return;
+  
   buffer.fill(backgroundColor);
 
   if (activeFlag)
-  {
-    if (buffer.isNull())
-    {
-//      buffer.resize(this->width(), this->height());
-      buffer = QPixmap(this->width(), this->height());
-      buffer.fill(backgroundColor);
-    }
-  
     drawScale();
-  }
 
   update();
 }
@@ -115,7 +107,6 @@ void ScalePlot::paintEvent (QPaintEvent *)
 void ScalePlot::resizeEvent (QResizeEvent *event)
 {
   buffer = QPixmap(event->size());
-//  buffer.resize(event->size());
   draw();
 }
 

@@ -20,13 +20,11 @@
  */
 
 #include "IndicatorPlot.h"
-#include "PrefDialog.h"
 #include "Config.h"
 #include "DataBase.h"
 #include "Indicator.h"
 
 #include "../pics/delete.xpm"
-#include "../pics/edit.xpm"
 #include "../pics/loggrid.xpm"
 #include "../pics/date.xpm"
 #include "../pics/buyarrow.xpm"
@@ -40,21 +38,10 @@
 
 #include <QPainter>
 #include <QPen>
-#include <QPoint>
 #include <QPolygon>
 #include <QCursor>
-#include <QContextMenuEvent>
-#include <QKeyEvent>
-#include <QPixmap>
-#include <QResizeEvent>
-#include <QMenu>
-#include <QMouseEvent>
-#include <QPaintEvent>
-#include <QVector>
-#include <QPrinter>
 #include <QImage>
 #include <QMessageBox>
-#include <QInputDialog>
 #include <QtDebug>
 #include <math.h> // only for fabs()
 
@@ -103,6 +90,7 @@ IndicatorPlot::IndicatorPlot (QWidget *w) : QWidget(w)
 IndicatorPlot::~IndicatorPlot ()
 {
   qDeleteAll(coList);
+  qDeleteAll(plotList);
 }
 
 void IndicatorPlot::clear ()
@@ -180,6 +168,9 @@ void IndicatorPlot::setInterval (BarData::BarLength d)
 
 void IndicatorPlot::draw ()
 {
+  if (buffer.isNull())
+    return;
+  
   buffer.fill(backgroundColor);
 
   if (data)
@@ -899,9 +890,6 @@ void IndicatorPlot::showPopupMenu ()
 {
   chartMenu->clear();
     
-  chartMenu->addAction(QPixmap(edit), tr("&Edit Indicator"), this, SLOT(slotEditIndicator()), Qt::CTRL+Qt::Key_E);
-  chartMenu->addSeparator ();
-
   chartObjectMenu = new QMenu(tr("Chart Objects")); 
   chartObjectMenu->addAction(QPixmap(buyarrow), tr("Buy Arrow"), this, SLOT(slotNewBuyArrow()));
   chartObjectMenu->addAction(QPixmap(arc), tr("Cycle"), this, SLOT(slotNewCycle()));
@@ -944,10 +932,6 @@ void IndicatorPlot::toggleLog ()
     logScale = FALSE;
 
   emit signalLogFlag(logScale);
-}
-
-void IndicatorPlot::slotEditIndicator ()
-{
 }
 
 void IndicatorPlot::slotMessage (QString d)

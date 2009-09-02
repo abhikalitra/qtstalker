@@ -84,7 +84,7 @@ class DatePlot : public QWidget
     QColor backgroundColor;
     QColor borderColor;
     BarData *data;
-    QList<TickItem*> dateList;
+    QList<TickItem *> dateList;
     QVector<int> xGrid;
 };
 

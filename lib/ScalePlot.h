@@ -28,6 +28,9 @@
 #include <QFont>
 #include <QPaintEvent>
 #include <QResizeEvent>
+
+
+
 #include "Scaler.h"
 
 class ScalePlot : public QWidget

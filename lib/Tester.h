@@ -89,7 +89,7 @@ class Tester : public QDialog
     QHash<QString, Setting *> exitLongSignal;
     QHash<QString, Setting *> enterShortSignal;
     QHash<QString, Setting *> exitShortSignal;
-    QList<TradeItem*> trades;
+    QList<TradeItem *> trades;
     QTabWidget *tabs;
     QDialogButtonBox *buttonBox;    
     PlotLine *customShortStopLine;

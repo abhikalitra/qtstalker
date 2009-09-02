@@ -23,16 +23,12 @@
 #include <QPainter>
 #include <QString>
 #include <QDateTime>
-#include <QResizeEvent>
-#include <QVector>
-#include <QPaintEvent>
 
 #define SCALE_WIDTH 60
 #define DATE_HEIGHT 30
 
 DatePlot::DatePlot (QWidget *w) : QWidget(w)
 {
-//  setBackgroundMode(Qt::NoBackground);
   scaleWidth = SCALE_WIDTH;
   startX = 2;
   backgroundColor.setNamedColor("black");
@@ -41,7 +37,6 @@ DatePlot::DatePlot (QWidget *w) : QWidget(w)
   interval = BarData::DailyBar;
   startIndex = 0;
   data = 0;
-//  setMouseTracking(TRUE);
   setFocusPolicy(Qt::ClickFocus);
 
   plotFont.setFamily("Helvetica");
@@ -50,17 +45,17 @@ DatePlot::DatePlot (QWidget *w) : QWidget(w)
   
   setMinimumHeight(DATE_HEIGHT);
   setMaximumHeight(DATE_HEIGHT);
-  
-  //dateList.setAutoDelete(TRUE);
 }
 
 DatePlot::~DatePlot ()
 {
+  qDeleteAll(dateList);
 }
 
 void DatePlot::clear ()
 {
   data = 0;
+  qDeleteAll(dateList);
   dateList.clear();
 }
 
@@ -70,6 +65,7 @@ void DatePlot::setData (BarData *l)
     return;
     
   data = l;
+  qDeleteAll(dateList);  
   dateList.clear();
     
   switch (interval)
@@ -98,9 +94,10 @@ void DatePlot::draw ()
 {
   if (buffer.isNull())
     return;
+  
   buffer.fill(backgroundColor);
 
-  if (dateList.count() && isVisible())
+  if (dateList.count() && isVisible() && data)
   {
     QPainter painter;
     painter.begin(&buffer);
@@ -167,7 +164,6 @@ void DatePlot::paintEvent (QPaintEvent *)
 void DatePlot::resizeEvent (QResizeEvent *event)
 {
   buffer = QPixmap(event->size());
-//  buffer.resize(event->size());
   draw();
 }
 
