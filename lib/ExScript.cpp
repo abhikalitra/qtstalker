@@ -112,13 +112,13 @@ void ExScript::sendBarData (QStringList &l)
   if (l[1] == "GET")
   {
     int flag = FALSE;
-    PlotLine *in = tlines.value(l[1]);
+    PlotLine *in = tlines.value(l[2]);
     if (! in)
     {
       in = data->getInput(data->getInputType(l[2]));
       if (! in)
       {
-        qDebug() << "ExScript::sendBarData: cannot create input_1 " << l[1];
+        qDebug() << "ExScript::sendBarData: cannot create input_1 " << l[2];
         return;
       }
     
