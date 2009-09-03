@@ -1,0 +1,25 @@
+********************************************************************
+*************** DATA FORMAT FOR SCRIPTS ****************************
+********************************************************************
+
+The format for exchanging indicator data in scripts is as follows:
+
+
+To request indicator values:
+
+GET_INDICATOR,NAME
+
+  Where NAME is the variable name of the indicator previously created in the script.
+  On success, a CSV string is returned of the entire dataset. Failure returns the string "ERROR".
+  We return "ERROR" instead of "1" because it script might confuse the error code with actual data,
+  so we return letters instead of numbers in this case.
+
+
+To send data from the script to create a new dataset:
+
+SET_INDICATOR,NAME,STRING
+
+   Where NAME is the variable name of the dataset.
+   STRING is CSV string of all values.
+   On success returns "0", failure returns "1";
+  
