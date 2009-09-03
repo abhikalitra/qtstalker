@@ -1,4 +1,4 @@
-# qtstalker DMI indicator
+# qtstalker DMI (Directional Movement Index) indicator
 
 $|++; # turn on autoflush, qtstalker needs this to know when data is finished being sent/recieved
 

@@ -24,6 +24,7 @@
 
 #include <QByteArray>
 #include <QtDebug>
+#include <math.h> // for fabs()
 
 
 
@@ -34,11 +35,13 @@ ExScript::ExScript ()
     qDebug("TALIB::setDefaults:error on TA_Initialize");
 
   proc = 0;
-  
+
+  opList << "=" << "<" << "<=" << ">" << ">=" << "AND" << "OR";
+
   maList << "SMA" << "EMA" << "WMA" << "DEMA" << "TEMA" << "TRIMA" << "KAMA" << "MAMA" << "T3";
   
   indicatorList << "ACOS" << "AD" << "ADOSC" << "ADD" << "ADX" << "ADXR" << "APO" << "AROON" << "AROONOSC" << "ASIN";
-  indicatorList << "ATAN" << "ATR" << "AVGPRICE" << "BARS" << "BBANDS" << "BETA" << "BOP" << "CCI" << "CDL2CROWS" << "CDL3BLACKCROWS";
+  indicatorList << "ATAN" << "ATR" << "AVGPRICE" << "BARS" << "BBANDS" << "BETA" << "BOP" << "CANDLES" << "CCI" << "CDL2CROWS" << "CDL3BLACKCROWS";
   indicatorList << "CDL3INSIDE" << "CDL3LINESTRIKE" << "CDL3OUTSIDE" << "CDL3STARSINSOUTH" << "CDL3WHITESOLDIERS";
   indicatorList << "CDLABANDONEDBABY" << "CDLADVANCEBLOCK" << "CDLBELTHOLD" << "CDLBREAKAWAY" << "CDLCLOSINGMARUBOZU";
   indicatorList << "CDLCONCEALBABYSWALL" << "CDLCOUNTERATTACK" << "CDLDARKCLOUDCOVER" << "CDLDOJI" << "CDLDOJISTAR";
@@ -50,12 +53,12 @@ ExScript::ExScript ()
   indicatorList << "CDLMORNINGSTAR" << "CDLONNECK" << "CDLPIERCING" << "CDLRICKSHAWMAN" << "CDLRISEFALL3METHODS";
   indicatorList << "CDLSEPARATINGLINES" << "CDLSHOOTINGSTAR" << "CDLSHORTLINE" << "CDLSPINNINGTOP" << "CDLSTALLEDPATTERN";
   indicatorList << "CDLSTICKSANDWICH" << "CDLTAKURI" << "CDLTASUKIGAP" << "CDLTHRUSTING" << "CDLTRISTAR" << "CDLUNIQUE3RIVER";
-  indicatorList << "CDLUPSIDEGAP2CROWS" << "CDLXSIDEGAP3METHODS" << "CEIL" << "CMO" << "CORREL" << "COS" << "COSH";
+  indicatorList << "CDLUPSIDEGAP2CROWS" << "CDLXSIDEGAP3METHODS" << "CEIL" << "CMO" << "COLOR" << "COMPARE" << "CORREL" << "COS" << "COSH";
   indicatorList << "DIV" << "DX" << "EXP" << "FLOOR" << "HT_DCPERIOD" << "HT_DCPHASE" << "HT_PHASOR" << "HT_SINE";
   indicatorList << "HT_TRENDLINE" << "HT_TRENDMODE" << "LINEARREG" << "LINEARREG_ANGLE" << "LINEARREG_INTERCEPT";
   indicatorList << "LINEARREG_SLOPE" << "LN" << "LOG10" << "MA" << "MACD" << "MACDEXT" << "MACDFIX" << "MAVP";
   indicatorList << "MAX" << "MAXINDEX" << "MEDPRICE" << "MFI" << "MIDPOINT" << "MIDPRICE" << "MIN" << "MININDEX" << "MINMAX";
-  indicatorList << "MINMAXINDEX" << "MINUS_DI" << "MINUS_DM" << "MOM" << "MULT" << "NATR" << "OBV" << "PLUS_DI" << "PLUS_DM";
+  indicatorList << "MINMAXINDEX" << "MINUS_DI" << "MINUS_DM" << "MOM" << "MULT" << "NATR" << "NORMAL" << "OBV" << "PLUS_DI" << "PLUS_DM";
   indicatorList << "PPO" << "REF" << "ROC" << "ROCP" << "ROCR" << "ROCR100" << "RSI" << "SAR" << "SAREXT" << "SIN" << "SINH";
   indicatorList << "SQRT" << "STDDEV" << "STOCH" << "STOCHF" << "STOCHRSI" << "SUB" << "SUM" << "TAN" << "TANH";
   indicatorList << "TRANGE" << "TRIX" << "TSF" << "TYPPRICE" << "ULTOSC" << "VAR" << "WCLPRICE" << "WILLR";
@@ -106,19 +109,27 @@ void ExScript::done (int, QProcess::ExitStatus)
 
 void ExScript::sendBarData (QStringList &l)
 {
-  // format 'DATA,GET,VARIABLE' returns the requested data in a CSV string
-  // format 'DATA,SET,VARIABLE,CSV,DATA,FROM,NOW,ON' - will create a new line using the provided data
+  // format 'GET_INDICATOR,VARIABLE' returns the requested data in a CSV string
+  // format 'SET_INDICATOR,VARIABLE,CSV,DATA,FROM,NOW,ON' - will create a new line using the provided data
 
-  if (l[1] == "GET")
+  if (l[0] == "GET_INDICATOR")
   {
+    if (l.count() != 2)
+    {
+      qDebug() << "ExScript::sendBarData: parm error " << l;
+      proc->write("ERROR\n");
+      return;
+    }
+    
     int flag = FALSE;
-    PlotLine *in = tlines.value(l[2]);
+    PlotLine *in = tlines.value(l[1]);
     if (! in)
     {
-      in = data->getInput(data->getInputType(l[2]));
+      in = data->getInput(data->getInputType(l[1]));
       if (! in)
       {
-        qDebug() << "ExScript::sendBarData: cannot create input_1 " << l[2];
+        qDebug() << "ExScript::sendBarData: cannot create input_1 " << l[1];
+        proc->write("ERROR\n");
         return;
       }
     
@@ -137,25 +148,34 @@ void ExScript::sendBarData (QStringList &l)
     
     if (flag)
       delete in;
+    
+    return;
   }
   
-  if (l[1] == "SET")
+  if (l[0] == "SET_INDICATOR")
   {
-    PlotLine *line = tlines.value(l[2]);
+    if (l.count() < 3)
+    {
+      qDebug() << "ExScript::sendBarData: parm error " << l;
+      proc->write("1\n");
+      return;
+    }
+    
+    PlotLine *line = tlines.value(l[1]);
     if (line)
     {
       // variable already used, abort
-      qDebug() << "ExScript::sendBarData: duplicate variable name" << l[2];
+      qDebug() << "ExScript::sendBarData: duplicate variable name" << l[1];
       proc->write("1\n");
       return;
     }
     
     line = new PlotLine;
     int loop;
-    for (loop = 3; loop < l.count(); loop++)
+    for (loop = 2; loop < l.count(); loop++)
       line->append(l[loop].toDouble());
     
-    tlines.insert(l[2], line);
+    tlines.insert(l[1], line);
 
     proc->write("0\n");
   }  
@@ -172,7 +192,7 @@ void ExScript::readFromStdout ()
     return;
   }
   
-  if (l[0] == "DATA")
+  if (l[0] == "GET_INDICATOR" || l[0] == "SET_INDICATOR")
   {
     sendBarData(l);
     return;
@@ -427,6 +447,18 @@ int ExScript::parseIndicator (QStringList &l)
       break;
     case STOCHRSI:
       rc = getSTOCHRSI(l);
+      break;
+    case COMPARE:
+      rc = getCOMPARE(l);
+      break;
+    case COLOR:
+      rc = getCOLOR(l);
+      break;
+    case NORMAL:
+      rc = getNORMAL(l);
+      break;
+    case CANDLES:
+      rc = getCANDLES(l);
       break;
     default:
       break;
@@ -729,6 +761,7 @@ int ExScript::getHLCInput (QStringList &l, int i)
     case MINUS_DI:
     case NATR:
     case PLUS_DI:
+    case WILLR:
       if (l.count() != 3)
       {
         qDebug() << "ExScript::getHLCInput: parm error" << l;
@@ -745,7 +778,6 @@ int ExScript::getHLCInput (QStringList &l, int i)
     case TRANGE:
     case TYPPRICE:
     case WCLPRICE:
-    case WILLR:
       if (l.count() != 2)
       {
         qDebug() << "ExScript::getHLCInput: parm error" << l;
@@ -1112,85 +1144,109 @@ int ExScript::getOHLCInput (QStringList &l, int i)
 //***************************************************
 int ExScript::getBARS (QStringList &l)
 {
-  // format 'BARS,NAME,METHOD,BAR_UP_COLOR,BAR_DOWN_COLOR,BAR_NEUTRAL_COLOR'
-  // format 'BARS,NAME,METHOD,CANDLE_COLOR'
+  // format 'BARS,NAME,BAR_UP_COLOR,BAR_DOWN_COLOR,BAR_NEUTRAL_COLOR'
   
-  if (l[2] == "Bar")
+  if (l.count() != 5)
   {
-    if (l.count() != 6)
-    {
-      qDebug() << "ExScript::BARS: parm error" << l;
-      return 1;
-    }
+    qDebug() << "ExScript::BARS: parm error" << l;
+    return 1;
+  }
 
-    PlotLine *line = new PlotLine;
-    int loop;
-    QColor color;
-    QColor barUpColor(l[3]);
-    QColor barDownColor(l[4]);
-    QColor barNeutralColor(l[5]);
+  QColor color;
+  QColor barUpColor(l[2]);
+  if (! barUpColor.isValid())
+  {
+    qDebug() << "ExScript::CANDLES: parm error" << l[2];
+    return 1;
+  }
 
-    for (loop = 0; loop < (int) data->count(); loop++)
-    {
-      if (loop > 0)
-      {  
-        if (data->getClose(loop) > data->getClose(loop - 1))
-          color = barUpColor;
-        else
-        {
-          if (data->getClose(loop) < data->getClose(loop - 1))
-            color = barDownColor;
-          else
-            color = barNeutralColor;
-        }
-      }
+  QColor barDownColor(l[3]);
+  if (! barDownColor.isValid())
+  {
+    qDebug() << "ExScript::CANDLES: parm error" << l[3];
+    return 1;
+  }
+  
+  QColor barNeutralColor(l[4]);
+  if (! barNeutralColor.isValid())
+  {
+    qDebug() << "ExScript::CANDLES: parm error" << l[4];
+    return 1;
+  }
+
+  PlotLine *line = new PlotLine;
+  int loop;
+  for (loop = 0; loop < (int) data->count(); loop++)
+  {
+    if (loop > 0)
+    {  
+      if (data->getClose(loop) > data->getClose(loop - 1))
+        color = barUpColor;
       else
-        color = barNeutralColor;
-
-      line->append(color, data->getOpen(loop), data->getHigh(loop), data->getLow(loop), data->getClose(loop), FALSE);
-
-      QDateTime dt;
-      data->getDate(loop, dt);
-      line->append(dt);
-    }
-
-    tlines.insert(l[1], line);
-    return 0;
-  }
-  
-  if (l[2] == "Candle")
-  {
-    if (l.count() != 4)
-    {
-      qDebug() << "ExScript::BARS: parm error" << l;
-      return 1;
-    }
-    
-    PlotLine *line = new PlotLine;
-    int loop;
-    QColor color(l[3]);
-
-    for (loop = 0; loop < (int) data->count(); loop++)
-    {
-      double c = data->getClose(loop);
-      double o = data->getOpen(loop);
-      bool fillFlag = FALSE;
-
-      if (o != 0)
       {
-        if (c < o)
-          fillFlag = TRUE;
+        if (data->getClose(loop) < data->getClose(loop - 1))
+          color = barDownColor;
+        else
+          color = barNeutralColor;
       }
+    }
+    else
+      color = barNeutralColor;
 
-      line->append(color, o, data->getHigh(loop), data->getLow(loop), c, fillFlag);
+    line->append(color, data->getOpen(loop), data->getHigh(loop), data->getLow(loop), data->getClose(loop), FALSE);
 
-      QDateTime dt;
-      data->getDate(loop, dt);
-      line->append(dt);
+    QDateTime dt;
+    data->getDate(loop, dt);
+    line->append(dt);
+  }
+
+  tlines.insert(l[1], line);
+  
+  return 0;
+}
+
+//***************************************************
+//********** CANDLES ********************************
+//***************************************************
+int ExScript::getCANDLES (QStringList &l)
+{
+  // format 'CANDLES,NAME,CANDLE_COLOR'
+  
+  if (l.count() != 3)
+  {
+    qDebug() << "ExScript::CANDLES: parm error" << l;
+    return 1;
+  }
+    
+  QColor color(l[2]);
+  if (! color.isValid())
+  {
+    qDebug() << "ExScript::CANDLES: parm error" << l[2];
+    return 1;
+  }
+
+  PlotLine *line = new PlotLine;
+  int loop;
+  for (loop = 0; loop < (int) data->count(); loop++)
+  {
+    double c = data->getClose(loop);
+    double o = data->getOpen(loop);
+    bool fillFlag = FALSE;
+
+    if (o != 0)
+    {
+      if (c < o)
+        fillFlag = TRUE;
     }
 
-    tlines.insert(l[1], line);
+    line->append(color, o, data->getHigh(loop), data->getLow(loop), c, fillFlag);
+
+    QDateTime dt;
+    data->getDate(loop, dt);
+    line->append(dt);
   }
+
+  tlines.insert(l[1], line);
   
   return 0;
 }
@@ -2744,6 +2800,270 @@ int ExScript::getDoubleOutput (QStringList &l, int i)
 
   tlines.insert(l[2], line);
   tlines.insert(l[3], line2);
+
+  if (flag)
+    delete in;
+  
+  return 0;
+}
+
+//***************************************************
+//********** COMPARE ********************************
+//***************************************************
+int ExScript::getCOMPARE (QStringList &l)
+{
+  // format 'COMPARE,NAME,INPUT_1,INPUT_2,OPERATOR'
+
+  if (l.count() != 5)
+  {
+    qDebug() << "ExScript::getCOMPARE: parm error" << l;
+    return 1;
+  }
+
+  int op = opList.indexOf(l[4]);
+  if (op == -1)
+  {
+    qDebug() << "ExScript::getCOMPARE: parm error" << l[4];
+    return 1;
+  }
+
+  int flag = FALSE;
+  int flag2 = FALSE;
+  PlotLine *in = tlines.value(l[2]);
+  if (! in)
+  {
+    in = data->getInput(data->getInputType(l[2]));
+    if (! in)
+    {
+      qDebug() << "ExScript::getCOMPARE: cannot create input_1 " << l[2];
+      return 1;
+    }
+    
+    flag = TRUE;
+  }
+
+  PlotLine *in2 = tlines.value(l[3]);
+  if (! in2)
+  {
+    in2 = data->getInput(data->getInputType(l[3]));
+    if (! in2)
+    {
+      qDebug() << "ExScript::getCOMPARE: cannot create input_2 " << l[3];
+      if (flag)
+	delete in;
+      return 1;
+    }
+    
+    flag2 = TRUE;
+  }
+
+  int loop = in->getSize() - 1;
+  int loop2 = in2->getSize() - 1;
+
+  PlotLine *line = new PlotLine;
+
+  while (loop > -1 && loop2 > -1)
+  {
+    double t = in->getData(loop);
+    double t2 = in2->getData(loop2);
+      
+    switch (op)
+    {
+      case 0: // equal
+        if (t == t2)
+          line->prepend(1);
+	else
+          line->prepend(0);
+        break;
+      case 1: // less then
+        if (t < t2)
+          line->prepend(1);
+	else
+          line->prepend(0);
+        break;
+      case 2: // less than equal
+        if (t <= t2)
+          line->prepend(1);
+	else
+          line->prepend(0);
+        break;
+      case 3: // greater than
+        if (t > t2)
+          line->prepend(1);
+	else
+          line->prepend(0);
+        break;
+      case 4: // greater than equal
+        if (t >= t2)
+          line->prepend(1);
+	else
+          line->prepend(0);
+        break;
+      case 5: // AND
+        if (t && t2)
+          line->prepend(1);
+	else
+          line->prepend(0);
+        break;
+      case 6: // OR
+        if (t || t2)
+          line->prepend(1);
+	else
+          line->prepend(0);
+        break;
+      default:
+        break;
+    }
+      
+    loop--;
+    loop2--;
+  }
+  
+  tlines.insert(l[1], line);
+
+  if (flag)
+    delete in;
+  if (flag2)
+    delete in2;
+  
+  return 0;
+}
+
+//***************************************************
+//********** COLOR ********************************
+//***************************************************
+int ExScript::getCOLOR (QStringList &l)
+{
+  // format 'COLOR,NAME,INPUT,INPUT_2,VALUE,COLOR'
+
+  if (l.count() != 6)
+  {
+    qDebug() << "ExScript::getCOLOR: parm error" << l;
+    return 1;
+  }
+  
+  bool ok;
+  double value = l[4].toDouble(&ok);
+  if (! ok)
+  {
+    qDebug() << "ExScript::getCOLOR: parm error" << l[4];
+    return 1;
+  }
+  
+  QColor c(l[5]);
+  if (! c.isValid())
+  {
+    qDebug() << "ExScript::getCOLOR: parm error" << l[5];
+    return 1;
+  }
+
+  int flag = FALSE;
+  int flag2 = FALSE;
+  PlotLine *in = tlines.value(l[2]);
+  if (! in)
+  {
+    in = data->getInput(data->getInputType(l[2]));
+    if (! in)
+    {
+      qDebug() << "ExScript::getCOLOR: cannot create input_1 " << l[2];
+      return 1;
+    }
+    
+    flag = TRUE;
+  }
+
+  PlotLine *in2 = tlines.value(l[3]);
+  if (! in2)
+  {
+    in2 = data->getInput(data->getInputType(l[3]));
+    if (! in2)
+    {
+      qDebug() << "ExScript::getCOLOR: cannot create input_2 " << l[3];
+      if (flag)
+	delete in;
+      return 1;
+    }
+    
+    flag2 = TRUE;
+  }
+
+  int inboolLoop = in->getSize() - 1;
+  in2->setColorFlag(TRUE);
+  int incolLoop = in2->getSize() - 1;
+
+  PlotLine *line = new PlotLine;
+  
+  while (inboolLoop > -1 && incolLoop > -1)
+  {
+    if (in->getData(inboolLoop) == value)
+      in2->setColorBar(incolLoop, c);
+
+    inboolLoop--;
+    incolLoop--;
+  }
+
+  tlines.insert(l[1], line);
+
+  if (flag)
+    delete in;
+  if (flag2)
+    delete in2;
+  
+  return 0;
+}
+
+//***************************************************
+//********** NORMAL *********************************
+//***************************************************
+int ExScript::getNORMAL (QStringList &l)
+{
+  // format 'NORMAL,NAME,INPUT'
+
+  if (l.count() != 3)
+  {
+    qDebug() << "ExScript::getNORMAL: parm error" << l;
+    return 1;
+  }
+  
+  int flag = FALSE;
+  PlotLine *in = tlines.value(l[2]);
+  if (! in)
+  {
+    in = data->getInput(data->getInputType(l[2]));
+    if (! in)
+    {
+      qDebug() << "ExScript::getNORMAL: cannot create input_1 " << l[2];
+      return 1;
+    }
+    
+    flag = TRUE;
+  }
+
+  int loop = 0;
+  double range = 0;
+  double max = -99999999.0;
+  double min = 99999999.0;
+  double norm = 0;
+  for (loop = 0; loop < in->getSize(); loop++)
+  {
+    if (in->getData(loop) > max)
+      max = in->getData(loop);
+
+    if (in->getData(loop) < min)
+      min = in->getData(loop);
+  }
+	
+  range = fabs(max) + fabs(min);
+
+  PlotLine *line = new PlotLine;
+  
+  for (loop = 0; loop < in->getSize(); loop++)
+  {	
+    norm = ((in->getData(loop) - min) / range) * 100;
+    line->append(norm);
+  }
+
+  tlines.insert(l[1], line);
 
   if (flag)
     delete in;

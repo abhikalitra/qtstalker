@@ -1,4 +1,4 @@
-# qtstalker MACD indicator
+# qtstalker MACD (Moving Average Convergence Divergence) indicator
 
 $|++; # turn on autoflush, qtstalker needs this to know when data is finished being sent/recieved
 

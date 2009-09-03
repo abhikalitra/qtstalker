@@ -23,16 +23,16 @@
 #include "DataBase.h"
 #include "Indicator.h"
 #include "Config.h"
+#include "PrefDialog.h"
 
 
 #include "../pics/ok.xpm"
 #include "../pics/disable.xpm"
-//#include "../pics/edit.xpm"
+#include "../pics/edit.xpm"
 #include "../pics/delete.xpm"
 #include "../pics/newchart.xpm"
 #include "../pics/search.xpm"
 #include "../pics/asterisk.xpm"
-#include "../pics/move.xpm"
 
 #include <QCursor>
 #include <QInputDialog>
@@ -92,11 +92,9 @@ IndicatorPage::IndicatorPage (QWidget *w) : QWidget (w)
   menu = new QMenu(this);
   QAction *action = menu->addAction(QIcon(newchart), tr("&New Indicator"), this, SLOT(newIndicator()), QKeySequence(Qt::CTRL+Qt::Key_N));
   actions.append(action);
-//  action = menu->addAction(QIcon(edit), tr("&Edit Indicator"), this, SLOT(editIndicator()), QKeySequence(Qt::CTRL+Qt::Key_E));
-//  actions.append(action);
-  action = menu->addAction(QIcon(deleteitem), tr("&Delete Indicator"), this, SLOT(deleteIndicator()), QKeySequence(Qt::CTRL+Qt::Key_D));
+  action = menu->addAction(QIcon(edit), tr("&Edit Indicator"), this, SLOT(editIndicator()), QKeySequence(Qt::CTRL+Qt::Key_E));
   actions.append(action);
-  action = menu->addAction(QIcon(moveitem), tr("&Move Indicator Tab"), this, SLOT(moveIndicator()), QKeySequence(Qt::CTRL+Qt::Key_M));
+  action = menu->addAction(QIcon(deleteitem), tr("&Delete Indicator"), this, SLOT(deleteIndicator()), QKeySequence(Qt::CTRL+Qt::Key_D));
   actions.append(action);
 
   listFlag = 0;
@@ -123,33 +121,43 @@ void IndicatorPage::newIndicator ()
     QMessageBox::information(this, tr("Qtstalker: Error"), tr("This indicator already exists."));
     return;
   }
-
-  Config config;
-  int rows;
-  config.getData(Config::IndicatorTabRows, rows);
-  int tabRow = QInputDialog::getInt (this, tr("Indicator Tab"), tr("Row"), 1, 1, rows, 1, &ok, 0);
-  if (! ok)
-    return;
-
-
-  QString command = QInputDialog::getText(this,
-				    	  tr("Script Command"),
-  				    	  tr("Enter command to run indicator script"),
-				    	  QLineEdit::Normal,
-				    	  tr("New Indicator"),
-				    	  &ok);
-  if (! ok || command.isEmpty())
-    return;
+  
+  PrefDialog *dialog = new PrefDialog(this);
+  
+  QString ns = tr("Name");
+  dialog->addTextItem(ns, selection);
 
   Indicator i;
   i.setName(selection);
-  i.setCommand(command);
-  db.getIndicator(i);
+  
+  Config config;
+  QString s;
+  config.getData(Config::IndicatorTabRows, s);
+  QString trs = tr("Tab Row");
+  dialog->addIntItem(trs, 1, 1, s.toInt());
+
+  QString sc = tr("Script Command");
+  s.clear();
+  dialog->addTextItem(sc, s);
+  
+  int rc = dialog->exec();
+  if (rc == QDialog::Rejected)
+  {
+    delete dialog;
+    return;
+  }
+  
+  dialog->getItem(sc, s);
+  i.setCommand(s);
+  
+  dialog->getItem(trs, s);
+  i.setTabRow(s.toInt());
 
   i.setEnable(1);
-  i.setTabRow(tabRow);
-
+  
   db.setIndicator(i);
+  
+  delete dialog;
 
   emit signalNewIndicator(selection);
 
@@ -160,7 +168,6 @@ void IndicatorPage::newIndicator ()
     showAll();
 }
 
-/*
 void IndicatorPage::editIndicator ()
 {
   QListWidgetItem *item = list->currentItem();
@@ -171,21 +178,47 @@ void IndicatorPage::editIndicator ()
   editIndicator(s);
 }
 
-void IndicatorPage::editIndicator (QString &)
+void IndicatorPage::editIndicator (QString &name)
 {
-  IndicatorDialog *dialog = new IndicatorDialog(this, s);
+  PrefDialog *dialog = new PrefDialog(this);
+  
+  QString ns = tr("Name");
+  dialog->addTextItem(ns, name);
+
+  DataBase db;
+  Indicator i;
+  i.setName(name);
+  db.getIndicator(i);
+  
+  Config config;
+  QString s;
+  config.getData(Config::IndicatorTabRows, s);
+  QString trs = tr("Tab Row");
+  dialog->addIntItem(trs, i.getTabRow(), 1, s.toInt());
+
+  QString sc = tr("Script Command");
+  i.getCommand(s);
+  dialog->addTextItem(sc, s);
+  
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)
   {
     delete dialog;
     return;
   }
-
+  
+  dialog->getItem(sc, s);
+  i.setCommand(s);
+  
+  dialog->getItem(trs, s);
+  i.setTabRow(s.toInt());
+  db.setIndicator(i);
+  
   delete dialog;
 
-  emit signalEditIndicator(s);
+  emit signalDisableIndicator(name);
+  emit signalEnableIndicator(name);
 }
-*/
 
 void IndicatorPage::deleteIndicator ()
 {
@@ -271,10 +304,10 @@ void IndicatorPage::doKeyPress (QKeyEvent *key)
         newIndicator();
 	break;
       case Qt::Key_D:
-//        deleteIndicator();
+        deleteIndicator();
 	break;
       case Qt::Key_E:
-//        editIndicator();
+        editIndicator();
 	break;
       default:
         break;
@@ -342,33 +375,5 @@ void IndicatorPage::showAll ()
     else
       new QListWidgetItem(QIcon(disable), l[loop], list, 0);
   }
-}
-
-void IndicatorPage::moveIndicator ()
-{
-  QListWidgetItem *item = list->currentItem();
-  if (! item)
-    return;
-
-  DataBase db;
-  Indicator i;
-  QString s = item->text();
-  i.setName(s);
-  db.getIndicator(i);
-  int cr = i.getTabRow();
-
-  bool aok;
-  Config config;
-  int rows;
-  config.getData(Config::IndicatorTabRows, rows);
-  int row = QInputDialog::getInt(this, tr("Move Indicator"), tr("Tab Row"), cr, 1, rows, 1, &aok, 0);
-  if (! aok)
-    return;
-
-  i.setTabRow(row);
-  db.setIndicator(i);
-
-  emit signalDisableIndicator(s);
-  emit signalEnableIndicator(s);
 }
 

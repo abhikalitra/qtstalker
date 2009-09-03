@@ -1,4 +1,4 @@
-# qtstalker ADX indicator
+# qtstalker ADX (Average Directional Movement) indicator
 
 $|++; # turn on autoflush, qtstalker needs this to know when data is finished being sent/recieved
 

@@ -1,4 +1,4 @@
-# qtstalker ATR indicator
+# qtstalker ATR (Average True Range) indicator
 
 $|++; # turn on autoflush, qtstalker needs this to know when data is finished being sent/recieved
 

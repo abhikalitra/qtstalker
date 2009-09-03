@@ -1,4 +1,4 @@
-# qtstalker Volume indicator
+# qtstalker Volume (Volume) indicator
 
 $|++; # turn on autoflush, qtstalker needs this to know when data is finished being sent/recieved
 

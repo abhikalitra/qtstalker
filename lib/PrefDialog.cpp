@@ -52,7 +52,6 @@ PrefDialog::~PrefDialog ()
   qDeleteAll(comboList);
   qDeleteAll(dateList);
   qDeleteAll(fileList);
-//  qDeleteAll(symbolList);
   qDeleteAll(labelList);
   qDeleteAll(timeList);
 }
@@ -371,39 +370,6 @@ void PrefDialog::getFile (QString &name, QStringList &l)
   if (button)
     button->getFile(l);
 }
-
-/*
-void PrefDialog::addSymbolItem (QString &name, QStringList &symbols)
-{
-  QLabel *label = new QLabel(name);
-  grid->addWidget(label, grid->rowCount(), 0);
-
-  SymbolButton *button = new SymbolButton(this, symbols);
-  grid->addWidget(button, grid->rowCount() - 1, 1);
-  symbolList.insert(name, button);
-}
-
-void PrefDialog::getSymbol (QString &name, QStringList &l)
-{
-  l.clear();
-  SymbolButton *button = symbolList.value(name);
-  if (button)
-    button->getSymbols(l);
-}
-*/
-
-/*
-void PrefDialog::addLabelItem (QString &name, QString &l)
-{
-  QLabel *label = new QLabel(name);
-  grid->addWidget(label, grid->rowCount(), 0);
-  
-  label = new QLabel(l);
-  label->setFrameStyle(QFrame::WinPanel | QFrame::Sunken);
-  grid->addWidget(label, grid->rowCount() - 1, 1);
-  labelList.insert(name, label);
-}
-*/
 
 void PrefDialog::getItem (QString &name, QString &s)
 {

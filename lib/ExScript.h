@@ -61,6 +61,7 @@ class ExScript : public QObject
       BBANDS,
       BETA,
       BOP,
+      CANDLES,
       CCI,
       CDL2CROWS,
       CDL3BLACKCROWS,
@@ -125,6 +126,8 @@ class ExScript : public QObject
       CDLXSIDEGAP3METHODS,
       CEIL,
       CMO,
+      COLOR,
+      COMPARE,
       CORREL,
       COS,
       COSH,
@@ -164,6 +167,7 @@ class ExScript : public QObject
       MOM,
       MULT,
       NATR,
+      NORMAL,
       OBV,
       PLUS_DI,
       PLUS_DM,
@@ -210,9 +214,13 @@ class ExScript : public QObject
     int getAROON (QStringList &l); // AROON and AROONOSC functions
     int getBARS (QStringList &l);
     int getBBANDS (QStringList &l);
+    int getCANDLES (QStringList &l);
     int getCDL (QStringList &l, int); // candle functions
+    int getCOMPARE (QStringList &l);
+    int getCOLOR (QStringList &l);
     int getMACD (QStringList &l, int i);
     int getMINMAXINDEX (QStringList &l);
+    int getNORMAL (QStringList &l);
     int getOBV (QStringList &l);
     int getREF (QStringList &l);
     int getSTOCH (QStringList &l, int i);
@@ -238,7 +246,8 @@ class ExScript : public QObject
     BarData *data;
     QHash<QString, PlotLine *> tlines;
     QStringList plotOrder;
-    QStringList maList;
+    QStringList opList;
     QStringList indicatorList;
+    QStringList maList;
 };
 

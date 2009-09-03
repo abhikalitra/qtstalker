@@ -1,4 +1,4 @@
-# qtstalker BOP indicator
+# qtstalker BOP (Balance Of Power) indicator
 
 $|++; # turn on autoflush, qtstalker needs this to know when data is finished being sent/recieved
 
