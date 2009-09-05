@@ -53,9 +53,9 @@ ExScript::ExScript ()
   indicatorList << "CDLMORNINGSTAR" << "CDLONNECK" << "CDLPIERCING" << "CDLRICKSHAWMAN" << "CDLRISEFALL3METHODS";
   indicatorList << "CDLSEPARATINGLINES" << "CDLSHOOTINGSTAR" << "CDLSHORTLINE" << "CDLSPINNINGTOP" << "CDLSTALLEDPATTERN";
   indicatorList << "CDLSTICKSANDWICH" << "CDLTAKURI" << "CDLTASUKIGAP" << "CDLTHRUSTING" << "CDLTRISTAR" << "CDLUNIQUE3RIVER";
-  indicatorList << "CDLUPSIDEGAP2CROWS" << "CDLXSIDEGAP3METHODS" << "CEIL" << "CMO" << "COLOR" << "COMPARE" << "CORREL" << "COS" << "COSH";
-  indicatorList << "DIV" << "DX" << "EXP" << "FLOOR" << "HT_DCPERIOD" << "HT_DCPHASE" << "HT_PHASOR" << "HT_SINE";
-  indicatorList << "HT_TRENDLINE" << "HT_TRENDMODE" << "LINEARREG" << "LINEARREG_ANGLE" << "LINEARREG_INTERCEPT";
+  indicatorList << "CDLUPSIDEGAP2CROWS" << "CDLXSIDEGAP3METHODS" << "CEIL" << "CMO" << "COLOR" << "COMPARE" << "COMPARE2";
+  indicatorList << "CORREL" << "COS" << "COSH" << "DIV" << "DX" << "EXP" << "FLOOR" << "HT_DCPERIOD" << "HT_DCPHASE" << "HT_PHASOR";
+  indicatorList << "HT_SINE" << "HT_TRENDLINE" << "HT_TRENDMODE" << "LINEARREG" << "LINEARREG_ANGLE" << "LINEARREG_INTERCEPT";
   indicatorList << "LINEARREG_SLOPE" << "LN" << "LOG10" << "MA" << "MACD" << "MACDEXT" << "MACDFIX" << "MAVP";
   indicatorList << "MAX" << "MAXINDEX" << "MEDPRICE" << "MFI" << "MIDPOINT" << "MIDPRICE" << "MIN" << "MININDEX" << "MINMAX";
   indicatorList << "MINMAXINDEX" << "MINUS_DI" << "MINUS_DM" << "MOM" << "MULT" << "NATR" << "NORMAL" << "OBV" << "PLUS_DI" << "PLUS_DM";
@@ -459,6 +459,9 @@ int ExScript::parseIndicator (QStringList &l)
       break;
     case CANDLES:
       rc = getCANDLES(l);
+      break;
+    case COMPARE2:
+      rc = getCOMPARE2(l);
       break;
     default:
       break;
@@ -2850,7 +2853,7 @@ int ExScript::getCOMPARE (QStringList &l)
     {
       qDebug() << "ExScript::getCOMPARE: cannot create input_2 " << l[3];
       if (flag)
-	delete in;
+        delete in;
       return 1;
     }
     
@@ -2925,6 +2928,115 @@ int ExScript::getCOMPARE (QStringList &l)
     delete in;
   if (flag2)
     delete in2;
+  
+  return 0;
+}
+
+//***************************************************
+//********** COMPARE2 ********************************
+//***************************************************
+int ExScript::getCOMPARE2 (QStringList &l)
+{
+  // format 'COMPARE,NAME,INPUT_1,VALUE,OPERATOR'
+
+  if (l.count() != 5)
+  {
+    qDebug() << "ExScript::getCOMPARE2: parm error" << l;
+    return 1;
+  }
+
+  int op = opList.indexOf(l[4]);
+  if (op == -1)
+  {
+    qDebug() << "ExScript::getCOMPARE2: parm error" << l[4];
+    return 1;
+  }
+
+  bool ok;
+  double value = l[3].toDouble(&ok);
+  if (! ok)
+  {
+    qDebug() << "ExScript::getCOMPARE2: parm error" << l[3];
+    return 1;
+  }
+
+  int flag = FALSE;
+  PlotLine *in = tlines.value(l[2]);
+  if (! in)
+  {
+    in = data->getInput(data->getInputType(l[2]));
+    if (! in)
+    {
+      qDebug() << "ExScript::getCOMPARE2: cannot create input_1 " << l[2];
+      return 1;
+    }
+    
+    flag = TRUE;
+  }
+
+  int loop = in->getSize() - 1;
+
+  PlotLine *line = new PlotLine;
+
+  while (loop > -1)
+  {
+    double t = in->getData(loop);
+      
+    switch (op)
+    {
+      case 0: // equal
+        if (t == value)
+          line->prepend(1);
+	else
+          line->prepend(0);
+        break;
+      case 1: // less then
+        if (t < value)
+          line->prepend(1);
+	else
+          line->prepend(0);
+        break;
+      case 2: // less than equal
+        if (t <= value)
+          line->prepend(1);
+	else
+          line->prepend(0);
+        break;
+      case 3: // greater than
+        if (t > value)
+          line->prepend(1);
+	else
+          line->prepend(0);
+        break;
+      case 4: // greater than equal
+        if (t >= value)
+          line->prepend(1);
+	else
+          line->prepend(0);
+        break;
+      case 5: // AND
+        if (t && value)
+          line->prepend(1);
+	else
+          line->prepend(0);
+        break;
+      case 6: // OR
+        if (t || value)
+          line->prepend(1);
+	else
+          line->prepend(0);
+        break;
+      default:
+        break;
+    }
+      
+    loop--;
+  }
+  
+  tlines.insert(l[1], line);
+
+  if (flag)
+    delete in;
   
   return 0;
 }

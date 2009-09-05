@@ -10,6 +10,19 @@ PERIOD is a integer value
 DEVIATION is a decimal value
 PENETRATION is a decimal value
 COLOR is a desired color eg. red, blue
+VALUE is any numerical value integer or decimal
+
+OPERATOR is a comparison operator. They are:
+
+    "=" equal to
+    "<" less than
+    "<=" less than or equal to
+    ">" greater than
+    ">=" greater than or equal to
+    "AND" logical AND
+    "OR" logical OR
+
+
 
 *************************************************************************************
 
@@ -40,12 +53,10 @@ ATR = INDICATOR,NAME,PERIOD
 AVGPRICE = INDICATOR,NAME
 
 BARS = INDICATOR,NAME,BAR_UP_COLOR,BAR_DOWN_COLOR,BAR_NEUTRAL_COLOR 
-
        This will create OHLC bars.
     
 CANDLES = INDICATOR,NAME,CANDLE_COLOR
-
-          This will create candles.
+          This will create candle bars.
 
 BBANDS = INDICATOR,INPUT,NAME_UPPER,NAME_MIDDLE,NAME_LOWER,PERIOD,UPPER_DEVIATION,LOWER_DEVIATION,MA_TYPE
 
@@ -182,6 +193,8 @@ CEIL = INDICATOR,NAME,INPUT
 CMO = INDICATOR,NAME,INPUT,PERIOD
 
 COLOR = INDICATOR,NAME,INPUT,INPUT_2,VALUE,COLOR
+    This function compares the values of INPUT data array with the number VALUE. If they are equal then
+    COLOR is applied to the INPUT_2 data array.
 
 	INPUT is the line that determines the color
 	INPUT_2 is the line that receives the color
@@ -189,16 +202,12 @@ COLOR = INDICATOR,NAME,INPUT,INPUT_2,VALUE,COLOR
 	COLOR is the color name that is applied to INPUT_2
 
 COMPARE = INDICATOR,NAME,INPUT_1,INPUT_2,OPERATOR
+    This function compares the values of INPUT_1 data array with INPUT_2 data array using the OPERATOR for comparison.
+    The result is a boolean array of TRUE/FALSE values.
 
-	OPERATOR is the compare operator. They are:
-	    "=" equal to
-	    "<" less than
-	    "<=" less than or equal to
-	    ">" greater than
-	    ">=" greater than or equal to
-	    "AND" logical AND
-	    "OR" logical OR
-
+COMPARE2 = INDICATOR,NAME,INPUT,VALUE,OPERATOR
+    This function compares the values of INPUT_1 data array with the number VALUE using the OPERATOR for comparison.
+    The result is a boolean array of TRUE/FALSE values.
 
 CORREL = INDICATOR,NAME,INPUT_1,INPUT_2,PERIOD
 
@@ -281,6 +290,9 @@ MULT = INDICATOR,NAME,INPUT_1,INPUT_2
 NATR = INDICATOR,NAME,PERIOD
 
 NORMAL = INDICATOR,NAME,INPUT
+    This funtion normalizes the values found in INPUT data array. That is, scales all numbers to values
+    between 0 and 100. Useful for plotting wildly different values together on the same chart. Also
+    useful for comparing multiple datasets of different value ranges.
 
 OBV = INDICATOR,NAME,INPUT
 

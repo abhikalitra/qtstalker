@@ -128,6 +128,7 @@ class ExScript : public QObject
       CMO,
       COLOR,
       COMPARE,
+      COMPARE2,
       CORREL,
       COS,
       COSH,
@@ -217,6 +218,7 @@ class ExScript : public QObject
     int getCANDLES (QStringList &l);
     int getCDL (QStringList &l, int); // candle functions
     int getCOMPARE (QStringList &l);
+    int getCOMPARE2 (QStringList &l);
     int getCOLOR (QStringList &l);
     int getMACD (QStringList &l, int i);
     int getMINMAXINDEX (QStringList &l);
