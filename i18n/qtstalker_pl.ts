@@ -408,14 +408,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Indicator Tab</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Row</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Show active indicators</source>
         <translation type="unfinished"></translation>
     </message>
@@ -436,15 +428,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&amp;Move Indicator Tab</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Script Command</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enter command to run indicator script</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -456,11 +440,15 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Move Indicator</source>
+        <source>Tab Row</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Tab Row</source>
+        <source>&amp;Edit Indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Name</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

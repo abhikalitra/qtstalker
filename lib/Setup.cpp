@@ -22,6 +22,10 @@
 #include "Setup.h"
 #include "qtstalker_defines.h"
 #include "Config.h"
+#include "DataBase.h"
+#include "Indicator.h"
+
+
 #include <QtDebug>
 #include <QtSql>
 #include <QDir>
@@ -43,11 +47,12 @@ void Setup::setupDirectories ()
   QDir dir(QDir::homePath());
   home = dir.absolutePath();
 
+  // create the home directory where all local data is stored
   home.append("/.qtstalker");
   if (! dir.exists(home))
   {
     if (! dir.mkdir(home))
-      qDebug() << "Unable to create ~/.qtstalker directory.";
+      qDebug() << "Unable to create" << home <<  "directory.";
   }
 
   version = "0.37";
@@ -431,30 +436,30 @@ void Setup::setupDefaultIndicators ()
   getConfig(k, d);
   if (d.toInt())
     return;
+  
+  // create the Bars indicator
+  Indicator i;
+  i.setTabRow(1);
+  i.setEnable(1);
+  QString s = "Bars";
+  i.setName(s);
+  s = "perl ";
+  s.append(INSTALL_DATA_DIR);
+  s.append("/qtstalker/indicator/Bars.perl");
+  i.setCommand(s);
+  
+  DataBase db;
+  db.setIndicator(i);
 
-/*
-  // add default bars indicator
-  QSqlQuery q(QSqlDatabase::database("data"));
-  QString s = "INSERT OR REPLACE INTO indicatorIndex (name,enable,tabRow,date,log,parms) VALUES (";
-  s.append("'Bars',1,1,1,0");
-  s.append(",'Indicator=BARS|Method=Bar|Bar Neutral Color=#0000ff|Variable=bars|Bar Down Color=#ff0000|LineType=Bar|Bar Up Color=#008000|Plot=1|Color=#ff0000|Label=C')");
-  q.exec(s);
-  if (q.lastError().isValid())
-  {
-    qDebug() << "Setup::setupDefaultIndicators: bars " << q.lastError().text();
-    return;
-  }
-
-  // add default volume indicator
-  s = "INSERT OR REPLACE INTO indicatorIndex (name,enable,tabRow,date,log,parms) VALUES (";
-  s.append("'Volume',1,2,1,0");
-  s.append(",'Indicator=UTIL|Method=REF|Period=0|Variable=volume|Input=Volume|LineType=Histogram Bar|Plot=1|Color=#ff0000|Label=V')");
-  q.exec(s);
-  if (q.lastError().isValid())
-  {
-    qDebug() << "Setup::setupDefaultIndicators: volume " << q.lastError().text();
-    return;
-  }
-*/
+  // lets add the Volume indicator
+  i.setTabRow(2);
+  i.setEnable(1);
+  s = "Volume";
+  i.setName(s);
+  s = "perl ";
+  s.append(INSTALL_DATA_DIR);
+  s.append("/qtstalker/indicator/Volume.perl");
+  i.setCommand(s);
+  db.setIndicator(i);
 }
 

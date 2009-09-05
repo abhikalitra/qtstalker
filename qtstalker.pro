@@ -105,6 +105,6 @@ SUBDIRS += src
 SUBDIRS += misc
 
 !win32 {
-  # install docs and i18n
- # SUBDIRS += docs
+ #  install docs and i18n
+  SUBDIRS += docs
 }
