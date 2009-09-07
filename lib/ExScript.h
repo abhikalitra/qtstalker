@@ -241,6 +241,7 @@ class ExScript : public QObject
 
   public slots:
     void readFromStdout ();
+    void readFromStderr ();
     void done (int, QProcess::ExitStatus);
     
   private:

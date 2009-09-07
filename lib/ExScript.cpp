@@ -85,6 +85,7 @@ void ExScript::calculate (QString &command)
   
   proc = new QProcess(this);
   connect(proc, SIGNAL(readyReadStandardOutput()), this, SLOT(readFromStdout()));
+  connect(proc, SIGNAL(readyReadStandardError()), this, SLOT(readFromStderr()));
   connect(proc, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(done(int, QProcess::ExitStatus)));
 
   // start the process
@@ -213,6 +214,13 @@ void ExScript::readFromStdout ()
     proc->write("1\n");
   else
     proc->write("0\n");
+}
+
+void ExScript::readFromStderr ()
+{
+  QByteArray ba = proc->readAllStandardError();
+  QString s(ba);
+  qDebug() << "ExScript::readFromStderr:" << s;
 }
 
 int ExScript::plot (QStringList &l)
