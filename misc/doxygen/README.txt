@@ -1,7 +1,10 @@
-2009-09-04
 Using doxygen-1.5.7
 
-You will need to tweak pathnames in config.txt
+You will need to tweak some pathnames in config.txt
+Search for "qtstalker-trunk".
+FIXME: Develop better config.
 
-In this directory, do:
- /Applications/Doxygen.app/Contents/Resources/doxygen config.txt
+To generate files into the "docs/api" directory:
+ cd /cvs/qtstalker-trunk/docs
+ /Applications/Doxygen.app/Contents/Resources/doxygen ../misc/doxygen/config.txt
+
