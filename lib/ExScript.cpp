@@ -85,7 +85,6 @@ void ExScript::calculate (QString &command)
   
   proc = new QProcess(this);
   connect(proc, SIGNAL(readyReadStandardOutput()), this, SLOT(readFromStdout()));
-  connect(proc, SIGNAL(readyReadStandardError()), this, SLOT(readFromStderr()));
   connect(proc, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(done(int, QProcess::ExitStatus)));
 
   // start the process
@@ -263,6 +262,7 @@ int ExScript::parseIndicator (QStringList &l)
 {
   int rc = FALSE;
   int i = indicatorList.indexOf(l[0]);
+  
   switch (i)
   {
     case ACOS:
@@ -3054,51 +3054,51 @@ int ExScript::getCOMPARE2 (QStringList &l)
 //***************************************************
 int ExScript::getCOLOR (QStringList &l)
 {
-  // format 'COLOR,NAME,INPUT,INPUT_2,VALUE,COLOR'
+  // format 'COLOR,INPUT,INPUT_2,VALUE,COLOR'
 
-  if (l.count() != 6)
+  if (l.count() != 5)
   {
     qDebug() << "ExScript::getCOLOR: parm error" << l;
     return 1;
   }
   
   bool ok;
-  double value = l[4].toDouble(&ok);
+  double value = l[3].toDouble(&ok);
   if (! ok)
   {
-    qDebug() << "ExScript::getCOLOR: parm error" << l[4];
+    qDebug() << "ExScript::getCOLOR: parm error" << l[3];
     return 1;
   }
   
-  QColor c(l[5]);
+  QColor c(l[4]);
   if (! c.isValid())
   {
-    qDebug() << "ExScript::getCOLOR: parm error" << l[5];
+    qDebug() << "ExScript::getCOLOR: parm error" << l[4];
     return 1;
   }
 
   int flag = FALSE;
   int flag2 = FALSE;
-  PlotLine *in = tlines.value(l[2]);
+  PlotLine *in = tlines.value(l[1]);
   if (! in)
   {
-    in = data->getInput(data->getInputType(l[2]));
+    in = data->getInput(data->getInputType(l[1]));
     if (! in)
     {
-      qDebug() << "ExScript::getCOLOR: cannot create input_1 " << l[2];
+      qDebug() << "ExScript::getCOLOR: cannot create input_1 " << l[1];
       return 1;
     }
     
     flag = TRUE;
   }
 
-  PlotLine *in2 = tlines.value(l[3]);
+  PlotLine *in2 = tlines.value(l[2]);
   if (! in2)
   {
-    in2 = data->getInput(data->getInputType(l[3]));
+    in2 = data->getInput(data->getInputType(l[2]));
     if (! in2)
     {
-      qDebug() << "ExScript::getCOLOR: cannot create input_2 " << l[3];
+      qDebug() << "ExScript::getCOLOR: cannot create input_2 " << l[2];
       if (flag)
 	delete in;
       return 1;
@@ -3111,8 +3111,6 @@ int ExScript::getCOLOR (QStringList &l)
   in2->setColorFlag(TRUE);
   int incolLoop = in2->getSize() - 1;
 
-  PlotLine *line = new PlotLine;
-  
   while (inboolLoop > -1 && incolLoop > -1)
   {
     if (in->getData(inboolLoop) == value)
@@ -3121,8 +3119,6 @@ int ExScript::getCOLOR (QStringList &l)
     inboolLoop--;
     incolLoop--;
   }
-
-  tlines.insert(l[1], line);
 
   if (flag)
     delete in;
