@@ -230,3 +230,4 @@ void GroupPage::updateGroups ()
   group->addItems(l);
 }
 
+

@@ -64,3 +64,4 @@ class GroupPage : public QWidget
 };
 
 #endif
+

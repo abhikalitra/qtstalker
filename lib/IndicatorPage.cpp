@@ -377,3 +377,4 @@ void IndicatorPage::showAll ()
   }
 }
 
+

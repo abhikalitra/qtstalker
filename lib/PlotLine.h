@@ -26,7 +26,10 @@
 #include <QList>
 #include <QColor>
 #include <QDateTime>
+
+
 #include "Setting.h"
+
 
 
 typedef struct
@@ -59,11 +62,10 @@ class PlotLine
     };
   
     PlotLine ();
-    ~PlotLine ();
-    void copy (PlotLine *);
     void setColor (QString &);
     void setColor (QColor &);
     void getColor (QColor &);
+    void resetColor ();
     void setType (PlotLine::LineType);
     void setType (QString &);
     PlotLine::LineType getType ();
@@ -113,6 +115,7 @@ class PlotLine
     bool scaleFlag;
     bool colorFlag;
     bool plotFlag;
+    QStringList typeList;
 };
 
 #endif

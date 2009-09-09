@@ -34,42 +34,24 @@ PlotLine::PlotLine ()
   scaleFlag = FALSE;
   colorFlag = FALSE;
   plotFlag = FALSE;
-}
-
-PlotLine::~PlotLine ()
-{
-}
-
-void PlotLine::copy (PlotLine *d)
-{
-  d->getColor(color);
   
-  setType(d->getType());
-  
-  d->getLabel(label);
-  
-  setScaleFlag(d->getScaleFlag());
-
-  setColorFlag(d->getColorFlag());
-
-  d->getData(data);
-
-  d->getDateList(dateList);
-
-  setHigh(d->getHigh());
-  setLow(d->getLow());
+  typeList << QObject::tr("Dot") << QObject::tr("Dash") << QObject::tr("Histogram") << QObject::tr("Histogram Bar");
+  typeList << QObject::tr("Line") << QObject::tr("Invisible") << QObject::tr("Horizontal");
+  typeList << QObject::tr("Bar") << QObject::tr("Candle");
 }
 
 void PlotLine::setColor (QString &d)
 {
   color.setNamedColor(d);
+//  resetColor();
 }
 
 void PlotLine::setColor (QColor &d)
 {
   color = d;
+//  resetColor();
 }
-
+  
 void PlotLine::getColor (QColor &d)
 {
   d = color;
@@ -77,12 +59,30 @@ void PlotLine::getColor (QColor &d)
 
 void PlotLine::setColorBar (int i, QColor &d)
 {
-  data[i].color = d;
+  Val r = data[i];
+  r.color = d;
+  data.replace(i, r);
+  
+//  data[i].color = d;
 }
 
 void PlotLine::getColorBar (int i, QColor &d)
 {
   d = data[i].color;
+}
+
+void PlotLine::resetColor ()
+{
+  if (! data.count())
+    return;
+  
+  int loop;
+  for (loop = 0; loop < data.count(); loop++)
+  {
+    Val r = data[loop];
+    r.color = color;
+    data.replace(loop, r);
+  }
 }
 
 void PlotLine::setType (PlotLine::LineType d)
@@ -92,65 +92,9 @@ void PlotLine::setType (PlotLine::LineType d)
 
 void PlotLine::setType (QString &d)
 {
-  if (! d.compare(QObject::tr("Dot")))
-  {
-    lineType = Dot;
-    return;
-  }
-
-  if (! d.compare(QObject::tr("Dash")))
-  {
-    lineType = Dash;
-    return;
-  }
-  
-  if (! d.compare(QObject::tr("Histogram")))
-  {
-    lineType = Histogram;
-    return;
-  }
-  
-  if (! d.compare(QObject::tr("Dash")))
-  {
-    lineType = Dash;
-    return;
-  }
-
-  if (! d.compare(QObject::tr("Histogram Bar")))
-  {
-    lineType = HistogramBar;
-    return;
-  }
-
-  if (! d.compare(QObject::tr("Line")))
-  {
-    lineType = Line;
-    return;
-  }
-
-  if (! d.compare(QObject::tr("Invisible")))
-  {
-    lineType = Invisible;
-    return;
-  }
-
-  if (! d.compare(QObject::tr("Horizontal")))
-  {
-    lineType = Horizontal;
-    return;
-  }
-
-  if (! d.compare(QObject::tr("Bar")))
-  {
-    lineType = Bar;
-    return;
-  }
-
-  if (! d.compare(QObject::tr("Candle")))
-  {
-    lineType = Candle;
-    return;
-  }
+  int lt = typeList.indexOf(d);
+  if (lt != -1)
+    lineType = (LineType) lt;
 }
 
 PlotLine::LineType PlotLine::getType ()
@@ -264,16 +208,7 @@ bool PlotLine::getColorFlag ()
 
 void PlotLine::getLineTypes (QStringList &l)
 {
-  l.clear();
-  l.append(QObject::tr("Dot"));
-  l.append(QObject::tr("Dash"));
-  l.append(QObject::tr("Histogram"));
-  l.append(QObject::tr("Histogram Bar"));
-  l.append(QObject::tr("Line"));
-  l.append(QObject::tr("Invisible"));
-  l.append(QObject::tr("Horizontal"));
-  l.append(QObject::tr("Candle"));
-  l.append(QObject::tr("Bar"));
+  l = typeList;
 }
 
 void PlotLine::append (QColor &c, double o, double h, double l, double cl, bool cf)

@@ -74,3 +74,4 @@ class ChartPage : public QWidget
 };
 
 #endif
+

@@ -351,7 +351,7 @@ void QtstalkerApp::createMenuBar()
   menu = new QMenu;
   menu->setTitle(tr("&Help"));
   menu->addAction(actionList.value(About));
-  menu->addAction(actionList.value(Help));
+//  menu->addAction(actionList.value(Help));
   menubar->addMenu(menu);
 }
 

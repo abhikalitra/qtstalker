@@ -257,4 +257,3 @@ void ChartPage::editSearch ()
 {
 }
 
-

@@ -1173,6 +1173,7 @@ void IndicatorPlot::drawHistogram ()
         y2 = scale.convertToY(currentLine->getData(loop));
       else
         y2 = scaler.convertToY(currentLine->getData(loop));
+      
       pa.setPoint(0, x, zero);
       pa.setPoint(1, x, y);
       pa.setPoint(2, x2, y2);

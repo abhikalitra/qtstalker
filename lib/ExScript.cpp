@@ -85,6 +85,7 @@ void ExScript::calculate (QString &command)
   
   proc = new QProcess(this);
   connect(proc, SIGNAL(readyReadStandardOutput()), this, SLOT(readFromStdout()));
+  connect(proc, SIGNAL(readyReadStandardError()), this, SLOT(readFromStderr()));
   connect(proc, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(done(int, QProcess::ExitStatus)));
 
   // start the process

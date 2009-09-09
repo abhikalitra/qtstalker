@@ -75,3 +75,4 @@ class IndicatorPage : public QWidget
 };
 
 #endif
+
