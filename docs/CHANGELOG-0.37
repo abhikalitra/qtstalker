@@ -7,3 +7,13 @@
 20080529: Chart object "FiboLine" now shows all line values as they are being added. Applied patch #1965845. Thanks to blshkv.
 
 20080708: Improved parsing of comma-separated values for CSV and Yahoo plugins. If there is a "Name" field, then it can now contain commas. Applied patch #2010375. Thanks to blshkv.
+
+20090909: Completed qt4 port.
+	  Removed Scanner and Backtesting functions. Perhaps redo in future.
+	  Ported db functions to use sqlite for local db functions.
+	  Quotes now managed by the user. Using qt4 sql functions to access quotes.
+	  Indicators are now fully scripted using any compatible scripting language. See ExScript class.
+	  Code overhaul and clean up performed. Many minor changes. Code simplification completed.
+
+20090910: Added ability to add items to groups from group page. 
+	  

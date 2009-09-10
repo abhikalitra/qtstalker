@@ -182,8 +182,11 @@ void ChartPage::addToGroup ()
     tl.append(sl.value(loop)->text());
 
   tl.removeDuplicates();
+  tl.removeAll(QString());
 
   db.setGroupList(group, tl);
+  
+  emit signalAddToGroup();
 }
 
 void ChartPage::doKeyPress (QKeyEvent *key)

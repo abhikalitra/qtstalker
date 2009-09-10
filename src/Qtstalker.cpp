@@ -992,7 +992,7 @@ void QtstalkerApp::initGroupNav ()
 {
   gp = new GroupPage(baseWidget);
   connect(gp, SIGNAL(fileSelected(QString)), this, SLOT(slotOpenChart(QString)));
-//  connect(chartNav, SIGNAL(signalAddToGroup(QString)), gp, SLOT(addChartToGroup(QString)));
+  connect(chartNav, SIGNAL(signalAddToGroup()), gp, SLOT(updateGroups()));
   connect(gp, SIGNAL(addRecentChart(QString)), this, SLOT(slotAddRecentChart(QString)));
 //  connect(extraToolbar, SIGNAL(signalSetGroupNavItem(QString, QString)), gp, SLOT(setGroupNavItem(QString, QString)));
   navTab->addTab(gp, QIcon(dirclosed), QString());

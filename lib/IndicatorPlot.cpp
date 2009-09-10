@@ -847,8 +847,9 @@ void IndicatorPlot::setScale ()
     }
   }
 
+  // create a little more room between chart edges and plots
   scaleHigh = scaleHigh * 1.001;
-  scaleLow = scaleLow * 0.999;
+  scaleLow = scaleLow * 0.98;
 
   double logScaleHigh = 1;
   double logRange = 0;

@@ -55,6 +55,8 @@ class GroupPage : public QWidget
     void doKeyPress (QKeyEvent *);
     void chartOpened (QListWidgetItem *);
     void updateGroups ();
+    void addToGroup ();
+    void loadGroups ();
 
   protected:
     QListWidget *nav;

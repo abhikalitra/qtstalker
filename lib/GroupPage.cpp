@@ -26,6 +26,7 @@
 #include "../pics/delete.xpm"
 #include "../pics/delgroup.xpm"
 #include "../pics/newchart.xpm"
+#include "../pics/addgroup.xpm"
 
 #include <QMessageBox>
 #include <QLineEdit>
@@ -66,19 +67,19 @@ GroupPage::GroupPage (QWidget *w) : QWidget (w)
   menu = new QMenu(this);
   QAction *action = menu->addAction(QIcon(newchart), tr("&New Group		Ctrl+N"), this, SLOT(newGroup()), QKeySequence(Qt::CTRL+Qt::Key_N));
   actionList.append(action);
-//  action = menu->addAction(QIcon(insert), tr("&Add Group Items	Ctrl+A"), this, SLOT(addGroupItem()), QKeySequence(Qt::CTRL+Qt::Key_A));
-//  actionList.append(action);
+  action = menu->addAction(QIcon(addgroup), tr("Add To &Group	Ctrl+G"), this, SLOT(addToGroup()), QKeySequence(Qt::CTRL+Qt::Key_G));
+  actionList.append(action);
   action = menu->addAction(QIcon(deleteitem), tr("&Delete Group Items	Ctrl+D"), this, SLOT(deleteGroupItem()), QKeySequence(Qt::CTRL+Qt::Key_D));
   actionList.append(action);
   action = menu->addAction(QIcon(delgroup), tr("De&lete Group	Ctrl+L"), this, SLOT(deleteGroup()), QKeySequence(Qt::CTRL+Qt::Key_L));
   actionList.append(action);
 
-  updateGroups();
-
+  loadGroups();
+  
   QString s;
   Config config;
   config.getData(Config::LastGroupUsed, s);
-  groupSelected(group->findText(s, Qt::MatchExactly));
+  group->setCurrentIndex(group->findText(s, Qt::MatchExactly));
 }
 
 GroupPage::~GroupPage ()
@@ -162,6 +163,9 @@ void GroupPage::deleteGroup()
 
   DataBase db;
   db.deleteGroup(g);
+  
+  if (g == group->currentText())
+    nav->clear();
 
   updateGroups();
 }
@@ -221,13 +225,62 @@ void GroupPage::doKeyPress (QKeyEvent *key)
   }
 }
 
-void GroupPage::updateGroups ()
+void GroupPage::loadGroups ()
 {
   group->clear();
   QStringList l;
   DataBase db;
   db.getAllGroupsList(l);
   group->addItems(l);
+}
+
+void GroupPage::updateGroups ()
+{
+  int cg = group->currentIndex();
+  int cr = nav->currentRow();  
+  
+  group->blockSignals(TRUE);
+  loadGroups();
+  group->blockSignals(FALSE);
+
+  groupSelected(cg);
+  
+  nav->setCurrentRow(cr);
+}
+
+void GroupPage::addToGroup ()
+{
+  QList<QListWidgetItem *> sl = nav->selectedItems();
+  if (! sl.count())
+    return;
+
+  DataBase db;
+  QStringList tl;
+  db.getAllGroupsList(tl);
+  bool ok;
+  QString group = QInputDialog::getItem(this,
+					QString(tr("Add To Group")),
+					QString(tr("Select group to add selected charts")),
+                                        tl,
+					0,
+					FALSE,
+                                        &ok,
+					0);
+  if (! group.length())
+    return;
+
+  db.getGroupList(group, tl);
+
+  int loop;
+  for (loop = 0; loop < sl.count(); loop++)
+    tl.append(sl.value(loop)->text());
+
+  tl.removeDuplicates();
+  tl.removeAll(QString());
+
+  db.setGroupList(group, tl);
+
+  updateGroups();
 }
 
 

@@ -32,6 +32,6 @@ INSTALLS += i18n
 # install the indicator files
 indicator.path = /usr/local/share/qtstalker/indicator
 indicator.files = ../misc/CUS_examples/*.perl
-INSTALLS += indicator
+#INSTALLS += indicator
 
 
