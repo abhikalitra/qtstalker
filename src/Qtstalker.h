@@ -127,7 +127,6 @@ class QtstalkerApp : public QMainWindow
     void slotDrawPlots ();
     void addIndicatorButton (QString);
     void slotWakeup ();
-//    void slotIndicatorSummary ();
     void slotAppFont (QFont);
     void slotHideNav (bool d);
     void ps1ButtonClicked ();
@@ -141,7 +140,6 @@ class QtstalkerApp : public QMainWindow
     void cmpsBtn5Clicked();
     int setSliderStart (int width, int records);
     void setPixelspace (int min, int d);
-    void slotEditIndicator (QString);
     void slotAddRecentChart (QString);
     void slotScriptDone ();
     

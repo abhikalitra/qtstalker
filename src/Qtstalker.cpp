@@ -175,7 +175,7 @@ QtstalkerApp::QtstalkerApp(QString session)
   // setup the initial indicators
   DataBase db;
   QStringList l;
-  db.getIndicatorList(l);
+  db.getActiveIndicatorList(l);
   for (loop = 0; loop < l.count(); loop++)
   {
     Indicator i;
@@ -185,8 +185,7 @@ QtstalkerApp::QtstalkerApp(QString session)
     if (i.getTabRow() > tabList.count())
       continue;
 
-    if (i.getEnable())
-      addIndicatorButton(l[loop]);
+    addIndicatorButton(l[loop]);
   }
 
   // set the app font
@@ -299,20 +298,6 @@ void QtstalkerApp::createActions ()
   action->setChecked(s.toInt());
   connect(action, SIGNAL(toggled(bool)), this, SIGNAL(signalCrosshairsStatus(bool)));
   actionList.insert(Crosshairs, action);
-
-//  action = new QAction(QIcon("../pics/help.xpm"), tr("&Help"), this);
-//  action->setShortcut(QKeySequence(Qt::ALT+Qt::Key_3));
-//  action->setStatusTip(tr("Display Help Dialog (Alt+3)"));
-//  action->setToolTip(tr("Display Help Dialog (Alt+3)"));
-//  connect(action, SIGNAL(activated()), mw, SLOT(slotHelp()));
-//  actionList.insert(Help, action);
-
-//  action = new QAction(this);
-//  action->setText(tr("Indicator Summary"));
-//  action->setStatusTip(tr("Indicator Summary"));
-//  action->setToolTip(tr("Indicator Summary"));
-//  connect(action, SIGNAL(activated()), this, SLOT(slotIndicatorSummary()));
-//  actionList.insert(IndicatorSummary, action);
 }
 
 void QtstalkerApp::createMenuBar()
@@ -343,7 +328,6 @@ void QtstalkerApp::createMenuBar()
   menu = new QMenu;
   menu->setTitle(tr("&Tools"));
   menu->addAction(actionList.value(DataWindow1));
-//  menu->addAction(actionList.value(IndicatorSummary));
   menubar->addMenu(menu);
 
   menubar->addSeparator();
@@ -351,7 +335,6 @@ void QtstalkerApp::createMenuBar()
   menu = new QMenu;
   menu->setTitle(tr("&Help"));
   menu->addAction(actionList.value(About));
-//  menu->addAction(actionList.value(Help));
   menubar->addMenu(menu);
 }
 
@@ -720,7 +703,7 @@ void QtstalkerApp::loadChart (QString d)
   
   script->setInput(recordList);
   
-  db.getIndicatorList(indicatorList);
+  db.getActiveIndicatorList(indicatorList);
   ilPos = -1;
   slotScriptDone();
 }
@@ -804,14 +787,10 @@ void QtstalkerApp::slotNewIndicator (QString n)
 {
   // add a new indicator slot
   addIndicatorButton(n);
-  Plot *p = plotList.value(n);
-  if (! p)
-    return;
-  if (! recordList)
-    return;
-  p->setData(recordList);
-  p->calculate();
-  p->draw();
+  indicatorList.clear();
+  indicatorList << n;
+  ilPos = -1;
+  slotScriptDone();
 }
 
 void QtstalkerApp::slotDeleteIndicator (QString text)
@@ -847,29 +826,10 @@ void QtstalkerApp::slotEnableIndicator (QString name)
 {
   // enable indicator
   addIndicatorButton(name);
-  Plot *p = plotList.value(name);
-  if (! p)
-    return;
-  if (! recordList)
-    return;
-  p->setData(recordList);
-  p->calculate();
-  p->draw();
-}
-
-void QtstalkerApp::slotEditIndicator (QString name)
-{
-  Plot *p = plotList.value(name);
-  if (! p)
-    return;
-
-  if (! recordList)
-    return;
-
-  p->getIndicatorPlot()->setIndicator(name);
-
-  p->calculate();
-  p->draw();
+  indicatorList.clear();
+  indicatorList << name;
+  ilPos = -1;
+  slotScriptDone();
 }
 
 void QtstalkerApp::slotPixelspaceChanged (int d)
@@ -1017,7 +977,6 @@ void QtstalkerApp::initIndicatorNav ()
   connect(ip, SIGNAL(signalNewIndicator(QString)), this, SLOT(slotNewIndicator(QString)));
   connect(ip, SIGNAL(signalDeleteIndicator(QString)), this, SLOT(slotDeleteIndicator(QString)));
   connect(this, SIGNAL(signalNewIndicator()), ip, SLOT(newIndicator()));
-//  connect(ip, SIGNAL(signalEditIndicator(QString)), this, SLOT(slotEditIndicator(QString)));
   navTab->addTab(ip, QIcon(indicator), QString());
   navTab->setTabToolTip(2, tr("Indicators"));
 }
@@ -1141,34 +1100,6 @@ void QtstalkerApp::slotWakeup ()
 {
   qApp->processEvents();
 }
-
-/*
-void QtstalkerApp::slotIndicatorSummary ()
-{
-  if (! recordList)
-    return;
-
-  QString basePath, s;
-  Config config;
-//  config.getData(Config::IndicatorPath, basePath);
-//  config.getData(Config::IndicatorGroup, s);
-  basePath.append("/" + s);
-
-  QStringList l;
-  QHashIterator<QString, Plot *> it(plotList);
-  while (it.hasNext())
-  {
-    it.next();
-//    IndicatorPlot *i = it.value()->getIndicatorPlot();
-//    i->getName(s);
-    l.append(basePath + "/" + s);
-  }
-
-//  IndicatorSummary is(l, toolbar2->getBars(), (BarData::BarLength) toolbar2->getBarLengthInt(), chartIndex);
-//  connect(&is, SIGNAL(signalWakeup()), this, SLOT(slotWakeup()));
-//  is.run();
-}
-*/
 
 void QtstalkerApp::slotAppFont (QFont d)
 {
