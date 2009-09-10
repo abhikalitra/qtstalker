@@ -27,13 +27,13 @@ $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 print STDOUT "COMPARE,relEqual,close_0,close_1,=";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
-print STDOUT "COLOR,colorUp,relUp,candles,1,green";
+print STDOUT "COLOR,relUp,candles,1,green";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
-print STDOUT "COLOR,colorDown,relDown,candles,1,red";
+print STDOUT "COLOR,relDown,candles,1,red";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
-print STDOUT "COLOR,colorEqual,relEqual,candles,1,blue";
+print STDOUT "COLOR,relEqual,candles,1,blue";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
 print STDOUT "PLOT,candles,Candle,dimgray,Candle";
