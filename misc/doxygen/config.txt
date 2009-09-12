@@ -124,8 +124,9 @@ FULL_PATH_NAMES        = YES
 # If left blank the directory from which doxygen is run is used as the 
 # path to strip.
 
-STRIP_FROM_PATH        = /Applications/Z-myapps/ \
-                         /cvs/qtstalker-trunk/
+STRIP_FROM_PATH        = /cvs/qtstalker-trunk/ \
+                         /cvs/qtstalker/ \
+                         /local/src/qtstalker/
 
 # The STRIP_FROM_INC_PATH tag can be used to strip a user-defined part of 
 # the path mentioned in the documentation of a class, which tells 
@@ -563,7 +564,7 @@ WARN_LOGFILE           =
 # directories like "/usr/src/myproject". Separate the files or directories 
 # with spaces.
 
-INPUT                  = /cvs/qtstalker-trunk
+INPUT                  = ..
 
 # This tag can be used to specify the character encoding of the source files 
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding, which is 
@@ -791,13 +792,13 @@ HTML_FILE_EXTENSION    = .html
 # each generated HTML page. If it is left blank doxygen will generate a 
 # standard header.
 
-HTML_HEADER            = /cvs/qtstalker-trunk/misc/doxygen/header.html
+HTML_HEADER            = ../misc/doxygen/header.html
 
 # The HTML_FOOTER tag can be used to specify a personal HTML footer for 
 # each generated HTML page. If it is left blank doxygen will generate a 
 # standard footer.
 
-HTML_FOOTER            = /cvs/qtstalker-trunk/misc/doxygen/footer.html
+HTML_FOOTER            = ../misc/doxygen/footer.html
 
 # The HTML_STYLESHEET tag can be used to specify a user-defined cascading 
 # style sheet that is used by each HTML page. It can be used to 
