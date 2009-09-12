@@ -11,7 +11,7 @@ TEMPLATE = app
 
 CONFIG(debug, debug|release): DEFINES += DEBUG _DEBUG
 
-QMAKE_CXXFLAGS += -rdynamic -ffast-math
+QMAKE_CXXFLAGS += -rdynamic -ffast-math -O2
 
 HEADERS += MainWindow.h
 HEADERS += CSVRuleDialog.h

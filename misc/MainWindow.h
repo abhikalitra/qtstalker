@@ -58,7 +58,6 @@ class MainWindow : public QMainWindow
     void createToolBars ();
     void createStatusBar ();
     void loadSettings ();
-    void saveSettings ();
     void setConfig (QString &k, QString &d);
     void getConfig (QString &k, QString &d);
     void loadRules ();

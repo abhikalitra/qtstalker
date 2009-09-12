@@ -339,13 +339,12 @@ void DatePlot::getWeeklyDate ()
       oldMonth = date;
       item->flag = 1;
       item->tick = 0;
-//      item->text = date.toString("MMM");
-      item->text = date.toString("M");
+      item->text = date.toString("MMM");
+      item->text.chop(2);
       
       if (date.month() == 1)
       {
         item->tick = 1;
-//        item->text = date.toString("MMM'yy");
         item->text = date.toString("yy");
       }
     }
@@ -376,7 +375,7 @@ void DatePlot::getMonthlyDate ()
       oldYear = date;
       item->flag = 1;
       item->tick = 1;
-      item->text = date.toString("yyyy");
+      item->text = date.toString("yy");
       
       xGrid.resize(xGrid.size() + 1);
       xGrid[xGrid.size() - 1] = loop;

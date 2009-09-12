@@ -24,6 +24,7 @@
 #include "MainWindow.h"
 #include "CSVRuleDialog.h"
 
+
 #include <QtSql>
 #include <QtDebug>
 #include <QLayout>
@@ -233,10 +234,6 @@ void MainWindow::loadSettings ()
     qDebug() << "CSV::loadSettings:createSymbolIndexTable: " << q2.lastError().text();
 }
 
-void MainWindow::saveSettings ()
-{
-}
-
 void MainWindow::setConfig (QString &k, QString &d)
 {
   QSqlQuery q(QSqlDatabase::database("data"));
@@ -267,7 +264,6 @@ void MainWindow::getConfig (QString &k, QString &d)
 
 void MainWindow::closeEvent (QCloseEvent *event)
 {
-  saveSettings();
   event->accept();
 }
 

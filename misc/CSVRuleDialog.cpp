@@ -269,9 +269,16 @@ void CSVRuleDialog::fieldListSelected ()
 
 void CSVRuleDialog::importFileDialog ()
 {
+  QString s = QDir::homePath();
+  if (fileList.count())
+  {
+    QFileInfo fi(fileList[0]);
+    s = fi.absolutePath();
+  }
+  
   fileList = QFileDialog::getOpenFileNames(this,
 					   QString(tr("Select CSV Files To Import")),
-					   QString(QDir::homePath()),
+					   s,
 					   QString("*"),
 					   0,
 					   0);

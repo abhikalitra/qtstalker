@@ -85,6 +85,8 @@ IndicatorPlot::IndicatorPlot (QWidget *w) : QWidget(w)
   setFocusPolicy(Qt::ClickFocus);
 
   rubberBand = new QRubberBand(QRubberBand::Rectangle, this);
+  
+//  setAttribute(Qt::WA_PaintOnScreen);  
 }
 
 IndicatorPlot::~IndicatorPlot ()
@@ -848,8 +850,9 @@ void IndicatorPlot::setScale ()
   }
 
   // create a little more room between chart edges and plots
-  scaleHigh = scaleHigh * 1.001;
-  scaleLow = scaleLow * 0.98;
+  double t = (scaleHigh - scaleLow) * 0.02; // get 2% of the range
+  scaleHigh = scaleHigh + t;
+  scaleLow = scaleLow - t;
 
   double logScaleHigh = 1;
   double logRange = 0;
