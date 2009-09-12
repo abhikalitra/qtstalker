@@ -23,6 +23,7 @@
 #include "PrefDialog.h"
 #include "DataBase.h"
 #include "Config.h"
+
 #include <QPainter>
 #include <QPolygon>
 
@@ -35,10 +36,6 @@ HorizontalLine::HorizontalLine ()
   type = (int) COHorizontalLine;
 
   loadDefaults();
-}
-
-HorizontalLine::~HorizontalLine ()
-{
 }
 
 void HorizontalLine::draw (QPixmap &buffer, Scaler &scaler, int, int, int)
@@ -236,8 +233,13 @@ void HorizontalLine::loadSettings (COSettings &co)
   co.getColor(color);
 }
 
-void HorizontalLine::adjustForSplit (QDateTime &, double d)
+void HorizontalLine::getInfo (Setting &info)
 {
-  value = value * d;
+  QString k = tr("Text");
+  info.setData(k, text);
+  
+  k = tr("Price");
+  QString d = QString::number(value);
+  info.setData(k, d);
 }
 

@@ -24,7 +24,6 @@
 #include "../pics/edit.xpm"
 //#include "../pics/rename.xpm"
 #include "BuyArrow.h"
-#include "Cycle.h"
 #include "FiboLine.h"
 #include "HorizontalLine.h"
 #include "SellArrow.h"
@@ -224,9 +223,6 @@ COBase * COBase::getCO (int s)
   {
     case COBuyArrow:
       t = new BuyArrow();
-      break;
-    case COCycle:
-      t = new Cycle();
       break;
     case COFiboLine:
       t = new FiboLine();

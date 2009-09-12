@@ -23,6 +23,7 @@
 #define HORIZONTALLINE_HPP
 
 #include "COBase.h"
+
 #include <QPoint>
 #include <QFont>
 
@@ -34,14 +35,13 @@ class HorizontalLine : public COBase
 
   public:
     HorizontalLine ();
-    ~HorizontalLine ();
     void draw (QPixmap &, Scaler &, int, int, int);
     void newObject (QString &, QString &);
     void loadDefaults ();
     void saveDefaults ();
     void loadSettings (COSettings &);
     void saveSettings ();
-    void adjustForSplit (QDateTime &, double);
+    void getInfo (Setting &);
     
   public slots:
     void prefDialog ();

@@ -23,6 +23,7 @@
 #include "PrefDialog.h"
 #include "DataBase.h"
 #include "Config.h"
+
 #include <QPainter>
 #include <QPolygon>
 
@@ -44,10 +45,6 @@ FiboLine::FiboLine ()
   type = (int) COFiboLine;
 
   loadDefaults();
-}
-
-FiboLine::~FiboLine ()
-{
 }
 
 void FiboLine::draw (QPixmap &buffer, Scaler &scaler, int startIndex, int pixelspace, int startX)
@@ -508,12 +505,38 @@ double FiboLine::getLine (int i)
   return v;
 }
 
-void FiboLine::adjustForSplit (QDateTime &dt, double d)
+void FiboLine::getInfo (Setting &info)
 {
-  if (startDate < dt && endDate < dt)
-  {
-    high = high * d;
-    low = low * d;
-  }
+  QString k = tr("High");
+  QString d = QString::number(high);
+  info.setData(k, d);
+  
+  k = tr("Low");
+  d = QString::number(low);
+  info.setData(k, d);
+  
+  k = tr("Line 1");
+  d = QString::number(line1);
+  info.setData(k, d);
+
+  k = tr("Line 2");
+  d = QString::number(line2);
+  info.setData(k, d);
+
+  k = tr("Line 3");
+  d = QString::number(line3);
+  info.setData(k, d);
+
+  k = tr("Line 4");
+  d = QString::number(line4);
+  info.setData(k, d);
+
+  k = tr("Line 5");
+  d = QString::number(line5);
+  info.setData(k, d);
+
+  k = tr("Line 6");
+  d = QString::number(line6);
+  info.setData(k, d);
 }
 

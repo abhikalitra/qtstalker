@@ -23,6 +23,7 @@
 #include "PrefDialog.h"
 #include "Config.h"
 #include "DataBase.h"
+
 #include <QPainter>
 
 
@@ -35,10 +36,6 @@ Text::Text ()
   type = (int) COText;
   
   loadDefaults();
-}
-
-Text::~Text ()
-{
 }
 
 void Text::draw (QPixmap &buffer, Scaler &scaler, int startIndex, int pixelspace, int startX)
@@ -225,9 +222,21 @@ void Text::loadSettings (COSettings &co)
   co.getText(label);
 }
 
-void Text::adjustForSplit (QDateTime &dt, double d)
+void Text::getInfo (Setting &info)
 {
-  if (date < dt)
-    value = value * d;
+  QString k = "D";
+  QString d = date.toString("yyyy-MM-dd");
+  info.setData(k, d);
+  
+  k = "T";
+  d = date.toString("HH:MM:ss");
+  info.setData(k, d);
+  
+  k = tr("Text");
+  info.setData(k, label);
+  
+  k = tr("Price");
+  d = QString::number(value);
+  info.setData(k, d);
 }
 

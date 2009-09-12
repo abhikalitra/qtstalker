@@ -19,5 +19,10 @@
 
 20090911: Made a little more space between plots and widget edges.
 
+20090912: Removed Cycle chart object. This is better suited as an indicator.
+
+	  Removed adjustForSplit() functions from chart objects. These are better suited for DataBase::
+	  
+
 
 	  

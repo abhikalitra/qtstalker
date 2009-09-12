@@ -28,7 +28,6 @@
 #include "../pics/loggrid.xpm"
 #include "../pics/date.xpm"
 #include "../pics/buyarrow.xpm"
-#include "../pics/arc.xpm"
 #include "../pics/fib.xpm"
 #include "../pics/horizontal.xpm"
 #include "../pics/sellarrow.xpm"
@@ -85,8 +84,6 @@ IndicatorPlot::IndicatorPlot (QWidget *w) : QWidget(w)
   setFocusPolicy(Qt::ClickFocus);
 
   rubberBand = new QRubberBand(QRubberBand::Rectangle, this);
-  
-//  setAttribute(Qt::WA_PaintOnScreen);  
 }
 
 IndicatorPlot::~IndicatorPlot ()
@@ -896,7 +893,6 @@ void IndicatorPlot::showPopupMenu ()
     
   chartObjectMenu = new QMenu(tr("Chart Objects")); 
   chartObjectMenu->addAction(QPixmap(buyarrow), tr("Buy Arrow"), this, SLOT(slotNewBuyArrow()));
-  chartObjectMenu->addAction(QPixmap(arc), tr("Cycle"), this, SLOT(slotNewCycle()));
   chartObjectMenu->addAction(QPixmap(fib), tr("Fibonacci Line"), this, SLOT(slotNewFiboline()));
   chartObjectMenu->addAction(QPixmap(horizontal), tr("Horizontal Line"), this, SLOT(slotNewHorizontalLine()));
   chartObjectMenu->addAction(QPixmap(sellarrow), tr("Sell Arrow"), this, SLOT(slotNewSellArrow()));
@@ -1348,11 +1344,6 @@ void IndicatorPlot::drawCandle ()
 void IndicatorPlot::slotNewBuyArrow ()
 {
   slotNewChartObject((int) COBase::COBuyArrow);
-}
-
-void IndicatorPlot::slotNewCycle ()
-{
-  slotNewChartObject((int) COBase::COCycle);
 }
 
 void IndicatorPlot::slotNewFiboline ()

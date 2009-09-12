@@ -23,6 +23,7 @@
 #include "PrefDialog.h"
 #include "DataBase.h"
 #include "Config.h"
+
 #include <QPainter>
 #include <QtDebug>
 
@@ -35,10 +36,6 @@ BuyArrow::BuyArrow ()
   type = (int) COBuyArrow;
   
   loadDefaults();
-}
-
-BuyArrow::~BuyArrow ()
-{
 }
 
 void BuyArrow::draw (QPixmap &buffer, Scaler &scaler, int startIndex, int pixelspace, int startX)
@@ -222,10 +219,18 @@ void BuyArrow::loadSettings (COSettings &co)
   co.getColor(color);
 }
 
-void BuyArrow::adjustForSplit (QDateTime &dt, double d)
+void BuyArrow::getInfo (Setting &info)
 {
-  if (date < dt)  
-    value = value * d;
+  QString k = "D";
+  QString d = date.toString("yyyy-MM-dd");
+  info.setData(k, d);
+  
+  k = "T";
+  d = date.toString("HH:MM:ss");
+  info.setData(k, d);
+  
+  k = tr("Price");
+  d = QString::number(value);
+  info.setData(k, d);
 }
-
 

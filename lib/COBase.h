@@ -62,7 +62,7 @@ class COBase : public QObject
     enum COType
     {
       COBuyArrow,
-      COCycle,
+      COUnused,
       COFiboLine,
       COHorizontalLine,
       COSellArrow,

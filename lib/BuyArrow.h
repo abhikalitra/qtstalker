@@ -23,6 +23,7 @@
 #define BUYARROW_HPP
 
 #include "COBase.h"
+
 #include <QPolygon>
 
 
@@ -34,14 +35,13 @@ class BuyArrow : public COBase
   public:
   
     BuyArrow ();
-    ~BuyArrow ();
     void draw (QPixmap &, Scaler &, int, int, int);
     void newObject (QString &, QString &);
     void loadDefaults ();
     void saveDefaults ();
     void saveSettings ();
     void loadSettings (COSettings &);
-    void adjustForSplit (QDateTime &, double);
+    void getInfo (Setting &);
     
   public slots:
     void prefDialog ();

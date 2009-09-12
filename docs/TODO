@@ -2,8 +2,6 @@ To Do:
 ======
 
 - create some howto docs for indicators
-- trendlines and fibo objects to plot on weekly and monthly charts as well
-  https://sourceforge.net/forum/message.php?msg_id=4527886
 - allow negative displacement for line plots
 - add more crosshairs behaviours to IndicatorPlot
 - user defined bar lengths for intraday charts

@@ -23,6 +23,7 @@
 #define VERTICALLINE_HPP
 
 #include "COBase.h"
+
 #include <QPoint>
 
 
@@ -33,7 +34,6 @@ class VerticalLine : public COBase
 
   public:
     VerticalLine ();
-    ~VerticalLine ();
     void draw (QPixmap &, Scaler &, int, int, int);
     void newObject (QString &, QString &);
     double getHigh ();
@@ -42,6 +42,7 @@ class VerticalLine : public COBase
     void saveDefaults ();
     void loadSettings (COSettings &);
     void saveSettings ();
+    void getInfo (Setting &);
     
   public slots:
     void prefDialog ();

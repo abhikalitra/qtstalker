@@ -23,6 +23,7 @@
 #include "PrefDialog.h"
 #include "DataBase.h"
 #include "Config.h"
+
 #include <QPainter>
 
 
@@ -34,10 +35,6 @@ SellArrow::SellArrow ()
   type = (int) COSellArrow;
   
   loadDefaults();
-}
-
-SellArrow::~SellArrow ()
-{
 }
 
 void SellArrow::draw (QPixmap &buffer, Scaler &scaler, int startIndex, int pixelspace, int startX)
@@ -216,9 +213,18 @@ void SellArrow::loadSettings (COSettings &co)
   co.getColor(color);
 }
 
-void SellArrow::adjustForSplit (QDateTime &dt, double d)
+void SellArrow::getInfo (Setting &info)
 {
-  if (date < dt)
-    value = value * d;
+  QString k = "D";
+  QString d = date.toString("yyyy-MM-dd");
+  info.setData(k, d);
+  
+  k = "T";
+  d = date.toString("HH:MM:ss");
+  info.setData(k, d);
+  
+  k = tr("Price");
+  d = QString::number(value);
+  info.setData(k, d);
 }
 

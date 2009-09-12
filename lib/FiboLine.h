@@ -23,6 +23,7 @@
 #define FIBOLINE_HPP
 
 #include "COBase.h"
+
 #include <QPoint>
 #include <QFont>
 
@@ -34,7 +35,6 @@ class FiboLine : public COBase
 
   public:
     FiboLine ();
-    ~FiboLine ();
     void draw (QPixmap &, Scaler &, int, int, int);
     void newObject (QString &, QString &);
     double getHigh ();
@@ -46,7 +46,7 @@ class FiboLine : public COBase
     void saveSettings ();
     int isGrabSelected (QPoint point);
     double getLine (int);
-    void adjustForSplit (QDateTime &, double);
+    void getInfo (Setting &);
     
   public slots:
     void prefDialog ();

@@ -23,6 +23,7 @@
 #define TRENDLINE_HPP
 
 #include "COBase.h"
+
 #include <QPoint>
 
 
@@ -33,7 +34,6 @@ class TrendLine : public COBase
 
   public:
     TrendLine ();
-    ~TrendLine ();
     void draw (QPixmap &, Scaler &, int, int, int);
     void newObject (QString &, QString &);
     double getHigh ();
@@ -43,7 +43,7 @@ class TrendLine : public COBase
     void loadSettings (COSettings &);
     void saveSettings ();
     int isGrabSelected (QPoint point);
-    void adjustForSplit (QDateTime &, double);
+    void getInfo (Setting &);
     
   public slots:
     void prefDialog ();

@@ -23,6 +23,7 @@
 #define SELLARROW_HPP
 
 #include "COBase.h"
+
 #include <QPolygon>
 #include <QPoint>
 
@@ -34,14 +35,13 @@ class SellArrow : public COBase
 
   public:
     SellArrow ();
-    ~SellArrow ();
     void draw (QPixmap &, Scaler &, int, int, int);
     void newObject (QString &, QString &);
     void loadDefaults ();
     void saveDefaults ();
     void loadSettings (COSettings &);
     void saveSettings ();
-    void adjustForSplit (QDateTime &, double);
+    void getInfo (Setting &);
     
   public slots:
     void prefDialog ();

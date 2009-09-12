@@ -23,6 +23,7 @@
 #include "PrefDialog.h"
 #include "DataBase.h"
 #include "Config.h"
+
 #include <QPainter>
 #include <QPolygon>
 
@@ -35,10 +36,6 @@ VerticalLine::VerticalLine ()
   type = (int) COVerticalLine;
   
   loadDefaults();
-}
-
-VerticalLine::~VerticalLine ()
-{
 }
 
 void VerticalLine::draw (QPixmap &buffer, Scaler &, int startIndex, int pixelspace, int startX)
@@ -239,5 +236,16 @@ void VerticalLine::loadSettings (COSettings &co)
   co.getIndicator(indicator);
   co.getDate(date);
   co.getColor(color);
+}
+
+void VerticalLine::getInfo (Setting &info)
+{
+  QString k = "D";
+  QString d = date.toString("yyyy-MM-dd");
+  info.setData(k, d);
+  
+  k = "T";
+  d = date.toString("HH:MM:ss");
+  info.setData(k, d);
 }
 

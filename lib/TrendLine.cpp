@@ -23,6 +23,7 @@
 #include "PrefDialog.h"
 #include "Config.h"
 #include "DataBase.h"
+
 #include <QPainter>
 #include <QPolygon>
 
@@ -39,10 +40,6 @@ TrendLine::TrendLine ()
   type = (int) COTrendLine;
 
   loadDefaults();
-}
-
-TrendLine::~TrendLine ()
-{
 }
 
 void TrendLine::draw (QPixmap &buffer, Scaler &scaler, int startIndex, int pixelspace, int startX)
@@ -426,12 +423,25 @@ void TrendLine::loadSettings (COSettings &co)
   extend = d.toInt();
 }
 
-void TrendLine::adjustForSplit (QDateTime &dt, double d)
+void TrendLine::getInfo (Setting &info)
 {
-  if (date < dt)
-    value = value * d;
-  if (date2 < dt)
-    value2 = value2 * d;
-}
+  QString k = tr("Start Date");
+  QString d = date.toString("yyyy-MM-dd HH:mm:ss");
+  info.setData(k, d);
+  
+  k = tr("Start Price");
+  d = QString::number(value);
+  info.setData(k, d);
+  
+  if (! extend)
+  {
+    k = tr("End Date");
+    d = date.toString("yyyy-MM-dd HH:mm:ss");
+    info.setData(k, d);
 
+    k = tr("End Price");
+    d = QString::number(value2);
+    info.setData(k, d);
+  }
+}
 

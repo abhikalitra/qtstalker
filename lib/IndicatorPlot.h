@@ -127,7 +127,6 @@ class IndicatorPlot : public QWidget
     void slotLogScaleChanged (bool);
     void setInterval(BarData::BarLength);
     void slotNewBuyArrow ();
-    void slotNewCycle ();
     void slotNewFiboline ();
     void slotNewHorizontalLine ();
     void slotNewSellArrow ();
