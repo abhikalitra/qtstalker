@@ -23,11 +23,15 @@
 
 	  Removed adjustForSplit() functions from chart objects. These are better suited for DataBase::
 
-20090914: Folded all chart object classes into IndicatorPlot:: to simplify and improve efficiency.
+20090914: Folded all chart object classes into IndicatorPlot:: to remove the legacy plugin structure,
+	  simplify and improve efficiency.
 
-	  Removed BuyArrow, FiboLine, HorizontalLine, SellArrow, Text, TrendLine, VerticalLine classes.
+	  Removed BuyArrow, FiboLine, HorizontalLine, SellArrow, Text, TrendLine, VerticalLine COBase classes.
 
 	  Added new CODialog class. This is the gui dialog to edit chart objects.
+
+	  Applied patch (#2857550 - chars replacement in csv and progress indicator). Thanks to Austin (x_curve)
+	  for the patch.
 	  
 
 

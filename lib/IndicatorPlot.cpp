@@ -332,20 +332,15 @@ void IndicatorPlot::mousePressEvent (QMouseEvent *event)
 
 void IndicatorPlot::mouseMoveEvent (QMouseEvent *event)
 {
-  if (! data)
-    return;
-
   // ignore moves above the top of the chart - we get draw errors if we don't
-  if (event->y() <= 0)
+  if (! data || event->y() <= 0)
     return;
-
+  
   if (mouseFlag == RubberBand)
   {
     rubberBand->setGeometry(QRect(mouseOrigin, event->pos()).normalized());
     return;
   }
-  
-  getXY(event->x(), event->y());
 
   // are we trying to drag a chart object?
   if (drawMode)
@@ -355,7 +350,9 @@ void IndicatorPlot::mouseMoveEvent (QMouseEvent *event)
       case Moving:
       case ClickWait:
       case ClickWait2:
+        getXY(event->x(), event->y());
         objectMoving();
+	return;
 	break;
       default:
 	break;
@@ -385,7 +382,8 @@ void IndicatorPlot::mouseDoubleClickEvent (QMouseEvent *event)
   if (mouseFlag != COSelected)
     return;
 
-//  coSelected->prefDialog();
+  if (coSelected)
+    slotObjectDialog();
 }
 
 void IndicatorPlot::mouseReleaseEvent(QMouseEvent *)
@@ -481,13 +479,6 @@ void IndicatorPlot::getInfo (int x)
 
 void IndicatorPlot::keyPressEvent (QKeyEvent *key)
 {
-  // if chart object selected then pass keyevent to it
-  if (mouseFlag == COSelected)
-  {
-//    coSelected->keyEvent(key);
-    return;
-  }
-  
   // process for plot keyevents
   switch (key->key())
   {
@@ -608,7 +599,6 @@ void IndicatorPlot::drawInfo ()
   painter.setPen(borderColor);
   painter.setFont(plotFont);
   painter.setBackgroundMode(Qt::OpaqueMode);
-//  painter.setBackgroundColor(backgroundColor);
   painter.setBackground(QBrush(backgroundColor));
   
   //QFontMetrics fm = painter.fontMetrics();
@@ -849,6 +839,7 @@ void IndicatorPlot::setScale ()
   scaleHigh = scaleHigh + t;
   scaleLow = scaleLow - t;
 
+  // handle log scaling if toggled
   double logScaleHigh = 1;
   double logRange = 0;
   if (logScale)
@@ -889,7 +880,7 @@ void IndicatorPlot::showPopupMenu ()
 {
   chartMenu->clear();
     
-  chartObjectMenu = new QMenu(tr("Chart Objects")); 
+  chartObjectMenu = new QMenu(tr("New Chart Object")); 
   chartObjectMenu->addAction(QPixmap(buyarrow), tr("Buy Arrow"), this, SLOT(slotNewBuyArrow()));
   chartObjectMenu->addAction(QPixmap(fib), tr("Fibonacci Line"), this, SLOT(slotNewFiboline()));
   chartObjectMenu->addAction(QPixmap(horizontal), tr("Horizontal Line"), this, SLOT(slotNewHorizontalLine()));

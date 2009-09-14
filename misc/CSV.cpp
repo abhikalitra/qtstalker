@@ -116,6 +116,7 @@ void CSV::import ()
 
       // check if the # of fieldlist and data fields match
       lineCount++;
+      
       if (l.count() != fieldList.count())
       {
         ts = QString(fName + " - " + tr("Line") + ": " + QString::number(lineCount) + " Number of fields in file (" + QString::number(l.count())
@@ -131,6 +132,7 @@ void CSV::import ()
       for (fieldLoop = 0; fieldLoop < (int) fieldList.count(); fieldLoop++)
       {
         QString listItem = l[fieldLoop].trimmed();
+	
         if (fieldList[fieldLoop].contains("Date"))
 	{
           QDateTime dt = QDateTime::fromString(listItem, dateFormat);
@@ -148,13 +150,16 @@ void CSV::import ()
 	  continue;
 	}
 
-        if (! fieldList[fieldLoop].compare("Symbol"))
-	{
-          while (listItem.contains(" "))
-            listItem.replace(listItem.indexOf(" "), 1, "_");
+	// remove any unwanted characters in the symbol name
+        if (fieldList[fieldLoop] == "Symbol")
+        {
+          listItem.replace(QString(" "), QString("_")); // replace spaces
+          listItem.replace(QString("-"), QString("_")); // replace minus signs
+          listItem.replace(QString("&"), QString("_")); // replace ampersand
+          listItem.replace(QString("."), QString("_")); // replace dot
           r.setSymbol(listItem);
-	  continue;
-	}
+          continue;
+        }
 
         // if we are here we have a number field to process
         bool ok;
@@ -209,6 +214,7 @@ void CSV::import ()
       it.next();
       setChart(it.value());
       records = records + it.value()->count();
+      emit signalMessage(QString(QString::number(records) + tr(" Records Processed")));
     }    
 
     qDeleteAll(symbolHash);
