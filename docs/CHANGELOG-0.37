@@ -22,6 +22,12 @@
 20090912: Removed Cycle chart object. This is better suited as an indicator.
 
 	  Removed adjustForSplit() functions from chart objects. These are better suited for DataBase::
+
+20090914: Folded all chart object classes into IndicatorPlot:: to simplify and improve efficiency.
+
+	  Removed BuyArrow, FiboLine, HorizontalLine, SellArrow, Text, TrendLine, VerticalLine classes.
+
+	  Added new CODialog class. This is the gui dialog to edit chart objects.
 	  
 
 

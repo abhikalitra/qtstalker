@@ -31,6 +31,8 @@ ColorButton::ColorButton (QWidget *w, QColor &c) : QPushButton (w)
   pix = QPixmap(50, 10);
   readonly = FALSE;
   changed = FALSE;
+  
+  setColorButton();
 }
 
 ColorButton::~ColorButton ()

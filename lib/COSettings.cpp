@@ -20,6 +20,7 @@
  */
 
 #include "COSettings.h"
+#include "Config.h"
 
 
 
@@ -29,84 +30,33 @@ COSettings::COSettings (QString i, QString s, QString indi, QString t)
   symbol = s;
   indicator = indi;
   type = t;
-
   dateFormat = "yyyy-MM-dd HH:mm:ss";
+  selected = FALSE;
+  saveFlag = FALSE;
 }
 
 COSettings::COSettings ()
 {
   dateFormat = "yyyy-MM-dd HH:mm:ss";
+  selected = FALSE;
+  saveFlag = FALSE;
 }
 
 COSettings::~COSettings ()
 {
-}
-
-void COSettings::getString (QString &k, QString &d)
-{
-  d.clear();
-  if (settings.contains(k))
-    d = settings.value(k);
-}
-
-void COSettings::setString (QString &k, QString &d)
-{
-  settings.insert(k, d);
-}
-
-void COSettings::getColor (QColor &d)
-{
-  QString k("Color");
-  if (settings.contains(k))
-    d.setNamedColor(settings.value(k));
-}
-
-void COSettings::setColor (QColor &d)
-{
-  QString k("Color");
-  QString s(d.name());
-  settings.insert(k, s);
-}
-
-double COSettings::getValue ()
-{
-  QString k("Value");
-  if (settings.contains(k))
-    return settings.value(k).toDouble();
-  else
-    return 0;
-}
-
-void COSettings::setValue (double d)
-{
-  QString k("Value");
-  settings.insert(k, QString::number(d));
-}
-
-double COSettings::getValue2 ()
-{
-  QString k("Value2");
-  if (settings.contains(k))
-    return settings.value(k).toDouble();
-  else
-    return 0;
-}
-
-void COSettings::setValue2 (double d)
-{
-  QString k("Value2");
-  settings.insert(k, QString::number(d));
+  qDeleteAll(grabHandles);
+  qDeleteAll(selectionArea);
 }
 
 void COSettings::getSettings (QString &s)
 {
   s.clear();
   QStringList l;
-  QHashIterator<QString, QString> it(settings);
+  QHashIterator<COParm, QString> it(settings);
   while (it.hasNext())
   {
     it.next();
-    l.append(it.key() + "=" + it.value());
+    l.append(QString::number(it.key()) + "=" + it.value());
   }
   s = l.join("|");
 }
@@ -122,90 +72,302 @@ void COSettings::parse (QString &d)
   {
     QStringList l2 = l[loop].split("=");
     if (l2.count() > 1)
-      settings.insert(l2[0], l2[1]);
+      settings.insert((COParm) l2[0].toInt(), l2[1]);
   }
 }
 
-void COSettings::getType (QString &d)
+void COSettings::getData (COParm k, int &d)
 {
-  d = type;
+  if (settings.contains(k))
+    d = settings.value(k).toInt();
 }
 
-void COSettings::setType (QString &d)
+void COSettings::setData (COParm k, int d)
 {
-  type = d;
+  settings.insert(k, QString::number(d));
 }
 
-void COSettings::getID (QString &d)
+void COSettings::getData (COParm k, double &d)
 {
-  d = id;
+  if (settings.contains(k))
+    d = settings.value(k).toDouble();
 }
 
-void COSettings::setID (QString &d)
+void COSettings::setData (COParm k, double d)
 {
-  id = d;
+  settings.insert(k, QString::number(d));
 }
 
-void COSettings::getIndicator (QString &d)
+void COSettings::getData (COParm k, QColor &d)
 {
-  d = indicator;
+  if (settings.contains(k))
+    d.setNamedColor(settings.value(k));
 }
 
-void COSettings::setIndicator (QString &d)
+void COSettings::setData (COParm k, QColor &d)
 {
-  indicator = d;
+  settings.insert(k, d.name());
 }
 
-void COSettings::getSymbol (QString &d)
+void COSettings::getData (COParm k, QDateTime &d)
 {
-  d = symbol;
-}
-
-void COSettings::setSymbol (QString &d)
-{
-  symbol = d;
-}
-
-void COSettings::getDate (QDateTime &d)
-{
-  QString k("Date");
   if (settings.contains(k))
     d = QDateTime::fromString(settings.value(k), dateFormat);
 }
 
-void COSettings::setDate (QDateTime &d)
+void COSettings::setData (COParm k, QDateTime &d)
 {
-  QString k("Date");
-  QString s = d.toString(dateFormat);
-  settings.insert(k, s);
+  settings.insert(k, d.toString(dateFormat));
 }
 
-void COSettings::getDate2 (QDateTime &d)
+void COSettings::getData (COParm, QFont &d)
 {
-  QString k("Date2");
-  if (settings.contains(k))
-    d = QDateTime::fromString(settings.value(k), dateFormat);
+  d = font;
 }
 
-void COSettings::setDate2 (QDateTime &d)
+void COSettings::setData (COParm, QFont &d)
 {
-  QString k("Date2");
-  QString s = d.toString(dateFormat);
-  settings.insert(k, s);
+  font = d;
 }
 
-void COSettings::getText (QString &d)
+void COSettings::getData (COParm k, QString &d)
 {
   d.clear();
-  QString k("Text");
-  if (settings.contains(k))
-    d = settings.value(k);
+  
+  switch (k)
+  {
+    case COID:
+      d = id;
+      break;
+    case COSymbol:
+      d = symbol;
+      break;
+    case COIndicator:
+      d = indicator;
+      break;
+    case COCOType:
+      d = type;
+      break;
+    case COLabel:
+    case COBarField:
+      if (settings.contains(k))
+        d = settings.value(k);
+      break;
+    default:
+      break;
+  };
 }
 
-void COSettings::setText (QString &d)
+void COSettings::setData (COParm k, QString &d)
 {
-  QString k("Text");
-  settings.insert(k, d);
+  switch (k)
+  {
+    case COID:
+      id = d;
+      break;
+    case COSymbol:
+      symbol = d;
+      break;
+    case COIndicator:
+      indicator = d;
+      break;
+    case COCOType:
+      type = d;
+      break;
+    case COLabel:
+    case COBarField:
+      settings.insert(k, d);
+      break;
+    default:
+      break;
+  };
 }
 
+void COSettings::newObject (int o)
+{
+  Config config;
+  QColor color;
+  QString d;
+  double td;
+  int ti;
+  
+  d = QString::number(o);
+  setData(COCOType, d);
+  
+  switch ((COType) o)
+  {
+    case COSettings::COBuyArrow:
+      config.getData(Config::DefaultBuyArrowColor, color);
+      setData(COColor, color);
+      break;
+    case COSettings::COFiboLine:
+      config.getData(Config::DefaultFiboLineColor, color);
+      setData(COColor, color);
+      
+      config.getData(Config::DefaultFiboLine1, td);
+      setData(COLine1, td);
+      
+      config.getData(Config::DefaultFiboLine2, td);
+      setData(COLine2, td);
+      
+      config.getData(Config::DefaultFiboLine3, td);
+      setData(COLine3, td);
+      
+      config.getData(Config::DefaultFiboLine4, td);
+      setData(COLine4, td);
+      
+      config.getData(Config::DefaultFiboLine5, td);
+      setData(COLine5, td);
+      
+      config.getData(Config::DefaultFiboLine6, td);
+      setData(COLine6, td);
+
+      setData(COExtend, 0);
+      break;
+    case COSettings::COHorizontalLine:
+      config.getData(Config::DefaultHorizontalLineColor, color);
+      setData(COColor, color);
+      break;
+    case COSettings::COSellArrow:
+      config.getData(Config::DefaultSellArrowColor, color);
+      setData(COColor, color);
+      break;
+    case COSettings::COText:
+      config.getData(Config::DefaultTextColor, color);
+      setData(COColor, color);
+
+      config.getData(Config::DefaultTextFont, font);
+      setData(COFont, font);
+
+      config.getData(Config::DefaultTextLabel, d);
+      setData(COLabel, d);
+      break;
+    case COSettings::COTrendLine:
+      config.getData(Config::DefaultTrendLineColor, color);
+      setData(COColor, color);
+
+      config.getData(Config::DefaultTrendLineBar, d);
+      setData(COBarField, d);
+
+      config.getData(Config::DefaultTrendLineUseBar, ti);
+      setData(COUseBar, ti);
+
+      config.getData(Config::DefaultTrendLineExtend, ti);
+      setData(COExtend, ti);
+      break;
+    case COSettings::COVerticalLine:
+      config.getData(Config::DefaultVerticalLineColor, color);
+      setData(COColor, color);
+      break;
+    default:
+      break;
+  }
+}
+
+void COSettings::setSaveFlag (int d)
+{
+  saveFlag = d;
+}
+
+int COSettings::getSaveFlag ()
+{
+  return saveFlag;
+}
+
+void COSettings::setSelected (int d)
+{
+  selected = d;
+}
+
+int COSettings::getSelected ()
+{
+  return selected;
+}
+
+void COSettings::clearGrabHandles ()
+{
+  qDeleteAll(grabHandles);
+  grabHandles.clear();
+}
+
+void COSettings::setGrabHandle (QRegion *d)
+{
+  grabHandles.append(d);
+}
+
+void COSettings::clearSelectionArea ()
+{
+  qDeleteAll(selectionArea);
+  selectionArea.clear();
+}
+
+void COSettings::setSelectionArea (QRegion *d)
+{
+  selectionArea.append(d);
+}
+
+int COSettings::isSelected (QPoint &point)
+{
+  int loop;
+  for (loop = 0; loop < (int) selectionArea.count(); loop++)
+  {
+    QRegion *r = selectionArea.at(loop);
+    if (r->contains(point))
+      return 1;
+  }
+  
+  return 0;
+}
+
+int COSettings::isGrabSelected (QPoint &point)
+{
+  int loop;
+  for (loop = 0; loop < (int) grabHandles.count(); loop++)
+  {
+    QRegion *r = grabHandles.at(loop);
+    if (r->contains(point))
+      return loop + 1;
+  }
+  
+  return 0;
+}
+
+void COSettings::getHighLow (double &high, double &low)
+{
+  double td = 0;
+  QString s;
+  getData(COCOType, s);
+  switch ((COType) s.toInt())
+  {
+    case COSettings::COBuyArrow:
+    case COSettings::COSellArrow:
+    case COSettings::COHorizontalLine:
+    case COSettings::COText:
+      getData(COValue, high);
+      getData(COValue, low);
+      break;
+    case COSettings::COFiboLine:
+      getData(COHigh, high);
+      getData(COLow, low);
+      break;
+    case COSettings::COTrendLine:
+      high = -99999999.0;
+      low = 99999999.0;
+
+      getData(COValue, td);
+      if (td > high)
+        high = td;
+      if (td < low)
+        low = td;
+
+      getData(COValue2, td);
+      if (td > high)
+        high = td;
+      if (td < low)
+        low = td;
+      break;
+    default:
+      break;
+  }
+}
 

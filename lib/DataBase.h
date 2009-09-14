@@ -25,7 +25,7 @@
 #include <QString>
 #include <QStringList>
 #include <QDateTime>
-#include <QList>
+#include <QHash>
 
 #include "BarData.h"
 #include "Indicator.h"
@@ -77,8 +77,8 @@ class DataBase
     void deleteChartObjects (QString &symbol);
     void deleteChartObjectsIndicator (QString &indicator);
     void deleteChartObject (QString &id);
-    void getChartObjects (QString &symbol, QString &indicator, QList<COSettings> &list);
-    void setChartObject (COSettings &);
+    void getChartObjects (QString &symbol, QString &indicator, QHash<QString, COSettings *> &list);
+    void setChartObject (COSettings *);
 };
 
 #endif

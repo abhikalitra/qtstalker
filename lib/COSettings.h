@@ -26,47 +26,98 @@
 #include <QHash>
 #include <QColor>
 #include <QDateTime>
+#include <QRegion>
+#include <QList>
+#include <QFont>
+#include <QPoint>
 
 
 
 class COSettings
 {
   public:
+    enum COType
+    {
+      COBuyArrow,
+      COUnused,
+      COFiboLine,
+      COHorizontalLine,
+      COSellArrow,
+      COText,
+      COTrendLine,
+      COVerticalLine
+    };
+
+    enum COParm
+    {
+      COID,
+      COSymbol,
+      COIndicator,
+      COCOType,
+      CODate,
+      CODate2,
+      COValue,
+      COValue2,
+      COColor,
+      COFont,
+      COHigh,
+      COLow,
+      COExtend,
+      COLine1,
+      COLine2,
+      COLine3,
+      COLine4,
+      COLine5,
+      COLine6,
+      COUseBar,
+      COBarField,
+      COLabel
+    };
+
     COSettings (QString i, QString s, QString indi, QString t);
     COSettings ();
     ~COSettings ();
-    void getString (QString &, QString &);
-    void setString (QString &, QString &);
-    void getColor (QColor &);
-    void setColor (QColor &);
-    double getValue ();
-    void setValue (double);
-    double getValue2 ();
-    void setValue2 (double);
-    void getDate (QDateTime &);
-    void setDate (QDateTime &);
-    void getDate2 (QDateTime &);
-    void setDate2 (QDateTime &);
     void getSettings (QString &);
     void parse (QString &);
-    void getIndicator (QString &);
-    void setIndicator (QString &);
-    void getType (QString &);
-    void setType (QString &);
-    void getID (QString &);
-    void setID (QString &);
-    void getSymbol (QString &);
-    void setSymbol (QString &);
-    void getText (QString &);
-    void setText (QString &);
+
+    void getData (COParm, int &);
+    void setData (COParm, int);
+    void getData (COParm, double &);
+    void setData (COParm, double);
+    void getData (COParm, QColor &);
+    void setData (COParm, QColor &);
+    void getData (COParm, QFont &);
+    void setData (COParm, QFont &);
+    void getData (COParm, QDateTime &);
+    void setData (COParm, QDateTime &);
+    void getData (COParm, QString &);
+    void setData (COParm, QString &);
+    
+    void newObject (int);
+    void setSaveFlag (int);
+    int getSaveFlag ();
+    void setSelected (int);
+    int getSelected ();
+    void clearGrabHandles ();
+    void setGrabHandle (QRegion *);
+    void clearSelectionArea ();
+    void setSelectionArea (QRegion *);
+    int isSelected (QPoint &point);
+    int isGrabSelected (QPoint &point);
+    void getHighLow (double &high, double &low);
     
   protected:
     QString id;
     QString symbol;
     QString indicator;
     QString type;
-    QHash<QString, QString> settings;
+    QFont font;
+    QHash<COParm, QString> settings;
     QString dateFormat;
+    int saveFlag;
+    int selected;
+    QList<QRegion *> grabHandles;
+    QList<QRegion *> selectionArea;
 };
 
 #endif

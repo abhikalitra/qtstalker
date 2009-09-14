@@ -604,7 +604,7 @@ void DataBase::deleteChartObject (QString &id)
   }
 }
 
-void DataBase::getChartObjects (QString &symbol, QString &indicator, QList<COSettings> &list)
+void DataBase::getChartObjects (QString &symbol, QString &indicator, QHash<QString, COSettings *> &list)
 {
   QSqlQuery q(QSqlDatabase::database("data"));
   QString s = "SELECT id,symbol,indicator,type,settings FROM chartObjects WHERE symbol='" + symbol + "' AND indicator='" + indicator + "'";
@@ -617,17 +617,17 @@ void DataBase::getChartObjects (QString &symbol, QString &indicator, QList<COSet
 
   while (q.next())
   {
-    COSettings co(q.value(0).toString(), q.value(1).toString(), q.value(2).toString(), q.value(3).toString());
+    COSettings *co = new COSettings(q.value(0).toString(), q.value(1).toString(), q.value(2).toString(), q.value(3).toString());
     QString ts = q.value(4).toString();
-    co.parse(ts);
-    list.append(co);
+    co->parse(ts);
+    list.insert(q.value(0).toString(), co);
   }
 }
 
-void DataBase::setChartObject (COSettings &co)
+void DataBase::setChartObject (COSettings *co)
 {
   QString id;
-  co.getID(id);
+  co->getData(COSettings::COID, id);
 
   QSqlQuery q(QSqlDatabase::database("data"));
   QString s = "SELECT id FROM chartObjects WHERE id=" + id;
@@ -641,7 +641,7 @@ void DataBase::setChartObject (COSettings &co)
   if (q.next())
   {
     QString settings;
-    co.getSettings(settings);
+    co->getSettings(settings);
 
     s = "UPDATE chartObjects SET settings='" + settings + "' WHERE id=" + id;
     q.exec(s);
@@ -651,10 +651,10 @@ void DataBase::setChartObject (COSettings &co)
   else
   {
     QString symbol, indicator, type, settings;
-    co.getSymbol(symbol);
-    co.getIndicator(indicator);
-    co.getType(type);
-    co.getSettings(settings);
+    co->getData(COSettings::COSymbol, symbol);
+    co->getData(COSettings::COIndicator, indicator);
+    co->getData(COSettings::COCOType, type);
+    co->getSettings(settings);
 
     s = "INSERT OR REPLACE INTO chartObjects VALUES (" + id + ",'" + symbol + "','" + indicator + "','" + type + "','" + settings + "')";
     q.exec(s);

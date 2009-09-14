@@ -2,48 +2,6 @@
 <!DOCTYPE TS>
 <TS version="2.0">
 <context>
-    <name>BuyArrow</name>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Value</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Set Default</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Edit BuyArrow</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select point to place BuyArrow...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Identifier</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Price</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>COBase</name>
-    <message>
-        <source>&amp;Edit Object</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Delete Object</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>CSV</name>
     <message>
         <source>Bad date</source>
@@ -197,29 +155,6 @@
     </message>
 </context>
 <context>
-    <name>Cycle</name>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Interval</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Set Default</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Edit Cycle</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select starting point of Cycle...</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>DataWindow</name>
     <message>
         <source>Date</source>
@@ -227,65 +162,6 @@
     </message>
     <message>
         <source>Time</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>FiboLine</name>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Set Default</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Line 1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Line 2</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Line 3</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Line 4</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Line 5</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Line 6</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>High</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Low</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Extend</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Edit FiboLine</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select FiboLine high point...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select FiboLine low point...</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -353,31 +229,16 @@
         <source>Are you sure you want to delete group item?</source>
         <translation type="unfinished"></translation>
     </message>
-</context>
-<context>
-    <name>HorizontalLine</name>
     <message>
-        <source>Color</source>
+        <source>Add To &amp;Group	Ctrl+G</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Set Default</source>
+        <source>Add To Group</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Value</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Text</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Edit HorizontalLine</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select point to place HorizontalLine...</source>
+        <source>Select group to add selected charts</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -475,10 +336,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Cycle</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Fibonacci Line</source>
         <translation type="unfinished"></translation>
     </message>
@@ -504,6 +361,58 @@
     </message>
     <message>
         <source>Are you sure you want to delete all chart objects?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select point to place Buy Arrow...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select Fibo Line high point...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select point to place Horizontal Line...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select point to place Sell Arrow...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select point to place Text...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select Trend Line starting point...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select point to place Vertical Line...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select FiboLine low point...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select TrendLine ending point...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>High</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Low</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Close</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1152,150 +1061,6 @@
     </message>
     <message>
         <source>Indicators</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>SellArrow</name>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Set Default</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Value</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Edit SellArrow</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select point to place SellArrow...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Identifier</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Price</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>Text</name>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Set Default</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Font</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Label</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Value</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Edit Text</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select point to place Text...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Text</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>TrendLine</name>
-    <message>
-        <source>Open</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>High</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Low</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Close</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Set Default</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Use Bar</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Extend Line</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Bar Field</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Start Value</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>End Value</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Edit TrendLine</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select TrendLine starting point...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select TrendLine ending point...</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>VerticalLine</name>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Set Default</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Edit VerticalLine</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select point to place VerticalLine...</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

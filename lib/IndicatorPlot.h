@@ -45,7 +45,9 @@
 #include "COSettings.h"
 #include "Scaler.h"
 #include "BarData.h"
-#include "COBase.h"
+
+#define HANDLE_WIDTH 6
+
 
 
 class IndicatorPlot : public QWidget
@@ -69,7 +71,8 @@ class IndicatorPlot : public QWidget
       ClickWait,
       COSelected,
       Moving,
-      RubberBand
+      RubberBand,
+      ClickWait2
     };
 
     IndicatorPlot (QWidget *);
@@ -80,7 +83,6 @@ class IndicatorPlot : public QWidget
     void updateStatusBar (int, int);
     void setInfoFlag (bool);
     void drawCrossHair ();
-    void addChartObject (COSettings &);
     int getWidth ();
     void strip (double, int, QString &);
     int convertXToDataIndex (int);
@@ -106,6 +108,19 @@ class IndicatorPlot : public QWidget
     void setIndicator (QString &);
     void loadChartObjects ();
     void addLine (PlotLine *);
+    
+    void objectClickWait ();
+    void objectClickWait2 ();
+    void drawBuyArrow ();
+    void drawSellArrow ();
+    void drawText ();
+    void drawFiboLine ();
+    void drawCOHorizontalLine ();
+    void drawTrendLine ();
+    void drawVerticalLine ();
+    void objectMoving ();
+    void trendLineMoving ();
+    void fiboLineMoving ();
    
   public slots:
     void draw();
@@ -157,10 +172,11 @@ class IndicatorPlot : public QWidget
     void slotMessage (QString);
     void slotNewChartObject (int);
     void slotDeleteAllChartObjects ();
-    void slotChartObjectDeleted (QString);
+    void slotChartObjectDeleted ();
     void toggleDate ();
     void toggleLog ();
     void saveChartObjects ();
+    void slotObjectDialog ();
 
   private:
     QFont plotFont;
@@ -186,18 +202,23 @@ class IndicatorPlot : public QWidget
     QDateTime crossHairX;
     double crossHairY;
     Scaler scaler;
-    double y1;
-    QDateTime x1;
+    double y1, ty; // ty is fiboline
+    QDateTime x1, tx; // tx is fiboline
+    int mpx, mpx2, mpy, mpy2; // co fiboline
     MouseStatus mouseFlag;
-    QHash<QString, COBase *> coList;
-    COBase *coSelected;
+    QHash<QString, COSettings *> coList;
+    COSettings *coSelected;
+    COSettings *coDraw;
     QString indicator;
     BarData *data;
     QVector<int> xGrid;
     QMenu *chartMenu;
     QMenu *chartObjectMenu;
+    QMenu *coMenu;
     QList<PlotLine *> plotList;
     QString chartSymbol;
+    int moveFlag;
+    QString dateFormat;
 
     QRubberBand *rubberBand;
     QPoint mouseOrigin;

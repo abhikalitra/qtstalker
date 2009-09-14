@@ -27,6 +27,7 @@
 #include <QColor>
 #include <QFont>
 #include <QStringList>
+
 #include "Scaler.h"
 #include "BarData.h"
 #include "DatePlot.h"

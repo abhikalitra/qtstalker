@@ -107,8 +107,8 @@ class Config
       DbSymbolColumn, // the name of the symbol index symbol column
       RecentChartsList, // csv list of the contents of the recent charts combobox
       LastChartObjectID, // used to assign a new co object id number
-      DefaultCycleColor,
-      DefaultCycleInterval,
+      DefaultTextLabel,
+      DefaultCycleInterval, // *** UNUSED ***
       DefaultFiboLineColor,
       DefaultFiboLine1,
       DefaultFiboLine2,

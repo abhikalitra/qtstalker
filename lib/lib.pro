@@ -23,18 +23,10 @@ HEADERS += FontButton.h
 HEADERS += FileButton.h
 HEADERS += Bar.h
 HEADERS += Config.h
-HEADERS += COBase.h
 HEADERS += Plot.h
 HEADERS += DatePlot.h
 HEADERS += ScalePlot.h
 HEADERS += IndicatorPlot.h
-HEADERS += BuyArrow.h
-HEADERS += FiboLine.h
-HEADERS += HorizontalLine.h
-HEADERS += SellArrow.h
-HEADERS += Text.h
-HEADERS += TrendLine.h
-HEADERS += VerticalLine.h
 HEADERS += DataWindow.h
 HEADERS += Preferences.h
 HEADERS += DataBase.h
@@ -45,6 +37,7 @@ HEADERS += IndicatorPage.h
 HEADERS += COSettings.h
 HEADERS += ExScript.h
 HEADERS += Indicator.h
+HEADERS += CODialog.h
 
 
    
@@ -58,18 +51,10 @@ SOURCES += FontButton.cpp
 SOURCES += FileButton.cpp
 SOURCES += Bar.cpp
 SOURCES += Config.cpp
-SOURCES += COBase.cpp
 SOURCES += Plot.cpp
 SOURCES += DatePlot.cpp
 SOURCES += ScalePlot.cpp
 SOURCES += IndicatorPlot.cpp
-SOURCES += BuyArrow.cpp
-SOURCES += FiboLine.cpp
-SOURCES += HorizontalLine.cpp
-SOURCES += SellArrow.cpp
-SOURCES += Text.cpp
-SOURCES += TrendLine.cpp
-SOURCES += VerticalLine.cpp
 SOURCES += DataWindow.cpp
 SOURCES += Preferences.cpp
 SOURCES += DataBase.cpp
@@ -80,6 +65,7 @@ SOURCES += IndicatorPage.cpp
 SOURCES += COSettings.cpp
 SOURCES += ExScript.cpp
 SOURCES += Indicator.cpp
+SOURCES += CODialog.cpp
 
 
    

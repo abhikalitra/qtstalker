@@ -29,6 +29,7 @@
 #include <QtDebug>
 #include <QtSql>
 #include <QDir>
+#include <QObject>
 
 
 Setup::Setup ()
@@ -397,6 +398,78 @@ void Setup::setupConfigDefaults ()
   setConfig(k, d);
 
   k = QString::number(Config::DefaultIndicators);
+  d = "0";
+  setConfig(k, d);
+  
+  k = QString::number(Config::DefaultBuyArrowColor);
+  d = "green";
+  setConfig(k, d);
+  
+  k = QString::number(Config::DefaultSellArrowColor);
+  d = "red";
+  setConfig(k, d);
+  
+  k = QString::number(Config::DefaultHorizontalLineColor);
+  d = "red";
+  setConfig(k, d);
+  
+  k = QString::number(Config::DefaultVerticalLineColor);
+  d = "red";
+  setConfig(k, d);
+  
+  k = QString::number(Config::DefaultFiboLineColor);
+  d = "red";
+  setConfig(k, d);
+  
+  k = QString::number(Config::DefaultFiboLine1);
+  d = "0.382";
+  setConfig(k, d);
+  
+  k = QString::number(Config::DefaultFiboLine2);
+  d = "0.5";
+  setConfig(k, d);
+  
+  k = QString::number(Config::DefaultFiboLine3);
+  d = "0.618";
+  setConfig(k, d);
+  
+  k = QString::number(Config::DefaultFiboLine4);
+  d = "0";
+  setConfig(k, d);
+  
+  k = QString::number(Config::DefaultFiboLine5);
+  d = "0";
+  setConfig(k, d);
+  
+  k = QString::number(Config::DefaultFiboLine6);
+  d = "0";
+  setConfig(k, d);
+  
+  k = QString::number(Config::DefaultTextColor);
+  d = "white";
+  setConfig(k, d);
+  
+  k = QString::number(Config::DefaultTextFont);
+  d = "DejaVu Sans,9,50,0,0";
+  setConfig(k, d);
+  
+  k = QString::number(Config::DefaultTextLabel);
+  d = QObject::tr("Text");
+  setConfig(k, d);
+  
+  k = QString::number(Config::DefaultTrendLineColor);
+  d = "red";
+  setConfig(k, d);
+  
+  k = QString::number(Config::DefaultTrendLineBar);
+  d = "Close";
+  setConfig(k, d);
+  
+  k = QString::number(Config::DefaultTrendLineExtend);
+  d = "1";
+  setConfig(k, d);
+  
+  k = QString::number(Config::DefaultTrendLineUseBar);
   d = "0";
   setConfig(k, d);
 }
