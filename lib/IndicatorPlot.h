@@ -203,9 +203,8 @@ class IndicatorPlot : public QWidget
     QDateTime crossHairX;
     double crossHairY;
     Scaler scaler;
-    double y1, ty; // ty is fiboline
-    QDateTime x1, tx; // tx is fiboline
-    int mpx, mpx2, mpy, mpy2; // co fiboline
+    double y1;
+    QDateTime x1;
     MouseStatus mouseFlag;
     QHash<QString, COSettings *> coList;
     COSettings *coSelected;

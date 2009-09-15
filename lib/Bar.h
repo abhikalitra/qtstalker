@@ -33,7 +33,6 @@ class Bar
 {
   public:
     Bar ();
-    ~Bar ();
     int setDate (QDateTime &);
     void getDate (QDateTime &);
     void setOpen (double);

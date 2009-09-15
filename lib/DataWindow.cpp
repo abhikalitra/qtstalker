@@ -45,10 +45,6 @@ DataWindow::DataWindow (QWidget *w) : QDialog (w, 0)
   resize(750, 550);
 }
 
-DataWindow::~DataWindow ()
-{
-}
-
 void DataWindow::setData (int row, int col, QString &data)
 {
   if (row > table->rowCount() -1)

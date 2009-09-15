@@ -41,7 +41,6 @@ class Plot : public QWidget
 
   public:
     Plot (QWidget *);
-    ~Plot ();
     void setData (BarData *);
     void setLogScale (bool);
     void updateStatusBar (int, int);

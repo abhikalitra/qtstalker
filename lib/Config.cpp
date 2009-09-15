@@ -28,10 +28,6 @@ Config::Config ()
 {
 }
 
-Config::~Config ()
-{
-}
-
 void Config::getData (Parm p, QString &d)
 {
   d.clear();

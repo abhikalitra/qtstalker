@@ -24,7 +24,7 @@
 
 #include "ColorButton.h"
 #include "FontButton.h"
-#include "FileButton.h"
+
 #include <QDialog>
 #include <QDialogButtonBox>
 #include <QTabWidget>
@@ -44,6 +44,7 @@
 #include <QString>
 #include <QLabel>
 #include <QGridLayout>
+
 
 class PrefDialog : public QDialog
 {
@@ -78,8 +79,6 @@ class PrefDialog : public QDialog
     QComboBox * getComboWidget (QString &);
     void addDateItem (QString &, QDateTime &);
     void getDate (QString &, QDateTime &);
-    void addFileItem (QString &, QStringList &, QString &);
-    void getFile (QString &, QStringList &);
     void getItem (QString &, QString &);
     void addTimeItem (QString &, QDateTime &);
     void getTime (QString &, QDateTime &);
@@ -95,7 +94,6 @@ class PrefDialog : public QDialog
     QHash<QString, QLineEdit *> textList;
     QHash<QString, QComboBox *> comboList;
     QHash<QString, QDateEdit *> dateList;
-    QHash<QString, FileButton *> fileList;
     QHash<QString, QLabel *> labelList;
     QHash<QString, QTimeEdit *> timeList;
     QDialogButtonBox *buttonBox;

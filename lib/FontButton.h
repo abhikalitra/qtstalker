@@ -33,7 +33,6 @@ class FontButton : public QPushButton
 
   public:
     FontButton (QWidget *, QFont &);
-    ~FontButton ();
     void getFont (QFont &);
     void setFontButton ();
     bool isChanged();

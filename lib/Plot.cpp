@@ -50,10 +50,6 @@ Plot::Plot (QWidget *w) : QWidget(w)
   connect(indicatorPlot, SIGNAL(signalLogFlag(bool)), this, SLOT(slotLogScaleChanged(bool)));
 }
 
-Plot::~Plot ()
-{
-}
-
 void Plot::clear ()
 {
   datePlot->clear();

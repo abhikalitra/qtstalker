@@ -29,10 +29,6 @@ Bar::Bar ()
   emptyFlag = TRUE;
 }
 
-Bar::~Bar ()
-{
-}
-
 int Bar::setDate (QDateTime &d)
 {
   if (! d.isValid())

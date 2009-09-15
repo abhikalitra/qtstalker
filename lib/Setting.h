@@ -30,7 +30,6 @@ class Setting
 {
   public:
     Setting ();
-    ~Setting ();
     void getData (QString &, QString &);
     double getDouble (QString &);
     int getInt (QString &);

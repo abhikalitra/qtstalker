@@ -27,16 +27,11 @@ ColorButton::ColorButton (QWidget *w, QColor &c) : QPushButton (w)
   color = c;
   QObject::connect(this, SIGNAL(clicked()), this, SLOT(colorDialog()));
   setMaximumHeight(25);
-//  setToggleButton(FALSE);
   pix = QPixmap(50, 10);
   readonly = FALSE;
   changed = FALSE;
   
   setColorButton();
-}
-
-ColorButton::~ColorButton ()
-{
 }
 
 void ColorButton::setColorButton ()

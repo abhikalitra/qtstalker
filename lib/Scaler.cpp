@@ -87,10 +87,6 @@ Scaler::Scaler ()
   scaleList.append("500000000000");
 }
 
-Scaler::~Scaler ()
-{
-}
-
 void Scaler::set (int ht, double h, double l, double lh, double lr, bool lf)
 {
   height = 0;

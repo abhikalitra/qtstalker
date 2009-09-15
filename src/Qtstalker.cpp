@@ -787,6 +787,10 @@ void QtstalkerApp::slotNewIndicator (QString n)
 {
   // add a new indicator slot
   addIndicatorButton(n);
+  
+  if (! recordList)
+    return;
+  
   indicatorList.clear();
   indicatorList << n;
   ilPos = -1;
@@ -826,6 +830,10 @@ void QtstalkerApp::slotEnableIndicator (QString name)
 {
   // enable indicator
   addIndicatorButton(name);
+  
+  if (! recordList)
+    return;
+  
   indicatorList.clear();
   indicatorList << name;
   ilPos = -1;

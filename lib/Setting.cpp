@@ -26,10 +26,6 @@ Setting::Setting ()
 {
 }
 
-Setting::~Setting ()
-{
-}
-
 void Setting::getData (QString &k, QString &d)
 {
   d.clear();

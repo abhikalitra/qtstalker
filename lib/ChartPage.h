@@ -46,7 +46,6 @@ class ChartPage : public QWidget
 
   public:
     ChartPage (QWidget *);
-    ~ChartPage ();
 
   public slots:
     void rightClick (const QPoint &);
@@ -58,7 +57,6 @@ class ChartPage : public QWidget
     void symbolSearch ();
     void sqlSearch ();
     void ruleSearch ();
-    void editSearch ();
 
   protected:
     int activeSearch;

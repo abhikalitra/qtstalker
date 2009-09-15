@@ -50,10 +50,6 @@ ScalePlot::ScalePlot (QWidget *w) : QWidget(w)
   setMaximumWidth(scaleWidth);
 }
 
-ScalePlot::~ScalePlot ()
-{
-}
-
 void ScalePlot::clear ()
 {
   close = 0;

@@ -51,7 +51,6 @@ PrefDialog::~PrefDialog ()
   qDeleteAll(textList);
   qDeleteAll(comboList);
   qDeleteAll(dateList);
-  qDeleteAll(fileList);
   qDeleteAll(labelList);
   qDeleteAll(timeList);
 }
@@ -351,24 +350,6 @@ void PrefDialog::getTime (QString &name, QDateTime &dt)
   QTimeEdit *time = timeList.value(name);
   if (time)
     dt.setTime(time->time());
-}
-
-void PrefDialog::addFileItem (QString &name, QStringList &l, QString &p)
-{
-  QLabel *label = new QLabel(name);
-  grid->addWidget(label, grid->rowCount(), 0);
-
-  FileButton *button = new FileButton(this, l, p);
-  grid->addWidget(button, grid->rowCount() - 1, 1);
-  fileList.insert(name, button);
-}
-
-void PrefDialog::getFile (QString &name, QStringList &l)
-{
-  l.clear();
-  FileButton *button = fileList.value(name);
-  if (button)
-    button->getFile(l);
 }
 
 void PrefDialog::getItem (QString &name, QString &s)

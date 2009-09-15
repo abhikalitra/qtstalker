@@ -10,6 +10,38 @@ if ($a ne "0")
   exit; # we have a non zero return code, exit script
 }
 
+print STDOUT "SET_INDICATOR,buy,20"; # create the STOCH buy line
+$a = <STDIN>; # get the return code
+chomp($a); # remove the \n
+if ($a ne "0")
+{
+  exit; # we have a non zero return code, exit script
+}
+
+print STDOUT "SET_INDICATOR,sell,80"; # create the STOCH sell line
+$a = <STDIN>; # get the return code
+chomp($a); # remove the \n
+if ($a ne "0")
+{
+  exit; # we have a non zero return code, exit script
+}
+
+print STDOUT "PLOT,buy,Buy,yellow,Horizontal"; # plot the STOCH buy line
+$a = <STDIN>; # get the return code
+chomp($a); # remove the \n
+if ($a ne "0")
+{
+  exit; # we have a non zero return code, exit script
+}
+
+print STDOUT "PLOT,sell,Sell,yellow,Horizontal"; # plot the STOCH sell line
+$a = <STDIN>; # get the return code
+chomp($a); # remove the \n
+if ($a ne "0")
+{
+  exit; # we have a non zero return code, exit script
+}
+
 print STDOUT "PLOT,SLOWK,%K,red,Line"; # plot the SLOWK line
 $a = <STDIN>; # get the return code
 chomp($a); # remove the \n 

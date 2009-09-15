@@ -37,6 +37,18 @@
 
 20090915: TODO done. When mouse cursor passes over a chart object, parms are displayed in the data panel.
 
+	  ChartPage now saves last used symbol search and attempts to load that search on startup.
+
+	  Fixed bug that segfaults when new indicator is added with no chart loaded.
+
+	  Added new buy/sell lines to RSI and STOCH scripts.
+
+	  Removed FileButton class. Not used anymore.
+
+
+
+
+
 
 
 

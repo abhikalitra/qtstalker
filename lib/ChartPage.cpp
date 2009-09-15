@@ -21,10 +21,9 @@
 
 #include "ChartPage.h"
 #include "DataBase.h"
+#include "Config.h"
+
 #include "../pics/addgroup.xpm"
-//#include "../pics/scanner.xpm"
-//#include "../pics/edit.xpm"
-//#include "../pics/sql.xpm"
 #include "../pics/search.xpm"
 #include "../pics/asterisk.xpm"
 
@@ -54,14 +53,6 @@ ChartPage::ChartPage (QWidget *w) : QWidget (w)
   hbox->setSpacing(2);
   vbox->addLayout(hbox);
 
-//  rules = new QComboBox;
-//  hbox->addWidget(rules);
-
-//  hbox = new QHBoxLayout;
-//  hbox->setMargin(5);
-//  hbox->setSpacing(2);
-//  vbox->addLayout(hbox);
-
   allButton = new QToolButton;
   allButton->setToolTip(tr("All Symbols"));
   allButton->setIcon(QIcon(asterisk_xpm));
@@ -76,34 +67,8 @@ ChartPage::ChartPage (QWidget *w) : QWidget (w)
   symbolButton->setMaximumSize(25, 25);
   hbox->addWidget(symbolButton);
 
-/* 
-  sqlButton = new QToolButton;
-  sqlButton->setToolTip(tr("SQL Search"));
-  sqlButton->setIcon(QIcon(sql_xpm));
-  connect(sqlButton, SIGNAL(clicked()), this, SLOT(sqlSearch()));
-  hbox->addWidget(sqlButton);
-  sqlButton->setEnabled(FALSE);
-*/
-
   hbox->addStretch(1);
 
-/*
-  searchGoButton = new QToolButton;
-  searchGoButton->setToolTip(tr("Perform Rule Search"));
-  searchGoButton->setIcon(QIcon(scanner));
-  connect(searchGoButton, SIGNAL(clicked()), this, SLOT(ruleSearch()));
-  hbox->addWidget(searchGoButton);
-  
-  searchEditButton = new QToolButton;
-  searchEditButton->setToolTip(tr("Edit Search Rules"));
-  searchEditButton->setIcon(QIcon(edit));
-  connect(searchEditButton, SIGNAL(clicked()), this, SLOT(editSearch()));
-  hbox->addWidget(searchEditButton);
-
-//  hbox->addStretch(1);
-
-*/
- 
   nav = new QListWidget;
   nav->setContextMenuPolicy(Qt::CustomContextMenu);
   nav->setSelectionMode(QAbstractItemView::ExtendedSelection);
@@ -117,11 +82,17 @@ ChartPage::ChartPage (QWidget *w) : QWidget (w)
   menu->addAction(QIcon(), tr("&All Symbols"), this, SLOT(updateList()), QKeySequence(Qt::CTRL+Qt::Key_A));
   menu->addAction(QIcon(search), tr("&Symbol Search"), this, SLOT(symbolSearch()), QKeySequence(Qt::CTRL+Qt::Key_S));
 
-  refreshList();
-}
+  // update to last symbol search before displaying
+  QString s;
+  Config config;
+  config.getData(Config::LastSymbolSearch, s);
+  
+  DataBase db;
+  QStringList l;
+  db.getSearchList(s, l);
 
-ChartPage::~ChartPage ()
-{
+  nav->clear();
+  nav->addItems(l);
 }
 
 void ChartPage::chartOpened (QListWidgetItem *item)
@@ -209,7 +180,6 @@ void ChartPage::doKeyPress (QKeyEvent *key)
     switch(key->key())
     {
       default:
-//        nav->doKeyPress(key);
         break;
     }
   }
@@ -241,6 +211,9 @@ void ChartPage::symbolSearch ()
 
   nav->clear();
   nav->addItems(l);
+  
+  Config config;
+  config.setData(Config::LastSymbolSearch, s);
 }
 
 void ChartPage::sqlSearch ()
@@ -253,10 +226,5 @@ void ChartPage::ruleSearch ()
   QString s = rules->currentText();
   if (! s.length())
     return;
-
-}
-
-void ChartPage::editSearch ()
-{
 }
 

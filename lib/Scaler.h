@@ -29,7 +29,6 @@ class Scaler
 {
   public:
     Scaler ();
-    ~Scaler ();
     void set (int ht, double h, double l, double lh, double lr, bool lf);
     int convertToY (double);
     double convertToVal (int);

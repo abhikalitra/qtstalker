@@ -39,7 +39,6 @@ class ScalePlot : public QWidget
 
   public:
     ScalePlot (QWidget *);
-    ~ScalePlot ();
     void clear ();
     void setData (double);
     void setScaleWidth (int);

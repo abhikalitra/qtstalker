@@ -108,7 +108,7 @@ class Config
       RecentChartsList, // csv list of the contents of the recent charts combobox
       LastChartObjectID, // used to assign a new co object id number
       DefaultTextLabel,
-      DefaultCycleInterval, // *** UNUSED ***
+      LastSymbolSearch,
       DefaultFiboLineColor,
       DefaultFiboLine1,
       DefaultFiboLine2,
@@ -131,7 +131,6 @@ class Config
     };
 
     Config ();
-    ~Config ();
     void setData (Parm, QString &);
     void getData (Parm, QString &);
     void getData (Parm, QSplitter *);
