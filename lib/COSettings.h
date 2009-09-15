@@ -31,6 +31,7 @@
 #include <QFont>
 #include <QPoint>
 
+#include "Setting.h"
 
 
 class COSettings
@@ -105,6 +106,7 @@ class COSettings
     int isSelected (QPoint &point);
     int isGrabSelected (QPoint &point);
     void getHighLow (double &high, double &low);
+    void getInfo (Setting &);
     
   protected:
     QString id;

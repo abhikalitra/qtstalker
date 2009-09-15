@@ -93,7 +93,8 @@ class IndicatorPlot : public QWidget
     void setCrosshairsFlag (bool);
     void setScaler (Scaler &);
     Scaler & getScaler ();
-    void getInfo (int);
+    void getInfo (int x, int y);
+    void getCOInfo ();
     void setXGrid (QVector<int> &);
     void setMenuFlag (bool);
     void drawLine ();

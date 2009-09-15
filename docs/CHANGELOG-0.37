@@ -33,6 +33,11 @@
 	  Applied patch (#2857550 - chars replacement in csv and progress indicator). Thanks to Austin (x_curve)
 	  for the patch.
 	  
+	  Chart objects now display some values in the data panel when selected.
+
+20090915: TODO done. When mouse cursor passes over a chart object, parms are displayed in the data panel.
+
+
 
 
 	  

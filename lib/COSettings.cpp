@@ -148,12 +148,9 @@ void COSettings::getData (COParm k, QString &d)
     case COCOType:
       d = type;
       break;
-    case COLabel:
-    case COBarField:
+    default:
       if (settings.contains(k))
         d = settings.value(k);
-      break;
-    default:
       break;
   };
 }
@@ -369,5 +366,132 @@ void COSettings::getHighLow (double &high, double &low)
     default:
       break;
   }
+}
+
+void COSettings::getInfo (Setting &info)
+{
+  QString k, d;
+  getData(COCOType, d);
+  switch ((COType) d.toInt())
+  {
+    case COSettings::COBuyArrow:
+      k = QObject::tr("Type");
+      d = QObject::tr("Buy Arrow");
+      info.setData(k, d);
+      
+      k = QObject::tr("Date");
+      getData(CODate, d);
+      info.setData(k, d);
+      
+      k = QObject::tr("Price");
+      getData(COValue, d);
+      info.setData(k, d);
+      break;
+    case COSettings::COFiboLine:
+      k = QObject::tr("Type");
+      d = QObject::tr("Fibo Line");
+      info.setData(k, d);
+      
+      k = QObject::tr("High Point");
+      getData(COHigh, d);
+      info.setData(k, d);
+      
+      k = QObject::tr("Low Point");
+      getData(COLow, d);
+      info.setData(k, d);
+      
+      k = QObject::tr("Line 1");
+      getData(COLine1, d);
+      info.setData(k, d);
+      
+      k = QObject::tr("Line 2");
+      getData(COLine2, d);
+      info.setData(k, d);
+      
+      k = QObject::tr("Line 3");
+      getData(COLine3, d);
+      info.setData(k, d);
+      
+      k = QObject::tr("Line 4");
+      getData(COLine4, d);
+      info.setData(k, d);
+      
+      k = QObject::tr("Line 5");
+      getData(COLine5, d);
+      info.setData(k, d);
+      
+      k = QObject::tr("Line 6");
+      getData(COLine6, d);
+      info.setData(k, d);
+      break;
+    case COSettings::COHorizontalLine:
+      k = QObject::tr("Type");
+      d = QObject::tr("Horizontal Line");
+      info.setData(k, d);
+      
+      k = QObject::tr("Date");
+      getData(CODate, d);
+      info.setData(k, d);
+      
+      k = QObject::tr("Price");
+      getData(COValue, d);
+      info.setData(k, d);
+      break;
+    case COSettings::COSellArrow:
+      k = QObject::tr("Type");
+      d = QObject::tr("Sell Arrow");
+      info.setData(k, d);
+      
+      k = QObject::tr("Date");
+      getData(CODate, d);
+      info.setData(k, d);
+      
+      k = QObject::tr("Price");
+      getData(COValue, d);
+      info.setData(k, d);
+      break;
+    case COSettings::COText:
+      k = QObject::tr("Type");
+      d = QObject::tr("Text");
+      info.setData(k, d);
+      
+      k = QObject::tr("Label");
+      getData(COLabel, d);
+      info.setData(k, d);
+      break;
+    case COSettings::COTrendLine:
+      k = QObject::tr("Type");
+      d = QObject::tr("Trend Line");
+      info.setData(k, d);
+      
+      k = QObject::tr("Start Date");
+      getData(CODate, d);
+      info.setData(k, d);
+      
+      k = QObject::tr("Start Price");
+      getData(COValue, d);
+      info.setData(k, d);
+
+      k = QObject::tr("End Date");
+      getData(CODate2, d);
+      info.setData(k, d);
+      
+      k = QObject::tr("End Price");
+      getData(COValue2, d);
+      info.setData(k, d);
+      break;
+    case COSettings::COVerticalLine:
+      k = QObject::tr("Type");
+      d = QObject::tr("Vertical Line");
+      info.setData(k, d);
+      
+      k = QObject::tr("Date");
+      getData(CODate, d);
+      info.setData(k, d);
+      break;
+    default:
+      break;
+  }
+  
 }
 

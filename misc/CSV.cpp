@@ -136,7 +136,7 @@ void CSV::import ()
         if (fieldList[fieldLoop].contains("Date"))
 	{
           QDateTime dt = QDateTime::fromString(listItem, dateFormat);
-          dt.setTime(QTime(0,0,0,0));
+//          dt.setTime(QTime(0,0,0,0)); disabled, may change a valid time
           if (! dt.isValid())
 	  {
             ts = QString(fName + " - " + tr("Line") + ": " + QString::number(lineCount) + " " + tr("Bad date") + ": " + listItem);

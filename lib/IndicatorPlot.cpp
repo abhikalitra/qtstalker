@@ -291,6 +291,7 @@ void IndicatorPlot::mousePressEvent (QMouseEvent *event)
       {
         mouseFlag = COSelected;
 	coSelected->setSelected(TRUE);
+        getCOInfo();
 	draw();
         return;
       }
@@ -359,10 +360,9 @@ void IndicatorPlot::mouseMoveEvent (QMouseEvent *event)
     }
   }
 
-  if (! infoFlag)
-    return;
-  else
-    getInfo(event->x());
+  // update the data panel with new data
+  if (infoFlag && mouseFlag == None)
+    getInfo(event->x(), event->y());
 }
 
 void IndicatorPlot::mouseDoubleClickEvent (QMouseEvent *event)
@@ -408,11 +408,32 @@ void IndicatorPlot::contextMenuEvent (QContextMenuEvent *)
   }
 }
 
-void IndicatorPlot::getInfo (int x)
+void IndicatorPlot::getInfo (int x, int y)
 {
-  int i = convertXToDataIndex(x);
-
   Setting tr;
+
+  // determine if we are over a chart object, if so we display parms in the data panel
+  QHashIterator<QString, COSettings *> it(coList);
+  while (it.hasNext())
+  {
+    it.next();
+    COSettings *co = it.value();
+    QPoint p(x, y);
+    if (co->isSelected(p))
+    {
+      co->getInfo(tr);
+      if (tr.count())
+      {
+        Setting *r = new Setting;
+        tr.copy(r);
+        emit infoMessage(r);
+        return;
+      }
+    }
+  }
+  
+  int i = convertXToDataIndex(x);
+  
   QString s, k;
   data->getDateString(i, s);
   k = "D";
@@ -420,42 +441,6 @@ void IndicatorPlot::getInfo (int x)
   data->getTimeString(i, s);
   k = "T";
   tr.setData(k, s);
-
-  // If there are Buy/Sell objects, then show them in the data panel
-/*
-  if (coList.count() > 0)
-  {
-    QDateTime d;
-    bar.getDate(d);
-    QDateTime coDate;
-    int c = 0;
-    Setting set;
-    QHashIterator<QString, COBase *> it(coList);
-    while (it.hasNext())
-    {
-      it.next();
-      it.value()->getDate(coDate);
-      if (coDate == d)
-      {
-        it.value()->getType(s);
-        if (s == "BuyArrow" || s == "SellArrow")
-        {
-          c++;
-          QString label = "Trade";
-          label += "-" + QString::number(c);
-          QString text = s.replace("Arrow", "");
-          k = "Identifier";
-          set.getData(k, s);
-          if (s != "") text += " " + s;
-          k = "Price";
-          set.getData(k, s);
-          if (s != "") text += " " + s;
-          tr.setData(label, text);
-        }
-      }
-    }
-  }
-*/
   
   if (plotList.count())
   {
@@ -469,6 +454,19 @@ void IndicatorPlot::getInfo (int x)
     }
   }
 
+  if (tr.count())
+  {
+    Setting *r = new Setting;
+    tr.copy(r);
+    emit infoMessage(r);
+  }
+}
+
+void IndicatorPlot::getCOInfo ()
+{
+  Setting tr;
+  coSelected->getInfo(tr);
+  
   if (tr.count())
   {
     Setting *r = new Setting;
