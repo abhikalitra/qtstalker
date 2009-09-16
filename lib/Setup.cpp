@@ -472,6 +472,10 @@ void Setup::setupConfigDefaults ()
   k = QString::number(Config::DefaultTrendLineUseBar);
   d = "0";
   setConfig(k, d);
+
+  k = QString::number(Config::IndicatorScriptDefault);
+  d = "perl /usr/local/share/qtstalker/indicator/";
+  setConfig(k, d);
 }
 
 void Setup::setConfig (QString &k, QString &d)

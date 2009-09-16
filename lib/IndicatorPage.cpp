@@ -137,7 +137,7 @@ void IndicatorPage::newIndicator ()
   dialog->addIntItem(trs, 1, 1, s.toInt());
 
   QString sc = tr("Script Command");
-  s.clear();
+  config.getData(Config::IndicatorScriptDefault, s);
   dialog->addTextItem(sc, s);
   
   int rc = dialog->exec();

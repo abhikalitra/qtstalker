@@ -34,7 +34,6 @@
 
 #include "ColorButton.h"
 #include "FontButton.h"
-#include "Config.h"
 
 
 
@@ -59,9 +58,8 @@ class Preferences : public QDialog
     void createDatabasePage ();
     void createColorPage ();
     void createFontPage ();
-    void createMTPage(); // main tool bar
-    void createCTPage(); // chart tool bar
-    void loadSettings ();
+    void createMTPage (); // main tool bar
+    void createCTPage (); // chart tool bar
 
   public slots:
     void slotSave ();
@@ -70,19 +68,26 @@ class Preferences : public QDialog
 
   private:
     int modified;
-    Config config;
     QTabWidget *tabs;
-    QDialogButtonBox *buttonBox;    
+    QDialogButtonBox *buttonBox;
+    
+    // main page
     QSpinBox *bs1Spinner;
     QSpinBox *bs2Spinner;
     QSpinBox *bs3Spinner;
     QSpinBox *tabRows;
+    QLineEdit *indicatorScriptDefault;
+    
+    // color page
     ColorButton *backgroundColorButton;
     ColorButton *borderColorButton;
     ColorButton *gridColorButton;
+    
+    // font page
     FontButton *plotFontButton;
     FontButton *appFontButton;
 
+    // db page 
     QComboBox *dbDriver;
     QLineEdit *dbHostName;
     QLineEdit *dbName;

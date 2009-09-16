@@ -5,7 +5,6 @@ To Do:
 - allow negative displacement for line plots
 - add more crosshairs behaviours to IndicatorPlot
 - user defined bar lengths for intraday charts
-- add ability to not draw sections of plotlines. (vectors)
 - save last chart viewed between sessions.
 - median lines chart objects
 - fibo time chart objects

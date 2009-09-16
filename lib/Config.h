@@ -127,7 +127,8 @@ class Config
       DefaultVerticalLineColor, // default vertical line color
       IndicatorTabRows, // # of indicator tab rows
       DbNameColumn, // the name of the symbol index name column
-      DbExchangeColumn // the name of the symbol index exchange column
+      DbExchangeColumn, // the name of the symbol index exchange column
+      IndicatorScriptDefault
     };
 
     Config ();

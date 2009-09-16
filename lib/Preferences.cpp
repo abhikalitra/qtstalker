@@ -20,6 +20,7 @@
  */
 
 #include "Preferences.h"
+#include "Config.h"
 
 #include <QLabel>
 #include <QLayout>
@@ -56,9 +57,8 @@ Preferences::Preferences (QWidget *w) : QDialog (w, 0)
   createFontPage();
   createMTPage();
   createCTPage();
-  
-  loadSettings();
 
+  Config config;
   QSize sz;
   config.getData(Config::PrefDlgWindowSize, sz);
   resize(sz);
@@ -68,46 +68,9 @@ Preferences::Preferences (QWidget *w) : QDialog (w, 0)
 
 Preferences::~Preferences ()
 {
+  Config config;
   QSize sz = size();
   config.setData(Config::PrefDlgWindowSize, sz);
-}
-
-void Preferences::loadSettings ()
-{
-  QString s;
-
-  config.getData(Config::PSButton1, s);
-  if (! s.isEmpty())
-    bs1Spinner->setValue(s.toInt());
-
-  config.getData(Config::PSButton2, s);
-  if (! s.isEmpty())
-    bs2Spinner->setValue(s.toInt());
-
-  config.getData(Config::PSButton3, s);
-  if (! s.isEmpty())
-    bs3Spinner->setValue(s.toInt());
-
-  config.getData(Config::IndicatorTabRows, s);
-  if (! s.isEmpty())
-    tabRows->setValue(s.toInt());
-
-  QColor color;
-  config.getData(Config::BackgroundColor, color);
-  backgroundColorButton->setColor(color);
-
-  config.getData(Config::BorderColor, color);
-  borderColorButton->setColor(color);
-
-  config.getData(Config::GridColor, color);
-  gridColorButton->setColor(color);
-
-  QFont font;
-  config.getData(Config::PlotFont, font);
-  plotFontButton->setFont(font);
-
-  config.getData(Config::AppFont, font);
-  appFontButton->setFont(font);
 }
 
 void Preferences::createGeneralPage ()
@@ -127,43 +90,70 @@ void Preferences::createGeneralPage ()
   vbox->addLayout(grid);
   
   vbox->insertStretch(-1, 1);
-
+  
+  int row = 0;
+  int col = 0;
+  QString s;
+  Config config;
+  
   // bar spacing 1
   QLabel *label = new QLabel(tr("Bar Spacing 1"));
-  grid->addWidget(label, 1, 0);
+  grid->addWidget(label, row, col++);
   
   bs1Spinner = new QSpinBox;
   bs1Spinner->setRange(2, 99);
+  config.getData(Config::PSButton1, s);
+  if (! s.isEmpty())
+    bs1Spinner->setValue(s.toInt());
   connect(bs1Spinner, SIGNAL(valueChanged(int)), this, SLOT(slotModified()));
-  grid->addWidget(bs1Spinner, 1, 1);
+  grid->addWidget(bs1Spinner, row++, col--);
 
   // bar spacing 2
   label = new QLabel(tr("Bar Spacing 2"));
-  grid->addWidget(label, 2, 0);
+  grid->addWidget(label, row, col++);
   
   bs2Spinner = new QSpinBox;
   bs2Spinner->setRange(2, 99);
+  config.getData(Config::PSButton2, s);
+  if (! s.isEmpty())
+    bs2Spinner->setValue(s.toInt());
   connect(bs2Spinner, SIGNAL(valueChanged(int)), this, SLOT(slotModified()));
-  grid->addWidget(bs2Spinner, 2, 1);
+  grid->addWidget(bs2Spinner, row++, col--);
 
   // bar spacing 3
   label = new QLabel(tr("Bar Spacing 3"));
-  grid->addWidget(label, 3, 0);
+  grid->addWidget(label, row, col++);
   
   bs3Spinner = new QSpinBox;
   bs3Spinner->setRange(2, 99);
+  config.getData(Config::PSButton3, s);
+  if (! s.isEmpty())
+    bs3Spinner->setValue(s.toInt());
   connect(bs3Spinner, SIGNAL(valueChanged(int)), this, SLOT(slotModified()));
-  grid->addWidget(bs3Spinner, 3, 1);
+  grid->addWidget(bs3Spinner, row++, col--);
 
   // indicator tab rows
   label = new QLabel(tr("Indicator Tab Rows"));
-  grid->addWidget(label, 4, 0);
+  grid->addWidget(label, row, col++);
   
   tabRows = new QSpinBox;
   tabRows->setRange(1, 3);
   tabRows->setValue(2);
+  config.getData(Config::IndicatorTabRows, s);
+  if (! s.isEmpty())
+    tabRows->setValue(s.toInt());
   connect(tabRows, SIGNAL(valueChanged(int)), this, SLOT(slotModified()));
-  grid->addWidget(tabRows, 4, 1);
+  grid->addWidget(tabRows, row++, col--);
+
+  // indicator script default
+  label = new QLabel(tr("Indicator Script Default"));
+  grid->addWidget(label, row, col++);
+  
+  indicatorScriptDefault = new QLineEdit;
+  config.getData(Config::IndicatorScriptDefault, s);
+  indicatorScriptDefault->setText(s);
+  connect(indicatorScriptDefault, SIGNAL(textChanged(const QString &)), this, SLOT(slotModified()));
+  grid->addWidget(indicatorScriptDefault, row++, col--);
 
   tabs->addTab(w, tr("General"));
 }
@@ -185,6 +175,7 @@ void Preferences::createDatabasePage ()
   
   int row = 0;
   int col = 0;
+  Config config;
 
   // setup the db sql driver
   QLabel *label = new QLabel(tr("Qt DB Driver"));
@@ -397,32 +388,39 @@ void Preferences::createColorPage ()
   
   vbox->insertStretch(-1, 1);
 
+  int row = 0;
+  int col = 0;
+  Config config;
+  
   // background color
   QLabel *label = new QLabel(tr("Chart Background"));
-  grid->addWidget(label, 0, 0);
+  grid->addWidget(label, row, col++);
   
   QColor color;
   backgroundColorButton = new ColorButton(w, color);
-  grid->addWidget(backgroundColorButton, 0, 1);
-//  backgroundColorButton->setColorButton();
+  grid->addWidget(backgroundColorButton, row++, col--);
+  config.getData(Config::BackgroundColor, color);
+  backgroundColorButton->setColor(color);
   connect(backgroundColorButton, SIGNAL(valueChanged()), this, SLOT(slotModified()));
 
   // border color
   label = new QLabel(tr("Chart Border"));
-  grid->addWidget(label, 1, 0);
+  grid->addWidget(label, row, col++);
   
   borderColorButton = new ColorButton(w, color);
-  grid->addWidget(borderColorButton, 1, 1);
-//  borderColorButton->setColorButton();
+  grid->addWidget(borderColorButton, row++, col--);
+  config.getData(Config::BorderColor, color);
+  borderColorButton->setColor(color);
   connect(borderColorButton, SIGNAL(valueChanged()), this, SLOT(slotModified()));
 
   // grid color
   label = new QLabel(tr("Chart Grid"));
-  grid->addWidget(label, 2, 0);
+  grid->addWidget(label, row, col++);
   
   gridColorButton = new ColorButton(w, color);
-  grid->addWidget(gridColorButton, 2, 1);
-//  gridColorButton->setColorButton();
+  grid->addWidget(gridColorButton, row++, col--);
+  config.getData(Config::GridColor, color);
+  gridColorButton->setColor(color);
   connect(gridColorButton, SIGNAL(valueChanged()), this, SLOT(slotModified()));
 
   //FIXME: add adjustment possibility for prefered CO-colors.
@@ -448,22 +446,30 @@ void Preferences::createFontPage ()
   vbox->addLayout(grid);
   
   vbox->insertStretch(-1, 1);
+  
+  int row = 0;
+  int col = 0;
+  Config config;
 
   // plot font
   QLabel *label = new QLabel(tr("Plot Font"));
-  grid->addWidget(label, 0, 0);
+  grid->addWidget(label, row, col++);
 
   QFont font;  
   plotFontButton = new FontButton(w, font);
-  grid->addWidget(plotFontButton, 0, 1);
+  grid->addWidget(plotFontButton, row++, col--);
+  config.getData(Config::PlotFont, font);
+  plotFontButton->setFont(font);
   connect(plotFontButton, SIGNAL(valueChanged()), this, SLOT(slotModified()));
 
   // app font
   label = new QLabel(tr("App Font"));
-  grid->addWidget(label, 1, 0);
+  grid->addWidget(label, row, col++);
   
   appFontButton = new FontButton(w, font);
-  grid->addWidget(appFontButton, 1, 1);
+  grid->addWidget(appFontButton, row++, col--);
+  config.getData(Config::AppFont, font);
+  appFontButton->setFont(font);
   connect(appFontButton, SIGNAL(valueChanged()), this, SLOT(slotModified()));
 
   tabs->addTab(w, tr("Fonts"));
@@ -487,103 +493,104 @@ void  Preferences::createMTPage()
   
   vbox->insertStretch(-1, 1);
   
-  int i = 0; // count rows
-  int j = 0; // "count" cols
+  int row = 0;
+  int col = 0;
   QString s;
+  Config config;
   
   QLabel *label = new QLabel(tr("Quit"));
-  grid->addWidget(label, i, j);
+  grid->addWidget(label, row, col++);
 
   quitBtnCheck = new QCheckBox;
   config.getData(Config::ShowQuitBtn, s);
   quitBtnCheck->setChecked(s.toInt());
   connect(quitBtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
-  grid->addWidget(quitBtnCheck, i++, j + 1);
+  grid->addWidget(quitBtnCheck, row++, col--);
 
   label = new QLabel(tr("Preferences"));
-  grid->addWidget(label, i, j);
+  grid->addWidget(label, row, col++);
 
   prefBtnCheck = new QCheckBox;
   config.getData(Config::ShowPrefBtn, s);
   prefBtnCheck->setChecked(s.toInt());
   connect(prefBtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
-  grid->addWidget(prefBtnCheck, i++, j + 1);
+  grid->addWidget(prefBtnCheck, row++, col--);
 
   label = new QLabel(tr("Side Panel"));
-  grid->addWidget(label, i, j);
+  grid->addWidget(label, row, col++);
 
   sidePanelBtnCheck = new QCheckBox;
   config.getData(Config::ShowSidePanelBtn, s);
   sidePanelBtnCheck->setChecked(s.toInt());
   connect(sidePanelBtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
-  grid->addWidget(sidePanelBtnCheck, i++, j + 1);
+  grid->addWidget(sidePanelBtnCheck, row++, col--);
 
   label = new QLabel(tr("Grid"));
-  grid->addWidget(label, i, j);
+  grid->addWidget(label, row, col++);
 
   gridBtnCheck = new QCheckBox;
   config.getData(Config::ShowGridBtn, s);
   gridBtnCheck->setChecked(s.toInt());
   connect(gridBtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
-  grid->addWidget(gridBtnCheck, i++, j + 1);
+  grid->addWidget(gridBtnCheck, row++, col--);
 
   label = new QLabel(tr("Scale to Screen"));
-  grid->addWidget(label, i, j);
+  grid->addWidget(label, row, col++);
 
   scaleToScreenBtnCheck = new QCheckBox;
   config.getData(Config::ShowScaleToScreenBtn, s);
   scaleToScreenBtnCheck->setChecked(s.toInt());
   connect(scaleToScreenBtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
-  grid->addWidget(scaleToScreenBtnCheck, i++, j + 1);
+  grid->addWidget(scaleToScreenBtnCheck, row++, col--);
 
   label = new QLabel(tr("CrossHair"));
-  grid->addWidget(label, i, j);
+  grid->addWidget(label, row, col++);
 
   crosshairBtnCheck = new QCheckBox;
   config.getData(Config::ShowCrosshairBtn, s);
   crosshairBtnCheck->setChecked(s.toInt());
   connect(crosshairBtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
-  grid->addWidget(crosshairBtnCheck, i++, j + 1);
+  grid->addWidget(crosshairBtnCheck, row++, col--);
 
   // now fill a second col
-  i = 0;
-  j = 3;
+  row = 0;
+  col = 2;
   
   label = new QLabel(tr("Draw Mode"));
-  grid->addWidget(label, i, j);
+  grid->addWidget(label, row, col++);
 
   drawModeBtnCheck= new QCheckBox;
   config.getData(Config::ShowDrawModeBtn, s);
   drawModeBtnCheck->setChecked(s.toInt());
   connect(drawModeBtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
-  grid->addWidget(drawModeBtnCheck, i++, j + 1);
+  grid->addWidget(drawModeBtnCheck, row++, col--);
 
   label = new QLabel(tr("New Indicator"));
-  grid->addWidget(label, i, j);
+  grid->addWidget(label, row, col++);
 
   newIndicatorBtnCheck = new QCheckBox;
   config.getData(Config::ShowNewIndicatorBtn, s);
   newIndicatorBtnCheck->setChecked(s.toInt());
   connect(newIndicatorBtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
-  grid->addWidget(newIndicatorBtnCheck, i++, j + 1);
+  grid->addWidget(newIndicatorBtnCheck, row++, col--);
 
   label = new QLabel(tr("Data Window"));
-  grid->addWidget(label, i, j);
+  grid->addWidget(label, row, col++);
 
   dataWindowBtnCheck = new QCheckBox;
   config.getData(Config::ShowDataWindowBtn, s);
   dataWindowBtnCheck->setChecked(s.toInt());
   connect(dataWindowBtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
-  grid->addWidget(dataWindowBtnCheck, i++, j + 1);
+  grid->addWidget(dataWindowBtnCheck, row++, col--);
 
   label = new QLabel(tr("Help"));
-  grid->addWidget(label, i, j);
+  grid->addWidget(label, row, col++);
 
   helpButtonCheck = new QCheckBox;
   config.getData(Config::ShowHelpButton, s);
   helpButtonCheck->setChecked(s.toInt());
   connect(helpButtonCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
-  grid->addWidget(helpButtonCheck, i++, j + 1);
+  grid->addWidget(helpButtonCheck, row++, col--);
 
   tabs->addTab(w, tr("MainToolbar"));
 }
@@ -605,118 +612,124 @@ void  Preferences::createCTPage()
   
   vbox->insertStretch(-1, 1);
 
-  int i = 0; // count rows
-  int j = 0; // "count" cols
+  int row = 0;
+  int col = 0;
   QString s;
+  Config config;
 
   QLabel *label = new QLabel(tr("Bar Length List"));
-  grid->addWidget(label, i, j);
+  grid->addWidget(label, row, col++);
 
   cmpsComboBoxCheck = new QCheckBox;
   config.getData(Config::ShowCmpsComboBox, s);
   cmpsComboBoxCheck->setChecked(s.toInt());
   connect(cmpsComboBoxCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
-  grid->addWidget(cmpsComboBoxCheck, i++, j + 1);  
+  grid->addWidget(cmpsComboBoxCheck, row++, col--);  
 
   label = new QLabel(tr("Monthly Bars"));
-  grid->addWidget(label, i, j);
+  grid->addWidget(label, row, col++);
 
   cmpsMtyBtnCheck = new QCheckBox;
   config.getData(Config::ShowCmpsMtyBtn, s);
   cmpsMtyBtnCheck->setChecked(s.toInt());
   connect(cmpsMtyBtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
-  grid->addWidget(cmpsMtyBtnCheck, i++, j + 1);
+  grid->addWidget(cmpsMtyBtnCheck, row++, col--);
 
   label = new QLabel(tr("Weekly Bars"));
-  grid->addWidget(label, i, j);
+  grid->addWidget(label, row, col++);
 
   cmpsWkyBtnCheck = new QCheckBox;
   config.getData(Config::ShowCmpsWkyBtn, s);
   cmpsWkyBtnCheck->setChecked(s.toInt());
   connect(cmpsWkyBtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
-  grid->addWidget(cmpsWkyBtnCheck, i++, j + 1);
+  grid->addWidget(cmpsWkyBtnCheck, row++, col--);
 
   label = new QLabel(tr("Daily Bars"));
-  grid->addWidget(label, i, j);
+  grid->addWidget(label, row, col++);
 
   cmpsDayBtnCheck = new QCheckBox;
   config.getData(Config::ShowCmpsDayBtn, s);
   cmpsDayBtnCheck->setChecked(s.toInt());
   connect(cmpsDayBtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
-  grid->addWidget(cmpsDayBtnCheck, i++, j + 1);
+  grid->addWidget(cmpsDayBtnCheck, row++, col--);
 
   label = new QLabel(tr("60 Minute Bars"));
-  grid->addWidget(label, i, j);
+  grid->addWidget(label, row, col++);
 
   cmps60BtnCheck = new QCheckBox;
   config.getData(Config::ShowCmps60Btn, s);
   cmps60BtnCheck->setChecked(s.toInt());
   connect(cmps60BtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
-  grid->addWidget(cmps60BtnCheck, i++, j + 1);
+  grid->addWidget(cmps60BtnCheck, row++, col--);
 
   label = new QLabel(tr("15 Minute Bars"));
-  grid->addWidget(label, i, j);
+  grid->addWidget(label, row, col++);
 
   cmps15BtnCheck = new QCheckBox;
   config.getData(Config::ShowCmps15Btn, s);
   cmps15BtnCheck->setChecked(s.toInt());
   connect(cmps15BtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
-  grid->addWidget(cmps15BtnCheck, i++, j + 1);
+  grid->addWidget(cmps15BtnCheck, row++, col--);
 
   label = new QLabel(tr("5 Minute Bars"));
-  grid->addWidget(label, i, j);
+  grid->addWidget(label, row, col++);
 
   cmps5BtnCheck = new QCheckBox;
   config.getData(Config::ShowCmps5Btn, s);
   cmps5BtnCheck->setChecked(s.toInt());
   connect(cmps5BtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
-  grid->addWidget(cmps5BtnCheck, i++, j + 1);
+  grid->addWidget(cmps5BtnCheck, row++, col--);
 
   label = new QLabel(tr("Bar Spacing"));
-  grid->addWidget(label, i, j);
+  grid->addWidget(label, row, col++);
 
   barSpSpinboxCheck = new QCheckBox;
   config.getData(Config::ShowBarSpSpinbox, s);
   barSpSpinboxCheck->setChecked(s.toInt());
   connect(barSpSpinboxCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
-  grid->addWidget(barSpSpinboxCheck, i++, j + 1);
+  grid->addWidget(barSpSpinboxCheck, row++, col--);
 
   label = new QLabel(tr("Bars To Load"));
-  grid->addWidget(label, i, j);
+  grid->addWidget(label, row, col++);
 
   barsToLoadFieldCheck = new QCheckBox;
   config.getData(Config::ShowBarsToLoadField, s);
   barsToLoadFieldCheck->setChecked(s.toInt());
   connect(barsToLoadFieldCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
-  grid->addWidget(barsToLoadFieldCheck, i++, j + 1);
+  grid->addWidget(barsToLoadFieldCheck, row++, col--);
 
   label = new QLabel(tr("Chart Slider"));
-  grid->addWidget(label, i, j);
+  grid->addWidget(label, row, col++);
 
   sliderCheck = new QCheckBox;
   config.getData(Config::ShowSlider, s);
   sliderCheck->setChecked(s.toInt());
   connect(sliderCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
-  grid->addWidget(sliderCheck, i++, j + 1);
+  grid->addWidget(sliderCheck, row++, col--);
 
   label = new QLabel(tr("Recent charts"));
-  grid->addWidget(label, i, j);
+  grid->addWidget(label, row, col++);
 
   recentComboBoxCheck = new QCheckBox;
   config.getData(Config::ShowRecentCharts, s);
   recentComboBoxCheck->setChecked(s.toInt());
   connect(recentComboBoxCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
-  grid->addWidget(recentComboBoxCheck, i++, j + 1);  
+  grid->addWidget(recentComboBoxCheck, row++, col--);  
 
   tabs->addTab(w, tr("ChartToolbar"));
 }
 
 void Preferences::slotSave ()
 {
+  Config config;
+  QString s;
+  
   config.setData(Config::PSButton1, bs1Spinner->value());
   config.setData(Config::PSButton2, bs2Spinner->value());
   config.setData(Config::PSButton3, bs3Spinner->value());
   config.setData(Config::IndicatorTabRows, tabRows->value());
+  s = indicatorScriptDefault->text();
+  config.setData(Config::IndicatorScriptDefault, s);
 
   QColor c, c2;
   backgroundColorButton->getColor(c);
@@ -787,7 +800,7 @@ void Preferences::slotSave ()
   config.setData(Config::ShowRecentCharts, recentComboBoxCheck->isChecked());
 
   // save database parms
-  QString s = dbDriver->currentText();
+  s = dbDriver->currentText();
   config.setData(Config::DbPlugin, s);
   
   s = dbHostName->text();

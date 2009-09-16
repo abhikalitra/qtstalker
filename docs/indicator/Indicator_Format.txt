@@ -505,6 +505,11 @@ Vector Arithmetic Substraction
 Summation
   SUM = INDICATOR,NAME,INPUT,PERIOD
 
+SYMBOL
+  SYMBOL = INDICATOR,NAME,SYMBOL_NAME
+
+	    Where SYMBOL_NAME is the symbol in the quote database.
+
 Vector Trigonometric Tan
   TAN = INDICATOR,NAME,INPUT
 

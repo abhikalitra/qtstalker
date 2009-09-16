@@ -21,6 +21,7 @@
 
 #include "ExScript.h"
 #include "ta_libc.h"
+#include "DataBase.h"
 
 #include <QByteArray>
 #include <QtDebug>
@@ -60,7 +61,7 @@ ExScript::ExScript ()
   indicatorList << "MAX" << "MAXINDEX" << "MEDPRICE" << "MFI" << "MIDPOINT" << "MIDPRICE" << "MIN" << "MININDEX" << "MINMAX";
   indicatorList << "MINMAXINDEX" << "MINUS_DI" << "MINUS_DM" << "MOM" << "MULT" << "NATR" << "NORMAL" << "OBV" << "PLUS_DI" << "PLUS_DM";
   indicatorList << "PPO" << "REF" << "ROC" << "ROCP" << "ROCR" << "ROCR100" << "RSI" << "SAR" << "SAREXT" << "SIN" << "SINH";
-  indicatorList << "SQRT" << "STDDEV" << "STOCH" << "STOCHF" << "STOCHRSI" << "SUB" << "SUM" << "TAN" << "TANH";
+  indicatorList << "SQRT" << "STDDEV" << "STOCH" << "STOCHF" << "STOCHRSI" << "SUB" << "SUM" << "SYMBOL" << "TAN" << "TANH";
   indicatorList << "TRANGE" << "TRIX" << "TSF" << "TYPPRICE" << "ULTOSC" << "VAR" << "WCLPRICE" << "WILLR";
 }
 
@@ -471,6 +472,9 @@ int ExScript::parseIndicator (QStringList &l)
       break;
     case COMPARE2:
       rc = getCOMPARE2(l);
+      break;
+    case SYMBOL:
+      rc = getSYMBOL(l);
       break;
     default:
       break;
@@ -3185,6 +3189,63 @@ int ExScript::getNORMAL (QStringList &l)
   if (flag)
     delete in;
   
+  return 0;
+}
+
+//***************************************************
+//********** SYMBOL *********************************
+//***************************************************
+int ExScript::getSYMBOL (QStringList &l)
+{
+  // format 'SYMBOL,NAME,TICKER'
+
+  if (l.count() != 3)
+  {
+    qDebug() << "ExScript::getSYMBOL: parm error" << l;
+    return 1;
+  }
+
+  DataBase db;
+  BarData *symbol = new BarData(l[2]);
+  symbol->setBarLength(data->getBarLength());
+  symbol->setBarsRequested(data->count());
+  db.getChart(symbol);
+
+  PlotLine *line = new PlotLine;
+  line->setScaleFlag(TRUE);
+  int loop;
+  for (loop = 0; loop < symbol->count(); loop++)
+    line->append(symbol->getClose(loop));
+  
+/*
+  QHash<QString, double> dict;
+  int loop;
+  QString ts = "Close";
+  QString ts2;
+  QDateTime dt;
+  double val = 0;
+  for (loop = 0; loop < (int) symbol->count(); loop++)
+  {
+    symbol->getDate(loop, dt);
+    ts = dt.toString("yyyyMMddHHmmss");
+    dict.insert(ts, symbol->getClose(loop));
+  }
+
+  PlotLine *line = new PlotLine;
+  line->setScaleFlag(TRUE);
+  for (loop = 0; loop < (int) data->count(); loop++)
+  {
+    data->getDate(loop, dt);
+    ts = dt.toString("yyyyMMddHHmmss");
+    if (dict.contains(ts))
+      line->append(dict.value(ts));
+  }
+*/  
+
+  delete symbol;
+
+  tlines.insert(l[1], line);
+
   return 0;
 }
 

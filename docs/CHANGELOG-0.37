@@ -45,6 +45,12 @@
 
 	  Removed FileButton class. Not used anymore.
 
+	  Added Config::IndicatorScriptDefault to the new indicator dialog. Got tired of typing in the long
+	  script path.
+
+	  Added SYMBOL fuction to ExScript class. Creates an array of close values of the given symbol (ticker).
+
+
 
 
 

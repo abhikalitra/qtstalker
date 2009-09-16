@@ -190,6 +190,7 @@ class ExScript : public QObject
       STOCHRSI,
       SUB,
       SUM,
+      SYMBOL,
       TAN,
       TANH,
       TRANGE,
@@ -227,6 +228,7 @@ class ExScript : public QObject
     int getREF (QStringList &l);
     int getSTOCH (QStringList &l, int i);
     int getSTOCHRSI (QStringList &l);
+    int getSYMBOL (QStringList &l);
     
     int getSingleInput (QStringList &l, int i);
     int getHLCVInput (QStringList &l, int i);
