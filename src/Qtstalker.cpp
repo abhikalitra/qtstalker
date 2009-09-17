@@ -928,7 +928,7 @@ void QtstalkerApp::addIndicatorButton (QString d)
 
 void QtstalkerApp::slotChartUpdated ()
 {
-  chartNav->refreshList();
+  chartNav->updateList();
   
   if (! recordList)
     return;

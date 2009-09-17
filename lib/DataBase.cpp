@@ -362,31 +362,31 @@ void DataBase::getDateOffset (QDateTime &dt, BarData::BarLength barLength)
   switch (barLength)
   {
     case BarData::Minute1:
-      dt = dt.addSecs(-(60));
+      dt = dt.addSecs(-60);
       break;
     case BarData::Minute5:
-      dt = dt.addSecs(-(300));
+      dt = dt.addSecs(-300);
       break;
     case BarData::Minute10:
-      dt = dt.addSecs(-(600));
+      dt = dt.addSecs(-600);
       break;
     case BarData::Minute15:
-      dt = dt.addSecs(-(900));
+      dt = dt.addSecs(-900);
       break;
     case BarData::Minute30:
-      dt = dt.addSecs(-(1800));
+      dt = dt.addSecs(-1800);
       break;
     case BarData::Minute60:
-      dt = dt.addSecs(-(3600));
+      dt = dt.addSecs(-3600);
       break;
     case BarData::DailyBar:
-      dt = dt.addDays(-(1));
+      dt = dt.addDays(-1);
       break;
     case BarData::WeeklyBar:
-      dt = dt.addDays(-(7));
+      dt = dt.addDays(-7);
       break;
     case BarData::MonthlyBar:
-      dt = dt.addMonths(-(1));
+      dt = dt.addMonths(-1);
       break;
     default:
       break;

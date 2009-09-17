@@ -83,16 +83,15 @@ ChartPage::ChartPage (QWidget *w) : QWidget (w)
   menu->addAction(QIcon(search), tr("&Symbol Search"), this, SLOT(symbolSearch()), QKeySequence(Qt::CTRL+Qt::Key_S));
 
   // update to last symbol search before displaying
-  QString s;
   Config config;
-  config.getData(Config::LastSymbolSearch, s);
-  
-  DataBase db;
-  QStringList l;
-  db.getSearchList(s, l);
-
-  nav->clear();
-  nav->addItems(l);
+  config.getData(Config::LastSymbolSearch, searchString);
+  if (searchString.isEmpty())
+    updateList();
+  else
+  {
+    activeSearch = 1;
+    updateList();
+  }
 }
 
 void ChartPage::chartOpened (QListWidgetItem *item)
@@ -107,22 +106,6 @@ void ChartPage::chartOpened (QListWidgetItem *item)
 void ChartPage::rightClick (const QPoint &)
 {
   menu->exec(QCursor::pos());
-}
-
-void ChartPage::refreshList ()
-{
-  switch (activeSearch)
-  {
-    case 1:
-      symbolSearch();
-      break;
-    case 2:
-      sqlSearch();
-      break;
-    default:
-      updateList();
-      break;
-  }
 }
 
 void ChartPage::addToGroup ()
@@ -187,19 +170,28 @@ void ChartPage::doKeyPress (QKeyEvent *key)
 
 void ChartPage::updateList ()
 {
-  activeSearch = 0;
-  searchString.clear();
-  nav->clear();
   DataBase db;
   QStringList l;
-  db.getAllChartsList(l);
+
+  nav->clear();
+
+  switch (activeSearch)
+  {
+    case 1:
+      db.getSearchList(searchString, l);
+      break;
+    default:
+      db.getAllChartsList(l);
+      break;
+  }
+  
   nav->addItems(l);
 }
 
 void ChartPage::symbolSearch ()
 {
   bool ok;
-  QString s = QInputDialog::getText(this, tr("Symbol Search"), tr("Symbol pattern:"), QLineEdit::Normal, QString(), &ok, 0);
+  searchString = QInputDialog::getText(this, tr("Symbol Search"), tr("Symbol pattern:"), QLineEdit::Normal, QString(), &ok, 0);
   if (! ok)
     return;
 
@@ -207,24 +199,12 @@ void ChartPage::symbolSearch ()
 
   DataBase db;
   QStringList l;
-  db.getSearchList(s, l);
+  db.getSearchList(searchString, l);
 
   nav->clear();
   nav->addItems(l);
   
   Config config;
-  config.setData(Config::LastSymbolSearch, s);
-}
-
-void ChartPage::sqlSearch ()
-{
-  activeSearch = 3;
-}
-
-void ChartPage::ruleSearch ()
-{
-  QString s = rules->currentText();
-  if (! s.length())
-    return;
+  config.setData(Config::LastSymbolSearch, searchString);
 }
 

@@ -50,6 +50,14 @@
 
 	  Added SYMBOL fuction to ExScript class. Creates an array of close values of the given symbol (ticker).
 
+20090917: Fixed Config to load defaults if none found.
+
+	  Preferences dialog saves window size properly now.
+
+	  Fixed bug that did not update chart panel properly after preferences dialog has closed.
+
+	  Applied patch (day + 3ma script - ID: 2860785). Thanks to Austin (x_curve) for the patch.
+
 
 
 

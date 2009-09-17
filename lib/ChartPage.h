@@ -49,14 +49,11 @@ class ChartPage : public QWidget
 
   public slots:
     void rightClick (const QPoint &);
-    void refreshList ();
     void doKeyPress (QKeyEvent *);
     void chartOpened (QListWidgetItem *);
     void addToGroup ();
     void updateList ();
     void symbolSearch ();
-    void sqlSearch ();
-    void ruleSearch ();
 
   protected:
     int activeSearch;
@@ -65,10 +62,6 @@ class ChartPage : public QWidget
     QMenu *menu;
     QToolButton *allButton;
     QToolButton *symbolButton;
-    QToolButton *sqlButton;
-    QToolButton *searchGoButton;
-    QToolButton *searchEditButton;
-    QComboBox *rules;
 };
 
 #endif

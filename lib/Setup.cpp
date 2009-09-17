@@ -144,338 +144,658 @@ void Setup::setupConfigDefaults ()
   // check if config defaults already exist
   QString k, d;
   k = QString::number(Config::Home);
-  getConfig(k, d);
-  if (d.length())
-    return;
-
   setConfig(k, home);
 
   k = QString::number(Config::Version);
   setConfig(k, version);
 
   k = QString::number(Config::Pixelspace);
-  d = "6";
-  setConfig(k, d);
+  getConfig(k, d);
+  if (d.isEmpty())
+  {
+    d = "6";
+    setConfig(k, d);
+  }
 
   k = QString::number(Config::BarLength);
-  d = "6";
-  setConfig(k, d);
+  getConfig(k, d);
+  if (d.isEmpty())
+  {
+    d = "6";
+    setConfig(k, d);
+  }
 
   k = QString::number(Config::Grid);
-  d = "1";
-  setConfig(k, d);
+  getConfig(k, d);
+  if (d.isEmpty())
+  {
+    d = "1";
+    setConfig(k, d);
+  }
 
   k = QString::number(Config::BarsToLoad);
-  d = "475";
-  setConfig(k, d);
+  getConfig(k, d);
+  if (d.isEmpty())
+  {
+    d = "275";
+    setConfig(k, d);
+  }
 
   k = QString::number(Config::BackgroundColor);
-  d = "#000000"; // black
-  setConfig(k, d);
+  getConfig(k, d);
+  if (d.isEmpty())
+  {
+    d = "#000000"; // black
+    setConfig(k, d);
+  }
 
   k = QString::number(Config::BorderColor);
-  d = "#ffffff"; // white
-  setConfig(k, d);
+  getConfig(k, d);
+  if (d.isEmpty())
+  {
+    d = "#ffffff"; // white
+    setConfig(k, d);
+  }
 
   k = QString::number(Config::GridColor);
-  d = "#555555"; // gray
-  setConfig(k, d);
+  getConfig(k, d);
+  if (d.isEmpty())
+  {
+    d = "#555555"; // gray
+    setConfig(k, d);
+  }
 
   k = QString::number(Config::Crosshairs);
-  d = "0";
-  setConfig(k, d);
+  getConfig(k, d);
+  if (d.isEmpty())
+  {
+    d = "0";
+    setConfig(k, d);
+  }
 
   k = QString::number(Config::DrawMode);
-  d = "1";
-  setConfig(k, d);
+  getConfig(k, d);
+  if (d.isEmpty())
+  {
+    d = "1";
+    setConfig(k, d);
+  }
 
   k = QString::number(Config::DataPanelSize);
-  d = "338,322";
-  setConfig(k, d);
+  getConfig(k, d);
+  if (d.isEmpty())
+  {
+    d = "338,322";
+    setConfig(k, d);
+  }
 
   k = QString::number(Config::ScaleToScreen);
-  d = "1";
-  setConfig(k, d);
+  getConfig(k, d);
+  if (d.isEmpty())
+  {
+    d = "1";
+    setConfig(k, d);
+  }
 
   k = QString::number(Config::PlotFont);
-  d = "DejaVu Sans,9,50,0,0";
-  setConfig(k, d);
+  getConfig(k, d);
+  if (d.isEmpty())
+  {
+    d = "DejaVu Sans,9,50,0,0";
+    setConfig(k, d);
+  }
 
   k = QString::number(Config::AppFont);
-  d = "DejaVu Sans,9,50,0,0";
-  setConfig(k, d);
+  getConfig(k, d);
+  if (d.isEmpty())
+  {
+    d = "DejaVu Sans,9,50,0,0";
+    setConfig(k, d);
+  }
 
   k = QString::number(Config::NavAreaSize);
-  d = "780,109";
-  setConfig(k, d);
+  getConfig(k, d);
+  if (d.isEmpty())
+  {
+    d = "780,109";
+    setConfig(k, d);
+  }
 
   k = QString::number(Config::MainWindowSize);
-  d = "950,600";
-  setConfig(k, d);
+  getConfig(k, d);
+  if (d.isEmpty())
+  {
+    d = "950,600";
+    setConfig(k, d);
+  }
 
   k = QString::number(Config::MainWindowPos);
-  d = "30,30";
-  setConfig(k, d);
+  getConfig(k, d);
+  if (d.isEmpty())
+  {
+    d = "30,30";
+    setConfig(k, d);
+  }
 
   k = QString::number(Config::PrefDlgWindowSize);
-  d = "400,400";
-  setConfig(k, d);
+  getConfig(k, d);
+  if (d.isEmpty())
+  {
+    d = "600,400";
+    setConfig(k, d);
+  }
 
   k = QString::number(Config::PlotSizes);
-  d = "339,85";
-  setConfig(k, d);
+  getConfig(k, d);
+  if (d.isEmpty())
+  {
+    d = "339,85";
+    setConfig(k, d);
+  }
 
   k = QString::number(Config::PSButton1);
-  d = "6";
-  setConfig(k, d);
+  getConfig(k, d);
+  if (d.isEmpty())
+  {
+    d = "6";
+    setConfig(k, d);
+  }
 
   k = QString::number(Config::PSButton2);
-  d = "8";
-  setConfig(k, d);
+  getConfig(k, d);
+  if (d.isEmpty())
+  {
+    d = "8";
+    setConfig(k, d);
+  }
 
   k = QString::number(Config::PSButton3);
-  d = "12";
-  setConfig(k, d);
+  getConfig(k, d);
+  if (d.isEmpty())
+  {
+    d = "12";
+    setConfig(k, d);
+  }
 
   k = QString::number(Config::ShowSidePanel);
-  d = "1";
-  setConfig(k, d);
+  getConfig(k, d);
+  if (d.isEmpty())
+  {
+    d = "1";
+    setConfig(k, d);
+  }
 
   k = QString::number(Config::ShowQuitBtn);
-  d = "1";
-  setConfig(k, d);
+  getConfig(k, d);
+  if (d.isEmpty())
+  {
+    d = "1";
+    setConfig(k, d);
+  }
 
   k = QString::number(Config::ShowPrefBtn);
-  d = "1";
-  setConfig(k, d);
+  getConfig(k, d);
+  if (d.isEmpty())
+  {
+    d = "1";
+    setConfig(k, d);
+  }
 
   k = QString::number(Config::ShowSidePanelBtn);
-  d = "1";
-  setConfig(k, d);
+  getConfig(k, d);
+  if (d.isEmpty())
+  {
+    d = "1";
+    setConfig(k, d);
+  }
 
   k = QString::number(Config::ShowGridBtn);
-  d = "1";
-  setConfig(k, d);
+  getConfig(k, d);
+  if (d.isEmpty())
+  {
+    d = "1";
+    setConfig(k, d);
+  }
 
   k = QString::number(Config::ShowScaleToScreenBtn);
-  d = "1";
-  setConfig(k, d);
+  getConfig(k, d);
+  if (d.isEmpty())
+  {
+    d = "1";
+    setConfig(k, d);
+  }
 
   k = QString::number(Config::ShowCrosshairBtn);
-  d = "1";
-  setConfig(k, d);
+  getConfig(k, d);
+  if (d.isEmpty())
+  {
+    d = "1";
+    setConfig(k, d);
+  }
 
   k = QString::number(Config::ShowDrawModeBtn);
-  d = "1";
-  setConfig(k, d);
+  getConfig(k, d);
+  if (d.isEmpty())
+  {
+    d = "1";
+    setConfig(k, d);
+  }
 
   k = QString::number(Config::ShowNewIndicatorBtn);
-  d = "1";
-  setConfig(k, d);
+  getConfig(k, d);
+  if (d.isEmpty())
+  {
+    d = "1";
+    setConfig(k, d);
+  }
 
   k = QString::number(Config::ShowDataWindowBtn);
-  d = "1";
-  setConfig(k, d);
+  getConfig(k, d);
+  if (d.isEmpty())
+  {
+    d = "1";
+    setConfig(k, d);
+  }
 
   k = QString::number(Config::ShowHelpButton);
-  d = "1";
-  setConfig(k, d);
+  getConfig(k, d);
+  if (d.isEmpty())
+  {
+    d = "1";
+    setConfig(k, d);
+  }
 
   k = QString::number(Config::ShowSlider);
-  d = "1";
-  setConfig(k, d);
+  getConfig(k, d);
+  if (d.isEmpty())
+  {
+    d = "1";
+    setConfig(k, d);
+  }
 
   k = QString::number(Config::ShowBarsToLoadField);
-  d = "1";
-  setConfig(k, d);
+  getConfig(k, d);
+  if (d.isEmpty())
+  {
+    d = "1";
+    setConfig(k, d);
+  }
 
   k = QString::number(Config::ShowBarSpSpinbox);
-  d = "1";
-  setConfig(k, d);
+  getConfig(k, d);
+  if (d.isEmpty())
+  {
+    d = "1";
+    setConfig(k, d);
+  }
 
   k = QString::number(Config::ShowCmps60Btn);
-  d = "0";
-  setConfig(k, d);
+  getConfig(k, d);
+  if (d.isEmpty())
+  {
+    d = "0";
+    setConfig(k, d);
+  }
 
   k = QString::number(Config::ShowCmps15Btn);
-  d = "0";
-  setConfig(k, d);
+  getConfig(k, d);
+  if (d.isEmpty())
+  {
+    d = "0";
+    setConfig(k, d);
+  }
 
   k = QString::number(Config::ShowCmps5Btn);
-  d = "0";
-  setConfig(k, d);
+  getConfig(k, d);
+  if (d.isEmpty())
+  {
+    d = "0";
+    setConfig(k, d);
+  }
 
   k = QString::number(Config::ShowCmpsDayBtn);
-  d = "1";
-  setConfig(k, d);
+  getConfig(k, d);
+  if (d.isEmpty())
+  {
+    d = "1";
+    setConfig(k, d);
+  }
 
   k = QString::number(Config::ShowCmpsWkyBtn);
-  d = "1";
-  setConfig(k, d);
+  getConfig(k, d);
+  if (d.isEmpty())
+  {
+    d = "1";
+    setConfig(k, d);
+  }
 
   k = QString::number(Config::ShowCmpsMtyBtn);
-  d = "1";
-  setConfig(k, d);
+  getConfig(k, d);
+  if (d.isEmpty())
+  {
+    d = "1";
+    setConfig(k, d);
+  }
 
   k = QString::number(Config::ShowCmpsComboBox);
-  d = "1";
-  setConfig(k, d);
+  getConfig(k, d);
+  if (d.isEmpty())
+  {
+    d = "1";
+    setConfig(k, d);
+  }
 
   k = QString::number(Config::ShowRecentCharts);
-  d = "1";
-  setConfig(k, d);
+  getConfig(k, d);
+  if (d.isEmpty())
+  {
+    d = "1";
+    setConfig(k, d);
+  }
 
   k = QString::number(Config::LastChartObjectID);
-  d = "0";
-  setConfig(k, d);
+  getConfig(k, d);
+  if (d.isEmpty())
+  {
+    d = "0";
+    setConfig(k, d);
+  }
 
   k = QString::number(Config::IndicatorTabRows);
-  d = "2";
-  setConfig(k, d);
+  getConfig(k, d);
+  if (d.isEmpty())
+  {
+    d = "2";
+    setConfig(k, d);
+  }
   
   k = QString::number(Config::DbPlugin);
-  d = "QSQLITE";
-  setConfig(k, d);
+  getConfig(k, d);
+  if (d.isEmpty())
+  {
+    d = "QSQLITE";
+    setConfig(k, d);
+  }
   
   k = QString::number(Config::DbHostName);
-  d = "localhost";
-  setConfig(k, d);
+  getConfig(k, d);
+  if (d.isEmpty())
+  {
+    d = "localhost";
+    setConfig(k, d);
+  }
   
   k = QString::number(Config::DbName);
-  d = QDir::homePath() + "/.CSV/quotes.sqlite";
-  setConfig(k, d);
+  getConfig(k, d);
+  if (d.isEmpty())
+  {
+    d = QDir::homePath() + "/.CSV/quotes.sqlite";
+    setConfig(k, d);
+  }
   
   k = QString::number(Config::DbUserName);
-  d = "qtstalker";
-  setConfig(k, d);
+  getConfig(k, d);
+  if (d.isEmpty())
+  {
+    d = "qtstalker";
+    setConfig(k, d);
+  }
   
   k = QString::number(Config::DbPassword);
-  d = "qtstalker";
-  setConfig(k, d);
+  getConfig(k, d);
+  if (d.isEmpty())
+  {
+    d = "qtstalker";
+    setConfig(k, d);
+  }
   
   k = QString::number(Config::DbDateColumn);
-  d = "date";
-  setConfig(k, d);
+  getConfig(k, d);
+  if (d.isEmpty())
+  {
+    d = "date";
+    setConfig(k, d);
+  }
 
   k = QString::number(Config::DbOpenColumn);
-  d = "open";
-  setConfig(k, d);
-
+  getConfig(k, d);
+  if (d.isEmpty())
+  {
+    d = "open";
+    setConfig(k, d);
+  }
+  
   k = QString::number(Config::DbHighColumn);
-  d = "high";
-  setConfig(k, d);
+  getConfig(k, d);
+  if (d.isEmpty())
+  {
+    d = "high";
+    setConfig(k, d);
+  }
 
   k = QString::number(Config::DbLowColumn);
-  d = "low";
-  setConfig(k, d);
+  getConfig(k, d);
+  if (d.isEmpty())
+  {
+    d = "low";
+    setConfig(k, d);
+  }
 
   k = QString::number(Config::DbCloseColumn);
-  d = "close";
-  setConfig(k, d);
+  getConfig(k, d);
+  if (d.isEmpty())
+  {
+    d = "close";
+    setConfig(k, d);
+  }
 
   k = QString::number(Config::DbVolumeColumn);
-  d = "volume";
-  setConfig(k, d);
+  getConfig(k, d);
+  if (d.isEmpty())
+  {
+    d = "volume";
+    setConfig(k, d);
+  }
 
   k = QString::number(Config::DbOIColumn);
-  d = "oi";
-  setConfig(k, d);
+  getConfig(k, d);
+  if (d.isEmpty())
+  {
+    d = "oi";
+    setConfig(k, d);
+  }
 
   k = QString::number(Config::DbIndexTable);
-  d = "symbolIndex";
-  setConfig(k, d);
+  getConfig(k, d);
+  if (d.isEmpty())
+  {
+    d = "symbolIndex";
+    setConfig(k, d);
+  }
 
   k = QString::number(Config::DbSymbolColumn);
-  d = "symbol";
-  setConfig(k, d);
+  getConfig(k, d);
+  if (d.isEmpty())
+  {
+    d = "symbol";
+    setConfig(k, d);
+  }
 
   k = QString::number(Config::DbNameColumn);
-  d = "name";
-  setConfig(k, d);
+  getConfig(k, d);
+  if (d.isEmpty())
+  {
+    d = "name";
+    setConfig(k, d);
+  }
 
   k = QString::number(Config::DbExchangeColumn);
-  d = "exchange";
-  setConfig(k, d);
+  getConfig(k, d);
+  if (d.isEmpty())
+  {
+    d = "exchange";
+    setConfig(k, d);
+  }
 
   k = QString::number(Config::DefaultIndicators);
-  d = "0";
-  setConfig(k, d);
+  getConfig(k, d);
+  if (d.isEmpty())
+  {
+    d = "0";
+    setConfig(k, d);
+  }
   
   k = QString::number(Config::DefaultBuyArrowColor);
-  d = "green";
-  setConfig(k, d);
+  getConfig(k, d);
+  if (d.isEmpty())
+  {
+    d = "green";
+    setConfig(k, d);
+  }
   
   k = QString::number(Config::DefaultSellArrowColor);
-  d = "red";
-  setConfig(k, d);
+  getConfig(k, d);
+  if (d.isEmpty())
+  {
+    d = "red";
+    setConfig(k, d);
+  }
   
   k = QString::number(Config::DefaultHorizontalLineColor);
-  d = "red";
-  setConfig(k, d);
+  getConfig(k, d);
+  if (d.isEmpty())
+  {
+    d = "red";
+    setConfig(k, d);
+  }
   
   k = QString::number(Config::DefaultVerticalLineColor);
-  d = "red";
-  setConfig(k, d);
+  getConfig(k, d);
+  if (d.isEmpty())
+  {
+    d = "red";
+    setConfig(k, d);
+  }
   
   k = QString::number(Config::DefaultFiboLineColor);
-  d = "red";
-  setConfig(k, d);
+  getConfig(k, d);
+  if (d.isEmpty())
+  {
+    d = "red";
+    setConfig(k, d);
+  }
   
   k = QString::number(Config::DefaultFiboLine1);
-  d = "0.382";
-  setConfig(k, d);
+  getConfig(k, d);
+  if (d.isEmpty())
+  {
+    d = "0.382";
+    setConfig(k, d);
+  }
   
   k = QString::number(Config::DefaultFiboLine2);
-  d = "0.5";
-  setConfig(k, d);
+  getConfig(k, d);
+  if (d.isEmpty())
+  {
+    d = "0.5";
+    setConfig(k, d);
+  }
   
   k = QString::number(Config::DefaultFiboLine3);
-  d = "0.618";
-  setConfig(k, d);
+  getConfig(k, d);
+  if (d.isEmpty())
+  {
+    d = "0.618";
+    setConfig(k, d);
+  }
   
   k = QString::number(Config::DefaultFiboLine4);
-  d = "0";
-  setConfig(k, d);
+  getConfig(k, d);
+  if (d.isEmpty())
+  {
+    d = "0";
+    setConfig(k, d);
+  }
   
   k = QString::number(Config::DefaultFiboLine5);
-  d = "0";
-  setConfig(k, d);
+  getConfig(k, d);
+  if (d.isEmpty())
+  {
+    d = "0";
+    setConfig(k, d);
+  }
   
   k = QString::number(Config::DefaultFiboLine6);
-  d = "0";
-  setConfig(k, d);
+  getConfig(k, d);
+  if (d.isEmpty())
+  {
+    d = "0";
+    setConfig(k, d);
+  }   
   
   k = QString::number(Config::DefaultTextColor);
-  d = "white";
-  setConfig(k, d);
+  getConfig(k, d);
+  if (d.isEmpty())
+  {
+    d = "white";
+    setConfig(k, d);
+  }
   
   k = QString::number(Config::DefaultTextFont);
-  d = "DejaVu Sans,9,50,0,0";
-  setConfig(k, d);
+  getConfig(k, d);
+  if (d.isEmpty())
+  {
+    d = "DejaVu Sans,9,50,0,0";
+    setConfig(k, d);
+  }
   
   k = QString::number(Config::DefaultTextLabel);
-  d = QObject::tr("Text");
-  setConfig(k, d);
+  getConfig(k, d);
+  if (d.isEmpty())
+  {
+    d = QObject::tr("Text");
+    setConfig(k, d);
+  }
   
   k = QString::number(Config::DefaultTrendLineColor);
-  d = "red";
-  setConfig(k, d);
+  getConfig(k, d);
+  if (d.isEmpty())
+  {
+    d = "red";
+    setConfig(k, d);
+  }
   
   k = QString::number(Config::DefaultTrendLineBar);
-  d = "Close";
-  setConfig(k, d);
+  getConfig(k, d);
+  if (d.isEmpty())
+  {
+    d = "Close";
+    setConfig(k, d);
+  }
   
   k = QString::number(Config::DefaultTrendLineExtend);
-  d = "1";
-  setConfig(k, d);
+  getConfig(k, d);
+  if (d.isEmpty())
+  {
+    d = "1";
+    setConfig(k, d);
+  }
   
   k = QString::number(Config::DefaultTrendLineUseBar);
-  d = "0";
-  setConfig(k, d);
+  getConfig(k, d);
+  if (d.isEmpty())
+  {
+    d = "0";
+    setConfig(k, d);
+  }
 
   k = QString::number(Config::IndicatorScriptDefault);
-  d = "perl /usr/local/share/qtstalker/indicator/";
-  setConfig(k, d);
+  getConfig(k, d);
+  if (d.isEmpty())
+  {
+    d = "perl /usr/local/share/qtstalker/indicator/";
+    setConfig(k, d);
+  }
 }
 
 void Setup::setConfig (QString &k, QString &d)

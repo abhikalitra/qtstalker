@@ -66,13 +66,6 @@ Preferences::Preferences (QWidget *w) : QDialog (w, 0)
   modified = 0;
 }
 
-Preferences::~Preferences ()
-{
-  Config config;
-  QSize sz = size();
-  config.setData(Config::PrefDlgWindowSize, sz);
-}
-
 void Preferences::createGeneralPage ()
 {
   // general parms page
@@ -85,8 +78,7 @@ void Preferences::createGeneralPage ()
   QGridLayout *grid = new QGridLayout;
   grid->setMargin(5);
   grid->setSpacing(5);
-  grid->setColumnStretch(1, 1); // stretch 2nd col a little
-  grid->setColumnStretch(2, 2); // stretch outer right col more
+  grid->setColumnStretch(1, 2);
   vbox->addLayout(grid);
   
   vbox->insertStretch(-1, 1);
@@ -382,8 +374,7 @@ void Preferences::createColorPage ()
   QGridLayout *grid = new QGridLayout;
   grid->setMargin(5);
   grid->setSpacing(5);
-  grid->setColumnStretch(1, 1);
-  grid->setColumnStretch(2, 2);
+  grid->setColumnStretch(1, 2);
   vbox->addLayout(grid);
   
   vbox->insertStretch(-1, 1);
@@ -441,8 +432,7 @@ void Preferences::createFontPage ()
   QGridLayout *grid = new QGridLayout;
   grid->setMargin(5);
   grid->setSpacing(5);
-  grid->setColumnStretch(1, 1);
-  grid->setColumnStretch(2, 2);
+  grid->setColumnStretch(1, 2);
   vbox->addLayout(grid);
   
   vbox->insertStretch(-1, 1);
@@ -607,7 +597,7 @@ void  Preferences::createCTPage()
   QGridLayout *grid = new QGridLayout;
   grid->setMargin(5);
   grid->setSpacing(5);
-  grid->setColumnStretch(1, 1);
+  grid->setColumnStretch(1, 2);
   vbox->addLayout(grid);
   
   vbox->insertStretch(-1, 1);
@@ -848,10 +838,12 @@ void Preferences::slotSave ()
   s = exchangeColumn->text();
   config.setData(Config::DbExchangeColumn, s);
   
-  
   emit signalReloadToolBars();
   
   emit signalLoadChart();
+
+  QSize sz = size();
+  config.setData(Config::PrefDlgWindowSize, sz);
 
   accept();    
 }
@@ -874,6 +866,10 @@ void Preferences::cancelPressed()
     if (rc == QMessageBox::No)
       return;
   }
+
+  Config config;
+  QSize sz = size();
+  config.setData(Config::PrefDlgWindowSize, sz);
 
   reject();
 }

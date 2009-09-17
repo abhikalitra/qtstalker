@@ -53,7 +53,6 @@ class Preferences : public QDialog
 
   public:
     Preferences (QWidget *);
-    ~Preferences ();
     void createGeneralPage ();
     void createDatabasePage ();
     void createColorPage ();
