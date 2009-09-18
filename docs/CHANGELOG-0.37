@@ -60,6 +60,11 @@
 
 20090918: Fixed bar building function. Loads very quickly now.
 
+	  Fixed bug that added an empty item in the recent charts list in the main toolbar.
+
+
+
+
 
 
 

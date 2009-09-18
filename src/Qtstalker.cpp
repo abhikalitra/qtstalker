@@ -533,11 +533,14 @@ void QtstalkerApp::createToolBars ()
   // recent charts combo
   QString s;
   config.getData(Config::RecentChartsList, s);
-  l = s.split(",");
+  l.clear();
+  if (! s.isEmpty())
+    l = s.split(",");
 
   recentCharts = new QComboBox;
   recentCharts->setSizeAdjustPolicy(QComboBox::AdjustToContents);
-  recentCharts->addItems(l);
+  if (l.count())
+    recentCharts->addItems(l);
   recentCharts->setCurrentIndex(0);
   recentCharts->setToolTip(tr("Recent Charts"));
   connect(recentCharts, SIGNAL(activated(int)), this, SLOT(slotOpenChart(int)));
