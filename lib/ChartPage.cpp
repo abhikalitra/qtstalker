@@ -56,7 +56,7 @@ ChartPage::ChartPage (QWidget *w) : QWidget (w)
   allButton = new QToolButton;
   allButton->setToolTip(tr("All Symbols"));
   allButton->setIcon(QIcon(asterisk_xpm));
-  connect(allButton, SIGNAL(clicked()), this, SLOT(updateList()));
+  connect(allButton, SIGNAL(clicked()), this, SLOT(allButtonPressed()));
   allButton->setMaximumSize(25, 25);
   hbox->addWidget(allButton);
  
@@ -206,5 +206,11 @@ void ChartPage::symbolSearch ()
   
   Config config;
   config.setData(Config::LastSymbolSearch, searchString);
+}
+
+void ChartPage::allButtonPressed ()
+{
+  activeSearch = 0;
+  updateList();
 }
 

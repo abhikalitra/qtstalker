@@ -54,6 +54,7 @@ class ChartPage : public QWidget
     void addToGroup ();
     void updateList ();
     void symbolSearch ();
+    void allButtonPressed ();
 
   protected:
     int activeSearch;

@@ -58,6 +58,8 @@
 
 	  Applied patch (day + 3ma script - ID: 2860785). Thanks to Austin (x_curve) for the patch.
 
+20090918: Fixed bar building function. Loads very quickly now.
+
 
 
 

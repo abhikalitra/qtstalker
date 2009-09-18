@@ -12,6 +12,7 @@ To Do:
 - Round off values to lesser precision when displaying in data panel.
 - Improve source code documentation. Javadoc comments are utilised by Doxygen.
 - Experiment with SVN trunk version of TA-Lib. Provide feedback to them if we have issues. Their 0.5 release is scheduled for January 2008.
+- add security name field to the CSV class.
  
 Maybe some day:
 ===============

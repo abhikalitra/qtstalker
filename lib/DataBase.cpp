@@ -83,6 +83,7 @@ void DataBase::getSearchList (QString &pat, QStringList &l)
   l.sort();
 }
 
+/*
 void DataBase::getChart (BarData *data)
 {
   QSqlQuery q(QSqlDatabase::database("quotes"));
@@ -244,6 +245,166 @@ void DataBase::getChart (BarData *data)
 
   data->createDateList();
 }
+*/
+
+void DataBase::getChart (BarData *data)
+{
+  QSqlQuery q(QSqlDatabase::database("quotes"));
+
+  QString symbol, ts, ts2, dateColumn, openColumn, highColumn, lowColumn, closeColumn, volumeColumn, oiColumn;
+  QString nameColumn, indexTable, symbolColumn;
+  data->getSymbol(symbol);
+  
+  Config config;
+  config.getData(Config::DbIndexTable, indexTable);
+  config.getData(Config::DbSymbolColumn, symbolColumn);
+  config.getData(Config::DbNameColumn, nameColumn);
+
+  // get the index details
+  QString s = "SELECT " + nameColumn + " FROM " + indexTable + " WHERE " + symbolColumn + "='" + symbol + "'";
+  q.exec(s);
+  if (q.lastError().isValid())
+  {
+    qDebug() << "DataBase::getChart: " << q.lastError().text();
+    return;
+  }
+
+  if (q.next())
+  {
+    s = q.value(0).toString();
+    data->setName(s);
+  }
+  else
+  {
+    qDebug() << "DataBase::getChart: no symbolIndex record found";
+    return;
+  }
+
+  QDateTime firstDate;
+  getFirstDate(firstDate, symbol);
+
+  QDateTime lastDate;
+  getLastDate(lastDate, symbol);
+
+  config.getData(Config::DbDateColumn, dateColumn);
+  config.getData(Config::DbOpenColumn, openColumn);
+  config.getData(Config::DbHighColumn, highColumn);
+  config.getData(Config::DbLowColumn, lowColumn);
+  config.getData(Config::DbCloseColumn, closeColumn);
+  config.getData(Config::DbVolumeColumn, volumeColumn);
+  config.getData(Config::DbOIColumn, oiColumn);
+  
+  QHash<QString, Bar *> bars;
+  QStringList dateList;
+
+  while (1)
+  {
+    QString sd = firstDate.toString("yyyy-MM-dd HH:mm:ss");
+    QString ed = lastDate.toString("yyyy-MM-dd HH:mm:ss");
+
+    s = "SELECT " + dateColumn;
+    s.append("," + openColumn);
+    s.append("," + highColumn);
+    s.append("," + lowColumn);
+    s.append("," + closeColumn);
+    s.append("," + volumeColumn);
+    s.append("," + oiColumn);
+    s.append(" FROM " + symbol + " WHERE " + dateColumn + " >='" + sd + "' AND " + dateColumn + " < '" + ed + "'");
+    s.append(" ORDER BY " + dateColumn + " DESC LIMIT " + QString::number(data->getBarsRequested()));
+    q.exec(s);
+    if (q.lastError().isValid())
+    {
+      qDebug() << "DataBase::getChart:" << q.lastError().text();
+      break;
+    }
+    
+    while (q.next())
+    {
+      QDateTime dt = q.value(0).toDateTime();
+      lastDate = dt;
+      setStartEndDates(dt, data->getBarLength());
+      s = dt.toString("yyyyMMddHHmmss");
+      Bar *bar = bars[s];
+      if (! bar)
+      {
+	if (bars.count() == data->getBarsRequested())
+	  break;
+	
+	dateList.append(s); // save new dateList entry
+	bar = new Bar;
+        bar->setDate(dt);
+	bars.insert(s, bar);
+	
+        QVariant v = q.value(1);
+        if (v.isValid())
+	  bar->setOpen(v.toDouble());
+	
+        v = q.value(2);
+        if (v.isValid())
+	  bar->setHigh(v.toDouble());
+	
+        v = q.value(3);
+        if (v.isValid())
+	  bar->setLow(v.toDouble());
+	
+        v = q.value(4);
+        if (v.isValid())
+	  bar->setClose(v.toDouble());
+	
+        v = q.value(5);
+        if (v.isValid())
+	  bar->setVolume(v.toDouble());
+	
+        v = q.value(6);
+        if (v.isValid())
+	  bar->setOI(v.toDouble());
+	
+	continue;
+      }
+
+      QVariant v = q.value(1);
+      if (v.isValid())
+        bar->setOpen(v.toDouble());
+	
+      v = q.value(2);
+      if (v.isValid())
+      {
+        double h = v.toDouble();
+        if (h > bar->getHigh())
+          bar->setHigh(h);
+      }
+
+      v = q.value(3);
+      if (v.isValid())
+      {
+        double l = v.toDouble();
+        if (l < bar->getLow())
+          bar->setLow(l);
+      }
+
+      v = q.value(5);
+      if (v.isValid())
+      {
+        double v1 = v.toDouble();
+        double v2 = bar->getVolume();
+        bar->setVolume(v1 + v2);
+      }
+    }
+    
+    if (bars.count() == data->getBarsRequested())
+      break;
+
+    if (lastDate == firstDate)
+      break;
+  }
+
+  // order the bars from most recent to first
+  int loop;
+  for (loop = 0; loop < dateList.count(); loop++)
+    data->prepend(bars[dateList[loop]]);
+
+  data->createDateList();
+}
 
 void DataBase::getFirstDate (QDateTime &date, QString &symbol)
 {
@@ -284,6 +445,7 @@ void DataBase::getLastDate (QDateTime &date, QString &symbol)
 
 }
 
+/*
 void DataBase::setStartEndDates (QDateTime &startDate, QDateTime &endDate, BarData::BarLength barLength)
 {
   QString s, s2;
@@ -349,6 +511,71 @@ void DataBase::setStartEndDates (QDateTime &startDate, QDateTime &endDate, BarDa
       dt.setTime(QTime(0, 0, 0, 0));
       dt = dt.addDays(- (dt.date().day() - 1));
       startDate = dt;
+      dt = dt.addDays(dt.date().daysInMonth());
+      endDate = dt;
+      break;
+    default:
+      break;
+  }
+}
+*/
+
+void DataBase::setStartEndDates (QDateTime &endDate, BarData::BarLength barLength)
+{
+  QString s, s2;
+  int tint = 0;
+  QDateTime dt = endDate;
+
+  switch (barLength)
+  {
+    case BarData::Minute1:
+      dt.setTime(QTime(dt.time().hour(), dt.time().minute(), 0, 0));
+      dt = dt.addSecs(60);
+      endDate = dt;
+      break;
+    case BarData::Minute5:
+      tint = dt.time().minute() / 5;
+      dt.setTime(QTime(dt.time().hour(), tint * 5, 0, 0));
+      dt = dt.addSecs(300);
+      endDate = dt;
+      break;
+    case BarData::Minute10:
+      tint = dt.time().minute() / 10;
+      dt.setTime(QTime(dt.time().hour(), tint * 10, 0, 0));
+      dt = dt.addSecs(600);
+      endDate = dt;
+      break;
+    case BarData::Minute15:
+      tint = dt.time().minute() / 15;
+      dt.setTime(QTime(dt.time().hour(), tint * 15, 0, 0));
+      dt = dt.addSecs(900);
+      endDate = dt;
+      break;
+    case BarData::Minute30:
+      tint = dt.time().minute() / 30;
+      dt.setTime(QTime(dt.time().hour(), tint * 30, 0, 0));
+      dt = dt.addSecs(1800);
+      endDate = dt;
+      break;
+    case BarData::Minute60:
+      dt.setTime(QTime(dt.time().hour(), 0, 0, 0));
+      dt = dt.addSecs(3600);
+      endDate = dt;
+      break;
+    case BarData::DailyBar:
+      dt.setTime(QTime(0, 0, 0, 0));
+      dt = dt.addDays(1);
+      endDate = dt;
+      break;
+    case BarData::WeeklyBar:
+      dt.setTime(QTime(0, 0, 0, 0));
+      dt = dt.addDays(- dt.date().dayOfWeek());
+      dt = dt.addDays(7);
+      endDate = dt;
+      break;
+    case BarData::MonthlyBar:
+      dt.setTime(QTime(0, 0, 0, 0));
+      dt = dt.addDays(- (dt.date().day() - 1));
       dt = dt.addDays(dt.date().daysInMonth());
       endDate = dt;
       break;
