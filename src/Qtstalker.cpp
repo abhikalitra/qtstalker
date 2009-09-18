@@ -2,7 +2,7 @@
                           qtstalker.cpp  -  description
                              -------------------
     begin                : Thu Mar  7 22:43:41 EST 2002
-    copyright            : (C) 2001-2008 by Stefan Stratigakos
+    copyright            : (C) 2001-2009 by Stefan Stratigakos
     email                :
  ***************************************************************************/
 
@@ -634,7 +634,7 @@ void QtstalkerApp::slotAbout()
   // display the about dialog
   QString versionString = "Qtstalker\nVersion 0.37-dev (working title)\nBuilt using Qt ";
   versionString += QT_VERSION_STR;
-  versionString += "\n(C) 2001-2008 by Stefan Stratigakos\nqtstalker.sourceforge.net";
+  versionString += "\n(C) 2001-2009 by Stefan Stratigakos\nqtstalker.sourceforge.net";
   QMessageBox::about(this, tr("About Qtstalker"), versionString);
 }
 
