@@ -31,7 +31,7 @@ Config::Config ()
 void Config::beginTransaction ()
 {
   QSqlQuery q(QSqlDatabase::database("data"));
-  QString s = "BEGIN TRANSACTION";
+  QString s = "BEGIN";
   q.exec(s);
   if (q.lastError().isValid())
     qDebug() << "Config::beginTransaction: " << q.lastError().text();

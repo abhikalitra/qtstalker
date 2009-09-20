@@ -141,8 +141,14 @@ void Setup::setupQuoteBase ()
 
 void Setup::setupConfigDefaults ()
 {
+  QSqlQuery q(QSqlDatabase::database("data"));
+  QString k = "BEGIN";
+  q.exec(k);
+  if (q.lastError().isValid())
+    qDebug() << "Setup::setupConfigDefaults: " << q.lastError().text();
+
   // check if config defaults already exist
-  QString k, d;
+  QString d;
   k = QString::number(Config::Home);
   setConfig(k, home);
 
@@ -796,6 +802,11 @@ void Setup::setupConfigDefaults ()
     d = "perl /usr/local/share/qtstalker/indicator/";
     setConfig(k, d);
   }
+
+  k = "COMMIT";
+  q.exec(k);
+  if (q.lastError().isValid())
+    qDebug() << "Setup::setupConfigDefaults:" << q.lastError().text();
 }
 
 void Setup::setConfig (QString &k, QString &d)
