@@ -44,7 +44,6 @@ class GroupPage : public QWidget
 
   public:
     GroupPage (QWidget *);
-    ~GroupPage ();
 
   public slots:
     void newGroup ();

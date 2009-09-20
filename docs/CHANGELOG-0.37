@@ -62,6 +62,12 @@
 
 	  Fixed bug that added an empty item in the recent charts list in the main toolbar.
 
+20090920: Fixed bars to load editing bug.
+
+          Recent charts list now updates when item is selected.
+
+
+
 
 
 

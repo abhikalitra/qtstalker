@@ -82,13 +82,6 @@ GroupPage::GroupPage (QWidget *w) : QWidget (w)
   group->setCurrentIndex(group->findText(s, Qt::MatchExactly));
 }
 
-GroupPage::~GroupPage ()
-{
-  QString s = group->currentText();
-  Config config;
-  config.setData(Config::LastGroupUsed, s);
-}
-
 void GroupPage::newGroup()
 {
   bool ok;
@@ -181,6 +174,9 @@ void GroupPage::groupSelected (int i)
   db.getGroupList(s, l);
   nav->clear();
   nav->addItems(l);
+
+  Config config;
+  config.setData(Config::LastGroupUsed, s);
 }
 
 void GroupPage::chartOpened (QListWidgetItem *item)
