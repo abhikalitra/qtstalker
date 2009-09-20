@@ -132,6 +132,8 @@ class Config
     };
 
     Config ();
+    void beginTransaction ();
+    void commit ();
     void setData (Parm, QString &);
     void getData (Parm, QString &);
     void getData (Parm, QSplitter *);

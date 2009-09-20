@@ -2,6 +2,137 @@
 <!DOCTYPE TS>
 <TS version="2.0">
 <context>
+    <name>CODialog</name>
+    <message>
+        <source>Edit Buy Arrow</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Edit Sell Arrow</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Price</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Set Default</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Parms</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Edit Horizontal Line</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Text</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Edit Text</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Font</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Edit Fibo Line</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Line 1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Line 2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Line 3</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Line 4</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Line 5</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Line 6</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>High Point</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Low Point</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Extend</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Edit Trend Line</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Start Price</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>End Price</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Bar Field</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>High</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Low</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Close</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Use Bar</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Edit Vertical Line</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Qtstalker: Warning</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Item modified. Are you sure you want to discard changes?</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>CSV</name>
     <message>
         <source>Bad date</source>
@@ -33,6 +164,10 @@
     </message>
     <message>
         <source> Records Imported</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source> Records Processed</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -162,13 +297,6 @@
     </message>
     <message>
         <source>Time</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>FileButton</name>
-    <message>
-        <source>Files</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -328,10 +456,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Chart Objects</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Buy Arrow</source>
         <translation type="unfinished"></translation>
     </message>
@@ -412,7 +536,15 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Close</source>
+        <source>&amp;Edit Chart Object</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Delete Chart Object</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>New Chart Object</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -765,6 +897,10 @@
         <source>Items modified. Are you sure you want to discard changes?</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Indicator Script Default</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>QObject</name>
@@ -881,11 +1017,99 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Select Files</source>
+        <source>OI</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>OI</source>
+        <source>Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Buy Arrow</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Price</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Fibo Line</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>High Point</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Low Point</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Line 1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Line 2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Line 3</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Line 4</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Line 5</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Line 6</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Horizontal Line</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sell Arrow</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Text</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Trend Line</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Start Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Start Price</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>End Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>End Price</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Vertical Line</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

@@ -713,6 +713,15 @@ void Preferences::slotSave ()
 {
   Config config;
   QString s;
+
+  if (! modified)
+  {
+    QSize sz = size();
+    config.setData(Config::PrefDlgWindowSize, sz);
+    accept();
+  }
+
+  config.beginTransaction();
   
   config.setData(Config::PSButton1, bs1Spinner->value());
   config.setData(Config::PSButton2, bs2Spinner->value());
@@ -844,6 +853,8 @@ void Preferences::slotSave ()
 
   QSize sz = size();
   config.setData(Config::PrefDlgWindowSize, sz);
+
+  config.commit();
 
   accept();    
 }

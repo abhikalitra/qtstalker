@@ -522,7 +522,7 @@ void QtstalkerApp::createToolBars ()
   config.getData(Config::BarsToLoad, ts);
   barCount->setValue(ts.toInt());
   barCount->setToolTip(tr("Total bars to load"));
-  connect(barCount, SIGNAL(valueChanged(int)), this, SLOT(slotChartUpdated()));
+  connect(barCount, SIGNAL(editingFinished()), this, SLOT(slotChartUpdated()));
   action = toolbar2->addWidget(barCount);
   actionList.insert(BarCount, action);
   config.getData(Config::ShowBarsToLoadField, ts);
@@ -556,6 +556,8 @@ void QtstalkerApp::slotQuit()
 
   // do this to save any pending chart object edits
   emit signalClearIndicator();
+
+  config.beginTransaction();
 
   // save last indicators used
   int loop;
@@ -618,6 +620,8 @@ void QtstalkerApp::slotQuit()
   s = l.join(",");
   config.setData(Config::RecentChartsList, s);
 
+  config.commit();
+
   // delete any BarData
   if (recordList)
     delete recordList;
@@ -652,6 +656,7 @@ void QtstalkerApp::slotOpenChart (QString selection)
 void QtstalkerApp::slotOpenChart (int row)
 {
   QString s = recentCharts->itemText(row);
+  recentCharts->setCurrentIndex(row);
   slotOpenChart(s);
 }
 

@@ -28,6 +28,24 @@ Config::Config ()
 {
 }
 
+void Config::beginTransaction ()
+{
+  QSqlQuery q(QSqlDatabase::database("data"));
+  QString s = "BEGIN TRANSACTION";
+  q.exec(s);
+  if (q.lastError().isValid())
+    qDebug() << "Config::beginTransaction: " << q.lastError().text();
+}
+
+void Config::commit ()
+{
+  QSqlQuery q(QSqlDatabase::database("data"));
+  QString s = "COMMIT";
+  q.exec(s);
+  if (q.lastError().isValid())
+    qDebug() << "Config::commit: " << q.lastError().text();
+}
+
 void Config::getData (Parm p, QString &d)
 {
   d.clear();
