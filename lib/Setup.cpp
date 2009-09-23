@@ -554,92 +554,44 @@ void Setup::setupConfigDefaults ()
     d = "qtstalker";
     setConfig(k, d);
   }
-  
-  k = QString::number(Config::DbDateColumn);
+
+  k = QString::number(Config::DbAllSymbols);
   getConfig(k, d);
   if (d.isEmpty())
   {
-    d = "date";
+    d = "SELECT symbol FROM symbolIndex";
     setConfig(k, d);
   }
 
-  k = QString::number(Config::DbOpenColumn);
+  k = QString::number(Config::DbSearchSymbols);
   getConfig(k, d);
   if (d.isEmpty())
   {
-    d = "open";
-    setConfig(k, d);
-  }
-  
-  k = QString::number(Config::DbHighColumn);
-  getConfig(k, d);
-  if (d.isEmpty())
-  {
-    d = "high";
+    d = "SELECT symbol FROM symbolIndex WHERE symbol LIKE";
     setConfig(k, d);
   }
 
-  k = QString::number(Config::DbLowColumn);
+  k = QString::number(Config::DbFirstDate);
   getConfig(k, d);
   if (d.isEmpty())
   {
-    d = "low";
+    d = "SELECT date FROM $symbol ORDER BY date ASC LIMIT 1";
     setConfig(k, d);
   }
 
-  k = QString::number(Config::DbCloseColumn);
+  k = QString::number(Config::DbLastDate);
   getConfig(k, d);
   if (d.isEmpty())
   {
-    d = "close";
+    d = "SELECT date FROM $symbol ORDER BY date DESC LIMIT 1";
     setConfig(k, d);
   }
 
-  k = QString::number(Config::DbVolumeColumn);
+  k = QString::number(Config::DbGetSymbol);
   getConfig(k, d);
   if (d.isEmpty())
   {
-    d = "volume";
-    setConfig(k, d);
-  }
-
-  k = QString::number(Config::DbOIColumn);
-  getConfig(k, d);
-  if (d.isEmpty())
-  {
-    d = "oi";
-    setConfig(k, d);
-  }
-
-  k = QString::number(Config::DbIndexTable);
-  getConfig(k, d);
-  if (d.isEmpty())
-  {
-    d = "symbolIndex";
-    setConfig(k, d);
-  }
-
-  k = QString::number(Config::DbSymbolColumn);
-  getConfig(k, d);
-  if (d.isEmpty())
-  {
-    d = "symbol";
-    setConfig(k, d);
-  }
-
-  k = QString::number(Config::DbNameColumn);
-  getConfig(k, d);
-  if (d.isEmpty())
-  {
-    d = "name";
-    setConfig(k, d);
-  }
-
-  k = QString::number(Config::DbExchangeColumn);
-  getConfig(k, d);
-  if (d.isEmpty())
-  {
-    d = "exchange";
+    d = "SELECT date,open,high,low,close,volume,oi FROM $symbol WHERE date >= $sd AND date < $ed ORDER BY date";
     setConfig(k, d);
   }
 

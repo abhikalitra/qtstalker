@@ -55,6 +55,7 @@ class Preferences : public QDialog
     Preferences (QWidget *);
     void createGeneralPage ();
     void createDatabasePage ();
+    void createSQLPage ();
     void createColorPage ();
     void createFontPage ();
     void createMTPage (); // main tool bar
@@ -92,17 +93,13 @@ class Preferences : public QDialog
     QLineEdit *dbName;
     QLineEdit *dbUserName;
     QLineEdit *dbPassword;
-    QLineEdit *dateColumn;
-    QLineEdit *openColumn;
-    QLineEdit *highColumn;
-    QLineEdit *lowColumn;
-    QLineEdit *closeColumn;
-    QLineEdit *volumeColumn;
-    QLineEdit *oiColumn;
-    QLineEdit *indexTable;
-    QLineEdit *symbolColumn;
-    QLineEdit *nameColumn;
-    QLineEdit *exchangeColumn;
+
+    // sql page
+    QLineEdit *dbAllSymbols;
+    QLineEdit *dbSearchSymbols;
+    QLineEdit *dbFirstDate;
+    QLineEdit *dbLastDate;
+    QLineEdit *dbGetSymbol;
 
     // on MainToolbar    
     QCheckBox *quitBtnCheck;

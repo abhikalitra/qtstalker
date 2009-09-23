@@ -53,6 +53,7 @@ Preferences::Preferences (QWidget *w) : QDialog (w, 0)
   
   createGeneralPage();
   createDatabasePage();
+  createSQLPage();
   createColorPage();
   createFontPage();
   createMTPage();
@@ -156,14 +157,16 @@ void Preferences::createDatabasePage ()
 
   QWidget *w = new QWidget;
 
-  QHBoxLayout *hbox = new QHBoxLayout;
-  w->setLayout(hbox);
+  QVBoxLayout *vbox = new QVBoxLayout;
+  w->setLayout(vbox);
   
   QGridLayout *grid = new QGridLayout;
   grid->setMargin(5);
   grid->setSpacing(5);
   grid->setColumnStretch(1, 2);
-  hbox->addLayout(grid);
+  vbox->addLayout(grid);
+
+  vbox->insertStretch(-1, 1);
   
   int row = 0;
   int col = 0;
@@ -182,7 +185,7 @@ void Preferences::createDatabasePage ()
   config.getData(Config::DbPlugin, s);
   if (s.length())
     dbDriver->setCurrentIndex(dbDriver->findText(s));
-  
+  connect(dbDriver, SIGNAL(currentIndexChanged(const QString &)), this, SLOT(slotModified()));
 
   // setup the db sql host name
   label = new QLabel(tr("Db Host Name"));
@@ -193,7 +196,7 @@ void Preferences::createDatabasePage ()
   config.getData(Config::DbHostName, s);
   if (s.length())
     dbHostName->setText(s);
-  
+  connect(dbHostName, SIGNAL(textChanged(const QString &)), this, SLOT(slotModified()));
   
   // setup the db name
   label = new QLabel(tr("Db Name"));
@@ -204,7 +207,7 @@ void Preferences::createDatabasePage ()
   config.getData(Config::DbName, s);
   if (s.length())
     dbName->setText(s);
-  
+  connect(dbName, SIGNAL(textChanged(const QString &)), this, SLOT(slotModified()));
   
   // setup the db user name
   label = new QLabel(tr("Db User Name"));
@@ -215,7 +218,7 @@ void Preferences::createDatabasePage ()
   config.getData(Config::DbUserName, s);
   if (s.length())
     dbUserName->setText(s);
-  
+  connect(dbUserName, SIGNAL(textChanged(const QString &)), this, SLOT(slotModified()));
   
   // setup the db password
   label = new QLabel(tr("Db Password"));
@@ -227,139 +230,89 @@ void Preferences::createDatabasePage ()
   config.getData(Config::DbPassword, s);
   if (s.length())
     dbPassword->setText(s);
-  
-  
-  // setup the date column
-  label = new QLabel(tr("Date Column Name"));
-  grid->addWidget(label, row, col++);
+  connect(dbPassword, SIGNAL(textChanged(const QString &)), this, SLOT(slotModified()));
 
-  dateColumn = new QLineEdit;
-  grid->addWidget(dateColumn, row++, col--);
-  config.getData(Config::DbDateColumn, s);
-  if (s.length())
-    dateColumn->setText(s);
-  
-  // setup the open column
-  label = new QLabel(tr("Open Column Name"));
-  grid->addWidget(label, row, col++);
+  tabs->addTab(w, tr("DB"));
+}
 
-  openColumn = new QLineEdit;
-  grid->addWidget(openColumn, row++, col--);
-  config.getData(Config::DbOpenColumn, s);
-  if (s.length())
-    openColumn->setText(s);
-  
-  // setup the high column
-  label = new QLabel(tr("High Column Name"));
-  grid->addWidget(label, row, col++);
+void Preferences::createSQLPage ()
+{
+  // database quotes sql page
 
-  highColumn = new QLineEdit;
-  grid->addWidget(highColumn, row++, col--);
-  config.getData(Config::DbHighColumn, s);
-  if (s.length())
-    highColumn->setText(s);
-  
+  QWidget *w = new QWidget;
 
-  // start a new col list of items in the page
-  grid->setRowStretch(row, 2);
+  QVBoxLayout *vbox = new QVBoxLayout;
+  w->setLayout(vbox);
   
-  row = 0;
-  col = 0;
-  
-  grid = new QGridLayout;
+  QGridLayout *grid = new QGridLayout;
   grid->setMargin(5);
   grid->setSpacing(5);
   grid->setColumnStretch(1, 2);
-  hbox->addLayout(grid);
+  vbox->addLayout(grid);
 
+  vbox->insertStretch(-1, 1);
   
-  // setup the low column
-  label = new QLabel(tr("Low Column Name"));
+  int row = 0;
+  int col = 0;
+  Config config;
+  QString s;
+
+  // enter the get all charts sql string
+  QLabel *label = new QLabel(tr("All Symbols"));
   grid->addWidget(label, row, col++);
 
-  lowColumn = new QLineEdit;
-  grid->addWidget(lowColumn, row++, col--);
-  config.getData(Config::DbLowColumn, s);
+  dbAllSymbols = new QLineEdit;
+  grid->addWidget(dbAllSymbols, row++, col--);
+  config.getData(Config::DbAllSymbols, s);
   if (s.length())
-    lowColumn->setText(s);
+    dbAllSymbols->setText(s);
+  connect(dbAllSymbols, SIGNAL(textChanged(const QString &)), this, SLOT(slotModified()));
   
-  // setup the close column
-  label = new QLabel(tr("Close Column Name"));
+  // enter the search symbols sql string
+  label = new QLabel(tr("Search Symbols"));
   grid->addWidget(label, row, col++);
 
-  closeColumn = new QLineEdit;
-  grid->addWidget(closeColumn, row++, col--);
-  config.getData(Config::DbCloseColumn, s);
+  dbSearchSymbols = new QLineEdit;
+  grid->addWidget(dbSearchSymbols, row++, col--);
+  config.getData(Config::DbSearchSymbols, s);
   if (s.length())
-    closeColumn->setText(s);
+    dbSearchSymbols->setText(s);
+  connect(dbSearchSymbols, SIGNAL(textChanged(const QString &)), this, SLOT(slotModified()));
   
-  // setup the date column
-  label = new QLabel(tr("Volume Column Name"));
+  // enter the first date sql string
+  label = new QLabel(tr("First Date"));
   grid->addWidget(label, row, col++);
 
-  volumeColumn = new QLineEdit;
-  grid->addWidget(volumeColumn, row++, col--);
-  config.getData(Config::DbVolumeColumn, s);
+  dbFirstDate = new QLineEdit;
+  grid->addWidget(dbFirstDate, row++, col--);
+  config.getData(Config::DbFirstDate, s);
   if (s.length())
-    volumeColumn->setText(s);
+    dbFirstDate->setText(s);
+  connect(dbFirstDate, SIGNAL(textChanged(const QString &)), this, SLOT(slotModified()));
   
-  // setup the oi column
-  label = new QLabel(tr("OI Column Name"));
+  // enter the last date sql string
+  label = new QLabel(tr("Last Date"));
   grid->addWidget(label, row, col++);
 
-  oiColumn = new QLineEdit;
-  grid->addWidget(oiColumn, row++, col--);
-  config.getData(Config::DbOIColumn, s);
+  dbLastDate = new QLineEdit;
+  grid->addWidget(dbLastDate, row++, col--);
+  config.getData(Config::DbLastDate, s);
   if (s.length())
-    oiColumn->setText(s);
-  
+    dbLastDate->setText(s);
+  connect(dbLastDate, SIGNAL(textChanged(const QString &)), this, SLOT(slotModified()));
 
-  // setup the symbol search table 
-  label = new QLabel(tr("Symbol Index Table"));
+  // enter the get chart sql string
+  label = new QLabel(tr("Get Symbol"));
   grid->addWidget(label, row, col++);
 
-  indexTable = new QLineEdit;
-  grid->addWidget(indexTable, row++, col--);
-  config.getData(Config::DbIndexTable, s);
+  dbGetSymbol = new QLineEdit;
+  grid->addWidget(dbGetSymbol, row++, col--);
+  config.getData(Config::DbGetSymbol, s);
   if (s.length())
-    indexTable->setText(s);
-
+    dbGetSymbol->setText(s);
+  connect(dbGetSymbol, SIGNAL(textChanged(const QString &)), this, SLOT(slotModified()));
   
-  // setup the symbol search column
-  label = new QLabel(tr("Symbol Column"));
-  grid->addWidget(label, row, col++);
-
-  symbolColumn = new QLineEdit;
-  grid->addWidget(symbolColumn, row++, col--);
-  config.getData(Config::DbSymbolColumn, s);
-  if (s.length())
-    symbolColumn->setText(s);
-  
-  
-  // setup the symbol name column
-  label = new QLabel(tr("Symbol Name Column"));
-  grid->addWidget(label, row, col++);
-
-  nameColumn = new QLineEdit;
-  grid->addWidget(nameColumn, row++, col--);
-  config.getData(Config::DbNameColumn, s);
-  if (s.length())
-    nameColumn->setText(s);
-  
-  
-  // setup the symbol exchange column
-  label = new QLabel(tr("Symbol Exchange Column"));
-  grid->addWidget(label, row, col++);
-
-  exchangeColumn = new QLineEdit;
-  grid->addWidget(exchangeColumn, row++, col--);
-  config.getData(Config::DbExchangeColumn, s);
-  if (s.length())
-    exchangeColumn->setText(s);
-  
-  grid->setRowStretch(row, 2);
-
-  tabs->addTab(w, tr("Quotes"));
+  tabs->addTab(w, tr("SQL"));
 }
 
 void Preferences::createColorPage ()
@@ -813,39 +766,22 @@ void Preferences::slotSave ()
   
   s = dbPassword->text();
   config.setData(Config::DbPassword, s);
+
+  // save sql commands
+  s = dbAllSymbols->text();
+  config.setData(Config::DbAllSymbols, s);
   
-  s = dateColumn->text();
-  config.setData(Config::DbDateColumn, s);
+  s = dbSearchSymbols->text();
+  config.setData(Config::DbSearchSymbols, s);
   
-  s = openColumn->text();
-  config.setData(Config::DbOpenColumn, s);
+  s = dbFirstDate->text();
+  config.setData(Config::DbFirstDate, s);
   
-  s = highColumn->text();
-  config.setData(Config::DbHighColumn, s);
+  s = dbLastDate->text();
+  config.setData(Config::DbLastDate, s);
   
-  s = lowColumn->text();
-  config.setData(Config::DbLowColumn, s);
-  
-  s = closeColumn->text();
-  config.setData(Config::DbCloseColumn, s);
-  
-  s = volumeColumn->text();
-  config.setData(Config::DbVolumeColumn, s);
-  
-  s = oiColumn->text();
-  config.setData(Config::DbOIColumn, s);
-  
-  s = indexTable->text();
-  config.setData(Config::DbIndexTable, s);
-  
-  s = symbolColumn->text();
-  config.setData(Config::DbSymbolColumn, s);
-  
-  s = nameColumn->text();
-  config.setData(Config::DbNameColumn, s);
-  
-  s = exchangeColumn->text();
-  config.setData(Config::DbExchangeColumn, s);
+  s = dbGetSymbol->text();
+  config.setData(Config::DbGetSymbol, s);
   
   emit signalReloadToolBars();
   

@@ -66,6 +66,20 @@
 
           Recent charts list now updates when item is selected.
 
+20040922: Changed DataBase chart functions to use a user editable SQL commands. The SQL commands are
+	  found in the SQL page of the preferences dialog.
+
+	  Added a SQL page to the preferences dialog to allow users to edit the chart commands to the DB.
+	  This allows users to modify the SQL commands for user defined db's. NOTE: Do not change any
+	  sub strings marked with a dollar sign eg. $symbol, $sd, $ed. These are place holders that
+	  qtstalker will later replace with valid values on the fly.
+
+	  Removed the table field and index table parms from the Quotes page.
+
+	  Renamed the preferences dialog Quotes page to 'DB'.
+
+
+
 
 
 

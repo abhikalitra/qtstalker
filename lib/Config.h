@@ -68,7 +68,7 @@ class Config
       ShowRecentCharts, // csv list of last used charts
       CurrentChart, // currently loaded chart
       DefaultIndicators, // install flag for default indicators, == 0 if not installed, == 1 if installed
-      DbDateColumn, // the sql date column text
+      DbAllSymbols, // the sql command to get all symbols in db
       PSButton1, // toolbar bar spacing button 1
       PSButton2, // toolbar bar spacing button 2
       PSButton3, // toolbar bar spacing button 3
@@ -79,7 +79,7 @@ class Config
       ShowGridBtn, // toolbar button flag
       ShowScaleToScreenBtn, // toolbar button flag
       ShowCrosshairBtn, // toolbar button flag
-      DbOpenColumn, // the sql open column text
+      DbSearchSymbols, // the sql command to get a symbol search
       ShowDrawModeBtn, // toolbar button flag
       ShowNewIndicatorBtn, // toolbar button flag
       ShowDataWindowBtn, // toolbar button flag
@@ -94,17 +94,17 @@ class Config
       ShowCmpsWkyBtn, // toolbar button flag
       ShowCmpsMtyBtn, // toolbar button flag
       ShowCmpsComboBox, // toolbar button flag
-      DbHighColumn, // the sql high column text
-      DbLowColumn, // the sql low column text
-      DbCloseColumn, // the sql close column text
-      DbVolumeColumn, // the sql volume column text
+      DbFirstDate, // the sql command to get the first date for a symbol
+      DbLastDate, // the sql command to get the last date for a symbol
+      DbGetSymbol, // the sql command to get symbol quotes
+      UNUSED1, // ********* UNUSED *******************
       LastGroupUsed, // last group displayed in groups area
       LastIndicatorUsed, // csv list of the last indicators used
-      DbOIColumn, // the sql oi column text
-      DbIndexTable, // table name for quote symbol index
+      UNUSED2, // ************ UNUSED ************************
+      UNUSED3, // ************* UNUSED *********************
       MainToolBarPos, // last position of the main toolbar
       ChartToolBarPos, // last position of the chart toolbar
-      DbSymbolColumn, // the name of the symbol index symbol column
+      UNUSED4, // ************** UNUSED ***************************
       RecentChartsList, // csv list of the contents of the recent charts combobox
       LastChartObjectID, // used to assign a new co object id number
       DefaultTextLabel,
@@ -126,8 +126,8 @@ class Config
       DefaultTrendLineUseBar,
       DefaultVerticalLineColor, // default vertical line color
       IndicatorTabRows, // # of indicator tab rows
-      DbNameColumn, // the name of the symbol index name column
-      DbExchangeColumn, // the name of the symbol index exchange column
+      UNUSED5, // ************ UNUSED ****************************
+      UNUSED6, // ************ UNUSED ***********************
       IndicatorScriptDefault
     };
 
