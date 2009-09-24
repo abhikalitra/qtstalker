@@ -33,7 +33,9 @@ class Setting
     void getData (QString &, QString &);
     double getDouble (QString &);
     int getInt (QString &);
+    int getInt (int);
     void setData (QString &, QString &);
+    void setData (int, int);
     void getKeyList (QStringList &);
     void remove (QString &);
     void getString (QString &);

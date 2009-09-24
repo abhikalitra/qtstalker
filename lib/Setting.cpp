@@ -49,9 +49,25 @@ int Setting::getInt (QString &k)
     return 0;
 }
 
+int Setting::getInt (int k)
+{
+  QString s = QString::number(k);
+  if (dict.contains(s))
+    return dict.value(s).toInt();
+  else
+    return 0;
+}
+
 void Setting::setData (QString &k, QString &d)
 {
   dict.insert(k, d);
+}
+
+void Setting::setData (int k, int d)
+{
+  QString s = QString::number(k);
+  QString s2 = QString::number(d);
+  dict.insert(s, s2);
 }
 
 void Setting::getKeyList (QStringList &l)

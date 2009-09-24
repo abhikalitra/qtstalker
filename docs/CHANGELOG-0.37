@@ -66,7 +66,7 @@
 
           Recent charts list now updates when item is selected.
 
-20040922: Changed DataBase chart functions to use a user editable SQL commands. The SQL commands are
+20090922: Changed DataBase chart functions to use a user editable SQL commands. The SQL commands are
 	  found in the SQL page of the preferences dialog.
 
 	  Added a SQL page to the preferences dialog to allow users to edit the chart commands to the DB.
@@ -78,19 +78,13 @@
 
 	  Renamed the preferences dialog Quotes page to 'DB'.
 
+20090924: Added rubberband method of selecting a chart area to zoom. Left double click, hold and drag the cursor
+          to size the rubberband to select an area. Release the mouse button to then complete the zoom. The chart
+          will then move and zoom the area to fill the complete space available. The zoom in and zoom out toolbar
+          buttons will update. To restore the chart user may either press the zoom out button or press either bar
+          spacing buttons to reset. Zooms are stored and unlimited for each symbol. Once a new symbol is loaded,
+          the zooms are cleared.
+
+          Removed the bar spacing spinbox and the third bar spacing button.
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-	  

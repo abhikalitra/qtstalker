@@ -40,6 +40,7 @@
 #include <QList>
 #include <QRubberBand>
 #include <QPoint>
+#include <QRect>
 
 #include "PlotLine.h"
 #include "COSettings.h"
@@ -59,7 +60,7 @@ class IndicatorPlot : public QWidget
     void infoMessage (Setting *);
     void leftMouseButton (int, int, bool);
     void keyPressed (QKeyEvent *);
-    void signalMinPixelspace (int);
+    void signalPixelspaceChanged (int, int);
     void signalDraw ();
     void signalDateFlag (bool);
     void signalLogFlag (bool);
@@ -122,6 +123,8 @@ class IndicatorPlot : public QWidget
     void objectMoving ();
     void trendLineMoving ();
     void fiboLineMoving ();
+
+    void drawRubberBand (QRect &r);
    
   public slots:
     void draw();
@@ -220,6 +223,7 @@ class IndicatorPlot : public QWidget
     int moveFlag;
     QString dateFormat;
 
+    int tx, ty;
     QRubberBand *rubberBand;
     QPoint mouseOrigin;
 };

@@ -113,18 +113,6 @@ void Preferences::createGeneralPage ()
   connect(bs2Spinner, SIGNAL(valueChanged(int)), this, SLOT(slotModified()));
   grid->addWidget(bs2Spinner, row++, col--);
 
-  // bar spacing 3
-  label = new QLabel(tr("Bar Spacing 3"));
-  grid->addWidget(label, row, col++);
-  
-  bs3Spinner = new QSpinBox;
-  bs3Spinner->setRange(2, 99);
-  config.getData(Config::PSButton3, s);
-  if (! s.isEmpty())
-    bs3Spinner->setValue(s.toInt());
-  connect(bs3Spinner, SIGNAL(valueChanged(int)), this, SLOT(slotModified()));
-  grid->addWidget(bs3Spinner, row++, col--);
-
   // indicator tab rows
   label = new QLabel(tr("Indicator Tab Rows"));
   grid->addWidget(label, row, col++);
@@ -430,8 +418,6 @@ void  Preferences::createMTPage()
   QGridLayout *grid = new QGridLayout; // two more cols as needed
   grid->setMargin(5);
   grid->setSpacing(5);
-  grid->setColumnStretch(2, 1); // middle spacing col
-  grid->setColumnStretch(5, 2); // outer right col
   vbox->addLayout(grid);
   
   vbox->insertStretch(-1, 1);
@@ -441,99 +427,69 @@ void  Preferences::createMTPage()
   QString s;
   Config config;
   
-  QLabel *label = new QLabel(tr("Quit"));
-  grid->addWidget(label, row, col++);
-
-  quitBtnCheck = new QCheckBox;
+  quitBtnCheck = new QCheckBox(tr("Quit"));
   config.getData(Config::ShowQuitBtn, s);
   quitBtnCheck->setChecked(s.toInt());
   connect(quitBtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
-  grid->addWidget(quitBtnCheck, row++, col--);
+  grid->addWidget(quitBtnCheck, row++, col);
 
-  label = new QLabel(tr("Preferences"));
-  grid->addWidget(label, row, col++);
-
-  prefBtnCheck = new QCheckBox;
+  prefBtnCheck = new QCheckBox(tr("Preferences"));
   config.getData(Config::ShowPrefBtn, s);
   prefBtnCheck->setChecked(s.toInt());
   connect(prefBtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
-  grid->addWidget(prefBtnCheck, row++, col--);
+  grid->addWidget(prefBtnCheck, row++, col);
 
-  label = new QLabel(tr("Side Panel"));
-  grid->addWidget(label, row, col++);
-
-  sidePanelBtnCheck = new QCheckBox;
+  sidePanelBtnCheck = new QCheckBox(tr("Side Panel"));
   config.getData(Config::ShowSidePanelBtn, s);
   sidePanelBtnCheck->setChecked(s.toInt());
   connect(sidePanelBtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
-  grid->addWidget(sidePanelBtnCheck, row++, col--);
+  grid->addWidget(sidePanelBtnCheck, row++, col);
 
-  label = new QLabel(tr("Grid"));
-  grid->addWidget(label, row, col++);
-
-  gridBtnCheck = new QCheckBox;
+  gridBtnCheck = new QCheckBox(tr("Grid"));
   config.getData(Config::ShowGridBtn, s);
   gridBtnCheck->setChecked(s.toInt());
   connect(gridBtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
-  grid->addWidget(gridBtnCheck, row++, col--);
+  grid->addWidget(gridBtnCheck, row++, col);
 
-  label = new QLabel(tr("Scale to Screen"));
-  grid->addWidget(label, row, col++);
-
-  scaleToScreenBtnCheck = new QCheckBox;
+  scaleToScreenBtnCheck = new QCheckBox(tr("Scale to Screen"));
   config.getData(Config::ShowScaleToScreenBtn, s);
   scaleToScreenBtnCheck->setChecked(s.toInt());
   connect(scaleToScreenBtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
-  grid->addWidget(scaleToScreenBtnCheck, row++, col--);
-
-  label = new QLabel(tr("CrossHair"));
-  grid->addWidget(label, row, col++);
-
-  crosshairBtnCheck = new QCheckBox;
-  config.getData(Config::ShowCrosshairBtn, s);
-  crosshairBtnCheck->setChecked(s.toInt());
-  connect(crosshairBtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
-  grid->addWidget(crosshairBtnCheck, row++, col--);
+  grid->addWidget(scaleToScreenBtnCheck, row++, col);
 
   // now fill a second col
   row = 0;
-  col = 2;
+  col = 1;
   
-  label = new QLabel(tr("Draw Mode"));
-  grid->addWidget(label, row, col++);
+  crosshairBtnCheck = new QCheckBox(tr("CrossHair"));
+  config.getData(Config::ShowCrosshairBtn, s);
+  crosshairBtnCheck->setChecked(s.toInt());
+  connect(crosshairBtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
+  grid->addWidget(crosshairBtnCheck, row++, col);
 
-  drawModeBtnCheck= new QCheckBox;
+  drawModeBtnCheck= new QCheckBox(tr("Draw Mode"));
   config.getData(Config::ShowDrawModeBtn, s);
   drawModeBtnCheck->setChecked(s.toInt());
   connect(drawModeBtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
-  grid->addWidget(drawModeBtnCheck, row++, col--);
+  grid->addWidget(drawModeBtnCheck, row++, col);
 
-  label = new QLabel(tr("New Indicator"));
-  grid->addWidget(label, row, col++);
-
-  newIndicatorBtnCheck = new QCheckBox;
+  newIndicatorBtnCheck = new QCheckBox(tr("New Indicator"));
   config.getData(Config::ShowNewIndicatorBtn, s);
   newIndicatorBtnCheck->setChecked(s.toInt());
   connect(newIndicatorBtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
-  grid->addWidget(newIndicatorBtnCheck, row++, col--);
+  grid->addWidget(newIndicatorBtnCheck, row++, col);
 
-  label = new QLabel(tr("Data Window"));
-  grid->addWidget(label, row, col++);
-
-  dataWindowBtnCheck = new QCheckBox;
+  dataWindowBtnCheck = new QCheckBox(tr("Data Window"));
   config.getData(Config::ShowDataWindowBtn, s);
   dataWindowBtnCheck->setChecked(s.toInt());
   connect(dataWindowBtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
-  grid->addWidget(dataWindowBtnCheck, row++, col--);
+  grid->addWidget(dataWindowBtnCheck, row++, col);
 
-  label = new QLabel(tr("Help"));
-  grid->addWidget(label, row, col++);
-
-  helpButtonCheck = new QCheckBox;
+  helpButtonCheck = new QCheckBox(tr("Help"));
   config.getData(Config::ShowHelpButton, s);
   helpButtonCheck->setChecked(s.toInt());
   connect(helpButtonCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
-  grid->addWidget(helpButtonCheck, row++, col--);
+  grid->addWidget(helpButtonCheck, row++, col);
 
   tabs->addTab(w, tr("MainToolbar"));
 }
@@ -550,7 +506,6 @@ void  Preferences::createCTPage()
   QGridLayout *grid = new QGridLayout;
   grid->setMargin(5);
   grid->setSpacing(5);
-  grid->setColumnStretch(1, 2);
   vbox->addLayout(grid);
   
   vbox->insertStretch(-1, 1);
@@ -560,104 +515,63 @@ void  Preferences::createCTPage()
   QString s;
   Config config;
 
-  QLabel *label = new QLabel(tr("Bar Length List"));
-  grid->addWidget(label, row, col++);
-
-  cmpsComboBoxCheck = new QCheckBox;
+  cmpsComboBoxCheck = new QCheckBox(tr("Bar Length List"));
   config.getData(Config::ShowCmpsComboBox, s);
   cmpsComboBoxCheck->setChecked(s.toInt());
   connect(cmpsComboBoxCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
-  grid->addWidget(cmpsComboBoxCheck, row++, col--);  
+  grid->addWidget(cmpsComboBoxCheck, row++, col);  
 
-  label = new QLabel(tr("Monthly Bars"));
-  grid->addWidget(label, row, col++);
-
-  cmpsMtyBtnCheck = new QCheckBox;
+  cmpsMtyBtnCheck = new QCheckBox(tr("Monthly Bars"));
   config.getData(Config::ShowCmpsMtyBtn, s);
   cmpsMtyBtnCheck->setChecked(s.toInt());
   connect(cmpsMtyBtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
-  grid->addWidget(cmpsMtyBtnCheck, row++, col--);
+  grid->addWidget(cmpsMtyBtnCheck, row++, col);
 
-  label = new QLabel(tr("Weekly Bars"));
-  grid->addWidget(label, row, col++);
-
-  cmpsWkyBtnCheck = new QCheckBox;
+  cmpsWkyBtnCheck = new QCheckBox(tr("Weekly Bars"));
   config.getData(Config::ShowCmpsWkyBtn, s);
   cmpsWkyBtnCheck->setChecked(s.toInt());
   connect(cmpsWkyBtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
-  grid->addWidget(cmpsWkyBtnCheck, row++, col--);
+  grid->addWidget(cmpsWkyBtnCheck, row++, col);
 
-  label = new QLabel(tr("Daily Bars"));
-  grid->addWidget(label, row, col++);
-
-  cmpsDayBtnCheck = new QCheckBox;
+  cmpsDayBtnCheck = new QCheckBox(tr("Daily Bars"));
   config.getData(Config::ShowCmpsDayBtn, s);
   cmpsDayBtnCheck->setChecked(s.toInt());
   connect(cmpsDayBtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
-  grid->addWidget(cmpsDayBtnCheck, row++, col--);
+  grid->addWidget(cmpsDayBtnCheck, row++, col);
 
-  label = new QLabel(tr("60 Minute Bars"));
-  grid->addWidget(label, row, col++);
-
-  cmps60BtnCheck = new QCheckBox;
+  cmps60BtnCheck = new QCheckBox(tr("60 Minute Bars"));
   config.getData(Config::ShowCmps60Btn, s);
   cmps60BtnCheck->setChecked(s.toInt());
   connect(cmps60BtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
-  grid->addWidget(cmps60BtnCheck, row++, col--);
+  grid->addWidget(cmps60BtnCheck, row++, col);
 
-  label = new QLabel(tr("15 Minute Bars"));
-  grid->addWidget(label, row, col++);
-
-  cmps15BtnCheck = new QCheckBox;
+  // now fill a second col
+  row = 0;
+  col = 1;
+  
+  cmps15BtnCheck = new QCheckBox(tr("15 Minute Bars"));
   config.getData(Config::ShowCmps15Btn, s);
   cmps15BtnCheck->setChecked(s.toInt());
   connect(cmps15BtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
-  grid->addWidget(cmps15BtnCheck, row++, col--);
+  grid->addWidget(cmps15BtnCheck, row++, col);
 
-  label = new QLabel(tr("5 Minute Bars"));
-  grid->addWidget(label, row, col++);
-
-  cmps5BtnCheck = new QCheckBox;
+  cmps5BtnCheck = new QCheckBox(tr("5 Minute Bars"));
   config.getData(Config::ShowCmps5Btn, s);
   cmps5BtnCheck->setChecked(s.toInt());
   connect(cmps5BtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
-  grid->addWidget(cmps5BtnCheck, row++, col--);
+  grid->addWidget(cmps5BtnCheck, row++, col);
 
-  label = new QLabel(tr("Bar Spacing"));
-  grid->addWidget(label, row, col++);
-
-  barSpSpinboxCheck = new QCheckBox;
-  config.getData(Config::ShowBarSpSpinbox, s);
-  barSpSpinboxCheck->setChecked(s.toInt());
-  connect(barSpSpinboxCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
-  grid->addWidget(barSpSpinboxCheck, row++, col--);
-
-  label = new QLabel(tr("Bars To Load"));
-  grid->addWidget(label, row, col++);
-
-  barsToLoadFieldCheck = new QCheckBox;
+  barsToLoadFieldCheck = new QCheckBox(tr("Bars To Load"));
   config.getData(Config::ShowBarsToLoadField, s);
   barsToLoadFieldCheck->setChecked(s.toInt());
   connect(barsToLoadFieldCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
-  grid->addWidget(barsToLoadFieldCheck, row++, col--);
+  grid->addWidget(barsToLoadFieldCheck, row++, col);
 
-  label = new QLabel(tr("Chart Slider"));
-  grid->addWidget(label, row, col++);
-
-  sliderCheck = new QCheckBox;
-  config.getData(Config::ShowSlider, s);
-  sliderCheck->setChecked(s.toInt());
-  connect(sliderCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
-  grid->addWidget(sliderCheck, row++, col--);
-
-  label = new QLabel(tr("Recent charts"));
-  grid->addWidget(label, row, col++);
-
-  recentComboBoxCheck = new QCheckBox;
+  recentComboBoxCheck = new QCheckBox(tr("Recent charts"));
   config.getData(Config::ShowRecentCharts, s);
   recentComboBoxCheck->setChecked(s.toInt());
   connect(recentComboBoxCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
-  grid->addWidget(recentComboBoxCheck, row++, col--);  
+  grid->addWidget(recentComboBoxCheck, row++, col);  
 
   tabs->addTab(w, tr("ChartToolbar"));
 }
@@ -678,7 +592,6 @@ void Preferences::slotSave ()
   
   config.setData(Config::PSButton1, bs1Spinner->value());
   config.setData(Config::PSButton2, bs2Spinner->value());
-  config.setData(Config::PSButton3, bs3Spinner->value());
   config.setData(Config::IndicatorTabRows, tabRows->value());
   s = indicatorScriptDefault->text();
   config.setData(Config::IndicatorScriptDefault, s);
@@ -739,9 +652,7 @@ void Preferences::slotSave ()
   config.setData(Config::ShowHelpButton, helpButtonCheck->isChecked());
 
   // chart tool bar settings
-  config.setData(Config::ShowSlider, sliderCheck->isChecked());
   config.setData(Config::ShowBarsToLoadField, barsToLoadFieldCheck->isChecked());
-  config.setData(Config::ShowBarSpSpinbox, barSpSpinboxCheck->isChecked());
   config.setData(Config::ShowCmps60Btn, cmps60BtnCheck->isChecked());
   config.setData(Config::ShowCmps15Btn, cmps15BtnCheck->isChecked());
   config.setData(Config::ShowCmps5Btn, cmps5BtnCheck->isChecked());

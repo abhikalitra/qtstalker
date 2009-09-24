@@ -83,13 +83,13 @@ class QtstalkerApp : public QMainWindow
       Compression60,
       Compression15,
       Compression5,
-      PixelSpace,
       PS1,
       PS2,
-      PS3,
       BarCount,
       Slider,
-      RecentCharts
+      RecentCharts,
+      ZoomIn,
+      ZoomOut
     };
 
     QtstalkerApp (QString);
@@ -116,7 +116,7 @@ class QtstalkerApp : public QMainWindow
     void slotNewIndicator (QString);
     void slotDeleteIndicator (QString);
     void slotBarLengthChanged (int);
-    void slotPixelspaceChanged (int);
+//    void slotPixelspaceChanged (int);
     void slotChartUpdated ();
     void slotStatusMessage (QString);
     void slotUpdateInfo (Setting *);
@@ -131,17 +131,19 @@ class QtstalkerApp : public QMainWindow
     void slotHideNav (bool d);
     void ps1ButtonClicked ();
     void ps2ButtonClicked ();
-    void ps3ButtonClicked ();
     void cmpsBtnMClicked();
     void cmpsBtnWClicked();
     void cmpsBtnDClicked();
     void cmpsBtn60Clicked();
     void cmpsBtn15Clicked();
     void cmpsBtn5Clicked();
-    int setSliderStart (int width, int records);
-    void setPixelspace (int min, int d);
     void slotAddRecentChart (QString);
     void slotScriptDone ();
+
+    void slotZoomIn ();
+    void slotZoomOut ();
+    void slotPlotZoom (int, int);
+    void resetZoomSettings ();
     
   private:
     QSplitter *split;
@@ -164,7 +166,6 @@ class QtstalkerApp : public QMainWindow
     QStringList lastIndicatorUsed;
     QHash<MenuAction, QAction*> actionList;
     QComboBox *compressionCombo;
-    QSpinBox *pixelspace;
     QSpinBox *barCount;
     QSlider *slider;
     QComboBox *recentCharts;
@@ -172,6 +173,9 @@ class QtstalkerApp : public QMainWindow
     ExScript *script;
     QStringList indicatorList;
     int ilPos;
+
+    QList<Setting> zoomList;
+    int zoomPos;
 };
 
 #endif

@@ -71,7 +71,7 @@ class Config
       DbAllSymbols, // the sql command to get all symbols in db
       PSButton1, // toolbar bar spacing button 1
       PSButton2, // toolbar bar spacing button 2
-      PSButton3, // toolbar bar spacing button 3
+      Unused8, // ******** UNUSED **************
       ShowSidePanel, // side panel flag
       ShowQuitBtn, // toolbar button flag
       ShowPrefBtn,  // toolbar button flag
@@ -84,7 +84,7 @@ class Config
       ShowNewIndicatorBtn, // toolbar button flag
       ShowDataWindowBtn, // toolbar button flag
       ShowHelpButton, // toolbar button flag
-      ShowSlider, // toolbar button flag
+      Unused7, // ********** UNUSED *************
       ShowBarsToLoadField,  // toolbar button flag
       ShowBarSpSpinbox, // toolbar button flag
       ShowCmps5Btn, // toolbar button flag

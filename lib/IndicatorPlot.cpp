@@ -89,8 +89,6 @@ IndicatorPlot::IndicatorPlot (QWidget *w) : QWidget(w)
   setMouseTracking(TRUE);
 
   setFocusPolicy(Qt::ClickFocus);
-
-  rubberBand = new QRubberBand(QRubberBand::Rectangle, this);
 }
 
 IndicatorPlot::~IndicatorPlot ()
@@ -336,7 +334,7 @@ void IndicatorPlot::mouseMoveEvent (QMouseEvent *event)
   // ignore moves above the top of the chart - we get draw errors if we don't
   if (! data || event->y() <= 0)
     return;
-  
+
   if (mouseFlag == RubberBand)
   {
     rubberBand->setGeometry(QRect(mouseOrigin, event->pos()).normalized());
@@ -372,6 +370,7 @@ void IndicatorPlot::mouseDoubleClickEvent (QMouseEvent *event)
 
   if (mouseFlag == None && drawMode == FALSE)
   {
+    rubberBand = new QRubberBand(QRubberBand::Rectangle, this);
     mouseOrigin = event->pos();
     rubberBand->setGeometry(QRect(mouseOrigin, QSize()));
     rubberBand->show();
@@ -388,13 +387,23 @@ void IndicatorPlot::mouseDoubleClickEvent (QMouseEvent *event)
 
 void IndicatorPlot::mouseReleaseEvent(QMouseEvent *)
 {
-  if (mouseFlag == RubberBand)
-  {
-    rubberBand->hide();
-    mouseFlag = None;
+  if (mouseFlag != RubberBand)
+    return;
 
-   // FIXME calculate new pixel spacing and position here
-  }
+  if (rubberBand->width() < pixelspace)
+    return;
+
+  // calculate new pixel spacing and position here
+  int x = convertXToDataIndex(mouseOrigin.x());
+
+  int ti = rubberBand->width() / pixelspace;
+  ti = this->width() / ti;
+
+  delete rubberBand;
+  mouseFlag = None;
+  if (ti < pixelspace)
+    return;
+  emit signalPixelspaceChanged(x, ti);
 }
 
 void IndicatorPlot::contextMenuEvent (QContextMenuEvent *)
@@ -1322,6 +1331,24 @@ void IndicatorPlot::drawCandle ()
   }
 
   painter.end();
+}
+
+void IndicatorPlot::drawRubberBand (QRect &r)
+{
+  // remove the old band by refreshing with pixmap
+//  QPainter painter(this);
+//  painter.drawPixmap(0, 0, buffer);
+
+  // draw rubber band on widget
+  QPainter painter;
+  painter.begin(&buffer);
+
+  painter.setPen(QColor("red"));
+  painter.drawRect(r);
+
+  painter.end();
+
+  update();
 }
 
 //*************************************************************************

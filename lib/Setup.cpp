@@ -315,14 +315,6 @@ void Setup::setupConfigDefaults ()
     setConfig(k, d);
   }
 
-  k = QString::number(Config::PSButton3);
-  getConfig(k, d);
-  if (d.isEmpty())
-  {
-    d = "12";
-    setConfig(k, d);
-  }
-
   k = QString::number(Config::ShowSidePanel);
   getConfig(k, d);
   if (d.isEmpty())
@@ -404,14 +396,6 @@ void Setup::setupConfigDefaults ()
   }
 
   k = QString::number(Config::ShowHelpButton);
-  getConfig(k, d);
-  if (d.isEmpty())
-  {
-    d = "1";
-    setConfig(k, d);
-  }
-
-  k = QString::number(Config::ShowSlider);
   getConfig(k, d);
   if (d.isEmpty())
   {

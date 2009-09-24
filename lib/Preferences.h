@@ -74,7 +74,6 @@ class Preferences : public QDialog
     // main page
     QSpinBox *bs1Spinner;
     QSpinBox *bs2Spinner;
-    QSpinBox *bs3Spinner;
     QSpinBox *tabRows;
     QLineEdit *indicatorScriptDefault;
     
@@ -115,9 +114,7 @@ class Preferences : public QDialog
     QCheckBox *helpButtonCheck;
 
     // on ChartToolbar
-    QCheckBox *sliderCheck;
     QCheckBox *barsToLoadFieldCheck;
-    QCheckBox *barSpSpinboxCheck;
     QCheckBox *cmps60BtnCheck;
     QCheckBox *cmps15BtnCheck;
     QCheckBox *cmps5BtnCheck;

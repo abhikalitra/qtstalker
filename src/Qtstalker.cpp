@@ -56,10 +56,13 @@
 #include "../pics/qtstalker.xpm"
 #include "../pics/crosshair.xpm"
 
+#include "../pics/zoomin.xpm"
+#include "../pics/zoomout.xpm"
 
 
 QtstalkerApp::QtstalkerApp(QString session)
 {
+  zoomPos = -1;
   recordList = 0;
   setWindowIcon(QIcon(qtstalker));
 
@@ -79,10 +82,6 @@ QtstalkerApp::QtstalkerApp(QString session)
   slider->setEnabled(FALSE);
   slider->setToolTip(tr("Scroll Chart"));
   slider->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding));
-//  action = toolbar2->addWidget(slider);
-//  actionList.insert(Slider, action);
-//  config.getData(Config::ShowSlider, ts);
-//  action->setVisible(ts.toInt());
   statusbar->addPermanentWidget(slider, 0);
   
   baseWidget = new QWidget;
@@ -385,7 +384,6 @@ void QtstalkerApp::createToolBars ()
   // construct the chart toolbar
   QToolBar *toolbar2 = addToolBar("chartToolBar");
 
-  int minPixelspace = 2;
   QString ts; // temporary string
   BarData bd(ts);
   QStringList l;
@@ -472,19 +470,41 @@ void QtstalkerApp::createToolBars ()
 
   toolbar2->addSeparator();
 
-  // pixelspace 
-  pixelspace = new QSpinBox;
-  pixelspace->setRange(minPixelspace, 99);
-  config.getData(Config::Pixelspace, ts);
-  pixelspace->setValue(ts.toInt());
-  connect (pixelspace, SIGNAL(valueChanged(int)), this, SLOT(slotPixelspaceChanged(int)));
-  pixelspace->setToolTip(tr("Bar Spacing"));
 
-  action = toolbar2->addWidget(pixelspace);
-  actionList.insert(PixelSpace, action);
-  config.getData(Config::ShowBarSpSpinbox, ts);
-  action->setVisible(ts.toInt());
+  int ti;
+  config.getData(Config::Pixelspace, ti);
+  Setting set;
+  set.setData(0, 0); // save index, 0 for now
+  set.setData(1, ti); // save pixelspace
+  zoomList.append(set);
+  zoomPos = 0;
+
+  // zoom in button  
+  b = new QToolButton;
+  connect(b, SIGNAL(clicked()), this, SLOT(slotZoomIn()));
+  action = toolbar2->addWidget(b);
+  actionList.insert(ZoomIn, action);
+  b->setToolTip(tr("Zoom In"));
+  b->setIcon(QIcon(zoomin_xpm));
+  action->setEnabled(FALSE);
+  action->setStatusTip(tr("Zoom In"));
   
+  // zoom out button  
+  b = new QToolButton;
+  connect(b, SIGNAL(clicked()), this, SLOT(slotZoomOut()));
+  action = toolbar2->addWidget(b);
+  actionList.insert(ZoomOut, action);
+  b->setToolTip(tr("Zoom Out"));
+  b->setIcon(QIcon(zoomout_xpm));
+  action->setEnabled(FALSE);
+  action->setStatusTip(tr("Zoom Out"));
+
+
+//  toolbar2->addAction(actionList.value(ZoomIn));
+//  toolbar2->addAction(actionList.value(ZoomOut));
+
+
+
   // PS1 button  
   b = new QToolButton;
   connect(b, SIGNAL(clicked()), this, SLOT(ps1ButtonClicked()));
@@ -505,15 +525,6 @@ void QtstalkerApp::createToolBars ()
   b->setToolTip(tr("Set Bar Spacing to ") + ts);
   b->setText(ts);
   
-  // PS3 button  
-  b = new QToolButton;
-  connect(b, SIGNAL(clicked()), this, SLOT(ps3ButtonClicked()));
-
-  action = toolbar2->addWidget(b);
-  actionList.insert(PS3, action);
-  config.getData(Config::PSButton3, ts);
-  b->setToolTip(tr("Set Bar Spacing to ") + ts);
-  b->setText(ts);
   
   toolbar2->addSeparator();
 
@@ -608,8 +619,8 @@ void QtstalkerApp::slotQuit()
   ts = QString::number(compressionCombo->currentIndex());
   config.setData(Config::BarLength, ts);
 
-  ts = pixelspace->text();
-  config.setData(Config::Pixelspace, ts);
+  Setting set = zoomList[0];
+  config.setData(Config::Pixelspace, set.getInt(1)); // save base zoom amount
 
   // save recent charts combo
   l.clear();
@@ -686,13 +697,12 @@ void QtstalkerApp::loadChart (QString d)
   Config config;
   config.setData(Config::CurrentChart, chartPath);
 
+  // create and populate the quote data
   if (recordList)
     delete recordList;
   recordList = new BarData(chartPath);
   recordList->setBarLength((BarData::BarLength) compressionCombo->currentIndex());
   recordList->setBarsRequested(barCount->value());
-
-//  slotStatusMessage(tr("Loading chart..."));
 
   DataBase db;
   db.getChart(recordList);
@@ -836,13 +846,15 @@ void QtstalkerApp::slotEnableIndicator (QString name)
   slotScriptDone();
 }
 
+/*
 void QtstalkerApp::slotPixelspaceChanged (int d)
 {
+  setSliderStart();
   emit signalPixelspace(d);
   emit signalIndex(slider->value());
-  setSliderStart();
   slotDrawPlots();
 }
+*/
 
 void QtstalkerApp::addIndicatorButton (QString d)
 {
@@ -895,7 +907,10 @@ void QtstalkerApp::addIndicatorButton (QString d)
 
   plot->setGridFlag(actionList.value(Grid)->isChecked());
   plot->setScaleToScreen(actionList.value(ScaleToScreen)->isChecked());
-  plot->setPixelspace(pixelspace->value());
+
+  Setting set = zoomList[zoomPos];
+  plot->setPixelspace(set.getInt(1));
+
   plot->setIndex(slider->value());
   plot->setInterval((BarData::BarLength) compressionCombo->currentIndex());
   QString b;
@@ -905,6 +920,8 @@ void QtstalkerApp::addIndicatorButton (QString d)
 
   IndicatorPlot *indy = plot->getIndicatorPlot();
   indy->setIndicator(d);
+
+  connect(indy, SIGNAL(signalPixelspaceChanged(int, int)), this, SLOT(slotPlotZoom(int, int)));
     
   connect(indy, SIGNAL(statusMessage(QString)), this, SLOT(slotStatusMessage(QString)));
   connect(indy, SIGNAL(infoMessage(Setting *)), this, SLOT(slotUpdateInfo(Setting *)));
@@ -1058,32 +1075,6 @@ void QtstalkerApp::slotCrosshairsStatus (bool status)
   emit signalCrosshairsStatus(status);
 }
 
-void QtstalkerApp::setSliderStart ()
-{
-  if (! recordList)
-    return;
-
-  int loop;
-  int rc = 0;
-  for (loop = 0; loop < (int) tabList.count(); loop++)
-  {
-    QTabWidget *tw = tabList.at(loop);
-    if (! tw->isHidden())
-    {
-      Plot *plot = plotList[tw->tabText(tw->currentIndex())];
-      if (! plot)
-        return;
-      else
-      {
-        rc = setSliderStart(plot->getWidth(), recordList->count());
-        break;
-      }
-    }
-  }
-
-  emit signalIndex(rc);
-}
-
 void QtstalkerApp::slotDrawPlots ()
 {
   int loop;
@@ -1135,7 +1126,13 @@ void QtstalkerApp::slotScriptDone ()
   if (ilPos >= indicatorList.count())
   {
     // we are done scripting, finish up now 
+    resetZoomSettings();
     setSliderStart();
+
+    Setting set = zoomList[0];
+    emit signalPixelspace(set.getInt(1));
+
+    emit signalIndex(slider->value());
     slotDrawPlots();
     setWindowTitle(getWindowCaption());
     slotStatusMessage(QString());
@@ -1151,63 +1148,80 @@ void QtstalkerApp::slotScriptDone ()
   script->calculate(s);
 }
 
-
 /**********************************************************************/
 /************************ TOOLBAR FUNCTIONS ***************************/
 /**********************************************************************/
 
-void QtstalkerApp::setPixelspace (int min, int d)
+void QtstalkerApp::setSliderStart ()
 {
-  pixelspace->blockSignals(TRUE);
-  pixelspace->setRange(min, 99);
-  pixelspace->setValue(d);
-  pixelspace->blockSignals(FALSE);
-}
+  QTabWidget *tw = tabList.at(0);
+  Plot *plot = plotList[tw->tabText(tw->currentIndex())];
+  if (! plot)
+    return;
 
-int QtstalkerApp::setSliderStart (int width, int records)
-{
-  int page = width / pixelspace->value();
-  int max = records - page;
+  Setting set = zoomList[0];
+  int page = plot->getWidth() / set.getInt(1);
+  int max = recordList->count() - page;
   if (max < 0)
     max = 0;
   slider->blockSignals(TRUE);
-  slider->setRange(0, records - 1);
-  int rc = 0;
+  slider->setRange(0, recordList->count() - 1);
   
-  if ((int) records < page)
+  if (recordList->count() < page)
+  {
     slider->setValue(0);
+    set.setData(0, 0);
+  }
   else
   {
     slider->setValue(max + 1);
-    rc = max + 1;
+    set.setData(0, max + 1);
   }
   slider->blockSignals(FALSE);
-  
-  return rc;
+
+  zoomList[0] = set;
 }
 
 void QtstalkerApp::ps1ButtonClicked ()
 {
-  QString ts;
+  int ti;
   Config config;
-  config.getData(Config::PSButton1, ts);
-  pixelspace->setValue(ts.toInt());
+  config.getData(Config::PSButton1, ti);
+
+  Setting set = zoomList[0];
+  set.setData(1, ti);
+  zoomList[0] = set;
+
+  setSliderStart();
+  emit signalPixelspace(ti);
+  emit signalIndex(slider->value());
+  slotDrawPlots();
+
+  zoomPos = 0;
+  if (zoomList.count() > 1)
+    actionList.value(ZoomIn)->setEnabled(TRUE);
+  actionList.value(ZoomOut)->setEnabled(FALSE);
 }
 
 void QtstalkerApp::ps2ButtonClicked ()
 {
-  QString ts;
+  int ti;
   Config config;
-  config.getData(Config::PSButton2, ts);
-  pixelspace->setValue(ts.toInt());
-}
+  config.getData(Config::PSButton2, ti);
 
-void QtstalkerApp::ps3ButtonClicked ()
-{
-  QString ts;
-  Config config;
-  config.getData(Config::PSButton3, ts);
-  pixelspace->setValue(ts.toInt());
+  Setting set = zoomList[0];
+  set.setData(1, ti);
+  zoomList[0] = set;
+
+  setSliderStart();
+  emit signalPixelspace(ti);
+  emit signalIndex(slider->value());
+  slotDrawPlots();
+
+  zoomPos = 0;
+  if (zoomList.count() > 1)
+    actionList.value(ZoomIn)->setEnabled(TRUE);
+  actionList.value(ZoomOut)->setEnabled(FALSE);
 }
 
 void QtstalkerApp::cmpsBtnMClicked()
@@ -1253,4 +1267,68 @@ void QtstalkerApp::slotAddRecentChart (QString d)
 
   recentCharts->addItem(d);
 }
+
+void QtstalkerApp::slotZoomIn ()
+{
+  zoomPos++;
+  if (zoomPos == zoomList.count() - 1)
+  {
+    actionList.value(ZoomIn)->setEnabled(FALSE);
+    actionList.value(ZoomOut)->setEnabled(TRUE);
+  }
+
+  Setting set = zoomList[zoomPos];
+  emit signalPixelspace(set.getInt(1));
+  emit signalIndex(set.getInt(0));
+  slider->setValue(set.getInt(0));
+  slotDrawPlots();
+}
+
+void QtstalkerApp::slotZoomOut ()
+{
+  zoomPos--;
+  if (zoomPos == 0)
+  {
+    actionList.value(ZoomIn)->setEnabled(TRUE);
+    actionList.value(ZoomOut)->setEnabled(FALSE);
+  }
+
+  Setting set = zoomList[zoomPos];
+  emit signalPixelspace(set.getInt(1));
+  emit signalIndex(set.getInt(0));
+  slider->setValue(set.getInt(0));
+  slotDrawPlots();
+}
+
+void QtstalkerApp::slotPlotZoom (int i, int p)
+{
+  Setting set;
+  set.setData(0, i);
+  set.setData(1, p);
+  zoomList.append(set);
+
+  zoomPos++;
+
+  actionList.value(ZoomOut)->setEnabled(TRUE);
+
+  emit signalPixelspace(p);
+  emit signalIndex(i);
+  slider->setValue(i);
+  slotDrawPlots();
+}
+
+void QtstalkerApp::resetZoomSettings ()
+{
+  // clear the zoomList, leave first item as starting base
+  int loop;
+  for (loop = 1; loop < zoomList.count(); loop++)
+    zoomList.removeAt(loop);
+
+  zoomPos = 0;
+
+  actionList.value(ZoomIn)->setEnabled(FALSE);
+  actionList.value(ZoomOut)->setEnabled(FALSE);
+}
+
+
 
