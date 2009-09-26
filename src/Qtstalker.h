@@ -116,7 +116,6 @@ class QtstalkerApp : public QMainWindow
     void slotNewIndicator (QString);
     void slotDeleteIndicator (QString);
     void slotBarLengthChanged (int);
-//    void slotPixelspaceChanged (int);
     void slotChartUpdated ();
     void slotStatusMessage (QString);
     void slotUpdateInfo (Setting *);

@@ -114,14 +114,12 @@ class Preferences : public QDialog
     QCheckBox *helpButtonCheck;
 
     // on ChartToolbar
-    QCheckBox *barsToLoadFieldCheck;
     QCheckBox *cmps60BtnCheck;
     QCheckBox *cmps15BtnCheck;
     QCheckBox *cmps5BtnCheck;
     QCheckBox *cmpsDayBtnCheck;
     QCheckBox *cmpsWkyBtnCheck;
     QCheckBox *cmpsMtyBtnCheck;
-    QCheckBox *cmpsComboBoxCheck;
     QCheckBox *recentComboBoxCheck;
 };
 

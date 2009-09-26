@@ -94,6 +94,7 @@ void Preferences::createGeneralPage ()
   grid->addWidget(label, row, col++);
   
   bs1Spinner = new QSpinBox;
+  bs1Spinner->setToolTip(tr("Number of screen pixels between bars.\n6 is good for bar charts."));
   bs1Spinner->setRange(2, 99);
   config.getData(Config::PSButton1, s);
   if (! s.isEmpty())
@@ -106,6 +107,7 @@ void Preferences::createGeneralPage ()
   grid->addWidget(label, row, col++);
   
   bs2Spinner = new QSpinBox;
+  bs2Spinner->setToolTip(tr("Number of screen pixels between bars.\n8 is good for candle charts"));
   bs2Spinner->setRange(2, 99);
   config.getData(Config::PSButton2, s);
   if (! s.isEmpty())
@@ -118,6 +120,7 @@ void Preferences::createGeneralPage ()
   grid->addWidget(label, row, col++);
   
   tabRows = new QSpinBox;
+  tabRows->setToolTip(tr("Maximum number of tabbed chart rows."));
   tabRows->setRange(1, 3);
   tabRows->setValue(2);
   config.getData(Config::IndicatorTabRows, s);
@@ -131,6 +134,7 @@ void Preferences::createGeneralPage ()
   grid->addWidget(label, row, col++);
   
   indicatorScriptDefault = new QLineEdit;
+  indicatorScriptDefault->setToolTip(tr("Default command for indicators. Just append indicator name."));
   config.getData(Config::IndicatorScriptDefault, s);
   indicatorScriptDefault->setText(s);
   connect(indicatorScriptDefault, SIGNAL(textChanged(const QString &)), this, SLOT(slotModified()));
@@ -167,6 +171,7 @@ void Preferences::createDatabasePage ()
   QStringList l;
   l << "QSQLITE" << "QSQLITE2" << "QMYSQL" << "QOCI" << "QODBC" << "QPSQL" << "QTDS" << "QDB2" << "QIBASE";
   dbDriver = new QComboBox;
+  dbDriver->setToolTip(tr("Qt4 SQL driver required for database."));
   dbDriver->addItems(l);
   grid->addWidget(dbDriver, row++, col--);
   QString s;
@@ -180,6 +185,7 @@ void Preferences::createDatabasePage ()
   grid->addWidget(label, row, col++);
 
   dbHostName = new QLineEdit;
+  dbHostName->setToolTip(tr("Network hostname of database. If local, use localhost"));
   grid->addWidget(dbHostName, row++, col--);
   config.getData(Config::DbHostName, s);
   if (s.length())
@@ -191,6 +197,7 @@ void Preferences::createDatabasePage ()
   grid->addWidget(label, row, col++);
 
   dbName = new QLineEdit;
+  dbName->setToolTip(tr("The database name."));
   grid->addWidget(dbName, row++, col--);
   config.getData(Config::DbName, s);
   if (s.length())
@@ -202,6 +209,7 @@ void Preferences::createDatabasePage ()
   grid->addWidget(label, row, col++);
 
   dbUserName = new QLineEdit;
+  dbUserName->setToolTip(tr("The database user name."));
   grid->addWidget(dbUserName, row++, col--);
   config.getData(Config::DbUserName, s);
   if (s.length())
@@ -213,6 +221,7 @@ void Preferences::createDatabasePage ()
   grid->addWidget(label, row, col++);
 
   dbPassword = new QLineEdit;
+  dbPassword->setToolTip(tr("The database user password."));
   dbPassword->setEchoMode(QLineEdit::Password);
   grid->addWidget(dbPassword, row++, col--);
   config.getData(Config::DbPassword, s);
@@ -250,6 +259,7 @@ void Preferences::createSQLPage ()
   grid->addWidget(label, row, col++);
 
   dbAllSymbols = new QLineEdit;
+  dbAllSymbols->setToolTip(tr("The SQL command to list all symbols in the database."));
   grid->addWidget(dbAllSymbols, row++, col--);
   config.getData(Config::DbAllSymbols, s);
   if (s.length())
@@ -261,6 +271,7 @@ void Preferences::createSQLPage ()
   grid->addWidget(label, row, col++);
 
   dbSearchSymbols = new QLineEdit;
+  dbSearchSymbols->setToolTip(tr("The SQL command to search for specific symbol(s) in the database.\n% is used for globbing."));
   grid->addWidget(dbSearchSymbols, row++, col--);
   config.getData(Config::DbSearchSymbols, s);
   if (s.length())
@@ -272,6 +283,7 @@ void Preferences::createSQLPage ()
   grid->addWidget(label, row, col++);
 
   dbFirstDate = new QLineEdit;
+  dbFirstDate->setToolTip(tr("The SQL command to return the earliest date for $symbol.\n$symbol is the symbol name."));
   grid->addWidget(dbFirstDate, row++, col--);
   config.getData(Config::DbFirstDate, s);
   if (s.length())
@@ -283,6 +295,7 @@ void Preferences::createSQLPage ()
   grid->addWidget(label, row, col++);
 
   dbLastDate = new QLineEdit;
+  dbLastDate->setToolTip(tr("The SQL command to return the most recent date for $symbol.\n$symbol is the symbol name."));
   grid->addWidget(dbLastDate, row++, col--);
   config.getData(Config::DbLastDate, s);
   if (s.length())
@@ -294,6 +307,7 @@ void Preferences::createSQLPage ()
   grid->addWidget(label, row, col++);
 
   dbGetSymbol = new QLineEdit;
+  dbGetSymbol->setToolTip(tr("The SQL command to return quotes.\n$symbol is the symbol name.\n$sd is the first date.\n$ed is the last date."));
   grid->addWidget(dbGetSymbol, row++, col--);
   config.getData(Config::DbGetSymbol, s);
   if (s.length())
@@ -330,6 +344,7 @@ void Preferences::createColorPage ()
   
   QColor color;
   backgroundColorButton = new ColorButton(w, color);
+  backgroundColorButton->setToolTip(tr("Background color for charts."));
   grid->addWidget(backgroundColorButton, row++, col--);
   config.getData(Config::BackgroundColor, color);
   backgroundColorButton->setColor(color);
@@ -340,6 +355,7 @@ void Preferences::createColorPage ()
   grid->addWidget(label, row, col++);
   
   borderColorButton = new ColorButton(w, color);
+  borderColorButton->setToolTip(tr("Border line color for charts. Used for seperators, ticks etc."));
   grid->addWidget(borderColorButton, row++, col--);
   config.getData(Config::BorderColor, color);
   borderColorButton->setColor(color);
@@ -350,6 +366,7 @@ void Preferences::createColorPage ()
   grid->addWidget(label, row, col++);
   
   gridColorButton = new ColorButton(w, color);
+  gridColorButton->setToolTip(tr("Grid color for charts."));
   grid->addWidget(gridColorButton, row++, col--);
   config.getData(Config::GridColor, color);
   gridColorButton->setColor(color);
@@ -388,6 +405,7 @@ void Preferences::createFontPage ()
 
   QFont font;  
   plotFontButton = new FontButton(w, font);
+  plotFontButton->setToolTip(tr("Font used for text that appears on the chart."));
   grid->addWidget(plotFontButton, row++, col--);
   config.getData(Config::PlotFont, font);
   plotFontButton->setFont(font);
@@ -398,6 +416,7 @@ void Preferences::createFontPage ()
   grid->addWidget(label, row, col++);
   
   appFontButton = new FontButton(w, font);
+  appFontButton->setToolTip(tr("Font used for everything but charts."));
   grid->addWidget(appFontButton, row++, col--);
   config.getData(Config::AppFont, font);
   appFontButton->setFont(font);
@@ -428,30 +447,35 @@ void  Preferences::createMTPage()
   Config config;
   
   quitBtnCheck = new QCheckBox(tr("Quit"));
+  quitBtnCheck->setToolTip(tr("Select if you want the Quit button to appear on the toolbar."));
   config.getData(Config::ShowQuitBtn, s);
   quitBtnCheck->setChecked(s.toInt());
   connect(quitBtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
   grid->addWidget(quitBtnCheck, row++, col);
 
   prefBtnCheck = new QCheckBox(tr("Preferences"));
+  prefBtnCheck->setToolTip(tr("Select if you want the Preferences button to appear on the toolbar."));
   config.getData(Config::ShowPrefBtn, s);
   prefBtnCheck->setChecked(s.toInt());
   connect(prefBtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
   grid->addWidget(prefBtnCheck, row++, col);
 
   sidePanelBtnCheck = new QCheckBox(tr("Side Panel"));
+  sidePanelBtnCheck->setToolTip(tr("Select if you want the Side Panel button to appear on the toolbar."));
   config.getData(Config::ShowSidePanelBtn, s);
   sidePanelBtnCheck->setChecked(s.toInt());
   connect(sidePanelBtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
   grid->addWidget(sidePanelBtnCheck, row++, col);
 
   gridBtnCheck = new QCheckBox(tr("Grid"));
+  gridBtnCheck->setToolTip(tr("Select if you want the Grid button to appear on the toolbar."));
   config.getData(Config::ShowGridBtn, s);
   gridBtnCheck->setChecked(s.toInt());
   connect(gridBtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
   grid->addWidget(gridBtnCheck, row++, col);
 
   scaleToScreenBtnCheck = new QCheckBox(tr("Scale to Screen"));
+  scaleToScreenBtnCheck->setToolTip(tr("Select if you want the Scale to Screen button to appear on the toolbar."));
   config.getData(Config::ShowScaleToScreenBtn, s);
   scaleToScreenBtnCheck->setChecked(s.toInt());
   connect(scaleToScreenBtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
@@ -462,30 +486,35 @@ void  Preferences::createMTPage()
   col = 1;
   
   crosshairBtnCheck = new QCheckBox(tr("CrossHair"));
+  crosshairBtnCheck->setToolTip(tr("Select if you want the Crosshair button to appear on the toolbar."));
   config.getData(Config::ShowCrosshairBtn, s);
   crosshairBtnCheck->setChecked(s.toInt());
   connect(crosshairBtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
   grid->addWidget(crosshairBtnCheck, row++, col);
 
   drawModeBtnCheck= new QCheckBox(tr("Draw Mode"));
+  drawModeBtnCheck->setToolTip(tr("Select if you want the Draw Mode button to appear on the toolbar."));
   config.getData(Config::ShowDrawModeBtn, s);
   drawModeBtnCheck->setChecked(s.toInt());
   connect(drawModeBtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
   grid->addWidget(drawModeBtnCheck, row++, col);
 
   newIndicatorBtnCheck = new QCheckBox(tr("New Indicator"));
+  newIndicatorBtnCheck->setToolTip(tr("Select if you want the New Indicator button to appear on the toolbar."));
   config.getData(Config::ShowNewIndicatorBtn, s);
   newIndicatorBtnCheck->setChecked(s.toInt());
   connect(newIndicatorBtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
   grid->addWidget(newIndicatorBtnCheck, row++, col);
 
   dataWindowBtnCheck = new QCheckBox(tr("Data Window"));
+  dataWindowBtnCheck->setToolTip(tr("Select if you want the Data Window button to appear on the toolbar."));
   config.getData(Config::ShowDataWindowBtn, s);
   dataWindowBtnCheck->setChecked(s.toInt());
   connect(dataWindowBtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
   grid->addWidget(dataWindowBtnCheck, row++, col);
 
   helpButtonCheck = new QCheckBox(tr("Help"));
+  helpButtonCheck->setToolTip(tr("Select if you want the Help button to appear on the toolbar."));
   config.getData(Config::ShowHelpButton, s);
   helpButtonCheck->setChecked(s.toInt());
   connect(helpButtonCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
@@ -515,59 +544,54 @@ void  Preferences::createCTPage()
   QString s;
   Config config;
 
-  cmpsComboBoxCheck = new QCheckBox(tr("Bar Length List"));
-  config.getData(Config::ShowCmpsComboBox, s);
-  cmpsComboBoxCheck->setChecked(s.toInt());
-  connect(cmpsComboBoxCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
-  grid->addWidget(cmpsComboBoxCheck, row++, col);  
-
   cmpsMtyBtnCheck = new QCheckBox(tr("Monthly Bars"));
+  cmpsMtyBtnCheck->setToolTip(tr("Select if you want the Monthly Bars button to appear on the toolbar."));
   config.getData(Config::ShowCmpsMtyBtn, s);
   cmpsMtyBtnCheck->setChecked(s.toInt());
   connect(cmpsMtyBtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
   grid->addWidget(cmpsMtyBtnCheck, row++, col);
 
   cmpsWkyBtnCheck = new QCheckBox(tr("Weekly Bars"));
+  cmpsWkyBtnCheck->setToolTip(tr("Select if you want the Weekly Bars button to appear on the toolbar."));
   config.getData(Config::ShowCmpsWkyBtn, s);
   cmpsWkyBtnCheck->setChecked(s.toInt());
   connect(cmpsWkyBtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
   grid->addWidget(cmpsWkyBtnCheck, row++, col);
 
   cmpsDayBtnCheck = new QCheckBox(tr("Daily Bars"));
+  cmpsDayBtnCheck->setToolTip(tr("Select if you want the Daily Bars button to appear on the toolbar."));
   config.getData(Config::ShowCmpsDayBtn, s);
   cmpsDayBtnCheck->setChecked(s.toInt());
   connect(cmpsDayBtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
   grid->addWidget(cmpsDayBtnCheck, row++, col);
 
   cmps60BtnCheck = new QCheckBox(tr("60 Minute Bars"));
+  cmps60BtnCheck->setToolTip(tr("Select if you want the 60 Minute Bars button to appear on the toolbar."));
   config.getData(Config::ShowCmps60Btn, s);
   cmps60BtnCheck->setChecked(s.toInt());
   connect(cmps60BtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
   grid->addWidget(cmps60BtnCheck, row++, col);
 
-  // now fill a second col
-  row = 0;
-  col = 1;
-  
   cmps15BtnCheck = new QCheckBox(tr("15 Minute Bars"));
+  cmps15BtnCheck->setToolTip(tr("Select if you want the 15 Minute Bars button to appear on the toolbar."));
   config.getData(Config::ShowCmps15Btn, s);
   cmps15BtnCheck->setChecked(s.toInt());
   connect(cmps15BtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
   grid->addWidget(cmps15BtnCheck, row++, col);
 
   cmps5BtnCheck = new QCheckBox(tr("5 Minute Bars"));
+  cmps5BtnCheck->setToolTip(tr("Select if you want the 5 Minute Bars button to appear on the toolbar."));
   config.getData(Config::ShowCmps5Btn, s);
   cmps5BtnCheck->setChecked(s.toInt());
   connect(cmps5BtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
   grid->addWidget(cmps5BtnCheck, row++, col);
 
-  barsToLoadFieldCheck = new QCheckBox(tr("Bars To Load"));
-  config.getData(Config::ShowBarsToLoadField, s);
-  barsToLoadFieldCheck->setChecked(s.toInt());
-  connect(barsToLoadFieldCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
-  grid->addWidget(barsToLoadFieldCheck, row++, col);
-
-  recentComboBoxCheck = new QCheckBox(tr("Recent charts"));
+  // now fill a second col
+  row = 0;
+  col = 1;
+  
+  recentComboBoxCheck = new QCheckBox(tr("Recent Charts"));
+  recentComboBoxCheck->setToolTip(tr("Select if you want the Recent Charts list to appear on the toolbar."));
   config.getData(Config::ShowRecentCharts, s);
   recentComboBoxCheck->setChecked(s.toInt());
   connect(recentComboBoxCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
@@ -652,14 +676,12 @@ void Preferences::slotSave ()
   config.setData(Config::ShowHelpButton, helpButtonCheck->isChecked());
 
   // chart tool bar settings
-  config.setData(Config::ShowBarsToLoadField, barsToLoadFieldCheck->isChecked());
   config.setData(Config::ShowCmps60Btn, cmps60BtnCheck->isChecked());
   config.setData(Config::ShowCmps15Btn, cmps15BtnCheck->isChecked());
   config.setData(Config::ShowCmps5Btn, cmps5BtnCheck->isChecked());
   config.setData(Config::ShowCmpsDayBtn, cmpsDayBtnCheck->isChecked());
   config.setData(Config::ShowCmpsWkyBtn, cmpsWkyBtnCheck->isChecked());
   config.setData(Config::ShowCmpsMtyBtn, cmpsMtyBtnCheck->isChecked());
-  config.setData(Config::ShowCmpsComboBox, cmpsComboBoxCheck->isChecked());
   config.setData(Config::ShowRecentCharts, recentComboBoxCheck->isChecked());
 
   // save database parms

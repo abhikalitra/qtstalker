@@ -318,7 +318,13 @@ void IndicatorPage::doKeyPress (QKeyEvent *key)
 void IndicatorPage::indicatorSearch ()
 {
   bool aok;
-  QString s = QInputDialog::getText(this, tr("Indicator Search"), tr("Search pattern:"), QLineEdit::Normal, QString(), &aok, 0);
+  QString s = QInputDialog::getText(this,
+                                    tr("Indicator Search"),
+                                    tr("Enter either a specific name like RSI or\na partial match like %SI or %RSI%"),
+                                    QLineEdit::Normal,
+                                    QString(),
+                                    &aok,
+                                    0);
   if (! aok)
     return;
 

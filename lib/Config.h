@@ -85,15 +85,15 @@ class Config
       ShowDataWindowBtn, // toolbar button flag
       ShowHelpButton, // toolbar button flag
       Unused7, // ********** UNUSED *************
-      ShowBarsToLoadField,  // toolbar button flag
-      ShowBarSpSpinbox, // toolbar button flag
+      Unused9,  // ********** UNUSED *************
+      Unused10, // ****** UNUSED **********
       ShowCmps5Btn, // toolbar button flag
       ShowCmps15Btn, // toolbar button flag
       ShowCmps60Btn, // toolbar button flag
       ShowCmpsDayBtn, // toolbar button flag
       ShowCmpsWkyBtn, // toolbar button flag
       ShowCmpsMtyBtn, // toolbar button flag
-      ShowCmpsComboBox, // toolbar button flag
+      Unused11, // ********* UNUSED *************
       DbFirstDate, // the sql command to get the first date for a symbol
       DbLastDate, // the sql command to get the last date for a symbol
       DbGetSymbol, // the sql command to get symbol quotes

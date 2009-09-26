@@ -403,22 +403,6 @@ void Setup::setupConfigDefaults ()
     setConfig(k, d);
   }
 
-  k = QString::number(Config::ShowBarsToLoadField);
-  getConfig(k, d);
-  if (d.isEmpty())
-  {
-    d = "1";
-    setConfig(k, d);
-  }
-
-  k = QString::number(Config::ShowBarSpSpinbox);
-  getConfig(k, d);
-  if (d.isEmpty())
-  {
-    d = "1";
-    setConfig(k, d);
-  }
-
   k = QString::number(Config::ShowCmps60Btn);
   getConfig(k, d);
   if (d.isEmpty())
@@ -460,14 +444,6 @@ void Setup::setupConfigDefaults ()
   }
 
   k = QString::number(Config::ShowCmpsMtyBtn);
-  getConfig(k, d);
-  if (d.isEmpty())
-  {
-    d = "1";
-    setConfig(k, d);
-  }
-
-  k = QString::number(Config::ShowCmpsComboBox);
   getConfig(k, d);
   if (d.isEmpty())
   {

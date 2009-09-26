@@ -399,8 +399,6 @@ void QtstalkerApp::createToolBars ()
 
   QAction *action = toolbar2->addWidget(compressionCombo);
   actionList.insert(Compression, action);
-  config.getData(Config::ShowCmpsComboBox, ts);
-  action->setVisible(ts.toInt());
 
   // monthly compression button  
   QToolButton *b = new QToolButton; // compression button monthly
@@ -500,11 +498,6 @@ void QtstalkerApp::createToolBars ()
   action->setStatusTip(tr("Zoom Out"));
 
 
-//  toolbar2->addAction(actionList.value(ZoomIn));
-//  toolbar2->addAction(actionList.value(ZoomOut));
-
-
-
   // PS1 button  
   b = new QToolButton;
   connect(b, SIGNAL(clicked()), this, SLOT(ps1ButtonClicked()));
@@ -538,8 +531,7 @@ void QtstalkerApp::createToolBars ()
 
   action = toolbar2->addWidget(barCount);
   actionList.insert(BarCount, action);
-  config.getData(Config::ShowBarsToLoadField, ts);
-  action->setVisible(ts.toInt());
+
   
   toolbar2->addSeparator();
 
@@ -845,16 +837,6 @@ void QtstalkerApp::slotEnableIndicator (QString name)
   ilPos = -1;
   slotScriptDone();
 }
-
-/*
-void QtstalkerApp::slotPixelspaceChanged (int d)
-{
-  setSliderStart();
-  emit signalPixelspace(d);
-  emit signalIndex(slider->value());
-  slotDrawPlots();
-}
-*/
 
 void QtstalkerApp::addIndicatorButton (QString d)
 {

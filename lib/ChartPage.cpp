@@ -79,7 +79,7 @@ ChartPage::ChartPage (QWidget *w) : QWidget (w)
 
   menu = new QMenu(this);
   menu->addAction(QIcon(addgroup), tr("Add To &Group	Ctrl+G"), this, SLOT(addToGroup()), QKeySequence(Qt::CTRL+Qt::Key_G));
-  menu->addAction(QIcon(), tr("&All Symbols"), this, SLOT(updateList()), QKeySequence(Qt::CTRL+Qt::Key_A));
+  menu->addAction(QIcon(asterisk_xpm), tr("&All Symbols"), this, SLOT(updateList()), QKeySequence(Qt::CTRL+Qt::Key_A));
   menu->addAction(QIcon(search), tr("&Symbol Search"), this, SLOT(symbolSearch()), QKeySequence(Qt::CTRL+Qt::Key_S));
 
   // update to last symbol search before displaying
@@ -191,7 +191,13 @@ void ChartPage::updateList ()
 void ChartPage::symbolSearch ()
 {
   bool ok;
-  searchString = QInputDialog::getText(this, tr("Symbol Search"), tr("Symbol pattern:"), QLineEdit::Normal, QString(), &ok, 0);
+  searchString = QInputDialog::getText(this,
+				       tr("Symbol Search"),
+                                       tr("Enter either a specific symbol like IBM or\na partial match like %BM or %IBM%"),
+                                       QLineEdit::Normal,
+                                       QString(),
+                                       &ok,
+                                       0);
   if (! ok)
     return;
 
