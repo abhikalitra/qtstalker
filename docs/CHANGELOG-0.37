@@ -89,4 +89,14 @@
 
           Added tooltips to the preferences dialog. Removed a few settings that may cause gui conflicts.
 
+20091001: Changed the default sql statements for Setup class. CVS users will need to refresh their ~/.qtstalker/data.sqlite*
+          files with either a new one or manually edit the preferences dialog sql page parms. You will need to look at
+          the defaults in Setup class to see what the new values are. I changed the Config::DbFirstDate, Config::DbLastDate and
+          Config::DbGetSymbol settings.
+
+20091004: Worked on bar date bug. Database date does not match date displayed by the bar. Not sure if it is fixed. Need some
+          testers to confirm.
+
+
+
 

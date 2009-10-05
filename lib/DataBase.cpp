@@ -89,28 +89,6 @@ void DataBase::getChart (BarData *data)
   Config config;
   config.getData(Config::DbGetSymbol, sql);
 
-  // get the index details
-/*
-  QString s = "SELECT " + nameColumn + " FROM " + indexTable + " WHERE " + symbolColumn + "='" + symbol + "'";
-  q.exec(s);
-  if (q.lastError().isValid())
-  {
-    qDebug() << "DataBase::getChart: " << q.lastError().text();
-    return;
-  }
-
-  if (q.next())
-  {
-    s = q.value(0).toString();
-    data->setName(s);
-  }
-  else
-  {
-    qDebug() << "DataBase::getChart: no symbolIndex record found";
-    return;
-  }
-*/
-
   QDateTime firstDate;
   getFirstDate(firstDate, symbol);
 
@@ -123,18 +101,18 @@ void DataBase::getChart (BarData *data)
   while (1)
   {
     QString sd = firstDate.toString("yyyy-MM-dd HH:mm:ss");
-    sd.prepend("'");
+    sd.prepend("'"); // we need to surround date strings in ' chars here because of TEXT storage conflicts.
     sd.append("'");
 
     QString ed = lastDate.toString("yyyy-MM-dd HH:mm:ss");
-    ed.prepend("'");
+    ed.prepend("'"); // we need to surround date strings in ' chars here because of TEXT storage conflicts.
     ed.append("'");
 
     s = sql;
     s.replace("$symbol", symbol, Qt::CaseSensitive);
     s.replace("$sd", sd, Qt::CaseSensitive);
     s.replace("$ed", ed, Qt::CaseSensitive);
-    s.append(" DESC LIMIT " + QString::number(data->getBarsRequested()));
+    s.replace("$records", QString::number(data->getBarsRequested()), Qt::CaseSensitive);
     q.exec(s);
     if (q.lastError().isValid())
     {
@@ -146,8 +124,9 @@ void DataBase::getChart (BarData *data)
     {
       QDateTime dt = q.value(0).toDateTime();
       lastDate = dt;
-      setStartEndDates(dt, data->getBarLength());
-      s = dt.toString("yyyyMMddHHmmss");
+      QDateTime sd, ed;
+      setStartEndDates(dt, sd, ed, data->getBarLength());
+      s = sd.toString("yyyyMMddHHmmss") + ed.toString("yyyyMMddHHmmss");
       Bar *bar = bars[s];
       if (! bar)
       {
@@ -156,7 +135,8 @@ void DataBase::getChart (BarData *data)
 	
 	dateList.append(s); // save new dateList entry
 	bar = new Bar;
-        bar->setDate(dt);
+        bar->setDate(dt); // save actual date
+
 	bars.insert(s, bar);
 	
         QVariant v = q.value(1);
@@ -266,103 +246,66 @@ void DataBase::getLastDate (QDateTime &date, QString &symbol)
 
   if (q.next())
     date = q.value(0).toDateTime();
-
 }
 
-void DataBase::setStartEndDates (QDateTime &endDate, BarData::BarLength barLength)
+void DataBase::setStartEndDates (QDateTime &date, QDateTime &startDate, QDateTime &endDate, BarData::BarLength barLength)
 {
   QString s, s2;
   int tint = 0;
-  QDateTime dt = endDate;
+  startDate = date;
 
   switch (barLength)
   {
     case BarData::Minute1:
-      dt.setTime(QTime(dt.time().hour(), dt.time().minute(), 0, 0));
-      dt = dt.addSecs(60);
-      endDate = dt;
+      startDate.setTime(QTime(startDate.time().hour(), startDate.time().minute(), 0, 0));
+      endDate = startDate;
+      endDate = endDate.addSecs(60);
       break;
     case BarData::Minute5:
-      tint = dt.time().minute() / 5;
-      dt.setTime(QTime(dt.time().hour(), tint * 5, 0, 0));
-      dt = dt.addSecs(300);
-      endDate = dt;
+      tint = startDate.time().minute() / 5;
+      startDate.setTime(QTime(startDate.time().hour(), tint * 5, 0, 0));
+      endDate = startDate;
+      endDate = endDate.addSecs(300);
       break;
     case BarData::Minute10:
-      tint = dt.time().minute() / 10;
-      dt.setTime(QTime(dt.time().hour(), tint * 10, 0, 0));
-      dt = dt.addSecs(600);
-      endDate = dt;
+      tint = startDate.time().minute() / 10;
+      startDate.setTime(QTime(startDate.time().hour(), tint * 10, 0, 0));
+      endDate = startDate;
+      endDate = endDate.addSecs(600);
       break;
     case BarData::Minute15:
-      tint = dt.time().minute() / 15;
-      dt.setTime(QTime(dt.time().hour(), tint * 15, 0, 0));
-      dt = dt.addSecs(900);
-      endDate = dt;
+      tint = startDate.time().minute() / 15;
+      startDate.setTime(QTime(startDate.time().hour(), tint * 15, 0, 0));
+      endDate = startDate;
+      endDate = endDate.addSecs(900);
       break;
     case BarData::Minute30:
-      tint = dt.time().minute() / 30;
-      dt.setTime(QTime(dt.time().hour(), tint * 30, 0, 0));
-      dt = dt.addSecs(1800);
-      endDate = dt;
+      tint = startDate.time().minute() / 30;
+      startDate.setTime(QTime(startDate.time().hour(), tint * 30, 0, 0));
+      endDate = startDate;
+      endDate = endDate.addSecs(1800);
       break;
     case BarData::Minute60:
-      dt.setTime(QTime(dt.time().hour(), 0, 0, 0));
-      dt = dt.addSecs(3600);
-      endDate = dt;
+      startDate.setTime(QTime(startDate.time().hour(), 0, 0, 0));
+      endDate = startDate;
+      endDate = endDate.addSecs(3600);
       break;
     case BarData::DailyBar:
-      dt.setTime(QTime(0, 0, 0, 0));
-      dt = dt.addDays(1);
-      endDate = dt;
+      startDate.setTime(QTime(0, 0, 0, 0));
+      endDate = startDate;
+      endDate = endDate.addDays(1);
       break;
     case BarData::WeeklyBar:
-      dt.setTime(QTime(0, 0, 0, 0));
-      dt = dt.addDays(- dt.date().dayOfWeek());
-      dt = dt.addDays(7);
-      endDate = dt;
+      startDate.setTime(QTime(0, 0, 0, 0));
+      startDate = startDate.addDays(- startDate.date().dayOfWeek());
+      endDate = startDate;
+      endDate = endDate.addDays(7);
       break;
     case BarData::MonthlyBar:
-      dt.setTime(QTime(0, 0, 0, 0));
-      dt = dt.addDays(- (dt.date().day() - 1));
-      dt = dt.addDays(dt.date().daysInMonth());
-      endDate = dt;
-      break;
-    default:
-      break;
-  }
-}
-
-void DataBase::getDateOffset (QDateTime &dt, BarData::BarLength barLength)
-{
-  switch (barLength)
-  {
-    case BarData::Minute1:
-      dt = dt.addSecs(-60);
-      break;
-    case BarData::Minute5:
-      dt = dt.addSecs(-300);
-      break;
-    case BarData::Minute10:
-      dt = dt.addSecs(-600);
-      break;
-    case BarData::Minute15:
-      dt = dt.addSecs(-900);
-      break;
-    case BarData::Minute30:
-      dt = dt.addSecs(-1800);
-      break;
-    case BarData::Minute60:
-      dt = dt.addSecs(-3600);
-      break;
-    case BarData::DailyBar:
-      dt = dt.addDays(-1);
-      break;
-    case BarData::WeeklyBar:
-      dt = dt.addDays(-7);
-      break;
-    case BarData::MonthlyBar:
-      dt = dt.addMonths(-1);
+      startDate.setTime(QTime(0, 0, 0, 0));
+      startDate = startDate.addDays(- (startDate.date().day() - 1));
+      endDate = startDate;
+      endDate = endDate.addDays(endDate.date().daysInMonth());
       break;
     default:
       break;

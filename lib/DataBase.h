@@ -44,8 +44,7 @@ class DataBase
     void getChart (BarData *);
     void getFirstDate (QDateTime &date, QString &symbol);
     void getLastDate (QDateTime &date, QString &symbol);
-    void setStartEndDates (QDateTime &endDate, BarData::BarLength barLength);
-    void getDateOffset (QDateTime &dt, BarData::BarLength barLength);
+    void setStartEndDates (QDateTime &date, QDateTime &startDate, QDateTime &endDate, BarData::BarLength barLength);
 
     // group functions
     void getAllGroupsList (QStringList &);

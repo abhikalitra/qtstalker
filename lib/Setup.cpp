@@ -535,7 +535,7 @@ void Setup::setupConfigDefaults ()
   getConfig(k, d);
   if (d.isEmpty())
   {
-    d = "SELECT date FROM $symbol ORDER BY date ASC LIMIT 1";
+    d = "SELECT min(date) FROM $symbol";
     setConfig(k, d);
   }
 
@@ -543,7 +543,7 @@ void Setup::setupConfigDefaults ()
   getConfig(k, d);
   if (d.isEmpty())
   {
-    d = "SELECT date FROM $symbol ORDER BY date DESC LIMIT 1";
+    d = "SELECT max(date) FROM $symbol";
     setConfig(k, d);
   }
 
@@ -551,7 +551,7 @@ void Setup::setupConfigDefaults ()
   getConfig(k, d);
   if (d.isEmpty())
   {
-    d = "SELECT date,open,high,low,close,volume,oi FROM $symbol WHERE date >= $sd AND date < $ed ORDER BY date";
+    d = "SELECT date,open,high,low,close,volume,oi FROM $symbol WHERE date >= $sd AND date <= $ed ORDER BY date DESC LIMIT $records";
     setConfig(k, d);
   }
 
