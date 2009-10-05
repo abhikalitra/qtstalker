@@ -60,34 +60,43 @@ void CSVRuleDialog::createRulePage ()
 //  grid->setColumnStretch(1, 1);
   grid->setColumnStretch(3, 1);
   vbox->addLayout(grid);
+
+  int col = 0;
+  int row = 0;
   
   QLabel *label = new QLabel(tr("Delimiter"));
-  grid->addWidget(label, 0, 0);
+  grid->addWidget(label, row, col++);
   
   delimiter = new QLineEdit;
   delimiter->setText(",");
-  grid->addWidget(delimiter, 0, 1);
+  grid->addWidget(delimiter, row++, col--);
 
   label = new QLabel(tr("Date Format"));
-  grid->addWidget(label, 1, 0);
+  grid->addWidget(label, row, col++);
   
   dateFormat = new QLineEdit;
-  grid->addWidget(dateFormat, 1, 1);
+  grid->addWidget(dateFormat, row++, col--);
+
+  label = new QLabel(tr("Time Format"));
+  grid->addWidget(label, row, col++);
+  
+  timeFormat = new QLineEdit;
+  grid->addWidget(timeFormat, row++, col--);
 
   label = new QLabel(tr("Time Interval"));
-  grid->addWidget(label, 2, 0);
+  grid->addWidget(label, row, col++);
 
   seconds = new QSpinBox;
   seconds->setRange(0, 9999);
-  grid->addWidget(seconds, 2, 1);
+  grid->addWidget(seconds, row++, col--);
 
   label = new QLabel(tr("CSV Files"));
-  grid->addWidget(label, 3, 0);
+  grid->addWidget(label, row, col++);
 
   fileButton = new QPushButton;
   fileButton->setText("0 " + tr("Files"));
   connect(fileButton, SIGNAL(clicked()), this, SLOT(importFileDialog()));
-  grid->addWidget(fileButton, 3, 1);
+  grid->addWidget(fileButton, row++, col--);
 
   useFileName = new QCheckBox;
   useFileName->setText(tr("Use File Name For Symbol"));
@@ -178,6 +187,12 @@ void CSVRuleDialog::saveRule ()
     return;
   }
 
+  if (format.contains("Time") && timeFormat->text().isEmpty())
+  {
+    QMessageBox::information(this, tr("Error"), tr("Time format missing."));
+    return;
+  }
+
   QSqlQuery q(QSqlDatabase::database("data"));
   QString s = "INSERT OR REPLACE INTO importRules VALUES (";
   s.append("'" + rule + "'");
@@ -187,6 +202,7 @@ void CSVRuleDialog::saveRule ()
   s.append(",'" + dateFormat->text() + "'");
   s.append("," + seconds->text());
   s.append(",'" + fileList.join("|") + "'");
+  s.append(",'" + timeFormat->text() + "'");
   s.append(")");
   q.exec(s);
   if (q.lastError().isValid())
@@ -231,6 +247,9 @@ void CSVRuleDialog::loadRule ()
 
     fileList = q.value(6).toString().split("|");
     fileButton->setText(QString::number(fileList.count()) + " " + tr("Files"));
+
+    s = q.value(7).toString();
+    timeFormat->setText(s);
   }
 }
 

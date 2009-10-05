@@ -97,6 +97,10 @@
 20091004: Worked on bar date bug. Database date does not match date displayed by the bar. Not sure if it is fixed. Need some
           testers to confirm.
 
+20091005: Added time field to the CSV app.
+
+
+
 
 
 

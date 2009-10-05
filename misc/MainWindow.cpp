@@ -194,12 +194,11 @@ void MainWindow::loadSettings ()
   s.append(", dateFormat TEXT");
   s.append(", interval INT");
   s.append(", fileList TEXT");
+  s.append(", timeFormat TEXT");
   s.append(")");
   q.exec(s);
   if (q.lastError().isValid())
     qDebug() << "CSV::loadSettings:createImportRulesTable: " << q.lastError().text();
-
-  
   
   QSqlDatabase db2 = QSqlDatabase::addDatabase("QSQLITE", "quotes");
   db2.setHostName("localhost");
@@ -219,9 +218,6 @@ void MainWindow::loadSettings ()
 //  if (! db2.open())
 //    qDebug() << "CSV::loadSettings:setupQuoteBase: quotes db open failed";
 
-
-  
-  
   QSqlQuery q2(db2);
   s = "CREATE TABLE IF NOT EXISTS symbolIndex (";
   s.append(" symbol VARCHAR(50) PRIMARY KEY UNIQUE");
@@ -467,6 +463,9 @@ void MainWindow::loadRule (CSVRule &rule)
     s = q.value(6).toString();
     QStringList l = s.split("|");
     rule.setFileList(l);
+
+    s = q.value(7).toString();
+    rule.setTimeFormat(s);
   }
 }
 

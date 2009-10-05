@@ -85,6 +85,9 @@ void CSV::import ()
   QString dateFormat;
   rule.getDateFormat(dateFormat);
   
+  QString timeFormat;
+  rule.getTimeFormat(timeFormat);
+  
   QString delim;
   rule.getDelimiter(delim);
 
@@ -136,7 +139,6 @@ void CSV::import ()
         if (fieldList[fieldLoop].contains("Date"))
 	{
           QDateTime dt = QDateTime::fromString(listItem, dateFormat);
-//          dt.setTime(QTime(0,0,0,0)); disabled, may change a valid time
           if (! dt.isValid())
 	  {
             ts = QString(fName + " - " + tr("Line") + ": " + QString::number(lineCount) + " " + tr("Bad date") + ": " + listItem);
@@ -147,6 +149,21 @@ void CSV::import ()
 	  
           r.setDate(dt);
           dateFlag = TRUE;
+	  continue;
+	}
+
+        if (fieldList[fieldLoop].contains("Time"))
+	{
+          QTime dt = QTime::fromString(listItem, timeFormat);
+          if (! dt.isValid())
+	  {
+            ts = QString(fName + " - " + tr("Line") + ": " + QString::number(lineCount) + " " + tr("Bad time") + ": " + listItem);
+            emit signalMessage(ts);
+	    flag = TRUE;
+	    break;
+	  }
+	  
+          r.setTime(dt);
 	  continue;
 	}
 

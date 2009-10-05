@@ -170,6 +170,10 @@
         <source> Records Processed</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Bad time</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>CSVRuleDialog</name>
@@ -253,6 +257,14 @@
         <source>No commas allowed.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Time Format</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Time format missing.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ChartPage</name>
@@ -285,7 +297,8 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Symbol pattern:</source>
+        <source>Enter either a specific symbol like IBM or
+a partial match like %BM or %IBM%</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -425,10 +438,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Search pattern:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Tab Row</source>
         <translation type="unfinished"></translation>
     </message>
@@ -438,6 +447,11 @@
     </message>
     <message>
         <source>Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter either a specific name like RSI or
+a partial match like %SI or %RSI%</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -686,10 +700,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Bar Spacing 3</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>General</source>
         <translation type="unfinished"></translation>
     </message>
@@ -758,14 +768,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Recent charts</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Quotes</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Edit Preferences</source>
         <translation type="unfinished"></translation>
     </message>
@@ -794,50 +796,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Date Column Name</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Open Column Name</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>High Column Name</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Low Column Name</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Close Column Name</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Volume Column Name</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>OI Column Name</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Symbol Index Table</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Symbol Column</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Symbol Name Column</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Symbol Exchange Column</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Draw Mode</source>
         <translation type="unfinished"></translation>
     </message>
@@ -847,10 +805,6 @@
     </message>
     <message>
         <source>Data Window</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Bar Length List</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -878,18 +832,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Bar Spacing</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Bars To Load</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Chart Slider</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Qtstalker: Warning</source>
         <translation type="unfinished"></translation>
     </message>
@@ -899,6 +841,190 @@
     </message>
     <message>
         <source>Indicator Script Default</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Number of screen pixels between bars.
+6 is good for bar charts.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Number of screen pixels between bars.
+8 is good for candle charts</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Maximum number of tabbed chart rows.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Default command for indicators. Just append indicator name.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Qt4 SQL driver required for database.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Network hostname of database. If local, use localhost</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The database name.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The database user name.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The database user password.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>DB</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>All Symbols</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The SQL command to list all symbols in the database.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Search Symbols</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The SQL command to search for specific symbol(s) in the database.
+% is used for globbing.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>First Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The SQL command to return the earliest date for $symbol.
+$symbol is the symbol name.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Last Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The SQL command to return the most recent date for $symbol.
+$symbol is the symbol name.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Get Symbol</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The SQL command to return quotes.
+$symbol is the symbol name.
+$sd is the first date.
+$ed is the last date.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>SQL</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Background color for charts.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Border line color for charts. Used for seperators, ticks etc.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Grid color for charts.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Font used for text that appears on the chart.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Font used for everything but charts.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select if you want the Quit button to appear on the toolbar.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select if you want the Preferences button to appear on the toolbar.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select if you want the Side Panel button to appear on the toolbar.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select if you want the Grid button to appear on the toolbar.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select if you want the Scale to Screen button to appear on the toolbar.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select if you want the Crosshair button to appear on the toolbar.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select if you want the Draw Mode button to appear on the toolbar.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select if you want the New Indicator button to appear on the toolbar.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select if you want the Data Window button to appear on the toolbar.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select if you want the Help button to appear on the toolbar.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select if you want the Monthly Bars button to appear on the toolbar.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select if you want the Weekly Bars button to appear on the toolbar.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select if you want the Daily Bars button to appear on the toolbar.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select if you want the 60 Minute Bars button to appear on the toolbar.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select if you want the 15 Minute Bars button to appear on the toolbar.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select if you want the 5 Minute Bars button to appear on the toolbar.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Recent Charts</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select if you want the Recent Charts list to appear on the toolbar.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1256,10 +1382,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Bar Spacing</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Set Bar Spacing to </source>
         <translation type="unfinished"></translation>
     </message>
@@ -1285,6 +1407,14 @@
     </message>
     <message>
         <source>Indicators</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Zoom In</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Zoom Out</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

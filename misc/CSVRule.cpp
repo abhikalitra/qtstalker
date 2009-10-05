@@ -106,6 +106,7 @@ void CSVRule::getFieldList (QStringList &tl)
   tl.clear();
   tl.append("Symbol");
   tl.append("Date");
+  tl.append("Time");
   tl.append("Open");
   tl.append("High");
   tl.append("Low");
@@ -120,8 +121,19 @@ void CSVRule::getBarFormat (QString &d)
   QStringList l = format.split(",");
   l.removeAll("Symbol");
   l.removeAll("Date");
+  l.removeAll("Time");
   l.removeAll("Ignore");
   d = l.join(",");
+}
+
+void CSVRule::setTimeFormat (QString &d)
+{
+  timeFormat = d;
+}
+
+void CSVRule::getTimeFormat (QString &d)
+{
+  d = timeFormat;
 }
 
 

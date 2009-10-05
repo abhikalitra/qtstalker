@@ -66,6 +66,7 @@ class CSVRuleDialog : public QDialog
     QPushButton *customButton;
     QCheckBox *useFileName;
     QLineEdit *dateFormat;
+    QLineEdit *timeFormat;
     QPushButton *fileButton;
     QSpinBox *seconds;
     QStringList fileList;

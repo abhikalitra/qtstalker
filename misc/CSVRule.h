@@ -47,6 +47,8 @@ class CSVRule
     void setFileList (QStringList &);
     void getFieldList (QStringList &);
     void getBarFormat (QString &d);
+    void setTimeFormat (QString &);
+    void getTimeFormat (QString &);
     
   protected:
     QString name;
@@ -56,6 +58,7 @@ class CSVRule
     bool useFileName;
     QStringList fileList;
     QString interval;
+    QString timeFormat;
 };
 
 #endif
