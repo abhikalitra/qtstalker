@@ -27,8 +27,8 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QHash>
-#include <QtSql>
 #include <QCoreApplication>
+#include <QDir>
 
 
 
@@ -37,7 +37,32 @@ CSV::CSV (CSVRule &r)
   rule = r;
   timer = 0;
 
-  QString s;
+  QDir dir(QDir::homePath());
+  QString s = dir.absolutePath() + "/.CSV/quotes.sqlite";
+
+  QSqlDatabase db = QSqlDatabase::database("quotes");
+  if (! db.isValid())
+  {
+    db = QSqlDatabase::addDatabase("QSQLITE", "quotes");
+    db.setHostName("localhost");
+    db.setDatabaseName(s);
+    db.setUserName("CSV");
+    db.setPassword("CSV");
+    if (! db.open())
+      qDebug() << "CSV::CSV: quotes db open failed";
+  }
+
+  QSqlQuery q(db);
+  s = "CREATE TABLE IF NOT EXISTS symbolIndex (";
+  s.append(" symbol VARCHAR(50) PRIMARY KEY UNIQUE");
+  s.append(", name VARCHAR(100)");
+  s.append(", exchange VARCHAR(25)");
+  s.append(", data VARCHAR(250)");
+  s.append(")");
+  q.exec(s);
+  if (q.lastError().isValid())
+    qDebug() << "CSV::CSV:createSymbolIndexTable: " << q.lastError().text();
+
   rule.getInterval(s);
   interval = s.toInt();
   if (interval)
@@ -254,8 +279,6 @@ void CSV::setChart (QList<Bar> *bars)
   if (! bars->count())
     return;
 
-  QSqlQuery q(QSqlDatabase::database("quotes"));
-
   Bar bar = bars->at(0);
   QString symbol, format;
   bar.getSymbol(symbol);
@@ -264,6 +287,14 @@ void CSV::setChart (QList<Bar> *bars)
   QStringList formatList = format.split(",");
 
   // check to see if symbol exists
+  QSqlDatabase db = QSqlDatabase::database("quotes");
+  if (! db.isValid())
+  {
+    qDebug() << "CSV::setChart:" << db.lastError().text();
+    return;
+  }
+
+  QSqlQuery q(db);
   QString ts = "SELECT * FROM symbolIndex WHERE symbol='" + symbol + "'";
   q.exec(ts);
   if (q.lastError().isValid())
@@ -297,7 +328,6 @@ void CSV::setChart (QList<Bar> *bars)
     }
   }
 
-  QSqlDatabase db = QSqlDatabase::database("quotes");
   db.transaction();
 
   int loop;

@@ -57,19 +57,14 @@ class MainWindow : public QMainWindow
     void createMenus ();
     void createToolBars ();
     void createStatusBar ();
-    void loadSettings ();
-    void setConfig (QString &k, QString &d);
-    void getConfig (QString &k, QString &d);
-    void loadRules ();
-    void loadRule (CSVRule &rule);
     void addRule (QString &name);
+    void loadRules ();
 
   public slots:
     void newRule ();
     void editRule ();
     void deleteRule ();
     void about ();
-    void getRules (QStringList &);
     void itemDoubleClicked (QTreeWidgetItem *, int);
     void statusChanged ();
     void message (QString);

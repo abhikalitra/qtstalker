@@ -23,6 +23,7 @@
 
 #include "MainWindow.h"
 #include "CSVRuleDialog.h"
+#include "Database.h"
 
 
 #include <QtSql>
@@ -78,8 +79,6 @@ MainWindow::MainWindow ()
   setUnifiedTitleAndToolBarOnMac(true);
 
   setWindowTitle(tr("Import CSV Quotes"));
-
-  loadSettings();
 
   loadRules();
 }
@@ -155,109 +154,6 @@ void MainWindow::createStatusBar ()
   statusBar()->showMessage(tr("Ready"));
 }
 
-void MainWindow::loadSettings ()
-{
-  QDir dir(QDir::homePath());
-  QString home = dir.absolutePath();
-  home.append("/.CSV");
-  if (! dir.exists(home))
-  {
-    if (! dir.mkdir(home))
-      qDebug() << "CSV::Unable to create ~/.CSV directory.";
-  }
-
-  QString s = home + "/data.sqlite";
-  QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", "data");
-  db.setHostName("localhost");
-  db.setDatabaseName(s);
-  db.setUserName("CSV");
-  db.setPassword("CSV");
-  if (! db.open())
-  {
-    qDebug() << "CSV::loadSettings:setup: data db open failed";
-    return;
-  }
-
-  // create the config table
-  QSqlQuery q(db);
-  s = "CREATE TABLE IF NOT EXISTS config (key INT PRIMARY KEY, setting VARCHAR(50))";
-  q.exec(s);
-  if (q.lastError().isValid())
-    qDebug() << "CSV::loadSettings:createConfigTable: " << q.lastError().text();
-
-  // create the import rules table
-  s = "CREATE TABLE IF NOT EXISTS importRules (";
-  s.append(" name TEXT PRIMARY KEY");
-  s.append(", format TEXT");
-  s.append(", delimeter TEXT");
-  s.append(", fileNameSymbol BOOL");
-  s.append(", dateFormat TEXT");
-  s.append(", interval INT");
-  s.append(", fileList TEXT");
-  s.append(", timeFormat TEXT");
-  s.append(")");
-  q.exec(s);
-  if (q.lastError().isValid())
-    qDebug() << "CSV::loadSettings:createImportRulesTable: " << q.lastError().text();
-  
-  QSqlDatabase db2 = QSqlDatabase::addDatabase("QSQLITE", "quotes");
-  db2.setHostName("localhost");
-  s = home + "/quotes.sqlite";
-  db2.setDatabaseName(s);
-  db2.setUserName("CSV");
-  db2.setPassword("CSV");
-  if (! db2.open())
-    qDebug() << "CSV::loadSettings:setupQuoteBase: quotes db open failed";
-
-  // mysql testing
-//  QSqlDatabase db2 = QSqlDatabase::addDatabase("QMYSQL", "quotes");
-//  db2.setHostName("localhost");
-//  db2.setDatabaseName("test");
-//  db2.setUserName("anonymous");
-//  db2.setPassword(QString());
-//  if (! db2.open())
-//    qDebug() << "CSV::loadSettings:setupQuoteBase: quotes db open failed";
-
-  QSqlQuery q2(db2);
-  s = "CREATE TABLE IF NOT EXISTS symbolIndex (";
-  s.append(" symbol VARCHAR(50) PRIMARY KEY UNIQUE");
-  s.append(", name VARCHAR(100)");
-  s.append(", exchange VARCHAR(25)");
-  s.append(", data VARCHAR(250)");
-  s.append(")");
-  q2.exec(s);
-  if (q2.lastError().isValid())
-    qDebug() << "CSV::loadSettings:createSymbolIndexTable: " << q2.lastError().text();
-}
-
-void MainWindow::setConfig (QString &k, QString &d)
-{
-  QSqlQuery q(QSqlDatabase::database("data"));
-  QString s = "INSERT OR REPLACE INTO config (key, setting) VALUES (" + k + ",'" + d + "')";
-  q.exec(s);
-  if (q.lastError().isValid())
-  {
-    qDebug() << "CSV::setConfig: " << q.lastError().text();
-    return;
-  }
-}
-
-void MainWindow::getConfig (QString &k, QString &d)
-{
-  d.clear();
-  QSqlQuery q(QSqlDatabase::database("data"));
-  QString s = "SELECT setting FROM config WHERE key=" + k;
-  q.exec(s);
-  if (q.lastError().isValid())
-  {
-    qDebug() << "CSV::getConfig: " << q.lastError().text();
-    return;
-  }
-
-  if (q.next())
-    d = q.value(0).toString();
-}
-
 void MainWindow::closeEvent (QCloseEvent *event)
 {
   event->accept();
@@ -271,24 +167,6 @@ void MainWindow::about ()
   QMessageBox::about(this, tr("About CSV"), versionString);
 }
 
-void MainWindow::getRules (QStringList &l)
-{
-  l.clear();
-  QSqlQuery q(QSqlDatabase::database("data"));
-  QString s = "SELECT name FROM importRules";
-  q.exec(s);
-  if (q.lastError().isValid())
-  {
-    qDebug() << "CSV::getRules: " << q.lastError().text();
-    return;
-  }
-
-  while (q.next())
-    l.append(q.value(0).toString());
-
-  l.sort();
-}
-
 void MainWindow::newRule ()
 {
   bool ok;
@@ -297,7 +175,8 @@ void MainWindow::newRule ()
     return;
 
   QStringList l;
-  getRules(l);
+  Database db;
+  db.getRules(l);
   if (l.contains(s))
   {
     QMessageBox::information(this, tr("Error"), s + tr(" already exists."));
@@ -358,11 +237,8 @@ void MainWindow::deleteRule ()
 
   QString name = item->text(0);
 
-  QSqlQuery q(QSqlDatabase::database("data"));
-  QString s = "DELETE FROM importRules WHERE name='" + name + "'";
-  q.exec(s);
-  if (q.lastError().isValid())
-    qDebug() << "CSV::deleteRule: " << q.lastError().text();
+  Database db;
+  db.deleteRule(name);
 
   delete item;
   itemList.remove(name);
@@ -415,7 +291,8 @@ void MainWindow::statusChanged ()
 void MainWindow::loadRules ()
 {
   QStringList l;
-  getRules(l);
+  Database db;
+  db.getRules(l);
   ruleList->clear();
 
   int loop;
@@ -428,44 +305,6 @@ void MainWindow::loadRules ()
     itemList.insert(l[loop], item);
 
     addRule(l[loop]);
-  }
-}
-
-void MainWindow::loadRule (CSVRule &rule)
-{
-  QString ts;
-  rule.getName(ts);
-  QSqlQuery q(QSqlDatabase::database("data"));
-  QString s = "SELECT * FROM importRules WHERE name='" + ts + "'";
-  q.exec(s);
-  if (q.lastError().isValid())
-  {
-    qDebug() << "MainWindow::loadRule: " << q.lastError().text();
-    return;
-  }
-
-  if (q.next())
-  {
-    s = q.value(1).toString();
-    rule.setFormat(s);
-    
-    s = q.value(2).toString();
-    rule.setDelimiter(s);
-
-    rule.setFileNameSymbol(q.value(3).toBool());
-
-    s = q.value(4).toString();
-    rule.setDateFormat(s);
-
-    s = q.value(5).toString();
-    rule.setInterval(s);
-
-    s = q.value(6).toString();
-    QStringList l = s.split("|");
-    rule.setFileList(l);
-
-    s = q.value(7).toString();
-    rule.setTimeFormat(s);
   }
 }
 
@@ -493,7 +332,9 @@ void MainWindow::addRule (QString &name)
 {
   CSVRule rule;
   rule.setName(name);
-  loadRule(rule);
+
+  Database db;
+  db.loadRule(rule);
 
   CSV *csv = new CSV(rule);
   connect(csv, SIGNAL(signalMessage(QString)), this, SLOT(message(QString)));

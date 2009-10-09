@@ -18,6 +18,7 @@ HEADERS += CSVRuleDialog.h
 HEADERS += CSV.h
 HEADERS += CSVRule.h
 HEADERS += Bar.h
+HEADERS += Database.h
 
 SOURCES += MainWindow.cpp
 SOURCES += main.cpp
@@ -25,6 +26,7 @@ SOURCES += CSVRuleDialog.cpp
 SOURCES += CSV.cpp
 SOURCES += CSVRule.cpp
 SOURCES += Bar.cpp
+SOURCES += Database.cpp
 
 TARGET = CSV
 

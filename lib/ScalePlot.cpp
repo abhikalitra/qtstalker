@@ -177,14 +177,6 @@ void ScalePlot::drawScale ()
           strip(s.toDouble() / 1000000, 4, s);
 	  s.append("m");
         }
-//        else
-//        {
-//          if (s.toDouble() >= 1000)
-//          {
-//            strip(s.toDouble() / 1000, 4, s);
-//            s.append("k");
-//          }
-//        }
       }
       
       if (flag)
@@ -195,7 +187,7 @@ void ScalePlot::drawScale ()
   }
 
   painter.drawLine (x, 0, x, buffer.height());
-  
+
   // draw the last value pointer on the scale of main plot
   int y = scaler.convertToY(close);
     

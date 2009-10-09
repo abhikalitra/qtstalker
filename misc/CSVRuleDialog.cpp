@@ -21,6 +21,7 @@
 
 #include "CSVRuleDialog.h"
 #include "CSVRule.h"
+#include "Database.h"
 
 #include <QDir>
 #include <QMessageBox>
@@ -193,64 +194,65 @@ void CSVRuleDialog::saveRule ()
     return;
   }
 
-  QSqlQuery q(QSqlDatabase::database("data"));
-  QString s = "INSERT OR REPLACE INTO importRules VALUES (";
-  s.append("'" + rule + "'");
-  s.append(",'" + format + "'");
-  s.append(",'" + delimiter->text() + "'");
-  s.append("," + QString::number(useFileName->isChecked()));
-  s.append(",'" + dateFormat->text() + "'");
-  s.append("," + seconds->text());
-  s.append(",'" + fileList.join("|") + "'");
-  s.append(",'" + timeFormat->text() + "'");
-  s.append(")");
-  q.exec(s);
-  if (q.lastError().isValid())
-  {
-    qDebug() << "CSVRuleDialog::saveRule: " << q.lastError().text();
-    return;
-  }
+  CSVRule r;
+  r.setName(rule);
+  r.setFormat(format);
+
+  QString s = delimiter->text();
+  r.setDelimiter(s);
+ 
+  r.setFileNameSymbol(useFileName->isChecked());
+
+  s = dateFormat->text();
+  r.setDateFormat(s);
+
+  s = seconds->text();
+  r.setInterval(s);
+
+  r.setFileList(fileList);
+
+  s = timeFormat->text();
+  r.setTimeFormat(s);
+
+  Database db;
+  db.saveRule(r);
 
   accept();
 }
 
 void CSVRuleDialog::loadRule ()
 {
-  QSqlQuery q(QSqlDatabase::database("data"));
-  QString s = "SELECT * FROM importRules WHERE name='" + rule + "'";
-  q.exec(s);
-  if (q.lastError().isValid())
-  {
-    qDebug() << "CSVRuleDialog::loadRule: " << q.lastError().text();
-    return;
-  }
+  CSVRule r;
+  r.setName(rule);
 
-  if (q.next())
+  Database db;
+  db.loadRule(r);
+
+  QString s;
+  r.getFormat(s);
+  if (s.length())
   {
-    s = q.value(1).toString();
-    if (s.length())
-    {
-      QStringList l = s.split(",");
-      ruleList->clear();
-      ruleList->addItems(l);
-    }
+    QStringList l = s.split(",");
+    ruleList->clear();
+    ruleList->addItems(l);
+  }
     
-    s = q.value(2).toString();
-    delimiter->setText(s);
+  r.getDelimiter(s);
+  delimiter->setText(s);
 
-    useFileName->setChecked(q.value(3).toBool());
+  useFileName->setChecked(r.getFileNameSymbol());
 
-    s = q.value(4).toString();
-    dateFormat->setText(s);
+  r.getDateFormat(s);
+  dateFormat->setText(s);
 
-    seconds->setValue(q.value(5).toInt());
+  r.getInterval(s);
+  seconds->setValue(s.toInt());
 
-    fileList = q.value(6).toString().split("|");
-    fileButton->setText(QString::number(fileList.count()) + " " + tr("Files"));
+  r.getFileList(fileList);
+  fileButton->setText(QString::number(fileList.count()) + " " + tr("Files"));
 
-    s = q.value(7).toString();
-    timeFormat->setText(s);
-  }
+  r.getTimeFormat(s);
+  timeFormat->setText(s);
 }
 
 void CSVRuleDialog::insertField ()
@@ -284,7 +286,6 @@ void CSVRuleDialog::fieldListSelected ()
   else
     insertButton->setEnabled(FALSE);
 }
-
 
 void CSVRuleDialog::importFileDialog ()
 {

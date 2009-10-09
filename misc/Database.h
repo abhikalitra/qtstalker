@@ -1,8 +1,8 @@
 /*
- *  CSV stock quote importer
- *
- *  Copyright (C) 2001-2007 Stefan S. Stratigakos
- *
+ *  CSV 
+ * 
+ *  Copyright (C) 2009 Stefan S. Stratigakos
+ * 
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
@@ -15,48 +15,38 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, 
  *  USA.
  */
 
-#ifndef CSV_H
-#define CSV_H
 
+#ifndef DATABASE_HPP
+#define DATABASE_HPP
 
-#include "CSVRule.h"
-#include "Bar.h"
-
-#include <QStringList>
 #include <QString>
-#include <QObject>
-#include <QTimer>
-#include <QDateTime>
+#include <QStringList>
 #include <QtSql>
 
+#include "CSVRule.h"
 
 
-class CSV : public QObject
+
+class Database
 {
-  Q_OBJECT
-
-  signals:
-    void signalMessage (QString);
-    void signalActive (QString);
-    void signalInactive (QString);
-
   public:
-    CSV (CSVRule &rule);
-    void setChart (QList<Bar> *bars);
-    void importSingleShot ();
-    void status ();
+    Database ();
 
-  public slots:
-    void import ();
+    // config functions
+    void setConfig (QString &k, QString &d);
+    void getConfig (QString &k, QString &d);
+
+    // rule functions
+    void getRules (QStringList &);
+    void loadRule (CSVRule &rule);
+    void deleteRule (QString &name);
+    void saveRule (CSVRule &rule);
 
   private:
-    int interval;
-    QTimer *timer;
-    CSVRule rule;
 };
 
 #endif

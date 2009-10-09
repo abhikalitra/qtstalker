@@ -99,7 +99,7 @@
 
 20091005: Added time field to the CSV app.
 
-
+20091008: Added new class to the CSV app to handle settings called Database::. Cleaned up sql code.
 
 
 
