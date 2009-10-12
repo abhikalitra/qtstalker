@@ -50,6 +50,7 @@ class Preferences : public QDialog
     void signalAppFont (QFont);
     void signalLoadChart ();
     void signalReloadToolBars ();
+    void signalRefreshChanged (int);
 
   public:
     Preferences (QWidget *);
@@ -65,17 +66,22 @@ class Preferences : public QDialog
     void slotSave ();
     void slotModified ();
     void cancelPressed ();
+    void slotRefreshModified ();
 
   private:
-    int modified;
     QTabWidget *tabs;
     QDialogButtonBox *buttonBox;
+
+    // flags
+    int modified;
+    int refreshModified;
     
     // main page
     QSpinBox *bs1Spinner;
     QSpinBox *bs2Spinner;
     QSpinBox *tabRows;
     QLineEdit *indicatorScriptDefault;
+    QSpinBox *refreshSpinner;
     
     // color page
     ColorButton *backgroundColorButton;
@@ -112,6 +118,7 @@ class Preferences : public QDialog
     QCheckBox *dataWindowBtnCheck;
     QCheckBox *mainQuoteBtnCheck;
     QCheckBox *helpButtonCheck;
+    QCheckBox *refreshButtonCheck;
 
     // on ChartToolbar
     QCheckBox *cmps60BtnCheck;

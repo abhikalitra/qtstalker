@@ -576,8 +576,6 @@ void CODialog::slotSave()
   co->setData(COSettings::COColor, color);
   
   Config config;
-  double td = 0;
-  int ti = 0;
   QFont font;
   QString s;
   co->getData(COSettings::COCOType, s);
@@ -587,22 +585,19 @@ void CODialog::slotSave()
       if (checkDefault->isChecked())
 	config.setData(Config::DefaultBuyArrowColor, color);
       
-      td = dspin->value();
-      co->setData(COSettings::COValue, td);
+      co->setData(COSettings::COValue, dspin->value());
       break;
     case COSettings::COSellArrow:
       if (checkDefault->isChecked())
 	config.setData(Config::DefaultSellArrowColor, color);
       
-      td = dspin->value();
-      co->setData(COSettings::COValue, td);
+      co->setData(COSettings::COValue, dspin->value());
       break;
     case COSettings::COHorizontalLine:
       if (checkDefault->isChecked())
 	config.setData(Config::DefaultHorizontalLineColor, color);
       
-      td = dspin->value();
-      co->setData(COSettings::COValue, td);
+      co->setData(COSettings::COValue, dspin->value());
 
       s = text->text();
       co->setData(COSettings::COLabel, s);
@@ -611,8 +606,7 @@ void CODialog::slotSave()
       if (checkDefault->isChecked())
 	config.setData(Config::DefaultTextColor, color);
       
-      td = dspin->value();
-      co->setData(COSettings::COValue, td);
+      co->setData(COSettings::COValue, dspin->value());
 
       s = text->text();
       co->setData(COSettings::COLabel, s);
@@ -628,69 +622,56 @@ void CODialog::slotSave()
       if (checkDefault->isChecked())
 	config.setData(Config::DefaultFiboLineColor, color);
       
-      td = dspin->value();
-      co->setData(COSettings::COLine1, td);
+      co->setData(COSettings::COLine1, dspin->value());
       if (checkDefault->isChecked())
-	config.setData(Config::DefaultFiboLine1, td);
+	config.setData(Config::DefaultFiboLine1, dspin->value());
 
-      td = dspin2->value();
-      co->setData(COSettings::COLine2, td);
+      co->setData(COSettings::COLine2, dspin2->value());
       if (checkDefault->isChecked())
-	config.setData(Config::DefaultFiboLine2, td);
+	config.setData(Config::DefaultFiboLine2, dspin2->value());
 
-      td = dspin3->value();
-      co->setData(COSettings::COLine3, td);
+      co->setData(COSettings::COLine3, dspin3->value());
       if (checkDefault->isChecked())
-	config.setData(Config::DefaultFiboLine3, td);
+	config.setData(Config::DefaultFiboLine3, dspin3->value());
 
-      td = dspin4->value();
-      co->setData(COSettings::COLine4, td);
+      co->setData(COSettings::COLine4, dspin4->value());
       if (checkDefault->isChecked())
-	config.setData(Config::DefaultFiboLine4, td);
+	config.setData(Config::DefaultFiboLine4, dspin4->value());
 
-      td = dspin5->value();
-      co->setData(COSettings::COLine5, td);
+      co->setData(COSettings::COLine5, dspin5->value());
       if (checkDefault->isChecked())
-	config.setData(Config::DefaultFiboLine5, td);
+	config.setData(Config::DefaultFiboLine5, dspin5->value());
 
-      td = dspin6->value();
-      co->setData(COSettings::COLine6, td);
+      co->setData(COSettings::COLine6, dspin6->value());
       if (checkDefault->isChecked())
-	config.setData(Config::DefaultFiboLine6, td);
+	config.setData(Config::DefaultFiboLine6, dspin6->value());
 
-      td = dspin7->value();
-      co->setData(COSettings::COHigh, td);
+      co->setData(COSettings::COHigh, dspin7->value());
 
-      td = dspin8->value();
-      co->setData(COSettings::COLow, td);
+      co->setData(COSettings::COLow, dspin8->value());
 
-      ti = (int) check->isChecked();
-      co->setData(COSettings::COExtend, ti);
+      co->setData(COSettings::COExtend, check->isChecked());
       break;
     case COSettings::COTrendLine:
       if (checkDefault->isChecked())
 	config.setData(Config::DefaultTrendLineColor, color);
       
-      td = dspin->value();
-      co->setData(COSettings::COValue, td);
+      co->setData(COSettings::COValue, dspin->value());
 
-      td = dspin2->value();
-      co->setData(COSettings::COValue2, td);
+      co->setData(COSettings::COValue2, dspin2->value());
 
       s = combo->currentText();
       co->setData(COSettings::COBarField, s);
       if (checkDefault->isChecked())
 	config.setData(Config::DefaultTrendLineBar, s);
       
-      ti = (int) check->isChecked();
-      co->setData(COSettings::COUseBar, ti);
+      co->setData(COSettings::COUseBar, check->isChecked());
       if (checkDefault->isChecked())
-	config.setData(Config::DefaultTrendLineUseBar, ti);
+	config.setData(Config::DefaultTrendLineUseBar, check->isChecked());
       
-      ti = (int) check2->isChecked();
-      co->setData(COSettings::COExtend, ti);
+      co->setData(COSettings::COExtend, check2->isChecked());
       if (checkDefault->isChecked())
-	config.setData(Config::DefaultTrendLineExtend, ti);
+	config.setData(Config::DefaultTrendLineExtend, check2->isChecked());
       break;
     case COSettings::COVerticalLine:
       if (checkDefault->isChecked())

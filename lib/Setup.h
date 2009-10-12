@@ -31,8 +31,6 @@ class Setup
   public:
     Setup ();
     void setup (QString);
-    void setConfig (QString &k, QString &d);
-    void getConfig (QString &k, QString &d);
     void setupConfigDefaults ();
     void setupDataBase (QString);
     void setupDirectories ();

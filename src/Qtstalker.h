@@ -29,6 +29,7 @@
 #include <QStatusBar>
 #include <QList>
 #include <QSpinBox>
+#include <QTimer>
 
 
 #include "Plot.h"
@@ -89,7 +90,8 @@ class QtstalkerApp : public QMainWindow
       Slider,
       RecentCharts,
       ZoomIn,
-      ZoomOut
+      ZoomOut,
+      Refresh
     };
 
     QtstalkerApp (QString);
@@ -138,11 +140,13 @@ class QtstalkerApp : public QMainWindow
     void cmpsBtn5Clicked();
     void slotAddRecentChart (QString);
     void slotScriptDone ();
-
     void slotZoomIn ();
     void slotZoomOut ();
     void slotPlotZoom (int, int);
     void resetZoomSettings ();
+    void slotRefreshChart (bool);
+    void slotReloadChart ();
+    void slotRefreshUpdated (int);
     
   private:
     QSplitter *split;
@@ -168,13 +172,12 @@ class QtstalkerApp : public QMainWindow
     QSpinBox *barCount;
     QSlider *slider;
     QComboBox *recentCharts;
-    
     ExScript *script;
     QStringList indicatorList;
     int ilPos;
-
     QList<Setting> zoomList;
     int zoomPos;
+    QTimer *refreshTimer;
 };
 
 #endif

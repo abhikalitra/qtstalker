@@ -115,25 +115,21 @@ void Setup::setupDataBase (QString session)
 
 void Setup::setupQuoteBase ()
 {
-  QString k = QString::number(Config::DbPlugin);
+  Config config;
   QString d;
-  getConfig(k, d);
+  config.getData(Config::DbPlugin, d);
   QSqlDatabase db = QSqlDatabase::addDatabase(d, "quotes");
   
-  k = QString::number(Config::DbHostName);
-  getConfig(k, d);
+  config.getData(Config::DbHostName, d);
   db.setHostName(d);
 
-  k = QString::number(Config::DbName);
-  getConfig(k, d);
+  config.getData(Config::DbName, d);
   db.setDatabaseName(d);
 
-  k = QString::number(Config::DbUserName);
-  getConfig(k, d);
+  config.getData(Config::DbUserName, d);
   db.setUserName(d);
 
-  k = QString::number(Config::DbPassword);
-  getConfig(k, d);
+  config.getData(Config::DbPassword, d);
   db.setPassword(d);
   if (! db.open())
     qDebug() << "Setup::setup: quote db open failed";
@@ -141,619 +137,527 @@ void Setup::setupQuoteBase ()
 
 void Setup::setupConfigDefaults ()
 {
-  QSqlQuery q(QSqlDatabase::database("data"));
-  QString k = "BEGIN";
-  q.exec(k);
-  if (q.lastError().isValid())
-    qDebug() << "Setup::setupConfigDefaults: " << q.lastError().text();
+  Config config;
+  config.transaction();
 
   // check if config defaults already exist
   QString d;
-  k = QString::number(Config::Home);
-  setConfig(k, home);
+  config.setData(Config::Home, home);
 
-  k = QString::number(Config::Version);
-  setConfig(k, version);
+  config.setData(Config::Version, version);
 
-  k = QString::number(Config::Pixelspace);
-  getConfig(k, d);
+  config.getData(Config::Pixelspace, d);
   if (d.isEmpty())
   {
     d = "6";
-    setConfig(k, d);
+    config.setData(Config::Pixelspace, d);
   }
 
-  k = QString::number(Config::BarLength);
-  getConfig(k, d);
+  config.getData(Config::BarLength, d);
   if (d.isEmpty())
   {
     d = "6";
-    setConfig(k, d);
+    config.setData(Config::BarLength, d);
   }
 
-  k = QString::number(Config::Grid);
-  getConfig(k, d);
+  config.getData(Config::Grid, d);
   if (d.isEmpty())
   {
     d = "1";
-    setConfig(k, d);
+    config.setData(Config::Grid, d);
   }
 
-  k = QString::number(Config::BarsToLoad);
-  getConfig(k, d);
+  config.getData(Config::BarsToLoad, d);
   if (d.isEmpty())
   {
     d = "275";
-    setConfig(k, d);
+    config.setData(Config::BarsToLoad, d);
   }
 
-  k = QString::number(Config::BackgroundColor);
-  getConfig(k, d);
+  config.getData(Config::BackgroundColor, d);
   if (d.isEmpty())
   {
     d = "#000000"; // black
-    setConfig(k, d);
+    config.setData(Config::BackgroundColor, d);
   }
 
-  k = QString::number(Config::BorderColor);
-  getConfig(k, d);
+  config.getData(Config::BorderColor, d);
   if (d.isEmpty())
   {
     d = "#ffffff"; // white
-    setConfig(k, d);
+    config.setData(Config::BorderColor, d);
   }
 
-  k = QString::number(Config::GridColor);
-  getConfig(k, d);
+  config.getData(Config::GridColor, d);
   if (d.isEmpty())
   {
     d = "#555555"; // gray
-    setConfig(k, d);
+    config.setData(Config::GridColor, d);
   }
 
-  k = QString::number(Config::Crosshairs);
-  getConfig(k, d);
+  config.getData(Config::Crosshairs, d);
   if (d.isEmpty())
   {
     d = "0";
-    setConfig(k, d);
+    config.setData(Config::Crosshairs, d);
   }
 
-  k = QString::number(Config::DrawMode);
-  getConfig(k, d);
+  config.getData(Config::DrawMode, d);
   if (d.isEmpty())
   {
     d = "1";
-    setConfig(k, d);
+    config.setData(Config::DrawMode, d);
   }
 
-  k = QString::number(Config::DataPanelSize);
-  getConfig(k, d);
+  config.getData(Config::DataPanelSize, d);
   if (d.isEmpty())
   {
     d = "338,322";
-    setConfig(k, d);
+    config.setData(Config::DataPanelSize, d);
   }
 
-  k = QString::number(Config::ScaleToScreen);
-  getConfig(k, d);
+  config.getData(Config::ScaleToScreen, d);
   if (d.isEmpty())
   {
     d = "1";
-    setConfig(k, d);
+    config.setData(Config::ScaleToScreen, d);
   }
 
-  k = QString::number(Config::PlotFont);
-  getConfig(k, d);
+  config.getData(Config::PlotFont, d);
   if (d.isEmpty())
   {
     d = "DejaVu Sans,9,50,0,0";
-    setConfig(k, d);
+    config.setData(Config::PlotFont, d);
   }
 
-  k = QString::number(Config::AppFont);
-  getConfig(k, d);
+  config.getData(Config::AppFont, d);
   if (d.isEmpty())
   {
     d = "DejaVu Sans,9,50,0,0";
-    setConfig(k, d);
+    config.setData(Config::AppFont, d);
   }
 
-  k = QString::number(Config::NavAreaSize);
-  getConfig(k, d);
+  config.getData(Config::NavAreaSize, d);
   if (d.isEmpty())
   {
     d = "780,109";
-    setConfig(k, d);
+    config.setData(Config::NavAreaSize, d);
   }
 
-  k = QString::number(Config::MainWindowSize);
-  getConfig(k, d);
+  config.getData(Config::MainWindowSize, d);
   if (d.isEmpty())
   {
     d = "950,600";
-    setConfig(k, d);
+    config.setData(Config::MainWindowSize, d);
   }
 
-  k = QString::number(Config::MainWindowPos);
-  getConfig(k, d);
+  config.getData(Config::MainWindowPos, d);
   if (d.isEmpty())
   {
     d = "30,30";
-    setConfig(k, d);
+    config.setData(Config::MainWindowPos, d);
   }
 
-  k = QString::number(Config::PrefDlgWindowSize);
-  getConfig(k, d);
+  config.getData(Config::PrefDlgWindowSize, d);
   if (d.isEmpty())
   {
     d = "600,400";
-    setConfig(k, d);
+    config.setData(Config::PrefDlgWindowSize, d);
   }
 
-  k = QString::number(Config::PlotSizes);
-  getConfig(k, d);
+  config.getData(Config::PlotSizes, d);
   if (d.isEmpty())
   {
     d = "339,85";
-    setConfig(k, d);
+    config.setData(Config::PlotSizes, d);
   }
 
-  k = QString::number(Config::PSButton1);
-  getConfig(k, d);
+  config.getData(Config::PSButton1, d);
   if (d.isEmpty())
   {
     d = "6";
-    setConfig(k, d);
+    config.setData(Config::PSButton1, d);
   }
 
-  k = QString::number(Config::PSButton2);
-  getConfig(k, d);
+  config.getData(Config::PSButton2, d);
   if (d.isEmpty())
   {
     d = "8";
-    setConfig(k, d);
+    config.setData(Config::PSButton2, d);
   }
 
-  k = QString::number(Config::ShowSidePanel);
-  getConfig(k, d);
+  config.getData(Config::ShowSidePanel, d);
   if (d.isEmpty())
   {
     d = "1";
-    setConfig(k, d);
+    config.setData(Config::ShowSidePanel, d);
   }
 
-  k = QString::number(Config::ShowQuitBtn);
-  getConfig(k, d);
+  config.getData(Config::ShowQuitBtn, d);
   if (d.isEmpty())
   {
     d = "1";
-    setConfig(k, d);
+    config.setData(Config::ShowQuitBtn, d);
   }
 
-  k = QString::number(Config::ShowPrefBtn);
-  getConfig(k, d);
+  config.getData(Config::ShowPrefBtn, d);
   if (d.isEmpty())
   {
     d = "1";
-    setConfig(k, d);
+    config.setData(Config::ShowPrefBtn, d);
   }
 
-  k = QString::number(Config::ShowSidePanelBtn);
-  getConfig(k, d);
+  config.getData(Config::ShowSidePanelBtn, d);
   if (d.isEmpty())
   {
     d = "1";
-    setConfig(k, d);
+    config.setData(Config::ShowSidePanelBtn, d);
   }
 
-  k = QString::number(Config::ShowGridBtn);
-  getConfig(k, d);
+  config.getData(Config::ShowGridBtn, d);
   if (d.isEmpty())
   {
     d = "1";
-    setConfig(k, d);
+    config.setData(Config::ShowGridBtn, d);
   }
 
-  k = QString::number(Config::ShowScaleToScreenBtn);
-  getConfig(k, d);
+  config.getData(Config::ShowScaleToScreenBtn, d);
   if (d.isEmpty())
   {
     d = "1";
-    setConfig(k, d);
+    config.setData(Config::ShowScaleToScreenBtn, d);
   }
 
-  k = QString::number(Config::ShowCrosshairBtn);
-  getConfig(k, d);
+  config.getData(Config::ShowCrosshairBtn, d);
   if (d.isEmpty())
   {
     d = "1";
-    setConfig(k, d);
+    config.setData(Config::ShowCrosshairBtn, d);
   }
 
-  k = QString::number(Config::ShowDrawModeBtn);
-  getConfig(k, d);
+  config.getData(Config::ShowDrawModeBtn, d);
   if (d.isEmpty())
   {
     d = "1";
-    setConfig(k, d);
+    config.setData(Config::ShowDrawModeBtn, d);
   }
 
-  k = QString::number(Config::ShowNewIndicatorBtn);
-  getConfig(k, d);
+  config.getData(Config::ShowNewIndicatorBtn, d);
   if (d.isEmpty())
   {
     d = "1";
-    setConfig(k, d);
+    config.setData(Config::ShowNewIndicatorBtn, d);
   }
 
-  k = QString::number(Config::ShowDataWindowBtn);
-  getConfig(k, d);
+  config.getData(Config::ShowDataWindowBtn, d);
   if (d.isEmpty())
   {
     d = "1";
-    setConfig(k, d);
+    config.setData(Config::ShowDataWindowBtn, d);
   }
 
-  k = QString::number(Config::ShowHelpButton);
-  getConfig(k, d);
+  config.getData(Config::ShowHelpButton, d);
   if (d.isEmpty())
   {
     d = "1";
-    setConfig(k, d);
+    config.setData(Config::ShowHelpButton, d);
   }
 
-  k = QString::number(Config::ShowCmps60Btn);
-  getConfig(k, d);
+  config.getData(Config::ShowCmps60Btn, d);
   if (d.isEmpty())
   {
     d = "0";
-    setConfig(k, d);
+    config.setData(Config::ShowCmps60Btn, d);
   }
 
-  k = QString::number(Config::ShowCmps15Btn);
-  getConfig(k, d);
+  config.getData(Config::ShowCmps15Btn, d);
   if (d.isEmpty())
   {
     d = "0";
-    setConfig(k, d);
+    config.setData(Config::ShowCmps15Btn, d);
   }
 
-  k = QString::number(Config::ShowCmps5Btn);
-  getConfig(k, d);
+  config.getData(Config::ShowCmps5Btn, d);
   if (d.isEmpty())
   {
     d = "0";
-    setConfig(k, d);
+    config.setData(Config::ShowCmps5Btn, d);
   }
 
-  k = QString::number(Config::ShowCmpsDayBtn);
-  getConfig(k, d);
+  config.getData(Config::ShowCmpsDayBtn, d);
   if (d.isEmpty())
   {
     d = "1";
-    setConfig(k, d);
+    config.setData(Config::ShowCmpsDayBtn, d);
   }
 
-  k = QString::number(Config::ShowCmpsWkyBtn);
-  getConfig(k, d);
+  config.getData(Config::ShowCmpsWkyBtn, d);
   if (d.isEmpty())
   {
     d = "1";
-    setConfig(k, d);
+    config.setData(Config::ShowCmpsWkyBtn, d);
   }
 
-  k = QString::number(Config::ShowCmpsMtyBtn);
-  getConfig(k, d);
+  config.getData(Config::ShowCmpsMtyBtn, d);
   if (d.isEmpty())
   {
     d = "1";
-    setConfig(k, d);
+    config.setData(Config::ShowCmpsMtyBtn, d);
   }
 
-  k = QString::number(Config::ShowRecentCharts);
-  getConfig(k, d);
+  config.getData(Config::ShowRecentCharts, d);
   if (d.isEmpty())
   {
     d = "1";
-    setConfig(k, d);
+    config.setData(Config::ShowRecentCharts, d);
   }
 
-  k = QString::number(Config::LastChartObjectID);
-  getConfig(k, d);
+  config.getData(Config::LastChartObjectID, d);
   if (d.isEmpty())
   {
     d = "0";
-    setConfig(k, d);
+    config.setData(Config::LastChartObjectID, d);
   }
 
-  k = QString::number(Config::IndicatorTabRows);
-  getConfig(k, d);
+  config.getData(Config::IndicatorTabRows, d);
   if (d.isEmpty())
   {
     d = "2";
-    setConfig(k, d);
+    config.setData(Config::IndicatorTabRows, d);
   }
   
-  k = QString::number(Config::DbPlugin);
-  getConfig(k, d);
+  config.getData(Config::DbPlugin, d);
   if (d.isEmpty())
   {
     d = "QSQLITE";
-    setConfig(k, d);
+    config.setData(Config::DbPlugin, d);
   }
   
-  k = QString::number(Config::DbHostName);
-  getConfig(k, d);
+  config.getData(Config::DbHostName, d);
   if (d.isEmpty())
   {
     d = "localhost";
-    setConfig(k, d);
+    config.setData(Config::DbHostName, d);
   }
   
-  k = QString::number(Config::DbName);
-  getConfig(k, d);
+  config.getData(Config::DbName, d);
   if (d.isEmpty())
   {
     d = QDir::homePath() + "/.CSV/quotes.sqlite";
-    setConfig(k, d);
+    config.setData(Config::DbName, d);
   }
   
-  k = QString::number(Config::DbUserName);
-  getConfig(k, d);
+  config.getData(Config::DbUserName, d);
   if (d.isEmpty())
   {
     d = "qtstalker";
-    setConfig(k, d);
+    config.setData(Config::DbUserName, d);
   }
   
-  k = QString::number(Config::DbPassword);
-  getConfig(k, d);
+  config.getData(Config::DbPassword, d);
   if (d.isEmpty())
   {
     d = "qtstalker";
-    setConfig(k, d);
+    config.setData(Config::DbPassword, d);
   }
 
-  k = QString::number(Config::DbAllSymbols);
-  getConfig(k, d);
+  config.getData(Config::DbAllSymbols, d);
   if (d.isEmpty())
   {
     d = "SELECT symbol FROM symbolIndex";
-    setConfig(k, d);
+    config.setData(Config::DbAllSymbols, d);
   }
 
-  k = QString::number(Config::DbSearchSymbols);
-  getConfig(k, d);
+  config.getData(Config::DbSearchSymbols, d);
   if (d.isEmpty())
   {
     d = "SELECT symbol FROM symbolIndex WHERE symbol LIKE";
-    setConfig(k, d);
+    config.setData(Config::DbSearchSymbols, d);
   }
 
-  k = QString::number(Config::DbFirstDate);
-  getConfig(k, d);
+  config.getData(Config::DbFirstDate, d);
   if (d.isEmpty())
   {
     d = "SELECT min(date) FROM $symbol";
-    setConfig(k, d);
+    config.setData(Config::DbFirstDate, d);
   }
 
-  k = QString::number(Config::DbLastDate);
-  getConfig(k, d);
+  config.getData(Config::DbLastDate, d);
   if (d.isEmpty())
   {
     d = "SELECT max(date) FROM $symbol";
-    setConfig(k, d);
+    config.setData(Config::DbLastDate, d);
   }
 
-  k = QString::number(Config::DbGetSymbol);
-  getConfig(k, d);
+  config.getData(Config::DbGetSymbol, d);
   if (d.isEmpty())
   {
     d = "SELECT date,open,high,low,close,volume,oi FROM $symbol WHERE date >= $sd AND date <= $ed ORDER BY date DESC LIMIT $records";
-    setConfig(k, d);
+    config.setData(Config::DbGetSymbol, d);
   }
 
-  k = QString::number(Config::DefaultIndicators);
-  getConfig(k, d);
+  config.getData(Config::DefaultIndicators, d);
   if (d.isEmpty())
   {
     d = "0";
-    setConfig(k, d);
+    config.setData(Config::DefaultIndicators, d);
   }
   
-  k = QString::number(Config::DefaultBuyArrowColor);
-  getConfig(k, d);
+  config.getData(Config::DefaultBuyArrowColor, d);
   if (d.isEmpty())
   {
     d = "green";
-    setConfig(k, d);
+    config.setData(Config::DefaultBuyArrowColor, d);
   }
   
-  k = QString::number(Config::DefaultSellArrowColor);
-  getConfig(k, d);
+  config.getData(Config::DefaultSellArrowColor, d);
   if (d.isEmpty())
   {
     d = "red";
-    setConfig(k, d);
+    config.setData(Config::DefaultSellArrowColor, d);
   }
   
-  k = QString::number(Config::DefaultHorizontalLineColor);
-  getConfig(k, d);
+  config.getData(Config::DefaultHorizontalLineColor, d);
   if (d.isEmpty())
   {
     d = "red";
-    setConfig(k, d);
+    config.setData(Config::DefaultHorizontalLineColor, d);
   }
   
-  k = QString::number(Config::DefaultVerticalLineColor);
-  getConfig(k, d);
+  config.getData(Config::DefaultVerticalLineColor, d);
   if (d.isEmpty())
   {
     d = "red";
-    setConfig(k, d);
+    config.setData(Config::DefaultVerticalLineColor, d);
   }
   
-  k = QString::number(Config::DefaultFiboLineColor);
-  getConfig(k, d);
+  config.getData(Config::DefaultFiboLineColor, d);
   if (d.isEmpty())
   {
     d = "red";
-    setConfig(k, d);
+    config.setData(Config::DefaultFiboLineColor, d);
   }
   
-  k = QString::number(Config::DefaultFiboLine1);
-  getConfig(k, d);
+  config.getData(Config::DefaultFiboLine1, d);
   if (d.isEmpty())
   {
     d = "0.382";
-    setConfig(k, d);
+    config.setData(Config::DefaultFiboLine1, d);
   }
   
-  k = QString::number(Config::DefaultFiboLine2);
-  getConfig(k, d);
+  config.getData(Config::DefaultFiboLine2, d);
   if (d.isEmpty())
   {
     d = "0.5";
-    setConfig(k, d);
+    config.setData(Config::DefaultFiboLine2, d);
   }
   
-  k = QString::number(Config::DefaultFiboLine3);
-  getConfig(k, d);
+  config.getData(Config::DefaultFiboLine3, d);
   if (d.isEmpty())
   {
     d = "0.618";
-    setConfig(k, d);
+    config.setData(Config::DefaultFiboLine3, d);
   }
   
-  k = QString::number(Config::DefaultFiboLine4);
-  getConfig(k, d);
+  config.getData(Config::DefaultFiboLine4, d);
   if (d.isEmpty())
   {
     d = "0";
-    setConfig(k, d);
+    config.setData(Config::DefaultFiboLine4, d);
   }
   
-  k = QString::number(Config::DefaultFiboLine5);
-  getConfig(k, d);
+  config.getData(Config::DefaultFiboLine5, d);
   if (d.isEmpty())
   {
     d = "0";
-    setConfig(k, d);
+    config.setData(Config::DefaultFiboLine5, d);
   }
   
-  k = QString::number(Config::DefaultFiboLine6);
-  getConfig(k, d);
+  config.getData(Config::DefaultFiboLine6, d);
   if (d.isEmpty())
   {
     d = "0";
-    setConfig(k, d);
+    config.setData(Config::DefaultFiboLine6, d);
   }   
   
-  k = QString::number(Config::DefaultTextColor);
-  getConfig(k, d);
+  config.getData(Config::DefaultTextColor, d);
   if (d.isEmpty())
   {
     d = "white";
-    setConfig(k, d);
+    config.setData(Config::DefaultTextColor, d);
   }
   
-  k = QString::number(Config::DefaultTextFont);
-  getConfig(k, d);
+  config.getData(Config::DefaultTextFont, d);
   if (d.isEmpty())
   {
     d = "DejaVu Sans,9,50,0,0";
-    setConfig(k, d);
+    config.setData(Config::DefaultTextFont, d);
   }
   
-  k = QString::number(Config::DefaultTextLabel);
-  getConfig(k, d);
+  config.getData(Config::DefaultTextLabel, d);
   if (d.isEmpty())
   {
     d = QObject::tr("Text");
-    setConfig(k, d);
+    config.setData(Config::DefaultTextLabel, d);
   }
   
-  k = QString::number(Config::DefaultTrendLineColor);
-  getConfig(k, d);
+  config.getData(Config::DefaultTrendLineColor, d);
   if (d.isEmpty())
   {
     d = "red";
-    setConfig(k, d);
+    config.setData(Config::DefaultTrendLineColor, d);
   }
   
-  k = QString::number(Config::DefaultTrendLineBar);
-  getConfig(k, d);
+  config.getData(Config::DefaultTrendLineBar, d);
   if (d.isEmpty())
   {
     d = "Close";
-    setConfig(k, d);
+    config.setData(Config::DefaultTrendLineBar, d);
   }
   
-  k = QString::number(Config::DefaultTrendLineExtend);
-  getConfig(k, d);
+  config.getData(Config::DefaultTrendLineExtend, d);
   if (d.isEmpty())
   {
     d = "1";
-    setConfig(k, d);
+    config.setData(Config::DefaultTrendLineExtend, d);
   }
   
-  k = QString::number(Config::DefaultTrendLineUseBar);
-  getConfig(k, d);
+  config.getData(Config::DefaultTrendLineUseBar, d);
   if (d.isEmpty())
   {
     d = "0";
-    setConfig(k, d);
+    config.setData(Config::DefaultTrendLineUseBar, d);
   }
 
-  k = QString::number(Config::IndicatorScriptDefault);
-  getConfig(k, d);
+  config.getData(Config::IndicatorScriptDefault, d);
   if (d.isEmpty())
   {
     d = "perl /usr/local/share/qtstalker/indicator/";
-    setConfig(k, d);
+    config.setData(Config::IndicatorScriptDefault, d);
   }
 
-  k = "COMMIT";
-  q.exec(k);
-  if (q.lastError().isValid())
-    qDebug() << "Setup::setupConfigDefaults:" << q.lastError().text();
-}
-
-void Setup::setConfig (QString &k, QString &d)
-{
-  QSqlQuery q(QSqlDatabase::database("data"));
-  QString s = "INSERT OR REPLACE INTO config (key, setting) VALUES (" + k + ",'" + d + "')";
-  q.exec(s);
-  if (q.lastError().isValid())
+  config.getData(Config::Refresh, d);
+  if (d.isEmpty())
   {
-    qDebug() << "Setup::setConfig: " << q.lastError().text();
-    return;
+    d = "1";
+    config.setData(Config::Refresh, d);
   }
-}
 
-void Setup::getConfig (QString &k, QString &d)
-{
-  d.clear();
-  QSqlQuery q(QSqlDatabase::database("data"));
-  QString s = "SELECT setting FROM config WHERE key=" + k;
-  q.exec(s);
-  if (q.lastError().isValid())
+  config.getData(Config::RefreshStatus, d);
+  if (d.isEmpty())
   {
-    qDebug() << "Setup::getData: " << q.lastError().text();
-    return;
+    d = "0";
+    config.setData(Config::RefreshStatus, d);
   }
 
-  if (q.next())
-    d = q.value(0).toString();
+  config.commit();
 }
 
 void Setup::setupDefaultIndicators ()
 {
-  QString k = QString::number(Config::DefaultIndicators);
   QString d;
-  getConfig(k, d);
+  Config config;
+  config.getData(Config::DefaultIndicators, d);
   if (d.toInt())
     return;
   

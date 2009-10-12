@@ -28,22 +28,16 @@ Config::Config ()
 {
 }
 
-void Config::beginTransaction ()
+void Config::transaction ()
 {
-  QSqlQuery q(QSqlDatabase::database("data"));
-  QString s = "BEGIN";
-  q.exec(s);
-  if (q.lastError().isValid())
-    qDebug() << "Config::beginTransaction: " << q.lastError().text();
+  QSqlDatabase db = QSqlDatabase::database("data");
+  db.transaction();
 }
 
 void Config::commit ()
 {
-  QSqlQuery q(QSqlDatabase::database("data"));
-  QString s = "COMMIT";
-  q.exec(s);
-  if (q.lastError().isValid())
-    qDebug() << "Config::commit: " << q.lastError().text();
+  QSqlDatabase db = QSqlDatabase::database("data");
+  db.commit();
 }
 
 void Config::getData (Parm p, QString &d)
@@ -187,13 +181,14 @@ void Config::setData (Parm name, QSize &sz)
   setData(name, s);
 }
 
-void Config::getData (Parm name, bool &b)
+bool Config::getBool (Parm name)
 {
   QString s;
-  b = FALSE;
+  bool b = FALSE;
   getData(name, s);
   if (s.length())
     b = s.toInt();
+  return b;
 }
 
 void Config::setData (Parm name, bool b)
@@ -202,13 +197,14 @@ void Config::setData (Parm name, bool b)
   setData(name, s);
 }
 
-void Config::getData (Parm name, int &i)
+int Config::getInt (Parm name)
 {
   QString s;
-  i = 0;
+  int i = 0;
   getData(name, s);
   if (s.length())
     i = s.toInt();
+  return i;
 }
 
 void Config::setData (Parm name, int i)
@@ -217,18 +213,34 @@ void Config::setData (Parm name, int i)
   setData(name, s);
 }
 
-void Config::getData (Parm name, double &d)
+double Config::getDouble (Parm name)
 {
   QString s;
-  d = 0;
+  double d = 0;
   getData(name, s);
   if (s.length())
     d = s.toDouble();
+  return d;
 }
 
 void Config::setData (Parm name, double d)
 {
   QString s = QString::number(d);
+  setData(name, s);
+}
+
+void Config::getData (Parm name, QStringList &l)
+{
+  l.clear();
+  QString s;
+  getData(name, s);
+  if (s.length())
+    l = s.split(",");
+}
+
+void Config::setData (Parm name, QStringList &l)
+{
+  QString s = l.join(",");
   setData(name, s);
 }
 

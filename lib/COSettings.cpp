@@ -184,11 +184,8 @@ void COSettings::newObject (int o)
 {
   Config config;
   QColor color;
-  QString d;
-  double td;
-  int ti;
-  
-  d = QString::number(o);
+
+  QString d = QString::number(o);
   setData(COCOType, d);
   
   switch ((COType) o)
@@ -201,23 +198,12 @@ void COSettings::newObject (int o)
       config.getData(Config::DefaultFiboLineColor, color);
       setData(COColor, color);
       
-      config.getData(Config::DefaultFiboLine1, td);
-      setData(COLine1, td);
-      
-      config.getData(Config::DefaultFiboLine2, td);
-      setData(COLine2, td);
-      
-      config.getData(Config::DefaultFiboLine3, td);
-      setData(COLine3, td);
-      
-      config.getData(Config::DefaultFiboLine4, td);
-      setData(COLine4, td);
-      
-      config.getData(Config::DefaultFiboLine5, td);
-      setData(COLine5, td);
-      
-      config.getData(Config::DefaultFiboLine6, td);
-      setData(COLine6, td);
+      setData(COLine1, config.getDouble(Config::DefaultFiboLine1));
+      setData(COLine2, config.getDouble(Config::DefaultFiboLine2));
+      setData(COLine3, config.getDouble(Config::DefaultFiboLine3));
+      setData(COLine4, config.getDouble(Config::DefaultFiboLine4));
+      setData(COLine5, config.getDouble(Config::DefaultFiboLine5));
+      setData(COLine6, config.getDouble(Config::DefaultFiboLine6));
 
       setData(COExtend, 0);
       break;
@@ -246,11 +232,9 @@ void COSettings::newObject (int o)
       config.getData(Config::DefaultTrendLineBar, d);
       setData(COBarField, d);
 
-      config.getData(Config::DefaultTrendLineUseBar, ti);
-      setData(COUseBar, ti);
+      setData(COUseBar, config.getInt(Config::DefaultTrendLineUseBar));
 
-      config.getData(Config::DefaultTrendLineExtend, ti);
-      setData(COExtend, ti);
+      setData(COExtend, config.getInt(Config::DefaultTrendLineExtend));
       break;
     case COSettings::COVerticalLine:
       config.getData(Config::DefaultVerticalLineColor, color);

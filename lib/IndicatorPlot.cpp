@@ -1401,8 +1401,7 @@ void IndicatorPlot::slotNewChartObject (int selection)
 
   Config config;
   QString s;
-  config.getData(Config::LastChartObjectID, s);
-  s = QString::number(s.toInt() + 1);
+  s = QString::number(config.getInt(Config::LastChartObjectID) + 1);
   coList.insert(s, coSelected);
   config.setData(Config::LastChartObjectID, s);
 

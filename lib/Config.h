@@ -71,7 +71,7 @@ class Config
       DbAllSymbols, // the sql command to get all symbols in db
       PSButton1, // toolbar bar spacing button 1
       PSButton2, // toolbar bar spacing button 2
-      Unused8, // ******** UNUSED **************
+      Refresh, // refreshes chart every x minutes
       ShowSidePanel, // side panel flag
       ShowQuitBtn, // toolbar button flag
       ShowPrefBtn,  // toolbar button flag
@@ -84,7 +84,7 @@ class Config
       ShowNewIndicatorBtn, // toolbar button flag
       ShowDataWindowBtn, // toolbar button flag
       ShowHelpButton, // toolbar button flag
-      Unused7, // ********** UNUSED *************
+      ShowRefreshButton, // toolbar button flag
       Unused9,  // ********** UNUSED *************
       Unused10, // ****** UNUSED **********
       ShowCmps5Btn, // toolbar button flag
@@ -97,7 +97,7 @@ class Config
       DbFirstDate, // the sql command to get the first date for a symbol
       DbLastDate, // the sql command to get the last date for a symbol
       DbGetSymbol, // the sql command to get symbol quotes
-      UNUSED1, // ********* UNUSED *******************
+      RefreshStatus, // status of the refresh chart toggle button
       LastGroupUsed, // last group displayed in groups area
       LastIndicatorUsed, // csv list of the last indicators used
       UNUSED2, // ************ UNUSED ************************
@@ -132,17 +132,17 @@ class Config
     };
 
     Config ();
-    void beginTransaction ();
+    void transaction ();
     void commit ();
     void setData (Parm, QString &);
     void getData (Parm, QString &);
     void getData (Parm, QSplitter *);
     void setData (Parm, QSplitter *);
-    void getData (Parm, bool &);
+    bool getBool (Parm);
     void setData (Parm, bool);
-    void getData (Parm, int &);
+    int getInt (Parm);
     void setData (Parm, int);
-    void getData (Parm, double &);
+    double getDouble (Parm);
     void setData (Parm, double);
     void getData (Parm, QColor &);
     void setData (Parm, QColor &);
@@ -152,8 +152,8 @@ class Config
     void setData (Parm, QPoint &);
     void getData (Parm, QSize &);
     void setData (Parm, QSize &);
-
-  protected:
+    void setData (Parm, QStringList &);
+    void getData (Parm, QStringList &);
 };
 
 #endif

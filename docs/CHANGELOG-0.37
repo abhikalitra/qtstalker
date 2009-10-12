@@ -101,6 +101,7 @@
 
 20091008: Added new class to the CSV app to handle settings called Database::. Cleaned up sql code.
 
-
+20091009: Added a refresh chart toggle button to the toolbar. If toggled, this will refresh the chart every x minutes.
+          Useful if bars are being updated quickly in quote database. The minutes are selected in the preferences dialog.
 
 

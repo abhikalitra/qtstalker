@@ -132,9 +132,8 @@ void IndicatorPage::newIndicator ()
   
   Config config;
   QString s;
-  config.getData(Config::IndicatorTabRows, s);
   QString trs = tr("Tab Row");
-  dialog->addIntItem(trs, 1, 1, s.toInt());
+  dialog->addIntItem(trs, 1, 1, config.getInt(Config::IndicatorTabRows));
 
   QString sc = tr("Script Command");
   config.getData(Config::IndicatorScriptDefault, s);
@@ -192,9 +191,8 @@ void IndicatorPage::editIndicator (QString &name)
   
   Config config;
   QString s;
-  config.getData(Config::IndicatorTabRows, s);
   QString trs = tr("Tab Row");
-  dialog->addIntItem(trs, i.getTabRow(), 1, s.toInt());
+  dialog->addIntItem(trs, i.getTabRow(), 1, config.getInt(Config::IndicatorTabRows));
 
   QString sc = tr("Script Command");
   i.getCommand(s);
