@@ -133,17 +133,19 @@ mv $WORK/qtstalker/qtstalker.plist.bin /Library/Preferences/com.Qtstalker.plist
 
 <a name="docs"></a>
 <h2><u>Enhancing documentation</u></h2>
+<p>
+The intention is to keep the documentation as simple as possible and link to tadoc.org where relevant.
+</p>
 <p>Edit docs in docs/*.html and view them immediately in your web browser using
 the <code>file://</code> protocol.</p>
-<p>To install the updated docs, do this:
+<p>
+To create a new document, copy the <code><a href="doc-template.html">doc-template.html</a></code> file.
 </p>
-
-<pre>
-touch docs/docs.pro
-make && sudo make install
-</pre>
-
-<p>Now view docs via Qtstalker context help. No need to re-start Qtstalker.
+<p>
+  NOTE: The documentation has not yet been fully updated from the
+  previous version. A warning has been added to the right-hand side of
+  every document. As each document is updated, that warning is removed
+  by removing the <code>&lt;div id="warnDoc">&lt;/div></code> element.
 </p>
 
 <p>
