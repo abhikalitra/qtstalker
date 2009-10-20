@@ -39,6 +39,15 @@
 **
 ****************************************************************************/
 
+/*
+This file is from Qt4.5.2:
+http://qt.nokia.com/doc/4.5/help-simpletextviewer-assistant-cpp.html
+
+Qtstalker changes are minor configuration and are noted below, and also in the
+project's revision control system.
+CVS $Revision: 1.2 $ $Date: 2009/10/20 04:22:06 $
+*/
+
 #include <QtCore/QByteArray>
 #include <QtCore/QDir>
 #include <QtCore/QLibraryInfo>
@@ -47,6 +56,9 @@
 #include <QtGui/QMessageBox>
 
 #include "assistant.h"
+// Qtstalker start changes
+#include "../lib/qtstalker_defines.h"
+// Qtstalker end changes
 
 Assistant::Assistant()
     : proc(0)
@@ -71,7 +83,12 @@ void Assistant::showDocumentation(const QString &page)
         return;
 
     QByteArray ba("SetSource ");
+// Qtstalker start changes
+/*
     ba.append("qthelp://com.trolltech.examples.simpletextviewer/doc/");
+*/
+    ba.append("qthelp://qtstalker/doc/");
+// Qtstalker end changes
     
     proc->write(ba + page.toLocal8Bit() + '\0');
 }
@@ -92,16 +109,30 @@ bool Assistant::startAssistant()
 #endif
 
         QStringList args;
+// Qtstalker start changes
+/*
         args << QLatin1String("-collectionFile")
             << QLibraryInfo::location(QLibraryInfo::ExamplesPath)
             + QLatin1String("/help/simpletextviewer/documentation/simpletextviewer.qhc")
             << QLatin1String("-enableRemoteControl");
+*/
+        QString collectionFile = QString("%1/qtstalker/html/doc.qhc").arg(INSTALL_DOCS_DIR);
+        args << QLatin1String("-collectionFile")
+            << collectionFile
+            << QLatin1String("-enableRemoteControl");
+// Qtstalker end changes
 
         proc->start(app, args);
 
         if (!proc->waitForStarted()) {
+// Qtstalker start changes
+/*
             QMessageBox::critical(0, QObject::tr("Simple Text Viewer"),
                 QObject::tr("Unable to launch Qt Assistant (%1)").arg(app));
+*/
+            QMessageBox::critical(0, QObject::tr("Qtstalker"),
+                QObject::tr("Unable to launch Qt Assistant (%1)").arg(app));
+// Qtstalker end changes
             return false;
         }    
     }

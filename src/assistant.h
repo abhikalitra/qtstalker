@@ -39,6 +39,15 @@
 **
 ****************************************************************************/
 
+/*
+This file is from Qt4.5.2:
+http://qt.nokia.com/doc/4.5/help-simpletextviewer-assistant-h.html
+
+Qtstalker changes are minor configuration and are noted below, and also in the
+project's revision control system.
+CVS $Revision: 1.2 $ $Date: 2009/10/20 04:22:06 $
+*/
+
 #ifndef ASSISTANT_H
 #define ASSISTANT_H
 
