@@ -898,7 +898,7 @@ TOC_EXPAND             = NO
 # Qt's qhelpgenerator to generate a Qt Compressed Help (.qch) of the generated 
 # HTML documentation.
 
-GENERATE_QHP           = NO
+GENERATE_QHP           = YES
 
 # If the QHG_LOCATION tag is specified, the QCH_FILE tag can 
 # be used to specify the file name of the resulting .qch file. 
@@ -910,13 +910,13 @@ QCH_FILE               =
 # Qt Help Project output. For more information please see 
 # <a href="http://doc.trolltech.com/qthelpproject.html#namespace">Qt Help Project / Namespace</a>.
 
-QHP_NAMESPACE          = org.doxygen.Project
+QHP_NAMESPACE          = org.doxygen.Qtstalker
 
 # The QHP_VIRTUAL_FOLDER tag specifies the namespace to use when generating 
 # Qt Help Project output. For more information please see 
 # <a href="http://doc.trolltech.com/qthelpproject.html#virtual-folders">Qt Help Project / Virtual Folders</a>.
 
-QHP_VIRTUAL_FOLDER     = doc
+QHP_VIRTUAL_FOLDER     = api
 
 # If the GENERATE_QHP tag is set to YES, the QHG_LOCATION tag can 
 # be used to specify the location of Qt's qhelpgenerator. 

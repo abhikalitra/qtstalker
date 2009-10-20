@@ -3,34 +3,35 @@ TEMPLATE = lib
 CONFIG += thread
 
 # install the example indicator html files and pics
-idocs.path = /usr/local/share/doc/qtstalker/html/indicator
+idocs.path = "$${INSTALL_DOCS_DIR}/qtstalker/html/indicator"
 idocs.files = indicator/*.html
 idocs.files += indicator/*.png
-#INSTALLS += idocs
+INSTALLS += idocs
 
 # install the past CHANGELOG files
-pcl.path = /usr/local/share/doc/qtstalker/html/pastchanges
+pcl.path = "$${INSTALL_DOCS_DIR}/qtstalker/html/pastchanges"
 pcl.files = pastchanges/*.html
 pcl.files += pastchanges/CHANGELOG*
-#INSTALLS += pcl
+INSTALLS += pcl
 
 # install the html files and pics
-docs.path = /usr/local/share/doc/qtstalker/html
+docs.path = "$${INSTALL_DOCS_DIR}/qtstalker/html"
 docs.files = *.html *.png CHANGELOG*
-#INSTALLS += docs
+docs.files += doc.qhc doc.qch doc-doxygen.qch
+INSTALLS += docs
 
 # install the license file
-lic.path = /usr/local/share/doc/qtstalker
+lic.path = "$${INSTALL_DOCS_DIR}/qtstalker"
 lic.files = COPYING
-#INSTALLS += lic
+INSTALLS += lic
 
 # install the translation files
-i18n.path = /usr/local/share/qtstalker/i18n
+i18n.path = "$${INSTALL_DATA_DIR}/qtstalker/i18n"
 i18n.files = ../i18n/*.qm
 INSTALLS += i18n
 
 # install the indicator files
-indicator.path = /usr/local/share/qtstalker/indicator
+indicator.path = "$${INSTALL_DATA_DIR}/qtstalker/indicator"
 indicator.files = ../misc/CUS_examples/*.perl
 #INSTALLS += indicator
 

@@ -51,10 +51,8 @@ int main(int argc, char *argv[])
   }
 
   QApplication a(argc, argv);
-#ifdef MINGW
-  QCoreApplication::setOrganizationName("QtStalker Team");
+  QCoreApplication::setOrganizationName("QtStalker");
   QCoreApplication::setApplicationName("QtStalker");
-#endif
   QTranslator tor( 0 );
 
   QString i18nDir = QString("%1/qtstalker/i18n").arg(INSTALL_DATA_DIR);

@@ -38,7 +38,7 @@
 #include "IndicatorPage.h"
 #include "GroupPage.h"
 #include "ExScript.h"
-
+#include "assistant.h"
 
 
 class QtstalkerApp : public QMainWindow
@@ -110,6 +110,8 @@ class QtstalkerApp : public QMainWindow
 
   public slots:
     void slotAbout ();
+    void slotStartDocumentation ();
+    void slotShowDocumentation (QString);
     void slotQuit();
     void slotOpenChart (QString);
     void slotOpenChart (int);
@@ -147,6 +149,9 @@ class QtstalkerApp : public QMainWindow
     void slotRefreshChart (bool);
     void slotReloadChart ();
     void slotRefreshUpdated (int);
+
+  protected:
+    void closeEvent(QCloseEvent *event);
     
   private:
     QSplitter *split;
@@ -178,6 +183,7 @@ class QtstalkerApp : public QMainWindow
     QList<Setting> zoomList;
     int zoomPos;
     QTimer *refreshTimer;
+    Assistant *assistant;
 };
 
 #endif

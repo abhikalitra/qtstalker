@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<QtHelpProject version="1.0">
+  <namespace>qtstalker</namespace>
+  <virtualFolder>doc</virtualFolder>
+  <customFilter name="Qtstalker 1.0">
+    <filterAttribute>qtstalker</filterAttribute>
+    <filterAttribute>1.0</filterAttribute>
+  </customFilter>
+  <filterSection>
+    <filterAttribute>qtstalker</filterAttribute>
+    <filterAttribute>1.0</filterAttribute>
+    <toc>
+      <section title="Qtstalker Manual" ref="index.html">
+        <section title="Installation" ref="install.html"/>
+      </section>
+      <section title="CSV Manual" ref="csv.html">
+        <section title="Data loading" ref="csv.html"/>
+      </section>
+    </toc>
+    <keywords>
+<!--
+      <keyword name="foo" id="MyApplication::foo" ref="install.html#where"/>
+-->
+      <keyword name="bar" ref="install.html#upgrade"/>
+<!--
+      <keyword id="MyApplication::foobar" ref="install.html#packages"/>
+-->
+    </keywords>
+    <files>
+      <file>qtstalker.css</file>
+      <file>qtstalker.js</file>
+      <file>index.html</file>
+      <file>install.html</file>
+      <file>docs.html</file>
+      <file>csv.html</file>
+      <file>qtstalker.png</file>
+      <file>screen-1.png</file>
+      <file>screen-2.png</file>
+      <file>back.png</file>
+      <file>next.png</file>
+      <file>home.png</file>
+    </files>
+  </filterSection>
+</QtHelpProject>

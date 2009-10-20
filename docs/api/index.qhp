@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<QtHelpProject version="1.0">
+  <namespace>org.doxygen.Qtstalker</namespace>
+  <virtualFolder>api</virtualFolder>
+  <customFilter name="Qtstalker API documentation">
+    <filterAttribute>Qtstalker API documentation</filterAttribute>
+  </customFilter>
+  <filterSection>
+    <filterAttribute>Qtstalker API documentation</filterAttribute>
+    <toc>
+      <section title="Qtstalker API documentation" ref="api.html">
+        <section title="Placeholder" ref="api.html"/>
+      </section>
+    </toc>
+    <files>
+      <file>api.html</file>
+    </files>
+  </filterSection>
+</QtHelpProject>

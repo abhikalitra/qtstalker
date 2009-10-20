@@ -14,9 +14,11 @@ CONFIG(debug, debug|release): DEFINES += DEBUG _DEBUG
 QMAKE_CXXFLAGS += -rdynamic -ffast-math
 
 HEADERS += Qtstalker.h
+HEADERS += assistant.h
 
 SOURCES += Qtstalker.cpp
 SOURCES += main.cpp
+SOURCES += assistant.cpp
 
 TARGET = qtstalker
 

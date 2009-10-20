@@ -31,6 +31,7 @@
 #include <QtDebug>
 #include <QToolButton>
 #include <QApplication>
+#include <QDesktopServices>
 
 #include "Qtstalker.h"
 #include "DataWindow.h"
@@ -54,6 +55,7 @@
 #include "../pics/nav.xpm"
 #include "../pics/co.xpm"
 #include "../pics/qtstalker.xpm"
+#include "../pics/help.xpm"
 #include "../pics/crosshair.xpm"
 #include "../pics/zoomin.xpm"
 #include "../pics/zoomout.xpm"
@@ -66,10 +68,13 @@ QtstalkerApp::QtstalkerApp(QString session)
   zoomPos = -1;
   recordList = 0;
   setWindowIcon(QIcon(qtstalker));
+  QApplication::setOrganizationName("Qtstalker");
 
   // setup the disk environment
   Setup setup;
   setup.setup(session);
+
+  assistant = new Assistant;
 
   createActions();
   createMenuBar();
@@ -256,6 +261,12 @@ void QtstalkerApp::createActions ()
   connect(action, SIGNAL(activated()), this, SLOT(slotAbout()));
   actionList.insert(About, action);
 
+  action = new QAction(QIcon(help), tr("&Help"), this);
+  action->setStatusTip(tr("Show documentation."));
+  action->setToolTip(tr("Show documentation."));
+  connect(action, SIGNAL(triggered()), this, SLOT(slotStartDocumentation()));
+  actionList.insert(Help, action);
+
   action = new QAction(QIcon(scaletoscreen), tr("&Scale To Screen"), this);
   action->setStatusTip(tr("Scale chart to current screen data (Ctrl+5)"));
   action->setToolTip(tr("Scale chart to current screen data (Ctrl+5)"));
@@ -332,6 +343,7 @@ void QtstalkerApp::createMenuBar()
   menu = new QMenu;
   menu->setTitle(tr("&Help"));
   menu->addAction(actionList.value(About));
+  menu->addAction(actionList.value(Help));
   menubar->addMenu(menu);
 }
 
@@ -591,6 +603,11 @@ void QtstalkerApp::slotQuit()
   delete script;
 }
 
+void QtstalkerApp::closeEvent(QCloseEvent *)
+{
+  delete assistant;
+}
+
 void QtstalkerApp::slotAbout()
 {
   // display the about dialog
@@ -598,6 +615,22 @@ void QtstalkerApp::slotAbout()
   versionString += QT_VERSION_STR;
   versionString += "\n(C) 2001-2009 by Stefan Stratigakos\nqtstalker.sourceforge.net";
   QMessageBox::about(this, tr("About Qtstalker"), versionString);
+}
+
+void QtstalkerApp::slotStartDocumentation()
+{
+  QString location = QDesktopServices::storageLocation(QDesktopServices::DataLocation);
+#ifdef Q_WS_MAC
+  location.insert(location.count() - QCoreApplication::applicationName().count(),
+    QCoreApplication::organizationName() + "/");
+#endif
+  qDebug("QtstalkerApp::slotStartDocumentation: Documentation cache: %s/", qPrintable(location));
+  assistant->showDocumentation("index.html");
+}
+
+void QtstalkerApp::slotShowDocumentation(QString doc)
+{
+  assistant->showDocumentation(doc);
 }
 
 void QtstalkerApp::slotOpenChart (QString selection)
