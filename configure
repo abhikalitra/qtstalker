@@ -58,6 +58,28 @@ else
 fi
 
 echo
+echo "Generating source code API documentation ..."
+dxCmd=`command -v doxygen`
+if [ -z "$dxCmd" ] ; then
+  echo "WARNING: Cannot find 'doxygen'."
+else
+  cd docs
+  $dxCmd ../misc/doxygen/config.txt
+  echo "Done"
+  cd ..
+fi
+
+echo
+echo "Indexing and creating the documentation collection ..."
+qcCmd=`command -v qcollectiongenerator`
+if [ -z "$qcCmd" ] ; then
+  echo "ERROR: Cannot find 'qcollectiongenerator'."
+else
+  $qcCmd docs/doc.qhcp -o docs/doc.qhc
+  echo "Done"
+fi
+
+echo
 echo "Creating national language files in i18n ..."
 qmake-qt4 -project -r -o qtstalker_single.pro .
 lupdate-qt4 qtstalker_single.pro
