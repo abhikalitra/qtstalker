@@ -21,6 +21,7 @@
 
 #include "PlotLine.h"
 #include "BarData.h"
+#include "IndicatorSettings.h"
 
 
 
@@ -46,8 +47,8 @@ class ExScript : public QObject
     {
       ACOS,
       AD,
-      ADOSC,
       ADD,
+      ADOSC,
       ADX,
       ADXR,
       APO,
@@ -132,8 +133,10 @@ class ExScript : public QObject
       CORREL,
       COS,
       COSH,
+      DEMA,
       DIV,
       DX,
+      EMA,
       EXP,
       FLOOR,
       HT_DCPERIOD,
@@ -142,16 +145,17 @@ class ExScript : public QObject
       HT_SINE,
       HT_TRENDLINE,
       HT_TRENDMODE,
+      KAMA,
       LINEARREG,
       LINEARREG_ANGLE,
       LINEARREG_INTERCEPT,
       LINEARREG_SLOPE,
       LN,
       LOG10,
-      MA,
       MACD,
       MACDEXT,
       MACDFIX,
+      MAMA,
       MAVP,
       MAX,
       MAXINDEX,
@@ -183,6 +187,7 @@ class ExScript : public QObject
       SAREXT,
       SIN,
       SINH,
+      SMA,
       SQRT,
       STDDEV,
       STOCH,
@@ -191,16 +196,20 @@ class ExScript : public QObject
       SUB,
       SUM,
       SYMBOL,
+      T3,
       TAN,
       TANH,
+      TEMA,
       TRANGE,
+      TRIMA,
       TRIX,
       TSF,
       TYPPRICE,
       ULTOSC,
       VAR,
       WCLPRICE,
-      WILLR
+      WILLR,
+      WMA
     };
     
     ExScript ();
@@ -211,35 +220,19 @@ class ExScript : public QObject
     int parseIndicator (QStringList &l);
     void getLines (QList<PlotLine *> &);
     void setInput (BarData *bd);
-    
-    // indicators
-    int getAROON (QStringList &l); // AROON and AROONOSC functions
-    int getBARS (QStringList &l);
-    int getBBANDS (QStringList &l);
-    int getCANDLES (QStringList &l);
-    int getCDL (QStringList &l, int); // candle functions
-    int getCOMPARE (QStringList &l);
-    int getCOMPARE2 (QStringList &l);
-    int getCOLOR (QStringList &l);
-    int getMACD (QStringList &l, int i);
-    int getMINMAXINDEX (QStringList &l);
-    int getNORMAL (QStringList &l);
-    int getOBV (QStringList &l);
-    int getREF (QStringList &l);
-    int getSTOCH (QStringList &l, int i);
-    int getSTOCHRSI (QStringList &l);
-    int getSYMBOL (QStringList &l);
-    
-    int getSingleInput (QStringList &l, int i);
-    int getHLCVInput (QStringList &l, int i);
-    int getDoubleInput (QStringList &l, int i);
-    int getHLCInput (QStringList &l, int i);
-    int getOHLCInput (QStringList &l, int i);
-    int getSingleInputInt (QStringList &l, int i);
-    int getSingleInputInt2 (QStringList &l, int i);
-    int getHLInput (QStringList &l, int i);
-    int getDoubleOutput (QStringList &l, int i);
-    int getOSC (QStringList &l, int i);
+    void getIndicatorList (QStringList &l);
+    int getCDL (IndicatorSettings &, int); // CDL* functions
+    int getInput (IndicatorSettings &, int); // single input functions
+    int getInput2 (IndicatorSettings &, int); // 2 input functions
+    int getFieldInput (IndicatorSettings &, int); // price field input functions
+    int getBARS (IndicatorSettings &); // BARS function
+    int getCANDLES (IndicatorSettings &); // CANDLES function
+    int getCOLOR (IndicatorSettings &); // COLOR function
+    int getCOMPARE (IndicatorSettings &); // COMPARE function
+    int getCOMPARE2 (IndicatorSettings &); // COMPARE2 function
+    int getNORMAL (IndicatorSettings &); // Normalize function
+    int getREF (IndicatorSettings &); // REF function
+    int getSYMBOL (IndicatorSettings &); // SYMBOL function
 
   public slots:
     void readFromStdout ();
@@ -253,6 +246,7 @@ class ExScript : public QObject
     QStringList plotOrder;
     QStringList opList;
     QStringList indicatorList;
+    QStringList inputFieldList;
     QStringList maList;
 };
 

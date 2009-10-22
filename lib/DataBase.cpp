@@ -32,6 +32,64 @@ DataBase::DataBase ()
 {
 }
 
+DataBase::DataBase (QString session)
+{
+  QString s = QDir::homePath() + "/.qtstalker/data.sqlite" + session;
+  QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", "data");
+  db.setHostName("me");
+  db.setDatabaseName(s);
+  db.setUserName("qtstalker");
+  db.setPassword("qtstalker");
+  if (! db.open())
+  {
+    qDebug() << "DataBase::DataBase:" << db.lastError().text();
+    return;
+  }
+
+  // create the config table
+  QSqlQuery q(db);
+  s = "CREATE TABLE IF NOT EXISTS config (key INT PRIMARY KEY, setting TEXT)";
+  q.exec(s);
+  if (q.lastError().isValid())
+    qDebug() << "DataBase::createConfigTable: " << q.lastError().text();
+
+  // create the group index table
+  s = "CREATE TABLE IF NOT EXISTS groupIndex (name TEXT PRIMARY KEY, parms TEXT)";
+  q.exec(s);
+  if (q.lastError().isValid())
+    qDebug() << "DataBase::createGroupIndexTable: " << q.lastError().text();
+
+  // create the indicator index table
+  s = "CREATE TABLE IF NOT EXISTS indicatorIndex (name TEXT PRIMARY KEY, enable INT, tabRow INT, date INT, log INT, command TEXT)";
+  q.exec(s);
+  if (q.lastError().isValid())
+    qDebug() << "DataBase::createIndicatorIndexTable: " << q.lastError().text();
+
+  // create the chart object table
+  s = "CREATE TABLE IF NOT EXISTS chartObjects (id INT PRIMARY KEY, symbol TEXT, indicator TEXT, type TEXT, settings TEXT)";
+  q.exec(s);
+  if (q.lastError().isValid())
+    qDebug() << "DataBase::createChartObjectsTable: " << q.lastError().text();
+
+  // create the indicator settings table
+  s = "CREATE TABLE IF NOT EXISTS indicatorSettings (indicator TEXT PRIMARY KEY UNIQUE, name TEXT, settings TEXT)";
+  q.exec(s);
+  if (q.lastError().isValid())
+    qDebug() << "DataBase::createIndicatorSettingsTable: " << q.lastError().text();
+}
+
+void DataBase::transaction ()
+{
+  QSqlDatabase db = QSqlDatabase::database("data");
+  db.transaction();
+}
+
+void DataBase::commit ()
+{
+  QSqlDatabase db = QSqlDatabase::database("data");
+  db.commit();
+}
+
 /********************************************************************************/
 /********************* chart functions *******************************************/
 /********************************************************************************/
@@ -375,7 +433,7 @@ void DataBase::deleteGroup (QString &n)
 void DataBase::getIndicator (Indicator &parms)
 {
   QString name;
-  parms.getName(name);
+  parms.getData(Indicator::IndicatorParmName, name);
 
   QSqlQuery q(QSqlDatabase::database("data"));
   QString s = "SELECT * FROM indicatorIndex WHERE name='" + name + "'";
@@ -389,24 +447,24 @@ void DataBase::getIndicator (Indicator &parms)
   if (! q.next())
     return;
 
-  parms.setEnable(q.value(1).toInt());
-  parms.setTabRow(q.value(2).toInt());
-  parms.setDate(q.value(3).toInt());
-  parms.setLog(q.value(4).toInt());
+  parms.setData(Indicator::IndicatorParmEnable, q.value(1).toInt());
+  parms.setData(Indicator::IndicatorParmTabRow, q.value(2).toInt());
+  parms.setData(Indicator::IndicatorParmDate, q.value(3).toInt());
+  parms.setData(Indicator::IndicatorParmLog, q.value(4).toInt());
+
   s = q.value(5).toString();
-  parms.setCommand(s);
+  parms.setData(Indicator::IndicatorParmCommand, s);
 }
 
 void DataBase::setIndicator (Indicator &i)
 {
   QString name, enable, tabRow, date, log, command;
-  
-  i.getName(name);
-  enable = QString::number(i.getEnable());
-  tabRow = QString::number(i.getTabRow());
-  date = QString::number(i.getDate());
-  log = QString::number(i.getLog());
-  i.getCommand(command);
+  i.getData(Indicator::IndicatorParmName, name);
+  i.getData(Indicator::IndicatorParmEnable, enable);
+  i.getData(Indicator::IndicatorParmTabRow, tabRow);
+  i.getData(Indicator::IndicatorParmDate, date);
+  i.getData(Indicator::IndicatorParmLog, log);
+  i.getData(Indicator::IndicatorParmCommand, command);
 
   QSqlQuery q(QSqlDatabase::database("data"));
   QString s = "INSERT OR REPLACE INTO indicatorIndex VALUES ('" + name + "'," + enable + "," + tabRow + "," + date + "," + log + ",'" + command + "')";
@@ -582,222 +640,51 @@ void DataBase::setChartObject (COSettings *co)
   }
 }
 
-/********************************************************************************/
-/****************************** scanner functions *********************************/
-/********************************************************************************/
-/*
-void DataBase::deleteScanner (QString &name)
-{
-  QSqlQuery q(QSqlDatabase::database("data"));
-  QString s = "DELETE FROM scanners WHERE name='" + name + "'";
-  q.exec(s);
-  if (q.lastError().isValid())
-    qDebug() << "DataBase::deleteScanner: " << q.lastError().text();
-}
+//***************************************************************************************
+//**************** INDICATOR SETTINGS ***************************************************
+//***************************************************************************************
 
-void DataBase::getScannerList (QStringList &l)
+void DataBase::getIndicatorSettings (IndicatorSettings &set)
 {
-  l.clear();
+  set.clear();
+
+  QString indicator;
+  set.getIndicator(indicator);
 
   QSqlQuery q(QSqlDatabase::database("data"));
-  QString s = "SELECT name FROM scanners";
+  QString s = "SELECT * FROM indicatorSettings WHERE indicator='" + indicator + "'";
   q.exec(s);
   if (q.lastError().isValid())
   {
-    qDebug() << "DataBase::getScannerList: " << q.lastError().text();
-    return;
-  }
-
-  while (q.next())
-    l.append(q.value(0).toString());
-
-  l.sort();
-}
-
-void DataBase::getScanner (ScannerRule &rule)
-{
-  QString ts;
-  rule.getName(ts);
-
-  QSqlQuery q(QSqlDatabase::database("data"));
-  QString s = "SELECT * FROM scanners WHERE name='" + ts + "'";
-  q.exec(s);
-  if (q.lastError().isValid())
-  {
-    qDebug() << "DataBase::getScanner: " << q.lastError().text();
+    qDebug() << "DataBase::getIndicatorSettings:" << q.lastError().text();
     return;
   }
 
   if (q.next())
   {
-    QString s = q.value(1).toString();
-    Indicator i;
-    i.setCommand(s);
-    rule.setIndicator(i);
+    QString ts = q.value(1).toString(); 
+    set.setName(ts);
 
-    s = q.value(2).toString();
-    rule.setAllSymbols(s);
-
-    QStringList l = q.value(3).toString().split(",");
-    rule.setFileList(l);
-
-    s = q.value(4).toString();
-    rule.setBarLength(s);
-
-    s = q.value(5).toString();
-    rule.setBars(s);
+    ts = q.value(2).toString(); 
+    set.parse(ts);
   }
 }
 
-void DataBase::setScanner (ScannerRule &rule)
+void DataBase::setIndicatorSettings (IndicatorSettings &set)
 {
-  QString name;
-  rule.getName(name);
-
-  Indicator i;
-  rule.getIndicator(i);
-  QString parms;
-  i.getCommand(parms);
-
-  QString allSymbols;
-  rule.getAllSymbols(allSymbols);
-
-  QStringList l;
-  rule.getFileList(l);
-  QString fileList = l.join(",");
-
-  QString barLength;
-  rule.getBarLength(barLength);
-
-  QString bars;
-  rule.getBars(bars);
-
+  QString indicator, ts, name;
+  set.getIndicator(indicator);
+  set.getString(ts);
+  set.getName(name);
+  
   QSqlQuery q(QSqlDatabase::database("data"));
-  QString s = "INSERT OR REPLACE INTO scanners VALUES ('" + name + "','" + parms + "'," + allSymbols + ",'" + fileList + "','" + barLength + "'," + bars + ")";
+  QString s = "INSERT OR REPLACE INTO indicatorSettings VALUES (";
+  s.append("'" + indicator + "'");
+  s.append("'" + name + "'");
+  s.append(",'" + ts + "'");
+  s.append(")");
   q.exec(s);
   if (q.lastError().isValid())
-    qDebug() << "DataBase::setSacnner: " << q.lastError().text();
-}
-*/
-/********************************************************************************/
-/****************************** tester functions *********************************/
-/********************************************************************************/
-/*
-void DataBase::deleteTest (QString &name)
-{
-  // delete indicators linked to the tester
-  QSqlQuery q(QSqlDatabase::database("data"));
-  QString s = "DELETE FROM testers WHERE name='" + name + "'";
-  q.exec(s);
-  if (q.lastError().isValid())
-    qDebug() << "DataBase::deleteTest: " << q.lastError().text();
+    qDebug() << "DataBase::setIndicatorSettings:" << q.lastError().text();
 }
 
-void DataBase::getTestList (QStringList &l)
-{
-  l.clear();
-
-  QSqlQuery q(QSqlDatabase::database("data"));
-  QString s = "SELECT name FROM testers";
-  q.exec(s);
-  if (q.lastError().isValid())
-  {
-    qDebug() << "DataBase::getTestList: " << q.lastError().text();
-    return;
-  }
-
-  while (q.next())
-    l.append(q.value(0).toString());
-
-  l.sort();
-}
-
-void DataBase::getTest (TesterRule &rule)
-{
-  QString name;
-  rule.getName(name);
-
-  QSqlQuery q(QSqlDatabase::database("data"));
-  QString s = "SELECT * FROM testers WHERE name='" + name + "'";
-  q.exec(s);
-  if (q.lastError().isValid())
-  {
-    qDebug() << "DataBase::getTestList: " << q.lastError().text();
-    return;
-  }
-
-  if (q.next())
-  {
-    s = q.value(0).toString();
-    rule.setName(s);
-
-    s = q.value(1).toString();
-    rule.setParms(s);
-
-    s = q.value(2).toString();
-    rule.setTrades(s);
-
-    s = q.value(3).toString();
-    rule.setSummary(s);
-
-    s = q.value(4).toString();
-    Indicator i;
-    i.setCommand(s);
-    rule.setEnterLong(i);
-
-    s = q.value(5).toString();
-    i.setCommand(s);
-    rule.setExitLong(i);
-
-    s = q.value(6).toString();
-    i.setCommand(s);
-    rule.setEnterShort(i);
-
-    s = q.value(7).toString();
-    i.setCommand(s);
-    rule.setExitShort(i);
-
-    s = q.value(8).toString();
-    i.setCommand(s);
-    rule.setCustomLongStop(i);
-
-    s = q.value(9).toString();
-    i.setCommand(s);
-    rule.setCustomShortStop(i);
-  }
-}
-
-void DataBase::setTest (TesterRule &rule)
-{
-  QString name, parms, trades, summary, el, xl, es, xs, ls, ss;
-  rule.getName(name);
-  rule.getParms(parms);
-  rule.getTrades(trades);
-  rule.getSummary(summary);
-
-  Indicator i;
-  rule.getEnterLong(i);
-  i.getCommand(el);
-
-  rule.getExitLong(i);
-  i.getCommand(xl);
-
-  rule.getEnterShort(i);
-  i.getCommand(es);
-
-  rule.getExitShort(i);
-  i.getCommand(xs);
-
-  rule.getCustomLongStop(i);
-  i.getCommand(ls);
-
-  rule.getCustomShortStop(i);
-  i.getCommand(ss);
-
-  QSqlQuery q(QSqlDatabase::database("data"));
-  QString s = "INSERT OR REPLACE INTO testers VALUES ('" + name + "','" + parms + "','" + trades + "','" + summary + "','" + el + "','" + xl + "','" + es + "','" + xs + "','" + ls + "','" + ss + "')";
-  q.exec(s);
-  if (q.lastError().isValid())
-    qDebug() << "DataBase::setTest: " << q.lastError().text();
-}
-*/

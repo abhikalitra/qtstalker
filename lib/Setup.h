@@ -30,12 +30,12 @@ class Setup
 {
   public:
     Setup ();
-    void setup (QString);
+    void setup ();
     void setupConfigDefaults ();
-    void setupDataBase (QString);
     void setupDirectories ();
     void setupQuoteBase ();
     void setupDefaultIndicators ();
+    void setupIndicatorSettings ();
 
   protected:
     QString home;

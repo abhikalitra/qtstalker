@@ -22,6 +22,7 @@
 #include "Config.h"
 #include <QtDebug>
 #include <QtSql>
+#include <QDir>
 
 
 Config::Config ()

@@ -4,7 +4,7 @@ echo -n "Determining Qt version ..."
 qtVersionMajorRequired="4"
 qtVersionMinorRequired="5"
 qtMessage="This version of Qtstalker requires Qt$qtVersionMajorRequired.$qtVersionMinorRequired or better"
-qmakeCmd=`command -v qmake-qt4`
+qmakeCmd=`command -v qmake`
 qtVersionOk="false"
 if [ -z "$qmakeCmd" ] ; then
   qmakeOk="false"
@@ -49,7 +49,7 @@ fi
 
 echo
 echo "Building Makefile ..."
-qmake-qt4 "DEFINES += QT_NO_COMPAT" "CONFIG += qt" -o Makefile qtstalker.pro
+qmake "DEFINES += QT_NO_COMPAT" "CONFIG += qt" -o Makefile qtstalker.pro
 if [ "$?" -ne "0" ]; then
   echo "ERROR: See configuration messages above."
   exit 1
@@ -81,11 +81,11 @@ fi
 
 echo
 echo "Creating national language files in i18n ..."
-qmake-qt4 -project -r -o qtstalker_single.pro .
-lupdate-qt4 qtstalker_single.pro
+qmake -project -r -o qtstalker_single.pro .
+lupdate qtstalker_single.pro
 echo "Done"
 echo "Compiling existing translations ..."
-lrelease-qt4 i18n/qtstalker_??.ts
+lrelease i18n/qtstalker_??.ts
 echo "Done"
 
 echo

@@ -1027,6 +1027,18 @@ $ed is the last date.</source>
         <source>Select if you want the Recent Charts list to appear on the toolbar.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Refresh Chart</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Refresh chart every x minutes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select if you want the Refresh Chart button to appear on the toolbar.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>QObject</name>
@@ -1238,6 +1250,90 @@ $ed is the last date.</source>
         <source>Vertical Line</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Aroon_Down)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Aroon_Up</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Input</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Input2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Output</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Output2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MA Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Fast Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Slow Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>AROON Down</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>AROON Up</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Up Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Down Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Neutral Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>BBANDS Up</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>BBANDS Mid</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>BBANDS Low</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Upper Deviation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Lower Deviation</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>QtstalkerApp</name>
@@ -1415,6 +1511,14 @@ $ed is the last date.</source>
     </message>
     <message>
         <source>Zoom Out</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Refresh Chart</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Refresh chart every x minutes</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

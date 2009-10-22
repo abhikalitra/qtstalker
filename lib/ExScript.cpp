@@ -36,33 +36,35 @@ ExScript::ExScript ()
     qDebug("TALIB::setDefaults:error on TA_Initialize");
 
   proc = 0;
+  data = 0;
 
   opList << "=" << "<" << "<=" << ">" << ">=" << "AND" << "OR";
-
-  maList << "SMA" << "EMA" << "WMA" << "DEMA" << "TEMA" << "TRIMA" << "KAMA" << "MAMA" << "T3";
   
-  indicatorList << "ACOS" << "AD" << "ADOSC" << "ADD" << "ADX" << "ADXR" << "APO" << "AROON" << "AROONOSC" << "ASIN";
-  indicatorList << "ATAN" << "ATR" << "AVGPRICE" << "BARS" << "BBANDS" << "BETA" << "BOP" << "CANDLES" << "CCI" << "CDL2CROWS" << "CDL3BLACKCROWS";
-  indicatorList << "CDL3INSIDE" << "CDL3LINESTRIKE" << "CDL3OUTSIDE" << "CDL3STARSINSOUTH" << "CDL3WHITESOLDIERS";
-  indicatorList << "CDLABANDONEDBABY" << "CDLADVANCEBLOCK" << "CDLBELTHOLD" << "CDLBREAKAWAY" << "CDLCLOSINGMARUBOZU";
-  indicatorList << "CDLCONCEALBABYSWALL" << "CDLCOUNTERATTACK" << "CDLDARKCLOUDCOVER" << "CDLDOJI" << "CDLDOJISTAR";
-  indicatorList << "CDLDRAGONFLYDOJI" << "CDLENGULFING" << "CDLEVENINGDOJISTAR" << "CDLEVENINGSTAR" << "CDLGAPSIDESIDEWHITE";
-  indicatorList << "CDLGRAVESTONEDOJI" << "CDLHAMMER" << "CDLHANGINGMAN" << "CDLHARAMI" << "CDLHARAMICROSS" << "CDLHIGHWAVE";
-  indicatorList << "CDLHIKKAKE" << "CDLHIKKAKEMOD" << "CDLHOMINGPIGEON" << "CDLIDENTICAL3CROWS" << "CDLINNECK";
+  maList << "SMA" << "EMA" << "WMA" << "DEMA" << "TEMA" << "TRIMA" << "KAMA" << "MAMA" << "T3";
+
+  indicatorList << "ACOS" << "AD" << "ADD" << "ADOSC" << "ADX" << "ADXR" << "APO" << "AROON" << "AROONOSC" << "ASIN";
+  indicatorList << "ATAN" << "ATR" << "AVGPRICE" << "BARS" << "BBANDS" << "BETA" << "BOP" << "CANDLES" << "CCI";
+  indicatorList << "CDL2CROWS" << "CDL3BLACKCROWS" << "CDL3INSIDE" << "CDL3LINESTRIKE" << "CDL3OUTSIDE";
+  indicatorList << "CDL3STARSINSOUTH" << "CDL3WHITESOLDIERS" << "CDLABANDONEDBABY" << "CDLADVANCEBLOCK" << "CDLBELTHOLD";
+  indicatorList << "CDLBREAKAWAY" << "CDLCLOSINGMARUBOZU" << "CDLCONCEALBABYSWALL" << "CDLCOUNTERATTACK" << "CDLDARKCLOUDCOVER";
+  indicatorList << "CDLDOJI" << "CDLDOJISTAR" << "CDLDRAGONFLYDOJI" << "CDLENGULFING" << "CDLEVENINGDOJISTAR" << "CDLEVENINGSTAR";
+  indicatorList << "CDLGAPSIDESIDEWHITE" << "CDLGRAVESTONEDOJI" << "CDLHAMMER" << "CDLHANGINGMAN" << "CDLHARAMI" << "CDLHARAMICROSS";
+  indicatorList << "CDLHIGHWAVE" << "CDLHIKKAKE" << "CDLHIKKAKEMOD" << "CDLHOMINGPIGEON" << "CDLIDENTICAL3CROWS" << "CDLINNECK";
   indicatorList << "CDLINVERTEDHAMMER" << "CDLKICKING" << "CDLKICKINGBYLENGTH" << "CDLLADDERBOTTOM" << "CDLLONGLEGGEDDOJI";
   indicatorList << "CDLLONGLINE" << "CDLMARUBOZU" << "CDLMATCHINGLOW" << "CDLMATHOLD" << "CDLMORNINGDOJISTAR";
   indicatorList << "CDLMORNINGSTAR" << "CDLONNECK" << "CDLPIERCING" << "CDLRICKSHAWMAN" << "CDLRISEFALL3METHODS";
   indicatorList << "CDLSEPARATINGLINES" << "CDLSHOOTINGSTAR" << "CDLSHORTLINE" << "CDLSPINNINGTOP" << "CDLSTALLEDPATTERN";
   indicatorList << "CDLSTICKSANDWICH" << "CDLTAKURI" << "CDLTASUKIGAP" << "CDLTHRUSTING" << "CDLTRISTAR" << "CDLUNIQUE3RIVER";
   indicatorList << "CDLUPSIDEGAP2CROWS" << "CDLXSIDEGAP3METHODS" << "CEIL" << "CMO" << "COLOR" << "COMPARE" << "COMPARE2";
-  indicatorList << "CORREL" << "COS" << "COSH" << "DIV" << "DX" << "EXP" << "FLOOR" << "HT_DCPERIOD" << "HT_DCPHASE" << "HT_PHASOR";
-  indicatorList << "HT_SINE" << "HT_TRENDLINE" << "HT_TRENDMODE" << "LINEARREG" << "LINEARREG_ANGLE" << "LINEARREG_INTERCEPT";
-  indicatorList << "LINEARREG_SLOPE" << "LN" << "LOG10" << "MA" << "MACD" << "MACDEXT" << "MACDFIX" << "MAVP";
-  indicatorList << "MAX" << "MAXINDEX" << "MEDPRICE" << "MFI" << "MIDPOINT" << "MIDPRICE" << "MIN" << "MININDEX" << "MINMAX";
-  indicatorList << "MINMAXINDEX" << "MINUS_DI" << "MINUS_DM" << "MOM" << "MULT" << "NATR" << "NORMAL" << "OBV" << "PLUS_DI" << "PLUS_DM";
-  indicatorList << "PPO" << "REF" << "ROC" << "ROCP" << "ROCR" << "ROCR100" << "RSI" << "SAR" << "SAREXT" << "SIN" << "SINH";
-  indicatorList << "SQRT" << "STDDEV" << "STOCH" << "STOCHF" << "STOCHRSI" << "SUB" << "SUM" << "SYMBOL" << "TAN" << "TANH";
-  indicatorList << "TRANGE" << "TRIX" << "TSF" << "TYPPRICE" << "ULTOSC" << "VAR" << "WCLPRICE" << "WILLR";
+  indicatorList << "CORREL" << "COS" << "COSH" << "DEMA" << "DIV" << "DX" << "EMA" << "EXP" << "FLOOR" << "HT_DCPERIOD";
+  indicatorList << "HT_DCPHASE" << "HT_PHASOR" << "HT_SINE" << "HT_TRENDLINE" << "HT_TRENDMODE" << "KAMA" << "LINEARREG";
+  indicatorList << "LINEARREG_ANGLE" << "LINEARREG_INTERCEPT" << "LINEARREG_SLOPE" << "LN" << "LOG10" << "MACD" << "MACDEXT";
+  indicatorList << "MACDFIX" << "MAMA" << "MAVP" << "MAX" << "MAXINDEX" << "MEDPRICE" << "MFI" << "MIDPOINT" << "MIDPRICE";
+  indicatorList << "MIN" << "MININDEX" << "MINMAX" << "MINMAXINDEX" << "MINUS_DI" << "MINUS_DM" << "MOM" << "MULT" << "NATR";
+  indicatorList << "NORMAL" << "OBV" << "PLUS_DI" << "PLUS_DM" << "PPO" << "REF" << "ROC" << "ROCP" << "ROCR" << "ROCR100";
+  indicatorList << "RSI" << "SAR" << "SAREXT" << "SIN" << "SINH" << "SMA" << "SQRT" << "STDDEV" << "STOCH" << "STOCHF";
+  indicatorList << "STOCHRSI" << "SUB" << "SUM" << "SYMBOL" << "T3" << "TAN" << "TANH" << "TEMA" << "TRANGE" << "TRIMA";
+  indicatorList << "TRIX" << "TSF" << "TYPPRICE" << "ULTOSC" << "VAR" << "WCLPRICE" << "WILLR" << "WMA";
 }
 
 ExScript::~ExScript ()
@@ -70,8 +72,16 @@ ExScript::~ExScript ()
   TA_Shutdown();  
 }
 
+void ExScript::getIndicatorList (QStringList &l)
+{
+  l = indicatorList;
+}
+
 void ExScript::setInput (BarData *bd)
 {
+  if (! data)
+    bd->getInputFields(inputFieldList);
+    
   data = bd;
 }
 
@@ -264,75 +274,212 @@ int ExScript::parseIndicator (QStringList &l)
 {
   int rc = FALSE;
   int i = indicatorList.indexOf(l[0]);
+  if (i < 0)
+    return 1;
   
-  switch (i)
+  IndicatorSettings set;
+  set.setIndicator(l[0]);
+  
+  DataBase db;
+  db.getIndicatorSettings(set);
+  
+  if (l.count() - 1 != set.count())
+  {
+    qDebug() << "ExScript::parseIndicator: item count" << l.count() << set.count();
+    return 1;
+  }
+  
+  set.load(l);
+
+  int loop;
+  for (loop = 0; loop < set.count(); loop++)
+  {
+    QString name, val;
+    int type;
+    set.getItem(loop, name, type, val);
+    
+    switch ((IndicatorSettings::Type) type)
+    {
+      case IndicatorSettings::TypeInput:
+      case IndicatorSettings::TypeInput2:
+        if (! tlines.contains(val))
+        {
+          if (inputFieldList.indexOf(val) == -1)
+          {
+            qDebug() << "ExScript::parseIndicator: cannot create input" << val;
+            return 1;
+          }
+        }
+        break;
+      case IndicatorSettings::TypeOutput:
+      case IndicatorSettings::TypeOutput2:
+      case IndicatorSettings::TypeOutput3:
+        if (val.isEmpty())
+        {
+          qDebug() << "ExScript::parseIndicator: output" << name << "is empty";
+          return 1;
+        }
+        break;
+      case IndicatorSettings::TypeInt:
+      {
+        bool ok;
+        val.toInt(&ok);
+        if (! ok)
+        {
+          qDebug() << "ExScript::parseIndicator:" << val << "is not a integer";
+          return 1;
+        }
+        break;
+      }
+      case IndicatorSettings::TypeDouble:
+      {
+        bool ok;
+        val.toDouble(&ok);
+        if (! ok)
+        {
+          qDebug() << "ExScript::parseIndicator:" << val << "is not valid";
+          return 1;
+        }
+        break;
+      }
+      case IndicatorSettings::TypeColor:
+      {
+        QColor c(val);
+        if (! c.isValid())
+        {
+          qDebug() << "ExScript::parseIndicator:" << val << "is not a color";
+          return 1;
+        }
+        break;
+      }
+      case IndicatorSettings::TypeOperator:
+        if (opList.indexOf(val) == -1)
+        {
+          qDebug() << "ExScript::parseIndicator:" << val << "is not valid";
+          return 1;
+        }
+        break;
+      case IndicatorSettings::TypeSymbol:
+        if (val.isEmpty())
+        {
+          qDebug() << "ExScript::parseIndicator: symbol" << name << "is empty";
+          return 1;
+        }
+        break;
+      default:
+        break;
+    }
+  }
+
+  switch ((IndicatorName) i)
   {
     case ACOS:
+    case APO:
     case ASIN:
     case ATAN:
+    case BBANDS:
     case CEIL:
+    case CMO:
     case COS:
     case COSH:
+    case DEMA:
+    case EMA:
     case EXP:
     case FLOOR:
     case HT_DCPERIOD:
     case HT_DCPHASE:
+    case HT_PHASOR:
+    case HT_SINE:
     case HT_TRENDLINE:
+    case HT_TRENDMODE:
+    case KAMA:
+    case LINEARREG:
+    case LINEARREG_ANGLE:
+    case LINEARREG_INTERCEPT:
+    case LINEARREG_SLOPE:
     case LN:
     case LOG10:
+    case MACD:
+    case MACDEXT:
+    case MACDFIX:
+    case MAMA:
+    case MAX:
+    case MAXINDEX:
+    case MIDPOINT:
+    case MIN:
+    case MININDEX:
+    case MINMAX:
+    case MINMAXINDEX:
+    case MOM:
+    case PPO:
+    case ROC:
+    case ROCP:
+    case ROCR:
+    case ROCR100:
+    case RSI:
     case SIN:
     case SINH:
+    case SMA:
     case SQRT:
+    case STDDEV:
+    case STOCHRSI:
+    case SUM:
+    case T3:
     case TAN:
     case TANH:
-      rc = getSingleInput(l, i);
+    case TEMA:
+    case TRIMA:
+    case TSF:
+    case VAR:
+    case WMA:
+      rc = getInput(set, i);
       break;
     case AD:
     case ADOSC:
+    case ADX:
+    case ADXR:
+    case AROON:
+    case AROONOSC:
+    case ATR:
+    case AVGPRICE:
+    case BOP:
+    case CCI:
+    case DX:
+    case MEDPRICE:
     case MFI:
-      rc = getHLCVInput(l, i);
+    case MIDPRICE:
+    case MINUS_DI:
+    case MINUS_DM:
+    case NATR:
+    case PLUS_DI:
+    case PLUS_DM:
+    case SAR:
+    case SAREXT:
+    case STOCH:
+    case STOCHF:
+    case TRANGE:
+    case TRIX:
+    case TYPPRICE:
+    case ULTOSC:
+    case WCLPRICE:
+    case WILLR:
+      rc = getFieldInput(set, i);
       break;
     case ADD:
     case BETA:
     case CORREL:
     case DIV:
-    case MULT:
-    case SUB:
     case MAVP:
-      rc = getDoubleInput(l, i);
-      break;
-    case ADX:
-    case ADXR:
-    case ATR:
-    case CCI:
-    case DX:
-    case MINUS_DI:
-    case NATR:
-    case PLUS_DI:
-    case TRANGE:
-    case TYPPRICE:
-    case ULTOSC:
-    case WCLPRICE:
-    case WILLR:
-      rc = getHLCInput(l, i);
-      break;
-    case AVGPRICE:
-    case BOP:
-      rc = getOHLCInput(l, i);
-      break;
-    case APO:
-    case PPO:
-      rc = getOSC(l, i);
-      break;
-    case AROON:
-    case AROONOSC:
-      rc = getAROON(l);
+    case MULT:
+    case OBV:
+    case SUB:
+      rc = getInput2(set, i);
       break;
     case BARS:
-      rc = getBARS(l);
+      rc = getBARS(set);
       break;
-    case BBANDS:
-      rc = getBBANDS(l);
+    case CANDLES:
+      rc = getCANDLES(set);
       break;
     case CDL2CROWS:
     case CDL3BLACKCROWS:
@@ -395,86 +542,25 @@ int ExScript::parseIndicator (QStringList &l)
     case CDLUNIQUE3RIVER:
     case CDLUPSIDEGAP2CROWS:
     case CDLXSIDEGAP3METHODS:
-      rc = getCDL(l, i);
-      break;
-    case CMO:
-    case LINEARREG:
-    case LINEARREG_ANGLE:
-    case LINEARREG_INTERCEPT:
-    case LINEARREG_SLOPE:
-    case MA:
-    case MAX:
-    case MIDPOINT:
-    case MIN:
-    case MOM:
-    case ROC:
-    case ROCP:
-    case ROCR:
-    case ROCR100:
-    case RSI:
-    case STDDEV:
-    case SUM:
-    case TRIX:
-    case TSF:
-    case VAR:
-      rc = getSingleInputInt(l, i);
-      break;
-    case HT_PHASOR:
-    case HT_SINE:
-    case MINMAX:
-      rc = getDoubleOutput(l, i);
-      break;
-    case MACD:
-    case MACDEXT:
-    case MACDFIX:
-      rc = getMACD(l, i);
-      break;
-    case MAXINDEX:
-    case MININDEX:
-    case HT_TRENDMODE:
-      rc = getSingleInputInt2(l, i);
-      break;
-    case MEDPRICE:
-    case MIDPRICE:
-    case MINUS_DM:
-    case PLUS_DM:
-    case SAR:
-    case SAREXT:
-      rc = getHLInput(l, i);
-      break;
-    case MINMAXINDEX:
-      rc = getMINMAXINDEX(l);
-      break;
-    case OBV:
-      rc = getOBV(l);
-      break;
-    case REF:
-      rc = getREF(l);
-      break;
-    case STOCH:
-    case STOCHF:
-      rc = getSTOCH(l, i);
-      break;
-    case STOCHRSI:
-      rc = getSTOCHRSI(l);
-      break;
-    case COMPARE:
-      rc = getCOMPARE(l);
+      rc = getCDL(set, i);
       break;
     case COLOR:
-      rc = getCOLOR(l);
+      rc = getCOLOR(set);
       break;
-    case NORMAL:
-      rc = getNORMAL(l);
-      break;
-    case CANDLES:
-      rc = getCANDLES(l);
+    case COMPARE:
+      rc = getCOMPARE(set);
       break;
     case COMPARE2:
-      rc = getCOMPARE2(l);
+      rc = getCOMPARE2(set);
+      break;
+    case NORMAL:
+      rc = getNORMAL(set);
+      break;
+    case REF:
+      rc = getREF(set);
       break;
     case SYMBOL:
-      rc = getSYMBOL(l);
+      rc = getSYMBOL(set);
       break;
     default:
       break;
@@ -484,107 +570,406 @@ int ExScript::parseIndicator (QStringList &l)
 }  
 
 //**********************************************************************************
-//************************ INDICATORS **********************************************
+//************************ Single Input Functions **********************************
 //**********************************************************************************
-
-//***************************************************
-//********** HLCV Input Functions *******************
-//***************************************************
-int ExScript::getHLCVInput (QStringList &l, int i)
+int ExScript::getInput (IndicatorSettings &set, int i)
 {
-  // format 'AD,NAME'
-  // format 'ADOSC,NAME,FAST_PERIOD,SLOW_PERIOD'
-  // format 'MFI,NAME,PERIOD'
-
-  bool ok;
-  int fast = 0;
-  int slow = 0;
-  int period = 0;
-  
-  switch (i)
-  {
-    case ADOSC:
-      if (l.count() != 4)
-      {
-        qDebug() << "ExScript::getHLCVInput: parm error" << l;
-        return 1;
-      }
-
-      fast = l[2].toInt(&ok);
-      if (! ok)
-      {
-        qDebug() << "ExScript::getHLCVInput: parm error" << l[2];
-        return 1;
-      }
-  
-      slow = l[3].toInt(&ok);
-      if (! ok)
-      {
-        qDebug() << "ExScript::getHLCVInput: parm error" << l[3];
-        return 1;
-      }
-      break;
-    case MFI:
-      if (l.count() != 3)
-      {
-        qDebug() << "ExScript::getHLCVInput: parm error" << l;
-        return 1;
-      }
-    
-      period = l[2].toInt(&ok);
-      if (! ok)
-      {
-        qDebug() << "ExScript::getHLCVInput: parm error" << l[2];
-        return 1;
-      }
-      break;
-    case AD:
-      if (l.count() != 2)
-      {
-        qDebug() << "ExScript::getHLCVInput: parm error" << l;
-        return 1;
-      }
-      break;
-    default:
-      break;
-  }
-  
-  TA_Real high[data->count()];
-  TA_Real low[data->count()];
-  TA_Real close[data->count()];
-  TA_Real volume[data->count()];
-  TA_Real out[data->count()];
+  QString s;
+  int flag = FALSE;
+  TA_RetCode rc = TA_SUCCESS;
   TA_Integer outBeg;
   TA_Integer outNb;
-
-  int loop;
-  for (loop = 0; loop < data->count(); loop++)
+  
+  set.getItemInput(s);
+  PlotLine *in = tlines.value(s);
+  if (! in)
   {
-    high[loop] = (TA_Real) data->getHigh(loop);
-    low[loop] = (TA_Real) data->getLow(loop);
-    close[loop] = (TA_Real) data->getClose(loop);
-    volume[loop] = (TA_Real) data->getVolume(loop);
+    in = data->getInput(data->getInputType(s));
+    flag = TRUE;
   }
 
-  TA_RetCode rc = TA_SUCCESS;
-  switch (i)
+  TA_Real input[in->getSize()];
+  TA_Real out[in->getSize()];
+  int loop;
+  for (loop = 0; loop < in->getSize(); loop++)
+    input[loop] = (TA_Real) in->getData(loop);
+  
+  switch ((IndicatorName) i)
   {
-    case AD:
-      rc = TA_AD(0, data->count() - 1, &high[0], &low[0], &close[0], &volume[0], &outBeg, &outNb, &out[0]);
+    case ACOS:
+      rc = TA_ACOS(0, in->getSize() - 1, &input[0], &outBeg, &outNb, &out[0]);
       break;
-    case ADOSC:
-      rc = TA_ADOSC(0, data->count() - 1, &high[0], &low[0], &close[0], &volume[0], fast, slow, &outBeg, &outNb, &out[0]);
+    case APO:
+    {
+      QString ma;
+      set.getItemVal(4, ma);
+      rc = TA_APO(0, in->getSize() - 1, &input[0], set.getItemInt(2), set.getItemInt(3), (TA_MAType) maList.indexOf(ma), &outBeg, &outNb, &out[0]);
       break;
-    case MFI:
-      rc = TA_MFI(0, data->count() - 1, &high[0], &low[0], &close[0], &volume[0], period, &outBeg, &outNb, &out[0]);
+    }
+    case ASIN:
+      rc = TA_ASIN(0, in->getSize() - 1, &input[0], &outBeg, &outNb, &out[0]);
+      break;
+    case ATAN:
+      rc = TA_ATAN(0, in->getSize() - 1, &input[0], &outBeg, &outNb, &out[0]);
+      break;
+    case BBANDS:
+    {
+      TA_Real middle[in->getSize()];
+      TA_Real lower[in->getSize()];
+      QString ma;
+      set.getItemVal(7, ma);
+      rc = TA_BBANDS(0, in->getSize() - 1, &input[0], set.getItemInt(4), set.getItemDouble(5), set.getItemDouble(6), (TA_MAType) maList.indexOf(ma), &outBeg, &outNb, &out[0], &middle[0], &lower[0]);
+      if (rc == TA_SUCCESS)
+      {
+        PlotLine *m = new PlotLine;
+        PlotLine *lw = new PlotLine;
+        for (loop = 0; loop < outNb; loop++)
+        {
+          m->append(middle[loop]);
+          lw->append(lower[loop]);
+        }
+        set.getItemOutput2(s);
+        tlines.insert(s, m);
+        set.getItemOutput3(s);
+        tlines.insert(s, lw);
+      }
+      break;
+    }
+    case CEIL:
+      rc = TA_CEIL(0, in->getSize() - 1, &input[0], &outBeg, &outNb, &out[0]);
+      break;
+    case CMO:
+      rc = TA_CMO(0, in->getSize() - 1, &input[0], set.getItemInt(2), &outBeg, &outNb, &out[0]);
+      break;
+    case COS:
+      rc = TA_COS(0, in->getSize() - 1, &input[0], &outBeg, &outNb, &out[0]);
+      break;
+    case COSH:
+      rc = TA_COSH(0, in->getSize() - 1, &input[0], &outBeg, &outNb, &out[0]);
+      break;
+    case DEMA:
+      rc = TA_DEMA(0, in->getSize() - 1, &input[0], set.getItemInt(2), &outBeg, &outNb, &out[0]);
+      break;
+    case EMA:
+      rc = TA_EMA(0, in->getSize() - 1, &input[0], set.getItemInt(2), &outBeg, &outNb, &out[0]);
+      break;
+    case EXP:
+      rc = TA_EXP(0, in->getSize() - 1, &input[0], &outBeg, &outNb, &out[0]);
+      break;
+    case FLOOR:
+      rc = TA_FLOOR(0, in->getSize() - 1, &input[0], &outBeg, &outNb, &out[0]);
+      break;
+    case HT_DCPERIOD:
+      rc = TA_HT_DCPERIOD(0, in->getSize() - 1, &input[0], &outBeg, &outNb, &out[0]);
+      break;
+    case HT_DCPHASE:
+      rc = TA_HT_DCPHASE(0, in->getSize() - 1, &input[0], &outBeg, &outNb, &out[0]);
+      break;
+    case HT_PHASOR:
+    {
+      TA_Real out2[in->getSize()];
+      rc = TA_HT_PHASOR(0, in->getSize() - 1, &input[0], &outBeg, &outNb, &out[0], &out2[0]);
+      if (rc == TA_SUCCESS)
+      {
+        PlotLine *quad = new PlotLine;
+        for (loop = 0; loop < outNb; loop++)
+          quad->append(out2[loop]);
+        set.getItemOutput2(s);
+        tlines.insert(s, quad);
+      }
+      break;
+    }
+    case HT_SINE:
+    {
+      TA_Real out2[in->getSize()];
+      rc = TA_HT_SINE(0, in->getSize() - 1, &input[0], &outBeg, &outNb, &out[0], &out2[0]);
+      if (rc == TA_SUCCESS)
+      {
+        PlotLine *lead = new PlotLine;
+        for (loop = 0; loop < outNb; loop++)
+          lead->append(out2[loop]);
+        set.getItemOutput2(s);
+        tlines.insert(s, lead);
+      }
+      break;
+    }
+    case HT_TRENDLINE:
+      rc = TA_HT_TRENDLINE(0, in->getSize() - 1, &input[0], &outBeg, &outNb, &out[0]);
+      break;
+    case HT_TRENDMODE:
+    {
+      TA_Integer iout[in->getSize()];
+      rc = TA_HT_TRENDMODE(0, in->getSize() - 1, &input[0], &outBeg, &outNb, &iout[0]);
+      if (rc == TA_SUCCESS)
+      {
+        for (loop = 0; loop < outNb; loop++)
+          out[loop] = iout[loop];
+      }
+      break;
+    }
+    case KAMA:
+      rc = TA_KAMA(0, in->getSize() - 1, &input[0], set.getItemInt(2), &outBeg, &outNb, &out[0]);
+      break;
+    case LINEARREG:
+      rc = TA_LINEARREG(0, in->getSize() - 1, &input[0], set.getItemInt(2), &outBeg, &outNb, &out[0]);
+      break;
+    case LINEARREG_ANGLE:
+      rc = TA_LINEARREG_ANGLE(0, in->getSize() - 1, &input[0], set.getItemInt(2), &outBeg, &outNb, &out[0]);
+      break;
+    case LINEARREG_INTERCEPT:
+      rc = TA_LINEARREG_INTERCEPT(0, in->getSize() - 1, &input[0], set.getItemInt(2), &outBeg, &outNb, &out[0]);
+      break;
+    case LINEARREG_SLOPE:
+      rc = TA_LINEARREG_SLOPE(0, in->getSize() - 1, &input[0], set.getItemInt(2), &outBeg, &outNb, &out[0]);
+      break;
+    case LN:
+      rc = TA_LN(0, in->getSize() - 1, &input[0], &outBeg, &outNb, &out[0]);
+      break;
+    case LOG10:
+      rc = TA_LOG10(0, in->getSize() - 1, &input[0], &outBeg, &outNb, &out[0]);
+      break;
+    case MACD:
+    {
+      TA_Real out2[in->getSize()];
+      TA_Real out3[in->getSize()];
+      rc = TA_MACD(0, in->getSize() - 1, &input[0], set.getItemInt(4), set.getItemDouble(5), set.getItemDouble(6), &outBeg, &outNb, &out[0], &out2[0], &out3[0]);
+      if (rc == TA_SUCCESS)
+      {
+        PlotLine *sig = new PlotLine;
+        PlotLine *hist = new PlotLine;
+        for (loop = 0; loop < outNb; loop++)
+        {
+          sig->append(out2[loop]);
+          hist->append(out3[loop]);
+        }
+        set.getItemOutput2(s);
+        tlines.insert(s, sig);
+        set.getItemOutput3(s);
+        tlines.insert(s, hist);
+      }
+      break;
+    }
+    case MACDEXT:
+    {
+      TA_Real out2[in->getSize()];
+      TA_Real out3[in->getSize()];
+      QString fma;
+      set.getItemVal(5, fma);
+      QString sma;
+      set.getItemVal(7, sma);
+      QString sigma;
+      set.getItemVal(9, sigma);
+      rc = TA_MACDEXT(0, in->getSize() - 1, &input[0], set.getItemInt(4), (TA_MAType) maList.indexOf(fma), set.getItemDouble(6), (TA_MAType) maList.indexOf(sma), set.getItemDouble(8), (TA_MAType) maList.indexOf(sigma), &outBeg, &outNb, &out[0], &out2[0], &out3[0]);
+      if (rc == TA_SUCCESS)
+      {
+        PlotLine *sig = new PlotLine;
+        PlotLine *hist = new PlotLine;
+        for (loop = 0; loop < outNb; loop++)
+        {
+          sig->append(out2[loop]);
+          hist->append(out3[loop]);
+        }
+        set.getItemOutput2(s);
+        tlines.insert(s, sig);
+        set.getItemOutput3(s);
+        tlines.insert(s, hist);
+      }
+      break;
+    }
+    case MACDFIX:
+    {
+      TA_Real out2[in->getSize()];
+      TA_Real out3[in->getSize()];
+      rc = TA_MACDFIX(0, in->getSize() - 1, &input[0], set.getItemInt(4), &outBeg, &outNb, &out[0], &out2[0], &out3[0]);
+      if (rc == TA_SUCCESS)
+      {
+        PlotLine *sig = new PlotLine;
+        PlotLine *hist = new PlotLine;
+        for (loop = 0; loop < outNb; loop++)
+        {
+          sig->append(out2[loop]);
+          hist->append(out3[loop]);
+        }
+        set.getItemOutput2(s);
+        tlines.insert(s, sig);
+        set.getItemOutput3(s);
+        tlines.insert(s, hist);
+      }
+      break;
+    }
+    case MAMA:
+    {
+      TA_Real out2[in->getSize()];
+      rc = TA_MAMA(0, in->getSize() - 1, &input[0], set.getItemDouble(3), set.getItemDouble(4), &outBeg, &outNb, &out[0], &out2[0]);
+      if (rc == TA_SUCCESS)
+      {
+        PlotLine *fama = new PlotLine;
+        for (loop = 0; loop < outNb; loop++)
+          fama->append(out2[loop]);
+        set.getItemOutput2(s);
+        tlines.insert(s, fama);
+      }
+      break;
+    }
+    case MAX:
+      rc = TA_MAX(0, in->getSize() - 1, &input[0], set.getItemInt(2), &outBeg, &outNb, &out[0]);
+      break;
+    case MAXINDEX:
+    {
+      TA_Integer iout[in->getSize()];
+      rc = TA_MAXINDEX(0, in->getSize() - 1, &input[0], set.getItemInt(2), &outBeg, &outNb, &iout[0]);
+      if (rc == TA_SUCCESS)
+      {
+        for (loop = 0; loop < outNb; loop++)
+          out[loop] = iout[loop];
+      }
+      break;
+    }
+    case MIDPOINT:
+      rc = TA_MIDPOINT(0, in->getSize() - 1, &input[0], set.getItemInt(2), &outBeg, &outNb, &out[0]);
+      break;
+    case MIN:
+      rc = TA_MIN(0, in->getSize() - 1, &input[0], set.getItemInt(2), &outBeg, &outNb, &out[0]);
+      break;
+    case MININDEX:
+    {
+      TA_Integer iout[in->getSize()];
+      rc = TA_MININDEX(0, in->getSize() - 1, &input[0], set.getItemInt(2), &outBeg, &outNb, &iout[0]);
+      if (rc == TA_SUCCESS)
+      {
+        for (loop = 0; loop < outNb; loop++)
+          out[loop] = iout[loop];
+      }
+      break;
+    }
+    case MINMAX:
+    {
+      TA_Real out2[in->getSize()];
+      rc = TA_MINMAX(0, in->getSize() - 1, &input[0], set.getItemInt(3), &outBeg, &outNb, &out[0], &out2[0]);
+      if (rc == TA_SUCCESS)
+      {
+        PlotLine *fama = new PlotLine;
+        for (loop = 0; loop < outNb; loop++)
+          fama->append(out2[loop]);
+        set.getItemOutput2(s);
+        tlines.insert(s, fama);
+      }
+      break;
+    }
+    case MINMAXINDEX:
+    {
+      TA_Integer iout[in->getSize()];
+      TA_Integer iout2[in->getSize()];
+      rc = TA_MINMAXINDEX(0, in->getSize() - 1, &input[0], set.getItemInt(3), &outBeg, &outNb, &iout[0], &iout2[0]);
+      if (rc == TA_SUCCESS)
+      {
+        PlotLine *line2 = new PlotLine;
+        for (loop = 0; loop < outNb; loop++)
+        {
+          out[loop] = iout[loop];
+          line2->append(iout2[loop]);
+        }
+        set.getItemOutput2(s);
+        tlines.insert(s, line2);
+      }
+      break;
+    }
+    case MOM:
+      rc = TA_MOM(0, in->getSize() - 1, &input[0], set.getItemInt(2), &outBeg, &outNb, &out[0]);
+      break;
+    case PPO:
+    {
+      QString ma;
+      set.getItemVal(4, ma);
+      rc = TA_PPO(0, in->getSize() - 1, &input[0], set.getItemInt(2), set.getItemInt(3), (TA_MAType) maList.indexOf(ma), &outBeg, &outNb, &out[0]);
+      break;
+    }
+    case ROC:
+      rc = TA_ROC(0, in->getSize() - 1, &input[0], set.getItemInt(2), &outBeg, &outNb, &out[0]);
+      break;
+    case ROCP:
+      rc = TA_ROCP(0, in->getSize() - 1, &input[0], set.getItemInt(2), &outBeg, &outNb, &out[0]);
+      break;
+    case ROCR:
+      rc = TA_ROCR(0, in->getSize() - 1, &input[0], set.getItemInt(2), &outBeg, &outNb, &out[0]);
+      break;
+    case ROCR100:
+      rc = TA_ROCR100(0, in->getSize() - 1, &input[0], set.getItemInt(2), &outBeg, &outNb, &out[0]);
+      break;
+    case RSI:
+      rc = TA_RSI(0, in->getSize() - 1, &input[0], set.getItemInt(2), &outBeg, &outNb, &out[0]);
+      break;
+    case SIN:
+      rc = TA_SIN(0, in->getSize() - 1, &input[0], &outBeg, &outNb, &out[0]);
+      break;
+    case SINH:
+      rc = TA_SINH(0, in->getSize() - 1, &input[0], &outBeg, &outNb, &out[0]);
+      break;
+    case SMA:
+      rc = TA_SMA(0, in->getSize() - 1, &input[0], set.getItemInt(2), &outBeg, &outNb, &out[0]);
+      break;
+    case SQRT:
+      rc = TA_SQRT(0, in->getSize() - 1, &input[0], &outBeg, &outNb, &out[0]);
+      break;
+    case STDDEV:
+      rc = TA_STDDEV(0, in->getSize() - 1, &input[0], set.getItemInt(2), set.getItemDouble(3), &outBeg, &outNb, &out[0]);
+      break;
+    case STOCHRSI:
+    {
+      TA_Real out2[in->getSize()];
+      QString ma;
+      set.getItemVal(5, ma);
+      rc = TA_STOCHRSI(0, in->getSize() - 1, &input[0], set.getItemInt(2), set.getItemInt(3), set.getItemInt(4), (TA_MAType) maList.indexOf(ma), &outBeg, &outNb, &out[0], &out2[0]);
+      if (rc == TA_SUCCESS)
+      {
+        PlotLine *line2 = new PlotLine;
+        for (loop = 0; loop < outNb; loop++)
+          line2->append(out2[loop]);
+        set.getItemOutput2(s);
+        tlines.insert(s, line2);
+      }
+      break;
+    }
+    case SUM:
+      rc = TA_SUM(0, in->getSize() - 1, &input[0], set.getItemInt(2), &outBeg, &outNb, &out[0]);
+      break;
+    case T3:
+      rc = TA_T3(0, in->getSize() - 1, &input[0], set.getItemInt(2), set.getItemDouble(3), &outBeg, &outNb, &out[0]);
+      break;
+    case TAN:
+      rc = TA_TAN(0, in->getSize() - 1, &input[0], &outBeg, &outNb, &out[0]);
+      break;
+    case TANH:
+      rc = TA_TANH(0, in->getSize() - 1, &input[0], &outBeg, &outNb, &out[0]);
+      break;
+    case TEMA:
+      rc = TA_TEMA(0, in->getSize() - 1, &input[0], set.getItemInt(2), &outBeg, &outNb, &out[0]);
+      break;
+    case TRIMA:
+      rc = TA_TRIMA(0, in->getSize() - 1, &input[0], set.getItemInt(2), &outBeg, &outNb, &out[0]);
+      break;
+    case TRIX:
+      rc = TA_TRIX(0, in->getSize() - 1, &input[0], set.getItemInt(2), &outBeg, &outNb, &out[0]);
+      break;
+    case TSF:
+      rc = TA_TSF(0, in->getSize() - 1, &input[0], set.getItemInt(2), &outBeg, &outNb, &out[0]);
+      break;
+    case VAR:
+      rc = TA_VAR(0, in->getSize() - 1, &input[0], set.getItemInt(2), set.getItemDouble(3), &outBeg, &outNb, &out[0]);
+      break;
+    case WMA:
+      rc = TA_WMA(0, in->getSize() - 1, &input[0], set.getItemInt(2), &outBeg, &outNb, &out[0]);
       break;
     default:
       break;
   }
-      
+
+  if (flag)
+    delete in;
+
   if (rc != TA_SUCCESS)
   {
-    qDebug() << "ExScript::getHLCVInput: TA-Lib error" << rc;
+    qDebug() << "ExScript::getInput: TA-Lib error" << rc;
     return 1;
   }
 
@@ -592,102 +977,204 @@ int ExScript::getHLCVInput (QStringList &l, int i)
   for (loop = 0; loop < outNb; loop++)
     line->append(out[loop]);
 
-  tlines.insert(l[1], line);
+  set.getItemOutput(s);
+  tlines.insert(s, line);
+  return 0;
+}
 
+//***************************************************
+//********** Field Input Functions ******************
+//***************************************************
+int ExScript::getFieldInput (IndicatorSettings &set, int i)
+{
+  TA_Real open[data->count()];
+  TA_Real high[data->count()];
+  TA_Real low[data->count()];
+  TA_Real close[data->count()];
+  TA_Real volume[data->count()];
+  TA_Real out[data->count()];
+  int loop;
+  for (loop = 0; loop < data->count(); loop++)
+  {
+    open[loop] = (TA_Real) data->getOpen(loop);
+    high[loop] = (TA_Real) data->getHigh(loop);
+    low[loop] = (TA_Real) data->getLow(loop);
+    close[loop] = (TA_Real) data->getClose(loop);
+    volume[loop] = (TA_Real) data->getVolume(loop);
+  }
+
+  QString s;
+  TA_RetCode rc = TA_SUCCESS;
+  TA_Integer outBeg;
+  TA_Integer outNb;
+  switch ((IndicatorName) i)
+  {
+    case AD:
+      rc = TA_AD(0, data->count() - 1, &high[0], &low[0], &close[0], &volume[0], &outBeg, &outNb, &out[0]);
+      break;
+    case ADOSC:
+      rc = TA_ADOSC(0, data->count() - 1, &high[0], &low[0], &close[0], &volume[0], set.getItemInt(1), set.getItemInt(2), &outBeg, &outNb, &out[0]);
+      break;
+    case ADX:
+      rc = TA_ADX(0, data->count() - 1, &high[0], &low[0], &close[0], set.getItemInt(1), &outBeg, &outNb, &out[0]);
+      break;
+    case ADXR:
+      rc = TA_ADXR(0, data->count() - 1, &high[0], &low[0], &close[0], set.getItemInt(1), &outBeg, &outNb, &out[0]);
+      break;
+    case AROON:
+    {
+      TA_Real out2[data->count()];
+      rc = TA_AROON(0, data->count() - 1, &high[0], &low[0], set.getItemInt(2), &outBeg, &outNb, &out[0], &out2[0]);
+      if (rc == TA_SUCCESS)
+      {
+        PlotLine *line = new PlotLine;
+        for (loop = 0; loop < outNb; loop++)
+          line->append(out2[loop]);
+        set.getItemOutput2(s);
+        tlines.insert(s, line);
+      }
+      break;
+    }
+    case AROONOSC:
+      rc = TA_AROONOSC(0, data->count() - 1, &high[0], &low[0], set.getItemInt(1), &outBeg, &outNb, &out[0]);
+      break;
+    case ATR:
+      rc = TA_ATR(0, data->count() - 1, &high[0], &low[0], &close[0], set.getItemInt(1), &outBeg, &outNb, &out[0]);
+      break;
+    case AVGPRICE:
+      rc = TA_AVGPRICE(0, data->count() - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
+      break;
+    case BOP:
+      rc = TA_BOP(0, data->count() - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
+      break;
+    case CCI:
+      rc = TA_CCI(0, data->count() - 1, &high[0], &low[0], &close[0], set.getItemInt(1), &outBeg, &outNb, &out[0]);
+      break;
+    case DX:
+      rc = TA_DX(0, data->count() - 1, &high[0], &low[0], &close[0], set.getItemInt(1), &outBeg, &outNb, &out[0]);
+      break;
+    case MEDPRICE:
+      rc = TA_MEDPRICE(0, data->count() - 1, &high[0], &low[0], &outBeg, &outNb, &out[0]);
+      break;
+    case MFI:
+      rc = TA_MFI(0, data->count() - 1, &high[0], &low[0], &close[0], &volume[0], set.getItemInt(1), &outBeg, &outNb, &out[0]);
+      break;
+    case MIDPRICE:
+      rc = TA_MIDPRICE(0, data->count() - 1, &high[0], &low[0], set.getItemInt(1), &outBeg, &outNb, &out[0]);
+      break;
+    case MINUS_DI:
+      rc = TA_MINUS_DI(0, data->count() - 1, &high[0], &low[0], &close[0], set.getItemInt(1), &outBeg, &outNb, &out[0]);
+      break;
+    case MINUS_DM:
+      rc = TA_MINUS_DM(0, data->count() - 1, &high[0], &low[0], set.getItemInt(1), &outBeg, &outNb, &out[0]);
+      break;
+    case NATR:
+      rc = TA_NATR(0, data->count() - 1, &high[0], &low[0], &close[0], set.getItemInt(1), &outBeg, &outNb, &out[0]);
+      break;
+    case PLUS_DI:
+      rc = TA_PLUS_DI(0, data->count() - 1, &high[0], &low[0], &close[0], set.getItemInt(1), &outBeg, &outNb, &out[0]);
+      break;
+    case PLUS_DM:
+      rc = TA_PLUS_DM(0, data->count() - 1, &high[0], &low[0], set.getItemInt(1), &outBeg, &outNb, &out[0]);
+      break;
+    case SAR:
+      rc = TA_SAR(0, data->count() - 1, &high[0], &low[0], set.getItemDouble(1), set.getItemDouble(2), &outBeg, &outNb, &out[0]);
+      break;
+    case SAREXT:
+      rc = TA_SAREXT(0, data->count() - 1, &high[0], &low[0], set.getItemDouble(1), set.getItemDouble(2), set.getItemDouble(3), set.getItemDouble(4), set.getItemDouble(5), set.getItemDouble(6), set.getItemDouble(7), set.getItemDouble(8), &outBeg, &outNb, &out[0]);
+      break;
+    case STOCH:
+    {
+      TA_Real out2[data->count()];
+      QString ma, ma2;
+      set.getItemVal(4, ma);
+      set.getItemVal(6, ma2);
+      rc = TA_STOCH(0, data->count() - 1, &high[0], &low[0], &close[0], set.getItemInt(2), set.getItemInt(3), (TA_MAType) maList.indexOf(ma), set.getItemInt(5), (TA_MAType) maList.indexOf(ma2), &outBeg, &outNb, &out[0], &out2[0]);
+      if (rc == TA_SUCCESS)
+      {
+        PlotLine *line = new PlotLine;
+        for (loop = 0; loop < outNb; loop++)
+          line->append(out2[loop]);
+        set.getItemOutput2(s);
+        tlines.insert(s, line);
+      }
+      break;
+    }
+    case STOCHF:
+    {
+      TA_Real out2[data->count()];
+      QString ma;
+      set.getItemVal(4, ma);
+      rc = TA_STOCHF(0, data->count() - 1, &high[0], &low[0], &close[0], set.getItemInt(2), set.getItemInt(3), (TA_MAType) maList.indexOf(ma), &outBeg, &outNb, &out[0], &out2[0]);
+      if (rc == TA_SUCCESS)
+      {
+        PlotLine *line = new PlotLine;
+        for (loop = 0; loop < outNb; loop++)
+          line->append(out2[loop]);
+        set.getItemOutput2(s);
+        tlines.insert(s, line);
+      }
+      break;
+    }
+    case TRANGE:
+      rc = TA_TRANGE(0, data->count() - 1, &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
+      break;
+    case TYPPRICE:
+      rc = TA_TYPPRICE(0, data->count() - 1, &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
+      break;
+    case ULTOSC:
+      rc = TA_ULTOSC(0, data->count() - 1, &high[0], &low[0], &close[0], set.getItemInt(1), set.getItemInt(2), set.getItemInt(3), &outBeg, &outNb, &out[0]);
+      break;
+    case WCLPRICE:
+      rc = TA_WCLPRICE(0, data->count() - 1, &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
+      break;
+    case WILLR:
+      rc = TA_WILLR(0, data->count() - 1, &high[0], &low[0], &close[0], set.getItemInt(1), &outBeg, &outNb, &out[0]);
+      break;
+    default:
+      break;
+  }
+  
+  if (rc != TA_SUCCESS)
+  {
+    qDebug() << "ExScript::getFieldInput: TA-Lib error" << rc;
+    return 1;
+  }
+
+  PlotLine *line = new PlotLine;
+  for (loop = 0; loop < outNb; loop++)
+    line->append(out[loop]);
+
+  set.getItemOutput(s);
+  tlines.insert(s, line);
   return 0;
 }
 
 //***************************************************
 //********** Double Input Functions *****************
 //***************************************************
-int ExScript::getDoubleInput (QStringList &l, int i)
+int ExScript::getInput2 (IndicatorSettings &set, int i)
 {
-  // format 'FUNCTION,NAME,INPUT_1,INPUT_2'
-  // format 'BETA,NAME,INPUT_1,INPUT_2,PERIOD'
-  // format 'CORREL,NAME,INPUT_1,INPUT_2,PERIOD'
-  // format 'MAVP,NAME,INPUT_1,INPUT_2,MIN,MAX,MA_TYPE'
-
-  bool ok;
-  int period = 0;
-  int min = 0;
-  int max = 0;
-  switch (i)
-  {
-    case BETA:
-    case CORREL:
-      if (l.count() != 5)
-      {
-        qDebug() << "ExScript::getDoubleInput: parm error" << l;
-        return 1;
-      }
-  
-      period = l[4].toInt(&ok);
-      if (! ok)
-      {
-        qDebug() << "ExScript::getDoubleInput: parm error" << l[4];
-        return 1;
-      }
-      break;
-    case MAVP:
-      if (l.count() != 7)
-      {
-        qDebug() << "ExScript::getDoubleInput: parm error" << l;
-        return 1;
-      }
-  
-      min = l[4].toInt(&ok);
-      if (! ok)
-      {
-        qDebug() << "ExScript::getDoubleInput: parm error" << l[4];
-        return 1;
-      }
-
-      max = l[5].toInt(&ok);
-      if (! ok)
-      {
-        qDebug() << "ExScript::getDoubleInput: parm error" << l[5];
-        return 1;
-      }
-      break;
-    default:
-      if (l.count() != 4)
-      {
-        qDebug() << "ExScript::getDoubleInput: parm error" << l;
-        return 1;
-      }
-      break;
-  }
-
+  QString s;
   int flag = FALSE;
   int flag2 = FALSE;
-  PlotLine *in = tlines.value(l[2]);
+  
+  set.getItemInput(s);
+  PlotLine *in = tlines.value(s);
   if (! in)
   {
-    in = data->getInput(data->getInputType(l[2]));
-    if (! in)
-    {
-      qDebug() << "ExScript::getDoubleInput: cannot create input_1 " << l[2];
-      return 1;
-    }
-    
+    in = data->getInput(data->getInputType(s));
     flag = TRUE;
   }
-
-  PlotLine *in2 = tlines.value(l[3]);
+  
+  set.getItemInput2(s);
+  PlotLine *in2 = tlines.value(s);
   if (! in2)
   {
-    in2 = data->getInput(data->getInputType(l[3]));
-    if (! in2)
-    {
-      qDebug() << "ExScript::getDoubleInput: cannot create input_2 " << l[3];
-      if (flag)
-	delete in;
-      return 1;
-    }
-    
+    in2 = data->getInput(data->getInputType(s));
     flag2 = TRUE;
   }
-
+  
   int size = in->getSize();
   if (in2->getSize() < size)
     size = in2->getSize();
@@ -707,6 +1194,11 @@ int ExScript::getDoubleInput (QStringList &l, int i)
     input2[loop2] = (TA_Real) in2->getData(loop2);
   }
   
+  if (flag)
+    delete in;
+  if (flag2)
+    delete in2;
+  
   TA_RetCode rc = TA_SUCCESS;
   switch (i)
   {
@@ -714,19 +1206,26 @@ int ExScript::getDoubleInput (QStringList &l, int i)
       rc = TA_ADD(0, size - 1, &input[0], &input2[0], &outBeg, &outNb, &out[0]);
       break;
     case BETA:
-      rc = TA_BETA(0, size - 1, &input[0], &input2[0], period, &outBeg, &outNb, &out[0]);
+      rc = TA_BETA(0, size - 1, &input[0], &input2[0], set.getItemInt(3), &outBeg, &outNb, &out[0]);
       break;
     case CORREL:
-      rc = TA_CORREL(0, size - 1, &input[0], &input2[0], period, &outBeg, &outNb, &out[0]);
+      rc = TA_CORREL(0, size - 1, &input[0], &input2[0], set.getItemInt(3), &outBeg, &outNb, &out[0]);
       break;
     case DIV:
       rc = TA_DIV(0, size - 1, &input[0], &input2[0], &outBeg, &outNb, &out[0]);
       break;
     case MAVP:
-      rc = TA_MAVP(0, size - 1, &input[0], &input2[0], min, max, (TA_MAType) maList.indexOf(l[6]), &outBeg, &outNb, &out[0]);
+    {
+      QString ma;
+      set.getItemVal(5, ma);
+      rc = TA_MAVP(0, size - 1, &input[0], &input2[0], set.getItemInt(3), set.getItemInt(4), (TA_MAType) maList.indexOf(ma), &outBeg, &outNb, &out[0]);
       break;
+    }
     case MULT:
       rc = TA_MULT(0, size - 1, &input[0], &input2[0], &outBeg, &outNb, &out[0]);
+      break;
+    case OBV:
+      rc = TA_OBV(0, size - 1, &input[0], &input2[0], &outBeg, &outNb, &out[0]);
       break;
     case SUB:
       rc = TA_SUB(0, size - 1, &input[0], &input2[0], &outBeg, &outNb, &out[0]);
@@ -737,7 +1236,7 @@ int ExScript::getDoubleInput (QStringList &l, int i)
       
   if (rc != TA_SUCCESS)
   {
-    qDebug() << "ExScript::getDoubleInput: TA-Lib error" << rc;
+    qDebug() << "ExScript::getInput2: TA-Lib error" << rc;
     return 1;
   }
 
@@ -745,640 +1244,18 @@ int ExScript::getDoubleInput (QStringList &l, int i)
   for (loop = 0; loop < outNb; loop++)
     line->append(out[loop]);
 
-  tlines.insert(l[1], line);
-
-  if (flag)
-    delete in;
-  if (flag2)
-    delete in2;
-  
-  return 0;
-}
-
-//***************************************************
-//********** HLC Input *****************************
-//***************************************************
-int ExScript::getHLCInput (QStringList &l, int i)
-{
-  // format 'ADX,NAME,PERIOD'
-  // format 'ADXR,NAME,PERIOD'
-
-  bool ok;
-  int period = 0;
-  int period2 = 0;
-  int period3 = 0;
-  switch (i)
-  {
-    case ADX:
-    case ADXR:
-    case ATR:
-    case CCI:
-    case DX:
-    case MINUS_DI:
-    case NATR:
-    case PLUS_DI:
-    case WILLR:
-      if (l.count() != 3)
-      {
-        qDebug() << "ExScript::getHLCInput: parm error" << l;
-        return 1;
-      }
-
-      period = l[2].toInt(&ok);
-      if (! ok)
-      {
-        qDebug() << "ExScript::getHLCInput: parm error" << l[2];
-        return 1;
-      }
-      break;
-    case TRANGE:
-    case TYPPRICE:
-    case WCLPRICE:
-      if (l.count() != 2)
-      {
-        qDebug() << "ExScript::getHLCInput: parm error" << l;
-        return 1;
-      }
-      break;      
-    case ULTOSC:
-      if (l.count() != 5)
-      {
-        qDebug() << "ExScript::getHLCInput: parm error" << l;
-        return 1;
-      }
-
-      period = l[2].toInt(&ok);
-      if (! ok)
-      {
-        qDebug() << "ExScript::getHLCInput: parm error" << l[2];
-        return 1;
-      }
-
-      period2 = l[3].toInt(&ok);
-      if (! ok)
-      {
-        qDebug() << "ExScript::getHLCInput: parm error" << l[3];
-        return 1;
-      }
-      
-      period3 = l[4].toInt(&ok);
-      if (! ok)
-      {
-        qDebug() << "ExScript::getHLCInput: parm error" << l[4];
-        return 1;
-      }
-      break;
-    default:
-      break;
-  }
-  
-  TA_Real high[data->count()];
-  TA_Real low[data->count()];
-  TA_Real close[data->count()];
-  TA_Real out[data->count()];
-  TA_Integer outBeg;
-  TA_Integer outNb;
-
-  int loop;
-  for (loop = 0; loop < data->count(); loop++)
-  {
-    high[loop] = (TA_Real) data->getHigh(loop);
-    low[loop] = (TA_Real) data->getLow(loop);
-    close[loop] = (TA_Real) data->getClose(loop);
-  }
-  
-  TA_RetCode rc = TA_SUCCESS;
-  switch (i)
-  {
-    case ADX:
-      rc = TA_ADX(0, data->count() - 1, &high[0], &low[0], &close[0], period, &outBeg, &outNb, &out[0]);
-      break;
-    case ADXR:
-      rc = TA_ADXR(0, data->count() - 1, &high[0], &low[0], &close[0], period, &outBeg, &outNb, &out[0]);
-      break;
-    case ATR:
-      rc = TA_ATR(0, data->count() - 1, &high[0], &low[0], &close[0], period, &outBeg, &outNb, &out[0]);
-      break;
-    case CCI:
-      rc = TA_CCI(0, data->count() - 1, &high[0], &low[0], &close[0], period, &outBeg, &outNb, &out[0]);
-      break;
-    case DX:
-      rc = TA_DX(0, data->count() - 1, &high[0], &low[0], &close[0], period, &outBeg, &outNb, &out[0]);
-      break;
-    case MINUS_DI:
-      rc = TA_MINUS_DI(0, data->count() - 1, &high[0], &low[0], &close[0], period, &outBeg, &outNb, &out[0]);
-      break;
-    case NATR:
-      rc = TA_NATR(0, data->count() - 1, &high[0], &low[0], &close[0], period, &outBeg, &outNb, &out[0]);
-      break;
-    case PLUS_DI:
-      rc = TA_PLUS_DI(0, data->count() - 1, &high[0], &low[0], &close[0], period, &outBeg, &outNb, &out[0]);
-      break;
-    case TRANGE:
-      rc = TA_TRANGE(0, data->count() - 1, &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
-      break;
-    case TYPPRICE:
-      rc = TA_TYPPRICE(0, data->count() - 1, &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
-      break;
-    case ULTOSC:
-      rc = TA_ULTOSC(0, data->count() - 1, &high[0], &low[0], &close[0], period, period2, period3, &outBeg, &outNb, &out[0]);
-      break;
-    case WCLPRICE:
-      rc = TA_WCLPRICE(0, data->count() - 1, &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
-      break;
-    case WILLR:
-      rc = TA_WILLR(0, data->count() - 1, &high[0], &low[0], &close[0], period, &outBeg, &outNb, &out[0]);
-      break;
-    default:
-      break;
-  }
-  
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << "ExScript::getHLCInput: TA-Lib error" << rc;
-    return 1;
-  }
-
-  PlotLine *line = new PlotLine;
-  for (loop = 0; loop < outNb; loop++)
-    line->append(out[loop]);
-
-  tlines.insert(l[1], line);
-
-  return 0;
-}
-
-//***************************************************
-//********** OSCILLATORS ****************************
-//***************************************************
-int ExScript::getOSC (QStringList &l, int i)
-{
-  // format 'APO,NAME,INPUT,FAST_PERIOD,SLOW_PERIOD,MA_TYPE'
-
-  bool ok;
-  int fast = 0;
-  int slow = 0;
-  switch (i)
-  {
-    default:
-      if (l.count() != 6)
-      {
-        qDebug() << "ExScript::getOSC: parm error" << l;
-        return 1;
-      }
-
-      fast = l[3].toInt(&ok);
-      if (! ok)
-      {
-        qDebug() << "ExScript::getOSC: parm error" << l[3];
-        return 1;
-      }
-  
-      slow = l[4].toInt(&ok);
-      if (! ok)
-      {
-        qDebug() << "ExScript::getOSC: parm error" << l[4];
-        return 1;
-      }
-      break;
-  }
-  
-  int flag = FALSE;
-  PlotLine *in = tlines.value(l[2]);
-  if (! in)
-  {
-    in = data->getInput(data->getInputType(l[2]));
-    if (! in)
-    {
-      qDebug() << "ExScript::getOSC: cannot create input " << l[2];
-      return 1;
-    }
-    
-    flag = TRUE;
-  }
-
-  TA_Real input[in->getSize()];
-  TA_Real out[in->getSize()];
-  TA_Integer outBeg;
-  TA_Integer outNb;
-
-  int loop;
-  for (loop = 0; loop < in->getSize(); loop++)
-    input[loop] = (TA_Real) in->getData(loop);
-  
-  TA_RetCode rc = TA_SUCCESS;
-  switch (i)
-  {
-    case APO:
-      rc = TA_APO(0, in->getSize() - 1, &input[0], fast, slow, (TA_MAType) maList.indexOf(l[5]), &outBeg, &outNb, &out[0]);
-      break;
-    case PPO:
-      rc = TA_PPO(0, in->getSize() - 1, &input[0], fast, slow, (TA_MAType) maList.indexOf(l[5]), &outBeg, &outNb, &out[0]);
-      break;
-    default:
-      break;
-  }
-  
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << "ExScript::getOSC: TA-Lib error" << rc;
-    return 1;
-  }
-
-  PlotLine *line = new PlotLine;
-  for (loop = 0; loop < outNb; loop++)
-    line->append(out[loop]);
-
-  tlines.insert(l[1], line);
-
-  if (flag)
-    delete in;
-  
-  return 0;
-}
-
-//***************************************************
-//********** AROON **********************************
-//***************************************************
-int ExScript::getAROON (QStringList &l)
-{
-  // format 'AROON,NAME_DOWN,NAME_UP,PERIOD'
-  // format 'AROONOSC,NAME,PERIOD'
-
-  bool ok;
-  int period;
-  if (l[0] == "AROON")
-  {
-    if (l.count() != 4)
-    {
-      qDebug() << "ExScript::AROON: parm error" << l;
-      return 1;
-    }
-
-    period = l[3].toInt(&ok);
-    if (! ok)
-    {
-      qDebug() << "ExScript::AROON: parm error" << l[3];
-      return 1;
-    }
-  }
-  else
-  {
-    if (l.count() != 3)
-    {
-      qDebug() << "ExScript::AROONOSC: parm error" << l;
-      return 1;
-    }
-
-    period = l[2].toInt(&ok);
-    if (! ok)
-    {
-      qDebug() << "ExScript::AROONOSC: parm error" << l[2];
-      return 1;
-    }
-  }
-  
-  TA_Real high[data->count()];
-  TA_Real low[data->count()];
-  TA_Real out[data->count()];
-  TA_Real out2[data->count()];
-  TA_Integer outBeg;
-  TA_Integer outNb;
-
-  int loop;
-  for (loop = 0; loop < data->count(); loop++)
-  {
-    high[loop] = (TA_Real) data->getHigh(loop);
-    low[loop] = (TA_Real) data->getLow(loop);
-  }
-  
-  TA_RetCode rc;
-  if (l[0] == "AROON")
-    rc = TA_AROON(0, data->count() - 1, &high[0], &low[0], period, &outBeg, &outNb, &out[0], &out2[0]);
-  else
-    rc = TA_AROONOSC(0, data->count() - 1, &high[0], &low[0], period, &outBeg, &outNb, &out[0]);
-    
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << "ExScript::AROON: TA-Lib error" << rc;
-    return 1;
-  }
-
-  if (l[0] == "AROON")
-  {
-    PlotLine *line = new PlotLine;
-    PlotLine *line2 = new PlotLine;
-    for (loop = 0; loop < outNb; loop++)
-    {
-      line->append(out[loop]);
-      line2->append(out2[loop]);
-    }
-
-    tlines.insert(l[1], line);
-    tlines.insert(l[2], line2);
-  }
-  else
-  {
-    PlotLine *line = new PlotLine;
-    for (loop = 0; loop < outNb; loop++)
-      line->append(out[loop]);
-
-    tlines.insert(l[1], line);
-  }
-
-  return 0;
-}
-
-//***************************************************
-//********** OHLC Input *******************************
-//***************************************************
-int ExScript::getOHLCInput (QStringList &l, int i)
-{
-  // format 'AVGPRICE,NAME'
-
-  switch (i)
-  {
-    case AVGPRICE:
-    case BOP:
-      if (l.count() != 2)
-      {
-        qDebug() << "ExScript::getOHLCInput: parm error" << l;
-        return 1;
-      }
-      break;
-    default:
-      break;
-  }
-
-  TA_Real high[data->count()];
-  TA_Real low[data->count()];
-  TA_Real close[data->count()];
-  TA_Real open[data->count()];
-  TA_Real out[data->count()];
-  TA_Integer outBeg;
-  TA_Integer outNb;
-
-  int loop;
-  for (loop = 0; loop < data->count(); loop++)
-  {
-    high[loop] = (TA_Real) data->getHigh(loop);
-    low[loop] = (TA_Real) data->getLow(loop);
-    close[loop] = (TA_Real) data->getClose(loop);
-    open[loop] = (TA_Real) data->getOpen(loop);
-  }
-  
-  TA_RetCode rc = TA_SUCCESS;
-  switch (i)
-  {
-    case AVGPRICE:
-      rc = TA_AVGPRICE(0, data->count() - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
-      break;
-    case BOP:
-      rc = TA_BOP(0, data->count() - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
-      break;
-    default:
-      break;
-  }
-    
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << "ExScript::getOHLCInput: TA-Lib error" << rc;
-    return 1;
-  }
-
-  PlotLine *line = new PlotLine;
-  for (loop = 0; loop < outNb; loop++)
-    line->append(out[loop]);
-
-  tlines.insert(l[1], line);
-
-  return 0;
-}
-
-//***************************************************
-//********** BARS ***********************************
-//***************************************************
-int ExScript::getBARS (QStringList &l)
-{
-  // format 'BARS,NAME,BAR_UP_COLOR,BAR_DOWN_COLOR,BAR_NEUTRAL_COLOR'
-  
-  if (l.count() != 5)
-  {
-    qDebug() << "ExScript::BARS: parm error" << l;
-    return 1;
-  }
-
-  QColor color;
-  QColor barUpColor(l[2]);
-  if (! barUpColor.isValid())
-  {
-    qDebug() << "ExScript::CANDLES: parm error" << l[2];
-    return 1;
-  }
-
-  QColor barDownColor(l[3]);
-  if (! barDownColor.isValid())
-  {
-    qDebug() << "ExScript::CANDLES: parm error" << l[3];
-    return 1;
-  }
-  
-  QColor barNeutralColor(l[4]);
-  if (! barNeutralColor.isValid())
-  {
-    qDebug() << "ExScript::CANDLES: parm error" << l[4];
-    return 1;
-  }
-
-  PlotLine *line = new PlotLine;
-  int loop;
-  for (loop = 0; loop < (int) data->count(); loop++)
-  {
-    if (loop > 0)
-    {  
-      if (data->getClose(loop) > data->getClose(loop - 1))
-        color = barUpColor;
-      else
-      {
-        if (data->getClose(loop) < data->getClose(loop - 1))
-          color = barDownColor;
-        else
-          color = barNeutralColor;
-      }
-    }
-    else
-      color = barNeutralColor;
-
-    line->append(color, data->getOpen(loop), data->getHigh(loop), data->getLow(loop), data->getClose(loop), FALSE);
-
-    QDateTime dt;
-    data->getDate(loop, dt);
-    line->append(dt);
-  }
-
-  tlines.insert(l[1], line);
-  
-  return 0;
-}
-
-//***************************************************
-//********** CANDLES ********************************
-//***************************************************
-int ExScript::getCANDLES (QStringList &l)
-{
-  // format 'CANDLES,NAME,CANDLE_COLOR'
-  
-  if (l.count() != 3)
-  {
-    qDebug() << "ExScript::CANDLES: parm error" << l;
-    return 1;
-  }
-    
-  QColor color(l[2]);
-  if (! color.isValid())
-  {
-    qDebug() << "ExScript::CANDLES: parm error" << l[2];
-    return 1;
-  }
-
-  PlotLine *line = new PlotLine;
-  int loop;
-  for (loop = 0; loop < (int) data->count(); loop++)
-  {
-    double c = data->getClose(loop);
-    double o = data->getOpen(loop);
-    bool fillFlag = FALSE;
-
-    if (o != 0)
-    {
-      if (c < o)
-        fillFlag = TRUE;
-    }
-
-    line->append(color, o, data->getHigh(loop), data->getLow(loop), c, fillFlag);
-
-    QDateTime dt;
-    data->getDate(loop, dt);
-    line->append(dt);
-  }
-
-  tlines.insert(l[1], line);
-  
-  return 0;
-}
-
-//***************************************************
-//********** BBANDS *********************************
-//***************************************************
-int ExScript::getBBANDS (QStringList &l)
-{
-  // format 'BBANDS,INPUT,NAME_UPPER,NAME_MIDDLE,NAME_LOWER,PERIOD,UPPER_DEVIATION,LOWER_DEVIATION,MA_TYPE'
-
-  if (l.count() != 9)
-  {
-    qDebug() << "ExScript::BBANDS: parm error" << l;
-    return 1;
-  }
-
-  bool ok;
-  int period = l[5].toInt(&ok);
-  if (! ok)
-  {
-    qDebug() << "ExScript::BBANDS: parm error" << l[5];
-    return 1;
-  }
-
-  double devUp = l[6].toDouble(&ok);
-  if (! ok)
-  {
-    qDebug() << "ExScript::BBANDS: parm error" << l[6];
-    return 1;
-  }
-
-  double devDown = l[7].toDouble(&ok);
-  if (! ok)
-  {
-    qDebug() << "ExScript::BBANDS: parm error" << l[7];
-    return 1;
-  }
-
-  int flag = FALSE;
-  PlotLine *in = tlines.value(l[1]);
-  if (! in)
-  {
-    in = data->getInput(data->getInputType(l[1]));
-    if (! in)
-    {
-      qDebug() << "ExScript::BBANDS: cannot create input " << l[1];
-      return 1;
-    }
-    
-    flag = TRUE;
-  }
-
-  TA_Real input[in->getSize()];
-  TA_Real upper[in->getSize()];
-  TA_Real lower[in->getSize()];
-  TA_Real middle[in->getSize()];
-  TA_Integer outBeg;
-  TA_Integer outNb;
-
-  int loop;
-  for (loop = 0; loop < in->getSize(); loop++)
-    input[loop] = (TA_Real) in->getData(loop);
-  
-  TA_RetCode rc = TA_BBANDS(0, in->getSize() - 1, &input[0], period, devUp, devDown, (TA_MAType) maList.indexOf(l[8]), &outBeg, &outNb, &upper[0], &middle[0], &lower[0]);
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << "ExScript::BBANDS: TA-Lib error" << rc;
-    return 1;
-  }
-
-  PlotLine *u = new PlotLine;
-  PlotLine *m = new PlotLine;
-  PlotLine *lw = new PlotLine;
-  for (loop = 0; loop < outNb; loop++)
-  {
-    u->append(upper[loop]);
-    m->append(middle[loop]);
-    lw->append(lower[loop]);
-  }
-
-  tlines.insert(l[2], u);
-  tlines.insert(l[3], m);
-  tlines.insert(l[4], lw);
-
-  if (flag)
-    delete in;
-  
+  set.getItemOutput(s);
+  tlines.insert(s, line);
   return 0;
 }
 
 //***************************************************
 //********** CDL  ***********************************
 //***************************************************
-int ExScript::getCDL (QStringList &l, int i)
+int ExScript::getCDL (IndicatorSettings &set, int i)
 {
   // format 'CDL,NAME'
   // format 'CDL,NAME,PENETRATION'
-
-  if (l.count() == 2 || l.count() == 3)
-  {
-    qDebug() << "ExScript::CDL: parm error" << l;
-    return 1;
-  }
-  
-  double penetration = 0;
-  if (l.count() == 3)
-  {
-    bool ok;
-    penetration = l[2].toDouble(&ok);
-    if (! ok)
-    {
-      qDebug() << "ExScript::CDL: parm error" << l[2];
-      return 1;
-    }
-  }
 
   TA_Real high[data->count()];
   TA_Real low[data->count()];
@@ -1399,7 +1276,7 @@ int ExScript::getCDL (QStringList &l, int i)
 
   TA_RetCode rc = TA_SUCCESS;
   
-  switch (i)
+  switch ((IndicatorName) i)
   {
     case CDL2CROWS:
       rc = TA_CDL2CROWS(0, data->count() - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
@@ -1423,7 +1300,7 @@ int ExScript::getCDL (QStringList &l, int i)
       rc = TA_CDL3WHITESOLDIERS(0, data->count() - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
       break;
     case CDLABANDONEDBABY:
-      rc = TA_CDLABANDONEDBABY(0, data->count() - 1, &open[0], &high[0], &low[0], &close[0], penetration, &outBeg, &outNb, &out[0]);
+      rc = TA_CDLABANDONEDBABY(0, data->count() - 1, &open[0], &high[0], &low[0], &close[0], set.getItemDouble(1), &outBeg, &outNb, &out[0]);
       break;
     case CDLADVANCEBLOCK:
       rc = TA_CDLADVANCEBLOCK(0, data->count() - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
@@ -1444,7 +1321,7 @@ int ExScript::getCDL (QStringList &l, int i)
       rc = TA_CDLCOUNTERATTACK(0, data->count() - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
       break;
     case CDLDARKCLOUDCOVER:
-      rc = TA_CDLDARKCLOUDCOVER(0, data->count() - 1, &open[0], &high[0], &low[0], &close[0], penetration, &outBeg, &outNb, &out[0]);
+      rc = TA_CDLDARKCLOUDCOVER(0, data->count() - 1, &open[0], &high[0], &low[0], &close[0], set.getItemDouble(1), &outBeg, &outNb, &out[0]);
       break;
     case CDLDOJI:
       rc = TA_CDLDOJI(0, data->count() - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
@@ -1459,10 +1336,10 @@ int ExScript::getCDL (QStringList &l, int i)
       rc = TA_CDLENGULFING(0, data->count() - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
       break;
     case CDLEVENINGDOJISTAR:
-      rc = TA_CDLEVENINGDOJISTAR(0, data->count() - 1, &open[0], &high[0], &low[0], &close[0], penetration, &outBeg, &outNb, &out[0]);
+      rc = TA_CDLEVENINGDOJISTAR(0, data->count() - 1, &open[0], &high[0], &low[0], &close[0], set.getItemDouble(1), &outBeg, &outNb, &out[0]);
       break;
     case CDLEVENINGSTAR:
-      rc = TA_CDLEVENINGSTAR(0, data->count() - 1, &open[0], &high[0], &low[0], &close[0], penetration, &outBeg, &outNb, &out[0]);
+      rc = TA_CDLEVENINGSTAR(0, data->count() - 1, &open[0], &high[0], &low[0], &close[0], set.getItemDouble(1), &outBeg, &outNb, &out[0]);
       break;
     case CDLGAPSIDESIDEWHITE:
       rc = TA_CDLGAPSIDESIDEWHITE(0, data->count() - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
@@ -1525,13 +1402,13 @@ int ExScript::getCDL (QStringList &l, int i)
       rc = TA_CDLMATCHINGLOW(0, data->count() - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
       break;
     case CDLMATHOLD:
-      rc = TA_CDLMATHOLD(0, data->count() - 1, &open[0], &high[0], &low[0], &close[0], penetration, &outBeg, &outNb, &out[0]);
+      rc = TA_CDLMATHOLD(0, data->count() - 1, &open[0], &high[0], &low[0], &close[0], set.getItemDouble(1), &outBeg, &outNb, &out[0]);
       break;
     case CDLMORNINGDOJISTAR:
-      rc = TA_CDLMORNINGDOJISTAR(0, data->count() - 1, &open[0], &high[0], &low[0], &close[0], penetration, &outBeg, &outNb, &out[0]);
+      rc = TA_CDLMORNINGDOJISTAR(0, data->count() - 1, &open[0], &high[0], &low[0], &close[0], set.getItemDouble(1), &outBeg, &outNb, &out[0]);
       break;
     case CDLMORNINGSTAR:
-      rc = TA_CDLMORNINGSTAR(0, data->count() - 1, &open[0], &high[0], &low[0], &close[0], penetration, &outBeg, &outNb, &out[0]);
+      rc = TA_CDLMORNINGSTAR(0, data->count() - 1, &open[0], &high[0], &low[0], &close[0], set.getItemDouble(1), &outBeg, &outNb, &out[0]);
       break;
     case CDLONNECK:
       rc = TA_CDLONNECK(0, data->count() - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
@@ -1590,7 +1467,7 @@ int ExScript::getCDL (QStringList &l, int i)
 
   if (rc != TA_SUCCESS)
   {
-    qDebug() << "ExScript::CDL: TA-Lib error" << rc;
+    qDebug() << "ExScript::getCDL: TA-Lib error" << rc;
     return 1;
   }
 
@@ -1598,335 +1475,116 @@ int ExScript::getCDL (QStringList &l, int i)
   for (loop = 0; loop < outNb; loop++)
     line->append(out[loop]);
 
-  tlines.insert(l[1], line);
+  QString s;
+  set.getItemVal(0, s);
+  tlines.insert(s, line);
 
   return 0;
 }
 
-//********************************************************
-//********** MACD FUNCTIONS ******************************
-//********************************************************
-int ExScript::getMACD (QStringList &l, int i)
+//***************************************************
+//********** BARS ***********************************
+//***************************************************
+int ExScript::getBARS (IndicatorSettings &set)
 {
-  // format 'MACD,INPUT,OUTPUT_MACD,OUTPUT_SIGNAL,OUTPUT_HIST,FAST,SLOW,SIGNAL'
-  // format 'MACDEXT,INPUT,OUTPUT_MACD,OUTPUT_SIGNAL,OUTPUT_HIST,FAST,FAST_MA_TYPE,SLOW,SLOW_MA_TYPE,SIGNAL,SIGNAL_MA_TYPE'
-  // format 'MACDFIX,INPUT,OUTPUT_MACD,OUTPUT_SIGNAL,OUTPUT_HIST,SIGNAL'
-
-  bool ok;
-  int fast = 0;
-  int slow = 0;
-  int signal = 0;
-  switch (i)
-  {
-    case MACD:
-      if (l.count() != 8)
-      {
-        qDebug() << "ExScript::getMACD: parm error" << l;
-        return 1;
-      }
+  // format 'BARS,NAME,BAR_UP_COLOR,BAR_DOWN_COLOR,BAR_NEUTRAL_COLOR'
   
-      fast = l[5].toInt(&ok);
-      if (! ok)
-      {
-        qDebug() << "ExScript::getMACD: parm error" << l[5];
-        return 1;
-      }
-      
-      slow = l[6].toInt(&ok);
-      if (! ok)
-      {
-        qDebug() << "ExScript::getMACD: parm error" << l[6];
-        return 1;
-      }
+  QColor color;
+  QString s;
+  set.getItemVal(1, s);
+  QColor barUpColor(s);
 
-      signal = l[7].toInt(&ok);
-      if (! ok)
-      {
-        qDebug() << "ExScript::getMACD: parm error" << l[7];
-        return 1;
-      }
-      break;
-    case MACDEXT:
-      if (l.count() != 11)
-      {
-        qDebug() << "ExScript::getMACD: parm error" << l;
-        return 1;
-      }
+  set.getItemVal(2, s);
+  QColor barDownColor(s);
   
-      fast = l[5].toInt(&ok);
-      if (! ok)
-      {
-        qDebug() << "ExScript::getMACD: parm error" << l[5];
-        return 1;
-      }
-      
-      slow = l[7].toInt(&ok);
-      if (! ok)
-      {
-        qDebug() << "ExScript::getMACD: parm error" << l[7];
-        return 1;
-      }
-
-      signal = l[9].toInt(&ok);
-      if (! ok)
-      {
-        qDebug() << "ExScript::getMACD: parm error" << l[9];
-        return 1;
-      }
-      break;
-    case MACDFIX:
-      if (l.count() != 6)
-      {
-        qDebug() << "ExScript::getMACD: parm error" << l;
-        return 1;
-      }
-  
-      signal = l[5].toInt(&ok);
-      if (! ok)
-      {
-        qDebug() << "ExScript::getMACD: parm error" << l[5];
-        return 1;
-      }
-      break;      
-    default:
-      break;
-  }
-
-  int flag = FALSE;
-  PlotLine *in = tlines.value(l[1]);
-  if (! in)
-  {
-    in = data->getInput(data->getInputType(l[1]));
-    if (! in)
-    {
-      qDebug() << "ExScript::getMACD: cannot create input " << l[1];
-      return 1;
-    }
-    
-    flag = TRUE;
-  }
-
-  TA_Real input[in->getSize()];
-  TA_Real macd[in->getSize()];
-  TA_Real sig[in->getSize()];
-  TA_Real hist[in->getSize()];
-  TA_Integer outBeg;
-  TA_Integer outNb;
-
-  int loop;
-  for (loop = 0; loop < in->getSize(); loop++)
-    input[loop] = (TA_Real) in->getData(loop);
-  
-  TA_RetCode rc = TA_SUCCESS;
-  switch (i)
-  {
-    case MACD:
-      rc = TA_MACD(0, in->getSize() - 1, &input[0], fast, slow, signal, &outBeg, &outNb, &macd[0], &sig[0], &hist[0]);
-      break;
-    case MACDEXT:
-      rc = TA_MACDEXT(0, in->getSize() - 1, &input[0], fast, (TA_MAType) maList.indexOf(l[6]), slow, (TA_MAType) maList.indexOf(l[8]),
-		      signal, (TA_MAType) maList.indexOf(l[10]), &outBeg, &outNb, &macd[0], &sig[0], &hist[0]);
-      break;
-    case MACDFIX:
-      rc = TA_MACDFIX(0, in->getSize() - 1, &input[0], signal, &outBeg, &outNb, &macd[0], &sig[0], &hist[0]);
-      break;
-    default:
-      break;
-  }
-    
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << "ExScript::getMACD: TA-Lib error" << rc;
-    return 1;
-  }
-
-  PlotLine *m = new PlotLine;
-  PlotLine *s = new PlotLine;
-  PlotLine *h = new PlotLine;
-  for (loop = outNb - 1; loop > -1; loop--)
-  {
-    m->prepend(macd[loop]);
-    s->prepend(sig[loop]);
-    h->prepend(hist[loop]);
-  }
-
-  tlines.insert(l[2], m);
-  tlines.insert(l[3], s);
-  tlines.insert(l[4], h);
-
-  if (flag)
-    delete in;
-  
-  return 0;
-}
-
-//********************************************************
-//********** MINMAXINDEX *********************************
-//********************************************************
-int ExScript::getMINMAXINDEX (QStringList &l)
-{
-  // format 'FUNCTION,INPUT,OUTPUT_1,OUTPUT_2,INTEGER'
-
-  if (l.count() != 5)
-  {
-    qDebug() << "ExScript::getMINMAXINDEX: parm error" << l;
-    return 1;
-  }
-  
-  bool ok;
-  int period = l[4].toInt(&ok);
-  if (! ok)
-  {
-    qDebug() << "ExScript::getMINMAXINDEX: parm error" << l[4];
-    return 1;
-  }
-  
-  int flag = FALSE;
-  PlotLine *in = tlines.value(l[1]);
-  if (! in)
-  {
-    in = data->getInput(data->getInputType(l[1]));
-    if (! in)
-    {
-      qDebug() << "ExScript::getMINMAXINDEX: cannot create input " << l[1];
-      return 1;
-    }
-    
-    flag = TRUE;
-  }
-
-  TA_Real input[in->getSize()];
-  TA_Integer out[in->getSize()];
-  TA_Integer out2[in->getSize()];
-  TA_Integer outBeg;
-  TA_Integer outNb;
-
-  int loop;
-  for (loop = 0; loop < in->getSize(); loop++)
-    input[loop] = (TA_Real) in->getData(loop);
-  
-  TA_RetCode rc = TA_MINMAXINDEX(0, in->getSize() - 1, &input[0], period, &outBeg, &outNb, &out[0], &out2[0]);
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << "ExScript::getMINMAXINDEX: TA-Lib error" << rc;
-    return 1;
-  }
+  set.getItemVal(3, s);
+  QColor barNeutralColor(s);
 
   PlotLine *line = new PlotLine;
-  PlotLine *line2 = new PlotLine;
-  for (loop = outNb - 1; loop > -1; loop--)
+  int loop;
+  for (loop = 0; loop < (int) data->count(); loop++)
   {
-    line->prepend(out[loop]);
-    line2->prepend(out2[loop]);
+    if (loop > 0)
+    {  
+      if (data->getClose(loop) > data->getClose(loop - 1))
+        color = barUpColor;
+      else
+      {
+        if (data->getClose(loop) < data->getClose(loop - 1))
+          color = barDownColor;
+        else
+          color = barNeutralColor;
+      }
+    }
+    else
+      color = barNeutralColor;
+
+    line->append(color, data->getOpen(loop), data->getHigh(loop), data->getLow(loop), data->getClose(loop), FALSE);
+
+    QDateTime dt;
+    data->getDate(loop, dt);
+    line->append(dt);
   }
 
-  tlines.insert(l[2], line);
-  tlines.insert(l[3], line2);
-
-  if (flag)
-    delete in;
+  set.getItemOutput(s);
+  tlines.insert(s, line);
   
   return 0;
 }
 
 //***************************************************
-//********** OBV Function ***************************
+//********** CANDLES ********************************
 //***************************************************
-int ExScript::getOBV (QStringList &l)
+int ExScript::getCANDLES (IndicatorSettings &set)
 {
-  // format 'OBV,NAME,INPUT'
+  // format 'CANDLES,NAME,CANDLE_COLOR'
 
-  if (l.count() != 3)
-  {
-    qDebug() << "ExScript::getOBV: parm error" << l;
-    return 1;
-  }
-  
-  int flag = FALSE;
-  PlotLine *in = tlines.value(l[2]);
-  if (! in)
-  {
-    in = data->getInput(data->getInputType(l[2]));
-    if (! in)
-    {
-      qDebug() << "ExScript::getOBV: cannot create input_1 " << l[2];
-      return 1;
-    }
-    
-    flag = TRUE;
-  }
-
-  int size = in->getSize();
-  if (data->count() < size)
-    size = data->count();
-  
-  TA_Real input[size];
-  TA_Real volume[size];
-  TA_Real out[size];
-  TA_Integer outBeg;
-  TA_Integer outNb;
-
-  int loop = in->getSize() - 1;
-  int loop2 = data->count() - 1;
-  int count = size - 1;
-  for (; count > -1; loop--, loop2--, count--)
-  {
-    input[loop] = (TA_Real) in->getData(loop);
-    volume[loop2] = (TA_Real) data->getVolume(loop2);
-  }
-  
-  TA_RetCode rc = TA_OBV(0, size - 1, &input[0], &volume[0], &outBeg, &outNb, &out[0]);
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << "ExScript::getOBV: TA-Lib error" << rc;
-    return 1;
-  }
+  QString s;
+  set.getItemVal(1, s);
+  QColor color(s);
 
   PlotLine *line = new PlotLine;
-  for (loop = 0; loop < outNb; loop++)
-    line->append(out[loop]);
+  int loop;
+  for (loop = 0; loop < (int) data->count(); loop++)
+  {
+    double c = data->getClose(loop);
+    double o = data->getOpen(loop);
+    bool fillFlag = FALSE;
 
-  tlines.insert(l[1], line);
+    if (o != 0)
+    {
+      if (c < o)
+        fillFlag = TRUE;
+    }
 
-  if (flag)
-    delete in;
+    line->append(color, o, data->getHigh(loop), data->getLow(loop), c, fillFlag);
 
+    QDateTime dt;
+    data->getDate(loop, dt);
+    line->append(dt);
+  }
+
+  set.getItemOutput(s);
+  tlines.insert(s, line);
+  
   return 0;
 }
-
 
 //***************************************************
 //********** REF ************************************
 //***************************************************
-int ExScript::getREF (QStringList &l)
+int ExScript::getREF (IndicatorSettings &set)
 {
   // format 'REF,NAME,INPUT,PERIOD'
 
-  if (l.count() != 4)
-  {
-    qDebug() << "ExScript::REF: parm error" << l;
-    return 1;
-  }
-
-  bool ok;
-  int period = l[3].toInt(&ok);
-  if (! ok)
-  {
-    qDebug() << "ExScript::REF: parm error" << l[3];
-    return 1;
-  }
-
+  int period = set.getItemInt(2);
   int flag = FALSE;
-  PlotLine *in = tlines.value(l[2]);
+  QString s;
+  set.getItemInput(s);
+  PlotLine *in = tlines.value(s);
   if (! in)
   {
-    in = data->getInput(data->getInputType(l[2]));
-    if (! in)
-    {
-      qDebug() << "ExScript::REF: cannot create input " << l[2];
-      return 1;
-    }
-    
+    in = data->getInput(data->getInputType(s));
     flag = TRUE;
   }
 
@@ -1940,882 +1598,8 @@ int ExScript::getREF (QStringList &l)
     line->append(in->getData(loop - period));
   }
 
-  tlines.insert(l[1], line);
-
-  if (flag)
-    delete in;
-  
-  return 0;
-}
-
-//********************************************************
-//********** STOCH FUNCTIONS ******************************
-//********************************************************
-int ExScript::getSTOCH (QStringList &l, int i)
-{
-  // format 'STOCH,OUTPUT_SLOWK,OUTPUT_SLOWD,FASTK,SLOWK,SLOWK_MA_TYPE,SLOWD,SLOWD_MA_TYPE'
-  // format 'STOCHF,OUTPUT_FASTK,OUTPUT_FASTD,FASTK,FASTD,FASTD_MA_TYPE'
-
-  bool ok;
-  int fastk = 0;
-  int fastd = 0;
-  int slowk = 0;
-  int slowd = 0;
-  switch (i)
-  {
-    case STOCH:
-      if (l.count() != 8)
-      {
-        qDebug() << "ExScript::getSTOCH: parm error" << l;
-        return 1;
-      }
-  
-      fastk = l[3].toInt(&ok);
-      if (! ok)
-      {
-        qDebug() << "ExScript::getSTOCH: parm error" << l[3];
-        return 1;
-      }
-      
-      slowk = l[4].toInt(&ok);
-      if (! ok)
-      {
-        qDebug() << "ExScript::getSTOCH: parm error" << l[4];
-        return 1;
-      }
-
-      slowd = l[6].toInt(&ok);
-      if (! ok)
-      {
-        qDebug() << "ExScript::getSTOCH: parm error" << l[6];
-        return 1;
-      }
-      break;
-    case STOCHF:
-      if (l.count() != 6)
-      {
-        qDebug() << "ExScript::getSTOCH: parm error" << l;
-        return 1;
-      }
-  
-      fastk = l[3].toInt(&ok);
-      if (! ok)
-      {
-        qDebug() << "ExScript::getSTOCH: parm error" << l[3];
-        return 1;
-      }
-      
-      fastd = l[4].toInt(&ok);
-      if (! ok)
-      {
-        qDebug() << "ExScript::getSTOCH: parm error" << l[4];
-        return 1;
-      }
-
-      break;
-    default:
-      break;
-  }
-
-  TA_Real high[data->count()];
-  TA_Real low[data->count()];
-  TA_Real close[data->count()];
-  TA_Real out[data->count()];
-  TA_Real out2[data->count()];
-  TA_Integer outBeg;
-  TA_Integer outNb;
-
-  int loop;
-  for (loop = 0; loop < data->count(); loop++)
-  {
-    high[loop] = (TA_Real) data->getHigh(loop);
-    low[loop] = (TA_Real) data->getLow(loop);
-    close[loop] = (TA_Real) data->getClose(loop);
-  }
-
-  TA_RetCode rc = TA_SUCCESS;
-  switch (i)
-  {
-    case STOCH:
-      rc = TA_STOCH(0, data->count() - 1, &high[0], &low[0], &close[0], fastk, slowk, (TA_MAType) maList.indexOf(l[5]),
-		    slowd, (TA_MAType) maList.indexOf(l[7]), &outBeg, &outNb, &out[0], &out2[0]);
-      break;
-    case STOCHF:
-      rc = TA_STOCHF(0, data->count() - 1, &high[0], &low[0], &close[0], fastk, fastd, (TA_MAType) maList.indexOf(l[5]),
-		    &outBeg, &outNb, &out[0], &out2[0]);
-      break;
-    default:
-      break;
-  }
-    
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << "ExScript::getSTOCH: TA-Lib error" << rc;
-    return 1;
-  }
-
-  PlotLine *k = new PlotLine;
-  PlotLine *d = new PlotLine;
-  for (loop = outNb - 1; loop > -1; loop--)
-  {
-    k->prepend(out[loop]);
-    d->prepend(out2[loop]);
-  }
-
-  tlines.insert(l[1], k);
-  tlines.insert(l[2], d);
-
-  return 0;
-}
-
-//********************************************************
-//********** STOCHRSI FUNCTION ***************************
-//********************************************************
-int ExScript::getSTOCHRSI (QStringList &l)
-{
-  // format 'STOCHRSI,INPUT,OUTPUT_FASTK,OUTPUT_FASTD,PERIOD,FASTK,FASTD,FASTD_MA_TYPE'
-
-  bool ok;
-  if (l.count() != 8)
-  {
-    qDebug() << "ExScript::getSTOCHRSI: parm error" << l;
-    return 1;
-  }
-  
-  int period = l[4].toInt(&ok);
-  if (! ok)
-  {
-    qDebug() << "ExScript::getSTOCHRSI: parm error" << l[4];
-    return 1;
-  }
-      
-  int fastk = l[5].toInt(&ok);
-  if (! ok)
-  {
-    qDebug() << "ExScript::getSTOCHRSI: parm error" << l[5];
-    return 1;
-  }
-
-  int fastd = l[6].toInt(&ok);
-  if (! ok)
-  {
-    qDebug() << "ExScript::getSTOCHRSI: parm error" << l[6];
-    return 1;
-  }
-
-  int flag = FALSE;
-  PlotLine *in = tlines.value(l[1]);
-  if (! in)
-  {
-    in = data->getInput(data->getInputType(l[1]));
-    if (! in)
-    {
-      qDebug() << "ExScript::getSTOCHRSI: cannot create input " << l[1];
-      return 1;
-    }
-    
-    flag = TRUE;
-  }
-
-  TA_Real input[in->getSize()];
-  TA_Real out[in->getSize()];
-  TA_Real out2[in->getSize()];
-  TA_Integer outBeg;
-  TA_Integer outNb;
-
-  int loop;
-  for (loop = 0; loop < in->getSize(); loop++)
-    input[loop] = (TA_Real) in->getData(loop);
-
-  TA_RetCode rc = TA_STOCHRSI(0, in->getSize() - 1, &input[0], period, fastk, fastd, (TA_MAType) maList.indexOf(l[7]),
-		              &outBeg, &outNb, &out[0], &out2[0]);
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << "ExScript::getSTOCHRSI: TA-Lib error" << rc;
-    return 1;
-  }
-
-  PlotLine *k = new PlotLine;
-  PlotLine *d = new PlotLine;
-  for (loop = outNb - 1; loop > -1; loop--)
-  {
-    k->prepend(out[loop]);
-    d->prepend(out2[loop]);
-  }
-
-  tlines.insert(l[1], k);
-  tlines.insert(l[2], d);
-
-  if (flag)
-    delete in;
-  
-  return 0;
-}
-
-//********************************************************
-//********** SINGLE INPUT FUNCTIONS **********************
-//********************************************************
-int ExScript::getSingleInput (QStringList &l, int i)
-{
-  // format 'FUNCTION,NAME,INPUT'
-
-  if (l.count() != 3)
-  {
-    qDebug() << "ExScript::getSingleInput: parm error" << l;
-    return 1;
-  }
-
-  int flag = FALSE;
-  PlotLine *in = tlines.value(l[2]);
-  if (! in)
-  {
-    in = data->getInput(data->getInputType(l[2]));
-    if (! in)
-    {
-      qDebug() << "ExScript::getSingleInput: cannot create input " << l[2];
-      return 1;
-    }
-    
-    flag = TRUE;
-  }
-
-  TA_Real input[in->getSize()];
-  TA_Real out[in->getSize()];
-  TA_Integer outBeg;
-  TA_Integer outNb;
-
-  int loop;
-  for (loop = 0; loop < in->getSize(); loop++)
-    input[loop] = (TA_Real) in->getData(loop);
-  
-  TA_RetCode rc = TA_SUCCESS;
-  switch (i)
-  {
-    case ACOS:
-      rc = TA_ACOS(0, in->getSize() - 1, &input[0], &outBeg, &outNb, &out[0]);
-      break;
-    case ASIN:
-      rc = TA_SIN(0, in->getSize() - 1, &input[0], &outBeg, &outNb, &out[0]);
-      break;
-    case ATAN:
-      rc = TA_ATAN(0, in->getSize() - 1, &input[0], &outBeg, &outNb, &out[0]);
-      break;
-    case CEIL:
-      rc = TA_CEIL(0, in->getSize() - 1, &input[0], &outBeg, &outNb, &out[0]);
-      break;
-    case COS:
-      rc = TA_COS(0, in->getSize() - 1, &input[0], &outBeg, &outNb, &out[0]);
-      break;
-    case COSH:
-      rc = TA_COSH(0, in->getSize() - 1, &input[0], &outBeg, &outNb, &out[0]);
-      break;
-    case EXP:
-      rc = TA_EXP(0, in->getSize() - 1, &input[0], &outBeg, &outNb, &out[0]);
-      break;
-    case FLOOR:
-      rc = TA_FLOOR(0, in->getSize() - 1, &input[0], &outBeg, &outNb, &out[0]);
-      break;
-    case HT_DCPERIOD:
-      rc = TA_HT_DCPERIOD(0, in->getSize() - 1, &input[0], &outBeg, &outNb, &out[0]);
-      break;
-    case HT_DCPHASE:
-      rc = TA_HT_DCPHASE(0, in->getSize() - 1, &input[0], &outBeg, &outNb, &out[0]);
-      break;
-    case HT_TRENDLINE:
-      rc = TA_HT_TRENDLINE(0, in->getSize() - 1, &input[0], &outBeg, &outNb, &out[0]);
-      break;
-    case LN:
-      rc = TA_LN(0, in->getSize() - 1, &input[0], &outBeg, &outNb, &out[0]);
-      break;
-    case LOG10:
-      rc = TA_LOG10(0, in->getSize() - 1, &input[0], &outBeg, &outNb, &out[0]);
-      break;
-    case SIN:
-      rc = TA_SIN(0, in->getSize() - 1, &input[0], &outBeg, &outNb, &out[0]);
-      break;
-    case SINH:
-      rc = TA_SINH(0, in->getSize() - 1, &input[0], &outBeg, &outNb, &out[0]);
-      break;
-    case SQRT:
-      rc = TA_SQRT(0, in->getSize() - 1, &input[0], &outBeg, &outNb, &out[0]);
-      break;
-    case TAN:
-      rc = TA_TAN(0, in->getSize() - 1, &input[0], &outBeg, &outNb, &out[0]);
-      break;
-    case TANH:
-      rc = TA_TANH(0, in->getSize() - 1, &input[0], &outBeg, &outNb, &out[0]);
-      break;
-    default:
-      break;
-  }
-    
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << "ExScript::getSingleInput: TA-Lib error" << rc;
-    return 1;
-  }
-
-  PlotLine *line = new PlotLine;
-  for (loop = 0; loop < outNb; loop++)
-    line->append(out[loop]);
-
-  tlines.insert(l[1], line);
-
-  if (flag)
-    delete in;
-  
-  return 0;
-}
-
-//********************************************************
-//********** SINGLE INPUT AND INT FUNCTIONS **********************
-//********************************************************
-int ExScript::getSingleInputInt (QStringList &l, int i)
-{
-  // format 'FUNCTION,NAME,INPUT,INTEGER'
-  // format 'FUNCTION,NAME,INPUT,INTEGER,DOUBLE'
-  // format 'FUNCTION,NAME,INPUT,INTEGER,MA_TYPE'
-  
-  bool ok;
-  int period = 0;
-  double dev = 0;
-  switch (i)
-  {
-    case STDDEV:
-    case VAR:
-      if (l.count() != 5)
-      {
-        qDebug() << "ExScript::getSingleInputInt: parm error" << l;
-        return 1;
-      }
-  
-      period = l[3].toInt(&ok);
-      if (! ok)
-      {
-        qDebug() << "ExScript::getSingleInputInt: parm error" << l[3];
-        return 1;
-      }
-      
-      dev = l[4].toDouble(&ok);
-      if (! ok)
-      {
-        qDebug() << "ExScript::getSingleInputInt: parm error" << l[4];
-        return 1;
-      }
-      break;
-    case MA:
-      if (l.count() != 5)
-      {
-        qDebug() << "ExScript::getSingleInputInt: parm error" << l;
-        return 1;
-      }
-  
-      period = l[3].toInt(&ok);
-      if (! ok)
-      {
-        qDebug() << "ExScript::getSingleInputInt: parm error" << l[3];
-        return 1;
-      }
-      break;
-    default:
-      if (l.count() != 4)
-      {
-        qDebug() << "ExScript::getSingleInputInt: parm error" << l;
-        return 1;
-      }
-  
-      period = l[3].toInt(&ok);
-      if (! ok)
-      {
-        qDebug() << "ExScript::getSingleInputInt: parm error" << l[3];
-        return 1;
-      }
-      break;
-  }
-
-  int flag = FALSE;
-  PlotLine *in = tlines.value(l[2]);
-  if (! in)
-  {
-    in = data->getInput(data->getInputType(l[2]));
-    if (! in)
-    {
-      qDebug() << "ExScript::getSingleInput: cannot create input " << l[2];
-      return 1;
-    }
-    
-    flag = TRUE;
-  }
-
-  TA_Real input[in->getSize()];
-  TA_Real out[in->getSize()];
-  TA_Integer outBeg;
-  TA_Integer outNb;
-
-  int loop;
-  for (loop = 0; loop < in->getSize(); loop++)
-    input[loop] = (TA_Real) in->getData(loop);
-  
-  TA_RetCode rc = TA_SUCCESS;
-  switch (i)
-  {
-    case CMO:
-      rc = TA_CMO(0, in->getSize() - 1, &input[0], period, &outBeg, &outNb, &out[0]);
-      break;
-    case LINEARREG:
-      rc = TA_LINEARREG(0, in->getSize() - 1, &input[0], period, &outBeg, &outNb, &out[0]);
-      break;
-    case LINEARREG_ANGLE:
-      rc = TA_LINEARREG_ANGLE(0, in->getSize() - 1, &input[0], period, &outBeg, &outNb, &out[0]);
-      break;
-    case LINEARREG_INTERCEPT:
-      rc = TA_LINEARREG_INTERCEPT(0, in->getSize() - 1, &input[0], period, &outBeg, &outNb, &out[0]);
-      break;
-    case LINEARREG_SLOPE:
-      rc = TA_LINEARREG_SLOPE(0, in->getSize() - 1, &input[0], period, &outBeg, &outNb, &out[0]);
-      break;
-    case MA:
-      rc = TA_MA(0, in->getSize() - 1, &input[0], period, (TA_MAType) maList.indexOf(l[4]), &outBeg, &outNb, &out[0]);
-      break;
-    case MAX:
-      rc = TA_MAX(0, in->getSize() - 1, &input[0], period, &outBeg, &outNb, &out[0]);
-      break;
-    case MIDPOINT:
-      rc = TA_MIDPOINT(0, in->getSize() - 1, &input[0], period, &outBeg, &outNb, &out[0]);
-      break;
-    case MIN:
-      rc = TA_MIN(0, in->getSize() - 1, &input[0], period, &outBeg, &outNb, &out[0]);
-      break;
-    case MOM:
-      rc = TA_MOM(0, in->getSize() - 1, &input[0], period, &outBeg, &outNb, &out[0]);
-      break;
-    case ROC:
-      rc = TA_ROC(0, in->getSize() - 1, &input[0], period, &outBeg, &outNb, &out[0]);
-      break;
-    case ROCP:
-      rc = TA_ROCP(0, in->getSize() - 1, &input[0], period, &outBeg, &outNb, &out[0]);
-      break;
-    case ROCR:
-      rc = TA_ROCR(0, in->getSize() - 1, &input[0], period, &outBeg, &outNb, &out[0]);
-      break;
-    case ROCR100:
-      rc = TA_ROCR100(0, in->getSize() - 1, &input[0], period, &outBeg, &outNb, &out[0]);
-      break;
-    case RSI:
-      rc = TA_RSI(0, in->getSize() - 1, &input[0], period, &outBeg, &outNb, &out[0]);
-      break;
-    case STDDEV:
-      rc = TA_STDDEV(0, in->getSize() - 1, &input[0], period, dev, &outBeg, &outNb, &out[0]);
-      break;
-    case SUM:
-      rc = TA_SUM(0, in->getSize() - 1, &input[0], period, &outBeg, &outNb, &out[0]);
-      break;
-    case TRIX:
-      rc = TA_TRIX(0, in->getSize() - 1, &input[0], period, &outBeg, &outNb, &out[0]);
-      break;
-    case TSF:
-      rc = TA_TSF(0, in->getSize() - 1, &input[0], period, &outBeg, &outNb, &out[0]);
-      break;
-    case VAR:
-      rc = TA_VAR(0, in->getSize() - 1, &input[0], period, dev, &outBeg, &outNb, &out[0]);
-      break;
-    default:
-      break;
-  }
-    
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << "ExScript::getSingleInput: TA-Lib error" << rc;
-    return 1;
-  }
-
-  PlotLine *line = new PlotLine;
-  for (loop = 0; loop < outNb; loop++)
-    line->append(out[loop]);
-
-  tlines.insert(l[1], line);
-
-  if (flag)
-    delete in;
-  
-  return 0;
-}
-
-//********************************************************
-//********** SINGLE INPUT AND INT FUNCTIONS **************
-//********** output is integer ***************************
-//********************************************************
-int ExScript::getSingleInputInt2 (QStringList &l, int i)
-{
-  // format 'FUNCTION,NAME,INPUT,INTEGER'
-  
-  bool ok;
-  int period = 0;
-  switch (i)
-  {
-    case MAXINDEX:
-    case MININDEX:
-      if (l.count() != 4)
-      {
-        qDebug() << "ExScript::getSingleInputInt2: parm error" << l;
-        return 1;
-      }
-  
-      period = l[3].toInt(&ok);
-      if (! ok)
-      {
-        qDebug() << "ExScript::getSingleInputInt2: parm error" << l[3];
-        return 1;
-      }
-      break;
-    default:
-      if (l.count() != 2)
-      {
-        qDebug() << "ExScript::getSingleInputInt2: parm error" << l;
-        return 1;
-      }
-      break;
-  }
-
-  int flag = FALSE;
-  PlotLine *in = tlines.value(l[2]);
-  if (! in)
-  {
-    in = data->getInput(data->getInputType(l[2]));
-    if (! in)
-    {
-      qDebug() << "ExScript::getSingleInput: cannot create input " << l[2];
-      return 1;
-    }
-    
-    flag = TRUE;
-  }
-
-  TA_Real input[in->getSize()];
-  TA_Integer out[in->getSize()];
-  TA_Integer outBeg;
-  TA_Integer outNb;
-
-  int loop;
-  for (loop = 0; loop < in->getSize(); loop++)
-    input[loop] = (TA_Real) in->getData(loop);
-  
-  TA_RetCode rc = TA_SUCCESS;
-  switch (i)
-  {
-    case MAXINDEX:
-      rc = TA_MAXINDEX(0, in->getSize() - 1, &input[0], period, &outBeg, &outNb, &out[0]);
-      break;
-    case MININDEX:
-      rc = TA_MININDEX(0, in->getSize() - 1, &input[0], period, &outBeg, &outNb, &out[0]);
-      break;
-    case HT_TRENDMODE:
-      rc = TA_HT_TRENDMODE(0, in->getSize() - 1, &input[0], &outBeg, &outNb, &out[0]);
-      break;
-    default:
-      break;
-  }
-    
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << "ExScript::getSingleInput2: TA-Lib error" << rc;
-    return 1;
-  }
-
-  PlotLine *line = new PlotLine;
-  for (loop = 0; loop < outNb; loop++)
-    line->append(out[loop]);
-
-  tlines.insert(l[1], line);
-
-  if (flag)
-    delete in;
-  
-  return 0;
-}
-
-
-//***************************************************
-//********** HL Input *******************************
-//***************************************************
-int ExScript::getHLInput (QStringList &l, int i)
-{
-  // format 'FUNCTION,NAME'
-  // format 'FUNCTION,NAME,INTEGER'
-  // format 'SAR,NAME,ACCEL,MAX'
-  // format 'SAREXT,NAME,START,OFFSET,AIL,AL,AML,AIS,AS,AMS' 10
-
-  bool ok;
-  int period = 0;
-  double accel = 0;
-  double max = 0;
-  double start = 0;
-  double offset = 0;
-  double ail = 0;
-  double al = 0;
-  double aml = 0;
-  double ais = 0;
-  double as = 0;
-  double ams = 0;
-  switch (i)
-  {
-    case MIDPRICE:
-    case MINUS_DM:
-    case PLUS_DM:
-      if (l.count() != 3)
-      {
-        qDebug() << "ExScript::getHLInput: parm error" << l;
-        return 1;
-      }
-
-      period = l[2].toInt(&ok);
-      if (! ok)
-      {
-        qDebug() << "ExScript::getHLInput: parm error" << l[2];
-        return 1;
-      }
-      break;
-    case SAR:
-      if (l.count() != 4)
-      {
-        qDebug() << "ExScript::getHLInput: parm error" << l;
-        return 1;
-      }
-      
-      accel = l[2].toDouble(&ok);
-      if (! ok)
-      {
-        qDebug() << "ExScript::getHLInput: parm error" << l[2];
-        return 1;
-      }
-      
-      max = l[3].toDouble(&ok);
-      if (! ok)
-      {
-        qDebug() << "ExScript::getHLInput: parm error" << l[3];
-        return 1;
-      }
-      break;
-    case SAREXT:
-      if (l.count() != 10)
-      {
-        qDebug() << "ExScript::getHLInput: parm error" << l;
-        return 1;
-      }
-      
-      start = l[2].toDouble(&ok);
-      if (! ok)
-      {
-        qDebug() << "ExScript::getHLInput: parm error" << l[2];
-        return 1;
-      }
-      
-      offset = l[3].toDouble(&ok);
-      if (! ok)
-      {
-        qDebug() << "ExScript::getHLInput: parm error" << l[3];
-        return 1;
-      }
-      
-      ail = l[4].toDouble(&ok);
-      if (! ok)
-      {
-        qDebug() << "ExScript::getHLInput: parm error" << l[4];
-        return 1;
-      }
-      
-      al = l[5].toDouble(&ok);
-      if (! ok)
-      {
-        qDebug() << "ExScript::getHLInput: parm error" << l[5];
-        return 1;
-      }
-      
-      aml = l[6].toDouble(&ok);
-      if (! ok)
-      {
-        qDebug() << "ExScript::getHLInput: parm error" << l[6];
-        return 1;
-      }
-      
-      ais = l[7].toDouble(&ok);
-      if (! ok)
-      {
-        qDebug() << "ExScript::getHLInput: parm error" << l[7];
-        return 1;
-      }
-      
-      as = l[8].toDouble(&ok);
-      if (! ok)
-      {
-        qDebug() << "ExScript::getHLInput: parm error" << l[8];
-        return 1;
-      }
-      
-      ams = l[9].toDouble(&ok);
-      if (! ok)
-      {
-        qDebug() << "ExScript::getHLInput: parm error" << l[9];
-        return 1;
-      }
-      break;
-    default:
-      if (l.count() != 2)
-      {
-        qDebug() << "ExScript::getHLInput: parm error" << l;
-        return 1;
-      }
-      break;
-  }
-  
-  TA_Real high[data->count()];
-  TA_Real low[data->count()];
-  TA_Real out[data->count()];
-  TA_Integer outBeg;
-  TA_Integer outNb;
-
-  int loop;
-  for (loop = 0; loop < data->count(); loop++)
-  {
-    high[loop] = (TA_Real) data->getHigh(loop);
-    low[loop] = (TA_Real) data->getLow(loop);
-  }
-  
-  TA_RetCode rc = TA_SUCCESS;
-  switch (i)
-  {
-    case MINUS_DM:
-      rc = TA_MINUS_DM(0, data->count() - 1, &high[0], &low[0], period, &outBeg, &outNb, &out[0]);
-      break;
-    case MEDPRICE:
-      rc = TA_MEDPRICE(0, data->count() - 1, &high[0], &low[0], &outBeg, &outNb, &out[0]);
-      break;
-    case MIDPRICE:
-      rc = TA_MIDPRICE(0, data->count() - 1, &high[0], &low[0], period, &outBeg, &outNb, &out[0]);
-      break;
-    case PLUS_DM:
-      rc = TA_PLUS_DM(0, data->count() - 1, &high[0], &low[0], period, &outBeg, &outNb, &out[0]);
-      break;
-    case SAR:
-      rc = TA_SAR(0, data->count() - 1, &high[0], &low[0], accel, max, &outBeg, &outNb, &out[0]);
-      break;
-    case SAREXT:
-      rc = TA_SAREXT(0, data->count() - 1, &high[0], &low[0], start, offset, ail, al, aml, ais, as, ams, &outBeg, &outNb, &out[0]);
-      break;
-    default:
-      break;
-  }
-    
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << "ExScript::getHLInput: TA-Lib error" << rc;
-    return 1;
-  }
-
-  PlotLine *line = new PlotLine;
-  for (loop = 0; loop < outNb; loop++)
-    line->append(out[loop]);
-
-  tlines.insert(l[1], line);
-
-  return 0;
-}
-
-//********************************************************
-//********** DOUBLE OUTPUT  ******************************
-//********************************************************
-int ExScript::getDoubleOutput (QStringList &l, int i)
-{
-  // format 'FUNCTION,INPUT,OUTPUT_1,OUTPUT_2'
-  // format 'FUNCTION,INPUT,OUTPUT_1,OUTPUT_2,INTEGER'
-  
-  bool ok;
-  int period = 0;
-  switch (i)
-  {
-    case HT_PHASOR:
-    case HT_SINE:
-      if (l.count() != 4)
-      {
-        qDebug() << "ExScript::getDoubleOutput: parm error" << l;
-        return 1;
-      }
-
-      break;
-    case MINMAX:
-      if (l.count() != 5)
-      {
-        qDebug() << "ExScript::getDoubleOutput: parm error" << l;
-        return 1;
-      }
-
-      period = l[4].toInt(&ok);
-      if (! ok)
-      {
-        qDebug() << "ExScript::getDoubleOutput: parm error" << l[4];
-        return 1;
-      }
-      break;
-    default:
-      break;
-  }
-
-  int flag = FALSE;
-  PlotLine *in = tlines.value(l[1]);
-  if (! in)
-  {
-    in = data->getInput(data->getInputType(l[1]));
-    if (! in)
-    {
-      qDebug() << "ExScript::getDoubleOutput: cannot create input " << l[1];
-      return 1;
-    }
-    
-    flag = TRUE;
-  }
-
-  TA_Real input[in->getSize()];
-  TA_Real out[in->getSize()];
-  TA_Real out2[in->getSize()];
-  TA_Integer outBeg;
-  TA_Integer outNb;
-
-  int loop;
-  for (loop = 0; loop < in->getSize(); loop++)
-    input[loop] = (TA_Real) in->getData(loop);
-  
-  TA_RetCode rc = TA_SUCCESS;
-  switch (i)
-  {
-    case HT_PHASOR:
-      rc = TA_HT_PHASOR(0, in->getSize() - 1, &input[0], &outBeg, &outNb, &out[0], &out2[0]);
-      break;
-    case HT_SINE:
-      rc = TA_HT_SINE(0, in->getSize() - 1, &input[0], &outBeg, &outNb, &out[0], &out2[0]);
-      break;
-    case MINMAX:
-      rc = TA_MINMAX(0, in->getSize() - 1, &input[0], period, &outBeg, &outNb, &out[0], &out2[0]);
-      break;
-    default:
-      break;
-  }
-    
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << "ExScript::getDoubleOutput: TA-Lib error" << rc;
-    return 1;
-  }
-
-  PlotLine *line = new PlotLine;
-  PlotLine *line2 = new PlotLine;
-  for (loop = outNb - 1; loop > -1; loop--)
-  {
-    line->prepend(out[loop]);
-    line2->prepend(out2[loop]);
-  }
-
-  tlines.insert(l[2], line);
-  tlines.insert(l[3], line2);
+  set.getItemOutput(s);
+  tlines.insert(s, line);
 
   if (flag)
     delete in;
@@ -2826,56 +1610,34 @@ int ExScript::getDoubleOutput (QStringList &l, int i)
 //***************************************************
 //********** COMPARE ********************************
 //***************************************************
-int ExScript::getCOMPARE (QStringList &l)
+int ExScript::getCOMPARE (IndicatorSettings &set)
 {
   // format 'COMPARE,NAME,INPUT_1,INPUT_2,OPERATOR'
 
-  if (l.count() != 5)
-  {
-    qDebug() << "ExScript::getCOMPARE: parm error" << l;
-    return 1;
-  }
-
-  int op = opList.indexOf(l[4]);
-  if (op == -1)
-  {
-    qDebug() << "ExScript::getCOMPARE: parm error" << l[4];
-    return 1;
-  }
+  QString s;
+  set.getItemVal(3, s);
+  int op = opList.indexOf(s);
 
   int flag = FALSE;
   int flag2 = FALSE;
-  PlotLine *in = tlines.value(l[2]);
+  set.getItemInput(s);
+  PlotLine *in = tlines.value(s);
   if (! in)
   {
-    in = data->getInput(data->getInputType(l[2]));
-    if (! in)
-    {
-      qDebug() << "ExScript::getCOMPARE: cannot create input_1 " << l[2];
-      return 1;
-    }
-    
+    in = data->getInput(data->getInputType(s));
     flag = TRUE;
   }
 
-  PlotLine *in2 = tlines.value(l[3]);
+  set.getItemInput2(s);
+  PlotLine *in2 = tlines.value(s);
   if (! in2)
   {
-    in2 = data->getInput(data->getInputType(l[3]));
-    if (! in2)
-    {
-      qDebug() << "ExScript::getCOMPARE: cannot create input_2 " << l[3];
-      if (flag)
-        delete in;
-      return 1;
-    }
-    
+    in2 = data->getInput(data->getInputType(s));
     flag2 = TRUE;
   }
 
   int loop = in->getSize() - 1;
   int loop2 = in2->getSize() - 1;
-
   PlotLine *line = new PlotLine;
 
   while (loop > -1 && loop2 > -1)
@@ -2934,8 +1696,9 @@ int ExScript::getCOMPARE (QStringList &l)
     loop--;
     loop2--;
   }
-  
-  tlines.insert(l[1], line);
+
+  set.getItemOutput(s);
+  tlines.insert(s, line);
 
   if (flag)
     delete in;
@@ -2948,47 +1711,26 @@ int ExScript::getCOMPARE (QStringList &l)
 //***************************************************
 //********** COMPARE2 ********************************
 //***************************************************
-int ExScript::getCOMPARE2 (QStringList &l)
+int ExScript::getCOMPARE2 (IndicatorSettings &set)
 {
   // format 'COMPARE,NAME,INPUT_1,VALUE,OPERATOR'
 
-  if (l.count() != 5)
-  {
-    qDebug() << "ExScript::getCOMPARE2: parm error" << l;
-    return 1;
-  }
+  QString s;
+  set.getItemVal(3, s);
+  int op = opList.indexOf(s);
 
-  int op = opList.indexOf(l[4]);
-  if (op == -1)
-  {
-    qDebug() << "ExScript::getCOMPARE2: parm error" << l[4];
-    return 1;
-  }
-
-  bool ok;
-  double value = l[3].toDouble(&ok);
-  if (! ok)
-  {
-    qDebug() << "ExScript::getCOMPARE2: parm error" << l[3];
-    return 1;
-  }
+  double value = set.getItemDouble(2);
 
   int flag = FALSE;
-  PlotLine *in = tlines.value(l[2]);
+  set.getItemInput(s);
+  PlotLine *in = tlines.value(s);
   if (! in)
   {
-    in = data->getInput(data->getInputType(l[2]));
-    if (! in)
-    {
-      qDebug() << "ExScript::getCOMPARE2: cannot create input_1 " << l[2];
-      return 1;
-    }
-    
+    in = data->getInput(data->getInputType(s));
     flag = TRUE;
   }
 
   int loop = in->getSize() - 1;
-
   PlotLine *line = new PlotLine;
 
   while (loop > -1)
@@ -3045,8 +1787,9 @@ int ExScript::getCOMPARE2 (QStringList &l)
       
     loop--;
   }
-  
-  tlines.insert(l[1], line);
+
+  set.getItemOutput(s);
+  tlines.insert(s, line);
 
   if (flag)
     delete in;
@@ -3057,60 +1800,25 @@ int ExScript::getCOMPARE2 (QStringList &l)
 //***************************************************
 //********** COLOR ********************************
 //***************************************************
-int ExScript::getCOLOR (QStringList &l)
+int ExScript::getCOLOR (IndicatorSettings &set)
 {
   // format 'COLOR,INPUT,INPUT_2,VALUE,COLOR'
 
-  if (l.count() != 5)
-  {
-    qDebug() << "ExScript::getCOLOR: parm error" << l;
-    return 1;
-  }
-  
-  bool ok;
-  double value = l[3].toDouble(&ok);
-  if (! ok)
-  {
-    qDebug() << "ExScript::getCOLOR: parm error" << l[3];
-    return 1;
-  }
-  
-  QColor c(l[4]);
-  if (! c.isValid())
-  {
-    qDebug() << "ExScript::getCOLOR: parm error" << l[4];
-    return 1;
-  }
+  double value = set.getItemDouble(2);
 
-  int flag = FALSE;
-  int flag2 = FALSE;
-  PlotLine *in = tlines.value(l[1]);
+  QString s;
+  set.getItemVal(3, s);
+  QColor c(s);
+
+  set.getItemInput(s);
+  PlotLine *in = tlines.value(s);
   if (! in)
-  {
-    in = data->getInput(data->getInputType(l[1]));
-    if (! in)
-    {
-      qDebug() << "ExScript::getCOLOR: cannot create input_1 " << l[1];
-      return 1;
-    }
-    
-    flag = TRUE;
-  }
+    return 1;
 
-  PlotLine *in2 = tlines.value(l[2]);
+  set.getItemInput2(s);
+  PlotLine *in2 = tlines.value(s);
   if (! in2)
-  {
-    in2 = data->getInput(data->getInputType(l[2]));
-    if (! in2)
-    {
-      qDebug() << "ExScript::getCOLOR: cannot create input_2 " << l[2];
-      if (flag)
-	delete in;
-      return 1;
-    }
-    
-    flag2 = TRUE;
-  }
+    return 1;
 
   int inboolLoop = in->getSize() - 1;
   in2->setColorFlag(TRUE);
@@ -3125,38 +1833,23 @@ int ExScript::getCOLOR (QStringList &l)
     incolLoop--;
   }
 
-  if (flag)
-    delete in;
-  if (flag2)
-    delete in2;
-  
   return 0;
 }
 
 //***************************************************
 //********** NORMAL *********************************
 //***************************************************
-int ExScript::getNORMAL (QStringList &l)
+int ExScript::getNORMAL (IndicatorSettings &set)
 {
   // format 'NORMAL,NAME,INPUT'
 
-  if (l.count() != 3)
-  {
-    qDebug() << "ExScript::getNORMAL: parm error" << l;
-    return 1;
-  }
-  
   int flag = FALSE;
-  PlotLine *in = tlines.value(l[2]);
+  QString s;
+  set.getItemInput(s);
+  PlotLine *in = tlines.value(s);
   if (! in)
   {
-    in = data->getInput(data->getInputType(l[2]));
-    if (! in)
-    {
-      qDebug() << "ExScript::getNORMAL: cannot create input_1 " << l[2];
-      return 1;
-    }
-    
+    in = data->getInput(data->getInputType(s));
     flag = TRUE;
   }
 
@@ -3177,14 +1870,15 @@ int ExScript::getNORMAL (QStringList &l)
   range = fabs(max) + fabs(min);
 
   PlotLine *line = new PlotLine;
-  
+
   for (loop = 0; loop < in->getSize(); loop++)
   {	
     norm = ((in->getData(loop) - min) / range) * 100;
     line->append(norm);
   }
 
-  tlines.insert(l[1], line);
+  set.getItemOutput(s);
+  tlines.insert(s, line);
 
   if (flag)
     delete in;
@@ -3195,18 +1889,14 @@ int ExScript::getNORMAL (QStringList &l)
 //***************************************************
 //********** SYMBOL *********************************
 //***************************************************
-int ExScript::getSYMBOL (QStringList &l)
+int ExScript::getSYMBOL (IndicatorSettings &set)
 {
   // format 'SYMBOL,NAME,TICKER'
 
-  if (l.count() != 3)
-  {
-    qDebug() << "ExScript::getSYMBOL: parm error" << l;
-    return 1;
-  }
-
   DataBase db;
-  BarData *symbol = new BarData(l[2]);
+  QString s;
+  set.getItemVal(1, s);
+  BarData *symbol = new BarData(s);
   symbol->setBarLength(data->getBarLength());
   symbol->setBarsRequested(data->count());
   db.getChart(symbol);
@@ -3244,7 +1934,8 @@ int ExScript::getSYMBOL (QStringList &l)
 
   delete symbol;
 
-  tlines.insert(l[1], line);
+  set.getItemOutput(s);
+  tlines.insert(s, line);
 
   return 0;
 }

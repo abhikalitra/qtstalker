@@ -30,6 +30,7 @@
 #include "BarData.h"
 #include "Indicator.h"
 #include "COSettings.h"
+#include "IndicatorSettings.h"
 
 
 
@@ -37,6 +38,9 @@ class DataBase
 {
   public:
     DataBase ();
+    DataBase (QString session); // called only at startup, initializes database tables
+    void transaction ();
+    void commit ();
 
     // chart functions
     void getAllChartsList (QStringList &);
@@ -60,24 +64,16 @@ class DataBase
     void getActiveIndicatorList (QStringList &);
     void getSearchIndicatorList (QString &pattern, QStringList &list);
 
-    // scanner functions
-//    void getScannerList (QStringList &);
-//    void deleteScanner (QString &);
-//    void getScanner (ScannerRule &);
-//    void setScanner (ScannerRule &);
-
-    // tester functions
-//    void getTestList (QStringList &);
-//    void deleteTest (QString &);
-//    void getTest (TesterRule &);
-//    void setTest (TesterRule &);
-
     // chart object functions
     void deleteChartObjects (QString &symbol);
     void deleteChartObjectsIndicator (QString &indicator);
     void deleteChartObject (QString &id);
     void getChartObjects (QString &symbol, QString &indicator, QHash<QString, COSettings *> &list);
     void setChartObject (COSettings *);
+
+    // indicator settings
+    void setIndicatorSettings (IndicatorSettings &);
+    void getIndicatorSettings (IndicatorSettings &);
 };
 
 #endif

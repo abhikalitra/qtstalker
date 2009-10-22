@@ -21,76 +21,36 @@
 
 #include "Indicator.h"
 
-#include <QObject>
-#include <QStringList>
-
 
 
 Indicator::Indicator ()
 {
-  enable = 0;
-  tabRow = 1;
-  date = 1;
-  log = 0;
+  setData(IndicatorParmEnable, 0);
+  setData(IndicatorParmTabRow, 1);
+  setData(IndicatorParmDate, 1);
+  setData(IndicatorParmLog, 0);
 }
 
-void Indicator::setName (QString &d)
+void Indicator::setData (IndicatorParm k, QString &d)
 {
-  name = d;
+  data.insert(k, d);
 }
 
-void Indicator::getName (QString &d)
+void Indicator::getData (IndicatorParm k, QString &d)
 {
-  d = name;
+  d.clear();
+  d = data.value(k);
 }
 
-void Indicator::setCommand (QString &d)
+void Indicator::setData (IndicatorParm k, int d)
 {
-  command = d;
+  data.insert(k, QString::number(d));
 }
 
-void Indicator::getCommand (QString &d)
+int Indicator::getIntData (IndicatorParm k)
 {
-  d = command;
-}
-
-void Indicator::setEnable (int d)
-{
-  enable = d;
-}
-
-int Indicator::getEnable ()
-{
-  return enable;
-}
-
-void Indicator::setTabRow (int d)
-{
-  tabRow = d;
-}
-
-int Indicator::getTabRow ()
-{
-  return tabRow;
-}
-
-void Indicator::setDate (int d)
-{
-  date = d;
-}
-
-int Indicator::getDate ()
-{
-  return date;
-}
-
-void Indicator::setLog (int d)
-{
-  log = d;
-}
-
-int Indicator::getLog ()
-{
-  return log;
+  int d = 0;
+  d = data.value(k).toInt();
+  return d;
 }
 

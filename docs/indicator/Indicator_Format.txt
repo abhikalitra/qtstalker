@@ -48,11 +48,11 @@ Vector Trigonometric ACos
 Chaikin A/D Line
   AD = INDICATOR,NAME
 
-Chaikin A/D Oscillator
-  ADOSC = INDICATOR,NAME,FAST_PERIOD,SLOW_PERIOD
-
 Vector Arithmetic Add
   ADD = INDICATOR,NAME,INPUT_1,INPUT_2
+
+Chaikin A/D Oscillator
+  ADOSC = INDICATOR,NAME,FAST_PERIOD,SLOW_PERIOD
 
 Average Directional Movement Index
   ADX = INDICATOR,NAME,PERIOD
@@ -86,11 +86,6 @@ OHLC Bars
 
        This will create OHLC bars.
 
-Candles
-  CANDLES = INDICATOR,NAME,CANDLE_COLOR
-
-       This will create candle bars.
-
 Bollinger Bands
   BBANDS = INDICATOR,INPUT,NAME_UPPER,NAME_MIDDLE,NAME_LOWER,PERIOD,UPPER_DEVIATION,LOWER_DEVIATION,MA_TYPE
 
@@ -99,6 +94,11 @@ Beta
 
 Balance Of Power
   BOP = INDICATOR,NAME
+
+Candles
+  CANDLES = INDICATOR,NAME,CANDLE_COLOR
+
+       This will create candle bars.
 
 Commodity Channel Index
   CCI = INDICATOR,NAME,PERIOD
@@ -321,11 +321,17 @@ Vector Trigonometric Cos
 Vector Trigonometric Cosh
   COSH = INDICATOR,NAME,INPUT
 
+Double Exponential Moving Average
+  DEMA = INDICATOR,NAME,INPUT,PERIOD
+
 Vector Arithmetic Div
   DIV = INDICATOR,NAME,INPUT_1,INPUT_2
 
 Directional Movement Index
   DX = INDICATOR,NAME,PERIOD
+
+Exponential Moving Average
+  EMA = INDICATOR,NAME,INPUT,PERIOD
 
 Vector Arithmetic Exp
   EXP = INDICATOR,NAME,INPUT
@@ -351,6 +357,9 @@ Hilbert Transform - Instantaneous Trendline
 Hilbert Transform - Trend vs Cycle Mode
   HT_TRENDMODE = INDICATOR,NAME,INPUT
 
+Kaufman Adaptive Moving Average
+  KAMA = INDICATOR,NAME,INPUT,PERIOD
+
 Linear Regression
   LINEARREG = INDICATOR,NAME,INPUT,PERIOD
 
@@ -369,11 +378,6 @@ Vector Log Natural
 Vector Log10
   LOG10 = INDICATOR,NAME,INPUT
 
-Moving average
-  MA = INDICATOR,NAME,INPUT,PERIOD,MA_TYPE
-
-      MA types are SMA,EMA,WMA,DEMA,TEMA,TRIMA,KAMA,MAMA,T3
-
 Moving Average Convergence/Divergence
   MACD = INDICATOR,INPUT,NAME_MACD,NAME_SIGNAL,NAME_HIST,FAST_PERIOD,SLOW_PERIOD,SIGNAL_PERIOD
 
@@ -382,6 +386,9 @@ MACD with controllable MA type
 
 Moving Average Convergence/Divergence Fix 12/26
   MACDFIX = INDICATOR,INPUT,NAME_MACD,NAME_SIGNAL,NAME_HIST,SIGNAL_PERIOD
+
+MESA Adaptive Moving Average
+  MAMA = INDICATOR,INPUT,NAME_MAMA,NAME_FAMA,FAST_LIMIT,SLOW_LIMIT
 
 Moving average with variable period
   MAVP = INDICATOR,NAME,INPUT_1,INPUT_2,MIN_PERIOD,MAX_PERIOD,MA_TYPE
@@ -439,7 +446,7 @@ Normalize
     useful for comparing multiple datasets of different value ranges.
 
 On Balance Volume
-  OBV = INDICATOR,NAME,INPUT
+  OBV = INDICATOR,NAME,INPUT,INPUT_2
 
 Plus Directional Indicator
   PLUS_DI = INDICATOR,NAME,PERIOD
@@ -484,6 +491,9 @@ Vector Trigonometric Sin
 Vector Trigonometric Sinh
   SINH = INDICATOR,NAME,INPUT
 
+Simple Moving Average
+  SMA = INDICATOR,NAME,INPUT,PERIOD
+
 Vector Square Root
   SQRT = INDICATOR,NAME,INPUT
 
@@ -510,14 +520,23 @@ SYMBOL
 
 	    Where SYMBOL_NAME is the symbol in the quote database.
 
+Triple Exponential Moving Average (T3)
+  T3 = INDICATOR,NAME,INPUT,PERIOD,VFACTOR
+
 Vector Trigonometric Tan
   TAN = INDICATOR,NAME,INPUT
 
 Vector Trigonometric Tanh
   TANH = INDICATOR,NAME,INPUT
 
+Triple Exponential Moving Average
+  TEMA = INDICATOR,NAME,INPUT,PERIOD
+
 True Range
   TRANGE = INDICATOR,NAME
+
+Triangular Moving Average
+  TRIMA = INDICATOR,NAME,INPUT,PERIOD
 
 TRIX - 1-day Rate-Of-Change (ROC) of a Triple Smooth EMA
   TRIX = INDICATOR,NAME,INPUT,PERIOD
@@ -540,5 +559,6 @@ Weighted Close Price
 Williams' %R
   WILLR = INDICATOR,NAME,PERIOD
 
-
+Weighted Moving Average
+  WMA = INDICATOR,NAME,INPUT,PERIOD
 

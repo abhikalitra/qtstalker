@@ -104,4 +104,7 @@
 20091009: Added a refresh chart toggle button to the toolbar. If toggled, this will refresh the chart every x minutes.
           Useful if bars are being updated quickly in quote database. The minutes are selected in the preferences dialog.
 
+20091012: Removed unused pics from pics/.
+
+	  Added a Enum parm interface to Indicator:: class to simplify code.
 

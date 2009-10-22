@@ -23,35 +23,30 @@
 #define INDICATOR_HPP
 
 #include <QString>
-#include <QList>
-
-
+#include <QHash>
 
 
 class Indicator
 {
   public:
+    enum IndicatorParm
+    {
+      IndicatorParmName,
+      IndicatorParmEnable,
+      IndicatorParmTabRow,
+      IndicatorParmDate,
+      IndicatorParmLog,
+      IndicatorParmCommand
+    };
+
     Indicator ();
-    void setName (QString &);
-    void getName (QString &);
-    void setEnable (int);
-    int getEnable ();
-    void setTabRow (int);
-    int getTabRow ();
-    void setDate (int);
-    int getDate ();
-    void setLog (int);
-    int getLog ();
-    void setCommand (QString &);
-    void getCommand (QString &);
+    void setData(IndicatorParm, QString &);
+    void getData(IndicatorParm, QString &);
+    void setData(IndicatorParm, int);
+    int getIntData(IndicatorParm);
     
   protected:
-    QString name;
-    QString command;
-    int enable;
-    int tabRow;
-    int date;
-    int log;
+    QHash<IndicatorParm, QString> data;
 };
 
 #endif

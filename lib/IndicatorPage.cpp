@@ -128,7 +128,7 @@ void IndicatorPage::newIndicator ()
   dialog->addTextItem(ns, selection);
 
   Indicator i;
-  i.setName(selection);
+  i.setData(Indicator::IndicatorParmName, selection);
   
   Config config;
   QString s;
@@ -147,12 +147,12 @@ void IndicatorPage::newIndicator ()
   }
   
   dialog->getItem(sc, s);
-  i.setCommand(s);
+  i.setData(Indicator::IndicatorParmCommand, s);
   
   dialog->getItem(trs, s);
-  i.setTabRow(s.toInt());
+  i.setData(Indicator::IndicatorParmTabRow, s);
 
-  i.setEnable(1);
+  i.setData(Indicator::IndicatorParmEnable, 1);
   
   db.setIndicator(i);
   
@@ -186,16 +186,16 @@ void IndicatorPage::editIndicator (QString &name)
 
   DataBase db;
   Indicator i;
-  i.setName(name);
+  i.setData(Indicator::IndicatorParmName, name);
   db.getIndicator(i);
   
   Config config;
   QString s;
   QString trs = tr("Tab Row");
-  dialog->addIntItem(trs, i.getTabRow(), 1, config.getInt(Config::IndicatorTabRows));
+  dialog->addIntItem(trs, i.getIntData(Indicator::IndicatorParmTabRow), 1, config.getInt(Config::IndicatorTabRows));
 
   QString sc = tr("Script Command");
-  i.getCommand(s);
+  i.getData(Indicator::IndicatorParmCommand, s);
   dialog->addTextItem(sc, s);
   
   int rc = dialog->exec();
@@ -206,10 +206,11 @@ void IndicatorPage::editIndicator (QString &name)
   }
   
   dialog->getItem(sc, s);
-  i.setCommand(s);
+  i.setData(Indicator::IndicatorParmCommand, s);
   
   dialog->getItem(trs, s);
-  i.setTabRow(s.toInt());
+  i.setData(Indicator::IndicatorParmTabRow, s);
+
   db.setIndicator(i);
   
   delete dialog;
@@ -252,19 +253,20 @@ void IndicatorPage::doubleClick (QListWidgetItem *item)
 
   DataBase db;
   Indicator i;
-  i.setName(s);
+  i.setData(Indicator::IndicatorParmName, s);
+
   db.getIndicator(i);
 
-  if (i.getEnable())
+  if (i.getIntData(Indicator::IndicatorParmEnable))
   {
-    i.setEnable(0);
+    i.setData(Indicator::IndicatorParmEnable, 0);
     db.setIndicator(i);
     item->setIcon(QIcon(disable));
     emit signalDisableIndicator(s);
   }
   else
   {
-    i.setEnable(1);
+    i.setData(Indicator::IndicatorParmEnable, 1);
     db.setIndicator(i);
     item->setIcon(QIcon(ok));
     emit signalEnableIndicator(s);

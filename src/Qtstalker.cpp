@@ -70,9 +70,13 @@ QtstalkerApp::QtstalkerApp(QString session)
   setWindowIcon(QIcon(qtstalker));
   QApplication::setOrganizationName("Qtstalker");
 
-  // setup the disk environment
+  // setup the disk environment and init databases
   Setup setup;
-  setup.setup(session);
+  setup.setupDirectories();
+  
+  DataBase db(session);
+  
+  setup.setup();
 
   assistant = new Assistant;
 
@@ -115,10 +119,8 @@ QtstalkerApp::QtstalkerApp(QString session)
   vbox->addWidget(split);
 
   // build the tab rows
-//  QString s;
   Config config;
   int tabRows = config.getInt(Config::IndicatorTabRows);
-
   int loop;
   for (loop = 0; loop < tabRows; loop++)
   {
@@ -173,16 +175,15 @@ QtstalkerApp::QtstalkerApp(QString session)
 
   
   // setup the initial indicators
-  DataBase db;
   QStringList l;
   db.getActiveIndicatorList(l);
   for (loop = 0; loop < l.count(); loop++)
   {
     Indicator i;
-    i.setName(l[loop]);
+    i.setData(Indicator::IndicatorParmName, l[loop]);
     db.getIndicator(i);
 
-    if (i.getTabRow() > tabList.count())
+    if (i.getIntData(Indicator::IndicatorParmTabRow) > tabList.count())
       continue;
 
     addIndicatorButton(l[loop]);
@@ -836,27 +837,28 @@ void QtstalkerApp::addIndicatorButton (QString d)
 {
   DataBase db;
   Indicator i;
-  i.setName(d);
+  i.setData(Indicator::IndicatorParmName, d);
   db.getIndicator(i);
-  if (! i.getEnable())
+
+  if (! i.getIntData(Indicator::IndicatorParmEnable))
     return;
 
-  if (i.getTabRow() > tabList.count())
+  if (i.getIntData(Indicator::IndicatorParmTabRow) > tabList.count())
     return;
 
-  QTabWidget *it = tabList.at(i.getTabRow() - 1);
+  QTabWidget *it = tabList.at(i.getIntData(Indicator::IndicatorParmTabRow) - 1);
 
   Plot *plot = new Plot(baseWidget);
   plotList.insert(d, plot);
-  plot->setDateFlag(i.getDate());
-  plot->setLogScale(i.getLog());
+  plot->setDateFlag(i.getIntData(Indicator::IndicatorParmDate));
+  plot->setLogScale(i.getIntData(Indicator::IndicatorParmLog));
 
   it->addTab(plot, d);
 
   // Set the current indicator in this row to the last used one.
-  if (i.getTabRow() < lastIndicatorUsed.count())
+  if (i.getIntData(Indicator::IndicatorParmTabRow) < lastIndicatorUsed.count())
   {
-    if (d == lastIndicatorUsed[i.getTabRow()])
+    if (d == lastIndicatorUsed[i.getIntData(Indicator::IndicatorParmTabRow)])
       it->setCurrentWidget(plot);
   }
     
@@ -1112,10 +1114,12 @@ void QtstalkerApp::slotScriptDone ()
 
   DataBase db;
   Indicator i;
-  i.setName(indicatorList[ilPos]);
+  i.setData(Indicator::IndicatorParmName, indicatorList[ilPos]);
+
   db.getIndicator(i);
+
   QString s;
-  i.getCommand(s);
+  i.getData(Indicator::IndicatorParmCommand, s);
   script->calculate(s);
 }
 
