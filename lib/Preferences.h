@@ -80,7 +80,6 @@ class Preferences : public QDialog
     QSpinBox *bs1Spinner;
     QSpinBox *bs2Spinner;
     QSpinBox *tabRows;
-    QLineEdit *indicatorScriptDefault;
     QSpinBox *refreshSpinner;
     
     // color page

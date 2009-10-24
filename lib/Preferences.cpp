@@ -124,17 +124,6 @@ void Preferences::createGeneralPage ()
   connect(tabRows, SIGNAL(valueChanged(int)), this, SLOT(slotModified()));
   grid->addWidget(tabRows, row++, col--);
 
-  // indicator script default
-  label = new QLabel(tr("Indicator Script Default"));
-  grid->addWidget(label, row, col++);
-  
-  indicatorScriptDefault = new QLineEdit;
-  indicatorScriptDefault->setToolTip(tr("Default command for indicators. Just append indicator name."));
-  config.getData(Config::IndicatorScriptDefault, s);
-  indicatorScriptDefault->setText(s);
-  connect(indicatorScriptDefault, SIGNAL(textChanged(const QString &)), this, SLOT(slotModified()));
-  grid->addWidget(indicatorScriptDefault, row++, col--);
-
   // refresh chart
   label = new QLabel(tr("Refresh Chart"));
   grid->addWidget(label, row, col++);
@@ -610,9 +599,6 @@ void Preferences::slotSave ()
   config.setData(Config::PSButton1, bs1Spinner->value());
   config.setData(Config::PSButton2, bs2Spinner->value());
   config.setData(Config::IndicatorTabRows, tabRows->value());
-
-  s = indicatorScriptDefault->text();
-  config.setData(Config::IndicatorScriptDefault, s);
 
   config.setData(Config::Refresh, refreshSpinner->value());
   if (refreshModified)

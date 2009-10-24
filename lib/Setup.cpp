@@ -578,11 +578,19 @@ void Setup::setupConfigDefaults ()
     config.setData(Config::DefaultTrendLineUseBar, d);
   }
 
-  config.getData(Config::IndicatorScriptDefault, d);
+  config.getData(Config::IndicatorScriptCommand, d);
   if (d.isEmpty())
   {
-    d = "perl /usr/local/share/qtstalker/indicator/";
-    config.setData(Config::IndicatorScriptDefault, d);
+    d = "perl";
+    config.setData(Config::IndicatorScriptCommand, d);
+  }
+
+  config.getData(Config::IndicatorScriptPath, d);
+  if (d.isEmpty())
+  {
+    d = INSTALL_DATA_DIR;
+    d.append("/qtstalker/indicator");
+    config.setData(Config::IndicatorScriptPath, d);
   }
 
   config.getData(Config::Refresh, d);
@@ -618,10 +626,12 @@ void Setup::setupDefaultIndicators ()
   QString s = "Bars";
   i.setData(Indicator::IndicatorParmName, s);
 
-  s = "perl ";
-  s.append(INSTALL_DATA_DIR);
-  s.append("/qtstalker/indicator/Bars.perl");
+  config.getData(Config::IndicatorScriptCommand, s);
   i.setData(Indicator::IndicatorParmCommand, s);
+
+  config.getData(Config::IndicatorScriptPath, s);
+  s.append("/Bars.perl");
+  i.setData(Indicator::IndicatorParmPath, s);
   
   DataBase db;
   db.setIndicator(i);
@@ -633,11 +643,13 @@ void Setup::setupDefaultIndicators ()
   s = "Volume";
   i.setData(Indicator::IndicatorParmName, s);
 
-  s = "perl ";
-  s.append(INSTALL_DATA_DIR);
-  s.append("/qtstalker/indicator/Volume.perl");
+  config.getData(Config::IndicatorScriptCommand, s);
   i.setData(Indicator::IndicatorParmCommand, s);
 
+  config.getData(Config::IndicatorScriptPath, s);
+  s.append("/Volume.perl");
+  i.setData(Indicator::IndicatorParmPath, s);
+  
   db.setIndicator(i);
 }
 
@@ -1506,7 +1518,7 @@ void Setup::setupIndicatorSettings ()
   set.addItem(input, (int) IndicatorSettings::TypeInput, close);
   set.addItem(input2, (int) IndicatorSettings::TypeInput2, close);
   set.addItem(period, (int) IndicatorSettings::TypeInt, 30);
-  s = QObject::tr("Pearson's Correlation Coefficient (r)");
+  s = QObject::tr("Pearsons Correlation Coefficient");
   set.setName(s);
   db.setIndicatorSettings(set);
 
@@ -2437,7 +2449,7 @@ void Setup::setupIndicatorSettings ()
   set.setIndicator(indicator);
   set.addItem(output, (int) IndicatorSettings::TypeOutput, indicator);
   set.addItem(period, (int) IndicatorSettings::TypeInt, 14);
-  s = QObject::tr("Williams' %R");
+  s = QObject::tr("Williams %R");
   set.setName(s);
   db.setIndicatorSettings(set);
 

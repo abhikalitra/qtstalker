@@ -108,3 +108,16 @@
 
 	  Added a Enum parm interface to Indicator:: class to simplify code.
 
+20091022: Added IndicatorSettings:: class. Added indicatorSettings table to db. This stores a description and settings format
+          for every indicator. Used by ExScript to simplify code and speed up format parsing. This will also be used to
+          allow a gui for indicator building in the future.
+
+20091023: Added IndicatorDialog:: class. This is a dialog for editing the indicator options.
+
+          Changed the format of the way an indicator script is run slightly. The command and script file portions of the
+          script command have been split into 2 parameters. The command parm is now just the script interpreter desired
+          along with any command line switches eg. 'perl -i blah'  The second parm is the script file path
+          eg. '/usr/local/share/qtstalker/indicators/Volume.perl'  NOTE: You will have to start a new ./qtstalker/data.sqlite*
+          file due to SQL table changes.
+
+          

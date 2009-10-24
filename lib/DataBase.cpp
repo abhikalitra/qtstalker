@@ -60,7 +60,7 @@ DataBase::DataBase (QString session)
     qDebug() << "DataBase::createGroupIndexTable: " << q.lastError().text();
 
   // create the indicator index table
-  s = "CREATE TABLE IF NOT EXISTS indicatorIndex (name TEXT PRIMARY KEY, enable INT, tabRow INT, date INT, log INT, command TEXT)";
+  s = "CREATE TABLE IF NOT EXISTS indicatorIndex (name TEXT PRIMARY KEY, enable INT, tabRow INT, date INT, log INT, command TEXT, path TEXT)";
   q.exec(s);
   if (q.lastError().isValid())
     qDebug() << "DataBase::createIndicatorIndexTable: " << q.lastError().text();
@@ -454,20 +454,32 @@ void DataBase::getIndicator (Indicator &parms)
 
   s = q.value(5).toString();
   parms.setData(Indicator::IndicatorParmCommand, s);
+
+  s = q.value(6).toString();
+  parms.setData(Indicator::IndicatorParmPath, s);
 }
 
 void DataBase::setIndicator (Indicator &i)
 {
-  QString name, enable, tabRow, date, log, command;
+  QString name, enable, tabRow, date, log, command, path;
   i.getData(Indicator::IndicatorParmName, name);
   i.getData(Indicator::IndicatorParmEnable, enable);
   i.getData(Indicator::IndicatorParmTabRow, tabRow);
   i.getData(Indicator::IndicatorParmDate, date);
   i.getData(Indicator::IndicatorParmLog, log);
   i.getData(Indicator::IndicatorParmCommand, command);
+  i.getData(Indicator::IndicatorParmPath, path);
 
   QSqlQuery q(QSqlDatabase::database("data"));
-  QString s = "INSERT OR REPLACE INTO indicatorIndex VALUES ('" + name + "'," + enable + "," + tabRow + "," + date + "," + log + ",'" + command + "')";
+  QString s = "INSERT OR REPLACE INTO indicatorIndex VALUES (";
+  s.append("'" + name + "'");
+  s.append("," + enable);
+  s.append("," + tabRow);
+  s.append("," + date);
+  s.append("," + log);
+  s.append(",'" + command + "'");
+  s.append(",'" + path + "'");
+  s.append(")");
   q.exec(s);
   if (q.lastError().isValid())
     qDebug() << "DataBase::setIndicator: " << q.lastError().text();
@@ -680,11 +692,11 @@ void DataBase::setIndicatorSettings (IndicatorSettings &set)
   QSqlQuery q(QSqlDatabase::database("data"));
   QString s = "INSERT OR REPLACE INTO indicatorSettings VALUES (";
   s.append("'" + indicator + "'");
-  s.append("'" + name + "'");
+  s.append(",'" + name + "'");
   s.append(",'" + ts + "'");
   s.append(")");
   q.exec(s);
   if (q.lastError().isValid())
-    qDebug() << "DataBase::setIndicatorSettings:" << q.lastError().text();
+    qDebug() << "DataBase::setIndicatorSettings:" << q.lastError().text() << s;
 }
 

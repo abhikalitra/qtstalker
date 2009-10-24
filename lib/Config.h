@@ -85,8 +85,8 @@ class Config
       ShowDataWindowBtn, // toolbar button flag
       ShowHelpButton, // toolbar button flag
       ShowRefreshButton, // toolbar button flag
-      Unused9,  // ********** UNUSED *************
-      Unused10, // ****** UNUSED **********
+      IndicatorScriptCommand,  // default script interpreter command
+      IndicatorScriptPath, // default indicator script directory
       ShowCmps5Btn, // toolbar button flag
       ShowCmps15Btn, // toolbar button flag
       ShowCmps60Btn, // toolbar button flag
@@ -127,8 +127,7 @@ class Config
       DefaultVerticalLineColor, // default vertical line color
       IndicatorTabRows, // # of indicator tab rows
       UNUSED5, // ************ UNUSED ****************************
-      UNUSED6, // ************ UNUSED ***********************
-      IndicatorScriptDefault
+      UNUSED6 // ************ UNUSED ***********************
     };
 
     Config ();

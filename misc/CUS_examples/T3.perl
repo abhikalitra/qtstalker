@@ -10,7 +10,7 @@ if ($a ne "0")
   exit; # we have a non zero return code, exit script
 }
 
-print STDOUT "MA,T3,Close,5,T3"; # create the T3 line
+print STDOUT "T3,T3,Close,5"; # create the T3 line
 $a = <STDIN>; # get the return code
 chomp($a); # remove the \n
 if ($a ne "0")

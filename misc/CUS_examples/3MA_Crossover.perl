@@ -10,7 +10,7 @@ if ($a ne "0")
   exit; # we have a non zero return code, exit script
 }
 
-print STDOUT "MA,10MA,Close,10,SMA"; # create the 10 SMA indicator
+print STDOUT "SMA,10MA,Close,10"; # create the 10 SMA indicator
 $a = <STDIN>; # get the return code
 chomp($a); # remove the \n
 if ($a ne "0")
@@ -18,7 +18,7 @@ if ($a ne "0")
   exit; # we have a non zero return code, exit script
 }
 
-print STDOUT "MA,20MA,Close,20,SMA"; # create the 20 SMA indicator
+print STDOUT "SMA,20MA,Close,20"; # create the 20 SMA indicator
 $a = <STDIN>; # get the return code
 chomp($a); # remove the \n
 if ($a ne "0")
@@ -26,7 +26,7 @@ if ($a ne "0")
   exit; # we have a non zero return code, exit script
 }
 
-print STDOUT "MA,50MA,Close,50,SMA"; # create the 50 SMA indicator
+print STDOUT "SMA,50MA,Close,50"; # create the 50 SMA indicator
 $a = <STDIN>; # get the return code
 chomp($a); # remove the \n
 if ($a ne "0")

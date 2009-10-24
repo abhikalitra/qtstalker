@@ -23,7 +23,7 @@
 #include "DataBase.h"
 #include "Indicator.h"
 #include "Config.h"
-#include "PrefDialog.h"
+#include "IndicatorDialog.h"
 
 
 #include "../pics/ok.xpm"
@@ -122,22 +122,18 @@ void IndicatorPage::newIndicator ()
     return;
   }
   
-  PrefDialog *dialog = new PrefDialog(this);
-  
-  QString ns = tr("Name");
-  dialog->addTextItem(ns, selection);
+  IndicatorDialog *dialog = new IndicatorDialog(this);
+  dialog->setWindowTitle(tr("New Indicator"));
 
-  Indicator i;
-  i.setData(Indicator::IndicatorParmName, selection);
-  
+  dialog->setName(selection);
+
   Config config;
   QString s;
-  QString trs = tr("Tab Row");
-  dialog->addIntItem(trs, 1, 1, config.getInt(Config::IndicatorTabRows));
+  config.getData(Config::IndicatorTabRows, s);
+  dialog->setTabRow(s);
 
-  QString sc = tr("Script Command");
-  config.getData(Config::IndicatorScriptDefault, s);
-  dialog->addTextItem(sc, s);
+  config.getData(Config::IndicatorScriptCommand, s);
+  dialog->setCommand(s);
   
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)
@@ -145,11 +141,17 @@ void IndicatorPage::newIndicator ()
     delete dialog;
     return;
   }
+
+  Indicator i;
+  i.setData(Indicator::IndicatorParmName, selection);
   
-  dialog->getItem(sc, s);
+  dialog->getCommand(s);
   i.setData(Indicator::IndicatorParmCommand, s);
   
-  dialog->getItem(trs, s);
+  dialog->getFile(s);
+  i.setData(Indicator::IndicatorParmPath, s);
+  
+  dialog->getTabRow(s);
   i.setData(Indicator::IndicatorParmTabRow, s);
 
   i.setData(Indicator::IndicatorParmEnable, 1);
@@ -179,24 +181,25 @@ void IndicatorPage::editIndicator ()
 
 void IndicatorPage::editIndicator (QString &name)
 {
-  PrefDialog *dialog = new PrefDialog(this);
-  
-  QString ns = tr("Name");
-  dialog->addTextItem(ns, name);
-
   DataBase db;
   Indicator i;
   i.setData(Indicator::IndicatorParmName, name);
   db.getIndicator(i);
   
-  Config config;
-  QString s;
-  QString trs = tr("Tab Row");
-  dialog->addIntItem(trs, i.getIntData(Indicator::IndicatorParmTabRow), 1, config.getInt(Config::IndicatorTabRows));
+  IndicatorDialog *dialog = new IndicatorDialog(this);
+  dialog->setWindowTitle(tr("Edit Indicator"));
 
-  QString sc = tr("Script Command");
+  dialog->setName(name);
+
+  QString s;
+  i.getData(Indicator::IndicatorParmTabRow, s);
+  dialog->setTabRow(s);
+
   i.getData(Indicator::IndicatorParmCommand, s);
-  dialog->addTextItem(sc, s);
+  dialog->setCommand(s);
+  
+  i.getData(Indicator::IndicatorParmPath, s);
+  dialog->setFile(s);
   
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)
@@ -205,10 +208,13 @@ void IndicatorPage::editIndicator (QString &name)
     return;
   }
   
-  dialog->getItem(sc, s);
+  dialog->getCommand(s);
   i.setData(Indicator::IndicatorParmCommand, s);
   
-  dialog->getItem(trs, s);
+  dialog->getFile(s);
+  i.setData(Indicator::IndicatorParmPath, s);
+  
+  dialog->getTabRow(s);
   i.setData(Indicator::IndicatorParmTabRow, s);
 
   db.setIndicator(i);

@@ -39,6 +39,7 @@ HEADERS += ExScript.h
 HEADERS += Indicator.h
 HEADERS += CODialog.h
 HEADERS += IndicatorSettings.h
+HEADERS += IndicatorDialog.h
 
 
    
@@ -68,6 +69,7 @@ SOURCES += ExScript.cpp
 SOURCES += Indicator.cpp
 SOURCES += CODialog.cpp
 SOURCES += IndicatorSettings.cpp
+SOURCES += IndicatorDialog.cpp
 
 
    

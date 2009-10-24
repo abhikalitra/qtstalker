@@ -127,10 +127,11 @@ QtstalkerApp::QtstalkerApp(QString session)
     QTabWidget *it = new QTabWidget;
 
     // make the tab text smaller so we can take up less space for tabs
-    QFont font = it->font();
-    font.setPointSize((int) font.pointSize() * 0.75);
-    font.setBold(TRUE);
-    it->setFont(font);
+    // looks bad...find another solution to make tabs smaller
+//    QFont font = it->font();
+//    font.setPointSize((int) font.pointSize() * 0.75);
+//    font.setBold(TRUE);
+//    it->setFont(font);
 
     split->addWidget(it);
     it->setContentsMargins(0, 0, 0, 0);
@@ -1118,9 +1119,11 @@ void QtstalkerApp::slotScriptDone ()
 
   db.getIndicator(i);
 
-  QString s;
+  QString s, s2, s3;
   i.getData(Indicator::IndicatorParmCommand, s);
-  script->calculate(s);
+  i.getData(Indicator::IndicatorParmPath, s2);
+  s3 = s + " " + s2;
+  script->calculate(s3);
 }
 
 /**********************************************************************/

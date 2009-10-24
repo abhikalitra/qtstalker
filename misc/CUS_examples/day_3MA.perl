@@ -17,7 +17,7 @@ if ($a ne "0")
 
 
 # create the 20 SMA indicator
-print STDOUT "MA,20MA,Close,20,SMA"; 
+print STDOUT "SMA,20MA,Close,20"; 
 $a = <STDIN>; # get the return code
 chomp($a); # remove the \n
 if ($a ne "0")
@@ -27,7 +27,7 @@ if ($a ne "0")
 
 
 # create the 50 SMA indicator
-print STDOUT "MA,50MA,Close,50,SMA"; 
+print STDOUT "SMA,50MA,Close,50"; 
 $a = <STDIN>; # get the return code
 chomp($a); # remove the \n
 if ($a ne "0")
@@ -37,7 +37,7 @@ if ($a ne "0")
 
 
 # create the 200 SMA indicator
-print STDOUT "MA,200MA,Close,200,SMA";
+print STDOUT "SMA,200MA,Close,200";
 $a = <STDIN>; # get the return code
 chomp($a); # remove the \n
 if ($a ne "0")
