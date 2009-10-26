@@ -43,6 +43,8 @@
 #include "Indicator.h"
 #include "Setup.h"
 #include "Config.h"
+#include "IndicatorPage.h"
+#include "GroupPage.h"
 
 #include "../pics/dirclosed.xpm"
 #include "../pics/plainitem.xpm"
@@ -167,9 +169,6 @@ QtstalkerApp::QtstalkerApp(QString session)
 //  initTestNav();
 //  initScannerNav();  
 
-  // restore the last used indicators
-  config.getData(Config::LastIndicatorUsed, lastIndicatorUsed);
-  
   // setup the indicator server
   script = new ExScript;
   connect(script, SIGNAL(signalDone()), this, SLOT(slotScriptDone()));
@@ -356,35 +355,38 @@ void QtstalkerApp::createToolBars ()
 
   //construct main toolbar
   Config config;
-  if (config.getBool(Config::ShowQuitBtn))
+  if (config.getBool(Config::ShowQuitButton))
     toolbar->addAction(actionList.value(Exit));
 
-  if (config.getBool(Config::ShowPrefBtn))
+  if (config.getBool(Config::ShowPrefButton))
     toolbar->addAction(actionList.value(Options));
 
-  if (config.getBool(Config::ShowSidePanelBtn))
+  if (config.getBool(Config::ShowSidePanelButton))
     toolbar->addAction(actionList.value(SidePanel));
 
-  if (config.getBool(Config::ShowGridBtn))
+  if (config.getBool(Config::ShowGridButton))
     toolbar->addAction(actionList.value(Grid));
 
-  if (config.getBool(Config::ShowScaleToScreenBtn))
+  if (config.getBool(Config::ShowScaleToScreenButton))
     toolbar->addAction(actionList.value(ScaleToScreen));
 
-  if (config.getBool(Config::ShowCrosshairBtn))
+  if (config.getBool(Config::ShowCrosshairButton))
     toolbar->addAction(actionList.value(Crosshairs));
 
-  if (config.getBool(Config::ShowDrawModeBtn))
+  if (config.getBool(Config::ShowDrawModeButton))
     toolbar->addAction(actionList.value(DrawMode));
 
   if (config.getBool(Config::ShowRefreshButton))
     toolbar->addAction(actionList.value(Refresh));
 
-  if (config.getBool(Config::ShowNewIndicatorBtn))
+  if (config.getBool(Config::ShowNewIndicatorButton))
     toolbar->addAction(actionList.value(NewIndicator));
 
-  if (config.getBool(Config::ShowDataWindowBtn))
+  if (config.getBool(Config::ShowDataWindowButton))
     toolbar->addAction(actionList.value(DataWindow1));
+
+  if (config.getBool(Config::ShowHelpButton))
+    toolbar->addAction(actionList.value(Help));
 
   // construct the chart toolbar
   QToolBar *toolbar2 = addToolBar("chartToolBar");
@@ -411,7 +413,7 @@ void QtstalkerApp::createToolBars ()
 
   action = toolbar2->addWidget(b);
   actionList.insert(CompressionM, action);
-  action->setVisible(config.getBool(Config::ShowCmpsMtyBtn));
+  action->setVisible(config.getBool(Config::ShowCmpsMtyButton));
   b->setText("M");
 
   // weekly compression button  
@@ -421,7 +423,7 @@ void QtstalkerApp::createToolBars ()
 
   action = toolbar2->addWidget(b);
   actionList.insert(CompressionW, action);
-  action->setVisible(config.getBool(Config::ShowCmpsWkyBtn));
+  action->setVisible(config.getBool(Config::ShowCmpsWkyButton));
   b->setText("W");
 
   // daily compression button  
@@ -431,7 +433,7 @@ void QtstalkerApp::createToolBars ()
 
   action = toolbar2->addWidget(b);
   actionList.insert(CompressionD, action);
-  action->setVisible(config.getBool(Config::ShowCmpsDayBtn));
+  action->setVisible(config.getBool(Config::ShowCmpsDayButton));
   b->setText("D");
   
   // 60 minute compression button  
@@ -441,7 +443,7 @@ void QtstalkerApp::createToolBars ()
 
   action = toolbar2->addWidget(b);
   actionList.insert(Compression60, action);
-  action->setVisible(config.getBool(Config::ShowCmps60Btn));
+  action->setVisible(config.getBool(Config::ShowCmps60Button));
   b->setText("60");
 
   // 15 minute compression button  
@@ -451,7 +453,7 @@ void QtstalkerApp::createToolBars ()
 
   action = toolbar2->addWidget(b);
   actionList.insert(Compression15, action);
-  action->setVisible(config.getBool(Config::ShowCmps15Btn));
+  action->setVisible(config.getBool(Config::ShowCmps15Button));
   b->setText("15");
 
   // 5 minute compression button  
@@ -461,7 +463,7 @@ void QtstalkerApp::createToolBars ()
 
   action = toolbar2->addWidget(b);
   actionList.insert(Compression5, action);
-  action->setVisible(config.getBool(Config::ShowCmps5Btn));
+  action->setVisible(config.getBool(Config::ShowCmps5Button));
   b->setText("5");
 
   toolbar2->addSeparator();
@@ -856,6 +858,11 @@ void QtstalkerApp::addIndicatorButton (QString d)
 
   it->addTab(plot, d);
 
+  // get the last used indicators
+  Config config;
+  QStringList lastIndicatorUsed;
+  config.getData(Config::LastIndicatorUsed, lastIndicatorUsed);
+  
   // Set the current indicator in this row to the last used one.
   if (i.getIntData(Indicator::IndicatorParmTabRow) < lastIndicatorUsed.count())
   {
@@ -864,7 +871,6 @@ void QtstalkerApp::addIndicatorButton (QString d)
   }
     
   QColor color;
-  Config config;
   config.getData(Config::BackgroundColor, color);
   
   connect(this, SIGNAL(signalBackgroundColor(QColor)), plot, SLOT(setBackgroundColor(QColor)));
@@ -945,7 +951,7 @@ void QtstalkerApp::initChartNav ()
 
 void QtstalkerApp::initGroupNav ()
 {
-  gp = new GroupPage(baseWidget);
+  GroupPage *gp = new GroupPage(baseWidget);
   connect(gp, SIGNAL(fileSelected(QString)), this, SLOT(slotOpenChart(QString)));
   connect(chartNav, SIGNAL(signalAddToGroup()), gp, SLOT(updateGroups()));
   connect(gp, SIGNAL(addRecentChart(QString)), this, SLOT(slotAddRecentChart(QString)));
@@ -965,7 +971,7 @@ void QtstalkerApp::initTestNav ()
 
 void QtstalkerApp::initIndicatorNav ()
 {
-  ip = new IndicatorPage(baseWidget);
+  IndicatorPage *ip = new IndicatorPage(baseWidget);
   connect(ip, SIGNAL(signalDisableIndicator(QString)), this, SLOT(slotDisableIndicator(QString)));
   connect(ip, SIGNAL(signalEnableIndicator(QString)), this, SLOT(slotEnableIndicator(QString)));
   connect(ip, SIGNAL(signalNewIndicator(QString)), this, SLOT(slotNewIndicator(QString)));

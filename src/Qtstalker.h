@@ -35,8 +35,6 @@
 #include "Plot.h"
 #include "Setting.h"
 #include "ChartPage.h"
-#include "IndicatorPage.h"
-#include "GroupPage.h"
 #include "ExScript.h"
 #include "assistant.h"
 
@@ -165,13 +163,8 @@ class QtstalkerApp : public QMainWindow
     QString chartPath;
     BarData *recordList;
     QTextEdit *infoLabel;
-    IndicatorPage *ip;
-//    ScannerPage *sp;
-//    TestPage *tp;
-    GroupPage *gp;
     QStatusBar *statusbar;
     QList<QTabWidget*> tabList;
-    QStringList lastIndicatorUsed;
     QHash<MenuAction, QAction*> actionList;
     QComboBox *compressionCombo;
     QSpinBox *barCount;

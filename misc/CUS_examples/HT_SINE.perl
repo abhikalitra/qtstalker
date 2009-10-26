@@ -2,7 +2,7 @@
 
 $|++; # turn on autoflush, qtstalker needs this to know when data is finished being sent/recieved
 
-print STDOUT "HT_SINE,Close,SINE,LEAD_SINE"; # create the HT_SINE lines
+print STDOUT "INDICATOR,HT_SINE,Close,SINE,LEAD_SINE"; # create the HT_SINE lines
 $a = <STDIN>; # get the return code
 chomp($a); # remove the \n
 if ($a ne "0")

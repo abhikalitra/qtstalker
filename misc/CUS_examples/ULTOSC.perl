@@ -2,7 +2,7 @@
 
 $|++; # turn on autoflush, qtstalker needs this to know when data is finished being sent/recieved
 
-print STDOUT "ULTOSC,ULTOSC,7,14,28"; # create the ULTOSC line
+print STDOUT "INDICATOR,ULTOSC,ULTOSC,7,14,28"; # create the ULTOSC line
 $a = <STDIN>; # get the return code
 chomp($a); # remove the \n
 if ($a ne "0")

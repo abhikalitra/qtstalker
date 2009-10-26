@@ -2,7 +2,7 @@
 
 $|++; # turn on autoflush, qtstalker needs this to know when data is finished being sent/recieved
 
-print STDOUT "CMO,CMO,Close,20"; # create the CMO line
+print STDOUT "INDICATOR,CMO,CMO,Close,20"; # create the CMO line
 $a = <STDIN>; # get the return code
 chomp($a); # remove the \n
 if ($a ne "0")

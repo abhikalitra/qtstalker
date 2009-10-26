@@ -2,7 +2,7 @@
 
 $|++; # turn on autoflush, qtstalker needs this to know when data is finished being sent/recieved
 
-print STDOUT "ADOSC,ADOSC,3,10";
+print STDOUT "INDICATOR,ADOSC,ADOSC,3,10";
 $a = <STDIN>; # get the return code
 chomp($a); # remove the \n
 if ($a ne "0")

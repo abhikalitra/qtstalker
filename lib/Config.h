@@ -73,26 +73,26 @@ class Config
       PSButton2, // toolbar bar spacing button 2
       Refresh, // refreshes chart every x minutes
       ShowSidePanel, // side panel flag
-      ShowQuitBtn, // toolbar button flag
-      ShowPrefBtn,  // toolbar button flag
-      ShowSidePanelBtn, // toolbar button flag
-      ShowGridBtn, // toolbar button flag
-      ShowScaleToScreenBtn, // toolbar button flag
-      ShowCrosshairBtn, // toolbar button flag
+      ShowQuitButton, // toolbar button flag
+      ShowPrefButton,  // toolbar button flag
+      ShowSidePanelButton, // toolbar button flag
+      ShowGridButton, // toolbar button flag
+      ShowScaleToScreenButton, // toolbar button flag
+      ShowCrosshairButton, // toolbar button flag
       DbSearchSymbols, // the sql command to get a symbol search
-      ShowDrawModeBtn, // toolbar button flag
-      ShowNewIndicatorBtn, // toolbar button flag
-      ShowDataWindowBtn, // toolbar button flag
+      ShowDrawModeButton, // toolbar button flag
+      ShowNewIndicatorButton, // toolbar button flag
+      ShowDataWindowButton, // toolbar button flag
       ShowHelpButton, // toolbar button flag
       ShowRefreshButton, // toolbar button flag
       IndicatorScriptCommand,  // default script interpreter command
       IndicatorScriptPath, // default indicator script directory
-      ShowCmps5Btn, // toolbar button flag
-      ShowCmps15Btn, // toolbar button flag
-      ShowCmps60Btn, // toolbar button flag
-      ShowCmpsDayBtn, // toolbar button flag
-      ShowCmpsWkyBtn, // toolbar button flag
-      ShowCmpsMtyBtn, // toolbar button flag
+      ShowCmps5Button, // toolbar button flag
+      ShowCmps15Button, // toolbar button flag
+      ShowCmps60Button, // toolbar button flag
+      ShowCmpsDayButton, // toolbar button flag
+      ShowCmpsWkyButton, // toolbar button flag
+      ShowCmpsMtyButton, // toolbar button flag
       Unused11, // ********* UNUSED *************
       DbFirstDate, // the sql command to get the first date for a symbol
       DbLastDate, // the sql command to get the last date for a symbol

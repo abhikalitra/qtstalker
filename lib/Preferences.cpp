@@ -442,37 +442,37 @@ void  Preferences::createMTPage()
   
   quitBtnCheck = new QCheckBox(tr("Quit"));
   quitBtnCheck->setToolTip(tr("Select if you want the Quit button to appear on the toolbar."));
-  quitBtnCheck->setChecked(config.getBool(Config::ShowQuitBtn));
+  quitBtnCheck->setChecked(config.getBool(Config::ShowQuitButton));
   connect(quitBtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
   grid->addWidget(quitBtnCheck, row++, col);
 
   prefBtnCheck = new QCheckBox(tr("Preferences"));
   prefBtnCheck->setToolTip(tr("Select if you want the Preferences button to appear on the toolbar."));
-  prefBtnCheck->setChecked(config.getBool(Config::ShowPrefBtn));
+  prefBtnCheck->setChecked(config.getBool(Config::ShowPrefButton));
   connect(prefBtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
   grid->addWidget(prefBtnCheck, row++, col);
 
   sidePanelBtnCheck = new QCheckBox(tr("Side Panel"));
   sidePanelBtnCheck->setToolTip(tr("Select if you want the Side Panel button to appear on the toolbar."));
-  sidePanelBtnCheck->setChecked(config.getBool(Config::ShowSidePanelBtn));
+  sidePanelBtnCheck->setChecked(config.getBool(Config::ShowSidePanelButton));
   connect(sidePanelBtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
   grid->addWidget(sidePanelBtnCheck, row++, col);
 
   gridBtnCheck = new QCheckBox(tr("Grid"));
   gridBtnCheck->setToolTip(tr("Select if you want the Grid button to appear on the toolbar."));
-  gridBtnCheck->setChecked(config.getBool(Config::ShowGridBtn));
+  gridBtnCheck->setChecked(config.getBool(Config::ShowGridButton));
   connect(gridBtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
   grid->addWidget(gridBtnCheck, row++, col);
 
   scaleToScreenBtnCheck = new QCheckBox(tr("Scale to Screen"));
   scaleToScreenBtnCheck->setToolTip(tr("Select if you want the Scale to Screen button to appear on the toolbar."));
-  scaleToScreenBtnCheck->setChecked(config.getBool(Config::ShowScaleToScreenBtn));
+  scaleToScreenBtnCheck->setChecked(config.getBool(Config::ShowScaleToScreenButton));
   connect(scaleToScreenBtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
   grid->addWidget(scaleToScreenBtnCheck, row++, col);
 
   crosshairBtnCheck = new QCheckBox(tr("CrossHair"));
   crosshairBtnCheck->setToolTip(tr("Select if you want the Crosshair button to appear on the toolbar."));
-  crosshairBtnCheck->setChecked(config.getBool(Config::ShowCrosshairBtn));
+  crosshairBtnCheck->setChecked(config.getBool(Config::ShowCrosshairButton));
   connect(crosshairBtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
   grid->addWidget(crosshairBtnCheck, row++, col);
 
@@ -482,7 +482,7 @@ void  Preferences::createMTPage()
   
   drawModeBtnCheck= new QCheckBox(tr("Draw Mode"));
   drawModeBtnCheck->setToolTip(tr("Select if you want the Draw Mode button to appear on the toolbar."));
-  drawModeBtnCheck->setChecked(config.getBool(Config::ShowDrawModeBtn));
+  drawModeBtnCheck->setChecked(config.getBool(Config::ShowDrawModeButton));
   connect(drawModeBtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
   grid->addWidget(drawModeBtnCheck, row++, col);
 
@@ -494,13 +494,13 @@ void  Preferences::createMTPage()
 
   newIndicatorBtnCheck = new QCheckBox(tr("New Indicator"));
   newIndicatorBtnCheck->setToolTip(tr("Select if you want the New Indicator button to appear on the toolbar."));
-  newIndicatorBtnCheck->setChecked(config.getBool(Config::ShowNewIndicatorBtn));
+  newIndicatorBtnCheck->setChecked(config.getBool(Config::ShowNewIndicatorButton));
   connect(newIndicatorBtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
   grid->addWidget(newIndicatorBtnCheck, row++, col);
 
   dataWindowBtnCheck = new QCheckBox(tr("Data Window"));
   dataWindowBtnCheck->setToolTip(tr("Select if you want the Data Window button to appear on the toolbar."));
-  dataWindowBtnCheck->setChecked(config.getBool(Config::ShowDataWindowBtn));
+  dataWindowBtnCheck->setChecked(config.getBool(Config::ShowDataWindowButton));
   connect(dataWindowBtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
   grid->addWidget(dataWindowBtnCheck, row++, col);
 
@@ -535,37 +535,37 @@ void  Preferences::createCTPage()
 
   cmpsMtyBtnCheck = new QCheckBox(tr("Monthly Bars"));
   cmpsMtyBtnCheck->setToolTip(tr("Select if you want the Monthly Bars button to appear on the toolbar."));
-  cmpsMtyBtnCheck->setChecked(config.getBool(Config::ShowCmpsMtyBtn));
+  cmpsMtyBtnCheck->setChecked(config.getBool(Config::ShowCmpsMtyButton));
   connect(cmpsMtyBtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
   grid->addWidget(cmpsMtyBtnCheck, row++, col);
 
   cmpsWkyBtnCheck = new QCheckBox(tr("Weekly Bars"));
   cmpsWkyBtnCheck->setToolTip(tr("Select if you want the Weekly Bars button to appear on the toolbar."));
-  cmpsWkyBtnCheck->setChecked(config.getBool(Config::ShowCmpsWkyBtn));
+  cmpsWkyBtnCheck->setChecked(config.getBool(Config::ShowCmpsWkyButton));
   connect(cmpsWkyBtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
   grid->addWidget(cmpsWkyBtnCheck, row++, col);
 
   cmpsDayBtnCheck = new QCheckBox(tr("Daily Bars"));
   cmpsDayBtnCheck->setToolTip(tr("Select if you want the Daily Bars button to appear on the toolbar."));
-  cmpsDayBtnCheck->setChecked(config.getBool(Config::ShowCmpsDayBtn));
+  cmpsDayBtnCheck->setChecked(config.getBool(Config::ShowCmpsDayButton));
   connect(cmpsDayBtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
   grid->addWidget(cmpsDayBtnCheck, row++, col);
 
   cmps60BtnCheck = new QCheckBox(tr("60 Minute Bars"));
   cmps60BtnCheck->setToolTip(tr("Select if you want the 60 Minute Bars button to appear on the toolbar."));
-  cmps60BtnCheck->setChecked(config.getBool(Config::ShowCmps60Btn));
+  cmps60BtnCheck->setChecked(config.getBool(Config::ShowCmps60Button));
   connect(cmps60BtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
   grid->addWidget(cmps60BtnCheck, row++, col);
 
   cmps15BtnCheck = new QCheckBox(tr("15 Minute Bars"));
   cmps15BtnCheck->setToolTip(tr("Select if you want the 15 Minute Bars button to appear on the toolbar."));
-  cmps15BtnCheck->setChecked(config.getBool(Config::ShowCmps15Btn));
+  cmps15BtnCheck->setChecked(config.getBool(Config::ShowCmps15Button));
   connect(cmps15BtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
   grid->addWidget(cmps15BtnCheck, row++, col);
 
   cmps5BtnCheck = new QCheckBox(tr("5 Minute Bars"));
   cmps5BtnCheck->setToolTip(tr("Select if you want the 5 Minute Bars button to appear on the toolbar."));
-  cmps5BtnCheck->setChecked(config.getBool(Config::ShowCmps5Btn));
+  cmps5BtnCheck->setChecked(config.getBool(Config::ShowCmps5Button));
   connect(cmps5BtnCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
   grid->addWidget(cmps5BtnCheck, row++, col);
 
@@ -648,25 +648,25 @@ void Preferences::slotSave ()
   
   // main tool bar settings
   // save all, anyway if changed or not, who cares?
-  config.setData(Config::ShowQuitBtn, quitBtnCheck->isChecked());
-  config.setData(Config::ShowPrefBtn, prefBtnCheck->isChecked());
-  config.setData(Config::ShowSidePanelBtn, sidePanelBtnCheck->isChecked());
-  config.setData(Config::ShowGridBtn, gridBtnCheck->isChecked());
-  config.setData(Config::ShowScaleToScreenBtn, scaleToScreenBtnCheck->isChecked());
-  config.setData(Config::ShowCrosshairBtn, crosshairBtnCheck->isChecked());
-  config.setData(Config::ShowDrawModeBtn, drawModeBtnCheck->isChecked());
+  config.setData(Config::ShowQuitButton, quitBtnCheck->isChecked());
+  config.setData(Config::ShowPrefButton, prefBtnCheck->isChecked());
+  config.setData(Config::ShowSidePanelButton, sidePanelBtnCheck->isChecked());
+  config.setData(Config::ShowGridButton, gridBtnCheck->isChecked());
+  config.setData(Config::ShowScaleToScreenButton, scaleToScreenBtnCheck->isChecked());
+  config.setData(Config::ShowCrosshairButton, crosshairBtnCheck->isChecked());
+  config.setData(Config::ShowDrawModeButton, drawModeBtnCheck->isChecked());
   config.setData(Config::ShowRefreshButton, refreshButtonCheck->isChecked());
-  config.setData(Config::ShowNewIndicatorBtn, newIndicatorBtnCheck->isChecked());
-  config.setData(Config::ShowDataWindowBtn, dataWindowBtnCheck->isChecked());
+  config.setData(Config::ShowNewIndicatorButton, newIndicatorBtnCheck->isChecked());
+  config.setData(Config::ShowDataWindowButton, dataWindowBtnCheck->isChecked());
   config.setData(Config::ShowHelpButton, helpButtonCheck->isChecked());
 
   // chart tool bar settings
-  config.setData(Config::ShowCmps60Btn, cmps60BtnCheck->isChecked());
-  config.setData(Config::ShowCmps15Btn, cmps15BtnCheck->isChecked());
-  config.setData(Config::ShowCmps5Btn, cmps5BtnCheck->isChecked());
-  config.setData(Config::ShowCmpsDayBtn, cmpsDayBtnCheck->isChecked());
-  config.setData(Config::ShowCmpsWkyBtn, cmpsWkyBtnCheck->isChecked());
-  config.setData(Config::ShowCmpsMtyBtn, cmpsMtyBtnCheck->isChecked());
+  config.setData(Config::ShowCmps60Button, cmps60BtnCheck->isChecked());
+  config.setData(Config::ShowCmps15Button, cmps15BtnCheck->isChecked());
+  config.setData(Config::ShowCmps5Button, cmps5BtnCheck->isChecked());
+  config.setData(Config::ShowCmpsDayButton, cmpsDayBtnCheck->isChecked());
+  config.setData(Config::ShowCmpsWkyButton, cmpsWkyBtnCheck->isChecked());
+  config.setData(Config::ShowCmpsMtyButton, cmpsMtyBtnCheck->isChecked());
   config.setData(Config::ShowRecentCharts, recentComboBoxCheck->isChecked());
 
   // save database parms

@@ -2,7 +2,7 @@
 
 $|++; # turn on autoflush, qtstalker needs this to know when data is finished being sent/recieved
 
-print STDOUT "PPO,PPO,Close,12,26,SMA"; # create the PPO line
+print STDOUT "INDICATOR,PPO,PPO,Close,12,26,SMA"; # create the PPO line
 $a = <STDIN>; # get the return code
 chomp($a); # remove the \n
 if ($a ne "0")

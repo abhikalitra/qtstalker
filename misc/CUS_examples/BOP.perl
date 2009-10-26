@@ -3,7 +3,7 @@
 $|++; # turn on autoflush, qtstalker needs this to know when data is finished being sent/recieved
 
 # create the BOP indicator
-print STDOUT "BOP,BOP";
+print STDOUT "INDICATOR,BOP,BOP";
 $a = <STDIN>; # get the return code
 chomp($a); # remove the \n
 if ($a ne "0")

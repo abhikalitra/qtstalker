@@ -120,4 +120,11 @@
           eg. '/usr/local/share/qtstalker/indicators/Volume.perl'  NOTE: You will have to start a new ./qtstalker/data.sqlite*
           file due to SQL table changes.
 
-          
+20091025: Added new class IndicatorScript:: This handles the logic of the scripting of indicators. Was split off of ExScript
+          for better efficiency. Preparing ExScript to be the scripting engine for future features.
+
+          Made a change to the indicator scripting format. In order for consistancy and future expansion, I added the
+          INDICATOR key word in front of all parms in a script. eg. 'SMA,sma,Close,14' has become 'INDICATOR,SMA,sma,Close,14'
+          All CUS_examples have been modified. CVS users please update any of your personal indicators to reflect this change.
+
+

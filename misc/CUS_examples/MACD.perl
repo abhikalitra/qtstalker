@@ -2,7 +2,7 @@
 
 $|++; # turn on autoflush, qtstalker needs this to know when data is finished being sent/recieved
 
-print STDOUT "MACD,Close,MACD,Signal,Hist,12,26,9"; # create the MACD indicator
+print STDOUT "INDICATOR,MACD,Close,MACD,Signal,Hist,12,26,9"; # create the MACD indicator
 $a = <STDIN>; # get the return code
 chomp($a); # remove the \n
 if ($a ne "0")

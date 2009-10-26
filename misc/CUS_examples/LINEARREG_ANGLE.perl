@@ -2,7 +2,7 @@
 
 $|++; # turn on autoflush, qtstalker needs this to know when data is finished being sent/recieved
 
-print STDOUT "LINEARREG_ANGLE,LINEARREG_ANGLE,Close,14"; # create the LINEARREG_ANGLE line
+print STDOUT "INDICATOR,LINEARREG_ANGLE,LINEARREG_ANGLE,Close,14"; # create the LINEARREG_ANGLE line
 $a = <STDIN>; # get the return code
 chomp($a); # remove the \n
 if ($a ne "0")

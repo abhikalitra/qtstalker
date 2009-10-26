@@ -2,7 +2,7 @@
 
 $|++; # turn on autoflush, qtstalker needs this to know when data is finished being sent/recieved
 
-print STDOUT "VAR,VAR,Close,5,1"; # create the VAR line
+print STDOUT "INDICATOR,VAR,VAR,Close,5,1"; # create the VAR line
 $a = <STDIN>; # get the return code
 chomp($a); # remove the \n
 if ($a ne "0")

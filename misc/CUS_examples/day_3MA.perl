@@ -7,44 +7,40 @@ $|++; # turn on autoflush, qtstalker needs this to know when data is finished be
 
 
 # create the day indicator
-print STDOUT "REF,Day,Close,0"; 
+print STDOUT "INDICATOR,REF,Day,Close,0"; 
 $a = <STDIN>; # get the return code
 chomp($a); # remove the \n
 if ($a ne "0")
 {
   exit; # we have a non zero return code, exit script
 }
-
 
 # create the 20 SMA indicator
-print STDOUT "SMA,20MA,Close,20"; 
+print STDOUT "INDICATOR,SMA,20MA,Close,20"; 
 $a = <STDIN>; # get the return code
 chomp($a); # remove the \n
 if ($a ne "0")
 {
   exit; # we have a non zero return code, exit script
 }
-
 
 # create the 50 SMA indicator
-print STDOUT "SMA,50MA,Close,50"; 
+print STDOUT "INDICATOR,SMA,50MA,Close,50"; 
 $a = <STDIN>; # get the return code
 chomp($a); # remove the \n
 if ($a ne "0")
 {
   exit; # we have a non zero return code, exit script
 }
-
 
 # create the 200 SMA indicator
-print STDOUT "SMA,200MA,Close,200";
+print STDOUT "INDICATOR,SMA,200MA,Close,200";
 $a = <STDIN>; # get the return code
 chomp($a); # remove the \n
 if ($a ne "0")
 {
   exit; # we have a non zero return code, exit script
 }
-
 
 # plot 200 SMA, color ligth yellow,
 # print 200SMA - 50SMA - 20SMA - Day, day is on the foreground
@@ -56,7 +52,6 @@ if ($a ne "0")
   exit; # we have a non zero return code, exit script
 }
 
-
 #plot 50 SMA, color purple
 print STDOUT "PLOT,50MA,50MA,#9041ff,Dash";
 $a = <STDIN>; # get the return code
@@ -66,7 +61,6 @@ if ($a ne "0")
   exit; # we have a non zero return code, exit script
 }
 
-
 # plot 20 SMA, color green
 print STDOUT "PLOT,20MA,20MA,#09ff00,Dash";
 $a = <STDIN>; # get the return code
@@ -75,7 +69,6 @@ if ($a ne "0")
 {
   exit; # we have a non zero return code, exit script
 }
-
 
 # plot day, color red
 print STDOUT "PLOT,Day,Day,Red,Line";

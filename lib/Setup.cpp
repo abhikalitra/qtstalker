@@ -242,67 +242,67 @@ void Setup::setupConfigDefaults ()
     config.setData(Config::ShowSidePanel, d);
   }
 
-  config.getData(Config::ShowQuitBtn, d);
+  config.getData(Config::ShowQuitButton, d);
   if (d.isEmpty())
   {
     d = "1";
-    config.setData(Config::ShowQuitBtn, d);
+    config.setData(Config::ShowQuitButton, d);
   }
 
-  config.getData(Config::ShowPrefBtn, d);
+  config.getData(Config::ShowPrefButton, d);
   if (d.isEmpty())
   {
     d = "1";
-    config.setData(Config::ShowPrefBtn, d);
+    config.setData(Config::ShowPrefButton, d);
   }
 
-  config.getData(Config::ShowSidePanelBtn, d);
+  config.getData(Config::ShowSidePanelButton, d);
   if (d.isEmpty())
   {
     d = "1";
-    config.setData(Config::ShowSidePanelBtn, d);
+    config.setData(Config::ShowSidePanelButton, d);
   }
 
-  config.getData(Config::ShowGridBtn, d);
+  config.getData(Config::ShowGridButton, d);
   if (d.isEmpty())
   {
     d = "1";
-    config.setData(Config::ShowGridBtn, d);
+    config.setData(Config::ShowGridButton, d);
   }
 
-  config.getData(Config::ShowScaleToScreenBtn, d);
+  config.getData(Config::ShowScaleToScreenButton, d);
   if (d.isEmpty())
   {
     d = "1";
-    config.setData(Config::ShowScaleToScreenBtn, d);
+    config.setData(Config::ShowScaleToScreenButton, d);
   }
 
-  config.getData(Config::ShowCrosshairBtn, d);
+  config.getData(Config::ShowCrosshairButton, d);
   if (d.isEmpty())
   {
     d = "1";
-    config.setData(Config::ShowCrosshairBtn, d);
+    config.setData(Config::ShowCrosshairButton, d);
   }
 
-  config.getData(Config::ShowDrawModeBtn, d);
+  config.getData(Config::ShowDrawModeButton, d);
   if (d.isEmpty())
   {
     d = "1";
-    config.setData(Config::ShowDrawModeBtn, d);
+    config.setData(Config::ShowDrawModeButton, d);
   }
 
-  config.getData(Config::ShowNewIndicatorBtn, d);
+  config.getData(Config::ShowNewIndicatorButton, d);
   if (d.isEmpty())
   {
     d = "1";
-    config.setData(Config::ShowNewIndicatorBtn, d);
+    config.setData(Config::ShowNewIndicatorButton, d);
   }
 
-  config.getData(Config::ShowDataWindowBtn, d);
+  config.getData(Config::ShowDataWindowButton, d);
   if (d.isEmpty())
   {
     d = "1";
-    config.setData(Config::ShowDataWindowBtn, d);
+    config.setData(Config::ShowDataWindowButton, d);
   }
 
   config.getData(Config::ShowHelpButton, d);
@@ -312,46 +312,46 @@ void Setup::setupConfigDefaults ()
     config.setData(Config::ShowHelpButton, d);
   }
 
-  config.getData(Config::ShowCmps60Btn, d);
+  config.getData(Config::ShowCmps60Button, d);
   if (d.isEmpty())
   {
     d = "0";
-    config.setData(Config::ShowCmps60Btn, d);
+    config.setData(Config::ShowCmps60Button, d);
   }
 
-  config.getData(Config::ShowCmps15Btn, d);
+  config.getData(Config::ShowCmps15Button, d);
   if (d.isEmpty())
   {
     d = "0";
-    config.setData(Config::ShowCmps15Btn, d);
+    config.setData(Config::ShowCmps15Button, d);
   }
 
-  config.getData(Config::ShowCmps5Btn, d);
+  config.getData(Config::ShowCmps5Button, d);
   if (d.isEmpty())
   {
     d = "0";
-    config.setData(Config::ShowCmps5Btn, d);
+    config.setData(Config::ShowCmps5Button, d);
   }
 
-  config.getData(Config::ShowCmpsDayBtn, d);
+  config.getData(Config::ShowCmpsDayButton, d);
   if (d.isEmpty())
   {
     d = "1";
-    config.setData(Config::ShowCmpsDayBtn, d);
+    config.setData(Config::ShowCmpsDayButton, d);
   }
 
-  config.getData(Config::ShowCmpsWkyBtn, d);
+  config.getData(Config::ShowCmpsWkyButton, d);
   if (d.isEmpty())
   {
     d = "1";
-    config.setData(Config::ShowCmpsWkyBtn, d);
+    config.setData(Config::ShowCmpsWkyButton, d);
   }
 
-  config.getData(Config::ShowCmpsMtyBtn, d);
+  config.getData(Config::ShowCmpsMtyButton, d);
   if (d.isEmpty())
   {
     d = "1";
-    config.setData(Config::ShowCmpsMtyBtn, d);
+    config.setData(Config::ShowCmpsMtyButton, d);
   }
 
   config.getData(Config::ShowRecentCharts, d);

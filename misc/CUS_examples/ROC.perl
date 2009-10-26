@@ -2,7 +2,7 @@
 
 $|++; # turn on autoflush, qtstalker needs this to know when data is finished being sent/recieved
 
-print STDOUT "ROC,ROC,Close,10"; # create the ROC line
+print STDOUT "INDICATOR,ROC,ROC,Close,10"; # create the ROC line
 $a = <STDIN>; # get the return code
 chomp($a); # remove the \n
 if ($a ne "0")

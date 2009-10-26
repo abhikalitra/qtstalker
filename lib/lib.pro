@@ -40,6 +40,7 @@ HEADERS += Indicator.h
 HEADERS += CODialog.h
 HEADERS += IndicatorSettings.h
 HEADERS += IndicatorDialog.h
+HEADERS += IndicatorScript.h
 
 
    
@@ -70,6 +71,7 @@ SOURCES += Indicator.cpp
 SOURCES += CODialog.cpp
 SOURCES += IndicatorSettings.cpp
 SOURCES += IndicatorDialog.cpp
+SOURCES += IndicatorScript.cpp
 
 
    

@@ -2,7 +2,7 @@
 
 $|++; # turn on autoflush, qtstalker needs this to know when data is finished being sent/recieved
 
-print STDOUT "MINUS_DI,-DI,14"; # create the -di line
+print STDOUT "INDICATOR,MINUS_DI,-DI,14"; # create the -di line
 $a = <STDIN>; # get the return code
 chomp($a); # remove the \n
 if ($a ne "0")
@@ -10,7 +10,7 @@ if ($a ne "0")
   exit; # we have a non zero return code, exit script
 }
 
-print STDOUT "PLUS_DI,+DI,14"; # create the +di line
+print STDOUT "INDICATOR,PLUS_DI,+DI,14"; # create the +di line
 $a = <STDIN>; # get the return code
 chomp($a); # remove the \n
 if ($a ne "0")
@@ -18,7 +18,7 @@ if ($a ne "0")
   exit; # we have a non zero return code, exit script
 }
 
-print STDOUT "ADX,ADX,14"; # create the adx line
+print STDOUT "INDICATOR,ADX,ADX,14"; # create the adx line
 $a = <STDIN>; # get the return code
 chomp($a); # remove the \n
 if ($a ne "0")

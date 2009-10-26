@@ -19,20 +19,14 @@
  *  USA.
  */
 
-#include "PlotLine.h"
 #include "BarData.h"
-#include "IndicatorSettings.h"
-
-
+#include "IndicatorScript.h"
 
 #include <QProcess>
 #include <QList>
 #include <QString>
 #include <QStringList>
 #include <QObject>
-#include <QHash>
-
-
 
 
 class ExScript : public QObject
@@ -43,196 +37,20 @@ class ExScript : public QObject
     void signalDone ();
   
   public:
-    enum IndicatorName
+    enum Function
     {
-      ACOS,
-      AD,
-      ADD,
-      ADOSC,
-      ADX,
-      ADXR,
-      APO,
-      AROON,
-      AROONOSC,
-      ASIN,
-      ATAN,
-      ATR,
-      AVGPRICE,
-      BARS,
-      BBANDS,
-      BETA,
-      BOP,
-      CANDLES,
-      CCI,
-      CDL2CROWS,
-      CDL3BLACKCROWS,
-      CDL3INSIDE,
-      CDL3LINESTRIKE,
-      CDL3OUTSIDE,
-      CDL3STARSINSOUTH,
-      CDL3WHITESOLDIERS,
-      CDLABANDONEDBABY,
-      CDLADVANCEBLOCK,
-      CDLBELTHOLD,
-      CDLBREAKAWAY,
-      CDLCLOSINGMARUBOZU,
-      CDLCONCEALBABYSWALL,
-      CDLCOUNTERATTACK,
-      CDLDARKCLOUDCOVER,
-      CDLDOJI,
-      CDLDOJISTAR,
-      CDLDRAGONFLYDOJI,
-      CDLENGULFING,
-      CDLEVENINGDOJISTAR,
-      CDLEVENINGSTAR,
-      CDLGAPSIDESIDEWHITE,
-      CDLGRAVESTONEDOJI,
-      CDLHAMMER,
-      CDLHANGINGMAN,
-      CDLHARAMI,
-      CDLHARAMICROSS,
-      CDLHIGHWAVE,
-      CDLHIKKAKE,
-      CDLHIKKAKEMOD,
-      CDLHOMINGPIGEON,
-      CDLIDENTICAL3CROWS,
-      CDLINNECK,
-      CDLINVERTEDHAMMER,
-      CDLKICKING,
-      CDLKICKINGBYLENGTH,
-      CDLLADDERBOTTOM,
-      CDLLONGLEGGEDDOJI,
-      CDLLONGLINE,
-      CDLMARUBOZU,
-      CDLMATCHINGLOW,
-      CDLMATHOLD,
-      CDLMORNINGDOJISTAR,
-      CDLMORNINGSTAR,
-      CDLONNECK,
-      CDLPIERCING,
-      CDLRICKSHAWMAN,
-      CDLRISEFALL3METHODS,
-      CDLSEPARATINGLINES,
-      CDLSHOOTINGSTAR,
-      CDLSHORTLINE,
-      CDLSPINNINGTOP,
-      CDLSTALLEDPATTERN,
-      CDLSTICKSANDWICH,
-      CDLTAKURI,
-      CDLTASUKIGAP,
-      CDLTHRUSTING,
-      CDLTRISTAR,
-      CDLUNIQUE3RIVER,
-      CDLUPSIDEGAP2CROWS,
-      CDLXSIDEGAP3METHODS,
-      CEIL,
-      CMO,
-      COLOR,
-      COMPARE,
-      COMPARE2,
-      CORREL,
-      COS,
-      COSH,
-      DEMA,
-      DIV,
-      DX,
-      EMA,
-      EXP,
-      FLOOR,
-      HT_DCPERIOD,
-      HT_DCPHASE,
-      HT_PHASOR,
-      HT_SINE,
-      HT_TRENDLINE,
-      HT_TRENDMODE,
-      KAMA,
-      LINEARREG,
-      LINEARREG_ANGLE,
-      LINEARREG_INTERCEPT,
-      LINEARREG_SLOPE,
-      LN,
-      LOG10,
-      MACD,
-      MACDEXT,
-      MACDFIX,
-      MAMA,
-      MAVP,
-      MAX,
-      MAXINDEX,
-      MEDPRICE,
-      MFI,
-      MIDPOINT,
-      MIDPRICE,
-      MIN,
-      MININDEX,
-      MINMAX,
-      MINMAXINDEX,
-      MINUS_DI,
-      MINUS_DM,
-      MOM,
-      MULT,
-      NATR,
-      NORMAL,
-      OBV,
-      PLUS_DI,
-      PLUS_DM,
-      PPO,
-      REF,
-      ROC,
-      ROCP,
-      ROCR,
-      ROCR100,
-      RSI,
-      SAR,
-      SAREXT,
-      SIN,
-      SINH,
-      SMA,
-      SQRT,
-      STDDEV,
-      STOCH,
-      STOCHF,
-      STOCHRSI,
-      SUB,
-      SUM,
-      SYMBOL,
-      T3,
-      TAN,
-      TANH,
-      TEMA,
-      TRANGE,
-      TRIMA,
-      TRIX,
-      TSF,
-      TYPPRICE,
-      ULTOSC,
-      VAR,
-      WCLPRICE,
-      WILLR,
-      WMA
+      INDICATOR, // get a library indicator
+      GET_INDICATOR, // pass indicator data to the calling script
+      SET_INDICATOR, // pass indicator data from script to qtstalker
+      PLOT // plot the desired indicator
     };
-    
+
     ExScript ();
     ~ExScript ();
+    void clear ();
     void calculate (QString &command);
-    void sendBarData (QStringList &l);
-    int plot (QStringList &l);
-    int parseIndicator (QStringList &l);
     void getLines (QList<PlotLine *> &);
     void setInput (BarData *bd);
-    void getIndicatorList (QStringList &l);
-    int getCDL (IndicatorSettings &, int); // CDL* functions
-    int getInput (IndicatorSettings &, int); // single input functions
-    int getInput2 (IndicatorSettings &, int); // 2 input functions
-    int getFieldInput (IndicatorSettings &, int); // price field input functions
-    int getBARS (IndicatorSettings &); // BARS function
-    int getCANDLES (IndicatorSettings &); // CANDLES function
-    int getCOLOR (IndicatorSettings &); // COLOR function
-    int getCOMPARE (IndicatorSettings &); // COMPARE function
-    int getCOMPARE2 (IndicatorSettings &); // COMPARE2 function
-    int getNORMAL (IndicatorSettings &); // Normalize function
-    int getREF (IndicatorSettings &); // REF function
-    int getSYMBOL (IndicatorSettings &); // SYMBOL function
 
   public slots:
     void readFromStdout ();
@@ -242,11 +60,7 @@ class ExScript : public QObject
   private:
     QProcess *proc;
     BarData *data;
-    QHash<QString, PlotLine *> tlines;
-    QStringList plotOrder;
-    QStringList opList;
-    QStringList indicatorList;
-    QStringList inputFieldList;
-    QStringList maList;
+    QStringList functionList;
+    IndicatorScript *is;
 };
 

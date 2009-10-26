@@ -4,36 +4,36 @@
 $|++;
 
 # get the Candles
-print STDOUT "CANDLES,candles,dimgray";
+print STDOUT "INDICATOR,CANDLES,candles,dimgray";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
 # get today's Close
-print STDOUT "REF,close_0,Close,0";
+print STDOUT "INDICATOR,REF,close_0,Close,0";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
 # get yesterday's Close
-print STDOUT "REF,close_1,Close,1";
+print STDOUT "INDICATOR,REF,close_1,Close,1";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
 # close is relatively up
-print STDOUT "COMPARE,relUp,close_0,close_1,>";
+print STDOUT "INDICATOR,COMPARE,relUp,close_0,close_1,>";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
 # close is relatively down
-print STDOUT "COMPARE,relDown,close_0,close_1,<";
+print STDOUT "INDICATOR,COMPARE,relDown,close_0,close_1,<";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
 # close is equal
-print STDOUT "COMPARE,relEqual,close_0,close_1,=";
+print STDOUT "INDICATOR,COMPARE,relEqual,close_0,close_1,=";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
-print STDOUT "COLOR,relUp,candles,1,green";
+print STDOUT "INDICATOR,COLOR,relUp,candles,1,green";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
-print STDOUT "COLOR,relDown,candles,1,red";
+print STDOUT "INDICATOR,COLOR,relDown,candles,1,red";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
-print STDOUT "COLOR,relEqual,candles,1,blue";
+print STDOUT "INDICATOR,COLOR,relEqual,candles,1,blue";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
 print STDOUT "PLOT,candles,Candle,dimgray,Candle";

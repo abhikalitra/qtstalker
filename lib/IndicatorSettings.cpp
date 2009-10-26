@@ -27,7 +27,6 @@
 
 IndicatorSettings::IndicatorSettings ()
 {
-  clear();
 }
 
 void IndicatorSettings::addItem (QString &name, int type, QString &val)
@@ -122,11 +121,11 @@ void IndicatorSettings::parse (QString &s)
 void IndicatorSettings::load (QStringList &l)
 {
   int loop;
-  for (loop = 1; loop < l.count(); loop++)
+  for (loop = 2; loop < l.count(); loop++)
   {
-    Item item = list.at(loop - 1);
+    Item item = list.at(loop - 2);
     item.val = l[loop];
-    list.replace(loop - 1, item);
+    list.replace(loop - 2, item);
   }
 }
 
