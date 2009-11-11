@@ -27,18 +27,22 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QHash>
-#include <QCoreApplication>
 #include <QDir>
+#include <QObject>
 
 
 
-CSV::CSV (CSVRule &r)
+CSV::CSV ()
 {
-  rule = r;
-  timer = 0;
-
   QDir dir(QDir::homePath());
-  QString s = dir.absolutePath() + "/.CSV/quotes.sqlite";
+  QString home = dir.absolutePath() + "/.CSV";
+  if (! dir.exists(home))
+  {
+    if (! dir.mkdir(home))
+      qDebug() << "CSV::Unable to create" << home;
+  }
+
+  QString s = home + "/quotes.sqlite";
 
   QSqlDatabase db = QSqlDatabase::database("quotes");
   if (! db.isValid())
@@ -63,215 +67,245 @@ CSV::CSV (CSVRule &r)
   if (q.lastError().isValid())
     qDebug() << "CSV::CSV:createSymbolIndexTable: " << q.lastError().text();
 
-  rule.getInterval(s);
-  interval = s.toInt();
-  if (interval)
-  {
-    timer = new QTimer(this);
-    connect(timer, SIGNAL(timeout()), this, SLOT(import()));
-    timer->start(interval * 1000);
-  }
+  clear();
 }
 
-void CSV::importSingleShot ()
+void CSV::clear ()
 {
-  QTimer::singleShot(200, this, SLOT(import()));
-}
-
-void CSV::status ()
-{
-  QString s;
-  rule.getName(s);
-
-  if (timer)
-    emit signalActive(s);
-  else
-    emit signalInactive(s);
+  date.clear();
+  time.clear();
+  symbol.clear();
+  open = "0";
+  high = "0";
+  low = "0";
+  close = "0";
+  volume = "0";
+  oi = "0";
 }
 
 void CSV::import ()
 {
-  QString ts, ts2;
-
-  if (! timer)
+  if (inputFile.isEmpty())
   {
-    rule.getName(ts);
-    emit signalActive(ts);
-    QCoreApplication::processEvents(QEventLoop::AllEvents);
+    importQuote();
+    return;
   }
 
-  QStringList fileList;
-  rule.getFileList(fileList);
+  QString ts, ts2;
+  int records = 0;
 
   QStringList fieldList;
-  rule.getFormat(ts);
-  fieldList = ts.split(",");
+  fieldList = format.split(",");
 
-  QString dateFormat;
-  rule.getDateFormat(dateFormat);
-  
-  QString timeFormat;
-  rule.getTimeFormat(timeFormat);
-  
-  QString delim;
-  rule.getDelimiter(delim);
-
-  int loop;
-  int records = 0;
-  for (loop = 0; loop < (int) fileList.count(); loop++)
+  QFile f(inputFile);
+  if (! f.open(QIODevice::ReadOnly))
   {
-    QFile f(fileList[loop]);
-    if (! f.open(QIODevice::ReadOnly))
+    qDebug() << "Error opening file" << inputFile;
+    return;
+  }
+  QTextStream stream(&f);
+
+  int lineCount = 0;
+  QFileInfo fi(f);
+  QString fName = fi.fileName();
+
+  typedef QList<Bar> BarList;
+  QHash<QString, BarList *> symbolHash;
+
+  while(stream.atEnd() == 0)
+  {
+    ts = stream.readLine();
+    QStringList l = ts.split(delimiter);
+
+    // check if the # of fieldlist and data fields match
+    lineCount++;
+
+    if (l.count() != fieldList.count())
     {
-      emit signalMessage(QString(tr("Error opening file ") + fileList[loop]));
+      qDebug() << "Line:" << lineCount << "Number of fields in file (" << l.count() << ") != rule format (" << fieldList.count() << ")";
       continue;
     }
-    QTextStream stream(&f);
 
-    emit signalMessage(QString(tr("Importing file ") + fileList[loop]) + QDateTime::currentDateTime().toString(" yyyy-MM-dd HH:mm:ss.sss"));
-
-    int lineCount = 0;
-    QFileInfo fi(f);
-    QString fName = fi.fileName();
-
-    typedef QList<Bar> BarList;
-    QHash<QString, BarList *> symbolHash;
-
-    while(stream.atEnd() == 0)
+    int fieldLoop;
+    bool flag = FALSE;
+    bool dateFlag = FALSE;
+    Bar r;
+    for (fieldLoop = 0; fieldLoop < (int) fieldList.count(); fieldLoop++)
     {
-      ts = stream.readLine();
-      QStringList l = ts.split(delim);
-
-      // check if the # of fieldlist and data fields match
-      lineCount++;
-      
-      if (l.count() != fieldList.count())
+      QString listItem = l[fieldLoop].trimmed();
+      QByteArray ba;
+      ba.append(fieldList[fieldLoop]);
+      switch (ba[0])
       {
-        ts = QString(fName + " - " + tr("Line") + ": " + QString::number(lineCount) + " Number of fields in file (" + QString::number(l.count())
-                     + ") != rule format (" + QString::number(fieldList.count()) + ")");
-        emit signalMessage(ts);
-        continue;
-      }
-      
-      int fieldLoop;
-      bool flag = FALSE;
-      bool dateFlag = FALSE;
-      Bar r;
-      for (fieldLoop = 0; fieldLoop < (int) fieldList.count(); fieldLoop++)
-      {
-        QString listItem = l[fieldLoop].trimmed();
-	
-        if (fieldList[fieldLoop].contains("Date"))
-	{
-          QDateTime dt = QDateTime::fromString(listItem, dateFormat);
-          if (! dt.isValid())
-	  {
-            ts = QString(fName + " - " + tr("Line") + ": " + QString::number(lineCount) + " " + tr("Bad date") + ": " + listItem);
-            emit signalMessage(ts);
-	    flag = TRUE;
-	    break;
+	case 'D':
+	  if (setBarDate(r, listItem))
+          {
+            qDebug() << "Line:" << lineCount << "Bad date" << listItem;
+            flag = TRUE;
 	  }
-	  
-          r.setDate(dt);
-          dateFlag = TRUE;
-	  continue;
-	}
-
-        if (fieldList[fieldLoop].contains("Time"))
-	{
-          QTime dt = QTime::fromString(listItem, timeFormat);
-          if (! dt.isValid())
-	  {
-            ts = QString(fName + " - " + tr("Line") + ": " + QString::number(lineCount) + " " + tr("Bad time") + ": " + listItem);
-            emit signalMessage(ts);
-	    flag = TRUE;
-	    break;
-	  }
-	  
-          r.setTime(dt);
-	  continue;
-	}
-
-	// remove any unwanted characters in the symbol name
-        if (fieldList[fieldLoop] == "Symbol")
-        {
-          listItem.replace(QString(" "), QString("_")); // replace spaces
-          listItem.replace(QString("-"), QString("_")); // replace minus signs
-          listItem.replace(QString("&"), QString("_")); // replace ampersand
-          listItem.replace(QString("."), QString("_")); // replace dot
-          r.setSymbol(listItem);
-          continue;
-        }
-
-        // if we are here we have a number field to process
-        bool ok;
-        listItem.toDouble(&ok);
-        if (! ok)
-        {
-          ts = QString(fName + " - " + tr("Line") + ": " + QString::number(lineCount) + " " + tr("Bad value") + ": " + fieldList[fieldLoop]);
-          emit signalMessage(ts);
-	  flag = TRUE;
+	  else
+            dateFlag = TRUE;
 	  break;
-	}
-
-        r.setData(fieldList[fieldLoop], listItem);
-      }
-      
-      if (flag)
-	continue;
-
-      if (! dateFlag)
-      {
-        emit signalMessage(QString(tr("Date error. Skipping line ") + QString::number(lineCount)));
-	continue;
-      }
-      
-      if (rule.getFileNameSymbol())
-      {
-	if (fi.suffix() == "txt" || fi.suffix() == "TXT")
-	  ts = fi.completeBaseName();
-	else
-          ts = fi.fileName();
-        r.setSymbol(ts);
-      }
-
-      if (symbolHash.contains(ts))
-      {
-        BarList *l = symbolHash.value(ts);
-        l->append(r);
-      }
-      else
-      {
-        BarList *l = new BarList;
-        l->append(r);
-        symbolHash.insert(ts, l);
+	case 'T':
+	  if (setBarTime(r, listItem))
+	  {
+            qDebug() << "Line:" << lineCount << "Bad time:" << listItem;
+	    flag = TRUE;
+	  }
+	  break;
+	case 'S':
+          setBarSymbol(r, listItem);
+          break;
+	case 'O':
+          if (setBarOpen(r, listItem))
+	  {
+            qDebug() << "Line:" << lineCount << "Bad value:" << listItem;
+	    flag = TRUE;
+          }
+	  break;
+	case 'H':
+          if (setBarHigh(r, listItem))
+	  {
+            qDebug() << "Line:" << lineCount << "Bad value:" << listItem;
+	    flag = TRUE;
+          }
+	  break;
+	case 'L':
+          if (setBarLow(r, listItem))
+	  {
+            qDebug() << "Line:" << lineCount << "Bad value:" << listItem;
+	    flag = TRUE;
+          }
+	  break;
+	case 'C':
+          if (setBarClose(r, listItem))
+	  {
+            qDebug() << "Line:" << lineCount << "Bad value:" << listItem;
+	    flag = TRUE;
+          }
+	  break;
+	case 'V':
+          if (setBarVolume(r, listItem))
+	  {
+            qDebug() << "Line:" << lineCount << "Bad value:" << listItem;
+	    flag = TRUE;
+          }
+	  break;
+	case 'I':
+          if (setBarOI(r, listItem))
+	  {
+            qDebug() << "Line:" << lineCount << "Bad value:" << listItem;
+	    flag = TRUE;
+          }
+	  break;
+	default:
+	  break;
       }
     }
 
-    f.close();
+    if (flag)
+      continue;
 
-    QHashIterator<QString, BarList *> it(symbolHash);
-    while (it.hasNext())
+    if (! dateFlag)
     {
-      it.next();
-      setChart(it.value());
-      records = records + it.value()->count();
-      emit signalMessage(QString(QString::number(records) + tr(" Records Processed")));
-    }    
+      qDebug() << "Date error. Skipping line" << lineCount;
+      continue;
+    }
 
-    qDeleteAll(symbolHash);
+    if (fi.suffix() == "txt" || fi.suffix() == "TXT")
+      ts = fi.completeBaseName();
+    else
+      ts = fi.fileName();
+    r.setSymbol(ts);
 
-    QCoreApplication::processEvents(QEventLoop::AllEvents);
+    if (symbolHash.contains(ts))
+    {
+      BarList *l = symbolHash.value(ts);
+      l->append(r);
+    }
+    else
+    {
+      BarList *l = new BarList;
+      l->append(r);
+      symbolHash.insert(ts, l);
+    }
   }
 
-  if (! timer)
+  f.close();
+
+  QHashIterator<QString, BarList *> it(symbolHash);
+  while (it.hasNext())
   {
-    rule.getName(ts);
-    emit signalInactive(ts);
+    it.next();
+    setChart(it.value());
+    records = records + it.value()->count();
   }
 
-  emit signalMessage(QString(tr("Done ") + QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss.sss")));
-  emit signalMessage(QString(QString::number(records) + tr(" Records Imported")));
+  qDeleteAll(symbolHash);
+
+  qDebug() << records << "Records Imported";
+}
+
+void CSV::importQuote ()
+{
+  Bar r;
+
+  if (setBarDate(r, date))
+  {
+    qDebug() << "Bad date" << date;
+    return;
+  }
+
+  if (setBarTime(r, time))
+  {
+    qDebug() << "Bad time" << time;
+    return;
+  }
+
+  setBarSymbol(r, symbol);
+
+  if (setBarOpen(r, open))
+  {
+    qDebug() << "Bad open value" << open;
+    return;
+  }
+
+  if (setBarHigh(r, high))
+  {
+    qDebug() << "Bad high value" << high;
+    return;
+  }
+
+  if (setBarLow(r, low))
+  {
+    qDebug() << "Bad low value" << low;
+    return;
+  }
+
+  if (setBarClose(r, close))
+  {
+    qDebug() << "Bad close value" << close;
+    return;
+  }
+
+  if (setBarVolume(r, volume))
+  {
+    qDebug() << "Bad volume value" << volume;
+    return;
+  }
+
+  if (setBarOI(r, oi))
+  {
+    qDebug() << "Bad oi value" << oi;
+    return;
+  }
+
+  QList<Bar> *l = new QList<Bar>;
+  l->append(r);
+  setChart(l);
+  delete l;
+
+  qDebug() << "1 quote imported";
 }
 
 void CSV::setChart (QList<Bar> *bars)
@@ -280,10 +314,9 @@ void CSV::setChart (QList<Bar> *bars)
     return;
 
   Bar bar = bars->at(0);
-  QString symbol, format;
-  bar.getSymbol(symbol);
+  QString tsymbol;
+  bar.getSymbol(tsymbol);
 
-  rule.getBarFormat(format);
   QStringList formatList = format.split(",");
 
   // check to see if symbol exists
@@ -295,7 +328,7 @@ void CSV::setChart (QList<Bar> *bars)
   }
 
   QSqlQuery q(db);
-  QString ts = "SELECT * FROM symbolIndex WHERE symbol='" + symbol + "'";
+  QString ts = "SELECT * FROM symbolIndex WHERE symbol='" + tsymbol + "'";
   q.exec(ts);
   if (q.lastError().isValid())
   {
@@ -307,7 +340,7 @@ void CSV::setChart (QList<Bar> *bars)
   if (! q.next())
   {
     // new symbol, create new table for it
-    ts = "CREATE TABLE IF NOT EXISTS " + symbol + " (date DATETIME PRIMARY KEY UNIQUE";
+    ts = "CREATE TABLE IF NOT EXISTS " + tsymbol + " (date DATETIME PRIMARY KEY UNIQUE";
     ts.append(", open REAL, high REAL, low REAL, close REAL, volume INT, oi INT)");
     q.exec(ts);
     if (q.lastError().isValid())
@@ -318,7 +351,7 @@ void CSV::setChart (QList<Bar> *bars)
     }
 
     // add new symbol entry into the symbol index table
-    ts = "REPLACE INTO symbolIndex (symbol) VALUES('" + symbol + "')";
+    ts = "REPLACE INTO symbolIndex (symbol) VALUES('" + tsymbol + "')";
     q.exec(ts);
     if (q.lastError().isValid())
     {
@@ -331,14 +364,14 @@ void CSV::setChart (QList<Bar> *bars)
   db.transaction();
 
   int loop;
-  QString date;
+  QString tdate;
   for (loop = 0; loop < bars->count(); loop++)
   {
     Bar bar = bars->at(loop);
-    bar.getDateTimeString(date);
+    bar.getDateTimeString(tdate);
 
-    ts = "REPLACE INTO " + symbol + " VALUES('" + date + "'";
-    
+    ts = "REPLACE INTO " + tsymbol + " VALUES('" + tdate + "'";
+
     QString k = "Open";
     QString d;
     bar.getData(k, d);
@@ -391,6 +424,198 @@ void CSV::setChart (QList<Bar> *bars)
   }
 
   db.commit();
+}
+
+void CSV::setFormat (QString &d)
+{
+  format = d;
+}
+
+void CSV::setDateFormat (QString &d)
+{
+  dateFormat = d;
+}
+
+void CSV::setTimeFormat (QString &d)
+{
+  timeFormat = d;
+}
+
+void CSV::setDelimiter (QString &d)
+{
+  delimiter = d;
+}
+
+void CSV::setInputFile (QString &d)
+{
+  inputFile = d;
+}
+
+void CSV::setDate (QString &d)
+{
+  date = d;
+}
+
+void CSV::setTime (QString &d)
+{
+  time = d;
+}
+
+void CSV::setOpen (QString &d)
+{
+  open = d;
+}
+
+void CSV::setHigh (QString &d)
+{
+  high = d;
+}
+
+void CSV::setLow (QString &d)
+{
+  low = d;
+}
+
+void CSV::setClose (QString &d)
+{
+  close = d;
+}
+
+void CSV::setVolume (QString &d)
+{
+  volume = d;
+}
+
+void CSV::setOI (QString &d)
+{
+  oi = d;
+}
+
+void CSV::setSymbol (QString &d)
+{
+  symbol = d;
+}
+
+int CSV::setBarDate (Bar &r, QString &d)
+{
+  int flag = FALSE;
+  QDateTime dt = QDateTime::fromString(d, dateFormat);
+  if (! dt.isValid())
+    flag = TRUE;
+  else
+    r.setDate(dt);
+  return flag;
+}
+
+int CSV::setBarTime (Bar &r, QString &d)
+{
+  int flag = FALSE;
+  QTime dt = QTime::fromString(d, timeFormat);
+  if (! dt.isValid())
+    flag = TRUE;
+  else
+    r.setTime(dt);
+  return flag;
+}
+
+void CSV::setBarSymbol (Bar &r, QString &d)
+{
+  // remove any unwanted characters in the symbol name
+  d.replace(QString(" "), QString("_")); // replace spaces
+  d.replace(QString("-"), QString("_")); // replace minus signs
+  d.replace(QString("&"), QString("_")); // replace ampersand
+  d.replace(QString("."), QString("_")); // replace dot
+  r.setSymbol(d);
+}
+
+int CSV::setBarOpen (Bar &r, QString &d)
+{
+  int flag = FALSE;
+  bool ok;
+  d.toDouble(&ok);
+  if (! ok)
+    flag = TRUE;
+  else
+  {
+    QString k("Open");
+    r.setData(k, d);
+  }
+  return flag;
+}
+
+int CSV::setBarHigh (Bar &r, QString &d)
+{
+  int flag = FALSE;
+  bool ok;
+  d.toDouble(&ok);
+  if (! ok)
+    flag = TRUE;
+  else
+  {
+    QString k("High");
+    r.setData(k, d);
+  }
+  return flag;
+}
+
+int CSV::setBarLow (Bar &r, QString &d)
+{
+  int flag = FALSE;
+  bool ok;
+  d.toDouble(&ok);
+  if (! ok)
+    flag = TRUE;
+  else
+  {
+    QString k("Low");
+    r.setData(k, d);
+  }
+  return flag;
+}
+
+int CSV::setBarClose (Bar &r, QString &d)
+{
+  int flag = FALSE;
+  bool ok;
+  d.toDouble(&ok);
+  if (! ok)
+    flag = TRUE;
+  else
+  {
+    QString k("Close");
+    r.setData(k, d);
+  }
+  return flag;
+}
+
+int CSV::setBarVolume (Bar &r, QString &d)
+{
+  int flag = FALSE;
+  bool ok;
+  d.toDouble(&ok);
+  if (! ok)
+    flag = TRUE;
+  else
+  {
+    QString k("Volume");
+    r.setData(k, d);
+  }
+  return flag;
+}
+
+int CSV::setBarOI (Bar &r, QString &d)
+{
+  int flag = FALSE;
+  bool ok;
+  d.toDouble(&ok);
+  if (! ok)
+    flag = TRUE;
+  else
+  {
+    QString k("OI");
+    r.setData(k, d);
+  }
+  return flag;
 }
 
 
