@@ -104,20 +104,57 @@
       </table>
       <h2 id="operation">Operation</h2>
       <p>
-        Double-click an item in the "Rule" column to show the edit dialog.
+        "CSV" is a command-line tool. This enables you greater flexibility and
+        automation for your data loading.
       </p>
       <p>
-        Double-click in the "Status" column will activate that rule once.
+        Here are the switches and some examples of usage:
       </p>
+      <pre>
+-S is symbol
 
+-D is date
+
+-T is time
+
+-O is open
+
+-H is high
+
+-L is low
+
+-C is close
+
+-V is volume
+
+-I is open interest
+
+-i is an input file containing quotes
+
+-d is date format
+
+-t is time format
+
+-f is csv field format 'D,O,H,L,C,V,I'
+
+-s is the delimiter
+      </pre>
       <p>
-        Setting the time interval to greater than zero on a rule will set that
-        rule to active for as long as the CSV application is running.
+        Some examples:
       </p>
-      <p>
-        Setting the timer to zero will set the status to inactive (i.e. it will
-        run once, only when activated).
-      </p>
+      <pre>
+to import a csv file with same symbol 'FOO', an example would be:
+CSV -i /home/user/csv.txt -d yyyy/MM/dd
+
+same as above but using the filename for Symbol (i.e. bhp):
+CSV -i /home/user/bhp.txt -d yyyy/MM/dd -f D,O,H,L,C,V,I
+
+to import a csv file with multiple symbols, an example would be:
+CSV -i /home/user/csv.txt -d yyyy/MM/dd -f S,D,O,H,L,C,V,I -s ,
+
+to import a single quote, an example would be:
+CSV -d yyyy/MM/dd -s , -S FOO -D 2009/11/11 -O 100.5 -H 150.75 -L 50 -C 125.75 -V 100000 -I 123456
+      </pre>
       <h2 id="todo">To do</h2>
       <pre>
 * Get some content from the old "cvs.html" doc.
