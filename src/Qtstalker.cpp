@@ -75,9 +75,9 @@ QtstalkerApp::QtstalkerApp(QString session)
   // setup the disk environment and init databases
   Setup setup;
   setup.setupDirectories();
-  
+
   DataBase db(session);
-  
+
   setup.setup();
 
   assistant = new Assistant;
@@ -85,7 +85,7 @@ QtstalkerApp::QtstalkerApp(QString session)
   createActions();
   createMenuBar();
   createToolBars();
-  
+
   statusbar = statusBar();
 
   // slider
@@ -95,7 +95,7 @@ QtstalkerApp::QtstalkerApp(QString session)
   slider->setToolTip(tr("Scroll Chart"));
   slider->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding));
   statusbar->addPermanentWidget(slider, 0);
-  
+
   baseWidget = new QWidget;
   setCentralWidget (baseWidget);
 
@@ -147,16 +147,16 @@ QtstalkerApp::QtstalkerApp(QString session)
   vbox->setMargin(0);
   vbox->setSpacing(0);
   navBase->setLayout(vbox);
-  
+
   // setup the data panel splitter
   dpSplitter = new QSplitter;
   dpSplitter->setOrientation(Qt::Vertical);
   vbox->addWidget(dpSplitter);
- 
+
   // setup the side panels
   navTab = new QTabWidget;
   dpSplitter->addWidget(navTab);
-  
+
   // setup the data panel area
   infoLabel = new QTextEdit;
   dpSplitter->addWidget(infoLabel);
@@ -167,13 +167,13 @@ QtstalkerApp::QtstalkerApp(QString session)
   initGroupNav();
   initIndicatorNav();
 //  initTestNav();
-//  initScannerNav();  
+//  initScannerNav();
 
   // setup the indicator server
   script = new ExScript;
   connect(script, SIGNAL(signalDone()), this, SLOT(slotScriptDone()));
 
-  
+
   // setup the initial indicators
   QStringList l;
   db.getActiveIndicatorList(l);
@@ -198,20 +198,20 @@ QtstalkerApp::QtstalkerApp(QString session)
   config.getData(Config::PlotSizes, split);
   config.getData(Config::NavAreaSize, navSplitter);
   config.getData(Config::DataPanelSize, dpSplitter);
-  
+
   // restore the size of the app
   QSize sz;
   config.getData(Config::MainWindowSize, sz);
   resize(sz);
-  
+
   // restore the position of the app
   QPoint p;
   config.getData(Config::MainWindowPos, p);
   move(p);
-  
+
   // catch any kill signals and try to save config
   connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(slotQuit()));
-  
+
   statusbar->showMessage(tr("Ready"), 2000);
 
   setUnifiedTitleAndToolBarOnMac(TRUE);
@@ -227,7 +227,7 @@ void QtstalkerApp::createActions ()
   action->setToolTip(tr("Quit Qtstalker (Ctrl+Q)"));
   connect(action, SIGNAL(activated()), qApp, SLOT(quit()));
   actionList.insert(Exit, action);
-  
+
   action = new QAction(QIcon(indicator), tr("New &Indicator"), this);
   action->setStatusTip(tr("Add a new indicator to chart (Ctrl+2)"));
   action->setToolTip(tr("Add a new indicator to chart (Ctrl+2)"));
@@ -291,7 +291,7 @@ void QtstalkerApp::createActions ()
   action->setChecked(config.getBool(Config::DrawMode));
   connect(action, SIGNAL(toggled(bool)), this, SIGNAL(signalDraw(bool)));
   actionList.insert(DrawMode, action);
-  
+
   action = new QAction(QIcon(crosshair), tr("Toggle Cross&hairs"), this);
   action->setStatusTip(tr("Toggle crosshairs (Ctrl+6)"));
   action->setToolTip(tr("Toggle crosshairs (Ctrl+6)"));
@@ -406,7 +406,7 @@ void QtstalkerApp::createToolBars ()
   QAction *action = toolbar2->addWidget(compressionCombo);
   actionList.insert(Compression, action);
 
-  // monthly compression button  
+  // monthly compression button
   QToolButton *b = new QToolButton; // compression button monthly
   b->setToolTip(tr("Monthly Compression"));
   connect(b, SIGNAL(clicked()), this, SLOT(cmpsBtnMClicked()));
@@ -416,7 +416,7 @@ void QtstalkerApp::createToolBars ()
   action->setVisible(config.getBool(Config::ShowCmpsMtyButton));
   b->setText("M");
 
-  // weekly compression button  
+  // weekly compression button
   b = new QToolButton; // compression button weekly
   b->setToolTip(tr("Weekly Compression"));
   connect(b, SIGNAL(clicked()), this, SLOT(cmpsBtnWClicked()));
@@ -426,7 +426,7 @@ void QtstalkerApp::createToolBars ()
   action->setVisible(config.getBool(Config::ShowCmpsWkyButton));
   b->setText("W");
 
-  // daily compression button  
+  // daily compression button
   b = new QToolButton; //   button daily
   b->setToolTip(tr("Daily Compression"));
   connect(b, SIGNAL(clicked()), this, SLOT(cmpsBtnDClicked()));
@@ -435,8 +435,8 @@ void QtstalkerApp::createToolBars ()
   actionList.insert(CompressionD, action);
   action->setVisible(config.getBool(Config::ShowCmpsDayButton));
   b->setText("D");
-  
-  // 60 minute compression button  
+
+  // 60 minute compression button
   b = new QToolButton; // compression button 60min
   b->setToolTip(tr("60min Compression"));
   connect(b, SIGNAL(clicked()), this, SLOT(cmpsBtn60Clicked()));
@@ -446,7 +446,7 @@ void QtstalkerApp::createToolBars ()
   action->setVisible(config.getBool(Config::ShowCmps60Button));
   b->setText("60");
 
-  // 15 minute compression button  
+  // 15 minute compression button
   b = new QToolButton; // compression button 15min
   b->setToolTip(tr("15min Compression"));
   connect(b, SIGNAL(clicked()), this, SLOT(cmpsBtn15Clicked()));
@@ -456,7 +456,7 @@ void QtstalkerApp::createToolBars ()
   action->setVisible(config.getBool(Config::ShowCmps15Button));
   b->setText("15");
 
-  // 5 minute compression button  
+  // 5 minute compression button
   b = new QToolButton; // compression button 5min
   b->setToolTip(tr("5min Compression"));
   connect(b, SIGNAL(clicked()), this, SLOT(cmpsBtn5Clicked()));
@@ -475,7 +475,7 @@ void QtstalkerApp::createToolBars ()
   zoomList.append(set);
   zoomPos = 0;
 
-  // zoom in button  
+  // zoom in button
   b = new QToolButton;
   connect(b, SIGNAL(clicked()), this, SLOT(slotZoomIn()));
   action = toolbar2->addWidget(b);
@@ -484,8 +484,8 @@ void QtstalkerApp::createToolBars ()
   b->setIcon(QIcon(zoomin_xpm));
   action->setEnabled(FALSE);
   action->setStatusTip(tr("Zoom In"));
-  
-  // zoom out button  
+
+  // zoom out button
   b = new QToolButton;
   connect(b, SIGNAL(clicked()), this, SLOT(slotZoomOut()));
   action = toolbar2->addWidget(b);
@@ -496,7 +496,7 @@ void QtstalkerApp::createToolBars ()
   action->setStatusTip(tr("Zoom Out"));
 
 
-  // PS1 button  
+  // PS1 button
   b = new QToolButton;
   connect(b, SIGNAL(clicked()), this, SLOT(ps1ButtonClicked()));
 
@@ -505,8 +505,8 @@ void QtstalkerApp::createToolBars ()
   config.getData(Config::PSButton1, ts);
   b->setToolTip(tr("Set Bar Spacing to ") + ts);
   b->setText(ts);
-  
-  // PS2 button  
+
+  // PS2 button
   b = new QToolButton;
   connect(b, SIGNAL(clicked()), this, SLOT(ps2ButtonClicked()));
 
@@ -515,11 +515,11 @@ void QtstalkerApp::createToolBars ()
   config.getData(Config::PSButton2, ts);
   b->setToolTip(tr("Set Bar Spacing to ") + ts);
   b->setText(ts);
-  
-  
+
+
   toolbar2->addSeparator();
 
-  //bars to load  
+  //bars to load
   barCount = new QSpinBox;
   barCount->setRange(1, 9999);
   barCount->setValue(config.getInt(Config::BarsToLoad));
@@ -566,11 +566,11 @@ void QtstalkerApp::slotQuit()
   }
   config.setData(Config::LastIndicatorUsed, l);
 
-  // save window sizes 
+  // save window sizes
   config.setData(Config::PlotSizes, split);
   config.setData(Config::DataPanelSize, dpSplitter);
   config.setData(Config::NavAreaSize, navSplitter);
-   
+
   // save app size and position
   QSize sz = size();
   config.setData(Config::MainWindowSize, sz);
@@ -699,9 +699,9 @@ void QtstalkerApp::loadChart (QString d)
 
   DataBase db;
   db.getChart(recordList);
-  
+
   script->setInput(recordList);
-  
+
   db.getActiveIndicatorList(indicatorList);
   ilPos = -1;
   slotScriptDone();
@@ -710,7 +710,7 @@ void QtstalkerApp::loadChart (QString d)
 QString QtstalkerApp::getWindowCaption ()
 {
   // update the main window text
-  
+
   QString caption = tr("Qtstalker");
 
   if (! recordList)
@@ -733,14 +733,14 @@ QString QtstalkerApp::getWindowCaption ()
 void QtstalkerApp::slotDataWindow ()
 {
   // show the datawindow dialog
-  
+
   if (! recordList)
     return;
 
   DataWindow *dw = new DataWindow(this);
   dw->setWindowTitle(getWindowCaption());
   dw->setBars(recordList);
-  
+
   DataBase db;
   QStringList l;
   db.getIndicatorList(l);
@@ -753,8 +753,9 @@ void QtstalkerApp::slotDataWindow ()
 
     dw->setPlot(plot);
   }
-  
+
   dw->show();
+  dw->scrollToBottom();
 }
 
 void QtstalkerApp::slotBarLengthChanged(int barLength)
@@ -763,7 +764,7 @@ void QtstalkerApp::slotBarLengthChanged(int barLength)
   int n = config.getInt(Config::BarLength);
   if (n == barLength)
     return;
- 
+
   // the compression has changed
   config.setData(Config::BarLength, compressionCombo->currentIndex());
 
@@ -783,10 +784,10 @@ void QtstalkerApp::slotNewIndicator (QString n)
 {
   // add a new indicator slot
   addIndicatorButton(n);
-  
+
   if (! recordList)
     return;
-  
+
   indicatorList.clear();
   indicatorList << n;
   ilPos = -1;
@@ -826,10 +827,10 @@ void QtstalkerApp::slotEnableIndicator (QString name)
 {
   // enable indicator
   addIndicatorButton(name);
-  
+
   if (! recordList)
     return;
-  
+
   indicatorList.clear();
   indicatorList << name;
   ilPos = -1;
@@ -862,17 +863,17 @@ void QtstalkerApp::addIndicatorButton (QString d)
   Config config;
   QStringList lastIndicatorUsed;
   config.getData(Config::LastIndicatorUsed, lastIndicatorUsed);
-  
+
   // Set the current indicator in this row to the last used one.
   if (i.getIntData(Indicator::IndicatorParmTabRow) < lastIndicatorUsed.count())
   {
     if (d == lastIndicatorUsed[i.getIntData(Indicator::IndicatorParmTabRow)])
       it->setCurrentWidget(plot);
   }
-    
+
   QColor color;
   config.getData(Config::BackgroundColor, color);
-  
+
   connect(this, SIGNAL(signalBackgroundColor(QColor)), plot, SLOT(setBackgroundColor(QColor)));
   plot->setBackgroundColor(color);
 
@@ -897,7 +898,7 @@ void QtstalkerApp::addIndicatorButton (QString d)
 
   plot->setIndex(slider->value());
   plot->setInterval((BarData::BarLength) compressionCombo->currentIndex());
-  plot->setCrosshairsStatus(config.getBool(Config::Crosshairs));  
+  plot->setCrosshairsStatus(config.getBool(Config::Crosshairs));
   plot->setDrawMode(actionList.value(DrawMode)->isChecked());
 
   IndicatorPlot *indy = plot->getIndicatorPlot();
@@ -923,10 +924,10 @@ void QtstalkerApp::addIndicatorButton (QString d)
 void QtstalkerApp::slotChartUpdated ()
 {
   chartNav->updateList();
-  
+
   if (! recordList)
     return;
-  
+
   Config config;
   config.setData(Config::BarsToLoad, barCount->value());
 
@@ -1047,7 +1048,7 @@ void QtstalkerApp::slotUpdateInfo (Setting *r)
 void QtstalkerApp::slotPlotLeftMouseButton (int x, int y, bool)
 {
   emit signalCrossHair(x, y, FALSE);
-  slotDrawPlots();  
+  slotDrawPlots();
 }
 
 void QtstalkerApp::slotCrosshairsStatus (bool status)
@@ -1086,26 +1087,26 @@ void QtstalkerApp::slotAppFont (QFont d)
 void QtstalkerApp::slotScriptDone ()
 {
   if (ilPos > -1)
-  {  
+  {
     Plot *plot = plotList[indicatorList[ilPos]];
     if (plot)
     {
       plot->setData(recordList);
       plot->calculate();
-    
+
       QList<PlotLine *> lines;
       script->getLines(lines);
       plot->getIndicatorPlot()->setPlotList(lines);
-    
+
       plot->loadChartObjects();
     }
   }
-  
+
   ilPos++;
-  
+
   if (ilPos >= indicatorList.count())
   {
-    // we are done scripting, finish up now 
+    // we are done scripting, finish up now
     resetZoomSettings();
     setSliderStart();
 
@@ -1150,7 +1151,7 @@ void QtstalkerApp::setSliderStart ()
     max = 0;
   slider->blockSignals(TRUE);
   slider->setRange(0, recordList->count() - 1);
-  
+
   if (recordList->count() < page)
   {
     slider->setValue(0);
@@ -1332,7 +1333,7 @@ void QtstalkerApp::slotRefreshChart (bool status)
 
     refreshTimer = new QTimer(this);
     connect(refreshTimer, SIGNAL(timeout()), this, SLOT(slotReloadChart()));
-    refreshTimer->start(60000 * minutes);    
+    refreshTimer->start(60000 * minutes);
   }
   else
   {
@@ -1359,7 +1360,7 @@ void QtstalkerApp::slotRefreshUpdated (int minutes)
 
     refreshTimer = new QTimer(this);
     connect(refreshTimer, SIGNAL(timeout()), this, SLOT(slotReloadChart()));
-    refreshTimer->start(60000 * minutes);    
+    refreshTimer->start(60000 * minutes);
   }
 }
 

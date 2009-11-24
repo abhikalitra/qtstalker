@@ -1,8 +1,8 @@
 /*
  *  Qtstalker stock charter
- * 
+ *
  *  Copyright (C) 2001-2008 Stefan S. Stratigakos
- * 
+ *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
@@ -15,7 +15,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, 
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
  *  USA.
  */
 
@@ -64,7 +64,7 @@ void DataWindow::setBars (BarData *d)
 {
   if (! d->count())
     return;
-    
+
   table->setColumnCount(2);
   table->setRowCount(d->count());
 
@@ -72,7 +72,7 @@ void DataWindow::setBars (BarData *d)
   sl.append(tr("Date"));
   sl.append(tr("Time"));
   table->setHorizontalHeaderLabels(sl);
-  
+
   int loop;
   for (loop = 0; loop < (int) d->count(); loop++)
   {
@@ -99,7 +99,7 @@ void DataWindow::setPlot (Plot *d)
   for (loop2 = 0; loop2 < lines.count(); loop2++)
   {
     table->setColumnCount(table->columnCount() + 1);
-      
+
     PlotLine *line = lines.at(loop2);
     line->getLabel(s);
     QTableWidgetItem *ti = new QTableWidgetItem(s, 0);
@@ -137,6 +137,11 @@ QString DataWindow::strip (double d, int p)
   }
 
   return s;
+}
+
+void DataWindow::scrollToBottom ()
+{
+  table->scrollToBottom();
 }
 
 

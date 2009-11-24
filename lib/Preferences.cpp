@@ -50,7 +50,7 @@ Preferences::Preferences (QWidget *w) : QDialog (w, 0)
   connect(buttonBox, SIGNAL(accepted()), this, SLOT(slotSave()));
   connect(buttonBox, SIGNAL(rejected()), this, SLOT(cancelPressed()));
   vbox->addWidget(buttonBox);
-  
+
   createGeneralPage();
   createDatabasePage();
   createSQLPage();
@@ -76,24 +76,24 @@ void Preferences::createGeneralPage ()
 
   QVBoxLayout *vbox = new QVBoxLayout;
   w->setLayout(vbox);
-  
+
   QGridLayout *grid = new QGridLayout;
   grid->setMargin(5);
   grid->setSpacing(5);
   grid->setColumnStretch(1, 2);
   vbox->addLayout(grid);
-  
+
   vbox->insertStretch(-1, 1);
-  
+
   int row = 0;
   int col = 0;
   QString s;
   Config config;
-  
+
   // bar spacing 1
   QLabel *label = new QLabel(tr("Bar Spacing 1"));
   grid->addWidget(label, row, col++);
-  
+
   bs1Spinner = new QSpinBox;
   bs1Spinner->setToolTip(tr("Number of screen pixels between bars.\n6 is good for bar charts."));
   bs1Spinner->setRange(2, 99);
@@ -104,7 +104,7 @@ void Preferences::createGeneralPage ()
   // bar spacing 2
   label = new QLabel(tr("Bar Spacing 2"));
   grid->addWidget(label, row, col++);
-  
+
   bs2Spinner = new QSpinBox;
   bs2Spinner->setToolTip(tr("Number of screen pixels between bars.\n8 is good for candle charts"));
   bs2Spinner->setRange(2, 99);
@@ -115,7 +115,7 @@ void Preferences::createGeneralPage ()
   // indicator tab rows
   label = new QLabel(tr("Indicator Tab Rows"));
   grid->addWidget(label, row, col++);
-  
+
   tabRows = new QSpinBox;
   tabRows->setToolTip(tr("Maximum number of tabbed chart rows."));
   tabRows->setRange(1, 3);
@@ -127,7 +127,7 @@ void Preferences::createGeneralPage ()
   // refresh chart
   label = new QLabel(tr("Refresh Chart"));
   grid->addWidget(label, row, col++);
-  
+
   refreshSpinner = new QSpinBox;
   refreshSpinner->setToolTip(tr("Refresh chart every x minutes"));
   refreshSpinner->setRange(1, 99);
@@ -146,7 +146,7 @@ void Preferences::createDatabasePage ()
 
   QVBoxLayout *vbox = new QVBoxLayout;
   w->setLayout(vbox);
-  
+
   QGridLayout *grid = new QGridLayout;
   grid->setMargin(5);
   grid->setSpacing(5);
@@ -154,7 +154,7 @@ void Preferences::createDatabasePage ()
   vbox->addLayout(grid);
 
   vbox->insertStretch(-1, 1);
-  
+
   int row = 0;
   int col = 0;
   Config config;
@@ -186,19 +186,19 @@ void Preferences::createDatabasePage ()
   if (s.length())
     dbHostName->setText(s);
   connect(dbHostName, SIGNAL(textChanged(const QString &)), this, SLOT(slotModified()));
-  
+
   // setup the db name
   label = new QLabel(tr("Db Name"));
   grid->addWidget(label, row, col++);
 
   dbName = new QLineEdit;
-  dbName->setToolTip(tr("The database name."));
+  dbName->setToolTip(tr("The database name. If using the sqlite driver use the file path to the database."));
   grid->addWidget(dbName, row++, col--);
   config.getData(Config::DbName, s);
   if (s.length())
     dbName->setText(s);
   connect(dbName, SIGNAL(textChanged(const QString &)), this, SLOT(slotModified()));
-  
+
   // setup the db user name
   label = new QLabel(tr("Db User Name"));
   grid->addWidget(label, row, col++);
@@ -210,7 +210,7 @@ void Preferences::createDatabasePage ()
   if (s.length())
     dbUserName->setText(s);
   connect(dbUserName, SIGNAL(textChanged(const QString &)), this, SLOT(slotModified()));
-  
+
   // setup the db password
   label = new QLabel(tr("Db Password"));
   grid->addWidget(label, row, col++);
@@ -235,7 +235,7 @@ void Preferences::createSQLPage ()
 
   QVBoxLayout *vbox = new QVBoxLayout;
   w->setLayout(vbox);
-  
+
   QGridLayout *grid = new QGridLayout;
   grid->setMargin(5);
   grid->setSpacing(5);
@@ -243,7 +243,7 @@ void Preferences::createSQLPage ()
   vbox->addLayout(grid);
 
   vbox->insertStretch(-1, 1);
-  
+
   int row = 0;
   int col = 0;
   Config config;
@@ -260,7 +260,7 @@ void Preferences::createSQLPage ()
   if (s.length())
     dbAllSymbols->setText(s);
   connect(dbAllSymbols, SIGNAL(textChanged(const QString &)), this, SLOT(slotModified()));
-  
+
   // enter the search symbols sql string
   label = new QLabel(tr("Search Symbols"));
   grid->addWidget(label, row, col++);
@@ -272,7 +272,7 @@ void Preferences::createSQLPage ()
   if (s.length())
     dbSearchSymbols->setText(s);
   connect(dbSearchSymbols, SIGNAL(textChanged(const QString &)), this, SLOT(slotModified()));
-  
+
   // enter the first date sql string
   label = new QLabel(tr("First Date"));
   grid->addWidget(label, row, col++);
@@ -284,7 +284,7 @@ void Preferences::createSQLPage ()
   if (s.length())
     dbFirstDate->setText(s);
   connect(dbFirstDate, SIGNAL(textChanged(const QString &)), this, SLOT(slotModified()));
-  
+
   // enter the last date sql string
   label = new QLabel(tr("Last Date"));
   grid->addWidget(label, row, col++);
@@ -308,7 +308,7 @@ void Preferences::createSQLPage ()
   if (s.length())
     dbGetSymbol->setText(s);
   connect(dbGetSymbol, SIGNAL(textChanged(const QString &)), this, SLOT(slotModified()));
-  
+
   tabs->addTab(w, tr("SQL"));
 }
 
@@ -320,23 +320,23 @@ void Preferences::createColorPage ()
 
   QVBoxLayout *vbox = new QVBoxLayout;
   w->setLayout(vbox);
-  
+
   QGridLayout *grid = new QGridLayout;
   grid->setMargin(5);
   grid->setSpacing(5);
   grid->setColumnStretch(1, 2);
   vbox->addLayout(grid);
-  
+
   vbox->insertStretch(-1, 1);
 
   int row = 0;
   int col = 0;
   Config config;
-  
+
   // background color
   QLabel *label = new QLabel(tr("Chart Background"));
   grid->addWidget(label, row, col++);
-  
+
   QColor color;
   backgroundColorButton = new ColorButton(w, color);
   backgroundColorButton->setToolTip(tr("Background color for charts."));
@@ -348,7 +348,7 @@ void Preferences::createColorPage ()
   // border color
   label = new QLabel(tr("Chart Border"));
   grid->addWidget(label, row, col++);
-  
+
   borderColorButton = new ColorButton(w, color);
   borderColorButton->setToolTip(tr("Border line color for charts. Used for seperators, ticks etc."));
   grid->addWidget(borderColorButton, row++, col--);
@@ -359,7 +359,7 @@ void Preferences::createColorPage ()
   // grid color
   label = new QLabel(tr("Chart Grid"));
   grid->addWidget(label, row, col++);
-  
+
   gridColorButton = new ColorButton(w, color);
   gridColorButton->setToolTip(tr("Grid color for charts."));
   grid->addWidget(gridColorButton, row++, col--);
@@ -369,7 +369,7 @@ void Preferences::createColorPage ()
 
   //FIXME: add adjustment possibility for prefered CO-colors.
   // in this way to add a spinbox to set the amount of colors too
-  
+
   tabs->addTab(w, tr("Colors"));
 }
 
@@ -381,15 +381,15 @@ void Preferences::createFontPage ()
 
   QVBoxLayout *vbox = new QVBoxLayout;
   w->setLayout(vbox);
-  
+
   QGridLayout *grid = new QGridLayout;
   grid->setMargin(5);
   grid->setSpacing(5);
   grid->setColumnStretch(1, 2);
   vbox->addLayout(grid);
-  
+
   vbox->insertStretch(-1, 1);
-  
+
   int row = 0;
   int col = 0;
   Config config;
@@ -398,7 +398,7 @@ void Preferences::createFontPage ()
   QLabel *label = new QLabel(tr("Plot Font"));
   grid->addWidget(label, row, col++);
 
-  QFont font;  
+  QFont font;
   plotFontButton = new FontButton(w, font);
   plotFontButton->setToolTip(tr("Font used for text that appears on the chart."));
   grid->addWidget(plotFontButton, row++, col--);
@@ -409,7 +409,7 @@ void Preferences::createFontPage ()
   // app font
   label = new QLabel(tr("App Font"));
   grid->addWidget(label, row, col++);
-  
+
   appFontButton = new FontButton(w, font);
   appFontButton->setToolTip(tr("Font used for everything but charts."));
   grid->addWidget(appFontButton, row++, col--);
@@ -428,18 +428,18 @@ void  Preferences::createMTPage()
 
   QVBoxLayout *vbox = new QVBoxLayout;
   w->setLayout(vbox);
-  
+
   QGridLayout *grid = new QGridLayout; // two more cols as needed
   grid->setMargin(5);
   grid->setSpacing(5);
   vbox->addLayout(grid);
-  
+
   vbox->insertStretch(-1, 1);
-  
+
   int row = 0;
   int col = 0;
   Config config;
-  
+
   quitBtnCheck = new QCheckBox(tr("Quit"));
   quitBtnCheck->setToolTip(tr("Select if you want the Quit button to appear on the toolbar."));
   quitBtnCheck->setChecked(config.getBool(Config::ShowQuitButton));
@@ -479,7 +479,7 @@ void  Preferences::createMTPage()
   // now fill a second col
   row = 0;
   col = 1;
-  
+
   drawModeBtnCheck= new QCheckBox(tr("Draw Mode"));
   drawModeBtnCheck->setToolTip(tr("Select if you want the Draw Mode button to appear on the toolbar."));
   drawModeBtnCheck->setChecked(config.getBool(Config::ShowDrawModeButton));
@@ -513,7 +513,7 @@ void  Preferences::createMTPage()
   tabs->addTab(w, tr("MainToolbar"));
 }
 
-void  Preferences::createCTPage() 
+void  Preferences::createCTPage()
 {
   // chart tool bar page
 
@@ -521,12 +521,12 @@ void  Preferences::createCTPage()
 
   QVBoxLayout *vbox = new QVBoxLayout;
   w->setLayout(vbox);
-  
+
   QGridLayout *grid = new QGridLayout;
   grid->setMargin(5);
   grid->setSpacing(5);
   vbox->addLayout(grid);
-  
+
   vbox->insertStretch(-1, 1);
 
   int row = 0;
@@ -572,12 +572,12 @@ void  Preferences::createCTPage()
   // now fill a second col
   row = 0;
   col = 1;
-  
+
   recentComboBoxCheck = new QCheckBox(tr("Recent Charts"));
   recentComboBoxCheck->setToolTip(tr("Select if you want the Recent Charts list to appear on the toolbar."));
   recentComboBoxCheck->setChecked(config.getBool(Config::ShowRecentCharts));
   connect(recentComboBoxCheck, SIGNAL(stateChanged(int)), this, SLOT(slotModified()));
-  grid->addWidget(recentComboBoxCheck, row++, col);  
+  grid->addWidget(recentComboBoxCheck, row++, col);
 
   tabs->addTab(w, tr("ChartToolbar"));
 }
@@ -595,7 +595,7 @@ void Preferences::slotSave ()
   }
 
   config.transaction();
-  
+
   config.setData(Config::PSButton1, bs1Spinner->value());
   config.setData(Config::PSButton2, bs2Spinner->value());
   config.setData(Config::IndicatorTabRows, tabRows->value());
@@ -645,7 +645,7 @@ void Preferences::slotSave ()
     config.setData(Config::AppFont, f);
     emit signalAppFont(f);
   }
-  
+
   // main tool bar settings
   // save all, anyway if changed or not, who cares?
   config.setData(Config::ShowQuitButton, quitBtnCheck->isChecked());
@@ -672,37 +672,37 @@ void Preferences::slotSave ()
   // save database parms
   s = dbDriver->currentText();
   config.setData(Config::DbPlugin, s);
-  
+
   s = dbHostName->text();
   config.setData(Config::DbHostName, s);
-  
+
   s = dbName->text();
   config.setData(Config::DbName, s);
-  
+
   s = dbUserName->text();
   config.setData(Config::DbUserName, s);
-  
+
   s = dbPassword->text();
   config.setData(Config::DbPassword, s);
 
   // save sql commands
   s = dbAllSymbols->text();
   config.setData(Config::DbAllSymbols, s);
-  
+
   s = dbSearchSymbols->text();
   config.setData(Config::DbSearchSymbols, s);
-  
+
   s = dbFirstDate->text();
   config.setData(Config::DbFirstDate, s);
-  
+
   s = dbLastDate->text();
   config.setData(Config::DbLastDate, s);
-  
+
   s = dbGetSymbol->text();
   config.setData(Config::DbGetSymbol, s);
-  
+
   emit signalReloadToolBars();
-  
+
   emit signalLoadChart();
 
   QSize sz = size();
@@ -710,7 +710,7 @@ void Preferences::slotSave ()
 
   config.commit();
 
-  accept();    
+  accept();
 }
 
 void Preferences::slotModified()
