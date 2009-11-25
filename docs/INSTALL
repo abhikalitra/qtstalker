@@ -5,10 +5,10 @@ To compile and install:
 
 Using the source from your currently installed version:
 
-1) make uninstall (as root) 
+1) sudo make uninstall (as superuser) 
 
 Using the new source version continue:
 
 2) ./configure
 3) make
-4) make install ( as root )
+4) sudo make install ( as superuser )
