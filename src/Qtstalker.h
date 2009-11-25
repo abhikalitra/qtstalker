@@ -3,7 +3,7 @@
                              -------------------
     begin                : Thu Mar  7 22:43:41 EST 2002
     copyright            : (C) 2001-2007 by Stefan Stratigakos
-    email                : 
+    email                :
  ***************************************************************************/
 
 /***************************************************************************
@@ -42,7 +42,7 @@
 class QtstalkerApp : public QMainWindow
 {
   Q_OBJECT
-  
+
   signals:
     void signalPixelspace (int);
     void signalBackgroundColor (QColor);
@@ -100,8 +100,6 @@ class QtstalkerApp : public QMainWindow
     void initGroupNav ();
     void initChartNav ();
     void initIndicatorNav ();
-//    void initTestNav();
-//    void initScannerNav ();
     QString getWindowCaption ();
     void loadChart (QString);
     void setSliderStart ();
@@ -150,7 +148,7 @@ class QtstalkerApp : public QMainWindow
 
   protected:
     void closeEvent(QCloseEvent *event);
-    
+
   private:
     QSplitter *split;
     QSplitter *navSplitter;

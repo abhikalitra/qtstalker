@@ -25,15 +25,11 @@ else {
     MY_OS += "linux"
   }
 
-  win32 {
-    MY_OS += "windows"
-  }
-
   macx {
     MY_OS += "macx"
     # For MacPorts
     exists(/opt/local/include/ta-lib) {
-      INCLUDEPATH += /opt/local/include/ta-lib 
+      INCLUDEPATH += /opt/local/include/ta-lib
     }
     exists(/opt/local/lib) {
       LIBS += -L/opt/local/lib
@@ -54,7 +50,7 @@ else {
 	error("Missing configuration file qtstalker.config")
   }
 	include(qtstalker.config)
-  
+
   INCLUDEPATH = $$unique(INCLUDEPATH)
   LIBS = $$unique(LIBS)
 
@@ -68,24 +64,15 @@ else {
   system(echo "INSTALL_LIB_DIR=$$INSTALL_LIB_DIR" >> .qmake.cache)
 
   message("Writing lib/qtstalker_defines.h")
-  win32 {
-    system(echo $${LITERAL_HASH}ifndef QTSTALKER_DEFINES_H > lib/qtstalker_defines.h)
-    system(echo $${LITERAL_HASH}define QTSTALKER_DEFINES_H >> lib/qtstalker_defines.h)
-    system(echo $${LITERAL_HASH}define INSTALL_BIN_DIR \"$$INSTALL_BIN_DIR\" >> lib/qtstalker_defines.h)
-    system(echo $${LITERAL_HASH}define INSTALL_DATA_DIR \"$$INSTALL_DATA_DIR\" >> lib/qtstalker_defines.h)
-    system(echo $${LITERAL_HASH}define INSTALL_DOCS_DIR \"$$INSTALL_DOCS_DIR\" >> lib/qtstalker_defines.h)
-    system(echo $${LITERAL_HASH}define INSTALL_LIB_DIR \"$$INSTALL_LIB_DIR\" >> lib/qtstalker_defines.h)
-    system(echo $${LITERAL_HASH}endif >> lib/qtstalker_defines.h)
-  } else {
-    system(echo \"$${LITERAL_HASH}ifndef QTSTALKER_DEFINES_H\" > lib/qtstalker_defines.h)
-    system(echo \"$${LITERAL_HASH}define QTSTALKER_DEFINES_H\" >> lib/qtstalker_defines.h)
-    system(echo \"$${LITERAL_HASH}define INSTALL_BIN_DIR \\\"$$INSTALL_BIN_DIR\\\"\" >> lib/qtstalker_defines.h)
-    system(echo \"$${LITERAL_HASH}define INSTALL_DATA_DIR \\\"$$INSTALL_DATA_DIR\\\"\" >> lib/qtstalker_defines.h)
-    system(echo \"$${LITERAL_HASH}define INSTALL_DOCS_DIR \\\"$$INSTALL_DOCS_DIR\\\"\" >> lib/qtstalker_defines.h)
-    system(echo \"$${LITERAL_HASH}define INSTALL_LIB_DIR \\\"$$INSTALL_LIB_DIR\\\"\" >> lib/qtstalker_defines.h)
-    system(echo \"$${LITERAL_HASH}endif\" >> lib/qtstalker_defines.h)
-  }
+  system(echo \"$${LITERAL_HASH}ifndef QTSTALKER_DEFINES_H\" > lib/qtstalker_defines.h)
+  system(echo \"$${LITERAL_HASH}define QTSTALKER_DEFINES_H\" >> lib/qtstalker_defines.h)
+  system(echo \"$${LITERAL_HASH}define INSTALL_BIN_DIR \\\"$$INSTALL_BIN_DIR\\\"\" >> lib/qtstalker_defines.h)
+  system(echo \"$${LITERAL_HASH}define INSTALL_DATA_DIR \\\"$$INSTALL_DATA_DIR\\\"\" >> lib/qtstalker_defines.h)
+  system(echo \"$${LITERAL_HASH}define INSTALL_DOCS_DIR \\\"$$INSTALL_DOCS_DIR\\\"\" >> lib/qtstalker_defines.h)
+  system(echo \"$${LITERAL_HASH}define INSTALL_LIB_DIR \\\"$$INSTALL_LIB_DIR\\\"\" >> lib/qtstalker_defines.h)
+  system(echo \"$${LITERAL_HASH}endif\" >> lib/qtstalker_defines.h)
 }
+
 message("Using INCLUDEPATH=$$INCLUDEPATH")
 message("Using LIBS=$$LIBS")
 message("Operating system: $$MY_OS")
@@ -104,7 +91,5 @@ SUBDIRS += src
 # compile CSV app
 SUBDIRS += misc
 
-!win32 {
- #  install docs and i18n
-  SUBDIRS += docs
-}
+# install docs and i18n
+SUBDIRS += docs

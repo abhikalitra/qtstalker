@@ -2,20 +2,27 @@
 <html>
 <head>
   <meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
-  <link rel="stylesheet" type="text/css" href="qtstalker.css" media="screen" />
-  <script src="qtstalker.js" type="text/javascript"> </script>
+  <link rel="stylesheet" type="text/css" href="qtstalker.css" media="screen">
+  <script type="text/javascript" src="qtstalker.js">
+ </script>
   <title>Qtstalker: Basic Installation</title>
 </head>
 
 <body>
+
 <div id="content">
+
 <div id="rightPanel">
-<div id="version"></div>
+
+<div id="version">
+</div>
+
 <div id="toc">
-  <hr />
-  <ul>
-    <li><a href="index.html">Home</a></li>
-    <li><a href="toc.html">Table of Contents</a></li>
+<hr>
+<ul>
+  <li><a href="index.html">Home</a></li>
+  <li><a href="toc.html">Table of Contents</a></li>
+</ul>
 </div>
 </div>
 
@@ -24,30 +31,26 @@
 <h3>Requirements</h3>
 <ul>
   <li>A Linux or FreeBSD compatible or Mac OS X operating system.</li>
-  <li><a href="http://qt.nokia.com/">Qt</a> development library.
-    At least Qt 4.5 version.</li>
-  <li><a href="http://ta-lib.org/">TA-Lib</a> Technical Analysis Library.
-    At least ta-lib-0.3.0 version. See below.</li>
+  <li><a href="http://qt.nokia.com/">Qt</a> development library. At least Qt
+    4.5 version.</li>
+  <li><a href="http://ta-lib.org/">TA-Lib</a> Technical Analysis Library. At
+    least ta-lib-0.3.0 version. See below.</li>
 </ul>
 
-<p>
-When upgrading Qtstalker from a previous source version, see the
-<a href="#upgrade">notes</a> below.
-</p>
+<p>When upgrading Qtstalker from a previous source version, see the <a
+href="#upgrade">notes</a> below. </p>
 
-<p>
-See notes below about <a href="#where">where</a>
-stuff gets installed.
-</p>
+<p>See notes below about <a href="#where">where</a> stuff gets installed. </p>
+<a name="packages"></a> 
 
-<a name="packages"></a>
 <h3>Installing via packages</h3>
+
 <p>Packages are available for some operating systems:</p>
 <ul>
- <li><a href="http://www.zwets.com/qtstalker/">Debian packages</a></li>
+  <li><a href="http://www.zwets.com/qtstalker/">Debian packages</a></li>
 </ul>
+<a name="source"></a> 
 
-<a name="source"></a>
 <h3>Installing from source</h3>
 
 <p><strong>Note:</strong> Package users can ignore the following advice as this
@@ -55,24 +58,22 @@ will be done automatically by the package installer. </p>
 
 <p><strong>Important (Qt):</strong> Ensure that Qt is installed properly.
 Ensure that '<code>qmake</code>' and friends are available (e.g. add
-<code>/path/to/qt/bin</code> to your <code>$PATH</code>
-<a href="http://en.wikipedia.org/wiki/Environment_variable">environment variable</a>).
-Qtstalker will use the programs (<code>qmake-qt4</code> and <code>lupdate-qt4</code> and
-<code>lrelease-qt4</code>) so you might need to create symbolic links for these (e.g.
-'<code>cd /path/to/qt/bin; ln -s qmake qmake-qt4</code>' and so on).
-Do '<code>which qmake-qt4</code>' etc. to ensure that these are properly installed.
-</p>
+<code>/path/to/qt/bin</code> to your <code>$PATH</code> <a
+href="http://en.wikipedia.org/wiki/Environment_variable">environment
+variable</a>). Qtstalker will use the programs (<code>qmake-qt4</code> and
+<code>lupdate-qt4</code> and <code>lrelease-qt4</code>) so you might need to
+create symbolic links for these (e.g. '<code>cd /path/to/qt/bin; ln -s qmake
+qmake-qt4</code>' and so on). Do '<code>which qmake-qt4</code>' etc. to ensure
+that these are properly installed. </p>
 
-<p><strong>Important (TA-Lib):</strong> Ensure that TA-Lib is installed properly.
-Also ensure that the '<code>ta-lib-config</code>' program is available on your <code>$PATH</code>
-environment variable.
-Do '<code>which ta-lib-config</code>' to ensure that this is properly installed.
-</p>
+<p><strong>Important (TA-Lib):</strong> Ensure that TA-Lib is installed
+properly. Also ensure that the '<code>ta-lib-config</code>' program is
+available on your <code>$PATH</code> environment variable. Do '<code>which
+ta-lib-config</code>' to ensure that this is properly installed. </p>
 
-<p>
-If you installed Qt or TA-Lib at a non-standard location, then edit the
-<code>qtstalker.config</code> file (e.g. "<code>INCLUDEPATH += /opt/local/include/ta-lib</code>").
-</p>
+<p>If you installed Qt or TA-Lib at a non-standard location, then edit the
+<code>qtstalker.config</code> file (e.g. "<code>INCLUDEPATH +=
+/opt/local/include/ta-lib</code>"). </p>
 
 <h4>Install Qtstalker</h4>
 
@@ -83,48 +84,42 @@ If you installed Qt or TA-Lib at a non-standard location, then edit the
   <li><code>make</code></li>
   <li><code>sudo make install</code> (i.e. as superuser)</li>
 </ul>
+<a name="where"></a> 
 
-<a name="where"></a>
 <h3>Where does stuff get installed</h3>
 <ul>
- <li>The executable 'qtstalker' will be copied to the
-  <code>/usr/local/bin</code> directory</li>
- <li>The library will be copied to <code>/usr/local/lib</code>
-  directory</li>
- <li>The translation files will be copied to
-   <code>/usr/local/share/qtstalker/i18n</code> directory</li>
- <li>Some example indicator scripts will be copied to
-   <code>/usr/local/share/qtstalker/indicator</code> directory</li>
- <li>The docs will be copied to
-  <code>/usr/local/share/doc/qtstalker/html</code> directory (see toc.html for
-  the table of contents)</li>
+  <li>The executable 'qtstalker' will be copied to the
+    <code>/usr/local/bin</code> directory</li>
+  <li>The library will be copied to <code>/usr/local/lib</code> directory</li>
+  <li>The translation files will be copied to
+    <code>/usr/local/share/qtstalker/i18n</code> directory</li>
+  <li>Some example indicator scripts will be copied to
+    <code>/usr/local/share/qtstalker/indicator</code> directory</li>
+  <li>The docs will be copied to
+    <code>/usr/local/share/doc/qtstalker/html</code> directory (see toc.html
+    for the table of contents)</li>
 </ul>
-<p>The user workspace is in your home at <code>~/.qtstalker/</code> directory.
-If using the '<code>CSV</code>' application then the data is stored at <code>~/.CSV/</code>
-directory.
-</p>
 
-<a name="upgrade"></a>
+<p>The user workspace is in your home at <code>~/.qtstalker/</code> directory.
+If using the '<code>CSV</code>' application then the data is stored at
+<code>~/.CSV/</code> directory. </p>
+<a name="upgrade"></a> 
+
 <h3>Updating from a previous version</h3>
 
-<p>If you are updating from a previous source version already installed on
-your system, it is best that you first uninstall the previous version
-before you install the upgraded version. Doing this will better ensure a
-problem-free upgrade. Many upgrade errors can be caused by old plugins and
-libraries hanging around complicating things. You can uninstall the old
-version by doing <code>'sudo make uninstall'</code> from the top directory of the
-<b>old</b>
+<p>If you are updating from a previous source version already installed on your
+system, it is best that you first uninstall the previous version before you
+install the upgraded version. Doing this will better ensure a problem-free
+upgrade. Many upgrade errors can be caused by old plugins and libraries hanging
+around complicating things. You can uninstall the old version by doing
+<code>'sudo make uninstall'</code> from the top directory of the <b>old</b>
 source install.</p>
 
 <h3>Using the current development source</h3>
 
 <p>See instructions for <a href="dev.html">using CVS</a>. </p>
 
-<p><a href="faq.html" target="_self"><img src="back.png" border="0"
-width="32" height="32" alt="Back" /></a> <a href="quick.html"
-target="_self"><img src="next.png" border="0" width="32" height="32"
-alt="Next" /></a> <a href="toc.html"><img src="home.png" border="0"
-width="32" height="32" alt="Home" /></a></p>
+<p></p>
 </div>
 </body>
 </html>

@@ -1,14 +1,6 @@
 TEMPLATE = lib
 
-!win32 {
-	CONFIG += thread warn_on debug
-} else {
-	CONFIG += thread warn_on debug_and_release
-	CONFIG(debug, debug|release): DESTDIR = ../mingwin32/deploydebug
-	CONFIG(release, debug|release): DESTDIR = ../mingwin32/deploy
-        DEFINES += MINGW
-}
-
+CONFIG += thread warn_on debug
 CONFIG(debug, debug|release): DEFINES += DEBUG _DEBUG
 
 QMAKE_CXXFLAGS += -rdynamic -ffast-math -O2
@@ -20,7 +12,6 @@ HEADERS += Scaler.h
 HEADERS += PrefDialog.h
 HEADERS += ColorButton.h
 HEADERS += FontButton.h
-#HEADERS += FileButton.h
 HEADERS += Bar.h
 HEADERS += Config.h
 HEADERS += Plot.h
@@ -43,7 +34,7 @@ HEADERS += IndicatorDialog.h
 HEADERS += IndicatorScript.h
 
 
-   
+
 SOURCES += Setting.cpp
 SOURCES += PlotLine.cpp
 SOURCES += BarData.cpp
@@ -51,7 +42,6 @@ SOURCES += Scaler.cpp
 SOURCES += PrefDialog.cpp
 SOURCES += ColorButton.cpp
 SOURCES += FontButton.cpp
-#SOURCES += FileButton.cpp
 SOURCES += Bar.cpp
 SOURCES += Config.cpp
 SOURCES += Plot.cpp
@@ -74,12 +64,8 @@ SOURCES += IndicatorDialog.cpp
 SOURCES += IndicatorScript.cpp
 
 
-   
-TARGET = qtstalker
 
-win32 {
-	CONFIG(debug, debug|release): TARGET = qtstalkerD
-}
+TARGET = qtstalker
 
 VERSION = 0.37.0
 
@@ -91,31 +77,22 @@ unix {
   }
 }
 
-win32 {
-    INCLUDEPATH += ../mingwin32/ta-lib/include
-    LIBS += -L../mingwin32/ta-lib/lib
-	LIBS += -lta_lib
-	LIBS += -lwsock32
-  } else {
-  TA_LIB_VERSION = $$system(ta-lib-config --version)
-  contains(TA_LIB_VERSION, 0.3.0) {
+TA_LIB_VERSION = $$system(ta-lib-config --version)
+contains(TA_LIB_VERSION, 0.3.0) {
     LIBS += -lta_abstract
     LIBS += -lta_common
     LIBS += -lta_func
   } else {
     LIBS += -lta_lib
   }
-}
 
 unix:linux-g++:LIBS += -ldl
 
 message("Using INCLUDEPATH=$$INCLUDEPATH")
 message("Using LIBS=$$LIBS")
 
-!win32 {
-	target.path = "$${INSTALL_LIB_DIR}"
-	INSTALLS += target
-}
+target.path = "$${INSTALL_LIB_DIR}"
+INSTALLS += target
 
 # FIXME: QMAKE_DISTCLEAN does not seem to work from the top-level qtstalker.pro
 # so doing it here.

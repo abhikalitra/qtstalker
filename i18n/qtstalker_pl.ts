@@ -133,140 +133,6 @@
     </message>
 </context>
 <context>
-    <name>CSV</name>
-    <message>
-        <source>Bad date</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Bad value</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Line</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Error opening file </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Importing file </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Date error. Skipping line </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Done </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source> Records Imported</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source> Records Processed</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Bad time</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>CSVRuleDialog</name>
-    <message>
-        <source>Editing CSV Rule: </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Delimiter</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Date Format</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Time Interval</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Files</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Use File Name For Symbol</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Insert Field-&gt;&gt;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&lt;&lt;-Delete Field</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select CSV Files To Import</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source> Files</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Error</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Rule missing a date field.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Date format missing.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>CSV Files</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Fields</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Custom Field-&gt;&gt;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Rule Format</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Custom Field</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enter field name</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>No commas allowed.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Time Format</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Time format missing.</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>ChartPage</name>
     <message>
         <source>Add To &amp;Group	Ctrl+G</source>
@@ -578,133 +444,6 @@ a partial match like %SI or %RSI%</source>
     </message>
 </context>
 <context>
-    <name>MainWindow</name>
-    <message>
-        <source>Rule</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Status</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Import CSV Quotes</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;New Rule</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Create a new import rule</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Edit Rule...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Edit an existing rule</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Delete Rule...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Delete an existing rule</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>E&amp;xit</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Ctrl+Q</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Exit the application</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;About</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>About CSV</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;File</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Edit</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Help</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>File</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Ready</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>New Rule Name</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enter new rule name</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>New Rule</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Error</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source> already exists.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Qtstalker: Warning</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Are you sure you want to permanently delete this rule ?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Active</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Cannot start an active rule.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>CSV: Activate Rule</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Are you sure you want to activate this rule ?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Inactive</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>Preferences</name>
     <message>
         <source>Bar Spacing 1</source>
@@ -877,10 +616,6 @@ a partial match like %SI or %RSI%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>The database name.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>The database user name.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1044,6 +779,10 @@ $ed is the last date.</source>
     </message>
     <message>
         <source>Select if you want the Refresh Chart button to appear on the toolbar.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The database name. If using the sqlite driver use the file path to the database.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
