@@ -11,7 +11,7 @@
     <filterAttribute>1.0</filterAttribute>
     <toc>
       <section title="Qtstalker Manual" ref="index.html">
-        <section title="Installation" ref="install.html"/>
+        <section title="Table of Contents" ref="toc.html"/>
       </section>
       <section title="CSV Manual" ref="csv.html">
         <section title="Data loading" ref="csv.html"/>
@@ -29,10 +29,19 @@
     <files>
       <file>qtstalker.css</file>
       <file>qtstalker.js</file>
-      <file>index.html</file>
-      <file>install.html</file>
-      <file>docs.html</file>
+      <file>chartobjects.html</file>
       <file>csv.html</file>
+      <file>cus.html</file>
+      <file>dev.html</file>
+      <file>doc-template.html</file>
+      <file>docs.html</file>
+      <file>faq.html</file>
+      <file>index.html</file>
+      <file>indicatorreference.html</file>
+      <file>install.html</file>
+      <file>main.html</file>
+      <file>quick.html</file>
+      <file>toc.html</file>
       <file>qtstalker.png</file>
       <file>screen-1.png</file>
       <file>screen-2.png</file>
