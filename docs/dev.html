@@ -120,26 +120,8 @@ path/to/<em>downloaded-patchfile-diff.txt</em></code></p>
 your cvs sources with the abovementioned command:</p>
 
 <p><code>cvs -q update -d</code></p>
-<a name="editSettings"></a> 
 
-<h2><u>Editing the application settings manually</u></h2>
-
-<p>Developers will sometimes need to search and even edit the Qtstalker
-settings. The user settings are persisted using platform-dependent mechanisms.
-</p>
-
-<p>On most platforms they are stored in the <code>~/.qt/qtstalkerrc</code>
-plain-text file. Edit, save, and re-start Qtstalker. </p>
-
-<p>On "Mac OS X" they are stored in a binary plist. To view/edit, do the
-following and then re-start Qtstalker: </p>
-<pre>cp /Library/Preferences/com.Qtstalker.plist $WORK/qtstalker/com.Qtstalker.plist.save
-plutil -convert xml1 -o $WORK/qtstalker/qtstalker.plist /Library/Preferences/com.Qtstalker.plist
-vi $WORK/qtstalker/qtstalker.plist
-plutil -convert binary1 -o $WORK/qtstalker/qtstalker.plist.bin $WORK/qtstalker/qtstalker.plist
-mv $WORK/qtstalker/qtstalker.plist.bin /Library/Preferences/com.Qtstalker.plist</pre>
 <a name="docs"></a> 
-
 <h2><u>Enhancing documentation</u></h2>
 
 <p>The intention is to keep the documentation as simple as possible and link to
