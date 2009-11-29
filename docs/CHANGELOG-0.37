@@ -15,7 +15,7 @@
 	  Indicators are now fully scripted using any compatible scripting language. See ExScript class.
 	  Code overhaul and clean up performed. Many minor changes. Code simplification completed.
 
-20090910: Added ability to add items to groups from group page. 
+20090910: Added ability to add items to groups from group page.
 
 20090911: Made a little more space between plots and widget edges.
 
@@ -32,7 +32,7 @@
 
 	  Applied patch (#2857550 - chars replacement in csv and progress indicator). Thanks to Austin (x_curve)
 	  for the patch.
-	  
+
 	  Chart objects now display some values in the data panel when selected.
 
 20090915: TODO done. When mouse cursor passes over a chart object, parms are displayed in the data panel.
@@ -126,5 +126,14 @@
           Made a change to the indicator scripting format. In order for consistancy and future expansion, I added the
           INDICATOR key word in front of all parms in a script. eg. 'SMA,sma,Close,14' has become 'INDICATOR,SMA,sma,Close,14'
           All CUS_examples have been modified. CVS users please update any of your personal indicators to reflect this change.
+
+20091129: Charts added to the recent charts combobox are now placed at the top of the list.
+
+          Fixed CSV bug when importing files with multiple symbols. The filename was being used.
+
+          Docs are mostly updated now. Need some minor changes here and there. No biggie.
+
+          Now able to delete multiple charts from the group tab instead of one at a time.
+
 
 

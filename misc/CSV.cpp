@@ -212,11 +212,16 @@ void CSV::import ()
       continue;
     }
 
-    if (fi.suffix() == "txt" || fi.suffix() == "TXT")
-      ts = fi.completeBaseName();
-    else
-      ts = fi.fileName();
-    r.setSymbol(ts);
+    // check if we have a symbol, if not we use the filename
+    r.getSymbol(ts);
+    if (ts.isEmpty())
+    {
+      if (fi.suffix() == "txt" || fi.suffix() == "TXT")
+        ts = fi.completeBaseName();
+      else
+        ts = fi.fileName();
+      r.setSymbol(ts);
+    }
 
     if (symbolHash.contains(ts))
     {

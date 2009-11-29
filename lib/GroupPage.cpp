@@ -37,7 +37,6 @@
 #include <QMenu>
 #include <QKeyEvent>
 #include <QVBoxLayout>
-#include <stdlib.h>
 #include <QToolTip>
 #include <QLayout>
 #include <QFileInfo>
@@ -59,6 +58,7 @@ GroupPage::GroupPage (QWidget *w) : QWidget (w)
 
   nav = new QListWidget;
   nav->setContextMenuPolicy(Qt::CustomContextMenu);
+  nav->setSelectionMode(QAbstractItemView::ExtendedSelection);
   nav->setSortingEnabled(TRUE);
   connect(nav, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(rightClick(const QPoint &)));
   connect(nav, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(chartOpened(QListWidgetItem *)));
@@ -75,7 +75,7 @@ GroupPage::GroupPage (QWidget *w) : QWidget (w)
   actionList.append(action);
 
   loadGroups();
-  
+
   QString s;
   Config config;
   config.getData(Config::LastGroupUsed, s);
@@ -111,13 +111,13 @@ void GroupPage::newGroup()
 
 void GroupPage::deleteGroupItem ()
 {
-  QListWidgetItem *item = nav->currentItem();
-  if (! item)
+  QList<QListWidgetItem *> sl = nav->selectedItems();
+  if (! sl.count())
     return;
 
   int rc = QMessageBox::warning(this,
 		            tr("Qtstalker: Warning"),
-			    tr("Are you sure you want to delete group item?"),
+			    tr("Are you sure you want to delete group items?"),
 			    QMessageBox::Yes,
 			    QMessageBox::No,
 			    QMessageBox::NoButton);
@@ -130,11 +130,15 @@ void GroupPage::deleteGroupItem ()
   QString s = group->currentText();
   db.getGroupList(s, l);
 
-  l.removeOne(item->text());
+  int loop;
+  for (loop = 0; loop < sl.count(); loop++)
+  {
+    QListWidgetItem *item = sl.at(loop);
+    l.removeOne(item->text());
+    delete item;
+  }
 
   db.setGroupList(s, l);
-
-  delete item;
 }
 
 void GroupPage::deleteGroup()
@@ -156,7 +160,7 @@ void GroupPage::deleteGroup()
 
   DataBase db;
   db.deleteGroup(g);
-  
+
   if (g == group->currentText())
     nav->clear();
 
@@ -193,7 +197,7 @@ void GroupPage::rightClick (const QPoint &)
 void GroupPage::doKeyPress (QKeyEvent *key)
 {
   key->accept();
-  
+
   if (key->modifiers() == Qt::ControlModifier)
   {
     switch(key->key())
@@ -233,14 +237,14 @@ void GroupPage::loadGroups ()
 void GroupPage::updateGroups ()
 {
   int cg = group->currentIndex();
-  int cr = nav->currentRow();  
-  
+  int cr = nav->currentRow();
+
   group->blockSignals(TRUE);
   loadGroups();
   group->blockSignals(FALSE);
 
   groupSelected(cg);
-  
+
   nav->setCurrentRow(cr);
 }
 

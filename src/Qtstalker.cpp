@@ -1226,7 +1226,7 @@ void QtstalkerApp::slotAddRecentChart (QString d)
   if (recentCharts->findText(d, Qt::MatchExactly) > -1)
     return;
 
-  recentCharts->addItem(d);
+  recentCharts->insertItem(0, d);
 }
 
 // ******************************************************************************
