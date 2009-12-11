@@ -524,6 +524,7 @@ void QtstalkerApp::createToolBars ()
   // recent charts combo
   config.getData(Config::RecentChartsList, l);
   recentCharts = new QComboBox;
+  recentCharts->setMaxCount(10);
   recentCharts->setSizeAdjustPolicy(QComboBox::AdjustToContents);
   if (l.count())
     recentCharts->addItems(l);
@@ -646,10 +647,14 @@ void QtstalkerApp::slotOpenChart (QString selection)
   loadChart(selection);
 }
 
+// sent here if user selected chart from recent charts combobox
+// move selected item to the top of the list so we can order list starting from most recent
 void QtstalkerApp::slotOpenChart (int row)
 {
   QString s = recentCharts->itemText(row);
-  recentCharts->setCurrentIndex(row);
+  recentCharts->removeItem(row);
+  recentCharts->insertItem(0, s);
+  recentCharts->setCurrentIndex(0);
   slotOpenChart(s);
 }
 
@@ -1057,7 +1062,7 @@ void QtstalkerApp::slotWakeup ()
 void QtstalkerApp::slotAppFont (QFont d)
 {
   qApp->setFont(d, 0);
-  qApp->setFont(d, "QComboBox");
+  slotWakeup();
 }
 
 // called each time script is done an indicator

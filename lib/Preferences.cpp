@@ -399,10 +399,10 @@ void Preferences::createFontPage ()
   grid->addWidget(label, row, col++);
 
   QFont font;
+  config.getData(Config::PlotFont, font);
   plotFontButton = new FontButton(w, font);
   plotFontButton->setToolTip(tr("Font used for text that appears on the chart."));
   grid->addWidget(plotFontButton, row++, col--);
-  config.getData(Config::PlotFont, font);
   plotFontButton->setFont(font);
   connect(plotFontButton, SIGNAL(valueChanged()), this, SLOT(slotModified()));
 
@@ -410,10 +410,10 @@ void Preferences::createFontPage ()
   label = new QLabel(tr("App Font"));
   grid->addWidget(label, row, col++);
 
+  config.getData(Config::AppFont, font);
   appFontButton = new FontButton(w, font);
   appFontButton->setToolTip(tr("Font used for everything but charts."));
   grid->addWidget(appFontButton, row++, col--);
-  config.getData(Config::AppFont, font);
   appFontButton->setFont(font);
   connect(appFontButton, SIGNAL(valueChanged()), this, SLOT(slotModified()));
 
@@ -635,7 +635,6 @@ void Preferences::slotSave ()
   if (f != f2)
   {
     config.setData(Config::PlotFont, f);
-    emit signalPlotFont(f);
   }
 
   appFontButton->getFont(f);

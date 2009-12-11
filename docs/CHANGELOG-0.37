@@ -135,5 +135,15 @@
 
           Now able to delete multiple charts from the group tab instead of one at a time.
 
+20091210: When double clicking the mouse on a chart, the cursor changes to notify user that a rubberband
+          selection is taking place.
+
+          Recent charts list now always orders charts starting from most recent to last displayed. The maximum
+          number of charts in the list is 10. Maybe will add a perferences option to change the maximum number
+          in future.
+
+          Fixed preferences dialog bug with fonts not being displayed correctly.
+
+          Added docs/api/.cvsignore file to ignore changes to the index.qhp file.
 
 

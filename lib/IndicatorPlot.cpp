@@ -75,17 +75,17 @@ IndicatorPlot::IndicatorPlot (QWidget *w) : QWidget(w)
 
   plotFont.setFamily("Helvetica");
   plotFont.setPointSize(12);
-  plotFont.setWeight(50);  
+  plotFont.setWeight(50);
   plotFontMetrics = new QFontMetrics(plotFont);
-  
+
   data = 0;
 
   chartMenu = new QMenu(this);
-  
+
   coMenu = new QMenu(this);
   coMenu->addAction(QPixmap(edit), tr("&Edit Chart Object"), this, SLOT(slotObjectDialog()), Qt::CTRL+Qt::Key_E);
   coMenu->addAction(QPixmap(deleteitem), tr("&Delete Chart Object"), this, SLOT(slotChartObjectDeleted()), Qt::CTRL+Qt::Key_D);
-  
+
   setMouseTracking(TRUE);
 
   setFocusPolicy(Qt::ClickFocus);
@@ -146,7 +146,7 @@ void IndicatorPlot::setDateFlag (bool d)
 void IndicatorPlot::setDrawMode (bool d)
 {
   drawMode = d;
-  
+
   if (drawMode)
     setCursor(QCursor(Qt::ArrowCursor));
   else
@@ -170,7 +170,7 @@ void IndicatorPlot::draw ()
 {
   if (buffer.isNull())
     return;
-  
+
   buffer.fill(backgroundColor);
 
   if (data)
@@ -186,7 +186,7 @@ void IndicatorPlot::draw ()
   }
 
   update();
-  
+
   emit signalDraw();
 }
 
@@ -204,7 +204,7 @@ void IndicatorPlot::drawLines ()
 
     if (! currentLine->getSize())
       continue;
-            
+
     switch (currentLine->getType())
     {
       case PlotLine::Histogram:
@@ -260,7 +260,7 @@ void IndicatorPlot::mousePressEvent (QMouseEvent *event)
 {
   if (! data  || event->button() != Qt::LeftButton)
     return;
-  
+
   if (! drawMode)
   {
     if (crosshairs)
@@ -271,12 +271,12 @@ void IndicatorPlot::mousePressEvent (QMouseEvent *event)
     }
     else
       updateStatusBar(event->x(), event->y());
-    
+
     return;
   }
-    
+
   getXY(event->x(), event->y());
-    
+
   if (mouseFlag == None)
   {
     QHashIterator<QString, COSettings *> it(coList);
@@ -295,7 +295,7 @@ void IndicatorPlot::mousePressEvent (QMouseEvent *event)
       }
     }
   }
-    
+
   QPoint p;
   switch (mouseFlag)
   {
@@ -375,9 +375,10 @@ void IndicatorPlot::mouseDoubleClickEvent (QMouseEvent *event)
     rubberBand->setGeometry(QRect(mouseOrigin, QSize()));
     rubberBand->show();
     mouseFlag = RubberBand;
+    setCursor(QCursor(Qt::SizeFDiagCursor));
     return;
   }
-    
+
   if (mouseFlag != COSelected)
     return;
 
@@ -401,6 +402,7 @@ void IndicatorPlot::mouseReleaseEvent(QMouseEvent *)
 
   delete rubberBand;
   mouseFlag = None;
+  unsetCursor();
   if (ti < pixelspace)
     return;
   emit signalPixelspaceChanged(x, ti);
@@ -440,9 +442,9 @@ void IndicatorPlot::getInfo (int x, int y)
       }
     }
   }
-  
+
   int i = convertXToDataIndex(x);
-  
+
   QString s, k;
   data->getDateString(i, s);
   k = "D";
@@ -450,7 +452,7 @@ void IndicatorPlot::getInfo (int x, int y)
   data->getTimeString(i, s);
   k = "T";
   tr.setData(k, s);
-  
+
   if (plotList.count())
   {
     int loop;
@@ -475,7 +477,7 @@ void IndicatorPlot::getCOInfo ()
 {
   Setting tr;
   coSelected->getInfo(tr);
-  
+
   if (tr.count())
   {
     Setting *r = new Setting;
@@ -584,7 +586,7 @@ void IndicatorPlot::drawYGrid ()
   QPainter painter;
   painter.begin(&buffer);
   painter.setPen(QPen(gridColor, 1, Qt::DotLine));
-  
+
   QVector<double> scaleArray;
   scaler.getScaleArray(scaleArray);
 
@@ -607,7 +609,7 @@ void IndicatorPlot::drawInfo ()
   painter.setFont(plotFont);
   painter.setBackgroundMode(Qt::OpaqueMode);
   painter.setBackground(QBrush(backgroundColor));
-  
+
   //QFontMetrics fm = painter.fontMetrics();
   int pos = startX;
 
@@ -655,9 +657,9 @@ void IndicatorPlot::drawInfo ()
             }
             painter.drawText(pos, 10, s);
             pos = pos + plotFontMetrics->width(s);
-  
+
             painter.setPen(borderColor);
-    
+
             s = "O=";
             strip(data->getOpen(data->count() - 1), 4, str);
             s.append(str);
@@ -675,10 +677,10 @@ void IndicatorPlot::drawInfo ()
             pos = pos + plotFontMetrics->width(s);
           }
         }
-	
+
 	else if (line->getType() == PlotLine::Horizontal)
 	{
-	  //dont print value of horizontal at the top 
+	  //dont print value of horizontal at the top
 	  //because its already displayed in the chart
 	  continue;
 	}
@@ -700,7 +702,7 @@ void IndicatorPlot::drawInfo ()
       }
     }
   }
-  
+
   painter.end();
 }
 
@@ -722,13 +724,13 @@ void IndicatorPlot::drawCrossHair ()
 {
   if (! crosshairs)
     return;
-    
+
   if (! crossHairFlag)
     return;
-    
+
   int y = scaler.convertToY(crossHairY);
   int x = startX + (data->getX(crossHairX) * pixelspace) - (startIndex * pixelspace);
-  
+
   QPainter painter;
   painter.begin(&buffer);
   painter.setPen(QPen(borderColor, 1, Qt::DotLine));
@@ -763,7 +765,7 @@ int IndicatorPlot::convertXToDataIndex (int x)
     i = data->count() - 1;
   if (i < startIndex)
     i = startIndex;
-  
+
   return i;
 }
 
@@ -806,7 +808,7 @@ void IndicatorPlot::setScale ()
           scaleLow = line->getLow();
       }
       else
-      {        
+      {
         int loop2 = line->getSize() - data->count() + startIndex;
         int end = (buffer.width() / pixelspace) + loop2;
         if (loop2 < 0)
@@ -835,7 +837,7 @@ void IndicatorPlot::setScale ()
       co->getHighLow(h, l);
       if (h > scaleHigh)
         scaleHigh = h;
-	
+
       if (l < scaleLow)
         scaleLow = l;
     }
@@ -886,8 +888,8 @@ void IndicatorPlot::strip (double d, int p, QString &s)
 void IndicatorPlot::showPopupMenu ()
 {
   chartMenu->clear();
-    
-  chartObjectMenu = new QMenu(tr("New Chart Object")); 
+
+  chartObjectMenu = new QMenu(tr("New Chart Object"));
   chartObjectMenu->addAction(QPixmap(buyarrow), tr("Buy Arrow"), this, SLOT(slotNewBuyArrow()));
   chartObjectMenu->addAction(QPixmap(fib), tr("Fibonacci Line"), this, SLOT(slotNewFiboline()));
   chartObjectMenu->addAction(QPixmap(horizontal), tr("Horizontal Line"), this, SLOT(slotNewHorizontalLine()));
@@ -901,12 +903,12 @@ void IndicatorPlot::showPopupMenu ()
     chartObjectMenu->setEnabled(FALSE);
   else
     chartObjectMenu->setEnabled(TRUE);
-  
+
   chartMenu->addAction(QPixmap(deleteitem), tr("Delete &All Chart Objects"), this, SLOT(slotDeleteAllChartObjects()), Qt::CTRL+Qt::Key_A);
   chartMenu->addSeparator ();
   chartMenu->addAction(QPixmap(date), tr("Date"), this, SLOT(toggleDate()), Qt::CTRL+Qt::Key_D);
   chartMenu->addAction(QPixmap(loggridicon), tr("Log Scaling"), this, SLOT(toggleLog()), Qt::CTRL+Qt::Key_L);
-  
+
   chartMenu->exec(QCursor::pos());
 }
 
@@ -1019,7 +1021,7 @@ void IndicatorPlot::drawLine ()
   int y = -1;
   int y2 = -1;
   int loop = currentLine->getSize() - data->count() + startIndex;
-  
+
   Scaler scale;
   if (currentLine->getScaleFlag())
   {
@@ -1072,11 +1074,11 @@ void IndicatorPlot::drawHorizontalLine ()
   strip(currentLine->getData(currentLine->getSize() - 1), 4, s);
   currentLine->getLabel(s2);
   s = s2 + "=" + s;
-  
+
   painter.setBackgroundMode(Qt::OpaqueMode);
   painter.setBackground(QBrush(backgroundColor));
   painter.setFont(plotFont);
-  
+
   QRect rc = painter.boundingRect(startX, y - (plotFontMetrics->height()/2), 1, 1, 0, s);
   painter.drawText(rc, s);
   painter.drawRect(rc);
@@ -1096,7 +1098,7 @@ void IndicatorPlot::drawDot ()
 
   int x = startX;
   int loop = currentLine->getSize() - data->count() + startIndex;
-  
+
   Scaler scale;
   if (currentLine->getScaleFlag())
   {
@@ -1169,7 +1171,7 @@ void IndicatorPlot::drawHistogram ()
         y2 = scale.convertToY(currentLine->getData(loop));
       else
         y2 = scaler.convertToY(currentLine->getData(loop));
-      
+
       pa.setPoint(0, x, zero);
       pa.setPoint(1, x, y);
       pa.setPoint(2, x2, y2);
@@ -1318,7 +1320,7 @@ void IndicatorPlot::drawCandle ()
       else
       {
         painter.drawLine (x, xh, x, xl);
-      
+
         if (xc == xo)
           painter.drawLine (x - 2, xo, x + 2, xo);
         else
@@ -1384,7 +1386,7 @@ void IndicatorPlot::slotNewTrendLine ()
 {
   slotNewChartObject((int) COSettings::COTrendLine);
 }
-    
+
 void IndicatorPlot::slotNewVerticalLine ()
 {
   slotNewChartObject((int) COSettings::COVerticalLine);
@@ -1394,7 +1396,7 @@ void IndicatorPlot::slotNewChartObject (int selection)
 {
   if (! chartSymbol.length())
     return;
-    
+
   coSelected = new COSettings;
   coSelected->newObject(selection);
   coSelected->setData(COSettings::COSymbol, chartSymbol);
@@ -1411,7 +1413,7 @@ void IndicatorPlot::slotNewChartObject (int selection)
 
   coSelected->setData(COSettings::COIndicator, indicator);
   coSelected->setData(COSettings::COID, s);
-  
+
   switch ((COSettings::COType) selection)
   {
     case COSettings::COBuyArrow:
@@ -1449,7 +1451,7 @@ void IndicatorPlot::drawObjects ()
     coDraw = it.value();
     QString s;
     coDraw->getData(COSettings::COCOType, s);
-    
+
     switch ((COSettings::COType) s.toInt())
     {
       case COSettings::COBuyArrow:
@@ -1501,7 +1503,7 @@ void IndicatorPlot::slotDeleteAllChartObjects ()
   db.deleteChartObjects(chartSymbol);
 
   mouseFlag = None;
-  
+
   draw();
 }
 
@@ -1509,7 +1511,7 @@ void IndicatorPlot::slotChartObjectDeleted ()
 {
   if (! chartSymbol.length() || ! coList.count() || ! coSelected)
     return;
-    
+
   QString s;
   coSelected->getData(COSettings::COID, s);
   delete coSelected;
@@ -1554,7 +1556,7 @@ void IndicatorPlot::objectClickWait ()
 {
   QString s;
   coSelected->getData(COSettings::COCOType, s);
-  
+
   switch ((COSettings::COType) s.toInt())
   {
     case COSettings::COBuyArrow:
@@ -1609,18 +1611,18 @@ void IndicatorPlot::objectClickWait2 ()
   double td = 0;
   QString s;
   coSelected->getData(COSettings::COCOType, s);
-  
+
   switch ((COSettings::COType) s.toInt())
   {
     case COSettings::COFiboLine:
-      coSelected->getData(COSettings::CODate, sd); 
+      coSelected->getData(COSettings::CODate, sd);
       if (x1 <= sd)
         break;
-      
-      coSelected->getData(COSettings::COHigh, td); 
+
+      coSelected->getData(COSettings::COHigh, td);
       if (y1 >= td)
         break;
-      
+
       coSelected->setData(COSettings::CODate2, x1);
       coSelected->setData(COSettings::COLow, y1);
       coSelected->setSaveFlag(TRUE);
@@ -1630,10 +1632,10 @@ void IndicatorPlot::objectClickWait2 ()
       setCursor(QCursor(Qt::ArrowCursor));
       break;
     case COSettings::COTrendLine:
-      coSelected->getData(COSettings::CODate, sd); 
+      coSelected->getData(COSettings::CODate, sd);
       if (x1 <= sd)
         break;
-      
+
       coSelected->setData(COSettings::CODate2, x1);
       coSelected->setData(COSettings::COValue2, y1);
       coSelected->setSaveFlag(TRUE);
@@ -1669,7 +1671,7 @@ void IndicatorPlot::drawBuyArrow ()
 
   QColor color;
   coDraw->getData(COSettings::COColor, color);
-  
+
   QPolygon arrow;
   arrow.putPoints(0, 7, x, y,
                   x + 5, y + 5,
@@ -1698,7 +1700,7 @@ void IndicatorPlot::drawSellArrow ()
 {
   QPainter painter;
   painter.begin(&buffer);
-  
+
   QDateTime date;
   coDraw->getData(COSettings::CODate, date);
   int x2 = data->getX(date);
@@ -1708,14 +1710,14 @@ void IndicatorPlot::drawSellArrow ()
   int x = startX + (x2 * pixelspace) - (startIndex * pixelspace);
   if (x == -1)
     return;
-    
+
   double value;
   coDraw->getData(COSettings::COValue, value);
   int y = scaler.convertToY(value);
 
   QColor color;
   coDraw->getData(COSettings::COColor, color);
-  
+
   QPolygon arrow;
   arrow.putPoints(0, 7, x, y,
                   x + 5, y - 5,
@@ -1729,7 +1731,7 @@ void IndicatorPlot::drawSellArrow ()
 
   coDraw->clearSelectionArea();
   coDraw->setSelectionArea(new QRegion(arrow));
-    
+
   if (coDraw->getSelected() && mouseFlag == COSelected)
   {
     coDraw->clearGrabHandles();
@@ -1744,7 +1746,7 @@ void IndicatorPlot::drawText ()
 {
   QPainter painter;
   painter.begin(&buffer);
-  
+
   QDateTime date;
   coDraw->getData(COSettings::CODate, date);
   int x2 = data->getX(date);
@@ -1762,7 +1764,7 @@ void IndicatorPlot::drawText ()
   QColor color;
   coDraw->getData(COSettings::COColor, color);
   painter.setPen(color);
-    
+
   double value;
   coDraw->getData(COSettings::COValue, value);
   int y = scaler.convertToY(value);
@@ -1770,11 +1772,11 @@ void IndicatorPlot::drawText ()
   QString label;
   coDraw->getData(COSettings::COLabel, label);
   painter.drawText(x, y, label);
-  
+
   QFontMetrics fm = painter.fontMetrics();
   coDraw->clearSelectionArea();
   coDraw->setSelectionArea(new QRegion(x, y - fm.height(), fm.width(label, -1), fm.height(), QRegion::Rectangle));
-    
+
   if (coDraw->getSelected() && mouseFlag == COSelected)
   {
     coDraw->clearGrabHandles();
@@ -1789,11 +1791,11 @@ void IndicatorPlot::drawFiboLine ()
 {
   QPainter painter;
   painter.begin(&buffer);
-  
+
   QFont font;
   coDraw->getData(COSettings::COFont, font);
   painter.setFont(font);
-  
+
   QDateTime startDate;
   coDraw->getData(COSettings::CODate, startDate);
   int x2 = data->getX(startDate);
@@ -1803,16 +1805,16 @@ void IndicatorPlot::drawFiboLine ()
   int x = startX + (x2 * pixelspace) - (startIndex * pixelspace);
   if (x == -1)
     return;
-	
+
   QDateTime endDate;
   coDraw->getData(COSettings::CODate2, endDate);
   QDateTime dt = endDate;
-  
+
   int extend = 0;
   coDraw->getData(COSettings::COExtend, extend);
   if (extend)
     data->getDate(data->count() - 1, dt);
-    
+
   x2 = data->getX(dt);
   if (x2 == -1)
     return;
@@ -1820,17 +1822,17 @@ void IndicatorPlot::drawFiboLine ()
   x2 = startX + (x2 * pixelspace) - (startIndex * pixelspace);
   if (x2 == -1)
     return;
-    
+
   QColor color;
   coDraw->getData(COSettings::COColor, color);
   painter.setPen(color);
-  
+
   QPolygon array;
   coDraw->clearSelectionArea();
-    
+
   double high = 0;
   coDraw->getData(COSettings::COHigh, high);
-  
+
   double low = 0;
   coDraw->getData(COSettings::COLow, low);
 
@@ -1860,12 +1862,12 @@ void IndicatorPlot::drawFiboLine ()
       int y = scaler.convertToY(r);
       painter.drawLine (x, y, x2, y);
       painter.drawText(x, y - 1, QString::number(td * 100) + "% - " + QString::number(r));
-	
+
       array.putPoints(0, 4, x, y - 4, x, y + 4, x2, y + 4, x2, y - 4);
       coDraw->setSelectionArea(new QRegion(array));
     }
   }
-  
+
   // draw the low line
   int y = scaler.convertToY(low);
   painter.drawLine (x, y, x2, y);
@@ -1874,7 +1876,7 @@ void IndicatorPlot::drawFiboLine ()
   // store the selectable area the low line occupies
   array.putPoints(0, 4, x, y - 4, x, y + 4, x2, y + 4, x2, y - 4);
   coDraw->setSelectionArea(new QRegion(array));
-    
+
   // draw the high line
   int y2 = scaler.convertToY(high);
   painter.drawLine (x, y2, x2, y2);
@@ -1883,16 +1885,16 @@ void IndicatorPlot::drawFiboLine ()
   // store the selectable area the high line occupies
   array.putPoints(0, 4, x, y2 - 4, x, y2 + 4, x2, y2 + 4, x2, y2 - 4);
   coDraw->setSelectionArea(new QRegion(array));
-    
+
   if (coDraw->getSelected() && mouseFlag == COSelected)
   {
     coDraw->clearGrabHandles();
-    
+
     //bottom left corner
     y = scaler.convertToY(low);
     coDraw->setGrabHandle(new QRegion(x, y - (HANDLE_WIDTH / 2), HANDLE_WIDTH, HANDLE_WIDTH, QRegion::Rectangle));
     painter.fillRect(x, y - (HANDLE_WIDTH / 2), HANDLE_WIDTH, HANDLE_WIDTH, color);
-    
+
     //top right corner
     y2 = scaler.convertToY(high);
     coDraw->setGrabHandle(new QRegion(x2, y2 - (HANDLE_WIDTH / 2), HANDLE_WIDTH, HANDLE_WIDTH, QRegion::Rectangle));
@@ -1906,37 +1908,37 @@ void IndicatorPlot::drawCOHorizontalLine ()
 {
   QPainter painter;
   painter.begin(&buffer);
-  
+
   QFont font;
   coDraw->getData(COSettings::COFont, font);
   painter.setFont(font);
-  
+
   double value;
   coDraw->getData(COSettings::COValue, value);
   int y = scaler.convertToY(value);
-  
+
   // if value is off chart then don't draw it
   if (value < scaler.getLow())
     return;
-      
+
   QColor color;
   coDraw->getData(COSettings::COColor, color);
   painter.setPen(color);
 
   QString text;
   coDraw->getData(COSettings::COLabel, text);
-  
+
   QFontMetrics fm(font);
   int pixelsWide = fm.width(text);
   painter.drawLine (0, y, buffer.width(), y);
   painter.drawText(0, y - 1, text);
   painter.drawText(0 + pixelsWide + 1, y - 1, QString::number(value));
-  
+
   coDraw->clearSelectionArea();
   QPolygon array;
   array.putPoints(0, 4, 0, y - 4, 0, y + 4, buffer.width(), y + 4, buffer.width(), y - 4);
   coDraw->setSelectionArea(new QRegion(array));
-    
+
   if (coDraw->getSelected() && mouseFlag == COSelected)
   {
     coDraw->clearGrabHandles();
@@ -1956,7 +1958,7 @@ void IndicatorPlot::drawTrendLine ()
 {
   QPainter painter;
   painter.begin(&buffer);
-  
+
   QDateTime date;
   coDraw->getData(COSettings::CODate, date);
   int x2 = data->getX(date);
@@ -1966,7 +1968,7 @@ void IndicatorPlot::drawTrendLine ()
   int x = startX + (x2 * pixelspace) - (startIndex * pixelspace);
   if (x == -1)
     return;
-	
+
   QDateTime date2;
   coDraw->getData(COSettings::CODate2, date2);
   x2 = data->getX(date2);
@@ -1976,7 +1978,7 @@ void IndicatorPlot::drawTrendLine ()
   x2 = startX + (x2 * pixelspace) - (startIndex * pixelspace);
   if (x2 == -1)
     return;
-    
+
   int y = 0;
   int y2 = 0;
   int usebar = 0;
@@ -1988,7 +1990,7 @@ void IndicatorPlot::drawTrendLine ()
 
     QString bar;
     coDraw->getData(COSettings::COBarField, bar);
-    
+
     if (bar == tr("Open"))
     {
       y = scaler.convertToY(data->getOpen(i));
@@ -2015,7 +2017,7 @@ void IndicatorPlot::drawTrendLine ()
     double value;
     coDraw->getData(COSettings::COValue, value);
     y = scaler.convertToY(value);
-    
+
     coDraw->getData(COSettings::COValue2, value);
     y2 = scaler.convertToY(value);
   }
@@ -2023,7 +2025,7 @@ void IndicatorPlot::drawTrendLine ()
   QColor color;
   coDraw->getData(COSettings::COColor, color);
   painter.setPen(color);
-  
+
   painter.drawLine (x, y, x2, y2);
 
   // save old values;
@@ -2035,7 +2037,7 @@ void IndicatorPlot::drawTrendLine ()
   int extend = 0;
   coDraw->getData(COSettings::COExtend, extend);
   if (extend)
-  {  
+  {
     int ydiff = y - y2;
     int xdiff = x2 - x;
     if (xdiff > 0)
@@ -2056,14 +2058,14 @@ void IndicatorPlot::drawTrendLine ()
   QPolygon array;
   array.putPoints(0, 4, tx, ty - 4, tx, ty + 4, x2, y2 + 4, x2, y2 - 4);
   coDraw->setSelectionArea(new QRegion(array));
-    
+
   if (coDraw->getSelected() && mouseFlag == COSelected)
   {
     coDraw->clearGrabHandles();
-    
+
     coDraw->setGrabHandle(new QRegion(tx, ty - (HANDLE_WIDTH / 2), HANDLE_WIDTH, HANDLE_WIDTH, QRegion::Rectangle));
     painter.fillRect(tx, ty - (HANDLE_WIDTH / 2), HANDLE_WIDTH, HANDLE_WIDTH, color);
-      
+
     coDraw->setGrabHandle(new QRegion(tx2, ty2 - (HANDLE_WIDTH / 2), HANDLE_WIDTH, HANDLE_WIDTH, QRegion::Rectangle));
     painter.fillRect(tx2, ty2 - (HANDLE_WIDTH / 2), HANDLE_WIDTH, HANDLE_WIDTH, color);
   }
@@ -2075,23 +2077,23 @@ void IndicatorPlot::drawVerticalLine ()
 {
   QPainter painter;
   painter.begin(&buffer);
-  
+
   QDateTime date;
   coDraw->getData(COSettings::CODate, date);
   int x2 = data->getX(date);
   if (x2 == -1)
     return;
-      
+
   int x = startX + (x2 * pixelspace) - (startIndex * pixelspace);
   if (x == -1)
     return;
-      
+
   QColor color;
   coDraw->getData(COSettings::COColor, color);
   painter.setPen(color);
 
   painter.drawLine (x, 0, x, buffer.height());
-  
+
   coDraw->clearSelectionArea();
   QPolygon array;
   array.putPoints(0,
@@ -2101,7 +2103,7 @@ void IndicatorPlot::drawVerticalLine ()
 		  x + (HANDLE_WIDTH / 2), buffer.height(),
 		  x - (HANDLE_WIDTH / 2), buffer.height());
   coDraw->setSelectionArea(new QRegion(array));
-    
+
   if (coDraw->getSelected() && mouseFlag == COSelected)
   {
     coDraw->clearGrabHandles();
@@ -2121,7 +2123,7 @@ void IndicatorPlot::objectMoving ()
 {
   QString s;
   coSelected->getData(COSettings::COCOType, s);
-    
+
   switch ((COSettings::COType) s.toInt())
   {
     case COSettings::COBuyArrow:
@@ -2178,7 +2180,7 @@ void IndicatorPlot::trendLineMoving ()
     coSelected->getData(COSettings::CODate2, date2);
     if (x1 >= date2)
       return;
-    
+
     coSelected->setData(COSettings::CODate, x1);
     coSelected->setData(COSettings::COValue, y1);
     coSelected->setSaveFlag(TRUE);
@@ -2214,7 +2216,7 @@ void IndicatorPlot::fiboLineMoving ()
     emit statusMessage(s);
     return;
   }
-  
+
   if (moveFlag == 1)
   {
     // bottom left corner
@@ -2222,7 +2224,7 @@ void IndicatorPlot::fiboLineMoving ()
     coSelected->getData(COSettings::CODate2, date2);
     if (x1 >= date2)
       return;
-    
+
     double td = 0;
     coSelected->getData(COSettings::COHigh, td);
     if (y1 >= td)
@@ -2231,9 +2233,9 @@ void IndicatorPlot::fiboLineMoving ()
     coSelected->setData(COSettings::CODate, x1);
     coSelected->setData(COSettings::COLow, y1);
     coSelected->setSaveFlag(TRUE);
-    
+
     draw();
-    
+
     QString s = x1.toString(dateFormat) + " " + QString::number(y1);
     emit statusMessage(s);
   }
@@ -2253,9 +2255,9 @@ void IndicatorPlot::fiboLineMoving ()
     coSelected->setData(COSettings::CODate2, x1);
     coSelected->setData(COSettings::COHigh, y1);
     coSelected->setSaveFlag(TRUE);
-    
+
     draw();
-    
+
     QString s = x1.toString(dateFormat) + " " + QString::number(y1);
     emit statusMessage(s);
   }
@@ -2267,7 +2269,7 @@ void IndicatorPlot::slotObjectDialog ()
   int rc = dialog->exec();
   if (rc == QDialog::Accepted)
     coSelected->setSaveFlag(TRUE);
-  
+
   delete dialog;
 }
 
