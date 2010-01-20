@@ -77,7 +77,13 @@ ta-lib-config</code>' to ensure that this is properly installed. </p>
 <code>qtstalker.config</code> file (e.g. "<code>INCLUDEPATH +=
 /opt/local/include/ta-lib</code>"). </p>
 
-<p></p>
+<p>On some systems the following error might occur when you start Qtstalker ...</p>
+<p><code>/usr/local/bin/qtstalker: error while loading shared libraries:
+    libqtstalker.so.0: cannot open shared object file: No such file or
+    directory</code></p>
+    <p>Fix this by adding <code>/usr/local/lib</code>
+    to your <code>/etc/ld.so.conf</code> file and run <code>ldconfig -v</code>
+    (as root).</p>
 
 <h4>Install Qtstalker</h4>
 
